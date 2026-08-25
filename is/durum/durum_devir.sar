@@ -9,9 +9,9 @@
 //   tarihçe atölyede kendi kaydıyla yaşar. Oturum sayacı burada birden başlar.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-25", oturum: 1,
-            neredeyiz: GIT-DOGUMU-SAHNE-TAM-YESIL,
-            sıradaki: CATI-TASINMASI-VE-MAGAZA-YUKLEMESI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-26", oturum: 1,
+            neredeyiz: CATIDA-YASIYOR-YUZLER-VE-KANCALAR-BAGLI,
+            sıradaki: UZAK-GONDERIM-UZLASMASI-VE-MAGAZA-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI, EKL-F6-A01-MAGAZA-YUKLEMESI, OSS-A05-KATKI-SOZLESMESI, RFM-ONCELIK-IKI-EKSEN-REFORMU, KPS-KAPSAM-BORCU-YAYIN-SONRASI, KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI ] ) {
   özet: """
@@ -28,9 +28,16 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-25", oturum: 1,
         tamamını geçti; depo denetimi sıfır hata ve sıfır uyarı verdi; kapalı
         ürün adı, kişi adı ve eski yol kalıntısı el ölçümüyle sıfırdır.
 
-        SIRADAKİ: depo çatının altına taşınır, atölye deposu arşive dönüşür ve
-        yürütücü ile editör yolları yeni köke bağlanır; ardından eklenti
-        mağazaya yüklenir ve lansman takvimi işler. Depo lansman gününe kadar
-        özel kalır; ilk uzak gönderim Founder'ın canlı açılışıdır.
+        ÇATI (2026-08-26): depo Nexivion-Labs çatısının altına taşındı; eski
+        atölye deposu Founder hükmüyle bugünkü adıyla aynı çatının altına
+        alındı ve tek pencerede yan yana duruyor. Yürütücü bağları bu depoda
+        yaşar: proje kapsamlı MCP kaydı, oturum kancaları ve iki doğum gecesi
+        hatırlatıcısı (çalışma alanı düğümlerinin Mini Graf'ta görünmesi ve
+        çatı kökünden denetimin sınırı).
+
+        SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
+        gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
+        lansman takvimi işler. Yayın belge kararları (KRR-YBI) Founder
+        onayını beklemektedir. Depo lansman gününe kadar özel kalır.
         """
 }
