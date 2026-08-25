@@ -458,3 +458,27 @@ Hatırlatıcı(
   tarih:            2026-08-24,
   ne:               "Yol haritası paneli iç içe yaşayan varlıkları kök düzeyinde kardeş gibi düz listelemektedir ve kusur Founder'ın 2026-08-24 tarihli ekran gözlemiyle sahada görüldü: çatı ilanı, kapalı ürün, eski sarmal ve sahnedeki yeni sarmal aynı seviyede dört kök satır olarak durmaktadır, oysa çatı ilanı sarmal gövdesini kendi rafı olarak beyan eder ve kapsayan ile kapsanan yan yana görünmektedir. Kök neden ölçüldü: panel her dosyayı yukarı yürüyerek ilk anadizinli dizine bağlar (eklenti/src/yolharitasi.ts satır iki yüz altmış üç ile iki yüz doksan iki arası) ve varlıkları tek düz dizide ada göre sıralar (satır beş yüz kırk üç); bir varlığın kök dizininin başka bir varlığın kök dizinini önek olarak kapsaması hiçbir yerde modellenmez ve kök çağrısı bu düz listeyi basar. Beklenen davranış şudur: bir çalışma alanı varlığı başka varlıkları klasör olarak kapsıyorsa panel kökünde yalnız kapsayıcı görünür ve kapsanan varlıklar onun altına çocuk olarak iner; dosya aidiyeti zaten yukarı yürüme ile doğru çözüldüğü için eksik olan yalnız varlıklar arası önek ilişkisinin ağaca inmesidir. Aynı önek körlüğü aktif varlık nabzının bulma çağrısında da şüphelidir (satır üç yüz yirmi bir), çünkü iç içe köklerde ilk eşleşen kazanır ve en uzun önek aranmaz; düzeltme turunda bu ikinci kalem de ölçülmelidir. KAPANIŞ (Founder gözle doğrulaması · 2026-08-25): kusur EKL-F7-A09 Adımında birbirini kapsayan kümeler modeliyle kapandı — panel kökü yalnız kapsayıcıyı basar, kapsanan varlıklar altına iner, çalışma alanı satırı kendi istasyon simgesini taşır ve şüpheli ikinci kalem de aynı turda ölçülüp giderildi: aktiflik çözümü artık en uzun önek eşleşmesiyle en derin kümeyi seçer. Founder 0.9.155 kurulu pencerede görünümü gözüyle doğruladı.",
 )
+
+// ── 2026-08-25 · doğum gecesi ölçümleri ────────────────────────────────────
+//   Açık deponun çatının altına taşındığı gece iki gözlem ileri-bağlandı: biri
+//   Founder'ın canlı isteği, öteki çatı kökünden koşan denetimin ölçülmüş
+//   sınırıdır. İkisi de plana Adım olarak inmez, hatırlatıcı olarak bekler.
+Hatırlatıcı(
+  kod:              HTR-CALISMA-ALANI-MINI-GRAF,
+  durum:            açık,
+  çapa:             gelecek,
+  dönüşTetikleyici: "Mağaza yüklemesinden sonra açılan ilk eklenti geliştirme oturumunda",
+  öncelik:          p2,
+  tarih:            2026-08-25,
+  ne:               "Founder 2026-08-25 tarihinde çalışma alanı düğümlerinin Mini Graf yüzeyinde de görünmesini istemiştir. Bugün Mini Graf yalnız proje kökünün altındaki düğümleri çizmekte, çatıyı ve kapsanan projeleri kardeş kümeler olarak göstermemektedir; oysa yol haritası paneli aynı hiyerarşiyi 0.9.155 sürümünden beri iç içe kümeler modeliyle basmaktadır. İş yol haritasındaki kapsama modelinin Mini Graf'a taşınmasıdır ve taşıma bittiği için açık deponun ilk eklenti işi olarak sıraya girer."
+)
+
+Hatırlatıcı(
+  kod:              HTR-CATI-KOKUNDEN-DENETIM,
+  durum:            açık,
+  çapa:             nitelik,
+  dönüşTetikleyici: "Çok projeli bir çatının kökünden denetim koşulmak istendiğinde ya da kimlik motoru çatı kademesine öğretildiğinde",
+  öncelik:          p3,
+  tarih:            2026-08-25,
+  ne:               "Çatı kökünden koşan denetim, kapsanan projelerin meyve yollarını ve ebedi kilidini kendi köklerinden değil çatı kökünden çözmektedir; bu 2026-08-25 gecesi ölçülmüştür: depo kendi kökünden sıfır hata verirken çatı kökünden aynı ağaç mühürsüz ebedi kural ve diskte yok görünen tamamlanmış meyveler bildirmiştir. Kanon her üretken ağacın kimliğinin kendi Proje düğümünden türediğini söyler (MIM-1.1) ve motor çok projeli çatıyı proje-tanı-kimliği-uyumsuz tanısıyla dürüstçe reddeder; eksik olan, çatı kökünden koşan denetimin her kapsanan projeyi kendi köküyle ayrı ayrı koşturup bulguları proje kimliğiyle gruplamasıdır. Bugünkü doğru kullanım her projenin kendi kökünden denetlenmesidir ve örnek çatı bunu belgesinde söyler."
+)

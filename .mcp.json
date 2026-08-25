@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "sarmal": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["urun/cekirdek/src/mcp.ts"],
+      "env": {}
+    }
+  }
+}
