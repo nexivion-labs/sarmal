@@ -1,0 +1,33 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga2_bilgi.sar — 🌊 2. DALGA · BİLGİ AİLESİ FORMATLARI (F8)
+//
+//   Founder incelemesi için ÖRNEK dosya: Sözlük · Deney.
+//   (Karar·Formül·Fikir·Çıkarım 1. dalgadan önce şemalıydı — aile tamamlanıyor.)
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  📖 Bilgi ailesinin son iki formatını kilitlemek: alanın dili (Sözlük) ve alanın kanıtı (Deney).
+
+  ## Kapsam
+  📦 Sözlük bir alanın terimlerini tek çatıda toplar: terimler gövde haritasında yaşar, anlatı belgeye gider. Deney bilimsel defterdir: hipotez zorunludur çünkü ölçümsüz iddia bilgi değildir; ölçüm ve çıkarım süreç ilerledikçe dolar, sonuç Karar düğümüne terfi edebilir (Bellek→Beceri zincirinin bilgi-ailesi kardeşi). İkisi de yapraktır: çocuk sarmaz, adımlara besler kenarıyla bağlanır.
+
+  ## Sonuç
+  ✅ Kabul: iki tip motor-temiz geçer; Deney→Karar terfi yolu 3. dalgada denetime bağlanır.
+|<--
+
+// ── SÖZLÜK — alanın dili: imza kod+ne · terimler gövde haritasında ──────────
+Sözlük( kod: ORN-SZL-ODEME, ne: "💳 Ödeme alanının ortak dili — ekip aynı sözcükle konuşur" ) {
+  terimler: {
+    provizyon: "kartta tutar bloke etme — henüz çekim DEĞİL",
+    iade: "tamamlanmış ödemenin geri dönüşü (refund)",
+    ciro: "gün sonu toplam işlem hacmi",
+  }
+}
+
+// ── DENEY — alanın kanıtı: imza kod+hipotez · ölçüm→çıkarım zinciri ─────────
+Deney( kod: ORN-DNY-KATLAMA,
+       hipotez: "🧪 110 sütun katlama eşiği okunabilirliği artırır, bilgi kaybetmez",
+       ölçüm: "54 gerçek niyet cümlesi katlandı; anlam-koruma sınaması bayt-birebir geçti",
+       çıkarım: "eşik doğru; üç-tırnak katlaması kanona alındı (DIL-2.2)",
+       referans: MIM-1.3 )   // anlatı-bağı: eski karar defteri kaydı .sar düğümü değil — DAG kenarı olamaz (ORK-1.2)

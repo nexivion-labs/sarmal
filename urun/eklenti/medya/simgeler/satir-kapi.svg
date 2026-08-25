@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kapı: yanıt bekleyen sorunun balonu — içinde Onaylar ailesinin bekleyen elması. -->
+  <rect x="4" y="4.4" width="16" height="11.6" rx="1.6"/>
+  <path d="M8.6 16 V20 L12.6 16"/>
+  <path d="M12 7.2 L14.4 10.2 L12 13.2 L9.6 10.2 Z"/>
+</svg>

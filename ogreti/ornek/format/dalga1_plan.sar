@@ -1,0 +1,56 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga1_plan.sar — 🌊 1. DALGA · PLAN AİLESİ FORMATLARI (F8)
+//
+//   Founder incelemesi için ÖRNEK dosya: Faz · Katman · Adım · Kapı ·
+//   Gereksinim formatlarını gerçekçi bir mini-planla gösterir.
+//   Kanon: SNF-0 semalar + formatKanonu (imza·gövde·anlatı·ev·kenar).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Teknoloji( kod: ORN-TEK-ARKAYUZ, ne: "örnek arkayüz çatısı — Katman'ın teknoloji bağı (MIM-1.4)" )
+
+-->|
+  ## Amaç
+  🌊 Plan ailesinin beş formatını tek örnekte kilitlemek: her tip bir fonksiyon gibi — imzası zorunlu, gövdesi izinli çocuklar, anlatısı DIL-2.
+
+  ## Kapsam
+  📦 Bu örnek plan ailesini kapsar. Faz ve Katman kapsayıcıdır: kimlikleri kod+ad ile kurulur, durumları ÇOCUKLARINDAN türetilir — dosyaya yazılmaz (çift-kayıt yasağı). Adım yapraktır: kod+ne zorunlu, durum opsiyoneldir; görev·referans·kabul·dokunulmaz·bağımlılık·sınır alanları BAĞLAM-KONİSİDİR — orkestratör-runtime bu koniden istem üretir. Kapı bir geçittir: kabul ölçütü olmadan yaşayamaz. Gereksinim kullanıcı sesidir: kim istiyor, ne istiyor. Varlık ekseni (MIM-1.1) bu ailenin çatısıdır: Blok üstte Proje/ÇalışmaAlanı'na bağlanır.
+
+  ## Sonuç
+  ✅ Kabul: bu dosya motor-temiz geçer; beş tipin imzası SNF şemasıyla birebir örtüşür.
+|<--
+
+
+Blok( kod: ORN-BLK-ODEME, ad: "odeme-sistemi", ne: "🧾 Örnek: bir ödeme sisteminin planlanışı" ) {
+
+  // ── FAZ — imza: kod+ad (zorunlu) · gövde: yalnız Katman · durum TÜRETİLİR ──
+  Katman( kod: ORN-F1, kullanır: ORN-TEK-ARKAYUZ, ad: "arkayuz",
+       ne: "🏗️ Ödeme çekirdeği: sağlayıcı entegrasyonu + kayıt defteri" ) {
+
+    // ── KATMAN — imza: kod+ad · gövde: yalnız Adım ─────────────────────────
+
+    // ── ADIM (yalın) — imza: kod+ne zorunlu; durum opsiyonel ─────────────
+    Adım( kod: ORN-F1-A01, durum: tamamlandı,
+          ne: "🔌 Stripe test anahtarıyla bağlantı kurulur ve doğrulanır",
+          kabul: "sınama: test anahtarıyla bağlantı canlı doğrulandı (YAS-4.2: tamamlanmış iş kanıtsız kalamaz)" )
+
+    // ── ADIM (koni-zengin) — orkestratör bu alanlardan İSTEM üretir ──────
+    Adım( kod: ORN-F1-A02, durum: geliştirmede,
+          ne: "💳 Ödeme oluşturma ucu yazılır (POST /odeme)",
+          görev: "FastAPI ucu + Pydantic şema + Stripe PaymentIntent çağrısı",
+          referans: MIM-1.3,
+          kabul: "sınama: 100₺ test ödemesi 201 döner; hatalı kart 402 döner",
+          dokunulmaz: "mevcut /musteri uçları — bu adım onlara DOKUNMAZ",
+          bağımlı: [ ORN-F1-A01 ],
+          sınır: "canlı anahtar YASAK; yalnız test ortamı" )
+  }
+
+  // ── KAPI — imza: kod+kabul zorunlu; faz geçidi, ölçütsüz yaşayamaz ────────
+  Kapı( kod: ORN-K1,
+        kabul: "tüm ORN-F1 adımları tamamlandı + sınamalar yeşil + motor-temiz",
+        ne: "🚪 Arkayüz fazının kapısı — geçilmeden önyüze başlanmaz" )
+
+  // ── GEREKSİNİM — kullanıcının sesi: kim + ne; adımlara `besler` bağlanır ──
+  Gereksinim( kod: ORN-G1, kim: "kafe sahibi",
+              ne: "📱 Müşterim QR okutup 10 saniyede ödesin istiyorum",
+              besler: ORN-F1-A02 )
+}

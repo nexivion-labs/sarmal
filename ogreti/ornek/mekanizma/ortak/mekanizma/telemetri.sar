@@ -1,0 +1,16 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/mekanizma/telemetri.sar — 🔩 Telemetri mekanizması (DAG ucu)
+//
+//   Gözlemlenebilirlik altyapısı. Governance'a BAĞIMLI (modül-DAG ucu:
+//   MEK-TEL → MEK-GOV → MEK-RBAC → MIM-0 — çok-hop bağımlı çözümü ispatı).
+//   Metrik + Log İÇERİR (nitelik ailesi — Mekanizma bunları toparlar).
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır MEK-GOV
+
+Mekanizma( kod: MEK-TEL, ad: "telemetri", faz: "F2",
+           bağımlı: [ MEK-GOV ],
+           ne: "🔩 gerçek-zamanlı metrik+log toplama — governance kararlarını da gözler" ) {
+  Metrik( kod: MTR-TEL-1, ne: "governance_block_rate — engellenen aksiyon oranı (5dk pencere)" )
+  Log(    kod: LOG-TEL-1, ne: "governance_check olayı — her kapı geçişi yapılandırılmış loglanır" )
+}

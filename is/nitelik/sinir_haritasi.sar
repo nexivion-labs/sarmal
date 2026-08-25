@@ -1,0 +1,56 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/sinir_haritasi.sar — 🗺️ SİNİR HARİTASI (Sistem Sağlık Turu · Faz-1)
+//
+//   "Omurga var mı, sinir bağlı mı?" envanteri: her Kural × makine-zorlama durumu.
+//   Founder teşhisi (2026-07-14): "omurga kuruldu ama sinirler çalışmıyor" —
+//   bu harita o teşhisi ÖLÇTÜ. Sonuç: sinirlerin bağlanması GEREKEN yerleri zaten
+//   bağlı (25 MOTORDA); kalan 46 "beyan"ın ~42'si BİLİNÇLİ (süreç/runtime/insan
+//   yasaları — statik denetle değil, ŞEF/RAY-3 ya da başka bekçi zorlar). Gerçek
+//   bağlama adayı yalnız ~3 (YZ-1/2/5, zaten "beklemede" işaretli).
+//   Üretim: yasa/ .sar'ları motor parser'ıyla tarandı × 86 motor-tanı-kodu (2026-07-14).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🗺️ Sinir Haritası — 71 Kural · Motor 86 tanı kodu
+
+  ## Amaç
+  Her yasa-Kuralının makine-zorlama (⑥ 5N1K) durumunu tek tabloda görmek: hangi
+  kural MOTORDA (tanısı motorda kanıtlı), hangisi bilinçli BEYAN, hangisi gerçekten
+  bağlanmayı bekliyor. "Sistemi nereden gözden geçireyim" körlüğünü bitirir.
+
+  ## ✅ MOTORDA — 24 kural (sinir BAĞLI · tanı motorda kanıtlı)
+  SD-1..15 sözdizim ailesi (kırık-referans · izinsiz-sarma · kural-motoru SD-13:
+  katman-uyumsuz/zorlanamayan-kural/ebedi-ihlal/koni-taşması/ağırlık-toplamı/eşik-sırası ·
+  kenar-metin · sahipsiz-belge) · YP-1 (kayıp-yapı·beyansız-yapı·bildirilmemiş-dosya) ·
+  DO-1/2/8/9 (kural-ihlali·teknolojisiz-yüzey·izinsiz-sarma·yetim-meyve·doc-drift) ·
+  BÇ-1/2 (eksik-alan·geçersiz-enum·yanlış-alan) · DR-1/3/10 (durum-boyutu·geçersiz-tür·
+  geçersiz-durum·hatırlatıcılar·gelistirmede/bloklu-capa) · YZ-3/6 (yinelenen-kod·
+  geçersiz-renk·düşük-kontrast) · DL-2 (ad-ayracı). BEL KEMİĞİ — hepsi çalışıyor.
+
+  ## ⚠️ KISMEN — 1 kural
+  DO-6 tanı:[öksüz-düğme·kavuşumsuz-ekran·eksik-alan] — öksüz-düğme/kavuşumsuz-ekran
+  zorunluKenarDenetle'de canlı; harita grep'i şablon-üretilen kodu görmemiş olabilir
+  (Faz-2'de teyit: muhtemelen MOTORDA).
+
+  ## 📝 BEYAN-SALT — 46 kural (tanı-kenarı yok) → ÇOĞU BİLİNÇLİ
+  • Süreç/RUNTIME yasaları (statik denetle DEĞİL — ŞEF/RAY-3 döngüsü zorlar):
+    IA-1..7 (iş-akışı) · KA-1..7 (kodlama-akışı).
+  • İnsan-süreç ilkeleri (makine statik denetleyemez): DR-2/4/5/6/7/8/9/11/12 ·
+    BL-1..4 (belge) · DL-1/3/4 (dil) · GR-1 (görünürlük).
+  • Başka bekçi zorluyor / EBEDİ anayasa: KRL-GUVENLIK-AMACLI · YZ-4 (öksüz-düğüm
+    ailesi DO-6'da) · DO-3/4/5/7 · YP-2/3 · SD-7/9/11/12.
+
+  ## 🎯 GERÇEK bağlama adayı — ~3 → FAZ-2 TRİYAJ KAPANDI (2026-07-14)
+  YZ-1 (uzantı-fazlalık) · YZ-2 (yön-geçersiz) · YZ-5 (gerekçe-eksik): ÜÇÜ de
+  hüküm = **BEYAN-KALSIN** (statik zorlanmaz). Gerekçe: YZ-1 → SD-2 ad-biçimi kapsar ·
+  YZ-2 → 5-yön frontmatter sistemi benimsenmedi (ilan-model) · YZ-5 → 5N1K/KARARLAR
+  gerekçeyi zaten kapsar. yuzey.sar'da "beklemede" yalanı → dürüst "beyan"a çevrildi.
+  SONUÇ: bağlanmayı bekleyen GERÇEK kural KALMADI — sistem sinir-dürüst.
+
+  ## Sonuç (reframe)
+  ✅ 25 kural MOTORDA (makine-zorlanabilir olanların neredeyse hepsi) · 46 "beyan"ın
+  ~42'si bilinçli (bağlanmamalı) · gerçek bağlama adayı ~3. "Omurga var sinir yok"
+  DEĞİL — sinirin gerekli olduğu yer bağlı. Teşhis ölçüldü, korku küçüldü.
+|<--
+Çıkarım( kod: CKR-SINIR-HARITASI, kaynak: "yasa/ .sar motor-parser taraması × 86 motor-tanı-kodu · 2026-07-14 · Sistem Sağlık Turu Faz-1",
+         ne: "🗺️ Sinir haritası: 71 Kural → 24 MOTORDA + 1 KISMEN + 46 BEYAN-SALT (çoğu bilinçli süreç/runtime yasası); gerçek bağlama adayı ~3 (YZ-1/2/5). 'Omurga var sinir yok' teşhisi ölçüldü — sinir gerekli yerde bağlı." )

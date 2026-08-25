@@ -1,0 +1,21 @@
+// kapali_urun/plan/urun_plani.sar — kapalı ürünün en küçük plan zinciri
+Faz( kod: FAZ-ORNEK-KAPALI-2026-10, ad: "urun-donemi", ne: "🌀 Kapalı ürünün ilk gövde dönemi", hedefTarih: "2026-10" ) {
+  -->|
+    ## Amaç
+    Ürünün ilk gövdesini açık aracın yayımlanmış sürümü üstünde kurmak.
+    ## Kapsam
+    Ürünün kendi gövdesi; açık aracın kodu kapsam dışıdır.
+    ## Sonuç
+    Ürün açık aracın yayımlanmış sürümüyle çalışır.
+  |<--
+  Blok( kod: BLK-ORNEK-KAPALI-GOVDE, ne: "🪵 İlk ürün gövdesi" ) {
+    Katman( kod: KAT-ORNEK-KAPALI-ARKAYUZ, ad: "arkayuz", ne: "🌿 Ürünün arka yüz teknolojisi", kullanır: TEK-ORNEK-KAPALI-TS ) {
+      AltKatman( kod: ALT-ORNEK-KAPALI-KODLAMA, ad: "kodlama", departman: kodlama, ne: "☘️ Ürün gövdesinin kodu" ) {
+        Adım( kod: ADM-ORNEK-KAPALI-A01, durum: beklemede,
+              ne: "Ürünün açık aracın yayımlanmış sürümüne bağlanması; bugün ürün aracın yerel kopyasına bakmaktadır.",
+              görev: "Bağımlılığı yayımlanmış sürüme çevir ve yerel yol atıflarını kaldır.",
+              kabul: [ "Ürün temiz bir makinede yalnız yayımlanmış araç sürümüyle çalışır." ] )
+      }
+    }
+  }
+}

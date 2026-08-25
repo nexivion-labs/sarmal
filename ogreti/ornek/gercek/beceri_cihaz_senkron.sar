@@ -1,0 +1,161 @@
+// ═══════════════════════════════════════════════════════════════════
+//  GERÇEK SKILL ÇEVİRİSİ — eski cihaz-senkron SKILL.md → .sar
+//  Ayrışanlar: sabitler → KURAL (adresli) · payload → SÖZLEŞME ·
+//  python+dart → İKİ Beceri (aynı Yetenek, ayrı yığın).
+//  Resmî belge biçimi: belge bloğu ve şekil muhafazası (referans: kuantum_bolum1.sar · DIL-2)
+// ═══════════════════════════════════════════════════════════════════
+
+Anayasa( kod: ANY-EVRENSEL, sürüm: "1.0" ) {
+  ne: "Evrensel kurallar (eski 00-UNIVERSAL-RULES — inherits hedefi)"
+  Kural şüphedeDur( kod: KRL-EVR-SUPHE, otorite: anayasa, katman: niyet, kapsam: etmen ) {
+    ne: "Emin olmadığını kesin söyleme; varsayımını beyan et"
+  }
+}
+
+-->|
+  # Cihaz Senkronizasyonu — Yetenek
+
+  Stack'ten bağımsız yapabilirlik: kayıt defteri, oturum devri, tercih
+  eşitleme, cihaz güvenliği. "Bunu kim sağlıyor?" sorusunun cevabı graf'tan
+  gelir — iki yığın-becerisi de bu Yetenek'i `sağlar:` ile işaretler.
+|<--
+
+Yetenek( kod: YTN-CIHAZ-SENKRON ) {
+  ne: "çok-cihaz senkronizasyonu (registry + handoff + tercih + güvenlik)"
+}
+
+// ── SABİTLER ARTIK KURAL: eski dosyada kod-içi const'tu, kimse denetlemiyordu ──
+
+Politika( kod: POL-CIHAZ-GUVENLIK, alan: güvenlik ) {
+  ne: "Çok-cihaz davranış eşikleri — iki yığının da uyduğu tek kaynak"
+  Kural cihazLimiti( kod: KRL-CIHAZ-LIMIT, otorite: politika, katman: eşik, kapsam: etmen ) {
+    ne: "Hesap başına en çok 5 aktif cihaz; 6.'da biri kaldırılmalı"
+    koşul: aktifCihaz <= 5
+    ihlal: "Cihaz limiti aşıldı — kayıt SUNUCUDA reddedilir (istemci kontrolü atlatılabilir)"
+    düzey: hata
+  }
+  Kural devirSüresi( kod: KRL-DEVIR-SURE, otorite: politika, katman: eşik, kapsam: etmen ) {
+    ne: "Oturum devri: B cihazı açıldığında A'nın durumu 3 saniyede görünmeli"
+    koşul: devirGecikmesi <= 3
+    ihlal: "Devir 3sn'yi aştı — WebSocket push zorunlu, polling yalnız yedek"
+    düzey: uyarı
+  }
+  Kural biyometrikKilit( kod: KRL-BIYO-KILIT, otorite: politika, katman: eşik, kapsam: etmen ) {
+    ne: "5 başarısız biyometrik → 30 dakika cihaz kilidi; yeni ülkeden giriş → uyarı + yeniden doğrulama (sessiz log YETMEZ)"
+    koşul: biyometrikHata < 5
+    ihlal: "Biyometrik deneme sınırı — cihaz 30dk kilitlenir"
+    düzey: hata
+  }
+}
+
+// ── SÖZLEŞME: eski dosyada gömülü dict'ti — şimdi iki yığının köprüsü ──
+
+Sözleşme( kod: SZL-TERCIH-GUNCELLEME, sürüm: "1.0" ) {
+  ne: "Cihazlar arası tercih-güncelleme mesajı (WebSocket)"
+  alanlar: {
+    tür: "metin · zorunlu · sabit: preference_update",
+    anahtar: "metin · zorunlu",
+    değer: "metin · zorunlu",
+    güncellenme: "tarih · zorunlu",
+  }
+}
+
+-->|
+  # Cihaz Senkron — Arkayüz
+
+  <ne-zaman>
+    Çok-cihaz yönetimi, oturum devri, şüpheli-giriş/kilitleme uygulanırken.
+    DEĞİL: görev-verisi senkronu (offline-queue işi) · gerçek-zamanlı işbirliği
+    (websocket-beceri işi).
+  </ne-zaman>
+
+  <desenler>
+    ## Kayıt Defteri (registry)
+
+    Limit SUNUCUDA uygulanır (KRL-CIHAZ-LIMIT) — istemci kontrolü atlatılabilir.
+    Yeni cihaz güven düzeyi DÜŞÜK doğar; biyometrik doğrulama sonrası YÜKSEK.
+    Cihaz kaldırılınca TÜM oturumları ANINDA sonlandırılır:
+
+    ```python
+    async def remove(self, user_id: str, device_id: str) -> None:
+        await self._revoke_all_sessions(device_id)   # önce oturumlar
+        await self._delete_device(user_id, device_id)
+    ```
+
+    ## Oturum Devri (handoff)
+
+    Durum tüm cihazlara WebSocket'le YAYINLANIR (KRL-DEVIR-SURE: ≤3sn);
+    sonradan gelen cihazlar için anlık-görüntü önbelleğe yazılır (TTL ~30sn).
+    Görev asla iki kez çalışmaz: SUNUCU tek çalıştırır, cihazlar sonucu görür.
+
+    ## Güvenlik
+
+    Şüpheli giriş (yeni ülke, hızlı cihaz değişimi) → uyarı + yeniden doğrulama.
+    Mobil 24 saat hareketsiz → oturum düşer; web 7 gün.
+  </desenler>
+|<--
+
+Beceri( kod: BCR-CIHAZ-SENKRON-ARKAYUZ, sağlar: YTN-CIHAZ-SENKRON, yığın: fastapi,
+        uygular: ANY-EVRENSEL ) {
+  ne: "Cihaz registry + oturum devri + cihaz güvenliği (sunucu tarafı)"
+  neZaman: "çok-cihaz yönetimi, oturum devri, şüpheli-giriş/kilitleme uygulanırken. KULLANMA: görev-verisi senkronu (offline-queue işi) ve gerçek-zamanlı işbirliği (websocket-beceri işi) için"
+  kurallar: [
+    "limit ve güvenlik kararları YALNIZ sunucuda (POL-CIHAZ-GUVENLIK kuralları)",
+    "cihaz kaldırma = önce oturum iptali, sonra silme (açık oturum bırakma)",
+    "devir yayını push'la; anlık-görüntü sonradan-gelen için önbellekte",
+    "görev tek çalışır — sunucu koşturur, cihazlar izler",
+  ]
+  örnek: "await self._revoke_all_sessions(device_id); await self._delete_device(...)"
+  antiDesen: [
+    "limiti istemcide uygulamak (atlatılır)",
+    "devir için polling'e güvenmek (3sn tutmaz — push esas, polling yedek)",
+    "kaldırılan cihazın oturumunu açık bırakmak (güvenlik açığı)",
+    "şüpheli girişi sessizce loglamak (kullanıcıya bildir + yeniden doğrulat)",
+  ]
+  neden: "cihaz güvenliği hesap-ele-geçirme yüzeyi — her kural bir saldırı yolunu kapatır (istemci-atlatma · hayalet-oturum · sessiz-sızma)"
+}
+
+-->|
+  # Cihaz Senkron — Flutter
+
+  <ne-zaman>
+    Kullanıcı tercihlerinin cihazlar arası eşitlenmesi ve devir UI'ı kurulurken.
+  </ne-zaman>
+
+  <desenler>
+    ## Tercih Eşitleme
+
+    Senkronize: tema · dil · bildirim · sessiz-saatler · pano düzeni.
+    YALNIZ-YEREL (senkron edilmez): parlaklık · titreşim · yazı boyutu —
+    cihaza özgü tercih başka cihazda anlamsızdır.
+    Çakışma: son-yazan-kazanır; çevrimdışı değişiklik yeniden bağlanınca gider.
+
+    ```dart
+    Future<void> syncPreference(String key, dynamic value) async {
+      if (kLocalOnlyPreferences.contains(key)) return;   // yerel kalır
+      await _repo.save(key, value);
+      await _ws.send({...});   // SZL-TERCIH-GUNCELLEME şemasına
+    }
+    ```
+  </desenler>
+|<--
+
+Beceri( kod: BCR-CIHAZ-SENKRON-FLUTTER, sağlar: YTN-CIHAZ-SENKRON, yığın: flutter,
+        uygular: ANY-EVRENSEL ) {
+  ne: "Tercih eşitleme + devir dinleme (istemci tarafı)"
+  neZaman: "kullanıcı tercihlerinin cihazlar arası eşitlenmesi ve devir UI'ı kurulurken"
+  kurallar: [
+    "yalnız-yerel tercih listesi KORUNUR — parlaklık/titreşim/yazı-boyutu gitmez",
+    "gönderilen her mesaj SZL-TERCIH-GUNCELLEME şemasına uyar",
+    "çakışmada son-yazan-kazanır; çevrimdışı kuyruklanır",
+  ]
+  örnek: "if (kLocalOnlyPreferences.contains(key)) return; await _ws.send({...});"
+  antiDesen: [
+    "yerel tercihi senkronlamak (başka cihazda anlamsız + gürültü)",
+    "şemasız serbest payload göndermek (taraf-uyumsuzluk döner)",
+  ]
+}
+
+// Eski: 1 dosya · ~250 satır · sabitler kod-yorumunda · applies_to ölü metin.
+// Yeni: sabitler ADRESLİ KURAL · payload SÖZLEŞME · iki yığın AYRI Beceri,
+// TEK Yetenek. Dışa: `sarmal belge` → SKILL.md ÜRETİLİR (Claude Code okur).

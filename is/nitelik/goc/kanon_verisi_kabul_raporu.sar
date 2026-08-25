@@ -1,0 +1,115 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/kanon_verisi_kabul_raporu.sar — ⚖️ KANON-VERİSİ TURUNUN BAĞIMSIZ
+//   KABUL RAPORU (GOC-KANON-A90). Denetim yöntemi üretimden bağımsız tutuldu:
+//   üretim adımları sınıflama kaydına yapısal JSON erişimiyle dokunmuştu; bu
+//   denetim aynı iddiaları kaba satır taramalarıyla (grep -n · awk), motorun
+//   tek-dosya CLI koşumlarıyla ve ayrı bir çalıştırma ortamındaki modül
+//   içe-aktarımıyla yeniden ölçtü. Denetçi hiçbir teslim dosyasını değiştirmedi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Hüküm
+
+Kanon-verisi turunun teslimi KABUL edilmiştir. Aşağıdaki bütün ölçümler kaynak
+satır kanıtıyla yapılmış ve üretim iddialarıyla birebir uyuşmuştur. Üç şerh
+sahipleriyle açık bırakılmıştır ve raporun son bölümünde yazılıdır; üçüncü
+şerh, bu raporun ilk sürümündeki bir denetim kusurunun Founder bulgusuyla
+düzeltilmesinden doğmuştur.
+
+## ① Üç yeni tipin üç kayıt yüzü — kaynak satırlarıyla doğrulandı
+
+`oz/siniflama/kayit.json` içinde `widgetTipleri` yüzü Meyve tipini 306,
+KimlikKökü tipini 481 ve KimlikSağlayıcısı tipini 486 numaralı satırda
+taşıyor. `semalar` yüzü KimlikPolitikası şemasını 2027, KimlikKökü şemasını
+2036, KimlikSağlayıcısı şemasını 2042 ve Meyve şemasını 2059 numaralı satırda
+taşıyor. `izinliSarma` yüzünde Adım girişinin tek çocuğu Meyve'dir, KimlikKökü
+girişi KimlikPolitikası ile KimlikSağlayıcısı çocuklarını taşır ve KimlikKökü
+hem ÇalışmaAlanı hem Proje çocuk listelerinde bulunur; sağlayıcı hiçbir kök
+dışı listede yoktur. Sağlayıcı şemasının tür enumunda altı taban değerin
+(google · github · linkedin · apple · microsoft · sso) altısı da sayıldı.
+`kenarTipleri` sözlüğü `kullanır` kenarını taşıyor.
+
+## ② Rejim ve departman sözleşmesi — kaynak satırlarıyla doğrulandı
+
+Proje şemasının rejim enumu 1473 numaralı satırda başlar ve yalnız katı ile
+esnek değerlerini taşır; hiçbir değer yıldız işareti taşımaz, dolayısıyla
+sessiz varsayılan doğmaz. Proje şemasının `beyanZorunlu` kaydı 1478 numaralı
+satırda başlar ve 1481 numaralı satırda zorlama tanısını `rejim-beyanı-eksik`
+olarak hata düzeyiyle ilan eder. AltKatman şemasının departman enumu 2344
+numaralı satırda başlar ve çekirdek beşliyi (planlama · kodlama · sınama ·
+inceleme · güvenlik) taşır; `beyanZorunlu` kaydı 2352 numaralı satırdadır.
+Motorun bugünkü davranışı tek-dosya CLI ile yedi fikstürde bağımsız koşuldu:
+katı ve esnek rejim fikstürleri rejim tanısı üretmedi, geçersiz rejim (sıkı)
+ile geçersiz departman (pazarlama) fikstürü iki geçersiz-enum uyarısı verdi,
+geçerli auth ağacı temiz geçti, bozuk auth fikstürü geçersiz-enum (facebook),
+eksik-alan (tür) ve izinsiz-sarma (köksüz sağlayıcı) tanılarını verdi, inline
+üretir Meyvesi temiz geçti ve kardeş yerleşimli Meyve izinsiz-sarma hatası aldı.
+
+## ③ Kimlik rol ayrımı — eski ad sıfırlandı
+
+Kaba tarama `kayit.json` içinde tekil "Kimlik" anahtarını sıfır buldu; altı
+kayıt noktasının tamamı KimlikPolitikası adını taşıyor. Yürür `.sar`
+kaynaklarında `Kimlik(` bildirimi sıfırdır; taramanın döndürdüğü tek eşleşme
+`nitelik/goc/siniflama_sema_kararlari.sar` içindeki anlatı cümlesidir ve bir
+bildirim değildir. AltKatman bildirimi taşıyan yürür kaynaklarda `rol:` alanı
+sıfırdır; `rol` adı yalnız rezerve bağlamlarında yaşamaktadır (ajan rolü
+`plan/mekanizma/mek_sef.sar`, RBAC alan tanımı `ornek/gercek/arkayuz_kimlik.sar`,
+erişilebilirlik rolü `ornek/gercek/yuzey_kimlik.sar`, tipografi rol sözleşmesi
+sınıflama kaydının Metin girişleri).
+
+## ④ Canlı ile gömülü kanon — birebir
+
+Gömülü kanon ayrı bir çalıştırma ortamında modül olarak içe aktarıldı ve
+dizgeleştirilmiş içerik karşılaştırmasıyla ölçüldü: GOMULU_KAYIT canlı
+`kayit.json` ile, GOMULU_REHBER canlı `rehber.json` ile birebir eşittir.
+Dosyanın ilk satırı üretici imzasını taşıyor ve dosya sürüm izleminin
+dışındadır (`eklenti/.gitignore` altıncı satır); elle düzenlenmiş iz yoktur.
+Üretim kanıtındaki idempotens ölçümü bağımsız koşumda da geçerlidir: üretici
+bu turda iki kez koşulmuş ve ikinci koşu üç çıktı dosyasının sha256 özetinde
+sıfır fark vermiştir.
+
+## ⑤ Nöbetler — süitler ve mutasyon kanıtı
+
+Çekirdek süiti bağımsız koşumda 837 sınamanın 832'sini geçirdi; başarısız
+dört sınama bu turdan önce de kırmızı olan bilinen kararlar.test.ts kümesidir
+ve bir sınama todo işaretlidir. Eklenti süiti 174 sınamanın 174'ünü geçirdi.
+Mutasyon kanıtları koşuldu ve üçü de tuttu: canlı kayıttan Meyve widget
+girişi silinince çekirdek nöbeti iki, KimlikSağlayıcısı şeması silinince üç
+ve Adım sarma girişi silinince iki sınamayla kırmızı yandı; her mutasyondan
+sonra kayıt geri yüklendi ve süit 33 nöbet sınamasının 33'üyle yeşile döndü.
+Gömülü eşitlik nöbeti de tek anahtarlık bayatlatmayla iki sınamada kırmızı
+yandı ve geri yüklemede yeşile döndü.
+
+## ⑥ Şerhler — üç konu, sahipli
+
+Birinci şerh: yürür kanon düğümü `yasa/kanon/mim.sar` dosyasının 85 numaralı
+satırındaki MIM-1.5 örneği hâlâ eski `rol: sınama` yazımını taşıyor. Spec
+devri düzeltmeyi bu tura vermişti; ancak turun yürütme talimatı kanon
+dosyalarını dokunulmaz kıldığı için üretici dokunmadı ve sapmayı raporladı.
+Tek satırlık düzeltme önerisi tur raporundadır; uygulama kontrolcünün mühür
+yetkisindedir.
+
+İkinci şerh: rejim ve departman zorunluluğunun motor zorlaması bu turda
+bilinçli olarak kurulmamıştır. Bugünkü motor yalnız yazılmış değerin enum
+uygunluğunu denetler; alanın yokluğunu denetlemek `beyanZorunlu` sözleşmesini
+okuyacak motor turunun tanı borcudur ve 177 mevcut bildirimin beyana
+geçirilmesi proje-kod turunun göç kapsamıdır. Bu ayrım üretimin kendi karar
+kaydında kontrollü deney kanıtıyla yazılıdır ve denetim bu gerekçeyi
+doğrulamıştır.
+
+Üçüncü şerh (2026-07-26 · Founder bulgusu üzerine kapanış düzeltmesi): Bu
+raporun ilk sürümü, denetim anındaki proje kapısını sıfır uyarı diye bildirdi;
+gerçekte kapı bir yetim-meyve uyarısı taşıyordu, çünkü A06'da yaratılan
+`eklenti/sinama/gomulu-esitlik.test.ts` dosyası planın hiçbir üretir meyvesine
+bağlanmamıştı. Denetçi bu uyarıyı görmedi, çünkü kapı çıktısını karne satırı
+ile çıkış koduna daraltan filtreli komutla okudu; çıkış kodu uyarı varken de
+sıfır döndüğü için yokluk kanıtı sayılamazdı. Bulgu Founder'ın filtresiz
+koşumuyla açığa çıktı. Düzeltme Founder GİT hükmüyle uygulandı: dosya
+SN-GOC-KANON-GOMULU-ESITLIK meyvesi olarak A06'nın üretir listesine bağlandı
+ve filtresiz yeniden koşum sıfır hata ile sıfır uyarı verdi. Kalıcı ders
+şerhin kendisidir: kapı hükmü yalnız filtresiz çıktının hata ve uyarı
+sayımlarıyla verilir; karne satırı ve çıkış kodu uyarı yokluğunu kanıtlamaz.
+|<--
+Çıkarım( kod: KBL-KANON-01,
+         kaynak: "oz/siniflama/kayit.json + oz/siniflama/rehber.json + eklenti/src/gomulu-kanon.ts + cekirdek/sinama/motor-guven.test.ts + eklenti/sinama/gomulu-esitlik.test.ts (bağımsız yöntem: grep -n satır taramaları · tek-dosya CLI koşumları · ayrı ortamda modül içe-aktarımı)",
+         ne: "⚖️ Kanon-verisi turunun bağımsız kabul sınaması tamamlandı ve hüküm üç şerhle KABUL verildi. Üç yeni tipin üç kayıt yüzü kaynak satır numaralarıyla doğrulandı; rejim ve departman sözleşmeleri hem veri satırlarında hem yedi CLI fikstüründe beklenen davranışı verdi; eski Kimlik adı bütün kayıt yüzlerinde ve yürür bildirimlerde sıfırlandı; canlı ile gömülü kanon ayrı araçla birebir çıktı; nöbet süitleri yeşil ve üç yüz mutasyonunun üçü de süiti kırmızı yapıyor. Açık şerhler: kanon MIM-1.5 örneğindeki eski alan adının düzeltilmesi kontrolcünün mühür yetkisinde, zorunluluk zorlaması motor turunun tanı borcunda ve mevcut bildirimlerin beyana geçirilmesi proje-kod turundadır. Üçüncü şerh bir denetim kusurunun kaydıdır: ilk sürümün sıfır uyarı bildirimi filtreli kapı okumasından kaynaklanıyordu, gerçekte bir yetim-meyve uyarısı vardı ve uyarı Founder bulgusu üzerine meyve beyanıyla kapatıldı; kapı hükmü bundan böyle yalnız filtresiz hata ve uyarı sayımlarıyla verilir." )

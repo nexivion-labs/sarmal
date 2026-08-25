@@ -1,0 +1,50 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/kosum_sicili.sar — 🏃 KOŞUM SİCİLİ (RF-T6-A01 · süreç ailesi dogfood'u)
+//
+//   Karne teşhisi (nitelik/karar_kural_karnesi.sar EKSEN ③): "süreç ailesi
+//   TAMAMEN ölü (6/6) — koşum gerçeği .sarmal/trace JSONL'de yaşıyor, dile hiç
+//   inmedi." Bu dosya o gerçeği DİLE İNDİRİR: aşağıdaki her düğüm YAŞANMIŞ bir
+//   işin kaydıdır (K-59 kör-drift yasağı — süs/dolgu düğüm yok); ham veri
+//   kaynakları (.sarmal/trace · git geçmişi · oturum devirleri) her düğümün
+//   ne: alanında adresli.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🏃 Koşum Sicili — koşum gerçeği dile iner
+
+  ## Amaç
+  🎯 Süreç ailesinin altı tipini (Koşum · İz · Komut · Git · Görev · Sorun)
+  kendi bahçemizin GERÇEK iş kayıtlarıyla diriltmek (RF-T6-A01 dogfood turu,
+  DR-13 tip-doğum kapısı). Çözülen problem: koşum gerçeği bugüne dek yalnız
+  makine dosyalarında (JSONL · git log) yaşıyordu — dil kendi süreç tiplerini
+  hiç kullanmamıştı; gezinme/graf yüzleri bu tarihe kördü.
+
+  ## Kapsam
+  📦 Kapsar: her süreç tipine en az bir gerçek kayıt; ham kaynağın adresi.
+  Kapsamaz: geçmişin toptan göçü (DR-2 — sicil yaşadıkça büyür), sicil
+  MADENCİLİĞİ otomasyonu (karne rayının ayrı işi — EMJ-A05 sınırı).
+|<--
+
+Koşum( kod: KSM-SEF-ILK-CANLI,
+  ne: "🏃 ŞEF döngüsünün İLK kayıtlı koşusu (2026-07-10 13:43 UTC): HALKA-SENK-A03 Adımı üzerinde üretici→denetçi çifti demo-stub modelle döndü; ham telsiz izi .sarmal/trace/kosu-2026-07-10T13-43-25-037Z.jsonl dosyasında satır satır yaşıyor (zaman·adım·rol·model·hamPrompt alanlarıyla; .sarmal/ gitignore'lu olduğundan İZLENEN KOPYA nitelik/kosu-2026-07-10T13-43-25-037Z.jsonl olarak rafa alındı — Sol 5. denetiminin 'temiz klonda kanıt yok' bulgusunun onarımı, K-59 yeniden-doğrulanabilirlik). Bu koşu, SEF-L3 rayının canlı ön-kanıt zincirinin ilk halkasıdır" )
+
+İz( kod: IZ-SEF-URETICI-DENETCI,
+  ne: "🧠 KSM-SEF-ILK-CANLI koşusunun akıl-yürütme izi: üretici rolü Adım konisinden (kritik kısıtlar + kanıt/halüsinasyon koruması bölümleriyle) iş prompt'u aldı; denetçi rolü İZOLE tutuldu — üreticinin belleğini görmeden yalnız çıktıyı yargıladı (KA-1 üretici-denetçi ayrımı; VARLIK≠DOĞRULUK ilkesi KA-3 prompt'a inmiş durumda). İzin ham hâli aynı JSONL'nin rol alanlarında" )
+
+Komut( kod: KMT-SEF-HALKA-SENK-PROMPT,
+  ne: "📜 ŞEF'in HALKA-SENK-A03 için ürettiği gerçek emir artefaktı: '# 🍂 Adım: HALKA-SENK-A03' başlıklı, Dokunulmaz/Sınır kısıtları öne alınmış, halüsinasyon korumalı üretici prompt'u — koni→prompt mekanizmasının (sef.ts) ilk kayıtlı ürünü; ham metin KSM-SEF-ILK-CANLI izinin hamPrompt alanında" )
+
+Git( kod: GIT-OTURUM-58-MUHUR-ZINCIRI,
+  ne: "🌿 Oturum 58'in (2026-07-18) gerçek commit zinciri — altı Adım mührü tek günde: 2cc53fd EMJ-A03 başladı · 202e833 EMJ-A03 kapandı (eklenti 0.9.85) · 56e8d9e EMJ-A04 kapandı (⭐ kanon onayı) · 8d3636e EMJ-A05 kapandı (karne canlı, MCP 0.10.0) · 2bcd223 RF-T6-A07 prova göçü (DR-2 → GenelKural) · 463ed08 TUR-D ⑪ üçlü mühür. Her commit sarmal-kapı denetiminden (test + drift) geçti; tam tarihçe git log'da" )
+
+Görev( kod: GRV-EMJ-A05-UYGULAMA, durum: bitti, gerçekleştirir: EMJ-A05,
+  ne: "🤖 Founder'ın oturum 58'de kadroya atadığı gerçek iş-birimi: 'EMJ-A05'i de yap' — onaylı karne skalasının uygulanması (kayit.json kanonu + karne.ts çekirdeği + CLI/MCP/hover yüzeyleri). Atama Founder sözüyle geldi, iş aynı oturumda kapandı (kapanış kanıtı EMJ-A05 koşu: alanında); Görev tipinin orkestrasyon primitifi (atama→koşu→bitiş) ilk kez gerçek bir akışla kullanıldı" )
+
+Sorun( kod: SRN-RAY-GECIKME,
+  ne: "🐛 Takipteki performans sorunu (oturum 58 · 2026-07-18, Founder bildirimi: 'özellikle rayda çok ciddi gecikmeler var'): yoğun dosya-yazım oturumlarında yol haritası paneli gecikiyor. Ölçülen iki katman: ① statusline'ın ccusage aracı dev oturum transcript'ini her tazelemede baştan ayrıştırıp CPU/belleği domine etti (%144 CPU · 2×1GB — kaçak süreçler temizlendi, kalıcı çare oturum devri/statusline hafifletme) ② eklentinin geniş disk izleyicisi (createFileSystemWatcher '**/*') her oluştur/sil olayında 500ms sonra TAM proje denetimi koşturup paneli yeniden çiziyor — ajan koşumlarında olay salkımı taramaları üst üste bindiriyor. Çözüm adayları: artımlı denetim · koşarken-atla kilidi · debounce büyütme; iyileştirme bakım rayının kalemi olarak açılacak. KAPANIŞ NOTU (2026-07-19, PERFORMANS TURU PRF-A01..A04 + Sol üç-koşuluk KABUL): ② katmanı onarıldı — gürültü süzgeci (tek-kaynak kapsam) + tek-uçuş kilidi + geciktirme düzeni (disk 1500 ms · sar 300 ms) + panel paylaşımlı-AST tazelemesi; Founder sahada teyit etti ('rayda kasma artık yok'); ① katmanı (statusline/ccusage) Sarmal kodu dışıdır, açık kalır" )
+
+Sorun( kod: SRN-IDE-KASMA-SOL-KOSUSU,
+  ne: "🐛 Takipteki performans sorunu (2026-07-19, Founder bildirimi: 'IDE'de Sarmal'dan dolayı kasma hissediyorum, özellikle Sol ne zaman koşsa kasma oluyor; problemin neyden kaynaklandığını çözemedim'): Sol'un kabul denetimleri sırasında VS Code belirgin yavaşlıyor. HENÜZ TANI KONMADI — güçlü şüpheli SRN-RAY-GECIKME'nin ② katmanıyla aynı kök: eklentinin geniş dosya izleyicisi (createFileSystemWatcher '**/*') Sol'un yoğun disk etkinliğinde (git clone --local ana repodan okuma · izole klon testleri · git log/show taramaları) olay salkımı üretip her 500ms'de TAM proje denetimini üst üste bindiriyor olabilir; ikinci aday: Sol'un paralel node/test süreçlerinin CPU baskısı altında eklenti ana-thread'inin aç kalması. AYRIŞTIRILMAMIŞ — ölçüm gerekiyor (eklenti çıktı kanalına denetim-süresi/olay-sayısı logu + Sol koşusu sırasında Activity Monitor örneklemi). Performans hızlandırma turu Founder'ın sıradaki isteği: çözüm adayları SRN-RAY-GECIKME'dekilerle ortak (artımlı denetim · koşarken-atla kilidi · debounce büyütme · izleyici kapsamını .sar'a daraltma · dist/out/.git dışlaması izleyici düzeyinde). KAPANIŞ NOTU (2026-07-19): PERFORMANS TURU (plan/performans_turu.sar PRF-A01..A04) tanıyı ölçüm merceğiyle koydu ve onardı — git yan-ürünü olay dalgaları süzgeçle kesildi (benzetim: 10 olaylık dalga eski 7 → onarımlı 0 fiilî tetik), denetim/panel turları tek-uçuş kilidinde, panel paylaşımlı AST'de; Sol'un üç koşuluk bağımsız döngüsü (RED→RED→KABUL, ham raporlar nitelik/sol_performans_kosu1..3.md) kapanışı mühürledi; Founder 0.9.91 sahasında teyit etti ('Sol çalışırken hissedilen gecikme yok, şimdilik konu kapanmıştır — gözlem sürecek'). Gözlemde yeni bulgu çıkarsa yeni Sorun düğümü açılır" )
+
+Sorun( kod: SRN-KARARLAR-MD-IZIN,
+  ne: "🐛 Takipteki gerçek engel (oturum 57'den beri açık): 'sarmal kararlar-md .. --yaz' komutu Claude Code izin sınıflandırıcısına takılıyor — üretim o oturumda çıktı kopyalanarak tamamlandı (sonuç birebir) ama komutun kendisi hâlâ izinsiz. Çözüm adayı: Founder'ın kalıcı izin eklemesi (.claude/settings.json allowlist). Kapanınca bu kayda kapanış notu düşülür. KAPANIŞ NOTU (2026-07-19): komut oturum 61'de izin engeline takılmadan koştu ve K-107 sonrası KARARLAR.md üretimi başarıyla tamamlandı — engel yeniden üretilemedi, kayıt kapatıldı; tekrar takılırsa yeni gözlemle açılır" )

@@ -1,0 +1,60 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// felsefe/cok-dosya-mimari.sar — 🗂️ ÇOK-DOSYA MİMARİSİ (FEL-7)
+//   IDA dogfood #11 (Founder inceleme 2026-07-15): "ayrı bir .sar bir Uygulama'ya
+//   Ekran/Servis'i NASIL ekler açık değil; çağır içerme değil bağımlılık — ekranları
+//   anadizine koymak zorunda kaldım, anadizin şişti." Bu rehber o boşluğu kapatır.
+//   Kaynak-gerçek: ornek/altin_yol/ (çalışan çok-uygulama referansı).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🗂️ Bir projeyi/uygulamayı BİRDEN ÇOK `.sar` dosyasına nasıl böleceğini — ve
+  parçaların nasıl BİRLEŞTİĞİNİ — tek yerde anlatmak. Kök soru: "ayrı bir yüzey/
+  arkayüz dosyası mevcut bir Uygulama'nın ağacına nasıl KATKI verir?" Cevap yanlış
+  bilinince (çağır'ı içerme sanmak) anadizin şişer, mimari≠yüzey ayrımı kaybolur.
+
+  ## Kapsam
+  📦 KAPSAR: anadizin=MİMARİ ilkesi · her ağacın kendi dosyası · `çağır` (DIL-1.4) =
+  BAĞIMLILIK (içerme DEĞİL) · dosya↔klasör yerleşimi · anti-desen (yüzey gömme).
+  KAPSAMAZ: tek-dosya küçük projeler (bölme gerekmez) · widget-birleştirme (Sarmal'da
+  YOK — her .sar kendi programıdır; parçalar KLASÖR yerleşimi + `çağır` ile komşu olur).
+
+  ## Sonuç
+  ✅ Kabul: geliştirici bir Uygulama'yı şişmeden bölebilir — anadizin yalnız Raf/
+  Kitaplık (klasör + yol:) ilan eder; Ekran/Servis/Adım kendi rafındaki ayrı .sar'da
+  yaşar; paylaşılan sözleşme/teknoloji `çağır` ile referanslanır. Anadizin YALIN kalır.
+|<--
+Felsefe( kod: FEL-7,
+         ad:  "Çok-Dosya Mimarisi — anadizin çizer, ayrı .sar doldurur",
+         ne:  "🗂️ Çok-dosya bölme deseni: anadizin MİMARİ (Raf/Kitaplık) çizer; her ağaç kendi .sar'ında yaşar; çağır BAĞIMLILIKTIR, içerme değil (IDA #11 · altın_yol referansı)",
+         tez: "Bir .sar dosyasının widget'ları BAŞKA bir dosyanın ağacına GÖMÜLMEZ — Sarmal'da widget-birleştirme yoktur; parçalar iki yolla komşu olur: (1) FİZİKSEL — dosya, anadizinin ilan ettiği Raf klasöründe yaşar (kod=KANUN, klasör=ayna); (2) MANTIKSAL — `çağır` (DIL-1.4) ile kod referansı (paylaşım, taşıma değil). Bu yüzden anadizin YALNIZ mimariyi (Raf/Kitaplık/yol:) çizer, yüzey/plan içeriğini DEĞİL; içerik her rafın kendi .sar'ında büyür. Ekran/Servis'i anadizine gömmek şişme tohumudur.",
+         referans: [ FEL-3, FEL-5 ] )   // FEL-3 klasör-mimarisi · FEL-5 prizma · anlatı-bağı (DAG kenarı değil)
+
+// ── DESEN (somut · ornek/altin_yol/ referansı) ──────────────────────────────
+//
+//   ① ANADİZİN = MİMARİ (yalın):
+//        ÇalışmaAlanı/Proje( … ) {
+//          Raf( kod: RAF-UYG-A, yol: "uygulama_a/", ne: "A ağacı — kök: uygulama_a.sar" )
+//          Raf( kod: RAF-ORTAK, yol: "ortak/",      ne: "paylaşık sözleşme/auth — herkes çağırır" )
+//        }
+//      → anadizin Ekran/Servis/Blok TAŞIMAZ; yalnız klasörü (Raf + yol:) ilan eder.
+//
+//   ② HER AĞAÇ KENDİ .sar'INDA (rafın klasöründe fiziksel yaşar):
+//        // uygulama_a/uygulama_a.sar
+//        çağır SZL-AUTH                      // ← MANTIKSAL bağ (ortak sözleşme)
+//        Uygulama( kod: UYG-A, ad: "uygulama_a" ) {
+//          Blok( … ) { Katman( … ) { Adım( … üretir: EKR-A-GIRIS ) } }
+//        }
+//      → bu dosya kendi başına tam bir program; kökü Uygulama. Diske uygulama_a/ altına iner.
+//
+//   ③ ÇAĞIR = BAĞIMLILIK (içerme değil):
+//        `çağır SZL-AUTH` A'yı ortak sözleşmeye BAĞLAR — sözleşmeyi A'nın klasörüne
+//        TAŞIMAZ, KOPYALAMAZ; yalnız "buna dayanıyorum" der. Fiziksel yer değişmez.
+//
+//   ANTİ-DESEN (IDA #11 — kaçın):
+//        Ekran/Servis widget'larını doğrudan anadizin köküne yazmak → anadizin şişer,
+//        mimari (Raf) ile içerik (yüzey) birbirine girer. Doğrusu: anadizinde RAF-EKRAN
+//        ilan et (yol: "ekranlar/"), Ekranları ekranlar/ altındaki ayrı .sar'a koy.
+//
+//   TEK-DOSYA NE ZAMAN YETER: küçük iş (tek app, az yüzey) tek .sar'da kalabilir —
+//   bölme bir ARAÇ, dayatma değil (yuvaya düşme yok). Şişme hissedilince böl.

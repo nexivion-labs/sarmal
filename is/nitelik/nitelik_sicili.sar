@@ -1,0 +1,45 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/nitelik_sicili.sar — 🧪 NİTELİK SİCİLİ (RF-T6-A01 · nitelik ailesi dogfood'u)
+//
+//   Karne teşhisi (nitelik/karar_kural_karnesi.sar EKSEN ③): "nitelik ailesi
+//   6 tip 0 — nitelik/ rafımız Çıkarım'la yazılıyor, kendi tipleriyle değil."
+//   Bu dosya o açığı KAPATIR: aşağıdaki her düğüm bahçenin YAŞANMIŞ bir nitelik
+//   gerçeğinin kaydıdır (K-59 kör-drift yasağı — süs/dolgu düğüm yok); ham
+//   kaynaklar (test süitleri · karne taraması · trace kanalı · kapsam beyanı ·
+//   canlı gateway koşusu) her düğümün ne: alanında adresli.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧪 Nitelik Sicili — bahçenin nitelik gerçeği kendi tipleriyle konuşur
+
+  ## Amaç
+  🎯 Nitelik ailesinin tiplerini (Sınama · Metrik · Log · Kapsama · Güvenlik)
+  kendi bahçemizin GERÇEK nitelik kayıtlarıyla diriltmek (RF-T6-A01 dogfood
+  turu, DR-13 tip-doğum kapısı). Çözülen problem: bahçenin nitelik gerçeği
+  bugüne dek makine dosyalarında ve serbest Çıkarım metinlerinde yaşıyordu —
+  dil kendi nitelik tiplerini hiç kullanmamıştı; graf/gezinme yüzleri test
+  süitlerine, ölçümlere ve güvenlik kalkanlarına kördü.
+
+  ## Kapsam
+  📦 Kapsar: beş tipe en az bir gerçek kayıt; ham kaynağın adresi. Ailenin
+  altıncı üyesi Değerlendirme bu dosyadan ÖNCE dirilmiştir — ilk gerçek
+  kullanımı nitelik/dil_baglami_sinavi.sar DGR-DIL-SINAVI'dır (2026-07-17,
+  dış-model dil sınavı); çift kayıt açılmaz. Kapsamaz: geçmiş ölçümlerin
+  toptan göçü (DR-2 — sicil yaşadıkça büyür), nitelik otomasyonu (karne
+  rayının ayrı işi).
+|<--
+
+Sınama( kod: SNM-NOBET-SUITI,
+  ne: "🧪 Bahçenin çift nöbet süiti — motorun ve eklentinin her commit'te koşan gerçek regresyon kalkanı: çekirdek 54 dosya / 759 test (cekirdek/sinama/*.test.ts, node --test) + eklenti 7 dosya / 155 test (eklenti/sinama). Nöbetin karakteri dosya adlarından okunur: motor-guven.test.ts (Terra'nın üç canlı deneyi regresyonda) · delik-kapama.test.ts (teftişin bulduğu test delikleri kapalı tutulur) · palette-drift.test.ts (K-96 dekor kanonu nöbeti) · gateway.test.ts (izin kalkanı). Son tam koşu 2026-07-18 (oturum 59): çekirdek 759/759 · eklenti 155/155, sıfır kırmızı" )
+
+Metrik( kod: MTR-URETIR-DOLULUK,
+  ne: "📊 Kampanyanın izlenen sayısı — üretir doluluk oranı: karne taramasının (2026-07-12, nitelik/karar_kural_karnesi.sar EKSEN ③) 259 canlı Adım üzerindeki ölçümü kabul %99 · bağımlı %69 · görev %64 · sınır %64 · referans %20 · ÜRETİR %16 · dokunulmaz %3 çıkardı; 'üretir meyvesi zorunlu' Founder emrine karşı Adımların %84'ü meyvesizdi. RF-T6-A01 kabul ölçütü bu metriği hedefe bağlar: %16 → %80+ (dogfood turu kapanırken yeniden ölçülüp karneye işlenecek)" )
+
+Log( kod: LOG-SEF-TELSIZ,
+  ne: "📜 ŞEF telsiz kanalı — .sarmal/trace/ altındaki yapılandırılmış JSONL log'u: her satır bir telsiz olayı (alanlar: zaman · adım · rol · model · hamPrompt). Kanalın ilk dosyası kosu-2026-07-10T13-43-25-037Z.jsonl (5 satır; izlenen kopyası nitelik/ rafında — K-59 yeniden-doğrulanabilirlik, Sol 5. denetim onarımı); Koşum KSM-SEF-ILK-CANLI (nitelik/kosum_sicili.sar) o kanalın ilk girdisinin koşum kaydıdır — Log tipi KANALIN kendisini, Koşum tek koşuyu kaydeder. Sicil madenciliği rayı açılınca karne bu kanaldan beslenir (EMJ-A05 beyanlı ertelemesi)" )
+
+Kapsama( kod: KPS-KAPI-YUZEY,
+  ne: "🎯 Bekçi × yüzey kapsam gerçeği — hangi bekçi ailesi hangi yüzeyde koşar: dört yüzey (CLI-KAPI tam kapı · EKLENTİ-PANEL · MCP-DENETLE · TEKİL-DOSYA) ve tam tablo nitelik/kapi_kapsami.sar beyanında yaşar. Beyanın doğum sebebi yaşanmış bir kapsam açığıdır: Bug-avı E5b bulgusu eklenti panelinin motorun BEYANSIZ alt-kümesi olduğunu yakaladı (KRR-MUT-2 sessiz-daralma ihlali) — kapsam artık tek yerden ilanlı, her ✖ hücresi gerekçeli; 'TAM-yeşil' hükmü yalnız CLI-KAPI yüzeyinden verilir" )
+
+Güvenlik( kod: GVN-GATEWAY-FAILCLOSED,
+  ne: "🛡️ ŞEF gateway fail-closed kalkanı — bahçenin canlı güvenlik sınırı: beyansız ya da matris-izinsiz araç talebi REDDEDİLİR ve yürütücü HİÇ çağrılmaz; araç sonucu DAİMA güvenilmez işaretlenir (untrusted sabit true); tur limiti sonsuz araç döngüsünü keser. Canlı kanıt SEF-L3-A29 (2026-07-15 gerçek NVIDIA koşusu, cekirdek/src/kopru/nvidia.ts): izinli zincir geçti + izinsiz talep kalkana çarptı. Nöbet: cekirdek/sinama/gateway.test.ts + toolround.test.ts + rbac.test.ts fail-closed senaryoları (2026-07-18 koşusunda yeşil)" )

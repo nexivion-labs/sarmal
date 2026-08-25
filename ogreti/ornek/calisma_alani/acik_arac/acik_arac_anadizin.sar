@@ -1,0 +1,20 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// acik_arac/acik_arac_anadizin.sar — 🔓 AÇIK KAYNAK ARACI (çatının yayımlanan projesi)
+//   Kendi kökü, kendi deposu (MIM-3); çatı bu projeyi yalnız Raf olarak bilir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🔓 Herkese açık yayımlanan komut satırı aracı — çatının dışa dönük yüzü.
+  ## Kapsam
+  📦 Aracın çekirdeği ve yayın hazırlığı. Kapsamaz: kapalı ürünün mantığı;
+  bu proje ona bağımlılık taşımaz.
+  ## Sonuç
+  ✅ Kabul: yayın Adımı kapanınca paket herkesin kurabileceği bir kanalda yaşar.
+|<--
+
+Proje( kod: PRJ-ORNEK-ACIK, ad: "acik_arac", rejim: katı, görünürlük: açık,
+  ne: "Çatının yayımlanan açık kaynak aracı" ) {
+  Teknoloji( kod: TEK-ORNEK-ACIK-TS, ne: "TypeScript çalışma dili" )
+  Raf( kod: RAF-ORNEK-ACIK-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}

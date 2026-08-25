@@ -1,0 +1,161 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/motor_tani_envanteri.sar — 📋 MOTOR TANI METNİ ENVANTERİ (MDR-A01)
+//
+//   Bu rapor, motorun kullanıcıya seslenen bütün metinlerini K-102 (niyet dili
+//   insan dilidir) ve K-81 (sade dil) ölçütleriyle değerlendirir. Durum:
+//   envanter TAMAMLANMIŞTIR, değerlendirme AŞAĞIDADIR (2026-07-17 · oturum 54);
+//   reform şablonu Founder onayı beklemektedir. Ham veri çıkarımı bir okuma
+//   görevine yaptırılmış, değerlendirme ve sınıflandırma bu oturumda yazılmıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 📋 Motor Tanı Metni Envanteri — değerlendirme raporu
+
+  ## Amaç
+  🎯 Motorun ürettiği her kullanıcı-yüzlü metni tek tabloda görmek ve dört
+  ölçütle sınamak: ① ne gözlendiğini söylüyor mu ② neden sorun olduğunu
+  söylüyor mu ③ nasıl düzeltileceğini söylüyor mu ④ kural-kodu atıfları
+  çıplak mı (kod adres olarak kalabilir, hükmü metinde açılmalıdır).
+
+  ## Yöntem
+  Merkezî tanı kaydındaki (tani-sicili.ts) 90 sabit kodun tamamı kaynak
+  üretim noktalarına bağlanmıştır (bulunamayan kod yoktur); serbest hata
+  metinleri (sözdizim, throw) ayrıca taranmıştır. Her metin yukarıdaki dört
+  ölçütle "uygun" ya da "reform gerekli" olarak sınıflandırılmıştır.
+
+  ## Genel hüküm
+  ✅ Motorun sesi büyük oranda SAĞLIKLIDIR: metinlerin yaklaşık dörtte üçü
+  (67/90) üç soruyu cevaplamakta ve gözlem + gerekçe + ↳ öneri düzenini zaten
+  taşımaktadır — reform şablonunun çekirdeği icat edilmeyecek, mevcut iyi
+  desen kanonlaşacaktır. Reform gerektiren 23 metnin kusurları dört sınıfta
+  toplanmaktadır ve çoğu hafiftir.
+
+  ## Reform sınıfları
+  - **R1 · Karanlık iç-kod atfı (en yaygın):** hükmü metinde açılmayan iç
+    kısayollar. En ağır örnekler: "(B2=A)" (olgunluk-onayı), "(K6)" ve "(K2)"
+    (ağırlık-toplamı, eşik-sırası — bunlar KARARLAR defteri kodu bile değildir),
+    "FEL-3", "FEL-7 · IDA #11", "DO-1/DO-2", "KA-5", "RF-T6-A05", "TAS-A01/B01",
+    "ADM-DGS-12/13", "EVRE-1 · IA-3", "SDD-L3". Kural: kod kalır, yanına tek
+    cümlelik hüküm gelir (MDR-A01 dördüncü ölçütü; NTK-A01 ipucu yüzü bunu
+    editörde ayrıca dokunulabilir kılacaktır).
+  - **R2 · Açıklamasız yabancı kısaltma/terim:** "FE ve BE" (kavuşumsuz-dilim),
+    "Prose" (gizli-bağımlılık), "dangling atıf" (kırık-halef), "CUE unification"
+    (kural-çatışması). Türkçesi ya da açıklaması eklenir.
+  - **R3 · Tarihçe sızıntısı (alan ayrımı ihlali):** fazsız-blok önerisi
+    "(Tam-zincir ZORUNLU — AOK-KESIN-1 · 2026-07-14; blok_kimlik göçü
+    tamamlandı, K-97 kademe AÇILDI → HATA.)" — karar tarihçesi kullanıcı
+    mesajına sızmıştır; tarihçe karar defterinin işidir, mesaj yalnız hükmü
+    söyler (K-102 ① alan ayrımının motor karşılığı).
+  - **R4 · Üçlü eksik:** "Beklenmeyen karakter: X" (nasıl-düzeltilir yok),
+    sahipsiz-belge (öneri alanı boş — çözüm mesajın içine gömülü), doğuş-eksik/
+    doğuş-sırası (mecaz yoğunluğu: "boş tarla", "doğuş omurgası" — teknik
+    karşılık aynı cümlede verilmelidir, K-102 ③).
+
+  ## Sicil bulgusu (ayrı iş)
+  ⚠️ rbac.ts üç tanı kodu üretmektedir (rbac-yönetici-üretir · rbac-l5-paylaşık
+  · rbac-l6-kalıcı) ve bunlar SABIT_TANI_KODLARI sicilinde YOKTUR — çift-kayıt
+  nöbetinin (motor-guven.test) kapsamı bu dosyayı taramıyor olmalıdır. MDR-A02
+  kapsamında sicile eklenmeli ya da nöbet kapsamı beyanla daraltılmalıdır.
+
+  ## Tam sınıflandırma tablosu
+  Biçim: tanı kodu → hüküm (✅ uygun · 🔧 reform) — gerekçe yalnız reformlarda.
+
+  **denetci.ts:** beyansız-yapı ✅ · teknolojisiz-yüzey ✅ · yer-uyuşmazlığı 🔧
+  (R1: FEL-3 çıplak; "kod=KANUN, klasör=ayna" mecazı açıklamasız) · harf-farkı ✅
+  (örnek metin — üç soru + platform gerekçesi) · kayıp-yapı ✅ · bildirilmemiş-
+  dosya 🔧 (R4 hafif: önerideki "omurga" tanımsız) · kural-ihlali/DL-2-ad ✅ ·
+  kural-ihlali/ana-yok ✅ · eski-giriş-adı ✅ · öneksiz-anadizin ✅ · doğuş-eksik 🔧
+  (R4+R1: mecaz yoğun, DO-1/DO-2 çıplak) · doğuş-sırası 🔧 (aynı) · olgunluk-
+  onayı 🔧 (R1 ağır: "B2=A" karanlık; K-65 çıplak) · ad-ayracı ✅ · kenar-metin ✅
+  · defter-referansı ✅ · kırık-referans (4 varyant) ✅ · karşılıksız-metin-atfı ✅
+  · kırık-halef 🔧 (R2: "dangling") · halef-döngü ✅ · yinelenen-kod ✅ (YZ-3
+  kodlu ama hüküm açık: "kimlik TEKİL olmalı") · kırık-koşar ✅ · durunca-
+  sözlüğü ✅ · kapsayıcı-kenar ✅ · yanlış-alan ✅ · gizli-bağımlılık 🔧 (R2:
+  "Prose") · bağımlılık-mekanik ✅ · tek-cocuk-kapsayici (3 varyant) ✅ ·
+  rafsız-anadizin ✅ · anadizin-plan-karışması 🔧 (R1: "EVRE-1 · IA-3" çıplak
+  yığın) · anadizin-yüzey-şişmesi 🔧 (R1: "FEL-7 · IDA #11") · kavuşumsuz-
+  paralellik ✅ (SDD-L3 kodlu ama hüküm tam açık) · silo-blok ✅ ("silo"
+  mecazı "dikey dilim değil" karşılığıyla) · kavuşumsuz-dilim 🔧 (R2: "FE ve
+  BE") · bilinmeyen-kapsam ✅ (örnek metin) · boş-kapsam ✅ · kullanımsız-tip 🔧
+  (R1: RF-T6-A05 çıplak) · fazsız-blok 🔧 (R3 ağır: tarihçe sızıntısı) ·
+  katmansız-adım ✅ · yetim-meyve ✅ · doc-drift ✅ · hatırlatıcı-vade 🔧 (R1
+  hafif: KA-5 çıplak) · uzak-vade ✅ ("halının altı" mecazı soru biçiminde,
+  anlaşılır) · katmansız-teknoloji ✅ · açık-adım (2 yüz) ✅ · açık-hatırlatıcı ✅
+  · faz-gecikti ✅ · faz-yaklasiyor ✅ · faz-tarihsiz ✅ (tren dili K-94 kanonlu
+  ve karşılıklı).
+
+  **dogrulayici.ts:** sahipsiz-belge 🔧 (R4: öneri alanı boş) · halefsiz-revize ✅
+  · öneksiz-blok ✅ · yinelenen-parametre ✅ · gayrimeşru-geçiş ✅ · doğrulanamayan-
+  tanı-iddiası ✅ · aile-geçersiz ✅ · tarif-eksik ✅ · ad-biçimi (2 yüz) ✅ ·
+  durum-boyutu ✅ · kod-ilk-değil ✅ · belge-yanlış-düğüm ✅ · geçersiz-enum ✅ ·
+  geçersiz-tür ✅ · eksik-alan (2 yüz) ✅ · ham-renk 🔧 (R1 hafif: TAS-A01/B01
+  çıplak) · açık-hatırlatıcı ✅ · kararlaşmış-hatırlatıcı ✅ · politika-
+  dayanaksız ✅ · beceri-terfisi ✅ · gelistirmede-capa ✅ · bloklu-capa 🔧 (R1
+  hafif: "ŞEF kararı BLOCKED" — ŞEF/BLOCKED yeni kullanıcıya tanımsız) ·
+  geçersiz-durum ✅ · bilinmeyen-tip ✅ · derin-dal ✅ · izinsiz-sarma ✅.
+
+  **kuralci.ts:** katman-uyumsuz (3 yüz) ✅ · zorlanamayan-kural ✅ · düzyazı-
+  koşul ✅ · ebedi-ihlal (3 yüz) ✅ · koni-taşması ✅ ("bağlam boğulması"
+  karşılıklı) · ağırlık-toplamı 🔧 (R1 ağır: "(K6)" hiçbir deftere çözülmez) ·
+  eşik-sırası 🔧 (R1 ağır: "(K2)" aynı) · kural-çatışması (3 yüz) 🔧 (R2:
+  "CUE unification") · kural-ihlali ✅ · zorlanamayan-koşul 🔧 (R1 hafif:
+  ADM-DGS-12) · mühürsüz-ebedi ✅ · mühür-kırık ✅.
+
+  **dag.ts:** öz-bağımlılık ✅ · kayıp-kenar ✅ · durum-tutarsızlığı ✅ ·
+  kopuk-zincir ✅ · döngüsel-bağımlılık ✅ (beşinin beşi de örnek nitelikte).
+
+  **tema.ts / gateway.ts / rbac.ts / mcp.ts:** geçersiz-renk ✅ · düşük-
+  kontrast ✅ · gateway-izin-biçim (3 varyant) ✅ · rbac-apex-tekil ✅ ·
+  rbac-yönetici-üretir ✅ · rbac-l5-paylaşık ✅ · rbac-l6-kalıcı ✅ (üçü sicil
+  bulgusuna tabidir) · soz-dizim (sarmalayıcı) — kaynakları aşağıda.
+
+  **Sözdizim serbest metinleri (belirtec/ayristirici):** kapanmamış blok
+  yorum/belge/dizgi/çok-satır ✅ (dördü de eksiği ve işareti söyler) · tek "="
+  ✅ · "#" anahtarı ✅ · "@" mühür üçlüsü ✅ · negatif-sayı ✅ (sınır + iki çözüm
+  yolu) · "X bekleniyordu, Y bulundu" ✅ · bildirim-başı ✅ · beklenmeyen-
+  karakter 🔧 (R4: nasıl-düzeltilir yok — en azından konum bağlamı önerilmeli).
+
+  **throw serbest metinleri:** agac kök-çözülemedi ✅ · dongu Adım-bulunamadı 🔧
+  (R4: tek cümle, öneri yok) · kararlar raf-boş ✅.
+
+  ## Reform şablonu önerisi (Founder onayına)
+  Mevcut iyi desen kanonlaşır — her tanı metni üç parçadır:
+  1. **Gözlem cümlesi:** ne bulundu, nerede (dosya/kod bağlamıyla).
+  2. **Gerekçe:** neden sorun — kural kodu burada YALNIZ hükmüyle birlikte
+     anılır: "(YP-1: ilansız yapı drift doğurur)" biçimi kanondur, çıplak
+     "(YP-1)" biçimi yasaktır. Defter dışı iç kısayollar (B2=A, K6, K2)
+     kaldırılır ya da deftere bağlanır.
+  3. **↳ Öneri:** uygulanabilir düzeltme adımı — komut/alan adı somut yazılır;
+     tarihçe ve karar süreci anlatılmaz (o, karar defterinin işidir).
+  Üçlünün tamamı akademik-teknik, tam-cümleli Türkçedir (K-102 ②); mecaz
+  yalnız teknik karşılığıyla birlikte kullanılır (K-102 ③).
+
+  ## Founder kararları (2026-07-17 · oturum 54 — üç soru cevaplanmıştır)
+  1. **Reform şablonu ONAYLANMIŞTIR:** gözlem + gerekçe (kural kodu yalnız
+     hükmüyle anılır; çıplak kod yasaktır) + uygulanabilir öneri.
+  2. **Defter-dışı kısayollar MESAJDAN KALDIRILIR:** hüküm cümlede kalır;
+     kısayol, arkeoloji kaybolmasın diye kaynak kod yorumuna iner (yorum
+     geliştiriciye, mesaj kullanıcıya seslenir).
+  3. **Sicil bulgusu MDR-A02 kapsamına ALINMIŞTIR:** rbac'ın üç kodu sicile
+     eklenir ve nöbet testinin tarama kapsamı düzeltilir.
+
+  ## MDR-A04 bölümü — test bağlarının sınıflandırması (aynı gün, ek çalışma)
+  Süitteki mesaj-metnine dokunan 92 assert bir okuma göreviyle dökülmüş ve üç
+  sınıfa ayrılmıştır: **56 kod-çıpalı** (tanı `kod` alanıyla bulunur, metin
+  ikincil varyant kontrolüdür) · **32 bilinçli metin sözleşmesi** (öneri komut
+  biçimi, gösterim/özet biçimi — amaçları metnin kendisini doğrulamaktır) ·
+  **1 kırılgan** (tanı yalnız mesaj dizgisiyle aranıyordu) · 3 belirsiz.
+  Yapılanlar: kırılgan bağ koda çıpalanmıştır (kosuyaz geçersiz-enum); iki
+  belirsiz negatif muhafız halef ve kırık-referans kodlarına çıpalanmıştır;
+  sekiz test dosyasının başına sınıflandırma referans notu konmuştur.
+  Ampirik kanıt: MDR-A02/A03 reformu 23 mesajı değiştirmiş ve süitte yalnız
+  BİR test kırılmıştır — bağların sağlamlığı canlı ölçümle doğrulanmıştır.
+  Kalan `.test()` biçimli ikincil desenler kod-çıpalı ya da nöbet niteliklidir
+  ve dosya-başı notların kapsamındadır.
+|<--
+
+Çıkarım( kod: CKR-MDR-ENVANTER, kaynak: "MDR-A01 envanteri (2026-07-17 · oturum 54): 90 sicil kodu + serbest metinler, okuma göreviyle çıkarıldı, dört ölçütle bu oturumda değerlendirildi",
+         referans: [ DIL-1.1, OGR-2.1 ],
+         ne: "📋 Envanter hükmü: motorun sesi büyük oranda sağlıklıdır — 90 tanının 67'si uygun, 23'ü reform gerektirir ve kusurlar dört sınıftadır: R1 karanlık iç-kod atfı (en yaygın; en ağırları defter-dışı B2=A, K6, K2 kısayolları) · R2 açıklamasız yabancı terim (FE/BE, Prose, dangling, CUE) · R3 tarihçe sızıntısı (fazsız-blok önerisinde karar tarihçesi kullanıcı mesajına taşmış) · R4 üçlü eksik (öneri alanı boş ya da mecaz teknik karşılıksız). Reform şablonu mevcut iyi desenin kanonlaşmasıdır: gözlem + gerekçe (kod yalnız hükmüyle) + uygulanabilir öneri. Ayrı bulgu: rbac.ts'nin üç tanı kodu sicil listesinde değildir (çift-kayıt nöbeti kapsam dışı bırakıyor)",
+         kanıt: "tani-sicili.ts 90 kod ↔ kaynak eşleşmesi TAM (bulunamayan yok) · üretim noktaları dosya:satır ile kayıtlı (okuma görevi çıktısı) · sınıflandırma tablosu yukarıdaki belge gövdesinde",
+         sınır: "yalnız değerlendirme ve şablon önerisi — hiçbir metin değiştirilmemiştir (değişiklik MDR-A02/A03'ün işidir ve Founder şablon onayını bekler); eklenti arayüz metinleri ve kanon-veri tanıları (zorunluKenarlar) bu envanterin kapsamı dışındadır" )

@@ -1,0 +1,178 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/karar_kural_karnesi.sar — ⚖️ KARAR→KURAL→KULLANIM KARNESİ (2026-07-12)
+//
+//   Founder teşhisi (reform açılışı): "Karar diye yazmışız ama kural
+//   koymamışız; çok fazla format hazırladık ama hiç kullanmamışız — kendi
+//   kurallarımızı çok ihlal etmişiz." Bu defter o teşhisi ÜÇ eksende sayıya
+//   döker: ① karar→kural bağı ② kural→motor bağı ③ format→KULLANIM (dogfood).
+//   Yöntem: 9 karar rafının tamamı okundu (96 düğüm); kullanım sayıları
+//   MAKİNE ölçümü (regex tarama, canlı=53 dosya / vitrin=50 dosya ayrımı;
+//   arsiv·fikstur·node_modules hariç). İddia değil envanter.
+//   Kardeş belgeler: nitelik/enforcement-denetimi.md (kural→motor, 2026-07-11)
+//   · nitelik/genel_teftis_defteri.sar (5 kaynaklı teftiş) · plan/reform_plani.sar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # ⚖️ Karar→Kural→Kullanım Karnesi — üç eksenli dürüst envanter
+
+  ## Yöntem
+  96 karar düğümü (yasa/kararlar/*.sar) tek tek okundu; kullanım verisi
+  makineyle ölçüldü: kanonun 98 widget tipi tüm `.sar` dosyalarında tarandı,
+  **canlı bahçe** (yasa·plan·durum·nitelik·bilgi·oz·ogrenme·anadizin — 53
+  dosya) ile **vitrin** (ornek·sablon — 50 dosya) ayrı sayıldı. Adım koni
+  doluluğu 259 canlı Adım üzerinde alan alan ölçüldü.
+
+  ## EKSEN ① — KARAR VAR, KURAL YOK (karar→yasa boşluğu)
+  - **K-07 görünürlük değişkeni (2026-07-02'den beri kilitli):** GR-1 hâlâ
+    ⏳ taslak, motor kapısı yok, canlıda `görünürlük:` yalnız 3 kullanım —
+    **en eski uygulanmamış karar.** (K-73 public-repo turuna bağlanmış ama
+    bağ mekanik değil, kâğıtta.)
+  - **K-52/K-53 geribildirim kanalları:** dil parametreleri doğdu ama akış
+    kuralı yok — canlıda takdir:5 · teşekkür:1 · onur:1; hasat→Bellek→ajan
+    öğrenmesi zinciri hiçbir yasada zorlanmıyor.
+  - **K-87 Döngü:** tip + çıkışsız-döngü şeması motorda; ama "hangi tekrar
+    eden işimiz Döngü olarak yazılır" kuralı yok → canlı kullanım 0 (kendi
+    gece-denetimi/lig koşularımız hâlâ dilin dışında yaşıyor).
+  - **K-64 contract-first:** Sözleşme'nin kavuşum-noktası hükmü vitrine ve
+    `başla` şablonuna işlendi ama KENDİ plan yazım kuralımıza (DR-11) hiç
+    girmedi → canlı planlarda Gereksinim 0 · Sözleşme yalnız mek-sef'te (7).
+  - **K-45/K-48 üslup-anlatı:** BL-2/BL-4 ⏳ taslak; bolumZorunlu yalnız
+    Blok'ta bağlı — Karar/Çıkarım gibi yoğun kullanılan tiplere bağlanmadı.
+  - **Takipsiz kararlar (teftişle uyumlu):** K-47 (rezerve, hiç dolmadı) ·
+    K-63 (Pardus, araştırma-şartlı) · K-73 (public repo) — kilitli ama
+    hiçbir plana/hatırlatıcıya mekanik bağlı değil; motor ölü-karar görmüyor.
+
+  ## EKSEN ①/ek — KURAL PARAMETRELERİ SÜS KALMIŞ (Founder netleştirmesi, 2026-07-12 gece)
+  YZ-6 örneği: `koşul:` alanı makine-değerlendirilebilir ifade değil DÜZYAZI;
+  "MOTORDA ✅ (tema.ts)" iddiası ELLE yazılmış — zorlama TS'te sabit-kodlu,
+  Kural düğümünden AKMIYOR. Kural motoru (kuralci · SD-9/13) var ama kendi
+  yasamız onu kullanmıyor: Kural düğümlerimiz motorun kendisi değil motorun
+  HAKKINDA dokümantasyon. Onarım rayı: **RF-T6-A03** — ① `tanı:` kenarı
+  (kural↔zorlayan-kapı mekanik bağ + iddia-doğrulama bekçisi: sahte-motor-
+  iddiası imkânsızlaşır, enforcement karnesi makine-türetilir olur) ② koşul
+  terfileri (v1 ifade dili) ③ uygular:/kapsam gerçek hedefler.
+
+  ## EKSEN ② — KURAL VAR, MOTOR YOK (enforcement — 2026-07-11 raporunun özü)
+  63 yazılı kuralın karnesi: 🟢 28 motorda · 🟡 16 kısmî · ⚪ 19 kâğıtta.
+  Kâğıtta kalanların motor-borcu olanları: DR-2 (dosya-dosya) · DR-5
+  (kutucuklu yol haritası) · DR-6 (PLAN→İŞ→DÖKÜMAN→GİT) · DR-8 (unutma
+  kapısı) · KA-5 (erteleme) · KA-6 (yeniden geçerleme) · IA-2 (teknoloji
+  uzlaşması) · GR-1 (görünürlük). Doğası-insan-işi olanlar (IA-5 onay ·
+  KA-7 oturum) "eksik" sayılmaz. Ayrıca 22 drift-anahtarının motor kodu
+  yok (teftiş 🟠). Detay: nitelik/enforcement-denetimi.md.
+
+  ## EKSEN ③ — FORMAT VAR, KULLANIM YOK (dogfood açığı — MAKİNE ÖLÇÜMÜ)
+  **98 tipin 75'i canlı bahçede SIFIR kullanımda.** Adalet ayrımıyla:
+  - **Doğası dış-proje olanlar (≈35 tip — İHLAL DEĞİL):** yüzey ailesi (21:
+    Ekran·Düğme·Form·Metin…) + arkayüz (10: Uç·Servis·Tablo…) + davranış (2)
+    — bunların evi vitrin + gerçek uygulama projeleri; vitrinde yaşıyorlar ✓.
+  - **BİZİM bahçede yaşaması gerekip 0 olanlar (≈40 tip — GERÇEK BORÇ):**
+    · **etmen ailesi 4/5 ölü:** Etmen·Beceri·Yetenek·Tetikleyici canlı 0
+      (yalnız Bellek 11). CLAUDE.md "Bellek→Beceri dönüşümüne ZORLAR" der,
+      motor `beceri-terfisi` uyarısı taşır — ama ogrenme/ rafında tek dosya
+      (dersler.sar) var, tek Beceri terfisi YAŞANMADI. (Kadro OS'ta [K-51]
+      savunması Etmen için geçerli, Beceri/ogrenme için DEĞİL.)
+    · **orkestrasyon 6 tip 0:** Döngü·İşAkışı·Orkestrasyon·Politika·Kanca·
+      Şablon — L1/L2 yasaları adlı Kural'la yazıldı, tipler kullanılmadı.
+    · **süreç ailesi TAMAMEN ölü (6/6):** Git·Komut·Görev·Koşum·Sorun·İz —
+      koşum gerçeği .sarmal/trace JSONL'de yaşıyor, dile hiç inmedi.
+    · **nitelik ailesi 6 tip 0:** Sınama·Metrik·Log·Değerlendirme·Kapsama·
+      Güvenlik — nitelik/ rafımız Çıkarım'la yazılıyor, kendi tipleriyle değil.
+    · **plan ailesinde Gereksinim 0** · temel'de ÇalışmaAlanı/Uygulama 0
+      (tek-Proje varlığıyız — kısmen meşru) · teknoloji'de Araç·MCP·Model·
+      Ortam 0 (lig modelleri Model tipiyle yazılabilirdi) · ürün'de Ayar·
+      Veri·Altyapı·Göç 0 (K-91 göçü yaşandı ama Göç düğümü hiç yazılmadı!).
+    · **yasa'da GenelKural·ÖzelKural·Mevzuat tipleri 0** — yasa külliyatı
+      adlı `Kural` (71 canlı) ile yazılmış; GenelKural TİPİ kanonda ölü.
+  - **Koni doluluk karnesi (259 canlı Adım):** kabul %99 ✓ · bağımlı %69 ·
+    görev %64 · sınır %64 · **referans %20 · üretir %16 · dokunulmaz %3.**
+    "Üretir meyvesi zorunlu" Founder emrine karşı Adımların %84'ü meyvesiz.
+  - **K-91 Faz gerçeği:** canlıda TEK Faz (FAZ-2026-TEMMUZ, hedefTarih'li) —
+    15 Blok'un 14'ü mevsimsiz. Devir teşhisi ("raylar Faz'sız yaşadı")
+    sayıyla doğrulandı.
+    *(K-108 güncellemesi 2026-07-19: bu ölçümden sonra 8 adet `belirsiz`
+    zarf-Faz türedi ve ZMN-A01 göçüyle çözüldü; güncel envanter yine tek
+    saat — FAZ-2026-TEMMUZ (28 gövde, çağır) + tarihli geçmiş dönem FAZ-E1.
+    Sahte-faz motor nöbeti canlı: bu satırın bayatlama sınıfı kapandı.)*
+  - **İyi dogfood örnekleri (teraziye konsun):** Karar 105 · Adım 259 ·
+    Kod 116 · Katman 72 · AltKatman 24 (K-92 dirildi ✓) · çağır 44 ·
+    --> 229 · dosya: 146 · KARARLAR.md md-yüzü üretimi (Prizma canlı) ·
+    README ağaç-bloğu (K-74 ✓) · hatırlat: 11 · koşu: 9.
+
+  ## YENİ MOTOR BULGUSU (bu karne taramasının yan ürünü)
+  🔴 **Yinelenen-parametre körlüğü:** `durum/durum_devir.sar` DurumKaydı'nda
+  `neredeyiz:`/`sıradaki:` çiftleri İKİ KEZ yazılmış ve İKİ denetim TAM-yeşil
+  — motor aynı düğümde aynı adlı parametrenin tekrarını hiç denetlemiyor
+  (panelin "ikinci-yazım körlüğü" dersinin ayrıştırıcı ikizi). TUR-2 motor
+  turuna aday: `yinelenen-parametre` tanısı.
+
+  ## FOUNDER HÜKÜMLERİ (aynı oturum — 2026-07-12, dördü de kilitli)
+  **S1 — tip kaderleri AİLE AİLE verildi; EMEKLİLİK YOK:**
+  - **Dış-proje malı (meşru, karneden düşer):** yüzey (21) + arkayüz (10) +
+    davranış (2) + ürün'den Ayar·Veri·Altyapı — evleri vitrin + gerçek
+    uygulama projeleri (Sınav serisi).
+  - **Dogfood'a alınır (TUR-6 iş listesi, TAMAMI):** süreç ailesi (Git·
+    Komut·Görev·Sorun·İz) · nitelik ailesi (Sınama·Metrik·Log·Değerlendirme·
+    Kapsama·Güvenlik) · Beceri (ilk gerçek terfi) · Gereksinim (contract-
+    first kendi planlarımıza) · Döngü (gece denetimi/lig) · teknoloji
+    dörtlüsü (Araç·MCP·Model·Ortam — lig kadrosu Model tipiyle) · Göç ·
+    Sözlük · Kanca · Şablon (kanca/ ve sablon/ rafları kendi tipleriyle).
+  - **OS-vadeli (Founder: "hepsinin yaşaması lazım — OS gelince bunların
+    hepsi olacak; biz bu derleyiciyi OS için kuruyoruz"):** Etmen · Yetenek ·
+    Tetikleyici (kadro) · İşAkışı · Orkestrasyon · Politika (zekâ tarafı) ·
+    **GenelKural · ÖzelKural · Mevzuat** (yasa tipleri OS yönetişiminin
+    vatandaşları olacak — kanonda kalırlar, OS mesaisinde dirilirler).
+  - Düzeltme kaydı: `Koşum` aslında CANLI (koşu: alanında satır-içi 9
+    kullanım — satır-başı sayacı kaçırmıştı).
+  **S2 — reforma yerleşim:** reform planına yeni **TUR-6 DOGFOOD TURU**
+  eklenir (RF-T6, RF-T5'e zincirli).
+  **S3 — koni doluluk kapısı:** BİLGİ düzeyinde motor kapısı kurulur —
+  geliştirmede-Adım'da üretir/referans boşsa bilgi tanısı (TUR-2 kapsamına).
+  **S4 — yinelenen-parametre tanısı** TUR-2 motor güven turuna eklendi
+  (kanıt vakası: durum_devir çift-parametre; dosya aynı oturumda düzeltildi).
+|<--
+Çıkarım( kod: CKR-KARAR-KURAL-KARNE,
+         kaynak: "9 karar rafı (96 düğüm) tam okuma + makine ölçümü (98 tip × 103 .sar dosya; canlı/vitrin ayrık) + enforcement-denetimi.md çaprazı — 2026-07-12, Founder reform açılış teşhisi üzerine; hükümler aynı oturumda Founder'dan alındı",
+         ne: "⚖️ Üç eksenli karne + HÜKÜMLER: karar→kural boşlukları (K-07 en eski · geribildirim/Döngü/contract-first kuralsız) + kural→motor (28🟢/16🟡/19⚪) + dogfood ölçümü (98 tipin 75'i canlıda sıfır; üretir %16 · referans %20 · tek Faz) — Founder kilidi: emeklilik yok; dış-proje malı meşru · dogfood listesi TUR-6'ya · etmen/orkestrasyon-zekâ + yasa tipleri OS-vadeli · koni bilgi-kapısı ve yinelenen-parametre TUR-2'ye" ) {
+  --> RF-T5-A01
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 📏 RF-T6-A01 KAPANIŞ ÖLÇÜMÜ (2026-07-18 · oturum 59) — EKSEN ③ borçlarının makine sayımı
+// ─────────────────────────────────────────────────────────────────────────────
+Çıkarım( kod: CKR-DOGFOOD-KAPANIS-OLCUMU, tarih: "2026-07-18",
+         kaynak: "RF-T6-A01 dogfood turu kapanış taraması — canlı bahçe (ornek/ · sablon/ · fikstür hariç) makine sayımı; karşılaştırma tabanı bu karnenin EKSEN ③ ölçümü (2026-07-12)",
+         ne: "📏 İki borç kapandı, sayılarla: ① DOGFOOD TİP LİSTESİ TAM — Founder S1 hükmünün 24 dogfood tipinin tamamı canlı bahçede ≥1 gerçek kullanımda (Git 1 · Komut 1 · Görev 1 · Sorun 2 · İz 1 · Koşum 1 · Sınama 1 · Metrik 1 · Log 1 · Değerlendirme 1 · Kapsama 1 · Güvenlik 1 · Beceri 3 · Gereksinim 1 · Sözleşme 8 · Döngü 2 · Araç 2 · MCP 1 · Model 3 · Ortam 1 · Göç 2 · Sözlük 1 · Kanca 1 · Şablon 1; sıfır kalan tip YOK). ② ÜRETİR DOLULUĞU %16 → %91: 331 tamamlanmış Adımın 303'ü gerçek meyvesine üretir: kenarıyla bağlı (hedef %80+ AŞILDI); kalan 28 Adım BİLİNÇLİ meyvesiz — kapı/onay/karar-kilitleme adımları, repo-dışı ürünler (kurulu paket · dış-makine yapılandırması · arşiv) ve evi belirsiz iki sözdizim kalemi (DGS-10/13). ③ Faz'sız Blok SIFIR — fazsız-blok tanısı HATA düzeyinde canlı ve iki varlık denetimi TAM-yeşil (mevsim yayılımı motor-kanıtlı)" ) {
+  --> RF-T6-A01
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔧 RF-T6-A01 RED-ONARIM ÖLÇÜMÜ (2026-07-18 · oturum 59) — Sol bulguları kapatıldıktan sonraki yeniden ölçüm
+// ─────────────────────────────────────────────────────────────────────────────
+Çıkarım( kod: CKR-DOGFOOD-ONARIM-OLCUMU, tarih: "2026-07-18",
+         kaynak: "Sol RED bulgularının (CKR-SOL-DOGFOOD-RED) onarımı sonrası yeniden ölçüm — bu kez motorun kendi AST yükleyicisiyle (programlariYukle; Sol'un yöntemi; önceki metin-tarama betiğinin 'ne: içindeki tamamlandı kelimesini durum sanma' hatası giderildi); canlı kapsam: yolunda ornek/ · sablon/ · fikstur geçenler hariç",
+         ne: "📏 DÜZELTİLMİŞ SAYILAR: ① 24 dogfood tipinin tamamı canlıda ≥1 kullanımda, sıfır kalan tip YOK (Git 1 · Komut 1 · Görev 1 · Sorun 2 · İz 1 · Koşum 1 · Sınama 1 · Metrik 1 · Log 1 · Değerlendirme 1 · Kapsama 1 · Güvenlik 1 · Beceri 3 · Gereksinim 1 · Sözleşme 8 · DÖNGÜ 1 · Araç 2 · MCP 1 · Model 3 · Ortam 1 · Göç 2 · Sözlük 1 · Kanca 1 · Şablon 1 — önceki kayıttaki 'Döngü 2' yanlıştı). ② ÜRETİR DOLULUĞU: 329 tamamlanmış Adımın 311'i meyveli = %94,53 (Sol'un RED anındaki 329/301=%91,49 tabanına onarım turu 10 yeni gerçek bağ ekledi; önceki kayıttaki 331/303 ölçüm-betiği hatasıydı). ③ BİLİNÇLİ MEYVESİZ 18 — TAM LİSTE (denetlenebilir istisna sicili): EKL-F1-A01 · EKL-F1-A02 · EKL-F1-A04 (envanter/kalıp/kapı-arşiv) · EKL-F2-A04 (emoji kuralı — hükmün bugünkü evi EMJ kanonu + K-102 ⑤; düğüm-üstü beyanlı) · EKL-F2-A05 · EKL-F9-A05 (faz kapıları) · BKM-EKL-A01 (kapalı-kaynak inceleme) · BKM-AD-A01 (ürün dizin yapısı + OS komut listesi K-51 sınırında; beyanlı) · BKM-FND-A01 (anahtar rotasyonu — env, repo-dışı) · BKM-FND-A02 (ikon kararı) · DPK-A01 (tasarım kapısı) · KPN-A02 (ürün kurulu VSIX — repo-dışı, düğümde beyanlı) · ADM-MUT-H1 · ADM-MUT-H2 (karar kilitleme) · ADM-UC-AGAC-KURAL (ürünü uc-agac.md eridi, hüküm K-31 gövdesinde; beyanlı) · SEF-L3-A21 (ürün öteki varlıkta — K-51 çapraz üretir yasak; beyanlı) · SNV3-A01 (sınav çalışma alanı repo-dışı) · ADM-SIT-MCP (dış-makine yapılandırması). ④ VARLIK DENETİMLERİ — DOĞRU İFADEYLE: her iki varlıkta drift YOK (0 hata · 0 uyarı); TAM-yeşil (motor sustu) hükmü yalnız kapalı varlık için geçerli — _Sarmal'da kampanyanın 45 açık Adımı nedeniyle motor bilerek susmuyor; önceki kayıttaki 'iki varlık TAM-yeşil' ifadesi bu ayrımı ezdiği için düzeltildi" ) {
+  --> RF-T6-A01
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔧 RF-T6-A01 RED-3 GÜNCEL ÖLÇÜMÜ (2026-07-18 · oturum 60) — Sol'un 3. denetiminin
+//    yakaladığı karne gecikmesi kapatıldı: RED-2 onarımındaki BKM-AD-A01
+//    meyvelenmesi sayılara yansıtıldı.
+// ─────────────────────────────────────────────────────────────────────────────
+Çıkarım( kod: CKR-DOGFOOD-RED3-OLCUMU, tarih: "2026-07-18",
+         kaynak: "Sol 3. kabul denetiminin (CKR-SOL-DOGFOOD-RED-3) karne-sapması bulgusu üzerine yeniden ölçüm — motorun AST yükleyicisiyle (programlariYukle; üretir liste değerleri dahil), canlı kapsam: yolunda ornek/ · sablon/ · fikstur geçenler hariç; Sol'un bağımsız sayımıyla birebir çapraz-doğrulandı",
+         ne: "📏 GÜNCEL SAYILAR (HEAD 327c901 sonrası): ① ÜRETİR DOLULUĞU: 329 tamamlanmış Adımın 312'si meyveli = %94,83 — önceki kayıt (CKR-DOGFOOD-ONARIM-OLCUMU: 329/311/18) RED-2 onarımında BKM-AD-A01'in KOD-DIZIN-DUZENI meyvesine bağlanmasını yansıtmıyordu, bir geride kalmıştı; ders: sayıları değiştiren HER onarım aynı commit'te karneyi de güncellemeli. ② BİLİNÇLİ MEYVESİZ 17 — TAM LİSTE (BKM-AD-A01 düştü, kalanlar aynı): EKL-F1-A01 · EKL-F1-A02 · EKL-F1-A04 (envanter/kalıp/kapı-arşiv) · EKL-F2-A04 (emoji kuralı — hükmün evi EMJ kanonu + K-102 ⑤; düğüm-üstü beyanlı) · EKL-F2-A05 · EKL-F9-A05 (faz kapıları) · BKM-EKL-A01 (kapalı-kaynak inceleme) · BKM-FND-A01 (anahtar rotasyonu — env, repo-dışı) · BKM-FND-A02 (ikon kararı) · DPK-A01 (tasarım kapısı) · KPN-A02 (ürün kurulu VSIX — repo-dışı, düğümde beyanlı) · ADM-MUT-H1 · ADM-MUT-H2 (karar kilitleme) · ADM-UC-AGAC-KURAL (ürünü uc-agac.md eridi, hüküm K-31 gövdesinde; beyanlı) · SEF-L3-A21 (ürün öteki varlıkta — K-51 çapraz üretir yasak; beyanlı) · SNV3-A01 (sınav çalışma alanı repo-dışı) · ADM-SIT-MCP (dış-makine yapılandırması). Sol'un hükmü: 17'nin tamamı kapı/onay/karar, repo-dışı ürün ya da çapraz-varlık gerekçesine oturuyor — makul olmayan istisna YOK. ③ Tip sayımı ve fazsız-blok 0 değişmedi (24/24 canlı · drift 0/0 iki varlıkta)" ) {
+  --> RF-T6-A01
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔬 ÜRETİR TAM-EŞLEME DENETİMİ (2026-07-18 · oturum 60) — Founder talebi:
+//    örneklem yerine 312 bağın TAMAMI. Sol'un tavsiye notuna uygun: eski
+//    kayıtlar dokunulmadı, sonuç deftere YENİ kayıt olarak eklendi.
+// ─────────────────────────────────────────────────────────────────────────────
+Çıkarım( kod: CKR-DOGFOOD-TAM-ESLEME, tarih: "2026-07-18",
+         kaynak: "312 üretir kenarının tam denetimi — üç aşamalı yöntem: ① motorun AST yükleyicisiyle tüm tamamlanmış-Adım→üretir dökümü + her hedef KOD'un beklenen yolları (dosya: alanı ya da aile-ilanı yol çıkarımı) ② çift-sinyal triyaj: Adım kodunu anan commit'lerin dokunduğu dosyalar (git log --grep + git show --name-only) ∨ Adımın kendi metninin ürün dosya adını anması ③ iki sinyalin de teyit edemediği 75 kenarın ELLE incelemesi (ne/görev metni ↔ kaynak dosya grep'i ↔ commit dosya listeleri); RED-6 dersinin uygulaması: hüküm NİYET METNİNE değil COMMIT/KOD GERÇEĞİNE dayandı",
+         ne: "🔬 SONUÇ: 312 kenarın TAMAMI incelendi — 308 DOĞRU · 4 YENİ YANLIŞ bulundu ve düzeltildi: ① VIT-K78-A01 → KOD-EKL-NABIZ yanlıştı, nabız DAVRANIŞI satirici.ts'e eklendi (commit e192604/7a416c6 satirici.ts kanıtlı; nabiz.ts F9-A08'in ürünü) → KOD-EKL-SATIRICI ② GBR-A07 → KOD-YOLCOZ yanlıştı, çift-segment onarımı iskeletci.ts+testinde (commit dosya listesi kanıtlı) → KOD-ISKELETCI ③ EKL-F4-A01 → KOD-EKL-BICIMLENDIR yanlıştı, SD-14 katlaması katla.ts (uzunNiyetiKatla) + duzeltme.ts eyleminde, bicimlendir.ts katla'ya hiç dokunmuyor → KOD-EKL-KATLA + KOD-EKL-DUZELTME ④ EKL-F4-A05 → KOD-EKL-BICIMLENDIR yanlıştı, tablo işi dört dosyada (katla.ts tabloHizala — duzeltme.ts:47 yorumu bizzat 'EKL-F4-A05' der — onizleme.ts gerçek-tablo çizimi — grammar markup.table.sar), bicimlendir.ts'te tablo izi SIFIR → KOD-EKL-KATLA + KOD-EKL-DUZELTME + KOD-EKL-ONIZLEME + KOD-EKL-GRAMMAR. Elle incelenen 71 diğer kenar DOĞRU çıktı (dosya-adı evrimi yanlış alarmları: indeks.ts→kimlik.ts · 'bicimle.ts' kısaltması=bicimlendir.ts · kosumYaz koniYaz'da). DÜZELTME TOPLAMI (6 koşu + tam denetim): 20 yanlış bağ onarıldı (RED-1:2 · RED-4:1+2 zenginleştirme · RED-5 süpürmesi:11 · RED-6:2 · tam denetim:4). Doluluk sayıları DEĞİŞMEDİ: 329/312/%94,83 · 17 istisna. SINIR BEYANI: 96 Adımın kodu hiçbir commit mesajında geçmiyor (toplu kapanışlar) — bunlar commit-sinyali yerine metin+kod-grep kanıtıyla doğrulandı; ham koşu çıktısı olmayan tarihsel iddialar bu denetimin kapsamı dışında (sicil madenciliği rayı)" ) {
+  --> RF-T6-A01
+}

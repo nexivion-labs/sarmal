@@ -1,0 +1,552 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/terfi_turu_denetim_raporu.sar — BAĞIMSIZ A90 DENETİMİ
+//   GOC-TERFI-A00–A06 teslimi üretici raporlarına güvenilmeden, canlı ağaçta
+//   yeniden ölçülmüş; kapılar mutasyonla sınanmış ve kenar yüzler aranmıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->| 
+# GOC-TERFI-A90 · Terfi turu bağımsız denetim raporu
+
+Bu rapor 3 Ağustos 2026 tarihinde
+`<atölye kökü>/_Sarmal`
+dizininde bağımsız olarak üretildi. Üretici raporlarındaki sayılar sonuç kabul
+edilmedi; aşağıdaki hükümler denetçinin kendi komutlarının çıktılarına dayanır.
+Geçmiş A00–A02 anlarının ağaç görüntüleri teslimde bulunmadığı için geçmişe
+dönük olarak yeniden üretilemeyen sayılar açıkça **ölçemedim** diye işaretlendi.
+
+Başlangıç durumunda aşağıdaki salt-okunur durum ölçümü alındı:
+
+```sh
+git status --short --untracked-files=all
+```
+
+Çıktı daha ilk ölçümde şuydu:
+
+```text
+ M plan/goc_plani.sar
+```
+
+Dolayısıyla denetim temiz bir ağaçta başlamadı. Bu değişiklik denetçiye ait
+değildir ve `plan/*.sar` dosyalarına denetim boyunca dokunulmadı.
+
+## 1. İddia 1 — zemin ve kanon mühürleri
+
+Sekiz kanonun canlı mühürleri şu komutla yeniden alındı:
+
+```sh
+shasum -a 256 yasa/kanon/{dil,mim,ogr,ork,str,tip,yas,yuz}.sar
+```
+
+Çıktı şudur:
+
+```text
+eb326cac1281b19e55b4dbab65af38db94f2dea10bfd97bd7f70933ef46d308d  yasa/kanon/dil.sar
+4dc47cc72a9fd1717f6c9c0bddeebd0288daacfd08fd0de8b1367483e6ed3ed4  yasa/kanon/mim.sar
+d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46  yasa/kanon/ogr.sar
+61f7c4043467a8fe0812abd6277449a93841262875d08b8d8852b40d7c84204e  yasa/kanon/ork.sar
+a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d  yasa/kanon/str.sar
+0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068  yasa/kanon/tip.sar
+159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49  yasa/kanon/yas.sar
+fc2f8a127357f87fc22e79b1c9d4f5e46f4483cecb0c02a803a05e4f4fba2a58  yasa/kanon/yuz.sar
+```
+
+Bu mühürler teslim kayıtlarındaki mühürlerle birebirdir. Bununla birlikte A00
+öncesi 568 bulgulu ağaç ve A00 sonu 449 bulgulu ağaç teslimde ayrı görüntüler
+olarak yoktur. Bugünkü ağacı geçmiş haline çevirmeden 568→449 düşüşünü yeniden
+ölçmek mümkün değildir. Bu nedenle “kanon SHA'ları kayıtlarla uyuşuyor” kısmı
+tuttu; “A00'da 568'den 449'a indi ve bu geçiş boyunca değişmedi” tarihsel
+iddiasını **ölçemedim**. İddia bütünüyle değil, kısmen doğrulandı.
+
+## 2. İddia 2 — 70 yeni tanı ve yeniden üretilebilir taban
+
+Sicil doğrudan TypeScript kaynağından içe aktarılarak sayıldı:
+
+```sh
+node --experimental-strip-types --input-type=module -e '
+import {YENI_TANI_KANONU as k} from "./cekirdek/src/tani-sicili.ts";
+console.log("kayıt="+k.length+" benzersiz="+new Set(k.map(x=>x.kod)).size)'
+```
+
+Çıktı `kayıt=70 benzersiz=70` oldu. Aynı canlı denetimler iki kez ayrı
+dosyalara yazılıp bayt düzeyinde karşılaştırıldı:
+
+```sh
+for n in 1 2; do
+  node --experimental-strip-types cekirdek/src/sarmal.ts denetle . --tam-liste > /tmp/sarmal-a90.0Alfro/ana.$n
+  node --experimental-strip-types cekirdek/src/sarmal.ts denetle ../<kapalı-varlık> --tam-liste > /tmp/sarmal-a90.0Alfro/nx.$n
+done
+shasum -a 256 /tmp/sarmal-a90.0Alfro/{ana.1,ana.2,nx.1,nx.2}
+cmp -s /tmp/sarmal-a90.0Alfro/ana.1 /tmp/sarmal-a90.0Alfro/ana.2; echo $?
+cmp -s /tmp/sarmal-a90.0Alfro/nx.1 /tmp/sarmal-a90.0Alfro/nx.2; echo $?
+```
+
+Çıktı şudur:
+
+```text
+fbb64dc77012c5e48d9fce52d24cb7baeb8c779154efb9c71ebad8e7188b40ee  ana.1
+fbb64dc77012c5e48d9fce52d24cb7baeb8c779154efb9c71ebad8e7188b40ee  ana.2
+20f8d35a27eb79706605da72f68494a8c6aae3d19fd3d8b207616f1a7b6d3380  nx.1
+20f8d35a27eb79706605da72f68494a8c6aae3d19fd3d8b207616f1a7b6d3380  nx.2
+0
+0
+```
+
+Canlı taban deterministiktir ve 70 yeni kimlik benzersizdir. A01'in ilk
+1.114 bulgulu ağacı bulunmadığı için o tarihsel tabanın kendisini yeniden
+üretmeyi **ölçemedim**. İddia bugünkü yeniden üretilebilirlik bakımından tuttu,
+tarihsel başlangıç bakımından kısmen ölçülebildi.
+
+## 3. İddia 3 — 1.114→700 temizlik, yanlış pozitifler ve gerçek ihlaller
+
+Canlı iki kökün tür dökümü doğrudan `denetimKos` sonucundan toplandı. Komutun
+özü, her kök için `turDokumu.reduce((n,x)=>n+x.toplam,0)` ve sicildeki 70 yeni
+kimliğin küme süzgecidir. Çıktı şudur:
+
+```text
+ANA tür=20 toplam=161 {"hata":0,"uyarı":0,"bilgi":161} yeni=62
+şema-dışı-alan=31
+adım-atomikliği=14
+yürütme-kenarı-sözleşmesi=10
+seçilemez-adım-yürütümü=4
+üretim-kökeni-ihlali=2
+kullanır-kenarı-ihlali=1
+KAPALI tür=13 toplam=829 {"hata":0,"uyarı":0,"bilgi":829} yeni=638
+beceri-kartı-eksik=467
+şema-dışı-alan=144
+terfi-kanıtı-eksik=25
+adım-atomikliği=1
+yürütme-kenarı-sözleşmesi=1
+```
+
+Yeni kümenin canlı birleşimi 62+638=700'dür. Birleşik pozitif dağılımı
+`adım-atomikliği=15`, `beceri-kartı-eksik=467`,
+`yürütme-kenarı-sözleşmesi=11`, `üretim-kökeni-ihlali=2`,
+`kullanır-kenarı-ihlali=1`, `seçilemez-adım-yürütümü=4`,
+`şema-dışı-alan=175` ve `terfi-kanıtı-eksik=25` olarak yeniden sayıldı.
+
+Regresyonların bütünü ayrıca `cd cekirdek && npm test` ve
+`cd eklenti && npm test` komutlarıyla koşuldu; sırasıyla `954/954` ve
+`376/376` geçti. Buna karşın 1.114 başlangıç görüntüsü, 404 bulgunun kapatılma
+öncesi fikstürü ve kaynakta düzeltildiği söylenen 10 ihlalin önceki kaynakları
+teslimde yoktur. Bu nedenle 700 sonunu ve mevcut regresyonu doğruladım; “tam
+404 yanlış pozitif ve tam 10 gerçek ihlal bu turda kapandı” nedensel/tarihsel
+iddiasını **ölçemedim**. İddia kısmen tuttu.
+
+## 4. İddia 4 — Founder terfisi ve kademe sınırı
+
+Sicil kademesi, kanon hedefi ve aşım doğrudan sayıldı:
+
+```sh
+node --experimental-strip-types --input-type=module -e '
+import {YENI_TANI_KANONU as k} from "./cekirdek/src/tani-sicili.ts";
+const c=(key)=>Object.fromEntries(["hata","uyarı","bilgi"].map(v=>[v,k.filter(x=>x[key]===v).length]));
+console.log("kademe="+JSON.stringify(c("kademe")));
+console.log("kanonDüzey="+JSON.stringify(c("kanonDüzey")));
+console.log("kademe-atlayan="+k.filter(x=>({bilgi:0,"uyarı":1,hata:2}[x.kademe]>{bilgi:0,"uyarı":1,hata:2}[x.kanonDüzey])).length)'
+```
+
+Çıktı şudur:
+
+```text
+kademe={"hata":46,"uyarı":16,"bilgi":8}
+kanonDüzey={"hata":49,"uyarı":21,"bilgi":0}
+kademe-atlayan=0
+```
+
+Founder kabul kaydındaki açık kabul metni ve 46 kimlik motor kapısıyla da
+doğrulandı. İddia tuttu.
+
+## 5. İddia 5 — yüzey eşitliği ve tek yönlendirme kaynağı
+
+Kaynak/model yüzleri hedefli olarak sınandı:
+
+```sh
+cd cekirdek
+node --test --test-name-pattern='GOC-TERFI-A05|A06' sinama/yeni-kanon-tanilari.test.ts sinama/motor-guven.test.ts
+cd ../eklenti
+node --import ./sinama/dil-kur.ts --test --test-name-pattern='A06 yüzey eşitliği|A06 KIRMIZI FİKSTÜR|kayıpsızlık' sinama/tani-yuzeyleri.test.ts
+```
+
+İlk komut `5/5`, ikinci komut `5/5` geçti. Sicil, gerçek üretici, Problems,
+hover ve öğretim yüzünün kimlik/düzey/nesne eşitliği kaynak testlerinde tuttu.
+İkinci düzey çizelgesi mutasyonu da aşağıdaki 2. mutasyonda bu nöbeti kırdı.
+
+Ancak dağıtılan gerçek editör girişi `package.json` içinde
+`./dist/eklenti.js` iken bu dosya yüklenememektedir. Kenar bulgusunda gösterilen
+`TypeError: Invalid URL` nedeniyle çalışan editör yüzü kurulamıyor. Bu yüzden
+iddia kaynak ve model katmanında tuttu; teslim edilen çalışma zamanı yüzünde
+tutmadı. Bu ayrım nihai hükmün bloklayıcı gerekçesidir.
+
+## 6. İddia 6 — nöbetlerin mutasyon kanıtı
+
+Denetçi üç zorunlu mutasyonu ve bir ek tur-dökümü mutasyonunu elle yaptı,
+hedefli kapıyı koştu ve her dosyayı geri aldı. Dört mutasyonun ayrıntıları
+aşağıdaki “Mutasyon sınamaları” bölümündedir. Dördü de ilgili nöbeti kırdı ve
+geri alındığında yeniden yeşile döndü. İddia tuttu.
+
+## 7. İddia 7 — derleme, süit ve canlı varlık kapıları
+
+Aşağıdaki komutlar birbirinden bağımsız koşuldu:
+
+```sh
+cd cekirdek && npx tsc --noEmit
+cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .
+cd cekirdek && npm test
+cd eklenti && npm test
+node --experimental-strip-types cekirdek/src/sarmal.ts denetle . --tam-liste
+node --experimental-strip-types cekirdek/src/sarmal.ts denetle ../<kapalı-varlık> --tam-liste
+```
+
+İki `tsc` komutu çıktı vermeden kod 0 ile bitti. Çekirdek özeti
+`tests 954, pass 954, fail 0`; eklenti özeti `tests 376, pass 376, fail 0`
+oldu. Canlı Sarmal ölçümü 161 bilgi, 0 hata, 0 uyarı; kapalı ürün ölçümü 829
+bilgi, 0 hata, 0 uyarı verdi ve iki komut da kod 0 ile bitti. İddia, tam olarak
+sayılan bu altı kapı bakımından tuttu. Gerçek VS Code süiti bu iddianın
+saydığı 376 kaynak testinin dışında olup ayrıca aşağıda raporlandı.
+
+## Mutasyon sınamaları ve geri alma mühürleri
+
+### Mutasyon 1 — bilgiden doğrudan hataya atlama
+
+`cekirdek/src/tani-sicili.ts` içindeki `adım-atomikliği` kaydı geçici olarak
+`kademe: "bilgi"` değerinden `kademe: "hata"` değerine çıkarıldı. Başlangıç
+mührü `1f3d9ecb20192d36ac8e9e42bb889cff6abd5cbb8360fc7735184927abd91d20`,
+mutasyon mührü
+`52d3bf27f994fbd04b9f24921e4f4395d868492c9c8e6d12a6d86b08918925ef`
+oldu. Şu komut koşuldu:
+
+```sh
+node --test --test-name-pattern='GOC-TERFI-A05|A06 gerçek kapı' \
+  sinama/yeni-kanon-tanilari.test.ts sinama/motor-guven.test.ts
+```
+
+Çıkış kodu 1, `pass 0, fail 2` oldu. Nöbetler “sekiz RET-ADAYI bilgide
+kalmadı” ve borç tanısının yetkisiz terfi ettiği gerekçeleriyle düştü. Geri
+almadan sonra aynı komut `2/2` geçti ve SHA-256 yeniden başlangıçtaki
+`1f3d9ecb...abd91d20` değerine döndü.
+
+### Mutasyon 2 — ikinci düzey çizelgesi
+
+`eklenti/src/yuzey-cekirdek.ts` içine kullanılan ikinci bir çizelge kondu ve
+`kanonik-kaynak-biçimi` düzeyi bu çizelgede `bilgi` yapıldı. Başlangıç mührü
+`e84bcc7271b3cf0a4228f0b5799aa284ab8b01e959696ba6f45e9af8d50880b7`,
+mutasyon mührü
+`17d8d3db6484b0eea32d080d090d5ba6e57c01dce658af5199dbfe27636f4076`
+oldu. Şu komut koşuldu:
+
+```sh
+node --import ./sinama/dil-kur.ts --test \
+  --test-name-pattern='A06 yüzey eşitliği|A06 KIRMIZI FİKSTÜR: yüzey' \
+  sinama/tani-yuzeyleri.test.ts
+```
+
+Çıkış kodu 1, `pass 1, fail 1` oldu; Problems yüzü kanonik nesneden ayrıldığı
+için yüzey eşitliği nöbeti düştü. Geri almadan sonra `2/2` geçti ve SHA-256
+yeniden `e84bcc72...d50880b7` oldu.
+
+### Mutasyon 3 — kabul kaydı olmadan terfi
+
+`nitelik/goc/hata_terfi_kapi_kaydi.sar` içindeki açık Founder kabul cümlesi
+geçici olarak “Yetkili açık kabul kaydı yoktur.” cümlesiyle değiştirildi.
+Başlangıç mührü
+`44c03352fcf5eca8e1acbe7e6400e9fd9bdaba7d45b576d86a52c60e913b4b65`,
+mutasyon mührü
+`d911094b7dae9b5edfb59c98117320c731b7ddab80f3591999842822f0dac9db`
+oldu. Şu komut koşuldu:
+
+```sh
+node --test --test-name-pattern='A06 gerçek kapı' sinama/motor-guven.test.ts
+```
+
+Çıkış kodu 1, `pass 0, fail 1` oldu ve 46 hata kimliğinin tamamı “yetkili açık
+kabul yoktur” gerekçesiyle listelendi. Geri almadan sonra `1/1` geçti ve
+SHA-256 yeniden `44c03352...13b4b65` oldu.
+
+### Mutasyon 4 — tur dökümünün yanlış sayı söylemesi
+
+`cekirdek/src/sarmal.ts` içinde basılan `String(r.toplam)` geçici olarak
+`String(r.toplam - 1)` yapıldı. Başlangıç mührü
+`ebcc67c9fa997a13374f48d1bbdeea78e9ba853e20889c9bd7abb182d776fa59`,
+mutasyon mührü
+`207246893581d36c8cefc8ee5f740c01ad7878b857fd0dd192a5f4bd16e93be8`
+oldu. `node --test sinama/tur-dokumu.test.ts` komutu kod 1 ile `pass 5,
+fail 2` verdi; hem normal hem `--tam-liste` basılı çıktı nöbeti gerçek 5 yerine
+4 yazıldığını yakaladı. Geri almadan sonra `7/7` geçti ve SHA-256 yeniden
+`ebcc67c9...776fa59` oldu.
+
+Kapanışta yedi mutasyon hedefinin toplu mühürleri başlangıç değerleriyle
+birebir bulundu:
+
+```text
+1f3d9ecb20192d36ac8e9e42bb889cff6abd5cbb8360fc7735184927abd91d20  cekirdek/src/tani-sicili.ts
+b09ff14cd042a0b98af34b8e0f6ff29e146176244b0fff0ea371c4fae61b24d4  cekirdek/sinama/tur-dokumu.test.ts
+906e8500997f1dc718ac06e631abd5ed3bc8c5627995b2c89a7ecc27aef7025b  cekirdek/sinama/motor-guven.test.ts
+9f9eaed4f7c732ae836996c00d54ab6f41c1245afe38b47f50eb478df86bc2cf  eklenti/sinama/tani-yuzeyleri.test.ts
+44c03352fcf5eca8e1acbe7e6400e9fd9bdaba7d45b576d86a52c60e913b4b65  nitelik/goc/hata_terfi_kapi_kaydi.sar
+e84bcc7271b3cf0a4228f0b5799aa284ab8b01e959696ba6f45e9af8d50880b7  eklenti/src/yuzey-cekirdek.ts
+ebcc67c9fa997a13374f48d1bbdeea78e9ba853e20889c9bd7abb182d776fa59  cekirdek/src/sarmal.ts
+```
+
+## Kapsam kenarı bulguları
+
+### BLOKLAYICI — paketlenmiş eklenti girişi yüklenemiyor
+
+`npm run build` iki kez şu uyarıyı verdi:
+
+```text
+[WARNING] "import.meta" is not available with the "cjs" output format and will be empty
+../cekirdek/src/cevir.ts:16:40
+../cekirdek/src/cevir.ts:112:82
+```
+
+Paket girişinin gerçekten bu dosya olduğu ve dönüştürmenin sonucu şu komutlarla
+ölçüldü:
+
+```sh
+node -e 'const p=require("./eklenti/package.json"); console.log(p.main)'
+rg -a -n 'var import_meta|new URL' eklenti/dist/eklenti.js
+```
+
+Çıktıda giriş `./dist/eklenti.js`, paket gövdesinde ise `var import_meta = {};`
+ve hemen ardından iki adet `new URL(..., import_meta.url)` vardır. Gerçek
+`vscode` modülü dışındaki yüklemeyi soyutlayan bir modül saplamasıyla giriş
+dosyası doğrudan yüklendi:
+
+```sh
+node -e 'const M=require("node:module"); const once=M._load;
+M._load=function(id,p,m){if(id==="vscode")return new Proxy({},
+{get(){return new Proxy(function(){},{get(){return function(){}},apply(){return {}}})}});
+return once.call(this,id,p,m)}; require("./dist/eklenti.js")'
+```
+
+Komut kod 1 ile şu asıl hatayı verdi:
+
+```text
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at Object.<anonymous> (.../_Sarmal/eklenti/dist/eklenti.js:52854:11)
+```
+
+Saplama yalnız VS Code API modülünün Node ortamında çözülebilmesini sağlar;
+hata API çağrısından önce, üst düzey `new URL` ifadesinde doğmaktadır. Böylece
+CLI çalışırken dağıtılan editör eklentisi etkinleşemez. Bu bulgu teslimin çalışan
+yüzlerinden birini ortadan kaldırdığı için **bloklayıcıdır**.
+
+### DÜZELTİLMELİ — İngilizce söz dizimi hatası Türkçe kalıyor
+
+Metin kapsamı ve hijyen testleri şu komutla koşuldu:
+
+```sh
+node --test sinama/tani-metni-ceviri-kapsama.test.ts \
+  sinama/tani-metni-hijyeni.test.ts sinama/tani-metni-tek-kaynak.test.ts
+```
+
+Sonuç `12/12` geçti. Ancak bu nöbetlerin bilinçli istisnası olan `söz-dizim`
+tanısı ayrıca üretildi ve İngilizceye çevrildi. Çıktı şudur:
+
+```text
+syntax_tr=")" (parametre listesi sonu) bekleniyordu, "dosyaSonu" bulundu.
+syntax_en=")" (parametre listesi sonu) bekleniyordu, "dosyaSonu" bulundu.
+has_en_cell=false
+```
+
+Dolayısıyla İngilizce Problems/hover yüzünde hata mesajı Türkçe kalabilir.
+Bu, terfi dağılımını değiştirmediği için bloklayıcı değil; İngilizce hata hanesi
+için **düzeltilmelidir**.
+
+### DÜZELTİLMELİ — paket ve kilit sürümü ayrışmış
+
+`rg -n '"version"' eklenti/package.json eklenti/package-lock.json` komutu
+`package.json=0.9.137`, kilit kökü ve üst sürümü `0.9.114` gösterdi. Bağımlılık
+süitleri geçse de dağıtım kimliği ve yeniden üretilebilir paket meta verisi
+aynı sürümü söylemelidir. Bulgu **düzeltilmelidir**.
+
+### NOT — karne ile bugünkü canlı Sarmal toplamı farklı
+
+`nitelik/goc/tani_terfi_karnesi.sar` A05 canlı kapısını 163 bilgi olarak
+kaydederken bugünkü ölçüm 161 bilgidir. Yeni 70 tanının canlı toplamı yine
+700'dür; fark eski bilgi sınıflarındadır. Denetim başlangıcında
+`plan/goc_plani.sar` zaten değiştirilmiş olduğu için bu iki kaydın bugünkü
+farkını teslim üreticisine yüklemedim. Bu bir **not/ortam bulgusu**dur; temiz
+görüntüde karne–canlı karşılaştırması yeniden alınmalıdır.
+
+### NOT — MCP ve gömülü kanon yüzleri
+
+MCP–CLI ve MCP–çekirdek eşitliği şu komutla yeniden sınandı:
+
+```sh
+node --test --test-name-pattern='MCP-A01: denetle-proje|yüzler arası uyum: MCP' \
+  sinama/mcp.test.ts sinama/yeni-kanon-tanilari.test.ts
+```
+
+Sonuç `2/2` geçti; MCP `denetle-proje` çıktısı CLI ile bayt eşit ve tanı
+kimlikleri çekirdekle aynıydı. Gömülü kanon için
+`node --import ./sinama/dil-kur.ts --test sinama/gomulu-esitlik.test.ts`
+komutu `2/2` geçti. `npm run build` öncesi ve sonrası
+`eklenti/package.json`, `eklenti/src/gomulu-kanon.ts` ve
+`eklenti/dist/eklenti.js` mühürleri sırasıyla
+`4ee9dabcff55542037d4c5145d1e946f11d1f9e133bbc26fc7a48a0dbd5c0198`,
+`16c857e19ddd0376d2ce362be093383190b6f8df225d069b74cd4160c4b1f73c` ve
+`65e30061e4f766e41317039fd593df030c5a2d3572168c1aac33213acd8278db`
+olarak değişmeden kaldı. Bu iki kenarda drift bulunmadı.
+
+### NOT — Node ESM uyarısı
+
+Eklenti kaynak testleri, `package.json` ESM türü ilan etmediği için her koşumda
+`MODULE_TYPELESS_PACKAGE_JSON` uyarısı verdi. Test sonucunu değiştirmiyor; hız
+ve temiz günlük bakımından **not** olarak kaydedildi.
+
+## Gerçek VS Code süiti — teslim hükmünden ayrı ortam maddesi
+
+İstenen komut aynen koşuldu:
+
+```sh
+cd eklenti && npm run test:vscode
+```
+
+Sürücü önce `update.code.visualstudio.com` için `ENOTFOUND` aldı, sonra mevcut
+1.130.0 önbelleğini seçti ve `Exit code: SIGABRT` ile bitti. Çıkış kodu 1'dir.
+Bu çökme eklenti aktivasyonuna ulaşmadan oluştu.
+
+Derin teşhis şu sonuçları verdi:
+
+```text
+host: macOS 26.5.1 (25F80), x86_64, MacBookPro16,1
+uygulama: .vscode-test/vscode-darwin-1.130.0/Visual Studio Code.app
+ikili: Contents/MacOS/Code (Contents/MacOS/Electron -> Code)
+VS Code: 1.130.0
+Electron Framework: 42.6.0
+Mach-O: x86_64
+doğrudan `Code --version`: exit 134
+codesign --verify --deep --strict: invalid signature (code or signature have been modified)
+TeamIdentifier: UBF8T346G9
+Notarization Ticket: stapled
+```
+
+1.127.0, 1.128.0, 1.129.1 ve 1.130.0 önbelleklerinin dördü de x86_64 ve dördü
+de aynı derin imza doğrulamasında geçersizdir. Son macOS çökme kaydı
+`Code-2026-08-03-024214.ips` içinde `EXC_CRASH/SIGABRT`, `abort() called` ve
+ana iş parçacığında AppKit `_RegisterApplication` çerçevesini gösterir.
+Mimari ana makineyle uyumludur; yeni indirme ağ nedeniyle yapılamamış, mevcut
+imzası bozuk önbellek kullanılmış ve GUI kaydı sırasında süreç düşmüştür.
+Talimat gereği bu **ortam maddesi bloklayıcı sayılmadı**. Paket girişindeki
+`Invalid URL` bulgusu bundan ayrıdır ve Electron başlamadan da bağımsız olarak
+yeniden üretilmiştir.
+
+## Kapanış durumu ve kalıcı değişiklik sınırı
+
+İzin verilen rapor yazıldıktan sonra canlı Sarmal denetimi ve durum ölçümü
+yeniden alındı:
+
+```sh
+node --experimental-strip-types cekirdek/src/sarmal.ts denetle . --tam-liste
+git status --short --untracked-files=all
+```
+
+İlk komut kod 0 ile `20 tanı türü · 161 GERÇEK bulgu`, 0 hata ve 0 uyarı
+verdi. İkinci komutun kapanış çıktısı şudur:
+
+```text
+ M plan/goc_plani.sar
+?? nitelik/goc/terfi_turu_denetim_raporu.sar
+```
+
+Başlangıçla karşılaştırıldığında `plan/goc_plani.sar` satırı aynen kalmış,
+yalnız talimatta açıkça izin verilen bu rapor eklenmiştir. Denetçi mutasyonlarının
+hiçbiri kalıcı değildir. Başlangıçta mevcut kullanıcı değişikliği nedeniyle
+mutlak “temiz ağaç” çıktısı üretilemedi; bunu temizlemek git işlemi ve kullanıcı
+verisine müdahale gerektireceğinden yapılmadı.
+
+## Nihai hüküm — RED
+
+Terfi sicilinin 46/16/8 dağılımı, kademe-aşmama koşulu, 700 canlı yeni bulgu,
+iki TypeScript kapısı, 954 ve 376 kaynak süiti, iki canlı varlığın 0 hata/0
+uyarısı ve dört mutasyon nöbeti bağımsız ölçümde tuttu. MCP ile gömülü kanon
+kenarları da eşitti. Tarihsel 568→449 ve 1.114→700 geçişlerinin önceki ağaçları
+bulunmadığından 404+10 ayrıştırması bağımsız olarak yeniden ölçülemedi.
+
+Buna rağmen teslim **RED**'dir. Gerekçe, dağıtımın ilan edilmiş eklenti girişi
+`dist/eklenti.js` dosyasının üst düzeyde `TypeError: Invalid URL` vererek
+yüklenememesidir. Bu kusur CLI ile editör arasında fiilî bir kopukluk yaratır
+ve yüzey eşitliği iddiasını çalışan üründe geçersiz kılar. RED hükmü VS Code
+ikilisinin SIGABRT ortam arızasına dayanmamaktadır. Yeniden denetim için CJS
+paketindeki `import.meta.url` kullanımı çalışma zamanı güvenli hale getirilmeli,
+paketlenmiş girişin gerçekten yüklenip etkinleştiği barınaksız bir duman
+nöbeti eklenmeli; ayrıca İngilizce `söz-dizim` hanesi ve kilit sürümü
+düzeltilmelidir.
+|<--
+
+Göç( kod: GOC-TERFI-A90-DENETIM,
+     ne: "GOC-TERFI-A00–A06 terfi turunun yedi iddiasını bağımsız canlı komutlarla ölçer, dört nöbeti geri alınan mutasyonlarla sınar, MCP/CLI/editör/gömülü-kanon/karne/İngilizce yüz kenarlarını denetler, gerçek VS Code SIGABRT ortam teşhisini ayırır ve yüklenemeyen paketlenmiş eklenti girişi nedeniyle RED hükmü verir." )
+
+-->| 
+# GOC-TERFI-A90 · Yeniden-hüküm — 3 Ağustos 2026
+
+Bu bölüm önceki RED hükmünü doğuran yalnız üç maddenin yeniden ölçümüdür.
+Önceki raporun öteki tarihsel ve ortam bulguları bu dar kapsamda yeniden hükme
+açılmamıştır.
+
+## 1. BLOKLAYICI — `dist/eklenti.js` yüklenmesi
+
+İlan edilen `./dist/eklenti.js` girişi iki bağımsız yoldan yeniden ölçüldü.
+`eklenti/` içinde `node --test sinama/paket-girisi-duman.test.ts` komutu kod 0
+ile `tests 1, pass 1, fail 0` verdi. Nöbet, o anda `node esbuild.mjs` ile
+ürettiği gerçek CJS dağıtım girişini VS Code sürecini açmadan yükledi ve dışa
+aktarılan `activate` değerinin fonksiyon olduğunu doğruladı. Denetçinin ayrıca
+kurduğu dinamik `vscode` modül saplamasıyla doğrudan `require` ölçümü de kod 0
+ve `DIRECT_LOAD=ok activate=function` verdi. Duman öncesi, sonrası ve son geri
+alma sonrası `dist/eklenti.js` SHA-256 değeri aynı kaldı:
+`cfa178b3c59655cfd16b0714818730ac3b8f96f9f37618bf0165dec00af6bf6e`.
+
+Nöbetin gerçek koruma sağladığı talimattaki mutasyonla sınandı.
+`cekirdek/src/cevir.ts` önce
+`/tmp/sarmal-a90-rejudge.DCizxM/cevir.ts` kopyasına yedeklendi; kaynak ile
+yedeğin başlangıç SHA-256 değeri
+`2a88aab3a08b21ea99a0a793eb0a8365e17223592d36854e40710d94ec8ec7e5`
+olarak birebirdi. Kaynağa üst düzey
+`const X = new URL("../../oz/", import.meta.url);` satırı eklendiğinde aynı
+duman nöbeti kod 1 ile `tests 1, pass 0, fail 1` verdi ve alt süreç tam olarak
+`TypeError: Invalid URL`, `code: ERR_INVALID_URL`, `input: '../../oz/'`
+nedeniyle düştü. Kaynak git kullanılmadan yedek kopyadan geri yazıldı. Geri
+yazılan kaynak ile yedeğin SHA-256 değeri yeniden ve birebir
+`2a88aab3a08b21ea99a0a793eb0a8365e17223592d36854e40710d94ec8ec7e5`
+oldu; ardından nöbet tekrar `1/1` geçti. Önceki bloklayıcı kapanmıştır ve onu
+geri getiren üst-düzey URL mutasyonunu yakalayan nöbet gerçekten korumaktadır.
+
+## 2. İngilizce `söz-dizim` hanesi
+
+`tani-metni-ceviri-kapsama`, `tani-metni-hijyeni` ve
+`tani-metni-tek-kaynak` nöbetleri birlikte kod 0 ile `13/13` geçti. Önceki
+fikstür bağımsız olarak yeniden üretildi. Türkçe mesaj
+`")" (parametre listesi sonu) bekleniyordu, "dosyaSonu" bulundu.` iken açık
+İngilizce yüz
+`")" (end of parameter list) was expected, "end of file" was found.` oldu ve
+`has_en_cell=true` ölçüldü. İngilizce hane artık vardır ve Türkçe mesajın
+kopyası değildir; önceki eksik kapanmıştır.
+
+## 3. Paket kilit sürümü
+
+`eklenti/package.json` sürümü, `eklenti/package-lock.json` kök sürümü ve kilit
+içindeki `packages[""]` sürümü ayrı ayrı okundu. Üç değer de `0.9.137` ve
+`all_equal=true` çıktı. Önceki `0.9.137`/`0.9.114` ayrışması kapanmıştır.
+
+## Hızlı sağlamlık
+
+Çekirdek `npx tsc --noEmit` ve eklenti
+`../cekirdek/node_modules/.bin/tsc --noEmit -p .` komutlarının ikisi de kod 0
+verdi. Çekirdek süiti `tests 955, pass 955, fail 0`; eklenti süiti
+`tests 377, pass 377, fail 0` verdi. Canlı Sarmal varlık denetimi kod 0 ile
+20 türde 161 bilgi bulgusu, kapalı varlık denetimi kod 0 ile 13 türde 829
+bilgi bulgusu verdi. Her iki varlık çıktısında da `✖=0` ve `⚠=0` sayıldı.
+
+## Nihai yeniden-hüküm — KABUL
+
+Dar yeniden-hüküm kapsamındaki üç eski RED gerekçesinin üçü de bağımsız canlı
+ölçümde kapanmıştır: paketlenmiş giriş yüklenmektedir ve gerilemeyi yakalayan
+mutasyon nöbeti vardır; `söz-dizim` tanısı gerçek İngilizce haneyi taşımaktadır;
+paket ile kilit sürümleri eşittir. İstenen hızlı sağlamlık kapıları da eksiksiz
+geçmiştir. Bu nedenle GOC-TERFI-A90 yeniden-hükmü **KABUL**'dür.
+|<--
+
+Göç( kod: GOC-TERFI-A90-YENIDEN-HUKUM,
+     ne: "Önceki RED'in üç gerekçesini 3 Ağustos 2026 tarihinde yeniden ölçer; paket girişini doğrudan ve mutasyonlu dumanla, söz-dizim İngilizce hanesini gerçek fikstürle, kilit sürümünü üç alan eşitliğiyle doğrular; iki tsc, 955 ve 377 test ile iki varlık denetimi sonunda KABUL hükmü verir." )

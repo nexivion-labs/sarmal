@@ -1,0 +1,42 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// calisma_alani/calisma_alani_anadizin.sar — 🌿 YAŞANMIŞ ÇALIŞMA ALANI ÖRNEĞİ (GOC-A10 · Founder 2026-08-23)
+//
+//   Bu örnek gerçek bir düzenin sadeleştirilmiş eşidir: bir çatı altında bir
+//   açık kaynak aracı, bir kapalı ürün, bir web sitesi ve bir arşiv yaşar.
+//   Çatı bir git deposu DEĞİLDİR; dört proje kendi klasöründe, kendi
+//   anadiziniyle ve kendi deposunda yaşar (MIM-3). Her projenin tanı, graf ve
+//   sahiplik kimliği kendi Proje düğümünden türer; çatı kimlikleri birleştirmez
+//   (MIM-1.1). Örnek hiçbir gerçek ürün adı, kişi adı ya da gizli içerik taşımaz;
+//   desen alınır, bağlam alınmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🌿 Bir geliştiricinin gündelik düzenini tek çatı altında göstermek: açık araç
+  yayımlanır, kapalı ürün yayımlanmaz, site ikisini anlatır ve arşiv eski
+  deponun dondurulmuş hâlini saklar. Doğuş komutunun çalışma alanı cevabı bu
+  desenin ilk halkasını üretir; bu örnek dört halkalı bitmiş hâlidir.
+
+  ## Kapsam
+  📦 Kapsar: çatı ilanı, dört bağımsız Proje kökü ve her birinin en küçük
+  plan zinciri. Kapsamaz: gerçek iş mantığı, ortak kimlik kökü ve dağıtım
+  ayarları — bu bir DESEN referansıdır, ürün değildir.
+
+  ## Sonuç
+  ✅ Kabul: dört projenin her biri KENDİ kökünden `denetle` kapısından sıfır
+  hatayla geçer; çatı kökünden tek koşu ise MIM-1.1 gereği kimlik ayrımı
+  ister ve motor bunu proje-tanı-kimliği-uyumsuz tanısıyla dürüstçe söyler,
+  çünkü bulgular tek bir dizin kimliğinde birleşemez. Kapalı ürün ile arşiv
+  `görünürlük: gizli`, açık araç ile site `görünürlük: açık` taşır ve çatı
+  hiçbir projenin içeriğini anlatmaz.
+|<--
+
+ÇalışmaAlanı( kod: CAL-ORNEK-CATI, ad: "ornek_cati",
+  ne: "Bir açık araç, bir kapalı ürün, bir site ve bir arşivi saran örnek çatı" ) {
+
+  // Çatı yalnız rafı ilan eder; her rafın altında projenin kendi anadizini yaşar.
+  Raf( kod: RAF-ORNEK-ACIK,   yol: "acik_arac/",   ne: "Açık kaynak aracı — yayımlanır; kökü acik_arac/acik_arac_anadizin.sar" )
+  Raf( kod: RAF-ORNEK-KAPALI, yol: "kapali_urun/", ne: "Kapalı ürün — yayımlanmaz; kökü kapali_urun/kapali_urun_anadizin.sar" )
+  Raf( kod: RAF-ORNEK-SITE,   yol: "site/",        ne: "Web sitesi — açık aracı ve ürünü anlatır; kökü site/site_anadizin.sar" )
+  Raf( kod: RAF-ORNEK-ARSIV,  yol: "arsiv/",       ne: "Arşiv — eski deponun dondurulmuş hâli; kökü arsiv/arsiv_anadizin.sar" )
+}

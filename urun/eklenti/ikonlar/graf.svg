@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- mini graf: bir kök, iki dal, üç düğüm (kapsama rayı + bağımlılık eğrisi) -->
+  <circle cx="6" cy="5" r="2.2"/>
+  <circle cx="18" cy="12" r="2.2"/>
+  <circle cx="6" cy="19" r="2.2"/>
+  <path d="M6 7.2 V16.8"/>
+  <path d="M8.2 5 C13 5 16 8 16.4 10"/>
+  <path d="M8.2 19 C13 19 16 16 16.4 14"/>
+</svg>

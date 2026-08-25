@@ -1,0 +1,74 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/adim_yerlesim_kosum_eki_onerisi.sar — 📐 ADIM YERLEŞİM VE KOŞUM
+//   STANDARDI · KANON EKİ MADDE ÖNERİSİ (GOC-SPEC-A03)
+//   Bu dosya YALNIZ öneri kaydıdır: kanona madde, madde kodu veya zorlama düzeyi
+//   EKLEMEZ. Yetkili hüküm Founder karar kuyruğundadır (F kademesi). Kanon
+//   gövdeleri bu üretimde tek bayt değişmedi — mühürler aşağıda.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Önerilen ek madde — Adım Yerleşim ve Koşum Standardı (kod önerilmez; kod yetkili hükmündür)
+
+Önerilen zorlama düzeyi: UYARI. Önerilen bölüm: MIM (Adım biçiminin evi MIM-1.6
+komşuluğu; ilgili: [MIM, DIL, ORK, STR]).
+
+### Sınanabilir hüküm önerileri
+
+1. **Koni sırası sabittir:** Adımın zengin alanları kaynakta şu sırayla yazılır:
+   `ne · görev · kabul · bağımlı · referans · üretir · sınır · koşu`. Araya başka
+   alan girebilir; sıralı alanların birbirine göre sırası değişemez.
+   *Sınama:* alan başlangıç konumları ölçülür; sıra dışı çift sayısı 0 olmalıdır.
+2. **`ne` kısa niyettir:** tek cümle; kapanış kaydı, koşum günlüğü veya ürün atfı
+   taşımaz. *Sınama:* `ne` içinde tarih damgası + denetim/koşum fiili kalıbı 0.
+3. **`koşu` kapanış kaydının tek evidir:** kapanış/çalıştırma kanıtı yalnız `koşu`
+   alanında yaşar; yorum satırına, `ne` alanına veya belge bloğuna dağılamaz.
+   `durum: tamamlandı` olan Adımda `koşu` bulunur. *Sınama:* tamamlandı ∧ koşusuz
+   Adım sayısı 0; yorumda kapanış kalıbı 0.
+4. **Ürün, üreten Adımın doğrudan üretim değeridir:** ürün düğümü üreten Adımın
+   `üretir` konisinin içinde (ya da hemen altında `üretir` bağıyla) bildirilir;
+   dosya dibine yığılmaz ve metinsel çift atıf yapılmaz. *Sınama:* `üretir`
+   hedefi ile ürün bildirimi arasındaki yapısal uzaklık 0; aynı ürüne ikinci
+   metin atfı 0.
+
+### Etki analizi — mevcut maddelere dokunuşlar
+
+| Madde | Etki |
+|---|---|
+| MIM-1.6 · Adım Atomikliği | Uyumlu, genişletir: atomiklik "tek kabul kapısı" der; öneri o kapının KAYIT biçimini (koni sırası + koşu evi) sabitler. Çelişki yok. |
+| STR-4 · Canlı Spec ve Geriye Yazım | Uyumlu, somutlaştırır: "kanıtlanan durum geri yazılır" hükmünün geri-yazım ADRESİ `koşu` alanı olur; iki yönlü ayrışma tanısı değişmez. |
+| ORK-1.3 · Üretir ve Provenance | Uyumlu: üretim kökeni kenarı aynı kalır; öneri yalnız ürün bildiriminin YERLEŞİMİNİ (üretir konisine bitişiklik) bağlar. Kenarın anlamına dokunmaz. |
+| ORK-6.2 · Tek Adım Tek Oturum | Uyumlu: oturum kapanışında raporlanan kanıtın tek evi `koşu` olarak netleşir; oturum sınırı hükmü değişmez. |
+| DIL-2.1 · Belge Sahipliği | Sınır ayrımı gerekir: kapanış kanıtı belge bloğuna değil `koşu` alanına yazılır; belge bloğu anlatı/amaç taşımaya devam eder. Hükümle çelişmez, yük ayrımı netleşir. |
+
+### Olası yeni tanı gereksinimleri (yalnız aday listesi — tanı eklenmez)
+
+- `koni-sırası` · UYARI — sıralı alanlar kaynakta sıra dışı yazılmış.
+- `koşusuz-kapanış` · UYARI — `durum: tamamlandı` ama `koşu` kanıtı yok.
+- `dağınık-kapanış` · BİLGİ — kapanış kalıbı `ne`/yorum/belge bloğunda bulundu.
+- `kopuk-ürün-bildirimi` · UYARI — ürün düğümü üreten Adımın üretir konisinden
+  yapısal olarak uzakta bildirilmiş ya da ikinci metinsel atıf taşıyor.
+
+### Kanıt tabanı ve karar kuyruğu girdisi
+
+- Desenin olumlu kanıtı: `plan/goc_plani.sar` (60 Adımda koni sırası sabit; iki
+  bağımsız denetimde 0 sapma ölçüldü). Olumsuz kanıt: `plan/reform_plani.sar`
+  dağınıklığı (kapanış `ne`/yorum'a dağılmış, ürünler dosya dibine yığılı) —
+  standardın doğduğu ders.
+- Bu öneri, sonraki yetkili karar için TEKİL ve SAHİPLİ girdidir. Sahip: Founder
+  (F kademesi — kanon hükmü). Hazırlayan: GOC-SPEC-A03 (spec turu üreticisi).
+  Öneri kabul edilirse madde kodu ve kesin zorlama düzeyi o hükümde verilir;
+  bu kayıt kanon değildir ve kanonik hüküm doğurmaz.
+
+### Kanon dokunulmazlık mühürleri (bu üretim anında)
+
+- `geneldurum/yeni-omurga/kanon_v1.sar` sha256:
+  `423d559b4ab0248e2e81061a8f13abcca23981dd5d52cfcd4b1a56fa44c03fcd`
+- `yasa/kanon/*.sar` (8 dosya) birleşik sha256 (repo kökünden
+  `shasum -a 256 _Sarmal/yasa/kanon/*.sar | shasum -a 256`):
+  `67e306f71e97fa95a913cd8febe4eb537cc83b165102f14ce15a07e15b3a0b4e`
+  — yoldan bağımsız içerik mührü (`cat _Sarmal/yasa/kanon/*.sar | shasum -a 256`):
+  `9ff43c987a4220fc2947cab8a2dc7a2bff2fb0af064881ea8d9a0969552dfea2`
+|<--
+Çıkarım( kod: ONR-ADIM-STD-01,
+         kaynak: "plan/goc_plani.sar 60-Adım deseni (iki bağımsız denetimde 0 koni sapması) + plan/reform_plani.sar dağınıklık dersi + MIM-1.6 · STR-4 · ORK-1.3 · ORK-6.2 · DIL-2.1 etki okuması",
+         ne: "📐 Bu kayıt, Adım yerleşim ve koşum standardını kanona ek madde olarak öneren tekil girdidir. Öneri dört sınanabilir hüküm taşıyor: Adımın koni alanları sabit sırayla yazılır, ne alanı yalnız kısa niyeti anlatır, kapanış ve çalıştırma kanıtının tek evi koşu alanıdır ve ürün düğümü üreten Adımın üretir konisine bitişik bildirilir. Kayıt ayrıca beş mevcut maddeye etki analizini ve dört yeni tanı adayının listesini içeriyor. Bu yalnız bir öneri kaydıdır: kanon gövdelerinde tek bayt değişiklik yapılmadı ve bunun kanıtı olarak içerik mühürleri belge bloğuna yazıldı; yetkili hüküm Founder karar kuyruğunda bekliyor." )

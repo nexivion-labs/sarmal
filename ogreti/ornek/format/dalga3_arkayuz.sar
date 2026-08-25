@@ -1,0 +1,66 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga3_arkayuz.sar — 🌊 3. DALGA · ARKAYÜZ AİLESİ (F8 · DIL-2)
+//
+//   Founder incelemesi için ÖRNEK: yüzeyin simetriği — sunucu yüzü.
+//   TIP-2 (qwen ilkesi): Uç yalnız metod+yol taşır; veri şeması SÖZLEŞME'de
+//   yaşar, her Uç bir Sözleşme'ye bağlanır; KimlikPolitikası/Gizli bayrakları da orada.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🏗️ Arkayüz ailesinin on formatını gerçek bir kimlik servisinde göstermek: uç ile sözleşmenin kuvvetler ayrılığı.
+
+  ## Kapsam
+  📦 Servis iş mantığının çatısıdır: Uç'ları, Olay'ları ve ArkaGörev'leri gruplar — Uç tek başına çağrılamaz, daima servis bağlamında yaşar. Uç bir adrestir: metod ve yol taşır, veri şemasını TAŞIMAZ; şema Sözleşme'dedir ve sözleşme parametresi zorunludur — bağsız Uç öksüzdür. Tablo kalıcı veriyi, Kuyruk asenkron akışı, Önbellek hız katmanını, Zamanlayıcı periyodik işi, KimlikPolitikası yetki zeminini, Gizli ise sır adreslerini (değerini ASLA) tanımlar. Bu ağaç da niyettir: FastAPI'ye de, Express'e de aynı sadakatle çevrilir.
+
+  ## Sonuç
+  ✅ Kabul: dosya motor-temiz geçer; Uç→Sözleşme bağı şemayla zorlanır (eksikse motor uyarır).
+|<--
+
+Servis( kod: ORN-SRV-KIMLIK, ne: "🔐 kimlik servisi — kayıt, giriş, oturum yenileme" ) {
+
+  // ── UÇ — yalnız metod+yol; şeması Sözleşme'de (TIP-2) ─────────────────────
+  Uç( kod: ORN-UC-GIRIS, metod: POST, yol: "/kimlik/giris",
+      sözleşme: ORN-SZL-GIRIS,
+      ne: "giriş ucu — kimlik bilgisi alır, jeton döner" )
+
+  Uç( kod: ORN-UC-YENILE, yol: "/kimlik/yenile",
+      sözleşme: ORN-SZL-YENILE,
+      ne: "oturum yenileme — metod yazılmadı: varsayılanVar GET (TIP-2 katmanı)" )
+
+  // ── OLAY — tetikleyici: yüzeydeki form gönderimi buraya akar ──────────────
+  Olay( kod: ORN-OLY-GIRIS, ne: "⚡ giriş istendi olayı — yüzey Form'undan gelir, ORN-UC-GIRIS'i niyetler" )
+
+  // ── ARKAGÖREV — istek-dışı iş ──────────────────────────────────────────────
+  ArkaGörev( kod: ORN-AGV-EPOSTA, ne: "📨 hoş geldin e-postası — girişten sonra kuyruğa düşer" )
+}
+
+// ── SÖZLEŞME — veri şemasının TEK evi (KimlikPolitikası/Gizli bayrakları da burada) ────
+Sözleşme( kod: ORN-SZL-GIRIS, sürüm: "1.0",
+          ne: "giriş sözleşmesi — girdi/çıktı yüzleri + yetki bayrağı" ) {
+  uc: "/kimlik/giris",
+  istek: { eposta: metin, sifre: metin },
+  yanıt: { jeton: metin, gecerlilik: sayı },
+  kural: "yanıt jetonu şifrelenir; oran-sınırı dakikada 5 deneme",
+}
+
+Sözleşme( kod: ORN-SZL-YENILE, sürüm: "1.0",
+          ne: "yenileme sözleşmesi — jeton girer, taze jeton çıkar" ) {
+  uc: "/kimlik/yenile",
+  istek: { jeton: metin },
+  yanıt: { jeton: metin },
+  kural: "yalnız geçerli oturum yeniler (yetki: oturum-sahibi)",
+}
+
+// ── KALICI KATMAN ────────────────────────────────────────────────────────────
+Tablo( kod: ORN-TBL-KULLANICI, ne: "🗄️ kullanıcı tablosu — eposta benzersiz, şifre karması saklanır" )
+
+Kuyruk( kod: ORN-KYR-EPOSTA, ne: "📮 e-posta kuyruğu — ArkaGörev'ler buradan beslenir" )
+
+Önbellek( kod: ORN-ONB-OTURUM, ne: "⚡ oturum önbelleği — jeton doğrulama veritabanına inmez" )
+
+Zamanlayıcı( kod: ORN-ZMN-TEMIZLIK, ne: "🕐 süresi dolmuş oturumları gece temizler" )
+
+KimlikPolitikası( kod: ORN-KML-ZEMIN, ne: "🛡️ yetki zemini — oturum-sahibi/yönetici rolleri" )
+
+Gizli( kod: ORN-GZL-JETON, ne: "🔑 jeton imza anahtarının ADRESİ (kasa yolu) — değeri ASLA dosyada yaşamaz" )

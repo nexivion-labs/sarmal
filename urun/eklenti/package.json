@@ -1,0 +1,862 @@
+{
+  "name": "sarmal",
+  "displayName": "%sarmal.displayName%",
+  "description": "%sarmal.description%",
+  "version": "0.9.156",
+  "publisher": "nexivion-labs",
+  "license": "Apache-2.0",
+  "icon": "ikonlar/sarmal-ikon.png",
+  "keywords": [
+    "sarmal",
+    "sar",
+    "türkçe",
+    "declarative",
+    "widget tree",
+    "drift",
+    "orkestrasyon",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexivion-labs/sarmal"
+  },
+  "bugs": {
+    "url": "https://github.com/nexivion-labs/sarmal/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "main": "./dist/eklenti.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "sarmal",
+        "aliases": [
+          "Sarmal",
+          "sar"
+        ],
+        "extensions": [
+          ".sar"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./ikonlar/sarmal.svg",
+          "dark": "./ikonlar/sarmal.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sarmal",
+        "scopeName": "source.sar",
+        "path": "./syntaxes/sarmal.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.python": "python",
+          "meta.embedded.block.dart": "dart",
+          "meta.embedded.block.typescript": "typescript",
+          "meta.embedded.block.javascript": "javascript",
+          "meta.embedded.block.yaml": "yaml",
+          "meta.embedded.block.sql": "sql",
+          "meta.embedded.block.json": "json",
+          "meta.embedded.block.shellscript": "shellscript",
+          "meta.embedded.block.css": "css"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sarmal",
+        "path": "./snippets/sarmal.code-snippets"
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "sarmalBahce",
+        "description": "%semantic.workspace%"
+      },
+      {
+        "id": "sarmalAgac",
+        "description": "%semantic.app%"
+      },
+      {
+        "id": "sarmalKok",
+        "description": "%semantic.project%"
+      },
+      {
+        "id": "sarmalGovde",
+        "description": "%semantic.block%"
+      },
+      {
+        "id": "sarmalDal",
+        "description": "%semantic.phase%"
+      },
+      {
+        "id": "sarmalAltDal",
+        "description": "%semantic.layer%"
+      },
+      {
+        "id": "sarmalYaprak",
+        "description": "%semantic.step%"
+      },
+      {
+        "id": "sarmalMeyve",
+        "description": "%semantic.product%"
+      },
+      {
+        "id": "sarmalBilgi",
+        "description": "%semantic.knowledge%"
+      },
+      {
+        "id": "sarmalOrkestrasyon",
+        "description": "%semantic.orchestration%"
+      },
+      {
+        "id": "sarmalEtmen",
+        "description": "%semantic.agent%"
+      },
+      {
+        "id": "sarmalYuzey",
+        "description": "%semantic.surface%"
+      },
+      {
+        "id": "sarmalYasa",
+        "description": "%semantic.law%"
+      },
+      {
+        "id": "sarmalTeknoloji",
+        "description": "%semantic.technology%"
+      },
+      {
+        "id": "sarmalSurec",
+        "description": "%semantic.process%"
+      },
+      {
+        "id": "sarmalNitelik",
+        "description": "%semantic.quality%"
+      },
+      {
+        "id": "sarmalOz",
+        "description": "%semantic.core%"
+      },
+      {
+        "id": "sarmalDavranis",
+        "description": "%semantic.behavior%"
+      },
+      {
+        "id": "sarmalArkayuz",
+        "description": "%semantic.backend%"
+      },
+      {
+        "id": "sarmalParam",
+        "description": "%semantic.parameter%"
+      },
+      {
+        "id": "sarmalKod",
+        "description": "%semantic.code%"
+      },
+      {
+        "id": "sarmalKenar",
+        "description": "%semantic.edge%"
+      },
+      {
+        "id": "sarmalKodEtmen",
+        "description": "%semantic.codeAgent%"
+      },
+      {
+        "id": "sarmalKodBeceri",
+        "description": "%semantic.codeSkill%"
+      },
+      {
+        "id": "sarmalKodBellek",
+        "description": "%semantic.codeMemory%"
+      },
+      {
+        "id": "sarmalKodHatir",
+        "description": "%semantic.codeReminder%"
+      },
+      {
+        "id": "sarmalKodYasa",
+        "description": "%semantic.codeLaw%"
+      },
+      {
+        "id": "sarmalKodYuzey",
+        "description": "%semantic.codeSurface%"
+      },
+      {
+        "id": "sarmalKodPlan",
+        "description": "%semantic.codePlan%"
+      },
+      {
+        "id": "sarmalKodOz",
+        "description": "%semantic.codeCore%"
+      }
+    ],
+    "configurationDefaults": {
+      "[sarmal]": {
+        "editor.lightbulb.enabled": "off",
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "bounded",
+        "editor.wordWrapColumn": 110,
+        "editor.wrappingIndent": "deepIndent",
+        "editor.inlineSuggest.enabled": false,
+        "editor.guides.indentation": false,
+        "editor.guides.bracketPairs": false,
+        "editor.guides.bracketPairsHorizontal": false,
+        "editor.bracketPairColorization.enabled": true,
+        "editor.bracketPairColorization.independentColorPoolPerBracketType": true
+      }
+    },
+    "configuration": {
+      "title": "%sarmal.category%",
+      "properties": {
+        "sarmal.dil": {
+          "type": "string",
+          "enum": [
+            "otomatik",
+            "tr",
+            "en"
+          ],
+          "enumDescriptions": [
+            "%config.language.auto%",
+            "%config.language.tr%",
+            "%config.language.en%"
+          ],
+          "default": "otomatik",
+          "description": "%config.language%"
+        },
+        "sarmal.denetim": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.validation%"
+        },
+        "sarmal.satirIciTani": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.inlineDiagnostics%"
+        },
+        "sarmal.aktifVarlikOdagi": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.activeEntityFocus%"
+        },
+        "sarmal.girintiRenkleri": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.indentColors%"
+        },
+        "sarmal.camEfekti": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.glassEffect%"
+        },
+        "sarmal.canliHarita": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.liveMap%"
+        },
+        "sarmal.miniGraf": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.miniGraph%"
+        },
+        "sarmal.agacCizgileri": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.treeGuides%"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "sarmal.iskeletKur",
+        "title": "%command.scaffold%",
+        "category": "%sarmal.category%",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "sarmal.onizleme",
+        "title": "%command.preview%",
+        "category": "%sarmal.category%",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "sarmal.kaynagaDon",
+        "title": "%command.returnToSource%",
+        "category": "%sarmal.category%",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "sarmal.yolHaritasiYenile",
+        "title": "%command.refreshRoadmap%",
+        "category": "%sarmal.category%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "sarmal.rayDegistir",
+        "title": "%command.switchTrack%",
+        "category": "%sarmal.category%",
+        "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "sarmal.takdirYaz",
+        "title": "%command.writeAppreciation%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.geribildirimYaz",
+        "title": "%command.writeFeedback%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.geribildirimHasadi",
+        "title": "%command.harvestFeedback%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.gonderTesekkur",
+        "title": "%command.sendThanks%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.gonderTakdir",
+        "title": "%command.sendAppreciation%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.gonderOnur",
+        "title": "%command.sendHonor%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.gonderOneri",
+        "title": "%command.sendSuggestion%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.koniKart",
+        "title": "%command.coneCard%",
+        "category": "%sarmal.category%",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "sarmal.giydir",
+        "title": "%command.dressWorkspace%",
+        "category": "%sarmal.category%",
+        "icon": "$(paintcan)"
+      },
+      {
+        "command": "sarmal.onayKuyrugu",
+        "title": "%command.openApprovals%",
+        "category": "%sarmal.category%"
+      },
+      {
+        "command": "sarmal.onayVer",
+        "title": "%command.approve%"
+      },
+      {
+        "command": "sarmal.onaySerhle",
+        "title": "%command.approveWithNote%"
+      },
+      {
+        "command": "sarmal.onayReddet",
+        "title": "%command.reject%"
+      },
+      {
+        "command": "sarmal.satiriKopyala",
+        "title": "%command.copyRow%",
+        "category": "%sarmal.category%",
+        "icon": "$(copy)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "sarmal.iskeletKur",
+          "when": "editorLangId == sarmal && resourceFilename == ana.sar",
+          "group": "navigation@0"
+        },
+        {
+          "command": "sarmal.onizleme",
+          "when": "editorLangId == sarmal",
+          "group": "navigation"
+        },
+        {
+          "command": "sarmal.kaynagaDon",
+          "when": "activeCustomEditorId == sarmal.okuma",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "sarmal.rayDegistir",
+          "when": "view == sarmalYolHaritasi",
+          "group": "navigation@0"
+        },
+        {
+          "command": "sarmal.yolHaritasiYenile",
+          "when": "view == sarmalYolHaritasi",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sarmal.koniKart",
+          "when": "view == sarmalYolHaritasi && viewItem == adim",
+          "group": "inline"
+        },
+        {
+          "command": "sarmal.satiriKopyala",
+          "when": "view == sarmalHatirlaticilar",
+          "group": "9_cutcopypaste"
+        },
+        {
+          "command": "sarmal.satiriKopyala",
+          "when": "view == sarmalBildirimler",
+          "group": "9_cutcopypaste"
+        },
+        {
+          "command": "sarmal.satiriKopyala",
+          "when": "view == sarmalFikirler",
+          "group": "9_cutcopypaste"
+        }
+      ],
+      "comments/commentThread/context": [
+        {
+          "command": "sarmal.gonderTesekkur",
+          "group": "inline@4",
+          "when": "commentController == sarmal-geribildirim"
+        },
+        {
+          "command": "sarmal.gonderTakdir",
+          "group": "inline@3",
+          "when": "commentController == sarmal-geribildirim"
+        },
+        {
+          "command": "sarmal.gonderOnur",
+          "group": "inline@2",
+          "when": "commentController == sarmal-geribildirim"
+        },
+        {
+          "command": "sarmal.gonderOneri",
+          "group": "inline@1",
+          "when": "commentController == sarmal-geribildirim"
+        },
+        {
+          "command": "sarmal.onayVer",
+          "group": "inline@1",
+          "when": "commentController == sarmal-onay"
+        },
+        {
+          "command": "sarmal.onaySerhle",
+          "group": "inline@2",
+          "when": "commentController == sarmal-onay"
+        },
+        {
+          "command": "sarmal.onayReddet",
+          "group": "inline@3",
+          "when": "commentController == sarmal-onay"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "sarmal.onayVer",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.onaySerhle",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.onayReddet",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "sarmal.onizleme",
+        "key": "shift+cmd+v",
+        "mac": "shift+cmd+v",
+        "win": "shift+ctrl+v",
+        "when": "editorLangId == sarmal && editorTextFocus"
+      }
+    ],
+    "markdown.previewStyles": [
+      "./medya/onizleme.css"
+    ],
+    "customEditors": [
+      {
+        "viewType": "sarmal.okuma",
+        "displayName": "%customEditor.reading%",
+        "selector": [
+          {
+            "filenamePattern": "*.sar"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "sarmal.baslangic",
+        "title": "%walkthrough.title%",
+        "description": "%walkthrough.description%",
+        "steps": [
+          {
+            "id": "sarmal.adim.dil",
+            "title": "%walkthrough.language.title%",
+            "description": "%walkthrough.language.description%",
+            "media": {
+              "markdown": "medya/rehber/01-dil.md"
+            },
+            "completionEvents": [
+              "onLanguage:sarmal"
+            ]
+          },
+          {
+            "id": "sarmal.adim.denetim",
+            "title": "%walkthrough.validation.title%",
+            "description": "%walkthrough.validation.description%",
+            "media": {
+              "markdown": "medya/rehber/02-denetim.md"
+            }
+          },
+          {
+            "id": "sarmal.adim.okuma",
+            "title": "%walkthrough.reading.title%",
+            "description": "%walkthrough.reading.description%",
+            "media": {
+              "markdown": "medya/rehber/03-okuma.md"
+            },
+            "completionEvents": [
+              "onCommand:sarmal.onizleme"
+            ]
+          },
+          {
+            "id": "sarmal.adim.ogrenim",
+            "title": "%walkthrough.learning.title%",
+            "description": "%walkthrough.learning.description%",
+            "media": {
+              "markdown": "medya/rehber/04-ogrenim.md"
+            }
+          },
+          {
+            "id": "sarmal.adim.bicim",
+            "title": "%walkthrough.formatting.title%",
+            "description": "%walkthrough.formatting.description%",
+            "media": {
+              "markdown": "medya/rehber/05-bicim.md"
+            },
+            "completionEvents": [
+              "onCommand:editor.action.formatDocument"
+            ]
+          },
+          {
+            "id": "sarmal.adim.gezinme",
+            "title": "%walkthrough.navigation.title%",
+            "description": "%walkthrough.navigation.description%",
+            "media": {
+              "markdown": "medya/rehber/06-gezinme.md"
+            }
+          }
+        ]
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sarmal-yol",
+          "title": "%view.container%",
+          "icon": "medya/simgeler/panel-yolharitasi.svg"
+        }
+      ]
+    },
+    "views": {
+      "sarmal-yol": [
+        {
+          "id": "sarmalYolHaritasi",
+          "name": "%view.roadmap%",
+          "icon": "medya/simgeler/panel-yolharitasi.svg",
+          "contextualTitle": "%view.roadmap%"
+        },
+        {
+          "id": "sarmalHatirlaticilar",
+          "name": "%view.reminders%",
+          "icon": "medya/simgeler/panel-hatirlaticilar.svg",
+          "contextualTitle": "%view.reminders%"
+        },
+        {
+          "id": "sarmalFikirler",
+          "name": "%view.ideas%",
+          "icon": "medya/simgeler/panel-fikirler.svg",
+          "contextualTitle": "%view.ideas%"
+        },
+        {
+          "id": "sarmalBildirimler",
+          "name": "%view.observations%",
+          "icon": "medya/simgeler/panel-gozlemler.svg",
+          "contextualTitle": "%view.observations%"
+        },
+        {
+          "id": "sarmalPostaKutusu",
+          "type": "webview",
+          "name": "%view.approvals%",
+          "icon": "medya/simgeler/panel-onaylar.svg",
+          "contextualTitle": "%view.approvals%"
+        },
+        {
+          "id": "sarmalMiniGraf",
+          "type": "webview",
+          "name": "%view.miniGraph%",
+          "icon": "medya/simgeler/panel-minigraf.svg",
+          "contextualTitle": "%view.miniGraph%",
+          "when": "config.sarmal.miniGraf"
+        }
+      ]
+    },
+    "productIconThemes": [
+      {
+        "id": "sarmal-kuzey-yildizi",
+        "label": "%productIconTheme.northStar%",
+        "path": "./temalar/kuzey-yildizi.json"
+      }
+    ],
+    "colors": [
+      {
+        "id": "sarmal.kenar",
+        "description": "%color.edge%",
+        "defaults": {
+          "dark": "#FF79C6",
+          "light": "#FF79C6",
+          "highContrast": "#FF79C6",
+          "highContrastLight": "#FF79C6"
+        }
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "sarmal",
+        "scopes": {
+          "sarmalBahce": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalAgac": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalKok": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalGovde": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalDal": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalAltDal": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalYaprak": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalMeyve": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalBilgi": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalOrkestrasyon": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalEtmen": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalYuzey": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalYasa": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalTeknoloji": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalSurec": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalNitelik": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalOz": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalDavranis": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalArkayuz": [
+            "entity.name.type.sar",
+            "entity.name.type",
+            "entity.name.class",
+            "support.type"
+          ],
+          "sarmalParam": [
+            "variable.parameter.sar",
+            "variable.parameter",
+            "variable.other.property"
+          ],
+          "sarmalKod": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKenar": [
+            "keyword.control.flow.sar",
+            "keyword.control.flow",
+            "keyword.control"
+          ],
+          "sarmalKodEtmen": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodBeceri": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodBellek": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodHatir": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodYasa": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodYuzey": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodPlan": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ],
+          "sarmalKodOz": [
+            "constant.other.kod.sar",
+            "constant.other",
+            "entity.name.constant",
+            "variable.other.constant"
+          ]
+        }
+      }
+    ],
+    "themes": [
+      {
+        "id": "sarmal-koyu",
+        "label": "%theme.dark%",
+        "uiTheme": "vs-dark",
+        "path": "./temalar/sarmal-koyu.json"
+      },
+      {
+        "id": "sarmal-acik",
+        "label": "%theme.light%",
+        "uiTheme": "vs",
+        "path": "./temalar/sarmal-acik.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs --production",
+    "test": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node --import ./sinama/dil-kur.ts --test \"sinama/*.test.ts\"",
+    "build:sinama": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs",
+    "test:vscode": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs && node dist-sinama/calistir.js"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.28.1",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.3.0",
+    "mocha": "^11.7.6"
+  },
+  "licenseFile": "LICENSE.md"
+}

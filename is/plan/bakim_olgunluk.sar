@@ -1,0 +1,641 @@
+// ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25): bu sahne kopyasında tarihsel damgalı elle markdown ikizine (enforcement denetimi) giden dört atıf düşürülmüştür;
+//     atıfların aslı atölye deposunda tarihiyle durur, açık depo çözülmeyen kimlik taşımaz. ═══
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/bakim_olgunluk.sar — 🧰 Bakım + Olgunluk Rayı (oturum 29 ray-döşeme turu)
+//
+//   Köken: durum.sar açıkİşler'inde plan karşılığı OLMAYAN bakım/olgunluk
+//   kalemleri (oturum 24-28 birikimleri) + Founder-eylemli operasyonel kalemler.
+//   STR-4 gereği hepsi koni-dolu Adım olarak raya iner — "sınır: sonraki tur"
+//   notlarında yaşayan iş, Adım'sız kalamaz (kör nokta).
+//
+//   ⚠️ BKM-FND-* Adımları KOD İŞİ DEĞİL — Founder eylemi/kararı bekler; motor
+//   bu Adımları durum:beklemede tutar, kimse otomatik kapatamaz.
+//   STR-3: KAPALI-URUN-MESAI bu dosyaya BİLEREK alınmadı — kapalı ürün işi kendi
+//   varlığının planında yaşar (çapraz atıf yasak).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧰 Bakım + Olgunluk — birikmiş açık işlerin rayı
+
+  ## Amaç
+  🎯 Oturumlar boyunca "sonraki tur" diye ertelenen bakım/olgunluk kalemlerini
+  görünür, bağımlılık-sıralı ve motor-denetimli bir raya indirmek; Founder-eylemli
+  operasyonel kalemleri de aynı rayda bekletip unutulmayı imkânsız kılmak.
+
+  ## Kapsam
+  📦 Motor bakımı (taksonomi oto-üretim · örtü find-up · doc-drift kapısı ·
+  politika-çapa bağı · durum handoff formatı) + Founder-eylemli üç kalem (NVIDIA
+  anahtar rotasyonu · ikon SVG kararı · STR-3 fiziksel taşıma). Kapsam dışı:
+  ŞEF/orkestrasyon (sef-plani · sef-halka), vitrin (vitrin-ui), eklenti performansı
+  (eklenti/plan.sar), Nexivion OS mesaisi (STR-3 — kendi planında).
+
+  ## Sonuç
+  ✅ Hiçbir açık iş yalnız durum-notunda yaşamaz; her kalemin Adım'ı, konisi ve
+  bağımlılık kenarı vardır. Founder kalemleri kapanınca LLM-canlı raylar
+  (lig tekrarı · canlı tool-round) kilidini otomatik kaybeder.
+|<--
+
+Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
+  ne: "Birikmiş bakım/olgunluk kalemleri + Founder-eylemli operasyonel işler — tek ray, sıfır kör nokta" ) {
+
+  // ══ KATMAN · MOTOR BAKIMI: çekirdek olgunluk kalemleri ═════════════════════════
+  Katman( kod: BKM-OLG, kullanır: TAKIM-CEKIRDEK, ad: "motor bakımı",
+    ne: "🔧 Motor olgunluk kalemleri — taksonomi · örtü keşfi · drift kapıları · durum formatı" ) {
+
+    AltKatman( kod: BKM-OLG-K1, departman: kodlama, ad: "taksonomi örtüsü" ) {
+      Adım( kod: BKM-OLG-A01, durum: tamamlandı, üretir: [ KOD-SINIFLAMA ], bağımlı: [],
+        ne:    "🏷️ Taksonomi oto-üretim — sınıflama kayıt dokümanı (kayit.md) elle değil, kayit.json'dan ÜRETİLİR; şema↔doküman drifti imkânsızlaşır (açık-iş: TAKSONOMI-OTOURETIM)" ) {
+        görev: "renk-uret/gomulu-kanon build deseninin doküman ikizi: oz/siniflama/kayit.json'dan kayit.md'nin taksonomi bölümlerini (aile·tip·enum tabloları) üreten SAF üretici + CLI/build kancası. Elle yazılmış açıklama blokları korunur (idempotent işaretli bölge — README oto-blok/ADM-AGAC-R1 deseni); üretilen bölge dışına dokunulmaz"
+        kabul: [
+          "kayit.json'dan üretilen bölüm kayit.md'ye idempotent yazılır (iki koşu = aynı çıktı, testli)",
+          "elle bölgeler korunur (yorum-işaretli sınır); şema değişince doküman tek komutla tazelenir",
+          "denetle-temiz + testler yeşil"
+        ]
+        sınır: "yalnız şema→doküman üretimi — taksonomiyi GENİŞLETME kararı insan işi (precedent'e bak kuralı, oturum 26 dersi)"
+      }
+      Adım( kod: BKM-OLG-A02, durum: tamamlandı, üretir: [ KOD-SINIFLAMA ], bağımlı: [],
+        ne:    "🔭 Örtü find-up keşfi — alt-dizinden denetlenen dosya, ÇalışmaAlanı kökündeki oz/siniflama/ortu.json'u yukarı-arama ile bulur (açık-iş: ORTU-FINDUP · SEF-L3-A22 sınırı)" ) {
+        görev: "siniflamaOrtuYukle'yi find-up'a genişlet: verilen dizinden köke doğru oz/siniflama/ortu.json ara (ilk bulunan kazanır — en yakın örtü); eklenti tarafında ortak.ts snfBul aynı davranışı kullanır. STR-3 KALKANI KORUNUR: yukariAra kardesGeriDusus=false — OS örtüsü _Sarmal görünümüne SIZMAZ (oturum 26 A22 çizgisi)"
+        kabul: [
+          "alt-dizinden denetim, kökteki örtüyü bulur (CLI + eklenti, testli)",
+          "kardeş-varlık örtüsü SIZMAZ (kardesGeriDusus=false regresyon testi)",
+          "örtüsüz proje davranışı birebir (taban kanon); denetle-temiz + testler yeşil"
+        ]
+        sınır: "yalnız keşif genişlemesi — merge mantığı (siniflamaOrtuMerge additive) değişmez"
+      }
+      Adım( kod: BKM-OLG-A10, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YAS-3.4 ],
+        ne: "🪪 Sınıflama kaydındaki fazla zorlama iddiasının daraltılması. Kayıt bugün iki ayrı şartı tek onay damgası altında toplamaktadır ve birinci yarısı olan yetki kademesinin yalnız denetçiye verilmesi şartı beyan anında hiç ölçülmemektedir; sicilde bulunmayan bir zorlamayı canlıymış gibi sunmak kapsam dürüstlüğünün ihlalidir. Karar 2026-08-10 tarihinde Founder yetki devriyle verildi ve 2026-08-18 tarihinde Founder onayıyla plana indi; kaynak kaydı HTR-SEMA-KAYDI-FAZLA-ZORLAMA-ILAN-EDIYOR hatırlatıcısıdır." ) {
+        görev: "Sınıflama kaydındaki ilgili iddia, yalnız gerçekten zorlanan yarısını anlatacak biçimde yeniden yazılır ve beyan anında ölçülmeyen yetki şartı iddiadan çıkarılır. Kaydın tek satırı değiştiğinde bayatlayan dört raf aynı turda tazelenir: belge yüzü, tutarlılık kaydı, mühür defteri ve eklentinin gömülü ikizi. Dört raf tek işlemede birlikte iner, çünkü yarım bırakılan tazeleme süiti kırmızıda bırakır. Aynı turda, canlı bahçede hiç kullanılmayan beş tipin (Kapı, Yasa, GenelKural, KimlikKökü ve KimlikSağlayıcısı) muafiyeti, sınıflama kaydının tipMuafiyetleri bölümüne gerekçesiyle beyan edilir; Founder 2026-08-18 tarihinde iki işin tek turda birleşmesine hükmetti, çünkü ikisi de aynı kayda dokunur ve ayrı turlar dört rafı iki kez tazeletir."
+        kabul: [
+          "Sınıflama kaydındaki iddia yalnız zorlanan yarıyı anlatır ve beyan anında ölçülmeyen hiçbir şartı canlı gibi sunmaz.",
+          "Beş kullanımsız tipin muafiyeti gerekçesiyle beyan edilmiştir ve kullanımsız-tip gözlemi sıfıra inmiştir.",
+          "Dört raf aynı turda tazelenmiştir ve mühürler yeniden hesaplanıp tutmuştur.",
+          "Çekirdek ile eklenti süitleri yeşildir ve proje denetimi sıfır hata ile sıfır uyarı verir."
+        ]
+        sınır: "Etmen tipine rol alanı eklemek bu Adımın dışındadır, çünkü şema genişlemesidir ve kendi kapısını ayrıca bekler; bu Adım yalnız iddiayı gerçeğe daraltır."
+        koşu:  "2026-08-21 · ÜRETİCİ TURU: Sınıflama kaydındaki Etmen yapısal kural iddiası daraltıldı. Yetki kademesinin yalnız denetçiye verilmesi şartı onay damgasının kapsamından çıkarıldı ve iddia artık yalnız gerçekten zorlanan yarısını, yani beşinci yetki kademesi ile paylaşık belleğin birlikte yazılamamasını anlatır; ölçülmeyen şartın çağrı anındaki denetimde yaşadığı aynı satırda açıkça beyan edildi ve böylece birinci kabul maddesi karşılandı. Beş kullanımsız tipin muafiyeti sınıflama kaydının tipMuafiyetleri bölümüne gerekçesiyle indi: KimlikKökü ile KimlikSağlayıcısı, kardeş tip KimlikPolitikası emsaliyle dış proje arkayüz kovasına yazıldı; Kapı, ilk canlı kullanıcısının ZKA-A02 Adımının altı kapılı karnesi olduğu ve o Adım koştuğunda muafiyetin kendiliğinden kalkacağı beyanıyla OS vadeli kovasına yazıldı; GenelKural için canlı kullanımın 2026-07-18 tarihinde kazanılmışken genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kaybolduğu, tipin motor vatandaşı olduğu ve kanonun yürürlükte kaldığı düz yazıyla beyan edildi; Yasa için canlı kanonun kanon rafında madde tipinde yaşadığı ve Yasa düğümü olarak beyan edilmediği düz yazıyla beyan edildi, çünkü üç kovadan hiçbiri bu iki duruma dürüstçe oturmaz, motor yalnız anahtarın varlığına bakar ve ÖzelKural emsali düz yazı gerekçeyi meşru kılar. Kullanımsız tip gözlemi beşten sıfıra indi ve ikinci kabul maddesi böylece karşılandı. Dört raf aynı turda tazelendi: taksonomi yüzü taksonomi-uret komutuyla, belge yüzleri belge-yuzleri-uret komutuyla on altı yüz sıfır fark vererek, kanon tutarlılık yüzü kanon-tutarlilik-uret komutuyla, on dört öğretim kartı ogretim-uret üreteciyle yeniden üretildi; mühür defterindeki sınıflama kaydı satırı yeni özete çekildi ve tarihli tazeleme notu yazıldı, mühürlerin tuttuğunu çekirdek süitinin türetilmiş yüz nöbetleri kanıtlar. Eklentinin gömülü ikizi elle yazılmadı; renk-uret üretecinin uret işlevi, eklentinin öteki çıktı yüzeyleri karalama dizinine yönlendirilerek dar kapsamla koşuldu ve depoya yalnız gomulu-kanon.ts indi, dosya sürüm takibi dışında bir yapı ürünü olduğu için işlemeye girmez. Üçüncü kabul maddesi böylece karşılandı. ÖLÇÜMLER: proje denetimi sıfır hata ile iki uyarı verdi; iki uyarı bu Adımdan önce de var olan ve eklenti araç dosyalarının plan beyanını bekleyen yetim-meyve bulgularıdır; çekirdek süiti 1039/1039 yeşildir. KALAN: eklenti süitinin koşulması, paralel oturum o süiti kullandığı için ana oturuma devredildi; iki yetim-meyve uyarısının kapanması eklenti kulvarının işidir. Dördüncü kabul maddesi bu iki kanıt kapanınca tamamlanacağı için Adım dürüstçe geliştirmede bırakıldı. 2026-08-22 · KAPANIŞ (kontrolcü ölçümü): Üreticinin devrettiği iki kanıt bağımsız olarak ölçüldü ve kapandı. Eklenti süiti beş yüz yirmi sınamanın tamamıyla, çekirdek süiti bin kırk bir sınamanın tamamıyla yeşildir ve tip denetimi temizdir. Devredilen iki yetim meyve uyarısı, eklentinin araç rafındaki kurulum betiği ile simge üretecinin meyve haritasına beyan edilmesiyle kapatıldı; bu iki dosya diskte plan beyanı olmadan yaşadığı için denetim onları haklı olarak yetim sayıyordu. Kapanış ölçümünde açık aracın denetimi sıfır hata ve sıfır uyarı verir, dolayısıyla dördüncü kabul maddesi de karşılanmıştır ve Adım tamamlandı durumuna geçirilmiştir."
+      }
+    }
+
+    AltKatman( kod: BKM-OLG-K2, departman: kodlama, ad: "drift kapıları" ) {
+      Adım( kod: BKM-OLG-A09, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [], referans: [ YAS-3.4 ],
+        ne:    "🕳️ Durumsuz-adım kapısı — durum: taşımayan Adım motor-kör kalıyordu; motor artık uyarıyla yakalar (EKL-F6 dersi · YAS-3.4 ruhu: motor göremediğini yakalamalı)" ) {
+        görev: "denetci.ts'e durumsizAdimTanilari bekçisi: durum: alanı olmayan Adım UYARI üretir (şema varsayılanı *beklemede ama açık-adım tarayıcısı örtük varsayılanı uygulamaz — iş sessizce kaybolur). Kanıt vakası: EKL-F6-A01/A02 (Marketplace + linguist yayını) haftalarca durumsuz+görünmezdi, Founder gözle yakaladı (2026-07-21). OGR-5 örnek-dünyası (INDEKS_DISI) muaf; panele de yayılır (KTEK-PANEL emsali)"
+        kabul: [
+          "Eğer bir Adım durum: alanı taşımıyorsa, motorun durumsuz-adım uyarısı üretmesi beklenir (testli)",
+          "durumlu Adım ve örnek-dünyası (INDEKS_DISI) Adımı susar; denetle ⛔0",
+          "bekçi Problems paneline yayılır; çekirdek + eklenti testleri yeşil"
+        ]
+        sınır:   "yalnız durum: yokluğu tanısı — koni doluluğu (konisiz-adım) ve açık-iş gündemi (açık-adım) ayrı bekçilerin işi; örtük varsayılanı uygulamak (durumsuz→beklemede sayıp gündeme almak) bu Adımın dışında (bilinçli: açık beyan yeğlenir)"
+      }
+      Adım( kod: BKM-OLG-A03, durum: tamamlandı, üretir: [ KOD-DENETCI ],
+        ne:    "📚 Doc-drift kapısı — plan .sar'ı 'tamamlandı' derken durum/doküman eskisini söylüyorsa denetim işaretler; drift-kapısı ailesinin 3. üyesi (açık-iş: DOC-DRIFT-KAPISI)" ) {
+        görev: "denetci.ts'e doc-drift tanısı: bir Adım durum:tamamlandı + üretir meyvesi diskte YOK ya da plan-Adımı tamamlandı ama Katman/Faz kapanış-notu 'beklemede' söylüyorsa uyar (oturum 26'da elle yakalanan K6/K7 doc-drift vakasının motorlaşması). Kademe deseni: v1 uyarı, düzey alanıyla (SENK-A03'ün ZorunluKenar.düzey altyapısı yeniden kullanılır)"
+        kabul: [
+          "tamamlandı-ama-meyvesiz / tamamlandı-ama-notu-bayat çelişkileri uyarı üretir (testli)",
+          "hizalı plan susar (yanlış-pozitif yok); v1 düzey=uyarı (kademe)",
+          "denetle-temiz + testler yeşil"
+        ]
+        bağımlı: []
+        sınır:   "yalnız plan-içi/plan-disk çelişki tanısı — .md ikiz-doküman senkronu (Prizma) bu Adım'ın dışında; tamamlanmış öncülleri senkron halkasıydı, o tur kapandı ve arşivdedir"
+      }
+      Adım( kod: BKM-OLG-A04, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        ne:    "⚓ Politika-çapa→Karar bağı — Politika düğümü çapa'sını bir Karar'a (KARARLAR kaydı) bağlama MEKANİZMASI; bağsız politika uyarısı (açık-iş: POLITIKA-CAPA-KARAR-BAGI)" ) {
+        görev: "Politika tipine opsiyonel karar-bağı alanı (ör. dayanak: K-nn) + denetim: çapa'lı Politika dayanaksızsa bilgi-tanısı üret ('hangi karara yaslanıyor?'). YALNIZ MEKANİZMA — kapalı varlıktaki 8 uyarılı dosyanın düzeltilmesi kapalı ürünün planının işi (STR-3); _Sarmal tarafı şema+tanı+test"
+        kabul: [
+          "dayanak'lı Politika temiz; çapa'lı+dayanaksız Politika bilgi-tanısı üretir (testli)",
+          "kanon şeması + gomulu-kanon senkron; kapalı varlık dosyalarına DOKUNULMAZ (STR-3)",
+          "denetle-temiz + testler yeşil"
+        ]
+        sınır: "yalnız şema+tanı mekanizması — OS'un 8 politikasını karara bağlamak OS mesaisi"
+      }
+      // KOD TAMAM 2026-07-12 (Founder 'bitirilmemis hedef kalmasin'): tasarım 5 nokta kararlaştı —
+      // ① tek alan tarih:=VADE (snooze kapsam dışı) ② determinizm: düzey BİLGİ (TAM-yeşil güne bağlanmaz)
+      // + tarih DIŞARIDAN enjekte (CLI --tarih; testler sabit-tarih; saf çekirdekte Date.now yok)
+      // ③ >90g uzak-vade aynası (STR-2.1 kalkanı) ④ dönüşTetikleyici kardeş, dokunulmadı ⑤ MIM-1.2 ISO + tür
+      // bekçisi bedava. hatirlaticiVadeTanilari (denetci) + CLI + panel Problems ❗ + 1 test (6 senaryo)
+      // + kapi_kapsami satırı. KALAN: gerçek VS Code'da gözle teyit (kabul ③) — Founder tek-dokunuş.
+      Adım( kod: BKM-OLG-A07, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],   // KAPANIŞ 2026-07-14 (sweep · Founder gözle-teyit): hatırlatıcı vade kapısı canlı — denetci.ts:1581 (hatirlaticiVadeTanilari + --tarih enjekte + >90g uzak-vade kalkanı); Founder VS Code'da teyit etti
+        ne:    "📅 Hatırlatıcı zamanlaması — hatırlatıcıya TARİH: 'şu tarihte yapılacak' denir, zamanı gelince PROBLEMS'a düşer; öncesinde SESSİZ (gürültünün kökten önlenmesi — Founder fikri 2026-07-11, ETRAFLICA DÜŞÜNÜLECEK)" ) {
+        görev: "Tasarım turu + uygulama. ETRAFLICA DÜŞÜNÜLECEK NOKTALAR (karar bu Adım açılınca Founder'la): (1) SEMANTİK — iki ayrı ihtiyaç var: 'şu tarihe KADAR sus' (erteleme/snooze) ile 'şu tarihte YAPILACAK' (vade/due) — tek alan mı iki alan mı; vade GEÇİNCE düzey terfisi (gecikmiş-hatırlatıcı uyarısı) olsun mu. (2) DETERMİNİZM GERİLİMİ — tarih-tabanlı tanı denetimi güne bağlar: aynı repo dün TAM-yeşil bugün pinli olur; pre-commit kapısı ve test determinizmi için çözüm adayları: yalnız bilgi/uyarı düzeyi + testlerde sabit-tarih enjeksiyonu (denetle --tarih) — Date.now doğrudan kullanılmaz. (3) KÖTÜYE KULLANIM KALKANI — her şeyi ileri tarihe atıp halının altına süpürme riski: STR-2.1 “erteleyen zarardadır” bağı — erteleme gerekçe ister mi, üst-sınır (ör. ≤90 gün) olur mu. (4) MEVCUT ALANLA İLİŞKİ — dönüşTetikleyici (olay-tabanlı) zaten var; tarih (zaman-tabanlı) onun kardeşi olmalı, yerine geçmemeli. (5) MIM-1.2 ISO tarih + geçmiş-tarih=anında düş"
+        kabul: [
+          "Tasarım kararları Founder'la birlikte verildi (semantik, determinizm çözümü, kötüye-kullanım kalkanı)",
+          "tarihi gelmemiş hatırlatıcı Problems paneline düşmüyor; tarihi gelen ❗ işaretiyle düşüyor (sabit-tarih enjeksiyonuyla test edildi)",
+          "denetle temiz çıkıyor, testler yeşil ve gerçek VS Code'da gözle teyit yapıldı"
+        ]
+        sınır: "yalnız Hatırlatıcı tipi zamanlaması — genel görev-takvimi/ajanda sistemi DEĞİL (Sarmal plan aracı, takvim uygulaması değil); takvim entegrasyonları kapsam dışı"
+      }
+      Adım( kod: BKM-OLG-A05, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], onay: "şerhle onaylandı — 2026-07-17 · onaylıyorum, karakter sınırını da 4000'den 7000'e yükseltelim · şablon onaylandı — 2026-07-18", bağımlı: [ TAKIM-CEKIRDEK ], referans: [ DIL-1.1 ],
+        ne:    "🤝 Durum handoff formatı — durum.sar oturum-devri (handoff) şablonuna evrilir: her oturum bilgisi bir sonrakine kayıpsız, standart bölümlerle devreder (açık-iş: DURUM-HANDOFF-FORMAT · Founder backlog 2026-07-09)" ) {
+        görev: "DurumKaydı şemasını handoff bölümleriyle netleştir (neredeyiz · sıradaki · açık-işler · kapı-durumu · devir-notları) + durum.sar'ı yeni şablona geçir + eski oturum özetlerinin arşiv disiplini (git geçmişi = arşiv ilkesi korunur). ⚠️ FOUNDER-ONAY ŞART: Founder 'şimdi değil, ileride' demişti — şablon önerisi hazırlanır, geçiş Founder onayıyla yapılır"
+        kabul: [
+          "Handoff şablonu önerisi bölümleri ve örneğiyle hazırlandı; Founder onayı alındı",
+          "durum.sar yeni şablona geçti ve denetle'den temiz çıkıyor; 'git geçmişi = arşiv' ilkesi korunuyor",
+          "sonraki oturum devri yeni şablonla kayıpsız gerçekleşti (canlı kanıt: en az bir devir)"
+        ]
+        sınır: "Founder onayı olmadan durum.sar'a GEÇİŞ YOK — bu Adım onay-kapılı; şablon tasarımı serbest"
+        koşu:  "2026-07-18 · KAPANIŞ: durum kaydı zaten oturumlar içinde handoff yapısına evrilmişti — Adımın işi bu yaşayan yapıyı KANONLAŞTIRMAK oldu. ① Şablon Founder onayıyla kanonda: DurumKaydı şemasına opsiyonel oturum · kilitler · açıkİşler alanları ve bölüm tanımları girdi (neredeyiz tek KOD-cümle · sıradaki öncelik zinciri · kilitler oturumlar-arası değişmez hükümler · açıkİşler kapı-durumu dahil · özet oturum anlatısı) ② boyut sınırı Founder şerhi gereği 4000→7000 yükseldi (dogrulayici DURUM_BOYUT_SINIRI + sabit kayıt boyutu kuralının canlı yasa metni + durum_devir başlığı + sınır testi: 6500 sığar, 7200 uyarılır) ③ canlı kanıt: oturum 55→56 devri tam bu şablonla KAYIPSIZ gerçekleşti (durum_devir.sar — f9701f5/7088fb2 devir commit'leri); git geçmişi = arşiv ilkesi korunuyor. Çekirdek 733/733 · eklenti 141/141 · iki denetim TAM-yeşil. Kabul 3/3 karşılanmıştır"
+      }
+    }
+
+    AltKatman( kod: BKM-OLG-K4, departman: kodlama, ad: "zorlama kapıları",
+      ne: "enforcement-denetimi raporunun 4 makine-borcu — kâğıttaki kural motora iner (Founder seçimi 2026-07-11: dördü de)" ) {
+      Adım( kod: BKM-KAPI-A01, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], bağımlı: [], referans: [ ],
+        ne:    "📏 Durum-boyutu kapısı — DurumKaydı ≤4000 karakter kuralı MOTORA iner; durum.sar'ın fiili ihlali arşiv disipliniyle birlikte kapanır (kendi kuralını çiğneyen tek somut vaka)" ) {
+        görev: "İki parça: (1) dogrulayici.ts'e DurumKaydı boyut denetimi — özet+parametreler toplamı 4000 karakteri aşarsa uyarı (YAS-4.2 kademe deseni: v1 uyarı, repo temizlenince hata terfisi; sade dil OGR-2.1). (2) durum.sar fiili ihlali kapat: '── önceki ──' altında biriken eski oturum özetleri arsiv/durum/'a tarihli dosya olarak taşınır (“üzerine-yaz” ruhu; git geçmişi zaten korur), güncel kayıt ≤4000'e iner"
+        kabul: [
+          "DurumKaydı >4000 kr uyarı üretir (testli); ≤4000 susar (yanlış-pozitif yok)",
+          "durum.sar ≤4000 kr — eski özetler arsiv/durum/'a taşındı, devir bilgisi kayıpsız",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "yalnız DurumKaydı tipi — genel dosya-boyutu kapısı değil; arşiv taşıması yalnız '── önceki ──' blokları (güncel oturum özeti dokunulmaz)"
+      }
+      Adım( kod: BKM-KAPI-A02, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [], referans: [ ],
+        ne:    "🔧 MIM-1.4 teknolojisiz-yüzey kapısı — Ekran/Uç varken çalışma-alanında HİÇ Teknoloji/Takım ilanı yoksa uyarı: 'Flutter seçilmeden ekran doğmaz' ilkesi motora iner" ) {
+        görev: "denetci.ts'e cross-file tanı: programlarda Ekran ya da Uç düğümü VAR ama hiçbir dosyada Teknoloji/Takım ilanı ya da çağır'ı YOKSA uyarı (proje-düzeyi v1 — Ekran-başına kenar zorlamak yanlış-pozitif üretir, Takım kökte yaşar). Sade dil (OGR-2.1): 'ekran/uç ilan edilmiş ama proje hiçbir teknoloji seçmemiş — önce Takım kur'. CLI denetleKomutu'na bağlanır"
+        kabul: [
+          "Ekran/Uç + sıfır-Teknoloji fikstürü uyarı üretir; Teknoloji'li proje susar (testli)",
+          "altin_yol ve mevcut repo yanlış-pozitif üretmez",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "proje-düzeyi varlık denetimi (v1) — Ekran-başına Teknoloji kenarı zorlaması ve sürüm-uzlaşması (MIM-1.4) bu Adım'ın dışında"
+      }
+      Adım( kod: BKM-KAPI-A03, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], bağımlı: [], referans: [ ],
+        ne:    "🔤 DIL-1.2 casing kapısı — Tip adı BüyükHarfle (PascalCase), parametre adı küçükHarfle (camelCase) başlar; ucuz mekanik denetim" ) {
+        görev: "dogrulayici.ts'e ad-biçimi denetimi: widget tip adının ilk harfi BÜYÜK, parametre adının ilk harfi küçük olmalı (Türkçe harf destekli — toLocaleUpperCase('tr') karşılaştırması; ÇalışmaAlanı geçerli PascalCase). Uyarı düzeyi + sade dil önerisi. Kullanıcı-tanımlı Tip ilanları da aynı kurala tabi (TIP-1 birinci-sınıf)"
+        kabul: [
+          "küçük-harfli tip adı + büyük-harfli parametre adı uyarı üretir (Türkçe harf testli)",
+          "mevcut repo + örnekler yanlış-pozitif üretmez (tüm kanon zaten uyumlu)",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "yalnız İLK-HARF denetimi (v1) — tam camelCase/PascalCase iç-yapı analizi (bitişik kelime sınırı) v2'ye; dosya adları ad-ayracı kuralının işi"
+      }
+      Adım( kod: BKM-KAPI-A04, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], bağımlı: [], referans: [ ],
+        ne:    "🔩 TIP-1.4 dağıtma tespiti — Mekanizma plan kapsayıcısının (Blok/Faz/Katman/Adım) İÇİNDE tanımlanmışsa uyarı: kesişen altyapı BİR KEZ ilan edilir, plana gömülmez" ) {
+        görev: "dogrulayici.ts'e dağıtma denetimi: Mekanizma tipi düğüm bir plan kapsayıcısının (Blok·Faz·Katman·Adım) altında sarılmışsa uyarı — mekanizma üst-düzeyde ya da mekanizma rafında yaşar, plan-Adımı ona 'bağımlı:' ile REFERANS verir (TIP-1.4). Sade dil önerisi: 'Mekanizmayı üst-düzeye taşı, Adım bağımlı: MEK-X ile bağlansın'"
+        kabul: [
+          "Adım/Katman içine gömülü Mekanizma uyarı üretir; üst-düzey + referanslı kullanım susar (testli)",
+          "ornek/mekanizma kanonik örneği yanlış-pozitif üretmez",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "yalnız YAPISAL gömülme tespiti — içerik-benzerliği (iki mekanizmanın aynı işi yapması) tespit edilmez (o insan gözden geçirmesidir)"
+      }
+    }
+
+    AltKatman( kod: ALT-BKM-OLG-SABLON-TOPARLAMA, departman: kodlama, ad: "şablon kütüphanesi toparlama",
+      ne: "🍃 Dağınık şablonların (mcp.ts gömülü string + ornek/) tek 'sablon/' kütüphanesinde toplanması" ) {
+      Adım( kod: BKM-OLG-A06, durum: tamamlandı, bağımlı: [], üretir: KOD-SABLON,
+        ne:    "📐 Şablon kütüphanesi toparlama — dağınık şablonlar (mcp.ts gömülü string + ornek/) tek 'sablon/' kütüphanesine toplanır; başla hem CLI hem MCP oradan okur (açık-iş: SABLON-KUTUPHANE-TOPARLAMA · Founder 2026-07-10)" ) {
+        görev: "Founder bulgusu: şablonlar dağınık (ekran/arkayüz/sözleşme bir arada değil). Çözüm: sablon/*.sar kanonik kütüphane (proje·blok·adım·sözleşme·arkayüz·ekran·etmen·mekanizma — eksik olan ARKAYÜZ + SÖZLEŞME dahil); cekirdek/src/sablon.ts tek kaynaktan okur (readFileSync + SABLON_KOK); mcp.ts gömülü SABLONLAR silinir, başla aracı sablon.ts'i çağırır; CLI `sarmal başla <tür>` eklenir (aynı kaynak, YUZ-1.2); sablon/ denetle YOKSAY'a + panel dışlamasına girer (yer-tutuculu şablon kapıyı bozmasın); OKU.md indeksi + ornek/OKU.md çapraz-referans"
+        kabul: [
+          "sablon/ 8 tip kanonik şablon + OKU.md; başla CLI ve MCP aynı sablon.ts'ten okur (çift-kaynak yok)",
+          "arkayüz + sözleşme bağımsız şablonu eklendi (Founder'ın eksik dediği ikisi)",
+          "tsc temiz + denetle TAM-yeşil + testler yeşil (sablon/ YOKSAY'da, kapı bozulmaz)"
+        ]
+        sınır: "yalnız şablon toparlama — ornek/ örnekleri yeniden düzenlenmez (OKU.md küratör haritası korunur); dil sadeleştirme ayrı tur"
+      }
+    }
+
+    AltKatman( kod: BKM-OLG-K5, departman: kodlama, ad: "dil ve eklenti olgunluğu",
+      ne: "hatırlatıcı gözden-geçirmesinden raya inen kalemler (Founder 2026-07-11: uygulanmamışlar planlamaya)" ) {
+      Adım( kod: BKM-DIL-A01, durum: tamamlandı, üretir: [ KOD-YASA-SOZDIZIMI ], bağımlı: [],
+        ne:    "🗣️ Dil analizi kalanları — KAPANIŞ 2026-07-12 (oturum 34, Founder'la canlı): ① çağır↔bağımlı↔kullanir ayrımı DIL-1.4 sayfasına örnekli yazıldı (kullanir=kök beyan-özelliği, KENAR DEĞİL — motor çözmez; bağ=bağımlı/çağır; tek gerçek kullanım sarmal_anadizin:97 envanterle doğrulandı) ② --> çoklu-kenar genişlemesi FOUNDER KARARIYLA GEREKÇELİ REDDEDİLDİ (DIL-1.4 karar notu: ok tek anlam taşır — ajan akıl-yükü sıfır; Founder merceği: 'özellik güzel ama ajan akıl edip kullanabilecek mi' → tek-anlam bu kaygının cevabı) ③ madde 6/7 GEREKSİZ-kapanış (dosya bilerek-hatalı ders vitrini + Proje→Tema sarması kanonda ZATEN izinli) · madde 8 kayit.md'ye kanonlandı (davranış: kardeş-İLAN + parametre-REFERANS deseni). HTR-DIL-ANALIZ pini yaşam-döngüsü gereği silindi (tarihçe git'te)" ) {
+        görev: "Üç iş: (1) çağır (kod-tabanlı içe-aktarma, DIL-1.4) ile kullanir: (teknoloji beyanı) ayrımı yasada netleşir + gerekiyorsa denetim; (2) --> şekeri bugün yalnız besler üretir — çoklu kenar tipine (bağımlı vb.) genişletilir mi KARAR + uygulama; (3) 2026-07-05 analizindeki düşük-öncelikli temizlikler gözden geçirilir (analiz notu hatırlatıcıda)"
+        kabul: [
+          "çağır↔kullanir ayrımı yasada yazılı + örnekli; belirsizlik bitti",
+          "--> genişleme kararı verildi (yapıldı YA DA gerekçeli reddedildi — dürüst kapanış)",
+          "denetle-temiz + testler yeşil"
+        ]
+        sınır: "dil ÇEKİRDEĞİ işi — eklenti boyama ayrı Adımlarda (BKM-EKL)"
+      }
+      Adım( kod: BKM-DIL-A02, durum: tamamlandı, üretir: [ KOD-SNF-KANON ], bağımlı: [],
+        ne:    "🪜 Rütbe-atlamalı sarma (rejim istisnası) — ara kademeler isteğe bağlı olur: Blok altına doğrudan Katman/Adım, Faz altına doğrudan Adım düşebilir; TERS sarma (Katman→Faz) yasak kalır. Founder: 'dengeli ve ölçülü olmalı, gelişigüzel yapılmamalı' (2026-07-11)" ) {
+        görev: "Tek kaynak kayit.json → izinliSarma matrisi genişletilir: Blok → +Katman +Adım (Faz·Gereksinim·Kapı kalır) · Faz → +Adım (Kapı·Katman kalır) · Katman → Adım (değişmez). taksonomi-uret ile kayit.md yenilenir (elle tablo düzenleme YOK, OGR-3.2). Sarma testleri güncellenir: yeni izinler yeşil + ters sarma hâlâ izinsiz-sarma hatası (Katman içine Faz, Adım içine kapsayıcı). ray1_format.sar'daki eski katı-kural yorumu (MIM-3.1 düzeltmesi notu) rütbe-atlama işaretiyle güncellenir"
+        kabul: [
+          "Blok içinde doğrudan Adım/Katman, Faz içinde doğrudan Adım denetle-yeşil (fikstürlü test)",
+          "ters sarma (Katman→Faz · Adım→kapsayıcı) izinsiz-sarma HATASI üretir (testli — rütbe düzeni korunur)",
+          "kayit.md taksonomi-uret'le türedi; çekirdek + eklenti testleri yeşil, tsc ×2"
+        ]
+        sınır: "yalnız plan-ailesi sarma matrisi — yüzey/arkayüz aileleri ve TIP-1 kullanıcı-tipi kuralları DEĞİŞMEZ; mevcut planların sadeleştirilmesi (kademe söküm turu) AYRI iştir, A03 önerileri ışığında yapılır"
+      }
+      Adım( kod: BKM-DIL-A03, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-DIL-A02 ],
+        ne:    "🔵 Tek-çocuk önerisi (rütbe-atlama eki) — tek Adım taşıyan Katman'a ve tek Katman taşıyan Faz'a motor 'çocuğu yukarı alabilirsin' bilgi tanısı verir: şişkinlik denetimle geriletilir, zorlanmaz" ) {
+        görev: "denetci.ts'e yapı-yalınlığı denetimi: kapsayıcının TEK kapsayıcı-olmayan işi tek çocuksa (Katman{1 Adım} · Faz{1 Katman}) duzey:bilgi tanısı — mesaj sade Türkçe (OGR-2.1): 'Bu Katman tek Adım taşıyor — Adım'ı doğrudan Faz’a alabilirsin (rütbe-atlama)'. Mevcut planlar HATALANMAZ (bilgi düzeyi karneyi/kapıyı etkilemez); tanı kodu kararlı: tek-cocuk-kapsayici"
+        kabul: [
+          "tek-Adımlı Katman + tek-Katmanlı Faz bilgi tanısı üretir (fikstürlü test, .kod sabit)",
+          "çok-çocuklu kapsayıcı tanı ÜRETMEZ; pre-commit/TAM-denetim kapısı bilgiden etkilenmez",
+          "denetle-temiz (kendi planlarımızdaki tanılar bilgi düzeyinde görünür — dürüst ayna)"
+        ]
+        sınır: "öneri ÜRETİMİ — otomatik yapı dönüştürme YOK (insan/ajan karar verir, YUZ-1.2); tek-tık düzeltme eklentiye ileride"
+      }
+      Adım( kod: BKM-EKL-A01, durum: tamamlandı, bağımlı: [],
+        ne:    "🎨 Grammar satır-içi obje — tmLanguage'e { anahtar: değer } kuralı: bracket-matching hatası biter (HTR-GRAMMAR-OBJE) — KAPANIŞ 2026-07-11: karşılığı ZATEN VARDI (#sarmal-ici-obje kuralı 0.7.0 açık-gizli kesim commit’inden beri repository'de + pattern'larda, tariften kapsamlı: yorum·kod·i18n·iç-içe obje dahil); motor kanıtı: 2-seviye iç-içe obje literal denetle'den söz-dizim hatasız geçti (hata 0)" ) {
+        görev: "sarmal.tmLanguage.json'a #satir-ici-obje repository kuralı (begin \\{, end \\}, içinde #parametreler + #dizgiler + #sayilar), widgetler pattern'ına include — hatırlatıcıdaki tarif hazır. Motor etkilenmez, salt boyama"
+        kabul: [ "satır-içi { } obje literal'i doğru boyanır; ')' beklerken '{' hatası üremez", "eklenti sınaması yeşil + gözle teyit" ]
+        sınır: "yalnız tmLanguage — anlamsal renklendirme (renk.ts) değişmez"
+      }
+      Adım( kod: BKM-DIL-A04, durum: tamamlandı, üretir: [ KOD-YASA-YUZEY ], bağımlı: [],
+        ne:    "⚖️ Son MD kural dönüşümü — yasa/genel_kurallar/yuzey.md (YZ: evrensel yüzey·kod·5 yön) tek dönüştürülmemiş MD kural kaldı; kardeşleri gibi Kural-widget'lı .sar olur (ARST-KURAL temizliğinin son adımı — düzen turu tespiti 2026-07-11) — KAPANIŞ 2026-07-11: yuzey.sar = ANY-YUZEY + 6 Kural (YUZ-6 ailesi, ①-⑦ maddeleri belge-bloklarında BİREBİR); motor dersi uygulandı: yapısal/eşik katman koşul: ister → YUZ-4 ile YUZ-4.1 MOTORDA-koşullu, YUZ-1 dürüstçe niyet'e çekildi (zorlaması beklemede); dizin.md güncel, yuzey.md git-arşivde; denetle TAM-yeşil — MD kural KALMADI" ) {
+        görev: "yuzey.md'deki YZ kural maddeleri Kural( kod, otorite, katman, ne ) widget'larına çevrilir (gorunurluk.sar/bicim.sar deseni); dizin.md satırı güncellenir; MD silinir (git arşiv). İçerik DEĞİŞMEZ — yalnız format dönüşümü"
+        kabul: [ "yuzey.sar denetle-yeşil, dizin.md güncel, yuzey.md silindi", "kural sayısı/içeriği birebir korundu (kayıpsız dönüşüm)" ]
+        sınır: "yalnız format dönüşümü — kural İÇERİĞİ değişmez (içerik turu ayrı iş, G-9 ailesi)"
+      }
+      Adım( kod: BKM-EKL-A02, durum: tamamlandı, üretir: [ KOD-EKL-GRAMMAR ], bağımlı: [],
+        ne:    "🌈 Fenced-kod renklenmesi — belge bloklarındaki ```python ```dart örnekleri editörde o dilin renkleriyle boyanır (HTR-RENK ①; okuma-modunda zaten var) — KAPANIŞ 2026-07-11: karşılığı ZATEN VARDI (BKM-EKL-A01 hikâyesinin ikizi): 0.7.0 açık-gizli kesim commit’inden (c0aa9c6) beri tmLanguage belge-bloğu deseninde 9 dil fenced kuralı (python·dart·typescript·javascript·yaml·sql·json·shellscript·css — begin/end + contentName) + package.json embeddedLanguages eşlemesi canlı; VS Code yerleşik grammar'ları devralınıyor. HTR-RENK ① kalemi kapandı, ② (linguist) BKM-YAY-A01'de; gözle son-teyit Founder'a (herhangi bir belge-bloğuna üç-tik python örneği koy, renkleri gör)" ) {
+        görev: "tmLanguage belge-bloğu deseni içinde fenced-kod çitlerine embeddedLanguages/injection bağla (markdown grammar deseni) — VS Code yerleşik dil grammar'ları devralınır. Okuma modu (highlight.js) zaten yapıyor; bu editör-içi eşleniği"
+        kabul: [ "```python bloğu editörde Python renkleriyle görünür (gözle teyit)", "eklenti sınaması yeşil" ]
+        sınır: "yalnız editör boyaması — dil listesi VS Code yerleşikleriyle sınırlı"
+      }
+      Adım( kod: BKM-YAY-A01, durum: tamamlandı, bağımlı: [], üretir: KOD-RAPOR-LINGUIST,
+        ne:    "🌍 GitHub linguist tanımı — .sar uzantısı GitHub'da dil olarak tanınsın (ad + renk + eşleme); dünya bunun yeni bir dil olduğunu görsün (HTR-RENK ② · yayın ailesi STR-3 ile İngilizce dil kapısı)" ) {
+        görev: "github-linguist deposuna .sar dil tanımı PR süreci: languages.yml girdisi (ad: Sarmal, renk, uzantı) + örnek dosyalar + kullanım eşiği araştırması (linguist'in kabul kriterleri: yeterli yaygınlık ister — muhtemelen public repo + kullanıcı SONRASI). Ön-araştırma + hazırlık bu Adım; PR zamanlaması yayın turuyla"
+        kabul: [ "linguist kabul kriterleri raporu + hazır languages.yml taslağı", "PR zamanlaması yayın rayına bağlandı (STR-3 public repo sonrası)" ]
+        sınır: "dış-dünya süreci — kabul GitHub'ın takdirinde; bu Adım HAZIRLIĞI kapatır, PR'ı değil" // KAPANIŞ 2026-07-11: nitelik/linguist_hazirlik.md — CONTRIBUTING okundu (2000-dosya/1-yıl eşiği · samples gerçek-kod · add-grammar/update-ids); DÜRÜST hüküm: tek engel yaygınlık, teknik hazırlık tam (grammar✅ örnek-havuzu✅ languages.yml taslağı✅ renk: gövde-kahvesi #C0925C önerisi); sahte .gitattributes eşlemesi YAPILMAZ; PR yayın rayına (STR-3 ile İngilizce dil kapısı) bağlandı
+      }
+      Adım( kod: BKM-ARC-A01, durum: tamamlandı, bağımlı: [], üretir: KOD-RAPOR-SUPERPOWERS,
+        ne:    "🔬 Superpowers desen-bakışı — planlama-disiplin çerçevesine TEK araştırma bakışı: bizde olmayan değerli desen var mı (desen madenciliği; Founder hükmü 2026-07-11)" ) {
+        görev: "superpowers skill-çerçevesinin planlama/yürütme desenleri web'den incelenir; Sarmal karşılığı olan/olmayan desenler kısa raporla listelenir (nitelik/ altına). Benimseme YOK — yalnız desen; değerli çıkan Founder'a KARAR olarak sunulur"
+        kabul: [ "kısa desen raporu (bizde var/yok tablosu) nitelik/ altında", "değerli desen çıktıysa Founder kararına sunuldu; çıkmadıysa dürüst 'yok' kapanışı" ]
+        sınır: "tek bakış — sürekli takip/entegrasyon işi değil (körlemesine benimseme yasak)" // KAPANIŞ 2026-07-11: nitelik/superpowers_desen_bakisi.md — 7 desen tablosu: 3 VAR (bizde motor-zoruyla) · 3 KISMEN · 1 bilinçli-YOK (worktree); 2 aday Founder kararına: ① Adım boyut-normu bilgi-tanısı ② red-green sırası (KA, kapsam üretir:kod)
+      }
+      Adım( kod: BKM-ARC-A02, durum: tamamlandı, bağımlı: [], üretir: KOD-RAPOR-IDE,
+        ne:    "🧭 IDE-aşinalık araştırması — Python/TypeScript/Flutter (+Rust/Go) geliştiricilerinin IDE'de alıştığı özellik ve formatların envanteri çıkarılır; Sarmal diline uyanlar seçilip raya iner (Founder isteği 2026-07-11: 'geliştiricilerin dile aşina olmaları kolay olsun') — KAPANIŞ 2026-07-11: nitelik/ide_asinalik.md — 5 ekosistem × 22 kalem (12 VAR · 5 KISMEN · 5 YOK, 3’ü YAS-4.1 gereği bilinçli-benimsenmez); tek sistematik boşluk kimlik-gezinme ailesi (tanıma-git·referans·F2·Ctrl+T·imza), 5 gerekçeli aday Founder seçimine sunuldu" ) {
+        görev: "Araştırma + öneri raporu (nitelik/ altına): her ekosistemin IDE alışkanlıkları taranır — (a) dil yüzeyi: go-to-definition · find-references · rename-symbol · signature-help · inlay-hints · code-lens; (b) format/araç: lock dosyası · manifest (package.json/pubspec) · format-on-save · linter-severity kademeleri; (c) proje yüzü: TODO-ağacı · test-explorer · debug-lens. Her kalem için Sarmal karşılığı VAR/YOK/KISMEN tablosu + uyarlanabilirlik notu. Değerli çıkanlar Founder seçimine sunulur; seçilenler eklenti/plan.sar'a Adım olarak iner"
+        kabul: [
+          "envanter raporu nitelik/ide_asinalik.md: ≥3 ekosistem × ≥10 özellik, VAR/YOK/KISMEN dürüst tablosu",
+          "Sarmal'a uyan adaylar gerekçeli kısa-liste; Founder'a karar sunumu hazır",
+          "körlemesine benimseme yok (YAS-4.1) — her aday 'Sarmal'ın doğasına uyuyor mu' süzgecinden geçer"
+        ]
+        sınır: "yalnız ARAŞTIRMA + öneri — uygulama seçilen kalemlerin kendi Adımlarında; VS Code API sınırları dürüst yazılır"
+      }
+      // MEYVE KAYDI (Sol RED-2 önerisi 2026-07-18): dizin yapısı SOYUT meyve olarak ilan edildi (KOD-DIZIN-DUZENI,
+      // meyve_haritasi.sar) ve bağlandı; OS komut listesi öteki varlıkta yaşamaya devam eder — STR-3 çapraz üretir kenarı yasak.
+      Adım( kod: BKM-AD-A01, üretir: [ KOD-DIZIN-DUZENI ], durum: tamamlandı, bağımlı: [],
+        // KAPANIŞ 2026-07-12: dilim-1 — 7 klasör git mv (genel_kurallar · altin_yol · uygulama_a/b ·
+        // sinama_vscode · tasarim_sozlugu · flutter_sozluk) + ~40 dosyada atıf güncellemesi (ts/sar/md/
+        // json/mjs; YASA_KOK + esbuild-sinama yolları dahil); kalan tireli atıf 0; iki süit + kasa build +
+        // iki denetim yeşil. Dilim-2 — kapalı varlık için yüz on bir git-mv komutu HAZIR: kapalı varlığın plan rafındaki ad göçü komutları
+        // (koşum + atıf güncellemesi OS turunun işi). ad-ayracı tanısının klasörlere genişletilmesi:
+        // ERTELENDİ (dizin adları anadizin yapı-aynasında zaten denetleniyor — çift bekçi açılmadı).
+        ne:    "🏷️ DIL-1.2 klasör-adı göçü — dosya adları alt-çizgiye geçti (2026-07-11); KLASÖR adlarındaki tireler (altin_yol · genel_kurallar · flutter_sozluk · tasarim_sozlugu) aynı standarda çekilir; OS'un 117 tireli etmen dosyası da OS turunda bu Adımın deseniyle göçer" ) {
+        görev: "İki dilim: (1) _Sarmal klasör adları alt-çizgiye (git mv + anadizin 'yol:' beyanları + tüm metin atıfları + testler — dosya-göçü 38abdff deseni birebir); (2) OS etmen dosya-adları (01-docker.etmen.sar → 01_docker.etmen.sar) OS varlığının kendi turunda — hazır komut listesi bu Adımdan çıkar. ad-ayracı tanısının klasörlere genişletilmesi uygulama sırasında kararlaştırılır"
+        kabul: [
+          "_Sarmal'da tireli klasör kalmadı; denetle TAM-yeşil, tüm testler yeşil ve eklenti build alıyor",
+          "OS göçü için hazır komut listesi çıkarıldı — OS turu kilidi açılınca tek oturumluk iş"
+        ]
+        sınır: "eski-repo referansları (eski ürün deposu) ve git geçmişi DOKUNULMAZ; üretilen dış-dünya kod dosyaları (.py/.ts) DIL-1.2 kapsamı dışı (artefakt ad sınırı korunur)"
+      }
+    }
+
+    AltKatman( kod: ALT-BKM-OLG-CLI, departman: kodlama, ad: "komut satırı yüzü",
+      ne: "Soğuk temas sınavının 2026-08-23 tarihinde ölçtüğü komut satırı kusurları — ham yığın izi veren komutlar ve kendini yeterince öğretmeyen bir argüman sırası" ) {
+      Adım( kod: BKM-CLI-A01, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ OGR-2 ], üretir: [ KOD-CLI-KAPISI, KOD-CLI-KAPISI-NOBET ],
+        ne: "2026-08-23 tarihinde bir soğuk temas sınavı koşulmuştur. Sarmal'ı hiç bilmeyen bir ajan boş bir klasörde yalnızca aracın kendi yüzeyinden öğrenerek bir plan kurmuş ve yirmi komutta sıfır hataya inmiştir, fakat yol boyunca iki kusur ölçülmüştür. Birinci kusur şudur: beş komut ham Node yığın iziyle çökmektedir ve bunlar sarmal --help, sarmal -h, sarmal help, sarmal siniflama ve sarmal durum-guncelle komutlarıdır; kullanıcıya node:fs:435 satırı ve beş satırlık bir yığın izi basılmaktadır. Kök sebep _Sarmal/cekirdek/src/sarmal.ts dosyasının 777. satırındadır: komut dağıtıcısı tanımadığı her dizeyi dosya adı saymakta ve doğrudan readFileSync çağırmaktadır, bilinmeyen komut dalı ile yardım dalı ise hiç bulunmamaktadır. Aracı kuran herkesin yazacağı ilk komut sarmal --help olduğu için bu kusur yayından önce kapanmalıdır. İkinci kusur şudur: ajan sef komutunun argüman sırasını üç denemede bulamamış ve sonunda aracın kaynak kodunu tarayarak öğrenmiştir; yani araç kendini komut satırında yeterince öğretmemektedir. Doğru davranışın örneği aracın kendi içinde zaten vardır: sarmal sef argümansız çağrıldığında çökmemekte ve ✖ sef için Adım KOD gerekli: sarmal sef <ADIM-KOD> [dizin] demektedir; kilitle alt komutu da aynı deseni taşımaktadır. Ayrıca ölçülmüştür ki CLI otuz yedi alt komut taşımaktadır, buna karşılık siniflama, durum-guncelle, kavram, prizma, bul, bicimle, iskelet ve denetle-proje yalnızca MCP aracıdır ve komut satırı karşılıkları yoktur; kullanıcı bunları yazdığında ne olacağı bu Adımda kararlaştırılmalıdır." ) {
+        görev: "Komut dağıtıcısına iki eksik dal eklenir: bir yardım dalı (--help, -h, help dizeleri sarmal.ts:777'deki dosya-okuma denemesinden önce yakalanır ve kullanım özetini basar) ve bir bilinmeyen-komut dalı (tanınmayan alt komut dizeleri dosya adı sayılıp readFileSync'e düşürülmeden önce yakalanır). Her iki dal da sef ve kilitle alt komutlarının zaten taşıdığı deseni izler: kısa, sade Türkçe bir ✖ mesajı ve doğru kullanım örneği; ham yığın izi hiçbir koşulda kullanıcıya basılmaz. Sekiz yalnızca-MCP komutunun (siniflama, durum-guncelle, kavram, prizma, bul, bicimle, iskelet, denetle-proje) CLI'da yazılması durumunda verilecek davranış kararlaştırılır ve uygulanır; seçenekler arasında bu komutların MCP'ye yönlendiren açıklayıcı bir mesajla karşılanması ya da CLI karşılıklarının eklenmesi değerlendirilir, seçilen yol gerekçesiyle koşu notuna yazılır. Son olarak sef'in argüman sırasının komut satırında kendini daha iyi öğretmesi için kullanım mesajı ve --help çıktısı gözden geçirilir."
+        kabul: [
+          "sarmal --help, sarmal -h ve sarmal help komutlarının hiçbiri ham Node yığın izi basmaz; üçü de kullanım özetini ekrana yazıp sıfır çıkış koduyla döner (testli)",
+          "sarmal siniflama ve sarmal durum-guncelle komutları çalıştırıldığında ham yığın izi yerine bu komutların yalnızca MCP aracı olduğunu ve CLI karşılığının bulunmadığını söyleyen sade bir mesaj basılır (testli)",
+          "kalan altı yalnızca-MCP komutu (kavram, prizma, bul, bicimle, iskelet, denetle-proje) için de aynı davranış uygulanır ve otuz yedi CLI alt komutunun tamamı üzerinde regresyon testi yeşildir",
+          "denetle-temiz koşulur ve çekirdek testleri yeşildir; komut dağıtıcısındaki değişiklik nedeniyle var olan hiçbir komutta davranış kırılmaz"
+        ]
+        sınır: "Yalnızca komut dağıtıcısının yardım ve bilinmeyen-komut dallarının eklenmesi ile sekiz yalnızca-MCP komutunun CLI davranışının kararlaştırılması bu Adımın kapsamındadır; sef'in argüman sırasının kendisinin değiştirilmesi, yeni CLI alt komutlarının MCP dışı işlevle üretilmesi ve genel argüman ayrıştırma altyapısının yeniden yazılması bu Adımın dışındadır."
+      }
+    }
+  }
+
+  // ══ KATMAN · SINAV-2 BULGULARI: "yeşil ama kör" delikleri kapanır ═══════════════
+  // (Kaynak: nitelik/sinav2_eksik_defteri.sar — Founder hükmü 2026-07-11:
+  //  "sınıf geçilemedi, daha çok çalışmamız gerekiyor". Sınav-3 bu katman bitmeden açılmaz.)
+  Katman( kod: BKM-SNV2, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "ikinci sınav bulguları",
+    ne: "🧪 Sınav-2'nin sınıfta bırakan bulguları: MIM-3 ve contract-first motor kapıları + görünüm paritesi + rehber/kanon-yüzü onarımları" ) {
+
+    AltKatman( kod: ALT-BKM-SNV2-BULGULAR, departman: inceleme, ad: "sınav-2 bulguları",
+      ne: "🍃 Sınav-2'nin yakaladığı yeşil-ama-kör delikler — motor kapıları, görünüm paritesi ve rehber onarımları" ) {
+
+      Adım( kod: BKM-SNV2-A01, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
+        ne:    "🏗️ rafsız-anadizin tanısı (F1 · MIM-3 kapısı) — KAPANIŞ 2026-07-11: denetci.rafsizAnadizinTanilari — temel-aile kökü var ama iskelet planı SIFIR dizin üretiyorsa uyarı; düzey gerekçesi: UYARI seçildi (plan-turu erken evrede kapıyı kırmaz ama sessizliği bitirir — F1 🔴 Founder bulgusunun motoru). Canlı kabul: sinav2 esnaf_defteri_anadizin.sar tanıyı ALIYOR, raf-dolu sarmal_anadizin SUSUYOR; fikstürlü test + 411/411 yeşil" ) {
+        görev: "denetci'ye yeni tanı: anadizindeki kök düğüm (Proje/ÇalışmaAlanı) raflar:/kullanir:-klasör beyanı ya da üretim-yeri taşıyan hiçbir yapısal ilan içermiyorsa 'rafsız-anadizin' UYARISI (plan-turu projelerde meşru olabilir → düzey tartışması uygulama sırasında: belki plan-yalnız kipinde bilgi); öneri metni Doğuş Rehberi'ne yönlendirir (MIM-1.1 ile MIM-3)"
+        kabul: [ "sınav-2'nin esnaf_defteri_anadizin.sar'ı bu tanıyı ALIR (regresyon fikstürü — sinav2 dizini ders malzemesi)", "raf beyanlı anadizin (sarmal_anadizin.sar) SUSAR", "çekirdek süiti yeşil + düzey gerekçesi kapanışta" ]
+        sınır: "yalnız İLAN varlığı denetlenir — raf içeriğinin doğruluğu mevcut disk-mutabakat kapısının işi"
+      }
+      Adım( kod: BKM-SNV2-A02, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
+        ne:    "🤝 kavuşumsuz-paralellik tanısı (F2 · SDD-L3 kapısı) — KAPANIŞ 2026-07-11: denetci.kavusumsuzParalellikTanilari — farklı Takım'a bağlı Adımlar arası doğrudan bağımlı: kenarı, ortak Sözleşme köprüsü yoksa uyarı (v1 dar: facet=bağımlı listesindeki Takım tipi; Teknoloji sayılmaz — yanlış-pozitif kalkanı). Canlı kabul: sinav2 blok_kimlik 7 tanı (Founder'ın işaret ettiği ADM-KML-10→02/03 dahil); köprülü + aynı-takım fikstürleri susuyor; 411/411 yeşil" ) {
+        görev: "denetci/dag'a tanı: Adım-A (bağımlı: TAKIM-X) → Adım-B (bağımlı: TAKIM-Y) doğrudan bağımlılığında arada Sözleşme referansı yoksa 'kavuşumsuz-paralellik' uyarısı + öneri: 'ortak Sözleşme ilan et, iki taraf ona bağlansın (contract-first)'. Takım-facet tespiti Adımın bağımlı listesindeki Takım kodundan"
+        kabul: [ "sınav-2 blok_kimlik.sar deseni (ADM-KML-10 → ADM-KML-02/03) tanıyı ALIR", "Sözleşme-köprülü ön/arka çifti SUSAR (fikstür)", "çekirdek süiti yeşil" ]
+        sınır: "uyarı düzeyi — mimari öneri, blok değil; Takımsız/tek-facet projelerde tanı üremez"
+      }
+      Adım( kod: BKM-SNV2-A03, durum: tamamlandı, üretir: KOD-EKL-GIYDIR, bağımlı: [],
+        ne:    "🎨 Çalışma Alanını Giydir (F3 · görünüm paritesi) — KAPANIŞ 2026-07-12 (Founder gözle: sinav2 giydirildi, [sarmal] bloğu dahil birebir): sarmal.giydir komutu + imzasız-alanda ilk-tespit teklifi (otoGiydir; imzalı repo sessiz — canlı doğrulandı) + rakip-susturma + giydir↔kanon 4'lü palette-drift nöbeti (textMate · rozet/ikon · anlamsal+açık-tema · [sarmal] bloğu). Gözle-teyit turu iki eksik yakalattı ve kapattı: ① [sarmal] dil-bloğu tabloya girdi (çift-çizgi bitti) ② kalın renk bantları = 6-boşluk dosya girintisi (BÇ standardı 2; çözüm ⇧⌥F — boyacı ceza kesmez, bilinçli). Eklenti 0.9.41" ) {
+        görev: "eklentiye giydir.ts: sarmal.giydir komutu + ilk-tespit bildirimi (Giydir · Bu projede sorma; ayar sarmal.otoGiydir) — Configuration API ile Workspace hedefine: editor.tokenColorCustomizations(textMate seti) + semanticTokenColorCustomizations(+[*Light*]) + workbench.colorCustomizations(rozetler); üretim eşlemeleri gomulu-kanon'dan (renk-uret ile TEK tablo — palette-drift nöbetine giydir↔kanon eşitliği eklenir)"
+        kabul: [ "sinav2 penceresinde Giydir sonrası görünüm _Sarmal ile eşdeğer (Founder gözle)", "bizim repoda giydirme İSTENMEZ (settings imzası var — sessiz)", "eklenti süiti + palette-drift nöbeti yeşil" ]
+        sınır: "kullanıcı ayarı EZİLMEZ (yalnız workspace hedefi); rakip eklenti ayarına yalnız kuruluysa ve yalnız susturma anahtarlarıyla dokunulur"
+      }
+      Adım( kod: BKM-SNV2-A04, durum: tamamlandı, bağımlı: [], üretir: KOD-SNF-NOBET,
+        ne:    "🗂️ siniflama-yüzü rütbe-atlama uyumu (A1 · ajan-yanıltıcı) — KAPANIŞ 2026-07-11 (oturum 34, otonom): kayit.json semalar.Adım'a koni alanları tipli-opsiyonel işlendi (görev:metin · kabul:liste · sınır:metin · dokunulmaz:liste · referans:liste; kayit.md ikizi eş) → MCP siniflama{Adım} şemadan gösterir, eklenti tamamlama/imza gomulu-kanon zinciriyle kendiliğinden zenginleşti (0.9.40). Test-nöbeti: mcp.test.ts konabilirliği ELLE LİSTE DEĞİL kanondan (izinliSarma) türetip doğrular — Blok·Faz·Katman üçü de görünür, A1 senaryosu (Katman'a-mecbur sanısı) yeniden üretilemez; koni alan tipleri çıktıda asserted. 423/423 yeşil" ) {
+        görev: "mcp siniflamaAraci çıktısı denetlenir/düzeltilir: 'Adım şuraya konabilir: Katman·Faz·Blok' güncel izinliSarma'dan aktığı test-nöbetiyle sabitlenir; semalar.Adım'a koni alanları opsiyonel+tür olarak işlenir (görev:metin · kabul:liste · sınır:metin · dokunulmaz:liste · referans:liste) → siniflama{Adım} şemadan doğrulanabilir; tamamlama/imza kendiliğinden zenginleşir"
+        kabul: [ "siniflama{Adım} çıktısı Faz/Blok'a konabilirliği ve koni alan tiplerini gösterir", "sınav-2 A1 senaryosu (ajanın Katman'a mecbur sanması) yeniden üretilemez", "süitler yeşil" ]
+        sınır: "koni alanları OPSİYONEL kalır (zorunluluk konisiz-adım bekçisinin işi — çift kapı açılmaz)"
+      }
+      Adım( kod: BKM-SNV2-A05, durum: tamamlandı, bağımlı: [], üretir: KOD-SABLON-NOBET,
+        ne:    "📖 Rehber onarımları (A2·A3·A4·A6·A7) — KAPANIŞ 2026-07-11 (oturum 34, otonom), beş kalem: ① başla omurgası ④'e Gereksinim-izlenebilirlik + ⑥'ya SÖZLEŞME-ÖNCE/contract-first (kavuşumsuz-paralellik bekçisine atıf) ② proje şablonuna 5 Teknoloji ilanı (A3 kırık-referans tuzağı öldü — kopyala→iskelet→denetle TAM-yeşil, kalıcı nöbet sablon.test.ts) ③ DIL-1.4 bağlama modeli (çağır=BAĞIMLILIK, içerme değil; graf'ta çağır-kenarı henüz GÖRÜNMEZ — dürüst sınır beyanı, çevrim RAY-3) ④ YAS-3.1 tanı-düzeyi sözleşmesi (hata=KAPI · uyarı=KAPATILMALI/YAS-4.2-terfi · bilgi=ÖNERİ; TAM-yeşil=hata0+uyarı0) ⑤ MCP denetle açıklaması sertleşti (tek-dosya yeşili ≠ proje yeşili — dosyalar-arası kapılar sayılı)" ) {
+        görev: "① basla omurgasına Gereksinim (izlenebilirlik) + Sözleşme/contract-first vurgusu (F2'nin rehber ayağı); ② basla{proje} şablonuna Teknoloji(...) ilan satırları (A3 kırık-referans tuzağı); ③ çağır bağlama modeli (içerme mi bağımlılık mı, graf’ta nasıl görünür) DIL-1.4 sayfasına + graf çıktısında çağır-kenarı görünürlüğü değerlendirmesi (A2); ④ tanı-düzeyi sözleşmesi (hata=kapı · uyarı=kapatılmalı · bilgi=öneri) yasaya kısa kural (A6); ⑤ MCP denetle açıklamasına tek-dosya≠bütün uyarısını sertleştir (A7)"
+        kabul: [ "beş kalem kapalı; basla('proje') şablonu denetle-temiz kopyalanabilir", "yeni yabancı-ajan dumanında A2–A7 sürtünmeleri yeniden üretilemiyor", "denetle TAM-yeşil" ]
+        sınır: "yalnız rehber/yüzey onarımı — F1/F2 motor kapıları A01/A02'nin işi"
+      }
+    }
+  }
+
+  // ══ KATMAN · BUG-AVI BULGULARI: "bekçi var, ikinci yazım-biçimine kör" delikleri ═
+  // (Kaynak: nitelik/bug_avi_defteri.sar — Founder talimatı oturum-32 devri:
+  //  "tüm kurallar ve kanunlar ÇALIŞIR olacak". BKM-SNV2 ile BİRLEŞİK koşulur:
+  //  aynı kök-desen — denetim yeşilken sessiz delik. Sıra önerisi: A01/A02
+  //  [kural-motoru+kapı] önce, çünkü SNV2-A01/A02 fikstürleri aynı test turunda.)
+  Katman( kod: BKM-BUG, kullanır: TAKIM-CEKIRDEK, ad: "bug avı bulguları",
+    ne: "🐛 Kapsamlı bug-avı bulguları: kapsam-çözümü · kırık-referans genişlemesi · parametre/özellik ve skaler/liste körlükleri · muafiyet dayanıklılığı · küçük onarımlar" ) {
+
+    AltKatman( kod: BKM-BUG-K1, departman: sınama, ad: "kural motoru kapıları",
+      ne: "yasa↔motor aynı dili konuşsun: kapsam kelimesi, referans kapsamı, koşul dürüstlüğü" ) {
+      Adım( kod: BKM-BUG-A01, durum: tamamlandı, üretir: [ KOD-KURALCI ], teşekkür: "teşekkürler 🤩", bağımlı: [],
+        ne:    "🎯 kapsam-çözümü bekçisi (M1) — yasadaki 53 kuralın `kapsam: genel` beyanı motorda BOŞ KÜMEYE düşüyordu (joker yalnız `tümü` idi); çözülmeyen kapsam artık susmuyor + kanonik joker Founder kararıyla tekleşti — KAPANIŞ 2026-07-11 (YAS-2.3): joker `genel` (yasa dili kazandı, `tümü` eş anlamlı — kuralci.KAPSAM_JOKER tek kaynak); denetci.kapsamTanilari dosyalar-arası bilinmeyen-kapsam + boş-kapsam uyarıları; canlı vaka onyuz→yuzey düzeltildi (buyuk_bahce); kayit.json kanon notu güncel; 5 yeni sınama, 404/404 yeşil, iki varlıkta denetle TAM-yeşil" ) {
+        görev: "İki parça: (1) FOUNDER KARARI — kanonik joker `genel` mi `tümü` mü? (öneri: yasa dili `genel` kazansın, motor ikisini de joker saysın — 53 dosya elden geçmesin; karar KARARLAR'a). (2) kuralci'ye kapsam-çözümü bekçisi: kuralın kapsam değeri aile/tip/KOD/joker hiçbirine çözülmüyorsa `bilinmeyen-kapsam` uyarısı (canlı örnek: yasadaki `kapsam: onyuz` — doğru aile adı `yuzey`); ayrıca yapısal-koşullu kuralın kapsam kümesi 0 düğümse zorlanamayan-koşul bekçisindeki `kapsamda > 0` şartı (kuralci.ts:570) boş-küme halini de söyler hale getirilir"
+        kabul: [
+          "kapsam: onyuz fikstürü bilinmeyen-kapsam uyarısı alır; kanonik joker ve geçerli aile/tip/KOD susar (testli)",
+          "yapısal-koşullu + boş-kapsamlı kural sessiz kalmaz (zorlanamayan-koşul ailesinden tanı, testli)",
+          "joker kararı KARARLAR'da; yasa/motor/kanon üçü aynı kelimede — denetle TAM-yeşil + 399+ test yeşil"
+        ]
+        sınır: "kapsam ÇÖZÜM denetimi — kapsam semantiğinin (koni seçicisi) kendisi değişmez; 53 dosyalık toplu yeniden-yazım ancak Founder joker'i `tümü` seçerse ve AYRI dilimde (STR-2.1)"
+      }
+      Adım( kod: BKM-BUG-A02, durum: tamamlandı, üretir: [ KOD-DENETCI ], takdir: "Tebrikler...", bağımlı: [],
+        ne:    "🔗 kırık-referans tüm-dosya genişlemesi (M2) — KAPANIŞ 2026-07-11: referans denetimi TÜM .sar'lara (muaf hariç); genişleme _Sarmal'ın kendi driftini döktü (34 hata + 9 uyarı) ve HEPSİ dürüst kapatıldı: 7 gerçek kopukluk onarıldı (ANY-EKLENTI→ORK-7 · CON-YP1/YZ4/OTORITE→MIM-3/TIP-2.3/YAS-2.3 · ORN-DERIN-EKRAN→EKR-Profil · HTR-GRAMMAR-OBJE→BKM-EKL-A01 · ADM-A05→ADM-GIRIS-UI · dalga3+derin_ekran kavuşum hedefleri doğdu) + meyve ilanları eklendi (SOZ/GOC-KIMLIK · EKR-PANO · SBL-DOGUS · TAN-* · MEK-ZORUNLU-KENAR) + iki dil kararı: .md frontmatter kimlikleri çözüm evreninde · K-nn defter atfı bilgi düzeyi defter-referansı; C9 tek-dosya kapsam notu eklendi; DIL-3.1 ile DIL-1.4 beyanları eşitlendi; 2 yeni sınama, 409/409 + TAM-yeşil" ) {
+        görev: "denetleKomutu referans denetimini TÜM programlara genişletir (muaflar atlanır; ornek/ mini-evrenleri için mevcut yinelenen-kod muafiyet deseni değerlendirilir — vitrin dosyaları kasıtlı kopuk olabilir, karar uygulamada gerekçeli). Yanlış-pozitif turu: genişleme önce mevcut repo + sinav2 üzerinde kuru-koşulur, meşru ileri-bağlama (üretir/hatırlat uyarı düzeyi) korunur. Ek: tekil-dosya kipi çıktısına kapsam notu (C9 — 'çok-dosya tanıları denetle'de') eklenir"
+        kabul: [
+          "giriş-dışı .sar'daki yazım-hatalı referans/çağır tanı alır (fikstürlü test)",
+          "mevcut repo TAM-yeşil kalır ya da çıkan her tanı gerçek drift olarak kapatılır (dürüst kapanış)",
+          "söz dizimi kanonunun DIL-3.1 ile DIL-1.4 zorlama beyanları yeni kapsamla eşitlenir; testler yeşil"
+        ]
+        sınır: "kenar-değeri TİPİ (tırnaklı hedef) A06'nın işi; çağır→bağımlı kenar çevrimi (RAY-3 kenar-deposu) bu Adım'ın dışında kalmaya devam eder"
+      }
+      Adım( kod: BKM-BUG-A03, durum: tamamlandı, üretir: [ KOD-KURALCI ], bağımlı: [],
+        ne:    "⚖️ kural-motoru dürüstlük seti (M3+M5+C7) — KAPANIŞ 2026-07-11: `düzyazı-koşul` bilgi tanısı (zorlanan katmanda metin koşul artık görünür; beyan-deseni meşru — bilgi düzeyi kapıyı doldurmaz, YUZ-4 · YUZ-4.1 · MIM-3 beyanları editör yüzeyinde dürüstçe işaretli) · KATMANLAR modül-durumu koşum-yerel oldu (kanon sızıntısı regresyon-testli kapandı) · eşik bandı return→continue (karışık bantta kalan sayılar denetlenir); 3 yeni sınama, 407/407 yeşil + tip temiz + kapı TAM-yeşil" ) {
+        görev: "Üç onarım tek dosyada (kuralci.ts): (1) katman yapısal/eşik + koşul.tur==metin → `düzyazı-koşul` bilgi tanısı ('bu koşulu motor değerlendirmez — beyansa katman/işaret düzelt'); yasadaki YUZ-4 · YUZ-4.1 · MIM-3 düzyazı-koşul beyanları bu tanıyla yüzleşir, gerekiyorsa beyan-işareti tasarlanır (Founder'a mini-karar). (2) KATMANLAR module-let → kuralDenetle içine yerel/parametre (saf fonksiyon). (3) eşik döngüsündeki return → continue (kalan çiftler denetlensin)"
+        kabul: [
+          "yapısal+düzyazı-koşul fikstürü tanı alır; niyet-katmanı düzyazı koşulsuz kural susar (testli)",
+          "kanonsuz proje, kanonlu projeden sonra denetlendiğinde taze varsayılan küme kullanır (sızıntı regresyon testi)",
+          "karışık-tipli eşik haritasında sayısal çiftler denetlenmeye devam eder (testli); denetle TAM-yeşil"
+        ]
+        sınır: "eşik katmanının RUNTIME koşul motoru (DIL-3 argümanlı uygulama) bu Adım'ın işi DEĞİL — yalnız sessizlik/dürüstlük onarımı"
+      }
+    }
+
+    AltKatman( kod: BKM-BUG-K2, departman: sınama, ad: "ikinci yazım körlükleri",
+      ne: "bekçi tek yazım-biçimini görüyor: parametre↔özellik · skaler↔liste · tırnaklı↔çıplak · harf-farkı" ) {
+      Adım( kod: BKM-BUG-A04, durum: tamamlandı, üretir: [ KOD-TEMA ], bağımlı: [],
+        ne:    "🎨 tema parametre-körlüğü (B3 · CANLI KANIT) — KAPANIŞ 2026-07-11: renkler parametre∪özellik aranır + tema gezintisi parametre-değerlerine iner; kanit_b3 kalıcı fikstür (geçersiz hex artık hata, kontrast parametreden de hesaplanır) — Tema( renkler: {…} ) paranteziçi yazımda #ZZZZZZ bile 'Drift yok' geçiyor: temaBir yalnız özelliklere bakıyor (tema.ts:29), gez parametre-değeri widget'larına inmiyor (tema.ts:22)" ) {
+        görev: "tema.ts iki onarım: (1) renkler alanı parametre∪özellik aranır (dogrulayici alanDeger deseni — aynı dersin ayna hali); (2) temaDenetle gez'i parametre değerlerindeki gömülü widget'ları da gezer (liste/harita içi dahil — dogrulayici degerdeGez deseni). Repro fikstürü: scratchpad kanit_b3.sar içeriği kalıcı teste iner"
+        kabul: [
+          "renkler parametre yazımında geçersiz-renk HATASI + düşük-kontrast uyarısı üretilir (kanit_b3 fikstürü testli)",
+          "özellik yazımı davranışı birebir korunur (regresyon)",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "yalnız arama-kapsamı onarımı — renk/kontrast kuralları (hex biçimi · 4.5:1) değişmez"
+      }
+      Adım( kod: BKM-BUG-A05, durum: tamamlandı, üretir: [ KOD-MAKRO-DONGU ], bağımlı: [],
+        ne:    "🔁 döngü skaler-koşar körlüğü (B4+C8 · CANLI KANIT) — KAPANIŞ 2026-07-11: skaler koşar = tek elemanlı liste (denetçi+koşucu birebir semantik); kırık-koşar önerisi v1-dürüst; kanit_b4 kalıcı fikstür — koşar: ADM-X (listesiz) hem denetçide (denetci.ts:601 yalnız liste) hem koşucuda (makro-dongu.ts:69 ogeler??[]) boş kümeye çöküyor: tanımsız hedefli döngü 'Drift yok' geçip SIFIR hedefle sağlıklı koşuyor" ) {
+        görev: "İki uç + bir tutarlılık: (1) donguTanilari skaler koşar'ı da denetler (tek kod = tek elemanlı liste semantiği — karar: destekle; yasaklamak kullanıcıya sürpriz); (2) donguBul kenarHedefleri deseniyle skaler+liste okur (dag.ts:55 yardımcısı yeniden kullanılır); (3) kırık-koşar önerisindeki 'Orkestrasyon ilan et' metni v1 gerçeğine çekilir (koşucu yalnız Adım koşar — makro-dongu.ts:131). Repro fikstürü kanit_b4 kalıcı teste iner"
+        kabul: [
+          "koşar: TEK-KOD yazımı: tanımsız hedef kırık-koşar uyarısı alır; tanımlı hedef koşucuda gerçekten koşulur (iki test)",
+          "liste yazımı davranışı birebir; kırık-koşar önerisi v1-dürüst",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "Döngü şeması/turLimiti/durunca semantiği değişmez; DIL-1.3 tam ifade dili ayrı tur (mevcut sınır korunur)"
+      }
+      Adım( kod: BKM-BUG-A06, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
+        ne:    "🪢 kenar-metin genellemesi (B6) — KAPANIŞ 2026-07-11: tüm kanonik kenarlarda tırnaklı hedef kenar-metin UYARISI (bağımlı/besler ORK-1.2 hatasına bırakıldı — çift tanı yok); mevcut repo sıfır yanlış-pozitif — referans: \"ADM-1\" tırnaklı yazım hiç çözülmüyor (denetci.ts:417 yalnız tur==kod) ve zorunlu-kenar bekçileri varlıkla doyduğu için kavuşumsuz-ekran çöp değerle susturulabiliyor; kenar-metin tanısı (ORK-1.2) yalnız bağımlı/besler'de" ) {
+        görev: "ORK-1.2 kenar-metin tanısı TÜM kenar tiplerine genellenir (snf.kenarTipleri kümesi — referans/üretir/hatırlat/yönetir/anayasa/çağırır/gider/…): kenar parametresi metin değer taşıyorsa 'kenar KOD ister' tanısı (düzey kararı uygulamada: bağımlı/besler hata-emsali var, diğerleri v1 uyarı — kademe YAS-4.2). Metin içinde çözülür tek KOD varsa öneri onu kenara çevirir (gizli-bağımlılık deseni yeniden kullanılır)"
+        kabul: [
+          "referans: \"metin\" fikstürü tanı alır; referans: [KOD] birebir temiz (testli)",
+          "mevcut repo + ornek/ yanlış-pozitif turu dürüst kapatılır (çıkan her tanı ya gerçek ya muafiyet-gerekçeli)",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "kenar-değeri tip zorlaması — hedef ÇÖZÜMÜ (kırık-referans kapsamı) A02'nin işi; sınır/görev gibi kenar-olmayan anlatı alanlarına dokunulmaz"
+      }
+      Adım( kod: BKM-BUG-A07, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
+        ne:    "🔠 harf-farkı sessizliği (B5) — KAPANIŞ 2026-07-11: bastırma yerine KONUMLU harf-farkı HATASI (macOS sessiz/Linux kırık çapraz-platform tuzağı kapandı); ad-ayracı yolu regresyonsuz — plan 'kayit.sar' derken diskte 'Kayit.sar' yaşarsa kayıp-yapı VE bildirilmemiş-dosya bastırılıyor (denetci.ts:215/238 “ad-ayracı yakalar” varsayımıyla) ama o kural .sar dosyalarını kapsamıyor (denetci.ts:285) → macOS'ta sessiz, Linux'ta kırık" ) {
+        görev: "Bastırma varsayımı gerçeğe bağlanır: harf-farkıyla eşleşen .sar (ve genel: ad-ayracı kapsamına girmeyen her uzantı) için bastırma yerine `ad-ihlali` ailesinden konumlu tanı üretilir ('diskteki ad ilanla yalnız büyük/küçük harf farklı — çapraz-platform kırılması'). ad-ayracı kuralTanilari kapsam notu güncellenir (M4 beyan eşitlemesiyle koordineli)"
+        kabul: [
+          "harf-farklı .sar fikstürü tanı alır (macOS'ta da); birebir eşleşen ad susar (testli)",
+          "md/yaml/json harf-farkı davranışı (ad-ayracı yolu) regresyonsuz",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "dosya-adı BİÇİM denetimi (DIL-1.2 snake_case tam kuralı) beklemede kalmaya devam eder — bu Adım yalnız bastırma-deliğini kapatır"
+      }
+    }
+
+    AltKatman( kod: BKM-BUG-K3, departman: sınama, ad: "dayanıklılık ve demet",
+      ne: "kabuk dayanıklılığı + tek başına Adım açmayacak küçük onarımların demeti" ) {
+      Adım( kod: BKM-BUG-A08, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
+        ne:    "🧯 muafiyet dayanıklılığı (C1+C2) — KAPANIŞ 2026-07-11: kilitle programlariYukle'ye indi (DRY — muaf+bozuk dosya mühürlemeyi kesmez); muaf+bozuk giriş dosyasında denetle çökmek yerine dürüst tanı + çıkış 2; CLI fikstür testli — kilitle bilerek-hatalı pragmasını tanımıyor (sarmal.ts:899 kendi yükleyicisi; muaf+bozuk dosya mühürlemeyi keser) ve giriş dosyası muaf+bozuksa denetle TypeError ile ÇÖKÜYOR (sarmal.ts:693 non-null)" ) {
+        görev: "İki onarım: (1) kilitleKomutu programlariYukle'ye iner (DRY — muaf dosyanın sözdizim hatası mühürlemeyi kesmez, EBEDİ envanteri parse-olanlardan kurulur; muaf+parse-olan zaten envantere girer). (2) denetleKomutu: anaEtiket programlar'da yoksa (muaf+bozuk giriş) çökme yerine konumlu hata tanısı ('giriş dosyası bilerek-hatalı ve ayrıştırılamıyor — denetim yapılamaz', çıkış 2)"
+        kabul: [
+          "muaf+bozuk sıradan dosya: kilitle mühürler, denetle listeler (iki test)",
+          "muaf+bozuk GİRİŞ dosyası: denetle çökmez, dürüst tanıyla çıkar (test)",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "BILEREK_HATALI semantiği (ilk 5 satır pragması) değişmez — yalnız tüketicilerin dayanıklılığı"
+      }
+      Adım( kod: BKM-BUG-A09, üretir: [ KOD-DENETCI, KOD-KONI, KOD-DOGRULAYICI ], durum: tamamlandı, bağımlı: [],
+        ne:    "🧹 küçük onarım demeti (C3+C4+C5+C6+B7+B8+M4) — KAPANIŞ 2026-07-11: yedi kalemin YEDİSİ kapandı: frontmatter çapası dosya-başına (C3) · ölü türetme dalları silindi (C4) · koni bağımlılık→bağımlı hizası tüm tüketicilerle (C5 — üretilen yüzey yasak alana yönlendirmiyor) · negatif sayıya özel Türkçe hata + DIL-1.3 sınır beyanı (C6) · durum-boyutu harita değerlerini sayar (B7) · yinelenen-kod değer-widget'ları gezer (B8) · ad-ayracı geçiş-dönemi beyanı yasaya yazıldı (M4); kayıtsız kapanma yok — tek başına Adım açmayacak yedi kalem: frontmatter çapası · ölü dal · koni-bağımlılık hizası · negatif sayı mesajı · harita boyut sayımı · değer-widget kod çakışması · ayraç beyan eşitlemesi" ) {
+        görev: "Yedi kalem: (1) frontmatterKod çapası dosya-başına (denetci.ts:158 — gövde '---'sı frontmatter sanılmasın); (2) koniAlani ölü referans-türetme dalı silinir (koni.ts:50); (3) koni alanı 'bağımlılık' → 'bağımlı' hizası (koni.ts:18 + iskeletci.ts:163 — üretilen yüzey ORK-1.2 hükmünün YASAKLADIĞI alana yönlendirmesin; KONI_ALANLARI/Koni arayüzü tüketicileriyle birlikte); (4) negatif sayı: unary eksi ya desteklenir ya 'Değer bekleniyordu' mesajına özel öneri ('negatif sayı v1 dışı — …'); (5) durumBoyutDenetle harita değerlerini sayar (dogrulayici.ts:167); (6) yinelenenKodTanilari değer-widget'larını da gezer (denetci.ts:540 — kodIndeksle ile tutarlı); (7) ad-ayracı ile DIL-1.2 geçiş-dönemi toleransı yasada beyanlanır (dil.sar/dizin — motor comment'inden yasa yüzüne)"
+        kabul: [
+          "yedi kalemin her biri fikstürlü testle kapanır ya da gerekçeli ertelenir (STR-2.1 — kayıtsız kapanma yok)",
+          "koni/iskelet çıktısı artık 'bağımlılık' başlığı üretmez; mevcut tüketiciler (sef prompt) regresyonsuz",
+          "denetle TAM-yeşil + çekirdek+eklenti testleri yeşil"
+        ]
+        sınır: "her kalem KÜÇÜK kalır — kapsam büyüyen kalem demetten çıkar, kendi Adım'ını açar (Superpowers boyut-normu ruhu)"
+      }
+      Adım( kod: BKM-BUG-A10, durum: tamamlandı, üretir: [ KOD-BUGAVI-DEFTER ], bağımlı: [],
+        ne:    "🔭 kalan-yüzey taraması — KAPANIŞ 2026-07-11: 19 çekirdek + 23 eklenti dosyası iki kademeli derinlikle tarandı (TAM okuma + HIZLI kök-desen grep; üç-durum tablosu defter EK bölümünde); çekirdek artığı 14/19 tam-temiz, 5 E-bulgusu çıktı ve HEPSİ koni-dolu BKM-BUG-A11'e bağlandı — kör nokta sıfır" ) {
+        görev: "Kalan ~15 çekirdek modülü + eklenti src (23 dosya) aynı üç kapsamla taranır: beyan↔kod mutabakatı (özellikle mcp araç açıklamaları — sinav2 A7 ailesi), parametre/özellik + skaler/liste ikilik körlükleri (bu turun kök-deseni checklist olarak uygulanır), kabuk dayanıklılığı. Bulgular bu deftere EK bölüm olarak işlenir; iş çıkarsa demet ya da yeni Adım"
+        kabul: [
+          "kalan modül listesi %100 işaretli (okundu/bulgu-var/temiz üç-durum tablosu deftere ek)",
+          "çıkan her bulgu ya kapatıldı ya koni-dolu Adım'a bağlandı (kör nokta sıfır)",
+          "denetle TAM-yeşil + testler yeşil"
+        ]
+        sınır: "tarama turu — büyük refaktör açılmaz; STR-3 çizgisi: kapalı taraf (kapalı varlık) bu taramanın dışında"
+      }
+      Adım( kod: BKM-BUG-A11, durum: tamamlandı, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        ne: "🩹 A10 bulgu demeti (E1-E5) — KAPANIŞ 2026-07-12 (Founder gözle teyidi 0.9.41'de: panel rozet/renk + tanı-düzey renkleri + takdir satırı doğru — 'A11 tamam'): beş kalemin BEŞİ kodlandı — E1 üç eklenti yüzeyi parametre∪özellik · E2 MCP örtü-farkında (dizin argümanı + uçtan-uca fikstürlü test) · E3 köprü güvenlik-rol kalıbı + denetim-ailesi RBAC ağı · E4 prizma tırnaklı-kod kimliği (testli) · E5 düzey eşlemesi + 3 yeni panel bekçisi + nitelik/kapi_kapsami.sar sözleşmesi; eklenti 0.9.39→0.9.41 zinciri + CHANGELOG" ) {
+        görev: """
+          Beş kalem: (1-E1) eklenti yolharitasi.parametre()/takdir/anahat alan okumaları parametre∪özellik
+          olur (motor alanDeger dersi — gövde-durumlu Adım panelde/geribildirimde doğru görünsün; eklenti
+          sürüm + kasa + gözle teyit). (2-E2) MCP denetle örtü-farkındalığı: yol verildiğinde dirname'den
+          find-up örtü; kaynak-only için opsiyonel dizin argümanı; kanon-cache kararı (taze-okuma mı
+          süreç-cache mi) beyanlanır. (3-E3) nvidia sistemPrompt güvenlik rolüne kendi kalıbını verir
+          (bulgular/kategoriRaporu alanları + rol='güvenlik'). (4-E4) prizma düğümYalın tırnaklı kod:
+          değerini de kimlik sayar (kodIndeksle ile tutarlı). (5-E5) eklenti cross-file tanılarında düzey
+          eşlemesi (Error sabiti kalkar — bilgi/uyarı doğru renkte) + kapı-kapsamı beyanı: hangi bekçi
+          hangi yüzeyde (CLI-kapı / eklenti-panel / MCP) tek tabloda; eksikler ya eklenir ya gerekçeli
+          beyan edilir (KRR-MUT-2)
+          """
+        kabul: [
+          "gövde-özellikli durum/ne fikstürü: panel rozeti + takdir + anahat doğru (eklenti kasası + gözle teyit)",
+          "örtülü çalışma-alanında MCP denetle sahte geçersiz-enum üretmez (fikstürlü test)",
+          "cross-file tanılar panelde kendi düzeyiyle görünür; kapı-kapsam tablosu yazıldı — denetle TAM-yeşil + iki süit yeşil"
+        ]
+        sınır: "beş kalem KÜÇÜK kalır (A09 demet ilkesi); eklenti kapısına yeni bekçi EKLEME kararları tabloda gerekçeli beyanla ertelenebilir — sessiz eksik kalmaz"
+      }
+    }
+  }
+
+  // ══ KATMAN · FOUNDER: kod-dışı operasyonel kalemler (insan eylemi/kararı) ═══════
+  // Teknoloji bağı istisnası: kod-DIŞI ray (Founder eylem/karar kalemleri) — teknoloji bağı
+  // bilinçli YOK; katmansız-teknoloji bilgisi burada DÜRÜST kalıntıdır.
+  Katman( kod: BKM-FND, ad: "Founder kalemleri",
+    teknolojiBağımsız: "Founder eylem/karar rayı — kod işi değil, teknoloji dilimi taşımaz (teknolojiBağımsız istisnası; ADM-STD-KTEK-TERFI dürüst-beyanı)",
+    ne:                "🧑‍💼 Founder eylemi/kararı bekleyen kalemler — kod işi değil; rayda görünür bekler, unutulamaz" ) {
+
+    AltKatman( kod: ALT-BKM-FND-KALEMLER, departman: planlama, ad: "Founder ve destek kalemleri",
+      ne: "🍃 Founder eylem/karar bekleyen kalemler ile onlara eşlik eden motor/araç destek işleri" ) {
+
+      Adım( kod: BKM-FND-A01, durum: tamamlandı, bağımlı: [],
+        // KAPANIŞ 2026-07-14: Founder yeni anahtarı build.nvidia.com'dan aldı, cekirdek/.env'e
+        // koydu (nvapi- · 70 kr); canlı duman testi GEÇTİ (nvidiaÇağır → gerçek yanıt, token 74/17).
+        // .env gitignore'lı (repoya sızmadı). SEF-canlı rayları AÇILDI (SEF-L3-A29 · HALKA-KANIT-A02).
+        ne:    "🔑 NVIDIA anahtar rotasyonu — anahtar sohbete yapıştırılmıştı; build.nvidia.com'dan yenisi alınır, eskisi iptal edilir (açık-iş: NVIDIA-ANAHTAR-YENILE · GÜVENLİK) — NOT 2026-07-11: Founder bilinçli ERTELEDİ ('anahtarı sonra değiştiririz'); SEF-canlı rayları (SEF-L3-A29 · HALKA-KANIT-A02) bu kalem çözülene dek kilitli kalır" ) {
+        görev: "Founder: build.nvidia.com'da mevcut API anahtarını iptal et, yeni anahtar üret, cekirdek/.env'e koy (.env gitignore'da — repoya sızmadı, sızmaz). Bu Adım kapanmadan LLM-canlı raylar (HALKA-KANIT-A02 lig tekrarı · SEF-L3-A29 canlı tool-round) koşulamaz"
+        kabul: [
+          "Eski anahtar sağlayıcıda iptal edildi — sohbete sızan anahtar artık ölü",
+          "yeni anahtar cekirdek/.env'e kondu; sarmal sef-dongu --gercek duman testi geçiyor",
+          ".env repoya girmedi (git status temiz)"
+        ]
+        dokunulmaz: [ "anahtar hiçbir dosyaya/sohbete düz-metin yazılmaz — yalnız .env" ]
+        sınır:      "yalnız anahtar rotasyonu — köprü kodu (nvidia.ts) değişmez"
+      }
+      Adım( kod: BKM-FND-A02, durum: tamamlandı, bağımlı: [],
+        ne:    "🖼️ İkon SVG kontrolü — working-tree'de kimliği belirsiz sarmal.svg değişikliği (gradient+shine+glow); Founder karar verir: commit mi geri-al mı (açık-iş: IKON-SVG-KONTROL · oturum 25) — KAPANIŞ 2026-07-11: Founder kararı KALSIN ('mevcut IDE'de gördüğüm ikon güzel, çok canlı duruyor'); değişiklik zaten oturum-27 commit'inde (823bad2) tarihe geçmiş, working-tree temiz — asılı değişiklik kalmadı" ) {
+        görev: "Founder: eklenti/ikonlar/sarmal.svg'deki commit'lenmemiş güzelleştirmeyi incele (oturum 25'te tespit edildi, kim/niçin belirsizdi) — beğeniyorsa commit, değilse HEAD'e geri al. Karar sonrası working-tree temiz olmalı (asılı değişiklik = her oturumda gürültü)"
+        kabul: [
+          "sarmal.svg için karar verildi (commit YA DA geri-al)",
+          "working-tree'de asılı ikon değişikliği kalmadı"
+        ]
+        sınır: "yalnız bu tek dosyanın kararı — ikon tasarım turu ayrı iş"
+      }
+      Adım( kod: BKM-MCP-A01, durum: tamamlandı, çapa: "2026-07-12: Founder 'hepsini neden yapmıyoruz' — 6 araç tek turda kodlanıyor", bağımlı: [], üretir: KOD-MCP,
+        ne:    "🔌 MCP araç genişlemesi (ajan kullanım ölçümü · Sınav-3 kronolojisinden doğdu) — ajanın MCP dışına düştüğü her an bir eksik aracın izidir: 6 yeni yüzey eklenir — KAPANIŞ 2026-07-12: sunucu 0.6.0, 13 araç; 6 yeni yüzey + 7 uçtan-uca test (çıktı-eşitliği/idempotenlik/dar-sınır kanıtlı) + kapi_kapsami MCP-ekleri tablosu; durum-guncelle enum'u KANONDAN akar" ) {
+        görev: "MCP sunucusuna altı araç ekle: ① denetle-proje{dizin} — CLI TAM-denetimini alt-süreç olarak koş ve çıktıyı aynen döndür (tek-kaynak: aynı komut; saf refaktör RAY-3 önkoşulu olarak ayrı işte kalır) ② etki{kod,dizin} — etkiCoz ile doğrudan+geçişli etkilenenleri listele ③ bul{metin,dizin} — düğüm adı/kodu/niyetinde metin ara (⌘T'nin ajan hâli; KOD bilinmeyenin giriş kapısı) ④ bicimle{kaynak} — bicimle çekirdeğini eklentiden çekirdeğe taşı ve BÇ-standart metni döndür (dosya yazmaz) ⑤ prizma{kaynak,yuz} — json/yaml/xml/md yüzleri ⑥ durum-guncelle{dizin,kod,durum} — İLK YAZAN ARAÇ (Founder onayı 2026-07-12): yalnız Adım'ın durum alanını, yalnız geçerli enum değerine, satirdaDegerDegistir ile günceller. Her araca ajan alışkanlık-tetiği yaz; kapi_kapsami tablosuna satırları ekle",
+        kabul: [
+          "Altı araç da tools/list'te görünüyor ve her biri uçtan-uca testli (mcp.test.ts)",
+          "denetle-proje çıktısı CLI denetle çıktısıyla birebir aynı (tek-kaynak kanıtı testte)",
+          "durum-guncelle yalnız Adım+durum+geçerli-enum üçlüsünde yazıyor; geçersiz istek dürüst hatayla dönüyor ve dosyaya dokunmuyor",
+          "bicimle çekirdeğe taşındı, eklenti ve testleri yeni evden içe alıyor (davranış birebir — idempotenlik süiti yeşil)",
+          "kapi_kapsami.sar yeni araçların satırlarını taşıyor; denetle TAM-yeşil ve iki süit + tsc temiz"
+        ]
+        sınır: "denetleKomutu SAF refaktörü bu Adımın işi DEĞİL (RAY-3 önkoşulu, ayrı ray) — alt-süreç köprüsü bilinçli ara-çözümdür ve kapi_kapsami'de beyanlıdır; durum-guncelle Adım dışı tip/alan yazamaz"
+      }
+      Adım( kod: BKM-KRR-A01, durum: tamamlandı, bağımlı: [], üretir: [KOD-KARARLAR, KOD-KARARLAR-NOBET],
+        // KAPANIŞ 2026-07-12: 90/90 karar → yasa/kararlar/ 9 dosya (8 küme + defter_cercevesi: rezerve numara yeri +
+        // tematik küme kararının kendisi — indekste kümesizdi, beyanlı); kanonik metinler belge bloklarında AYNEN
+        // (script-kopya, elle yazım yok); özel kodlar beyanlı (açık-gizli kesimi alt-bölümü; resmî belge biçimi kararının '|<--' literali
+        // → /// istisnası). kararlar.ts kararlarMd + `sarmal kararlar-md --yaz` (icindekiler tek-kaynak
+        // refaktörüyle); KARARLAR.md artık ÜRETİLİR — bayt-eş testle kilitli (md-ikiz drifti yapısal imkânsız;
+        // eski TOC'un 3 eksik girdisi de senkronlandı). gezin K-nn gerçek düğüme gidiyor (canlı spec kararı → yasa_drift.sar
+        // kanıtı). 5 test; 459/459 + tsc + TAM-yeşil. Koşum: arka-plan ajanı + bağımsız doğrulama.
+        ne:    "📇 Kararlar .sar göçü (DIL-5.2 Faz-2) — 90 karar, DIL-5.2 hükmünün 8 tematik kümesine göre kategori-başına .sar dosyalarına taşınır; defter motor denetimli, gezinilebilir ve MCP'den sorgulanabilir olur" ) {
+        görev: "yasa/kararlar/ altında kümeye-başına bir .sar dosyası aç ve her K-nn kararını Karar düğümü olarak taşı (STR-2.1: dosya-dosya, kümeler tek tek). Göç bitince KARARLAR.md'yi Prizma md-yüzü olarak üret — elle ikiz bırakma (tek kaynak .sar). Kimlik indeksine kararlar da girsin: ajan bir K-nn atfına gezin ile gidebilsin"
+        kabul: [
+          "Sekiz küme dosyası yaşıyor ve 90 kararın hepsi Karar düğümü olarak taşındı (yinelenen-kod bekçisi çift kaydı yakalar)",
+          "KARARLAR.md üretilir hâle geldi ve elle sürümüyle içerik-eş olduğu bir kez doğrulandı",
+          "gezin bir K-nn kodunun tanımına gidiyor; denetle TAM-yeşil ve testler yeşil"
+        ]
+        sınır: "kararların METNİ değişmez — bu Adım yalnız taşır ve yapılandırır (içerik revizyonu ayrı iştir); kronolojik tarihçe git'te zaten kalıcı"
+      }
+      Adım( kod: BKM-KRR-B02, durum: tamamlandı, bağımlı: [ BKM-KRR-A01 ], referans: [ DIL-1.1 ], üretir: [ KOD-DENETCI ],
+        ne:    "⚖️ Halef-hedef doğruluğu kapısı (çelişki-kapısı · Founder 2026-07-16): revize edilmiş bir kararın halef: atfı geçerli ve CANLI bir karara işaret etmelidir — kırık-halef ve halef-döngü durumları elle hizalama turundan motor kapısına indirilmiştir" ) {
+        görev: "Denetçiye kırık-halef (halef hedefi tanımsız) ve halef-döngü (halef zinciri kendine döner) tanılarını ekle; kapı kararlar defterinin canlı denetiminde koşsun"
+        kabul: [ "Kırık-halef ve halef-döngü tanıları canlı denetimde koşuyor (denetci.ts halef bölümü)", "Kararlar defteri kapıdan temiz geçiyor" ]
+        sınır: "Karar metinlerine dokunulmaz — kapı yalnız halef kenarının sağlığını ölçer"
+        koşu:  "2026-07-16 · kapı denetci.ts'e kodlanıp canlıya alındı (Founder istişaresiyle; sarmal.ts denetiminde koşuyor). NOT (2026-07-18 · RF-T6-A01 geriye-dönük ilan): bu Adım kod plandan önce yaşamıştı — karşılıksız-metin-atfı bekçisi kod yorumlarındaki BKM-KRR-B02 izini yakalayınca plan kaydı dürüstçe buraya işlendi (kod plandan önde durumu kapandı)"
+      }
+      Adım( kod: BKM-EKL-A03, durum: tamamlandı, bağımlı: [ TAKIM-EKLENTI ], referans: [ YUZ-1.2 ], üretir: [ KOD-EKL-EKLENTI ],
+        ne:    "🩹 Problems paneli sayı dalgası onarımı (Founder saha bulgusu 2026-07-20: 'uyarılar sürekli değişiyor, 57 mi 63 mü?'). Çözülen problem: panel tanı sayısı iki değer arasında sürekli oynuyordu; kök neden — tek-dosya yolu (denetle, yazarken anında) yalnız o dosyanın kendi tanılarını (tanila) yayınlıyor, oysa proje taraması (denetleHepsi) tanila + ÇAPRAZ tanıları (dayanaksız-kural gibi yalnız tam grafta hesaplananlar) yayınlıyordu; bir tuş vuruşu o dosyanın çapraz tanılarını panelden düşürüyor (63→57), debounce'lu tarama geri getiriyor (57→63). İki değer de eksikti: stabil gerçek her ikisinden büyüktür (çapraz tanılar dosyanın gerçek borcudur)" ) {
+        görev: [
+          "Son taramanın çapraz tanılarını dosya başına önbelleğe al (caprazOnbellek); tek-dosya yolu düzenlerken tanila + önbellekteki çapraz tanıları birlikte yayınlar — panel sayısı düzenlemede sabit kalır",
+          "Tani→vscode tanısı eşlemesini tek yere topla (taniYapTani): proje taraması ve tek-dosya çapraz-önbellek AYNI eşlemeyi kullanır (düzey/renk tutarsızlığı yapısal imkânsız · YUZ-1.2)",
+          "Bayat önbellek temizliği: bu turda görülmeyen (kapanmış/dışlanmış) dosyanın önbelleği silinir — silinmiş tanı düzenlemede geri gelmesin"
+        ]
+        kabul: [
+          "Panel tanı sayısı düzenleme ve tarama arasında SABİT kalmaktadır (çapraz tanılar tek-dosya yolunda da görünür)",
+          "Eklenti süiti tam geçmekte (172/172); 0.9.110 paketlenip kurulmuştur",
+          "Çapraz tanı düzey/rengi iki yolda birebir aynıdır (taniYapTani tek kaynak)"
+        ]
+        sınır: "Tanı MANTIĞI değişmez — hangi tanının üretildiği aynı; değişen yalnız tek-dosya yolunun çapraz tanıları da (önbellekten) göstermesidir. Dayanaksız-kural sayısının KENDİSİ (OS 31 · yasa dili turu işi) bu Adımın konusu değildir — o RAY-3 envanteri B6/ZKA-A02 kapısında"
+        koşu:  "2026-07-20 · KAPANIŞ (oturum 67): eklenti.ts'e caprazOnbellek (closure-düzeyi Map) + taniYapTani (tek eşleme yardımcısı) eklendi; denetle (tek-dosya) artık tanila + önbellek çapraz tanıları yayınlıyor, denetleHepsi her turda önbelleği tazeliyor ve bayat girdileri siliyor. CANLI KÖK NEDEN: dayanaksız-kural yalnız proje yolunda (dayanakTanilari) üretiliyordu, tek-dosya yolunda (dogrula) yoktu — CLI kanıtı: 0 özet + 31 düğüm-başına satır, ikisi ayrı yol. Onarım sonrası panel iki yolda da aynı kümeyi yayınlar. Eklenti 172/172 · 0.9.110 KURULU; çekirdek dokunulmadı. geriye-bağlantı: ajan sözleşmesi etkilenmedi (yalnız panel yayın davranışı)"
+      }
+      Adım( kod: BKM-INC-A01, durum: beklemede, öncelik: p1, onay: "şerhle onaylandı — 2026-08-05 · Founder oturumu erteledi ve v1 yayınının ardından, yayın sonrasının ilk gündem maddesi olarak koşulmasını hükmetti. Gerekçe kontrolcünün ölçümüdür: envanterdeki hiçbir kalem v1 yayınını bloklamaz ve borçların tamamı sahiplidir, dolayısıyla oturumu yayından önce koşmak kapanışa giden yolu uzatmaktan başka bir sonuç doğurmaz. Founder aynı hükümde işin unutulmamasını şart koştu. Karar verilmiş bir iş Onaylar panelinde karar bekliyormuş gibi durmayacağı için kapı kapanmıştır; unutulmama şartı HTR-V1-BORC-OTURUMU hatırlatıcısıyla karşılanır ve iş, tetikleyicisi v1 yayını olmak üzere Hatırlatıcılar panelinde sürekli görünür kalır. Envanterin tamamı bu Adımın koşu alanında korunmaktadır.",
+        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Depo genelindeki sahipli borçlar tek oturumda değerlendirilmek üzere bu kapıda toplanmıştır. Envanter şudur: temizlik turunun beş sahipli borcu (ray-üç envanterindeki emekli tanı adları, fikstürlerdeki gerçek eski karar numaraları, meyve haritasındaki çapraz harita yorumu, otuz dokuz emeklilik borcu kimliğinin sicilden çıkarılma sırası, plan ile tarihçe alanındaki karşılıksız atıflar); terfi turundan devreden yedi yüz bulguluk sekiz borç türü ile yorum isteyen on yedi şema alanı; gerçek VS Code süitinin ortam borcu; kökteki arşiv rafının dosya dosya incelenmesi ve göç bitişiyle tetiklenen üç hatırlatıcı (dış çalıştırma motoru entegrasyon vizyonu — kapalı üründe yaşar, devir kaydı sahipliği kararı, tanımsız sembol tanısı). Kontrolcü önerisi: bunların hiçbiri v1 yayınını bloklamaz; oturum v1 sonrasında Founder ile birlikte, kalem kalem yapılır.",
+        bağımlı: [ TEK-SARMAL ],
+        referans: [ STR-2, YAS-4.1 ],
+        ne:    "⚖️ V1 borç değerlendirme oturumunu Founder ile koşmak. Göç ve terfi kapanışlarının sahipli devrettiği bütün borçlar ile Founder gündemine inen hatırlatıcılar tek oturumda, kalem kalem ele alınır; her kalem kapatılır, ertelenir ya da yeni bir Adıma bağlanır." ) {
+        görev: "Koşu kaydındaki borç envanterini Founder ile kalem kalem gözden geçir; her kalemin hükmünü tarihli olarak bu Adımın koşusuna işle ve yeni iş doğuranları kendi planlarına Adım olarak bağla."
+        kabul: [ "Envanterdeki her kalem tarihli bir hükme kavuşmuştur: kapandı, ertelendi ya da yeni Adıma bağlandı; sahipsiz borç kalmamıştır." ]
+        sınır: "Bu oturum borçları değerlendirir; büyük uygulama işleri bu Adımın içinde yapılmaz, kendi Adımlarına iner."
+      }
+
+      Adım( kod: BKM-FND-A03, koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Rezervasyon Adımıdır ve içeriği günceldir; ancak açık depo yayınlanmadan önce gizli kalemlerin açık tarafta bulunmadığının varlık sınırı denetimiyle teyidi zorunludur. Kontrolcü önerisi: yayın kapısından önce Founder ile ayrı tur planlansın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): Founder kararıyla ayrı planlı tur — STR-3 fiziksel taşıma RAY-3 ile birlikte kendi oturumunda koşulur", durum: tamamlandı, onay: "şerhle onaylandı — 2026-08-05 · Founder rezervasyonu iki aşamaya ayırdı ve önce yalnız ÖLÇÜM yapılmasını hükmetti. Ölçüm, açık tarafta gizli kaleme benzeyen ne varsa varlık sınırı denetimiyle dosya ve satır düzeyinde çıkarır; bağımsız bir denetçiye koşturulur ve denetçi hiçbir dosyayı taşımaz. Sonuç temiz çıkarsa Adım taşınacak kalem bulunmadığı teyidiyle kapanır ve açık deponun yayınına giden son engel kalkar. Sızıntı çıkarsa taşıma turu ancak o zaman, tahmine değil gerçek bir listeye dayanarak açılır. Bu ayrımın gerekçesi şudur: teyit yayını bloklayan tek zorunluluktur, oysa fiziksel taşımanın tamamı gerekli olmayabilir ve dosya taşımak iki varlık arasındaki atıfları kırarak v1 kapanışında yeni bir cephe açma riski taşır. KAPANIŞ (aynı gün): şerhin şartı yerine gelmiştir. Bağımsız ölçüm koşuldu ve sonucu iki başlıkta toplandı — kimlik bilgisi sızıntısı ile kod düzeyinde çapraz bağımlılık sıfır çıktı, buna karşılık iki dosyada kapalı ürünün ayarlanmış karar sabitleri düz metin olarak bulundu. Bulgu üzerine BKM-FND-A04 temizlik turu açıldı ve kapandı. Rezervasyonun amacı böylece gerçekleşmiştir: gizli kalemler açık tarafta kalmamıştır. Kapanış, dosyaların fiziksel olarak taşınmasıyla değil açık taraftan silinmesiyle sağlandı, çünkü değerler kapalı taraftaki envanterde zaten yaşıyordu ve ikinci bir kopya taşımak yerine tek kaynağa dönmek doğru işlemdi. Kabul ölçütlerinin ikincisi de karşılanmıştır: iki varlığın denetimi temizdir ve çapraz atıf sıfırdır.", bağımlı: [],
+        ne:    "📦 STR-3 fiziksel taşıma — ŞEF politikası/gizli kalemlerin kapalı varlığa (ya da kapalı repoya) fiziksel taşınması; Founder kararıyla AYRI TUR (açık-iş: K51-FIZIKSEL-TASIMA)" ) {
+        görev: "Founder kararı + ayrı planlı tur: STR-3 açık/gizli kesiminin FİZİKSEL uygulaması — gizli taraf kalemleri (ŞEF politikası · etmen kadrosu zekâsı) kapalı varlık/kapalı repoya taşınır. KANON STR-3 “fiziksel taşıma RAY-3 ile birlikte, ayrı tur' der; bu Adım o turun rayda görünür rezervasyonudur. Taşıma planı (hangi dosya nereye) o tur açılınca STR-4 gereği kendi .sar'ına yazılır"
+        kabul: [
+          "Founder taşıma turunu açtı ve taşıma planı kendi .sar’ına yazıldı (STR-4)",
+          "taşıma sonrası iki varlık da denetle'den temiz geçiyor ve çapraz atıf sıfır (STR-3)"
+        ]
+        sınır: "bu Adım REZERVASYON — taşıma bu rayda yapılmaz, ayrı turun planına devredilir"
+      }
+
+      Adım( kod: BKM-FND-A04, durum: tamamlandı, bağımlı: [ BKM-FND-A03 ],
+        onay: "şerhle onaylandı — 2026-08-05 · Founder turu üç şerhle kapattı ve her şerh kayda işlendi. BİRİNCİ ŞERH, sınıflama kayıt dosyasındaki kanca sınırına DOKUNULMAMASI yönündedir: sınır dilin kendi kısıtıdır ve Sarmal ile kanca yazan herkesin bilmesi gerekir, kapalı üründeki orkestrasyon ayarıyla aynı sayıyı taşıması bir bağ değildir. Sayının sızıntı sanılıp silinmesini ya da iki değerin birbirine bağlanmasını önlemek için kayda açıklık eklendi. İKİNCİ ŞERH, nöbetçinin desenlerinde geçen strateji ve koreografi adlandırmalarının AÇIKTA KALMASI yönündedir: bu adlar bir stratejinin varlığını söyler, ayarını değil ve asıl değer olan ağırlıklar zaten silinmiştir. Zorlamanın kapalı tarafa taşınması reddedildi, çünkü o yol açık motoru gizli ürüne bağlayarak korumaya çalıştığı STR-3 hükmünü çiğnerdi; gerekçe nöbetçinin kendi kaydına yazıldı. ÜÇÜNCÜ ŞERH, muafiyet listesindeki kaçış valfinin DARALTILMASI yönündedir: ilk yazımda satırında belirli bir ibare geçen her kalem muaf sayılıyordu ve bu, kapalı bir eşiği açık tarafa yazıp yanına iyi niyetle o ibareyi düşen birinin nöbetçiyi susturmasına izin verirdi, yani bugün kapatılan kusuru başka kılıkta geri getirirdi. Muafiyet artık yalnız eşleyici puanlamasının kendi desenlerine bağlıdır ve yeni bir kalem açık kaynak yapılacaksa listeye elle eklenir.",
+        koşu: "2026-08-05 · KAPANIŞ. Bağımsız denetim açık tarafta iki dosyada gerçek sızıntı ölçtü ve temizlik turu bu bulgu üzerine koşuldu. İkinci dalga kalemleri ile üç destekleyici ifşa açık taraftan silindi; yerlerinde yalnız politikanın kapalı üründe yaşadığını söyleyen işaretçi kaldı ve hiçbir yere değer yazılmadı. Founder'ın dalga hükmü gereği eşleyici puanlaması açık tarafta korundu ve açık kaynak minimal sürümün parçası olduğu kayda geçti. Sınır nöbetçisinin kör noktası kapatıldı; kök neden ilk tahminden bir kat derindi, çünkü nöbetçi yalnız yol biçimli sızıntı aramakla kalmıyor, taraması yalnız ayrıştırılan kaynakları kapsıyordu ve sızan iki dosya belge biçiminde olduğu için görüş alanına hiç girmiyordu. Üretici kendi ilk yazımında desenlerin ve fikstürlerin gerçek sabitleri düz metin taşıdığını fark edip düzeltti ve bunu raporunda açıkça bildirdi; kontrolcü desenlerin biçim tanıdığını bağımsız doğruladı. Kontrolcü kendi mutasyon sondajını da koştu: temizlenen kanca sabiti geri konduğunda nöbetçi doğru dosya, satır ve envanter bölümüyle yakaladı, dosya kopyasıyla geri alınınca denetim yeniden temizlendi; valfin daraltılması da ayrı bir mutasyonla kanıtlandı. Ölçümler: çekirdek süiti 975/975, eklenti süiti 426/426, tür denetimi temiz, iki varlığın denetimi sıfır hata ve sıfır uyarı, ikinci dalga sabitleri açık tarafta sıfır kez geçiyor. Git geçmişi açığı kapsam dışında bırakıldı ve yayın Adımının işi olarak devredildi.",
+        referans: [ STR-3, YAS-4.1 ],
+        üretir: [ KOD-DENETCI ],
+        ne:    "🧹 VARLIK SINIRI TEMİZLİK TURU — ölçülmüş sızıntının kapatılması ve nöbetçinin büyütülmesi. Bağımsız denetim 2026-08-05 tarihinde açık tarafta iki dosyada gerçek sızıntı buldu: kapalı ürünün AYARLANMIŞ karar sabitleri, yani asıl teknik bilgi birikimi, açık depoda düz metin olarak yaşıyor. Denetim ayrıca yapısal kökü gösterdi: sınır nöbetçisi yalnız YOL BİÇİMLİ sızıntı arıyor ve içerik biçimli sızıntıyı tasarımı gereği göremiyor, dolayısıyla yeşil kapı bu kalemleri onaylayarak geçirdi." ) {
+        görev: [
+          "AÇIK KAYNAK AYRIMINI ÖNCE UYGULA (Founder hükmü 2026-08-05). Minimal orkestrasyon zekâsı Sarmal içinde açık kaynak yayımlanacaktır; bu yüzden birinci dalgaya ait sabitler açık tarafta MEŞRUDUR ve taşınmaz. Ajan eşleyici puanlaması ZKA-A06 ile birinci dalgadadır: açık tarafta kalır ve açık kaynak minimal sürümün parçası olduğu kaydıyla işaretlenir. Karar motoru eşikleri, strateji seçici, tetikleyici koreografisi ve model koordinatörü ikinci dalgadadır ve kapalı tarafa taşınır.",
+          "TAŞIMAYI CERRAHİ YAP. plan/ray3_yol_haritasi.md dosyasının gizli zekâ bölümündeki ikinci dalga kalemleri ile aynı dosyadaki üç destekleyici ifşa (hangi orkestrasyon etmeninin gizli olduğunun kodlarıyla sayılması, kadro büyüklüğü ile kapalı depo yolu, yeniden deneme ve eskalasyon limitleri) açık taraftan çıkarılır; yerlerinde yalnız politikanın kapalı üründe yaşadığını söyleyen işaretçi kalır. plan/orkestrator_gundemi.md dosyasındaki kanca politikası sabitleri aynı biçimde temizlenir. Değerler kapalı taraftaki eşik envanterinde zaten yaşadığı için taşıma bir kopya değil, açık taraftan SİLME işlemidir.",
+          "NÖBETÇİYİ BÜYÜT. Bugünkü sınır nöbetçisi bir satırda kapalı varlığın yol adını arar ve belge bloklarını atlar; sızan dosyalar o yolu hiç anmadığı için nöbetçi sessiz kaldı. Nöbetçi İÇERİK BİÇİMLİ sızıntıyı da görecek biçimde genişletilir: kapalı taraftaki eşik envanterinden türeyen sabitlerin açık tarafta düz metin olarak belirmesi yakalanmalıdır. Genişletme, açık kaynak minimal sürümün meşru sabitlerini KIRMIZIYA DÜŞÜRMEMELİDİR; ayrım nöbetçinin kendi kaydında açıkça yazılır.",
+          "GİT GEÇMİŞİ AÇIĞINI KAPAT. Denetim yalnız çalışan ağacı ölçtü; sabitler daha önce başka dosyalarda yaşamışsa tam geçmişle yayımlanan bir depo onları yine ifşa eder. Karar J zaten temiz geçmişle ayrı depo öngörür; bu yolun fiilen uygulandığı ve yayın kümesinin geçmiş taşımadığı yayın anında doğrulanır.",
+          "SINIRDAKİ KALEMLERİ FOUNDER'A TEK TEK SOR. Denetimin tartışmalı sınıfı şunları içerir: rakip analizi ile ticari konumlanma metinleri, kapalı ürünün mimari anlatısını taşıyan belgeler, dört dosyadaki makine kullanıcı adı içeren mutlak yollar, bir demo elektronik posta adresi ve rotasyon bekleyen bir anahtar borcunun alenen duyurulması. Bunlar sır değildir fakat açık kaynak bir dil deposunun taşımak zorunda olmadığı kalemlerdir; her birinin akıbetine Founder karar verir."
+        ]
+        kabul: [
+          "İkinci dalga sabitleri açık tarafta sıfır kez geçmektedir ve bu, kapalı taraftaki envanterden türetilen bir aramayla gösterilmiştir.",
+          "Ajan eşleyici puanlaması açık tarafta durmaktadır ve açık kaynak minimal sürümün parçası olduğu kayda geçmiştir; yanlışlıkla taşınmamıştır.",
+          "Nöbetçi içerik biçimli sızıntıyı yakalamaktadır ve bu MUTASYONLA kanıtlanmıştır: temizlenen kalemlerden biri geri konduğunda süit kırmızıya döner, geri alınınca yeşile döner.",
+          "Nöbetçi, açık kaynak minimal sürümün meşru sabitlerinde yanlış alarm ÜRETMEMEKTEDİR ve bu da ayrı bir fikstürle ölçülmüştür.",
+          "Founder sınırdaki kalemlerin her birine hüküm vermiştir; sessizce bırakılan kalem yoktur.",
+          "İki varlığın denetimi sıfır hata ve sıfır uyarı verir; çekirdek ile eklenti süitleri yeşildir ve sayıları düşmemiştir."
+        ]
+        sınır: "Bu Adım kapalı taraftaki envanterin İÇERİĞİNİ değiştirmez, yalnız açık taraftan siler. Açık kaynak yapılacak minimal sürümün kapsamı bu Adımın konusu değildir; o karar dalga ayrımında verilmiştir ve burada yalnız uygulanır. Git geçmişinin fiilî temizliği yayın Adımının işidir; burada yalnız açık kaydedilir."
+      }
+    }
+  }
+}
+
+// 🍎 Meyve ilanları (dosya-seviye · MIM-2.1 üretim-yeri)
+Kod( kod: KOD-CLI-KAPISI, dosya: "urun/cekirdek/src/sarmal.ts",
+  ne: "🍎 Komut satırı yardım ve bilinmeyen-komut kapısı — --help/-h/help dalları ile tanınmayan alt komutlar, ham Node yığın izi basmadan sef/kilitle deseniyle karşılanır; yalnızca-MCP sekiz komutun CLI davranışı da bu kapıdan karar bulur (BKM-CLI-A01)" )
+Kod( kod: KOD-CLI-KAPISI-NOBET, dosya: "urun/cekirdek/sinama/cli-kapisi.test.ts",
+  ne: "🍎 komut satırı kapısı test-nöbeti — yardım dalı, bilinmeyen-komut dalı ve dürüst dosya hatası yirmi iki sınamayla regresyona kilitlenir (BKM-CLI-A01)" )
+Kod( kod: KOD-SABLON, dosya: "urun/cekirdek/src/sablon.ts",
+  ne: "🍎 Şablon kütüphanesi tek kaynak — sablon/*.sar dosyalarını okur; başla üreteci (CLI+MCP) buradan besler (BKM-OLG-A06)" )
+Kod( kod: KOD-SNF-NOBET, dosya: "urun/cekirdek/sinama/mcp.test.ts",
+  ne: "🍎 siniflama-yüzü test-nöbeti — MCP siniflama{Adım} konabilirliği izinliSarma kanonundan akar (Blok·Faz·Katman) + koni alan tipleri görünür; A1 senaryosu regresyon kalkanı (BKM-SNV2-A04)" )
+Kod( kod: KOD-SABLON-NOBET, dosya: "urun/cekirdek/sinama/sablon.test.ts",
+  ne: "🍎 şablon kopyalanabilirlik nöbeti — başla('proje') kopyala→iskelet→denetle TAM-yeşil; Teknoloji ilanları kırık-referans A3 tuzağını kapalı tutar (BKM-SNV2-A05)" )
+Kod( kod: KOD-EKL-GIYDIR, dosya: "urun/eklenti/src/giydir.ts",
+  ne: "🍎 Çalışma Alanını Giydir kabuğu — sarmal.giydir komutu + imza-tespitli ilk teklif (otoGiydir) + rakip-susturma; yalnız Workspace hedefi (BKM-SNV2-A03)" )
+Kod( kod: KOD-EKL-GIYDIR-AYAR, dosya: "urun/eklenti/src/giydir-ayar.ts",
+  ne: "🍎 Giydir ayar üretimi (SAF) — renk/dekor tablosu gömülü kanondan; renk-uret.mjs'in runtime ikizi, palette-drift eşitlik nöbetli (BKM-SNV2-A03)" )
+Kod( kod: KOD-ETKI-NOBET, dosya: "urun/cekirdek/sinama/etki.test.ts",
+  ne: "🍎 etki çekirdeği birim-test nöbeti — doğrudan/geçişli ayrımı · topolojik sıra · boş-durum · bilinmeyen-KOD (test yoğunlaşması ①, c522a3f; beyanı BKM-KRR-A01 turunda tamamlandı — yetim-meyve mirası kapandı)" )
+Kod( kod: KOD-KARARLAR,
+  ne: "🍎 KARARLAR md-yüzü üreticisi (SAF) — kararlarMd: eski defter rafından KARARLAR.md üretirdi (BKM-KRR-A01); defter 2026-07-31 tarihinde repo dışı arşive inince üretici emekli oldu, jenerik içindekiler çekirdeği cekirdek/src/icindekiler.ts halefinde yaşar" )
+Kod( kod: KOD-KARARLAR-NOBET,
+  ne: "🍎 kararlar göçü test-nöbeti — 9 kaynak dosya parse + 90 Karar düğümü + md idempotent/senkron + örnek karar metni birebir (BKM-KRR-A01); sınadığı korpus arşive inince süit emekli oldu, şekil-drift köşe-durumu fikstur-sekil-drift.txt fikstürüne izole edildi" )

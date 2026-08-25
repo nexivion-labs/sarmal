@@ -1,0 +1,32 @@
+// 🎓 BECERİ ŞABLONU — sistemin öğrendiği, tekrar kullanılabilir yapabilirlik.
+//    Doğuş yolu: yaşanan ders önce Bellek'e düşer; değerli/tekrar eden ders
+//    Beceri'ye TERFİ eder (motor `beceri-terfisi` ile hatırlatır). Beceri ≤300 satır.
+//    Bağlama TÜKETİCİ-beyan: Adım `kullanır: BCR-…` der; Beceri görev listesi TUTMAZ.
+//    Bekçi: eksik-alan — 9 zorunlu: kod·sağlar·yığın·ne·neZaman·kurallar·örnek·antiDesen·uygular.
+
+// ① YETENEK — yığından bağımsız yapabilirlik ("bunu kim sağlıyor?" grafın cevabı)
+Yetenek( kod: YTN-Ornek ) {
+  ne: "<yığından bağımsız yapabilirlik — tek cümle>"
+}
+
+// ② BECERİ — o yeteneğin BİR yığındaki somut hâli (ayrı yığın = ayrı Beceri)
+-->|
+  ## Amaç
+  <bu beceri hangi dersten doğdu, neyi tekrar edilebilir kılar>
+  ## Kapsam
+  <hangi durumları kapsar · neyi KAPSAMAZ>
+  ## Sonuç
+  <bu beceriyi kullanan Adım neyi doğru yapmış olur>
+|<--
+Beceri( kod: BCR-Ornek,
+        sağlar: YTN-Ornek,
+        yığın: evrensel,                     // flutter · react · fastapi · evrensel
+        ne: "<bu beceri NE yapar — tek cümle>",
+        neZaman: "<hangi durumda devreye girer>",
+        kurallar: [ "<uyulacak kesin kural 1>", "<kural 2>" ],
+        örnek: "<somut kullanım örneği — kopyalanabilir küçük parça>",
+        antiDesen: "<bunu YAPMA — en sık düşülen hata>",
+        uygular: ANY-X )
+
+// Kullanan Adım (BAŞKA dosyada) beyan eder:
+//   Adım( kod: ADM-X, ..., kullanır: BCR-Ornek, durum: geliştirmede )

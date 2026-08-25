@@ -1,0 +1,738 @@
+{
+  "kod": "SNF-REHBER",
+  "ne": "Widget tiplerinin EĞİTİCİ açıklamaları — hover/öğrenme için (kayit.json'un kısa 'ne'sinin uzun, öğretici hâli). Türkçe-önce, insan+ajan anlasın.",
+  "ikiz": "oz/siniflama/kayit.json",
+  "girisler": {
+    "ÇalışmaAlanı": {
+      "tanim": "ÇalışmaAlanı (bahçe 🏡), tek bir tabanda birden çok Uygulama'yı (ağacı) paralel yetiştiren en üst konteynerdir. Tek auth, ortak yasa, ortak Blok/Etmen; her Uygulama ayrı ağaç ama aynı toprakta.",
+      "yeri": "En tepede. İçinde Uygulama ve Proje sarar: **ÇalışmaAlanı** › Uygulama/Proje › …",
+      "gorev": "Büyük işi tek noktadan yönetir — çok teknoloji, çok ekip, çok app'i ortak kurallarla birleştirir; kod-tabanlı `çağır` ile parçaları paylaştırır.",
+      "ajan": "Ajanlara **ortak anayasa + ortak havuz** verir: tüm ajanlar aynı kurala uyar, işi birbirine bağlar.",
+      "insan": "İnsana **tek kokpit** verir: dağınık repolar yerine tek bahçe; nerede ne yetişiyor bir bakışta."
+    },
+    "Uygulama": {
+      "tanim": "Uygulama (ağaç 🌳), ÇalışmaAlanı içinde yaşayan tek bir uygulamadır. Kendi kökü, gövdesi, dalları vardır ama bahçenin ortak yasasına tabidir.",
+      "yeri": "ÇalışmaAlanı altında, Proje ile aynı seviyede: ÇalışmaAlanı › **Uygulama** › Blok/Teknoloji/Ekran…",
+      "gorev": "Bir ürünü baştan sona tanımlar; başka Uygulama'larla ortak parçaları `çağır` ile paylaşır, kendine özgü kısmı ayrı tutar.",
+      "ajan": "Ajana **bu ağacın sınırını** çizer: 'sen bu uygulamanın işiyle ilgilen' der.",
+      "insan": "İnsana çok-app'i **paralel** geliştirme imkânı verir — biri diğerini bozmaz."
+    },
+    "Proje": {
+      "tanim": "Proje (kök 🌱), tek bir ağacın üretken köküdür — Flutter'ın `main.dart`'ı gibi. Tüm hiyerarşiyi ve kuralları ANA olarak İLAN eder; bu ilan tanınmadan tek satır kod yazılmaz (Yapı-Önce: fiziksel yapı üretilmeden kanonik kökte ilan edilir).",
+      "yeri": "Ağacın en altında, her şeyi besleyen kök: **Proje** › Faz › Blok › Katman › Adım. Bu kanonik dizilişte rütbe atlamak serbesttir; küçük bir iş Faz ve Katman yazmadan da ilerleyebilir.",
+      "gorev": "Klasör hiyerarşisini + kullanılan teknolojileri + rafları ilan eder; sağlam kök = drift'siz dal.",
+      "ajan": "Ajana **tek kaynak-gerçek** verir: 'yapı budur, buna göre üret' — tahmin yok.",
+      "insan": "İnsana projenin **tek anayasa dosyasını** verir: her şey nereden başlar, nerede durur bellidir.",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    "Blok": {
+      "tanim": "Blok (gövde 🪵), İŞ eksenidir — ayrı bir sınıf ya da dosya gibi yeniden kullanılabilen dikey iş dilimidir. En önemli özelliği şudur: **önyüz ve arkayüz adımlarını TEK çatı altında kavuşturur**; bir özellik hem önyüzü hem arkayüzüyle burada buluşur. Kimliği TEKİLDİR; mevsimler boyunca AYNI gövde büyür ve ileriki fazlarda `çağır BLK-X` ile sürer.",
+      "yeri": "Proje/Uygulama altında (zaman gerekiyorsa bir Faz onu sarar); içinde Katman sarar: Proje › Faz › **Blok** › Katman › Adım.",
+      "gorev": "Bir özelliği (ör. 'kimlik') uçtan uca toplar; farklı teknoloji katmanlarını (Flutter+FastAPI) tek kabul kapısında birleştirir; fazlar-arası sürekliliği `çağır` ile taşır.",
+      "ajan": "Ajana **kavuşturma noktasını** verir: 'önyüz A05'e, arkayüz A05'e bakacak' — kenarlarla bağlar.",
+      "insan": "İnsana bir özelliği **bir bütün** olarak gösterir: parçalar dağılmaz, bir gövdede toplanır.",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    "Faz": {
+      "tanim": "Faz (mevsim/yıl halkası 🌀), ZAMAN eksenidir — projenin bir büyüme dönemidir. Zaman ağacın parçası değil BÜYÜME DÖNEMİDİR; halka, o mevsimde büyüyen her dalın odununu kapsar. Kardeş fazlar SIRALIDIR: sırayı motor türetir, çünkü bir fazın Adımları kendinden önceki fazın Kapısına örtük olarak bağımlıdır.",
+      "yeri": "Proje altında Blok'ları sarar: Proje › **Faz** › Blok › Katman › Adım. Küçük iş Faz yazmaz (rütbe-atlama serbest); AYNI Blok sonraki fazda `çağır` ile sürer.",
+      "gorev": "Projeyi zaman dilimlerine böler. İşin boyutunu değil ZAMANI ayırır; kardeş fazlar arasındaki sırayı faz-sırası bekçisi motorda türetir.",
+      "ajan": "Ajana **hangi dönemde** çalıştığını söyler: 'sen mvp fazındasın' — bağlamı o dönemin kapsamıyla sınırlar; önceki faz kapanmadan sonraki dönemin işine sızmayı (drift) engeller.",
+      "insan": "İnsana projenin **yol haritasını** bir bakışta gösterir: hangi dönem bitti, hangisi büyüyor — mevsimler halinde okunur.",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    "Katman": {
+      "tanim": "Katman (dal 🌿), TEKNOLOJİ eksenidir — bir Blok'un içindeki teknoloji dilimidir: **önyüz · arkayüz · güvenlik · denetim**. Bir Takım ya da Teknoloji bağı bekler: dilin ve yığının kim olduğu Katman'da beyan edilir, beyan edilmezse katmansız-teknoloji bekçisi uyarır.",
+      "yeri": "Blok altında yaşar; içinde Adım (yaprak) ve AltKatman (ufak dal) taşır: Blok › **Katman** › (AltKatman) › Adım. Bir Blok altında birden çok Katman durur, çünkü her teknoloji dilimi ayrı bir daldır. Önerilen diziliş şudur: Adım'ı doğrudan taşımak yerine konu bazlı AltKatman modülleri sar. Doğrudan taşımak da geçerlidir; bilgi bekçisi bunu yalnız ölçer, ceza vermez. Kavuşum kuralı ise şudur: farklı Katmanların modülleri birbirine doğrudan değil Sözleşme üzerinden kavuşur, yani dikey dilim aynı sözleşmeye bağımlı modül çiftidir.",
+      "gorev": "Bloku teknoloji dilimlerine böler; ilişkili Adım'ları bir dalda toplar (ör. 'önyüz' katmanı tüm ekran adımlarını tutar). **1 Katman → çok Adım.** Takım bağı burada verilir — Adımlar dalın teknolojisini miras alır.",
+      "ajan": "Ajana **dar bir bağlam konisi** verir: 'yalnız bu teknoloji diliminin adımlarıyla ilgilen'. Odağı daraltır, komşu katmana sızmayı (drift) engeller.",
+      "insan": "İnsana **sindirilebilir harita** sunar: koca bloğu tek seferde değil, teknoloji dilimi dilimi görür; breadcrumb'da nerede olduğunu bir bakışta anlar.",
+      "koken": [
+        "MIM-1.3",
+        "ORK-2.3"
+      ]
+    },
+    "AltKatman": {
+      "tanim": "AltKatman (ufak dal 🌿) — DEPARTMAN eksenidir (MIM-1.5): her AltKatman planlama · kodlama · sınama · inceleme · güvenlik çekirdek beşlisinden tam olarak birini `departman:` alanıyla temsil eder. Yeni bir departman yalnız ÇalışmaAlanı örtüsünün katkılı enum genişletmesiyle eklenir; taban küme yerinde değiştirilemez. Alan adı tektir: `rol:` adı RBAC ve ajan rolüne rezervedir, AltKatman'da kullanılmaz.",
+      "yeri": "Katman altında yaşar; içinde Adım taşır: Katman › **AltKatman** › Adım. Katı rejimde her Katman→Adım yolu en az bir AltKatman'dan geçer (YAS-1.1); AltKatman zinciri derinleşirse derin-dal bilgi tanısı sorar (fren — ceza değil soru).",
+      "gorev": "Katman'ın işini görünür departman sorumluluklarına böler; teknoloji bağını KÖK Katman'dan MİRAS alır — kendi bağını beyan ETMEZ (katmansız-teknoloji bekçisi AltKatman'a bakmaz).",
+      "ajan": "Ajana **daha da dar bir koni** verir: 'yalnız bu departmanın adımlarıyla ilgilen' — kabul sahipliği departmandan okunur; teknoloji bağını kök Katman'dan alır, yeniden sormaz.",
+      "insan": "İnsana **departman haritası** sunar: aynı Katman'daki işlerin hangi sorumlulukta (planlama mı, kodlama mı, sınama mı) olduğunu adıyla söyler."
+    },
+    "Adım": {
+      "tanim": "Adım (yaprak 🍃), AKIŞ eksenidir — ağacın en küçük iş birimidir, yani bölünemeyen tek görevdir. Ama basit bir satır değil, **zengin bir düğümdür**: içinde bir bağlam konisi taşır (görev · referans · kabul · dokunulmaz · bağımlılık · sınır).",
+      "yeri": "Katman altında, ağacın ucunda: Katman › **Adım**. Çocuk sarmaz (yaprak); ilişkileri kenarlarla kurar (`bağımlı`, `üretir`, `besler`, `referans`).",
+      "gorev": "Bir işi tam tanımlar: ne yapılacak (görev), hangi kaynaklarla (referans), ne zaman doğru sayılır (kabul), neye dokunulmaz, neye bağlı, nerede durur.",
+      "ajan": "Ajana **doğrudan prompt kaynağıdır**: orkestratör bu koniyi okur, referansları zorla yükler, XML-tag'li bir prompt üretir → ajan tahmin etmeden, tam bağlamla üretir. Meyveyi (`üretir`) buradan doğurur.",
+      "insan": "İnsana her işin **tam tarifini** verir: 'bu adım tam olarak ne, nasıl kabul edilir' — belirsizlik yok, drift yok.",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    "Teknoloji": {
+      "tanim": "Teknoloji, bir stack'i (Flutter, FastAPI, PostgreSQL…) temsil eden widget'tır. `çağır KOD` ile getirilir; bir Adım ona `bağımlı` olunca 'bu adımın meyvesi bu dilde olacak' demektir.",
+      "yeri": "Proje/Uygulama altında ilan edilir; Adım'lar `bağımlı: FLUTTER` gibi kenarlarla ona bağlanır.",
+      "gorev": "Sarmal'ın dil-bağımsızlığını sağlar: aynı Türkçe niyet, `bağımlı`ya göre farklı teknolojiye çevrilir (Flutter→Dart, FastAPI→Python).",
+      "ajan": "Ajana **hangi dilde yazacağını** söyler: çeviri tablosunu Teknoloji widget'ı taşır.",
+      "insan": "İnsana teknoloji seçimini **tek yerde** verir: stack değişince niyet değil, sadece bağlanılan Teknoloji değişir."
+    },
+    "Etmen": {
+      "tanim": "Etmen, kimlik+yetenek+izole bellek+anayasa taşıyan AI çalışanıdır (F-1). tür: apex (tekil orkestra şefi) · yönetici (akışı yönetir, ÜRETMEZ) · uzman (üretir, uzmanlık dışına çıkmaz). yetki: L1-L6 (varsayılan L3; L5 yalnız denetçi; L6 kalıcı atanamaz). Beceriler etmenin ALTINDA yaşar.",
+      "yeri": "Orkestrasyon altında yaşar; içinde Beceri, Bellek, Anayasa, Kanca, Tetikleyici sarar.",
+      "gorev": "Belirli işleri yapan uzman aktörü tanımlar; apex orkestratör havuzdan Etmen seçip görev dağıtır.",
+      "ajan": "Ajanın **kimliğini ve sınırını** verir: hangi araçlara erişir, hangi kurala uyar, neyi hatırlar.",
+      "insan": "İnsana ajan takımını **kurulabilir/denetlenebilir** kılar: her ajanın ne yaptığı ve nereye tabi olduğu bellidir."
+    },
+    "Beceri": {
+      "tanim": "Beceri, bir Yetenek'in belirli bir yığındaki uygulamasıdır (F-2): `sağlar: YTN-…` + `yığın: flutter`. Zorunlu anatomi (eski 3-katman, kanıtlı): neZaman · kurallar · örnek · antiDesen (+ güvenlikte neden). Anayasa mirası zorunlu (`uygular:`). ≤300 satır. Bellek'teki tekrar eden ders Beceri'ye terfi eder.",
+      "yeri": "Etmen altında; Tetikleyici ile 'ne zaman kullanılacağı' koşula bağlanır.",
+      "gorev": "Etmenin uzmanlığını taşır — etmenin ALTINDA yaşar. Bağlama tüketici-beyan: Adım `kullanır: BCR-…` der, koni beceriyi otomatik getirir; Beceri'de görev listesi tutulmaz (çift-kaynak yasak).",
+      "ajan": "Ajana **hazır uzmanlık** verir: her seferinde sıfırdan değil, damıtılmış reçeteyle çalışır.",
+      "insan": "İnsana sistemin **öğrendiğini görünür** kılar: hangi ders beceriye dönüştü, bellidir."
+    },
+    "Karar": {
+      "tanim": "Karar, verilmiş bir tasarım/yön kararının kaydıdır (ör. 'oturum JWT + yenileme jetonu'). Sadece bir not değil: `besler`/`referans` kenarlarıyla ilgili Adım'ların bağlam-konisine girer.",
+      "yeri": "Genelde üst seviyede; kenarlarla Adım'lara bağlanır: `Karar ──besler──▶ Adım`.",
+      "gorev": "Bir kararı tek yerde tutar ve onu ilgilendiren adımlara otomatik taşır — karar dağılmaz, tekrar edilmez.",
+      "ajan": "Ajana **kararı otomatik gösterir**: o adımda çalışırken ilgili Karar bağlama yüklenir, ajan onu görerek üretir.",
+      "insan": "İnsana 'neden böyle yapıldı'yı **kaybetmeden** saklar: karar geçmişi izlenebilir."
+    },
+    "Şablon": {
+      "tanim": "Şablon, ajana verilecek bağlamın (prompt'un) FORMATIDIR. Adım'ın konisini deterministik, XML-tag'li bir prompt'a dönüştürür — prompt-mühendisliği artık ad-hoc değil, versiyonlu, drift-denetimli birinci-sınıf artefakt.",
+      "yeri": "Orkestrasyon tarafında; orkestratör: Şablon(format) + Adım(koni) + çözülmüş kenarlar → final prompt.",
+      "gorev": "Her ajana **aynı yapılı** bağlamı verir: `<görev>…</görev> <kabul>…</kabul>` gibi XML-tag'li, Claude/LLM-dostu.",
+      "ajan": "Ajana **tutarlı, parse-edilebilir** bağlam verir: her seferinde aynı format → daha az hata.",
+      "insan": "İnsana prompt kalitesini **kontrol edilebilir** kılar: format tek yerde, herkes ona uyar."
+    },
+    "Anayasa": {
+      "tanim": "Anayasa, TÜM ajanların uyduğu tek ortak kural setidir. Vendor'a özel değil (claude.md/gemini.md değil): tek `Anayasa` → Claude, Gemini, GPT, Cursor hepsi aynı kurala uyar (model-agnostik).",
+      "yeri": "Yasa ailesinde; Etmen'ler `anayasa` kenarıyla ona tabi olur: `Etmen ──anayasa──▶ Anayasa`.",
+      "gorev": "Ajanlar-arası tutarlılığı sağlar: farklı araçlar/modeller aynı davranışı gösterir, birbirinden drift etmez.",
+      "ajan": "Ajana **değişmez kuralı** verir: hangi model olursa olsun aynı çerçevede çalışır.",
+      "insan": "İnsana **tek kural dosyası** verir: her araç için ayrı kural yazma derdi biter."
+    },
+    "Kod": {
+      "tanim": "Kod, üretilen kaynak koddur — ağacın MEYVESİ 🍎. Bir Adım'ın `üretir` kenarının hedefi; gerçek `.py/.dart/.ts` dosyası. Sarmal onu `.sar`'a çoğaltmaz, sadece niyetle bağlar; kod hedef dilinde, gerçek dosyada kalır.",
+      "yeri": "Ürün ailesinde; `Adım ──üretir──▶ Kod`. Gerçek dosya çalışılan dizinde.",
+      "gorev": "Niyetin somut çıktısını temsil eder; Denetçi 'bu meyve var mı, spec'e uyuyor mu' diye denetler.",
+      "ajan": "Ajanın **ürettiği sonuç**: koniden aldığı bağlamla bunu yazar, Sınama kabul'e karşı doğrular.",
+      "insan": "İnsana 'niyet gerçekten koda döndü mü'yü **izlenebilir** kılar: spec ↔ kod bağı kopmaz."
+    },
+    "Kapı": {
+      "tanim": "Kapı (kabul geçidi ✅), bir Faz'ı ya da Blok'u 'gerçekten bitti mi?' diye sınayıp geçişe izin veren denetim noktasıdır. Kabul kriterleri yeşil olmadan sonraki aşamaya geçilmez — 'vibe ile bitti' demeyi imkânsız kılar.",
+      "yeri": "Bir Faz/Blok'un sonuna bağlanır ve ardındaki işi kilitler: `Faz ─geçer─▶ Kapı ─açar─▶ sonraki Faz`.",
+      "gorev": "Bir aşamanın çıktısını ölçülebilir kriterlere vurur; geçemezse ilerlemeyi durdurur. Faz-kapılı yürütmenin (yuvaya düşmeyi önleyen) somut düğümüdür.",
+      "ajan": "Ajana **net bir 'tamam' tanımı** verir: 'şu kriterler yeşilse görevin bitti' — belirsiz bitiş ve kendi kendini onaylama yok.",
+      "insan": "İnsana **güven** verir: her aşama bir kapıdan geçtiği için ilerleme gerçektir; yarım işin 'bitti' sanılması engellenir."
+    },
+    "Gereksinim": {
+      "tanim": "Gereksinim, sistemden istenen bir özelliğin/kullanıcı-hikâyesinin kaydıdır ('kullanıcı jetonla giriş yapabilmeli'). Neyin YAPILACAĞINI tanımlar — nasıl yapılacağını değil.",
+      "yeri": "Planın üst tarafında yaşar; `karşılar`/`referans` kenarlarıyla onu gerçekleyen Blok/Adım'lara bağlanır.",
+      "gorev": "İstenen davranışı tek yerde sabitler; hangi adımın hangi gereksinimi karşıladığını izlenebilir kılar (kapsama takibi).",
+      "ajan": "Ajana **hedefi** söyler: 'bu adım şu gereksinimi karşılamalı' — ne inşa edeceğini niyet düzeyinde bilir.",
+      "insan": "İnsana **kapsam sözleşmesi** sunar: söz verilen özellikler kaybolmaz, her biri bir adıma bağlıdır."
+    },
+    "Formül": {
+      "tanim": "Formül, bir bilimsel/teknik temeli (denklem, kapasite hesabı, algoritma çekirdeği) tutan bilgi düğümüdür. Karar değil, **dayanak**tır.",
+      "yeri": "Bilgi rafında durur; `informs` (bilgilendirir) kenarıyla ilgili Adım'ların bağlam-konisine girer.",
+      "gorev": "Bir hesabın/kuralın doğru temelini tek yerde saklar; adımlar onu referans alır, yeniden türetmeye gerek kalmaz.",
+      "ajan": "Ajana **sağlam zemin** verir: uydurmak yerine kanıtlı formülü bağlamda görür, ona göre üretir.",
+      "insan": "İnsana 'bu neye dayanıyor'u **kaybetmeden** saklar — bilgi tekrar keşfedilmez."
+    },
+    "Sözlük": {
+      "tanim": "Sözlük, alanın terimlerini tek bir ortak dilde tanımlayan bilgi düğümüdür ('oturum', 'jeton', 'kavuşturma' ne demek). Terim kargaşasını bitirir.",
+      "yeri": "Bilgi rafında; birçok düğüm ona `informs` ile bakar — projenin ortak kelime dağarcığı.",
+      "gorev": "Terimlerin tek anlamını sabitler; aynı kelimenin farklı yerlerde farklı anlaşılmasını (kavramsal drift) engeller.",
+      "ajan": "Ajana **ortak dil** verir: terimleri projenin tanımladığı gibi anlar, kendi varsayımını dayatmaz.",
+      "insan": "İnsana **anlaşma zemini** sunar: ekip ve etmenler aynı kelimeyi aynı şeye der."
+    },
+    "Fikir": {
+      "tanim": "Fikir, henüz ham ve taahhütsüz bir düşüncedir ('belki WebSocket kullanırız'). Karar değildir; olgunlaşırsa Karar'a **yükselir**.",
+      "yeri": "Bilgi rafında, gevşek/kenarsız durur; değer kazanınca Karar'a dönüşür (provenance korunarak).",
+      "gorev": "Ham fikirleri kaybetmeden park eder; erken karara zorlamadan düşünmeye alan açar.",
+      "ajan": "Ajana **keşif alanı** verir: kesinleşmemiş seçenekleri 'karar' sanmadan görür — yanlış bağlanmaz.",
+      "insan": "İnsana beynindeki **taslakları** bir kenarda tutma imkânı verir; olgunlaşınca kararlaştırır."
+    },
+    "Deney": {
+      "tanim": "Deney, bir hipotezi sınayan küçük araştırmadır ('bu kütüphane yeterince hızlı mı?') — hipotez + sonuç. Bir Karar'ı besler.",
+      "yeri": "Bilgi rafında; `besler` kenarıyla ilgili Karar'a bağlanır: `Deney ─besler─▶ Karar`.",
+      "gorev": "Belirsizliği ölçümle giderir; kararı tahmine değil kanıta dayandırır.",
+      "ajan": "Ajana **kanıt** sunar: 'şu denendi, sonuç bu' — varsayımla değil, sonuçla ilerler.",
+      "insan": "İnsana 'neden bu yolu seçtik'in **deneysel gerekçesini** saklar."
+    },
+    "Orkestrasyon": {
+      "tanim": "Orkestrasyon, bir etmen havuzunu çalışma anında yöneten düğümdür: Adım'ın bağlam konisinden **istem üretir**, uygun ajanı seçer, işi dağıtır ve sonucu toplar. Apex orkestratörün çalışma birimidir.",
+      "yeri": "Yönetim düzleminde durur ve Adım'lara ile Etmen'lere kenarlarla bağlanır. Bir tanım düğümü değil, çalışma anında koşan bir bileşendir; komut satırı ve MCP tarafında yaşar.",
+      "gorev": "Graph'tan yürütmeye köprü kurar: hangi ajan, hangi koniyle, hangi sırayla çalışacak — hepsini yönetir.",
+      "ajan": "Ajana **görevini ve sınırını** teslim eder: doğru koniyle, doğru yetkiyle, doğru anda tetiklenir.",
+      "insan": "İnsana **orkestra şefi** verir: onlarca ajanı tek tek gütmek yerine dağıtımı sistem yapar."
+    },
+    "Politika": {
+      "tanim": "Politika, alana özel bir kural demetidir; alanı öğrenme, maliyet, güvenlik, hız ya da içerik olabilir. Kural'ı sarar ve otoritesi politikadır: çakışma olduğunda anayasa maddesi onu ezer. Değerlendirme motoru Kural ile aynıdır.",
+      "yeri": "Yönetim düzleminde; Etmen'lerin anayasasına ve Kanca'lara bağlanır.",
+      "gorev": "İzinli/yasak davranışı sabitler; orkestrasyonu güvenli sınırlar içinde tutar.",
+      "ajan": "Ajana **kırmızı çizgiler** verir: neyi yapamayacağını baştan bilir, sınır aşımı engellenir.",
+      "insan": "İnsana **kontrol** verir: sistemin sınırları yazılı ve zorlanır — sürpriz davranış olmaz.",
+      "koken": [
+        "F-5",
+        "YAS-2.3",
+        "YAS-2.4",
+        "YAS-3.4"
+      ]
+    },
+    "İşAkışı": {
+      "tanim": "İşAkışı, aşamalı bir sürecin tanımıdır: hangi adım hangi sırayla, hangi koşulla, kime geçer. Orkestrasyonun reçetesi.",
+      "yeri": "Yönetim düzleminde; Adım'ları ve Kapı'ları sıraya dizer.",
+      "gorev": "Tekrarlanan çok-adımlı işleri (ör. 'PR aç → test → gözden geçir → birleştir') tek tanımda toplar.",
+      "ajan": "Ajana **rota** verir: bir sonraki adımın ne olduğunu ve koşulunu bilir — kaybolmaz.",
+      "insan": "İnsana **tekrarlanabilir süreç** sunar: aynı iş her seferinde aynı disiplinle akar."
+    },
+    "Kanca": {
+      "tanim": "Kanca, bir olayın öncesine/sonrasına/hatasına takılan otomatik tetiktir (`önce`/`sonra`/`hata`). Zorlama motorunun eli: bir şey olduğunda kural işletir.",
+      "yeri": "Yönetim düzleminde; Adım/Etmen yaşam-döngüsüne bağlanır.",
+      "gorev": "'Şu olduğunda şunu yap'ı otomatikleştirir (ör. adım bitince sınama koş, hata olunca geri al).",
+      "ajan": "Ajana **refleks** verir: elle hatırlamak yerine, olayla birlikte doğru davranış otomatik tetiklenir.",
+      "insan": "İnsana **unutmama garantisi** verir: kontroller sürecin içine gömülü, atlanamaz."
+    },
+    "Bellek": {
+      "tanim": "Bellek, etmenin tipli hafızasıdır; türü ders, referans, proje ya da kullanıcı olabilir. Ders türünün zorunlu alanları neden, nasılUygula ve aşamadır; beş basamaklı terfi hattında bekleyen dersleri Denetçi ölçer. İçeriğin kendisini değil İŞARETÇİSİNİ tutar (bkz:). Tekrar eden ders Beceri'ye terfi eder.",
+      "yeri": "Etmen'e aittir (katman/adıma değil); `ogrenme/` altında, ajana özel ve izole.",
+      "gorev": "Ajanın deneyimini kalıcılaştırır; aynı hatayı iki kez yapmayı önler, sistemi yaşadıkça akıllandırır.",
+      "ajan": "Ajana **geçmişini** verir: daha önce ne yaşadığını hatırlar, sıfırdan başlamaz; başka ajanın belleğine sızmaz (izolasyon).",
+      "insan": "İnsana **öğrenen sistem** sunar: hatalar kaybolmaz, derse dönüşür.",
+      "koken": [
+        "F-3",
+        "OGR-4",
+        "YAS-4.2"
+      ]
+    },
+    "Tetikleyici": {
+      "tanim": "Tetikleyici, bir Beceri'nin 'ne zaman kullanılacağını' söyleyen koşuldur. Eşleşince ilgili Beceri **otomatik ateşlenir**: `Beceri ◀tetikler─ Tetikleyici`.",
+      "yeri": "Etmen düzleminde; Beceri'ye `tetikler` kenarıyla bağlıdır.",
+      "gorev": "Yeteneği bağlama bağlar: doğru durumda doğru beceriyi devreye sokar, elle çağırmaya gerek kalmaz.",
+      "ajan": "Ajana **refleks eşiği** verir: 'şu koşul varsa şu beceriyi kullan' — beceriyi ne zaman kullanacağını bilir.",
+      "insan": "İnsana **otomatik doğru araç** sağlar: uygun yetenek, uygun anda kendiliğinden gelir."
+    },
+    "Ekran": {
+      "tanim": "Ekran, bir arayüzün köküdür (Flutter'ın Scaffold'u = İskelet). Türkçe, bildirimsel niyet: 'burada bir giriş ekranı var' der; nasıl çizileceğini ajan yazar.",
+      "yeri": "Yüzey alt-ağacının tepesi; içinde Sütun/Satır/Kart gibi yerleşim widget'larını sarar.",
+      "gorev": "Bir ekranın çatısını kurar; başlık/gövde/aksiyon iskeletini bildirir.",
+      "ajan": "Ajana **çizilecek yüzeyin niyetini** verir: hangi ekran, hangi parçalarla — kodu hedef teknolojide üretir.",
+      "insan": "İnsana ekranı **koda boğulmadan** tarif etme imkânı verir: 'ne'yi söyler, 'nasıl'ı sisteme bırakır."
+    },
+    "Sütun": {
+      "tanim": "Sütun, çocuklarını **dikey** dizen yerleşim widget'ıdır (Flutter Column). 'Şunlar alt alta' demenin bildirimsel yolu.",
+      "yeri": "Yüzey ağacında; Ekran/Kapsayıcı içinde yaşar, içinde başka widget'lar taşır.",
+      "gorev": "Öğeleri yukarıdan aşağıya sıralar; dikey yerleşimi niyet düzeyinde belirtir.",
+      "ajan": "Ajana **dikey yerleşim niyetini** verir: sırayı bilir, hedef çatıda karşılığını üretir.",
+      "insan": "İnsana yerleşimi **piksel hesabı yapmadan** anlatma imkânı verir."
+    },
+    "Satır": {
+      "tanim": "Satır, çocuklarını **yatay** dizen yerleşim widget'ıdır (Flutter Row). 'Şunlar yan yana' demenin bildirimsel yolu.",
+      "yeri": "Yüzey ağacında; Ekran/Kapsayıcı içinde yaşar, içinde başka widget'lar taşır.",
+      "gorev": "Öğeleri soldan sağa sıralar; yatay yerleşimi niyet düzeyinde belirtir.",
+      "ajan": "Ajana **yatay yerleşim niyetini** verir: sırayı bilir, hedef çatıda karşılığını üretir.",
+      "insan": "İnsana bir satır düzenini **tek kelimeyle** ifade etme imkânı verir."
+    },
+    "Yığın": {
+      "tanim": "Yığın, çocuklarını **üst üste** (z-ekseninde) yerleştiren yerleşim widget'ıdır (Flutter Stack). Katmanlı arayüz (arka plan + üstünde içerik) için.",
+      "yeri": "Yüzey ağacında; içinde üst üste binen widget'lar taşır.",
+      "gorev": "Öğeleri katman katman bindirir; derinlik/örtüşme niyetini belirtir.",
+      "ajan": "Ajana **katmanlı yerleşim niyetini** verir: neyin neyin üstünde olacağını bilir.",
+      "insan": "İnsana örtüşen tasarımı **karmaşık koda girmeden** tarif ettirir."
+    },
+    "Kapsayıcı": {
+      "tanim": "Kapsayıcı, tek bir çocuğu boyut/renk/kenar-boşluğu ile saran kutudur (Flutter Container). Görünüm ayarlarının taşıyıcısı.",
+      "yeri": "Yüzey ağacında; içine tek bir widget alır, onu biçimlendirir.",
+      "gorev": "Bir öğeye çerçeve verir: boyut, dolgu, arka plan — görsel kabuğu bildirir.",
+      "ajan": "Ajana **biçim niyetini** verir: hangi öğe, hangi kutu ölçüleriyle sarılacak.",
+      "insan": "İnsana bir öğenin çerçevesini **stil koduna dalmadan** ayarlatır."
+    },
+    "Kart": {
+      "tanim": "Kart, gölgeli/köşeleri yuvarlak bir içerik kabıdır (Flutter Card). İlişkili bilgiyi görsel bir parça hâlinde gruplar.",
+      "yeri": "Yüzey ağacında; içinde Sütun/Metin/Düğme gibi öğeleri toplar.",
+      "gorev": "İlgili içeriği bir 'kart' olarak öbekler; malzeme-tasarımı hissi verir.",
+      "ajan": "Ajana **öbekleme niyetini** verir: hangi öğeler bir kartta toplanacak.",
+      "insan": "İnsana içeriği **düzenli parçalar** hâlinde gösterme imkânı verir."
+    },
+    "Liste": {
+      "tanim": "Liste, kaydırılabilir bir öğe dizisidir (Flutter ListView). Çok sayıda benzer öğeyi (satırları) verimli gösterir.",
+      "yeri": "Yüzey ağacında; içinde tekrarlı öğeler (Kart/Satır/Metin) taşır.",
+      "gorev": "Uzun içeriği kaydırmalı biçimde sunar; dinamik/tekrarlı listeleri bildirir.",
+      "ajan": "Ajana **liste niyetini** verir: neyin tekrarlanıp kaydırılacağını bilir.",
+      "insan": "İnsana uzun içeriği **kaydırma mantığını yazmadan** listeletir."
+    },
+    "Metin": {
+      "tanim": "Metin, ekrandaki yazıdır (Flutter Text) — bir **yaprak** 🍂 (daha alt sarmaz). Arayüzün en küçük anlam taşıyan parçası.",
+      "yeri": "Yüzey ağacının ucunda; yaprak — içine başka widget almaz.",
+      "gorev": "Bir yazıyı ve stilini bildirir: başlık, etiket, açıklama.",
+      "ajan": "Ajana **gösterilecek metnin niyetini** verir: hangi yazı, nerede, ne vurguyla.",
+      "insan": "İnsana yazıyı **doğrudan** yerleştirme imkânı verir."
+    },
+    "Düğme": {
+      "tanim": "Düğme, tıklanabilir bir eylemdir (Flutter Button) — bir **yaprak** 🍂. Kullanıcının sistemle etkileşim noktası.",
+      "yeri": "Yüzey ağacının ucunda; yaprak — bir eyleme (adıma) bağlanabilir.",
+      "gorev": "Bir eylemi tetikleyen tıklanabilir öğeyi bildirir (giriş yap, kaydet).",
+      "ajan": "Ajana **eylem niyetini** verir: bu düğme neyi tetikleyecek — hangi işe bağlı.",
+      "insan": "İnsana etkileşimi **olay koduna dalmadan** tanımlatır."
+    },
+    "Görsel": {
+      "tanim": "Görsel, ekrandaki resimdir (Flutter Image) — bir **yaprak** 🍂. Görsel içerik taşıyıcısı.",
+      "yeri": "Yüzey ağacının ucunda; yaprak — içine başka widget almaz.",
+      "gorev": "Bir resmi ve kaynağını/ölçüsünü bildirir.",
+      "ajan": "Ajana **gösterilecek görselin niyetini** verir: hangi resim, hangi ölçüde.",
+      "insan": "İnsana görseli **doğrudan** yerleştirme imkânı verir."
+    },
+    "İkon": {
+      "tanim": "İkon, küçük simgedir (Flutter Icon) — bir **yaprak** 🍂. Anlamı hızlı ileten görsel işaret.",
+      "yeri": "Yüzey ağacının ucunda; genelde Düğme/Metin yanında yaprak olarak durur.",
+      "gorev": "Bir simgeyi ve anlamını bildirir (ara, sil, ayar).",
+      "ajan": "Ajana **simge niyetini** verir: hangi ikon, hangi anlamı taşıyacak.",
+      "insan": "İnsana anlamı **tek simgeyle** iletme imkânı verir."
+    },
+    "Sayfa": {
+      "tanim": "Sayfa, bir tasarım-oluşturucu sayfasıdır (design-builder page): birden çok Ekran/Bileşen'in bir arada tasarlandığı tuval.",
+      "yeri": "Yüzey ailesinde, üst seviyede; içinde Ekran/Bileşen'leri toplar.",
+      "gorev": "Tasarım çalışmasını sayfa düzeyinde toplar; ekranlar arası bütünlüğü bildirir.",
+      "ajan": "Ajana **sayfa bağlamını** verir: hangi ekranlar/bileşenler bir arada tasarlanıyor.",
+      "insan": "İnsana tasarımı **sayfa sayfa** düzenleme imkânı verir."
+    },
+    "Bileşen": {
+      "tanim": "Bileşen, yeniden-kullanılabilir bir UI parçasıdır (component): bir kez tanımlanıp çok yerde kullanılan widget öbeği.",
+      "yeri": "Yüzey ailesinde; Ekran/Sayfa içinde `çağır` ile tekrar kullanılır (kod-tabanlı paylaşım).",
+      "gorev": "Tekrarlanan arayüz parçasını tek tanıma indirir; kopyala-yapıştır driftini önler.",
+      "ajan": "Ajana **yeniden-kullanım niyetini** verir: aynı parçayı çoğaltmak yerine bileşeni çağırır.",
+      "insan": "İnsana **tutarlı arayüz** sağlar: bir yerde düzeltilen, her yerde düzelir."
+    },
+    "Tema": {
+      "tanim": "Tema, arayüzün renk/font/token bütünüdür (theme): tasarım dilinin tek kaynağı.",
+      "yeri": "Yüzey ailesinde, üst seviyede; tüm Ekran/Bileşen ona bakar.",
+      "gorev": "Görsel tutarlılığı sabitler: renkler ve tipografi tek yerde tanımlanır, her yer miras alır.",
+      "ajan": "Ajana **tasarım dilini** verir: hangi renk/font kullanılacağını uydurmadan bilir.",
+      "insan": "İnsana **marka tutarlılığı** sağlar: tema değişince tüm arayüz birlikte değişir."
+    },
+    "Yasa": {
+      "tanim": "Yasa, projenin **değişmez kurallarını** barındıran raftır (kural-seti kökü). 'Genel Kurallar' burada yaşar: BÇ (biçim), DL (dil), SD (söz dizim), YP (yapı) gibi kategori-önekli kanunlar. Sağlam kök = düzenli dal = bol meyve.",
+      "yeri": "Kök seviyesinde, `yasa/` rafı; tüm ağacı bağlar. `genel_kurallar` (her dosyaya) + `ozel-kurallar` (kategoriye/duruma) diye ayrılır.",
+      "gorev": "Neyin doğru/yanlış olduğunu sabitler; derleyici bu kuralları drift denetiminde ölçüt alır. Kurallar olmadan büyüyen proje drift'e sürüklenir.",
+      "ajan": "Ajana **anayasayı** verir: uyacağı kanunları baştan bilir; ihlal ederse drift olarak yakalanır.",
+      "insan": "İnsana **güvenli zemin** sunar: kurallar yazılı ve zorlanır; hem insan hem etmen aynı yasaya tabidir."
+    },
+    "GenelKural": {
+      "tanim": "GenelKural, framework'ün **yerleşik (built-in)** kuralıdır — Sarmal'la gelen kanun (ör. 'ilk parametre KOD olmalı', 'Türkçe-öncelik'). Temeldir, değiştirilemez.",
+      "yeri": "`yasa/genel_kurallar/` altında; her dosyaya uygulanır (kategori bağımsız).",
+      "gorev": "Sarmal'ın çekirdek disiplinini dayatır; tüm projelerde ortak, sarsılmaz taban.",
+      "ajan": "Ajana **evrensel zeminini** verir: hangi projede olursa olsun uyulacak temel kurallar bellidir.",
+      "insan": "İnsana **tutarlılık** sağlar: framework'ün özü her yerde aynı davranır."
+    },
+    "ÖzelKural": {
+      "tanim": "ÖzelKural, **kullanıcının kendi tanımladığı** kuraldır ve fonksiyona benzer: `Kural ad(...) { ... }`. Geliştirici projesine özgü kanunu yazar, makine onu zorlar.",
+      "yeri": "`yasa/ozel-kurallar/` altında; belirli kategoriye/duruma uygulanır.",
+      "gorev": "Projeye özel disiplini tanımlar (ör. 'bu blokta yalnız FastAPI'). Genel kural yetmediğinde devreye girer.",
+      "ajan": "Ajana **projeye özgü sınırları** verir: bu projede neyin geçerli olduğunu bilir.",
+      "insan": "İnsana **kendi kuralını koyma** gücü verir: mimariyi Sarmal dayatmaz, geliştirici tanımlar — sistem korur.",
+      "koken": [
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    "MCP": {
+      "tanim": "MCP, bir MCP sunucusu düğümüdür: ajanların **denetimli araç erişim kapısıdır**. Ajan araca doğrudan değil bu denetimli geçitten ulaşır; geçidin sözleşmesi çalışma anında zorlanır.",
+      "yeri": "Teknoloji ailesinde; Adım'lara `bağımlı` kenarıyla bağlanır (bağımlılık tiplemesi).",
+      "gorev": "Dış yetenekleri (dosya, DB, API) ajana **kontrollü** açar: hangi araç, hangi izinle erişilebilir.",
+      "ajan": "Ajana **güvenli eller** verir: yalnız izinli araçlara, izinli biçimde erişir — sınırsız erişim yok.",
+      "insan": "İnsana **denetim** verir: ajanın neye dokunabildiği tek kapıdan yönetilir."
+    },
+    "Araç": {
+      "tanim": "Araç, MCP-dışı bir dış araçtır (CLI/API): ajanın kullandığı harici yetenek (ör. `git`, bir REST servisi).",
+      "yeri": "Teknoloji ailesinde; Adım/Etmen'e `bağımlı` kenarıyla bağlanır.",
+      "gorev": "Dışarıdaki bir kabiliyeti ağaca tanıtır; adımların ona bağımlılığını görünür kılar.",
+      "ajan": "Ajana **kullanabileceği aleti** tanıtır: hangi dış aracın mevcut olduğunu bilir.",
+      "insan": "İnsana **bağımlılık haritası** verir: hangi adım hangi dış araca dayanıyor, bellidir."
+    },
+    "Model": {
+      "tanim": "Model, bir AI-model kaydı/yönlendirmesidir (registry/routing): hangi işe hangi modelin koşacağını tanımlar.",
+      "yeri": "Teknoloji ailesinde; Etmen'e/Orkestrasyon'a bağlanır — 'bu ajan şu modelle çalışır'.",
+      "gorev": "Model seçimini sabitler ve yönlendirir: ağır muhakeme güçlü modele, mekanik iş hızlı modele.",
+      "ajan": "Ajana **beynini** atar: hangi model tier'ında çalışacağını belirler (doğru işe doğru model).",
+      "insan": "İnsana **maliyet/kalite dengesi** verir: model dağılımı bilinçli ve yazılıdır."
+    },
+    "Ortam": {
+      "tanim": "Ortam, bir çalışma ortamıdır (dev/staging/prod): kodun hangi koşulda koştuğunu tanımlar.",
+      "yeri": "Teknoloji ailesinde; Ayar/Altyapı ve adımlara bağlanır.",
+      "gorev": "Ortama-özgü davranışı ayırır (ör. prod'da farklı gizli anahtar); ortam karışmasını önler.",
+      "ajan": "Ajana **nerede çalıştığını** söyler: dev mi prod mu — davranışını ona göre ayarlar.",
+      "insan": "İnsana **güvenli ayrım** verir: geliştirme ile canlı birbirine karışmaz."
+    },
+    "Ayar": {
+      "tanim": "Ayar, bir yapılandırma meyvesidir 🍎 (config/env/build): sistemin çalışma parametreleri (`üretir` kenarıyla doğar).",
+      "yeri": "Ürün ailesinde; bir Adım'ın `üretir` kenarıyla ortaya çıkan somut çıktı.",
+      "gorev": "Çalışma-zamanı ayarlarını tek yerde tutar; ortam/anahtar/bayrak değerlerini bildirir.",
+      "ajan": "Ajana **üretilecek yapılandırmanın** niyetini verir: hangi ayar, hangi değerle.",
+      "insan": "İnsana **somut çıktı** gösterir: adımın meyvesi olan ayar dosyası izlenebilir."
+    },
+    "Sözleşme": {
+      "tanim": "Sözleşme, önyüz+arkayüz+veritabanının AYNI şemaya üretildiği stack-nötr köprüdür (F-6). İki yüz: uç sözleşmesi `istek:/yanıt:(+hatalar:)` · veri sözleşmesi `alanlar:`. Alan tarifi kompakt: `eposta: \"metin · zorunlu · eposta-biçimi\"`. `sürüm:` zorunlu — sürüm artmadan kırıcı değişiklik = sözleşme-kırılması (Denetçi).",
+      "yeri": "Ürün ailesinde; genelde bir Blok'un kavuşturma noktasında `üretir` ile doğar.",
+      "gorev": "Tarafları sabitler: Uç `istek:/yanıt:` ile, Tablo `şema:` ile, Form `sözleşme:` ile bağlanır — uyumsuzluk `taraf-uyumsuz`, bağsızlık `askıda-sözleşme`. Şema değişirse üç taraf birden uyarılır; drift burada ölür.",
+      "ajan": "Ajana **uyulacak arayüzü** verir: ürettiği kod bu sözleşmeye uymalı — serbest uydurmaz.",
+      "insan": "İnsana **kavuşturma garantisi** sağlar: önyüz ve arkayüz aynı sözleşmeye bakar."
+    },
+    "Altyapı": {
+      "tanim": "Altyapı, dağıtım/işletim meyvesidir 🍎 (Docker/K8s/Terraform/CI-CD): kodun nerede ve nasıl koşacağının tanımı.",
+      "yeri": "Ürün ailesinde; bir Adım'ın `üretir` kenarıyla doğan işletim çıktısı.",
+      "gorev": "Barındırma, ölçekleme, dağıtım hattını bildirir; 'benim makinemde çalışıyordu'yu bitirir.",
+      "ajan": "Ajana **koşum ortamının** niyetini verir: hangi altyapı, hangi biçimde üretilecek.",
+      "insan": "İnsana **tekrarlanabilir dağıtım** sağlar: altyapı kod olarak izlenir."
+    },
+    "Veri": {
+      "tanim": "Veri, bir veri kümesi/tohum/fixture meyvesidir 🍎 (dataset/seed): sistemin çalışması/testi için başlangıç verisi.",
+      "yeri": "Ürün ailesinde; bir Adım'ın `üretir` kenarıyla doğar; Sınama'lar onu kullanır.",
+      "gorev": "Örnek/başlangıç verisini tek yerde tutar; test ve geliştirmeyi öngörülebilir kılar.",
+      "ajan": "Ajana **çalışacağı veriyi** tanıtır: hangi tohum/fixture mevcut, ona göre üretir.",
+      "insan": "İnsana **öngörülebilir zemin** verir: aynı veriyle aynı sonuç."
+    },
+    "Göç": {
+      "tanim": "Göç, bir DB şema-değişim script'idir 🍎 (migration): veritabanını bir sürümden diğerine **sıralı** taşıyan adım.",
+      "yeri": "Ürün ailesinde; sıralıdır (biri diğerini takip eder), `üretir` ile doğar.",
+      "gorev": "Şema değişimini geri-alınabilir, sıralı biçimde uygular; elle-şema-değiştirme kaosunu bitirir.",
+      "ajan": "Ajana **sıralı dönüşümü** verir: mevcut şemadan hedefe hangi adımlarla gidileceğini bilir.",
+      "insan": "İnsana **güvenli veri evrimi** sağlar: her değişim kayıtlı, sıralı, geri-alınabilir."
+    },
+    "Meyve": {
+      "tanim": "Meyve 🍎, bir Adımın `üretir` bağıyla doğurduğu izlenebilir teslimdir (MIM-2). Türünü taşır; Kod, Ekran, Uç ve Sözleşme türleri proje-içi `dosya` beyan eder (MIM-2.1), Karar, Onay ve dış-çıktı türleri dosya muafiyeti kataloğundadır (MIM-2.2).",
+      "yeri": "Üreten Adımın `üretir` konisine bitişik yazılır; üreticisi belirsiz Meyve kabul edilmez.",
+      "gorev": "Sonuç ile onu doğuran işi tek kenarla bağlar: değişikliğin sahibi, kabul kanıtı ve etki zinciri graftan okunur.",
+      "ajan": "Ajana teslim sözleşmesini verir: hangi türde, hangi dosyaya, hangi Adım'dan.",
+      "insan": "İnsana ürün grafını verir: plan bitince ortaya ne çıktı, tek bakışta."
+    },
+    "Görev": {
+      "tanim": "Görev, ajana atanan durumlu bir iş-birimidir (task): atandı → koşuyor → bitti. Orkestrasyonun temel primitifi.",
+      "yeri": "Süreç ailesinde; bir Adım'dan doğar, bir Etmen'e atanır, bir Koşum'da yürür.",
+      "gorev": "Yapılacak işi izlenebilir bir birime çevirir; kimin neyi, hangi durumda yürüttüğünü gösterir.",
+      "ajan": "Ajana **net iş paketi** verir: ne yapacağını ve durumunu bilir; iş kaybolmaz.",
+      "insan": "İnsana **ilerleme görünürlüğü** sağlar: hangi görev nerede, tek bakışta bellidir."
+    },
+    "Koşum": {
+      "tanim": "Koşum, bir çalışmanın canlı kaydıdır (run): ajanın işi yürütürkenki telsiz/akış izi.",
+      "yeri": "Süreç ailesinde; bir Görev'in yürütülmesiyle doğar, canlı akar.",
+      "gorev": "Yürütmeyi anlık olarak kaydeder; 'şu an ne oluyor'u görünür kılar (telsiz).",
+      "ajan": "Ajana **canlı geri-bildirim** verir: yürütmesinin durumu izlenir, müdahale edilebilir.",
+      "insan": "İnsana **şeffaflık** sağlar: iş kara-kutu değil, canlı izlenir."
+    },
+    "İz": {
+      "tanim": "İz, bir ajanın akıl-yürütme tutanağıdır (trace): kararlarını nasıl aldığının adım-adım kaydı. Zincir-yukarı hesap verir.",
+      "yeri": "Süreç ailesinde; bir Koşum'un içinden çıkar, `reports_to` ile üst orkestratöre gider.",
+      "gorev": "Ajanın düşünce/eylem zincirini saklar; sonradan denetlenebilir kılar (§ üretici≠denetçi).",
+      "ajan": "Ajana **hesap verebilirlik** getirir: ne yaptığı ve neden yaptığı kayıtlı, denetlenebilir.",
+      "insan": "İnsana **güven denetimi** sağlar: ajanın gerekçesi görülebilir, kör noktalar yakalanır."
+    },
+    "Komut": {
+      "tanim": "Komut, ajana verilen emir/prompt artefaktıdır (prompt): orkestratörün Adım'ın bağlam-konisinden ürettiği talimat.",
+      "yeri": "Süreç ailesinde; Orkestrasyon tarafından üretilip Görev'e/Etmen'e iletilir.",
+      "gorev": "Niyeti (görev·referans·kabul·sınır) somut bir talimata çevirir; ajanın gireceği bağlamı sabitler.",
+      "ajan": "Ajana **tam talimatı** verir: ne yapacağını, neye bakacağını, sınırını tek pakette alır.",
+      "insan": "İnsana **üretilen prompt'u** görünür kılar: ajana ne söylendiği izlenebilir."
+    },
+    "Git": {
+      "tanim": "Git, bir sürüm-kontrol kaydıdır (commit/PR/dal/sürüm): kodun değişim geçmişindeki bir düğüm.",
+      "yeri": "Süreç ailesinde; genelde bir Görev/Koşum sonucu üretilen değişikliğe bağlanır.",
+      "gorev": "Kod değişimini izlenebilir bir olaya çevirir; hangi işin hangi commit'e karşılık geldiğini bağlar.",
+      "ajan": "Ajana **değişim bağlamı** verir: hangi commit/PR neyi değiştirdi, görünür.",
+      "insan": "İnsana **izlenebilir geçmiş** sağlar: iş ↔ kod değişimi eşlemesi kaybolmaz."
+    },
+    "Sorun": {
+      "tanim": "Sorun, takip edilen bir hata/istek/özelliktir (issue): giderilmesi/karşılanması gereken açık uç.",
+      "yeri": "Süreç ailesinde; bir Adım/Gereksinim'e bağlanır, bir Görev'le çözülür.",
+      "gorev": "Açık işleri (bug/feature) izlenebilir tutar; hangi sorunun hangi işle çözüldüğünü bağlar.",
+      "ajan": "Ajana **çözülecek problemi** tanıtır: neyin eksik/bozuk olduğunu ve bağlamını bilir.",
+      "insan": "İnsana **açık uç defteri** verir: hiçbir sorun sessizce kaybolmaz."
+    },
+    "Sınama": {
+      "tanim": "Sınama, bir sınama/test birimidir: bir Adım/Blok'un çıktısını **kabul kriterlerine** karşı doğrular. 'Çalışıyor mu?' kapısının kanıtı.",
+      "yeri": "Nitelik ailesinde; `doğrular` kenarıyla bir Adım/Blok'un `kabul`üne bağlanır.",
+      "gorev": "Meyveyi (üretilen ürünü) kabule vurur; sözle değil çalıştırarak 'bitti'yi kanıtlar.",
+      "ajan": "Ajana **başarı ölçütü** verir: ürettiği şeyin doğru olup olmadığını sınamayla görür.",
+      "insan": "İnsana **gerçek bitiş** sağlar: iddia değil, geçen sınama = bitti."
+    },
+    "Değerlendirme": {
+      "tanim": "Değerlendirme, kalite rubriğidir (F-10): hedef + boyutlar (ağırlık toplamı 1.0 — Denetçi doğrular) + eşikler (kabul·kabulNotlu·izlemeyle·revizyon; altı red-eskalasyon). Puanlayan denetçi-etmen (izole bellek).",
+      "yeri": "Nitelik ailesinde; Etmen/Komut çıktılarına bağlanır.",
+      "gorev": "Model/prompt kalitesini ölçülebilir kılar; gerileme (regression) olduğunda yakalar.",
+      "ajan": "Ajana **kalite geri-bildirimi** verir: çıktısının yeterli olup olmadığı ölçülür.",
+      "insan": "İnsana **AI kalite güvencesi** sağlar: 'daha iyi mi oldu' sorusu ölçümle cevaplanır."
+    },
+    "Metrik": {
+      "tanim": "Metrik, telemetri/performans ölçümüdür (OTel): sistemin nicel sağlık göstergesi (gecikme, hata oranı).",
+      "yeri": "Nitelik ailesinde; Koşum/Altyapı'ya bağlanır.",
+      "gorev": "Sistemin davranışını sayıya döker; sorunları erken görünür kılar.",
+      "ajan": "Ajana **nicel durum** verir: sistemin sağlığını tahminle değil ölçümle bilir.",
+      "insan": "İnsana **erken uyarı** sağlar: bozulma sayılarla önceden görülür."
+    },
+    "Log": {
+      "tanim": "Log, yapılandırılmış bir olay-kaydıdır: sistemde ne olduğunun zaman-damgalı izi.",
+      "yeri": "Nitelik ailesinde; Koşum/Altyapı'dan akar.",
+      "gorev": "Olayları kaydeder; hata ayıklama ve denetim için geçmişi tutar.",
+      "ajan": "Ajana **ne olduğunun kaydını** verir: sorunu loglardan izleyerek teşhis eder.",
+      "insan": "İnsana **iz sürme** imkânı sağlar: bir sorun sonradan kayıttan çözülür."
+    },
+    "Güvenlik": {
+      "tanim": "Güvenlik, bir güvenlik bulgusudur (SAST/pentest/CVE): tespit edilen zafiyet/risk düğümü. Sarmal'da güvenlik **savunma-odaklı**dır.",
+      "yeri": "Nitelik ailesinde; ilgili Adım/Ürün/Altyapı'ya bağlanır.",
+      "gorev": "Zafiyetleri görünür ve izlenebilir kılar; savunma önlemlerine bağlar.",
+      "ajan": "Ajana **risk bağlamı** verir: hangi bulgu nerede, nasıl giderilecek — bilir.",
+      "insan": "İnsana **savunma görünürlüğü** sağlar: riskler kayıtlı, sahipli, izlenir."
+    },
+    "Kapsama": {
+      "tanim": "Kapsama, test kapsaması/mutation ölçüsüdür: kodun/gereksinimlerin ne kadarının sınandığını gösterir.",
+      "yeri": "Nitelik ailesinde; Sınama'lara ve Gereksinim'lere bağlanır.",
+      "gorev": "Sınanmayan boşlukları görünür kılar; 'yeterince test ettik mi' sorusunu ölçer.",
+      "ajan": "Ajana **eksik sınama alanını** gösterir: nereyi henüz doğrulamadığını bilir.",
+      "insan": "İnsana **güven düzeyi** verir: kapsam sayısı, test yeterliliğini gösterir."
+    },
+    "Sınıflama": {
+      "tanim": "Sınıflama, **tip sisteminin kendisidir** (SNF-0): hangi widget'lar, hangi parametreler, hangi aileler geçerli — hepsi buradan okunur. Sarmal'ın 'sözlüğü'.",
+      "yeri": "`oz/siniflama/` altında; makine ikizi `kayit.json`, insan ikizi `kayit.md`. Derleyici geçerliliği buradan doğrular.",
+      "gorev": "Neyin geçerli tip olduğunu tek kaynakta tutar; bilinmeyen-tip/izinsiz-sarma driftleri buna göre yakalanır. Yeni tip tek-dokunuşla eklenir (registry).",
+      "ajan": "Ajana **geçerli kelime dağarcığını** verir: hangi widget'ı nereye koyabileceğini bilir; uydurma tip yazmaz.",
+      "insan": "İnsana **canlı katalog** sunar: neyin var olduğunu, neyin nereye ait olduğunu tek kaynaktan görür."
+    },
+    "Hatırlatıcı": {
+      "tanim": "Hatırlatıcı, mekanik olarak tetiklenen ileri bağdır: durumu açık, tamamlandı ya da gereksiz olur; bir çapa taşır ve `hatırlat:` kenarıyla hedefine bağlanır. Çapa önem sırası şudur: mimari, adımdan belirgin biçimde önce gelir; adım yasa ve nitelikten, onlar da gelecekten önce gelir. Hedef aktifleştiğinde hatırlatıcı koniyle birlikte KENDİSİ gelir; hatırlatıcı açıkken hedef kapatılırsa kaçırılmış-hatırlatıcı HATASI doğar. Alınan ders şudur: tetik serbest metin olamaz.",
+      "yeri": "Öz/meta düzleminde; henüz çözülmemiş referansları işaretler.",
+      "gorev": "Gelecekte tamamlanacak bağları park eder; hedef doğunca bağlanmayı hatırlatır (yetim/kırık-bağ önleme).",
+      "ajan": "Ajana **bekleyen işi** hatırlatır: 'şu düğüm gelince şunu bağla' — eksik unutulmaz.",
+      "insan": "İnsana **açık uçları** kaybetmeme imkânı verir: yapılacaklar sistemin içinde durur.",
+      "koken": [
+        "F-8",
+        "TIP-1.12",
+        "ORK-2.1",
+        "YAS-2.2",
+        "OGR-4"
+      ]
+    },
+    "DurumKaydı": {
+      "tanim": "DurumKaydı, çalışmanın anlık-görüntüsüdür: 'nerede kaldık' sorusunun tek cevap dosyası (DRM). Bağlam dolunca buradan devam edilir.",
+      "yeri": "oz (meta) ailesinde; projenin durum/ rafında yaşar, ağacın üretim dallarına karışmaz.",
+      "gorev": "Oturumlar arası köprü kurar: bitenler, sıradaki adım ve açık kararları tek bakışta verir.",
+      "ajan": "Ajana **rehydrate kaynağı** verir: yeni oturum bu kayıttan bağlam yükler, sıfırdan keşfe gerek kalmaz.",
+      "insan": "İnsana **kaldığı yeri** hatırlatır: haftalar sonra dönünce tek dosya okumak yeter."
+    },
+    "ÜstÇubuk": {
+      "tanim": "ÜstÇubuk, ekranın tepesindeki başlık ve aksiyon şerididir (Flutter'ın AppBar'ı). Başlığı, geri okunu ve hızlı eylemleri taşır.",
+      "yeri": "Ekran'ın ilk çocuğu olarak en üstte; içine Metin/İkon/Düğme alabilir.",
+      "gorev": "Ekranın kimliğini ve üst-düzey eylemlerini bildirir: başlık ne, sağda hangi ikonlar var.",
+      "ajan": "Ajana **çubuğun niyetini** verir: başlık+aksiyon listesi — hedef teknolojide AppBar/Header'a çevirir.",
+      "insan": "İnsana ekran başlığını **tek satırda** tanımlatır; hizalama/yükseklik derdini sisteme bırakır."
+    },
+    "Gövde": {
+      "tanim": "Gövde, ekranın ana içerik alanıdır (Body). Kaydırma davranışını ve güvenli-alan (çentik) korumasını burada bildirirsin.",
+      "yeri": "Ekran'ın içinde, ÜstÇubuk'un altında; yerleşim widget'larını (Sütun/Satır/Kart) sarar.",
+      "gorev": "İçeriğin nasıl aktığını belirler: dikey mi kayar, güvenli alana mı sığar.",
+      "ajan": "Ajana **içerik kabuğunu** verir: kaydırma+safe-area niyetini platform karşılığına çevirir.",
+      "insan": "İnsana 'içerik buraya' demenin en sade yolunu verir — taşma/çentik hesabı sistemin işi."
+    },
+    "Form": {
+      "tanim": "Form, girdi alanlarını tek doğrulama çatısı altında toplar. Ne zaman doğrulanacağını (alan çıkışında / gönderimde) Form söyler.",
+      "yeri": "Gövde içinde; MetinAlanı/OnayKutusu/AçılırListe ve gönderen Düğme'yi sarar.",
+      "gorev": "Alanların doğrulama anını ve gönderim bütünlüğünü yönetir: hepsi geçerliyse gönder.",
+      "ajan": "Ajana **form sözleşmesini** verir: alanlar+kurallar+gönderim hedefi — validator kodunu ajan yazar.",
+      "insan": "İnsana form kurallarını **okunur listede** toplar: hangi alan zorunlu, tek bakışta."
+    },
+    "MetinAlanı": {
+      "tanim": "MetinAlanı, kullanıcıdan metin alan girdi kutusudur (TextField). Türünü (eposta/parola) ve doğrulama kurallarını üstünde taşır.",
+      "yeri": "Form içinde bir yaprak; çocuk sarmaz.",
+      "gorev": "Tek bir girdinin niyetini bildirir: etiketi ne, türü ne, neye göre geçerli.",
+      "ajan": "Ajana **alan şartnamesi** verir: tür+doğrula listesi — klavye tipi/maskeleme/hata mesajını ajan üretir.",
+      "insan": "İnsana 'eposta alanı, zorunlu' demeyi yeter kılar — regex/odak yönetimi görünmez."
+    },
+    "OnayKutusu": {
+      "tanim": "OnayKutusu, işaretlenebilir çoklu-seçim kutusudur (Checkbox). Değeri genellikle bir Durum alanına bağlanır.",
+      "yeri": "Form ya da yerleşim içinde yaprak; çocuk sarmaz.",
+      "gorev": "Evet/hayır tercihinin niyetini ve bağlandığı durum alanını bildirir.",
+      "ajan": "Ajana **bağlama hedefini** verir: hangi durum alanı — two-way binding kodunu ajan kurar.",
+      "insan": "İnsana tercihi tek satırda tanımlatır: 'beni hatırla → oturum.hatırla'."
+    },
+    "AçılırListe": {
+      "tanim": "AçılırListe, seçeneklerden birini seçtiren açılır menüdür (Dropdown/Select). Değerlerini ve seçili olanı bildirir.",
+      "yeri": "Form ya da yerleşim içinde yaprak; çocuk sarmaz.",
+      "gorev": "Seçenek kümesini ve varsayılanı tanımlar; serbest metin yerine kapalı liste sunar.",
+      "ajan": "Ajana **seçenek envanterini** verir — platformun select/picker'ına çevirir.",
+      "insan": "İnsana seçenekleri **veri gibi** yazdırır: [üye, yönetici] — menü mekaniği sistemin."
+    },
+    "AnlıkBildirim": {
+      "tanim": "AnlıkBildirim, ekranın altında kısa süreliğine beliren mesajdır (SnackBar/Toast). Kaynağını ve süresini bildirir.",
+      "yeri": "Ekran'ın çocuğu olarak durur ama akışa karışmaz; yaprak — çocuk sarmaz.",
+      "gorev": "Geçici geri bildirimi tanımlar: hangi durumdan beslenir, kaç saniye görünür.",
+      "ajan": "Ajana **bildirim tetiğini** verir: kaynak alan değişince göster — kuyruk/animasyonu ajan halleder.",
+      "insan": "İnsana 'hata olursa altta 4 saniye göster' cümlesini koda çevirmeden yazdırır."
+    },
+    "Canlandırma": {
+      "tanim": "Canlandırma, hareket niyetidir: tür (solma/kayma/nabız/parıltı), süre, eğri ve tekrar. Kod değil niyet — kare hesabını çalgıcı yapar.",
+      "yeri": "davranis ailesinde; ya KOD'la ön-tanımlı durur ya da widget değeri olarak satır-içi kullanılır (canlandırma: Canlandırma(...)).",
+      "gorev": "Görsel geçişlerin dilbilgisini kurar: neyin, ne kadar sürede, hangi eğriyle hareket edeceği.",
+      "ajan": "Ajana **animasyon şartnamesi** verir: sözlükteki eğri adları (hızlıÇıkışYavaşGiriş) hedef API'ye eşlenir.",
+      "insan": "İnsana animasyonu **üç kelimeyle** tarif ettirir: tür+süre+eğri; controller/dispose derdi yok."
+    },
+    "Durum": {
+      "tanim": "Durum, uygulamanın ya da ekranın değişen verisinin (State) niyetidir: hangi alanlar var, nereden beslenir.",
+      "yeri": "davranis ailesinde; ekran/uygulama kökünde ilan edilir, UI öğeleri alanlarına nokta-erişimiyle bağlanır.",
+      "gorev": "Veri ile görünüm arasındaki bağı tanımlar: kaynak Uç, alanlar, başlangıç değerleri.",
+      "ajan": "Ajana **durum modelini** verir: Provider/BLoC/Riverpod seçimini ve tesisatını ajan kurar.",
+      "insan": "İnsana 'girişYapıldı diye bir bayrağımız var, şu uçtan dolar' demeyi yeter kılar."
+    },
+    "Servis": {
+      "tanim": "Servis, arkayüzde bir iş mantığı kabıdır: taban yolu, sürümü, günlük ve gözlem politikası onda; API uçlarını o sarar.",
+      "yeri": "arkayuz ailesinin kabı; Uygulama/Proje altında ya da kökte durur, içine Uç alır.",
+      "gorev": "İlgili uçları tek çatıda toplar ve ortak işletme kurallarını (log/metrik) bildirir.",
+      "ajan": "Ajana **modül sınırını** verir: router/controller iskeletini bu kaptan üretir.",
+      "insan": "İnsana arkayüzü haritalar: 'kimlik servisi şu üç uçtan oluşur' — dosya gezmeden."
+    },
+    "Uç": {
+      "tanim": "Uç, tek bir API noktasıdır (endpoint): yolu, yöntemi, istek/yanıt sözleşmesi, yetkisi, hız sınırı ve hataları.",
+      "yeri": "Servis'in içinde yaşar; çocuk sarmaz — zenginliği parametrelerindedir.",
+      "gorev": "Bir isteğin tam şartnamesini tek yerde toplar: ne gelir, ne döner, kim çağırabilir.",
+      "ajan": "Ajana **uç şartnamesi** verir: FastAPI/Express/Gin karşılığını sözlükten eşleyip üretir.",
+      "insan": "İnsana API'yi tablo gibi okutur: POST /giris → jeton döner, 5 deneme/dk."
+    },
+    "Tablo": {
+      "tanim": "Tablo, veritabanı tablosunun niyetidir: şeması bir Sözleşme'den türer (tek gerçek), indekslerini ve ilişkilerini bildirir.",
+      "yeri": "arkayuz ailesinde; Uygulama/Proje altında ya da kökte, teknoloji bağıyla (POSTGRES) durur.",
+      "gorev": "Kalıcı verinin biçimini ilan eder; Göç (migration) meyvesini üretir.",
+      "ajan": "Ajana **şema kaynağını** verir: ORM modeli + migration'ı Sözleşme'den türetir — çift tanım drift'i biter.",
+      "insan": "İnsana veri modelini tek yerden okutur: alanlar sözleşmede, tablo ona işaret eder."
+    },
+    "KimlikPolitikası": {
+      "tanim": "KimlikPolitikası, kimlik-doğrulama politikasıdır: jeton ömürleri, parola algoritması, kilitleme kuralları. Kimlik alanının sınırını KimlikKökü, dış sağlayıcıyı KimlikSağlayıcısı temsil eder; politika bu ikisiyle karıştırılmaz.",
+      "yeri": "arkayuz ailesinde; uygulama köküne bir kez ilan edilir, uçlar yetki: ile ona yaslanır.",
+      "gorev": "Güvenliğin sayılarını tek yerde toplar: 15dk erişim, 5 deneme, argon2id.",
+      "ajan": "Ajana **güvenlik şartnamesi** verir: JWT/oturum tesisatını bu politikadan kurar.",
+      "insan": "İnsana güvenlik kararlarını **denetlenebilir** kılar: politika dosyada, kodda gömülü değil."
+    },
+    "KimlikKökü": {
+      "tanim": "KimlikKökü, kimlik alanının sınırıdır (MIM-1.1 · ORK-5): kullanıcı havuzunu, yürürlükteki KimlikPolitikası'nı ve bağlı sağlayıcı kümesini tek kapta toplar. Ortak Auth kullanan Projeler aynı kökü `kullanır` bağıyla paylaşır; Proje kimlikleri asla birleşmez.",
+      "yeri": "ÇalışmaAlanı altında ortak kök olarak ya da bağımsız yolu seçen Proje'nin içinde yaşar; çocukları KimlikPolitikası ile KimlikSağlayıcısı'dır.",
+      "gorev": "Kimlik sınırını tek yerde ilan eder: hangi havuz, hangi politika, hangi sağlayıcılar.",
+      "ajan": "Ajana auth mimarisinin kökünü verir: oturum tesisatı bu kökten okunur, sağlayıcı listesi buradan çözülür.",
+      "insan": "İnsana ortak oturum ile ürün sahipliğinin ayrımını gösterir: kök paylaşılır, proje kimliği paylaşılmaz."
+    },
+    "KimlikSağlayıcısı": {
+      "tanim": "KimlikSağlayıcısı, köke bağlı dış kimlik sağlayıcısıdır (ORK-5.1). Taban katalog kapalıdır: google · github · linkedin · apple · microsoft · sso; yeni sağlayıcı yalnız ÇalışmaAlanı örtüsünün katkılı enum genişletmesiyle eklenir.",
+      "yeri": "Yalnız bir KimlikKökü altında yaşar; köksüz sağlayıcı izinsiz yerleşimdir.",
+      "gorev": "Dış oturum kapısını tipiyle ilan eder: `tür: google` gibi.",
+      "ajan": "Ajana OAuth/SSO entegrasyonunun hangi sağlayıcıya kurulacağını söyler; serbest metin tahmini bırakmaz.",
+      "insan": "İnsana giriş seçeneklerinin envanterini verir: bu üründe hangi kapılardan girilir."
+    },
+    "Kuyruk": {
+      "tanim": "Kuyruk, asenkron işlerin sırasıdır: sağlayıcısı (REDIS vb.) ve yeniden-deneme politikası onda.",
+      "yeri": "arkayuz ailesinde; kökte ilan edilir, ArkaGörev'ler ona bağlanır.",
+      "gorev": "İşlerin dayanıklılık kurallarını bildirir: kaç deneme, hangi geri-çekilme.",
+      "ajan": "Ajana **kuyruk tesisatını** seçtirir: Celery/BullMQ karşılığını kurar, retry'ı politikadan okur.",
+      "insan": "İnsana 'e-posta işleri 3 kez denenir' güvencesini yazılı verir."
+    },
+    "ArkaGörev": {
+      "tanim": "ArkaGörev, kullanıcıyı bekletmeyen arka plan işidir: tetiği (Olay), kuyruğu ve zaman aşımı.",
+      "yeri": "arkayuz ailesinde; Kuyruk'a ve tetikleyen Olay'a KOD'la bağlanır.",
+      "gorev": "Asenkron işin niyetini bildirir: ne zaman koşar, nerede bekler, ne kadar sürebilir.",
+      "ajan": "Ajana **worker şartnamesi** verir: job kodunu ve kuyruk aboneliğini üretir.",
+      "insan": "İnsana 'kayıt olunca hoş geldin e-postası gider' cümlesini sisteme söyletir."
+    },
+    "Zamanlayıcı": {
+      "tanim": "Zamanlayıcı, takvimle tetiklenen iştir (cron): ifadesi ve görevi.",
+      "yeri": "arkayuz ailesinde; kökte ilan edilir.",
+      "gorev": "Periyodik bakım/temizlik işlerini görünür kılar: gece 3'te jeton temizliği.",
+      "ajan": "Ajana **cron şartnamesi** verir: scheduler kaydını ve işi üretir.",
+      "insan": "İnsana gizli kalan periyodik işleri **envantere** çıkarır — 'bu sistemde gece ne döner?' cevabı burada."
+    },
+    "Olay": {
+      "tanim": "Olay, sistemde olup bitenin ilanıdır (event/webhook): adı, yükü (Sözleşme) ve yayın yönü.",
+      "yeri": "arkayuz ailesinde; yayıncı uç/görev ile dinleyici ArkaGörev'i KOD üzerinden buluşturur.",
+      "gorev": "Gevşek bağlaşımı kurar: 'kullanıcı kaydoldu' derken kimin dinlediğini bilmek zorunda değilsin.",
+      "ajan": "Ajana **olay sözleşmesini** verir: publisher/subscriber tesisatını üretir.",
+      "insan": "İnsana sistemin sinir uçlarını gösterir: hangi olay var, yükü ne."
+    },
+    "Önbellek": {
+      "tanim": "Önbellek, tekrar eden cevabın saklanma niyetidir: sağlayıcı, ömür (TTL) ve anahtar.",
+      "yeri": "arkayuz ailesinde; kökte ilan edilir ya da Uç'a widget değeri olarak iliştirilir.",
+      "gorev": "Neyin, ne kadar süre, hangi anahtarla saklanacağını bildirir.",
+      "ajan": "Ajana **cache stratejisini** verir: Redis get/set sarmalını ve invalidation'ı üretir.",
+      "insan": "İnsana performans kararını görünür kılar: '/ben 5 dakika önbellekte'."
+    },
+    "Gizli": {
+      "tanim": "Gizli, bir sırrın (API anahtarı, imza anahtarı) İLANIDIR — değeri asla dosyaya yazılmaz, yalnız nereden geleceği söylenir.",
+      "yeri": "arkayuz ailesinde; kökte ilan edilir, ihtiyaç duyan yapılar KOD'la başvurur.",
+      "gorev": "Sırrın kaynağını (ortam değişkeni/kasa) ve adını bildirir; değer üretim ortamından gelir.",
+      "ajan": "Ajana **sır sözleşmesini** verir: os.environ okuma kodunu üretir, değeri asla görmez.",
+      "insan": "İnsana güvenlik hijyeni kazandırır: repoda sır yok, sadece sırrın adresi var."
+    },
+    "Raf": {
+      "tanim": "YAPRAK klasör — rafta yalnız KİTAPLAR (içerik: Yasa, Sınıflama, Sözleşme…) durur; RAF İÇİNDE RAF OLMAZ (metafor: Kitaplık › Raf › Kitap › Sayfa). Yeri `yol:` parametresinden.",
+      "yeri": "Kitaplık'ın (ya da kökün) hemen altında. Dallanma gerekiyorsa o kap Raf değil KİTAPLIK'tır. Yaprak kardeş-raflar `raflar:` haritasıyla kompakt yazılır.",
+      "gorev": "Yapıyı bir kez ilan etmektir: İskeletçi bu ağaçtan klasörleri kurar, Denetçi kayıp rafı satır numarasıyla yakalar. Rafın içeriği bugün serbesttir; denetlenen tek şey rafın var olmasıdır.",
+      "ajan": "Ajan dosyayı nereye koyacağını raftan öğrenir; tahmin etmesi gerekmez. Yanlış rafa yazılan iş, dosya tipini rafa bağlayan kurallar geldiğinde anında yakalanacaktır.",
+      "insan": "Kitaplık metaforu: raf = yer, kitap = içerik. Projeye bakan herkes mimariyi tek dosyadan (ana.sar) okur; klasör gezmeye gerek kalmaz."
+    },
+    "Kitaplık": {
+      "tanim": "Dallanan klasör kabı — kitaplık metaforunun gövdesi: Kitaplık › Raf › Kitap › Sayfa. `yol:` parametresiyle yerini ilan eder; içinde Raf'lar (ve bölüm olarak alt-Kitaplıklar) durur.",
+      "yeri": "Kök düğümün (Proje/Uygulama/ÇalışmaAlanı) altında; derin yapılar Kitaplık-içinde-Kitaplık ile dallanır.",
+      "gorev": "Klasör ağacının DALLANAN kısmını taşımak. Yaprak alt-raflar tek tek widget yerine `raflar: { ad: \"tarif\" }` haritasıyla kompakt ilan edilir.",
+      "ajan": "Ajan derin yolu kitaplık zincirinden okur; hangi rafa yazacağını raf tarifinden öğrenir.",
+      "insan": "Gerçek kitaplık gibi oku: bina değil ama bölüm, bölümde raflar, rafta kitaplar. Raf içinde raf aramazsın — Founder kuralı (2026-07-02)."
+    },
+    "Yetenek": {
+      "tanim": "Yetenek, stack-agnostik bir yapabilirlik İLANIDIR (F-2): 'durum yönetimi' bir yetenek; Flutter-Bloc ve React-Zustand onun ayrı Beceri uygulamalarıdır. Tek satırlık hafif düğüm.",
+      "yeri": "Etmen ailesinde; Beceriler ona `sağlar:` kenarıyla bağlanır.",
+      "gorev": "Fabrika sorusunu graftan cevaplatır: 'bu yeteneğin hangi yığın uygulamaları var?' İlan edilmemiş bir yetenek kodu kırık referanstır, çünkü ilan edilmeyen ad kullanılamaz.",
+      "koken": [
+        "TIP-1",
+        "TIP-2",
+        "DIL-3"
+      ]
+    },
+    "Kural": {
+      "tanim": "Kural, ya makinenin zorlayabildiği (yapısal ya da eşik) ya da niyet taşıyan (isteme giden) tek hükümdür. Otoritesini (anayasa › politika › tercih), ebedi bayrağını, kuralı kimin zorladığını söyleyen katman beyanını ve kapsam koni seçicisini taşır.",
+      "yeri": "Anayasa ya da Politika gövdesinde; kapsam: ile hedeflerine otomatik bağlanır.",
+      "gorev": "Drift'i kaynağında öldürür: çelişkiyi Denetçi bulur (kural-çatışması), dokunulmazı diff yakalar (ebedi-ihlal), etmene yalnız kendi konisi gider (≤20).",
+      "koken": [
+        "DIL-3",
+        "YAS-2.3",
+        "YAS-2.4",
+        "YAS-3.4"
+      ]
+    },
+    "Mevzuat": {
+      "tanim": "Mevzuat, sistemin uymak zorunda olduğu DIŞ hukuki ya da düzenleyici normdur: KVKK, GDPR ve SOC2 gibi. Kuralın kendisi değil KAYNAĞIDIR; uygulaması Politika ve Adım tarafında yaşar. Dilin ilk resmî tip terfisidir: vitrinde bir tip ilanıyla doğdu, sonra kanona terfi etti.",
+      "yeri": "Yasa ailesinde; `zorunluKılar:` kenarıyla Adım/Kapı/Politika'ya bağlanır.",
+      "gorev": "Hangi mevzuat hangi adımı bağlıyor — graf'tan sorgulanır; bağsız Mevzuat öksüz uyarısı alır.",
+      "koken": [
+        "F-7",
+        "TIP-1",
+        "TIP-2",
+        "DIL-3"
+      ]
+    },
+    "Çıkarım": {
+      "tanim": "Çıkarım, dış kaynaktan (kitap/makale/tecrübe) damıtılan içgörüdür: ne + kaynak zorunlu, --> uygulama kenarı güçlü tavsiyedir. Eski MD tablolarındaki 'Uygulandığı Yer' sütununun canlı-ok hâli.",
+      "yeri": "Bilgi ailesinde; beslediği Kural/Beceri/Etmen'e okla bağlanır.",
+      "gorev": "'Bu kitap sistemin nerelerine dokundu?' sorusunu graf sorgusu yapar; kenarsız çıkarım öksüz kalır (ilk formül kaydının öksüz kalışından çıkan ders)."
+    }
+  }
+}

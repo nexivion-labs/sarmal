@@ -1,0 +1,102 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/surum_yonetisimi.sar — 🌿 Sürüm Yönetişimi: dal · işleme · birleştirme
+//
+//   YÜRÜRLÜKTEKİ KURAL GÖVDESİ. Bu dosya bir süreç artefaktı değildir; işleme
+//   mesajı kapısı (kanca/commit-msg) ile katkı rehberi hükümlerini buradan alır
+//   ve dünyaya bu adresi gösterir.
+//
+//   KÖKEN VE TAZELEME (2026-08-08): Metin, yeni omurga reformunun sürüm
+//   yönetişimi olarak geneldurum/yeni-omurga/ altında doğmuştu ve orası hiçbir
+//   varlığın anadizininde ilan edilmemiş bir klasördü; motor dosyayı göremiyor,
+//   katkı rehberi ise dünyaya oradan adres veriyordu. Founder hükmüyle dosya
+//   açık aracın yasa kitaplığına taşındı, reforma özgü hükümleri gerekçesiyle
+//   düşürüldü ve yürürlükteki hükümleri bugünün gerçeğine çekildi.
+//
+//   DÜŞÜRÜLEN HÜKÜMLER VE GEREKÇELERİ (sessiz silme yoktur):
+//   ① Üç dallı model (main · canli-spec · omurga-v1) düşürüldü, çünkü depo
+//      2026-08-06 tarihinde tek dallı hâle geldi; omurga-v1 ile canli-spec ana
+//      gövdeye ileri sarılıp silindi ve geri dönüş etiketleri korundu.
+//   ② Reform dalının alt dal deseni (omurga-v1/<konu>) düşürüldü, çünkü
+//      dayandığı dal artık yoktur.
+//   ③ Geri dönüş etiketlerinin reforma özgü adlandırması ile reform kapılarına
+//      bağlı etiketleme ritmi düşürüldü; yerine faz ve tur sonu ritmi kondu.
+//   ④ Kontrol noktalarının hangi dosyaya işleneceği beyanı düşürüldü, çünkü
+//      yetkili durum kaydının hangisi olduğu ayrı bir Founder kararına bağlıdır.
+//   ⑤ Örnek metindeki kanon madde sayısı düşürüldü, çünkü sayı bayattı ve
+//      bir örnek cümlenin içinde ölçüm taşımak sayıyı sessizce yanlışlar.
+//   Reform dönemine ait tam metin git geçmişinde yaşamaya devam eder.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🌿 Sürüm Yönetişimi — Dal · İşleme · Birleştirme
+
+## Amaç
+Deponun tarihini okunur, geri dönülebilir ve dürüst tutmak. Her değişiklik tek bir
+mantıksal işi taşır, her işleme kendi gerekçesini yazar ve ana gövdeye yalnız
+kapılardan geçerek girer.
+
+## Sözlük
+İşleme, dal, birleştirme, birleştirme isteği, etiket, geri dönüş, kontrol noktası,
+kanca ve çalışma ağacı. Bütün mesajlarda ve açıklamalarda bu Türkçe karşılıklar
+kullanılır; İngilizce sözcük geçmez.
+
+## Dal modeli — tek gövde
+Depo tek kalıcı dal taşır ve o dal `main` gövdesidir. İş büyüyüp ayrı bir kulvar
+gerektirdiğinde konu dalı açılır, işi bitince ana gövdeye birleşir ve dal silinir;
+silinmeyen bitmiş dal hayalet işleme riski doğurur. Ayrı dalın açılması bir
+istisnadır ve gerekçesi işleme mesajında yazılır.
+
+## İşleme disiplini
+İşleme atomiktir, yani bir işleme bir mantıksal değişikliği taşır ve karışık sepet
+yasaktır. Metin tam Türkçedir ve tam ortografiyle yazılır. Ortak yazar satırı, iz
+satırı ve imza altı eklenmez. Kanca atlama, yani doğrulamayı devre dışı bırakan
+bayraklarla işleme, yasaktır. Mesajda emekli kod adı ve iç jargon geçmez.
+
+## İşleme mesajı biçimi
+Başlık `<tip>(<kapsam>): <özet>` biçimindedir ve en çok yetmiş iki karakter tutar;
+sonunda nokta bulunmaz. Tipler şunlardır: özellik, düzeltme, düzenleme, belge,
+sınama, bakım, başarım, biçim, gözlem, plan, işaretçi ve durum. Büyük işlemede
+gövde zorunludur ve `Ne:` ile `Neden:` satırlarını taşır; hangi denetimin geçtiği
+`Kapı:` satırıyla, konan etiket ise `Kontrol noktası:` satırıyla yazılır. Bu biçim
+tavsiye değildir: `kanca/commit-msg` onu mekanik olarak zorlar ve tutmayan mesajı
+reddeder.
+
+## Birleştirme yetkisi ve kapısı
+Birleştirme kararı yalnız Founder'ındır. Üretici ajan işi yapar ve iter, kontrolcü
+denetler, birleştirmeyi Founder onaylar; üretici ile denetçi rolleri ayrıdır.
+Birleştirme kapısı üç şart ister ve üçü birden sağlanmadan birleşme olmaz: iki
+varlıkta denetim sıfır hata verir, sınamalar yeşildir ve Founder yazılı onayı
+vardır. Strateji işin boyutuna göre seçilir; beş ve üzeri işlemelik atomik bir
+sezon düz birleştirmeyle girer ve ezilmez, çünkü ezilen katkı hayalete döner.
+
+## Geri dönüş noktaları
+Etiket açıklamalı yazılır; hafif etiket yasaktır. Etiket her faz sonunda, her
+kapanan turda ve uzun göç turlarında yaklaşık beş adımda bir konur. Geri dönüş
+yıkıcı olmayan yolla yapılır: düzeltme için geri alma tercih edilir, sert
+sıfırlama ile zorla itme yasaktır. Geri dönmeden önce mevcut uç bir yedek
+etiketiyle mühürlenir. Denetim izi geri dönüşle silinmez; iz yalnız eklemeye açıktır.
+
+## Kontrol noktası
+Her kapı sonunda sabit alanlı kısa bir devir yazılır ve şu alanları taşır: aşama,
+tarih, durum, biten iş, dokunulan dosyalar, sınama ile denetim sonucu, kabul,
+sonraki adım ve engel. Devrin hangi kayda işleneceği yetkili durum kaydının
+belirlenmesiyle birlikte kesinleşir.
+
+## Sürüm etiketi
+Anlamsal sürüm açıklamalı etiketi `vBÜYÜK.KÜÇÜK.YAMA` biçimindedir ve yalnız ana
+gövdedeki birleşmiş işlemeye konur; özellik ucuna asla konmaz. Etiket donar ve
+yeniden etiketleme yasaktır.
+
+## Dal temizliği ve açık kaynak yayını
+Birleşmemiş işleme taşıyan bir dal silinmeden önce arşiv etiketiyle mühürlenir ve
+mühür doğrulanır; ancak ondan sonra silinir. Açık kaynak yayınında geliştirme aynı
+depoda sürer ve temiz açık depo, yayın anındaki yeşil anlık görüntüden doğar;
+kirli tarih taşınmaz ve geliştirme sırasında ikinci bir depo açılmaz.
+|<--
+Çıkarım( kod: GIT-DAL-01,
+         kaynak: "Depo yönetişim deseni ve 2026-08-06 tek dal kararı; metin 2026-08-08 tarihinde yasa kitaplığına taşınırken tazelendi",
+         ne: "🌿 Dal ve işleme disiplini: depo tek kalıcı gövde taşır ve konu dalı istisnadır; işleme atomik ve tam Türkçedir, başlık tip ve kapsam taşır ve yetmiş iki karakteri aşmaz, büyük işleme gövdesinde ne ve neden yazılır; ortak yazar ile iz satırı yasaktır ve kanca atlanamaz; birleştirme Founder tekelindedir ve üç şartlı kapıdan geçer" )
+
+Çıkarım( kod: GIT-DAL-02,
+         kaynak: "Geri dönüş, sürüm ve arşiv deseni ile açık kaynak yayın kararı; metin 2026-08-08 tarihinde tazelendi",
+         ne: "🌿 Geri dönüş ve sürüm disiplini: etiket açıklamalıdır ve faz ile tur sonlarında konur, geri dönüş yıkıcı olmayan yolla yapılır ve zorla itme yasaktır, denetim izi silinmez; anlamsal sürüm yalnız ana gövdeye konur ve etiket donar; birleşmemiş dal arşiv mührüyle korunup silinir, açık depo ise yayın anındaki yeşil anlık görüntüden doğar" )

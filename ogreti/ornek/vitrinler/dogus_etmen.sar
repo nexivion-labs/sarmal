@@ -1,0 +1,85 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// vitrinler/dogus_etmen.sar — 🌱 DOĞUŞ ŞABLONU ③ ETMEN (ADM-DGS-03)
+//
+//   Ajan-widget TAM kimliğiyle doğar: kimlik + anayasa + belge-bloklu Beceri
+//   (YAS-4.2: kanıtsız beceri Beceri değildir) + izole Bellek + Tetikleyici + Kanca
+//   + Görev köprüsü (Adım'a atama — beceriler ŞEF konisine buradan akar,
+//   kopru_kaniti deseni). YAS-3.4: hepsi baştan dolu; yalın Etmen tuzaktır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ETMENİN ANAYASASI — uyacağı kurallar kimlikten ÖNCE (YAS-2).
+Anayasa( kod: VTR-ANY-ETMEN, ne: "form uzmanının değişmez çalışma ilkeleri" ) {
+  Kural şüphedeDur( kod: VTR-KRL-SUPHE, otorite: anayasa, katman: niyet, kapsam: VTR-ETM-FORM ) {
+    ne: "Emin olmadığını kesin söyleme; varsayımını beyan et, şüphede durup sor"
+  }
+}
+
+// YETENEK — yığından bağımsız yapabilirlik; Beceri bunu `sağlar:` ile işaretler.
+Yetenek( kod: VTR-YTN-FORM, ne: "doğrulamalı form kurma — alan kuralları + hata sunumu + gönderim disiplini" )
+
+-->|
+  ## Amaç
+  Önyüz form işlerinin atandığı kadro havuzunu kurmak: tek uzman, tam kimlikle
+  (anayasa + beceri + bellek + tetikleyici + kanca) doğar.
+  ## Kapsam
+  Yalnız form uzmanlığı; liste/görüntüleme uzmanları ayrı Etmen olarak eklenir.
+  KAPSAMAZ: kadro SEÇİM zekâsı (hangi uzman ne zaman — orkestratör politikası).
+  ## Sonuç
+  Görev köprüsüyle atanan Adım'ın ŞEF konisine bu uzmanın becerileri akıyorsa
+  kadro canlıdır (kopru_kaniti deseniyle doğrulanır).
+|<--
+Orkestrasyon( kod: VTR-ORK-ONYUZ, ne: "önyüz kadrosu — form işleri bu havuzdan atanır" ) {
+  Etmen( kod: VTR-ETM-FORM, ad: "form-uzmanı", tür: uzman, uzmanlık: önyüz-form,
+         yetki: L3, bellek: izole, ne: "doğrulamalı form ekranları üreten uzman",
+         uygular: VTR-ANY-ETMEN ) {
+
+    -->|
+      # Doğrulamalı Form — Beceri
+
+      <ne-zaman>
+        Kullanıcı girdisi toplayan her yüzeyde (giriş, kayıt, adres, ödeme).
+        DEĞİL: salt-görüntüleme ekranları · dosya yükleme akışı (ayrı beceri).
+      </ne-zaman>
+
+      <desenler>
+        ## Alan Doğrulama
+        Kural ALANDA yazılır, hata ALANIN ALTINDA gösterilir — genel "form
+        hatalı" mesajı yasak. Sunucu hatası (401/409/422) alanlara EŞLENİR.
+
+        ## Gönderim Disiplini
+        Düğme gönderim sırasında kilitlenir (çift tıklama = çift kayıt);
+        başarıda form sıfırlanmaz, YÖNLENDİRİLİR (geri tuşu yeniden-göndermez).
+      </desenler>
+    |<--
+    Beceri( kod: VTR-BCR-FORM, ne: "doğrulamalı form kurma reçetesi",
+            sağlar: VTR-YTN-FORM, yığın: evrensel, uygular: VTR-ANY-ETMEN,
+            neZaman: "kullanıcı girdisi toplayan bir yüzey kurulacaksa",
+            kurallar: [ "hata alanın altında — genel hata mesajı yasak", "gönderimde düğme kilitlenir", "sunucu hataları alanlara eşlenir" ],
+            örnek: "eposta alanı boşsa 'E-posta gerekli' ALANIN altında; 401 gelirse parola alanına 'E-posta ya da parola hatalı'",
+            antiDesen: "tüm hataları tepede tek kırmızı kutuda toplamak — kullanıcı hangi alanı düzelteceğini bulamaz" )
+
+    Bellek( kod: VTR-BLK-FORM, tür: ders, ne: "form işlerinden süzülen izole dersler",
+            neden: "429 bekleme süresini göstermeyen ilk sürüm kullanıcıyı köre bıraktı — ders: her kilitli durumun süresi söylenir",
+            nasılUygula: "gönderim-kilidi kalıbına geri-sayım etiketi ekle",
+            aşama: bellek )
+
+    Tetikleyici( kod: VTR-TRG-FORM, ne: "form içeren Adım gelince beceriyi ateşler",
+                 koşul: görev, tetikler: VTR-BCR-FORM )
+
+    Kanca( kod: VTR-KNC-DENETIM, evre: sonra, ne: "üretim sonrası öz-denetim — alan/hata eşlemesi kontrol listesi koşulur" )
+  }
+}
+
+// GÖREV KÖPRÜSÜ — Adım'ı uzmana ATAR; gömülü beceriler ŞEF konisine buradan akar (kopru_kaniti).
+Adım( kod: VTR-ADM-ADRES-FORMU, ad: "adres-formu",
+      görev: "Adres ekleme formunu kur — il/ilçe bağımlı seçim, posta kodu doğrulaması, kaydette çift-gönderim kilidi",
+      kabul: [ "alan hataları alan altında gösteriliyor", "il seçilmeden ilçe kapalı; posta kodu il ile tutarlı doğrulanıyor" ],
+      üretir: VTR-KOD-ADRES-FORMU,
+      bağımlı: [],
+      sınır: "harita/konum seçimi bu Adımda değil",
+      durum: beklemede )
+Görev( kod: VTR-GRV-ADRES, ne: "adres formunu form uzmanına atar", gerçekleştirir: VTR-ADM-ADRES-FORMU,
+       atanan: VTR-ETM-FORM, durum: beklemede )
+
+Kod( kod: VTR-KOD-ADRES-FORMU, dosya: "uygulama/lib/ekranlar/adres_formu.dart",
+     ne: "🍎 adres formu — VTR-ADM-ADRES-FORMU'nun meyvesi" )

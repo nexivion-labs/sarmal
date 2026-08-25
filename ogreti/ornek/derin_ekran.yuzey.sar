@@ -1,0 +1,60 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// derin_ekran.yuzey.sar — DERİN + BAĞLI ekran (YUZ-3 dal-çizgileri · ORK-2.3 kavuşum)
+//
+//   Amaç: Ekran > Yığın > Kart > Sütun > Metin/Düğme — 5 seviye derin (YUZ-3).
+//   VS Code bracket-pair yatay dalları (└─) + dallar.ts ağaç-renkli dikey çizgi
+//   ile derinlikte hangi widget'ın içinde olduğunu GÖZLE takip et (Flutter gibi).
+//
+//   AYRICA (TIP-2.3 zorunlu-kenar · kör drift kalkanı): ekran bir plan Adım'ına
+//   kavuşur (referans), her Düğme bir Uç'a bağlanır (çağırır) — "bu düğme NE
+//   YAPIYOR?" sorusu boş kalmaz. Hollow hâli (edge'siz) motorca UYARILIR.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// A02 onarımı (2026-07-11): kavuşum hedefi dosyada DOĞDU — referans kırık değil, örnek TAM.
+Adım( kod: ADM-PROFIL, durum: beklemede,
+      ne: "🍂 Profil ekranını üretecek plan adımı — aşağıdaki Ekran'ın kavuşum (referans) hedefi" )
+
+// TAS-A01/B01 (2026-07-12): tasarım sistemi BİR KEZ ilan — rol ADLARI .sar'da (sözleşme),
+// DEĞERLER (hex/px) `dosya:` beyanındaki teknoloji temasında yaşar (temasız-ekran bekçisi susar).
+Tema( kod: TEM-PROFIL, görünürlük: açık, ne: "profil yüzeyi tasarım sistemi — rol sözleşmesi (değerler tech-temada)",
+      dosya: "uygulama/lib/tema/profil_tema.dart",
+      renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, başlık2, gövde, etiket ],
+      boşluk: [ sm, md, lg ],
+      yuvarlaklık: [ sm, md ] )
+
+Ekran( kod: EKR-Profil, görünürlük: açık, ne: "Kullanıcı profil ekranı", referans: ADM-PROFIL, tema: TEM-PROFIL ) {
+  Yığın( kod: YIG-Govde, görünürlük: açık, ne: "ana içerik yığını" ) {
+    Kart( kod: KRT-Bilgi, görünürlük: açık, ne: "kullanıcı bilgi kartı" ) {
+      Sütun( kod: STN-Alanlar, görünürlük: açık, ne: "bilgi alanları dikey diz" ) {
+        Metin( kod: MTN-Ad, görünürlük: açık, ne: "Ahmet Yılmaz", stil: başlık2 ) { }
+        Metin( kod: MTN-Eposta, görünürlük: açık, ne: "ahmet@nexivion.io", stil: gövde ) { }
+        Satır( kod: STR-Eylemler, görünürlük: açık, ne: "buton satırı" ) {
+          Düğme( kod: DGM-Duzenle, görünürlük: açık, ne: "Düzenle", gider: EKR-ProfilDuzenle ) { }
+          Düğme( kod: DGM-Kaydet, görünürlük: açık, ne: "Kaydet", çağırır: UC-ProfilGuncelle ) { }
+        }
+      }
+    }
+  }
+}
+
+// TUR-2 kenar-sicili onarımı (2026-07-13): çağırır/gider artık kanonik kenar —
+// çözücü hedef ister; vitrin kırık referansla ders veremez, hedefler DOĞDU.
+Sözleşme( kod: SZL-PROFIL-GUNCELLE, sürüm: "1.0",
+          ne: "profil güncelleme kontratı — ad/eposta alanları, doğrulama arkayüzde",
+          istek: { ad: metin, eposta: metin },
+          yanıt: { durum: metin } )
+
+Uç( kod: UC-ProfilGuncelle, yol: "/api/profil", metod: PUT, sözleşme: SZL-PROFIL-GUNCELLE,
+    ne: "profil güncelleme ucu — DGM-Kaydet'in çağırdığı kavuşum noktası" )
+
+Ekran( kod: EKR-ProfilDuzenle, görünürlük: açık, ne: "Profil düzenleme ekranı — DGM-Duzenle'nin gider hedefi (rota kırık değil)",
+       referans: ADM-PROFIL, tema: TEM-PROFIL ) {
+  Yığın( kod: YIG-DuzenleGovde, görünürlük: açık, ne: "düzenleme formu yığını" ) {
+    Form( kod: FRM-Profil, görünürlük: açık, ne: "ad/eposta düzenleme formu", gönderir: UC-ProfilGuncelle ) {
+      MetinAlanı( kod: MAL-Ad, görünürlük: açık, ne: "ad alanı" ) { }
+      MetinAlanı( kod: MAL-Eposta, görünürlük: açık, ne: "eposta alanı" ) { }
+      Düğme( kod: DGM-DuzenleKaydet, görünürlük: açık, ne: "Kaydet", çağırır: UC-ProfilGuncelle ) { }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/uretir_kenari_becerisi.sar — 🍎 ÜRETİR KENARI BECERİSİ (DVR-A03 · OGR-2.2)
+//
+//   Doğuş: 2026-07-17 gecesinin canlı ölçümü — `kenar-metin` tanısı örneksiz
+//   olduğu için ajan grep arkeolojisine düştü. Bu kart o boşluğu kapatır:
+//   meyve kenarının doğru yazımı tek örnekle öğrenilir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-URETIR-KENARI, ne: "Adım kapanışında üretir meyvesini doğru beyan etme" )
+
+-->|
+  ## Amaç
+  🎯 Bir Adım kapanırken ürettiği ürünün (kod dosyası, belge, karar) plandan
+  okunur olmasını sağlamak. Çözdüğü problem: kapanan işin izinin kaybolması —
+  Adım→kod bağı yazılmayınca meyve plandan görünmez (yetim-meyve · kör iz).
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle kapatılan Adımda üretir: kenarı çözülen bir düğüm
+  KOD'una işaret eder; kenar-metin ve yetim-meyve tanıları doğmaz.
+|<--
+
+Beceri( kod: BCR-URETIR-KENARI,
+        sağlar: YTN-URETIR-KENARI,
+        yığın: evrensel,
+        anlatır: [ "kenar-metin", "yetim-meyve", "kırık-referans" ],
+        ne: "Adım kapanışında ürünü önce Kod( kod: KOD-X, dosya: \"...\" ) düğümüyle İLAN eder, sonra Adıma üretir: [ KOD-X ] kenarını TIRNAKSIZ kod olarak yazar",
+        neZaman: "Bir Adım tamamlandı işaretlenirken; motorda kenar-metin ya da yetim-meyve tanısı görüldüğünde",
+        kurallar: [
+          "Kenar değeri KOD'dur, metin değildir: üretir: [ \"kod.ts\" ] YANLIŞ (kenar-metin tanısı) — önce düğümü ilan et, sonra tırnaksız koduyla bağlan",
+          "Ürün düğümü meyve haritasında (ya da ilgili planda) bir kez ilan edilir: Kod( kod: KOD-X, dosya: \"yol/dosya.ts\", ne: \"🍎 ...\" ) — aynı ürün ikinci kez ilan edilmez",
+          "Ürün kod olmayabilir: kanonik karar, felsefe (FEL-n) ya da beceri (BCR-X) de meşru meyvedir — kenar yine ilanlı tırnaksız koda işaret eder",
+          "Kapanışta üretir'i unutma: tamamlandı Adımın meyvesi plandan okunmalıdır; bilinçli meyvesizlik ancak gerekçesiyle beyan edilir"
+        ],
+        kabul: "Tamamlanan Adımın üretir alanındaki her tırnaksız kimlik tek bir ilanlı ürün düğümüne çözülür; kenar-metin, yetim-meyve ve kırık-referans bulguları sıfırdır",
+        örnek: "Kod( kod: KOD-GIRIS-FORMU, dosya: \"istemci/src/giris_formu.ts\", ne: \"🍎 giriş formu doğrulaması\" ) ilan et → Adıma üretir: [ KOD-GIRIS-FORMU ] yaz (tırnak YOK — kod kenarı düğüme çözülür)",
+        antiDesen: "üretir: [ \"istemci/src/giris_formu.ts\" ] — dosya yolunu tırnaklı metin olarak kenara yazmak; kenar düğüme çözülemez, iz kopar (kenar-metin)",
+        uygular: ORK-7 )
+
+Tetikleyici( kod: TTK-URETIR-KENARI, tetikler: BCR-URETIR-KENARI,
+             koşul: adım.durum == geliştirmede,
+             ne: "Kapanış anında meyve beyanı bu karttan öğrenilir — iz plandan okunur kalır" )

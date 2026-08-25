@@ -1,0 +1,218 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/hata_terfi_kapi_kaydi.sar — GOC-TERFI-A05 KABUL KAYDI
+//   A04 adayı, ret-adayı ve etki ölçümü ile 2026-08-03 tarihli Founder
+//   kabulünü birlikte taşır; uygulama sicilde ve A06 nöbetinde doğrulanır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# Hata terfisi kapı kaydı · Founder kabulü
+
+## Yetki ve ölçüm sınırı
+
+Bu kayıt 3 Ağustos 2026 tarihinde GOC-TERFI-A04 ölçümünden üretilmiş ve aynı
+tarihli açık Founder hükmüyle kabul edilmiştir. Aşağıdaki “HATA öner” satırları
+Founder'ın kabul ettiği 46 kimliği, “Uyarıda kalsın” satırları uyarıda bırakılan
+16 kimliği gösterir; sekiz RET-ADAYI bilgide kalır. Uygulama sonunda
+`cekirdek/src/tani-sicili.ts` dağılımı 46 hata, 16 uyarı ve 8 bilgidir.
+Kanonun sekiz hüküm dosyasına ve `plan/*.sar` kaynaklarına dokunulmamıştır.
+
+A04'ün makine-okur ölçümü iki kez yinelenmiş ve her iki canlı kökte 62 uyarı
+tanısının her biri sıfır bulunmuştur. Koşu-1 ile koşu-2 mühürleri birebir
+`4d5bbaadb602b6c43769035f8e25fcf6decab48343baed26925713315416109c`;
+124 tanı-kök hücresinin tamamı sıfırdır. Üçlü kanıt kapsaması 62 tam, 0
+eksiktir. Canlı kök aramasında yalnız `_Sarmal` ve `kapalı varlık` bulunmuştur.
+
+## Proje ve yayın etkisi anahtarı
+
+Bütün ADAY satırlarında bugünkü ölçüm aynıdır: ANA=0 ve KPLU=0 olduğu için
+bugün bloklayan dosya veya düğüm yoktur. Satırdaki tanı kimliği gelecekte
+bloklanacak ihlal sınıfını, etki anahtarı ise dosya/düğüm yayılımını belirtir:
+
+| Anahtar | Tanı hata olduğunda gelecekteki Proje ve yayın etkisi |
+|---|---|
+| E-TEK | İhlali taşıyan tek dosya ve içindeki düğüm Proje kapısını; bu kapıya bağlı yayını bloklar. |
+| E-PROJE | Bulguyu taşıyan dosya/düğüm ile ait olduğu Proje kökü Proje kapısını; bu kapıya bağlı yayını bloklar. |
+| E-KURAL | İhlalli Kural düğümü ve onu taşıyan dosya Proje kapısını; bu kapıya bağlı yayını bloklar. |
+| E-ORK | Orkestrasyon sonucunu bozan dosya/düğüm ve ilgili Proje kökü Proje kapısını; bu kapıya bağlı yayını bloklar. |
+
+Bu etki tahmin değildir: bugünkü “bloklayan yok” hükmü iki canlı sayacın
+sıfırından, gelecekteki bloklama ise motorun hata sayacının Proje kapısını
+kapatan davranışından ve tanının sicildeki ölçülmüş kapsamından türetilmiştir.
+
+## ADAY · sıfır sayaç ve tam üçlü kanıt · 1–22
+
+`U` uygulama, `D` doğrulama, `K` kabul bağıdır. Her satırda ANA/KPLU sayacı
+0/0'dır.
+
+| No | Tanı · kanon maddesi | Üçlü kanıt bağı | Proje ve yayın etkisi | ÖNERİ |
+|---:|---|---|---|---|
+| 1 | `kanonik-kaynak-biçimi` · DIL-1 | U `cekirdek/src/denetci.ts:3038` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:259` · K `yasa/kanon/dil.sar:27` | E-PROJE: gelecekte `kanonik-kaynak-biçimi` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 2 | `orthografi-kaybı` · DIL-1.1 | U `cekirdek/src/denetci.ts:3050` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:260` · K `yasa/kanon/dil.sar:39` | E-PROJE: gelecekte `orthografi-kaybı` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 3 | `belge-şekil-drift` · DIL-2 | U `cekirdek/src/dogrulayici.ts:486` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:97` · K `yasa/kanon/dil.sar:91` | E-TEK: gelecekte `belge-şekil-drift` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 4 | `çok-satırlı-değer-drift` · DIL-2.2 | U `cekirdek/src/dogrulayici.ts:502` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:105` · K `yasa/kanon/dil.sar:116` | E-TEK: gelecekte `çok-satırlı-değer-drift` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 5 | `kenar-tip-uyuşmazlığı` · DIL-3.1 | U `cekirdek/src/denetci.ts:3069` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:261` · K `yasa/kanon/dil.sar:140` | E-PROJE: gelecekte `kenar-tip-uyuşmazlığı` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 6 | `numara-grafı-uyumsuz` · DIL-5 | U `cekirdek/src/denetci.ts:3084` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:262` · K `yasa/kanon/dil.sar:165` | E-PROJE: gelecekte `numara-grafı-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 7 | `madde-kodu-uyumsuz` · DIL-5.1 | U `cekirdek/src/denetci.ts:3100` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:263` · K `yasa/kanon/dil.sar:177` | E-PROJE: gelecekte `madde-kodu-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 8 | `ilgili-önek-geçersiz` · DIL-5.2 | U `cekirdek/src/dogrulayici.ts:306` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:79` · K `yasa/kanon/dil.sar:189` | E-TEK: gelecekte `ilgili-önek-geçersiz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 9 | `proje-köksüz-üretim` · MIM-1.1 | U `cekirdek/src/denetci.ts:2633` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:140` · K `yasa/kanon/mim.sar:39` | E-PROJE: gelecekte `proje-köksüz-üretim` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 10 | `çok-teknolojili-katman` · MIM-1.4 | U `cekirdek/src/denetci.ts:2640` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:138` · K `yasa/kanon/mim.sar:77` | E-PROJE: gelecekte `çok-teknolojili-katman` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 11 | `üretimsiz-meyve` · MIM-2 | U `cekirdek/src/denetci.ts:2665` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:141` · K `yasa/kanon/mim.sar:115` | E-PROJE: gelecekte `üretimsiz-meyve` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 12 | `meyve-dosyası-eksik` · MIM-2.1 | U `cekirdek/src/denetci.ts:2671` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:142` · K `yasa/kanon/mim.sar:127` | E-PROJE: gelecekte `meyve-dosyası-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 13 | `öğretim-kaynak-drifti` · OGR-2 | U `cekirdek/src/denetci.ts:3186` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:298` · K `yasa/kanon/ogr.sar:87` | E-PROJE: gelecekte `öğretim-kaynak-drifti` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 14 | `öğretim-yüzü-uyumsuz` · OGR-2.1 | U `cekirdek/src/denetim.ts:776` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:477` · K `yasa/kanon/ogr.sar:99` | E-ORK: gelecekte `öğretim-yüzü-uyumsuz` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 15 | `başvuru-sicil-drifti` · OGR-2.3 | U `cekirdek/src/denetci.ts:3223` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:301` · K `yasa/kanon/ogr.sar:125` | E-PROJE: gelecekte `başvuru-sicil-drifti` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 16 | `öğretim-etki-eksik` · OGR-3 | U `cekirdek/src/denetci.ts:3269` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:304` · K `yasa/kanon/ogr.sar:137` | E-PROJE: gelecekte `öğretim-etki-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 17 | `öğretim-bayat` · OGR-3.1 | U `cekirdek/src/denetci.ts:3196` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:299` · K `yasa/kanon/ogr.sar:149` | E-PROJE: gelecekte `öğretim-bayat` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 18 | `üretilmiş-öğretim-değiştirilmiş` · OGR-3.2 | U `cekirdek/src/denetci.ts:3206` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:300` · K `yasa/kanon/ogr.sar:162` | E-PROJE: gelecekte `üretilmiş-öğretim-değiştirilmiş` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 19 | `kanıtsız-beceri-terfisi` · OGR-4 | U `cekirdek/src/denetci.ts:3247` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:303` · K `yasa/kanon/ogr.sar:174` | E-PROJE: gelecekte `kanıtsız-beceri-terfisi` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 20 | `ilişki-sınıfı-ihlali` · ORK-1 | U `cekirdek/src/denetci.ts:2751` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:173` · K `yasa/kanon/ork.sar:27` | E-PROJE: gelecekte `ilişki-sınıfı-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 21 | `mimari-bağı-ihlali` · ORK-1.1 | U `cekirdek/src/denetci.ts:2768` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:174` · K `yasa/kanon/ork.sar:39` | E-PROJE: gelecekte `mimari-bağı-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 22 | `deterministik-sıra-ihlali` · ORK-3 | U `cekirdek/src/denetci.ts:2844` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:177` · K `yasa/kanon/ork.sar:138` | E-PROJE: gelecekte `deterministik-sıra-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+
+## ADAY · sıfır sayaç ve tam üçlü kanıt · 23–42
+
+| No | Tanı · kanon maddesi | Üçlü kanıt bağı | Proje ve yayın etkisi | ÖNERİ |
+|---:|---|---|---|---|
+| 23 | `döngü-sonlanması-eksik` · ORK-3.3 | U `cekirdek/src/denetci.ts:2891` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:226` · K `yasa/kanon/ork.sar:175` | E-PROJE: gelecekte `döngü-sonlanması-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 24 | `kapı-kabul-kanıtı-eksik` · ORK-3.3 | U `cekirdek/src/denetci.ts:2901` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:227` · K `yasa/kanon/ork.sar:175` | E-PROJE: gelecekte `kapı-kabul-kanıtı-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 25 | `çapraz-proje-ad-alanı` · ORK-4 | U `cekirdek/src/denetci.ts:2859` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:217` · K `yasa/kanon/ork.sar:188` | E-PROJE: gelecekte `çapraz-proje-ad-alanı` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 26 | `auth-omurgası-ihlali` · ORK-5 | U `cekirdek/src/denetci.ts:2930` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:234` · K `yasa/kanon/ork.sar:201` | E-PROJE: gelecekte `auth-omurgası-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 27 | `founder-ortak-auth-eksik` · ORK-5.2 | U `cekirdek/src/denetci.ts:2948` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:235` · K `yasa/kanon/ork.sar:225` | E-PROJE: gelecekte `founder-ortak-auth-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 28 | `şef-akışı-ihlali` · ORK-6 | U `cekirdek/src/denetci.ts:2988` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:243` · K `yasa/kanon/ork.sar:249` | E-PROJE: gelecekte `şef-akışı-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 29 | `üretici-denetçi-çakışması` · ORK-6.1 | U `cekirdek/src/denetci.ts:2979` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:242` · K `yasa/kanon/ork.sar:261` | E-PROJE: gelecekte `üretici-denetçi-çakışması` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 30 | `oturum-adım-sınırı` · ORK-6.2 | U `cekirdek/src/denetci.ts:2997` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:244` · K `yasa/kanon/ork.sar:273` | E-PROJE: gelecekte `oturum-adım-sınırı` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 31 | `unutma-kapısı-ihlali` · STR-1 | U `cekirdek/src/denetci.ts:3316` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:337` · K `yasa/kanon/str.sar:27` | E-PROJE: gelecekte `unutma-kapısı-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 32 | `kanon-kodu-uyumsuz` · STR-1.1 | U `cekirdek/src/denetci.ts:3339` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:338` · K `yasa/kanon/str.sar:39` | E-PROJE: gelecekte `kanon-kodu-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 33 | `göç-sırası-ihlali` · STR-2 | U `cekirdek/src/denetci.ts:3385` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:339` · K `yasa/kanon/str.sar:64` | E-PROJE: gelecekte `göç-sırası-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 34 | `göç-kapısı-eksik` · STR-2.1 | U `cekirdek/src/denetci.ts:3399` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:340` · K `yasa/kanon/str.sar:76` | E-PROJE: gelecekte `göç-kapısı-eksik` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 35 | `açık-gizli-sınır-ihlali` · STR-3 | U `cekirdek/src/denetci.ts:3420` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:341` · K `yasa/kanon/str.sar:88` | E-PROJE: gelecekte `açık-gizli-sınır-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 36 | `çekirdek-bağımlılık-drifti` · STR-3.1 | U `cekirdek/src/denetci.ts:3434` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:342` · K `yasa/kanon/str.sar:100` | E-PROJE: gelecekte `çekirdek-bağımlılık-drifti` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 37 | `yürütücü-bağımlılığı` · STR-3.2 | U `cekirdek/src/denetci.ts:3451` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:343` · K `yasa/kanon/str.sar:112` | E-PROJE: gelecekte `yürütücü-bağımlılığı` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 38 | `etki-yayın-kapısı-eksik` · STR-5 | U `cekirdek/src/denetci.ts:3463` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:344` · K `yasa/kanon/str.sar:137` | E-PROJE: gelecekte `etki-yayın-kapısı-eksik` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 39 | `ölü-iz` · STR-5 | U `cekirdek/src/denetci.ts:3486` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:345` · K `yasa/kanon/str.sar:137` | E-PROJE: gelecekte `ölü-iz` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 40 | `tip-evreni-eksik` · TIP-1 | U `cekirdek/src/denetci.ts:3526` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:365` · K `yasa/kanon/tip.sar:27` | E-PROJE: gelecekte `tip-evreni-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 41 | `omurga-tipi-eksik` · TIP-1.15 | U `cekirdek/src/denetci.ts:3544` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:366` · K `yasa/kanon/tip.sar:207` | E-PROJE: gelecekte `omurga-tipi-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 42 | `şema-tanımı-eksik` · TIP-2 | U `cekirdek/src/denetci.ts:3552` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:367` · K `yasa/kanon/tip.sar:231` | E-PROJE: gelecekte `şema-tanımı-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+
+## ADAY · sıfır sayaç ve tam üçlü kanıt · 43–62
+
+| No | Tanı · kanon maddesi | Üçlü kanıt bağı | Proje ve yayın etkisi | ÖNERİ |
+|---:|---|---|---|---|
+| 43 | `örtü-ihlali` · TIP-2.5 | U `cekirdek/src/denetci.ts:3561` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:368` · K `yasa/kanon/tip.sar:293` | E-PROJE: gelecekte `örtü-ihlali` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 44 | `rejim-beyanı-eksik` · YAS-1 | U `cekirdek/src/denetci.ts:2519` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:121` · K `yasa/kanon/yas.sar:27` | E-PROJE: gelecekte `rejim-beyanı-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 45 | `katı-rejim-altkatman-eksik` · YAS-1.1 | U `cekirdek/src/denetci.ts:2536` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:126` · K `yasa/kanon/yas.sar:39` | E-PROJE: gelecekte `katı-rejim-altkatman-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 46 | `rejim-geçiş-uyumsuzluğu` · YAS-1.3 | U `cekirdek/src/denetci.ts:2553` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:127` · K `yasa/kanon/yas.sar:63` | E-PROJE: gelecekte `rejim-geçiş-uyumsuzluğu` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 47 | `hüküm-türü-uyumsuz` · YAS-2 | U `cekirdek/src/kuralci.ts:895` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:412` · K `yasa/kanon/yas.sar:75` | E-KURAL: gelecekte `hüküm-türü-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 48 | `kural-sözleşmesi-eksik` · YAS-2.3 | U `cekirdek/src/kuralci.ts:920` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:413` · K `yasa/kanon/yas.sar:113` | E-KURAL: gelecekte `kural-sözleşmesi-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 49 | `tanı-sözleşmesi-uyumsuz` · YAS-3 | U `cekirdek/src/denetim.ts:730` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:474` · K `yasa/kanon/yas.sar:139` | E-ORK: gelecekte `tanı-sözleşmesi-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 50 | `tanı-kapsamı-karışması` · YAS-3.2 | U `cekirdek/src/denetim.ts:739` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:475` · K `yasa/kanon/yas.sar:163` | E-ORK: gelecekte `tanı-kapsamı-karışması` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 51 | `proje-tanı-kimliği-uyumsuz` · YAS-3.3 | U `cekirdek/src/denetim.ts:746` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:428` · K `yasa/kanon/yas.sar:175` | E-ORK: gelecekte `proje-tanı-kimliği-uyumsuz` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 52 | `tanı-terfi-kapısı-ihlali` · YAS-4 | U `cekirdek/src/kuralci.ts:937` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:414` · K `yasa/kanon/yas.sar:200` | E-KURAL: gelecekte `tanı-terfi-kapısı-ihlali` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 53 | `sahte-tam-yeşil` · YAS-4.1 | U `cekirdek/src/denetim.ts:802` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:478` · K `yasa/kanon/yas.sar:212` | E-ORK: gelecekte `sahte-tam-yeşil` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 54 | `prizma-kaynak-ayrışması` · YUZ-1 | U `cekirdek/src/denetci.ts:3632` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:393` · K `yasa/kanon/yuz.sar:27` | E-PROJE: gelecekte `prizma-kaynak-ayrışması` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 55 | `eş-yetkili-yüz-ikizi` · YUZ-1.2 | U `cekirdek/src/denetci.ts:3643` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:394` · K `yasa/kanon/yuz.sar:51` | E-PROJE: gelecekte `eş-yetkili-yüz-ikizi` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 56 | `yüz-idempotans-drifti` · YUZ-1.3 | U `cekirdek/src/denetci.ts:3654` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:395` · K `yasa/kanon/yuz.sar:63` | E-PROJE: gelecekte `yüz-idempotans-drifti` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 57 | `geliştirme-yüzü-drifti` · YUZ-3 | U `cekirdek/src/denetci.ts:3680` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:396` · K `yasa/kanon/yuz.sar:123` | E-PROJE: gelecekte `geliştirme-yüzü-drifti` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 58 | `tanı-yüzü-uyumsuz` · YUZ-3.1 | U `cekirdek/src/denetim.ts:760` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:476` · K `yasa/kanon/yuz.sar:135` | E-ORK: gelecekte `tanı-yüzü-uyumsuz` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+| 59 | `yüzey-sözleşmesi-eksik` · YUZ-4 | U `cekirdek/src/denetci.ts:3700` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:397` · K `yasa/kanon/yuz.sar:171` | E-PROJE: gelecekte `yüzey-sözleşmesi-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 60 | `palet-yüz-drifti` · YUZ-4.1 | U `cekirdek/src/denetci.ts:3708` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:398` · K `yasa/kanon/yuz.sar:183` | E-PROJE: gelecekte `palet-yüz-drifti` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 61 | `görünürlük-sözleşmesi-eksik` · YUZ-5 | U `cekirdek/src/dogrulayici.ts:383` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:89` · K `yasa/kanon/yuz.sar:208` | E-TEK: gelecekte `görünürlük-sözleşmesi-eksik` sınıfı ihlali. | **HATA öner** — kanon hedefi HATA. |
+| 62 | `tanı-yüzeyi-karışması` · YUZ-3.3 | U `cekirdek/src/denetim.ts:794` · D `cekirdek/sinama/yeni-kanon-tanilari.test.ts:507` · K `yasa/kanon/yuz.sar:159` | E-ORK: gelecekte `tanı-yüzeyi-karışması` sınıfı ihlali. | **Uyarıda kalsın** — kanon hedefi UYARI. |
+
+## RET-ADAYI · açık sayaç veya önceki kademe
+
+Aşağıdaki sekiz kimlik canlı sicilde bilgi kademesindedir ve iki kökün birleşik
+sayaçları sıfır değildir. Uyarı kapısını geçmedikleri için hata adaylığına
+hazır değillerdir. Bugün bilgi düzeyinde olduklarından Proje veya yayın kapısını
+bloklamazlar; önce kaynak borcu kapanmalı, sayaç sıfırlanmalı, üçlü kanıtla
+uyarıya tek kademe çıkmalı ve ayrı bir A05 değerlendirmesine dönmelidirler.
+
+| Tanı · madde | ANA / KPLU | RET-ADAYI gerekçesi | ÖNERİ |
+|---|---:|---|---|
+| `adım-atomikliği` · MIM-1.6 | 14 / 1 | 15 canlı bulgu vardır; ANA ve KPLU plan sahipli borcudur. | Bilgide ve sahipli kalsın. |
+| `beceri-kartı-eksik` · OGR-2.2 | 0 / 467 | KPLU etmen kartlarında 467 canlı bulgu vardır. | Bilgide ve KPLU etmen sahibinde kalsın. |
+| `yürütme-kenarı-sözleşmesi` · ORK-1.2 | 10 / 1 | İki varlığın planlarında 11 canlı kenar bulgusu vardır. | Bilgide ve plan sahiplerinde kalsın. |
+| `üretim-kökeni-ihlali` · ORK-1.3 | 2 / 0 | ANA planlarında 2 canlı üretim-kökeni bulgusu vardır. | Bilgide ve ANA plan sahibinde kalsın. |
+| `kullanır-kenarı-ihlali` · ORK-2.4 | 1 / 0 | ANA reform planında 1 canlı kenar bulgusu vardır. | Bilgide ve ANA plan sahibinde kalsın. |
+| `seçilemez-adım-yürütümü` · ORK-3.2 | 4 / 0 | ANA vitrin planında 4 canlı öncül bulgusu vardır. | Bilgide ve ANA vitrin planı sahibinde kalsın. |
+| `şema-dışı-alan` · TIP-2.2 | 31 / 144 | İki kökte 175 bulgu vardır; ANA sayacı ders dünyasını da görünür tutar. | Bilgide ve ayrık şema sahiplerinde kalsın. |
+| `terfi-kanıtı-eksik` · YAS-4.2 | 0 / 25 | KPLU'un dört yasa dosyasında 25 canlı kanıt bulgusu vardır. | Bilgide ve KPLU yasa sahibinde kalsın. |
+
+## Öneri dağılımı ve gerekçe
+
+Sıfır sayaç ile tam üçlü kanıt 62 tanının A05'e girmesi için gerekli koşulu
+karşılar; hangi tanının gerçekten hata olması gerektiğini ise değişmeyen
+kanonun hedef düzeyi belirler. Sicildeki `kanonDüzey` sayımı, 62 adayın 46'sı
+için HATA ve 16'sı için UYARI sonucunu verir. Güvenli çekirdek bu 46 HATA
+hedefli tanıdır. On altı UYARI hedefli tanıyı hataya önermek kanon hükmünü
+değiştirmeden kanonla çelişir; bu nedenle uyarıda kalmaları önerilir.
+
+| Dağılım | Sayı | Kontrolör önerisi |
+|---|---:|---|
+| ADAY, kanon hedefi HATA | 46 | Founder açıkça kabul ederse sonraki koşumda uyarıdan hataya tek kademe çıkarılsın. |
+| ADAY, kanon hedefi UYARI | 16 | Uyarıda kalsın; hata terfisi önerilmez. |
+| RET-ADAYI, açık sayaçlı bilgi | 8 | Bilgide ve sahipli kalsın; bu A05 kapısına alınmasın. |
+| Kanıtı eksik uyarı | 0 | Hata adayı yoktur. |
+
+## Founder kabul özeti · 2026-08-03
+
+| Founder'ın okuyacağı hüküm | Ölçülen değer |
+|---|---|
+| Canlı kapsam | `_Sarmal` ve `kapalı varlık`; üçüncü canlı Proje kökü yoktur. |
+| Uyarı sayaçları | 62 tanının 62'si iki kökte 0/0; iki koşu birebirdir. |
+| Üçlü kanıt | 62 tam, 0 eksik. |
+| Değerlendirme | 62 ADAY değerlendirilmiş, 46 hata terfisi kabul edilmiş, 16 tanı uyarıda ve sekiz RET-ADAYI bilgide bırakılmıştır. |
+| Founder hükmü | 46 HATA-hedefli güvenli çekirdek hataya çıkarılmış; 16 UYARI-hedefli tanı uyarıda bırakılmıştır. |
+| Bugünkü etki | Terfi uygulanmış ve aday sayaçları sıfır kalmıştır; bloklanan yeni dosya, düğüm veya yayın yoktur. |
+| Yetki | Founder 2026-08-03 tarihinde açık kabul vermiştir: “46 güvenli çekirdek hataya, 16 uyarıda kalır.” |
+
+- [x] Founder, kanon hedefi HATA olan 46 tanının bu koşumda hataya tek kademe
+  çıkarılmasını kabul etmiştir.
+- [x] Founder, kanon hedefi UYARI olan 16 tanının uyarıda kalmasını kabul
+  etmiştir.
+- [x] Founder, sekiz RET-ADAYI tanının açık sayaçları kapanana kadar bilgi
+  düzeyinde ve sahipli kalmasını kabul etmiştir.
+
+Founder hükmü 2026-08-03 tarihinde tam olarak şöyledir: “46 güvenli çekirdek
+hataya, 16 uyarıda kalır.” Bu hüküm yalnız aşağıda tam kimlikleri yazılan üç
+kümeye yetki verir; başka hiçbir tanı düzeyi değiştirilemez.
+
+Founder'ın hataya çıkmasını kabul ettiği 46 kimlik şunlardır:
+`kanonik-kaynak-biçimi`, `belge-şekil-drift`, `kenar-tip-uyuşmazlığı`,
+`numara-grafı-uyumsuz`, `madde-kodu-uyumsuz`, `ilgili-önek-geçersiz`,
+`proje-köksüz-üretim`, `çok-teknolojili-katman`, `üretimsiz-meyve`,
+`meyve-dosyası-eksik`, `öğretim-kaynak-drifti`, `başvuru-sicil-drifti`,
+`öğretim-etki-eksik`, `üretilmiş-öğretim-değiştirilmiş`,
+`ilişki-sınıfı-ihlali`, `mimari-bağı-ihlali`, `deterministik-sıra-ihlali`,
+`döngü-sonlanması-eksik`, `kapı-kabul-kanıtı-eksik`,
+`çapraz-proje-ad-alanı`, `auth-omurgası-ihlali`,
+`founder-ortak-auth-eksik`, `şef-akışı-ihlali`,
+`üretici-denetçi-çakışması`, `unutma-kapısı-ihlali`,
+`kanon-kodu-uyumsuz`, `göç-sırası-ihlali`, `açık-gizli-sınır-ihlali`,
+`yürütücü-bağımlılığı`, `tip-evreni-eksik`, `omurga-tipi-eksik`,
+`şema-tanımı-eksik`, `rejim-beyanı-eksik`,
+`katı-rejim-altkatman-eksik`, `hüküm-türü-uyumsuz`,
+`kural-sözleşmesi-eksik`, `tanı-sözleşmesi-uyumsuz`,
+`tanı-kapsamı-karışması`, `proje-tanı-kimliği-uyumsuz`,
+`tanı-terfi-kapısı-ihlali`, `sahte-tam-yeşil`,
+`prizma-kaynak-ayrışması`, `eş-yetkili-yüz-ikizi`,
+`yüzey-sözleşmesi-eksik`, `palet-yüz-drifti` ve
+`görünürlük-sözleşmesi-eksik`.
+
+Founder'ın uyarıda kalmasını kabul ettiği 16 kimlik şunlardır:
+`orthografi-kaybı`, `çok-satırlı-değer-drift`, `öğretim-yüzü-uyumsuz`,
+`öğretim-bayat`, `kanıtsız-beceri-terfisi`, `oturum-adım-sınırı`,
+`göç-kapısı-eksik`, `çekirdek-bağımlılık-drifti`,
+`etki-yayın-kapısı-eksik`, `ölü-iz`, `örtü-ihlali`,
+`rejim-geçiş-uyumsuzluğu`, `yüz-idempotans-drifti`,
+`geliştirme-yüzü-drifti`, `tanı-yüzü-uyumsuz` ve
+`tanı-yüzeyi-karışması`.
+
+Founder'ın reddettiği ve bilgide bıraktığı sekiz RET-ADAYI kimlik şunlardır:
+`adım-atomikliği`, `beceri-kartı-eksik`, `yürütme-kenarı-sözleşmesi`,
+`üretim-kökeni-ihlali`, `kullanır-kenarı-ihlali`,
+`seçilemez-adım-yürütümü`, `şema-dışı-alan` ve `terfi-kanıtı-eksik`.
+|<--
+
+Veri( kod: KAY-GOC-TERFI-A05-DEGERLENDIRME,
+  ne: "GOC-TERFI-A05 için altmış iki sıfır-sayaçlı ve üçlü kanıtı tam adayı, sekiz açık-sayaçlı ret-adayını, tanı başına Proje-yayın etkisini ve 2026-08-03 tarihli açık Founder kabulünü kaydeder; kabul 46 kimliği hataya çıkarır, 16 kimliği uyarıda ve sekiz kimliği bilgide bırakır." )

@@ -1,0 +1,196 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar — 🧭 TANI YÜZEYİ YÖNLENDİRME
+//   MATRİSİ (GOC-YUZEY-A01)
+//
+//   Kanonun üç sunum yüzeyi hükmünün eklenti tarafındaki uygulanma kaydıdır.
+//   Her tanı doğasına göre TEK bir yüzeye atanır; bu kayıt o atamanın tam
+//   çizelgesini, sayısal özetini ve ortak veri sözleşmesini yazar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🧭 Tanı Yönlendirme Matrisi — Üç Sunum Yüzeyi
+
+## A · Yönlendirmenin tek yetkili kaynağı
+
+Yönlendirme kararı bu kayıtta ya da eklenti kodunda ÜRETİLMEZ. Karar motorun
+tek bir işlevinde yaşar: `cekirdek/src/denetim.ts` içindeki
+`beklenenSunumYuzeyi`. Eklenti o işlevi çağırır ve yalnız taşıma, gruplama ve
+özetleme yapar.
+
+Bu tercih bilinçlidir. Yönlendirme için ikinci bir eşleme çizelgesi yazılsaydı
+iki çizelgeden biri sessizce bayatlar ve tanı yanlış yüzeye düşerdi; kusur da
+kimsenin bakmadığı yerde büyürdü. Bu kayıt bir ÇİZELGE değil, tek kaynaktan
+türetilmiş bir OKUMA yüzüdür; yüzey nöbeti kaydın türetilmiş gerçekle
+uyuştuğunu ayrıca ölçer.
+
+## B · Doğa türetme kuralı ve sırası
+
+Kural iki basamaklıdır ve basamak sırası önemlidir.
+
+**Birinci basamak — doğa.** Tanının kimliği ileri-bağlam kümesinde ise kayıt
+Hatırlatıcılar yüzeyine gider. Bu küme motorda sabittir ve dört kimlik taşır:
+`açık-hatırlatıcı`, `açık-adım`, `bloklu-çapa`, `geliştirmede-çapa`. Bunlar
+düzeltilecek bir sapma değildir; kullanıcının bilerek açık bıraktığı ve
+unutmak istemediği işlerdir.
+
+**İkinci basamak — düzey.** Kimlik ileri-bağlam kümesinde değilse düzeyine
+bakılır: bilgi düzeyli kayıt Bildirimler yüzeyine, hata ve uyarı düzeyli kayıt
+Problems yüzeyine gider.
+
+Basamak sırası ölçülebilir bir fark yaratır. `bloklu-çapa` uyarı düzeyinde
+üretilir; düzey basamağı önce koşsaydı Problems'a düşerdi. Doğa basamağı önce
+koştuğu için Hatırlatıcılar'da yaşar ve kullanıcı onu çözülmesi gereken bir
+ihlal sanmaz.
+
+## C · Kapsam ve sayısal özet
+
+Kanonik tanı sicilinde bugün **173** kimlik vardır: yeni omurga kanonunun ilan
+ettiği **72** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
+veri-güdümlü tanıları (`zorunluKenarlar` alanlarından gelenler) çalışma anında
+birleştirilir ve aynı iki basamaklı kuraldan geçer; bugünkü çalışma alanında
+sayıları sıfırdır.
+
+Yüzeylere bugünkü dağılım şudur:
+
+| Yüzey | Kimlik sayısı | Nereden gelir |
+|---|---|---|
+| Problems | 142 | önceki kimliklerin hata ve uyarı düzeyli olanları ile A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı |
+| Hatırlatıcılar | 4 | ileri-bağlam kümesinin dördü |
+| Bildirimler | 27 | A03 dışında kalan 10 yeni bilgi tanısı ile önceki 17 bilgi kimliği; son ikisi öncelik beyanı (ORK-3.4) ve ateşlemiş hatırlatıcı (YUZ-3.4) gözlemleridir |
+| **Toplam** | **173** | sicilin tamamı — atanmamış kimlik yoktur |
+
+⚠️ NÖBETİN SINIRI — bu iki sayı birbirine karşı korunmuyor. Nöbet sicilin toplam
+boyutunu, yeni kanonun yetmişini, önceki gövdenin yüz ikisini ve ileri-bağlam
+kümesinin dördünü doğrudan ölçer. A05/A06 nöbeti ayrıca yeni kümenin 62 Problems
+ve 8 Bildirimler dağılımını doğrudan ölçer. Buna karşılık önceki gövdenin Problems
+ile Bildirimler dağılımı yalnız toplam üzerinden korunur; bu iki eski-gövde
+sayısı birlikte ve ters yönde kayarsa kayıt sessizce bayatlayabilir. Sebep şudur:
+önceki 102
+kimliğin düzeyi sicilde makine-okur biçimde tutulmaz, yalnız üretici işlevinin
+kaynak satırında yaşar, dolayısıyla bu iki sayı statik olarak türetilemez. Kalıcı
+çözüm `ONCEKI_TANI_KODLARI` kaydına düzey alanı eklemektir ve bu iş terfi turuna
+bağlanmalıdır; o zamana dek bu iki sayı elle doğrulanır.
+
+Önceki 102 kimliğin kaynaktan ölçülen düzey dağılımı 25 hata, 48 uyarı,
+20 bilgi, bağlama göre değişen 3 kimlik ve tek geçişli tarama ile ölçülemeyen
+6 kimliktir. Ölçülemeyen altısı üretici işlevlerinde düzeyi ayrı satırda
+kuruldukları için statik taramaya görünmez; yönlendirmeleri çalışma anında
+aynı iki basamaklı kuraldan geçer ve hiçbiri ileri-bağlam kümesinde değildir.
+
+Bu bölümdeki sayılar 2026-08-08 tarihinde bir kimlik artmıştır. Sebebi ilan
+yokluğu bekçisinin doğmasıdır: Yapı-Önce hükmü o güne dek yalnız klasör
+düzeyinde zorlanıyordu ve ilan edilmiş bir kitaplığın içine konan kaynak
+gövdesini hiçbir kapı görmüyordu. Yeni `ilansız-gövde` kimliği önceki gövdeye
+katılır ve gözlem düzeyinde doğduğu için Bildirimler yüzeyine düşer; düzeyi
+gözlemde doğması bir tercih değil, yeni bir hükmün doğrudan uyarı ya da hata
+düzeyinde doğmasını yasaklayan terfi kapısının gereğidir.
+
+## D · Kademe hükmü — A05 terfisinin yüzey sonucu
+
+Sicil iki ayrı alan tutar: `kanonDüzey` kanonun hedeflediği düzeydir,
+`kademe` ise tanının bugün gerçekten üretildiği düzeydir. GOC-TERFI-A05,
+Founder'ın 2026-08-03 tarihli açık kabulüyle kanon hedefi hata olan 46 tanının
+`kademe` alanını uyarıdan hataya tek kademe yükseltmiştir. Kanon hedefi uyarı
+olan 16 tanı uyarıda, sayaç taşıyan sekiz tanı bilgide kalmıştır.
+
+Doğa türetmesi üreticinin sicil `kademe` alanından kurduğu kanonik tanı
+nesnesini okur. Bugünkü ölçümde 46 hata ile 16 uyarı Problems'a, sekiz bilgi
+RET-ADAYI Bildirimler'e düşer. Hiçbir yüzey `kanonDüzey` hedefinden ikinci bir
+gösterim düzeyi türetmez; hedef yalnız terfi kapısının değişmeyen üst sınırıdır.
+
+Yüzey tarafında 46 terfi için ayrı bir düzey çizelgesi yazılmamıştır. Sicildeki
+kademe yükseldiğinde üretici aynı tanı nesnesine hata düzeyini koyar; Problems,
+denetim özeti, ipucu ve öğretim cümlesi kimliği, düzeyi, mesajı, konumu ve
+öneriyi bu nesneden okur. Yönlendirmenin tek kaynaktan okunmasının somut
+kazancı budur.
+
+## E · Ortak veri sözleşmesi
+
+Üç yüzey aynı kanonik tanı nesnesini taşır ve hiçbiri onu yeniden
+derecelendiremez ya da yeniden adlandıramaz. Sözleşme `YuzeyKaydi` tipinde
+yazılıdır (`eklenti/src/yuzey-cekirdek.ts`) ve üç alandan oluşur.
+
+| Alan | Ne taşır | Yüzeyin yetkisi |
+|---|---|---|
+| `proje` | kaydın bağlı olduğu Proje kodu ve insan adı | yalnız gruplama anahtarıdır |
+| `dosya` | kaydın geldiği dosyanın tam yolu | yalnız satıra gitmek için okunur |
+| `tani` | motorun kanonik tanı nesnesi | salt okunurdur, hiçbir alanı değişmez |
+
+`tani` alanı beş şeyi birlikte taşır: tanı kimliği, düzey, mesaj özü, kaynak
+konumu (satır ve sütun) ve düzeltme önerisi. Yüzey bunların hiçbirini
+düşüremez; panel satırının etiketi mesajdan, gri açıklaması kaynak konumundan,
+ipucu ise beşinin tamamından kurulur.
+
+Proje kimliği Yol Haritası ile AYNI çözümlemeden gelir
+(`yolharitasi.projeKimligi`). İkinci bir kök arama yazılmadığı için iki panel
+aynı dosyayı farklı Projeye yazamaz.
+
+## F · Mevcut davranışların sahipliği
+
+| Davranış | Sahibi | Bu turda ne oldu |
+|---|---|---|
+| Hata ve uyarı düzeyli sapmanın Problems'ta gösterilmesi | `eklenti.ts` tanı koleksiyonu | değişmedi |
+| Aktif varlığa odaklanan Problems süzgeci | `eklenti.ts` tanı defteri | değişmedi |
+| Çapraz tanı önbelleği (panel dalgasının onarımı) | `eklenti.ts` | korundu, yönlendirmeden önce birleşir |
+| Plan ağacının Yol Haritası panelinde gösterilmesi | `yolharitasi.ts` | değişmedi |
+| Aynı-kök gürültüsünün tek özete inmesi | önceden `eklenti.ts`, artık `bildirimler.ts` | sahip değişti |
+| Aktif-varlık süzgecinin ÜÇ yüzeyde birden uygulanması | `eklenti.ts` yüzey defteri (`yuzey-cekirdek.YuzeyDefteri`) | düzeltme halkasında eklendi |
+
+Son satır düzeltme halkasının (2026-07-28) karar verici hükmüdür ve gerekçesi
+kayda geçmelidir. Teslim edildiğinde yalnız Problems koleksiyonu
+`panelDeGorunur` süzgecinden geçiyordu; iki yeni yüzey bu süzgeci hiç sormuyor,
+dolayısıyla Sarmal'a odaklanmışken öteki varlığın hatırlatıcıları ve
+bildirimleri panelde durmaya devam ediyordu. Hüküm şudur: iki yeni yüzey de aynı
+süzgece UYAR. Gerekçe kullanıcı tarafında ölçülebilir bir zarardır. Aynı motorun
+çıktısını gösteren üç yüzey kapsam konusunda birbiriyle anlaşmak zorundadır;
+biri bir varlığı gizlerken öteki ikisi göstermeye devam ederse kullanıcı
+çelişkili iki tablo görür ve yeni başlayan biri bunu kendi hatası sanar.
+
+Uygulama iki noktadadır ve ikisi de nöbete alınmıştır. Süzgeç yayın anında
+uygulanır, dolayısıyla defter bütün kayıtları tutmaya devam eder ve odak geri
+döndüğünde kayıtlar geri gelir; süzgeç hiçbir kaydı SİLMEZ. Odak ya da odak
+ayarı değiştiğinde üç yüzey birlikte yeniden basılır. Nöbet mutasyonla
+kanıtlanmıştır: süzgeç saf çekirdekte devre dışı bırakıldığında bir sınama
+düştü, odak yenilemesinden iki yeni yüzey çıkarıldığında bir sınama daha düştü.
+
+Bir önceki satır da bilinçli bir taşımadır. Çıplak Adım taşıyan Katmanların özeti
+eskiden Problems yolunda ayrıca konsolide ediliyordu. O tanı bilgi
+düzeyindedir ve artık Bildirimler yüzeyinde yaşıyor; Bildirimler ise aynı
+kökten gelen bütün kayıtları zaten sayısını söyleyen tek başlık altında
+topluyor. Aynı işi iki yerde yapmak, ikisinden birinin sessizce bayatladığı
+sınıfa girer; özetleme tek yerde, sunum yüzeyinde kaldı.
+
+## G · Sunumun değiştiremeyeceği üç şey
+
+Birincisi, sunum kolaylığı tanının düzeyini değiştiremez. Bilgi kaydı panelde
+uyarıya yükseltilmez; yükseltme yalnız terfi turunun ve `kademe` alanının
+işidir.
+
+İkincisi, sunum tanının kimliğini değiştiremez. Panelde görünen kimlik motorun
+bastığı kimliğin aynısıdır; kısaltılmaz, çevrilmez, başka bir ada
+eşlenmez.
+
+Üçüncüsü, sunum motorun kapsamını değiştiremez. Yüzey hiçbir tanı üretmez ve
+hiçbir tanıyı gizlemez; her kayıt tam olarak bir yüzeye ulaşır. Kayıp yayın ve
+çift yayın yasağı dağıtım işlevinin kendisinde yapısaldır ve yüzey nöbeti
+ikisini de mutasyonla ölçer.
+
+## H · Kayda geçen iki sınır
+
+**Birinci sınır — `kararlaşmış-hatırlatıcı` Bildirimler'e gider.** Kimlik bilgi
+düzeyindedir ve ileri-bağlam kümesinde değildir. Gerekçe okunabilir: kararı
+verilmiş bir hatırlatıcı bekleyen iş değil, bildirilen bir durumdur. Kümeyi
+genişletmek motor kararıdır ve bu turda kümeye dokunulmamıştır.
+
+**İkinci sınır — motorun kendi yüzey nöbeti henüz susmaktadır.** Motorda
+`tanı-yüzeyi-karışması` hükmü hazırdır ve kendisine bir yönlendirme tablosu
+verildiğinde konuşur. Tablo bugün proje kapısına bağlanmamıştır; bağlansaydı
+tablo ile hükmün kaynağı aynı işlev olacağı için nöbet hiçbir koşulda
+kırmızıya dönemez, yani ölçmeyen bir nöbet kurulmuş olurdu. Ayrımın gerçek
+nöbeti bu yüzden yüzey süitindedir ve mutasyonla kanıtlanmıştır. Tablonun
+kapıya bağlanması, bağımsız bir ikinci kaynak (bu kaydın kendisi) okunacaksa
+anlamlıdır ve sahipli borç olarak kaydedilmiştir.
+|<--
+Çıkarım( kod: YZY-MATRIS-01,
+         kaynak: "cekirdek/src/denetim.ts beklenenSunumYuzeyi işlevinin doğrudan koşturulması + cekirdek/src/tani-sicili.ts sicilinin 171 kimliği + cekirdek/src üretici kaynaklarının düzey taraması + eklenti/src/yuzey-cekirdek.ts dağıtım işlevi (bu üretimde ölçüldü)",
+         ne: "🧭 Tanı yönlendirme matrisi sicilin 171 kimliğinin tamamını tek yüzeye atar. GOC-TERFI-A05 sonrasında dağılım 143 Problems, 4 Hatırlatıcılar ve 24 Bildirimler'dir. Founder'ın kabul ettiği 46 tanı uyarıdan hataya çıkmış, kanon hedefi uyarı olan 16 tanı uyarıda kalmış ve bu 62 kimlik aynı kanonik tanı nesnesiyle Problems'a taşınmıştır; sekiz RET-ADAYI bilgide ve Bildirimler'de kalmıştır. Yönlendirme kararı `beklenenSunumYuzeyi` işlevinde tek kaynak olarak yaşar; eklenti kimliği, düzeyi, mesajı, kaynak konumunu ve öneriyi değiştirmeden taşır. A05/A06 yüzey nöbeti 46/16/8 ayrımını, toplam 171 kimliği ve dört ileri-bağlam kimliğini doğrudan ölçer." )

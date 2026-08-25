@@ -1,0 +1,21 @@
+// site/plan/anlatim_plani.sar — sitenin en küçük plan zinciri
+Faz( kod: FAZ-ORNEK-SITE-2026-09, ad: "anlatim-donemi", ne: "🌀 Sitenin açık aracı anlattığı ilk dönem", hedefTarih: "2026-09" ) {
+  -->|
+    ## Amaç
+    Açık aracın yayınıyla aynı gün sitede aracı anlatan sayfayı açmak.
+    ## Kapsam
+    Tek sayfa ve yayın akışı; ürün tanıtımı sonraki dönemdedir.
+    ## Sonuç
+    Sayfa yayındadır ve aracın kurulum komutunu birebir taşır.
+  |<--
+  Blok( kod: BLK-ORNEK-SITE-SAYFA, ne: "🪵 Aracı anlatan sayfa" ) {
+    Katman( kod: KAT-ORNEK-SITE-ONYUZ, ad: "onyuz", ne: "🌿 Statik site katmanı", kullanır: TEK-ORNEK-SITE-STATIK ) {
+      AltKatman( kod: ALT-ORNEK-SITE-KODLAMA, ad: "kodlama", departman: kodlama, ne: "☘️ Sayfa yazımı" ) {
+        Adım( kod: ADM-ORNEK-SITE-A01, durum: beklemede,
+              ne: "Açık aracı anlatan sayfanın yazılması; bugün site aracın adını hiç anmamaktadır.",
+              görev: "Aracın ne olduğunu, kurulum komutunu ve örnek kullanımı taşıyan sayfayı yaz ve yayımla.",
+              kabul: [ "Sayfa yayındadır ve kurulum komutu aracın yayımlanmış sürümüyle birebir aynıdır." ] )
+      }
+    }
+  }
+}

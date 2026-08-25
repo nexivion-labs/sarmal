@@ -1,0 +1,1525 @@
+{
+  "_meta": {
+    "ad": "Nexivion ortak tasarım sözlüğü (TR)",
+    "amaç": "Türkçe nötr kavram → TÜM stack'ler. HER İKİ YÜZ: önyüz (Flutter/React/SwiftUI) + arkayüz (Python/Node/Go) + efekt + animasyon.",
+    "ilke": "söz dizimi EVRENSEL · sözcükler DOĞAL DİL (TR) · kavram dil-nötr → her stack'e eşlenir (PROFİL.stack).",
+    "kaynaklar": [
+      "docs.flutter.dev/ui/widgets/{layout,material,animation,input,scrolling,interaction,painting,text}",
+      "kendi HTML mockup'larımız (F1/screens)",
+      "FastAPI/Express/Gin"
+    ],
+    "kapsam": "Flutter kataloğu araştırılarak GERÇEK HAYATTA ne varsa eklendi (Founder 'kütüphaneleri araştır'). Liste yaşar.",
+    "not": "react/swiftui = en yakın muadil (yaklaşık). flutter = kanonik.",
+    "adlandırma-kararı": "PLN-2 D7 (2026-07-02): sözlük kanonik + 2 istisna — buton→düğme, Container kutu→kapsayıcı (Box=kutu ayrı). SNF tipleri = kavramın PascalCase'i."
+  },
+  "onyuz": {
+    "yerlesim": {
+      "kapsayıcı": {
+        "flutter": "Container",
+        "react": "<div>",
+        "swiftui": "ZStack"
+      },
+      "satır": {
+        "flutter": "Row",
+        "react": "<div flex-row>",
+        "swiftui": "HStack"
+      },
+      "sütun": {
+        "flutter": "Column",
+        "react": "<div flex-col>",
+        "swiftui": "VStack"
+      },
+      "yığın": {
+        "flutter": "Stack",
+        "react": "<div relative>",
+        "swiftui": "ZStack"
+      },
+      "konumlu": {
+        "flutter": "Positioned",
+        "react": "absolute",
+        "swiftui": ".position"
+      },
+      "katmanlı-yığın": {
+        "flutter": "IndexedStack",
+        "react": "conditional stack",
+        "swiftui": "ZStack+if"
+      },
+      "ortala": {
+        "flutter": "Center",
+        "react": "grid place-center",
+        "swiftui": ".frame(center)"
+      },
+      "hizala": {
+        "flutter": "Align",
+        "react": "self-{align}",
+        "swiftui": ".frame(alignment:)"
+      },
+      "temel-hiza": {
+        "flutter": "Baseline",
+        "react": "align-baseline",
+        "swiftui": ".alignmentGuide"
+      },
+      "boşluk": {
+        "flutter": "Padding",
+        "react": "p-N",
+        "swiftui": ".padding()"
+      },
+      "esnek": {
+        "flutter": "Expanded",
+        "react": "flex-1",
+        "swiftui": "Spacer"
+      },
+      "esne": {
+        "flutter": "Flexible",
+        "react": "flex",
+        "swiftui": ".layoutPriority"
+      },
+      "aralık": {
+        "flutter": "SizedBox",
+        "react": "<div w/h>",
+        "swiftui": ".frame"
+      },
+      "ayırıcı": {
+        "flutter": "Spacer",
+        "react": "flex-grow",
+        "swiftui": "Spacer"
+      },
+      "sar": {
+        "flutter": "Wrap",
+        "react": "flex-wrap",
+        "swiftui": "LazyVGrid"
+      },
+      "akış": {
+        "flutter": "Flow",
+        "react": "flow",
+        "swiftui": "Layout"
+      },
+      "tablo": {
+        "flutter": "Table",
+        "react": "<table>",
+        "swiftui": "Grid"
+      },
+      "en-boy-oranı": {
+        "flutter": "AspectRatio",
+        "react": "aspect-{r}",
+        "swiftui": ".aspectRatio"
+      },
+      "sığdır": {
+        "flutter": "FittedBox",
+        "react": "object-fit",
+        "swiftui": ".scaledToFit"
+      },
+      "kısıtla": {
+        "flutter": "ConstrainedBox",
+        "react": "max-w/min-w",
+        "swiftui": ".frame(min/max)"
+      },
+      "limit-kutu": {
+        "flutter": "LimitedBox",
+        "react": "max-w",
+        "swiftui": ".frame(maxWidth)"
+      },
+      "kesirli-boyut": {
+        "flutter": "FractionallySizedBox",
+        "react": "w-1/2",
+        "swiftui": "GeometryReader"
+      },
+      "öz-yükseklik": {
+        "flutter": "IntrinsicHeight",
+        "react": "h-fit",
+        "swiftui": ".fixedSize(v)"
+      },
+      "öz-genişlik": {
+        "flutter": "IntrinsicWidth",
+        "react": "w-fit",
+        "swiftui": ".fixedSize(h)"
+      },
+      "taşma-kutu": {
+        "flutter": "OverflowBox",
+        "react": "overflow-visible",
+        "swiftui": ".frame(overflow)"
+      },
+      "gizli-yer": {
+        "flutter": "Offstage",
+        "react": "hidden (keeps)",
+        "swiftui": ".hidden"
+      },
+      "yerleşim-kurucu": {
+        "flutter": "LayoutBuilder",
+        "react": "useResizeObserver",
+        "swiftui": "GeometryReader"
+      },
+      "kaydır-tek": {
+        "flutter": "SingleChildScrollView",
+        "react": "overflow-auto",
+        "swiftui": "ScrollView"
+      },
+      "güvenli-alan": {
+        "flutter": "SafeArea",
+        "react": "safe-area-inset",
+        "swiftui": ".safeAreaInset"
+      },
+      "görünürlük": {
+        "flutter": "Visibility",
+        "react": "hidden/block",
+        "swiftui": ".opacity/.hidden"
+      },
+      "yapışkan": {
+        "flutter": "SliverPersistentHeader (pinned)",
+        "react": "position: sticky",
+        "swiftui": "Section (pinned header)"
+      },
+      "duyarlı": {
+        "flutter": "LayoutBuilder/MediaQuery",
+        "react": "media query",
+        "swiftui": "ViewThatFits / size class"
+      }
+    },
+    "metin": {
+      "metin": {
+        "flutter": "Text",
+        "react": "<span>",
+        "swiftui": "Text"
+      },
+      "başlık": {
+        "flutter": "Text(headline)",
+        "react": "<h1>",
+        "swiftui": "Text.font(.title)"
+      },
+      "zengin-metin": {
+        "flutter": "RichText",
+        "react": "<p>",
+        "swiftui": "Text+AttributedString"
+      },
+      "seçilebilir-metin": {
+        "flutter": "SelectableText",
+        "react": "user-select",
+        "swiftui": ".textSelection"
+      },
+      "varsayılan-stil": {
+        "flutter": "DefaultTextStyle",
+        "react": "text-base",
+        "swiftui": ".font/.environment"
+      }
+    },
+    "girdi": {
+      "metin-alanı": {
+        "flutter": "TextField",
+        "react": "<input>",
+        "swiftui": "TextField"
+      },
+      "çok-satır-alan": {
+        "flutter": "TextField(maxLines)",
+        "react": "<textarea>",
+        "swiftui": "TextEditor"
+      },
+      "form": {
+        "flutter": "Form",
+        "react": "<form>",
+        "swiftui": "Form"
+      },
+      "form-alanı": {
+        "flutter": "TextFormField",
+        "react": "controlled input",
+        "swiftui": "field+binding"
+      },
+      "otomatik-tamamla": {
+        "flutter": "Autocomplete",
+        "react": "<Combobox>",
+        "swiftui": "searchable"
+      },
+      "onay-kutusu": {
+        "flutter": "Checkbox",
+        "react": "<input checkbox>",
+        "swiftui": "Toggle"
+      },
+      "radyo": {
+        "flutter": "Radio",
+        "react": "<input radio>",
+        "swiftui": "Picker"
+      },
+      "anahtar": {
+        "flutter": "Switch",
+        "react": "<Switch>",
+        "swiftui": "Toggle"
+      },
+      "kaydırıcı": {
+        "flutter": "Slider",
+        "react": "<input range>",
+        "swiftui": "Slider"
+      },
+      "aralık-kaydırıcı": {
+        "flutter": "RangeSlider",
+        "react": "<RangeSlider>",
+        "swiftui": "two sliders"
+      },
+      "açılır-liste": {
+        "flutter": "DropdownButton",
+        "react": "<select>",
+        "swiftui": "Picker"
+      },
+      "tarih-seçici": {
+        "flutter": "showDatePicker",
+        "react": "<input date>",
+        "swiftui": "DatePicker"
+      },
+      "saat-seçici": {
+        "flutter": "showTimePicker",
+        "react": "<input time>",
+        "swiftui": "DatePicker(.hourAndMinute)"
+      }
+    },
+    "düğme": {
+      "düğme": {
+        "flutter": "ElevatedButton",
+        "react": "<button>",
+        "swiftui": "Button"
+      },
+      "dolu-düğme": {
+        "flutter": "FilledButton",
+        "react": "<button filled>",
+        "swiftui": "Button(.borderedProminent)"
+      },
+      "metin-düğme": {
+        "flutter": "TextButton",
+        "react": "<button text>",
+        "swiftui": "Button(.plain)"
+      },
+      "çerçeve-düğme": {
+        "flutter": "OutlinedButton",
+        "react": "<button outline>",
+        "swiftui": "Button(.bordered)"
+      },
+      "ikon-düğme": {
+        "flutter": "IconButton",
+        "react": "<button icon>",
+        "swiftui": "Button{Image}"
+      },
+      "yüzen-düğme": {
+        "flutter": "FloatingActionButton",
+        "react": "<button fab>",
+        "swiftui": "Button.fab"
+      },
+      "segment-düğme": {
+        "flutter": "SegmentedButton",
+        "react": "<ToggleGroup>",
+        "swiftui": "Picker(.segmented)"
+      },
+      "menü-düğme": {
+        "flutter": "PopupMenuButton",
+        "react": "<DropdownMenu>",
+        "swiftui": "Menu"
+      }
+    },
+    "bilesen": {
+      "iskele": {
+        "flutter": "Scaffold",
+        "react": "<Page/Layout>",
+        "swiftui": "NavigationStack"
+      },
+      "üst-çubuk": {
+        "flutter": "AppBar",
+        "react": "<Header>",
+        "swiftui": ".toolbar"
+      },
+      "alt-uygulama-çubuğu": {
+        "flutter": "BottomAppBar",
+        "react": "<Footer>",
+        "swiftui": "bottom bar"
+      },
+      "çekmece": {
+        "flutter": "Drawer",
+        "react": "<Drawer>",
+        "swiftui": ".sheet"
+      },
+      "gezinme-çekmecesi": {
+        "flutter": "NavigationDrawer",
+        "react": "<SideNav>",
+        "swiftui": "List+NavigationLink"
+      },
+      "alt-gezinme": {
+        "flutter": "NavigationBar",
+        "react": "<TabBar>",
+        "swiftui": "TabView"
+      },
+      "gezinme-rayı": {
+        "flutter": "NavigationRail",
+        "react": "<Rail>",
+        "swiftui": "side TabView"
+      },
+      "sekme-çubuğu": {
+        "flutter": "TabBar",
+        "react": "<Tabs>",
+        "swiftui": "TabView"
+      },
+      "sekme-görünüm": {
+        "flutter": "TabBarView",
+        "react": "<TabPanels>",
+        "swiftui": "TabView page"
+      },
+      "kart": {
+        "flutter": "Card",
+        "react": "<Card>",
+        "swiftui": "GroupBox"
+      },
+      "liste-öğesi": {
+        "flutter": "ListTile",
+        "react": "<li>",
+        "swiftui": "Label"
+      },
+      "bölücü": {
+        "flutter": "Divider",
+        "react": "<hr>",
+        "swiftui": "Divider"
+      },
+      "rozet": {
+        "flutter": "Badge",
+        "react": "<Badge>",
+        "swiftui": ".badge"
+      },
+      "yonga": {
+        "flutter": "Chip",
+        "react": "<Chip>",
+        "swiftui": "Capsule label"
+      },
+      "ipucu": {
+        "flutter": "Tooltip",
+        "react": "<Tooltip>",
+        "swiftui": ".help"
+      },
+      "adımlayıcı": {
+        "flutter": "Stepper",
+        "react": "<Stepper>",
+        "swiftui": "step view"
+      },
+      "veri-tablosu": {
+        "flutter": "DataTable",
+        "react": "<Table>",
+        "swiftui": "Table"
+      },
+      "genişleyen-öğe": {
+        "flutter": "ExpansionTile",
+        "react": "<Accordion>",
+        "swiftui": "DisclosureGroup"
+      },
+      "menü": {
+        "flutter": "MenuAnchor",
+        "react": "<Menu>",
+        "swiftui": "Menu"
+      },
+      "menü-çubuğu": {
+        "flutter": "MenuBar",
+        "react": "<Menubar>",
+        "swiftui": ".commands"
+      },
+      "alt-menü": {
+        "flutter": "SubmenuButton",
+        "react": "<DropdownMenuSub>",
+        "swiftui": "Menu (iç içe)"
+      },
+      "bağlam-menüsü": {
+        "flutter": "showMenu (imleç konumunda)",
+        "react": "<ContextMenu>",
+        "swiftui": ".contextMenu"
+      },
+      "mega-menü": {
+        "flutter": "MenuAnchor (geniş özel panel)",
+        "react": "<NavigationMenu> (geniş panel)",
+        "swiftui": "özel popover panel"
+      },
+      "kırıntı-yolu": {
+        "flutter": "özel Row+TextButton (doğrudan widget yok)",
+        "react": "<Breadcrumb>",
+        "swiftui": "özel HStack"
+      },
+      "sayfalama": {
+        "flutter": "PaginatedDataTable (tablo) / özel sayfa düğmeleri",
+        "react": "<Pagination>",
+        "swiftui": "özel (sayfa düğmeleri)"
+      },
+      "dairesel-ilerleme": {
+        "flutter": "CircularProgressIndicator",
+        "react": "<Spinner>",
+        "swiftui": "ProgressView"
+      },
+      "çizgi-ilerleme": {
+        "flutter": "LinearProgressIndicator",
+        "react": "<ProgressBar>",
+        "swiftui": "ProgressView(value:)"
+      },
+      "uyarı-diyaloğu": {
+        "flutter": "AlertDialog",
+        "react": "<AlertModal>",
+        "swiftui": ".alert"
+      },
+      "diyalog": {
+        "flutter": "Dialog",
+        "react": "<Modal>",
+        "swiftui": ".sheet"
+      },
+      "alt-sayfa": {
+        "flutter": "BottomSheet",
+        "react": "<Sheet>",
+        "swiftui": ".presentationDetents"
+      },
+      "anlık-bildirim": {
+        "flutter": "SnackBar",
+        "react": "<Toast>",
+        "swiftui": ".overlay banner"
+      },
+      "arama-çubuğu": {
+        "flutter": "SearchBar",
+        "react": "<SearchInput>",
+        "swiftui": ".searchable"
+      },
+      "kenar-çubuğu": {
+        "flutter": "NavigationRail / özel yan panel",
+        "react": "<Sidebar>",
+        "swiftui": "NavigationSplitView (yan sütun)"
+      },
+      "araç-çubuğu": {
+        "flutter": "AppBar actions / özel Row",
+        "react": "<Toolbar>",
+        "swiftui": ".toolbar"
+      },
+      "durum-çubuğu": {
+        "flutter": "özel alt Row (uygulama içi)",
+        "react": "<StatusBar>",
+        "swiftui": "özel alt şerit"
+      },
+      "bölünmüş-görünüm": {
+        "flutter": "özel Row + sürükle-ayraç",
+        "react": "<SplitPane>",
+        "swiftui": "HSplitView / NavigationSplitView"
+      },
+      "açılır-kutu": {
+        "flutter": "showDialog (konumlu) / MenuAnchor",
+        "react": "<Popover>",
+        "swiftui": ".popover"
+      },
+      "komut-paleti": {
+        "flutter": "özel (arama diyaloğu + kısayol)",
+        "react": "<CommandPalette> (cmdk)",
+        "swiftui": "özel (arama sayfası)"
+      },
+      "ağaç-görünümü": {
+        "flutter": "özel ExpansionTile ağacı",
+        "react": "<TreeView>",
+        "swiftui": "OutlineGroup"
+      },
+      "afiş": {
+        "flutter": "MaterialBanner",
+        "react": "<Banner> / <Alert>",
+        "swiftui": "özel üst şerit"
+      }
+    },
+    "kaydirma": {
+      "liste": {
+        "flutter": "ListView",
+        "react": "<ul map>",
+        "swiftui": "List"
+      },
+      "ızgara": {
+        "flutter": "GridView",
+        "react": "grid",
+        "swiftui": "LazyVGrid"
+      },
+      "sayfa-görünüm": {
+        "flutter": "PageView",
+        "react": "<Carousel>",
+        "swiftui": "TabView(.page)"
+      },
+      "kaydırılır": {
+        "flutter": "SingleChildScrollView",
+        "react": "overflow-auto",
+        "swiftui": "ScrollView"
+      },
+      "özel-kaydırma": {
+        "flutter": "CustomScrollView",
+        "react": "virtualized",
+        "swiftui": "ScrollView+LazyVStack"
+      },
+      "iç-içe-kaydırma": {
+        "flutter": "NestedScrollView",
+        "react": "nested scroll",
+        "swiftui": "nested ScrollView"
+      },
+      "kaydırma-çubuğu": {
+        "flutter": "Scrollbar",
+        "react": "scrollbar",
+        "swiftui": ".scrollIndicators"
+      },
+      "sıralanır-liste": {
+        "flutter": "ReorderableListView",
+        "react": "<Sortable>",
+        "swiftui": ".onMove"
+      },
+      "yenile": {
+        "flutter": "RefreshIndicator",
+        "react": "pull-to-refresh",
+        "swiftui": ".refreshable"
+      },
+      "sürüklenir-alt-sayfa": {
+        "flutter": "DraggableScrollableSheet",
+        "react": "<BottomSheet drag>",
+        "swiftui": ".presentationDetents"
+      },
+      "kayan-liste": {
+        "flutter": "SliverList",
+        "react": "virtual list",
+        "swiftui": "LazyVStack"
+      },
+      "kayan-ızgara": {
+        "flutter": "SliverGrid",
+        "react": "virtual grid",
+        "swiftui": "LazyVGrid"
+      },
+      "kayan-üst-çubuk": {
+        "flutter": "SliverAppBar",
+        "react": "sticky header",
+        "swiftui": "collapsing header"
+      }
+    },
+    "varliklar": {
+      "görsel": {
+        "flutter": "Image",
+        "react": "<img>",
+        "swiftui": "Image"
+      },
+      "ağ-görsel": {
+        "flutter": "Image.network",
+        "react": "<img src>",
+        "swiftui": "AsyncImage"
+      },
+      "varlık-görsel": {
+        "flutter": "Image.asset",
+        "react": "<img import>",
+        "swiftui": "Image(asset)"
+      },
+      "ikon": {
+        "flutter": "Icon",
+        "react": "<Icon>",
+        "swiftui": "Image(systemName)"
+      },
+      "daire-avatar": {
+        "flutter": "CircleAvatar",
+        "react": "<Avatar>",
+        "swiftui": "Image.clipShape(Circle)"
+      }
+    },
+    "asenkron": {
+      "gelecek-kur": {
+        "flutter": "FutureBuilder",
+        "react": "useEffect+state",
+        "swiftui": ".task"
+      },
+      "akış-kur": {
+        "flutter": "StreamBuilder",
+        "react": "subscribe",
+        "swiftui": ".onReceive"
+      },
+      "animasyonlu-liste": {
+        "flutter": "AnimatedList",
+        "react": "<AnimatePresence>",
+        "swiftui": "List+animation"
+      }
+    },
+    "etkilesim": {
+      "dokunma": {
+        "flutter": "GestureDetector",
+        "react": "onClick/onPointer",
+        "swiftui": ".gesture"
+      },
+      "tıklanır": {
+        "flutter": "InkWell",
+        "react": "onClick (ripple)",
+        "swiftui": ".onTapGesture"
+      },
+      "sürükle": {
+        "flutter": "Draggable",
+        "react": "draggable",
+        "swiftui": ".draggable"
+      },
+      "uzun-bas-sürükle": {
+        "flutter": "LongPressDraggable",
+        "react": "long-press drag",
+        "swiftui": ".onLongPressGesture"
+      },
+      "bırak-hedefi": {
+        "flutter": "DragTarget",
+        "react": "onDrop",
+        "swiftui": ".dropDestination"
+      },
+      "kaydır-sil": {
+        "flutter": "Dismissible",
+        "react": "swipe-to-delete",
+        "swiftui": ".swipeActions"
+      },
+      "yoksay-imleç": {
+        "flutter": "IgnorePointer",
+        "react": "pointer-events-none",
+        "swiftui": ".allowsHitTesting(false)"
+      },
+      "emici-imleç": {
+        "flutter": "AbsorbPointer",
+        "react": "capture pointer",
+        "swiftui": ".contentShape"
+      },
+      "etkileşimli-görüntü": {
+        "flutter": "InteractiveViewer",
+        "react": "pinch-zoom",
+        "swiftui": ".magnificationGesture"
+      },
+      "fareyle-üzerinde": {
+        "flutter": "MouseRegion",
+        "react": "onMouseEnter",
+        "swiftui": ".onHover"
+      },
+      "gezgin": {
+        "flutter": "Navigator",
+        "react": "router",
+        "swiftui": "NavigationStack"
+      },
+      "çift-tıklama": {
+        "flutter": "GestureDetector onDoubleTap",
+        "react": "onDoubleClick",
+        "swiftui": ".onTapGesture(count: 2)"
+      },
+      "uzun-basma": {
+        "flutter": "GestureDetector onLongPress",
+        "react": "long-press (özel)",
+        "swiftui": ".onLongPressGesture"
+      },
+      "kaydırma-jesti": {
+        "flutter": "GestureDetector onHorizontalDragEnd",
+        "react": "swipe (özel/kütüphane)",
+        "swiftui": "DragGesture"
+      },
+      "kısayol": {
+        "flutter": "Shortcuts + Actions",
+        "react": "hotkey dinleyicisi",
+        "swiftui": ".keyboardShortcut"
+      }
+    },
+    "boyama": {
+      "saydamlık": {
+        "flutter": "Opacity",
+        "react": "opacity",
+        "swiftui": ".opacity"
+      },
+      "dönüştür": {
+        "flutter": "Transform",
+        "react": "transform",
+        "swiftui": ".transformEffect"
+      },
+      "döndürülmüş": {
+        "flutter": "RotatedBox",
+        "react": "rotate",
+        "swiftui": ".rotationEffect"
+      },
+      "kesirli-kaydır": {
+        "flutter": "FractionalTranslation",
+        "react": "translate-%",
+        "swiftui": ".offset"
+      },
+      "dekor": {
+        "flutter": "DecoratedBox",
+        "react": "styled div",
+        "swiftui": ".background"
+      },
+      "özel-boya": {
+        "flutter": "CustomPaint",
+        "react": "<canvas>",
+        "swiftui": "Canvas"
+      },
+      "kırp-yuvarlak": {
+        "flutter": "ClipRRect",
+        "react": "rounded",
+        "swiftui": ".clipShape(RoundedRectangle)"
+      },
+      "kırp-dikdörtgen": {
+        "flutter": "ClipRect",
+        "react": "overflow-hidden",
+        "swiftui": ".clipped"
+      },
+      "kırp-oval": {
+        "flutter": "ClipOval",
+        "react": "rounded-full",
+        "swiftui": ".clipShape(Circle)"
+      },
+      "kırp-yol": {
+        "flutter": "ClipPath",
+        "react": "clip-path",
+        "swiftui": ".clipShape(custom)"
+      },
+      "arka-filtre": {
+        "flutter": "BackdropFilter",
+        "react": "backdrop-blur",
+        "swiftui": ".background(.material)"
+      },
+      "gölge-maske": {
+        "flutter": "ShaderMask",
+        "react": "mask-image",
+        "swiftui": ".mask"
+      },
+      "renk-filtreli": {
+        "flutter": "ColorFiltered",
+        "react": "filter",
+        "swiftui": ".colorMultiply"
+      }
+    },
+    "animasyon-widget": {
+      "animasyonlu-kapsayıcı": {
+        "flutter": "AnimatedContainer",
+        "react": "<motion.div>",
+        "swiftui": "withAnimation+state"
+      },
+      "animasyonlu-saydamlık": {
+        "flutter": "AnimatedOpacity",
+        "react": "animate opacity",
+        "swiftui": ".animation(opacity)"
+      },
+      "animasyonlu-konum": {
+        "flutter": "AnimatedPositioned",
+        "react": "layout animate",
+        "swiftui": ".animation(position)"
+      },
+      "animasyonlu-hiza": {
+        "flutter": "AnimatedAlign",
+        "react": "animate align",
+        "swiftui": ".animation(align)"
+      },
+      "animasyonlu-ölçek": {
+        "flutter": "AnimatedScale",
+        "react": "animate scale",
+        "swiftui": ".scaleEffect+anim"
+      },
+      "animasyonlu-boyut": {
+        "flutter": "AnimatedSize",
+        "react": "animate size",
+        "swiftui": ".animation(size)"
+      },
+      "çapraz-solma": {
+        "flutter": "AnimatedCrossFade",
+        "react": "<AnimatePresence>",
+        "swiftui": "if+transition"
+      },
+      "animasyon-kurucu": {
+        "flutter": "AnimatedBuilder",
+        "react": "useAnimation",
+        "swiftui": "TimelineView"
+      },
+      "solma-geçiş": {
+        "flutter": "FadeTransition",
+        "react": "fade",
+        "swiftui": ".transition(.opacity)"
+      },
+      "ölçek-geçiş": {
+        "flutter": "ScaleTransition",
+        "react": "scale",
+        "swiftui": ".transition(.scale)"
+      },
+      "döndürme-geçiş": {
+        "flutter": "RotationTransition",
+        "react": "rotate",
+        "swiftui": ".rotationEffect"
+      },
+      "kayma-geçiş": {
+        "flutter": "SlideTransition",
+        "react": "slide",
+        "swiftui": ".transition(.slide)"
+      },
+      "boyut-geçiş": {
+        "flutter": "SizeTransition",
+        "react": "h/w transition",
+        "swiftui": "frame anim"
+      },
+      "kahraman": {
+        "flutter": "Hero",
+        "react": "shared-element",
+        "swiftui": ".matchedGeometryEffect"
+      }
+    },
+    "cupertino": {
+      "ios-iskele": {
+        "flutter": "CupertinoPageScaffold",
+        "react": "iOS layout",
+        "swiftui": "NavigationStack"
+      },
+      "ios-gezinme": {
+        "flutter": "CupertinoNavigationBar",
+        "react": "iOS navbar",
+        "swiftui": ".toolbar"
+      },
+      "ios-düğme": {
+        "flutter": "CupertinoButton",
+        "react": "iOS button",
+        "swiftui": "Button"
+      },
+      "ios-anahtar": {
+        "flutter": "CupertinoSwitch",
+        "react": "iOS switch",
+        "swiftui": "Toggle"
+      },
+      "ios-seçici": {
+        "flutter": "CupertinoPicker",
+        "react": "iOS picker",
+        "swiftui": "Picker(.wheel)"
+      },
+      "ios-diyalog": {
+        "flutter": "CupertinoAlertDialog",
+        "react": "iOS alert",
+        "swiftui": ".alert"
+      }
+    }
+  },
+  "parametreler": {
+    "ortalı": {
+      "flutter": "alignment: Alignment.center",
+      "react": "items-center justify-center",
+      "swiftui": ".center"
+    },
+    "gizli": {
+      "flutter": "obscureText: true",
+      "react": "type='password'",
+      "swiftui": "SecureField"
+    },
+    "boşluk": {
+      "flutter": "padding: EdgeInsets.all(N)",
+      "react": "p-N",
+      "swiftui": ".padding(N)"
+    },
+    "kenar-boşluk": {
+      "flutter": "margin: EdgeInsets.all(N)",
+      "react": "m-N",
+      "swiftui": ".padding(N)"
+    },
+    "esnek": {
+      "flutter": "Expanded",
+      "react": "flex-1",
+      "swiftui": "Spacer"
+    },
+    "kalın": {
+      "flutter": "fontWeight: FontWeight.bold",
+      "react": "font-bold",
+      "swiftui": ".bold()"
+    },
+    "italik": {
+      "flutter": "fontStyle: italic",
+      "react": "italic",
+      "swiftui": ".italic()"
+    },
+    "renk": {
+      "flutter": "color:",
+      "react": "text-{color}",
+      "swiftui": ".foregroundColor"
+    },
+    "arka-renk": {
+      "flutter": "color: (BoxDecoration)",
+      "react": "bg-{color}",
+      "swiftui": ".background"
+    },
+    "yuvarlak": {
+      "flutter": "borderRadius",
+      "react": "rounded",
+      "swiftui": ".cornerRadius"
+    },
+    "genişlik": {
+      "flutter": "width:",
+      "react": "w-N",
+      "swiftui": ".frame(width:)"
+    },
+    "yükseklik": {
+      "flutter": "height:",
+      "react": "h-N",
+      "swiftui": ".frame(height:)"
+    },
+    "boyut": {
+      "flutter": "fontSize:",
+      "react": "text-N",
+      "swiftui": ".font(.system(size:))"
+    },
+    "tıklanır": {
+      "flutter": "onPressed:",
+      "react": "onClick",
+      "swiftui": "Button action"
+    },
+    "zorunlu": {
+      "flutter": "validator: required",
+      "react": "required",
+      "swiftui": ".required"
+    },
+    "salt-okunur": {
+      "flutter": "readOnly: true",
+      "react": "readOnly",
+      "swiftui": ".disabled(true)"
+    },
+    "ipucu-metni": {
+      "flutter": "hintText:",
+      "react": "placeholder",
+      "swiftui": "prompt"
+    },
+    "etkin-değil": {
+      "flutter": "onPressed: null",
+      "react": "disabled",
+      "swiftui": ".disabled(true)"
+    },
+    "katman-sırası": {
+      "flutter": "Stack çocuk sırası",
+      "react": "z-index",
+      "swiftui": ".zIndex"
+    },
+    "yazı-ailesi": {
+      "flutter": "fontFamily",
+      "react": "font-family",
+      "swiftui": ".font(.custom)"
+    },
+    "harf-aralığı": {
+      "flutter": "letterSpacing",
+      "react": "letter-spacing",
+      "swiftui": ".kerning"
+    }
+  },
+  "efektler": {
+    "cam-efekti": {
+      "flutter": "BackdropFilter(ImageFilter.blur)",
+      "react": "backdrop-blur bg-white/10",
+      "swiftui": ".background(.ultraThinMaterial)",
+      "_kaynak": "mockup: backdrop-filter (glassmorphism)"
+    },
+    "bulanıklık": {
+      "flutter": "ImageFilter.blur(sigmaX,sigmaY)",
+      "react": "blur()",
+      "swiftui": ".blur(radius:)",
+      "_kaynak": "mockup: blur ×12"
+    },
+    "gradyan": {
+      "flutter": "LinearGradient",
+      "react": "bg-gradient-to-{dir}",
+      "swiftui": "LinearGradient",
+      "_kaynak": "mockup: gradient ×17"
+    },
+    "radyal-gradyan": {
+      "flutter": "RadialGradient",
+      "react": "bg-radial",
+      "swiftui": "RadialGradient"
+    },
+    "gölge": {
+      "flutter": "BoxShadow",
+      "react": "shadow-{size}",
+      "swiftui": ".shadow(radius:)",
+      "_kaynak": "mockup: box-shadow"
+    },
+    "metin-gölge": {
+      "flutter": "TextStyle.shadows",
+      "react": "text-shadow",
+      "swiftui": ".shadow (text)"
+    },
+    "yuvarlak-köşe": {
+      "flutter": "BorderRadius.circular(N)",
+      "react": "rounded-{size}",
+      "swiftui": ".cornerRadius(N)",
+      "_kaynak": "mockup: border-radius ×28"
+    },
+    "saydamlık": {
+      "flutter": "Opacity(opacity:)",
+      "react": "opacity-{N}",
+      "swiftui": ".opacity(N)",
+      "_kaynak": "mockup: opacity ×9"
+    },
+    "ölçekle": {
+      "flutter": "Transform.scale(scale:)",
+      "react": "scale-{N}",
+      "swiftui": ".scaleEffect(N)",
+      "_kaynak": "mockup: scale"
+    },
+    "döndür": {
+      "flutter": "Transform.rotate(angle:)",
+      "react": "rotate-{deg}",
+      "swiftui": ".rotationEffect(.degrees)",
+      "_kaynak": "mockup: rotate"
+    },
+    "kaydır-konum": {
+      "flutter": "Transform.translate(offset:)",
+      "react": "translate-{xy}",
+      "swiftui": ".offset(x,y)",
+      "_kaynak": "mockup: translate"
+    },
+    "parlaklık": {
+      "flutter": "ColorFiltered(brightness)",
+      "react": "brightness()",
+      "swiftui": ".brightness(N)"
+    },
+    "doygunluk": {
+      "flutter": "ColorFiltered(saturation)",
+      "react": "saturate()",
+      "swiftui": ".saturation(N)"
+    },
+    "kırp": {
+      "flutter": "ClipRRect / ClipPath",
+      "react": "overflow-hidden clip",
+      "swiftui": ".clipShape"
+    },
+    "kenarlık": {
+      "flutter": "Border.all",
+      "react": "border",
+      "swiftui": ".overlay(stroke)"
+    },
+    "iç-gölge": {
+      "flutter": "özel (BoxShadow inset desteklemez)",
+      "react": "inset box-shadow",
+      "swiftui": "özel (iç gölge katmanı)"
+    },
+    "kaplama": {
+      "flutter": "ModalBarrier / Stack üst katman",
+      "react": "overlay / scrim",
+      "swiftui": ".overlay"
+    }
+  },
+  "animasyonlar": {
+    "süre": {
+      "flutter": "Duration(milliseconds:)",
+      "react": "duration-{N}",
+      "swiftui": ".animation(duration:)"
+    },
+    "gecikme": {
+      "flutter": "Future.delayed",
+      "react": "delay-{N}",
+      "swiftui": ".delay(N)"
+    },
+    "eğri": {
+      "flutter": "Curves.easeInOut",
+      "react": "ease-in-out",
+      "swiftui": ".easeInOut",
+      "_not": "cubic-bezier eşleniği"
+    },
+    "tekrar": {
+      "flutter": "controller.repeat()",
+      "react": "infinite",
+      "swiftui": ".repeatForever()"
+    },
+    "ileri-geri": {
+      "flutter": "repeat(reverse: true)",
+      "react": "alternate",
+      "swiftui": ".repeatForever(autoreverses:true)"
+    },
+    "geçiş": {
+      "flutter": "AnimatedContainer",
+      "react": "transition",
+      "swiftui": "implicit .animation"
+    },
+    "solma": {
+      "flutter": "FadeTransition / AnimatedOpacity",
+      "react": "animate-fade-in",
+      "swiftui": ".transition(.opacity)",
+      "_kaynak": "mockup: @keyframes fadeIn"
+    },
+    "nabız": {
+      "flutter": "ScaleTransition (loop)",
+      "react": "animate-pulse",
+      "swiftui": ".scaleEffect + repeatForever",
+      "_kaynak": "mockup: @keyframes pulse/chipPulse"
+    },
+    "parıltı": {
+      "flutter": "Shimmer (paket)",
+      "react": "animate-shimmer",
+      "swiftui": ".redacted + shimmer",
+      "_kaynak": "mockup: @keyframes shimmer"
+    },
+    "dönme": {
+      "flutter": "RotationTransition",
+      "react": "animate-spin",
+      "swiftui": ".rotationEffect + repeatForever",
+      "_kaynak": "mockup: @keyframes spin"
+    },
+    "zıplama": {
+      "flutter": "Curves.bounceOut",
+      "react": "animate-bounce",
+      "swiftui": ".spring(bounce)",
+      "_kaynak": "mockup: @keyframes typingBounce"
+    },
+    "yanıp-sönme": {
+      "flutter": "Opacity (loop)",
+      "react": "animate-blink",
+      "swiftui": ".opacity + repeatForever",
+      "_kaynak": "mockup: @keyframes blink"
+    },
+    "yazıyor-göstergesi": {
+      "flutter": "3-nokta zıplama göstergesi",
+      "react": "typing-dots",
+      "swiftui": "typing dots",
+      "_kaynak": "mockup: @keyframes typingBounce"
+    },
+    "kahraman-geçiş": {
+      "flutter": "Hero",
+      "react": "shared-element",
+      "swiftui": ".matchedGeometryEffect"
+    },
+    "yay": {
+      "flutter": "SpringSimulation",
+      "react": "spring (framer-motion)",
+      "swiftui": ".spring"
+    },
+    "dalga": {
+      "flutter": "InkRipple / InkWell",
+      "react": "ripple (özel)",
+      "swiftui": "özel (dalga efekti)"
+    }
+  },
+  "arkayuz": {
+    "uc-tanimi": {
+      "uç": {
+        "python": "@app.{method}(path)",
+        "node": "app.{method}(path)",
+        "go": "router.{METHOD}(path)"
+      },
+      "get": {
+        "python": "@app.get",
+        "node": "app.get",
+        "go": "router.GET"
+      },
+      "post": {
+        "python": "@app.post",
+        "node": "app.post",
+        "go": "router.POST"
+      },
+      "put": {
+        "python": "@app.put",
+        "node": "app.put",
+        "go": "router.PUT"
+      },
+      "sil": {
+        "python": "@app.delete",
+        "node": "app.delete",
+        "go": "router.DELETE"
+      }
+    },
+    "veri": {
+      "model": {
+        "python": "BaseModel (Pydantic)",
+        "node": "zod schema / interface",
+        "go": "struct"
+      },
+      "şema": {
+        "python": "BaseModel",
+        "node": "zod",
+        "go": "struct tags"
+      },
+      "alan": {
+        "python": "Field()",
+        "node": "z.field",
+        "go": "struct field"
+      },
+      "doğrula": {
+        "python": "@validator",
+        "node": "zod.refine",
+        "go": "validator tag"
+      },
+      "isteğe-bağlı": {
+        "python": "Optional[T]",
+        "node": "z.optional",
+        "go": "*T / omitempty"
+      }
+    },
+    "istek-yanit": {
+      "gövde": {
+        "python": "Body()",
+        "node": "req.body",
+        "go": "c.BindJSON"
+      },
+      "sorgu": {
+        "python": "Query()",
+        "node": "req.query",
+        "go": "c.Query"
+      },
+      "yol-param": {
+        "python": "Path()",
+        "node": "req.params",
+        "go": "c.Param"
+      },
+      "başlık": {
+        "python": "Header()",
+        "node": "req.headers",
+        "go": "c.GetHeader"
+      },
+      "çerez": {
+        "python": "Cookie()",
+        "node": "req.cookies",
+        "go": "c.Cookie"
+      },
+      "yanıt": {
+        "python": "JSONResponse",
+        "node": "res.json",
+        "go": "c.JSON"
+      },
+      "durum-kodu": {
+        "python": "status_code=",
+        "node": "res.status",
+        "go": "c.Status"
+      },
+      "hata": {
+        "python": "HTTPException",
+        "node": "throw/next(err)",
+        "go": "c.AbortWithError"
+      }
+    },
+    "altyapi": {
+      "asenkron": {
+        "python": "async def",
+        "node": "async function",
+        "go": "goroutine"
+      },
+      "bağımlılık": {
+        "python": "Depends()",
+        "node": "middleware",
+        "go": "middleware"
+      },
+      "yetki": {
+        "python": "Security/OAuth2",
+        "node": "passport/jwt",
+        "go": "jwt middleware"
+      },
+      "ara-katman": {
+        "python": "@app.middleware",
+        "node": "app.use",
+        "go": "router.Use"
+      },
+      "arka-görev": {
+        "python": "BackgroundTasks",
+        "node": "queue/worker",
+        "go": "goroutine"
+      },
+      "veritabanı": {
+        "python": "SQLAlchemy session",
+        "node": "Prisma/TypeORM",
+        "go": "gorm/sqlx"
+      },
+      "şifrele": {
+        "python": "bcrypt/passlib",
+        "node": "bcrypt",
+        "go": "bcrypt"
+      },
+      "ortam-değişkeni": {
+        "python": "os.environ/Settings",
+        "node": "process.env",
+        "go": "os.Getenv"
+      }
+    }
+  },
+  "mantik": {
+    "_not": ".sar tarafında imperative KULLANILMAZ — bildirimsel karşılıkları var: her:(yinele) · görünür:(koşul) · boşsa:(boş-durum). Bu tablo ÇALGICI ajanın çeviri sözlüğüdür.",
+    "koşul": {
+      "dart": "if",
+      "python": "if",
+      "node": "if",
+      "go": "if"
+    },
+    "değilse": {
+      "dart": "else",
+      "python": "else",
+      "node": "else",
+      "go": "else"
+    },
+    "değilse-koşul": {
+      "dart": "else if",
+      "python": "elif",
+      "node": "else if",
+      "go": "else if"
+    },
+    "eşle": {
+      "dart": "switch",
+      "python": "match",
+      "node": "switch",
+      "go": "switch"
+    },
+    "üçlü": {
+      "dart": "c ? a : b",
+      "python": "a if c else b",
+      "node": "c ? a : b",
+      "go": "if (yok — if/else)"
+    },
+    "yinele": {
+      "dart": "for (x in liste)",
+      "python": "for x in liste",
+      "node": "for (x of liste)",
+      "go": "for _, x := range"
+    },
+    "say-döngüsü": {
+      "dart": "for (i=0; i<n; i++)",
+      "python": "for i in range(n)",
+      "node": "for (i=0; i<n; i++)",
+      "go": "for i := 0; i < n; i++"
+    },
+    "koşullu-döngü": {
+      "dart": "while",
+      "python": "while",
+      "node": "while",
+      "go": "for koşul"
+    },
+    "kır": {
+      "dart": "break",
+      "python": "break",
+      "node": "break",
+      "go": "break"
+    },
+    "atla": {
+      "dart": "continue",
+      "python": "continue",
+      "node": "continue",
+      "go": "continue"
+    },
+    "döndür": {
+      "dart": "return",
+      "python": "return",
+      "node": "return",
+      "go": "return"
+    },
+    "boş-denetim": {
+      "dart": "x ?? varsayılan",
+      "python": "x or varsayılan",
+      "node": "x ?? varsayılan",
+      "go": "if x == nil"
+    },
+    "dene-yakala": {
+      "dart": "try/catch/finally",
+      "python": "try/except/finally",
+      "node": "try/catch/finally",
+      "go": "if err != nil"
+    },
+    "süz": {
+      "dart": ".where()",
+      "python": "filter/[x for x if]",
+      "node": ".filter()",
+      "go": "for+if"
+    },
+    "dönüştür": {
+      "dart": ".map()",
+      "python": "map/[f(x) for x]",
+      "node": ".map()",
+      "go": "for+append"
+    },
+    "indirge": {
+      "dart": ".fold()",
+      "python": "reduce/sum",
+      "node": ".reduce()",
+      "go": "for+topla"
+    },
+    "sırala": {
+      "dart": ".sort()",
+      "python": "sorted()",
+      "node": ".sort()",
+      "go": "sort.Slice"
+    }
+  },
+  "matematik": {
+    "_not": "Aritmetik semboller evrensel (+ - * / %) — .sar ifade dilinde (DIL-1.3 önerisi) aynen kullanılır. Mantık sözcükleri Türkçe: ve · veya · değil.",
+    "topla-çıkar-çarp-böl": {
+      "dart": "+ - * /",
+      "python": "+ - * /",
+      "node": "+ - * /",
+      "go": "+ - * /"
+    },
+    "kalan": {
+      "dart": "%",
+      "python": "%",
+      "node": "%",
+      "go": "%"
+    },
+    "üs": {
+      "dart": "pow(x, y)",
+      "python": "x ** y",
+      "node": "x ** y",
+      "go": "math.Pow"
+    },
+    "kök": {
+      "dart": "sqrt(x)",
+      "python": "math.sqrt",
+      "node": "Math.sqrt",
+      "go": "math.Sqrt"
+    },
+    "mutlak": {
+      "dart": "x.abs()",
+      "python": "abs(x)",
+      "node": "Math.abs",
+      "go": "math.Abs"
+    },
+    "yuvarla": {
+      "dart": "x.round()",
+      "python": "round(x)",
+      "node": "Math.round",
+      "go": "math.Round"
+    },
+    "taban": {
+      "dart": "x.floor()",
+      "python": "math.floor",
+      "node": "Math.floor",
+      "go": "math.Floor"
+    },
+    "tavan": {
+      "dart": "x.ceil()",
+      "python": "math.ceil",
+      "node": "Math.ceil",
+      "go": "math.Ceil"
+    },
+    "en-küçük": {
+      "dart": "min(a, b)",
+      "python": "min",
+      "node": "Math.min",
+      "go": "math.Min"
+    },
+    "en-büyük": {
+      "dart": "max(a, b)",
+      "python": "max",
+      "node": "Math.max",
+      "go": "math.Max"
+    },
+    "toplam": {
+      "dart": ".fold(0, +)",
+      "python": "sum(liste)",
+      "node": ".reduce(+)",
+      "go": "for+topla"
+    },
+    "ortalama": {
+      "dart": "toplam / uzunluk",
+      "python": "statistics.mean",
+      "node": "toplam / uzunluk",
+      "go": "toplam / uzunluk"
+    },
+    "yüzde": {
+      "dart": "x * oran / 100",
+      "python": "x * oran / 100",
+      "node": "x * oran / 100",
+      "go": "x * oran / 100"
+    },
+    "rastgele": {
+      "dart": "Random()",
+      "python": "random",
+      "node": "Math.random",
+      "go": "math/rand"
+    },
+    "karşılaştırma": {
+      "dart": "== != < <= > >=",
+      "python": "== != < <= > >=",
+      "node": "=== !== < <= > >=",
+      "go": "== != < <= > >="
+    },
+    "ve": {
+      "dart": "&&",
+      "python": "and",
+      "node": "&&",
+      "go": "&&"
+    },
+    "veya": {
+      "dart": "||",
+      "python": "or",
+      "node": "||",
+      "go": "||"
+    },
+    "değil": {
+      "dart": "!",
+      "python": "not",
+      "node": "!",
+      "go": "!"
+    }
+  }
+}

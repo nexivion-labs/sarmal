@@ -1,0 +1,17 @@
+// 🔩 MEKANİZMA ŞABLONU (TIP-1.4) — kesişen altyapı BİR KEZ ilan; Adım REFERANS alır, İÇERMEZ.
+//    Dağıtma YASAK: aynı mekanizma iki yerde tanımlanırsa tek-kaynak bozulur.
+//    ortak/mekanizma/ rafında yaşar. Bekçi: faz serbest etiket (enum yok);
+//    modüller arası sıra bağımlı-DAG; Adım mekanizmayı İÇERİRSE = TIP-1.4 ihlali.
+
+Mekanizma( kod: MEK-GOV, ad: "governance", faz: "F1",
+           bağımlı: [ MEK-RBAC, MIM-0 ],
+           ne: "<bu mekanizma NE kesişen işi çözer — governance/RBAC/telemetri/audit>" ) {
+  Politika( kod: POL-GOV, alan: güvenlik, ne: "<işletim politikası>" ) {
+    Kural govKapisi( kod: KRL-GOV-1, otorite: anayasa, katman: niyet,
+           ne: "<uyulacak kesin kural>" )
+  }
+}
+
+// Kullanan Adım (BAŞKA dosyada) İÇERMEZ, referans verir:
+//   çağır MEK-GOV
+//   Adım( kod: ADM-X, ..., bağımlı: [ MEK-GOV ], durum: geliştirmede )

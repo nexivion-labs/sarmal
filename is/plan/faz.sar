@@ -1,0 +1,47 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/mevsim.sar — 🌀 CANLI MEVSİM (Founder 2026-07-12: "gerçek mevsim-Fazı aç")
+//
+//   Sarmal'ın kendi ZAMAN ekseni kendi bahçesinde: aktif geliştirme Blok'ları
+//   büyüdükleri mevsime bağlanır (MIM-1.3 Provider deseni — Blok TEK yerde tanımlı,
+//   mevsim `çağır` ile kapsar; kopya yok; bir bağ yalnız tek yerde tanımlanır). Kardeş
+//   Fazlar sıralıdır (motor türetir). Tarife motoru (hedefTarih · faz-vade
+//   nöbeti) kendi projemizde de yaşar. 🚄
+//
+//   DÜRÜST SINIR: faz-vade açık-iş taraması Faz'ın DOĞRUDAN Adım çocuklarına
+//   bakar — `çağır` hedeflerinin içine inmez (çağır-kenarı çevrimi RAY-3'ün işi;
+//   DIL-1.4 beyanıyla aynı sınır). Mevsim tarihi tek kaynaktan okunur.
+//
+//   DEVİR KAYDI (Founder 2026-07-21: "BLK-SOL-IDA-TEST hariç tüm blokları
+//   bitirelim; sonra orkestrasyon zekâsına geçelim"): Temmuz'un ağır mühendislik
+//   yükü kapandı (Gemini turu 8 Adım + RF-T3 plan zinciri kademe turu). Açık işi kalan 6 Blok
+//   Ağustos'a devrolur (Provider deseni — gövde sürer, biten Adımlar tarihsel
+//   kalır); done-blokların odunu Temmuz halkasında (büyüdükleri mevsim, MIM-1.2).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Faz( kod: FAZ-2026-TEMMUZ, ad: "temmuz olgunlaşma mevsimi", hedefTarih: "2026-07-31",
+     ne: "🌀 Temmuz büyüme dönemi — karar hizalaması + reform + ŞEF/eklenti olgunlaşması + Gemini standartlaştırma bu mevsimde büyüdü ve MÜHÜRLENDİ (Founder devir hükmü 2026-07-21); açık iş taşıyan 6 Blok Ağustos halkasına geçti" ) {
+
+  // Temmuz'da büyüyüp BİTEN on dokuz gövde bu mevsimde kapandı ve dosyaları
+  // 2026-07-31 tarihinde repo dışı arşive indi (adres Karar F kaydındadır);
+  // çağır kenarları arşivdeki gövdelere işaret edemeyeceği için düşürüldü —
+  // odunların tam listesi arşiv mühür kaydında ve git tarihçesindedir.
+  // Açık işi kalan gövdeler Ağustos'a taşındı (aşağıda); Temmuz'da başlayıp
+  // repoda canlı kalan iki gövde şunlardır:
+  çağır BLK-VITRIN      // vitrin/graf yüzü
+  çağır BLK-MDR         // 🗣️ motor diksiyon reformu
+}
+
+Faz( kod: FAZ-2026-AGUSTOS, ad: "ağustos orkestrasyon mevsimi", hedefTarih: "2026-08-31",
+     ne: "🌀 Ağustos dönemi — ASIL CEPHE orkestrasyon zekâsı (DALGA-3: eşikler tek kaynak + ajan eşleyici, ZKA-A05/A06); Temmuz'dan devrolan 6 Blok'un açık işi burada olgunlaşır. Founder north-star: 'orkestrasyon zekâsına geçelim' (2026-07-21)" ) {
+
+  // Temmuz'dan devrolan Blok'lar — açık iş taşıyan gövdeler (Provider deseni:
+  // aynı Blok kimliği, biten Adımlar tarihsel, açık Adımlar bu mevsimin işi).
+  çağır BLK-REFORM      // 🏛️ RF-T4-A01 metin/yüzey hizalaması (belge süpürmesi + Founder mini-kararı)
+  çağır BLK-KPN         // 🏁 KPN-A04 orkestrasyon açılış oturumu (RAY-3 envanteri + ACT fark analizi gündemde) → DALGA-3 kapısı
+  çağır BLK-BAKIM       // 📦 BKM-FND-A03 STR-3 fiziksel taşıma (ayrı planlı tur rezervasyonu)
+  çağır BLK-PRF         // ⚡ PRF-A06 TAM-TUR maliyet gözlemi (veri orkestrasyon mesaisinde birikir)
+  çağır BLK-SINAV3      // 🎓 SNV4-A01 tam-steril sınav turu (ayrı pencere)
+  çağır BLK-COKDILLILIK // 🌍 yayın dil kapısı: İngilizce okuma yüzeyi — v1'in KRİTİK YOLUNDA, çünkü minimum-güçlü ilk çıkış kapısının üç şartından biri budur ve depo bu şart sağlanmadan açılmaz (Founder hükmü 2026-07-28: seçenek A şimdi, seçenek B v2'ye)
+  çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı (Marketplace + GitHub linguist) — yayın dil kapısı ve STR-3 kapılı, orkestrasyon sonrası; biten eklenti Adımları tarihsel (Provider deseni)
+  çağır BLK-SOL-IDA-TEST // 🧪 ADM-SIT×4 Sol/IDA gerçek-dünya testi (Founder'ın örnek projesi bekleniyor — bu Blok Founder'ca hariç tutuldu, kapı Founder'da)
+}

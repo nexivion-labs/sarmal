@@ -1,0 +1,143 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/str.sar — 🧭 STRATEJİ bölümü · v1 kanonu (11 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### STR-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Strateji, Göç ve Unutma Kapısı, yeni kanonun geçmiş kod yükünden bütünüyle arınmasını, değişikliklerin bağlayıcı etki sırasıyla yayılmasını, doğrulanmış gerçekliğin kanonik sahiplerine geri bağlanmasını ve sürüm kapılarından kanıtla geçmesini tanımlayan tek geçiş otoritesidir; paralel bir göç veya yayın düzeni kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [STR, YAS, ORK].
+**Gerekçe:** Geçiş kuralları tek kökte toplanmazsa eski ve yeni kimlikler birlikte yaşamayı sürdürür, uygulama katları farklı sırayla değişir ve yayın durumu doğrulama kanıtından kopar.
+**Örnek:** Kanonik akış: `unutma kapısı → etki sıralı göç → aşama temizliği → geriye yazım → yayın → ölü iz temizliği`.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: STR-0, durum: kilitli,
+       ne: "STR-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Strateji, Göç ve Unutma Kapısı, yeni kanonun geçmiş kod yükünden bütünüyle arınmasını, değişikliklerin bağlayıcı etki sırasıyla yayılmasını, doğrulanmış gerçekliğin kanonik sahiplerine geri bağlanmasını ve sürüm kapılarından kanıtla geçmesini tanımlayan tek geçiş otoritesidir; paralel bir göç veya yayın düzeni kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [STR, YAS, ORK].",
+       gerekçe: "Geçiş kuralları tek kökte toplanmazsa eski ve yeni kimlikler birlikte yaşamayı sürdürür, uygulama katları farklı sırayla değişir ve yayın durumu doğrulama kanıtından kopar." )
+
+-->|
+### STR-1 · Sıkı Unutma Kapısı [HATA]
+**Hüküm:** Yeni kanon önceki karar, kural ve iç çalışma kodlarına metin, yorum, dayanak, örnek ya da belge notu olarak hiçbir atıf taşıyamaz; geçmiş kimlikler kanonik dosyaya açıklama veya izlenebilirlik gerekçesiyle dahi geri sokulamaz; dayanak: STR-0; ilgili: [STR, DIL, YAS].
+**Gerekçe:** Eski kimliğin tek bir yerde korunması bile onu kullanılabilir bir otorite gibi yaşatır, yeni madde grafını ikiye böler ve sonraki değişikliklerde geçmiş eşlemeye bağımlılık doğurur.
+**Örnek:** Doğru: `dayanak: STR-0`; yanlış: `dayanak:` değerini emekli bir kodla yazmak veya o kodu yorum içinde saklamak.
+**Zorlama:** Yeni tanı önerisi `unutma-kapısı-ihlali` · HATA · “Kanon geçmiş karar, kural veya iç çalışma koduna atıf taşıyor; atfı kaldır ve dayanağı yeni madde grafında kur.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: STR-1, durum: kilitli,
+       ne: "STR-1 · Sıkı Unutma Kapısı [HATA]",
+       karar: "Yeni kanon önceki karar, kural ve iç çalışma kodlarına metin, yorum, dayanak, örnek ya da belge notu olarak hiçbir atıf taşıyamaz; geçmiş kimlikler kanonik dosyaya açıklama veya izlenebilirlik gerekçesiyle dahi geri sokulamaz; dayanak: STR-0; ilgili: [STR, DIL, YAS].",
+       gerekçe: "Eski kimliğin tek bir yerde korunması bile onu kullanılabilir bir otorite gibi yaşatır, yeni madde grafını ikiye böler ve sonraki değişikliklerde geçmiş eşlemeye bağımlılık doğurur." )
+
+-->|
+### STR-1.1 · Yeni Kod Grafı [HATA]
+**Hüküm:** Yeni bütün hükümler yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin tekil madde kodlarıyla birbirine dayanır; Madde-0 dışındaki her dayanak çözülebilir olmalı ve kendi bölümünün dayanaksız köküne ulaşan ileriye dönük tek, döngüsüz izlenebilirlik grafına katılmalıdır; dayanak: STR-1; ilgili: [STR, DIL, YAS].
+**Gerekçe:** Tanımsız, paralel veya döngülü bir kod bağı hangi hükmün yürürlükte olduğunu belirsizleştirir; köke ulaşan tek graf gerekçeyi, etkiyi ve terfi kanıtını aynı kimlik uzayında tutar.
+**Örnek:** Doğru zincir: `STR-1.1 → STR-1 → STR-0`; yanlış: tanımsız bir bölüm önekine dayanmak, var olmayan maddeyi hedeflemek veya iki hükmü birbirine dayandırmak.
+**Zorlama:** `kırık-referans` · HATA · “KOD hiçbir `.sar` dosyasında yok; hedefi ilan et veya atfı düzelt.” · yüzey: proje CLI; yeni tanı önerisi `kanon-kodu-uyumsuz` · HATA · “Dayanak sekiz kanonik önek dışında, yinelenen kimlikte, döngülü veya Madde-0 köküne ulaşmıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural yeniKodGrafı( kod: STR-1.1,
+       ne: "STR-1.1 · Yeni Kod Grafı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-1,
+       tanı: [ kırık-referans ] )
+
+-->|
+### STR-1.2 · Kanon Dışı Geçici Eşleme [BİLGİ]
+**Hüküm:** Geçmişten yeni yapıya geçiş için zorunlu olan tek-seferlik eşleme yalnız kanon dışındaki göç girdisinde yaşar, hiçbir kanonik düğüme veya türetilmiş kalıcı yüze yazılamaz ve göç kabulü tamamlanınca kullanım dışı bırakılır; dayanak: STR-1; ilgili: [STR, YAS, ORK].
+**Gerekçe:** Eşleme kanonda kalırsa geçici köprü kalıcı bir uyumluluk sözleşmesine dönüşür ve sıkı unutma kapısını içeriden deler; göç sonrasında kaldırılması yeni grafın kendi başına yeterli olduğunu kanıtlar.
+**Örnek:** Doğru: geçiş eşlemesi yalnız tek kullanımlık göç girdisinde okunur ve kabulden sonra kanonik üretime katılmaz; yanlış: eski-yeni eşleme tablosunu kanon belge bloğuna eklemek.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural kanonDışıGeçiciEşleme( kod: STR-1.2,
+       ne: "STR-1.2 · Kanon Dışı Geçici Eşleme [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-1 )
+
+-->|
+### STR-2 · Göç Etki Sırası [HATA]
+**Hüküm:** Her göç `spec→kanon→motor→yüzey→proje-kod→terfi→belge` sırasını eksiksiz izler; bir aşama kapsamındaki zorunlu değişiklikler uygulanıp o aşamanın temiz kapısı kapanmadan sonraki aşamada değişiklik başlatılamaz, sıra atlanamaz veya tersine çevrilemez; dayanak: STR-0; ilgili: [STR, MIM, YAS, YUZ, OGR, ORK].
+**Gerekçe:** Tüketiciyi kaynağından önce değiştirmek geçici çift anlam ve sahte tanı üretir; belgeyi uygulamadan önce yenilemek ise henüz doğrulanmamış davranışı tamamlanmış gibi öğretir.
+**Örnek:** Doğru: `spec ✓ → kanon ✓ → motor ✓ → yüzey ✓ → proje-kod ✓ → terfi ✓ → belge`; yanlış: kanon kapısı açıkken motoru veya öğretim belgesini yeni hükme geçirmek.
+**Zorlama:** Yeni tanı önerisi `göç-sırası-ihlali` · HATA · “Göç aşaması, zorunlu öncülünün temiz kapısı kapanmadan başladı; etki sırasındaki eksik aşamaya dön.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: STR-2, durum: kilitli,
+       ne: "STR-2 · Göç Etki Sırası [HATA]",
+       karar: "Her göç `spec→kanon→motor→yüzey→proje-kod→terfi→belge` sırasını eksiksiz izler; bir aşama kapsamındaki zorunlu değişiklikler uygulanıp o aşamanın temiz kapısı kapanmadan sonraki aşamada değişiklik başlatılamaz, sıra atlanamaz veya tersine çevrilemez; dayanak: STR-0; ilgili: [STR, MIM, YAS, YUZ, OGR, ORK].",
+       gerekçe: "Tüketiciyi kaynağından önce değiştirmek geçici çift anlam ve sahte tanı üretir; belgeyi uygulamadan önce yenilemek ise henüz doğrulanmamış davranışı tamamlanmış gibi öğretir." )
+
+-->|
+### STR-2.1 · Aşama Temizlik Kapıları [UYARI]
+**Hüküm:** Her göç aşaması, kapsama giren bütün varlıkların envanteri, tekrar üretilebilir doğrulama sonucu, açık kalan borçların sahipli kaydı ve izleyen aşamaya aktarılacak etki kümesi birlikte bulunmadan kapatılamaz; eksiksiz kapanış kaydı bir sonraki aşamanın zorunlu girdisidir; dayanak: STR-2; ilgili: [STR, YAS, ORK].
+**Gerekçe:** Yalnız “tamamlandı” beyanıyla kapanan aşama unutulmuş dosya ve yüzleri görünmez kılar; borç ile etkinin açık devri, eksik işin sonraki aşamada sessizce kaybolmasını önler.
+**Örnek:** Doğru kapı kaydı: `kapsam: tam · doğrulama: 0 HATA / 0 UYARI · kalan borç: sahipli · devredilen etki: açık`; yanlış: yalnız `durum: tamamlandı` yazmak.
+**Zorlama:** Yeni tanı önerisi `göç-kapısı-eksik` · UYARI · “Göç aşaması kapsam envanteri, doğrulama sonucu, sahipli borç kaydı veya etki devrinden en az biri olmadan kapatılıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural aşamaTemizlikKapıları( kod: STR-2.1,
+       ne: "STR-2.1 · Aşama Temizlik Kapıları [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-2 )
+
+-->|
+### STR-3 · Açık Araç ve Gizli Ürün Sınırı [HATA]
+**Hüküm:** Açık dil, tip kanonu, doğrulama çekirdeği ve motor yetenekleri gizli orkestrasyon ürününden bağımsız olarak kullanılabilir, sınanabilir ve açıklanabilir kalır; gizli ürün açık sözleşmeleri tüketebilir fakat gizli politika, veri veya çalışma biçimini açık kanonun ya da çekirdeğin zorunlu bağımlılığına dönüştüremez; dayanak: STR-0; ilgili: [STR, MIM, TIP, ORK].
+**Gerekçe:** Gizli davranış açık çekirdeğin çalışması için şart olursa yayımlanan dil gerçekte eksik kalır, doğrulama yeniden üretilemez ve kanon açıklamadığı bir otoriteye bağlanır.
+**Örnek:** Doğru: `açık çekirdek ← ilanlı sözleşme → gizli ürün`; yanlış: ayrıştırma veya doğrulama sonucunu yalnız gizli bir politika çağrısı varsa üretebilmek.
+**Zorlama:** Yeni tanı önerisi `açık-gizli-sınır-ihlali` · HATA · “Açık dil veya motor gizli ürün politikasına zorunlu olarak bağlanmış; bağımlılığı ilanlı açık sözleşme sınırına taşı.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: STR-3, durum: kilitli,
+       ne: "STR-3 · Açık Araç ve Gizli Ürün Sınırı [HATA]",
+       karar: "Açık dil, tip kanonu, doğrulama çekirdeği ve motor yetenekleri gizli orkestrasyon ürününden bağımsız olarak kullanılabilir, sınanabilir ve açıklanabilir kalır; gizli ürün açık sözleşmeleri tüketebilir fakat gizli politika, veri veya çalışma biçimini açık kanonun ya da çekirdeğin zorunlu bağımlılığına dönüştüremez; dayanak: STR-0; ilgili: [STR, MIM, TIP, ORK].",
+       gerekçe: "Gizli davranış açık çekirdeğin çalışması için şart olursa yayımlanan dil gerçekte eksik kalır, doğrulama yeniden üretilemez ve kanon açıklamadığı bir otoriteye bağlanır." )
+
+-->|
+### STR-3.1 · Bağımlılık Sadeliği [UYARI]
+**Hüküm:** Açık çekirdek yalnız temel işlev için zorunlu, ilanlı ve ikame edilebilir çalışma-zamanı bağımlılıklarını taşır; türetilmiş yüzler çekirdeğe geri bağımlılık kuramaz, kanonik kaynakta bulunmayan varsayılan, alan, hüküm veya yorum ekleyemez; dayanak: STR-3; ilgili: [STR, DIL, YUZ].
+**Gerekçe:** Gereksiz bağımlılıklar çekirdeğin taşınabilirliğini ve arıza sınırını büyütür; yüzeyden çekirdeğe geri akan anlam ise tek-kaynak zincirini ters çevirerek sunumu otoriteye dönüştürür.
+**Örnek:** Doğru: `.sar kaynak → açık çekirdek → türetilmiş yüz`; yanlış: ayrıştırıcının bir yüzey paketini yüklemesi veya yüzün eksik alan için kendine özgü hüküm üretmesi.
+**Zorlama:** Yeni tanı önerisi `çekirdek-bağımlılık-drifti` · UYARI · “Açık çekirdek zorunlu olmayan çalışma-zamanı bağımlılığı taşıyor veya türetilmiş yüz kanonik kaynağa yeni otorite ekliyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural bağımlılıkSadeliği( kod: STR-3.1,
+       ne: "STR-3.1 · Bağımlılık Sadeliği [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-3 )
+
+-->|
+### STR-3.2 · Model Bağımsızlığı [HATA]
+**Hüküm:** Kanondaki her hüküm, öğretim ve orkestrasyon sözleşmesi hiçbir dış modelin kimliğine, sürümüne, geçici davranışına veya özel istem biçimine dayanmadan anlaşılabilir, uygulanabilir ve doğrulanabilir olmalıdır; yürütücü değişikliği kanonik anlamı ya da kabul sonucunu değiştiremez; dayanak: STR-3; ilgili: [STR, OGR, ORK].
+**Gerekçe:** Geçici bir yürütücü davranışını norm saymak, aynı hükmün zamanla veya ortamla başka sonuca ulaşmasına neden olur ve kabul kanıtını yeniden üretilemez kılar.
+**Örnek:** Doğru: görev, girdi, çıktı ve kabul koşulunu yetenekten bağımsız açık sözleşmeyle tanımlamak; yanlış: başarıyı yalnız belirli bir dış yürütücünün adı, sürümü veya özel istem kalıbıyla tarif etmek.
+**Zorlama:** Yeni tanı önerisi `yürütücü-bağımlılığı` · HATA · “Kanonik hüküm dış yürütücünün kimliğine, sürümüne, geçici davranışına veya özel istem biçimine bağımlı.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural modelBağımsızlığı( kod: STR-3.2,
+       ne: "STR-3.2 · Model Bağımsızlığı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-3 )
+
+-->|
+### STR-4 · Canlı Spec ve Geriye Yazım [UYARI]
+**Hüküm:** Uygulama sırasında kanıtlanan durum değişiklikleri, üretilen Meyveler ve kalıcı öğrenimler tipli bağlarla kendi kanonik Adım, ürün ve bilgi sahiplerine geri yazılır; disk ile planın iki yöndeki her ayrışması tanı olarak görünür kalır ve doğrulanmamış gözlem kendiliğinden bağlayıcı hükme dönüşemez; dayanak: STR-0; ilgili: [STR, MIM, YAS, OGR].
+**Gerekçe:** Gerçekleşen iş kanona dönmezse plan bayatlar; kanıtsız gözlem doğrudan hükme yazılırsa da geçici davranış normlaşır. İki yönlü drift görünürlüğü, planın gerçeğin önüne veya arkasına sessizce düşmesini engeller.
+**Örnek:** Diskte ürün var fakat Adım ve Meyve bağı yoksa plan geridedir; `durum: tamamlandı` olan Adımın ilanlı Meyvesi diskte yoksa plan ileridedir; doğrulanan kalıcı ders ise hedefi çözülen Bellek üzerinden Beceriye bağlanır.
+**Zorlama:** `yetim-meyve` · UYARI · “Diskte yaşayan kod plana bağlı değil; kod plandan önde.”; `doc-drift` · UYARI · “Tamamlanan Adımın Meyvesi diskte yok; plan gerçeğin önünde.”; `beceri-drift` · UYARI · “Beceri anlattığı hedefe bağlanamıyor; bayat içerik riski.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural canlıSpecVeGeriyeYazım( kod: STR-4,
+       ne: "STR-4 · Canlı Spec ve Geriye Yazım [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-0,
+       tanı: [ beceri-drift, doc-drift, yetim-meyve ] )
+
+-->|
+### STR-5 · Etki, Yayın ve Ölü İz Temizliği [UYARI]
+**Hüküm:** Her kanonik değişiklik yayımdan önce geçişli kenarları üzerinden etkilenen düğümleri, motor davranışlarını, türetilmiş yüzleri ve öğretim paketlerini belirler; bu etki kümesi doğrulanıp yayın kapısı tam yeşil olmadan değişiklik yürürlüğe alınamaz, artık kanonik anlam taşımayan kod, atıf, yüz ve öğretim izleri sahipli biçimde emekliye ayrılır; dayanak: STR-0; ilgili: [STR, YAS, YUZ, OGR, ORK].
+**Gerekçe:** Etki hesabı yapılmadan yayımlanan hüküm, görünmeyen tüketicileri eski anlamda bırakır; ölü izlerin korunması ise gezinme, öğretim ve doğrulamada yürürlükten kalkmış seçenekleri canlıymış gibi gösterir.
+**Örnek:** Doğru akış: `değişiklik → geçişli etki kümesi → yüz ve öğretim tazeleme → 0 HATA / 0 UYARI → yayın → ölü iz emekliliği`; yanlış: yalnız kaynak düğümü değiştirip eski atıfları ve üretilmiş yüzleri bırakmak.
+**Zorlama:** `karşılıksız-metin-atfı` · BİLGİ (`.md`) / UYARI (`.ts`) · “Kod gibi yazılmış atıf hiçbir `.sar` dosyasında tanımlı değil; belge veya kod yorumu çözülmeyen kimliğe yöneliyor.” · yüzey: proje CLI; yeni tanı önerisi `etki-yayın-kapısı-eksik` · UYARI · “Değişikliğin geçişli etki kümesi doğrulanmadan veya yayın kapısı tam yeşil olmadan yürürlük başlatılıyor.”; yeni tanı önerisi `ölü-iz` · UYARI · “Artık kanonik anlam taşımayan kod, atıf, yüz veya öğretim izi etkin kapsamda kalmış.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural etkiYayınVeÖlüİzTemizliği( kod: STR-5,
+       ne: "STR-5 · Etki, Yayın ve Ölü İz Temizliği [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: STR-0,
+       tanı: [ karşılıksız-metin-atfı ] )

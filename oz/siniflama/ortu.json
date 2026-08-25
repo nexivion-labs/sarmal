@@ -1,0 +1,10 @@
+{
+  "_açıklama": "ÇalışmaAlanı örtüsü (TIP-2.5 katkılı örtü). Taban kümeye yalnız EKLEME yapar; çekirdek değerler silinmez ve yeniden adlandırılmaz. İlk girdi içerik üretimi için açıldı: içerik hazırlama işi çekirdek beşliye (planlama·kodlama·sınama·inceleme·güvenlik) girmediği için yanlış etiket yazmak yerine departman kümesi genişletildi — karşılama kartının öğrettiği doğru yol budur ve bu dosya deponun kendi ilk dogfood örtüsüdür.",
+  "semalar": {
+    "AltKatman": {
+      "enum": {
+        "departman": ["içerik"]
+      }
+    }
+  }
+}

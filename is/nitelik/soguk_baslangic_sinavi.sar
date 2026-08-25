@@ -1,0 +1,90 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/soguk_baslangic_sinavi.sar — 🧪 SOĞUK-BAŞLANGIÇ SINAVI DEFTERİ (DVR-A06)
+//
+//   Deney sicili: karşılama kartının (sarmal ogret) öğretme gücü SAYIYLA
+//   ölçüldü (K-100 ⑤ "sayı, his değil"). Kalıcı fikstür ve betik:
+//   ~/Documents/Development/projects/dvr-a06-fikstur/
+//   (KNT-A06 dersi: fikstür silinirse sicil ölür — SİLİNMEZ).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧪 Soğuk-Başlangıç Sınavı — Karşılama Kartının Kanıtı
+
+  ## Çözülen problem
+  Davranış katmanının iddiası "ajan eğitimsiz konuşabilmeli"ydi: Sarmal'ı hiç
+  görmemiş bir yapay-zekâ modeli, YALNIZ karşılama kartıyla (tek `ogret`
+  çıktısı) geçerli `.sar` üretebilir mi? Bu iddia bugüne dek histi; bu deney
+  onu sayıya çevirdi. Ölçülen şey kartın kendisidir — model değil.
+
+  ## Deney düzeneği (tekrarlanabilir)
+  - **Betik:** `dvr-a06-fikstur/sinav.ts` · komut: `cd dvr-a06-fikstur && node sinav.ts`
+    (model değiştirmek için: `NVIDIA_MODEL=<model> node sinav.ts`).
+  - **Model:** meta/llama-3.3-70b-instruct (varsayılan köprü modeli — KNT-A04
+    503-dayanıklı köprüsü + betik düzeyinde zaman-aşımı tekrarı; demo-stub DEĞİL).
+  - **İki görev × iki kol** (aynı görev metni, tek fark sistem mesajı):
+    - Görev A `adim-ekle`: verilen plana (iki hazır Adım örneği taşıyan
+      `ilk_plan.sar`) yeni bir Adım ekle.
+    - Görev B `sifirdan-plan`: plan dosyasını SIFIRDAN kur — kopyalanacak örnek
+      yok; kartın kopyala-başla örneğinin ve dört-eksen anlatısının gerçek sınavı.
+    - Kol `kartlı`: sistem mesajı = çalışma anında üretilen karşılama kartı
+      (`sarmal ogret` — bayat kart sınava giremez, K-04).
+    - Kol `kartsız`: sistem mesajı = "Sen bir yazılım etmenisin. Görevleri
+      Türkçe yürütürsün." (sıfır Sarmal bilgisi).
+  - **Ölçüm döngüsü:** üretilen dosya `sarmal denetle`den geçirilir; ⛔ hata
+    varsa denetim çıktısı modele geri beslenir (en çok 3 tur). Ölçü: ⛔0'a
+    ulaşılan tur sayısı + tur başına tanı sayıları.
+  - **Kabul eşiği (plandan):** kartlı kol her görevde ≤1 turda ⛔0 VE kartsız
+    koldan ölçülebilir fark; yoksa "kart YETERSİZ — DVR-A01'e dön".
+
+  ## Sonuç (2026-07-19 · iz: soguk-sinav-2026-07-19T07-43-58-755Z.jsonl)
+  | Görev | Kol | Tur 1 | Tur 2 | Tur 3 | Geçtiği tur |
+  |---|---|---|---|---|---|
+  | adim-ekle | **kartlı** | **⛔0** · ⚠1 | — | — | **1** |
+  | adim-ekle | kartsız | ⛔1 | ⛔1 | ⛔1 | geçemedi |
+  | sifirdan-plan | **kartlı** | **⛔0** · ⚠5 | — | — | **1** |
+  | sifirdan-plan | kartsız | ⛔1 | ⛔1 | ⛔1 | geçemedi |
+
+  **HÜKÜM: KART KANITLANDI.** Kartlı kol her iki görevde de İLK turda ⛔0 üretti;
+  kartsız kol altı turun hiçbirinde geçemedi. Kabul eşiğinin iki koşulu da
+  karşılandı (kartlı ≤1 tur ✅ · ölçülebilir fark ✅).
+
+  ## Kartsız kolun düşme biçimleri (kartın tam olarak ne öğrettiğinin kanıtı)
+  - `sifirdan-plan`: model Sarmal söz dizimini hiç bilmediği için YAML-vari bir
+    biçim İCAT etti (`Faz: Bahçe Sulama Raporu Üretimi` — parantezsiz, kod'suz);
+    üç turluk denetim geri-beslemesi bile onu gramere getiremedi. Kart olmadan
+    "denetim çıktısından öğrenme" yolu kapalı: tanılar gramer dersi değildir.
+  - `adim-ekle`: eldeki örneklerden deseni büyük ölçüde kopyaladı ama niyet
+    metnindeki uzun tireyi (—) tırnaksız bıraktı → sözdizim hatası; üç turda da
+    aynı sınıf hatayı temizleyemedi.
+
+  ## Kartlı kolun kalitesi ve iyileştirme adayı
+  Kartlı kol koni alanlarını (görev·kabul·bağımlı·sınır·referans·üretir) kendi
+  iradesiyle kullandı — kart yalnız geçerlilik değil ZENGİNLİK de öğretiyor.
+  Ancak `sifirdan-plan` çıktısındaki 5 uyarının 4'ü `kenar-metin` sınıfı:
+  model `referans:`/`üretir:` kenarlarına KOD yerine serbest metin yazdı
+  ("veri toplama dokümanı"). Kart kenar/KOD ayrımını örneklemiyor →
+  **DVR-A01 iyileştirme adayı** (zorunlu değil — uyarı sınıfı, hata değil;
+  geriye-bağlantı K-106 notu olarak kaydedildi).
+
+  ## Ölçüm dersleri (1. koşu — iz: soguk-sinav-2026-07-19T07-39-32-369Z.jsonl)
+  İlk koşu İKİ ölçüm hatası yüzünden geçersizdi ve DÜRÜSTÇE çöpe atılmadı,
+  ders olarak işlendi: ① görev metni dosyayı `───` süs başlığıyla veriyordu —
+  iki kol da başlığı dosyaya kopyaladı (artefakt, model hatası değil; sınır
+  işaretli ve "ilk satır Faz( ile başlasın" yönergeli biçime geçildi).
+  ② İlk görev tek başına DOYGUNDU: plan dosyasındaki hazır Adım örnekleri
+  kartsız kola şablon oluyordu — iki kol da 2. turda geçince fark ölçülemedi;
+  görev B (sıfırdan kurulum) bu yüzden eklendi. ③ Ücretsiz uç ara sıra hiç
+  yanıt vermeden asılı kalıyor (curl 180 sn) — zaman aşımı ALTYAPI olayıdır,
+  model başarısızlığı sayılmaz (KNT-A04 ölçüm hijyeni); betik sınırlı tekrar
+  + iz kaydıyla ayrıştırır. ④ `denetle` temiz koşuda ÖZET satırı basmaz —
+  sayaç Karne `⛔ N` satırından okunur (betik üç-katmanlı ayrıştırır).
+
+  ## Sicil dosyaları (kalıcı fikstürde)
+  - İz: `dvr-a06-fikstur/.sarmal/trace/soguk-sinav-*.jsonl` (tur başına satır:
+    model · token giriş/çıkış · denetle sayıları · ham dosya yolu · HÜKÜM satırı).
+  - Ham yanıtlar + tur başına denetim çıktıları: `dvr-a06-fikstur/kosu/<görev>/<kol>/`.
+  - Taban fikstür: `dvr-a06-fikstur/taban/` (kartın kendi örneği — denetle ⛔0).
+|<--
+
+Çıkarım( kod: CKR-SOGUK-SINAV, kaynak: "DVR-A06 soğuk-başlangıç sınavı (2026-07-19 · oturum 64): 2 görev × 2 kol × llama-3.3-70b, denetle geri-beslemeli en çok 3 tur",
+         ne: "🏆 Karşılama kartı KANITLANDI: kartlı kol iki görevde de İLK turda ⛔0 .sar üretti; kartsız kol altı turda hiç geçemedi (sıfırdan görevde söz dizimi İCAT etti — denetim tanıları gramer dersi yerine geçmiyor). Sayı: kart, sıfır-bağlam modeli tek sistem mesajıyla Sarmal konuşturuyor. İyileştirme adayı: kart kenar/KOD ayrımını örneklemiyor (kenar-metin uyarı sınıfı — DVR-A01 adayı)" )

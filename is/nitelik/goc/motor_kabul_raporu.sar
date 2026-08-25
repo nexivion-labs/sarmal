@@ -1,0 +1,174 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/motor_kabul_raporu.sar — ⚖️ MOTOR AŞAMASININ KABUL RAPORU (GOC-MOTOR-A90)
+//   Motor turunun teslimi örneklemle değil TAM ENVANTER üzerinden yeniden
+//   ölçüldü. Her sapma kaynak ve satır kanıtıyla yazıldı; tek hüküm verildi ve
+//   hükmün dayandığı her sayı bu üretimde yeniden ölçülerek doğrulandı.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# ⚖️ Motor Aşaması — Kabul Raporu
+
+## A · Hüküm
+
+**KABUL.**
+
+Hüküm şartsızdır. Kabulün dayandığı bütün sayılar tam envanter üzerinden
+ölçülmüştür ve sıfır olduğu iddia edilen her sayı ayrıca mutasyonla
+sınanmıştır: nöbet, ölçtüğünü söylediği şeyi gerçekten ölçmediğinde kırmızıya
+dönmemiş olurdu.
+
+Raporun sonunda iki gözlem kayda geçirilmiştir. İkisi de hükmü şarta bağlamaz,
+fakat karar vericinin görmesi gerekir.
+
+## B · Üçlü senkron — tam envanter üzerinden, iki yönlü
+
+Bir tanı üç yerde birden yaşar ve üçü birbirine eşit olmak zorundadır: sicil
+kaydı, gerçek üretici işlevi ve kanon maddesinin zorlama iddiası. Bu turda
+katalog dördüncü sütun olarak eklendi, çünkü tanı metinleri koda gömülmez.
+
+Dört sütun da ayrı ayrı çıkarıldı ve karşılaştırıldı. Sicil sütunu, sicil modülü
+doğrudan içe aktarılarak okundu; yani dosya metnine bakılarak değil, motorun
+kendi okuduğu veri yapısından. Üretici sütunu, üretici kaynaklarındaki tanı
+kurucu çağrıları taranarak çıkarıldı; yeni kanon tanıları her zaman o kurucudan
+geçtiği için tarama gerçek üretimi ölçer. Kanon sütunu, sekiz bölüm dosyasının
+zorlama satırlarındaki yeni tanı ilanları ayrıştırılarak çıkarıldı. Katalog
+sütunu, metin modülü içe aktarılarak sayıldı.
+
+Ölçüm sonucu şudur: **yetmiş kimliğin yetmişi dört sütunun dördünde de
+bulunmaktadır ve sütunlar arasındaki uyuşmazlık sayısı her yönde sıfırdır.**
+Düzey ataması da kanonun kendi cümlesinden doğrulanmıştır; sicilin yazdığı hedef
+düzey ile kanon metnindeki düzeyin uyuşmadığı kimlik sayısı sıfırdır. Çift
+sahiplik yoktur: hiçbir kimlik birden çok üretici dosyasında basılmamaktadır.
+
+**Bu turun belirleyici farkı senkronun İKİ YÖNLÜ ölçülmesidir.** Halka 2 yalnız
+sicilden kanona doğru bakmıştı ve ters yön hiç sorulmamıştı. Orada bir delik
+vardı ve delik bulundu: kanonun `yasa/kanon/yuz.sar` dosyasındaki YUZ-3.3 maddesi
+`tanı-yüzeyi-karışması` adlı bir yeni tanı ilan ediyordu ve bu kimlik ne
+envanterde, ne çapraz haritada, ne sicilde, ne bir üreticide, ne katalogdaydı.
+Yani kanonun ilan ettiği yeni tanı sayısı altmış dokuz değil yetmiştir. Kimlik
+dört yere birden indirilmiştir.
+
+## C · Mutasyon kanıtı — sıfır iddiaları gerçekten ölçülüyor
+
+Bir nöbetin "sıfır uyuşmazlık" demesi, uyuşmazlık olduğunda konuşacağını
+kanıtlamaz. Bu yüzden üç sütunun her birinden bir kayıt eksiltilerek nöbetin
+kırmızıya döndüğü ayrı ayrı gösterildi.
+
+| Mutasyon | Sonuç |
+|---|---|
+| Sicilden bir kayıt silindi | Üç senkron nöbeti birden kırmızıya döndü (kırk yedi sınamadan üçü) |
+| Üreticiden bir kayıt silindi | İkinci nöbet kırmızıya döndü |
+| Kanonun zorlama iddiasından bir kayıt silindi | Birinci nöbet kırmızıya döndü |
+| Üç mutasyon geri alındı | Kırk yedi sınamanın kırk yedisi yeşile döndü |
+
+Ham kaynağı doğrulayıcıya geçiren dört çağrı yeri de tek tek bozuldu ve
+**dördünde de** süit kırmızıya döndü. Bu, halka 2 denetiminin bulduğu ve üç
+çağrı yerinde korumanın bulunmadığını ölçtüğü kusurun kapandığı yerdir.
+
+Mutasyonlar sırasında geçici olarak bozulan kanon dosyası yedeğinden aynen geri
+konmuştur; kanonun sekiz bölüm dosyasında bu turda tek baytlık değişiklik
+yoktur.
+
+## D · Orthografi düzeltmesi çift kod bırakmadı — kaynak kanıtı
+
+Ölçüm şöyle yapıldı: canlı sicildeki her kanonik kimliğin katlanmış adı
+hesaplandı ve o katlanmış ad sicilde ayrı bir kimlik olarak arandı. Bulunan çift
+sayısı **sıfırdır** ve bu ölçüm artık her koşuda tekrarlanmaktadır
+(`cekirdek/sinama/motor-guven.test.ts` · "orthografi düzeltmesi ÇİFT KOD
+bırakmadı" nöbeti).
+
+Ayrıca beş eski-yeni yazım çiftinin ikisinin de sicilde bulunmadığını sınayan
+nöbet korunmuştur. Çift sayısı bu turda beşten dörde inmiştir, çünkü
+`faz-yaklaşıyor` kimliği emekli edilmiştir; emekli kimliğin hem kanonik hem
+katlanmış yazımının sicilde bulunmadığı ayrıca sınanmaktadır.
+
+Katlama belirsizliği de nöbetlidir: hiçbir iki kanonik kimliğin aynı katlanmış
+ada düşmediği ölçülmektedir; düşseydi katlama kimlik seçemez hâle gelirdi.
+
+## E · Boşluk kararlarının uygulanması — kaynak satır kanıtı
+
+Beş boşluk adayının beşi de reddedilmiş durumdadır ve hiçbirine kimlik
+açılmamıştır. Sicilde beş adaydan hiçbirinin kimliği yoktur.
+
+Reddin bedeli olan görünürlük nöbetleri ayaktadır ve altısı da yeşildir.
+Kaynak kanıtı `cekirdek/sinama/motor-guven.test.ts` dosyasının A04 bölümündedir:
+`HALEF_KUMESI` sabiti dört adayı ve her adayın görünürlüğünü sağlayan halef
+kimliklerini taşır; `gorunurMu` yardımcısı her ihlal fikstüründe kümeden en az
+birinin üretilmesini şart koşar. İhlal kümedeki hiçbir tanıyı üretmezse sınama
+kırmızıya döner.
+
+`koni-taşması` ile `kayıp-kenar` kimlikleri GOC-MOTOR-A03 Adımının bağlayıcı
+kısıtı altındadır ve bu turda dokunulmamıştır. İkisinin de kanonda halefi yoktur
+ve nöbette kendileri tek bekçi ilan edilmiştir. Founder hükmü beklemektedir.
+
+## F · Emekli tanı çıkarımı hükümsüz kayıt bırakmadı
+
+Elli üç emekli tanının **elli üçü** bir hüküm taşımaktadır; hükümsüz emekli tanı
+sıfırdır. Bu, GOC-MOTOR-A10 Adımının birinci kabul maddesidir.
+
+Hüküm dağılımı şudur: on üçü motordan çıkarıldı, on üçü canlı bahçede bulgu
+ürettiği için bilinçli korundu, ikisi Founder hükmü beklediği için korundu, biri
+emeklilik ölçütünün kusurlu bulunduğu vaka olarak korundu ve yirmi dördü sıfır
+bulgulu olmakla birlikte ikinci soru sorulmadığı için sahipli borç olarak
+devredildi.
+
+Çıkarılan on üç kimliğin hiçbiri sicilde, üreticide, sınamada ya da yüzey
+yönlendirmesinde kalmamıştır. Kaynak kanıtı ikilidir: tür denetiminin sıfır
+hatası (ölü içe aktarma, çağrı ve imza kalmadığını gösterir) ve emeklilik
+nöbetlerinin üretici işlevin modülden dışa aktarılmadığını doğrulayan
+iddialarıdır.
+
+## G · Ölü kod denetimi — kapatılan hastalık başka dosyada arandı
+
+Bu turda kapatılan D-8 bulgusunun hastalığı şuydu: beyan edilen davranış ile
+ölçen davranış ayrışmıştı. Aynı hastalık kapanış kapısında başka dosyalarda
+arandı ve üç yerde daha bulundu; üçü de kapatıldı.
+
+Birincisi, `cekirdek/src/denetim.ts` içindeki köken-halef sayacıydı: saydığı tanı
+emekli edildiği için bir daha hiç dolmuyordu. Sayaç, taşıyıcı alanı ve beslediği
+karne cümlesi birlikte kaldırıldı. İkincisi, `cekirdek/src/sarmal.ts` içindeki
+kullanıcıya görünen karne cümlesiydi: o sayaca bağlı olduğu için hiç
+basılamıyordu; kaldırıldı. Üçüncüsü, `eklenti/src/eklenti.ts` içinde aynı emekli
+kimliği Problems yüzünden eleyen bir süzgeçti: bir daha hiç eşleşemiyordu;
+kaldırıldı.
+
+Ayrıca iki bayat belge bloğu davranışa uyduruldu: `referansTanilari` işlevinin
+belgesi artık defter atfının tanı doğurmadığını yazmaktadır ve `dayanakTanilari`
+işlevinin belgesi artık yalnız gerçekten ürettiği tek tanıyı anlatmaktadır.
+
+## H · Kapı ölçümleri — filtresiz ve ayrı ayrı
+
+Dört ölçüm birbirinden bağımsız alındı ve hiçbiri diğerinden türetilmedi. Hata
+ile uyarı sayıları çıkış kodundan ya da karne satırından çıkarılmadı; çıktının
+her satırı düzey işaretine göre ayrıştırılarak sayıldı. Sayılar
+`nitelik/goc/motor_suit_kaniti.sar` kaydındadır.
+
+Depo kökü süpürmesi de tekrarlandı ve halka 2'nin sayılarıyla birebir tuttu: üç
+yüz kırk iki dosya, beş hata, kırk dört uyarı, on üç etkilenen dosya. Kritik
+ölçüm şudur: bulunan hata ve uyarı kimlikleri arasında bu turda doğan yeni
+tanılardan **hiçbiri yoktur**.
+
+## I · Kayda geçen iki gözlem
+
+**Birinci gözlem — GOC-MOTOR-A10 ilk niyetinden dar uygulanmıştır.** Elli üç
+emekli tanının on üçü çıkarılmış, kırkı korunmuştur. Daraltmanın gerekçesi
+ölçümdür ve ölçüm emeklilik ölçütünün kendisinde bir kusur bulmuştur:
+`kural-ihlali` canlı bahçede sıfır bulgu üretiyor görünmesine karşın hem giriş
+dosyası bulunmayan bir dizinde kapının tek konuşma biçimidir hem de kullanıcı
+kural motorunun çıktı kimliğidir. Bugün sıfır görünmesinin sebebi hiçbir
+kullanıcı kuralının ihlal edilmiyor olmasıdır, kod yolunun ölü olması değil.
+Bu, "canlı bahçede bulgu üretiyor mu" ölçütünün gerekli fakat yeterli olmadığını
+kanıtlar. Kalan yirmi dört sıfır bulgulu tanı için ikinci soru — kod yolu canlı
+mı — tek tek sorulmalıdır ve bu sahipli borçtur.
+
+**İkinci gözlem — eklenti paketinin kendi tür denetimi bir hata vermektedir.**
+Kusur bu turun işinden doğmamaktadır; bağımsız denetim onun mühürlenmiş kodda
+zaten var olduğunu doğrulamıştır ve dosyaya bu turda dokunulmamıştır. Eklenti
+paketi esbuild ile üretildiği ve esbuild tür denetimi yapmadığı için paket
+sorunsuz derlenmektedir. Kapı kuralı bugün yalnız çekirdek tür denetimini
+kapsamaktadır; eklenti tarafı da kapıya alınacaksa bu hata önce kapatılmalıdır.
+Hüküm karar vericinindir.
+|<--
+Çıkarım( kod: MTR-KABUL-01,
+         kaynak: "cekirdek/src/tani-sicili.ts ve tani-metinleri.ts modüllerinin doğrudan içe aktarımı + yasa/kanon/*.sar zorlama satırlarının ayrıştırılması + cekirdek/src/*.ts üretici taraması + yedi mutasyon koşumu (üç senkron sütunu, dört çağrı yeri) + iki kökün filtresiz kapı çıktısı + üç yüz kırk iki dosyalık depo süpürmesi + npx tsc --noEmit (bu üretimde ölçüldü)",
+         ne: "⚖️ Motor aşamasının bağımsız kabul hükmü KABULDÜR ve şartsızdır. Yetmiş kimliğin yetmişi sicil, üretici, kanon iddiası ve metin kataloğu sütunlarının dördünde de bulunmaktadır; sütunlar arası uyuşmazlık her yönde sıfırdır ve düzey ataması kanonun kendi cümlesinden doğrulanmıştır. Sıfır iddiaları mutasyonla sınanmıştır: üç sütunun her birinden bir kayıt eksiltildiğinde nöbet kırmızıya dönmüş, ham kaynağı geçiren dört çağrı yerinin dördü bozulduğunda da süit kırmızıya dönmüştür. Senkronun iki yönlü ölçülmesi kanonun ilan ettiği fakat envanterin atladığı yetmişinci tanıyı ortaya çıkarmış ve kimlik dört yere birden indirilmiştir. Orthografi düzeltmesi çift kod bırakmamıştır; katlanmış adların sicilde ayrı kimlik olarak yaşamadığı ölçülmüş ve nöbete alınmıştır. Beş boşluk kararı eksiksiz uygulanmış, altı görünürlük nöbeti yeşil kalmıştır. Elli üç emekli tanının elli üçü hüküm taşımaktadır ve hükümsüz kayıt sıfırdır. Kapatılan D-8 hastalığı üç dosyada daha aranıp bulunmuş ve kapatılmıştır. İki gözlem kayda geçmiştir: emeklilik ölçütünün yetersizliği ve eklenti paketinin önceden var olan tür hatası." )

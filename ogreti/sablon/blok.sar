@@ -1,0 +1,36 @@
+// 🪵 BLOK ŞABLONU — plan gövdesi: Blok(İŞ) → Katman(TEKNOLOJİ) → Adım(AKIŞ) (MIM-1).
+//    Zaman gerekiyorsa Faz(🌀 mevsim) Blok'u ÜSTTEN sarar; sonraki fazlarda AYNI Blok
+//    `çağır` ile sürer (Provider deseni). Katmanlar projenin TEKNOLOJİSİNE göre bölünür
+//    (frontend·backend·siber·denetim) ve her Katman bir Takım/Teknoloji bağı bekler
+//    (katmansız-teknoloji bekçisi). Bekçi: konisiz-adım (geliştirmede Adım koni taşımalı).
+
+-->|
+  ## Amaç
+  <bu blok neyi inşa eder — tek paragraf>
+  ## Kapsam
+  <hangi katmanlar · neyi KAPSAMAZ>
+  ## Sonuç
+  <kabul: blok ne olunca "bitti">
+|<--
+Blok( kod: BLK-Ornek, ne: "<blok amacı>", uygular: ORK-7 ) {
+
+  // Katman = TEKNOLOJİ dilimi (MIM-1.4): Takım bağı Katman'da beyan edilir —
+  // katmansız-teknoloji bekçisi burada Takım/Teknoloji bağı arar (uyarı düzeyi;
+  // bilinçli teknolojisizse teknolojiBağımsız: "gerekçe" beyanı susturur).
+  // İDEAL DİZİLİŞ (MIM-1.5): Katman → AltKatman (konu modülü) → Adım — Adım'ı
+  // doğrudan Katman'a yazmak ÇIPLAK yazımdır (bilgi bekçisi ölçer, cezasız).
+  // KAVUŞUM (asıl dert — ORK-2.3 sözleşme-önce): farklı Katmanların modülleri
+  // birbirine DOĞRUDAN değil SÖZLEŞME üzerinden kavuşur — önyüz modülünün Adımı
+  // ve arkayüz modülünün Adımı aynı SZL-X'e bağımlı: verir; kavuşumsuz-dilim /
+  // sözleşmesiz-uç bekçileri bu buluşmayı denetler.
+  Katman( kod: KAT-Ornek, ad: "<katman-adı>", kullanır: TAKIM-Ornek ) {   // MIM-1.4: tek Takım/Teknoloji hedefi — ör. TAKIM-ONYUZ
+    AltKatman( kod: AKT-Ornek, departman: kodlama, ad: "<konu-modülü>" ) {   // ör. "kimlik" · "sepet" — AltKatman bir konu departmanıdır
+      Adım( kod: ADM-01, ad: "<kısa-ad>",
+            görev: "<NE yapılacak — çalgıcının tahmin etmesine gerek kalmayacak DETAY>",
+            kabul: [ "<kabul ölçütü 1>", "<ölçüt 2>" ],
+            bağımlı: [ ],                 // önceki Adımlar + kavuşum Sözleşmesi — ör. [ ADM-00, SZL-Ornek ]
+            sınır: "<neyi KAPSAMAZ>",
+            durum: beklemede )
+    }
+  }
+}

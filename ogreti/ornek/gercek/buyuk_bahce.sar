@@ -1,0 +1,355 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/buyuk_bahce.sar — STRES + KAPSAM örneği (#9)
+//
+//   Amaç: eklenti + çekirdek büyük, gerçekçi bir ağaçta takılmadan çalışıyor mu?
+//   Model (eski facet kademesi — güncel omurga MIM-1'dedir): Blok › Faz(=facet: önyüz/arkayüz/güvenlik) › Katman(alt-alan) › Adım.
+//     Çok-çocuk her seviyede: 1 Blok→çok Faz · 1 Faz→çok Katman · 1 Katman→çok Adım.
+//   Kapsam: ÇalışmaAlanı › Uygulama › {Blok facet'leri · Orkestrasyon›Etmen · Ekran›düzen›yaprak}
+//           + üst-seviye Karar/Yasa + Tip/Kural/çağır.
+//   Tüm değer türleri: metin · kod · sayı · liste · harita · widget.
+//   Tüm kenarlar: bağımlı·referans·üretir·besler·hatırlat·yönetir·içerir·uygular·anayasa.
+//   Sıfır-drift hedefi (dogfood) + format idempotency + tüm sağlayıcılar sağlam.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/* Blok yorum sınaması — çok satırlı.
+   Bu bölge belirteçlenmez; içindeki { ( [ süsler drift/format saymaz. */
+
+// ── Çağrılar (DIL-1.4: kod-tabanlı, yol değil) ──────────────────────────────────
+çağır FLUTTER
+çağır FASTAPI
+çağır POSTGRES
+çağır DOCKER
+
+// ── Kullanıcı-tanımlı tipler (TIP-1) ─────────────────────────────────────────
+Tip GirişEkranı( aile: yuzey, içerir: [ Metin, Düğme, İkon ], renk: "#14B8A6" ) {
+  ne: "Kimlik girişi için özel yüzey tipi",
+}
+Tip PanoEkranı( aile: yuzey, içerir: [ Kart, Liste ], renk: "#0EA5E9" ) {
+  ne: "Özet gösterge paneli yüzeyi",
+}
+
+// ── Kullanıcı-tanımlı kural (DIL-3) ───────────────────────────────────────────
+Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niyet, kapsam: yuzey ) {
+  ne: "Önyüz facet'inde yalnız Flutter bağımlılığına izin verilir",
+}
+
+// ═══ BAHÇE: tek tabanda iki paralel Uygulama ═════════════════════════════════
+-->|
+  ## Amaç
+  🎯 Büyük bahçe örneğiyle çok-uygulamalı çalışma alanını uçtan uca sergilemek.
+  ## Kapsam
+  📦 Bu alan örnek korpusu kapsar. Web ve mobil uygulamalar, ortak taban paylaşımı
+  ve blok/faz/katman/adım hiyerarşisi bu sınırdadır. Kod örnekleri temsili tutulur.
+  Gerçek üretim yapılandırması KAPSAM DIŞIDIR — bu dosya öğretim ve sınama korpusudur.
+  ## Sonuç
+  ✅ Kabul: dosya motorun tüm denetimlerinden sıfır driftle geçer (stres dogfood).
+|<--
+ÇalışmaAlanı(
+  kod:   CA-BAHCE,
+  ad:    "nexivion-bahcesi",
+  dil:   tr,
+  sürüm: 1,
+  ne:    "Ortak yasa + ortak Blok'larla iki uygulamayı paralel yetiştiren bahçe",
+  neden: "Büyük iş tek Proje'ye sığmaz; ÇalışmaAlanı çok Uygulama'yı ortak tabanda tutar",
+  amaç:  "Önyüz + arkayüz + güvenlik facet'lerini drift'siz kavuşturmak",
+) {
+
+  // ── Uygulama 1: web (ağaç 🌳) ──────────────────────────────────────────────
+  -->|
+    ## Amaç
+    🎯 Tarayıcı istemcisini tek ağaçta modellemek.
+    ## Kapsam
+    📦 Ağaç web uygulamasını kapsar. Kimlik ve pano blokları, yüzey ekranları ve servis
+    bağları bu sınırdadır. Dağıtım altyapısı ve mobil akışlar KAPSAM DIŞIDIR.
+    ## Sonuç
+    ✅ Kabul: bloklar kavuşur, ekranlar adımlardan üretilir bağıyla izlenir.
+  |<--
+  Uygulama(
+    kod: UYG-WEB,
+    ad:  "web-uygulamasi",
+    ne:  "Tarayıcı tabanlı ana uygulama",
+  ) {
+
+    -->|
+      ## Amaç
+      🎯 Kimlik doğrulamayı tek blokta toplamak: giriş, oturum ve güvenlik tek kapıdan yönetilir.
+      ## Kapsam
+      📦 Bu blok kimlik yaşam döngüsünü kapsar. Önyüz giriş ekranı, arkayüz doğrulama servisi
+      ve güvenlik politikası facet'leri uçtan uca bu blokta kavuşur. Oturum yenileme ve parola
+      akışları da bu sınırın içindedir. Yetkilendirme (RBAC) ayrı bloğun konusudur ve KAPSAM DIŞIDIR.
+      ## Sonuç
+      ✅ Kabul: üç facet motor-temiz kavuşur; giriş akışı tek koddan (BLK-KIMLIK) adreslenir.
+    |<--
+    // ── Blok: kimlik (gövde 🪵) — üç facet uçtan uca kavuşur ─────────────────
+    Blok(
+      kod: BLK-KIMLIK,
+      ad:  "kimlik",
+      ne:  "Tek noktadan giriş — önyüz + arkayüz + güvenlik facet'leri",
+    ) {
+
+      // FACET 1: önyüz (dal 🌿) — iki Katman (çokluk)
+      Katman( kod: KAT-K-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+        AltKatman( kod: KAT-K-EKRANLAR, departman: kodlama, ad: "ekranlar" ) {
+          Adım(
+            kod:      ADM-GIRIS-UI,
+            ad:       "giris-ekrani",
+            oncelik:  1,
+            bağımlı:  FLUTTER,
+            üretir:   EKR-GIRIS,
+            referans: KRR-OTURUM,
+            uygular:  yalnızca_flutter,
+          )
+          Adım(
+            kod:      ADM-KAYIT-UI,
+            ad:       "kayit-ekrani",
+            oncelik:  2,
+            bağımlı:  FLUTTER,
+            referans: KRR-OTURUM,
+          )
+        }
+        Adım(
+          kod:     ADM-OTURUM-DURUM,
+          ad:      "oturum-durumu",
+          bağımlı: FLUTTER,
+          besler:  ADM-GIRIS-UI,
+        )
+      }
+
+      // FACET 2: arkayüz (dal 🌿) — iki Katman
+      Katman( kod: KAT-K-ARKAYUZ, kullanır: TAKIM-TAMYIGIN, ad: "arkayuz" ) {
+        Adım(
+          kod:      ADM-KIMLIK-SVC,
+          ad:       "kimlik-servisi",
+          bağımlı:  FASTAPI,
+          besler:   ADM-GIRIS-UI,          // oturum/jeton besler → KAVUŞTURMA
+          üretir:   SOZ-KIMLIK,
+          referans: KRR-OTURUM,
+        )
+        Adım(
+          kod:      ADM-KIMLIK-DB,
+          ad:       "kimlik-tablosu",
+          bağımlı:  POSTGRES,
+          üretir:   GOC-KIMLIK,
+          referans: KRR-VERITABANI,
+        )
+      }
+
+      // FACET 3: güvenlik (dal 🌿)
+      Katman( kod: KAT-K-GUVENLIK, kullanır: TAKIM-TAMYIGIN, ad: "guvenlik" ) {
+        Adım(
+          kod:      ADM-JETON,
+          ad:       "jeton-dogrula",
+          besler:   ADM-KIMLIK-SVC,
+          referans: KRR-OTURUM,
+        )
+      }
+    }
+
+    // ── Blok: pano ──────────────────────────────────────────────────────────
+    -->|
+      ## Amaç
+      🎯 Yönetim göstergelerini tek özet panosunda sunmak.
+      ## Kapsam
+      📦 Blok özet panoyu kapsar. Sayaç kartları, son işlem listesi ve durum grafiği bu sınırdadır.
+      Veri kaynağı arkayüz servisidir; pano yalnız okur. Ayrıntılı raporlama ekranları KAPSAM DIŞIDIR.
+      ## Sonuç
+      ✅ Kabul: pano tek ekranda yüklenir ve tüm kartlar canlı veriyle dolar.
+    |<--
+    Blok( kod: BLK-PANO, ad: "pano", ne: "Özet gösterge paneli" ) {
+      Katman( kod: KAT-P-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+        Adım(
+          kod:     ADM-PANO-UI,
+          ad:      "pano-ekrani",
+          bağımlı: FLUTTER,
+          üretir:  EKR-PANO,
+          besler:  ADM-KIMLIK-SVC,
+        )
+      }
+    }
+
+    // ── Orkestrasyon: etmen havuzu (yönetim) ────────────────────────────────
+    -->|
+      ## Amaç
+      🎯 Web ağacının işlerini uygun etmene dağıtmak.
+      ## Kapsam
+      📦 Orkestrasyon web uygulamasının görev dağıtımını kapsar. Etmen seçimi, iş
+      kuyruğu ve sonuç toplama bu sınırdadır. Etmenlerin iç becerileri kendi
+      profillerinde tanımlıdır ve KAPSAM DIŞIDIR.
+      ## Sonuç
+      ✅ Kabul: her görev tek etmene düşer ve izi orkestrasyon kaydında görünür.
+    |<--
+    Orkestrasyon( kod: ORK-WEB, ad: "web-orkestra", ne: "Web uygulamasının ajan havuzu" ) {
+      Etmen(
+        kod:      ETM-ONYUZCU,
+        ad:       "onyuz-ustasi",
+        ne:       "Flutter önyüz ustası — erişilebilirlik duyarlı",
+        tür:      uzman,
+        uzmanlık: önyüz,
+        yetki:    L3,
+        bellek:   izole,
+        profil:   "Flutter/Dart uzmanı; erişilebilirlik duyarlı",
+        model:    CLAUDE-OPUS,
+        uygular:  ANY-ONYUZ,
+        yönetir:  ADM-GIRIS-UI,
+      ) {
+        -->|
+          # Widget Üretimi
+          <ne-zaman> bir Ekran'ın widget ağacı üretilecekse </ne-zaman>
+          <desenler>
+            ## Nasıl
+            Bildirimden Flutter widget'ı üretilir; her ekran kendi durumunu taşır (Bloc/setState).
+            ## Neden
+            İş mantığı widget'a gömülürse test edilemez ve yeniden kullanılamaz.
+          </desenler>
+        |<--
+        Beceri( kod: BCR-WIDGET, ad: "widget-uret", ne: "Bildirimden Flutter widget'ı üretir",
+                sağlar: YTN-WIDGET-URET, yığın: flutter, uygular: ANY-ONYUZ,
+                neZaman: "bir Ekran'ın widget ağacı üretilecekse",
+                kurallar: [ "her ekran kendi durumunu taşır" ],
+                örnek: "class Giris extends StatelessWidget { }",
+                antiDesen: [ "iş mantığını widget içine gömmek" ] )
+        Yetenek( kod: YTN-WIDGET-URET, ne: "bildirimden UI widget'ı üretme" )
+        Bellek( kod: BLK-MEM-ONYUZ, ad: "onyuz-belligi", ne: "Önyüzcünün izole öğrenmeleri", tür: ders,
+                neden: "tekrar eden UI hatası ders olur", nasılUygula: "her üretimden sonra sına", aşama: bellek )
+        Anayasa( kod: ANY-ONYUZ, ad: "onyuz-anayasa", ne: "Erişilebilirlik + Türkçe-öncelik zorunlu" )
+        Kanca( kod: KNC-ONYUZ-POST, ad: "post-uret", evre: sonra, ne: "Üretimden sonra sınama koş" )
+        Tetikleyici( kod: TRG-EKRAN, ad: "ekran-istegi", koşul: "ekran talebi geldiğinde", ne: "Ekran talebi gelince widget-uret ateşle" )
+      }
+      Etmen(
+        kod:      ETM-ARKAYUZCU,
+        ad:       "arkayuz-ustasi",
+        ne:       "FastAPI + Postgres arkayüz ustası",
+        tür:      uzman,
+        uzmanlık: arkayüz,
+        yetki:    L3,
+        bellek:   izole,
+        profil:   "FastAPI + Postgres uzmanı",
+        model:    CLAUDE-SONNET,
+        uygular:  ANY-ARKA,
+        yönetir:  ADM-KIMLIK-SVC,
+      ) {
+        -->|
+          # Servis Üretimi
+          <ne-zaman> bir Sözleşme'den servis iskeleti kurulacaksa </ne-zaman>
+          <desenler>
+            ## Nasıl
+            Sözleşmeden FastAPI servis iskeleti üretilir; endpoint sözleşmeye sadık kalır.
+            ## Neden
+            Sözleşme dışı alan dönerse istemci (yüzey/CLI) kırılır — tek doğru kaynak sözleşmedir.
+          </desenler>
+        |<--
+        Beceri( kod: BCR-SERVIS, ad: "servis-uret", ne: "Sözleşmeden servis iskeleti üretir",
+                sağlar: YTN-SERVIS-URET, yığın: fastapi, uygular: ANY-ARKA,
+                neZaman: "bir Sözleşme'den servis iskeleti kurulacaksa",
+                kurallar: [ "endpoint sözleşmeye sadık kalır" ],
+                örnek: "@app.post('/giris')",
+                antiDesen: [ "sözleşme dışı alan döndürmek" ] )
+        Yetenek( kod: YTN-SERVIS-URET, ne: "sözleşmeden servis iskeleti üretme" )
+        Bellek( kod: BLK-MEM-ARKA, ad: "arka-belligi", ne: "Arkayüzcünün izole öğrenmeleri", tür: ders,
+                neden: "tekrar eden servis hatası ders olur", nasılUygula: "her göçten önce doğrula", aşama: bellek )
+        Anayasa( kod: ANY-ARKA, ad: "arka-anayasa", ne: "Sözleşmeye sadakat + göç-güvenliği" )
+      }
+    }
+
+    // ── Tasarım sistemi (TAS-A01): BİR KEZ ilan — roller .sar'da, değerler tech-temada ──
+    Tema( kod: TEM-WEB, görünürlük: açık, ad: "web-temasi", ne: "web yüzeyi tasarım sistemi — token-ROL sözleşmesi",
+          dosya: "onyuz/lib/tema/web_tema.dart",
+          renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+          tipografi: [ başlık1, başlık2, gövde, etiket ],
+          boşluk: [ sm, md, lg ],
+          yuvarlaklık: [ sm, md ] )
+
+    // ── Ekran: giriş (yüzey ağacı · düzen › yaprak) ─────────────────────────
+    Ekran( kod: EKR-GIRIS, görünürlük: açık, ad: "giris-ekrani", ne: "Kimlik giriş yüzeyi", referans: ADM-GIRIS-UI, tema: TEM-WEB ) {   // A02 onarımı: ADM-A05 diye Adım yok — giriş ekranını üreten gerçek Adım
+      Sütun( kod: STN-GIRIS, görünürlük: açık, ad: "giris-sutunu" ) {
+        Metin( kod: MTN-BASLIK, görünürlük: açık, ad: "baslik", değer: "Hoş geldiniz", stil: başlık1 )
+        Kapsayıcı( kod: KPS-FORM, görünürlük: açık, ad: "form-kutusu", dolgu: 16 ) {
+          Sütun( kod: STN-ALANLAR, görünürlük: açık, ad: "alanlar" ) {
+            Metin( kod: MTN-EPOSTA, görünürlük: açık, ad: "eposta-etiket", değer: "E-posta", stil: etiket )
+            Metin( kod: MTN-PAROLA, görünürlük: açık, ad: "parola-etiket", değer: "Parola", stil: etiket )
+            Satır( kod: STR-EYLEM, görünürlük: açık, ad: "eylem-satiri" ) {
+              Düğme( kod: DGM-GIRIS, görünürlük: açık, ad: "giris-dugmesi", değer: "Giriş yap", çağırır: UC-GIRIS )
+              İkon( kod: IKN-YARDIM, görünürlük: açık, ad: "yardim-ikonu", adSimge: "help" )
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ── Uygulama 2: mobil (ikinci ağaç · aynı tabanı paylaşır) ─────────────────
+  -->|
+    ## Amaç
+    🎯 Mobil istemciyi web ile ortak servis sözleşmesine bağlamak.
+    ## Kapsam
+    📦 Ağaç mobil istemciyi kapsar. Giriş akışı ve biyometrik açılış bu sınırdadır;
+    servis sözleşmesi webden miras alınır ve burada yeniden tanımlanmaz. Mağaza
+    dağıtım süreçleri KAPSAM DIŞIDIR.
+    ## Sonuç
+    ✅ Kabul: mobil ağaç, ortak sözleşme referanslarıyla motor-temiz bağlanır.
+  |<--
+  Uygulama( kod: UYG-MOBIL, ad: "mobil-uygulamasi", ne: "iOS/Android istemcisi" ) {
+    -->|
+      ## Amaç
+      🎯 Mobil girişte web ile aynı kimlik servisini paylaşmak — çift mantık drifti önlenir.
+      ## Kapsam
+      📦 Blok mobil giriş yüzeyini kapsar. Ekran akışı mobil deneyime göre sadeleşir, servis
+      sözleşmesi web ile ortaktır ve yeniden yazılmaz. Biyometrik açılış bu bloğa dahildir.
+      Web oturum yönetimi KAPSAM DIŞIDIR — kaynağı BLK-KIMLIK'tir.
+      ## Sonuç
+      ✅ Kabul: mobil giriş, ortak sözleşme üzerinden web servisiyle birebir çalışır.
+    |<--
+    Blok( kod: BLK-MOBIL-KIMLIK, ad: "mobil-kimlik", ne: "Mobilde giriş — web servisini paylaşır" ) {
+      Katman( kod: KAT-M-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+        Adım(
+          kod:      ADM-MOBIL-GIRIS,
+          ad:       "mobil-giris-ekrani",
+          bağımlı:  FLUTTER,
+          besler:   ADM-KIMLIK-SVC,        // ORTAK arkayüzü çağırır (kod-tabanlı paylaşım)
+          hatırlat: ADM-BILDIRIM,          // ileri-bağlama: bildirim adımı sonra doğacak
+        )
+      }
+    }
+  }
+}
+
+// ═══ Üst-seviye bilgi düğümleri (kenarlarla bağlama girer) ═══════════════════
+Karar(
+  kod:    KRR-OTURUM,
+  ad:     "oturum-stratejisi",
+  ne:     "Jeton tabanlı oturum (JWT) + yenileme jetonu",
+  durum:  kilitli,
+  besler: [ ADM-GIRIS-UI, ADM-KIMLIK-SVC, ADM-JETON ],
+) {
+  karar:   "JWT erişim + yenileme jetonu ikilisi"
+  gerekçe: "Durumsuz doğrulama ölçeklenir; yenileme jetonu güvenli süreklilik verir"
+}
+Karar(
+  kod:    KRR-VERITABANI,
+  ad:     "veritabani-secimi",
+  ne:     "PostgreSQL — ilişkisel bütünlük + göç disiplini",
+  durum:  kilitli,
+  besler: ADM-KIMLIK-DB,
+) {
+  karar:   "PostgreSQL kullanılır"
+  gerekçe: "İlişkisel bütünlük + olgun göç araçları + pgvector genişlemesi"
+}
+
+// ── Değişmez yasa kaydı (harita + widget değeri örneği) ──────────────────────
+Yasa(
+  kod:        GK,
+  konum:      "yasa/genel_kurallar/",
+  ne:         "Genel Kurallar — kategori-önekli (BÇ·DL·SD·YP·YZ·BL·DR·GR)",
+  ayrim:      [ "genel_kurallar", "ozel-kurallar" ],
+  raflar:     { YASA: "yasa/", BILGI: "bilgi/", OGRENME: "ogrenme/" },
+  kararlılık: değişmez,
+)
+
+// 🍎 Meyve/hedef ilanları (A02 onarımı 2026-07-11): üretir/hatırlat hedefleri artık ilanlı
+Sözleşme( kod: SOZ-KIMLIK, sürüm: "1.0",
+          ne: "🍎 Kimlik servisinin veri sözleşmesi — ADM-KIMLIK-SVC üretir meyvesi",
+          alanlar: { eposta: "metin · zorunlu · eposta-biçimi", parola: "metin · zorunlu · gizli" } )
+Göç( kod: GOC-KIMLIK, ne: "🍎 Kimlik tablosunun ilk göçü — ADM-KIMLIK-DB üretir meyvesi" )
+Ekran( kod: EKR-PANO, görünürlük: açık, ne: "🍎 Özet pano yüzeyi — ADM-PANO-UI üretir meyvesi", referans: ADM-PANO-UI, tema: TEM-WEB )
+Adım( kod: ADM-BILDIRIM, durum: beklemede,
+      ne: "🍂 Bildirim adımı — mobil girişin hatırlat hedefi (ileri-bağlama örneği, artık doğdu)" )

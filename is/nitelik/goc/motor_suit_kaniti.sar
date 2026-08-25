@@ -1,0 +1,150 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/motor_suit_kaniti.sar — 🧪 MOTOR SÜİT KOŞUM KANITI (GOC-MOTOR-A09)
+//   Yetmiş yeni tanının kapsama kanıtı ile motor süitlerinin tam koşum kaydı.
+//   Bütün sayılar koşucunun kendi özet satırlarından ve kapının filtresiz
+//   çıktısından okundu; hiçbiri başka bir belgeden kopyalanmadı ve hiçbiri
+//   çıkış kodundan türetilmedi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🧪 Motor Süit Koşum Kanıtı — 70/70 kapsama ve tam süit
+
+## A · Bu kaydın ölçüm yöntemi
+
+Bu Adım dört ölçümü birbirinden bağımsız olarak aldı ve hiçbirini diğerinden
+türetmedi. Tür denetimi kendi komutundan, kapı sonucu çıktının her satırının
+düzey işaretine göre ayrıştırılmasından, sınama sayıları ise koşucunun kendi
+özet satırlarından okundu. Bu ayrım bir tercih değil zorunluluktur: bu turda
+ölçüldüğü üzere kapının çıkış kodu uyarı varken de sıfır dönmektedir ve sınama
+süiti tür hatalarını hiç göremez.
+
+## B · Tür denetimi — kapının yeni zorunlu maddesi
+
+Çekirdek tür denetimi `npx tsc --noEmit` komutuyla koşuldu ve çıktısı tümüyle
+boştur; yani sıfır hata vardır.
+
+Bu maddenin kapıya girmesinin gerekçesi bu Adımda ölçüldü. Halka 2'nin
+mühürlenmiş kodunda `cekirdek/src/denetim.ts` dosyası derlenmiyordu: orkestrasyon
+tanıları o dosyaya taşınırken bir düğüm tipi içe aktarılmamıştı. Kusuru kimse
+görmemişti, çünkü Node tipleri sıyırarak koşar; kod çalışıyor ve bütün sınamalar
+geçiyordu. Hatayı yalnız tür denetimi görüyordu ve tür denetimi kapıda
+koşulmuyordu.
+
+Kararın değeri aynı oturumda ikinci kez ölçüldü. Emekli tanıların üreticileri
+kaldırılırken tür denetimi on bir ayrı kusur yakaladı ve bunların hiçbirini
+sınama süiti göremezdi: kaldırılan işlevlere ait üç içe aktarma satırı, altı
+çağrı yeri ve iki imza uyuşmazlığı. Bunların bir kısmı çalışma anında da
+patlardı, fakat yalnız o kod yolu tetiklendiğinde; yani sessiz bir zaman
+bombasıydı.
+
+## C · Kapı sonucu — filtresiz, hata ve uyarı ayrı ayrı
+
+| Ölçüm | `_Sarmal` | kapalı varlık |
+|---|---:|---:|
+| Hata satırı | 0 | 0 |
+| Uyarı satırı | 0 | 2 |
+| Bilgi satırı | 326 | 334 |
+
+kapalı varlık kökündeki iki uyarı `plan/kopru-kaniti.sar` dosyasındaki
+`durumsuz-adım` bulgularıdır; bu turdan bağımsızdır ve halka 2'de de aynen
+vardı.
+
+Karne satırı şudur: iki bin kırk altı düğüm, dört yüz altmış iki Adım; dört yüz
+on üçü tamamlandı, ikisi geliştirmede, kırk yedisi beklemede ve hiçbiri bloklu
+değildir.
+
+## D · Sınama süitleri — koşucunun kendi özet satırlarından
+
+| Süit | tests | pass | fail | skipped | todo |
+|---|---:|---:|---:|---:|---:|
+| Çekirdek | 872 | 867 | 4 | 0 | 1 |
+| Eklenti | 174 | 174 | 0 | 0 | 0 |
+
+Başarısız sınama sayısı dörttür ve dördünün de kimliği tek tek okundu; dördü de
+`cekirdek/sinama/kararlar.test.ts` dosyasındadır ve otuz dördüncü, kırk üçüncü,
+yetmiş ikinci ile seksen ikinci satırlarda başlar. Bu, `BORÇ-SPEC-03` olarak
+kayıtlı ve bu turdan bağımsız olan bilinen kümedir. Tek todo işareti
+`cekirdek/sinama/tani-metni-hijyeni.test.ts` dosyasının yüz sekizinci
+satırındadır ve koşucu onu başarısız saymamaktadır. Bu beşinin dışında yeni
+kırmızı yoktur.
+
+## E · Süit sayısındaki değişim — süit KÜÇÜLDÜ, kapsama kaybı yoktur
+
+Bu turun ilk raporunda süitin büyüdüğü yazılmıştı ve bu yanlıştı; bağımsız
+denetim düzeltti ve sayı burada doğrusuyla kayda geçiyor.
+
+Çekirdek süiti sekiz yüz yetmiş altı sınamadan sekiz yüz yetmiş ikiye
+**inmiştir**; net değişim eksi dörttür. Değişimin dört dosyaya dağılımı şudur:
+
+| Dosya | HEAD | Bugün | Fark |
+|---|---:|---:|---:|
+| `motor-guven.test.ts` | 42 | 47 | +5 |
+| `yeni-kanon-tanilari.test.ts` | 29 | 31 | +2 |
+| `denetci.test.ts` | 110 | 100 | −10 |
+| `delik-kapama.test.ts` | 15 | 14 | −1 |
+| **Toplam** | **196** | **192** | **−4** |
+
+On dört yeni nöbet eklendi ve on sekiz eski sınama bildirimi kaldırıldı; on
+dört eksi on sekiz eksi dört eder ve toplam sayıyla birebir tutar.
+
+**Küçülmenin gerekçesi ve kapsama kaybının olmadığının kanıtı.** Kaldırılan on
+sekiz sınamanın on sekizi de GOC-MOTOR-A10 Adımında emekli edilen tanıların
+ihlal iddialarıydı; yani artık var olmayan bir hükmün ateşlendiğini ileri süren
+sınamalardı ve emeklilik sonrası kırmızı kalmaktan başka bir şey yapamazlardı.
+
+Kapsama kaybı yoktur, çünkü **hiçbir ihlal fikstürü atılmadı**. Her fikstür
+korundu ve iddiası tersine çevrildi: aynı ihlal kaynağı hâlâ motordan
+geçiriliyor, fakat bu kez emekli kimliğin çıktıda BULUNMAMASI sınanıyor.
+Nöbetler ayrıca üretici işlevin modülden dışa aktarılmadığını da doğruluyor,
+yani emekli tanı sessizce geri getirilemez. On sekiz ayrı iddia, yedi emeklilik
+nöbetinde birleştirildiği için sayı düştü; ölçülen davranış düşmedi.
+
+Eklenen on dört nöbet şunlardır: beşi üçlü senkronun ve orthografi ile
+veri-güdümlü kaynak ayrımının nöbetidir, ikisi devredilen bulguların
+kapatılmasıdır (dört çağrı yerinin yapı nöbeti ile yetmişinci tanının fikstürü),
+yedisi de emeklilik nöbetidir.
+
+## F · Yetmiş tanının kapsama kanıtı
+
+Yetmiş yeni tanının her biri için en az bir ihlal örneği bulunduğu beyanla değil
+makineyle tutulmaktadır. `cekirdek/sinama/yeni-kanon-tanilari.test.ts` dosyasının
+kapanış nöbeti, süit boyunca gerçekten üretildiği kanıtlanan kimlikleri bir
+deftere yazar ve sicilin yetmiş kimliğinin tamamının o defterde bulunmasını şart
+koşar. Kanıt defteri yalnız iddia geçtikten sonra doldurulur; başarısız bir
+iddia sessizce kanıt sayılmaz.
+
+Nöbet bu turda altmış dokuzdan yetmişe çıkarıldı, çünkü kanonun ilan ettiği
+fakat envanterin atladığı bir kimlik bulundu (`tanı-yüzeyi-karışması` · YUZ-3.3).
+Kimliğin fikstürü üç dallıdır ve üçü de ölçülür: yanlış yönlendirme iki ayrı
+tanı doğası için de bulgu verir, doğru yönlendirme susar, yönlendirme tablosu
+hiç verilmediğinde hüküm susar.
+
+Temiz örnek kapsaması ayrı bir desenle tutulur: şekil nöbetlerinin sağlam
+kaynakta bulgu üretmediği, dolu koninin tanı almadığı ve doğru yönlendirmenin
+sustuğu ayrı yanlış-pozitif iddialarıyla sınanır.
+
+## G · Tek-dosya ile Proje kapılarının kapsam ayrımı
+
+Kapsam ayrımı aynı fikstür üzerinde uçtan uca sınandı. Şekil hükümlerini taşıyan
+gerçek bir kaynak dosya üç ayrı yüzeyden geçirilir: çekirdek ile CLI yolundan,
+gerçek bir alt süreç başlatılarak MCP `denetle` aracından ve geçici bir kök
+kurularak Proje kapısından. Üçünün de aynı kimlikleri vermesi şart koşulur.
+
+Ters yön de ölçülür: ham kaynağı `dogrula` çağrısına geçiren dört yerin her biri
+tek tek bozulduğunda süitin kırmızıya döndüğü gösterilmiştir. Halka 2'de bu
+korumanın yalnız birinde olduğu bağımsız denetimle ölçülmüştü; artık dördü de
+korunmaktadır.
+
+Kapsamın yanlış kapıda konuşması ayrıca `tanı-kapsamı-karışması` hükmüyle motorun
+kendi içinde de zorlanır ve bu hükmün fikstürü arızayı kendisi enjekte eder.
+
+## H · Atlanan dosya ve bayat üretilmiş girdi
+
+Atlanan dosya yoktur: kapının atlanan kapı listesi boştur ve `sahte-tam-yeşil`
+kimliği kapı çıktısında görünmemektedir. Bayat üretilmiş girdi de yoktur; eklenti
+paketi bu turun kaynaklarından sonra yeniden üretilmiş ve kurulu kopyayla özet
+eşitliği doğrulanmıştır.
+|<--
+Çıkarım( kod: MTR-SUIT-01,
+         kaynak: "npx tsc --noEmit çekirdek koşumu + node src/sarmal.ts denetle iki kökte filtresiz koşum + node --test iki süit koşumu (koşucunun kendi özet satırları) + cekirdek/sinama/yeni-kanon-tanilari.test.ts kapanış nöbeti + dört sınama dosyasının HEAD ile bugünkü test bildirimi sayımı (bu üretimde ölçüldü)",
+         ne: "🧪 Motor süitlerinin tam koşum kanıtı kayda geçti. Tür denetimi sıfır hata verdi ve kapının zorunlu maddesi oldu; gerekçesi ölçüldü, çünkü halka 2'nin mühürlenmiş kodundaki derlenmeyen dosyayı yalnız tür denetimi görüyordu ve emekli üreticiler kaldırılırken on bir kusuru yine yalnız o yakaladı. Kapı iki kökte de filtresiz ölçüldü: _Sarmal sıfır hata ve sıfır uyarı, kapalı varlık sıfır hata ve iki bağımsız uyarı verdi. Çekirdek süiti sekiz yüz yetmiş iki sınamadan sekiz yüz altmış yedisini geçti, dört bilinen kırmızı ile bir todo aynı kaldı ve yeni kırmızı doğmadı; eklenti süitinin yüz yetmiş dördü de geçti. Süit sekiz yüz yetmiş altıdan sekiz yüz yetmiş ikiye KÜÇÜLDÜ ve küçülme dosya dosya ölçüldü: on dört yeni nöbet eklendi, emekli tanıların on sekiz ihlal iddiası kaldırıldı. Kapsama kaybı yoktur, çünkü hiçbir ihlal fikstürü atılmadı; her fikstür korunup iddiası tersine çevrildi ve emekli kimliğin artık üretilmemesi nöbete alındı. Yetmiş tanının yetmişinin ihlal örneği kapanış nöbetiyle makineyle tutulmaktadır ve tek-dosya ile Proje kapılarının kapsam ayrımı aynı fikstür üzerinde üç yüzeyden uçtan uca sınanmıştır." )

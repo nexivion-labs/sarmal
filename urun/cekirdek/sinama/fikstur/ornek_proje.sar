@@ -1,0 +1,20 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// fikstur/ornek_proje.sar — program toplama sınamalarının okuduğu tarafsız fikstür
+//
+//   Bu dosya yalnız sınama içindir: programlariTopla ile programHaritasi'nin
+//   bir dizinden en az bir program yükleyebildiğini kanıtlar. Gerçek bir projeyi
+//   anlatmaz, hiçbir ürün bilgisi taşımaz ve motorun tarama dışlama listesinde
+//   (fikstur) yaşadığı için proje denetimine girmez. (GOC-A08 · 2026-08-25)
+// ═══════════════════════════════════════════════════════════════════════════
+-->|
+## Amaç
+Sınama fikstürü — program toplama sınamaları bu dosyayı yükler.
+## Kapsam
+Bir teknoloji ilanı ve bir plan rafı; başka gövde taşımaz.
+## Sonuç
+Dosya ayrıştırılır ve bir program olarak sayılır.
+|<--
+Proje( kod: PRJ-FIKSTUR, ad: "fikstur_projesi", rejim: katı, ne: "program toplama sınamalarının tarafsız fikstürü" ) {
+  Teknoloji( kod: TEK-FIKSTUR-TS, ne: "TypeScript çalışma dili" )
+  Raf( kod: RAF-FIKSTUR-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}

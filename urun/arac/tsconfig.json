@@ -1,0 +1,7 @@
+{
+  "extends": "../cekirdek/tsconfig.json",
+  "compilerOptions": {
+    "typeRoots": ["../cekirdek/node_modules/@types"]
+  },
+  "include": ["*.ts"]
+}

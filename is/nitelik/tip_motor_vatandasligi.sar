@@ -1,0 +1,53 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/tip_motor_vatandasligi.sar — 🩺 TİP MOTOR-VATANDAŞLIĞI TEŞHİSİ
+//   Founder hedefi (2026-07-13 · oturum 39): "tüm şablonlar, fonksiyonlar,
+//   kurallar çalışır hale gelmeli ki OS'u kurmaya başlayalım." Bu defter, 98
+//   kanon tipin motor karşısındaki gerçek durumunu MAKİNE ile ölçer — "format
+//   yazıp uygulamama" hastalığının nesnel haritası (RF-T6-A05 + T6-SAHA dayanağı).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🩺 Tip Motor-Vatandaşlığı — Makine Teşhisi (oturum 39)
+
+  ## Ölçüt: bir tip motorda "çalışıyor" mu?
+  Üç sinyal ölçülür — **zorunlu alan** (şema eksikte tanı üretir) · **zorunlu
+  kenar** (koni/graf bağı) · **motor özel-işlemi** (dogrulayici/kuralci/dag/koni/
+  durum kaynağında adı geçer). Hiçbiri yoksa = **boş kabuk** ("yazılmış ama
+  uygulanmamış" — Founder'ın korktuğu hastalık).
+
+  ## Sonuç (98 kanon tip)
+  | Sınıf | Sayı | Anlam |
+  |---|---|---|
+  | 🟢 Zengin motor-vatandaşı | 74 | zorunlu alan + kenar + motor özel-işlem — tam çalışır |
+  | 🟠 Zayıf (tek sinyal) | 24 | motor parse+doğrular ama kenar/özel-işlem sığ |
+  | 🕳️ Boş kabuk | **0** | tamamen bağlanmamış tip YOK — temel sağlam |
+
+  ## 🟠 Zayıf 24 tipin ayrımı (kritik: çoğu MEŞRU)
+  - **UI widget'ları (17 · dış-proje MEŞRU):** Sayfa · Bileşen · Sütun · Satır ·
+    Yığın · Kapsayıcı · Kart · Liste · Görsel · İkon · ÜstÇubuk · Gövde · Form ·
+    MetinAlanı · OnayKutusu · AçılırListe · AnlıkBildirim. Bunlar UYGULAMA
+    widget'ları; doğrulama uygulamanın kendi `.sar` ağacında olur, motorda özel-
+    işlem BEKLENMEZ (tek zorunlu alan = kod/ad yeterli). K-51 dış-proje kilidi.
+  - **Çekirdek tip (7 · zenginleştirme adayı):** Mekanizma · Tema · Blok ·
+    ÇalışmaAlanı · Uygulama · Proje · Orkestrasyon — motorda İŞLENİYOR (m:1),
+    yalnız zorunlu-kenar tanımı sığ. Gerçek borç burada, sığ ama boş değil.
+
+  ## OS kapısına okuma (Founder hedefi)
+  "Tüm tipler çalışır hale gelmeli" ölçütü İKİ katmanlıdır:
+  ① **motor-vatandaşlığı** (tip parse+doğrulanıyor mu) → 98/98 EVET (kabuk yok)
+  ② **canlı dogfood** (kendi bahçede kullanılıyor mu) → 50 tip sıfır-kullanım,
+     ANCAK çoğu OS-vadeli/dış-proje MEŞRU muaf (aile-oturumu kilidi: "hepsi
+     yaşamalı, OS gelince olacak"). Muafiyet BEYANLI olmalı (A05 kapısı).
+
+  ## Sıradaki iş (RF-T6-A05)
+  Bu elle-teşhis MOTOR NÖBETİNE iner: kullanımsız-tip bekçisi kanon tipleri canlı
+  kullanımla karşılaştırır, `tipMuafiyetleri` listesi kanonda beyanlı (dış-proje/
+  OS-vadeli) — beyansız sıfır-kullanım BİLGİ tanısı. Böylece "hangi tip çalışmıyor"
+  sorusu elle taramadan sürekli nöbete döner; OS kapısı ölçülebilir olur.
+|<--
+
+Çıkarım( kod: CKR-TIP-VATANDASLIK, tarih: "2026-07-13",
+         kaynak: "makine teşhisi (98 kanon tip × zorunlu-alan/kenar/motor-özel-işlem sinyalleri + canlı kullanım sayımı) — Founder OS-kapısı hedefi 'tüm şablon/fonksiyon/kural çalışır hale gelmeli'",
+         ne: "🩺 Temel SAĞLAM: boş kabuk YOK (0/98); 74 tip zengin motor-vatandaşı, 24 zayıfın 17'si dış-proje UI (meşru), 7 çekirdek tip motorda işlenir ama zorunlu-kenarı sığ. 'Format yazıp uygulamama' gerçek ama sınırlı ve haritalı. OS kapısı = motor-vatandaşlığı (98/98 ✅) + beyanlı dogfood muafiyeti (RF-T6-A05 bekçisi)." ) {
+  --> RF-T6-A05
+}

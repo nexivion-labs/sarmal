@@ -1,0 +1,3109 @@
+{
+  "kod": "SNF-0",
+  "surum": "0.6",
+  "ne": "Parametre/widget tip sistemi — .sar grameri buradan doğrulanır",
+  "ikiz": "oz/siniflama/kayit.md",
+  "esneklik": "lego düzenindedir: yeni bir tip tek dokunuşla eklenir ve sistem çekirdek tiplerle başlar",
+  "koken": "12 aile: eski ürün deposunun on iki aile deseni (çeşitlendirme onayı Founder 2026-07-01) + Türkçe-önce + ağaç metaforu; kaos alınmadı, ayrım alındı",
+  "aileler": {
+    "temel": "üretken kök / iskelet (kasa→proje→uygulama)",
+    "plan": "içerir (containment) — omurga",
+    "bilgi": "bilgi & tecrübe (karar·formül·sözlük·fikir·deney)",
+    "orkestrasyon": "yönetir (işletim: şablon·politika·akış·kanca)",
+    "etmen": "kimlik + yetenek + bellek + tetikleyici",
+    "yuzey": "içerir (UI ağacı — kullanıcının gördüğü)",
+    "yasa": "kural düzlemi (değişmez)",
+    "teknoloji": "bağımlı (adaptör: teknoloji·mcp·araç·model·ortam)",
+    "urun": "üretilen yazılım (meyve 🍎 — kod·sınama-dışı artefakt)",
+    "surec": "yürütme izi (görev · koşum · iz · git) — çalışma anında oluşan kayıt",
+    "nitelik": "doğrulama & gözlem (sınama·metrik·log·güvenlik)",
+    "oz": "meta / kayıt (sınıflama·durum·hatırlatıcı)",
+    "davranis": "UI-mantık köprüsü (canlandırma·durum) — teknoloji-bağımsız niyet",
+    "arkayuz": "sunucu yüzü (servis·uç·tablo·kuyruk) — yüzeyin simetriği"
+  },
+  "caprazRolKumeleri": {
+    "not": "TIP-1.16 Çapraz-Rol Tip Kümeleri maddesinin sicil karşılığıdır. Bir tipin çapraz rol üyeliği widgetTipleri girdisindeki caprazRoller alanında yaşar ve bu katalog yalnız beş rol kümesinin izinli belirteçlerini sayar. Rol belirteçleri aile adlarıyla aynı yazımı kullanır; çok-üyelik tek kanonik tipi çoğaltmaz ve ana aileyi değiştirmez (örnek: Sözleşme urun ailesinde kalır, yuzey ile arkayuz rollerinde birlikte indekslenir). Alan adı caprazRoller seçilmiştir, çünkü `rol:` adı AltKatman şema kuralıyla (MIM-1.5) RBAC ve ajan rolüne rezervedir ve tema rol adları temaRolleri kaydında ayrı yaşar.",
+    "izinliRoller": [
+      "yasa",
+      "plan",
+      "bilgi",
+      "yuzey",
+      "arkayuz"
+    ]
+  },
+  "widgetTipleri": [
+    {
+      "ad": "ÇalışmaAlanı",
+      "aile": "temel",
+      "ne": "bahçe/workspace — tek taban; birçok Uygulama'yı paralel sarar (M-01)"
+    },
+    {
+      "ad": "Uygulama",
+      "aile": "temel",
+      "ne": "bir app (ağaç); ÇalışmaAlanı içinde paralel geliştirilir"
+    },
+    {
+      "ad": "Proje",
+      "aile": "temel",
+      "ne": "üretken kök (ANA); tek ağaç / Yapı-Önce ilanı"
+    },
+    {
+      "ad": "Blok",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "gövde — İŞ eksenidir; önyüz ve arkayüz adımlarını tek kimlik altında kavuşturur, fazlar arasında çağır kenarıyla sürer",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    {
+      "ad": "Faz",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "mevsim ya da yıl halkası — ZAMAN eksenidir; Blok'ları sarar ve kardeş fazlar sıralıdır, sırayı motor türetir",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    {
+      "ad": "Katman",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "dal — TEKNOLOJİ eksenidir (önyüz · arkayüz · güvenlik gibi); bir Blok altında birden çok Katman yaşar ve her biri Takım bağı bekler",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    {
+      "ad": "AltKatman",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "ufak dal — DEPARTMAN ekseni (MIM-1.5): planlama·kodlama·sınama·inceleme·güvenlik çekirdek beşlisinden birini `departman:` alanıyla temsil eder; teknoloji bağını KÖK Katman'dan MİRAS alır, kendi bağ beyan etmez; AltKatman içinde AltKatman derin-dal freni alır"
+    },
+    {
+      "ad": "Adım",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "yaprak — en küçük iş birimidir ve koni alanlarını taşır (görev · referans · kabul · dokunulmaz · bağımlı · sınır); bağımlılık MEKANİKTİR, yalnız bağımlı: [KOD] kenarıyla yazılır",
+      "koken": [
+        "ORK-1.2",
+        "ORK-3",
+        "ORK-3.1"
+      ]
+    },
+    {
+      "ad": "Kapı",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "kabul/geçit — bir aşamayı doğrulayıp geçiren kapı (GATE)"
+    },
+    {
+      "ad": "Gereksinim",
+      "aile": "plan",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "istenen özellik / user-story (REQ)"
+    },
+    {
+      "ad": "Karar",
+      "aile": "bilgi",
+      "caprazRoller": [
+        "yasa"
+      ],
+      "ne": "karar kaydı; besler/referans ile Adım'ın bağlam-konisine girer"
+    },
+    {
+      "ad": "Formül",
+      "aile": "bilgi",
+      "caprazRoller": [
+        "bilgi"
+      ],
+      "ne": "bilimsel formül/temel — adıma informs kenarı"
+    },
+    {
+      "ad": "Sözlük",
+      "aile": "bilgi",
+      "caprazRoller": [
+        "bilgi"
+      ],
+      "ne": "alan terimleri sözlüğü (glossary)"
+    },
+    {
+      "ad": "Fikir",
+      "aile": "bilgi",
+      "ne": "ham/taahhütsüz fikir; olgunlaşırsa Karar'a yükselir"
+    },
+    {
+      "ad": "Çıkarım",
+      "aile": "bilgi",
+      "caprazRoller": [
+        "bilgi"
+      ],
+      "ne": "dış kaynaktan damıtılan içgörü: kaynak zorunlu, --> uygulama kenarı GÜÇLÜ TAVSİYE — 'uygulandığı yer' ölü sütun değil canlı ok"
+    },
+    {
+      "ad": "Deney",
+      "aile": "bilgi",
+      "ne": "hipotez + sonuç (experiment/spike); Karar'ı besler"
+    },
+    {
+      "ad": "Felsefe",
+      "aile": "bilgi",
+      "caprazRoller": [
+        "bilgi"
+      ],
+      "ne": "Sarmal'ın bir ilkesini/vizyonunu savunan manifesto belgesi (FEL-*); tez + gerekçe taşır, Karar'ı ve Yasa'yı besler"
+    },
+    {
+      "ad": "Mockup",
+      "aile": "bilgi",
+      "ne": "dış tasarım gerçeğidir (Figma · HTML · görsel) — olduğu gibi referans alınır; ÖZETLENMEZ, yeri dosya: parametresiyle beyan edilir",
+      "koken": [
+        "TAS-C01"
+      ]
+    },
+    {
+      "ad": "Orkestrasyon",
+      "aile": "orkestrasyon",
+      "ne": "etmen havuzunu yönetir; Adım'dan istem üretip çalışma anında dağıtır"
+    },
+    {
+      "ad": "Döngü",
+      "aile": "orkestrasyon",
+      "caprazRoller": [
+        "plan"
+      ],
+      "ne": "tekrarlayan iştir: tetik ile döner, koşar zincirini işletir ve durunca ya da turLimiti ile DURUR; çıkışı olmayan döngü yazılamaz",
+      "koken": [
+        "TIP-1.4",
+        "ORK-3.3"
+      ]
+    },
+    {
+      "ad": "Şablon",
+      "aile": "orkestrasyon",
+      "ne": "ajana verilecek bağlam/prompt formatı (yeni — CAT-0 TPL deseni)"
+    },
+    {
+      "ad": "Politika",
+      "aile": "orkestrasyon",
+      "caprazRoller": [
+        "yasa"
+      ],
+      "ne": "işletim politikası / anti-desen (POL)"
+    },
+    {
+      "ad": "İşAkışı",
+      "aile": "orkestrasyon",
+      "ne": "aşamalı iş akışı tanımı (workflow)"
+    },
+    {
+      "ad": "Kanca",
+      "aile": "orkestrasyon",
+      "ne": "yaşam-döngüsü kancası (önce/sonra/hata); zorlama motoru"
+    },
+    {
+      "ad": "Mekanizma",
+      "aile": "orkestrasyon",
+      "ne": "kesişen altyapı modülüdür (yönetişim · RBAC · telemetri · hız sınırı · denetim); BİR KEZ ilan edilir, birçok Adım ona referans verir ya da bağımlı olur; içeriği adımlara dağıtılmaz, tek kaynakta durur",
+      "koken": [
+        "TIP-1.4",
+        "DIL-3.1",
+        "ORK-2.1",
+        "DIL-1.4",
+        "ORK-4"
+      ]
+    },
+    {
+      "ad": "Etmen",
+      "aile": "etmen",
+      "ne": "kimlik+beceri+izole bellek+anayasa+hook+tetikleyici"
+    },
+    {
+      "ad": "Yetenek",
+      "aile": "etmen",
+      "ne": "stack-agnostik yetenek ilanı (F-2): Beceri `sağlar:` ile bağlanır — aynı yeteneğin Flutter/React uygulamaları ayrı Beceriler"
+    },
+    {
+      "ad": "Beceri",
+      "aile": "etmen",
+      "caprazRoller": [
+        "bilgi"
+      ],
+      "ne": "etmene bağlı yetenek; Bellek'ten damıtılır (skill)"
+    },
+    {
+      "ad": "Bellek",
+      "aile": "etmen",
+      "ne": "etmenin izole hafızası (ogrenme/); hata/öğrenilen buraya"
+    },
+    {
+      "ad": "Tetikleyici",
+      "aile": "etmen",
+      "ne": "\"ne zaman kullan\" koşulu; eşleşince Beceri otomatik fire (TRG)"
+    },
+    {
+      "ad": "Ekran",
+      "aile": "yuzey",
+      "caprazRoller": [
+        "yuzey"
+      ],
+      "ne": "UI kökü (Scaffold=İskelet); Türkçe declarative niyet"
+    },
+    {
+      "ad": "Sütun",
+      "aile": "yuzey",
+      "ne": "dikey diz (Column)"
+    },
+    {
+      "ad": "Satır",
+      "aile": "yuzey",
+      "ne": "yatay diz (Row)"
+    },
+    {
+      "ad": "Yığın",
+      "aile": "yuzey",
+      "ne": "üst üste yerleştir (Stack)"
+    },
+    {
+      "ad": "Kapsayıcı",
+      "aile": "yuzey",
+      "ne": "boyut/renk/boşluk kutusu (Container)"
+    },
+    {
+      "ad": "Kart",
+      "aile": "yuzey",
+      "ne": "gölgeli içerik kabı (Card)"
+    },
+    {
+      "ad": "Liste",
+      "aile": "yuzey",
+      "ne": "kaydırılabilir liste (ListView)"
+    },
+    {
+      "ad": "Metin",
+      "aile": "yuzey",
+      "caprazRoller": [
+        "yuzey"
+      ],
+      "ne": "yazı — yaprak (Text)"
+    },
+    {
+      "ad": "Düğme",
+      "aile": "yuzey",
+      "caprazRoller": [
+        "yuzey"
+      ],
+      "ne": "tıklanabilir eylem — yaprak (Button)"
+    },
+    {
+      "ad": "Görsel",
+      "aile": "yuzey",
+      "ne": "resim — yaprak (Image)"
+    },
+    {
+      "ad": "İkon",
+      "aile": "yuzey",
+      "ne": "ikon — yaprak (Icon)"
+    },
+    {
+      "ad": "Sayfa",
+      "aile": "yuzey",
+      "ne": "tasarım sayfası (design-builder page)"
+    },
+    {
+      "ad": "Bileşen",
+      "aile": "yuzey",
+      "ne": "yeniden-kullanılır UI bileşeni (component)"
+    },
+    {
+      "ad": "Tema",
+      "aile": "yuzey",
+      "ne": "renk/font/token teması (theme)"
+    },
+    {
+      "ad": "Yasa",
+      "aile": "yasa",
+      "ne": "kural rafı"
+    },
+    {
+      "ad": "GenelKural",
+      "aile": "yasa",
+      "ne": "framework built-in kural"
+    },
+    {
+      "ad": "ÖzelKural",
+      "aile": "yasa",
+      "ne": "kullanıcının kendi tanımladığı, fonksiyona benzeyen kural düğümü",
+      "koken": [
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    {
+      "ad": "Kural",
+      "aile": "yasa",
+      "caprazRoller": [
+        "yasa"
+      ],
+      "ne": "kural düğümüdür: otorite · ebedi · katman · kapsam alanlarını koşul, ihlal ve düzey üçlüsüyle birlikte taşır; Anayasa ve Politika bu düğümü sarar",
+      "koken": [
+        "DIL-3",
+        "YAS-2.3",
+        "YAS-2.4",
+        "YAS-3.4"
+      ]
+    },
+    {
+      "ad": "Anayasa",
+      "aile": "yasa",
+      "caprazRoller": [
+        "yasa"
+      ],
+      "ne": "TÜM ajanlar için tek ortak kural (claude.md/gemini.md değil)"
+    },
+    {
+      "ad": "Mevzuat",
+      "aile": "yasa",
+      "caprazRoller": [
+        "yasa"
+      ],
+      "ne": "dış hukuki/düzenleyici norm (F-7): kural değil kuralın KAYNAĞI — kaynak/yargıAlanı/yaptırım + zorunluKılar: kenarı; uygulama Politika/Adım'da"
+    },
+    {
+      "ad": "Teknoloji",
+      "aile": "teknoloji",
+      "ne": "işin yaslandığı somut dış sistem — yazılım yığını (Flutter · Next · FastAPI) ya da işin yürütüldüğü kanal (Google İşletme Profili · Meta hesapları)"
+    },
+    {
+      "ad": "Takım",
+      "aile": "teknoloji",
+      "ne": "teknoloji takımı — bir arada benimsenen tutarlı yığın (bağımlı: üyeler); proje/etmen takımı bir bütün çağırır"
+    },
+    {
+      "ad": "MCP",
+      "aile": "teknoloji",
+      "ne": "MCP server — ajanların governed araç-erişim kapısı"
+    },
+    {
+      "ad": "Araç",
+      "aile": "teknoloji",
+      "ne": "CLI/API dış araç (MCP-dışı)"
+    },
+    {
+      "ad": "Model",
+      "aile": "teknoloji",
+      "ne": "AI model registry/routing"
+    },
+    {
+      "ad": "Ortam",
+      "aile": "teknoloji",
+      "ne": "dev/staging/prod ortamı"
+    },
+    {
+      "ad": "Meyve",
+      "aile": "urun",
+      "ne": "meyve 🍎 — bir Adımın `üretir` bağıyla doğurduğu izlenebilir teslim (MIM-2): üreten Adım, tür ve dosya-zorunlu türlerde proje-içi dosya birlikte görünür; üreticisi belirsiz Meyve kabul edilmez"
+    },
+    {
+      "ad": "Kod",
+      "aile": "urun",
+      "ne": "üretilen kaynak kod (meyve 🍎; dile göre adaptör)"
+    },
+    {
+      "ad": "Ayar",
+      "aile": "urun",
+      "ne": "yapılandırma/env/build (config)"
+    },
+    {
+      "ad": "Sözleşme",
+      "aile": "urun",
+      "caprazRoller": [
+        "yuzey",
+        "arkayuz"
+      ],
+      "ne": "API sözleşmesi + DB şeması (OpenAPI/GraphQL)"
+    },
+    {
+      "ad": "Altyapı",
+      "aile": "urun",
+      "ne": "Docker/K8s/Terraform/CI-CD"
+    },
+    {
+      "ad": "Veri",
+      "aile": "urun",
+      "ne": "veri kümesi / seed / fixture"
+    },
+    {
+      "ad": "Göç",
+      "aile": "urun",
+      "ne": "DB migration / şema değişim script'i (sıralı)"
+    },
+    {
+      "ad": "Görev",
+      "aile": "surec",
+      "ne": "ajana-atanan iş-birimi, durumlu (atandı/koşuyor/bitti); orkestrasyon primitifi"
+    },
+    {
+      "ad": "Koşum",
+      "aile": "surec",
+      "ne": "çalışma kaydı — canlı akış/telsiz izi (run)"
+    },
+    {
+      "ad": "İz",
+      "aile": "surec",
+      "ne": "ajan akıl-yürütme izi (trace/tutanak)"
+    },
+    {
+      "ad": "Komut",
+      "aile": "surec",
+      "ne": "ajana verilen emir/prompt artefaktı (prompt)"
+    },
+    {
+      "ad": "Git",
+      "aile": "surec",
+      "ne": "commit/PR/release/branch kaydı"
+    },
+    {
+      "ad": "Sorun",
+      "aile": "surec",
+      "ne": "takip edilen bug/issue/feature"
+    },
+    {
+      "ad": "Sınama",
+      "aile": "nitelik",
+      "ne": "sınama/test birimi — bir Adım/Blok'u kabul'e karşı doğrular"
+    },
+    {
+      "ad": "Değerlendirme",
+      "aile": "nitelik",
+      "ne": "grader/benchmark/prompt-regression (eval)"
+    },
+    {
+      "ad": "Metrik",
+      "aile": "nitelik",
+      "ne": "telemetri/performans (OTel)"
+    },
+    {
+      "ad": "Log",
+      "aile": "nitelik",
+      "ne": "yapılandırılmış log / olay-kaydı"
+    },
+    {
+      "ad": "Güvenlik",
+      "aile": "nitelik",
+      "ne": "güvenlik bulgusu (SAST/pentest/CVE)"
+    },
+    {
+      "ad": "Kapsama",
+      "aile": "nitelik",
+      "ne": "test kapsaması / mutation"
+    },
+    {
+      "ad": "Sınıflama",
+      "aile": "oz",
+      "ne": "bu tip sistemi"
+    },
+    {
+      "ad": "DurumKaydı",
+      "aile": "oz",
+      "ne": "oturum/rehydrate anlık-görüntü kaydı (DRM — nerede kaldık)"
+    },
+    {
+      "ad": "Hatırlatıcı",
+      "aile": "oz",
+      "ne": "ileri-bağlama düğümü (forward-binding)"
+    },
+    {
+      "ad": "ÜstÇubuk",
+      "aile": "yuzey",
+      "ne": "üst başlık/aksiyon çubuğu (AppBar); Ekran'ın tepesi"
+    },
+    {
+      "ad": "Gövde",
+      "aile": "yuzey",
+      "ne": "ekranın ana içerik alanı (Body); kaydırma+güvenliAlan taşır"
+    },
+    {
+      "ad": "Form",
+      "aile": "yuzey",
+      "caprazRoller": [
+        "yuzey"
+      ],
+      "ne": "girdi alanlarını saran doğrulama kabı; doğrulamaAnı bildirir"
+    },
+    {
+      "ad": "MetinAlanı",
+      "aile": "yuzey",
+      "ne": "kullanıcıdan metin girişi (TextField); tür+doğrula taşır"
+    },
+    {
+      "ad": "OnayKutusu",
+      "aile": "yuzey",
+      "ne": "çoklu seçim kutusu (Checkbox); durum alanına bağlanır"
+    },
+    {
+      "ad": "AçılırListe",
+      "aile": "yuzey",
+      "ne": "açılır seçenek listesi (Dropdown); değerler+seçili taşır"
+    },
+    {
+      "ad": "AnlıkBildirim",
+      "aile": "yuzey",
+      "ne": "kısa süreli alt bildirim (SnackBar/Toast); kaynak+süre"
+    },
+    {
+      "ad": "Canlandırma",
+      "aile": "davranis",
+      "ne": "animasyon niyeti: tür+süre+eğri+tekrar; ön-tanımlı ya da satır-içi değer"
+    },
+    {
+      "ad": "Durum",
+      "aile": "davranis",
+      "ne": "uygulama/ekran durumu (State) niyeti: alanlar+kaynak; UI'ya bağlanır"
+    },
+    {
+      "ad": "Servis",
+      "aile": "arkayuz",
+      "ne": "iş mantığı kabı; tabanYol+sürüm+günlük+gözlem; Uç'ları sarar"
+    },
+    {
+      "ad": "Uç",
+      "aile": "arkayuz",
+      "caprazRoller": [
+        "arkayuz"
+      ],
+      "ne": "API ucu (endpoint): yol+yöntem+istek/yanıt sözleşmesi+yetki+hızSınırı"
+    },
+    {
+      "ad": "Tablo",
+      "aile": "arkayuz",
+      "ne": "veritabanı tablosu NİYETİ: şema(Sözleşme'den)+indeks; Göç üretir"
+    },
+    {
+      "ad": "KimlikPolitikası",
+      "aile": "arkayuz",
+      "ne": "kimlik-doğrulama politikası: jeton ömrü+parola algoritması+kilitleme — kimlik alanı sınırı KimlikKökü tipinin, dış sağlayıcı KimlikSağlayıcısı tipinin işidir; üç rol ayrıdır ve birleştirilemez"
+    },
+    {
+      "ad": "KimlikKökü",
+      "aile": "arkayuz",
+      "ne": "kimlik alanı sınırı (MIM-1.1 · ORK-5): kullanıcı havuzunu, yürürlükteki KimlikPolitikası'nı ve sağlayıcı kümesini kapsar; ortak Auth'ta Projeler aynı kökü `kullanır` bağıyla paylaşır, Proje kimlikleri birleşmez"
+    },
+    {
+      "ad": "KimlikSağlayıcısı",
+      "aile": "arkayuz",
+      "ne": "dış kimlik sağlayıcısı (ORK-5.1): yalnız bir KimlikKökü altında yaşar; taban katalog google · github · linkedin · apple · microsoft · sso, genişletme yalnız katkılı örtüyle"
+    },
+    {
+      "ad": "Kuyruk",
+      "aile": "arkayuz",
+      "ne": "asenkron iş kuyruğu; yenidenDene+geriÇekilme politikası"
+    },
+    {
+      "ad": "ArkaGörev",
+      "aile": "arkayuz",
+      "ne": "arka plan işi (background job): tetik+kuyruk+zamanAşımı"
+    },
+    {
+      "ad": "Zamanlayıcı",
+      "aile": "arkayuz",
+      "ne": "zamanlanmış iş (cron): ifade+görev"
+    },
+    {
+      "ad": "Olay",
+      "aile": "arkayuz",
+      "ne": "olay/webhook niyeti: ad+yük(Sözleşme)+yayın yönü"
+    },
+    {
+      "ad": "Önbellek",
+      "aile": "arkayuz",
+      "ne": "önbellek niyeti: sağlayıcı+ömür+anahtar; Uç değeri olarak da kullanılır"
+    },
+    {
+      "ad": "Gizli",
+      "aile": "arkayuz",
+      "ne": "gizli değer (secret) İLANI: sağlayıcı+ad — değerin kendisi asla yazılmaz"
+    },
+    {
+      "ad": "Raf",
+      "aile": "oz",
+      "ne": "klasör ilanıdır — yapının rafıdır; yeri yol: parametresinden gelir ve içerik rafın içine sarılır, çünkü raf ile içerik ayrı şeylerdir",
+      "koken": [
+        "PLN-3"
+      ]
+    },
+    {
+      "ad": "Kitaplık",
+      "aile": "oz",
+      "ne": "dallanan klasör — kitaplıkta RAFLAR (ve bölüm olarak alt-kitaplıklar) durur; metafor: Kitaplık › Raf › Kitap › Sayfa"
+    }
+  ],
+  "kenarTipleri": [
+    {
+      "ad": "bağımlı",
+      "yon": "A->B",
+      "ne": "A, B'ye bağımlıdır; çağrı bağının tabanını kurar",
+      "koken": [
+        "DIL-1.4",
+        "ORK-4"
+      ]
+    },
+    {
+      "ad": "referans",
+      "yon": "A->B",
+      "ne": "A, B'ye atıf (provenance); Adım bağlam-konisi"
+    },
+    {
+      "ad": "hatırlat",
+      "yon": "A->B",
+      "ne": "Hatırlatıcı, B adımının bağlamına (ileri-bağlama)"
+    },
+    {
+      "ad": "üretir",
+      "yon": "A->B",
+      "ne": "A derlenince B'yi üretir (meyve)"
+    },
+    {
+      "ad": "yönetir",
+      "yon": "A->B",
+      "ne": "orkestratör/etmen B'yi yönetir"
+    },
+    {
+      "ad": "içerir",
+      "yon": "A->B",
+      "ne": "A, B'yi sarar (containment)"
+    },
+    {
+      "ad": "besler",
+      "yon": "A->B",
+      "ne": "A, B'ye veri/bağlam besler"
+    },
+    {
+      "ad": "uygular",
+      "yon": "A->B",
+      "ne": "hedef A, B kuralını uygular",
+      "koken": [
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    {
+      "ad": "dayanak",
+      "yon": "A->B",
+      "ne": "kural ya da politika A, B kararından doğar; 'kim karar verdi?' sorusu graftan okunsun diye karar ile kural arasındaki izi kurar",
+      "koken": [
+        "RF-T6-A02"
+      ]
+    },
+    {
+      "ad": "mevsim",
+      "yon": "Blok -> Faz",
+      "ne": "zaman kenarı: Blok yürürlükteki mevsime kendi dosyasından bağlanır; yükleme çevrimi bu bağı Faz tarafına sanal çağır olarak normalize eder, böylece panel, karne ve fazsız-blok denetimi değişmeden iki yazımı da kapsar — çevrim TEK noktada yapılır",
+      "koken": [
+        "DIL-2",
+        "TIP-2",
+        "OGR-1.4"
+      ]
+    },
+    {
+      "ad": "anayasa",
+      "yon": "A->B",
+      "ne": "etmen A, B anayasasına tabi"
+    },
+    {
+      "ad": "tetikler",
+      "yon": "A->B",
+      "ne": "Tetikleyici A, yapısal koşulu sağlanınca B Beceri'sini ateşler",
+      "koken": [
+        "RAY-3"
+      ]
+    },
+    {
+      "ad": "tema",
+      "yon": "Ekran → Tema",
+      "ne": "tasarım-sistemi bağı: ekran hangi Tema sözleşmesiyle giyinir (temasız-ekran bekçisi bunu arar)"
+    },
+    {
+      "ad": "çağırır",
+      "yon": "A->B",
+      "ne": "davranış kenarı: Düğme ya da Form A, B ucunu çağırır",
+      "koken": [
+        "TIP-2.3",
+        "YAS-3.4",
+        "MIM-2",
+        "TUR-2"
+      ]
+    },
+    {
+      "ad": "gider",
+      "yon": "A->B",
+      "ne": "navigasyon kenarı: A, B ekranına gider",
+      "koken": [
+        "TIP-2.3",
+        "YAS-3.4",
+        "MIM-2",
+        "TUR-2"
+      ]
+    },
+    {
+      "ad": "gönderir",
+      "yon": "A->B",
+      "ne": "veri kenarı: Form A, B ucuna gönderir",
+      "koken": [
+        "TIP-2.3",
+        "YAS-3.4",
+        "MIM-2",
+        "TUR-2"
+      ]
+    },
+    {
+      "ad": "sözleşme",
+      "yon": "A->B",
+      "ne": "kavuşum kenarı: Uç A, B sözleşmesinden türer — sözleşme önce yazılır",
+      "koken": [
+        "MIM-1.3",
+        "ORK-2.3",
+        "TUR-2"
+      ]
+    },
+    {
+      "ad": "koşar",
+      "yon": "A->B",
+      "ne": "koşum kenarı: Döngü A, B adım ve orkestrasyonlarını işletir",
+      "koken": [
+        "TIP-1.4",
+        "ORK-3.3",
+        "TUR-2"
+      ]
+    },
+    {
+      "ad": "kullanır",
+      "yon": "A->B",
+      "ne": "teknoloji ve kimlik bağı: Katman tam olarak bir somut Teknolojiyi (MIM-1.4), Proje ortak ya da kendi KimlikKökünü (ORK-5) kullanır; bağ hedefi kimlikleri birleştirmez"
+    }
+  ],
+  "izinliSarma": {
+    "ÇalışmaAlanı": [
+      "Kitaplık",
+      "Raf",
+      "Uygulama",
+      "Proje",
+      "Mekanizma",
+      "Faz",
+      "KimlikKökü"
+    ],
+    "Uygulama": [
+      "Kitaplık",
+      "Raf",
+      "Blok",
+      "Teknoloji",
+      "Takım",
+      "Orkestrasyon",
+      "Döngü",
+      "Ekran",
+      "Servis",
+      "Tablo",
+      "KimlikPolitikası",
+      "Kuyruk",
+      "ArkaGörev",
+      "Zamanlayıcı",
+      "Olay",
+      "Önbellek",
+      "Gizli",
+      "Tema",
+      "Canlandırma",
+      "Durum",
+      "Mekanizma",
+      "Faz"
+    ],
+    "Proje": [
+      "Kitaplık",
+      "Raf",
+      "Blok",
+      "Teknoloji",
+      "Takım",
+      "Orkestrasyon",
+      "Döngü",
+      "Ekran",
+      "Servis",
+      "Tablo",
+      "KimlikPolitikası",
+      "Kuyruk",
+      "ArkaGörev",
+      "Zamanlayıcı",
+      "Olay",
+      "Önbellek",
+      "Gizli",
+      "Tema",
+      "Canlandırma",
+      "Durum",
+      "Mekanizma",
+      "Faz",
+      "KimlikKökü"
+    ],
+    "Blok": [
+      "Katman",
+      "Adım",
+      "Gereksinim",
+      "Kapı"
+    ],
+    "Faz": [
+      "Blok",
+      "Kapı",
+      "Katman",
+      "Adım"
+    ],
+    "Katman": [
+      "AltKatman",
+      "Adım"
+    ],
+    "AltKatman": [
+      "AltKatman",
+      "Adım"
+    ],
+    "Adım": [
+      "Meyve"
+    ],
+    "KimlikKökü": [
+      "KimlikPolitikası",
+      "KimlikSağlayıcısı"
+    ],
+    "Orkestrasyon": [
+      "Etmen",
+      "İşAkışı",
+      "Şablon"
+    ],
+    "Etmen": [
+      "Beceri",
+      "Yetenek",
+      "Bellek",
+      "Anayasa",
+      "Kanca",
+      "Tetikleyici"
+    ],
+    "Servis": [
+      "ArkaGörev",
+      "Olay",
+      "Uç"
+    ],
+    "Raf": [
+      "Altyapı",
+      "Anayasa",
+      "ArkaGörev",
+      "Ayar",
+      "Blok",
+      "Canlandırma",
+      "Durum",
+      "Ekran",
+      "Etmen",
+      "Gizli",
+      "Karar",
+      "Kuyruk",
+      "Mekanizma",
+      "Metrik",
+      "Olay",
+      "Orkestrasyon",
+      "Döngü",
+      "Proje",
+      "Servis",
+      "Sözleşme",
+      "Sınama",
+      "Sınıflama",
+      "Tablo",
+      "Tema",
+      "Uygulama",
+      "Yasa",
+      "Zamanlayıcı",
+      "Önbellek"
+    ],
+    "Kitaplık": [
+      "Kitaplık",
+      "Raf",
+      "Uygulama",
+      "Proje"
+    ],
+    "Anayasa": [
+      "Kural"
+    ],
+    "Politika": [
+      "Kural"
+    ],
+    "Mekanizma": [
+      "Politika",
+      "Kural",
+      "KimlikPolitikası",
+      "Uç",
+      "Servis",
+      "Metrik",
+      "Log",
+      "Güvenlik",
+      "Sözleşme",
+      "İz"
+    ],
+    "Teknoloji": [
+      "Araç",
+      "MCP",
+      "Model",
+      "Ortam"
+    ]
+  },
+  "yuzeyKurali": {
+    "duzen": [
+      "Ekran",
+      "Sütun",
+      "Satır",
+      "Yığın",
+      "Kapsayıcı",
+      "Kart",
+      "Liste",
+      "Sayfa",
+      "Bileşen",
+      "ÜstÇubuk",
+      "Gövde",
+      "Form"
+    ],
+    "yaprak": [
+      "Metin",
+      "Düğme",
+      "Görsel",
+      "İkon",
+      "Tema",
+      "MetinAlanı",
+      "OnayKutusu",
+      "AçılırListe",
+      "AnlıkBildirim"
+    ],
+    "kural": "düzen widget'ları tüm yüzey widget'larını sarar; yaprak sarmaz"
+  },
+  "agacMetaforu": {
+    "kök": "Proje/ANA",
+    "mevsim": "Faz — yıl halkası 🌀 (ZAMAN ekseni: büyüme dönemidir; kardeş fazlar sıralıdır)",
+    "gövde": "Blok — İŞ (mevsimler boyunca AYNI gövde büyür; fazlar-arası çağır sürekliliği)",
+    "dal": "Katman — TEKNOLOJİ (Takım bağı bekler)",
+    "yaprak": "Adım — AKIŞ",
+    "meyve": "üretilen ürün (üretir → urun ailesi)",
+    "bahçe": "ÇalışmaAlanı",
+    "özsu": "bilgi ailesi (Karar·Formül·Sözlük·Fikir·Çıkarım·Deney·Felsefe·Mockup) — dışarıdan alınan ışığı besine çeviren damıtma katmanı; içgörü uygulandığı dala --> kenarıyla akar, akmayan yaprak ağacı beslemez (Founder metaforu · 2026-08-10)"
+  },
+  "adimSemasi": {
+    "not": "1. dalga bağdaştırması (2026-07-06): kimlik zorunludur, koni opsiyoneldir; orkestratör koni alanlarından çalışma anında istem üretir.",
+    "zorunlu": [
+      "kod",
+      "ne|ad (birinden biri — ne tercih edilir)"
+    ],
+    "opsiyonel": [
+      "durum (beklemede|geliştirmede|tamamlandı — yoksa beklemede)"
+    ],
+    "koniAlanlari": [
+      "görev",
+      "referans",
+      "kabul",
+      "dokunulmaz",
+      "bağımlı",
+      "sınır"
+    ]
+  },
+  "renkPaleti": {
+    "not": "TEK DOĞRULUK KAYNAĞI (Founder 2026-07-06): eklenti renkleri bu paletten ÜRETİLİR; üretimi eklenti/arac/renk-uret.mjs yapar ve yapı adımında koşar. Yüzeye elle boya yazmak YASAKTIR, çünkü paletten sapan yüzey sessizce kayar. Bölümler şunlardır: agacRenkleri plan omurgasını taşır (kök kahvesinden yaprak yeşiline, oradan meyve moruna); aileler kategori paletidir; sadeRenkler biçim öğelerini boyar (niyet BEYAZ, parametre mavi, KOD altın); kodOnekleri imza renkleridir; driftRozetleri durumu gösterir; gradyan ise marka ve ikon içindir.",
+    "gradyan": [
+      "#7C3AED",
+      "#06B6D4"
+    ],
+    "agacRenkleri": {
+      "ÇalışmaAlanı": "#8A6E58",
+      "Uygulama": "#9A7A5C",
+      "Proje": "#AC814F",
+      "Blok": "#C0925C",
+      "Faz": "#D0A878",
+      "Katman": "#D8BE94",
+      "AltKatman": "#E2CFAA",
+      "Adım": "#8CC152",
+      "meyve": "#C173CE"
+    },
+    "sadeRenkler": {
+      "kenar": "#FF79C6",
+      "parametre": "#9CDCFE",
+      "kod": "#E5C07B",
+      "dizgi": "#FFFFFF",
+      "sayi": "#B5CEA8",
+      "belgeEtiket": "#E5C07B",
+      "belgeBaslik": "#C0925C",
+      "belgeCit": "#2ECC71",
+      "tablo": "#82C7B0",
+      "anahtar": "#C586C0",
+      "kuralAd": "#DCDCAA"
+    },
+    "aileler": {
+      "temel": "#AC814F",
+      "plan": "#C0925C",
+      "bilgi": "#4ec9b0",
+      "orkestrasyon": "#c9b458",
+      "etmen": "#c586c0",
+      "yuzey": "#ce9178",
+      "yasa": "#e06c6c",
+      "teknoloji": "#5b97a3",
+      "urun": "#C173CE",
+      "surec": "#9c7256",
+      "nitelik": "#b56a8e",
+      "oz": "#56C8D8",
+      "davranis": "#4fc1ff",
+      "arkayuz": "#2472c8"
+    },
+    "driftRozetleri": {
+      "not": "Founder ayrımı 2026-07-06: uyarı TURUNCU, terfi SARIDIR. VS Code her önem derecesine tek renk verdiği için editör çizgisi ve panel metni uyarı turuncusunu alır; terfi sarısı ise mesaj rozetinde 🟡 ve Sarmal'ın kendi yüzeylerinde (graf ve panel) saf olarak uygulanır. Takdir dekorasyonunun kalp rengi #FF4D4D olarak kanona indi. Bilgi rengi Founder'ın 2026-07-12 tarihli kararıyla belirginleştirildi: parlak #4D9FFF ile bilgiZemin arka plan tintı birlikte kullanılır, çünkü soluk ⓘ okunmuyordu.",
+      "hata": "#EF4444",
+      "uyari": "#FF8C42",
+      "terfi": "#FFD60A",
+      "bilgi": "#4D9FFF",
+      "bilgiZemin": "#4D9FFF26",
+      "kalp": "#FF4D4D"
+    },
+    "kodOnekleri": {
+      "not": "İmza rengi katmanı: her KOD öneki bir imza rengine eşlenir ve düğümün niyeti bu imzadan okunur",
+      "ETM|ORK|ANY": "#D886D3",
+      "BCR|YTN": "#4EC9B0",
+      "BLK|TTK|KNC": "#DCDCAA",
+      "HTR": "#569CD6",
+      "K|SD|GK|FEL": "#F14C4C",
+      "EKR|TEM|KRT": "#CE9178",
+      "PLN|ADM|FZ|KTM|EKL": "#D0A878",
+      "SNF|DRM|RAY": "#8A9BA8"
+    },
+    "sadeRenklerAcik": {
+      "not": "AÇIK tema eşleri: niyet beyazının açık tema karşılığı mürekkeptir; koyu eşiyle AYNI anlamı taşır, yalnız zemin terstir. Bütün textMate anahtarlarının eşi vardır.",
+      "parametre": "#0451A5",
+      "kod": "#9A6700",
+      "dizgi": "#1F1F1F",
+      "sayi": "#098658",
+      "belgeEtiket": "#9A6700",
+      "belgeBaslik": "#8C5A2B",
+      "belgeCit": "#1E9E50",
+      "tablo": "#1E6E5C",
+      "anahtar": "#AF00DB",
+      "kuralAd": "#795E26",
+      "kenar": "#C2185B"
+    },
+    "kodOnekleriAcik": {
+      "ETM|ORK|ANY": "#A626A4",
+      "BCR|YTN": "#0E7C6B",
+      "BLK|TTK|KNC": "#8F7A00",
+      "HTR": "#0B62B8",
+      "K|SD|GK|FEL": "#C41E1E",
+      "EKR|TEM|KRT": "#A0522D",
+      "PLN|ADM|FZ|KTM|EKL": "#8B6A3D",
+      "SNF|DRM|RAY": "#5A6B78"
+    }
+  },
+  "aileSimgeleri": {
+    "temel": "🌱",
+    "plan": "🌳",
+    "bilgi": "📚",
+    "orkestrasyon": "🎼",
+    "etmen": "🤖",
+    "yuzey": "🎨",
+    "davranis": "💠",
+    "arkayuz": "🌊",
+    "yasa": "⚖️",
+    "teknoloji": "🔌",
+    "urun": "🍎",
+    "surec": "⚙️",
+    "nitelik": "🔍",
+    "oz": "🗂️"
+  },
+  "tipSimgeleri": {
+    "Blok": "🪵",
+    "Faz": "🌀",
+    "Katman": "🌿",
+    "Adım": "🍃",
+    "Kapı": "🚪",
+    "Ekran": "📱",
+    "Raf": "🗄️",
+    "Kitaplık": "📚",
+    "Döngü": "🔁",
+    "Mockup": "🖼️",
+    "AltKatman": "☘️"
+  },
+  "tipSimgeleriNot": "Bu simgeler EDİTÖR yüzeylerinde yaşar: üzerine gelme baloncuğunda, tamamlama listesinde, koni kartı başlığında ve Mini Graf düğümlerinin cam merceğinde görünürler. Yol Haritası PANELİNDE YAŞAMAZLAR: panelde tip kimliği ikonun ŞEKLİYLE anlatılır (paket Blok'u, takvim Faz'ı, katmanlar Katman'ı gösterir) ve etiket yalın KOD'dur. Emoji panelden bir sadeleştirme turunda kaldırılmıştır. HER TİP AYRI BİR SİMGE TAŞIR: iki tip aynı simgeyi paylaşırsa grafta hangisinin dal hangisinin ufak dal olduğu anlaşılmaz. Bu çizelge emoji takma adları çizelgesiyle (emojiYazimi.tipler) aynı simgeyi kullanır; ikisi ayrışırsa aynı kavram iki yüzde iki ayrı işaretle görünür.",
+  "alanTurleri": [
+    "metin",
+    "sayı",
+    "ondalık",
+    "mantıksal",
+    "tarih",
+    "liste<tür>",
+    "SZL-KOD (iç içe sözleşme)"
+  ],
+  "alanKurallari": [
+    "zorunlu",
+    "enAz: n",
+    "enÇok: n",
+    "eposta-biçimi",
+    "benzersiz"
+  ],
+  "yetkiSozlugu": {
+    "L1": "izleyici (salt-okur)",
+    "L2": "katkıcı",
+    "L3": "işletmen (VARSAYILAN)",
+    "L4": "gözetmen (izolasyon/kimlik/geri-alınamaz işler)",
+    "L5": "denetçi (YALNIZ denetçiye — bellek izole zorunlu)",
+    "L6": "kurucu-vekili (kalıcı atanamaz)"
+  },
+  "semalar": {
+    "Etmen": {
+      "zorunlu": [
+        "kod",
+        "tür",
+        "uzmanlık",
+        "yetki",
+        "bellek",
+        "ne",
+        "uygular"
+      ],
+      "enum": {
+        "tür": [
+          "apex",
+          "yönetici",
+          "uzman"
+        ],
+        "bellek": [
+          "izole",
+          "paylaşık"
+        ],
+        "yetki": [
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L6"
+        ]
+      },
+      "opsiyonel": [
+        "model",
+        "tetik",
+        "önce",
+        "sonra",
+        "hataDa",
+        "araçlar",
+        "mcpİzinleri",
+        "sınır"
+      ],
+      "yapisalKurallar": [
+        "apex TEKİL — ikinci apex hatadır  ✅(motor çalışma anında zorlar — cekirdek/src/rbac.ts)",
+        "tür: yönetici ÜRETEMEZ — üretir kenarını taşıyamaz, yalnız akışı yönetir  ✅(motor çalışma anında zorlar — cekirdek/src/rbac.ts)",
+        "yetki: L5 ile bellek: paylaşık birlikte yazılamaz, denetçi EBEDİ olarak izoledir  ✅(motor çalışma anında zorlar — cekirdek/src/rbac.ts); yetki kademesinin yalnız denetçiye verilmesi şartı beyan anında ölçülmez, onu çağrı anındaki denetim tutar",
+        "yetki: L6 kalıcı olarak atanamaz  ✅(motor çalışma anında zorlar — cekirdek/src/rbac.ts)"
+      ],
+      "kural": "Kanca sınırları (en çok 10 kanca, en çok 500 ms) eşik kuralı olarak anayasaya yazılacaktır. Bu sınır DİLİN KENDİ KISITIDIR ve Sarmal ile kanca yazan herkesin bilmesi gerekir; kapalı üründeki orkestrasyon politikasının ayarıyla ilgisi yoktur. İki tarafta benzer sayıların bulunması bir bağ değildir: biri dilin gramer sınırı, öteki ürünün çalışma ayarıdır ve birbirinden bağımsız değişir. Bu açıklık 2026-08-05 varlık sınırı temizliğinde eklendi, çünkü sayı sızıntı sanılıp silinebilir ya da iki değer yanlışlıkla birbirine bağlanabilirdi.",
+      "koken": [
+        "F-1",
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    "Beceri": {
+      "zorunlu": [
+        "kod",
+        "sağlar",
+        "yığın",
+        "ne",
+        "neZaman",
+        "kurallar",
+        "örnek",
+        "antiDesen",
+        "uygular"
+      ],
+      "belgeZorunlu": true,
+      "enum": {
+        "yığın": [
+          "flutter",
+          "react",
+          "fastapi",
+          "evrensel"
+        ]
+      },
+      "kural": "Bağlamayı TÜKETEN taraf beyan eder: Adım `kullanır: BCR-…` yazar, Beceri'de görev listesi TUTULMAZ; aynı bilgi iki yerde yaşayamaz. Gövde en çok 300 satır olmalıdır. `anlatır:` alanı becerinin öğrettiği kuralı ya da tanıyı beyan eder; liste öğesi ya çözülebilen bir düğüm KOD'udur ya da tanı sicilinde yaşayan bir tanı adıdır (örneğin \"kenar-metin\"). Çözülmeyen beyan beceri-drift tanısı üretir, çünkü öğreten içerik öğrettiği kuraldan kopamaz.",
+      "opsiyonel": [
+        "anlatır"
+      ],
+      "tür": {
+        "anlatır": "liste"
+      },
+      "koken": [
+        "F-2",
+        "DIL-3",
+        "YAS-2.3",
+        "YAS-2",
+        "OGR-2.2",
+        "OGR-4",
+        "DIL-1.1",
+        "OGR-2.1"
+      ]
+    },
+    "Bellek": {
+      "zorunlu": [
+        "kod",
+        "tür",
+        "ne"
+      ],
+      "kosullu": [
+        {
+          "alan": "tür",
+          "deger": "ders",
+          "gerekli": [
+            "neden",
+            "nasılUygula",
+            "aşama"
+          ]
+        }
+      ],
+      "enum": {
+        "tür": [
+          "ders",
+          "referans",
+          "proje",
+          "kullanıcı"
+        ],
+        "aşama": [
+          "pratik",
+          "bellek",
+          "karar",
+          "yasa-taslağı",
+          "yasa"
+        ],
+        "terfi": [
+          "bekliyor",
+          "tamamlandı"
+        ]
+      },
+      "opsiyonel": [
+        "kanıt"
+      ],
+      "tür": {
+        "kanıt": "metin|liste"
+      },
+      "kural": "işaretçi ilkesi: içerik değil bkz: adresi; sahibi = saran Etmen (izolasyon); bekleyen-terfi Denetçi ölçer (F-3 kilidi 2026-07-02). Opsiyonel `kanıt:` alanı bir dersin nereden öğrenildiğini gösterir; kanıtı olan ders terfi ederken tartışılabilir, kanıtsız ders yalnız iddiadır."
+    },
+    "Politika": {
+      "zorunlu": [
+        "kod",
+        "alan",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dayanak"
+      ],
+      "enum": {
+        "alan": [
+          "öğrenme",
+          "maliyet",
+          "güvenlik",
+          "hız",
+          "içerik"
+        ]
+      },
+      "kural": "Politika, dayandığı Karar kaydına `dayanak:` kenarıyla bağlanır.",
+      "koken": [
+        "F-5",
+        "BKM-OLG-A04"
+      ]
+    },
+    "Mekanizma": {
+      "zorunlu": [
+        "kod"
+      ],
+      "birindenBiri": [
+        [
+          "ad",
+          "ne"
+        ]
+      ],
+      "opsiyonel": [
+        "faz"
+      ],
+      "kural": "faz: alanı SERBEST bir etikettir ve sabit bir değer listesi yoktur; dil jenerik kalır, çünkü ürün tarafının faz adları tabana yazılmaz. Mekanizmalar arasındaki sıra `bağımlı:` kenarlarının kurduğu çevrimsiz çizgeden okunur. Kesişen içerik (Politika · Kural · Metrik · Log · Güvenlik) mekanizmanın İÇİNDE durur, adımlara dağıtılmaz.",
+      "koken": [
+        "STR-3",
+        "STR-3.1",
+        "TIP-1.4",
+        "DIL-3.1",
+        "ORK-2.1"
+      ]
+    },
+    "Mevzuat": {
+      "zorunlu": [
+        "kod",
+        "kaynak",
+        "yargıAlanı",
+        "ne",
+        "zorunluKılar"
+      ],
+      "enum": {
+        "yargıAlanı": [
+          "TR",
+          "AB",
+          "ABD",
+          "küresel"
+        ]
+      },
+      "opsiyonel": [
+        "yaptırım"
+      ],
+      "kural": "zorunluKılar: [Adım|Kapı|Politika] kenarı — bağsız Mevzuat = öksüz (F-7 kilidi 2026-07-02)"
+    },
+    "Hatırlatıcı": {
+      "zorunlu": [
+        "kod",
+        "durum",
+        "çapa",
+        "ne"
+      ],
+      "kosullu": [
+        {
+          "alan": "çapa",
+          "deger": "adım",
+          "gerekli": [
+            "hatırlat"
+          ]
+        },
+        {
+          "alan": "durum",
+          "deger": "kararlaştı",
+          "gerekli": [
+            "hatırlat"
+          ]
+        },
+        {
+          "alan": "çapa",
+          "deger": "mimari",
+          "gerekli": [
+            "dönüşTetikleyici"
+          ]
+        },
+        {
+          "alan": "çapa",
+          "deger": "yasa",
+          "gerekli": [
+            "dönüşTetikleyici"
+          ]
+        },
+        {
+          "alan": "çapa",
+          "deger": "nitelik",
+          "gerekli": [
+            "dönüşTetikleyici"
+          ]
+        },
+        {
+          "alan": "çapa",
+          "deger": "gelecek",
+          "gerekli": [
+            "dönüşTetikleyici"
+          ]
+        }
+      ],
+      "enum": {
+        "durum": [
+          "açık",
+          "kararlaştı",
+          "tamamlandı",
+          "gereksiz"
+        ],
+        "çapa": [
+          "mimari",
+          "adım",
+          "yasa",
+          "nitelik",
+          "gelecek"
+        ],
+        "öncelik": [
+          "p0",
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "opsiyonel": [
+        "öncelik",
+        "tarih",
+        "dönüşTetikleyici"
+      ],
+      "kural": "Çapası adım olan hatırlatıcıda `hatırlat:` KOD'u zorunludur; hedef Adım aktifleştiğinde hatırlatıcı onun konisiyle birlikte gelir ve hatırlatıcı açıkken hedefi kapatmak kaçırılmış-hatırlatıcı sayılır. Çapası adım dışında olanda (mimari · yasa · nitelik · gelecek) `dönüşTetikleyici:` zorunludur, çünkü hatırlatıcının hangi olayla canlanacağı yazılmalıdır. Çapa önem sırası şudur: mimari, adımdan belirgin biçimde önce gelir; adım yasa ve nitelikten, onlar da gelecekten önce gelir. Bu sıra öncelik alanından ayrıdır. Tamamlanan kayıt yerinde kalır, gereksiz olan silinir. Yaşam döngüsü açık, kararlaştı ve tamamlandı ya da gereksiz olarak ilerler; kararlaştı, işin zincire girdiği andır ve o anda `hatırlat:` Adım KOD'u zorunlu olur. Bunun üç meşru yolu vardır: hatırlatıcı mevcut bir Adıma eklenir, araya yeni bir Adım açılır ya da hedef zaten tamamlanmışsa kod aynı anda güncellenir.",
+      "tür": {
+        "tarih": "tarih"
+      },
+      "koken": [
+        "F-8",
+        "TIP-1.12",
+        "ORK-2.1",
+        "YAS-2.2",
+        "OGR-4",
+        "YUZ-3",
+        "YUZ-3.1",
+        "YUZ-4.1"
+      ]
+    },
+    "Değerlendirme": {
+      "zorunlu": [
+        "kod",
+        "hedef",
+        "boyutlar",
+        "eşikler",
+        "ne"
+      ],
+      "enum": {
+        "hedef": [
+          "etmen-çıktısı",
+          "meyve",
+          "adım"
+        ]
+      },
+      "opsiyonel": [
+        "tarih"
+      ],
+      "tür": {
+        "tarih": "tarih"
+      },
+      "kural": "puanlayan = denetçi-etmen (izole bellek); karar-motoru GRAFI okur (F-10 kilidi 2026-07-02). Opsiyonel `tarih:` alanı değerlendirmenin hangi gün yapıldığını söyler; puan zamanla bayatladığı için ölçümün günü ölçümün kendisi kadar bilgi taşır."
+    },
+    "Sözleşme": {
+      "zorunlu": [
+        "kod",
+        "sürüm",
+        "ne"
+      ],
+      "enAzBiri": [
+        [
+          "alanlar"
+        ],
+        [
+          "istek"
+        ],
+        [
+          "yanıt"
+        ]
+      ],
+      "kural": "en az bir yüz zorunlu (uç: istek/yanıt · veri: alanlar); alan tarifi KOMPAKT harita — 'tür · kural · kural' (F-6 kilidi 2026-07-02)"
+    },
+    "Karar": {
+      "zorunlu": [
+        "kod",
+        "karar",
+        "gerekçe",
+        "durum",
+        "ne"
+      ],
+      "enum": {
+        "durum": [
+          "kilitli",
+          "bekliyor",
+          "revize",
+          "tarihçe"
+        ],
+        "uygulama": [
+          "gerekli",
+          "kendinden-tam",
+          "ertelendi"
+        ]
+      },
+      "kural": "Bir Karar kararın kendisini, gerekçesini ve durumunu taşır; GEREKÇESİZ KARAR GEÇERSİZDİR. YÜRÜRLÜK MODELİ şöyledir: karar metinleri tarihçedir ve dokunulmaz; eskiyen karar `durum: revize` ile birlikte `halef:` damgası alır, halefi yazılmamış revize uyarı üretir; tek seferlik bitmiş işler `durum: tarihçe` alır. Belge yüzü yürürlük ve tarihçe olarak iki bölüm hâlinde basılır. ÖZET KATMANI: opsiyonel `özet:` alanı, bağlamı bilmeyen birinin okuyabileceği tek paragraftır; defter yüzü ile ipucu penceresi önce özeti gösterir, ham karar metni ise bayt bayt korunarak tarihçede kalır. UYGULAMA DURUMU: opsiyonel `uygulama:` alanı gerekli, kendinden-tam ya da ertelendi değerlerinden biriyle dürüstçe beyan edilir; uygulaması gerekli, kilitli ve hiçbir plana bağlanmamış karar uygulanmamış-karar uyarısı alır, çünkü bağ `dayanak`, `uygular` ve `referans` kenarlarından ters yönde aranır. Erteleme gerekçesi `ertelemeGerekçesi` alanında yaşar.",
+      "opsiyonel": [
+        "halef",
+        "özet",
+        "uygulama",
+        "ertelemeGerekçesi",
+        "sıra"
+      ],
+      "tür": {
+        "halef": "kod",
+        "özet": "metin",
+        "ertelemeGerekçesi": "metin",
+        "sıra": "sayı"
+      },
+      "koken": [
+        "HZL-B01",
+        "NTK-A09",
+        "DIL-1.1",
+        "OGR-2.1",
+        "YAS-2.1",
+        "YAS-4.2",
+        "STR-2.1",
+        "ORK-1.2",
+        "ORK-3",
+        "ORK-3.1"
+      ]
+    },
+    "Formül": {
+      "zorunlu": [
+        "kod",
+        "tez",
+        "kaynak",
+        "ne"
+      ],
+      "kural": "tez + kaynak — besler/--> kenarı GÜÇLÜ TAVSİYE (bağsız formül = öksüz; ilk formül kaydının öksüz kalışından çıkan ders)"
+    },
+    "Fikir": {
+      "zorunlu": [
+        "kod",
+        "ne",
+        "durum",
+        "dönüşTetikleyici"
+      ],
+      "kural": "ne + durum: park + dönüşTetikleyici — taahhüt YOK (Hatırlatıcı'nın söz-verilmemiş kardeşi)"
+    },
+    "Çıkarım": {
+      "zorunlu": [
+        "kod",
+        "ne",
+        "kaynak"
+      ],
+      "opsiyonel": [
+        "tarih",
+        "kanıt",
+        "sıra"
+      ],
+      "tür": {
+        "tarih": "tarih",
+        "kanıt": "metin|liste",
+        "sıra": "sayı"
+      },
+      "kural": "ne + kaynak — --> uygulama kenarı GÜÇLÜ TAVSİYEDİR. Zorunluluk iddiası 2026-08-10 tarihinde geri çekilmiştir, çünkü dayanak gösterilen F-12 hiçbir kaynakta tanımlı değildi, motor kenarı hiç zorlamıyordu ve doksan sekiz canlı Çıkarımın altmış ikisi kenarsız yaşıyordu; kırk yerde çiğnenen bir kuralı canlı ilan etmek yeşil kapıya yalan söyletir. Tavsiyenin gerekçesi ağaç metaforudur: damıtılan içgörü uygulandığı dala akmalıdır, akmayan yaprak yerde kalır. Çıkarım dış bir kaynaktan damıtıldığı için iki opsiyonel alan taşır: `tarih:` çıkarımın hangi gün damıtıldığını, `kanıt:` çıkarımı doğrulayan somut dayanağı söyler. İkisi de zorunlu değildir, çünkü her çıkarım tarihlenebilir ya da tek bir kanıta indirgenebilir olmayabilir."
+    },
+    "Felsefe": {
+      "zorunlu": [
+        "kod",
+        "ne",
+        "tez"
+      ],
+      "kural": "ne + tez — TEZSİZ FELSEFE LAFTIR; bir görüşü gerekçesiyle savunur, belge bloğunda anlatır"
+    },
+    "Yetenek": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Kural": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "enum": {
+        "otorite": [
+          "anayasa",
+          "politika",
+          "tercih"
+        ],
+        "katman": [
+          "yapısal",
+          "eşik",
+          "niyet"
+        ]
+      },
+      "kural": "kapsam: alanı SERBEST bir seçicidir ve sabit bir değer listesiyle sayılamaz: joker `genel` (eş anlamlısı `tümü`), bir aile adı, bir tip adı ya da tek bir KOD yazılabilir. Çözülemeyen seçici bilinmeyen-kapsam uyarısı alır; yapısal koşullu bir kuralda hiçbir düğüme denk gelmeyen seçici ise boş-kapsam uyarısı alır.",
+      "opsiyonel": [
+        "tanı (liste — bu kuralı zorlayan motor tanı kodları; iddia-doğrulama bekçisi her kodu tanı sicilinde arar, bu yüzden sahte 'MOTORDA' iddiası yazılamaz)",
+        "dayanak (kenar: tek KOD ya da liste — kuralın doğduğu Karar kaydı ya da kayıtları; dayanağı olmayan Kural bilgi tanısı alır)"
+      ],
+      "koken": [
+        "YAS-2.3",
+        "BKM-BUG-A01"
+      ]
+    },
+    "Tema": {
+      "zorunlu": [
+        "ne"
+      ],
+      "enAzBiri": [
+        [
+          "renkler"
+        ],
+        [
+          "tipografi"
+        ],
+        [
+          "boşluk"
+        ],
+        [
+          "yuvarlaklık"
+        ]
+      ],
+      "opsiyonel": [
+        "kod (tema kenarının hedefi olacaksa şart — Ekran( tema: TEM-… ))",
+        "renkler (ROL listesi ya da harita — roller: birincil · ikincil · vurgu · hata · yüzey · arkaplan · nötr)",
+        "tipografi (ROL listesi — başlık1 · başlık2 · başlık3 · başlık4 · gövde · etiket)",
+        "boşluk (ölçek — xs · sm · md · lg · xl)",
+        "yuvarlaklık (ölçek — sm · md · lg)",
+        "dosya (üretim-yeri: değerlerin yaşadığı teknoloji dosyası — örneğin ThemeData ya da :root bloğu)"
+      ],
+      "kural": "Token-ROL sözleşmesi: .sar yalnız AD/ROL taşır — DEĞER (hex/px) .sar'a YAZILMAZ, teknoloji dosyasında (ThemeData/:root) yaşar ve yeri `dosya:` üretim-yeri beyanından okunur. Harita+hex yazımı (eski biçim) geçersiz-renk ve düşük-kontrast bekçilerinden geçer; rol-listesi yazımı önerilendir."
+    },
+    "Tetikleyici": {
+      "zorunlu": [
+        "kod",
+        "koşul",
+        "ne"
+      ]
+    },
+    "Kanca": {
+      "zorunlu": [
+        "kod",
+        "evre",
+        "ne"
+      ],
+      "enum": {
+        "evre": [
+          "önce",
+          "sonra",
+          "hata"
+        ]
+      }
+    },
+    "Blok": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "mevsim",
+        "planlanmamış"
+      ],
+      "kural": "mevsim: alanı, Blok'un yürürlükteki Faz'a kendi dosyasından kurduğu bağdır ve tek bir KOD taşır; yükleme çevrimi bu bağı sanal bir çağır kenarına normalize eder. Bir bağ tek yerde yazılır: aynı bağ hem burada hem de Faz'ın çağır listesinde yazılırsa çift-mevsim-kaydı uyarısı doğar. planlanmamış: alanı, tarih taahhüdü verilmemiş işin dürüst beyanıdır; değeri NEDEN metnidir ve boş yazılamaz, çünkü boş beyan beyan sayılmaz ve fazsız-blok bulgusu sürer.",
+      "bolumZorunlu": [
+        "Amaç",
+        "Kapsam",
+        "Sonuç"
+      ],
+      "koken": [
+        "DIL-2",
+        "TIP-2",
+        "OGR-1.4"
+      ]
+    },
+    "ÇalışmaAlanı": {
+      "zorunlu": [
+        "kod"
+      ],
+      "bolumZorunlu": [
+        "Amaç",
+        "Kapsam",
+        "Sonuç"
+      ]
+    },
+    "Uygulama": {
+      "zorunlu": [
+        "kod"
+      ],
+      "bolumZorunlu": [
+        "Amaç",
+        "Kapsam",
+        "Sonuç"
+      ]
+    },
+    "Proje": {
+      "zorunlu": [
+        "kod"
+      ],
+      "bolumZorunlu": [
+        "Amaç",
+        "Kapsam",
+        "Sonuç"
+      ],
+      "enum": {
+        "rejim": [
+          "katı",
+          "esnek"
+        ]
+      },
+      "beyanZorunlu": {
+        "rejim": {
+          "dayanak": "YAS-1",
+          "tanı": "rejim-beyanı-eksik",
+          "düzey": "hata",
+          "not": "Her Proje `rejim` alanını tam bir kez ve yalnız katı ya da esnek değeriyle beyan eder; CUE yıldızı bilinçli olarak konmadı, çünkü YAS-1 sessiz varsayılanı yasaklar. Motor zorlaması motor turunun tanı borcundadır; mevcut Proje bildirimlerinin beyana geçirilmesi proje-kod turunun göç kapsamıdır"
+        }
+      },
+      "kural": "Rejim sözleşmesi (YAS-1 ailesi): katı rejimde her Katman→Adım sarma yolu en az bir AltKatman'dan geçer ve Katman'ın doğrudan Adım taşıması yasaktır (YAS-1.1 · zorlama tanısı katı-rejim-altkatman-eksik motor borcunda); yalnız esnek beyanlı küçük veya deneysel Projelerde Katman doğrudan Adım taşıyabilir ve bu izin AltKatman'ı yasaklamaz (YAS-1.2); rejim yalnız açık kullanıcı değişikliğiyle geçer, yapı otomatik sarılmaz, taşınmaz veya silinmez ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır (YAS-1.3)"
+    },
+    "Orkestrasyon": {
+      "zorunlu": [
+        "kod"
+      ],
+      "bolumZorunlu": [
+        "Amaç",
+        "Kapsam",
+        "Sonuç"
+      ]
+    },
+    "Faz": {
+      "zorunlu": [
+        "kod",
+        "ad"
+      ],
+      "opsiyonel": [
+        "hedefTarih"
+      ],
+      "tür": {
+        "hedefTarih": "tarih"
+      },
+      "kural": "Faz ZAMAN eksenidir; `hedefTarih` alanı fazın takvimini ISO biçiminde taşır. İçine Blok konan Faz tarih ister, tarihsiz kalırsa bulgu alır; geciken ve yaklaşan vadeleri motor nöbeti ölçer.",
+      "koken": [
+        "MIM-1",
+        "MIM-1.2",
+        "MIM-1.3",
+        "MIM-1.4"
+      ]
+    },
+    "Katman": {
+      "zorunlu": [
+        "kod",
+        "ad"
+      ],
+      "opsiyonel": [
+        "teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"
+      ],
+      "tür": {
+        "teknolojiBağımsız": "metin"
+      },
+      "kural": "Teknoloji tekilliği (MIM-1.4): her Katman tam olarak bir somut Teknolojiye `kullanır` bağıyla bağlanır; teknolojisiz ya da birden çok teknolojiye bağlı Katman kurulamaz, böyle gereksinim ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
+    },
+    "Adım": {
+      "zorunlu": [
+        "kod"
+      ],
+      "birindenBiri": [
+        [
+          "ne",
+          "ad"
+        ]
+      ],
+      "enum": {
+        "durum": [
+          "*beklemede",
+          "geliştirmede",
+          "tamamlandı",
+          "doğrulanmamış",
+          "bloklu"
+        ],
+        "öncelik": [
+          "p0",
+          "p1",
+          "p2",
+          "p3"
+        ],
+        "onayBekler": [
+          "founder"
+        ]
+      },
+      "opsiyonel": [
+        "öncelik",
+        "görev",
+        "kabul",
+        "sınır",
+        "dokunulmaz",
+        "referans",
+        "teşekkür",
+        "takdir",
+        "onur",
+        "öneri",
+        "koşu",
+        "rapor",
+        "yama",
+        "onay",
+        "onayBekler",
+        "etkiler (kenar: bu işin dokunduğu öğretim yüzleri — kanonik kaynağı değiştiren iş, öğretim yüzünü aynı turda işler)"
+      ],
+      "tür": {
+        "görev": "metin|liste",
+        "kabul": "liste",
+        "sınır": "metin|liste",
+        "dokunulmaz": "liste",
+        "referans": "liste",
+        "rapor": "metin|liste",
+        "yama": "metin|liste",
+        "onay": "metin|liste"
+      },
+      "kural": "Geribildirim kanalları (🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri) tamamlanmış bir Adıma yalnız Founder tarafından yazılır. Koni alanları (görev · kabul · sınır · dokunulmaz · referans) şemada OPSİYONELDİR; bunların ne zaman zorunlu olduğuna konisiz-adım bekçisi karar verir, böylece aynı kural için iki ayrı kapı açılmaz. ONAYBEKLER ALANI kapıyı MEKANİK beyan eder: Adım `onayBekler: founder` taşıyorsa kapanışı Founder onayına bağlıdır ve onay panelinin kuyruğu bu Adımı düz metin tahmini olmadan görür; kabul metnindeki onay cümlesi deseni yalnız geçiş dönemi yedeğidir, çünkü düz metinden kapı çıkarmak bir sonraki farklı cümlede yine kaçırır. ONAY ALANI Founder'ın kendi hükmüdür ve ONAYLAR panelinden yazılır; kapı kararı Adımın üstünde, kayıt sahibinin altında yaşar. Founder yokken kontrolcünün kendi başına aldığı hüküm ise Adımın ALANI DEĞİLDİR: o hüküm ayrı bir `Karar` düğümü olarak yazılır ve Adıma `referans:` kenarıyla bağlanır, çünkü kararın kendi kimliği, kendi gerekçesi ve kendi yürürlük durumu vardır. Aynı adı iki ayrı tipte iki ayrı anlamla kullanmak okuyanı yanıltır.",
+      "koken": [
+        "STR-4",
+        "OGR-4",
+        "BKM-SNV2-A04"
+      ]
+    },
+    "Kapı": {
+      "zorunlu": [
+        "kod",
+        "kabul"
+      ]
+    },
+    "Gereksinim": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "kim (gereksinimi dile getiren tarafın sesi — Gereksinim tipinin kanonik şekli deponun kendi tarifinde 'kullanıcının sesi: kim + ne' olarak yazılıdır; bu alan işi yürütecek sorumluyu gösteren sahip alanı DEĞİLDİR, ihtiyacın sahibini gösterir)"
+      ],
+      "tür": {
+        "kim": "metin"
+      }
+    },
+    "DurumKaydı": {
+      "zorunlu": [
+        "kod",
+        "tarih",
+        "neredeyiz",
+        "sıradaki"
+      ],
+      "opsiyonel": [
+        "oturum",
+        "kilitler",
+        "açıkİşler",
+        "özet"
+      ],
+      "tür": {
+        "tarih": "tarih",
+        "oturum": "sayı",
+        "kilitler": "liste",
+        "açıkİşler": "liste",
+        "özet": "metin"
+      },
+      "kural": "Oturum devri standart bölümlerle kayıpsız aktarılır. Bölümler şunlardır: neredeyiz alanı tek KOD taşıyan bir cümledir; sıradaki alanı öncelik zincirini verir; kilitler alanı oturumlar arasında değişmeyen hükümleri sayar; açıkİşler alanı kapı durumu dahil bekleyen kalemleri tutar; özet alanı ise oturum anlatısını taşıyan gövdedir.",
+      "koken": [
+        "BKM-OLG-A05"
+      ]
+    },
+    "Raf": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "yol (rafın göreli klasör yolu — kardeş Kitaplık tipinde aynı ad aynı anlamla ZORUNLUDUR ve Raf tipinin kendi kanonik tarifi de 'yeri yol: parametresinden gelir' der; ilan edilmemiş fakat kanonun kendi metninde zaten anlatılmış alan kayda geçirildi)"
+      ]
+    },
+    "Kitaplık": {
+      "zorunlu": [
+        "kod",
+        "yol",
+        "ne"
+      ]
+    },
+    "Anayasa": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Yasa": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "GenelKural": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "enum": {
+        "otorite": [
+          "anayasa",
+          "politika",
+          "tercih"
+        ],
+        "katman": [
+          "yapısal",
+          "eşik",
+          "niyet"
+        ]
+      },
+      "opsiyonel": [
+        "kapsam (serbest-seçici — joker genel | aile | tip | KOD)",
+        "koşul (bugünkü ifade dili — yapısal ve eşik katmanında motor değerlendirir)",
+        "ihlal",
+        "düzey (hata|uyarı|bilgi)",
+        "tanı (liste — bu kuralı zorlayan motor tanı kodları; her kod tanı sicilinde doğrulanır)"
+      ],
+      "kural": "GenelKural, kapsam varsayılanı `genel` olan Kural'dır ve çalışma alanının TAMAMINA hükmeder. Ayrı bir değerlendirici yoktur: kural motoru onu diğer kurallarla aynı yerde değerlendirir.",
+      "koken": [
+        "RF-T6-A04",
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    "ÖzelKural": {
+      "zorunlu": [
+        "kod",
+        "ne",
+        "hedef"
+      ],
+      "enum": {
+        "otorite": [
+          "anayasa",
+          "politika",
+          "tercih"
+        ],
+        "katman": [
+          "yapısal",
+          "eşik",
+          "niyet"
+        ]
+      },
+      "opsiyonel": [
+        "kapsam (serbest-seçici — joker genel | aile | tip | KOD)",
+        "koşul (bugünkü ifade dili — yapısal ve eşik katmanında motor değerlendirir)",
+        "ihlal",
+        "düzey (hata|uyarı|bilgi)",
+        "tanı (liste — bu kuralı zorlayan motor tanı kodları; her kod tanı sicilinde doğrulanır)"
+      ],
+      "kural": "ÖzelKural, `hedef:` alanında yazılı dizine inen Kural'dır; tipi diğerinden ayıran şey kapsamıdır. Hedefin dışındaki dosyalarda yapısal ve eşik değerlendirmesi atlanır. Ayrı bir değerlendirici yoktur: kural motoru aynıdır.",
+      "koken": [
+        "RF-T6-A04",
+        "DIL-3",
+        "YAS-2.3"
+      ]
+    },
+    "Sözlük": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "terimler (alanın ortak terimlerini ad→tanım haritasıyla toplar; Sözlük formatının kendi kaynak metni terimlerin gövde haritasında yaşadığını söyler)"
+      ],
+      "tür": {
+        "terimler": "harita"
+      }
+    },
+    "Deney": {
+      "zorunlu": [
+        "kod",
+        "hipotez"
+      ],
+      "opsiyonel": [
+        "ölçüm (hipotezin sınanmasında elde edilen gözlem; Deney formatının kendi kaynak metninde süreç ilerledikçe dolduğu yazılıdır)",
+        "çıkarım (ölçümden damıtılan sonuç; Deney formatının kendi kaynak metninde ölçümden sonra gelen zincir halkasıdır)"
+      ],
+      "tür": {
+        "ölçüm": "metin",
+        "çıkarım": "metin"
+      }
+    },
+    "Şablon": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "kalıp (Adım bağlamının döküldüğü istem kalıbı; Şablon formatının kendi kaynak metninde böyle tanımlanır)",
+        "çıktı (şablon sonucunun uyması gereken Sözleşme kodu; şablon kataloğunun kendi kaynak metni çıktıyı şemaya bağlar)",
+        "doldurur (şablon girdilerini yerleştiren taraf; şablon kataloğunun kendi kaynak metninde orkestratör olarak beyan edilir)",
+        "girdiler (şablon gövdesine taşınan bağlam adları; şablon kataloğunun kendi kaynak metninde liste olarak beyan edilir)",
+        "gövde (ajana verilecek istem satırları; şablon kataloğunun kendi kaynak metninde liste olarak yaşar)"
+      ],
+      "tür": {
+        "kalıp": "metin",
+        "çıktı": "kod",
+        "doldurur": "metin|kod",
+        "girdiler": "liste",
+        "gövde": "liste"
+      }
+    },
+    "İşAkışı": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Teknoloji": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "ayakizi"
+      ],
+      "tür": {
+        "ayakizi": "liste"
+      },
+      "kural": "ayakizi: alanı, teknolojinin diskte bıraktığı bilinen yapılandırma, iskelet ve üretilmiş dosya izlerini liste hâlinde tutar. Denetçi bu yolları İLAN EDİLMİŞ omurga-dışı sayar ve yolları ilanın yaşadığı dizine GÖRELİ çözer. Bu, sebebi yazılmış bir beyaz listedir, kör susturma değildir. Diskte iz bırakan komut satırı araçları (pnpm · wrangler) Teknoloji değil Araç olarak modellenir.",
+      "koken": [
+        "MIM-1.4",
+        "MIM-3",
+        "ORK-2.4"
+      ]
+    },
+    "Takım": {
+      "zorunlu": [
+        "kod",
+        "ne",
+        "bağımlı"
+      ],
+      "opsiyonel": [
+        "ayakizi"
+      ],
+      "tür": {
+        "ayakizi": "liste"
+      },
+      "kural": "kod + ne + bağımlı (üyeler) — ÜYESİZ TAKIM GEÇERSİZ; her üye çözülen bir Teknoloji/Takım KOD'u (drift-denetli)"
+    },
+    "MCP": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "ayakizi"
+      ],
+      "tür": {
+        "ayakizi": "liste"
+      }
+    },
+    "Araç": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "ayakizi",
+        "komut (aracın çalıştırdığı yerel komut; Araç formatının kendi kaynak metninde yerel komut olarak tanımlanır)"
+      ],
+      "tür": {
+        "ayakizi": "liste",
+        "komut": "metin"
+      }
+    },
+    "Model": {
+      "zorunlu": [
+        "kod",
+        "kimlik",
+        "ne"
+      ],
+      "enum": {
+        "kademe": [
+          "usta",
+          "ağır",
+          "işçi",
+          "hızlı"
+        ]
+      },
+      "opsiyonel": [
+        "ayakizi"
+      ],
+      "tür": {
+        "ayakizi": "liste"
+      }
+    },
+    "Ortam": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "ayakizi"
+      ],
+      "tür": {
+        "ayakizi": "liste"
+      }
+    },
+    "Ekran": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar",
+        "dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)",
+        "tema (tasarım-sistemi bağı: Tema KOD'u — temasız-ekran bekçisi bunu arar)"
+      ]
+    },
+    "Sayfa": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Bileşen": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Sütun": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Satır": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Yığın": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Kapsayıcı": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Kart": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Liste": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Metin": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar",
+        "stil (tipografi ROLÜ: başlık1..4 · gövde · etiket — ölçüsüz-metin bekçisi bunu arar; DEĞER değil AD)"
+      ]
+    },
+    "Düğme": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar",
+        "eylem (düğmenin teknoloji-bağımsız metin eylemi; düğme eylem sözleşmesi bu alanı çağırır/gider/gönderir kenarlarının metin kardeşi olarak zaten sayar)"
+      ]
+    },
+    "Görsel": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "İkon": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "ÜstÇubuk": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Gövde": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Form": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "MetinAlanı": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "OnayKutusu": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "AçılırListe": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "AnlıkBildirim": {
+      "zorunlu": [
+        "kod"
+      ],
+      "opsiyonel": [
+        "ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)",
+        "erişilebilirlik",
+        "veriAnahtarı",
+        "olaylar"
+      ]
+    },
+    "Servis": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)"
+      ]
+    },
+    "Tablo": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)"
+      ]
+    },
+    "KimlikPolitikası": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)"
+      ]
+    },
+    "KimlikKökü": {
+      "zorunlu": [
+        "kod"
+      ],
+      "kural": "Kimlik alanı sınırı (MIM-1.1 · ORK-5): tam olarak bir KimlikPolitikası kapsar ve sıfırdan çok KimlikSağlayıcısı sarar; ortak Auth kullanan Projeler bu kökü `kullanır` kenarıyla gösterir ve Proje kimlikleri birleşmez. Köksüz sağlayıcı ve kök dışı politika ihlaldir; motor zorlaması `auth-omurgası-ihlali` tanısıyla motor turunun borcundadır"
+    },
+    "KimlikSağlayıcısı": {
+      "zorunlu": [
+        "kod",
+        "tür"
+      ],
+      "enum": {
+        "tür": [
+          "google",
+          "github",
+          "linkedin",
+          "apple",
+          "microsoft",
+          "sso"
+        ]
+      },
+      "kural": "Taban sağlayıcı kataloğu kapalıdır (ORK-5.1): google · github · linkedin · apple · microsoft · sso eksiksiz korunur; yeni sağlayıcı yalnız ÇalışmaAlanı örtüsünün katkılı enum genişletmesiyle eklenir, taban seçenek silinemez veya yeniden adlandırılamaz. Sağlayıcı yalnız bir KimlikKökü altında yaşar"
+    },
+    "Meyve": {
+      "zorunlu": [
+        "kod",
+        "tür"
+      ],
+      "enum": {
+        "tür": [
+          "Kod",
+          "Ekran",
+          "Uç",
+          "Sözleşme",
+          "Karar",
+          "Onay",
+          "dış-çıktı"
+        ]
+      },
+      "dosyaZorunluTürler": [
+        "Kod",
+        "Ekran",
+        "Uç",
+        "Sözleşme"
+      ],
+      "dosyaMuafTürler": [
+        "Karar",
+        "Onay",
+        "dış-çıktı"
+      ],
+      "opsiyonel": [
+        "dosya (MIM-2.1: dosya-zorunlu türlerde proje kökü içinde çözülen somut yol — boş, proje dışı veya diskte karşılıksız yol teslim sayılmaz)",
+        "ne"
+      ],
+      "kural": "Meyve tam olarak bir Adımın `üretir` bağıyla doğar (MIM-2); Kod, Ekran, Uç ve Sözleşme türleri proje-içi `dosya` beyan eder (MIM-2.1), Karar, Onay ve dış-çıktı türleri kanonik muafiyet kataloğundadır (MIM-2.2) ve katalog dışı serbest muafiyet üretilemez. Üreticisiz Meyve zorlaması `üretimsiz-meyve` tanısıyla motor turunun borcundadır"
+    },
+    "Kuyruk": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "ArkaGörev": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Zamanlayıcı": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Olay": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Önbellek": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Gizli": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Uç": {
+      "zorunlu": [
+        "kod",
+        "yol",
+        "sözleşme"
+      ],
+      "opsiyonel": [
+        "metod (yazılmazsa GET kabul edilir)",
+        "dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)"
+      ],
+      "kural": "Veri şeması ASLA Uç'ta yaşamaz, Sözleşme'de yaşar; Kimlik ve Gizli bayrakları da Sözleşme düzeyinde beyan edilir.",
+      "enum": {
+        "metod": [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
+        ]
+      },
+      "koken": [
+        "DIL-2",
+        "DIL-3",
+        "TIP-2"
+      ]
+    },
+    "Canlandırma": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Durum": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Kod": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dosya (MIM-2.1: beyan edilmişse proje kökü içinde çözülen somut ve tekil yol — boş, proje dışına taşan veya diskte karşılıksız yol meyve-dosyası-eksik tanısıyla raporlanır)"
+      ],
+      "kural": "Kod düğümü ürün ailesinin somut kaynak-kod meyvesidir; `dosya` beyan ettiğinde yol, Meyve'nin MIM-2.1 disk doğrulamasının aynısından geçer. Beyansız Kod düğümü bu doğrulamadan muaftır, çünkü alanı zorunlu kılmak MIM-2.1'in kapsamını genişleten yeni bir kanon hükmü ister ve kanon hükmü Founder kapısıdır"
+    },
+    "Ayar": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Altyapı": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Veri": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Göç": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Görev": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "gerçekleştirir",
+        "atanan",
+        "beceriKonisi",
+        "durum"
+      ]
+    },
+    "Koşum": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "enum": {
+        "mühür": [
+          "COMPLETED",
+          "VERIFIED",
+          "BLOCKED"
+        ],
+        "karar": [
+          "kabul",
+          "revizyon",
+          "red",
+          "kurtarma",
+          "eskalasyon"
+        ]
+      },
+      "opsiyonel": [
+        "mühür",
+        "karar",
+        "kanıt",
+        "iterasyon",
+        "tarih",
+        "model"
+      ],
+      "kural": "Adım'ın son ŞEF koşusu plana `koşu: Koşum(...)` biçiminde geri yazılır. Bu kayıt serbest bir harita değildir, şemaya karşı doğrulanır; mühür ve karar değerleri ŞEF'in durak özetiyle birebir aynıdır.",
+      "koken": [
+        "STR-4",
+        "YAS-4.2"
+      ]
+    },
+    "İz": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Komut": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Git": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Sorun": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Sınama": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Metrik": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Log": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Güvenlik": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Kapsama": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ]
+    },
+    "Sınıflama": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "kural": "singleton — SNF-0 tek örnektir; sürüm kayit.json'da yaşar (düğümde tekrarı çift-kayıt olur), ikizi kayit.md"
+    },
+    "Döngü": {
+      "zorunlu": [
+        "kod",
+        "tetik",
+        "koşar"
+      ],
+      "enAzBiri": [
+        [
+          "durunca"
+        ],
+        [
+          "turLimiti"
+        ]
+      ],
+      "enum": {
+        "tetik": [
+          "koşul",
+          "el",
+          "olay",
+          "zaman"
+        ]
+      },
+      "tür": {
+        "turLimiti": "sayı"
+      },
+      "opsiyonel": [
+        "durunca",
+        "turLimiti",
+        "ne",
+        "ad",
+        "sınır"
+      ],
+      "kural": "Çıkış koşulu ŞEMADA zorunludur: `durunca` ve `turLimiti` alanlarının en az biri yazılmadan Döngü kurulamaz, böylece kendini durduramayan döngü daha dilin kapısında reddedilir. Koşum kaydı `.sarmal/trace` altında tutulur.",
+      "koken": [
+        "TIP-1.4",
+        "ORK-3.3"
+      ]
+    },
+    "Mockup": {
+      "zorunlu": [
+        "kod",
+        "ne"
+      ],
+      "opsiyonel": [
+        "dosya (mockup'ın yaşadığı yer — HTML yolu / Figma bağlantısı; AS-IS gerçek)",
+        "kaynak (Figma · Stitch · HTML · görsel)"
+      ],
+      "kural": "Mockup-referans kipi: mockup ÖZETLENMEZ — .sar yalnız referansı taşır (Adım/Ekran `referans: [ MOK-… ]`); detay mockup dosyasının KENDİSİNDE yaşar, çünkü kayıplı özet niyeti kaçırır ve özetin var olması doğru olduğunu göstermez."
+    },
+    "AltKatman": {
+      "zorunlu": [
+        "kod",
+        "ad"
+      ],
+      "kural": "Kanonik departman alan adı `departman:`dır (MIM-1.5); `rol:` adı RBAC ve ajan rolüne rezervedir ve AltKatman'da kullanılmaz — eski yazımdan sessiz dönüşüm yapılmaz, geçiş görünür raporla yürür. Teknoloji bağı KÖK Katman'da beyan edilir ve AltKatman miras alır (katmansız-teknoloji bekçisi AltKatman'a bakmaz); AltKatman{AltKatman} derin-dal bilgi tanısı alır (derinlik freni — ceza değil soru)",
+      "enum": {
+        "departman": [
+          "planlama",
+          "kodlama",
+          "sınama",
+          "inceleme",
+          "güvenlik"
+        ]
+      },
+      "beyanZorunlu": {
+        "departman": {
+          "dayanak": "MIM-1.5 · YAS-1.1",
+          "not": "Her AltKatman çekirdek beşliden tam olarak bir departmanı `departman:` alanıyla taşır; taban küme yerinde değiştirilemez ve genişletme yalnız ÇalışmaAlanı örtüsünün katkılı enum birleşimiyle olur (TIP-2.5). Eksiklik zorlamasının tanı seçimi motor turunun tanı envanteri işidir; mevcut AltKatman bildirimlerinin beyana geçirilmesi proje-kod turunun göç kapsamıdır ve otomatik departman seçimi yasaktır"
+        }
+      }
+    }
+  },
+  "formatKanonu": {
+    "not": "Her tipin formatı 5 sorunun cevabıdır — F8 format kanonları (Founder 2026-07-06). Dalga dalga doldurulur; 1. dalga: plan+oz+yasa.",
+    "sorular": {
+      "imza": "zorunlu + opsiyonel parametreler (fonksiyonun parametreleri)",
+      "gövde": "izinli çocuk tipleri (fonksiyonun gövdesi — izinliSarma)",
+      "anlatı": "belge bloğunda bölüm başlığı zorunlu mudur (bolumZorunlu)",
+      "ev": "hangi raf + dosya deseni (klasör yapısı ilanın aynasıdır)",
+      "kenar": "zorunlu bağlar (çağrı sözleşmesi — öksüz düğüm yasak)"
+    },
+    "semaSurumu": "1.0",
+    "zorunlulukKatmanlari": [
+      "zorunlu",
+      "varsayılanVar",
+      "çıkarımlı",
+      "opsiyonel"
+    ],
+    "altinIlke": "Motor bir alanı yokluğunda sentezleyebiliyorsa o alan zorunlu İLAN EDİLEMEZ; çıkarımlı alanlara düşer",
+    "birindenBiriTavani": "en çok VE ile VEYA birleşimi kurulabilir ve derinlik ikiyi aşamaz; bağlama bağlı koşul YASAKTIR",
+    "bekleyenMotorIsleri": [
+      "bağlamZorunlu: MetinAlanı, OnayKutusu ve AçılırListe yalnız Form bağlamında yazılabilir",
+      "tekÇocuk: Kart ile ÜstÇubuk en çok bir doğrudan çocuk taşır",
+      "hiyerarşiDışı: AnlıkBildirim hiçbir görsel ağacın çocuğu olamaz",
+      "dönüştürücü: şemaSürümü uyuşmadığında çalışacak taşıma hattı",
+      "bilinmeyen-alan uyarısı: şemaların opsiyonel listeleri tamamlanınca açılacak; erken açmak yanlış pozitif seli üretir"
+    ],
+    "hafizaKalibi": "Bellek(tür: ders) → neden+nasılUygula+aşama zorunlu (bellekSemasi); ev: etmenin ogrenme/ rafı; terfi: aşama pratik→bellek→karar→yasa (F-3)",
+    "kimlikKarti": "Etmen belge bloğu Amaç, Kapsam ve Sonuç bölümlerinden kurulur; Kapsam bölümü neyin KAPSAM DIŞI olduğunu da cümleyle söyler. İmzası etmen şemasıdır, yani fonksiyon imzası gibi okunur. Motorun bunu zorlaması kadro dolum kampanyasından SONRA açılacaktır.",
+    "tekKaynak": "Bütün şema tek bir 'semalar' evinde toplanır; enum, opsiyonel, kural ve yapisalKurallar alanları da oraya dahildir. Yalnız belge amaçlı duran dokuz ayrı şema bloğu bu eve eritilmiştir. Motor da eklenti de tek bu kaynaktan okur.",
+    "koken": [
+      "DIL-2",
+      "TIP-2",
+      "OGR-1.4",
+      "DIL-3",
+      "EKL-F9-A01",
+      "KRR-MUT-3"
+    ]
+  },
+  "zorunluKenarlar": {
+    "Adım": [
+      {
+        "grup": [
+          "görev",
+          "kabul",
+          "üretir",
+          "bağımlı",
+          "referans",
+          "sınır",
+          "dokunulmaz"
+        ],
+        "tanı": "konisiz-adım",
+        "mesaj": "Bu Adım geliştirmede ama bağlam alanları boş (görev · kabul · üretir …) — işi yapacak kişi ya da ajan, ne üreteceğini bu plandan okuyamaz.",
+        "öneri": "En az bir bağlam alanı ekle: görev (yapılacak iş) · kabul (bitti sayılma ölçütleri) · üretir (üretilen dosya) · bağımlı · referans. Niyeti yazılmamış bir Adımı okuyan, işi tahmin etmek zorunda kalır. Henüz başlamadıysan durum: beklemede bırak — beklemede Adımın iskelet kalması doğaldır.",
+        "ancak": {
+          "alan": "durum",
+          "değerler": [
+            "geliştirmede"
+          ]
+        },
+        "koken": [
+          "TIP-2.3",
+          "YAS-3.4",
+          "MIM-2"
+        ]
+      },
+      {
+        "grup": [
+          "bağımlı"
+        ],
+        "tanı": "bağımlılık-beyansız",
+        "mesaj": "Bu Adım geliştirmede ama neye bağımlı olduğu yazılmamış — bağımlılık bilinmezse iş yanlış sırada koşulabilir.",
+        "öneri": "bağımlı: [KOD] yaz. Bu iş gerçekten hiçbir şeye bağımlı değilse bunu da açıkça söyle: bağımlı: [] — sessiz bırakmak yasaktır, bilinçli bağımsızlık beyan edilir.",
+        "ancak": {
+          "alan": "durum",
+          "değerler": [
+            "geliştirmede"
+          ]
+        },
+        "düzey": "hata",
+        "koken": [
+          "ORK-1.2",
+          "ORK-3",
+          "ORK-3.1"
+        ]
+      },
+      {
+        "grup": [
+          "üretir",
+          "kabul"
+        ],
+        "tanı": "niyet-drift",
+        "mesaj": "Bu Adım tamamlandı olarak işaretli ama ne ürettiği (üretir:) ve neye göre kabul edildiği (kabul:) yazılmamış — plan, gerçekte yapılan işin gerisinde kalmış.",
+        "öneri": "üretir: KOD-… (üretilen dosyanın ilanı) ya da kabul: […] (bitti sayılma ölçütleri) ekle — tamamlanmış iş kanıtsız bırakılamaz (kaydın var olması, doğru olduğunu göstermez).",
+        "ancak": {
+          "alan": "durum",
+          "değerler": [
+            "tamamlandı"
+          ]
+        },
+        "düzey": "uyarı",
+        "koken": [
+          "STR-4",
+          "YAS-4.2"
+        ]
+      },
+      {
+        "grup": [
+          "üretir"
+        ],
+        "tanı": "meyvesiz-geliştirme",
+        "düzey": "bilgi",
+        "mesaj": "Bu Adım geliştirmede ama hangi dosyayı üreteceği (üretir:) yazılmamış — Adım bitince ürettiği kodun izi plandan okunamayacak.",
+        "öneri": "üretir: KOD-… kenarı ekle ve ürünü dosya sonunda bir Kod düğümüyle ilan et — hangi Adımın hangi dosyayı ürettiği plandan izlenir. Bu bir öneridir, işi engellemez.",
+        "ancak": {
+          "alan": "durum",
+          "değerler": [
+            "geliştirmede"
+          ]
+        }
+      },
+      {
+        "grup": [
+          "referans"
+        ],
+        "tanı": "referanssız-geliştirme",
+        "düzey": "bilgi",
+        "mesaj": "Bu Adım geliştirmede ama hangi karara ya da kanıta dayandığı (referans:) yazılmamış — işi yapan, dayanağını plandan bulamaz.",
+        "öneri": "referans: [KOD, …] ekle — dayanak bir karar (K-…), bir çıkarım ya da bir defter kaydı olabilir. Bu bir öneridir, işi engellemez.",
+        "ancak": {
+          "alan": "durum",
+          "değerler": [
+            "geliştirmede"
+          ]
+        }
+      }
+    ],
+    "Düğme": [
+      {
+        "grup": [
+          "çağırır",
+          "gider",
+          "gönderir",
+          "eylem"
+        ],
+        "tanı": "öksüz-düğme",
+        "mesaj": "davranış-kenarı taşımıyor — bu düğme NE YAPIYOR?",
+        "öneri": "çağırır: (bir Uç) · gider: (bir Ekran ya da rota) · gönderir: · eylem: — bunlardan birini bağla; hiçbiri yazılmazsa düğmenin ne yaptığını kodu üreten taraf tahmin etmek zorunda kalır.",
+        "koken": []
+      }
+    ],
+    "Ekran": [
+      {
+        "grup": [
+          "referans",
+          "üretir"
+        ],
+        "tanı": "kavuşumsuz-ekran",
+        "mesaj": "bir plan Adım'ına kavuşmuyor — köken/niyet kopuk.",
+        "öneri": "referans: alanına ekranı üreten Adımı bağla; plan ile yüzey ancak bu kenarla kavuşur.",
+        "koken": [
+          "TIP-2.3",
+          "YAS-3.4",
+          "MIM-2"
+        ]
+      },
+      {
+        "grup": [
+          "tema"
+        ],
+        "tanı": "temasız-ekran",
+        "mesaj": "tema kenarı taşımıyor — bu ekran HANGİ tasarım sistemiyle giyinecek? (tasarım sistemi BİR KEZ ilan edilir, her ekran ona bağlanır)",
+        "öneri": "tema: alanına bir Tema düğümü bağla. Tema rol ADLARINI taşır; renk ve ölçü DEĞERLERİ teknoloji dosyasında yaşar. Bu bulgu şimdilik uyarıdır, hataya terfisi ayrı bir kararla verilecektir.",
+        "düzey": "uyarı",
+        "koken": [
+          "TAS-A01",
+          "TAS-B01"
+        ]
+      }
+    ],
+    "Metin": [
+      {
+        "grup": [
+          "stil",
+          "rol",
+          "ölçek"
+        ],
+        "tanı": "ölçüsüz-metin",
+        "mesaj": "tipografi rolü taşımıyor — bu metin HANGİ ölçekte? (başlık mı gövde mi; çalgıcı tahmin eder = kör drift)",
+        "öneri": "stil: alanına bir tipografi rolü yaz. Roller Tema sözleşmesinden gelir: başlık1 · başlık2 · başlık3 · başlık4 · gövde · etiket. Bu bulgu şimdilik uyarıdır.",
+        "düzey": "uyarı",
+        "koken": [
+          "TAS-B01"
+        ]
+      }
+    ]
+  },
+  "ortakEnum": {
+    "görünürlük": [
+      "açık",
+      "gizli"
+    ],
+    "ebedi": [
+      "evet"
+    ]
+  },
+  "temaRolleri": {
+    "not": "Token-ROL sözleşmesi — AD listesi (öneri paleti; rijit enum DEĞİL: geçersiz-enum basılmaz). Tamamlama stil:/renk-rolü önerilerini buradan okur; DEĞERLER teknoloji temasında yaşar.",
+    "renk": [
+      "birincil",
+      "ikincil",
+      "vurgu",
+      "hata",
+      "yüzey",
+      "arkaplan",
+      "nötr"
+    ],
+    "tipografi": [
+      "başlık1",
+      "başlık2",
+      "başlık3",
+      "başlık4",
+      "gövde",
+      "etiket"
+    ],
+    "boşluk": [
+      "xs",
+      "sm",
+      "md",
+      "lg",
+      "xl"
+    ],
+    "yuvarlaklık": [
+      "sm",
+      "md",
+      "lg"
+    ]
+  },
+  "durumGecisleri": {
+    "not": "DURUM MAKİNESİ (Founder kilidi 2026-07-12): Adım durum geçişleri KANONDA yaşar ve motor buradan okur; yazıcılar geçersiz geçişi yazma anında reddeder, denetim ise gayrimeşru geçişi bulgu olarak bildirir. Üç sınıf vardır: meşru geçiş sessizdir; bilgi sınıfı yazılır ama yanına bilgi notu düşer (geri alma ailesi); yasak geçiş hiç YAZILMAZ, çünkü bloklu iş bitmiş İLAN EDİLEMEZ ve doğrulanmamış iş kanıtsız tamamlandı sayılamaz. Kanıtlı terfi YALNIZ ŞEF geri yazımından gelir: doğrulanmış mühür 'tamamlandı' değerini kendisi yazar. İlk yazım, yani durumsuz bir düğüme ilk değerin verilmesi serbesttir. Çekirdekteki YEDEK_GECISLER tablosu bunun gömülü ikizidir ve nöbet testi ikisinin birebirliğini kilitler.",
+    "meşru": {
+      "beklemede": [
+        "geliştirmede",
+        "tamamlandı",
+        "bloklu",
+        "doğrulanmamış"
+      ],
+      "geliştirmede": [
+        "tamamlandı",
+        "bloklu",
+        "doğrulanmamış"
+      ],
+      "tamamlandı": [
+        "bloklu"
+      ],
+      "bloklu": [
+        "beklemede",
+        "geliştirmede"
+      ],
+      "doğrulanmamış": [
+        "geliştirmede",
+        "bloklu"
+      ]
+    },
+    "bilgi": {
+      "tamamlandı": [
+        "geliştirmede",
+        "beklemede"
+      ],
+      "geliştirmede": [
+        "beklemede"
+      ],
+      "doğrulanmamış": [
+        "beklemede"
+      ]
+    },
+    "yasak": {
+      "bloklu": [
+        "tamamlandı"
+      ],
+      "doğrulanmamış": [
+        "tamamlandı"
+      ]
+    }
+  },
+  "tipMuafiyetleri": {
+    "Sayfa": "dış-proje-yüzey",
+    "Bileşen": "dış-proje-yüzey",
+    "Sütun": "dış-proje-yüzey",
+    "Satır": "dış-proje-yüzey",
+    "Yığın": "dış-proje-yüzey",
+    "Kapsayıcı": "dış-proje-yüzey",
+    "Kart": "dış-proje-yüzey",
+    "Liste": "dış-proje-yüzey",
+    "Görsel": "dış-proje-yüzey",
+    "İkon": "dış-proje-yüzey",
+    "ÜstÇubuk": "dış-proje-yüzey",
+    "Gövde": "dış-proje-yüzey",
+    "OnayKutusu": "dış-proje-yüzey",
+    "AçılırListe": "dış-proje-yüzey",
+    "AnlıkBildirim": "dış-proje-yüzey",
+    "Canlandırma": "dış-proje-yüzey",
+    "KimlikPolitikası": "dış-proje-arkayüz",
+    "KimlikKökü": "dış-proje-arkayüz",
+    "KimlikSağlayıcısı": "dış-proje-arkayüz",
+    "Kuyruk": "dış-proje-arkayüz",
+    "ArkaGörev": "dış-proje-arkayüz",
+    "Zamanlayıcı": "dış-proje-arkayüz",
+    "Olay": "dış-proje-arkayüz",
+    "Önbellek": "dış-proje-arkayüz",
+    "Gizli": "dış-proje-arkayüz",
+    "Formül": "OS-vadeli",
+    "Deney": "OS-vadeli",
+    "Ayar": "OS-vadeli",
+    "Altyapı": "OS-vadeli",
+    "Durum": "OS-vadeli",
+    "ÇalışmaAlanı": "OS-vadeli",
+    "Mevzuat": "OS-vadeli",
+    "ÖzelKural": "aday yok — 2026-07-18 taramasında dizin hedefli hiçbir kural görülmedi; sınıf, ileride yazılacak dizine özel hükümler için açık tutuluyor",
+    "Düğme": "dış-proje-yüzey",
+    "Ekran": "dış-proje-yüzey",
+    "Form": "dış-proje-yüzey",
+    "Metin": "dış-proje-yüzey",
+    "MetinAlanı": "dış-proje-yüzey",
+    "Tema": "dış-proje-yüzey",
+    "Servis": "dış-proje-arkayüz",
+    "Tablo": "dış-proje-arkayüz",
+    "Uç": "dış-proje-arkayüz",
+    "Uygulama": "OS-vadeli",
+    "Kural": "OS-vadeli",
+    "Kapı": "OS-vadeli; ilk canlı kullanıcısı ZKA-A02 Adımının altı kapılı karnesidir ve o Adım koştuğunda bu muafiyet kendiliğinden kalkar.",
+    "GenelKural": "Canlı kullanım 2026-07-18 tarihinde kazanılmıştı; genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kayboldu. Tip motor vatandaşıdır ve kanon yürürlüktedir, kullanıcısı ise arşivdedir.",
+    "Yasa": "Canlı kanon, kanon rafında madde tipinde yaşar ve Yasa düğümü olarak beyan edilmez; üç kovadan hiçbiri bu duruma dürüstçe oturmadığı için gerekçe düz yazıyla beyan edilmektedir."
+  },
+  "emojiYazimi": {
+    "not": "EMOJİ TAKMA ADLARI (Founder onaylı kanon, 2026-07-17): her emoji, karşılık geldiği Türkçe yazımın EŞDEĞER takma adıdır. Belirteçleyici tek yönlü normalleştirir, yani emojiyi kanonik ada çevirir; böylece iki yazım yüzü de aynı grafı üretir. Tek anlam kuralı gereği bir emoji tek bir kavrama bağlıdır. Çekirdekteki eşi src/emoji-yazim.ts dosyasıdır ve eşitliği nöbet testiyle korunur.",
+    "tipler": {
+      "🌀": "Faz",
+      "🪵": "Blok",
+      "🌿": "Katman",
+      "☘️": "AltKatman",
+      "🍃": "Adım",
+      "🔁": "Döngü",
+      "🚪": "Kapı"
+    },
+    "parametreler": {
+      "🆔": "kod",
+      "🏷️": "ad",
+      "❓": "ne",
+      "🛠️": "görev",
+      "✅": "kabul",
+      "🚧": "sınır",
+      "🔗": "bağımlı",
+      "🍎": "üretir",
+      "📖": "referans",
+      "🏃": "koşu",
+      "🚦": "durum",
+      "🔔": "hatırlat",
+      "📞": "çağır",
+      "🧰": "kullanır",
+      "🧭": "uygular",
+      "💪": "sağlar"
+    },
+    "durumlar": {
+      "⏳": "beklemede",
+      "🔨": "geliştirmede",
+      "🏁": "tamamlandı",
+      "⛔": "bloklu"
+    }
+  },
+  "karneSkalasi": {
+    "not": "ETMEN KARNE SKALASI (Founder onaylı kanon, 2026-07-18): etmen başarımının dilden bağımsız derece dilidir ve beş dereceden oluşur. Tek anlam kuralı gereği ⭐ işareti dilin yüzeylerinde YALNIZ derece birimidir; dekoratif kullanım ✳️ işaretine taşınmıştır. Bileşen AĞIRLIKLARI ile dereceye çevrim formülü burada YAŞAMAZ, çünkü bunlar örtü tarafının gizli orkestrasyon politikasıdır. Sicil boşken hiçbir yüzey uydurma derece basamaz.",
+    "birim": "⭐",
+    "dereceler": {
+      "1": "zayıf — sicil belirgin biçimde sorunlu",
+      "2": "gelişmekte — sicilde tekrarlanan aksama var",
+      "3": "yeterli — sicil beklentiyi karşılıyor",
+      "4": "güçlü — sicil beklentinin üstünde",
+      "5": "örnek — sicil kadroya örnek gösterilir"
+    },
+    "bilesenler": {
+      "kabulIsabeti": "kapattığı Adımlarda kabul maddeleri kanıtla karşılandı mı (koşu mühürleri; yeniden-açılan Adım isabeti düşürür)",
+      "denetimTemizligi": "kapanış anındaki denetle hükmü (0 hata beklenir; üretilen drift sicile işlenir)",
+      "sinamaYesilligi": "kapanış commit'indeki süit durumu (kapı kayıtları)",
+      "founderSinyalleri": "Adım'a yazılmış takdir/onur/öneri kayıtları (insan sinyali; sayı değil nitelik olarak okunur)"
+    }
+  }
+}

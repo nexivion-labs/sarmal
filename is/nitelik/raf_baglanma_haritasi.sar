@@ -1,0 +1,478 @@
+// ═══ KÜRASYON NOTU (GOC-A08 onuncu küme · 2026-08-25): bu haritanın öz rafı bölümünde sayılan HTR-VSCODE-1132-ENTEGRASYON düğümü kapalı ürünün orkestrasyon zeminine baktığı için açık depoya girmemiştir;
+//     anılan tekil hatırlatıcı dosyaları da aynı gün birleşik kayıtta eritilmiş olup bugün oz/kayit/hatirlaticilar.sar altında yaşar. Metin o günün ölçümü olarak olduğu gibi bırakılmıştır. ═══
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/raf_baglanma_haritasi.sar — 🗺️ RAF BAĞLANMA HARİTASI (KYN-MTR-A03)
+//
+//   Bu dosya _Sarmal varlığının raflarının birbirine hangi yoğunlukta bağlandığını,
+//   hangi gövdelerin gerçekten öksüz kaldığını ve iki varlık arasında kaçak bir
+//   kenar bulunup bulunmadığını ölçer. Ölçüm 2026-08-09 tarihinde, saat 16.37 ile
+//   17.07 arasında (eşgüdümlü evrensel zaman) yapılmıştır; yayımlanan yapısal sayılar
+//   16.53.55 anına, atıf sayıları 17.00.55 anına ve kapanış denetimi 17.06.29 anına
+//   aittir ve her bölüm kendi anını metninde yineler.
+//
+//   Bu Adımın kökeninde bir hata dersi vardır. Önceki bir turda graf çıktısındaki
+//   yapısal kenar alanı bütün atıflar sanılmış ve bundan yanlış bir sayı
+//   üretilmiştir. Bu yüzden aşağıdaki her sayı hangi araçla, hangi komutla ve
+//   hangi anda ölçüldüğünü kendi cümlesinde söyler; graf ile gezin ölçümleri asla
+//   toplanmaz ve kaynağını söylemeyen hiçbir sayı bu dosyaya girmez.
+//
+//   ÖLÇÜM KENDİ AYAK İZİNİ SAYAR. Bu dosya ölçtüğü grafın dışında duran bir araç
+//   değil, o grafın bir parçasıdır; bu yüzden bütün ölçümler iki kez, dosya ağaçta
+//   dururken ve dosya geçici olarak ağaçtan çıkarılmışken koşturulmuştur. İki
+//   okuma ② numaralı bölümde karşılaştırılmış ve bu dosyanın kendi ayak izi
+//   sayıyla verilmiştir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🗺️ Raf Bağlanma Haritası — _Sarmal (açık araç)
+
+  ## ① Neden iki ayrı ölçüm var ve nasıl yeniden üretilir
+  `graf` aracı bir yönlü çevrimsiz çizge döndürür ve o çizge yalnız iki tür kenarı
+  taşır; bunlar içerme kenarı ile bağımlılık kenarıdır. `gezin` aracı ise bir kodun
+  tanımını ve o koda dokunan bütün konumları döndürür; buna yapısal olmayan metin
+  atıfları, kod yorumları ve `.md` ile `.ts` dosyalarındaki anmalar da girer. Bu iki
+  küme aynı şey değildir ve birbirinin yerine geçmez; bu yüzden aşağıdaki hiçbir
+  tabloda graf sayısı ile gezin sayısı toplanmamıştır.
+
+  Yapısal ölçüm `_Sarmal/cekirdek` dizininde `node src/sarmal.ts graf ..` komutuyla
+  alınmıştır ve bu komut MCP `graf` aracının beslendiği aynı çekirdeği çağırır. Atıf
+  ölçümü ise `cekirdek/src/kimlik.ts` dosyasındaki `dizindenIndeks` işlevi çağrılarak
+  alınmıştır; bu işlev MCP `gezin` aracının altındaki kimlik indeksinin ta kendisidir
+  ve bin beş yüzü aşan düğümü tek tek sormak yerine tek geçişte sorar. Her iki ölçüm
+  de ham aramaya dayanmaz. Ham arama bu haritada yalnız kaynak metinlerinin okunması
+  için, yani sayı üretmek için değil bulguyu gözle doğrulamak için kullanılmıştır ve
+  bu kullanım ⑧ numaralı bölümde tek tek dosya ve satır numarasıyla beyan edilmiştir.
+
+  ## ② Ölçümün kendi ayak izi — A ile B izolasyonu
+  Bu bölüm ölçümün kendisini ölçer. Bütün sayılar iki kez alınmıştır. A okuması bu
+  dosya ağaçta dururken, B okuması ise dosya geçici olarak ağaçtan çıkarılıp ölçüm
+  bittikten sonra bit bit aynı hâlde geri konularak alınmıştır; geri koyma özet
+  karşılaştırmasıyla doğrulanmıştır.
+
+  | ölçülen büyüklük | A okuması (dosya ağaçta) | B okuması (dosya çıkarılmış) | bu dosyanın ayak izi |
+  |---|---|---|---|
+  | graf düğüm sayısı | 1724 | 1716 | 8 düğüm |
+  | tekil yapısal kenar | 1414 | 1406 | 8 kenar |
+  | raflar arası akış sayısı | 6 | 5 | 1 yeni akış |
+  | raflar arası kenar toplamı | 130 | 122 | 8 kenar |
+  | kimlik indeksi dosya sayısı | 410 | 409 | 1 dosya |
+  | tekil kod tanımı | 1518 | 1510 | 8 tanım |
+  | çözülmüş atıf | 9125 | 9064 | 61 atıf |
+  | üç ölçütü karşılayan öksüz | 248 | 281 | 33 düğüm |
+
+  Bu dosyanın koyduğu sekiz kenarın altısı KYN-MTR-A03 Adımına, ikisi ise STR-3
+  kararına gider; nitelik rafından plan rafına giden kenar sayısı kırk yediden elli
+  üçe yükselmiş ve nitelik rafından yasa rafına daha önce hiç bulunmayan iki kenarlık
+  bir akış doğmuştur. Kenar sayısındaki sekizlik fark tam olarak budur.
+
+  EN AĞIR BULGU ÖKSÜZ SATIRINDADIR VE BU HARİTANIN KENDİ KUSURUDUR. Dosya ağaçta
+  dururken öksüz sayısı iki yüz kırk sekiz, çıkarıldığında iki yüz seksen birdir; aradaki
+  otuz üç düğüm, bu haritanın kendi metninde adıyla andığı düğümlerdir. Yani harita
+  raporladığı boşluğu, sırf raporladığı için ölçüm gözünde kapatmaktadır. Bir ölçüm
+  kaydında anılmak bir bağlanma kenarı değildir; anma iş yapmaz, yalnız iz bırakır.
+  Bundan iki bağlayıcı hüküm çıkar. Birincisi, öksüzlük hükmünün sayısı B okumasıdır
+  ve bu harita boyunca öksüzlük iki yüz seksen bir olarak anılır. İkincisi, bundan
+  sonra öksüzlük ölçen her koşu bu dosyayı kapsam dışı bırakmak zorundadır; aksi
+  hâlde harita kendi bulgusunu gizler ve sayı sessizce iyileşiyormuş gibi görünür. Bu
+  ikinci hükmün somut kanıtı bu düzeltme turunun kendisidir: harita gerçek boşlukları
+  daha ayrıntılı saydıkça A okuması iyileşmiş, yani öksüz sayısı iki yüz elli dokuzdan
+  iki yüz kırk sekize inmiştir; oysa ağaçta hiçbir kenar kurulmamıştır.
+
+  ## ③ Raf bilançosu — yapısal kenar (kaynak: `node src/sarmal.ts graf ..`)
+  Ham çıktıda yedi yüz altmış yedi içerme kenarı, altı yüz kırk yedi öncekiler ve altı
+  yüz kırk yedi sonrakiler alanı vardır. Buradaki tuzak şudur: öncekiler ile sonrakiler
+  aynı bağımlılık kenarının iki ucudur ve ikisi ayrı ayrı sayılırsa kenar sayısı şişer.
+  Tekilleştirme kenarları yön dizesine çevirip kümeye koyarak sınanmış ve iki alanın
+  birebir aynı yön kümesini ürettiği doğrulanmıştır; tekil bağımlılık yönü altı yüz
+  kırk yedidir. Bu yüzden tekil yapısal kenar sayısı bin dört yüz on dörttür ve bu sayı
+  yedi yüz altmış yedi içerme kenarı ile altı yüz kırk yedi bağımlılık kenarının
+  toplamıdır. Aynı koşuda kopuk uç sayısı sıfır çıkmıştır.
+
+  Aşağıdaki tablo A okumasıdır, yani bu dosyanın kendi sekiz kenarını içerir.
+
+  | raf | düğüm | raf-içi kenar | dışarı | içeri |
+  |---|---|---|---|---|
+  | plan | 748 | 841 | 72 | 55 |
+  | ornek | 408 | 292 | 0 | 1 |
+  | nitelik | 163 | 0 | 55 | 0 |
+  | yasa | 152 | 0 | 2 | 2 |
+  | eklenti | 96 | 101 | 1 | 72 |
+  | ogrenme | 69 | 10 | 0 | 0 |
+  | oz | 48 | 18 | 0 | 0 |
+  | (anadizin) | 21 | 20 | 0 | 0 |
+  | durum | 9 | 0 | 0 | 0 |
+  | bilgi | 5 | 0 | 0 | 0 |
+  | felsefe | 5 | 2 | 0 | 0 |
+
+  A okumasında yapısal düzeyde raflar arasında altı akış vardır ve bu akışlar toplam
+  yüz otuz kenar taşır; akışlar nitelik rafından plan rafına elli üç, plan rafından
+  eklenti rafına yetmiş iki, nitelik rafından yasa rafına iki, eklenti rafından plan
+  rafına bir, yasa rafından ornek rafına bir ve yasa rafından plan rafına bir kenar
+  biçimindedir. B okumasında akış sayısı beşe, kenar toplamı ise yüz yirmi ikiye iner.
+  Her iki okumada da sonuç aynıdır: yapısal graf rafları neredeyse hiç birbirine
+  bağlamaz ve bağlanma asıl atıf düzeyinde yaşar.
+
+  ## ④ Raf bilançosu — atıf düzeyi (kaynak: `kimlik.ts` · `dizindenIndeks`)
+  Aynı ağaç kimlik indeksiyle tarandığında A okumasında dört yüz on dosya taranmış, bin
+  beş yüz on sekiz tekil kod tanımı bulunmuş ve tanımı çözülen dokuz bin yüz yirmi beş atıf
+  ölçülmüştür. Bunların bin sekiz yüz on biri rafın kendi içinde, yedi bin üç yüz on dördü
+  raflar arasındadır. Tekil yapısal kenar sayısı bin dört yüz on dört olduğuna göre atıf
+  evreni yapısal evrenin yaklaşık altı buçuk katıdır; bu oran, yapısal kenar alanını
+  bütün atıflar sanan okumanın ne kadar büyük bir hata olduğunu sayısallaştırır.
+
+  | raf | raf-içi atıf | dışarı atıf | içeri atıf |
+  |---|---|---|---|
+  | yasa | 719 | 31 | 4989 |
+  | plan | 932 | 1213 | 1855 |
+  | (anadizin) | 1 | 16 | 123 |
+  | eklenti | 79 | 990 | 101 |
+  | nitelik | 39 | 3153 | 87 |
+  | ogrenme | 29 | 110 | 85 |
+  | oz | 1 | 71 | 58 |
+  | felsefe | 11 | 27 | 14 |
+  | bilgi | 0 | 39 | 1 |
+  | durum | 0 | 30 | 1 |
+  | ogretim | 0 | 61 | 0 |
+  | arac | 0 | 5 | 0 |
+  | cekirdek | 0 | 1568 | 0 |
+
+  Bu tabloda `ornek` rafı yoktur ve bunun sebebi ölçümün kapsamıdır: kimlik indeksi
+  `arsiv`, `ornek`, `fikstur`, `sablon` ve derlenmiş çıktı dizinlerini kapsam dışı
+  bırakır. Buna karşılık `cekirdek` rafı bu tabloda vardır ve ③ numaralı bölümdeki
+  yapısal tabloda yoktur; sebebi, motor kaynağının atıf taşıyıp tanım taşımamasıdır.
+
+  ## ⑤ Akışın yönü — kim üretir, kim tüketir (kaynak: `kimlik.ts` · `dizindenIndeks`)
+  Bu bölümdeki bütün sayılar ④ numaralı bölümün atıf matrisinin satırlarıdır ve aynı
+  koşudan, yani kimlik indeksinin 2026-08-09T17:00:55Z anındaki A okumasından gelir;
+  hiçbiri graf çıktısından okunmamıştır ve hiçbiri elle sayılmamıştır.
+
+  Yasa rafı sistemin çekim merkezidir, çünkü dört bin dokuz yüz seksen dokuz gelen atıf
+  alırken yalnız otuz bir atıf verir. Kanon hükümleri bütün rafları bağlar ve hiçbir
+  rafa bağımlı değildir; STR-3'ün açık çekirdeğin kendi kendine ayakta durmasını
+  buyuran hükmü bu asimetride ölçülebilir hâle gelir. Çekirdek rafı bunun tam tersidir,
+  çünkü bin beş yüz altmış sekiz atıf verir ve sıfır atıf alır. Bunun kanonik sebebi vardır:
+  YUZ-3.2 hükmüne göre `.ts` dosyaları atıf evrenine girer fakat tanım taşımaz ve tanım
+  her zaman `.sar` içinde yaşar. Bu yüzden motor kodunun sıfır gelen atıfı bir kopukluk
+  değil, tasarımın kendisidir. Nitelik rafı ise üç bin yüz elli üç atıf verip yalnız
+  seksen yedi atıf alan bir gözlem rafıdır; ölçtüğü şeye bakar, kendisine bakılmaz.
+
+  ## ⑥ Öksüzlük ölçümü — tanım sayıdan koparılamaz
+  Öksüzlük hükmünün dayandığı tanım şudur ve bu haritada verilen hiçbir öksüz sayısı bu
+  tanımdan koparılarak alıntılanamaz. Bir düğüm ancak dört koşulu birden karşılarsa
+  öksüz sayılır. Birinci koşul, `graf` çıktısında yapısal derecesinin sıfır olması, yani
+  ne kapsayanının ne kapsadığının ne de bağımlılık kenarının bulunmasıdır. İkinci koşul,
+  kimlik indeksinde gelen atıf sayısının sıfır olmasıdır. Üçüncü koşul, aynı indekste
+  beyanlı giden kenarının, yani `bağımlı`, `besler`, `hatırlat`, `üretir` ya da `dayanak`
+  alanıyla ilan edilmiş bir çıkışının bulunmamasıdır. Dördüncü koşul, düğümün kimlik
+  indeksinin kapsamı içinde yaşamasıdır; ders dünyasına ait dizinler indeks kapsamı
+  dışında olduğu için o dizinlerdeki düğümler bu hükmün kapsamına hiç girmez. Ölçüm
+  ayrıca bu haritanın kendi metnini dışlar, çünkü ② numaralı bölümde gösterildiği üzere
+  bir ölçüm kaydında anılmak bağlanma değildir.
+
+  Bu tanımla ölçülen sayılar şunlardır. Yapısal derecesi sıfır olan düğüm sayısı sekiz
+  yüz dörttür. Bunların yüz on üçü ders dünyasında yaşadığı için hükmün kapsamı
+  dışındadır. Kapsam içinde kalanların dört yüz onunun kimlik indeksinde ya gelen atfı
+  ya da beyanlı giden kenarı vardır; onlar öksüz değil, yalnız grafın göremediği
+  düğümlerdir. Geriye kalan iki yüz seksen bir düğüm dört koşulu birden karşılar ve
+  öksüzlük hükmü yalnız onları bağlar.
+
+  Graf körlüğünün en çarpıcı örneği kanon kararlarıdır. Aynı koşuda MIM-1 düğümünün
+  yapısal derecesi sıfırdır fakat beş yüz kırk iki gelen atfı vardır; DIL-1 düğümünün
+  yapısal derecesi sıfır ve gelen atfı üç yüz altmış iki, STR-3 düğümünün ise B
+  okumasında yapısal derecesi sıfır ve gelen atfı üç yüz yedidir. Yapısal kenar alanını
+  bütün atıflar sanan okuma tam olarak burada çöker.
+
+  ## ⑦ Öksüzlerin tamamının hesabı (kaynak: ⑥ numaralı bölümün öksüz listesi · `graf` tip alanı)
+  Bu bölümün girdisi ⑥ numaralı bölümde tanımlanan öksüzlük ölçümünün B okumasında
+  ürettiği iki yüz seksen bir düğümlük listedir; liste her düğüm için kodu, `graf`
+  çıktısındaki `tip` alanını ve dosyasını taşır. Sayım şu sorgudur ve başkası tarafından
+  aynen yeniden üretilebilir: liste `tip` alanına göre gruplanır ve gruplar aşağıdaki
+  eşlemeyle sekiz sınıfa toplanır. A sınıfı `Kod` tipidir. B sınıfı `Çıkarım` ile
+  `Değerlendirme` tipleridir. C sınıfı `Veri`, `Göç`, `Sınama`, `Git`, `Log`, `Sorun` ve
+  `DurumKaydı` tipleridir. D sınıfı `Bellek` tipidir. E sınıfı `İşAkışı`, `Model`,
+  `Tetikleyici`, `Yetenek` ve `Araç` tipleridir. F sınıfı `Görev` tipidir. G sınıfı
+  `Hatırlatıcı` ile `Fikir` tipleridir. H sınıfı `Karar` tipidir. Eşleme her tipi tam
+  olarak bir sınıfa gönderdiği ve öksüz listesinde başka tip bulunmadığı için sınıf
+  toplamları girdinin toplamına eşittir; eşitlik ayrıca sayımın kendisiyle
+  doğrulanmıştır. Tek tek anılan otuz üç düğümün kodları da aynı listeden, yani ölçümün
+  çıktısından alınmıştır ve elle derlenmemiştir.
+
+  İki yüz seksen bir öksüzün tamamı aşağıdaki sekiz sınıftan birine düşer. Sınıflar
+  düğümün tipine göre çizilmiştir ve tüketicidir, yani sınıflanmamış düğüm kalmamıştır;
+  sınıf toplamları iki yüz seksen bir etmektedir. Sınıf gerekçesi tek tek gerekçeye
+  yeğlenmiştir, çünkü bu düğümlerin öksüzlüğü tekil bir kusurdan değil taşıdıkları tipin
+  kayıt rolünden doğar; aynı gerekçeyi iki yüz seksen bir kez yinelemek kaydı uzatır ama
+  bilgi eklemez. Sınıflar sıklığa göre A harfinden H harfine sıralanmıştır ve harfler bölüm
+  numaralarıyla karışmasın diye bilerek rakam yerine harfle adlandırılmıştır. Buna
+  karşılık gerçek boşluğa işaret eden E ile G sınıflarının otuz düğümü aşağıda tek tek
+  anılmıştır.
+
+  | sınıf | adet | düşürülme gerekçesi |
+  |---|---|---|
+  | A · meyve ve Kod beyanı | 125 | Kod düğümü diskte yaşayan bir dosyayı ya da kalemi ilan eder; kenarı diske doğrudur ve içeri kenar beklenmez. Bunların yüz onu `plan/meyve_haritasi.sar` dosyasında yetim-meyve kapısı için geriye dönük ilan edilmiştir. |
+  | B · çıkarım ve değerlendirme | 57 | Damıtılmış içgörü terminal kayıttır ve kendisine atıf yapılması beklenen bir ara düğüm değildir; sınıflama kanonu Çıkarım tipini dış kaynaktan damıtılan içgörü olarak tanımlar. |
+  | C · kanıt ve sicil kaydı | 31 | Veri, Göç, Sınama, Git, Log, Sorun ve DurumKaydı düğümleri kanıt kaydı olarak doğar; bir turun ölçümünü saklarlar ve zincirin ortasında duran ara düğüm değildirler. |
+  | D · ders ve gözlem belleği | 21 | Bellek düğümleri terminal bilgi kaydıdır; değerli olanı Beceri düğümüne terfi eder ve terfi eden kaydın kendisi bağlanmaz. |
+  | E · katalog düğümü | 20 | Bunlar canlı şeyleri tarif eder fakat hiçbir kenarları yoktur; gerçek bağlanma adayı budur ve aşağıda tek tek sayılmıştır. |
+  | F · kapanmış kampanya Görev'i | 14 | `plan/v1_bulgu_kapatma.sar` dosyasındaki Görev düğümleridir; kampanya kapandığı için yeni kenar almazlar. |
+  | G · kuyruk düğümü | 10 | Hatırlatıcı ve Fikir düğümleri ileriye bakan kuyruk kayıtlarıdır; çapası henüz ilan edilmemiş olanların beyanlı giden kenarı yoktur ve aşağıda tek tek sayılmıştır. |
+  | H · gözlem dosyasındaki Karar kaydı | 3 | Nitelik rafındaki denetim defterlerinde yaşayan Karar düğümleridir; kanon kararı değil gözlem kaydıdır ve kendilerine atıf beklenmez. |
+
+  YİRMİ KATALOG DÜĞÜMÜ TEK TEK ŞUNLARDIR. `plan/akis_omurgasi.sar` dosyasında dokuz
+  İşAkışı düğümü bulunur ve bunlar OMR-KOK, OMR-DOGUS, OMR-YASA, OMR-ISKELET, OMR-KONI,
+  OMR-OLGUNLUK, OMR-KODLA, OMR-DURUM ve OMR-INDEX düğümleridir. `plan/takimlar.sar`
+  dosyasında üç Model düğümü olan MDL-DEEPSEEK, MDL-GLM ve MDL-NEMOTRON ile iki Araç
+  düğümü olan ARC-CURL ve ARC-VSCE bulunur. `ogrenme/kadro.sar` dosyasında üç Yetenek
+  düğümü olan YTN-SAR-MOTOR, YTN-SAR-DENETIM ve YTN-SAR-OGRETIM ile iki Tetikleyici
+  düğümü olan TTK-SAR-ARAC ve TTK-SAR-OLCUM bulunur. Yirminci düğüm
+  `ogrenme/adim_yazimi_becerisi.sar` dosyasındaki TTK-ADIM-YAZIMI Tetikleyicisidir.
+
+  ON KUYRUK DÜĞÜMÜ TEK TEK ŞUNLARDIR. `oz/hatirlaticilar.sar` dosyasında yedi
+  Hatırlatıcı bulunur ve bunlar HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ, HTR-GEZINME-SESSIZ-RET,
+  HTR-IPUCU-YORUM-KORUMASI, HTR-MARKDOWN-YUZU-ZAYIF, HTR-MCP-SUREC-BAYATLIGI,
+  HTR-VSCODE-1132-ENTEGRASYON ve HTR-YAYIN-NOTU-OLCUM-BAGI düğümleridir.
+  `oz/hatirlatici_onay_beyani_celiskisi.sar` dosyasında HTR-ONAY-BEYAN-CELISKISI,
+  `nitelik/mutabakat_denetim_raporu.sar` dosyasında HTR-GRAF-KENAR-SOHBETI ve
+  `oz/fikirler.sar` dosyasında FKR-GIRIS-KAPISI-MARKDOWN düğümü yaşar.
+
+  ÜÇ KARAR KAYDI TEK TEK ŞUNLARDIR. `nitelik/mutabakat_denetim_raporu.sar` dosyasında
+  KRR-MUT-1 ile KRR-MUT-7 ve `nitelik/sinav2_eksik_defteri.sar` dosyasında SNV2-HUKUM
+  düğümü bulunur.
+
+  BU ADIM HİÇBİR BAĞLANMA KENARI KURMAMIŞTIR ve bunun gerekçesi Adımın kendi sınırıdır.
+  Adım yalnız ölçüm ve haritalamadır; bulunan boşluğun işini yapmak kendi Adımının
+  işidir. Yukarıdaki otuz düğüm için bu harita bir düşürülme gerekçesi değil bir
+  bağlanma önerisi bırakır, çünkü onların öksüzlüğü tipin kayıt rolünden değil eksik bir
+  kenardan doğmaktadır; geri kalan iki yüz elli bir düğüm için ise sınıf gerekçesi
+  düşürülme gerekçesidir.
+
+  ## ⑧ İki varlık sınırı — STR-3 sızıntı denetimi
+  Sızıntı ölçümü için depo kökü indekslendi; böylece _Sarmal ile kapalı varlık aynı
+  indekste yan yana durdu ve gezin yüzeyinin varlık süzgeci bilerek devre dışı bırakıldı.
+  Süzgeç açık bırakılsaydı çapraz atıflar zaten gizlenirdi ve ölçüm kendi kendini
+  doğrulamış olurdu. A okumasında beş yüz seksen üç dosya indekslendi. Yalnız
+  kapalı varlıkta tanımlı bin iki yüz kırk sekiz kod ile yalnız _Sarmal'da tanımlı bin beş
+  yüz on yedi kod bulundu; iki varlıkta birden tanımlı tek kod RAF-PLAN'dır ve bu, iki
+  varlığın kendi plan rafını kendi anadizininde ilan etmesinden doğan meşru bir ad
+  çakışmasıdır.
+
+  Beyanlı yapısal kenar düzeyinde depo genelinde yedi yüz on beş kenar sayıldı ve
+  bunlardan hiçbiri varlık sınırını geçmiyor. Yasak yön olan _Sarmal'dan kapalı varlığa
+  giden beyanlı kenar sayısı sıfırdır. Bu sonuç bağımsız ikinci bir ölçümle de
+  doğrulanır, çünkü `graf` aracı _Sarmal üzerinde koşturulduğunda hem kopuk uç sayısını
+  hem de hedefi grafta bulunmayan kenar sayısını sıfır verir.
+
+  Metin düzeyinde ise sayı sıfır değildir ve bu dürüstçe kaydedilmelidir. A okumasında
+  _Sarmal dosyalarında, tanımı yalnız kapalı varlıkta yaşayan kodlara kırk dokuz anma
+  vardır ve bu anmalar on yedi dosyaya yayılmıştır; bu sayının yedisi bu haritanın kendi
+  metnindeki anmalardır, dolayısıyla haritanın dışındaki gerçek anma sayısı kırk iki ve
+  dosya sayısı on altıdır. Haritanın kendi payı düzeltme turunda beşten yediye çıkmıştır,
+  çünkü nöbet mekanizmasını anlatan bölüm iki anma daha eklemiştir; hükmü taşıyan sayı
+  olan kırk iki ile on altı bu eklemeden etkilenmemiştir ve etkilenmemesi ayak izi
+  ölçümünün doğru çalıştığının kanıtıdır. Ters yönde, yani kapalı varlık dosyalarından yalnız _Sarmal'da
+  tanımlı kodlara sekiz anma vardır ve bu yön STR-3 hükmünce zaten serbesttir, çünkü
+  gizli ürün açık sözleşmeleri tüketebilir.
+
+  KIRK İKİ ANMANIN TAMAMINI TEK BİR TARİHSEL İZ SAYAN OKUMA YANLIŞTIR VE TEHLİKELİDİR,
+  çünkü o okumadan doğan tedavi canlı bir nöbetin muafiyet kaydını bozar. Anmalar
+  aşağıdaki dört sınıfa ayrılmıştır ve her sınıfın gerekçesi kaynak dosyanın kendi
+  metninden okunmuştur.
+
+  BİRİNCİ SINIF CANLI SIZINTI NÖBETİNİN MUAFİYET KAYDIDIR VE BEŞ ANMA TAŞIR. Bu beş
+  anma `cekirdek/src/denetci.ts` dosyasının 3493, 3509 ve 3510 numaralı satırları ile
+  `cekirdek/sinama/yeni-kanon-tanilari.test.ts` dosyasının 392 ve 404 numaralı
+  satırlarındadır ve hepsi ZKA-A06 koduna aittir. Motor kaynağındaki üç anmanın ne
+  olduğu kaynağın kendi metninde yazılıdır: 3493 numaralı satır MINIMAL_SURUM_SABITLERI
+  dizisinin belge yorumunda yer alır ve Founder'ın 2026-08-05 tarihli dalga hükmünü
+  taşıyarak ajan eşleyici puanlamasının birinci dalgada, yani açık tarafta yayımlanacak
+  minimal sürümün içinde olduğunu ilan eder; 3509 ile 3510 numaralı satırlar ise o
+  dizinin iki muafiyet desenini, yani eşleyici ağırlık vektörü ile kabul eşiklerini
+  etiketler. Aynı belge yorumu muafiyetin sihirli bir sözcüğe değil somut bir kaleme
+  bağlandığını ve listenin sessizce genişleyemeyeceğini de kayda geçirir. Sınama
+  dosyasındaki iki anmanın biri nöbetin bu ayrımı gerçekten uyguladığını sınayan testin
+  gerekçe yorumunda, öteki ise nöbetin susması gereken fikstür metninin içindedir.
+
+  ZARARIN MEKANİZMASI İKİ KADEMELİDİR VE İKİSİ BİRBİRİNE KARIŞTIRILMAMALIDIR. Beş
+  anmanın hiçbiri çalışan kod değildir; üçü belge yorumunda ya da satır sonu yorumunda,
+  biri sınama gerekçe yorumunda, biri de fikstür anlatısındadır. Birinci kademe kayıt
+  kaybıdır: yalnız anma metnini silmek muafiyetin NEDEN var olduğunu anlatan kaydı yok
+  eder, fakat nöbetin davranışını değiştirmez ve tek başına alarm üretmez. İkinci kademe
+  davranış kaybıdır ve yalnız 3509 ile 3510 numaralı SATIRLARIN tamamı kalkarsa doğar,
+  çünkü muafiyeti kuran şey o satırlardaki iki desendir; anma o desenlerin yanına
+  iliştirilmiş etikettir. Uyarı bu daraltmaya rağmen yerinde durur, çünkü gerçek risk
+  anmanın tek başına silinmesi değil, satırı tarihsel iz sanan bir temizliğin deseniyle
+  birlikte satırın tamamını götürmesidir; o takdirde nöbet açık tarafta meşru olarak
+  duran sabitlerde yanlış alarm üretmeye başlar. Bu yüzden bu beş satıra
+  dokunulmamalıdır.
+
+  AYRIM BOŞ İDDİA DEĞİLDİR VE ÖLÇÜLMÜŞTÜR. Motor kaynağına hiç dokunmadan, denetçinin
+  dışa açık `stratejiTanilari` işlevi geçici dizinlerde üç fikstürle çağrılmıştır.
+  Muafiyet deseni bulunup ZKA-A06 anması hiç bulunmayan metinde nöbet sessiz kalmış,
+  desen ile anmanın birlikte bulunduğu metinde yine sessiz kalmış, desenin bulunmayıp
+  yalnız anmanın ve açık kaynak ibaresinin bulunduğu metinde ise bir `açık-gizli-sınır-ihlali`
+  bulgusu üretmiştir. Birinci ile üçüncü sonucun karşılaştırılması muafiyetin anmaya
+  değil desene bağlı olduğunu doğrudan gösterir.
+
+  İKİNCİ SINIF CANLI BELGELEMEDİR VE BEŞ ANMA TAŞIR. `eklenti/src/atif-baglanti.ts`
+  dosyasının altıncı, `eklenti/src/atif-cekirdek.ts` dosyasının kırk sekizinci ve
+  `eklenti/src/baglanti.ts` dosyasının on birinci satırındaki BLK-ZKA anmaları çapraz
+  varlık bakışının doğuş gerekçesini anlatan açıklayıcı yorumlardır ve bu kodu, varlık
+  süzgeci yüzünden çözülemeyen kodun çalışan örneği olarak kullanırlar.
+  `eklenti/src/renk.ts` dosyasının yetmiş ikinci satırındaki ETM-PY-PYTEST anması ise
+  önek ile renk belirteci eşlemesinin belge örneğidir. `plan/bakim_olgunluk.sar`
+  dosyasının beş yüz yetmiş ikinci satırındaki anma açık kaynak ayrımının hâlen
+  yürürlükte olan hükmünü taşır. Bunlar canlı belgedir ve silinmeleri bilgi kaybıdır.
+
+  ÜÇÜNCÜ SINIF YÜRÜRLÜKTEKİ PLAN BEYANIDIR VE BİR ANMA TAŞIR. `plan/faz.sar` dosyasının
+  otuz beşinci satırı FAZ-2026-AGUSTOS düğümünün `ne` alanıdır ve içinde bulunulan
+  mevsimin asıl cephesini ZKA-A05 ile ZKA-A06 kalemlerine bağlar. Bu anma tarihsel iz
+  değildir, çünkü tarif ettiği mevsim henüz kapanmamıştır; silinmesi yürürlükteki bir
+  plan beyanını sakatlar. Önceki tur bu anmayı tarihsel iz sınıfına koymuş ve temizlik
+  önermişti; ölçüm bu sınıflandırmanın yanlış olduğunu göstermektedir.
+
+  DÖRDÜNCÜ SINIF KAPANMIŞ KAYIT ALANI VE TARİHSEL ANLATIDIR VE OTUZ BİR ANMA TAŞIR.
+  Bunlar `bilgi/ray3_konsolide.sar` dosyasında on bir, `plan/kapanis_kampanyasi.sar`
+  dosyasında dokuz, `plan/reform_plani.sar` dosyasında üç, `nitelik/orkestrasyon_zemini.sar`
+  dosyasında iki, `oz/hatirlaticilar.sar` dosyasında iki, `plan/bakim_olgunluk.sar`
+  dosyasının beş yüz kırk ikinci satırında bir, `nitelik/act_fark_analizi.sar` dosyasında
+  bir, `nitelik/v1_gozden_gecirme_envanteri.sar` dosyasında bir ve
+  `plan/kaynak_disiplini.sar` dosyasının seksen üçüncü satırında bir anma biçiminde
+  dağılmıştır. Bu otuz bir anmanın tamamı ya kapanmış bir Adımın onay, koşu ya da sınır
+  alanının içinde ya da kapanmış bir envanterin belge bloğunda yaşamaktadır.
+
+  BU ADIM HİÇBİR ANMA İÇİN TEMİZLİK ÖNERMEZ ve gerekçesi şudur. Kırk iki anmanın on biri
+  yukarıdaki ilk üç sınıfta yer alır ve onlara dokunmak ya çalışan bir nöbeti kırar ya
+  bilgi kaybına yol açar ya da yürürlükteki bir plan beyanını sakatlar. Kalan otuz biri
+  ise mühürlü kayıt alanlarının içindedir ve mühürlü bir kayıttan metin çıkarmak
+  temizlik değil tarih yazımıdır. Bir temizlik Adımı açılacaksa kapsamı sayıyla değil
+  anma anma savunulmalıdır; bu haritanın verdiği şey o savunmanın yapılabileceği
+  dosya ve satır dökümüdür.
+
+  ## ⑨ Ölçümün sınırları — neye güvenilmemeli
+  Birincisi, kimlik indeksi ders dünyası dizinlerini kapsam dışı bırakır ve bu sınır ⑥
+  numaralı bölümde hükmün dördüncü koşulu olarak yazılmıştır; ders dünyasındaki yüz on üç
+  düğüm öksüzlük hükmünün kapsamına hiç girmemiştir.
+
+  İkincisi, MCP `gezin` yüzeyi ile doğrudan indeks geçişi aynı ağacı ölçtüğü hâlde
+  geçmişte birbirinden birkaç birim farklı sayı bildirmişti. Bugün bu fark ölçülmüş ve
+  kapanmış bulunmuştur: MCP `gezin` aracı STR-3 için dört yüz on dosya tarayıp üç yüz on
+  yedi gelen atıf bildirmiş, doğrudan indeks geçişi de aynı anda üç yüz on yedi atıf
+  saymıştır. Buna rağmen iki yüzeyin sayısı gelecekte yine ayrışabilir ve bu yüzden
+  hangi yüzeyin okunduğu her sayıda yazılmalıdır.
+
+  Üçüncüsü, ağaç ölçüm sırasında canlıdır ve aynı depoda başka üreticiler
+  çalışmaktadır; bu yüzden zaman damgası taşımayan hiçbir sayı yeniden üretilebilir
+  sayılmamalıdır. Bu haritadaki bütün atıf sayıları 2026-08-09T17:00:55Z anına aittir
+  ve bu anın yazılması zorunludur, çünkü aynı ölçüm yedi dakika önce başka bir sonuç
+  vermişti: çözülmüş atıf sayısı 2026-08-09T16:53:55Z anında dokuz bin yüz on yedi,
+  2026-08-09T16:58:28Z anında ise dokuz bin yüz yirmi beştir. Sekiz atıflık fark bu
+  haritadan doğmamıştır, çünkü aradaki dakikalarda başka bir üretici motorun sınama
+  dizinindeki yetki sınamalarını genişletmiş ve o dosya atıf evrenine yüz on dokuz
+  satır eklemiştir. Düğüm sayısı, kenar sayısı ve öksüz sayısı bu aralıkta
+  değişmemiştir. Bu haritanın teslim edildiği dakikalarda bile aynı ölçüm
+  2026-08-09T17:05:39Z anında dokuz bin yüz yirmi altı vermiştir; dolayısıyla ④ ile ⑤
+  numaralı bölümlerdeki atıf sütunları bir iki birim tazeliğini yitirmiş olabilir ve
+  denetçi yeniden ölçtüğünde tam eşitlik değil aynı büyüklük sırası beklemelidir.
+  Yapısal sayılar, öksüz sayısı ve sızıntı sayıları motor kaynağındaki çalışmadan
+  etkilenmez, çünkü onlar `.sar` gövdesinden gelir; buna karşılık başka bir üretici yeni
+  bir `.sar` düğümü ilan ederse onlar da oynar. Bunun ölçülmüş örneği şudur:
+  2026-08-09T18:05Z anında yapılan yeniden ölçüm A okumasında bin yedi yüz yirmi altı,
+  B okumasında bin yedi yüz on sekiz düğüm ve sırasıyla iki yüz elli bir ile iki yüz
+  seksen dört öksüz vermiştir, çünkü aradaki saatlerde başka bir üretici iki düğüm daha
+  ilan etmiştir. YAYIMLANAN SAYILAR DEĞİŞTİRİLMEMİŞTİR, çünkü onlar bağımsız denetimin
+  yeniden ürettiği anın kaydıdır ve sonradan tazelenirlerse denetimin doğruladığı
+  kayıt ortadan kalkar. Asıl önemlisi şudur: aynı yeniden ölçümde bu dosyanın ayak izini
+  veren altı farkın altısı da birebir aynı çıkmıştır, yani sekiz düğüm, sekiz kenar, bir
+  dosya, sekiz tanım, altmış bir atıf ve otuz üç öksüz. Mutlak düzeyler oynar, ayak izi
+  oynamaz; hüküm ayak izine dayandığı için hükümde bir sarsıntı yoktur.
+
+  Aynı canlılık hükmünün ikinci kanıtı bu haritanın kendi geçmişidir. Haritanın önceki
+  sürümü bin altı yüz yirmi dokuz düğüm, bin dört yüz yirmi tanım ve iki yüz altmış sekiz
+  öksüz bildirmişti; aynı ölçümler bir gün sonra A okumasında bin yedi yüz yirmi dört
+  düğüm ile bin beş yüz on sekiz tanım, B okumasında ise iki yüz seksen bir öksüz
+  vermektedir. Önceki sayılar yanlış değildi, yalnız ait oldukları an geçmişti; bu
+  haritadaki sayılar için de aynı şey geçerlidir ve okuyan kişi ölçüm anını sormalıdır.
+
+  Dördüncüsü, denetim uyarı sayısı da aynı sebeple bir anın büyüklüğüdür ve kaynağı
+  yazılmadan alıntılanamaz. Haritanın ilk sürümü uyarı sayısını kaynak göstermeden elli
+  üç yazmış, ikinci sürümü elli iki olarak düzeltmişti. Bugün ölçülen sayı sıfırdır ve
+  ölçümün kendisi şudur: `_Sarmal/cekirdek` dizininde `node src/sarmal.ts denetle ..`
+  komutu 2026-08-09T16:43:04Z ve 2026-08-09T16:43:06Z anlarında art arda koşturulmuş,
+  ikisinde de sıfır hata ve sıfır uyarı vermiş, yirmi bir tanı türünde iki yüz iki bilgi
+  düzeyinde bulgu bildirmiştir. Aynı komut teslim anında, yani 2026-08-09T17:00:08Z
+  anında bir kez daha koşturulmuş, yine sıfır hata ile sıfır uyarı vermiş fakat bilgi
+  düzeyindeki bulgu sayısı iki yüz dörde çıkmıştır; bu iki birimlik fark da başka bir
+  üreticinin aynı dakikalarda bir Adımı geliştirmede durumuna almasından doğmuştur ve
+  uyarı sayısının sıfır olduğu hükmünü değiştirmez. Kapanış ölçümü 2026-08-09T17:06:29Z
+  anında alınmıştır ve açık araç ile kapalı ürün ayrı ayrı koşturulduğunda ikisi de
+  sıfır hata ve sıfır uyarı vermiştir. Aynı koşuda karşılıksız metin atfı tanısı yalnız dört
+  kez ve yalnız iki `.md` dosyasında görünmektedir; bu tanı `.md` yüzünde bilgi, `.ts`
+  yüzünde uyarı düzeyinde konuştuğuna göre, önceki turda sayılan elli iki uyarının
+  kaynağı olan motor kaynağındaki bayat yorum atıflarının bugün ağaçta bulunmadığı
+  sonucu çıkar. Bu son cümle bir ölçüm değil ölçümden çıkarılan bir sonuçtur ve öyle
+  okunmalıdır.
+|<--
+
+Çıkarım( kod: CKR-RAF-ARAC-CATALI,
+         kaynak: "Ölçüm iki araçtan beslenmiştir. Yapısal kenarlar _Sarmal/cekirdek dizininde koşturulan `node src/sarmal.ts graf ..` komutunun determinist çıktısından okunmuş, atıf düzeyi ise cekirdek/src/kimlik.ts dosyasındaki dizindenIndeks işlevi çağrılarak, yani MCP gezin aracının altındaki kimlik indeksinin toplu geçişiyle ölçülmüştür. Ölçüm _Sarmal varlığında ve 2026-08-09 tarihinde, saat 16.37 ile 17.07 arasında yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Graf komutu bin yedi yüz yirmi dört düğüm bildirmiş ve kopuk uç sayısını sıfır vermiştir. Aynı çıktıda yedi yüz altmış yedi içerme kenarı ile altı yüz kırk yedi öncekiler ve altı yüz kırk yedi sonrakiler alanı bulunmaktadır; öncekiler ile sonrakiler alanları yön dizesine çevrilip kümeye konduğunda ikisinin de aynı altı yüz kırk yedi elemanlı kümeyi ürettiği görülmüş, dolayısıyla tekil yapısal kenar sayısı bin dört yüz on dört olarak ölçülmüştür. Aynı ağaç kimlik indeksiyle tarandığında dört yüz on dosyada bin beş yüz on sekiz tekil tanım ile dokuz bin yüz yirmi beş çözülmüş atıf bulunmuştur; atıf evreninin yapısal evrene oranı yaklaşık altı virgül dört kattır.",
+         ne: "🧭 Graf aracı ile gezin aracı aynı şeyi ölçmez ve ürettikleri sayılar toplanamaz, çünkü graf yalnız içerme ile bağımlılık kenarını verirken gezin bütün atıfları verir. Bu ayrımın ihmal edilmesi iki ayrı hataya yol açar. Birincisi graf ham çıktısındaki öncekiler ve sonrakiler alanlarının aynı kenarın iki ucu olduğunun görülmemesidir; ayrı sayılırlarsa kenar sayısı bin dört yüz on dörtten iki bin altmış bire şişer. İkincisi yapısal kenar sayısının bütün atıflar sanılmasıdır; bu haritanın kökeninde duran yanlış sayı tam olarak bu iki hatadan doğmuştur." ) {
+  --> KYN-MTR-A03
+}
+
+Çıkarım( kod: CKR-RAF-AYAK-IZI,
+         kaynak: "Bu çıkarım, bütün ölçümlerin iki kez koşturulmasıyla üretilmiştir. A okuması bu harita dosyası ağaçta dururken, B okuması ise dosya geçici olarak ağaçtan çıkarılıp ölçüm bittikten sonra aynı içerikle geri konularak alınmıştır; geri koymanın bit düzeyinde doğru olduğu özet karşılaştırmasıyla doğrulanmıştır. Ölçüm 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "A okumasında graf bin yedi yüz yirmi dört düğüm ile bin dört yüz on dört tekil yapısal kenar, B okumasında ise bin yedi yüz on altı düğüm ile bin dört yüz altı tekil yapısal kenar bildirmiştir; fark sekiz düğüm ve sekiz kenardır. Kimlik indeksi A okumasında dört yüz on dosya, bin beş yüz on sekiz tanım ve dokuz bin yüz yirmi beş atıf, B okumasında dört yüz dokuz dosya, bin beş yüz on tanım ve dokuz bin altmış dört atıf saymıştır. Öksüz sayısı A okumasında iki yüz kırk sekiz, B okumasında iki yüz seksen birdir ve aradaki otuz üç düğüm bu haritanın belge bloğunda adıyla andığı düğümlerin tamamıdır.",
+         ne: "🔭 Bu harita ölçtüğü grafın dışında duran bir araç değil, o grafın bir parçasıdır ve kendi ayak izi sayılmıştır. Ayak izi sekiz düğüm, sekiz beyanlı kenar, bir dosya, sekiz tanım ve altmış bir atıftır. En ağır sonuç öksüzlük satırındadır: harita raporladığı otuz üç boşluğu, sırf metninde andığı için ölçüm gözünde kapatmaktadır. Bir ölçüm kaydında anılmak bağlanma kenarı değildir; bu yüzden öksüzlük hükmünün sayısı kendini dışlayan iki yüz seksen birdir ve bundan sonra öksüzlük ölçen her koşu bu dosyayı kapsam dışı bırakmak zorundadır, aksi hâlde harita kendi bulgusunu gizler." ) {
+  --> KYN-MTR-A03
+}
+
+Çıkarım( kod: CKR-RAF-BILANCO,
+         kaynak: "Bilanço iki ölçümün raf bazında çaprazlanmasıyla kurulmuştur. Yapısal sütunlar graf komutunun çıktısından, atıf sütunları ise kimlik indeksinin her atfın bulunduğu rafı o atfın işaret ettiği tanımın rafıyla çaprazlamasıyla kurduğu matristen gelmektedir. Ölçüm _Sarmal varlığında ve 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "A okumasında yapısal düzeyde raflar arasında altı akış bulunmuştur; nitelik rafından plan rafına elli üç, plan rafından eklenti rafına yetmiş iki, nitelik rafından yasa rafına iki, eklenti rafından plan rafına bir, yasa rafından ornek rafına bir ve yasa rafından plan rafına bir kenar sayılmıştır ve toplam yüz otuz kenardır. Aynı raflar atıf düzeyinde bin sekiz yüz on bir raf-içi ve yedi bin üç yüz on dört raflar-arası kenarla bağlıdır. B okumasında akış sayısı beşe ve raflar arası kenar toplamı yüz yirmi ikiye inmektedir.",
+         ne: "🗺️ Rafların gerçek bağlanması yapısal grafta değil atıf düzeyinde yaşar. Yapısal graf raflar arasında yalnız altı akış tanır ve bunların toplamı yüz otuz kenardır; aynı raflar atıf düzeyinde yedi bin üç yüz on dört kenarla bağlıdır. Buradan çıkan hüküm şudur: bir rafın yalnız graf ile ölçülen bağlantısızlığı, o rafın gerçekten kopuk olduğunu kanıtlamaz. Ayrıca bu tablodaki ornek rafı ile cekirdek rafının asimetrisi ölçüm kapsamının tabloyla birlikte taşınması gerektiğini gösterir; ornek rafı yapısal tabloda vardır fakat atıf tablosunda yoktur, cekirdek rafı ise bunun tam tersidir." ) {
+  --> KYN-MTR-A03
+}
+
+Çıkarım( kod: CKR-RAF-AKIS-YONU,
+         kaynak: "Yön okuması kimlik indeksinin ürettiği raf ile raf arası atıf matrisinden gelmektedir; matris, her atfın bulunduğu rafı o atfın işaret ettiği tanımın rafıyla çaprazlayarak kurulmuştur. Ölçüm _Sarmal varlığında ve 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Yasa rafı dört bin dokuz yüz seksen dokuz atıf almış ve otuz bir atıf vermiştir. Çekirdek rafı hiç atıf almamış ve bin beş yüz altmış sekiz atıf vermiştir. Nitelik rafı seksen yedi atıf almış ve üç bin yüz elli üç atıf vermiştir. Plan rafı bin sekiz yüz elli beş atıf almış ve bin iki yüz on üç atıf vermiştir.",
+         ne: "⚖️ Rafların rolü atıf yönünden okunabilir. Yasa rafı çekim merkezidir, çünkü aldığı atıf verdiğinin yüz katının üzerindedir ve hiçbir rafa bağımlı değildir; STR-3'ün açık çekirdeğin kendi başına ayakta durmasını buyuran hükmü bu asimetride ölçülebilir hâle gelir. Çekirdek rafı saf tüketicidir ve sıfır gelen atıfı bir kopukluk değil tasarımdır, çünkü YUZ-3.2 hükmü gereği .ts dosyaları atıf taşır fakat tanım taşımaz. Nitelik rafı ise gözlem rafıdır, çünkü ölçtüğü şeye bakar ve kendisine bakılmaz." ) {
+  --> STR-3
+}
+
+Çıkarım( kod: CKR-RAF-OKSUZ,
+         kaynak: "Öksüzlük, graf komutunun verdiği yapısal derece ile kimlik indeksinin verdiği gelen atıf ve beyanlı giden kenar sayılarının kesiştirilmesiyle ölçülmüştür. Ölçüm bu harita dosyası ağaçtan çıkarılmışken, yani B okumasında yapılmıştır; sebebi, dosyanın kendi metninde andığı düğümlerin ölçümde sahte biçimde bağlanmış görünmesidir. Ölçüm _Sarmal varlığında ve 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Yapısal derecesi sıfır olan sekiz yüz dört düğümden yüz on üçü ders dünyası dizinlerinde yaşadığı için kapsam dışıdır; kapsam içinde kalanların dört yüz onunda kimlik indeksinde ya gelen atıf ya da beyanlı giden kenar bulunmuştur ve geriye kalan iki yüz seksen bir düğüm dört koşulu birden karşılamaktadır. Aynı koşuda MIM-1 düğümünün yapısal derecesi sıfır olduğu hâlde beş yüz kırk iki gelen atfı, DIL-1 düğümünün üç yüz altmış iki gelen atfı ve STR-3 düğümünün üç yüz yedi gelen atfı ölçülmüştür.",
+         ne: "🕳️ Gerçek öksüz gövde sayısı iki yüz seksen birdir ve bu sayı ancak taşıdığı tanımla birlikte anlamlıdır. Bir düğüm öksüz sayılmak için dört koşulu birden karşılamalıdır: grafta yapısal derecesi sıfır olmalı, kimlik indeksinde gelen atfı bulunmamalı, aynı indekste beyanlı giden kenarı olmamalı ve indeksin kapsamı içinde yaşamalıdır. Tanım değişirse sayı da değişir, dolayısıyla bu sayı tanımından koparılarak alıntılanamaz. Sayının kendisi de aldatıcı olabilir, çünkü yapısal olarak boş görünen sekiz yüz dört düğümün dört yüz onu aslında atıf ya da beyanlı çıkış taşır; bunun en keskin kanıtı, yapısal derecesi sıfır olan MIM-1 kararının beş yüz kırk iki gelen atıf taşımasıdır." ) {
+  --> KYN-MTR-A03
+}
+
+Çıkarım( kod: CKR-RAF-OKSUZ-SINIFLARI,
+         kaynak: "Sınıflandırma, öksüz olduğu ölçülen iki yüz seksen bir düğümün taşıdığı tip ile yaşadığı dosyanın kendi ilan ettiği amaç birlikte okunarak kurulmuştur; sınıf sınırları düğüm tipinin kayıt rolüne göre çizilmiş ve sayım betikle yapılmıştır. Ölçüm 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Sekiz sınıf iki yüz seksen bir düğümün tamamını kapsamakta ve sınıflanmamış düğüm bırakmamaktadır. Meyve ve Kod beyanı sınıfı yüz yirmi beş, çıkarım ve değerlendirme sınıfı elli yedi, kanıt ve sicil kaydı sınıfı otuz bir, ders ve gözlem belleği sınıfı yirmi bir, katalog düğümü sınıfı yirmi, kapanmış kampanya Görev'i sınıfı on dört, kuyruk düğümü sınıfı on ve gözlem dosyasındaki Karar kaydı sınıfı üç düğüm taşımaktadır; bu sekiz sayının toplamı iki yüz seksen birdir.",
+         ne: "🗂️ Öksüzlerin tamamı gerekçelendirilmiştir ve iki yüz elli birinin gerekçesi sınıf düzeyindedir. Sınıf gerekçesi tek tek gerekçeye yeğlenmiştir, çünkü bu düğümlerin öksüzlüğü tekil bir kusurdan değil taşıdıkları tipin kayıt rolünden doğar; Kod düğümü diske işaret eden bir yapraktır, Bellek ile Çıkarım terminal bilgi kaydıdır, Veri ile Göç ve Sınama kanıt kaydıdır, kapanmış kampanyanın Görev'i ise tarihsel arşivdir ve bunların hiçbirinde içeri kenar beklenmez. Geriye kalan otuz düğüm gerçek boşluktur, çünkü canlı şeyleri tarif ettikleri hâlde hiçbir kenarları yoktur; bunlar belge bloğunda kod kod sayılmıştır ve bağlanma işi kendi Adımlarına aittir." ) {
+  --> KYN-MTR-A03
+}
+
+Çıkarım( kod: CKR-STR3-SIZINTI-OLCUMU,
+         kaynak: "Sızıntı ölçümü için depo kökü, yani iki varlık birden, kimlik indeksiyle ve gezin yüzeyinin varlık süzgeci bilerek devre dışı bırakılarak indekslenmiştir; süzgeç açık bırakılsaydı çapraz atıflar gizlenir ve ölçüm kendi kendini doğrulamış olurdu. Sonuç, graf komutunun _Sarmal üzerindeki kopuk uç sayısıyla bağımsız olarak ikinci kez doğrulanmıştır. Anmaların sınıflandırması ise sayıdan değil kaynak dosyaların ilgili satırlarının okunmasından çıkarılmıştır. Ölçüm 2026-08-09 tarihinde yapılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Beş yüz seksen üç dosya indekslenmiş, depo genelinde yedi yüz on beş beyanlı yapısal kenar sayılmış ve bunlardan hiçbirinin varlık sınırını geçmediği görülmüştür; yasak yön olan _Sarmal'dan kapalı varlığa giden beyanlı kenar sayısı sıfırdır. Bağımsız ikinci ölçümde graf komutu _Sarmal üzerinde hem kopuk uç sayısını hem de hedefi grafta bulunmayan kenar sayısını sıfır vermiştir. Metin düzeyinde _Sarmal'dan kapalı varlığa kırk dokuz anma ölçülmüş, bunların yedisi bu harita dosyasının kendi metninde bulunduğu için harita dışındaki gerçek sayı kırk iki ve dosya sayısı on altı olarak saptanmıştır; ters yönde sekiz anma vardır. Muafiyetin neye bağlı olduğu ayrıca ölçülmüştür: motor kaynağına dokunmadan, denetçinin dışa açık stratejiTanilari işlevi geçici dizinlerde üç fikstürle çağrıldığında muafiyet deseni bulunup ZKA-A06 anması bulunmayan metin sessiz, desen ile anmanın birlikte bulunduğu metin sessiz, desenin bulunmayıp yalnız anmanın ve açık kaynak ibaresinin bulunduğu metin ise bir açık-gizli-sınır-ihlali bulgusu vermiştir.",
+         ne: "🚧 İki varlık arasında yapısal kaçak kenar yoktur ve bu iki bağımsız ölçümle gösterilmiştir. Metin düzeyindeki kırk iki anma ise tek bir kategori değildir ve dört sınıfa ayrılır. Beş anma canlı sızıntı nöbetinin muafiyet kaydıdır ve motor kaynağında MINIMAL_SURUM_SABITLERI dizisinin belge yorumu ile iki muafiyet deseninin satır sonu etiketinde, sınama tarafında ise nöbetin susması gereken fikstürün içinde yaşar. Zararın mekanizması iki kademelidir ve karıştırılmamalıdır: anmaların hiçbiri çalışan kod olmadığı için yalnız anma metnini silmek muafiyetin gerekçe kaydını yok eder fakat davranışı değiştirmez, buna karşılık muafiyet desenlerini taşıyan iki satırın tamamının kalkması nöbeti meşru sabitlerde yanlış alarma sürükler. Uyarı bu daraltmaya rağmen yerinde durur, çünkü satırı tarihsel iz sanan bir temizlik anmayı deseniyle birlikte götürür. Beş anma canlı belgelemedir ve çapraz varlık bakışının doğuş gerekçesini ya da önek eşlemesinin örneğini taşır. Bir anma yürürlükteki plan beyanıdır, çünkü ağustos mevsiminin asıl cephesini ilan eden Faz düğümünün içindedir. Kalan otuz bir anma mühürlü kayıt alanlarının içindedir. Bu yüzden bu Adım hiçbir anma için temizlik önermez ve tedaviyi sayıya değil anma anma savunmaya bağlar." ) {
+  --> STR-3
+}
+
+Çıkarım( kod: CKR-RAF-HARITA-ONERI,
+         kaynak: "Öneriler yukarıdaki yedi ölçümün birlikte okunmasından doğmuştur. KYN-MTR-A03 Adımının sınırı yalnız ölçüm ve haritalamadır; bu yüzden öneriler yazılmış fakat hiçbiri uygulanmamış, hiçbir bağlanma kenarı kurulmamış ve hiçbir kaynak dosyaya dokunulmamıştır. Öneri 2026-08-09 tarihinde yazılmıştır.",
+         tarih: 2026-08-09,
+         kanıt: "Önerilerin dayandığı üç sayı ayrı ayrı ölçülmüştür. Öksüzlerin iki yüz elli biri yaprak kayıt sınıflarına düşmekte ve yalnız otuzu gerçek boşluk taşımaktadır. Gerçek boşluğun yirmisi akış omurgasındaki dokuz İşAkışı ile takımlar ve kadro dosyalarındaki on bir katalog düğümünde yoğunlaşmakta, onu ise çapası ilan edilmemiş kuyruk düğümlerinden oluşmaktadır. Sızıntı tarafında kırk iki anmanın on biri dokunulmaz sınıflardadır ve otuz biri mühürlü kayıt alanlarının içindedir.",
+         ne: "📌 Ölçümden üç öneri doğar ve üçü de bu Adımın sınırı dışında kaldığı için yalnız yazılmıştır. Birincisi, öksüzlük kapısı açılacaksa hangi tiplerin yaprak sayıldığı önce sınıflama kanonunda ilan edilmelidir, çünkü aksi hâlde kapı yalnız meyve haritasının yüz on düğümünü yanlışlıkla drift sayacaktır. İkincisi, gerçek bağlanma adayı olan otuz düğüm kendi planlarında bağımlı, üretir ya da hatırlat kenarıyla bağlanmalıdır ve bu iş bu haritanın değil o planların Adımlarının işidir. Üçüncüsü, _Sarmal içinde kalan kırk iki anmanın hiçbiri için toplu bir temizlik önerilmemektedir; on biri dokunulmazdır ve otuz biri mühürlü kayıt alanındadır, dolayısıyla bir temizlik Adımı açılacaksa kapsamı anma anma savunulmalıdır. Dokunulmazlık gerekçesi anmanın kendisinde değil bulunduğu satırdadır: muafiyet desenlerini taşıyan iki satırın kaldırılması nöbeti yanlış alarma sürükler, oysa yalnız anma metninin silinmesi davranışı değil gerekçe kaydını yok eder; temizlik önerisi bu iki sonucu ayırmadan yazılamaz." ) {
+  --> KYN-MTR-A03
+}

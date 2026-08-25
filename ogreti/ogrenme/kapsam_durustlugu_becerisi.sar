@@ -1,0 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/kapsam_durustlugu_becerisi.sar — 🔍 KAPSAM DÜRÜSTLÜĞÜ BECERİSİ (DVR-A03)
+//
+//   Doğuş: 2026-07-17 gecesi — 'neyi kanıtladın, neyi kanıtlamadın' ayrımını
+//   elle yazılmış prompt sağladı, uçucuydu. Bu kart davranışı kalıcılaştırır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-KAPSAM-DURUSTLUGU, ne: "kanıtın kapsamını olduğu gibi beyan etme" )
+
+-->|
+  ## Amaç
+  🎯 Kapanış kayıtlarının ve raporların, kanıtladığından fazlasını iddia
+  etmemesini sağlamak. Çözdüğü problem: 'çalışıyor' genellemesi — tek koşuluk
+  gözlem bütün davranış uzayının kanıtı gibi sunulunca okur yanılır (YAS-3.4) ve
+  bilgi yanlış alana yığılır (DIL-1.1).
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle yazılan kapanışta kanıtlanan/kanıtlanmayan ayrımı
+  açıktır; ertelenen ve devredilen kalemler açık damgayla yazılıdır.
+|<--
+
+Beceri( kod: BCR-KAPSAM-DURUSTLUGU,
+        sağlar: YTN-KAPSAM-DURUSTLUGU,
+        yığın: evrensel,
+        anlatır: [ YAS-3.4, DIL-1.1 ],
+        ne: "Kapanış ve rapor metinlerinde kanıtın gerçek kapsamını beyan eder: ne sınandı, hangi girdiyle, neyi KAPSAMADI; eksik kalan iş açık damgayla devredilir",
+        neZaman: "Bir Adım kapatılırken; bir rapor/karne yazılırken; bir kabul ölçütü 'karşılandı' işaretlenecekken",
+        kurallar: [
+          "Her kanıt cümlesine dayanağını iliştir: hangi test, hangi komut, hangi gözlem — sayı ve dosya adıyla ('763/763' · 'denetle ⛔0' · 'rapor: nitelik/x.md')",
+          "Kanıtlanan MEKANİZMA ile kanıtlanan ÖLÇEK'i ayır: tek koşu tek vakayı kanıtlar, sınıfın tamamını değil — genelleme yapacaksan sınırını yaz",
+          "Karşılanamayan kabul kalemini silme ve 'karşılandı' sayma: dürüst revize et, açık damgayla devret ve nereye devrettiğini yaz (bilgi silinmez, doğru alana ayrılır — DIL-1.1)",
+          "Bir şey doğrulanamadıysa ('ağaç diskte bulunamadı' gibi) bunu kapanışa AYNEN yaz — yokluk kanıtı ile kanıt yokluğunu karıştırma"
+        ],
+        kabul: "Kapanış cümlesi kullanılan komutu, ölçülen girdiyi, sayısal sonucu ve ölçümün kapsamadığı alanı birlikte bildirir; karşılanmayan kalem sahipli bir devre bağlanır",
+        örnek: "İYİ kapanış: 'muafiyet davranışı fikstürde kanıtlandı (3 test); GERÇEK ağaçta ölçüm 0/0 — repoda vaka yoktu, saha kanıtı örnek projeye devredildi (açık damga)'. KÖTÜ: 'her yerde çalışıyor'",
+        antiDesen: "RED almamak için kabul metnini sonradan gevşetmek ya da kanıtsız kalemi sessizce 'karşılandı' listesine almak — denetçi farkı yakalar, güven sermayesi erir",
+        uygular: ORK-7 )
+
+Tetikleyici( kod: TTK-KAPSAM-DURUSTLUGU, tetikler: BCR-KAPSAM-DURUSTLUGU,
+             koşul: adım.durum == geliştirmede,
+             ne: "Kapanış kaleme alınırken kapsam beyanı bu karttan hatırlanır — iddia kanıtı aşmaz" )

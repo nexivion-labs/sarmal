@@ -1,0 +1,14 @@
+// 📜 SÖZLEŞME ŞABLONU — KAVUŞUM NOKTASI (contract-first, SDD-L3).
+//    Frontend↔backend anlaşması ÖNCE yazılır; hem Ekran hem Uç BURADAN türer.
+//    Sözleşme değişmeden iki taraf da değişmez → drift'in en güçlü kalkanı.
+//    Bekçi: sözleşmesiz-uç (her Uç bir sözleşmeye bağlanmalı).
+
+Sözleşme( kod: SZL-Ornek, sürüm: "1.0",
+          ne: "<bu sözleşme neyi anlaşmaya bağlar — tek cümle>",
+          istek: "<gönderilen alanlar — ör. eposta + parola>",
+          yanıt: "<dönen alanlar + hata kodları — ör. token · hatalar: 401, 429>" )
+
+// Kullanımı (BAŞKA dosyalarda türer):
+//   Ekran → Form( uygular: SZL-Ornek )   // önyüz sözleşmeyi ONURLANDIRIR
+//   Uç    → Uç( sözleşme: SZL-Ornek )     // arkayüz sözleşmeyi UYGULAR
+//   Paylaşımlı sözleşme (çok uygulama) → `çağır SZL-Ornek` (DIL-1.4 · altin_yol deseni)

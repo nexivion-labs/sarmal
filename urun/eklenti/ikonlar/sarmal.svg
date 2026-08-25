@@ -1,0 +1,42 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sarmalGrad" x1="6" y1="4" x2="27" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6D5DF6"/>
+      <stop offset="0.52" stop-color="#2685F2"/>
+      <stop offset="1" stop-color="#05C7B9"/>
+    </linearGradient>
+    <linearGradient id="sarmalShine" x1="10" y1="6" x2="22" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M16 4.7
+       a11.3 11.3 0 1 0 11.3 11.3
+       a8.15 8.15 0 1 1 -8.15 -8.15
+       a5.1 5.1 0 1 0 5.1 5.1
+       a2.45 2.45 0 1 1 -2.45 -2.45"
+    stroke="#1198F5"
+    stroke-opacity="0.18"
+    stroke-width="4.6"
+    stroke-linecap="round"
+    fill="none"/>
+  <path
+    d="M16 4.7
+       a11.3 11.3 0 1 0 11.3 11.3
+       a8.15 8.15 0 1 1 -8.15 -8.15
+       a5.1 5.1 0 1 0 5.1 5.1
+       a2.45 2.45 0 1 1 -2.45 -2.45"
+    stroke="url(#sarmalGrad)"
+    stroke-width="3.35"
+    stroke-linecap="round"
+    fill="none"/>
+  <path
+    d="M15.7 6.2
+       a9.75 9.75 0 0 0 -8.9 9.65
+       a9.1 9.1 0 0 0 8.65 9.08"
+    stroke="url(#sarmalShine)"
+    stroke-width="0.9"
+    stroke-linecap="round"
+    fill="none"/>
+</svg>

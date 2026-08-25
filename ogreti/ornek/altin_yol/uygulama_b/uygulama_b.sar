@@ -1,0 +1,48 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// uygulama_b/uygulama_b.sar — 📱 UYGULAMA B (ayrı ağaç · AYNI ortak auth'u çağırır)
+//   Not: sub-Uygulama kökü uygulama-ADIYLA anılır (ana.sar = yalnız Varlık/ÇalışmaAlanı kökü).
+//
+//   İKİNCİ uygulama — kendi ayrı ağacı, ama giriş için AYNI SZL-AUTH'u paylaşır.
+//   "Kök tek auth": A ve B, tek giriş sözleşmesine kavuşur (çok-app · tek-auth).
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır SZL-AUTH
+çağır UC-AUTH
+çağır TEM-BAHCE   // ortak tasarım sistemi (TAS-A01: tek tema, çok uygulama)
+
+Teknoloji( kod: TEK-B-FLUTTER, ne: "B ağacının önyüz çatısı — teknolojisiz yüzey doğmaz (ORK-2.4)" )
+
+-->|
+  ## Amaç
+  📱 Bahçenin B uygulaması — A'dan bağımsız ayrı ağaç, ortak girişi paylaşır.
+  ## Kapsam
+  📦 Giriş akışı (demo). AYNI ortak SZL-AUTH'u `çağır` ile kullanır.
+  ## Sonuç
+  ✅ Kabul: B'nin girişi de A ile aynı SZL-AUTH'a kavuşur (paylaşık auth ispatı).
+|<--
+Uygulama( kod: UYG-B, ad: "uygulama_b", ne: "📱 Bahçenin B uygulaması — A ile aynı girişi paylaşır" ) {
+
+  -->|
+    ## Amaç
+    B uygulamasının giriş akışı — ortak auth'a kavuşur.
+    ## Kapsam
+    Yalnız giriş ekranı (demo).
+    ## Sonuç
+    ✅ Kabul: giriş ekranı SZL-AUTH sözleşmesini uygular.
+  |<--
+  Blok( kod: BLK-B, ne: "B uygulaması giriş bloğu" ) {
+    Katman( kod: KAT-B-ONYUZ, kullanır: TEK-B-FLUTTER, ad: "önyüz" ) {
+      Adım( kod: ADM-B-GIRIS, ad: "giris-ekrani",
+            görev: "B uygulaması giriş ekranı — ortak SZL-AUTH sözleşmesini kullanır",
+            kabul: [ "giriş SZL-AUTH'a uygun istek gönderir" ],
+            üretir: EKR-B-GIRIS, bağımlı: [ SZL-AUTH ], durum: beklemede )
+    }
+  }
+
+  Ekran( kod: EKR-B-GIRIS, görünürlük: açık, ne: "B giriş ekranı", referans: ADM-B-GIRIS, tema: TEM-BAHCE ) {
+    Form( kod: FRM-B-GIRIS, görünürlük: açık, ne: "giriş formu", uygular: SZL-AUTH ) {
+      MetinAlanı( kod: ALN-B-EPOSTA, görünürlük: açık, ne: "e-posta girişi" )
+      Düğme( kod: DGM-B-GIRIS, görünürlük: açık, ne: "Giriş yap", çağırır: UC-AUTH )
+    }
+  }
+}

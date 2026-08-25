@@ -1,0 +1,258 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/bug_avi_defteri.sar — 🐛 KAPSAMLI BUG-AVI DEFTERİ (2026-07-11 · oturum 33)
+//   Founder talimatı (oturum-32 devri, birebir): "tüm projeyi gözden geçir ve
+//   SADECE BUG'ları ara — tüm kurallar ve kanunlar ÇALIŞIR olacak."
+//   Üç kapsam tarandı: (a) kural-kapsam mutabakatı (yasa beyanı ↔ motor gerçeği)
+//   (b) boş-küme kör noktaları (varlık-tetikli bekçilerin kaçırdığı "hiç
+//   yazılmamış doğru") (c) motor kod bugları. Her bulgu dosya:satır kanıtlı;
+//   B3/B4 ayrıca CANLI repro ile doğrulandı. İşler: plan/bakim_olgunluk.sar
+//   BKM-BUG fazı (BKM-SNV2 ile birleşik koşulur — devir talimatı).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🐛 Kapsamlı Bug-Avı Defteri — "beyan tam, motor yarım" taraması
+
+  ## Yöntem
+  12 yasa dosyasındaki ~40 kuralın zorlama beyanları tek tek çıkarıldı;
+  çekirdek motorun ana denetim dosyaları (denetci · kuralci · dogrulayici ·
+  tema · dag · belirtec · ayristirici · iskeletci · makro-dongu · dongu ·
+  koni/koniYaz · sef · siniflama · sarmal CLI) satır satır okundu; sinav2
+  dizini negatif fikstür olarak canlı koşuldu (sonuç: TAM-yeşil — F1/F2
+  körlüğü teyit). Kasa durumu: çekirdek 399/399 yeşil · denetle TAM-yeşil.
+  Okunmayan yüzeyler dürüstçe beyan: kimlik/mcp/gateway/rbac/sozlesme/
+  muzakere/orkestra/toolround/prizma-ailesi + eklenti src — BKM-BUG-A10
+  bu artığı taşır.
+
+  ## A · KURAL-KAPSAM MUTABAKATI (beyan ↔ motor)
+
+  ### M1 — `kapsam:` seçicisi HİÇ doğrulanmıyor; yasadaki 53 kural boş kümeye düşüyor 🔴
+  Kanon (kayit.json semalar.Kural.kural): kapsam serbest-seçicidir —
+  "aile adı | tip adı | tek KOD | tümü". Motor jokeri yalnız `tümü`
+  (kuralci.ts:193,382,534). Oysa yasa/ornek/sablon taraması: **53 kural
+  `kapsam: genel`** yazıyor (+1 `kapsam: onyuz` — doğru aile adı `yuzey`).
+  "genel" ne ailedir ne tiptir ne KOD'dur → bu kuralların kapsam kümesi
+  BOŞ: koni-taşması saymaz, kapsam-kesişim çatışması görmez ve en tehlikelisi
+  — yapısal koşullu bir kural `kapsam: genel` yazarsa kapsamda 0 düğüm kalır,
+  `zorlanamayan-koşul` bekçisi de `kapsamda > 0` şartına takılır
+  (kuralci.ts:570) → TAM SESSİZLİK. Bilinmeyen-kapsam bekçisi yok.
+  Gerek: ① kapsam-çözümü bekçisi (aile/tip/KOD/tümü'ye çözülmeyen kapsam =
+  uyarı) ② Founder kararı: kanonik joker `genel` mi `tümü` mü — yasa ile
+  motor aynı kelimeyi konuşmalı.
+
+  ### M2 — kırık-referans YALNIZ giriş dosyasında koşuyor; SD-6/SD-8/SD-12 beyanı daralmayı söylemiyor 🔴
+  `referansTanilari` (çağır çözümü + tüm kenar hedefleri) denetleKomutu'nda
+  yalnız ANA'ya uygulanıyor (sarmal.ts:724 — "DAR kapsam" bilinçli ama
+  YASADA BEYANSIZ). Sonuç: giriş dışındaki HER .sar'da `referans:`, `üretir:`,
+  `hatırlat:`, `yönetir:`, `anayasa:`, `çağır KOD` hedefleri denetim dışı —
+  yalnız `bağımlı`/`besler` kopuk-zincir (dag.ts) ile kapsanıyor. soz_dizimi.sar
+  SD-6/SD-8/SD-12 "kırık-referans → MOTORDA ✅" der; KRR-MUT-2 "sessiz daralma
+  yasak" ilkesinin ihlali. Sınav-tipi projede plan dosyaları giriş'ten çağrıldığı
+  için yazım-hatalı bir referans sonsuza dek sessiz kalır.
+
+  ### M3 — Zorlanan katmanda DÜZYAZI koşul hiçbir tanı almıyor (sessiz ölüm) 🟠
+  `katman: yapısal` + `koşul: "düzyazı"` → yapisalDegerlendir atlar
+  (kuralci.ts:546 "M-1 kapsamı" notu) ama M-1 hijyen de bu hali denetlemiyor →
+  kural ne değerlendirilir ne "değerlendirilemedi" denir. KRR-MUT-3
+  "değerlendirilemeyen koşul sessiz geçmez" beyanının deliği. Bugün yasadaki
+  YZ-3/YZ-6/YP-1 koşulları da düzyazı — bilerek (beyan-işaretçisi) ama motor
+  bunu "bilerek" ile "kaza"dan ayıramıyor. Gerek: düzyazı-koşul bilgi/uyarı
+  tanısı ("bu koşulu motor değerlendirmez — beyansa işaretle").
+
+  ### M4 — DL-2/K-85 ayraç beyanı ↔ motor toleransı 🟡
+  Yasa "ayraç alt-çizgi" der; motor KEBAP regex'i `_` VE `-` kabul eder
+  (denetci.ts:264 — geçiş dönemi comment'te beyanlı, yasada yarım). Ayrıca
+  `.sar` dosya adları DL-2 kapsamı dışı + SD-2 dosya-adı denetimi beklemede
+  → B5 sessizliğinin zemini. Dürüstlük eşitlemesi gerek (yasaya geçiş-dönemi
+  notu ya da motora sıkılaştırma).
+
+  ### M5 — kuralci KATMANLAR modül-düzeyi mutable durum: kanon sızıntısı 🟡
+  `let KATMANLAR` (kuralci.ts:25) her kuralDenetle'de kanondan tazelenir ama
+  kanonu OLMAYAN proje, kanonlu projeden SONRA denetlenirse önceki kümeyi
+  devralır (uzun-ömürlü MCP sürecinde gerçek senaryo). Saf-fonksiyon ihlali;
+  parametreye inmeli.
+
+  ## B · BOŞ-KÜME KÖR NOKTALARI (varlık-tetikli bekçi + hiç-yazılmamış doğru)
+
+  ### B1/B2 — rafsız-anadizin (YP-1) · kavuşumsuz-paralellik (SDD-L3) 🔴 [BİLİNEN]
+  Sınav-2 bulguları; BKM-SNV2-A01/A02 rayda. Bu avda CANLI yeniden doğrulandı:
+  sarmal_sinav2 bugün de TAM-yeşil geçiyor. Ek gözlem: rafsız anadizin yalnız
+  YP-1'i değil, ZİNCİRLEME üç bekçiyi söndürüyor — omurga boş kalınca
+  `bildirilmemiş-dosya` VE DL-2 `kural-ihlali` taramaları da (ikisi omurga-içi
+  arar, denetci.ts:240,281) hiç koşmuyor. A01 kapanışı bu zinciri de test etmeli.
+
+  ### B3 — Tema renkleri PARAMETRE yazılırsa renk bekçisi susuyor 🔴 [CANLI KANIT]
+  temaBir yalnız `d.ozellikler`e bakıyor (tema.ts:29); `Tema( renkler: {…} )`
+  paranteziçi yazımda `#ZZZZZZ` bile "Drift yok" geçiyor (repro: kanit_b3.sar).
+  YZ-6 "Tema düğümü her doğrulandığında" beyanına aykırı. Aynı kök: temaDenetle
+  gez'i parametre-değeri widget'larına inmiyor (tema.ts:22 yalnız ozellikler).
+  dogrulayici.ts:369 alanDeger dersinin ("yalnız parametrelere bakan denetçi
+  sessizce atlar") ayna hali — bu kez özellik tarafı tek kalmış.
+
+  ### B4 — Döngü `koşar:` SKALER yazılırsa hem denetçi hem koşucu kör 🔴 [CANLI KANIT]
+  donguTanilari kırık-koşar yalnız `tur === "liste"` dalında (denetci.ts:601);
+  donguBul `(p("koşar")?.ogeler ?? [])` (makro-dongu.ts:69) → skaler koşar
+  boş listeye çöker: `koşar: ADM-YOK-BOYLE` tanı almaz (repro: kanit_b4.sar)
+  ve koşucu SIFIR hedefle "sağlıklı" tur atar. K-87 "çıkışsız döngü dilin
+  kapısında ölür" beyanının kardeş deliği: hedefsiz döngü kapıdan geçiyor.
+
+  ### B5 — Yalnız harf-farklı .sar dosyası TAM sessiz 🟠
+  Plan `durum/kayit.sar` der, diskte `durum/Kayit.sar` yaşarsa: kayıp-yapı
+  harf-duyarsız bastırılır (denetci.ts:215, "DL-2 yakalar" notuyla),
+  bildirilmemiş-dosya da bastırılır (denetci.ts:238) — ama DL-2 kuralTanilari
+  yalnız md/yaml/json artefaktlarını ve dizinleri denetler (denetci.ts:262,285);
+  `.sar` dosyası İKİ bastırmanın arasına düşer → hiçbir tanı. macOS'ta çalışır,
+  Linux'ta "dosya yok" ile patlar.
+
+  ### B6 — Kenar hedefi TIRNAKLI yazılırsa çözüm denetimi yok + bekçi çöple doyuyor 🟠
+  referansTanilari yalnız `tur === "kod"` hedef denetler (denetci.ts:417);
+  `referans: "ADM-1"` (metin) hiç çözülmez. Üstelik zorunlu-kenar bekçileri
+  yalnız alan VARLIĞINA bakar → `referans: "boş laf"` kavuşumsuz-ekran'ı
+  susturur. kenar-metin tanısı (K-76) yalnız bağımlı/besler'e uygulanıyor
+  (denetci.ts:658) — diğer kenar tiplerine genellenmeli.
+
+  ### B7 — DurumKaydı boyut bekçisi harita değerlerini saymıyor 🟡
+  durumBoyutDenetle say() harita çiftlerine `+= 0` (dogrulayici.ts:167) —
+  4000 sınırı, metni haritaya gömerek delinebilir. Kademeli kapatma yeterli.
+
+  ### B8 — Parametre-değeri içindeki widget'ın kod'u yinelenen-kod'a görünmez 🟡
+  yinelenenKodTanilari gezKod yalnız cocuklar'ı gezer (denetci.ts:540);
+  `yasa: Yasa( kod: X )` gibi değer-widget'ındaki çift tanım sessiz —
+  kodIndeksle aynı düğümü indeksler (denetci.ts:387 icin ile), tutarsızlık.
+
+  ## C · MOTOR KOD BUGLARI
+
+  ### C1 — `kilitle` bilerek-hatalı muafiyetini tanımıyor 🟠
+  kilitleKomutu kendi yükleyicisini kullanır (sarmal.ts:899) — BILEREK_HATALI
+  pragması yok sayılır: muaf+parse-olmayan tek dosya tüm mühürlemeyi çıkış-2
+  ile keser (denetle aynı dosyayı hoş görür). programlariYukle'ye (DRY) inmeli.
+
+  ### C2 — Giriş dosyası muaf + sözdizim-bozuk → denetle ÇÖKER 🟠
+  programlariYukle muaf dosyanın sözdizim hatasını sessiz atlar (programlar'a
+  girmez, hatalar'a da girmez — denetci.ts:515); denetleKomutu
+  `programlar.get(anaEtiket)!` (sarmal.ts:693) undefined üstünde iskeletPlani →
+  TypeError. Fail-safe tanıya inmeli ("giriş dosyası bilerek-hatalı — denetim
+  yapılamaz").
+
+  ### C3 — frontmatterKod regex'i dosya-başı şartsız 🟡
+  /^---[\s\S]*?^kod:/m (denetci.ts:158) — ilk 512 karakterde HERHANGİ `---`
+  satırı + `kod:` satırı frontmatter sanılır (md gövdesinde yatay çizgi + kod:
+  geçen satır → sahte KOD → sahte yer-uyuşmazlığı). Çapa dosya-başına alınmalı.
+
+  ### C4 — koniAlani "referans" türetme dalı ÖLÜ KOD 🟢
+  koni.ts:50-53 aynı alan adını ikinci kez arar — p bulunmadıysa r de yoktur;
+  dal hiçbir zaman değer üretmez. Temizlenmeli (yanıltıcı).
+
+  ### C5 — Koni hâlâ `bağımlılık` alanı üretiyor; K-76 o alanı HATA ile yasakladı 🟠
+  KONI_ALANLARI "bağımlılık" içerir (koni.ts:18) ve iskeletçi Adım .md'sine
+  "## bağımlılık" başlığı basar (iskeletci.ts:163) — kullanıcı bu başlığı
+  .sar'a taşırsa gizliBagimlilikTanilari `bağımlılık-mekanik` HATASI yer.
+  Üretilen yüzey, yasakladığımız alana yönlendiriyor; koni alan adı ile kenar
+  adı (bağımlı) hizalanmalı.
+
+  ### C6 — Negatif sayı literali yok; hata mesajı yanıltıcı 🟡
+  `puan: -5` → lexer `-` işleci + ayristirAtom "Değer bekleniyordu" (SD-4
+  "sayı" beyanına belgesiz daralma). Ya unary eksi desteklenir ya SD-4'e
+  sınır yazılır + özel öneri mesajı.
+
+  ### C7 — Değerlendirme eşik bandı: sayısal-olmayan İLK değerde tüm denetim terk 🟢
+  degerlendirmeDenetle eşik döngüsünde `return` (kuralci.ts:235) — kalan
+  çiftler ve bant-monotonluğu denetlenmeden çıkar; `continue` olmalı.
+
+  ### C8 — makro-koşucu v1 yalnız Adım koşar; kırık-koşar önerisi "Orkestrasyon ilan et" diyor 🟢
+  denetci.ts:608 önerisi ile makro-dongu.ts:131 gerçeği çelişik — öneri
+  metni v1 gerçeğine çekilmeli (yanıltıcı rehberlik).
+
+  ### C9 — Tekil-dosya kipinde Döngü/DAG tanıları hiç koşmuyor (beyan netliği) 🟢
+  kırık-koşar/kopuk-zincir/durum-tutarlılığı yalnız `denetle` seviyesinde;
+  `sarmal <dosya.sar>` çıktısındaki "Drift yok" bunu söylemiyor (sinav2 A7
+  akrabası — tek-dosya≠bütün). Çıktıya kapsam notu eklenmeli.
+
+  ## Çıkarım
+  Motorun 399 testi yeşil ve beyanların BÜYÜK çoğunluğu doğru (SD-1/3/4/5/
+  10/11/13/14/15 · YP-1 çift-yön · DL-2 · BÇ-2 · DR-10 · YZ-3/YZ-4 · ebedi
+  mühür — hepsi koddan doğrulandı). Kırılma deseni hep aynı: bekçi VAR ama
+  (a) kapsam kelimesi kanonla uyuşmuyor (M1), (b) tek yazım-biçimini görüyor
+  (B3/B4/B6 — parametre↔özellik ve skaler↔liste ikilikleri), (c) daralma
+  beyansız (M2/C9). Sınav-2'nin "yeşil ama kör" dersi motor içinde de fraktal.
+  Çalışma listesi: plan/bakim_olgunluk.sar BKM-BUG fazı (A01-A10) —
+  BKM-SNV2 A01-A05 ile birleşik koşulur.
+|<--
+Çıkarım( kod: CKR-BUGAVI-1, kaynak: "Founder bug-avı talimatı (oturum-32 devri) + çekirdek kaynak taraması + sinav2/kanit canlı reproları (2026-07-11)",
+         ne: "🐛 Kapsamlı bug-avı hükmü: 5 mutabakat + 8 boş-küme + 9 kod bulgusu — kırılma deseni 'bekçi var, ikinci yazım-biçimine kör'; işler BKM-BUG fazında, BKM-SNV2 ile birleşik koşulur" ) {
+  --> BKM-BUG
+}
+
+-->|
+  # 🔭 EK — A10 Kalan-Yüzey Taraması (2026-07-11 · aynı oturum)
+
+  ## Yöntem ve kapsam
+  A01-A09 turu kapandıktan sonra ilk turda okunmayan yüzeyler aynı üç kapsamla
+  (mutabakat · ikinci-yazım körlüğü · kod bugu) tarandı. Derinlik iki kademeli
+  ve tabloda dürüstçe işaretli: TAM = satır satır okundu; HIZLI = başlık +
+  kök-desen grep'i (tek-taraflı parametre/özellik araması + skaler/liste +
+  tırnaklı/çıplak kalıpları).
+
+  ## Üç-durum tablosu — çekirdek artığı
+  TAM-TEMİZ: kimlik.ts · gateway.ts · sozlesme.ts · muzakere.ts · orkestra.ts ·
+             toolround.ts · belgele.ts · graf.ts · etki.ts · agac.ts · sablon.ts ·
+             tema-designmd.ts · yolcoz.ts · deger-yaz.ts
+  TAM-NOTLU (düşük): rbac.ts (apex-tekil dosya-kapsamı beyanlı ilk dilim;
+             Etmen'i yalnız çocuk-gezisiyle arar — değer-widget Etmen görülmez)
+  TAM-BULGULU: mcp.ts (E2) · kopru/nvidia.ts (E3) · prizma.ts (E4)
+  HIZLI-TEMİZ: cevir.ts · yazdir.ts · kopru/iz.ts · kopru/lig.ts
+
+  ## Üç-durum tablosu — eklenti src (23 dosya)
+  TAM/HEDEFLİ-BULGULU: yolharitasi.ts · takdir.ts · anahat.ts (E1) ·
+             eklenti.ts (E5)
+  HIZLI-TEMİZ: ortak.ts · gezinme.ts · onizleme.ts · tamamlama.ts · dallar.ts ·
+             bicimle.ts · bicimlendir.ts · ipucu.ts · katla.ts · nabiz.ts ·
+             onbellek.ts · renk.ts · satirici.ts · yildiz.ts · duzeltme.ts ·
+             girinti.ts · imza.ts · baglanti.ts (kök-desen grep + başlık)
+  ÜRETİLMİŞ: gomulu-kanon.ts (renk-uret çıktısı — el-yazımı değil, kaynağı kanon)
+
+  ## E-bulguları (A10)
+
+  ### E1 — Eklenti `durum`/alan okumaları yalnız PARAMETREDEN 🟠 (A04'ün eklenti ikizi)
+  Motor `durum`u parametre∪özellik okur (dogrulayici alanDeger dersi); eklenti
+  üç yüzeyde yalnız parametreye bakıyor: yolharitasi.ts:129 `parametre()` yardımcısı
+  (yol haritası paneli — gövde-durumlu Adım yanlış rozet alır) · takdir.ts:54
+  (gövde-durumlu tamamlandı Adım geribildirim kanallarını hiç göstermez) ·
+  anahat.ts:81 (anahat `ne` gösterimi gövde-özellikli düğümde boş).
+
+  ### E2 — MCP `denetle` örtü-körü 🟠
+  mcp.ts denetleAraci taban kanonla koşar (mcp.ts:44 tek sefer yüklenir);
+  ÇalışmaAlanı örtüsü (ortu.json · find-up · SEF-L3-A20/BKM-OLG-A02) HİÇ
+  uygulanmaz → OS tarafının örtü-enum'ları MCP'de sahte geçersiz-enum üretir.
+  `yol` argümanı verildiğinde dirname'den örtü çözülebilir; `kaynak`-only
+  çağrı için opsiyonel `dizin` argümanı gerekir. Ek not: kanon süreç-başı
+  cache'lenir (gezin'in "önbellek yok bilinçli" kararıyla tutarsız).
+
+  ### E3 — NVIDIA köprüsü `güvenlik` rolünü tanımıyor 🟡
+  sistemPrompt (nvidia.ts:39) yalnız üretici/denetçi ayrımı yapar; güvenlik
+  rolü denetçi kalıbına düşer ("rol='denetçi' olmalı" der) → HALKA-GUV canlı
+  koşumda rol alanı çelişir. Canlı raylar BKM-FND-A01 kilidinde — düşük aciliyet.
+
+  ### E4 — Prizma tırnaklı `kod:` kimliğini öne çıkarmaz 🟢
+  düğümYalın (prizma.ts:75) yalnız `tur === "kod"` değeri kimlik sayar;
+  `kod: "X"` (tırnaklı metin) alanlara düşer — JSON/XML yüzünde kod niteliği
+  kaybolur (motor kodIndeksle iki yazımı da kabul eder — tutarsızlık).
+
+  ### E5 — Eklenti kapısı: cross-file tanılar SABİT Error + liste motorun alt-kümesi 🟠
+  eklenti.ts:96 cross-file tanıları `DiagnosticSeverity.Error` sabitiyle basar —
+  donguTanilari'nın bilgi (durunca-sözlüğü) ve uyarı düzeyleri panelde KIRMIZI
+  görünür (düzey eşlemesi tek-dosya yolunda var, cross yolunda yok). Ayrıca
+  cross-file kapı listesi (dag·durum-tutarlılık·gizli-bağımlılık·döngü) motorun
+  alt-kümesi: A02 referans genişlemesi · yinelenen-kod · kopuk-zincir ·
+  kayıp-kenar · kapsam-çözümü · kavuşumsuz-paralellik panelde yok — hangi
+  bekçinin hangi yüzeyde koştuğu tek yerde beyan edilmeli (KRR-MUT-2 ruhu).
+
+  ## Hüküm
+  Çekirdeğin kalan yüzeyi büyük oranda TEMİZ (14 dosya tam-temiz); bulgular
+  yüzey katmanlarında (MCP/eklenti/köprü) ve çoğu ilk turun kök-deseninin
+  ("ikinci yazım-biçimine körlük") aynı ailesinden. Beş E-bulgusu tek koni-dolu
+  Adım'a bağlandı: BKM-BUG-A11.
+|<--
+Çıkarım( kod: CKR-BUGAVI-2, kaynak: "A10 kalan-yüzey taraması — 19 çekirdek + 23 eklenti dosyası, iki kademeli derinlik tablosu yukarıda (2026-07-11)",
+         ne: "🔭 A10 hükmü: çekirdek artığı 14/19 tam-temiz; 5 E-bulgusu (eklenti ikinci-yazım ikizi · MCP örtü-körlüğü · köprü güvenlik-rolü · prizma tırnaklı-kod · eklenti sabit-Error+alt-küme kapı) BKM-BUG-A11'e bağlandı" ) {
+  --> BKM-BUG
+}

@@ -1,0 +1,127 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/niyet_dili_becerisi.sar — 🗣️ NİYET DİLİ BECERİSİ (DIL-1.1 uygulaması)
+//
+//   Düstur: kural ZORLAR (DIL-1.1 · YAS-2), beceri ÖĞRETİR (bu dosya · OGR-2.2). Bu beceri,
+//   niyet alanlarını (ne · görev · kabul · sınır · koşu) insan diliyle yazmayı
+//   öğretir; Sarmal ajan kadrosuna ŞEF enjeksiyonuyla taşınmaya adaydır (DVR rayı).
+//   Doğuş: Sol'un plan taraması (2026-07-17) + Founder sınır çizimi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-NIYET-DILI, ne: "niyet ifadelerini insan diliyle, alan ayrımına uyarak yazma" )
+
+-->|
+  ## Amaç
+  🎯 Plan ve belge metinlerindeki niyet ifadelerini, ilk okumada anlaşılan,
+  dilbilgisi kurallarına uyan, akademik-teknik ve saygılı bir Türkçeyle yazmayı
+  öğretmek. Çözdüğü problem: teknik olarak zengin bilginin tek bir alana
+  yığılması ve mecaz/kısaltma yoğunluğunun açıklamanın yerine geçmesi.
+
+  Diátaxis amacı: nasıl-yapılır rehberi.
+
+  ## Alan ayrımı (DIL-1.1 ①)
+  Her bilgi kendi alanında yaşar; yoğunluğu azaltmak için bilgi silinmez,
+  doğru alana ayrılır:
+  - `ne` — Adımın amacı ve çözdüğü teknik problem. Uygulama günlüğü değildir.
+  - `görev` — Uygulanacak işlemler, mantıksal sırayla. Sonuç ya da onay kaydı içermez.
+  - `kabul` — Yalnız gözlemlenebilir ve sınanabilir koşullar. Geçmiş zamanlı
+    faaliyet değil, doğrulanabilir koşul.
+  - `sınır` — Kapsam dışı işler ve korunacak değişmezler; açık ve yoruma kapalı.
+  - `koşu` (kanıt/yorum) — Tarih, oturum, onay, test sayısı ve kapanış kayıtları.
+
+  ## Yazım örneği (kötü → iyi)
+  KÖTÜ (yığılmış, mecaz açıklamasız):
+    ne: "⚖️ GenelKural/ÖzelKural MOTOR-VATANDAŞLIĞI (Founder gece, vitrin
+         sorusu: 'bunlar çalışıyor mu?') — şema+kuralci+testler, göç sonraya"
+  İYİ (amaç + problem, tam cümlelerle):
+    ne: "⚖️ GenelKural ve ÖzelKural düğümlerini kural değerlendirme motoruna
+         dâhil etmek. Bu iki düğüm türü bugün yalnız kod ve açıklama taşımakta,
+         Kural düğümünün doğrulama alanlarından yararlanamamaktadır. Bu Adım üç
+         düğüm türünü ortak bir değerlendirme modeli altında birleştirir."
+  (Tarih, onay ve test kayıtları `koşu` alanına; göç ertelemesi `sınır` alanına gider.)
+
+  ## Kabul ölçütü standardı (MIM-1.6)
+  Her ölçüt şu sorulardan en az birini yanıtlar: hangi davranış doğrulanacak?
+  Hangi girdiyle hangi sonuç bekleniyor? Doğrulama hangi test ya da denetimle
+  yapılacak? "Çalışıyor", "tam yeşil", "temiz" tek başına ölçüt olamaz — hangi
+  komuta, teste ya da gözleme dayandığı belirtilir.
+
+  MIM-1.6 uyarınca sınanabilir her `kabul` maddesi, aşağıdaki kontrollü doğal dil
+  kalıplarından biriyle yazılır:
+  1. "Eğer <koşul> ise, <beklenen gözlemlenebilir sonuç> beklenir"
+  2. "<bileşen>, <girdi> verildiğinde <çıktı>yı üretir"
+
+  Koşul ile girdi yeniden kurulabilir; sonuç ile çıktı da test tarafından
+  gözlemlenebilir olmalıdır. Serbest açıklama kullanılabilir, ancak sınanabilir
+  koşul bu iki kalıptan birine çevrilir. Bu standardın dayanakları DIL-1.1'in
+  ölçülebilir niyet dili ile YAS-4.1'in "varlık değil, davranış kanıtlanır"
+  ilkesidir.
+
+  Somut test dönüşümü:
+  - Kabul maddesi: `Kullanıcı adı doğrulayıcısı, boş metin verildiğinde "Kullanıcı adı boş olamaz" hata sonucunu üretir.`
+  - Test önkoşulu: doğrulayıcıya `""` değeri verilir.
+  - Test eylemi: kullanıcı adı doğrulaması çalıştırılır.
+  - Beklenen gözlem: dönen hata sonucu tam olarak `"Kullanıcı adı boş olamaz"`
+    metnini taşır; farklı bir metin ya da başarı sonucu testi başarısız kılar.
+
+  Böylece kabul maddesindeki bileşen, girdi ve çıktı doğrudan testin öznesine,
+  düzenlemesine ve doğrulamasına dönüşür. "Doğrulayıcı çalışıyor" ya da "testler
+  tam yeşil" aynı senaryoyu kurmadığı için kabul ölçütü değildir.
+
+  ## Denetim listesi (YAP / YAPMA)
+  Bir niyet metnini yazdıktan sonra, aşağıdaki altı ölçütün her biriyle karşılaştır:
+
+  1. Niyet cümlesi.
+     YAP: `görev: "Ayrıştırıcıya hatalı parantez durumunu yakalayan tanı kuralı ekle."`
+     YAPMA: `görev: "Parantez mevzusunu hallet."` — öznesi ve somut fiili belirsizdir.
+  2. Kabul ölçütü.
+     YAP: `kabul: "Eğer kullanıcı adı alanı boş bırakılıp form gönderilirse, 'Kullanıcı adı boş olamaz' uyarısının görüntülenmesi ve isteğin gönderilmemesi beklenir."`
+     YAP: `kabul: "Kullanıcı adı doğrulayıcısı, boş metin verildiğinde 'Kullanıcı adı boş olamaz' hata sonucunu üretir."`
+     YAPMA: `kabul: "Testler geçti, kod çalışıyor."` — gözlemlenebilir ve sınanabilir bir koşul değildir.
+  3. Karar gerekçesi.
+     YAP: `gerekçe: "Sıkı tarih zorlaması iş akışını kestiği için nazik rejime geçildi."`
+     YAPMA: `gerekçe: "Böyle daha iyi oldu."` — ölçülebilir bir dayanak sunmaz.
+  4. Emoji kullanımı.
+     YAP: `ne: "🛡️ Güvenlik duvarı kurallarını tanımlar."` — emoji yalnız vurgu ve
+     görsel arama kolaylığıdır; açıklamayı metin taşır.
+     YAPMA: `Proje( kod: 🛡️_PROJE )` — emoji bir düğüm kimliğinin, tip adının ya da
+     parametrenin yerine geçemez (kaynak: nitelik/emoji_kanon_taslagi.sar; renk ve
+     emoji kanonu YUZ-4.1).
+  5. Dosya adlandırma.
+     YAP: `durum_devir.sar` — küçük harf, alt-çizgi ayraç, içeriği tarif eden ad (DIL-1.2).
+     YAPMA: `DurumDevir.SAR` ya da `is-akisi-FINAL.sar` — büyük harf, tire ve
+     yer-tutucu ek kanona aykırıdır.
+  6. Süreç geçişi.
+     YAP: Adım'a başlarken durumu `geliştirmede` işaretle ve koniyi doldur.
+     YAPMA: Adım'ı doğrudan `tamamlandı` yapıp kapatmak — beklemede durumundan
+     tamamlandı durumuna atlama, seçilebilir Adım hükmü ORK-3.2'yi ihlal eder.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyi kullanan ajanın yazdığı Adım metinlerinde alanlar
+  görevine uygun dolar, cümleler dilbilgisi kurallarına uyar, mecazların teknik
+  karşılığı aynı yerde bulunur ve kabul ölçütleri sınanabilir olur.
+|<--
+
+Beceri( kod: BCR-NIYET-DILI,
+        sağlar: YTN-NIYET-DILI,
+        yığın: evrensel,
+        ne: "Plan ve belge metinlerindeki niyet alanlarını (ne · görev · kabul · sınır · koşu) DIL-1.1 standardıyla yazar: alan ayrımı, tam Türkçe dilbilgisi, akademik-teknik saygılı ton, ölçülebilir kabul",
+        neZaman: "Bir Adım/Blok/Katman yazılırken ya da mevcut bir niyet metni elden geçirilirken; bir rapor, karar veya belge kaydı kaleme alınırken",
+        kurallar: [
+          "Düsturu uygula — 'Netlik, güvencenin sinyalidir': her cümle kesin ve net, hedef odaklı, yol göstericidir; kayıt bütün dünya okuyacakmış gibi resmî belge titizliğiyle yazılır (commit/PR açıklamaları dahil: ne yapıldı, niçin yapıldı, kapsamı nedir)",
+          "Her bilgiyi kendi alanına yaz: ne=amaç+problem · görev=işlemler · kabul=sınanabilir koşullar · sınır=kapsam dışı+değişmezler · koşu=tarih/onay/test kayıtları · rapor=Adım-özgü bulgu/gözlem (tarih + metin; ORK-2.2 — tek Adım'ı ilgilendiren kayıt o Adım'ın altında yaşar) · yama=Adım-özgü düzeltme kaydı (aynı biçim; birden çok kayıt madde listesi olarak birikir)",
+          "Yoğunluğu azaltmak için bilgiyi SİLME; doğru alana AYIR — değerli ayrıntı korunur",
+          "Tam cümleler kur; Türkçe dilbilgisi ve yazım kurallarına eksiksiz uy; telgraf dili ve ok-zinciri anlatımını cümle yerine kullanma",
+          "Kesinlik kipiyle yaz: belge yüklemi 'onaylanmıştır/doğrulanmıştır/değişmemiştir' biçimindedir; '-mış' tek başına aktarma kipidir, belge dilinde kullanılmaz",
+          "Her ifadenin beş soruyu karşıladığını denetle: ne, neden, kim için, ne zaman, hangi koşullarda (koşul varsa mutlaka yazılır)",
+          "Mecazı tek başına açıklama olarak kullanma; teknik karşılığını aynı cümlede ver",
+          "Bir kavramı ilk kullanımında tanımla; belirsiz fiil yerine uygulanabilir fiil seç (düzenle · genişlet · doğrula · eşleştir · sınırlandır · üret)",
+          "Kabul ölçütünü MIM-1.6'nın kontrollü doğal dil kalıplarından biriyle sınanabilir yaz: 'Eğer <koşul> ise, <beklenen gözlemlenebilir sonuç> beklenir' ya da '<bileşen>, <girdi> verildiğinde <çıktı>yı üretir'; 'çalışıyor/tam yeşil/temiz' tek başına ölçüt değildir (dayanak: DIL-1.1 ve YAS-4.1)",
+          "Emoji-kanonu koru (tip simgeleri ve karar-emoji dili kalır); emojiyi açıklamanın yerine geçirme",
+          "Aynı bilgiyi birden fazla alanda yineleme; kod, tip, dosya ve alan adlarını değiştirme",
+          "Dosya adı içeriği tarif etsin: küçük harf, Türkçe-ASCII, anlamlı ad",
+          "Kişilerden ve onay makamlarından tarafsız ve saygılı biçimde söz et; öznel üstünlük ifadesi kullanma"
+        ],
+        kabul: "Yazılan kayıt ne, görev, kabul, sınır ve koşu bilgisini doğru alanlara ayırır; kabul cümlesi belirli bir girdide gözlemlenebilir sonuç taşır ve proje denetiminde niyet-dili ihlali üretmez",
+        örnek: "KÖTÜ: ne: 'kabulGate TÜKETİLİR (B7) — adı kapı davranışı telemetri, sozlesme.ts:106 geçti/ihlaller hesaplıyor ama kimse okumuyor'. İYİ: ne: 'kabulGate sonucunu mühür hesabına bağlamak. Sözleşme denetimi bugün geçti/ihlal bilgisini üretmekte, ancak üretim yolunda hiçbir tüketicisi bulunmamaktadır; bu Adım mühür kararını o bilgiye bağlar.' (dosya:satır ayrıntısı göreve, tarihçe koşuya gider)",
+        antiDesen: "Tek `ne` alanına tarihçeyi, teşhisi, kararı, uygulamayı, doğrulamayı ve kapanış notunu birlikte yığmak — metin uygulama günlüğüne dönüşür ve akademik açıklık kaybolur",
+        uygular: DIL-0 )

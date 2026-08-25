@@ -1,0 +1,56 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// felsefe/prizma.sar — 🔺 PRİZMA MANİFESTOSU (FEL-5 · Sarmal kendini Sarmal'la anlatır)
+//
+//   Yayın vitrini: dil kendi vizyonunu kendi belge-bloklarıyla ifade eder.
+//   Founder tezi (2026-07-06): "Önemli olan makineyi, insanı ve ajanı birleştirmek."
+//   İnsan okuma yüzü: prizma-dort-yuz.md; kanonik dayanak YUZ-1 ve YUZ-1.1.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🔺 Sarmal'ın gerçek işini tek cümlede sabitlemek: **format üretmek değil, üç aktörü
+  — makine · insan · ajan — tek gerçek etrafında birleştirmek.** Prizma bunun nasıl'ıdır:
+  tek `.sar` kaynağı bir prizmadan geçer, her aktör kendi ana dilinde kendi yüzünü alır;
+  hepsi aynı ışıktan doğduğu için asla birbirinden kopmaz (drift YOK).
+
+  ## Prizma — İKİ EKSEN, tek kaynak
+
+  Aynı `.sar` iki yöne birden kırılır: kim okuyacak (FORMAT) ve hangi teknolojiyle
+  çalışacak (DİL). Format ekseni aktörü buluşturur; dil ekseni yığınları buluşturur.
+
+  ```
+                        ☀️  .sar  (TEK KAYNAK — tek gerçek)
+                              │  parse → Dugum ağacı (tek iç temsil)
+              ┌───────────────┴───────────────┐
+        FORMAT EKSENİ                     DİL EKSENİ  (FEL-1: şef, çalgıcı değil)
+        "kim okuyacak?"                   "hangi teknolojiyle?"
+              │                                 │
+     ╱      │      │      ╲              hedef teknolojiler
+  ⚙️Makine 🤖Ajan 🔧Config 👤İnsan        (kodu ÇALGICI yazar; Sarmal niyet üretir)
+    JSON    XML   YAML    MD              cevir.ts → tasarim_sozlugu/kayit.json
+     │       │     │       │              (TR kavram → hedef teknoloji)
+  determ. reason token narrative                    │
+   %100   aktif  verim  okunur           tek niyet → N teknoloji, çeviri çalgıcıda
+     └───────┴─────┴───────┘
+              │
+   JSON+XML+YAML+MD birlikte, tek kaynaktan → hepsi aynı gerçeği söyler
+   JSON makineyi · XML ajanı · YAML config'i · MD insanı taşır → DRIFT YOK
+  ```
+
+  ## Kapsam
+  📦 Bu belge Sarmal'ın çekirdek vaadini savunur; uygulama planı (JSON+YAML projektörü,
+  XML dışa-verme) ayrı turdur. Durum: 4 yüzden MD ✅ çalışır (belgele.ts), XML ⚠️ yarım
+  (`.sar` gövdesi bölüm-etiketi gömer ama dışa-vermez), JSON ⬜ ve YAML ⬜ yazılmadı.
+  Kısıt = güç: DÖRT yüz, nokta — "plugin ile N. format" YASAK (hayali genişletme = drift).
+
+  ## Sonuç
+  ✅ Kabul: `denetle .` bu belgeyi sıfır hatayla geçer (dogfood — dil kendini kendi
+  diliyle ifade eder). Türetilmiş bir tüketici tek kaynaktan beslenmezse yüzler ayrışır;
+  bu nedenle önce Prizma sözleşmesi, sonra tüketici yüzleri kurulur.
+|<--
+
+Felsefe( kod: FEL-5,
+         ad:  "Prizma — Tek Kaynak, Dört Yüz",
+         ne:  "🔺 Sarmal üç aktörü (makine·insan·ajan) + tüm teknoloji dillerini tek .sar kaynağında kavuşturur — yüzler tek ışıktan doğar, drift olmaz",
+         tez: "Sarmal'ın işi format değil BİRLEŞTİRME'dir: tek kaynak (.sar) iki eksende kırılır — FORMAT (JSON makine·XML ajan·YAML config·MD insan) + DİL (hedef teknolojiyi yürütücü uygular); hepsi aynı gerçekten türediği için asla kopmaz",
+         referans: [ YUZ-1, YUZ-1.1, FEL-1, FEL-2 ] )

@@ -1,0 +1,23 @@
+{
+  "name": "@sarmal/cekirdek",
+  "version": "0.1.0",
+  "description": "Sarmal çekirdeği — .sar belirteçleyici + ayrıştırıcı (kaynak → söz dizim ağacı). Node yerel TypeScript (type-stripping) ile ÇALIŞIR; typescript yalnız TİP-DENETİMİ için (dev). devDependencies = editör tipleri (@types/node) + derleyici (typescript) — çalışma zamanında SIFIR bağımlılık (STR-3.1).",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "sarmal": "src/sarmal.ts"
+  },
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "sar": "node src/sarmal.ts",
+    "test": "node --test --test-concurrency=1 \"sinama/*.test.ts\"",
+    "tip-denetle": "tsc --noEmit",
+    "mcp": "node src/mcp.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "typescript": "^5.9.3"
+  }
+}

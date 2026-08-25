@@ -1,0 +1,803 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/vitrin_ui.sar — 🎨 Vitrin Yüzleri + Founder UI Hükümleri (YUZ-3 · YUZ-3.1)
+//
+//   Köken: oturum 28 — YUZ-3 dış gözden geçirmesi ("gerçek DSL+ekosistem" tanındı)
+//   vitrin kalemlerini, YUZ-3.1 Founder UI hükümleri editör hissiyatını kilitledi.
+//   Bu plan iki kararın 7 kalemini raya döker (oturum 29 ray-döşeme turu).
+//
+//   ⚖️ STR-3: tüm kalemler AÇIK mekanizma — deterministik render/rozet/CLI yüzü;
+//   ajan-seçim/politika zekâsı içermez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🎨 Vitrin Yüzleri + UI Hükümleri — YUZ-3 · YUZ-3.1
+
+  ## Amaç
+  🎯 Sarmal'ın dışa görünen yüzünü karar-kilitli kalemlerle parlatmak: plan durumu tek
+  bakışta okunur (renk rozetleri · build karnesi), değişikliğin etkisi motordan sorulur
+  (`sarmal etki <KOD>`), editör hissiyatı Founder hükümleriyle hizalanır (nabız · ünlem ·
+  gövde-tonu tiki).
+
+  ## Kapsam
+  📦 YUZ-3 maddesinin 4 vitrin kalemi ile YUZ-3.1 maddesinin 3 UI hükmü. Dokunulan yüzeyler: eklenti/src
+  (yolharitasi · satirici · bicimle · renk) + cekirdek/src (sarmal CLI · yazdir · yeni
+  etki.ts). Kapsam dışı: ŞEF orkestrasyon motoru (sef_halka.sar) ve eklenti performans
+  kalemleri (eklenti/plan.sar EKL-F9).
+
+  ## Sonuç
+  ✅ Panel/satır rozetleri dört durumu renkle konuşur, denetle sonu karne basar,
+  `sarmal etki <KOD>` bir düğümün besleme zincirini gösterir, hata lensi nabız atar,
+  Hatırlatıcı ünlemle yaşar ve karara bağlanınca zincire girer, Blok tiki gövde tonuyla
+  ayrışır. Kabul: denetle-temiz + eklenti sınamaları yeşil + gerçek-VSCode gözle teyit.
+|<--
+
+Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
+  ne: "YUZ-3 vitrin yüzleri + YUZ-3.1 Founder UI hükümleri — dışa görünen yüz ve editör hissiyatı" ) {
+
+  // ══ KATMAN · YUZ-3 VİTRİN: dış gözden geçirmenin vitrin kalemleri ═══════════════
+  Katman( kod: VIT-K77, kullanır: TAKIM-EKLENTI, ad: "vitrin yüzleri",
+    ne: "🪟 YUZ-3 vitrin kalemleri — durum rozetleri · build karnesi · etki-analizi yüzü · hizalama standardı" ) {
+    // Katı rejim yerleşimi (proje-kod turu 2026-07-31): dört tamamlanmış Adım
+    // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
+    AltKatman( kod: VIT-K77-AK1, departman: kodlama, ad: "vitrin kodlaması",
+      ne: "vitrin kalemlerinin eklenti kod işleri" ) {
+
+    Adım( kod: VIT-K77-A01, durum: tamamlandı, üretir: [ KOD-YOLHARITA ], bağımlı: [],
+      ne:    "🟢 Durum renk rozetleri — dört durum (tamamlandı🟢 · geliştirmede🟡 · beklemede🔵 · bloklu⛔) panelde ve satırda TEK renk diliyle konuşur (YUZ-4.1)" ) {
+      görev: "eklenti yolharitasi.ts + satır dekorasyonlarında Adım durumunu dört-renk rozet standardına bağla: tamamlandı=yeşil🟢, geliştirmede=sarı🟡, beklemede=mavi🔵, bloklu=kırmızı⛔. Renkler kanondan (kayit.json rozet renkleri — YUZ-4.1 tek-kaynak, elle hex yasak); mevcut bloklu-kırmızı (HALKA-SENK-A01) bu standarda katılır"
+      kabul: [
+        "dört durum panelde ve satır rozetinde ayrı renkle görünür; renk kaynağı kanon (elle hex yok)",
+        "durum değişince rozet canlı güncellenir (mevcut watch)",
+        "eklenti sınaması yeşil + gerçek-VSCode gözle teyit"
+      ]
+      referans: [ SNF-0 ]
+      sınır:    "yalnız rozet/renk standardı — durum YAZIMI SENK-A05/IZLE-A02 işi; Blok tiki VIT-K78-A03'te"
+    }
+    Adım( kod: VIT-K77-A02, durum: tamamlandı, üretir: [ KOD-YAZDIR ], bağımlı: [],
+      ne:    "📋 Build-sonu karnesi — denetle koşusu sonunda tek-bakış karne: hata/uyarı sayısı · ağaç sağlığı · tamamlanma oranı · en riskli dosyalar (YUZ-3)" ) {
+      görev: "cekirdek denetle çıkışına karne bölümü ekle (sarmal.ts denetleKomutu + yazdir.ts): toplam düğüm/Adım sayısı, durum dağılımı (🟢🟡🔵⛔ adetleri), hata/uyarı özeti, en çok tanı üreten ilk 3 dosya. Karne SAF veri üzerinden render edilir (mevcut tanı toplama yeniden kullanılır, yeni tarama yok)"
+      kabul: [
+        "denetle sonunda karne basılır: durum dağılımı + tanı özeti + riskli dosyalar",
+        "TAM-yeşil koşuda karne sade tek-satır kutlama verir (gürültü yok)",
+        "denetle-temiz + çekirdek testleri yeşil"
+      ]
+      sınır: "yalnız çıktı-sonu özeti — tanı ÜRETİMİ değişmez; JSON/makine yüzü Prizma işi, karne insan yüzü"
+    }
+    Adım( kod: VIT-K77-A03, durum: tamamlandı, üretir: KOD-ETKI-YUZ,
+      ne:    "💥 Etki-analizi yüzü — `sarmal etki <KOD>`: bu düğüme dokunursam ne etkilenir? DAG ters-türetmesinden besleme zinciri (YUZ-3)" ) {
+      görev: "yeni cekirdek/src/etki.ts (agac.ts yüz-deseni: SAF üretici + CLI kabuğu): verilen KOD'un DAG üzerindeki İLERİ kapanışını (bu düğümü bekleyen tüm ardıllar — dag.ts ters-türetme A02 + topolojik sıra A03 yeniden kullanılır) ağaç görünümünde bas: doğrudan ardıllar → geçişli ardıllar, durum rozetleriyle. sarmal.ts'e `sarmal etki <KOD> <dizin>` komutu"
+      kabul: [
+        "sarmal etki <KOD> doğrudan+geçişli ardılları topolojik sırada, durum rozetli basar",
+        "kenarsız düğümde dürüst mesaj: 'bu düğümü bekleyen yok' (boş ≠ hata)",
+        "etki üretici SAF + birim-testli; denetle-temiz"
+      ]
+      bağımlı: []
+      sınır:   "yalnız DETERMİNİSTİK etki listesi (STR-3 AÇIK: I/O-şekli) — 'riskli mi' skorlaması GİZLİ politika, burada yok; tamamlanmış öncülleri zincir halkasıydı, o tur kapandı ve arşivdedir"
+    }
+    Adım( kod: VIT-K77-A04, durum: tamamlandı, üretir: [ KOD-EKL-BICIMLENDIR ], bağımlı: [],
+      ne:    "📐 İki-nokta hizalama standardı — biçimlendirici `kod:` / `ne:` / `durum:` anahtarlarının iki-noktasını blok içinde hizalar (YUZ-3 okunabilirlik standardı)" ) {
+      görev: "eklenti bicimle.ts'e iki-nokta hizalama geçişi ekle: aynı çok-satırlı bildirimin parametre satırlarında anahtar adları sola dayalı, değerler iki-nokta sonrası TEK hizada başlar (kanondaki iki-nokta hizalama standardı). basKapaticiSay dedent düzeltmesi (oturum 27) korunur; hizalama opsiyonel değil, biçimlendiricinin varsayılanı"
+      kabul: [
+        "çok-satırlı bildirim parametreleri iki-nokta sonrası tek hizada; 84+ biçimlendirici testi yeşil (regresyon yok)",
+        "tek-satır bildirimler dokunulmaz (kısa liste toplanmaz kuralı korunur)",
+        "idempotent: iki kez biçimle = aynı çıktı (testli)"
+      ]
+      sınır: "yalnız biçimlendirici hizalaması — sözdizimi/gramer değişmez; word-wrap sınırı (oturum 27 hükmü) aynen kalır"
+    }
+    }
+  }
+
+  // ══ KATMAN · YUZ-3.1 UI HÜKÜMLERİ: Founder'ın üç editör hissiyat hükmü ════════════
+  Katman( kod: VIT-K78, kullanır: TAKIM-EKLENTI, ad: "arayüz hükümleri",
+    ne: "🖋️ YUZ-3.1 Founder hükümleri — hata lensi NABIZ · Hatırlatıcı ÜNLEM + yaşam döngüsü · Blok tamamlanma tiki gövde-tonu" ) {
+    // Katı rejim yerleşimi (proje-kod turu 2026-07-31): yedi tamamlanmış Adım
+    // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
+    AltKatman( kod: VIT-K78-AK1, departman: kodlama, ad: "arayüz kodlaması",
+      ne: "Founder hissiyat hükümlerinin eklenti kod işleri" ) {
+
+    Adım( kod: VIT-K78-A01, durum: tamamlandı, üretir: [ KOD-EKL-SATIRICI ],
+      ne:    "💓 Hata lensi NABIZ atar — satır-sonu hata lensi statik değil, kalp-atışı gibi yumuşak nabızla dikkat çeker (YUZ-3.1 ①)" ) {
+      görev: "eklenti satirici.ts hata (🔴) lensine nabız davranışı ekle: EKL-F9-A08'in TEK kalp-atışı yardımcısı yeniden kullanılır (750ms toggle üçüncü kez KOPYALANMAZ — takdir.ts kalbiyle aynı zamanlayıcı). Yalnız hata düzeyi nabız atar; uyarı/bilgi statik kalır (dikkat hiyerarşisi)"
+      kabul: [
+        "hata lensi nabız atar (görsel toggle); uyarı/bilgi statik (testli ayrım)",
+        "tek zamanlayıcı: takdir kalbi + hata nabzı aynı yardımcıyı paylaşır (kopya kod yok)",
+        "eklenti sınaması yeşil + gerçek-VSCode gözle teyit"
+      ]
+      bağımlı: [ EKL-F9-A08 ]
+      sınır:   "yalnız hata-düzeyi nabız — lens metni/rengi değişmez; performans (tek nabız) EKL-F9-A08'in işi"
+    }
+    Adım( kod: VIT-K78-A02, durum: tamamlandı, üretir: [ KOD-EKL-SATIRICI ],
+      ne:    "❗ Hatırlatıcı ÜNLEM + yaşam döngüsü — işaret ünleme döner; kararlaşan hatırlatıcı Blok içindeki Adım'a zincir mantığıyla DAHİL olur (YUZ-3.1 ②)" ) {
+      görev: "İki parça: (1) eklenti — Hatırlatıcı işareti ÜNLEM (❗) rozetine döner (satirici/ipucu; PROBLEMS info-pin kasıtlı kalır, susturulmaz). (2) çekirdek denetci.ts — yaşam döngüsü denetimi: 'kararlaşan' Hatırlatıcı üç meşru yoldan Adım'a bağlanır: mevcut-Adım'a eklenir | araya yeni-Adım açılır | tamamlanmış Adım'a gerekiyorsa kod ANINDA güncellenir (Sarmal HİZALAR); karara bağlanmış ama zincire GİRMEMİŞ hatırlatıcı uyarı üretir (bağ DAG kenarıyla — HALKA-ZINCIR-A01 motoru)"
+      kabul: [
+        "Hatırlatıcı editörde ünlem rozetiyle görünür; PROBLEMS info-pin davranışı korunur (Founder hükmü)",
+        "kararlaşmış-ama-zincirsiz hatırlatıcı denetimde uyarı üretir (üç meşru yol tanılı, testli)",
+        "denetle-temiz + eklenti sınaması yeşil"
+      ]
+      bağımlı: []
+      sınır:   "yalnız işaret + yaşam-döngüsü DENETİMİ — hatırlatıcıyı Adım'a OTOMATİK dönüştürme yok (insan/ajan karar verir, YUZ-1.2 tek-kaynak); tamamlanmış öncülü zincir halkasıydı, o tur kapandı ve arşivdedir"
+    }
+    Adım( kod: VIT-K78-A03, durum: tamamlandı, üretir: [ KOD-YOLHARITA ], bağımlı: [],
+      ne:    "✔️ Blok tamamlanma tiki — Blok'un biten hâli adım-yeşili DEĞİL; gövde tonuyla işaretlenir, Blok olduğu belli kalır (YUZ-3.1 ③) — Founder gözle teyit etti (2026-07-11 ekran görüntüsü: HALKA-ORK [4/4] ve altındaki K1/K2 gövde-tonu 🪵✔, Adım-yeşilinden ayırt edilir; bitmemiş kapsayıcılar [1/4]·[4/14] tiksiz)" ) {
+      görev: "eklenti yolharitasi.ts panel render'ında tamamlanmış Blok'a (tüm yaprak Adımları tamamlandı) Adım'ın yeşil rozeti YERİNE gövde-tonu işareti ver: 🪵 gövde renk ailesinden ayrı ton + tik (kanondan türetilir, elle hex yok). Blok/Faz/Katman tamamlanma durumu çocuklardan HESAPLANIR (YUZ-1.2 — .sar’a yazılmaz); kapsayıcı rütbe zaten çocukların en geçi (ORK-3 deseni yeniden kullanılır)"
+      kabul: [
+        "tamamlanmış Blok gövde-tonu tikiyle görünür; Adım-yeşilinden ayırt edilir (gözle + testle)",
+        "tamamlanma çocuklardan hesaplanır, dosyaya yazılmaz (YUZ-1.2)",
+        "eklenti sınaması yeşil + gerçek-VSCode gözle teyit"
+      ]
+      sınır: "yalnız Blok (ve kapsayıcı) tamamlanma görseli — Adım rozet standardı VIT-K77-A01'de"
+    }
+    Adım( kod: VIT-K78-A04, durum: tamamlandı, üretir: [ KOD-YOLHARITA ],
+      ne:    "🃏 Adım KART görünümü — KARAR verildi (2026-07-10): yüzey = Yol Haritası paneli + koni detay kartı → uygulama VIT-GRAF fazına evrildi; bu Adım kesinti-belgeleme + ara-çözüm doğrulamasıyla kapanır — KAPANIŞ 2026-07-11: kesinti sınırları dallar.ts başlığına KALICI belgelendi (KESİNTİ SINIRLARI bölümü); kod-analizi bulgusu DÜRÜST: döşe() kardeşler arasına ARALIKSIZ │ koyar → muafiyet-kaynaklı dal-çizgisi kesintisi YOK (daraltılacak şey çıkmadı); kalan iki kesinti API sınırı (CodeLens sanal-satırı + word-wrap devam satırı) ve kesintisiz bütün panel/kartta yaşıyor; belgeSatirlari muafiyeti yalnız girinti-RENK boyamasına (bilinçli tasarım). Çizgi ekran-kanıtı tip-görsel turunda verilmişti" ) {
+      görev: "Founder kararı (2026-07-10 · seçenekler ekranda önizlemeli karşılaştırıldı): kart yüzeyi = TreeView Yol Haritası (② yolu) + tıklamayla açılan koni detay kartı; uygulama VIT-GRAF-A03/A04'te. Editör-içi yollar (① folding+dekor · ③ inset) KAPANDI — denenmez. Bu Adım'ın kalan işi: (1) dal-çizgisi kesinti kaynaklarını DÜRÜST belgele: CodeLens sanal-satırı + word-wrap devam satırı = VS Code API sınırı (dekorasyon belge satırına bağlanır, görsel satıra değil) — kesintisiz görünüm panelde/kartta yaşar, editörde sınır kalır; (2) DÜŞÜK öncelik ara çözüm: kesinti kaynakları canlıda yeniden doğrulanır, bizim muafiyetimizden (dallar.ts) kaynaklanan kesinti varsa daraltılır"
+      kabul: [
+        "tasarım kararı Founder'la verildi: yüzey = Yol Haritası + koni kartı (2026-07-10, ekran-önizlemeli seçim) — editör-içi kart yolları kapatıldı",
+        "dal-çizgisi kesinti kaynakları belgelenmiş: hangileri panel/kartla çözülür, hangileri API sınırı kalır (dürüst sınır)",
+        "muafiyet-kaynaklı kesinti varsa daraltılmış; eklenti sınaması yeşil + gerçek-VSCode gözle teyit"
+      ]
+      bağımlı: [ VIT-GRAF-A04 ]
+      sınır:   "yalnız GÖRÜNÜM katmanı — .sar kaynağı/gramer değişmez (YUZ-4.2 ruhu); word-wrap kapatma ve üç-tırnak dönüşümü daha önce REDDEDİLDİ (oturum 27 hükümleri), bu Adım o kararları çiğnemez"
+    }
+    Adım( kod: VIT-K78-A05, durum: tamamlandı, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+      ne:    "🗂️ Problems varlık-ayrımı — Founder hükmü (2026-07-11: 'her projenin doğası farklıdır, ayırmak gerekir'): her tanının kaynağı bağlı olduğu VARLIK ile etiketlenir; _Sarmal ile kapalı varlık tanıları Problems'ta ayrışır (MIM-1.1 Proje kökü ekseni + STR-3 iki-varlık ayrılığının tanı yüzü)" ) {
+      görev: "eklenti.ts taniYap: sabit source:'Sarmal' yerine varlikEtiketi(dosya) — dosyadan yukarı ana.sar kökü aranır (12 kademe, dizin-başına memo), kaynak 'Sarmal · <varlık-klasörü>' olur (ör. Sarmal · _Sarmal · Sarmal · kapalı varlık); köksüz dosya sade 'Sarmal' kalır. Problems filtre kutusuna varlık adı yazınca tek projenin tanıları kalır; tablo görünümünde kaynak sütunuyla sıralanır"
+      kabul: [
+        "_Sarmal dosyasının tanısı 'Sarmal · _Sarmal', kapalı varlık dosyasınınki 'Sarmal · kapalı varlık' kaynağıyla görünür (gözle teyit)",
+        "filtre kutusuna varlık adı yazınca yalnız o projenin tanıları listelenir (gözle teyit)",
+        "eklenti sınaması yeşil + tsc temiz; tek tanı-fabrikası (taniYap) dışında source ataması YOK"
+      ]
+      sınır: "yalnız tanı KAYNAĞI etiketi — tanı içeriği/düzeyi değişmez; multi-root workspace dönüşümü (ayrı .code-workspace) bu Adım'ın işi DEĞİL (istenirse ayrı karar)"
+    }
+    Adım( kod: VIT-K78-A06, durum: tamamlandı, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [ VIT-K78-A05 ],
+      ne:    "🎯 Problems aktif-varlık ODAĞI (YAS-3.3) — panel bağlam-duyarlı: Nexivion'dayken yalnız Nexivion'un, Sarmal'dayken yalnız Sarmal'ın tanıları görünür; ayarla kapatılabilir" ) {
+      görev: "eklenti.ts: tüm tanılar kayıt defterinde (Map dosya→tanılar) tutulur, panele YALNIZ aktif varlığın tanıları basılır. Aktif varlık = aktif editör dosyasının ana.sar kökü (her dosya türü sayılır — .ts/.md dahil, varlık İÇİNDE çalışmak bağlamdır); köksüz aktif dosyada son varlık YAPIŞKAN (panel boşalmaz); köksüz dosyaların tanıları HER ZAMAN görünür. onDidChangeActiveTextEditor → yeniden yayınla. Ayar: sarmal.aktifVarlikOdagi (varsayılan açık; kapatınca tüm varlıklar birden, A05 etiketiyle ayrışır)"
+      kabul: [
+        "kapalı varlık dosyası aktifken Problems'ta yalnız kapalı varlığın tanıları; _Sarmal dosyasına geçince yalnız Sarmal (gözle teyit)",
+        "köksüz dosya aktifken panel boşalmaz (yapışkan son varlık); ayar kapatılınca hepsi görünür",
+        "eklenti sınaması yeşil + tsc temiz + gerçek-VSCode gözle teyit"
+      ]
+      sınır: "yalnız PANEL görünürlüğü (koleksiyon yayını) — tanı üretimi/denetim kapsamı değişmez; CLI denetle her zaman TÜM varlıkları denetler (kapı davranışı bu Adım'dan etkilenmez)"
+    }
+
+    Adım( kod: VIT-K78-A07, durum: tamamlandı, bağımlı: [ VIT-K78-A04 ],
+      ne:    "🌈 WORD-WRAP DEVAM SATIRI SÜREKLİLİĞİ (Founder 2026-07-17 ekran-kanıtlı: 'rainbow ve hiyerarşi çizgileri paragrafların solunda kayboluyor — ne olursa olsun hep görünür olsun') — A04'ün 'API sınırı' diye kabullendiği kesinti geri açılır: girinti bantları belge-satırı dekorasyonu olduğu için sarmalanan uzun satırların (örn. 891 karakterlik ne: metni) devam satırları boş kalıyor" ) {
+      görev: "girinti.ts: mevcut sol bantlara EK, uzun (sarmalanma-riskli) satırlara satırın DERİNLİK rengiyle çok düşük alfalı TAM-SATIR (isWholeLine) ton katmanı — seçim vurgusuyla aynı mekanizma olduğu için devam satırlarının TAMAMINA (sanal girinti alanı dahil) kesin taşar; kısa satırlar değişmez (bant yeter). Eşik + alfa ayarlanabilir sabit; sarmal.girintiRenkleri kapatınca ton da kapanır. Eklenti sürüm + paket + kurulum"
+      kabul: [
+        "uzun ne:/görev: paragraflarının devam satırları editörde derinlik tonunu KESİNTİSİZ taşıyor (Founder gözle-teyit — ekran görüntüsündeki kopukluk kapandı)",
+        "kısa satırların görünümü değişmedi; sarmal.girintiRenkleri=false hepsini kapatıyor",
+        "eklenti sınaması yeşil + tsc temiz"
+      ]
+      üretir: [ KOD-EKL-GIRINTI ]
+      sınır:  "A04 hükümleri ÇİĞNENMEZ: word-wrap kapatma YOK, üç-tırnak/kaynak dönüşümü YOK (oturum 27 redleri), gramer/motor DEĞİŞMEZ — yalnız eklenti görünüm katmanı; dal-glifleri (├─/│) devam satırında ÇİZİLEMEZ (API sınırı sürer) — süreklilik hissini ton verir, glif değil"
+      koşu:   "2026-07-17 · NEGATİF KAPANIŞ — ÖZELLİK GERİ ALINDI (Founder kararı: 'olmuyorsa zorlamayalım'). Üç iterasyon canlı denendi, üçü de Founder ekran-teyidiyle değerlendirildi: ① tam-satır soluk ton (0.9.61) — Founder: 'ton güzel' AMA sol bantlar hâlâ yok ② isWholeLine + inset box-shadow şeritleri (0.9.62) — bantlar devam satırlarında GÖRÜNDÜ ama aralıksız kalın levha estetiği: 'çok çirkin' ③ gradyan bant-dokusu: 1.5px hiyerarşi çizgisi + alfa-0.13 bant ritmi (0.9.63) — 'iyice bozuldu'. HÜKÜM: CSS-enjeksiyon ailesi (tek erişilebilir yol — dekorasyon API'si sanal girinti alanını adreslemez) piksel düzeyinde ÇALIŞIYOR ama gerçek bantların karakter-hücresi ritmiyle hizalanamıyor (font-px tahmini + glifsizlik) → görsel kalite eşiği tutturulamadı. girinti.ts A07-öncesi hâline döndürüldü (git show 1598a42 · davranış=0.9.60), eklenti 0.9.64 kurulu, süit 118/118. Kabul ① gözle-teyidi ALINMADI — bu kapanış özellik teslimi DEĞİL, denemenin dürüst kaydıdır: A04'ün 'word-wrap devam satırı = API sınırı, kesintisiz bütün panel/kartta yaşar' hükmü YENİDEN yürürlükte. İz: commit 0a33720 (it-1) · 53aad36 (it-2) · 6c5c856 (it-3) · geri alım bu commit"
+    }
+    }
+  }
+
+  // ══ KATMAN · GRAF: kanonik graf yüzü + Yol Haritası müfettişi (oturum 30) ══════
+  //    Dış mühendis gözlemi ORK-3 mimarimizi bağımsız doğruladı: "graph dosyalardan
+  //    çizilmez, derleyicinin çıktısıdır". Motorda bu ZATEN böyle (dagKur→Dag);
+  //    eksik olan grafın DIŞA AÇIK yüzü (JSON+MCP) ve panel müfettişi.
+  Katman( kod: VIT-GRAF, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "graf yüzü",
+    ne: "🕸️ Kanonik graf yüzü + panel müfettişi — derleyicinin DAG çıktısı dışa açılır (JSON + MCP), Yol Haritası kenar/etki/koni-kartıyla müfettişe büyür (Founder kararı 2026-07-10 · VIT-K78-A04 evrimi)" ) {
+
+    AltKatman( kod: VIT-GRAF-K1, departman: kodlama, ad: "kanonik yüz",
+      ne: "graf motor çıktısı olarak dışa açılır — AI ve araçlar dosya yerine grafı okur" ) {
+      Adım( kod: VIT-GRAF-A01, durum: tamamlandı, bağımlı: [], üretir: KOD-GRAF-YUZ,
+        ne:    "🕸️ `sarmal graf <dizin>` — Dag'ın kanonik JSON yüzü: düğümler + kenarlar + kopuk + karne özeti; --kok ile alt-graf" ) {
+        görev: "yeni cekirdek/src/graf.ts (etki.ts/agac.ts yüz-deseni: SAF üretici + CLI kabuğu): dagKur çıktısını DETERMİNİST JSON'a serile — {düğümler:[{kod,tip,dosya,satır,durum,öncekiler,sonrakiler}], kopuk:[…], özet:karneOzeti}; anahtar sırası sabit (test edilebilir). --kok KOD verilirse alt-graf: etkiCoz ileri-kapanışı + kapsayıcı zinciri. sarmal.ts'e `graf <dizin> [--kok KOD]` komutu. Kopuk kenarlar çıktıda DÜRÜSTÇE görünür (kopuk varken graf 'tam' gibi davranmaz)"
+        kabul: [
+          "sarmal graf <dizin> determinist JSON basar: düğümler+kenarlar+kopuk+karne; iki koşu = aynı çıktı (testli)",
+          "--kok KOD alt-grafı filtreler (ileri kapanış + kapsayıcılar); bilinmeyen KOD dürüst hata",
+          "graf üretici SAF + birim-testli (kopuk-kenar fikstürü dahil); denetle-temiz"
+        ]
+        sınır: "yalnız SERİLEŞTİRME yüzü — Dag KURULUMU (dag.ts) değişmez; graph-DB/bellek-dışı depo YOK (STR-3.1 sıfır-npm, ölçek Map+JSON'la karşılanır); 'riskli mi' skorlaması GİZLİ politika (STR-3), burada yok"
+      }
+      Adım( kod: VIT-GRAF-A02, durum: tamamlandı, üretir: [ KOD-GRAF-YUZ ],
+        ne:    "🤖 MCP `graf` aracı — AI dosya okumak yerine kanonik grafı sorgular (etki/sıra/durum tek çağrıda) — restart-sonrası el-sınaması kanıtlandı (2026-07-11: tam graf 734 düğüm/0 kopuk + kok=VIT-GRAF-A05 alt-grafı doğru)" ) {
+        görev: "cekirdek/src/mcp.ts'e `graf` aracı ekle (mevcut denetle-aracı deseni: dizin parametresi + mutlak-yol): VIT-GRAF-A01'in grafYüz çıktısını döner; isteğe bağlı kok parametresi alt-graf verir. Araç tanımı Türkçe, çıktı JSON (ajan-yüzü)"
+        kabul: [
+          "MCP graf aracı kayıtlı ve çağrılabilir: dizin→tam graf, kok→alt-graf",
+          "çıktı VIT-GRAF-A01 ile BİREBİR aynı serileştiriciden (çift mantık yok — YUZ-1.2 tek-kaynak)",
+          "çekirdek testleri yeşil + MCP el-sınaması (restart sonrası) kanıtlı"
+        ]
+        bağımlı: [ VIT-GRAF-A01 ]
+        sınır:   "yalnız OKUMA aracı — graf üzerinden yazma/mutasyon yok; ajan yazımı koniYaz kapısından geçer (SENK-A05 kilidi)"
+      }
+    }
+
+    AltKatman( kod: VIT-GRAF-K2, departman: inceleme, ad: "panel müfettişi",
+      ne: "Yol Haritası paneli graf müfettişine büyür — kenarlar, etki, koni kartı" ) {
+      Adım( kod: VIT-GRAF-A03, durum: tamamlandı, üretir: [ KOD-YOLHARITA ],
+        ne:    "🧭 Yol Haritası büyütme — Adım düğümü genişleyince kenarları konuşur: ↳bağımlı (rozetli, tıkla→atla) · ↳etkiler (ileri kapanış) · ↳kabul özeti — Founder gözle teyit etti (2026-07-11 ekran: HALKA-ORK-A01 genişletildi, ↳etkiler rozetli + ↳kabul özeti geldi; kenar tıklaması ÇAPRAZ-DOSYA atladı — etkiler·EKL-F6-A01 → eklenti/plan.sar:129 hedef Adım'a)" ) {
+        görev: "eklenti yolharitasi.ts PanelOge birleşimine kenar/kabul düğümleri ekle (Kosum deseni örnek): Adım genişleyince altında '↳ bağımlı:' çocukları (her hedef kendi durum rozetiyle; tıklama mevcut satıra-atla komutuyla hedef düğüme gider), '↳ etkiler:' çocukları (etkiCoz ileri kapanışından, rozetli) ve '↳ kabul: N madde' özet satırı. Dag paylaşımlı önbellekten kurulur (onbellek.ts deseni — tuş başına yeniden kurulum yok); serileştirme mantığı graf.ts'te TEK kaynak kalır"
+        kabul: [
+          "Adım düğümü genişleyince bağımlı/etkiler/kabul alt düğümleri rozetli görünür; kenar tıklaması hedef düğüme atlar",
+          "panel performansı korunur: Dag önbellekli, geciktirici (350ms) deseni bozulmaz",
+          "eklenti sınaması yeşil + gerçek-VSCode gözle teyit"
+        ]
+        bağımlı: [ VIT-GRAF-A01 ]
+        sınır:   "yalnız PANEL görünümü — editör dal-çizgileri (dallar.ts) bu Adım'da DEĞİŞMEZ; koşum düğümleri (HALKA-IZLE) olduğu gibi kalır"
+      }
+      Adım( kod: VIT-GRAF-A05, durum: tamamlandı, üretir: KOD-YOLHARITA,   // KAPANIŞ 2026-07-14 (sweep · Founder gözle-teyit): canlı imleç-takipli koni haritası — yolharitasi.ts:766 (onDidChangeTextEditorSelection + sarmal.canliHarita ayarı + geciktirici); Founder VS Code'da teyit etti
+        ne:    "🧠 İmleç-takipli canlı semantik harita — editörde imleç hangi düğümdeyse, koni kartı/kenar görünümü ANLIK o düğümü gösterir; 'IDE değil proje beyni' hissi (dış mühendis önerisi 2026-07-11) — KOD TAMAM 2026-07-11: tek-canlı-kart (koniKart açıkken yeniden tık = öne gel+tazele; dispose temiz) + onDidChangeTextEditorSelection→geciktirici(350ms)→imleci kapsayan EN DERİN kod'lu düğüm→kodlaBul→kartGoster (tıklamasız, preserveFocus — yazma akışı bozulmaz); sarmal.canliHarita ayarı (varsayılan açık); kart kapalıyken imleç dinleyicisi erken-çıkar (sıfır maliyet); süit 96 + tsc + build yeşil; kalan: Founder gözle-teyidi (kart açıkken imleç gezdir)" ) {
+        görev: "Koni kartının (VIT-GRAF-A04) imleç-takipli kipi: editörde imleç bir KOD'lu düğümün üzerine gelince açık kart/panel kendini o düğüme tazeler (tıklama gerektirmez) — bağımlılar · etkilenenler · koni canlı akar. Mevcut altyapı yeniden kullanılır: onbellek AST + saklı Dag + koniKartHtml; yalnız imleç-olayı bağlanır (onDidChangeTextEditorSelection + geciktirici). Aç/kapa ayarı (sarmal.canliHarita) — istemeyen için sessiz"
+        kabul: [
+          "İmleç bir düğüme gelince açık kart en geç 500ms içinde o düğümü gösteriyor (tıklama gerekmiyor)",
+          "performans korunuyor (geciktirici sayesinde tuş başına yeniden hesap yapılmıyor)",
+          "özellik ayarla kapatılabiliyor; eklenti sınaması yeşil geçiyor ve gözle teyit yapıldı"
+        ]
+        bağımlı: [ VIT-GRAF-A04 ]
+        sınır:   "yalnız GÖRÜNÜM tazelemesi — kart içeriği/serileştirme değişmez (graf.ts tek kaynak); yeni panel açılmaz, mevcut kart tazelenir"
+      }
+      Adım( kod: VIT-GRAF-A04, durum: tamamlandı, üretir: [ KOD-YOLHARITA ],
+        ne:    "🃏 Koni detay KARTI — panelde Adım'a tıkla → webview kart: kod+rozet, görev·kabul·sınır·dokunulmaz, bağımlılar, etkilenenler, dosyaya-atla (Founder kart fikrinin uygulaması) — Founder gözle teyit etti (2026-07-11 ekran ×2: HALKA-ORK-A01 kartı alanlar tam + doğrudan/geçişli rozetli; 'dosyada aç' vitrin_ui.sar'da hedef düğüme açtı)" ) {
+        görev: "sarmal.koniKart komutu + webview: konusmaDetay webview deseni (escape'li render, tema-token renkleri) yeniden kullanılır. Kart içeriği: başlık (kod + YUZ-4.1 rozeti + kısa ne), koni alanları (görev·kabul·sınır·dokunulmaz·referans), bağımlılar (rozetli liste), etkilenenler (etkiCoz), dosya konumuna 'dosyada aç' bağlantısı. Panel Adım düğümüne kart-aç düğmesi/komutu bağlanır; satıra-atla davranışı korunur (kart onu EZMEZ)"
+        kabul: [
+          "Adım kartı tek tıkla açılır: koni alanları + bağımlılar + etkilenenler okunur; 'dosyada aç' çalışır",
+          "rozet/renk YUZ-4.1 standardından (elle hex yok); webview içerik escape'li (ham metin güvenli)",
+          "eklenti sınaması yeşil + gerçek-VSCode gözle teyit (Founder kart deneyimini ekranda onaylar)"
+        ]
+        bağımlı: [ VIT-GRAF-A03 ]
+        sınır:   "yalnız OKUMA kartı — karttan .sar YAZIMI yok (durum değişimi koniYaz/--yaz kapısının işi); editör-içi inset/folding kart yolları KAPALI (Founder kararı 2026-07-10)"
+      }
+      Adım( kod: VIT-GRAF-A06, durum: tamamlandı, üretir: [ KOD-YOLHARITA ], bağımlı: [ VIT-GRAF-A03 ],
+        ne:    "🗂️ Kenar GRUPLARI — Founder geri bildirimi (2026-07-11 gözle-teyit: 'hani blok altında? liste çok uzamış'): düz '↳ etkiler · X' satırları Adım altını şişiriyor (geçişli kapanış büyükse liste uzar); kenarlar tek katlanabilir gruba katlanır" ) {
+        görev: "yolharitasi.ts bilgiUret: her kenar türü BilgiGrup düğümüne toplanır — grup etiketi sayı taşır ('↳ etkiler [12]', açıklamada ⚡doğrudan·🌊geçişli dökümü), KAPALI başlar; çocuklar rozetli hedef satırları (tıkla→atla korunur; KENAR_USTU kırpması + '… +N daha' satırı grubun İÇİNDE). '↳ kabul · N madde' özet satırı yaprak kalır"
+        kabul: [
+          "Adım genişleyince kenarlar TEK grup satırı görünür (↳ bağımlı [N] · ↳ etkiler [N], kapalı); grup açılınca rozetli hedefler tıkla→atla çalışır",
+          "eklenti sınaması yeşil + gerçek-VSCode gözle teyit (Founder liste-şişmesinin kapandığını onaylar)"
+        ]
+        sınır: "yalnız panel render — etkiCoz/graf motoru ve koni kartı düzeni bu Adım'da DEĞİŞMEZ"
+      }
+      Adım( kod: VIT-GRAF-A07, durum: tamamlandı, üretir: [ KOD-YOLHARITA ], bağımlı: [],
+        ne:    "🎨 Panel tip görselleri (tip-görsel paneli kararı · Founder önizlemeli seçimi: İKİSİ BİRDEN) — satırlar kanon tip simgesini etikete alır (🪵Blok · 🌿Faz · 🍃Katman) VE kapsayıcı ikonu tip rengine boyanır; hiyerarşi bir bakışta okunur ('çok karışık olmuş' geri bildirimi)" ) {
+        görev: "yolharitasi.ts getTreeItem: (1) kapsayıcı etiketine kanon simgesi öneki — kaynak tipSimgeleri (kayit.json → ortak.ts tipSimge, TEK kaynak; elle emoji yazılmaz DIL-4); (2) bitmemiş kapsayıcı ikonu tip renginde ThemeColor: Blok charts.orange · Faz charts.green · Katman charts.blue (tema-token, elle hex yok YUZ-4.1); ANA satırı nötr (🌱 zaten var). Adım satırı DEĞİŞMEZ (checkbox + durum rozeti yeterli — önizleme öyle onaylandı)"
+        kabul: [
+          "panelde Blok/Faz/Katman satırları kanon simgesi + tip-renkli ikonla ayrışır (gözle + testle)",
+          "YUZ-3.1 ③ bitti-tiki AYNEN: tamamlanan kapsayıcı gövde-tonu 🪵✔ (tip rengi bitti-rengini EZMEZ)",
+          "eklenti sınaması yeşil + gerçek-VSCode gözle teyit (Founder 'karışıklık bitti' onayı)"
+        ]
+        sınır: "yalnız Yol Haritası paneli — editör dekorasyonları/satır-içi simge YOK (Founder 2026-07-02: ekran kirliliği dersi); durum rozet standardı (YUZ-4.1) değişmez"
+      }
+      Adım( kod: VIT-GRAF-A08, durum: tamamlandı, onay: "onaylandı — 2026-07-19 (Founder: 'tmm onaylıyorum')", üretir: [ KOD-MINIGRAF, KOD-MINIGRAF-CEKIRDEK, KOD-SNM-MINIGRAF ], bağımlı: [ VIT-GRAF-A05 ], referans: [ YUZ-4.1, YUZ-1.2 ],
+        koşu:  "2026-07-19 · İŞ TESLİM: saf çekirdek (minigraf-cekirdek.ts: egoCikar + dosyaEgoCikar + egoSvg — dış kütüphane yok, YUZ-4.1 renkleri yol-dekor’dan, cam dokusu kanon gradyanından) + vscode kabuğu (minigraf.ts: WebviewView 'sarmalMiniGraf', betiksiz + komut-linkli) + yolharitasi bağları (dagAl tek kaynak · panel seçimi · imleç geciktirici · yenile-sonrası tazeleme) + package.json (görünüm when:config.sarmal.miniGraf · sarmal.miniGrafKip kip komutu) · sınama 172/172 · build yeşil — Founder gözle-teyidi bekliyor (estetik çıta Founder'ın) --- 2026-07-19 · KAPANIŞ: Founder Mini Graf'ı sahada kullandı (0.9.98'de gördü, mercek geri-bildirimini bu görünüm üzerinden verdi) ve buzlu-cam iterasyonuyla birlikte onayladı ('tamam gözüm eline sağlık' — 0.9.99). Kabul 3/3: 1-halka komşuluk canlı+tıkla-atla · saklı Dag ile tek-kaynak · ayar+sınama tam",
+        ne:    "🕸️ MİNİ GRAF görünümü — Founder fikri (2026-07-19 gece, ekran görüntülü): yol haritasının ALTINDAKİ boşluğa küçük ve zarif bir graf ekranı gelir; panelde ya da editörde seçilen Adımın bir halkalık kenar komşuluğu (solda bağımlı gelenler · ortada düğüm · sağda besler/etkiler gidenler) canlı çizilir; dosya-bazlı kip aynı veriyi dosyaya göre gruplar. 'IDE değil proje beyni' hissinin görsel katmanı" ) {
+        görev: "Aynı görünüm kabına ikinci görünüm ekle (WebviewView — yol haritasının altına oturur); saklı Dag'dan (VIT-GRAF-A03 önbelleği — yeni tarama yok) seçili düğümün 1-halka ego-grafını satır-içi SVG ile çiz (dış kütüphane yok); renkler YUZ-4.1 durum kanonundan, doku ZRF cam dilinden; imleç-takibi mevcut geciktiriciyle (VIT-GRAF-A05 deseni) beslenir; düğüm tıklaması satıra-atla komutunu kullanır; Adım-bazlı/dosya-bazlı kip anahtarı + kapatma ayarı (sarmal.miniGraf) eklenir"
+        kabul: [
+          "Yol haritasının altında mini graf yaşamaktadır: seçilen Adımın 1-halka komşuluğu durum renkleriyle çizilir, düğüm tıklaması kaynağa atlar (Founder gözle doğrulamıştır — estetik çıta Founder'ındır)",
+          "Veri saklı Dag'dan gelir (yeni tarama/parse yok — performans turu kilit ve önbellek disiplini korunur); serileştirme graf.ts tek kaynağından beslenir (YUZ-1.2)",
+          "Ayarla kapatılabilir; eklenti sınaması tam geçmektedir"
+        ]
+        sınır: "Bir halkadan derin çizim bu Adımda yapılmaz (zarafet — kalabalık graf tam graf yüzünün işidir); yol haritası ağacının davranışı değişmez; dış görselleştirme kütüphanesi eklenmez"
+      }
+      Adım( kod: VIT-GRAF-A09, durum: tamamlandı, üretir: [ KOD-YOLHARITA, KOD-MINIGRAF-CEKIRDEK ], bağımlı: [ VIT-GRAF-A07 ], referans: [ DIL-1.1 ],
+        ne:    "🏷️ İnsan-adı etiketi (DIL-1.1 · Founder tespiti 2026-07-20: 'yol haritası insan için — ikonlar tipi zaten belirtiyor, isimle görünsün') — panel düğümleri KOD yerine ad: alanını gösterir; kod hover/başlıkta stabil kimlik olarak kalır. HTR-YOLHARITASI-INSAN-ADI hatırlatıcısını kapatır" ) {
+        görev: "yolharitasi.ts: Oge tipine ad alanı eklenir, ogeleriTopla() ad:'ı toplar, getTreeItem etiket kaynağı o.ad ?? o.kod olur (tooltip'te tip · kod korunur, satır 748). Mini Graf aynı ilkeyle: cekirdek/dag.ts DagDugum'a ad alanı + dagKur toplaması; minigraf-cekirdek MiniDugum'a kod alanı, etiket = ad ?? kod, SVG hover başlığı stabil kod'u taşır. İkon zaten tipi söylediği için tip öneki etikette tekrarlanmaz"
+        kabul: [
+          "Eğer bir düğüm ad: taşıyorsa, panel etiketinin o adı göstermesi beklenir (ad yoksa koda düşer); kod hover/başlıkta korunur",
+          "Mini Graf düğümleri de adıyla görünür, kod SVG başlığında yaşar (testli: egoCikar etiket=ad · kod ayrı)",
+          "çekirdek + eklenti sınaması yeşil; denetle ⛔0"
+        ]
+        sınır: "Nabız yüzü ayrı bir görünüm değil (varlık roketi zaten ad·kod gösteriyor — VIT satır 686); editör satır-içi dekorasyon değişmez"
+        koşu:  "2026-07-21 · KAPANIŞ (Founder 'tamamlayalım'): yolharitasi.ts Oge.ad + getTreeItem o.ad ?? o.kod (kod tooltip'te); Mini Graf için dag.ts DagDugum.ad + dagKur toplaması + minigraf-cekirdek MiniDugum.kod (etiket=ad ?? kod, SVG başlığı 'ad · kod'). Çekirdek 821/821 + eklenti 172/172 + yeni minigraf ad-etiket testi (8/8) yeşil; denetle ⛔0. HTR-YOLHARITASI-INSAN-ADI kapatıldı (çapa:eklenti geçersiz-enum uyarısı da temizlendi)."
+      }
+      Adım( kod: VIT-GRAF-A10, durum: tamamlandı, onay: "onaylandı — 2026-07-29", üretir: [ KOD-MINIGRAF-CEKIRDEK, KOD-MINIGRAF, KOD-SNM-MINIGRAF ], bağımlı: [ VIT-GRAF-A08, VIT-GRAF-A09 ], referans: [ YUZ-4.1, YUZ-1.2, DIL-1.1 ],
+        ne:    "🕸️ GİTLENS-BENZERİ TEK PROJE GRAFI (Founder tasarım onayı 2026-07-21): Mini Graf'taki Adım/Dosya kipleri ve reddedilen üçüncü omurga denemesi kalkar; tek doğru görünüm tüm projeyi gösterir. Faz → Blok → Katman → AltKatman → Adım, GitLens commit grafı gibi ince raylarda akar; kökler ortak proje rayına bağlanır, gerçek bağımlılık ağı özellikle Adım seviyesindeki yumuşak eğrilerle görünür. Düğümler küçük yuvarlak renksiz buzlu-cam mercektir: DIL-4 kanon ikonu camın içinde, YUZ-4.1 durum ışığı camın ardında; hover'da düğüm, satır ve doğrudan bağlar hafifçe ışıldar. Sayfa arka planında gradyan yoktur. Seçim grafı kesmez, yalnız mevcut düğümü işaretler — 'IDE değil proje beyni' bütün-resmi" ) {
+        görev: "minigraf-cekirdek.ts: projeGrafiCikar(dag, secili) saklı Dag'dan yalnız Faz·Blok·Katman·AltKatman·Adım düğümlerini toplar; en yakın görünür kapsayanı çözerek beş ayrı raya dizer, kökleri ortak proje rayında birleştirir, tüm görünür oncekiler bağımlılıklarını kırpmadan taşır ve kapsayıcı durumunu durumTuret/kapsayiciEvre tek kaynağından türetir. projeGrafiSvg: GitLens-benzeri dikey raylar + bağımlılık eğrileri + DIL-4 kanon ikonlu küçük cam mercek + YUZ-4.1 tema-token rengi + saf CSS :hover ışıltısı + sarmal.dosyaAc linki. minigraf.ts: tek görünüm; seçim yalnız secili işareti, kip/komut yok. package.json: sarmal.miniGrafKip komutu ve başlık düğmesi kaldırılır. Sınama: beş ray (AltKatman dahil) · bütün-proje korunması · bağımlılık · durum türetmesi · cam/hover · betiksizlik · gradyansız zemin"
+        kabul: [
+          "Mini Graf YALNIZ ODAKTAKİ VARLIĞI gösterir ve odak değiştiğinde kendini tazeler (Founder hükmü 2026-07-28). Bugünkü kusur gözle bulundu: görünüm ne aktif-varlık süzgecini uyguluyor ne de odak değişimini dinliyor, dolayısıyla Sarmal dosyasına bakarken kapalı ürün düğümlerini gösteriyor ve odak değişince donmuş kalıyor. Kaynakta doğrulandı: yeniden çizim yalnız görünürlük değişiminde, düğüm seçiminde ve dışarıdan tazele çağrısında oluyor, odak olayına bağlı değil",
+          "Katman ile AltKatman düğümleri GÖRSEL OLARAK AYIRT EDİLİR. Bugünkü kusur kanondadır ve ölçüldü: tip simgeleri kaydında ikisi de aynı yaprak simgesini taşıyor, bu yüzden grafta hangisinin dal hangisinin ufak dal olduğu anlaşılmıyor. Panelde ayrılıyorlar çünkü orası VS Code ikonu kullanıyor; graf ise kanondan okuyor",
+          "Mini Graf tek görünümde tüm Faz·Blok·Katman·AltKatman·Adım düğümlerini ortak proje rayı ve gerçek bağımlılık ağıyla gösterir; seçim grafı 1-halkaya daraltmaz (Founder gözle doğrular — estetik çıta Founder'ındır)",
+          "Düğümler küçük yuvarlak buzlu-cam mercektir: kanon ikon içeride, durum rengi camın ardında, hover ışıltısı hafif; zemin gradyansız ve görünüm betiksizdir",
+          "Veri yalnız saklı Dag'dan gelir (yeni tarama/parse yok — YUZ-1.2); kip/anahtar yok; çekirdek + eklenti sınaması yeşil, denetle ⛔0",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        koşu:  "2026-07-29 · KAPANIŞ. Altı kabul ölçütünün beşi ayrı ayrı ölçüldü, altıncısını Founder gözle verdi. ① ODAK: görünüm artık kendi süzgecini kurmuyor, Yol Haritası ile paylaşılan OdakKapısı soyutlamasını taşıyor ve odak değişimine abone oluyor (minigraf.ts:47 `this.odak.degisince(() => this.ciz())`); dört sınama bunu koruyor — yalnız odaktaki varlığın basılması, odak öteki varlığa geçince grafın onu göstermesi, kapsam dışı düğümün bağımlılık kenarının da düşmesi ve süzgeç verilmediğinde davranışın değişmemesi. ② SİMGE AYRIMI: kanonda Katman 🌿 ile AltKatman ☘️ ayrı simgeler taşıyor ve on bir tipin hiçbiri simge paylaşmıyor; ileri ve geri çizelgeler (tipSimgeleri ile emojiYazımı.tipler) yedi ortak girdide birebir örtüşüyor. Üç sınama koruyor: simge tekilliği, çizelge ikizliği ve grafta görsel ayrım. ③ TEK GÖRÜNÜM: kip komutu ve başlık düğmesi söküldü, `miniGrafKip` kimliği depoda sıfır yerde geçiyor; seçim grafı daraltmıyor, yalnız işaretliyor. ④ CAM MERCEK: görünümde `<script` yok, `linearGradient` yok, ışıltı saf CSS (`filter:blur(5px)` geçiş) ve zemin gradyansız. ⑤ VERİ KAYNAĞI: yalnız saklı Dag okunuyor, yeni tarama ya da ayrıştırma yok. Kapılar: eklenti süiti 341/341, minigraf dosyası 13/13, proje denetimi 0 hata. ⑥ FOUNDER GÖZ ONAYI 2026-07-29 tarihinde alındı ve onay alanına işlendi. AYNI GÖZDEN GEÇİRMEDE BİR EKSİK BİLDİRİLDİ VE DEVREDİLDİ: Founder mini grafta Adımların işaret ettiği Meyve düğümlerinin görünmediğini söyledi. Ölçüm doğruladı — çekirdek beş tiple sınırlıdır (minigraf-cekirdek.ts:19 `MiniGrafTipi`) ve depoda 307 meyve düğümü ile onlara giden 509 `üretir:` kenarı çizilmiyor. Bu bir kusur DEĞİLDİR: bu Adımın kabul metni beş tip sayar ve kod şartnamesine uyar; eksik olan şartnamedir. Founder hükmü aynı gün alındı — bu Adım bugünkü kapsamıyla kapanır, meyve rayı VIT-GRAF-A12 Adımında yapılır; o Adım zaten 2026-07-28 tarihli gözden geçirmede açılmış ve bu Adıma bağımlı ilan edilmişti, dolayısıyla devir yeni bir kayıt doğurmadı."
+        sınır: "Betik/dış görselleştirme kütüphanesi/yeni tarama YOK; renk yalnız YUZ-4.1 durumundan, simge yalnız DIL-4 kanonundan; kalp atışı ve Yol Haritası ağacının davranışı değişmez."
+      }
+
+      Adım( kod: VIT-GRAF-A11, durum: tamamlandı, onay: "onaylandı — 2026-07-30", bağımlı: [ VIT-GRAF-A10 ],
+        koşu: "2026-08-04 · KAPANIŞ. Founder tarafından 28 Temmuz canlı gözden geçirmesinde bildirilen bütün maddeler bağımsız mutabakat ölçümüyle doğrulandı: kimlik tekilliği varlık sınırına göre gerçek fikstürlü nöbetle, ham yol yasağı ve okunur grup başlıkları yüzey nöbetleriyle, üç panelin bakışta ayrımı görünüş ve proje satırı simge nöbetleriyle, tür renklerinin kanonik tema rollerinden gelişi ve grup ile kayıt simge ayrımı palet nöbetleriyle yeşildir. Panel simge ailesi 4 Ağustos günü geometrik dile geçti ve Founder aynı gün canlı pencerede panelleri inceleyip görsel kimliği onayladı. Ölçümler mutabakat tablosuyla birlikte vitrin halka bir teslim kaydındadır; eklenti süiti ve iki varlık denetimi kapanış gününde filtresiz temizdir.",
+        ne:    "🔎 Üç panelin varlık ayrımını tutarlı kılmak ve Bildirimler panelini okunur hâle getirmek. Bulguların tamamı Founder'ın 2026-07-28 tarihli canlı gözden geçirmesinden çıktı; hiçbirini mevcut sınamalar yakalayamazdı, çünkü hepsi kullanıcının gördüğü şeyle ilgilidir." ) {
+        görev: "Beş kusur kapatılacaktır. BİRİNCİSİ kimlik tekilliğidir: motor iki bağımsız varlığı tek isim uzayı sayıyor ve meşru bir yapıyı çakışma diye bildiriyor. Ölçülmüş kanıt şudur — `RAF-PLAN` kodu hem `_Sarmal` hem kapalı varlık anadizininde tanımlıdır, ikisi de kendi `plan/` rafını ilan eder ve bu tamamen meşrudur, buna karşılık panel yinelenen kod uyarısı basmaktadır. Kimlik tekilliği tarama kapsamına göre değil varlık sınırına göre ölçülmelidir. İKİNCİSİ Bildirimler panelinin okunmamasıdır: bir kaydın etiketi ham dosya yolu olarak basılıyor ve grup adları çıplak tanı kodudur; yüz yetmiş iki kayıt kod adlarıyla gruplanınca gezilebilir olmuyor. ÜÇÜNCÜSÜ başlık tekrarıdır: görünüş adı kapsayıcının adını yeniden söylüyor ve kullanıcı aynı sözcüğü iki kez okuyor. DÖRDÜNCÜSÜ ikon çakışmasıdır: Bildirimler panelinin proje satırları Yol Haritası ile aynı simgeyi kullanıyor, dolayısıyla iki panel bakışta ayrılmıyor. BEŞİNCİSİ renksizliktir: Bildirimler kayıtları tek düzeydedir fakat türleri farklıdır ve bugün hiçbir görsel ayrım taşımıyorlar."
+        kabul: [
+          "Kimlik tekilliği varlık sınırına göre ölçülür; iki bağımsız varlığın aynı kodu ilan etmesi uyarı üretmez ve bu, iki varlığın aynı kodu taşıdığı gerçek bir fikstürle nöbete alınmıştır.",
+          "Bildirimler panelinde hiçbir kayıt etiketi ham dosya yolu değildir ve grup başlıkları çıplak tanı kodu yerine okunabilir bir cümle taşır.",
+          "Hiçbir görünüş başlığı kapsayıcının adını tekrar etmez.",
+          "Üç panel bakışta ayrılır; hiçbiri diğerinin proje satırı simgesini kullanmaz.",
+          "Bildirimler kayıtları türlerine göre görsel olarak ayrılır ve renk kanonik tema rolünden okunur, ham değer gömülmez.",
+          "GRUP SATIRI İLE ALTINDAKİ KAYITLAR AYNI SİMGEYİ TAŞIMAZ. Founder 2026-07-28 tarihli ikinci canlı incelemede bunu gözle buldu: grup başlığı ile çocukları aynı daireyi kullanıyor, dolayısıyla ağacın kademesi bakışta okunmuyor. Ata ile çocuk ayrı simge taşımalı, aksi hâlde gruplama görsel olarak hiçbir şey kazandırmaz.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Bildirimler paneli düzeltme istemeyen kayıtların yeridir; bu Adım hiçbir kaydın düzeyini yükseltmez ve hiçbir kaydı Problems yüzeyine taşımaz. Renk yalnız kanonik tema rolünden alınır, yeni palet kurulmaz."
+      }
+
+      Adım( kod: VIT-GRAF-A12, durum: geliştirmede, öncelik: p1, onay: "şerhle onaylandı — 2026-08-08 · Founder meyve satırlarının SEÇİME BAĞLI kalmasına hükmetti ve gerekçe dört ölçüme dayandırıldı. BİRİNCİ ÖLÇÜM asıl şikâyetin zaten karşılandığıdır: Founder 2026-07-28 tarihinde meyvelerin grafta hiç yer almadığını bildirmişti, oysa bugün her Adım kaç meyve beyan ettiğini ve bunların kaçının diskte bulunamadığını seçimden bağımsız olarak söylemektedir; kaynakta bu iki alan seçimden bağımsız olarak işaretlidir. Şikâyet varlık üzerineydi ve varlık artık görünür, görünmeyen yalnız ayrıntıdır. İKİNCİ ÖLÇÜM grafın işidir: kanon ORK-1.3 hükmü üretim kökeni bağının hiçbir koşulda yürütme sırası oluşturmadığını söyler, dolayısıyla sıraya hiç katılmayan düğümlerin görsel alanın yüzde kırk üçünü kalıcı olarak işgal etmesi asıl okunması gereken sırayı zorlaştırır ve karşılığında hiçbir sıra bilgisi eklemez. ÜÇÜNCÜ ÖLÇÜM maliyettir: aynı turda yinelenen kenarlar kırpılarak çizim ögesi sayısı bin iki yüz yirmi yediden sekiz yüz doksan altıya indirilmiştir ve iki yüz altmış dört satır eklemek bu kazancı geri vermek olur. DÖRDÜNCÜ ÖLÇÜM erişimdir: ayrıntı bir tıklama uzaktadır ve istendiğinde gelen bilgi kaybolmuş sayılmaz. ŞERH: bu karar ölçülebilir bir işaretle geri alınabilir; Founder kendini ne ürettiklerini görmek için Adımları sırayla açarken bulursa varsayılan yanlış demektir ve tersine çevrilir. Ayar düğmesi bilinçli olarak önerilmemiştir, çünkü gereksiz bir düğme kullanıcıyı yanıltır.", koşu: "2026-08-21 · MEVSİM BAĞI TESLİMİ (üretici): Adımın meyve ve zemin işleri önceki turlarda teslim edilmişti; bu tur Founder'ın 2026-08-10 tarihli iki bildirimini ve 2026-08-11 anlatı tazelemesini kapattı. ÖLÇÜM: canlı korpusta on sekiz Blok–Faz mevsim bağı yaşıyordu — on gerçek çağır yazımı ile mevsim alanından doğan sekiz sanal kenar — ve dagKur çağır çocuklarını hiç okumadığı için bu bağların sıfırı grafa iniyordu; mini grafta yirmi üç Blok köksüz duruyordu ve kök sayısı kırk yediydi. DEĞİŞEN: motor artık Faz'ın gerçek ya da sanal çağır çocuğunu hedef Blok'un mevsim alanına indirir (cekirdek/src/dag.ts), kanonik JSON yüzü bu alanı taşır (cekirdek/src/graf.ts) ve mini graf yerleşimi fiziksel atası olmayan Blok'u mevsim Fazının altına oturtup bağı kapsama rayıyla çizer (eklenti/src/minigraf-cekirdek.ts). Ayrı bir kenar sınıfı bilinçli olarak açılmadı, çünkü motor üç yazımı tek kapsama kenarına normalize eder ve aynı olgu iki görsel dille anlatılamaz (ORK-1). Değişiklik sonrası ölçüm: on sekiz bağın on sekizi grafa indi, kök sayısı yirmi dokuza düştü, köksüz kalan beş Blok'un tamamı mevsim beyan etmeyen ders ile örnek dünyası gövdeleridir, BLK-SEF-HARITA artık FAZ-2026-AGUSTOS altında gruplanır ve kenar sayısı iki yüz doksan altıda sabit kaldı. KATMAN BAĞI KARARI: anlatı tazelemesinin istediği kullanır kenarı okuması zaten yürürlüktedir — dag.ts kullanır yazımını asıl, Takım ile Teknoloji hedefli bağımlı yazımını geçiş yedeği olarak aynı zemin kaydına indirir ve mini graf o kaydı okur; ölçüm, çözülen seksen bir kullanır kenarının seksen birinin zeminde olduğunu ve grafın yüz yirmi dört zemin kenarı çizdiğini gösterdi, dolayısıyla kod değişikliği gerekmedi. KANIT: çekirdek süiti bin kırk bir, eklenti süiti beş yüz yirmi sınamayla yeşildir; mini graf dosyası mevsim bağı için üç yeni sınama taşır (gerçek fikstürlü motor inişi, gruplama ile tek görsel dil, savunmacı hâller) ve motor ile graf yüzü süitlerine birer nöbet eklendi. İki varlık denetimi ayrı ayrı koşuldu: _Sarmal sıfır hata ile önceden var olan iki yetim-meyve uyarısını, kapalı varlık sıfır hata ile sıfır uyarıyı verir; değişiklik yeni bulgu üretmedi. Adım tamamlandı ilan edilmez: kabul ölçütlerinden biri canlı görünümün gözle doğrulanmasıdır ve kapanışı yalnız Founder bakışı tutar. Önceki kayıt: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): Bağımlısı kapalı, metni temiz ve iş hazırdır; meyve düğümleri ile Katman kenarlarının grafa inmesi vitrin kapsamındadır. Kontrolcü önerisi: ikinci halkada koşulsun. Onay tarihçesi: onaylandı — 2026-07-30", bağımlı: [ VIT-GRAF-A10 ],
+        üretir:   [ KOD-MINIGRAF-CEKIRDEK, KOD-MINIGRAF, KOD-SNM-MINIGRAF ],
+        referans: [ YUZ-4.1, YUZ-1.2, TIP-0, ORK-1.2 ],
+        ne:    "🕸️ Mini Grafa Katman bağımlılık kenarlarını ve Meyve düğümlerini eklemek. Founder 2026-07-28 tarihli gözden geçirmede ikisinin de eksik olduğunu bildirdi. Bunlar kusur DEĞİLDİR: VIT-GRAF-A10 Adımının kabul metni yalnız beş plan tipini sayıyordu ve Meyve ile Katman kenarı o listede hiç yoktu. Yeni istektir ve kendi Adımını hak eder." ) {
+        görev: "Mini Graf bugün yalnız Adım seviyesindeki bağımlılık eğrilerini çiziyor; Katman düğümlerinin birbirine ve teknolojiye olan bağları görünmüyor. Ayrıca Adımların ürettiği Meyve düğümleri grafta hiç yer almıyor, oysa meyve plan ile diskin buluştuğu yerdir ve bir Adımın gerçekten ne ürettiğini yalnız o gösterir. İkisini de mevcut ray düzenine, saklı graftan okuyarak ve yeni tarama açmadan ekle; Meyve düğümleri Adımın altında ayrı bir kademe olarak görünsün ve diskteki karşılığı yoksa bu görsel olarak belli olsun. ÜÇÜNCÜ EKSİK FOUNDER TARAFINDAN 2026-08-10 GECESİ BULUNDU: mevsim bağı grafta hiç çizilmiyor. Kapsama rayı yalnız fiziksel iç içe geçmeden türediği ve kenar listesi yalnız bağımlı, besler ile üretir tanıdığı için, bağını mevsim alanıyla kuran bir Blok (canlı örnek BLK-KYN → FAZ-2026-AGUSTOS) grafta köksüz görünüyor; oysa bağ kaynakta sahicidir ve motor onu tanır. Mevsim kenarı da bu Adımın kapsamında grafa eklenir ve Faz halkası ile Blok arasındaki bağ görünür kılınır. DÖRDÜNCÜ EKSİK FOUNDER TARAFINDAN 2026-08-10 GÜNDÜZ VARDİYASINDA İKİ EKRAN GÖRÜNTÜSÜYLE BİLDİRİLDİ: mevsim kenarı eksikliğinin görünür sonucu ağaç yerleşiminde de yaşıyor. Faz düğümleri ağaçta art arda düz satırlar olarak duruyor ve altlarında listelenen Blok satırlarının hangi Faza ait olduğu girintiden okunamıyor; temmuz ve ağustos mevsimleri yan yana dururken BLK-SEF-HARITA gibi bir Blokun hangisine bağlı olduğunu bakış ayırt edemiyor. Mevsim kenarı grafa inerken aidiyet ağaç yerleşiminde de görünür kılınır: bir Faza bağlı Bloklar o Fazın altında gruplanır ya da aidiyet satırın kendisinde açıkça yazılır. ANLATI TAZELEMESİ 2026-08-11: Katman ile Teknoloji arasındaki bağın kanonik taşıyıcısı V1B-KANON-A01 göçüyle kullanır kenarına geçti ve motorun graf çekirdeği bu kenarı zemin kaydına indiriyor; bu Adım Katman ile Teknoloji bağını çizerken kullanır kenarından okur, bağımlı yazımı yalnız geçiş yedeğidir. Founder aynı gün göç diffini canlı izlerken bağın silinmediğini fakat grafta görünmez kalabileceğini gözledi; kullanır kenarının çizimi bu gözlemin cevabıdır."
+        kabul: [
+          "Katman düğümlerinin bağımlılık kenarları grafta görünür ve Adım kenarlarından ayırt edilir.",
+          "Adımların ürettiği Meyve düğümleri grafta görünür ve hangi Adımdan doğdukları izlenebilir.",
+          "İlan edilmiş fakat diskte bulunmayan Meyve görsel olarak ayrılır; kullanıcı beyan ile gerçek arasındaki farkı grafta görür.",
+          "Veri yalnız saklı graftan gelir; yeni tarama, yeni ayrıştırma ya da dış görselleştirme kütüphanesi eklenmez.",
+          "Mevsim bağı kuran her Blokun hangi Faza ait olduğu bakışta okunur; Faz satırları çocuksuz düz bir liste gibi durmaz ve aidiyet ya gruplamayla ya satır üzerinde açık beyanla görünür.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Graf kalabalıklaşırsa okunabilirlik önceliklidir; her kenarı çizmek pahasına graf okunmaz hâle getirilmez. Kip ya da ayar anahtarı eklenmez, tek görünüm ilkesi korunur."
+      }
+
+      Adım( kod: VIT-GRAF-A14, durum: geliştirmede, öncelik: p1, onayBekler: founder,
+        onay: "onaylandı — 2026-08-04 · Founder hükmü koşu tarihçesinde verilmişti ve 2026-08-10 gece turunda onay alanına taşındı, çünkü verilmiş bir kararın yalnız tarihçede yaşaması kapıyı panelde açık gösteriyordu; hüküm değişmedi, yalnız yeri düzeldi",
+        koşu: "2026-08-21 · KOŞU KAYDI GERİYE DÖNÜK YAZILDI (kontrolcü ölçümü): Bu Adımın işi 143f98c numaralı işlemeyle fiilen teslim edilmiş fakat koşu kaydı hiç yazılmamıştı; kayıt bugün ölçülerek dolduruldu. Teslimin dört meyvesi diskte doğrulandı: baglanti-cekirdek.ts saf çekirdek olarak alan katmanını ve anlatı katmanını taşır ve anlatı içi üç yüz yetmiş bir yol sözcesinin iki yüz altmış sekizini çözer, olmayan dosyaya bağlantı üretmez; atif-baglanti.ts Founder'ın ek hükmünü uygular ve çapraz varlık gezinmesini okur yalnız bakış olarak kurar; sınama dosyası on beş sınama taşır. Bugünkü bağımsız ölçüm: eklenti süiti beş yüz on yedi sınamanın tamamıyla yeşildir ve iki varlık denetimi sıfır hata ile sıfır uyarı verir. Üç kabul ölçütünün ikisi bu ölçümlerle kanıtlanmıştır; birinci ölçüt olan tek tıkla hedefe gitme davranışı Founder'ın canlı penceresinde henüz doğrulanmamıştır ve Adımın kapanışını yalnız o bakış tutmaktadır. Önceki kayıt: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): En taze kayıttır ve bugünün gerçekleriyle tam uyumludur. Kontrolcü önerisi: ikinci halkada koşulsun. Onay tarihçesi: onaylandı — 2026-08-04 · Founder hükmü: koni alanlarındaki dosya yolları da atıf kodları gibi tıklanabilir olur; kullanıcı meyve kaydına editörden tek tıkla gider", bağımlı: [ VIT-GRAF-A13 ],
+        referans: [ YUZ-1.2, DIL-4 ],
+        üretir:   [ KOD-EKL-EKLENTI, KOD-BAGLANTI-CEKIRDEK, KOD-ATIF-BAGLANTI, KOD-SNM-BAGLANTI-ATIF ],
+        ne:       "🧭 Editörde dosya yolu alanlarını gezilebilir kılmak. Founder canlı kullanımda bir meyve düğümünün dosya alanındaki yola tıkladığında hedefe gidemediğini bildirdi: kod atıfları çözülüp bağlantı olurken dosya yolları düz metin kalıyor." ) {
+        görev:    [
+          "Sar belgelerinde dosya alanı ve benzeri yol taşıyan değerleri belge bağlantısı olarak ilan et; tıklanınca yol çalışma alanı köküne göre çözülür ve hedef dosya editörde açılır.",
+          "Var olmayan hedef bağlantısız kalır ya da ipucunda eksikliği söyler; kullanıcı kırık yola sessizce düşürülmez.",
+          "Nöbet kur: örnek belgede dosya alanı bağlantı üretir, var olmayan yol üretmez; mutasyonla kanıtla.",
+          "Founder ek hükmü (2026-08-04, onay incelemesi sırasında): koşu ve anlatı metinlerinin İÇİNDEKİ kod atıfları da tıklanır ve üzerine gelinince küçük pencerede bağlam gösterir; bugün atıflar altı çizili süslenmekte ama tıklama hedefe götürmemekte ve karar vermeyi zorlaştırmaktadır. Hedef öbür varlıkta yaşıyorsa gezinme varlık sınırını okur-yalnız aşar: dosya salt okunur açılır ve bu bir bağımlılık değildir, yalnız bakıştır."
+        ]
+        kabul: [
+          "Koni ve meyve alanlarındaki dosya yolları editörde tek tıkla hedefe götürür.",
+          "Var olmayan hedefler bağlantı üretmez ve bu nöbetle ölçülür.",
+          "Eklenti süiti yeşildir ve taban düşmez; iki varlık denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Dosyaya yazılmaz; ayrıştırıcı ve kimlik değişmez. Kod atıflarının mevcut çözümü aynen kalır."
+      }
+
+      Adım( kod: VIT-GRAF-A13, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-08; gözle doğrulama onayı — 2026-08-16 · Founder yedi kabul maddesini canlı pencerede tek tek doğruladı ve kapanışı açık sözlü onayla mühürledi.", koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Görev metni emekli Posta Kutusu adını taşımaktadır ve güncel ad Onaylar olduğundan metin tazelenmelidir; bağımlısı olan çift yüzey Adımı açıktır. Kontrolcü önerisi: ad tazelemesiyle birlikte ikinci halkada koşulsun. Onay tarihçesi: onaylandı — 2026-07-30. 2026-08-16 · GÖZLE DOĞRULAMA TURU: yedi kabul maddesi Founder ile canlı pencerede tek tek doğrulandı; üç kademeli ağaç, dosya satırında sekmedekiyle bire bir aynı teknoloji simgesi, korunmuş yaprak tür renkleri, kod önekleri ile çan ve eksen simge ayrışması, tam metinli pano kopyası, dört sayaçlı durum çubuğu ve iki panelde tek desen maddelerinin hepsi onaylandı. Kapanış ölçümü: eklenti süiti beş yüz on yedi sınamayla yeşildir ve proje denetimi sıfır hata ile sıfır uyarı vermektedir. Tur iki ardıl bulgu üretti ve bulgular VIT-GRAF-A17 ile VIT-GRAF-A18 Adımlarına indi.", bağımlı: [ VIT-POSTA-A03 ],
+        referans: [ YUZ-3.3, YUZ-1.2, YUZ-4.1 ],
+        üretir:   [ KOD-EKL-EKLENTI, KOD-SNM-YUZEYLER, KOD-TEKNOLOJI-SIMGESI, KOD-DURUM-CUBUGU ],
+        ne:       "🧭 Tanı panellerini GEZİLEBİLİR ve KOPYALANABİLİR kılmak, dört yüzeyi durum çubuğuna taşımak. Founder 2026-07-28 tarihli canlı incelemede üç eksik bildirdi ve üçü de aynı kökten gelir: paneller kayıt gösteriyor fakat kullanıcının o kayıtla YAPABİLECEĞİ hiçbir şey yok." ) {
+        görev:    [
+          "DOSYA KADEMESİ EKLE. Gözlemler ve Hatırlatıcılar panellerinin ağacı bugün iki kademelidir: Proje, sonra doğrudan kayıt yığını. Altmış iki kayıt tek yığın hâlinde gezilemiyor. Araya DOSYA kademesi girsin: Proje → Dosya → kayıt. Bu, gezinmeyi kolaylaştırmanın yanında ikinci bir kazanç daha getirir — teknoloji simgesinin doğal yeri doğar.",
+          "TEKNOLOJİ SİMGESİNİ DOSYA SATIRINA KOY. Founder'ın hükmü şudur: bir Sarmal ya da herhangi bir dosya türü ile ilgili her bildirim, gözlem veya sorun, o dosyanın ilgili olduğu teknolojinin simgesini taşısın. Çizelge ZATEN VARDIR ve tek kaynaktır — `teknoloji-simgesi.ts` eklentinin kendi dil ilanından türer, ikinci bir çizelge yazılmaz. Posta Kutusunda bu bağ kurulmuştur, emsal odur.",
+          "YAPRAK SATIRIN TÜR RENGİNE DOKUNMA. Bu, Adımın en kolay ihlal edilecek kısmıdır. Gözlemler yapraklarında renk türü söyler — mavi ölçüm, sarı uyarıya aday, turuncu hataya aday — ve bu ayrım aynı gün Founder bulgusuyla kurulmuştur. Simge dosya yolundan gelen bir SVG olduğu için tema rengiyle boyanamaz; yaprağa logo koymak tür sinyalini öldürür. Simge YALNIZ dosya satırına gider.",
+          "KOPYALAMA KOMUTU EKLE. Founder'ın cümlesi şudur: hatırlatıcı ve bildirim metinlerini kopyalayamıyorum. Ağaç görünüşlerinde metin seçilemez; kopyalama ancak bir komutla olur. Sağ tık menüsüne kopyalama girdisi eklensin ve satırın TAM metnini panoya yazsın — etiket, açıklama ve ipucundaki gövde birlikte, dosya yolu ve satır numarasıyla. Kullanıcı kopyaladığını başka yere yapıştırdığında bağlamı kaybetmemelidir.",
+          "DÖRT YÜZEYİ DURUM ÇUBUĞUNA TAŞI. Bugün durum çubuğunda Sarmal'a ait hiçbir girdi yoktur; yalnız VS Code'un kendi hata ve uyarı sayacı görünür. Founder dört yüzeyin de orada görünmesini istedi: sorunlar, gözlemler, hatırlatıcılar ve posta kutusu. Girdi tıklanabilir olsun ve ilgili paneli açsın; sayı sıfırken de kaybolmasın, çünkü sıfır da bir bilgidir ve kullanıcı sayacın çalıştığını görmelidir.",
+          "SAYILAR TEK KAYNAKTAN GELSİN. Durum çubuğu kendi taramasını KURMAZ ve kendi sayacını tutmaz; panellerin zaten tuttuğu sayıları okur. İkinci bir sayaç doğarsa panelle durum çubuğu ayrışır ve hangisinin doğru olduğu bilinemez.",
+          "SATIR NEREYE GİDECEĞİNİ SÖYLESİN. Founder 2026-07-29 canlı incelemede şunu bildirdi: 'bazıları tıklandığında adımlara gidiyor, bazıları da tıklandığında hatırlatıcıya gidiyor, anlamadım.' Ölçüm şudur ve davranış aslında DOĞRUDUR: Hatırlatıcılar paneli tek tip kayıt taşımaz — panelin kendi başlık yorumunun söylediği gibi açık Hatırlatıcı düğümleri, henüz kapanmamış Adımlar ve bloklu ya da geliştirme evresindeki çıpalar aynı listede yaşar; tıklama her zaman satırı DOĞURAN kayda gider. Kusur yönlendirmede değil OKUNAKLILIKTADIR: bugün bütün satırların simgesi aynı çandır ve hiçbirinde kod yoktur, dolayısıyla kullanıcı tıklamadan nereye gideceğini bilemez ve davranış rastgele hissettirir.",
+          "ÇÖZÜM İKİ PARÇADIR ve ikisi de gezinme yüzeyinin işidir. Birincisi, satır etiketi KODLA başlasın — Posta Kutusunda emsali vardır ve orada karışıklık yaşanmamıştır. `HTR-` ile başlayan bir kaydın hatırlatıcı düğümüne, `VIT-` ile başlayanın Adıma gideceği bakışta anlaşılır. İkincisi, kayıt TÜRÜNE göre simge ayrışsın: hatırlatıcı düğümü çanını korusun, açık Adım kendi eksen simgesini taşısın. Aynı okunaksızlık Gözlemler panelinde de vardır ve ikisi birlikte kapanır; iki panelde iki farklı desen doğarsa kusur ad değiştirerek yaşamaya devam eder."
+        ]
+        kabul: [
+          "Gözlemler ve Hatırlatıcılar ağacı üç kademelidir: Proje, Dosya, kayıt. Hiçbir kayıt elenmez ve kademe atlanmaz.",
+          "Dosya satırı ilgili teknolojinin simgesini taşır ve simge `teknoloji-simgesi.ts` tek kaynağından gelir; ikinci bir çizelge kurulmadığı nöbetle ölçülür.",
+          "Yaprak satırların tür rengi DEĞİŞMEMİŞTİR; üç türün rengi ve tek şekil kuralı yerindedir ve bu bir nöbetle korunur.",
+          "Her panelde bir satırın tam metni tek komutla panoya kopyalanabilir; kopyalanan metin dosya yolunu ve satır numarasını taşır.",
+          "Durum çubuğunda dört yüzeyin sayısı görünür, tıklanınca ilgili panel açılır ve sayı sıfırken girdi kaybolmaz.",
+          "Durum çubuğu sayıları panellerin tuttuğu sayılardan gelir; ikinci bir tarama ya da ikinci bir sayaç kurulmadığı nöbetle ölçülür.",
+          "Gözlemler ve Hatırlatıcılar panellerinde her satır kendi kodunu taşır ve kayıt türüne göre simgesi ayrışır; kullanıcı tıklamadan önce nereye gideceğini bilir. Kodsuz bir satır üretilirse süit kırmızıya döner ve bu mutasyonla kanıtlanır.",
+          "İki panel AYNI deseni kullanır; biri kodu başa alıp öteki almazsa süit kırmızıya döner. Aynı kusurun iki panelde farklı biçimde yaşamaya devam etmesi yapısal olarak engellenmiştir.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; proje denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Bu Adım panellerin GEZİNME ve TAŞIMA yüzeyini büyütür; hangi kaydın hangi panele düştüğüne dokunmaz. Yönlendirme kararı motorda tek yerde yaşar ve oraya girilmez. Hiçbir kaydın düzeyi yükseltilmez ve hiçbir kayıt elenmez. Durum çubuğu bir tanı yüzeyi DEĞİLDİR: sayı gösterir ve panele götürür, kaydın kendisini basmaz."
+      }
+
+      Adım( kod: VIT-GRAF-A15, durum: tamamlandı, öncelik: p1, bağımlı: [ VIT-GRAF-A13 ],
+        referans: [ YUZ-3.3, YUZ-4.1 ],
+        üretir:   [ KOD-SNM-YUZEYLER, KOD-FIKIR-CEKIRDEK ],
+        koşu: "2026-08-09 · ÜRETİM, BAĞIMSIZ DENETİM VE DÜZELTME TURU. Bağımsız denetçi teslimi ŞERHLİ KABUL ile geçirdi ve hiçbir engelleyici şerh açmadı; dört şerhin dördü de düzeltme turunda kapandı. DENETÇİNİN KENDİ ÖLÇÜMLERİ ŞUNLARDIR ve üreticinin sayısına bakmadan üretilmiştir: motorun akışından çıkan yüz doksan dört ham kaydı yüzeylere ayırıp dağılımı kendi sayacıyla kurmuş, gözlem yüzeyinde on sekiz tür ile yüz on bir kayıt, hatırlatıcı yüzeyinde üç tür ile seksen üç kayıt ölçmüş ve panelin bastığı sayılarla sapma bulmamıştır. Komşu Adımın ölçütlerini okuyarak değil ÖLÇEREK kanıtlamış; teslimden önceki sınama dosyalarını yeni kaynağa karşı koşturmuş ve yalnız üreticinin değiştirdiğini beyan ettiği iki iddianın kırmızıya döndüğünü, dokuz ölçütün dokuzunun da ayakta kaldığını göstermiştir. Yedi mutasyonun yedisi de hedefindeki nöbeti kırmıştır. DÜZELTME TURUNDA KAPANAN DÖRT ŞERH: bugünkü hükmü yalanlayan iki bayat yorum tazelendi, gürültü kararının gerekçesindeki tür sayısı yeniden ölçülüp düzeltildi, körelmiş bir koruma gerçek bir iddiaya çevrildi ve ikinci sayaç yasağı yazımdan bağımsız hâle getirildi. Kapanış ölçümü: eklenti süiti dört yüz yetmiş sekizden dört yüz doksan üç sınamaya çıktı ve tamamı yeşildir, açık aracın denetimi sıfır hata ve sıfır uyarı vermektedir. 2026-08-16 · Tür özeti Founder tarafından canlı pencerede gözle doğrulandı ve zincirin kökü VIT-GRAF-A13 aynı gün kapandığından kapı borcu kalkmıştır.",
+        onay: "şerhle onaylandı — 2026-08-08 ve 2026-08-09 · Founder iki işi de ölçülmüş gerekçeyle onayladı. BİRİNCİ İŞİN HÜKMÜ: tür özeti en üstteki proje satırına yazılacak. Hükmün doğuşu şudur; VIT-GRAF-A13 Adımı ağacın üç kademeli olmasını şart koşuyordu ve üretici bu ölçütü uygularken tanı kimliğine göre yığan eski kademeyi dosya kademesiyle DEĞİŞTİRMEK zorunda kalmıştı, çünkü ikisini birlikte tutmak dört kademe demekti. Bedeli ölçüldü: kullanıcı artık bir dosyanın nesi olduğunu bakışta görür, buna karşılık hangi tür sorunun baskın olduğunu görmek için bütün dosyaları açıp saymak zorundaydı. Founder kaybolan görünümü geri istedi fakat dördüncü kademeyi reddetti, çünkü fazladan kademe her kayda ulaşmak için fazladan tıklama demektir. Geri getirilen şey kademe değil özet satırıdır. İKİNCİ İŞİN HÜKMÜ: Fikir satırı da ortak biçime girecek ve kodunu başında taşıyacak; gerekçesi tutarlılık, izlenebilirlik ve bedelin küçüklüğüdür. KONTROLCÜ ŞERHİ: düzeltme turunun kapanışı BAĞIMSIZ OLARAK YENİDEN DENETLENMEMİŞTİR ve bu bilinçli bir seçimdir. Gerekçesi şudur: denetçinin hükmü zaten şerhli kabuldü ve dört şerhin dördü de engelleyici değildi, yani kayda geçirilerek taşınabilir kalemlerdi; üretici bunları taşımak yerine kapattı ve her düzeltme için denetçinin ölçtüğü mutasyonu birebir yineleyip kırmızıya döndüğünü gösterdi. Buna karşılık dördüncü düzeltme yeni ve hatırı sayılır bir nöbet gövdesi doğurmuştur, dolayısıyla o gövdenin kendisi bağımsız bir gözle sınanmamıştır; bu boru hattının açık kalan tek noktasıdır ve burada dürüstçe beyan edilmektedir. İKİNCİ ŞERH: üreticinin ilk raporunda bir beyan yanlış çıktı, çünkü değiştirmediği bir nöbeti değiştirdiğini yazmıştı; denetçi bunu kendi diffini okuyarak yakaladı ve üretici bundan sonra beyanını hafızasına değil kendi diffine dayandıracağını kayda geçirdi. ÜÇÜNCÜ ŞERH: Adımın metni tür özetinin etikete yazılmasını istiyordu ve lafza uyuldu, oysa yürütücü ağacında ikincil bilgi için doğal yer gri açıklamadır; Founder canlı görünümde satırı ağır bulursa taşıma tek satırlık bir değişikliktir ve nöbetler o taşımayı da ölçmeye devam eder.",
+        ne: "🔢 Tür özetinin proje satırına çıkması — Gözlemler ve Hatırlatıcılar ağacı bugün kayıtları dosyaya göre yığıyor ve bu sorunun bir yüzünü çözüyor, oysa hangi tür sorunun baskın olduğu ancak bütün dosyalar tek tek açılıp sayılarak öğrenilebiliyor; oysa o bilgi zaten motorun elinde ve tek satıra sığar" ) {
+        görev: "İKİNCİ İŞ — FİKİR SATIRININ KOD ÖNEKİ (Founder hükmü 2026-08-08): Hatırlatıcılar panelinin içinde bugün iki ayrı satır biçimi yaşamaktadır; hatırlatıcı satırları kodla başlar, Fikir satırları ise yalnız amaç cümlesini gösterir ve kimliğini düşürür. Fikir satırı da ortak biçime çevrilir ve kodunu başında taşır. Founder'ın gerekçesi üç maddedir. Birincisi tutarlılıktır, çünkü tek panelin içinde iki biçim kullanıcıya iki kural öğretir ve bu, iki panelde iki biçimden daha kötüdür. İkincisi izlenebilirliktir, çünkü kanon Fikir'in olgunlaşınca Karar'a yükseleceğini söyler ve terfi eden fikrin hangi kayıttan doğduğu ancak kimliği baştan görünürse izlenir. Üçüncüsü bedelin küçüklüğüdür, çünkü satır kırpılma bedelini zaten bütün öteki satırlar ödemektedir ve Fikir'e muafiyet tanımanın ölçülmüş bir gerekçesi yoktur. Ortak biçim işlevi zaten vardır ve nöbetlidir; yeni bir biçim icat edilmez, var olan kullanılır.\n\nBİRİNCİ İŞ — TÜR ÖZETİ: Ağacın en üstündeki proje satırının etiketine tür özeti yazılır. Özet, o paneldeki kayıtları tanı kimliğine göre sayar ve en çok görülen birkaç türü adıyla ve sayısıyla gösterir. Kaç türün gösterileceği bir gürültü kararıdır ve satırın okunur kalmasına göre seçilir; geri kalanı ipucu penceresinde ya da toplam sayıda yaşar. Sayım panelin zaten tuttuğu kayıtlardan türetilir ve ikinci bir tarama kurulmaz, çünkü aynı gerçeğin iki sayacı zamanla ayrışır. Karar mantığı saf çekirdekte yaşar ve vscode kabuğundan bağımsız sınanır."
+        kabul: [
+          "Proje satırı, o paneldeki kayıtların tür dağılımını adıyla ve sayısıyla gösterir ve gösterilen sayılar panelin kendi kayıt kümesinden türetilir",
+          "Yeni bir ağaç kademesi doğmamıştır ve ağaç üç kademeli kalır; bu bir nöbetle ölçülür",
+          "Sayım için ikinci bir tarama ya da ikinci bir sayaç kurulmadığı nöbetle ölçülür",
+          "Hatırlatıcılar panelinin içindeki bütün satırlar aynı biçimi kullanır ve Fikir satırı da kodunu başında taşır; biri kodu başa alıp öteki almazsa süit kırmızıya döner",
+          "İki panel aynı deseni kullanır ve satır emoji taşımaz; eklenti süiti yeşildir ve sayısı düşmemiştir"
+        ]
+        sınır: "Bu Adım yalnız özet satırını yazar. Hangi kaydın hangi panele düştüğüne, kayıtların düzeyine ve ağacın kademe sayısına dokunulmaz; süzme ve sıralama yüzeyi de bu Adımın dışındadır."
+      }
+
+      Adım( kod: VIT-GRAF-A16, durum: tamamlandı, öncelik: p1, bağımlı: [ VIT-GRAF-A15 ],
+        referans: [ YUZ-4.1, YUZ-3.3, DIL-1.1 ],
+        üretir:   [ KOD-FIKIR-PANELI, KOD-SNM-FIKIR-PANELI ],
+        onay: "şerhle onaylandı — 2026-08-08 ve 2026-08-09 · Hükmün kendisi Founder'ındır ve 2026-08-08 tarihinde verilmiştir: Fikirler kendi panelini hak eder, çünkü Fikir kendi başına bir düşünce evresidir ve başka bir tipin penceresine misafir edilemez; kardeşlik ilişkisi ortak bir pencereyi değil ortak bir deseni gerektirir. HÜKMÜN DOĞRULUĞU 2026-08-09 TARİHİNDE AYRICA ÖLÇÜLDÜ: canlı rafa yazılan iki gerçek Fikir panelde ilk bakışta bulunamadı, çünkü ikisi de yirmi dokuz hatırlatıcı kaydının altında kalmıştı; yerleşim kusuru bir tercih tartışması değil ölçülmüş bir gerçektir. BAĞIMSIZ DENETÇİ ŞERHLİ KABUL VERDİ ve iki şerhin ikisi de taşınabilirdir. Birinci şerh değişiklik günlüğündeki bir tarihsel imlâ kaymasıydı ve teslimden sonra düzeltildi; girdi hanenin bir önceki sürümde açıldığını yazıyordu, oysa hane 0.9.138 sürümünde açılmış ve geçicilik beyanı 0.9.140 notuna yazılmıştı. İkinci şerh plan kaydının henüz ilerletilmemiş olmasıdır ve bu kayıtla kapanmaktadır. KONTROLCÜ ŞERHİ: Adım mekanik olarak bitmiştir fakat KAPATILAMAMAKTADIR, çünkü öncül zinciri açıktır ve kanon öncülü tamamlanmadan bir Adımın tamamlandı gösterilmesini yasaklar; zincirin kökü Founder'ın canlı görünümdeki gözle doğrulamasını bekleyen VIT-GRAF-A13 Adımıdır ve hiçbir sınama onun yerine geçemez. Bu bir iş borcu değil, kapı borcudur.",
+        koşu: "2026-08-09 · ÜRETİM VE BAĞIMSIZ DENETİM. Fikir hanesi Hatırlatıcılar panelinden söküldü ve kenar çubuğunda kendi görünüşüne taşındı; görünüş kendi kimliğiyle paket bildirimine indi, kendi vektörel simgesini aldı ve adı iki dil kaydına birlikte girdi. Beslenme yolu değişmedi: kayıtlar aynı paylaşılan ayrıştırma önbelleğinden okunur, tek defterde tutulur, kapsam süzgeci yüzey defteriyle aynı kalır ve tur sonunda tek yayın yapılır. Saf çekirdeğe ve Fikir tipinin şemasına hiç dokunulmadı. DENETÇİ BÜTÜN SAYILARI KENDİ ÖLÇÜMÜYLE YENİDEN ÜRETTİ ve üreticinin hiçbir rakamına güvenmedi: eklenti süiti dört yüz doksan üçten beş yüz on bire çıktı ve denetçi taban sayıyı ayrı bir kum havuzunda depo başının kendisinden koşturarak doğruladı, yani sınama sayısının düşmediği bağımsız olarak gösterildi. Çekirdek süiti bin yirmi üç sınamayla yeşildir, iki varlığın denetimi de sıfır hata ve sıfır uyarı vermektedir, iki tür denetimi de temizdir ve nöbet defterine yazılan iki mühür denetçi tarafından yeniden hesaplanıp birebir tutmuştur. NÖBETİN GERÇEKTEN KORUDUĞU MUTASYONLA KANITLANDI: denetçi canlı ağaca hiç dokunmadan on iki kendi mutasyonunu ayrı bir kopyada koşturdu ve on ikisi de hedefindeki nöbeti kırdı. Bunlardan biri körlük sondasıydı ve önemlidir: bölüm başka bir adla, hiç fikir sözcüğü kullanmadan geri doğduğunda da yakalandı, çünkü koruma yalnız dize aramasına değil düğüm türü beyaz listesine ve bayt mührüne de yaslanmaktadır. Sürüm 0.9.140'tan 0.9.141'e ilerledi ve değişiklik günlüğüne indi. 2026-08-16 · Fikirler paneli Founder tarafından canlı pencerede gözle doğrulandı ve zincirin kökü VIT-GRAF-A13 aynı gün kapandığı için kontrolcü şerhindeki kapı borcu kalkmıştır.",
+        ne: "💡 Fikirlerin kendi paneline taşınması — Fikir hanesi bugün Hatırlatıcılar panelinin içinde, yirmi dokuz kaydın altında bir bölüm olarak yaşıyor ve kullanıcı kendi yazdığı fikri görmek için başka bir tipin listesini sonuna kadar kaydırmak zorunda kalıyor; Founder 2026-08-08 tarihinde Fikirlerin kendi panelini hak ettiğine hükmetmişti ve hüküm bugüne dek uygulanmadı" ) {
+        görev: "Fikir hanesi Hatırlatıcılar panelinden çıkarılır ve kenar çubuğunda kendi görünüşüne taşınır.\n\nHÜKMÜN KAYNAĞI VE GEREKÇESİ. Gece turunda üretici yerleşimi tek başına seçmek zorunda kalmış, Fikirleri Hatırlatıcılar panelinin içinde bir bölüm olarak açmış ve gerekçesini sınıflamanın Fikir tipini Hatırlatıcının kardeşi ilan etmesine dayandırmıştı. Founder 2026-08-08 tarihinde bunun tersine hükmetti; gerekçesi Fikrin kendi başına bir düşünce evresi olması ve başka bir tipin penceresine misafir edilmemesidir. Hükmün doğruluğu 2026-08-09 tarihinde canlı görünümde ayrıca ölçüldü: canlı rafa yazılan iki gerçek Fikir panelde bulunamadı, çünkü ikisi de yirmi dokuz hatırlatıcı kaydının altında kalmıştı.\n\nYAPILACAK İŞ. Yeni görünüş kendi kimliğiyle kenar çubuğuna kaydedilir ve paket bildirimine iner. Panelin beslendiği yol DEĞİŞMEZ: kayıtlar bugün olduğu gibi paylaşılan ayrıştırma önbelleğinden okunur, dosya başına deftere yazılır, kapsam süzgeci yüzey defteriyle aynı kalır ve tur sonunda tek yayın yapılır. Saf çekirdek yeniden yazılmaz; satır etiketi, gri açıklama ve ipucu tarifleri bugün nerede yaşıyorsa orada kalır ve yalnız görünüş kabuğu yeni evine taşınır.\n\nBOŞ DURUM VE SAYAÇ. Hatırlatıcılar panelinin boşluk ölçüsü bugün iki haneyi birlikte sayıyor; Fikir çıkınca o ölçü yalnız hatırlatıcılara döner, yeni panel de kendi boş durum cümlesini kazanır. Durum çubuğundaki sayaçlar hangi haneyi saydığını yeni yerleşime göre yeniden söyler; aynı gerçeğin iki sayacı kurulmaz.\n\nARTIK BÖLÜM GERİ DÖNMESİN. Taşıma yapıldıktan sonra Hatırlatıcılar panelinde Fikir bölümünün bir daha doğmadığı mekanik olarak ölçülür; ayrışma nöbetleri iki paneli birden kapsayacak biçimde genişletilir. Ayrıca her paketlemenin sürümü ilerletmesi kuralı bu teslimde de geçerlidir, çünkü aynı numarayla paketlenen paket kullanıcının editöründe hiç tazelenmez."
+        kabul: [
+          "Fikirler kenar çubuğunda kendi görünüşünde yaşar ve Hatırlatıcılar panelinde Fikir bölümü bir daha doğmaz; bu ikisi de nöbetle ölçülür",
+          "Panelin beslendiği yol değişmemiştir: kayıtlar aynı önbellekten okunur, ikinci bir tarama ya da ikinci bir sayaç kurulmamıştır ve bu nöbetle ölçülür",
+          "İki panelin de boş durum cümlesi kendi hanesini anlatır; hatırlatıcısı olmayan kullanıcı fikirlerini görürken yanlış bir cümle okumaz",
+          "Satır biçimi ortak kalır ve Fikir satırı kodunu başında taşımayı sürdürür; satırlar emoji taşımaz ve işaretler vektörel aileden gelir",
+          "Eklenti süiti yeşildir ve sınama sayısı düşmemiştir; açık aracın denetimi sıfır hata verir; eklenti sürümü ilerlemiş ve değişiklik günlüğüne inmiştir"
+        ]
+        sınır: "Bu Adım yalnız yerleşimi taşır. Fikir tipinin şeması, Fikirden Karara terfi yolu, Fikir için yeni bir tanı ya da nöbet ve süzme ile sıralama yüzeyi bu Adımın dışındadır."
+        dokunulmaz: [ "Fikir tipinin sınıflama şeması", "Saf çekirdeğin satır tarifleri" ]
+      }
+
+      Adım( kod: VIT-GRAF-A17, durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ VIT-GRAF-A13 ],
+        onay: "onaylandı — 2026-08-18 · Founder Onaylar kuyruğu değerlendirme oturumunda Adımın işe alınmasını tasdik etti ve üç vitrin Adımının koşum sırasını küçükten büyüğe VIT-GRAF-A19, VIT-GRAF-A17 ve VIT-GRAF-A18 olarak belirledi. Kapanış hükmü bu tasdikten ayrıdır: canlı pencerede gözle doğrulama şartı aynen yürürlüktedir ve hiçbir sınama onun yerine geçmez.",
+        referans: [ YUZ-3.3 ],
+        üretir:   [ KOD-EKL-EKLENTI, KOD-SNM-YUZEYLER ],
+        ne: "🖱️ Satır eylemlerinin üzerine gelince görünür olması. Founder 2026-08-16 gözle doğrulama turunda kopyalamanın sağ tık menüsünde çalıştığını fakat keşfedilebilir olmadığını bildirdi; Onaylar panelinde eylemlerin satır üzerinde tek bakışta erişilir olması emsal gösterildi ve aynı erişim kolaylığının bütün panellere gelmesi hükme bağlandı." ) {
+        görev: "Gözlemler, Hatırlatıcılar ve Fikirler panellerindeki kopyalama komutu, satırın üzerine gelindiğinde beliren satır içi düğme olarak da sunulur; Yol Haritası panelindeki koni kartı düğmesi bu yerleşimin mevcut emsalidir ve aynı desen izlenir. Sağ tık menüsündeki girdi kaldırılmaz, çünkü iki erişim yolu birbirini dışlamaz ve aynı komuta iner. Düğmenin simgesi vektörel aileden seçilir ve panel başına ayrı bir desen kurulmaz."
+        kabul: [
+          "Üç panelde de satırın üzerine gelindiğinde kopyalama düğmesi belirir ve tıklanınca sağ tık menüsündeki komutla aynı pano metnini üretir.",
+          "Sağ tık menüsündeki kopyalama girdisi yerinde kalır ve iki yol tek komuta iner; ikinci bir kopyalama mantığı doğmadığı nöbetle ölçülür.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; kapanış Founder'ın canlı pencerede gözle doğrulamasını ister."
+        ]
+        sınır: "Bu Adım yalnız erişim yüzeyini büyütür; pano metninin içeriğine, panellerin veri yoluna ve başka satır eylemlerine dokunulmaz."
+      }
+
+      Adım( kod: VIT-GRAF-A18, durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ VIT-GRAF-A13 ],
+        onay: "onaylandı — 2026-08-18 · Founder Onaylar kuyruğu değerlendirme oturumunda Adımın işe alınmasını tasdik etti; koşum sırası üç vitrin Adımı içinde sonuncudur, çünkü kapsamı en genişidir. Founder ayrıca HTR-IPUCU-YORUM-KORUMASI hatırlatıcısının bu Adıma bağlanmasına hükmetti, çünkü o hatırlatıcının dönüş tetikleyicisi ipucu yüzeyine bir sonraki dokunuşu bekler ve bu Adım o dokunuşun kendisidir; üretici Adım açıldığında hatırlatıcıyı koniden okur ve yorum satırı korumasının bu turun kapsamına sığıp sığmadığını ölçüp raporlar. Kapanış hükmü bu tasdikten ayrıdır ve canlı pencerede gözle doğrulama şartı aynen yürürlüktedir.",
+        referans: [ DIL-1.5, YUZ-3.3 ],
+        üretir:   [ KOD-TANI-METINLERI, KOD-YUZEY-METINLERI ],
+        ne: "📝 İpucu penceresindeki tanı anlatımının ıslahı. Founder 2026-08-16 turunda ipucunu fotoğrafla belgeleyip üç kusur bildirdi: pencere, satırın kırpılmış metnini olduğu gibi tekrarlıyor ve tam gövdeyi göstermiyor; öneri cümleleri ok ve dikey çizgi işaretli telegrafik yazımla geliyor; kaynak satırı upuzun mutlak yol basıyor." ) {
+        görev: "Üç iş tek turda kapanır. Birincisi, ipucu penceresi kaydın kırpılmamış gövdesini gösterir; kırpma yalnız satır etiketine aittir ve ipucuya taşınmaz. İkincisi, motorun tanı ve öneri metinleri anlatım bütünlüğü hükmüne çekilir: ok işaretleri, dikey çizgiyle sıralanmış seçenekler ve kesik ibareler tam cümlelere çevrilir; metinlerin anlamı değişmez, yalnız düzyazıya kavuşur. Üçüncüsü, ipucundaki kaynak satırı çalışma alanı köküne göreli yazılır; tam yol pano kopyasında yaşamaya devam eder."
+        kabul: [
+          "İpucu penceresi kaydın tam gövdesini gösterir ve satır etiketindeki üç nokta kırpması ipucuda görünmez; bu nöbetle ölçülür.",
+          "Tanı ve öneri metinlerinde ok ile dikey çizgi işaretli telegrafik yazım kalmaz; metinler tam cümledir ve bir nöbet bu işaretleri tarar.",
+          "İpucundaki kaynak satırı çalışma alanına göreli yoldur; pano kopyası tam yolu korur.",
+          "Çekirdek ve eklenti süitleri yeşildir ve sayıları düşmemiştir; proje denetimi sıfır hata ve sıfır uyarı verir; kapanış Founder'ın canlı pencerede gözle doğrulamasını ister."
+        ]
+        sınır: "Tanıların kimliği, düzeyi, yönlendirme matrisi ve CLI çıktısının bilgi içeriği değişmez; bu Adım yalnız anlatımı ıslah eder. Boş durum metinleri bu Adımın dışındadır, çünkü 2026-08-16 tarihinde ayrıca kapanmıştır."
+      }
+
+      Adım( kod: VIT-GRAF-A19, durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ VIT-GRAF-A13 ],
+        onay: "onaylandı — 2026-08-18 · Founder Onaylar kuyruğu değerlendirme oturumunda Adımın işe alınmasını tasdik etti; üç vitrin Adımı içinde ilk koşulacak iş budur, çünkü kapsamı en küçüktür ve her paketleme sürümü ilerlettiği için küçükten büyüğe gitmek tazeleme maliyetini düşürür. Kapanış hükmü bu tasdikten ayrıdır ve canlı pencerede gözle doğrulama şartı aynen yürürlüktedir.",
+        referans: [ YUZ-3.3, YUZ-4.1 ],
+        üretir:   [ KOD-EKL-EKLENTI, KOD-SNM-YUZEYLER ],
+        ne: "🔢 Hatırlatıcılar ve Gözlemler sekmelerinin kayıt sayısı rozetini kazanması. Founder 2026-08-17 tarihinde iki ekran görüntüsüyle belirtiyi belgeledi: Onaylar sekmesinin adının yanında sayıyı taşıyan bir rozet varken Hatırlatıcılar sekmesinde böyle bir rozet bulunmuyor ve sayı yalnız açılan satırın metnine gömülü kalıyor. Founder'ın gerekçesi şudur: genel sayı sekmenin üzerinde görünmezse panel boş sanılır ve içindeki iş gözden kaçar." ) {
+        görev: "Hatırlatıcılar ve Gözlemler görünüşleri, Onaylar panelinin hâlihazırda uyguladığı desenle sekme rozetine kendi kayıt sayısını yazar. Emsal mekanizma eklentinin onay panelinde yaşamaktadır ve orada görünüşün rozet alanına adet değeri atanmaktadır; iki panel de ağaç görünüşü kullandığından aynı alan onlarda da mevcuttur. Sayı, panelin kendi kayıt kümesinden türetilir ve ikinci bir sayaç doğurulmaz, çünkü ayrı sayaç ile panel içeriği zamanla ayrışır. Rozet, panel içeriği her tazelendiğinde birlikte tazelenir ve küme boşaldığında rozet kaldırılır."
+        kabul: [
+          "Hatırlatıcılar ve Gözlemler sekmelerinin adının yanında kayıt sayısını gösteren rozet görünür ve rozetteki sayı panelin içindeki kayıt sayısıyla birebir aynıdır.",
+          "Rozet sayısı panelin kendi kayıt kümesinden türetilir; bağımsız bir sayaç alanı doğmadığı nöbetle ölçülür.",
+          "Panel kümesi boşaldığında rozet kaybolur ve kayıt eklenince yeniden belirir.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; kapanış Founder'ın canlı pencerede gözle doğrulamasını ister."
+        ]
+        sınır: "Bu Adım yalnız sekme rozetini ekler; panellerin sıralaması, satır metinleri, simgeleri ve veri yolu değişmez. Onaylar panelinin mevcut rozeti emsaldir ve ona dokunulmaz."
+      }
+    }
+  }
+
+  // ══ KATMAN · POSTA: Founder onayı bekleyen kapıların kendi yüzü ════════════════
+  //    Founder 2026-07-28 hükmü: onay bekleyen iş, Hatırlatıcılar ve Gözlemler gibi
+  //    bir PANELDE yaşar. Bugün bir komuttur ve arama kutusundan çağrılır; yani
+  //    Founder'ın kararını bekleyen iş, Founder'ın göremediği bir yerde durmaktadır.
+  Katman( kod: VIT-POSTA, kullanır: TAKIM-EKLENTI, ad: "posta kutusu yüzü",
+    ne: "📬 Founder onayı bekleyen kapıların kalıcı paneli — onay kuyruğu komut olmaktan çıkıp dördüncü tanı yüzeyi olur" ) {
+
+    AltKatman( kod: VIT-POSTA-K1, ad: "panel", departman: kodlama,
+      ne: "onay kuyruğunun görünür yüzü ve onu besleyen tek tarayıcı" ) {
+
+      Adım( kod: VIT-POSTA-A01, durum: tamamlandı, onay: "onaylandı — 2026-07-30", bağımlı: [ VIT-GRAF-A11 ],
+        koşu:  "2026-08-04 · KAPANIŞ. Onaylar görünüşü beşinci panel olarak kenar çubuğunda yaşar ve komut çağırmadan görünür; Founder panele bu adıyla günlerdir fiilen çalışmaktadır. Kabul maddeleri bağımsız mutabakat ölçümüyle doğrulandı: kapı listesi tek tarayıcıdan gelir ve tarama tekeli nöbetle zorlanır, iki dışlama evreni tek kaynağa inmiştir ve ölçülen ayrışma kapanmıştır, rozet ile boş durum cümlesi nöbetlidir, hiçbir etiket ham yol basmaz ve panel simgesi geometrik ailenin zarf konseptiyle öteki dört panelden bakışta ayrılır. Founder 4 Ağustos canlı bakışında panel ailesinin görsel kimliğini onayladı. Bilinen kuyruk kusurları bu Adımın sınırı gereği ayrı Adımda yaşamaya devam eder.",
+        referans: [ YUZ-3.3, YUZ-1.2, YUZ-4.1, OZK-03 ],
+        üretir:   [ KOD-POSTA-PANEL, KOD-ONAY-TARAYICI, KOD-SNM-POSTA ],
+        ne:       "📬 Onay kuyruğunu gerçek bir panele çevirmek. Ölçülmüş bulgu şudur: `package.json` içindeki görünüş dizisi dört görünüş taşır ve onay kuyruğunun paneli yoktur; kuyruk yalnız `sarmal.onayKuyrugu` komutuyla açılan bir seçim listesidir. Founder'ın kendi cümlesi şudur: şu an bambaşka bir yerde gidip arama kutusunda arayıp bulmaya çalışıyoruz." ) {
+        görev:    [
+          "Beşinci bir görünüş kur ve adı Posta Kutusu olsun; Founder onayı bekleyen bütün kapıları çalışma alanı genelinde ağaç olarak göstersin. Kayda tıklayınca kapıya gidilsin ve mevcut karar akışı açılsın; karar akışının kendisi yeniden yazılmaz, yalnız yeni bir giriş kapısı kazanır.",
+          "TEK TARAYICI kur. Onay kuyruğunun bugünkü çalışma alanı taraması komutun içinde yaşıyor; panel de aynı taramaya muhtaçtır ve ikinci bir tarayıcı yazmak yasaktır. Tarama ortak bir modüle çıkarılır, hem komut hem panel oradan beslenir. Panel ile komut farklı sayı gösteriyorsa bu bir kusurdur.",
+          "İki dışlama evrenini teke indir. Modül bugün iki ayrı dışlama listesi kullanıyor: tarama tarafında ortak glob, olay tarafında elle yazılmış bir düzenli ifade. Dosyanın kendi yorumu ikiz listeyi yasaklıyor, oysa ikiz liste dosyanın içindedir. Farkı ölç ve tek kaynağa bağla.",
+          "Panel başlığı bekleyen kapı sayısını rozet olarak taşısın; kuyruk boşken panel gelen kutusu sıfır anlamına gelen okunur bir cümle göstersin."
+        ]
+        kabul: [
+          "Posta Kutusu görünüşü kenar çubuğunda yaşar ve komut çağırmadan görünür; Founder onay bekleyen işi aramak zorunda kalmaz.",
+          "Panelin proje satırı simgesi öteki dört panelin hiçbirininkiyle aynı değildir ve beş panel bakışta ayrılır.",
+          "Grup satırı ile altındaki kayıtlar aynı simgeyi taşımaz; ağacın kademesi bakışta okunur.",
+          "Hiçbir kayıt etiketi ham dosya yolu değildir; yol yalnız ipucuna iner.",
+          "Kapı listesi TEK tarayıcıdan gelir ve bunu bir nöbet mutasyonla kanıtlar; iki tüketicinin farklı sayı üretmesi imkânsızdır.",
+          "İki dışlama evreni arasındaki fark ÖLÇÜLMÜŞ hâliyle kayda geçmiştir ve evren tektir.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; proje denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Bu Adım karar akışının MANTIĞINI değiştirmez; onay kaydının nasıl yazıldığı, hangi damgaların verildiği ve kararın Adıma nasıl işlendiği aynen korunur. Panel yalnız yeni bir GİRİŞ ve GÖRÜNÜM yüzeyidir. Kuyruğun bilinen kusurları bu Adımın işi değildir; onlar VIT-POSTA-A02 Adımında yaşar ve buraya sızdırılmaz."
+      }
+
+      Adım( kod: VIT-POSTA-A02, durum: geliştirmede, öncelik: p1, onay: "onaylandı — 2026-08-08", bağımlı: [ VIT-POSTA-A01 ],
+        referans: [ YUZ-3.3, YUZ-1.2, OZK-02, OZK-04 ],
+        üretir:   [ KOD-POSTA-PANEL, KOD-SNM-POSTA ],
+        ne:       "🐞 Posta kutusunun kusurlarını kapatmak. Founder 2026-07-28 tarihinde belirtiyi tarif etmeden şunu söyledi: o posta kutusu düzgün çalışmıyor. Bağımsız bir denetim koşuldu ve bulgular bu Adımın gövdesini oluşturur." ) {
+        görev:    [
+          "Bağımsız denetimin raporundaki her kusuru tek tek kapat. Her onarımın yanına, kusurun HANGİ ÖLÇÜMLE gösterildiğini yaz; belirtiye değil ölçüme onarım yapılır.",
+          "Şu hat özellikle ölçülecektir: karar yazıldıktan sonraki doğrulama, kaydetme ile önbellek geçersizleşmesi arasında yarışıyor olabilir. Yarış varsa kullanıcı kararını verdiği hâlde 'karar yazıldı görünmüyor' hatası alır; yani sistem doğru davranıp yanlış konuşur.",
+          "Açılış maliyetini ölç. Modül etkinleşince çalışma alanındaki her plan dosyasını açıyor; Founder ayrıca yol haritası açılınca eklentinin kastığını bildirmişti. İkisi arasındaki bağı ölçerek kur ya da ölçerek reddet, tahmin etme.",
+          "KAPI TANIMA KUSURUNU KAPAT. Yukarıdaki `karar:` alanında ölçülen kusur şudur: Founder'ın şart koştuğu on kapıdan beşi kuyruğa hiç görünmüyor. İki seçenek vardır ve Founder hangisiyle gidileceğini söyler. BİRİNCİ SEÇENEK, kapının kanonik bir alanla açıkça beyan edilmesidir; Adım `onayBekler: founder` gibi bir alan taşır, motor bunu şemadan bilir ve düz metin tahmini biter. Bu seçenek kesindir fakat yeni bir kanonik alan ilan etmeyi ve mevcut on kapıyı elden geçirmeyi gerektirir. İKİNCİ SEÇENEK, mevcut desenin genişletilmesidir; ucuzdur ve hemen uygulanır fakat aynı hastalığı sürdürür, çünkü bir sonraki farklı cümle yine kaçar. İki seçenek birlikte de yürüyebilir: alan kanonik yol olur, desen yalnız geçiş döneminde yedek kalır ve alan yazılmamış kapıya bir gözlem düşer.",
+          "Seçenek hangisi olursa olsun, ONARIMDAN SONRA aynı ölçüm yeniden koşulur ve kuyruğun gördüğü kapı sayısı ile Founder'ın şart koştuğu kapı sayısı BİREBİR eşitlenir. Aradaki fark sıfır değilse iş bitmemiştir.",
+          "SESSİZ VERİ BOZMA ZİNCİRİNİ KIR. Bağımsız denetimin en ağır bulgusu şudur: karar yazımının ekleme noktası `sutun - 1 + metin.length` diye hesaplanıyor ve bu yalnız TIRNAKSIZ değerde doğrudur. Tırnaklı bir `durum:` değerinde belirteç açılış tırnağını gösterirken metin tırnaksızdır, dolayısıyla kayıt iki karakter erken, yani dizginin İÇİNE düşer ve dosya söz dizimini kaybeder. Çok satırlı değerde dosya geçerli kalır fakat `durum` alanı sessizce bozulur. İkinci kusur bunu görünmez kılar: yazım sonrası doğrulama kapının kapandığını 'listede yok' diye ölçüyor, oysa ayrıştırma hatasında liste zaten boşalır — yani bozulan dosya için kullanıcıya başarı bildirilir. Kontrolcü ölçümü, bu kusurun BUGÜN ulaşılabilir olmadığını gösterdi: hiçbir Adım tırnaklı durum kullanmıyor. Zincir kurulu fakat tetiği çekilmemiştir ve bu, onarımı erteleme değil sıraya alma gerekçesidir.",
+          "Onarım, ekleme noktasını TAHMİN ETMEKTEN vazgeçmelidir. Ayrıştırıcının değer kaydında bitiş konumu bulunmuyor; bu yüzden ya değer kaydına gerçek bitiş konumu eklenir ya da yazım, konumu kaynak metinden okuyarak doğrular. Tırnak sayısını sayarak düzeltmek üçüncü bir tahmindir ve kaçırılmış bir biçim yine bozar.",
+          "Yazım sonrası doğrulama, 'kapı listede yok' ile 'dosya ayrıştırılamıyor' durumlarını AYIRMALIDIR. Ayrıştırma başarısızsa kullanıcıya başarı değil, dosyanın bozulmuş olabileceği açıkça söylenir.",
+          "Kapının kimlik çapası olarak kod kullanılıyor, oysa depoda yinelenen Adım kodları mevcuttur; ölçülen örnekler `ADM-01`, `ADM-02`, `ADM-SINA` ve `ADM-X`. Satır kaydığında koda düşen geri çekilme, kararı YANLIŞ Adıma yazabilir. Çapa tekilliği garanti edilmelidir."
+        ]
+        kabul: [
+          "Denetim raporundaki her kusur ya kapatılmıştır ya da neden kapatılmadığı gerekçesiyle yazılmıştır; sessizce atlanan kusur yoktur.",
+          "Kapatılan her kusur için bir nöbet vardır ve nöbet mutasyonla kanıtlanmıştır: kasten bozulunca süit kırmızıya döner, geri alınınca yeşile döner.",
+          "Karar yazımından sonra hiçbir koşulda yanlış hata mesajı basılmaz; doğrulama ya gerçek başarısızlığı gösterir ya susar.",
+          "Açılış taramasının maliyeti gerçek sayılarla ölçülmüş ve kayda geçmiştir.",
+          "Kuyruğun gördüğü kapı sayısı ile Founder'ın şart koştuğu kapı sayısı birebir eşittir; fark sıfırdır ve bu bir nöbetle korunur.",
+          "Kapı tanıma yönteminde hangi seçeneğin uygulanacağını FOUNDER onaylar; kontrolcü ölçümü yapar ve seçeneği hazırlar, hükmü vermez.",
+          "Eklenti süiti yeşildir; proje denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        koşu:  "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Büyük ilerleme koşuda kayıtlıdır ve kapanış canlı göz teyidini beklemektedir; gövde metni yer yer emekli Posta Kutusu adını korumaktadır. Kontrolcü önerisi: kalan uçlar ikinci halkada kapatılsın. Onay tarihçesi: onaylandı — 2026-07-30 ⇢ 2026-07-30 · BÜYÜK İLERLEME, KAPANIŞ DEĞİL. Üretici alt-ajan dört kusuru kapattı ve Codex bağımsız denetimi (salt-okunur, gpt-5.6-sol) teslimi önce KALDI hükmüyle döndürdü: kritik bulgu, NFC'ye normalleştirilmiş metinden hesaplanan sütunun ham NFD satıra uygulanınca dilim denetimini sahte-geçirebilmesiydi ve denetçi bunu geçerli bir fikstürle kanıtladı. Onarım: ham satır NFC değilse yazım hiç yapılmaz; nöbeti mutasyonla kanıtlıdır. Sessiz veri bozma zinciri böylece üç katta kırıldı: dilim doğrulaması, normalizasyon nöbeti ve dürüst hata. Aynı kör aritmetiğin takdir.ts kopyası da tek eve bağlandı. Yalancı başarı ayrıldı, çapa tekilliği kapalı ikizi de yakalıyor, yarış ölçümle reddedildi (sürüm anahtarlı önbellek + VS Code sürüm sözleşmesi), açılış maliyeti ölçüldü (302 dosya · 4.51 MB · yedek tur ~348 ms · yalnız ana hat susmuşsa koşar). KAPI TANIMA KALICI ONARIMI UYGULANDI: Adım şeması artık onayBekler alanını taşıyor (enum: founder), kuyruk mekanik beyanı düz metin tahmini olmadan görüyor, kabul-cümlesi deseni geçiş yedeği olarak yaşıyor; üç kollu nöbet mutasyonla kanıtlı. Seçenek kararı OZK-08 kaydındadır. Ölçümler: eklenti 369/369, çekirdek 938/938, iki tür denetimi de sıfır, proje kapısı sıfır hata altı uyarı. KAPANIŞI TUTAN İKİ BAĞ: sıfır-uyarı kabul maddesi A10'un devralınmış altı uygulanmamış-karar borcuna bağlıdır ve o borç bu Adımın değildir; canlı görünümün gözle doğrulanması ölçütü ise ÖLÇÜLMEMİŞTİR — kontrolcü hiçbir sınamayı onun yerine saymaz, Founder Onaylar panelini canlı açıp baktığında kapanır."
+        sınır: "Bu Adım kusur onarır, özellik eklemez. Denetimde çıkan yeni istekler kendi Adımlarını hak eder ve buraya yamanmaz. Karar damgalarının anlamı ve onay kaydının biçimi değişmez, çünkü diskte yazılmış kayıtlar geriye dönük olarak yalanlanamaz."
+      }
+
+      Adım( kod: VIT-POSTA-A03, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-10 · Founder canlı pencerede gözle doğruladı ve kapanış hükmünü verdi. Doğrulanan kalemler şunlardır: kapı kuyruğu dosya gruplarıyla listelenir ve rozet gerçek sayıyı söyler; karar kademesi gerekçe kutusu ve üç eylemle kapı satırının altında açılır ve Kapıya git çocuk satırı üretilmez; kapı satırına tek tık Adımı dosyasında doğru satırda gösterir; art arda seçilen kapılar tek önizleme sekmesini paylaşır ve Founder pencere kirliliği olmadığını kendi gözlemiyle bildirdi; odak panelde kalır ve karar satırına tek tıkla ulaşılır. Mekanik kapı tanıma da canlı kanıt verdi, çünkü aynı gün doğan iki reform kapısı yalnız onayBekler alanıyla kuyruğa düştü. Önceki damga tarihçesi: onaylandı — 2026-08-08", koşu: "2026-08-09 · ÜRETİM, BAĞIMSIZ DENETİM VE DÜZELTME TURU. ADIMIN ÖNCÜLÜ BAYAT ÇIKTI VE BU KAYDA GEÇSİN: gövdenin çoğu 2026-07-28 tarihli bir işlemeyle zaten inmişti ve bugünkü davranış kaynaklarının tamamı o işlemenin hâliyle bayt birebir aynıdır, dolayısıyla bu tur davranışa sıfır satır dokunmuştur. TURUN ÜRETTİĞİ ASIL DEĞER BİR DAVRANIŞ AÇIĞI DEĞİL BİR DÜRÜSTLÜK AÇIĞIDIR: OZK-09 kararı editör içi karar yüzeyini emekliye ayırdıktan sonra üç komut hiçbir kayıt yazmıyordu, buna karşılık adları hâlâ bir hüküm vaat ediyordu ve komut paleti onları ayrı bir karar girişi gibi listeliyordu; palet girdisi, Adımın var oluş sebebi olan kuyruk ile karar yüzeyi ayrımını kullanıcının gözünde yeniden bulandırıyordu. Üç adın her biri kararın nerede verildiğini söyleyecek biçimde yeniden yazıldı ve paletten gizlendi; satır içi yol bilinçli olarak sökülmedi ve bu bir nöbetle korunmaktadır. İKİNCİ KUSUR ONAY YÜZEYİNİN METİNLERİNDEYDİ: metinler kullanıcıya artık var olmayan bir arayüzü tarif ediyordu, çünkü karar satırları 0.9.138 sürümünde emojiden vektörel simge ailesine geçmişti; ayrıca bildirim penceresi düzey simgesini kendisi çizdiği için metnin başındaki işaret ikinci ve yürütücüden yürütücüye farklı çizilen bir işaretti. DENETÇİ BİR ŞERH AÇTI VE ÜRETİCİ SÜPÜRGEYİ TAMAMLAYARAK KAPATTI: değişiklik günlüğünün kapsam cümlesi işten genişti, çünkü denetçinin kendi süpürgesi emoji taşıyan on kullanıcı metni bulmuştu; yirmi dizgi öneki düşürüldü ve geriye yalnız adıyla ilan edilmiş tek istisna kaldı. DENETÇİ İKİNCİ BİR ZAYIFLIK DA GÖSTERDİ ve bu deponun kendi dersinin tekrarıydı: nöbetin ADI yüzey genelinde kapsam iddia ediyor, ERİŞİMİ ise elle seçilmiş on üç metni tarıyordu. Nöbetin erişimi kaynak bölge işaretlerine bağlanarak yüzeyin tamamına açıldı ve mutasyon bunu kanıtladı, çünkü eski listede hiç bulunmayan bir metne konan emoji artık adıyla yakalanmaktadır. DENETÇİNİN KENDİ ÖLÇÜMLERİ: on bir kabul ölçütünün onu kendi kanıtıyla karşılanmış bulundu; canlı editör kabuğunu ne üretici ne denetçi koşturabildi, buna karşılık denetçi kendi ölçen kabuğunu kurup gerçek etkinleştirmeyi gerçek korpusla koşturdu ve açılışta yaratılan iş parçacığı ile açılan belge sayısını KENDİ ölçtü, ikisi de sıfır çıktı. Kimlik sapması sıfırdır, komşu iki panelin kaynağı bayt birebir aynıdır ve mühürler denetçi tarafından yeniden hesaplanıp tutmuştur. KAPANIŞ ÖLÇÜMÜ: eklenti süiti beş yüz on birden beş yüz on yedi sınamaya çıktı ve tamamı yeşildir; açık aracın denetimi sıfır hata ve sıfır uyarı verir; tür denetimi ve mühür nöbeti temizdir. ADIM KAPATILMADI, çünkü on birinci kabul ölçütü Founder onayını canlı görünümün gözle doğrulanması olarak tanımlar ve hiçbir sınama onun yerine geçmez; önizleme sekmesi ile odak davranışı da gerçek pencerede henüz görülmemiştir. Önceki inceleme kaydı burada korunur: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): İş gerçektir ve kuyruk ile karar yüzeyinin ayrımı kalite borcudur; ancak metin emekli Posta Kutusu adını canlı ad gibi kullanmaktadır ve tazelenmelidir. Kontrolcü önerisi: ad tazelemesiyle birlikte ikinci halkada koşulsun. Onay tarihçesi: onaylandı — 2026-07-30. KAPANIŞ 2026-08-10: on birinci ölçüt Founder'ın canlı penceresinde kapandı; önizleme sekmesi paylaşımı ile odak davranışı ilk kez gerçek pencerede görüldü ve ikisi de ölçütü karşıladı. Adım tamamlandı durumuna bu doğrulamayla geçti.", bağımlı: [ VIT-POSTA-A01 ],
+        referans: [ YUZ-1.2, YUZ-3.3, OZK-09 ],
+        üretir:   [ KOD-POSTA-PANEL, KOD-POSTA-GOVDE, KOD-ONAY-TARAYICI, KOD-SNM-POSTA, KOD-SNM-ONAY-YUZEYLERI ],
+        ne:       "🧭 ÇİFT YÜZEY KUSURUNU KÖKÜNDEN ÇÖZMEK — kuyruk ile karar yüzeyini ayırmak. Founder canlı görünümde iki paneli yan yana gördü ve şunu bildirdi: Açıklamalar paneli ile Posta Kutusu AYNI on bir kapıyı gösteriyor, iki farklı panel aynı görevi yapıyor. Bağımsız tasarım turu kökü buldu ve bu Adım o tasarımın uygulamasıdır." ) {
+        görev:    [
+          "KÖK NEDENİ ANLA, belirtiyi kovalama. Comments yüzeyi bir YEDEK olarak kurulmuştu: VS Code'un o sürümü pencereleri hiçbir yüzeyde çizmiyordu, bu yüzden esas yüzey bir seçim listesine çevrilmişti. Bugün VS Code onları çiziyor, dolayısıyla geçerliliğini yitirmiş yedek ayakta kaldı ve üstüne asıl panel eklendi. Kusur bir ihmal değil, emekli edilmemiş bir kararın kalıntısıdır.",
+          "İKİ İŞLEVSEL YÜZEY KUR. Posta Kutusu çalışma alanındaki bütün açık kapıların TEK KALICI KUYRUĞUDUR. Comments ise yalnız kullanıcının seçtiği TEK kapının ETKİN KARAR YÜZEYİDİR; iş parçacığı ancak kullanıcı o kapıyı açtığında yaratılır ve aynı anda en fazla bir tane yaşar. Bu, yaygın araçların ana-öğe ile ayrıntı ayrımıdır: kuyruk göz gezdirilir ve sayılır, karar yüzeyinde ise tek iş hakkında hüküm verilir. · ANLATI TAZELEMESİ 2026-08-09: bu maddenin ikinci yarısı OZK-09 kararıyla TAŞIYICISINI KAYBETMİŞTİR ve artık uygulanmaz. Founder 2026-08-08 tarihinde editör içi karar yüzeyini istemediğini bildirdi; karar yüzeyi Onaylar panelinin içine taşındı, dolayısıyla canlı iş parçacığı sayısı en fazla bir değil KALICI OLARAK SIFIRDIR ve bağımsız denetim bunu kendi ölçen kabuğuyla doğrulamıştır. Maddenin birinci yarısı, yani kuyruk ile karar yüzeyinin ayrılması, yürürlüktedir ve karşılanmıştır. Metin silinmemiştir çünkü o gün verilen talimatın kaydıdır",
+          "AÇILIŞTA HİÇBİR İŞ PARÇACIĞI YARATILMASIN. Bugün açılışta her kapı için bir Comments nesnesi açılıyor; ölçüm on bir nesne ve iki yüz doksan sekiz belge açılışı gösterdi. İkisi de sıfıra inmelidir.",
+          "AÇILIŞ TARAMASINI ANA TANI HATTINA BAĞLA. Ana hat zaten çalışma alanını ayrıştırıp bir görüntü üretiyor; onay tarayıcısı kapıları O GÖRÜNTÜDEN çıkarsın, ikinci bir tam tur açmasın. Ana hat kapalıysa ya da henüz görüntü üretmediyse yedek yol dosyayı bir kez okusun ve tam sözdizim ağacını paylaşımlı önbelleğe KOYMASIN.",
+          "DÖRT GİRİŞ NOKTASI KISAYOLA DÖNSÜN. Komut paleti yeni bir liste açmak yerine Posta Kutusu görünüşüne odaklansın; kod merceği bulunduğu satırdaki kapıyı seçip etkin karar yüzeyini açsın; panel satırı da aynı akışa gitsin. Hiçbiri ikinci bir karar arayüzü açmasın; karar yazan tek el `kaydiIsle` olarak kalsın.",
+          "Denetleyicinin KULLANICIYA GÖRÜNEN adı kuyruk çağrıştırmasın; ikinci bir kuyruk gibi adlandırılırsa kusur adında yaşamaya devam eder. Kimlikler ise DEĞİŞMEZ.",
+          "Kullanıcı yazılmamış bir not bırakıp başka kapıya geçebilir. Comments taslak metnini eklentiye açmadığı için sessiz kayıp riski vardır; her etkin kapı değişiminde açık bir geçiş onayı istenir. · ANLATI TAZELEMESİ 2026-08-09: bu madde 2026-07-29 tarihinde Founder'ın canlı tepkisiyle KALDIRILMIŞTIR ve bugün kaynakta karşılığı yoktur; geçiş onayı yanlış alarm oranı yüzde yüz olduğu için sökülmüştür. Maddenin çözmek istediği risk ise ortadan kalkmıştır ve bu daha iyi bir cevaptır: taslak metin artık kapı başına eklentinin kendi defterinde yaşar, başka kapıya geçmek metni silmez ve bu bir nöbetle ölçülür. Metin silinmemiştir çünkü o gün verilen talimatın kaydıdır.",
+          "KAPI SATIRINA TEK TIK YETSİN. Founder hükmü 2026-07-29: kapı satırına tıklayıp sonra Adıma gitmek için ayrıca bir 'Kapıya git' satırına tıklamak gereksizdir. Tek tık hem satırı açsın hem Adımı dosyasında doğru satırda göstersin; bu olunca 'Kapıya git' çocuk satırı gereksizleşir ve kaldırılır, altta yalnız üç karar satırı kalır. Kapıya gitme yolu kaybolmaz — kapı satırının kendisi o yol hâline gelir ve kod merceği aynı işi yapmaya devam eder.",
+          "TEK TIK KURALININ BEDELİNİ ÖDE. Bu hüküm bir gerçek maliyet doğurur: kullanıcı on dört kapı arasında gezinirken her seçim bir belge açar ve editör kirlenir. Bunu iki seçenekle karşıla — belge ÖNİZLEME kipinde açılsın, böylece art arda gezinen kullanıcı tek sekme kirletir ve üzerine yazılır; ayrıca odak panelden ÇALINMASIN, çünkü kullanıcının bir sonraki hamlesi karar satırına tıklamaktır ve odak editöre kaçarsa ikinci tık yine boşa gider."
+        ]
+        kabul: [
+          "Etkinleşmeden sonra canlı Comments iş parçacığı sayısı SIFIRDIR ve bu bir nöbetle ölçülür.",
+          "Onay yüzeyinin açılışta doğrudan açtığı belge sayısı sıfırdır; kapı listesi ana tanı hattının görüntüsünden gelir ve onaya özel ikinci tam tarama turu sayısı sıfırdır.",
+          "Aynı anda en fazla BİR Sarmal onay iş parçacığı yaşar; ikinci bir kapı seçildiğinde canlı sayı yine birdir ve eski nesne elden çıkarılmıştır. Bu mutasyonla kanıtlanır.",
+          "Karar yazan tek el `kaydiIsle` olarak kalır; `onay:` kayıt biçimi, damgalar, tarih ve not ekleme davranışı DEĞİŞMEZ. Diskte yazılmış eski kayıtlar her iki sürümde de okunur.",
+          "Görünüş kimliği, komut kimliği ve denetleyici kimliği DEĞİŞMEZ; yalnız kullanıcıya görünen adlar rolü açıklayacak biçimde değişir. Kimlik sapması nöbetle durdurulur, çünkü kimlik değişirse kullanıcının panel yerleşimi sıfırlanır.",
+          "Founder'ın beğendiği görünüm korunur: dosya satırının `.sar` simgesi ile kapı satırının mesaj balonu yerinde kalır. EDİTÖR İÇİ YÜZEY ARTIK ŞART DEĞİLDİR ve bu ölçüt OZK-09 hükmüyle daraltılmıştır; Founder 2026-08-08 tarihinde paneli canlı görüp editör içi genişletilmiş bağlam ile yanıt kutusunu artık istemediğini bildirdi, dolayısıyla genişletilmiş bağlam ve gerekçe kutusu kapı satırının altında, Onaylar panelinin kendi içinde açılır.",
+          "Komşu iki panel — Hatırlatıcılar ve Gözlemler — DEĞİŞMEZ; görünüş kimlikleri, kayıt sayıları ve tazelenme davranışları bu değişiklikten önceki sonuçlarla aynıdır ve bu ölçülür.",
+          "Kapı satırına TEK TIK hem satırı açar hem Adımı dosyasında doğru satırda gösterir; bu tek eylemle olur ve bir nöbetle ölçülür. 'Kapıya git' adında bir çocuk satır ARTIK ÜRETİLMEZ; karar satırı sayısı dörtten üçe inmiştir ve bu mutasyonla kanıtlanmıştır.",
+          "Gezinme editörü kirletmez: art arda seçilen kapılar tek bir önizleme sekmesini paylaşır ve odak panelden çalınmaz. İkisi de canlı pencerede doğrulanmıştır.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; proje denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Bu Adım YÜZEYLERİN ROLÜNÜ değiştirir, karar mantığını değil. Kapı tespitinin üç koşulu, onay kaydının biçimi ve tek yazıcı ilkesi aynen korunur. Kuyruğun bilinen mantık kusurları VIT-POSTA-A02'nin işidir ve buraya karıştırılmaz. Comments denetleyicisi tümüyle kaldırılmaz; kaldırmak Founder'ın beğendiği satır içi yanıt deneyimini yok ederdi ve tasarım turu bunu ölçerek ikinci seçenek olarak bıraktı."
+      }
+
+      Adım( kod: VIT-POSTA-A04, durum: tamamlandı, bağımlı: [ VIT-POSTA-A01 ],
+        onay: "onaylandı — 2026-08-05 · Founder canlı pencerede iki turda doğruladı. Birinci turda kapı bloğunu panodan sohbete birebir yapıştırarak kopyalamanın çalıştığını gördü ve eylemin kapı satırında üzerine gelince belirmesini hükmetti; ikinci turda beliren işaretin emoji olmasını reddetti ve arayüz işaretlerinin endüstri ölçüsünde vektörel aileden gelmesini şart koştu. Her iki hüküm de aynı gün uygulanıp Founder tarafından gözle onaylandı.",
+        koşu: "2026-08-04 · İLK TESLİM KAPIDAN GEÇTİ, FOUNDER CANLI DOĞRULADI. Üretici dört dosyada teslim etti: kapı gövdesine üç karar satırının yanında ikincil bir bağlam kopyalama düğmesi geldi, pano yazımı yalnız kabukta vscode.env.clipboard.writeText ile yaşıyor, bildirim kapının kodunu söylüyor ve defterden düşmüş kapıda pano değişmeden uyarı basılıyor. Dört yeni nöbet üreticinin ve ayrıca kontrolcünün bağımsız sondajıyla mutasyon kanıtlıdır. Ölçümler: eklenti süiti 418'den 422'ye çıkıp yeşil, tür denetimi temiz, proje denetimi sıfır hata ve sıfır uyarı, webview kaynaklarında yasak pano yolu araması sıfır. Founder aynı akşam kapı bloğunu panodan sohbete birebir yapıştırarak doğruladı ve bir iyileştirme hükmü verdi: kopyalama eylemi kapı satırının üzerine gelindiğinde satırda belirsin. Adım bu iyileştirme teslim edilene dek açık kalır. İlk teslimin mührü: 74c4d11.",
+        referans: [ YUZ-3.3, YUZ-1.2 ],
+        üretir:   [ KOD-POSTA-GOVDE, KOD-POSTA-PANEL, KOD-SNM-ONAY-YUZEYLERI ],
+        ne:       "📋 Onaylar panelinde kapı bağlamının panoya taşınabilmesi. Founder 2026-08-04 canlı incelemesinde bir kapının metnini seçip kopyalamaya çalıştığını ve panonun eski içeriğinde kaldığını bildirdi; Kes denemesi de aynı biçimde sonuçsuz kaldı. Ölçülen kök neden şudur: kapı satırları düğme öğesiyle basılır ve tarayıcı düğme içi metni seçime kapalı tutar; Kopyala ile Kes boş seçim üzerinde sessizce hiçbir şey yapmaz ve kullanıcıya hiçbir hata görünmez. Founder'ın asıl niyeti kapı bağlamını karar için asistana taşımaktır ve bu niyet seçim cambazlığıyla değil açık bir eylemle karşılanır." ) {
+        görev:    [
+          "Her kapıya bağlamı panoya kopyalayan açık bir eylem koy. Eylem webview'den kabuğa mesaj gönderir ve kabuk kapının tam bağlamını — kod, dosya ile satır, ne metni, ölçüt ve koşu ile onay tarihçesi elde varsa onları — okunur bir blok hâlinde vscode.env.clipboard.writeText ile panoya yazar. Webview seçim davranışına ve execCommand yoluna hiçbir bağımlılık kalmaz, çünkü kusurun kökü tam olarak o yoldur.",
+          "Kopyalama başarıldığında kullanıcıya kısa bir durum bildirimi göster. Sessiz başarı, bugünkü sessiz başarısızlıkla aynı belirsizliği doğurur; kullanıcı panoya ne indiğini bilmelidir.",
+          "Eylemin panel içindeki yeri Founder'ın gezinme düzenini bozmasın: kapı satırındaki tek tık davranışı, klavye gezinmesi ve karar satırları aynen korunur; kopyalama eylemi bunların yanına eklenir, hiçbirinin yerine geçmez.",
+          "FOUNDER İYİLEŞTİRME HÜKMÜ (2026-08-04 canlı doğrulama sırasında): kopyalama eylemi yalnız açık kapının gövdesinde durmasın, kapı satırının üzerine gelindiğinde satırın kendisinde de belirsin. Bu, ağaç görünümlerinin bilinen üzerine-gelince-eylem desenidir; kapıyı açmadan tek hamlede kopyalamayı mümkün kılar. Satır bir düğme öğesi olduğundan içine ikinci bir düğme yuvalanamaz; eylem geçerli bir işaretlemeyle (düğme dışı, tıklanabilir bir öğeyle) kurulur, tıkı satırın açma-kapama davranışına düşmez ve klavye kullanıcısı için gövdedeki erişilebilir düğme yerinde kalır."
+        ]
+        kabul: [
+          "Paneldeki her kapıda bağlam kopyalama eylemi vardır ve tek kullanımda panoya kapının kodunu, dosya ile satırını, ne metnini ve ölçütünü yazar; blok içeriği bir sınamayla ölçülür.",
+          "Pano yazımı kabuk tarafında vscode.env.clipboard.writeText ile yapılır; webview tarafında seçime ya da execCommand'e dayanan hiçbir kopyalama yolu yoktur ve bu bir aramayla ölçülür.",
+          "Kopyalama sonrası kullanıcıya bildirim basılır ve bildirimde kopyalanan kapının kodu geçer.",
+          "Komşu paneller değişmez; bayt nöbeti yeşil kalır ve panel kimlikleri aynıdır.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; proje denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder canlı pencerede kopyala ve yapıştır akışını gözle doğrular; hiçbir sınama bu doğrulamanın yerine geçmez."
+        ]
+        sınır: "Bu Adım karar mantığına, onay kaydının biçimine ve kapı tespitine dokunmaz; yalnız bir okuma ve kopyalama yüzeyi ekler. Kuyruk ile karar yüzeyinin ayrımı VIT-POSTA-A03'ün, kuyruğun mantık kusurları VIT-POSTA-A02'nin işidir ve buraya karıştırılmaz. Satır düğmelerinin seçime kapalı doğası bu Adımda zorlanmaz; niyet açık eylemle karşılanır."
+      }
+    }
+  }
+
+  // ══ KATMAN · KİMLİK: Sarmal'ın kendi görsel dili ══════════════════════════════
+  //    Founder 2026-07-28 hükmü: kendimize özgü konseptler çizilecek, bütün ikonlar
+  //    gözden geçirilecek ve dört eksenin her biri kendi simgesini taşıyacaktır.
+  //    Ölçülmüş gerekçe: makinenin bir düğümü tanıması Türkçe kelimeye değil KARARLI
+  //    bir kimliğe dayanmalıdır; ancak o zaman görünen etiket dile göre değişebilir.
+  Katman( kod: VIT-KIMLIK, kullanır: TAKIM-EKLENTI, ad: "görsel kimlik",
+    ne: "🎨 Sarmal'a özgü simge ailesi — dört eksen ve meyve kendi simgelerini kazanır, beş panel bakışta ayrılır" ) {
+
+    AltKatman( kod: VIT-KIMLIK-K1, ad: "simge ailesi", departman: inceleme,
+      ne: "konsept üretimi, Founder seçimi ve seçilenin üretime taşınması" ) {
+
+      Adım( kod: VIT-KIMLIK-A01, durum: tamamlandı,
+        onay:     "onaylandı — 2026-07-28 · Founder galeriyi inceledi ve altı eksen tipi için GEOMETRİK aileyi seçti. Founder'ın kendi cümlesi: 'tamam geometrik olsun, bu seti sakla ilerde yine bakarız, şimdilik geometrik olsun.' Dört ailenin tamamı korunur ve arşivlenir; seçim bugünün seçimidir, kapanış değildir. Beş panel simgesi AYRI bir karardır ve henüz verilmemiştir.",
+        koşu:  "2026-08-04 · KAPANIŞ. Altı eksen tipi için dört ayrı aile (organik bahçe, geometrik kapsama, yapısal ağaç, sarmal marka dili) çizildi ve tek dosyalık galeri üç boyutta, açık ve koyu zeminde üretildi. Founder 2026-07-28 tarihinde galeriyi inceleyip altı eksen için GEOMETRİK aileyi seçti ve setin korunmasını hükmetti. Beş panel simgesinin ayrı bekleyen kararı 2026-08-04 gecesi verildi: Founder panel ailesi olarak da GEOMETRİK aileyi seçti; panel simgelerinin üretime taşınması sonraki halkanın işidir. Dört ailenin tamamı yirmi dokuz dosyayla tasarım artefaktı olarak korunmaktadır; set o gün geneldurum/yeni-omurga/ikon_konseptleri/ altında yaşıyordu ve 2026-08-08 tarihinde Founder hükmüyle nitelik/ikon_konseptleri/ rafına taşındı. Seçilen aile panellere, satırlara ve editör içine indirildi; Founder 4 Ağustos canlı bakışında bütünü onayladı ve Adım zincir sırasıyla kapandı.",
+        bağımlı:  [ VIT-POSTA-A01 ],
+        referans: [ YUZ-4.1, YUZ-1.2, OZK-03 ],
+        üretir:   [ TSR-IKON-AILESI ],
+        ne:       "🎨 Altı tip ve beş panel için simge konseptleri çizdirmek, Founder'a seçtirmek. Bugün dört eksenin görsel kimliği yalnız emojidir ve panel simgeleri birbirine karışmaktadır; Founder bildirim simgesini açıkça çirkin buldu ve iki panelin aynı simgeyi taşıdığını gözle yakaladı." ) {
+        görev:    [
+          "Faz, Blok, Katman, AltKatman, Adım ve Meyve tipleri için dörder ayrı konsept çizdir. Dört varyant aynı fikrin dört tonu olmayacak, dört ayrı fikir olacaktır: organik bahçe metaforu, geometrik kapsama, yapısal ağaç diyagramı ve markanın kendi sarmal dilinden doğan cesur bir çizim.",
+          "Simgeler birbirinden bağımsız çizimler değil AYNI AİLENİN AŞAMALARI olacaktır; bakan kişi hangisinin hangisini kapsadığını simgeden sezmelidir. Ağaç sırası şudur: Faz → Blok → Katman → AltKatman → Adım → Meyve.",
+          "Beş panel simgesini birlikte gözden geçir: Yol Haritası, Hatırlatıcılar, Gözlemler, Mini Graf ve Posta Kutusu. Beşi bakışta ayrılmalıdır ve bugün ayrılmıyor.",
+          "Bütün varyantları on altı, yirmi dört ve kırk sekiz piksel boyutlarında, açık ve koyu zeminde yan yana gösteren tek dosyalık bir galeri üret. On altı piksel sütunu en önemlisidir, çünkü kenar çubuğu simgeleri o boyutta çizilir ve kalabalık bir simge o boyutta lekeye döner.",
+          "Founder galeriden seçimini yapsın; yalnız SEÇİLENLER üretime taşınır."
+        ]
+        kabul: [
+          "Altı tip ve beş panel için dörder konsept üretilmiştir ve hepsi mevcut çizim diline uyar: yirmi dört birimlik kutu, dolgusuz, `currentColor` konturu, yuvarlatılmış uçlar.",
+          "Hiçbir simgeye renk gömülmemiştir; renk tema rolünden gelir.",
+          "Galeri tek dosyadır, dış bağlantı taşımaz ve on altı piksel okunurluğunu gösterir.",
+          "Founder onayı olmadan hiçbir simge üretime taşınmaz; onay, galeriden yapılan açık seçimdir.",
+          "Seçilen simgeler kanonik simge çizelgesiyle çelişmez; iki çizelgenin ayrışması 2026-07-28 tarihinde ölçülmüş bir kusurdur ve tekrarlanmaz."
+        ]
+        sınır: "Bu Adım simge ÜRETİR ve SEÇTİRİR; kanonik simge çizelgesini kendi başına değiştirmez. Çizelge değişikliği kanona dokunur ve Founder'ın ayrı hükmünü bekler. Emoji çizelgesi ile SVG ailesi iki ayrı yüzeydir ve biri diğerinin yerine geçmez."
+      }
+
+      Adım( kod: VIT-KIMLIK-A02, durum: tamamlandı, onay: "onaylandı — 2026-07-30", bağımlı: [ VIT-GRAF-A11 ],
+        koşu:  "2026-08-04 · KAPANIŞ. Panelin görünen adı bütün kullanıcı yüzeylerinde Gözlemler olarak ölçüldü: dil kataloglarında, yüzey metinlerinde ve paket başlıklarında eski ad sıfırdır; kalan dört geçiş kullanıcıya basılmayan iç kimlik ve işlev adıdır ve v1 sonrası ad temizliği kapsamındadır. Panelin simgesi geometrik ailenin mercek ve göz bebeği motifiyle yenilendi, beş panelin simge farklılığı içerik nöbetiyle zorlanır ve Founder 4 Ağustos canlı bakışında görsel kimliği onayladı. Eklenti süiti ve iki varlık denetimi kapanış gününde filtresiz temizdir.",
+        referans: [ YUZ-3.3, YUZ-4.1 ],
+        üretir:   [ KOD-EKL-EKLENTI ],
+        ne:       "🛈 Bildirimler panelinin adını Gözlemler yapmak ve simgesini değiştirmek. Founder 2026-07-28 tarihinde şunu sordu: bildirim ne demek? Ad yanlıştır — panel bildirim göndermez, düzeltme istemeyen gözlemleri gösterir. Founder önerilen adı kabul etti." ) {
+        görev:    [
+          "Panelin görünen adını Bildirimler'den Gözlemler'e çevir. Ad, görünüş tanımında ve panelin bastığı bütün cümlelerde birlikte değişir; iki yerde iki ad kalırsa kullanıcı hangisinin doğru olduğunu bilemez.",
+          "Panelin simgesini yenile. Founder mevcut simgeyi açıkça çirkin buldu; yeni simge VIT-KIMLIK-A01 Adımının galerisinden seçilir.",
+          "Adın geçtiği bütün yardım ve öğretim metinlerini birlikte güncelle; yeni ad ile eski ad aynı anda yaşayamaz."
+        ]
+        kabul: [
+          "Panelin adı her yüzeyde Gözlemler'dir ve depoda kullanıcıya görünen hiçbir yerde eski ad kalmamıştır; bu bir aramayla ölçülmüş ve sayı sıfır çıkmıştır.",
+          "Panelin simgesi Founder onayından geçmiş simgedir ve öteki dört panelinkinden ayrılır.",
+          "Eklenti süiti yeşildir; proje denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım yalnız AD ve SİMGE değiştirir; panelin hangi kayıtları gösterdiği, kayıtların düzeyi ve yönlendirme kararı değişmez. Yönlendirme motorda tek yerde yaşar ve oraya dokunulmaz."
+      }
+
+      Adım( kod: VIT-KIMLIK-A03, durum: tamamlandı, onay: "onaylandı — 2026-07-30", bağımlı: [ VIT-KIMLIK-A01 ],
+        koşu:  "2026-08-04 · ÜRETİM TESLİM ALINDI (kapanış değil — Founder canlı bakışı bekleniyor). Altı geometrik simge eklenti rafına konsept kaynağıyla bayt eş kopyalandı ve tek kaynak çizelge modülü kuruldu; Mini Graf ile Yol Haritası aynı çizelgeden okur. Renk tek yerde yaşar: raf kaynakları renksiz konturdur, otuz sekiz evre ve tema varyantını build üreticisi tek kaynaktan döker. Founder hükmü iki aşamada oturdu: önce geometrik aileden türetilmiş ikon denendi, Founder ise dosyaların kimliğinin kendi çizimleri olan MARKA ikonu olduğunu hükmetti — dil katkısı ikonlar/sarmal.svg dosyasına birebir bağlandı ve gradyanlı sarmal editör sekmesi ile gezginde her yerde görünür; geometrik aile IDE içindeki eksen satırlarının dilidir. Yedi nöbet kuruldu ve üç mutasyonla kanıtlandı; kontrolcünün bağımsız mutasyon denemesi de nöbeti düşürüp sha birebir geri aldı. KONTROLCÜ ÖLÇÜMLERİ: iki tip denetimi sıfır, eklenti 388/388, çekirdek 973/973, build sıfır ve otuz sekiz varyant diskte, iki varlık denetimi filtresiz sıfır hata ve sıfır uyarı. Adım satırı checkbox kanunu gereği tip ikonu almadı ve Mini Graf merceği kanon gereği emojide kaldı. Kapanış onayı geldi: dosya kimliği Founder hükmüyle marka ikonuna döndü, eksen simgeleri Yol Haritası satırlarında evre renkleriyle yaşıyor ve Founder 4 Ağustos canlı bakışında görsel kimliği onaylayarak Adımı kapattı.",
+        referans: [ YUZ-4.1, YUZ-1.2, DIL-4 ],
+        üretir:   [ KOD-MINIGRAF-CEKIRDEK, KOD-YOLHARITA, KOD-SIMGE-CIZELGE, KOD-SNM-SIMGE-CIZELGE ],
+        ne:       "🎨 Seçilen geometrik aileyi üretime taşımak. Founder 2026-07-28 tarihinde galeriden geometrik aileyi seçti; bu Adım o seçimi çalışan yüzeye indirir. Bugün altı eksen tipinin görsel kimliği SVG değil EMOJİ'dir ve kanonun `tipSimgeleri` çizelgesinde yaşar; yani bu iş simge dosyası kopyalamak değil, emoji taşıyan bir çizelgenin yanına SVG taşıyan bir yüzey kurmaktır." ) {
+        görev:    [
+          "Seçilen altı geometrik simgeyi eklentinin simge rafına taşı ve tek kaynaktan okunur kıl. Bugün Mini Graf kanon simgesini merceğin içine basıyor, Yol Haritası ise etikete emoji koyuyor; ikisi de aynı çizelgeden okumalıdır ki ayrışma yapısal olarak imkânsız kalsın.",
+          "Emoji çizelgesini SİLME. Emoji, uçbirim çıktısında, MCP yanıtlarında ve düz metin yüzeylerde çalışmaya devam eder; SVG yalnız grafik yüzeylerin karşılığıdır. İki yüzey aynı KİMLİKTEN türer, birbirinin yerine geçmez.",
+          "Bir nöbet, SVG kümesi ile emoji çizelgesinin AYNI tip kümesini kapsadığını ölçsün. Bugünün ölçülmüş dersi şudur: iki simge çizelgesi birbirinden ayrıştı ve bunu hiçbir kapı yakalamadı, Founder gözle buldu. Aynı hata ikinci kez yapılmaz.",
+          "Beş panel simgesi bu Adımın işi DEĞİLDİR ve Founder kararı beklemektedir; panel simgelerine dokunma.",
+          "Founder hükmü (2026-08-03, ekran görüntülü): .sar dosyaları editörde ve gezginde HER YERDE Sarmal'ın kendi ikonuyla görünür — dil katkısına açık ve koyu tema için dosya ikonu bağla; ikon geometrik ailenin dilinden türer ve tek kaynaktan okunur."
+        ]
+        kabul: [
+          "Altı eksen tipi grafik yüzeylerde geometrik simgesini taşır ve simgeler tek kaynaktan okunur.",
+          ".sar dosyaları editör sekmesinde ve dosya gezgininde Sarmal'ın kendi dosya ikonunu taşır; açık ve koyu temada okunur ve bu canlı pencerede gözle doğrulanır.",
+          "Emoji çizelgesi yerinde durur ve düz metin yüzeylerde çalışmaya devam eder.",
+          "SVG kümesi ile emoji çizelgesinin aynı tip kümesini kapsadığı bir nöbetle ölçülür; biri ötekinden fazla ya da eksik tip taşırsa süit kırmızıya döner ve bu mutasyonla kanıtlanır.",
+          "Dört ailenin tamamı tasarım artefaktı olarak korunur; seçilmeyen üç aile silinmez.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır ve hiçbir sınama onun yerine geçmez."
+        ]
+        sınır: "Bu Adım yalnız SEÇİLEN aileyi taşır; yeni simge çizmez ve seçilmeyen aileleri üretime sokmaz. Kanonik tip kimliği değişmez — değişen yalnız o kimliğin grafik karşılığıdır. Founder'ın seçimi bugünün seçimidir ve kalıcı bir kilit değildir; set korunduğu için karar ileride gözden geçirilebilir."
+      }
+
+      Adım( kod: VIT-KIMLIK-A05, durum: tamamlandı, onay: "onaylandı — 2026-08-04 · Founder hükmü: panellerin satır ve grup ikonları da hazır ikon setinden çıkar ve geometrik ailenin çizim diline bağlanır; bu iş Founder tarafından beklenen doğal kapsamdır", bağımlı: [ VIT-KIMLIK-A03 ],
+        koşu:  "2026-08-04 · KAPANIŞ. Dört panelin kayıt ve grup satırlarındaki bütün hazır ikon kimlikleri ile Onaylar kapı balonunun emojisi, on dört geometrik satır simgesine çevrildi; simgeler tek kaynak çizelgenin satır hanesinden okunur ve anlam renkleri üreticinin dokuz değerlik anlam ekseniyle korunur. Founder canlı bakışında düz gri basılan ikonların metinden ayrışmadığını bildirdi; çan uyarı sarısına, proje satırları bilgi mavisine ve koşum satırı turuncuya bağlanarak bulgu aynı gün kapatıldı ve komşu panel bayt nöbeti bilinçli güncelleme notuyla tazelendi. Hazır ikona geri düşüş beş panel dosyasında sıfırdır ve taramayla zorlanır; meşru istisnalar gerekçeleriyle kayıtlıdır. Üreticinin beş mutasyonuna ek kontrolcünün silme mutasyonu da nöbeti düşürüp birebir geri döndü ve Founder 4 Ağustos canlı bakışında satır dilini onayladı.",
+        referans: [ YUZ-4.1, YUZ-1.2, DIL-4 ],
+        üretir:   [ KOD-SIMGE-CIZELGE, KOD-SNM-SIMGE-CIZELGE ],
+        ne:       "🎨 Panel İÇİ satır ve grup ikonlarını geometrik aileye çevirmek. Founder 2026-08-04 canlı bakışında panel başlık simgelerinin VS Code yerleşiminde görünmediğini, gözüne çarpan ikonların ise satır içi hazır ikonlar (çan, katman, nokta, roket) olduğunu gördü ve hükmünü verdi: IDE'nin içi baştan aşağı markanın çizim dilinden konuşacak." ) {
+        görev:    [
+          "Hatırlatıcılar, Gözlemler, Onaylar ve Yol Haritası panellerinde kayıt ve grup satırlarına basılan hazır ikonların envanterini çıkar: hangi dosya hangi codicon kimliğini hangi tema rengiyle basıyor, tabloyla raporla.",
+          "Her satır ikonunu geometrik ailenin çizim dilinden türeyen bir SVG karşılığına çevir; simge çizelgesine satır hanesi ekle ve bütün paneller tek kaynaktan okusun. Şekil tipi anlatır, renk durumu anlatır: bugün tema rolleriyle verilen anlam renkleri (mavi, sarı, kırmızı, yeşil) üretici varyantlarıyla korunur, anlam kaybı yasaktır.",
+          "Grup satırı ile kayıt satırı aynı simgeyi taşımaz; ağaç kademesi bakışta okunur kalır.",
+          "Nöbeti genişlet: satır ikonu çizelgesi ile disk birebirdir, kaynaklara renk gömülmez ve hiçbir panel hazır ikon kimliğine geri düşmez; mutasyonla kanıtla."
+        ]
+        kabul: [
+          "Dört panelin kayıt ve grup satırlarında hazır ikon kimliği sıfırdır; hepsi geometrik ailenin simgelerini tek kaynaktan taşır ve bu bir aramayla ölçülür.",
+          "Anlam renkleri korunur: tür ve evre ayrımları renkte yaşamaya devam eder ve ham renk hiçbir kaynağa gömülmez.",
+          "Eklenti süiti yeşildir ve taban düşmez; iki varlık denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır."
+        ]
+        sınır: "Panellerin davranışı, kayıt içeriği ve yönlendirme kararı değişmez; yalnız görsel katman değişir. Marka dosya ikonu (ikonlar/sarmal.svg) ve konsept galerisi dokunulmazdır. Adım satırının checkbox kanunu korunur."
+      }
+
+      Adım( kod: VIT-KIMLIK-A06, durum: tamamlandı, onay: "onaylandı — 2026-08-04 · Founder hükmü: geometrik simge ailesi yalnız panellerde kalmaz; kaynak dosyanın kendisinde de yaşar ve editörde Blok ile Katman gibi tip bildirimlerinin satırlarında görünür", bağımlı: [ VIT-KIMLIK-A05 ],
+        koşu:  "2026-08-04 · KAPANIŞ. Editör içi eksen simge katmanı kuruldu: açık bir sar dosyasında altı eksen tipinin bildirim satırları tip adının yanında kendi geometrik simgesini taşır ve renk durum kilidi korunur. Dekorasyon tek kaynak çizelgenin editör hanesinden okur, tema seçimini editörün kendi kanalına bırakır, paylaşımlı ayrıştırma önbelleğinden beslendiği için ek ayrıştırma maliyeti sıfırdır ve tazeleme gecikmeli çalışır; kasma regresyonu performans nöbetiyle yasaklandı. Altı nöbet emoji eşadlı satırın çift simge almadığını, dizgi ve yorum içindeki tip adlarının dekor almadığını ve dosyanın tek baytının değişmediğini ölçer; üreticinin üç mutasyonuna ek kontrolcünün kapsam mutasyonu da nöbeti düşürüp birebir geri döndü. Founder 4 Ağustos canlı bakışında editör içi görünümü inceleyip beğenisini bildirdi ve Adım bu onayla kapandı.",
+        referans: [ YUZ-4.1, DIL-4, YUZ-1.2 ],
+        üretir:   [ KOD-SIMGE-CIZELGE, KOD-SNM-SIMGE-CIZELGE ],
+        ne:       "🎨 Editör İÇİNDE tip satırlarına geometrik simge basmak. Founder panellerdeki simge ailesini beğendi ve aynı dilin kaynak dosyanın içinde de konuşmasını istedi: açık bir .sar editöründe Faz, Blok, Katman, AltKatman, Adım ve Meyve bildirimlerinin satırlarında ilgili geometrik simge görünür." ) {
+        görev:    [
+          "Açık .sar editörlerinde altı eksen tipinin bildirim satırlarına tip adının yanında geometrik simgeyi gösteren bir dekorasyon katmanı kur; simgeler tek kaynak çizelgeden okunur ve dosya içeriğine tek bayt yazılmaz.",
+          "Mevcut dekorasyon emsallerinin (görsel eşad, yol dekoru, satır içi) kayıt ve kapanış desenine uy; dekorasyon tema ile uyumlu varyantı basar ve dil ayarından bağımsız çalışır.",
+          "Performans ölçülür: dekorasyon yalnız görünür aralık için hesaplanır ya da belge değişiminde makul bir gecikmeyle tazelenir; Founder'ın bildirdiği kasma regresyonu tekrarlanamaz.",
+          "Nöbet kur: örnek belgede altı tipin satırları dekorasyon alır, dosyanın sha256 özeti dekorasyon öncesi ve sonrası birebirdir, kapsam çizelgeyle eşittir; mutasyonla kanıtla."
+        ]
+        kabul: [
+          "Açık bir .sar editöründe altı eksen tipinin bildirim satırları geometrik simgesini taşır ve simgeler tek kaynaktan gelir.",
+          "Dosya içeriği tek bayt değişmez ve bu sha256 ile nöbete bağlıdır.",
+          "Eklenti süiti yeşildir ve taban düşmez; iki varlık denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, canlı görünümün gözle doğrulanmasıdır."
+        ]
+        sınır: "Ayrıştırıcı, belirteçleyici ve kimlik değişmez; dosyaya yazılmaz. Kanonik emoji çizelgesi ve dil eşad katmanı yerinde kalır; bu Adım yalnız görüntü katmanı ekler. Marka dosya ikonu ve konsept galerisi dokunulmazdır."
+      }
+
+      Adım( kod: VIT-KIMLIK-A04, durum: geliştirmede, öncelik: p1, onay: "onaylandı — 2026-08-08", koşu: "2026-08-22 · TESLİM ÖLÇÜMÜ (kontrolcü). Adımın beş kabul maddesinin dördü bugün ölçülerek karşılanmış bulundu; kalan tek madde Founder'ın canlı bakışıdır ve bu yüzden Adım tamamlandı ilan edilmez. ÖLÇÜLENLER. Birincisi kapsam köprüsüdür ve tamdır: eklenti otuz anlamsal simge tipi ilan ediyor ve `contributes.semanticTokenScopes` otuzunu da yerleşik TextMate kapsamlarına bağlıyor, kapsamsız tip sayısı sıfırdır. Bu ilan Adımın istediği en büyük hamledir, çünkü kullanıcının KENDİ teması Sarmal kaynağını hiçbir ayar yazılmadan renklendirir. Küme eşitliği bir nöbetle zorlanır ve kapsamsız kalan bir tipte süit kırmızıya döner. İkincisi tema katkısıdır: iki Sarmal teması pakete ilan edilmiştir ve tezgâh renkleri ayar yazmadan yalnız tema yoluyla, tema seçicisinden tek tıkla gelir. Üçüncüsü sessiz aktivasyondur ve DAVRANIŞ olarak ölçülmüştür: giydirme kaydı sahte bir yürütücüye paketlenip gerçekten koşturulur, açılışta kullanıcıya gösterilen ileti sayısı sıfır ve kullanıcının ayarına yazılan anahtar sayısı sıfır ölçülür; teklifi susturan ayarın da kaldırıldığı ayrıca denetlenir, çünkü ölü bir düğme kullanıcıyı olmayan bir davranışı kapatmaya çalıştırır. Dördüncüsü giydir komutunun elle çalışan kolaylık olarak yaşamayı sürdürmesidir ve komut çağrıldığında yalnız çalışma alanı hedefine yazdığı, kullanıcı ayarını hiçbir koşulda ezmediği ölçülmüştür. Beşincisi sıfır bağımlılık ilkesidir: eklentinin çalışma zamanı bağımlılığı listesi boştur. AYNI GÜN İKİNCİ BİR HÜKÜM BU ADIMIN ALANINA DOKUNDU: Founder renk yolunu dayatmadan çıkardı ve dizgi renklerinin pakete ilan edilmemesine hükmetti; o hüküm EKL-F6-A04 Adımında işlenmiştir ve bu Adımın kapsam köprüsü yaklaşımını çürütmez, tersine onu ürünün TEK renk yolu hâline getirir. FOUNDER BAKIŞI İÇİN NE İSTENİYOR: temiz bir profilde bir .sar dosyası açıldığında hiçbir teklif çıkmadığının ve renklerin yine de geldiğinin gözle doğrulanması. Önceki kayıt: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): Onay damgası hiç verilmemişti; ilk karşılaşma deneyimini izin sorusundan kurtaran bu iş yayın öncesi anlamlıdır ve bağımlısı kapalıdır. Kontrolcü önerisi: onaylanıp ikinci halkaya alınsın.", bağımlı: [ VIT-KIMLIK-A03 ],
+        referans: [ YUZ-1.2, STR-3.1 ],
+        üretir:   [ TSR-GIYDIRME-KARARI, VRI-TEMA-KOYU, VRI-TEMA-ACIK, KOD-SNM-GIYDIRMESIZ-RENK ],
+        ne:       "🎨 GİYDİRME TEKLİFİNİ ORTADAN KALDIRMAK — Sarmal renklerinin geliştiriciden izin istemeden gelmesi. Founder sorusu 2026-07-29: bir Sarmal projesi açıldığında geliştirici renkler için 'giydir' demek zorunda mı? Ölçülmüş cevap hayırdır ve bugünkü teklif bir tasarım kusurunun belirtisidir. Teklif çıkıyor çünkü giydirme, geliştiricinin KENDİ çalışma alanı ayarlarına yirmiden fazla anahtar YAZIYOR; bir eklentinin kullanıcının deposundaki ayar dosyasını izinsiz değiştirmesi kabul edilemez, dolayısıyla sormak zorunda kalıyor. Kusur sormakta değil, yazmak zorunda olmakta." ) {
+        görev:    [
+          "ÖNCE BUGÜN NEYİN ZATEN İZİNSİZ ÇALIŞTIĞINI ÖLÇ ve yaz. Ölçüm 2026-07-29 tarihinde şudur: eklenti yirmi sekiz anlamsal simge tipi ilan ediyor ve `contributes.configurationDefaults` altında hem `editor.semanticHighlighting.enabled` hem `editor.semanticTokenColorCustomizations` taşıyor. Bunlar hiçbir izin istemeden, hiçbir dosya yazmadan uygulanıyor. Yani anlamsal renkler ZATEN giydirmesiz geliyor; teklifin eklediği şey TextMate kuralları ile tezgâh renkleridir.",
+          "EKSİK OLAN İLANI KUR: `contributes.semanticTokenScopes`. Ölçüm şudur, bugün bu ilan YOKTUR. Bu ilan, Sarmal'ın anlamsal simgelerini yerleşik TextMate kapsamlarına eşler; eşleme kurulunca kullanıcının KENDİ teması Sarmal kodunu kendiliğinden renklendirir. Bu, teklifi gereksiz kılan tek en büyük hamledir ve kullanıcının ayarına hiç dokunmaz.",
+          "İSTEYENE TAM GÖRÜNÜM İÇİN BİR TEMA SUN: `contributes.themes`. Ölçüm şudur, bugün eklenti hiç tema taşımıyor. Tezgâh renkleri (hata, uyarı, bilgi, rozet) ayar yazmadan yalnız tema yoluyla gelir. Tema, kullanıcının tema seçicisinden bir tıkla açılıp bir tıkla kapanır; deposuna hiçbir dosya yazılmaz ve geri alması kolaydır.",
+          "GİYDİR KOMUTUNU SİLME, TEKLİFİ KALDIR. Komut elle çalışan bir kolaylık olarak kalsın — kullanıcı isterse ayarları çalışma alanına yazdırabilir. Kaldırılacak olan, proje açılışında kendiliğinden çıkan tekliftir; bir geliştiricinin ürünle ilk karşılaşması bir izin sorusu olmamalıdır.",
+          "İLK KARŞILAŞMAYI ÖLÇ: temiz bir profilde, hiç ayarı olmayan boş bir klasörde bir `.sar` dosyası aç ve kaç renk/dekorun kendiliğinden geldiğini say. Bu sayı hem önce hem sonra ölçülür ve iki sayı da yazılır."
+        ]
+        kabul: [
+          "Temiz bir profilde bir `.sar` dosyası açıldığında HİÇBİR teklif çıkmaz ve renkler yine de gelir; bu canlı pencerede gözle doğrulanmıştır.",
+          "Kullanıcının çalışma alanı ayar dosyasına eklenti tarafından kendiliğinden yazılan anahtar sayısı SIFIRDIR ve bu sayılarak gösterilmiştir.",
+          "`semanticTokenScopes` ilanı vardır ve yirmi sekiz anlamsal simge tipinin tamamını kapsar; kapsamayan bir tip kalırsa süit kırmızıya döner ve bu mutasyonla kanıtlanmıştır.",
+          "Giydir komutu elle çalışmaya devam eder ve çalıştığında yine yalnız çalışma alanı hedefine yazar; kullanıcı ayarı hiçbir koşulda ezilmez.",
+          "Sıfır bağımlılık ilkesi korunmuştur; tema ve ilan katkısı eklentiye tek bir çalışma zamanı bağımlılığı eklememiştir."
+        ]
+        sınır: "Bu Adım renk PALETİNİ değiştirmez — hangi tipin hangi rengi taşıdığı kanonun hükmüdür ve aynen kalır. Değişen yalnız o rengin kullanıcıya ULAŞMA YOLUDUR: ayar yazmak yerine ilan etmek. Ayrıca bu Adım rakip eklenti susturmasını kaldırmaz; o davranış elle çalışan komutun içinde kalır, çünkü başka bir eklentinin gürültüsünü susturmak ancak kullanıcı açıkça istediğinde meşrudur. Doğacak tema dosyasının kod meyvesi, dosya diskte doğduğunda ilan edilir; bugün ilan edilseydi karşılıksız yol teslim sayılmazdı."
+      }
+
+      Adım( kod: VIT-KIMLIK-A07, durum: beklemede, öncelik: p1, onay: "onaylandı — 2026-08-08", bağımlı: [ VIT-KIMLIK-A06 ],
+        referans: [ YUZ-4.2, YUZ-4.1, YUZ-1.2 ],
+        üretir:   [ KOD-SIMGE-CIZELGE, KOD-SNM-SIMGE-CIZELGE ],
+        ne:       "🎨 ARAYÜZ İŞARETLERİNİN TAM ENVANTERİ VE AİLEYE GEÇİŞİ. Founder 2026-08-05 tarihinde geliştirme ortamında emojiyle çizilmiş düğmeler gördü ve bunun endüstri ölçüsüyle bağdaşmadığını bildirdi. Verdiği ayrım nettir: emoji, niyet cümlelerinde ve etmen davranışının takdir edildiği yerlerde meşru bir anlatım aracıdır; buna karşılık geliştirme ortamında görünen her düğme ve her simge kilitli vektörel aileden gelmelidir. Ölçülmüş gerekçe şudur: emoji platforma göre başka çizilir, rengini temadan almaz, ölçüsü denetlenemez ve yardımcı teknolojide anlamı kaybolur." ) {
+        görev:    [
+          "BÜTÜN PROJEYİ TARAYARAK ARAYÜZ İŞARETLERİNİN ENVANTERİNİ ÇIKAR. Envanter dosya ve satır düzeyinde olmalıdır ve her kalem üç sınıftan birine ayrılmalıdır: kullanıcıya görünen arayüz işareti (düğme, satır, panel başlığı, durum çubuğu, ağaç öğesi, bildirim), kaynak metninin kendi anlatımı (Adım ve Kural gövdelerindeki niyet cümleleri) ve geliştirici gözüne bakan iç kayıt (kod yorumu, günlük satırı). Yalnız birinci sınıf bu Adımın konusudur; ikincisi Founder hükmüyle korunur ve üçüncüsü kullanıcıya hiç ulaşmaz.",
+          "ENVANTERİ EKSİKLİK LİSTESİNE ÇEVİR. Her arayüz işareti için ailede bir karşılık var mı sorusu tek tek yanıtlanır; karşılığı olmayanlar eksik ilan edilir ve hangi anlamı taşıması gerektiği yazılır. Sayı tahmin edilmez, sayılarak bulunur.",
+          "EKSİK SİMGELERİ AİLENİN KENDİ DİLİYLE ÇİZ. Ölçü yirmi dört birimlik kutu, dolgusuz gövde, currentColor konturu ve yuvarlatılmış uçlardır; yeni çizimler mevcut on sekiz satır simgesiyle aynı ailedendir ve on altı piksel boyutunda okunur kalır.",
+          "GEÇİŞİ BÜTÜN YÜZEYLERDE UYGULA ve her yüzeyin erişilebilir adını koru. İkon yalnız sunum işaretidir; metinsel etiketin yerine geçemez.",
+          "KANON HÜKMÜNÜ TAZELE. YUZ-4.2 maddesi bugün ikon katmanını emoji sözlüğüne göre tanımlamaktadır; hüküm, arayüz işaretlerinin kilitli vektörel aileden geldiğini doğrudan söyleyecek biçimde yeniden yazılır ve emojinin meşru kaldığı iki alan (kaynak anlatımı ve takdir yüzeyi) açıkça ayrılır. Kanon değişikliği Founder onayıyla yürürlüğe girer.",
+          "GERİLEMEYİ NÖBETLE DURDUR. Kullanıcıya basılan yüzeylerde emoji beliren bir yol kalırsa süit kırmızıya dönmelidir; nöbet kaynak anlatımını ve takdir yüzeyini kapsam dışında tutar, çünkü oradaki emoji hükmen meşrudur."
+        ]
+        kabul: [
+          "Envanter dosya ve satır düzeyinde tamdır, üç sınıfa ayrılmıştır ve her kalemin akıbeti yazılıdır; sessizce atlanan kalem yoktur.",
+          "Eksik ilan edilen simgelerin tamamı çizilmiştir ve hepsi ailenin çizim ölçülerini geçer; bu bir nöbetle ölçülür.",
+          "Kullanıcıya görünen yüzeylerde emoji sayısı sıfırdır ve bu, kaynak anlatımı ile takdir yüzeyini dışlayan bir aramayla gösterilmiştir.",
+          "Gerilemeyi durduran nöbet vardır ve mutasyonla kanıtlanmıştır: bir yüzeye emoji geri konduğunda süit kırmızıya döner, geri alınınca yeşile döner.",
+          "YUZ-4.2 maddesinin yeni metni Founder onayından geçmiştir ve kanon denetimi temizdir.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; iki varlığın denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder canlı pencerede paneli ve editörü gözle doğrular; hiçbir sınama bu doğrulamanın yerine geçmez."
+        ]
+        sınır: "Bu Adım kaynak dosyalarındaki niyet cümlelerine DOKUNMAZ: Adım ve Kural gövdelerindeki emojiler Founder hükmüyle yerinde kalır, çünkü orada emoji bir arayüz işareti değil anlatım aracıdır. Etmen davranışının takdir edildiği yüzey de kapsam dışıdır. Renk paleti, tip anlamları ve panel kimlikleri değişmez; değişen yalnız işaretin ÇİZİM KAYNAĞIDIR."
+      }
+    }
+  }
+}
+
+// 🍎 VIT-POSTA ve VIT-KIMLIK meyveleri — Adım→kod izi
+Kod( kod: KOD-POSTA-GOVDE, dosya: "urun/eklenti/src/posta-govde.ts",
+  ne: "🍎 Posta Kutusunun panel içi gövdesi — kapı satırının altında açılan gerekçe kutusu ve onun altındaki üç karar seçeneği. Founder'ın hükmü gereği not artık pencerenin tepesindeki giriş kutusunda değil, gözün olduğu yerde yazılır; ölçüldü ki VS Code'un giriş kutusu yüzeylerinde konum alanı YOKTUR ve ağaç satırı metin alanı barındıramaz, dolayısıyla bu tek yoldu" )
+Kod( kod: KOD-POSTA-PANEL, dosya: "urun/eklenti/src/posta-kutusu.ts",
+  ne: "🍎 Posta Kutusu paneli — Founder onayı bekleyen kapıların kalıcı ağaç görünüşü; kayda tıklanınca kapıya gidilir ve karar akışı açılır" )
+Kod( kod: KOD-ONAY-TARAYICI, dosya: "urun/eklenti/src/onay-tarayici.ts",
+  ne: "🍎 Onay kapılarının TEK tarayıcısı — hem komut hem panel buradan beslenir; iki tüketicinin farklı sayı üretmesi yapısal olarak imkânsızdır" )
+Kod( kod: KOD-SNM-POSTA, dosya: "urun/eklenti/sinama/posta-kutusu.test.ts",
+  ne: "🍎 Posta Kutusu nöbetleri — tek tarayıcı, simge ayrımı, ata/çocuk kademe farkı, boş kuyruk cümlesi" )
+Kod( kod: KOD-DURUM-CUBUGU, dosya: "urun/eklenti/src/durum-cubugu.ts",
+  ne: "🍎 Dört yüzeyin durum çubuğu sayaçları — sayılar panellerden TÜRETİLİR, ikinci sayaç tutulmaz" )
+Kod( kod: KOD-TEKNOLOJI-SIMGESI, dosya: "urun/eklenti/src/teknoloji-simgesi.ts",
+  ne: "🍎 Dosya uzantısı → teknoloji simgesi tek kaynağı — eşleme eklentinin kendi dil ilanından türer, ikinci çizelge doğmaz" )
+Kod( kod: KOD-SNM-YUZEYLER, dosya: "urun/eklenti/sinama/tani-yuzeyleri.test.ts",
+  ne: "🍎 Tanı yüzeyi nöbetleri — üç panelin kademe düzeni, tür rengi, dosya kademesi, kopyalama ve durum çubuğu sayaçlarının tek kaynaklılığı" )
+Kod( kod: KOD-SNM-ONAY-YUZEYLERI, dosya: "urun/eklenti/sinama/onay-yuzeyleri.test.ts",
+  ne: "🍎 Onay yüzeyi nöbetleri — açılışta sıfır iş parçacığı, aynı anda tek etkin karar yüzeyi, giriş noktalarının ikinci karar arayüzü açmaması" )
+Meyve( kod: TSR-GIYDIRME-KARARI, tür: dış-çıktı,
+  ne: "🍎 Giydirme yolunun kararı ve ölçümü — temiz profilde kendiliğinden gelen renk/dekor sayısı önce ve sonra; ayar yazmak yerine ilan etmenin gerekçesi. Türü dış-çıktıdır çünkü bu bir teslim edilebilir hüküm ve ölçüm kaydıdır, proje içi bir dosya değil." )
+// KÜRASYON (GOC-A08 · 2026-08-25): ikon konsept galerisi açık depoya girmez; mockup dosya beyanı düşürüldü, aslı atölyededir.
+Mockup( kod: TSR-IKON-AILESI,
+  ne: "🍎 Simge ailesi galerisi — altı tip ve beş panel için dörder konsept, üç boyutta ve iki zeminde; Founder seçim yüzeyi. Galeri 2026-08-08 tarihinde geneldurum/ altından nitelik rafına taşındı, çünkü ilansız bir klasörde yaşayan karar kanıtını motor göremez ve varlık dışına uzanan işaretçi taşıma anında sessizce kırılır" )
+
+// 🍎 VIT-GRAF ek meyveleri — Adım→kod izi
+Kod( kod: KOD-MINIGRAF, dosya: "urun/eklenti/src/minigraf.ts",
+  ne: "🍎 Mini graf görünümü (vscode kabuğu) — Yol Haritasının altında tek proje WebviewView'ı; seçim/imleç/yenile akar ama seçim grafı daraltmaz; kip/anahtar yok" )
+Kod( kod: KOD-MINIGRAF-CEKIRDEK, dosya: "urun/eklenti/src/minigraf-cekirdek.ts",
+  ne: "🍎 Mini graf çekirdeği (SAF — vscode importsuz) — saklı Dag'dan GitLens-benzeri tüm-proje rayı; Faz→Blok→Katman→AltKatman→Adım kapsama bağları + gerçek bağımlılık eğrileri + DIL-4 ikonlu YUZ-4.1 durum renkli buzlu-cam mercek" )
+Kod( kod: KOD-SNM-MINIGRAF, dosya: "urun/eklenti/sinama/minigraf.test.ts",
+  ne: "🍎 Mini graf davranış sınamaları — beş ray (AltKatman dahil) · tüm proje · seçim işareti · gerçek bağımlılık · YUZ-4.1 türetme · DIL-4 ikon · cam/hover · betiksiz/gradyansız HTML" )
+
+// 🍎 Meyve ilanları (dosya-seviye · MIM-2.1 üretim-yeri)
+Kod( kod: KOD-ETKI-YUZ, dosya: "urun/cekirdek/src/etki.ts",
+  ne: "🍎 Etki-analizi yüzü — sarmal etki <KOD>: DAG ters-türetmesinden ileri-kapanış (bu düğümü bekleyenler), durum rozetli ağaç render (YUZ-3)" )
+Kod( kod: KOD-GRAF-YUZ, dosya: "urun/cekirdek/src/graf.ts",
+  ne: "🍎 Kanonik graf yüzü — sarmal graf <dizin> [--kok KOD]: Dag → determinist JSON (düğümler+kenarlar+kopuk+karne); IDE·AI·MCP aynı grafı okur (VIT-GRAF-A01)" )Kod( kod: KOD-SIMGE-CIZELGE, dosya: "urun/eklenti/src/simge-cizelgesi.ts",
+  ne: "🍎 Tek kaynak simge çizelgesi — altı eksen tipinin emojisi kanondan, geometrik SVG yolu raftan tek modülde; Mini Graf ile Yol Haritası buradan okur ve ayrışma yapısal olarak imkânsızdır (VIT-KIMLIK-A03)" )
+Kod( kod: KOD-SNM-SIMGE-CIZELGE, dosya: "urun/eklenti/sinama/simge-cizelgesi.test.ts",
+  ne: "🍎 Kapsam eşitliği nöbeti — SVG rafı ile kanon emoji çizelgesi aynı altı tipi kapsar, kaynaklara renk gömülmez, 38 üretilmiş varyant ve dosya ikonu ilanı diskle birebirdir; mutasyonla kanıtlı (VIT-KIMLIK-A03)" )
+Kod( kod: KOD-BAGLANTI-CEKIRDEK, dosya: "urun/eklenti/src/baglanti-cekirdek.ts",
+  ne: "🍎 Yol çözümü ve link kararının saf çekirdeği — alan katmanına ek anlatı-içi yol sözceleri; çözülmeyen yol link almaz (VIT-GRAF-A14)" )
+Kod( kod: KOD-ATIF-BAGLANTI, dosya: "urun/eklenti/src/atif-baglanti.ts",
+  ne: "🍎 Çapraz varlık atıf bağlantısı — dekorla aynı kimlik evreninden beslenir, hedef öbür varlıktaysa salt okunur bakış açar; F12 çözümüne dokunmaz (VIT-GRAF-A14)" )
+Kod( kod: KOD-SNM-BAGLANTI-ATIF, dosya: "urun/eklenti/sinama/baglanti-atif.test.ts",
+  ne: "🍎 Bağlantı ve atıf nöbetleri — on dört sınama: yol dürüstlüğü, F12 bekçisi, AST hover yedeği ve tanımsız kod bekçisi mutasyon kanıtlı (VIT-GRAF-A14)" )
+Kod( kod: KOD-YUZEY-METINLERI, dosya: "urun/eklenti/src/yuzey-metinleri.ts",
+  ne: "🍎 Yüzey metin kataloğu — panellerin bütün kullanıcı cümleleri (boş durum, açıklama, ipucu, pano) iki dilde tek dosyada yaşar; üslup siz biçimindedir ve boş durum cümleleri kısa tutulur (Founder hükmü 2026-08-16)" )
+
+// 🍎 VIT-KIMLIK-A04 giydirmesiz renk teslimi (2026-08-08)
+//    Üretici teklifi kaldırdı ve rengi iki katmanda ilana çevirdi; iki katman da
+//    kullanıcının hiçbir dosyasına yazmaz. Birinci katman anlamsal simgeleri
+//    kullanıcının KENDİ temasına bağlar, ikinci katman ise tezgâh renklerini
+//    isteyene tema olarak sunar. Tema dosyaları elle yazılmaz; kanondan üretilir
+//    ve bir palet nöbeti üreticinin tek bir renk uydurmasını yasaklar.
+Veri( kod: VRI-TEMA-KOYU, dosya: "urun/eklenti/temalar/sarmal-koyu.json",
+  ne: "🍎 Sarmal koyu teması — tezgâh renkleri, anlamsal renkler ve biçim kuralları kanondan üretilir; seçilmedikçe hiçbir kullanıcıya uygulanmaz ve tema seçicisinden tek tıkla geri dönülür (VIT-KIMLIK-A04 meyvesi)" )
+Veri( kod: VRI-TEMA-ACIK, dosya: "urun/eklenti/temalar/sarmal-acik.json",
+  ne: "🍎 Sarmal açık teması — koyu kardeşiyle aynı üreticiden doğar ve aynı palet nöbetine tabidir; açık zemin için kanonun açık eşleri kullanılır (VIT-KIMLIK-A04 meyvesi)" )
+Kod( kod: KOD-SNM-GIYDIRMESIZ-RENK, dosya: "urun/eklenti/sinama/giydirmesiz-renk.test.ts",
+  ne: "🍎 Giydirmesiz renk nöbetleri — dokuz sınama: aktivasyonda kullanıcı ayarına yazılan anahtar sayısının sıfır olduğu sahte yürütücüye giden çağrılar sayılarak, kapsam ile ilan tamlığı çizelgeden, paletin kanon dışına çıkmadığı ve üretecin idempotent olduğu mutasyonla kanıtlanır (VIT-KIMLIK-A04 meyvesi)" )

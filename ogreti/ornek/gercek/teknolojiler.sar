@@ -1,0 +1,26 @@
+// ═══════════════════════════════════════════════════════════════════
+//  ORTAK TEKNOLOJİ İLANLARI — desen kütüphanesinin paylaşılan tabanı
+//  Resmî belge biçimi: belge bloğu ve şekil muhafazası (referans: kuantum_bolum1.sar · DIL-2)
+// ═══════════════════════════════════════════════════════════════════
+
+-->|
+  # Teknoloji İlanları
+
+  `çağır FLUTTER` gibi kod-tabanlı çağrıların çözüldüğü tek yer. Teknoloji
+  adları evrenseldir (çevrilmez); her `.sar` bunları `çağır` ile alır,
+  `bağımlı:` kenarıyla bağlanır — yol değil KOD, drift-bağışık.
+|<--
+
+Teknoloji( kod: FLUTTER, ne: "çok-platform önyüz çatısı (Dart)" )
+Teknoloji( kod: FASTAPI, ne: "Python arkayüz çatısı (async)" )
+Teknoloji( kod: POSTGRES, ne: "ilişkisel veritabanı" )
+Teknoloji( kod: REDIS, ne: "bellek-içi önbellek + kuyruk" )
+Teknoloji( kod: DOCKER, ne: "konteyner çalışma zamanı" )
+
+/// Teknoloji takımı: dağınık ilanları bir bütün yapar — proje/etmen tek KOD ile
+/// tüm yığını benimser (bağımlı: TAKIM-TAMYIGIN). Her üye drift-denetli.
+Takım( kod: TAKIM-TAMYIGIN, ne: "tam-yığın takım — Flutter önyüz + FastAPI arkayüz + veri + altyapı",
+       bağımlı: [ FLUTTER, FASTAPI, POSTGRES, REDIS, DOCKER ] )
+
+/// Türkçe kaynak sözlüğü — i18n anahtarlarının (#giris.başlık) çözüldüğü yer.
+Sözlük( kod: SOZ-TR, dil: "tr", ne: "Türkçe metin sözlüğü — i18n anahtar kaynağı" )

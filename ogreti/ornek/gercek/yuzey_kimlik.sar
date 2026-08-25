@@ -1,0 +1,127 @@
+// sarmal: bilerek-hatalı vitrin — yüzey örneği; bilinen belirteç/şema kusurları HTR-DIL-ANALIZ ders malzemesi
+// ═══ YÜZEY NİYETİ — kimlik bloku önyüz yüzü (PLN-2 §A → gerçek örnek) ═══════
+// Niyet Türkçe + bildirimsel; Flutter/Next'e ÇEVİRİYİ ajan yapar (FEL-1).
+// Plan tarafındaki bağ: ADM-GIRIS --üretir--> EKR-GIRIS (bu dosyadaki kök).
+// Yenilikler: #anahtar i18n (DIL-1.3) · nokta-erişimi · ifade dili · D7 adları.
+
+çağır FLUTTER                          // hedef teknoloji (katalogdan)
+çağır SOZ-TR                           // çok-dil sözlüğü (i18n — DIL-1.1 ilk gün)
+
+// ── Tema: uygulamanın görsel anayasası (tasarım sözlüğü: renkler) ───────────
+Tema(
+  kod: TEM-KIMLIK,
+  ad:  "kimlik-temasi",
+  ne:  "kimlik bloğu yüzey teması — renk düzeni + yazı ailesi",
+  renkler: {                   // ColorScheme → renk düzeni
+    birincil:  "#14B8A6",
+    ikincil:   "#8B5CF6",
+    hata:      "#EF4444",
+    yüzey:     "#FFFFFF",
+    arkaplan:  "#F8FAFC",
+  },
+  karanlıkMod: { birincil: "#2DD4BF", yüzey: "#0F172A", arkaplan: "#020617" },
+  yazıStilleri: {                      // TextStyle → yazı stili
+    başlık: { boyut: 24, kalınlık: yarıKalın, aralık: 0.2 },
+    gövde:  { boyut: 16, kalınlık: normal },
+  },
+  köşeYuvarlaklığı: 12,                // BorderRadius
+  gölge: yumuşak,                      // Elevation kademesi
+)
+
+// ── Canlandırma ön-tanımları (tasarım sözlüğü: animasyon) ───────────────────
+Canlandırma(
+  kod:  CNL-SAYFA-GECIS,
+  tür:  kayma,                         // SlideTransition → kayma
+  yön:  sağdan,
+  süre: "300ms",
+  eğri: hızlıÇıkışYavaşGiriş,          // Curves.fastOutSlowIn (Material standart)
+)
+Canlandırma(
+  kod:    CNL-HATA-SARSMA,
+  tür:    sarsma,                      // hata geribildirimi
+  süre:   "400ms",
+  eğri:   esnekBitiş,                  // Curves.elasticOut
+  tekrar: 1,
+)
+Canlandırma( kod: CNL-LOGO-SOLMA, tür: solma, süre: "600ms", eğri: yavaşBaşla )
+
+// ── Durum niyeti (State Management — teknoloji-bağımsız) ────────────────────
+Durum(
+  kod: DRM-OTURUM,
+  ad:  "oturum-durumu",
+  alanlar: { girişYapıldı: "mantık", kullanıcı: "SZL-KULLANICI", yükleniyor: "mantık", hata: "metin", hatırla: "mantık" },
+  kaynak: UC-GIRIS,                    // arkayüz ucundan beslenir → KAVUŞMA
+)
+
+// ── Ekran: rota + koruma + iskelet ──────────────────────────────────────────
+Ekran(
+  kod:      EKR-GIRIS,
+  ad:       "giris-ekrani",
+  referans: ADM-GIRIS,                 // hangi plan-adımı üretti (provenance)
+  rota:     "/giris",                  // adlandırılmış rota
+  geçiş:    CNL-SAYFA-GECIS,           // rotaya giriş animasyonu
+  koruma:   girişsiz,                  // auth-guard: yalnız oturumsuz erişir
+  tema:     TEM-KIMLIK,
+  duyarlılık: { mobil: 0, tablet: 600, masaüstü: 1024 },   // kırılımlar (px)
+  dil:      SOZ-TR,                    // metin anahtarları bu sözlükten
+) {
+  ÜstÇubuk( kod: CUB-GIRIS, başlık: #giris.başlık, ortala: EVET )
+
+  Gövde( kod: GVD-GIRIS, kaydırma: dikey, güvenliAlan: EVET ) {
+    Sütun( kod: STN-FORM, hizala: merkez, boşluk: { iç: 24, ara: 16 } ) {
+
+      Görsel( kod: GRS-LOGO, kaynak: "logo.svg", enBoyOranı: 1.0,
+      canlandırma: CNL-LOGO-SOLMA )
+
+      Metin( kod: MTN-SLOGAN, değer: #giris.slogan, stil: gövde,
+      erişilebilirlik: { rol: başlık, düzey: 2 } )
+
+      // Form: giriş alanları + doğrulama niyeti (DIL-1.3 ifadeleri iş başında)
+      Form( kod: FRM-GIRIS, doğrulamaAnı: alanÇıkışında ) {
+        MetinAlanı(
+          kod: ALN-EPOSTA, etiket: #giris.eposta, tür: eposta,
+          doğrula: [ zorunlu, epostaBiçimi ],
+          hataCanlandırma: CNL-HATA-SARSMA,
+          erişilebilirlik: { ipucu: #giris.eposta_ipucu },
+        )
+        MetinAlanı(
+          kod: ALN-PAROLA, etiket: #giris.parola, tür: parola, gizle: EVET,
+          doğrula: [ zorunlu, { enAz: 8 } ],
+        )
+        OnayKutusu( kod: ONY-HATIRLA, etiket: #giris.beni_hatırla,
+        bağla: DRM-OTURUM.hatırla )              // nokta-erişimi (DIL-1.3)
+
+        Düğme(
+          kod: DGM-GIRIS, tür: yükseltilmiş, etiket: #giris.buton,
+          basınca: { eylem: gönder, hedef: UC-GIRIS },       // ← arkayüz ucuna KAVUŞMA
+          etkin: değil DRM-OTURUM.yükleniyor,                // ifade dili (DIL-1.3)
+          yüklenirken: { göster: dönenHalka, kilitle: EVET },
+          dokunuş: mürekkepDalgası,                          // InkWell
+        )
+      }
+
+      Satır( kod: STR-ALT, hizala: aralıklı ) {
+        Düğme( kod: DGM-KAYIT, tür: metin, etiket: #giris.kayıt_ol,
+        basınca: { eylem: git, rota: "/kayit" } )
+        Düğme( kod: DGM-UNUT, tür: metin, etiket: #giris.parola_unuttum,
+        basınca: { eylem: git, rota: "/parola-sifirla" } )
+      }
+    }
+  }
+
+  AnlıkBildirim( kod: MSJ-HATA, kaynak: DRM-OTURUM.hata,
+    görünür: DRM-OTURUM.hata != "",             // karşılaştırma (DIL-1.3)
+  süre: "4sn", konum: alt )
+}
+
+// ── Kullanıcı-tanımlı bileşen (TIP-1) — tekrar eden UI parçası ──────────────
+Tip SosyalGirişDüğmesi( aile: yuzey, içerir: [Metin], renk: "#0EA5E9" ) {
+  ne: "Google/Apple ile giriş — markalı düğme deseni",
+}
+
+// ── UI yasası (DIL-3): erişilebilirlik zorunlu ───────────────────────────────
+Kural erişilebilirlikZorunlu( otorite: politika, katman: yapısal, kapsam: Ekran ) {
+  koşul: "her etkileşimli öğe erişilebilirlik etiketi taşır",
+  ihlal: "erişilebilirlik-eksik",
+  düzey: uyarı,
+}

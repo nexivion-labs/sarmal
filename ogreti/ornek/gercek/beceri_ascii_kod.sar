@@ -1,0 +1,69 @@
+// ═══════════════════════════════════════════════════════════════════
+//  BELLEK→BECERİ TERFİSİ CANLI — bugün yaşanan disiplin Beceriye terfi etti (OGR-4)
+//  Kod üreten HER ajan bunu koniyle alır → şapkalı-harf bug'ı doğmaz.
+//  Resmî belge biçimi: belge bloğu ve şekil muhafazası (referans: kuantum_bolum1.sar · DIL-2)
+// ═══════════════════════════════════════════════════════════════════
+
+/// Evrensel yetenek: implementasyon dilinde temiz kimlik adlandırma.
+Yetenek( kod: YTN-TEMIZ-KIMLIK ) {
+  ne: "implementasyon dillerinde ASCII-güvenli tanımlayıcı adlandırma"
+}
+
+-->|
+  # ASCII Kod Kimlikleri — Şapkalı-Harf Yasağı
+
+  <ne-zaman>
+    TS/Python/Dart/Go vb. GERÇEK KOD üretilirken — her kod-üreten ajan bu
+    beceriyi koniyle alır. DEĞİL: `.sar` yazarken (orada Türkçe şapkalı SERBEST).
+  </ne-zaman>
+
+  <desenler>
+    ## İki dünya, iki kural
+
+    - **`.sar` = ortak spec dili** → Türkçe şapkalı SERBEST (`Sözleşme`, `görev`) — ÜRÜN.
+    - **TS/Python/Dart/Go = motor dilleri** → kimliklerde şapkalı harf YASAK.
+
+    ## Neden
+
+    Türkçe karakterli KİMLİKLER (değişken/fonksiyon/tip adı) sinsi bug + güvenlik
+    açığı üretir: NFC/NFD normalizasyon uyuşmazlığı (macOS dosyaları NFD saklar →
+    `Sözleşme` ≠ `Sözleşme` sessizce), İ/ı locale-casing tuzağı, tooling/stack-trace
+    bozulması. Ve en kötüsü: kimse böyle kodlamadığı için sebep BULUNAMAZ.
+
+    ## Nasıl
+
+    Türkçe kelimeyi TUT, şapkayı SÖK (transliterasyon):
+    `ş→s · ğ→g · ı→i · İ→I · ö→o · ç→c · ü→u`
+
+    Örnek: `şemaDenetle→semaDenetle` · `değer→deger` · `düğüm→dugum` ·
+    `çocuklar→cocuklar` · `ayrıştır→ayristir`.
+
+    ## Korunan (istisna — şapkalı KALIR)
+
+    - String literal içindeki `.sar` DİL anahtarları: `p.ad === "sağlar"` — parser
+      `.sar` içeriğiyle eşleştiği için Türkçe ZORUNLU.
+    - Kullanıcıya giden Türkçe MESAJLAR: `"çözülemeyen çağrı"` — ürün Türkçe.
+    - Yorumlar: çalışmayı etkilemez, okunur Türkçe kalabilir.
+    - Regex literal içi (mesaj-eşleştiren): `/çok-satırlı/` Türkçe kalır.
+  </desenler>
+|<--
+
+Beceri( kod: BCR-ASCII-KIMLIK, sağlar: YTN-TEMIZ-KIMLIK, yığın: evrensel, uygular: ANY-EVRENSEL ) {
+  ne: "Motor dillerinde ASCII kimlik disiplini — şapkalı harf yalnız .sar'da"
+  neZaman: "TS/Python/Dart/Go vb. gerçek kod üretilirken (her kod-üreten ajan)"
+  kurallar: [
+    "değişken/fonksiyon/tip/property adı ASCII — şapkalı harf YASAK",
+    "Türkçe kelime tutulur, şapka sökülür (deger·dugum·ayristir·sema)",
+    "dosya adları da ASCII snake/kebab (belirtec.ts, kayit.json)",
+    "boundary'de NFC normalize et (kaynak.normalize('NFC')) — NFD tuzağı",
+    "locale-casing yalnız toLocaleLowerCase('tr') — çıplak toLowerCase İ/ı bozar",
+  ]
+  örnek: "const semaDenetle = (dugum) => dugum.cocuklar.map(...)  // ASCII"
+  antiDesen: [
+    "kimlikte şapkalı harf: const değer = ...  (NFD/tooling bug)",
+    ".sar dil-anahtarı string'ini şapkasızlaştırmak: p.ad === \"saglar\" (parser kırılır)",
+    "kullanıcı mesajını İngilizceye çevirmek (ürün Türkçe kalır)",
+    "çıplak str.toLowerCase() Türkçe metinde (İ→i̇ locale tuzağı)",
+  ]
+  neden: "Türkçe kimlik = NFC/NFD sessiz uyuşmazlığı + İ/ı casing + 'kimse böyle yapmadığı için çözülemeyen' bug sınıfı; motor dilinde ASCII evrensel standarttır"
+}

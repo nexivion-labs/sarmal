@@ -1,0 +1,109 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/dogus_tani_sozlesme_bulgulari.sar — 🧪 DOĞUŞ & TANI SÖZLEŞMESİ BULGU DEFTERİ
+//   Köken: Founder test koşusu (2026-07-20). Üçüncü-parti bir ajan (Codex),
+//   bağlı Sarmal MCP araçlarıyla `akilli_calisma_rotasi` adlı yeni bir .sar
+//   projesi doğurdu. Founder koşudan 12 kalemlik bir bulgu listesi çıkardı
+//   (raporun 11 sorunu + sözle eklenen 1 gizlilik sorunu). Bu defter, üç
+//   bağımsız çekirdek/eklenti/MCP kod okumasıyla (kâşif turu) her kalemi
+//   kanıt-esaslı triyaj eder. HÜKÜM Founder'ındır — bu defter yalnız ölçer
+//   ve kanıtı işaretler; onarım kararları ayrı turda değerlendirilecektir.
+//   İlgili plan: bilgi/dogus_tani_sozlesme_turu.sar (taslak · onay bekliyor).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧪 Doğuş & Tanı Sözleşmesi — Bulgu Defteri
+
+  ## Düzenek
+  Üçüncü-parti ajan (Codex), bağlı Sarmal MCP araçlarıyla (`basla`, `dogus`,
+  `denetle`, `denetle-proje`, `iskelet`, `durum-guncelle`) sıfırdan bir proje
+  doğurdu: `sarmal_sinav2/akilli_calisma_rotasi`. Yüzeyde her şey temiz göründü
+  (`denetle` → **0 hata · 0 uyarı**). Buna rağmen ajan, kullanıcıya hiç sormadan
+  MVP hedef tarihini **uydurdu** (`2026-09-30`) ve Doğuş fazını tarihsiz bıraktı.
+  Founder tarih uyarısını (`faz-tarihsiz`) görünce ajan geriye dönük özeleştiri
+  yaptı; konuşma Sarmal'ın üç davranış-sınıfı uyaranını (bekçi · nöbetçi · rehber)
+  ajanın ayırt edememesine kadar indi.
+
+  ## Kök teşhis
+  **Sarmal eksikliği teşhis ediyor, ama ajanın kullanıcıyla konuşmasını garanti
+  etmiyor.** Üç davranış sınıfı Sarmal'ın *felsefesinde* var, ama *makine
+  sözleşmesinde* (Tanı nesnesinde, MCP/CLI/VS Code çıktısında) makinece-okunabilir
+  bir alan olarak taşınmıyor. Bu yüzden ajan "engellemiyor"u "önemsiz"le
+  karıştırıyor. Çözüm ajanın iyi niyetine bırakılamaz — sözleşmeye ve motora
+  zorlatılmalıdır.
+
+  Üç davranış sınıfının tanımı (Founder'ın koşuda dile getirdiği ayrım):
+  · **Bekçi / sert kural** — ihlal edilince yapı geçersiz ya da durum geçişi
+    reddedilir. *Engeller.*
+  · **Nöbetçi / devam-bekleyen** — şimdi yolu kesmez ama açtığı düğüm yüzünden
+    açık bir planlama borcu doğurur; motor susmaz. *Engellemez ama kapanış bekler.*
+  · **Rehber / zorlamayan** — sadece daha yalın/okunaklı bir öneri; reddedilebilir.
+    *Yükümlülük doğurmaz.*
+
+  ## Triyaj tablosu (kanıt-esaslı — üç kâşifin kod okuması)
+  > Hüküm ölçeği: **gerçek boşluk** · **kısmen** · **zaten çözülü** · **host-yanı**
+  > · **belief düzeltmesi** (Founder'ın varsayımı kanıtla değişti).
+
+  | # | Sorun | Hüküm | Ana kanıt (dosya:satır) |
+  |---|---|---|---|
+  | S-01 | Üç davranış sınıfı makine sözleşmesinde yok | **gerçek boşluk** | `cekirdek/src/tani.ts:8-20` — `Tani`'de yalnız `duzey`; `davranış` alanı yok. `faz-tarihsiz`+`dayanaksız-kural` (nöbetçi) ile `tek-cocuk-kapsayici` (rehber) hepsi `duzey:"bilgi"` → ayırt edilemez |
+  | S-02 | `dogus` kararları sormadan taahhüt yazıyor | **gerçek boşluk** | `dogus.ts:83-99` tek komutta yazar; `dogus.ts:86` tarih yoksa bugünü koyar; `mcp.ts:293-300` girdi yalnız `hedef`+`ad` |
+  | S-03 | Kuruluş adımı açık nöbetle tamamlanabiliyor | **gerçek boşluk** | `koniYaz.ts:203` + `durum.ts:96-104` geçiş kontrolü tek-Adım kapsamlı; kuşatan Faz nöbetlerine bakmaz |
+  | S-04 | VS Code ↔ CLI/MCP tanı paritesi | **zaten çözülü (kısmen)** | Şiddet paritesi VAR (`eklenti.ts:520-524` ↔ `sarmal.ts:1065`; SRN-PANEL-DALGA kapatılmış). Eksik: taşınacak sınıf alanı yok (S-01'e bağlı) |
+  | S-05 | "0 hata · 0 uyarı" nöbetleri gizliyor | **gerçek boşluk (kısmi telafi var)** | `denetim.ts:128-133` `bilgi` sayılmaz; `sarmal.ts:857` özet yalnız hata+uyarı. `açık-adım` için ayrı "MOTOR SUSMAZ" bloğu var (`sarmal.ts:844`) ama genelleştirilmemiş |
+  | S-06 | Üretilen `AGENTS.md` kendi tanısını doğuruyor | **gerçek boşluk (doğrulandı)** | `dil-baglami.ts:140` üretilen dosyada `ADM-GIRIS-01` tam dizesi; `sablon/dogus/ilk_plan.sar` `ADM-KURULUS-01` → ADM ailesi var → `denetci.ts:900-947` `karşılıksız-metin-atfı` (bilgi). Kaynak-bölme hilesi yalnız `.ts`'i korur |
+  | S-07 | Stratejik değerin kökeni izlenmiyor | **kısmen** | `Karar` düğümü + `dayanak` kenarı VAR (`denetci.ts:2020,2066`, `dag.ts:220`) ama *kural→karar* için; *tarih/kapasite→köken/kararVeren* YOK (`kararVeren`/`köken:` grep sıfır) |
+  | S-08 | Hedef ≠ gerçekleşen tarih ayrımı yok | **gerçek boşluk** | Tek `hedefTarih` (28 kullanım); `başlangıçTarihi`/`tamamlanmaTarihi` sıfır. `denetci.ts:2574-2641` |
+  | S-09 | `basla` yapılandırılmış soru vermiyor | **gerçek boşluk** | `mcp.ts:773-820` düz metin döner; K-109 nesir olarak `mcp.ts:650` |
+  | S-10 | Rehber ↔ borç Problems'ta karışıyor | **gerçek boşluk** | S-01'in UI yüzü; sınıf alanı olmadığı için filtrelenemez |
+  | S-11 | MCP keşfi ilk turda güvenilir değil | **host-yanı + içerik yüzü gerçek** | `mcp.ts:1160-1169` serverInfo yalnız ad+sürüm. AMA `SEF_SEMA.description` (`mcp.ts:92-96`) `tools/list`'te orkestrasyonu reklamlıyor |
+  | S-12 | Doğuş paketi gizli içeriği düşünceye sızdırıyor | **belief düzeltmesi — araç sızıntısı YOK** | Araçlar K-51 sınırını bilinçle korur (`dil-baglami.ts:14-15,218`; `sef` haritadan çıkarılmış; `KARARLAR.md` okunmuyor). Gerçek yüzey: repo-hijyeni (K-73) + hacim + `sef`-açıklama |
+
+  ## Ajan muhakeme hatası (Sarmal kusuru değil, ama sözleşmeyle önlenebilir)
+  MVP tarihi `2026-09-30` **şablonda yoktur** — ajan kendi ekledi
+  (`sablon/dogus/ilk_plan.sar:16` yalnızca tarihsiz Doğuş fazı açar; MVP fazı/tarihi
+  şablonda hiç yok). "0 uyarı"yı planın hazır olduğu sanması da ajan yorumudur. Bu
+  iki hata, S-01/S-02/S-09 boşlukları yüzünden MÜMKÜN oldu; sözleşme sertleşince
+  yapısal olarak önlenir.
+
+  ## S-12 için ayrıntılı kanıt (belief düzeltmesinin gerekçesi)
+  Founder "gerçek gizli içerik + karar defteri sızıyor" diye işaretlemişti; kâşif
+  kanıtı bunu düzeltti. `dogus`/`basla`/`ogret`/`AGENTS.md` çıktısı K-51 açık/gizli
+  çizgisini KASITLA korur:
+  · `dil-baglami.ts:14-15` — "SINIR (K-51): yalnız AÇIK dil… orkestrasyon ZEKÂSI
+    bağlama SIZMAZ."
+  · `dil-baglami.ts:218` — "Ağırlık ve çevrim formülü bu bağlamda YAŞAMAZ (K-51
+    gizli politika)."
+  · `AGENTS.md` araç haritası (`dil-baglami.ts:255-271`) — `sef` (orkestrasyon
+    prompt-montajı) bilinçle DIŞARIDA.
+  · `KARARLAR.md` hiçbir araç tarafından okunmuyor/emit edilmiyor.
+  Çıktılarda görünen tek "iç" şey karar-NUMARASI etiketleridir (K-91 gibi atıf,
+  gerekçe değil). Founder'ın gözlemlediği "kararlar görünüyor" durumunun gerçek
+  üç kaynağı: **(D1)** ajanın açık-core repoda duran `_Sarmal/KARARLAR.md`'yi
+  DOĞRUDAN okuması (fiziksel açık/gizli kesim K-73 henüz yapılmadı — anayasa
+  "ŞİMDİ DEĞİL" der); **(D2)** `SEF_SEMA.description`'ın `tools/list`'te
+  orkestrasyonu ifşa etmesi (mekanizma açık = meşru, ama gizli ürünün adı/varlığı
+  görünüyor); **(D3)** açık kanonun hacmi (açık ama çok — düşünce penceresini
+  dolduruyor). Gerçek gizli varlık kapalı varlığa hiçbir araç dokunmuyor.
+
+  ## Neden testler yakalamamış
+  `dogus.test.ts` yalnız `status === 0` ve `/0 hata/` denetler. S-06 tanısı
+  **bilgi** düzeyinde olduğu için hata sayısına girmez → test yeşil kalır, ama
+  `denetle` çıktısında bilgi satırı yine basılır (`denetim.ts:164-165`). Aynı
+  körlük, "0 hata · 0 uyarı" özetinin nöbetçileri gizlemesiyle (S-05) aynı köktendir.
+
+  ## Sonuç (bu defterin hükmü)
+  · **7 gerçek boşluk:** S-01, S-02, S-03, S-05, S-06, S-08, S-09, S-10 (S-10, S-01'in
+    UI izdüşümü).
+  · **2 kısmen / zaten çözülü:** S-04 (şiddet paritesi mevcut, sınıf ekseni eksik) ·
+    S-07 (`Karar`+`dayanak` altyapısı var, köken modeli yok).
+  · **1 belief düzeltmesi:** S-12 (araç sızıntısı yok; gerçek yüzey D1/D2/D3).
+  · **1 host + içerik:** S-11 (serverInfo minimal; `sef`-açıklama ifşası gerçek).
+  Onarım mimarisi ve kanon kararları plan taslağındadır
+  (bilgi/dogus_tani_sozlesme_turu.sar). Bu defter yalnız kanıtı mühürler.
+|<--
+
+Çıkarım( kod: CKR-DOGUS-TANI, kaynak: "Founder test koşusu 2026-07-20 (Codex + bağlı Sarmal MCP · sarmal_sinav2/akilli_calisma_rotasi) + üç bağımsız çekirdek/eklenti/MCP kod okuması (kâşif turu)",
+         referans: [ STR-3, STR-3.1, MIM-1.2 ],
+         ne: "🧪 Doğuş & tanı sözleşmesi bulgu hükmü: on iki kalemin kanıt-esaslı triyajı — yedi gerçek boşluk (S-01/02/03/05/06/08/09, S-10 bunların UI izdüşümü), iki kısmen/zaten çözülü (S-04 şiddet paritesi mevcut·sınıf ekseni eksik; S-07 Karar+dayanak altyapısı var·köken modeli yok), bir belief düzeltmesi (S-12 araç sızıntısı yok; gerçek yüzey repo-hijyeni K-73 + sef-açıklama ifşası + kanon hacmi) ve bir host+içerik kalemi (S-11). Kök teşhis: üç davranış sınıfı (bekçi·nöbetçi·rehber) felsefede var ama makine sözleşmesinde makinece-okunabilir alan olarak taşınmıyor",
+         kanıt: "her hüküm dosya:satır referansıyla belge gövdesindeki triyaj tablosunda kayıtlı; MVP tarihi 2026-09-30 şablonda yok (sablon/dogus/ilk_plan.sar) — ajanın kendi eklemesi olduğu doğrulandı",
+         sınır: "yalnız ölçüm ve kanıt mühürleme — hiçbir onarım uygulanmamıştır; onarım mimarisi ve kanon kararları plan taslağında (bilgi/dogus_tani_sozlesme_turu.sar) değerlendirilmeyi bekler. Fiziksel açık/gizli kesim (K-73 · D1) bu değerlendirmenin dışıdır ve anayasa gereği ileri tura aittir" )

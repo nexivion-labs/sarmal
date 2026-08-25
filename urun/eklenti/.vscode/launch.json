@@ -1,0 +1,20 @@
+{
+  // Sarmal eklentisini CANLI test et: bu klasörü VS Code'da aç → F5.
+  // Yeni bir "Extension Development Host" penceresi açılır; kaynaktan yüklü
+  // eklentiyle ornek/ korpusu gelir. .sar aç → hover · tamamlama · Kuzey Yıldızı
+  // · geribildirim kutusu · tanılar CANLI. (npm run watch = kaydedince yeniden derle.)
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🌀 Sarmal Eklenti — Canlı Test (Host)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "${workspaceFolder}/../../ogreti/ornek"
+      ],
+      "outFiles": [ "${workspaceFolder}/dist/**/*.js" ],
+      "preLaunchTask": "sarmal-derle"
+    }
+  ]
+}

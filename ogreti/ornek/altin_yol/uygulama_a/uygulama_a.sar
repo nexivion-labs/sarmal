@@ -1,0 +1,54 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// uygulama_a/uygulama_a.sar — 📱 UYGULAMA A (ayrı ağaç · ortak auth'u çağırır)
+//   Not: sub-Uygulama kökü uygulama-ADIYLA anılır (ana.sar = yalnız Varlık/ÇalışmaAlanı kökü).
+//
+//   Bahçedeki bir Uygulama: kendi planı+yüzeyi VAR, ama giriş için ORTAK
+//   SZL-AUTH sözleşmesini `çağır` ile paylaşır (tek giriş, contract-first).
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır SZL-AUTH
+çağır UC-AUTH
+çağır TEM-BAHCE   // ortak tasarım sistemi (TAS-A01: tek tema, çok uygulama)
+
+Teknoloji( kod: TEK-A-FLUTTER, ne: "A ağacının önyüz çatısı — teknolojisiz yüzey doğmaz (ORK-2.4)" )
+
+-->|
+  ## Amaç
+  📱 Bahçenin A uygulaması — kendi ağacı olan, ortak girişi paylaşan bağımsız uygulama.
+  ## Kapsam
+  📦 Giriş akışı (demo). Ortak SZL-AUTH sözleşmesini `çağır` ile kullanır.
+  ## Sonuç
+  ✅ Kabul: giriş ekranı ortak SZL-AUTH'a kavuşur (tek giriş).
+|<--
+Uygulama( kod: UYG-A, ad: "uygulama_a", ne: "📱 Bahçenin A uygulaması — ortak girişi kullanır" ) {
+
+  // ── PLAN (önyüz facet) — Adım giriş ekranını ÜRETİR ────────────────────────
+  -->|
+    ## Amaç
+    A uygulamasının giriş akışı — ortak auth'a kavuşur.
+    ## Kapsam
+    Yalnız giriş ekranı (demo). İş mantığı kapsam dışı.
+    ## Sonuç
+    ✅ Kabul: giriş ekranı SZL-AUTH sözleşmesini uygular.
+  |<--
+  Blok( kod: BLK-A, ne: "A uygulaması giriş bloğu" ) {
+    Katman( kod: KAT-A-ONYUZ, kullanır: TEK-A-FLUTTER, ad: "önyüz" ) {
+      Adım( kod: ADM-A-GIRIS, ad: "giris-ekrani",
+            görev: "kimlik giriş ekranı — ortak SZL-AUTH sözleşmesini kullanır, e-posta+parola alır",
+            kabul: [ "giriş SZL-AUTH'a uygun istek gönderir", "401/429 hataları gösterilir" ],
+            üretir: EKR-A-GIRIS, bağımlı: [ SZL-AUTH ], durum: beklemede )
+          
+    }
+  }
+
+  // ── YÜZEY — Ekran plana KAVUŞUR (referans) · Form ortak sözleşmeyi UYGULAR ──
+  // dosya: üretim-yeri AÇIK beyan (MIM-2.1) — B uygulaması dosya YAZMAZ → ağaçtan türetilir (convention)
+  Ekran( kod: EKR-A-GIRIS, görünürlük: açık, ne: "A giriş ekranı", referans: ADM-A-GIRIS,
+         tema: TEM-BAHCE, dosya: "onyuz/lib/screens/giris_a.dart" ) {
+    Form( kod: FRM-A-GIRIS, görünürlük: açık, ne: "giriş formu", uygular: SZL-AUTH ) {
+      MetinAlanı( kod: ALN-A-EPOSTA, görünürlük: açık, ne: "e-posta girişi" )
+      MetinAlanı( kod: ALN-A-PAROLA, görünürlük: açık, ne: "parola girişi" )
+      Düğme( kod: DGM-A-GIRIS, görünürlük: açık, ne: "Giriş yap", çağırır: UC-AUTH )
+    }
+  }
+}

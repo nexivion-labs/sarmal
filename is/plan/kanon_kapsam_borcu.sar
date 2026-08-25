@@ -1,0 +1,125 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/kanon_kapsam_borcu.sar — 🧭 Kanon Kapsam Borcu
+//
+//   Köken: oturum doksan üçün (2026-08-23) durum kaydındaki bulgu. İki bağımsız
+//   denetçi kanonun yüz elli maddesini okumuş ve doksan bir zorlama iddialı
+//   maddenin tanı kapsamını ölçmüştür; bu dosya o bulguyu ilk kez plan Adımına
+//   indirir. Sayılar durum_devir.sar dosyasının oturum doksan üç özetinden
+//   olduğu gibi taşınmıştır.
+//
+//   ⚠️ ÖLÇÜM DERSİ: bu dosyayı yazan üretici ölçümü yeniden yapmamış, kanonun
+//   yüz elli maddesini yeniden okumamış ve yeni bir sayı üretmemiştir. İşi
+//   yalnız ölçülmüş olanı plana indirmektir; sayıların doğrulanması ve
+//   düzeltilmesi bağımsız denetçinin işidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧭 Kanon Kapsam Borcu
+
+  ## Amaç
+  🎯 Kanonun zorlama iddiası taşıyan doksan bir maddesinin motor tarafından ne
+  ölçüde gerçekten zorlandığını görünür kılmak ve oturum doksan üçte bulunan
+  dört açık cepheyi kapatılabilir Adımlara indirmektir. Bu bulgu bugüne kadar
+  yalnız durum kaydındaki bir düzyazı özetinde yaşamaktadır; durum kaydı
+  kendisi kanonik bir `.sar` kaynağı olduğu için burada bir hüküm ihlali
+  yoktur, fakat özet madde madde bir döküm taşımadığı için hangi maddenin
+  gerçekten hangi kovada durduğu izlenemez kalmaktadır. Bu Adım tam bu
+  boşluğu kapatır ve bulguyu takip edilebilir bir plan gövdesine indirir.
+
+  ## Kapsam
+  📦 Dört cephe kapsanır. Kapsam sicili cephesi kanonun doksan bir maddesinin
+  her birinin motorun bugünkü tanı sicili karşısındaki gerçek durumunu madde
+  madde kayda geçirir. Tanı kademesi cephesi sekiz tanının kanonun öngördüğü
+  düzeyin altında üretilmesini ve bunlardan üçünün kanonun HATA dediği yerde
+  yalnız BİLGİ basmasını kanonla hizalar. Kenar kanunu cephesi `mimariBağı`
+  kenarının kanonda on kez geçtiği hâlde motor kaynağında ve tip sicilinde hiç
+  bulunmamasının hangi yönde çözüleceğini Founder kapısına taşır. Terfi kapısı
+  cephesi terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasını ve hiçbir
+  üreticinin onu çağırmamasını gerçek üretim yoluna bağlar. Ölçümün kendisi bu
+  Adımların işi değildir; sayılar durum kaydından olduğu gibi taşınmıştır ve
+  bağımsız doğrulanmadan kanıt sayılmaz.
+
+  ## Sonuç
+  ✅ Kapanışta şu dört cümle kanıtlanmış olur. Doksan bir maddenin her biri tam,
+  kısmi veya hiç ölçülmüyor kovalarından birine gerekçesiyle yerleşmiştir.
+  Sekiz düşük kademeli tanının kanonla hizalanma yolu, kanonun öngördüğü terfi
+  kanıtıyla çizilmiştir. `mimariBağı` kenarının akıbeti Founder hükmüyle ya
+  motora ve tip sicline inmiş ya da kanondan gerekçesiyle düşürülmüştür. Terfi
+  kapısı ölçümü gerçek üretim yolundan çağrılır hâle gelmiştir.
+|<--
+
+Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
+  ne: "🧭 Oturum doksan üçte bulunan kanon kapsam borcunun dört cephesi — kapsam sicili, tanı kademesi hizalaması, mimariBağı kenar kanunu ve terfi kapısı ölçümü — tek rayda plan Adımına iner" ) {
+
+  // ══ KATMAN · KANON KAPSAM BORCU: kanonun tanı sözleşmesinin motordaki karşılığı ══
+  Katman( kod: KPS-KAPSAM, kullanır: TAKIM-CEKIRDEK, ad: "kanon kapsam borcu",
+    ne: "⚖️ Kanonun tanı sözleşmesi ailesinin, yani YAS-3 ve YAS-4 hükümlerinin, motorda gerçekten karşılığı olup olmadığını dört cepheden ölçülebilir hâle getirir" ) {
+
+    AltKatman( kod: KPS-KAPSAM-K1, departman: inceleme, ad: "kapsam sicili",
+      ne: "🔍 Kanonun doksan bir zorlama iddialı maddesinin tanı kapsamının madde madde .sar gövdesine dökülmesi" ) {
+
+      Adım( kod: KPS-SIC-A01, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ YAS-3, YAS-3.4 ],
+        üretir: [ KOD-KPS-SICIL ],
+        koşu: "2026-08-24 · ÜRETİM, RED VE KABUL. Doksan bir maddenin dökümü nitelik/kanon_kapsam_sicili.sar dosyasına doksan bir Kapsama kaydı ve bir çatı kaydıyla indi; her kayıt maddesine referans kenarıyla bağlıdır ve kovasını gerekçesiyle taşır. Yerleştirme bir masa incelemesidir ve bu sınır belge bloğunda dört dürüstlük beyanıyla açıkça yaşar: oturum doksan üçün davranış ölçümü, yani on dokuz tam, altmış dokuz kısmi ve üç işlevsiz, olduğu gibi taşındı, bu Adımda ne doğrulandı ne düzeltildi; masa incelemesinin kendi toplamları elli dört tam ile otuz yedi kısmidir ve iki düzlem arasındaki fark bağımsız doğrulama borcu olarak beyanlıdır. Üretici ile denetçi ayrıldı ve ilk teslim RED aldı: bağımsız denetçi iki hiç yerleştirmesinin motor kaynağıyla çeliştiğini kanıtladı, çünkü mimari-bağı-ihlali tanısı fiziksel sarma hiyerarşisinden, tanı-terfi-kapısı-ihlali tanısı ise kuralcı üretim yolundan gerçekten ateşlemektedir; ayrıca bir tam gerekçesinin bileşim cümlesi yanlış bulundu. Üç kayıt kanıtla düzeltildi, hiç kovası boşaldı ve ikinci denetim KABUL verdi: üç düzeltme kanıta uygundur, yeni kusur doğmamıştır ve kayıt kümesi ile kova toplamları denetçinin bağımsız sayımıyla birebirdir. Denetçi sekiz tanının hedef kademe altında üretildiğini ve üçünün kanonun hata dediği yerde bilgi bastığını da bağımsız sayımla doğruladı; bu sayılar sicilin dördüncü beyanıyla uyumludur. Mekanik doğrulama ayrıca koşuldu: sicildeki kayıt kümesi kanonun doksan bir iddialı maddesiyle iki yönde birebir eşleşir, referans hedefleri kendi maddeleridir ve varlık denetimi sıfır hata ile sıfır uyarı verir. Kabul maddelerinin üçü de karşılanmıştır; kısmi ve eksik dilimlerin tamamlanması sınır gereği bu Adımın dışındadır ve KPS-KAD-A01, KPS-KEN-A01 ile KPS-TRF-A01 Adımlarında sahiplidir.",
+        ne: "🗂️ Kanonun zorlama iddiası taşıyan doksan bir maddesi bugün iki bağımsız denetçinin ölçümüyle üç dilime ayrılmış durumdadır: on dokuz madde tanı hükmünü tam karşılamaktadır, altmış dokuz madde yalnız bir dilimini karşılamaktadır ve üç madde ya ilgisiz kalmaktadır ya da hiç ateşlenmemektedir. Bu ayrımın madde madde dökümü bugüne kadar hiçbir kaynağa inmemiştir ve yalnız durum kaydındaki bir düzyazı özetinde yaşamaktadır. Bu durum üretici tarafından dürüstçe bir kusur olarak beyan edilir, çünkü sicil kurulmadan hangi maddenin gerçekten hangi kovada durduğu her okuyan için yeniden tartışma konusu olur ve aynı ölçüm sessizce yeniden yapılmak zorunda kalır." ) {
+        görev: "Doksan bir maddenin her biri kaynak kanon metninden tek tek okunur ve motorun bugünkü tanı sicili karşısında üç kovadan birine yerleştirilir. Birinci kova hükmün tarif ettiği ihlalin motorda birebir bir tanıyla karşılık bulduğu maddelerdir. İkinci kova hükmün yalnız bir bölümünün tanı ürettiği, geri kalan bölümünün motorda karşılıksız kaldığı maddelerdir. Üçüncü kova hükmün motorda hiçbir tanı üretmediği maddelerdir. Her yerleştirme gerekçesiyle birlikte kayda geçer, çünkü YAS-3.4 sicilde bulunmayan bir zorlamanın canlıymış gibi sunulmasını açıkça yasaklamaktadır ve gerekçesiz bir kova ataması aynı ihlali başka bir biçimde yeniden üretir."
+        kabul: [
+          "Doksan bir maddenin tamamı üç kovadan birine yerleştirilmiştir ve kovasız kalan madde yoktur; her yerleştirme gerekçesiyle birlikte kayıtlıdır",
+          "Sicil, önceki turun düzyazı özetinin madde madde bir döküm olmadığı gerçeğini açıkça beyan eder ve bu beyan kayıttan çıkarılmaz",
+          "Üretilen sicil YAS-3.4 gereğince yalnız motorda gerçekten karşılığı olan zorlamayı canlı gösterir; doğrulanamayan hiçbir iddia sicilde canlıymış gibi sunulmaz"
+        ]
+        sınır: "Bu Adım ölçümü yeniden yapmaz; iki bağımsız denetçinin oturum doksan üçte ulaştığı sayılar olduğu gibi taşınır ve bu Adımda ne doğrulanır ne düzeltilir. Kısmi ya da hiç ölçülmeyen maddelerin nasıl tamamlanacağı bu Adımın kapsamı dışındadır ve kendi Adımlarını bekler."
+        dokunulmaz: [ "Kanonun kaynak metni", "Motorun tanı sicili kodu" ]
+      }
+    }
+
+    AltKatman( kod: KPS-KAPSAM-K2, departman: kodlama, ad: "tanı kademesi hizalaması",
+      ne: "🔢 Sekiz tanının kanonun öngördüğü düzeyin altında üretilmesinin, bunlardan üçünün kanonun HATA dediği yerde yalnız BİLGİ basmasının kanonla hizalanması" ) {
+
+      Adım( kod: KPS-KAD-A01, durum: beklemede, öncelik: p2, bağımlı: [ KPS-SIC-A01 ], referans: [ YAS-3.1, YAS-4, YAS-4.2 ],
+        ne: "🔢 Sekiz tanı kanonun öngördüğü düzeyin altında üretilmektedir ve bunlardan üçü kanonun HATA dediği yerde yalnız BİLGİ düzeyinde basmaktadır. Bu üç tanı YAS-4 terfi kapısı atlanarak doğrudan yükseltilemez, çünkü düzey sıçraması kanıtsız terfi sayılır ve kanon bunu açıkça yasaklamaktadır." ) {
+        görev: "Kapsam sicili Adımının çıkardığı döküm kullanılarak sekiz düşük kademeli tanının kimliği tek tek doğrulanır. Her tanı için kanonun öngördüğü düzey ile motorun bugün ürettiği düzey yan yana karşılaştırılır. Düzeyi HATA olması gerekirken BİLGİ basan üç tanı için YAS-4.2'nin istediği üç kanıt, yani çalışan uygulama bağı, tekrar üretilebilir doğrulama ve yetkili açık kabul, ayrı ayrı toplanır ve hiçbiri düzyazı iddiasıyla ikame edilmez. Kalan beş tanı için de aynı üç kanıt zinciri aynı disiplinle kurulur ve terfi YAS-4'ün öngördüğü BİLGİ'den UYARI'ya, UYARI'dan HATA'ya sıralı basamaklarla yürür; hiçbir düzey atlanmaz."
+        kabul: [
+          "Sekiz düşük kademeli tanının her biri kimliklendirilmiştir ve kanonun öngördüğü düzey ile motorun bugün ürettiği düzey yan yana kayıtlıdır",
+          "Kanonun HATA dediği yerde BİLGİ basan üç tanı için YAS-4.2'nin üç kanıtı, yani uygulama bağı, tekrar üretilebilir doğrulama ve açık kabul, ayrı ayrı toplanmıştır",
+          "Hiçbir tanının düzeyi YAS-4'ün sıralı terfi basamağı atlanarak yükseltilmemiştir"
+        ]
+        sınır: "Bu Adım tanı düzeylerini kanonla hizalar; kanona yeni bir tanı eklemek ya da var olan bir tanıyı silmek bu Adımın kapsamı dışındadır."
+      }
+    }
+
+    AltKatman( kod: KPS-KAPSAM-K3, departman: kodlama, ad: "mimariBağı kenar kanunu",
+      ne: "🧩 `mimariBağı` kenarının kanonda on kez geçtiği hâlde motor kaynağında ve tip sicilinde hiç bulunmamasının çözülmesi" ) {
+
+      Adım( kod: KPS-KEN-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ ORK-1, ORK-1.1 ], onayBekler: founder,
+        ne: "🧩 `mimariBağı` kenarı ORK-1.1 gereğince kanonda on kez geçmektedir ve yalnız Blok'tan Katman'a, Katman'dan AltKatman'a ve AltKatman'dan Adım'a mimari görünürlük kurması gereken bir kenardır. Buna karşılık bu kenar bugün ne motorun kaynak kodunda ne de tip sicilinde bulunmaktadır ve bu yüzden kanonun ilan ettiği bir kural fiilen zorlanmamaktadır." ) {
+        görev: "Kanondaki on atfın her biri gezinme aracıyla tek tek doğrulanır ve `mimariBağı` kenarının motor kaynağında ve tip sicilinde gerçekten karşılıksız olduğu kanıtlanır. Ardından iki seçenek gerekçesiyle Founder'a sunulur. Birinci seçenek kenarın ORK-1.1'in tarif ettiği sınırlarla, yani yalnız ardışık Blok'tan Katman'a, Katman'dan AltKatman'a ve AltKatman'dan Adım'a mimari görünürlük kenarı olarak, motora ve tip sicline indirilmesidir. İkinci seçenek kenarın kanondan düşürülüp on atfın gerekçesiyle birlikte başka bir kenara ya da hükme yönlendirilmesidir. Hangi seçeneğin doğru olduğu bir niyet kararıdır ve üretici bu kararı kendi başına veremez."
+        kabul: [
+          "Kanondaki on atfın konumu gezinme aracıyla tek tek doğrulanmıştır ve motor kaynağı ile tip sicilinde karşılığının bulunmadığı kanıtlanmıştır",
+          "İki seçenek gerekçesiyle Founder'a sunulmuştur ve seçilen yön şerhli onay olarak bu Adımın onay kaydına işlenmiştir",
+          "Founder hükmü verildikten sonra kenar ya ORK-1.1'in sınırlarına uygun biçimde motora ve tip sicline inmiştir ya da kanondan gerekçesiyle düşürülmüştür; ara bir durumda bırakılmamıştır"
+        ]
+        sınır: "Bu Adım hükmü uygulamaz; hüküm Founder kapısıdır. Adım yalnız ölçer, seçenekleri gerekçesiyle sunar ve verilen Founder hükmünü kaydeder."
+      }
+    }
+
+    AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
+      ne: "🚪 Terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasının ve hiçbir üreticinin onu çağırmamasının gerçek üretim yoluna bağlanması" ) {
+
+      Adım( kod: KPS-TRF-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YAS-4, YAS-4.2 ],
+        ne: "🚪 Terfi kapısı ölçümü, yani YAS-4'ün terfi ve karne kapısının motordaki karşılığı, bugün yalnız bir sınama dosyasından çağrılmaktadır ve hiçbir üretici yol bu ölçümü koşmamaktadır. Bu durum YAS-4.2'nin istediği çalışan uygulama bağını fiilen boşta bırakır, çünkü yalnız sınamadan çağrılan bir ölçüm gerçek üretim davranışının kanıtı sayılamaz." ) {
+        görev: "Terfi kapısı ölçümünün motor kaynağındaki gerçek konumu gezinme aracıyla bulunur ve onu bugün çağıran tek yolun sınama dosyası olduğu kanıtlanır. Ardından ölçüm, denetim akışının gerçek üretim yoluna, yani `denetle` ve `denetle-proje` komutlarının koştuğu zincire, bağlanır ve bu bağ en az bir üretici çağrı yoluyla doğrulanır. Bağlama bittikten sonra hem çekirdek hem eklenti süiti yeniden koşulur ve ölçümün üretim yolundan da doğru sonucu verdiği kanıtlanır."
+        kabul: [
+          "Terfi kapısı ölçümünün motor kaynağındaki tanımı ve onu bugün çağıran tek sınama yolu gezinme aracıyla kanıtlanmıştır",
+          "Ölçüm en az bir üretici yoldan, yani gerçek denetim akışından, çağrılır hâle gelmiştir ve bu bağ bağımsız ölçümle doğrulanmıştır",
+          "Çekirdek ve eklenti süitleri bağlama sonrasında yeşil kalmıştır ve açık aracın denetimi sıfır hata verir"
+        ]
+        sınır: "Bu Adım yalnız çağrı yolunu üretime bağlar; terfi kapısının kendi eşik mantığı ya da hangi tanının hangi düzeye terfi edeceği bu Adımın kapsamı dışındadır."
+      }
+    }
+  }
+}
+
+// ── Meyve ilanı — kapsam sicili Adımının ürettiği kayıt gövdesi ──
+Kod( kod: KOD-KPS-SICIL, dosya: "is/nitelik/kanon_kapsam_sicili.sar",
+  ne: "⚖️ Kanon kapsam sicili — doksan bir zorlama iddialı maddenin, motorun tanı sicili karşısındaki masa incelemesi dökümü; her kayıt maddesine referans kenarıyla bağlıdır ve dört dürüstlük beyanı belge bloğunda yaşar" )

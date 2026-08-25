@@ -1,0 +1,10 @@
+{
+  "name": "@sarmal/arac",
+  "version": "0.1.0",
+  "description": "Sarmal yüz üreteçleri — kanonik kaydı okur ve işaretli bölgeyi idempotent tazeler. Bu dosya yalnız modül türünü ilan eder (ESM); çalışma zamanında sıfır bağımlılık taşır ve motorun derleme boru hattına girmez.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "ogretim-uret": "node ogretim-uret.ts"
+  }
+}

@@ -1,0 +1,195 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/mim.sar — 🏗️ MİMARİ bölümü · v1 kanonu (15 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### MIM-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Mimari Omurga, ÇalışmaAlanından proje içi dosyaya uzanan üretim ağacının kademelerini, her kademenin tekil sorumluluğunu ve aralarındaki yapısal değişmezleri tanımlayan kanonik kaynaktır; omurgaya aykırı ikinci bir üretim hiyerarşisi kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [MIM, TIP, ORK].
+**Gerekçe:** Tek bir kuzey yıldızı olmadan aynı kavram klasör, plan ve graf yüzlerinde farklı ebeveynlere bağlanır; bu madde kademe anlamının ve sahipliğin yüzeyler arasında sürüklenmesini önler.
+**Örnek:** Kanonik okuma: `ÇalışmaAlanı → KimlikKökü → Proje → Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya`.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: MIM-0, durum: kilitli,
+       ne: "MIM-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Mimari Omurga, ÇalışmaAlanından proje içi dosyaya uzanan üretim ağacının kademelerini, her kademenin tekil sorumluluğunu ve aralarındaki yapısal değişmezleri tanımlayan kanonik kaynaktır; omurgaya aykırı ikinci bir üretim hiyerarşisi kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [MIM, TIP, ORK].",
+       gerekçe: "Tek bir kuzey yıldızı olmadan aynı kavram klasör, plan ve graf yüzlerinde farklı ebeveynlere bağlanır; bu madde kademe anlamının ve sahipliğin yüzeyler arasında sürüklenmesini önler." )
+
+-->|
+### MIM-1 · Kanonik Omurga Akışı [HATA]
+**Hüküm:** Her üretim ağacı `ÇalışmaAlanı→Auth→Proje[*]→Faz→Blok→Katman→AltKatman→Adım→üretir→Meyve→dosya` akışını korur; Auth kademesi ortak veya Projeye özgü kimlik yapısıyla karşılanır, izinli bir esneklik açıkça beyan edilmedikçe kademe atlanamaz, çocuk kapsayıcısını saramaz ve yürütme sırası kapsayıcı kademelere yazılamaz; dayanak: MIM-0; ilgili: [MIM, TIP, ORK].
+**Gerekçe:** Kademe atlama sorumlulukları birbirine karıştırır; kapsayıcıya yazılan sıra kenarı ise gerçek yürütme birimlerini gizleyerek ters ve çözülemeyen bağımlılıklar doğurur.
+**Örnek:** Doğru: `Faz { Blok { Katman { AltKatman { Adım } } } }`; yanlış: `Faz { Adım }` veya Blok üzerinde yürütme bağı kurmak.
+**Zorlama:** `izinsiz-sarma` · HATA · “İzin verilmeyen yerleşim; doğru ebeveyn altına taşı.” · yüzey: Problems, satır-lensi ve tek-dosya CLI; `kapsayıcı-kenar` · HATA · “Sıra çocuklardan kurulur; kenar Adım'da olmalı.” · yüzey: proje CLI; format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: MIM-1, durum: kilitli,
+       ne: "MIM-1 · Kanonik Omurga Akışı [HATA]",
+       karar: "Her üretim ağacı `ÇalışmaAlanı→Auth→Proje[*]→Faz→Blok→Katman→AltKatman→Adım→üretir→Meyve→dosya` akışını korur; Auth kademesi ortak veya Projeye özgü kimlik yapısıyla karşılanır, izinli bir esneklik açıkça beyan edilmedikçe kademe atlanamaz, çocuk kapsayıcısını saramaz ve yürütme sırası kapsayıcı kademelere yazılamaz; dayanak: MIM-0; ilgili: [MIM, TIP, ORK].",
+       gerekçe: "Kademe atlama sorumlulukları birbirine karıştırır; kapsayıcıya yazılan sıra kenarı ise gerçek yürütme birimlerini gizleyerek ters ve çözülemeyen bağımlılıklar doğurur." )
+
+-->|
+### MIM-1.1 · Çalışma Alanı, Auth ve Proje Kökleri [HATA]
+**Hüküm:** ÇalışmaAlanı en az bir bağımsız Proje kökünü kapsar; ortak Auth kullanıldığında bunu KimlikKöküyle ilan etmek zorunludur, Founder Projesi için ortak Auth zorunlu ve diğer kullanıcıların Projeleri için tercihe bağlıdır; her üretken ağacın tanı, graf ve sahiplik kimliği kendi Proje düğümünden türer ve ortak kimlik kullanımı Proje kimliklerini birleştiremez; dayanak: MIM-1; ilgili: [MIM, YAS, ORK].
+**Gerekçe:** Fiziksel dizini ya da ortak Auth kaydını proje kimliği saymak, aynı çalışma alanındaki bağımsız ürünlerin tanılarını ve graflarını birbirine karıştırır.
+**Örnek:** `ÇalışmaAlanı( kod: CAL-01 ) { KimlikKökü( kod: KMK-01 ) Proje( kod: PRJ-A ) Proje( kod: PRJ-B ) }`; PRJ-A ile PRJ-B ayrı kimliklerdir.
+**Zorlama:** Yeni tanı önerisi `proje-köksüz-üretim` · HATA · “Üretken düğüm bir Proje köküne bağlı değil; kimlik ve sahiplik türetilemez.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural çalışmaAlanıAuthVeProjeKökleri( kod: MIM-1.1,
+       ne: "MIM-1.1 · Çalışma Alanı, Auth ve Proje Kökleri [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1 )
+
+-->|
+### MIM-1.2 · Faz ve Zaman Ekseni [HATA]
+**Hüküm:** Faz, Proje içindeki zaman dilimini kurar ve her Blok tam olarak yürürlükte olduğu Faz kapsamında yer alır; Faz dışında duran ya da yalnız düzyazıyla bir zamana atanan Blok geçerli sayılmaz; dayanak: MIM-1; ilgili: [MIM, STR, ORK].
+**Gerekçe:** Blok ile zaman dilimi arasındaki yapısal bağ koparsa hangi iş gövdesinin ne zaman yürürlükte olduğu belirlenemez ve yol haritası gerçek durumu yansıtmaz.
+**Örnek:** Doğru: `Faz( kod: FAZ-01 ) { Blok( kod: BLK-01 ) }`; yanlış: Proje altında Fazsız `Blok( kod: BLK-01 )`.
+**Zorlama:** `fazsız-blok` · HATA · “Blok, Faz'ın zaman diliminde yer almalı.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural fazVeZamanEkseni( kod: MIM-1.2,
+       ne: "MIM-1.2 · Faz ve Zaman Ekseni [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1,
+       tanı: [ fazsız-blok ] )
+
+-->|
+### MIM-1.3 · Blok Kavuşum Gövdesi [UYARI]
+**Hüküm:** Blok tek bir teknolojinin kabı olarak kullanılamaz; uçtan uca bir iş sonucunu üretmek üzere farklı somut teknolojilere bağlı birden çok Katmanı aynı dikey gövdede kavuşturur ve katmanlar arasındaki sözleşme noktasını görünür kılar; dayanak: MIM-1; ilgili: [MIM, TIP, ORK].
+**Gerekçe:** Teknoloji başına Blok açmak iş sonucunu yatay silolara böler; önyüz, arkayüz ve koruma katları ayrı ilerlerken kavuşum drift'i gizli kalır.
+**Örnek:** `Blok( kod: BLK-KIMLIK ) { Katman( kod: KAT-ARAYUZ, kullanır: TEK-ARAYUZ ) Katman( kod: KAT-SERVIS, kullanır: TEK-SERVIS ) Katman( kod: KAT-GUVENLIK, kullanır: TEK-GUVENLIK ) }`.
+**Zorlama:** `silo-blok` · UYARI · “Blok dikey dilim değil, tek yüzlü silo olarak kalmış.”; `kavuşumsuz-dilim` · UYARI · “Önyüz ve arkayüz var, fakat kavuşum bağı yok.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural blokKavuşumGövdesi( kod: MIM-1.3,
+       ne: "MIM-1.3 · Blok Kavuşum Gövdesi [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1,
+       tanı: [ kavuşumsuz-dilim, silo-blok ] )
+
+-->|
+### MIM-1.4 · Katman Teknoloji Tekilliği [HATA]
+**Hüküm:** Her Katman tam olarak bir somut Teknolojiye `kullanır` bağıyla bağlanır ve yalnız o teknoloji dalının mimari sınırını temsil eder; teknolojisiz ya da birden çok teknolojiye bağlı Katman kurulamaz, böyle bir gereksinim ayrı Katmanlara bölünür; dayanak: MIM-1; ilgili: [MIM, TIP, ORK].
+**Gerekçe:** Teknolojisiz Katmanın sahipliği belirsizdir; çok teknolojili Katman ise derleme, sınama ve sorumluluk sınırlarını birbirine karıştırır.
+**Örnek:** Doğru: `Katman( kod: KAT-ARAYUZ, kullanır: TEK-ARAYUZ )`; yanlış: `Katman( kod: KAT-KARISIK, kullanır: [ TEK-ARAYUZ, TEK-SERVIS ] )`.
+**Zorlama:** `katmansız-teknoloji` · UYARI · “Katman teknoloji bağı taşımıyor; Katman bir teknoloji dilimidir.” · yüzey: proje CLI; yeni tanı önerisi `çok-teknolojili-katman` · HATA · “Katman birden çok Teknoloji kullanıyor; her teknoloji için ayrı Katman kur.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural katmanTeknolojiTekilliği( kod: MIM-1.4,
+       ne: "MIM-1.4 · Katman Teknoloji Tekilliği [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1,
+       tanı: [ katmansız-teknoloji ] )
+
+-->|
+### MIM-1.5 · AltKatman Departmanları [UYARI]
+**Hüküm:** Her AltKatman `planlama`, `kodlama`, `sınama`, `inceleme` veya `güvenlik` çekirdek departmanlarından tam olarak birini temsil eder; yeni bir departman yalnız ÇalışmaAlanı örtüsünün katkılı enum genişletmesiyle eklenebilir, taban küme yerinde değiştirilemez; dayanak: MIM-1; ilgili: [MIM, TIP, YAS].
+**Gerekçe:** Serbest metinli departman adları aynı sorumluluğu farklı etiketlere böler; tabanı değiştiren yerel eklemeler ise çalışma alanları arasında sınıflama drift'i yaratır.
+**Örnek:** `AltKatman( kod: ALT-SINAMA, departman: sınama )`; yerel `uyumluluk` departmanı kullanılacaksa değer önce ÇalışmaAlanı örtüsüne katkılı olarak eklenir.
+**Zorlama:** `geçersiz-enum` · UYARI · “Departman değeri izinli kümede değil; geçerli değerlerden birini kullan veya örtüyle genişlet.” · yüzey: Problems, satır-lensi ve tek-dosya CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural altKatmanDepartmanları( kod: MIM-1.5,
+       ne: "MIM-1.5 · AltKatman Departmanları [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1,
+       tanı: [ geçersiz-enum ] )
+
+-->|
+### MIM-1.6 · Adım Atomikliği ve Kabulü [UYARI]
+**Hüküm:** Her Adım tek bir ajan oturumunda yürütülebilen, tam olarak bir kabul kapısıyla sonuçlanan ve en az bir Meyve teslim eden en küçük yürütme birimidir; birden çok bağımsız kabul ya da oturum gerektiren iş ayrı Adımlara bölünür; dayanak: MIM-1; ilgili: [MIM, OGR, ORK].
+**Gerekçe:** Büyük ve çok kapılı Adımlar ilerlemeyi ölçülemez kılar; kabulü veya teslimi olmayan Adımlar ise tamamlanma iddiasını kanıtsız bırakır.
+**Örnek:** `Adım( kod: ADM-01, kabul: [ "Kimlik isteği başarıyla doğrulanır." ], üretir: [ MEY-01 ] )`; ikinci bağımsız kabul ayrı bir Adıma taşınır.
+**Zorlama:** Yeni tanı önerisi `adım-atomikliği` · UYARI · “Adım tek oturum, tek kabul kapısı ve en az bir Meyve sözleşmesini sağlamıyor; işi böl veya eksik teslimi beyan et.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural adımAtomikliğiVeKabulü( kod: MIM-1.6,
+       ne: "MIM-1.6 · Adım Atomikliği ve Kabulü [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1 )
+
+-->|
+### MIM-2 · Meyve ve Üretim Yeri [HATA]
+**Hüküm:** Her Meyve tam olarak bir Adımın `üretir` bağıyla doğurduğu izlenebilir sonucu temsil eder; ürün grafı Meyvenin üreten Adımını, türünü ve varsa proje içi dosya yerini birlikte gösterir, üreticisi belirsiz Meyve kabul edilmez; dayanak: MIM-0; ilgili: [MIM, TIP, YUZ, ORK].
+**Gerekçe:** Sonuç ile onu doğuran iş arasındaki bağ koparsa değişikliğin sahibi, kabul kanıtı ve etki zinciri bulunamaz; disk ürünü planın önüne geçer.
+**Örnek:** `Adım( kod: ADM-01, üretir: [ MEY-KOD-01 ] )` ve `Meyve( kod: MEY-KOD-01, tür: Kod, dosya: "src/kimlik.sar" )` aynı üretim kökeni zincirini kurar.
+**Zorlama:** `yetim-meyve` · UYARI · “Diskte yaşayan kod plana bağlı değil; kod plandan önde.” · yüzey: proje CLI; yeni tanı önerisi `üretimsiz-meyve` · HATA · “Meyve tam olarak bir Adımın üretir bağına bağlı değil; üretim yeri izlenemiyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: MIM-2, durum: kilitli,
+       ne: "MIM-2 · Meyve ve Üretim Yeri [HATA]",
+       karar: "Her Meyve tam olarak bir Adımın `üretir` bağıyla doğurduğu izlenebilir sonucu temsil eder; ürün grafı Meyvenin üreten Adımını, türünü ve varsa proje içi dosya yerini birlikte gösterir, üreticisi belirsiz Meyve kabul edilmez; dayanak: MIM-0; ilgili: [MIM, TIP, YUZ, ORK].",
+       gerekçe: "Sonuç ile onu doğuran iş arasındaki bağ koparsa değişikliğin sahibi, kabul kanıtı ve etki zinciri bulunamaz; disk ürünü planın önüne geçer." )
+
+-->|
+### MIM-2.1 · Dosya-Zorunlu Meyveler [HATA]
+**Hüküm:** `Kod`, `Ekran`, `Uç` ve `Sözleşme` türündeki her Meyve proje kökü içinde çözülen somut `dosya` değerini beyan eder; boş, proje dışına taşan veya diskte karşılığı bulunmayan yol teslim sayılmaz; dayanak: MIM-2; ilgili: [MIM, TIP, YAS, YUZ].
+**Gerekçe:** Dosya beyanı olmayan somut ürün graf yüzünde var görünürken diskte bulunamaz; bu durum kabul kapısını ve plan↔gerçek mutabakatını bozar.
+**Örnek:** Doğru: `Meyve( kod: MEY-01, tür: Sözleşme, dosya: "sozlesmeler/kimlik.sar" )`; yanlış: `Meyve( kod: MEY-01, tür: Sözleşme )`.
+**Zorlama:** `doc-drift` · UYARI · “Tamamlanan Adımın Meyvesi diskte yok; plan gerçeğin önünde.” · yüzey: proje CLI; yeni tanı önerisi `meyve-dosyası-eksik` · HATA · “Dosya-zorunlu Meyve somut proje-içi dosyasını beyan etmiyor veya yol diskte çözülmüyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural dosyaZorunluMeyveler( kod: MIM-2.1,
+       ne: "MIM-2.1 · Dosya-Zorunlu Meyveler [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-2,
+       tanı: [ doc-drift ] )
+
+-->|
+### MIM-2.2 · Dosya Muafiyetleri [BİLGİ]
+**Hüküm:** `Karar`, `Onay` ve `dış-çıktı` türündeki Meyveler kanonik muafiyet kataloğunda açıkça yer aldıkları için dosya beyanından bağışık tutulabilir; katalog dışında serbest muafiyet üretilemez; dayanak: MIM-2; ilgili: [MIM, TIP, YAS].
+**Gerekçe:** Her sonuç fiziksel dosya değildir; buna karşın örtük muafiyetler somut teslimlerin kaybolmasına yol açacağından istisna kümesi kapalı ve görünür tutulur.
+**Örnek:** `Meyve( kod: MEY-ONAY-01, tür: Onay )` dosyasız olabilir; `Meyve( kod: MEY-UÇ-01, tür: Uç )` bu muafiyeti kullanamaz.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural dosyaMuafiyetleri( kod: MIM-2.2,
+       ne: "MIM-2.2 · Dosya Muafiyetleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-2 )
+
+-->|
+### MIM-3 · Yapı-Önce ve Disk Mutabakatı [HATA]
+**Hüküm:** Proje yapısı kod veya içerik üretilmeden önce kanonik anadizinde ilan edilir; fiziksel klasör ve dosyalar ilandaki yer, ad, harf büyüklüğü ve sahiplik sınırlarıyla birebir uyuşur, ilan ile diskten hiçbiri diğerinden bağımsız gerçek sayılamaz; dayanak: MIM-0; ilgili: [MIM, DIL, YAS].
+**Gerekçe:** Disk önden giderse yetim yapı, ilan önden gidip uygulanmazsa hayalî yapı oluşur; yol ve harf farkları da çalışma ortamları arasında sessiz kırılma yaratır.
+**Örnek:** `Kitaplık( kod: KTP-KAYNAK, yol: "src/" ) { Raf( kod: RAF-KIMLIK, yol: "kimlik/" ) }` ilanı diskte `src/kimlik/` ile aynı yerde ve aynı adla bulunur.
+**Zorlama:** `beyansız-yapı` · HATA · “Diskteki yapı anadizinde ilan edilmemiş; plandan kopuk.”; `yer-uyuşmazlığı` · HATA · “İlan edilen yapı kanonik yerinde değil.”; `kayıp-yapı` · HATA · “İlanın diskte karşılığı yok.”; `bildirilmemiş-dosya` · UYARI · “Diskte yetim dosya veya klasör var.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: MIM-3, durum: kilitli,
+       ne: "MIM-3 · Yapı-Önce ve Disk Mutabakatı [HATA]",
+       karar: "Proje yapısı kod veya içerik üretilmeden önce kanonik anadizinde ilan edilir; fiziksel klasör ve dosyalar ilandaki yer, ad, harf büyüklüğü ve sahiplik sınırlarıyla birebir uyuşur, ilan ile diskten hiçbiri diğerinden bağımsız gerçek sayılamaz; dayanak: MIM-0; ilgili: [MIM, DIL, YAS].",
+       gerekçe: "Disk önden giderse yetim yapı, ilan önden gidip uygulanmazsa hayalî yapı oluşur; yol ve harf farkları da çalışma ortamları arasında sessiz kırılma yaratır." )
+
+-->|
+### MIM-3.1 · İzinli Sarma ve Kademe Bütünlüğü [HATA]
+**Hüküm:** Her düğüm yalnız kanonda izin verilen ebeveyn altında sarılır; dosyayı kısaltmak, içeriği yakın tutmak veya geçici iş kolaylığı mimari kademe atlamaya gerekçe olamaz ve yaprak tipler çocuk taşıyamaz; dayanak: MIM-3; ilgili: [MIM, TIP, YAS].
+**Gerekçe:** Yerel kolaylık için değiştirilen sarma, aynı tipin projeden projeye farklı anlam kazanmasına ve genel denetimlerin güvenilmez olmasına yol açar.
+**Örnek:** Doğru: `Katman { AltKatman { Adım } }`; yanlış: `Proje { Adım }` veya `Adım { Katman }`.
+**Zorlama:** `izinsiz-sarma` · HATA · “İzin verilmeyen yerleşim; düğümü izinli ebeveyn altına taşı.” · yüzey: Problems, satır-lensi ve tek-dosya CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural izinliSarmaVeKademeBütünlüğü( kod: MIM-3.1,
+       ne: "MIM-3.1 · İzinli Sarma ve Kademe Bütünlüğü [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-3,
+       tanı: [ izinsiz-sarma ] )
+
+-->|
+### MIM-3.2 · Raf ve Kitaplık Yapısı [UYARI]
+**Hüküm:** Kitaplık ana fiziksel alanı, Raf ise onun içindeki sorumluluk bölümünü ilan eder; anadizin en az bir klasör yapısını bu düğümlerle gösterir ve üretken düğümlerin kanonik yerini içerik anlatısından ayrı tutar; dayanak: MIM-3; ilgili: [MIM, TIP, YUZ].
+**Gerekçe:** Fiziksel yapı içerik düğümlerinden sezilmeye bırakılırsa iskelet üretimi ile disk denetimi farklı yollar hesaplar ve anadizin plan içeriğiyle şişer.
+**Örnek:** `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder; Ekran içeriği ayrı kaynakta yaşar.
+**Zorlama:** `rafsız-anadizin` · UYARI · “Proje kökü hiçbir klasör yapısı ilan etmiyor; Kitaplık veya Raf ekle.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural rafVeKitaplıkYapısı( kod: MIM-3.2,
+       ne: "MIM-3.2 · Raf ve Kitaplık Yapısı [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-3,
+       tanı: [ rafsız-anadizin ] )
+
+-->|
+### MIM-4 · Doğuş Omurgası ve Yapı Kural Aileleri [BİLGİ]
+**Hüküm:** Doğuş omurgası ile yapı-önce kural ailelerinin Proje kökü, teknoloji ilanı, plan zinciri, kavuşum, üretim yeri ve disk aynasına ilişkin bütün hükümleri bu bölümde kataloglanır; başka bölümler bu hükümleri ayrı bir mimari kaynak olarak yineleyemez; dayanak: MIM-0; ilgili: [MIM, TIP, YAS, ORK].
+**Gerekçe:** Aynı yapı hükmünün birden çok kural ailesinde sahiplenilmesi, hangi tanının yetkili olduğunu belirsizleştirir ve terfi sırasında çift zorlama yaratır.
+**Örnek:** Proje kökü ve disk aynası MIM altında tanımlanır; tip alanları TIP, rejim istisnası YAS ve yürütme bağı ORK tarafından yalnızca kendi sözleşmesi kadar tamamlanır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural doğuşOmurgasıVeYapıKuralAileleri( kod: MIM-4,
+       ne: "MIM-4 · Doğuş Omurgası ve Yapı Kural Aileleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-0 )

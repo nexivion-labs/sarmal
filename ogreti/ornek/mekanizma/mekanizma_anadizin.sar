@@ -1,0 +1,32 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// mekanizma/mekanizma_anadizin.sar — 🔩 MEKANİZMA KATMANI referansı (TIP-1.4)
+//
+//   Cross-cutting altyapının (governance·RBAC·telemetri) plana DAĞITILMADAN,
+//   BİR KEZ Mekanizma olarak ilan edilip çok Adım'ca REFERANS alınmasının canlı
+//   örneği. Omurga (MIM-1): Yasa → 🔩 Mekanizma → Plan. Adım İÇERMEZ, referans alır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🔩 Mekanizma tipinin (TIP-1.4) uçtan-uca dogfood'u: kesişen altyapı modülleri
+  `ortak/mekanizma/` rafında BİR KEZ ilan edilir; modüller arası bağımlı-DAG
+  ile sıralanır; plan Adım'ı onları `çağır`/`bağımlı` ile REFERANS alır (dağıtmaz).
+
+  ## Kapsam
+  📦 ortak/mekanizma/ (RBAC·governance·telemetri Mekanizmaları) · plan/ (referans
+  eden Adım). KAPSAM DIŞI: gerçek uygulama — bu bir DESEN referansıdır.
+
+  ## Sonuç
+  ✅ Kabul: modül-DAG (MEK-TEL→MEK-GOV→MEK-RBAC) çözülür; Adım MEK-GOV'a referansla
+  hem kavuşur hem `konisiz-adım`'ı temizler; `denetle` sıfır hatayla geçer.
+|<--
+ÇalışmaAlanı(
+  kod: CAL-MEK,
+  ad:  "ornek-mekanizma",
+  dil: tr,
+  ne:  "Mekanizma katmanı (TIP-1.4) dogfood — cross-cutting altyapı tek-kaynak+referans",
+) {
+  // ── Raflar (kod=KANUN, klasör=ayna) ────────────────────────────────────────
+  Raf( kod: RAF-MEK,  yol: "ortak/mekanizma/", ne: "🔩 mekanizma modülleri — BİR KEZ ilan, çok Adım çağırır (TIP-1.4)" )
+  Raf( kod: RAF-PLAN, yol: "plan/",            ne: "plan — Adım mekanizmaları REFERANS alır (içermez)" )
+}

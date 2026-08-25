@@ -1,0 +1,51 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/arac_yonlendirme_becerisi.sar — 🧭 ARAÇ YÖNLENDİRME BECERİSİ
+//
+//   Doğuş: 2026-07-27 canlı ölçümü. Kontrolcü asistan o gün Sarmal'ın on sekiz
+//   MCP aracından yalnız yedisini kullandı. Karşılama kartı on sekizini de
+//   sayıyordu ve asistan o kartı okumuştu — yani LİSTE DAVRANIŞI DEĞİŞTİRMİYOR.
+//
+//   Bu kart listeyi tekrarlamaz. Soruyu araca bağlar ve her satıra o gün gerçekten
+//   yapılmış hatayı anti-desen olarak yazar. Değiştiren şey anti-desendir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-ARAC-YONLENDIRME, ne: "Soruyu ham taramaya değil doğru Sarmal aracına yöneltme" )
+
+-->|
+  ## Amaç
+  🎯 Ajanın, cevabı bir Sarmal aracının kesin verdiği soruyu ham dosya taramasıyla
+  cevaplamasını engellemek. Çözdüğü problem: grep kırık atfı, yinelenen tanımı ve
+  kopuk ucu göremez; gördüğünü sanan ajan eksik veriyle hüküm verir.
+
+  ## Kapsam
+  Bir KOD'un izini sürme, etki ölçme, kapı hükmü verme, şema öğrenme ve kural
+  alıntılama. Beş soru, beş araç, beş anti-desen.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle çalışan ajanın her sayısal iddiası hangi araçla ölçüldüğünü
+  söyler. Ham tarama yalnız hiçbir aracın cevaplamadığı sorularda kullanılır ve
+  kullanıldığında gerekçesi yazılır.
+|<--
+
+Beceri( kod: BCR-ARAC-YONLENDIRME,
+        sağlar: YTN-ARAC-YONLENDIRME,
+        yığın: evrensel,
+        anlatır: [ "kırık-referans", "karşılıksız-metin-atfı", "doğrulanamayan-tanı-iddiası" ],
+        ne: "Soruyu ham `grep` yerine cevabı kesin veren Sarmal aracına yöneltir: iz sürme `gezin`, etki `etki`, kapı hükmü `denetle-proje`, şema `siniflama`, kural metni `kurallar`",
+        neZaman: "Bir KOD, tip, kural ya da kapı hükmü hakkında sayısal bir şey söylemeden ÖNCE; ham tarama yapma refleksi geldiği anda",
+        kurallar: [
+          "Bir KOD nerede tanımlı ve kimler atıf veriyor sorusu `gezin`e gider — grep yinelenen tanımı ve kırık atfı göremez, gezin ikisini de dürüstçe raporlar",
+          "Bu düğüme dokunursam ne kırılır sorusu `etki`ye gider — geçişli ardılları elle tahmin etmek eksik kalır",
+          "Proje bütünü yeşil mi sorusu `denetle-proje`ye gider ve FİLTRESİZ koşulur; hata ile uyarı AYRI AYRI sayılır, çıkış kodundan ya da karne satırından türetilmez",
+          "Bu tipin şeması ne sorusu `siniflama`ya gider — örnek dosyadan kopyalamak bayat şema öğretir",
+          "Bir kural ya da madde alıntılanacaksa `kurallar` veya `gezin` ile kaynağından OKUNUR; hafızadan alıntı yasaktır",
+          "Ham tarama yalnız hiçbir aracın cevaplamadığı sorularda meşrudur (git farkı, bayt karşılaştırma, TypeScript kaynağı içi arama) ve kullanıldığında gerekçesi yazılır"
+        ],
+        kabul: "Yanıt, soruya uygun Sarmal aracının komutunu ve filtresiz ölçüm çıktısını gösterir; ham tarama kullanılmışsa hiçbir özel aracın soruyu karşılamadığı gerekçesi açıkça yazılmıştır",
+        örnek: "Göç planının kök kodunu ararken: `graf { dizin }` kodsuz çağrılır ya da `bul { metin }` sorulur → kök tek çağrıda gelir. Yanlış kodla çağırıp hata alınca doğru çağrıyı yapmak, grep'e düşmekten ucuzdur.",
+        antiDesen: "2026-07-27'de gerçekten yapıldı: kontrolcü `graf`ı yanlış kodla çağırdı, hata aldı, aracı düzgün çağırmak yerine `grep`e düştü. Aynı gün `etki` aracı hiç çağrılmadı ve emekli tanıların etkisi elle tahmin edildi.",
+        uygular: ANY-KONTROLCU )
+
+Tetikleyici( kod: TTK-ARAC-YONLENDIRME, tetikler: BCR-ARAC-YONLENDIRME,
+             koşul: adım.durum == geliştirmede,
+             ne: "İş başlarken araç haritası koniye düşer — ajan ham taramaya düşmeden doğru aracı bilir" )

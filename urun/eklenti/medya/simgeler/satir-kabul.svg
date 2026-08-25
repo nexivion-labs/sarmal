@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kabul: ölçütlerin çerçevesi ve içindeki onay çizgisi. -->
+  <rect x="4.2" y="4.2" width="15.6" height="15.6" rx="1.8"/>
+  <path d="M8.2 12.4 L11 15.2 L15.8 9.6"/>
+</svg>

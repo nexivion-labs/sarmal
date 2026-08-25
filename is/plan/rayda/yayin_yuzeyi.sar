@@ -1,0 +1,108 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/yayin_yuzeyi.sar
+//   📜 AÇIK KAYNAK YAYIN YÜZEYİ — deponun kamuya dönük yüzü
+//   Minimum-güçlü ilk çıkış kapısının SAYMADIĞI işler burada toplanır. Kapı üç şart ölçer
+//   (denetim · dogfood · İngilizce) ama yayın günü geliştiricinin ilk gördüğü
+//   şeyleri saymaz: lisans, katkı yolu, davranış kuralı, güvenlik bildirimi.
+//   Ölçüm 2026-07-29: bu dosyaların hiçbiri depo kökünde yoktur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Sarmal açık kaynak olarak yayımlandığında bir geliştiricinin ilk karşılaştığı yüzeyi
+kurmak. Bu yüzey kodun kendisi değildir; kodu kullanmaya izin veren, katkıyı kabul eden
+ve güvenlik açığının nereye bildirileceğini söyleyen belgelerdir. Bugün depo kökünde
+bunların hiçbiri yoktur ve eldeki iki metin birbiriyle çelişmektedir.
+
+## Kapsam
+Depo kökünde yaşayacak dört yayın belgesi ile eklentinin lisans dosyasının bunlarla
+hizalanması. Lisans HÜKMÜ bu Bloğun kapsamındadır fakat en sona bırakılmıştır; geri
+kalan üç belge hükümden bağımsız olarak hazırlanabilir.
+
+## Sonuç
+Yayın günü depo kökü bir yabancı geliştiricinin beklediği belgelerle karşılar ve hiçbir
+iki metin birbiriyle çelişmez. Lisans hükmü verilene kadar Blok kapanmaz.
+|<--
+Blok( kod: BLK-YAYIN-YUZEYI, mevsim: FAZ-2026-AGUSTOS,
+      ne: "📜 Deponun kamuya dönük yüzü — lisans, katkı, davranış ve güvenlik belgeleri" ) {
+
+  Katman( kod: YYZ-BELGE, ad: "yayin-belgeleri", ne: "yayın belgeleri katmanı",
+          kullanır: TEK-SARMAL ) {
+
+    AltKatman( kod: YYZ-BELGE-PLN, ad: "planlama", departman: planlama,
+               ne: "yayın belgelerinin hazırlanma modülü" ) {
+
+      Adım( kod: YYZ-A01, durum: tamamlandı, bağımlı: [],
+        koşu:     "2026-07-29 · KAPANIŞ. Sayım tarayarak yapıldı, tahminle değil; dökümü `geneldurum/yeni-omurga/yayin_yuzeyi_sayimi.md` dosyasındadır. ÇELİŞKİ DÖRT METİNDE, BEŞ SATIRDADIR: kök giriş belgesi `_Sarmal/` klasörünü açık kaynak ilan ediyor; eklentinin lisans dosyası 'tüm hakları saklıdır' ve 'kapalı geliştirme' diyor, kopyalama ile dağıtımı yasaklıyor; eklentinin giriş belgesi 'kapalı geliştirme sürümü' diyor; paket bildirimindeki makine okunur lisans alanı da aynı kapalı metne işaret ediyor. Yani bir metin açık diyor, dördü kapalı diyor. Lisans dosyası kendi içinde 'yayın lisansı v1.0 ile ilan edilecektir' diye söz veriyor, dolayısıyla v1.0 çıktığında o cümle ya gerçekleşmiş ya bozulmuş olacaktır. DEPO KÖKÜNDE dört yayın belgesinin hiçbiri yoktur. DİL KARARI: çift dilli TEK dosya — önce Türkçe bölüm, hemen ardından İngilizce bölüm. Üç gerçek tartıldı: DIL-1 anayasa rütbesinde kanonik kaynağın Türkçe öncelikli olduğunu ilan eder, yayın sıralaması önce Türkçe topluluk sonra küresel olarak kararlaştırılmıştır, Founder'ın hükmü ise yabancı geliştiricinin Sarmal'ı çeviri ürünü gibi görmemesidir. Tek dosyada iki bölüm üçünü birden karşılar. İki ayrı dosya REDDEDİLDİ ve gerekçesi bu depoda ölçülmüş bir olgudur: iki kaynak tutulunca biri güncellenir öteki unutulur — bugün lisans yüzeyinde bilfiil yaşanan tam olarak budur. BULUNAMAYAN BİLGİ: depoda gerçek bir iletişim adresi yoktur, taramada çıkan bütün adresler örnektir. Adresin ne olacağı Founder'ın hükmüdür ve bir gizlilik kararıdır: kişisel adres mi, yalnız bu iş için açılmış adres mi? Belgelere yer tutucu konur.",
+        referans: [ STR-3, STR-3.1 ],
+        üretir:   [ BLG-CELISKI-RAPORU ],
+        ne:       "🔍 Deponun kamuya dönük yüzündeki ÇELİŞKİYİ kayda geçirmek ve kapsamı saymak. Ölçüm 2026-07-29 tarihinde alındı ve şudur: depo kökünde lisans, katkı, davranış kuralı ve güvenlik bildirimi dosyalarının hiçbiri yoktur. Buna karşılık iki metin birbiriyle çelişmektedir — eklentinin kendi lisans dosyası 'Tüm hakları saklıdır, yayın lisansı v1.0 ile ilan edilecektir' derken, kök giriş belgesi aynı klasörü '🟢 Açık kaynak (open-core)' diye ilan etmektedir. Bu çelişki bugün deponun kamuya açılan yüzünde durmaktadır." ) {
+        görev: [
+          "Çelişkinin bulunduğu bütün yerleri say ve listele: kök giriş belgesi, eklenti lisans dosyası, eklenti paket bildirimindeki lisans alanı, eklentinin kendi giriş belgesi ve varsa değişiklik günlüğü. Kaç metnin ne dediğini tek tek yaz; tahmin etme, tara.",
+          "Yayın günü kaç dosyanın doğması gerektiğini karara bağla ve her birinin hangi soruyu yanıtladığını yaz: lisans kullanma iznini, katkı belgesi katkının nasıl kabul edildiğini, davranış kuralı topluluğun kuralını, güvenlik bildirimi açığın nereye bildirileceğini yanıtlar.",
+          "Bu belgelerin dilini karara bağla. Depo Türkçe-öncedir fakat bu dört belgenin okuru yabancı geliştiricidir; hangi dilde ya da hangi ikilikte yazılacağı ölçülerek kararlaştırılır ve gerekçesi yazılır."
+        ]
+        kabul: [
+          "Çelişkinin bulunduğu bütün metinler sayılarak listelenmiştir ve hiçbiri tahminle eklenmemiştir.",
+          "Doğacak dosyaların listesi ve her birinin yanıtladığı soru yazılmıştır.",
+          "Belgelerin dili gerekçesiyle kararlaştırılmıştır."
+        ]
+        sınır: "Bu Adım hiçbir yayın belgesini YAZMAZ ve lisans hükmünü VERMEZ; yalnız kapsamı sayar ve çelişkiyi kayda geçirir."
+      }
+
+      Adım( kod: YYZ-A02, durum: tamamlandı, bağımlı: [ YYZ-A01 ],
+        koşu:     "2026-07-29 · ARA KAYIT — üç belge YAZILDI, Founder okuması bekleniyor. Üçü de çift dilli tek gövdedir ve hiçbirinde lisans varsayımı yoktur; tarayarak doğrulandı, `MIT`, `Apache` ya da 'açık kaynak lisansı' geçen tek bir cümle yok. İLETİŞİM TEK KAYNAKTA: adres ve yanıt süresi sözü yalnız `SECURITY.md` içindeki çapalı blokta yazılıdır; öteki iki belge oraya bağlantı verir ve adresi sıfır kez tekrarlar, dolayısıyla adres değiştiğinde tek satır değişir. `security@` adresi hiçbir yerde varmış gibi gösterilmemiştir, çünkü o adrese gönderilen bir açık bildirimi bugün kimseye ULAŞMAZ. ÖLÇÜLMÜŞ EN ÖNEMLİ BULGU BİR DÜZELTMEDİR: 'motor yerelde koşar, hiçbir plan verisi dışarı çıkmaz' iddiası TAM DOĞRU DEĞİLDİR. Motor ve eklenti kaynağında tam olarak BİR dış uç adresi vardır — `cekirdek/src/kopru/nvidia.ts` içindeki dış dil modeli sağlayıcısı. Köprü varsayılan olarak kapalıdır, yalnız açık bir bayrakla açılır ve anahtar ister; eklentide dış uç adresi sıfırdır. Bu istisna saklanmadı, güvenlik bildiriminde kendi başlığı altında anlatıldı: ne zaman devreye girdiği, açıldığında ne gönderildiği, anahtarın nasıl redakte edildiği ve izin kapısının varsayılan olarak reddettiği yazılıdır. Bu düzeltme önemlidir, çünkü aynı iddia bu plana ve MCP yayın Adımına da yazılmıştı. VAATLER KOŞTURULARAK DOĞRULANDI: denetim iki varlıkta da sıfır, çekirdek süiti 899/899, tür denetimi hatasız, MCP sunucusu ayağa kalkıp on yedi araç ilan etti, kancanın birinci kapısı sıfır çıkış kodu verdi. Belgede anılan her dosya varlık kontrolünden geçirildi; bilerek istisna tek dosyadır ve 'bugün bu dosya yoktur' diye açıkça yazılmıştır. 2026-07-31 · KAPANIŞ — Founder bu oturumda geliştirmedeki Adımların tamamlanmasını sözlü talimatla istedi ve bekleyen okuma kaydı bu talimatla kapandı. Kapanış doğrulaması yeniden koşuldu: üç belge depo kökünde duruyor (CONTRIBUTING.md · CODE_OF_CONDUCT.md · SECURITY.md), hiçbirinde lisans varsayımı yok ve iletişim adresi tek kaynakta yaşıyor. Bu Adımın yazımından sonra depo evrildi ve vaatler bugünkü gerçekle yeniden ölçüldü: proje denetimi iki varlıkta sıfır hata ve sıfır uyarı, çekirdek süiti 931/931, eklenti süiti 369/369. Lisans hükmü bilinçli olarak dışarıda kaldı; o ayrı Adımın işidir ve Founder hükmüyle en sona bırakılmıştır.",
+        referans: [ STR-3, STR-3.1 ],
+        üretir:   [ BLG-KATKI, BLG-DAVRANIS, BLG-GUVENLIK ],
+        ne:       "📝 Lisanstan BAĞIMSIZ üç belgeyi yazmak: katkı yolu, davranış kuralı ve güvenlik bildirimi. Bu üçü lisans hükmünü beklemez, çünkü hiçbiri lisans seçimine bağlı değildir; katkının nasıl kabul edildiği, topluluğun kuralı ve açığın nereye bildirileceği hangi lisans seçilirse seçilsin aynı kalır. Bu yüzden Founder'ın lisansı en sona bırakan hükmü bu üç belgeyi bloke ETMEZ." ) {
+        görev: [
+          "Katkı belgesini yaz. Sarmal'ın gerçeğini anlat: depo Sarmal ile yönetilir, plan `.sar` dosyalarında yaşar ve katkı yalnız kod değil plan da içerir. Denetimin sıfır hata vermesi katkının kapısıdır ve bu açıkça söylenir.",
+          "Davranış kuralını yaz. Yerleşik bir metni temel almak serbesttir fakat körü körüne kopyalanmaz; iletişim adresi ve uygulama yolu gerçek olmalıdır, yoksa belge süs olur.",
+          "Güvenlik bildirimini yaz. Açığın nereye ve nasıl bildirileceği, hangi sürümlerin desteklendiği ve yanıt süresi beklentisi yazılır. Sarmal'ın gerçeği burada avantajdır ve dürüstçe söylenir: motor yerelde koşar ve hiçbir plan verisi dışarı çıkmaz.",
+          "Üç belgenin de deponun kendi ölçülmüş gerçeğini anlattığını doğrula; vaat edilen hiçbir süreç olmayan bir sürece işaret etmemelidir."
+        ]
+        kabul: [
+          "Üç belge depo kökünde vardır ve her biri kendi sorusunu yanıtlamaktadır.",
+          "Hiçbir belge olmayan bir sürece, olmayan bir adrese ya da işletilmeyen bir yola işaret etmemektedir; her vaat kontrol edilmiştir.",
+          "Katkı belgesi Sarmal'ın kendi disiplinini anlatmaktadır: katkı plan ile birlikte gelir ve denetim kapısı sıfır hata ister.",
+          "Üç belgenin hiçbiri lisans hükmünü ÖNCEDEN VARSAYMAMAKTADIR; hangi lisans seçilirse seçilsin metinler geçerli kalır."
+        ]
+        sınır: "Bu Adım LİSANS DOSYASI YAZMAZ ve lisans hükmüne dair hiçbir varsayım taşımaz. Lisans ayrı bir Adımdır ve Founder hükmü gereği en sona bırakılmıştır."
+      }
+
+      Adım( kod: YYZ-A03, durum: tamamlandı, onay: "onaylandı — 2026-08-05 · Founder Adımı kapattı. Hüküm, işin fiilen tamamlanmış olmasına dayanır: lisans seçimi verilmiş ve üç yüzeyin üçünde de yürürlüğe girmiştir, dolayısıyla açık bırakmanın karşılığı yalnız kaydın gerçeği söylememesi olurdu.", koşu: "2026-08-05 · KAPANIŞ. Adımın metni lisansın henüz seçilmediği varsayımıyla yazılmıştı ve bu varsayım bayatlamıştır; ölçüm üç somut çıktının üçünün de diskte yürürlükte olduğunu gösterdi. Kontrolcünün doğruladığı kanıtlar şunlardır: depo kökündeki LICENSE dosyası Apache Lisansı metnini taşır, eklentinin kendi lisans dosyası eklenti/LICENSE.md yolunda yaşar ve eklenti paket bildiriminin lisans alanı Apache-2.0 değerini taşır. Seçim ayrıca Karar J devir kayıtlarında yazılıdır. Kapanışta kalan tek iş çelişki noktalarının sıfırlanmış olmasının teyidiydi ve bu teyit verilmiştir. Önceki inceleme kaydı: 2026-08-04 · V1 İNCELEMESİ (kontrolcü) — üç çıktının yürürlükte olduğu ve metnin bayat kaldığı bu turda ölçülmüştü.", bağımlı: [ YYZ-A01, YYZ-A02 ],
+        referans: [ STR-3, STR-3.1 ],
+        üretir:   [ BLG-LISANS ],
+        ne:       "⚖️ LİSANS HÜKMÜ ve lisans yüzeyinin hizalanması. Founder'ın hükmü 2026-07-29 tarihinde şudur: lisans olayı yayın öncesi EN SON adım olarak bırakılacaktır. Bu Adım o hükmün plandaki karşılığıdır; kendinden önceki bütün yayın işleri bitmeden açılmaz ve açıldığında Founder'ın seçimi olmadan kapanmaz." ) {
+        görev: [
+          "Founder'a lisans seçeneklerini ölçülmüş sonuçlarıyla birlikte sun. Her seçenek için şu üç soru yanıtlanır: türev çalışmayı kim ne koşulla kapatabilir, ticari kullanımın önü nasıl kesilir ya da açılır, ve açık-çekirdek modeli, kalıcı laboratuvar deposu ile ondan ayrı duran curated public depo ayrımıyla nasıl çalışır. Seçenek sayısı üçü geçmesin; on beş seçenekli bir liste karar kolaylaştırmaz, karar geciktirir.",
+          "Founder'ın seçtiği lisansı depo köküne yaz ve eklentinin lisans dosyasını AYNI hükümle hizala. Bugün eklenti dosyası 'tüm hakları saklıdır' demektedir ve bu cümle yayın günü yalan olacaktır.",
+          "Eklenti paket bildirimindeki lisans alanını seçilen lisansla hizala.",
+          "Kök giriş belgesindeki '🟢 Açık kaynak' ilanının artık gerçek olduğunu doğrula; YYZ-A01'de sayılan bütün çelişki noktalarını tek tek kapat."
+        ]
+        kabul: [
+          "Founder lisansı SEÇMİŞTİR ve seçim hükmü kayda geçmiştir; bu Adım Founder hükmü olmadan kapanamaz.",
+          "Seçilen lisans depo kökünde ve eklentinin lisans dosyasında AYNI hükmü söylemektedir.",
+          "Paket bildirimindeki lisans alanı seçilen lisansla aynıdır.",
+          "YYZ-A01'de sayılan çelişki noktalarının tamamı kapanmıştır ve tekrar sayıldığında sıfır çelişki çıkmıştır."
+        ]
+        sınır: "Bu Adım LİSANSI KENDİ SEÇMEZ. Lisans bir Founder hükmüdür ve geri alınamaz: bir kez yayımlanan lisans altında dağıtılan kod geri çağrılamaz. Adımın işi seçeneği ölçülmüş biçimde sunmak ve verilen hükmü bütün yüzeylere aynı şekilde geçirmektir. Ayrıca bu Adım yayın öncesi EN SON iştir; kendinden önceki yayın işleri bitmeden başlatılmaz."
+      }
+    }
+  }
+}
+
+// 🍎 Yayın yüzeyi meyveleri — Adım→teslim izi.
+// Beşi de `dış-çıktı` türündedir ve bu bir tercih değil zorunluluktur: bu belgeler
+// depo KÖKÜNDE yaşayacaktır, yani `_Sarmal` proje kökünün dışında. Dosya-zorunlu bir
+// tür beyan edilseydi yol proje içinde çözülemez ve teslim sayılmazdı (MIM-2.1).
+Meyve( kod: BLG-CELISKI-RAPORU, tür: dış-çıktı,
+  ne: "🍎 Kamuya dönük yüzdeki çelişkinin sayılmış dökümü — hangi metin ne diyor ve kaç yerde çelişiyor" )
+Meyve( kod: BLG-KATKI, tür: dış-çıktı,
+  ne: "🍎 Katkı belgesi — katkının nasıl kabul edildiği; Sarmal'ın kendi disiplini anlatılır: katkı plan ile birlikte gelir, denetim kapısı sıfır hata ister" )
+Meyve( kod: BLG-DAVRANIS, tür: dış-çıktı,
+  ne: "🍎 Davranış kuralı — topluluğun kuralı ve uygulama yolu; iletişim adresi gerçek olacaktır, yoksa belge süs olur" )
+Meyve( kod: BLG-GUVENLIK, tür: dış-çıktı,
+  ne: "🍎 Güvenlik bildirimi — açığın nereye bildirileceği, desteklenen sürümler ve yanıt beklentisi; motorun yerelde koştuğu ve plan verisinin dışarı çıkmadığı burada dürüstçe söylenir" )
+Meyve( kod: BLG-LISANS, tür: dış-çıktı,
+  ne: "🍎 Lisans — Founder hükmüyle seçilir ve depo kökü, eklenti lisans dosyası ile paket bildirimi AYNI hükmü söyler" )

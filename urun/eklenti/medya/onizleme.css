@@ -1,0 +1,57 @@
+/* Sarmal — yerli markdown önizlemesine enjekte edilen stil (DIL-2 insan yüzü).
+   Yalnız sarmal-üretimi MD'ye etki eder: .sarmal-tag ve .sarmal-sekil sınıfları
+   belgele.ts tarafından basılır; sıradan MD ögelerine DOKUNULMAZ. */
+
+/* XML bölüm tag'i → amber rozet (editördeki tag rengiyle aynı: #E5C07B) */
+.sarmal-tag {
+  color: #E5C07B;
+  font-family: var(--vscode-editor-font-family, "SF Mono", monospace);
+  font-size: 0.95em;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  border-left: 4px solid #E5C07B;
+  background: rgba(229, 192, 123, 0.09);
+  border-radius: 4px;
+  padding: 0.18em 0.7em;
+  margin: 1.6em 0 0.5em;    /* bölümler arası nefes — layout ritmi */
+}
+
+/* Şekil başlığı → amber, kaynağı soluk */
+.sarmal-sekil {
+  color: #E5C07B;
+  margin: 1.4em 0 0.3em;    /* şekil öncesi nefes */
+}
+.sarmal-sekil em {
+  color: var(--vscode-descriptionForeground, #999);
+  font-size: 0.85em;
+}
+
+/* Şekil/kod çitleri: hafif çerçeve — şekil kutusu hissi */
+.sarmal-sekil + pre {
+  border: 1px solid rgba(229, 192, 123, 0.25);
+  border-radius: 6px;
+}
+
+/* ── .sar kod bloğu — GERÇEK kod görünümü (editör paletiyle birebir) ──────── */
+pre.sarmal-kod {
+  font-family: var(--vscode-editor-font-family, "SF Mono", monospace);
+  font-size: 0.9em;
+  line-height: 1.45;
+  background: var(--vscode-textCodeBlock-background, rgba(127, 127, 127, 0.08));
+  border: 1px solid rgba(127, 168, 168, 0.18);
+  border-radius: 6px;
+  padding: 0.8em 1em;
+  /* Founder kararı 2026-07-06 03:05 — "yazılar alt alta yazılsa sorun çözülür":
+     kod blokları DAİMA sarar; yatay kaydırma yok. Girinti korunur (pre-wrap). */
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.sk-yorum  { color: #6a9955; font-style: italic; }  /* yorum + /// belge */
+.sk-dizgi  { color: #ce9178; }                       /* "metin" */
+.sk-sayi   { color: #b5cea8; }                       /* 42 · 3.14 */
+.sk-ok     { color: #2ecc71; font-weight: 700; }     /* --> akış oku (zümrüt) */
+.sk-kod    { color: #7fa8a8; }                       /* CKR-SPIN-TEMEL (KOD) */
+.sk-tip    { color: #4ec9b0; font-weight: 700; }     /* tip adı (aile rengi inline gelir) */
+.sk-param  { color: #9e9e9e; }                       /* parametre adları */
+.sk-anahtar{ color: #c586c0; }                       /* çağır · Tip · Kural · ve/veya/değil */

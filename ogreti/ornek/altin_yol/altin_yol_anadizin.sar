@@ -1,0 +1,33 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// altin_yol/altin_yol_anadizin.sar — 🌿 BAHÇE (ÇalışmaAlanı) KÖKÜ — çok-uygulama referansı
+//
+//   ALTIN YOL: Sarmal'ın uçtan-uca "doğru bağlanmış" referansı. Omurga sırası
+//   (MIM-1) + sözleşme-önce (ORK-2.3) + çok-uygulama/tek-auth (Bahçe) tek yerde.
+//   "Kök tek auth girişinden ilerler": ortak/ altında SZL-AUTH; her Uygulama çağırır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🌿 Tek tabanda (tek auth · ortak yasa · ortak kadro) birden çok Uygulama'yı
+  paralel yetiştirmenin canlı örneği — Bahçe metaforu.
+
+  ## Kapsam
+  📦 ortak/ (paylaşık auth + anayasa) · uygulama_a/ · uygulama_b/ (her biri ayrı
+  ağaç). Uygulamalar ortak parçaları kod-tabanlı `çağır` (DIL-1.4) ile paylaşır.
+  KAPSAM DIŞI: gerçek iş mantığı — bu bir DESEN referansıdır.
+
+  ## Sonuç
+  ✅ Kabul: iki Uygulama da aynı SZL-AUTH sözleşmesine kavuşur (tek giriş);
+  `denetle` sıfır hatayla geçer (bahçe dogfood'u).
+|<--
+ÇalışmaAlanı(
+  kod: CAL-BAHCE,
+  ad:  "ornek-bahce",
+  dil: tr,
+  ne:  "Tek auth + ortak yasa üstünde çok-uygulamalı örnek çalışma alanı",
+) {
+  // ── Raflar (klasör ağacı — kod=KANUN, klasör=ayna) ─────────────────────────
+  Raf( kod: RAF-ORTAK, yol: "ortak/",      ne: "paylaşık auth (SZL-AUTH) + anayasa — TÜM uygulamalar çağırır" )
+  Raf( kod: RAF-UYG-A, yol: "uygulama_a/", ne: "Uygulama A — ayrı ağaç (kök: uygulama_a.sar)" )
+  Raf( kod: RAF-UYG-B, yol: "uygulama_b/", ne: "Uygulama B — ayrı ağaç (kök: uygulama_b.sar)" )
+}

@@ -1,0 +1,48 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga1_yasa.sar — 🌊 1. DALGA · YASA AİLESİ FORMATLARI (F8)
+//
+//   Founder incelemesi için ÖRNEK dosya: Anayasa · Yasa · GenelKural ·
+//   ÖzelKural — kuvvetler ayrılığının (YAS-2) yasama düzlemi.
+//   Kural zaten kilitli (DIL-3 fonksiyon-biçimi); burada AİLE bütünü görünür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  ⚖️ Yasa ailesinin dört formatını kilitlemek: normlar hiyerarşisi tek örnekte — Anayasa üstte, kurallar altında, kapsam mekanizması ortada.
+
+  ## Kapsam
+  📦 Anayasa değişmez ilkeler kümesidir: yalnız Kural sarar, etmenler ona uygular: mirasıyla bağlanır. Yasa tekil üst-normdur: bir alanın çatı hükmü. GenelKural çalışma alanının TAMAMINA hükmeder; ÖzelKural tek projeye/dizine iner — ikisinin farkı içerik değil KAPSAMDIR. Yönetmelik ihtiyacı bu ailede karşılanır: kapsam: etmen yazılan kural, uygular denmeden TÜM kadroya koniyle enjekte edilir — motor davranışıdır, kanonda ayrı maddesi yoktur; ayrı tip gerekmez, desen yeter. Dış hukuki normlar bu ailenin dışındadır: onlar Mevzuat'tır (F-7), kuralın kendisi değil KAYNAĞIDIR.
+
+  ## Sonuç
+  ✅ Kabul: dört tip motor-temiz geçer; kapsam: etmen kuralının koniye düştüğü RAY-3'te sınanır.
+|<--
+
+// ── ANAYASA — imza: kod+ne · gövde: yalnız Kural · etmenler `uygular` der ───
+Anayasa( kod: ORN-ANY-CALISMA, ad: "calisma-duzeni", sürüm: "1.0",
+         ne: "🏛️ Örnek çalışma-düzeni anayasası — tüm kadronun uyduğu üç temel hüküm" ) {
+
+  Kural raporTeslimi( kod: ORN-CD-1, otorite: anayasa, katman: niyet, kapsam: etmen ) {
+    ne: "📨 Her etmen işini motor-temiz raporla teslim eder — kanıtsız 'bitti' YASAKTIR"
+  }
+
+  Kural bilgiKaynagi( kod: ORN-CD-2, otorite: anayasa, katman: niyet, kapsam: etmen ) {
+    ne: "📖 Teknik içerik yalnız resmî dokümandan gelir — uydurma (halüsinasyon) yasaktır"
+  }
+
+  // kapsam: etmen → uygular: yazılmadan HER etmene koniyle enjekte (yönetmelik deseni)
+  Kural huzurluDil( kod: ORN-CD-3, otorite: politika, katman: niyet, kapsam: etmen ) {
+    ne: "🕊️ Üslup kurumsal ve barışçıldır — savaş metaforu kullanılmaz, bahçe/emek dili esastır"
+  }
+}
+
+// ── YASA — tekil üst-norm: bir alanın çatı hükmü ────────────────────────────
+Yasa( kod: ORN-YASA-VERI, ad: "veri-yasasi",
+      ne: "🔐 Kişisel veri asla düz metin saklanmaz; erişim en-az-yetki ilkesiyle verilir" )
+
+// ── GENELKURAL — çalışma alanının TAMAMINA hükmeder ─────────────────────────
+GenelKural( kod: ORN-GK-BICIM, otorite: politika, katman: niyet, kapsam: genel,
+            ne: "📏 Tüm .sar dosyaları 110 sütunu aşmaz; uzun niyet üç-tırnağa katlanır (DIL-2.2)" )
+
+// ── ÖZELKURAL — tek projeye/dizine iner (kapsam farkı, içerik farkı değil) ──
+ÖzelKural( kod: ORN-OK-EKLENTI, otorite: politika, katman: niyet, hedef: "eklenti/",
+           ne: "🎨 Eklenti dizininde renk ELLE yazılmaz — kanon→üretici zinciri zorunludur" )

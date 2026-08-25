@@ -1,0 +1,35 @@
+// ═══════════════════════════════════════════════════════════════════
+//  BELGE MOTORU CANLI ÖRNEK — /// (tek satır) + -->| |<-- (blok) + """
+//  Bu dosya motorun kendisiyle sınanır (parse + biçim güvenceleri).
+//  Kural: tek satır belge = /// · çok satırlı metin = -->| |<-- bloğu.
+// ═══════════════════════════════════════════════════════════════════
+
+-->|
+  # Belge Motoru
+
+  Bu blok **yorum değil** — altındaki düğümün belgesidir: grafa girer,
+  aranabilir, koninin L2 katmanında ajana gider.
+
+  ```dart
+  // kod-çiti bile belgeyle taşınır — model markdown okur, önizleme dart renkleriyle boyar
+  var ornek = { a: 1 };
+  ```
+|<--
+
+Karar( kod: KRR-SD14-CANLI, durum: kilitli ) {
+  ne: "Belge motoru çalışıyor — blok düğüme bağlı, üç-tırnak kırpılıyor"
+  karar: """
+    /// işareti tek-satır belge içindir (dartdoc mirası);
+    çok-satırlı anlatı -->| |<-- bloğunda yaşar;
+    çok-satırlı DEĞER üç-tırnakta — girintisi ilk satıra göre kırpılır,
+    biçimlendirici içine ASLA dokunmaz.
+    """
+  gerekçe: "tek-dosya vizyonunun ön-şartı: insan yüzü dilin İÇİNDE yaşar"
+}
+
+/// Tek satırlık belge hâlâ /// ile — kısa not için blok açılmaz.
+Karar( kod: KRR-TEK-SATIR, durum: kilitli ) {
+  ne: "Tek satır belge örneği — /// kanalı yaşıyor"
+  karar: "kısa not /// ile kalır; blok yalnız çok-satırlı anlatıya açılır"
+  gerekçe: "her nota blok açmak gürültü; tek satır için dartdoc mirası yeterli"
+}

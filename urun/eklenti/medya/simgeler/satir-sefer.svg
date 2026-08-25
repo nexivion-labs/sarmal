@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sefer: varlık satırının lokomotifi — üçgen burunlu gövde, iki kanat ve itki çizgisi. -->
+  <path d="M12 3.4 L15.2 9 V16 H8.8 V9 Z"/>
+  <circle cx="12" cy="11.4" r="1.7"/>
+  <path d="M8.8 13.2 L5.6 16.4 H8.8"/>
+  <path d="M15.2 13.2 L18.4 16.4 H15.2"/>
+  <path d="M12 17.8 V20.6"/>
+</svg>

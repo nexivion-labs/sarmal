@@ -1,0 +1,192 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/ogr.sar — 📚 ÖĞRENME bölümü · v1 kanonu (15 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### OGR-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Öğretim ve Ajan Canlı Kütüphanesi, kanonik bilginin insana ve ajana amaç-uygun biçimlerde öğretilmesini, öğretim yüzlerinin kaynaklarıyla birlikte yenilenmesini ve kalıcı öğrenimin Beceriye dönüşmesini tanımlayan tek öğretim otoritesidir; kanondan bağımsız ikinci bir öğretim gerçeği kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [OGR, DIL, YUZ, ORK].
+**Gerekçe:** Öğretim ayrı bir otoriteye dönüşürse kullanıcı ile ajan aynı kavramı farklı ad, kapsam veya davranışla öğrenir; tek kök, anlatım değişse de hükmün ve hedef davranışın sabit kalmasını sağlar.
+**Örnek:** Kanonik akış: `kanon → Tutorial · How-To · Reference · Explanation → hover · tanı önerisi · Beceri`; ok hangi öğretim yüzünün hangi kaynaktan türediğini gösterir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: OGR-0, durum: kilitli,
+       ne: "OGR-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Öğretim ve Ajan Canlı Kütüphanesi, kanonik bilginin insana ve ajana amaç-uygun biçimlerde öğretilmesini, öğretim yüzlerinin kaynaklarıyla birlikte yenilenmesini ve kalıcı öğrenimin Beceriye dönüşmesini tanımlayan tek öğretim otoritesidir; kanondan bağımsız ikinci bir öğretim gerçeği kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [OGR, DIL, YUZ, ORK].",
+       gerekçe: "Öğretim ayrı bir otoriteye dönüşürse kullanıcı ile ajan aynı kavramı farklı ad, kapsam veya davranışla öğrenir; tek kök, anlatım değişse de hükmün ve hedef davranışın sabit kalmasını sağlar." )
+
+-->|
+### OGR-1 · Diátaxis Dörtlüsü [BİLGİ]
+**Hüküm:** Her öğretim yüzü `Tutorial`, `How-To`, `Reference` veya `Explanation` amaçlarından tam olarak birini açıkça üstlenir; aynı kanonik kaynak ayrı amaçlar için ayrı yüzler üretebilir fakat tek yüz bu amaçları birbirine karıştırarak görevini belirsizleştiremez; dayanak: OGR-0; ilgili: [OGR, YUZ].
+**Gerekçe:** Uygulamalı öğrenme, hedef çözme, eksiksiz başvuru ve kavramsal açıklamanın aynı metinde erimesi okuyucunun ne yapacağını ve hangi bilginin bağlayıcı olduğunu ayırt etmesini güçleştirir.
+**Örnek:** SNF-0 alan kataloğu `Reference`, ilk geçerli projeyi kurduran yürüyüş `Tutorial` olur; tek belge kendisini hem eksiksiz sicil hem başlangıç dersi ilan edemez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: OGR-1, durum: kilitli,
+       ne: "OGR-1 · Diátaxis Dörtlüsü [BİLGİ]",
+       karar: "Her öğretim yüzü `Tutorial`, `How-To`, `Reference` veya `Explanation` amaçlarından tam olarak birini açıkça üstlenir; aynı kanonik kaynak ayrı amaçlar için ayrı yüzler üretebilir fakat tek yüz bu amaçları birbirine karıştırarak görevini belirsizleştiremez; dayanak: OGR-0; ilgili: [OGR, YUZ].",
+       gerekçe: "Uygulamalı öğrenme, hedef çözme, eksiksiz başvuru ve kavramsal açıklamanın aynı metinde erimesi okuyucunun ne yapacağını ve hangi bilginin bağlayıcı olduğunu ayırt etmesini güçleştirir." )
+
+-->|
+### OGR-1.1 · Tutorial [BİLGİ]
+**Hüküm:** Tutorial, yeni kullanıcının ön bilgi varsayımını asgaride tutarak tek bir kanonik sonucu başlangıçtan doğrulanmış bitişe kadar sıralı ve uygulanabilir adımlarla üretmesini sağlar; her adım görünür bir ara sonuç verir, dallanan seçenekler ve kapsam dışı açıklamalar ana yürüyüşü bölemez; dayanak: OGR-1; ilgili: [OGR, YUZ].
+**Gerekçe:** İlk öğrenme yolunda gizli ön koşul veya erken seçenek bolluğu, kullanıcının sonucu görmeden kavram yükü altında kalmasına ve kanonik olmayan kestirmeler edinmesine neden olur.
+**Örnek:** `projeyi doğur → ilk düğümü yaz → denetle → tanıyı düzelt → temiz sonucu gör` bir Tutorial akışıdır; bütün olası tipleri adımların arasına katalog olarak dökmek değildir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural tutorial( kod: OGR-1.1,
+       ne: "OGR-1.1 · Tutorial [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-1 )
+
+-->|
+### OGR-1.2 · How-To [BİLGİ]
+**Hüküm:** How-To, temel kavramları bildiği varsayılan ve belirli bir işi tamamlamak isteyen kullanıcıya gerekli ön koşulları, en kısa kanonik işlem dizisini ve başarı denetimini verir; konu öğretimini, seçenek kataloğunu veya mimari tartışmayı hedef çözümünün yerine geçiremez; dayanak: OGR-1; ilgili: [OGR, YUZ].
+**Gerekçe:** Görev odaklı okuyucuya ders veya ansiklopedi sunmak uygulanabilir yolu gizler; açık ön koşul ve sonuç denetimi, tarifin yalnız mutlu yolu anlatıp başarısızlığı sessiz bırakmasını önler.
+**Örnek:** “Bir Beceri kartını hedefe bağlama” yüzü gereken düğümü, bağı, doğrulama komutunu ve beklenen temiz sonucu verir; öğretim sisteminin bütün tarihini anlatmaz.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural howTo( kod: OGR-1.2,
+       ne: "OGR-1.2 · How-To [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-1 )
+
+-->|
+### OGR-1.3 · Reference [BİLGİ]
+**Hüküm:** Reference; tip, alan, kenar, komut ve tanı sözleşmelerini kanonik sicillerdeki ad, biçim, düzey, varsayılan, kısıt ve ilişkileri eksiltmeden, yeni yorum katmadan ve kararlı bir dizilimle sunar; başvuru yüzü kaynakta bulunmayan örnek değer veya davranış icat edemez; dayanak: OGR-1; ilgili: [OGR, TIP, YAS, YUZ].
+**Gerekçe:** Eksik başvuru kullanıcıyı tahmine iter, yorum ekleyen başvuru ise sicilin üstüne görünmez bir kural katmanı kurar; deterministik ve eksiksiz üretim karşılaştırılabilir bir sözleşme yüzü sağlar.
+**Örnek:** Bir kenarın Reference kaydı `ad · kaynak tipi · hedef tipi · yön · düzey · ilgili tanı` alanlarını sicilden gösterir; “genellikle böyle kullanılır” diye kaynaksız bir istisna eklemez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural reference( kod: OGR-1.3,
+       ne: "OGR-1.3 · Reference [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-1 )
+
+-->|
+### OGR-1.4 · Explanation [BİLGİ]
+**Hüküm:** Explanation, mimari ve yönetişim hükümlerinin nedenlerini, aralarındaki nedensel ilişkileri, sınırlarını ve sonuçlarını kanonik dayanaklarına bağlayarak açıklar; kavramsal yorum yürürlükteki hükmü genişletemez, daraltamaz veya yeni bir zorunluluk doğuramaz; dayanak: OGR-1; ilgili: [OGR, MIM, YAS].
+**Gerekçe:** Gerekçenin hükümden kopması yorumu zamanla yeni bir norm gibi gösterir; açık dayanak bağı okuyucunun açıklama ile bağlayıcı sözleşmeyi ayırmasını sağlar.
+**Örnek:** Blokun neden çok-teknolojili kavuşum gövdesi olduğu açıklanabilir; açıklama “bazı Bloklar tek teknoloji olabilir” diyerek MIM hükmüne yeni bir istisna ekleyemez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural explanation( kod: OGR-1.4,
+       ne: "OGR-1.4 · Explanation [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-1 )
+
+-->|
+### OGR-2 · Kanondan Türetilen Öğretim [HATA]
+**Hüküm:** `ogret`, karşılama ve `AGENTS.md` öğretim metinlerinin normatif içeriği elle yazılamaz; her kavram, örnek ve zorunluluk kanonik düğüm ya da sicilden deterministik olarak üretilir ve kaynak değişikliğiyle aynı üretim zincirinde tazelenir; dayanak: OGR-0; ilgili: [OGR, DIL, YUZ, ORK].
+**Gerekçe:** Kopyalanmış öğretim metni kaynak değiştiğinde sessizce bayatlar ve ajana artık geçerli olmayan tip, alan veya iş akışını öğretir; izlenebilir üretim tek kaynak sözleşmesini korur.
+**Örnek:** Doğru: `kanon → ogret · karşılama · AGENTS.md`; yanlış: bu üç çıktıya kanonda karşılığı olmayan zorunlu bir alanı elle eklemek veya kaynak değişince eski metni bırakmak.
+**Zorlama:** Yeni tanı önerisi `öğretim-kaynak-drifti` · HATA · “Öğretim metni kanonik kaynaktan türemiyor, kaynaksız norm taşıyor veya kaynak değişikliğinden sonra tazelenmemiş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: OGR-2, durum: kilitli,
+       ne: "OGR-2 · Kanondan Türetilen Öğretim [HATA]",
+       karar: "`ogret`, karşılama ve `AGENTS.md` öğretim metinlerinin normatif içeriği elle yazılamaz; her kavram, örnek ve zorunluluk kanonik düğüm ya da sicilden deterministik olarak üretilir ve kaynak değişikliğiyle aynı üretim zincirinde tazelenir; dayanak: OGR-0; ilgili: [OGR, DIL, YUZ, ORK].",
+       gerekçe: "Kopyalanmış öğretim metni kaynak değiştiğinde sessizce bayatlar ve ajana artık geçerli olmayan tip, alan veya iş akışını öğretir; izlenebilir üretim tek kaynak sözleşmesini korur." )
+
+-->|
+### OGR-2.1 · Hover ve Tanı Öğretimi [UYARI]
+**Hüküm:** Hover metni ihlal öncesinde, tanı mesajı ile önerisi ise ihlal anında aynı kanonik kavramı, gerekçeyi, düzeyi ve düzeltme yönünü öğretir; yüzler birbiriyle çelişemez, tanı önerisi ne bulunduğunu, neden sorun olduğunu ve nasıl düzeltileceğini birlikte açıklamak zorundadır; dayanak: OGR-2; ilgili: [OGR, YAS, YUZ].
+**Gerekçe:** Önceden öğretilen davranış ile ihlal anındaki reçete ayrışırsa kullanıcı doğru yazdığı hâlde cezalandırıldığını sanır veya hatayı kanona aykırı bir yolla düzeltir.
+**Örnek:** Hover “kenar hedefi tırnaksız KOD'dur” diyorsa `kenar-metin` önerisi de tırnaklı metni çözülebilen KOD'a çevirmeyi öğretir; metin hedefi önermek çelişkidir.
+**Zorlama:** `doğrulanamayan-tanı-iddiası` · UYARI · “Kuralın `tanı:` iddiası sicilde yok; ‘motorda’ iddiası doğrulanamıyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; yeni tanı önerisi `öğretim-yüzü-uyumsuz` · UYARI · “Hover ile tanı mesajı veya önerisi aynı kanonik kavramı, gerekçeyi, düzeyi ve düzeltme yönünü öğretmiyor.” · yüzey: Problems, hover, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural hoverVeTanıÖğretimi( kod: OGR-2.1,
+       ne: "OGR-2.1 · Hover ve Tanı Öğretimi [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-2,
+       tanı: [ doğrulanamayan-tanı-iddiası ] )
+
+-->|
+### OGR-2.2 · Beceri Kartları [UYARI]
+**Hüküm:** Her Beceri kartı öğrettiği davranışı kanonik bir hedefe bağlar ve hangi tetikleyicide kullanılacağını, hangi adımlarla uygulanacağını, hangi kabul kanıtıyla doğrulanacağını açıkça taşır; kartın belge gövdesi ve ilişkileri kanondan okunur, serbest anlatı hedef bağının yerine geçemez; dayanak: OGR-2; ilgili: [OGR, TIP, ORK].
+**Gerekçe:** Hedefsiz kartın neyi güncel tutacağı, tetikleyicisiz kartın ne zaman çağrılacağı ve doğrulamasız kartın başarıyı nasıl ayırt edeceği bilinemez; eksik bağlar davranış bilgisini uygulanamaz nota dönüştürür.
+**Örnek:** `Beceri( kod: BCR-KENAR-01, referans: ORK-1, tetikleyici: TTK-KENAR, kabul: KAP-TEMIZ )` hedefi, çağrılma anını ve doğrulama kapısını gösterir; yalnız “kenarları doğru yaz” demek yeterli değildir.
+**Zorlama:** `eksik-alan` · UYARI · “Beceri zorunlu alan veya belge sözleşmesini taşımıyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `beceri-drift` · UYARI · “Beceri anlattığı hedefe bağlanamıyor; bayat içerik riski.” · yüzey: proje CLI; yeni tanı önerisi `beceri-kartı-eksik` · UYARI · “Beceri hedef, tetikleyici, uygulama veya doğrulama bağından en az birini taşımıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural beceriKartları( kod: OGR-2.2,
+       ne: "OGR-2.2 · Beceri Kartları [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-2,
+       tanı: [ beceri-drift, eksik-alan ] )
+
+-->|
+### OGR-2.3 · Kanonik Başvuru Üretimi [HATA]
+**Hüküm:** Tip, kenar, söz dizimi ve tanı başvurularının bütün satırları ilgili kanonik sicillerden eksiksiz ve deterministik olarak üretilir; elle tutulan ikiz tablo, sicil dışı öğe, farklı düzey veya bağımsız açıklama başvuru kaynağına eklenemez; dayanak: OGR-2; ilgili: [OGR, DIL, TIP, YAS, YUZ].
+**Gerekçe:** Elle sürdürülen başvuru tablosu ilk ekleme, silme veya düzey değişikliğinde sicilden ayrılır; kullanıcı olmayan bir öğeyi geçerli sanabilir ya da gerçek bir sözleşmeyi hiç göremez.
+**Örnek:** Doğru: `SNF-0 kenar sicili → kenar Reference tablosu`; yanlış: yeni kenarı yalnız başvuru tablosuna eklemek veya sicildeki HATA düzeyini tabloda UYARI göstermek.
+**Zorlama:** Yeni tanı önerisi `başvuru-sicil-drifti` · HATA · “Tip, kenar, söz dizimi veya tanı başvurusu kanonik sicilden eksik, fazla ya da farklı sözleşme üretiyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural kanonikBaşvuruÜretimi( kod: OGR-2.3,
+       ne: "OGR-2.3 · Kanonik Başvuru Üretimi [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-2 )
+
+-->|
+### OGR-3 · Geriye-Bağlantı [HATA]
+**Hüküm:** Her kanonik yenilik aynı değişiklik içinde etki analiziyle ajan bağlam paketine, bütün ilgili öğretim yüzlerine ve hedeflediği Beceri kartlarına bağlanır; etkilenmeyen yüz açıkça kanıtlanmadıkça öğretim güncellemesi sonraki değişikliğe ertelenemez; dayanak: OGR-0; ilgili: [OGR, STR, ORK].
+**Gerekçe:** Kaynak değişikliği ile öğretim güncellemesini ayırmak, aradaki her koşumda eski davranışı yeniden üretir ve yeni hükmü uygulayacak kullanıcı ile ajanları yanlış yönlendirir.
+**Örnek:** Yeni bir kenar eklendiğinde aynı değişiklik onun ajan bağlamı, Reference kaydı, hover açıklaması ve ilgili Beceri kartı etkisini işler; yalnız sicili değiştirip öğretimi sonraya bırakmak yasaktır.
+**Zorlama:** Yeni tanı önerisi `öğretim-etki-eksik` · HATA · “Kanonik yeniliğin ajan bağlamı, öğretim yüzü veya ilgili Beceri etkisi aynı değişiklikte işlenmemiş ya da etkilenmediği kanıtlanmamış.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: OGR-3, durum: kilitli,
+       ne: "OGR-3 · Geriye-Bağlantı [HATA]",
+       karar: "Her kanonik yenilik aynı değişiklik içinde etki analiziyle ajan bağlam paketine, bütün ilgili öğretim yüzlerine ve hedeflediği Beceri kartlarına bağlanır; etkilenmeyen yüz açıkça kanıtlanmadıkça öğretim güncellemesi sonraki değişikliğe ertelenemez; dayanak: OGR-0; ilgili: [OGR, STR, ORK].",
+       gerekçe: "Kaynak değişikliği ile öğretim güncellemesini ayırmak, aradaki her koşumda eski davranışı yeniden üretir ve yeni hükmü uygulayacak kullanıcı ile ajanları yanlış yönlendirir." )
+
+-->|
+### OGR-3.1 · Otomatik Tazeleme [UYARI]
+**Hüküm:** Her öğretim çıktısı kaynak kanonik kimliklerini ve üretildiği girdi mührünü izler; kaynak kimliği çözülemiyorsa, mühür kaynakla uyuşmuyorsa veya bağlı hedef değişmişse çıktı yeniden üretilip doğrulanmadan güncel sayılamaz ve yayımlanamaz; dayanak: OGR-3; ilgili: [OGR, YAS, YUZ, STR].
+**Gerekçe:** Yalnız dosya tarihine veya insan beyanına dayanan güncellik, içerik değişikliğini güvenilir biçimde yakalayamaz; kaynak bağı ile mühür bayatlığı makinece görünür kılar.
+**Örnek:** `kaynak: OGR-2 · girdiMührü: abc123` taşıyan yüzün hesaplanan mührü değişmişse yüz bayattır; başlığı “güncel” yapmak yeniden üretimin yerini tutmaz.
+**Zorlama:** `beceri-drift` · UYARI · “Beceri anlattığı hedefe bağlanamıyor; bayat içerik riski.” · yüzey: proje CLI; yeni tanı önerisi `öğretim-bayat` · UYARI · “Öğretim çıktısının kaynak kimliği çözülemiyor, girdi mührü uyuşmuyor veya bağlı hedefi değişmiş; yeniden üret.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural otomatikTazeleme( kod: OGR-3.1,
+       ne: "OGR-3.1 · Otomatik Tazeleme [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-3,
+       tanı: [ beceri-drift ] )
+
+-->|
+### OGR-3.2 · Elle Düzenleme Yasağı [HATA]
+**Hüküm:** Üretilen ajan bağlamı ve öğretim metinleri doğrudan düzenlenemez; kalıcı her içerik değişikliği ilgili kanonik düğüm, sicil veya Beceri kaynağına yapılır ve çıktı yalnız üretici tarafından bütünüyle ya da işaretli bölgesinde yenilenir; dayanak: OGR-3; ilgili: [OGR, DIL, YUZ, STR].
+**Gerekçe:** Çıktıya yapılan düzeltme bir sonraki üretimde kaybolur, kaynağı eski bırakır ve aynı öğretimin iki farklı sürümünü doğurur; değişikliğin kanona yapılması bütün yüzleri birlikte düzeltir.
+**Örnek:** Yanlış bir alan açıklaması `AGENTS.md` içinde elle düzeltilmez; alanın kanonik tarifi değiştirilir ve bağlam paketi yeniden üretilir.
+**Zorlama:** Yeni tanı önerisi `üretilmiş-öğretim-değiştirilmiş` · HATA · “Üretilen ajan bağlamı veya öğretim metni kaynak ya da izinli üretim bölgesi dışında elle değiştirilmiş; değişikliği kanonik kaynağa taşı.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural elleDüzenlemeYasağı( kod: OGR-3.2,
+       ne: "OGR-3.2 · Elle Düzenleme Yasağı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-3 )
+
+-->|
+### OGR-4 · Bellekten Beceriye Öğrenme [UYARI]
+**Hüküm:** Koşumda gözlenen ve yeniden kullanılabilir görülen ders önce kaynağı, nedeni ve doğrulama durumu açık bir Bellek olarak tutulur; ancak hedef davranış üzerinde yinelenebilir kanıt sağlandıktan sonra Beceriye terfi ettirilir, terfi eden Beceri çözülebilen hedefe ve kabul kanıtına bağlanır; dayanak: OGR-0; ilgili: [OGR, TIP, YAS, ORK].
+**Gerekçe:** Tek koşumluk gözlemi doğrudan Beceri yapmak rastlantıyı kalıcı davranışa çevirir; doğrulanmış dersi Bellekte bırakmak ise aynı hatanın yeniden öğrenilmesine ve öğretim kütüphanesinin eksik kalmasına yol açar.
+**Örnek:** `Bellek( kod: BLK-DERS-01, tür: ders, neden: "Kenar hedefi çözülmedi", terfi: bekliyor )` önce kanıt toplar; doğrulama geçince hedefi çözülen `Beceri( kod: BCR-KENAR-01, referans: ORK-1 )` üretilir.
+**Zorlama:** `beceri-terfisi` · UYARI · “Bellek `terfi: bekliyor`; dersi Beceriye dönüştür.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `beceri-drift` · UYARI · “Beceri anlattığı hedefe bağlanamıyor; bayat içerik riski.” · yüzey: proje CLI; yeni tanı önerisi `kanıtsız-beceri-terfisi` · UYARI · “Bellek yinelenebilir doğrulama kanıtı olmadan Beceriye terfi ettirilmiş veya Beceri kabul kanıtına bağlanmamış.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural bellektenBeceriyeÖğrenme( kod: OGR-4,
+       ne: "OGR-4 · Bellekten Beceriye Öğrenme [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-0,
+       tanı: [ beceri-drift, beceri-terfisi ] )
+
+-->|
+### OGR-5 · Ürün ve Öğretim Dünyası Ayrımı [BİLGİ]
+**Hüküm:** Örnek, ders ve alıştırma düğümleri öğretim kapsamı ve kimliği altında yaşar; ürün Meyvesi, üretim Adımı, proje teslimi, ürün karnesi veya yürütme gündemi olarak sayılamaz, buna karşılık kendi söz dizimi, tip, hedef ve kabul sözleşmelerine göre doğrulanmak zorundadır; dayanak: OGR-0; ilgili: [OGR, YAS, ORK].
+**Gerekçe:** Öğretim varlıklarını gerçek ürün işine katmak karne ile ilerleme ölçümünü yapay olarak şişirir; doğrulamadan bağışık tutmak ise öğrenciye çalışmayan veya kanona aykırı örnek sunar.
+**Örnek:** Bir Tutorial içindeki `ADM-ORNEK-01` öğretim denetiminde geçerli olmak zorundadır fakat gerçek projenin “sıradaki Adımı” veya teslim edilmiş Meyvesi olarak ürün karnesine girmez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural ürünVeÖğretimDünyasıAyrımı( kod: OGR-5,
+       ne: "OGR-5 · Ürün ve Öğretim Dünyası Ayrımı [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: OGR-0 )

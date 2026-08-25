@@ -1,0 +1,198 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/performans_turu.sar — 🐛→⚡ PERFORMANS TURU (Founder isteği 2026-07-19)
+//
+//   Founder bildirimi: "IDE'de Sarmal'dan dolayı kasma hissediyorum, özellikle
+//   Sol ne zaman koşsa kasma oluyor" (Sorun kaydı: SRN-IDE-KASMA-SOL-KOSUSU,
+//   nitelik/kosum_sicili.sar). Tur, oturum 60 devrinde SIRADAKİ ÖNCELİK olarak
+//   işaretlenmiştir. Yöntem sırası Sorun kaydındaki gibidir: önce ÖLÇÜM
+//   (tanı konmadan çare uygulanmaz — kör onarım yasağı), sonra izleyici
+//   yükünü düşüren onarımlar, en son Founder his teyidiyle saha kapanışı.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # ⚡ Performans Turu — eklenti izleyici yükü ölçülür ve düşürülür
+
+  ## Amaç
+  🎯 VS Code eklentisinin dosya-izleyici mimarisinin ürettiği tam-proje
+  denetim yükünü görünür kılmak ve düşürmek. Çözülen problem: Sol'un kabul
+  koşuları gibi yoğun disk etkinliği dönemlerinde IDE belirgin kasıyor;
+  kod incelemesi üç şüpheli mekanizma gösteriyor — ① geniş disk izleyicisi
+  (`**/*`) Sol'un her git komutunun yan ürünlerini (`.git/index.lock`
+  oluştur/sil dalgaları) olay sayıp 500 ms sonra TAM proje denetimi
+  tetikliyor; ② her `.sar` olayı `denetleHepsi`'yi geciktirmesiz ve
+  üst üste (koşan denetim bitmeden yenisi) çağırıyor; ③ `denetleHepsi`
+  her turda bütün `.sar` dosyalarını `openTextDocument` ile açıp DAG +
+  disk-mutabakat taraması koşturuyor. Tanı henüz ölçümle DOĞRULANMADI —
+  turun ilk adımı ölçüm merceğidir.
+
+  ## Kapsam
+  📦 Kapsar: PRF-A01..A04 (ölçüm merceği · izleyici onarımı · saha teyidi ·
+  panel tazeleme onarımı);
+  yalnız eklenti katmanı (eklenti/src). Kapsamaz: artımlı denetim mimarisi
+  (denetim motorunun kendisini değiştirmek ayrı ve büyük iştir — ölçüm
+  gerekçelendirirse ayrı Adım olarak doğar), statusline/ccusage katmanı
+  (SRN-RAY-GECIKME ① — Sarmal kodu değildir), çekirdek CLI performansı.
+
+  ## Sonuç
+  ✅ Kabul: denetim süresi ve olay sayısı çıktı kanalından okunur durumdadır;
+  izleyici gürültü olayları (git/derleme yan ürünleri) denetim tetiklemez
+  olmuştur; koşan denetim üst üste binmez; Sol benzeri yük altında Founder
+  kasma hissinin geçtiğini teyit etmiştir.
+|<--
+
+// 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski PRF-FAZ sarmalayıcısı çözüldü — zaman bağı
+// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+//   ne: "🌀 IDE kasma şikâyetinin ölçümle tanılanıp izleyici onarımlarıyla kapatıldığı dönem; Sorun kayıtları SRN-IDE-KASMA-SOL-KOSUSU ve SRN-RAY-GECIKME ② bu mevsimde kapanış notu alır"
+
+-->|
+  ## Amaç
+  🎯 Eklentinin dosya-izleyici ve tam-proje denetim yükünü önce ölçmek,
+  sonra düşürmek — kasma şikâyeti kanıtla kapanır, hisle değil.
+
+  ## Kapsam
+  📦 Kapsar: eklenti izleyici mimarisi (eklenti.ts) + performans günlüğü.
+  Kapsamaz: denetim motorunun artımlı hâle getirilmesi, çekirdek CLI.
+
+  ## Sonuç
+  ✅ Kabul: ölçüm merceği canlı; gürültü süzülüyor; denetimler üst üste
+  binmiyor; Founder saha teyidi alınmış.
+|<--
+
+Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
+  ne: "🪵 Üç kalem: denetim/olay ölçüm merceği · izleyici gürültü süzgeci + koşarken-atla kilidi + geciktirme büyütme · Sol-yükü altında saha teyidi" ) {
+
+  Katman( kod: KAT-PRF-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti izleyici ve denetim döngüsü",
+    ne: "🌿 Dosya izleyicilerinin ve denetleHepsi döngüsünün yaşadığı eklenti giriş katmanı (eklenti.ts) + yeni performans günlüğü modülü" ) {
+
+    AltKatman( kod: ALT-PRF-EKLENTI-IZLEME, departman: sınama, ad: "izleyici ve denetim performansı",
+      ne: "🍃 Ölçüm merceğinden saha teyidine kadar tüm izleyici/denetim/panel performans onarımlarının toplandığı tek konu dalı" ) {
+
+      Adım( kod: PRF-A01, durum: tamamlandı, bağımlı: [ TAKIM-EKLENTI ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU, SRN-RAY-GECIKME ], üretir: [ KOD-PERFORMANS, KOD-SNM-PERFORMANS, KOD-EKL-EKLENTI ],
+        ne:    "🔬 Ölçüm merceğini kurmak. Sorun kaydının ilk şartı ölçümdür: kasmanın kaynağı bugün yalnız kod okumasına dayalı şüphedir; hangi izleyicinin kaç olay ürettiği ve bir tam-proje denetiminin kaç milisaniye sürdüğü hiçbir yerde görünmez. Bu Adım 'Sarmal Performans' çıktı kanalını ve olay/süre sayaçlarını kurar — tanı bu kanaldan okunur, onarımın önce/sonra karşılaştırması da aynı kanaldan yapılır" ) {
+        görev: [
+          "performans.ts modülünü doğur: 'Sarmal Performans' çıktı kanalı + sayaç toplayıcı (izleyici başına olay sayısı · süzülen olay sayısı · denetim tetik kaynağı · denetleHepsi süresi ve dosya sayısı · atlanan/ertelenen denetim sayısı)",
+          "Sayaç mantığını saf yardımcıda tut (kanal yazımı ayrı) ve davranış testine bağla — eklenti host'u olmadan sınanabilsin",
+          "eklenti.ts kancalarını bağla: üç izleyicinin (sar · atıf · disk) olayları ve denetleHepsi giriş/çıkışı mercekten geçer; her denetim turu tek satırlık özet düşer (tur süresi + o turdan beri biriken olay dökümü)",
+          "Maliyet disiplinini koru: sayaç artırımı sabit-zamanlıdır, kanal yazımı yalnız denetim turlarında olur — mercek kendisi yük üretmez"
+        ]
+        kabul: [
+          "Mercek her tam-proje denetimi için süre (ms) · taranan dosya sayısı · tetik kaynağı · aradan geçen olay sayılarını tek satırda üretmekte ve kanala yazmaktadır (davranış-testli); satırın gerçek VS Code yüzünde gözle okunuşu PRF-A03 saha kabulüdür (RED-1 K1 ayrımı)",
+          "Sayaç yardımcısı davranış-testlidir; eklenti sınaması tam geçmektedir",
+          "Merceğin maliyeti sınırlıdır: olay başına yalnız sabit-zamanlı sayaç artırımı yapılır; metin üretimi ve kanal yazımı denetim turu başına tek satırdır (kanal aktivasyonda bir kez koşulsuz yaratılır — bilinçli tekil işlem)"
+        ]
+        sınır: "Bu Adım davranış DEĞİŞTİRMEZ — izleyici kapsamı, geciktirme süresi ve denetim akışı aynen kalır (onarım PRF-A02'nin işidir); telemetri dışarı gönderilmez, günlük yalnız yerel çıktı kanalındadır"
+        koşu:  "2026-07-19 · UYGULAMA BİTTİ: performans.ts doğdu (PerformansMercegi — vscode'suz saf sayaç; olayGeldi/süzüldü/atlandı/ertelendi sabit-zamanlı, metin üretimi + kanal yazımı yalnız turBitti'de) ve eklenti.ts'e bağlandı: 'Sarmal Performans' çıktı kanalı + üç izleyicinin (sar · atıf · disk) olay sayımı + denetleHepsi tetik-kaynağı etiketi (başlangıç · sar-olayı · disk-olayı · ayar) + tur süresi/dosya sayısı özeti. Geciktiriciye takılan disk istekleri 'ertelenen' sayacına düşer. Davranış testi performans.test.ts (2 test: tur özeti dökümü + sayaç sıfırlama/tek-yazım disiplini); eklenti süiti 157/157 · build yeşil. Davranış değişmedi (izleyici kapsamı/geciktirme aynı — sınır korundu). Kanalın gözle okunuşu bir sonraki kurulu-eklenti turunda (PRF-A03 sahası) teyit edilecektir — kurulu 0.9.87 bayat build (devir notu). geriye-bağlantı kontrolü: ajan bağlam paketine dokunulmadı — kanal eklenti-içi geliştirici tanı yüzüdür, dil/akış davranışı değişmemiştir --- 2026-07-19 · SOL RED-1 ONARIMI (rapor: nitelik/sol_performans_kosu1.md): ① P1 — üretir bağına KOD-EKL-EKLENTI eklendi (kanal kurulumu ve kancalar eklenti.ts değişikliğidir; commit 5af1db3 gerçeği) ve KOD-PERFORMANS açıklaması düzeltildi (kanalı eklenti.ts kurar, performans.ts yalnız yazıcı alır) ② K1 — kabul cümleleri kodun birebir davranışına çekildi: 'kanal açılmamışken iş yapılmaz' iddiası yanlıştı (kanal aktivasyonda yaratılır, özet her turda yazılır — kod gerçeği artık kabulde); kanalın gözle okunuşu PRF-A03 kabulüne TAŞINDI (bilgi silinmedi, doğru alana ayrıldı; bilgi silinmez, doğru alana ayrılır). Adım bu dar ve doğru kabullerle yeniden kapatıldı"
+      }
+
+      Adım( kod: PRF-A02, durum: tamamlandı, bağımlı: [ PRF-A01 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU, SRN-RAY-GECIKME ], üretir: [ KOD-EKL-EKLENTI, KOD-IZLEYICI-CEKIRDEK, KOD-SNM-IZLEYICI ],
+        ne:    "🧯 İzleyici yükünü düşürmek. Ölçüm merceğinin görünür kılacağı üç mekanizma onarılır: geniş disk izleyicisi git/derleme yan ürünlerini olay sayıyor, .sar olayları denetimi geciktirmesiz tetikliyor ve koşan denetim bitmeden yenisi başlayabiliyor. Onarım üçlüsü Sorun kaydındaki çare adaylarının eklenti katmanına inenleridir" ) {
+        görev: [
+          "Gürültü süzgeci: izleyici olaylarına yol süzgeci ekle — gizli dizinler (.git · .sarmal · .vscode …) ve araç/derleme çıkışları (node_modules · dist · out · arsiv · fikstur · sablon) denetim tetiklemez (süzülen olaylar mercekte sayılır); süzgeç kapsamı tam taramanın dışlama kapsamıyla TEK KAYNAKTAN hizalanır (RED-1 D1)",
+          "Koşarken-atla kilidi: denetleHepsi'yi tek-uçuş sarmalayıcıya al — koşarken gelen istek bayrak bırakır, tur bitince TEK ertelenmiş tur koşulur (istek kaybolmaz, üst üste binme biter, çöken tur sessiz yutulmaz)",
+          "Geciktirme düzeni: .sar olayları da geciktiriciden geçer (anlık üst üste tetik biter); disk-mutabakat geciktirmesi varsayılan 1500 ms'ye büyütülür — kesin değerin saha ölçümüyle seçimi PRF-A03'e taşınmıştır (RED-1 K2 ayrımı; bilgi silinmedi, doğru alana ayrıldı)",
+          "Önce/sonra kanıtı: GERÇEK olay hattı (üretimde kullanılan sınıf) sahte-zamanlayıcı benzetiminde koşturulur ve fiilî denetim-tetik sayısı ölçülür (RED-1 P2: sentetik yol sınıflaması kanıt sayılmaz)"
+        ]
+        kabul: [
+          "Gerçek olay hattının (OlayHatti) sahte-zamanlayıcı benzetiminde: 10 olaylık git dalgası onarım-öncesi yapılandırmada (süzgeçsiz · 500 ms) 7 fiilî tetik, onarımlı yapılandırmada (süzgeçli · 1500 ms) 0 tetik üretmektedir; meşru dosya dalgası kaybolmadan tek tura inmektedir (kanıt: izleyici.test.ts)",
+          "Koşan denetim üst üste binmemektedir: mercek 'atlanan/ertelenen' sayacı bunu doğrulamaktadır; hiçbir meşru istek kaybolmamaktadır (son istek daima koşulur) ve çöken tur kanala raporlanmaktadır (RED-1 R1)",
+          "Süzgeç ile tam taramanın kapsamı tek kaynaktan hizalıdır: taramaya girebilen hiçbir .sar'ın olayı süzülmemekte, süzülen hiçbir yol taranmamaktadır (RED-1 D1; kanıt: izleyici.test.ts kapsam-hizası testi)",
+          "Açık editördeki .sar yazımının canlı tanı deneyimi bozulmamıştır (yazarken tek-dosya denetimi anlık kalır); eklenti sınaması tam geçmektedir"
+        ]
+        sınır: "Denetim motorunun kendisi (çekirdek) değişmez; artımlı denetim bu Adımın işi değildir — ölçüm gerekçelendirirse ayrı Adım açılır; canlı tanı (açık belge, tuş vuruşu yolu) yavaşlatılmaz"
+        koşu:  "2026-07-19 · UYGULAMA BİTTİ: izleyici-cekirdek.ts doğdu (vscode'suz saf mantık) — ① gurultuMu: .git · .sarmal · node_modules · dist · out · .vscode altındaki olaylar denetim tetiklemez (YOKSAY kanonuyla hizalı; Windows ayracı dahil); ② TekUcusKilidi: koşarken gelen istekler tek bayrağa iner (son tetik kazanır), tur bitince TEK telafi turu — çöken tur kilidi asılı bırakmaz. eklenti.ts bağlandı: tüm denetleHepsi çağrıları kilitten geçer; disk geciktirmesi 500→1500 ms (gerekçe: tek git/derleme komutunun olay dalgası saniye-altı aralıklı — 500 ms dalga ortasında tam tarama başlatıyordu; kesin değer PRF-A03 sahasında doğrulanacak); .sar olayları 300 ms geciktiriciyle tek DAG turuna iner, canlı tanı yolu (onDidChangeTextDocument → denetle) DEĞİŞMEDİ. ÖNCE/SONRA benzetimi izleyici.test.ts'te: 10 olaylık git dalgası önce 10 tetik → sonra 0 tetik; meşru dosyalar süzülmüyor; kilit davranış nöbeti 2 test (üst-üste-binme yok · son istek kaybolmaz · hata dayanıklılığı). Eklenti süiti 161/161 · build yeşil. geriye-bağlantı kontrolü: ajan bağlam paketine dokunulmadı — onarım eklenti-içi zamanlama davranışıdır, dil/araç yüzeyi değişmemiştir --- 2026-07-19 · SOL RED-1 ONARIMI (rapor: nitelik/sol_performans_kosu1.md): ① P2/K3 — önce/sonra kanıtı gerçek ölçüme geçti: olay hattı sınanabilir OlayHatti sınıfına çıkarıldı (eklenti.ts disk+sar hatları BU sınıfı kullanır), benzetim sahte-zamanlayıcıyla GERÇEK hattı koşturup fiilî tetik sayıyor — 10 olaylık dalga (100–700 ms aralıklı): eski yapılandırma 7 tetik · onarımlı 0 tetik · meşru dalga 1 tetik (dar-doğru iddia; 'önce 10 tetik' anlatısı geri çekildi) ② D1 — kapsam ayrışması kapandı: dışlama kümesi tek kaynak (izleyici-cekirdek DISLANAN_ADLAR + TARAMA_DISLAMA_GLOB, denetci.ts YOKSAY kanonuyla hizalı); denetleHepsi taraması aynı globu kullanır, sar süzgeci (sarGurultuMu) aynı evreni süzer — dist/out/gizli-dizin .sar'ları artık ne taranır ne bayat kalır; süzgece çalışma-alanı-göreli yol verilir (RED-2 dersi) ③ R1 — kilit hata geri-çağrısı aldı, çöken tur '⛔ denetim turu çöktü' satırıyla kanala düşer ④ K2 — 1500 ms 'varsayılan' olarak dürüstçe adlandırıldı, ölçümle kesinleştirme PRF-A03 kabulüne taşındı ⑤ S1 cevabı: zaman-aşımı bekçisi eklenmedi — kanonda zorunluluk yok, denetleHepsi'nin await'leri çöz/red garantili VS Code API'leridir (kayda geçirildi). Eklenti süiti 164/164 · build yeşil. Adım onarılmış kabullerle yeniden kapatıldı --- 2026-07-19 · SOL RED-2 ONARIMI (rapor: nitelik/sol_performans_kosu2.md): D1-kalıntı kapandı — dışlama globu artık SAR_DISLANANLAR listesinden TÜRETİLİR (elle yazılmış ikiz liste kalktı; __pycache__ dâhil her ad iki yüze birden iner); kapsam-hizası testi 'includes' zayıflığından kurtuldu: glob küme parçası sökülüp listeyle KÜME EŞİTLİĞİ aranır + her ad için süzgeç davranışı kök ve içeride sınanır (__pycache__/canli.sar somut örneği testte). Eklenti süiti 165/165. Adım yeniden kapatıldı --- 2026-07-19 · SOL KOŞU-3 KABUL (rapor: nitelik/sol_performans_kosu3.md): RED-2 kapanışları bağımsız doğrulandı — D1-kalıntı KAPALI (glob türetimi minimatch çapraz-deneyiyle), IZLE-A03 KAPALI (1201,4 ms meşgul panel turunda iz turu olaydan 351,3 ms sonra başladı), önceki hükümler (P1·P2/K3·K1·K2·R1) geriye açılmadı; izole klon 165/165 + build yeşil. Tur mühürlü; kalan tek kapı PRF-A03 sahası"
+      }
+
+      Adım( kod: PRF-A04, durum: tamamlandı, onay: "onaylandı — 2026-07-19 (Founder: 'PRF-A04'ü aç, Sol bitince gir')", bağımlı: [ PRF-A02 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU ], üretir: [ KOD-YOLHARITA-YENILE, KOD-PERFORMANS ],
+        ne:    "🗺️ Yol haritası panelinin tazeleme yolunu onarmak. Founder saha bulgusu (2026-07-19, Sol koşusu sırasında): panel açıkken yazarken kasma hissediliyor, panelin kendisi ağır çalışıyor. Kod incelemesi PRF-A02 onarımlarının panele İNMEDİĞİNİ gösterdi: yenile() her .sar olayında bütün ağacı sıfırdan kuruyor — üç findFiles + her dosyayı paylaşımlı AST önbelleğini (programAl) KULLANMADAN çıplak ayristir ile yeniden ayrıştırma (denetim turuyla çifte ayrıştırma) + tüm trace JSONL'lerini baştan okuma + tek-uçuş kilidi yokluğu + degisti.fire() ile tüm ağacın yeniden çizimi. Ayrıca ölçüm merceği panel turlarına kör — kanal yalnız denetleHepsi'yi görüyor" ) {
+        görev: [
+          "yenile() paylaşımlı AST önbelleğine (programAl) geçir — aynı dosyanın denetim ve panel için iki kez ayrıştırılması biter",
+          "Tek-uçuş kilidini (TekUcusKilidi) ve gürültü süzgecini (gurultuMu) panel izleyicisine de indir — panel tazelemeleri üst üste binmez, git/derleme yan ürünleri panel turu tetiklemez",
+          "Merceğe panel-turu ölçümü ekle: her yenile() turu süre/dosya sayısı/tetik ile kanala düşer (A01 kör noktası kapanır)",
+          "Denetim ile panelin aynı olay dalgasında ayrı ayrı tam tarama yapmasını azalt: en azından dosya listesi/AST paylaşımı, mümkünse tek taramadan iki tüketici",
+          "Trace okumasını sınırla: izleriYukle her turda tüm JSONL'leri baştan okumasın (bugün 8 KB — büyümeden kapatılan borç)"
+        ]
+        kabul: [
+          "Panel tazelemesi paylaşımlı AST önbelleğinden (programAl) beslenmektedir — denetim ve panel aynı (dosya, sürüm) ikilisini ikinci kez ayrıştırmamaktadır (mekanizma: sürüm-anahtarlı tek parse; saha sayıları PRF-A03 kanal gözlemindedir)",
+          "Panel turları kanalda görünmektedir (süre · dosya · tetik satırı) ve çöken tur raporlanmaktadır; üst üste binme tek-uçuş kilidiyle yapısal olarak engellenmektedir (kilit davranış-testli)",
+          "Panel davranışı korunmuştur: ağaç içeriği, sayaçlar, topolojik sıra, çağır-çevrimi ve aktif-varlık nabzı aynıdır; tek bilinçli fark tarama kapsamının denetimle tek-kaynak hizasıdır (gizli dizin/derleme çıkışı .sar'ları artık panelde de kapsam dışı — RED-1 D1); eklenti sınaması tam geçmektedir",
+          "Panel akıcılığının Founder gözle teyidi PRF-A03 saha kabulündedir (tüm saha kanıtları tek kapıda — RED-1 K1 dersi; bu Adım kod/test kanıtlarıyla kapanır, saha hükmü A03'ündür)"
+        ]
+        sınır: "Panelin görsel dili ve bilgi mimarisi değişmez (ZRF kalemleri korunur — kalp atışı dahil); webview'e taşıma yok; çekirdek motor değişmez; Sol koşusu bitmeden eklenti kaynağına dokunulmaz (Founder şartı)"
+        koşu:  "2026-07-19 · UYGULAMA BİTTİ: yolharitasi.ts panel tazeleme yolu onarıldı — ① yenile() paylaşımlı AST önbelleğine (programAl) geçti; çıplak ayristir(belirtecle(...)) kalktı, sözdizim-kırık dosya kirik listesinde sayılmaya devam ediyor (renk yalnız durumu anlatır karşı-tanısı korunur) ② panel izleyicisi OlayHatti + TekUcusKilidi'ne bağlandı (süzgeç sarGurultuMu — denetimle tek kaynak; üst üste binme yapısal engelli; çöken tur '⛔ panel turu çöktü' satırıyla kanala düşer; yenile düğmesi 'el-ile' tetikli geciktirmesiz kaldı) ③ her iki findFiles TARAMA_DISLAMA_GLOB'a hizalandı ④ mercek kör noktası kapandı: her panel turu '🗺️ … panel turu: N ms · M dosya · tetik=…' satırıyla 'Sarmal Performans' kanalına düşer (yolHaritasiKaydi ölçüm-yazıcı parametresi aldı, eklenti.ts bağladı) ⑤ trace okuması değişme-zamanı önbellekli — değişmeyen JSONL yeniden okunmaz/ayrıştırılmaz, silinen dosya önbellekten düşer. Trace hattı bilinçli süzgeçsizdir (.sarmal onun kaynağıdır — IZLE-A03 ≤1sn sözleşmesi korunur). Denetim+panel tam-tarama paylaşımının varılan noktası dürüst: AST paylaşımı TAM (sürüm-anahtarlı tek parse), findFiles listesi hâlâ iki kez koşar (ucuz; tek taramadan iki tüketici ileri iş — gerekirse ölçüm sonrası ayrı Adım). Eklenti süiti 164/164 · build yeşil. geriye-bağlantı kontrolü: ajan bağlam paketine dokunulmadı — eklenti-içi zamanlama/önbellek davranışıdır. IZ-8 imleç-takibi ve tek-nabız mimarisi (nabiz.ts) değişmedi --- 2026-07-19 · SOL RED-2 ONARIMI (rapor: nitelik/sol_performans_kosu2.md): IZLE-A03 ≤1sn sözleşmesi YAPISAL güvenceye kavuştu — iz yolu tam-tur kuyruğundan çıkarıldı: izTazele() hızlı yolu doğdu (yalnız izleriYukle + degisti.fire; findFiles+AST+DAG beklemez), kendi TekUcusKilidi'yle koşar, '🛰️ iz turu' satırıyla kanala düşer; izleriYukle yerel haritada kurup ATOMİK takas yapar (eşzamanlı iz/panel turları yarım hâl görmez). Sol'un karşı-deneyi (meşgul 1100 ms panel turunda iz başlangıcı 1102 ms) onarımlı mimaride davranış-testine çevrildi: aynı senaryoda iz turu 350 ms'de (geciktirme dolar dolmaz) başlar. Eklenti süiti 165/165 · build yeşil. Adım yeniden kapatıldı --- 2026-07-19 · SOL KOŞU-3 KABUL (rapor: nitelik/sol_performans_kosu3.md): RED-2 kapanışları bağımsız doğrulandı — D1-kalıntı KAPALI (glob türetimi minimatch çapraz-deneyiyle), IZLE-A03 KAPALI (1201,4 ms meşgul panel turunda iz turu olaydan 351,3 ms sonra başladı), önceki hükümler (P1·P2/K3·K1·K2·R1) geriye açılmadı; izole klon 165/165 + build yeşil. Tur mühürlü; kalan tek kapı PRF-A03 sahası"
+      }
+
+      Adım( kod: PRF-A05, durum: tamamlandı, onay: "öne alındı ve onaylandı — 2026-07-19 sabah (Founder, ikinci saha bulgusu üzerine zaman-ekseni rotasıyla birlikte: 'sen nasıl diyorsan öyle yapalım'); kapsam eki aynı onayla: Blok satırlarının varsayılan açık gelmesi kapalıya çekilir — kalabalık mevsim Faz'ı açılınca bütün gövdelerin tek karede kurulması biter", bağımlı: [ PRF-A04 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU ], üretir: [ KOD-YOLHARITA-GENISLETME ],
+        ne:    "🐢 Panel genişletme maliyetini düşürmek. Founder saha bulgusu (2026-07-19 gece, ekran görüntülü): FAZ-2026-TEMMUZ gibi kalabalık bir Faz açılınca panel kasıyor. Kod incelemesi kök nedeni gösterdi: her Adım satırı genişlerken kenar grupları için etkiCoz (grafta GEÇİŞLİ kapanış taraması) sıfırdan hesaplanıyor; Faz kapatılıp açıldığında daha önce açık olan bütün alt-Adımlar yeniden kurulduğu için onlarca kapanış taraması tek karede üst üste biniyor. Veri turlar arasında değişmediği hâlde her genişletmede yeniden üretiliyor" ) {
+        görev: [
+          "Kenar-grubu üretimini (bilgiUret) yenile-başına önbelleğe al: etkiCoz sonucu ve grup satırları Adım koduna anahtarlanır, önbellek yalnız yenile() turunda temizlenir (graf o turda değişir) — Faz aç/kapa yeniden hesap tetiklemez",
+          "Koşum satırlarını önbelleğe ALMA: iz verisi yenile olmadan da tazelenir (izTazele hızlı yolu) — canlılık feda edilmez",
+          "Yavaş genişletmeyi merceğe bağla: getChildren süresi eşiği aşarsa kanala tek satır düşer (🐢 işaretli) — saha ölçümü hissiyata muhtaç kalmaz",
+          "Blok satırlarının varsayılan genişletme durumunu kapalıya çek: kalabalık mevsim Faz'ı açıldığında yalnız Blok başlıkları kurulur, gövdenin içi kullanıcı isteğiyle açılır (Founder rota onayı 2026-07-19 sabah)"
+        ]
+        kabul: [
+          "Kalabalık Faz kapatılıp yeniden açıldığında kenar grupları önbellekten gelir (aynı yenile turunda ikinci etkiCoz koşusu yoktur); Founder kasmanın geçtiğini gözle teyit etmiştir",
+          "İz canlılığı korunur: koşum satırları önbelleğe alınmaz, izTazele sonrası taze görünür; eklenti sınaması tam geçmektedir",
+          "Yavaş genişletme kanalda görünür (eşik aşımında tek satır) — panelin üç yolu da (tazeleme · iz · genişletme) ölçülür durumdadır"
+        ]
+        sınır: "Panelin bilgi mimarisi ve kenar-grubu etiketleri (sayılar dahil — VIT-GRAF-A06 Founder onayı) değişmez; etkiCoz motoru (cekirdek/etki.ts) değişmez (İSTİSNA — saha bulgusu 2 kanıtıyla: davranış-KORUYUCU opsiyonel hazirSira parametresi eklendi, verilmezse eski davranış birebir; denklik testli); önbellek yalnız yenile-ömürlüdür (bayat veri gösterilmez). Tek bilinçli görünüm farkı onay alanındaki kapsam ekidir: Blok satırları varsayılan kapalı gelir (içerik/etiket değil, yalnız açılış durumu)"
+        rapor: "2026-07-19 (sabah) · Founder saha bulgusu İKİNCİ KEZ: yol haritası paneli AÇIKKEN IDE'de takılma yaşanmakta, dosya gezginine (Explorer) geçilince takılma kaybolmaktadır — belirti konudaki tanıyla birebir uyumlu (panel görünürken genişletme/yenileme turları Adım-başına geçişli etkiCoz kapanış hesabını tetikliyor; panel gizlenince hesap durmuyor değil, hiç çağrılmıyor). Erteleme kararı Founder'ındı; yinelenen bulgu bu Adımı bir sonraki oturumun ilk adayı yapar"
+        koşu:  "2026-07-19 · UYGULAMA BİTTİ (damga: doğrulanmamış — kapanış kapısı Founder göz-teyidi, kanıtsız tamamlanma dili): yolharitasi.ts genişletme yolu onarıldı — ① bilgiOnbellek + etkiOnbellek (yenile-ömürlü): kenar grupları ve etkiCoz kapanış sonuçları Adım koduna anahtarlandı, önbellekler YALNIZ yenile() graf kurulumunda boşalır; Faz aç/kapa yeniden hesap tetiklemez, koni kartı (koniKartHtml) da aynı önbellekten okur — aynı yenile turunda ikinci etkiCoz koşusu yapısal olarak yoktur (etkiAl tek kapı) ② koşum satırları bilinçli önbellek DIŞI: iz canlılığı korunur (izTazele hızlı yolu koşumları this.izler'den taze kurar) ③ 🐢 yavaş-genişletme merceği: getChildren süresi 30 ms eşiğini aşarsa 'Sarmal Performans' kanalına tek satır düşer (süre · düğüm · çocuk sayısı) — panelin üç yolu da ölçülür (🗺️ tazeleme · 🛰️ iz · 🐢 genişletme) ④ kapsam eki (Founder rota onayı): Blok satırları varsayılan KAPALI — kalabalık mevsim Faz'ı açılınca yalnız Blok başlıkları kurulur, tek karede tüm ağaç kurulumu biter. Eklenti süiti 165/165 · build yeşil. Dürüst sınır: önbellek davranışının birim testi yok (YolHaritasi sınıfı vscode-bağımlı, saf modül değil — mekanizma kod-okuma + saha merceğiyle kanıtlanır); Founder kasmanın geçtiğini gözle teyit edince tamamlandı damgası basılır --- 2026-07-19 · SAHA BULGUSU 2 + ONARIM (0.9.94 kanal ekranı, Founder): 🐢 merceği İLK sahada avını yakaladı — '🐢 yavaş genişletme: 957 ms · BKM-FND-A01' + '952 ms · BKM-FND-A03' (arada 🗺️ turu yok → önbellek doluydu; yavaşlık her Adımın İLK hesabındaydı: etkiCoz her çağrıda topolojikSira'yı TÜM grafa [1470 düğüm] yeniden koşturuyor). Onarım: yenile()'nin zaten kurduğu topolojik sıra saklanır (topoSira) ve etkiCoz'a enjekte edilir — etki.ts'e davranış-koruyucu opsiyonel hazirSira parametresi (sınır istisnası gerekçeli; denklik testi: tüm düğümlerde enjekte-sıra ≡ yerinde-hesap). Çekirdek 789/789 · eklenti 165/165 · 0.9.95 paketlendi+kuruldu. Başlangıç turlarının ağırlığı (🗺️ 9545 ms · denetim 12003 ms · 240 dosya, tetik=başlangıç) AYRI sınıf: soğuk açılış tam taraması — bu Adımın genişletme kapsamı dışı, gözlem sürerse yeni Sorun düğümü açılır --- 2026-07-19 · SAHA KAPANIŞI (0.9.95, VS Code güncellemesi sonrası devrede): Founder göz-teyidi kendi sözleriyle: 'kasma tamamen sona erdi' — kalabalık mevsim Faz'ı + terminal yazımı senaryosunda takılma yok. Kabul ①'in saha ayağı kapandı; doğrulanmamış→tamamlandı geçişi bu teyitle basıldı (kanıt = Founder saha hükmü + 789/789·165/165 süit sicili). Terminal-gecikme belirtisinin de bu turla birlikte kaybolması dikkat çekici: açık Adımların her turda Adım-başına ~950 ms yeniden kurulması muhtemel ortak kökmüş — PRF-A06 (tam-tur sınıfı) gözlem modunda beklemede kalır, kanal sayısı birikirse oradan devam edilir"
+      }
+
+      Adım( kod: PRF-A06, koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Acil kasma sorunu önceki Adımda çözülmüş ve göz teyidi alınmıştı; bu Adım gözlem modundadır ve verisi orkestrasyon mesaisinde birikecektir. Kontrolcü önerisi: gözlemde kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): gözlem işi — TAM-TUR maliyet verisi orkestrasyon mesaisi sırasında birikir, ölçüm o zaman anlamlı", durum: beklemede, öncelik: p2, onay: "onaylandı — 2026-08-08", bağımlı: [ PRF-A05 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU ],
+        ne:    "🏋️ TAM-TUR maliyetini düşürmek — üçüncü ve ayrı performans sınıfı. Founder saha bulgusu (2026-07-19 sabah, 0.9.94 kanal ekranı + terminal gözlemi): 'terminalden yazı yazarken gecikme hissediyorum, özellikle yol haritası açıkken.' Kanal sayıları sınıfı ayırıyor: 🗺️ panel turu 9545 ms · denetim turu 12003 ms (240 dosya, tetik=başlangıç). Tanı hipotezi: her .sar olayı (terminaldeki ajan commit'leri dahil) TAM tur tetikliyor — 240 dosyanın tamamı openTextDocument ile açılıp taranıyor, dagKur+topolojik+sıralama senkron koşuyor; 9-12 saniyelik senkron JS bloğu eklenti sürecini kilitliyor, terminal/editör yazımı o pencerede takılıyor. PRF-A05'in genişletme önbelleği bu sınıfa İLAÇ DEĞİL (o Adım-genişletme yoluydu, bu tam-tur yolu)" ) {
+        görev: [
+          "Ölç ve doğrula: olağan çalışma seansında (ajan terminalde commit atarken) 🗺️/denetim tur sıklığı ve süreleri kanaldan toplanır — 'başlangıç 9.5 s' ile 'olay-tetikli tur' süresi ayrıştırılır (soğuk/sıcak farkı)",
+          "Artımlı tur: yalnız DEĞİŞEN dosya yeniden okunur/ayrıştırılır — değişmeyen dosyaların Oge listesi dosya-sürümü anahtarlı önbellekten gelir (PRF-A04 AST önbelleğinin panel-üstü katmanı); findFiles sonucu da olaydan türetilerek tam disk taraması azaltılır",
+          "Senkron bloğu parçala: 240-dosya döngüsü olay döngüsüne nefes bırakacak şekilde dilimlenir (await ile yield) ya da ağır kısım ertelenir — tur sürerken yazım takılması yapısal olarak biter",
+          "Denetim+panel tek taramadan iki tüketici (PRF-A04'ün dürüst 'ileri iş' kalemi buraya devrolur) — aynı olay dalgasında iki ayrı tam tarama koşmaz"
+        ]
+        kabul: [
+          "Olay-tetikli tur süresi kanalda ölçülür ve tek-dosya değişikliğinde tam-tarama süresinin belirgin altına iner (önce/sonra sayıları koşu kaydında)",
+          "Tur koşarken terminal/editör yazımı takılmaz — Founder gözle teyit eder (bu Adımın saha kapısı)",
+          "Panel davranışı korunur: ağaç içeriği, sayaçlar, çağır-çevrimi, iz canlılığı aynı; eklenti süiti tam geçer"
+        ]
+        sınır: "Denetim motorunun (cekirdek) artımlı hâle getirilmesi bu Adımın dışı (Blok kapsam beyanıyla aynı sınır — eklenti katmanı); soğuk açılış tam taraması meşru kalır (ilk resim tam olmalı), hedef OLAY-tetikli turlardır"
+        rapor: "2026-07-19 · Doğuş bulgusu: Founder 0.9.94 sahasında terminal yazımında gecikme bildirdi (yol haritası açıkken belirgin); aynı ekranda başlangıç turları 9545/12003 ms · 240 dosya. PRF-A05 genişletme onarımları (önbellek + hazirSira + Blok-kapalı) bu sınıfı kapsamıyor — ayrı Adım açıldı (STR-4: kayıt sahibinin altında). 0.9.95 saha gözlemi bu Adımın ölçüm girdisidir"
+      }
+
+      Adım( kod: PRF-A03, durum: tamamlandı, bağımlı: [ PRF-A02, PRF-A04 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU ],
+        ne:    "🩺 Saha teyidi. Onarımın gerçek yük altında işe yaradığı ancak sahada kanıtlanır: Sol benzeri yoğun koşu (ya da bizzat Sol'un bir sonraki koşusu) sırasında mercek özetleri toplanır ve Founder kasma hissinin geçtiğini kendi elleriyle teyit eder — Sorun kayıtları ancak bu teyitle kapanış notu alır" ) {
+        görev: [
+          "Sol benzeri yük senaryosu koştur (git clone --local + izole test koşusu) ve mercek özetlerini topla",
+          "Kanalın gerçek VS Code yüzünde gözle okunduğunu teyit et — 'Sarmal Performans' çıktı kanalında tur satırları görünür ve anlaşılırdır (RED-1 K1'den taşınan kabul)",
+          "Disk geciktirme değerini (varsayılan 1500 ms) kanal ölçümleriyle sına — olay dalgalarının gerçek aralık dağılımına göre değeri teyit et ya da ayarla (RED-1 K2'den taşınan görev)",
+          "Founder'dan his teyidi al: aynı senaryoda IDE akıcılığı",
+          "İki Sorun kaydına (SRN-IDE-KASMA-SOL-KOSUSU · SRN-RAY-GECIKME ② katmanı) kapanış notunu düş; kalıntı varsa yeni Sorun olarak ayrıştır"
+        ]
+        kabul: [
+          "Founder gerçek/benzetilmiş Sol yükü altında kasmanın geçtiğini teyit etmiştir",
+          "Kanal gerçek yüzünde gözle okunmuştur ve geciktirme değeri saha ölçümüyle gerekçelendirilmiştir (teyit ya da değişiklik — sayılarıyla koşu kaydında)",
+          "Sorun kayıtlarında kapanış (ya da dürüst kalıntı) notu vardır; mercek özet çıktısı koşu kaydında adreslidir"
+        ]
+        sınır: "Founder teyidi olmadan Sorun kapatılmaz — 'ölçüm düştü' tek başına kabul değildir (YAS-4.2: “çalışıyor” hissi değil sınanabilir koşul ile sahibinin teyidi)"
+        koşu:  "2026-07-19 · SAHA KAPANIŞI (Founder, 0.9.91 kurulu + pencere yenilenmiş): gerçek Sol yükü sahada yaşandı — koşu-2 ve koşu-3 kabul denetimleri (git clone --local + npm ci + süit koşuları) bizzat yük senaryosuydu, Founder kanalı koşular boyunca canlı izledi (gözle-okunuş teyidi). HÜKÜM Founder sözleriyle: 'performans eskisinden daha iyi durumda; yol haritasında kasma artık yok, Sol çalışma yaparken IDE'de hissedilen gecikme şu an için yok; gözlemlemeye devam edeceğim, şimdilik konu kapanmıştır.' 1500 ms varsayılanı saha gözleminde sorun çıkarmadı — değer teyit edildi (değişiklik gerekmedi). DÜRÜST KALINTI: kanal satırlarının sayısal dökümü koşu kaydına inmeden Founder konuyu kapattı — Sol koşu-3 raporundaki bağımsız ölçümler (1201 ms meşgul panelde iz 351,3 ms · trace hızlı yolu p95 0,9 ms) sayısal kanıt olarak bu kaydın adresidir; gözlem sürer, yeni bulgu yeni Sorun düğümü açar (Founder: 'ilerde herhangi bir bulgu olursa bildiririm'). İki Sorun kaydına kapanış notu düşüldü"
+      }
+
+    }
+  }
+}
+
+// 🍎 PRF meyveleri — Adım→kod izi (üretir: kenarının hedefleri)
+Kod( kod: KOD-PERFORMANS, dosya: "urun/eklenti/src/performans.ts",
+  ne: "🍎 Performans merceği sayaç çekirdeği — vscode'suz PerformansMercegi (olay/süre sayaçları + tur özeti üretimi); 'Sarmal Performans' kanalını performans.ts DEĞİL eklenti.ts kurar ve yazıcı olarak bağlar (PRF-A01 ürünü; adres düzeltmesi RED-1 P1)" )
+
+Kod( kod: KOD-SNM-PERFORMANS, dosya: "urun/eklenti/sinama/performans.test.ts",
+  ne: "🍎 Mercek sınaması — sayaç yardımcısının davranış nöbeti (PRF-A01 ürünü)" )
+
+Kod( kod: KOD-IZLEYICI-CEKIRDEK, dosya: "urun/eklenti/src/izleyici-cekirdek.ts",
+  ne: "🍎 İzleyici çekirdeği — gürültü deseni (git/derleme yan ürünleri) + tek-uçuş kilidi (koşan denetim üst üste binmez, son istek kaybolmaz); vscode'suz saf mantık (PRF-A02 ürünü)" )
+
+Kod( kod: KOD-SNM-IZLEYICI, dosya: "urun/eklenti/sinama/izleyici.test.ts",
+  ne: "🍎 İzleyici çekirdeği sınaması — gürültü süzgeci önce/sonra benzetimi + tek-uçuş kilidi davranış nöbeti (PRF-A02 ürünü)" )
+
+Kod( kod: KOD-YOLHARITA-GENISLETME, dosya: "urun/eklenti/src/yolharitasi.ts",
+  ne: "🍎 Panel genişletme önbelleği — kenar grupları yenile-başına önbellekli, yavaş genişletme 🐢 satırıyla kanalda (PRF-A05 ürünü)" )
+
+Kod( kod: KOD-YOLHARITA-YENILE, dosya: "urun/eklenti/src/yolharitasi.ts",
+  ne: "🍎 Panel tazeleme onarımı — yenile() paylaşımlı AST önbelleğine geçer, tek-uçuş kilidi + gürültü süzgeci panel izleyicisine iner, panel turları mercekte görünür (PRF-A04 ürünü)" )

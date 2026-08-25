@@ -1,0 +1,340 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/ork.sar — 🎼 ORKESTRASYON bölümü · v1 kanonu (27 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### ORK-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Orkestrasyon ve Bağımlılık; mimari görünürlük, Adım yürütme sırası, üretim kökeni, Auth, ajan iş bölümü ve yetki akışlarını birbirinden ayrılmış, tipli ve tek anlamlı ilişki sınıflarıyla tanımlayan kanonik işletim otoritesidir; bu anlamlar örtük kaynak sırası, düzyazı veya ikinci bir ilişki siciliyle kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [ORK, MIM, TIP, YAS].
+**Gerekçe:** Kapsam, sıra, teslim kökeni, kimlik ve yetki aynı bağ türüne yüklendiğinde grafın neyi gösterdiği ve hangi değişikliğin yürütmeyi etkilediği belirsizleşir. Ayrık ilişki sınıfları aynı düğüm çiftinin farklı yüzlerde başka anlam kazanmasını önler.
+**Örnek:** Kanonik ayrım: `mimariBağı = görünürlük`, `bağımlı|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: ORK-0, durum: kilitli,
+       ne: "ORK-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Orkestrasyon ve Bağımlılık; mimari görünürlük, Adım yürütme sırası, üretim kökeni, Auth, ajan iş bölümü ve yetki akışlarını birbirinden ayrılmış, tipli ve tek anlamlı ilişki sınıflarıyla tanımlayan kanonik işletim otoritesidir; bu anlamlar örtük kaynak sırası, düzyazı veya ikinci bir ilişki siciliyle kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [ORK, MIM, TIP, YAS].",
+       gerekçe: "Kapsam, sıra, teslim kökeni, kimlik ve yetki aynı bağ türüne yüklendiğinde grafın neyi gösterdiği ve hangi değişikliğin yürütmeyi etkilediği belirsizleşir. Ayrık ilişki sınıfları aynı düğüm çiftinin farklı yüzlerde başka anlam kazanmasını önler." )
+
+-->|
+### ORK-1 · Üç Tipli İlişki Modeli [HATA]
+**Hüküm:** Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: `mimariBağı` yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez veya aynı bağlantı birden çok sınıfta yinelenemez; dayanak: ORK-0; ilgili: [ORK, MIM, TIP].
+**Gerekçe:** Mimari yakınlığı yürütme önceliği, teslim bağını da bağımlılık saymak sahte öncüller, yanlış döngüler ve kayıp üretim izi doğurur. Üçlü ayrım graf hesabını ve görsel okumayı tek anlamda tutar.
+**Örnek:** `ALT-KOD mimariBağı ADM-DERLE`, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez.
+**Zorlama:** Yeni tanı önerisi `ilişki-sınıfı-ihlali` · HATA · “Kenar mimari görünürlük, Adım sırası veya üretim kökeni sınıflarından yanlış olanında kullanılmış; ilanlı sınıfa taşı.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: ORK-1, durum: kilitli,
+       ne: "ORK-1 · Üç Tipli İlişki Modeli [HATA]",
+       karar: "Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: `mimariBağı` yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez veya aynı bağlantı birden çok sınıfta yinelenemez; dayanak: ORK-0; ilgili: [ORK, MIM, TIP].",
+       gerekçe: "Mimari yakınlığı yürütme önceliği, teslim bağını da bağımlılık saymak sahte öncüller, yanlış döngüler ve kayıp üretim izi doğurur. Üçlü ayrım graf hesabını ve görsel okumayı tek anlamda tutar." )
+
+-->|
+### ORK-1.1 · mimariBağı [HATA]
+**Hüküm:** `mimariBağı` yalnız `Blok→Katman`, `Katman→AltKatman` ve `AltKatman→Adım` ardışık çiftlerinde, üst kademenin alt kademeyi mimari kapsamda görünür kılması için kullanılır; topolojik yürütme sırasına katılamaz, kademe atlayamaz ve `Blok→Blok`, `Katman→Katman` veya başka eş-kademe bağı kuramaz; dayanak: ORK-1; ilgili: [ORK, MIM].
+**Gerekçe:** Mimari kapsamın sıra grafına girmesi bir kapsayıcının bütün yapraklarını istemeden kilitler; eş-kademe ve atlamalı bağlar ise kanonik sarma zincirinin dışına ikinci bir mimari hiyerarşi kurar.
+**Örnek:** Doğru: `BLK-KIMLIK mimariBağı KAT-SERVIS` ve `KAT-SERVIS mimariBağı ALT-SINAMA`; yanlış: `BLK-KIMLIK mimariBağı BLK-ODEME` veya bu bağı “önce çalışır” diye yorumlamak.
+**Zorlama:** Yeni tanı önerisi `mimari-bağı-ihlali` · HATA · “`mimariBağı` yalnız ardışık Blok→Katman→AltKatman→Adım görünürlük zincirinde kullanılabilir ve yürütme sırası kuramaz.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural mimariBağı( kod: ORK-1.1,
+       ne: "ORK-1.1 · mimariBağı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-1 )
+
+-->|
+### ORK-1.2 · Bağımlı ve Besler [HATA]
+**Hüküm:** `bağımlı` ve `besler` yalnız Adım kaynakları ile Adım hedefleri arasında tek bir yönlü, döngüsüz yürütme grafı kurar; `A bağımlı B`, B'nin A'dan önce tamamlanmasını, `A besler B` ise A'nın B'den önce tamamlanmasını zorunlu kılar, dolayısıyla `A besler B` ile `B bağımlı A` aynı öncül→ardıl çiftine normalleştirilir ve ters bağlantı ayrıca yazılmadan türetilir; dayanak: ORK-1; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** İki yazımın yönü açık olmazsa aynı kaynak bir koşumda öncül, diğerinde ardıl sayılabilir; kapsayıcı veya yinelenen ters kayıtlar da yaprak sırasını şişirip döngü hesabını bozar.
+**Örnek:** `Adım( kod: ADM-DERLE, besler: [ ADM-SINA ] )` ile `Adım( kod: ADM-SINA, bağımlı: [ ADM-DERLE ] )` aynı “DERLE önce, SINA sonra” çiftini anlatır; ikisi iki ayrı iş bağı sayılmaz.
+**Zorlama:** `kapsayıcı-kenar` · HATA · “Sıra çocuklardan kurulur; kenar Adım'da olmalı.”; `döngüsel-bağımlılık` · HATA · “Bağımlılık zinciri sıralanamıyor; döngüyü kır.”; `öz-bağımlılık` · HATA · “Bir iş kendinden önce gelemez.” · yüzey: proje CLI; yeni tanı önerisi `yürütme-kenarı-sözleşmesi` · HATA · “`bağımlı|besler` uçları Adım değil, yön anlamı ters veya aynı öncül→ardıl çifti yinelenmiş.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural bağımlıVeBesler( kod: ORK-1.2,
+       ne: "ORK-1.2 · Bağımlı ve Besler [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-1,
+       tanı: [ döngüsel-bağımlılık, kapsayıcı-kenar, öz-bağımlılık ] )
+
+-->|
+### ORK-1.3 · Üretir ve Provenance [HATA]
+**Hüküm:** `üretir` yalnız bir Adımdan bir Meyveye yönelir; her Meyve tam olarak bir üreten Adıma bağlanır, kenar teslimin üretim kökenini gösterir ve hiçbir koşulda öncül, ardıl, mimari kapsam veya topolojik yürütme sırası oluşturmaz; dayanak: ORK-1; ilgili: [ORK, MIM, TIP, YUZ].
+**Gerekçe:** Meyveyi sıranın parçası yapmak ürün düğümünü çalıştırılabilir iş gibi gösterir; birden çok veya hiç üretici bulunmaması da teslimin sahibi, kabulü ve etki zincirini belirsizleştirir.
+**Örnek:** Doğru: `Adım( kod: ADM-SINA, üretir: [ MEY-RAPOR ] )` ve `Meyve( kod: MEY-RAPOR, tür: Sözleşme )`; yanlış: `Meyve`den Adıma `üretir` yöneltmek veya bu kenarı ADM-SINA'nın sırası saymak.
+**Zorlama:** `kırık-referans` · HATA · “`üretir` hedefindeki KOD hiçbir `.sar` kaynağında yok.” · yüzey: proje CLI; yeni tanı önerisi `üretim-kökeni-ihlali` · HATA · “`üretir` yalnız Adım→Meyve yönünde kurulmalı ve Meyve tam bir üreticiye bağlı olmalı; bu kenarı yürütme sırasından çıkar.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural üretirVeProvenance( kod: ORK-1.3,
+       ne: "ORK-1.3 · Üretir ve Provenance [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-1,
+       tanı: [ kırık-referans ] )
+
+-->|
+### ORK-2 · Yardımcı İlişki Sınıfları [BİLGİ]
+**Hüküm:** Üç ana ilişki sınıfı dışındaki yardımcı kenarlar yalnız ilan edildikleri referans, yönetişim, kapsam, zaman, yönetim, davranış, kavuşum veya hizmet anlamını taşır; açıkça Adım-sırası kenarı olarak tanımlanmayan hiçbir yardımcı ilişki topolojik sıraya, seçilebilirlik hesabına veya döngü denetimine katılamaz; dayanak: ORK-0; ilgili: [ORK, TIP, YAS, YUZ].
+**Gerekçe:** Her ilişkiyi genel bağımlılık saymak bağlam ve yönetişim kayıtlarını sahte yürütme engellerine dönüştürür; kapalı sınıflama kenar eklenirken semantiğin görünür kalmasını sağlar.
+**Örnek:** `dayanak` hüküm kökenini, `tema` görünüm bağını, `koşar` işletilecek hedefi gösterir; bunların hiçbiri tek başına iki Adım arasında “önce→sonra” sırası üretmez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: ORK-2, durum: kilitli,
+       ne: "ORK-2 · Yardımcı İlişki Sınıfları [BİLGİ]",
+       karar: "Üç ana ilişki sınıfı dışındaki yardımcı kenarlar yalnız ilan edildikleri referans, yönetişim, kapsam, zaman, yönetim, davranış, kavuşum veya hizmet anlamını taşır; açıkça Adım-sırası kenarı olarak tanımlanmayan hiçbir yardımcı ilişki topolojik sıraya, seçilebilirlik hesabına veya döngü denetimine katılamaz; dayanak: ORK-0; ilgili: [ORK, TIP, YAS, YUZ].",
+       gerekçe: "Her ilişkiyi genel bağımlılık saymak bağlam ve yönetişim kayıtlarını sahte yürütme engellerine dönüştürür; kapalı sınıflama kenar eklenirken semantiğin görünür kalmasını sağlar." )
+
+-->|
+### ORK-2.1 · Referans ve Yönetişim Kenarları [BİLGİ]
+**Hüküm:** `referans` bilgi veya bağlam hedefini, `hatırlat` ileri bağlama taşınacak kaydı, `uygular` hedefin tabi olduğu kuralı, `dayanak` hükmün doğduğu kararı ve `anayasa` Etmenin tabi olduğu üst sınırı tipli olarak gösterir; bu kenarlar izlenebilirlik sağlar fakat topolojik Adım sırası kurmaz; dayanak: ORK-2; ilgili: [ORK, YAS, OGR].
+**Gerekçe:** Hüküm kökeni ile iş önceliğini aynı kenara yüklemek bir karar değişikliğini yürütme bağımlılığına dönüştürür ve öğretim bağlarını gereksiz yere koşumu kilitleyen bağlantılar yapar.
+**Örnek:** `Kural rejimBeyanı( kod: KRL-REJIM, dayanak: KAR-REJIM )` hüküm kökenini gösterir; KAR-REJIM'in KRL-REJIM'den önce “çalıştırılacağı” anlamına gelmez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural referansVeYönetişimKenarları( kod: ORK-2.1,
+       ne: "ORK-2.1 · Referans ve Yönetişim Kenarları [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-2 )
+
+-->|
+### ORK-2.2 · Kapsama, Zaman ve Yönetim Kenarları [BİLGİ]
+**Hüküm:** `içerir` yapısal kapsamı, `mevsim` Blokun yürürlük zamanını, `yönetir` sahiplik ve yönetim bağını, `tetikler` ilanlı koşulda etkinleşecek hedefi, `tema` ise yüzeyin görünüm sözleşmesini gösterir; her biri yalnız kanonik kaynak-hedef tipleri arasında kurulur ve Adım sırası yerine kullanılamaz; dayanak: ORK-2; ilgili: [ORK, MIM, TIP, YUZ].
+**Gerekçe:** Kapsam, zaman, sahiplik, etkinleşme ve görünümün örtük alanlarda saklanması graf yüzlerini eksiltir; bunları bağımlılığa çevirmek ise zaman veya tema değişikliğini sahte yürütme öncülü yapar.
+**Örnek:** `Blok( kod: BLK-KIMLIK, mevsim: FAZ-01 )` zaman bağını, `Ekran( kod: EKR-GIRIS, tema: TEM-ANA )` görünüm bağını kurar; ikisi de iş sırası değildir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural kapsamaZamanVeYönetimKenarları( kod: ORK-2.2,
+       ne: "ORK-2.2 · Kapsama, Zaman ve Yönetim Kenarları [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-2 )
+
+-->|
+### ORK-2.3 · Davranış ve Kavuşum Kenarları [BİLGİ]
+**Hüküm:** `çağırır` eylemden uca çağrıyı, `gider` hedef yüzeye gezinmeyi, `gönderir` formdan uca veri aktarımını, `sözleşme` yüzler arası kavuşumu ve `koşar` Döngünün ilanlı işletim hedefini tipli olarak kurar; davranış veya işletim bağı ancak ayrıca Adım-sırası kenarı varsa topolojik öncelik doğurur; dayanak: ORK-2; ilgili: [ORK, TIP, YUZ].
+**Gerekçe:** Kullanıcı hareketini, servis sözleşmesini ve tekrar hedefini genel bağımlılıkta eritmek gerçek ürün davranışını görünmez kılar ve DAG'a ürün akışından gelmeyen sahte kenarlar ekler.
+**Örnek:** `Düğme( kod: DGM-GONDER, çağırır: UC-KAYDET )`, `Form( kod: FRM-GIRIS, gönderir: UC-KAYDET )` ve `Uç( kod: UC-KAYDET, sözleşme: SZL-KIMLIK )` farklı davranış bağlarıdır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural davranışVeKavuşumKenarları( kod: ORK-2.3,
+       ne: "ORK-2.3 · Davranış ve Kavuşum Kenarları [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-2 )
+
+-->|
+### ORK-2.4 · Kullanır Kenarı [HATA]
+**Hüküm:** `kullanır` yalnız ortak Auth seçen Projeyi tam bir KimlikKöküne veya bir Katmanı tam bir somut Teknolojiye bağlayan paylaşılan hizmet ilişkisidir; Katman tam olarak bir Teknoloji kullanır, Proje ise ortak Auth seçtiğinde tam olarak bir ortak KimlikKökü kullanır ve başka kaynak-hedef çiftleri bu kenarı üstlenemez; dayanak: ORK-2; ilgili: [ORK, MIM, TIP].
+**Gerekçe:** Aynı kenarın sınırsız hizmet bağına dönüşmesi Katmanın teknoloji tekilliğini ve Projenin kimlik sınırını belirsizleştirir; eksik ya da çoklu hedef derleme, sahiplik ve erişim hesaplarını ayrıştırır.
+**Örnek:** Doğru: `Katman( kod: KAT-SERVIS, kullanır: TEK-SERVIS )` ve `Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )`; yanlış: bir Katmanın `[ TEK-SERVIS, TEK-VERI ]` kullanması.
+**Zorlama:** `katmansız-teknoloji` · UYARI · “Katman teknoloji bağı taşımıyor; Katman bir teknoloji dilimidir.” · yüzey: proje CLI; yeni tanı önerisi `kullanır-kenarı-ihlali` · HATA · “`kullanır` kaynağı/hedefi izinli Proje→KimlikKökü veya Katman→Teknoloji çifti değil ya da tekillik bozulmuş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural kullanırKenarı( kod: ORK-2.4,
+       ne: "ORK-2.4 · Kullanır Kenarı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-2,
+       tanı: [ katmansız-teknoloji ] )
+
+-->|
+### ORK-3 · Adım DAG’ı ve Deterministik Sıra [HATA]
+**Hüküm:** Yürütme sırası yalnız Adımlar arasındaki normalleştirilmiş `bağımlı|besler` çiftlerinden kararlı topolojik sıralamayla türetilir; aynı graf ve durum girdisi her koşumda aynı sırayı verir, eşdeğer adaylar kanonik KOD sırasıyla çözülür ve Faz, Blok, Katman veya AltKatmanın kaynak sırası iş önceliği sayılamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** Dosya sırasını öncelik saymak biçimlendirme veya taşıma işlemini yürütme davranışına dönüştürür; kararsız eşitlik çözümü de aynı planın farklı koşumlarda başka işi seçmesine yol açar.
+**Örnek:** `ADM-B bağımlı ADM-A` ise A önce, B sonra gelir; bağımsız `ADM-C` ile `ADM-D` aynı anda seçilebilirse kararlı KOD sırası kullanılır, bunların dosyadaki yeri sonucu değiştirmez.
+**Zorlama:** `kapsayıcı-kenar` · HATA · “Sıra çocuklardan kurulur; kenar Adım'da olmalı.” · yüzey: proje CLI; yeni tanı önerisi `deterministik-sıra-ihlali` · HATA · “Yürütme sırası Adım DAG'ı dışında kaynak sırası, kapsayıcı veya kararsız eşitlik çözümü kullanıyor.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: ORK-3, durum: kilitli,
+       ne: "ORK-3 · Adım DAG’ı ve Deterministik Sıra [HATA]",
+       karar: "Yürütme sırası yalnız Adımlar arasındaki normalleştirilmiş `bağımlı|besler` çiftlerinden kararlı topolojik sıralamayla türetilir; aynı graf ve durum girdisi her koşumda aynı sırayı verir, eşdeğer adaylar kanonik KOD sırasıyla çözülür ve Faz, Blok, Katman veya AltKatmanın kaynak sırası iş önceliği sayılamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS].",
+       gerekçe: "Dosya sırasını öncelik saymak biçimlendirme veya taşıma işlemini yürütme davranışına dönüştürür; kararsız eşitlik çözümü de aynı planın farklı koşumlarda başka işi seçmesine yol açar." )
+
+-->|
+### ORK-3.1 · Döngü Yasağı [HATA]
+**Hüküm:** Adım bağımlılık grafındaki her doğrudan veya dolaylı döngü, her öz-bağımlılık ve öncülü tamamlanmadan tamamlanmış ya da terfi etmiş gösterilen her Adım geçersizdir; bu bulgulardan biri varken sıralama, seçme, yürütme ve durum terfisi durur; dayanak: ORK-3; ilgili: [ORK, YAS].
+**Gerekçe:** Döngülü grafın ilk işi yoktur, öz-bağımlılık imkânsız bir önkoşul kurar ve tamamlanmamış öncül üstünden terfi kabul zincirini atlar; devam etmek deterministik olmayan veya kanıtsız durum üretir.
+**Örnek:** Yanlış: `ADM-A bağımlı ADM-B` ve `ADM-B bağımlı ADM-A`; ayrıca ADM-A tamamlanmadan ADM-B `durum: tamamlandı` olamaz.
+**Zorlama:** `döngüsel-bağımlılık` · HATA · “Bağımlılık zinciri sıralanamıyor; döngüyü kır.”; `öz-bağımlılık` · HATA · “Bir iş kendinden önce gelemez.”; `durum-tutarsızlığı` · HATA · “Öncül bitmeden iş tamamlanamaz.” · yüzey: proje CLI ve graf · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural döngüYasağı( kod: ORK-3.1,
+       ne: "ORK-3.1 · Döngü Yasağı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-3,
+       tanı: [ durum-tutarsızlığı, döngüsel-bağımlılık, öz-bağımlılık ] )
+
+-->|
+### ORK-3.2 · Seçilebilir Adım [UYARI]
+**Hüküm:** Orkestratör yalnız `beklemede` veya `geliştirmede` durumundaki, bütün Adım öncülleri `tamamlandı` olan işleri seçebilir; seçilebilir kümede `geliştirmede` olan etkin Adımlar önce, aynı durumdakiler kanonik KOD sırasıyla alınır ve bloklu, doğrulanmamış ya da öncülü açık iş yürütülemez; dayanak: ORK-3; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** Öncülü bitmeyen veya bloklu işi seçmek bağımlılık sözleşmesini bozar; etkin işi kararlı biçimde öne almamak ise yarım işi çoğaltır ve aynı girdiden farklı gündemler üretir.
+**Örnek:** ADM-A tamamlandı, ADM-B `geliştirmede` ve `bağımlı: [ ADM-A ]` ise B seçilebilir; ADM-C `bağımlı: [ ADM-B ]` iken B bitmeden C seçilemez.
+**Zorlama:** Yeni tanı önerisi `seçilemez-adım-yürütümü` · UYARI · “Seçilen Adım açık durumda değil, en az bir öncülü tamamlanmamış veya kararlı etkin-Adım önceliğini ihlal ediyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural seçilebilirAdım( kod: ORK-3.2,
+       ne: "ORK-3.2 · Seçilebilir Adım [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-3 )
+
+-->|
+### ORK-3.3 · Kapı ve Döngü İşletimi [HATA]
+**Hüküm:** Kapı yalnız ilanlı kabul ölçütlerinin tamamını karşılayan çözülebilir ve doğrulanmış kanıtla geçilebilir; her Döngü en az bir çözülebilir `koşar` hedefi ile en az bir sonlanma güvencesini (`durunca` veya `turLimiti`) açıkça taşır, hedef ya da sonlanma koşulu eksikken işletilemez; dayanak: ORK-3; ilgili: [ORK, TIP, YAS].
+**Gerekçe:** Kanıtsız Kapı yalnız durum etiketidir; hedefsiz Döngü hiçbir iş yapmaz, sonlanma güvencesi olmayan Döngü ise sınırsız koşum ve kaynaksız durum değişikliği riski taşır.
+**Örnek:** `Döngü( kod: DNG-TEMIZLIK, tetik: koşul, koşar: [ ADM-DENETLE ], durunca: "karne.hata == 0", turLimiti: 5 )` hedefli ve sınırlıdır; kabul ölçütü karşılanmamış `Kapı` geçilmiş sayılamaz.
+**Zorlama:** `kırık-koşar` · UYARI · “Döngünün `koşar` hedefi ilansız; Döngü koşulamaz.”; `durunca-sözlüğü` · BİLGİ · “`durunca` koşulu kanonik sözlükte yok; koşucu değerlendiremez.” · yüzey: proje CLI; yeni tanı önerisi `kapı-kabul-kanıtı-eksik` · HATA · “Kapı, kabul ölçütlerini karşılayan çözülebilir ve doğrulanmış kanıt olmadan geçilmiş.”; yeni tanı önerisi `döngü-sonlanması-eksik` · HATA · “Döngünün çözülebilir hedefi veya `durunca|turLimiti` sonlanma güvencesi eksik.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural kapıVeDöngüİşletimi( kod: ORK-3.3,
+       ne: "ORK-3.3 · Kapı ve Döngü İşletimi [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-3,
+       tanı: [ durunca-sözlüğü, kırık-koşar ] )
+
+-->|
+### ORK-3.4 · Öncelik Kademeleri [BİLGİ]
+**Hüküm:** `öncelik` alanı bir işin aciliyetini dört kademeli tek bir kanonik kümeyle beyan eder ve kademeler `p0`, `p1`, `p2` ile `p3` değerlerini alır; `p0` yayını ya da başka bir işi fiilen bloklayan işi, `p1` içinde bulunulan mevsimin işini, `p2` sırasını bekleyen işi, `p3` ise tarih taahhüdü verilmemiş işi gösterir; bu küme öncelik taşıyan bütün tipler için ortaktır, ikinci bir kademe kümesi ilan edilemez ve beyan edilen kademe yürütme sırasını belirlemez; dayanak: ORK-3; ilgili: [ORK, TIP, YAS].
+**Gerekçe:** Aynı kavramın iki tipte iki ayrı biçimde yazılması aynı işin iki yüzeyde farklı aciliyette görünmesine yol açar; kademelerin anlamı yazılmazsa beyan da ölçülemez ve herkes kendi ölçeğini uydurur. Önceliğin yürütme sırasını belirlememesi ise bilinçlidir, çünkü sıra yalnız Adım grafından deterministik olarak türetilir ve insan beyanının o hesabı bozması aynı plandan farklı koşumlar doğurur.
+**Örnek:** Doğru: `Adım( kod: ADM-YAYIN, öncelik: p0 )` yayını bloklayan işi, `Hatırlatıcı( kod: HTR-01, öncelik: p3 )` tarih taahhüdü olmayan kaydı gösterir; yanlış: aynı ağaçta `P1` ile `p1` değerlerinin birlikte kullanılması ya da yüksek kademeli bir işin öncülünden önce seçilmesi.
+**Zorlama:** Kademe DEĞERİ hiçbir koşulda zorlanamaz, çünkü bir işin ne kadar acil olduğu insan hükmüdür ve makine onu uyduramaz; kademe kümesinin kendisi ise şema enumu olarak `geçersiz-enum` tanısıyla zaten korunmaktadır. BEYANIN YOKLUĞU ise ölçülür ve gözlem düzeyinde bildirilir: yeni tanı önerisi `önceliksiz-adım` · BİLGİ · “Açık Adım öncelik beyanı taşımıyor; işin sıralamadaki yeri okunamıyor.” · yüzey: proje CLI ve Bildirimler · format: `{duzey, kod, mesaj, satir, sutun, oneri}`. Gözlem yalnız açık Adımları görür; tamamlanmış Adımlar ile ders dünyası kapsam dışıdır ve bulgular kapsayıcıya göre gruplanır.
+|<--
+Kural öncelikKademeleri( kod: ORK-3.4,
+       ne: "ORK-3.4 · Öncelik Kademeleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-3,
+       tanı: [ önceliksiz-adım ] )
+
+-->|
+### ORK-4 · Çapraz-Proje Ad-Alanı [HATA]
+**Hüküm:** Niteliksiz KOD yalnız bulunduğu Proje içinde çözülür; başka bir Projedeki hedefe kurulan her kenar `PRJ-A::KOD-X` biçimindeki açık Proje ad-alanını kullanır, ad-alanı ile KOD birlikte tek hedefe çözülür ve tesadüfî küresel kod eşleşmesi hiçbir zaman geçerli bağ sayılmaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** ÇalışmaAlanındaki iki Proje aynı yerel KOD'u taşıyabilir; küresel ilk-eşleşme yanlış ürüne bağlanır, Proje taşındığında veya yeni düğüm eklendiğinde sessizce hedef değiştirir.
+**Örnek:** PRJ-B içinden PRJ-A'nın `SZL-KIMLIK` düğümüne doğru atıf `PRJ-A::SZL-KIMLIK`tir; yalnız `SZL-KIMLIK` yazmak yerel PRJ-B kapsamının dışına çıkamaz.
+**Zorlama:** `kırık-referans` · HATA · “Kenar hedefindeki KOD hiçbir `.sar` kaynağında yok.” · yüzey: proje CLI; yeni tanı önerisi `çapraz-proje-ad-alanı` · HATA · “Başka Projedeki hedef niteliksiz veya `PRJ::KOD` çifti tek bir düğüme çözülmüyor; açık ad-alanı kullan.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural çaprazProjeAdAlanı( kod: ORK-4,
+       ne: "ORK-4 · Çapraz-Proje Ad-Alanı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-0,
+       tanı: [ kırık-referans ] )
+
+-->|
+### ORK-5 · Auth Omurgası [HATA]
+**Hüküm:** Auth omurgası, kimlik sınırını ilan eden bir KimlikKökü ile yalnız bu köke bağlı, tipli ve genişletilebilir KimlikSağlayıcısı düğümlerinden oluşur; ortak Auth kullanan Projeler aynı kökü `kullanır` bağıyla paylaşır, Proje kimlikleri birleşmez ve jeton ile parola hükümleri kanonik Kimlik politikasında zorlanmayı sürdürür; dayanak: ORK-0; ilgili: [ORK, MIM, TIP, YAS].
+**Gerekçe:** Sağlayıcıyı doğrudan Proje kimliği saymak ortak oturum ile ürün sahipliğini karıştırır; jeton ve parola hükümlerini sağlayıcı başına kopyalamak da güvenlik davranışını zamanla ayrıştırır.
+**Örnek:** `KimlikKökü( kod: KMK-ORTAK ) { KimlikSağlayıcısı( kod: KMS-GOOGLE, tür: google ) }` ve `Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )`; PRJ-ANA yine ayrı Proje kimliğidir.
+**Zorlama:** Yeni tanı önerisi `auth-omurgası-ihlali` · HATA · “KimlikSağlayıcısı bir KimlikKöküne bağlı değil, ortak Auth bağı köke yönelmiyor veya Proje kimliği ortak kökle birleştirilmiş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: ORK-5, durum: kilitli,
+       ne: "ORK-5 · Auth Omurgası [HATA]",
+       karar: "Auth omurgası, kimlik sınırını ilan eden bir KimlikKökü ile yalnız bu köke bağlı, tipli ve genişletilebilir KimlikSağlayıcısı düğümlerinden oluşur; ortak Auth kullanan Projeler aynı kökü `kullanır` bağıyla paylaşır, Proje kimlikleri birleşmez ve jeton ile parola hükümleri kanonik Kimlik politikasında zorlanmayı sürdürür; dayanak: ORK-0; ilgili: [ORK, MIM, TIP, YAS].",
+       gerekçe: "Sağlayıcıyı doğrudan Proje kimliği saymak ortak oturum ile ürün sahipliğini karıştırır; jeton ve parola hükümlerini sağlayıcı başına kopyalamak da güvenlik davranışını zamanla ayrıştırır." )
+
+-->|
+### ORK-5.1 · Kimlik Sağlayıcıları [BİLGİ]
+**Hüküm:** KimlikSağlayıcısı taban kataloğu `Google`, `GitHub`, `LinkedIn`, `Apple`, `Microsoft` ve `SSO` seçeneklerini eksiksiz içerir; yeni sağlayıcı yalnız kanonik katkılı örtüyle eklenebilir, taban seçenek silinemez, yeniden adlandırılamaz veya yerel serbest metinle ikame edilemez; dayanak: ORK-5; ilgili: [ORK, TIP].
+**Gerekçe:** Kapalı tabanı yerinde değiştirmek aynı sağlayıcıyı Projeler arasında farklı ad ve yetenekle gösterir; katkılı genişletme yerel ihtiyacı ortak Auth sözleşmesini bozmadan karşılar.
+**Örnek:** `KimlikSağlayıcısı( kod: KMS-APPLE, tür: apple )` taban kataloğundadır; `kurumsalKimlik` eklenecekse önce ÇalışmaAlanı örtüsünde sağlayıcı enumuna katkı yapılır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural kimlikSağlayıcıları( kod: ORK-5.1,
+       ne: "ORK-5.1 · Kimlik Sağlayıcıları [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-5 )
+
+-->|
+### ORK-5.2 · Founder Projesinde Ortak Auth [HATA]
+**Hüküm:** Founder Projesi, içinde bulunduğu ÇalışmaAlanının tam olarak bir ortak KimlikKökünü `kullanır` bağıyla göstermek zorundadır; bu bağ eksik, yerel bir kimlik köküyle ikame edilmiş, birden çok köke yönelmiş veya isteğe bağlı bırakılamaz; dayanak: ORK-5; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** Founder Projesinin ayrı veya belirsiz Auth kullanması ortak yönetim kimliğini parçalar, sağlayıcı ve güvenlik politikalarının hangi kökten uygulanacağını belirsizleştirir.
+**Örnek:** Doğru: `Proje( kod: PRJ-FOUNDER, kullanır: KMK-ORTAK )`; yanlış: Founder Projesini `kullanır` bağı olmadan bırakmak veya yalnız kendi yerel köküne bağlamak.
+**Zorlama:** Yeni tanı önerisi `founder-ortak-auth-eksik` · HATA · “Founder Projesi ÇalışmaAlanının tek ortak KimlikKökünü zorunlu `kullanır` bağıyla göstermiyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural founderProjesindeOrtakAuth( kod: ORK-5.2,
+       ne: "ORK-5.2 · Founder Projesinde Ortak Auth [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-5 )
+
+-->|
+### ORK-5.3 · Diğer Kullanıcılarda Auth Seçimi [BİLGİ]
+**Hüküm:** Founder dışındaki kullanıcı Projeleri ÇalışmaAlanının ortak KimlikKökünü kullanmayı açıkça seçebilir; ortak Auth seçilmezse Proje kendi tekil KimlikKökünü ve ona bağlı sağlayıcılarını ilan eder, iki seçenekten hiçbiri örtük bırakılamaz ve yerel seçim başka Projelerin kimlik sınırını değiştiremez; dayanak: ORK-5; ilgili: [ORK, MIM, YAS].
+**Gerekçe:** İsteğe bağlılığın beyansızlık sayılması Projenin ortak mı bağımsız mı doğrulanacağını belirsizleştirir; açık iki yol sahiplik ve tanı kapsamını korur.
+**Örnek:** `Proje( kod: PRJ-DIGER, kullanır: KMK-ORTAK )` ortak yolu; Proje kapsamında ilan edilen `KimlikKökü( kod: KMK-PRJ-DIGER )` ise bağımsız yolu seçer.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural diğerKullanıcılardaAuthSeçimi( kod: ORK-5.3,
+       ne: "ORK-5.3 · Diğer Kullanıcılarda Auth Seçimi [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-5 )
+
+-->|
+### ORK-6 · ŞEF ve Ajan İş Bölümü [HATA]
+**Hüküm:** ŞEF yalnız seçilebilir kanonik Adımdan görev, kabul, sınır, referans, bağımlılık ve üretim bağlamını kurar; işi gerekli yetkiye sahip Etmene verir, teslimi bağımsız denetime sunar ve Adım durumunu yalnız doğrulanmış kabul kanıtının sonucuna göre değiştirir; ŞEF hüküm, teslim veya kanıt uyduramaz ve kanıtsız tamamlanma yazamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS, OGR].
+**Gerekçe:** Bağlamı kanon dışından tamamlamak ajana görünmeyen iş verir; üretim sonucunu bağımsız denetimden geçirmeden duruma yazmak da tamamlanmayı beyana indirger ve plan ile gerçek arasında drift yaratır.
+**Örnek:** Kanonik akış: `seçilebilir Adım → bağlam → yetkili Etmen → Meyve → bağımsız denetim → kabul kanıtı → durum`; denetim başarısızsa Adım `tamamlandı` olamaz.
+**Zorlama:** `gayrimeşru-geçiş` · UYARI · “Koşum kararıyla uyuşmayan durum geçişi; kanıtsız terfi elle yazılamaz.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; yeni tanı önerisi `şef-akışı-ihlali` · HATA · “ŞEF seçilemez Adım, kanon dışı bağlam, yetkisiz Etmen veya bağımsız doğrulama olmadan durum değişikliği kullanıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: ORK-6, durum: kilitli,
+       ne: "ORK-6 · ŞEF ve Ajan İş Bölümü [HATA]",
+       karar: "ŞEF yalnız seçilebilir kanonik Adımdan görev, kabul, sınır, referans, bağımlılık ve üretim bağlamını kurar; işi gerekli yetkiye sahip Etmene verir, teslimi bağımsız denetime sunar ve Adım durumunu yalnız doğrulanmış kabul kanıtının sonucuna göre değiştirir; ŞEF hüküm, teslim veya kanıt uyduramaz ve kanıtsız tamamlanma yazamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS, OGR].",
+       gerekçe: "Bağlamı kanon dışından tamamlamak ajana görünmeyen iş verir; üretim sonucunu bağımsız denetimden geçirmeden duruma yazmak da tamamlanmayı beyana indirger ve plan ile gerçek arasında drift yaratır." )
+
+-->|
+### ORK-6.1 · Üretici ve Denetçi Ayrılığı [HATA]
+**Hüküm:** Aynı teslim için üretici ve denetçi rolleri ayrı, bağımsız Etmen oturumlarınca yürütülür; denetçi yalnız teslimi, ilanlı kabul ölçütlerini ve yeniden üretilebilir kanıtı görebilir, üreticinin gizli belleğine, gerekçelendirme konuşmasına veya açıklanmamış çalışma bağlamına erişemez ve üretici kendi teslimine kabul hükmü veremez; dayanak: ORK-6; ilgili: [ORK, YAS].
+**Gerekçe:** Üreticinin kendi varsayımlarını denetime taşıması aynı kör noktayı ikinci kez üretir; gizli bağlama dayanan kabul ise başka bir denetçi tarafından yeniden üretilemez.
+**Örnek:** Doğru: ETM-URETICI Meyveyi teslim eder, ETM-DENETCI yalnız Meyve+kabul+kanıt paketini sınar; yanlış: aynı oturumun “ürettim ve onayladım” diyerek Kapıyı geçmesi.
+**Zorlama:** Yeni tanı önerisi `üretici-denetçi-çakışması` · HATA · “Aynı teslimin üretici ve denetçi rolleri ayrılmamış veya denetim üreticinin gizli bağlamına dayanıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural üreticiVeDenetçiAyrılığı( kod: ORK-6.1,
+       ne: "ORK-6.1 · Üretici ve Denetçi Ayrılığı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-6 )
+
+-->|
+### ORK-6.2 · Tek Adım Tek Oturum [UYARI]
+**Hüküm:** Bir ajan oturumu tam olarak bir Adımı yürütür; o Adımın kabul sonucu, ürettiği Meyveler, doğrulama kanıtı ve açık kalan durumu raporlanıp bağlam kapatılmadan başka bir Adımın üretimine geçilemez, çok-Adımlı iş ayrı ve sıralı oturumlara bölünür; dayanak: ORK-6; ilgili: [ORK, MIM, OGR].
+**Gerekçe:** Aynı oturumda birden çok Adımın bağlamını taşımak teslimlerin hangi kabul ve sınırdan doğduğunu karıştırır; kapanışsız geçiş yarım işi görünmez bırakır.
+**Örnek:** ADM-A oturumu `Meyve: MEY-A · kabul: geçti · durum: tamamlandı` raporuyla kapanır; ancak bundan sonra ADM-B için yeni bağlam açılır.
+**Zorlama:** Yeni tanı önerisi `oturum-adım-sınırı` · UYARI · “Ajan oturumu birden çok Adımı yürütüyor veya ilk Adımın kabul, Meyve, kanıt ve durum kapanışı tamamlanmadan başka Adıma geçmiş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural tekAdımTekOturum( kod: ORK-6.2,
+       ne: "ORK-6.2 · Tek Adım Tek Oturum [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-6 )
+
+-->|
+### ORK-6.3 · Takım, Yetki ve Geçit [HATA]
+**Hüküm:** Her üretim sorumluluğu tekil Takım sahipliğine, her Etmen ilanlı yetki kademesine ve her dış eylem yalnız gereken işlem kiplerini içeren açık izinlere bağlanır; yazılmayan izin reddedilir, yönetici üretim yapamaz, yüksek yetki paylaşılan belleğe veya kalıcı atamaya dönüştürülemez ve üretim ile yönetim ayrı, kapalı-varsayılan geçitlerden geçer; dayanak: ORK-6; ilgili: [ORK, TIP, YAS].
+**Gerekçe:** Sahipsiz iş ve geniş izinler hesap verebilirliği kaybettirir; yönetim ile üretimi aynı rolde toplamak onay sahibini kendi kararının uygulayıcısı ve denetçisi yapar. Kapalı varsayılan, eksik beyanı sessiz yetkiye çevirmeyi önler.
+**Örnek:** Doğru: yönetici işi atar, yetkili uzman üretir ve yalnız ilanlı `oku|yaz|çağır` kipleri geçitten geçer; yanlış: `tür: yönetici` Etmenin `üretir` kenarı taşıması veya tanımsız izni kullanması.
+**Zorlama:** `rbac-yönetici-üretir` · HATA · “Yönetici Etmen üretim kenarı taşıyamaz.”; `rbac-l5-paylaşık` · HATA · “L5 yetki paylaşılan bellekle kullanılamaz.”; `rbac-l6-kalıcı` · HATA · “L6 kalıcı atanamaz.”; `rbac-apex-tekil` · HATA · “Birden çok apex Etmen ilan edilmiş.”; `gateway-izin-biçim` · HATA · “İzin biçimi, kip veya hedef tanımsız; yazılmayan izin reddedilir.” · yüzey: proje CLI (`rbac`, `gateway`) · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural takımYetkiVeGeçit( kod: ORK-6.3,
+       ne: "ORK-6.3 · Takım, Yetki ve Geçit [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-6,
+       tanı: [ gateway-izin-biçim, rbac-apex-tekil, rbac-l5-paylaşık, rbac-l6-kalıcı, rbac-yönetici-üretir ] )
+
+-->|
+### ORK-7 · İş Akışı, Kodlama Akışı ve İşletim Kural Aileleri [BİLGİ]
+**Hüküm:** İş akışı, kodlama akışı, uygulama, servis ve takım kural ailelerinin doğuş, seçilebilirlik, kabul, durum eşzamanlama, üretici-denetçi ayrılığı, yeniden doğrulama, tek-Adım oturumu, sahiplik, yetki ve işletim hükümleri yalnız bu bölümde yaşar; başka bölüm ikinci bir orkestrasyon otoritesi kuramaz ve yalnız kendi mimari, tip, yönetişim veya öğretim sözleşmesi ölçüsünde tamamlayabilir; dayanak: ORK-0; ilgili: [ORK, MIM, TIP, YAS, OGR].
+**Gerekçe:** Aynı işletim hükmünün farklı ailelerde yinelenmesi yürütme sırasını, kabul sonucunu ve yetki kararını yüzeye göre değiştirir; tek sahiplik uygulama ile öğretimin aynı akışı göstermesini sağlar.
+**Örnek:** MIM Adımın mimari yerini, TIP alan ve kenar şemasını, YAS tanı düzeyini, OGR öğretim yüzünü tanımlar; Adımın ne zaman seçileceği ve teslimin nasıl doğrulanacağı ORK hükümlerine geri bağlanır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural işAkışıKodlamaAkışıVeİşletimKuralAileleri( kod: ORK-7,
+       ne: "ORK-7 · İş Akışı, Kodlama Akışı ve İşletim Kural Aileleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-0 )
+
+-->|
+### ORK-8 · Mevsim Ritüeli [BİLGİ]
+**Hüküm:** Bir mevsim yalnız ilanlı bir ritüelle açılır ve yalnız aynı ritüelle kapanır; açılış üç basamaktan oluşur ve bu basamaklar geçen mevsimin açık işinin devredilip biten gövdesinin bırakılması, mevsimin tek cümlelik hedefinin yazılması ve mevsime giren her Adımın bir öncelik kademesi almasıdır; mevsim akarken doğan gözlem ile hatırlatıcı o anda işlenmez, kuyruğa yazılır ve önceliğini orada alır; kapanış dört basamaktan oluşur ve bu basamaklar ölçümün alınması, biten Adımların Meyvelerinin hasat edilip mevsim kaydının yazılması, açık işin sonraki mevsime devredilip kapanmayacak işin gerekçesiyle düşürülmesi ve mevsimin mühürlenmesidir; kapanış ölçümünde hiçbir sayısal iddia bağımsız ölçülmeden kabul edilemez ve mühürlenmiş bir mevsimin içine yeni Adım yazılamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS, STR].
+**Gerekçe:** Ritüelsiz kapanan bir mevsim tekrarlanabilir değildir; Temmuz mevsimi bir basamak dizisiyle değil plan dosyasının başına elle yazılmış bir yorum satırıyla kapatılmıştır ve bu yüzden bir sonraki kapanışın hangi işleri yapması gerektiği hiçbir kaynakta yazılı kalmamıştır. Açılışta hedef ile öncelik yazılmazsa mevsim yalnız bir tarih aralığına iner ve içindeki işlerin hangisinin ne kadar acil olduğunu her oturum yeniden kurar; kapanışta ölçüm bağımsız alınmazsa üreticinin kendi sayısı kabul kanıtının yerine geçer; mühür yazılmazsa kapanmış bir dönem sessizce yeniden doldurulur ve mevsimin tanıklığı kaybolur. Bu madde mevsimi bir takvim aralığı olmaktan çıkarıp tekrarlanabilir bir işletim halkasına çevirmek için vardır.
+**Örnek:** Doğru kapanış sırası şudur: `Faz( kod: FAZ-01 )` halkasındaki Adımlar ölçülür, biten Adımların Meyveleri hasat edilip mevsim kaydına yazılır, açık kalan `ADM-YAYIN` bir sonraki mevsime devredilir ve mevsim mühürlenir; yanlış olan, mevsimi yalnız dosyanın başına bir yorum satırı yazarak kapatmak ve açık işi devretmeden bırakmaktır.
+**Zorlama:** Zorlanmaz — niyet katmanı; ritüelin basamakları bugün makineye ölçtürülemediği için DIL-3 uyarınca zorlanabilir koşul aranmaz ve bu madde yeni bir tanı ilan etmez. Canlı zorlamalar yalnız ritüelin çevresini tutar: `fazsız-blok` Blokun bir Faz halkasında durmasını, `çift-mevsim-kaydı` mevsim bağının tek yerde yazılmasını ve YAS-4.1 tam-yeşil tanımı kapanış ölçümünün sayısal eşiğini bağlar. Bu iddianın ömrü burada beyan edilir: `çift-mevsim-kaydı` bugün canlı sicildedir fakat aynı zamanda açık emeklilik borcu kümesinde durmaktadır, dolayısıyla o tanı emekliye ayrıldığı gün bu cümle bayatlar ve bugün onu görecek bir nöbet yoktur; emeklilik uygulandığında bu paragraf aynı turda tazelenir. Buna karşılık hedefin yazılıp yazılmadığı, devir hükmünün verilip verilmediği ve mevsimin mühürlenip mühürlenmediği hiçbir tanıyla görülmez; `Faz` şeması bir mühür alanı taşımadığı için mühür bugün yalnız insan kaydıdır. Uyum, üretici ile denetçinin ayrı olduğu insan kapısında sınanır; ritüeli gören bir bekçi ilan edilecekse o bekçi bu maddenin değil kendi Adımının konusudur ve doğduğunda bu maddeye bağlanır.
+|<--
+Karar( kod: ORK-8, durum: kilitli,
+       ne: "ORK-8 · Mevsim Ritüeli [BİLGİ]",
+       karar: "Bir mevsim yalnız ilanlı bir ritüelle açılır ve yalnız aynı ritüelle kapanır; açılış üç basamaktan oluşur ve bu basamaklar geçen mevsimin açık işinin devredilip biten gövdesinin bırakılması, mevsimin tek cümlelik hedefinin yazılması ve mevsime giren her Adımın bir öncelik kademesi almasıdır; mevsim akarken doğan gözlem ile hatırlatıcı o anda işlenmez, kuyruğa yazılır ve önceliğini orada alır; kapanış dört basamaktan oluşur ve bu basamaklar ölçümün alınması, biten Adımların Meyvelerinin hasat edilip mevsim kaydının yazılması, açık işin sonraki mevsime devredilip kapanmayacak işin gerekçesiyle düşürülmesi ve mevsimin mühürlenmesidir; kapanış ölçümünde hiçbir sayısal iddia bağımsız ölçülmeden kabul edilemez ve mühürlenmiş bir mevsimin içine yeni Adım yazılamaz; dayanak: ORK-0; ilgili: [ORK, MIM, YAS, STR].",
+       gerekçe: "Ritüelsiz kapanan bir mevsim tekrarlanabilir değildir; Temmuz mevsimi bir basamak dizisiyle değil plan dosyasının başına elle yazılmış bir yorum satırıyla kapatılmıştır ve bu yüzden bir sonraki kapanışın hangi işleri yapması gerektiği hiçbir kaynakta yazılı kalmamıştır. Açılışta hedef ile öncelik yazılmazsa mevsim yalnız bir tarih aralığına iner ve içindeki işlerin hangisinin ne kadar acil olduğunu her oturum yeniden kurar; kapanışta ölçüm bağımsız alınmazsa üreticinin kendi sayısı kabul kanıtının yerine geçer; mühür yazılmazsa kapanmış bir dönem sessizce yeniden doldurulur ve mevsimin tanıklığı kaybolur. Bu madde mevsimi bir takvim aralığı olmaktan çıkarıp tekrarlanabilir bir işletim halkasına çevirmek için vardır." )
+
+-->|
+### ORK-8.1 · Tur Kaydı Disiplini [BİLGİ]
+**Hüküm:** Bir turun kalıcı kaydı yalnız karar değiştiren bulguları taşır ve ölçüm sayıları ilgili Adımın koşu alanında zaten yaşadığı için aynı sayı ikinci kez tur kaydına yazılamaz; bu kayıtlar nitelik rafında yaşar ve turlar için ayrı bir raf açılamaz; kayıt kalıcı kalır, sonradan gelen bir ölçüte göre geriye dönük budanmaz ve yalnız mevsim kapanışının hasat basamağında özetlenir; dayanak: ORK-8; ilgili: [ORK, MIM, YUZ, YAS].
+**Gerekçe:** Aynı ölçümü hem Adımın koşu alanında hem tur kaydında tutmak ikinci bir bayat kaynak doğurur, çünkü iki kayıttan biri ilerlediğinde hangisinin güncel olduğu okur tarafından ayırt edilemez. Turlar için ayrı bir raf açmak yeni bir ilan yükü getirir ve karşılığında hiçbir ayrım kazandırmaz, çünkü bu kayıtlar cins olarak ölçüm ve gözlem metnidir ve nitelik rafı bu cinsin kurulmuş evidir. Kaydın kalıcı kalması turun tanıklığını korur; özetlemenin hasat basamağına bağlanması ise budamanın keyfî bir anda değil ritüelin ilanlı bir basamağında yapılmasını sağlar. Geriye dönük budama yasağı ayrı bir hüküm değil, bu son gerekçenin doğrudan sonucudur ve kalıcı yazılmasının sebebi şudur: bir kaydı sonradan gelen bir ölçüte göre kırpmak o kaydın tanıklığını zayıflatır, çünkü kayıt artık yazıldığı günün değil budandığı günün ölçütünü gösterir; bu sebep tek bir güne değil bütün turlara aynı biçimde uygulanır, dolayısıyla yasak geçiş hükmü olarak daraltılmamıştır.
+**Örnek:** Doğru: bir tur kaydı nitelik rafında `Çıkarım( kod: CKR-TUR-01, ... )` düğümüyle yaşar ve yalnız o turda değişen hükmü anlatır; yanlış: turun bütün ölçüm sayılarını Adımın koşu alanından kopyalayıp tur kaydına ikinci kez yazmak ya da bu kayıtlar için yeni bir raf açmak.
+**Zorlama:** Zorlanmaz — niyet katmanı; bir bulgunun kararı değiştirip değiştirmediği anlam yargısıdır, makine onu ölçemez ve bu madde yeni bir tanı ilan etmez. Hükmün yalnız raf dilimi dolaylı olarak tutulur, çünkü `ilansız-gövde` tanısı anadizine ilan edilmemiş bir rafta doğan `.sar` gövdesini bildirir ve turlar için açılacak beyansız bir raf bu tanıya takılır. Kaydın ikinci bir bayat kaynağa dönüşmemesi ile özetlemenin ritüelin basamağında yapılması insan kapısında sınanır.
+|<--
+Kural turKaydıDisiplini( kod: ORK-8.1,
+       ne: "ORK-8.1 · Tur Kaydı Disiplini [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: ORK-8 )

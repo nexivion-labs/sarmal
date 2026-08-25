@@ -1,0 +1,5 @@
+// arsiv/kayit/dondurma_karari.sar — arşivin tek kaydı: dondurma kararı
+Karar( kod: KRR-ORNEK-ARSIV-DONDURMA, durum: kilitli, uygulama: kendinden-tam,
+  ne: "Eski tek deponun arşive dönüştürülmesi",
+  karar: "Açık araç ile kapalı ürün kendi depolarına doğduğu gün eski tek depo salt okunur arşiv sayılır; yeni iş yalnız yeni depolarda açılır.",
+  gerekçe: "İki ürünün aynı depoda yaşaması açık ile kapalı sınırını bulanıklaştırıyordu; arşiv tarihi korur, sınırı ise yeni depolar çizer." )

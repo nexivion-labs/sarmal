@@ -1,0 +1,55 @@
+// 🖼️ EKRAN ŞABLONU — CONTRACT-FIRST (SDD-L3). Sözleşme ÖNCE; Ekran ve Uç ondan türer.
+//    Üç ağaç (plan·yüzey·arkayüz) tek sözleşmede KAVUŞUR.
+//    Bekçi: öksüz-düğme (Düğme→çağırır/gider) · kavuşumsuz-ekran (Ekran→referans/üretir)
+//           · temasız-ekran (Ekran→tema) · ölçüsüz-metin (Metin→stil) · ham-renk
+//           · sözleşmesiz-uç (Uç→sözleşme). Sözleşme İLK yaz (contract-first).
+//
+// ❓ YÖNLENDİREN SORULAR (mockup-referans kipi · Doğuş Rehberi/OGR-2 deseni — cevapla, boşluk bırakma;
+//    cevapsız soru = kör drift, çalgıcı tahmin eder):
+//    1. AMAÇ: bu ekran NE yapar, kullanıcı buradan ne alır? → Adım.görev'e yaz.
+//    2. DURUMLAR: boş / yükleniyor / dolu / hata hâlleri nasıl görünür? → görev+kabul'e madde madde.
+//    3. VERİ: hangi alanlar gösterilir/toplanır, hangi Durum'a bağlanır? → Sözleşme + veriAnahtarı.
+//    4. KAVUŞUM: hangi Adım üretiyor (referans), hangi Uç'a gidiyor (çağırır)? → kenarları bağla.
+//    5. TEMA: hangi tasarım sistemi? Metinler hangi tipografi rolünde (başlık1..4·gövde·etiket)?
+//       → tema: TEM-… + her Metin'e stil: — DEĞER yazma, ROL yaz (TAS-A01).
+//    6. MOCKUP: Figma/HTML mockup varsa ÖZETLEME — Mockup düğümü ilan et, referans: [ MOK-… ] bağla.
+//    7. SINIR: bu ekranın işi OLMAYAN nedir? → Adım.sınır'a yaz.
+
+// ① PLAN — Adım ekranı ÜRETİR (koni-dolu; niyet maddeleri kabul ölçütüne dönüşür —
+//    denetçi bunları MADDE MADDE işaretler, TAS-D01 checklist)
+Adım( kod: ADM-Giris, ad: "giris-ekrani",
+      görev: "<ekranın niyeti — hangi durumlar (boş/yükleniyor/hata), hangi akış, hangi teknoloji>",
+      kabul: [ "<madde 1: ölçülebilir niyet-maddesi — örn. 'başlık1 rolünde tek başlık var'>",
+               "<madde 2: örn. 'hata durumunda alan-bazlı Türkçe mesaj gösterilir'>" ],
+      üretir: EKR-Giris, referans: [ MOK-Giris ],
+      bağımlı: [ TAKIM-ONYUZ ], durum: beklemede )
+
+// ② MOCKUP — dış tasarım gerçeği AS-IS (TAS-C01 kip B): ÖZETLENMEZ, yalnız referans.
+Mockup( kod: MOK-Giris, ne: "giriş ekranı mockup'ı — Figma/HTML AS-IS gerçek (özetlenmez)",
+        dosya: "tasarim/mockup/giris.html", kaynak: "Figma" )
+
+// ③ TASARIM SİSTEMİ — BİR KEZ ilan (TAS-A01): rol ADLARI sözleşme, DEĞERLER (hex/px)
+//    `dosya:` beyanındaki teknoloji temasında (ThemeData/:root) yaşar.
+Tema( kod: TEM-Ana, ne: "uygulama tasarım sistemi — token-ROL sözleşmesi",
+      dosya: "onyuz/lib/tema/ana_tema.dart",
+      renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, başlık2, gövde, etiket ],
+      boşluk: [ sm, md, lg ],
+      yuvarlaklık: [ sm, md ] )
+
+// ④ SÖZLEŞME — KAVUŞUM NOKTASI: frontend↔backend anlaşması ÖNCE.
+Sözleşme( kod: SZL-Giris, sürüm: "1.0", ne: "giriş sözleşmesi",
+          istek: "eposta + parola", yanıt: "token · hatalar: 401, 429" )
+
+// ⑤ YÜZEY — Ekran sözleşmeyi ONURLANDIRIR (Düğme çağırır Uç; şekil SZL-Giris'ten);
+//    tema'ya giyinir, Metin rol taşır (renk/boyut DEĞERİ yazılmaz — rol yazılır).
+Ekran( kod: EKR-Giris, ne: "giriş ekranı", referans: ADM-Giris, tema: TEM-Ana ) {
+  Form( kod: FRM-Giris, ne: "giriş formu", uygular: SZL-Giris ) {
+    Metin( kod: MTN-Baslik, ne: "Hesabına giriş yap", stil: başlık1 )
+    MetinAlanı( kod: ALN-Eposta, ne: "e-posta girişi" )
+    Düğme( kod: DGM-Giris, ne: "Giriş yap", çağırır: UC-Giris )
+  }
+}
+
+// ⑥ ARKAYÜZ — Uç sözleşmeyi UYGULAR
+Uç( kod: UC-Giris, metod: POST, yol: "/api/v1/auth/login", sözleşme: SZL-Giris )

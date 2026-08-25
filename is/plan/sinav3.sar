@@ -1,0 +1,95 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/sinav3.sar — 🧪 SINAV-3 PLANI (STR-4 · Founder açılışı 2026-07-12)
+//
+//   Üçüncü gerçek-dünya sınavı. Sınav-2'nin bıraktığı yerden: BKM-SNV2 5/5 +
+//   BKM-BUG 11/11 kapandı, motor kapıları canlı — şimdi ölçülen şey dilin ajan için yazılıp yazılmadığı
+//   merceğidir: "özellik VAR mı" değil, "yabancı ajan zamanında KULLANDI mı".
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  Yabancı bir ajana sıfırdan küçük bir proje planlatıp iki şeyi ölçmek:
+  ① motorun yeni kapıları (doğuş-eksik · rafsız-anadizin · kavuşumsuz-paralellik ·
+  konisiz-adım · DIL-1.1 diksiyonu) ajanı gerçekten YÖNLENDİRİYOR mu;
+  ② ajan Sarmal'ın yüzeylerini (başla · siniflama · denetle · Gereksinim ·
+  Sözleşme köprüsü) kimse hatırlatmadan, doğru anda kullanıyor mu (ajan kullanım ölçümü).
+
+  ## Kapsam
+  Sınav düzeneği kurulur (hedef + temiz çalışma alanı), yabancı ajan tek
+  koşuda planı üretir, çıktı CLI kapısından ve ajan kullanım kartından geçirilir,
+  bulgular deftere iner ve hüküm Founder'a sunulur. KAPSAMAZ: ajanın ürettiği
+  planın içerik-kalitesine göre motor değişikliği bu turda yapılmaz — bulgular
+  koni-dolu Adım olarak raya iner (Sınav-2 deseni).
+
+  ## Sonuç
+  Kabul: sınav koşuldu, ajan kullanım kartı dolu, bulgular defterde, hüküm
+  Founder'da. Sınavın kendisi TAM-yeşil kapıyı bozmaz.
+|<--
+
+Blok(
+  kod: BLK-SINAV3,
+  ad:  "üçüncü sınav",
+  ne:  "🧪 Üçüncü gerçek-dünya sınavı: yabancı ajan sıfırdan proje planlar; ajan kullanım merceğiyle ölçülür",
+) {
+
+  Katman( kod: SNV3-HAZIRLIK, kullanır: TEK-SARMAL, ad: "düzenek",
+    ne: "Sınav düzeneği: hedef dosyası + temiz çalışma alanı; hedef ajan koşusundan ÖNCE commit'le mühürlenir (dürüstlük)" ) {
+
+    AltKatman(
+      kod: ALT-SNV3-HAZIRLIK-AKIS, departman: planlama,
+      ad:  "sınav akışı",
+      ne:  "🍃 Hedef yazımından yabancı ajan koşusuna ve Founder hükmüne kadar sınav-3'ün uçtan uca akışını taşır",
+    ) {
+      Adım( kod: SNV3-A01, durum: tamamlandı, bağımlı: [],
+        ne:    "🎯 Hedef + çalışma alanı — sarmal_sinav3/ klasörünü aç ve hedef.sar'ı yaz: Randevu Defteri projesinin İLK turu (yalnız plan), G1-G5 gereksinimleri, sert sınırlar ve sahibin kabul ölçütleri",
+        görev: "sarmal_sinav3/ klasörünü oluştur ve içine hedef.sar'ı yaz. Hedef, Sınav-2 formatını izlesin: büyük resim + bu turun işi + G-kodlu gereksinimler + sert sınırlar + sahibin kabulü. Sınav-3 farkı olarak kabul ölçütlerine Sözleşme köprüsünü (contract-first) ve DIL-1.1 diksiyonunu ekle. Hedefi ajan koşusundan ÖNCE commit'le — sınav sorusu sonradan değiştirilemez",
+        kabul: [ "sarmal_sinav3/hedef.sar yazıldı ve ajan koşusundan önce commit'lendi", "hedef G1-G5'i, sert sınırları ve kabul ölçütlerini tek belgede taşıyor" ],
+        sınır: "hedef dosyası sahibin sesidir — ajana motor içi ipucu (hangi bekçi ne yakalar) YAZILMAZ; araçların varlığı söylenir, kullanım zamanı söylenmez (ajan kullanım ölçümü tam bunu ölçer)" )
+      Adım( kod: SNV3-A02, üretir: [ KOD-SINAV3-DEFTER ], durum: tamamlandı, bağımlı: [ SNV3-A01 ],
+        ne:    "🤖 Yabancı ajan koşusu — KAPANIŞ 2026-07-12: tek koşu, 48 araç çağrısı, ~15 dk; ajan başla→kurallar→siniflama→yaz→denetle(3 tur)→graf→sef sırasıyla ilerledi ve 6 dosyalık plan üretti; araç kronolojisi kendi beyanıyla kayıtlı, müdahale edilmedi",
+        görev: "Tek bir yabancı ajanı şu asgari talimatla koştur: 'hedef.sar'ı oku, projeyi Sarmal diliyle planla, dosyaları sarmal_sinav3/ içine yaz; elinde mcp__sarmal araçları var'. Koşu sırasında yönlendirme yapma, hata düzeltme, ipucu verme. Koşu bitince ajanın araç-kullanım izini kaydet",
+        kabul: [ "Ajan koşusu tek seferde tamamlandı ve sarmal_sinav3/ içinde .sar plan dosyaları doğdu", "ajanın hangi aracı ne zaman çağırdığı kayıt altında (ajan kullanım kartının hammaddesi)" ],
+        sınır: "KONTAMİNASYON DÜRÜSTLÜĞÜ: ajan bu oturumun alt-ajanıysa repo bağlamını (CLAUDE.md) görüyor olabilir — bu sınırlılık defterde açıkça beyan edilir; tam-steril sınav Founder'ın ayrı pencerede koşacağı turdur" )
+      Adım( kod: SNV3-A03, durum: tamamlandı, bağımlı: [ SNV3-A02 ], üretir: KOD-SINAV3-DEFTER,
+        ne:    "📏 Değerlendirme — KAPANIŞ 2026-07-12: bağımsız denetim TAM-yeşil (0 hata · 0 uyarı · 118 düğüm; ajan beyanına güvenilmedi, üretici≠denetçi); ajan kullanım kartı 12✅/1⚪ dolduruldu; B1 sınav-doğumlu düzeltmeyle kapatıldı (kurallar yakın-önerisi, testli), B2 Sınav-4 adayı (gezin ölçümü mevcut-proje görevi ister), B3/B4 dürüst sınırlılık beyanları defterde",
+        görev: "İki ölçüm yap: ① sarmal denetle sarmal_sinav3 çıktısını kaydet (hangi bekçi ne yakaladı); ② ajan kullanım kartını doldur — başla · siniflama · gezin (⌘+tık refleksi: KOD görünce dosya taramak yerine sordu mu) · denetle(tek-dosya/proje) · Gereksinim ilanı · Sözleşme köprüsü · Teknoloji-önce · koni-dolu Adım · DIL-1.1 diksiyon · sert-sınır sadakati satırlarının her birine 'ajan akıl etti / motor yönlendirdi / kaçırıldı' hükmü ver. Bulguları nitelik/sinav3_defteri.sar'a yaz",
+        kabul: [ "denetle çıktısı ve ajan kullanım kartı sinav3_defteri.sar'da satır satır duruyor", "her kaçırılan özellik için 'motor niye yönlendirmedi' sorusu cevaplandı (yeni bekçi adayı ya da gerekçeli sessizlik)" ],
+        sınır: "bu Adım yalnız ÖLÇER ve yazar — motor/rehber değişikliği yapmaz; bulgular koni-dolu Adım olarak ayrı raya iner (Sınav-2 deseni)" )
+      Adım( kod: SNV3-A04, üretir: [ KOD-SINAV3-DEFTER ], durum: tamamlandı, bağımlı: [ SNV3-A03 ],
+        // KAPANIŞ 2026-07-14: Founder hükmü VERİLDİ → 🔴 KALDI (5 gerekçe: gezin ölçülemedi ·
+        // steril değil · MCP bayat · yüksek standart · Founder bizzat incelemeli). Defter Sonuç'a
+        // işlendi (sinav3_defteri.sar); tekrar Adımı SNV4-A01 açıldı. Hüküm-adımının İŞİ bitti.
+        ne:    "⚖️ Hüküm — Founder sınav sonucunu okur ve hükmü verir: geçti / kaldı / şartlı; bulgular raya bağlanır",
+        görev: "Defteri ve ajan kullanım kartını Founder'a sun. Founder hükmü KARARLAR'a iner; kaçırılan her kritik özellik için koni-dolu düzeltme Adımı aç (hangi raya gireceğine Founder karar verir)",
+        kabul: [ "Founder hükmü verildi ve KARARLAR defterine işlendi", "bulgu Adımları koni-dolu olarak ilgili raya bağlandı" ],
+        sınır: "hüküm FOUNDER'ındır — ajan/motor kendi sınavına not veremez" )
+    }
+  }
+
+  // ── SINAV-4 · TEKRAR (SNV3 KALDI → 5 eksik kapanır) ─────────────────────────
+  Katman( kod: SNV4-TEKRAR, kullanır: TEK-SARMAL, ad: "dördüncü sınav — tekrar",
+    ne: "Sınav-3 KALDI hükmünün 5 eksiğini kapatan tekrar turu: steril + güncel-araç + 18/18 + Founder bizzat inceler" ) {
+
+    AltKatman(
+      kod: ALT-SNV4-TEKRAR-KOSU, departman: sınama,
+      ad:  "tekrar koşusu",
+      ne:  "🍃 Sınav-4 tekrar turunun tam-steril ve güncel-araçlı koşusunu taşır",
+    ) {
+      Adım( kod: SNV4-A01, öncelik: p2,
+        onay: "şerhle onaylandı — 2026-08-05 · Founder ölçek tazelemesini onayladı ve sınavın koşumunu v1 yayınının ardına bıraktı. Tazelemenin gerekçesi ölçülmüştür: kabul ölçeği on üç araçlık eski yüzeye göre yazılmıştı ve güncel araç sayısı on sekizdir, dolayısıyla bayat ölçekle koşulan bir sınav beş aracı hiç sınamadan tam kapsam iddia eder ve kendi sonucunu yanlış raporlardı. Ölçek sınavın önündeki dört yerde on sekize çekildi; tarihsel koşu kayıtlarına dokunulmadı, çünkü geçmiş ölçümler kendi günlerinin gerçeğini söyler. Founder ayrıca kapının AÇIK KALMASINA hükmetti: sınav yakın vadelidir ve Founder penceresine bağlıdır, dolayısıyla erteleme kaydıyla panelden düşürülmesi yerine gündemde tutulması tercih edildi. Kapanış hükmü sınav koşulduktan sonra verilecektir.", koşu: "2026-08-05 · ÖLÇEK TAZELENDİ (Founder onayı). Kabul ölçeği on üç araçlık eski yüzeye göre yazılmıştı ve güncel araç sayısı on sekizdir; bayat ölçekle koşulsaydı sınav beş aracı hiç sınamadan tam kapsam iddia eder, yani kendi sonucunu yanlış raporlardı. Founder tazelemeyi onayladı ve ölçek sınavın önündeki dört yerde on sekize çekildi; tarihsel koşu kayıtlarına dokunulmadı, çünkü geçmiş ölçümler kendi günlerinin gerçeğini söyler. Sınavın KENDİSİ v1 sonrasına bırakılmıştır: koşum Founder penceresi ister ve yayını bloklamaz. Kapı açık tutulur, çünkü sınav yakın vadelidir ve Founder takvimine bağlıdır. Önceki inceleme kaydı: 2026-08-04 · V1 İNCELEMESİ (kontrolcü) — bayat ölçek bu turda ölçüldü. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): dış bağlam ister — tam-steril ayrı pencere/oturum koşusu; uygun pencere Founder'la planlanır", durum: beklemede, bağımlı: [ SNV3-A04 ],
+        ne:    "🧪 Sınav-4 (tekrar) — yabancı ajan MEVCUT projede değişiklik görevi alır; TAM-STERİL ayrı pencere + GÜNCEL araç (MCP taze) + ajan kullanım kartı 18/18 ölçülür + Founder BİZZAT inceleyip hüküm verir",
+        görev: "Sınav-3'ün 5 eksiğini kapatan tam tur: (1) TAM-STERİL — ayrı pencere/oturum, ajan repo bağlamını (CLAUDE.md) GÖRMEZ; (2) GÜNCEL araç — MCP taze (gezin dahil tüm araçlar listede, bayat-süreç yok); (3) MEVCUT-proje değişiklik görevi — 'sıfırdan proje' değil, ki gezin/⌘+tık refleksi ÖLÇÜLEBİLSİN (B2 kapanır); (4) ajan kullanım kartı 18/18 doldurulur, defter yazılır; (5) Founder yapılan testi BİZZAT inceler ve hüküm verir",
+        kabul: [
+          "Sınav TAM-STERİL koşuldu: ajan CLAUDE.md/repo bağlamını görmedi (kontaminasyon yok, defterde beyanlı)",
+          "Araçlar GÜNCEL: MCP taze, gezin dahil tüm araçlar erişilebilir (bayat-süreç yok)",
+          "ajan kullanım kartı 18/18 ölçüldü — gezin (⌘+tık) mevcut-proje değişiklik göreviyle ölçüldü (B2 kapandı)",
+          "Founder yapılan testi BİZZAT inceledi ve hükmü verdi (KARARLAR'a işlendi)"
+        ],
+        sınır: "FOUNDER-koşulu sınav — steril ayrı-pencere turu Founder'ın; ajan/motor kendine not veremez (SNV3 dersi tekrarı)" )
+    }
+  }
+}
+
+// 🍎 Meyve ilanları (MIM-2.1 üretim-yeri)
+Kod( kod: KOD-SINAV3-DEFTER, dosya: "is/nitelik/sinav3_defteri.sar",
+  ne: "🍎 Sınav-3 defteri — denetle çıktısı + ajan kullanım kartı + bulgular (SNV3-A03 üretimi)" )

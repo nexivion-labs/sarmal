@@ -1,0 +1,13 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogreti/ogrenme/dersler.sar — 🎓 DERS DEFTERİ (göç doğumu: 2026-08-25)
+//
+//   Sistem yaşadıkça akıllanır: yaşanan hata ve öğrenilen her şey buraya
+//   Bellek kaydı olarak düşer; değerli ve tekrar eden ders BECERİ'ye terfi
+//   eder (MCP `başla { tür: "beceri" }` şablon verir). Bu defter, kürasyon
+//   hükmü gereği boş doğar — süs kayıt yazılmaz (YAS-3.4) ve eski atölyenin
+//   ders tarihi kendi arşivinde yaşar. İlk gerçek dersini yaşadığında şu
+//   biçimle başla:
+//
+//   Bellek( kod: DRS-001, tür: ders,
+//     ne: "Ne yaşandı, kök neden neydi, bir daha nasıl önlenir — tam cümlelerle" )
+// ═══════════════════════════════════════════════════════════════════════════

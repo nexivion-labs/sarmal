@@ -1,0 +1,714 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/tani_terfi_karnesi.sar — GOC-TERFI-A01 → A02 → A03 → A04
+//   Bu dosya terfi halkasının ölçüm, temizlik ve kanıtlı terfi karnesidir.
+//   Plan dosyaları ile kanonik hüküm dosyaları bu kayıt için değiştirilmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# Tanı terfi karnesi
+
+Bu karne 2 Ağustos 2026 tarihinde Karar J altında üretildi. Karar J, Sarmal'ın
+Apache-2.0 ile açık yayıma çıkacağını ve v1 hedefinin 7 Ağustos olduğunu söyler.
+Terfi burada bir temizlik kapısıdır: bilgi düzeyinden yalnız uyarı düzeyine tek
+kademe geçilebilir; bilgi düzeyinden hataya atlamak yasaktır.
+
+## ① GOC-TERFI-A01 · Bilgi tabanı ölçümü
+
+### Sayı şerhi ve ölçülen küme
+
+Bağlayıcı görev metni 69 yeni tanı der. Canlı sicilin görevde tarif edilen
+`kademe: "bilgi"` kümesi ise 70 kayıttır. Yetmişinci kayıt
+`tanı-yüzeyi-karışması`dır. Sicildeki açıklama, bu kaydın GOC-MOTOR-A08
+sırasında kanonda bulunup eski envanterde kaçmış tanı olarak sonradan
+eklendiğini açıkça söyler. Üçlü senkron nöbeti kanondaki her yeni tanının
+sicilde ve gerçek üreticide bulunmasını iki yönlü zorladığı için bu kayıt
+gizlenemez. Bu karne 69/69 gibi yanlış bir tamlık iddiası kurmak yerine canlı
+tanım gereği 70/70 tanıyı ölçer; sayı uyuşmazlığını Founder şerhi olarak taşır.
+
+A00 kapanış kaydı 449 bilgi ve 27 türü mühürlemiştir. Bu oturumdaki ilk canlı
+ölçüm 448 bilgi ve 27 türdür. Tek değişim eski `açık-adım` tanısının 43'ten
+42'ye inmesidir; yeni tanı kümesinin hiçbir sayacı bu farktan etkilenmemiştir.
+Plan dosyalarına dokunma yasağı nedeniyle tarihsel 449 sayısı geri yaratılmadı.
+
+### Koşum ve yinelenebilirlik
+
+İki varlık aşağıdaki filtresiz ve tam-listeli komutlarla ölçüldü:
+
+```sh
+cd _Sarmal/cekirdek
+node --experimental-strip-types src/sarmal.ts denetle .. --tam-liste
+node --experimental-strip-types src/sarmal.ts denetle ../../<kapalı-varlık> --tam-liste
+```
+
+Her komut aynı girdi üzerinde art arda iki kez çalıştırıldı. Sarmal çıktısının
+iki SHA-256 özeti de
+`c8e94b2bd77e088982d470cec483bc2a5bc9d1eeacbfadb63554ba4455b13437`,
+kapalı ürün çıktısının iki özeti de
+`e2a2b55bb6526e264b8b5e3417ee14db3d4c9d967728ea82ca2028ea49b65f0d`
+oldu. Sayaçlar, dosya yayılımı, sıra ve bütün basılan metin iki varlıkta da
+birebir aynıdır.
+
+### Kapsamların ayrımı
+
+`ANA` Sarmal'ın canlı Proje kökü, `KAPALI` kapalı ürünün canlı çalışma alanı
+köküdür. `ornek/**` OGR-5 uyarınca ders dünyasıdır; ürün borcuna katılmaz.
+`sablon/**` yeniden kullanılabilir şablon dünyasıdır. `**/sinama/fikstur/**`
+sınama fikstürüdür. Satır başında dar
+`// sarmal: bilerek-hatalı ...` pragması taşıyan sekiz dosya bilinçli
+muafiyettir; motor bu dosyaları ayrıştırır fakat tanılarını saymaz. Bunların
+dışındaki bütün yollar ürün kapsamıdır. İlk ölçümde ders dünyasında yalnız
+`şema-dışı-alan` türünden 23 bulgu vardır; şablon ve fikstür kapsamlarında yeni
+tanı bulgusu yoktur. Sekiz bilinçli muaf girdi ürün sayacına katılmamıştır.
+
+Tanı çizelgesindeki `FP` sütunu yanlış pozitif adayını gösterir. `—`, ölçülen
+bir yanlış pozitif adayı olmadığını; `evet`, A02'de üretici mantığıyla
+incelenecek adayı gösterir. Dosya sütununda `—` varsa sayaç sıfırdır. Her sıfır
+sayaçlı tanının sahibi A03 terfi kapısıdır; açık sayaçların sahipleri ayrıca
+dosya dökümünde verilir.
+
+### Tanı başına başlangıç karnesi · 1–24
+
+| No | Tanı | Madde | Üretici kapsamı | ANA | KAPALI | Ders | Toplam | FP | Sahip |
+|---:|---|---|---|---:|---:|---:|---:|---|---|
+| 1 | `kanonik-kaynak-biçimi` | DIL-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 2 | `orthografi-kaybı` | DIL-1.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 3 | `belge-şekil-drift` | DIL-2 | tek-dosya | 0 | 1 | 0 | 1 | evet | biçim üreticisi + KAPALI izleme sahibi |
+| 4 | `çok-satırlı-değer-drift` | DIL-2.2 | tek-dosya | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 5 | `kenar-tip-uyuşmazlığı` | DIL-3.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 6 | `numara-grafı-uyumsuz` | DIL-5 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 7 | `madde-kodu-uyumsuz` | DIL-5.1 | proje | 28 | 0 | 0 | 28 | evet | dil ve numara grafı üreticisi |
+| 8 | `ilgili-önek-geçersiz` | DIL-5.2 | tek-dosya | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 9 | `proje-köksüz-üretim` | MIM-1.1 | proje | 110 | 20 | 0 | 130 | evet | omurga üreticisi + iki plan sahibi |
+| 10 | `çok-teknolojili-katman` | MIM-1.4 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 11 | `adım-atomikliği` | MIM-1.6 | proje | 14 | 1 | 0 | 15 | — | ilgili plan sahipleri |
+| 12 | `üretimsiz-meyve` | MIM-2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 13 | `meyve-dosyası-eksik` | MIM-2.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 14 | `öğretim-kaynak-drifti` | OGR-2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 15 | `öğretim-yüzü-uyumsuz` | OGR-2.1 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 16 | `beceri-kartı-eksik` | OGR-2.2 | proje | 10 | 467 | 0 | 477 | — | Sarmal öğrenme + KAPALI etmen sahipleri |
+| 17 | `başvuru-sicil-drifti` | OGR-2.3 | proje | 1 | 0 | 0 | 1 | evet | sınıflama yüzü üreticisi |
+| 18 | `öğretim-etki-eksik` | OGR-3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 19 | `öğretim-bayat` | OGR-3.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 20 | `üretilmiş-öğretim-değiştirilmiş` | OGR-3.2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 21 | `kanıtsız-beceri-terfisi` | OGR-4 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 22 | `ilişki-sınıfı-ihlali` | ORK-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 23 | `mimari-bağı-ihlali` | ORK-1.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 24 | `yürütme-kenarı-sözleşmesi` | ORK-1.2 | proje | 10 | 1 | 0 | 11 | evet | ilişki üreticisi + ilgili plan sahipleri |
+
+### Tanı başına başlangıç karnesi · 25–48
+
+| No | Tanı | Madde | Üretici kapsamı | ANA | KAPALI | Ders | Toplam | FP | Sahip |
+|---:|---|---|---|---:|---:|---:|---:|---|---|
+| 25 | `üretim-kökeni-ihlali` | ORK-1.3 | proje | 2 | 0 | 0 | 2 | evet | ilişki üreticisi + ilgili plan sahipleri |
+| 26 | `kullanır-kenarı-ihlali` | ORK-2.4 | proje | 1 | 0 | 0 | 1 | evet | ilişki üreticisi + reform planı sahibi |
+| 27 | `deterministik-sıra-ihlali` | ORK-3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 28 | `seçilemez-adım-yürütümü` | ORK-3.2 | proje | 4 | 0 | 0 | 4 | evet | strateji üreticisi + vitrin planı sahibi |
+| 29 | `döngü-sonlanması-eksik` | ORK-3.3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 30 | `kapı-kabul-kanıtı-eksik` | ORK-3.3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 31 | `çapraz-proje-ad-alanı` | ORK-4 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 32 | `auth-omurgası-ihlali` | ORK-5 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 33 | `founder-ortak-auth-eksik` | ORK-5.2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 34 | `şef-akışı-ihlali` | ORK-6 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 35 | `üretici-denetçi-çakışması` | ORK-6.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 36 | `oturum-adım-sınırı` | ORK-6.2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 37 | `unutma-kapısı-ihlali` | STR-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 38 | `kanon-kodu-uyumsuz` | STR-1.1 | proje | 122 | 0 | 0 | 122 | evet | strateji üreticisi |
+| 39 | `göç-sırası-ihlali` | STR-2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 40 | `göç-kapısı-eksik` | STR-2.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 41 | `açık-gizli-sınır-ihlali` | STR-3 | proje | 9 | 112 | 0 | 121 | evet | strateji üreticisi + metin sahipleri |
+| 42 | `çekirdek-bağımlılık-drifti` | STR-3.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 43 | `yürütücü-bağımlılığı` | STR-3.2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 44 | `etki-yayın-kapısı-eksik` | STR-5 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 45 | `ölü-iz` | STR-5 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 46 | `tip-evreni-eksik` | TIP-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 47 | `omurga-tipi-eksik` | TIP-1.15 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 48 | `şema-tanımı-eksik` | TIP-2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+
+### Tanı başına başlangıç karnesi · 49–70
+
+| No | Tanı | Madde | Üretici kapsamı | ANA | KAPALI | Ders | Toplam | FP | Sahip |
+|---:|---|---|---|---:|---:|---:|---:|---|---|
+| 49 | `şema-dışı-alan` | TIP-2.2 | tek-dosya | 31 | 144 | 23 | 175 | — | A00 Founder devri + KAPALI etmen sahipleri |
+| 50 | `örtü-ihlali` | TIP-2.5 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 51 | `rejim-beyanı-eksik` | YAS-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 52 | `katı-rejim-altkatman-eksik` | YAS-1.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 53 | `rejim-geçiş-uyumsuzluğu` | YAS-1.3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 54 | `hüküm-türü-uyumsuz` | YAS-2 | kural | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 55 | `kural-sözleşmesi-eksik` | YAS-2.3 | kural | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 56 | `tanı-sözleşmesi-uyumsuz` | YAS-3 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 57 | `tanı-kapsamı-karışması` | YAS-3.2 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 58 | `proje-tanı-kimliği-uyumsuz` | YAS-3.3 | orkestrasyon | 1 | 0 | 0 | 1 | evet | orkestrasyon üreticisi |
+| 59 | `tanı-terfi-kapısı-ihlali` | YAS-4 | kural | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 60 | `sahte-tam-yeşil` | YAS-4.1 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 61 | `terfi-kanıtı-eksik` | YAS-4.2 | proje | 0 | 25 | 0 | 25 | — | KAPALI yasa sahipleri |
+| 62 | `prizma-kaynak-ayrışması` | YUZ-1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 63 | `eş-yetkili-yüz-ikizi` | YUZ-1.2 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 64 | `yüz-idempotans-drifti` | YUZ-1.3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 65 | `geliştirme-yüzü-drifti` | YUZ-3 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 66 | `tanı-yüzü-uyumsuz` | YUZ-3.1 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 67 | `yüzey-sözleşmesi-eksik` | YUZ-4 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 68 | `palet-yüz-drifti` | YUZ-4.1 | proje | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 69 | `görünürlük-sözleşmesi-eksik` | YUZ-5 | tek-dosya | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+| 70 | `tanı-yüzeyi-karışması` | YUZ-3.3 | orkestrasyon | 0 | 0 | 0 | 0 | — | A03 terfi kapısı |
+
+Başlangıçta 70 tanının 55'inin birleşik sayacı sıfır, 15'inin sayacı sıfırdan
+büyüktür. Birleşik yeni-tanı bulgu toplamı 1.114'tür: ANA ürününde 320,
+ANA ders dünyasında 23 ve KAPALI ürününde 771 bulgu vardır. Şablon, fikstür ve
+dar bilinçli muaf kapsamlarından ürün borcu yazılmamıştır.
+
+### Sıfırdan büyük sayaçların dosya dökümü
+
+Dosya dökümünde parantez içindeki sayı o dosyadaki bulgu sayısıdır. Bir glob
+kullanıldığında kümenin dosya sayısı da yazılmıştır ve globun tamamı ölçülen
+türe aittir; böylece dosya listesi kısaltılırken kapsam belirsizleşmez.
+
+| Tanı | Dosyalar ve yayılım |
+|---|---|
+| `belge-şekil-drift` | KAPALI `etmen/izleme/uzmanlar/04-prometheus.etmen.sar` (1). |
+| `madde-kodu-uyumsuz` | ANA `yasa/kanon/{dil,mim,ogr,ork,str,tip,yas,yuz}.sar` dosyalarında sırasıyla 4, 3, 3, 5, 3, 2, 4 ve 4 bulgu vardır. |
+| `proje-köksüz-üretim` | ANA `plan/goc_plani.sar` (110); KAPALI `plan/kopru-kaniti.sar` (2) ve `plan/orkestrasyon_acilisi.sar` (18). |
+| `adım-atomikliği` | ANA `eklenti/plan.sar` (6), `plan/bakim_olgunluk.sar` (3), `plan/kapanis_kampanyasi.sar` (2), `plan/performans_turu.sar` (1), `plan/sinav3.sar` (1), `plan/sol_ida_test_plani.sar` (1); KAPALI `plan/orkestrasyon_acilisi.sar` (1). |
+| `beceri-kartı-eksik` | ANA `ogrenme/adim_yazimi_becerisi.sar`, `arac_yonlendirme_becerisi.sar`, `durum_akisi_becerisi.sar`, `goc_hakem_becerisi.sar`, `kapsam_durustlugu_becerisi.sar`, `kontrolcu_olcum_becerileri.sar`, `mutasyon_kaniti_becerisi.sar`, `niyet_dili_becerisi.sar`, `niyet_diyalogu_becerisi.sar` ve `uretir_kenari_becerisi.sar` dosyalarının her birinde 1 bulgu vardır. KAPALI'ta `etmen/*/uzmanlar/*.etmen.sar` globundaki 106 dosyanın tamamı ile `etmen/flutter/flutter.etmen.sar` etkilenir; bu 107 dosyada toplam 467 bulgu vardır. |
+| `başvuru-sicil-drifti` | ANA `oz/siniflama/kayit.md` (1). |
+| `yürütme-kenarı-sözleşmesi` | ANA `plan/bakim_olgunluk.sar` (2), `plan/kapanis_kampanyasi.sar` (5), `plan/mekanizma/mek_sef.sar` (1), `plan/performans_turu.sar` (1), `plan/reform_plani.sar` (1); KAPALI `plan/orkestrasyon_acilisi.sar` (1). |
+| `üretim-kökeni-ihlali` | ANA `plan/reform_plani.sar` (1) ve `plan/vitrin_ui.sar` (1). |
+| `kullanır-kenarı-ihlali` | ANA `plan/reform_plani.sar` (1). |
+| `seçilemez-adım-yürütümü` | ANA `plan/vitrin_ui.sar` (4). |
+| `kanon-kodu-uyumsuz` | ANA `yasa/kanon/{dil,mim,ogr,ork,str,tip,yas,yuz}.sar` dosyalarında sırasıyla 13, 13, 12, 21, 8, 23, 17 ve 15 bulgu vardır. |
+| `açık-gizli-sınır-ihlali` | ANA `nitelik/goc/motor_devir_kaydi.sar` (1), `nitelik/orkestrasyon_zemini.sar` (1), `nitelik/sol_mimari_degerlendirme.sar` (1), `plan/bakim_olgunluk.sar` (1), `plan/kapanis_kampanyasi.sar` (5); KAPALI `plan/ad_gocu_komutlari.sar` (111) ve `plan/zeka_hazirlik_raporu.sar` (1). |
+| `şema-dışı-alan` | ANA ürününde `plan/bakim_olgunluk.sar` (1) ile `sarmal_anadizin.sar` (7) vardır. ANA ders dünyasında `ornek/altin_yol/altin_yol_anadizin.sar` (1), `ornek/format/dalga3_arkayuz.sar` (4), `ornek/format/dalga3_yuzey.sar` (1), `ornek/gercek/beceri_ascii_kod.sar` (1), `ornek/gercek/beceri_cihaz_senkron.sar` (1), `ornek/gercek/buyuk_bahce.sar` (13), `ornek/gercek/teknolojiler.sar` (1) ve `ornek/mekanizma/mekanizma_anadizin.sar` (1) vardır. KAPALI'ta `etmen/**/*.etmen.sar` globundaki 116 dosyanın tamamı, kapalı varlığın anadizini ve `taban/teknolojiler.sar` etkilenir; bu 118 dosyada toplam 144 bulgu vardır. |
+| `proje-tanı-kimliği-uyumsuz` | ANA `sarmal_anadizin.sar` (1). |
+| `terfi-kanıtı-eksik` | KAPALI `taban/yasa/ajan-kurallari.sar` (8), `taban/yasa/anayasa.sar` (10), `taban/yasa/kanit-protokolu.sar` (3) ve `taban/yasa/repo-yonetisim.sar` (4). |
+
+Dar bilinçli muafiyet kümesi tam olarak şu sekiz girdidir:
+`ornek/durum_kaydi.sar`, `ornek/format/kuzey_yildizi.sar`,
+`ornek/gercek/adim_a01.sar`, `ornek/gercek/arkayuz_kimlik.sar`,
+`ornek/gercek/yuzey_kimlik.sar`, `ornek/tema_ornek.sar`,
+`ornek/vitrinler/adim_zinciri.sar` ve
+`ornek/vitrinler/format_vitrini.sar`. Muafiyet yalnız dosyanın ilk satırındaki
+dar pragmadan doğar; gerekçeleri aynı satırda ders veya vitrin kusurunu açıkça
+adlandırır ve sahibi K-107/OGR-5 Founder hükmüdür. Genel yol muafiyeti yoktur.
+
+### A01 kapanış kapıları
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Çekirdek tip denetimi | `cd cekirdek && npx tsc --noEmit` | Çıkış 0'dır. |
+| Eklenti tip denetimi | `cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .` | Çıkış 0'dır; eklentinin kullandığı derleyici çekirdeğin gerçek `tsc` dosyasıdır. |
+| Çekirdek süiti | `cd cekirdek && npm test` | 947/947 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| Eklenti süiti | `cd eklenti && npm test` | 373/373 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| ANA canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle .. --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 27 türde 448 bilgi vardır. |
+| KAPALI canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle ../../<kapalı-varlık> --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 16 türde 962 bilgi vardır. |
+| Kanon mührü | `shasum -a 256 yasa/kanon/*.sar` | Sekiz özet A00 başlangıç değerleriyle birebirdir. |
+
+A01'in tür dökümü önce ve sonra değişmemiştir. Bu tablo toplam tür dökümünü
+özetler; 27 satırlık ayrıntılı ANA dökümü A00 kaydındaki tabloyla aynıdır,
+yalnız eski `açık-adım` canlı farkı 43 yerine 42'dir.
+
+| Varlık | A01 girişi | A01 çıkışı | Tür bazlı değişim |
+|---|---|---|---|
+| ANA | 27 tür / 448 bilgi / 0 uyarı / 0 hata | 27 tür / 448 bilgi / 0 uyarı / 0 hata | Hiçbir tür değişmedi. |
+| KAPALI | 16 tür / 962 bilgi / 0 uyarı / 0 hata | 16 tür / 962 bilgi / 0 uyarı / 0 hata | Hiçbir tür değişmedi. |
+
+A01 kapanmıştır. Karne bütün canlı sicil kümesini, bütün açık bulguları,
+kapsam ayrımını ve sahipleri taşır; ölçüm hiçbir tanının kademesini
+değiştirmemiştir.
+
+## ② GOC-TERFI-A02 — Bilgi bulgularını temizleme
+
+A02'de her tur A01 ile aynı iki filtresiz denetim komutuyla ölçülmüştür. Hiçbir
+onarım kanon dosyasına, `plan/*.sar` kaynağına veya K-107'nin sekiz
+bilerek-hatalı örneğine dokunmamıştır. Genel 449'luk tarihsel bilgi tabanı hedef
+alınmamış; yalnız yeni sicil kümesinin uyarı adaylığı temizlenmiştir.
+
+| Tur | Sınıf ve onarım | ANA önce→sonra | KAPALI önce→sonra | Regresyon ve canlı nöbet |
+|---|---|---:|---:|---|
+| A02-T1 | `belge-şekil-drift` yanlış pozitifiydi. İkinci sığdırma geçişinin belge ve üçlü-dizgi içini bölmesi `bicimle.ts` kaynağında durduruldu. | 448/27→448/27 | 962/16→961/15 | Uzun ve virgüllü PromQL belge satırı regresyonu 1/1 geçti; iki varlık 0 uyarı/0 hata kaldı. |
+| A02-T2 | `madde-kodu-uyumsuz` ile `kanon-kodu-uyumsuz` üretici yanlış pozitifiydi. İlk alt madde `.1` olarak kabul edildi ve Karar düğümünün kanonik `karar` taşıyıcısındaki dar `dayanak: KOD` parçası okundu. | 448/27→298/25 | 961/15→961/15 | DIL-5.1/STR-1.1 regresyonu 1/1 geçti; iki varlık 0 uyarı/0 hata kaldı. |
+| A02-T3 | `proje-köksüz-üretim` ile `proje-tanı-kimliği-uyumsuz` üretici kapsam hatasıydı. Kökün ilan ettiği `yol` rafları kök kapsamına alındı; ders/şablon Projeleri ürün kimliği sayımından çıkarıldı. | 298/25→187/23 | 961/15→941/14 | İlanlı raf ve ders-Projesi regresyonları 2/2 geçti; iki varlık 0 uyarı/0 hata kaldı. |
+| A02-T4 | `açık-gizli-sınır-ihlali` ham metin yanlış pozitifiydi. Gizli varlığın öz-başvurusu ile belge/anlatı atfı ayrıldı; yürütülebilir doğrudan erişim korunmuştur. | 187/23→178/22 | 941/14→829/13 | Doğrudan erişimin tek bulgu üretip anlatı ve öz-başvurunun susmasını gösteren regresyon 1/1 geçti; iki varlık 0 uyarı/0 hata kaldı. |
+| A02-T5 | `başvuru-sicil-drifti` üretici yanlış pozitifiydi. İdempotent üretilmiş taksonomi bölgesinin içi artık aynı sınırlar içindeki beklenen içerikle karşılaştırılır. | 178/22→177/21 | 829/13→829/13 | Temiz üretilmiş blok regresyonu 1/1 geçti; `taksonomi-uret` değişiklik yapmadan idempotent kapandı ve iki varlık 0 uyarı/0 hata kaldı. |
+| A02-T6 | ANA'daki on `beceri-kartı-eksik` gerçek kaynak ihlaliydi. Her karta kendi hedefini ölçen ayrı bir `kabul` cümlesi yazıldı. | 177/21→167/20 | 829/13→829/13 | ANA sayacı 10→0 oldu; kapalı varlığın 467 dış-varlık bulgusu sahipli borç olarak kaldı ve iki varlık 0 uyarı/0 hata kaldı. |
+
+Bu altı tur yeni-tanı toplamını 1.114'ten 700'e indirmiştir. Toplam 404 yanlış
+pozitif üretici mantığında ve regresyonla, 10 gerçek ihlal ise kaynakta
+kapatılmıştır. Yeni kümenin 62 tanısı birleşik sıfır sayaca ulaşmış, sekiz tanı
+türü sıfırdan büyük sayaçla A03 dışında kalmıştır.
+
+### A02 tür bazlı önce/sonra dökümü
+
+Aşağıdaki tablo A01'de sıfırdan büyük olan 15 yeni tanının tamamını gösterir;
+başlangıçta sıfır olan diğer 55 tanı A02 boyunca 0→0 kalmıştır.
+
+| Tanı | ANA önce→sonra | KAPALI önce→sonra | Birleşik son | Sınıf |
+|---|---:|---:|---:|---|
+| `belge-şekil-drift` | 0→0 | 1→0 | 0 | Yanlış pozitif kapatıldı. |
+| `madde-kodu-uyumsuz` | 28→0 | 0→0 | 0 | Yanlış pozitif kapatıldı. |
+| `proje-köksüz-üretim` | 110→0 | 20→0 | 0 | Yanlış pozitif kapatıldı. |
+| `adım-atomikliği` | 14→14 | 1→1 | 15 | Sahipli gerçek borç kaldı. |
+| `beceri-kartı-eksik` | 10→0 | 467→467 | 467 | ANA gerçek ihlali kapatıldı; KAPALI borcu kaldı. |
+| `başvuru-sicil-drifti` | 1→0 | 0→0 | 0 | Yanlış pozitif kapatıldı. |
+| `yürütme-kenarı-sözleşmesi` | 10→10 | 1→1 | 11 | Sahipli gerçek borç kaldı. |
+| `üretim-kökeni-ihlali` | 2→2 | 0→0 | 2 | Sahipli gerçek borç kaldı. |
+| `kullanır-kenarı-ihlali` | 1→1 | 0→0 | 1 | Sahipli gerçek borç kaldı. |
+| `seçilemez-adım-yürütümü` | 4→4 | 0→0 | 4 | Sahipli gerçek borç kaldı. |
+| `kanon-kodu-uyumsuz` | 122→0 | 0→0 | 0 | Yanlış pozitif kapatıldı. |
+| `açık-gizli-sınır-ihlali` | 9→0 | 112→0 | 0 | Yanlış pozitif kapatıldı. |
+| `şema-dışı-alan` | 31→31 | 144→144 | 175 | Ürün, ders ve dış-varlık borcu ayrık kaldı. |
+| `proje-tanı-kimliği-uyumsuz` | 1→0 | 0→0 | 0 | Yanlış pozitif kapatıldı. |
+| `terfi-kanıtı-eksik` | 0→0 | 25→25 | 25 | KAPALI sahipli borcu kaldı. |
+| **Yeni küme toplamı** | **343→62** | **771→638** | **700** | **62 sıfır sayaçlı aday, 8 borçlu tanı vardır.** |
+
+### Founder'a devredilen sahipli borçlar
+
+Bu tablo A02 sonunda kalan 700 bulgunun her birini tür, kapsam ve sahip
+bakımından sınıflar. `plan/*.sar` değişmez sınırı nedeniyle ANA plan borçları bu
+halkada kaynakta değiştirilememiştir; KAPALI ise ayrı canlı varlığın sahipli
+işidir. Sayaçlar A03 terfisine uygun değildir.
+
+| Tanı | Sınıf | Ayrık kapsam ve bulgu | Sahip ve kapatma koşulu |
+|---|---|---|---|
+| `adım-atomikliği` | Sahipli borç | ANA ürün planlarında 14, KAPALI planında 1 gerçek ihlal vardır. | Founder plan sahipleri, tamamlanan Adımlara ilanlı Meyve ve tek kabul kapısı bağladığında kapanır. |
+| `beceri-kartı-eksik` | Sahipli borç | ANA'nın 10 gerçek ihlali kaynakta kapandı; kapalı varlığın 107 etmen dosyasındaki 467 kartı kaldı. | KAPALI etmen/kadro sahibi, her karta hedefe özgü dar kabul kanıtı yazdığında kapanır. |
+| `yürütme-kenarı-sözleşmesi` | Sahipli borç | ANA ürün planlarında 10, KAPALI planında 1 uygunsuz yürütme kenarı vardır. | Founder plan sahipleri, yürütme bağlarını Adım→Adım sözleşmesine taşıdığında kapanır. |
+| `üretim-kökeni-ihlali` | Sahipli borç | ANA `plan/reform_plani.sar` ve `plan/vitrin_ui.sar` dosyalarında toplam 2 bulgu vardır. | İlgili plan sahipleri, teslimi Adım altında ilanlı Meyve kökenine bağladığında kapanır. |
+| `kullanır-kenarı-ihlali` | Sahipli borç | ANA `plan/reform_plani.sar` dosyasında 1 bulgu vardır. | Reform planı sahibi, Beceri ilişkisini `kullanır` yerine izinli tipli sözleşmeye taşıdığında kapanır. |
+| `seçilemez-adım-yürütümü` | Sahipli borç | ANA `plan/vitrin_ui.sar` dosyasında 4 geliştirmede Adımın öncülü tamamlanmamıştır. | Vitrin planı sahibi, öncülleri kapatıp yürütüm sırasını seçilebilir yaptığında kapanır. |
+| `şema-dışı-alan` | Sahipli borç | ANA ürününde 8, ANA ders dünyasında 23 ve KAPALI ürününde 144 bulgu vardır; üç kapsam birbirine katılmamıştır. | Founder şema göçü ANA ürün alanlarını; K-107 ders sahibi 23 ders alanını; KAPALI şema sahibi 144 dış-varlık alanını ayrı turlarda kapatır. |
+| `terfi-kanıtı-eksik` | Sahipli borç | kapalı varlığın dört yasa dosyasında 25 bulgu vardır. | KAPALI yasa sahibi, her hükme çalışan üretici, aynı-girdi tekrar kanıtı ve yetkili kabul bağını birlikte yazdığında kapanır. |
+
+Yanlış pozitif sınıfındaki 404 bulgu yedi tanı türünde üretici mantığında
+kapatılmış ve her davranış regresyonla korunmuştur. Gerçek ihlal sınıfındaki 10
+ANA Beceri bulgusu kaynakta giderilmiştir. Bilinçli muafiyet sınıfı yalnız
+A01'de adı verilen sekiz K-107 dosyasıdır; bu dosyalar dar ilk-satır pragması,
+dosyaya özgü gerekçe ve K-107/OGR-5 sahipliği taşır, sayaçlara bulgu sokmaz.
+Boş, yol-geneli veya sahipsiz muafiyet eklenmemiştir.
+
+### A02 kapanış kapıları
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Çekirdek tip denetimi | `cd cekirdek && npx tsc --noEmit` | Çıkış 0'dır. |
+| Eklenti tip denetimi | `cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .` | Çıkış 0'dır ve çekirdeğin gerçek `tsc` dosyası kullanılmıştır. |
+| Çekirdek süiti | `cd cekirdek && npm test` | 949/949 geçti; başarısız, atlanan ve todo sınama yoktur. A01'e göre iki yeni regresyon sınaması eklenmiştir. |
+| Eklenti süiti | `cd eklenti && npm test` | 374/374 geçti; başarısız, atlanan ve todo sınama yoktur. A01'e göre bir yeni belge-sığdırma nöbeti eklenmiştir. |
+| ANA canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle .. --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 20 türde 167 bilgi vardır. |
+| KAPALI canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle ../../<kapalı-varlık> --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 13 türde 829 bilgi vardır. |
+| Kanon mührü | `shasum -a 256 yasa/kanon/*.sar` | Sekiz özet A00 ve A01 değerleriyle birebirdir. |
+
+| Varlık | A02 girişi | A02 çıkışı | Tür bazlı sonuç |
+|---|---|---|---|
+| ANA | 27 tür / 448 bilgi / 0 uyarı / 0 hata | 20 tür / 167 bilgi / 0 uyarı / 0 hata | Yedi tür sıfıra indi; kalan 20 türün tam dökümü canlı komutla alınmıştır. |
+| KAPALI | 16 tür / 962 bilgi / 0 uyarı / 0 hata | 13 tür / 829 bilgi / 0 uyarı / 0 hata | Üç tür sıfıra indi; kalan 13 türün tam dökümü canlı komutla alınmıştır. |
+
+Kanon mühürleri sırasıyla `dil=eb326cac1281b19e55b4dbab65af38db94f2dea10bfd97bd7f70933ef46d308d`,
+`mim=4dc47cc72a9fd1717f6c9c0bddeebd0288daacfd08fd0de8b1367483e6ed3ed4`,
+`ogr=d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46`,
+`ork=61f7c4043467a8fe0812abd6277449a93841262875d08b8d8852b40d7c84204e`,
+`str=a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d`,
+`tip=0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068`,
+`yas=159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49`
+ve `yuz=fc2f8a127357f87fc22e79b1c9d4f5e46f4483cecb0c02a803a05e4f4fba2a58`
+olarak ölçülmüştür.
+
+A02 kapanmıştır. Uyarıya aday 62 tanının bilgi sayacı iki canlı varlığın
+birleşiminde sıfırdır; sekiz tanı ve 700 bulgu sahipli borç olarak A03 dışında
+tutulmuştur.
+
+## ③ GOC-TERFI-A03 — Uyarıya tek-kademe terfi
+
+A03 değişiklik kümesi sicildeki `kademe` alanını, o alanı okuyan gerçek
+üreticileri ve üç sunum yüzeyinin türetilmiş yönlendirme kaydını birlikte
+güncellemiştir. Kanonun `kanonDüzey` hedefleri ve sekiz hüküm dosyası
+değişmemiştir. Terfi öncesinde yeni sicil 70 bilgi kaydı taşırken terfi
+sonrasında 62 uyarı, 8 bilgi ve 0 hata kaydı taşır.
+
+Aşağıdaki her satır aynı dört bağlayıcı gerekçeyi ayrı ayrı karşılar: A02
+sonunda ANA+KAPALI birleşik sayacı 0'dır; tanı gerçek üretici fikstüründe
+üretilmektedir; A08 sicil–kanon Zorlama iddiası–üretici senkron nöbeti geçmiştir;
+aynı girdinin iki tam koşusu aynı SHA-256 mührünü vermiştir. Bu dört kanıttan
+biri bulunmayan kimlik çizelgeye alınmamıştır. Her satırda değişen tek alan
+`kademe: bilgi→uyarı`dır.
+
+### Gerekçeli terfi çizelgesi · 1–22
+
+| No | Tanı | Madde | A02 birleşik sayaç | Terfi kararı |
+|---:|---|---|---:|---|
+| 1 | `kanonik-kaynak-biçimi` | DIL-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 2 | `orthografi-kaybı` | DIL-1.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 3 | `belge-şekil-drift` | DIL-2 | 0 | A02-T1 regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 4 | `çok-satırlı-değer-drift` | DIL-2.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 5 | `kenar-tip-uyuşmazlığı` | DIL-3.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 6 | `numara-grafı-uyumsuz` | DIL-5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 7 | `madde-kodu-uyumsuz` | DIL-5.1 | 0 | A02-T2 regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 8 | `ilgili-önek-geçersiz` | DIL-5.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 9 | `proje-köksüz-üretim` | MIM-1.1 | 0 | A02-T3 ve mesaj-sabitliği regresyonları ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 10 | `çok-teknolojili-katman` | MIM-1.4 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 11 | `üretimsiz-meyve` | MIM-2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 12 | `meyve-dosyası-eksik` | MIM-2.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 13 | `öğretim-kaynak-drifti` | OGR-2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 14 | `öğretim-yüzü-uyumsuz` | OGR-2.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 15 | `başvuru-sicil-drifti` | OGR-2.3 | 0 | A02-T5 idempotans regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 16 | `öğretim-etki-eksik` | OGR-3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 17 | `öğretim-bayat` | OGR-3.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 18 | `üretilmiş-öğretim-değiştirilmiş` | OGR-3.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 19 | `kanıtsız-beceri-terfisi` | OGR-4 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 20 | `ilişki-sınıfı-ihlali` | ORK-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 21 | `mimari-bağı-ihlali` | ORK-1.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 22 | `deterministik-sıra-ihlali` | ORK-3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+
+### Gerekçeli terfi çizelgesi · 23–42
+
+| No | Tanı | Madde | A02 birleşik sayaç | Terfi kararı |
+|---:|---|---|---:|---|
+| 23 | `döngü-sonlanması-eksik` | ORK-3.3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 24 | `kapı-kabul-kanıtı-eksik` | ORK-3.3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 25 | `çapraz-proje-ad-alanı` | ORK-4 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 26 | `auth-omurgası-ihlali` | ORK-5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 27 | `founder-ortak-auth-eksik` | ORK-5.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 28 | `şef-akışı-ihlali` | ORK-6 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 29 | `üretici-denetçi-çakışması` | ORK-6.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 30 | `oturum-adım-sınırı` | ORK-6.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 31 | `unutma-kapısı-ihlali` | STR-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 32 | `kanon-kodu-uyumsuz` | STR-1.1 | 0 | A02-T2 regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 33 | `göç-sırası-ihlali` | STR-2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 34 | `göç-kapısı-eksik` | STR-2.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 35 | `açık-gizli-sınır-ihlali` | STR-3 | 0 | A02-T4 sınır regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 36 | `çekirdek-bağımlılık-drifti` | STR-3.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 37 | `yürütücü-bağımlılığı` | STR-3.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 38 | `etki-yayın-kapısı-eksik` | STR-5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 39 | `ölü-iz` | STR-5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 40 | `tip-evreni-eksik` | TIP-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 41 | `omurga-tipi-eksik` | TIP-1.15 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 42 | `şema-tanımı-eksik` | TIP-2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+
+### Gerekçeli terfi çizelgesi · 43–62
+
+| No | Tanı | Madde | A02 birleşik sayaç | Terfi kararı |
+|---:|---|---|---:|---|
+| 43 | `örtü-ihlali` | TIP-2.5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 44 | `rejim-beyanı-eksik` | YAS-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 45 | `katı-rejim-altkatman-eksik` | YAS-1.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 46 | `rejim-geçiş-uyumsuzluğu` | YAS-1.3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 47 | `hüküm-türü-uyumsuz` | YAS-2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 48 | `kural-sözleşmesi-eksik` | YAS-2.3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 49 | `tanı-sözleşmesi-uyumsuz` | YAS-3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 50 | `tanı-kapsamı-karışması` | YAS-3.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 51 | `proje-tanı-kimliği-uyumsuz` | YAS-3.3 | 0 | A02-T3 kapsam regresyonu ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+| 52 | `tanı-terfi-kapısı-ihlali` | YAS-4 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 53 | `sahte-tam-yeşil` | YAS-4.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 54 | `prizma-kaynak-ayrışması` | YUZ-1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 55 | `eş-yetkili-yüz-ikizi` | YUZ-1.2 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 56 | `yüz-idempotans-drifti` | YUZ-1.3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 57 | `geliştirme-yüzü-drifti` | YUZ-3 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 58 | `tanı-yüzü-uyumsuz` | YUZ-3.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 59 | `yüzey-sözleşmesi-eksik` | YUZ-4 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 60 | `palet-yüz-drifti` | YUZ-4.1 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 61 | `görünürlük-sözleşmesi-eksik` | YUZ-5 | 0 | Dört kanıt tamamdır; yalnız bilgi→uyarı yükseltilmiştir. |
+| 62 | `tanı-yüzeyi-karışması` | YUZ-3.3 | 0 | A08 yetmişinci-tanı nöbeti ayrıca geçmiştir; yalnız bilgi→uyarı yükseltilmiştir. |
+
+### A03 dışında kalan sekiz tanı
+
+| Tanı | A02/A03 birleşik sayaç | Kademe | Terfi dışı kalma gerekçesi |
+|---|---:|---|---|
+| `adım-atomikliği` | 15 | bilgi | Sayaç sıfır değildir; ANA ve KAPALI plan sahipli borcudur. |
+| `beceri-kartı-eksik` | 467 | bilgi | KAPALI etmen kartlarının sahipli borcu sürmektedir. |
+| `yürütme-kenarı-sözleşmesi` | 11 | bilgi | ANA ve KAPALI planlarında gerçek kenar borcu sürmektedir. |
+| `üretim-kökeni-ihlali` | 2 | bilgi | ANA planlarında gerçek üretim-kökeni borcu sürmektedir. |
+| `kullanır-kenarı-ihlali` | 1 | bilgi | ANA reform planında gerçek kenar borcu sürmektedir. |
+| `seçilemez-adım-yürütümü` | 4 | bilgi | ANA vitrin planında tamamlanmamış öncül borcu sürmektedir. |
+| `şema-dışı-alan` | 175 | bilgi | ANA ürün, ANA ders ve KAPALI şema borçları ayrık biçimde sürmektedir. |
+| `terfi-kanıtı-eksik` | 25 | bilgi | KAPALI yasa dosyalarında terfi kanıtı borcu sürmektedir. |
+| **Toplam** | **700** | **8 bilgi tanısı** | **Sayaç sıfır olmadığı için hiçbirine dokunulmamıştır.** |
+
+### Düzey, mesaj ve yüzey tutarlılığı
+
+`GOC-TERFI-A03: 62 sıfır-sayaçlı tanı uyarıda, sekiz sahipli borç bilgide
+kalır` nöbeti, sicilde tam 62 uyarı, tam 8 bilgi ve 0 hata bulunduğunu; bilgide
+kalan kümenin yukarıdaki sekiz kimlikle birebir olduğunu ölçer.
+
+`proje: omurga kökü, teknoloji tekilliği, atomiklik ve meyve hükümleri`
+fikstüründeki aynı `proje-köksüz-üretim` ihlali A02 anlık görüntüsüyle
+karşılaştırılmıştır. Kod, Türkçe ve İngilizce mesajlar, Türkçe ve İngilizce
+öneriler, satır ve sütun birebir sabit kalmış; yalnız düzey bilgi→uyarı
+değişmiştir.
+
+Eklentinin `A03 kademe hükmü: 62 tanı Problems'a, sekiz sahipli borç
+Bildirimler'e düşer` nöbeti gerçek `beklenenSunumYuzeyi` işlevini kullanır.
+Sonuç 62 Problems ve 8 Bildirimler kaydıdır. Yüzey kodunda ayrı bir düzey
+eşlemesi yazılmamış, `nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` kaydı
+143 Problems, 4 Hatırlatıcılar, 24 Bildirimler ve toplam 171 kimlik olarak aynı
+değişiklik kümesinde güncellenmiştir.
+
+### A03 kapanış kapıları
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Çekirdek tip denetimi | `cd cekirdek && npx tsc --noEmit` | Çıkış 0'dır. |
+| Eklenti tip denetimi | `cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .` | Çıkış 0'dır ve çekirdeğin gerçek `tsc` dosyası kullanılmıştır. |
+| Çekirdek süiti | `cd cekirdek && npm test` | 950/950 geçti; başarısız, atlanan ve todo sınama yoktur. A03 kademe ve anlık-görüntü nöbeti eklenmiştir. |
+| Eklenti süiti | `cd eklenti && npm test` | 374/374 geçti; başarısız, atlanan ve todo sınama yoktur. A03 yüzey nöbeti önceki genel kademe nöbetini dar ve sayılabilir 62/8 hükmüne çevirmiştir. |
+| ANA canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle .. --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 20 türde 167 bilgi vardır. |
+| KAPALI canlı kapısı | `node --experimental-strip-types src/sarmal.ts denetle ../../<kapalı-varlık> --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 13 türde 829 bilgi vardır. |
+| Kanon mührü | `shasum -a 256 yasa/kanon/*.sar` | Sekiz özet A00, A01 ve A02 değerleriyle birebirdir. |
+
+A03 tekrar üretilebilirlik ölçümü, aynı iki tam komutu yeniden ikişer kez
+koşturmuştur. ANA çıktısının iki SHA-256 özeti de
+`83b2ecec9b1d4e05764600f92cb12228b85e7191d57cc440fea8ed0ebf720d87`,
+KAPALI çıktısının iki özeti de
+`20f8d35a27eb79706605da72f68494a8c6aae3d19fd3d8b207616f1a7b6d3380`
+olmuştur. Her dört komutun çıkışı 0'dır ve her çift bayt düzeyinde aynıdır.
+
+| Ölçüm yüzü | A03 öncesi | A03 sonrası | Tür bazlı değişim |
+|---|---|---|---|
+| Yeni sicil kademesi | 70 bilgi / 0 uyarı / 0 hata | 8 bilgi / 62 uyarı / 0 hata | Gerekçeli çizelgedeki 62 kimlik yalnız bir kademe yükseldi; sekiz borç kimliği değişmedi. |
+| ANA canlı tür dökümü | 20 tür / 167 bilgi / 0 uyarı / 0 hata | 20 tür / 167 bilgi / 0 uyarı / 0 hata | Terfi edilen türlerin canlı sayacı 0 olduğu için hiçbir tür veya bulgu sayısı değişmedi. |
+| KAPALI canlı tür dökümü | 13 tür / 829 bilgi / 0 uyarı / 0 hata | 13 tür / 829 bilgi / 0 uyarı / 0 hata | Terfi edilen türlerin canlı sayacı 0 olduğu için hiçbir tür veya bulgu sayısı değişmedi. |
+| Üç sunum yüzeyi | 81 Problems / 4 Hatırlatıcılar / 86 Bildirimler | 143 Problems / 4 Hatırlatıcılar / 24 Bildirimler | Aynı 62 kimlik, veri kaybı veya çift yayın olmadan Bildirimler'den Problems'a taşındı. |
+
+A03 kapanmıştır. **62 tanı uyarıya çıkmış, 8 tanı sahipli borçta bilgi
+kademesinde kalmıştır.** Hata kademesine çıkan tanı sayısı 0'dır. İki canlı
+varlığın kök denetimi 0 uyarı ve 0 hata olarak korunmuştur.
+
+## ④ GOC-TERFI-A04 — Uyarı sıfırlaması ve üçlü kanıt bağı
+
+### Canlı kapsam ve iki koşulu tanı sayacı
+
+Çalışma alanı kökünden en çok iki dizin aşağıda `*_anadizin.sar` araması
+yeniden yapıldı. Canlı Proje kökü olarak yalnız `_Sarmal/sarmal_anadizin.sar`
+ve kapalı varlığın anadizini bulundu; üçüncü canlı kök yoktur.
+`ornek/**`, `sablon/**`, sınama fikstürleri ve ilk satırında dar
+`sarmal: bilerek-hatalı` pragması taşıyan sekiz dosya A01'de yazılan kapsam
+ayrımıyla değerlendirilmiştir; hiçbir genel yol süzgeci eklenmemiştir.
+
+Makine-okur ölçüm, `denetimKos(..., { tamListe: true })` sonucundaki
+`turDokumu` ile sicilde `kademe === "uyarı"` olan 62 kimliği birleştirmiştir.
+Tür dökümünde bulunmayan kimlik için sayaç sıfırdır; köklerin `toplamHata` ve
+`toplamUyari` değerleri aynı sayım noktasından gelir. Aynı işlem iki kez
+koşulmuş, her koşuda 62×2 sayaç yazılmıştır. Koşu-1 ve koşu-2 JSON özetlerinin
+SHA-256 mührü birebir
+`4d5bbaadb602b6c43769035f8e25fcf6decab48343baed26925713315416109c`
+olmuştur. Her iki koşuda iki kökün çıkışı 0, hata sayacı 0 ve uyarı sayacı
+0'dır; 124 tanı-kök hücresinin 124'ü sıfırdır.
+
+Tekrar komutu aşağıdadır. Komut iki kez çalıştırılır; `satırlar` dizisinin
+bayt düzeyinde eşitliği ve SHA-256 özeti karşılaştırılır.
+
+```sh
+cd _Sarmal
+node --input-type=module --experimental-strip-types <<'NODE'
+import { resolve } from "node:path";
+import { denetimKos } from "./cekirdek/src/denetim.ts";
+import { YENI_TANI_KANONU } from "./cekirdek/src/tani-sicili.ts";
+const snfYol = resolve("oz/siniflama/kayit.json");
+const kokler = [["ANA", resolve(".")], ["KAPALI", resolve("../<kapalı-varlık>")]];
+const kodlar = YENI_TANI_KANONU.filter((x) => x.kademe === "uyarı").map((x) => x.kod);
+const sonuc = kokler.map(([ad, kok]) => [ad, denetimKos(kok, { snfYol, tamListe: true })]);
+console.log(JSON.stringify(kodlar.map((kod) => Object.fromEntries([
+  ["tanı", kod], ...sonuc.map(([ad, s]) => [ad, s.turDokumu.find((x) => x.kod === kod)?.toplam ?? 0]),
+])), null, 2));
+NODE
+```
+
+Sayaç sıfır olmayan uyarı tanısı çıkmadığı için A04'te kaynak onarımı,
+yanlış-pozitif düzeltmesi veya yeni sahipli borç doğmamıştır. Aşağıdaki
+`uygulama` sütunu gerçek `yeniTani` çağrısını, `doğrulama` sütunu o kimliği
+gerçek fikstürde üreten nöbeti, `kabul` sütunu ise değişmeyen kanonun
+`Zorlama` satırını gösterir. Bu üç sütundan biri boş olan tanı A05 adayı
+sayılamaz.
+
+### Üçlü kanıt çizelgesi · 1–22
+
+| No | Tanı · madde | ANA / KAPALI | Uygulama | Doğrulama | Kabul |
+|---:|---|---:|---|---|---|
+| 1 | `kanonik-kaynak-biçimi` · DIL-1 | 0 / 0 | `cekirdek/src/denetci.ts:3038` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:259` | `yasa/kanon/dil.sar:27` |
+| 2 | `orthografi-kaybı` · DIL-1.1 | 0 / 0 | `cekirdek/src/denetci.ts:3050` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:260` | `yasa/kanon/dil.sar:39` |
+| 3 | `belge-şekil-drift` · DIL-2 | 0 / 0 | `cekirdek/src/dogrulayici.ts:486` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:97` | `yasa/kanon/dil.sar:91` |
+| 4 | `çok-satırlı-değer-drift` · DIL-2.2 | 0 / 0 | `cekirdek/src/dogrulayici.ts:502` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:105` | `yasa/kanon/dil.sar:116` |
+| 5 | `kenar-tip-uyuşmazlığı` · DIL-3.1 | 0 / 0 | `cekirdek/src/denetci.ts:3069` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:261` | `yasa/kanon/dil.sar:140` |
+| 6 | `numara-grafı-uyumsuz` · DIL-5 | 0 / 0 | `cekirdek/src/denetci.ts:3084` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:262` | `yasa/kanon/dil.sar:165` |
+| 7 | `madde-kodu-uyumsuz` · DIL-5.1 | 0 / 0 | `cekirdek/src/denetci.ts:3100` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:263` | `yasa/kanon/dil.sar:177` |
+| 8 | `ilgili-önek-geçersiz` · DIL-5.2 | 0 / 0 | `cekirdek/src/dogrulayici.ts:306` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:79` | `yasa/kanon/dil.sar:189` |
+| 9 | `proje-köksüz-üretim` · MIM-1.1 | 0 / 0 | `cekirdek/src/denetci.ts:2633` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:140` | `yasa/kanon/mim.sar:39` |
+| 10 | `çok-teknolojili-katman` · MIM-1.4 | 0 / 0 | `cekirdek/src/denetci.ts:2640` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:138` | `yasa/kanon/mim.sar:77` |
+| 11 | `üretimsiz-meyve` · MIM-2 | 0 / 0 | `cekirdek/src/denetci.ts:2665` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:141` | `yasa/kanon/mim.sar:115` |
+| 12 | `meyve-dosyası-eksik` · MIM-2.1 | 0 / 0 | `cekirdek/src/denetci.ts:2671` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:142` | `yasa/kanon/mim.sar:127` |
+| 13 | `öğretim-kaynak-drifti` · OGR-2 | 0 / 0 | `cekirdek/src/denetci.ts:3186` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:298` | `yasa/kanon/ogr.sar:87` |
+| 14 | `öğretim-yüzü-uyumsuz` · OGR-2.1 | 0 / 0 | `cekirdek/src/denetim.ts:776` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:477` | `yasa/kanon/ogr.sar:99` |
+| 15 | `başvuru-sicil-drifti` · OGR-2.3 | 0 / 0 | `cekirdek/src/denetci.ts:3223` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:301` | `yasa/kanon/ogr.sar:125` |
+| 16 | `öğretim-etki-eksik` · OGR-3 | 0 / 0 | `cekirdek/src/denetci.ts:3269` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:304` | `yasa/kanon/ogr.sar:137` |
+| 17 | `öğretim-bayat` · OGR-3.1 | 0 / 0 | `cekirdek/src/denetci.ts:3196` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:299` | `yasa/kanon/ogr.sar:149` |
+| 18 | `üretilmiş-öğretim-değiştirilmiş` · OGR-3.2 | 0 / 0 | `cekirdek/src/denetci.ts:3206` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:300` | `yasa/kanon/ogr.sar:162` |
+| 19 | `kanıtsız-beceri-terfisi` · OGR-4 | 0 / 0 | `cekirdek/src/denetci.ts:3247` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:303` | `yasa/kanon/ogr.sar:174` |
+| 20 | `ilişki-sınıfı-ihlali` · ORK-1 | 0 / 0 | `cekirdek/src/denetci.ts:2751` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:173` | `yasa/kanon/ork.sar:27` |
+| 21 | `mimari-bağı-ihlali` · ORK-1.1 | 0 / 0 | `cekirdek/src/denetci.ts:2768` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:174` | `yasa/kanon/ork.sar:39` |
+| 22 | `deterministik-sıra-ihlali` · ORK-3 | 0 / 0 | `cekirdek/src/denetci.ts:2844` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:177` | `yasa/kanon/ork.sar:138` |
+
+### Üçlü kanıt çizelgesi · 23–42
+
+| No | Tanı · madde | ANA / KAPALI | Uygulama | Doğrulama | Kabul |
+|---:|---|---:|---|---|---|
+| 23 | `döngü-sonlanması-eksik` · ORK-3.3 | 0 / 0 | `cekirdek/src/denetci.ts:2891` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:226` | `yasa/kanon/ork.sar:175` |
+| 24 | `kapı-kabul-kanıtı-eksik` · ORK-3.3 | 0 / 0 | `cekirdek/src/denetci.ts:2901` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:227` | `yasa/kanon/ork.sar:175` |
+| 25 | `çapraz-proje-ad-alanı` · ORK-4 | 0 / 0 | `cekirdek/src/denetci.ts:2859` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:217` | `yasa/kanon/ork.sar:188` |
+| 26 | `auth-omurgası-ihlali` · ORK-5 | 0 / 0 | `cekirdek/src/denetci.ts:2930` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:234` | `yasa/kanon/ork.sar:201` |
+| 27 | `founder-ortak-auth-eksik` · ORK-5.2 | 0 / 0 | `cekirdek/src/denetci.ts:2948` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:235` | `yasa/kanon/ork.sar:225` |
+| 28 | `şef-akışı-ihlali` · ORK-6 | 0 / 0 | `cekirdek/src/denetci.ts:2988` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:243` | `yasa/kanon/ork.sar:249` |
+| 29 | `üretici-denetçi-çakışması` · ORK-6.1 | 0 / 0 | `cekirdek/src/denetci.ts:2979` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:242` | `yasa/kanon/ork.sar:261` |
+| 30 | `oturum-adım-sınırı` · ORK-6.2 | 0 / 0 | `cekirdek/src/denetci.ts:2997` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:244` | `yasa/kanon/ork.sar:273` |
+| 31 | `unutma-kapısı-ihlali` · STR-1 | 0 / 0 | `cekirdek/src/denetci.ts:3316` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:337` | `yasa/kanon/str.sar:27` |
+| 32 | `kanon-kodu-uyumsuz` · STR-1.1 | 0 / 0 | `cekirdek/src/denetci.ts:3339` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:338` | `yasa/kanon/str.sar:39` |
+| 33 | `göç-sırası-ihlali` · STR-2 | 0 / 0 | `cekirdek/src/denetci.ts:3385` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:339` | `yasa/kanon/str.sar:64` |
+| 34 | `göç-kapısı-eksik` · STR-2.1 | 0 / 0 | `cekirdek/src/denetci.ts:3399` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:340` | `yasa/kanon/str.sar:76` |
+| 35 | `açık-gizli-sınır-ihlali` · STR-3 | 0 / 0 | `cekirdek/src/denetci.ts:3420` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:341` | `yasa/kanon/str.sar:88` |
+| 36 | `çekirdek-bağımlılık-drifti` · STR-3.1 | 0 / 0 | `cekirdek/src/denetci.ts:3434` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:342` | `yasa/kanon/str.sar:100` |
+| 37 | `yürütücü-bağımlılığı` · STR-3.2 | 0 / 0 | `cekirdek/src/denetci.ts:3451` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:343` | `yasa/kanon/str.sar:112` |
+| 38 | `etki-yayın-kapısı-eksik` · STR-5 | 0 / 0 | `cekirdek/src/denetci.ts:3463` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:344` | `yasa/kanon/str.sar:137` |
+| 39 | `ölü-iz` · STR-5 | 0 / 0 | `cekirdek/src/denetci.ts:3486` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:345` | `yasa/kanon/str.sar:137` |
+| 40 | `tip-evreni-eksik` · TIP-1 | 0 / 0 | `cekirdek/src/denetci.ts:3526` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:365` | `yasa/kanon/tip.sar:27` |
+| 41 | `omurga-tipi-eksik` · TIP-1.15 | 0 / 0 | `cekirdek/src/denetci.ts:3544` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:366` | `yasa/kanon/tip.sar:207` |
+| 42 | `şema-tanımı-eksik` · TIP-2 | 0 / 0 | `cekirdek/src/denetci.ts:3552` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:367` | `yasa/kanon/tip.sar:231` |
+
+### Üçlü kanıt çizelgesi · 43–62
+
+| No | Tanı · madde | ANA / KAPALI | Uygulama | Doğrulama | Kabul |
+|---:|---|---:|---|---|---|
+| 43 | `örtü-ihlali` · TIP-2.5 | 0 / 0 | `cekirdek/src/denetci.ts:3561` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:368` | `yasa/kanon/tip.sar:293` |
+| 44 | `rejim-beyanı-eksik` · YAS-1 | 0 / 0 | `cekirdek/src/denetci.ts:2519` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:121` | `yasa/kanon/yas.sar:27` |
+| 45 | `katı-rejim-altkatman-eksik` · YAS-1.1 | 0 / 0 | `cekirdek/src/denetci.ts:2536` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:126` | `yasa/kanon/yas.sar:39` |
+| 46 | `rejim-geçiş-uyumsuzluğu` · YAS-1.3 | 0 / 0 | `cekirdek/src/denetci.ts:2553` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:127` | `yasa/kanon/yas.sar:63` |
+| 47 | `hüküm-türü-uyumsuz` · YAS-2 | 0 / 0 | `cekirdek/src/kuralci.ts:895` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:412` | `yasa/kanon/yas.sar:75` |
+| 48 | `kural-sözleşmesi-eksik` · YAS-2.3 | 0 / 0 | `cekirdek/src/kuralci.ts:920` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:413` | `yasa/kanon/yas.sar:113` |
+| 49 | `tanı-sözleşmesi-uyumsuz` · YAS-3 | 0 / 0 | `cekirdek/src/denetim.ts:730` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:474` | `yasa/kanon/yas.sar:139` |
+| 50 | `tanı-kapsamı-karışması` · YAS-3.2 | 0 / 0 | `cekirdek/src/denetim.ts:739` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:475` | `yasa/kanon/yas.sar:163` |
+| 51 | `proje-tanı-kimliği-uyumsuz` · YAS-3.3 | 0 / 0 | `cekirdek/src/denetim.ts:746` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:428` | `yasa/kanon/yas.sar:175` |
+| 52 | `tanı-terfi-kapısı-ihlali` · YAS-4 | 0 / 0 | `cekirdek/src/kuralci.ts:937` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:414` | `yasa/kanon/yas.sar:200` |
+| 53 | `sahte-tam-yeşil` · YAS-4.1 | 0 / 0 | `cekirdek/src/denetim.ts:802` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:478` | `yasa/kanon/yas.sar:212` |
+| 54 | `prizma-kaynak-ayrışması` · YUZ-1 | 0 / 0 | `cekirdek/src/denetci.ts:3632` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:393` | `yasa/kanon/yuz.sar:27` |
+| 55 | `eş-yetkili-yüz-ikizi` · YUZ-1.2 | 0 / 0 | `cekirdek/src/denetci.ts:3643` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:394` | `yasa/kanon/yuz.sar:51` |
+| 56 | `yüz-idempotans-drifti` · YUZ-1.3 | 0 / 0 | `cekirdek/src/denetci.ts:3654` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:395` | `yasa/kanon/yuz.sar:63` |
+| 57 | `geliştirme-yüzü-drifti` · YUZ-3 | 0 / 0 | `cekirdek/src/denetci.ts:3680` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:396` | `yasa/kanon/yuz.sar:123` |
+| 58 | `tanı-yüzü-uyumsuz` · YUZ-3.1 | 0 / 0 | `cekirdek/src/denetim.ts:760` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:476` | `yasa/kanon/yuz.sar:135` |
+| 59 | `yüzey-sözleşmesi-eksik` · YUZ-4 | 0 / 0 | `cekirdek/src/denetci.ts:3700` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:397` | `yasa/kanon/yuz.sar:171` |
+| 60 | `palet-yüz-drifti` · YUZ-4.1 | 0 / 0 | `cekirdek/src/denetci.ts:3708` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:398` | `yasa/kanon/yuz.sar:183` |
+| 61 | `görünürlük-sözleşmesi-eksik` · YUZ-5 | 0 / 0 | `cekirdek/src/dogrulayici.ts:383` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:89` | `yasa/kanon/yuz.sar:208` |
+| 62 | `tanı-yüzeyi-karışması` · YUZ-3.3 | 0 / 0 | `cekirdek/src/denetim.ts:794` | `cekirdek/sinama/yeni-kanon-tanilari.test.ts:507` | `yasa/kanon/yuz.sar:159` |
+
+### A04 kapanış özeti
+
+Üçlü kanıt kapsaması uyarı kümesinde 62/62 tam ve 0/62 eksiktir. Uygulama,
+doğrulama veya kabul bağı eksik tanı yoktur; sayaç sıfır olmayan uyarı tanısı
+da yoktur. Dolayısıyla 62 tanının tamamı A05 değerlendirmesine girebilir,
+fakat bu sonuç tek başına hata düzeyine geçiş yetkisi değildir. Founder'ın
+açık kabulü bulunmadığı için bu koşumda sicildeki hiçbir `kademe` alanı
+değiştirilmemiştir.
+
+### A04 kapanış kapıları
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Çekirdek tip denetimi | `cd cekirdek && npx tsc --noEmit` | Çıkış 0'dır. |
+| Eklenti tip denetimi | `cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .` | Çıkış 0'dır. |
+| Çekirdek süiti | `cd cekirdek && npm test` | 950/950 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| Eklenti süiti | `cd eklenti && npm test` | 374/374 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| ANA canlı kapısı | `node --experimental-strip-types cekirdek/src/sarmal.ts denetle . --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 20 türde 164 bilgi vardır. |
+| KAPALI canlı kapısı | `node --experimental-strip-types cekirdek/src/sarmal.ts denetle ../<kapalı-varlık> --tam-liste` | Çıkış 0, 0 hata ve 0 uyarıdır; 13 türde 829 bilgi vardır. |
+| Sicil düzeyi | `YENI_TANI_KANONU` doğrudan içe aktarımı | 62 uyarı, 8 bilgi ve 0 hatadır; A05 yalnız değerlendirmedir. |
+| Kanon mührü | `shasum -a 256 yasa/kanon/*.sar` | Sekiz özet A00–A03 değerleriyle birebirdir. |
+
+Görev zemini ve A03 mührü ANA için 167 bilgi yazıyordu; yeniden ölçüm 164
+bilgi vermiştir. Önceki kayıtta 42 olan `açık-adım` sayacı bugün 39'dur;
+üçlük toplam farkın tamamı bu türdedir ve diğer 19 türün birleşik toplamı
+125 olarak korunmuştur. Bu A04/A05 koşumu
+`plan/*.sar` dosyalarını değiştirmemiş ve tarihsel sayıyı geri yaratmamıştır.
+KAPALI 829 bilgiyle birebirdir. Bilgi sayısındaki bu üçlük fark 62 uyarı
+tanısının sıfır sayaç hükmünü etkilemez.
+
+## GOC-TERFI-A05 · Founder kabulünün uygulanması
+
+Founder, 2026-08-03 tarihinde “46 güvenli çekirdek hataya, 16 uyarıda kalır.”
+hükmünü açıkça kabul etmiştir. Kabul edilen 46 kimlik, uyarıda bırakılan 16
+kimlik ve reddedilen sekiz kimlik `hata_terfi_kapi_kaydi.sar` içindeki Founder
+kabul hanesinde ayrı tam cümlelerle yazılmıştır. Aynı hanede uygulama,
+değerlendirme ve kanon iddiası kutuları açıktır.
+
+Sicildeki her değişiklik, kabul çizelgesindeki kimliği gerçek sicil kaydıyla
+eşleyip `kanonDüzey: "hata"` koşulunu doğrulayan mekanik kapıdan geçirilmiştir.
+Bu kapı yalnız kabul edilen 46 kaydın `kademe` değerini `uyarı`dan `hata`ya
+çıkarmış; 16 kanon-uyarı kaydını ve sekiz ret kaydını değiştirmemiştir.
+
+| A05 ölçümü | Komut | Ölçülen sonuç |
+|---|---|---|
+| Sicil dağılımı | `node --experimental-strip-types --input-type=module -e 'import { YENI_TANI_KANONU as k } from "./cekirdek/src/tani-sicili.ts"; ...'` | Doğrudan TypeScript içe aktarımı 70 kaydı 46 hata, 16 uyarı ve sekiz bilgi olarak saymıştır. Yerel ve çevrimdışı npm önbelleğinde `tsx` ikilisi bulunmadığından aynı iş Node'un yerleşik TypeScript çalıştırıcısıyla yapılmıştır; depoya bağımlılık eklenmemiştir. |
+| ANA canlı kapısı | `node --experimental-strip-types cekirdek/src/sarmal.ts denetle . --tam-liste` | Komut çıkışı 0'dır; filtresiz çıktıda 0 `✖`, 0 `⚠` ve 163 bilgi satırı vardır. |
+| KAPALI canlı kapısı | `node --experimental-strip-types cekirdek/src/sarmal.ts denetle ../<kapalı-varlık> --tam-liste` | Komut çıkışı 0'dır; filtresiz çıktıda 0 `✖`, 0 `⚠` ve 829 bilgi satırı vardır. |
+| Canlı kök keşfi | `find .. -maxdepth 2 -type f -name '*_anadizin.sar' -print | sort` | Yalnız `../_Sarmal/sarmal_anadizin.sar` ile kapalı varlığın anadizini bulunmuştur; iki kökün ikisi de ölçülmüştür. |
+
+A05 sonrasında iki canlı varlık ve bütün keşfedilen canlı köklerde yeni hata
+sayısı sıfır, yeni uyarı sayısı sıfırdır. Terfi, daha önce sıfır olan sayaçları
+yükseltmemiştir.
+
+## GOC-TERFI-A06 · Eşzamanlama ve motor güven nöbeti
+
+Tanı düzeyinin tek yetkili kaynağı `cekirdek/src/tani-sicili.ts` olarak
+korunmuştur. Üreticiler `yeniTani` üzerinden bu sicili okur; denetim
+orkestrasyonu ile eklenti dağıtımı gerçek tanı düzeyinin sicil kademesinden
+ayrılmasını kusur sayar. Problems, Hatırlatıcılar, Bildirimler, Gözlemler,
+hover ve öğretim metni aynı tanı nesnesini taşır. Eklenti kaynağındaki ikinci
+hedef çizelgesi kaldırılmıştır; `rg -n 'kanonDüzey|hataya-aday|uyarıya-aday'
+eklenti/src` komutu eşleşme üretmemiştir.
+
+Somut eşitlik koşumunda `kanonik-kaynak-biçimi` tanısı sicilde, gerçek
+üreticide, Problems dağıtımında ve hover görünümünde ayrı ayrı
+`{ kimlik: "kanonik-kaynak-biçimi", duzey: "hata" }` çıktısını vermiştir.
+Problems kaydı üretici tanı nesnesiyle nesne özdeşliğini korumuş; hover aynı
+öğretim önerisini kanonik tanıdan taşımıştır. Aynı hata tanısı
+Hatırlatıcılar'a veya Bildirimler'e ikinci kez yayılmamıştır.
+
+Motor güven nöbetine tek-kademe `bilgi→uyarı→hata` sırası, bütün sayaçların
+ayrı ayrı sıfır olması, uygulama-doğrulama-kanon üçlü kanıtının dolu olması ve
+yetkili açık kabulün bulunması koşulları eklenmiştir. Founder kayıt ayrıştırma
+sınaması 46 kabulün her birini bu dört kapıdan geçirir; 16 uyarı ile sekiz ret
+kimliğinin değişmediğini de aynı koşumda doğrular. Düzey atlama, sıfır olmayan
+sayaç, eksik üçlü kanıt, kapalı kabul, yüzeyde yeniden derecelendirme ve
+atlanmış kapıyla sahte tam-yeşil durumları kırmızı fikstürdür.
+
+### A06 gerçek mutasyon kanıtları
+
+| Geçici mutasyon | Düşen sınama ve sonuç | Geri dönüş SHA-256 kanıtı |
+|---|---|---|
+| `SIRADAKI_TERFI_DUZEYI.bilgi` değeri `uyarı`dan `hata`ya çevrilmiştir. | `node --test --test-name-pattern='A06 KIRMIZI FİKSTÜRLER' sinama/motor-guven.test.ts` çıkış 1 vermiş ve “bilgi→hata atlaması kırmızı olmadı” iddiası düşmüştür. | `cekirdek/src/tani-sicili.ts` geri alındıktan sonra `1f3d9ecb20192d36ac8e9e42bb889cff6abd5cbb8360fc7735184927abd91d20` özetine birebir dönmüştür. |
+| Eklenti dağıtımındaki sicilden farklı düzey nöbeti geçici olarak `false` ile kapatılmıştır. | `node --import ./sinama/dil-kur.ts --test --test-name-pattern='A06 KIRMIZI FİKSTÜR: yüzey hata tanısını' sinama/tani-yuzeyleri.test.ts` çıkış 1 vermiş ve “yüzey yeniden derecelendirmesi kırmızı olmadı” iddiası düşmüştür. | `eklenti/src/yuzey-cekirdek.ts` geri alındıktan sonra `e84bcc7271b3cf0a4228f0b5799aa284ab8b01e959696ba6f45e9af8d50880b7` özetine birebir dönmüştür. |
+| Atlanan zorunlu kapının `sahte-tam-yeşil` üretim koşulu geçici olarak kapatılmıştır. | `node --test --test-name-pattern='A06 KIRMIZI FİKSTÜR: atlanan kapıyla' sinama/motor-guven.test.ts` çıkış 1 vermiş ve “zorunlu kapı atlandı ama sahte tam-yeşil nöbeti kırmızı olmadı” iddiası düşmüştür. | `cekirdek/src/denetim.ts` geri alındıktan sonra `60d9ef348291e41a958c591f6d87453cfe29468795c645221aa1f5dc5f3197d8` özetine birebir dönmüştür. |
+
+Her mutasyon yalnız ilgili satıra uygulanmış, kırmızı sonuç görüldükten hemen
+sonra ters yama uygulanmış ve tam SHA-256 eşitliği ölçülmüştür. Sonraki tam
+süitler geri dönüşlerin davranışsal olarak da temiz olduğunu doğrulamıştır.
+
+### A06 yayın ve kapanış kapıları
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Çekirdek tip denetimi | `cd cekirdek && npx tsc --noEmit` | Çıkış 0'dır. |
+| Eklenti tip denetimi | `cd eklenti && ../cekirdek/node_modules/.bin/tsc --noEmit -p .` | Çıkış 0'dır. |
+| Çekirdek süiti | `cd cekirdek && npm test` | 954/954 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| Eklenti süiti | `cd eklenti && npm test` | 376/376 geçti; başarısız, atlanan ve todo sınama yoktur. |
+| Gömülü eklenti üretimi | `cd eklenti && npm run build` | Çıkış 0'dır; üreteç `package.json`, `.vscode/settings.json` ve `src/gomulu-kanon.ts` dosyalarını kanondan yeniden üretmiş, `dist/eklenti.js` paketlenmiştir. Dist içinde `kanonik-kaynak-biçimi` kaydı `kademe: "hata"` olarak ölçülmüştür. |
+| Gerçek VS Code süiti | `cd eklenti && npm run test:vscode` | Paketleme tamamlanmış, fakat çevrimdışı ortam güncel sürüm sorgusunu çözememiştir. Yerel VS Code 1.130.0 ikilisi test barınağı başlamadan SIGABRT/134 ile kapanmıştır. İkilinin tek başına `--version` çağrısı da aynı sonucu vermiştir. Geçici kopya ad-hoc imzalanıp `codesign --verify --deep --strict` ile doğrulandıktan sonra dahi 134 sürdüğü için bu çevresel Electron başlatma engelidir; gerçek süit çalışmış veya yeşil sayılmamıştır. |
+
+Sekiz kanon hüküm dosyasının son SHA-256 değerleri sırasıyla `dil` için
+`eb326cac1281b19e55b4dbab65af38db94f2dea10bfd97bd7f70933ef46d308d`,
+`mim` için `4dc47cc72a9fd1717f6c9c0bddeebd0288daacfd08fd0de8b1367483e6ed3ed4`,
+`ogr` için `d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46`,
+`ork` için `61f7c4043467a8fe0812abd6277449a93841262875d08b8d8852b40d7c84204e`,
+`str` için `a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d`,
+`tip` için `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068`,
+`yas` için `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49`
+ve `yuz` için `fc2f8a127357f87fc22e79b1c9d4f5e46f4483cecb0c02a803a05e4f4fba2a58`
+olarak ölçülmüştür. Sekiz değer A00–A04 mühürleriyle birebirdir; kanon hüküm
+metinleri değiştirilmemiştir.
+
+|<--
+
+Veri( kod: KRN-GOC-TERFI-TANI,
+  ne: "GOC-TERFI-A01 ile A06 arasındaki canlı tanı sayaçlarını, Founder kabulünü, tek-kademe hata terfilerini, yüzey eşitliğini, motor nöbetini ve gerçek mutasyon kanıtlarını tam cümlelerle kaydeder." )

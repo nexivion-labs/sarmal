@@ -1,0 +1,13 @@
+{
+  // F5 öncesi otomatik taze derleme (renk-üret + esbuild).
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "sarmal-derle",
+      "type": "shell",
+      "command": "npm run build",
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent", "panel": "shared" }
+    }
+  ]
+}

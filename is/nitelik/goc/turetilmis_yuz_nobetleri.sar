@@ -1,0 +1,365 @@
+// KÜRASYON (GOC-A08 sekizinci küme · 2026-08-25): kaynak mühürleri altı kitaplık düzeninin yollarıyla yeniden
+// mühürlendi; atölyede kalan terfi devir kaydının satırı düştü, dil bağlamı kaynağı yol uyarlaması nedeniyle yeni mühür aldı.
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/turetilmis_yuz_nobetleri.sar — GOC-BELGE-A04 · SN-GOC-BELGE-TUREV
+//   Türetilmiş yüzlerin kaynak, mühür, idempotans, bayatlık ve bağlantı
+//   nöbetlerinin koşum kaydı. Makine nöbeti çekirdek süitinde yaşar:
+//   cekirdek/sinama/turetilmis-yuz-nobetleri.test.ts bu kaydın A bölümündeki
+//   mühür tablosunu canlı kaynakla karşılaştırır; kaynak ilerleyip bu kayıt
+//   tazelenmezse süit kırmızı yanar. Bu dosya kanon değildir; hüküm kurmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# Türetilmiş yüz nöbetleri — koşum kaydı
+
+Bu kayıt 3 Ağustos 2026 tarihinde canlı çalışma ağacından ölçülmüştür. Bütün
+üreticiler önce canlı kökte, sonra çalışma ağacının dışına kurulan temiz bir
+kopyada yeniden koşulmuş; her koşunun birinci ve ikinci farkı ayrı ayrı
+kaydedilmiştir. Kırmızı fikstürler canlı ağaca dokunmaz: dört bozulma senaryosu
+geçici sandbox kopyalarında kurulur ve nöbetin o senaryoyu gerçekten kırmızıya
+düşürdüğü mutasyonla kanıtlanır.
+
+## A · Kaynak mühürleri
+
+Aşağıdaki tablo türetilmiş yüz üreticilerinin okuduğu canlı kaynakların bu
+koşudaki SHA-256 mühürleridir. Kanon demeti GOC-BELGE-A03 formülüyle ölçülür:
+sekiz resmi dosyanın `ad:sha256` satırları dosya adına göre sıralanıp satır
+sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
+
+| Kaynak | SHA-256 |
+|---|---|
+| `yasa/kanon demeti (A03 formülü)` | `ddc3ceef60a6e3cb006521074cd51be4e170c60fac5f3631675691f733b59d08` |
+| `oz/siniflama/kayit.json` | `5ce2f43a274503552d2ec2d4d94c134d8d0b60d155764aa2fa6c76a39cf83904` |
+| `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
+| `urun/cekirdek/src/tani-sicili.ts` | `b8bb04cbf6f540df24735ade6c711c0cb5a34dc1af54824f6d541de1f13904eb` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `b0f9456696c19e04c729584c96e54fcef8bb4d8d5b360980ab81420607250827` |
+| `urun/cekirdek/src/dil-baglami.ts` | `c374ef710e6133492ed2ca4b3793125c1927d7eacc92cba101a4959ab0912690` |
+| `urun/eklenti/package.nls.tr.json` | `deb6acd817424ddd885e1e8c679c0c635ff9a5c480baabfcfc9d7eb5f92859b2` |
+| `urun/eklenti/package.nls.json` | `b659db2b409f1b506b75cabe493c3210395cc859c071cf2702f8fd78052319d0` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `23da93f3f6d3bbcdd77c6bfefc272ca596173dd5d31258cd2cda8be72888786b` |
+
+Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
+her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-08-03 · göç kapanışı): göç planı arşive inince kaynak kodun
+yorumlarındaki tur kimliği atıfları anlatıya çevrildi. Bu dönüşüm sicil
+kaynağının mührünü değiştirdiği için tanı sicili satırı ile kanon tutarlılık
+yüzü aynı kapanışta üreticiyle yeniden tazelendi.
+
+Tazeleme notu (2026-08-08 · ilan yokluğu bekçisi): Yapı-Önce hükmünü dosya
+düzeyinde zorlayan ilansız gövde kimliği sicile eklendi ve yönlendirme
+matrisinin sayısal özeti bir kimlik arttı. İki kaynağın mührü bu yüzden
+değişti; kanon tutarlılık yüzü ile belge yüzleri aynı koşuda üreticileriyle
+yeniden tazelendi ve ikinci koşu sıfır fark verdi.
+
+Tazeleme notu (2026-08-24 · vitrin metinleri): Founder onayıyla kısa mağaza
+açıklaması iki dil dosyasında yenilenmişti ve o tur nöbet kaydını tazelemeden
+kapanmıştı; çekirdek süiti vitrin işlemesinden sonra ilk kez oturum doksan
+altıda koşulunca nöbet ayrışmayı yakaladı. İki dil dosyasının mührü canlı
+değerle tazelendi; kusur içerik değil kayıt borcudur ve elle yazılan iki dil
+dosyası bu tablonun izlediği kaynaklar arasında yaşamaya devam eder.
+
+Tazeleme notu (2026-08-08 · anlatım bütünlüğü hükmü): Founder'ın yazım ve üslup
+hükmü kanonun dil bölümüne DIL-1.5 koduyla indi ve kanon yüz kırk dört maddeden
+yüz kırk beş maddeye çıktı. Bu ekleme yalnız kanonun dil dosyasının baytlarını
+değiştirdiği için kanon demeti mührü tazelendi; kanon tutarlılık yüzü ile belge
+okuma yüzleri aynı koşuda üreticileriyle yeniden üretildi.
+
+Tazeleme notu (2026-08-08 · vitrin turu, iki dil kaydı): Giydirme teklifi
+kaldırılırken eklentinin arayüz metinleri iki yönde değişti. Bir yandan artık
+var olmayan bir davranışı kapatan ayarın etiketi düştü, çünkü olmayan bir
+davranışı kapatan düğme kullanıcıyı yanıltır; öte yandan sağlayıcının ürettiği
+hâlde hiç ilan edilmemiş iki anlamsal simge ilan edildi ve tanı yüzeylerine
+kopyalama komutu indi, dolayısıyla yeni etiketler doğdu. İki dil dosyasının
+mührü bu yüzden ilerledi ve nöbet kaydı canlı ölçüme çekildi.
+
+Tazeleme notu (2026-08-09 · emekli karar komutlarının adları): Onaylar
+yüzeyindeki üç karar komutu OZK-09 hükmüyle emekliye ayrılmış olduğu hâlde
+kullanıcıya görünen adları hâlâ bir hüküm vaat ediyordu ve bu adlar emoji
+taşıyordu. Adların üçü de kararın Onaylar panelinde verildiğini söyleyecek
+biçimde yeniden yazıldı ve arayüz işaretleri vektörel aile hükmüne uydurulup
+düşürüldü. Değişen tek şey görünen metindir; komut kimlikleri, görünüş kimliği
+ve denetleyici kimliği bilerek korunmuştur. Bu yüzden yalnız iki dil dosyasının
+mührü ilerledi ve nöbet kaydının o iki satırı canlı ölçüme çekildi; tablonun
+başka hiçbir satırına dokunulmadı.
+
+Tazeleme notu (2026-08-08 · öncelik kademeleri hükmü): Öncelik alanının anlamı
+kanonun orkestrasyon bölümüne ORK-3.4 koduyla indi ve kanon yüz kırk beş
+maddeden yüz kırk altı maddeye çıktı. Aynı turda sınıflama kaydındaki Adım
+öncelik kümesi de tekleşti, çünkü Adım büyük harfli üç kademe tanırken
+Hatırlatıcı küçük harfli dört kademe tanıyordu ve aynı kavramın iki biçimde
+yazılması aynı işi iki yüzeyde farklı aciliyette gösteriyordu. Bu yüzden iki
+kaynağın mührü birden değişti: kanon demeti ile sınıflama kaydı. Emekliye
+ayrılan büyük harfli değerler dil sözlüğünden de düşürüldü, çünkü kanonda
+karşılığı kalmayan bir sözlük anahtarı bayat kayıttır. Kanon tutarlılık yüzü
+ile belge okuma yüzleri aynı koşuda üreticileriyle yeniden üretildi ve ikinci
+koşu sıfır fark verdi.
+
+Tazeleme notu (2026-08-08 · mevsim ritüeli, tur kaydı ve yüzey güncelliği
+hükümleri): Founder'ın üç hükmü aynı turda kanona indi ve kanon yüz kırk altı
+maddeden yüz kırk dokuz maddeye çıktı. Mevsim ritüeli orkestrasyon bölümüne
+ORK-8 koduyla, tur kaydı disiplini onun basamağı olarak ORK-8.1 koduyla ve
+yüzey güncelliği hükmü yüzeyler bölümüne YUZ-7 koduyla yazıldı. Ekleme yalnız
+kanonun orkestrasyon ve yüzeyler dosyalarının baytlarını değiştirdiği için
+kaynak mühürlerinden yalnız kanon demeti ilerledi; sınıflama kaydı, tanı sicili
+ve öteki kaynaklar bu turda hiç dokunulmadan kaldı, çünkü üç maddenin hiçbiri
+yeni bir tanı ilan etmemiştir ve şemaya bir alan eklememiştir. Kanon tutarlılık
+yüzü ile belge okuma yüzleri aynı koşuda üreticileriyle yeniden üretildi; ilk
+koşu on altı yüzün dördünü tazeledi, ikinci koşu ise sıfır fark verdi. Bu
+kayıttaki mühür tablosunu ikiye bölen boş satır da aynı düzenlemede kaldırıldı,
+çünkü tablonun ortasına giren boşluk okuma yüzünde tabloyu iki ayrı tabloya
+böler ve dokuz kaynağın tek listede okunmasını engeller.
+
+Tazeleme notu (2026-08-10 · Kod tipinin dosya beyanı doğrulaması): Kod tipinin
+şemasına dosya alanı seçimlik olarak bağlandı ve beyan edilen yolun Meyve ile
+aynı MIM-2.1 disk doğrulamasından geçmesi motora indirildi; yeni bir tanı
+kimliği ilan edilmemiş, mevcut kimliğin kapsamı genişletilmiştir. Bu ekleme
+yalnız sınıflama kaydının baytlarını değiştirdiği için kaynak mühürlerinden
+yalnız sınıflama kaydı ilerledi; kanon demeti ve tanı sicili dokunulmadan
+kaldı. Kanon tutarlılık yüzü ile taksonomi yüzü aynı koşuda üreticileriyle
+yeniden üretildi ve ikinci koşu sıfır fark verdi.
+
+Tazeleme notu (2026-08-11 · çapraz rol indeksinin sicil karşılığı): TIP-1.16
+maddesinin andığı beş rol kümesi sınıflama kaydına sorgulanabilir alan olarak
+indi: yirmi dört tipin widgetTipleri girdisine caprazRoller alanı, kaydın üst
+düzeyine ise yalnız izinli rol belirteçlerini sayan caprazRolKumeleri kataloğu
+eklendi. Alan adı caprazRoller seçilmiştir, çünkü rol adı AltKatman şema
+kuralıyla RBAC ve ajan rolüne rezervedir ve tema rol adları ayrı kayıtta yaşar.
+Kanon madde metnine dokunulmamıştır; değişen tek kaynak sınıflama kaydıdır ve
+bu yüzden kaynak mühürlerinden yalnız sınıflama kaydı ilerlemiştir. Taksonomi
+yüzü, kanon tutarlılık yüzü, belge yüzleri ve on dört öğretim kartı aynı koşuda
+üreticileriyle yeniden üretilmiş, sınıflama Reference yüzüne çapraz rol indeksi
+tablosu üreticiden inmiş, öğretim kartlarında yalnız kaynak mührü satırı
+ilerlemiş ve bütün üreticilerin ikinci koşusu sıfır fark vermiştir.
+
+Tazeleme notu (2026-08-11 · kanon örneklerinin motorla hizalanması): Founder
+yön hükmü gereği kanon kalmış, gerçek göçmüştür. Motorun katmansız-teknoloji
+bekçisi artık MIM-1.4 hükmünün andığı kullanır kenarını asıl yol olarak tanır
+ve Takım ya da Teknoloji hedefli bağımlı yazımını geçiş yedeği olarak okumaya
+devam eder; iki varlıktaki seksen dört canlı Katman düğümü kullanır yazımına
+mekanik göçle çevrilmiştir. Kanon tarafında yalnız MIM-1.5 maddesinin örnek
+satırı değişmiş ve rol yazımı Karar B gereği departman adına çekilmiştir;
+hüküm metinlerine dokunulmamıştır. Bu düzeltme kanonun mimari dosyasının
+baytlarını değiştirdiği için kanon demeti mührü ilerlemiş, dil bağlamı
+kaynağındaki öğretim örneği de kullanır yazımına çekildiği için o kaynağın
+mührü birlikte ilerlemiştir. Kanon tutarlılık yüzü ile belge yüzleri aynı
+koşuda üreticileriyle yeniden koşulmuş, belge yüzlerinde bayt farkı doğmamış
+ve üreticilerin ikinci koşusu sıfır fark vermiştir.
+
+Tazeleme notu (2026-08-21 · şema iddiasının daraltılması ve beş tipin muafiyet
+beyanı): Etmen şemasının yapısal kurallarından biri iki ayrı şartı tek onay
+damgası altında topluyordu; yetki kademesinin yalnız denetçiye verilmesi şartı
+beyan anında hiç ölçülmediği için iddia yalnız gerçekten zorlanan yarısını,
+yani beşinci yetki kademesi ile paylaşık belleğin birlikte yazılamamasını
+anlatacak biçimde daraltıldı ve ölçülmeyen şartın çağrı anındaki denetimde
+yaşadığı açıkça beyan edildi. Aynı turda canlı bahçede hiç kullanılmayan beş
+tipin, yani Kapı, Yasa, GenelKural, KimlikKökü ve KimlikSağlayıcısı tiplerinin
+muafiyeti sınıflama kaydının tip muafiyetleri bölümüne gerekçesiyle indi ve
+kullanımsız tip gözlemi sıfırlandı. Değişen tek kaynak sınıflama kaydıdır ve
+bu yüzden kaynak mühürlerinden yalnız sınıflama kaydı ilerlemiştir. Taksonomi
+yüzü, kanon tutarlılık yüzü, belge yüzleri ve on dört öğretim kartı aynı koşuda
+üreticileriyle yeniden üretildi; öğretim kartlarında yalnız kaynak mührü satırı
+ilerledi ve üreticilerin ikinci koşusu sıfır fark verdi. Eklentinin gömülü
+ikizi aynı üreticinin gömülü çıktı yoluyla tazelendi ve öteki eklenti
+yüzeylerine dokunulmadı, çünkü paralel bir oturum o yüzeyler üzerinde
+çalışmaktadır.
+
+BÖLÜM SEÇİMLERİNİN GEREKÇESİ ve reddedilen adaylar burada kalıcı olarak
+kayıtlıdır, çünkü iki Adımın kabul ölçütü seçimin gerekçesiyle birlikte
+yazılmasını ister ve bir oturum raporu kalıcı kayıt değildir.
+
+Mevsim ritüeli ORKESTRASYON bölümüne indirilmiştir, çünkü ORK-7 maddesi işletim
+kural ailelerinin hükümlerinin yalnız o bölümde yaşayabileceğini ve başka hiçbir
+bölümün ikinci bir orkestrasyon otoritesi kuramayacağını söylemektedir; mevsim
+ritüeli bir yapı tarifi değil bir işletim halkasıdır. REDDEDİLEN BİRİNCİ ADAY
+MİMARİ bölümüdür ve gerekçesi şudur: MIM-1.2 maddesi Fazın yapısal yerini kurar
+ve MIM-4 kataloğu o bölümün kapsamını proje kökü, teknoloji ilanı, plan zinciri,
+üretim yeri ve disk aynası olarak sayar, oysa ritüel bir yerleşim değil bir
+yordamdır. REDDEDİLEN İKİNCİ ADAY STRATEJİ bölümüdür ve gerekçesi şudur: STR-0
+maddesi o bölümü göç ve yayın geçişinin otoritesi olarak tanımlar, oysa mevsim
+tek seferlik bir geçiş değil tekrar eden bir çalışma dönemidir. Madde ORK-3
+ailesinin altına alt madde olarak da konulmamıştır, çünkü ORK-3 hükmü Faz ile
+kapsayıcıların kaynak sırasını iş önceliği saymayı açıkça yasaklar ve mevsimi
+sıralama hesabının dışına iter; ritüeli o ailenin çocuğu yapmak ebeveynin kendi
+hükmüyle çelişirdi. Bu yüzden madde üst kademede doğdu ve DIL-5.1 ana maddelerin
+boşluksuz ardışık tamsayılarla yazılmasını istediği için ORK-8 tek meşru koddu.
+Tur kaydı disiplini ise ayrı bir üst madde değil ORK-8.1 alt maddesidir, çünkü
+bu hüküm ritüelin hasat basamağının bir parçasıdır ve dayanağı ORK-8 maddesidir.
+
+Güncellik hükmü YÜZEYLER bölümüne indirilmiştir, çünkü YUZ-6 kataloğu yüzey,
+kimlik, belge ve görünürlük hükümlerinin yalnız o bölümde kataloglanacağını ve
+başka bölümün onları ikinci bir yüz otoritesi olarak yineleyemeyeceğini söyler.
+REDDEDİLEN ADAY ÖĞRETİM bölümüdür ve gerekçesi ölçülerek verilmiştir: hükmün
+bağladığı dört yüzeyden ikisi, yani MCP araç açıklamaları ile kaynak kodun
+yorum satırları, hiçbir öğretim üreticisinden doğmaz ve girdi mührü taşımaz,
+dolayısıyla hükmü öğretim bölümüne koymak ya o bölümün otoritesini kod
+yorumlarına kadar genişletmeyi ya da hükmün kapsamını öğretim yüzlerine
+daraltmayı gerektirirdi ve iki sonuç da yanlıştır.
+
+YUZ-7 İLE OGR-3 ARASINDAKİ SINIR şudur ve maddenin kendi metnine de yazılmıştır:
+YUZ-7 güncel kalma borcunu bütün yüzey sınıfları için kurar ve araç yüzeyi ile
+kod yorumlarını başka hiçbir madde sahiplenmediği için üstlenir, OGR-3 ise aynı
+borcun öğretim yüzeyindeki uygulanışını, yani ajan bağlam paketinin, öğretim
+yüzlerinin ve Beceri kartlarının kanonik yenilikle aynı değişiklikte işlenmesini
+sahiplenir. İki hüküm aynı yöne bakar ve çelişmez; YUZ-7 borcu kurar, OGR-3 o
+borcun öğretim yüzeyindeki karşılığını zorlar.
+
+Tazeleme notu (2026-08-09 · düzeltme turu): Bağımsız denetçi teslimi RED ile
+geçirdi ve altı şerh açtı; şerhlerin üçü engelleyiciydi ve hepsi bu turda
+kapatıldı. BİRİNCİ ŞERH deponun kök tanıtım dosyasının bayat kalmasıydı: o dosya
+kanonu iki yerde hâlâ yüz kırk beş madde diye anlatıyordu, üstelik bu turda
+kanona inen YUZ-7 hükmü tam olarak bunu yasaklar. Kusurun kökü ölçüldü ve
+kusurun kendisinden daha önemli çıktı: kök dosyalar iki varlığın da denetim
+kökünün dışındadır, dolayısıyla ne üreteç ne denetim onları görür. Ağaç bölgesi
+elle düzeltilmedi, üreticisiyle yeniden üretildi; bu tazeleme yalnız madde
+sayısını değil, anadizinde ilan edilmiş olduğu hâlde tanıtım ağacında hiç
+görünmeyen öğretim ve araç raflarını da ortaya çıkardı. Elle bakılan tablo satırı
+ayrıca hizalandı. İKİNCİ ŞERH ORK-8 maddesinin makine taşıyıcı alanının belge
+metninden ayrışmasıydı: gerekçe alanından son cümle düşmüştü ve dört-parça
+denetimi yalnız başlığın varlığına baktığı için ayrışma yeşil kapıdan geçmişti.
+Cümle alana eklendi ve ayrışmanın tekil olduğu bağımsız ölçümle doğrulandı; otuz
+yedi Karar düğümünün tamamı tarandı ve taşıyıcı ile belge metni artık otuz
+yedisinde de birebirdir. ÜÇÜNCÜ ŞERH bölüm seçimlerinin gerekçesinin hiçbir
+kalıcı kayda yazılmamış olmasıydı ve gerekçe yukarıdaki bölüme indi. DÖRDÜNCÜ
+ŞERH ORK-8 gerekçesinin ORK-3 bölümünden iş sırası terimini ödünç almasıydı;
+cümle aciliyet diline çevrildi, çünkü ORK-3.4 önceliğin yürütme sırasını
+belirlemediğini bilinçle hükme bağlamıştır. BEŞİNCİ ŞERH tur kaydının geriye
+dönük budanmama yasağının bir geçiş hükmünden kalıcı hükme genellenmesiydi;
+genelleme korundu ve gerekçesi maddeye yazıldı. ALTINCI ŞERH ORK-8 zorlama
+bölümünün andığı bir tanının açık emeklilik borcu kümesinde durmasıydı; iddianın
+ömrü maddenin kendi metninde beyan edildi. Bu düzeltme turu iki kanon dosyasının
+da baytlarını değiştirdiği için kanon demeti mührü bir kez daha ilerledi ve
+yukarıdaki tablo bu koşuya çekildi.
+
+Tazeleme notu (2026-08-08 · araç açıklamalarında atıf tazeliği): MCP araç
+metinleri, `sef` aracının Adım parametresinde ve `etki` aracının KOD
+parametresinde örnek olarak `SEF-L3-A18` kimliğini gösteriyordu. Bu kimlik
+bugün hiçbir canlı `.sar` dosyasında tanımlı değildir ve motor onu karşılıksız
+metin atfı tanısıyla bildiriyordu; kullanıcıya çözülemeyen bir kimliği örnek
+diye sunan bir araç açıklaması, Founder'ın MCP ile araçların her zaman güncel
+kalmasını buyuran hükmüne aykırıdır. Bu yüzden dört atıf da bugün canlı olan
+`SEF-ATF-A01` Adımına hizalandı; halefin tanımı `plan/sef_yol_haritasi.sar`
+gövdesindedir ve gezinme aracıyla doğrulanmıştır. Türkçe ile İngilizce yüzler
+aynı düzenlemede birlikte ilerletildi, çünkü iki dil yüzünün ayrışması iki
+dillilik nöbetini kırar. Metin kaynağının mührü yalnız bu dört örnek kimliğin
+değişmesi yüzünden ilerlemiştir; araçların şeması, kimliği ve sayısı aynı
+kalmıştır.
+
+Tazeleme notu (2026-08-09 · Fikirlerin kendi paneli): Fikir hanesi Hatırlatıcılar
+panelinin içinden çıkarıldı ve kenar çubuğunda kendi görünüşüne taşındı. Founder
+2026-08-08 tarihinde Fikrin kendi başına bir düşünce evresi olduğuna ve başka bir
+tipin penceresine misafir edilemeyeceğine hükmetmişti; hükmün doğruluğu
+2026-08-09 tarihinde canlı görünümde ayrıca ölçüldü, çünkü canlı rafa yazılan iki
+gerçek Fikir yirmi dokuz hatırlatıcı kaydının altında kaldığı için panelde
+bulunamıyordu. Yeni görünüşün adı iki dil kaydına birlikte indi ve iki dosyanın
+mührü bu yüzden birlikte ilerledi; iki dil yüzünün ayrı turlarda ilerlemesi iki
+dillilik nöbetini kırardı. Metin kaynaklarında değişen tek şey yeni görünüşün
+adıdır; var olan hiçbir anahtar düşmemiş ve hiçbir etiketin karşılığı
+değişmemiştir.
+
+Tazeleme notu (2026-08-22 · MCP araç ek açıklamaları): On sekiz MCP aracının
+hiçbiri bugüne dek görünen ad ya da davranış ipucu taşımıyordu ve bu ölçüm
+sıfırdı. EKL-F6-A03 Adımının ek açıklama maddesi kapatılırken araç kataloğuna
+protokolün `Tool.title` ile `Tool.annotations` alanlarını besleyen bir beyan
+hanesi eklendi; her araç artık görünen adını iki dilde ve okur ya da yazar
+olduğunu açıkça ilan eder. Beyan on beş aracı okur, üç aracı yazar olarak
+ayırır ve yazan araçların yıkıcılık ipucu da yazılır. Kaynağın mührü yalnız bu
+ekleme yüzünden ilerlemiştir; araç adları, parametre adları, şema tipleri ve
+zorunlu alanlar değişmemiş, dolayısıyla çağrı uyumluluğu korunmuştur.
+
+## B · Üretici koşuları — hedef bölge ve ikinci koşu farkı
+
+Altı üretici ailesi de temiz ortamda başarıyla koştu; hiçbir üreticinin
+çıktısı elle düzeltilmedi. Her satırın son iki sütunu birinci ve ikinci koşunun
+fark sayısıdır.
+
+| Üretici | Komut | Hedef bölge | 1. koşu | 2. koşu |
+|---|---|---|---:|---:|
+| Belge okuma yüzleri | `sarmal belge-yuzleri-uret ..` | 16 yüzün `SARMAL:URETILEN` bölgeleri | 0 değişti · 16 aynı | 0 değişti · 16 aynı |
+| Karar indeksi (kanon tutarlılık) | `sarmal kanon-tutarlilik-uret ..` | `nitelik/goc/kanon_tutarlilik.sar` tam dosya | aynı | aynı |
+| Sınıflama Reference | `sarmal taksonomi-uret ..` | `oz/siniflama/kayit.md` `SARMAL:TAKSONOMI` bölgesi | değişmedi | değişmedi |
+| Kavram rehberi | `sarmal belge-yuzleri-uret ..` (KAVRAMLAR yüzü) | `KAVRAMLAR.md` üretilen indeks | 0 fark | 0 fark |
+| Gömülü kanon | `node eklenti/arac/renk-uret.mjs` | `eklenti/src/gomulu-kanon.ts` + manifest renk bölgeleri | bayt-eş | bayt-eş |
+| Öğretim kartı ve belge okuma | `sarmal ogret` · `sarmal belge <kaynak.sar>` | stdout yüzleri | üretildi | birebir aynı |
+
+## C · Belge envanteriyle karşılaştırma
+
+GOC-BELGE-A01 envanterinin kaynak mühürleri o günün ölçümüdür ve tarihsel kayıt
+olarak dokunulmadan bırakılmıştır. Bu koşuda dört tekil kaynağın envanterdeki
+başlangıç mühründen ayrıştığı ölçüldü: `oz/siniflama/kayit.json`,
+`cekirdek/src/tani-sicili.ts`, `cekirdek/src/mcp-metinleri.ts` ve
+`cekirdek/src/dil-baglami.ts`. Ayrışmanın nedeni bu belge turundan sonra plana
+inen CDL-A08 görsel eşad katmanı ile iki dillilik çalışmasının meşru kaynak
+ilerlemesidir; iki manifest ve terfi devri mühürleri envanterle birebir kaldı.
+Bütün türetilmiş yüzler bu koşuda güncel kaynaklardan sıfır farkla yeniden
+üretildiği için bayat yüz kalmadı. TAZELEME (2026-08-08): dil bağlamı üreticisinin
+mührü bir kez daha ilerledi, çünkü eklentinin paketlenmiş girişi açılamıyordu ve
+kusurun kökü bu dosyada modül yüklenirken çözülen üç dosya yoluydu; paket ortamında
+`import.meta.url` boşaldığı için URL kurucusu yükleme anında hata atıyor ve eklenti
+hiç açılmıyordu. TAZELEME (2026-08-10): sınıflama kaydının mührü bir kez daha ilerledi, çünkü
+Çıkarım ile Formül tiplerindeki dayanaksız zorunluluk iddiası Founder yetki
+devriyle geri çekildi (tanımsız F-12 atfı kaynaktan silindi, ok kenarı güçlü
+tavsiyeye indi) ve ağaç metaforuna bilgi ailesinin yeri özsu olarak eklendi;
+gömülü kanon, öğretim kartları, belge yüzleri ve kanon tutarlılık yüzü aynı
+turda yeniden üretildi ve bu tablo yeni mühürle tazelendi.
+Yollar okuma anına ertelendi, üretilen içerik değişmedi ve nöbet
+kaydı yeni mühre çekildi. Güncel mühür tablosu artık bu kayıttadır ve
+makine nöbeti bu tabloya bağlanmıştır.
+
+On altı yüzün ve karar indeksinin bu koşudaki mühürleri (ilk 12):
+
+| Yüz | Mühür |
+|---|---:|
+| `README.md` | `a49e2feb7ab7` |
+| `README.en.md` | `7a4f2fe74862` |
+| `NEDIR.md` | `fa55e409fa1c` |
+| `KAVRAMLAR.md` | `3a5580609e43` |
+| `ROL-HARITASI.md` | `095f92ddeda0` |
+| `cekirdek/README.md` | `b43ca1bbc49f` |
+| `eklenti/README.md` | `887b7debe28d` |
+| `eklenti/medya/rehber/01-dil.md` | `816fd8e9ab0c` |
+| `eklenti/medya/rehber/02-denetim.md` | `61dcd8c836db` |
+| `eklenti/medya/rehber/03-okuma.md` | `2e73b98228bf` |
+| `eklenti/medya/rehber/04-ogrenim.md` | `60ffb8027b29` |
+| `eklenti/medya/rehber/05-bicim.md` | `93ba169269d1` |
+| `eklenti/medya/rehber/06-gezinme.md` | `44e7a7577024` |
+| `oz/siniflama/kayit.md` | `a8a11d765f13` |
+| `ornek/OKU.md` | `067ed133ed5a` |
+| `sablon/OKU.md` | `db19f1fd1bf0` |
+| `nitelik/goc/kanon_tutarlilik.sar` | `38729bdcd981` |
+
+## D · Kırmızı fikstürler ve mutasyon kanıtları
+
+Dört bozulma senaryosunun dördü de süitin içinde geçici sandbox kopyasında
+kurulur ve beklenen kırmızıyı üretir; canlı ağaç hiçbir fikstürde değişmez.
+
+| Senaryo | Fikstür | Beklenen kırmızı |
+|---|---|---|
+| Kaynak ayrışması | sandbox kanon dosyasına tek bayt eklenir | demet mührü A tablosundan ayrışır |
+| Elle değiştirilmiş üretilen yüz | sandbox `README.md` üretilen bölgesinde `149 tekil madde` → `148 tekil madde` | ilk koşu farkı `README.md` olarak görünür ve yüz kanonik ölçüme onarılır |
+| Bayat öğretim | sandbox `sablon/` rafına yeni kaynak eklenir, yüz eski bırakılır | ilk koşu `sablon/OKU.md` yüzünü bayat sayar ve tazeler |
+| İdempotens drift | aynı girdiyle ikinci koşu | ikinci koşu farkı sıfırdan saparsa süit kırmızı yanar |
+
+Ayrıca üretici kaynağına dışarıdan drift enjekte edilerek (temiz kopyada
+üreticiye koşu-zamanı damgası eklenerek) ikinci koşu farkının sıfırdan saptığı
+ve idempotens nöbetinin bu sapmayı kırmızıya düşürdüğü ayrı bir koşumla
+kanıtlanmıştır; canlı üreticiye bu mutasyon uygulanmamıştır.
+
+## E · Bağlantı nöbeti
+
+Yirmi altı yüz tarandı: on altı üretilen yüz, iki lisans yüzü, altı felsefe
+açıklaması ve iki bağımsız sözlük indeksi. Yetmiş iki göreli bağlantının
+tamamı var olan kanonik hedefe çözülür; kırık bağlantı sıfırdır ve hiçbir yüz
+emekli KARARLAR defterine bağlanmaz. Nöbet süitte kalıcıdır.
+|<--
+
+Sınama( kod: SNM-TUREV-YUZ-01,
+        ne: "🧪 Türetilmiş yüz nöbetleri koşuldu ve kalıcı süite bağlandı. Altı üretici ailesi temiz ortamda yeniden koşuldu; on altı belge yüzü, karar indeksi, sınıflama Reference yüzü, gömülü kanon, öğretim kartı ve belge okuma yüzü birinci koşuda sıfır fark verdi ve ikinci koşular birebir aynı çıktıyı üretti. Canlı kaynak mühürleri bu kaydın A tablosuna yazıldı ve çekirdek süitindeki kaynak ayrışması nöbeti bu tabloya bağlandı. Envanter karşılaştırmasında dört kaynağın CDL-A08 sonrası meşru olarak ilerlediği, yüzlerin ise güncel kaynaklarla sıfır farkta olduğu ölçüldü." )
+
+// Belge yüzü sayımına girmeyen uygulama meyvesi; proje kapısının dosya izi (halka 1 emsali).
+Kod( kod: KOD-SNM-TUREV-YUZ,
+     dosya: "urun/cekirdek/sinama/turetilmis-yuz-nobetleri.test.ts",
+     ne: "A04 nöbet süiti: kaynak ayrışması, elle değiştirilen üretilen yüz, bayat öğretim, idempotens ve bağlantı nöbetleri" )
+
+Sınama( kod: SNM-TUREV-YUZ-02,
+        ne: "🧪 Dört kırmızı fikstür mutasyonla kanıtlandı: sandbox kanon mutasyonu demet mührünü düşürür, üretilen bölgeye elle dokunan bayt ilk koşuda yakalanıp onarılır, kaynak ilerleyip yüz eski kalınca bayat öğretim nöbeti yüzü bayat sayıp tazeler ve üreticiye enjekte edilen koşu-zamanı damgası idempotens nöbetini kırmızıya düşürür. Bağlantı nöbeti yirmi altı yüzdeki yetmiş iki göreli bağlantının tamamını kanonik hedefe çözer; kırık bağlantı sıfırdır ve emekli KARARLAR defteri bağlantı hedefi olarak yasaklıdır." )

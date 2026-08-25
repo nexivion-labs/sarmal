@@ -1,0 +1,28 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/gov_plan.sar — 📋 PLAN — mekanizmayı REFERANS alır (İÇERMEZ)
+//
+//   TIP-1.4 kanıtı: Adım, yönetişim mekanizmasını `çağır`/`bağımlı` ile REFERANS
+//   alır — Politika/Kural'ı kendi içine DAĞITMAZ. Tek-kaynak: kural MEK-GOV'da yaşar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır MEK-GOV
+
+Teknoloji( kod: TEK-GOV-ARKAYUZ, ne: "governance demosunun arkayüz çatısı — teknoloji bağı (MIM-1.4)" )
+
+-->|
+  ## Amaç
+  📋 Governance kapısını kuran blok — MEK-GOV mekanizmasını REFERANS alarak uygular.
+  ## Kapsam
+  Yalnız kapı-kurulum adımı (demo). Politika/Kural MEK-GOV'da yaşar, buraya kopyalanmaz.
+  ## Sonuç
+  ✅ Kabul: Adım MEK-GOV'a `bağımlı` — kural tek-kaynakta kalır (TIP-1.4 dağıtma-yasak).
+|<--
+
+Blok( kod: BLK-GOV, ne: "governance kapısını uygulayan blok" ) {
+  Katman( kod: KAT-GOV-ARKA, kullanır: TEK-GOV-ARKAYUZ, ad: "arkayüz" ) {
+    Adım( kod: ADM-GOV, ad: "governance-kapisini-kur",
+          görev: "birleşik governance kapısını kodla — MEK-GOV mekanizmasının Politika/Kural'larını uygular; kuralları BURAYA kopyalamaz, MEK-GOV'a referans verir",
+          kabul: [ "her aksiyon MEK-GOV kapısından geçer", "başarısız kontrol aksiyonu engeller + denetim izine yazar" ],
+          bağımlı: [ MEK-GOV ], durum: geliştirmede )
+  }
+}

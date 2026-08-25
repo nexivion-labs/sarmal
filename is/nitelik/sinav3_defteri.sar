@@ -1,0 +1,82 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/sinav3_defteri.sar — 🧪 SINAV-3 DEFTERİ (SNV3-A03 üretimi · 2026-07-12)
+//   Randevu Defteri sınavının ölçüm kaydı: bağımsız denetim + K-89 kullanım
+//   kartı + bulgular. Hüküm FOUNDER'ındır (SNV3-A04) — bu defter yalnız ölçer.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧪 Sınav-3 Defteri — Randevu Defteri (K-89 merceği)
+
+  ## Düzenek
+  Hedef (sarmal_sinav3/hedef.sar) ajan koşusundan ÖNCE ayrı git deposunda
+  mühürlendi (da497eb). Yabancı ajan tek koşuda, asgari talimatla çalıştı
+  (araçların varlığı söylendi, kullanım ZAMANI söylenmedi). Koşu: 48 araç
+  çağrısı · ~15 dk · 6 üretilen .sar dosyası.
+
+  ## Bağımsız denetim (üretici ≠ denetçi — ajanın beyanına güvenilmedi)
+  · CLI `sarmal denetle sarmal_sinav3` → **TAM-yeşil: 0 hata · 0 uyarı**
+    (118 düğüm · 10 Adım; 10 bilgi-önerisi — tek-çocuk yalınlaştırma, ajan
+    gerekçe yorumuyla bilinçli bıraktı).
+  · Sert sınır taraması (ödeme/SMS/parola/şube): ihlal YOK — dört sınır
+    ANY-RANDEVU anayasasına kural olarak kilitlenmiş (beklenenin ÜSTÜNDE).
+  · G-izlenebilirlik: 45 G-atfı; G1-G5'in beşi de Gereksinim düğümü + Adım
+    koni atfı taşıyor.
+  · Sözleşme köprüsü: 9 Sözleşme; önyüz `uygular:`, arkayüz `sözleşme:` ile
+    aynı rafa bağlanıyor — doğrudan önyüz→arkayüz kenarı yok (contract-first).
+
+  ## K-89 KULLANIM KARTI — "özellik VAR mı" değil "ajan zamanında KULLANDI mı"
+  | Yüzey/özellik | Hüküm | Kanıt |
+  |---|---|---|
+  | başla (doğuş rehberi) | ✅ AJAN AKIL ETTİ | yazmadan ÖNCE türsüz + 6 şablon çağrısı |
+  | kurallar (yasa yüzü) | ✅ AJAN AKIL ETTİ | dizin + yapı + soz_dizimi; DL-4/DR-12'yi okuyup UYGULADI |
+  | siniflama (tip kanonu) | ✅ AJAN AKIL ETTİ | 14 çağrı; konabilirlik/zorunlu-alanları yazmadan doğruladı |
+  | denetle (proje kapısı) | ✅ AJAN AKIL ETTİ | 3 tur CLI TAM-denetim; MCP tekil-dosyayı BİLİNÇLİ atladı ("dizin-bağlam gerekir") — A7 dersinin tersine dönüşü |
+  | graf (DAG bütünlüğü) | ✅ AJAN AKIL ETTİ | teslim öncesi kopuk-uç provası |
+  | sef (koni provası) | ✅ AJAN AKIL ETTİ | teslim öncesi 1 Adım'dan prompt üretim testi |
+  | gezin (⌘+tık refleksi) | ⚪ ÖLÇÜLEMEDİ | oturum MCP sunucusu bayat (gezin listede yok) + sıfırdan-proje görevi gezinme ihtiyacı doğurmadı — Sınav-4 adayı: MEVCUT projede değişiklik görevi |
+  | Gereksinim ilanı | ✅ AJAN AKIL ETTİ | G1-G5 düğüm olarak kayıtlı (omurga ④ güncellemesi karşılık verdi) |
+  | Sözleşme köprüsü | ✅ AJAN AKIL ETTİ | contract-first kendiliğinden; üstüne KRL-SOZLESME-ONCE yasası yazdı |
+  | Teknoloji-önce (DO-2) | ✅ AJAN AKIL ETTİ | kökte 8 Teknoloji + 2 Takım, plan sonrası değil önce |
+  | koni-dolu Adım | ✅ AJAN AKIL ETTİ | 10/10 Adım görev·kabul·sınır·referans·üretir·bağımlı |
+  | DL-4 diksiyon | ✅ AJAN UYGULADI | niyetler özne-nesne-fiil tam cümle (örnekleme doğrulandı) — kurallar'dan OKUYUP uyguladı: yasa kanalı ÇALIŞIYOR |
+  | sert-sınır sadakati | ✅ TAM | ihlal sıfır + sınırlar anayasaya kilitlendi |
+  | MOTOR YÖNLENDİRMESİ | ✅ ÇALIŞTI | 1. tur denetle: 5 beyansız-yapı HATASI + rafsız-anadizin UYARISI (YP-1/A01 bekçisi!) → ajan düzeltti → TAM-yeşil. Bekçiler sınavda gerçek iş yaptı |
+
+  ## Bulgular
+  · **B1 (kapatıldı — sınav-doğumlu düzeltme):** ajan `kurallar{dogus-omurgasi}`
+    (tire-ayraçlı varyant) deneyince bayat sunucuda çirkin ENOENT yedi; güncel
+    kaynakta temiz hata vardı ama YAKIN-ÖNERİ yoktu → tire↔alt-çizgi normalize
+    eden "şunu mu demek istedin" önerisi eklendi (testli). K-89 dersi: yazım
+    varyantı da yönlendirilir.
+  · **B2 (Sınav-4 adayı):** gezin refleksi bu görevde ölçülemedi — sıfırdan
+    projede gezinilecek mevcut düğüm yok. Sınav-4 "MEVCUT projede değişiklik"
+    görevi olmalı (gezin + etki-analizi + kırık-referans yüzeyleri ölçülür).
+  · **B3 (altyapı dersi):** oturum-içi MCP sunucusu kaynak güncellemelerini
+    almıyor (süreç bayat) — sınav ajanı bu turun yeni yüzeylerini (gezin
+    tetiği, denetle çapraz-yönlendirmesi) GÖRMEDİ; buna rağmen doğru davrandı.
+    Tam-steril sınav Founder'ın taze pencerede koşacağı turdur.
+  · **B4 (kontaminasyon beyanı — dürüstlük):** ajan bu oturumun alt-ajanıydı;
+    repo bağlamına (CLAUDE.md · kanonik örnekler) erişebildi ve kronolojide
+    örnek dosyaları DESEN olarak okuduğunu beyan etti. Sonuç "Sarmal'ı hiç
+    bilmeyen ajan" ölçümü DEĞİL, "bağlamlı ajan + motor kapıları" ölçümüdür.
+
+  ## Sonuç (hüküm Founder'ın — SNV3-A04)
+  Sahibin 6 kabul ölçütünün 6'sı bağımsız denetimde KARŞILANDI. K-89 kartında
+  12 satır ✅, 1 satır ⚪ (ölçülemedi). Sınav-2'yle kıyas: orada Founder'ın elle
+  yakaladığı iki ihlal (rafsız-anadizin · kavuşumsuz-paralellik) bu kez MOTORDA
+  yakalandı ya da hiç doğmadı — "yeşil ama kör" deliklerinin kapandığının
+  canlı kanıtı.
+
+  ### ⚖️ FOUNDER HÜKMÜ (2026-07-14): 🔴 KALDI
+  Metrikler güçlü olsa da (6/6 kabul · 12✅) sınav GEÇERSİZ/EKSİK sayıldı — 5 gerekçe:
+  1. **1⚪ gezin ölçülemedi** → 13/13 tamamlanmadan tam sınav değil.
+  2. **Steril değildi** → ajan repo bağlamını (CLAUDE.md) görüyordu; tam-steril ayrı pencere turu koşulmadı.
+  3. **MCP bayattı** → gezin listede yoktu; bayat-araçlı sınav geçerli sayılmaz.
+  4. **Standart daha yüksek** → tam-yeşil İSPAT için 13/13 + steril + güncel-araç hepsi şart.
+  5. **Founder bizzat incelemeli** → yapılan testi Founder kendi gözüyle inceleyecek (ajan/motor kendine not veremez).
+  → TEKRAR: SNV4-A01 (Sınav-4) açıldı; 5 şart kabul ölçütü. B2 (gezin) burada kapanır.
+|<--
+Çıkarım( kod: CKR-SINAV3, kaynak: "Sınav-3 koşusu 2026-07-12 (sarmal_sinav3 · hedef mührü da497eb · 48 araç çağrısı)",
+         ne: "🧪 Sınav-3 ölçümü: 6/6 sahip-kabulü + K-89 kartı 12✅/1⚪ + motor yönlendirmesi canlı kanıtlı; B1 kapatıldı, B2 Sınav-4 adayı, B3/B4 dürüst sınırlılık beyanları" ) {
+  --> SNV3-A04
+}

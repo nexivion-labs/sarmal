@@ -1,0 +1,49 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/ilk_plan.sar — 🗺️ İLK PLAN (doğuş paketi üretti: {{TARIH}})
+//
+//   MIM-1 dört ekseni: Faz=ZAMAN (klasör açmaz) → Blok=İŞ → Katman=TEKNOLOJİ →
+//   Adım=AKIŞ. Her Adım koni taşır (görev · kabul · bağımlı · sınır) — yalın
+//   tek-cümle Adım kör drift'tir (YAS-3.4). Bir Adıma başlarken durum'unu
+//   geliştirmede yap, bitirince tamamlandı + üretir meyvesini yaz (ORK-3.2).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// MIM-1.2 (nazik rejim): tarih GÜÇLÜ TAVSİYEDİR — hedefTarih verirsen ("YYYY-AA-GG",
+// gün bilinmiyorsa "YYYY-AA") vade nöbeti rötarı/yaklaşanı takip eder; vermezsen Faz
+// yine açılır, motor yalnız hatırlatır (iş akışı kesilmez; yetişmeyen tarih ertelenir).
+// Sonraki plan dosyaları yeni Blok'u zamana üç yolla bağlar (bir bağ tek yerde · DIL-2):
+// Faz gövdesine iç içe yazım · Faz'ın çağır listesi · Blok( ..., mevsim: FAZ-… ) alanı;
+// önceliklendirme bekleyen iş için dürüst beyan: planlanmamış: "neden metni".
+Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "dogus",
+  ne: "🌀 Kuruluş dönemi — mimari kararlar verilir, proje gerçek planına kavuşur" ) {
+
+  -->|
+    ## Amaç
+    🎯 Projeyi doğuş iskeletinden gerçek kimliğine taşımak: mimari kararlar
+    verilir, teknolojiler ilan edilir, niyet metinleri gerçek cümlelerle dolar.
+
+    ## Kapsam
+    📦 Kapsar: mimari diyalog, Teknoloji/Takım ilanı, anadizin niyetlerinin
+    doldurulması ve ilk gerçek iş Blokunun yazımı. Kapsamaz: uygulama kodu —
+    kod, ilk gerçek iş Blokunun Adımlarında başlar.
+
+    ## Sonuç
+    ✅ Kabul: denetle sıfır hata verir; anadizin teknolojili ve gerçek
+    niyetli; bu planda koni-dolu ilk gerçek iş Bloku yazılmıştır.
+  |<--
+  Blok( kod: BLK-{{KOD}}-KURULUS, ad: "kurulus",
+    ne: "🪵 Projenin temel atma işi: mimari diyalog, teknoloji ilanı ve ilk gerçek planın yazımı" ) {
+
+    // NOT: Katman'ın Takım bağı ADM-KURULUS-01 kapanınca beyan edilir —
+    // Katman( ..., kullanır: TAKIM-X ) biçiminde (MIM-1.4 teknoloji ekseni · tek hedef).
+    Katman( kod: KAT-{{KOD}}-MIMARI, ad: "mimari",
+      ne: "🌿 Teknoloji henüz seçilmedi — ADM-KURULUS-01 kapanınca bu Katman seçilen Takım'a bağlanır" ) {
+
+      Adım( kod: ADM-KURULUS-01, durum: beklemede, bağımlı: [],
+        ne: "🏛️ Mimari diyaloğu yürütmek ve projeyi gerçek kimliğine kavuşturmak. MCP `başla` aracının mimari diyaloğu izlenir: kapsayıcı tipi doğru mu (Proje / ÇalışmaAlanı), teknolojiler ve takımlar nelerdir, teknoloji hangi klasörleri doğurur. Sonuçlar anadizine ilan edilir, bu planın devamı gerçek iş Bloklarıyla yazılır" ) {
+        görev: "MCP `başla` rehberini oku ve mimari diyaloğun üç sorusunu cevapla; Teknoloji ve Takım düğümlerini anadizine ilan et; bu Katmanı kullanır kenarıyla kurulan Takım'a bağla; anadizindeki yönerge metinlerini (Amaç/Kapsam/Sonuç ve ne alanları) projenin gerçek cümleleriyle değiştir; ilk gerçek iş Blokunu koni-dolu Adımlarla bu dosyaya ekle"
+        kabul: [ "anadizinde en az bir Teknoloji ve bir Takım ilanlı; katmanlar Takım'a bağlı", "anadizinin bütün yönerge metinleri gerçek proje cümleleriyle değişti", "denetle sıfır hata veriyor ve ilk gerçek iş Bloku koni-dolu yazıldı" ]
+        sınır: "Bu Adım kod yazmaz — yalnız mimari karar, ilan ve plan; kod ilk gerçek iş Blokunun Adımlarında başlar"
+      }
+    }
+  }
+}

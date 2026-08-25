@@ -1,0 +1,20 @@
+// sarmal: bilerek-hatalı test — geçersiz-renk (#ZZZ) ve düşük-kontrast bekçilerinin CANLI gösterimi
+// ornek/tema_ornek.sar — Tema denetimi vitrini (D1 sema + D2 icerik/WCAG)
+//
+//   NASIL GORURSUN:
+//     • Terminalde:  node cekirdek/src/sarmal.ts ornek/tema_ornek.sar
+//       (ya da session'da:  ! node cekirdek/src/sarmal.ts ornek/tema_ornek.sar)
+//     • Stitch DESIGN.md deseni Sarmal'a alindi (arac degil DESEN — desen odunc alinir, arac degil).
+
+// ✅ DOGRU: Heritage (Stitch DESIGN.md "Heritage" temasindan) -> temiz beklenir
+Tema( kod: TEM-Heritage, ne: "Architectural Minimalism + Journalistic Gravitas" ) {
+  renkler: { ana: "#1A1C1E", ikincil: "#6C7278", üçüncül: "#B8422E", nötr: "#F7F5F2" }
+  tipografi: { h1: "Public Sans 3rem", gövde: "Public Sans 1rem", etiket: "Space Grotesk 0.75rem" }
+  yuvarlaklık: { sm: "4px", md: "8px" }
+  boşluk: { sm: "8px", md: "16px" }
+}
+
+// ✖ HATALI: motor yakalar — dusuk kontrast (WCAG) + gecersiz hex
+Tema( kod: TEM-Hatali, ne: "kotu ornek — motor uyarir" ) {
+  renkler: { ana: "#777777", nötr: "#888888", vurgu: "#ZZZ" }
+}

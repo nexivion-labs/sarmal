@@ -1,0 +1,19 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// site/site_anadizin.sar — 🌐 WEB SİTESİ (çatının anlatan projesi)
+//   Açık aracı ve ürünü anlatır; ikisine de kod bağımlılığı taşımaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🌐 Çatının dışa dönük anlatım yüzü — açık aracı öğretir, ürünü tanıtır.
+  ## Kapsam
+  📦 Sayfalar ve yayın akışı. Kapsamaz: aracın ya da ürünün kodu.
+  ## Sonuç
+  ✅ Kabul: site açık aracın güncel sürümünü anlatır ve bayat cümle taşımaz.
+|<--
+
+Proje( kod: PRJ-ORNEK-SITE, ad: "site", rejim: katı, görünürlük: açık,
+  ne: "Çatının açık aracı ve ürünü anlatan web sitesi" ) {
+  Teknoloji( kod: TEK-ORNEK-SITE-STATIK, ne: "Statik site üreteci" )
+  Raf( kod: RAF-ORNEK-SITE-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}

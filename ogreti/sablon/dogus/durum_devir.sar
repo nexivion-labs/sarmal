@@ -1,0 +1,20 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// durum/durum_devir.sar — 🧭 DURUM KAYDI (doğuş paketi üretti: {{TARIH}})
+//
+//   "Nerede kaldık" tek dosyada yaşar: her oturum sonunda ÜZERİNE YAZILIR,
+//   tarih arşivi git geçmişidir. Devir güvenli olur, bağlam kaybolmaz —
+//   oturum kapanmadan bu kaydı güncelle ve değişiklikleri commit'le.
+// ═══════════════════════════════════════════════════════════════════════════
+
+DurumKaydı( kod: DRM-{{KOD}}, tarih: "{{TARIH}}", oturum: 1,
+            neredeyiz: DOGUS-PAKETI-KURULDU,
+            sıradaki: ILK-PLAN-ADM-KURULUS-01 ) {
+  özet: """
+        🌱 OTURUM 1 ({{TARIH}}) — proje doğuş paketiyle doğdu: anadizin +
+        durum devri + öğrenme rafı + ilk plan hazır. Sıradaki iş: plan/
+        ilk_plan.sar'daki ADM-KURULUS-01 — mimari diyalog yürütülür,
+        teknolojiler ve takımlar ilan edilir, anadizinin niyet alanları
+        gerçek metinlerle doldurulur. Bu özeti her oturum sonunda güncelle:
+        ne bitti, ne açık, sıradaki ilk iş ne.
+        """
+}

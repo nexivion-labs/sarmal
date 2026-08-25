@@ -1,0 +1,84 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// vitrinler/tasarim_niyeti.sar — 🎨 TASARIM-DİSİPLİNİ VİTRİNİ (TAS-A01 + TAS-C01)
+//
+//   ÜÇ NİYET-KİPİ tek dosyada CANLI (HTR-TASARIM-DISIPLINI · BLK-TASARIM):
+//     KİP A — SÖZLÜK-YARDIMLI DETAYLI NİYET: görev, tasarım sözlüğünün (272 kavram ·
+//             bilgi/tasarim_sozlugu) kavramlarıyla DETAYLI yazılır; sözlük İFADE
+//             PALETİDİR (tamamlama önerir), rijit enum kafesi DEĞİL.
+//     KİP B — MOCKUP AS-IS REFERANS: dış araçla (Figma/Stitch/HTML) yapılmış mockup
+//             ÖZETLENMEZ — Mockup düğümü ilan edilir, Adım `referans: [ MOK-… ]` ile
+//             bağlar; detay mockup DOSYASINDA yaşar (kayıplı özet = niyet kaçar).
+//     KİP C — SARMAL SORAR: sablon/ekran.sar'daki yönlendiren sorular (amaç? durumlar?
+//             veri? kavuşum? tema? mockup? sınır?) cevaplana cevaplana koni DOLAR —
+//             aşağıdaki VTR-ADM-SEPET konisi o soruların CEVAPLANMIŞ hâlidir.
+//
+//   TASARIM SİSTEMİ (TAS-A01): Tema BİR KEZ ilan — rol ADLARI .sar'da (sözleşme),
+//   DEĞERLER (hex/px) `dosya:` üretim-yeri beyanındaki teknoloji temasında. Her
+//   niyet-maddesi kabul ölçütüne dönüşür; ŞEF denetçisi MADDE MADDE işaretler
+//   (TAS-D01 yüzey-checklist — bütünsel 'iyi mi' yargısı YASAK).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── TASARIM SİSTEMİ — BİR KEZ ilan (TAS-A01 token-ROL sözleşmesi) ─────────────
+// ADLAR burada = sözleşme; DEĞERLER tech-temada (dosya: beyanı — MIM-2.1 üretim-yeri).
+// Ham hex bir yüzey widget'ına yazılırsa motor uyarır (ham-renk · TAS-B01).
+Tema( kod: VTR-TEM-MAGAZA, görünürlük: açık, ne: "🎨 mağaza tasarım sistemi — token-ROL sözleşmesi: renk/tipografi/boşluk/yuvarlaklık ADLARI (değerler tech-temada)",
+      dosya: "uygulama/lib/tema/magaza_tema.dart",
+      renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, başlık2, başlık3, başlık4, gövde, etiket ],
+      boşluk: [ xs, sm, md, lg, xl ],
+      yuvarlaklık: [ sm, md, lg ] )
+
+// ── KİP A — SÖZLÜK-YARDIMLI DETAYLI NİYET ────────────────────────────────────
+// görev sözlük kavramlarıyla DETAYLI (kart · gölge · dönen-halka · anlık-bildirim …);
+// her niyet-maddesi kabul listesinde AYRI ölçüt (denetçi madde madde uydurur).
+Adım( kod: VTR-ADM-URUN, ad: "urun-listesi-ekrani",
+      görev: "Ürün listesi ekranı: kaydırılabilir liste içinde gölgeli kartlar (kart+gölge); her kartta ürün görseli (en-boy 1:1), başlık2 rolünde ad, etiket rolünde fiyat; yüklenirken dönen-halka, boş listede boş-durum çizimi + gövde rolünde açıklama, hata durumunda anlık-bildirim (alttan kayar); çekme-ile-yenile hareketi listeyi tazeler",
+      kabul: [ "Ürün listesi ekranı, ürünler verildiğinde gölgeli ve kaydırılabilir ürün kartları listesini üretir",
+               "Ürün kartı, bir ürün verildiğinde 1:1 oranlı görseli, başlık2 rolündeki adı ve etiket rolündeki fiyatı üretir",
+               "Eğer ürün listesi boşsa, boş-durum çizimi ile gövde rolündeki açıklamanın görüntülenmesi beklenir",
+               "Eğer ürün listesi yükleniyor ya da hata durumundaysa, sırasıyla dönen-halkanın ya da anlık-bildirimin görüntülenmesi beklenir",
+               "Ürün listesi ekranı, çekme-ile-yenile hareketi verildiğinde güncel ürün listesini üretir" ],
+      üretir: VTR-EKR-URUN,
+      bağımlı: [],
+      sınır: "ürün DETAY ekranı ayrı Adım'ın işi; ödeme akışı kapsam dışı",
+      durum: beklemede )
+
+Ekran( kod: VTR-EKR-URUN, görünürlük: açık, ne: "🛍️ ürün listesi — kart ızgarası (niyet KİP A: sözlük-detaylı)",
+       referans: VTR-ADM-URUN, tema: VTR-TEM-MAGAZA ) {
+  Liste( kod: VTR-LST-URUN, görünürlük: açık, ne: "kaydırılabilir ürün listesi — çekme-ile-yenile" ) {
+    Kart( kod: VTR-KRT-URUN, görünürlük: açık, ne: "gölgeli ürün kartı (yuvarlaklık: md rolü)" ) {
+      Görsel( kod: VTR-GRS-URUN, görünürlük: açık, ne: "ürün görseli — 1:1", erişilebilirlik: "ürün fotoğrafı" )
+      Metin( kod: VTR-MTN-AD, görünürlük: açık, ne: "ürün adı", stil: başlık2 )
+      Metin( kod: VTR-MTN-FIYAT, görünürlük: açık, ne: "fiyat", stil: etiket )
+      Düğme( kod: VTR-DGM-SEPETE, görünürlük: açık, ne: "Sepete ekle", eylem: "sepete-ekle (VTR-ADM-SEPET akışına veri besler)" )
+    }
+  }
+}
+
+// ── KİP B — MOCKUP AS-IS REFERANS (özetlenmez) ───────────────────────────────
+// Mockup düğümü dış gerçeğin ADRESİDİR; içeriği .sar'a ÖZETLENMEZ (YAS-4.1 dersi:
+// özet kayıplı → denetçi yargısı gevşer). Çalgıcı mockup DOSYASINI açar, AS-IS uyar.
+Mockup( kod: VTR-MOK-SEPET, ne: "🖼️ sepet ekranı mockup'ı — Stitch HTML, AS-IS gerçek (özetlenmez)",
+        dosya: "tasarim/mockup/sepet.html", kaynak: "Stitch" )
+
+// ── KİP C — SARMAL SORAR: yönlendiren soruların CEVAPLANMIŞ konisi ───────────
+// (sablon/ekran.sar soruları: amaç? durumlar? veri? kavuşum? tema? mockup? sınır?)
+Adım( kod: VTR-ADM-SEPET, ad: "sepet-ekrani",
+      görev: "Sepet ekranı (mockup VTR-MOK-SEPET'e AS-IS sadık): satır başına ürün + adet arttır/azalt; DURUMLAR — boş sepet: boş-durum çizimi + alışverişe dön düğmesi, dolu: toplam tutar etiket rolünde, hata: anlık-bildirim; VERİ — sepet Durum'dan okunur",
+      kabul: [ "mockup'taki yerleşime AS-IS uyuluyor (özet değil, dosyanın kendisi referans)",
+               "boş/dolu/hata durumlarının üçü de ekranda karşılanıyor",
+               "toplam tutar etiket rolünde ve tema rollerine sadık (ham hex yok)" ],
+      üretir: VTR-EKR-SEPET,
+      referans: [ VTR-MOK-SEPET ],
+      bağımlı: [ VTR-ADM-URUN ],
+      sınır: "ödeme (checkout) ayrı Adım; kupon/indirim kapsam dışı",
+      durum: beklemede )
+
+Ekran( kod: VTR-EKR-SEPET, görünürlük: açık, ne: "🧺 sepet — mockup-referanslı yüzey (niyet KİP B+C)",
+       referans: VTR-ADM-SEPET, tema: VTR-TEM-MAGAZA ) {
+  Sütun( kod: VTR-STN-SEPET, görünürlük: açık, ne: "sepet satırları + toplam" ) {
+    Metin( kod: VTR-MTN-SEPET-BASLIK, görünürlük: açık, ne: "Sepetim", stil: başlık1 )
+    Metin( kod: VTR-MTN-TOPLAM, görünürlük: açık, ne: "toplam tutar", stil: etiket )
+    Düğme( kod: VTR-DGM-URUNE-DON, görünürlük: açık, ne: "Alışverişe dön", gider: VTR-EKR-URUN )
+  }
+}

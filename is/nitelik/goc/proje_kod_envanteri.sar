@@ -1,0 +1,68 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/proje_kod_envanteri.sar — 🚚 GOC-PROJEKOD-A01 envanteri
+//   Tarama motorun kendi ayrıştırıcısıyla yapıldı ve tekrar üretilebilir;
+//   betik ölçümü 2026-07-31 tarihlidir. Kapsam görevdeki dört raf artı
+//   bilinçli bir genişletmedir: eklenti/plan.sar canlı bir plan ağacıdır ve
+//   ana Projenin rejim kapsamı bütün ağacı bağladığı için envantere alındı.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Canlı, tarihsel ve muaf proje ağaçlarını rejim, sarma, teknoloji ve departman
+durumuyla tek envantere indirmek; dönüştürme dalgasının tabanını mühürlemek.
+
+## Kapsam
+`sarmal_anadizin.sar`, `plan/**`, `ornek/**`, `sablon/**`, `ogrenme/**` ve
+bilinçli genişletmeyle `eklenti/plan.sar`. Kapalı plan turları bu turdan önce
+repo dışı arşive indiği için taramada yoktur; tarihsel sınıf boş kümedir.
+
+## Sonuç
+Seksen sekiz dosya tarandı. Sayılar: 231 Adım (artı eklenti planındakiler),
+40 Adım AltKatman dışında (11'i canlı vitrin planında, kalanı öğretim
+örneklerinde), 62 artı 16 departmansız AltKatman, 10 teknolojisiz Katman,
+sıfır çok-teknolojili Katman, sıfır rejim beyanı. Üç doğuş şablonu yer
+tutucu taşıdığı için ayrıştırılamaz ve muaf sınıfındadır.
+|<--
+-->|
+## Envanter gövdesi
+
+SINIF DAĞILIMI — canlı yürütülebilir planlar: plan/goc_plani (65 Adım) ·
+  plan/bakim_olgunluk (45) · plan/vitrin_ui (31) · plan/reform_plani (13) ·
+  plan/motor_diksiyon_reformu (6) · plan/performans_turu (6) ·
+  plan/sol_ida_test_plani (6) · plan/kapanis_kampanyasi (5) · plan/sinav3 (5) ·
+  plan/cokdillilik · plan/yayin_yuzeyi · plan/akis_omurgasi · plan/faz ·
+  plan/takimlar · plan/meyve_haritasi · plan/ozerk_kararlar ·
+  plan/kapanis_kampanyasi · plan/mekanizma/mek_sef · eklenti/plan (16 AltKatman).
+  Öğretim örnekleri: ornek/** (küçük vitrin ve format dosyaları tek ile dokuz
+  Adım arası). Şablonlar: sablon/*.sar. Muaf: sablon/dogus/anadizin.sar,
+  sablon/dogus/durum_devir.sar, sablon/dogus/ilk_plan.sar (yer tutucu içerir,
+  ayrıştırılamaz — doğuş yazıcısı doldurur). Tarihsel sınıf boştur; kapalı
+  turlar bu envanterden önce arşive inmiştir.
+
+  REJİM — hiçbir Proje düğümü rejim beyanı taşımıyor; canlı Proje kökü tektir
+  (sarmal_anadizin ANA). Örnek çalışma alanları Proje düğümü değil
+  ÇalışmaAlanı ve Uygulama kökleri taşır, rejim kuralı onları bağlamaz.
+  Sahip: A02.
+
+  YERLEŞİM — AltKatman dışında Adım: vitrin_ui 11 (canlı) · buyuk_bahce 7 ·
+  kuzey_yildizi 3 · tek-Adımlık öğretim dosyaları 19. Departmansız AltKatman:
+  goc_plani 23 · bakim_olgunluk 10 · reform_plani 7 · motor_diksiyon_reformu 4 ·
+  kapanis_kampanyasi 3 · sinav3 2 · sol_ida_test_plani 2 · vitrin_ui 2 ·
+  performans_turu 1 · blok_kimlik 4 · dogus_proje 2 · buyuk_bahce 1 ·
+  sablon/blok 1 · eklenti/plan 16. Sahip: A03 (canlı planlar) ve A05
+  (örnek ile şablon).
+
+  TEKNOLOJİ — teknolojisiz Katman: BKM-FND (bakim_olgunluk) · KAT-SIT-SUREC
+  (sol_ida_test_plani) · ORN-F1 (dalga1_plan) · ORN-YILDIZ-K1 (kuzey_yildizi) ·
+  KAT-ONYUZ, KAT-ARKAYUZ, KAT-GUVENLIK (blok_kimlik) · VTR-KAT-ONYUZ,
+  VTR-KAT-ARKAYUZ (dogus_proje) · KAT-Ornek (sablon/blok). Çok-teknolojili
+  Katman sıfırdır; kavuşum ayrıştırması gerektiren silo gövde bulunmadı.
+  Sahip: A04.
+
+YÜZEY DEVRİ — yüzey kapısından devreden dosya ve düğüm etki kümesi bu turun
+önceki oturumlarında kapanan A07, A08 ve A10 Adımlarınca tüketildi; bu
+envanter kalan dönüştürme işini taşır.
+|<--
+Çıkarım( kod: ENV-PROJEKOD-01,
+  kaynak: "Motorun kendi ayrıştırıcısıyla 2026-07-31 taraması — 88 dosya: anadizin + plan + ornek + sablon + ogrenme rafları ve bilinçli genişletmeyle eklenti planı",
+  ne: "🍎 Proje-kod turunun taban envanteri — sınıf, rejim, sarma, teknoloji ve departman durumu; her satırın sahibi dönüştürme Adımlarıdır (rejim A02 · yerleşim A03 · kavuşum A04 · örnek ile şablon A05); sahipsiz, sınıfsız veya yinelenen girdi yoktur" )

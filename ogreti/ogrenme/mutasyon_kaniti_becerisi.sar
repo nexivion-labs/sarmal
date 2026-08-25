@@ -1,0 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/mutasyon_kaniti_becerisi.sar — 🧬 MUTASYON KANITI BECERİSİ (DVR-A03)
+//
+//   Doğuş: 2026-07-17 gecesi — gecenin en iyi ajan davranışı ('kalkanı söküp
+//   testin düştüğünü göster') oturuma elle yazılan prompt'tan geldi, uçucuydu.
+//   Bu kart o davranışı repo malı yapar (OGR-4: değerli davranış kalıcılaşır).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-MUTASYON-KANITI, ne: "bir korumanın gerçekten koruduğunu mutasyonla kanıtlama" )
+
+-->|
+  ## Amaç
+  🎯 'Testler yeşil' beyanını gerçek güvenceye çevirmek. Çözdüğü problem: hiçbir
+  şeyi sınamayan test de yeşildir — koruma iddiası, koruma kaldırılınca testin
+  DÜŞTÜĞÜ gösterilmeden kanıt sayılamaz (YAS-4.1: varlık ≠ doğruluk).
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle yazılan koruma testinin kapanış kaydında mutasyon
+  kanıtı vardır: kalkan söküldü → test kırmızı; kalkan geri geldi → yeşil.
+|<--
+
+Beceri( kod: BCR-MUTASYON-KANITI,
+        sağlar: YTN-MUTASYON-KANITI,
+        yığın: evrensel,
+        anlatır: [ YAS-4.1 ],
+        ne: "Yeni bir koruma/bekçi testinin gerçekten koruduğunu, korumayı geçici söküp testin düştüğünü göstererek kanıtlar; kanıtı kapanış kaydına yazar",
+        neZaman: "Motora yeni bekçi/kalkan eklenirken; 'bu test bunu yakalar' iddiası kapanış kanıtı olarak kullanılacakken",
+        kurallar: [
+          "Testi yaz, yeşil gör — sonra DUR: bu henüz kanıt değildir",
+          "Korumayı geçici olarak devre dışı bırak (kalkan satırını yorumla ya da koşulu tersine çevir) ve testin KIRMIZIYA düştüğünü gözle — düşmüyorsa test o korumayı sınamıyordur, testi düzelt",
+          "Korumayı geri getir, süitin tamamının yeşile döndüğünü doğrula; mutasyon deneyini çalışma kopyasında bırakma",
+          "Kapanış kaydına iki yönü de yaz: 'kalkan söküldü → N test düştü · geri geldi → süit yeşil' — sayı, his değil"
+        ],
+        kabul: "Kapanış kaydı koruma devre dışıyken düşen sınama sayısını ve koruma geri geldiğinde geçen tam süit sayısını birlikte gösterir; çalışma kopyasında mutasyon kalmaz",
+        örnek: "Yetim taraması muafiyeti eklendi → muafiyet predikatı geçici tersine çevrildi → davranış testi düştü (beklenen) → geri alındı → 780/780 yeşil; koşu kaydına 'mutasyonla doğrulandı' satırı yazıldı",
+        antiDesen: "Yalnız yeşil süite bakıp 'koruma testli' demek — koruma hiç çalışmıyor olsa da süit yeşildir; iddia sınanmamıştır",
+        uygular: ORK-7 )
+
+Tetikleyici( kod: TTK-MUTASYON-KANITI, tetikler: BCR-MUTASYON-KANITI,
+             koşul: adım.durum == geliştirmede,
+             ne: "Kapanıştan önce mutasyon deneyi bu karttan hatırlanır — yeşil, kanıta dönüşür" )

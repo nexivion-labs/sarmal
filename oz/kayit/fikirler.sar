@@ -1,0 +1,43 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// oz/kayit/fikirler.sar — ham ve taahhütsüz fikirlerin evi (SNF-0 · Fikir tipi)
+//
+//   NEDEN AYRI BİR DOSYA. Sınıflama kaydı Fikir tipini Hatırlatıcının söz
+//   verilmemiş kardeşi olarak tanımlar: Hatırlatıcı bir taahhüttür ve kapanışı
+//   vardır, Fikir ise yalnız bir düşüncedir ve kimseyi bağlamaz. İki cinsi aynı
+//   dosyada tutmak bu ayrımı gözden siler ve okuyucu taahhütsüz bir düşünceyi
+//   verilmiş söz sanar; ayrı dosya ayrımı yüzeyde de korur.
+//
+//   OLGUNLAŞMA YOLU. Bir Fikir olgunlaşırsa Karar düğümüne yükselir ve o zaman
+//   plana Adım olarak iner. Yükselmeyen Fikir burada kalır ve bu bir kusur
+//   değildir; parkta bekleyen düşünce sistemin hafızasıdır. Dönüş tetikleyicisi
+//   düşüncenin ne zaman yeniden ele alınacağını söyler, bir vade sözü vermez.
+//
+//   ⚠️ BU DOSYA CANLI RAFTADIR. Örnek rafındaki Fikir düğümleri panel
+//   yüzeylerinin dışında kalır ve bu yüzden Fikir hanesi bugüne dek boş
+//   görünmüştür (KYN-YUZ-A01). Buradaki düğümler gerçektir ve panelde görünür.
+//
+//   KÜRASYON NOTU (göç · 2026-08-25): bu kopya küratörlü aktarımla doğdu;
+//   park tarihçesinin tamamı atölye arşivinde yaşar ve kapalı ürünü ya da
+//   ticari stratejiyi ilgilendiren park kayıtları bu dosyaya taşınmamıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Fikir(
+  kod:             FKR-ANLATIM-KANITI,
+  durum:           park,
+  dönüşTetikleyici: "v1 yayın yüzeyi konuşulduğunda ya da Sarmal ilk kez depo dışından birine gösterileceği zaman",
+  ne:              "Sarmal'ın değeri, dili öğretmeye girişmeden önce gösterilebilir mi? Founder 2026-08-08 tarihinde sistemin geldiği noktayı değerlendirirken bunun insanlara en baştan nasıl anlatılacağını sordu ve soru bugün cevapsızdır. Düşünce şudur: yeni gelen kişiye önce gramer, tip sistemi ya da kanon anlatılmaz; ona bir plan ile diskin birbirinden ayrıştığı an gösterilir ve motorun bu ayrışmayı kendiliğinden bildirdiği görülür. Bu gösterimde Sarmal'ın ne olduğu söylenmez, ne yaptığı yaşatılır ve dil ancak merak uyandıktan sonra devreye girer. Fikir taahhütsüzdür ve bir yüzey biçimine, süreye ya da mecraya bağlanmamıştır; yalnız anlatımın kavramdan değil kanıttan başlaması gerektiği savını taşır. Karşı sav da kayda geçmelidir: kanıttan başlayan anlatım izleyende doğru fakat sığ bir kavrayış bırakabilir ve dilin asıl kazancı olan tek kaynak disiplini görünmeden kalabilir.",
+)
+
+Fikir(
+  kod:             FKR-GIRIS-KAPISI-MARKDOWN,
+  durum:           park,
+  dönüşTetikleyici: "Markdown yüzü zenginleştirildiğinde ya da açık depo yayını için giriş dosyası tasarlandığında",
+  ne:              "Yeni gelen kişinin Sarmal ile ilk karşılaşması Markdown olabilir mi, kaynak yine .sar kalmak şartıyla? Founder 2026-08-08 tarihinde bu özelliklerin .sar yerine .md dosyalarında yaşaması hâlinde daha geniş kabul görüp görmeyeceğini sordu. Düşünce, sorunun iki ucunu da tutmayı denemektedir: okuyucu tanıdık bir biçimle karşılaşır, motor ise değişmeden kendi kaynağını okur. Bugün bunun önünde çözülmemiş bir gerilim vardır ve gizlenmemelidir; elle yazılmış ikiz yasaktır, dolayısıyla böyle bir giriş kapısı ancak üretilmiş bir yüz olabilir ve üretilmiş yüzün elle düzenlenmesi de yasaktır. Ayrıca Prizma bugün Markdown yüzünü yalnız bir kod bloğuna sarmaktadır ve bu hâliyle tanıdıklık kazandırmaz. Fikir taahhütsüzdür ve bir uygulama yolu önermez; yalnız kabul genişliği ile kaynak disiplini arasındaki gerilimin bir gün açıkça tartılması gerektiğini kayda geçirir.",
+)
+
+Fikir(
+  kod:             FKR-OZELLESTIRME-PANELI,
+  durum:           park,
+  dönüşTetikleyici: "yayın sonrası ilk bakım turunda eklenti panel gündemi açıldığında ya da etmen kadrosu genişleyip kadroya bakan bir yüz ihtiyacı doğduğunda",
+  ne:              "Eklentiye, Claude Code masaüstü uygulamasındaki Özelleştirmeler bölümü gibi bir kadro görünümü eklenebilir mi? Founder 2026-08-24 tarihinde o bölümü gösterdi: aracılar, beceriler, yönergeler, kancalar, MCP sunucuları ve araçlar tek listede sayılarıyla duruyor. Sarmal için bu fikir sıra dışı biçimde ucuzdur, çünkü aynı envanterin tamamı bizde zaten tipli düğümler olarak grafta yaşamaktadır: Etmen kadrosu, Beceri kartları, Kanca, Tetikleyici, Şablon düğümleri ve on sekiz MCP aracı bugün gezinme ve graf yüzlerinden tek tek okunabilmektedir. Panel elle liste olmaz; grafın kendisinden türetilmiş bir yüz olur, sayılar karneden gelir ve her satır kendi düğümüne gezinir, dolayısıyla tek kaynak hükmü bozulmaz. Karşı sav da kayda geçmelidir: eklenti bugün altı yüzey taşımaktadır ve her yeni panel kullanıcının dikkat bütçesinden yer alır; bu yüzden fikir yayın kapsamına alınmamış, bakım gündemine park edilmiştir. Founder 2026-08-24 günü ikinci bir görüntüyle fikri büyüttü ve kesinlikle yapılması gerektiğini söyledi; kayıt Founder'ın kendi isteğiyle fikir düzeyinde tutuldu. Görülen ikinci yüz yalnız okunan bir kadro listesi değil bir üretim kapısıdır: kullanıcı tercihlerini düz yazıyla anlatır ve araç ondan aracı, beceri, yönerge ya da kanca dosyası üretir. Sarmal'da bu kapının doğal karşılığı doğuş ve iskelet komutlarıdır, çünkü niyet zaten dilin kendisidir; sihirbaz düz yazıyı Etmen, Beceri, Kanca ve Tetikleyici düğümlerine çevirir ve ilanları Yapı-Önce sırasıyla yazar, üretilen her düğüm de denetimin bildik kapısından geçer.",
+)

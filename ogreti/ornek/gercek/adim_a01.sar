@@ -1,0 +1,52 @@
+// sarmal: bilerek-hatalı vitrin — ilk adım örneği; şema gevşekliği kasıtlı
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/adim_a01.sar — ZENGİN ADIM: A01 kendi .sar dosyası olarak
+//
+//   Soru (Founder): "A01'in bir sürü referans dosyası var; nasıl görünecek?
+//   Ajan bağlamı nasıl alacak? A01 .sar olarak yazılabilecek mi?"
+//
+//   Cevap: Adım = ZENGİN DÜĞÜM. Bağlam-konisi (görev·referans·kabul·dokunulmaz
+//   ·bağımlılık·sınır) burada BİLDİRİLİR. Orkestratör bu koniyi okuyup
+//   referansları çözer → PROMPT üretir → ajana verir. (Spec ≠ Runtime.)
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır FASTAPI                 // teknoloji (bağımlılık)
+
+// ── Referans becerileri (Bellek→Beceri terfileri) ────────────────────────────
+
+/// Arkayüz iskelet kurma yeteneği — iki beceri de bunu sağlar.
+Yetenek( kod: YTN-ARKAYUZ-TEMELI ) {
+  ne: "arkayüz proje temeli — klasör düzeni + giriş + ayar + CLI"
+}
+
+Beceri( kod: BCR-FASTAPI-YAPI, ad: "fastapi-proje-yapisi", sağlar: YTN-ARKAYUZ-TEMELI,
+        yığın: fastapi, uygular: ANY-EVRENSEL ) {
+  ne: "app/ düzeni · giriş · config deseni (A01-A04)"
+  neZaman: "FastAPI projesi sıfırdan kurulurken"
+  kurallar: [ "app/ düzeni sabit desene uyar", "ayar tek config modülünde toplanır" ]
+  örnek: "app/main.py + app/config.py + app/saglik.py"
+  antiDesen: [ "ayarları koda gömmek", "düz tek-dosya main.py büyütmek" ]
+}
+
+Beceri( kod: BCR-PYTHON-CLI, ad: "python-cli-temeli", sağlar: YTN-ARKAYUZ-TEMELI,
+        yığın: fastapi, uygular: ANY-EVRENSEL ) {
+  ne: "CLI iskeleti — Typer/argparse (A01)"
+  neZaman: "projeye komut satırı girişi eklenirken"
+  kurallar: [ "komutlar alt-komut olarak düzenlenir", "çıkış kodları sözleşmelidir" ]
+  örnek: "app komutu → typer.Typer() alt-komutları"
+  antiDesen: [ "argümanları elle sys.argv'den ayrıştırmak" ]
+}
+
+// ── A01 — bağlam-konisi TAM dolu ─────────────────────────────────────────────
+Adım(
+  kod:        A01,
+  ad:         "fastapi-iskelet",
+  bağımlı:    FASTAPI,
+  üretir:     SRV-CEKIRDEK,
+
+  görev:      "FastAPI proje iskeletini kur: app/ klasör düzeni, ana giriş (main.py), ayar (config), sağlık uç noktası",
+  referans:   [ BCR-FASTAPI-YAPI, BCR-PYTHON-CLI ],
+  kabul:      [ "uvicorn app.main:app ayağa kalkar", "GET /saglik 200 döner", "pyproject bağımlılıkları tam" ],
+  dokunulmaz: [ "app/ klasör düzeni deseni", "ayar şeması adları" ],
+  sınır:      "yalnız iskelet — DB A03-A04'te, kimlik A05'te",
+)

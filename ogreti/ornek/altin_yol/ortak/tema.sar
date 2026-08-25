@@ -1,0 +1,18 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/tema.sar — 🎨 ORTAK TASARIM SİSTEMİ (bahçenin tek teması · TAS-A01)
+//
+//   Tasarım sistemi BİR KEZ ilan edilir (cross-cutting — güvenlik Mekanizması
+//   gibi, DIL-1.4 · TIP-1.4): her Uygulama'nın Ekran'ı `tema: TEM-BAHCE` ile buna
+//   GİYİNİR (temasız-ekran bekçisi böyle susar — TAS-B01).
+//
+//   TOKEN-ROL SÖZLEŞMESİ (TAS-A01): .sar yalnız rol ADLARINI taşır (sözleşme);
+//   DEĞERLER (hex/px) `dosya:` üretim-yeri beyanındaki teknoloji temasında
+//   (ThemeData / :root) yaşar. Çalgıcı ajan rengi ROL'den çözer, değeri oradan okur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Tema( kod: TEM-BAHCE, görünürlük: açık, ne: "🎨 bahçe ortak tasarım sistemi — token-ROL sözleşmesi (tek tema, çok uygulama; değerler tech-temada)",
+      dosya: "onyuz/lib/tema/bahce_tema.dart",
+      renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, başlık2, başlık3, başlık4, gövde, etiket ],
+      boşluk: [ xs, sm, md, lg, xl ],
+      yuvarlaklık: [ sm, md, lg ] )

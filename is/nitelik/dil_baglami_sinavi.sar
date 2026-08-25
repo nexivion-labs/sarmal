@@ -1,0 +1,39 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/dil_baglami_sinavi.sar — 🧠 AJAN DİL BAĞLAMI CANLI SINAVI (DPK-A03)
+//
+//   Sınanan iddia (Founder): "Ajan tüm sar dilini bağlam olarak almalı ki
+//   başarıya ulaşabilelim." Kanıt sorusu: Sarmal'ı HİÇ görmemiş bir dış model,
+//   yalnız doğuş paketinin ürettiği AGENTS.md ile koni-dolu geçerli bir plan
+//   yazabilir mi? Koşular gerçektir (NVIDIA köprüsü, canlı API).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Değerlendirme( kod: DGR-DIL-SINAVI, tarih: "2026-07-17", hedef: meyve,   // sınanan meyve: KOD-DIL-BAGLAMI (AGENTS.md üreticisi)
+  boyutlar: [ "dil-öğretme-gücü (hiç görmemiş model geçerli .sar yazabiliyor mu)", "plan-niteliği (koni-doluluk + K-91 tam-zincir)" ],
+  eşikler:  [ "gerçek denetimden 0 hata", "her Adım koni-dolu (görev·kabul·bağımlı·sınır)" ],
+  ne: "AGENTS.md dil bağlamının dış-model sınavı — iki bağımsız canlı koşu, hüküm: BAŞARILI" ) {
+  koşu: """
+        MODEL: deepseek-ai/deepseek-v4-pro (Sarmal'ı hiç görmemiş; sistem
+        talimatı yalnız verilen belgeye dayanmayı şart koştu). GÖREV: yemek
+        tarifi defteri için Teknoloji/Takım ilanlı, K-91 tam-zincirli,
+        Blok-belgeli, iki koni-dolu Adımlı plan dosyası.
+
+        KOŞU 1 (giriş 7490 · çıkış 1529 token): model geçerli .sar üretti —
+        Proje sarmalı + Teknoloji(içinde Araç sarması!) + Takım bağı + tam
+        zincir + 3 koni-dolu Adım. Gerçek denetim: 0 HATA · 2 uyarı (Proje
+        anlatı belgesi eksik; Blok belgesi tek-satır yer-tutucu kopyalanmış —
+        bağlam belgeyi gerçek örnekle göstermiyordu).
+
+        İYİLEŞTİRME: dil-baglami.ts sözdizim örneğine çok satırlı gerçek
+        anlatı belgesi eklendi; belge kuralı açık cümleyle yazıldı.
+
+        KOŞU 2 (giriş 7664 · çıkış 1581 token): 0 HATA · 1 uyarı — Blok
+        belgesi bu kez TAM (Amaç/Kapsam/Sonuç bölümlü); kalan tek kusur Proje
+        belgesinin düğüm İÇİNE konması (belge-yanlış-düğüm tanısı yol
+        gösteriyor — ajanın ikinci turda düzelteceği türden bir nudge).
+
+        HÜKÜM: kabul ölçütü karşılandı — Sarmal'ı hiç görmemiş ajan, yalnız
+        AGENTS.md ve motor tanılarıyla koni-dolu geçerli plan yazmaktadır.
+        Bağlam iyileştirmesinin uyarıyı 2'den 1'e düşürmesi, belgenin
+        öğretme gücünün ölçülebilir olduğunu da göstermiştir.
+        """
+}

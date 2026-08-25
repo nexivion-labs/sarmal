@@ -1,0 +1,442 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/spec_envanteri.sar — 🚚 SPEC GÖÇÜ KAPSAM ENVANTERİ (GOC-SPEC-A01)
+//   Mühürlü kapsam: 144 madde · 125 karar (96 EŞLENDİ · 11 EMEKLİ · 18 ARŞİV) ·
+//   74 kural (69 EŞLENDİ · 5 EMEKLİ) · 60 eski K-XX yapısal dayanak kaydı.
+//   Sayılar bu üretimde kaynaklardan yeniden ölçüldü; sınıflar çapraz haritadan
+//   (nitelik/goc/capraz_harita.sar) birebir okundu. Kabul sahipleri: madde
+//   içeriği GOC-SPEC-A02 · arşiv taşıması GOC-SPEC-A04 · bağımsız sayım GOC-SPEC-A90.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## A · Kanon maddeleri — 144/144 (kaynak: yasa/kanon/*.sar · hedef zaten resmi konum)
+
+| Madde | Rol (YAS-2) | Düzey | Resmi dosya | Kabul sahibi |
+|---|---|---|---|---|
+| DIL-0 | Karar | BİLGİ | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-1 | Karar | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-1.1 | Kural | UYARI | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-1.2 | Kural | UYARI | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-1.3 | Kural | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-1.4 | Kural | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-2 | Karar | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-2.1 | Kural | UYARI | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-2.2 | Kural | UYARI | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-3 | Karar | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-3.1 | Kural | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-4 | Kural | BİLGİ | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-5 | Karar | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-5.1 | Kural | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-5.2 | Kural | HATA | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| DIL-6 | Kural | BİLGİ | yasa/kanon/dil.sar | GOC-SPEC-A02 |
+| MIM-0 | Karar | BİLGİ | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1 | Karar | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.1 | Kural | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.2 | Kural | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.3 | Kural | UYARI | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.4 | Kural | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.5 | Kural | UYARI | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-1.6 | Kural | UYARI | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-2 | Karar | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-2.1 | Kural | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-2.2 | Kural | BİLGİ | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-3 | Karar | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-3.1 | Kural | HATA | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-3.2 | Kural | UYARI | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| MIM-4 | Kural | BİLGİ | yasa/kanon/mim.sar | GOC-SPEC-A02 |
+| OGR-0 | Karar | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-1 | Karar | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-1.1 | Kural | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-1.2 | Kural | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-1.3 | Kural | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-1.4 | Kural | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-2 | Karar | HATA | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-2.1 | Kural | UYARI | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-2.2 | Kural | UYARI | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-2.3 | Kural | HATA | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-3 | Karar | HATA | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-3.1 | Kural | UYARI | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-3.2 | Kural | HATA | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-4 | Kural | UYARI | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| OGR-5 | Kural | BİLGİ | yasa/kanon/ogr.sar | GOC-SPEC-A02 |
+| ORK-0 | Karar | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-1 | Karar | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-1.1 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-1.2 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-1.3 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-2 | Karar | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-2.1 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-2.2 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-2.3 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-2.4 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-3 | Karar | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-3.1 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-3.2 | Kural | UYARI | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-3.3 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-4 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-5 | Karar | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-5.1 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-5.2 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-5.3 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-6 | Karar | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-6.1 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-6.2 | Kural | UYARI | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-6.3 | Kural | HATA | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| ORK-7 | Kural | BİLGİ | yasa/kanon/ork.sar | GOC-SPEC-A02 |
+| STR-0 | Karar | BİLGİ | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-1 | Karar | HATA | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-1.1 | Kural | HATA | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-1.2 | Kural | BİLGİ | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-2 | Karar | HATA | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-2.1 | Kural | UYARI | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-3 | Karar | HATA | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-3.1 | Kural | UYARI | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-3.2 | Kural | HATA | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-4 | Kural | UYARI | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| STR-5 | Kural | UYARI | yasa/kanon/str.sar | GOC-SPEC-A02 |
+| TIP-0 | Karar | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1 | Karar | HATA | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.1 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.2 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.3 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.4 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.5 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.6 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.7 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.8 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.9 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.10 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.11 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.12 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.13 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.14 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.15 | Kural | HATA | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-1.16 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2 | Karar | HATA | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2.1 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2.2 | Kural | UYARI | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2.3 | Kural | UYARI | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2.4 | Kural | HATA | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-2.5 | Kural | UYARI | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-3 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| TIP-4 | Kural | BİLGİ | yasa/kanon/tip.sar | GOC-SPEC-A02 |
+| YAS-0 | Karar | BİLGİ | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-1 | Karar | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-1.1 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-1.2 | Kural | BİLGİ | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-1.3 | Kural | UYARI | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-2 | Karar | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-2.1 | Kural | UYARI | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-2.2 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-2.3 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-2.4 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-3 | Karar | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-3.1 | Kural | BİLGİ | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-3.2 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-3.3 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-3.4 | Kural | UYARI | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-4 | Karar | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-4.1 | Kural | HATA | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-4.2 | Kural | UYARI | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YAS-5 | Kural | BİLGİ | yasa/kanon/yas.sar | GOC-SPEC-A02 |
+| YUZ-0 | Karar | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-1 | Karar | HATA | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-1.1 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-1.2 | Kural | HATA | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-1.3 | Kural | UYARI | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-2 | Karar | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-2.1 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-2.2 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-2.3 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-3 | Karar | UYARI | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-3.1 | Kural | UYARI | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-3.2 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-3.3 | Kural | UYARI | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-4 | Karar | HATA | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-4.1 | Kural | HATA | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-4.2 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-5 | Kural | HATA | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+| YUZ-6 | Kural | BİLGİ | yasa/kanon/yuz.sar | GOC-SPEC-A02 |
+|<--
+
+-->|
+## B · Eski kararlar — 125/125 (kaynak: yasa/kararlar/*.sar · sınıf: çapraz harita A)
+
+| Karar | Kaynak dosya | Sonuç sınıfı | Yeni hedef | Kabul sahibi |
+|---|---|---|---|---|
+| K-01 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | DIL-1, YUZ-1, YUZ-2 | GOC-SPEC-A04 |
+| K-02 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | TIP-0, TIP-1 | GOC-SPEC-A04 |
+| K-03 | yasa/kararlar/kimlik_felsefe.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-04 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | TIP-0, TIP-1, TIP-2, TIP-2.5 | GOC-SPEC-A04 |
+| K-05 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | TIP-1.2, TIP-1.4, MIM-1.3 | GOC-SPEC-A04 |
+| K-06 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | TIP-1.5, ORK-6.3 | GOC-SPEC-A04 |
+| K-07 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1.1, YUZ-5, ORK-4 | GOC-SPEC-A04 |
+| K-08 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YAS-3, YUZ-3, OGR-2.1, STR-3 | GOC-SPEC-A04 |
+| K-09 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1, DIL-1.1 | GOC-SPEC-A04 |
+| K-10 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | YAS-2, STR-2, STR-3.1 | GOC-SPEC-A04 |
+| K-11 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | STR-3.2 | GOC-SPEC-A04 |
+| K-12 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.2, DIL-1.3 | GOC-SPEC-A04 |
+| K-13 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | DIL-6, YAS-5, MIM-4, ORK-7 | GOC-SPEC-A04 |
+| K-14 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.4, ORK-2.1, ORK-4 | GOC-SPEC-A04 |
+| K-15 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-3, YAS-2.3 | GOC-SPEC-A04 |
+| K-16 | yasa/kararlar/strateji_yayin.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-17 | yasa/kararlar/tip_sistemi_yapi.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-18 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | STR-3 | GOC-SPEC-A04 |
+| K-19 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-3, YAS-2, YAS-2.3 | GOC-SPEC-A04 |
+| K-20 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | TIP-1.12, ORK-2.1, YAS-2.2, OGR-4 | GOC-SPEC-A04 |
+| K-21 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | OGR-4, YAS-4.2 | GOC-SPEC-A04 |
+| K-22 | yasa/kararlar/dil_format.sar | EŞLENDİ | STR-3.1 | GOC-SPEC-A04 |
+| K-23 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | TIP-1.3, TIP-1.5, OGR-2.2 | GOC-SPEC-A04 |
+| K-24 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1, DIL-1.1 | GOC-SPEC-A04 |
+| K-25 | yasa/kararlar/dil_format.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-26 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-2, DIL-2.2 | GOC-SPEC-A04 |
+| K-27 | yasa/kararlar/dil_format.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-28 | yasa/kararlar/dil_format.sar | EŞLENDİ | MIM-1.1, MIM-3, DIL-1 | GOC-SPEC-A04 |
+| K-29 | yasa/kararlar/orkestrasyon_sef.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-30 | yasa/kararlar/orkestrasyon_sef.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-31 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1.3, ORK-2.3, YUZ-3.2 | GOC-SPEC-A04 |
+| K-32 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | ORK-1.2, ORK-3 | GOC-SPEC-A04 |
+| K-33 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | YAS-2, YAS-3, YAS-4, ORK-6.1 | GOC-SPEC-A04 |
+| K-34 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | STR-3, YAS-4.2, ORK-1.2 | GOC-SPEC-A04 |
+| K-35 | yasa/kararlar/yuzeyler.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-36 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | STR-3, YAS-3, YUZ-3 | GOC-SPEC-A04 |
+| K-37 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | STR-3, ORK-6.3 | GOC-SPEC-A04 |
+| K-38 | yasa/kararlar/kimlik_felsefe.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-39 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | DIL-1, YAS-3, YUZ-3, OGR-2 | GOC-SPEC-A04 |
+| K-40 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | YAS-4, YAS-4.2, ORK-3.3 | GOC-SPEC-A04 |
+| K-41 | yasa/kararlar/orkestrasyon_sef.sar | EŞLENDİ | DIL-1, STR-3.2, ORK-6 | GOC-SPEC-A04 |
+| K-42 | yasa/kararlar/bilgi_ogrenme.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-43 | yasa/kararlar/orkestrasyon_sef.sar | EŞLENDİ | STR-3, STR-3.2 | GOC-SPEC-A04 |
+| K-44 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | MIM-1.1 | GOC-SPEC-A04 |
+| K-45 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.1, OGR-1.4 | GOC-SPEC-A04 |
+| K-46 | yasa/kararlar/orkestrasyon_sef.sar | EŞLENDİ | STR-4, STR-5, ORK-6 | GOC-SPEC-A04 |
+| K-47 | yasa/kararlar/defter_cercevesi.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-48 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-2, TIP-2, OGR-1.4 | GOC-SPEC-A04 |
+| K-49 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1, MIM-1.1, MIM-1.2 | GOC-SPEC-A04 |
+| K-50 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-2, DIL-3, TIP-2 | GOC-SPEC-A04 |
+| K-51 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | STR-3, STR-3.1 | GOC-SPEC-A04 |
+| K-52 | yasa/kararlar/bilgi_ogrenme.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-53 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | STR-4, OGR-4 | GOC-SPEC-A04 |
+| K-54 | yasa/kararlar/strateji_yayin.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-55 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-1, YUZ-1.1 | GOC-SPEC-A04 |
+| K-56 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-1.1, YUZ-1.3 | GOC-SPEC-A04 |
+| K-57 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | TIP-1.8, MIM-1.4, ORK-6.3 | GOC-SPEC-A04 |
+| K-58 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | OGR-2, OGR-2.1, MIM-4 | GOC-SPEC-A04 |
+| K-59 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | TIP-2.3, YAS-3.4, MIM-2 | GOC-SPEC-A04 |
+| K-60 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-3, YUZ-4, YUZ-4.2 | GOC-SPEC-A04 |
+| K-61 | yasa/kararlar/tip_sistemi_yapi.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-62 | yasa/kararlar/yasa_drift.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-63 | yasa/kararlar/strateji_yayin.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-64 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | MIM-1.3, ORK-2.3 | GOC-SPEC-A04 |
+| K-65 | yasa/kararlar/yasa_drift.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-66 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | TIP-1.4, DIL-3.1, ORK-2.1 | GOC-SPEC-A04 |
+| K-67 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-2, MIM-2.1 | GOC-SPEC-A04 |
+| K-68 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-3, OGR-2.3, STR-3 | GOC-SPEC-A04 |
+| K-69 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | MIM-1.6, ORK-6, YAS-4.2 | GOC-SPEC-A04 |
+| K-70 | yasa/kararlar/orkestrasyon_sef.sar | EŞLENDİ | ORK-3.2, ORK-6, ORK-6.1 | GOC-SPEC-A04 |
+| K-71 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | DIL-1, STR-4 | GOC-SPEC-A04 |
+| K-72 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | STR-3, STR-3.1 | GOC-SPEC-A04 |
+| K-73 | yasa/kararlar/strateji_yayin.sar | EŞLENDİ | STR-3, STR-3.1 | GOC-SPEC-A04 |
+| K-74 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-1.1, YUZ-3.2 | GOC-SPEC-A04 |
+| K-75 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | STR-4, YAS-4.2 | GOC-SPEC-A04 |
+| K-76 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | ORK-1.2, ORK-3, ORK-3.1 | GOC-SPEC-A04 |
+| K-77 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YAS-4.2, YUZ-1.1, YUZ-3 | GOC-SPEC-A04 |
+| K-78 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-3, YUZ-3.1, YUZ-4.1 | GOC-SPEC-A04 |
+| K-79 | yasa/kararlar/kimlik_felsefe.sar | EŞLENDİ | STR-3, STR-3.2 | GOC-SPEC-A04 |
+| K-80 | yasa/kararlar/strateji_yayin.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-81 | yasa/kararlar/dil_format.sar | EŞLENDİ | YAS-3, YUZ-3.1, OGR-2.1 | GOC-SPEC-A04 |
+| K-82 | yasa/kararlar/bilgi_ogrenme.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-83 | yasa/kararlar/tip_sistemi_yapi.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-84 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | MIM-1.1, YAS-3.3, ORK-4 | GOC-SPEC-A04 |
+| K-85 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.2, MIM-3 | GOC-SPEC-A04 |
+| K-86 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-3.2, STR-1.1, ORK-4 | GOC-SPEC-A04 |
+| K-87 | yasa/kararlar/dil_format.sar | EŞLENDİ | TIP-1.4, ORK-3.3 | GOC-SPEC-A04 |
+| K-88 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | YAS-2.3 | GOC-SPEC-A04 |
+| K-89 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.1, DIL-1.4 | GOC-SPEC-A04 |
+| K-90 | yasa/kararlar/defter_cercevesi.sar | EŞLENDİ | DIL-5, DIL-5.2, YAS-5 | GOC-SPEC-A04 |
+| K-91 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1, MIM-1.2, MIM-1.3, MIM-1.4 | GOC-SPEC-A04 |
+| K-92 | yasa/kararlar/tip_sistemi_yapi.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-93 | yasa/kararlar/yuzeyler.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-94 | yasa/kararlar/tip_sistemi_yapi.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| K-95 | yasa/kararlar/yuzeyler.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-96 | yasa/kararlar/yuzeyler.sar | EŞLENDİ | YUZ-4, YUZ-4.1, YUZ-4.2 | GOC-SPEC-A04 |
+| K-97 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1, YAS-1, YAS-1.1 | GOC-SPEC-A04 |
+| K-98 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | MIM-1.4, MIM-3, ORK-2.4 | GOC-SPEC-A04 |
+| K-99 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | YAS-4, YAS-4.2, ORK-3.2 | GOC-SPEC-A04 |
+| K-100 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | YAS-2, OGR-2.2, OGR-4 | GOC-SPEC-A04 |
+| K-101 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.1, YAS-5, ORK-6.3 | GOC-SPEC-A04 |
+| K-102 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1.1, OGR-2.1 | GOC-SPEC-A04 |
+| K-103 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1.6, ORK-6.2 | GOC-SPEC-A04 |
+| K-104 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | STR-4, ORK-1.3, ORK-2.2 | GOC-SPEC-A04 |
+| K-105 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | TIP-3, YUZ-1.2, OGR-2.3 | GOC-SPEC-A04 |
+| K-106 | yasa/kararlar/bilgi_ogrenme.sar | EŞLENDİ | OGR-3, OGR-3.1, STR-5 | GOC-SPEC-A04 |
+| K-107 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | OGR-5, YAS-3.2 | GOC-SPEC-A04 |
+| K-108 | yasa/kararlar/tip_sistemi_yapi.sar | ARŞİV | — | GOC-SPEC-A04 |
+| K-109 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | MIM-1.2 | GOC-SPEC-A04 |
+| K-110 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | YAS-2.1, YAS-2.2, ORK-2.1 | GOC-SPEC-A04 |
+| K-111 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1, YUZ-2, YUZ-2.3 | GOC-SPEC-A04 |
+| K-112 | yasa/kararlar/orkestrasyon_sef.sar | EŞLENDİ | TIP-1.3, OGR-1.4, STR-3.2 | GOC-SPEC-A04 |
+| K-113 | yasa/kararlar/dil_format.sar | EŞLENDİ | OGR-1, OGR-1.1, OGR-1.2, OGR-1.3, OGR-1.4 | GOC-SPEC-A04 |
+| K-114 | yasa/kararlar/dil_format.sar | EŞLENDİ | MIM-1.6, ORK-3.3, YAS-4.2 | GOC-SPEC-A04 |
+| K-115 | yasa/kararlar/tip_sistemi_yapi.sar | EŞLENDİ | YAS-2.4 | GOC-SPEC-A04 |
+| K-116 | yasa/kararlar/dil_format.sar | EŞLENDİ | DIL-1, DIL-1.1, YAS-3.4 | GOC-SPEC-A04 |
+| K-117 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | YAS-2.1, YAS-4.2, STR-2.1 | GOC-SPEC-A04 |
+| K-118 | yasa/kararlar/yasa_drift.sar | EŞLENDİ | STR-3.2, YAS-3.4, YAS-4.2 | GOC-SPEC-A04 |
+| AOK-BEKLE-1 | yasa/kararlar/akis_omurgasi_kararlari.sar | ARŞİV | — | GOC-SPEC-A04 |
+| AOK-BEKLE-2 | yasa/kararlar/akis_omurgasi_kararlari.sar | EŞLENDİ | YAS-4, YAS-4.2 | GOC-SPEC-A04 |
+| AOK-FACT | yasa/kararlar/akis_omurgasi_kararlari.sar | ARŞİV | — | GOC-SPEC-A04 |
+| AOK-KESIN-1 | yasa/kararlar/akis_omurgasi_kararlari.sar | EŞLENDİ | MIM-1, MIM-1.5, YAS-1.1 | GOC-SPEC-A04 |
+| AOK-KESIN-2 | yasa/kararlar/akis_omurgasi_kararlari.sar | EŞLENDİ | YUZ-1, YUZ-3.2 | GOC-SPEC-A04 |
+| AOK-OZET | yasa/kararlar/akis_omurgasi_kararlari.sar | ARŞİV | — | GOC-SPEC-A04 |
+| AOK-RED | yasa/kararlar/akis_omurgasi_kararlari.sar | ARŞİV | — | GOC-SPEC-A04 |
+|<--
+
+-->|
+## C · Eski kurallar — 74/74 (kaynak: yasa/genel_kurallar/*.sar · sınıf: çapraz harita B)
+
+| Kural | Kaynak dosya | Sonuç sınıfı | Yeni hedef | Kabul sahibi |
+|---|---|---|---|---|
+| BL-1 | yasa/genel_kurallar/belge.sar | EŞLENDİ | OGR-1.3, YAS-4.2 | GOC-SPEC-A04 |
+| BL-2 | yasa/genel_kurallar/belge.sar | EŞLENDİ | OGR-1.4 | GOC-SPEC-A04 |
+| BL-3 | yasa/genel_kurallar/belge.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| BL-4 | yasa/genel_kurallar/belge.sar | EŞLENDİ | YUZ-2, YUZ-2.1, YUZ-2.3 | GOC-SPEC-A04 |
+| BL-5 | yasa/genel_kurallar/belge.sar | EŞLENDİ | OGR-1, OGR-1.1, OGR-1.2, OGR-1.3, OGR-1.4 | GOC-SPEC-A04 |
+| BÇ-1 | yasa/genel_kurallar/bicim.sar | EŞLENDİ | DIL-3, YAS-2.3 | GOC-SPEC-A04 |
+| BÇ-2 | yasa/genel_kurallar/bicim.sar | EŞLENDİ | TIP-2, TIP-2.2 | GOC-SPEC-A04 |
+| DL-1 | yasa/genel_kurallar/dil.sar | EŞLENDİ | DIL-1, DIL-1.1 | GOC-SPEC-A04 |
+| DL-2 | yasa/genel_kurallar/dil.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| DL-3 | yasa/genel_kurallar/dil.sar | EŞLENDİ | DIL-1.1, TIP-3 | GOC-SPEC-A04 |
+| DL-4 | yasa/genel_kurallar/dil.sar | EŞLENDİ | DIL-1.1, OGR-2.1 | GOC-SPEC-A04 |
+| DO-1 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | MIM-1.1, MIM-3 | GOC-SPEC-A04 |
+| DO-2 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | MIM-1.4, ORK-2.4 | GOC-SPEC-A04 |
+| DO-3 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | YAS-2, TIP-1.7 | GOC-SPEC-A04 |
+| DO-4 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | MIM-1, MIM-1.2, MIM-1.5, MIM-1.6 | GOC-SPEC-A04 |
+| DO-5 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | MIM-1.6, MIM-2, ORK-1.3 | GOC-SPEC-A04 |
+| DO-6 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | TIP-2.3, ORK-2.3 | GOC-SPEC-A04 |
+| DO-7 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | ORK-3.2, ORK-6 | GOC-SPEC-A04 |
+| DO-8 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | TIP-1.4, DIL-3.1, ORK-2.1 | GOC-SPEC-A04 |
+| DO-9 | yasa/genel_kurallar/dogus_omurgasi.sar | EŞLENDİ | MIM-2, MIM-2.1 | GOC-SPEC-A04 |
+| GR-1 | yasa/genel_kurallar/gorunurluk.sar | EŞLENDİ | YUZ-5 | GOC-SPEC-A04 |
+| KRL-GUVENLIK-AMACLI | yasa/genel_kurallar/guvenlik.sar | EŞLENDİ | YAS-2.4, YAS-5, ORK-6.3 | GOC-SPEC-A04 |
+| IA-1 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | MIM-1.1, MIM-1.4, YAS-2 | GOC-SPEC-A04 |
+| IA-2 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | MIM-1.4, ORK-2.4 | GOC-SPEC-A04 |
+| IA-3 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | MIM-1.3, ORK-2.3 | GOC-SPEC-A04 |
+| IA-4 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | MIM-1.6, TIP-2.3, YAS-4 | GOC-SPEC-A04 |
+| IA-5 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | YAS-4, YAS-4.2, ORK-3.3 | GOC-SPEC-A04 |
+| IA-6 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | ORK-3.2, ORK-3.3, YAS-4 | GOC-SPEC-A04 |
+| IA-7 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | STR-4, OGR-4, ORK-3.2 | GOC-SPEC-A04 |
+| IA-8 | yasa/genel_kurallar/is_akisi.sar | EŞLENDİ | ORK-3.2, STR-4 | GOC-SPEC-A04 |
+| KA-1 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | ORK-6.1 | GOC-SPEC-A04 |
+| KA-2 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | ORK-6, ORK-6.1, YAS-4.2 | GOC-SPEC-A04 |
+| KA-3 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | YAS-4.1, YAS-4.2 | GOC-SPEC-A04 |
+| KA-4 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | YAS-4, YAS-4.2 | GOC-SPEC-A04 |
+| KA-5 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | STR-2.1, STR-5 | GOC-SPEC-A04 |
+| KA-6 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | YAS-4.2, OGR-3.1 | GOC-SPEC-A04 |
+| KA-7 | yasa/genel_kurallar/kodlama_akisi.sar | EŞLENDİ | ORK-6.2 | GOC-SPEC-A04 |
+| SD-1 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.3 | GOC-SPEC-A04 |
+| SD-2 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.2 | GOC-SPEC-A04 |
+| SD-3 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.2 | GOC-SPEC-A04 |
+| SD-4 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.3, TIP-2 | GOC-SPEC-A04 |
+| SD-5 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | MIM-3.1, DIL-3.1, TIP-2.4 | GOC-SPEC-A04 |
+| SD-6 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-3.1, ORK-1, ORK-2 | GOC-SPEC-A04 |
+| SD-7 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.1, DIL-1.4 | GOC-SPEC-A04 |
+| SD-8 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.4, ORK-4 | GOC-SPEC-A04 |
+| SD-9 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-3, YAS-2.3 | GOC-SPEC-A04 |
+| SD-10 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | TIP-1, TIP-2, DIL-3 | GOC-SPEC-A04 |
+| SD-11 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.3 | GOC-SPEC-A04 |
+| SD-12 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-1.4, ORK-1.2 | GOC-SPEC-A04 |
+| SD-13 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | YAS-2.3, YAS-2.4, YAS-3.4 | GOC-SPEC-A04 |
+| SD-14 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-2, DIL-2.1, DIL-2.2 | GOC-SPEC-A04 |
+| SD-15 | yasa/genel_kurallar/soz_dizimi.sar | EŞLENDİ | DIL-2 | GOC-SPEC-A04 |
+| DR-1 | yasa/genel_kurallar/surec.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| DR-3 | yasa/genel_kurallar/surec.sar | EŞLENDİ | MIM-1.2, TIP-2 | GOC-SPEC-A04 |
+| DR-4 | yasa/genel_kurallar/surec.sar | EŞLENDİ | TIP-3, OGR-3, STR-5 | GOC-SPEC-A04 |
+| DR-5 | yasa/genel_kurallar/surec.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| DR-6 | yasa/genel_kurallar/surec.sar | EŞLENDİ | STR-2, STR-2.1 | GOC-SPEC-A04 |
+| DR-7 | yasa/genel_kurallar/surec.sar | EŞLENDİ | YAS-2, ORK-6.3 | GOC-SPEC-A04 |
+| DR-8 | yasa/genel_kurallar/surec.sar | EŞLENDİ | STR-1, STR-1.2 | GOC-SPEC-A04 |
+| DR-9 | yasa/genel_kurallar/surec.sar | EŞLENDİ | YAS-2.4, STR-2.1 | GOC-SPEC-A04 |
+| DR-10 | yasa/genel_kurallar/surec.sar | EŞLENDİ | ORK-3.2, YAS-4, OGR-4 | GOC-SPEC-A04 |
+| DR-11 | yasa/genel_kurallar/surec.sar | EŞLENDİ | DIL-1, STR-4 | GOC-SPEC-A04 |
+| DR-12 | yasa/genel_kurallar/surec.sar | EŞLENDİ | YAS-3.1, YAS-4.1 | GOC-SPEC-A04 |
+| DR-13 | yasa/genel_kurallar/surec.sar | EŞLENDİ | TIP-1, YAS-4.2 | GOC-SPEC-A04 |
+| DR-2 | yasa/genel_kurallar/surec.sar | EŞLENDİ | STR-2.1, YAS-4.2 | GOC-SPEC-A04 |
+| YP-1 | yasa/genel_kurallar/yapi.sar | EŞLENDİ | MIM-3, MIM-3.2 | GOC-SPEC-A04 |
+| YP-2 | yasa/genel_kurallar/yapi.sar | EMEKLİ | — | GOC-SPEC-A04 |
+| YP-3 | yasa/genel_kurallar/yapi.sar | EŞLENDİ | DIL-1, YUZ-1.2 | GOC-SPEC-A04 |
+| YZ-1 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | DIL-1, YUZ-1, YUZ-2 | GOC-SPEC-A04 |
+| YZ-2 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | TIP-1.16, YUZ-5 | GOC-SPEC-A04 |
+| YZ-3 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | YUZ-4, STR-1.1 | GOC-SPEC-A04 |
+| YZ-4 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | TIP-2.3, ORK-1.3 | GOC-SPEC-A04 |
+| YZ-5 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | YAS-2.1, OGR-1.4 | GOC-SPEC-A04 |
+| YZ-6 | yasa/genel_kurallar/yuzey.sar | EŞLENDİ | YUZ-4, YUZ-4.1 | GOC-SPEC-A04 |
+|<--
+
+-->|
+## D · Eski K-XX yapısal dayanak kayıtları — 60/60 (kaynak satırıyla)
+
+| # | Kaynak dosya:satır | K-XX hedefleri | Kabul sahibi |
+|---|---|---|---|
+| 1 | yasa/genel_kurallar/belge.sar:29 | K-40 | GOC-SPEC-A04 |
+| 2 | yasa/genel_kurallar/belge.sar:38 | K-45 | GOC-SPEC-A04 |
+| 3 | yasa/genel_kurallar/belge.sar:55 | K-45 | GOC-SPEC-A04 |
+| 4 | yasa/genel_kurallar/belge.sar:72 | K-48 K-55 | GOC-SPEC-A04 |
+| 5 | yasa/genel_kurallar/bicim.sar:29 | K-19 | GOC-SPEC-A04 |
+| 6 | yasa/genel_kurallar/bicim.sar:45 | K-19 | GOC-SPEC-A04 |
+| 7 | yasa/genel_kurallar/dil.sar:34 | K-09 | GOC-SPEC-A04 |
+| 8 | yasa/genel_kurallar/dil.sar:57 | K-12 | GOC-SPEC-A04 |
+| 9 | yasa/genel_kurallar/dil.sar:66 | K-09 | GOC-SPEC-A04 |
+| 10 | yasa/genel_kurallar/dil.sar:103 | K-89 | GOC-SPEC-A04 |
+| 11 | yasa/genel_kurallar/dogus_omurgasi.sar:51 | K-62 | GOC-SPEC-A04 |
+| 12 | yasa/genel_kurallar/dogus_omurgasi.sar:55 | K-62 | GOC-SPEC-A04 |
+| 13 | yasa/genel_kurallar/dogus_omurgasi.sar:59 | K-62 | GOC-SPEC-A04 |
+| 14 | yasa/genel_kurallar/dogus_omurgasi.sar:63 | K-62 | GOC-SPEC-A04 |
+| 15 | yasa/genel_kurallar/dogus_omurgasi.sar:67 | K-62 | GOC-SPEC-A04 |
+| 16 | yasa/genel_kurallar/dogus_omurgasi.sar:71 | K-62 | GOC-SPEC-A04 |
+| 17 | yasa/genel_kurallar/dogus_omurgasi.sar:75 | K-62 | GOC-SPEC-A04 |
+| 18 | yasa/genel_kurallar/dogus_omurgasi.sar:79 | K-66 | GOC-SPEC-A04 |
+| 19 | yasa/genel_kurallar/dogus_omurgasi.sar:83 | K-67 | GOC-SPEC-A04 |
+| 20 | yasa/genel_kurallar/gorunurluk.sar:30 | K-07 | GOC-SPEC-A04 |
+| 21 | yasa/genel_kurallar/is_akisi.sar:54 | K-69 | GOC-SPEC-A04 |
+| 22 | yasa/genel_kurallar/is_akisi.sar:58 | K-69 | GOC-SPEC-A04 |
+| 23 | yasa/genel_kurallar/is_akisi.sar:62 | K-69 | GOC-SPEC-A04 |
+| 24 | yasa/genel_kurallar/is_akisi.sar:66 | K-69 | GOC-SPEC-A04 |
+| 25 | yasa/genel_kurallar/is_akisi.sar:75 | K-69 | GOC-SPEC-A04 |
+| 26 | yasa/genel_kurallar/is_akisi.sar:87 | K-69 | GOC-SPEC-A04 |
+| 27 | yasa/genel_kurallar/is_akisi.sar:91 | K-69 | GOC-SPEC-A04 |
+| 28 | yasa/genel_kurallar/is_akisi.sar:95 | K-69 | GOC-SPEC-A04 |
+| 29 | yasa/genel_kurallar/kodlama_akisi.sar:57 | K-70 | GOC-SPEC-A04 |
+| 30 | yasa/genel_kurallar/kodlama_akisi.sar:61 | K-70 | GOC-SPEC-A04 |
+| 31 | yasa/genel_kurallar/kodlama_akisi.sar:71 | K-70 | GOC-SPEC-A04 |
+| 32 | yasa/genel_kurallar/kodlama_akisi.sar:75 | K-70 | GOC-SPEC-A04 |
+| 33 | yasa/genel_kurallar/kodlama_akisi.sar:79 | K-70 | GOC-SPEC-A04 |
+| 34 | yasa/genel_kurallar/kodlama_akisi.sar:83 | K-70 | GOC-SPEC-A04 |
+| 35 | yasa/genel_kurallar/kodlama_akisi.sar:94 | K-70 | GOC-SPEC-A04 |
+| 36 | yasa/genel_kurallar/soz_dizimi.sar:40 | K-12 | GOC-SPEC-A04 |
+| 37 | yasa/genel_kurallar/soz_dizimi.sar:55 | K-12 | GOC-SPEC-A04 |
+| 38 | yasa/genel_kurallar/soz_dizimi.sar:70 | K-12 | GOC-SPEC-A04 |
+| 39 | yasa/genel_kurallar/soz_dizimi.sar:87 | K-04 | GOC-SPEC-A04 |
+| 40 | yasa/genel_kurallar/soz_dizimi.sar:99 | K-04 | GOC-SPEC-A04 |
+| 41 | yasa/genel_kurallar/soz_dizimi.sar:116 | K-61 | GOC-SPEC-A04 |
+| 42 | yasa/genel_kurallar/soz_dizimi.sar:125 | K-09 | GOC-SPEC-A04 |
+| 43 | yasa/genel_kurallar/soz_dizimi.sar:166 | K-14 | GOC-SPEC-A04 |
+| 44 | yasa/genel_kurallar/soz_dizimi.sar:186 | K-15 | GOC-SPEC-A04 |
+| 45 | yasa/genel_kurallar/soz_dizimi.sar:200 | K-04 | GOC-SPEC-A04 |
+| 46 | yasa/genel_kurallar/soz_dizimi.sar:231 | K-89 | GOC-SPEC-A04 |
+| 47 | yasa/genel_kurallar/soz_dizimi.sar:247 | K-19 | GOC-SPEC-A04 |
+| 48 | yasa/genel_kurallar/soz_dizimi.sar:259 | K-26 | GOC-SPEC-A04 |
+| 49 | yasa/genel_kurallar/soz_dizimi.sar:278 | K-27 | GOC-SPEC-A04 |
+| 50 | yasa/genel_kurallar/surec.sar:51 | K-39 | GOC-SPEC-A04 |
+| 51 | yasa/genel_kurallar/surec.sar:76 | K-20 K-42 | GOC-SPEC-A04 |
+| 52 | yasa/genel_kurallar/surec.sar:88 | K-71 | GOC-SPEC-A04 |
+| 53 | yasa/genel_kurallar/surec.sar:131 | K-50 | GOC-SPEC-A04 |
+| 54 | yasa/genel_kurallar/yapi.sar:35 | K-03 | GOC-SPEC-A04 |
+| 55 | yasa/genel_kurallar/yapi.sar:45 | K-05 | GOC-SPEC-A04 |
+| 56 | yasa/genel_kurallar/yapi.sar:54 | K-48 | GOC-SPEC-A04 |
+| 57 | yasa/genel_kurallar/yuzey.sar:37 | K-01 | GOC-SPEC-A04 |
+| 58 | yasa/genel_kurallar/yuzey.sar:50 | K-04 | GOC-SPEC-A04 |
+| 59 | yasa/genel_kurallar/yuzey.sar:77 | K-59 | GOC-SPEC-A04 |
+| 60 | yasa/genel_kurallar/yuzey.sar:85 | K-19 | GOC-SPEC-A04 |
+|<--
+Çıkarım( kod: ENV-SPEC-01,
+         kaynak: "yasa/kanon/*.sar + yasa/kararlar/*.sar + yasa/genel_kurallar/*.sar + nitelik/goc/capraz_harita.sar (bu üretimde yeniden sayıldı)",
+         ne: "🚚 Spec göçünün kapsam envanteri bu kayıtla mühürlendi. Envanter dört bölümden oluşuyor: 144 kanon maddesinin tamamı rolü, zorlama düzeyi ve resmi dosyasıyla listelendi; bu maddelerin 36'sı Karar, 108'i Kural düğümü olarak yaşıyor. 125 eski kararın tamamı kaynak dosyası, çapraz haritadaki sonuç sınıfı ve yeni hedefiyle kayda geçti; sınıf dağılımı 96 eşlenen, 11 emekli ve 18 arşiv kararıdır. 74 eski formal kuralın 69'u eşlendi ve 5'i emekli edildi. Eski K-XX uzayına bağlı 60 yapısal dayanak kaydının her biri dosya ve satır numarasıyla listelendi. Envanterde sahipsiz, hedefsiz veya yinelenen girdi yoktur; madde içeriğinin kabul sahibi GOC-SPEC-A02, arşiv taşımasının kabul sahibi GOC-SPEC-A04 olarak atanmıştır." )

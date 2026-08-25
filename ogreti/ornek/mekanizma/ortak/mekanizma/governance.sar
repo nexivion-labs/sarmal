@@ -1,0 +1,18 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/mekanizma/governance.sar — 🔩 Governance mekanizması
+//
+//   Birleşik yönetişim kapısı. RBAC'a BAĞIMLI (modül-DAG: MEK-GOV → MEK-RBAC).
+//   Yasa/Anayasa omurgasına (MIM-0) da bağlıdır — TIP-1.4: Yasa'nın küçük kardeşi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+çağır MEK-RBAC
+çağır MIM-0
+
+Mekanizma( kod: MEK-GOV, ad: "governance", faz: "F1",
+           bağımlı: [ MEK-RBAC, MIM-0 ],
+           ne: "🔩 birleşik yönetişim kapısı — her ajan aksiyonu buradan geçer (anayasa+RBAC+politika)" ) {
+  Politika( kod: POL-GOV, alan: güvenlik, ne: "tek kapı: bypass yok; başarısız kontrol → aksiyon engellenir + loglanır" ) {
+    Kural govKapisi( kod: KRL-GOV-1, otorite: anayasa, katman: niyet, kapsam: etmen,
+           ne: "governance senkron çalışır ve devre-dışı bırakılamaz; her karar denetim izine yazılır" )
+  }
+}

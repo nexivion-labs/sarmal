@@ -1,0 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/durum_akisi_becerisi.sar — 🚦 DURUM AKIŞI BECERİSİ (DVR-A03 · OGR-2.2)
+//
+//   Düstur (YAS-2 zorlar · OGR-2.2 öğretir): kural ZORLAR (ORK-3.2 yaz-anında RED · gayrimeşru-geçiş),
+//   beceri ÖĞRETİR (bu kart). YAS-4.2 ile genişledi: doğrulanmamış beşinci değer.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-DURUM-AKISI, ne: "Adım durum makinesini dürüst işletme (ORK-3.2 · YAS-4.2)" )
+
+-->|
+  ## Amaç
+  🎯 Adım durumlarını gerçeğe sadık yürütmeyi öğretmek. Çözdüğü problem: rayda
+  görünmeyen aktif iş (geliştirmede işaretlenmeden çalışmak) ve kanıtsız kapanış
+  (bloklu ya da doğrulanmamış işi elle 'tamamlandı' ilan etmek — kör drift).
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle yürütülen işte aktif cephe her an panelden okunur;
+  gayrimeşru-geçiş ve doğrulanmamış-çapa tanıları elle yazımdan doğmaz.
+|<--
+
+Beceri( kod: BCR-DURUM-AKISI,
+        sağlar: YTN-DURUM-AKISI,
+        yığın: evrensel,
+        anlatır: [ ORK-7, YAS-4.2, "gayrimeşru-geçiş", "doğrulanmamış-çapa" ],
+        ne: "Adım durumunu beklemede → geliştirmede → tamamlandı akışıyla, atlamadan ve kanıt disipliniyle yürütür; YAS-4.2 doğrulanmamış ara-durumunu doğru okur",
+        neZaman: "Bir Adıma çalışmaya başlarken; bir Adımı kapatırken; koşu kaydı taşıyan bir Adımın durumu elle değiştirilmek istendiğinde",
+        kurallar: [
+          "Başlarken durum: geliştirmede işaretle ve hafif bir 'başladı' commit'i at — aktif cephe görünür olur; beklemede→tamamlandı doğrudan atlaması yasaktır (ORK-3.2)",
+          "geliştirmede Adım koni-dolu olmalıdır: bağımlı: zorunlu, görev/kabul dolu; kapatırken kanıtı koşu: alanına, ürünü üretir: kenarına yaz",
+          "bloklu → tamamlandı YAZILAMAZ: önce blokajı çöz (bloklu → beklemede/geliştirmede), sonra kapat — üç yazıcı da bu geçişi reddeder",
+          "doğrulanmamış → tamamlandı ELLE YAZILAMAZ (YAS-4.2): bu değer 'iş teslim, bağımsız kanıt yok' demektir; kanıtlı terfi yalnız sicil-kanıtlı VERIFIED koşusundan gelir — kanıt yoksa koşuyu yeniden koştur",
+          "Durumu geri almak (tamamlandı → geliştirmede) meşrudur ve bilgi notuyla yazılır — dürüst geri dönüş, sahte yeşilden iyidir"
+        ],
+        kabul: "Durum değişikliği beklemede→geliştirmede→tamamlandı sırasını korur; kapanan Adım çözülebilir ürün kenarı ile tarihli ve sayılı koşu kanıtını birlikte taşır",
+        örnek: "Başla: durum: geliştirmede + commit('ADM-X başladı') → çalış → kapat: durum: tamamlandı + koşu: \"2026-07-19 · KAPANIŞ: ... test 12/12\" + üretir: [ KOD-X ]",
+        antiDesen: "İşi bitirip tek commit'te beklemede→tamamlandı yazmak — tur yarıda kesilirse ray yalan söyler ('hiç başlamamıştı' görünür); ya da doğrulanmamış Adımı kanıtsız elle kapatmak",
+        uygular: ORK-7 )
+
+Tetikleyici( kod: TTK-DURUM-AKISI, tetikler: BCR-DURUM-AKISI,
+             koşul: adım.durum == geliştirmede,
+             ne: "Durum yazımından önce akış kuralları bu karttan okunur — ray dürüst kalır" )

@@ -1,0 +1,429 @@
+// is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
+// Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
+// KAYNAK-MUHRU kanon-demeti-sha256:ddc3ceef60a6e3cb006521074cd51be4e170c60fac5f3631675691f733b59d08
+
+-->|
+# Kanon tutarlılık yüzü
+
+Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canlı tanı sicilini ve canlı sınıflamayı okur. `geneldurum/` kaynak değildir ve bu üreticide tüketilmez.
+
+## Kaynak mühürleri
+
+| Kaynak | SHA-256 |
+|---|---|
+| `yasa/kanon/dil.sar` | `3454c635035b35eb70ffdd4128e46be22702073e7f67025edea53f8b1a4ad3e7` |
+| `yasa/kanon/mim.sar` | `a972812400b437ca95b7af68b74104d5eaa0fd11141555a83e645256dc29fda3` |
+| `yasa/kanon/ogr.sar` | `d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46` |
+| `yasa/kanon/ork.sar` | `d45d023d706304bf0b4e38bd63d2cedb093cd512f027d00215459794b0791aac` |
+| `yasa/kanon/str.sar` | `a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d` |
+| `yasa/kanon/tip.sar` | `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068` |
+| `yasa/kanon/yas.sar` | `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49` |
+| `yasa/kanon/yuz.sar` | `c5498c0e350b3b5b6d037e273bb92909aba2e8d64dd88b6ad5c55ff0eb2cc0e7` |
+| kanon demeti | `ddc3ceef60a6e3cb006521074cd51be4e170c60fac5f3631675691f733b59d08` |
+| `urun/cekirdek/src/tani-sicili.ts` | `b8bb04cbf6f540df24735ade6c711c0cb5a34dc1af54824f6d541de1f13904eb` |
+| `oz/siniflama/kayit.json` | `5ce2f43a274503552d2ec2d4d94c134d8d0b60d155764aa2fa6c76a39cf83904` |
+| `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
+
+## Resmi kanon ölçümü ve değişmezler
+
+| Ölçü | Beklenen | Gerçek | Sonuç |
+|---|---:|---:|---|
+| Resmi kaynak dosyası | 8 | 8 | GEÇTİ |
+| Kanon maddesi | 150 tekil | 150 | GEÇTİ |
+| Rol dağılımı | 37 Karar + 113 Kural | 37 Karar + 113 Kural | GEÇTİ |
+| Dört parçalı madde | 150/150 | 150/150 | GEÇTİ |
+| Kanonik örnek | 150/150 | 150/150 | GEÇTİ |
+| Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
+| Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
+| Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
+
+Resmi sonuç 150/150 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
+
+## Kanonik örnekler — 150/150
+
+| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |
+|---|---|---|---|
+| `DIL-0` | Karar | `dil.sar` | Kanonik akış: `.sar kaynak → belirteçler → söz dizim ağacı → doğrulanmış nötr anlam → türetilmiş yüz`. |
+| `DIL-1` | Karar | `dil.sar` | Doğru: hüküm `kanon.sar` içinde yaşar ve diğer yüzler ondan üretilir; yanlış: aynı hükmü ayrı bir metin dosyasında elle güncel tutmak veya NFD dizilimini yeni bir ad saymak. |
+| `DIL-1.1` | Kural | `dil.sar` | Doğru: `sözleşme`, `sınır`, `değerlendirme`; yanlış: `sozlesme`, `sinir`, `degerlendirme`. |
+| `DIL-1.2` | Kural | `dil.sar` | Doğru: `Adım( kod: ADM-01, ne: "Kimlik denetimi", durum: beklemede )`; yanlış: `adım( ne: "Kimlik denetimi", Kod: ADM-01, ne: "İkinci değer" )`. |
+| `DIL-1.3` | Kural | `dil.sar` | Doğru: `koşul: güven >= 0.7 ve durum != bloklu` ve `hedefler: [ ADM-01, ADM-02 ]`; yanlış: `koşul: güven = 0.7` veya şemanın sayı beklediği alana serbest metin yazmak. |
+| `DIL-1.4` | Kural | `dil.sar` | Doğru: `Adım( kod: ADM-01 ) { --> ADM-02 }` yalnız ADM-01'in ADM-02'yi beslediğini anlatır; yanlış: aynı oku ebeveynlik veya genel referans işareti saymak. |
+| `DIL-1.5` | Kural | `dil.sar` | Doğru: “Bu Adım hükmü kanona indirir; üslubun mekanik olarak ölçülmesi kapsam dışında bırakılmıştır, çünkü dilbilgisi denetimi makine için güvenilir değildir.”; yanlış: “hüküm kanona · ölçüm sonraya · kapsam dışı”. |
+| `DIL-2` | Karar | `dil.sar` | Doğru: belge içindeki `A \| B` satırı ile altındaki girintili şekil aynen kalır; yanlış: tek bir boru karakterini kapanış saymak veya göreli boşlukları yeniden akıtmak. |
+| `DIL-2.1` | Kural | `dil.sar` | Doğru: belge bloğunu doğrudan `Karar( kod: KAR-01 )` izler; yanlış: belge ile Karar arasına `ne:` özelliği koymak veya kapsamı belge sonrasında kapatmak. |
+| `DIL-2.2` | Kural | `dil.sar` | Doğru: biçimlendirme öncesi ve sonrası çok satırlı değerin sözcükleri ile göreli sütunları aynıdır; yanlış: satırları birleştirmek, yorumu yeniden yazmak veya hizalı sütunu kaydırmak. |
+| `DIL-3` | Karar | `dil.sar` | `Kural adSınırı( kod: DIL-KUR-01, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: ad.uzunluk <= 40, ihlal: "Ad sınırı aşıldı.", düzey: uyarı )` açık bir kural bildirimidir. |
+| `DIL-3.1` | Kural | `dil.sar` | Doğru: `Katman { AltKatman { Adım( kod: ADM-02, bağımlı: [ ADM-01 ] ) } }`; yanlış: `Proje { Adım }` veya `bağımlı: "ADM-01"`. |
+| `DIL-4` | Kural | `dil.sar` | Kaynakta `🍃` ile `Adım` aynı kanonik kavrama normalleşebilir; görüntü yüzündeki Adım ikonu ise yalnız görsel karşılıktır ve kaynak sözcesi değildir. |
+| `DIL-5` | Karar | `dil.sar` | `DIL-3.1` kodu `dayanak: DIL-3` ile üst hükmüne, `ilgili: [DIL, TIP, ORK]` ile çok-üyeli bağlarına katılır. |
+| `DIL-5.1` | Kural | `dil.sar` | Doğru sıra: `DIL-0`, `DIL-1`, `DIL-1.1`, `DIL-1.2`, `DIL-2`; yanlış: `DIL-1.1` maddesini `DIL-1` olmadan kurmak veya `DIL-3`ten `DIL-5`e atlamak. |
+| `DIL-5.2` | Kural | `dil.sar` | Doğru: `ilgili: [DIL, TIP, YUZ]`; yanlış: `ilgili: [DIL, YAP]` veya `ilgili: [DIL, DIL]`. |
+| `DIL-6` | Kural | `dil.sar` | Bir alanın değer türünü TIP ilan eder, o değerin nasıl yazılacağını DIL belirler; YAS düzeyini, YUZ ise yalnız görünümünü tamamlar. |
+| `MIM-0` | Karar | `mim.sar` | Kanonik okuma: `ÇalışmaAlanı → KimlikKökü → Proje → Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya`. |
+| `MIM-1` | Karar | `mim.sar` | Doğru: `Faz { Blok { Katman { AltKatman { Adım } } } }`; yanlış: `Faz { Adım }` veya Blok üzerinde yürütme bağı kurmak. |
+| `MIM-1.1` | Kural | `mim.sar` | `ÇalışmaAlanı( kod: CAL-01 ) { KimlikKökü( kod: KMK-01 ) Proje( kod: PRJ-A ) Proje( kod: PRJ-B ) }`; PRJ-A ile PRJ-B ayrı kimliklerdir. |
+| `MIM-1.2` | Kural | `mim.sar` | Doğru: `Faz( kod: FAZ-01 ) { Blok( kod: BLK-01 ) }`; yanlış: Proje altında Fazsız `Blok( kod: BLK-01 )`. |
+| `MIM-1.3` | Kural | `mim.sar` | `Blok( kod: BLK-KIMLIK ) { Katman( kod: KAT-ARAYUZ, kullanır: TEK-ARAYUZ ) Katman( kod: KAT-SERVIS, kullanır: TEK-SERVIS ) Katman( kod: KAT-GUVENLIK, kullanır: TEK-GUVENLIK ) }`. |
+| `MIM-1.4` | Kural | `mim.sar` | Doğru: `Katman( kod: KAT-ARAYUZ, kullanır: TEK-ARAYUZ )`; yanlış: `Katman( kod: KAT-KARISIK, kullanır: [ TEK-ARAYUZ, TEK-SERVIS ] )`. |
+| `MIM-1.5` | Kural | `mim.sar` | `AltKatman( kod: ALT-SINAMA, departman: sınama )`; yerel `uyumluluk` departmanı kullanılacaksa değer önce ÇalışmaAlanı örtüsüne katkılı olarak eklenir. |
+| `MIM-1.6` | Kural | `mim.sar` | `Adım( kod: ADM-01, kabul: [ "Kimlik isteği başarıyla doğrulanır." ], üretir: [ MEY-01 ] )`; ikinci bağımsız kabul ayrı bir Adıma taşınır. |
+| `MIM-2` | Karar | `mim.sar` | `Adım( kod: ADM-01, üretir: [ MEY-KOD-01 ] )` ve `Meyve( kod: MEY-KOD-01, tür: Kod, dosya: "src/kimlik.sar" )` aynı üretim kökeni zincirini kurar. |
+| `MIM-2.1` | Kural | `mim.sar` | Doğru: `Meyve( kod: MEY-01, tür: Sözleşme, dosya: "sozlesmeler/kimlik.sar" )`; yanlış: `Meyve( kod: MEY-01, tür: Sözleşme )`. |
+| `MIM-2.2` | Kural | `mim.sar` | `Meyve( kod: MEY-ONAY-01, tür: Onay )` dosyasız olabilir; `Meyve( kod: MEY-UÇ-01, tür: Uç )` bu muafiyeti kullanamaz. |
+| `MIM-3` | Karar | `mim.sar` | `Kitaplık( kod: KTP-KAYNAK, yol: "src/" ) { Raf( kod: RAF-KIMLIK, yol: "kimlik/" ) }` ilanı diskte `src/kimlik/` ile aynı yerde ve aynı adla bulunur. |
+| `MIM-3.1` | Kural | `mim.sar` | Doğru: `Katman { AltKatman { Adım } }`; yanlış: `Proje { Adım }` veya `Adım { Katman }`. |
+| `MIM-3.2` | Kural | `mim.sar` | `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder; Ekran içeriği ayrı kaynakta yaşar. |
+| `MIM-4` | Kural | `mim.sar` | Proje kökü ve disk aynası MIM altında tanımlanır; tip alanları TIP, rejim istisnası YAS ve yürütme bağı ORK tarafından yalnızca kendi sözleşmesi kadar tamamlanır. |
+| `OGR-0` | Karar | `ogr.sar` | Kanonik akış: `kanon → Tutorial · How-To · Reference · Explanation → hover · tanı önerisi · Beceri`; ok hangi öğretim yüzünün hangi kaynaktan türediğini gösterir. |
+| `OGR-1` | Karar | `ogr.sar` | SNF-0 alan kataloğu `Reference`, ilk geçerli projeyi kurduran yürüyüş `Tutorial` olur; tek belge kendisini hem eksiksiz sicil hem başlangıç dersi ilan edemez. |
+| `OGR-1.1` | Kural | `ogr.sar` | `projeyi doğur → ilk düğümü yaz → denetle → tanıyı düzelt → temiz sonucu gör` bir Tutorial akışıdır; bütün olası tipleri adımların arasına katalog olarak dökmek değildir. |
+| `OGR-1.2` | Kural | `ogr.sar` | “Bir Beceri kartını hedefe bağlama” yüzü gereken düğümü, bağı, doğrulama komutunu ve beklenen temiz sonucu verir; öğretim sisteminin bütün tarihini anlatmaz. |
+| `OGR-1.3` | Kural | `ogr.sar` | Bir kenarın Reference kaydı `ad · kaynak tipi · hedef tipi · yön · düzey · ilgili tanı` alanlarını sicilden gösterir; “genellikle böyle kullanılır” diye kaynaksız bir istisna eklemez. |
+| `OGR-1.4` | Kural | `ogr.sar` | Blokun neden çok-teknolojili kavuşum gövdesi olduğu açıklanabilir; açıklama “bazı Bloklar tek teknoloji olabilir” diyerek MIM hükmüne yeni bir istisna ekleyemez. |
+| `OGR-2` | Karar | `ogr.sar` | Doğru: `kanon → ogret · karşılama · AGENTS.md`; yanlış: bu üç çıktıya kanonda karşılığı olmayan zorunlu bir alanı elle eklemek veya kaynak değişince eski metni bırakmak. |
+| `OGR-2.1` | Kural | `ogr.sar` | Hover “kenar hedefi tırnaksız KOD'dur” diyorsa `kenar-metin` önerisi de tırnaklı metni çözülebilen KOD'a çevirmeyi öğretir; metin hedefi önermek çelişkidir. |
+| `OGR-2.2` | Kural | `ogr.sar` | `Beceri( kod: BCR-KENAR-01, referans: ORK-1, tetikleyici: TTK-KENAR, kabul: KAP-TEMIZ )` hedefi, çağrılma anını ve doğrulama kapısını gösterir; yalnız “kenarları doğru yaz” demek yeterli değildir. |
+| `OGR-2.3` | Kural | `ogr.sar` | Doğru: `SNF-0 kenar sicili → kenar Reference tablosu`; yanlış: yeni kenarı yalnız başvuru tablosuna eklemek veya sicildeki HATA düzeyini tabloda UYARI göstermek. |
+| `OGR-3` | Karar | `ogr.sar` | Yeni bir kenar eklendiğinde aynı değişiklik onun ajan bağlamı, Reference kaydı, hover açıklaması ve ilgili Beceri kartı etkisini işler; yalnız sicili değiştirip öğretimi sonraya bırakmak yasaktır. |
+| `OGR-3.1` | Kural | `ogr.sar` | `kaynak: OGR-2 · girdiMührü: abc123` taşıyan yüzün hesaplanan mührü değişmişse yüz bayattır; başlığı “güncel” yapmak yeniden üretimin yerini tutmaz. |
+| `OGR-3.2` | Kural | `ogr.sar` | Yanlış bir alan açıklaması `AGENTS.md` içinde elle düzeltilmez; alanın kanonik tarifi değiştirilir ve bağlam paketi yeniden üretilir. |
+| `OGR-4` | Kural | `ogr.sar` | `Bellek( kod: BLK-DERS-01, tür: ders, neden: "Kenar hedefi çözülmedi", terfi: bekliyor )` önce kanıt toplar; doğrulama geçince hedefi çözülen `Beceri( kod: BCR-KENAR-01, referans: ORK-1 )` üretilir. |
+| `OGR-5` | Kural | `ogr.sar` | Bir Tutorial içindeki `ADM-ORNEK-01` öğretim denetiminde geçerli olmak zorundadır fakat gerçek projenin “sıradaki Adımı” veya teslim edilmiş Meyvesi olarak ürün karnesine girmez. |
+| `ORK-0` | Karar | `ork.sar` | Kanonik ayrım: `mimariBağı = görünürlük`, `bağımlı\|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır. |
+| `ORK-1` | Karar | `ork.sar` | `ALT-KOD mimariBağı ADM-DERLE`, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez. |
+| `ORK-1.1` | Kural | `ork.sar` | Doğru: `BLK-KIMLIK mimariBağı KAT-SERVIS` ve `KAT-SERVIS mimariBağı ALT-SINAMA`; yanlış: `BLK-KIMLIK mimariBağı BLK-ODEME` veya bu bağı “önce çalışır” diye yorumlamak. |
+| `ORK-1.2` | Kural | `ork.sar` | `Adım( kod: ADM-DERLE, besler: [ ADM-SINA ] )` ile `Adım( kod: ADM-SINA, bağımlı: [ ADM-DERLE ] )` aynı “DERLE önce, SINA sonra” çiftini anlatır; ikisi iki ayrı iş bağı sayılmaz. |
+| `ORK-1.3` | Kural | `ork.sar` | Doğru: `Adım( kod: ADM-SINA, üretir: [ MEY-RAPOR ] )` ve `Meyve( kod: MEY-RAPOR, tür: Sözleşme )`; yanlış: `Meyve`den Adıma `üretir` yöneltmek veya bu kenarı ADM-SINA'nın sırası saymak. |
+| `ORK-2` | Karar | `ork.sar` | `dayanak` hüküm kökenini, `tema` görünüm bağını, `koşar` işletilecek hedefi gösterir; bunların hiçbiri tek başına iki Adım arasında “önce→sonra” sırası üretmez. |
+| `ORK-2.1` | Kural | `ork.sar` | `Kural rejimBeyanı( kod: KRL-REJIM, dayanak: KAR-REJIM )` hüküm kökenini gösterir; KAR-REJIM'in KRL-REJIM'den önce “çalıştırılacağı” anlamına gelmez. |
+| `ORK-2.2` | Kural | `ork.sar` | `Blok( kod: BLK-KIMLIK, mevsim: FAZ-01 )` zaman bağını, `Ekran( kod: EKR-GIRIS, tema: TEM-ANA )` görünüm bağını kurar; ikisi de iş sırası değildir. |
+| `ORK-2.3` | Kural | `ork.sar` | `Düğme( kod: DGM-GONDER, çağırır: UC-KAYDET )`, `Form( kod: FRM-GIRIS, gönderir: UC-KAYDET )` ve `Uç( kod: UC-KAYDET, sözleşme: SZL-KIMLIK )` farklı davranış bağlarıdır. |
+| `ORK-2.4` | Kural | `ork.sar` | Doğru: `Katman( kod: KAT-SERVIS, kullanır: TEK-SERVIS )` ve `Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )`; yanlış: bir Katmanın `[ TEK-SERVIS, TEK-VERI ]` kullanması. |
+| `ORK-3` | Karar | `ork.sar` | `ADM-B bağımlı ADM-A` ise A önce, B sonra gelir; bağımsız `ADM-C` ile `ADM-D` aynı anda seçilebilirse kararlı KOD sırası kullanılır, bunların dosyadaki yeri sonucu değiştirmez. |
+| `ORK-3.1` | Kural | `ork.sar` | Yanlış: `ADM-A bağımlı ADM-B` ve `ADM-B bağımlı ADM-A`; ayrıca ADM-A tamamlanmadan ADM-B `durum: tamamlandı` olamaz. |
+| `ORK-3.2` | Kural | `ork.sar` | ADM-A tamamlandı, ADM-B `geliştirmede` ve `bağımlı: [ ADM-A ]` ise B seçilebilir; ADM-C `bağımlı: [ ADM-B ]` iken B bitmeden C seçilemez. |
+| `ORK-3.3` | Kural | `ork.sar` | `Döngü( kod: DNG-TEMIZLIK, tetik: koşul, koşar: [ ADM-DENETLE ], durunca: "karne.hata == 0", turLimiti: 5 )` hedefli ve sınırlıdır; kabul ölçütü karşılanmamış `Kapı` geçilmiş sayılamaz. |
+| `ORK-3.4` | Kural | `ork.sar` | Doğru: `Adım( kod: ADM-YAYIN, öncelik: p0 )` yayını bloklayan işi, `Hatırlatıcı( kod: HTR-01, öncelik: p3 )` tarih taahhüdü olmayan kaydı gösterir; yanlış: aynı ağaçta `P1` ile `p1` değerlerinin birlikte kullanılması ya da yüksek kademeli bir işin öncülünden önce seçilmesi. |
+| `ORK-4` | Kural | `ork.sar` | PRJ-B içinden PRJ-A'nın `SZL-KIMLIK` düğümüne doğru atıf `PRJ-A::SZL-KIMLIK`tir; yalnız `SZL-KIMLIK` yazmak yerel PRJ-B kapsamının dışına çıkamaz. |
+| `ORK-5` | Karar | `ork.sar` | `KimlikKökü( kod: KMK-ORTAK ) { KimlikSağlayıcısı( kod: KMS-GOOGLE, tür: google ) }` ve `Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )`; PRJ-ANA yine ayrı Proje kimliğidir. |
+| `ORK-5.1` | Kural | `ork.sar` | `KimlikSağlayıcısı( kod: KMS-APPLE, tür: apple )` taban kataloğundadır; `kurumsalKimlik` eklenecekse önce ÇalışmaAlanı örtüsünde sağlayıcı enumuna katkı yapılır. |
+| `ORK-5.2` | Kural | `ork.sar` | Doğru: `Proje( kod: PRJ-FOUNDER, kullanır: KMK-ORTAK )`; yanlış: Founder Projesini `kullanır` bağı olmadan bırakmak veya yalnız kendi yerel köküne bağlamak. |
+| `ORK-5.3` | Kural | `ork.sar` | `Proje( kod: PRJ-DIGER, kullanır: KMK-ORTAK )` ortak yolu; Proje kapsamında ilan edilen `KimlikKökü( kod: KMK-PRJ-DIGER )` ise bağımsız yolu seçer. |
+| `ORK-6` | Karar | `ork.sar` | Kanonik akış: `seçilebilir Adım → bağlam → yetkili Etmen → Meyve → bağımsız denetim → kabul kanıtı → durum`; denetim başarısızsa Adım `tamamlandı` olamaz. |
+| `ORK-6.1` | Kural | `ork.sar` | Doğru: ETM-URETICI Meyveyi teslim eder, ETM-DENETCI yalnız Meyve+kabul+kanıt paketini sınar; yanlış: aynı oturumun “ürettim ve onayladım” diyerek Kapıyı geçmesi. |
+| `ORK-6.2` | Kural | `ork.sar` | ADM-A oturumu `Meyve: MEY-A · kabul: geçti · durum: tamamlandı` raporuyla kapanır; ancak bundan sonra ADM-B için yeni bağlam açılır. |
+| `ORK-6.3` | Kural | `ork.sar` | Doğru: yönetici işi atar, yetkili uzman üretir ve yalnız ilanlı `oku\|yaz\|çağır` kipleri geçitten geçer; yanlış: `tür: yönetici` Etmenin `üretir` kenarı taşıması veya tanımsız izni kullanması. |
+| `ORK-7` | Kural | `ork.sar` | MIM Adımın mimari yerini, TIP alan ve kenar şemasını, YAS tanı düzeyini, OGR öğretim yüzünü tanımlar; Adımın ne zaman seçileceği ve teslimin nasıl doğrulanacağı ORK hükümlerine geri bağlanır. |
+| `ORK-8` | Karar | `ork.sar` | Doğru kapanış sırası şudur: `Faz( kod: FAZ-01 )` halkasındaki Adımlar ölçülür, biten Adımların Meyveleri hasat edilip mevsim kaydına yazılır, açık kalan `ADM-YAYIN` bir sonraki mevsime devredilir ve mevsim mühürlenir; yanlış olan, mevsimi yalnız dosyanın başına bir yorum satırı yazarak kapatmak ve açık işi devretmeden bırakmaktır. |
+| `ORK-8.1` | Kural | `ork.sar` | Doğru: bir tur kaydı nitelik rafında `Çıkarım( kod: CKR-TUR-01, ... )` düğümüyle yaşar ve yalnız o turda değişen hükmü anlatır; yanlış: turun bütün ölçüm sayılarını Adımın koşu alanından kopyalayıp tur kaydına ikinci kez yazmak ya da bu kayıtlar için yeni bir raf açmak. |
+| `STR-0` | Karar | `str.sar` | Kanonik akış: `unutma kapısı → etki sıralı göç → aşama temizliği → geriye yazım → yayın → ölü iz temizliği`. |
+| `STR-1` | Karar | `str.sar` | Doğru: `dayanak: STR-0`; yanlış: `dayanak:` değerini emekli bir kodla yazmak veya o kodu yorum içinde saklamak. |
+| `STR-1.1` | Kural | `str.sar` | Doğru zincir: `STR-1.1 → STR-1 → STR-0`; yanlış: tanımsız bir bölüm önekine dayanmak, var olmayan maddeyi hedeflemek veya iki hükmü birbirine dayandırmak. |
+| `STR-1.2` | Kural | `str.sar` | Doğru: geçiş eşlemesi yalnız tek kullanımlık göç girdisinde okunur ve kabulden sonra kanonik üretime katılmaz; yanlış: eski-yeni eşleme tablosunu kanon belge bloğuna eklemek. |
+| `STR-2` | Karar | `str.sar` | Doğru: `spec ✓ → kanon ✓ → motor ✓ → yüzey ✓ → proje-kod ✓ → terfi ✓ → belge`; yanlış: kanon kapısı açıkken motoru veya öğretim belgesini yeni hükme geçirmek. |
+| `STR-2.1` | Kural | `str.sar` | Doğru kapı kaydı: `kapsam: tam · doğrulama: 0 HATA / 0 UYARI · kalan borç: sahipli · devredilen etki: açık`; yanlış: yalnız `durum: tamamlandı` yazmak. |
+| `STR-3` | Karar | `str.sar` | Doğru: `açık çekirdek ← ilanlı sözleşme → gizli ürün`; yanlış: ayrıştırma veya doğrulama sonucunu yalnız gizli bir politika çağrısı varsa üretebilmek. |
+| `STR-3.1` | Kural | `str.sar` | Doğru: `.sar kaynak → açık çekirdek → türetilmiş yüz`; yanlış: ayrıştırıcının bir yüzey paketini yüklemesi veya yüzün eksik alan için kendine özgü hüküm üretmesi. |
+| `STR-3.2` | Kural | `str.sar` | Doğru: görev, girdi, çıktı ve kabul koşulunu yetenekten bağımsız açık sözleşmeyle tanımlamak; yanlış: başarıyı yalnız belirli bir dış yürütücünün adı, sürümü veya özel istem kalıbıyla tarif etmek. |
+| `STR-4` | Kural | `str.sar` | Diskte ürün var fakat Adım ve Meyve bağı yoksa plan geridedir; `durum: tamamlandı` olan Adımın ilanlı Meyvesi diskte yoksa plan ileridedir; doğrulanan kalıcı ders ise hedefi çözülen Bellek üzerinden Beceriye bağlanır. |
+| `STR-5` | Kural | `str.sar` | Doğru akış: `değişiklik → geçişli etki kümesi → yüz ve öğretim tazeleme → 0 HATA / 0 UYARI → yayın → ölü iz emekliliği`; yanlış: yalnız kaynak düğümü değiştirip eski atıfları ve üretilmiş yüzleri bırakmak. |
+| `TIP-0` | Karar | `tip.sar` | Kanonik okuma: `SNF-0 → aile → tip → şema + izinli çocuklar + zorunlu kenarlar + destek sözlükleri`. |
+| `TIP-1` | Karar | `tip.sar` | Doğru: `Felsefe` bilgi ailesinde aynı kanonik adla korunur; yanlış: düğümleri taşımadan tipi sicilden çıkarmak veya `Felsefe`yi örtük biçimde `İlke` diye yeniden adlandırmak. |
+| `TIP-1.1` | Kural | `tip.sar` | `ÇalışmaAlanı( kod: CAL-01 ) { Proje( kod: PRJ-01 ) { Uygulama( kod: UYG-01 ) } }` üç ayrı kök rolünü görünür tutar. |
+| `TIP-1.2` | Kural | `tip.sar` | `Faz { Blok { Katman { AltKatman { Adım } } } }` yapıyı kurar; `Kapı` kabulü, `Gereksinim` karşılanacak ihtiyacı ayrı tiplerde tutar. |
+| `TIP-1.3` | Kural | `tip.sar` | Bağlayıcı hüküm `Karar`, türetilmiş sonuç `Çıkarım`, sınanabilir öneri `Deney`, terim eşlemesi `Sözlük` olarak ilan edilir. |
+| `TIP-1.4` | Kural | `tip.sar` | Yinelenen işletim `Döngü`, olayla devreye giriş `Kanca`, bağlayıcı işletim sınırı `Politika`, uçtan uca sıra `İşAkışı` olarak modellenir. |
+| `TIP-1.5` | Kural | `tip.sar` | `Etmen( kod: ETM-01 )`, bir `Yetenek` ile kabiliyetini, bir `Beceri` ile öğretilmiş davranışını ve bir `Tetikleyici` ile etkinleşme koşulunu ayrı ayrı bağlar. |
+| `TIP-1.6` | Kural | `tip.sar` | `Form { MetinAlanı OnayKutusu Düğme }` girdi ve eylem yapısını kurar; `Metin` ya da `İkon` düzen kapsayıcısı gibi çocuk taşımaz. |
+| `TIP-1.7` | Kural | `tip.sar` | Ortak değişmez `Anayasa`, makinece sınanabilir koşul `Kural`, dış düzenleme yükümlülüğü `Mevzuat` olarak tutulur. |
+| `TIP-1.8` | Kural | `tip.sar` | `Katman` bir `Teknoloji` kullanır; sorumlusu `Takım`, çalışma sınırı `Ortam`, izin verilen etkileşimler ise kendi erişim tipleriyle ilan edilir. Yazılım dalında `Teknoloji( kod: TEK-NEXT, ne: "Next.js önyüz yığını" )`, pazarlama dalında `Teknoloji( kod: TEK-GBP, ne: "Google İşletme Profili — yerel arama kanalı" )` aynı sözleşmeyi taşır. |
+| `TIP-1.9` | Kural | `tip.sar` | Uygulama kaynağı `Kod`, arabirim bağı `Sözleşme`, şema dönüşümü `Göç`, dağıtım temeli `Altyapı` olarak ayrılır. |
+| `TIP-1.10` | Kural | `tip.sar` | Yapılacak iş `Görev`, çalıştırılmış örnek `Koşum`, gözlenen akış `İz`, giderilecek sapma `Sorun` olarak kaydedilir. |
+| `TIP-1.11` | Kural | `tip.sar` | Tekrarlanabilir kontrol `Sınama`, sayısal sonuç `Metrik`, yorumlu hüküm `Değerlendirme`, olay dizisi `Log` olarak tutulur. |
+| `TIP-1.12` | Kural | `tip.sar` | Canlı durum `DurumKaydı`, gelecekte ele alınacak bağ `Hatırlatıcı`, ana fiziksel alan `Kitaplık`, iç sorumluluk bölümü `Raf` olarak ilan edilir. |
+| `TIP-1.13` | Kural | `tip.sar` | Bir kartın `Durum`u `seçili`, bu duruma geçişteki hareketi ayrı bir `Canlandırma` düğümüdür. |
+| `TIP-1.14` | Kural | `tip.sar` | İstek girişi `Uç`, iş mantığı `Servis`, kalıcı yapı `Tablo`, ertelenmiş ileti `Kuyruk`, süreli tetik `Zamanlayıcı` olarak ayrılır. |
+| `TIP-1.15` | Kural | `tip.sar` | `Adım( kod: ADM-01, üretir: [ MEY-01 ] )`, `Meyve( kod: MEY-01, tür: Kod )` ve `KimlikKökü( kod: KMK-01 ) { KimlikSağlayıcısı( kod: KMS-01 ) }` ayrı sözleşmeleri kurar. |
+| `TIP-1.16` | Kural | `tip.sar` | `Sözleşme` ürün kimliğini korurken Yüzey ve Arkayüz rol sorgularında bulunur; ikinci bir `ArkayüzSözleşmesi` tipi türetilmez. |
+| `TIP-2` | Karar | `tip.sar` | `Beceri` için `belgeZorunlu`, `Durum` için `enum`, tarih alanı için `tür: tarih`, alternatif kimlik için `birindenBiri: [ ne, ad ]` aynı şema sözleşmesinde ilan edilir. |
+| `TIP-2.1` | Kural | `tip.sar` | `durum: [ *beklemede, geliştirmede, tamamlandı, bloklu ]` kümesinin varsayılanı bütün yüzlerde `beklemede` olarak görünür. |
+| `TIP-2.2` | Kural | `tip.sar` | Şema `durum` beklerken `durrum: tamamlandı` yazmak yanlış; alan düğümde görünse bile kanonik anlam taşımaz. |
+| `TIP-2.3` | Kural | `tip.sar` | `Düğme` en az bir `çağırır\|gider\|gönderir\|eylem` kenarı, geliştirmedeki `Adım` ise en az bir bağlam ya da teslim kenarı taşır. |
+| `TIP-2.4` | Kural | `tip.sar` | Doğru: `Form { MetinAlanı Düğme }`; yanlış: `Metin { Düğme }` veya `Proje { Adım }`. |
+| `TIP-2.5` | Kural | `tip.sar` | Doğru: AltKatman rol kümesine `uyumluluk` eklemek; yanlış: tabandaki `sınama` değerini silmek, yeniden adlandırmak veya örtüyle yeni bir zorunlu alan dayatmak. |
+| `TIP-3` | Kural | `tip.sar` | Bir yüzey renk anlamını `tema rolleri` ile seçer, gerçek değeri `renk paleti`nden alır; yetki adları yalnız `yetki sözlüğü`nden çözülür. |
+| `TIP-4` | Kural | `tip.sar` | `aile → tip → şema → izinli kenar/sarma` görünümü SNF-0'dan üretilir; yeni tip eklendiğinde ayrıca elle tablo satırı yazılmaz. |
+| `YAS-0` | Karar | `yas.sar` | Bir kuralın dayanağı, uygulandığı rejim, ürettiği tanı ve terfi kanıtı YAS hükümlerine göre birlikte okunur; yalnız bir yüzey ayarıyla kural düzeyi değiştirilemez. |
+| `YAS-1` | Karar | `yas.sar` | Doğru: `Proje( kod: PRJ-URUN-01, rejim: katı )`; yanlış: `Proje( kod: PRJ-URUN-01 )` veya `rejim: varsayılan`. |
+| `YAS-1.1` | Kural | `yas.sar` | Doğru: `Katman( ... ) { AltKatman( departman: kodlama ) { Adım( kod: ADM-01 ) } }`; yanlış: `Katman( ... ) { Adım( kod: ADM-01 ) }`. |
+| `YAS-1.2` | Kural | `yas.sar` | `Proje( kod: PRJ-DENEY-01, rejim: esnek )` altında `Katman( ... ) { Adım( kod: ADM-01 ) }` geçerlidir; aynı yerleşim katı rejimde geçerli değildir. |
+| `YAS-1.3` | Kural | `yas.sar` | Kullanıcı `rejim: esnek` değerini `rejim: katı` yapınca doğrudan Katman altındaki Adımlar yerinde kalır ve her eksik AltKatman yolu raporlanır; motor kendiliğinden departman seçmez. |
+| `YAS-2` | Karar | `yas.sar` | Karar “rejim açık beyan edilir” yönünü kilitler; ona dayanan Kural eksik `rejim` alanının koşulunu ve ihlal mesajını taşır; işletim sırası ayrıca Politika olarak yazılır. |
+| `YAS-2.1` | Kural | `yas.sar` | `Kural rejimBeyanı( kod: YAS-KUR-01, dayanak: KAR-REJIM-01, kapsam: Proje, ... )` izlenebilirdir; açıklamada yalnız “KAR-REJIM-01 gereği” yazmak yeterli değildir. |
+| `YAS-2.2` | Kural | `yas.sar` | Doğru: `Karar( kod: KAR-01, durum: revize, halef: KAR-02, ... )` ve yürürlükte `KAR-02`; yanlış: `KAR-01 → KAR-02 → KAR-01`. |
+| `YAS-2.3` | Kural | `yas.sar` | `Kural adSınırı( kod: YAS-KUR-02, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: ad.uzunluk <= 40, ... )`; `kapsam: BilinmeyenTip` geçersizdir. |
+| `YAS-2.4` | Kural | `yas.sar` | `anayasa` otoritesindeki `değer <= 10` hükmü, daha alt otoritede `değer <= 8` ile daraltılabilir; `değer <= 12` ile gevşetilemez ve aynı hedefte `değer >= 20` ile birleştirilemez. |
+| `YAS-3` | Karar | `yas.sar` | `{ duzey: hata, kod: "rejim-beyanı-eksik", mesaj: "Rejim beyanı eksik.", satir: 3, sutun: 1, oneri: "rejim: katı veya rejim: esnek ekle." }`; yalnız mesaj metni döndürmek yeterli değildir. |
+| `YAS-3.1` | Kural | `yas.sar` | `halef-döngü` HATA olarak kapıyı kapatır, `uygulanmamış-karar` UYARI olarak tam yeşili engeller, `açık-adım` BİLGİ olarak yalnız gündemi görünür kılar. |
+| `YAS-3.2` | Kural | `yas.sar` | `geçersiz-enum` açık dosyada belirlenebilir; `kırık-referans`, `yinelenen-kod` ve `doc-drift` ise bütün Proje indeksi ve disk görülmeden sonuçlandırılamaz. |
+| `YAS-3.3` | Kural | `yas.sar` | `PRJ-MOBIL` başka klasöre taşındığında aynı Problems grubu ve karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez. |
+| `YAS-3.4` | Kural | `yas.sar` | Aynı dosyadaki çok sayıda dayanak eksiği tek özet bulguda gösterilebilir; bir Kural `tanı: hayali-kod` diyorsa yüzey bunu çalışan zorlama olarak etiketlemez. |
+| `YAS-4` | Karar | `yas.sar` | Bir bilgi tanısı hâlâ açık bulgu üretirken uyarıya çevrilemez; uyarı bulguları sıfır, doğrulaması tekrar üretilebilir ve kabulü kayıtlıysa HATA terfisi değerlendirilebilir. |
+| `YAS-4.1` | Kural | `yas.sar` | `0 HATA · 0 UYARI · 7 BİLGİ` tam yeşildir; `0 HATA · 1 UYARI · 0 BİLGİ` tam yeşil değildir. |
+| `YAS-4.2` | Kural | `yas.sar` | `uygulama: TAN-YAS-04`, `doğrulama: SIN-YAS-04` ve `kabul: ONY-YAS-04` bağlarından biri eksikse düzey aynı kalır. |
+| `YAS-5` | Kural | `yas.sar` | Karar ardıllığı ve tam-yeşil hesabı durum/süreç ailesindedir; kimlik bilgisinin açığa çıkmasını engelleyen değişmez güvenlik ailesindedir, günlük iş sırası değildir. |
+| `YUZ-0` | Karar | `yuz.sar` | Bir `Ekran` düğümü `.sar` içinde bir kez ilan edilir; insan okuması, makine verisi ve geliştirme görünümü aynı düğümü kendi sunumuyla gösterir fakat yeni alan veya hüküm eklemez. |
+| `YUZ-1` | Karar | `yuz.sar` | Doğru akış: `.sar kaynak → nötr ağaç → JSON · YAML · XML · ağaç · okuma`; yanlış akış: JSON üreticisinin kaynak metni bağımsız okuyup boş alanları kendiliğinden doldurması. |
+| `YUZ-1.1` | Kural | `yuz.sar` | `Metin( kod: MTN-BASLIK, ne: "Karşılama" )` bütün yapısal yüzlerde `Metin`, `MTN-BASLIK` ve `Karşılama` değerlerini aynı çocuk konumuyla korur; yalnız çevreleyen gösterim değişir. |
+| `YUZ-1.2` | Kural | `yuz.sar` | Doğru: `ekran.sar` kaynak, `ekran.json` yeniden üretilebilir yüzdür; yanlış: `ekran.md` içindeki alanları bağımsız güncelleyip onları `.sar` ile eşit otoritede saymak. |
+| `YUZ-1.3` | Kural | `yuz.sar` | Bir README içindeki üretilen indeks bölgesi ikinci üretimde değişmiyorsa ve çevresindeki elle yazılmış giriş metni aynen kalıyorsa sonuç idempotenttir; zaman damgası yüzünden her koşumda değişen çıktı yanlıştır. |
+| `YUZ-2` | Karar | `yuz.sar` | `README.md`, kodsuz bir inceleme raporu ve kanondan üretilmiş başvuru belgesi izinlidir; elle sürdürülen paralel tip sicili izinli değildir. |
+| `YUZ-2.1` | Kural | `yuz.sar` | README “Tema hükümleri için `YUZ-4.1` maddesine bakın.” diyebilir; “bütün yüzler şu ham rengi kullanır” diye yeni bir hüküm koyamaz. |
+| `YUZ-2.2` | Kural | `yuz.sar` | `kontrast_incelemesi.md` ölçümleri ve seçenekleri karşılaştırabilir; seçilen erişilebilirlik sınırı yürürlüğe girecekse ayrı kanonik maddeye veya Karara yazılır. |
+| `YUZ-2.3` | Kural | `yuz.sar` | `Karar( kod: KAR-TEMA-01, ... )` düğümünden karar okuma başlığı üretilebilir; başlık altındaki hüküm değişecekse çıktı değil kaynak düğüm düzenlenir. |
+| `YUZ-3` | Karar | `yuz.sar` | Aynı `EKR-GIRIS` kimliği Problems, hover, graf ve gezinmede değişmeden görünür; `Ekran` ve `Kart` tiplerinin tanımlı olması tek başına çalışır bir cihaz görseli önizlemesi bulunduğu anlamına gelmez. |
+| `YUZ-3.1` | Kural | `yuz.sar` | `bilinmeyen-tip` tanısı Problems'te HATA ise hover ve satır-lensinde de aynı kodla HATA görünür ve aynı geçerli tipe yönlendirir; yalnız bir yüzde sessizce BİLGİ'ye indirilemez. |
+| `YUZ-3.2` | Kural | `yuz.sar` | `ADM-GIRIS üretir EKR-GIRIS` bağı Adımdan Ekrana giden `üretir`, Ekrandan Adıma gelen üretim-kökeni olarak görünür; mimari sarma bağı diye yeniden etiketlenmez. |
+| `YUZ-3.3` | Kural | `yuz.sar` | `rejim-beyanı-eksik` HATA düzeyiyle Problems'te, `Hatırlatıcı( durum: açık )` kendi kanonik kimliğiyle Hatırlatıcılar'da, bilgi düzeyli bir durum veya vade işareti Bildirimler'de görünür; her biri kodunu ve düzeyini yüzeyler arasında değiştirmeden korur. |
+| `YUZ-3.4` | Kural | `yuz.sar` | Doğru: bir Hatırlatıcı `durum: kararlaştı` ve `hatırlat: ADM-SIRADAKI` yazımıyla beklerken, ADM-SIRADAKI tamamlandığı anda ateşlemiş sayılır ve kapatılmayı bekler; yanlış: aynı düğümün o Adım kapandıktan sonra da uykudakilerle aynı grupta, ayırt edilmeden durması. |
+| `YUZ-4` | Karar | `yuz.sar` | `Ekran( kod: EKR-GIRIS, referans: ADM-GIRIS, tema: TEM-ANA, görünürlük: açık )` kimlik, köken, tema ve görünürlük bağlarını açıklar; yerel renkle ve üretici bağı olmadan bırakılan adsız ekran eksiktir. |
+| `YUZ-4.1` | Kural | `yuz.sar` | Doğru: `Tema( kod: TEM-ANA, renkler: [ birincil, yüzey, nötr ], ne: "Ana tema" )`; yanlış: bir `Kart` üzerinde `renk: "#0A84FF"` yazarak tema rolünü atlamak. |
+| `YUZ-4.2` | Kural | `yuz.sar` | `Adım` kaynakta kanonik adıyla kalır; ağaç yüzü yanında kilitli Adım ikonunu ve “Adım” erişilebilir etiketini gösterebilir, ikon dosyası kaynak kimliğe yazılmaz. |
+| `YUZ-5` | Kural | `yuz.sar` | Doğru: `Ekran( kod: EKR-YONETIM, görünürlük: gizli, açılmaKoşulu: KAP-YETKI-01 )`; yanlış: gizli ekranı koşulsuz bırakmak veya `görünürlük: bazen` yazmak. |
+| `YUZ-6` | Kural | `yuz.sar` | TIP yüzey tiplerinin şemasını, OGR öğretim türetimini tanımlar; `.sar` ile türetilmiş yüz arasındaki otorite ve görünürlük sınırı YUZ hükümlerine geri bağlanır. |
+| `YUZ-7` | Kural | `yuz.sar` | Doğru: bir Adım kimliği emekliye ayrıldığında o kimliği örnek olarak gösteren araç açıklaması, onu anan belge cümlesi ve ona işaret eden kod yorumu aynı turda yaşayan halefe çevrilir; yanlış: yalnız kaynağı ilerletip araç açıklamasını eski kimlikle bırakmak ya da yüzeyin başlığını güncel diye etiketleyip tazelemenin yerine saymak. |
+
+## Tanı ↔ madde haritası — yeni küme
+
+Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydı buna eklenen yetmişinci kimliktir. Güncel küme 72 tanıdır ve düzey dağılımı 46 hata + 16 uyarı + 10 bilgidir.
+
+| Tanı | Kanon maddesi | Canlı düzey | Kapsam | Üretici |
+|---|---|---|---|---|
+| `kanonik-kaynak-biçimi` | `DIL-1` | hata | proje | `denetci.ts` |
+| `orthografi-kaybı` | `DIL-1.1` | uyarı | proje | `denetci.ts` |
+| `belge-şekil-drift` | `DIL-2` | hata | tek-dosya | `dogrulayici.ts` |
+| `çok-satırlı-değer-drift` | `DIL-2.2` | uyarı | tek-dosya | `dogrulayici.ts` |
+| `kenar-tip-uyuşmazlığı` | `DIL-3.1` | hata | proje | `denetci.ts` |
+| `numara-grafı-uyumsuz` | `DIL-5` | hata | proje | `denetci.ts` |
+| `madde-kodu-uyumsuz` | `DIL-5.1` | hata | proje | `denetci.ts` |
+| `ilgili-önek-geçersiz` | `DIL-5.2` | hata | tek-dosya | `dogrulayici.ts` |
+| `proje-köksüz-üretim` | `MIM-1.1` | hata | proje | `denetci.ts` |
+| `çok-teknolojili-katman` | `MIM-1.4` | hata | proje | `denetci.ts` |
+| `adım-atomikliği` | `MIM-1.6` | bilgi | proje | `denetci.ts` |
+| `üretimsiz-meyve` | `MIM-2` | hata | proje | `denetci.ts` |
+| `meyve-dosyası-eksik` | `MIM-2.1` | hata | proje | `denetci.ts` |
+| `öğretim-kaynak-drifti` | `OGR-2` | hata | proje | `denetci.ts` |
+| `öğretim-yüzü-uyumsuz` | `OGR-2.1` | uyarı | orkestrasyon | `denetim.ts` |
+| `beceri-kartı-eksik` | `OGR-2.2` | bilgi | proje | `denetci.ts` |
+| `başvuru-sicil-drifti` | `OGR-2.3` | hata | proje | `denetci.ts` |
+| `öğretim-etki-eksik` | `OGR-3` | hata | proje | `denetci.ts` |
+| `öğretim-bayat` | `OGR-3.1` | uyarı | proje | `denetci.ts` |
+| `önceliksiz-adım` | `ORK-3.4` | bilgi | proje | `denetci.ts` |
+| `ateşlemiş-hatırlatıcı` | `YUZ-3.4` | bilgi | proje | `denetci.ts` |
+| `üretilmiş-öğretim-değiştirilmiş` | `OGR-3.2` | hata | proje | `denetci.ts` |
+| `kanıtsız-beceri-terfisi` | `OGR-4` | uyarı | proje | `denetci.ts` |
+| `ilişki-sınıfı-ihlali` | `ORK-1` | hata | proje | `denetci.ts` |
+| `mimari-bağı-ihlali` | `ORK-1.1` | hata | proje | `denetci.ts` |
+| `yürütme-kenarı-sözleşmesi` | `ORK-1.2` | bilgi | proje | `denetci.ts` |
+| `üretim-kökeni-ihlali` | `ORK-1.3` | bilgi | proje | `denetci.ts` |
+| `kullanır-kenarı-ihlali` | `ORK-2.4` | bilgi | proje | `denetci.ts` |
+| `deterministik-sıra-ihlali` | `ORK-3` | hata | proje | `denetci.ts` |
+| `seçilemez-adım-yürütümü` | `ORK-3.2` | bilgi | proje | `denetci.ts` |
+| `döngü-sonlanması-eksik` | `ORK-3.3` | hata | proje | `denetci.ts` |
+| `kapı-kabul-kanıtı-eksik` | `ORK-3.3` | hata | proje | `denetci.ts` |
+| `çapraz-proje-ad-alanı` | `ORK-4` | hata | proje | `denetci.ts` |
+| `auth-omurgası-ihlali` | `ORK-5` | hata | proje | `denetci.ts` |
+| `founder-ortak-auth-eksik` | `ORK-5.2` | hata | proje | `denetci.ts` |
+| `şef-akışı-ihlali` | `ORK-6` | hata | proje | `denetci.ts` |
+| `üretici-denetçi-çakışması` | `ORK-6.1` | hata | proje | `denetci.ts` |
+| `oturum-adım-sınırı` | `ORK-6.2` | uyarı | proje | `denetci.ts` |
+| `unutma-kapısı-ihlali` | `STR-1` | hata | proje | `denetci.ts` |
+| `kanon-kodu-uyumsuz` | `STR-1.1` | hata | proje | `denetci.ts` |
+| `göç-sırası-ihlali` | `STR-2` | hata | proje | `denetci.ts` |
+| `göç-kapısı-eksik` | `STR-2.1` | uyarı | proje | `denetci.ts` |
+| `açık-gizli-sınır-ihlali` | `STR-3` | hata | proje | `denetci.ts` |
+| `çekirdek-bağımlılık-drifti` | `STR-3.1` | uyarı | proje | `denetci.ts` |
+| `yürütücü-bağımlılığı` | `STR-3.2` | hata | proje | `denetci.ts` |
+| `etki-yayın-kapısı-eksik` | `STR-5` | uyarı | proje | `denetci.ts` |
+| `ölü-iz` | `STR-5` | uyarı | proje | `denetci.ts` |
+| `tip-evreni-eksik` | `TIP-1` | hata | proje | `denetci.ts` |
+| `omurga-tipi-eksik` | `TIP-1.15` | hata | proje | `denetci.ts` |
+| `şema-tanımı-eksik` | `TIP-2` | hata | proje | `denetci.ts` |
+| `şema-dışı-alan` | `TIP-2.2` | bilgi | tek-dosya | `dogrulayici.ts` |
+| `örtü-ihlali` | `TIP-2.5` | uyarı | proje | `denetci.ts` |
+| `rejim-beyanı-eksik` | `YAS-1` | hata | proje | `denetci.ts` |
+| `katı-rejim-altkatman-eksik` | `YAS-1.1` | hata | proje | `denetci.ts` |
+| `rejim-geçiş-uyumsuzluğu` | `YAS-1.3` | uyarı | proje | `denetci.ts` |
+| `hüküm-türü-uyumsuz` | `YAS-2` | hata | kural | `kuralci.ts` |
+| `kural-sözleşmesi-eksik` | `YAS-2.3` | hata | kural | `kuralci.ts` |
+| `tanı-sözleşmesi-uyumsuz` | `YAS-3` | hata | orkestrasyon | `denetim.ts` |
+| `tanı-kapsamı-karışması` | `YAS-3.2` | hata | orkestrasyon | `denetim.ts` |
+| `proje-tanı-kimliği-uyumsuz` | `YAS-3.3` | hata | orkestrasyon | `denetim.ts` |
+| `tanı-terfi-kapısı-ihlali` | `YAS-4` | hata | kural | `kuralci.ts` |
+| `sahte-tam-yeşil` | `YAS-4.1` | hata | orkestrasyon | `denetim.ts` |
+| `terfi-kanıtı-eksik` | `YAS-4.2` | bilgi | proje | `denetci.ts` |
+| `prizma-kaynak-ayrışması` | `YUZ-1` | hata | proje | `denetci.ts` |
+| `eş-yetkili-yüz-ikizi` | `YUZ-1.2` | hata | proje | `denetci.ts` |
+| `yüz-idempotans-drifti` | `YUZ-1.3` | uyarı | proje | `denetci.ts` |
+| `geliştirme-yüzü-drifti` | `YUZ-3` | uyarı | proje | `denetci.ts` |
+| `tanı-yüzü-uyumsuz` | `YUZ-3.1` | uyarı | orkestrasyon | `denetim.ts` |
+| `yüzey-sözleşmesi-eksik` | `YUZ-4` | hata | proje | `denetci.ts` |
+| `palet-yüz-drifti` | `YUZ-4.1` | hata | proje | `denetci.ts` |
+| `görünürlük-sözleşmesi-eksik` | `YUZ-5` | hata | tek-dosya | `dogrulayici.ts` |
+| `tanı-yüzeyi-karışması` | `YUZ-3.3` | uyarı | orkestrasyon | `denetim.ts` |
+
+## Canlı korunan sabit küme
+
+Yeni kümeden önceki 101 sabit kimlik canlı sicilde korunur. Kanonun yapısal `tanı:` alanında açıkça geçen maddeler ikinci sütunda gösterilir; “doğrudan madde iddiası yok” ifadesi yeni bir eşleme icat edilmediğini bildirir.
+
+| Korunan kimlik | Yapısal kanon iddiası | Durum |
+|---|---|---|
+| `açık-adım` | doğrudan madde iddiası yok | canlı-sabit |
+| `açık-hatırlatıcı` | doğrudan madde iddiası yok | canlı-sabit |
+| `ad-ayracı` | doğrudan madde iddiası yok | canlı-sabit |
+| `ad-biçimi` | `DIL-1.2` | canlı-sabit |
+| `ağırlık-toplamı` | doğrudan madde iddiası yok | canlı-sabit |
+| `aile-geçersiz` | doğrudan madde iddiası yok | canlı-sabit |
+| `anadizin-plan-karışması` | doğrudan madde iddiası yok | canlı-sabit |
+| `bağımlılık-mekanik` | doğrudan madde iddiası yok | canlı-sabit |
+| `beceri-drift` | `OGR-2.2` · `OGR-3.1` · `OGR-4` · `STR-4` | canlı-sabit |
+| `beceri-terfisi` | `OGR-4` | canlı-sabit |
+| `belge-yanlış-düğüm` | `DIL-2.1` | canlı-sabit |
+| `beyansız-yapı` | doğrudan madde iddiası yok | canlı-sabit |
+| `bildirilmemiş-dosya` | doğrudan madde iddiası yok | canlı-sabit |
+| `bilinmeyen-kapsam` | `YAS-2.3` | canlı-sabit |
+| `bilinmeyen-tip` | doğrudan madde iddiası yok | canlı-sabit |
+| `birleşim-çatışması` | `YAS-2.4` | canlı-sabit |
+| `bloklu-çapa` | doğrudan madde iddiası yok | canlı-sabit |
+| `boş-kapsam` | `YAS-2.3` | canlı-sabit |
+| `çıplak-adımlı-katman` | doğrudan madde iddiası yok | canlı-sabit |
+| `çift-mevsim-kaydı` | doğrudan madde iddiası yok | canlı-sabit |
+| `dayanaksız-kural` | `YAS-2.1` | canlı-sabit |
+| `derin-dal` | doğrudan madde iddiası yok | canlı-sabit |
+| `diakritik-kayıp` | `DIL-1.1` | canlı-sabit |
+| `doc-drift` | `MIM-2.1` · `STR-4` | canlı-sabit |
+| `doğrulanamayan-tanı-iddiası` | `OGR-2.1` · `YAS-3.4` | canlı-sabit |
+| `doğrulanmamış-çapa` | doğrudan madde iddiası yok | canlı-sabit |
+| `doğuş-eksik` | doğrudan madde iddiası yok | canlı-sabit |
+| `doğuş-sırası` | doğrudan madde iddiası yok | canlı-sabit |
+| `döngüsel-bağımlılık` | `ORK-1.2` · `ORK-3.1` | canlı-sabit |
+| `durum-tutarsızlığı` | `ORK-3.1` | canlı-sabit |
+| `durumsuz-adım` | doğrudan madde iddiası yok | canlı-sabit |
+| `durunca-sözlüğü` | `ORK-3.3` | canlı-sabit |
+| `düşük-kontrast` | `YUZ-4.1` | canlı-sabit |
+| `düzyazı-koşul` | doğrudan madde iddiası yok | canlı-sabit |
+| `ebedi-ihlal` | `YAS-2.4` | canlı-sabit |
+| `eksik-alan` | `OGR-2.2` · `YAS-2.3` | canlı-sabit |
+| `eşik-sırası` | doğrudan madde iddiası yok | canlı-sabit |
+| `fazsız-blok` | `MIM-1.2` | canlı-sabit |
+| `gateway-izin-biçim` | `ORK-6.3` | canlı-sabit |
+| `gayrimeşru-geçiş` | doğrudan madde iddiası yok | canlı-sabit |
+| `geçersiz-durum` | doğrudan madde iddiası yok | canlı-sabit |
+| `geçersiz-enum` | `MIM-1.5` · `YUZ-5` | canlı-sabit |
+| `geçersiz-renk` | `YUZ-4.1` | canlı-sabit |
+| `geçersiz-tür` | `DIL-1.3` | canlı-sabit |
+| `geliştirmede-çapa` | doğrudan madde iddiası yok | canlı-sabit |
+| `gizli-bağımlılık` | doğrudan madde iddiası yok | canlı-sabit |
+| `günsüz-tarih` | doğrudan madde iddiası yok | canlı-sabit |
+| `halef-döngü` | `YAS-2.2` | canlı-sabit |
+| `halefsiz-revize` | `YAS-2.2` | canlı-sabit |
+| `ham-renk` | `YUZ-4.1` | canlı-sabit |
+| `harf-farkı` | doğrudan madde iddiası yok | canlı-sabit |
+| `ilansız-gövde` | doğrudan madde iddiası yok | canlı-sabit |
+| `izinsiz-sarma` | `DIL-3.1` · `MIM-3.1` · `TIP-2.4` | canlı-sabit |
+| `kapsayıcı-kenar` | `ORK-1.2` | canlı-sabit |
+| `kararlaşmış-hatırlatıcı` | doğrudan madde iddiası yok | canlı-sabit |
+| `karşılıksız-metin-atfı` | `STR-5` | canlı-sabit |
+| `katman-uyumsuz` | `YAS-2.3` | canlı-sabit |
+| `katmansız-adım` | doğrudan madde iddiası yok | canlı-sabit |
+| `katmansız-teknoloji` | `MIM-1.4` · `ORK-2.4` | canlı-sabit |
+| `kavuşumsuz-dilim` | `MIM-1.3` | canlı-sabit |
+| `kavuşumsuz-paralellik` | doğrudan madde iddiası yok | canlı-sabit |
+| `kayıp-kenar` | doğrudan madde iddiası yok | canlı-sabit |
+| `kayıp-yapı` | doğrudan madde iddiası yok | canlı-sabit |
+| `kenar-metin` | `DIL-3.1` | canlı-sabit |
+| `kırık-halef` | `YAS-2.2` | canlı-sabit |
+| `kırık-koşar` | `ORK-3.3` | canlı-sabit |
+| `kırık-referans` | `DIL-1.4` · `ORK-1.3` · `ORK-4` · `STR-1.1` | canlı-sabit |
+| `kod-ilk-değil` | `DIL-1.2` | canlı-sabit |
+| `koni-taşması` | doğrudan madde iddiası yok | canlı-sabit |
+| `kopuk-zincir` | doğrudan madde iddiası yok | canlı-sabit |
+| `kullanımsız-tip` | doğrudan madde iddiası yok | canlı-sabit |
+| `kural-çatışması` | `YAS-2.4` | canlı-sabit |
+| `kural-ihlali` | doğrudan madde iddiası yok | canlı-sabit |
+| `mühür-kırık` | `YAS-2.4` | canlı-sabit |
+| `mühürsüz-ebedi` | doğrudan madde iddiası yok | canlı-sabit |
+| `normalizasyon-uyumsuz` | doğrudan madde iddiası yok | canlı-sabit |
+| `olgunluk-onayı` | doğrudan madde iddiası yok | canlı-sabit |
+| `öneksiz-blok` | doğrudan madde iddiası yok | canlı-sabit |
+| `öz-bağımlılık` | `ORK-1.2` · `ORK-3.1` | canlı-sabit |
+| `planlanmamış-çelişki` | doğrudan madde iddiası yok | canlı-sabit |
+| `planlanmamış-gövde` | doğrudan madde iddiası yok | canlı-sabit |
+| `politika-dayanaksız` | `YAS-2.1` | canlı-sabit |
+| `rafsız-anadizin` | `MIM-3.2` | canlı-sabit |
+| `rbac-apex-tekil` | `ORK-6.3` | canlı-sabit |
+| `rbac-l5-paylaşık` | `ORK-6.3` | canlı-sabit |
+| `rbac-l6-kalıcı` | `ORK-6.3` | canlı-sabit |
+| `rbac-yönetici-üretir` | `ORK-6.3` | canlı-sabit |
+| `sahipsiz-belge` | `DIL-2.1` | canlı-sabit |
+| `silo-blok` | `MIM-1.3` | canlı-sabit |
+| `söz-dizim` | `DIL-1.3` · `DIL-1.4` | canlı-sabit |
+| `tarif-eksik` | doğrudan madde iddiası yok | canlı-sabit |
+| `tek-çocuk-kapsayıcı` | doğrudan madde iddiası yok | canlı-sabit |
+| `teknolojisiz-yüzey` | doğrudan madde iddiası yok | canlı-sabit |
+| `uygulanmamış-karar` | `YAS-2.1` | canlı-sabit |
+| `yanlış-alan` | `DIL-1.4` | canlı-sabit |
+| `yer-uyuşmazlığı` | doğrudan madde iddiası yok | canlı-sabit |
+| `yetim-meyve` | `STR-4` | canlı-sabit |
+| `yinelenen-kod` | doğrudan madde iddiası yok | canlı-sabit |
+| `yinelenen-parametre` | `DIL-1.2` | canlı-sabit |
+| `zorlanamayan-koşul` | doğrudan madde iddiası yok | canlı-sabit |
+| `zorlanamayan-kural` | doğrudan madde iddiası yok | canlı-sabit |
+
+## Sınıflamadan türeyen canlı kimlikler
+
+Sabit 171 kimliğe ek olarak 9 kimlik canlı `zorunluKenarlar` verisinden türetilir. Bunlar sabit yönlendirme sayısına veya yeni-küme düzey dağılımına eklenmez.
+
+| Kimlik | Kaynak | Durum |
+|---|---|---|
+| `bağımlılık-beyansız` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `kavuşumsuz-ekran` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `konisiz-adım` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `meyvesiz-geliştirme` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `niyet-drift` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `öksüz-düğme` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `ölçüsüz-metin` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `referanssız-geliştirme` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+| `temasız-ekran` | `oz/siniflama/kayit.json.zorunluKenarlar` | canlı-dinamik |
+
+## Güncel emekli kümesi ve emeklilik borcu
+
+Emekli kararı uygulanmış ve canlı sicilden çıkmış küme 15 kimliktir: `anadizin-yüzey-şişmesi` · `ayakizi-bulunamadı` · `dayanak-halef` · `dayanak-hedef-tür` · `defter-referansı` · `durum-boyutu` · `eski-giriş-adı` · `faz-gecikti` · `faz-tarihsiz` · `faz-yaklasiyor` · `hatırlatıcı-vade` · `kırıntı-adım` · `tek-cocuk-kapsayici` · `uzak-vade` · `öneksiz-anadizin`.
+
+Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli sicilde yaşamayı sürdüren açık borç 38 kimliktir: `ad-ayracı` · `aile-geçersiz` · `anadizin-plan-karışması` · `ağırlık-toplamı` · `bağımlılık-beyansız` · `bağımlılık-mekanik` · `derin-dal` · `doğrulanmamış-çapa` · `doğuş-eksik` · `doğuş-sırası` · `durumsuz-adım` · `düzyazı-koşul` · `eşik-sırası` · `geçersiz-durum` · `gizli-bağımlılık` · `günsüz-tarih` · `harf-farkı` · `kararlaşmış-hatırlatıcı` · `katmansız-adım` · `kavuşumsuz-paralellik` · `kayıp-kenar` · `koni-taşması` · `kopuk-zincir` · `kullanımsız-tip` · `kural-ihlali` · `meyvesiz-geliştirme` · `mühürsüz-ebedi` · `niyet-drift` · `olgunluk-onayı` · `planlanmamış-gövde` · `planlanmamış-çelişki` · `tarif-eksik` · `teknolojisiz-yüzey` · `zorlanamayan-koşul` · `referanssız-geliştirme` · `çift-mevsim-kaydı` · `çıplak-adımlı-katman` · `öneksiz-blok`. Bu küme “emekli” diye yanlış sayılmaz; çelişki raporunda açık kalır.
+
+## Çelişki raporu
+
+| Bulgu | Ölçüm | Hüküm |
+|---|---:|---|
+| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem = 72 | ÇÖZÜLDÜ · güncel sayı 70 |
+| Yeni tanının resmi maddesi eksik | 0 | YOK |
+| Kanonik örnek eksiği | 0 | YOK |
+| Dört parçalı madde eksiği | 0 | YOK |
+| Çözülemeyen kanon dayanağı | 0 | YOK |
+| Uygulanmış emekli kümesinin canlı sicille kesişimi | 0 | YOK |
+| Emeklilik kararı uygulanmamış canlı kimlik | 38 | AÇIK · Founder sahipliği gerekir |
+| Eski `geneldurum/` türevi | 0 | YOK · arşiv işlemi gerekmiyor |
+
+Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühürleri yukarıdaki sekiz SHA-256 değeriyle yeniden üretilebilir.
+|<--
+
+Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
+      ne: "Resmi yasa/kanon sekizlisinin 150/150 maddesi, 37 Karar ve 113 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
+
+Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
+      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla ve iki gözlemle 72 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 15 uygulanmış emekli kimlik ve 38 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
+
+Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
+      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 38 uygulanmamış emeklilik kararıdır." )

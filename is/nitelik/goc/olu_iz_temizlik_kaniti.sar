@@ -1,0 +1,129 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/olu_iz_temizlik_kaniti.sar — GOC-BELGE-A05 · SN-GOC-BELGE-OLU-IZ
+//   Eski kod, bayat yüz, kırık hedef ve geçici eşleme tüketicisi temizliğinin
+//   ölçülmüş kanıtı. Bu dosya kanon değildir; hüküm kurmaz. Tarihsel arşiv
+//   (kök plan kayıtları, nitelik tarihçesi, durum devirleri, koşu alanları)
+//   canlı taramaya karıştırılmamış ve tek baytı değiştirilmemiştir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# Eski izlerin son temizliği — koşum kanıtı
+
+Bu kayıt 3 Ağustos 2026 tarihinde ölçülmüştür. Tarama kapsamı canlı kümedir:
+`_Sarmal` çalışma ağacından kök `plan/` kayıtları, `nitelik/` tarihçesi,
+`durum/` devirleri, `.sarmal/` koşu alanları, bağımlılık ve üretim çıktıları
+ile sekiz bilerek-hatalı örnek fikstürü çıkarılmıştır. Aynı tarama betiği
+önce ve sonra ölçümünde değiştirilmeden kullanılmıştır; tek betik farkı koşu
+alanlarının kapsam dışına alınmasıdır ve bu fark her iki sayı için de ayrıca
+raporlanmıştır.
+
+## A · Sınıf bazında önce ve sonra
+
+| İz sınıfı | Önce | Sonra | Canlı bayat iddia |
+|---|---:|---:|---:|
+| Eski karar kimliği (`K-n` · `AOK-*`) | 68 | 58 | 0 |
+| Eski kural kimliği (`SD/DR/DO/IA/KA/YZ/BL/DL/YP/BÇ/GR-n`) | 5 | 3 | 0 |
+| Emekli tanı kimliği (14 gerçek emekli) | 71 | 68 | 0 |
+| `143 madde` bayat sayısı | 1 | 1 | 0 |
+| `capraz_harita` canlı tüketicisi | 0 | 0 | 0 |
+
+Önce sütunundaki 68 sayısının onu `.sarmal/lig` koşu alanı çıktısıydı; koşu
+alanı tarihsel kanıt olduğu için sonra ölçümünde kapsam dışına alındı, içeriğe
+dokunulmadı. Sonra sütunlarında kalan geçişlerin tamamı aşağıdaki üç meşru
+sınıftan birindedir ve hiçbiri yürür hüküm ya da güncel öğretim iddiası taşımaz.
+
+## B · Kalan geçişlerin sınıflandırması
+
+Birinci meşru sınıf yokluk bekçileridir: emekli bir kimliğin geri dönmediğini
+zorlayan nöbet sınamaları ve emekliliği açıklayan motor yorumları kimliği adıyla
+anmak zorundadır. Emekli tanı sınıfının 68 geçişinden 63'ü bu bekçi kümesidir
+(`cekirdek/sinama/denetci.test.ts` 36 · `cekirdek/src/denetci.ts` 16 ·
+`cekirdek/sinama/delik-kapama.test.ts` 4 · `cekirdek/src/sarmal.ts` 2 ·
+`cekirdek/src/denetim.ts` 2 · `cekirdek/sinama/motor-guven.test.ts` 2 ASCII
+çözüm eşlemesi · `eklenti/src/eklenti.ts` 1); `143 madde` sınıfının tek geçişi
+de `kanon-tutarlilik.test.ts` içindeki yokluk iddiasının kendisidir.
+
+İkinci meşru sınıf sınama fikstürleridir: atıf, kimlik ve hijyen mekanizmalarını
+sınayan sentetik girdiler (`eklenti/sinama/atif-ipucu.test.ts` 13 ·
+`cekirdek/sinama/metin-atif.test.ts` 4 · `cekirdek/sinama/kimlik.test.ts` 4 ·
+`cekirdek/sinama/tani-metni-hijyeni.test.ts` 2+1 nöbet tanımı ·
+`cekirdek/sinama/denetci.test.ts` 2 · `cekirdek/sinama/yeni-kanon-tanilari.test.ts` 1 ·
+bayt-duyarlı `cekirdek/sinama/fikstur-sekil-drift.txt` 2). Bu girdiler eski
+kanona hüküm atfetmez; mekanizmanın eski-kod desenini yakalayabildiğini sınar.
+
+Üçüncü meşru sınıf elle korunan tarihçedir: `eklenti/CHANGELOG.md` sürüm
+tarihçesindeki 31+1 geçiş ile `eklenti/plan.sar` satır 625'teki tek kapanış
+koşu kaydı geçmiş sürümlerin o günkü gerçeğini anlatır; tarih tahrif edilmez.
+
+## C · Bu koşuda yapılan canlı düzeltmeler
+
+| Dosya | Eski iz | İşlem |
+|---|---|---|
+| `felsefe/cok_dosya_mimari.sar` | iki `SD-8` eski kural atfı | canlı Explanation kaynağında yeni kanonik hedefe taşındı: `çağır` kenarı artık `DIL-1.4` maddesine bağlanır |
+| `ornek/vitrinler/dogus_proje.sar` | emekli `faz-tarihsiz` bekçi anlatısı | yorum güncel hükme çevrildi: `MIM-1.2 vade nöbeti` |
+| `cekirdek/src/denetim.ts` | emekli tanıya dayalı bayat yorum ve hiç okunmayan `evre1` değişkeni | ölü iz silindi; davranış değişmedi, iki tür denetimi ve süit yeşil |
+| `cekirdek/sinama/delik-kapama.test.ts` | emekli davranışı yürürmüş gibi anlatan bölüm başlığı | başlık güncel MIM-1.2 sözleşmesine ve emeklilik nöbetine çevrildi |
+
+## D · Geçici göç eşlemesi tüketicileri
+
+`capraz_harita.sar` için canlı kapsamda tüketici sıfırdır. Depo genelindeki on
+bir geçişin tamamı final kabul ve arşiv hattındadır: beş geçiş `nitelik/goc/`
+altındaki mühürlü üretim kayıtlarının kaynak beyanıdır, bir geçiş dosyanın kendi
+başlığıdır, dört geçiş `plan/goc_plani.sar` içindeki final kabul ve arşiv görev
+metinleridir. On birinci geçiş `plan/meyve_haritasi.sar` satır 316'daki
+açıklama yorumudur; kök plan kaydı bu turda dokunulmaz olduğundan bu tek işaret
+aşağıda sahipli borca yazılmıştır ve final arşiv görevinin kapsamına aittir.
+
+## E · Kırık hedef ve ölü yüz taraması
+
+Bağlantı nöbeti yirmi altı belge, rehber ve indeks yüzündeki yetmiş iki göreli
+bağlantının tamamını var olan kanonik hedefe çözdü; kırık bağlantı sıfırdır ve
+emekli KARARLAR defterine giden bağlantı sıfırdır. Motorun metin-atıf denetimi
+canlı belge ve öğretim yüzlerinde çözülmeyen kimlik bırakmadı; kalan on bir
+`karşılıksız-metin-atfı` bulgusunun tamamı tarihsel ya da dokunulmaz plan
+alanındadır (`plan/ray3_yol_haritasi.md` 8 · `nitelik/` tarihsel rapor 2 ·
+`eklenti/CHANGELOG.md` 1) ve aşağıda sahipli borçtadır.
+
+## F · Sahipli borçlar — final kapısına kayıt
+
+| Borç | Dosya ve iz | Sahip |
+|---|---|---|
+| B1 | `bilgi/ray3_konsolide.sar` C3 kalemindeki emekli tanı adları (`tek-cocuk-kapsayici` · `dayanak-halef`): tarihli Founder önceliklendirme envanteri; dalga açılırken güncel kimliklerle yeniden yazılır | RAY-3 dalga sahibi · Founder |
+| B2 | Sınama fikstürlerinde gerçek eski karar numaraları (`K-85`, `K-86`, `K-9`, `K-40`, `K-51`): davranış değişmeden sentetik kimliklere çevrilme borcu | Motor süiti sahibi · final kapı |
+| B3 | `plan/meyve_haritasi.sar:316` `capraz_harita` açıklama yorumu: kök plan dokunulmazlığı gereği final arşiv göreviyle birlikte kapanır | Kontrolcü · Founder |
+| B4 | 39 emeklilik borcu tanı kimliğinin sicilden çıkarılma sırası (A03 devrinin devamı) | Founder |
+| B5 | `plan/ray3_yol_haritasi.md` içindeki sekiz `POL-*` karşılıksız atfı ile iki tarihsel nitelik raporu ve bir CHANGELOG atfı | Plan sahibi · final kapı |
+
+## G · Bağımsız denetim şartının kapanışı — genişletilmiş yeniden koşum
+
+Bağımsız denetçi 3 Ağustos 2026 tarihli ŞARTLI KABUL hükmünde bu kaydın
+sınıflamadığı beş canlı iz buldu; şart, izlerin güncellenmesi ya da sahipli
+borca yazılması ve taramanın genişletilmiş dosya-türü kapsamıyla bir kez daha
+koşulmasıydı. Şart aynı gün kontrolcü tarafından kapatıldı. Üç iz güncellendi:
+`eklenti/snippets/sarmal.code-snippets` içindeki iki kullanıcı açıklaması eski
+kural numaralarından kanonik haleflere çevrildi (`SD-8` çağırma açıklaması
+`DIL-1.4`, `SD-10` tip açıklaması `TIP-1` oldu) ve `eklenti/medya/onizleme.css`
+birinci satırındaki `SD-15` yorumu `DIL-2` halefine taşındı. İki iz sınıflandı:
+`ogrenme/ida_dogfood_geribildirim.sar` dosyasının tarihli madde listesindeki
+`faz-tarihsiz` geçişi elle korunan tarihçedir ve dokunulmadı; aynı dosyanın
+yaşayan ders yönergesindeki geçiş ise halef-önce anlatıma çevrildi (yönerge
+artık `MIM-1.2` vade nöbetine işaret eder ve eski adı yalnız tarihsel açıklama
+olarak anar). Genişletilmiş yeniden koşum, eski kural kimliği desenini yalnız
+kaynak dosyalarında değil json, css, code-snippets, markdown ve mjs türlerinde
+de taradı ve canlı kümede sıfır geçiş ölçtü; emekli tanı kimliği taraması
+`ogrenme/`, `eklenti/snippets/`, `eklenti/medya/`, `oz/` ve `sablon/`
+alanlarında yalnız yukarıda sınıflanan iki tarihçe ve halef-önce geçişini
+bıraktı. Aynı kapıda kontrolcünün kendi bulgusu da kapatıldı: `ogret`
+karşılama kartının kopyala-başla örneği rejim beyanı taşımadığı için
+`rejim-beyanı-eksik` hatası veriyor ve kartın kendini kanıtlama vaadini
+bozuyordu; örneğe `rejim: katı` beyanı eklendi ve kart nöbeti CLI denetiminin
+tam boru hattını (`denetimKos`) koşan yeni bir sınamayla güçlendirildi —
+mutasyon kanıtında beyan geri çıkarılınca nöbet düştü, dosya kopyasıyla geri
+alımda sha256 birebir döndü ve süit yeniden yeşile geçti.
+|<--
+
+Sınama( kod: SNM-OLU-IZ-01,
+        ne: "🧹 Eski iz taraması canlı kümede sıfır bayat iddiaya indi. Beş iz sınıfı aynı betikle önce ve sonra ölçüldü: eski karar kimliği 68'den 58'e, eski kural kimliği 5'ten 3'e, emekli tanı kimliği 71'den 68'e indi; 143 madde sınıfında tek geçiş yokluk nöbetinin kendisidir ve çapraz haritanın canlı tüketicisi sıfırdır. Kalan bütün geçişler yokluk bekçisi, sınama fikstürü ya da elle korunan tarihçe sınıfındadır ve dosya dosya sınıflandırılmıştır. Dört canlı düzeltme yapıldı: iki SD-8 atfı DIL-1.4 hedefine taşındı, emekli faz-tarihsiz anlatısı MIM-1.2 vade nöbetine çevrildi, motor gövdesindeki ölü evre1 izi silindi ve bayat sınama başlığı güncellendi." )
+
+Sınama( kod: SNM-OLU-IZ-02,
+        ne: "🧹 Kırık hedef ve geçici eşleme kapısı ölçüldü: yirmi altı yüzdeki yetmiş iki göreli bağlantının tamamı kanonik hedefe çözülür ve emekli KARARLAR defteri hedefi sıfırdır. Çapraz haritanın depo genelindeki on bir geçişi yalnız final kabul, arşiv görevi ve mühürlü üretim kayıtlarına aittir. Kapanmayan her iz beş sahipli borç olarak final kapısına yazıldı: RAY-3 envanterindeki emekli tanı adları, fikstürlerdeki gerçek eski karar numaraları, meyve haritasındaki çapraz harita yorumu, otuz dokuz emeklilik borcu kimliğinin sırası ve plan ile tarihçe alanındaki karşılıksız atıflar. Tarihsel arşivin tek baytı değiştirilmedi." )

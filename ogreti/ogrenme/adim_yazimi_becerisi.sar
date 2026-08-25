@@ -1,0 +1,44 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/adim_yazimi_becerisi.sar — 🍃 ADIM YAZIMI BECERİSİ (DVR-A03 · OGR-2.2)
+//
+//   Düstur (YAS-2 zorlar · OGR-2.2 öğretir): kural ZORLAR (MIM-1 tam-zincir ·
+//   konisiz-adım bekçisi),
+//   beceri ÖĞRETİR (bu kart). Doğuş: 2026-07-17 gecesinin canlı ölçümü —
+//   koni-dolu Adım yazmayı bilen ajan tek turda geçerli plan üretti.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-ADIM-YAZIMI, ne: "koni-dolu, tam-zincirli ve sınanabilir Adım yazma" )
+
+-->|
+  ## Amaç
+  🎯 Bir işi Sarmal planına eklerken Adım düğümünü ilk denemede geçerli ve
+  zengin yazmayı öğretmek. Çözdüğü problem: yapısal olarak geçerli ama niyeti
+  boş Adımlar (kör drift) ve kademe atlaması yüzünden motorun reddettiği planlar.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle yazılan Adım, katı rejimin tam zincirinde doğar
+  (Faz→Blok→Katman→AltKatman altında), koni alanları dolu gelir ve
+  `sarmal denetle .` ilk turda hata vermez.
+|<--
+
+Beceri( kod: BCR-ADIM-YAZIMI,
+        sağlar: YTN-ADIM-YAZIMI,
+        yığın: evrensel,
+        anlatır: [ MIM-1, "konisiz-adım", "fazsız-blok", "katmansız-adım" ],
+        ne: "Bir Adım düğümünü katı rejimin tam zinciri (Faz→Blok→Katman→AltKatman→Adım · MIM-1, YAS-1.1) içinde, koni alanları dolu ve kabul ölçütleri sınanabilir biçimde yazar",
+        neZaman: "Plana yeni iş eklenirken; var olan bir Adım koni-boş bulunduğunda; bir görev tarifi .sar planına çevrilirken",
+        kurallar: [
+          "Katı rejimde Adımı köke, Blok'a veya doğrudan Katman'a yazma: her Adım departman taşıyan bir AltKatman altında, her AltKatman bir Katman altında ve her Blok bir Faz altında yaşar (MIM-1, YAS-1.1); esnek rejim yalnız açık gerekçeli istisnadır (YAS-1.2)",
+          "kod: tekil ve kalıcıdır; ne: işin amacını ve çözdüğü problemi tam cümleyle anlatır (uygulama günlüğü değildir)",
+          "görev: uygulanacak işlemleri mantık sırasıyla verir; kabul: yalnız gözlemlenebilir/sınanabilir koşullar taşır — 'çalışıyor' tek başına ölçüt olamaz",
+          "sınır: kapsam dışını ve değişmezleri açık yazar; bağımlı: Adımın beslendiği gerçek hedefleri gösterir (geliştirmede Adımda zorunludur — ORK-3.2)",
+          "Yazdıktan sonra `sarmal denetle .` koştur; çıkan her tanının önerisini uygula, tanı kapanmadan işi bitti sayma"
+        ],
+        kabul: "Kart uygulandığında yeni Adım tam zincirde yaşar; görev, kabul ve sınır alanları doludur; proje denetiminde konisiz-adım, fazsız-blok veya katmansız-adım bulgusu üretmez",
+        örnek: "Adım( kod: ADM-GIRIS-DOGRULAMA, durum: beklemede, ne: \"Giriş formu doğrulamasını eklemek. Bugün boş e-posta sunucuya gidiyor; bu Adım istemci tarafında alan doğrulaması kurar.\", görev: \"e-posta ve parola alanlarına doğrulama kuralları yaz; hata iletilerini forma bağla\", kabul: [ \"boş e-posta gönderilince form sunucuya istek atmaz ve alan altında Türkçe hata iletisi görünür\" ] )",
+        antiDesen: "Tek satırlık ne: ile 'geçerli ama boş' Adım bırakmak — yapı yeşil görünür, niyet yoktur; orkestratör bu Adımdan prompt üretemez (kör drift)",
+        uygular: ORK-7 )
+
+Tetikleyici( kod: TTK-ADIM-YAZIMI, tetikler: BCR-ADIM-YAZIMI,
+             koşul: adım.durum == beklemede,
+             ne: "Adım yazımı başlarken bu beceri karta çağrılır — ilk deneme geçerli olsun" )

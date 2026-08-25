@@ -1,0 +1,77 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga3_yuzey.sar — 🌊 3. DALGA · YÜZEY + DAVRANIŞ (F8 · DIL-2)
+//
+//   Founder incelemesi için ÖRNEK: bir giriş ekranının NİYETİ — kod üretmez,
+//   çevirmen ajan bu ağacı Flutter'a (ya da React'e, SwiftUI'ye) döker (FEL-1).
+//   Qwen çekirdeği: kod zorunlu · ne=FEL-1 · erişilebilirlik/veriAnahtarı/olaylar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🖼️ Yüzey ve davranış ailelerinin formatını gerçek bir giriş ekranında göstermek: görsel ağaç niyet taşır, kodu ajan yazar.
+
+  ## Kapsam
+  📦 Ekran kök kapsayıcıdır: düzen birimlerini (Sütun·Satır·Yığın) sarar. Form doğrulama bağlamıdır: MetinAlanı ve OnayKutusu onun içinde yaşar — bağlam-zorunluluğu motor işi olarak kanona not düşüldü (bekleyenMotorIsleri). Her görsel öğe erişilebilirlik etiketi taşıyabilir: ekran okuyucu da bu ağacın vatandaşıdır. Durum (State) davranış ailesindendir: alanları veriAnahtarı ile yüzeye bağlanır, UI-mantık köprüsü teknoloji-bağımsız kalır. AnlıkBildirim hiyerarşi-dışıdır: global niyet olarak kökte ilan edilir.
+
+  ## Sonuç
+  ✅ Kabul: dosya motor-temiz geçer; çevirmen ajan bu niyetten üç farklı çerçevede aynı ekranı üretebilir.
+|<--
+
+// A02 onarımı (2026-07-11): kavuşum hedefi dosyada DOĞDU — Ekran.referans artık
+// gerçek bir plan Adım'ına bağlanır (kavuşum örneği kırık değil, TAM gösterilir).
+Adım( kod: ORN-ADM-GIRIS, durum: beklemede,
+      ne: "🍂 Giriş ekranını üretecek plan adımı — aşağıdaki Ekran'ın kavuşum (referans) hedefi" )
+
+// TAS-A01/B01 (2026-07-12): tasarım sistemi BİR KEZ ilan — roller .sar'da, değerler tech-temada.
+Tema( kod: ORN-TEM-GIRIS, görünürlük: açık, ne: "🎨 giriş yüzeyi tasarım sistemi — token-ROL sözleşmesi (değerler tech-temada)",
+      dosya: "uygulama/lib/tema/giris_tema.dart",
+      renkler: [ birincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, gövde, etiket ],
+      boşluk: [ sm, md, lg ],
+      yuvarlaklık: [ sm, md ] )
+
+Ekran( kod: ORN-EKR-GIRIS, görünürlük: açık, ne: "🔐 Giriş ekranı — e-posta+şifre, hatırla beni, kayıt bağlantısı",
+       referans: ORN-ADM-GIRIS, tema: ORN-TEM-GIRIS ) {
+
+  Sütun( kod: ORN-STN-ANA, görünürlük: açık, ne: "dikey akış — logo üstte, form ortada, bağlantı altta" ) {
+
+    Görsel( kod: ORN-GRS-LOGO, görünürlük: açık, ne: "kurum logosu",
+            erişilebilirlik: "Nexivion logosu" )
+
+    Form( kod: ORN-FRM-GIRIS, görünürlük: açık, ne: "giriş formu — doğrulama bağlamı",
+          olaylar: { gönderildiğinde: ORN-OLY-GIRIS } ) {
+
+      MetinAlanı( kod: ORN-MTA-EPOSTA, görünürlük: açık, ne: "e-posta girişi",
+                  veriAnahtarı: girisDurumu.eposta,
+                  erişilebilirlik: "E-posta adresinizi yazın" )
+
+      MetinAlanı( kod: ORN-MTA-SIFRE, görünürlük: açık, ne: "şifre girişi — gizli yazım",
+                  veriAnahtarı: girisDurumu.sifre )
+
+      OnayKutusu( kod: ORN-ONY-HATIRLA, görünürlük: açık, ne: "beni hatırla seçimi",
+                  veriAnahtarı: girisDurumu.hatirla )
+
+      Düğme( kod: ORN-DGM-GIRIS, görünürlük: açık, ne: "giriş yap — formu gönderir",
+             çağırır: ORN-UC-GIRIS,
+             erişilebilirlik: "Giriş yap düğmesi" )
+    }
+
+    Metin( kod: ORN-MTN-KAYIT, görünürlük: açık, ne: "hesabın yok mu? kayıt ol — kayıt ekranına bağlantı",
+           stil: etiket )
+  }
+}
+
+// ── DAVRANIŞ AİLESİ — UI-mantık köprüsü (teknoloji-bağımsız) ─────────────────
+Durum( kod: ORN-DRM-GIRIS, ne: "🧠 giriş ekranı durumu — alanlar yüzeye veriAnahtarı ile bağlanır" ) {
+  alanlar: {
+    eposta: metin,
+    sifre: metin,
+    hatirla: mantıksal,
+    yükleniyor: mantıksal,
+  }
+}
+
+Canlandırma( kod: ORN-CNL-SARSMA, ne: "🌀 hatalı girişte form yatay sarsılır — 300ms, üç salınım" )
+
+// ── ANLIK BİLDİRİM — hiyerarşi-DIŞI global niyet (qwen kuralı) ───────────────
+AnlıkBildirim( kod: ORN-BLD-HATA, görünürlük: açık, ne: "⚠️ giriş başarısız bildirimi — kısa, alttan kayar" )

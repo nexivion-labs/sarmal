@@ -1,0 +1,71 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga2_teknoloji.sar — 🌊 2. DALGA · TEKNOLOJİ + ORKESTRASYON (F8)
+//
+//   Founder incelemesi için ÖRNEK dosya: Teknoloji · Model · Araç · MCP ·
+//   Ortam · Şablon · İşAkışı — RAY-3 orkestratör-runtime bu formatları çağıracak.
+//   Model kimlikleri KURGUSAL örneklerdir; kendi sağlayıcı kimliklerinle değiştirirsin.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🎼 Orkestratörün çalacağı enstrümanları formata bağlamak: teknoloji ailesi (beş tip) ve orkestrasyonun iki aracı (Şablon·İşAkışı).
+
+  ## Kapsam
+  📦 Teknoloji bir bağımlılığın çatısıdır: Model, Araç, MCP ve Ortam onun altında yaşar — bağımlılık ailesi tek ağaçta görünür. Model bir yapay-us kimliğidir: kimlik parametresi zorunludur çünkü orkestratör modeli bu adresle çağırır; kademe (usta·ağır·işçi·hızlı) seçim politikasını besler. Araç bir yerel komuttur, MCP bir sunucu köprüsüdür, Ortam bir çalışma zeminidir. Şablon istem kalıbıdır: Adım'ın bağlam-konisi bu kalıba dökülür. İşAkışı adımların akış tarifidir: sıra ve koşul burada yaşar, içerik plan ağacında kalır.
+
+  ## Sonuç
+  ✅ Kabul: yedi tip motor-temiz geçer; RAY-3 pilotu Model+Şablon ikilisiyle ilk istemini üretir.
+|<--
+
+// ── TEKNOLOJİ — bağımlılık çatısı: Model·Araç·MCP·Ortam sarar ───────────────
+Teknoloji( kod: ORN-TEK-CALGICI, ne: "🎻 Çalgıcı köprüsü — bedava API'den .sar üretimi" ) {
+
+  // ── MODEL — imza: kod+kimlik+ne · kademe seçim politikasını besler ────────
+  Model( kod: ORN-MDL-USTA, kimlik: "ornek-saglayici/usta-model-1", kademe: usta,
+         ne: "🏆 En güçlü çalgıcı — karmaşık üretim işleri bu kademeye atanır ve çıktı denetimle kullanılır" )
+
+  Model( kod: ORN-MDL-ISCI, kimlik: "ornek-saglayici/isci-model-1", kademe: işçi,
+         ne: "🔨 Günlük üretim atı — hacimli ve rutin işin sahibi" )
+
+  Model( kod: ORN-MDL-HIZLI, kimlik: "ornek-saglayici/hizli-model-1", kademe: hızlı,
+         ne: "⚡ Kısa işler — hızlı yanıt, basit dönüşümler" )
+
+  // ── ARAÇ — yerel komut: motorun kapıları ──────────────────────────────────
+  Araç( kod: ORN-ARC-DENET, komut: "node src/sarmal.ts denetle",
+        ne: "🛡️ Motor denetçisi — çalgıcı çıktısı bu kapıdan geçmeden kabul edilmez" )
+
+  // ── MCP — sunucu köprüsü: dış dünyaya resmî kapı ──────────────────────────
+  MCP( kod: ORN-MCP-SARMAL, ne: "🔌 Sarmal MCP — denetle aracını editör dışına açar" )
+
+  // ── ORTAM — çalışma zemini ────────────────────────────────────────────────
+  Ortam( kod: ORN-ORT-YEREL, ne: "🖥️ Yerel geliştirme — macOS · Node 22 · anahtarlar ~/.nexivion kasasında" )
+}
+
+// ── ORKESTRASYON'UN İKİ ARACI ────────────────────────────────────────────────
+-->|
+  ## Amaç
+  🎼 Şablon ve İşAkışı formatlarını gerçek bir üretim hattı örneğinde göstermek.
+
+  ## Kapsam
+  📦 Hat üç duraktan oluşur. Adım'ın bağlam-konisi Şablon kalıbına dökülür ve istem doğar. İstem kademeye uygun Model'e gider; çıktı .sar dosyasıdır. Motor denetler: hata varsa İşAkışı iade turunu döndürür — en çok üç kez. İnsan onayı ve yayın bu örneğin dışındadır.
+
+  ## Sonuç
+  ✅ Kabul: hat, motor-temiz dosya teslim eder; üç turda temizlenmeyen iş insana taşınır.
+|<--
+Orkestrasyon( kod: ORN-ORK-URETIM, ad: "uretim-hatti",
+              ne: "🎼 Örnek üretim hattı — Adım konisinden isteme, istemden motor-temiz dosyaya" ) {
+
+  // ── ŞABLON — istem kalıbı: koni alanları buraya dökülür ──────────────────
+  Şablon( kod: ORN-SBL-URETIM,
+          ne: "📋 Üretim istemi kalıbı — görev+referans+kabul+sınır alanlarından istem kurar" ) {
+    kalıp: """
+           Görevin: {görev}
+           Bağlam: {referans} · Sınır: {sınır}
+           Kabul ölçütü: {kabul} — çıktın motor denetiminden GEÇMEK zorunda.
+           """
+  }
+
+  // ── İŞAKIŞI — akış tarifi: sıra ve koşul; içerik plan ağacında kalır ──────
+  İşAkışı( kod: ORN-AKS-MOTOR-IADE,
+           ne: "🔁 Motor-iade döngüsü: üret → denetle → hata varsa iade et → en çok 3 tur" )
+}

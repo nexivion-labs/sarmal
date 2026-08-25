@@ -1,0 +1,56 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/rejim_esnek.sar — 🍃 ESNEK REJİM ÖRNEĞİ (en küçük geçerli hâl)
+//
+//   Rejim beyanı zorunludur ve sessiz varsayılan yoktur (YAS-1). `katı` normdur
+//   ve tam zinciri şablon kütüphanesi öğretir (sablon/proje.sar); bu dosya
+//   BİLİNÇLİ istisnayı gösterir: `esnek` seçen tek kişilik küçük bir deneme,
+//   Katman ile Adım arasına AltKatman koymadan yaşayabilir. Esnek seçimin
+//   gerekçesi beyanın yanına yazılır — gerekçesiz esneklik disiplinsizliktir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Esnek rejimin en küçük geçerli örneğini vermek: rejim açıkça beyan edilir,
+gerekçesi yanında yaşar ve AltKatman zorunluluğu bilinçli olarak düşer.
+
+## Kapsam
+Bir teknoloji ilanı, tek Katman ve tek Adım; öğretim dışında iş taşımaz.
+
+## Sonuç
+Dosya tek başına denetimden temiz geçer ve katı örneklerden ayrı yaşar.
+|<--
+Teknoloji( kod: ORN-TEK-BETIK, ne: "örnek betik dili — esnek denemenin tek teknolojisi" )
+
+// rejim: esnek — tek kişilik keşif deneme alanı; iş büyürse katıya terfi eder
+// ve Adımlar departman taşıyan AltKatman'lara alınır.
+-->|
+## Amaç
+Esnek rejim beyanının gerekçeli en küçük örneğini taşımak.
+## Kapsam
+Tek Faz, tek Blok, tek Adım; iş taşımaz, öğretir.
+## Sonuç
+Denetim temiz geçer; esneklik bilinçli istisna olarak görünür.
+|<--
+Proje( kod: PRJ-ESNEK-ORNEK, ad: "esnek-deneme", rejim: esnek,
+  ne: "Esnek rejimin en küçük geçerli örneği — bilinçli istisna, gerekçesi yukarıdaki yorumda" ) {
+  Faz( kod: ORN-ESNEK-F1, ad: "deneme dönemi", ne: "tek yapraklı keşif mevsimi" ) {
+    -->|
+    ## Amaç
+    Keşif işini tek gövdede taşımak.
+    ## Kapsam
+    Tek Katman ve tek Adım.
+    ## Sonuç
+    Adım kapanınca gövde biter.
+    |<--
+    Blok( kod: ORN-ESNEK-B1, ne: "keşif gövdesi" ) {
+      Katman( kod: ORN-ESNEK-K1, ad: "betik", kullanır: ORN-TEK-BETIK ) {
+        // Esnek rejim: AltKatman yok — Adım doğrudan Katman altında yaşayabilir.
+        Adım( kod: ORN-ESNEK-A01, durum: beklemede,
+          ne: "Keşif betiğini yazmak ve deneme sonucunu not etmek",
+          görev: "Tek dosyalık deneme betiği yazılır ve çıktısı gözle doğrulanır",
+          kabul: [ "Betik çalışır ve çıktısı kaydedilmiştir" ],
+          bağımlı: [] )
+      }
+    }
+  }
+}

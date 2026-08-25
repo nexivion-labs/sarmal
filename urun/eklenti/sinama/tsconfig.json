@@ -1,0 +1,12 @@
+{
+  // sinama/ birim testleri (node:test): ana tsconfig'in "include":["src"] kapsamı dışında.
+  // .ts uzantılı + çapraz-paket (../../cekirdek/src) import ederler → editör bunları
+  // allowImportingTsExtensions/kapsam olmadan kırmızı gösterirdi. extends ile ana ayarları
+  // (allowImportingTsExtensions·strict·Node16) miras alır; yalnız kapsamı ekler, tip node.
+  // Build/test esbuild+node:test ile; tsc emit yok — bu config yalnız editör/tip-denetimi.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["."]
+}

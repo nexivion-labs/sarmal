@@ -1,0 +1,71 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// felsefe/sozler.sar — 🪨 SÖZLER (FEL-6 · felsefe taşının vecize defteri)
+//
+//   Felsefe taşlarının damıtılmış halleri: tek cümlede Sarmal. Her söz tarihli
+//   ve bağlamlıdır — "kaydet, bir gün lazım olur" (Founder buyruğu, 2026-07-10).
+//   Dil kendini kendi diliyle söyler (EKL-F1 öz-ifade — .md değil .sar).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🪨 Sarmal felsefesinin vecizelerini tek defterde, doğdukları an ve bağlamla birlikte
+  saklamak: uzun taşlar (FEL-1..FEL-5) düşünceyi SAVUNUR, bu defter onu EZBERLETİR —
+  bir cümle, bir bakış, tam isabet.
+
+  ## Kapsam
+  📦 Defter yalnız Founder onaylı vecizeleri taşır; her kayıt tarih + bağlam + bağlı
+  taşlarıyla gelir. Rastgele güzel söz toplanmaz — yaşanmış bir oturumdan damıtılmış
+  olması şarttır. Uzun gerekçe ve savunma KAPSAM DIŞIDIR: onlar bağlı FEL taşlarında
+  yaşar; burada yalnız öz durur. Defter büyüdükçe kayıtlar eklenir, eskisi silinmez.
+
+  ## 2026-07-10 · Üçlünün Özü (oturum 28 kapanışı)
+
+  > **"İnsan yönü belirler, AI yolculuğu hızlandırır, Sarmal raydan çıkılmamasını sağlar."**
+  > — Founder
+
+  Üç katmanın işbölümü tek cümlede: **yön** insanın (niyet · karar · kabul — ORK-6
+  rol ayrımı), **hız** Etmenin (üretici çalgıcılar — FEL-1 şef-çalgıcı), **ray**
+  Sarmal'ın (drift-kalkanı + makine-hakem — FEL-2/FEL-4). Canlı Spec + DAG + Çalgıcı
+  Ligi'nin canlandığı oturumun sözü. Aynı gün doğan kardeş kavram: *kanunware* —
+  "vibe ile ÜRETİLEN, kanunla KABUL EDİLEN yazılım" (vibeware'in panzehiri).
+
+  ## 2026-07-19 · Mutabakat Bizim (oturum 63 kapanışı)
+
+  > **"Yürütücü kimin olursa olsun, mutabakat bizim."**
+  > — oturum 63 (Founder onayıyla deftere alındı)
+
+  Farklı ajan yürütücülerinin aynı çalışma alanına girdiği gün görünür olan katman,
+  plan↔gerçek MUTABAKATIDIR. Koridoru hangi Etmen yürürse yürüsün işi kabul eden kapı
+  Sarmal denetimidir; beceri ve koni açık sözleşmedir, drift'i aynı motor yakalar.
+
+  ## Sonuç
+  ✅ Kabul: her vecize tarihli+bağlamlı; defter denetle-temiz; söz gerektiğinde
+  (vitrin · README · yayın) buradan alınır — kaynak tek, alıntı çok.
+|<--
+Felsefe( kod: FEL-6,
+         ad:  "Sözler — Üçlünün Özü",
+         ne:  "🪨 Vecize defteri — ilk taş: İnsan yön · AI hız · Sarmal ray (Founder, 2026-07-10)",
+         tez: "İnsan yönü belirler, AI yolculuğu hızlandırır, Sarmal raydan çıkılmamasını sağlar — üç aktörün işbölümü tek cümlede; bu defter felsefenin ezber yüzüdür",
+         referans: [ FEL-1, FEL-2, FEL-4, MIM-1.6, ORK-6, YAS-4.2 ] )
+
+Karar(
+  kod:    KRR-SOZ-UCLU,
+  ad:     "uclunun-ozu-vecizesi",
+  ne:     "🪨 'İnsan yön · AI hız · Sarmal ray' vecizesi felsefe taşının resmî sözü olarak kabul edildi",
+  durum:  kilitli,
+  besler: FEL-6,
+) {
+  karar:   "Vecize kanona girer: 'İnsan yönü belirler, AI yolculuğu hızlandırır, Sarmal raydan çıkılmamasını sağlar' (Founder, oturum 28 · 2026-07-10) — vitrin/README/yayında bu söz TEK kaynaktan (FEL-6) alıntılanır"
+  gerekçe: "Üç aktörün işbölümünü tek cümlede ezberletir: yön insanın (ORK-6 rol ayrımı), hız Etmenin (FEL-1 şef-çalgıcı), ray Sarmal'ın (FEL-2 drift-kalkanı + FEL-4 makine-hakem); canlı plan ve grafın canlandığı oturumda yaşanmışlıktan damıtıldı"
+}
+
+Karar(
+  kod:    KRR-SOZ-MUTABAKAT,
+  ad:     "mutabakat-bizim-vecizesi",
+  ne:     "🪨 'Yürütücü kimin olursa olsun, mutabakat bizim' vecizesi ajan-bağımsız denetim sözü olarak deftere alındı",
+  durum:  kilitli,
+  besler: FEL-6,
+) {
+  karar:   "Vecize kanona girer: 'Yürütücü kimin olursa olsun, mutabakat bizim' (Founder onayı, oturum 63 · 2026-07-19) — Sarmal'ın ajan-bağımsız denetim yüzü; alıntı FEL-6 kaynağına bağlanır"
+  gerekçe: "Farklı ajan yürütücülerinin aynı plan↔gerçek mutabakat kapısına tabi olduğu saha gözleminden damıtıldı; yürütücü değişse de kabul ölçümü değişmez"
+}

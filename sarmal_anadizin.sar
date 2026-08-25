@@ -1,0 +1,88 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// sarmal/sarmal_anadizin.sar — 🧭 SARMAL açık deposunun anadizini (doğum ilanı)
+//
+//   Bu dosya, Nexivion Labs çatısı altında doğan sarmal açık deposunun giriş
+//   ilanıdır ve GOC-A09 hükmünün altı kitaplıklı yerleşimini taşır. Yapı-Önce
+//   gereği önce bu ilan yazılmış, klasörler ilandan doğmuştur; içerik, eski
+//   depodan kademeli küratörlü taşımayla ve dosya dosya gözden geçirilerek
+//   gelecektir (GOC-A08). Depo lansman gününe kadar özel kalır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  Sarmal dilinin, motorunun ve eklentisinin açık kaynak evi. Bu depo, niyeti
+  bildirimsel .sar dosyalarıyla yazan dili, plan ile disk arasındaki sapmayı
+  denetleyen motoru ve Visual Studio Code eklentisini tek çatı altında taşır.
+
+  ## Kapsam
+  Altı kitaplık kapsanır ve ilansız klasör yaşayamaz: urun kitaplığı çekirdek
+  motoru, eklentiyi ve araçları; yasa kitaplığı kanonu ve yönetişim
+  kaynaklarını; oz kitaplığı tip sistemini, kimlik ve çeviri kaynaklarını; is
+  kitaplığı planları, durumu ve nitelik kayıtlarını; ogreti kitaplığı öğrenme
+  kartlarını, örnekleri, şablonları, felsefeyi ve bilgi rafını; kanca
+  kitaplığı git kancalarını taşır. Kapalı ürün, site ve atölye bu deponun
+  kapsamı dışındadır ve çatının kendi düzeyinde ayrı varlıklar olarak yaşar.
+
+  ## Sonuç
+  Depo sıfır geçmişle ve tam yeşil denetimle doğar; her klasör bu ilandaki
+  bir Kitaplık ya da Raf düğümüne bağlıdır ve denetim ilansız gövde tanısını
+  sıfırda tutar.
+|<--
+
+Proje( kod: PRJ-SARMAL, ad: "sarmal", rejim: katı,
+  ne: "🧭 Sarmal açık deposu — dil, motor ve eklentinin Nexivion Labs çatısındaki açık kaynak evi" ) {
+
+  Teknoloji( kod: TEK-SARMAL-TS, ne: "TypeScript çalışma dili — motor ve eklenti bu dille yazılır, çalışma zamanı bağımlılığı sıfırdır" )
+
+  Kitaplık( kod: KTP-URUN, yol: "urun/",
+    ne: "📦 Ürün kitaplığı — çekirdek motor, editör eklentisi ve derleme araçları burada yaşar" ) {
+    Raf( kod: RAF-URUN-CEKIRDEK, yol: "cekirdek/", ne: "çekirdek motor: ayrıştırıcı, doğrulayıcı, denetçi, MCP sunucusu ve sınamaları" )
+    Raf( kod: RAF-URUN-EKLENTI, yol: "eklenti/", ne: "Visual Studio Code eklentisi: dil desteği, paneller, temalar ve sınamaları" )
+    Raf( kod: RAF-URUN-ARAC, yol: "arac/", ne: "derleme ve üretim araçları: yüz üreticileri ve yardımcı betikler" )
+  }
+
+  Kitaplık( kod: KTP-YASA, yol: "yasa/",
+    ne: "⚖️ Yasa kitaplığı — kanonun sekiz bölümü ile ebedî kural ve sürüm yönetişimi kaynakları burada yaşar" ) {
+    Raf( kod: RAF-YASA-KANON, yol: "kanon/", ne: "tek yetkili kanon: dil, mim, ogr, ork, str, tip, yas ve yuz bölümleri" )
+    Raf( kod: RAF-YASA-YONETISIM, yol: "yonetisim/", ne: "yönetişim kaynakları: ebedî çekirdek kural ve sürüm yönetişimi hükümleri (Founder onayı 2026-08-24)" )
+  }
+
+  Kitaplık( kod: KTP-OZ, yol: "oz/",
+    ne: "🌱 Öz kitaplığı — tip sistemi, kontrolcü anayasası, birleştirilmiş hatırlatıcı kaydı, fikirler ve çeviri kaynakları burada yaşar" ) {
+    Raf( kod: RAF-OZ-SINIFLAMA, yol: "siniflama/", ne: "tip sistemi kaydı ve rehberi: aileler, şemalar, kenarlar ve renk paleti" ) {
+      // SNF-0 tip kanonunun kimliği eski ilandaki gibi rafın altında yaşar; planlar bu koda referans verir.
+      Sınıflama( kod: SNF-0, ne: "geçerli tip, kenar ve sarma kümesi — .sar grameri buradan doğrulanır" )
+    }
+    Raf( kod: RAF-OZ-CEVIRI, yol: "ceviri/", ne: "çok dillilik kaynakları: sözlükler ve çeviri katmanı" )
+    Raf( kod: RAF-OZ-KAYIT, yol: "kayit/", ne: "öz kayıtları: kontrolcü anayasası, birleşik hatırlatıcı kaydı ve ayıklanmış fikirler (Founder onayı 2026-08-24)" )
+  }
+
+  Kitaplık( kod: KTP-IS, yol: "is/",
+    ne: "🗂️ İş kitaplığı — canlı planlar, durum kaydı ve nitelik kayıtları burada yaşar" ) {
+    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı plan dosyaları: fazlar, bloklar ve adımlar" )
+    Raf( kod: RAF-IS-PLAN-RAYDA, yol: "plan/rayda/", ne: "tamamen bitmiş planların rayı: tarih repoda kalır, plan görünür durur" )
+    // Eski anadizinde ilanlı iki rafın karşılığı (GOC-A08 yedinci küme, 2026-08-25): mekanizma
+    // ilanları ile göç kanıtları alt raf olarak sürer; ilansız gövde sıfır ölçütü korunur.
+    Raf( kod: RAF-IS-PLAN-MEKANIZMA, yol: "plan/mekanizma/", ne: "kesişen altyapı ilanları: ŞEF mekanizması" )
+    Raf( kod: RAF-IS-DURUM, yol: "durum/", ne: "tek yetkili durum ve devir kaydı" )
+    Raf( kod: RAF-IS-NITELIK, yol: "nitelik/", ne: "nitelik kayıtları: siciller, ölçümler ve kabul kanıtları" )
+    Raf( kod: RAF-IS-NITELIK-GOC, yol: "nitelik/goc/", ne: "v1 göç kanıtları: envanterler, kabul raporları ve canlı nöbetlerin okuduğu ölçüm yüzleri" )
+  }
+
+  Kitaplık( kod: KTP-OGRETI, yol: "ogreti/",
+    ne: "🎓 Öğreti kitaplığı — öğrenme kartları, örnek çalışma alanları, şablonlar, felsefe ve bilgi rafı burada yaşar" ) {
+    Raf( kod: RAF-OGRETI-OGRENME, yol: "ogrenme/", ne: "beceri kartları ve öğretim kaynakları" )
+    Raf( kod: RAF-OGRETI-ORNEK, yol: "ornek/", ne: "örnek korpus ve yaşanmış çalışma alanı örneği" )
+    Raf( kod: RAF-OGRETI-SABLON, yol: "sablon/", ne: "doğuş ve iskelet şablonları" )
+    Raf( kod: RAF-OGRETI-FELSEFE, yol: "felsefe/", ne: "dilin felsefe metinleri" )
+    // KRS-05 (Founder onayı 2026-08-24): öğretim klasörü ölü gövde değil, elle yazılmış anlatı taşıyan hibrit yüzdür ve raf olarak girer.
+    Raf( kod: RAF-OGRETI-OGRETIM, yol: "ogretim/", ne: "sınıf ailelerinin öğretim kartları — olgusal bölgeler sınıflama kaydından üretilir, anlatı bölgeleri elle yazılır" )
+    // GOC-A11 (Founder 2026-08-23): Founder'ın kendi yazacağı eğitim metni için yer bugünden ayrılır; raf boştur ve metin kapsam dışıdır (KRR-YBI-08).
+    Raf( kod: RAF-OGRETI-EGITIM, yol: "egitim/", ne: "Founder'ın eğitim metni için ayrılmış raf — yer tutucu dışında boştur, metin Founder tarafından yazılacaktır" )
+    Raf( kod: RAF-OGRETI-BILGI, yol: "bilgi/", ne: "bilgi rafı: kalıcı başvuru kaynakları" )
+    Raf( kod: RAF-OGRETI-BILGI-SOZLUK, yol: "bilgi/sozluk/", ne: "teknoloji sözlükleri — her teknolojinin çeviri sözlüğü kendi adıyla yaşar ve ilk sakin flutter olacaktır; kavramların tek yetkili kaynağı tasarım sözlüğüdür, buradaki sözlükler kaynak değil köken ve köprü katmanıdır (Founder onayı 2026-08-24)" )
+  }
+
+  Kitaplık( kod: KTP-KANCA, yol: "kanca/",
+    ne: "🪝 Kanca kitaplığı — işleme kapılarını koşturan git kancaları burada yaşar" )
+}

@@ -1,0 +1,267 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/motor_tani_envanteri.sar — 🗂️ MOTOR TANI ENVANTERİ (GOC-MOTOR-A01)
+//   Motor turunun birinci Adımı, altmış dokuz yeni tanıyı sahiplerine ayırır.
+//   Her tanı bir maddeye, bir düzeye, bir kapsama, bir üretici dosyasına ve
+//   onu uygulayacak bir Adıma bağlanır. Bütün sayılar bu üretimde kaynaktan
+//   yeniden ölçüldü; hiçbiri başka bir belgeden kopyalanmadı.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🗂️ Motor Tanı Envanteri — 70 yeni tanının sahiplik ayrımı
+
+> **DÜZELTME KAYDI (2026-07-27 · GOC-MOTOR-A08 · bağımsız denetim bulgusu D-4).**
+> Bu envanter ilk yazıldığında altmış dokuz tanı sayıyordu ve bir kimliği atlamıştı.
+> Kanonun `yasa/kanon/yuz.sar` dosyasındaki YUZ-3.3 maddesi `tanı-yüzeyi-karışması`
+> adlı yetmişinci bir yeni tanı ilan etmektedir; bu kimlik ne çapraz haritanın C
+> bölümünde ne bu envanterde ne de sicilde vardı. Delik, üçlü senkronun yalnız TEK
+> YÖNDE (sicilden kanona doğru) ölçülmesinden doğdu; ters yön hiç sorulmadı. Kimlik
+> artık envantere, sicile, üreticiye ve metin kataloğuna girmiştir ve
+> `GOC-MOTOR-A08` nöbeti senkronu İKİ YÖNLÜ tuttuğu için aynı delik bir daha
+> sessizce açılamaz. Aşağıdaki metinde geçen "altmış dokuz" sayıları o günün
+> ölçümüdür ve tarihsel kayıt olarak bırakılmıştır; yürürlükteki sayı YETMİŞTİR.
+
+## A · Kapsam ve ölçüm yöntemi
+
+Bu envanterin girdisi iki kaynaktır ve ikisi de bu üretimde okundu. Birincisi
+`nitelik/goc/capraz_harita.sar` dosyasının C bölümüdür; bu dosya salt okunur
+girdidir ve bu Adımda tek bayt değişmemiştir. İkincisi `yasa/kanon/` altındaki
+sekiz bölüm dosyasıdır; her maddenin belge bloğundaki `**Zorlama:**` satırı o
+maddenin tanı iddiasını taşır ve düzeyi orada yazılıdır.
+
+Ölçüm şöyle yapıldı. Çapraz haritanın C bölümündeki YENİ işaretli satırlardan
+altmış dokuz tanı kimliği ile hedef madde kodu çıkarıldı. Ardından sekiz kanon
+dosyasındaki bütün `**Zorlama:**` satırları tarandı ve her tanı kimliği için
+kanonun yazdığı düzey ile sunum yüzeyi okundu. İki kaynak karşılaştırıldı.
+
+Sonuç şudur: altmış dokuz tanının altmış dokuzu kanonda tam olarak bir
+`**Zorlama:**` satırı taşımaktadır. Kanonun yazdığı madde kodu ile çapraz
+haritanın yazdığı madde kodu arasında sıfır uyuşmazlık vardır. Kanonda
+karşılığı bulunamayan tanı yoktur ve iki kez ilan edilen tanı yoktur.
+
+Düzey dağılımı kanondan okundu: kırk dokuz tanı HATA, yirmi tanı UYARI
+düzeyindedir. Bilgi düzeyinde yeni tanı yoktur.
+
+Madde dağılımı için bir not gereklidir. Altmış dokuz tanı altmış yedi ayrı
+maddeye dağılır, çünkü iki madde ikişer tanı taşır: ORK-3.3 hem
+`döngü-sonlanması-eksik` hem `kapı-kabul-kanıtı-eksik` tanısını, STR-5 ise hem
+`etki-yayın-kapısı-eksik` hem `ölü-iz` tanısını ilan eder.
+
+## B · Küme ayrımı — korunan, yeni ve emekli tanılar karışmıyor
+
+Çapraz haritanın C bölümü üç kümeyi ayırır ve bu Adım üçünü de kimlik düzeyinde
+karşılaştırdı. Korunan küme yetmiş, yeni küme altmış dokuz, emekli küme elli üç
+kimlik taşır. Üç kesişim de boştur: yeni küme ile korunan küme sıfır ortak
+kimlik taşır, yeni küme ile emekli küme sıfır ortak kimlik taşır, korunan küme
+ile emekli küme sıfır ortak kimlik taşır. Yani hiçbir yeni tanı, korunan veya
+emekli bir kimliği yeniden kullanmıyor.
+
+Ayrım canlı sicile karşı da doğrulandı ve aritmetik tam kapanmaktadır.
+`cekirdek/src/tani-sicili.ts` dosyasındaki `SABIT_TANI_KODLARI` listesi yüz on
+dört kimlik taşır. Korunan yetmiş kimliğin altmış beşi, emekli elli üç kimliğin
+kırk dokuzu bu listede bulunur; altmış beş ile kırk dokuzun toplamı yüz on
+dörttür ve listenin tamamını kapsar. Listede olup çapraz haritanın C bölümünde
+karşılığı bulunmayan kimlik sıfırdır.
+
+Kalan dokuz kimlik sabit listede değildir, çünkü bunlar veri-güdümlü
+tanılardır: kanonun `zorunluKenarlar` kayıtlarındaki `tanı` alanlarından
+çalışma anında doğarlar ve `taniSicili` işlevi onları birleştirir. Korunan
+kümeden beşi böyledir (`kavuşumsuz-ekran`, `konisiz-adım`, `temasız-ekran`,
+`öksüz-düğme`, `ölçüsüz-metin`); emekli kümeden dördü böyledir
+(`bağımlılık-beyansız`, `meyvesiz-geliştirme`, `niyet-drift`,
+`referanssız-geliştirme`). Yüz on dört sabit kimlik ile dokuz veri-güdümlü
+kimliğin toplamı yüz yirmi üçtür; bu sayı yetmiş korunan ile elli üç emekli
+kimliğin toplamına birebir eşittir. Atlanan veya uydurulan kimlik yoktur.
+
+Altmış dokuz yeni kimliğin hiçbiri bugün sicilde bulunmamaktadır. Bu beklenen
+durumdur: sicile kayıt GOC-MOTOR-A07 Adımının işidir.
+
+## C · Sahiplik ölçütü — bir tanı hangi üreticiye düşer
+
+Sahiplik tek bir ölçütle belirlendi ve bu ölçüt envanterin her satırında aynı
+biçimde uygulandı: bir tanı, kararını yalnız açık dosyanın ayrıştırılmış
+ağacından ve sınıflama kaydından verebiliyorsa tek-dosya kapsamındadır;
+kararını verebilmek için başka bir dosyanın düğümüne, disk görüntüsüne veya
+bağımlılık grafına ihtiyaç duyduğu anda proje kapsamına geçer.
+
+Dört sahip vardır ve her tanı tam olarak birine düşer. `dogrulayici.ts`
+tek-dosya kapsamını taşır. `denetci.ts` proje kapsamını taşır. `kuralci.ts`
+kural gövdesinin otorite, katman, kapsam ve düzey sözleşmesini taşır.
+`denetim.ts` orkestrasyonu taşır; yani tanının kendi sözleşmesini, kapı
+kapsamını, Proje kimliğini ve yüzler arası tutarlılığını denetleyen tanılar
+buradadır, çünkü bu hükümler tek bir dosyanın değil, denetim sonucunun
+tamamının üzerinde konuşur.
+
+Kapsam ile sunum yüzeyi karıştırılmamalıdır. Kanonun `yüzey:` parçası tanının
+nerede görüneceğini söyler, hangi üreticinin ürettiğini değil. `denetim.ts`
+dosyası her dosya için `dogrula` işlevini de çağırdığından, tek-dosya
+kapsamındaki bir tanı proje kapısında da görünür; bunun tersi doğru değildir.
+Bu yüzden kanonda "proje CLI" yazması bir tanıyı proje kapsamına zorlamaz,
+ama "tek-dosya CLI" yazması onu tek-dosya kapsamına zorlar.
+
+Dağılım şöyledir: `denetci.ts` elli beş tanı, `dogrulayici.ts` beş tanı,
+`denetim.ts` altı tanı ve `kuralci.ts` üç tanı alır. Toplam altmış dokuzdur.
+Sahipsiz tanı yoktur ve çift sahipli tanı yoktur.
+
+Bu dağılım dengesiz görünmektedir ve dengesizlik gerçektir, gizlenmemelidir.
+Sebebi yeni kanonun kendisidir: yeni omurganın hükümleri ağırlıklı olarak
+Projenin bütünü hakkında konuşur. Rejim beyanı, Proje kimliği, disk
+mutabakatı, göç sırası, öğretim tazeliği, kimlik omurgası ve ilişki sınıfları
+tek bir dosyaya bakarak karara bağlanamaz. Bu ölçüm ikinci halkanın iş
+yükünün de gerçek dağılımıdır: GOC-MOTOR-A06 Adımı bu turun en ağır Adımıdır
+ve planlaması buna göre yapılmalıdır.
+
+## D · Envanter tablosu — 70/70
+
+| # | Tanı kimliği | Madde | Düzey | Kapsam | Üretici sahibi | Uygulayan Adım | Kanon `Zorlama:` satırı |
+|---|---|---|---|---|---|---|---|
+| 1 | `kanonik-kaynak-biçimi` | DIL-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | dil.sar:27 |
+| 2 | `orthografi-kaybı` | DIL-1.1 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | dil.sar:39 |
+| 3 | `belge-şekil-drift` | DIL-2 | HATA | tek-dosya | `dogrulayici.ts` | GOC-MOTOR-A05 | dil.sar:87 |
+| 4 | `çok-satırlı-değer-drift` | DIL-2.2 | UYARI | tek-dosya | `dogrulayici.ts` | GOC-MOTOR-A05 | dil.sar:111 |
+| 5 | `kenar-tip-uyuşmazlığı` | DIL-3.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | dil.sar:134 |
+| 6 | `numara-grafı-uyumsuz` | DIL-5 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | dil.sar:157 |
+| 7 | `madde-kodu-uyumsuz` | DIL-5.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | dil.sar:169 |
+| 8 | `ilgili-önek-geçersiz` | DIL-5.2 | HATA | tek-dosya | `dogrulayici.ts` | GOC-MOTOR-A05 | dil.sar:180 |
+| 9 | `proje-köksüz-üretim` | MIM-1.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | mim.sar:39 |
+| 10 | `çok-teknolojili-katman` | MIM-1.4 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | mim.sar:74 |
+| 11 | `adım-atomikliği` | MIM-1.6 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | mim.sar:98 |
+| 12 | `üretimsiz-meyve` | MIM-2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | mim.sar:109 |
+| 13 | `meyve-dosyası-eksik` | MIM-2.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | mim.sar:121 |
+| 14 | `öğretim-kaynak-drifti` | OGR-2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:83 |
+| 15 | `öğretim-yüzü-uyumsuz` | OGR-2.1 | UYARI | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | ogr.sar:95 |
+| 16 | `beceri-kartı-eksik` | OGR-2.2 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:107 |
+| 17 | `başvuru-sicil-drifti` | OGR-2.3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:119 |
+| 18 | `öğretim-etki-eksik` | OGR-3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:130 |
+| 19 | `öğretim-bayat` | OGR-3.1 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:142 |
+| 20 | `üretilmiş-öğretim-değiştirilmiş` | OGR-3.2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:154 |
+| 21 | `kanıtsız-beceri-terfisi` | OGR-4 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | ogr.sar:165 |
+| 22 | `ilişki-sınıfı-ihlali` | ORK-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:27 |
+| 23 | `mimari-bağı-ihlali` | ORK-1.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:39 |
+| 24 | `yürütme-kenarı-sözleşmesi` | ORK-1.2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:50 |
+| 25 | `üretim-kökeni-ihlali` | ORK-1.3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:62 |
+| 26 | `kullanır-kenarı-ihlali` | ORK-2.4 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:119 |
+| 27 | `deterministik-sıra-ihlali` | ORK-3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:131 |
+| 28 | `seçilemez-adım-yürütümü` | ORK-3.2 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:155 |
+| 29 | `döngü-sonlanması-eksik` | ORK-3.3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:166 |
+| 30 | `kapı-kabul-kanıtı-eksik` | ORK-3.3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:166 |
+| 31 | `çapraz-proje-ad-alanı` | ORK-4 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:178 |
+| 32 | `auth-omurgası-ihlali` | ORK-5 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:190 |
+| 33 | `founder-ortak-auth-eksik` | ORK-5.2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:213 |
+| 34 | `şef-akışı-ihlali` | ORK-6 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:235 |
+| 35 | `üretici-denetçi-çakışması` | ORK-6.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:247 |
+| 36 | `oturum-adım-sınırı` | ORK-6.2 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | ork.sar:258 |
+| 37 | `unutma-kapısı-ihlali` | STR-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:27 |
+| 38 | `kanon-kodu-uyumsuz` | STR-1.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:39 |
+| 39 | `göç-sırası-ihlali` | STR-2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:62 |
+| 40 | `göç-kapısı-eksik` | STR-2.1 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:74 |
+| 41 | `açık-gizli-sınır-ihlali` | STR-3 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:85 |
+| 42 | `çekirdek-bağımlılık-drifti` | STR-3.1 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:97 |
+| 43 | `yürütücü-bağımlılığı` | STR-3.2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:108 |
+| 44 | `etki-yayın-kapısı-eksik` | STR-5 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:131 |
+| 45 | `ölü-iz` | STR-5 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | str.sar:131 |
+| 46 | `tip-evreni-eksik` | TIP-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | tip.sar:27 |
+| 47 | `omurga-tipi-eksik` | TIP-1.15 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | tip.sar:193 |
+| 48 | `şema-tanımı-eksik` | TIP-2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | tip.sar:215 |
+| 49 | `şema-dışı-alan` | TIP-2.2 | UYARI | tek-dosya | `dogrulayici.ts` | GOC-MOTOR-A05 | tip.sar:238 |
+| 50 | `örtü-ihlali` | TIP-2.5 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | tip.sar:273 |
+| 51 | `rejim-beyanı-eksik` | YAS-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yas.sar:27 |
+| 52 | `katı-rejim-altkatman-eksik` | YAS-1.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yas.sar:39 |
+| 53 | `rejim-geçiş-uyumsuzluğu` | YAS-1.3 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | yas.sar:61 |
+| 54 | `hüküm-türü-uyumsuz` | YAS-2 | HATA | kural | `kuralci.ts` | GOC-MOTOR-A07 | yas.sar:72 |
+| 55 | `kural-sözleşmesi-eksik` | YAS-2.3 | HATA | kural | `kuralci.ts` | GOC-MOTOR-A07 | yas.sar:108 |
+| 56 | `tanı-sözleşmesi-uyumsuz` | YAS-3 | HATA | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | yas.sar:132 |
+| 57 | `tanı-kapsamı-karışması` | YAS-3.2 | HATA | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | yas.sar:155 |
+| 58 | `proje-tanı-kimliği-uyumsuz` | YAS-3.3 | HATA | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | yas.sar:166 |
+| 59 | `tanı-terfi-kapısı-ihlali` | YAS-4 | HATA | kural | `kuralci.ts` | GOC-MOTOR-A07 | yas.sar:189 |
+| 60 | `sahte-tam-yeşil` | YAS-4.1 | HATA | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | yas.sar:201 |
+| 61 | `terfi-kanıtı-eksik` | YAS-4.2 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | yas.sar:212 |
+| 62 | `prizma-kaynak-ayrışması` | YUZ-1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:27 |
+| 63 | `eş-yetkili-yüz-ikizi` | YUZ-1.2 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:50 |
+| 64 | `yüz-idempotans-drifti` | YUZ-1.3 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:61 |
+| 65 | `geliştirme-yüzü-drifti` | YUZ-3 | UYARI | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:117 |
+| 66 | `tanı-yüzü-uyumsuz` | YUZ-3.1 | UYARI | orkestrasyon | `denetim.ts` | GOC-MOTOR-A07 | yuz.sar:129 |
+| 67 | `yüzey-sözleşmesi-eksik` | YUZ-4 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:162 |
+| 68 | `palet-yüz-drifti` | YUZ-4.1 | HATA | proje | `denetci.ts` | GOC-MOTOR-A06 | yuz.sar:174 |
+| 69 | `görünürlük-sözleşmesi-eksik` | YUZ-5 | HATA | tek-dosya | `dogrulayici.ts` | GOC-MOTOR-A05 | yuz.sar:197 |
+| 70 | `tanı-yüzeyi-karışması` | YUZ-3.3 | UYARI | orkestrasyon | `denetim.ts` | GOC-MOTOR-A08 | yuz.sar:151 |
+
+## E · Tek-dosya kapsamının gerekçesi — beş tanı neden orada
+
+Beş tanı, kararını yalnız açık dosyadan verebildiği için tek-dosya
+kapsamındadır ve gerekçeleri tek tek yazılmıştır.
+
+`belge-şekil-drift` maddesi DIL-2, belge bloğunun satır düzeninin korunmasını
+ister; blok açık dosyanın içindedir ve karşılaştırma aynı dosyanın biçimlenmiş
+hâliyle yapılır. `çok-satırlı-değer-drift` maddesi DIL-2.2, çok satırlı değer
+ile kullanıcı hizasının biçimlemede bozulmamasını ister; ölçüm yine tek
+dosyanın kendi içindedir. `şema-dışı-alan` maddesi TIP-2.2, ilan edilmemiş
+alanı uyarır; alan adı dosyada, şema sınıflama kaydındadır ve kanonun kendisi
+bu tanının yüzeyini "tek-dosya CLI" olarak yazmıştır. `ilgili-önek-geçersiz`
+maddesi DIL-5.2, `ilgili` listesinin sekiz kanonik önek dışına çıkmasını
+reddeder; sekizli önek kümesi kapalıdır ve karşılaştırma yereldir, emsali
+`geçersiz-enum` tanısıdır. `görünürlük-sözleşmesi-eksik` maddesi YUZ-5,
+görünürlük beyanının tam bir kez bulunmasını ve gizli yüzeyin açılma koşulu
+taşımasını ister; alanların varlığı ve tekilliği yerel bir denetimdir.
+
+Son tanının bir sınırı açıkça kaydedilmelidir. Açılma koşulunun *çözülebilir*
+olması, koşulun içinde bir KOD geçiyorsa proje indeksini gerektirir. Bu Adım
+sahibi `dogrulayici.ts` olarak belirlemiştir ve koşulun hedef çözümlemesini
+`kırık-referans` tanısının mevcut proje kapsamına bırakmıştır; yani tek ihlal
+iki tanıya bölünmez, her biri kendi kapısında konuşur.
+
+## F · Kural ve orkestrasyon kapsamının gerekçesi
+
+`kuralci.ts` üç tanı alır ve üçü de kural gövdesinin kendi sözleşmesi
+hakkındadır. `hüküm-türü-uyumsuz` maddesi YAS-2, hükmün rolü ile seçilen yasa
+tipinin uyumunu denetler. `kural-sözleşmesi-eksik` maddesi YAS-2.3, otorite,
+katman ve çözülebilir kapsam üçlüsünü zorlar; emsalleri `katman-uyumsuz`,
+`bilinmeyen-kapsam` ve `boş-kapsam` tanılarıdır. `tanı-terfi-kapısı-ihlali`
+maddesi YAS-4, kuralın ilan ettiği düzeyin kanıtsız yükseltilmesini reddeder.
+
+`denetim.ts` altı tanı alır ve altısı da denetim sonucunun bütünü hakkında
+konuşur. `tanı-sözleşmesi-uyumsuz` maddesi YAS-3, üretilen her tanının düzey,
+tekil kod, mesaj, konum ve öneri alanlarını taşımasını ve kodunun sicilde
+bulunmasını ister; bu ancak bütün üreticilerin çıktısı birleştirildikten sonra
+denetlenebilir. `tanı-kapsamı-karışması` maddesi YAS-3.2, bir tanının yanlış
+kapıda koşmasını yakalar. `proje-tanı-kimliği-uyumsuz` maddesi YAS-3.3, sonuç
+kümesinin Proje koduyla ayrılmasını zorlar. `sahte-tam-yeşil` maddesi YAS-4.1,
+karne iddiasını denetler. `tanı-yüzü-uyumsuz` maddesi YUZ-3.1 ile
+`öğretim-yüzü-uyumsuz` maddesi OGR-2.1, aynı tanının yüzler arasında kimlik,
+düzey ve düzeltme yönü bakımından bozulmamasını zorlar; ikisi de tek bir
+üreticinin göremeyeceği karşılaştırmalardır.
+
+## G · Üçlü eşleşme tablosu — beklenen durum ve bugünkü durum
+
+Bir tanı üç yerde yaşar ve üçü birbirine eşit olmalıdır: `tani-sicili.ts`
+kaydı, gerçek üretici işlevi ve kanon maddesinin `**Zorlama:**` iddiası.
+Aşağıdaki tablo bu üç sütunun bugünkü durumunu ve borcun sahibini yazar. Boş
+hücre bırakılmamıştır; her hücre ya bir ölçüm ya da sahipli bir borç kaydıdır.
+
+| Sütun | Bugünkü durum (ölçüldü) | Borcun sahibi | Nöbeti kuran Adım |
+|---|---|---|---|
+| Kanon `**Zorlama:**` iddiası | 69/69 var; düzey ve madde kanondan okundu | borç yok, Tur 1 kapattı | GOC-MOTOR-A08 |
+| `tani-sicili.ts` kaydı | 0/69 var; altmış dokuz kimliğin hiçbiri sicilde değil | GOC-MOTOR-A07 | GOC-MOTOR-A08 |
+| Üretici işlevi | 0/69 var; bu envanter sahipleri atadı, uygulama yazılmadı | GOC-MOTOR-A05, GOC-MOTOR-A06, GOC-MOTOR-A07 | GOC-MOTOR-A08 |
+
+Üretici sütununun sahip dağılımı şudur: GOC-MOTOR-A05 Adımı beş tanıyı
+`dogrulayici.ts` içinde, GOC-MOTOR-A06 Adımı elli beş tanıyı `denetci.ts`
+içinde, GOC-MOTOR-A07 Adımı ise üç tanıyı `kuralci.ts` ve altı tanıyı
+`denetim.ts` içinde uygular. Beş, elli beş, üç ve altının toplamı altmış
+dokuzdur.
+
+Bu tablonun dürüstlük değeri şudur: bugün motor altmış dokuz hükmü kanonda
+ilan etmiş ama hiçbirini zorlamamaktadır. Üçlü senkron bugün sağlanmamıştır ve
+sağlanmadığı bu kayıtla açıkça beyan edilmiştir. Nöbetin kendisi GOC-MOTOR-A08
+Adımında kurulacak ve üç sütunun eşitliğini makineyle sınayacaktır.
+
+## H · Bu Adımın sınırı
+
+Bu Adım kimlik, düzey veya sahip seçimini envanter dışında sessizce yapmadı.
+Tanı kimlikleri ve düzeyleri kanondan okundu, uydurulmadı. Sahiplik ölçütü C
+bölümünde açıkça yazıldı ve altmış dokuz satırın hepsine aynı biçimde
+uygulandı. Bu Adım hiçbir tanıyı sicile eklemedi, hiçbir üretici yazmadı ve
+kanonun hüküm metnine dokunmadı.
+|<--
+Çıkarım( kod: MTR-ENV-01,
+         kaynak: "nitelik/goc/capraz_harita.sar C bölümü (salt okunur) + yasa/kanon/{dil,mim,ogr,ork,str,tip,yas,yuz}.sar Zorlama satırları + cekirdek/src/tani-sicili.ts + cekirdek/src/{dogrulayici,denetci,kuralci,denetim}.ts üretici yüzeyleri (bu üretimde ölçüldü)",
+         ne: "🗂️ Altmış dokuz yeni tanının sahiplik envanteri kapandı. Altmış dokuzunun altmış dokuzu kanonda tam bir Zorlama satırı taşıyor; kanon ile çapraz harita arasında sıfır madde uyuşmazlığı var. Düzey dağılımı kırk dokuz hata ve yirmi uyarıdır. Korunan, yeni ve emekli kümeler kimlik düzeyinde üç kesişimde de boştur; yüz on dört sabit sicil kimliği ile dokuz veri-güdümlü kimliğin toplamı yüz yirmi üçtür ve yetmiş korunan ile elli üç emekli kimliğe birebir eşittir. Sahiplik tek ölçütle atandı: karar yalnız açık dosyadan verilebiliyorsa tek-dosya, başka dosya, disk veya graf gerekiyorsa projedir. Dağılım denetci.ts elli beş, dogrulayici.ts beş, denetim.ts altı ve kuralci.ts üçtür; sahipsiz veya çift sahipli tanı yoktur. Üçlü eşleşme tablosunda kanon sütunu doludur, sicil ve üretici sütunları sahipli borç olarak kayıtlıdır." )

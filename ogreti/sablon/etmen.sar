@@ -1,0 +1,9 @@
+// 🤖 ETMEN ŞABLONU — 7 zorunlu alan (kimlik + yetenek + izole hafıza + anayasa).
+//    Bekçi: eksik-alan — Etmen 7 zorunlu: kod·tür·uzmanlık·yetki·bellek·ne·uygular.
+//    tür ∈ {apex, yönetici, uzman} · yetki ∈ {L1..L6}.
+//    Not: hazır bir etmen kadrosu ya da seçim politikası bu şablonun işi değildir (STR-3); Sarmal ETMEN tipini TANIR ve kendi kadronu bu şablonla yazarsın.
+
+Etmen( kod: ETM-X, tür: uzman, uzmanlık: "<uzmanlık alanı>",
+       yetki: L3, bellek: izole,
+       ne: "<bu etmen NE yapar, hangi görevleri üstlenir>",
+       uygular: ANY-X )

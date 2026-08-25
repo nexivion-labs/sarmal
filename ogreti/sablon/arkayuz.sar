@@ -1,0 +1,21 @@
+// 🔌 ARKAYÜZ ŞABLONU — backend ayağı: Uç sözleşmeyi UYGULAR.
+//    Sıra: Sözleşme ÖNCE (sablon/sozlesme.sar) → Uç onu uygular → üretim-yeri beyan.
+//    Bekçi: sözleşmesiz-uç (Uç→sözleşme ŞART) · üretim-yeri (dosya: KODUN düşeceği yer, MIM-2.1).
+
+// ① SÖZLEŞME — kavuşum noktası (frontend↔backend anlaşması ÖNCE)
+Sözleşme( kod: SZL-Ornek, sürüm: "1.0",
+          ne: "<bu uç neyi anlaşmaya bağlar>",
+          istek: "<gönderilen alanlar>",
+          yanıt: "<dönen alanlar + hata kodları>" )
+
+// ② UÇ — sözleşmeyi UYGULAR (backend endpoint) · dosya: kodun düşeceği yer (MIM-2.1)
+Uç( kod: UC-Ornek, metod: POST, yol: "/api/v1/<kaynak>", sözleşme: SZL-Ornek,
+    dosya: "arkayuz/app/api/<kaynak>.py" )
+
+// ③ PLAN — Uç'u ÜRETEN Adım (koni-dolu; arkayüz Faz'ında yaşar)
+Adım( kod: ADM-Ornek-Uc, ad: "<kısa-ad>",
+      görev: "<uç mantığı — hangi doğrulama, hangi veri, hangi hata yolları>",
+      üretir: UC-Ornek,
+      bağımlı: [ TAKIM-ARKAYUZ ],
+      sınır: "<neyi KAPSAMAZ — ör. yetkilendirme MEK-RBAC'ta>",
+      durum: beklemede )

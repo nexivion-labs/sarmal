@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+  <!-- ray: iki hat + traversler (mimari sıra = tren rayı) -->
+  <path d="M8 2.5 L6.2 21.5"/>
+  <path d="M16 2.5 L17.8 21.5"/>
+  <path d="M7.4 6.5 h9.2"/>
+  <path d="M7 11 h10"/>
+  <path d="M6.6 15.5 h10.8"/>
+  <path d="M6.2 20 h11.6"/>
+</svg>

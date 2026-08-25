@@ -1,0 +1,333 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/belge_kabul_raporu.sar — BAĞIMSIZ A90 DENETİMİ · SN-GOC-BELGE-KABUL
+//   GOC-BELGE-A01–A05 teslimi üretici raporlarına güvenilmeden, canlı ağaçta
+//   yeniden ölçülmüş; nöbetler dört gerçek mutasyonla sınanmış ve teslim
+//   kapsamının kenarları ayrıca aranmıştır. Emsal desen:
+//   nitelik/goc/terfi_turu_denetim_raporu.sar (GOC-TERFI-A90).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# GOC-BELGE-A90 · Belge turu bağımsız denetim raporu
+
+Bu raporun ölçümleri 1 Ağustos 2026 tarihinde başladı ve rapor 3 Ağustos 2026
+tarihinde
+`<atölye kökü>/_Sarmal`
+dizininde bağımsız olarak üretildi. Üretici raporlarındaki sayılar sonuç kabul
+edilmedi; aşağıdaki hükümler denetçinin kendi komutlarının çıktılarına dayanır.
+Başlangıç ölçümü `git status --short --untracked-files=all` komutuyla alındı ve
+çıktı yalnız `?? oz/siniflama/ortu.json` satırıydı; bu dosya Founder hükmüyle
+commit dışıdır, denetim boyunca dokunulmadı ve kusur sayılmadı. Bunun dışında
+ağaç temizdi.
+
+## 1. İddia 1 — on altı türetilmiş yüzün idempotent üretimi
+
+Üretici hem çalışma ağacının dışına kurulan temiz bir kopyada iki kez, hem de
+canlı ağaçta doğrudan koşuldu. Temiz kopyada `belgeYuzleriniUret` birinci
+koşuda `değişen=[] · aynı=16 · madde=144 · araç=18`, ikinci koşuda yine
+`değişen=[]` verdi. Canlı ağaçta
+`node --experimental-strip-types cekirdek/src/sarmal.ts belge-yuzleri-uret .`
+komutu `0 değişti · 16 aynı · 144 madde · 18 araç` bastı ve `git status`
+değişmedi. On altı yüzün on altısında `SARMAL:DIATAXIS` mührü ayrıca sayıldı
+(16/16). On altı yüzün ve karar indeksinin canlı SHA-256 mühürleri A04 nöbet
+kaydının C tablosuyla 17/17 birebir çıktı. İddia tuttu.
+
+## 2. İddia 2 — sekiz nöbet ve kırmızı fikstürler
+
+`cekirdek/sinama/turetilmis-yuz-nobetleri.test.ts` dosyasında tam sekiz
+`test(...)` bloğu sayıldı ve `node --test` koşusu `tests 8 · pass 8 · fail 0`
+verdi. Bayat öğretim, elle değiştirilmiş üretilen yüz, kaynak ayrışması ve
+idempotens senaryolarının kırmızı fikstürleri süitin içinde sandbox kopyasında
+koşuyor; denetçi bunlara güvenmeyip aşağıdaki dört gerçek mutasyonu canlı
+ağaçta ayrıca uyguladı ve dördü de ilgili nöbeti kırdı. İddia tuttu.
+
+## 3. İddia 3 — yetmiş iki bağlantı
+
+Denetçi süitten bağımsız kendi tarayıcısını yazdı: on altı üretilen yüz, iki
+lisans, altı felsefe açıklaması ve iki sözlük indeksi olmak üzere yirmi altı
+yüz tarandı. Ölçüm `göreli bağlantı=72 · kırık=0 · KARARLAR-hedefi=0` oldu ve
+iddianın 72 sayısıyla birebirdir. `KARARLAR.md` diskte yoktur. İddia tuttu.
+
+## 4. İddia 4 — eski izlerin sıfırlanması ve sınıflanması
+
+Denetçi kendi tarama desenleriyle canlı kümeyi (kök `plan/`, `nitelik/`,
+`durum/`, `.sarmal/`, bağımlılık ve üretim çıktıları hariç) yeniden ölçtü.
+`143 madde` deseni yalnız iki bekçi/fikstür satırında çıktı
+(`kanon-tutarlilik.test.ts` yokluk iddiası ve nöbet süitinin kırmızı
+fikstür dizesi). Eski karar kimlikleri yalnız sınama fikstürlerinde,
+CHANGELOG tarihçesinde ve `eklenti/plan.sar` kapanış kaydında görüldü; on dört
+uygulanmış emekli tanı kimliğinin geçişleri bekçi kodu, sicildeki emekli
+listesi, fikstürler ve B1 sahipli borcundaki `bilgi/ray3_konsolide.sar`
+kalemleriyle örtüştü. Hiçbir geçiş yürür hüküm ya da güncel öğretim iddiası
+kurmuyor; bu yönüyle iddianın gövdesi tuttu.
+
+Ancak kanıt dosyasının sınıflamasına girmeyen üç canlı iz bulundu ve aşağıda
+kenar bulgusu olarak şiddetiyle yazıldı: `eklenti/snippets/sarmal.code-snippets`
+içinde kullanıcıya görünen iki eski kural kimliği (`SD-8` ve `SD-10`
+açıklamaları), `eklenti/medya/onizleme.css` birinci satırında bir `SD-15`
+yorumu ve `ogrenme/ida_dogfood_geribildirim.sar` içinde iki `faz-tarihsiz`
+geçişi. İddia bu dar dilimde kısmen tuttu.
+
+## 5. İddia 5 — bayatlık sıfır ve canlı sayılar
+
+`kanon-tutarlilik-uret` canlı koşusu `aynı · 144/144` bastı ve
+`nitelik/goc/kanon_tutarlilik.sar` mührü koşudan önce ve sonra
+`38729bdcd981e345d502da412eae067eb29e7eddb1b725c56bdc4c0a551a1415` olarak
+değişmedi; `kanonTutarlilikMetni(".")` ile disk içeriği bayt-eş ölçüldü.
+Sicil doğrudan içe aktarılarak sayıldı: 70 kimlik, dağılım 46 hata + 16 uyarı
++ 8 bilgi. Üretici canlı sayı olarak 144 madde ve 18 aracı yüzlere basıyor.
+Yüz mühürlerinin nöbet kaydıyla 17/17 eşitliği bayat yüz kalmadığını ayrıca
+kanıtladı. İddia tuttu.
+
+## 6. İddia 6 — kanon dokunulmazlığı
+
+Sekiz kanon dosyasının canlı SHA-256 mühürleri tek tek alındı; sekizli
+A03/A04 kayıtlarındaki değerlerle ve terfi turu A90 raporundaki mühürlerle
+birebirdir. A03 formülüyle bağımsız hesaplanan demet mührü
+`697110f9aed3d2fbed15de219724601f0a87d9909dd87cd9befbf082e5a6d99e` olarak
+kayıtla aynı çıktı ve `git diff HEAD -- yasa/kanon` boş döndü. Tur içindeki
+ara anların ağaç görüntüleri teslimde bulunmadığı için "tur boyunca hiçbir
+anda değişmedi" tarihsel iddiasının ara noktalarını ölçemedim; bugünkü ağaç
+ile tur kayıtlarının eşitliği bakımından iddia tuttu.
+
+## 7. İddia 7 — kapılar
+
+Komutlar birbirinden bağımsız koşuldu: `cekirdek` içinde `npx tsc --noEmit`
+kod 0; kök dizinden `cekirdek/node_modules/.bin/tsc --noEmit -p
+eklenti/tsconfig.json` kod 0; `cekirdek` süiti `tests 972 · pass 972 ·
+fail 0`; `eklenti` süiti `tests 381 · pass 381 · fail 0`. İki varlık denetimi
+`--tam-liste` ile koşuldu ve satır sınıfları sayıldı: Sarmal kökü
+`hata=0 · uyarı=0 · bilgi=150` (20 tanı türü), kapalı ürün
+`hata=0 · uyarı=0 · bilgi=829` (13 tanı türü); iki komut da kod 0 ile bitti.
+İddia tuttu.
+
+## Mutasyon sınamaları ve geri alma mühürleri
+
+Bütün geri almalar dosya kopyasıyla yapıldı; git komutu hiçbir geri almada
+kullanılmadı. Yedekler oturum scratchpad dizininde tutuldu.
+
+### Mutasyon 1 — üretilen yüz elle bozuldu
+
+`README.md` üretilen bölgesindeki `144 tekil madde` değeri `143 tekil madde`
+yapıldı. Başlangıç mührü
+`a49e2feb7ab73292353c6e1fe2751cdadead565d48c2945015bf27e03eacdd5c`, mutasyon
+mührü `f8e6721a22ee4afa9c10178fb766398f18da3ea3541aed74f3877e1ce2783f1b` oldu.
+Nöbet süiti `pass 7 · fail 1` verdi ve düşen nöbet tam beklenen nöbetti:
+"② + ④ temiz kopyada on altı yüzün ilk ve ikinci koşusu sıfır fark verir".
+Yedek kopyadan geri yazım sonrası mühür yeniden `a49e2feb...e03eacdd5c` oldu
+ve süit 8/8 geçti.
+
+### Mutasyon 2 — öğretim paketi bayatlatıldı
+
+`sablon/` rafına `zzz_a90_denetim_fiksturu.sar` adlı yeni kaynak eklendi ve
+`sablon/OKU.md` bilerek eski bırakıldı. Süit `pass 6 · fail 2` verdi ve
+başarısızlık iletisi bayat yüzü adıyla gösterdi: "üretilen yüz canlı
+üreticiden ayrışmış (elle değişiklik ya da bayat yüz): sablon/OKU.md".
+Fikstür dosyası silindi; `sablon/OKU.md` mührü mutasyondan önce ve sonra
+`db19f1fd1bf054e1dc84278e81cfb2d8a236af105cf302d401668852a67aed39` olarak hiç
+değişmedi ve süit 8/8 geçti.
+
+### Mutasyon 3 — üretici kaynağı yüzden ayrıştırıldı
+
+A tablosundaki canlı kaynaklardan `cekirdek/src/dil-baglami.ts` dosyasının
+sonuna yorum satırı eklendi. Başlangıç mührü
+`86d58878e92ba37fbbf4da89fd919b64a424af4b0ee706308531259408d06218`, mutasyon
+mührü `51b2cb0ac442f3249d15059f4364296daa8979db872d289a7d6e953d06bf759b`
+oldu. Süit `pass 7 · fail 1` verdi ve düşen nöbet "① kaynak ayrışması
+nöbeti" idi; ileti kaynağı adıyla gösterdi: "cekirdek/src/dil-baglami.ts
+kaynağı nöbet kaydından ayrıştı". Yedek kopyadan geri yazım sonrası mühür
+yeniden `86d58878...08d06218` oldu ve süit 8/8 geçti.
+
+### Mutasyon 4 — türetilmiş karar indeksi elle bozuldu
+
+`nitelik/goc/kanon_tutarlilik.sar` tablosundaki gerçek madde sayısı 144'ten
+143'e çevrildi; mutasyon mührü
+`18698ebe9707f80bec1d6917fb0bfd0ce6b38178a5a8635b5acb88333174000d` oldu. Süit
+`pass 7 · fail 1` verdi ve düşen nöbet "④ karar indeksi ile sınıflama
+Reference yüzü diskte üreticisiyle birebirdir" idi. Yedek kopyadan geri yazım
+sonrası mühür yeniden `38729bdc...33174000d` yerine başlangıç değeri olan
+`38729bdcd981e345d502da412eae067eb29e7eddb1b725c56bdc4c0a551a1415` oldu ve
+süit 8/8 geçti.
+
+## Kapsam kenarı bulguları
+
+### DÜZELTİLMELİ — ölü iz taramasının kapsamı üç canlı dosyayı ıskalamış
+
+Kanıt dosyası eski kural kimliği kalıntısını üç geçiş olarak sayarken denetçi
+taraması canlı kümede üç ek geçiş buldu:
+`eklenti/snippets/sarmal.code-snippets` içinde `"Çağırma (SD-8) —
+kod-tabanlı içe-aktarma"` ve `"Kullanıcı-tanımlı tip (SD-10)"` açıklamaları
+ile `eklenti/medya/onizleme.css` birinci satırındaki `SD-15 insan yüzü`
+yorumu. Snippet açıklamaları editörün öneri arayüzünde kullanıcıya görünen
+öğretim yüzüdür; emekli kural kimliğini güncel bir tanımmış gibi taşır.
+Ayrıca `ogrenme/ida_dogfood_geribildirim.sar` içinde iki `faz-tarihsiz`
+geçişi vardır; bu bir tarihli geri bildirim kaydıdır fakat kanıt dosyasının
+sınıf tablosunda anılmamıştır. Hiçbiri hüküm kurmadığı için bloklayıcı
+değildir; üç kimlik güncellenmeli ya da sahipli borca bağlanmalı ve ölü iz
+tarama betiğinin dosya-türü kapsamı `.css`, `.code-snippets` ve `ogrenme/`
+alanını içerecek biçimde bir kez yeniden koşulmalıdır.
+
+### NOT — kanıt dosyasındaki sayımlarla küçük satır farkları
+
+Denetçinin satır bazlı sayımları kanıt dosyasının bazı hane değerlerinden
+küçük farklar verdi (örneğin `kimlik.test.ts` eski karar geçişi kanıtta 4,
+satır sayımında 5; emekli tanı geçişlerinde satır ve geçiş sayımı farkı).
+Sınıflamanın kendisi doğrudur; fark sayım biriminden (satır ve tekrarlı
+geçiş) kaynaklanır ve hüküm değiştirmez.
+
+### NOT — gömülü kanon ve üretici tazeliği
+
+`gomulu-esitlik.test.ts` 2/2 geçti ve `node arac/renk-uret.mjs` koşusu
+`eklenti/src/gomulu-kanon.ts` mührünü
+`97e992b838b358ed382bc81b6fee5617fd4a0bb4f27472e4326d2b09bf4e8748` değerinden
+oynatmadı; gömülü kanon canlı kanonla eş ve üretici idempotenttir.
+
+### NOT — öğretim kartı emeklilik borcu kimliklerini öğretmeye devam ediyor
+
+`sarmal ogret` kartı kanondan üretiliyor ve zorunlu kenar bölümünde
+`bağımlılık-beyansız`, `niyet-drift`, `meyvesiz-geliştirme` ve
+`referanssız-geliştirme` gibi kimlikleri öğretiyor. Bu kimlikler 39 açık
+emeklilik borcu kümesindedir ve canlı sicilde hâlâ yaşadıkları için kartın
+onları göstermesi bugünkü gerçeğe uygundur; borç B4 kapsamında Founder
+sırasını beklemektedir. Bulgu bilgi amaçlı nottur.
+
+### NOT — emekli KARARLAR defterinin kalan anmaları
+
+`KARARLAR.md` diskte yoktur ve hiçbir yüz ona bağlanmaz. Kalan anmalar
+`bilgi/` tarihsel envanterlerinde, `eklenti/plan.sar` kapanış kaydında ve
+`cekirdek/src/sarmal.ts` içindeki genel bir açıklama yorumundadır; hepsi
+tarihçe ya da anlatıdır, canlı bağlantı hedefi değildir.
+
+## Gerçek VS Code süiti — teslim hükmünden ayrı ortam maddesi
+
+`eklenti/` içinde `npm run test:vscode` aynen koşuldu. Sürücü bu koşumda
+1.131.0 sürümünü çözdü fakat 321,37 MB'lık indirme üç denemede de 15 saniyelik
+istek zaman aşımına takıldı ve "Failed to download and unzip VS Code 1.131.0"
+hatasıyla bitti; süit Electron barınağına hiç ulaşamadı. Önceki koşumlardaki
+SIGABRT/134 aşamasına dahi gelinemedi çünkü sürücü önbellek yerine yeni sürümü
+indirmeyi seçti ve ağ katmanında düştü. Talimat gereği bu ortam maddesi tur
+teslimi aleyhine bloklayıcı sayılmadı; kaynak eklenti süitinin 381/381 yeşili
+ayrıca ölçülmüştür. Koşum çalışma ağacında iz bırakmadı.
+
+## Kapanış durumu ve kalıcı değişiklik sınırı
+
+Rapor yazılmadan önce ve dört mutasyonun her geri alımından sonra
+`git status --short --untracked-files=all` çıktısı başlangıçtaki tek satıra
+(`?? oz/siniflama/ortu.json`) döndü. Bu raporun eklenmesinden sonraki kapanış
+çıktısında yalnız aynı satır ile talimatın açıkça izin verdiği
+`?? nitelik/goc/belge_kabul_raporu.sar` satırı bulunur. Denetçi
+mutasyonlarının hiçbiri kalıcı değildir; `plan/*.sar` dosyalarına ve
+`oz/siniflama/ortu.json` dosyasına dokunulmamıştır.
+
+## Nihai hüküm — ŞARTLI KABUL
+
+Yedi iddianın ölçülebilir gövdesi bağımsız komutlarla tuttu: on altı yüz iki
+ortamda da sıfır farkla ve DIATAXIS mührüyle üretiliyor, sekiz nöbet yeşil ve
+dört gerçek mutasyonun dördünü de adıyla yakalıyor, yetmiş iki bağlantının
+tamamı çözülüyor, karar indeksi üreticisiyle bayt-eş, kanon mühürleri
+kayıtlarla birebir ve altı kapı (iki tsc, 972/972, 381/381, iki varlıkta
+✖0 ⚠0) eksiksiz geçiyor. Gerçek VS Code süitinin ağ kaynaklı düşüşü ortam
+maddesidir ve hükme katılmamıştır.
+
+Hükmün ŞARTLI olmasının tek nedeni dördüncü iddiadaki tamlık açığıdır: ölü iz
+kanıtının "kalan her geçiş sınıflandı" beyanına rağmen `sarmal.code-snippets`
+içindeki iki kullanıcı-görünür `SD-8`/`SD-10` açıklaması, `onizleme.css`
+içindeki `SD-15` yorumu ve `ogrenme/` alanındaki iki `faz-tarihsiz` geçişi
+sınıflama dışında kalmıştır. Şart şudur: bu üç dosyadaki eski kimlikler final
+kapısından önce güncellenir ya da sahipli borç listesine açıkça yazılır ve
+ölü iz taramasının dosya-türü kapsamı genişletilmiş biçimde bir kez yeniden
+koşulur. Bu şart yerine geldiğinde belge turu teslimi başka hiçbir çekince
+olmaksızın kabul edilebilir durumdadır.
+|<--
+
+Göç( kod: GOC-BELGE-A90-DENETIM,
+     ne: "GOC-BELGE-A01–A05 belge turunun yedi iddiasını bağımsız canlı komutlarla yeniden ölçer; on altı yüzün idempotensini iki ortamda, sekiz nöbeti dört gerçek mutasyonla, yetmiş iki bağlantıyı bağımsız tarayıcıyla, kanon mühürlerini demet formülüyle ve altı kapıyı kendi koşularıyla doğrular; snippet ile css içinde sınıflanmamış üç eski kural kimliği izi bulduğu için ŞARTLI KABUL hükmü verir ve gerçek VS Code süitinin ağ kaynaklı düşüşünü ortam maddesi olarak ayırır." )
+
+-->|
+# GOC-BELGE-A90 · Yeniden-hüküm — 3 Ağustos 2026
+
+Bu bölüm ŞARTLI KABUL hükmünün tek şartını doğuran kalemlerin ve kontrolcünün
+aynı kapıda kapattığı ek bulgunun bağımsız yeniden ölçümüdür. İlk bölümün
+öteki bulguları bu dar kapsamda yeniden hükme açılmamıştır. Yeniden ölçüm
+başlarken çalışma ağacında şartı kapatan altı üretici değişikliği commitsiz
+duruyordu; denetim bu teslim edilen duruma karşı yapıldı ve denetçi yalnız bu
+rapor dosyasına yazdı.
+
+## 1. Snippet ve css halefleri
+
+`eklenti/snippets/sarmal.code-snippets` içindeki iki açıklama doğrudan okundu:
+çağırma açıklaması artık `Çağırma (DIL-1.4) — kod-tabanlı içe-aktarma`, tip
+açıklaması `Kullanıcı-tanımlı tip (TIP-1)` metnini taşıyor ve dosyada `SD-8`
+ile `SD-10` geçişi kalmadı. `eklenti/medya/onizleme.css` birinci satırı
+`DIL-2 insan yüzü` olarak ölçüldü ve `SD-15` geçişi sıfırdır. İki kalem tuttu.
+
+## 2. Öğrenme kaydının halef-önce anlatımı
+
+`ogrenme/ida_dogfood_geribildirim.sar` satır 30'daki tarihli madde listesi
+dokunulmadan `faz-tarihsiz` adını koruyor (elle korunan tarihçe); satır
+41'deki yaşayan ders yönergesi ise `vade nöbeti (MIM-1.2 — o günkü adıyla
+faz-tarihsiz)` biçiminde halefi önce anıyor ve eski adı yalnız tarihsel
+açıklama olarak taşıyor. Kalem tuttu.
+
+## 3. Genişletilmiş taramanın bağımsız tekrarı
+
+Denetçi kendi desenini dosya türü kısıtı olmadan canlı kümede (kök `plan/`,
+`nitelik/`, `durum/`, `.sarmal/`, bağımlılık ve üretim çıktıları hariç)
+yeniden koştu. Eski kural kimliği deseni, ilk bölümde meşru sayılan iki
+bekçi/fikstür dosyası (`fikstur-sekil-drift.txt` ve
+`tani-metni-hijyeni.test.ts`) dışında sıfır geçiş verdi; ilk hükümdeki
+snippet, css ve öğrenme izlerinin üçü de kapanmıştır. Daha önce ıskalanan
+alanlarda (`ogrenme/`, `eklenti/snippets/`, `eklenti/medya/`, `oz/`,
+`sablon/`) emekli tanı taraması yalnız ikinci kalemde sınıflanan iki öğrenme
+geçişini bıraktı. Kapanış `olu_iz_temizlik_kaniti.sar` dosyasına G bölümü
+olarak işlenmiş durumda ve bölüm ölçülen gerçeklikle uyumludur. Kalem tuttu.
+
+## 4. Karşılama kartının tam-denetim nöbeti ve mutasyon kanıtı
+
+`cekirdek/src/ogret.ts` örneği artık `rejim: katı` beyanını taşıyor ve canlı
+`sarmal ogret` çıktısında aynı satır görünüyor. `cekirdek/sinama/ogret.test.ts`
+dosyasına eklenen yeni nöbet `denetimKos` tam boru hattını geçici dizinde
+koşuyor ve süit 6/6 geçti. Nöbetin gerçek koruma sağladığı denetçinin kendi
+mutasyonuyla sınandı: `rejim: katı, ` parçası örnekten çıkarıldığında
+(başlangıç mührü
+`a363d2b33aef16641dce9d3de60e43c18af862a4398a687e5fcb3388dce94231`, mutasyon
+mührü `552fe236fe39c083799ff86656d3c4613f0aa18df4736b0f28ffc89a2e7fbf9d`)
+süit `pass 5 · fail 1` verdi ve düşen tam olarak yeni nöbetti ("kart örneği
+tam denetimde hata taşıyamaz"). Dosya kopyasından geri yazım sonrası mühür
+birebir `a363d2b3...dce94231` değerine döndü ve süit yeniden 6/6 geçti.
+Kalem tuttu.
+
+## 5. Hızlı sağlamlık kapıları
+
+Çekirdek `npx tsc --noEmit` ve eklenti
+`cekirdek/node_modules/.bin/tsc --noEmit -p eklenti/tsconfig.json` komutları
+kod 0 verdi. Çekirdek süiti yeni nöbetle `tests 973 · pass 973 · fail 0`,
+eklenti süiti `tests 381 · pass 381 · fail 0` verdi. İki varlık denetimi
+filtresiz koşuldu ve satır sınıfları sayıldı: Sarmal `hata=0 · uyarı=0 ·
+bilgi=149`, kapalı ürün `hata=0 · uyarı=0 · bilgi=829`; iki komut da kod 0 ile
+bitti. Sarmal bilgi toplamının ilk bölümdeki 150 değerinden 149'a inmesi,
+yeniden ölçüm sırasında denetçi dışında ilerleyen `plan/reform_plani.sar`
+kapanış kaydıyla tutarlı bir açık-adım azalmasıdır ve hükme etki etmez.
+
+## Kapanış durumu
+
+Denetçi mutasyonunun geri alımı sonrası `git status` çıktısında yalnız şartı
+kapatan altı üretici değişikliği, denetçiye ait bu rapor, commit dışı
+`oz/siniflama/ortu.json` ve denetçiye ait olmayan `plan/reform_plani.sar`
+kapanış kaydı bulunmaktadır; denetçinin başka hiçbir izi yoktur.
+
+## Nihai yeniden-hüküm — KABUL
+
+ŞARTLI KABUL hükmünün şartını oluşturan beş iz bağımsız ölçümde kapanmıştır:
+iki snippet açıklaması ve css yorumu kanonik haleflere çevrilmiş, öğrenme
+kaydının yaşayan yönergesi halef-önce anlatıma alınmış ve tarihli listesi
+tarihçe olarak korunmuş, genişletilmiş tarama denetçinin kendi koşusunda da
+canlı kümede sıfır eski kural kimliği ölçmüş ve sonuç kanıt dosyasının G
+bölümüne işlenmiştir. Kontrolcünün ek bulgusu olan karşılama kartı örneği
+gerçek bir düzeltme ve mutasyonla kanıtlanmış kalıcı bir tam-denetim nöbeti
+kazanmıştır. İstenen sağlamlık kapılarının tamamı geçmiştir. Bu nedenle
+GOC-BELGE-A90 yeniden-hükmü **KABUL**'dür; belge turu teslimi çekincesiz
+kabul edilebilir durumdadır.
+|<--
+
+Göç( kod: GOC-BELGE-A90-YENIDEN-HUKUM,
+     ne: "ŞARTLI KABUL şartının beş kalemini 3 Ağustos 2026 tarihinde bağımsız yeniden ölçer; snippet ve css haleflerini doğrudan okumayla, öğrenme kaydını satır satır, genişletilmiş taramayı kendi koşusuyla, karşılama kartının denetimKos nöbetini rejim mutasyonu ve dosya-kopyalı geri alımla doğrular; iki tsc, 973 ve 381 test ile iki varlıkta ✖0 ⚠0 ölçümü sonunda KABUL hükmü verir." )

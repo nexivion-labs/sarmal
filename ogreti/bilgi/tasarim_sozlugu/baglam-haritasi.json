@@ -1,0 +1,66 @@
+{
+  "_meta": {
+    "kod": "KVR-HARITA",
+    "ad": "Bağlam→kavram öneri haritası",
+    "amaç": "Ajanın niyet diyaloğunda kullandığı 'nereye ne gelebilir' rehberi: bağlam (düğüm tipi ya da tip.alan) → aday kavram aileleri. Kavramlar kopyalanmaz, kanon yoluyla anılır (TIP-3: kimlik = kayit.json yolu).",
+    "ilke": "ÖNERİ üretir — tanı, kural, zorunluluk ÜRETEMEZ: şemada zorlayıcı alan tanımlı değildir, denetçi bu dosyayı okumaz, kırık-işaretçi nöbeti yalnız çekirdek sınamasındadır (cekirdek/sinama/baglam-haritasi.test.ts).",
+    "eşleme-kuralı": "ŞEF aktif düğümün tipine (ve doldurulan alana) bakarak bağlam anahtarını seçer — en özel anahtar kazanır: 'Adım.görev' varsa 'Adım'a düşülmez.",
+    "referans": [
+      "TIP-3",
+      "KVR-A02",
+      "nitelik/kavram_harita_tasarimi.sar"
+    ],
+    "tasarım-onayı": "Founder 2026-07-18 — model, anahtar biçimi ve zorlamasızlık güvenceleri üçü de onaylı"
+  },
+  "aileler": {
+    "menü-ailesi": {
+      "soru": "Nasıl bir menü düşünüyorsunuz — tıklayınca liste inen açılır menü mü, kenardan çıkan çekmece mi?",
+      "üyeler": [
+        "onyuz.bilesen.menü",
+        "onyuz.düğme.menü-düğme",
+        "onyuz.bilesen.çekmece",
+        "onyuz.bilesen.menü-çubuğu",
+        "onyuz.bilesen.alt-menü",
+        "onyuz.bilesen.bağlam-menüsü",
+        "onyuz.bilesen.mega-menü"
+      ]
+    },
+    "gezinme-ailesi": {
+      "soru": "Kullanıcı sayfalar arasında nasıl gezinsin — hep görünen üst çubuk mu, alttaki gezinme mi, sekmeler mi?",
+      "üyeler": [
+        "onyuz.bilesen.üst-çubuk",
+        "onyuz.bilesen.alt-gezinme",
+        "onyuz.bilesen.gezinme-rayı",
+        "onyuz.bilesen.gezinme-çekmecesi",
+        "onyuz.bilesen.sekme-çubuğu",
+        "onyuz.bilesen.kırıntı-yolu",
+        "onyuz.bilesen.sayfalama"
+      ]
+    },
+    "eylem-fiilleri": {
+      "soru": "Bu görevde veri nasıl işlenecek — süzülecek mi, dönüştürülecek mi, bir koşula mı bağlanacak?",
+      "üyeler": [
+        "mantik.koşul",
+        "mantik.yinele",
+        "mantik.süz",
+        "mantik.dönüştür",
+        "mantik.indirge",
+        "mantik.sırala",
+        "mantik.dene-yakala"
+      ]
+    }
+  },
+  "bağlamlar": {
+    "Ekran": {
+      "öner": [
+        "gezinme-ailesi",
+        "menü-ailesi"
+      ]
+    },
+    "Adım.görev": {
+      "öner": [
+        "eylem-fiilleri"
+      ]
+    }
+  }
+}

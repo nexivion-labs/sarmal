@@ -1,0 +1,76 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/yeni_tipler.sar — 🍎🔐 YENİ OMURGA TİPLERİ (en küçük geçerli örnekler)
+//
+//   Kanon-verisi turunun sicile kazandırdığı üç tipin öğretim örneği: Meyve
+//   (Adım'ın somut ürünü — üretir konisinde doğar, dosya-zorunlu türler proje
+//   içi yol beyan eder), KimlikKökü (ÇalışmaAlanı'nın tek Auth omurgası) ve
+//   KimlikSağlayıcısı (kapalı taban kataloğundan tür seçer; yeni sağlayıcı
+//   yalnız örtünün katkılı genişletmesiyle eklenir).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Meyve, KimlikKökü ve KimlikSağlayıcısı tiplerinin canlı şemayla birebir, en
+küçük geçerli örneklerini vermek.
+
+## Kapsam
+Bir kimlik omurgası (kök + politika bağı + iki sağlayıcı) ve meyveli tek
+Adım; öğretim dışında iş taşımaz.
+
+## Sonuç
+Dosya tek başına denetimden temiz geçer; her zorunlu alan ve sarma bağı
+şemadaki hâliyle görünür.
+|<--
+ÇalışmaAlanı( kod: ORN-YT-CA, ne: "yeni tiplerin öğretim bahçesi" ) {
+
+  // KimlikKökü: ÇalışmaAlanı'nın tek Auth omurgası — sağlayıcılar yalnız
+  // bu kökün altında yaşar (köksüz sağlayıcı ihlaldir).
+  KimlikKökü( kod: ORN-YT-KIMLIK ) {
+    KimlikSağlayıcısı( kod: ORN-YT-GOOGLE, tür: google,
+      ne: "taban katalogdan bir sağlayıcı — tür kapalı enumdan seçilir" )
+    KimlikSağlayıcısı( kod: ORN-YT-SSO, tür: sso,
+      ne: "kurumsal tek oturum — aynı kökün ikinci sağlayıcısı" )
+  }
+
+  -->|
+  ## Amaç
+  Meyve tipinin doğuşunu en küçük katı projede göstermek.
+  ## Kapsam
+  Tek teknoloji, tek zincir, meyveli tek Adım.
+  ## Sonuç
+  Denetim temiz geçer; iki meyve türü şemadaki hâliyle görünür.
+  |<--
+  Proje( kod: ORN-YT-PRJ, ad: "meyve-ornegi", rejim: katı,
+    ne: "Meyve tipinin üretir konisinde doğuşunu gösteren en küçük katı proje" ) {
+    Teknoloji( kod: ORN-YT-TEK, ne: "örnek teknoloji — Katman bağı için" )
+    Faz( kod: ORN-YT-F1, ad: "örnek dönemi", ne: "tek yapraklı öğretim mevsimi" ) {
+      -->|
+      ## Amaç
+      Meyveli Adımı tek gövdede taşımak.
+      ## Kapsam
+      Tek Katman zinciri ve iki meyve ilanı.
+      ## Sonuç
+      Adım kapanınca meyveler teslim sayılır.
+      |<--
+      Blok( kod: ORN-YT-B1, ne: "öğretim gövdesi" ) {
+        Katman( kod: ORN-YT-K1, ad: "uretim", kullanır: ORN-YT-TEK ) {
+          AltKatman( kod: ORN-YT-AK1, departman: kodlama, ad: "meyve modülü" ) {
+            Adım( kod: ORN-YT-A01, durum: beklemede,
+              ne: "Meyvenin üretir konisinde doğuşunu göstermek",
+              görev: "Somut ürün, üreten Adım'ın üretir bağında Meyve düğümü olarak ilan edilir",
+              kabul: [ "Meyve dosya-zorunlu türdeyse proje içi yolu diskte çözülür" ],
+              bağımlı: [],
+              üretir: [
+                // Kod türü dosya-zorunludur: proje kökü içinde çözülen somut yol.
+                Meyve( kod: ORN-YT-MEYVE-KOD, tür: Kod, dosya: "ornek/format/yeni_tipler.sar",
+                  ne: "dosya-zorunlu türün örneği — bu öğretim dosyasının kendisi" ),
+                // dış-çıktı türü kanonik muafiyet kataloğundandır: dosya beyanı istemez.
+                Meyve( kod: ORN-YT-MEYVE-RAPOR, tür: dış-çıktı,
+                  ne: "dosya-muaf türün örneği — repo dışına giden rapor" )
+              ] )
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,178 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/mutabakat_denetim_raporu.sar — 🏛️ KURAL↔KOD MUTABAKAT DENETİMİ
+//
+//   Founder talimatı (2026-07-06): "tüm ajanları göreve çağır acımasızca
+//   incelesinler... gerçek ve ispatlı kanıtlı belgeler ile bulguları rapor
+//   olarak sun, beraber istişare edin ve ortak bir karar alın."
+//   Founder çerçevesi: bulgular hata değil İKİ YÖNLÜ KAYIT BORCU — talimatlar
+//   bazen doğrudan koda aktı (deftere yazılmadan), bazen deftere yazıldı
+//   (koda bağlanmadan). İkisi de gerçek kural; iş = mutabakat.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🏛️ Sarmal'ın YAZILI kuralları (yasa + SNF-0 kanonu) ile YAŞAYAN kuralları
+  (motor + eklenti kodu) arasındaki tüm açıkları iki yönde listelemek ve
+  birleştirme kararlarını Founder onayına hazırlamak. Kapsam: YALNIZ Sarmal
+  dili/söz dizimi/şema/eklenti — orkestrasyon zekâsı ertelendi (Founder).
+
+  ## Yöntem
+  🔬 Dört bağımsız İç Denetim uzmanı (① yasa↔motor · ② kanon↔motor ·
+  ③ söz-dizimi↔parser · ④ eklenti↔kanon) + CEO öz-denetimi. Toplam 60+ ampirik
+  deneme (gerçek motor `dogrula()`/`kuralDenetle` + gerçek TextMate tokenizer),
+  her bulgu dosya:satır kanıtlı; kanıtsız iddia "şüphe" etiketiyle ayrıldı.
+  ⚠️ DeepSeek köprüsü bu oturumda ulaşılamadı (betikler eski oturum scratchpad'inde,
+  anahtar ortamda yok) — dış-model sesi bu tura KATILAMADI; dürüstçe kayıt düşüldü.
+
+  ## Ana Tablo — sağlık
+  ✅ SAĞLAM ÇIKAN: yalancı-bekçi 0 ("MOTORDA ✅" damgalı HER iddia kodda var,
+  mühür/ebedi.kilit.json canlı) · SD-1..15'in 9'u satır-satır birebir ·
+  soz_dizimi.sar kendi motorundan 0 tanıyla geçiyor · çekirdek şema hattı
+  (zorunlu/koşullu/enum/belge/bölüm) ampirik yeşil · 94/94 tip şemalı ·
+  eklenti 13/13 komut birebir · dark-palet 29/29 kanonla eş · tanı köprüsü doğru.
+
+  <sutun-a>
+  ## SÜTUN A — KODDA VAR, KANUNA İLAN EDİLECEK (sessiz-bekçiler)
+  Motor zorluyor, hiçbir yasa ilan etmiyor (①-B kümesi, grep kanıtlı ~13 tanı):
+
+  | Tanı | Kod kanıtı | Gideceği yasa |
+  |---|---|---|
+  | eksik-alan (şema ailesi) | dogrulayici.ts:219-237 | bicim.sar (BÇ) |
+  | kayıp-yapı (HATA!) | denetci.ts:131-142 | yapi.sar (YP-1 4. bekçi) |
+  | geçersiz-enum | dogrulayici.ts:183-190 | soz_dizimi.sar (SD-4) |
+  | geçersiz-tür (DR-3 tarih CANLI) | dogrulayici.ts:200-207,133 | surec.sar (DR-3 ⏳→✅) |
+  | geçersiz-durum · geçersiz-renk · düşük-kontrast · mühürsüz-ebedi · ağırlık-toplamı · eşik-sırası · açık-hatırlatıcı · beceri-terfisi · gelistirmede-capa · tek '=' yasağı | dogrulayici/kuralci/tema/belirtec | ilgili kategoriler |
+
+  Ayrıca: DL-2 yasada "beklemede" ama motor CANLI zorluyor (denetci.ts:186-211)
+  + yasadaki tanı adı (ad-ihlali) kodda yok → beyan CANLI'ya çekilir, ad eşitlenir.
+  K-53 kanalları (teşekkür/takdir/onur/öneri) dile yazılıyor (takdir.ts:141) ama
+  kayit.json semalar.Adım'da YOK → Founder talimatıydı, kanona opsiyonel İLAN edilir.
+  </sutun-a>
+
+  <sutun-b>
+  ## SÜTUN B — KANUNDA VAR, KODA BAĞLANACAK (boş vaatler + dürüst bekleyenler)
+
+  ACİL (kanon yanlış beyan ediyor — ya bağla ya dürüstleştir):
+  | İddia | Kanıt | Hüküm önerisi |
+  |---|---|---|
+  | 22 yüzey şeması "motor ayrıca uyarır" | kayit.json:1382+21 eş · Ekran(kod'suz)→0 tanı | tarif-eksik'i widget'lara genişlet YA beyanı sil |
+  | semalar.Kural BÜTÜNÜYLE bypass | dogrulayici.ts:101 yalnız tur==='widget' · Kural(otorite:padişah)→0 tanı | semaDenetle'ye kuralTanım/tipTanım dahil et |
+  | yapisalKurallar "= HATA" | kayit.json:895-900 · iki apex→0 tanı | ⏸️ zorlama=orkestrasyon-runtime (Founder erteledi); etiket "beklemede (runtime)" diye DÜRÜSTLEŞTİRİLİR |
+  | hover "sözleşme-kırılması (Denetçi)" | ipucu.ts:98 · kodda tanı yok | hover metni düzeltilir |
+  | SD-9 argümanlı-uygulama + örnek `.uzunluk` | kuralci: skaler=sabit, alan yok → SESSİZ | belirsiz→"zorlanamayan" UYARISI (sessizlik yasağı) + örnek düzeltilir |
+  | SD-3 "kod: İLK ve ZORUNLU" | parser/şema hiçbiri zorlamıyor (Proje zorunlu:[]) | FOUNDER HÜKMÜ → zorlanacaksa şemalara kod eklenir |
+  | negatif sayı parse edilemiyor ama turUymaz bekliyor | T3b hata · dogrulayici:131 ölü dal | tekli eksi parser'a eklenir; '1.2.3' lexer'ı sıkılır |
+  | bilinmeyen-alan sessiz kayboluyor | Etmen(uydurmaAlan:x)→0 tanı | bilinmeyen-alan UYARISI (opsiyonel listesine karşı) |
+  | sarmal denetle kapısı dogrula() KOŞMUYOR | 2 bağımsız probe: uydurma-tipli proje "✅ Drift yok" | EN BÜYÜK İŞ: kapıya dogrula bağlanır |
+
+  DÜRÜST BEKLEYENLER (~25 vaat, "beklemede" beyanlı — sıra planına girer):
+  yabancı-isim · özel-isim-sızıntı · kural-format-eksik · BL-1..4 · GR-1 ·
+  YZ-1..5 · DR-1..9 (DR-3 kısmen canlı) · çok-birim · yığın-toplayıcı.
+  </sutun-b>
+
+  <sutun-c>
+  ## SÜTUN C — İKİSİNDE DE VAR, ÇELİŞİYOR (Founder hükmü gereken dil kararları)
+
+  | Çelişki | Taraflar | Not |
+  |---|---|---|
+  | yöntem ↔ metod | eklenti öğretiyor: yöntem (tamamlama.ts:134) · kanon+motor: metod | kullanıcıya görünen çatal — TEK kelime seçilmeli |
+  | SD-2 snake_case ↔ DL-2 kebab | .sar adları: _ ZORUNLU · artefakt adları: _ YASAK | iki standart bilinçli mi? yasaya açıkça yazılmalı |
+  | kapsam enum'u | kanon: [etmen,genel,tümü] · kuralci: tip adı/aile/KOD kabul | kod davranışı zengin — kanon koda mı çekilir? |
+  | ana-yok ↔ kural-ihlali | yasa tanı adı · kodun gerçek kodu | ad eşitlenir (mekanik) |
+  | hover sözlüğü ASCII ↔ kanon diacritikli | ~25 ölü giriş (ipucu.ts:43-117) | diacritikliye eşitlenir (mekanik) |
+  | dizin.md haritası | soz-dizimi.md bayat + guvenlik.sar (EBEDİ yasa!) haritada hiç yok | harita gerçeğe çekilir (mekanik) |
+  </sutun-c>
+
+  <sutun-d>
+  ## SÜTUN D — ÇOKLU KAYIT, TEK KAYNAĞA İNER (drift tohumları; bugün eşit, ilk değişimde patlar)
+
+  | Kopya | Yerler |
+  |---|---|
+  | Adım durum enum'u ×3 | kayit.json + dogrulayici.ts:295 + yolharitasi.ts:21 |
+  | KATMANLAR set'i | kuralci.ts:23 elle (kanondan okumaz) |
+  | açık-tema paleti | package.json [*Light*] elle (renk-uret.mjs yazmıyor) — "elle boya YASAK" ilkesinin ihlali |
+  | rozet/dekorasyon renkleri | yildiz.ts:58 #FFD60A ("kanondan" diyen yorumla!) · takdir.ts #FF4D4D (kanonda yok) · girinti.ts 6 rengin 4'ü kanon-dışı · onizleme.ts bayat fallback |
+  | adimSemasi ↔ semalar.Adım | çift-ev + iskeletci KONI elle kopya |
+  | YEDEK_ENUM anahtarı | 'yöntem' — kanon anahtarıyla (metod) uyuşmayan "yedek" = ikinci gerçek |
+  | ÖLÜ ÜST-ANAHTARLAR | formatKanonu (bekleyenMotorIsleri BAYAT: türDenetimi bitmiş, listede) · alanTurleri · alanKurallari · agacMetaforu — ya okunur hale gelir ya kanondan belgeye taşınır |
+  </sutun-d>
+
+  <istisare>
+  ## İSTİŞARE — kadronun ortak teşhisi
+
+  Dört uzman ÇELİŞMEDİ; bulgular tamamlayıcı ve tek desene çıkıyor:
+  **"Değişiklik tek katmanda yapılıyor, kardeş katmanlara işlenmiyor."**
+  ① "motor yasanın önüne geçmiş" (kod>yasa) · ② "kanon yapmadığını vaat ediyor +
+  yarısı ölü veri" (kanon>kod) · ③ "zorlama beyanları tutulmamış, sessiz ölüm var"
+  · ④ "üretici+nöbetçi koridoru gerçek ama dar — dışı elle atölye". CEO öz-denetimi
+  aynı hastalığı KENDİ aynı-gün kodunda buldu (MCP elle-liste, Prizma 2 açık —
+  üçü de kapatıldı: 258c0f7, 5832a11). Founder çerçevesi teşhisi TAMAMLADI:
+  bunlar suç değil, kayıt borcu — talimat neredeyse gerçek orası.
+
+  Ortak İLKE önerileri (kadro oybirliği):
+  1. **Beyan disiplini:** her tanı doğduğu commit'te yasaya ilan edilir; her yasa
+     zorlaması ya "✅ MOTORDA" ya "⏳ beklemede" — üçüncü hal yok. (Yeni BÇ kuralı.)
+  2. **Sessizlik yasağı:** motor değerlendiremediğini SÖYLER — belirsiz kural
+     koşulu, bilinmeyen alan, yinelenen KOD sessiz geçmez.
+  3. **Tek-kaynak tamiri:** elle kopyalar üreticiye bağlanır ya da nöbetçi kapsar;
+     nöbetçinin KAPSAMADIĞI yüzey "0 drift" tabelası taşıyamaz.
+  4. **Dürüst erteleme:** orkestrasyon-runtime işleri (yapisalKurallar zorlaması,
+     uygular: bağı, kenar deposu/graf) kanonda "beklemede (runtime)" etiketlenir —
+     Founder: "orkestrasyon zekâsına daha geçmedik, vakit var."
+  </istisare>
+
+  ## Sonuç
+  ✅ Kabul: bu rapor dört sütunuyla mutabakat turunun TEK kaynak listesidir;
+  aşağıdaki kararlar Founder onayıyla kilitlenir, tur sütun sırasına göre koşulur:
+  A (ilan, ucuz) → C (Founder hükümleri) → D (tek-kaynak) → B (kod bağlama; kapı önce).
+  Kenarlar/graf-motoru veri sohbeti ayrı oturuma park edildi (HTR-GRAF-KENAR).
+|<--
+
+Karar( kod: KRR-MUT-1, durum: kilitli,
+       ne: "Mutabakat turu dört sütun halinde koşulur: A ilan → C hüküm → D tek-kaynak → B kod-bağlama",
+       karar: "Kural↔kod açıkları iki yönlü kayıt borcudur; sütun sırası A→C→D→B, kapıya dogrula() bağlanması B'nin ilk işidir",
+       gerekçe: "Founder çerçevesi (2026-07-06): 'kodda olanlar kanunda da olsun, kanunda olanlar kodda da olsun' — ucuz/mekanik işler önce, Founder hükümleri erken alınır ki mekanik tur tek seferde doğru koşsun" )
+
+Karar( kod: KRR-MUT-2, durum: kilitli,
+       ne: "Beyan disiplini yasalaşır: tanı ile yasa aynı commit'te doğar",
+       karar: "Her yeni tanı kodu doğduğu commit'te ilgili yasa dosyasına '🤖 Zorlama' satırıyla ilan edilir; mevcut ~13 sessiz-bekçi geriye dönük ilan edilir",
+       gerekçe: "① no'lu uzman teşhisi: drift koddan yasaya akıyor; ilaç tek disiplin — bicim.sar'a BÇ kuralı olarak yazılır, ileride kural-format-eksik bekçisiyle makineleşir" )
+
+Karar( kod: KRR-MUT-3, durum: kilitli,
+       ne: "Sessizlik yasağı: motor değerlendiremediğini söyler",
+       karar: "Belirsiz kural koşulu → 'zorlanamayan' uyarısı; bilinmeyen alan → 'bilinmeyen-alan' uyarısı; yinelenen KOD → 'yinelenen-kod' tanısı",
+       gerekçe: "③-B2 (SD-9 örneği sessiz ölür) + ②-B9 (uydurma alan sessiz) + CEO probe (çift KOD sessiz): sessiz kabul = en sinsi drift; K-40 tam-isabet ruhu" )
+
+Karar( kod: KRR-MUT-4, durum: kilitli,
+       ne: "Dürüst erteleme: orkestrasyon-runtime zorlamaları kanonda 'beklemede (runtime)' etiketlenir",
+       karar: "yapisalKurallar '= HATA' metni, uygular: bağı ve kenar-deposu işleri kod yazılmadan yalnız ETİKET dürüstleştirilir; zorlama RAY-3 turunda gelir",
+       gerekçe: "Founder: 'orkestrasyon zekâsına daha geçmedik' — kanonun yalan söylemesi bugün biter, motorlaşması runtime turunda; governance≠derleyici çizgisi korunur" )
+
+Karar( kod: KRR-MUT-5, durum: kilitli,
+       ne: "Nöbetçi kapsam genişletmesi: '0 drift' tabelası ancak kapsanan yüzey için",
+       karar: "palette-drift nöbetçisi 14 aileye + [*Light*] bloğuna + rozet/dekorasyon renklerine genişletilir; YEDEK_ENUM içerik-anahtarı kanonla karşılaştırılır",
+       gerekçe: "④-B4: nöbetçi dar koridoru koruyup kapıda genel tabela taşıyor; kapsam ilanı gerçek kapsama eşitlenir" )
+
+// ── Founder hükümleri (Sütun C · 2026-07-06 onayı — dördü de aynı oturumda) ──
+
+Karar( kod: KRR-MUT-6, durum: kilitli,
+       ne: "HTTP alan adı: metod (yöntem değil)",
+       karar: "Kanon+motor zaten metod tanır; eklenti (tamamlama.ts:134 + YEDEK_ENUM + ipucu.ts) metod'a çekilir — kullanıcıya görünen çatal kapanır",
+       gerekçe: "Founder hükmü: en az dokunuş, kanon esas; iki dosya düzeltilir, 94 şema + örnekler yerinde kalır" )
+
+Karar( kod: KRR-MUT-7, durum: kilitli,
+       ne: "Çift ad standardı BİLİNÇLİ: .sar dosyaları snake_case (SD-2) · artefakt/belge adları kebab-case (DL-2)",
+       karar: "İki standart korunur; SD-2 ve DL-2 metinlerine karşılıklı atıf + gerekçe yazılır — çatallanma yasada görünür olur",
+       gerekçe: "Founder hükmü: kaynak-kod kimliği (snake, dil-dosyası sinyali) ile artefakt taşınabilirliği (kebab, ASCII-güvenli) farklı ihtiyaçlar — ayrım kasıtlı, artık belgeli" )
+
+Karar( kod: KRR-MUT-8, durum: kilitli,
+       ne: "kod: kimlik kuralı UYARI düzeyinde makine-bekçili olur",
+       karar: "Ana tip şemalarına kod zorunluluğu eklenir (yüzey yaprakları muaf — görsel ağaç) + kod var ama ilk parametre değilse 'kod-ilk-değil' uyarısı; SD-3 metni gerçek kapsama eşitlenir",
+       gerekçe: "Founder hükmü: kimlik omurgası bekçisiz kalamaz ama eski dosyaları kırmamalı — uyarı düzeyi geçiş yumuşaklığı sağlar" )
+
+// KAPANIŞ 2026-07-11: Founder graf oturumu YAPILDI (dış mühendis gözlemi + VIT-GRAF kararları) — istenen
+// üçü de canlı: kenar deposu (dagKur + kanonik graf JSON yüzü KOD-GRAF-YUZ) · üretir↔referans çaprazı
+// (kayıp-kenar kapısı) · graf sorgusu (sarmal graf / etki + MCP graf aracı).
+Hatırlatıcı( kod: HTR-GRAF-KENAR-SOHBETI, durum: tamamlandı, çapa: gelecek, öncelik: p2,
+             ne: "Founder (2026-07-06): 'bütün kenarlar birbirlerine ne kadar bağlı, graf motorunun düzgün çalışması için hangi verileri getirmemiz gerek — yavaş yavaş konuşuruz.' Bugünkü gerçek: kenarlar tip-denetli (referansTanilari) ama KALICI KENAR DEPOSU yok (çağır→bağımlı çevrimi yazılmıyor, üretir↔referans çaprazı denetlenmiyor, graf sorgusu yok). Sohbet başlığı: kenar deposu şeması + çift-yön doğrulama + koni üretimi için graf gezinme ihtiyaçları.",
+             dönüşTetikleyici: "Founder graf/kenar oturumunu açtığında — RAY-3 orkestratör tasarımından önce" )

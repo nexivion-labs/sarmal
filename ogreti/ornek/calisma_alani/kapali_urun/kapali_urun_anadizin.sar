@@ -1,0 +1,20 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// kapali_urun/kapali_urun_anadizin.sar — 🔒 KAPALI ÜRÜN (çatının yayımlanmayan projesi)
+//   Kendi kökü, kendi deposu (MIM-3); açık araca bağımlı olabilir, tersi yasaktır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🔒 Açık aracın üstünde yükselen, yayımlanmayan ürün — çatının gelir kaynağı.
+  ## Kapsam
+  📦 Ürünün kendi gövdesi. Kapsamaz: açık aracın kodu; araç ayrı projede yaşar
+  ve ürün ona yalnız bağımlılık olarak bakar.
+  ## Sonuç
+  ✅ Kabul: ürün açık aracın yayımlanmış sürümüyle çalışır ve kendi deposu dışına sızmaz.
+|<--
+
+Proje( kod: PRJ-ORNEK-KAPALI, ad: "kapali_urun", rejim: katı, görünürlük: gizli,
+  ne: "Çatının yayımlanmayan kapalı ürünü" ) {
+  Teknoloji( kod: TEK-ORNEK-KAPALI-TS, ne: "TypeScript çalışma dili" )
+  Raf( kod: RAF-ORNEK-KAPALI-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}

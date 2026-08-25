@@ -1,0 +1,98 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/gercek/arkayuz_servis_uc_sozlesme.sar — 🔌 ARKA YÜZ ÜÇLÜSÜ
+//
+//   NE ÖĞRETİR. Arka yüzün üç tipi birlikte çalışır ve birlikte öğrenilir:
+//   Servis iş mantığının kabıdır, Uç dışarıya açılan adrestir, Sözleşme ise
+//   verinin biçimidir. Aralarındaki iş bölümü kanonun kilitli kuralıdır ve tek
+//   cümleyle şudur: VERİ ŞEMASI ASLA UÇ'TA YAŞAMAZ, SÖZLEŞME'DE YAŞAR. Uç
+//   yalnız yolu, yöntemi ve hangi sözleşmeye bağlandığını söyler.
+//
+//   NEDEN AYRI DURURLAR. Aynı veri biçimi birden çok uçtan geçebilir; şema uca
+//   yazılırsa her uçta bir kopya doğar ve kopyalar zamanla sessizce ayrışır.
+//   Sözleşme tek kaynak olduğunda bir alanın kuralı bir yerde değişir ve o
+//   alanı kullanan bütün uçlar aynı anda değişmiş olur.
+//
+//   KOPYALA-ÇALIŞTIR: bu dosya olduğu gibi `sarmal denetle <dosya>` ile sıfır
+//   hata verir. Kendi projene taşırken kodları ve yolları değiştirmen yeter.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Arka yüzün üç tipini birlikte çalışır hâlde göstermek: Servis iş mantığını
+kaba alır, Uç dışarıya açılan adresi verir, Sözleşme ise verinin biçimini tek
+kaynakta tutar.
+
+## Kapsam
+Bir teknoloji ilanı, bir sözleşme rafı, üç sözleşme ve iki uç taşıyan tek bir
+servis. Gerçek kod yazılmaz; bu dosya yalnız niyeti ve iş bölümünü ilan eder.
+
+## Sonuç
+Dosya olduğu gibi denetimden sıfır hata ile geçer ve veri şemasının Uç'ta
+değil Sözleşme'de yaşadığı kuralını çalışan bir örnekle öğretir.
+|<--
+Proje( kod: PRJ-ARKAYUZ-ORNEK, ad: "arkayuz_ornegi", rejim: esnek,
+       ne: "Arka yüz üçlüsünün çalışan örneği: Servis, Uç ve Sözleşme birlikte" ) {
+
+  Teknoloji( kod: TEK-NODE, ne: "Node.js çalışma zamanı — servis gövdesi bu dille yazılır" )
+
+  // ── Sözleşmeler kendi rafında yaşar ───────────────────────────────────────
+  //   Sözleşme yalnız Raf ya da Mekanizma altına konabilir; Servis'in içine
+  //   yazılamaz. Gerekçe şudur: sözleşme birden çok servisin ortak dilidir ve
+  //   bir servisin özel malı değildir.
+  Raf( kod: RAF-SOZLESME, yol: "sozlesme/", ne: "veri ve uç sözleşmelerinin rafı" ) {
+
+    // VERİ YÜZÜ: `alanlar` haritası. Alan tarifi kompakt yazılır —
+    // "tür · kural · kural" biçiminde, her kural tek sözcükle.
+    Sözleşme( kod: SZL-KULLANICI, sürüm: "1.0.0",
+              ne: "Kullanıcı kaydının veri biçimi — bu şema tek kaynaktır ve uçlara kopyalanmaz",
+              alanlar: {
+                kimlik:   "metin · zorunlu · tekil",
+                eposta:   "metin · zorunlu · eposta-biçimi",
+                ad:       "metin · zorunlu · en-az-2",
+                durum:    "metin · zorunlu · aktif|askıda|kapalı",
+                kayıtTarihi: "tarih · zorunlu · geçmiş"
+              } )
+
+    // UÇ YÜZÜ: `istek` ile `yanıt`. Aynı sözleşme hem veri hem uç yüzü
+    // taşıyabilir; burada iki ayrı sözleşmeyle gösterilir ki iş bölümü
+    // okunur kalsın.
+    Sözleşme( kod: SZL-KULLANICI-ARA, sürüm: "1.0.0",
+              ne: "Kullanıcı arama ucunun istek ve yanıt biçimi",
+              istek: {
+                sorgu:  "metin · zorunlu · en-az-2",
+                sayfa:  "sayı · opsiyonel · varsayılan-1",
+                boyut:  "sayı · opsiyonel · en-çok-100"
+              },
+              yanıt: {
+                toplam:  "sayı · zorunlu",
+                kayıtlar: "dizi · zorunlu · SZL-KULLANICI"
+              } )
+
+    Sözleşme( kod: SZL-KULLANICI-OLUSTUR, sürüm: "1.0.0",
+              ne: "Kullanıcı oluşturma ucunun istek ve yanıt biçimi",
+              istek: {
+                eposta: "metin · zorunlu · eposta-biçimi",
+                ad:     "metin · zorunlu · en-az-2"
+              },
+              yanıt: {
+                kimlik: "metin · zorunlu · tekil"
+              } )
+  }
+
+  // ── Servis: iş mantığının kabı, Uç'ları sarar ─────────────────────────────
+  //   `dosya` alanı üretim yerini beyan eder: kod yazıldığında oraya düşer.
+  //   Yazılmazsa ağaçtan türetilir; beyan konvansiyonu geçersiz kılar.
+  Servis( kod: SRV-KULLANICI, dosya: "src/servis/kullanici.ts",
+          ne: "Kullanıcı servisi — kayıt, arama ve oluşturma işlerini tek kimlik altında toplar" ) {
+
+    // Uç yalnız ADRESİ ve BAĞLANDIĞI SÖZLEŞMEYİ söyler; şema burada yaşamaz.
+    // `metod` yazılmazsa GET kabul edilir; okunurluk için yine de yazılır.
+    Uç( kod: UC-KULLANICI-ARA, yol: "/kullanici/ara", metod: GET,
+        sözleşme: SZL-KULLANICI-ARA,
+        dosya: "src/servis/kullanici/ara.ts" )
+
+    Uç( kod: UC-KULLANICI-OLUSTUR, yol: "/kullanici", metod: POST,
+        sözleşme: SZL-KULLANICI-OLUSTUR,
+        dosya: "src/servis/kullanici/olustur.ts" )
+  }
+}

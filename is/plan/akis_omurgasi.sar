@@ -1,0 +1,170 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/akis_omurgasi.sar — 🧭 AKIŞ OMURGASI (geliştirici yolculuğu · NAVİGASYON)
+//
+//   Dayanak: YUZ-1 (index/navigasyon, TAŞIMA DEĞİL). Bu dosya yeni yasa/kavram
+//   ÜRETMEZ — mevcut omurgayı (5 yüze dağılmış) tek haritada İŞARET eder. Kaynak
+//   gerçek yasa dosyalarında kalır; burası "hangi durakta neye bakılır" pusulası.
+//   İki bağımsız kazı (Claude + Sol) + 276 adımlık eski ürün korpusu DESEN'iyle doğrulandı.
+//
+//   İKİ ÖLÇEK:  MAKRO = EVRE-1 (DOĞUŞ→YASA→İSKELET→KONİ→🔒OLGUNLUK) → EVRE-2
+//              (KODLA→ÇALIŞTIR→DÜZELT→DURUM), ORK-7 iş akışı kapıları · yasa/kanon/ork.sar.
+//              MİKRO = bir Adım kodlanırken AŞ-0..AŞ-10, ORK-7 kodlama akışı ailesi · yasa/kanon/ork.sar.
+//   Her durak: giriş · çıkış · yöneten yasa · bekçi(ler) · şablon · format-örneği ·
+//   garanti · geçiş. Pointer'lar METİN (yasa dosyaları tek-kaynak; burada atıf).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🧭 Geliştiricinin (AI ajan; insan = onay makamı) bir işi sıfırdan bitirirken
+  geçtiği doğal durakların TEK haritası. İcat değil kazı: her durak sistemde ZATEN
+  var, burada yalnız görünür + gezinilebilir kılınır.
+  ## Kapsam
+  📦 KAPSAR: 7 makro durak (ORK-7) + mikro AŞ-0..10 + her durağın yasa/bekçi/
+  şablon/format pusulası. KAPSAMAZ: yasa metninin kendisi (is_akisi · kodlama_akisi ·
+  dogus_omurgasi — orada yaşar) · orkestrasyon zekâsı (STR-3 gizli · OS).
+|<--
+İşAkışı( kod: OMR-KOK,
+  ne: "🧭 Akış omurgası kökü — geliştirici yolculuğu index'i; MAKRO (EVRE-1/2 · ORK-7) + MİKRO (AŞ-0..10). Mevcut yasaları işaret eder, taşımaz (YUZ-1)." )
+
+
+// ══════════════════ EVRE 1 · PLAN (kod YOK · konuşarak olgunlaşır) ══════════════════
+
+-->|
+  ━━ DURAK 1 · 🌱 DOĞUŞ ━━ (yasa: MIM-1.1 · MIM-1.4 · MIM-3)
+  • Giriş: henüz yapı/kod yok; önce mimari sorular (başla mimari-diyalog).
+  • Çıkış: <varlık>_anadizin.sar — Teknoloji/Takım + Kitaplık/Raf/yol mimarisi
+    (plan GÖMÜLMEZ). Şablon: sablon/proje.sar. Format: ornek/format/dalga2_teknoloji.
+  • Bekçiler (denetci.ts): ana-yok · rafsız-anadizin · anadizin-plan-karışması ·
+    teknolojisiz-yüzey · doğuş-sırası. Drift-anahtarı: doğuşsuz-plan.
+  • Garanti: dosya yerleri + teknoloji zemini TAHMİN değil, önceden ilanlı (MIM-3).
+  • Geçiş: kök+teknoloji+mimari görünür → Yasa/Mekanizma doğabilir.
+|<--
+İşAkışı( kod: OMR-DOGUS,
+  ne: "🌱 DOĞUŞ — kimlik + Teknoloji/Takım + anadizin mimarisi (plan ayrı). Yasa MIM-1.1 · MIM-1.4 · MIM-3 · şablon proje.sar · bekçi ana-yok/rafsız-anadizin/anadizin-plan-karışması/doğuş-sırası." )
+
+-->|
+  ━━ DURAK 2 · ⚖️ YASA + MEKANİZMA ━━ (yasa: YAS-2 · TIP-1.7 · MIM-1)
+  • Giriş: kimlik/teknoloji/mimari ilanlı.
+  • Çıkış: Anayasa/Kural düğümleri + kesişen altyapı Mekanizma (BİR KEZ ilan,
+    adımlar referans verir). Şablon: sablon/mekanizma.sar. Format: dalga1_yasa.
+  • Bekçiler (kuralci.ts): kural-ihlali · kural-çatışması · ebedi-ihlal ·
+    bilinmeyen/boş-kapsam · doğrulanamayan-tanı-iddiası. Bekçi↔kural bağı = .sar
+    Kural düğümünün `tanı:` alanı (frontmatter DEĞİL).
+  • Garanti: planı sınırlayan kurallar görünür; RBAC/telemetri kopyalanmadan referanslı.
+  • Geçiş: plan düğümleri yasa+mekanizmalara KOD kenarlarıyla bağlanabilir.
+|<--
+İşAkışı( kod: OMR-YASA,
+  ne: "⚖️ YASA + MEKANİZMA — Anayasa/Kural + kesişen altyapı (bir kez ilan). Yasa YAS-2 · TIP-1.7 · MIM-1 · şablon mekanizma.sar · bekçi kural-ihlali/çatışma/ebedi-ihlal/kapsam (kuralci.ts). Bağ = Kural.tanı alanı." )
+
+-->|
+  ━━ DURAK 3 · 🧱 İSKELET / DİKEY-DİLİM ━━ (yasa: MIM-1.3 · MIM-1.6 · ORK-2.3 · MIM-1)
+  • Giriş: anadizin + teknoloji + yasa + ortak mekanizmalar mevcut.
+  • Çıkış: plan/*.sar içinde TAM-ZİNCİR Faz→Blok→Katman→Adım + Gereksinim + Kapı +
+    bağımlı DAG. Blok = dikey dilim (ön+arka+güvenlik BİRLİKTE). Şablon: sablon/
+    blok.sar · arkayuz.sar · ekran.sar. Format: dalga1_plan · dalga3_arkayuz/yuzey.
+  • Bekçiler (denetci.ts/dag.ts): silo-blok · kavuşumsuz-dilim · kavuşumsuz-paralellik ·
+    fazsız-blok · katmansız-adım (tam-zincir · MIM-1) · izinsiz-sarma ·
+    döngüsel/öz/kopuk-bağımlılık · durum-tutarsızlığı. Ray: `sarmal ray` (blokRayi).
+  • Garanti: bağımlı/besler'den topolojik sıra türetilir; Blok durumu Adımlardan hesaplanır.
+  • Geçiş: geliştirilecek Adımlar koni+bağımlılıkla dolar.
+|<--
+İşAkışı( kod: OMR-ISKELET,
+  ne: "🧱 İSKELET/DİKEY-DİLİM — tam-zincir Faz→Blok→Katman→Adım + DAG + `sarmal ray`. Yasa MIM-1.3 · MIM-1.6 · ORK-2.3 · MIM-1 · şablon blok/arkayuz/ekran.sar · bekçi silo-blok/kavuşumsuz-dilim/fazsız-blok/katmansız-adım/DAG." )
+
+-->|
+  ━━ DURAK 4 · 🎯 KONİ + KAVUŞUM ━━ (yasa: MIM-1.6 · ORK-2.3 · MIM-2.1)
+  • Giriş: Adım iskeleti + üretilecek yüzey/arkayüz düğümleri ilanlı.
+  • Çıkış: her Adım koni-dolu (görev·kabul·referans·bağımlı·dokunulmaz·sınır) +
+    üretir meyvesi + üretim-yeri (dosya:). Ön/arka contract-first Sözleşmede kavuşur.
+    Şablon: sablon/adim.sar · sozlesme.sar. Format: dalga1_plan (koni-zengin Adım).
+  • Bekçiler (kanon zorunluKenarlar + denetci.ts): konisiz-adım · bağımlılık-beyansız ·
+    niyet-drift · meyvesiz/referanssız-geliştirme · öksüz-düğme · kavuşumsuz-ekran ·
+    yetim-meyve · doc-drift. Runtime konisi 'üretir'i ŞEF prompt'una taşır ✓ (koni.ts · #11).
+  • Garanti: Adımın ne/kabul/ray'ı .sar'dan okunur; iki yüz Sözleşme'de buluşur.
+  • Geçiş: koni-tam + denetle-temiz + niyet-tam → OLGUNLUK KAPISI.
+|<--
+İşAkışı( kod: OMR-KONI,
+  ne: "🎯 KONİ + KAVUŞUM — Adım koni-dolu + üretim-yeri + contract-first Sözleşme kavuşumu. Yasa MIM-1.6 · ORK-2.3 · MIM-2.1 · şablon adim/sozlesme.sar · bekçi konisiz-adım/öksüz-düğme/kavuşumsuz-ekran/yetim-meyve." )
+
+-->|
+  ━━ DURAK 5 · 🔒 OLGUNLUK KAPISI ━━ (yasa: YAS-4 · olgunluk kapısının KALBİ)
+  • Giriş: plan bütün + Teknoloji sürümleri kilitli + koniler+denetim temiz.
+  • Çıkış: İNSAN ONAYI — "plan hazır, koda geçebiliriz". EVRE-1→EVRE-2 TEK geçit.
+  • Bekçi: (B2=A · YAS-4) olgunluk-onayı HATIRLATICI ✓ İŞLİ — plan olgun
+    (koni-dolu) + kod başlamamış GEÇİŞ ANINDA "olgunluk onayını al" der, KESMEZ (denetci.ts).
+  • Garanti: kod başlamadan planın olgunlaştığı ilan düzeyinde kabul edilir.
+  • Geçiş: yalnız insan onayıyla EVRE-2 açılır (drift-anahtarı: onaysız-kod).
+|<--
+İşAkışı( kod: OMR-OLGUNLUK,
+  ne: "🔒 OLGUNLUK KAPISI — EVRE-1→EVRE-2 insan onayı (YAS-4). Bekçi: olgunluk-onayı-bekleniyor HATIRLATICI (B2=A · kesmez); PLANLI, henüz kurulmadı." )
+
+
+// ══════════════════ EVRE 2 · KOD (adım adım · ŞEF yürütür) ══════════════════
+
+-->|
+  ━━ DURAK 6 · ⌨️ KODLA→ÇALIŞTIR→DÜZELT ━━ (yasa: ORK-3.2 · AŞ-0..10 · ORK-7)
+  • Giriş: plan olgun; ŞEF'e bir Adım KOD'u verilir.
+  • Çıkış: üretilen dosya sicili + gerekçe + kabul mührü (VERIFIED/COMPLETED/BLOCKED).
+    Runtime: sef.ts (bağlam montajı) → dongu.ts (üret→izole denetle→yama→karar).
+  • Bekçiler (dongu.ts): üretici≠denetçi izole (ORK-6.1 EBEDİ) · kabulGate (VERIFIED
+    yalnız L5-denetçi + davranışsal kanıt) · sahte-yeşil→tekrar-bulgu (YAS-4.1) ·
+    kırık-koşar · ilerlemesiz-döngü (ORK-3.3). Güvenlik halkası opt-in (guvenlikAktif).
+  • MİKRO OMURGA: bkz. OMR-MIKRO (AŞ-0..10). Hedef tam AŞ-0..10 (B1=B); runtime şu an
+    sıkışık çekirdek (üret→denetle→yama→karar).
+  • Garanti: kapanış üreticinin öz-beyanına DEĞİL, ayrı denetçi+kanıta bağlı.
+  • Geçiş: yalnız kabul çok-Adımlı akışı ilerletir; diğer kararlar kontrol noktasını korur.
+|<--
+İşAkışı( kod: OMR-KODLA,
+  ne: "⌨️ KODLA→ÇALIŞTIR→DÜZELT — ŞEF Adım seç→koni→prompt→izole üretici/denetçi→kabulGate. Yasa ORK-3.2 · AŞ-0..10 · ORK-7 · runtime sef.ts/dongu.ts. Mikro: OMR-MIKRO. Hedef tam AŞ-0..10 (B1)." )
+
+-->|
+  ━━ MİKRO OMURGA · AŞ-0..AŞ-10 ━━ (yasa: yasa/kanon/ork.sar · ORK-7)
+  Bir Adım kodlanırken (DURAK 6 içi) kanonik zincir — HİÇBİRİ atlanmaz (ORK-6):
+    AŞ-0 Bağlam Kilidi (eksik referans→DUR) · AŞ-1 Durum Özeti · AŞ-2 Önce Tasarım ·
+    AŞ-3 Kodlama · AŞ-4 İnceleme [izole denetçi] · AŞ-5 Mantık Yaması+Yeniden Doğrulama ·
+    AŞ-6 Test Üretimi · AŞ-7 Test Yaması+Doğrulama · AŞ-8 Güvenlik Denetimi [izole] ·
+    AŞ-9 Güvenlik Yaması+Doğrulama · AŞ-10 Son Kontrol (kabul? dokunulmaz? tutarlı?).
+  Kodlama akışı disiplinleri: ORK-6.1 üretici≠denetçi · ORK-6 zincir · YAS-4.1 VARLIK≠DOĞRULUK ·
+    YAS-4 çok-değerli kabul · STR-2.1 erteleyen zarardadır · YAS-4.2 yeniden-geçerleme ·
+    ORK-6.2 oturum disiplini (1 adım=1 oturum · /clear · durum devri).
+  DURUM: runtime bunu SIKIŞIK çekirdeğe indiriyor (üret→denetle→yama→karar); tam
+    AŞ-0..10 ayrı-aşama HEDEF (B1=B · kademeli büyür · kontrol noktalı).
+  KAYNAK: DESEN eski OS P0-P10 zinciri (STR-3: P→AŞ, bağlam atıldı).
+|<--
+İşAkışı( kod: OMR-MIKRO,
+  ne: "🔬 MİKRO AŞ-0..AŞ-10 — bir Adım'ın kodlanma zinciri (yasa/kanon/ork.sar · ORK-7). Runtime sıkışık çekirdek; tam 11-aşama HEDEF (B1=B). Desen: eski OS P0-P10 (STR-3)." )
+
+-->|
+  ━━ DURAK 7 · ✅ DURUM ━━ (yasa: STR-4 · OGR-4)
+  • Giriş: ŞEF Adım sonucu (kabul mührü).
+  • Çıkış: Adım durum:tamamlandı + koşu:Koşum(...) + DurakÖzet + kontrol noktası;
+    öğrenilen→Bellek→değerliyse Beceri. Şablon: ornek/durum_kaydi.sar (DurumKaydı).
+  • Bekçiler (denetci.ts/dag.ts/koniYaz.ts): açık-adım (MOTOR-SUSMAZ — beklemede/
+    geliştirmede neden'iyle gündemde) · durum-tutarsızlığı · gayrimeşru-geçiş ·
+    faz-vade · hatırlatıcı-vade · yaz-anında davranışsal-doğrulama.
+  • Garanti: sonraki Adım önceki karar/mühür/kanıt/açık-kalemi devralır; kesinti
+    sonrası kabul edilmiş Adımlar tekrar koşulmaz. Motor açık iş varken SUSMAZ.
+  • Geçiş: tüm Adımlar tamam + tam denetim temiz → "Motor SUSTU (TAM-yeşil)".
+|<--
+İşAkışı( kod: OMR-DURUM,
+  ne: "✅ DURUM — durum:tamamlandı + Koşum + kontrol noktası + Bellek/Beceri. Yasa STR-4 · OGR-4 · şablon durum_kaydi.sar · bekçi açık-adım(motor-susmaz)/durum-tutarsızlığı/gayrimeşru-geçiş." )
+
+
+// ══════════════════ POINTER İNDEKSİ (hangi dosya neyi tutar) ══════════════════
+
+-->|
+  🗺️ TEK BAKIŞ — omurga nerede yaşıyor (index, tek-kaynak bozulmaz):
+    • Makro tempo + ORK-7 iş akışı kapıları . yasa/kanon/ork.sar
+    • Semantik doğuş sırası (MIM-4) ......... yasa/kanon/mim.sar
+    • Mikro AŞ-0..10 + ORK-7 ................ yasa/kanon/ork.sar
+    • Repo değişiklik disiplini (STR-2) ..... yasa/kanon/str.sar
+    • Tip/sarma/koni/durum/kenar kanonu ..... oz/siniflama/kayit.json
+    • Bekçiler (tanı fonksiyonları) ......... cekirdek/src/denetci.ts · dag.ts · kuralci.ts
+    • Tanı sicili (bekçi↔kural evreni) ...... cekirdek/src/tani-sicili.ts
+    • Runtime: bağlam montajı / Adım döngüsü  cekirdek/src/sef.ts · dongu.ts
+    • Ray (Blok→topolojik iniş) ............. cekirdek/src/dag.ts (blokRayi) · `sarmal ray`
+    • Öğretim (şablon + mimari-diyalog) ..... sablon/*.sar · cekirdek/src/mcp.ts · sablon.ts
+    • Tasarım kararları (bu omurganın spec’i) yasa/kanon/mim.sar · ork.sar · yas.sar
+|<--
+İşAkışı( kod: OMR-INDEX,
+  ne: "🗺️ Pointer indeksi — omurganın 5 yüzü (yasa · kanon · runtime · bekçi · şablon) nerede yaşıyor. Tek-kaynak bozulmaz; bu dosya yalnız işaret eder (YUZ-1)." )

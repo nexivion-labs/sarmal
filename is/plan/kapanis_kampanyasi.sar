@@ -1,0 +1,231 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/kapanis_kampanyasi.sar — 🏁 KAPANIŞ KAMPANYASI (Founder hedefi 2026-07-18)
+//
+//   Founder'ın sözüyle doğuş: "Sarmal'daki tüm adımları bitirip orkestrasyon
+//   katmanına geçelim, sağlam bir plan yapalım." Bu dosya, bütün raylardaki
+//   açık Adımları TEK sıraya koyar ve kampanya bitince orkestrasyon cephesinin
+//   nasıl açılacağını tanımlar. Netlik kampanyası deseni geçerlidir: diğer
+//   kalemler KENDİ raylarında yaşar ve buradan ATIFLA sıralanır — çift kayıt
+//   tutulmaz; bu dosyada yalnız dört YENİ Adım (KPN-A01..A04) tanımlıdır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🏁 Kapanış Kampanyası — bekleyenler biter, orkestra kurulur
+
+  ## Amaç
+  🎯 On rayda dağılmış ~40 açık Adımı bağımlılık ve etki/emek sırasına koyup
+  bitirmek; kampanya kapanınca orkestrasyon zekâsı cephesini (STR-3 gizli taraf)
+  sağlam bir açılış planıyla açmak. Çözülen problem: açık işler dört ayrı
+  dönemin raylarına yayılmıştır; tek sıra olmadan cepheler dağılır, orkestrasyon
+  mesaisi hiç başlayamaz.
+
+  ## Kampanya sırası (yedi tur — her kalem kendi rayında koşulur)
+  Sıralamanın ölçüleri: bağımlılık zinciri → etki/emek oranı → Founder-dokunuş
+  gruplaması (onay isteyen işler tur içinde art arda gelir, oturum bölünmez).
+
+  ### TUR-A · Çekirdek şema üçlüsü (kodlanabilir, az onay)
+  ① NTK-A04 — görev/sınır alanlarına madde desteği (MIM-1.6).
+  ② NTK-A07 — Adım'a rapor:/yama: çocuk desteği (STR-4; A04’ün şema deseni emsal).
+  ③ NTK-A05 — kırıntı-Adım bekçisi: tasarım + gerçek planlarda yanlış-pozitif
+    ölçümü → Founder onayı → motora iniş (MIM-1.6).
+  ④ BKM-OLG-A05 — durum kaydı karakter sınırı 4000→7000 (şerhli onay alınmıştır).
+
+  ### TUR-B · Defter ve dil
+  ⑤ NTK-A09 — karar defterine konu dizini + evrensel özet katmanı (konu
+    kümeleri ve özetler karar-karar Founder onayından geçer).
+  ⑥ NTK-A03 — prizma insan yüzü rutini (üretim noktası seçenekleri Founder'a sunulur).
+  ⑦ KVR-A01 → KVR-A02 — sözlük envanteri + bağlam→kavram haritası.
+  ⑧ KVR-A03 → KVR-A04 — niyet diyaloğu becerisi + ŞEF bağı (A04 şerhi gereği
+    kapsam önce netleştirilip onaylatılır).
+
+  ### TUR-C · Emoji yüzü (EMJ-A02 ile önü açıldı)
+  ⑨ EMJ-A03 — editör yüzleri: tamamlama + ipucu + biçimlendirici yazım-yüzü koruması.
+  ⑩ EMJ-A04 — etmen karne skalası tasarımı → Founder onayı (uygulama onay sonrası).
+
+  ### TUR-D · Reform omurgası (en ağır tur — Founder oturumları ister)
+  ⑪ RF-T6-A07 — yasa göç turu: göç ölçütü Founder'la yazılır → TEK kural prova
+    → onay → kalan göç STR-2.1 dosya-dosya. Kapanınca RF-T6-A04 ve RF-T6-A05
+    tek işaretle tamamlanır (öncül kilidi çözülür).
+  ⑫ RF-T6-A01 — dogfood turu: her dogfood tipi kendi bahçede ≥1 gerçek kullanım
+    + Faz'sız Blok kalmaz + üretir doluluğu ölçülür (STR-2.1 aile aile; en büyük kalem).
+  ⑬ RF-T6-A02 — karar↔kural dayanak kenarı: kanon + bekçi + DIL-5.2 küme
+    oturumlarında 71 kural Founder'la eşlenir.
+  ⑭ RF-T3-A01 — MIM-1 kademeli doğuş (bilgi bekçisi + şablon/rehber ideali).
+  ⑮ RF-T4-A01 — metin/yüzey hizalaması (bayat-varsayım süpürmesi).
+  ⑯ RF-T5-A01 — RAY-3 konsolide ENVANTERİ (yalnız planlama; orkestrasyon
+    cephesinin besleme belgesi — KPN-A04'ün girdisi).
+
+  ### TUR-E · Kanıt, davranış ve geribildirim rayları
+  ⑰ KNT-A07..A11 — kanıt ekseni kalan Adımları.
+  ⑱ HZL-C01 (şerh gereği kapsam istişaresiyle) + HZL-D01 — damga turu + süpürme.
+  ⑲ GBR-A09..A11 — IDA geribildirim rayı kalanları.
+  ⑳ DVR-A01..A06 — davranış katmanı (karşılama ve diyalog deneyimi).
+
+  ### TUR-F · Saha sınavları (dış bağlam ister)
+  ㉑ SNV4-A01 — sınav-4 tekrarı (yabancı ajan koşusu).
+  ㉒ ADM-SIT-BAGLAM → PROMPT → PLAN → OTONOM — Sol saha sınavı (genelleştirildi,
+    Founder kararı 2026-07-19: IDA arşivde; koşu, eklenti olgunlaşınca Founder'ın
+    göstereceği gerçek örnek projede — bağlamı Founder verir; gerçek-proje
+    izolasyonu korunur, workspace'e karışmaz).
+
+  ### TUR-G · Kampanya kapanışı ve orkestra açılışı (bu dosyanın Adımları)
+  ㉓ KPN-A01 — kimlik indeksi varlık sınırı (RAF-PLAN çakışması).
+  ㉔ KPN-A02 — eklenti 0.9.79 paketleme + kurulum + gözle teyit.
+  ㉕ KPN-A03 — kampanya kapanış kaydı + karne ölçümü.
+  ㉖ KPN-A04 — ORKESTRASYON CEPHESİ AÇILIŞI (Founder oturumu; STR-3 sınırıyla).
+
+  ## Founder-dokunuş haritası (planlama kolaylığı için)
+  Onay/oturum isteyen kalemler: NTK-A05 eşiği · NTK-A09 konu kümeleri ve
+  özetler · NTK-A03 akış seçimi · KVR-A04 kapsamı · EMJ-A04 skalası ·
+  RF-T6-A07 göç ölçütü · RF-T6-A02 DIL-5.2 küme eşlemeleri · HZL-C01 istişaresi ·
+  Sol/IDA bağlamı · KPN-A02 gözle teyit · KPN-A04 açılış oturumu. Kalan her
+  şey kodlanabilir iştir; gözle-teyit ölçütleri onay kuyruğuna düşer (NTK-A08).
+
+  ## Kapsam
+  📦 Kapsar: sıralama kaydı + dört yeni Adım (varlık sınırı · kurulum ·
+  kapanış · açılış). Kapsamaz: diğer kalemlerin içeriği (kendi raylarında
+  tanımlıdır); orkestrasyon ZEKÂSININ kendisi — o, KPN-A04'ün ürettiği ayrı
+  planla kapalı varlık tarafında yürür (STR-3: mekanizma açık, zekâ gizli).
+
+  ## Sonuç
+  ✅ Kabul: on raydaki bütün Adımlar tamamlandı ya da bilinçli-kapalı
+  (reddedildi/ertelendi damgalı); iki varlık denetimi TAM-yeşil; kampanya
+  kapanış kaydı işlendi; orkestrasyon açılış planı Founder onaylı olarak
+  kapalı varlığın plan rafı altında yaşıyor.
+|<--
+
+// GEREKSİNİM — kampanyayı doğuran ihtiyaç İLAN edilir, kapanış Adımları ona bağlanır
+// (contract-first izlenebilirlik; Gereksinim tipinin İLK canlı kullanımı — RF-T6-A01 dogfood turu).
+Gereksinim( kod: GRK-KAPANIS-ORKESTRA, kim: "Founder",
+  ne: "Sarmal'daki bütün açık Adımlar bitirilmeli ya da bilinçli damgayla kapatılmalı ki orkestrasyon katmanına temiz ve sağlam bir zeminle geçilebilsin (Founder sözü 2026-07-18: 'Sarmal'daki tüm adımları bitirip orkestrasyon katmanına geçelim, sağlam bir plan yapalım')" )
+
+// 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski KPN-FAZ sarmalayıcısı çözüldü — zaman bağı
+// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+//   ne: "🌀 Bütün açık rayların tek sırada bitirildiği ve orkestrasyon cephesinin açıldığı dönem; sıra yedi turdur, kaynak-gerçek yukarıdaki belge bloğudur"
+//   onay: "onaylandı — 2026-07-18 · Founder: yedi tur sırası onaylı, koşu TUR-A'dan başlar"
+
+-->|
+  ## Amaç
+  🎯 Kampanyanın öteki raylarda karşılığı olmayan dört işini taşımak:
+  kimlik indeksinin varlık/şablon sınırı bilinci, birikmiş eklenti
+  kaynağının kuruluma inmesi, kampanyanın makine-ölçümlü kapanışı ve
+  orkestrasyon cephesinin STR-3 sınırına saygılı açılışı.
+
+  ## Kapsam
+  📦 Kapsar: KPN-A01..A04. Kapsamaz: yedi turun öteki ~36 kalemi — onlar
+  kendi raylarında tanımlı ve koşulur; sıraları Faz belge bloğundadır.
+
+  ## Sonuç
+  ✅ Kabul: dört Adım kendi ölçütleriyle kapanmıştır; kampanya kapanış
+  kaydı işlenmiş, orkestrasyon açılış planı kapalı tarafta onaylı yaşamaktadır.
+|<--
+
+Blok( kod: BLK-KPN, ad: "kapanış kampanyası", uygular: ORK-7,
+  ne: "🪵 Kampanyanın dört yeni kalemi: kimlik indeksi varlık sınırı · eklenti kurulumu · kapanış kaydı · orkestrasyon açılışı — diğer ~36 kalem kendi raylarında, sıra belge bloğunda" ) {
+
+  Katman( kod: KAT-KPN-KIMLIK, kullanır: TAKIM-CEKIRDEK, ad: "kimlik indeksi varlık sınırı",
+    ne: "🌿 Gezinme ve atıf çözümü varlık/şablon sınırına tam saygılı olur — standart kodların yinelenen tanımları kullanıcıyı yanlış kapıya götürmez" ) {
+
+    AltKatman( kod: ALT-KPN-KIMLIK-VARLIK-SINIRI, departman: kodlama, ad: "varlık/şablon sınır uygulaması",
+      ne: "🍃 Kimlik indeksinin yinelenen standart kod tanımlarını varlık ve şablon köküne göre ayırt etmesini sağlayan uygulama adımı" ) {
+
+      Adım( kod: KPN-A01, durum: tamamlandı, onay: "onaylandı — 2026-07-18; başlama işareti Founder'dan alındı (2026-07-19 · oturum 65 'devam inşallah'); çözüm seçeneği Founder onaylı (aynı gün: 'Sınır + etiket birlikte')", üretir: [ KOD-KPN-KIMLIK ], bağımlı: [ TAKIM-CEKIRDEK ], referans: [ STR-3, YAS-3.3, DIL-1.2 ],
+        koşu:  "2026-07-19 · KAPANIŞ (oturum 65): ① KEŞİF — envanter betikle çıkarıldı: 2835 tanımlı kod, 39 çok-dosyalı, 25 bölge-aşan çakışma; omurga↔OS: RAF-PLAN + FLUTTER (varlık sınırı); omurga↔şablon: RAF-PLAN · RAF-DURUM · RAF-OGRENME · UYG-A · FLUTTER (RAF-PLAN tek başına 6 yerde). Mevcut korumalar saptandı: INDEKS_DISI şablon/örnek dışlaması + eklenti gezinmesinin YAS-3.3 varlık süzgeci; iki delik açıktı: MCP/CLI gezin varlık körüydü, açık ders-dosyası istisnası ürün F12 listesine şablon kopyası sızdırıyordu. ② KARAR — üç seçenek gerekçeleriyle sunuldu, Founder 'Sınır + etiket birlikte' seçeneğini onayladı. ③ UYGULAMA (kimlik.ts): gezinmeSuzgeci saf süzgeci doğdu (ürün kaynaklı gezinmede ders-dünyası kopyaları süzülür · kaynak dosyanın kendisi hep görünür · ders kaynağı kendi evreninde serbest · YAS-3.3 varlık sınırı korunur) + bolgeEtiketi/varlikAdi rozet çözücüleri (📋 şablon · 🎓 örnek · 🧪 fikstür · 🗄️ arşiv · 🧭 varlık-adı) + gezinRaporu her tanımı rozetler ve çok-tanım uyarısı şablon/varlık/drift ayrımını öğretir; eklenti kablosu: gezinme.ts süzgeci çekirdekten alır (YUZ-1.2), atif-dekor link evreni açık ders-dosyası tanımlarını süzer (belge-içi linkler yaşar). İpucu etkilenmedi (belge-içi çözümlü — dokunmak gerekmedi). ④ KANIT — 3 fikstürlü test (süzgeç davranışı · rozet çözümü · raporda rozet+öğretici uyarı); CANLI: workspace kökünden 'gezin RAF-PLAN' iki tanımı rozetli gösteriyor (🧭 kapalı-varlık · 🧭 sarmal — şablon kopyaları listede yok). Çekirdek 800/800 · eklenti 172/172 · tsc temiz · iki varlık denetimi exit 0 · eklenti 0.9.105 KURULU. Sınır korundu: şablon dosyalarının içeriğine dokunulmadı, STR-3 ile YAS-3.3 desenleri değişmedi — değişen yalnız indeksin sınır bilinci",
+        ne:    "🧭 Kimlik indeksine varlık ve şablon sınırı kazandırmak. RAF-PLAN gibi standart raf kodları bugün dört ayrı yerde tanımlıdır (sarmal_anadizin.sar + sablon/proje.sar + sablon/dogus/anadizin.sar + sablon/calisma_alani.sar) ve kapalı varlık kendi eş kodlarını taşır; indeks bu yinelenen tanımları ayırt edemeyince gezinme yanlış dosyaya gidebilmekte, yinelenen-tanım işareti gerçek drift ile şablon kopyasını karıştırmaktadır" ) {
+        görev: [
+          "Keşif: yinelenen-tanım envanteri çıkar — hangi kodlar kaç yerde tanımlı (şablon kopyaları · doğuş şablonları · iki varlık)",
+          "Karar seçeneklerini gerekçeleriyle Founder'a sun: sablon/ ve doğuş şablonları indeks-dışı sayılır · tanım çözümü aktif varlığın köküne daraltılır (YAS-3.3 deseni) · şablon tanımları ayrı 'şablon' etiketiyle işaretlenir",
+          "Onaylı çözümü kimlik.ts'e uygula",
+          "Gezinme, ipucu ve atıf-dekor yüzlerinin doğru tanımı seçtiğini fikstürlü testle kanıtla"
+        ]
+        kabul: [
+          "RAF-PLAN araması aktif varlığın gerçek tanımını döndürmektedir; şablon kopyaları gezinmeyi ve yinelenen-tanım işaretini kirletmemektedir (fikstürlü test)",
+          "Çözüm seçeneği Founder tarafından onaylanmıştır",
+          "Çekirdek ve eklenti süitleri tam geçmekte, iki varlık denetimi TAM-yeşil kalmaktadır"
+        ]
+        sınır: "Çapraz-varlık atıf yasağı (STR-3) ve YAS-3.3 aktif-varlık deseni değişmez; şablon dosyalarının içeriğine dokunulmaz — değişen yalnız indeksin sınır bilinci"
+      }
+    }
+  }
+
+  Katman( kod: KAT-KPN-YAYIN, kullanır: TAKIM-EKLENTI, ad: "eklenti kurulum turu",
+    ne: "🌿 Oturum 56 kaynak değişiklikleri (saf çekirdek ayrımları) paketlenip Founder makinesine kurulur" ) {
+
+    // NOT: Bu Adımın ürünü repo dosyası değil KURULU PAKETtir (0.9.79 vsix) — üretir:
+    // kenarı bilinçli boş; kanıt koşu: kaydındaki kurulum doğrulamasıdır.
+    AltKatman( kod: ALT-KPN-YAYIN-PAKETLEME, departman: kodlama, ad: "eklenti paketleme ve kurulum",
+      ne: "🍃 Oturum 56 kaynak değişikliklerinin 0.9.79 paketiyle Founder makinesine kurulup gözle doğrulanması" ) {
+
+      Adım( kod: KPN-A02, durum: tamamlandı, bağımlı: [ TAKIM-EKLENTI ], referans: [ DIL-1.1 ],
+        ne:    "📦 Eklentiyi 0.9.79 olarak paketleyip kurmak. Oturum 56'da eklenti kaynağı değişti (onay/atıf/ipucu mantığı saf çekirdeklere ayrıldı) — davranış birebir olsa da kurulu sürüm 0.9.78 eski kaynaktan derlidir; kurulum yapılmadan sonraki eklenti işleri (EMJ-A03 dahil) eski taban üstünde birikir" ) {
+        görev: "Sürümü 0.9.79 yap; paketle (vsce package) ve kur; onay kuyruğu, atıf link görünümü ve ipucu pencerelerinin canlı çalıştığını Founder gözüyle doğrula"
+        kabul: [
+          "0.9.79 kurulu ve eklenti sınaması tam yeşildir",
+          "Onay kuyruğu + atıf linkleri + Karar ipucu penceresi canlıda çalışmaktadır (Founder gözle doğrulamıştır)"
+        ]
+        sınır: "Bu tur yalnız paketleme ve kurulumdur — yeni özellik eklenmez; EMJ-A03 editör yüzleri ayrı Adımdır"
+        koşu:  "2026-07-18 · ARA KAYIT (kurulum yapıldı, gözle teyit bekliyor): sürüm 0.9.79, vsce paketi üretildi ve kuruldu (code --list-extensions doğrulaması: nexivion-labs.sarmal@0.9.79). TUR-G'den öne çekildi (gerekçe: NTK-A04 madde görünümü ve cilalanan tanı metinleri ancak kurulu eklentiyle Founder ekranına düşer — gözle teyitlerin önü açıldı). Eklenti sınaması 141/141. Kalan tek kanıt: onay kuyruğu + atıf linkleri + Karar ipucu pencerelerinin canlı çalıştığının Founder gözle teyidi --- 2026-07-18 · KAPANIŞ: Founder 0.9.79'u canlıda gözle doğruladı ('okunuyor, çok güzel olmuş' — cilalanan tanı metinleri ve maddeli görünüm ekranda). Kabul 2/2 karşılanmıştır"
+      }
+    }
+  }
+
+  Katman( kod: KAT-KPN-KAPANIS, kullanır: TEK-SARMAL, ad: "kampanya kapanışı ve orkestra açılışı",
+    ne: "🌿 Kampanyanın mühürlenmesi ve orkestrasyon cephesinin STR-3 sınırına saygılı açılışı" ) {
+
+    AltKatman( kod: ALT-KPN-KAPANIS-MUHURLEME, departman: inceleme, ad: "kapanış ölçümü ve orkestra açılışı",
+      ne: "🍃 Motorun ürün gündemine hizalanması (OGR-5), kampanya kapanış kaydının işlenmesi ve orkestrasyon cephesinin Founder onaylı açılışı" ) {
+
+      Adım( kod: KPN-A05, durum: tamamlandı, bağımlı: [ TAKIM-CEKIRDEK ], referans: [ OGR-5, YUZ-1.2, YAS-3.4 ], üretir: [ TAN-ACIK-ADIM, KOD-KARNE-URUN-KAPSAMI, KOD-CLI-DENETLE-K107, KOD-SNM-K107 ],
+        ne:    "📚 OGR-5 hükmünü motora uygulamak: motorun açık-iş gündemi yalnız ürün ağacına bakar duruma getirilir. Çözülen problem: motor-susmaz gündemi ve karne sayaçları bugün örnek dünyasının (ornek/ — vitrin, altın yol, biçim örnekleri) kasıtlı olarak açık bırakılmış ders Adımlarını da saymaktadır; kırk dört açık Adımın yaklaşık on altısı ders malzemesidir ve gündemi kirleterek 'fazlar kapanmıyor' yanılgısı doğurmaktadır. OGR-5 hükmü gereği ders malzemesi ürün gündeminden ayrılır ancak gizlenmez — ayrı ve tek bilgilendirici satırla raporlanır" ) {
+        görev: [
+          "Açık-adım nöbetini (denetci.ts acikAdimTanilari) ürün kapsamına daralt: kapsam ölçütü tek kaynaktan alınır (kimlik.ts INDEKS_DISI kanonu — elle ikiz liste yazılmaz, YUZ-1.2 ilkesi ve Sol RED-2 dersi)",
+          "Ders dünyası sayacını doğur: örnek kapsamındaki açık Adımların sayısını veren ayrı bir işlev yazılır; denetim çıktısına 'örnek dünyasında N açık Adım — ders malzemesi, kasıtlı' bilgi satırı eklenir",
+          "Karne özetini (dag.ts karneOzeti) ürün kapsamına hizala: örnek kapsamındaki Adımlar durum sayaçlarına girmez; karne satırı ürün ağacının gerçeğini söyler",
+          "Davranış testleri yaz: örnek yolundaki açık Adımın gündeme girmediği, ders sayacında sayıldığı ve ürün yolundaki Adımın davranışının değişmediği sınanır"
+        ]
+        kabul: [
+          "Denetim çıktısında motor-susmaz gündemi yalnız ürün ağacının açık Adımlarını saymaktadır; örnek dünyası ayrı bilgi satırında sayıyla görünmektedir (gizleme yoktur)",
+          "Kapsam ölçütü tek kaynaktan (INDEKS_DISI) türetilmektedir; davranış testleri örnek/ürün ayrımını sınamaktadır ve çekirdek sınaması tam geçmektedir",
+          "Hiçbir örnek Adımına kurgusal kapanış yazılmamıştır (YAS-3.4); bu depoda gündemdeki açık Adım sayısı yalnız gerçek iş kalemlerini göstermektedir"
+        ]
+        sınır: "Örnek dosyalarının içeriği değiştirilmez (ders malzemesi kasıtlı hâlinde kalır); açık-adım tanısının editör içi görünümü (tekil dosya açıkken) korunur; INDEKS_DISI kanonunun kapsamı bu Adımda genişletilmez"
+        koşu:  "2026-07-19 · UYGULAMA BİTTİ: ① denetci.ts — acikAdimTanilari ürün kapsamına daraltıldı (INDEKS_DISI dosyaları atlanır; ölçüt kimlik.ts kanonundan içe alınır, ikiz liste yazılmadı) ve dersAcikAdimSayisi işlevi doğdu ② dag.ts — karneOzeti örnek kapsamındaki Adımları durum sayaçlarına almaz (karne satırı 'Karne (ürün)' adını aldı) ③ sarmal.ts — denetim çıktısına ders satırı eklendi ('📚 Örnek dünyasında N açık Adım — ders malzemesi, kasıtlı; ürün gündemine ve karneye girmez'). CANLI ÖLÇÜM: gündem 44→31 açık Adıma indi, örnek dünyası 14 açık Adımla ayrı satırda görünür (gizleme yok — toplam 45 = 31 ürün + 14 ders; artış KPN-A05'in kendisidir); karne 368 ürün Adımı sayar. Davranış testleri: iki yeni OGR-5 nöbeti (örnek/ürün ayrımı + ders sayacı + karne kapsamı) ve karar defteri sayım nöbetleri 106 karara güncellendi; çekirdek süiti 761/761 · eklenti 165/165 · OS denetimi TAM-yeşil. Hiçbir örnek dosyasına dokunulmadı (sınır korundu). geriye-bağlantı kontrolü: ajan bağlam paketi etkilenmedi — davranış denetim çıktısı düzeyindedir, dil/araç sözleşmesi değişmemiştir"
+      }
+
+      Adım( kod: KPN-A03, durum: tamamlandı, onay: "başlama işareti Founder (2026-07-19 · oturum 65 devam); bilinçli-beklemede listesi Founder onaylı (aynı oturum: 'Onaylıyorum, damgala' + RF-T5-A01 KPN-A04 gündemine)", bağımlı: [ TEK-SARMAL ], referans: [ DIL-1.1, GRK-KAPANIS-ORKESTRA ],
+        koşu:  "2026-07-19 · KAMPANYA KAPANIŞ KAYDI (oturum 65): ① MAKİNE ÖLÇÜMÜ — açık Adım envanteri motor listesinden çıkarıldı: KPN-A04 (sıradaki açılış oturumu — kampanyanın kendi kapısı) dışında 12 beklemede Adım kaldı ve TAMAMI Founder onayıyla bilinçli-beklemede damgalandı (onay alanlarında tarihli gerekçeler): EKL-F6-A01/A02 (yayın erken — İngilizce dil kapısı ve açık araç sınırı) · BKM-FND-A03 (açık-gizli kesiminin fiziksel taşıması RAY-3 ile ayrı tur) · PRF-A06 (gözlem — veri orkestrasyon mesaisinde birikir) · RF-T3-A01/RF-T4-A01 (reform kuyruğu kendi sırasında) · RF-T5-A01 (Founder hükmü: RAY-3 envanteri KPN-A04 açılış gündeminin İLK maddesi) · SNV4-A01 (dış bağlam — steril pencere) · ADM-SIT-BAGLAM/PROMPT/PLAN/OTONOM (Founder'ın göstereceği gerçek örnek proje bekleniyor). ② ÜRETİR DOLULUK karneye işlendi: 364 tamamlanmış Adımın 345'i meyveli — %94,78 (AST yükleyicisiyle ölçüldü). ③ KAMPANYA BİLANÇOSU: yedi turun kalemleri kapandı — bugünkü oturumlarda son üç büyük kalem indi (KPN-A01 kimlik sınırı · RF-T6-A02 dayanak haritası TAM/sıfır sarı · ZMN rayı 6/6 ile Faz zaman ekseni hükmü); karne 🟢364 · ⛔0 · dayanak haritası TAM · iki varlık denetimi drift-temiz (exit 0/0, OS motor-sustu). ④ Kapanış kaydı bu koşuya ve durum devrine işlendi; KARARLAR.md üretimi günceldir (109 karar). Orkestrasyon cephesine zemin TEMİZ — kapı: KPN-A04. EK (2026-07-20 · Sol zemin denetimi bulgusu): kayıttaki %94,78 oranı kapanış-ÖNCESİ paydaydı — KPN-A03'ün kendisi (üretir taşımadan: ürünü bu koşu kaydının kendisidir, repo-dışı meyve yok) tamamlanınca güncel oran 345/365 = %94,52 oldu; ders RED-3'tekiyle aynı: sayıyı değiştiren kapanış karneyi de güncellemeli. Ayrıca EKL-F6-A01/A02'ye açık durum: beklemede yazıldı (durumsuz Adım karne dürüstlüğünü bozuyordu) ve 'drift-temiz 0/0' ifadesindeki uyarı-körlüğü kabul edildi (durum-boyutu uyarısı aynı gün kapatıldı)",
+        ne:    "🏁 Kampanya kapanış kaydını işlemek. Yedi turun sonunda açık Adım kalmadığı makine ölçümüyle kanıtlanır ve kampanyanın kapanışı kayda geçer — orkestrasyon cephesine temiz zeminle girilir" ) {
+        görev: "Bütün raylarda açık (beklemede/geliştirmede/bloklu) Adım kalmadığını denetimle ölç (bilinçli-ertelenen varsa damgasıyla listele); üretir doluluk oranını karneye işle; kampanya kapanış kaydını bu dosyaya ve durum devrine yaz; KARARLAR.md'yi üretimle tazele"
+        kabul: [
+          "Denetim ölçümü: açık Adım sayısı sıfırdır ya da kalanlar bilinçli-damgalıdır (liste kayıttadır)",
+          "İki varlık denetimi TAM-yeşildir; kapanış kaydı işlenmiş ve commit'lenmiştir"
+        ]
+        sınır: "Kapanış kaydı geriye dönük tarih yazmaz — her turun kendi koşu kayıtları kendi raylarındadır"
+      }
+
+      Adım( kod: KPN-A04, durum: tamamlandı, bağımlı: [ TEK-SARMAL ], referans: [ STR-3, GRK-KAPANIS-ORKESTRA ],
+        onay: "şerhle onaylandı — 2026-08-05 · Founder cepheyi kapattı ve kapsamı daraltan bir hüküm verdi: hedef tam olgunlukta bir orkestrasyon zekâsı değil, kapalı ürünü KODLAYABİLECEK EN KÜÇÜK ÇALIŞIR ZEKÂDIR. Hüküm gereği gövdenin on bir Adımı iki dalgaya ayrıldı ve ayrım kapalı taraftaki plan gövdesinin belge bloğuna indi; birinci dalga yerleşim, kadro, eşleyici ve ilk dikey dilimi taşır, olgunlaştıran beş Adım ikinci dalgaya alındı ve silinmedi. Sol şart kapıları karnesi minimal sürümde de bağlayıcı kaldı, çünkü paralellik sözleşmeleri kapanmadan iki kulvarı gerçekten koşturmak veri kaybı riski taşır. Kapanışın gerekçesi şudur: bu Adımın işi cepheyi AÇMAKTI ve açılmıştır — plan ağacı doğmuş, Founder onayından geçmiş ve üç hüküm kayda girmiştir; sonraki iş kapalı taraftaki kendi planında yürür. Üçüncü kabul ölçütü olan sızıntı denetimi de aynı gün yeşile döndü: bağımsız ölçüm açık taraftaki sızıntıyı buldu, BKM-FND-A04 turu temizledi ve iki varlığın denetimi sıfır hata ile kapandı.",
+        koşu:  "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Aktif orkestrasyon cephesidir; koşu günlüğündeki süit ve defter sayıları tarih damgalı olup göç bitişiyle aşılmıştır, canlı gövde ise günceldir. Kontrolcü önerisi: açık kalsın ve orkestrasyon mesaisi kendi rayında sürsün; yayın kapısını bloklamaz. Onay tarihçesi: şerhle onaylandı — 2026-07-18; başlama işareti Founder (2026-07-20 · oturum 66: 'devir yapalım, açılış oturumunu başlatalım inşallah'); Sol ŞARTLI KABUL çerçevesinde: oturum planlama yapar, fiilî çok-kulvarlı yürütme kapılar kapanmadan başlamaz · Orkestrasyon zekasının kurulması için mevcut planlamamızı gözden geçirmek, yapıyı doğru kurabilmek için sağlam bir zemin için gerekli hazırlıkları yapmak ve genişçe bir kapsam değerlendirmesi yapmak şartı ile onaylıyorum. ⇢ 2026-07-20 · ARA KAYIT (oturum 67 — açılış oturumu KOŞULDU, plan taslağı doğdu, Founder onayı bekliyor): ① Founder tespiti ('orkestrasyon adımları, fazları, katman ve adım planlaması henüz yapılmamış') doğrulandı — zemin belgeleri hazırdı ama plan ağacı yoktu; boşluk kapatıldı: kapalı varlığın plan rafındaki orkestrasyon açılış planı doğdu (Faz FAZ-ZKA-DOGUM hedefTarih 2026-09-30 → Blok BLK-ZKA → 5 Katman → 11 koni-dolu Adım ZKA-A01..A11; gündem beş maddesinin tamamı eşlendi; OS denetimi hatasız). ② Oturumda kararlaşan üç Founder hükmü plana ve kataloğa işlendi: ZEKÂ DİLİ = TYPESCRIPT (çentiklere köprüsüz takılır; Python ürün arkayüzünde kalır — taban/teknolojiler.sar güncellendi, SARMAL beyan-dili de kataloğa girdi) · SIRALAMA: önce zekâ, sonra büyük OS bu zekâyla kodlanır (dogfood zirvesi) · VARLIK BAĞIMSIZLIĞI: depo ayrımı karardır (ZKA-A10 zamanlama/geçiş-yolu sorusu kaldı) + orkestrasyon durum-devir dosyaları kendi klasöründe tutulacak (ZKA-A11). ③ Sol kapıları ZKA-A02 karnesine bağlandı — ilk dikey dilim (ZKA-A09) kapı karnesi kapanmadan başlatılamaz (sınır alanında bağlayıcı). Kalan: planın Founder onayı + STR-3 sızıntı bekçisi doğrulaması + kabul maddelerinin kapanışı --- 2026-07-20 · EK (aynı gün, oturum devamı): ① PLAN ONAYLANDI — Founder işareti 'ya Allah bismillah'; taslak damgası ONAYLI'ya çevrildi (içerik aynı oturumda Founder'la şekillendi: TypeScript + depo ayrımı + durum hattı + gözlemci/yerleşim gündemleri ZKA-A03/A04'e bağlı). ② TEK FORMAT KANUNU doğdu (dil_format.sar · kilitli): içerik yalnız .sar'da yaşar; MD yalnız içi-boş ekosistem işaretçisi; insan yüzü arayüzde; ilk-temas farkındalığı (doğuş işaretçisi + MCP sunucu tanıtımı) eklenti/MCP rayına kalem; göç ayrı tur — KARARLAR.md üretiminin vadesi doldu, fiilî kaldırma göç planında. Karar defteri 111'e çıktı, sayım nöbetleri güncellendi, çekirdek 805/805. ③ Üçlü sözlük + eski-kavram eşlemesi + ajan-yüzü istişaresi (ad=protokol/içerik=insan-dili → tek format kanununun ikinci maddesine evrildi) bu oturumun zemin kayıtlarına işlendi. Sıradaki: ZKA-A01 envanter oturumu (dağınık kalemler tek listede Founder önceliklendirmesine gelir)",
+        ne:    "🎼 Orkestrasyon cephesini açmak. Kampanya kapanınca Founder ile açılış oturumu yapılır: RF-T5-A01'in ürettiği RAY-3 konsolide envanteri girdi alınır, orkestrasyon ZEKÂSININ (etmen kadrosu · seçim politikası · tescilli sıralama) planı STR-3 sınırına saygıyla kapalı varlığın plan rafı altında koni-dolu .sar olarak yazılır ve onaylanır — Sarmal tarafında yalnız jenerik mekanizma (sef.ts) kalır" ) {
+        görev: "Founder açılış oturumunu kur — gündem: ① RAY-3 konsolide envanteri (RF-T5, İLK madde — Founder önceliklendirir) ② etmen kadrosu taslağı + AJAN YERLEŞİM MİMARİSİ (Founder sorusu 2026-07-20, Copilot Agent-Customizations referans deseniyle: ajan başına özel klasör/izole bellek · yetenek-beceri ayrımı · araç izin matrisi — Sarmal karşılıkları: Etmen düğümü + etmen rafı + kullanır/yetenek kenarları + gateway) ③ SOL ŞARTLI-KABUL KAPILARI (2026-07-20 · bağlayıcı — fiilî çok-kulvarlı yürütme bunlar kapanmadan BAŞLATILAMAZ): paralellik sözleşmeleri (asenkron etmen sınırı · okur/yazar kilitleri · kulvar manifesti · sandbox · host-sahipli diff · VERIFIED-yalnız seri merge) + STR-3 sızıntı bekçisi (bugün üretilemiyor) + ham-kanıt koruma Adımı (DRS-HAM-KANIT-KORUMA terfisi) + PRF-A06 performans bütçe kapısı + MIM-1.2 EVRE-1 hatırlatma hükmü + OS dayanak borcu (31 kural) ④ L3 ŞEF runtime kapanış yolu ⑤ STR-3 fiziksel taşıma zamanlaması; oturum çıktısını kapalı varlığın plan rafındaki orkestrasyon açılış planı olarak koni-dolu yaz; planı Founder onayından geçir; Sarmal tarafında sızıntı olmadığını (politika/kadro bilgisi açık repoda yok) STR-3 bekçisiyle doğrula"
+        kabul: [
+          "Orkestrasyon açılış planı kapalı varlığın plan rafı altında koni-dolu yaşamaktadır ve Founder tarafından onaylanmıştır",
+          "STR-3 sınırı korunmuştur: açık tarafta yalnız jenerik mekanizma, zekâ kalemleri kapalı taraftadır (sızıntı denetimi yeşildir)",
+          "Cephenin ilk Adımı geliştirmede işaretlenmiş, orkestrasyon mesaisi fiilen başlamıştır"
+        ]
+        sınır: "Bu Adım orkestrasyon zekâsını UYGULAMAZ — yalnız cepheyi planlı ve onaylı açar; zekânın içeriği kapalı tarafın planında yürür (STR-3)"
+      }
+    }
+  }
+}
+// 🍎 KPN meyveleri — Adım→kod izi (üretir: kenarının hedefleri; TAN-ACIK-ADIM evre1_zorlama.sar'da tanımlıdır)
+Kod( kod: KOD-KPN-KIMLIK, dosya: "urun/cekirdek/src/kimlik.ts",
+  ne: "🍎 Kimlik indeksinin varlık/şablon sınır bilinci — gezinmeSuzgeci (ürün gezinmesi ders kopyasından arınır, YAS-3.3 varlık sınırı) + bolgeEtiketi/varlikAdi rozetleri + gezinRaporu rozetli tanımlar (KPN-A01 ürünü; eklenti kablosu gezinme.ts + atif-dekor.ts)" )
+Kod( kod: KOD-KARNE-URUN-KAPSAMI, dosya: "urun/cekirdek/src/dag.ts",
+  ne: "🍎 Karne özetinin ürün kapsamı — karneOzeti örnek dünyasındaki (INDEKS_DISI) Adımları durum sayaçlarına almaz; karne satırı ürün ağacının gerçeğini söyler (KPN-A05 ürünü · OGR-5)" )
+
+Kod( kod: KOD-CLI-DENETLE-K107, dosya: "urun/cekirdek/src/sarmal.ts",
+  ne: "🍎 Denetim çıktısının OGR-5 hizası — motor-susmaz gündemi ürün ağacına bakar, örnek dünyası ayrı bilgi satırıyla raporlanır (KPN-A05 ürünü)" )
+
+Kod( kod: KOD-SNM-K107, dosya: "urun/cekirdek/sinama/denetci.test.ts",
+  ne: "🍎 OGR-5 davranış nöbeti — örnek/ürün ayrımının ve ders sayacının sınamaları (KPN-A05 ürünü)" )

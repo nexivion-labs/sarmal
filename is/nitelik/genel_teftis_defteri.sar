@@ -1,0 +1,66 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/genel_teftis_defteri.sar — 🔍 GENEL TEFTİŞ DEFTERİ (2026-07-12 gece)
+//
+//   Founder: "sonlara yaklaştık — ana dizinlerden omurgaya her şeyi gözden
+//   geçir, kör noktaları bul; en baştan reform yapalım." BEŞ bağımsız kaynak:
+//   git-arkeoloğu · dil-omurgası denetçisi · motor kör-nokta avcısı (Claude
+//   ajanları) + GPT-5.6 Terra (CANLI kod deneyleriyle) + renk kurulu (5 görüş).
+//   Reform planı: ~/.claude/plans (onaylı) + plan/reform_plani.sar (ray).
+//   Sınıflar: 🔴 motor-bug · 🟠 beyan-boşluğu · 🟡 metin-drift · 🔵 ürünleşme.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🔍 Genel Teftiş — beş kaynağın çapraz-doğrulanmış bulgu envanteri
+
+  ## 🔴 MOTOR-BUG (Terra canlı deneyle kanıtladı → TUR-2)
+  - **DAG öz-bağımlılık deliği:** `bağımlı: [KENDİSİ]` kenarsız atlanıyor —
+    öz-döngü ne kenar ne tanı üretiyor (dag.ts kenarEkle; canlı denendi).
+  - **Kenar sicili kaçağı:** `Düğme(çağırır: UC-YOK)` sessiz geçiyor —
+    çağırır/gider/gönderir/eylem kanonik kenar listesinde değil, kırık-referans
+    çözücüsünden kaçıyor (canlı denendi). Omurga denetçisinin "kâğıt-kenarlar"
+    bulgusuyla ikiz: yönetir·anayasa·tema·hatırlat grafta gezilmiyor.
+  - **Durum-geçiş makinesi yok:** bloklu→tamamlandı yazılabiliyor (mcp
+    durum-guncelle · panel durumYaz · koniYaz — üçü de yalnız enum bakar);
+    dogrulayici:510 ok-diyagramı beyan, motor zorlamıyor.
+  - **test:vscode KIRMIZI:** entegrasyon sürücüsü 'Cannot find module .../ornek'
+    (calistir.ts yol kırığı) — "5/5 kasa" iddiası şu an geçersiz.
+  - **K-96 panel bugları (renk kurulu):** kapsayıcı rengi durumdan değil
+    sayaçtan (bloklu kapsayıcı kırmızı/rozetli olamıyor) + checkbox↔ikon
+    zıplaması.
+
+  ## 🟠 BEYAN-BOŞLUĞU (avcı → TUR-2)
+  - **Panel↔CLI muaf asimetrisi:** denetleHepsi muaflar+BILEREK_HATALI
+    süzgeçsiz (eklenti.ts:91,111) — kapi_kapsami bu farkı beyan etmiyor
+    (KRR-MUT-2 sınıfı; bugünkü bilgi-süzme vakasının açık kuzeni).
+  - **"Bitti" türetmesi 4 kopya, 3 farklı tanım:** dag.ts:282 · yolharitasi:186
+    · denetci:1293 (bloklu kiminde açık-iş kiminde değil) → ortak durumTuret().
+  - **Kırık dosya panelden sessiz kaybolur** (yolharitasi:290) — karşı-tanı yok.
+  - **Testsiz modüller:** sarmal.ts/denetleKomutu (50KB, bugünkü bug'ın evi!) ·
+    yolcoz · tema · yazdir · kopru/iz · kopru/nvidia.
+  - **Enforcement karnesi:** 19 kural kâğıtta (DR-8 · DR-2 · KA-2...) +
+    22 drift-anahtarının motor kodu yok — bilinçli ama "zorunlu" dilli.
+
+  ## 🟡 METİN-DRİFT (arkeolog + omurga + Terra → TUR-4)
+  - **is_akisi.sar IA-3 hâlâ eski diziliş** (canlı yasa!) · dogus_rehberi
+    facet dili (ajanın giriş kapısı — en yüksek risk) · felsefe/ üçlüsü
+    6-7 Temmuz'da donmuş · KAVRAMLAR "9 kenar" (kanon farklı) + ağaç
+    tablosunda AltKatman yok · CLAUDE.md omurga cümlesi 4-seviye ·
+    eklenti README hızlı-başlangıcı K-91'e AYKIRI (kopyalayan hata alır) ·
+    CHANGELOG 0.9.41'de · cekirdek/README bayat.
+  - **Takipsiz kararlar:** K-47 (rezerve, hiç dolmadı) · K-63 (Pardus) ·
+    K-73 (public repo) — kilitli ama hiç işlenmedi; motor ölü-karar görmüyor.
+
+  ## 🔵 ÜRÜNLEŞME (Terra TOP-10 → TUR-4/5)
+  - Altın başlangıç tek kaynaktan üretilmeli (README/snippet/şablon) ·
+    İngilizce yüzey MVP (K-80 yayın kapısı) · panel 500+ düğüm ölçekleme
+    (artımlı indeks) · LICENSE v1 kararı · K-92 Takım-mirası ŞEF paketine
+    girmiyor (canlı denendi: boş döndü) · çağır DAG'a çevrilmiyor (K-91
+    sürekliliği yürütmede kör — RAY-3).
+
+  ## TUR EŞLEMESİ (reform planı — kilitli kararlarla)
+  TUR-1 K-96 renk kanunu+panel bütünlüğü → TUR-2 motor güven turu →
+  TUR-3 K-97 katman kuralı (kademeli) → TUR-4 metin/yüzey hizalaması →
+  TUR-5 RAY-3 konsolidasyon planı. Terra = tur-sonu kabul denetçisi.
+|<--
+Çıkarım( kod: CKR-GENEL-TEFTIS, kaynak: "5 bağımsız teftiş kaynağı (3 Claude ajanı + GPT-5.6 Terra canlı-deneyli + renk kurulu) — 2026-07-12 gece; ham lig: cekirdek/.sarmal/lig",
+         ne: "🔍 Genel teftiş hükmü: 5 motor-bug (öz-bağımlılık · kenar-kaçağı · geçiş-makinesisizlik · test:vscode · panel-durum) + beyan boşlukları (muaf-asimetrisi · 4-kopya-bitti · sessiz-kayıp · testsiz-sarmal.ts) + metin driftleri (iş-dilimi anlatısı · dogus_rehberi facet · felsefe donuk) + ürünleşme eksikleri — hepsi 5-turlu reform planına eşlendi, kararlar Founder kilidli; beslediği hizalama turu kapandı ve arşivdedir" )

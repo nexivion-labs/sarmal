@@ -1,0 +1,17 @@
+{
+  "_yorum": "🌟 KUZEY YILDIZI teması — Founder bulgusu 2026-07-18: ampulün yıldız kılığı KALKTI (satıra tıklayınca çıkan kod-aksiyonu ampulü ikinci bir yıldız gibi görünüyor, kafa karıştırıyordu). Gökyüzünde TEK yıldız yaşar: gutter'daki kuzey yıldızı (yildiz.ts). Ampul varsayılan görünümüne döner — tema kimliği korunur (giydir ayarı geçerli kalsın), tanım listesi bilinçli boştur.",
+  "fonts": [
+    {
+      "id": "sarmal-yildiz",
+      "src": [
+        {
+          "path": "./yildiz.ttf",
+          "format": "truetype"
+        }
+      ],
+      "weight": "normal",
+      "style": "normal"
+    }
+  ],
+  "iconDefinitions": {}
+}

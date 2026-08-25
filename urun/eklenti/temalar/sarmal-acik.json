@@ -1,0 +1,246 @@
+{
+  "_uretim": "ÜRETİLDİ — arac/renk-uret.mjs (kaynak: oz/siniflama/kayit.json · renkPaleti). Elle düzenlenmez; üreteci değiştir ve yeniden koştur.",
+  "name": "Sarmal Acik",
+  "type": "light",
+  "semanticHighlighting": true,
+  "colors": {
+    "editorError.foreground": "#EF4444",
+    "editorWarning.foreground": "#FF8C42",
+    "editorInfo.foreground": "#4D9FFF",
+    "editorInfo.background": "#4D9FFF26",
+    "editorOverviewRuler.infoForeground": "#4D9FFF",
+    "list.errorForeground": "#EF4444",
+    "list.warningForeground": "#FF8C42",
+    "list.infoForeground": "#4D9FFF",
+    "checkbox.foreground": "#8CC152"
+  },
+  "semanticTokenColors": {
+    "sarmalBahce": "#8A6E58",
+    "sarmalAgac": "#9A7A5C",
+    "sarmalKok": "#AC814F",
+    "sarmalGovde": "#C0925C",
+    "sarmalDal": "#D0A878",
+    "sarmalAltDal": "#D8BE94",
+    "sarmalYaprak": "#8CC152",
+    "sarmalMeyve": "#C173CE",
+    "sarmalBilgi": "#4ec9b0",
+    "sarmalOrkestrasyon": "#c9b458",
+    "sarmalEtmen": "#c586c0",
+    "sarmalYuzey": "#ce9178",
+    "sarmalYasa": "#e06c6c",
+    "sarmalTeknoloji": "#5b97a3",
+    "sarmalSurec": "#9c7256",
+    "sarmalNitelik": "#b56a8e",
+    "sarmalOz": "#56C8D8",
+    "sarmalDavranis": "#4fc1ff",
+    "sarmalArkayuz": "#2472c8",
+    "sarmalParam": "#0451A5",
+    "sarmalKod": "#9A6700",
+    "sarmalKenar": "#FF79C6",
+    "sarmalKodEtmen": "#A626A4",
+    "sarmalKodBeceri": "#0E7C6B",
+    "sarmalKodBellek": "#8F7A00",
+    "sarmalKodHatir": "#0B62B8",
+    "sarmalKodYasa": "#C41E1E",
+    "sarmalKodYuzey": "#A0522D",
+    "sarmalKodPlan": "#8B6A3D",
+    "sarmalKodOz": "#5A6B78"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment",
+        "punctuation.definition.comment"
+      ],
+      "settings": {
+        "foreground": "#5A6B78"
+      }
+    },
+    {
+      "scope": [
+        "string",
+        "string.quoted",
+        "meta.embedded.assembly"
+      ],
+      "settings": {
+        "foreground": "#A0522D"
+      }
+    },
+    {
+      "scope": [
+        "constant.numeric"
+      ],
+      "settings": {
+        "foreground": "#098658"
+      }
+    },
+    {
+      "scope": [
+        "constant.language",
+        "constant.character",
+        "support.constant",
+        "storage",
+        "storage.type",
+        "storage.modifier",
+        "entity.name.tag"
+      ],
+      "settings": {
+        "foreground": "#0B62B8"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "keyword.control"
+      ],
+      "settings": {
+        "foreground": "#AF00DB"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function",
+        "support.function",
+        "meta.function-call"
+      ],
+      "settings": {
+        "foreground": "#795E26"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "entity.name.class",
+        "support.type",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#0E7C6B"
+      }
+    },
+    {
+      "scope": [
+        "variable",
+        "variable.other",
+        "variable.parameter",
+        "entity.name.variable",
+        "support.variable",
+        "entity.other.attribute-name"
+      ],
+      "settings": {
+        "foreground": "#0451A5"
+      }
+    },
+    {
+      "scope": [
+        "constant.other"
+      ],
+      "settings": {
+        "foreground": "#9A6700"
+      }
+    },
+    {
+      "scope": [
+        "markup.heading"
+      ],
+      "settings": {
+        "foreground": "#8C5A2B",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": [
+        "markup.bold"
+      ],
+      "settings": {
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": [
+        "markup.italic"
+      ],
+      "settings": {
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": [
+        "invalid"
+      ],
+      "settings": {
+        "foreground": "#EF4444"
+      }
+    },
+    {
+      "scope": "entity.name.tag.sar",
+      "settings": {
+        "foreground": "#9A6700",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": "markup.heading.sar",
+      "settings": {
+        "foreground": "#8C5A2B",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": [
+        "punctuation.definition.comment.begin.sar",
+        "punctuation.definition.comment.end.sar"
+      ],
+      "settings": {
+        "foreground": "#1E9E50",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": [
+        "string.quoted.double.sar",
+        "string.quoted.triple.sar"
+      ],
+      "settings": {
+        "foreground": "#1F1F1F"
+      }
+    },
+    {
+      "scope": "constant.other.kod.sar",
+      "settings": {
+        "foreground": "#9A6700"
+      }
+    },
+    {
+      "scope": "constant.numeric.sar",
+      "settings": {
+        "foreground": "#098658"
+      }
+    },
+    {
+      "scope": "markup.table.sar",
+      "settings": {
+        "foreground": "#1E6E5C"
+      }
+    },
+    {
+      "scope": "keyword.control.sar",
+      "settings": {
+        "foreground": "#AF00DB"
+      }
+    },
+    {
+      "scope": "entity.name.function.sar",
+      "settings": {
+        "foreground": "#795E26"
+      }
+    },
+    {
+      "scope": "keyword.control.flow.sar",
+      "settings": {
+        "foreground": "#C2185B",
+        "fontStyle": "bold"
+      }
+    }
+  ]
+}

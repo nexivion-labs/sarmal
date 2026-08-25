@@ -1,0 +1,110 @@
+#!/bin/sh
+# ═══════════════════════════════════════════════════════════════════════════
+# kanca/commit-msg — ✍️ SARMAL İŞLEME MESAJI KAPISI
+#
+#   NEDEN VAR: yasa/yonetisim/surum_yonetisimi.sar biçimi en baştan tarif ediyordu (başlık
+#   `tip(kapsam): özet`, uzun anlatım gövdeye `Ne:` · `Neden:` · `Kapı:`),
+#   fakat kural tavsiye statüsünde kaldığı için aylarca ihlal edildi. Ölçüm:
+#   Temmuz'un 1140 işlemesinde ortalama başlık 197 karakter, en uzunu 1333
+#   karakterdir; Ağustos'ta başlık 86 karaktere indi ama 57 işlemenin 57'sinde
+#   gövde hiç yazılmadı. İyi niyet bu işi çözmedi, bu yüzden kural buraya indi.
+#
+#   ARIZA-GÜVENLİ: birleştirme · geri-alma · düzeltme mesajlarını atlar.
+#   Bilinçli atlamak için:  git commit --no-verify
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Gösterilecek kaynak adresi ada gömülmez, ÖLÇÜLÜR (GOC-A03): gövde taşındığında
+# ya da yeniden adlandırıldığında kullanıcıya bayat bir adres verilmez.
+VARLIK=""
+for aday in . */; do
+  aday="${aday%/}"
+  [ -f "$aday/yasa/yonetisim/surum_yonetisimi.sar" ] && { [ "$aday" = "." ] || VARLIK="$aday"; break; }
+done
+
+MESAJ_DOSYASI="$1"
+[ -f "$MESAJ_DOSYASI" ] || exit 0
+
+# — yorum satırlarını ve sondaki boşluğu ayıkla —
+GOVDE_TAM=$(grep -v '^#' "$MESAJ_DOSYASI" | sed -e 's/[[:space:]]*$//')
+BASLIK=$(printf '%s\n' "$GOVDE_TAM" | sed -n '1p')
+
+# — boş mesaj: git kendisi durdurur, karışma —
+[ -z "$BASLIK" ] && exit 0
+
+# — otomatik üretilen mesajları atla (birleştirme · geri-alma · düzeltme) —
+case "$BASLIK" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *|birleştir*|geri-al*) exit 0 ;;
+esac
+
+HATA=0
+yaz_hata() {
+  [ "$HATA" -eq 0 ] && {
+    echo "✖ sarmal-mesaj-kapısı: işleme mesajı biçimi tutmuyor"
+    echo "─────────────────────────────────────────────"
+  }
+  echo "  · $1"
+  HATA=1
+}
+
+# ── ① BAŞLIK UZUNLUĞU ───────────────────────────────────────────────────────
+#    Yetmiş iki karakter, git'in kendi araçlarının kırpmadan gösterdiği sınırdır.
+UZUNLUK=$(printf '%s' "$BASLIK" | wc -m | tr -d ' ')
+if [ "$UZUNLUK" -gt 72 ]; then
+  yaz_hata "başlık $UZUNLUK karakter — en çok 72 olmalı; fazlasını gövdeye taşı"
+fi
+
+# ── ② BAŞLIK BİÇİMİ ─────────────────────────────────────────────────────────
+#    `tip(kapsam): özet` — tip küçük harfle başlayan tek Türkçe sözcüktür.
+if ! printf '%s' "$BASLIK" | grep -qE '^[a-zçğıöşü]+\([a-zçğıöşü0-9-]+\): .+'; then
+  yaz_hata "başlık 'tip(kapsam): özet' biçiminde değil — örnek: bakım(kanca): mesaj kapısı kuruldu"
+fi
+
+# ── ③ NOKTA AYRACIYLA ZİNCİRLEME ────────────────────────────────────────────
+#    Founder üslup hükmü (2026-07-26): kayıt metni tam cümle kurar; nokta
+#    ayracıyla etiket dizmek kabul edilmez. Eski kusurun imzası tam olarak budur.
+if printf '%s' "$BASLIK" | grep -q ' · '; then
+  yaz_hata "başlıkta ' · ' ayracı var — etiket dizmek yerine tam cümle kur, ayrıntıyı gövdeye yaz"
+fi
+
+# ── ④ BÜYÜK HARFLE BAĞIRMA ──────────────────────────────────────────────────
+#    Özet kısmında art arda üç sözcük tümüyle büyük harfse, bu vurgu değil gürültüdür.
+OZET=$(printf '%s' "$BASLIK" | sed -e 's/^[^:]*: //')
+if printf '%s' "$OZET" | grep -qE '([A-ZÇĞİÖŞÜ]{2,}[[:space:]]+){2}[A-ZÇĞİÖŞÜ]{2,}'; then
+  yaz_hata "özette art arda üç büyük harfli sözcük var — vurgu değil gürültü üretir"
+fi
+
+# ── ⑤ BAŞLIK SONU NOKTASI ───────────────────────────────────────────────────
+case "$BASLIK" in
+  *.) yaz_hata "başlık nokta ile bitmemeli" ;;
+esac
+
+# ── ⑥ İZ SATIRI YASAĞI (Founder emri · yasa/yonetisim/surum_yonetisimi.sar) ──────────────────
+if printf '%s\n' "$GOVDE_TAM" | grep -qiE '^(co-authored-by|ortak-yazar|generated with|signed-off-by)'; then
+  yaz_hata "ortak-yazar / iz-satırı / imza-altı eklenmez"
+fi
+
+# ── ⑦ BÜYÜK İŞLEMEDE GÖVDE ZORUNLU ──────────────────────────────────────────
+#    Başlığı kısaltmak tek başına yetmez; anlatım silinmemeli, gövdeye inmeli.
+DOSYA_SAYISI=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
+SATIR_SAYISI=$(git diff --cached --numstat 2>/dev/null | awk '{e+=$1; s+=$2} END {print e+s+0}')
+if [ "${DOSYA_SAYISI:-0}" -ge 5 ] || [ "${SATIR_SAYISI:-0}" -ge 100 ]; then
+  if ! printf '%s\n' "$GOVDE_TAM" | grep -qE '^(Ne|Neden|Kapı|Kontrol noktası):'; then
+    yaz_hata "büyük işleme ($DOSYA_SAYISI dosya · $SATIR_SAYISI satır) — gövdeye 'Ne:' ve 'Neden:' satırları şart"
+  fi
+fi
+
+if [ "$HATA" -ne 0 ]; then
+  echo "─────────────────────────────────────────────"
+  echo "  Biçim kaynağı: ${VARLIK:+$VARLIK/}yasa/yonetisim/surum_yonetisimi.sar"
+  echo "  Örnek:"
+  echo "    bakım(kanca): işleme mesajı kapısı kuruldu"
+  echo "    "
+  echo "    Ne: Başlık uzunluğu, biçimi ve büyük işlemede gövde zorunluluğu nöbete bağlandı."
+  echo "    Neden: Kural üç yerde yazılıyken tavsiye kaldığı için aylarca ihlal edildi."
+  echo "    Kapı: iki varlıkta denetim sıfır hata."
+  echo "  → düzelt, ya da bilinçliyse:  git commit --no-verify"
+  exit 1
+fi
+
+echo "✍️✅ sarmal-mesaj-kapısı: başlık $UZUNLUK karakter, biçim tuttu"
+exit 0

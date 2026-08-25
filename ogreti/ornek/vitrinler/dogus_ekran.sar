@@ -1,0 +1,74 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// vitrinler/dogus_ekran.sar — 🌱 DOĞUŞ ŞABLONU ② EKRAN+UÇ+SÖZLEŞME ÜÇLÜSÜ (ADM-DGS-03)
+//
+//   Kavuşum üçlüsü TAM: Adım üretir Ekran · Ekran çağırır Uç · Uç bağlanır
+//   Sözleşme (ORK-2.3). Bekçi ormanını GEÇEREK öğretir: kavuşumsuz-ekran
+//   (referans var) · öksüz-düğme (her düğme davranış-kenarlı) · sözleşmesiz-uç
+//   (uç sözleşmeli). Tüm hedefler bu dosyada DOĞAR — kırık referans yok
+//   (A02 dersi: örnek TAM olur, yarım örnek kötü öğretmendir).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// PLAN HEDEFİ — ekranın kavuşacağı koni-dolu Adım (yalın Adım örneği YOK · YAS-3.4).
+Adım( kod: VTR-ADM-GIRIS, ad: "giriş-ekranı",
+      görev: "E-posta+parola ile giriş ekranını kur; form VTR-SZL-GIRIS sözleşmesini onurlandırır, başarıda ana ekrana geçilir, 401/429 kullanıcıya Türkçe açıklanır",
+      kabul: [ "form sözleşme alanlarını doğrulayıp gönderiyor", "başarısız girişte alan-bazlı hata gösteriliyor; 429'da bekleme süresi söyleniyor" ],
+      üretir: VTR-KOD-GIRIS-EKRANI,
+      bağımlı: [],
+      sınır: "kayıt-ol ve parola-sıfırla ayrı Adımların işi",
+      durum: beklemede )
+
+// KAVUŞUM KÖPRÜSÜ — önyüz ile arkayüzün anlaştığı TEK yer (contract-first).
+Sözleşme( kod: VTR-SZL-GIRIS, sürüm: "1.0", ne: "Giriş anlaşması — form gönderir, uç doğrular" ) {
+  alanlar: {
+    eposta: "eposta-biçimi · zorunlu",
+    parola: "metin · zorunlu · en az 8 karakter",
+    yanıt: "metin · oturum jetonu · hatalar: 401, 429",
+  }
+}
+
+// TASARIM SİSTEMİ (TAS-A01/B01) — BİR KEZ ilan: rol ADLARI .sar'da (sözleşme),
+// DEĞERLER teknoloji temasında (`dosya:` üretim-yeri beyanı). İki ekran da buna bağlanır.
+Tema( kod: VTR-TEM-ANA, görünürlük: açık, ne: "vitrin tasarım sistemi — token-ROL sözleşmesi (değerler tech-temada)",
+      dosya: "uygulama/lib/tema/ana_tema.dart",
+      renkler: [ birincil, ikincil, vurgu, hata, yüzey, arkaplan ],
+      tipografi: [ başlık1, başlık2, gövde, etiket ],
+      boşluk: [ xs, sm, md, lg ],
+      yuvarlaklık: [ sm, md ] )
+
+// ÖNYÜZ — Ekran plana KAVUŞUR (referans) + temaya GİYİNİR (tema — temasız-ekran susar),
+// Form sözleşmeyi ONURLANDIRIR (uygular), her Düğme bir davranış-kenarı taşır (öksüz-düğme
+// bekçisi böyle susar), her Metin tipografi ROLÜ taşır (ölçüsüz-metin bekçisi böyle susar).
+Ekran( kod: VTR-EKR-GIRIS, görünürlük: açık, ne: "giriş ekranı", referans: VTR-ADM-GIRIS, tema: VTR-TEM-ANA ) {
+  Yığın( kod: VTR-YIG-GIRIS, görünürlük: açık, ne: "dikey yerleşim" ) {
+    Form( kod: VTR-FRM-GIRIS, görünürlük: açık, ne: "kimlik formu", uygular: VTR-SZL-GIRIS ) {
+      Metin( kod: VTR-MTN-BASLIK, görünürlük: açık, ne: "Hesabına giriş yap", stil: başlık1 ) { }
+      MetinAlanı( kod: VTR-GRD-EPOSTA, görünürlük: açık, ne: "e-posta alanı" ) { }
+      MetinAlanı( kod: VTR-GRD-PAROLA, görünürlük: açık, ne: "parola alanı (gizli)" ) { }
+      Satır( kod: VTR-STR-EYLEM, görünürlük: açık, ne: "eylem satırı" ) {
+        Düğme( kod: VTR-DGM-GIRIS, görünürlük: açık, ne: "Giriş Yap", çağırır: VTR-UC-GIRIS ) { }
+        Düğme( kod: VTR-DGM-KAYIT, görünürlük: açık, ne: "Kayıt Ol", gider: VTR-EKR-KAYIT ) { }
+      }
+    }
+  }
+}
+
+// gider: hedefi de bu dosyada DOĞAR (kırık rota yok) — kendi planına kavuşur.
+Adım( kod: VTR-ADM-KAYIT, ad: "kayıt-ekranı",
+      görev: "Kayıt-ol ekranının iskeletini kur — bu vitrinde yalnız rota hedefi olarak yaşar; gerçek projede kendi sözleşmesi ve ucuyla doldurulur",
+      kabul: [ "giriş ekranındaki 'Kayıt Ol' rotası bu ekrana çıkıyor" ],
+      bağımlı: [ VTR-ADM-GIRIS ],
+      sınır: "vitrinde iskelet — kayıt akışının konisi kendi projesinde dolar",
+      durum: beklemede )
+Ekran( kod: VTR-EKR-KAYIT, görünürlük: açık, ne: "kayıt ekranı (rota hedefi)", referans: VTR-ADM-KAYIT, tema: VTR-TEM-ANA ) {
+  Metin( kod: VTR-MTN-KAYIT, görünürlük: açık, ne: "Yeni hesap oluştur", stil: başlık2 ) { }
+}
+
+// ARKAYÜZ — Uç sözleşmeyi UYGULAR (sözleşmesiz-uç bekçisi böyle susar).
+Servis( kod: VTR-SRV-KIMLIK, ne: "kimlik servisi — giriş/oturum uçları" ) {
+  Uç( kod: VTR-UC-GIRIS, yol: "/api/giris", metod: POST, sözleşme: VTR-SZL-GIRIS,
+      ne: "girişi doğrular, oturum jetonu döner; 5 hatada 429 + bekleme" )
+}
+
+// MEYVELER (MIM-2.1 üretim-yeri): iki yüzün kodu nereye düşer.
+Kod( kod: VTR-KOD-GIRIS-EKRANI, dosya: "uygulama/lib/ekranlar/giris_ekrani.dart",
+     ne: "🍎 giriş ekranı — VTR-ADM-GIRIS'in meyvesi" )

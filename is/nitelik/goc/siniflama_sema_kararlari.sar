@@ -1,0 +1,130 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/siniflama_sema_kararlari.sar — 🧬 CANLI ŞEMA KARARLARI (GOC-KANON-A01)
+//   Kanon-verisi turunun şema kararları: mevcut sicil envanteri, Karar C'nin
+//   uygulanması, üç yeni tipin kayıt hedefleri, rejim ile departman
+//   sözleşmesinin veri biçimi ve spec kapısından devredilen etki kümesinin
+//   sahip eşlemesi. Bütün sayılar bu üretimde kaynak dosyalardan ölçüldü.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## A · Mevcut sicil envanteri — kaynak: oz/siniflama/kayit.json
+
+Canlı sınıflama kaydı bu kararların alındığı anda şu envanteri taşıyor:
+`widgetTipleri` listesinde 98 tip, `semalar` sözlüğünde 98 şema ve
+`izinliSarma` sözlüğünde 16 ebeveyn girişi yaşıyor. Ortak alan sözleşmeleri
+`alanTurleri` (7 tür) ile `alanKurallari` (5 kural) listelerinde, kenar
+sözlüğü `kenarTipleri` listesinde (18 kenar) duruyor. Motor bu kayıttan üç
+zorlama yüzü türetiyor: `semalar.<tip>.zorunlu` eksikliği `eksik-alan`
+uyarısı, `semalar.<tip>.enum` aykırılığı `geçersiz-enum` uyarısı ve
+`izinliSarma` aykırılığı `izinsiz-sarma` hatası üretir.
+
+Mevcut `Kimlik` sözleşmesi altı kayıt noktasında yaşıyordu: `widgetTipleri`
+girişi (arkayuz ailesi), `izinliSarma` içinde Uygulama, Proje ve Mekanizma
+ebeveyn listeleri, `semalar` anahtarı (zorunlu: kod ve ne; opsiyonel: dosya)
+ve `tipMuafiyetleri` anahtarı (dış-proje-arkayüz muafiyeti). Motor kaynak
+kodunda `Kimlik` tip adına bağlı özel bir okuma yoktur; bu ölçüm
+`cekirdek/src` ve `eklenti/src` üzerinde tam taramayla yapıldı ve sıfır
+eşleşme verdi. Bu yüzden yeniden adlandırma yalnız veri ve örnek katmanına
+dokunur, motor koduna dokunmaz.
+
+## B · Karar C uygulandı — mevcut Kimlik tipi KimlikPolitikası oldu
+
+Kilitli Karar C bu üretimde uygulandı. Altı kayıt noktasının altısı da
+`KimlikPolitikası` adını taşıyor ve `kayit.json` içinde `"Kimlik"` geçişi
+sıfırdır. Öğretim yüzleri aynı işlemde hizalandı: `rehber.json` girişinin
+anahtarı ve tanımı yeni adı anlatıyor, ikiz okuma yüzü `kayit.md` dört
+satırında yeni adı kullanıyor. Bildirim taşıyan iki örnek dosya güncellendi:
+`ornek/format/dalga3_arkayuz.sar` dosyasında bir bildirim ile üç öğretim
+atfı, `ornek/gercek/arkayuz_kimlik.sar` dosyasında bir bildirim ile bir bölüm
+başlığı yeni ada geçti. Tarama sonucu: yürür kaynaklarda `Kimlik(` bildirimi
+sıfırdır; `KimlikKökü` ve `KimlikSağlayıcısı` adlarıyla ad, şema veya sarma
+çakışması yoktur, çünkü bu iki ad bu karar anında hiçbir kayıt yüzünde
+bulunmuyor ve kayıtları ayrı sözleşmelerle GOC-KANON-A03 Adımında açılacak.
+
+Rol ayrımı üç satırda kesinleşti: `KimlikPolitikası` jeton ömrü, parola
+algoritması ve kilitleme kurallarını taşıyan doğrulama politikasıdır;
+`KimlikKökü` kullanıcı havuzunu, yürürlükteki politikayı ve sağlayıcı
+kümesini kapsayan kimlik alanı sınırıdır; `KimlikSağlayıcısı` bu köke bağlı
+dış sağlayıcıdır. Kök tam olarak bir politika kapsar ve sıfırdan çok
+sağlayıcı sarar; üç rol birleştirilemez.
+
+## C · Üç yeni tipin kayıt hedefleri — TIP-1.15 ve ORK-5 okumasıyla
+
+| Tip | Aile | widgetTipleri | semalar | izinliSarma |
+|---|---|---|---|---|
+| Meyve | urun | eklenecek | zorunlu: kod ve tür; enum tür: Kod · Ekran · Uç · Sözleşme · Karar · Onay · dış-çıktı; dosya-zorunlu türler MIM-2.1'den, dosya-muaf türler MIM-2.2'den makine-okur | ebeveyn olarak Adım (üretir konisine bitişik teslim) |
+| KimlikKökü | arkayuz | eklenecek | zorunlu: kod; kimlik alanı semantiği tanımda açık | ÇalışmaAlanı ile Proje çocuklarına eklenir; kendi çocukları KimlikPolitikası ile KimlikSağlayıcısı |
+| KimlikSağlayıcısı | arkayuz | eklenecek | zorunlu: kod ve tür; enum tür: google · github · linkedin · apple · microsoft · sso (taban kapalı, genişletme yalnız katkılı örtüyle) | yalnız KimlikKökü altında yaşar |
+
+Kenar sözlüğü kararı: `kenarTipleri` listesine `kullanır` kenarı eklenir;
+bu kenar Katmanın somut Teknoloji bağını ve Projenin ortak ya da kendi
+KimlikKökü seçimini aynı adla taşır. Bu ekleme, tutarlılık raporundan göçe
+devredilen "kullanır kenarı sicile makine-okur inmeli" boşluğunu da kapatır.
+`zorunluKenarlar` sözlüğüne bu turda Meyve veya kimlik girişi eklenmez;
+gerekçe D bölümündeki zorlama ayrımıyla aynıdır, çünkü üreticisiz Meyve ve
+köksüz sağlayıcı ihlallerinin kanonik tanıları (`üretimsiz-meyve`,
+`auth-omurgası-ihlali`) motor turunun tanı borcundadır ve bu veri sözlüğü
+motorda anında zorlama üretir.
+
+## D · Rejim ve departman sözleşmesi — zorunluluk, enum ve geçiş davranışı
+
+Proje rejimi ile AltKatman departmanının veri sözleşmesi şöyle kesinleşti.
+`Proje` şeması `rejim` alanını yalnız `katı` ve `esnek` değerlerini kabul
+eden bir enum olarak taşıyacak ve hiçbir değer yıldızla işaretlenmeyecek,
+çünkü YAS-1 sessiz varsayılanı açıkça yasaklar. `AltKatman` şeması
+`departman` alanını `planlama`, `kodlama`, `sınama`, `inceleme` ve
+`güvenlik` çekirdek beşlisiyle taşıyacak; genişletme yalnız ÇalışmaAlanı
+örtüsünün katkılı enum birleşimiyle olur ve taban küme yerinde değiştirilemez.
+
+Zorunluluğun veri biçimi için kontrollü bir deney yapıldı: iki alan bugünkü
+`zorunlu` listelerine eklenip proje denetimi koşulduğunda motor 177
+`eksik-alan` uyarısı üretti ve deney geri alındı. Bu 177 kullanım, plandaki
+proje-kod turunun göç kapsamıdır ve o turun görevi otomatik departman
+seçmeyi açıkça yasaklar. Ayrıca kanon bu iki zorunluluğun zorlamasını
+`eksik-alan` uyarısına değil kendi tanılarına bağlar: rejim eksikliği YAS-1
+uyarınca `rejim-beyanı-eksik` düzeyinde hatadır ve departman semantiği
+MIM-1.5 ile YAS-1.1 tanılarıyla zorlanır; bu tanıların üçü de çapraz
+haritada motor turunun 69 tanı borcunda kayıtlıdır. Bu iki gerekçeyle karar
+şudur: zorunluluk, motorun bugünkü `eksik-alan` bekçisine bağlanmaz;
+şemalara motorun henüz okumadığı makine-okur `beyanZorunlu` sözleşmesi
+olarak iner, enum kayıtları ise hemen iner ve alan yazıldığı anda bugünkü
+`geçersiz-enum` bekçisiyle denetlenir. Motor turu `beyanZorunlu` kaydını
+kanonik tanılarla zorlayacak, terfi turu düzeyleri kademeli yükseltecektir.
+
+Geçiş davranışı YAS-1.3 okumasıyla kaydedildi: rejim yalnız açık kullanıcı
+değişikliğiyle geçer, mevcut yapı otomatik sarılmaz, taşınmaz veya silinmez
+ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır. Aynı
+ilke departman alanına da uygulanır: eski `rol:` yazımından `departman:`
+yazımına sessiz dönüşüm yapılmaz; motor eski adı tanımaz ve geçiş görünür
+raporla yürütülür. Teknoloji bağı sözleşmesi korunur: bağ yalnız kök
+Katmanda `kullanır` kenarıyla yaşar ve AltKatman bu bağı değiştirmeden
+miras alır.
+
+## E · Spec etki kümesinin sahip eşlemesi ve iki açık kayıt
+
+Spec devir kaydının kanon-verisi etki kümesindeki her hedefin sahibi bu
+turda bellidir: üç yeni tipin kayıt yüzleri GOC-KANON-A03'ün, rejim ile
+departman şeması GOC-KANON-A04'ün, Karar C uygulaması bu Adımın, Karar B
+hizası GOC-KANON-A02'nin, gömülü kanon üretimi GOC-KANON-A05'in işidir.
+Karşılıksız sınıflama hedefi kalmadı.
+
+Ebedî kural değerlendirmesi de bu devirle karşılandı: KRL-GUVENLIK-AMACLI
+kuralının hüküm karşılığı yeni kanonda vardır — YAS-2.4 ebedî güvenlik
+hükümlerinin anayasa otoritesinde ve kilitli imzayla yaşamasını, YAS-5 ise
+güvenlik kural ailesinin yalnız savunma amaçlı ebedî koruma hükümlerini
+kataloglamasını zorlar. Kuralın kendisi kanon maddesi değil Anayasa gövdesi
+düğümüdür ve `yasa/genel_kurallar/guvenlik.sar` evinde yaşamayı sürdürür;
+eski gövde silinirken bu evin korunması ya da taşınması, spec borcunun
+sahipleri olan motor ile proje-kod turlarında karara bağlanacaktır. Bu tur
+sınıflama verisinde ek bir işlem gerektirmez, çünkü Anayasa ve Kural
+tipleri sicilde zaten kayıtlıdır.
+
+Açık kayıt: yürür kanon düğümü mim.sar içindeki MIM-1.5 maddesinin belge
+bloğu örneğinde eski `rol:` yazımı duruyor. Spec devri düzeltmenin evini bu
+tura vermişti; ancak bu turun yürütme talimatı kanon dosyalarını açıkça
+dokunulmaz kıldı. Sapma raporlandı: tek satırlık düzeltme önerisi tur
+raporundadır ve uygulaması kontrolcünün mühür yetkisine bırakılmıştır.
+|<--
+Çıkarım( kod: SEMA-KANON-01,
+         kaynak: "oz/siniflama/kayit.json + oz/siniflama/rehber.json + yasa/kanon/{mim,tip,yas,ork}.sar + nitelik/goc/spec_devir_kaydi.sar + goc_mimari_kararlari.md Karar B ve Karar C (bu üretimde ölçüldü)",
+         ne: "🧬 Kanon-verisi turunun canlı şema kararları bu kayıtla kesinleşti. Karar C uygulandı: mevcut Kimlik tipi altı kayıt noktasında KimlikPolitikası adını aldı, iki örnek dosya ile iki öğretim yüzü hizalandı ve yürür kaynaklarda Kimlik bildirimi sıfırlandı. Üç yeni tipin aile, zorunlu alan, enum, sarma ve kenar hedefleri tabloya indi; kullanır kenarının sicile eklenmesi kararlaştırıldı. Rejim ile departman zorunluluğunun veri biçimi kontrollü deneyle seçildi: enum kayıtları hemen iner, zorunluluk motorun okumadığı beyanZorunlu sözleşmesiyle iner ve zorlama motor turunun kanonik tanılarına bırakılır, çünkü bugünkü eksik-alan bekçisine bağlamak 177 mevcut kullanımı yanlış tanı kimliğiyle kırar. Spec etki kümesinin bütün sınıflama hedefleri sahipli, ebedî kural karşılığı değerlendirilmiş ve MIM-1.5 örneğindeki eski alan adı sapma olarak kayıtlıdır." )

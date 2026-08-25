@@ -1,0 +1,322 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/tip.sar — 🧬 TİP SİSTEMİ bölümü · v1 kanonu (26 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### TIP-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Tip Sistemi ve SNF-0, bütün düğüm ailelerini, şemaları, sarma sınırlarını, kenar sözleşmelerini, destek sözlüklerini ve izinli genişletme mekanizmalarını tek makine-okur kanonda tutan tip otoritesidir; bir tipin anlamı veya yapısal sözleşmesi ikinci bir sicilden türetilemez; dayanak: aksiyom (dayanaksız kök); ilgili: [TIP, DIL, YAS].
+**Gerekçe:** Tip bilgisi dosyalara ve yüzlere dağılırsa aynı düğüm farklı yerlerde farklı alan, çocuk veya kenar kabul eder; tek sicil, ayrıştırmadan öğretime kadar bütün tüketicilerin aynı sınıflamayı görmesini sağlar.
+**Örnek:** Kanonik okuma: `SNF-0 → aile → tip → şema + izinli çocuklar + zorunlu kenarlar + destek sözlükleri`.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: TIP-0, durum: kilitli,
+       ne: "TIP-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Tip Sistemi ve SNF-0, bütün düğüm ailelerini, şemaları, sarma sınırlarını, kenar sözleşmelerini, destek sözlüklerini ve izinli genişletme mekanizmalarını tek makine-okur kanonda tutan tip otoritesidir; bir tipin anlamı veya yapısal sözleşmesi ikinci bir sicilden türetilemez; dayanak: aksiyom (dayanaksız kök); ilgili: [TIP, DIL, YAS].",
+       gerekçe: "Tip bilgisi dosyalara ve yüzlere dağılırsa aynı düğüm farklı yerlerde farklı alan, çocuk veya kenar kabul eder; tek sicil, ayrıştırmadan öğretime kadar bütün tüketicilerin aynı sınıflamayı görmesini sağlar." )
+
+-->|
+### TIP-1 · Eksiksiz Tip Koruma İlkesi [HATA]
+**Hüküm:** Mevcut tip evrenindeki hiçbir düğüm tipi yeni omurga dışında bırakılamaz, yeniden adlandırılamaz veya sessizce emekli edilemez; her kanonik tip tam adı, ailesi, şeması ve varsa çapraz rolleriyle SNF-0'da çözülebilir kalır, değişiklik ancak açık kanon hükmüyle yapılabilir; dayanak: TIP-0; ilgili: [TIP, MIM, YAS, YUZ, ORK].
+**Gerekçe:** Sessiz tip kaybı var olan düğümleri `bilinmeyen-tip` durumuna düşürür, türetilmiş yüzleri eksiltir ve eski anlamın yeni bir ada bölünmesine yol açar.
+**Örnek:** Doğru: `Felsefe` bilgi ailesinde aynı kanonik adla korunur; yanlış: düğümleri taşımadan tipi sicilden çıkarmak veya `Felsefe`yi örtük biçimde `İlke` diye yeniden adlandırmak.
+**Zorlama:** `bilinmeyen-tip` · HATA · “`X` diye bir tip yok.” ve en yakın tip önerisi · yüzey: Problems, satır-lensi ve tek-dosya CLI; yeni tanı önerisi `tip-evreni-eksik` · HATA · “Kanonik tip evrenindeki zorunlu tip, aile, şema veya rol kaydı SNF-0'da eksik.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: TIP-1, durum: kilitli,
+       ne: "TIP-1 · Eksiksiz Tip Koruma İlkesi [HATA]",
+       karar: "Mevcut tip evrenindeki hiçbir düğüm tipi yeni omurga dışında bırakılamaz, yeniden adlandırılamaz veya sessizce emekli edilemez; her kanonik tip tam adı, ailesi, şeması ve varsa çapraz rolleriyle SNF-0'da çözülebilir kalır, değişiklik ancak açık kanon hükmüyle yapılabilir; dayanak: TIP-0; ilgili: [TIP, MIM, YAS, YUZ, ORK].",
+       gerekçe: "Sessiz tip kaybı var olan düğümleri `bilinmeyen-tip` durumuna düşürür, türetilmiş yüzleri eksiltir ve eski anlamın yeni bir ada bölünmesine yol açar." )
+
+-->|
+### TIP-1.1 · Temel Tipler [BİLGİ]
+**Hüküm:** `ÇalışmaAlanı`, `Uygulama` ve `Proje`, temel ailesinin üretken kök tipleri olarak korunur; ÇalışmaAlanı ortak kapsamı, Proje bağımsız üretim ve kimlik kökünü, Uygulama ise Proje altında kurulabilen uygulama niteliğini temsil eder ve bu roller birbirinin yerine geçirilemez; dayanak: TIP-1; ilgili: [TIP, MIM].
+**Gerekçe:** Kapsam, üretim kökü ve uygulama çıktısı tek tipe sıkıştırılırsa proje sahipliği ile türetilmiş yüzlerin başlangıç noktası belirsizleşir.
+**Örnek:** `ÇalışmaAlanı( kod: CAL-01 ) { Proje( kod: PRJ-01 ) { Uygulama( kod: UYG-01 ) } }` üç ayrı kök rolünü görünür tutar.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural temelTipler( kod: TIP-1.1,
+       ne: "TIP-1.1 · Temel Tipler [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: temel,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.2 · Plan Tipleri [BİLGİ]
+**Hüküm:** `Blok`, `Faz`, `Katman`, `AltKatman`, `Adım`, `Kapı` ve `Gereksinim`, plan ailesinin sırasıyla iş gövdesi, zaman dilimi, teknoloji sınırı, departman, atomik yürütme, kabul geçidi ve ihtiyaç tipleri olarak korunur; her biri yalnız kendi plan rolünü taşır; dayanak: TIP-1; ilgili: [TIP, MIM, ORK].
+**Gerekçe:** Plan kademelerinin tek bir genel görev tipine indirgenmesi, yapısal kapsam ile gerçek yürütme sırasını birbirine karıştırır ve kabulün hangi birime ait olduğunu gizler.
+**Örnek:** `Faz { Blok { Katman { AltKatman { Adım } } } }` yapıyı kurar; `Kapı` kabulü, `Gereksinim` karşılanacak ihtiyacı ayrı tiplerde tutar.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural planTipleri( kod: TIP-1.2,
+       ne: "TIP-1.2 · Plan Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: plan,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.3 · Bilgi Tipleri [BİLGİ]
+**Hüküm:** `Karar`, `Formül`, `Sözlük`, `Fikir`, `Çıkarım`, `Deney`, `Felsefe` ve `Mockup`, bilgi ailesinin hüküm, hesap, terim, öneri, türetim, sınama, ilke ve taslak referans tipleri olarak korunur; bilgi türü, kaynağının kanıt ve yaşam-döngüsü niteliğine göre seçilir; dayanak: TIP-1; ilgili: [TIP, YAS, OGR].
+**Gerekçe:** Her bilgiyi serbest metin olarak saklamak karar ile varsayımı, deney sonucu ile felsefi ilkeyi ayırt edilemez kılar; doğru tip, izlenebilirlik ve öğretim yüzünü belirler.
+**Örnek:** Bağlayıcı hüküm `Karar`, türetilmiş sonuç `Çıkarım`, sınanabilir öneri `Deney`, terim eşlemesi `Sözlük` olarak ilan edilir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural bilgiTipleri( kod: TIP-1.3,
+       ne: "TIP-1.3 · Bilgi Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: bilgi,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.4 · Orkestrasyon Tipleri [BİLGİ]
+**Hüküm:** `Orkestrasyon`, `Döngü`, `Şablon`, `Politika`, `İşAkışı`, `Kanca` ve `Mekanizma`, orkestrasyon ailesinin yönetim, tekrar, bağlam kalıbı, işletim hükmü, yaşam-döngüsü, tetik bağlantısı ve uygulanabilir düzenek tipleri olarak korunur; yürütme niyeti uygun tipe açıkça ayrılır; dayanak: TIP-1; ilgili: [TIP, YAS, ORK].
+**Gerekçe:** Tek bir akış tipine yığılan tekrar, tetik ve politika anlamları işletim grafını okunamaz kılar; ayrık tipler hangi bağın sıra, hangisinin etkinleşme veya yönetişim olduğunu korur.
+**Örnek:** Yinelenen işletim `Döngü`, olayla devreye giriş `Kanca`, bağlayıcı işletim sınırı `Politika`, uçtan uca sıra `İşAkışı` olarak modellenir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural orkestrasyonTipleri( kod: TIP-1.4,
+       ne: "TIP-1.4 · Orkestrasyon Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: orkestrasyon,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.5 · Etmen Tipleri [BİLGİ]
+**Hüküm:** `Etmen`, `Yetenek`, `Beceri`, `Bellek` ve `Tetikleyici`, etmen ailesinin kimlik, doğrudan kabiliyet, öğretilebilir davranış, doğrulanmayı bekleyen öğrenim ve etkinleşme tipleri olarak korunur; kim olduğu, ne yapabildiği, ne öğrendiği ve ne zaman devreye girdiği ayrı düğümlerde ilan edilir; dayanak: TIP-1; ilgili: [TIP, OGR, ORK].
+**Gerekçe:** Kimlik ile yeteneği veya geçici öğrenim ile kalıcı beceriyi aynı düğüme gömmek yetki denetimini ve bilginin terfi yolunu belirsizleştirir.
+**Örnek:** `Etmen( kod: ETM-01 )`, bir `Yetenek` ile kabiliyetini, bir `Beceri` ile öğretilmiş davranışını ve bir `Tetikleyici` ile etkinleşme koşulunu ayrı ayrı bağlar.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural etmenTipleri( kod: TIP-1.5,
+       ne: "TIP-1.5 · Etmen Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: etmen,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.6 · Yüzey Tipleri [BİLGİ]
+**Hüküm:** `Ekran`, `Sütun`, `Satır`, `Yığın`, `Kapsayıcı`, `Kart`, `Liste`, `Metin`, `Düğme`, `Görsel`, `İkon`, `Sayfa`, `Bileşen`, `Tema`, `ÜstÇubuk`, `Gövde`, `Form`, `MetinAlanı`, `OnayKutusu`, `AçılırListe` ve `AnlıkBildirim`, yüzey ailesinin düzen, içerik, girdi, eylem ve bildirim tipleri olarak eksiksiz korunur; düzen kuran tiplerle yaprak içerik tiplerinin rolleri karıştırılamaz; dayanak: TIP-1; ilgili: [TIP, YUZ].
+**Gerekçe:** Görsel öğeleri genel bir bileşen adı altında eritmek sarma kurallarını, erişilebilirlik rolünü ve hangi düğümün çocuk taşıyabileceğini görünmez kılar.
+**Örnek:** `Form { MetinAlanı OnayKutusu Düğme }` girdi ve eylem yapısını kurar; `Metin` ya da `İkon` düzen kapsayıcısı gibi çocuk taşımaz.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural yüzeyTipleri( kod: TIP-1.6,
+       ne: "TIP-1.6 · Yüzey Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: yuzey,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.7 · Yasa Tipleri [BİLGİ]
+**Hüküm:** `Yasa`, `GenelKural`, `ÖzelKural`, `Kural`, `Anayasa` ve `Mevzuat`, yasa ailesinin genel hüküm, kapsam katmanı, makine zorlama, en yüksek ortak sınır ve dış uyum tipleri olarak korunur; her hüküm otoritesine ve uygulanma biçimine uygun yasa tipinde yaşar; dayanak: TIP-1; ilgili: [TIP, YAS].
+**Gerekçe:** Dış yükümlülük, anayasal sınır ve çalıştırılabilir kural aynı tipe indirgenirse otorite sırası ile zorlama sorumluluğu çözülemez.
+**Örnek:** Ortak değişmez `Anayasa`, makinece sınanabilir koşul `Kural`, dış düzenleme yükümlülüğü `Mevzuat` olarak tutulur.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural yasaTipleri( kod: TIP-1.7,
+       ne: "TIP-1.7 · Yasa Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: yasa,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.8 · Teknoloji Tipleri [BİLGİ]
+**Hüküm:** `Teknoloji`, `Takım`, `MCP`, `Araç`, `Model` ve `Ortam`, teknoloji ailesinin somut yığın ya da kanal, sahiplik, erişim kapısı, kullanılabilir yetenek, yönlendirme hedefi ve çalışma bağlamı tipleri olarak korunur; `Teknoloji` işin yaslandığı somut dış sistemi temsil eder ve bu sistem bir yazılım yığını olabileceği gibi işin yürütüldüğü bir kanal da olabilir; ürün mimarisi ile onu işleten kaynakların kimliği ayrı tutulur; dayanak: TIP-1; ilgili: [TIP, MIM, ORK].
+**Gerekçe:** Teknoloji, sahiplik ve çalışma ortamını tek kayıtta birleştirmek Katmanın ne kullandığını, kimin yönettiğini ve hangi bağlamda çalıştığını belirsizleştirir. Kapsamın kanalı da içermesi ölçülmüş bir gereksinimdir: MIM-1.4 her Katmanın tam olarak bir Teknolojiye bağlanmasını zorunlu kıldığı için, yazılım dışı bir dal kurmak isteyen kullanıcının bağlanacak başka düğümü yoktur ve dar tanım onu ya kanalı yığın gibi göstermeye ya da planı hiç kurmamaya zorlar.
+**Örnek:** `Katman` bir `Teknoloji` kullanır; sorumlusu `Takım`, çalışma sınırı `Ortam`, izin verilen etkileşimler ise kendi erişim tipleriyle ilan edilir. Yazılım dalında `Teknoloji( kod: TEK-NEXT, ne: "Next.js önyüz yığını" )`, pazarlama dalında `Teknoloji( kod: TEK-GBP, ne: "Google İşletme Profili — yerel arama kanalı" )` aynı sözleşmeyi taşır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural teknolojiTipleri( kod: TIP-1.8,
+       ne: "TIP-1.8 · Teknoloji Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: teknoloji,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.9 · Ürün Tipleri [BİLGİ]
+**Hüküm:** `Kod`, `Ayar`, `Sözleşme`, `Altyapı`, `Veri` ve `Göç`, ürün ailesinin kaynak, yapılandırma, taraflar arası bağ, işletim temeli, kalıcı bilgi ve dönüşüm tipleri olarak korunur; teslimin fiziksel ve semantik niteliği uygun ürün tipiyle beyan edilir; dayanak: TIP-1; ilgili: [TIP, MIM, YUZ].
+**Gerekçe:** Bütün teslimleri yalnız dosya adıyla tanımlamak üretimin kabul, etki ve taşıma gereksinimlerini gizler; ürün tipi hangi doğrulamanın uygulanacağını belirler.
+**Örnek:** Uygulama kaynağı `Kod`, arabirim bağı `Sözleşme`, şema dönüşümü `Göç`, dağıtım temeli `Altyapı` olarak ayrılır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural ürünTipleri( kod: TIP-1.9,
+       ne: "TIP-1.9 · Ürün Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: urun,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.10 · Süreç Tipleri [BİLGİ]
+**Hüküm:** `Görev`, `Koşum`, `İz`, `Komut`, `Git` ve `Sorun`, süreç ailesinin atama, gerçekleşen çalışma, gözlem kaydı, açık emir, sürüm hareketi ve takip edilen sapma tipleri olarak korunur; planlanan iş ile gerçekleşen süreç kaydı aynı düğüm sayılmaz; dayanak: TIP-1; ilgili: [TIP, YAS, ORK].
+**Gerekçe:** Atama, koşum ve sorun tek kayıtta birleşirse niyet ile gerçekleşen olay ayrıştırılamaz, yeniden üretim ve sorumluluk izi kaybolur.
+**Örnek:** Yapılacak iş `Görev`, çalıştırılmış örnek `Koşum`, gözlenen akış `İz`, giderilecek sapma `Sorun` olarak kaydedilir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural süreçTipleri( kod: TIP-1.10,
+       ne: "TIP-1.10 · Süreç Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: surec,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.11 · Nitelik Tipleri [BİLGİ]
+**Hüküm:** `Sınama`, `Değerlendirme`, `Metrik`, `Log`, `Güvenlik` ve `Kapsama`, nitelik ailesinin doğrulama, yorumlu yargı, nicel ölçüm, olay gözlemi, koruma ve erişim alanı tipleri olarak korunur; kanıtın niteliği açık tipinden okunabilir olmalıdır; dayanak: TIP-1; ilgili: [TIP, YAS, ORK].
+**Gerekçe:** Ölçüm ile yorumu, sınama ile çalışma günlüğünü aynı kanıt saymak kabul kapılarını karşılaştırılamaz ve güvenlik kapsamını örtük kılar.
+**Örnek:** Tekrarlanabilir kontrol `Sınama`, sayısal sonuç `Metrik`, yorumlu hüküm `Değerlendirme`, olay dizisi `Log` olarak tutulur.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural nitelikTipleri( kod: TIP-1.11,
+       ne: "TIP-1.11 · Nitelik Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: nitelik,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.12 · Öz Tipler [BİLGİ]
+**Hüküm:** `Sınıflama`, `DurumKaydı`, `Hatırlatıcı`, `Raf` ve `Kitaplık`, öz ailesinin tip kanonu, yaşayan devir, ileri bağlam ve fiziksel yapı ilanı tipleri olarak korunur; destekleyici meta-yapı üretim içeriğinin yerine geçirilemez; dayanak: TIP-1; ilgili: [TIP, MIM, YAS].
+**Gerekçe:** Devir bilgisi, ileri hatırlatma ve dizin ilanı serbest belgeye gömülürse makine bunların yaşam döngüsünü, vadesini ve disk mutabakatını izleyemez.
+**Örnek:** Canlı durum `DurumKaydı`, gelecekte ele alınacak bağ `Hatırlatıcı`, ana fiziksel alan `Kitaplık`, iç sorumluluk bölümü `Raf` olarak ilan edilir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural özTipler( kod: TIP-1.12,
+       ne: "TIP-1.12 · Öz Tipler [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: oz,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.13 · Davranış Tipleri [BİLGİ]
+**Hüküm:** `Canlandırma` ve `Durum`, davranış ailesinin hareket niyeti ile uygulama durumu niyetini temsil eden ayrı tipler olarak korunur; zaman içindeki görsel değişim kalıcı durum beyanı yerine kullanılamaz; dayanak: TIP-1; ilgili: [TIP, YUZ].
+**Gerekçe:** Hareket ile durumu tek özellikte toplamak yüzeyin ne olduğu ile nasıl değiştiğini karıştırır ve aynı niyetin farklı yüzlerde başka biçimde yorumlanmasına neden olur.
+**Örnek:** Bir kartın `Durum`u `seçili`, bu duruma geçişteki hareketi ayrı bir `Canlandırma` düğümüdür.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural davranışTipleri( kod: TIP-1.13,
+       ne: "TIP-1.13 · Davranış Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: davranis,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.14 · Arkayüz Tipleri [BİLGİ]
+**Hüküm:** `Servis`, `Uç`, `Tablo`, `Kimlik`, `Kuyruk`, `ArkaGörev`, `Zamanlayıcı`, `Olay`, `Önbellek` ve `Gizli`, arkayüz ailesinin iş mantığı, erişim noktası, veri yapısı, kimlik, ileti kuyruğu, artalan işi, zamanlama, olay, geçici saklama ve gizlilik tipleri olarak korunur; her arkayüz sorumluluğu kendi sınırında ilan edilir; dayanak: TIP-1; ilgili: [TIP, YUZ, ORK].
+**Gerekçe:** Veri, zamanlama, ileti ve gizli değerlerin genel bir servis düğümüne yığılması güvenlik sınırını, işletim sahibini ve yüzeyle kavuşum noktasını gizler.
+**Örnek:** İstek girişi `Uç`, iş mantığı `Servis`, kalıcı yapı `Tablo`, ertelenmiş ileti `Kuyruk`, süreli tetik `Zamanlayıcı` olarak ayrılır.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural arkayüzTipleri( kod: TIP-1.14,
+       ne: "TIP-1.14 · Arkayüz Tipleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: arkayuz,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.15 · Yeni Omurga Tipleri [HATA]
+**Hüküm:** `Meyve`, `KimlikKökü` ve `KimlikSağlayıcısı` SNF-0'a kanonik tipler olarak eklenir; Meyve bir Adımın teslim kökenini, KimlikKökü ortak veya projeye özgü kimlik sınırını, KimlikSağlayıcısı ise bu köke bağlanan genişletilebilir sağlayıcıyı temsil eder ve bu roller genel ürün ya da servis tipleriyle ikame edilemez; dayanak: TIP-1; ilgili: [TIP, MIM, ORK].
+**Gerekçe:** Açık Meyve tipi olmadan ürün ile üreten Adım arasındaki köken bağı, açık kimlik tipleri olmadan da ortak kimlik ile proje sahipliği birbirine karışır.
+**Örnek:** `Adım( kod: ADM-01, üretir: [ MEY-01 ] )`, `Meyve( kod: MEY-01, tür: Kod )` ve `KimlikKökü( kod: KMK-01 ) { KimlikSağlayıcısı( kod: KMS-01 ) }` ayrı sözleşmeleri kurar.
+**Zorlama:** Yeni tanı önerisi `omurga-tipi-eksik` · HATA · “Meyve, KimlikKökü veya KimlikSağlayıcısı kanonik aile, şema ya da sarma kaydıyla SNF-0'da bulunmuyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural yeniOmurgaTipleri( kod: TIP-1.15,
+       ne: "TIP-1.15 · Yeni Omurga Tipleri [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-1.16 · Çapraz-Rol Tip Kümeleri [BİLGİ]
+**Hüküm:** `Karar`, `Kural`, `Anayasa`, `Politika` ve `Mevzuat` Yasa rolünde; `Faz`, `Blok`, `Katman`, `AltKatman`, `Adım`, `Kapı`, `Döngü` ve `Gereksinim` Plan rolünde; `Beceri`, `Felsefe`, `Çıkarım`, `Formül` ve `Sözlük` Bilgi rolünde; `Ekran`, `Form`, `Uç`, `Sözleşme`, `Düğme` ve `Metin` ise uygun Yüzey ile Arkayüz rollerinde çok-üyeli olarak indekslenir; çok-üyelik tek kanonik tipi çoğaltmaz veya ana ailesini değiştirmez; dayanak: TIP-1; ilgili: [TIP, MIM, YAS, YUZ, OGR, ORK].
+**Gerekçe:** Tek aile ağacı çapraz sorumlulukları görünmez kılar, tip kopyalamak ise aynı kavrama birden çok kimlik verir; rol indeksleri iki sorunu da kimliği bölmeden çözer.
+**Örnek:** `Sözleşme` ürün kimliğini korurken Yüzey ve Arkayüz rol sorgularında bulunur; ikinci bir `ArkayüzSözleşmesi` tipi türetilmez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural çaprazRolTipKümeleri( kod: TIP-1.16,
+       ne: "TIP-1.16 · Çapraz-Rol Tip Kümeleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-1 )
+
+-->|
+### TIP-2 · Şema Sözleşmesi [HATA]
+**Hüküm:** Her tip; zorunlu, koşullu, en-az-biri, birinden-biri, belge-zorunlu, bölüm-zorunlu, enum, değer türü ve yapısal kural sözleşmelerinden kendisine uygulanabilenleri kanonik şemasında makine-okur olarak beyan eder; düğüm doğrulaması yalnız bu şemadan türetilir ve yüzler ek şema icat edemez; dayanak: TIP-0; ilgili: [TIP, DIL, YAS].
+**Gerekçe:** Alan gereksinimleri kod veya belge içine ayrı ayrı gömülürse aynı düğüm bir yüzeyde geçerli, diğerinde eksik sayılır; açık şema doğrulama, tamamlama ve öğretimi aynı kaynağa bağlar.
+**Örnek:** `Beceri` için `belgeZorunlu`, `Durum` için `enum`, tarih alanı için `tür: tarih`, alternatif kimlik için `birindenBiri: [ ne, ad ]` aynı şema sözleşmesinde ilan edilir.
+**Zorlama:** `eksik-alan` · UYARI · “Zorunlu alanlar veya en-az-biri seçenekleri eksik.”; `geçersiz-enum` · UYARI · “Değer izinli kümede değil.”; `geçersiz-tür` · UYARI · “Değer ilan edilen türe uymuyor.” · yüzey: Problems, satır-lensi ve tek-dosya CLI; yeni tanı önerisi `şema-tanımı-eksik` · HATA · “Tipin uygulanabilir yapısal sözleşmesi SNF-0 şemasında makine-okur olarak beyan edilmemiş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: TIP-2, durum: kilitli,
+       ne: "TIP-2 · Şema Sözleşmesi [HATA]",
+       karar: "Her tip; zorunlu, koşullu, en-az-biri, birinden-biri, belge-zorunlu, bölüm-zorunlu, enum, değer türü ve yapısal kural sözleşmelerinden kendisine uygulanabilenleri kanonik şemasında makine-okur olarak beyan eder; düğüm doğrulaması yalnız bu şemadan türetilir ve yüzler ek şema icat edemez; dayanak: TIP-0; ilgili: [TIP, DIL, YAS].",
+       gerekçe: "Alan gereksinimleri kod veya belge içine ayrı ayrı gömülürse aynı düğüm bir yüzeyde geçerli, diğerinde eksik sayılır; açık şema doğrulama, tamamlama ve öğretimi aynı kaynağa bağlar." )
+
+-->|
+### TIP-2.1 · CUE Varsayılanı [BİLGİ]
+**Hüküm:** Bir enum kümesinde en çok bir değer yıldızla işaretlenir; işaretli değer CUE varsayılanı olarak seçilir, yıldızı kaldırılmış normal biçimi şemaya yazılır ve bütün yüzlere aynı değer olarak taşınır; yüzler kendilerine özgü varsayılan seçemez; dayanak: TIP-2; ilgili: [TIP, DIL, YUZ].
+**Gerekçe:** Birden çok veya yüzeye özgü varsayılan aynı eksik alanı farklı sonuçlara tamamlar; tek işaret ve normalleşme deterministik yorum sağlar.
+**Örnek:** `durum: [ *beklemede, geliştirmede, tamamlandı, bloklu ]` kümesinin varsayılanı bütün yüzlerde `beklemede` olarak görünür.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural cUEVarsayılanı( kod: TIP-2.1,
+       ne: "TIP-2.1 · CUE Varsayılanı [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-2 )
+
+-->|
+### TIP-2.2 · Şema-Dışı Alan [UYARI]
+**Hüküm:** Bir düğümde kullanılan her parametre ve gövde özelliği o tipin kanonik şemasında veya ilanlı ortak alan sözlüğünde bulunur; şema dışındaki alan görünür uyarı üretir, veri olarak korunabilse bile anlamlı ya da doğrulanmış sayılmaz; dayanak: TIP-2; ilgili: [TIP, DIL, YAS].
+**Gerekçe:** Yazım hatasıyla oluşan alan sessizce kabul edilirse kullanıcının niyeti kaybolur ve hiçbir tüketici o değeri güvenle okuyamaz; görünür uyarı veri kaybı ile sahte geçerliliği ayırır.
+**Örnek:** Şema `durum` beklerken `durrum: tamamlandı` yazmak yanlış; alan düğümde görünse bile kanonik anlam taşımaz.
+**Zorlama:** Yeni tanı önerisi `şema-dışı-alan` · UYARI · “`X` alanı bu tipin kanonik şemasında yok; geçerli alanı kullan veya şemayı kanonik olarak genişlet.” · yüzey: Problems, satır-lensi ve tek-dosya CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural şemaDışıAlan( kod: TIP-2.2,
+       ne: "TIP-2.2 · Şema-Dışı Alan [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-2 )
+
+-->|
+### TIP-2.3 · Zorunlu Kenar Grupları [UYARI]
+**Hüküm:** Davranış, kavuşum, bağlam veya köken bağı gerektiren her tip, kendisi için ilan edilen `ZorunluKenar` gruplarının her birinden en az bir izinli kenar taşır; `ancak` koşulu varsa grup yalnız o bağlamda zorlanır ve gruptaki kenarlar birbirinin izinli alternatifi sayılır; dayanak: TIP-2; ilgili: [TIP, YAS, ORK].
+**Gerekçe:** Görünüşte eksiksiz bir düğüm eylemsiz, temasız veya üretim kökeninden kopuk kalabilir; koşullu kenar grubu bu kör drift'i gereksiz tek-kenar dayatmadan yakalar.
+**Örnek:** `Düğme` en az bir `çağırır|gider|gönderir|eylem` kenarı, geliştirmedeki `Adım` ise en az bir bağlam ya da teslim kenarı taşır.
+**Zorlama:** `öksüz-düğme`, `kavuşumsuz-ekran`, `temasız-ekran`, `ölçüsüz-metin` ve `konisiz-adım` · UYARI · “Tip için ilan edilen zorunlu davranış, kavuşum veya bağlam kenarı grubundan en az biri eksik.” · yüzey: Problems, satır-lensi ve tek-dosya CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural zorunluKenarGrupları( kod: TIP-2.3,
+       ne: "TIP-2.3 · Zorunlu Kenar Grupları [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-2,
+       tanı: [ kavuşumsuz-ekran, konisiz-adım, temasız-ekran, öksüz-düğme, ölçüsüz-metin ] )
+
+-->|
+### TIP-2.4 · İzinli Sarma ve Yüzey Rolleri [HATA]
+**Hüküm:** Her ebeveyn yalnız SNF-0 sarma sözleşmesinde izin verilen çocuk tiplerini doğrudan sarar; düzen tipleri yüzey ağacını kurabilir, yaprak tipler hiçbir çocuk taşıyamaz ve yüzey rolü mimari kademe atlamaya izin vermez; dayanak: TIP-2; ilgili: [TIP, MIM, YUZ].
+**Gerekçe:** Serbest sarma, aynı tipin konuma göre değişen örtük anlamlar kazanmasına ve düzen ile içeriğin birbirine dönüşmesine yol açar; makine ağacı güvenle gezemez.
+**Örnek:** Doğru: `Form { MetinAlanı Düğme }`; yanlış: `Metin { Düğme }` veya `Proje { Adım }`.
+**Zorlama:** `izinsiz-sarma` · HATA · “İzin verilmeyen yerleşim; düğümü izinli ebeveyn altına taşı.” ve doğru ebeveyn önerisi · yüzey: Problems, satır-lensi ve tek-dosya CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural izinliSarmaVeYüzeyRolleri( kod: TIP-2.4,
+       ne: "TIP-2.4 · İzinli Sarma ve Yüzey Rolleri [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-2,
+       tanı: [ izinsiz-sarma ] )
+
+-->|
+### TIP-2.5 · Katkılı Örtü [UYARI]
+**Hüküm:** ÇalışmaAlanı örtüsü taban SNF-0'ı yerinde değiştiremez; yalnız izin verilen `şema→tip→enum→alan` kümelerine birleşim yoluyla yeni değer ekler, taban değerlerini korur, yinelemeleri tekilleştirir ve en yakın geçerli örtü kapsam dışına sızmadan uygulanır; dayanak: TIP-2; ilgili: [TIP, MIM, STR].
+**Gerekçe:** Taban değeri silen veya şema biçimini değiştiren yerel örtü aynı kaynağı çalışma alanına göre başka bir dile dönüştürür; katkılı birleşim yerel genişlemeyi kanonik uyumluluğu bozmadan sağlar.
+**Örnek:** Doğru: AltKatman rol kümesine `uyumluluk` eklemek; yanlış: tabandaki `sınama` değerini silmek, yeniden adlandırmak veya örtüyle yeni bir zorunlu alan dayatmak.
+**Zorlama:** Yeni tanı önerisi `örtü-ihlali` · UYARI · “ÇalışmaAlanı örtüsü izinli enum birleşimi dışında taban kanonu değiştiriyor veya kapsam dışına taşıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural katkılıÖrtü( kod: TIP-2.5,
+       ne: "TIP-2.5 · Katkılı Örtü [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-2 )
+
+-->|
+### TIP-3 · Destek Sözlükleri [BİLGİ]
+**Hüküm:** Durum geçişleri, tip muafiyetleri, tema rolleri, karne skalası, renk paleti ve yetki sözlüğü tip sisteminin adlandırılmış tek-kaynak destek sözleşmeleri olarak tutulur; şemalar ve yüzler bu kümeleri kopyalamak yerine kanonik sözlükten okur; dayanak: TIP-0; ilgili: [TIP, YAS, YUZ, ORK].
+**Gerekçe:** Aynı durum, renk veya yetki kümesinin ayrı yerlerde tutulması geçerli değerlerin ve geçişlerin zamanla ayrışmasına yol açar.
+**Örnek:** Bir yüzey renk anlamını `tema rolleri` ile seçer, gerçek değeri `renk paleti`nden alır; yetki adları yalnız `yetki sözlüğü`nden çözülür.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural destekSözlükleri( kod: TIP-3,
+       ne: "TIP-3 · Destek Sözlükleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-0 )
+
+-->|
+### TIP-4 · Sınıflama Kural Ailesi ve Taksonomi [BİLGİ]
+**Hüküm:** Sınıflama kural ailesi geçerli aile, tip, alan, kenar, rol ve sarma evrenini SNF-0'dan tanımlar; insan-okur taksonomi yüzü aynı kanondan deterministik olarak üretilir ve bağımsız sınıflama otoritesi sayılmaz; dayanak: TIP-0; ilgili: [TIP, DIL, YUZ, OGR].
+**Gerekçe:** Elle tutulan taksonomi tablosu kanonik sicilden ayrışarak var olmayan tipleri öğretir veya geçerli tipleri gizler; türetim, makine ve insan envanterini aynı kimlikte tutar.
+**Örnek:** `aile → tip → şema → izinli kenar/sarma` görünümü SNF-0'dan üretilir; yeni tip eklendiğinde ayrıca elle tablo satırı yazılmaz.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural sınıflamaKuralAilesiVeTaksonomi( kod: TIP-4,
+       ne: "TIP-4 · Sınıflama Kural Ailesi ve Taksonomi [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: TIP-0 )

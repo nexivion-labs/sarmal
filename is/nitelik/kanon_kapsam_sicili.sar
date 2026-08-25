@@ -1,0 +1,262 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/kanon_kapsam_sicili.sar — ⚖️ KANON KAPSAM SİCİLİ (KPS-SIC-A01)
+//
+//   Kanonun zorlama iddiası taşıyan doksan bir maddesinin, motorun tanı sicili
+//   karşısındaki madde madde dökümü. Köken: oturum doksan üçün iki bağımsız
+//   denetçi ölçümü; o ölçümün sayıları bu dosyada OLDUĞU GİBİ taşınır ve
+//   burada ne doğrulanır ne düzeltilir (KPS-SIC-A01 sınırı). Dosya üretici
+//   masa incelemesinin ürünüdür; bağımsız denetçi doğrulaması ayrı iştir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # ⚖️ Kanon Kapsam Sicili — doksan bir zorlama iddiasının madde madde dökümü
+
+  ## Amaç
+  🎯 Kanonun yüz elli maddesinden zorlama iddiası taşıyan doksan birinin her
+  birini, motorun bugünkü tanı sicili karşısında üç kovadan birine gerekçesiyle
+  yerleştirmek. Bu döküm bugüne kadar hiçbir kaynağa inmemişti ve bulgu yalnız
+  durum kaydındaki bir düzyazı özetinde yaşıyordu; ÖNCEKİ TURUN DÜZYAZI ÖZETİ
+  MADDE MADDE BİR DÖKÜM DEĞİLDİR ve bu beyan bu kayıttan çıkarılmaz.
+
+  ## Kapsam
+  📦 Kapsanan doksan bir maddedir; kanonun elli dokuz maddesi Zorlama satırında
+  kendini zorlanmaz ilan eder, tanım, katalog ya da insan yargısı taşıdığı için
+  bu sicile girmez ve muaf sayılır. Üç kova şudur: TAM kova hükmün tarif ettiği
+  ihlalin tanı karşılığını birebir bulduğu, KISMİ kova hükmün yalnız bir
+  bölümünün tanı ürettiği, HİÇ kova hükmün fiilen hiçbir tanı üretmediği
+  maddelerdir.
+
+  ## Ölçüm düzlemi ve dürüstlük beyanları
+  ⚖️ Birinci beyan: bu sicil bir MASA İNCELEMESİDİR. Yerleştirmeler kanon
+  maddelerinin Hüküm ve Zorlama metinleri ile motorun tanı sicili kayıtları
+  (yeni sicil, önceki tanı listesi ve kanonun zorunlu kenar kaydından çalışma
+  anında birleştirilen veri güdümlü tanılar) karşılaştırılarak yapılmıştır;
+  aşağıdaki gerekçelerde geçen ölçülür ifadeleri tanının SİCİL TARİFİNİN
+  kapsamını aktarır, üretici kodun davranışı bu Adımda doğrulanmamıştır ve
+  YAS-3.4 gereği doğrulanmamış hiçbir iddia canlı zorlama kanıtı sayılamaz.
+  İkinci beyan: iki bağımsız denetçinin oturum doksan üçteki DAVRANIŞ ölçümü
+  doksan bir maddeyi on dokuz tam, altmış dokuz kısmi ve üç işlevsiz olarak
+  saymıştır; bu sayılar buraya olduğu gibi taşınmıştır, bu Adımda ne
+  doğrulanmış ne düzeltilmiştir ve davranış düzleminin yetkili sayısı onlardır.
+  Üçüncü beyan: bu masa incelemesinin kova toplamları elli dört tam, otuz yedi
+  kısmi ve sıfır hiçtir. İlk teslim iki maddeyi hiç kovasına yerleştirmişti;
+  bağımsız denetçi teslimi reddetti, çünkü iki maddenin tanılarının da motor
+  kaynağında yapısal yoldan gerçekten ateşlediğini kaynak ve sınama kanıtıyla
+  gösterdi, iki kayıt gerekçeleri düzeltilerek kısmi kovasına taşındı ve bir
+  tam kaydın bileşim cümlesi düzeltildi. Bu vaka masa incelemesinin sınırına
+  canlı örnektir. İki toplam arasındaki fark ölçüm düzlemlerinin farkıdır:
+  tarifi hükmü kapsayan bir tanının kodda gerçekten o kapsamda ölçüp ölçmediği
+  ancak davranış doğrulamasıyla anlaşılır ve o doğrulama bu Adımın sınırı
+  gereği yapılmamıştır. Fark, tarifte tam görünen fakat davranışı doğrulanmamış
+  maddelerin bağımsız denetçi tarafından tek tek doğrulanması işi olarak
+  devredilir. Dördüncü beyan: sekiz tanının hedef kademesinin altında üretildiği
+  ve bunların üçünün kanonun hata dediği yerde bilgi bastığı sicil kayıtlarından
+  bu incelemede de doğrulanmıştır; kademe hizalaması KPS-KAD-A01, mimariBağı
+  kenarının akıbeti KPS-KEN-A01 ve terfi kapısının üretim yoluna bağlanması
+  KPS-TRF-A01 Adımlarının işidir.
+
+  ## Sonuç
+  ✅ Doksan bir maddenin tamamı kovasına gerekçesiyle yerleşmiştir ve kovasız
+  madde yoktur; her kayıt maddesine referans kenarıyla bağlıdır ve gezinme
+  aracıyla iki yönde izlenir.
+|<--
+Kapsama( kod: KSC-KANON-KAPSAM, referans: [ KPS-SIC-A01 ],
+  ne: "⚖️ Sicilin çatı kaydı — doksan bir zorlama iddialı kanon maddesinin masa incelemesi dökümü: elli dört madde tarif düzleminde tam, otuz yedi madde kısmi kovasındadır ve hiç kovası bağımsız denetimden sonra boştur. Davranış düzleminin yetkili sayısı oturum doksan üçün bağımsız ölçümüdür, yani on dokuz tam, altmış dokuz kısmi ve üç işlevsiz; iki düzlem arasındaki fark bağımsız denetçinin doğrulama borcu olarak açıktır. İlk teslim bağımsız denetimden RED aldı ve üç kayıt kanıtla düzeltilerek geçti." )
+
+// ── DİL bölümü — 13 zorlama iddialı madde ──
+Kapsama( kod: KSC-DIL-1, referans: [ DIL-1 ],
+  ne: "KISMİ (masa incelemesi) — Hükmün eş yetkili dış kaynak yasağı sicildeki kanonik-kaynak-biçimi tanısıyla, NFC normalizasyon şartı ise önceki evrende yaşayan normalizasyon-uyumsuz tanısıyla ölçülmektedir; buna karşılık kaynağın Türkçe öncelikli yazılması dilimi hiçbir tanıya bağlanmamıştır ve ölçümsüzdür." )
+Kapsama( kod: KSC-DIL-1.1, referans: [ DIL-1.1 ],
+  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı diakritik kaybıdır ve bu sınıf iki tanıyla birden ölçülür: orthografi-kaybı sicilde maddesine bağlı ve kanonun öngördüğü uyarı düzeyinde üretilmektedir, diakritik-kayıp ise önceki evrende aynı kusurun bilgi düzeyindeki izleyicisidir." )
+Kapsama( kod: KSC-DIL-1.2, referans: [ DIL-1.2 ],
+  ne: "KISMİ (masa incelemesi) — Zorlama satırının andığı ad-biçimi, kod-ilk-değil ve yinelenen-parametre tanılarının üçü de önceki evrende canlıdır ve hükmün üç somut dilimini ölçer; buna karşılık sicilin madde bağı bu hükme işlenmemiştir ve son cümledeki anlamı belirsiz adlandırma yasağı hiçbir tanıya inmemiştir." )
+Kapsama( kod: KSC-DIL-1.3, referans: [ DIL-1.3 ],
+  ne: "KISMİ (masa incelemesi) — Kapalı değer dili ile tek eşittir yasağı söz-dizim, şema türüne aykırılık geçersiz-tür tanısıyla önceki evrende ölçülmektedir; sicilin madde bağı bu hükme kurulmamıştır ve çalıştırılabilir yan etki yasağı ayrı bir tanıyla adlandırılmadığı için yalnız ayrıştırıcının genel reddine yaslanmaktadır." )
+Kapsama( kod: KSC-DIL-1.4, referans: [ DIL-1.4 ],
+  ne: "KISMİ (masa incelemesi) — Çağrı hedefinin çözülmesi kırık-referans, akış ve çağrı yazımı söz-dizim, kenar alanı adı yanlış-alan tanılarıyla önceki evrende ölçülmektedir; yorumların yapıyı yinelemek yerine niyeti açıklaması insan yargısı isteyen bir dilimdir ve hiçbir tanıya bağlanmamıştır, sicil madde bağı da eksiktir." )
+Kapsama( kod: KSC-DIL-2, referans: [ DIL-2 ],
+  ne: "TAM (masa incelemesi) — Hükmün iki dilimi iki tanıyla birebir karşılanır: açılış ve kapanış imlerinin bütünlüğünü önceki evrendeki söz-dizim, blok içeriğinin kayıpsız korunmasını ise sicilde maddesine bağlı ve hedef düzeyinde üretilen belge-şekil-drift ölçer." )
+Kapsama( kod: KSC-DIL-2.1, referans: [ DIL-2.1 ],
+  ne: "KISMİ (masa incelemesi) — Zorlama satırının andığı sahipsiz-belge ve belge-yanlış-düğüm tanıları önceki evrende canlıdır ve hükmün düğümsüz belge ile yanlış düğüme bağlanma dilimlerini ölçer; sicilin madde bağı bu hükme işlenmemiştir ve birden çok düğümü sahiplenme dilimi tanı tariflerinde açıkça anılmamaktadır." )
+Kapsama( kod: KSC-DIL-2.2, referans: [ DIL-2.2 ],
+  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı biçimlendirmenin çok satırlı içerikleri değiştirmesidir ve bu sınıf sicilde maddesine bağlı, kanonun öngördüğü uyarı düzeyinde üretilen çok-satırlı-değer-drift tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-DIL-3, referans: [ DIL-3 ],
+  ne: "KISMİ (masa incelemesi) — Bildirim başlığının sözleşmesi söz-dizim, kural katman ve koşul uyumu katman-uyumsuz, zorlanabilir koşulsuz yapısal kural zorlanamayan-kural tanılarıyla önceki evrende ölçülmektedir; sicilin madde bağı kurulmamıştır ve tip bildiriminin aile ile tarif taşıma şartı ayrı bir tanıyla adlandırılmamıştır." )
+Kapsama( kod: KSC-DIL-3.1, referans: [ DIL-3.1 ],
+  ne: "TAM (masa incelemesi) — Hükmün üç dilimi üç tanıyla birebir karşılanır: izinli ebeveyn ve yaprak sarma yasağını izinsiz-sarma, KOD beklenen kenara tırnaklı metin yazımını kenar-metin, kaynak ile hedef tip sözleşmesini ise sicilde maddesine bağlı ve hedef düzeyinde üretilen kenar-tip-uyuşmazlığı ölçer." )
+Kapsama( kod: KSC-DIL-5, referans: [ DIL-5 ],
+  ne: "TAM (masa incelemesi) — Tekil madde kodu, çözülen dayanak bağı ve paralel numara evreni yasağı sicilde maddesine bağlı ve kanonun öngördüğü hata düzeyinde üretilen numara-grafı-uyumsuz tanısıyla ölçülmektedir; ilgili listelerinin sözleşmesi kendi maddesinin tanısına ayrılmıştır ve orada ölçülür." )
+Kapsama( kod: KSC-DIL-5.1, referans: [ DIL-5.1 ],
+  ne: "TAM (masa incelemesi) — Bölüm öneki, sıfırdan başlama, ardışıklık ve noktalı ebeveyn sözleşmesinin tamamı sicilde maddesine bağlı ve hedef düzeyinde üretilen madde-kodu-uyumsuz tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-DIL-5.2, referans: [ DIL-5.2 ],
+  ne: "TAM (masa incelemesi) — İlgili listesinin sekiz kanonik önekle sınırlanması, tekillik ve tanımsız üyelik yasağının tamamı sicilde maddesine bağlı ve hedef düzeyinde üretilen ilgili-önek-geçersiz tanısıyla birebir ölçülmektedir." )
+
+// ── MİM bölümü — 12 zorlama iddialı madde ──
+Kapsama( kod: KSC-MIM-1, referans: [ MIM-1 ],
+  ne: "KISMİ (masa incelemesi) — Kademe atlama ve çocuk kapsayıcı sarma yasağı izinsiz-sarma, yürütme sırasının kapsayıcı kademeye yazılması yasağı kapsayıcı-kenar tanısıyla önceki evrende ölçülmektedir; sicilin madde bağı kurulmamıştır ve Auth kademesinin ortak ya da Projeye özgü kimlikle karşılanması dilimi bu maddede tanısızdır." )
+Kapsama( kod: KSC-MIM-1.1, referans: [ MIM-1.1 ],
+  ne: "KISMİ (masa incelemesi) — Üretken düğümün Proje köksüz kalması sicildeki proje-köksüz-üretim tanısıyla hedef düzeyinde ölçülmektedir; ortak kimlikte KimlikKökü ilanının zorunluluğu, Founder Projesi için ortak kimlik şartı ve kimliklerin birleşmezliği dilimleri tanı tarifinde yoktur." )
+Kapsama( kod: KSC-MIM-1.2, referans: [ MIM-1.2 ],
+  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı Faz dışında ya da yalnız düzyazıyla zamana atanmış Blok'tur ve bu sınıf önceki evrendeki fazsız-blok tanısıyla birebir ölçülür; mevsim kenarı yükleme çevriminde Faz tarafına normalize edildiği için iki yazım da aynı denetimden geçer." )
+Kapsama( kod: KSC-MIM-1.3, referans: [ MIM-1.3 ],
+  ne: "TAM (masa incelemesi) — Tek teknolojili silo Blok yasağı silo-blok, katmanlar arası kavuşum bağının görünürlüğü kavuşumsuz-dilim tanısıyla ölçülür; iki tanı da önceki evrende canlıdır ve hükmün iki dilimini birlikte kapatır." )
+Kapsama( kod: KSC-MIM-1.4, referans: [ MIM-1.4 ],
+  ne: "TAM (masa incelemesi) — Teknolojisiz Katman önceki evrendeki katmansız-teknoloji, birden çok teknolojiye bağlı Katman ise sicilde maddesine bağlı ve hedef düzeyinde üretilen çok-teknolojili-katman tanısıyla ölçülür; hükmün iki ihlal sınıfı da karşılanmıştır." )
+Kapsama( kod: KSC-MIM-1.5, referans: [ MIM-1.5 ],
+  ne: "KISMİ (masa incelemesi) — Departman değerinin çekirdek küme ya da katkılı örtü dışına çıkması önceki evrendeki geçersiz-enum tanısıyla ölçülmektedir; taban kümenin yerinde değiştirilemezliği dilimi Zorlama satırında tanıya bağlanmamıştır ve sicilin madde bağı kurulmamıştır." )
+Kapsama( kod: KSC-MIM-1.6, referans: [ MIM-1.6 ],
+  ne: "KISMİ (masa incelemesi) — Adım atomikliği sicildeki adım-atomikliği tanısıyla ölçülmektedir fakat tanı kanonun öngördüğü uyarı yerine bilgi kademesinde üretilmektedir; ayrıca hükmün tek ajan oturumunda yürütülebilirlik dilimi makine ölçümüne inmemiştir. Kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-MIM-2, referans: [ MIM-2 ],
+  ne: "TAM (masa incelemesi) — Üreticisi belirsiz Meyve sicilde maddesine bağlı ve hedef düzeyinde üretilen üretimsiz-meyve tanısıyla, diskte yaşayıp plana bağlanmayan ürün ise önceki evrendeki yetim-meyve tanısıyla ölçülür; ürün grafının gösterim dilimi tanı konusu değil graf yüzünün canlı davranışıdır." )
+Kapsama( kod: KSC-MIM-2.1, referans: [ MIM-2.1 ],
+  ne: "TAM (masa incelemesi) — Dosya zorunlu Meyvenin somut proje içi yol beyanı sicilde maddesine bağlı ve hedef düzeyinde üretilen meyve-dosyası-eksik tanısıyla, tamamlanan Adımın diskte karşılıksız kalması ise önceki evrendeki doc-drift tanısıyla ölçülür." )
+Kapsama( kod: KSC-MIM-3, referans: [ MIM-3 ],
+  ne: "TAM (masa incelemesi) — Yapı-Önce hükmünün dört ihlal sınıfı dört önceki tanıyla birebir ölçülür: ilansız disk yapısı beyansız-yapı, yanlış konum yer-uyuşmazlığı, diskte karşılıksız ilan kayıp-yapı ve yetim dosya bildirilmemiş-dosya; harf büyüklüğü uyumu da önceki evrendeki harf-farkı tanısıyla kapsanır." )
+Kapsama( kod: KSC-MIM-3.1, referans: [ MIM-3.1 ],
+  ne: "TAM (masa incelemesi) — Hükmün iki dilimi, izinli ebeveyn dışında sarma ve yaprak tipin çocuk taşıması, önceki evrendeki izinsiz-sarma tanısıyla birebir ölçülür; tanı tek dosya yüzeylerinde ve satır lensinde canlıdır." )
+Kapsama( kod: KSC-MIM-3.2, referans: [ MIM-3.2 ],
+  ne: "TAM (masa incelemesi) — Klasör yapısı ilan etmeyen kök önceki evrendeki rafsız-anadizin, raf ilanının kapsamadığı gövde ilansız-gövde ve anadizine plan içeriği karışması anadizin-plan-karışması tanılarıyla ölçülür; hükmün ilan ve ayrıştırma dilimleri bu üçlüyle kapsanmıştır." )
+
+// ── ÖĞR bölümü — 8 zorlama iddialı madde ──
+Kapsama( kod: KSC-OGR-2, referans: [ OGR-2 ],
+  ne: "TAM (masa incelemesi) — Öğretim metinlerinin elle yazılamazlığı, kanonik kaynaktan deterministik üretimi ve kaynak değişikliğiyle aynı zincirde tazelenmesi sicilde maddesine bağlı ve hedef düzeyinde üretilen öğretim-kaynak-drifti tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-OGR-2.1, referans: [ OGR-2.1 ],
+  ne: "KISMİ (masa incelemesi) — Hover ile tanı mesajının kanonik uyumu sicildeki öğretim-yüzü-uyumsuz tanısıyla, kuralların doğrulanamayan motor iddiası önceki evrendeki doğrulanamayan-tanı-iddiası tanısıyla ölçülür; buna karşılık önerinin ne bulunduğunu, neden sorun olduğunu ve nasıl düzeltileceğini birlikte öğretme şartı içerik yeterliliği isteyen bir dilimdir ve makine ölçümüne inmemiştir." )
+Kapsama( kod: KSC-OGR-2.2, referans: [ OGR-2.2 ],
+  ne: "KISMİ (masa incelemesi) — Beceri kartının zorunlu alanları önceki evrendeki eksik-alan, hedef bağının kopması beceri-drift ve kart sözleşmesi sicildeki beceri-kartı-eksik tanısıyla ölçülür; fakat beceri-kartı-eksik kanonun öngördüğü uyarı yerine bilgi kademesinde üretilmektedir ve kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-OGR-2.3, referans: [ OGR-2.3 ],
+  ne: "TAM (masa incelemesi) — Başvuru satırlarının kanonik sicillerden eksiksiz ve deterministik üretimi ile elle ikiz tablo yasağı sicilde maddesine bağlı ve hedef düzeyinde üretilen başvuru-sicil-drifti tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-OGR-3, referans: [ OGR-3 ],
+  ne: "TAM (masa incelemesi) — Kanonik yeniliğin ajan bağlamına, öğretim yüzlerine ve Beceri kartlarına aynı değişiklikte bağlanması ya da etkilenmediğinin kanıtlanması sicilde maddesine bağlı ve hedef düzeyinde üretilen öğretim-etki-eksik tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-OGR-3.1, referans: [ OGR-3.1 ],
+  ne: "KISMİ (masa incelemesi) — Kaynak kimliğinin çözülmesi, girdi mührünün uyuşması ve bağlı hedefin değişmesi sicildeki öğretim-bayat tanısıyla ölçülür; buna karşılık güncel sayılmayan çıktının yayımlanamazlığı dilimi bir yayın kapısına bağlanmamıştır ve ölçümsüzdür." )
+Kapsama( kod: KSC-OGR-3.2, referans: [ OGR-3.2 ],
+  ne: "TAM (masa incelemesi) — Üretilen öğretim çıktısının kaynak ya da izinli üretim bölgesi dışında elle değiştirilmesi sicilde maddesine bağlı ve hedef düzeyinde üretilen üretilmiş-öğretim-değiştirilmiş tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-OGR-4, referans: [ OGR-4 ],
+  ne: "KISMİ (masa incelemesi) — Terfi bekleyen Bellek önceki evrendeki beceri-terfisi, kanıtsız terfi sicildeki kanıtsız-beceri-terfisi ve hedef bağı kopukluğu beceri-drift tanısıyla ölçülür; buna karşılık kanıtın hedef davranış üzerinde yinelenebilir olması şartı insan yargısı isteyen bir dilimdir ve makine ölçümüne inmemiştir." )
+
+// ── ORK bölümü — 17 zorlama iddialı madde ──
+Kapsama( kod: KSC-ORK-1, referans: [ ORK-1 ],
+  ne: "KISMİ (masa incelemesi) — Yürütme sırası ve üretim kökeni sınıflarının karışması kapsayıcı-kenar ile üretim kökeni tanıları üzerinden ölçülmektedir ve ilişki-sınıfı-ihlali sicilde hedef düzeyinde kayıtlıdır; buna karşılık üç sınıftan biri olan mimariBağı kenarı motor kaynağında ve tip sicilinde bulunmadığı için o sınıfın karışması fiilen ölçülememektedir. Kenarın akıbeti KPS-KEN-A01 Adımında Founder kapısındadır." )
+Kapsama( kod: KSC-ORK-1.1, referans: [ ORK-1.1 ],
+  ne: "KISMİ (masa incelemesi) — mimariBağı kenarının kendisi ne motor kaynağında ne tip sicilinde tanımlıdır ve kenar üzerinden görünürlük denetimi bu yüzden fiilen kurulamamaktadır; buna karşılık bağımsız denetim, mimari-bağı-ihlali tanısının fiziksel sarma hiyerarşisinden üretildiğini ve eş kademe sarma ile kademe atlama dilimlerini kenara hiç bakmadan gerçekten ateşlediğini motor kaynağı ve sınamasıyla göstermiştir. İlk teslim bu maddeyi hiç kovasına koymuştu ve denetim bunu çürüttü; kenarın akıbeti KPS-KEN-A01 Adımında Founder kapısındadır." )
+Kapsama( kod: KSC-ORK-1.2, referans: [ ORK-1.2 ],
+  ne: "KISMİ (masa incelemesi) — Tek yönlü ve döngüsüz yürütme grafı önceki evrendeki döngüsel-bağımlılık, öz-bağımlılık ve kapsayıcı-kenar tanılarıyla ölçülür, besler ile bağımlı normalizasyonunu motor yükleme çevriminde yapar; buna karşılık kenar tip sözleşmesini ölçen yürütme-kenarı-sözleşmesi tanısı kanonun hata dediği yerde bilgi kademesinde üretilmektedir. Kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-ORK-1.3, referans: [ ORK-1.3 ],
+  ne: "KISMİ (masa incelemesi) — Üretir kenarının yalnız Adımdan Meyveye yönelmesi sicildeki üretim-kökeni-ihlali tanısıyla ölçülmekte ve çözülmeyen hedefler önceki evrendeki kırık-referans tanısına düşmektedir; fakat tanı kanonun hata dediği yerde bilgi kademesinde üretilmektedir ve kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-ORK-2.4, referans: [ ORK-2.4 ],
+  ne: "KISMİ (masa incelemesi) — Kullanır kenarının izinli kaynak ve hedef çiftleri sicildeki kullanır-kenarı-ihlali tanısıyla, teknolojisiz Katman önceki evrendeki katmansız-teknoloji tanısıyla ölçülür; fakat kullanır-kenarı-ihlali kanonun hata dediği yerde bilgi kademesinde üretilmektedir ve kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-ORK-3, referans: [ ORK-3 ],
+  ne: "TAM (masa incelemesi) — Sıranın yalnız normalleştirilmiş Adım çiftlerinden kararlı topolojiyle türetilmesi, eşdeğer adayların kanonik KOD sırasıyla çözülmesi ve kaynak sırasının öncelik sayılmaması sicilde maddesine bağlı ve hedef düzeyinde üretilen deterministik-sıra-ihlali tanısıyla, kapsayıcıya yazılan sıra ise önceki evrendeki kapsayıcı-kenar tanısıyla ölçülür." )
+Kapsama( kod: KSC-ORK-3.1, referans: [ ORK-3.1 ],
+  ne: "TAM (masa incelemesi) — Hükmün üç ihlal sınıfının üçü de önceki evrende adlandırılmış tanılarla ölçülür: bağımlılık döngüsü döngüsel-bağımlılık, kendinden önce gelme öz-bağımlılık ve öncülü bitmeden tamamlanma durum-tutarsızlığı; üçü de hata düzeyinde ürettiği için sıralama ve terfi zinciri kapıda durur." )
+Kapsama( kod: KSC-ORK-3.2, referans: [ ORK-3.2 ],
+  ne: "KISMİ (masa incelemesi) — Seçilebilirlik sözleşmesi sicildeki seçilemez-adım-yürütümü tanısıyla ölçülmektedir fakat tanı kanonun öngördüğü uyarı yerine bilgi kademesinde üretilmektedir; kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-ORK-3.3, referans: [ ORK-3.3 ],
+  ne: "TAM (masa incelemesi) — Kapının yalnız doğrulanmış kabul kanıtıyla geçilmesi kapı-kabul-kanıtı-eksik, döngünün sonlanma güvencesi döngü-sonlanması-eksik tanısıyla sicilde hedef düzeyinde ölçülür; çözülmeyen koşar hedefi ile sözlük dışı durunca koşulu da önceki evrendeki kırık-koşar ve durunca-sözlüğü tanılarıyla kapsanır." )
+Kapsama( kod: KSC-ORK-3.4, referans: [ ORK-3.4 ],
+  ne: "TAM (masa incelemesi) — Kanonun kendisi kademe değerinin insan hükmü olduğunu ve zorlanamayacağını beyan eder; zorlanabilir iki dilimden küme üyeliği önceki evrendeki geçersiz-enum, beyan yokluğu ise sicilde maddesine bağlı ve hedef düzeyinde üretilen önceliksiz-adım tanısıyla ölçülür." )
+Kapsama( kod: KSC-ORK-4, referans: [ ORK-4 ],
+  ne: "TAM (masa incelemesi) — Niteliksiz kodun proje içinde çözülmesi ve çapraz proje hedefinin açık ad alanı istemesi sicilde maddesine bağlı ve hedef düzeyinde üretilen çapraz-proje-ad-alanı tanısıyla, çözülmeyen hedefler önceki evrendeki kırık-referans tanısıyla ölçülür." )
+Kapsama( kod: KSC-ORK-5, referans: [ ORK-5 ],
+  ne: "TAM (masa incelemesi) — Kimlik omurgasının yapısı, ortak kök paylaşımı ve kimliklerin birleşmezliği sicilde maddesine bağlı ve hedef düzeyinde üretilen auth-omurgası-ihlali tanısıyla ölçülür; jeton ve parola hükümleri bu maddenin yeni dilimi değil kanonik kimlik politikasının kendi zorlamasına yapılmış bir atıftır." )
+Kapsama( kod: KSC-ORK-5.2, referans: [ ORK-5.2 ],
+  ne: "TAM (masa incelemesi) — Founder Projesinin çalışma alanının tek ortak kimlik köküne zorunlu kullanır bağıyla bağlanması sicilde maddesine bağlı ve hedef düzeyinde üretilen founder-ortak-auth-eksik tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-ORK-6, referans: [ ORK-6 ],
+  ne: "KISMİ (masa incelemesi) — Kanıtsız durum terfisi önceki evrendeki gayrimeşru-geçiş tanısıyla, akışın yapısal ihlalleri sicildeki şef-akışı-ihlali tanısıyla ölçülür; buna karşılık işin gerekli yetkiye sahip Etmene verilmesi ve teslimin bağımsız denetime sunulması koşum zamanı davranış dilimleridir ve yapısal tanıyla tam ölçülememektedir." )
+Kapsama( kod: KSC-ORK-6.1, referans: [ ORK-6.1 ],
+  ne: "KISMİ (masa incelemesi) — Rol ayrılığının yapısal ihlali sicildeki üretici-denetçi-çakışması tanısıyla ölçülür; buna karşılık denetçinin üreticinin gizli belleğine ve gerekçelendirme konuşmasına erişmemesi oturum gerçekliğine ait bir dilimdir ve koşum kaydı olmadan makinece doğrulanamamaktadır." )
+Kapsama( kod: KSC-ORK-6.2, referans: [ ORK-6.2 ],
+  ne: "KISMİ (masa incelemesi) — Oturumun tek Adım yürütmesi sicildeki oturum-adım-sınırı tanısıyla hedef düzeyde kayıtlıdır; fakat oturum sınırının gerçekten korunduğu ancak koşum kayıtlarından ölçülebilir ve bu izleme bugün kurulmadığı için hükmün davranış dilimi fiilen desk kaydında kalmaktadır." )
+Kapsama( kod: KSC-ORK-6.3, referans: [ ORK-6.3 ],
+  ne: "KISMİ (masa incelemesi) — Yetki kademeleri ve kapalı varsayılan geçitler önceki evrendeki dört rbac tanısı ile gateway-izin-biçim tanısına ve canlı kalkan sınamalarına bağlıdır; buna karşılık her üretim sorumluluğunun tekil Takım sahipliğine bağlanması dilimi hiçbir tanıya inmemiştir ve sicilin madde bağı bu hükme kurulmamıştır." )
+
+// ── STR bölümü — 9 zorlama iddialı madde ──
+Kapsama( kod: KSC-STR-1, referans: [ STR-1 ],
+  ne: "TAM (masa incelemesi) — Kanona geçmiş karar, kural ya da iç çalışma kodu atfının sokulması sicilde maddesine bağlı ve hedef düzeyinde üretilen unutma-kapısı-ihlali tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-STR-1.1, referans: [ STR-1.1 ],
+  ne: "TAM (masa incelemesi) — Dayanak grafının sekiz kanonik önekle sınırlanması, çözülebilirlik ve döngüsüzlük sicilde maddesine bağlı ve hedef düzeyinde üretilen kanon-kodu-uyumsuz tanısıyla, çözülmeyen kodlar önceki evrendeki kırık-referans tanısıyla ölçülür." )
+Kapsama( kod: KSC-STR-2, referans: [ STR-2 ],
+  ne: "TAM (masa incelemesi) — Göç aşamalarının ilanlı sırayı izlemesi ve öncül kapı kapanmadan sonraki aşamaya geçilmemesi sicilde maddesine bağlı ve hedef düzeyinde üretilen göç-sırası-ihlali tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-STR-2.1, referans: [ STR-2.1 ],
+  ne: "TAM (masa incelemesi) — Göç aşamasının envanter, doğrulama sonucu, sahipli borç kaydı ve etki devri olmadan kapatılması sicilde maddesine bağlı ve hedef düzeyinde üretilen göç-kapısı-eksik tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-STR-3, referans: [ STR-3 ],
+  ne: "TAM (masa incelemesi) — Açık çekirdeğin gizli ürün politikasına zorunlu bağlanması sicilde maddesine bağlı ve hedef düzeyinde üretilen açık-gizli-sınır-ihlali tanısıyla ölçülmektedir; sınır bağımlılık grafından okunur." )
+Kapsama( kod: KSC-STR-3.1, referans: [ STR-3.1 ],
+  ne: "TAM (masa incelemesi) — Açık çekirdeğin zorunlu olmayan çalışma zamanı bağımlılığı taşıması ve türetilmiş yüzün kaynağa yeni otorite eklemesi sicilde maddesine bağlı ve hedef düzeyinde üretilen çekirdek-bağımlılık-drifti tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-STR-3.2, referans: [ STR-3.2 ],
+  ne: "KISMİ (masa incelemesi) — Kanonik hükmün dış yürütücü kimliğine açık atıfla bağlanması sicildeki yürütücü-bağımlılığı tanısıyla taranabilmektedir; buna karşılık hükmün her yürütücüde aynı anlamla uygulanabilir ve doğrulanabilir kalması içerik yargısı isteyen bir dilimdir ve makine ölçümü açık kimlik atıflarının ötesine geçememektedir." )
+Kapsama( kod: KSC-STR-4, referans: [ STR-4 ],
+  ne: "KISMİ (masa incelemesi) — Disk ile planın iki yönlü ayrışması önceki evrendeki yetim-meyve ve doc-drift, öğrenim bağının kopması beceri-drift tanısıyla ölçülür; buna karşılık kanıtlanan durum değişikliklerinin tipli bağlarla geri yazılması ve doğrulanmamış gözlemin hükme dönüşmemesi dilimleri bu maddede tanısızdır ve sicilin madde bağı kurulmamıştır." )
+Kapsama( kod: KSC-STR-5, referans: [ STR-5 ],
+  ne: "TAM (masa incelemesi) — Etki kümesi doğrulanmadan yürürlüğe alma etki-yayın-kapısı-eksik, artık anlam taşımayan izlerin sahipsiz kalması ölü-iz tanısıyla sicilde hedef düzeyinde ölçülür; çözülmeyen metin atıfları da önceki evrendeki karşılıksız-metin-atfı tanısıyla kapsanır." )
+
+// ── TİP bölümü — 7 zorlama iddialı madde ──
+Kapsama( kod: KSC-TIP-1, referans: [ TIP-1 ],
+  ne: "TAM (masa incelemesi) — Tanımsız tipin reddi önceki evrendeki bilinmeyen-tip tanısıyla, kanonik tip evreninden eksilme ya da sessiz emeklilik ise sicilde maddesine bağlı ve hedef düzeyinde üretilen tip-evreni-eksik tanısıyla ölçülür; iki dilim birlikte hükmü kapatır." )
+Kapsama( kod: KSC-TIP-1.15, referans: [ TIP-1.15 ],
+  ne: "TAM (masa incelemesi) — Meyve, KimlikKökü ve KimlikSağlayıcısı tiplerinin kanonik aile, şema ve sarma kayıtlarıyla sınıflamada bulunması sicilde maddesine bağlı ve hedef düzeyinde üretilen omurga-tipi-eksik tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-TIP-2, referans: [ TIP-2 ],
+  ne: "KISMİ (masa incelemesi) — Şema sözleşmesinin beyanı sicildeki şema-tanımı-eksik tanısıyla, sözleşmenin düğümlere uygulanması önceki evrendeki eksik-alan, geçersiz-enum ve geçersiz-tür tanılarıyla ölçülür; buna karşılık yüzlerin ek şema icat edememesi dilimi hiçbir tanıya bağlanmamıştır ve yalnız tek kaynak mimarisinin doğal sonucu olarak durmaktadır." )
+Kapsama( kod: KSC-TIP-2.2, referans: [ TIP-2.2 ],
+  ne: "KISMİ (masa incelemesi) — Şema dışı alanın görünür uyarı üretmesi sicildeki şema-dışı-alan tanısıyla ölçülmektedir fakat tanı kanonun öngördüğü uyarı yerine bilgi kademesinde üretilmektedir; kademe hizalaması KPS-KAD-A01 Adımının işidir." )
+Kapsama( kod: KSC-TIP-2.3, referans: [ TIP-2.3 ],
+  ne: "TAM (masa incelemesi) — Zorunlu kenar gruplarının eksikliği sicil dosyasının birinci muafiyetinde açıklanan veri güdümlü yoldan, kanonun zorunluKenarlar kaydından çalışma anında birleştirilen dokuz tanıyla ölçülür; dokuzun bileşimi beş Adım ve dört yüzey tanısıdır, Zorlama satırı ise dört yüzey tanısıyla birlikte konisiz-adım tanısını adlandırır ve ancak koşulunu motor aynı kayıttan değerlendirir." )
+Kapsama( kod: KSC-TIP-2.4, referans: [ TIP-2.4 ],
+  ne: "TAM (masa incelemesi) — Sarma sözleşmesinin tek ihlal sınıfı izinsiz yerleşimdir ve önceki evrendeki izinsiz-sarma tanısı bunu doğru ebeveyn önerisiyle birlikte ölçer; yaprak tiplerin çocuk yasağı da aynı sözleşmenin kaydından değerlendirilir." )
+Kapsama( kod: KSC-TIP-2.5, referans: [ TIP-2.5 ],
+  ne: "TAM (masa incelemesi) — Örtünün taban kanonu yerinde değiştirmesi ya da kapsam dışına taşması sicilde maddesine bağlı ve hedef düzeyinde üretilen örtü-ihlali tanısıyla, birleşim çakışmaları ise önceki evrendeki birleşim-çatışması tanısıyla ölçülür." )
+
+// ── YAS bölümü — 15 zorlama iddialı madde ──
+Kapsama( kod: KSC-YAS-1, referans: [ YAS-1 ],
+  ne: "TAM (masa incelemesi) — Rejim alanının tam bir kez ve yalnız izinli iki değerle beyanı sicilde maddesine bağlı ve hedef düzeyinde üretilen rejim-beyanı-eksik tanısıyla birebir ölçülmektedir; sessiz varsayım yasağı tanının varlık sebebidir." )
+Kapsama( kod: KSC-YAS-1.1, referans: [ YAS-1.1 ],
+  ne: "TAM (masa incelemesi) — Katı rejimde Katmanın doğrudan Adım taşıması sicilde maddesine bağlı ve hedef düzeyinde üretilen katı-rejim-altkatman-eksik tanısıyla, aynı kusurun eski yazımı da önceki evrendeki katmansız-adım tanısıyla ölçülür." )
+Kapsama( kod: KSC-YAS-1.3, referans: [ YAS-1.3 ],
+  ne: "KISMİ (masa incelemesi) — Rejim değiştiğinde hedef rejimi sağlamayan yapının görünür tanı taşıması sicildeki rejim-geçiş-uyumsuzluğu tanısıyla ölçülür; buna karşılık geçişin yalnız açık kullanıcı değişikliğiyle yapılabilmesi ve yapının otomatik dönüştürülmemesi koşum davranışı dilimleridir ve tanı tarifinin dışındadır." )
+Kapsama( kod: KSC-YAS-2, referans: [ YAS-2 ],
+  ne: "KISMİ (masa incelemesi) — Hüküm rolünün seçilen yasa tipiyle uyuşmazlığı sicildeki hüküm-türü-uyumsuz tanısıyla ölçülür; buna karşılık zorlama zincirinin Karardan uygulanabilir Kurala kadar çözülebilir kalması dilimi bu tanının tarifinde değildir ve komşu maddelerin dayanak tanılarına dağılmıştır." )
+Kapsama( kod: KSC-YAS-2.1, referans: [ YAS-2.1 ],
+  ne: "KISMİ (masa incelemesi) — Kuralın dayanaksızlığı önceki evrendeki dayanaksız-kural, Politikanın karara yaslanmaması politika-dayanaksız ve uygulanmayan kilitli Karar uygulanmamış-karar tanısıyla ölçülür; buna karşılık sicilin madde bağı bu hükme kurulmamıştır ve Karar hedef kenarı dilimi Zorlama satırında adlandırılmamıştır." )
+Kapsama( kod: KSC-YAS-2.2, referans: [ YAS-2.2 ],
+  ne: "KISMİ (masa incelemesi) — Ardıl zincirinin üç ihlali önceki evrendeki halefsiz-revize, kırık-halef ve halef-döngü tanılarıyla ölçülür; buna karşılık yürürlükten kalkmış Kararın güncel hüküm gibi uygulanması dilimini ölçen dayanak-halef tanısı emekliye ayrılmıştır ve yerine geçen bir ölçüm sicile inmemiştir." )
+Kapsama( kod: KSC-YAS-2.3, referans: [ YAS-2.3 ],
+  ne: "TAM (masa incelemesi) — Kural sözleşmesinin üç zorunlu alanı sicilde maddesine bağlı ve hedef düzeyinde üretilen kural-sözleşmesi-eksik tanısıyla, alan eksikliği, katman uyumu ve çözülmeyen kapsam ise önceki evrendeki eksik-alan, katman-uyumsuz ve bilinmeyen-kapsam tanılarıyla ölçülür." )
+Kapsama( kod: KSC-YAS-2.4, referans: [ YAS-2.4 ],
+  ne: "TAM (masa incelemesi) — Deterministik birleşmenin üç ihlal sınıfı önceki evrende adlandırılmış tanılarla ölçülür: sağlanamayan kesişim ve gevşetme kural-çatışması, boş mantıksal taban birleşim-çatışması, ebedi hükümlerin anayasa dışına taşması ebedi-ihlal; mühür bütünlüğü de mühürsüz-ebedi ile mühür-kırık tanılarıyla korunur." )
+Kapsama( kod: KSC-YAS-3, referans: [ YAS-3 ],
+  ne: "TAM (masa incelemesi) — Tanının beş zorunlu alanı ve kodunun sicilde bulunması şartı sicilde maddesine bağlı ve hedef düzeyinde üretilen tanı-sözleşmesi-uyumsuz tanısıyla ölçülür; yüzler arası kayıpsızlık dilimi YUZ bölümünün kendi maddelerinde ayrıca ölçülmektedir." )
+Kapsama( kod: KSC-YAS-3.2, referans: [ YAS-3.2 ],
+  ne: "TAM (masa incelemesi) — Tek dosya kapısı ile Proje kapısının kapsam ayrımı ve tek dosya temizliğinin Proje temizliği diye sunulamaması sicilde maddesine bağlı ve hedef düzeyinde üretilen tanı-kapsamı-karışması tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-YAS-3.3, referans: [ YAS-3.3 ],
+  ne: "TAM (masa incelemesi) — Tanı, graf ve karne kimliğinin fiziksel yoldan değil Proje kodundan türemesi ve ayrı Projelerin bulgularının birleşmemesi sicilde maddesine bağlı ve hedef düzeyinde üretilen proje-tanı-kimliği-uyumsuz tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-YAS-3.4, referans: [ YAS-3.4 ],
+  ne: "KISMİ (masa incelemesi) — Sicilde bulunmayan zorlamanın canlı sunulması önceki evrendeki doğrulanamayan-tanı-iddiası tanısıyla ölçülür; buna karşılık tanının kapsamına uygun en az bir yüzde görünür kalması, yinelenen bulguların anlam kaybetmeden özetlenmesi ve önerinin düzeltmeyi öğretmesi yüz davranışı dilimleridir ve hiçbir tanıya bağlanmamıştır." )
+Kapsama( kod: KSC-YAS-4, referans: [ YAS-4 ],
+  ne: "KISMİ (masa incelemesi) — kural düzey iddiasının motor kademesini aşması tanı-terfi-kapısı-ihlali tanısıyla üretici denetim yolunda gerçekten basılmaktadır ve bağımsız denetim bunu motor kaynağından doğrulamıştır; ilk teslimin hiç kovası iddiası bu kanıtla çürütüldü. Buna karşılık terfi kapısının dört ölçümünü birlikte okuyan terfi kapısı ölçümü bugün yalnız bir sınama dosyasından çağrılmakta ve hiçbir üretici yol onu koşmamaktadır, dolayısıyla hükmün sıralı terfi ve kanıtlı temizlik kapısı dilimleri üretim akışında ölçümsüzdür. Ölçümün gerçek denetim zincirine bağlanması KPS-TRF-A01 Adımının işidir." )
+Kapsama( kod: KSC-YAS-4.1, referans: [ YAS-4.1 ],
+  ne: "TAM (masa incelemesi) — Kapının yalnız sıfır hata ve sıfır uyarıyla tam yeşil sayılması, bilgi kayıtlarının sonucu bozmadan görünür kalması ve atlanan denetimin tam yeşil sayılmaması sicilde maddesine bağlı ve hedef düzeyinde üretilen sahte-tam-yeşil tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-YAS-4.2, referans: [ YAS-4.2 ],
+  ne: "KISMİ (masa incelemesi) — Terfinin üç kanıt zinciri sicildeki terfi-kanıtı-eksik tanısıyla tarif edilmiştir fakat tanı kanonun öngördüğü uyarı yerine bilgi kademesinde üretilmektedir ve terfi kapısı ölçümünün üretici yoldan çağrılmaması bu tanıyı da fiilen zayıflatmaktadır; kademe hizalaması KPS-KAD-A01, çağrı yolu KPS-TRF-A01 Adımının işidir." )
+
+// ── YÜZ bölümü — 10 zorlama iddialı madde ──
+Kapsama( kod: KSC-YUZ-1, referans: [ YUZ-1 ],
+  ne: "TAM (masa incelemesi) — Her yüzün tek nötr ağaçtan türemesi ve hiçbir yüzün kaynağı yeniden yorumlamaması sicilde maddesine bağlı ve hedef düzeyinde üretilen prizma-kaynak-ayrışması tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-YUZ-1.2, referans: [ YUZ-1.2 ],
+  ne: "TAM (masa incelemesi) — Elle yazılan ya da türetilen bir yüzün kanonik kaynağın eş yetkili ikizi olarak kullanılması sicilde maddesine bağlı ve hedef düzeyinde üretilen eş-yetkili-yüz-ikizi tanısıyla birebir ölçülmektedir." )
+Kapsama( kod: KSC-YUZ-1.3, referans: [ YUZ-1.3 ],
+  ne: "TAM (masa incelemesi) — Aynı kaynak ve seçeneklerle yinelenen üretimin birebir kararlı sonuç vermesi ve üreticinin izinli bölge dışına dokunmaması sicilde maddesine bağlı ve hedef düzeyinde üretilen yüz-idempotans-drifti tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-YUZ-3, referans: [ YUZ-3 ],
+  ne: "KISMİ (masa incelemesi) — Geliştirme yüzünün kanonik kimlik ve tanıdan ayrışması sicildeki geliştirme-yüzü-drifti tanısıyla tarif edilmiştir; buna karşılık bütün yüzeylerin aynı tanı nesnesini fiilen paylaştığı ve LSP sınırının yalnız taşıma yaptığı ancak canlı yüzey davranışında ölçülebilir ve bu davranış izleme bu maddede tek tanıya sığmamaktadır." )
+Kapsama( kod: KSC-YUZ-3.1, referans: [ YUZ-3.1 ],
+  ne: "TAM (masa incelemesi) — Aynı ihlalin bütün uygulanabilir yüzlerde aynı kod, düzey, mesaj özü, konum ve düzeltme yönlendirmesiyle sunulması sicilde maddesine bağlı ve hedef düzeyinde üretilen tanı-yüzü-uyumsuz tanısıyla ölçülmektedir." )
+Kapsama( kod: KSC-YUZ-3.3, referans: [ YUZ-3.3 ],
+  ne: "TAM (masa incelemesi) — Tanının doğasına göre üç sunum yüzeyine yönlendirilmesi sicilde maddesine bağlı ve hedef düzeyinde üretilen tanı-yüzeyi-karışması tanısıyla ölçülür; oturum doksan dördün panel köken süzgeci işi bu ayrımı üretici köken damgasına bağlamıştır." )
+Kapsama( kod: KSC-YUZ-3.4, referans: [ YUZ-3.4 ],
+  ne: "TAM (masa incelemesi) — Ateşlemiş Hatırlatıcının uykudakilerden ayrılması ve bildirimin grafın kendi kenarından türetilmesi sicilde maddesine bağlı ve hedef düzeyinde üretilen ateşlemiş-hatırlatıcı tanısıyla ölçülmektedir; tanı bu çalışma alanında bugün canlı bulgular üretmektedir." )
+Kapsama( kod: KSC-YUZ-4, referans: [ YUZ-4 ],
+  ne: "TAM (masa incelemesi) — Yüzey sözleşmesinin bütünü sicilde maddesine bağlı ve hedef düzeyinde üretilen yüzey-sözleşmesi-eksik tanısıyla, kod tekilliği, renk geçerliliği ve kontrast eşiği ise önceki evrendeki yinelenen-kod, geçersiz-renk ve düşük-kontrast tanılarıyla ölçülür." )
+Kapsama( kod: KSC-YUZ-4.1, referans: [ YUZ-4.1 ],
+  ne: "TAM (masa incelemesi) — Yüzeyin ham renk taşıması önceki evrendeki ham-renk, rol dışı palet kopyası sicilde maddesine bağlı ve hedef düzeyinde üretilen palet-yüz-drifti, değer ve kontrast bozulmaları ise geçersiz-renk ile düşük-kontrast tanılarıyla ölçülür." )
+Kapsama( kod: KSC-YUZ-5, referans: [ YUZ-5 ],
+  ne: "KISMİ (masa incelemesi) — Görünürlük beyanının eksikliği ve gizli yüzeyin çözülebilir açılma koşulu taşımaması sicildeki görünürlük-sözleşmesi-eksik ve önceki evrendeki geçersiz-enum tanılarıyla ölçülür; buna karşılık koşul sağlanmadan hiçbir yüzde açığa çıkarılmama dilimi yüz davranışıdır ve tanıya inmemiştir." )

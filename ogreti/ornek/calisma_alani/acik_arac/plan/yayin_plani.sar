@@ -1,0 +1,21 @@
+// acik_arac/plan/yayin_plani.sar — açık aracın en küçük plan zinciri (Faz → Blok → Katman → AltKatman → Adım)
+Faz( kod: FAZ-ORNEK-ACIK-2026-09, ad: "yayin-donemi", ne: "🌀 Açık aracın ilk yayın dönemi", hedefTarih: "2026-09" ) {
+  -->|
+    ## Amaç
+    Açık aracı ilk kez herkese açık bir kanalda yayımlamak.
+    ## Kapsam
+    Paketleme ve yayın; belge yazımı ayrı bir Blok'ta ele alınır.
+    ## Sonuç
+    Paket yayın kanalında görünür ve kurulum tek komutla çalışır.
+  |<--
+  Blok( kod: BLK-ORNEK-ACIK-YAYIN, ne: "🪵 İlk yayın gövdesi" ) {
+    Katman( kod: KAT-ORNEK-ACIK-CEKIRDEK, ad: "cekirdek", ne: "🌿 Aracın TypeScript çekirdeği", kullanır: TEK-ORNEK-ACIK-TS ) {
+      AltKatman( kod: ALT-ORNEK-ACIK-KODLAMA, ad: "kodlama", departman: kodlama, ne: "☘️ Paketleme kodu" ) {
+        Adım( kod: ADM-ORNEK-ACIK-A01, durum: beklemede,
+              ne: "Aracın paketlenip yayın kanalına yüklenmesi; bugün paket yalnız geliştiricinin makinesinde kurulabilmektedir.",
+              görev: "Paket betiğini yaz, sürüm numarasını ilerlet ve paketi yayın kanalına yükle.",
+              kabul: [ "Paket yayın kanalında listelenir ve temiz bir makinede tek komutla kurulur." ] )
+      }
+    }
+  }
+}

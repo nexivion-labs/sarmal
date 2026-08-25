@@ -1,0 +1,113 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/blok_kimlik.sar — Örnek Blok: "Tek Noktadan Giriş" (kimlik/auth)
+//
+//   Amaç: Grameri (SD) + tipleri (SNF-0) gerçek kullanımda sınamak (çalışıyor mu?).
+//   Gösterdikleri (MIM-1 · dört eksen + tam-zincir):
+//     • Faz = ZAMAN halkası (bu örnekte kimlik geliştirme dönemi) ← Blok'u sarar
+//     • Blok = bir özelliği uçtan uca KAVUŞTURAN gövde (dikey dilim: ön+arka+güvenlik)
+//     • Katman = TEKNOLOJİ dilimi: önyüz · arkayüz · güvenlik    ← 1 Blok → çok Katman
+//     • Adım = somut iş (yaprak)                                 ← 1 Katman → çok Adım
+//     • DIL-1.4 çağırma (kod-tabanlı) · TIP-1 kullanıcı-tanımlı tip
+//     • Karar → besler/referans ile Adım'ın BAĞLAM-KONİSİNE girer (AI talimatı görür)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Çağrılar (DIL-1.4: kod-tabanlı, yol değil) ──────────────────────────────────
+çağır FLUTTER          // teknoloji-widget (katalog)
+çağır FASTAPI
+
+// ── Kullanıcı-tanımlı tip (TIP-1) — kişi kendi tipini ilan eder ──────────────
+Tip GirişEkranı( aile: yuzey, içerir: [Metin, Düğme], renk: "#14B8A6" ) {
+  ne: "Kimlik girişi için özel yüzey tipi",
+}
+
+// ── Faz: kimlik geliştirme dönemi (MIM-1.2: Faz=ZAMAN halkası — Blok'u sarar · tam-zincir) ──
+Faz( kod: FAZ-KIMLIK, ad: "kimlik-donemi", hedefTarih: "2027-01-01",
+     ne: "Kimlik özelliğinin geliştirme dönemi — tam-zincir kök (Faz→Blok→Katman→Adım · MIM-1)" ) {
+
+-->|
+  ## Amaç
+  🎯 Kimlik doğrulamayı tek blokta toplamak: giriş, oturum ve güvenlik tek kapıdan yönetilir.
+  ## Kapsam
+  📦 Bu blok kimlik yaşam döngüsünü kapsar. Önyüz giriş ekranı, arkayüz doğrulama servisi
+  ve güvenlik politikası Katmanları uçtan uca bu blokta kavuşur. Oturum yenileme ve parola
+  akışları da bu sınırın içindedir. Yetkilendirme (RBAC) ayrı bloğun konusudur ve KAPSAM DIŞIDIR.
+  ## Sonuç
+  ✅ Kabul: üç Katman motor-temiz kavuşur; giriş akışı tek koddan (BLK-KIMLIK) adreslenir.
+|<--
+// ── Blok: kimlik özelliği · üç Katman (teknoloji dilimi) uçtan uca kavuşur ─────
+Blok(
+  kod: BLK-KIMLIK,
+  ad:  "kimlik",
+  ne:  "Tek noktadan giriş — önyüz + arkayüz + güvenlik Katmanları kavuşturulur",
+) {
+
+  // ── FACET 1: önyüz (dal 🌿) ─────────────────────────────────────────
+  Katman( kod: KAT-ONYUZ, kullanır: FLUTTER, ad: "onyuz" ) {
+    AltKatman( kod: KAT-EKRANLAR, departman: kodlama, ad: "ekranlar" ) {      // alt-alan → 2 Adım
+      Adım(
+        kod:      ADM-GIRIS,
+        ad:       "giris-ekrani",
+        bağımlı:  FLUTTER,
+        üretir:   EKR-GIRIS,
+        referans: KRR-OTURUM,       // kararı bağlama al
+      )
+      Adım(
+        kod:      ADM-KAYIT,
+        ad:       "kayit-ekrani",
+        bağımlı:  FLUTTER,
+        referans: KRR-OTURUM,
+      )
+    }
+  }
+
+  // ── FACET 2: arkayüz (dal 🌿) — 2 Katman (çokluk) ───────────────────
+  Katman( kod: KAT-ARKAYUZ, kullanır: FASTAPI, ad: "arkayuz" ) {
+    AltKatman( kod: KAT-SERVISLER, departman: kodlama, ad: "servisler" ) {
+      Adım(
+        kod:      ADM-SERVIS,
+        ad:       "kimlik-servisi",
+        bağımlı:  FASTAPI,
+        besler:   ADM-GIRIS,        // oturum/jeton besler → KAVUŞTURMA noktası
+        referans: KRR-OTURUM,
+      )
+    }
+    AltKatman( kod: KAT-VERITABANI, departman: kodlama, ad: "veritabani" ) {
+      Adım(
+        kod:      ADM-TABLO,
+        ad:       "kimlik-tablosu",
+        bağımlı:  FASTAPI,
+        üretir:   GOC-KIMLIK,
+      )
+    }
+  }
+
+  // ── FACET 3: güvenlik (dal 🌿) ──────────────────────────────────────
+  Katman( kod: KAT-GUVENLIK, kullanır: FASTAPI, ad: "guvenlik" ) {
+    AltKatman( kod: KAT-JETON, departman: kodlama, ad: "jeton" ) {
+      Adım(
+        kod:      ADM-JETON,
+        ad:       "jeton-dogrula",
+        besler:   ADM-SERVIS,
+        referans: KRR-OTURUM,
+      )
+    }
+  }
+}
+}   // ── Faz FAZ-KIMLIK kapanışı ──
+
+// ── Karar düğümü — ilgili adımların BAĞLAM-KONİSİNE girer ─────────────────────
+//   ADM-GIRIS/ADM-SERVIS/ADM-JETON'da AI asistanına talimat verilince,
+//   bu karar otomatik olarak bağlama (cone) yüklenir → asistan onu görerek çalışır.
+Karar(
+  kod: KRR-OTURUM,
+  ad:  "oturum-stratejisi",
+  ne:  "Jeton tabanlı oturum (JWT) + yenileme jetonu",
+  durum: kilitli,
+  besler: [ ADM-GIRIS, ADM-SERVIS, ADM-JETON ],
+) {
+  karar:   "Oturum JWT ile taşınır; kısa-ömür erişim + uzun-ömür yenileme jetonu"
+  gerekçe: "Durumsuz (stateless) doğrulama ölçeklenir; yenileme jetonu güvenli oturum sürekliliği verir"
+}
+
+// 🍎 Meyve ilanı (A02 onarımı 2026-07-11): üretir hedefi artık ilanlı — kırık-referans susar
+Göç( kod: GOC-KIMLIK, ne: "🍎 Kimlik tablosunun ilk veritabanı göçü — ADM'nin üretir meyvesi" )

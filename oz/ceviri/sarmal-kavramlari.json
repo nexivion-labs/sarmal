@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "ad": "Sarmal'ın kendi kavramları",
+    "amaç": "Sarmal'ın kendi mimari kavramlarının sorgulanabilir tanımı. Çeviri katmanının öteki üç sözlüğü başka soruların evidir: birincisi dilin anahtar sözcüklerini dillere çevirir, ikincisi Türkçe bir kavramı çerçevelerin karşılıklarına eşler, üçüncüsü tasarım terimlerinin Türkçe ile İngilizce eşini verir. Sarmal'ın KENDİ kavramları bu üçünün hiçbirine ait değildir ve bu sözlük o boşluğu kapatır (V1B-KAVRAM-A01).",
+    "kural": "Her girdi tanımını ve kanonik dayanağını birlikte taşır. Tanım burada YENİDEN YAZILMAZ; kanonun söylediğini okunur Türkçeyle özetler ve okuyucuyu kaynağına gönderir, çünkü hüküm yalnız kaynağında yaşar (YUZ-1.2).",
+    "sürüm": 1
+  },
+  "kavramlar": {
+    "koni": {
+      "tanim": "Koni, bir Adımın işi tek başına yürütülebilir kılan zengin alanlar kümesidir: görev, kabul, üretir, bağımlı, referans ve sınır. Ad, işin tepede tek cümlelik amaçtan başlayıp aşağı doğru genişleyerek somut kabul ölçütlerine ve teslim edilecek meyveye ulaşmasından gelir. Bir Adım geliştirmede durumuna alındığında koninin dolu olması şarttır; koni boş bırakılırsa Adım yapısal olarak geçerli fakat niyet bakımından boş kalır ve orkestratör ondan istem üretemez.",
+      "dayanak": "Zorunlu kenarlar ve konisiz-adım tanısı — yasa/kanon/ork.sar; alanların tam listesi oz/siniflama/kayit.json içindeki Adım şemasındadır.",
+      "nerede": "Adım düğümünün alanları",
+      "en": "cone"
+    },
+    "kavuşum": {
+      "tanim": "Kavuşum, farklı teknolojilere bağlı Katmanların aynı Blok gövdesinde uçtan uca tek bir iş sonucu üretmek üzere buluşmasıdır. Blok tek bir teknolojinin kabı değildir; önyüz, arkayüz ve koruma katları aynı dikey gövdede kavuşur ve aralarındaki sözleşme noktası görünür kılınır. Kavuşumsuz bir Blok yatay siloya döner: katlar ayrı ayrı ilerler, aralarındaki sapma hiçbir kapıda görünmez. Farklı Takımlara bağlı Adımlar ise ortak bir Sözleşme köprüsü olmadan paralel koşulamaz.",
+      "dayanak": "MIM-1.3 · Blok Kavuşum Gövdesi — yasa/kanon/mim.sar; zorlayan tanılar: kavuşumsuz-dilim, silo-blok, kavuşumsuz-paralellik, kavuşumsuz-ekran.",
+      "nerede": "Blok gövdesi ve Katman ilişkisi",
+      "en": "convergence"
+    }
+  }
+}

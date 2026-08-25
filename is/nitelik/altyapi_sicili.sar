@@ -1,0 +1,40 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/altyapi_sicili.sar — 🏗️ ALTYAPI SİCİLİ (RF-T6-A01 · Göç·Sözlük·Kanca·Şablon dogfood'u)
+//
+//   Karne teşhisi (nitelik/karar_kural_karnesi.sar EKSEN ③): Göç·Sözlük·Kanca·
+//   Şablon canlı bahçede sıfırdı — "K-91 göçü yaşandı ama Göç düğümü hiç
+//   yazılmadı; kanca/ ve sablon/ rafları kendi tipleriyle yazılmıyor." Bu dosya
+//   o dört tipi bahçenin YAŞANMIŞ altyapı gerçekleriyle diriltir (K-59 kör-drift
+//   yasağı — süs/dolgu düğüm yok); ham kaynaklar her düğümün ne: alanında adresli.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🏗️ Altyapı Sicili — bahçenin altyapı gerçeği kendi tipleriyle konuşur
+
+  ## Amaç
+  🎯 Dört altyapı tipini (Kanca · Şablon · Sözlük · Göç) kendi bahçemizin
+  gerçek kayıtlarıyla diriltmek (RF-T6-A01 dogfood turu, DR-13 tip-doğum
+  kapısı). Çözülen problem: commit kapısı, şablon kütüphanesi, kavram sözlüğü
+  ve yaşanmış büyük göçler bugüne dek dilin dışında (kabuk betiği · md ·
+  yorum satırı) yaşıyordu; graf/gezinme yüzleri bu altyapıya kördü.
+
+  ## Kapsam
+  📦 Kapsar: dört tipe en az bir gerçek kayıt; ham kaynağın adresi.
+  Kapsamaz: geçmiş göçlerin toptan dökümü (sicil yaşadıkça büyür); kanca/
+  betiğinin ve şablon içeriklerinin kendisi (kaynak dosyalar tek gerçek).
+|<--
+
+Kanca( kod: KNC-COMMIT-KAPISI, evre: önce,
+  ne: "🪝 pre-commit sarmal-kapı (kanca/pre-commit) — her commit'ten ÖNCE koşan drift kapısı: `sarmal denetle _Sarmal` hata verirse commit BLOKLANIR (drift tarihe girmez), uyarı geçer; arıza-güvenli tasarım (node/motor yoksa kilitlemez, atlar; bilinçli kaçış `--no-verify`). Canlı kanıt: bugünkü dogfood mühür zinciri (e35ea0c · 1214144 · f43832b · 9eb1735 · 356dc94) her adımda '🚪✅ sarmal-kapı: drift yok' çıktısıyla bu kapıdan geçti" )
+
+Şablon( kod: SBL-KANON-KUTUPHANE,
+  ne: "📐 Kanonik şablon kütüphanesi (sablon/ · anadizinde KTP-SABLON ilanı) — düğüm tiplerinin başlangıç kalıpları: adim · blok · dongu · beceri · etmen · sozlesme · ekran · arkayuz · mekanizma · proje · calisma_alani + dogus/ doğuş paketi (anadizin · dersler · durum_devir · geribildirim · ilk_plan). 'başla' üreteci ve doğuş rehberi buradan okur (K-48 tek-kaynak); şablonlar öğretir de: dongu.sar, K-87 çıkış-koşulu zorunluluğunu yorum satırlarıyla anlatır. Bilinen açık iş: şablon kopyalarının kimlik indeksini kirletmesi KPN-A01'in konusu" )
+
+Sözlük( kod: SZK-KAVRAMLAR,
+  ne: "🗺️ Kavram sözlüğü (KAVRAMLAR.md) — Sarmal jargonunun (koni · kavuşum · ray · mekanizma · drift + ağaç metaforunun iki yüzü) yabancıya ilk-bakış haritası; tip sistemi derinliği oz/siniflama/kayit.md'ye, felsefe felsefe/ rafına bağlanır. KVR rayının (nitelik/sozluk_envanteri.sar) çalışma zemini; son içerik güncellemesi 2026-07-08 — bağlam→kavram haritası genişletmesi KVR-A02'nin açık işi" )
+
+Göç( kod: GOC-K91-DIZILIS,
+  ne: "🚚 K-91 kanonik diziliş göçü (2026-07-12) — canlı bahçenin Faz→Blok→Katman→Adım tam-zincirine taşınması: eski-diziliş tanısı 12 dosyada 43 facet-Faz'ın rotasını çizdi, 60+ dosyalık göç motor rehberliğinde yürüdü; göçün ifade EDEMEDİĞİ iki fikstür K-92 AltKatman kararını doğurdu (eksik kanonu göç yakaladı); göç sonrası kalıntı SIFIR (tek bilinçli muaf: kademe testinin kasıtlı fikstürü). Bu vaka motor-hakem deseninin doğumu: dersi DRS-GOC-HAKEM-SINAVI, terfisi BCR-GOC-HAKEM becerisi" )
+
+Göç( kod: GOC-DR2-GENELKURAL,
+  ne: "🚚 DR-2 yasa göçü provası (2026-07-18 · RF-T6-A07) — topluDegisiklikYok hükmü Anayasa gövdesinden üst-düzey bağımsız GenelKural'a hüküm+kimlik birebir taşındı; ölçüt Founder'la yazıldı (nitelik/yasa_goc_olcutu.sar üç-soru: konu testi varsayılan-KALMAK · çapraz-konu → GenelKural · dizin-hedef → ÖzelKural). GenelKural tipinin İLK canlı kullanımını doğuran göç; Founder kapanış hükmü 'provayla yetin' — kalan göç bilinçli yapılmadı (göç istisnadır ilkesi)" )

@@ -1,0 +1,26 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/anayasa.sar — ⚖️ ORTAK ANAYASA (bahçe yönetişimi)
+//
+//   YAS-2: Yasa/Anayasa tüm planı sınırlayan üst hüküm katmanıdır. Bahçedeki her Uygulama bu
+//   ortak anayasaya uyar (tek yasa, çok uygulama). Uygulamalar `çağır ANY-BAHCE`.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  ⚖️ Bahçedeki tüm uygulamaların uyacağı ortak yönetişim ilkeleri — tek yasa.
+  ## Kapsam
+  📦 Kimlik (tek giriş) + en-az-yetki. Uygulamaya özel kurallar buraya girmez.
+  ## Sonuç
+  ✅ Kabul: her Uygulama SZL-AUTH'a kavuşur ve bu anayasaya uyar.
+|<--
+Anayasa( kod: ANY-BAHCE, ad: "bahce-anayasasi", sürüm: "1.0",
+         ne: "⚖️ Bahçe ortak yönetişimi — tek giriş + en-az-yetki (tüm uygulamalar uyar)" ) {
+
+  Kural tekGiris( kod: KRL-TEK-GIRIS, otorite: anayasa, katman: niyet, kapsam: genel ) {
+    ne: "🔑 Tüm uygulamalar tek auth sözleşmesini (SZL-AUTH) paylaşır — ayrı giriş yasak"
+  }
+
+  Kural enAzYetki( kod: KRL-EN-AZ-YETKI, otorite: anayasa, katman: niyet, kapsam: genel ) {
+    ne: "🛡️ Her uygulama yalnız ihtiyacı olan yetkiyi ister (en-az-yetki ilkesi)"
+  }
+}

@@ -1,0 +1,146 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/oncelik_kod_reformu.sar — ⚖️ ÖNCELİK MODELİ VE KOD STANDARDI REFORMU
+//   Kaynak: Founder'ın 2026-08-10 tarihli oturum bildirimi. Founder iki eksiklik
+//   ilan etti ve üç çatal sorusuna hüküm verdi; hükümler bu planın Adımlarında
+//   gerekçeleriyle yaşar. Kanon maddesi Founder kapısıdır; madde metinleri
+//   yazıldığında tasdik Onaylar panelinden alınır (onayBekler: founder).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# ⚖️ Öncelik Modeli ve Kod Standardı Reformu
+
+## Amaç
+Founder 2026-08-10 tarihinde iki yapısal eksiklik bildirdi. Birincisi öncelik
+modelidir: ORK-3.4 maddesi bugün önem ile aciliyeti tek bir p0–p3 kademesine
+sıkıştırmaktadır, oysa iki kavram bağımsız eksenlerdir; hüküm, önemin
+yüksek, normal ve düşük değerleriyle, aciliyetin ise ayrı bir acil bayrağıyla
+beyan edilmesidir. İkincisi kod atamalarıdır: düğüm kodları bugün hiçbir
+ilanlı standart taşımadan elle yazılmaktadır; hüküm, biçim kuralının kanona
+inmesi, öneklerin bir sicilde ilan edilmesi ve sonraki boş kodu motorun
+önermesidir.
+
+## Kapsam
+Kanon maddeleri (ORK-3.4 revizyonu, ORK-8 hizalaması, yeni kod standardı
+maddesi), tip şeması (öncelik taşıyan bütün tipler), iki dillilik sözlüğü,
+mevcut yetmiş bir öncelik beyanının mekanik göçü ve motor desteği (biçim
+tanısı ile kod önerici araç). Kapsam dışı: mevcut kodların geriye dönük
+yeniden adlandırılması — Founder 2026-08-10 tarihinde standardın yalnız yeni
+doğan kodları bağlamasına hükmetti, çünkü tarih tahrif edilmez ve atıflar
+kırılmaz.
+
+## Sonuç
+Öncelik iki bağımsız eksenle beyan edilir ve eski p-kademesi kaynakta sıfır
+kez geçer; yeni doğan her kod ilanlı bir biçim kuralına ve önek siciline
+yaslanır, sonraki boş kodu araç önerir. İki varlığın denetimi sıfır hata ve
+sıfır uyarıda kalır.
+|<--
+Blok( kod: BLK-RFM, mevsim: FAZ-2026-AGUSTOS,
+      ne: "⚖️ öncelik modelinin iki eksene ayrılması ve kod atamalarının standarda bağlanması" ) {
+
+  Katman( kod: KAT-RFM-KANON, ad: "kanon-katmani", ne: "kanon maddeleri ve sözlük — .sar kaynağı",
+          kullanır: TEK-SARMAL ) {
+
+    AltKatman( kod: ALT-RFM-YASA, ad: "yasa", departman: planlama,
+               ne: "kanon madde metinlerinin yazımı ve Founder tasdiki" ) {
+
+      Adım( kod: RFM-KANON-A01, durum: beklemede, öncelik: p1, onayBekler: founder,
+        bağımlı: [],
+        referans: [ ORK-3.4, ORK-8 ],
+        rapor: "SIRALAMA HÜKMÜ — Founder 2026-08-18: Adımın raya alınması tasdik edildi ve koşum sırası vitrin üçlüsü ile site odak oturumunun arkasına konuldu, çünkü v1 kritik yoluna üçüncü bir cephe açmamak seçildi. Onay alanı bilinçli olarak yazılmamıştır, çünkü bu kapının asıl tasdiki yazılacak madde metnine verilecektir ve kapıyı şimdi kapatmak o tasdiki Onaylar panelinden düşürür. Founder ayrıca HTR-TASIYICI-MUTABAKAT-KORLUGU hatırlatıcısının bu Adıma bağlanmasına hükmetti, çünkü o hatırlatıcının tetikleyicisi kanona bir sonraki madde eklenmesini bekler ve bu Adım o maddenin kendisidir; madde yazılırken taşıyıcı alan ile belge metninin eşitliğini ölçen bekçinin yeri sorusu birlikte ele alınır.",
+        ne: "⚖️ ORK-3.4 maddesinin iki eksenli öncelik modeline revize edilmesi. Founder 2026-08-10 tarihinde önem ile aciliyetin tek kademeye sıkıştırılmasını kusur ilan etti; yeni hüküm önemi yüksek, normal ve düşük değerleriyle, aciliyeti ise ayrı bir acil bayrağıyla beyan eder ve iki eksen birbirinden bağımsızdır, çünkü düşük önemli fakat acil iş mümkündür." ) {
+        görev: [
+          "ORK-3.4 maddesinin hükmünü, gerekçesini, örneğini ve zorlama bölümünü iki eksenli modele göre yeniden yaz: önem alanı işin değerini yüksek, normal ve düşük kademeleriyle, acil bayrağı ise takvim baskısını beyan eder; küme öncelik taşıyan bütün tipler için ortak kalır ve beyanın yürütme sırasını belirlememesi hükmü aynen korunur.",
+          "ORK-8 mevsim ritüelindeki açılış basamağının öncelik kademesi cümlesini yeni modele hizala; mevsime giren her Adım bir önem kademesi alır.",
+          "Revizyonun halef-selef zincirini kararlar rafı desenine uygun kur: eski hüküm tarihçedir, dokunulmaz ve yürürlük yeni metne geçer.",
+          "Madde metni yazıldığında tasdiki Onaylar panelinden iste; kanon maddesi Founder kapısıdır ve bu Adımın kapanışı tasdiksiz ilan edilmez."
+        ]
+        kabul: [
+          "yasa/kanon/ork.sar içindeki ORK-3.4 maddesi önem ve acil eksenlerini ayrı ayrı tanımlar ve eski dört kademeli kümeyi yürürlükte göstermez.",
+          "ORK-8 maddesinin metninde öncelik kademesi ifadesi yeni modelle çelişmez.",
+          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
+          "Founder madde metnini Onaylar panelinden tasdik etmiştir; tasdiksiz kapanış yoktur."
+        ]
+        sınır: "Bu Adım yalnız kanon metnine dokunur; şema, sözlük, göç ve motor işi kendi Adımlarındadır. Öncelik beyanının değeri zorlanmaz — bir işin önemi insan hükmüdür ve makine onu uyduramaz; bu ilke eski maddeden aynen taşınır."
+      }
+
+      Adım( kod: RFM-KANON-A02, durum: beklemede, öncelik: p1, onayBekler: founder,
+        bağımlı: [],
+        referans: [ DIL-5.1, DIL-5.2 ],
+        rapor: "SIRALAMA HÜKMÜ — Founder 2026-08-18: Adımın raya alınması tasdik edildi ve koşum sırası RFM-KANON-A01 ile aynı hükme tabidir, yani vitrin üçlüsü ile site odak oturumunun arkasındadır. Onay alanı bilinçli olarak yazılmamıştır, çünkü bu kapının asıl tasdiki yazılacak madde metnine verilecektir ve kapıyı şimdi kapatmak o tasdiki Onaylar panelinden düşürür.",
+        ne: "🏷️ Düğüm kodu standardının kanona inmesi. Founder 2026-08-10 tarihinde elle yazılan kod atamalarının standartsızlığını kusur ilan etti ve standardın üç parçayı birden kapsamasına hükmetti: biçim kuralı, önek sicili ve motor kod önerici. Standart ileriye dönüktür; mevcut kodlar dokunulmaz kalır, çünkü tarih tahrif edilmez ve atıflar kırılmaz." ) {
+        görev: [
+          "Mevcut kod envanterini ölçerek biçim kuralını yaz: bugünkü fiilî desen büyük harfli ASCII ve rakamlardan oluşan, tire ile ayrılan parçalardır ve son parça çoğunlukla tip harfi ile ardışık sıradır; kural bu ölçümden türetilir, masa başında icat edilmez.",
+          "Önek sicilinin yaşayacağı yeri kararlaştır ve hükme yaz: her önek tek bir yerde ilan edilir ve ilansız önekle yeni kod doğamaz; sicilin sınıflama kaydında mı anadizinde mi yaşayacağı bu Adımın tasarım ölçümüyle belirlenir ve gerekçesiyle kayda iner.",
+          "İleriye dönüklüğü hükmün kendisine yaz: standart yalnız yeni doğan kodları bağlar ve mevcut kodların uyumsuzluğu tanı üretmez; bu sınırın mekanik kuruluşu motor Adımının işidir.",
+          "Madde metni yazıldığında tasdiki Onaylar panelinden iste."
+        ]
+        kabul: [
+          "Kanonda düğüm kodu biçimini, önek sicilini ve ileriye dönüklük sınırını birlikte tanımlayan bir madde yaşar ve dayanak zinciri Madde-0 köküne ulaşır.",
+          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
+          "Founder madde metnini Onaylar panelinden tasdik etmiştir."
+        ]
+        sınır: "Kanon maddesi kodlarının kendi standardı (DIL-5.1) bu Adımın konusu değildir ve ona dokunulmaz; bu Adım yalnız düğüm kodlarını bağlar."
+      }
+    }
+  }
+
+  Katman( kod: KAT-RFM-MOTOR, ad: "motor-katmani", ne: "şema, göç, tanı ve araç — TypeScript kaynağı",
+          kullanır: TEK-TYPESCRIPT ) {
+
+    AltKatman( kod: ALT-RFM-KODLAMA, ad: "kodlama", departman: kodlama,
+               ne: "şema değişikliği, mekanik göç ve motor desteği" ) {
+
+      Adım( kod: RFM-MOTOR-A01, durum: beklemede, öncelik: p1,
+        bağımlı: [ RFM-KANON-A01 ],
+        referans: [ ORK-3.4 ],
+        ne: "🔀 Şemanın iki eksene geçirilmesi ve yetmiş bir beyanın mekanik göçü. Founder 2026-08-10 tarihinde göç eşlemesine hükmetti: p0 önem yüksek ile acil bayrağına, p1 önem yükseğe, p2 önem normale, p3 önem düşüğe iner; göç tek turda tamdır, çünkü iki küme aynı anda yaşayamaz." ) {
+        görev: [
+          "Öncelik taşıyan bütün tiplerin şemasında öncelik enumunu kaldırıp önem (yüksek | normal | düşük) alanını ve acil (evet) bayrağını ilan et; iki dillilik sözlüğüne İngilizce karşılıkları ekle ve gömülü kanonu yeniden üret.",
+          "İki varlıktaki bütün öncelik beyanlarını Founder eşlemesiyle göçür; ölçülen envanter altı p0, otuz bir p1, yirmi beş p2 ve dokuz p3 beyanıdır.",
+          "Desene uymayan beyanları göçten önce tek tek incele; ölçümde bir adet öncelik değeri 101 görünümlü kayıt bulundu ve bu kayıt mekanik eşlemeye sokulmadan yerinde yargılanır.",
+          "Türetilmiş yüzleri aynı turda tazele; bayat yüz bırakma."
+        ]
+        kabul: [
+          "İki varlığın .sar kaynağında eski p-kademesi beyanı sıfır kez geçer; `grep -rn 'öncelik: p' --include='*.sar' <açık varlık> <kapalı varlık>` boş döner.",
+          "`siniflama` aracı Adım tipi için önem ve acil alanlarını yeni kümeleriyle gösterir ve öncelik alanını artık göstermez.",
+          "`sarmal denetle-proje` iki varlıkta ayrı ayrı sıfır hata ve sıfır uyarı verir; çekirdek ve eklenti süitleri ile iki dillilik nöbeti yeşildir."
+        ]
+        sınır: "Göç yalnız alan adı ve değer çevirisidir; hiçbir Adımın metnine, durumuna ya da tarihine dokunulmaz. Eski değerler için geçiş yedeği bırakılmaz — şema tek kaynaktır ve iki kademe kümesinin birlikte yaşaması ORK-3.4 hükmünün kendisiyle çelişir."
+      }
+
+      Adım( kod: RFM-MOTOR-A02, durum: beklemede, öncelik: p1,
+        bağımlı: [ RFM-KANON-A02 ],
+        referans: [ DIL-5.1 ],
+        ne: "🛡️ Önek sicilinin kurulması ve biçim tanısının doğması. Sicil her öneki tek yerde ilan eder; tanı ilansız önekli ya da biçim dışı YENİ kodu UYARI düzeyinde bildirir ve ileriye dönüklük sınırı mekanik kurulur." ) {
+        görev: [
+          "Kanon maddesinin seçtiği yerde önek sicilini kur ve mevcut envanterin öneklerini toptan ilan et; toptan ilan ileriye dönüklüğün en ucuz mekanik kuruluşudur, çünkü mevcut kodlar kendi ilanlı önekleriyle tanısız kalır ve yalnız sicile girmemiş yeni bir önek tanı üretir.",
+          "Biçim tanısını UYARI düzeyinde doğur; yeni tanı kimliğinin kanon maddesine bağlanması, sicile girmesi ve iki dilli metin taşıması zorunludur — doğru sıra madde, sicil, tanı ve testtir.",
+          "Tanıyı ilansız önekli kod içeren bir fikstürle sına; mevcut deponun tanısız kaldığını iki varlıkta ölç."
+        ]
+        kabul: [
+          "İlansız önekle doğan kod fikstür projede UYARI düzeyinde tanı üretir.",
+          "`sarmal denetle-proje` iki varlıkta sıfır hata ve sıfır uyarı vermeye devam eder; mevcut hiçbir kod tanı üretmez.",
+          "İki dillilik nöbeti yeşildir; tanı metni iki dilde yaşar."
+        ]
+        sınır: "Tanı hiçbir koşulda HATA düzeyine çıkarılmaz; standart ileriye dönüktür ve mevcut kaynağı kırmızıya boyamak Founder hükmünün tersidir."
+      }
+
+      Adım( kod: RFM-MOTOR-A03, durum: beklemede, öncelik: p2,
+        bağımlı: [ RFM-MOTOR-A02 ],
+        referans: [ DIL-5.1 ],
+        ne: "🧮 Kod önerici aracın doğması: kapsayıcı verildiğinde araç önek sicilini ve mevcut sırayı okuyup sonraki boş kodu önerir; elle sıra sayma biter." ) {
+        görev: [
+          "CLI ve MCP yüzeylerinde, verilen kapsayıcı (örneğin bir AltKatman kodu) için sonraki boş kodu öneren bir komut kur; öneri önek sicilinden ve kimlik indeksinden okunur, dosya taranmaz.",
+          "Çakışma güvencesini fikstürle sına: araç var olan bir kodu asla önermez ve önerdiği kod biçim kuralına uyar.",
+          "Aracı öğretim yüzeylerine tanıt; karşılama kartına ya da ilgili belge yüzüne tek satırlık kullanım örneği iner."
+        ]
+        kabul: [
+          "Araç gerçek bir kapsayıcı için sonraki boş kodu doğru önerir ve öneri biçim tanısından geçer.",
+          "Fikstürde var olan kodla çakışan öneri sıfırdır.",
+          "`sarmal denetle-proje` iki varlıkta sıfır hata ve sıfır uyarı verir; süitler yeşildir."
+        ]
+        sınır: "Araç öneri verir, dayatmaz; kodu kaynağa yazan el insanın ya da üretici ajanın elidir ve araç hiçbir dosyayı kendiliğinden değiştirmez."
+      }
+    }
+  }
+}

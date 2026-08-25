@@ -1,0 +1,281 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/cokdillilik.sar — 🌍 İNGİLİZCE YÜZEY (yayın kapısı · v1 kritik yolu)
+//
+//   Founder hükmü 2026-07-28: "A'yı şimdi yapalım, B'yi versiyon 2'ye erteleyelim."
+//
+//   SEÇENEK A yürürlüktedir: `.sar` KAYNAĞI Türkçe anahtar kelimelerle yazılmaya
+//   devam eder; İngilizce yalnız panel, ipucu, tamamlama, tanı, öğretim ve belge
+//   YÜZEYİNDE görünür. Diskte tek gerçek kalır, dolayısıyla sapma yapısal olarak
+//   imkânsızdır ve anayasa rütbesindeki DIL-1 hükmüyle çatışma doğmaz.
+//
+//   SEÇENEK B — geliştiricinin `.sar` dosyasını İngilizce anahtar kelimelerle
+//   YAZABİLMESİ — v2'ye ertelendi. Ertelemenin gerekçesi iki katmanlıdır: takvim
+//   olarak ayrıştırıcıya eşanlamlı tanıma ve biçimlendiriciye dil tercihi eklemek
+//   on güne sığmaz; yönetişim olarak da B, anayasa rütbesindeki DIL-1 hükmünü
+//   deler ve o hüküm aynı turda yeniden yazılmadan B uygulanamaz.
+//
+//   BU İŞ ERTELENEMEZ. Yayın kapısı Sarmal'ın İngilizce dil desteği olmadan
+//   yayınlanmasını engeller; bu şart bir kanon maddesi değil bir plan koşuludur ve
+//   Marketplace yayın Adımlarına `bağımlı:` kenarıyla bağlanmıştır. Minimum-güçlü
+//   ilk çıkış kapısının üç şartından biri de doğrudan budur: her iki varlıkta
+//   drift-sıfır denetim, en az bir gerçek dış projenin uçtan uca yönetilmesi ve
+//   İngilizce okuma yüzeyinin hazır olması. Yani bu Blok v1'in kritik yolundadır.
+//
+//   ⚠️ FOUNDER'A NOT — B'NİN MALİYET TAHMİNİ DEĞİŞTİ (ölçüm 2026-07-28, tur sonu).
+//   B'yi ertelerken "ayrıştırıcıya eşanlamlı tanıma eklemek pahalıdır" gerekçesini
+//   kullanmıştım. Bağımsız ölçüm bunu ZAYIFLATTI ve dürüstlük gereği buraya yazılıyor:
+//   ① Gramerde sabit yalnız üç sözcük vardır (`çağır`, `Tip`, `Kural`) artı üç işleç;
+//      belirteçleyicide Türkçe anahtar kelime tablosu YOKTUR, adlar Unicode harf
+//      sınıfıyla tanınır. ② Takma-ad mekanizması ZATEN ÇALIŞMAKTADIR: `emoji-yazim.ts`
+//      yirmi yedi takma ad taşır ve belirteçleyici kaynakta gördüğü emojiyi kanonik
+//      Türkçe ada normalleştirir — yani `🍃( kod: X )` bugün Adım olarak tanınmaktadır.
+//      İngilizce takma ad tablosu bu mekanizmanın birebir ikizidir ve yeni mimari
+//      istemez. ③ Motorun asıl engeli tip adlarına dallanan yüz yirmi iki karşılaştırma
+//      noktasıdır, ki orası kullanıcının hiç görmediği yerdir.
+//   Buna karşılık erteleme kararının İKİNCİ ve daha güçlü gerekçesi ayakta durur:
+//   B'nin YAZMA ayağı yayımlandıktan sonra GERİ ALINAMAZ bir sözleşmedir. Dışarıda
+//   İngilizce `.sar` dosyaları doğduktan sonra takma-ad tablosu kaldırılamaz; ayrıca
+//   anayasa rütbesindeki DIL-1 hükmü aynı turda yeniden yazılmadan B uygulanamaz.
+//   Ölçüm B'yi UCUZLAŞTIRDI fakat GERİ DÖNÜLEBİLİR yapmadı — karar Founder'ındır ve
+//   bu not, kararın yeni ölçümle birlikte gözden geçirilebilmesi için buradadır.
+//
+//   ZEMİN ÖLÇÜMÜ: nitelik/devir/cokdillilik_zemini.md (2026-08-10 geneldurum sökümüyle taşındı)
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Sarmal'ın bütün okuma yüzeylerini İngilizceye açmak ve yayın kapısını geçmek.
+Yabancı geliştirici panelde, ipucunda, tanıda ve öğretim kartında Türkçe görmez.
+
+## Kapsam
+Sözlük doldurma, dağınık tanı metinlerinin toplanması, tanı ve öneri metinlerinin
+çevirisi, eklenti manifestosunun yerelleştirilmesi, araç açıklamaları, öğretim
+şablonu ve İngilizce giriş belgesi. Kaynak dosyanın kendisi kapsam DIŞIDIR.
+
+## Sonuç
+Dil tercihi İngilizce olan bir kullanıcı Sarmal'ı uçtan uca Türkçe görmeden kullanır;
+`.sar` dosyaları Türkçe kalır ve motor tek gerçekle çalışmaya devam eder.
+|<--
+
+Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
+  ne: "🌍 yayın kapısını geçiren İngilizce okuma yüzeyi — kaynak Türkçe kalır, görünen her şey çevrilir" ) {
+
+  Katman( kod: CDL-SOZLUK, kullanır: TAKIM-CEKIRDEK, ad: "sözlük ve tanı metinleri",
+    ne: "📖 Çeviri altyapısının doldurulması ve motor metinlerinin toplanması" ) {
+
+    AltKatman( kod: CDL-SOZLUK-K1, ad: "sözlük", departman: kodlama,
+      ne: "kanonik evrenin İngilizce karşılıkları" ) {
+
+      Adım( kod: CDL-A01, durum: tamamlandı, bağımlı: [],
+        koşu:     "2026-07-29 · KAPANIŞ. Adımın iki yarısı da ölçülerek kapandı. AD KAPSAMASI 348/348 (%100) — 101 tip · 19 kenar · 111 alan · 117 enum değeri; brifingdeki 347 tarihsel ölçümdür, kanon o günden bu yana bir girdi büyümüş ve sözlük boşluk bırakmamıştır. DÜZYAZI KAPSAMASI %0'dan %100'e çıktı: 155 kayıt (widgetNe 101/101 · kenarNe 19/19 · semaKural 35/35), 2 456 Türkçe kelimenin karşılığı 3 720 İngilizce kelime. Çeviri kanon kaydına DEĞİL sözlüğe yazıldı ve gerekçesi üç katlıdır: sözlük zaten tek çeviri kapısıdır ve çeviriyi ikiye bölmek ikinci bir bayat kaynak doğururdu; sözlük dört dil ilan eder, dolayısıyla azerice ve arapça geldiğinde aynı anahtarın altına hane eklemek yeter; ve kanon kaydı üretim yoluyla eklentiye gömülü kopyalanır, oraya yazmak üretilmiş kopyanın yenilenmesini gerektirirdi. NÖBET 10 hükümden 15 hükme çıktı ve İKİ mutasyonla kanıtlandı: İngilizce karşılığı olmayan bir şema kuralı eklendiğinde süit kırmızıya döndü; daha önemlisi İngilizce hanesine Türkçe metnin birebir kopyası yazıldığında da kırmızıya döndü — yani sayıyı yeşil gösteren bir kopyala-yapıştır çeviri bu nöbetten geçemez. Emin olunamayan altı terim uydurulmadı, sözlüğün `belirsiz` defterine gerekçesiyle işlendi ve nöbet bu işaretlerin gerçek anahtarlara baktığını ölçüyor; en ağırı `Meyve` tipinin İngilizce adının `Artifact` olması ve metaforun düşüp düşmeyeceğinin Founder hükmü olmasıdır. ÖLÇÜMLER: çekirdek süiti 894/894 (taban 889'du, beş hüküm eklendi, hiçbir sayı düşmedi) · her iki varlığın denetimi ✖0 ⚠0 · tür denetimi hatasız. DÜRÜST SINIR: İngilizce düzyazı sözlükte HAZIR fakat hiçbir yüzeye BAĞLANMAMIŞTIR — üstüne gelince açılan açıklama, otomatik tamamlama ve panel bugün hâlâ Türkçe basar. Bağlama CDL-A04'ün işidir ve o Adımın görev maddesine yazılmıştır; bu Adımın sınırı zaten 'yalnız sözlüğe yazar' demektedir.",
+        referans: [ DIL-1, YUZ-1.2 ],
+        üretir:   [ VR-CDL-SOZLUK, KOD-SNM-SOZLUK-KAPSAMA ],
+        ne:       "📖 Çeviri sözlüğünü kanonik evrenin tamamına doldurmak. Ölçülmüş zemin şudur: altyapı zaten yazılıdır ve tektir — `cekirdek/src/cevir.ts` üç sözlüğü tek kapıdan sunar, `oz/ceviri/dil-sozlugu.json` dört dil ilan eder. Eksik olan altyapı değil DOLDURMADIR ve boşluk sanılandan büyüktür: sözlükte otuz sekiz girdi vardır, hedef ise üç yüz kırk yedidir — yani doluluk yüzde on birdir. Hedefin dağılımı şudur: yüz bir tip, on dokuz kenar tipi, yüz alan adı ve yüz yirmi yedi enum değeri." ) {
+        görev:    [
+          "Eksik üç yüz dokuz girdiyi sözlüğe yaz: yetmiş dört tip adı, seksen dokuz alan adı, on dokuz kenar tipi ve yüz yirmi yedi enum değeri. Karşılıklar birebir sözlük çevirisi DEĞİL, yazılım dünyasının yerleşik terimleri olacaktır; `kabul` için 'acceptance criteria', `sınır` için 'scope boundary' gibi.",
+          "KANONUN KENDİ DÜZYAZISINI DA HESABA KAT. Ölçüm şudur: `oz/siniflama/kayit.json` dosyası iki bin dört yüz elli altı kelimelik kullanıcıya görünen Türkçe düzyazı taşır — yüz bir tipin `ne` alanı, on dokuz kenarın `ne` alanı ve otuz beş şemanın `kural` cümlesi. Bu metinler üstüne gelince açılan açıklamada, otomatik tamamlamada ve panelde GÖRÜNÜR. Yani ad çevirmek tek başına yetmez; kullanıcının okuduğu cümle çevrilmezse yabancı geliştirici İngilizce bir ad ile Türkçe bir açıklama görür ve bu, hiç çevirmemekten daha kötüdür.",
+          "Zemin belgesinin dördüncü bölümündeki taslak sözlüğü başlangıç al, fakat körü körüne kopyalama: belgede emin olunmayan karşılıklar işaretlidir ve onlar tek tek kararlaştırılır.",
+          "Sözlüğün kanonun tamamını kapsadığını ÖLÇEN bir nöbet yaz. Kanona yeni bir tip ya da alan eklendiğinde sözlükte karşılığı yoksa süit kırmızıya döner; böylece sözlük bir daha asla sessizce bayatlayamaz.",
+          "Doldurmadan önce ve sonra kapsama oranını ölç ve yaz; tahmin edilen değil sayılan oran kaydedilir."
+        ]
+        kabul: [
+          "Kanondaki her tip, her alan, her kenar tipi ve her enum değerinin İngilizce karşılığı sözlükte vardır; kapsama oranı yüzde yüzdür ve bu sayılarak gösterilmiştir. Başlangıç ölçümü otuz sekiz bölü üç yüz kırk yedidir ve kapanış ölçümü aynı yöntemle alınır.",
+          "Kanonun kendi düzyazısı da çevrilmiştir: tip ve kenar tanımları ile şema kuralları İngilizce karşılığını taşır. İngilizce ad ile Türkçe açıklamanın yan yana göründüğü tek bir yüzey kalmamıştır.",
+          "Sözlüğün kanonu tam kapsadığı bir nöbetle sürekli ölçülür ve nöbet mutasyonla kanıtlanmıştır: kanona sözlükte karşılığı olmayan bir tip eklendiğinde süit kırmızıya döner.",
+          "Hiçbir `.sar` kaynak dosyası değişmemiştir; bu Adım yalnız sözlüğe yazar.",
+          "İki varlığın denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım yalnız SÖZLÜĞE yazar. Ayrıştırıcı, biçimlendirici ve motorun tip-adı dallanmaları DEĞİŞMEZ — onlar seçenek B'nin işidir ve v2'ye ertelenmiştir. Türkçe karşılıklar silinmez ya da yeniden adlandırılmaz; İngilizce PARALEL yüzey olarak eklenir."
+      }
+    }
+
+    AltKatman( kod: CDL-SOZLUK-K2, ad: "tanı metinleri", departman: kodlama,
+      ne: "motorun konuştuğu her cümlenin toplanması ve çevrilmesi" ) {
+
+      Adım( kod: CDL-A02, durum: tamamlandı, bağımlı: [ CDL-A01 ],
+        koşu:     "2026-07-29 · KAPANIŞ. SAYIM: motor 180 tanı üretiyor — 171'i kaynakta sabit yazılı, 9'u kanonun `zorunluKenarlar` verisinden çalışma anında türüyor. Toplama oranı taşımadan önce sabit kümede 70/171 (%40,9), yüz seksenlik ölçekte 79/180 (%43,9) idi; kapanışta 170/171 ve 179/180 (%99,4) oldu. Tanı nesnesine gömülü kalan kullanıcı cümlesi sayısı 230'dan SIFIRA indi. Dağınıklığın haritası da ölçüldü: `denetci.ts` 98 dizgi · `dogrulayici.ts` 64 · `kuralci.ts` 40 · `rbac.ts` 9 · `dag.ts` 9 · `denetim.ts` 5 · `tema.ts` 4 · `gateway.ts` 1. TAŞIMA: mevcut desen bozulmadı, yanına ikinci hane açıldı — yeni kanonun kataloğu olduğu gibi durur, önceki kanonun cümleleri `ONCEKI_TANI_METINLERI` kataloğuna girdi. Ayrımın gerekçesi ölçülmüş bir olgudur: yeni kanonda düzey sicilin terfi kademesinden okunur, önceki kümede ise aynı tanı farklı kapılarda farklı düzeyle üretilebildiği için düzeyi üretici seçmek zorundadır. HİÇBİR METİN DEĞİŞMEDİ ve bu iki bağımsız yolla doğrulandı: taşımadan önce motorun bütün mesaj ve öneri değerlerinden 749 tekil düz metin parçası çıkarıldı, taşımadan sonra 749'unun tamamı kaynakta birebir bulundu ve kaybolan parça sayısı sıfır çıktı; ayrıca süitin tanı cümlelerini birebir iddia eden hükümlerinin hiçbiri kırılmadı. NÖBET beş hüküm koşturuyor ve en değerlisi şudur: kaynaktaki her mesaj ve öneri dizgisi için onu saran nesne çözülür, nesne bir düzey taşıyorsa — yani tanı nesnesiyse — süit kırmızıya döner. İKİ mutasyonla kanıtlandı: `döngüsel-bağımlılık` cümlesi `dag.ts` içine geri gömüldüğünde nöbet iki satırı adıyla gösterdi; sicile metinsiz bir tanı kimliği eklendiğinde kapsama hükmü kırmızıya döndü. BEYANLI TEK İSTİSNA `söz-dizim`'dir: metni bir şablon değil, belirteçleyici ile ayrıştırıcının fırlattığı on dört söz dizimi hatasının kendi cümlesidir ve kataloğa taşımak en alt katmanı en üst katmana bağımlı kılardı. İstisnanın TEK kaldığını ayrı bir hüküm ölçer, yani liste sessizce büyüyemez. ÖLÇÜMLER: çekirdek süiti 899/899 (taban 894'tü, beş hüküm eklendi, hiçbir sayı düşmedi) · denetim ✖0 · kapalı varlık ✖0 ⚠0 · tür denetimi hatasız. DEVREDEN İKİ SORU Founder hükmü bekliyor: birincisi `söz-dizim` cümlelerinin nereye taşınacağı — üç seçenek ölçülüp yazıldı, karar verilmedi; ikincisi tanı OLMAYAN kullanıcı metinleridir (`dongu.ts` on beş, `sozlesme.ts` dört, `rbac.ts` beş cümle) — bunlar `Bulgu` ve `İhlal` kayıtlarıdır, bu Adımın kapsamı dışındadır ve nöbet onları bilinçli olarak ölçmez, fakat ŞEF çıktısında kullanıcı onları da okur.",
+        referans: [ YUZ-1.2, YAS-4 ],
+        üretir:   [ KOD-TANI-METINLERI, KOD-SNM-TANI-TEK-KAYNAK ],
+        ne:       "🧹 Dağınık tanı metinlerini tek kaynağa toplamak. Ölçülmüş zemin şudur: motor yüz seksen tanı üretiyor ve bunların yalnız yetmişi `tani-metinleri.ts` desenine toplanmış; kalan yüz biri motor dosyalarının içine dağılmış durumda. Dağınık metin çevrilemez, çünkü çevrilecek yerin kendisi belli değildir." ) {
+        görev:    [
+          "Yüz bir dağınık tanı metnini ve önerisini mevcut `tani-metinleri.ts` desenine topla. Bu bir ÇEVİRİ işi değil, TOPLAMA işidir; metinler Türkçe hâlleriyle taşınır ve anlamları değişmez.",
+          "Toplama sırasında hiçbir tanının metni iyileştirilmeye çalışılmasın; metin iyileştirme ayrı bir iştir ve toplama turuna karıştırılırsa hangi değişikliğin neyi bozduğu izlenemez.",
+          "Bütün tanı metinlerinin tek kaynaktan geldiğini ölçen bir nöbet yaz: motor dosyalarında gömülü kullanıcı metni kalmışsa süit kırmızıya dönsün."
+        ]
+        kabul: [
+          "Motorun ürettiği yüz seksen tanının metni ve önerisi tek kaynaktadır; motor dosyalarında gömülü kullanıcı metni kalmamıştır ve bu bir aramayla ölçülmüştür.",
+          "Hiçbir tanının Türkçe metni anlamca değişmemiştir; toplama öncesi ve sonrası çıktılar karşılaştırılmış ve birebir aynı bulunmuştur.",
+          "Tek kaynak kuralı nöbetle korunur ve nöbet mutasyonla kanıtlanmıştır.",
+          "Çekirdek süiti yeşildir; iki varlığın denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım metinleri TAŞIR, çevirmez ve iyileştirmez. Çeviri CDL-A03'ün işidir. Tanıların düzeyi, kodu ve tetiklenme koşulu değişmez."
+      }
+
+      Adım( kod: CDL-A03, durum: tamamlandı, bağımlı: [ CDL-A02 ],
+        koşu:     "2026-08-02 · KAPANIŞ. Üretici temiz bağlamlı bir Codex koşumuydu ve kontrolcü her sayısal iddiayı kendi araçlarıyla yeniden ölçtü. İki katalog yüz yetmiş tanının tamamında İngilizce hane kazandı: yeni kanon kataloğu ile önceki gövde kataloğu ayrı ayrı, toplam yüz yetmiş mesaj ve yüz yetmiş öneri. Kontrolcü sayımı birebir tuttu: Türkçe küme 170, İngilizce küme 170, eksik 0, fazla 0 ve Türkçe-kopya 0. Dil kapısı cevir.ts desenine bağlandı ve Türkçe metinlerin tek baytı değişmedi. NÖBET kuruldu: tani-metni-ceviri-kapsama.test.ts beş hüküm koşturur ve küme paritesini, alan paritesini ve İngilizce haneye birebir Türkçe kopya yazılmasını ölçer. Nöbet İKİ MUTASYONLA kanıtlandı: İngilizce bir kayıt silindiğinde süit kırmızıya döndü; İngilizce haneye Türkçe metin birebir yazıldığında sahte-çeviri hükmü alanı adıyla gösterdi; iki mutasyon da geri alındı ve dosyanın sha256 özeti başlangıç değeriyle birebir aynı ölçüldü. BEYANLI SAPMA: kabul metni yüz seksen tanı der, katalogda ise yüz yetmiş kimlik yaşar. Aradaki on kimliğin dokuzu kayit.json içindeki zorunluKenarlar verisinden çalışma anında türür ve biri söz-dizim beyanlı istisnadır; bu dağılım CDL-A02 kapanış kaydıyla birebir örtüşür. On kimliğin İngilizce yüzü katalog işi değil bağlama işidir ve CDL-A04 kapsamına şerh olarak devredilmiştir. ÖLÇÜMLER (araç adlarıyla): çekirdek tür denetimi sıfır hata (npx tsc --noEmit) · çekirdek süiti 937/937 (npm test) · eklenti tür denetimi sıfır hata (çekirdeğin tsc ikilisiyle) · eklenti süiti 373/373 · _Sarmal denetimi filtresiz sıfır hata ve sıfır uyarı (yetim-meyve uyarısı bu kapanışta KOD-SNM-TANI-CEVIRI ilanıyla kapatıldı) · kapalı varlık denetimi sıfır hata ve sıfır uyarı. Depo kökü denetimi giriş-dosyası-yok hatası basar; bu yapısaldır, bu turdan önce de vardı ve public depo ayrı kurulacağı için şerh olarak kayda geçmiştir.",
+        referans: [ YUZ-1.2, DIL-1 ],
+        üretir:   [ KOD-TANI-METINLERI, KOD-SNM-TANI-CEVIRI ],
+        ne:       "🌍 Yüz seksen tanı metnini ve önerisini İngilizceye çevirmek. Tanı metinleri Sarmal'ın kullanıcıyla en çok konuştuğu yerdir; bir tanı yalnız neyin yanlış olduğunu değil, nasıl düzeltileceğini de söyler ve bu ikinci cümle çeviride en kolay kaybedilen şeydir." ) {
+        görev:    [
+          "İki yüz kırk `mesaj:` ve yüz doksan dokuz `oneri:` metnini çevir. Öneri cümleleri yapıştır-düzelt örnekleri taşıyor; örneklerin içindeki `.sar` kodu ÇEVRİLMEZ, çünkü kaynak Türkçe kalmaktadır. Yani cümle İngilizce, örnek Türkçedir ve bu bilinçli bir karmadır.",
+          "Çeviri tonunu koru. Sarmal'ın tanıları suçlamaz, ölçer ve yol gösterir; İngilizce karşılıkları da öyle olmalıdır.",
+          "Bir tanının Türkçe ve İngilizce metinlerinin AYNI tanı kümesini kapsadığını ölçen bir nöbet yaz; biri ötekinden eksik kalırsa süit kırmızıya dönsün."
+        ]
+        kabul: [
+          "Yüz seksen tanının metni ve önerisi İngilizce karşılığını taşır; eksik çeviri sayısı sıfırdır ve sayılarak gösterilmiştir.",
+          "Öneri örneklerindeki `.sar` kodu Türkçe kalmıştır; İngilizce cümle içinde Türkçe örnek bulunması bilinçlidir ve belgede açıklanmıştır.",
+          "İki dilin aynı tanı kümesini kapsadığı nöbetle ölçülür ve nöbet mutasyonla kanıtlanmıştır.",
+          "Çekirdek süiti yeşildir; iki varlığın denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım yalnız ÇEVİRİR. Tanı ekleme, kaldırma, düzey değiştirme ve metin iyileştirme bu Adımın dışındadır."
+      }
+    }
+  }
+
+  Katman( kod: CDL-YUZEY, kullanır: TAKIM-EKLENTI, ad: "eklenti ve araç yüzeyi",
+    ne: "🖥️ Kullanıcının doğrudan gördüğü yüzeylerin yerelleştirilmesi" ) {
+
+    AltKatman( kod: CDL-YUZEY-K1, ad: "eklenti", departman: kodlama,
+      ne: "manifesto ve kaynak metinleri" ) {
+
+      Adım( 
+              kod: CDL-A04, 
+              durum: tamamlandı, 
+              bağımlı: [ CDL-A01 ],
+              koşu:     "2026-08-03 · FOUNDER CANLI DOĞRULAMASI (kısmî geçti + bir bulgu): Founder dili en yaptı ve panellerin İngilizceye döndüğünü gözüyle doğruladı; fakat tip adlarının (Katman, AltKatman, Adım, Blok) yüzey satırlarında hâlâ Türkçe basıldığını yakaladı. Teşhis: karşılıklar CDL-A01 sözlüğünün widget hanesinde hazırdır, yüzeyler tip adını veriden ham basıyor — bağlama eksiği. Düzeltme, belge üreticisi çekirdeği bıraktığı an dar turda koşulacak ve kapanış Founder'ın ikinci bakışına bağlıdır. Aynı oturumda Founder kapsamı genişletti ve yeni hüküm CDL-A08 Adımı olarak plana indi: kaynak dosyanın İÇİNDE de dil İngilizceyken tip adları dekorasyonla İngilizce GÖRÜNecek; yalnız görüntüleme, yazma tanıma Seçenek B olarak v2 kilidinde. ÖNCEKİ ARA KAYIT — 2026-08-02: ONAY TARİHÇESİ: 30 Temmuz kaydı Adımın AÇILIŞ onayıydı; kapanış onayı ayrı bir kapıdır ve alanda bayat durursa Posta Kutusu kapıyı göremez (bu bugün canlı yaşandı), bu yüzden alan kaldırıldı ve kapı yeniden açıldı. (üretim bitti, Founder gözü bekleniyor — kabul metni gereği tamamlandı İLAN EDİLMEDİ). Üretici Codex üç koşumda teslim etti; ikisi ağ kesintisiyle düştü ve iş kaldığı yerden ölçülmüş devirle sürdürüldü — zarar tek tür hatasıydı ve kapanış koşumunda kapandı. ÜRETİLEN: manifest seksen beş anahtarla package.nls.json ile package.nls.tr.json çiftine göçtü ve iki küme birebir eşittir; eklenti/src/dil.ts dil kaynağının TEK kapısıdır (vscode.env.language yalnız orada okunur, sarmal.dil ayarı otomatik/tr/en kaçış kapısıdır); sözlük düzyazısı hover, tamamlama ve panellere bağlandı; tanı nesnesi üretim anında iki dilli metin çifti taşır (çekirdek genişlemesi: tani.ts, dogrulayici.ts {dil} seçeneği, taniDilineCevir yayın sınırı — gerekçesi üretici raporunda beyanlıdır: sonradan dize çevirmek bağlam ve öneriyi kaybediyordu). CDL-A03'ün devrettiği ŞERH KAPANDI: zorunluKenarlar'dan türeyen dokuz tanının İngilizce yüzü elle tablo kurulmadan sözlükten türetildi ve dokuz sınamayla ölçüldü; söz-dizim istisnasına gerek kalmadı. Onay yüzeyinin bayt-kilidi nöbeti iki dosya için bilinçli güncellendi (hatirlaticilar.ts ve bildirimler.ts — yalnız kullanıcı metinleri dil katmanına taşındı, davranış değişmedi; gerekçe sınamanın kendi açıklamasına yazıldı) ve nöbet gevşetilmedi. KONTROLCÜ ÖLÇÜMLERİ (araç adlarıyla): manifest ham Türkçe dize 0 (desenli arama) · gömülü kullanıcı metni 0 (AST ölçümü) · dil tekliği dil.ts dışında 0 · etkin dil en iken mesajın TANI_METINLERI_EN'den geldiği el sınamasıyla kanıtlı · eklenti süiti 373/373 · çekirdek süiti 940/940 · iki tür denetimi sıfır · iki varlık denetimi ✖0 ⚠0 (dört yetim-meyve bu kayıtla ilan edildi). DIŞARIDA KALAN: canlı pencerede otomatik/tr/en geçişlerinin gözle doğrulanması ve Founder onayı.",
+          referans: [ YUZ-1.2, YUZ-3.3 ],
+          üretir:   [ KOD-EKL-EKLENTI, KOD-EKL-DIL, KOD-EKL-NLS, KOD-SNM-DIL-KUR ],
+          ne:       "🖥️ Eklenti manifestosunu yerelleştirmeye göçürmek ve kaynaktaki gömülü metinleri toplamak. Ölçülmüş zemin şudur: manifestoda hiç yerelleştirme dosyası yoktur; görünüş adları, komut başlıkları ve ayar açıklamaları doğrudan Türkçe yazılıdır. Kaynak tarafında `yuzey-metinleri.ts` deseni kurulmuştur fakat kapsamı tam değildir." ) {
+          görev:    [
+          "DİL KAYNAĞI VS CODE'UN GÖRÜNTÜ DİLİDİR. Founder hükmü 2026-07-29: geliştirici VS Code'u Türkçe kullanıyorsa Sarmal da Türkçe konuşur, İngilizce kullanıyorsa Sarmal da İngilizce konuşur. Ölçülmüş zemin şudur: `vscode.env.language` bugün eklentinin HİÇBİR yerinde kullanılmıyor. Manifesto tarafında bu iş kendiliğinden çözülür, çünkü VS Code'un kendi yerelleştirme mekanizması zaten görüntü dilini izler; kaynak tarafında ise dil AÇIKÇA `vscode.env.language` değerinden türetilir ve motor çağrılarına o dil geçirilir. İkinci bir dil ayarı, ikinci bir varsayılan ya da elle seçilen bir dil çizelgesi KURULMAZ.",
+          "KAÇIŞ KAPISI OLARAK tek bir ayar bulunsun: `sarmal.dil` değerleri `otomatik` (varsayılan · VS Code'u izler), `tr` ve `en`. Gerekçesi şudur: bir geliştirici VS Code'u İngilizce kullanıp Sarmal'ı Türkçe okumak isteyebilir ve bunun tersi de doğrudur. Varsayılan `otomatik` olduğu sürece bu ayar hükmü bozmaz, yalnız istisnayı mümkün kılar.",
+          "Manifestodaki bütün kullanıcı-görünür dizeleri yerelleştirme dosyasına taşı ve İngilizce karşılıklarını yaz. Görünüş adları, komut başlıkları, ayar açıklamaları ve kapsayıcı adları bu kapsamdadır.",
+          "SÖZLÜKTEKİ İNGİLİZCE DÜZYAZIYI YÜZEYE BAĞLA. Ölçülmüş zemin şudur: CDL-A01 kanonun yüz elli beş açıklama kaydını İngilizceye çevirdi ve sözlükte hazır duruyor, fakat hiçbir yüzeye bağlanmadı. Üstüne gelince açılan açıklama, otomatik tamamlama ve panel bugün hâlâ Türkçe basıyor. Bu bağlama olmadan çeviri görünmez kalır.",
+          "Eklenti kaynağında gömülü kalan kullanıcı metinlerini `yuzey-metinleri.ts` altında topla; toplama bitince gömülü metin sayısı ölçülüp sıfır olduğu gösterilir.",
+          "Beş panelin adları da bu turda çevrilir. Panel adlarının Türkçe ve İngilizce karşılıkları tek kaynaktan gelir; iki yerde iki ad yaşayamaz."
+        ]
+        kabul: [
+          "Manifestoda kullanıcıya görünen hiçbir dize doğrudan yazılı değildir; hepsi yerelleştirme dosyasından gelir ve bu bir aramayla ölçülmüştür.",
+          "Eklenti kaynağında gömülü kullanıcı metni kalmamıştır; sayı sıfırdır ve sayılarak gösterilmiştir.",
+          "VS Code görüntü dili İngilizce olan bir kullanıcı beş panelin hiçbirinde Türkçe görmez; görüntü dili Türkçe olan bir kullanıcı ise hiçbir yerde İngilizce görmez. İkisi de canlı pencerede gözle doğrulanmıştır.",
+          "Dilin kaynağı TEKTİR ve `vscode.env.language` değeridir; ikinci bir dil kaynağı aramayla ölçülüp bulunmadığı gösterilmiştir. `sarmal.dil` ayarı yalnız kaçış kapısıdır ve varsayılanı `otomatik`tir.",
+          "Kanonun İngilizce açıklama düzyazısı gerçekten GÖRÜNÜR: üstüne gelince açılan açıklamada İngilizce ad ile Türkçe açıklamanın yan yana durduğu tek bir yüzey kalmamıştır ve bu gözle doğrulanmıştır.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; onay, İngilizce yüzeyin canlı görünümde gözle doğrulanmasıdır."
+        ]
+        sınır: "Bu Adım metinleri TAŞIR ve ÇEVİRİR; hiçbir panelin davranışı, hangi kayıtları gösterdiği ya da simgesi değişmez."
+      }
+
+      Adım( kod: CDL-A08, durum: tamamlandı, bağımlı: [ CDL-A04 ],
+        referans: [ DIL-1, YUZ-1.2 ],
+        üretir:   [ KOD-EKL-GORSEL-ESAD, KOD-SNM-GORSEL-ESAD ],
+        koşu:     "2026-08-03 · KAPANIŞ. Founder aynı gün onayını verdi ve Adım kapandı; canlı pencere doğrulaması Founder hükmüyle kabul edilmiştir. Üretici Codex dekorasyon katmanını kurdu: dil en iken açık .sar editöründe 101 tip adı sözlüğün widget hanesinden İngilizce görünür, imleç satırındayken gerçek Türkçe metin belirir, tr iken dekorasyon türü ve dinleyici hiç kurulmaz. Founder'ın panel bulgusu da kapandı: yol haritası, hover, anahat, gezinme, imza, tamamlama ve ortak yüzey metinlerindeki ham tip basımları sözlük kapısına bağlandı; ikinci ad çizelgesi doğmadı. DEĞİŞMEZLİK KANITLI: örnek dosyanın sha256 özeti üç durumda (önce, en kararı, tr kararı) birebir aynıdır — en 29 dekorasyon, tr 0 üretir; dosyaya tek bayt yazılmaz. Nöbet dört hükümle kuruldu ve sözlük kapısını kimlik işleviyle değiştiren mutasyon Layer beklentisini düşürerek kanıtlandı. Üretici plan yasağına uyup meyve ilanını kontrolcüye devretti; ilan bu kayıtla yapıldı ve varlık kapısı yeniden ölçüldü. ÖLÇÜMLER: iki tsc sıfır · eklenti 381/381 (377 taban + 4 nöbet) · çekirdek 964/964 · build 0 ve paket dumanı 1/1 · iki varlık denetimi ✖0 ⚠0. Kalan tek şey Founder'ın canlı bakışıdır: dil en → editörde Layer( görünümü.",
+        ne:       "🪞 Kaynak içi görsel eşadlar. Founder hükmü 2026-08-03: yabancı geliştirici dil olarak İngilizceyi seçtiğinde tip adlarını yalnız panellerde değil kaynak dosyanın İÇİNDE de İngilizce görmelidir — Katman yazan yerde Layer okunur. Kapsam YALNIZ GÖRÜNTÜLEMEDİR: dosya diskte Türkçe kalır, git Türkçe görür, motor Türkçe denetler; çeviri editör dekorasyonuyla yüzeyde yaşar ve imleç satıra girince gerçek metin görünür. Yazma tanıma bilinçli olarak dışarıdadır; o Seçenek B'dir ve v2 kilidindedir." ) {
+        görev:    [
+          "Etkin dil en iken açık .sar editöründe tip adlarını (öncelik: 101 widget adı) sözlüğün widget hanesinden İngilizce gösteren dekorasyon katmanını kur; imleç satırındayken gerçek metin görünür, kopyalanan metin her zaman diskteki Türkçe metindir.",
+          "Aynı kapıdan panel, yol haritası ve hover satırlarındaki HAM tip adı basımlarını da sözlük kapısından geçir — Founder'ın canlı bulgusu buydu; gösterim etiketi tek kaynaktan gelir, ikinci bir ad çizelgesi doğmaz.",
+          "Dil tr ya da otomatik-Türkçe iken dekorasyon tamamen kapalıdır ve hiçbir maliyet üretmez; dil geçişinde açık editörler yeniden giydirilir.",
+          "Nöbet yaz: dil en iken örnek bir belgede tip adlarının İngilizce etikete bağlandığını, tr iken dekorasyonun hiç kurulmadığını ve diskteki metnin her iki durumda da bayt-bayt değişmediğini ölç; mutasyonla kanıtla."
+        ]
+        kabul: [
+          "Dil en iken açık .sar dosyasında Katman satırı Layer olarak görünür ve imleç satıra girince gerçek Türkçe metin okunur; dosyanın diskteki içeriği değişmez ve bu sha256 ile ölçülmüştür.",
+          "Panellerde ve hover'da ham Türkçe tip adı basımı kalmamıştır; etiketler sözlük kapısından gelir ve bu aramayla ölçülmüştür.",
+          "Dil tr iken dekorasyon kurulmaz; davranış farkı nöbetle ölçülmüştür ve nöbet mutasyonla kanıtlıdır.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; Founder canlı pencerede Layer görünümünü gözüyle doğrulamıştır."
+        ]
+        sınır: "Bu Adım YAZMA tanımaya dokunmaz: Layer( yazılan bir dosya bu Adımdan sonra da tanınmaz, o Seçenek B'dir ve v2 kilidindedir. Ayrıştırıcı, belirteçleyici ve kimlik katmanı değişmez; dosya içeriğine tek bayt yazılmaz."
+      }
+
+      Adım( kod: CDL-A05, durum: tamamlandı, bağımlı: [ CDL-A01 ],
+        koşu:     "2026-08-02 · KAPANIŞ. Üretici temiz bağlamlı bir Codex koşumuydu ve kontrolcü bütün sayısal iddiaları kendi araçlarıyla yeniden ölçtü. SAYI DÜZELTMESİ KAYDA GEÇTİ: planın on dokuz araç tahmini kodla uyuşmadı; gerçek tools/list evreni ON SEKİZ araçtır, üretici uyuşmazlığı beyan etti ve davranış değişikliği yasağı gereği yapay araç eklemedi. Araç açıklamaları ile parametre tarifleri cekirdek/src/mcp-metinleri.ts tek kaynağına toplandı ve çevrildi: 18/18 araç açıklaması, 32/32 parametre tarifi, eksik sıfır — kontrolcü sayımı birebir tuttu. ARAÇ VE PARAMETRE ADLARI SABİT KALDI; ad bir protokol kimliğidir, değişmesi mevcut ajan çağrılarını, saklanan istemleri ve MCP bütünleşmelerini kırardı. DİL SEÇİMİ tek mekanizmadır: SARMAL_DIL ortam değişkeni (varsayılan tr, bilinmeyen değer tr'ye döner) — MCP sunucusu VS Code bağlamı taşımaz, eklenti kendi etkin dilini süreç ortamıyla geçirir. Kapsama nöbeti mcp-metin-ceviri-kapsama.test.ts kuruldu ve iki mutasyonla kanıtlandı (açıklama silme + çeviri boşaltma, ikisi de yakalandı). İki dilli el sınaması iki ayrı süreçte koşuldu ve sef aracının açıklaması iki dilde, kimlikler aynı kalarak doğrulandı. ÖLÇÜMLER: çekirdek tür denetimi sıfır (npx tsc --noEmit) · çekirdek süiti kapanış anında 938/938, A04 teslimi sonrası 940/940 · iki varlık denetimi ✖0 ⚠0 (iki yetim-meyve bu kayıtla ilan edildi).",
+        referans: [ YUZ-1.2, OGR-4 ],
+        üretir:   [ KOD-MCP, KOD-MCP-METINLERI, KOD-SNM-MCP-CEVIRI ],
+        ne:       "🤖 On dokuz aracın açıklamalarını toplayıp çevirmek. Araç açıklamaları yapay zekâ ajanlarının Sarmal'ı öğrendiği ilk yüzeydir; bugün hepsi gömülü Türkçe metindir ve İngilizce çalışan bir ajan aracın ne yaptığını okuyamaz." ) {
+        görev:    [
+          "On dokuz aracın adını, açıklamasını ve parametre tariflerini tek kaynağa topla, sonra çevir.",
+          "Araç ADLARININ çevrilip çevrilmeyeceğini ayrıca karara bağla ve gerekçesini yaz. Araç adı bir kimliktir ve değişirse mevcut ajan çağrıları kırılır; bu yüzden varsayılan tercih adların SABİT kalması, yalnız açıklamaların çevrilmesidir."
+        ]
+        kabul: [
+          "On dokuz aracın açıklaması ve parametre tarifleri İngilizce karşılığını taşır.",
+          "Araç adlarının sabit kalıp kalmadığı açıkça karara bağlanmış ve gerekçesi yazılmıştır.",
+          "Çekirdek süiti yeşildir; araçlar el sınamasıyla çağrılabilir durumdadır."
+        ]
+        sınır: "Bu Adım araçların DAVRANIŞINI değiştirmez; yalnız anlattıkları metni çevirir."
+      }
+    }
+
+    AltKatman( kod: CDL-YUZEY-K2, ad: "öğretim ve belge", departman: inceleme,
+      ne: "öğrenme yüzeyi ve deponun giriş kapısı" ) {
+
+      Adım( kod: CDL-A06, durum: tamamlandı, bağımlı: [ CDL-A01, CDL-A03 ],
+        koşu:     "2026-08-02 · KAPANIŞ. Üretici Codex iki koşumda çalıştı ve ikisi de ağ kesintisiyle rapor veremeden düştü; iş diskte tamamına yakın bulundu ve kontrolcü kapı ölçümlerini doğrudan kendisi koştu. ÜRETİLEN: karşılama kartının (ogret.ts) ve ajan dil bağlamı üreticisinin (dil-baglami.ts) sabit anlatım metinleri İngilizce hane kazandı; kanondan derlenen bölümler elle çevrilmedi, sözlükten besleniyor; MINIMAL_PLAN örneğinin .sar kodu Türkçe kaldı ve İngilizce sürümde örneğin üstündeki anlatım bunu açıklıyor. Nöbet ogretim-ceviri.test.ts yedi hükümle kuruldu ve yedisi de yeşildir; İngilizce kartın kanondan türediğini ve elle yazılmış ikinci bir kart dosyasının doğmadığını ölçer. KONTROLCÜ ÖLÇÜMLERİ (araç adlarıyla): iki dilde kart el sınaması somut çıktıyla kanıtlı — SARMAL_DIL=en ile 'SARMAL WELCOME CARD — this card is generated from canon' başlığı, SARMAL_DIL=tr ile Türkçe kart basılıyor (sarmal ogret koşumu) · çekirdek tür denetimi sıfır (npx tsc --noEmit) · çekirdek süiti 947/947 (940 taban + 7 yeni nöbet, yeni kırmızı yok) · _Sarmal denetimi ✖0 ⚠0 (yetim-meyve bu kayıtla ilan edildi). ÜRETİM DERSİ: üç CDL koşumu aynı gün ağ kesintisine düştü ve üçünde de iş bölümlü ilerlendiği için ağaç hep tutarlı kaldı; uzun-tek-yama yasağı bugün üç kez kendini kanıtladı.",
+        referans: [ OGR-4, YUZ-1.2 ],
+        üretir:   [ KOD-DIL-BAGLAMI, KOD-OGRET-CEKIRDEK, KOD-SNM-OGRETIM-CEVIRI ],
+        ne:       "🎓 Öğretim yüzeyinin İngilizce sürümü. Öğretim kartı bugün kanondan DERLENİYOR, yani sözlük dolunca büyük bölümü kendiliğinden İngilizceye döner; çevrilmesi gereken şey kartın etrafındaki şablon düzyazısıdır." ) {
+        görev:    [
+          "Öğretim şablonunun düzyazı bölümlerini çevir; kanondan derlenen bölümler sözlükten beslendiği için elle çevrilmez.",
+          "Karşılama kartının İngilizce sürümünün gerçekten kanondan türediğini ve elle yazılmış ikinci bir kart doğmadığını nöbetle ölç. İkinci bir kart doğarsa bayatlar; bu deponun kendi dersi budur."
+        ]
+        kabul: [
+          "Dil tercihi İngilizce olan bir ajan ya da kullanıcı öğretim kartını uçtan uca İngilizce alır.",
+          "İngilizce kart kanondan TÜRETİLİR; elle yazılmış ikinci bir kart yoktur ve bu nöbetle ölçülür.",
+          "Çekirdek süiti yeşildir."
+        ]
+        sınır: "Bu Adım öğretimin İÇERİĞİNİ değiştirmez; ne öğretildiği aynı kalır, yalnız hangi dilde söylendiği değişir."
+      }
+
+      Adım( kod: CDL-A07, durum: tamamlandı, bağımlı: [ CDL-A01 ],
+        koşu:     "2026-08-03 · KAPANIŞ. Founder giriş belgesinin tonunu onayladı ve Adım kapandı. ÖNCEKİ ARA KAYIT — 2026-08-02: README.en.md üretildi ve mühürlendi (957baff); İngilizce belgede Türkçe kaynaklarda karşılığı olmayan iddia sayısı sıfır ölçüldü. ONAY TARİHÇESİ: 30 Temmuz kaydı Adımın AÇILIŞ onayıydı; kapanış onayı (belgenin tonunun Founder hükmünden geçmesi) ayrı bir kapıdır, bayat alan Posta Kutusu'nu susturduğu için kaldırıldı ve kapı yeniden açıldı.",
+        referans: [ STR-2, OGR-4 ],
+        üretir:   [ BLG-CDL-README ],
+        ne:       "📄 İngilizce giriş belgesi. Ölçülmüş zemin şudur: depoda hiç İngilizce giriş belgesi yoktur, dördü de Türkçedir. Depo açıldığında bir yabancı geliştiricinin göreceği İLK şey budur ve bugün o ilk şey okunamaz durumdadır." ) {
+        görev:    [
+          "Deponun İngilizce giriş belgesini yaz: Sarmal nedir, hangi problemi çözer, nasıl başlanır, `.sar` dosyasının Türkçe anahtar kelimelerle yazıldığı neden böyledir.",
+          "Dilin Türkçe olmasını SAVUNMA ya da özür dileme; açıkla. Bu bir tasarım kararıdır ve gerekçesi vardır: tek gerçek diskte yaşar, çeviri yüzeydedir, dolayısıyla sapma imkânsızdır.",
+          "Türkçe giriş belgesiyle İngilizcesinin aynı şeyi söylediğini ölç; ikisi ayrışırsa hangisinin doğru olduğu bilinemez."
+        ]
+        kabul: [
+          "Depo kökünde İngilizce bir giriş belgesi vardır ve Sarmal'ı hiç bilmeyen birinin okuyup ilk projesini kurabileceği kadar tamdır.",
+          "Kaynağın Türkçe kalmasının gerekçesi açıkça yazılmıştır; savunmacı değil açıklayıcı bir tonla.",
+          "Türkçe ve İngilizce giriş belgelerinin ayrışmadığı ölçülmüştür.",
+          "Founder onayı olmadan bu Adım tamamlandı ilan edilmez; giriş belgesi deponun yüzüdür ve tonu Founder'ın hükmüne tabidir."
+        ]
+        sınır: "Bu Adım giriş belgesi yazar; lisans, katkı rehberi ve güvenlik belgesi bu Adımın dışındadır ve kendi işlerini bekler."
+      }
+    }
+  }
+}
+
+// 🍎 Çok dillilik meyveleri — Adım→çıktı izi
+Veri( kod: VR-CDL-SOZLUK, dosya: "oz/ceviri/dil-sozlugu.json",
+  ne: "🍎 Sarmal anahtar kelimelerinin çok dilli sözlüğü — kanonik evrenin tam İngilizce karşılığı" )
+Kod( kod: KOD-SNM-SOZLUK-KAPSAMA, dosya: "urun/cekirdek/sinama/sozluk-kapsama.test.ts",
+  ne: "🍎 Sözlük kapsama nöbeti — kanona sözlükte karşılığı olmayan bir tip ya da alan eklenirse süit kırmızıya döner; sözlük bir daha sessizce bayatlayamaz" )
+Kod( kod: KOD-TANI-METINLERI, dosya: "urun/cekirdek/src/tani-metinleri.ts",
+  ne: "🍎 Motorun konuştuğu bütün tanı ve öneri cümlelerinin tek kaynağı — iki dilli" )
+Kod( kod: KOD-SNM-TANI-TEK-KAYNAK, dosya: "urun/cekirdek/sinama/tani-metni-tek-kaynak.test.ts",
+  ne: "🍎 Tanı metni tek-kaynak nöbeti — motor kaynağında düzey taşıyan bir tanı nesnesine kullanıcı cümlesi gömülürse süit kırmızıya döner. Beyanlı tek istisna `söz-dizim`'dir ve istisnanın TEK kaldığını ayrı bir hüküm ölçer, yani liste sessizce büyüyemez" )
+Kod( kod: KOD-SNM-TANI-CEVIRI, dosya: "urun/cekirdek/sinama/tani-metni-ceviri-kapsama.test.ts",
+  ne: "🍎 Çeviri parite nöbeti — Türkçe ve İngilizce tanı kataloglarının aynı tanı kümesini kapsadığını, her İngilizce kaydın mesaj ile öneri taşıdığını ve İngilizce haneye Türkçe metnin birebir kopyasının yazılamadığını ölçer; iki mutasyonla kanıtlanmıştır" )
+Kod( kod: KOD-MCP-METINLERI, dosya: "urun/cekirdek/src/mcp-metinleri.ts",
+  ne: "🍎 On sekiz MCP aracının adı, açıklaması ve parametre tariflerinin iki dilli tek kaynağı — adlar protokol kimliği olarak sabittir, yalnız açıklama yüzü çevrilir" )
+Kod( kod: KOD-SNM-MCP-CEVIRI, dosya: "urun/cekirdek/sinama/mcp-metin-ceviri-kapsama.test.ts",
+  ne: "🍎 MCP metin kapsama nöbeti — bir araç açıklamasının ya da parametre tarifinin İngilizce hanesi eksilirse süit kırmızıya döner; iki mutasyonla kanıtlanmıştır" )
+Kod( kod: KOD-EKL-DIL, dosya: "urun/eklenti/src/dil.ts",
+  ne: "🍎 Eklentinin dil kaynağı tek kapısı — vscode.env.language yalnız burada okunur, sarmal.dil ayarı (otomatik/tr/en) kaçış kapısıdır ve etkin dil motor çağrılarına buradan geçirilir" )
+Kod( kod: KOD-EKL-GORSEL-ESAD, dosya: "urun/eklenti/src/gorsel-esad.ts",
+  ne: "🍎 Kaynak içi görsel eşad katmanı — dil İngilizceyken açık .sar editöründe tip adlarını sözlükten İngilizce gösteren dekorasyon; dosya diskte Türkçe kalır, yalnız görüntü çevrilir" )
+Kod( kod: KOD-SNM-GORSEL-ESAD, dosya: "urun/eklenti/sinama/gorsel-esad.test.ts",
+  ne: "🍎 Görsel eşad nöbeti — dil en iken tip adlarının İngilizce etikete bağlandığını, tr iken dekorasyonun hiç kurulmadığını ve diskteki metnin her iki durumda bayt-bayt değişmediğini dört hükümle ölçer; sözlük kapısı mutasyonuyla kanıtlıdır" )
+Kod( kod: KOD-EKL-NLS, dosya: "urun/eklenti/package.nls.json",
+  ne: "🍎 Manifest yerelleştirme katalogları — package.nls.json İngilizce ve package.nls.tr.json Türkçe, seksen beş anahtar iki kümede birebir eşittir; manifest kullanıcı-görünür dizeleri yalnız buradan okur" )
+Kod( kod: KOD-SNM-DIL-KUR, dosya: "urun/eklenti/sinama/dil-kur.ts",
+  ne: "🍎 Dil sınama kurulumu — süit koşumunda etkin dili belirleyip yüzey sınamalarının iki dilde de koşabilmesini sağlayan yardımcı" )
+Meyve( kod: BLG-CDL-README, tür: dış-çıktı,
+  ne: "🍎 Deponun İngilizce giriş belgesi (depo kökünde `README.en.md`) — yabancı geliştiricinin gördüğü ilk yüzey. Türü dış-çıktıdır çünkü depo kökü `_Sarmal` projesinin sınırı DIŞINDADIR; sürüm takibi git'in işidir, motorun değil." )
+Kod( kod: KOD-OGRET-CEKIRDEK, dosya: "urun/cekirdek/src/ogret.ts",
+  ne: "🍎 Karşılama kartı üreticisi — kart kanondan iki dilde derlenir; sabit anlatım metinleri İngilizce hane taşır, MINIMAL_PLAN örneğinin .sar kodu Türkçe kalır" )
+Kod( kod: KOD-SNM-OGRETIM-CEVIRI, dosya: "urun/cekirdek/sinama/ogretim-ceviri.test.ts",
+  ne: "🍎 Öğretim çeviri nöbeti — İngilizce kartın kanondan türediğini, elle yazılmış ikinci bir kart doğmadığını ve iki dilin aynı bölüm iskeletini taşıdığını yedi hükümle ölçer" )
+// KOD-MCP ve KOD-DIL-BAGLAMI başka dosyalarda ZATEN ilan edilmiştir (meyve_haritasi.sar ·
+// kapali/dogus/dogus_paketi.sar); burada yeniden ilan edilmez, yalnız üretir kenarıyla anılır.

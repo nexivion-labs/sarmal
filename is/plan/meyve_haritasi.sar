@@ -1,0 +1,521 @@
+// ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25): atölyede kalan on iki teslimin dosya beyanı bu sahne kopyasında düşürülmüştür;
+//     Kod düğümleri ve üretir kenarları korunur, teslimlerin aslı atölye deposundadır. ═══
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/meyve_haritasi.sar — 🍎 ÇEKİRDEK MEYVE HARİTASI (STR-4 · oturum 29)
+//
+//   Yetim-meyve kapısı (HALKA-SENK-A04) canlanınca 26 çekirdek modülün beyansız
+//   olduğu ortaya çıktı — STR-4 geriye yazım hükmünden ÖNCE doğmuş kodun dürüst envanteri. Bu dosya
+//   her canlı çekirdek modülünü Kod meyvesi olarak İLAN eder: kod↔plan haritası
+//   tek bakışta, yetim-meyve kapısı tam-yeşil.
+//
+//   Kural: YENİ modül önce üreten Adım'ın 'üretir:' kenarıyla kendi planında
+//   ilan edilir (sef-halka deseni: KOD-DAG-MOTOR · KOD-KONI-YAZ · KOD-NVIDIA-KOPRU);
+//   bu harita yalnız geriye yazım hükmünden önceki tarihsel modüllerin evidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Dil çekirdeği: metin → ağaç ──────────────────────────────────────────────
+Kod( kod: KOD-BELIRTEC, dosya: "urun/cekirdek/src/belirtec.ts",
+  ne: "🍎 Belirteçleyici (lexer) — .sar metnini belirteçlere böler (UTF-8/emoji-güvenli)" )
+Kod( kod: KOD-AYRISTIRICI, dosya: "urun/cekirdek/src/ayristirici.ts",
+  ne: "🍎 Ayrıştırıcı (parser) — belirteçlerden Dugum ağacı kurar" )
+Kod( kod: KOD-SOZDIZIM, dosya: "urun/cekirdek/src/sozdizim.ts",
+  ne: "🍎 Söz Dizim Ağacı (AST) tipleri — Program · Dugum · Deger" )
+Kod( kod: KOD-TANI, dosya: "urun/cekirdek/src/tani.ts",
+  ne: "🍎 Tanı tipi — Türkçe, konumlu, öneri taşıyan drift bulgusu (hata·uyarı·bilgi)" )
+
+// ── Denetim motoru: ağaç → tanı ──────────────────────────────────────────────
+Kod( kod: KOD-DOGRULAYICI, dosya: "urun/cekirdek/src/dogrulayici.ts",
+  ne: "🍎 Doğrulayıcı — şema·enum·sarma·kimlik·zorunlu-kenar dosya-içi denetimi" )
+Kod( kod: KOD-DENETCI, dosya: "urun/cekirdek/src/denetci.ts",
+  ne: "🍎 Denetçi — spec↔disk drift kapısı (kayıp-yapı · kırık-referans · yetim-meyve)" )
+Kod( kod: KOD-DENETIM, dosya: "urun/cekirdek/src/denetim.ts",
+  ne: "🍎 Saf denetim çekirdeği (SEF-L3-A37) — denetleme koşumu veri döndürür (konsolsuz·süreçsiz); CLI kabuğu ve runtime aynı çekirdeği çağırır" )
+Kod( kod: KOD-YONERGE-IKIZI, dosya: "urun/cekirdek/src/yonerge-ikizi.ts",
+  ne: "🍎 Yönerge ikizi nöbeti (KYN-MTR-A02) — çalışma alanı kökündeki CLAUDE.md ile AGENTS.md bayt özdeşliğini zorlar; ayrışmayı satır adresiyle bildirir, sınır gereği EŞİTLEMEZ" )
+Kod( kod: KOD-RAF-HARITASI, dosya: "is/nitelik/raf_baglanma_haritasi.sar",
+  ne: "🍎 Raf bağlanma haritası — hangi rafın hangi rafa atıf verdiğini, hangi gövdenin dışarıdan hiç çağrılmadığını ve iki varlık arasında kaçak kenar bulunup bulunmadığını gezin ile graf araçlarıyla ölçüp Çıkarım düğümleriyle kayda geçirir; her sayısal iddia hangi araçla ölçüldüğünü kendi metninde söyler ve ölçüm kendi ayak izini dışlar (KYN-MTR-A03 meyvesi)" )
+Kod( kod: KOD-KOK-YUZEYI, dosya: "urun/cekirdek/src/kok-yuzeyi.ts",
+  ne: "🍎 Kök yüzeyi nöbeti (KYN-MTR-A04) — çalışma alanı kökündeki tanıtım, katkı, güvenlik, davranış ve yönerge dosyalarının metnindeki kod atıflarını açık aracın kimlik evrenine vurur; karşılıksız kalanı adresiyle bildirir, varlık karnesine yazmaz ve içeriği tazelemez" )
+Kod( kod: KOD-KAPI-KAPSAMI, dosya: "urun/cekirdek/src/kapi-kapsami.ts",
+  ne: "🍎 Kapı kapsamının tek yetkili kaynağı (KYN-MTR-A05 meyvesi) — hangi üreticinin hangi yüzeyde koştuğunu ilan eder, denetim gövdesinin gerçek çağrı kümesini kaynaktan okuyup ilanla iki yönlü karşılaştırır ve eklentinin panel süzgecini bu ilandan üretir; eski elle bakılan proje-denetim.ts kopyası bu dosyanın doğuşuyla söküldü" )
+Kod( kod: KOD-KURALCI, dosya: "urun/cekirdek/src/kuralci.ts",
+  ne: "🍎 Kuralcı — DIL-3 ile YAS-2.3 kural motoru: koşul değerlendirme + kural-çatışması (M-3)" )
+Kod( kod: KOD-ISKELETCI, dosya: "urun/cekirdek/src/iskeletci.ts",
+  ne: "🍎 İskeletçi — ana.sar ilanından beklenen klasör-iskeletini türetir" )
+Kod( kod: KOD-YOLCOZ, dosya: "urun/cekirdek/src/yolcoz.ts",
+  ne: "🍎 Yol Çözücü — düğüm→kanonik disk yolu (FEL-3 deep-mirror, kebap adlama)" )
+Kod( kod: KOD-SINIFLAMA, dosya: "urun/cekirdek/src/siniflama.ts",
+  ne: "🍎 Sınıflama yükleyici — SNF-0 tip sistemi + çalışma-alanı örtü merge (SEF-L3-A20)" )
+
+// ── Yüzler (Prizma): tek kaynak → çok görünüm ────────────────────────────────
+Kod( kod: KOD-PRIZMA, dosya: "urun/cekirdek/src/prizma.ts",
+  ne: "🍎 Prizma projektörü — .sar → JSON/YAML/XML yüzleri (FEL-5, sıfır bağımlılık)" )
+Kod( kod: KOD-BELGELE, dosya: "urun/cekirdek/src/belgele.ts",
+  ne: "🍎 MD yüzü — .sar → Markdown belge üretici (DIL-2 sarmal belge)" )
+Kod( kod: KOD-AGAC-YUZ, dosya: "urun/cekirdek/src/agac.ts",
+  ne: "🍎 Ağaç yüzü — ├──/└── klasör-ağacı render (Prizma 5. yüz · YUZ-1.1 · agacUret)" )
+Kod( kod: KOD-YAZDIR, dosya: "urun/cekirdek/src/yazdir.ts",
+  ne: "🍎 Türkçe ağaç/rapor yazımı — CLI insan-yüzü çıktıları" )
+Kod( kod: KOD-CEVIR, dosya: "urun/cekirdek/src/cevir.ts",
+  ne: "🍎 Çeviri katmanı — üç sözlük tek kapı (çok-dil altyapısı, 1. gün mimaride)" )
+
+// ── Tema ailesi ──────────────────────────────────────────────────────────────
+Kod( kod: KOD-TEMA, dosya: "urun/cekirdek/src/tema.ts",
+  ne: "🍎 Tema içerik denetimi — DESIGN.md CLI deseni (D2)" )
+Kod( kod: KOD-TEMA-DESIGNMD, dosya: "urun/cekirdek/src/tema-designmd.ts",
+  ne: "🍎 Tema ↔ DESIGN.md dönüştürücü — D3 import + D4 export" )
+
+// ── ŞEF runtime (RAY-3 · AÇIK jenerik mekanizma STR-3) ──────────────────────
+Kod( kod: KOD-KONI, dosya: "urun/cekirdek/src/koni.ts",
+  ne: "🍎 Bağlam-konisi çıkarımı — Adım'ın görev·referans·kabul·sınır konisi (saf)" )
+Kod( kod: KOD-SEF, dosya: "urun/cekirdek/src/sef.ts",
+  ne: "🍎 ŞEF ilk nefes — koni→bağlam-paket→token→prompt (SEF-L3-A01, beceri/kanca montajı)" )
+Kod( kod: KOD-DONGU, dosya: "urun/cekirdek/src/dongu.ts",
+  ne: "🍎 ŞEF çekirdek döngüsü — üret→denetle→yama→karar; izolasyon+sahte-yeşil avı (SEF-L3-K2)" )
+Kod( kod: KOD-OGRET, dosya: "urun/cekirdek/src/ogret.ts",
+  ne: "🍎 Karşılama kartı — sarmal ogret: kanondan üretilen ilk-temas kartı (minimal geçerli dosya + dört eksen + koni + zorunlu kenarlar · DVR-A01, OGR-2.2)" )
+Kod( kod: KOD-KONIYAZ, dosya: "urun/cekirdek/src/koniYaz.ts",
+  ne: "🍎 runtime→plan geri-yazımı — mühür→durum eşlemesi (YAS-4) + koşu kaydı; kilitli tek-yazar (STR-4)" )
+Kod( kod: KOD-SOZLESME, dosya: "urun/cekirdek/src/sozlesme.ts",
+  ne: "🍎 Sözleşme doğrulaması — Etmen çıktısı/ŞEF kararı mek-sef şemalarına vurulur (SEF-L3-K2)" )
+Kod( kod: KOD-RBAC, dosya: "urun/cekirdek/src/rbac.ts",
+  ne: "🍎 Etmen yetki zorlaması — 4 yapısal kural, fail-closed (SEF-L3-K3)" )
+Kod( kod: KOD-GATEWAY, dosya: "urun/cekirdek/src/gateway.ts",
+  ne: "🍎 Etmen↔araç izin kapısı — beyan ∧ matris, fail-closed (SEF-L3-K6 rayı)" )
+Kod( kod: KOD-TOOLROUND, dosya: "urun/cekirdek/src/toolround.ts",
+  ne: "🍎 Gerçek tool-round — SZL-ARAÇ-TALEP→gateway→SZL-ARAÇ-SONUÇ (untrusted kalkanı) + alt-MCP proxy + tur limiti (SEF-L3-A27/A28)" )
+Kod( kod: KOD-MUZAKERE, dosya: "urun/cekirdek/src/muzakere.ts",
+  ne: "🍎 Debate + recovery + çok-Etmen — müzakereEt (itiraz→savunma→hakem) · kurtar (yeniden-dene/böl/eskale) · cokEtmenÜret (SEF-L3-A30/A31/A32)" )
+
+// ── Kabuk + köprüler ─────────────────────────────────────────────────────────
+Kod( kod: KOD-CLI, dosya: "urun/cekirdek/src/sarmal.ts",
+  ne: "🍎 CLI girişi — denetle·sira·sef·lig·agac·yansıt… tüm komut kabuğu" )
+Kod( kod: KOD-MCP, dosya: "urun/cekirdek/src/mcp.ts",
+  ne: "🍎 MCP sunucusu — ajanın Sarmal-gözü (denetle·kurallar·siniflama·basla·sef·gezin)" )
+Kod( kod: KOD-DEGER-YAZ, dosya: "urun/cekirdek/src/deger-yaz.ts",
+  ne: "🍎 Quote-güvenli değer yazıcı — durumYaz+takdir tek yardımcıda (EKL-F9-A09)" )
+Kod( kod: KOD-KIMLIK, dosya: "urun/cekirdek/src/kimlik.ts",
+  ne: "🍎 Kimlik indeksi — kod→tanım+atıf konum haritası; ÜÇ YÜZ tek çekirdek: eklenti F12/⇧F12 · MCP gezin · CLI gezin (EKL-F11-A01/A05)" )
+Kod( kod: KOD-MAKRO-DONGU, dosya: "urun/cekirdek/src/makro-dongu.ts",
+  ne: "🍎 Makro-döngü koşucusu — Döngü widget'ının runtime'ı: tetik→tur→durunca/turLimiti; ilerlemesiz-bekçi + Koşum-trace (ORK-3.3 · DNG-KOS)" )
+Kod( kod: KOD-SABLON-DONGU, dosya: "ogreti/sablon/dongu.sar",
+  ne: "🍎 Döngü doğuş şablonu — başla('döngü') koni-dolu, çıkış-koşullu örnek (ORK-3.3 · DNG-YUZ-A01)" )
+
+// ── Nitelik raporları (araştırma meyveleri) ──────────────────────────────────
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/ide_asinalik.md); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-RAPOR-IDE,
+  ne: "🍎 IDE-aşinalık envanteri — 5 ekosistem × 22 kalem VAR/KISMEN/YOK (BKM-ARC-A02 → YUZ-3.2 kimlik-gezinme hükmünün tohumu)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/linguist_hazirlik.md); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-RAPOR-LINGUIST,
+  ne: "🍎 GitHub linguist hazırlığı — kabul kriterleri raporu + languages.yml taslağı (BKM-YAY-A01; PR yayın rayında)" )
+
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/superpowers_desen_bakisi.md); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-RAPOR-SUPERPOWERS,
+  ne: "🍎 Superpowers desen-bakışı — 7 desen × Sarmal tablosu; 2 aday Founder kararına (BKM-ARC-A01 · ürün-taşıma metaforu)" )
+
+// ── Eklenti yüzleri (VS Code — meyve izi Founder isteği 2026-07-11: 'hangi Adım hangi koda işaret ediyor anlaşılsın') ──
+Kod( kod: KOD-EKL-ANAHAT, dosya: "urun/eklenti/src/anahat.ts",
+  ne: "🍎 Anahat/Outline — widget ağacı → sembol ağacı (breadcrumb bedava)" )
+Kod( kod: KOD-EKL-BICIMLE, dosya: "urun/cekirdek/src/bicimle.ts",
+  ne: "🍎 Biçimlendirme ÇEKİRDEĞİ (saf) — girinti+hizalama; idempotenlik testli. Eklentiden çekirdeğe indi (BKM-MCP-A01: MCP bicimle aracı da aynı motoru kullanacak)" )
+Kod( kod: KOD-EKL-BICIMLENDIR, dosya: "urun/eklenti/src/bicimlendir.ts",
+  ne: "🍎 Biçimlendirme sağlayıcısı — ⇧⌥F kabuğu (bicimle.ts'i sarar)" )
+Kod( kod: KOD-EKL-DALLAR, dosya: "urun/eklenti/src/dallar.ts",
+  ne: "🍎 Ağaç kılavuz çizgileri — kesintisiz │/├/└ + kapanış etiketleri" )
+Kod( kod: KOD-EKL-DUZELTME, dosya: "urun/eklenti/src/duzeltme.ts",
+  ne: "🍎 Hızlı düzeltme 💡 — üç-tırnak katlama, tablo hizalama" )
+Kod( kod: KOD-EKL-EKLENTI, dosya: "urun/eklenti/src/eklenti.ts",
+  ne: "🍎 Eklenti girişi — aktivasyon, tanı motoru, kayıtlar, YAS-3.3 varlık odağı" )
+Kod( kod: KOD-EKL-GIRINTI, dosya: "urun/eklenti/src/girinti.ts",
+  ne: "🍎 Girinti renkleri — derinlik ağaç-gradyanı (kod-dışı boyanmaz)" )
+Kod( kod: KOD-EKL-GRAMMAR, dosya: "urun/eklenti/syntaxes/sarmal.tmLanguage.json",
+  ne: "🍎 TextMate grammar'ı — renklendirme/bracket kuralları; obje-literal yalnız değer-konumunda (ADM-DGS-08: gövde yutulması giderildi)" )
+Kod( kod: KOD-EKL-GOMULUKANON, dosya: "urun/eklenti/src/gomulu-kanon.ts",
+  ne: "🍎 ÜRETİLEN gömülü kanon (renk-uret.mjs döker) — dış projede tam renk/hover" )
+Kod( kod: KOD-EKL-IPUCU, dosya: "urun/eklenti/src/ipucu.ts",
+  ne: "🍎 Hover açıklamaları — Türkçe, kanondan" )
+Kod( kod: KOD-EKL-KATLA, dosya: "urun/eklenti/src/katla.ts",
+  ne: "🍎 Uzun-niyet katlayıcı + tablo hizalayıcı (refactor yardımcıları)" )
+Kod( kod: KOD-EKL-NABIZ, dosya: "urun/eklenti/src/nabiz.ts",
+  ne: "🍎 Tek kalp-atışı + geciktirici — yıldız/takdir/lens ortak ritmi" )
+Kod( kod: KOD-EKL-ONBELLEK, dosya: "urun/eklenti/src/onbellek.ts",
+  ne: "🍎 Paylaşımlı AST önbelleği — belge-versiyon anahtarlı tek parse" )
+Kod( kod: KOD-EKL-PALET, dosya: "urun/eklenti/src/palet.ts",
+  ne: "🍎 İfade paleti (TAS-C01) — tasarım sözlüğü + temaRolleri'nden tamamlama önerileri (saf çıkarım; rijit enum değil)" )
+Kod( kod: KOD-EKL-ONIZLEME, dosya: "urun/eklenti/src/onizleme.ts",
+  ne: "🍎 Okuma modu (Prizma insan-yüzü) — kod ↔ kitap custom editor" )
+Kod( kod: KOD-EKL-ORTAK, dosya: "urun/eklenti/src/ortak.ts",
+  ne: "🍎 Paylaşılan yardımcılar — snfBul/rozet renkleri (kanon köprüsü)" )
+Kod( kod: KOD-EKL-RENK, dosya: "urun/eklenti/src/renk.ts",
+  ne: "🍎 Anlamsal renklendirme — 30 token tipi, aile/önek renkleri kanondan" )
+Kod( kod: KOD-EKL-SATIRICI, dosya: "urun/eklenti/src/satirici.ts",
+  ne: "🍎 Satır-içi tanılar — errorlens'in Sarmal yerlisi (hata nabzı)" )
+Kod( kod: KOD-EKL-TAKDIR, dosya: "urun/eklenti/src/takdir.ts",
+  ne: "🍎 Dört kanal 🙏❤️🏅💡 + takdir lensi/kalbi (OGR-4)" )
+Kod( kod: KOD-EKL-TAMAMLAMA, dosya: "urun/eklenti/src/tamamlama.ts",
+  ne: "🍎 Otomatik tamamlama — şema-farkında alan/enum önerileri" )
+Kod( kod: KOD-EKL-YILDIZ, dosya: "urun/eklenti/src/yildiz.ts",
+  ne: "🍎 Kuzey Yıldızı bekçisi — eylem satırında atan yıldız + rozetler" )
+Kod( kod: KOD-GEZINME, dosya: "urun/eklenti/src/gezinme.ts",
+  ne: "🍎 Kimlik-gezinme sağlayıcıları — F12/⌥F12/⇧F12 (A02) + F2/⌘T (A03); varlık-süzgeçli (EKL-F11)" )
+Kod( kod: KOD-IMZA, dosya: "urun/eklenti/src/imza.ts",
+  ne: "🍎 İmza yardımı — ( açılınca kanondan parametre imzası; adla-yazım aktif-parametre (EKL-F11-A04)" )
+Kod( kod: KOD-BAGLANTI, dosya: "urun/eklenti/src/baglanti.ts",
+  ne: "🍎 Tıklanır yollar — referans:/yol:/dosya: DocumentLink; olmayan dosyaya link yok (EKL-F11-A04)" )
+Kod( kod: KOD-YOLHARITA, dosya: "urun/eklenti/src/yolharitasi.ts",
+  ne: "🍎 Yol Haritası paneli + koni kartı + canlı-harita imleç takibi (VIT-GRAF ailesi)" )
+
+// ── Sınama nöbetleri (cekirdek/sinama — yetim-meyve kapsamı BKM-SNV2 nöbetleriyle açıldı; tarihsel envanter) ──
+Kod( kod: KOD-SNM-YENI-KANON, dosya: "urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts",
+  ne: "🍎 sınama nöbeti — yeni kanonun altmış dokuz tanısının fikstür kanıtı; her kimlik gerçekten üretiliyor mu" )
+Kod( kod: KOD-SNM-AGAC, dosya: "urun/cekirdek/sinama/agac.test.ts",
+  ne: "🍎 sınama nöbeti — ağaç yüzü (agacUret ├──/└── render)" )
+Kod( kod: KOD-SNM-AYRISTIRICI, dosya: "urun/cekirdek/sinama/ayristirici.test.ts",
+  ne: "🍎 sınama nöbeti — ayrıştırıcı (parser)" )
+Kod( kod: KOD-SNM-BELGELE, dosya: "urun/cekirdek/sinama/belgele.test.ts",
+  ne: "🍎 sınama nöbeti — MD yüzü (DIL-2 sarmal belge)" )
+Kod( kod: KOD-SNM-BELIRTEC, dosya: "urun/cekirdek/sinama/belirtec.test.ts",
+  ne: "🍎 sınama nöbeti — belirteçleyici (lexer, emoji-güvenli)" )
+Kod( kod: KOD-SNM-CEVIR, dosya: "urun/cekirdek/sinama/cevir.test.ts",
+  ne: "🍎 sınama nöbeti — çeviri katmanı (üç sözlük)" )
+Kod( kod: KOD-SNM-DAG, dosya: "urun/cekirdek/sinama/dag.test.ts",
+  ne: "🍎 sınama nöbeti — DAG motoru (bağımlılık/topo-sıra)" )
+Kod( kod: KOD-SNM-DEGERYAZ, dosya: "urun/cekirdek/sinama/deger-yaz.test.ts",
+  ne: "🍎 sınama nöbeti — quote-güvenli değer yazıcı" )
+Kod( kod: KOD-SNM-DENETCI, dosya: "urun/cekirdek/sinama/denetci.test.ts",
+  ne: "🍎 sınama nöbeti — denetçi (spec↔disk drift kapıları)" )
+Kod( kod: KOD-SNM-DENETIM, dosya: "urun/cekirdek/sinama/denetim.test.ts",
+  ne: "🍎 sınama nöbeti — saf denetim çekirdeği (konsolsuz koşum · erken yollar · determinizm)" )
+Kod( kod: KOD-SNM-KAPI-KAPSAMI, dosya: "urun/cekirdek/sinama/kapi-kapsami.test.ts",
+  ne: "🍎 sınama nöbeti — kapı kapsamı ilanı ile denetim gövdesinin gerçek çağrı kümesi arasındaki sapmayı yakalar; davranışı sahte kimlik ekleme ve gerçek üretici silme mutasyonlarıyla kanıtlanmıştır" )
+Kod( kod: KOD-SNM-DOGRULAYICI, dosya: "urun/cekirdek/sinama/dogrulayici.test.ts",
+  ne: "🍎 sınama nöbeti — doğrulayıcı (şema·enum·sarma·kimlik)" )
+Kod( kod: KOD-SNM-DONGU, dosya: "urun/cekirdek/sinama/dongu.test.ts",
+  ne: "🍎 sınama nöbeti — ŞEF çekirdek döngüsü" )
+Kod( kod: KOD-SNM-GATEWAY, dosya: "urun/cekirdek/sinama/gateway.test.ts",
+  ne: "🍎 sınama nöbeti — etmen↔araç izin kapısı (fail-closed)" )
+Kod( kod: KOD-SNM-GIZLIBAGIMLILIK, dosya: "urun/cekirdek/sinama/gizli-bagimlilik.test.ts",
+  ne: "🍎 sınama nöbeti — gizli-bağımlılık tanısı" )
+Kod( kod: KOD-SNM-GRAF, dosya: "urun/cekirdek/sinama/graf.test.ts",
+  ne: "🍎 sınama nöbeti — kanonik graf yüzü (determinist JSON)" )
+Kod( kod: KOD-SNM-IFADE, dosya: "urun/cekirdek/sinama/ifade.test.ts",
+  ne: "🍎 sınama nöbeti — DIL-1.3 ifade dili" )
+Kod( kod: KOD-SNM-ILANSIZ-GOVDE, dosya: "urun/cekirdek/sinama/ilansiz-govde.test.ts",
+  ne: "🍎 sınama nöbeti — ilan yokluğu bekçisi; kitaplığa ve köke konan ilansız kaynak gövdesinin fikstürlü kanıtı ile raf eşiğinin ve muafiyet listesinin yanlış pozitif üretmediğinin ölçümü" )
+Kod( kod: KOD-SNM-ISKELETCI, dosya: "urun/cekirdek/sinama/iskeletci.test.ts",
+  ne: "🍎 sınama nöbeti — iskeletçi (ilan→klasör iskeleti)" )
+Kod( kod: KOD-SNM-KIMLIK, dosya: "urun/cekirdek/sinama/kimlik.test.ts",
+  ne: "🍎 sınama nöbeti — kimlik indeksi (kod→tanım+atıf)" )
+Kod( kod: KOD-SNM-KONI, dosya: "urun/cekirdek/sinama/koni.test.ts",
+  ne: "🍎 sınama nöbeti — bağlam-konisi çıkarımı" )
+Kod( kod: KOD-SNM-KONIYAZ, dosya: "urun/cekirdek/sinama/koniyaz.test.ts",
+  ne: "🍎 sınama nöbeti — koni yazıcı (koniYaz)" )
+Kod( kod: KOD-SNM-KOSUYAZ, dosya: "urun/cekirdek/sinama/kosuyaz.test.ts",
+  ne: "🍎 sınama nöbeti — koşu yazıcı (durumYaz)" )
+Kod( kod: KOD-SNM-KURALCI, dosya: "urun/cekirdek/sinama/kuralci.test.ts",
+  ne: "🍎 sınama nöbeti — kural motoru (DIL-3 ile YAS-2.3 + kapsam-çözümü)" )
+Kod( kod: KOD-SNM-LIG, dosya: "urun/cekirdek/sinama/lig.test.ts",
+  ne: "🍎 sınama nöbeti — lig/karne özeti" )
+Kod( kod: KOD-SNM-MAKRODONGU, dosya: "urun/cekirdek/sinama/makro-dongu.test.ts",
+  ne: "🍎 sınama nöbeti — Döngü koşucusu (ORK-3.3 tetik→tur→durunca)" )
+Kod( kod: KOD-SNM-MUZAKERE, dosya: "urun/cekirdek/sinama/muzakere.test.ts",
+  ne: "🍎 sınama nöbeti — debate+recovery+çok-Etmen" )
+Kod( kod: KOD-SNM-ORKESTRA, dosya: "urun/cekirdek/sinama/orkestra.test.ts",
+  ne: "🍎 sınama nöbeti — orkestra montajı" )
+Kod( kod: KOD-SNM-PLN3, dosya: "urun/cekirdek/sinama/pln3.test.ts",
+  ne: "🍎 sınama nöbeti — PLN-3 plan denetimleri" )
+Kod( kod: KOD-SNM-PRIZMA, dosya: "urun/cekirdek/sinama/prizma.test.ts",
+  ne: "🍎 sınama nöbeti — Prizma projektörü (JSON/YAML/XML)" )
+Kod( kod: KOD-SNM-RBAC, dosya: "urun/cekirdek/sinama/rbac.test.ts",
+  ne: "🍎 sınama nöbeti — etmen yetki zorlaması (fail-closed)" )
+Kod( kod: KOD-SNM-SD10, dosya: "urun/cekirdek/sinama/sd10.test.ts",
+  ne: "🍎 sınama nöbeti — TIP-1 kullanıcı-tanımlı tip" )
+Kod( kod: KOD-SNM-SD14, dosya: "urun/cekirdek/sinama/sd14.test.ts",
+  ne: "🍎 sınama nöbeti — DIL-2 belge yüzleri" )
+Kod( kod: KOD-SNM-SD15, dosya: "urun/cekirdek/sinama/sd15.test.ts",
+  ne: "🍎 sınama nöbeti — DIL-2 belge bloğu denetimleri" )
+Kod( kod: KOD-SNM-SEF, dosya: "urun/cekirdek/sinama/sef.test.ts",
+  ne: "🍎 sınama nöbeti — ŞEF koni→prompt montajı" )
+Kod( kod: KOD-SNM-SINIFLAMA, dosya: "urun/cekirdek/sinama/siniflama.test.ts",
+  ne: "🍎 sınama nöbeti — sınıflama yükleyici + örtü merge" )
+Kod( kod: KOD-SNM-SOZLESME, dosya: "urun/cekirdek/sinama/sozlesme.test.ts",
+  ne: "🍎 sınama nöbeti — sözleşme doğrulaması (mek-sef şemaları)" )
+Kod( kod: KOD-SNM-STRES, dosya: "urun/cekirdek/sinama/stres.test.ts",
+  ne: "🍎 sınama nöbeti — stres/ölçek sınamaları" )
+Kod( kod: KOD-SNM-TEMADESIGNMD, dosya: "urun/cekirdek/sinama/tema-designmd.test.ts",
+  ne: "🍎 sınama nöbeti — tema↔DESIGN.md dönüştürücü" )
+Kod( kod: KOD-SNM-TOOLROUND, dosya: "urun/cekirdek/sinama/toolround.test.ts",
+  ne: "🍎 sınama nöbeti — gerçek tool-round (untrusted kalkanı)" )
+
+// ── Eklenti sınama nöbetleri (RF-T6-A01 geriye-dönük beyan — yetim-meyve kapanışı) ──
+Kod( kod: KOD-SNM-BICIMLE, dosya: "urun/eklenti/sinama/bicimle.test.ts",
+  ne: "🍎 sınama nöbeti — biçimlendirici idempotenlik + anlam-koruma güvenceleri (tüm örnekler üstünde)" )
+
+Kod( kod: KOD-SNM-PALET, dosya: "urun/eklenti/sinama/palet.test.ts",
+  ne: "🍎 sınama nöbeti — ifade paleti çıkarımı (TAS-C01 tasarım sözlüğü önerileri)" )
+
+Kod( kod: KOD-SNM-PALET-DRIFT, dosya: "urun/eklenti/sinama/palette-drift.test.ts",
+  ne: "🍎 sınama nöbeti — palet↔kanon drift bekçisi (üretilen renkler kanonla birebir)" )
+
+// ── RF-T6-A01 üretir-doldurma turu (2026-07-18): geriye dönük meyve ilanları ──
+// Eklenti F1-F10 raylarının modül-dışı gerçek ürünleri — üreten Adımlar
+// eklenti/plan.sar'da üretir: kenarıyla bağlandı (Adım→kod izi plandan okunur).
+Kod( kod: KOD-SNF-KANON, dosya: "oz/siniflama/kayit.json",
+  ne: "🍎 SNF-0 kanon dosyası — şema · enum · renk kanonu · durum geçişleri · karne skalası tek doğruluk kaynağında; motor+eklenti aynı kanondan okur (EKL-F9 tek-şema-evi reformunun meyvesi)" )
+Kod( kod: KOD-YASA-SOZDIZIMI,
+  ne: "🍎 Söz dizimi yasası — DIL-6 söz dizimi ailesinin maddeleri canlı .sar hukuku olarak (EKL-F1 md→sar çevirisinin meyvesi); gövde 2026-07-31 tarihinde repo dışı arşive indi, yürür hüküm kanon DIL bölümündedir" )
+Kod( kod: KOD-YASA-GK,
+  ne: "🍎 Genel kurallar külliyatı çevirisi — yasa/genel_kurallar/{dil·yapi·belge·bicim·surec·gorunurluk}.sar altı kategori (EKL-F8-A05 md→sar çevirisinin meyvesi; tek dosyaya indirgenemez, aile ilanı)" )
+Kod( kod: KOD-YASA-DIZIN,
+  ne: "🍎 Genel kurallar haritası — külliyatın kategori dizini; soz_dizimi.sar satırı ve GÜVENLİK kategorisi ADM-MUT-A4 mutabakatında gerçeğe hizalandı (Sol 4. kabul denetiminin yanlış-eşleme bulgusu üzerine ayrı meyve olarak ilan edildi: dizin.md altı-kategori .sar ailesinin üyesi değil, haritasıdır)" )
+Kod( kod: KOD-DERSLER, dosya: "ogreti/ogrenme/dersler.sar",
+  ne: "🍎 Ders defteri — Sarmal'ın kendi hafızası: Bellek(tür:ders) kayıtları + terfi zinciri (EKL-F8-A02 kalıbı ve EKL-F9-A13 kadro-denetimi derslerinin meyvesi)" )
+Kod( kod: KOD-KANCA-PRECOMMIT, dosya: "kanca/pre-commit",
+  ne: "🍎 Commit kapısı betiği — denetle drift-gate + staged .ts değişiminde test kapısı; arıza-güvenli (EKL-F9-A11 meyvesi; sicil kaydı: KNC-COMMIT-KAPISI)" )
+Kod( kod: KOD-EKL-IKONLAR,
+  ne: "🍎 Kuzey Yıldızı ikon ailesi — eklenti/ikonlar/{kuzey-parlak·kuzey-orta·kuzey-sonuk}.svg + gömülü codicon ürün-ikonu (EKL-F10-A09 meyvesi)" )
+Kod( kod: KOD-YASA-ISAKISI,
+  ne: "🍎 İş akışı yasası — iş akışı ailesinin evre kapıları (doğuş→plan→olgunluk→kod) canlı hukuk (SEF-L1 meyvesi); gövde 2026-07-31 tarihinde repo dışı arşive indi, yürür hüküm ORK-7 maddesindedir" )
+Kod( kod: KOD-YASA-KODLAMA,
+  ne: "🍎 Kodlama akışı yasası — aşama mikro zinciri (üretici≠denetçi · VARLIK≠DOĞRULUK) canlı hukuk (SEF-L1 meyvesi); gövde 2026-07-31 tarihinde repo dışı arşive indi, yürür hüküm ORK-7 maddesindedir" )
+Kod( kod: KOD-MEK-SEF, dosya: "is/plan/mekanizma/mek_sef.sar",
+  ne: "🍎 ŞEF mekanizma sözleşmeleri — SZL-ETMEN-CIKTI · SZL-BAGLAM-PAKET · SZL-GEREKCE · SZL-DURAK + araç-çağrı kontratları (SEF-L2/L3 meyvesi)" )
+Kod( kod: KOD-YASA-YUZEY,
+  ne: "🍎 Yüzey yasası — evrensel yüzey/kod kuralları, son md→sar dönüşümü (BKM-DIL-A04 meyvesi); gövde 2026-07-31 tarihinde repo dışı arşive indi, yürür hüküm kanon YUZ bölümündedir" )
+Kod( kod: KOD-BUGAVI-DEFTER, dosya: "is/nitelik/bug_avi_defteri.sar",
+  ne: "🍎 Bug-avı defteri — kalan-yüzey taramasının bulgu envanteri ve disposisyon kayıtları (BKM-BUG-A10 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/gorsel_diff_fizibilite.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-GORSELDIFF-RAPOR,
+  ne: "🍎 Görsel-diff fizibilite raporu — screenshot↔mockup araştırması + Founder hükmü (TAS-E01 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/emoji_kanon_taslagi.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-EMOJI-TASLAK,
+  ne: "🍎 Emoji eşleme kanonu tasarımı — tip→emoji haritası taslağı, kanona iniş öncesi (EMJ-A01 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/karne_skalasi_taslagi.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-KARNE-TASLAK,
+  ne: "🍎 Karne skalası tasarımı — ⭐ beş derece + dört sicil bileşeni adayları ve Founder seçimi (EMJ-A04 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/yasa_goc_olcutu.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-YASA-GOC-OLCUTU,
+  ne: "🍎 Yasa göç ölçütü — üç-soru testi (varsayılan-KALMAK · çapraz-konu → GenelKural · dizin-hedef → ÖzelKural), Founder onaylı (RF-T6-A07 meyvesi)" )
+Kod( kod: KOD-KNT-ILK-TEMAS, dosya: "is/nitelik/knt_a06_ilk_temas.sar",
+  ne: "🍎 Kanıt ekseni ilk-temas kaydı — tezin gerçeklikle ilk gerçek koşusunun defteri (KNT-A06 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/zaman_dili_evrimi_tasarimi.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-ZMN-TASARIM,
+  ne: "🍎 Dil evrimi tasarım raporu — mevsim: kenarı (tek-KOD, sanal-çağır normalize) + planlanmamış beyanı (zorunlu-nedenli alan) + fazsız-blok üç meşru hâl; Founder onaylı 2026-07-19 (ZMN-A04 meyvesi)" )
+Kod( kod: KOD-SNM-OGRET, dosya: "urun/cekirdek/sinama/ogret.test.ts",
+  ne: "🍎 ogret MCP aracı sınamaları — konusuz karşılama kartı · konulu tam metin/kod eşleşmesi/hata listesi · tools-list 18 nöbeti (DVR-A04 meyvesi)" )
+Kod( kod: KOD-SOGUK-SINAV, dosya: "is/nitelik/soguk_baslangic_sinavi.sar",
+  ne: "🍎 Soğuk-başlangıç sınavı defteri — karşılama kartının öğretme gücü sayıyla kanıtlandı (2 görev × 2 kol × llama; kartlı ilk turda ⛔0, kartsız hiç geçemedi); kalıcı fikstür+betik dvr-a06-fikstur/ (DVR-A06 meyvesi)" )
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/sol_orkestrasyon_raporu.md); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-RAPOR-SOL-ORKESTRASYON,
+  ne: "🍎 Sol orkestrasyon araştırma raporu — eski-nesil desen arkeolojisi + 2025-2026 literatür taraması + KPN-A04 açılış oturumu zemini (12 karar sorusu · risk listesi · ilk sürüm kapsamı); ham dış-denetçi ürünü, hükmü CKR-SOL-ORK-RAPOR Çıkarımında" )
+Kod( kod: KOD-WS-AYAR,
+  ne: "🍎 Çalışma alanı VS Code ayarları (depo kökü .vscode/settings.json) — GitLens susturma satırları (185-186) + [*Light*] tema blokları; EKL-F10-A08 ve giydir üreticisinin ortak yüzeyi" )
+Kod( kod: KOD-EKL-GITIGNORE, dosya: "urun/eklenti/.gitignore",
+  ne: "🍎 Eklenti yoksayma listesi — *.vsix build çıktısı kuralı (tek kararlı sürüm disiplini, EKL-F10-A10 meyvesi)" )
+Kod( kod: KOD-ORNEK-KIMLIK-YUZEY, dosya: "ogreti/ornek/gercek/yuzey_kimlik.sar",
+  ne: "🍎 Kimlik diliminin yüzey ağacı — auth/login üç-ağaç ayrımının format ispatı (ADM-ROUNDTRIP-AUTH meyvesi)" )
+Kod( kod: KOD-ORNEK-KIMLIK-ARKAYUZ, dosya: "ogreti/ornek/gercek/arkayuz_kimlik.sar",
+  ne: "🍎 Kimlik diliminin arkayüz ağacı — Servis→Uç→Sözleşme kolu, üç-ağaç format ispatının ikizi (ADM-ROUNDTRIP-AUTH meyvesi)" )
+Kod( kod: KOD-VITRIN-ETMEN, dosya: "ogreti/ornek/vitrinler/dogus_etmen.sar",
+  ne: "🍎 Açık vitrin kadrosu — Anayasa+Yetenek+Orkestrasyon+Etmen (gömülü Beceri·Bellek·Tetikleyici) + Görev zinciri; motorun kadroyla canlı çalıştığının OSS-demo kanıtı (SEF-L3-A19 meyvesi; gerçek kadro STR-3 gereği kapalı tarafta)" )
+Kod( kod: KOD-EKL-ESBUILD, dosya: "urun/eklenti/esbuild.mjs",
+  ne: "🍎 Eklenti paket betiği — esbuild ile out/ üretimi (build zincirinin gövdesi; TEK-ESBUILD teknolojisinin somut yüzü)" )
+Kod( kod: KOD-EKL-ESBUILD-SINAMA, dosya: "urun/eklenti/esbuild-sinama.mjs",
+  ne: "🍎 Eklenti sınama-paket betiği — VS Code entegrasyon kasasının derleme adımı (test:vscode zincirinin gövdesi)" )
+Kod( kod: KOD-DIZIN-DUZENI,
+  ne: "🍎 Alt-çizgi dizin düzeni — DIL-1.2 klasör-adı göçünün somut ürünü: genel_kurallar · altin_yol · uygulama_a/b · sinama_vscode · tasarim_sozlugu · flutter_sozluk dizin ailesi (7 klasör git mv + ~40 atıf; iz 38abdff deseni); tekil dosya değil YAPI meyvesi — Sol RED-2 önerisiyle ilan edildi (BKM-AD-A01 meyvesi)" )
+
+// 🍎 RF-T6-A01 dogfood turunun meyvesi (KABUL kapanışı 2026-07-19)
+Kod( kod: KOD-DOGFOOD-SICIL,
+  ne: "🍎 Dogfood turunun sicil ailesi — nitelik/{kosum_sicili·nitelik_sicili·altyapi_sicili}.sar (24 dogfood tipinin canlı diriliş kayıtları) + nitelik/sol_dogfood_kabul.sar (istem + 7 hüküm Çıkarımı) + sol_dogfood_kabul_raporu*.md ham raporları + nitelik/kosu-2026-07-10T13-43-25-037Z.jsonl izlenen ham kanıt (RF-T6-A01'in meyvesi; tek dosyaya indirgenemez, aile ilanı — ev: nitelik rafı)" )
+
+// ── Kapalı turlardan devralınan ilanlar (GOC-PROJEKOD-A08 · 2026-07-31) ──────
+//   Kapanmış plan turları repo dışı arşive indi; ürettikleri CANLI modüllerin
+//   meyve ilanları bu haritaya devredildi. Üretici Adım'ların tam kaydı arşivde
+//   ve git tarihçesindedir; eski→yeni hüküm karşılıkları capraz_harita.sar'dadır.
+Kod( kod: KOD-DIL-BAGLAMI, dosya: "urun/cekirdek/src/dil-baglami.ts",
+  ne: "🍎 Ajan dil bağlamı üreticisi — AGENTS.md'yi tip/kenar kanonundan ve koni alanlarından derler (elle kopya yasak, tek kaynak)" )
+Kod( kod: KOD-DOGUS, dosya: "urun/cekirdek/src/dogus.ts",
+  ne: "🍎 Doğuş paketi yazıcısı — manifest (saf) + diske yazım (ezmez) + insan/ajan raporu; şablonlar sablon/dogus/ rafından" )
+Kod( kod: KOD-EMOJI-YAZIM, dosya: "urun/cekirdek/src/emoji-yazim.ts",
+  ne: "🍎 Emoji takma-adı çekirdeği — Founder-onaylı kanonun (kayit.json emojiYazimi) çekirdek eşi + emojiEsle: belirteçleyici tek yönlü normalleştirir, iki yüz aynı grafı üretir (emoji turunun ürünü)" )
+Kod( kod: KOD-KARNE, dosya: "urun/cekirdek/src/karne.ts",
+  ne: "🍎 Karne raporu saf çekirdeği — onaylı ⭐ skalasını kanondan (kayit.json karneSkalasi) okur, Etmen düğümlerini graftan toplar, boş sicilde dürüst 'henüz sicil yok' basar; CLI ve MCP aynı çekirdeği çağırır (emoji turunun ürünü)" )
+Kod( kod: KOD-ORKESTRA, dosya: "urun/cekirdek/src/orkestra.ts",
+  ne: "🍎 Paralel yürütücü — Kahn seviyelerinden paralel-küme + limitli allSettled koşusu; zaman damgalı eşzamanlılık kanıtı (orkestra halkasının ürünü)" )
+Kod( kod: TAN-ACIK-ADIM, dosya: "urun/cekirdek/src/denetci.ts",
+  ne: "🍎 açık-adım tanısı + motor-susmaz kapanış — beklemede/geliştirmede Adım neden'iyle gündemde, iş bitene dek motor susmaz (Founder 2026-07-14)" )
+Kod( kod: KOD-SNM-HARITA-NOBET, dosya: "urun/cekirdek/sinama/baglam-haritasi.test.ts",
+  ne: "🍎 Kırık-işaretçi nöbeti — haritadaki her üye yolu kanonda çözülür, tanımsız aile ve zorlayıcı alan testi kırar (kavram-rehberi turunun ürünü)" )
+Kod( kod: KOD-SNM-DILBAGLAMI, dosya: "urun/cekirdek/sinama/dil-baglami.test.ts",
+  ne: "🍎 Dil bağlamının nöbeti — kanon-senkronluk (her tip/kenar içerikte), üretilen-dosya beyanı ve kapalı-ürün sızıntı bekçisi (STR-3)" )
+Kod( kod: KOD-SNM-DOGUS, dosya: "urun/cekirdek/sinama/dogus.test.ts",
+  ne: "🍎 Doğuş paketinin nöbeti — doğan proje gerçek denetimden sıfır hata çıkar; dolu-dizin sözleşmesi ve idempotens testli" )
+Kod( kod: KOD-SNM-EMOJI, dosya: "urun/cekirdek/sinama/emoji-yazim.test.ts",
+  ne: "🍎 Emoji yazımı sınaması — eşdeğerlik + karışık yazım + geriye uyumluluk kanıtları ve kanon eşitlik nöbeti; prizma yansıma sınaması emoji turunda eklendi" )
+Kod( kod: KOD-SNM-KARNE, dosya: "urun/cekirdek/sinama/karne.test.ts",
+  ne: "🍎 Karne sınaması — kanon varlık/tek-anlamlılık nöbeti + boş-sicil dürüstlüğü + rapor yüzü kanıtları (emoji turunun ürünü)" )
+Kod( kod: KOD-SNM-METIN-ATIF, dosya: "urun/cekirdek/sinama/metin-atif.test.ts",
+  ne: "🍎 metin-atıf kapısının sınaması — karşılıksız atıf yakalanır · çöp elenir · .sar bu kapının dışı (çift tanı yok) · düzey .md bilgi / .ts uyarı (HATA değil)" )
+Kod( kod: KOD-SNM-DOSYA-YAZ, dosya: "urun/cekirdek/sinama/nvidia-dosya-yaz.test.ts",
+  ne: "🍎 yazma aracı sınaması — kök-dışı/mutlak/derin/ön-ek-komşusu RED + izinli yazımda dosya gerçekten diskte; mutasyon DİSKİ ölçtü (kacak.txt kök dışına yazıldı, find ile bulundu)" )
+Kod( kod: KOD-SNM-KOPRUBAG, dosya: "urun/cekirdek/sinama/nvidia-koprubag.test.ts",
+  ne: "🍎 sınama nöbeti — köprü bağlanması (LLM'siz, 23 fikstürlü): symlink kaçışı üç yürütücüde de RED (disk ölçülür, hata metni değil) · denetçi diske dokunamaz · 503 tekrar/backoff/kalıcı-hata ayrımı · argümansız nvidiaEtmenYap() regresyon kilidi" )
+Kod( kod: KOD-SNM-NVIDIA-TOOLROUND, dosya: "urun/cekirdek/sinama/nvidia-toolround.test.ts",
+  ne: "🍎 sicil sahiplenme sınaması — kırmızı-takım fikstürü: model sahte sicil uydurur + hiç araç çağırmaz → alan silinir (mutasyonla sınandı: koşullu atama geri konunca DÜŞER)" )
+Kod( kod: KOD-SNM-TEST-KOS, dosya: "urun/cekirdek/sinama/test-kosucu.test.ts",
+  ne: "🍎 test koşucusu sınaması — geçen→0 · kırık→≠0 ayrışması + NODE_TEST_CONTEXT nöbeti (miras 'skipping running files' ile kırık testi 0 gösteriyordu); mutasyon 5/5 öldürüldü" )
+Kod( kod: KOD-ATIF-CEKIRDEK, dosya: "urun/eklenti/src/atif-cekirdek.ts",
+  ne: "🍎 Atıf saf çekirdeği — link kararının üç koşulu (KOD biçimi + tanımlı + tanımın-kendisi-değil) vscode'suz tek yerde (netlik turunun ürünü)" )
+Kod( kod: KOD-ATIF-DEKOR, dosya: "urun/eklenti/src/atif-dekor.ts",
+  ne: "🍎 Çözülen atıf görünümü — kimlik indeksinde tanımı olan her KOD atfı, belgenin her yerinde (parametre, yorum, belge bloğu) link rengi ve altı çizgiyle işaretlenir; tanımsız sözce işaretlenmez (netlik turunun ürünü)" )
+Kod( kod: KOD-CAM, dosya: "urun/eklenti/src/cam.ts",
+  ne: "🍎 Cam efekti — tip adları ve anahtar kelimeler buzlu-cam kapsülde; sarmal.camEfekti ayarıyla (zarafet turunun ürünü)" )
+// KOD-DUZYAZI-TONU İLANI GERİ ALINDI (2026-08-10): düz yazı tonu katmanı Founder'ın
+// okunurluk bildirimiyle aynı gece söküldü — soldurulan anlatı okunamaz hâle gelmişti
+// ve asıl şikayet kaynak boyaması değil okuma modunun görünümüydü; iz git geçmişinde.
+Kod( kod: KOD-EMOJI-YUZ, dosya: "urun/eklenti/src/emoji-yuz.ts",
+  ne: "🍎 Emoji yüzü saf çekirdeği — ad→emoji ters eşlemesi + emoji sözce çözümü + yüz algısı (emojiYuzuMu) + yazım-dışı bölge tespiti; tamamlama ve ipucu buradan beslenir (emoji turunun ürünü)" )
+Kod( kod: KOD-IPUCU-CEKIRDEK, dosya: "urun/eklenti/src/ipucu-cekirdek.ts",
+  ne: "🍎 İpucu saf çekirdeği — kod tanım taraması (Karar hükmü dahil) + karar metni eki + belge-bloğu iç/dış tespiti vscode'suz tek yerde (netlik turunun ürünü)" )
+Kod( kod: KOD-ONAY-CEKIRDEK, dosya: "urun/eklenti/src/onay-cekirdek.ts",
+  ne: "🍎 Onay kapısı saf çekirdeği — onayKapilariTopla: kapı tanımanın üç koşulu (durum açık + Founder-onay imzalı ölçüt + onay: yok) vscode'suz tek yerde; yol-dekor deseni (netlik turunun ürünü)" )
+Kod( kod: KOD-ONAY-KUYRUGU, dosya: "urun/eklenti/src/onay-kuyrugu.ts",
+  ne: "🍎 Onay kuyruğu — Founder onayı bekleyen Adımlar Comments paneline iş parçacığı olarak düşer; karar üç düğmeyle verilir ve onay: kaydı olarak Adım'ın altına işlenir (netlik turunun ürünü)" )
+Kod( kod: KOD-SNM-ATIF-IPUCU, dosya: "urun/eklenti/sinama/atif-ipucu.test.ts",
+  ne: "🍎 Atıf + ipucu sınaması — link kararı, tanım taraması, hüküm eki ve blok tespitinin fikstürlü kanıtı (netlik turunun ürünü)" )
+Kod( kod: KOD-SNM-EMOJI-YUZ, dosya: "urun/eklenti/sinama/emoji-yuz.test.ts",
+  ne: "🍎 Emoji yüzü sınaması — ters eşleme kanon nöbeti + yüz algısı dürüstlüğü + yazım-dışı tespit + biçimlendirici yüz koruması kanıtları (emoji turunun ürünü)" )
+Kod( kod: KOD-SNM-MADDELE, dosya: "urun/eklenti/sinama/maddele.test.ts",
+  ne: "🍎 Madde çevirme sınaması — noktaliVirgulMaddele davranış nöbeti (zarafet turunun ürünü)" )
+Kod( kod: KOD-SNM-ONAY, dosya: "urun/eklenti/sinama/onay-kuyrugu.test.ts",
+  ne: "🍎 Onay kapısı sınaması — kapı tanımanın fikstürlü kanıtı + karar yazım noktasının gidiş-dönüş nöbeti (onay kaydı eklenince kapı kapanır; sessiz kayıp yasak — netlik turunun ürünü)" )
+Kod( kod: KOD-ICINDEKILER, dosya: "urun/cekirdek/src/icindekiler.ts",
+  ne: "🍎 MD içindekiler çekirdeği — `### ` başlıklarından çapa/slug üretimi; eski KARARLAR defteri üreticisinden 2026-07-31 gövde arşivlemesinde devralındı, `sarmal icindekiler` komutu buradan beslenir" )
+
+// 🍎 Eklenti araç rafının betikleri (2026-08-22 · BKM-OLG-A10 kapanış turunda beyan edildi)
+//    İki betik de eklentinin arac/ rafında yaşar ve derleme boru hattının değil
+//    bakım işinin parçasıdır; diskte plan beyanı olmadan durdukları için denetim
+//    onları yetim meyve sayıyordu ve beyan bu körlüğü kapatır.
+Kod( kod: KOD-EKL-KUR, dosya: "urun/eklenti/arac/kur.mjs",
+  ne: "🍎 Eklenti kurulum betiği — paketlenen eklentiyi yerel editöre kurar ve sürüm doğrulamasını yapar; geliştirme turlarının kapanışında elle koşulur" )
+Kod( kod: KOD-EKL-SIMGE-URET, dosya: "urun/eklenti/arac/simge-uret.mjs",
+  ne: "🍎 Simge üreteci — geometrik marka ailesinin anlam varyantlarını tek kaynaktan türetir; renk gömmez ve elle çizilmiş simge yazımını gereksiz kılar" )
+
+// 🍎 KYN-OGR-A01 öğretim üretecinin meyveleri (kaynak disiplini rayı · 2026-08-08)
+//    Üreteç motorun içinde değil arac/ rafında yaşar, çünkü kanondan yüz üreten
+//    bir betik derleme boru hattının parçası değildir; motor kaynağı denetler,
+//    bu betik ise denetlenen kaynaktan okunabilir bir yüz türetir.
+Kod( kod: KOD-OGRETIM-URET, dosya: "urun/arac/ogretim-uret.ts",
+  ne: "🍎 Öğretim üreteci — on dört sınıf ailesinin öğretim kartı iskeletini oz/siniflama/kayit.json kanonundan üretir; künye ile iskelet bölgeleri idempotent yazılır, elle yazılan anlatı bölgesi korunur (KYN-OGR-A01 meyvesi)" )
+Kod( kod: KOD-OGRETIM-TEMEL, dosya: "ogreti/ogretim/aile_temel.md",
+  ne: "🍎 temel ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart kanonun omurga üçlüsü ve okuma sırası sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-PLAN, dosya: "ogreti/ogretim/aile_plan.md",
+  ne: "🍎 plan ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart zaman, iş, teknoloji ve departman eksenleri sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-YASA, dosya: "ogreti/ogretim/aile_yasa.md",
+  ne: "🍎 yasa ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart hüküm, kural ve anayasa düzlemi sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-BILGI, dosya: "ogreti/ogretim/aile_bilgi.md",
+  ne: "🍎 bilgi ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart karar, formül, sözlük ve taahhütsüz fikir sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-OZ, dosya: "ogreti/ogretim/aile_oz.md",
+  ne: "🍎 oz ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart kitaplık, raf ve sınıflama kaydı sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-ETMEN, dosya: "ogreti/ogretim/aile_etmen.md",
+  ne: "🍎 etmen ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart yetenek, beceri ve tetikleyici üçlüsü sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-ORKESTRASYON, dosya: "ogreti/ogretim/aile_orkestrasyon.md",
+  ne: "🍎 orkestrasyon ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart döngü, mekanizma ve işletim halkası sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-TEKNOLOJI, dosya: "ogreti/ogretim/aile_teknoloji.md",
+  ne: "🍎 teknoloji ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart takım, yığın ve ortam bağı sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-URUN, dosya: "ogreti/ogretim/aile_urun.md",
+  ne: "🍎 urun ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart kod, meyve ve üretim kökeni sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-NITELIK, dosya: "ogreti/ogretim/aile_nitelik.md",
+  ne: "🍎 nitelik ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart sınama, metrik, kapsama ve güvenlik sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-SUREC, dosya: "ogreti/ogretim/aile_surec.md",
+  ne: "🍎 surec ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart koşum, iz, komut ve görev sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-ARKAYUZ, dosya: "ogreti/ogretim/aile_arkayuz.md",
+  ne: "🍎 arkayuz ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart uç, sözleşme ve servis sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-YUZEY, dosya: "ogreti/ogretim/aile_yuzey.md",
+  ne: "🍎 yuzey ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart düzen ile yaprak tiplerinin ayrımı sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-OGRETIM-DAVRANIS, dosya: "ogreti/ogretim/aile_davranis.md",
+  ne: "🍎 davranis ailesinin öğretim kartı — anlatı bölgesi elle yazılır ve üreteç ona dokunmaz; kart durum, veri bağı ve canlanma sorusunu bir soruyla açar, metaforuyla anlatır ve canlı ağaçtan alınmış gerçek bir örnekle kapatır (KYN-OGR-A02 meyvesi)" )
+Kod( kod: KOD-SNM-OGRETIM-URET, dosya: "urun/cekirdek/sinama/ogretim-ureteci.test.ts",
+  ne: "🍎 Öğretim üreteci sınaması — on dört kartın üretimi, iki koşunun birebirliği, anlatı bölgesinin korunması ve üretilen kartların motor öğretim nöbetinden geçmesi kanıtlanır (KYN-OGR-A01 meyvesi)" )
+
+// 🍎 KYN-KYN-A01 kaynak dönüşümünün meyvesi (kaynak disiplini rayı · 2026-08-08)
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (plan/rayda/ray3_yol_haritasi.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-RAY3-GOVDE,
+  ne: "🍎 Ray üç yol haritasının .sar gövdesi — markdown'da yaşayan otuz altı maddenin üç kovaya ayrılıp Adım kimliğine kavuştuğu plan gövdesi; dönüşümden önce bu maddelerin hiçbiri denetime girmiyordu (KYN-KYN-A01 meyvesi)" )
+
+// 🍎 KYN-YUZ-A01 Fikir panel yüzeyinin meyveleri (kaynak disiplini rayı · 2026-08-08)
+//    Fikir tipi kanonda Hatırlatıcı'nın söz-verilmemiş kardeşidir; bu yüzden
+//    yüzeyi de kardeşinin panelinin İÇİNDE bir bölüm olarak doğdu ve kenar
+//    çubuğuna beşinci bir görünüş eklemedi. Meyveler bu yüzden bir panel değil,
+//    bir saf çekirdek, onun nöbeti ve bölümün vektörel işaretidir.
+Kod( kod: KOD-FIKIR-CEKIRDEK, dosya: "urun/eklenti/src/fikir-cekirdek.ts",
+  ne: "🍎 Fikir yüzeyinin saf çekirdeği — ayrışmış ağaçtan Fikir düğümlerini toplar, panel satırının etiketini, dönüş tetikleyicisini okutan gri açıklamasını ve ipucunu tarif eder, dosya başına defteri tek yayın ve kapsam süzgeci sözleşmesiyle tutar; vscode kabuğu istemez (KYN-YUZ-A01 meyvesi)" )
+Kod( kod: KOD-SNM-FIKIR-YUZEYI, dosya: "urun/eklenti/sinama/fikir-yuzeyi.test.ts",
+  ne: "🍎 Fikir yüzeyi nöbeti — yazılan bir Fikrin gerçek ayrıştırıcıdan geçip panel satırına dönüştüğünü, dönüş tetikleyicisinin yüzeye çıktığını mutasyonla, eksik alanın uydurulmadığını ve arayüz işaretlerinin vektörel aileden gelip hiç emoji taşımadığını ölçer (KYN-YUZ-A01 meyvesi)" )
+Kod( kod: KOD-FIKIR-PANELI, dosya: "urun/eklenti/src/fikirler.ts",
+  ne: "🍎 Fikirler panelinin görünüş kabuğu — Fikir kayıtlarını kenar çubuğundaki kendi ağacına basar; satır tarifini saf çekirdekten alır ve kendi tarifini icat etmez, kayıtları paylaşılan önbellekten gelen defterden okur ve ikinci bir tarama kurmaz (VIT-GRAF-A16 meyvesi)" )
+Kod( kod: KOD-SNM-FIKIR-PANELI, dosya: "urun/eklenti/sinama/fikir-paneli.test.ts",
+  ne: "🍎 Fikir panelinin ayrışma nöbeti — Fikirlerin kendi görünüşünde yaşadığını, Hatırlatıcılar panelinde Fikir bölümünün bir daha doğmadığını, iki panelin boş durum cümlesinin kendi hanesini anlattığını ve ikinci sayaç kurulmadığını mutasyonla ölçer (VIT-GRAF-A16 meyvesi)" )
+Veri( kod: VRI-SIMGE-FIKIR, dosya: "urun/eklenti/medya/simgeler/satir-fikir.svg",
+  ne: "🍎 Fikir bölümünün vektörel işareti — geometrik ailenin çizim dilinde (24x24 görüş kutusu, currentColor kontur, 1.7 kalınlık) çizilmiş yanan halka; renk gömülmez, anlam varyantları arac/simge-uret.mjs üreticisiyle türer (KYN-YUZ-A01 meyvesi)" )
+
+// 🍎 KYN-ONC-A01 öncelik kademelerinin meyvesi (kaynak disiplini rayı · 2026-08-08)
+//    Meyve kanonun orkestrasyon bölümüdür, çünkü bu Adımın ürünü bir mekanizma
+//    değil bir anlam tanımıdır ve tanım yalnız kanonda yaşar. Alanın şemadaki
+//    karşılığı ayrı bir meyve sayılmaz; sınıflama kaydı zaten kanonun makine
+//    yüzüdür ve kendi mühürüyle nöbet altındadır.
+Kod( kod: KOD-KANON-ORK, dosya: "yasa/kanon/ork.sar",
+  ne: "🍎 Kanonun orkestrasyon bölümü — ORK-3.4 Öncelik Kademeleri maddesinin evi; dört kademenin anlamı ölçülebilir biçimde yazılır, küme bütün tipler için ortaktır ve beyanın yürütme sırasını değiştirmediği açıkça hükme bağlanır (KYN-ONC-A01 meyvesi)" )
+
+// 🍎 KYN-GNC-A01 güncellik hükmünün meyvesi (kaynak disiplini rayı · 2026-08-09)
+Kod( kod: KOD-KANON-YUZ, dosya: "yasa/kanon/yuz.sar",
+  ne: "🍎 Kanonun yüzeyler bölümü — YUZ-7 Yüzey Güncelliği maddesinin evi; hüküm dört yüzeyi adıyla kapsar ve öğretim yüzeyindeki uygulanışını OGR-3 hükmüne bırakarak sınırı açıkça çizer (KYN-GNC-A01 meyvesi)" )
+
+// 🍎 KYN-TUR-A01 tur kaydının meyvesi (kaynak disiplini rayı · 2026-08-08)
+//    Meyve bir kayıt gövdesidir ve nitelik rafında yaşar. Founder hükmü gereği
+//    tur raporları geçici markdown alanında değil ilanlı bir rafta .sar biçiminde
+//    tutulur; böylece motor onları görür, atıfları çözülür ve tur hafızası
+//    oturumla birlikte silinmez.
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (nitelik/gece_turu_2026_08_08.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-TUR-KAYDI-0808,
+  ne: "🍎 8 Ağustos gece turunun kalıcı kaydı — yedi üretici, altı denetçi ve iki düzeltme turunun sonucu dört Çıkarım olarak yaşar; üçü karar değiştirmiştir (yönerge ikizi nöbetinin kör noktası, Fikir yüzeyinin sınanamazlığı ve elli bir uyarının gerçek kaynağı) ve biri turun bütününü özetler (KYN-TUR-A01 meyvesi)" )
+
+// 🍎 KYN-USL-A01 yazım ve üslup hükmünün meyvesi (kaynak disiplini rayı · 2026-08-08)
+//    Meyve bir kod dosyası değil kanon bölümünün kendisidir, çünkü bu Adımın
+//    ürünü çalışan bir mekanizma değil bağlayıcı bir hükümdür. Hüküm kanonda
+//    yaşadığı için meyve de kanon dosyasını gösterir; yönerge dosyaları meyve
+//    sayılmaz, çünkü onlar YUZ-1.2 gereği yalnız işaretçidir.
+Kod( kod: KOD-KANON-DIL, dosya: "yasa/kanon/dil.sar",
+  ne: "🍎 Kanonun dil bölümü — DIL-1.5 Anlatım Bütünlüğü maddesinin evi; hüküm beş şartıyla birlikte niyet katmanında yaşar ve yalnız Founder sözünün aktarımını değil bütün .sar yazımını, kanon maddelerini, Adım metin alanlarını, belge bloklarını ve işleme mesajlarının gövdesini bağlar (KYN-USL-A01 meyvesi)" )
+
+// 🍎 KYN-KYN-A02 şef yol haritası dönüşümünün meyvesi (2026-08-08)
+// KÜRASYON (GOC-A08 · 2026-08-25): bu teslimin dosyası atölye deposunda kalır (plan/sef_yol_haritasi.sar); açık depoda dosya beyanı düşürüldü.
+Kod( kod: KOD-SEF-HARITA-GOVDE,
+  ne: "🍎 Şef yol haritasının .sar gövdesi — markdown'da yaşayan on üç maddenin kalıcı tarif ile zamana bağlı iş olarak ayrıldığı ve üç koni dolu Adımın doğduğu plan gövdesi; kalıcı tarif ŞEF mekanizma ilanına indi, gövde yalnız işi taşır (KYN-KYN-A02 meyvesi)" )
+
+// 🍎 KYN-MTR-A02 yönerge ikizi nöbetinin sınama meyvesi (2026-08-08)
+//    Nöbetin kaynak meyvesi (KOD-YONERGE-IKIZI) bu haritanın denetim motoru
+//    bölümünde ilan edilmişti, fakat sınama meyvesi ilansız kalmıştı ve motor
+//    açık aracın TEK yetim-meyve uyarısını bu dosya için basıyordu. Kardeş
+//    üreticilerin deseni (KOD-SNM-OGRETIM-URET · KOD-SNM-FIKIR-YUZEYI) izlenerek
+//    sınama da kendi kimliğiyle ilan edilir; bir nöbeti koruyan sınamanın plandan
+//    görünmez kalması, korumanın kendisini denetim dışına düşürürdü.
+Kod( kod: KOD-SNM-KOK-YUZEYI, dosya: "urun/cekirdek/sinama/kok-yuzeyi.test.ts",
+  ne: "🍎 Kök yüzeyi nöbetinin sınaması — karşılıksız atfın adresiyle bildirilmesi, kimlik şekli süzgecinin yanlış pozitifi kesmesi, aile süzgecinin bilinçli yokluğu, örnek kaynak bloğunun kapsam dışılığı ve ilan-disk mutabakatı fikstürlerle ölçülür; canlı bölüm gerçek çalışma alanı kökünü okuyup kapının hatasız geçtiğini ve kökte ilansız dosya kalmadığını gösterir (KYN-MTR-A04 meyvesi)" )
+Kod( kod: KOD-SNM-YONERGE-IKIZI, dosya: "urun/cekirdek/sinama/yonerge-ikizi.test.ts",
+  ne: "🍎 Yönerge ikizi nöbetinin sınaması — özdeşlik, satır adresli ayrışma, eksik ikiz ve tanı seli özeti saf katmanda ölçülür; canlı nöbet deponun gerçek CLAUDE.md ile AGENTS.md dosyalarını okur, mutasyon kanıtı yeşilin tesadüf olmadığını gösterir ve atılabilir gerçek bir git deposu kurularak 'biri sahnelenmiş öteki sahnelenmemiş' tuzağında sahnelenmiş kipin kırıldığı, çalışma ağacı kipinin ise kör kaldığı birlikte kanıtlanır (KYN-MTR-A02 meyvesi)" )
+
+// ── KÜRASYON (GOC-A08 sekizinci küme · 2026-08-25): dört meyve, planı atölyede kalan Adımların ürünü ──
+//    ŞEF yol haritası ile üçüncü ray yol haritası açık depoya girmedi; o planların
+//    RAY3-ESL-A01, RAY3-GTW-A01 ve SEF-SZL-A01 Adımları bu dört dosyayı üretmişti.
+//    Dosyalar ürün kümesiyle sahneye indiği için beyanları burada Kod düğümü olarak
+//    yaşar; üreten Adımların aslı atölye deposundadır.
+Kod( kod: KOD-ESLESME, dosya: "urun/cekirdek/src/eslesme.ts",
+  ne: "🍎 Adım ile Etmen eşleyicisi — bir Adımın hangi Etmene verileceğini ölçülebilir ve gerekçeli bir kararla seçer; ağırlıklar gövdeye gömülü değildir ve boş aday kümesinde aday uydurulmaz" )
+Kod( kod: KOD-SNM-ESLESME, dosya: "urun/cekirdek/sinama/eslesme.test.ts",
+  ne: "🍎 Eşleyici nöbetlerinin sınaması — determinizm, ağırlıkların gövdeye gömülü olmaması, gerekçesiz elemenin imkânsızlığı, boş aday kümesinde aday uydurulmaması ve sınırın korunması gerçek fikstürlerle ölçülür" )
+Kod( kod: KOD-SNM-GATEWAY-SURUM, dosya: "urun/cekirdek/sinama/gateway-surum-denetimi.test.ts",
+  ne: "🍎 Araç kapısındaki sürüm denetimi ailesinin sınaması — kapı fail-closed kalır, sürüm denetimi araçları izin matrisinde tanınır ve reddin sebebi izin yokluğu ile araç tanınmazlığı arasında ayrışır" )
+Kod( kod: KOD-SNM-KURTARMA-SOZLESMESI, dosya: "urun/cekirdek/sinama/kurtarma-sozlesmesi.test.ts",
+  ne: "🍎 Kurtarma şekli nöbetlerinin sınaması — motorun ürettiği kurtarma kaydının SZL-KURTARMA sözleşmesine uyması, şekli bozulan kaydın reddedilmesi ve açık tarafta hiçbir kurtarma yolu ağırlığının yazılı olmaması ölçülür" )

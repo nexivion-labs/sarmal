@@ -1,0 +1,31 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// felsefe/ilkeler.sar — 🧭 DÖRT KURUCU İLKENİN KİMLİK KAYNAĞI
+//
+//   FEL-1, FEL-2, FEL-3 ve FEL-4 kimlikleri bugüne dek yalnız markdown
+//   başlıklarında yaşıyordu; üç kaynak dosyası onlara yapısal kenarla bağlanıyor
+//   ve denetçi, başlık bloklarını çözüm evrenine katan yazılı olmayan bir
+//   muafiyetle kırıkları susturuyordu (HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ · p0).
+//   Bağımsız müfettişin rampalı önerisinin birinci basamağı budur: ilkeler
+//   kaynakta DOĞURULUR ve atıflar susturularak değil doğru kılınarak çözülür.
+//   İkinci basamak olan muafiyetin emekliye ayrılması ayrı bir motor kapısıdır.
+//
+//   Her ilkenin tam metni kendi markdown dosyasında insan yüzü olarak yaşamaya
+//   devam eder; bu dosya kimliği ve tezi taşır, metni İKİZLEMEZ (YUZ-1.2).
+//   Doğuş: 2026-08-10 gece kampanyası · Founder yetki devriyle kontrolcü.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Felsefe( kod: FEL-1,
+  ne: "Neden Sarmal dil bağımsızdır — şef, çalgıcı değil. Tam metin: felsefe/neden-dil-bagimsiz.md",
+  tez: "Sarmal hedef kodu değil, teknoloji bağı taşıyan denetlenebilir niyeti üretir; şef partisyonu yönetir, çalgıyı çalmaz — bu yüzden her teknoloji yığını aynı niyet diline bağlanabilir." )
+
+Felsefe( kod: FEL-2,
+  ne: "Sarmal eşittir drift kalkanı artı kalıcı hafıza. Tam metin: felsefe/ai-drift-kalkani.md",
+  tez: "Doğal dil ile ürün arasındaki niyet, denetlenebilir ve kalıcı bir grafa bağlanır; insan hafızasına yenilen drift, makinenin gördüğü ve söylediği bir ölçüme dönüşür." )
+
+Felsefe( kod: FEL-3,
+  ne: "Klasör mimarisi, bildirilen ağacın fiziksel yüzüdür. Tam metin: felsefe/klasor-mimarisi.md",
+  tez: "Geliştirici yapıyı ilan eder, İskeletçi kurar, Denetçi mutabakatı korur; kod kanundur ve klasör onun aynasıdır — ilansız yapı drifttir." )
+
+Felsefe( kod: FEL-4,
+  ne: "Makine hakem — simetrik zorlama. Tam metin: felsefe/fel-4-makine-hakem.md",
+  tez: "İnsan ve Etmen aynı açık kurala tabidir; hüküm yetkili rolde, uygulama ölçülebilir motorda yaşar ve hakemin güveni yorum üstünlüğünden değil aynı girdiye aynı sonucu vermesinden gelir." )

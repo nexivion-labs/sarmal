@@ -1,0 +1,12 @@
+{
+  // sinama_vscode/ entegrasyon testleri: ana tsconfig'in "include":["src"] kapsamı
+  // DIŞINDA kalıyor + "types":["node","vscode"] mocha içermiyordu → editör describe/it/
+  // after/Mocha için "Cannot find name" gürültüsü üretiyordu (450 sahte-kırmızının gövdesi).
+  // Bu ayrı tsconfig ana ayarları extends ile miras alır, yalnız kapsamı + mocha tipini ekler.
+  // Build esbuild ile (esbuild-sinama.mjs); tsc emit yok — bu config yalnız editör/tip-denetimi.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vscode", "mocha"]
+  },
+  "include": ["."]
+}

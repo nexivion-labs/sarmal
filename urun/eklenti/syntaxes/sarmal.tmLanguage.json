@@ -1,0 +1,512 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sarmal",
+  "scopeName": "source.sar",
+  "patterns": [
+    {
+      "include": "#yorumlar"
+    },
+    {
+      "include": "#dizgiler"
+    },
+    {
+      "include": "#kuralAdi"
+    },
+    {
+      "include": "#anahtarlar"
+    },
+    {
+      "include": "#mantik-islecleri"
+    },
+    {
+      "include": "#widgetler"
+    },
+    {
+      "include": "#sarmal-ici-obje"
+    },
+    {
+      "include": "#kodlar"
+    },
+    {
+      "include": "#parametreler"
+    },
+    {
+      "include": "#akis-oku"
+    },
+    {
+      "include": "#i18n-anahtar"
+    },
+    {
+      "include": "#islecler"
+    },
+    {
+      "include": "#sayilar"
+    }
+  ],
+  "repository": {
+    "yorumlar": {
+      "patterns": [
+        {
+          "begin": "-->\\|",
+          "end": "\\|<--",
+          "name": "comment.block.documentation.sar",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.begin.sar"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.end.sar"
+            }
+          },
+          "patterns": [
+            {
+              "match": "^\\s*\\|.*\\|\\s*$",
+              "name": "markup.table.sar"
+            },
+            {
+              "begin": "^(\\s*)(```)(python)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.python",
+              "patterns": [
+                {
+                  "include": "source.python"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(dart)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.dart",
+              "patterns": [
+                {
+                  "include": "source.dart"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(typescript)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.typescript",
+              "patterns": [
+                {
+                  "include": "source.typescript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(ts)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.typescript",
+              "patterns": [
+                {
+                  "include": "source.typescript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(javascript)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.javascript",
+              "patterns": [
+                {
+                  "include": "source.javascript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(js)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.javascript",
+              "patterns": [
+                {
+                  "include": "source.javascript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(yaml)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.yaml",
+              "patterns": [
+                {
+                  "include": "source.yaml"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(sql)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.sql",
+              "patterns": [
+                {
+                  "include": "source.sql"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(json)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.json",
+              "patterns": [
+                {
+                  "include": "source.json"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(bash)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.shellscript",
+              "patterns": [
+                {
+                  "include": "source.shellscript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(sh)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.shellscript",
+              "patterns": [
+                {
+                  "include": "source.shellscript"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(html)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.html",
+              "patterns": [
+                {
+                  "include": "text.html.basic"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)(css)\\b",
+              "end": "^(\\s*)(```)\\s*$",
+              "beginCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                },
+                "3": {
+                  "name": "fenced_code.block.language.sar"
+                }
+              },
+              "endCaptures": {
+                "2": {
+                  "name": "punctuation.definition.markdown.sar"
+                }
+              },
+              "contentName": "meta.embedded.block.css",
+              "patterns": [
+                {
+                  "include": "source.css"
+                }
+              ]
+            },
+            {
+              "begin": "^(\\s*)(```)[\\w-]*\\s*$",
+              "end": "^(\\s*)(```)\\s*$",
+              "name": "markup.raw.block.sar"
+            },
+            {
+              "match": "</?[\\p{L}\\p{N}_-]+[^>]*>",
+              "name": "entity.name.tag.sar"
+            },
+            {
+              "match": "^#{1,6} .*$",
+              "name": "markup.heading.sar"
+            }
+          ]
+        },
+        {
+          "match": "///.*$",
+          "name": "comment.block.documentation.sar"
+        },
+        {
+          "match": "//.*$",
+          "name": "comment.line.double-slash.sar"
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.sar"
+        }
+      ]
+    },
+    "dizgiler": {
+      "patterns": [
+        {
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "name": "string.quoted.triple.sar"
+        },
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.sar",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.sar"
+            }
+          ]
+        }
+      ]
+    },
+    "anahtarlar": {
+      "match": "(?<![\\p{L}\\p{N}_])(çağır|Tip|Kural)(?![\\p{L}\\p{N}_])",
+      "name": "keyword.control.sar"
+    },
+    "widgetler": {
+      "match": "(?<![\\p{L}\\p{N}_])(\\p{Lu}[\\p{L}\\p{N}_]*)\\s*(?=\\()",
+      "name": "entity.name.type.sar"
+    },
+    "kodlar": {
+      "match": "(?<![\\p{L}\\p{N}_-])\\p{Lu}[\\p{Lu}\\p{N}]*(-[\\p{Lu}\\p{N}]+)+(?![\\p{L}\\p{N}_-])",
+      "name": "constant.other.kod.sar"
+    },
+    "parametreler": {
+      "match": "(?<![\\p{L}\\p{N}_])([\\p{L}][\\p{L}\\p{N}_]*)\\s*(?=:)",
+      "name": "variable.parameter.sar"
+    },
+    "sayilar": {
+      "match": "(?<![\\p{L}\\p{N}_])[0-9]+(\\.[0-9]+)?",
+      "name": "constant.numeric.sar"
+    },
+    "akis-oku": {
+      "match": "-->",
+      "name": "keyword.control.flow.sar"
+    },
+    "i18n-anahtar": {
+      "match": "#[\\p{L}_][\\p{L}\\p{N}_]*(\\.[\\p{L}_][\\p{L}\\p{N}_]*)*",
+      "name": "constant.language.anahtar.sar"
+    },
+    "mantik-islecleri": {
+      "match": "(?<![\\p{L}\\p{N}_])(ve|veya|değil)(?![\\p{L}\\p{N}_])",
+      "name": "keyword.operator.logical.sar"
+    },
+    "islecler": {
+      "comment": "Tire (çıkarma) yalnız boşluklu eşleşir — KOD birleşimi (BLK-KIMLIK) boyanmaz (DIL-1.3 tire kuralı)",
+      "patterns": [
+        {
+          "match": "==|!=|<=|>=",
+          "name": "keyword.operator.comparison.sar"
+        },
+        {
+          "match": "(?<=\\s)-(?=\\s)",
+          "name": "keyword.operator.arithmetic.sar"
+        },
+        {
+          "match": "[+*/%]|<|>",
+          "name": "keyword.operator.sar"
+        }
+      ]
+    },
+    "sarmal-ici-obje": {
+      "comment": "ADM-DGS-08: yalnız DEĞER konumundaki { anahtar: değer } — widget gövdesi `) {` YUTULMAZ (gövde içi --> ve Kural/Tip renksiz kalıyordu; HTR-GRAMMAR-OBJE)",
+      "begin": "(?<=[:\\[,])\\s*(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.object.begin.sar"
+        }
+      },
+      "end": "\\}",
+      "name": "meta.object-literal.sar",
+      "patterns": [
+        {
+          "include": "#yorumlar"
+        },
+        {
+          "include": "#dizgiler"
+        },
+        {
+          "include": "#parametreler"
+        },
+        {
+          "include": "#kodlar"
+        },
+        {
+          "include": "#sayilar"
+        },
+        {
+          "include": "#i18n-anahtar"
+        },
+        {
+          "include": "#sarmal-ici-obje"
+        }
+      ]
+    },
+    "kuralAdi": {
+      "match": "\\b(Kural|Tip)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "keyword.control.sar"
+        },
+        "2": {
+          "name": "entity.name.function.sar"
+        }
+      }
+    }
+  }
+}

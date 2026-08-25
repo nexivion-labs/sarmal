@@ -1,0 +1,6 @@
+
+# Paketlenmiş eklenti — yalnız kaynak izlenir, vsix build çıktısıdır
+*.vsix
+.vscode-test/
+dist-sinama/
+src/gomulu-kanon.ts

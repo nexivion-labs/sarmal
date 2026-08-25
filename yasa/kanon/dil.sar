@@ -1,0 +1,218 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/dil.sar — 🗣️ DİL bölümü · v1 kanonu (17 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### DIL-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Dil ve Söz Dizimi, kanonik metnin `.sar` kaynak-gerçeğinde nasıl yazılacağını, tek anlamlı olarak nasıl yorumlanacağını, biçimsel dönüşümlerde nasıl korunacağını ve madde grafında nasıl numaralandırılacağını tanımlayan tek dil otoritesidir; ikinci bir eş-yetkili söz dizimi kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [DIL, TIP, YUZ].
+**Gerekçe:** Dil kuralları birden çok yerde sahiplenilirse aynı metin ayrıştırıcı, biçimlendirici ve insan yüzünde farklı anlamlara gelir; bu madde bütün dil hükümlerini tek kökte toplar.
+**Örnek:** Kanonik akış: `.sar kaynak → belirteçler → söz dizim ağacı → doğrulanmış nötr anlam → türetilmiş yüz`.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: DIL-0, durum: kilitli,
+       ne: "DIL-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Dil ve Söz Dizimi, kanonik metnin `.sar` kaynak-gerçeğinde nasıl yazılacağını, tek anlamlı olarak nasıl yorumlanacağını, biçimsel dönüşümlerde nasıl korunacağını ve madde grafında nasıl numaralandırılacağını tanımlayan tek dil otoritesidir; ikinci bir eş-yetkili söz dizimi kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [DIL, TIP, YUZ].",
+       gerekçe: "Dil kuralları birden çok yerde sahiplenilirse aynı metin ayrıştırıcı, biçimlendirici ve insan yüzünde farklı anlamlara gelir; bu madde bütün dil hükümlerini tek kökte toplar." )
+
+-->|
+### DIL-1 · Tek Kaynak Dili ve Normalizasyon [HATA]
+**Hüküm:** Kanonik kaynak-gerçek yalnız `.sar` biçiminde ve Türkçe öncelikli yazılır; kaynak metin kimlik, ad ve değer karşılaştırmalarından önce NFC biçimine normalleştirilir, türetilmiş hiçbir metin ya da veri yüzü eş-yetkili kaynak sayılamaz; dayanak: DIL-0; ilgili: [DIL, TIP, YUZ].
+**Gerekçe:** Aynı hükmün farklı dosya biçimlerinde yaşaması kaynak çatallanmasına, görünüşte aynı Türkçe karakterlerin farklı Unicode dizileriyle saklanması ise sahte kimlik ve başvuru hatalarına yol açar.
+**Örnek:** Doğru: hüküm `kanon.sar` içinde yaşar ve diğer yüzler ondan üretilir; yanlış: aynı hükmü ayrı bir metin dosyasında elle güncel tutmak veya NFD dizilimini yeni bir ad saymak.
+**Zorlama:** Yeni tanı önerisi `kanonik-kaynak-biçimi` · HATA · “Kanonik hüküm `.sar` dışında eş-yetkili kaynak olarak tutuluyor; tek kaynak diline taşı.” · yüzey: Problems, proje CLI ve satır-lensi; `normalizasyon-uyumsuz` · BİLGİ · “Dosya NFD Türkçe karakter taşıyor; dış yüzlerle uyuşmaz.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: DIL-1, durum: kilitli,
+       ne: "DIL-1 · Tek Kaynak Dili ve Normalizasyon [HATA]",
+       karar: "Kanonik kaynak-gerçek yalnız `.sar` biçiminde ve Türkçe öncelikli yazılır; kaynak metin kimlik, ad ve değer karşılaştırmalarından önce NFC biçimine normalleştirilir, türetilmiş hiçbir metin ya da veri yüzü eş-yetkili kaynak sayılamaz; dayanak: DIL-0; ilgili: [DIL, TIP, YUZ].",
+       gerekçe: "Aynı hükmün farklı dosya biçimlerinde yaşaması kaynak çatallanmasına, görünüşte aynı Türkçe karakterlerin farklı Unicode dizileriyle saklanması ise sahte kimlik ve başvuru hatalarına yol açar." )
+
+-->|
+### DIL-1.1 · Türkçe Orthografi [UYARI]
+**Hüküm:** Kanonik adlar, alanlar ve niyet cümleleri Türkçe sözcükleri bütün diakritikleriyle ve tam orthografiyle yazar; `ç`, `ğ`, `ı`, `İ`, `ö`, `ş` ve `ü` karakterlerini anlamı ya da kanonik kimliği değiştiren ASCII karşılıklarına indirgemek yasaktır; dayanak: DIL-1; ilgili: [DIL, OGR, YUZ].
+**Gerekçe:** Diakritik kaybı aynı kavramı iki ayrı yazıma böler, alan eşleşmesini sessizce düşürür ve öğretilen dille çalışan dil arasına görünmez fark koyar.
+**Örnek:** Doğru: `sözleşme`, `sınır`, `değerlendirme`; yanlış: `sozlesme`, `sinir`, `degerlendirme`.
+**Zorlama:** `diakritik-kayıp` · BİLGİ · “Alan adı şapkasız; niyet sessizce kaybolur.” · yüzey: proje CLI; yeni tanı önerisi `orthografi-kaybı` · UYARI · “Kanonik Türkçe ad veya niyet diakritik kaybı taşıyor; tam orthografiyi kullan.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural türkçeOrthografi( kod: DIL-1.1,
+       ne: "DIL-1.1 · Türkçe Orthografi [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1,
+       tanı: [ diakritik-kayıp ] )
+
+-->|
+### DIL-1.2 · Bildirim ve Adlandırma [UYARI]
+**Hüküm:** Düğüm ve kullanıcı tipi adları büyük harfle, parametre, alan ve kural adları küçük harfle başlar; kimlik taşıyan her bildirimde `kod` ilk parametredir ve aynı alan ikinci kez yazılamaz; ilanlı şema sırası dışında anlamı belirsiz bir adlandırma kurulamaz; dayanak: DIL-1; ilgili: [DIL, TIP, YAS].
+**Gerekçe:** Kararsız harf düzeni aynı sözceyi tip ve alan rollerinde belirsizleştirir; kimliğin geriye itilmesi veya alanın yinelenmesi de ilk bakışta okunabilirliği bozar ve hangi değerin geçerli olduğu konusunda drift yaratır.
+**Örnek:** Doğru: `Adım( kod: ADM-01, ne: "Kimlik denetimi", durum: beklemede )`; yanlış: `adım( ne: "Kimlik denetimi", Kod: ADM-01, ne: "İkinci değer" )`.
+**Zorlama:** `ad-biçimi` · UYARI · “Tip adı büyük, parametre ve alan adı küçük harfle başlamalı.”; `kod-ilk-değil` · UYARI · “Kimlik ilk bakışta okunsun; `kod` ilk parametre olmalı.”; `yinelenen-parametre` · UYARI · “Motor ilk değeri okur, yinelenen değer çöpe gider.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural bildirimVeAdlandırma( kod: DIL-1.2,
+       ne: "DIL-1.2 · Bildirim ve Adlandırma [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1,
+       tanı: [ ad-biçimi, kod-ilk-değil, yinelenen-parametre ] )
+
+-->|
+### DIL-1.3 · Değerler ve Bildirimsel İfadeler [HATA]
+**Hüküm:** Metin, sayı, mantıksal değer, liste, harita, iç içe düğüm, sözlük anahtarı, erişim ve işleç ifadeleri yalnız kapalı değer dilinin söz dizimiyle bildirimsel olarak yazılır; tek `=` karşılaştırma sayılamaz, şemadaki değer türüne aykırı ya da çalıştırılabilir yan etki taşıyan ifade kabul edilemez; dayanak: DIL-1; ilgili: [DIL, TIP].
+**Gerekçe:** Serbest ve kapalı olmayan değer yazımı aynı sözceyi yüzeyden yüzeye farklı yorumlatır; tür dışı değerler ile buyruksal yan etkiler de doğrulamanın deterministik olmasını engeller.
+**Örnek:** Doğru: `koşul: güven >= 0.7 ve durum != bloklu` ve `hedefler: [ ADM-01, ADM-02 ]`; yanlış: `koşul: güven = 0.7` veya şemanın sayı beklediği alana serbest metin yazmak.
+**Zorlama:** `söz-dizim` · HATA · “Değer bekleniyordu veya tek `=` geçersiz; kapalı değer söz dizimini kullan.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `geçersiz-tür` · UYARI · “Değer ilan edilen sayı, tarih, mantıksal ya da diğer şema türüne uymuyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural değerlerVeBildirimselİfadeler( kod: DIL-1.3,
+       ne: "DIL-1.3 · Değerler ve Bildirimsel İfadeler [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1,
+       tanı: [ geçersiz-tür, söz-dizim ] )
+
+-->|
+### DIL-1.4 · Yorum, Çağrı ve Akış Yazımı [HATA]
+**Hüküm:** Satır ve blok yorumları yapının ne yaptığını yinelemek yerine niyetini açıklar; her `çağır` bildirimi çözülen kararlı bir KOD'a yönelir ve akış oku yalnız `besler` kenarının kısa yazımı olarak kullanılır, sarma veya başka bir kenar anlamına dönüştürülemez; dayanak: DIL-1; ilgili: [DIL, ORK].
+**Gerekçe:** Yapıyı düzyazıda saklayan yorumlar zamanla koddan kopar; çözülmeyen çağrılar ile çok-anlamlı akış okları ise gerçek grafı görünmez ve yönü belirsiz kılar.
+**Örnek:** Doğru: `Adım( kod: ADM-01 ) { --> ADM-02 }` yalnız ADM-01'in ADM-02'yi beslediğini anlatır; yanlış: aynı oku ebeveynlik veya genel referans işareti saymak.
+**Zorlama:** `söz-dizim` · HATA · “Yorum, çağrı veya akış yazımı dilbilgisine uymuyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `kırık-referans` · HATA · “Çağrı ya da akış hedefindeki KOD hiçbir `.sar` kaynağında yok.” · yüzey: proje CLI; `yanlış-alan` · HATA · “`bağımlılık` alanı geçersiz; kanonik kenar adı `bağımlı` olmalı.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural yorumÇağrıVeAkışYazımı( kod: DIL-1.4,
+       ne: "DIL-1.4 · Yorum, Çağrı ve Akış Yazımı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1,
+       tanı: [ kırık-referans, söz-dizim, yanlış-alan ] )
+
+-->|
+### DIL-1.5 · Anlatım Bütünlüğü [BİLGİ]
+**Hüküm:** Kanonik kaynağa yazılan her metin akademik üslupla ve tam cümlelerle kurulur; her cümle öznesini, nesnesini ve yüklemini taşır, metin amacını ve kapsamının nerede bittiğini açıkça bildirir, hükmü ile gerekçesini ayrı ayrı yazarak sebep ile sonuç arasındaki bağı cümlede görünür kılar ve giriş, gelişme ile sonuç bütünlüğü içinde bir hükümle kapanır; yazımın dilbilgisi ile diyakritik bütünlüğü DIL-1.1 hükmüne bağlıdır ve burada yinelenmez; bu hüküm kanon maddelerini, plan Adımlarının bütün metin alanlarını, yani `ne`, `görev`, `kabul`, `sınır`, `koşu` ve `onay` alanlarını, belge bloklarını ve işleme mesajlarının gövdesini bağlar; eksiltili yapı, madde imiyle sıralanmış çıplak sözcük öbeği ve gerekçesiz hüküm kayıt sayılamaz; dayanak: DIL-1; ilgili: [DIL, OGR, YAS].
+**Gerekçe:** Konuşma anında apaçık olan niyet telegrafik biçimde kaydedildiğinde aynı kaydı altı ay sonra okuyan kişi için anlaşılmaz hâle gelir; kapsamı ve gerekçesi yazılmamış hüküm ise okuru kendi çıkarımına mahkûm eder ve kaynağın anlamı zamanla sessizce sapar. Bu madde metni güzelleştirmek için değil, anlamı zamana karşı korumak için vardır.
+**Örnek:** Doğru: “Bu Adım hükmü kanona indirir; üslubun mekanik olarak ölçülmesi kapsam dışında bırakılmıştır, çünkü dilbilgisi denetimi makine için güvenilir değildir.”; yanlış: “hüküm kanona · ölçüm sonraya · kapsam dışı”.
+**Zorlama:** Zorlanmaz — niyet katmanı; anlatım bütünlüğü makine tarafından tam olarak ölçülemediği için DIL-3 uyarınca zorlanabilir koşul aranmaz ve uyum, üretici ile denetçinin ayrı olduğu insan kapısında sınanır.
+|<--
+Kural anlatımBütünlüğü( kod: DIL-1.5,
+       ne: "DIL-1.5 · Anlatım Bütünlüğü [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1 )
+
+-->|
+### DIL-2 · Belge Blokları ve Şekil Muhafazası [HATA]
+**Hüküm:** Her belge bloğu kanonik açılış imiyle başlar ve onun ayna kapanış imiyle biter; blok içindeki metin, satır sırası, göreli girinti, çizelge ve şekil karakterleri ayrıştırma, biçimlendirme ve yüz üretimi boyunca kayıpsız korunur; dayanak: DIL-0; ilgili: [DIL, YUZ].
+**Gerekçe:** Gevşek kapanış belgeyi izleyen düğümleri yanlışlıkla yutabilir; satır düzeninin değiştirilmesi ise çizelge ve ASCII şekillerini bozarak kaynakla okuma yüzünü birbirinden ayırır.
+**Örnek:** Doğru: belge içindeki `A | B` satırı ile altındaki girintili şekil aynen kalır; yanlış: tek bir boru karakterini kapanış saymak veya göreli boşlukları yeniden akıtmak.
+**Zorlama:** `söz-dizim` · HATA · “Kapanmamış belge bloğu; ayna kapanış imi eksik.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; yeni tanı önerisi `belge-şekil-drift` · HATA · “Belge bloğunun satır düzeni kaynak ile türetilmiş yüz arasında değişti.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: DIL-2, durum: kilitli,
+       ne: "DIL-2 · Belge Blokları ve Şekil Muhafazası [HATA]",
+       karar: "Her belge bloğu kanonik açılış imiyle başlar ve onun ayna kapanış imiyle biter; blok içindeki metin, satır sırası, göreli girinti, çizelge ve şekil karakterleri ayrıştırma, biçimlendirme ve yüz üretimi boyunca kayıpsız korunur; dayanak: DIL-0; ilgili: [DIL, YUZ].",
+       gerekçe: "Gevşek kapanış belgeyi izleyen düğümleri yanlışlıkla yutabilir; satır düzeninin değiştirilmesi ise çizelge ve ASCII şekillerini bozarak kaynakla okuma yüzünü birbirinden ayırır." )
+
+-->|
+### DIL-2.1 · Belge Sahipliği [UYARI]
+**Hüküm:** Her belge bloğu araya özellik, kenar veya kapsam kapanışı girmeden hemen ardından gelen tek düğüme bağlanır; düğümsüz kalan, birden çok düğümü sahiplenen veya niyet edilen düğümden başka bir düğüme bağlanan belge bırakılamaz; dayanak: DIL-2; ilgili: [DIL, TIP, YUZ].
+**Gerekçe:** Sahipsiz belge hiçbir yüzeyde görünmez; yanlış düğüme bağlanan anlatı ise doğru metni yanlış kimliğin öğretimi ve hover'ı olarak yayımlar.
+**Örnek:** Doğru: belge bloğunu doğrudan `Karar( kod: KAR-01 )` izler; yanlış: belge ile Karar arasına `ne:` özelliği koymak veya kapsamı belge sonrasında kapatmak.
+**Zorlama:** `sahipsiz-belge` · UYARI · “Belge sahipsiz; hiçbir yüzeyde görünmez.”; `belge-yanlış-düğüm` · UYARI · “Belge hedef düğümden hemen önce olmalı; yanlış düğüme bağlandı.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural belgeSahipliği( kod: DIL-2.1,
+       ne: "DIL-2.1 · Belge Sahipliği [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-2,
+       tanı: [ belge-yanlış-düğüm, sahipsiz-belge ] )
+
+-->|
+### DIL-2.2 · Çok Satırlı Değer Bütünlüğü [UYARI]
+**Hüküm:** Çok satırlı değerlerin içerik satırları, satır ve blok yorumlarının metni ve kullanıcının anlam taşıyan sütun hizalaması biçimlendirme sırasında değiştirilemez; yalnız yapısal girinti, izinli çevre boşlukları ve baştaki ya da sondaki boş satırlar kanonik kurala göre düzenlenebilir; dayanak: DIL-2; ilgili: [DIL, YUZ].
+**Gerekçe:** Biçimlendirme görünüm işlemi olmasına rağmen içerik satırına dokunursa metin, örnek ve şekil anlamını sessizce değiştirir; yinelenen biçimlendirmede yeni fark oluşması güveni yok eder.
+**Örnek:** Doğru: biçimlendirme öncesi ve sonrası çok satırlı değerin sözcükleri ile göreli sütunları aynıdır; yanlış: satırları birleştirmek, yorumu yeniden yazmak veya hizalı sütunu kaydırmak.
+**Zorlama:** Yeni tanı önerisi `çok-satırlı-değer-drift` · UYARI · “Biçimlendirme çok satırlı değer, yorum veya kullanıcı hizalamasının içeriğini değiştirdi; kaynak içeriğini aynen koru.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural çokSatırlıDeğerBütünlüğü( kod: DIL-2.2,
+       ne: "DIL-2.2 · Çok Satırlı Değer Bütünlüğü [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-2 )
+
+-->|
+### DIL-3 · Kural ve Kullanıcı Tipi Bildirimleri [HATA]
+**Hüküm:** Her kullanıcı tipi `Tip Ad(...)` bildirimiyle ailesini ve tarifini, her kural `Kural ad(...)` bildirimiyle kodunu, otoritesini, katmanını, kapsamını, koşulunu, ihlalini ve düzeyini ilanlı sözleşmesine göre taşır; tip, kural ve sıradan düğüm bildirimleri birbirinin yerine kullanılamaz, niyet katmanı makine koşulu taşıyamaz ve yapısal ya da eşik katmanı zorlanabilir koşulsuz bırakılamaz; dayanak: DIL-0; ilgili: [DIL, TIP, YAS].
+**Gerekçe:** Bildirim aileleri karışırsa şema genişletmesi ile uygulanan hüküm ayırt edilemez; eksik katman ve koşul beyanı da makinenin zorlayamadığı kuralı zorlanıyormuş gibi gösterir.
+**Örnek:** `Kural adSınırı( kod: DIL-KUR-01, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: ad.uzunluk <= 40, ihlal: "Ad sınırı aşıldı.", düzey: uyarı )` açık bir kural bildirimidir.
+**Zorlama:** `söz-dizim` · HATA · “Bildirim başında düğüm tipi, `çağır`, `Tip` veya `Kural` bekleniyordu.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `katman-uyumsuz` · UYARI · “Kuralın katman ve koşul beyanları birbiriyle uyuşmuyor.”; `zorlanamayan-kural` · UYARI · “Yapısal ya da eşik kuralı zorlanabilir bir koşul taşımıyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: DIL-3, durum: kilitli,
+       ne: "DIL-3 · Kural ve Kullanıcı Tipi Bildirimleri [HATA]",
+       karar: "Her kullanıcı tipi `Tip Ad(...)` bildirimiyle ailesini ve tarifini, her kural `Kural ad(...)` bildirimiyle kodunu, otoritesini, katmanını, kapsamını, koşulunu, ihlalini ve düzeyini ilanlı sözleşmesine göre taşır; tip, kural ve sıradan düğüm bildirimleri birbirinin yerine kullanılamaz, niyet katmanı makine koşulu taşıyamaz ve yapısal ya da eşik katmanı zorlanabilir koşulsuz bırakılamaz; dayanak: DIL-0; ilgili: [DIL, TIP, YAS].",
+       gerekçe: "Bildirim aileleri karışırsa şema genişletmesi ile uygulanan hüküm ayırt edilemez; eksik katman ve koşul beyanı da makinenin zorlayamadığı kuralı zorlanıyormuş gibi gösterir." )
+
+-->|
+### DIL-3.1 · İzinli Sarma ve Tipli Kenar Yazımı [HATA]
+**Hüküm:** Her düğüm yalnız kanonun izin verdiği ebeveyn altında sarılır ve her kenar ilanlı kaynak tipinden ilanlı hedef tipine kanonik alan adıyla yönelir; KOD beklenen kenara tırnaklı metin yazılamaz, yaprak düğüm çocuk taşıyamaz ve tip sözleşmesine aykırı kaynak-hedef çifti kurulamaz; dayanak: DIL-3; ilgili: [DIL, TIP, ORK].
+**Gerekçe:** Serbest sarma aynı düğüm tipine projeden projeye farklı kapsam verir; tipsiz veya metinle saklanan kenarlar da grafın hedefi çözmesini ve ilişki anlamını doğrulamasını engeller.
+**Örnek:** Doğru: `Katman { AltKatman { Adım( kod: ADM-02, bağımlı: [ ADM-01 ] ) } }`; yanlış: `Proje { Adım }` veya `bağımlı: "ADM-01"`.
+**Zorlama:** `izinsiz-sarma` · HATA · “İzin verilmeyen yerleşim; düğümü doğru ebeveyn altına taşı.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `kenar-metin` · UYARI/HATA (bağlama göre) · “Kenar KOD ister; tırnaklı hedef çözülmez.” · yüzey: proje CLI; yeni tanı önerisi `kenar-tip-uyuşmazlığı` · HATA · “Kenarın kaynak veya hedef tipi kanonik sözleşmeyle uyuşmuyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural izinliSarmaVeTipliKenarYazımı( kod: DIL-3.1,
+       ne: "DIL-3.1 · İzinli Sarma ve Tipli Kenar Yazımı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-3,
+       tanı: [ izinsiz-sarma, kenar-metin ] )
+
+-->|
+### DIL-4 · İkon ve Emoji Kanonu [BİLGİ]
+**Hüküm:** Kaynak düzeyindeki özenle seçilmiş Unicode emoji sözlüğü her simgeyi tek bir kanonik Türkçe sözcenin isteğe bağlı ve tek yönlü normalleşen takma adı olarak tutar; görüntü düzeyindeki profesyonel ikon seti bundan ayrı bir sunum katmanıdır, kaynak anlamını değiştiremez ve kaynak dosya belirli bir ikon çizimine bağımlı olamaz; dayanak: DIL-0; ilgili: [DIL, YUZ].
+**Gerekçe:** Emoji ile görüntü ikonunu aynı katman saymak ayrıştırılan kimliği tema varlığına bağlar; bir simgeyi birden çok kavrama vermek de dilin tek-anlamlılığını bozar.
+**Örnek:** Kaynakta `🍃` ile `Adım` aynı kanonik kavrama normalleşebilir; görüntü yüzündeki Adım ikonu ise yalnız görsel karşılıktır ve kaynak sözcesi değildir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural ikonVeEmojiKanonu( kod: DIL-4,
+       ne: "DIL-4 · İkon ve Emoji Kanonu [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-0 )
+
+-->|
+### DIL-5 · Numara Grafı [HATA]
+**Hüküm:** Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri açık bölüm düğümlerine yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL, YAS, STR].
+**Gerekçe:** Birden çok kod evreni aynı hükmün farklı kimliklerle anılmasına yol açar; çözülemeyen dayanak ve örtük üyelikler ise kanonu sıralı listeye indirerek çapraz izlenebilirliği kaybettirir.
+**Örnek:** `DIL-3.1` kodu `dayanak: DIL-3` ile üst hükmüne, `ilgili: [DIL, TIP, ORK]` ile çok-üyeli bağlarına katılır.
+**Zorlama:** Yeni tanı önerisi `numara-grafı-uyumsuz` · HATA · “Madde kodu yineleniyor, dayanağı çözülemiyor veya kanon dışında paralel kod evreni kullanıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: DIL-5, durum: kilitli,
+       ne: "DIL-5 · Numara Grafı [HATA]",
+       karar: "Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri açık bölüm düğümlerine yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL, YAS, STR].",
+       gerekçe: "Birden çok kod evreni aynı hükmün farklı kimliklerle anılmasına yol açar; çözülemeyen dayanak ve örtük üyelikler ise kanonu sıralı listeye indirerek çapraz izlenebilirliği kaybettirir." )
+
+-->|
+### DIL-5.1 · Hiyerarşik Madde Kodları [HATA]
+**Hüküm:** Her bölüm kendi önekiyle yazılan Madde-0'dan başlar; ana maddeler boşluksuz ardışık tamsayılarla, özelleşmeler ise var olan ana maddenin koduna eklenen noktalı ardışık alt numaralarla gösterilir, kod atlanamaz, yinelenemez veya ebeveynsiz bırakılamaz; dayanak: DIL-5; ilgili: [DIL, YAS].
+**Gerekçe:** Atlanan veya ebeveynsiz kodlar madde sırasını yorum gerektirir hâle getirir; yinelenen kod ise dayanakların hangi hükme yöneldiğini belirsizleştirir.
+**Örnek:** Doğru sıra: `DIL-0`, `DIL-1`, `DIL-1.1`, `DIL-1.2`, `DIL-2`; yanlış: `DIL-1.1` maddesini `DIL-1` olmadan kurmak veya `DIL-3`ten `DIL-5`e atlamak.
+**Zorlama:** Yeni tanı önerisi `madde-kodu-uyumsuz` · HATA · “Madde kodu bölüm öneki, Madde-0, ardışıklık veya noktalı ebeveyn sözleşmesini bozuyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural hiyerarşikMaddeKodları( kod: DIL-5.1,
+       ne: "DIL-5.1 · Hiyerarşik Madde Kodları [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-5 )
+
+-->|
+### DIL-5.2 · Sekiz Önekli Çok-Üyelik [HATA]
+**Hüküm:** Her `ilgili` listesi yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK öneklerinden oluşur; üyelikler açık, tekil ve kanonik yazılır, tanımsız, yinelenen veya örtük hiçbir bölüm etiketi kullanılamaz; dayanak: DIL-5; ilgili: [DIL, MIM, TIP, YAS, YUZ, STR, OGR, ORK].
+**Gerekçe:** Tanımsız önek dokuzuncu bir bölüm varmış gibi sahte kimlik üretir; yinelenen veya örtük üyelik ise çok-üyelik grafının deterministik kurulmasını engeller.
+**Örnek:** Doğru: `ilgili: [DIL, TIP, YUZ]`; yanlış: `ilgili: [DIL, YAP]` veya `ilgili: [DIL, DIL]`.
+**Zorlama:** Yeni tanı önerisi `ilgili-önek-geçersiz` · HATA · “`ilgili` listesi sekiz kanonik önek dışında, yinelenen veya tanımsız üyelik taşıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural sekizÖnekliÇokÜyelik( kod: DIL-5.2,
+       ne: "DIL-5.2 · Sekiz Önekli Çok-Üyelik [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-5 )
+
+-->|
+### DIL-6 · Söz Dizimi, Dil ve Biçim Kural Aileleri [BİLGİ]
+**Hüküm:** Söz dizimi, Türkçe dil ve biçim kural ailelerinin bildirim, adlandırma, değer, sarma, kenar, yorum, belge ve şema uyumuna ilişkin bütün hükümleri bu bölümde yaşar; başka bölüm bu hükümleri ayrı bir dil otoritesi olarak yineleyemez, yalnız kendi tip, yönetişim veya yüzey sözleşmesi ölçüsünde tamamlayabilir; dayanak: DIL-0; ilgili: [DIL, TIP, YAS, YUZ].
+**Gerekçe:** Aynı dil hükmünün birden çok ailede sahiplenilmesi farklı tanı metinleri ve biçim sonuçları doğurur; tek sahiplik, zorlama ile öğretimin aynı sözlüğe dayanmasını sağlar.
+**Örnek:** Bir alanın değer türünü TIP ilan eder, o değerin nasıl yazılacağını DIL belirler; YAS düzeyini, YUZ ise yalnız görünümünü tamamlar.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural sözDizimiDilVeBiçimKuralAileleri( kod: DIL-6,
+       ne: "DIL-6 · Söz Dizimi, Dil ve Biçim Kural Aileleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-0 )

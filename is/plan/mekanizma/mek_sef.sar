@@ -1,0 +1,376 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/mekanizma/mek_sef.sar — 🔩 ŞEF ORKESTRASYON MEKANİZMASI (MEK-SEF)
+//
+//   ⚖️ STR-3 AÇIK-GİZLİ KESİMİ: kontrat ŞEKİLLERİ (jenerik I/O) AÇIK mekanizmadır; bu şekilleri
+//   onurlandıran ŞEF POLİTİKASI = GİZLİ ürün (ileride kapalı varlık/kapalı repo).
+//
+//   Kaynak madde: ORK-6 · L2 (runtime sözleşmeleri). ŞEF'in (RAY-3) runtime I/O
+//   şekilleri — ürün API'si DEĞİL, orkestrasyonun kendi kontratları. O yüzden
+//   Sözleşme'yi bir Mekanizma İÇİNDE topluyoruz (TIP-1.4: kesişen runtime altyapısı).
+//
+//   bağımlı: [ORK-7, ORK-7] → kontratlar iş-akışı yasalarına
+//   bağlanır (L1↔L2 kavuşumu). faz: RAY-3 → aktivasyon dalgası ŞEF motoru kurulunca.
+//   Şartname deseni: eski OS tpl-001(agent-output)·tpl-007(rationale)·wf-context.
+//   Türkçeleştirildi; $ maliyet YOK → token-ölçer (ORK-6). ertelenen = Hatırlatıcı.
+//
+//   NOT: debate·recovery sözleşmeleri BİLEREK ertelendi — RAY-3 ihtiyaç duyunca
+//   eklenir (yalın L2). Başlıktaki 'üç çekirdek kontrat' tarihseldi — dosya bugün
+//   DURAK, araç ve müzakere/tasarım sözleşmeleriyle büyüdü (Sol düzeltmesi 2026-07-20).
+//
+// ── HARİTANIN BU EVE TAŞINMASI (KYN-KYN-A02 · 2026-08-08) ──────────────────
+//
+//   KÖKEN. ŞEF mekanizmasının yol haritası 2026-07-08 tarihinde ORK-6 kararının
+//   kaynağıyla `plan/sef_yol_haritasi.md` dosyasına yazıldı ve 2026-08-08 tarihine
+//   kadar orada yaşadı. Harita ilk gerçek dünya sınavının derslerini ve eski
+//   işletim külliyatının süzülmüş desenlerini taşıyordu; sırasını ise MIM-1.6
+//   hükmünün ruhu belirliyordu, yani ray trenden önce döşenir.
+//
+//   DÖNÜŞÜMÜN GEREKÇESİ. YUZ-1.2 kural, karar ve plan içeriğinin yalnız `.sar`
+//   kaynağında yaşamasını buyurur ve elle yazılan markdown ikizini yasaklar.
+//   Harita markdown'da kaldığı sürece motor onu göremiyordu; dahası mekanizmanın
+//   TARİFİ ile mekanizmanın İLANI iki ayrı dosyada birbirinden habersiz yaşıyordu
+//   ve bu ayrılık haritayı bayatlamaya açık bırakıyordu. Dönüşüm haritayı tek bir
+//   ölçütle ikiye ayırdı: kalıcı olan tarif bu dosyaya indi ve burada tek kaynak
+//   oldu, biten bir iş olan madde ise `plan/sef_yol_haritasi.sar` gövdesinde Adım
+//   olarak doğdu ve bu mekanizmaya ORK-2.1 referans kenarıyla bağlandı.
+//
+//   MARKDOWN DOSYASININ AKIBETİ. Kaynak dosya bu ekleme yazıldıktan sonra silindi,
+//   çünkü içeriği iki adrese eksiksiz taşındı ve tarihi git geçmişinde yaşamaya
+//   devam ediyor.
+//
+//   SINIR. Taşıma mekanizmanın DAVRANIŞINI değiştirmez. Sekiz Sözleşmenin kodu,
+//   sürümü ve alan listesi olduğu gibi korunmuştur; eklenen yalnız mekanizmanın
+//   kendi işleyişini, katman yerleşimini, açık ile kapalı kesimini ve kapsam
+//   sınırını anlatan tariftir. Yapı ağacına iki satır eklenmiştir; bu ekleme yeni
+//   sözleşme doğurmaz, yalnız ağacın altı sözleşme sayarken dosyanın sekiz
+//   sözleşme taşıması eksikliğini giderir.
+//
+//   BAYAT SAYIMIN TAZELENMESİ (denetçi şerhi 4). Düğümün `ne` alanı ile Sonuç
+//   bölümü sözleşme sayısını üç olarak yazıyordu ve bu sayı 2026-07-20 tarihinde
+//   dosya büyüdüğünde tazelenmemişti. Kusur soyut değildi: `sef` brifingi bir
+//   Adımın bağlam kartında düğümün `ne` alanını aynen bastığı için bayat özet her
+//   ajana taşınıyordu. İki yer de sekize çekildi ve `ne` alanı sekiz sözleşmeyi
+//   adıyla sayar hâle getirildi. Sözleşmelerin kendisine dokunulmamıştır.
+//
+//   YİNELENEN KENARIN DÜŞÜRÜLMESİ (denetçi şerhi 5). Düğümün `bağımlı` kenarı
+//   `ORK-7` hedefini iki kez yazıyordu; yazım eski omurgadan kalmıştı ve iş akışı
+//   ile kodlama akışı ailelerinin ayrı iki maddede yaşadığı dönemi yansıtıyordu.
+//   v1 kanonunda iki aile `yasa/kanon/ork.sar:300` satırındaki tek ORK-7 maddesinde
+//   birleştiği için ikinci yazım artık ayrı bir bağ anlatmıyor, yalnız aynı kenarı
+//   tekrarlıyordu ve motor bunu yürütme kenarı sözleşmesi tanısıyla bildiriyordu.
+//   Kenar tek hedefe indirildi; kaybolan bir bağ yoktur, çünkü iki yazım da aynı
+//   düğüme çözülüyordu.
+//
+// ── ATIF TAZELEMESİ (2026-08-08 bildirildi · 2026-08-22 SEF-ATF-A01 ile kapandı) ──
+//
+//   BULGU. Bu dosyadaki sözleşme metinleri bugün BAŞKA BİR HÜKME çözülen kural
+//   kodlarına atıf yapıyordu. Kusurun sinsiliği şuradaydı: atıflar çözülüyordu,
+//   dolayısıyla kırık atıf nöbeti hiçbir şey görmüyor ve yeşil kapı geçiyordu;
+//   buna karşılık gösterilen adrese bakan okuyucu anlatılan disiplini orada
+//   bulamıyordu. Kırık atıf gürültülüdür ve kendini ele verir; çözülen fakat
+//   yanlış hükme giden atıf sessizdir ve bu yüzden daha tehlikelidir.
+//
+//   ① SZL-ETMEN-CIKTI `YAS-4.1` kodunu varlık değil davranış kanıtı anlamında
+//      kullanıyordu, oysa YAS-4.1 Tam Yeşil Tanımıdır. Anlatılan disiplinin
+//      bugünkü evi YAS-4.2 · Terfi Kanıtıdır: bir iddia ancak çalışan uygulama
+//      bağı, tekrar üretilebilir doğrulama ve açık kabul kaydıyla yükselir ve
+//      hiçbiri düzyazı iddiasıyla ikame edilemez. Atıf YAS-4.2'ye çevrildi.
+//   ② SZL-GEREKCE `YAS-4` kodunu ÇOK DEĞERLİ KABUL anlamında kullanıyordu, oysa
+//      YAS-4 Terfi ve Karne Kapısıdır. Bu disiplinin kanonda KARŞILIĞI YOKTUR:
+//      GEÇTİ, PASS-WEAK, PARTIAL ve CONDITIONAL kademelerini tarif eden hiçbir
+//      madde bulunmamaktadır (2026-08-22 taraması). Atıf bu yüzden başka bir
+//      maddeye çevrilmedi, KALDIRILDI ve karşılıksızlığı alanın kendi metnine
+//      yazıldı. Sessizce silinmedi, çünkü kanonda karşılığı olmayan bir disiplin
+//      canlı sözleşmede yaşıyorsa bu bir borçtur ve görünür kalmalıdır.
+//   ③ Ertelenen kalemlerin Hatırlatıcı'ya inmesi `STR-2.1` koduna bağlanıyordu,
+//      oysa STR-2.1 Aşama Temizlik Kapılarıdır. Hatırlatıcı'yı ileri bağlam tipi
+//      olarak kanonlaştıran madde TIP-1.12 · Öz Tiplerdir; iki atıf da oraya
+//      çevrildi.
+//   ④ SZL-MÜZAKERE ile SZL-TASARIM yorumları `SEF-L3-A30` ve `SEF-L3-A33` Adım
+//      kodlarını canlı atıf gibi anıyordu; bu kodlar 2026-07-31 arşivinden sonra
+//      hiçbir canlı kaynakta tanımlı değildir. Kodlar korundu fakat cümlede
+//      TARİHSEL KÖKEN oldukları açıkça yazıldı, çünkü kökeni silmek tarihi
+//      yoksaymak, canlı atıf gibi bırakmak ise okuyucuyu boşluğa göndermektir.
+//
+//   SINIR: sözleşmelerin kodu, sürümü ve alan listesi değişmedi; mekanizmanın
+//   davranışı aynıdır. Değişen yalnız atıfların hedefidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🔩 ŞEF'in (RAY-3) üç çekirdek runtime kontratını deklaratif kilitlemek: Etmen'in
+  NE döndürdüğü · ŞEF'in Etmen'e NE gönderdiği · ŞEF'in kararını NASIL gerekçelendirdiği.
+  Motor (L3) bunları TypeScript tipine çevirip zorlar; kaynak-gerçek burada yaşar.
+
+  ## Yapı
+  🔩 MEK-SEF ─ bağımlı: [ORK-7]  (evre ile adım aileleri v1 kanonunda tek maddede birleşti)
+     ├─ SZL-ETMEN-CIKTI   Etmen → ŞEF (üretilen + kanıt + token)
+     ├─ SZL-BAGLAM-PAKET  ŞEF → Etmen (öncelik-sıralı bağlam + token bütçesi)
+     ├─ SZL-GEREKCE       ŞEF kararı (çok-değerli kabul + ertelenen→Hatırlatıcı)
+     ├─ SZL-DURAK         ŞEF durum-devri (çok-adımlı handoff + kontrol noktası · D.3)
+     ├─ SZL-ARAÇ-TALEP    Etmen → gateway (araç·mod·argüman · least-privilege · Gateway-RAY)
+     ├─ SZL-ARAÇ-SONUÇ    gateway → Etmen (durum·sonuç · güvenilmez=untrusted · Gateway-RAY)
+     ├─ SZL-MÜZAKERE      üretici ↔ denetçi (itiraz·savunma·hakem · tur limitli)
+     └─ SZL-TASARIM       üretici → ŞEF (AŞ-2 tasarım-önce · kod YOK)
+
+  ## Katman yerleşimi
+  🧭 ŞEF üç katmanda yaşar ve bu mekanizma ortadaki katmandır. Alt katman iş akışı
+  yasasıdır: bir Adımın hangi evrede seçileceğini, üretici ile denetçinin nasıl
+  ayrılacağını ve tek Adımın tek oturumda işleneceğini `yasa/kanon/ork.sar:300`
+  satırındaki ORK-7 kural ailesi ile `yasa/kanon/ork.sar:263` ve
+  `yasa/kanon/ork.sar:275` satırlarındaki ORK-6.1 ve ORK-6.2 kuralları söyler.
+  Orta katman bu dosyadır ve yasanın gerektirdiği alışverişin ŞEKLİNİ deklaratif
+  sözleşmelere kilitler. Üst katman runtime'dır; motorun açık tarafta kalan işleri
+  ile kapanmış aşamalarının kanıt defteri `plan/ray3_yol_haritasi.sar` gövdesinde
+  yaşar. Sıra tersine çevrilemez, çünkü şekli belirsiz bir alışverişi kodlayan
+  motor her yeni Etmen çağrısında kendi sözleşmesini yeniden icat eder ve iki
+  çağrı arasındaki fark denetlenemez hâle gelir.
+
+  ## Çalışma zinciri
+  🔄 Mekanizmanın halkaları aşağıdaki sırayı izler ve her halka bir sözleşmeyle
+  konuşur. Önce Tetikleyicinin koşulu okunur ve işlenecek Adım seçilir. Ardından
+  Adıma bir Etmen atanır; atama üretici ile denetçiyi ORK-6.1 gereği ayrı tutar.
+  Etmen çağrılmadan önce bağlam montajlanır ve montaj SZL-BAGLAM-PAKET şekline
+  uyar, yani öncelik sırasını, jeton bütçesini ve doğrulama kapısını taşır.
+  Üretici kod yazmadan önce SZL-TASARIM ile seçeneklerini, değişmezlerini ve test
+  stratejisini beyan eder. Üretici Etmen koşar ve işini SZL-ETMEN-CIKTI olarak
+  döndürür. Üreticinin belleğini görmeyen izole denetçi yalnız bu çıktıyı inceler
+  ve beyan ile kanıt arasındaki açığı arar. Denetçinin bulgusuna üretici itiraz
+  ederse SZL-MÜZAKERE turu açılır ve hakem hükmünü kanıta bakarak verir. Yama ile
+  yeniden doğrulama döngüsü bulgu kapanana kadar yinelenir. ŞEF kararını
+  SZL-GEREKCE ile yazar, ertelediği her kalemi açık bir Hatırlatıcıya bağlar ve
+  Adımı SZL-DURAK özetiyle kapatır; durak bir sonraki Adımın bağlam paketine akar
+  ve kontrol noktasına serileşir. Etmenin bir araca uzanması gerektiğinde talep
+  SZL-ARAÇ-TALEP ile beyan edilir ve gateway'in cevabı SZL-ARAÇ-SONUÇ ile
+  güvenilmez işaretli döner, çünkü araç çıktısı sorgulanmadan yürütülemez.
+
+  ## Aşama eşlemesi
+  🔗 Bir Adımın kodlanma zinciri olan on bir aşama bu dosyada yeniden yazılmaz,
+  çünkü zincirin canlı ilanı `plan/akis_omurgasi.sar:121` satırından başlayan
+  OMR-MIKRO düğümündedir ve aynı zinciri ikinci kez yazmak YUZ-1.2'nin yasakladığı
+  ikizi doğurur. Burada yalnız hangi sözleşmenin hangi aşamada ateşlendiği
+  kayıtlıdır, çünkü bu eşleme zincirin değil mekanizmanın kendi bilgisidir.
+  Bağlam kilidi ile durum özeti aşamalarını SZL-BAGLAM-PAKET besler. Önce tasarım
+  aşamasının çıktısı SZL-TASARIM'dır ve bu çıktı kodlama aşamasının bağlamına
+  akar. Kodlama aşamasının çıktısı ile inceleme aşamasının girdisi
+  SZL-ETMEN-CIKTI'dır. İnceleme veya güvenlik denetimi sonrasında itiraz doğarsa
+  SZL-MÜZAKERE turu açılır. Mantık, test ve güvenlik yamalarından oluşan üç yama
+  aşaması aynı çıktı sözleşmesini yeniden üretir ve yeniden doğrular. Son kontrol
+  aşamasının hükmü SZL-GEREKCE'ye, kapanışın devri ise SZL-DURAK'a yazılır. İki
+  araç sözleşmesi tek bir aşamaya bağlı değildir ve Etmenin bir araca uzandığı her
+  anda geçerlidir.
+
+  ## Terim kökeni
+  📚 Aşağıdaki eşleme kalıcı bir sözlük değil, köken kaydıdır: soldaki kısa ad
+  eski işletim külliyatının terimidir, sağdaki ise Sarmal'ın bugün kullandığı
+  Türkçe karşılığıdır. Kayıt tutulur, çünkü desen o külliyattan alınmıştır ve
+  hangi disiplinin nereden geldiğini bilmeyen okuyucu Türkçe terimi yeni bir icat
+  sanır; bağlam ise alınmamıştır ve kapsam dışı bölümünde sayılmıştır.
+
+  | Köken terimi | Sarmal karşılığı |
+  |---|---|
+  | context-lock | bağlam kilidi |
+  | patch + reverify | yama ve yeniden doğrulama |
+  | producer / auditor | üretici ve denetçi |
+  | revalidation | yeniden geçerleme |
+  | checkpoint | durak |
+  | handoff | devir |
+  | rollback | geri dönüş |
+  | placebo | sahte yeşil |
+  | decontamination | arındırma |
+
+  ## Yönetici ders
+  🏆 Bu mekanizmanın bütün kanıt alanları tek bir dersten doğmuştur ve ders şudur:
+  ideal aşama zincirinin gerçek dünyada eksik bıraktığı şey doğrulamanın kendisine
+  güvenilebilirliğiydi. Dersten çıkan hüküm üç şart taşır. Bir yeşil, davranışsal
+  olarak kanıtlanana kadar yeşil sayılmaz. Geçmiş bir onay, disiplin değiştiğinde
+  bağımsız olarak yeniden koşulana kadar geçerli sayılmaz. Ertelenen bir kalem,
+  gerçek bir bağımlılıkla gerekçelenene kadar meşru sayılmaz. Sözleşmelerdeki
+  testSonucu, kanıt, varsayımlar ve ertelenenler alanları bu üç şartın şekle
+  dökülmüş hâlidir; alanlar süs değildir, dersin mekanik karşılığıdır.
+
+  ## Kapsam dışı
+  ⚖️ ŞEF'in açık ile kapalı arasındaki kesimi burada ilan edilir, çünkü sınırını
+  söylemeyen mekanizma her yeni katkıda sınırını yeniden tartışır. Jenerik ŞEF
+  MEKANİZMASI açıktır ve bu dosyada yaşar: sözleşmelerin şekilleri, bağlam
+  montajının sırası, jeton bütçesinin varlığı, rol ayrımının zorlanması ve araç
+  kapısının fail-closed davranışı açık aracın parçasıdır. ŞEF POLİTİKASI ile etmen
+  kadrosu kapalıdır ve kapalı varlıkta yaşar: hangi Etmenin hangi işi
+  alacağı, adayların hangi ağırlıklarla sıralanacağı, hangi turda hangi kurtarma
+  yolunun seçileceği, izin matrisinin hangi hücresinin dolu olacağı ve kadronun
+  kimlerden kurulduğu bu dosyada yazılamaz. Ayrımın ölçütü tektir: şekil ile
+  iskelet açık, ağırlık ile yönlendirme kapalıdır. Gerekçe iki yönlüdür. Açık taraf
+  şekli taşımazsa dışarıdan gelen hiçbir katkı sözleşmeye uyup uymadığını
+  ölçemez; kapalı taraf ağırlığı bırakırsa ürünün asıl değeri olan orkestrasyon
+  zekâsı ilk okuyana devredilmiş olur. Genel hüküm `yasa/kanon/str.sar:84`
+  satırındaki STR-3 kararıdır; buradaki cümle o kararın ŞEF'e özgü uygulamasıdır
+  ve kararın kendisini tekrar etmez.
+
+  🚫 Eski işletim külliyatından desen alınmış, bağlam alınmamıştır. Şu kalemler
+  bilerek taşınmamıştır ve bu mekanizmanın kapsamı dışındadır: yedi kategoriye
+  ayrılmış sızıntı arındırma yordamı, model ve komut satırı maliyet defterleri,
+  üç depoyu sıraya sokan yayın koreografisi, çift dilli emoji işleme ile imza
+  şeması ve geriye dönük denetim zinciri. Gerekçe iki başlıkta toplanır. Birincisi
+  şudur: bu kalemlerin hepsi başka bir ürünün bağlamına aittir ve Sarmal'ın kendi
+  yapısında karşılıkları yoktur, dolayısıyla taşınsalar bile hiçbir kapıyı
+  beslemezler. İkincisi şudur: geriye dönük denetim zinciri, disiplin baştan
+  uygulandığında gereksizdir, çünkü zincirin kapatmak için var olduğu boşluk hiç
+  açılmaz. Parasal maliyet ölçümü de kapsam dışıdır ve yerini jeton ölçere
+  bırakmıştır; bu ikame ORK-6 kararının hükmüdür.
+
+  ## Sonuç
+  ✅ Kabul: sekiz Sözleşme denetle-temiz tanınır; L1 yasalarına bağlıdır. RAY-3
+  motoru bunları okuyup Etmen çağrılarını bu şekle zorlar — sözleşmesiz uç kalmaz.
+|<--
+Mekanizma( kod: MEK-SEF, faz: "RAY-3", bağımlı: [ ORK-7 ],
+           ne: "🔩 ŞEF orkestrasyon altyapısı — sekiz runtime sözleşmesi: Etmen çıktısı, bağlam paketi, gerekçe, durak, araç talebi, araç sonucu, müzakere ve tasarım" ) {
+
+  /// Etmen → ŞEF çıktısı. Üretici Etmen bir Adım'ı işledikten sonra bunu döndürür.
+  Sözleşme( kod: SZL-ETMEN-CIKTI, sürüm: "1.0" ) {
+    ne: "Etmen'in ŞEF'e döndürdüğü yapılandırılmış çıktı — varlık değil davranış kanıtı (YAS-4.2)"
+    alanlar: {
+      adım: "metin · zorunlu",
+      etmen: "metin · zorunlu",
+      rol: "metin · üretici|denetçi",
+      güven: "sayı · 0..1",
+      gerekçe: "metin · zorunlu · ne + neden",
+      üretilenDosyalar: "liste · üretim-yeri (MIM-2.1)",
+      testSonucu: "metin · geçti/kaldı + kapsam + davranışsal-kanıt",
+      değişmezler: "liste · korunması gerekenler",
+      kırılganNoktalar: "liste · en zayıf 10 nokta",
+      varsayımlar: "liste · gizlenmez (halüsinasyon kalkanı)",
+      tokenGiriş: "sayı",
+      tokenÇıkış: "sayı",
+    }
+  }
+
+  /// ŞEF → Etmen bağlamı. Etmen çağrılmadan ÖNCE montajlanır (ORK-6.2 montaj-kapısı).
+  Sözleşme( kod: SZL-BAGLAM-PAKET, sürüm: "1.0" ) {
+    ne: "ŞEF'in Etmen'e gönderdiği bağlam — öncelik-sıralı, token-bütçeli, doğrulanmış (ORK-6.2)"
+    alanlar: {
+      adım: "metin · zorunlu",
+      etmen: "metin · zorunlu",
+      oturum: "metin",
+      öncekiDurak: "metin · önceki adımın özeti",
+      risk: "sayı · 0..1",
+      montajSırası: "liste · anayasa→görev→koni→durak→bellek→profil (öncelik)",
+      tokenBütçe: "sayı · ~20000 · token-ölçer ölçer",
+      referansDefteri: "liste · insan-onaylı; salt-yol reddedilir",
+    }
+  }
+
+  /// ŞEF kararı. AŞ-10 sonrası ŞEF adımı kabul/revize/reddeder — gerekçesiyle.
+  Sözleşme( kod: SZL-GEREKCE, sürüm: "1.0" ) {
+    ne: "ŞEF'in karar kaydı — çok-değerli kabul (kanonda karşılıksız · bkz. dosya başlığı) + ertelenen kalemler Hatırlatıcı’ya (TIP-1.12)"
+    alanlar: {
+      adım: "metin · zorunlu",
+      karar: "metin · zorunlu · kabul|revizyon|red|kurtarma|eskalasyon",
+      ne: "metin · zorunlu",
+      neden: "metin · zorunlu",
+      kanıt: "metin · denetim + test + güven + risk",
+      kabulDurumu: "metin · GEÇTİ|PASS-WEAK|PARTIAL|CONDITIONAL — çok değerli kabul kademesinin kanonda karşılığı YOKTUR (SEF-ATF-A01 ölçümü · 2026-08-22); atıf verilmez",
+      ertelenenler: "liste · her biri Hatırlatıcı(durum: açık) (TIP-1.12)",
+    }
+  }
+
+  /// ŞEF durum-devri (D.3). Bir Adım kapanınca kararı bir DURAK'a özetlenir; çok-adımlı
+  /// akışta sonraki Adım'ın SZL-BAGLAM-PAKET.öncekiDurak'ına akar + kontrol noktasına serileşir.
+  Sözleşme( kod: SZL-DURAK, sürüm: "1.0" ) {
+    ne: "ŞEF'in bir Adım'ı kapatınca ürettiği durum-özeti — çok-adımlı handoff + kontrol noktası kalıcılığı (D.3)"
+    alanlar: {
+      adım: "metin · zorunlu",
+      karar: "metin · zorunlu · kabul|revizyon|red|kurtarma|eskalasyon",
+      mühür: "metin · zorunlu · COMPLETED|VERIFIED|BLOCKED",
+      özet: "metin · zorunlu · sonraki Adım'a taşınan kısa durum (ne yapıldı + durum)",
+      ertelenenler: "liste · açık kalemler (TIP-1.12 · sonraki Adım’a taşınır)",
+      kanıt: "metin · denetçi davranışsal kanıtı (file:line · VARLIK≠DOĞRULUK)",
+    }
+  }
+
+  /// Etmen → gateway araç-talebi (Gateway-RAY). Etmen bir aracı least-privilege ilkesiyle
+  /// ister; gateway izin-matrisi + fail-closed kapıdan geçirir (kim ne alır = GİZLİ · STR-3).
+  Sözleşme( kod: SZL-ARAÇ-TALEP, sürüm: "1.0" ) {
+    ne: "Etmen'in gateway'e ilettiği araç-çağrı isteği — least-privilege beyan (yazılmayan araç yasak)"
+    alanlar: {
+      etmen: "metin · zorunlu",
+      araç: "metin · zorunlu · MCP/Araç KOD'u",
+      mod: "metin · zorunlu · oku|yaz|çağır",
+      argümanlar: "liste · araca geçen parametreler",
+      gerekçe: "metin · zorunlu · neden bu araç (denetlenebilirlik)",
+    }
+  }
+
+  /// gateway → Etmen araç-sonucu (Gateway-RAY). Araç çıktısı DAİMA güvenilmez sarılır
+  /// (untrusted — enjeksiyon kalkanı); durum izin-kapısının çok-değerli sonucudur.
+  Sözleşme( kod: SZL-ARAÇ-SONUÇ, sürüm: "1.0" ) {
+    ne: "gateway'in Etmen'e döndürdüğü araç-sonucu — izin kararı + güvenilmez-işaretli çıktı"
+    alanlar: {
+      araç: "metin · zorunlu",
+      durum: "metin · zorunlu · izinli|red|hata",
+      sonuç: "metin · araç çıktısı (durum=izinli ise)",
+      süreMs: "sayı · çağrı süresi (gözlemlenebilirlik)",
+      güvenilmez: "metin · zorunlu · untrusted işareti (araç çıktısı sorgulanmadan yürütülmez)",
+    }
+  }
+
+  /// Üretici↔denetçi çok-tur müzakeresi (kökeni: 2026-07-31 arşivine inmiş SEF-L3-A30 Adımıdır;
+  /// canlı atıf değil TARİHSEL KÖKENDİR). Denetçi bulgusuna üretici
+  /// SAVUNMA verebilir; itirazda ŞEF hakem-kararı verir. Tur limiti + aynı-iddia-tekrarı
+  /// yasak (döngü kilidi). Hakem POLİTİKASI (hangi tarafa ne ağırlık) GİZLİ (STR-3).
+  Sözleşme( kod: SZL-MÜZAKERE, sürüm: "1.0" ) {
+    ne: "Üretici-denetçi müzakere turu — itiraz→savunma→hakem; tek-turda çözülmeyen bulgu olgunlaşır"
+    alanlar: {
+      tur: "sayı · zorunlu · müzakere turu no",
+      taraf: "metin · zorunlu · üretici|denetçi|hakem",
+      iddia: "metin · zorunlu · öne sürülen sav",
+      kanıt: "metin · davranışsal dayanak (dosya:satır) — hakem kanıtlıyı tartar",
+      hüküm: "metin · hakem kararı (kabul|itiraz-haklı|bulgu-geçerli) · yalnız taraf=hakem",
+    }
+  }
+
+  /// AŞ-2 Önce Tasarım (kökeni: 2026-07-31 arşivine inmiş SEF-L3-A33 Adımıdır; canlı atıf
+  /// değil TARİHSEL KÖKENDİR). Üretici KOD yazmadan ÖNCE tasarım
+  /// üretir: seçenekler + değişmezler(≥2) + edge'ler + test stratejisi. Bu çıktı AŞ-3
+  /// kod prompt'una bağlam akar (kodlama_akisi AŞ-2). İçeriğin ZEKÂSI Etmen'in — motor
+  /// yalnız aşamayı zorlar + sözleşmeyi doğrular (STR-3 AÇIK mekanizma).
+  Sözleşme( kod: SZL-TASARIM, sürüm: "1.0" ) {
+    ne: "AŞ-2 tasarım-önce çıktısı — kod YOK; üretici seçenek·değişmez·edge·test stratejisi beyan eder (AŞ-3'e bağlam)"
+    alanlar: {
+      adım: "metin · zorunlu",
+      seçenekler: "liste · değerlendirilen tasarım seçenekleri (en az bir yaklaşım)",
+      değişmezler: "liste · zorunlu · korunacak değişmezler (≥2 — bağlam kilidi AŞ-0 ruhu)",
+      edgeler: "liste · sınır/edge durumları (test stratejisine besleme)",
+      testStratejisi: "metin · zorunlu · nasıl test edilecek (AŞ-6 test üretimine köprü)",
+      rol: "metin · üretici (ORK-6.1 izolasyonu — denetçi bu aşamada yok)",
+    }
+  }
+
+  /// KURTARMA KAYDI (SEF-SZL-A01 · 2026-08-22). Motor bir Adımı BLOKLU mührüyle
+  /// kapattığında kurtarma kararı üretir, kararı durak ile kontrol noktasına
+  /// taşır ve çevrim tavanı aşıldığında insana eskalasyon yazar. Bu şeklin
+  /// bugüne kadar hiçbir sözleşme ilanı yoktu ve mekanizmanın kendi kapanış
+  /// hükmü sözleşmesiz uç bırakmamayı şart koştuğu için ilan boşluğu kendi
+  /// şartını çiğniyordu. Aşağıdaki alanların hepsi motorun BUGÜN gerçekten
+  /// ürettiği veriden çıkarılmıştır, tahminden değil; her alanın yanında
+  /// kaynağının dosyası ve satırı yazılıdır.
+  ///
+  /// SINIR (STR-3): hangi yolun hangi koşulda seçileceğini söyleyen STRATEJİ
+  /// burada ilan EDİLMEZ. Açık taraf yalnız şekli ve tavanın varlığını bildirir;
+  /// seçim politikası kapalı üründe yaşar ve motora dışarıdan takılır
+  /// (cekirdek/src/dongu.ts:871). Açık tarafta yalnız gösterim amaçlı basit bir
+  /// sıra vardır ve kendisi de böyle beyan edilmiştir (cekirdek/src/muzakere.ts:92).
+  Sözleşme( kod: SZL-KURTARMA, sürüm: "1.0" ) {
+    ne: "BLOKLU mührü sonrası kurtarma kararının şekli — hangi Adım, hangi yol, hangi gerekçe, kaçıncı çevrim ve tavan aşılırsa doğan eskalasyon kaydı"
+    alanlar: {
+      adım: "metin · zorunlu · kurtarılan Adımın kodu (cekirdek/src/dongu.ts:895)",
+      yol: "metin · zorunlu · yeniden-dene|böl|eskale (cekirdek/src/muzakere.ts:77 · alan: muzakere.ts:80)",
+      gerekçe: "metin · zorunlu · yolun neden seçildiği (cekirdek/src/muzakere.ts:85)",
+      deneme: "sayı · zorunlu · kaçıncı kurtarma çevrimi (cekirdek/src/dongu.ts:894)",
+      çevrimTavanı: "sayı · zorunlu · azami çevrim; verilmezse üç (cekirdek/src/dongu.ts:892)",
+      mühür: "metin · zorunlu · COMPLETED|VERIFIED|BLOCKED (cekirdek/src/dongu.ts:114)",
+      bölmeÖnerisi: "liste · yalnız böl yolunda · alt-parça ÖNERİLERİ; motor karar vermez, dosya yazmaz (cekirdek/src/muzakere.ts:82)",
+      hatırlatıcı: "metin · yalnız eskale yolunda · insana giden Hatırlatıcı kalemi (cekirdek/src/muzakere.ts:84)",
+      durakİzi: "harita · durak ile kontrol noktasında taşınan daraltılmış biçim: yol ve gerekçe (cekirdek/src/sef.ts:114)",
+    }
+  }
+}

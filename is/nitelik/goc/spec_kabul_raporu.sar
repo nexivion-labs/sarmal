@@ -1,0 +1,52 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/spec_kabul_raporu.sar — ⚖️ SPEC AŞAMASI BAĞIMSIZ KABUL RAPORU
+//   (GOC-SPEC-A90 · 2026-07-26) — HÜKÜM: KABUL (iki şerhle)
+//   Yöntem bağımsızlığı: sayımlar üretim scriptlerinin regex'leriyle DEĞİL,
+//   motorun kendi belirteçleyici + ayrıştırıcısıyla (belirtec.ts + ayristirici.ts)
+//   ve ayrı kaba komutlarla (grep/awk/diff) yeniden yapıldı. Denetçi bu turda
+//   hiçbir teslim dosyasını değiştirmedi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## HÜKÜM: KABUL — spec aşaması teslimi kabul edilir (iki şerhle)
+
+### Bağımsız sayımlar ↔ envanter mutabakatı
+
+| Ölçü | Envanter iddiası | Bağımsız ölçüm | Yöntem | Sonuç |
+|---|---|---|---|---|
+| Kanon maddesi (kaynak) | 144 | 144 | `grep -c "^## " kanon_v1.sar` | ✓ |
+| Resmi madde düğümü | 144 (36 Karar + 108 Kural) | 144 · 36 Karar + 108 Kural · 144 tekil kod | motor ayrıştırıcısı, `yasa/kanon/*.sar` | ✓ |
+| Eski karar | 125 | 125 `Karar` düğümü | motor ayrıştırıcısı, `yasa/kararlar/*.sar` | ✓ |
+| Eski formal kural | 74 | 73 `Kural` + 1 `GenelKural` (12 `Anayasa` aile başlığı sayım dışı) | motor ayrıştırıcısı, `yasa/genel_kurallar/*.sar` | ✓ |
+| Eski K-XX yapısal dayanak | 60 | kaba eşleşme 64; 4'ü anlatı içi `dayanak:` anması (yapısal değer değil — `tip_sistemi_yapi.sar` ×2 · `yasa_drift.sar` ×2), yapısal kayıt 60 | awk + değer-deseni ayrımı | ✓ |
+| Envanter girdi satırı | 403 (144+125+74+60) | 144 A02-sahipli + 259 A04-sahipli | `grep -c` envanter üzerinde | ✓ |
+| Çapraz sınıflar | 96/11/18 karar · 69/5 kural | çapraz harita A/B tablolarından yeniden okundu | tablo ayrıştırma | ✓ |
+
+### Dört kabul ölçütünün mutabakatı
+
+1. **Bağımsız sayımlar envanterle birebir uyuşur** — yukarıdaki tablo; sapma yok
+   (64→60 farkı yöntem açıklamasıyla kapandı).
+2. **Yeni kod grafı çözülebilir ve döngüsüzdür; eski kod sızıntısı sıfırdır** —
+   proje kapısı 0 hata / 0 uyarı (kırık-referans ve DAG bekçileri temiz); 144
+   madde düğümünün dayanak zinciri Madde-0 köklerine döngüsüz ulaşıyor
+   (GOC-SPEC-A02 ölçümü, bu turda motor ayrıştırıcısıyla yeniden kurulan kod
+   uzayı tekilliğiyle teyitli); `yasa/kanon/` içinde eski kod ataması 0.
+3. **Resmi yasa ile arşiv sınırı açıktır; aynı hükmün iki yürür kopyası yoktur** —
+   repo dışı arşiv kopyası birebir (bağımsız `diff -r` bu turda yeniden koşuldu)
+   ve kullanım-dışı damgalı mühür kaydı taşıyor; yürür kanon tek: `yasa/kanon/`
+   (144 madde). ŞERH-1 aşağıda.
+4. **Rapor tek hüküm ve tekrar koşulabilir kanıt taşır** — hüküm KABUL; bütün
+   ölçüm komutları bu kayıtta ve halka raporundadır.
+
+### Şerhler (kabulü düşürmeyen, sahipli)
+
+- **ŞERH-1 · Repo içi eski gövde henüz silinmedi.** GOC-SPEC-A04 kontrollü deneyle
+  kanıtladı: silme bugün 65 hata · 22 uyarı üretir (34 canlı dosyada 62 eski-kod
+  kenarı + `KRL-GUVENLIK-AMACLI` ebedî kural mührü + 2 anadizin ilanı). Silme,
+  tüketici temizliğine bağlı sahipli borçtur (devir kaydında); eski gövde
+  yürürlükten düşmüş-bekleyen statüsündedir, yürür kanon tekliği bozulmaz.
+- **ŞERH-2 · Karar F somut arşiv adresi vermiyor.** Seçilen repo-dışı konum
+  (arşiv mühür kaydında) Founder onayına önerilmiştir; onay F kademesindedir.
+|<--
+Sınama( kod: SNM-SPEC-KABUL-01,
+        ne: "⚖️ Spec aşamasının teslimi bağımsız olarak sınandı ve hüküm KABUL olarak verildi. Sayımlar, üreticinin kendi betiklerine güvenmemek için motorun belirteçleyicisi ve ayrıştırıcısıyla yeniden yapıldı: resmi yasa kaynaklarında 144 madde düğümü, kararlar rafında 125 karar, genel kurallar rafında 74 formal kural ve 60 yapısal dayanak kaydı bulundu; bu değerlerin tamamı spec envanteriyle birebir uyuşuyor. Proje denetimi sıfır hata ve sıfır uyarı verdi; repo dışına alınan arşiv kopyasının kaynakla birebir olduğu bağımsız bir karşılaştırmayla doğrulandı ve kopya kullanım dışı damgalı mühür kaydı taşıyor. Kabul iki sahipli şerhle verildi: eski gövdenin repo içinden silinmesi canlı tüketiciler temizlenene dek borç olarak bekliyor ve Karar F'nin somut arşiv adresi Founder onayına sunulmuş durumda." )

@@ -1,0 +1,102 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// vitrinler/dogus_proje.sar — 🌱 DOĞUŞ ŞABLONU ① PROJE İSKELETİ (ADM-DGS-03)
+//
+//   İLK CANLI MIM-1 ÖRNEĞİ — dört eksen omurgası SIRASIYLA canlı:
+//   Teknoloji/Takım → Yasa → Gereksinim → Sözleşme → Plan
+//   (Faz=ZAMAN 🌀 → Blok=İŞ 🪵 → Katman=TEKNOLOJİ 🌿 → Adım=AKIŞ 🍃)
+//   → koni-dolu Adımlar → Sözleşme kavuşumu → meyveler. Takım bağı KATMAN'da
+//   beyan edilir (katmansız-teknoloji bekçisi); Blok kimliği TEKİLDİR — sonraki
+//   fazlarda `çağır BLK-X` ile AYNI gövde büyür (Provider deseni).
+//   YAS-3.4: "yalın yaz sonra zenginleştir" TUZAKTIR — bu şablon baştan DOLU doğar;
+//   hiçbir Adım yalın değildir (görev+kabul+üretir/bağımlı+sınır her düğümde).
+//   Kopyala → VTR- öneklerini kendi kodlarınla değiştir → denetle ile doğrula.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ① TEKNOLOJİ + TAKIM — teknolojisiz yüzey DOĞMAZ (ORK-2.4); Takım bir bütün benimsenir (MIM-1.4).
+Teknoloji( kod: VTR-TEK-FLUTTER, ne: "önyüz çerçevesi — tek kod tabanından çok platform" )
+Teknoloji( kod: VTR-TEK-FASTAPI, ne: "arkayüz çerçevesi — tipli Python API" )
+Teknoloji( kod: VTR-TEK-POSTGRES, ne: "ilişkisel veritabanı — kalıcı gerçek" )
+Takım( kod: VTR-TAKIM-ONYUZ, ne: "önyüz takımı — ekranları bu yığın üretir", bağımlı: [ VTR-TEK-FLUTTER ] )
+Takım( kod: VTR-TAKIM-ARKAYUZ, ne: "arkayüz takımı — uç ve tabloları bu yığın üretir", bağımlı: [ VTR-TEK-FASTAPI, VTR-TEK-POSTGRES ] )
+
+// ② YASA — planı sınırlayan kurallar plandan ÖNCE (YAS-2: üst hüküm katmanı).
+Anayasa( kod: VTR-ANY-SIPARIS, ne: "sipariş uygulamasının değişmez ilkeleri" ) {
+  Kural fiyatSunucuda( kod: VTR-KRL-FIYAT, otorite: anayasa, katman: niyet, kapsam: VTR-BLK-SIPARIS ) {
+    ne: "Fiyat/indirim hesabı YALNIZ sunucuda — istemci hesabı atlatılabilir"
+  }
+}
+
+// ③ GEREKSİNİM — ihtiyaç İLAN edilir, Adımlar ona bağlanır (izlenebilirlik · BKM-SNV2-A05).
+Gereksinim( kod: VTR-GRK-SIPARIS-VER, ne: "Kullanıcı sepetindeki ürünleri tek dokunuşla sipariş verebilmeli" )
+
+// ④ KAVUŞUM KÖPRÜSÜ ÖNCE (contract-first): iki katmanın Adımları bu sözleşmede buluşur.
+Sözleşme( kod: VTR-SZL-SIPARIS, sürüm: "1.0", ne: "Sipariş oluşturma anlaşması — önyüz gönderir, arkayüz uygular" ) {
+  alanlar: {
+    sepetKimliği: "metin · zorunlu",
+    adresKimliği: "metin · zorunlu",
+    yanıt: "metin · siparişNo + tahminiTeslim · hatalar: 400, 402, 409",
+  }
+}
+
+// ⑤ PLAN — MIM-1 kanonik diziliş: Faz(ZAMAN) › Blok(İŞ) › Katman(TEKNOLOJİ, Takım bağlı) › Adım(AKIŞ).
+//    Kardeş Fazlar SIRALIDIR — motor sırayı türetir (VTR-FAZ-V1, VTR-FAZ-MVP'ye örtük bağımlı).
+Faz( kod: VTR-FAZ-MVP, ad: "mvp", ne: "ilk büyüme dönemi — sipariş dikey dilimi uçtan uca",
+     hedefTarih: "2027-06-30" ) {   // Faz=ZAMAN: makine yaklaşanı/geçeni takip eder (MIM-1.2 vade nöbeti)
+
+  -->|
+    ## Amaç
+    Sipariş verme dikey dilimini uçtan uca kurmak: sepet ekranından sipariş
+    ucuna, tek sözleşme köprüsünde kavuşan iki teknoloji katmanı.
+    ## Kapsam
+    Önyüz sipariş ekranı + arkayüz sipariş ucu/tablosu. KAPSAMAZ: ödeme
+    sağlayıcı entegrasyonu (ayrı blok) ve kampanya motoru.
+    ## Sonuç
+    İki Adım da kabul ölçütlerini kanıtla geçince blok biter: ekran sözleşmeyi
+    onurlandırır, uç sözleşmeyi uygular, denetle TAM-yeşil kalır.
+  |<--
+  Blok( kod: VTR-BLK-SIPARIS, ne: "sipariş verme dikey dilimi", uygular: VTR-ANY-SIPARIS ) {
+
+    Katman( kod: VTR-KAT-ONYUZ, ad: "önyüz", ne: "kullanıcının gördüğü yüz — sipariş ekranı",
+            kullanır: VTR-TAKIM-ONYUZ ) {
+      // MIM-1.5 ideali: Adım doğrudan Katman'da (çıplak) durmaz — konu modülü sarar.
+      AltKatman( kod: VTR-AKT-SIPARIS-YUZU, departman: kodlama, ad: "sipariş yüzü" ) {
+      Adım( kod: VTR-ADM-SIPARIS-EKRANI, ad: "sipariş-ekranı",
+            görev: "Sepet özetini ve adres seçimini gösteren sipariş ekranını kur; 'Siparişi Ver' düğmesi VTR-SZL-SIPARIS sözleşmesindeki alanları toplayıp sipariş ucunu çağırır — fiyat İSTEMCİDE HESAPLANMAZ (VTR-KRL-FIYAT), sunucudan gelen özet gösterilir",
+            kabul: [ "ekran sepet özetini ve adresleri sunucudan okuyup gösteriyor", "düğme sözleşme alanlarını eksiksiz gönderiyor; 400/402/409 hataları kullanıcıya Türkçe açıklanıyor" ],
+            üretir: VTR-KOD-SIPARIS-EKRANI,
+            bağımlı: [ VTR-TAKIM-ONYUZ, VTR-SZL-SIPARIS ],
+            referans: [ VTR-GRK-SIPARIS-VER ],
+            sınır: "yalnız sipariş verme yüzü — sipariş geçmişi ekranı ayrı Adım",
+            durum: beklemede )
+      }
+    }
+
+    Katman( kod: VTR-KAT-ARKAYUZ, ad: "arkayüz", ne: "sunucu yüzü — sipariş ucu ve kaydı",
+            kullanır: VTR-TAKIM-ARKAYUZ ) {
+      AltKatman( kod: VTR-AKT-SIPARIS-UCU, departman: kodlama, ad: "sipariş servisi" ) {
+      Adım( kod: VTR-ADM-SIPARIS-UCU, ad: "sipariş-ucu",
+            görev: "VTR-SZL-SIPARIS sözleşmesini uygulayan sipariş ucunu ve sipariş tablosunu kur; fiyat/stok doğrulaması burada yapılır (VTR-KRL-FIYAT), çakışan sipariş 409 ile reddedilir",
+            kabul: [ "uç sözleşmedeki istek/yanıt/hata alanlarını birebir uyguluyor", "stok yetersizse 409, ödeme sınırı aşılırsa 402 dönüyor ve kayıt atomik yazılıyor" ],
+            üretir: VTR-KOD-SIPARIS-UCU,
+            bağımlı: [ VTR-TAKIM-ARKAYUZ, VTR-SZL-SIPARIS ],
+            referans: [ VTR-GRK-SIPARIS-VER ],
+            sınır: "ödeme sağlayıcı çağrısı bu Adımda DEĞİL — sahte-ödeme stubuyla test edilir",
+            durum: beklemede )
+      }
+    }
+  }
+}
+
+// ⑥ BLOK SÜREKLİLİĞİ (MIM-1.3): ikinci mevsimde AYNI gövde büyür — Blok
+//    yeniden TANIMLANMAZ, `çağır` ile sürer (Provider deseni: tek tanım, ağaçtan
+//    erişim, kopya yok). Motor kardeş fazları kaynak sırasında zincirler:
+//    v1'in işi, mvp'nin yaprakları bitmeden başlayamaz (faz-sırası türetme).
+Faz( kod: VTR-FAZ-V1, ad: "v1", ne: "ikinci büyüme dönemi — sipariş dilimi bu mevsimde de büyür (yeni Katman/Adımlar buraya eklenir)" ) {
+  çağır VTR-BLK-SIPARIS
+}
+
+// ⑦ ÜRETİM-YERİ (MIM-2.1): meyve nereye düşer — çalgıcı klasör UYDURMAZ.
+Kod( kod: VTR-KOD-SIPARIS-EKRANI, dosya: "uygulama/lib/ekranlar/siparis_ekrani.dart",
+     ne: "🍎 sipariş ekranı — VTR-ADM-SIPARIS-EKRANI'nın meyvesi" )
+Kod( kod: VTR-KOD-SIPARIS-UCU, dosya: "sunucu/app/uclar/siparis.py",
+     ne: "🍎 sipariş ucu — VTR-ADM-SIPARIS-UCU'nun meyvesi" )

@@ -1,0 +1,241 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/kanon/yas.sar — ⚖️ YASA bölümü · v1 kanonu (19 madde)
+//   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
+//   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
+//   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
+//   alanları aynı metnin makine-okur taşıyıcısıdır. Tam içerik doğrulaması ve
+//   dört-parça mutabakatı GOC-SPEC-A02 kapsamındadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+### YAS-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
+**Hüküm:** Yönetişim, Rejim ve Tanı; hükümlerin yaşam döngüsünü, her Projenin zorlama rejimini, tanıların dürüst ve öğretici görünürlüğünü, düzey anlamlarını ve terfi kapılarını tanımlayan tek kanonik yönetim alanıdır; bu sorumluluklar paralel bir sicile devredilemez; dayanak: aksiyom (dayanaksız kök); ilgili: [YAS, MIM, TIP, STR].
+**Gerekçe:** Hüküm, zorlama ve görünürlük ayrı kaynaklardan yönetilirse aynı ihlal farklı Projelerde farklı anlam ve sonuç üretir; tek alan, yönetişim drift'ini önler.
+**Örnek:** Bir kuralın dayanağı, uygulandığı rejim, ürettiği tanı ve terfi kanıtı YAS hükümlerine göre birlikte okunur; yalnız bir yüzey ayarıyla kural düzeyi değiştirilemez.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Karar( kod: YAS-0, durum: kilitli,
+       ne: "YAS-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
+       karar: "Yönetişim, Rejim ve Tanı; hükümlerin yaşam döngüsünü, her Projenin zorlama rejimini, tanıların dürüst ve öğretici görünürlüğünü, düzey anlamlarını ve terfi kapılarını tanımlayan tek kanonik yönetim alanıdır; bu sorumluluklar paralel bir sicile devredilemez; dayanak: aksiyom (dayanaksız kök); ilgili: [YAS, MIM, TIP, STR].",
+       gerekçe: "Hüküm, zorlama ve görünürlük ayrı kaynaklardan yönetilirse aynı ihlal farklı Projelerde farklı anlam ve sonuç üretir; tek alan, yönetişim drift'ini önler." )
+
+-->|
+### YAS-1 · Zorunlu Rejim Beyanı [HATA]
+**Hüküm:** Her Proje anadizininde `rejim` alanını tam bir kez ve yalnız `katı` ya da `esnek` değeriyle açıkça beyan eder; alan eksik, yinelenmiş veya geçersizse Proje doğrulanamaz ve hiçbir motor, yüzey ya da koşum sessiz varsayım üretemez; dayanak: YAS-0; ilgili: [YAS, MIM, TIP].
+**Gerekçe:** Örtük varsayım aynı yapının farklı koşumlarda farklı geçerlilik kazanmasına ve yapısal hataların tesadüfen gizlenmesine yol açar.
+**Örnek:** Doğru: `Proje( kod: PRJ-URUN-01, rejim: katı )`; yanlış: `Proje( kod: PRJ-URUN-01 )` veya `rejim: varsayılan`.
+**Zorlama:** Yeni tanı önerisi `rejim-beyanı-eksik` · HATA · “Proje `rejim: katı|esnek` beyanını tam bir kez taşımalı; sessiz varsayım yok.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: YAS-1, durum: kilitli,
+       ne: "YAS-1 · Zorunlu Rejim Beyanı [HATA]",
+       karar: "Her Proje anadizininde `rejim` alanını tam bir kez ve yalnız `katı` ya da `esnek` değeriyle açıkça beyan eder; alan eksik, yinelenmiş veya geçersizse Proje doğrulanamaz ve hiçbir motor, yüzey ya da koşum sessiz varsayım üretemez; dayanak: YAS-0; ilgili: [YAS, MIM, TIP].",
+       gerekçe: "Örtük varsayım aynı yapının farklı koşumlarda farklı geçerlilik kazanmasına ve yapısal hataların tesadüfen gizlenmesine yol açar." )
+
+-->|
+### YAS-1.1 · Katı Rejim Normu [HATA]
+**Hüküm:** `rejim: katı` olan bir Projede her Katman→Adım sarma yolu en az bir AltKatmandan geçer; Katmanın doğrudan Adım taşıması veya AltKatman kademesinin başka bir düğümle ikame edilmesi yasaktır; dayanak: YAS-1; ilgili: [YAS, MIM].
+**Gerekçe:** AltKatman atlandığında planlama, kodlama, sınama, inceleme ve güvenlik sorumlulukları görünmezleşir; aynı Katmandaki işlerin kabul sahipliği karışır.
+**Örnek:** Doğru: `Katman( ... ) { AltKatman( departman: kodlama ) { Adım( kod: ADM-01 ) } }`; yanlış: `Katman( ... ) { Adım( kod: ADM-01 ) }`.
+**Zorlama:** Yeni tanı önerisi `katı-rejim-altkatman-eksik` · HATA · “Katı rejimde Katman doğrudan Adım taşıyamaz; araya en az bir AltKatman koy.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural katıRejimNormu( kod: YAS-1.1,
+       ne: "YAS-1.1 · Katı Rejim Normu [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-1 )
+
+-->|
+### YAS-1.2 · Esnek Rejim İstisnası [BİLGİ]
+**Hüküm:** Yalnız `rejim: esnek` beyan edilmiş küçük veya deneysel Projelerde Katman doğrudan Adım taşıyabilir; bu izin AltKatmanı yasaklamaz, başka mimari kademeleri düşürmez ve istisna kullanımı görünür bir bilgi kaydı olarak korunur; dayanak: YAS-1; ilgili: [YAS, MIM, STR].
+**Gerekçe:** Küçük işler için zorunlu departman ayrımı gereksiz yük yaratabilir; açık rejim beyanı, bu kolaylığın genel norm sanılmasını ve büyük Projelere sessizce yayılmasını önler.
+**Örnek:** `Proje( kod: PRJ-DENEY-01, rejim: esnek )` altında `Katman( ... ) { Adım( kod: ADM-01 ) }` geçerlidir; aynı yerleşim katı rejimde geçerli değildir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural esnekRejimİstisnası( kod: YAS-1.2,
+       ne: "YAS-1.2 · Esnek Rejim İstisnası [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-1 )
+
+-->|
+### YAS-1.3 · Rejim Geçişi [UYARI]
+**Hüküm:** Bir Projenin rejimi yalnız açık kullanıcı değişikliğiyle geçer; geçiş önce hedef rejime göre doğrulanır, mevcut yapı otomatik sarılmaz, taşınmaz veya silinmez ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır; dayanak: YAS-1; ilgili: [YAS, MIM, STR].
+**Gerekçe:** Otomatik dönüşüm dosya sahipliğini ve plan niyetini tahmin ederek değiştirebilir; sessiz yeniden yazım hem veri kaybı hem de gözden kaçan kapsam drift'i doğurur.
+**Örnek:** Kullanıcı `rejim: esnek` değerini `rejim: katı` yapınca doğrudan Katman altındaki Adımlar yerinde kalır ve her eksik AltKatman yolu raporlanır; motor kendiliğinden departman seçmez.
+**Zorlama:** Yeni tanı önerisi `rejim-geçiş-uyumsuzluğu` · UYARI · “Rejim değişti, ancak yapı hedef rejimi sağlamıyor; otomatik dönüştürme yapılmadı.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural rejimGeçişi( kod: YAS-1.3,
+       ne: "YAS-1.3 · Rejim Geçişi [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-1 )
+
+-->|
+### YAS-2 · Hüküm ve Zorlama Zinciri [HATA]
+**Hüküm:** Karar hükmün niçinini ve kilitli yönünü, Kural makinenin nasıl zorlayacağını, Anayasa en yüksek ortak sınırı, Politika işletim bağını, Mevzuat ise dış yükümlülüğü taşır; bu tiplerden biri diğerinin otoritesini veya sorumluluğunu üstlenemez ve zorlama zinciri Karardan uygulanabilir Kurala kadar çözülebilir kalır; dayanak: YAS-0; ilgili: [YAS, TIP, ORK].
+**Gerekçe:** Niyet, otorite ve uygulama tek tipte karıştığında hangi ifadenin bağlayıcı, hangisinin açıklayıcı olduğu belirsizleşir; yanlış tip seçimi denetlenebilir hükmü düzyazıya dönüştürür.
+**Örnek:** Karar “rejim açık beyan edilir” yönünü kilitler; ona dayanan Kural eksik `rejim` alanının koşulunu ve ihlal mesajını taşır; işletim sırası ayrıca Politika olarak yazılır.
+**Zorlama:** Yeni tanı önerisi `hüküm-türü-uyumsuz` · HATA · “Hükmün niyet, zorlama, üst sınır, işletim veya dış yükümlülük rolü seçilen yasa tipiyle uyuşmuyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: YAS-2, durum: kilitli,
+       ne: "YAS-2 · Hüküm ve Zorlama Zinciri [HATA]",
+       karar: "Karar hükmün niçinini ve kilitli yönünü, Kural makinenin nasıl zorlayacağını, Anayasa en yüksek ortak sınırı, Politika işletim bağını, Mevzuat ise dış yükümlülüğü taşır; bu tiplerden biri diğerinin otoritesini veya sorumluluğunu üstlenemez ve zorlama zinciri Karardan uygulanabilir Kurala kadar çözülebilir kalır; dayanak: YAS-0; ilgili: [YAS, TIP, ORK].",
+       gerekçe: "Niyet, otorite ve uygulama tek tipte karıştığında hangi ifadenin bağlayıcı, hangisinin açıklayıcı olduğu belirsizleşir; yanlış tip seçimi denetlenebilir hükmü düzyazıya dönüştürür." )
+
+-->|
+### YAS-2.1 · Dayanak ve Uygulama İzlenebilirliği [UYARI]
+**Hüküm:** Her Kural ve Politika yeni kanondaki açık dayanağına tipli bir `dayanak` kenarıyla bağlanır; kilitli her Karar da uygulandığı yapısal hedefi tipli kenarla gösterir, düzyazıdaki kod anması kenar yerine geçmez; dayanak: YAS-2; ilgili: [YAS, TIP, ORK].
+**Gerekçe:** Yapısal bağ olmadan hükmün kökeni ve etkilediği hedef yalnız metin aramasına kalır; yeniden adlandırma veya kapsam değişiminde uygulama sessizce kopar.
+**Örnek:** `Kural rejimBeyanı( kod: YAS-KUR-01, dayanak: KAR-REJIM-01, kapsam: Proje, ... )` izlenebilirdir; açıklamada yalnız “KAR-REJIM-01 gereği” yazmak yeterli değildir.
+**Zorlama:** `dayanaksız-kural` · BİLGİ/UYARI (bağlama göre) · “Metin anması yapısal dayanak bağı değildir.”; `politika-dayanaksız` · BİLGİ · “Politikanın hangi karardan doğduğu belirsiz.” · yüzey: Problems, satır-lensi, tek-dosya ve proje CLI; `uygulanmamış-karar` · UYARI · “Kilitli ve gerekli Karar yapısal hedefe uygulanmamış.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural dayanakVeUygulamaİzlenebilirliği( kod: YAS-2.1,
+       ne: "YAS-2.1 · Dayanak ve Uygulama İzlenebilirliği [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-2,
+       tanı: [ dayanaksız-kural, politika-dayanaksız, uygulanmamış-karar ] )
+
+-->|
+### YAS-2.2 · Karar Yaşam Döngüsü [HATA]
+**Hüküm:** Her Karar yürürlük durumunu açıkça taşır; `durum: revize` ise tam olarak bir çözülebilir ardıl gösterir, ardıl zinciri döngüsüz biçimde tek güncel hükümde sonlanır ve yürürlükten kalkmış bir Karar güncel hüküm gibi uygulanamaz; dayanak: YAS-2; ilgili: [YAS, STR].
+**Gerekçe:** Karşılıksız veya döngülü ardıllık hangi kararın yürürlükte olduğunu belirsizleştirir; aynı konuda eski ve yeni hükmün birlikte uygulanmasına yol açar.
+**Örnek:** Doğru: `Karar( kod: KAR-01, durum: revize, halef: KAR-02, ... )` ve yürürlükte `KAR-02`; yanlış: `KAR-01 → KAR-02 → KAR-01`.
+**Zorlama:** `halefsiz-revize` · UYARI · “Revize hükmü kimin güncellediği belirtilmemiş.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `kırık-halef` · HATA · “Revize Kararın ardıl hedefi tanımsız.”; `halef-döngü` · HATA · “Ardıl zinciri döngülü; güncel hüküm belirsiz.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural kararYaşamDöngüsü( kod: YAS-2.2,
+       ne: "YAS-2.2 · Karar Yaşam Döngüsü [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-2,
+       tanı: [ halef-döngü, halefsiz-revize, kırık-halef ] )
+
+-->|
+### YAS-2.3 · Otorite, Katman ve Kapsam [HATA]
+**Hüküm:** Her Kural `otorite`, `katman` ve `kapsam` alanlarını açıkça beyan eder; otorite kanonik sırada, katman `yapısal`, `eşik` veya `niyet` sözleşmesinde, kapsam ise en az bir gerçek hedefe çözülebilir olmalı, boş ya da çözülemeyen kapsam sessizce geçerli sayılamaz; dayanak: YAS-2; ilgili: [YAS, TIP].
+**Gerekçe:** Bu üçlü eksik olduğunda kimin üstün olduğu, koşulu hangi mekanizmanın çalıştıracağı ve hükmün nereye uygulanacağı bilinemez; kural var görünürken fiilen ölü kalır.
+**Örnek:** `Kural adSınırı( kod: YAS-KUR-02, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: ad.uzunluk <= 40, ... )`; `kapsam: BilinmeyenTip` geçersizdir.
+**Zorlama:** `eksik-alan` · UYARI · “Kuralın zorunlu alanı eksik.”; `katman-uyumsuz` · UYARI · “Katman ve koşul beyanları uyuşmuyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; `bilinmeyen-kapsam` · UYARI · “Kural kapsamı çözülemiyor.”; `boş-kapsam` · UYARI · “Yapısal koşul hiçbir hedefe uygulanmıyor.” · yüzey: proje CLI; yeni tanı önerisi `kural-sözleşmesi-eksik` · HATA · “Kural geçerli otorite, katman ve çözülebilir kapsam üçlüsünü taşımıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural otoriteKatmanVeKapsam( kod: YAS-2.3,
+       ne: "YAS-2.3 · Otorite, Katman ve Kapsam [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-2,
+       tanı: [ bilinmeyen-kapsam, boş-kapsam, eksik-alan, katman-uyumsuz ] )
+
+-->|
+### YAS-2.4 · Çatışma, Birleşim ve Ebedî Hüküm [HATA]
+**Hüküm:** Kurallar kanonik otorite sırası ve tip kısıtlarına göre deterministik birleşir; eşit otoriteli çelişkiler, üstün hükmü gevşeten alt hükümler ve boş mantıksal kesişimler reddedilir, `ebedi: evet` güvenlik hükümleri yalnız anayasa otoritesinde yaşar ve kilitli imzasıyla mühürlü kalır; dayanak: YAS-2; ilgili: [YAS, TIP, ORK].
+**Gerekçe:** Sessiz galibiyet aynı kural kümesinden farklı sonuçlar üretir; ebedî korumanın imzası değiştirilebilirse güvenlik sınırı sıradan bir tercihe dönüşür.
+**Örnek:** `anayasa` otoritesindeki `değer <= 10` hükmü, daha alt otoritede `değer <= 8` ile daraltılabilir; `değer <= 12` ile gevşetilemez ve aynı hedefte `değer >= 20` ile birleştirilemez.
+**Zorlama:** `kural-çatışması` · HATA · “Kesişen kurallar aynı anda sağlanamıyor veya alt otorite üstün hükmü gevşetiyor.”; `birleşim-çatışması` · HATA · “Uygulanan kuralların kesişimi boş mantıksal taban üretiyor.”; `ebedi-ihlal` · HATA · “Ebedî kural silinmiş, değiştirilmiş veya anayasa dışı otoritede.”; `mühür-kırık` · HATA · “Sabitlenen hedefin içerik mührü değişmiş.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural çatışmaBirleşimVeEbedHüküm( kod: YAS-2.4,
+       ne: "YAS-2.4 · Çatışma, Birleşim ve Ebedî Hüküm [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-2,
+       tanı: [ birleşim-çatışması, ebedi-ihlal, kural-çatışması, mühür-kırık ] )
+
+-->|
+### YAS-3 · Tanı Sözleşmesi [HATA]
+**Hüküm:** Her tanı tam olarak düzey, tekil kod, eyleme dönük mesaj, kaynak konumu ve uygulanabilir düzeltme önerisi taşır; bütün yüzler aynı tanı nesnesini kayıpsız gösterir ve bir hüküm ancak kodu kanonik tanı sicilinde bulunuyorsa motorda zorlanıyor sayılabilir; dayanak: YAS-0; ilgili: [YAS, DIL, YUZ].
+**Gerekçe:** Eksik ya da yüzeye göre değişen tanı, ihlalin yerini ve çözümünü belirsizleştirir; sicilsiz zorlama iddiası belgede var olan fakat çalışmayan sahte güvence üretir.
+**Örnek:** `{ duzey: hata, kod: "rejim-beyanı-eksik", mesaj: "Rejim beyanı eksik.", satir: 3, sutun: 1, oneri: "rejim: katı veya rejim: esnek ekle." }`; yalnız mesaj metni döndürmek yeterli değildir.
+**Zorlama:** Yeni tanı önerisi `tanı-sözleşmesi-uyumsuz` · HATA · “Tanı düzey, tekil kod, mesaj, konum ve düzeltme önerisi alanlarının tamamını taşımıyor veya kod sicilde yok.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: YAS-3, durum: kilitli,
+       ne: "YAS-3 · Tanı Sözleşmesi [HATA]",
+       karar: "Her tanı tam olarak düzey, tekil kod, eyleme dönük mesaj, kaynak konumu ve uygulanabilir düzeltme önerisi taşır; bütün yüzler aynı tanı nesnesini kayıpsız gösterir ve bir hüküm ancak kodu kanonik tanı sicilinde bulunuyorsa motorda zorlanıyor sayılabilir; dayanak: YAS-0; ilgili: [YAS, DIL, YUZ].",
+       gerekçe: "Eksik ya da yüzeye göre değişen tanı, ihlalin yerini ve çözümünü belirsizleştirir; sicilsiz zorlama iddiası belgede var olan fakat çalışmayan sahte güvence üretir." )
+
+-->|
+### YAS-3.1 · Tanı Düzeyleri [BİLGİ]
+**Hüküm:** `HATA` doğrulama veya terfi kapısını kapatan yapısal ihlali, `UYARI` tam yeşilden önce giderilmesi gereken drift riskini, `BİLGİ` ise kapıyı kapatmayan ölçüm, istisna kaydı veya yönlendirme işaretini temsil eder; yüzler bu anlamları yeniden derecelendiremez; dayanak: YAS-3; ilgili: [YAS, STR, YUZ].
+**Gerekçe:** Düzey anlamları sabit değilse aynı tanı bir yüzeyde engel, diğerinde süs olur; kullanıcı hangi kayıtla çalışmaya devam edebileceğini öngöremez.
+**Örnek:** `halef-döngü` HATA olarak kapıyı kapatır, `uygulanmamış-karar` UYARI olarak tam yeşili engeller, `açık-adım` BİLGİ olarak yalnız gündemi görünür kılar.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural tanıDüzeyleri( kod: YAS-3.1,
+       ne: "YAS-3.1 · Tanı Düzeyleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-3 )
+
+-->|
+### YAS-3.2 · Tek-Dosya ve Proje Kapsamları [HATA]
+**Hüküm:** Sözdizimi, yerel şema, sarma ve dosya içi kural tanıları tek-dosya kapısında; kimlik tekilliği, disk mutabakatı, çok-dosya referansı ve bağımlılık grafı tanıları Proje kapısında çalışır; tek-dosya temizliği Proje temizliği diye sunulamaz ve iki kapı birbirinin kapsamını taklit edemez; dayanak: YAS-3; ilgili: [YAS, MIM, ORK].
+**Gerekçe:** Bir dosyanın tek başına temiz olması çözülemeyen dış hedefleri veya disk drift'ini kanıtlamaz; kapsamların karışması yanlış yeşil sonuç üretir.
+**Örnek:** `geçersiz-enum` açık dosyada belirlenebilir; `kırık-referans`, `yinelenen-kod` ve `doc-drift` ise bütün Proje indeksi ve disk görülmeden sonuçlandırılamaz.
+**Zorlama:** Yeni tanı önerisi `tanı-kapsamı-karışması` · HATA · “Tanı yanlış kapıda çalıştırıldı veya tek-dosya sonucu Proje temizliği olarak sunuldu.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural tekDosyaVeProjeKapsamları( kod: YAS-3.2,
+       ne: "YAS-3.2 · Tek-Dosya ve Proje Kapsamları [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-3 )
+
+-->|
+### YAS-3.3 · Proje-Bazlı Problems ve Graf Kimliği [HATA]
+**Hüküm:** Problems grupları, graf, karne ve tanı kümesi kimliği fiziksel anadizin yolundan değil ÇalışmaAlanı içindeki tekil Proje düğümünün `kod` değerinden türer; Proje taşınsa kimliği korunur, aynı dizindeki ayrı Projelerin bulguları birleşmez ve ortak Auth Proje sınırını silemez; dayanak: YAS-3; ilgili: [YAS, MIM, YUZ, ORK].
+**Gerekçe:** Yol tabanlı kimlik taşıma ve yeniden adlandırmada geçmişi koparır; bir çalışma alanındaki çoklu Projelerin tanılarını birbirine karıştırarak yanlış karne ve graf üretir.
+**Örnek:** `PRJ-MOBIL` başka klasöre taşındığında aynı Problems grubu ve karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez.
+**Zorlama:** Yeni tanı önerisi `proje-tanı-kimliği-uyumsuz` · HATA · “Tanı, graf veya karne kimliği Proje kodundan türemiyor ya da birden çok Projenin bulgularını birleştiriyor.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural projeBazlıProblemsVeGrafKimliği( kod: YAS-3.3,
+       ne: "YAS-3.3 · Proje-Bazlı Problems ve Graf Kimliği [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-3 )
+
+-->|
+### YAS-3.4 · Görünürlük ve Tanı Dürüstlüğü [UYARI]
+**Hüküm:** Tanılar Problems, satır-lensi, hover veya CLI yüzlerinden kapsamına uygun olan en az birinde görünür kalır, yinelenen aynı-kök bulguları anlam kaybetmeden özetler, önerisiyle düzeltmeyi öğretir ve sicilde bulunmayan bir zorlamayı canlıymış gibi sunamaz; dayanak: YAS-3; ilgili: [YAS, YUZ, OGR].
+**Gerekçe:** Gizli tanı uygulanabilir değildir, yinelenen gürültü ise gerçek nedeni örter; doğrulanmamış canlılık iddiası kullanıcıya var olmayan bir korumaya güven verir.
+**Örnek:** Aynı dosyadaki çok sayıda dayanak eksiği tek özet bulguda gösterilebilir; bir Kural `tanı: hayali-kod` diyorsa yüzey bunu çalışan zorlama olarak etiketlemez.
+**Zorlama:** `doğrulanamayan-tanı-iddiası` · UYARI · “Kuralın motorda zorlama iddiası kanonik tanı sicilinde doğrulanamıyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural görünürlükVeTanıDürüstlüğü( kod: YAS-3.4,
+       ne: "YAS-3.4 · Görünürlük ve Tanı Dürüstlüğü [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-3,
+       tanı: [ doğrulanamayan-tanı-iddiası ] )
+
+-->|
+### YAS-4 · Terfi ve Karne Kapısı [HATA]
+**Hüküm:** Yeni bir hüküm önce `BİLGİ` düzeyinde gözlenir, tekrar üretilebilirliği kanıtlanıp ilgili bilgi bulguları temizlendiğinde `UYARI`ya, uyarı bulguları sıfırlanıp açık yetkili kabulü alındığında `HATA`ya terfi eder; düzey atlanamaz, yalnız metin değişikliğiyle yükseltilemez ve her geçiş kanıtlı bir temizlik kapısı taşır; dayanak: YAS-0; ilgili: [YAS, STR, ORK].
+**Gerekçe:** Kanıtlanmamış sert zorlama mevcut Projeleri yanlış pozitiflerle kilitler; kapısız terfi, hükmün uygulama olgunluğunu görünmez bir editör tercihine dönüştürür.
+**Örnek:** Bir bilgi tanısı hâlâ açık bulgu üretirken uyarıya çevrilemez; uyarı bulguları sıfır, doğrulaması tekrar üretilebilir ve kabulü kayıtlıysa HATA terfisi değerlendirilebilir.
+**Zorlama:** Yeni tanı önerisi `tanı-terfi-kapısı-ihlali` · HATA · “Tanı düzeyi sıra, temizlik, doğrulama veya açık kabul kanıtı olmadan yükseltilmiş.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Karar( kod: YAS-4, durum: kilitli,
+       ne: "YAS-4 · Terfi ve Karne Kapısı [HATA]",
+       karar: "Yeni bir hüküm önce `BİLGİ` düzeyinde gözlenir, tekrar üretilebilirliği kanıtlanıp ilgili bilgi bulguları temizlendiğinde `UYARI`ya, uyarı bulguları sıfırlanıp açık yetkili kabulü alındığında `HATA`ya terfi eder; düzey atlanamaz, yalnız metin değişikliğiyle yükseltilemez ve her geçiş kanıtlı bir temizlik kapısı taşır; dayanak: YAS-0; ilgili: [YAS, STR, ORK].",
+       gerekçe: "Kanıtlanmamış sert zorlama mevcut Projeleri yanlış pozitiflerle kilitler; kapısız terfi, hükmün uygulama olgunluğunu görünmez bir editör tercihine dönüştürür." )
+
+-->|
+### YAS-4.1 · Tam Yeşil Tanımı [HATA]
+**Hüküm:** Bir kapı yalnız kapsamındaki `HATA` sayısı `0` ve `UYARI` sayısı `0` olduğunda tam yeşildir; `BİLGİ` kayıtları görünür kalır fakat sonucu bozmaz, atlanan denetim veya yalnız tek-dosya temizliği Proje için tam yeşil sayılamaz; dayanak: YAS-4; ilgili: [YAS, STR].
+**Gerekçe:** Uyarılı sonuca yeşil denmesi biriken drift'i normalleştirir; bilgi kayıtlarını hata saymak ise ölçüm ve yönlendirme tanılarını gereksiz engellere çevirir.
+**Örnek:** `0 HATA · 0 UYARI · 7 BİLGİ` tam yeşildir; `0 HATA · 1 UYARI · 0 BİLGİ` tam yeşil değildir.
+**Zorlama:** Yeni tanı önerisi `sahte-tam-yeşil` · HATA · “Tam yeşil ilanı geçersiz; kapsamda uyarı/hata var veya zorunlu denetim kapısı çalıştırılmamış.” · yüzey: Problems, proje CLI ve karne · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural tamYeşilTanımı( kod: YAS-4.1,
+       ne: "YAS-4.1 · Tam Yeşil Tanımı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-4 )
+
+-->|
+### YAS-4.2 · Terfi Kanıtı [UYARI]
+**Hüküm:** Bir hükmün tanı düzeyi yalnız çalışan uygulama bağı, aynı girdide aynı sonucu veren tekrar üretilebilir doğrulama ve yetkili açık kabul kaydı birlikte bulunduğunda yükseltilir; bu üç kanıttan hiçbiri düzyazı iddiasıyla ikame edilemez; dayanak: YAS-4; ilgili: [YAS, STR, ORK].
+**Gerekçe:** Kodlanmamış, sınanmamış veya kabul edilmemiş bir terfi belgenin vaat ettiği sertlikle motorun gerçek davranışını ayırır; sürümler arasında seviye drift'i doğurur.
+**Örnek:** `uygulama: TAN-YAS-04`, `doğrulama: SIN-YAS-04` ve `kabul: ONY-YAS-04` bağlarından biri eksikse düzey aynı kalır.
+**Zorlama:** Yeni tanı önerisi `terfi-kanıtı-eksik` · UYARI · “Tanı düzeyi için uygulama, tekrar üretilebilir doğrulama ve açık kabul kanıtlarının tamamı bağlı değil.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural terfiKanıtı( kod: YAS-4.2,
+       ne: "YAS-4.2 · Terfi Kanıtı [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-4 )
+
+-->|
+### YAS-5 · Durum, Süreç ve Güvenlik Kural Aileleri [BİLGİ]
+**Hüküm:** Durum ve süreç kural aileleri kayıt, tarih, iş sırası, yaşam döngüsü, karne ve temizlik hükümlerini; güvenlik kural ailesi ise yalnız savunma amaçlı, anayasa otoriteli ebedî koruma hükümlerini bu bölümde kataloglar; işletim veya ürün davranışı güvenlik gerekçesiyle ebedîleştirilemez; dayanak: YAS-0; ilgili: [YAS, STR, ORK].
+**Gerekçe:** Aile sınırları açık değilse geçici süreç tercihleri değiştirilemez güvenlik hükmü gibi mühürlenir veya gerçek savunma sınırları sıradan işletim ayarına indirgenir.
+**Örnek:** Karar ardıllığı ve tam-yeşil hesabı durum/süreç ailesindedir; kimlik bilgisinin açığa çıkmasını engelleyen değişmez güvenlik ailesindedir, günlük iş sırası değildir.
+**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+|<--
+Kural durumSüreçVeGüvenlikKuralAileleri( kod: YAS-5,
+       ne: "YAS-5 · Durum, Süreç ve Güvenlik Kural Aileleri [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: YAS-0 )

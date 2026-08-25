@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- İstasyon: çalışma alanı satırı — çatı örtüsü ve altında kapsanan iki birim (EKL-F7-A09 küme kimliği). -->
+  <path d="M3.4 9.8 L12 4.2 L20.6 9.8"/>
+  <path d="M5.4 9.8 V19.2 H18.6 V9.8"/>
+  <rect x="7.9" y="13.2" width="3.3" height="6"/>
+  <rect x="12.8" y="13.2" width="3.3" height="6"/>
+</svg>

@@ -1,0 +1,17 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/auth.sar — 🔑 TEK GİRİŞ (paylaşık auth sözleşmesi)
+//
+//   Bahçe'nin KAVUŞUM NOKTASI: tüm Uygulamalar bunu `çağır SZL-AUTH` ile paylaşır
+//   (sözleşme-önce, ORK-2.3). "Kök tek auth girişinden ilerler" — işte o kök burası.
+//   Üst-seviye bildirim (kısıtsız): ortak kütüphane, kod'dan çözülür (DIL-1.4).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ① SÖZLEŞME — auth kontratı (uygulamalar-arası + frontend↔backend anlaşması)
+Sözleşme( kod: SZL-AUTH, sürüm: "1.0",
+          ne: "kimlik doğrulama sözleşmesi — bahçedeki TÜM uygulamalar tek girişi paylaşır",
+          istek: "eposta + parola",
+          yanıt: "token + kullanıcı · hatalar: 401 geçersiz-kimlik, 429 çok-deneme" )
+
+// ② UÇ — sözleşmeyi UYGULAR (backend ayağı) · dosya: üretim-yeri BEYAN (MIM-2.1)
+Uç( kod: UC-AUTH, metod: POST, yol: "/api/v1/auth/login", sözleşme: SZL-AUTH,
+    dosya: "arkayuz/app/api/auth.py" )

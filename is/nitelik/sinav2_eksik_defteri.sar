@@ -1,0 +1,67 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/sinav2_eksik_defteri.sar — 🧪 SINAV-2 EKSİK DEFTERİ (2026-07-11)
+//   Gerçek-dünya sınavı #2: yabancı ajan, Esnaf-Defteri ilk-blok PLANI.
+//   HÜKÜM (Founder): SARMAL SINIFI GEÇEMEDİ — ajan rotada kaldı (sadakat ✅)
+//   ama motor iki temel ilkeyi ZORLAMADI; denetim yeşilken kör-drift yaşandı.
+//   Bu defter sınavın meyvesidir; her bulgu BKM-SNV2 rayına bağlıdır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧪 Sınav-2 Eksik Defteri — "Yeşil ama Kör"
+
+  ## Deney
+  Yabancı ajan (Sarmal'ı hiç bilmiyor) + sahibin hedefi (`hedef.sar`: G1–G7 +
+  sert sınırlar) + yalnız MCP araçları. Çıktı: 2 dosya, 13 Adım, denetle
+  TAM-yeşil, graf kopuksuz — 8,5 dakikada.
+
+  ## Sadakat sonucu (ajan tarafı — BAŞARILI)
+  G1–G7 birebir Gereksinim düğümü + Adım görev/kabul'lerinde izlenebilir;
+  yasak kelimeler yalnız `sınır:` alanlarında (bağımsız taramayla doğrulandı);
+  kapsam şişmesi yok; kod/iskelet üretilmedi. **Rota-koruma vaadi ÇALIŞTI.**
+
+  ## Sınıfta bırakan bulgular (motor/rehber tarafı)
+
+  ### F1 — YAPI-ÖNCE (YP-1) zorlanmıyor 🔴 (Founder yakaladı)
+  Anadizin klasör hiyerarşisi/raf/üretim-yeri İLANSIZ doğdu; motor sustu
+  (bugün disk↔ilan "tutarlı" göründü). Kod fazında duvar: hiçbir dosyanın
+  düşeceği yer tanımlı değil. Gerek: `rafsız-anadizin` tanısı.
+
+  ### F2 — CONTRACT-FIRST / PARALELLİK zorlanmıyor 🔴 (Founder yakaladı)
+  Önyüz Adımları arkayüz Adımlarına DOĞRUDAN `bağımlı:` zincirlendi — ön/arka
+  paralel koşamaz; kavuşum `Sözleşme` üzerinden olmalıydı (SDD-L3). Ajan
+  Sözleşme/Ekran/Uç katmanına hiç inmedi → sözleşmesiz-uç bekçisi Uç
+  açılmadığı için TETİKLENEMEDİ. Gerek: çapraz-facet doğrudan-bağımlılık
+  tanısı ("kavuşum sözleşmeden") + rehberin contract-first'e İTMESİ.
+
+  ### F3 — GÖRÜNÜM PARİTESİ yok 🟠 (Founder yakaladı, Fable kök-neden çıkardı)
+  Dış projede niyet-beyazı/KOD-altını/tip-renkleri yok (textMate+semantic
+  `.vscode/settings.json`'a hapis — EKL-F3-A05 kısıtının bumerangı); global
+  indent-rainbow bizim inceliği eziyor. Gerek: "Çalışma Alanını Giydir".
+
+  ### A1..A7 — Ajanın sürtünme listesi (ham rapor, dürüst)
+  A1 siniflama↔motor çelişkisi: MCP siniflama `Adım konabilir: [Katman]` diyor,
+     motor Faz-altını kabul edip Katman'ı "kaldır" öneriyor — K-83 rütbe-atlama
+     kanonda VAR (izinliSarma.Faz=[Kapı,Katman,Adım] doğrulandı) ama MCP
+     görünümü/anlatımı eski. 🔴 ajan-yanıltıcı.
+  A2 Çok-dosya bağlama modeli belgesiz: `çağır`ın içerme mi bağımlılık mı
+     ürettiği hiçbir araç çıktısından okunamıyor; graf'ta kapsayan boş.
+  A3 basla{proje} şablonu ilan edilmemiş Teknoloji kodları gösteriyor
+     (FLUTTER/BLOC/GOROUTER) — birebir kopyalayan kırık-referans üretir.
+  A4 Gereksinim tipi rehberde/omurgada görünmüyor — ajan tesadüfen buldu
+     (izlenebilirlik merkezi kavramken).
+  A5 siniflama{Adım} şeması koni alanlarını (görev/kabul/sınır tipleri)
+     listelemiyor — ajan şablondan çıkarsıyor.
+  A6 Tanı-düzeyi sözleşmesi (hata/uyarı/bilgi kapı ilişkisi) tek kural
+     sayfasında değil — "bilgi kapatılmalı mı" tereddüdü.
+  A7 MCP denetle tek-dosya "temiz"i bütün-temiz yanılgısı verebilir
+     (açıklama araçta var ama ajan gözünden kaçabilir).
+
+  ## Çıkarım
+  Sarmal SADAKATİ korudu ama MİMARİYİ koruyamadı: kalkan plan-ailesi
+  düzeyinde güçlü, yapı/kavuşum ilkelerinde kapısız. "Daha çok çalışmamız
+  gerekiyor" (Founder) — çalışma listesi: BKM-SNV2 fazı.
+|<--
+Karar( kod: SNV2-HUKUM, durum: kilitli,
+       karar: "Sınav-2 hükmü: SINIF GEÇİLEMEDİ — sadakat kanıtlandı, mimari kapılar (YP-1 · contract-first) eksik; tüm bulgular BKM-SNV2 rayına iner, sınav-3 bu kapılar canlanmadan açılmaz",
+       gerekçe: "Denetim TAM-yeşilken iki temel ilkenin sessizce çiğnenebilmesi kör-drift'in ta kendisi — kalkanın delikleri sahada, sahibin gözüyle bulundu (2026-07-11)",
+       ne: "🧪 Sınav-2 sonucu ve ray bağlantısı — bulgular yukarıdaki defterde, işler plan/bakim_olgunluk.sar BKM-SNV2 fazında" )

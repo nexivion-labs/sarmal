@@ -1,0 +1,174 @@
+// ═══ KÜRASYON NOTU (GOC-A08 onuncu küme · 2026-08-25): bu tespit kaydının hatırlatıcı tablosunda anılan HTR-YAYIN-TAKVIMI, HTR-V1-BORC-OTURUMU ve HTR-AJAN-ORTAMI düğümleri açık depoya girmemiştir;
+//     ilki yerel yayın mutfağının kalemidir, ikincisi atölye içi yönetişim oturumudur, üçüncüsü kapalı ürünün orkestrasyon zeminine bakar. Satırlar o günün envanteri olarak olduğu gibi bırakılmıştır. ═══
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/v1_gozden_gecirme_envanteri.sar — 🔭 V1 YAYIN ÖNCESİ GÖZDEN GEÇİRME
+//
+//   Bu dosya bir TESPİT kaydıdır, karar kaydı değildir. Founder'ın gözlem turu
+//   kuralı gereği tur sırasında hiçbir kaleme müdahale edilmemiştir: her kalem
+//   ölçülmüş, kaydedilmiş ve kontrolcü önerisiyle sıraya konmuştur. Kararlar
+//   Founder ile kalem kalem verilecek ve o oturum canlı eğitim olarak kaydedilecektir.
+//
+//   ÖLÇÜM TARİHİ: 2026-08-06. Bütün sayılar o günün canlı kaynağından alınmıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🔭 V1 Yayın Öncesi Gözden Geçirme Envanteri
+
+## Turun amacı ve yöntemi
+
+Bu tur, biriken işi kapatmak için değil GÖRÜNÜR KILMAK için koşuldu. Founder bir oturumda
+on bir ayrı iş talebi verdi ve kuyruğun kendisi bunaltıcı hâle geldi; oysa kalemlerin bir
+kısmının çoktan yapılmış olduğu, bir kısmının da yayını bloklamadığı ölçülmeden bilinemezdi.
+Turun yöntemi Founder'ın kendi kuralıdır: gözlem turunda önce kaydedilir, anında müdahale
+edilmez. Kuralın gerekçesi aynı gün bir kez daha kanıtlandı; örtü dosyasına yapılan bir
+cümlelik düzeltme bir nöbeti kırdı ve kırmızı sınama depoya gönderildi.
+
+Her kalem dört alanla yazılmıştır: ne olduğu, neden hâlâ açık durduğu, bugünkü ÖLÇÜLMÜŞ
+durumu ve kontrolcü önerisi. Öneri dört değerden birini alır: KAPANIR, ERTELENİR, PLANA
+İNER, DÜŞER. Öneri hüküm değildir; hüküm Founder'ındır.
+
+## A · BUGÜN BULUNAN ÜÇ KUSUR
+
+### A1 — Hatırlatıcı tetikleyicisi makine tarafından hiç okunmuyor (en ağır bulgu)
+
+Kanon, çapası mimari, yasa, nitelik ya da gelecek olan her Hatırlatıcının `dönüşTetikleyici`
+alanını zorunlu taşımasını şart koşar ve gerekçesini de yazar: hatırlatıcının hangi olayla
+canlanacağı yazılmalıdır. Ölçüm şunu gösterdi: motorun kaynağında bu alanı OKUYAN tek bir
+satır yoktur. Alanın varlığı doğrulanır, içeriği hiçbir zaman değerlendirilmez.
+
+Bugün iki hatırlatıcının tetikleyicisi ateşlemiş durumdadır ve metinlerinde "TETİKLENDİ"
+yazmaktadır: `HTR-DEVIR-SAHIPLIGI` ile `HTR-TANIMSIZ-SEMBOL`. İkisi de 3 Ağustos'ta göç
+kapanışıyla canlandı ve üç gün boyunca kimse bakmadı. Sebep dikkatsizlik değil, mekanizmadır:
+mevcut üç tanı (`açık-hatırlatıcı`, `kararlaşmış-hatırlatıcı`, `hatırlatıcı-vade`) yalnız
+DURUM alanına bakar, tetikleyiciye bakmaz. Üstelik ilk ikisi CLI'de bilinçli olarak tek özet
+satırına katlanır ve düzeyleri bilgidir, yani kapıyı bloklamaz. Sonuç olarak ateşlemiş bir
+hatırlatıcı ile aylardır uykuda olan bir hatırlatıcı hem panelde hem denetimde birbirinin
+aynısı görünür.
+
+Bu bulgunun ağırlığı sayısal değil ilkeseldir: Sarmal'ın kurucu tezi planın yalan
+söyleyememesidir, oysa burada kaydın üstünde "TETİKLENDİ" yazmakta ve hiçbir şey olmamaktadır.
+
+ÖNERİ: PLANA İNER, dört kademeyle. Birincisi tetikleyici serbest metinden makinece okunabilir
+bir alana döner (beklemede ya da ateşledi, yanında tarih; metin gerekçe olarak kalır).
+İkincisi ateşlemiş hatırlatıcı kendi tanısını alır ve düzeyi UYARI olur, çünkü ateşlemiş
+hatırlatıcı not değil bekleyen iştir; uyarı düzeyi onu özet katlamasından da kurtarır.
+Üçüncüsü panel ateşleyenleri ayrı grupta gösterir. Dördüncüsü ateşleyen hatırlatıcı bir Adıma
+bağlanır; kanon bunu zaten söyler, çünkü durum kararlaştı olduğunda `hatırlat:` kodu zorunludur.
+
+### A2 — `Kod` tipinin `dosya` alanı hiçbir yerde doğrulanmıyor
+
+Founder, kod haritasında diskte bulunmayan bir dosyanın göründüğünü bildirdi:
+`plan/ida_geribildirim_rayi.sar`. Ölçüm dosyanın canlı ağaçta olmadığını, yalnız arşiv rafında
+durduğunu doğruladı. Kök sebep şudur: `Kod` tipinin şemasında zorunlu alanlar yalnız `kod` ile
+`ne`'dir ve `dosya` alanı tanımlı DEĞİLDİR. Buna karşılık `Meyve` tipinde aynı ad tanımlıdır ve
+MIM-2.1 onu şöyle bağlar: yol proje kökü içinde çözülmelidir, boş ya da proje dışı ya da diskte
+karşılıksız yol teslim sayılmaz. Yani aynı isimli alan iki farklı sözleşme taşımaktadır; birinde
+mekanik olarak zorlanır, ötekinde serbest metindir.
+
+Ölçülen boyut: iki yüz otuz iki `Kod` düğümü `dosya` beyan etmektedir ve hiçbiri diskte
+doğrulanmamaktadır. Beş düğümde değer tek yol bile değildir; dört ayrı yol artı işaretiyle tek
+dizeye tıkıştırılmıştır, dolayısıyla doğrulama açılsa bile o hâliyle çözülemez.
+
+ÖNERİ: PLANA İNER. `Kod` tipinin `dosya` alanı şemaya bağlanır ve Meyve ile aynı disk
+doğrulamasına sokulur; artı ile birleştirilmiş beş beyan ayrıştırılır. Bu iş, planın sessizce
+yalan söylemesini kapattığı için yayın öncesi sayılmalıdır.
+
+### A3 — Aynı iş iki panelde birden görünüyor
+
+Founder, Hatırlatıcılar panelinde onay bekleyen bir konunun göründüğünü sordu. Ölçüm şunu
+gösterdi: panelde görünen şey Adımın kendisi değil, o Adıma düşen `geliştirmede-çapa` bilgi
+tanısıdır. Teknik olarak hata yoktur. Fakat kullanıcı deneyimi bakımından gerçek bir kusur
+vardır: `VIT-GRAF-A12` Adımı aynı anda Onaylar panelinde Founder onayı beklediği için,
+Hatırlatıcılar panelinde ise geliştirmede olduğu için durmaktadır. İki panel iki farklı doğruyu
+söyler ama kullanıcı tek işi iki yerde görür ve hangisinin eylem gerektirdiğini ayırt edemez.
+Bu, 28 Temmuz'dan beri açık duran kapı-tanıma sorusunun aynı ailesindendir.
+
+ÖNERİ: PLANA İNER, A1 ile aynı Adım gövdesinde; ikisi de panel yüzeyinin ayrım kusurudur.
+
+## B · ONAY BEKLEYEN ON SEKİZ KAPI
+
+Ölçüm: on sekiz Adım `onayBekler` alanı taşımaktadır. Dağılım şudur.
+
+| Küme | Kapı | Konu |
+|---|---|---|
+| Vitrin arayüzü | `VIT-GRAF-A12` · `A13` · `A14` | Mini Graf kenarları ve Meyve düğümleri |
+| Vitrin arayüzü | `VIT-POSTA-A02` · `A03` | Onaylar panelinin kusurları ve çift yüzey |
+| Vitrin arayüzü | `VIT-KIMLIK-A04` | Görsel kimlik kalanı |
+| Sınav sahası | `ADM-SIT-BAGLAM` · `PROMPT` · `PLAN` · `OTONOM` · `TURNUSOL` | Gerçek proje sınavının beş Adımı |
+| Sınav | `SNV4-A01` | Dördüncü sınav, ölçeği on sekiz araca çekildi |
+| Yayın | `EKL-F6-A02` · `A03` | GitHub dil tanıtımı ve MCP dizin yayını |
+| Bakım | `BKM-INC-A01` | Borç envanteri oturumu (v1 sonrasına ertelenmişti) |
+| Başarım | `PRF-A06` | Tam tur maliyetini düşürme |
+
+ÖNERİ: Bu kümede en yüksek değerli beşli sınav sahasıdır; gerçek projede sınav, öğretim
+içeriğinin neyi anlatacağını belirler ve bu sıralama bugün iki kez kanıtlanmıştır. Vitrin
+kalemleri A1 ve A3 bulgularıyla birleştirilebilir. `BKM-INC-A01` Founder hükmüyle zaten v1
+sonrasına ertelenmiştir ve panelde karar bekliyor görünmesi kaydın gerçeği söylememesidir;
+kontrolcü önerisi kapının kapatılmasıdır.
+
+## C · ON ÜÇ HATIRLATICI
+
+Ölçüm: on üç tekil Hatırlatıcı vardır. Onu açık, biri kararlaştı, ikisi tamamlandı durumdadır.
+İkisinin tetikleyicisi ateşlemiştir ve A1 bulgusunun konusudur.
+
+| Kod | Durum | Öncelik | Not |
+|---|---|---|---|
+| `HTR-YAYIN-TAKVIMI` | açık | p1 | Ekran kaydıyla içerik akışı — bu turun kendisi onu besler |
+| `HTR-AGENT-HOST-FIRSATI` | kararlaştı | p1 | Zincire girmiş, `hatırlat` kodu bağlı |
+| `HTR-DEVIR-SAHIPLIGI` | açık | p2 | ATEŞLEDİ (2026-08-03), üç gündür bakılmadı |
+| `HTR-TANIMSIZ-SEMBOL` | açık | p2 | ATEŞLEDİ (2026-08-03), üç gündür bakılmadı |
+| `HTR-V1-BORC-OTURUMU` | açık | p2 | Tetikleyicisi yayın; doğru şekilde uykuda |
+| `HTR-GOAL-73B-DEVAM` | açık | p2 | Eski oturumdan devir |
+| `HTR-FLUTTER-YUZEY` | açık | p2 | v2 zengin yüzey seçeneği |
+| `HTR-KIRMIZI-YESIL` | açık | p2 | Önce başarısız sınama disiplini |
+| `HTR-PORT-TESTI` | açık | p3 | Örnek dünyasında yaşıyor |
+| `HTR-AJAN-ORTAMI` | açık | p3 | Ölçekte ajan ortamı seçeneği |
+| `HTR-ANLAMSAL-FARK` | açık | p3 | İki koşu arasındaki anlamsal fark yüzeyi |
+
+ÖNERİ: İki ateşlemiş kalem karara girer. Üç adet p3 kalemi v1 sonrasına ERTELENİR ve
+tetikleyicileri yayına bağlanır, böylece uykuda kalmaları meşru olur. `HTR-ORCA-VIZYON` bu
+listede yoktur, çünkü 6 Ağustos'ta varlık sınırı gereği kapalı ürüne taşınmıştır.
+
+## D · YİRMİ İKİ AÇIK ADIM
+
+Dağılım dosya bazındadır: vitrin arayüzü yedi, sınav sahası beş, yayın içeriği üç, eklenti
+planı üç, bakım · kapanış · başarım · sınav birer. Dördü geliştirmede, on beşi beklemededir.
+Bu kalemlerin çoğu B kümesindeki kapılarla aynı işlerdir; ayrı bir gövde değildir.
+
+## E · `geneldurum` KLASÖRÜNÜN AKIBETİ
+
+Founder klasörün akıbetini sordu. Ölçüm: altmış üç dosya, 1.3 MB. Bunların yalnız YEDİSİ canlı
+kaynaktan atıf almaktadır: `00_DURUM.sar` (altı atıf), `git_yonetisimi.sar` (üç),
+`goc_mimari_kararlari.md` (iki), `sistem_dokumantasyonu.sar`, `yonetisim_dokumantasyonu.sar`,
+`yayin_yuzeyi_sayimi.md` ve `cokdillilik_zemini.md` (birer). Kalan elli altı dosya hiçbir canlı
+kaynaktan atıf almamaktadır ve reform sürecinin tarihsel artefaktıdır.
+
+ÖNERİ: Klasör toptan taşınamaz, çünkü `00_DURUM.sar` her oturumun giriş belgesidir ve oturum
+kancası ile CLAUDE.md ona işaret eder. Üç kümeye ayrılması önerilir. Canlı yedi dosya
+`_Sarmal/nitelik/` altına taşınır ve atıfları hizalanır; böylece ürün varlığının dışında canlı
+kaynak kalmaz. Tarihsel elli altı dosya kökteki `arsiv/` rafına iner, çünkü Founder'ın 3 Ağustos
+arşiv hükmü yaşanmış işin repodan çıkmayacağını söyler. Hiçbir dosya silinmez ve her birinin
+kaderi Founder ile tek tek incelenir.
+
+## F · BUGÜN KAPANAN ÜÇ İŞ (kayıt için)
+
+Birincisi klon kapısıdır: temiz bir klonda README'nin ilk komutu hata veriyordu, çünkü sicil
+kaydı yerelde tutulan örtünün departmanını yazıyordu. Örtü depoya alındı ve kapı yeşile döndü.
+İkincisi işleme tarihidir: bin yüz doksan dokuz mesajın dokuz yüzünün başlığı kısaltıldı,
+ortalama yüz doksan yedi karakterden elli ikiye indi ve hiçbir kelime silinmedi; dosya ağacının
+karma değeri onarım öncesi ve sonrası birebir aynı çıktı. Üçüncüsü kancanın kör noktasıdır:
+mesaj biçimi artık mekanik olarak zorlanır ve test kapısı mühürlenen kaynakları da kapsar.
+
+## G · CANLI EĞİTİM ÇEKİM DÜZENİ (karar oturumundan ÖNCE kurulur)
+
+Founder karar oturumunun canlı eğitim olarak kaydedilmesini istedi. Kayıt başlamadan önce bir
+çekim düzeni kurulmalıdır, çünkü kaydın yayını geri alınamaz. Zorunlu tek şart varlık sınırıdır:
+ekranda kapalı ürün görünmemelidir. kapalı varlık aynı depodadır ve gezginde tek tık uzaktır.
+Düzen şu dördü belirlemelidir: gezginin hangi kökü göstereceği, hangi panellerin açık olacağı,
+terminalde hangi komutların koşacağı ve editörde hangi dosyaların sekmede duracağı.
+
+ÖNERİ: PLANA İNER ve bu envanterin ilk uygulanan kalemi olur.
+|<--
+Çıkarım( kod: CKR-V1-GOZDEN-GECIRME,
+         kaynak: "6 Ağustos 2026 gözden geçirme turu — canlı kaynaktan ölçüm, Founder gözlem turu kuralıyla müdahalesiz",
+         ne: "🔭 V1 yayın öncesi envanter: üç yeni kusur (hatırlatıcı tetikleyicisi motorca hiç okunmuyor · Kod tipinin dosya alanı 232 düğümde doğrulanmıyor · aynı iş iki panelde birden) · 18 onay kapısı · 13 hatırlatıcı (2'si ateşlemiş ve üç gündür bakılmamış) · 22 açık Adım · geneldurum'un 63 dosyasından yalnız 7'si canlı · bugün kapanan üç iş · canlı eğitim çekim düzeni yayın öncesi şarttır" )

@@ -1,0 +1,39 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// {{AD}}_anadizin.sar — 🌿 ÇALIŞMA ALANI GİRİŞ DOSYASI (MIM-1.1 · MIM-3 · doğuş paketi üretti: {{TARIH}})
+//
+//   Bu dosya çalışma alanının ÇATI İLANIDIR: hangi bağımsız Proje köklerini
+//   sardığını Raf düğümleriyle söyler. Çatı bir git deposu DEĞİLDİR; her proje
+//   kendi klasöründe, kendi anadiziniyle ve kendi deposunda yaşar (MIM-3).
+//   Yeni bir proje katıldığında bedeli bir klasör ile buraya eklenecek bir
+//   Raf satırından ibarettir. Her üretken ağacın tanı, graf ve sahiplik
+//   kimliği kendi Proje düğümünden türer; çatı kimlikleri birleştirmez (MIM-1.1).
+//
+//   🧭 İLK İŞİN: {{PROJE}}/plan/ilk_plan.sar içindeki kuruluş Adımını koş —
+//   ilk proje kendi kökünde doğmuştur ve mimari diyalog orada tarif edilir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🎯 Bu bölüm çalışma alanının hangi ürün ailesini, ekibi ya da çatıyı
+  sardığını tek paragrafla anlatmalıdır. Doğuş paketi bu metni bilerek
+  yönerge olarak bırakır: çatıyı kuran yazar — "hangi projeler neden aynı
+  çatı altında yaşıyor" sorusunun cevabını buraya yaz.
+
+  ## Kapsam
+  📦 Çatının altında bugün hangi projelerin yaşadığını VE hangilerinin
+  bilinçli olarak dışarıda kaldığını yaz; ortak kimlik kullanılacaksa bunu
+  KimlikKökü ile ilan et (MIM-1.1).
+
+  ## Sonuç
+  ✅ Çatı ne olduğunda doğru kurulmuş sayılır — her proje kendi anadiziniyle
+  denetimden sıfır hata ile çıkar ve çatı ilanı diskle birebir örtüşür.
+|<--
+
+ÇalışmaAlanı( kod: CAL-{{KOD}}, ad: "{{AD}}",
+  ne: "Bu alan çalışma alanının tek cümlelik tanımıdır — doğuş paketinin bıraktığı bu yönergeyi kendi cümlenle değiştir" ) {
+
+  // Her proje kendi anadiziniyle kendi klasöründe doğar; çatı yalnız rafı ilan
+  // eder ve projenin içeriğini anlatmaz. Yeni proje = yeni klasör + yeni Raf satırı.
+  Raf( kod: RAF-{{PROJEKOD}}, yol: "{{PROJE}}/",
+    ne: "İlk proje — kendi kökü {{PROJE}}/{{PROJE}}_anadizin.sar dosyasındadır ve kendi deposunda yaşar" )
+}

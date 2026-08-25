@@ -1,0 +1,139 @@
+// sarmal: bilerek-hatalı vitrin — arkayüz şema gevşekliği kasıtlı (ne/sözleşme eksikleri ders malzemesi)
+// ═══ ARKAYÜZ NİYETİ — kimlik bloku arka yüzü (PLN-2 §B → gerçek örnek) ══════
+// Aynı gramer, arkayüz kelime dağarcığı. Kodu ajan yazar (FastAPI'ye çevirir).
+// Yenilikler: --> akış oku (DIL-1.4 · kavuşma) · D7 adları (ArkaGörev).
+
+çağır FASTAPI
+çağır POSTGRES
+çağır REDIS
+
+// ── Sözleşme: iki yüzün ORTAK dili ──────────────────────────────────────────
+Sözleşme(
+  kod: SZL-KULLANICI,
+  ad:  "kullanici-sozlesmesi",
+  sürüm: "1.0",
+  ne: "kullanıcı veri sözleşmesi — önyüz+arkayüz+tablo aynı şemaya bağlı",
+  alanlar: {
+    kimlik:  { tür: "kimlikNo", zorunlu: EVET },
+    eposta:  { tür: "eposta",  zorunlu: EVET, benzersiz: EVET },
+    ad:      { tür: "metin",   enÇok: 120 },
+    rol:     { tür: "seçim",   değerler: [ üye, yönetici ] },
+  },
+)
+Sözleşme(
+  kod: SZL-GIRIS-ISTEK,
+  sürüm: "1.0",
+  ne: "giriş isteği gövdesi — eposta + parola",
+  alanlar: { eposta: { tür: "eposta", zorunlu: EVET }, parola: { tür: "parola", zorunlu: EVET } },
+)
+Sözleşme(
+  kod: SZL-JETON-YANIT,
+  sürüm: "1.0",
+  ne: "giriş yanıtı — erişim/yenileme jetonları + ömür",
+  alanlar: { erişimJetonu: { tür: "metin" }, yenilemeJetonu: { tür: "metin" }, ömür: { tür: "saniye" } },
+)
+
+// ── Tablo (veritabanı niyeti — D3: Tablo niyet, Göç meyve) ──────────────────
+Tablo(
+  kod: TBL-KULLANICI,
+  ad:  "kullanicilar",
+  bağımlı: POSTGRES,
+  şema: SZL-KULLANICI,                  // sözleşmeden türetilir — tek gerçek
+  indeksler: [ { alan: eposta, benzersiz: EVET } ],
+  üretir: GOC-KULLANICI-1,              // migration meyvesi 🍎
+)
+
+// ── Önbellek politikası (uçlar kod ile başvurur) ────────────────────────────
+Önbellek( kod: ONB-BEN, sağlayıcı: REDIS, ömür: "5dk", anahtar: kullanıcıKimlik )
+
+// ── Servis: iş mantığı kabı ─────────────────────────────────────────────────
+Servis(
+  kod: SRV-KIMLIK,
+  ad:  "kimlik-servisi",
+  bağımlı: FASTAPI,
+  tabanYol: "/api/v1/kimlik",
+  sürüm: 1,
+  günlük: { düzey: bilgi, kişiselVeriMaskele: EVET },
+  gözlem: { metrikler: [ istekSayısı, gecikme ], izleme: EVET },
+) {
+
+  Uç(
+    kod:     UC-GIRIS,
+    ad:      "giris",
+    yol:     "/giris",
+    yöntem:  POST,
+    istek:   SZL-GIRIS-ISTEK,
+    yanıt:   SZL-JETON-YANIT,
+    hatalar: { yetkisiz: "kimlik-doğrulanamadı", hesapKilitli: "hesap-kilitli", hızAşımı: "hız-aşımı" },
+    hızSınırı: { istek: 5, pencere: "1dk", anahtar: eposta },   // brute-force kalkanı
+    yetki:   herkese,                    // giriş ucu açık
+    referans: KRR-OTURUM,                // karar bağlamda (JWT stratejisi)
+  ) {
+    --> EKR-GIRIS                        // ← önyüz ekranına KAVUŞMA (DIL-1.4: besler)
+    --> DRM-OTURUM                       //   oturum durumunu da besler
+  }
+
+  Uç(
+    kod:    UC-BEN,
+    yol:    "/ben",
+    yöntem: GET,
+    yanıt:  SZL-KULLANICI,
+    yetki:  girişli,                     // koruma: jeton zorunlu
+    önbellek: ONB-BEN,
+  )
+
+  Uç(
+    kod:    UC-YENILE,
+    yol:    "/yenile",
+    yöntem: POST,
+    yanıt:  SZL-JETON-YANIT,
+    yetki:  yenilemeJetonu,
+  )
+}
+
+// ── KimlikPolitikası/Jeton politikası ─────────────────────────────────────────────────
+
+/// RBAC çizgisi — uçlar yalnız 'yetki:' ilanındaki rolle erişilir (Etmen ile ortak sözlük).
+Kural erişilebilirYetki( kod: KRL-ERIS-YETKI, otorite: politika, katman: niyet, kapsam: tümü ) {
+  ne: "Uç, yetki ilanındaki rol dışında erişilemez — RBAC tek sözlükten (herkese · girişli · rol)"
+}
+
+KimlikPolitikası(
+  kod: KML-JWT,
+  tür: jeton,                            // JWT (teknoloji özel adı evrensel)
+  ömür: { erişim: "15dk", yenileme: "7g" },
+  parola: { algoritma: "argon2id", enAz: 8 },
+  kilitleme: { deneme: 5, süre: "15dk" },
+  uygular: erişilebilirYetki,            // RBAC kuralına tabi (D5: Etmen ile ortak)
+)
+
+// ── Asenkron dünya: Kuyruk · ArkaGörev · Zamanlayıcı · Olay ─────────────────
+Kuyruk( kod: KYR-EPOSTA, bağımlı: REDIS, yenidenDene: { sayı: 3, geriÇekilme: üstel } )
+
+ArkaGörev(
+  kod: GRV-HOSGELDIN,
+  ad:  "hosgeldin-epostasi",
+  tetik: OLY-KAYIT,                      // olay tetikler
+  kuyruk: KYR-EPOSTA,
+  zamanAşımı: "30sn",
+)
+
+Zamanlayıcı(
+  kod: ZMN-JETON-TEMIZLIK,
+  ifade: "0 3 * * *",                    // her gece 03:00
+  görev: "süresi geçmiş yenileme jetonlarını sil",
+)
+
+Olay( kod: OLY-KAYIT, ad: "kullanici-kaydoldu", yük: SZL-KULLANICI, yayın: içeride )
+
+// ── Yapılandırma + Gizli ────────────────────────────────────────────────────
+Ayar( kod: AYR-KIMLIK, ortamlar: [ geliştirme, sınama, üretim ],
+değerler: { jetonÖmrü: "15dk", oturumSınırı: 3 } )
+Gizli( kod: GZL-JWT-ANAHTAR, sağlayıcı: ortamDeğişkeni, ad: "JWT_GIZLI_ANAHTAR" )
+
+// ── Arkayüz yasası (DIL-3) ───────────────────────────────────────────────────
+Kural yetkiİlanZorunlu( otorite: politika, katman: yapısal, kapsam: Uç ) {
+  koşul: "her Uç bir yetki: parametresi ilan eder",
+  ihlal: "yetki-ilansız",
+  düzey: hata,
+}

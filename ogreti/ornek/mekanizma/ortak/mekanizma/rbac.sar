@@ -1,0 +1,14 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ortak/mekanizma/rbac.sar — 🔩 RBAC mekanizması (DAG kökü)
+//
+//   Kesişen yetkilendirme altyapısı. BİR KEZ ilan edilir; governance ona bağımlıdır.
+//   Üst-seviye bildirim (kısıtsız): kod'dan çözülür (DIL-1.4). Politika+Kural İÇERİR.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Mekanizma( kod: MEK-RBAC, ad: "rbac", faz: "F1",
+           ne: "🔩 rol-tabanlı erişim denetimi (L1-L6) — tüm ajanların yetkisini sınırlar" ) {
+  Politika( kod: POL-RBAC, alan: güvenlik, ne: "en-az-yetki: ajan yalnız görev kapsamındaki kaynağa erişir" ) {
+    Kural rbacSeviye( kod: KRL-RBAC-1, otorite: politika, katman: niyet, kapsam: etmen,
+           ne: "her ajana tam olarak bir seviye (L1-L6) atanır; üst seviye alt seviyeleri kapsar" )
+  }
+}

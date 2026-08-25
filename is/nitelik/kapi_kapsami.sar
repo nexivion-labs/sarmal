@@ -1,0 +1,42 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/kapi_kapsami.sar — 🚪 KAPI-KAPSAM BEYANI (KYN-MTR-A05 · 2026-08-23)
+//   Bu dosya artık serbest metin bir tablo TAŞIMAZ; ilan canlı ve zorlanan
+//   kaynağa taşındı. Gerekçe ölçümle bulundu: bu dosyanın önceki hâli bekçi ×
+//   yüzey tablosunu elle tutuyordu ve yapı-aynası ailesinin beş üyesi eklentiye
+//   indikten sonra tablo hiç güncellenmedi (KYN-MTR-A05 belirtisi) — serbest
+//   metin kendi kendini zorlayamadığı için sapma aylarca sessiz kaldı. Aynı
+//   hastalığın bir daha doğmaması için ilan artık KOD'a taşındı: eklenti ve
+//   CLI aynı tabloyu OKUR, ikinci bir elle-tutulan liste hiçbir yüzeyde kalmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🚪 Kapı-Kapsam Beyanı — işaretçi
+
+  Kapsam ilanının TEK yetkili kaynağı `_Sarmal/cekirdek/src/kapi-kapsami.ts`
+  dosyasındaki `KAPI_KAPSAMI` dizisidir. Orada her üreticinin (denetci.ts ·
+  dag.ts · kuralci.ts · dogrulayici.ts dışa açımı) bugün gerçekten koştuğu
+  yüzeyler (cli · panel · mcp · tekil) tek satırda yaşar; ilan tanı kimliği
+  listelemez, çünkü bağımsız denetim elle tutulan kimlik listesinin ölçümsüz
+  ikinci bir el listesi olduğunu göstermişti. Eklenti bu ilanı
+  `panelCaprazUreticiKumesi` üstünden okur ve CLI'nin çağırdığı AYNI gövdenin
+  (`denetimKos`) tam akışını, her tanının köken damgasına (hangi üreticiden
+  doğduğuna) bakarak süzer (eklenti.ts · denetleHepsi); komut satırı zaten
+  aynı `denetimKos` gövdesini çağırır. İki yüzey de aynı kaynağı okuduğu için
+  bu dosyanın bayatlaması yapısal olarak bir daha mümkün değildir.
+
+  İlan ile CLI'nin gerçekten çağırdığı üretici kümesi arasındaki sapmayı
+  `cliGercekUreticileri` (aynı dosya) ölçer, `kapsamNobeti` iki yönlü farkı
+  (ilanda olup çağrılmayan · çağrılıp ilanda olmayan) tanı olarak döndürür.
+  Nöbetin mutasyon kanıtı `_Sarmal/cekirdek/sinama/kapi-kapsami.test.ts`
+  içinde yaşar: ilana sahte bir kimlik eklenince nöbet kırmızıya döner, gerçek
+  bir girdi ilandan silinince de kırmızıya döner — ikisi de testte kanıtlıdır.
+
+  Hangi kapının hangi yüzeyde koşacağı kararı bu dosyanın da, kaynak kodun da
+  yetkisinde değildir; karar Founder hükmüdür. Bu iki kaynak yalnız bugün
+  verilmiş kararı tek yerden zorlar — yeni bir yüzey kararı doğduğunda
+  değişecek olan `kapi-kapsami.ts` dosyasıdır, bu işaretçi değil.
+|<--
+Çıkarım( kod: CKR-KAPI-KAPSAM, kaynak: "KYN-MTR-A05 ölçümü — eklenti paneli motorun elle bakılan küçültülmüş kopyasını (proje-denetim.ts) koşturuyordu, kırk dört üretici hiç panele ulaşmıyordu (2026-08-23)",
+         ne: "🚪 Kapı-kapsam ilanı artık cekirdek/src/kapi-kapsami.ts kaynağında canlı ve zorlanan bir tablodur; bu dosya yalnız o kaynağa işaret eder, içerik biriktirmez" ) {
+  --> BKM-BUG-A11
+}

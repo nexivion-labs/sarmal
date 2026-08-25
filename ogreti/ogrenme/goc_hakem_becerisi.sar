@@ -1,0 +1,55 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/goc_hakem_becerisi.sar — ⚖️ GÖÇ-HAKEM BECERİSİ (İLK Bellek→Beceri terfisi)
+//
+//   Doğuş: DRS-GOC-HAKEM-SINAVI dersinin terfisi (RF-T6-A01 dogfood turu).
+//   CLAUDE.md zorlaması ("değerli/tekrar edeni Beceri'ye dönüştür") İLK KEZ
+//   gerçek bir ders üzerinde yürüdü: motor 🟡 beceri-terfisi uyarısını bastı
+//   (2026-07-18, dogrulayici.ts kanıtı), ders bu dosyaya terfi etti. Kaynak
+//   ders dersler.sar'da yaşamaya devam eder (terfi: tamamlandı damgasıyla);
+//   uygulanabilir "YAP" listesi TEK evde — burada — yaşar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-GOC-HAKEM, ne: "yapısal göçü motor tanılarını hakem yaparak yürütme — göç hem yapıyı düzeltir hem bekçiyi sınar" )
+
+-->|
+  ## Amaç
+  🎯 Yapısal bir kararın (hiyerarşi değişikliği, kanon genişlemesi, toplu
+  yer değiştirme) çok-dosyalı göçünü, motorun tanılarını yol gösterici hakem
+  olarak kullanıp yürütmeyi öğretmek. Çözdüğü problem: büyük göçte iki kör
+  nokta aynı anda yaşanır — göçü elle yürüyen kişi parçaların doğru yerini
+  şaşırır, bekçinin kendi hataları da (yanlış yönlendirme ya da susması
+  gereken yerde bağırma) gerçek yük görmeden fark edilmez. Bu beceri iki
+  körlüğü tek hamlede çözer: kural ÖNCE motora iner, göç motorun rotasıyla
+  yürür, göç yükü de hakemin canlı sınavı olur.
+
+  ## İşleyiş (YAS-4.2 kanıtlı terfi ile)
+  ① Karar verilir → kural motora BİLGİ/UYARI düzeyinde yazılır (test nöbetiyle).
+  ② Göç, motorun tanı listesi izlenerek dosya dosya yürütülür (STR-2.1) —
+  tanı rotayı çizer, insan yalnız doğrular. ③ Motorun ifade EDEMEDİĞİ durum
+  çıkarsa bu eksik kanonun yakalanışıdır — ayrı karar adayı olarak kaydedilir.
+  ④ Göç bitince "motor kaç yerde yol gösterdi, nerede yanıldı/susamadı"
+  kanıtı yazılır; kuralın HATA düzeyine terfi kararı bu kanıtla verilir.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyle yürütülen göçün sonunda hedef tanı kalıntısı sıfırdır,
+  hakem kanıtı (yol gösterme sayısı + yakalanan kanon eksikleri) göç kaydına
+  işlenmiştir ve kuralın düzey-terfi kararı ölçülmüş güvene dayanmaktadır.
+|<--
+
+Beceri( kod: BCR-GOC-HAKEM,
+        sağlar: YTN-GOC-HAKEM,
+        yığın: evrensel,
+        ne: "Yapısal kararların çok-dosyalı göçünü motor-hakem düzeniyle yürütür: kural önce motora iner (kademeli düzey), göç tanı rotasıyla dosya dosya ilerler, göç yükü bekçinin canlı sınavı sayılır ve hakem kanıtı terfi kararını besler",
+        neZaman: "Çok dosyayı etkileyen yapısal bir karar (hiyerarşi kuralı, kanon genişlemesi, ad/yer göçü) uygulanacağı zaman; ya da mevcut bir bekçinin güvenilirliği gerçek yük görmeden terfi ettirilecekse",
+        kurallar: [
+          "Göçe başlamadan ÖNCE kuralı motora yaz — kademeli düzeyle (bilgi→uyarı→hata terfisi, YAS-4.2) ve test nöbetiyle; kuralsız elle göç yapma",
+          "Göçü motorun tanı listesini izleyerek dosya dosya yürüt (STR-2.1 · toplu değişiklik yok); tanının göstermediği yerde kendiliğinden dosya değiştirme",
+          "Motorun ifade edemediği yapı çıkarsa durup kaydet — eksik kanonun yakalanışı ayrı karar adayıdır (emsal: AltKatman kademesi, tam-zincir göçünün hakem sınavından doğdu — MIM-1)",
+          "Bekçinin yanlış yönlendirdiği ya da susması gereken yerde bağırdığı her vakayı not et — göç yükü bekçiyi sınar, bulgular bekçi onarımına gider",
+          "Göç bitiminde hakem kanıtını yaz: motor kaç yerde yol gösterdi, kaç kanon eksiği yakalandı, kalıntı tanı sayısı kaç; düzey-terfi (uyarı→hata) kararını bu kanıta dayandır",
+          "Göç sonrası hedef tanı kalıntısı sıfır olmalı; bilinçli muaf kalan her nokta gerekçesiyle beyan edilir"
+        ],
+        kabul: "Göç kaydı başlangıç ve kapanış tanı sayılarını aynı komutla gösterir; hedef tanı sıfırdır ve kalan her muafiyet dosya, dar kapsam, gerekçe ve sahip taşır",
+        örnek: "Tam-zincir göçü (2026-07-12 · MIM-1): eski-diziliş tanısı 12 dosyada 43 facet-Faz'ın rotasını çizdi; iki KABUL fikstürünün 3-seviyeli yol ihtiyacını motor ifade edemeyince eksik kanon yakalandı → AltKatman kademesi kararı doğdu; göç sonrası kalıntı SIFIR (tek muaf: kademe testinin kasıtlı fikstürü), KABUL testleri skip'siz yeşil",
+        antiDesen: "Kuralı motora yazmadan göçü elle yürümek — rota insan hafızasına kalır, bekçi sınavsız kalır ve aynı-sınıf hata bir sonraki göçte tekrarlanır; ya da göç kanıtı yazılmadan kuralı doğrudan HATA düzeyine terfi ettirmek (ölçülmemiş güven)",
+        uygular: ORK-7 )

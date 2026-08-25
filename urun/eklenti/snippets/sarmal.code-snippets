@@ -1,0 +1,60 @@
+{
+  "Blok": {
+    "prefix": "blok",
+    "body": [
+      "Blok( kod: ${1:BLK-X}, ad: \"${2:ad}\", ne: \"${3:...}\" ) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Blok — frontend+backend adımlarını kavuşturan birim (gövde 🪵)"
+  },
+  "Faz": {
+    "prefix": "faz",
+    "body": ["Faz( kod: ${1:FAZ-X}, ad: \"${2:ad}\" ) {", "\t$0", "}"],
+    "description": "Faz — aşama (ana dal 🌿)"
+  },
+  "Katman": {
+    "prefix": "katman",
+    "body": ["Katman( kod: ${1:KAT-X}, ad: \"${2:ad}\" ) {", "\t$0", "}"],
+    "description": "Katman (ufak dal 🍃)"
+  },
+  "Adım": {
+    "prefix": "adım",
+    "body": [
+      "Adım(",
+      "\tkod:      ${1:ADM-X},",
+      "\tad:       \"${2:ad}\",",
+      "\tbağımlı:  ${3:TEKNOLOJI},",
+      "\türetir:   ${4:URUN-KOD},",
+      "\treferans: ${5:KARAR-KOD},",
+      ")$0"
+    ],
+    "description": "Adım — en küçük iş birimi (yaprak 🍂; bağlam-konisi)"
+  },
+  "Karar": {
+    "prefix": "karar",
+    "body": [
+      "Karar(",
+      "\tkod:    ${1:KRR-X},",
+      "\tad:     \"${2:ad}\",",
+      "\tne:     \"${3:...}\",",
+      "\tbesler: [ ${4:ADM-X} ],",
+      ")$0"
+    ],
+    "description": "Karar — ilgili adımların bağlam-konisine girer"
+  },
+  "Çağır": {
+    "prefix": "çağır",
+    "body": ["çağır ${1:KOD}$0"],
+    "description": "Çağırma (DIL-1.4) — kod-tabanlı içe-aktarma"
+  },
+  "Tip tanımı": {
+    "prefix": "tip",
+    "body": [
+      "Tip ${1:AdıTip}( aile: ${2:yuzey}, içerir: [ ${3:Metin} ], renk: \"${4:#14B8A6}\" ) {",
+      "\tne: \"${5:...}\",",
+      "}$0"
+    ],
+    "description": "Kullanıcı-tanımlı tip (TIP-1)"
+  }
+}

@@ -1,0 +1,118 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/niyet_diyalogu_becerisi.sar — 💬 NİYET DİYALOĞU BECERİSİ (KVR-A03)
+//
+//   Düstur: kural ZORLAR (YAS-2), beceri ÖĞRETİR (bu dosya · OGR-2.2). Bu beceri, teknik
+//   sözcük dağarcığı sınırlı kullanıcının niyetini doğru sorularla ve doğru
+//   terimlerle açığa çıkarmayı öğretir. Veri kaynağı: kavram kanonu
+//   (bilgi/tasarim_sozlugu/kayit.json · TIP-3) + bağlam→kavram haritası
+//   (baglam-haritasi.json · KVR-A07). Doğuş: Founder'ın kendi deneyimi —
+//   "Ben de tüm teknik kavramları bilmediğim için bazı konularda kendimi
+//   ifade edemiyorum" (2026-07-17).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-NIYET-DIYALOGU, ne: "belirsiz kullanıcı ifadesini sözlük kavramlarıyla soruya çevirip niyeti kanonik terimle kayda geçirme" )
+
+-->|
+  ## Amaç
+  🎯 Çözülen problem: kullanıcı bir arayüz ögesini ya da davranışı istemekte,
+  ancak adını bilmediği için kendini ifade edememektedir — "üstte bir menü
+  olsun" diyen kullanıcı açılır menü ile mega menü ayrımını bilmiyor
+  olabilir. Bu beceri, ajanın o belirsizliği DAYATMADAN çözmesini öğretir:
+  ajan haritadan aday aileyi bulur, seçenekleri Türkçe adı ve kısa tanımıyla
+  sunar, kullanıcının seçtiği kavramı kanonik yoluyla koniye yazar —
+  kullanıcı her diyalogdan bir terim öğrenerek çıkar.
+
+  ## Akış (dört durak)
+  1. **Aileyi bul:** belirsiz ifade görülünce bağlam haritasından
+     (`baglam-haritasi.json`) aktif düğüm bağlamının önerdiği aileleri al;
+     ifadedeki ipuçlarıyla (yer, eylem) aday aileyi seç.
+  2. **Seçenekleri sun:** ailenin sorusunu sor; her seçeneği Türkçe adı +
+     tek cümlelik tanımı + varsa yaygın İngilizce karşılığıyla ver
+     ("açılır menü — tıklayınca liste iner; dropdown olarak da bilinir").
+  3. **Koşulu sorgula:** kavram seçilince niyetin koşullarını sor — "Siz
+     şunu istiyorsunuz; burada başka bir koşul var ise belirtir misiniz?"
+     (hangi durumda, kimin için, ne zaman). Koşulsuz kaydedilen niyet,
+     mantıksal çıkarıma — koşullu akışlara — çevrilemez.
+  4. **Kanonik kaydet ve öğret:** seçilen kavramı koniye kanon YOLUYLA yaz
+     (`onyuz.düğme.menü-düğme` — TIP-3: kimlik = kanon yolu); kullanıcıya
+     terimi BİR KEZ nazikçe öğret, sonraki konuşmada kullanıcının kendi
+     kelimesini kullanmayı sürdürmesine izin ver.
+
+  ## Diyalog örneği (kötü → iyi)
+  KÖTÜ (dayatma + jargon + koşulsuz kayıt):
+    Kullanıcı: "Üstte bir menü olsun."
+    Ajan: "PopupMenuButton mı MenuAnchor mı istiyorsunuz?" — kullanıcı
+    İngilizce widget adlarını bilmiyor; soru cevaplanamaz. Ajan varsayılanı
+    seçip geçer; koniye koşulsuz "menü" yazılır — hangi durumda açılacağı
+    bilinmediği için üretilen ekran niyeti karşılamaz.
+  İYİ (seçenek + tanım + koşul sorgusu + kanonik kayıt + öğretme):
+    Kullanıcı: "Üstte bir menü olsun."
+    Ajan: "Nasıl bir menü düşünüyorsunuz — ① hep görünen bir üst çubuk
+    (uygulama başlığı ve eylemler; app bar olarak da bilinir) ② tıklayınca
+    liste inen bir menü düğmesi (dropdown) ③ kenardan çıkan bir çekmece
+    (drawer)?"
+    Kullanıcı: "Tıklayınca açılan olsun."
+    Ajan: "Anladım — menü düğmesi istiyorsunuz. Burada başka bir koşul var
+    ise belirtir misiniz: menü her kullanıcıya mı görünecek, yalnız
+    yöneticiye mi? Hangi ekranlarda bulunacak?"
+    Kullanıcı: "Sadece yönetici görsün, her ekranda olsun."
+    Ajan koniye kaydeder: kavram `onyuz.düğme.menü-düğme`, koşul "yalnız
+    yönetici rolüne görünür; bütün ekranlarda yaşar" — ve bir kez öğretir:
+    "Bu öğeye menü düğmesi deniyor; bundan sonra öyle anacağım ama siz
+    dilediğiniz gibi tarif etmeye devam edin."
+
+  ## Yapı elicitasyonu: teknolojisiz Katman ve plansız karar (STR-2.1 · YAS-4.2 genişlemesi)
+  Aynı ilke — tahmin etme, sor — kavram seçiminin ötesinde iki YAPI durumunu
+  da kapsar. İkisinde de yanlış davranış, ajanın boşluğu kendi varsayımıyla
+  doldurmasıdır; doğru davranış niyeti kullanıcıya sormaktır.
+
+  1. **Teknolojisiz Katman:** bir Katman `kullanır:` kenarında Takım/Teknoloji
+     hedefi taşımıyorsa (motor tanısı: katmansız-teknoloji, MIM-1.4), ajan
+     kendiliğinden bir teknoloji atamaz; sorar:
+       Ajan: "Bu katman hangi teknolojiyle çalışacak — projede tanımlı
+       takımlardan biri mi (örneğin arkayüz takımı), yoksa bu katman
+       bilinçli olarak teknoloji-bağımsız mı? Bağımsızsa gerekçesini
+       yazayım (teknoloji-bağımsız beyanı), motor bekçisi sussun."
+     Kullanıcının seçimi ya `kullanır: TAKIM-X` kenarı ya da gerekçeli
+     dürüst-beyan olarak koniye iner — sessiz varsayılan yoktur.
+  2. **Plansız karar:** `uygulama: gerekli` beyanlı kilitli bir Karar'ı
+     uygulayan hiçbir Adım yoksa (motor tanısı: uygulanmamış-karar, STR-2.1),
+     ajan kararı kendi kafasına göre bir plana yerleştirmez; sorar:
+       Ajan: "Kilitli karar uygulama istiyor. Bu karar hangi plana
+       insin — mevcut bir turun altına Adım mı açalım, yeni bir tur mu
+       gerekiyor, yoksa uygulaması ertelensin mi (gerekçeyle)?"
+     Cevap plana koni-dolu Adım (karara `referans:` bağıyla) ya da
+     `uygulama: ertelendi "gerekçe"` beyanı olarak işlenir.
+  Bu iki yönerge YAS-4.2'nin dört savunma katmanında BİLGİ PAKETİ katmanıdır:
+  motor tanıları (katman 1) boşluğu gösterir, bu beceri ajanın o boşluğu
+  varsayımla değil soruyla kapatmasını öğretir.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyi kullanan ajanın diyaloğu sonunda koniye yazılan
+  terim kanonik sözlük yoludur, niyetin koşulları kayda geçmiştir ve
+  kullanıcıya hiçbir seçim dayatılmamıştır — kullanıcı terimi öğrenmiş,
+  makine öğretmiş ama zorlamamıştır. Yapı boşluklarında (teknolojisiz
+  Katman · plansız karar) ajan varsayım yerine soru üretmiştir.
+|<--
+
+Beceri( kod: BCR-NIYET-DIYALOGU,
+        sağlar: YTN-NIYET-DIYALOGU,
+        yığın: evrensel,
+        ne: "Belirsiz kullanıcı ifadesini bağlam haritasından bulunan kavram ailesiyle soruya çevirir, niyetin koşullarını sorgular ve seçilen kavramı koniye kanonik yoluyla kaydeder — öğretir, dayatmaz",
+        neZaman: "Kullanıcı bir arayüz ögesini, davranışı ya da akışı adını tam bilmeden tarif ettiğinde; bir Adım konisi doldurulurken niyetin kavramı ya da koşulları belirsiz kaldığında; bir Katman teknoloji bağı taşımadığında ya da uygulama isteyen kilitli bir karar plansız kaldığında",
+        kurallar: [
+          "Belirsiz ifade görülünce önce bağlam haritasına bak: aktif düğümün bağlam kaydı (tip ya da tip.alan, en özel kazanır) hangi aileleri öneriyorsa aday oradan seçilir — aile yoksa kanon bölümlerinden en yakınını seç ve haritaya aday boşluk olarak not et",
+          "Seçenekleri Türkçe adı + tek cümlelik tanımı + varsa yaygın İngilizce karşılığıyla sun; İngilizce widget adını tek başına soru yapma — kullanıcı onu bilmediği için buradadır",
+          "Kullanıcının kelimesini düzeltme, DAYATMA: seçimi kaydet, kanonik terimi bir kez nazikçe öğret, kullanıcının kendi ifadesiyle devam etmesine izin ver",
+          "Koşul sorgulama zorunludur: kavram seçilince 'Siz şunu istiyorsunuz; burada başka bir koşul var ise belirtir misiniz?' sorusuyla hangi durumda · kimin için · ne zaman üçlüsünü sor — koşulsuz kaydedilen niyet koşullu akışlara çevrilemez",
+          "Koniye kavramın kanonik YOLUNU yaz (onyuz.düğme.menü-düğme — TIP-3: kimlik = kanon yolu); serbest metin ad koni kaydında kavram kimliği yerine geçemez",
+          "Kullanıcı hiçbir seçeneği istemiyorsa zorlamadan serbest tarifini kaydet ve kanonda karşılığı olmayan isteği boşluk adayı olarak raporla (KVR-A06 deseni: boşluk Founder'a sunulur, sözlüğe sessizce kavram eklenmez)",
+          "Diyaloğun sonunda kaydı kullanıcıya bir cümleyle geri oku (seçilen kavram + koşullar) — yanlış anlaşılma koniye yazılmadan yakalanır",
+          "Niyet metnini DIL-1.1 standardıyla yaz (alan ayrımı · tam cümleler · mecazın teknik karşılığı) — bu beceri BCR-NIYET-DILI'nin diyalog yüzüdür, yazım yüzü orada yaşar",
+          "Teknolojisiz Katman görülünce teknoloji atamayı varsayma; kullanıcıya sor ('bu katman hangi teknolojiyle — yoksa bilinçli teknoloji-bağımsız mı?') ve cevabı kullanır: kenarı ya da gerekçeli teknoloji-bağımsız beyanı olarak işle (MIM-1.4 bekçisinin insan yüzü)",
+          "Uygulama isteyen kilitli bir karar plansız kalınca kararı kendi varsayımınla bir plana yerleştirme; kullanıcıya sor ('bu karar hangi plana insin — mevcut tur mu, yeni tur mu, ertelensin mi?') ve cevabı karara referans bağlı koni-dolu Adım ya da ertelendi beyanı olarak işle (STR-2.1 bekçisinin insan yüzü)"
+        ],
+        kabul: "Diyalog en az iki tanımlı kanonik seçenek sunar, kullanıcı koşullarını açıkça sorar ve seçilen kavramı kanonik yolu ile koşulları birlikte geri okuyarak koniye kaydeder",
+        örnek: "Kullanıcı: 'üstte bir menü olsun' → Ajan haritadan menü/gezinme ailelerini bulur, üç seçeneği tanımlarıyla sunar (üst çubuk · menü düğmesi · çekmece), seçim sonrası koşulu sorar ('yalnız yönetici mi görecek?'), koniye onyuz.düğme.menü-düğme + koşulları yazar ve terimi bir kez öğretir",
+        antiDesen: "Kullanıcının belirsiz ifadesini sorgusuz varsayılana bağlamak ('menü dedi, MenuAnchor yazdım') ya da İngilizce widget adlarıyla soru sormak — ikisi de niyeti kaydetmez, ajanın tahminini kaydeder; koşul sorulmadan kapanan diyalog da eksik niyettir",
+        uygular: DIL-0 )

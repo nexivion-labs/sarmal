@@ -1,0 +1,15 @@
+// 🔁 DÖNGÜ ŞABLONU — tekrarlayan işin evi (ORK-3.3: döngü sonlanma güvencesi).
+//    Bekçi: eksik-alan — durunca ve/veya turLimiti OLMADAN Döngü yazılamaz
+//    (çıkışsız döngü dilin kapısında ölür); tetik ∈ {koşul, el, olay, zaman}.
+//    Koşucu ayrıca İLERLEMESİZ-DÖNGÜ bekçisi taşır: özdeş iki tur → erken durur.
+//    Koşum: sarmal dongu-kos <KOD> [dizin] (olay/zaman için --izle [--aralik ms]).
+//    Her tur .sarmal/trace'e yazılır — kayıtsız döngü yoktur (panel Koşum yüzü okur).
+
+Döngü( kod: DNG-X, ad: "<kısa-ad>",
+       tetik: koşul,                        // koşul: durunca sağlanana KADAR döner (baştan sağlıysa sıfır tur)
+                                            // el: hemen döner · olay: .sar değişince · zaman: aralıkta (--izle)
+       koşar: [ ADM-X ],                    // her turda işletilecek Adım zinciri (tur = ŞEF üret→denetle→yama'yı sarar)
+       durunca: "karne.hata == 0",          // v1 sözlüğü: karne.hata==0 · karne.uyari<=N · durum(KOD)==tamamlandı
+       turLimiti: 5,                        // mutlak tavan — durunca hiç sağlanmazsa bile durur
+       ne: "<bu döngü NEYİ, NEDEN tekrarlıyor — niyeti yaz>",
+       sınır: "<neye DOKUNMAZ — tur başına bütçe/dokunulmazlar>" )

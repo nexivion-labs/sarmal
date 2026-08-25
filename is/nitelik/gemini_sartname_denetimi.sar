@@ -1,0 +1,164 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/gemini_sartname_denetimi.sar — 🎓 DIŞ-MODEL ŞARTNAME DENETİMİ
+//
+//   Bu dosya, dış bir yapay zekâ modelinin (Google Gemini) ürettiği akademik
+//   şartnamenin, Sarmal deposundaki gerçek kaynağa (kararlar, yasa kuralları,
+//   şablonlar) karşı doğrulanmasının kalıcı kaydıdır. nitelik/ rafı, kuvvetler
+//   ayrılığında (K-33) YARGI katmanıdır: bir çıktının kurallara uygunluğunu
+//   denetler. Bu kayıt, doğrulamada bulunan hataların sonraki turlarda kanona
+//   sessizce sızmasını önleyen bir çapadır (K-59 kör-drift yasağı).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🎓 Gemini Şartname Denetimi — dış modelin bizi ne kadar doğru anladığının kaydı
+
+  ## Amaç ve çözülen problem
+  Sarmal'ın planlama dilini ve üslubunu daha olgun bir standarda taşımak için,
+  deponun kod dışı tüm dil, kural, şablon ve üslup içeriği tek bir metinde
+  toplandı (110 dosyalık derleme) ve dış bir modele (Google Gemini) verilerek
+  akademik bir şartname üretmesi istendi. Ortaya çıkan şartname dört bölümden
+  oluşur: akademik literatür çerçevesi, endüstri standartları kıyaslaması,
+  üslup ve ton rehberi, dönüşüm ve düzeltme yol haritası.
+
+  Çözülen problem şudur: dış bir model, üslubu güçlü ve ikna edici bir metin
+  üretse bile, içine deponun gerçeğinde bulunmayan "makul ama uydurma" iddialar
+  (halüsinasyon) katabilir. Bu tür iddiaların fark edilmeden kanona geçmesi,
+  planlama dilinin kendisini bozar. Bu denetim, şartnamenin her olgusal
+  iddiasını depo kaynağıyla karşılaştırıp hangilerinin doğru, hangilerinin
+  hatalı olduğunu dosya ve satır kanıtıyla kayda geçirir.
+
+  ## Kapsam
+  Kapsar: şartnamenin OLGUSAL iddialarının (karar kodları, metaforlar, kural
+  tanımları, komut adları, şablon alanları) depo kaynağıyla eşleşme denetimi;
+  bulunan kesin hataların ve nüansların gerekçeli dökümü; şartnamenin özgün
+  katkılarının (yeni öneriler) tespiti. Kapsamaz: şartnamenin DEĞERLENDİRME
+  içeren bölümleri (endüstri kıyaslama puanları, iyileştirme önerileri) —
+  bunlar görüştür, doğru/yanlış denemez; bu görüşlerin karara dönüştürülmesi
+  ayrı bir turun (K-113..K-116 adayları) işidir.
+|<--
+
+Değerlendirme( kod: DGR-GEMINI-ISABET, tarih: "2026-07-20", hedef: meyve,
+  boyutlar: [ "olgusal isabet — iddiaların depo kaynağıyla birebir eşleşmesi", "kavramsal kavrayış — metafor, yönetişim ve dört-eksen modelinin doğru anlaşılması", "üslup ve çerçeve — akademik anlatım ile endüstri kıyaslamasının niteliği" ],
+  eşikler:  [ "depoda karşılığı olmayan (uydurma) hiçbir karar veya metafor bulunmamalıdır", "tespit edilen her kesin hata dosya ve satır kanıtıyla belgelenmelidir" ],
+  ne: "Gemini şartnamesinin genel isabet karnesi: dört bağımsız doğrulama kolunun ortak hükmü, şartnamenin depo gerçeğiyle yaklaşık yüzde doksan oranında örtüştüğü ve içinde uydurma bir karar ya da metafor bulunmadığı yönündedir." ) {
+  koşu: """
+        YÖNTEM: Doğrulama dört bağımsız kolda yürütüldü. Birinci kol metaforları
+        ve yönetişim kararlarını (K-33, K-51, K-55, K-94 ve karar kod numaraları),
+        ikinci kol yasa kurallarını (Biçim, Dil, Söz Dizimi, Yapı, Yüzey, İş
+        Akışı ailelerinin tüm maddeleri), üçüncü kol şablonları, komutları ve
+        niyet dilini, dördüncü kol ise şartnamede sonradan geçen ek karar
+        kodlarını (K-24, K-45, K-48, K-61, K-76, SD-14) inceledi. Her kol
+        iddiayı kaynak dosyanın ilgili satırıyla karşılaştırdı.
+
+        GENEL HÜKÜM: Şartnamenin isabeti yaklaşık yüzde doksandır. En önemli
+        bulgu, deponun gerçeğinde hiç bulunmayan bir kararın ya da metaforun
+        icat edilmemiş olmasıdır; yani gerçek anlamda halüsinasyon yoktur.
+        Doğru anlaşılan başlıklar arasında çift metafor (editörde ağaç, yol
+        haritasında hızlı tren — K-94), kuvvetler ayrılığı (yasama, yürütme,
+        yargı — K-33), tek kaynaktan dört yüz üreten Prizma mekanizması (K-55;
+        makine için JSON, ajan için XML, yapılandırma için YAML, insan için
+        Markdown), açık araç ile gizli ürün ayrımı (K-51 ve K-51/a) ve tüm
+        yasa kuralları ile on bir aşamalı adım kodlama zinciri (AŞ-0..AŞ-10)
+        yer alır. Hatalar dar ve nokta atışı düzeltilebilir niteliktedir;
+        ayrıntıları DGR-GEMINI-KESIN-HATA ve DGR-GEMINI-NUANS düğümlerindedir.
+        """
+}
+
+Değerlendirme( kod: DGR-GEMINI-KESIN-HATA, tarih: "2026-07-20", hedef: meyve,
+  boyutlar: [ "olgusal hata — depo kaynağıyla çelişen veya depoda bulunmayan iddialar" ],
+  eşikler:  [ "her hata için gerçek karşılığı ve kaynak dosya:satır verilmelidir" ],
+  ne: "Şartnamede tespit edilen altı kesin olgusal hata: her biri, düzeltilmiş gerçeğiyle birlikte kayda geçirilmiştir; bu hatalar kanona hiçbir biçimde aktarılmayacaktır." ) {
+  koşu: """
+        1) KARAR TANIMI YANLIŞ — K-92. Şartname K-92'yi "Varlık Ekseni" diye
+        tanımlar. Gerçek başlık AltKatman'dır: bir dalın (Katman/teknoloji)
+        üstünde beliren daha küçük teknoloji kademesi. "Varlık" kavramı ise
+        K-49 ve K-51'e aittir, K-92'ye değil (kaynak: KARARLAR.md, K-92 satırı).
+
+        2) UYDURMA MODEL ADI — koşu örneği. Şartnamenin örnek Adım'ında
+        model olarak "claude-3-5-sonnet" yazılıdır. Bu ad depoda hiçbir yerde
+        geçmez. Depoda kullanılan gerçek model adları sembolik biçimde
+        CLAUDE-OPUS ve CLAUDE-SONNET'tir (kaynak: ornek/gercek/buyuk_bahce.sar);
+        düzyazıda Fable 5, Opus 4.8 ve GPT-5.6 geçer.
+
+        3) UYDURMA DÜĞÜM İMZASI — koşu/Koşum. Şartname koşu alanını
+        "Koşum(tarih, mühür, model, kanıt)" biçiminde adlı-parametreli bir
+        düğüm sanır. Gerçekte koşu alanı serbest metinli bir dizedir. "Koşum"
+        ayrı bir kavramdır ve .sarmal/trace altındaki JSONL biçimli koşu
+        siciline karşılık gelir; adlı-parametreli bir .sar düğümü değildir.
+
+        4) UYDURMA TANI ADI — durum atlama. Şartname "durum-atlama" adında bir
+        denetçi tanısı verir. Bu ad depoda yoktur; kuralın kendisi (beklemede
+        durumundan doğrudan tamamlandı durumuna geçiş yasağı, IA-8) gerçektir
+        ancak gerçek tanının adı "gayrimeşru-geçiş"tir.
+
+        5) ALAN YANLIŞ DÜĞÜMDE — dosya. Şartname "dosya" alanını Adım
+        düğümünün alanı sayar. Gerçekte "dosya" alanı Kod düğümüne aittir;
+        Adım, ürettiği kod dosyasına "üretir" kenarıyla bağlanır.
+
+        6) ALAN YANLIŞ DÜĞÜMDE — model. Şartname "model" alanını koşu içine
+        yerleştirir. Gerçekte "model" alanı Etmen düğümüne aittir.
+        """
+}
+
+Değerlendirme( kod: DGR-GEMINI-NUANS, tarih: "2026-07-20", hedef: meyve,
+  boyutlar: [ "eksik veya yarı-doğru anlatım — kavram doğru ama tam değil" ],
+  eşikler:  [ "her nüans, doğru okunuşuyla birlikte belirtilmelidir" ],
+  ne: "Şartnamede tespit edilen nüans ve eksiklikler: kavram doğru anlaşılmış ancak tanım tam verilmemiş ya da güncelliğini yitirmiş beş noktadır." ) {
+  koşu: """
+        A) DL-4 aşırı basitleştirilmiş. Şartnamenin ilk bölümü "görev alanı
+        net emir kipinde yazılır" der. Kural bunu içerir ama tek boyutu değildir:
+        DL-4 ayrıca öznesi, nesnesi ve fiili belli, tek nefeste okunan TAM
+        cümleler ister. Şartnamenin üslup rehberi bölümü bu ayrımı sonradan
+        doğru yapmıştır (görev alanında emir kipi, kural ve tanımlarda bildirme
+        kipi) — bu doğru sentez Faz 2'de kanona katılacaktır.
+
+        B) K-111 "MD üretilir" yarı-güncel. Şartname Markdown yüzünün
+        üretildiğini söyler. K-111 (Tek Format Kanunu) bu üretimi geçmişe ait
+        sayar: içerik yalnız .sar dosyasında yaşar, insan yüzü arayüzde canlı
+        gösterilir; diske Markdown kopyası dökme yaklaşımı emekliye ayrılmıştır.
+
+        C) K-112 boş bırakılmış. Şartname K-112'nin tanımını vermez. Gerçek
+        başlık "Kuramsal Temel"dir: orkestrasyon zekâsının yedi çekirdek formül
+        korpusuna dayandırılmasıdır (kaynak: KARARLAR.md, K-112 satırı).
+
+        D) İş Akışı sıralaması kayık. Şartname "Onarım"ı ayrı bir iş-akışı
+        maddesi sanır; oysa onarım IA-6 (adım kapısı) içindeki bir aşamadır.
+        Ayrıca IA-8 (aktif adım işareti) atlanıp yerine "Durum" konmuştur.
+
+        E) Küçük eksikler. Yüzey kuralı YZ-4'ün dördüncü bekçisi "sözleşmesiz-uç"
+        anılmamıştır (üç yerine dört bekçi vardır); Adım şablonunun "ad" alanı
+        atlanmıştır; emoji kanonu yanlışlıkla K-48'e bağlanmıştır, gerçek kaynak
+        nitelik/emoji_kanon_taslagi.sar ile renk kanunu K-96'dır.
+        """
+}
+
+Değerlendirme( kod: DGR-GEMINI-KATKI, tarih: "2026-07-20", hedef: meyve,
+  boyutlar: [ "özgün katkı — şartnamenin depoya kattığı yeni, uygulanabilir öneriler" ],
+  eşikler:  [ "her öneri, karar adayına dönüştürülebilir somutlukta olmalıdır" ],
+  ne: "Şartnamenin özgün katkıları: Founder'ın benimsenmesini istediği dört öneri, ayrı karar adaylarına (K-113..K-116) çevrilmek üzere kayda geçirilmiştir." ) {
+  koşu: """
+        Şartname, deponun mevcut içeriğini tekrar etmenin ötesine geçip dört
+        somut iyileştirme önerdi. Bu öneriler görüş niteliğindedir; kanona
+        girmeleri için resmî karar ve Founder onayı gerekir (Faz 3):
+
+        K-113 adayı — Diátaxis eşlemesi: bilgi düğüm tiplerinin dört
+        dokümantasyon çeyreğine eşlenmesi (Beceri → nasıl-yapılır, Sınıflama →
+        başvuru, Felsefe → açıklama, Örnek → öğretim).
+
+        K-114 adayı — Kontrollü doğal dil ile kabul şablonu: kabul alanının
+        sınırlı bir Türkçe dilbilgisiyle ("... ise ... beklenir") yazılması,
+        böylece bir yapay zekâ etmeninin bu alanı belirsizliğe düşmeden test
+        senaryosuna çevirebilmesi.
+
+        K-115 adayı — Tip birleşimi ve çatışma hatası: K-61 kenar sisteminin
+        genişletilmesi; Anayasa ve Politika katmanlarındaki kısıtlar bir alt
+        blokta çeliştiğinde motorun otomatik çatışma (mantıksal taban, ⊥)
+        hatası fırlatması. Bu bir motor cephesidir, kod turu ayrıdır.
+
+        K-116 adayı — Dil denetçisi: denetle motoruna, Türkçe metinlerdeki
+        eksik diakritik harfleri ve yazım uyumsuzluklarını tarayan bir modül
+        eklenmesi; böylece Türkçe öncelik kuralı (DL-1), niyet dili kuralı
+        (K-102) ve Unicode normalizasyon kuralı (K-24) makine tarafından
+        zorlanır. Bu da bir motor cephesidir.
+        """
+}

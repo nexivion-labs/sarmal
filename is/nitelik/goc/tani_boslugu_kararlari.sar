@@ -1,0 +1,250 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/tani_boslugu_kararlari.sar — ⚖️ BEŞ BOŞLUK ADAYININ HÜKMÜ (GOC-MOTOR-A03)
+//   Çapraz haritanın dört açık boşluk adayı ile Karar B'nin önerdiği beşinci
+//   aday burada tek tek karara bağlanır. Her hüküm kaynak fikstür, kanon
+//   maddesi ve üretici kapsamıyla gerekçelidir. Kabul edilen adayın uygulaması
+//   GOC-MOTOR-A04 Adımının, reddedilen adayın görünürlük nöbeti de aynı
+//   Adımın işidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# ⚖️ Beş Tanı Boşluğu Adayı — kabul ve ret hükümleri
+
+## A · Kararın ölçütü ve bu Adımın yetki sınırı
+
+Bir adayın kabul edilmesi, yeni omurgada o ihlalin görünmez kalacağı ve hiçbir
+kanonik tanının onu yakalayamayacağı anlamına gelir. Reddedilmesi ise ya mevcut
+bir kanonik tanının ihlali eksiksiz karşıladığı, ya da yeni kanonun o konuda
+bilinçli olarak hüküm taşımadığı anlamına gelir.
+
+Bu Adımın üzerinde duran ve hükümleri belirleyen iki bağlayıcı sınır vardır ve
+ikisi de açıkça kaydedilmelidir.
+
+Birincisi üçlü senkron kuralıdır. Bir tanı üç yerde birden yaşar: sicilde,
+üretici işlevde ve kanon maddesinin `**Zorlama:**` iddiasında. Üçünden birine
+eklenip diğerine eklenmemesi, motorun sessizce yalan söylemesi demektir. Bu
+yüzden kanonda hiçbir maddenin iddia etmediği bir tanı sicile ve üreticiye
+eklenemez; eklenirse motor, kanonun kurmadığı bir hükmü zorlamış olur ve bu
+doğrudan YAS-3.4 tanı dürüstlüğü ihlalidir.
+
+İkincisi yetki sınırıdır. Bu Adımın yürütme talimatı kanon dosyalarının hüküm
+metnini dokunulmaz kılmıştır; tek istisna GOC-MOTOR-A02 Adımının beş orthografi
+kimliğidir. Kanon maddesi koymak Founder kademesinin işidir; üretici kademesi
+kanon hükmü koyamaz, yalnız boşluğu raporlar.
+
+Bu iki sınırın birleşik sonucu şudur: bir adayı kabul etmek, ona bir kanon
+iddiası yazmayı gerektirir; kanon iddiası yazmak bu Adımın yetkisinde değildir.
+Dolayısıyla bu halkada hiçbir aday yeni kimlik olarak kabul edilemez. Beş adayın
+beşi de reddedilmiştir. Ret hükümleri iki ayrı gerekçeye dayanır ve ikisi
+karıştırılmamalıdır: iki aday kanonik bir tanı tarafından karşılandığı için, üç
+aday ise yeni kanon o konuda hüküm taşımadığı için reddedilmiştir.
+
+Ölçüm: beş adayın hiçbiri `yasa/kanon/` altındaki sekiz bölüm dosyasında
+geçmemektedir. Tarama bu üretimde koşuldu ve beş kimlik için de sıfır geçiş
+verdi. Yani kanon bu beş kimliği hiçbir maddede iddia etmemektedir.
+
+## B · Aday 1 — `koni-taşması` · RET (kanonda hüküm yok)
+
+**Özgül ihlal.** Kapsam yoluyla tek bir düğüme yirmiden çok kural düşer; ajan o
+düğümü okurken bağlam boğulur. Bugünkü üretici `cekirdek/src/kuralci.ts`
+dosyasındaki `koniTasmasi` işlevidir, eşik yirmidir ve düzey uyarıdır.
+
+**Yakalanabilir kaynak kapsamı.** Proje kapsamı. Kural kapsamlarının bir düğüme
+düşüp düşmediği ancak bütün kural gövdesi ve tip ailesi haritası birlikte
+okunduğunda hesaplanabilir.
+
+**Yanlış pozitif riski.** Düşük fakat eşik seçimine bağlıdır. Yirmi sayısı
+kanonik bir dayanak taşımaz; ölçülmüş değil seçilmiş bir sayıdır.
+
+**Mevcut tanıyla kapsanma.** Kısmi, eksiksiz değil. En yakın kanonik komşu
+YAS-2.3 maddesinin yeni tanısı `kural-sözleşmesi-eksik` ile korunan
+`boş-kapsam` tanısıdır; ikisi de kapsamın ALT sınırını zorlar, yani kapsamın en
+az bir gerçek hedefe çözülmesini ister. Kapsamın ÜST sınırını, yani tek düğüme
+düşen kural sayısını sınırlayan hiçbir kanon maddesi yoktur.
+
+**Hüküm: RET.** Bu turda yeni kimlik üretilmez. Gerekçe kapsanma değil, hüküm
+yokluğudur ve bu ayrım dürüstçe kaydedilmelidir: yeni kanon bağlam boğulmasını
+bir ihlal saymamaktadır. Motorun kanonun kurmadığı bir hükmü zorlaması yasaktır.
+
+**Founder kademesine sevk.** Bağlam boğulmasının kanonik bir hüküm hâline gelip
+gelmeyeceği açık bir sorudur ve YAS-2.3 maddesine bir alt madde ya da YAS-5
+kural ailesine bir kayıt olarak önerilebilir. Karar verilene kadar mevcut
+davranış yerinde kalır.
+
+**Bağlayıcı sıra kısıtı.** GOC-MOTOR-A10 Adımı emekli tanıları motordan
+çıkarırken `koni-taşması` kimliğini Founder hükmü olmadan silemez; silinirse
+bugün canlı olan bir davranış karşılıksız kaybolur.
+
+## C · Aday 2 — `kopuk-zincir` · RET (kanonik tanı eksiksiz karşılıyor)
+
+**Özgül ihlal.** Bir düğümün `bağımlı` ya da `besler` kenarının hedefi hiçbir
+`.sar` kaynağında tanımlı değildir; kenar grafa hiç girmez ve sıra hesabı o bağı
+göremez. Bugünkü üretici `cekirdek/src/dag.ts` dosyasındaki `kopukZincirTanilari`
+işlevidir ve düzey uyarıdır.
+
+**Yakalanabilir kaynak kapsamı.** Proje kapsamı; çözümleme bütün kod indeksini
+gerektirir.
+
+**Yanlış pozitif riski.** Yok denecek kadar azdır, çünkü ölçüt ikilidir: hedef ya
+çözülür ya çözülmez.
+
+**Mevcut tanıyla kapsanma: EKSİKSİZ.** ORK-1.2 maddesinin yeni tanısı
+`yürütme-kenarı-sözleşmesi` bu ihlali doğrudan kapsar. Maddenin hükmü `bağımlı`
+ile `besler` kenarlarının yalnız Adım kaynakları ile Adım hedefleri arasında
+graf kurmasını ister; tanının kendi metni "`bağımlı|besler` uçları Adım değil"
+diyerek başlar. Çözülmeyen bir hedef, tanımı gereği bir Adım değildir; bu yüzden
+kopuk zincir bu tanının kapsamına tam olarak girer. İkinci ağ olarak korunan
+`kırık-referans` tanısı çözülmeyen KOD hedefini genel olarak yakalar.
+
+**Düzey sonucu.** İhlal uyarıdan hataya yükselir, çünkü ORK-1.2 maddesi hata
+düzeyindedir. Bu bir sertleşmedir ve kanonun bilinçli seçimidir.
+
+**Hüküm: RET.** Yeni kimlik üretilmez. `yürütme-kenarı-sözleşmesi` tanısı
+GOC-MOTOR-A06 Adımında `denetci.ts` içinde uygulanacaktır.
+
+**Görünürlük nöbeti.** GOC-MOTOR-A04 Adımı, çözülmeyen bir `bağımlı` hedefinin
+hiçbir zaman sessiz kalmadığını sınayan bir fikstür yazar. Nöbet halef kümesine
+bakar: ihlal bugün `kopuk-zincir`, göç tamamlandığında ise
+`yürütme-kenarı-sözleşmesi` tarafından yakalanır ve ikisinden hiçbiri
+üretilmezse sınama kırmızıya döner.
+
+## D · Aday 3 — `kayıp-kenar` · RET (kanonda hüküm yok)
+
+**Özgül ihlal.** Bir Adım, başka bir Adımın Meyvesini referans alır fakat o
+Adıma bağımlı değildir; sıra hesabı gerçek üretim bağını göremez. Bugünkü
+üretici `cekirdek/src/dag.ts` dosyasındaki `kayipKenarTanilari` işlevidir ve
+düzey uyarıdır.
+
+**Yakalanabilir kaynak kapsamı.** Proje kapsamı; hem üretim kenarları hem geçişli
+öncül kümesi gerekir.
+
+**Yanlış pozitif riski. YÜKSEK ve bu riskin yönetimi mevcut kodun içine
+yazılmıştır.** Bugünkü üretici üç ayrı susturma taşır: tamamlanmış Adımda susar,
+Adımın kendi Meyvesinde susar ve geçişli öncül zinciri bağı zaten kuruyorsa
+susar. Yani bu tanı, bilinçli olarak yumuşak tutulmuş bir sezgidir; her referans
+bir yürütme bağı değildir, bilgi bağı da olabilir.
+
+**Mevcut tanıyla kapsanma: EKSİK.** İki komşu incelendi ve ikisi de yetmedi.
+ORK-1 maddesinin yeni tanısı `ilişki-sınıfı-ihlali` VAR OLAN bir kenarın yanlış
+sınıfta kullanılmasını yakalar; buradaki kusur ise EKSİK bir kenardır ve var
+olmayan kenarın sınıfı olmaz. ORK-3 maddesinin yeni tanısı
+`deterministik-sıra-ihlali` sıranın DAG dışı bir kaynaktan türetilmesini
+yakalar; burada sıra doğru kaynaktan türetilmektedir, yalnız eksik veriyle.
+
+**Hüküm: RET.** Bu turda yeni kimlik üretilmez ve gerekçe kapsanma değil, hüküm
+yokluğudur. Yeni kanon "Meyve tüketen Adım o Meyveyi üreten Adıma bağımlı
+olmalıdır" hükmünü hiçbir maddede kurmamıştır.
+
+**Founder kademesine sevk ve dikkat çeken nokta.** Bu aday kabul edilseydi
+kanonik evi ORK-1.2 ya da ORK-3 olurdu ve ikisi de hata düzeyindedir; oysa
+bugünkü davranış bilinçli olarak uyarı düzeyindedir ve üç susturma taşır. Yani
+bu adayın kabulü yalnız bir kimlik kararı değil, aynı zamanda bir düzey ve
+yanlış-pozitif kararıdır. Bu iki soru kanon hükmüyle birlikte kararlaşmalıdır.
+
+**Bağlayıcı sıra kısıtı.** GOC-MOTOR-A10 Adımı `kayıp-kenar` kimliğini Founder
+hükmü olmadan silemez.
+
+## E · Aday 4 — `teknolojisiz-yüzey` · RET (kanonik tanı eksiksiz karşılıyor)
+
+**Özgül ihlal.** Ekran ya da Uç ilan edilmiştir fakat çalışma alanında hiçbir
+Teknoloji veya Takım ilanı yoktur; teknoloji seçilmeden yüzey doğmuştur.
+Bugünkü üretici `cekirdek/src/denetci.ts` dosyasındaki
+`teknolojisizYuzeyTanilari` işlevidir ve düzey uyarıdır.
+
+**Yakalanabilir kaynak kapsamı.** Proje kapsamı.
+
+**Yanlış pozitif riski.** Bugünkü uygulamada riski düşürmek için ölçüm proje
+geneline alınmıştır; yüzey başına zorlama bilinçli olarak yapılmamıştır, çünkü
+eski omurgada Takım kökte yaşıyordu ve yüzeyle arasında zorunlu bir kenar yoktu.
+
+**Mevcut tanıyla kapsanma: EKSİKSİZ, ve kapsama yeni omurgada güçlenmektedir.**
+Gerekçe zincirlidir. MIM-1.4 maddesi her Katmanın tam olarak bir somut
+Teknolojiye `kullanır` bağıyla bağlanmasını ister; korunan `katmansız-teknoloji`
+tanısı bunun alt sınırını, yeni `çok-teknolojili-katman` tanısı üst sınırını
+zorlar. ORK-2.4 maddesinin yeni tanısı `kullanır-kenarı-ihlali` kenarın kaynak
+ve hedef çiftini zorlar. YAS-1.1 katı rejim normu ise Katmandan Adıma giden her
+sarma yolunun en az bir AltKatmandan geçmesini zorunlu kılar.
+
+Bu zincirin sonucu şudur: yeni omurgada bir Ekran ya da Uç, bir Adımın altında,
+o Adım bir AltKatmanın altında, o AltKatman da bir Katmanın altında yaşar ve o
+Katman teknoloji bağı taşımak zorundadır. Teknolojisiz bir yüzey artık ayrı bir
+tanı gerektiren özel bir hâl değil, `katmansız-teknoloji` tanısının doğrudan
+sonucudur. Zincirin dışına çıkan bir yüzey ise MIM-1.1 maddesinin yeni tanısı
+`proje-köksüz-üretim` ile korunan `izinsiz-sarma` tanısına düşer.
+
+Çapraz haritanın "yüzeyin teknoloji kökeni Katman kontrolünden ayrı kalabilir"
+şeklindeki kaygısı eski omurga içindir; katı rejim bu ayrılma ihtimalini yapısal
+olarak kapatmıştır.
+
+**Hüküm: RET.** Yeni kimlik üretilmez.
+
+**Görünürlük nöbeti.** GOC-MOTOR-A04 Adımı, teknolojisiz bir yüzeyin sessiz
+kalmadığını sınayan bir fikstür yazar; nöbet bugünkü `teknolojisiz-yüzey` ile
+halefi `katmansız-teknoloji` kümesine bakar.
+
+## F · Aday 5 — `alan-adı-çakışması` · RET (ihlalin kaynağı Tur 2'de kapandı)
+
+**Özgül ihlal.** Karar B'nin önerdiği hâliyle: aynı çalışma alanında bir alan
+adının iki ayrı anlam taşıması. Somut vaka `rol` adının hem AltKatman
+departmanını hem ajan rolünü karşılamasıydı.
+
+**Yakalanabilir kaynak kapsamı.** Proje kapsamı; bütün şema sözlüğü ile bütün
+bildirimlerin birlikte okunması gerekir.
+
+**Yanlış pozitif riski. YÜKSEK.** Alan adı yeniden kullanımı doğal ve çoğunlukla
+meşrudur: `kod`, `ne`, `durum` ve `dayanak` adları onlarca tipte aynı anda
+yaşar. "Bir alan adı bir anlam taşır" hükmünü zorlayabilmek için önce anlamın
+makine-okur biçimde tanımlanması gerekir; bugünkü şema sözlüğü alan başına tür
+ve zorunluluk taşır, anlam kimliği taşımaz.
+
+**Mevcut durum: ihlalin kaynağı ortadan kalktı.** Bu üretimde ölçüldü. Karar B
+Tur 2'de veri katmanında uygulanmıştır: `oz/siniflama/kayit.json` içindeki
+AltKatman şeması kanonik alan adını `departman` olarak taşır, enum değerleri
+planlama, kodlama, sınama, inceleme ve güvenliktir, ve şemanın kural metni
+"`rol:` adı RBAC ve ajan rolüne rezervedir ve AltKatman'da kullanılmaz" hükmünü
+açıkça yazar. Yani adayı doğuran çakışma artık yoktur.
+
+**Kanon durumu.** `alan-adı-çakışması` kimliği kanonun sekiz bölüm dosyasının
+hiçbirinde geçmemektedir. Karar B'nin kendi metni de bunu bir kanon eki adayı
+olarak önermiş, hüküm olarak kurmamıştır. DIL-1.2 maddesi adlandırmanın harf
+düzenini ve kimlik sırasını zorlar, anlam tekilliğini zorlamaz. TIP-2.2
+maddesinin yeni tanısı `şema-dışı-alan` ilan edilmemiş alanı uyarır, aynı adın
+iki anlamını değil.
+
+**Hüküm: RET.** Yeni kimlik üretilmez. Somut ihlal veri katmanında kapatılmıştır
+ve genel bir anlam-tekilliği zorlaması kanon hükmü ister; bu Founder
+kademesindedir ve önce anlamın makine-okur tanımını gerektirir.
+
+**Görünürlük nöbeti.** GOC-MOTOR-A04 Adımı, kanonik alan adının `departman`
+olduğunu ve AltKatman şemasında `rol` adının bulunmadığını sınayan bir fikstür
+yazar; çakışma geri doğarsa nöbet kırmızıya döner.
+
+## G · Hüküm özeti
+
+| Aday | Hüküm | Ret gerekçesi | Kanonik karşılık | Sonraki sahip |
+|---|---|---|---|---|
+| `koni-taşması` | RET | kanonda hüküm yok | yok (kısmi komşu: `kural-sözleşmesi-eksik`, `boş-kapsam`) | Founder · kanon ek adayı |
+| `kopuk-zincir` | RET | kanonik tanı eksiksiz karşılıyor | `yürütme-kenarı-sözleşmesi` · ORK-1.2 · HATA | GOC-MOTOR-A06 |
+| `kayıp-kenar` | RET | kanonda hüküm yok | yok (komşular yetmedi: `ilişki-sınıfı-ihlali`, `deterministik-sıra-ihlali`) | Founder · kanon ek adayı |
+| `teknolojisiz-yüzey` | RET | kanonik tanı eksiksiz karşılıyor | `katmansız-teknoloji` · MIM-1.4 ve ORK-2.4 · UYARI | GOC-MOTOR-A06 |
+| `alan-adı-çakışması` | RET | ihlalin kaynağı Tur 2'de kapandı | yok; somut çakışma veri katmanında çözüldü | Founder · kanon ek adayı |
+
+Beş adayın beşi de ret hükmü taşır ve hiçbiri tek bir genel tanı altında
+kanıtsız biçimde eritilmemiştir; iki ret kanıtlı kapsanmaya, üç ret ise kanonun
+açıkça ölçülmüş sessizliğine dayanır.
+
+## H · Bu Adımın açık bıraktıkları
+
+Üç aday Founder hükmü beklemektedir ve üçü de aynı soruyu sorar: yeni omurga bu
+davranışı bir ihlal sayıyor mu? Cevap evetse kanona madde girer ve tanı motor
+turunun bir sonraki halkasında doğar; cevap hayırsa davranış GOC-MOTOR-A10
+Adımında hükümle motordan çıkar.
+
+Karar verilene kadar bağlayıcı olan kısıt şudur: `koni-taşması` ile `kayıp-kenar`
+kimlikleri bugün canlıdır, gerçek ihlal yakalamaktadır ve hükümsüz silinemez.
+GOC-MOTOR-A10 Adımının kabul ölçütü zaten "hükümsüz emekli tanı sıfırdır"
+demektedir; bu iki kimlik için hüküm henüz yoktur.
+|<--
+Çıkarım( kod: MTR-BOSLUK-01,
+         kaynak: "nitelik/goc/capraz_harita.sar C bölümü dört boşluk adayı + goc_mimari_kararlari.md Karar B beşinci aday + yasa/kanon/{mim,ork,tip,yas}.sar madde metinleri + cekirdek/src/{kuralci,dag,denetci}.ts mevcut üreticiler + oz/siniflama/kayit.json AltKatman şeması (bu üretimde ölçüldü)",
+         ne: "⚖️ Beş tanı boşluğu adayının hükmü kesinleşti ve beşi de reddedildi, fakat iki ayrı gerekçeyle. İki aday kanonik bir tanı tarafından eksiksiz karşılandığı için reddedildi: kopuk-zincir ihlali ORK-1.2 maddesinin yürütme-kenarı-sözleşmesi tanısına, teknolojisiz-yüzey ihlali ise MIM-1.4 ile ORK-2.4 zincirindeki katmansız-teknoloji tanısına düşer ve katı rejim bu ihlalin ayrı kalma ihtimalini yapısal olarak kapatır. Üç aday ise yeni kanon o konuda hüküm taşımadığı için reddedildi: koni-taşması bağlam boğulmasının üst sınırını, kayıp-kenar eksik yürütme kenarını arar ve kanonun sekiz bölüm dosyasında ikisinin de karşılığı sıfırdır; alan-adı-çakışmasını doğuran somut çelişki ise Tur 2'de veri katmanında kapatılmıştır. Ret hükümlerinin bağlayıcı sebebi üçlü senkron kuralıdır: kanonda iddiası olmayan tanı sicile ve üreticiye eklenemez, kanon maddesi koymak da Founder kademesinin işidir. Üç aday Founder hükmüne sevk edildi ve koni-taşması ile kayıp-kenar kimliklerinin GOC-MOTOR-A10 Adımında hükümsüz silinemeyeceği kısıt olarak kayda geçti." )

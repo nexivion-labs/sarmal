@@ -1,0 +1,42 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga4_surec_nitelik.sar — 🌊 4. DALGA · ÜRÜN+SÜREÇ+NİTELİK (F8)
+//
+//   Founder incelemesi için ÖRNEK: koşum zamanının izleri ve doğrulama katmanı.
+//   Bu dalgayla 92/92 tip ŞEMALI — format kanonu tamamlandı 🍎
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  📋 Son üç ailenin formatını kilitlemek: meyve (ürün), koşum izi (süreç) ve doğrulama (nitelik) — döngü tamamlanır.
+
+  ## Kapsam
+  📦 Ürün ailesi meyvedir: Kod bir üretilmiş dosyayı, Göç bir veri taşımasını, Ayar bir yapılandırmayı NİYET düzeyinde tanımlar — içerik ajanın işidir. Süreç ailesi koşum zamanıdır: Görev orkestratörün iş emridir, Koşum bir çalıştırmanın kaydıdır, İz adım adım ayak izidir, Sorun yakalanan aksaklıktır — bunlar elle yazılmaz, runtime yazar (mat bölge kardeşliği). Nitelik ailesi bekçidir: Sınama kabulü, Metrik sağlığı, Log tanıklığı, Kapsama genişliği, Güvenlik ise sınır ihlalini gözler.
+
+  ## Sonuç
+  ✅ Kabul: dosya motor-temiz geçer; 92 tipin tamamı şemalıdır — RAY-3 bu formatların üstünde koşar.
+|<--
+
+// ── ÜRÜN 🍎 — üretilen meyvenin niyeti (içerik ajanın işi) ───────────────────
+Kod( kod: ORN-KOD-GIRIS, ne: "🍎 giriş ekranı Flutter dosyası — ORN-EKR-GIRIS niyetinden üretilir" )
+
+Göç( kod: ORN-GOC-KULLANICI, ne: "🗄️ kullanıcı tablosu ilk göçü — eposta benzersiz kısıtıyla" )
+
+// ── SÜREÇ — koşum izleri (elle yazılmaz; runtime yazar) ──────────────────────
+Görev( kod: ORN-GRV-URETIM, ne: "📌 iş emri: ORN-F1-A02 adımını işçi-kademe modele üret" )
+
+Koşum( kod: ORN-KSM-001, ne: "▶️ 2026-07-06 koşumu — 3 adım işlendi, 1 iade turu, motor-temiz bitti" )
+
+İz( kod: ORN-IZ-001, ne: "👣 koşum ayak izi: istem→üretim→denetim→iade→üretim→kabul" )
+
+Sorun( kod: ORN-SRN-042, ne: "🐛 üretilen dosyada Türkçe şapka kaybı — işçi modele iade edildi, 2. turda düzeldi" )
+
+// ── NİTELİK — bekçiler ───────────────────────────────────────────────────────
+Sınama( kod: ORN-SNM-GIRIS, ne: "🧪 giriş akışı kabul sınaması — doğru şifre 200, yanlış şifre 401" )
+
+Metrik( kod: ORN-MTR-SURE, ne: "📊 üretim süresi ölçümü — adım başına ortalama, iade oranı" )
+
+Log( kod: ORN-LOG-KOSUM, ne: "📜 koşum tanıklığı — her tur zaman damgalı satır" )
+
+Kapsama( kod: ORN-KPS-PLAN, ne: "🎯 plan kapsaması — kaç adımın kabul ölçütü sınamayla bağlı" )
+
+Güvenlik( kod: ORN-GVN-SINIR, ne: "🛡️ sınır bekçisi — canlı anahtar sızıntısı ve yasak dizin erişimi gözlenir" )

@@ -1,0 +1,243 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/proje_kod_kabul_raporu.sar — ⚖️ PROJE-KOD AŞAMASI BAĞIMSIZ KABUL RAPORU
+//   (GOC-PROJEKOD-A90 · 2026-07-31) — HÜKÜM: KABUL (üç şerhle)
+//   Yöntem bağımsızlığı: denetçi üretici oturumlarının bağlamını bilmez ve koşu
+//   kayıtlarındaki iddialara güvenmez. Bütün sayımlar motorun kendi belirteçleyici
+//   ve ayrıştırıcısıyla, proje kapısının filtresiz çıktısıyla, git mühürleri
+//   üzerinden küme karşılaştırmasıyla ve arşivde TAM sha256 doğrulamasıyla
+//   yeniden yapıldı; örnekleme kullanılmadı. Denetçi bu turda kendi raporu
+//   dışında hiçbir dosyayı değiştirmedi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## Amaç
+Proje-kod turunun dokuz kapanmış Adımının (A01 · A02 · A03 · A04 · A05 · A07 ·
+A08 · A09 · A10) kabul listelerini, üreticiden bağımsız ve yeniden üretilebilir
+komutlarla tam sayım üzerinden sınamak ve tek hükme bağlamak.
+
+## Kapsam
+`plan/goc_plani.sar` içindeki BLK-GOC-PROJEKOD bloğunun kabul maddeleri; canlı
+proje ağaçları (`sarmal_anadizin.sar` · `plan/**` · `ornek/**` · `sablon/**` ·
+`ogrenme/**` · `eklenti/plan.sar`), iki varlık kapısı, iki sınama süiti, iki tip
+denetimi, yasa rafı, repo dışı arşiv ve eski kod atıf taraması. Kapalı plan
+turlarının içeriği tarihtir ve içerik düzeyinde denetlenmez; yalnız arşiv
+bütünlüğü ölçülür.
+
+## Sonuç
+Hüküm KABUL, üç şerhle. Dokuz Adımın kabul maddelerinin ezici çoğunluğu
+bağımsız ölçümle birebir doğrulandı: iki varlık kapısı da sıfır hata ve sıfır
+uyarı verdi, çekirdek süiti dokuz yüz otuz iki sınamanın tamamını ve eklenti
+süiti üç yüz yetmiş üç sınamanın tamamını geçti, iki tip denetimi de sıfır hata
+verdi. Departmansız AltKatman canlı ağaçta sıfırdır, rejim beyanları beş kökte
+de gerekçeli ve geçerlidir, eski yasa gövdesi repodan tamamen kalkmıştır ve iki
+arşivin bütün içerik mühürleri birebir çıkmıştır. Şerhlerin üçü de kabulü
+düşürmeyen, dosya ve satırla kayıtlı sapmalardır: eklenti rafının dört köşesi
+atıf göçü taramasının dışında kalmıştır, devir kaydının iki yeni cümlesi eski
+kod anmaktadır ve kanonun bir örnek cümlesi reddedilen alan adını öğretmeye
+devam etmektedir.
+|<--
+
+-->|
+## Kapı ve süit ölçümleri (bütün Adımların ortak zemini)
+
+| Ölçüm | Komut | Sonuç |
+|---|---|---|
+| Açık varlık kapısı | `cd _Sarmal/cekirdek && node src/sarmal.ts denetle ..` | 0 hata · 0 uyarı · 157 bilgi satırı; karne ⛔ 0 |
+| Kapalı varlık kapısı | `node src/sarmal.ts denetle ../../<kapalı-varlık>` | 0 hata · 0 uyarı · 328 bilgi satırı; karne ⛔ 0 |
+| Çekirdek süiti | `node --test "sinama/*.test.ts"` | 932 sınama · 932 geçti · 0 düştü · 0 todo |
+| Eklenti süiti | `cd _Sarmal/eklenti && npm test` | 373 sınama · 373 geçti · 0 düştü |
+| Çekirdek tip denetimi | `npm run tip-denetle` | 0 hata |
+| Eklenti tip denetimi | `tsc --noEmit -p .` | 0 hata |
+
+Hata ve uyarı sayımı filtresiz alınmıştır: kapı çıktısı dosyaya indirildi ve
+`grep -c '^⛔'` ile `grep -c '^⚠'` sayımları iki varlıkta da sıfır döndü. Kapı
+hükmü karne satırından ya da çıkış kodundan değil, bu iki sayımdan verilmiştir.
+|<--
+
+-->|
+## GOC-PROJEKOD-A01 — envanter (dört madde: DOĞRULANDI)
+
+Envanter `nitelik/goc/proje_kod_envanteri.sar` dosyasında duruyor ve tarama
+motorun kendi ayrıştırıcısıyla bağımsız olarak yeniden koşuldu (belirteçleyici
+ve ayrıştırıcı modülleri doğrudan içe aktarılarak). Ölçülen: kapsamda doksan
+`.sar` dosyası (envanterin seksen sekizi artı bu turda doğan iki öğretim
+dosyası), üçü yer tutucu taşıdığı için ayrıştırılamayan muaf doğuş şablonu —
+envanterin muaf sınıfıyla birebir. Tarihsel sınıf boş kümedir ve bu doğrudur,
+çünkü `plan/kapali/` rafı diskte yoktur ve kapalı turlar arşivdedir. Sahipsiz
+veya sınıfsız dosya bulunmadı. Envanterin bağımlı-kenar düşürme notu (üç kapı
+kenarının yaşanan gerçeğe göre kaldırılması) git mühürüyle doğrulandı ve
+aşağıda A03 bölümünde sayılmıştır.
+|<--
+
+-->|
+## GOC-PROJEKOD-A02 — rejim beyanları (dört madde: DOĞRULANDI)
+
+`grep -n "rejim:"` taraması canlı köklerde beş beyan buldu ve beşi de geçerli
+değer taşıyor: `sarmal_anadizin.sar:43` katı rejimi gerekçe yorumuyla beyan
+eder; `sablon/proje.sar:21` ve `sablon/dogus/anadizin.sar:31` katı rejimi
+şablon düzeyinde öğretir; `ornek/format/yeni_tipler.sar:43` katı,
+`ornek/format/rejim_esnek.sar:34` gerekçeli esnek beyan taşır. Proje kapısının
+saydığı üç Proje kökünün (ANA · PRJ-ESNEK-ORNEK · ORN-YT-PRJ) üçü de beyanlıdır
+ve rejimsiz canlı Proje kalmamıştır. Rejim fikstürleri bağımsız koşuldu:
+`node --test sinama/yeni-kanon-tanilari.test.ts` otuz iki sınamanın tamamını
+geçti ve eksik, yinelenen ve geçersiz rejim beyanının beklenen tanıyı ürettiği
+sınama adıyla görünüyor. Rejim geçişinin Adım taşımadığı, sarmadığı ve
+silmediği A03 bölümündeki küme karşılaştırmasıyla kanıtlandı.
+|<--
+
+-->|
+## GOC-PROJEKOD-A03 — omurga yerleşimi (dört madde: DOĞRULANDI)
+
+Departman sayımı satır eşleşmesiyle değil, motorun ayrıştırıcısının ürettiği
+ağaç üzerinde parantez gövdesine bakılarak yapıldı: kapsamda seksen sekiz
+gerçek AltKatman bildirimi var ve departman alanı taşımayanı SIFIRDIR. Kaba
+metin taramasının işaretlediği üç ek nokta tek tek açıldı ve üçü de bildirim
+değildir: `sablon/blok.sar:20` bir yorum cümlesidir, `yasa/kanon/mim.sar:89`
+madde gövdesindeki örnek metnidir (ŞERH-3'e konu) ve
+`cekirdek/sinama/fikstur/eski_proje_*.sar` dosyaları bilinçli sınama
+fikstürüdür. AltKatman dışında otuz Adım kaldı ve tamamı Proje düğümü
+taşımayan öğretim ağaçlarında ya da bilinçli esnek rejim örneğindedir; katı
+rejimdeki canlı ağaçta AltKatman'sız Katman-Adım yolu yoktur.
+
+Kayıpsızlık git mühürüyle sınandı: yerleşim göçünü taşıyan işlemenin bir
+öncesi ve kendisi arasında Adım kodu kümeleri karşılaştırıldı — göç öncesi iki
+yüz yirmi iki kod, göç sonrası iki yüz yirmi dört kod, KAYBOLAN KOD SIFIR;
+iki yeni kod bu turda doğan iki öğretim Adımıdır. Bağımlı-kenar listelerinin
+tam metni de karşılaştırıldı: tek fark, envanter Adımının kendi kaydında beyan
+ettiği üç kapı kenarının düşürülmesi ile iki yeni öğretim dosyasının kendi
+kenarlarıdır; beyansız kenar kaybı yoktur. Kapının sıfır hatası kırık referans
+ve döngü bekçilerini kapsadığı için DAG çözülürlüğü de kapalıdır.
+|<--
+
+-->|
+## GOC-PROJEKOD-A04 — teknoloji tekilliği ve kavuşum (dört madde: DOĞRULANDI)
+
+Proje kapısının filtresiz tür dökümünde çok-teknolojili Katman, silo ve
+kavuşumsuz-dilim tanısı yoktur; katmansız-teknoloji bekçisi uyarı düzeyinde
+çalıştığı ve iki varlıkta da uyarı sayısı sıfır olduğu için her canlı Katmanın
+teknoloji sözleşmesi motor gözünde tamdır. Envanterin teknolojisiz saydığı on
+Katmanın öğretim ağaçlarında yaşadığı ve bilinçli olduğu, departman sayımıyla
+aynı ayrıştırıcı turunda görüldü; açık sahipli borç kaydı gerektiren silo
+gövde bulunmadı.
+|<--
+
+-->|
+## GOC-PROJEKOD-A05 — örnek ve şablon hizası (dört madde: DOĞRULANDI, ŞERH-3 sınır komşusudur)
+
+Örnek, şablon ve öğrenme raflarının tamamı bütün-Proje kapısından sıfır hata
+ve sıfır uyarıyla geçiyor; iki yeni öğretim dosyası (`rejim_esnek.sar` ·
+`yeni_tipler.sar`) tek-dosya kapısından da ayrıca geçirildi ve yalnız bilgi
+düzeyi bulgu verdi. Katı ve esnek rejim örnekleri ayrı dosyalarda yaşıyor ve
+ikisi de kendi rejimini gerekçesiyle öğretiyor. `rol:` alanını AltKatman
+üzerinde öğreten yürür örnek bu üç rafta SIFIRDIR (`grep -rn "rol:"` taraması
+AltKatman bağlamında boş döndü). Kanon rafındaki tek kalıntı bu Adımın kapsamı
+dışındadır ve ŞERH-3 olarak kayıtlıdır.
+|<--
+
+-->|
+## GOC-PROJEKOD-A07 — eski atıf göçü (altı maddeden beşi DOĞRULANDI; kapsam köşeleri ŞERH-1 ve ŞERH-2)
+
+Görevde verilen desenle (`K-` · `SD-` · `DR-` · `AOK-` aileleri) tam tarama
+koşuldu. Çekirdek kaynağı ve eklenti kaynağı SIFIR gerçek atıf taşıyor;
+çekirdek ve eklenti sınamalarındaki bütün eşleşmeler plan kaydının bilinçli
+istisna ayrıştırmasındaki sentetik fikstürlerdir (atıf-tanıyıcı fikstürleri
+`kimlik.test.ts` · `metin-atif.test.ts` · `denetci.test.ts` ·
+`atif-ipucu.test.ts` yalnız hiç var olmamış sentetik numaralar taşır; hijyen
+kapısının kendi yasak-jeton belgesi ile unutma-kapısı fikstürü sayılıdır).
+Hijyen kapısı `tani-metni-hijyeni.test.ts` genişletilmiş yasak listesiyle
+(karar aileleri · harf sonekli emoji kodları · tasarım ve spec aileleri ·
+numaralı Adım kodları) yaşıyor, köprü alt dizinini ve üretilen belge yüzlerini
+tarıyor ve süit içinde yeşildir. Öğrenme, öz ve bilgi rafları sıfırdır.
+Kullanıcı-yüzü metinlerinde kod taşımama sözleşmesi aynı kapının konusudur ve
+kapı yeşildir. Kapalı turlara ve silinmiş eski gövdeye dokunulmadığı, arşiv
+mühürlerinin birebir çıkmasıyla dolaylı olarak da doğrulanmıştır.
+
+Ölçülen sapma — ŞERH-1: A07'nin üretim kaydı kapsamı "çekirdek, eklenti,
+örnek, şablon, öğrenme, öz, durum ve bilgi rafları" diye ilan eder, fakat
+eklenti rafının dört köşesi taramanın ve bilinçli-istisna ayrıştırmasının
+dışında kalmıştır: `eklenti/plan.sar` on sekiz geçiş taşır (tamamı kapanmış
+Adımların tarih metinlerindedir; ana plan rafında aynı sınıf metin göçürülmüşken
+burada göçürülmemiştir), `eklenti/arac/renk-uret.mjs` dört canlı kod yorumu
+(satır 58 · 99 · 131 · 136), `eklenti/sinama_vscode/suite/aktivasyon.test.ts`
+dört canlı yorum ve sınama mesajı (satır 79 · 85 · 117 · 266),
+`eklenti/syntaxes/sarmal.tmLanguage.json` bir yorum (satır 450) taşır;
+`eklenti/CHANGELOG.md` ayrıca otuz bir tarihsel geçiş içerir. Hijyen kapısının
+tarama kökleri bu köşeleri görmediği için sapma nöbetsizdir ve sessizce
+büyüyebilir. — ŞERH-2: `durum/durum_devir.sar` iki YENİ yazılmış kayıt
+cümlesinde eski kod anar (satır 24 ve satır 65); A07'nin kendi ilkesi tarihsel
+kayda kod yazmamak, olayı cümleyle anlatmaktır ve bu iki cümle ilkeyle
+çelişir.
+|<--
+
+-->|
+## GOC-PROJEKOD-A08 — kapalı turların arşivi (dört madde: DOĞRULANDI)
+
+`plan/kapali/` diskte yoktur ve çalışma alanında arşiv rafı doğmamıştır. Repo
+dışı arşivde (`Nexivion-Arsiv/omurga-v0-plan-kapali/`) mühür kaydı yirmi bir
+dosya ilan eder ve dizinde mühür kaydıyla birlikte tam yirmi iki dosya vardır;
+yirmi bir içerik mühürünün TAMAMI `shasum -a 256 -c` ile birebir doğrulandı,
+tek sapma yoktur. Mühür kaydı kopyayı açıkça kullanım dışı ilan eder ve
+içerik taşınırken değiştirilmediğini, eski atıfların tarihin parçası olarak
+korunduğunu yazar. Taşıma sonrası proje kapısı sıfır hata ve sıfır uyarıdır;
+arşiv yoluna dayanak kuran canlı kaynak taramada görülmedi.
+|<--
+
+-->|
+## GOC-PROJEKOD-A09 — örtü zincirinin birleşmesi (dört madde: DOĞRULANDI)
+
+`node --test sinama/siniflama.test.ts` on bir sınamanın tamamını geçti ve
+nöbet adıyla görünüyor: iki kademeli örtüde iç örtünün dıştakini gölgelemediği,
+birleşimin dıştan içe yapıldığı, tabanın korunduğu ve yinelemelerin
+tekilleştiği ayrı sınamalarla ölçülüyor; örtüsüz durumda tabanın birebir
+döndüğü de nöbettedir. Taban kanonun hiçbir kademede değişmediği bu
+sınamaların iddiasıdır ve süit yeşildir. Gerçek müşteri çalışma alanı ölçümü
+bu turda yeniden koşuldu: kapalı varlık kapısı sıfır hata ve sıfır uyarı
+verdi. Mutasyon kanıtı üretim kaydının iddiasıdır; denetçi teslimi
+değiştirmediği için mutasyonu yeniden koşmadı ve nöbetin varlığını ile
+yeşilliğini ölçmekle yetindi — nöbet kurulu olduğu sürece birleştirmenin
+kaldırılması süiti kırmızıya döndürecek biçimde yazılmıştır.
+|<--
+
+-->|
+## GOC-PROJEKOD-A10 — eski gövdenin silinmesi (beş madde: DOĞRULANDI)
+
+Arşiv bütünlüğü tam sayımla doğrulandı: `omurga-v0-yasa/` mühür kaydındaki
+yirmi iki asıl mühürden on dokuzu bugünkü dosyalarla birebir, üçü tazeleme
+bölümünün ilan ettiği evrilmiş dosyadır ve üç tazeleme mühürünün üçü de
+bugünkü içerikle birebir çıktı; eksik ya da açıklamasız bozuk dosya yoktur.
+Repoda `yasa/` rafında yalnız `kanon/` ile `ebedi.sar` yaşıyor;
+`yasa/kararlar/`, `yasa/genel_kurallar/` ve üretilen `KARARLAR.md` diskte
+yoktur. Ebedî kural `yasa/ebedi.sar` içinde kendi kimliğiyle duruyor ve
+kapıda ebedi-ihlal tanısı sıfırdır. Silme sonrası iki kapı da sıfır hata ve
+sıfır uyarıdır; disksiz raf ilanı kalmadığı kapının yapı-aynası temizliğinden
+görünür. Eski defter süiti `kararlar.test.ts` diskte yoktur ve çekirdek süiti
+dokuz yüz otuz iki sınamayla tamamen yeşil olduğu için devralınan kırmızı
+sınama da kalmamıştır; korunan şekil-drift köşe durumu sentetik kimlikli
+fikstüre taşınmış hâlde süitte yaşıyor.
+|<--
+
+-->|
+## Şerhler (kabulü düşürmeyen, dosya ve satırla kayıtlı)
+
+- **ŞERH-1 · Eklenti rafının dört köşesi atıf göçünün dışında kaldı.**
+  `eklenti/plan.sar` (18 geçiş, kapanmış Adım tarih metinleri) ·
+  `eklenti/arac/renk-uret.mjs` (4 canlı yorum) ·
+  `eklenti/sinama_vscode/suite/aktivasyon.test.ts` (4 canlı yorum ve mesaj) ·
+  `eklenti/syntaxes/sarmal.tmLanguage.json` (1 yorum) ·
+  `eklenti/CHANGELOG.md` (31 tarihsel geçiş). Bu köşeler üretim kaydının
+  bilinçli-istisna ayrıştırmasında yoktur ve hijyen kapısı onları taramaz;
+  sapma bu yüzden nöbetsizdir. Sahip atanması ve ya göç ya gerekçeli istisna
+  kaydı gerekir.
+- **ŞERH-2 · Devir kaydına yeni eski-kod anması yazıldı.**
+  `durum/durum_devir.sar` satır 24 ve satır 65, göç olaylarını anlatırken eski
+  kodları yeni yazılmış cümlelere taşımıştır; A07'nin "tarihsel kayda kod
+  yazılmaz, olay cümleyle anlatılır" ilkesiyle çelişir.
+- **ŞERH-3 · Kanonun bir örneği reddedilen alanı öğretiyor.**
+  `yasa/kanon/mim.sar:89` — departman maddesinin kendi örnek cümlesi
+  AltKatman üzerinde `rol:` alanını gösteriyor; aynı sapma kanon-verisi kabul
+  raporunda sahipli şerh olarak kayıtlıydı ve hâlâ açıktır. Öğretim rafları
+  temizdir, kalıntı yalnız kanon metnindedir.
+|<--
+Çıkarım( kod: KBL-PROJEKOD-01,
+         kaynak: "plan/goc_plani.sar BLK-GOC-PROJEKOD kabul listeleri; bağımsız ölçümler: iki varlıkta filtresiz kapı sayımı, çekirdek ve eklenti süitleri, iki tip denetimi, motor ayrıştırıcısıyla AltKatman ve Adım sayımı, git mühürleriyle Adım ve kenar kümesi karşılaştırması, iki arşivde tam sha256 doğrulaması ve dört aileli eski kod taraması",
+         ne: "⚖️ Proje-kod aşamasının dokuz kapanmış Adımı bağımsız olarak sınandı ve hüküm ÜÇ ŞERHLE KABUL verildi. İki varlık kapısı da filtresiz sayımla sıfır hata ve sıfır uyarı verdi; çekirdek süiti dokuz yüz otuz iki ve eklenti süiti üç yüz yetmiş üç sınamanın tamamını geçti; iki tip denetimi de sıfırdır. Departmansız AltKatman motor ayrıştırıcısıyla yapılan tam sayımda canlı ağaçta sıfır çıktı, beş rejim beyanının beşi de gerekçeli ve geçerli bulundu, yerleşim göçünün Adım kümesi git mühürleriyle karşılaştırıldı ve kaybolan kod sıfırdır. Eski yasa gövdesi ile üretilen insan yüzü repodan tamamen kalkmış, ebedî kural kendi canlı evinde korunmuş ve iki repo dışı arşivin bütün içerik mühürleri örneklem değil tam sayımla birebir doğrulanmıştır. Kaynak ağaçlarında gerçek eski atıf sıfırdır ve genişletilmiş hijyen kapısı süitte yeşildir. Üç şerh dosya ve satırla kayıtlıdır: eklenti rafının dört köşesi atıf göçü taramasının ve nöbetin dışında kalmıştır, devir kaydının iki yeni cümlesi eski kod anmaktadır ve kanonun bir örnek cümlesi reddedilen alan adını öğretmeye devam etmektedir; üçü de sahip atanmasını bekleyen, kabulü düşürmeyen borçlardır." )

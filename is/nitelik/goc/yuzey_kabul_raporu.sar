@@ -1,0 +1,143 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/yuzey_kabul_raporu.sar — ⚖️ YÜZEY AŞAMASI BAĞIMSIZ KABUL RAPORU
+//   (GOC-YUZEY-A90 · 2026-07-28) — HÜKÜM: KABUL
+//
+//   Yöntem bağımsızlığı: denetim, teslimi üreten ajanla hiçbir teması olmayan
+//   ayrı bir bağlamda iki tur olarak koşuldu. Denetçi hiçbir teslim dosyasını
+//   değiştirmedi; mutasyonları kendi eliyle koştu ve her birini sha256 ile geri
+//   aldığını ölçerek kanıtladı. Sayılar üreticinin raporundan alınmadı, motorun
+//   kendi işlevleri doğrudan koşturularak yeniden üretildi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+## HÜKÜM: KABUL — yüzey aşamasının teslimi kabul edilir
+
+Yüzey turu, motorun ürettiği tanıları tek panelde yığmak yerine üç kanonik sunum
+yüzeyine ayırdı. Düzeltilmesi gereken sapma Problems yüzeyine, bilinçli ileri bağlam
+Hatırlatıcılar yüzeyine, salt bilgilendirme Bildirimler yüzeyine düşüyor.
+
+Denetim iki turda yürüdü. Birinci tur teslimi baştan sona ölçtü ve yedi şartla ŞARTLI
+KABUL verdi. İkinci tur yalnız o yedi şartın kapanışını ölçtü ve KABUL verdi.
+
+### Bağımsız sayımlar ile üretici beyanının mutabakatı
+
+| Ölçü | Üretici beyanı | Bağımsız ölçüm | Yöntem | Sonuç |
+|---|---|---|---|---|
+| Sicildeki kimlik | 171 | 171 | `taniSicili()` doğrudan koşuldu | ✓ |
+| Yeni kanondan gelen | 70 | 70 | `YENI_TANI_KANONU` sayımı | ✓ |
+| Önceki gövdeden gelen | 101 | 101 | sicil farkı | ✓ |
+| Problems yüzeyi | 81 | 81 | düzey dağılımı kaynaktan tarandı | ✓ |
+| Hatırlatıcılar yüzeyi | 4 | 4 | ileri-bağlam kümesi | ✓ |
+| Bildirimler yüzeyi | 86 | 86 | 70 yeni kanon + 16 önceki bilgi | ✓ |
+| Atanmamış kimlik | 0 | 0 | `beklenenSunumYuzeyi` toplam işlevdir | ✓ |
+| Yüzey nöbeti | 18 sınama | 24 sınama (düzeltmeden sonra) | `npm test` | ✓ |
+
+Atanmamış ya da iki yüzeye birden atanmış kimlik bulunması YAPISAL OLARAK imkânsızdır,
+çünkü yönlendirme işlevi toplamdır ve her kimlik için tam olarak bir kova seçer. Denetçi
+bunu yüz yetmiş bir kimliğin tamamı üzerinde koşturarak doğruladı.
+
+Tek fark ayrıntıdadır ve hükmü değiştirmez: kayıt önceki kimlikleri "25 hata ve 6
+ölçülemeyen" diye yazarken denetçinin taraması "24 hata ve 7 ölçülemeyen" buldu. Fark bir
+kimliktir, iki farklı sezgisel taramanın doğal sapmasıdır ve üç yüzeyin sayılarını
+değiştirmez.
+
+### Tek kaynak iddiası doğrulandı
+
+Yönlendirme kararı yalnız `cekirdek/src/denetim.ts` içindeki `beklenenSunumYuzeyi`
+işlevinde yaşıyor. Denetçi bütün çağrı yerlerini taradı: eklentinin üretim kodunda iki
+çağrı, nöbette iki çağrı, motorun kendi hükmünde bir çağrı. Eklenti tarafında ikinci bir
+eşleme çizelgesi yoktur; sağlayıcılar kayıtları hazır ayrılmış olarak alır ve doğa kararı
+vermez. İkinci bir çizelge yazılsaydı biri sessizce bayatlar ve tanı yanlış yüzeye
+düşerdi.
+
+### Birinci turun yedi şartı ve kapanışları
+
+**① Fazla güçlü hüküm geri alındı.** `GOC-YUZEY-A04` koşusu "sağlayıcı kaydı da paket
+bildirimi de aynı sabitten okuyor" diyordu; bu doğru değildi, çünkü `package.json` bir
+JSON dosyasıdır ve TypeScript sabitini içeri alamaz. Kimlik gerçekte iki yerde ayrı ayrı
+yazılıdır ve güvence tek kaynak değil, eşitliği ölçen iki nöbettir. Kayıt düzeltildi.
+
+**② Yinelenen yenileme kusuru onarıldı — turun en değerli bulgusu.** Kayıt "yinelenen
+yenileme sayısı yapısal olarak sıfırdır" diyordu. Denetçi yüz yetmiş üç canlı dosya
+üzerinde ölçtü ve yaklaşık YETMİŞ BİR yeniden çizim buldu. Sebep şuydu: parmak izi
+güvencesi yalnız içerik değişmediğinde çizimi engelliyor, oysa toplu tarama sırasında
+defter her belgede büyüdüğü için parmak izi her seferinde değişiyordu. Defter gövdesi saf
+çekirdeğe taşındı ve toplu tarama yolunda yayın kapatıldı. İkinci turda aynı ölçüm
+tekrarlandı: döngü içi çizim sıfır, tur sonu toplam çizim BİR.
+
+**③ Aktif-varlık süzgeci üç yüzeye de uygulandı.** İki yeni yüzey odak süzgecini hiç
+sormuyordu; Problems öteki varlığı gizlerken yeni paneller göstermeye devam ediyordu.
+Karar vericinin hükmü süzgecin uygulanması yönünde oldu ve gerekçesi şudur: aynı motorun
+çıktısını gösteren üç yüzey kapsam konusunda birbiriyle anlaşmalıdır, yoksa kullanıcı
+çelişkili iki tablo görür ve yeni başlayan biri bunu kendi hatası sanar. Denetçi süzgeci
+odağı üç kez çevirerek ölçtü: kayıt silinmiyor, yalnız yayın anında gizleniyor ve odak
+geri dönünce kayıt geri geliyor.
+
+**④ Bayatlayacak sayılar nöbete bağlandı — kısmen.** Sicil boyutu, yeni kanon sayısı,
+önceki gövde sayısı ve ileri-bağlam kümesi doğrudan motora bağlandı; denetçi bunlardan
+birini bozunca süit kırmızıya döndü. Fakat Problems ile Bildirimler satırları birbirine
+karşı korunmuyor: ikisi birlikte ve ters yönde kayarsa süit yeşil kalır. Sebep, önceki
+yüz bir kimliğin düzeyinin sicilde makine-okur biçimde tutulmaması ve yalnız üretici
+işlevinin kaynak satırında yaşamasıdır. Sınır hem sınamanın yorumunda hem yayımlanan
+matris kaydında açıkça yazılıdır. Kalıcı çözüm önceki tanı kayıtlarına düzey alanı
+eklemektir ve bu iş terfi turuna bağlanmıştır.
+
+**⑤ Gerçek görünüş koşumu genişletildi.** Kabul metinleri "gerçek görünüş sınaması
+yeşildir" diyordu, oysa o süit bu reformda hiç koşulmamıştı. Süit dokuz sınamadan on bire
+çıkarıldı; biri iki yeni görünüşün gerçek VS Code'da kayıtlı olduğunu, öteki bir
+hatırlatıcının Hatırlatıcılar yüzeyinde tam bir kez göründüğünü ve öteki iki yüzeye
+sızmadığını ölçüyor. Denetçi bu sınamaların boş kabuk olmadığını mutasyonla kanıtladı.
+
+**⑥ Ölü kod sahiplendirildi.** Satır-içi tanı yüzündeki bilgi düzeyi renk dalı, bilgi
+kayıtları Problems'tan çıktığı için artık ateşlemiyor. Kaldırılmadı ve gerekçesi kaynağa
+yazıldı: düzey işlevi dört tanı şiddetini birden karşılayan tam bir işlevdir ve dalı
+silmek iki şiddeti yanlış göstermeye zorlardı; ayrıca terfi turu bir kademeyi
+yükselttiğinde dal yeniden ateşler.
+
+**⑦ Sahipsiz metin dokunuşları devredildi.** Yedi eklenti modülünde, hiçbir Adımın koşu
+alanında beyan edilmemiş on sekiz kullanıcı metni düzenlemesi bulundu. Hepsi iç karar
+numarasını metinden çıkarma yönündeydi ve iyileştirmeydi, fakat sahipsizdi. `MDR-A06`
+Adımına devredildi ve devir o Adımın rapor alanına dosya dosya yazıldı.
+
+### Nöbet mutasyonla kanıtlandı
+
+Üretici sekiz mutasyon koşturdu. Denetçi bunlardan dördünü kendi eliyle tekrarladı ve
+dördü de süiti kırmızıya döndürdü: yönlendirmenin ileri-bağlam kümesi bozulduğunda gerçek
+VS Code süiti düştü, toplu tarama yayını yeniden açıldığında tek yayın nöbeti düştü,
+yayımlanan kayıttaki bir sayı bayatlatıldığında tazelik nöbeti düştü ve aktif-varlık
+süzgeci defterden söküldüğünde süzgeç nöbeti düştü. Bozulan dört dosyanın dördü de sha256
+ile başlangıçtaki hâline geri döndüğü ölçülerek kanıtlandı.
+
+### Denetçinin kendi hatasını geri alması
+
+Birinci turda denetçi gerçek görünüş süitinde bir sınamanın düştüğünü bildirmişti. İkinci
+turda üretici o sınamayı altı kez, denetçi üç kez koştu ve dokuz koşumun dokuzu da yeşil
+geçti; biri 9.07 yük altındaydı ve yine geçti. Denetçi ilk koşumun VS Code'un ilk kez
+indirildiği koşum olduğunu, soğuk indirme ile boş kullanıcı dizininin üst üste bindiği bir
+zaman aşımı yaşandığını saptadı ve gerileme iddiasını geri çekti. İlk koşum kırılganlığı
+olarak not düşülmüştür.
+
+### Dört kapı — ayrı ayrı, hiçbiri diğerinden türetilmedi
+
+| Ölçüm | Sonuç |
+|---|---|
+| Çekirdek tür denetimi | 0 hata |
+| Eklenti tür denetimi | 0 hata |
+| Proje denetimi | 0 hata · 0 uyarı · 318 bilgi |
+| Çekirdek süiti | 879 sınama · 874 geçti · 4 düştü · 1 todo |
+| Eklenti süiti | 198 / 198 |
+| Gerçek VS Code süiti | 11 / 11 |
+
+Proje denetiminin sayımı çıkış kodundan ya da karne satırından türetilmedi; altı yüz elli
+dört satırlık ham çıktıda satır başı simgesi sayıldı. Çekirdek süitindeki dört kırmızının
+dördü de `sinama/kararlar.test.ts` dosyasındadır, bu turdan bağımsızdır ve eski yasa
+gövdesi emekli olunca çözülecektir.
+
+### Devredilen açık borç
+
+Yayımlanan matris kaydındaki Problems ve Bildirimler sayıları nöbet tarafından birbirine
+karşı korunmuyor; kalıcı çözüm önceki tanı kayıtlarına düzey alanı eklemektir ve sahibi
+terfi turudur.
+|<--
+Sınama( kod: SNM-YUZEY-KABUL-01,
+        ne: "⚖️ Yüzey aşamasının teslimi bağımsız olarak iki turda sınandı ve hüküm KABUL olarak verildi. Denetçi üreticinin sayılarına güvenmedi ve motorun kendi işlevlerini doğrudan koşturarak sicilin yüz yetmiş bir kimliğini yeniden saydı; seksen bir Problems, dört Hatırlatıcılar ve seksen altı Bildirimler dağılımı bağımsız ölçümle birebir doğrulandı. Yönlendirmenin tek kaynaklı olduğu bütün çağrı yerleri taranarak kanıtlandı. Birinci tur yedi şartla şartlı kabul verdi ve en değerli bulgu yinelenen yenileme kusuruydu: kayıt bu sayının yapısal olarak sıfır olduğunu iddia ediyordu, oysa gerçek ölçüm yüz yetmiş üç dosyalık taramada yaklaşık yetmiş bir yeniden çizim buldu; onarımdan sonra aynı ölçüm bire indi. İkinci tur yedi şartın altısını ölçümle kapalı buldu ve dördünü mutasyonla kanıtladı; kalan bir şart kısmen kapandı ve boşluğu terfi turuna bağlandı. Denetçi ayrıca kendi bildirdiği bir gerilemeyi dokuz koşumluk ölçüm sonrası geri çekti. Dört kapının dördü de temiz geçti ve hiçbir yeni kırmızı doğmadı." )

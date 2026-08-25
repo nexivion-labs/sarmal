@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Yol Haritası paneli: iki düz ray ve dört travers — planın omurga hattı. -->
+  <path d="M8 3.2 V20.8"/>
+  <path d="M16 3.2 V20.8"/>
+  <path d="M6.4 6.6 H17.6"/>
+  <path d="M6.4 11.3 H17.6"/>
+  <path d="M6.4 16 H17.6"/>
+</svg>

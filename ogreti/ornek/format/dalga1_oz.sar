@@ -1,0 +1,41 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ornek/format/dalga1_oz.sar — 🌊 1. DALGA · ÖZ AİLESİ FORMATLARI (F8)
+//
+//   Founder incelemesi için ÖRNEK dosya: DurumKaydı · Raf · Kitaplık.
+//   DurumKaydı = "nerede kaldık" düğümü — rehydrate İNSAN-işi olmaktan çıkar,
+//   SİSTEM-işi olur: dönüşte sıradaki adıma tek tıkla düşülür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🧭 Öz ailesinin üç formatını kilitlemek: çalışmanın pusulası (DurumKaydı) ve bilginin evleri (Raf·Kitaplık).
+
+  ## Kapsam
+  📦 DurumKaydı oturum kapanışının fotoğrafıdır: tarih ve iki kenar (neredeyiz·sıradaki) zorunludur — bu kenarlar plan adım KODLARINA bağlanır, serbest metne değil; kilitler o oturumda doğan kararları, açıkİşler bekleyen hatırlatıcıları taşır. TEK dosya yaşar (durum/durum_devir.sar) — arşivi git geçmişidir, kopya dosya çoğaltılmaz. Kitaplık üst kümedir — kütüphane binası gibi: yol parametresi zorunludur çünkü klasör=ayna ilkesinde (MIM-3) adres kanundur. Raf onun içindeki bölmedir: kod+ne ile kimliklenir; içerik tipleri (Karar·Sınama·Etmen…) raflarda yaşar — Kitaplık ⊃ Raf ⊃ içerik, tersi izinsiz sarmadır.
+
+  ## Sonuç
+  ✅ Kabul: DurumKaydı'ndaki adım kodları grafta ÇÖZÜLÜR (öksüz atıf motor uyarısı); dosya motor-temiz geçer.
+|<--
+
+// ── DURUMKAYDI — imza: kod+tarih+neredeyiz+sıradaki zorunlu ─────────────────
+DurumKaydı( kod: ORN-DRM, tarih: "2026-07-06", oturum: 18,
+            neredeyiz: EKL-F7-A06,
+            sıradaki: EKL-F8-A01,
+            kilitler: [ MIM-1.1 ],
+            açıkİşler: [ HTR-ARAC-TASIMA, HTR-MODEL-HAVUZU ] ) {
+  özet: """
+        🌙 Gece vardiyası kapanışı: varlık ekseni kilidi (MIM-1.1) mühürlendi,
+        panel gerçek ağacı aynalıyor; format kanonları (F8) tasarıma alındı.
+        Dönüşte ilk iş: DurumKaydı formatının pilotu.
+        """
+}
+
+// ── KİTAPLIK — kütüphane (üst küme): imza kod+yol+ne · Raf sarar ────────────
+Kitaplık( kod: ORN-KTP-BILGI, yol: "bilgi/",
+          ne: "📚 bilgi kütüphanesi — karar·formül·sözlük·deney bu çatı altında" ) {
+
+  // ── RAF — kütüphane içi bölme: imza kod+ne · içerik tipleri sarar ─────────
+  Raf( kod: ORN-RAF-KARAR, ne: "⚖️ Karar rafı — her karar bir düğüm, adımlara besler kenarıyla bağlanır" )
+
+  Raf( kod: ORN-RAF-DENEY, ne: "🧪 Deney rafı — hipotez→ölçüm→çıkarım zinciri" )
+}

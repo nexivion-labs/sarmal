@@ -1,0 +1,137 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/sozluk_envanteri.sar — 📚 SÖZLÜK VARLIKLARI ENVANTERİ (KVR-A01)
+//
+//   Bu rapor, depodaki dört sözlük varlığını kapsam · biçim · güncellik
+//   ölçütleriyle tek çatıda haritalar; kavram rehberi rayının (plan/
+//   kavram_rehberi.sar) temel taşıdır. Bütün sayılar kaynak dosyalardan
+//   ölçülmüştür (2026-07-18 · oturum 57); tahmin yoktur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 📚 Sözlük Varlıkları Envanteri — KVR-A01 raporu
+
+  ## Amaç
+  🎯 Çözülen problem: teknik sözcük dağarcığı sınırlı bir kullanıcının
+  niyetini ajanın doğru terimlerle açığa çıkarabilmesi için, elimizdeki
+  sözlük birikiminin NE olduğunu bilmemiz gerekir — neyimiz var, hangi
+  biçimde, ne kadar güncel ve nerede boşluk var. Bu rapor o dört varlığı
+  ilk kez tek çatıda tanımlar; kavram haritası (KVR-A02) ve niyet diyaloğu
+  (KVR-A03) bu envanterin üzerine kurulacaktır.
+
+  ## Yöntem
+  Dört varlığın her dosyası açılıp yapısı programatik olarak sayılmıştır
+  (bölüm ve kavram adetleri JSON'dan, satır sayıları dosyadan); güncellik
+  her varlığın son içerik dokunuşuna git geçmişinden bakılarak
+  belirlenmiştir. Örnek aile analizi (menü · gezinme) kabul ölçütü gereği
+  kavram-kavram taranmıştır.
+
+  ## Varlık ① — KAVRAMLAR.md (kök · 126 satır · Markdown)
+  **Kapsam:** Sarmal'ın KENDİ jargonu — ağaç ve tren metaforlarının iki
+  yüzlü karşılıkları, K-96 görsel sözlüğü (şekil "bu ne?", renk "ne
+  durumda?" der), çekirdek kavramlar, sık tipler, 9 kenar tipi ve kod
+  önekleri. **Biçim:** insan-okur Markdown; başlıklı bölümler ve tablolar.
+  **Güncellik:** diri — son içerik dokunuşu 2026-07-12 (K-96 renk kanunu
+  turu). **Rehberdeki rolü:** kullanıcı-diyalog sözlüğü DEĞİLDİR; Sarmal'ı
+  öğrenen geliştiricinin ve ajanın iç-jargon haritasıdır. Kavram rehberi
+  bu dosyayı "Sarmal terimleri" katmanı olarak ayrı tutmalıdır.
+
+  ## Varlık ② — bilgi/flutter_sozluk/ (4 dosya · 488 satır · Markdown)
+  **Kapsam:** Flutter/Dart terimlerinin Türkçe karşılıkları üç konu
+  dosyasında: genel.md (295 satır — mimari · düzen · etkileşim · tema ·
+  durum yönetimi · navigasyon · veri · ağ · test · platform · i18n),
+  renkler.md (70 satır — renk sistemi) ve animasyonlar.md (97 satır —
+  Controller · Curve · Tween ailesi); dizin.md frontmatter'lı kapak
+  (BLG-SOZLUK). **Biçim:** düzyazı ve liste ağırlıklı Markdown — insan
+  okur, makine güvenilir biçimde OKUYAMAZ (ayrıştırılabilir şema yok).
+  **Güncellik:** içerik damgası 2026-07-01 (dizin frontmatter'ı "güncel"
+  der); sonraki dokunuşlar yalnız klasör-adı göçüdür. **Rehberdeki rolü:**
+  tek-stack (Flutter) köken sözlüğü; ③'ün Türkçe adlarının tarihsel
+  kaynağıdır. Dizindeki YP-1 notu ("alt-klasör ileride ANA'da ilan
+  edilecek") hâlâ askıdadır.
+
+  ## Varlık ③ — bilgi/tasarim_sozlugu/kayit.json (1389 satır · JSON kanon)
+  **Kapsam:** yedi üst bölümde ~257 kavram — onyuz 12 bölüm / 147 kavram
+  (yerlesim 30 · metin 5 · girdi 13 · düğme 8 · bilesen 26 · kaydirma 13
+  · varliklar 5 · asenkron 3 · etkilesim 11 · boyama 13 · animasyon-widget
+  14 · cupertino 6) + parametreler 18 + efektler 15 + animasyonlar 14 +
+  arkayuz 4 bölüm / 26 kavram + mantik 18 + matematik 19. Her kavram
+  Türkçe nötr ad → Flutter/React/SwiftUI (önyüz) ya da Python/Node/Go
+  (arkayüz) eşlemesi taşır; Flutter kanonik, diğerleri en yakın muadildir.
+  **Biçim:** makine-okur JSON — dört varlık içinde ayrıştırılabilir TEK
+  kanon budur. **Güncellik:** içerikçe en dirisi — PLN-2 D7 adlandırma
+  kararı (2026-07-02: buton→düğme, Container kutu→kapsayıcı) _meta'ya ve
+  gövdeye işlidir. **Rehberdeki rolü:** bağlam→kavram haritasının (KVR-A02)
+  doğal omurgası; bölüm yapısı zaten "hangi bağlamda hangi aile" sorusuna
+  yakındır.
+
+  ## Varlık ④ — oz/ceviri/ (3 dosya · 571 satır · karışık biçim)
+  - **dil-sozlugu.json (46 satır):** .sar SÖZDİZİMİNİN çeviri katmanı —
+    4 dil (tr/en/az/ar), 27 widget adı + 11 parametre anahtarı. Tasarım
+    kavramı içermez; ayrı bir görevi (çok-dil altyapısı) besler ve bu
+    rayın kapsamı dışında sağlıklıdır.
+  - **stack-eslemesi.json (279 satır):** ③'ün ESKİ İKİZİDİR — aynı _meta,
+    aynı beş üst bölüm (onyuz · parametreler · efektler · animasyonlar ·
+    arkayuz); ayrıntı aşağıdaki çift-kaynak bulgusundadır.
+  - **tasarim-terimleri.md (246 satır · 189 tablo satırı):** TR↔EN insan
+    tablosu, 11 bölüm (ölçü alma · yerleşim · bileşenler · etkileşim ·
+    görsel · renk · hareket · tipografi · durumlar · ölçü-birim · ortak
+    sözlük). Founder'ın tasarım konuşma dili için yazılmıştır; ③'te
+    OLMAYAN kavramlar içerir (aşağıda).
+  **Güncellik (② hariç üçü için ortak):** 2026-07-06'dan beri içerik
+  dokunuşu yoktur; o commit de yalnız K-51 taşımasıdır — gerçek içerik
+  daha eskidir.
+
+  ## ⚠️ Çift-kaynak bulgusu — ortak kavram-kimliği değerlendirmesi
+  stack-eslemesi.json ile tasarim_sozlugu/kayit.json AYNI sözlüğün iki
+  kopyasıdır ve içerik SAPMIŞTIR. Ölçülen sapma:
+  - **Adlandırma:** D7 kararı yalnız ③'e işlenmiştir. ④'te bölüm adı
+    "buton" (③'te "düğme"), kavram adları "kutu · animasyonlu-kutu ·
+    ios-buton" (③'te "kapsayıcı · animasyonlu-kapsayıcı · ios-düğme").
+  - **Kapsam:** ③'teki mantik (18) ve matematik (19) bölümleri ④'te HİÇ
+    yoktur; düğme ailesinin 8 kavramı ④'te eski tek "buton" biçiminde
+    kalmıştır.
+  Hüküm: aynı kavram iki dosyada farklı adla yaşamaktadır — ortak
+  kavram-kimliği ihtiyacı VARSAYIM değil ölçülmüş GERÇEKTİR. Ayrıca ③
+  (makine kanonu) ile tasarim-terimleri.md (insan tablosu) arasında da
+  tek-yönlü boşluk vardır: "kırıntı yolu (breadcrumb)", "sayfalama
+  (pagination)" ve "bağlam menüsü (context menu)" insan tablosunda var,
+  makine kanonunda YOKTUR. Öneri (Founder kapısı): ③ TEK kanon ilan
+  edilsin; stack-eslemesi.json ya emekli edilsin ya ③'ten üretilen bir
+  yansıma olsun (elle çift bakım sürdürülemez — bu rapor sapmanın
+  kanıtıdır); insan tablosundaki kanon-dışı kavramlar ③'e taşınsın.
+
+  ## Örnek aile analizi — kabul ölçütü gereği somut
+  **Menü ailesi (③'te VAR):** menü (MenuAnchor) · menü-düğme
+  (PopupMenuButton) · çekmece (Drawer) · segment-düğme. **EKSİK:** mega
+  menü (geniş panelli açılır menü — Founder'ın problem örneği!), bağlam
+  menüsü (sağ-tık menüsü; insan tablosunda var, kanonda yok), menü çubuğu
+  (MenuBar — pencere üstü yatay menü) ve basamaklı alt-menü
+  (SubmenuButton). Kullanıcı "üstte bir menü olsun" dediğinde ajanın
+  soracağı seçeneklerin YARISI bugün kanonda adsızdır.
+  **Gezinme ailesi (③'te VAR — güçlü):** üst-çubuk (AppBar) ·
+  alt-uygulama-çubuğu · gezinme-çekmecesi (NavigationDrawer) · alt-gezinme
+  (NavigationBar) · gezinme-rayı (NavigationRail) · sekme-çubuğu ·
+  sekme-görünüm · ios-gezinme. **EKSİK:** kırıntı yolu (breadcrumb) ve
+  sayfalama (pagination) — ikisi de web'in temel gezinme desenleridir;
+  kaynak Flutter kataloğu olduğu için web-kökenli desenler süzülmüştür.
+
+  ## Boşluk listesi (Founder'a sunulur — bu Adımda EKLENMEZ, K-102 sınır)
+  1. mega menü · 2. bağlam menüsü · 3. menü çubuğu · 4. basamaklı alt-menü
+  · 5. kırıntı yolu · 6. sayfalama. Ortak nitelik: hepsi web/masaüstü
+  kökenli desenlerdir; sözlük Flutter kataloğundan doğduğu için mobil
+  yanlıdır. Founder onaylarsa ekleme işi ayrı bir Adım açar.
+
+  ## Sonuç
+  ✅ Dört varlığın dördü de kapsam · biçim · güncellik ölçüleriyle kayıt
+  altındadır. Rehber mimarisi için hüküm: makine tarafının tek sağlıklı
+  omurgası ③'tür (kayit.json); ① Sarmal-jargon katmanı, ② tarihsel köken,
+  ④/tasarim-terimleri.md insan-yüz zenginleştiricisi olarak konumlanır.
+  KVR-A02 bağlam→kavram haritası ③'ün bölüm yapısı üzerine, çift-kaynak
+  hükmü Founder'dan çıktıktan sonra kurulmalıdır.
+|<--
+
+Çıkarım( kod: CKR-SOZLUK-ENVANTER, kaynak: "KVR-A01 envanteri (keşif oturum 56 · rapor oturum 57): dört sözlük varlığı kaynak dosyalardan programatik sayımla haritalandı",
+         referans: [ DIL-1.1, OGR-2.1 ],
+         ne: "📚 Envanter hükmü: makine tarafının tek sağlıklı omurgası bilgi/tasarim_sozlugu/kayit.json'dur (~257 kavram, D7 adları işli); KAVRAMLAR.md Sarmal-jargon katmanı, flutter_sozluk tarihsel köken, tasarim-terimleri.md insan-yüz zenginleştiricisidir. Çift-kaynak sapması ölçülmüştür: stack-eslemesi.json aynı sözlüğün eski ikizidir — D7 adlandırması işlenmemiş (buton/kutu), mantik ve matematik bölümleri yoktur; ortak kavram-kimliği ihtiyacı varsayım değil ölçülmüş gerçektir. Boşluk listesi altı kalemdir (mega menü · bağlam menüsü · menü çubuğu · basamaklı alt-menü · kırıntı yolu · sayfalama) ve ortak nitelikleri web/masaüstü kökenli desenler olmalarıdır — sözlük Flutter kataloğundan doğduğu için mobil yanlıdır",
+         kanıt: "bölüm ve kavram adetleri JSON'dan programatik sayıldı · sapma örnekleri kavram-kavram karşılaştırmayla ölçüldü (kapsayıcı↔kutu, düğme↔buton, animasyonlu-kapsayıcı↔animasyonlu-kutu, ios-düğme↔ios-buton) · güncellik git geçmişinden dosya-dosya bakıldı · menü ve gezinme aileleri tam listeyle belge gövdesindedir",
+         sınır: "yalnız envanter ve değerlendirme — hiçbir sözlüğe kavram eklenmemiş, hiçbir içerik değiştirilmemiştir; çift-kaynak hükmü (kayit.json tek kanon, stack-eslemesi emeklilik ya da üretilen-yansıma) ve boşluk kalemlerinin eklenmesi Founder onayı bekler" )

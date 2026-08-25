@@ -1,0 +1,55 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/kontrolcu_olcum_becerileri.sar — 📏 ÖLÇÜM DİSİPLİNİ BECERİSİ
+//
+//   Doğuş: 2026-07-27. O gün "beyan edilen ile ölçülen aynı değil" hastalığı
+//   sekiz ayrı biçimde ortaya çıktı. Bu kart o sekiz vakayı tek disiplinde toplar.
+//
+//   ⚠️ NEDEN TEK KART: İlk tasarımda dört ayrı kart yazıldı ve `sef` ile ölçüldü.
+//   Beceri bölmesinin karakter tavanı 4000'dir; dördü de aynı koşulla ateşlediği
+//   için bütçe doldu ve DÖRDÜ DE işaretçiye indi, yani okunmaz oldu. Ölçüm
+//   disiplinini anlatan kartın bütçe yüzünden okunmaması ironikti ve düzeltildi.
+//   Ders: kart yazmak yetmez, kartın prompta GERÇEKTEN girdiği ölçülmelidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-OLCUM-DISIPLINI, ne: "Beyan edileni ölçülmüş saymadan hüküm verme" )
+
+-->|
+  ## Amaç
+  🎯 Bir hükmü, onu doğrulayan ölçüm olmadan vermemek. Çözdüğü problem tek cümleyle
+  şudur: beyan edilen ile ölçülen aynı şey değildir ve arada kalan boşluk sessizce
+  yalan üretir.
+
+  ## Kapsam
+  Kapı hükmü, nöbet kanıtı, kaynak tekliği ve teslim doğrulaması. Dördü de aynı
+  hastalığın dört yüzüdür.
+
+  ## Sonuç
+  ✅ Kabul: verilen her sayısal hüküm hangi araçla ölçüldüğünü söyleyebilir; kurulan
+  her nöbet bozularak kanıtlanmıştır; her kavramın tek tanımı vardır.
+|<--
+
+Beceri( kod: BCR-OLCUM-DISIPLINI,
+        sağlar: YTN-OLCUM-DISIPLINI,
+        yığın: evrensel,
+        anlatır: [ "sahte-tam-yeşil", "doğrulanamayan-tanı-iddiası", "yinelenen-kod" ],
+        ne: "Hükmü ölçümle verir: kapıyı dört ayrı ölçümle okur, nöbeti bozarak kanıtlar, kaynağı tek yerde tutar ve gelen teslimin sayılarını kendi ölçümüyle karşılaştırır",
+        neZaman: "Bir turu, halkayı ya da Adımı kapatmadan önce; bir nöbet eklendiğinde; bir teslim değerlendirilirken; bir şeyi not ederken",
+        kurallar: [
+          "KAPI dört ölçümle okunur ve hiçbiri diğerinden türetilmez: tür denetimi, proje denetimi (hata ve uyarı AYRI), çekirdek süiti, yüzey süiti. Çıkış kodundan ya da karne satırından sıfır uyarı hükmü çıkmaz; uyarı varken de çıkış kodu sıfır döner. Süitin yeşil olması tür denetiminin yerine geçmez, çünkü çalışma ortamı tipleri sıyırarak koşar",
+          "KAPI ürünün taradığı kapsamda koşulur; ölçümün kapsamı ürünün kapsamından darsa kapı bir şey ölçmüyordur",
+          "NÖBET bozularak kanıtlanır: korunanı kasten boz, süit kırmızıya dönüyor mu ölç, geri koy. Bütün çağrı yerleri ayrı ayrı bozulur; fikstür boş küme üstünde koşuyorsa iddia hiçbir şey ölçmez",
+          "KAYNAK tektir: not ve hafıza içerik kopyalamaz, çözülebilir adres taşır. Kopyalanan içerik kaynak değişince sessizce bayatlar; adres kırılınca motor haber verir. Ürüne göçen tasarım kaynağı arşive gider, yerinde bırakılmaz",
+          "TESLİM kendi ölçümüyle doğrulanır; üreticinin özeti hükmün yerine geçmez. Ölçüm aracının çıktısı da doğru okunur — todo işaretli sınamayı başarısız saymak ile filtreli çıktıdan uyarı elemek aynı sınıf hatadır",
+          "NÖBET GERÇEK VERİ BİÇİMİYLE kalibre edilir. Kısaltılmış ya da uydurma fikstürle kurulan nöbet yeşil kalır fakat ürünü korumaz; sınama, üründe gerçekten görülen boyut ve biçimle koşulmalıdır",
+          "ÖLÇÜMÜN KOŞULLARI da ölçülür. Beklenmedik bir sonuç çıkınca önce ölçümün koşullarını sorgula, sonra sonucu: koşu beklenenden uzun sürdüyse yükü ölç, uzun ömürlü bir süreç eski kodu bellekte tutuyor olabilir, taze alt-süreç ile bellekteki modül farklı cevap verir",
+          "TESLİMİN KAPSAMI da ölçülür. Bir işleme sahnelenirken yollar tek tek verilir ve sahnelenen küme işlemeden önce okunur; çalışma ağacında birden çok üreticinin işi bir aradaysa bu ölçüm ihmal edilemez, çünkü mesaj taşıdığını sandığından fazlasını taşır",
+          "Ölçülemeyen için 'ölçemedim' yazılır; tahmin ölçüm gibi sunulmaz"
+        ],
+        kabul: "Kapanış, tür denetimi, filtresiz proje denetimi, çekirdek süiti ve yüzey süitini ayrı komut ve ayrı sayılarla bildirir; yeni nöbet koruması geçici bozma deneyinde kırmızıya döner",
+        örnek: "Kapanış bildirimi dört ayrı satırdır: tür denetimi 0 hata · proje denetimi 0 hata / 0 uyarı / 319 bilgi · çekirdek 872/867/4/1 · yüzey 174/174. Dördü de kendi komutuyla koşulmuştur.",
+        antiDesen: "2026-07-27 ve 28'de on bir kez yapıldı. Beş örnek: bir tur tür denetimi hiç koşulmadan mühürlendi ve mühürlenen kodda derlenmeyen dosya çıktı; kapı varlık kökünde koşulup temiz denildi, oysa ürünün taradığı kapsamda yirmi üç uyarı vardı; bir nöbet dört çağrı yerinden yalnız birini koruyordu ve kurulmuş sayılıyordu; bir kalabalık nöbeti on iki karakterlik uydurma adlarla kalibre edildiği için yeşil kalıyordu, oysa gerçek adlar kırk dokuz karakterdi ve ürün bozuktu; bir işleme kendini belge kaydı ilan etti, oysa içinde başka bir üreticinin o an uçuşta olan altı yüz on satırlık ürün kodu vardı.",
+        uygular: ANY-KONTROLCU )
+
+Tetikleyici( kod: TTK-OLCUM-DISIPLINI, tetikler: BCR-OLCUM-DISIPLINI,
+             koşul: adım.durum == geliştirmede,
+             ne: "İş başlarken ölçüm disiplini koniye düşer — hüküm ölçümsüz verilmez" )

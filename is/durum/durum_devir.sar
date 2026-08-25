@@ -1,0 +1,36 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// is/durum/durum_devir.sar — 🧭 DURUM KAYDI (TEK KAYNAK · DIL-1.2 adıyla)
+//
+//   "Nerede kaldık" grafı: neredeyiz ve sıradaki kenarları plan Adım kodlarına
+//   bağlanır. TEK dosya yaşar ve üzerine yazılır; tarihçe git geçmişindedir.
+//
+//   DOĞUM NOTU (2026-08-25): bu kayıt açık deponun sıfır geçmişli doğumuyla taze
+//   doğmuştur. Atölye deposunun devir tarihçesi bu depoya taşınmamıştır; o
+//   tarihçe atölyede kendi kaydıyla yaşar. Oturum sayacı burada birden başlar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-25", oturum: 1,
+            neredeyiz: GIT-DOGUMU-SAHNE-TAM-YESIL,
+            sıradaki: CATI-TASINMASI-VE-MAGAZA-YUKLEMESI,
+            kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
+            açıkİşler: [ GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI, EKL-F6-A01-MAGAZA-YUKLEMESI, OSS-A05-KATKI-SOZLESMESI, RFM-ONCELIK-IKI-EKSEN-REFORMU, KPS-KAPSAM-BORCU-YAYIN-SONRASI, KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI ] ) {
+  özet: """
+        🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
+        aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
+        ile özün mekanik dilimi, kancalar, felsefe, öğrenme kartları ile
+        kontrolcü anayasası, şablon ile örnek korpusu, bilgi ile ayıklanmış
+        fikirler, iş kümesi, ürün kümesi (çekirdek motor, eklenti ve araçlar),
+        öğretim rafı ve düğüm düğüm redakte edilmiş hatırlatıcı kaydı. Aynı
+        gece doğuş komutu çalışma alanı kademesini sormayı öğrendi, örnek
+        rafına dört varlıklı yaşanmış çatı girdi ve yayın belgelerinin iskelet
+        kararı Founder onayı için bekliyor durumunda yazıldı. Doğum kapıları:
+        çekirdek süiti bin yüz iki, eklenti süiti beş yüz altmış sekiz sınamanın
+        tamamını geçti; depo denetimi sıfır hata ve sıfır uyarı verdi; kapalı
+        ürün adı, kişi adı ve eski yol kalıntısı el ölçümüyle sıfırdır.
+
+        SIRADAKİ: depo çatının altına taşınır, atölye deposu arşive dönüşür ve
+        yürütücü ile editör yolları yeni köke bağlanır; ardından eklenti
+        mağazaya yüklenir ve lansman takvimi işler. Depo lansman gününe kadar
+        özel kalır; ilk uzak gönderim Founder'ın canlı açılışıdır.
+        """
+}

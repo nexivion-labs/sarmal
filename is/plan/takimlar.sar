@@ -1,0 +1,78 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/takimlar.sar — 🧰 SARMAL'IN KENDİ TEKNOLOJİ İLANLARI (Founder 2026-07-12)
+//
+//   Doğuş: katmansız-teknoloji bekçisi kendi raylarımızda ~40 bilgi basıyordu;
+//   Founder teşhisi: "iç raylara kullandığımız teknoloji TypeScript değil mi?"
+//   — DOĞRU. İç raylar yapay değil GERÇEK teknoloji işidir: çekirdek motor ve
+//   eklenti TypeScript'tir, yasa/plan kaynakları Sarmal dilidir (dogfood).
+//   Bu dosya o gerçeği İLAN eder; ray Katman'ları buraya bağlanır (MIM-1.4:
+//   teknolojisiz yüzey doğmaz — kendi bahçemizde de).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Teknoloji( kod: TEK-TYPESCRIPT, ne: "tek dil — çekirdek motor + eklenti kaynağı (Türkçe adlandırmalı .ts)" )
+Teknoloji( kod: TEK-NODE, ne: "koşu ortamı — CLI, MCP sunucusu, node:test süiti" )
+Teknoloji( kod: TEK-VSCODE-API, ne: "eklenti yüzeyi — VS Code uzantı API'si (panel · tanı · dekorasyon)" )
+Teknoloji( kod: TEK-ESBUILD, ne: "paketleyici — eklenti build zinciri (renk-uret → esbuild → vsix)" )
+Teknoloji( kod: TEK-SARMAL, ne: "Sarmal dili (.sar) — yasa · sözleşme · plan kaynakları bu dille yazılır (dogfood: dil kendini tarif eder)" )
+
+Takım( kod: TAKIM-CEKIRDEK, ne: "çekirdek motor takımı — cekirdek/src (ayrıştırıcı · doğrulayıcı · denetçi · ŞEF)",
+       bağımlı: [ TEK-TYPESCRIPT, TEK-NODE, TEK-SARMAL ] )
+Takım( kod: TAKIM-EKLENTI, ne: "eklenti takımı — eklenti/src (panel · boyacı · giydir · tamamlama)",
+       bağımlı: [ TEK-TYPESCRIPT, TEK-VSCODE-API, TEK-ESBUILD ] )
+
+// ── TEKNOLOJİ DÖRTLÜSÜ — Model · MCP · Araç · Ortam İLK canlı kullanımları ──
+// (RF-T6-A01 dogfood turu · 2026-07-18 · Founder S1 hükmü: "lig kadrosu Model
+// tipiyle, MCP'ler MCP, ortamlar Ortam"). Hepsi yaşanmış gerçeğin ilanıdır;
+// ham kaynaklar: cekirdek/src/kopru/lig.ts LIG_MODELLER (canlı ping 2026-07-10)
+// · nitelik/lig_tur2_defteri.sar (üç-model canlı koşu 2026-07-15) ·
+// cekirdek/src/mcp.ts SUNUCU · dersler.sar DRS-CALGICI-MODEL-KOTA.
+
+Model( kod: MDL-DEEPSEEK, kimlik: "deepseek-ai/deepseek-v4-pro",
+  ne: "çalgıcı ligi üyesi — tur-2'de timeout'suz tamamladı (oturum-28 dersi maxTokens 4096 + curl -m 180 ile); plan hakemliğinde en somut ölçülebilirlik önerilerinin kaynağı" )
+Model( kod: MDL-GLM, kimlik: "z-ai/glm-5.2",
+  ne: "çalgıcı ligi üyesi — tur-2 sentezinde en yüksek genel puanı verdi (6/10); DeepSeek'le dayanaksız-kural beyan formatı önerisinde uzlaştı" )
+Model( kod: MDL-NEMOTRON, kimlik: "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+  ne: "çalgıcı ligi üyesi — üçüncü model ailesi (Llama/Nemotron); kadro çeşitliliği bilinçli: üç ayrı aile, model-bazlı kota dolduğunda kardeş modele geçilir (DRS-CALGICI-MODEL-KOTA dersi)" )
+
+MCP( kod: MCP-SARMAL-SUNUCU,
+  ne: "sarmal MCP sunucusu (cekirdek/src/mcp.ts · stdio · 0.10.0 · 17 araç: sef·kavram·basla·dogus·graf·gezin·denetle·kurallar·siniflama·denetle-proje·iskelet·etki·bul·bicimle·prizma·durum-guncelle·karne) — global kurulu: Claude Code her projede kullanır; Codex'e de kuruldu (oturum 40, Sol/IDA testi: dış YZ Sarmal'a dosyaya dokunmadan MCP'den danışır)" )
+
+Araç( kod: ARC-CURL,
+  ne: "NVIDIA köprüsünün senkron taşıyıcısı (STR-3.1 sıfır-npm ilkesi: Node yerel curl + execFileSync; cekirdek/src/kopru/nvidia.ts) — oturum-28 timeout dersi -m 180 bayrağını kalıcılaştırdı" )
+Araç( kod: ARC-VSCE,
+  ne: "eklenti paketleyicisi (@vscode/vsce · 'vsce package --no-dependencies') — her sürüm mühründe kullanılır; son gerçek koşular: 0.9.79 · 0.9.85 · 0.9.87 vsix paketleri Founder makinesine kuruldu" )
+
+// ── SÜRÜM DENETİMİ ARAÇ AİLESİ (RAY3-GTW-A01 · 2026-08-22) ──────────────────
+//
+//   NEDEN AİLE OLARAK İLAN EDİLİR. Araç kapısı fail-closed çalışır ve izin
+//   matrisinde karşılığı olmayan her çağrıyı reddeder; buna karşılık kapının
+//   tanıdığı araç evreninde tek bir sürüm denetimi aracı yoktu. Sonuç şuydu:
+//   bir Etmen depoya dokunmak istediğinde kapı ona DOĞRU cevabı veremiyordu,
+//   çünkü reddin sebebi izin yokluğu değil aracın hiç tanınmamasıydı. Bu ilan
+//   o boşluğu kapatır; kapı artık her sürüm denetimi çağrısına gerekçeli cevap
+//   verebilir.
+//
+//   KİP AYRIMI BİLİNÇLİDİR. Okuma ile yazma aynı izin değildir, dolayısıyla
+//   durum ile fark okuma `oku`, dal açma ile işleme `yaz` kipinde yaşar.
+//   Gönderme ise ayrı bir kip hak eder ve `çağır` kipindedir, çünkü uzak depoya
+//   giden bir değişiklik geri alınamaz; geri alınamayan eylemin izni, geri
+//   alınabilir yazmanın izniyle aynı hücrede duramaz.
+//
+//   ⚖️ SINIR (STR-3). Bu ilan yalnız araç adlarını, kiplerini ve şemasını
+//   kapsar. Hangi Etmenin hangi araca hangi kiple erişeceğini söyleyen MATRİS
+//   HÜCRELERİ açık tarafta DOLDURULMAZ, çünkü ayarlanmış yönlendirme kapalı
+//   üründe yaşar. Bunun görünen sonucu şudur ve bir kusur değil tasarımın
+//   kendisidir: hücre doldurulmadığı sürece bu ailenin her aracı reddedilir.
+Araç( kod: ARC-GIT-DURUM, komut: "git status --porcelain",
+  ne: "çalışma ağacının durumunu okur — hangi dosya değişmiş, hangisi sahnelenmiş; kip: oku (hiçbir şeyi değiştirmez)" )
+Araç( kod: ARC-GIT-FARK, komut: "git diff",
+  ne: "değişikliğin kendisini okur — sahnelenmiş ve sahnelenmemiş fark; kip: oku (hiçbir şeyi değiştirmez)" )
+Araç( kod: ARC-GIT-DAL, komut: "git switch -c",
+  ne: "yeni dal açar — çalışma ağacının bağlamını değiştirir; kip: yaz (yereldir ve geri alınabilir)" )
+Araç( kod: ARC-GIT-ISLE, komut: "git commit",
+  ne: "değişikliği depoya işler — yerel tarihe kalıcı kayıt düşer; kip: yaz (yereldir ve geri alınabilir)" )
+Araç( kod: ARC-GIT-GONDER, komut: "git push",
+  ne: "yerel işlemeleri uzak depoya gönderir — GERİ ALINAMAZ, çünkü kayıt başkalarının görüş alanına girer; kip: çağır (kendi kipi vardır ve yazmayla aynı hücrede duramaz)" )
+
+Ortam( kod: ORT-NVIDIA-CANLI,
+  ne: "canlı model ortamı — fiilî uç integrate.api.nvidia.com (OpenAI-uyumlu, nvidia.ts:22); build.nvidia.com anahtar/katalog portalıdır (Sol 5. denetim düzeltmesi: önceki metin portalı uç sanıyordu); anahtar .env'de (gitignore'lu, rotasyon kalemi bakım rayında açık); kota MODEL-BAZLI dolar (hesap-geneli değil — lig bu yüzden çok-modelli); SEF-L3-A29 tool-round ve lig tur-2 bu ortamda koştu" )

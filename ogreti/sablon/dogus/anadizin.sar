@@ -1,0 +1,44 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// {{AD}}_anadizin.sar — 🌱 PROJE GİRİŞ DOSYASI (MIM-3 · doğuş paketi üretti: {{TARIH}})
+//
+//   Bu dosya projenin ANAYASASIDIR: mimariyi (Kitaplık/Raf → klasör ağacı) ve
+//   teknolojileri İLAN eder; makine ne yazarsan ONU takip eder. Plan buraya
+//   GÖMÜLMEZ — plan/ rafında ayrı .sar dosyalarında yaşar (MIM-1).
+//
+//   🧭 İLK İŞİN: plan/ilk_plan.sar'daki ADM-KURULUS-01 Adımını koş — mimari
+//   diyalog orada tarif edilir. Yardım: MCP `başla` (rehber + şablonlar),
+//   `kurallar` (yürürlük), `siniflama` (tip kanonu), `denetle` (drift aynası).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🎯 Bu bölüm projenin çözdüğü problemi tek paragrafla anlatmalıdır. Doğuş
+  paketi bu metni bilerek yönerge olarak bırakır: amacı projeyi kuran yazar —
+  "ne yapıyoruz ve hangi acıyı dindiriyoruz" sorusunun cevabını buraya yaz.
+
+  ## Kapsam
+  📦 Neyi kapsadığını VE neyi bilinçli olarak kapsamadığını yaz — kapsam dışı
+  bırakılanlar drift'e karşı en güçlü kalkandır.
+
+  ## Sonuç
+  ✅ Ne olduğunda bu proje "bitti/başarılı" sayılır — sınanabilir kabul
+  ölçütleriyle yaz ("çalışıyor" tek başına ölçüt değildir).
+|<--
+
+// REJİM — zorunlu beyandır, sessiz varsayılan yoktur (YAS-1). `katı` normdur
+// (Katman→AltKatman→Adım tam zincir, AltKatman departman taşır); `esnek`
+// bilinçli istisnadır ve gerekçesi yanına yazılır.
+Proje( kod: PRJ-{{KOD}}, ad: "{{AD}}", rejim: katı,
+  ne: "Bu alan projenin tek cümlelik tanımıdır — doğuş paketinin bıraktığı bu yönergeyi kendi cümlenle değiştir" ) {
+
+  // ① TEKNOLOJİ — her şeyin abisi: Flutter seçilmeden ekran doğmaz (ORK-2.4).
+  //    Teknoloji( kod: FLUTTER, ne: "önyüz çerçevesi" ) biçiminde ilan et;
+  //    sonra Takım( kod: TAKIM-ONYUZ, bağımlı: [ FLUTTER ] ) ile yığına bağla.
+  //    Plan Katmanları Takım'a bağlanır. İlansız kod KIRIK REFERANSTIR (DIL-1.4).
+
+  // ② MİMARİ — klasör ağacı. Doğuş paketi üç temel rafı hazır ilan eder;
+  //    teknoloji seçilince kendi Kitaplık/Raf'larını (onyuz/ arkayuz/ taban/) ekle.
+  Raf( kod: RAF-PLAN,    yol: "plan/",    ne: "Plan ağacı — Faz→Blok→Katman→AltKatman→Adım ayrı .sar dosyalarında (MIM-1)" )
+  Raf( kod: RAF-DURUM,   yol: "durum/",   ne: "Durum devri — oturum sonu 'nerede kaldık' kaydı (kaynak-gerçek repo'da)" )
+  Raf( kod: RAF-OGRENME, yol: "ogrenme/", ne: "Bellek→Beceri döngüsü — dersler ve geribildirim hasadı burada birikir" )
+}

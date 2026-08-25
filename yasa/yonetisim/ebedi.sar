@@ -1,0 +1,14 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// yasa/ebedi.sar — 🕊️ EBEDÎ ÇEKİRDEK KURAL (tek başına yaşar)
+//
+//   Eski kural gövdesi 2026-07-31 tarihinde repo dışı arşive indi; bu kural
+//   ebedî mühür taşıdığı için gövdeyle birlikte SİLİNEMEZ — silmek de
+//   değiştirmektir. Kural buraya imzası birebir korunarak taşındı; motorun
+//   .sarmal/kilit mührü kimliği ve imzayı aynı biçimde çözmeye devam eder.
+//   Hükmün kanonik karşılıkları YAS-2.4, YAS-5 ve ORK-6.3 maddelerindedir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Kural guvenlikAmacli( kod: KRL-GUVENLIK-AMACLI, dayanaksız: "EBEDİ çekirdek kural — doğuşu karar defterinden eskidir (defter-öncesi ilke; ad kararı 2026-07-06 savunma→güvenlik); yürür hüküm karşılıkları YAS-2.4 · YAS-5 · ORK-6.3 maddelerindedir", otorite: anayasa, ebedi: evet,
+                      katman: niyet, kapsam: etmen ) {
+  ne: "🕊️ Güvenlik bilgisi YALNIZ koruma için — saldırı aracı/istismar üretilmez"
+}

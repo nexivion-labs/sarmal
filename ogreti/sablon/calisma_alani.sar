@@ -1,0 +1,53 @@
+// 🏡 ÇALIŞMAALANI (BAHÇE) ŞABLONU — <varlık>_anadizin.sar (KÖK · MIM-3). Çok-uygulama, TEK-AUTH.
+//    ⚠️ ÇalışmaAlanı = BAHÇE: tek taban · TEK-AUTH · ortak yasa; İÇİNDE çok Uygulama (ağaç) paralel.
+//       Her Uygulama KENDİ Teknoloji/Takım'ını taşır (FARKLI stack serbest) — hepsi ORTAK
+//       taban/kimlik'e `çağır`/`bağımlı` ile bağlanır (10 teknoloji × 10 uygulama → TEK auth · MIM-1.1).
+//    NE ZAMAN: ileride başka app/teknoloji gelecekse VEYA ortak auth gerekiyorsa. Tek app ise → proje.sar.
+//       ⚖️ UZUN-VADELİ ŞEKİL kapsayıcıyı belirler, bugünkü tek teslimat DEĞİL (IDA dersi 2026-07-14).
+//    ⚠️ ANADİZİN = MİMARİ (Kitaplık/Raf/yol). PLAN (Faz→Blok→Katman→AltKatman→Adım) BURAYA GÖMÜLMEZ —
+//       plan/ altında AYRI .sar'da yaşar (bekçi: anadizin-plan-karışması).
+//    Doldur: <...> yer-tutucularını gerçek değerle değiştir; kodları kendi kısaltmanla adlandır.
+
+-->|
+  ## Amaç
+  <bu bahçe hangi ürün ailesini yetiştirir — tek paragraf>
+  ## Kapsam
+  <hangi Uygulamalar · ortak taban ne sağlar (tek-auth · ortak sözleşmeler) · neyi KAPSAMAZ>
+  ## Sonuç
+  <kabul: bahçe ne olduğunda "kurulu" sayılır — ortak taban + ≥1 Uygulama ayakta>
+|<--
+ÇalışmaAlanı( kod: CAL-Ornek, ad: "ornek-bahce",
+              ne: "<tek cümle: bu bahçe ne yetiştirir — tek-auth tabanı üstünde çok app>" ) {
+
+  // ① ORTAK GÖVDE (taban) — TÜM ağaçların paylaştığı zemin: TEK-AUTH burada YAŞAR.
+  //    Uygulamalar buna `bağımlı: [ SZL-AUTH ]` / `çağır` ile bağlanır — kimlik TEK noktada (MIM-1.1).
+  Kitaplık( kod: KTP-TABAN, yol: "taban/", ne: "ortak gövde — tüm Uygulamaların paylaştığı zemin" ) {
+    Raf( kod: RAF-KIMLIK, yol: "kimlik/", ne: "TEK-AUTH tabanı — ortak kimlik/SZL-AUTH; tüm app'ler çağırır" )
+    Raf( kod: RAF-SOZLESME, yol: "sozlesmeler/", ne: "ortak Sözleşmeler — app'ler-arası + FE↔BE ortak dil" )
+  }
+
+  // ② UYGULAMA-1 (ilk ağaç) — KENDİ Teknoloji/Takım'ını taşır; ortak tabana bağlanır.
+  //    (Her Uygulama de kendi belge bloğunu taşır — Amaç/Kapsam/Sonuç zorunlu.)
+  -->|
+    ## Amaç
+    <bu app neyi çözer — tek paragraf>
+    ## Kapsam
+    <neyi kapsar · neyi KAPSAMAZ>
+    ## Sonuç
+    <kabul: ne olduğunda "bitti" sayılır>
+  |<--
+  Uygulama( kod: UYG-Tanitim, ad: "tanitim", ne: "<ilk app: ne yapar>" ) {
+    Teknoloji( kod: NEXTJS, ne: "önyüz+arkayüz çerçevesi (bu app'in stack'i)" )
+    Takım( kod: TAKIM-Tanitim, ne: "tanıtım app yığını", bağımlı: [ NEXTJS ] )
+    Kitaplık( kod: KTP-TANITIM, yol: "tanitim/", ne: "tanıtım app ağacı (kendi klasörü)" )
+    // Auth: bu app KENDİ IdP'sini KURMAZ — ortak tabana bağlanır (bağımlı: [ SZL-AUTH ]).
+  }
+
+  // ③ UYGULAMA-2 (gelecek ağaç · FARKLI teknoloji SERBEST) — bahçenin kazancı:
+  //    Uygulama( kod: UYG-Akademi, ad: "akademi", ne: "<ikinci app>" ) {
+  //      Teknoloji( kod: ASTRO, ne: "farklı stack — sorun değil, ayrı ağaç" )
+  //      Kitaplık( kod: KTP-AKADEMI, yol: "akademi/", ne: "akademi app ağacı" )
+  //    }   // AYNI taban/kimlik'e bağlanır → tek-auth korunur, sıfır yeniden-düzen.
+
+  Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan ağacı — her Uygulamanın planı Faz→Blok→Katman→AltKatman→Adım AYRI .sar'da (MIM-1)" )
+}

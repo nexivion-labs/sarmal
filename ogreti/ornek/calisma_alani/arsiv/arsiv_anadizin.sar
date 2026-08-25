@@ -1,0 +1,19 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// arsiv/arsiv_anadizin.sar — 🧊 ARŞİV (eski deponun dondurulmuş hâli)
+//   Salt okunur tarih; yeni iş almaz, yalnız kayıt taşır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  ## Amaç
+  🧊 Açık araç ile kapalı ürün ayrı depolara doğmadan önceki tek deponun tarihini saklamak.
+  ## Kapsam
+  📦 Dondurulmuş kayıtlar. Kapsamaz: canlı iş; arşiv plan taşımaz ve yeni Adım almaz.
+  ## Sonuç
+  ✅ Kabul: arşiv salt okunur kalır ve dondurma kararı kayıtta yaşar.
+|<--
+
+Proje( kod: PRJ-ORNEK-ARSIV, ad: "arsiv", rejim: esnek, görünürlük: gizli,
+  ne: "Eski deponun dondurulmuş, salt okunur arşivi — esnek rejim, çünkü canlı plan zinciri taşımaz" ) {
+  Teknoloji( kod: TEK-ORNEK-ARSIV-GIT, ne: "Salt okunur git deposu" )
+  Raf( kod: RAF-ORNEK-ARSIV-KAYIT, yol: "kayit/", ne: "dondurma kararının rafı" )
+}

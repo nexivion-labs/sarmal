@@ -1,0 +1,86 @@
+// ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25): bu sahne kopyasında iç mutfak defterine (kod öneki kanonsuz) giden atıf düşürülmüştür;
+//     atıfların aslı atölye deposunda tarihiyle durur, açık depo çözülmeyen kimlik taşımaz. ═══
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/knt_a06_ilk_temas.sar — 🎯 KNT-A06 İLK GERÇEK TEMAS (2026-07-17 · oturum 53)
+//
+//   Bu proje 335+ Adım tamamladı, SIFIR gerçek koşu yaptı. KNT-A06 tezi ilk kez
+//   gerçeğe değdirdi — ve gerçek İKİ ŞEY söyledi. Bu defter o teması kaydeder.
+//   Sicil KALICI: ~/Documents/Development/projects/knt-a06-fikstur/
+//   (A04 dersi: fikstür silinince sicil ölür — bu kez SİLİNMEDİ).
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🎯 KNT-A06 — tezin gerçeklikle ilk teması: iki somut "henüz değil"
+
+  ## Ne yapıldı
+  Kalıcı fikstürde (knt-a06-fikstur/plan.sar · ADM-TOPLA: iki sayı topla + test)
+  `sarmal sef-dongu ADM-TOPLA <fikstür> --gercek --iz` iki modelle koşuldu.
+  Beklenen akış: model dosya yazar → test yazar → test-koş çağırır → çıkış kodu
+  okur → kapatır. GERÇEKLEŞEN: mühür BLOCKED, iki ayrı kök nedenle.
+
+  ## BULGU-1 · `test-koş` araç adı WIRE-SAFE DEĞİL (deterministik · KRİTİK)
+  Model: deepseek-ai/deepseek-v4-pro. Endpoint araç şemasını REDDETTİ:
+    "Validation: Function at index 2 has an invalid name: \"test-koş\".
+     Only a-z, A-Z, 0-9, underscores, and dashes are allowed."
+  Index 2 = üçüncü katalog aracı (dosya-oku · dosya-yaz · **test-koş**). Kök:
+  `ş` (U+015F) OpenAI-uyumlu function-calling `name` alanında yasak. dosya-oku /
+  dosya-yaz ASCII olduğu için geçti; test-koş — TEZİN MEKANİK UCU — düştü.
+  ⚔️ TASARIM GERİLİMİ: Türkçe-öncelik (CLAUDE.md §3) ↔ wire ASCII zorunluluğu.
+  Araç KİMLİĞİ Türkçe kalabilir ama WIRE-ADI ASCII olmalı (iç↔dış eşleme).
+  ⚠️ DOKUNAKLI: bu ad KNT-A01/A03/A04/A05'in HEPSİNDE kullanıldı — sicilde
+  `araç:"test-koş"` aranıyor (sicildeKanitVar · dongu.ts:426). Wire-ad değişirse
+  sicil eşleşmesi de kayar → tek dilimlik dikkatli iş (ad kimliği ≠ wire adı).
+
+  ## BULGU-2 · llama GERÇEK tool_call ÜRETMEDİ (model yeterliliği · ölçülmeli)
+  Model: meta/llama-3.3-70b-instruct (varsayılan). Katalog kabul edildi (llama
+  `ş`'yi reddetmedi — gateway'ler geçersiz şemayı farklı ele alıyor), AMA model
+  araç çağrısını GERÇEK tool_call olarak DEĞİL, gerekçe metninin içine gömülü
+  JSON olarak döndürdü: gerekçe = 'LLM JSON döndürmedi: {"name":"dosya-yaz",...}'.
+  Köprü bunu tool_call diye parse edemedi → dosya yazılmadı → araçTurları BOŞ.
+  Diskte yalnız topla.ts kaldı (bir turda sızmış), topla.test.js hiç doğmadı.
+  → Plan KNT-A06'nın "EN RİSKLİ VARSAYIM" notu KANITLANDI: "test-koş'un LLM'ce
+  kullanılabilirliği kanıtsız." Şimdi ölçüldü: varsayılan model 4-6 turluk
+  araç akışını YÜRÜTEMEDİ. Suç bölünebilir (KNT-A03 kabulü kasten LLM'siz):
+  ARAÇ sağlam (A03 fikstürlü kanıtladı), MODEL zayıf. İkisi ayrıştı.
+
+  ## Hüküm — bu BAŞARISIZLIK DEĞİL, İLK ÖLÇÜM
+  🎯 335 Adım boyunca sorulmayan soru ("model gerçekten yazıp koşuyor mu?") ilk
+  kez SOMUT cevap aldı: henüz değil — ama dosya:satır, model-adı, hata-metni
+  düzeyinde somut bir "henüz değil". Tezin ("LLM dönüştürür") ilk gerçek ölçümü:
+  BULGU-1 mekanik (ucuz düzeltme), BULGU-2 tezin "LLM YAPAR" yarısının kendisi.
+  Bu rayın VAROLUŞ SEBEBİ tam buydu — sahte yeşili gerçek ölçümle değiştirmek.
+
+  ## Sıradaki (Founder kapısı — kod A05 sicil eşleşmesine dokunur)
+  ① BULGU-1: araç wire-adı ASCII'ye (test-koş → test_kos/test-kos) + iç↔dış
+     eşleme; sicil/matris/sicildeKanitVar hizalanır. Ayrı dilim (A04↔A05 arası
+     "model yeterlilik kapısı" olarak plan öngörmüştü).
+  ② BULGU-2: model seçimi K1'e girer — hangi model tool_call üretiyor? (lig işi:
+     deepseek-v4 · glm-5.2 · nemotron — hangisi araç akışını yürütür ölçülür).
+     NVIDIA_MODEL env hazır (sarmal.ts:62).
+  Sicil kanıtı: knt-a06-fikstur/deneme-1 (llama) · deneme-2 (deepseek) — trace'ler
+  KALICI, iki modelin de HAM prompt+yanıtı diskte.
+
+  ## DENEME-3 (aynı gün, oturum 54) — İKİ BULGU KAPANDI, MÜHÜR YEŞİL
+  KNT-A13 (wire-adı: test-koş tele `test_kos` çıkar, iç kimlik değişmez) +
+  NVIDIA_MODEL=deepseek-ai/deepseek-v4-pro (BULGU-2 cevabı: tool_call üreten model)
+  ile aynı fikstürde üçüncü koşu → **mühür VERIFIED — projenin İLK sicil-tabanlı
+  yeşili.** Üretici sicili planın umduğu akışın TAMAMI: yaz → test-yaz →
+  koş(çıkışKodu:1 — İLK KOŞU DÜŞTÜ) → DÜZELT → koş(çıkışKodu:0). "Düzelt iki araç
+  turu ister" (maxTur=6 gerekçesi) canlı doğrulandı. Denetçi: oku×2 + koş(0),
+  yazmadı. Sicilde araç adı İÇ KİMLİK (`test-koş`) — A13 tasarımı görünmez çalıştı.
+  Disk: topla.ts sha256:e3cf9712… · topla.test.ts sha256:44760440…; Founder
+  oturumunda ELLE `node --test` koşumu çıkış-kodu 0. İz: deneme-3/.sarmal/trace/
+  kosu-2026-07-17T03-16-19-547Z.jsonl (2 satır, ikisi de deepseek — stub yok).
+|<--
+
+Çıkarım( kod: CKR-KNT-A06-ILK-TEMAS, kaynak: "KNT-A06 gerçek koşu (2026-07-17 · oturum 53): kalıcı fikstürde iki model (llama-3.3-70b · deepseek-v4-pro) sef-dongu --gercek — mühür BLOCKED, iki kök neden",
+         referans: [ YAS-2, OGR-2.2, OGR-4 ],
+         ne: "🎯 Tezin gerçeklikle ilk teması iki somut 'henüz değil' verdi: BULGU-1 (deterministik/kritik) — `test-koş` araç adındaki `ş` (U+015F) wire-safe değil, deepseek endpoint'i şemayı reddetti ('Only a-z A-Z 0-9 _ - allowed', index 2); Türkçe-öncelik ↔ wire-ASCII gerilimi, iç kimlik≠wire-ad çözümü; ad A01/A03/A04/A05'te + sicilde kullanılıyor, tek-dilim dikkat. BULGU-2 (model yeterliliği) — llama gerçek tool_call üretmedi, araç çağrısını gerekçe metnine gömülü JSON döndürdü, köprü parse edemedi, araçTurları boş; planın 'EN RİSKLİ VARSAYIM' notu kanıtlandı, suç bölündü (araç sağlam/model zayıf). Başarısızlık DEĞİL — 335 Adım'ın sormadığı sorunun ilk somut ölçümü",
+         kanıt: "trace knt-a06-fikstur/deneme-1 (llama: 4 satır, gerekçe='LLM JSON döndürmedi: {name:dosya-yaz...}', araçTuru 0) · deneme-2 (deepseek: 'Validation: Function at index 2 invalid name test-koş') · fikstür KALICI (A04 sicil-kaybı dersi uygulandı) · katalog nvidia.ts test-koş adı · sicildeKanitVar dongu.ts:426 araç:'test-koş' arıyor",
+         sınır: "yalnız TESPİT + sicil — düzeltme YOK (Founder kapısı): wire-ad ASCII'ye çevrimi A05 sicil eşleşmesine dokunur, ayrı dilim; model seçimi lig işi. KNT-A06 geliştirmede kalır — sahte yeşile boyanmaz (rayın hükmü kendi Adım'ına da uygulanır)" )
+
+Çıkarım( kod: CKR-KNT-A06-VERIFIED, kaynak: "KNT-A06 deneme-3 (2026-07-17 · oturum 54): KNT-A13 wire-adı + NVIDIA_MODEL=deepseek-ai/deepseek-v4-pro ile kalıcı fikstürde üçüncü koşu",
+         referans: [ CKR-KNT-A06-ILK-TEMAS ],
+         ne: "🏁 İKİ BULGU KAPANDI, MÜHÜR VERIFIED — projenin İLK sicil-tabanlı yeşili. BULGU-1 çözümü (A13: tele test_kos, içeride test-koş) canlı sınavı geçti: deneme-2'de kataloğu geri çeviren deepseek endpoint'i şemayı KABUL etti; sicilde araç adı iç kimlikle kaldı, sicildeKanitVar dokunulmadan eşleşti. BULGU-2 cevabı: deepseek-v4-pro 6 araç-turluk akışı UÇTAN UCA yürüttü — üstelik planın en uzun senaryosuyla: ilk test koşusu DÜŞTÜ (çıkışKodu:1), model düzeltti, yeniden koştu (çıkışKodu:0). 'Düzelt iki araç turu ister' (ÜRETİM_MAX_TUR=6 gerekçesi) teoriden canlıya geçti. Denetçi rolü matris sınırında kaldı (oku+koş, yazım yok). Tez ('LLM dönüştürür — yazar, sınar, düzeltir') ilk kez ölçülü olarak DOĞRULANDI: tek Adım, tek koşu ölçeğinde",
+         kanıt: "iz deneme-3/.sarmal/trace/kosu-2026-07-17T03-16-19-547Z.jsonl (2 satır, model:deepseek-ai/deepseek-v4-pro — stub yok) · üretici araçTurları: dosya-yaz✅×2 → test-koş✅:1 → dosya-yaz✅ → test-koş✅:0 · denetçi: dosya-oku✅×2 + test-koş✅:0 · disk topla.ts sha256:e3cf9712 / topla.test.ts sha256:44760440 · Founder oturumunda elle `node --test` çıkış-kodu 0 · mühür hesabı dongu.ts:797 yalnız sicildeKanitVar okur (A05)",
+         sınır: "kanıtlanan MEKANİZMA, ölçek değil: tek Adım, tek koşu, tek model — otonom çok-Adım akışı (ADM-SIT-OTONOM) ve model ligi (deepseek/glm/nemotron karşılaştırması) bu kaydın DIŞI; llama'nın tool_call üretememesi bulgusu geçerliliğini korur (varsayılan model seçimi hâlâ açık iş)" )

@@ -1,0 +1,12 @@
+// 🎯 ADIM ŞABLONU — KONİ-dolu (yalın Adım = kör drift; çalgıcı tahmin eder).
+//    Bekçi: konisiz-adım — durum:geliştirmede'ye alınca koni ŞART
+//    (görev·kabul·üretir·bağımlı·referans). Adım plan ağacının yaprağıdır.
+
+Adım( kod: ADM-X, ad: "<kısa-ad>",
+      görev: "<NE yapılacak — çalgıcının tahmin etmesine gerek kalmayacak DETAY>",
+      kabul: [ "<kabul ölçütü 1>", "<ölçüt 2>" ],
+      referans: [ MOK-X ],           // tasarım/mockup gerçeği — KOPYALAMA, referans ver
+      üretir: EKR-X,                  // bir ürün doğuruyorsa (ekran/mekanizma/uç)
+      bağımlı: [ TAKIM-ONYUZ ],       // teknoloji + önceki Adımlar
+      sınır: "<neyi KAPSAMAZ>",
+      durum: beklemede )

@@ -1,0 +1,151 @@
+#!/bin/sh
+# ═══════════════════════════════════════════════════════════════════════════
+# kanca/pre-commit — 🚪 SARMAL COMMIT-KAPISI (HTR-COMMIT-KAPISI)
+#
+#   ÇEKİRDEK (evrensel · şimdi): `sarmal denetle` = drift-gate. Hata → BLOK,
+#   uyarı → GEÇ (denetle exit: hata>0 ise 4, yoksa 0 — satır 383). Drift TARİHE GİRMEZ.
+#   ARIZA-GÜVENLİ: node/motor yoksa ATLAR (commit'i kilitlemez).
+#   Bilinçli atlamak için:  git commit --no-verify
+#
+#   PROJE-ÖZEL KURALLAR (branch·commit-msg·gizli-tarama·iki-kademe) İLERİDE:
+#   kapı, varsa `kanca/proje-kurallari.sh`'i çalıştırır — içi sonra dolar
+#   (Founder: "git kuralları proje-özel tanımlanabilir olmalı"). Kapı ince kalır.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# — ⓪ DEPO KÖKÜ VE VARLIK: yol tahmin edilmez, ÖLÇÜLÜR (GOC-A03) —
+#   Bu kanca eskiden hem `core.hooksPath` ayarında hem kendi gövdesinde mutlak ve
+#   ada gömülü yollar taşıyordu. Kırılganlığı sessizliğindeydi: klasörün adı ya da
+#   yeri değiştiği an git kancayı hiç bulamaz, hiçbir hata basmaz ve bütün kapılar
+#   sessizce açık kalır. Artık depo kökü git'in kendisine sorulur ve açık aracın
+#   gövdesi motoru taşıyan dizin aranarak bulunur; dolayısıyla varlık klasörünün
+#   adı değişse de, gövde kendi deposunun köküne çıksa da kapı yerini bulur.
+KOK=$(git rev-parse --show-toplevel 2>/dev/null) \
+  || { echo "🚪 sarmal-kapı: depo kökü okunamadı → atlandı"; exit 0; }
+cd "$KOK" || { echo "🚪 sarmal-kapı: depo köküne inilemedi → atlandı"; exit 0; }
+
+VARLIK=""
+for aday in . */; do
+  aday="${aday%/}"
+  [ -f "$aday/urun/cekirdek/src/sarmal.ts" ] && { VARLIK="$aday"; break; }
+done
+[ -n "$VARLIK" ] || { echo "🚪 sarmal-kapı: motor bulunamadı → atlandı"; exit 0; }
+MOTOR="$VARLIK/urun/cekirdek/src/sarmal.ts"
+# Sahnelenen yollar depo köküne göredir; gövde kökte yaşıyorsa önek boş kalır.
+[ "$VARLIK" = "." ] && ONEK="" || ONEK="$VARLIK/"
+
+# — arıza-güvenli: önkoşul yoksa sessizce atla (geliştiriciyi kilitleme) —
+command -v node >/dev/null 2>&1 || { echo "🚪 sarmal-kapı: node yok → atlandı"; exit 0; }
+
+# — ① ÇEKİRDEK drift-gate: açık araç temiz mi? (aktif varlık; kapalı ürün ileride) —
+if ! node "$MOTOR" denetle "$VARLIK" >/tmp/sarmal-kapi.log 2>&1; then
+  echo "✖ sarmal-kapı: DRİFT — commit bloklandı (hata var):"
+  echo "─────────────────────────────────────────────"
+  tail -15 /tmp/sarmal-kapi.log
+  echo "─────────────────────────────────────────────"
+  echo "  → düzelt, ya da bilinçliyse:  git commit --no-verify"
+  exit 1
+fi
+
+# — ①·b YÖNERGE İKİZİ NÖBETİ (KYN-MTR-A02 · YUZ-1.2) —
+#   Kökteki CLAUDE.md ile AGENTS.md aynı yönergenin iki adıdır. Biri değişip öteki
+#   kalırsa tek yönerge ikiye bölünür ve iki ajan iki ayrı kurala uyar; nöbet bu
+#   ayrışmayı işleme anında yakalar. Nöbet dosyaları EŞİTLEMEZ, çünkü hangi yüzün
+#   doğru olduğunu yalnız insan bilir; kapı ayrışan satırları adresiyle basar ve durur.
+#
+#   ⚠️ KURULUM TUZAĞI: CLAUDE.md ile AGENTS.md kullanıcının ~/.gitignore_global
+#   dosyasında yok sayılmıştır; depoya ancak `git add -f CLAUDE.md AGENTS.md` ile
+#   girerler. Sıradan `git add` sessizce hiçbir şey yapar görünür ve dosya izlenmeden
+#   kalır. İkiz listesine üçüncü bir dosya eklenirse aynı zorlama gerekecektir.
+#
+#   NEDEN `--sahnelenmiş` (kapının en kritik ayrıntısı · denetçi bulgusu 2026-08-08):
+#   Kapı çalışma ağacını değil, deponun SAHNELENMİŞ yüzünü ölçer. Gerekçe yaşanmış
+#   bir kaçaktır: iki ikize de aynı satır eklenir, fakat zorlama her dosya için ayrı
+#   gerektiğinden yalnız biri sahnelenir. Çalışma ağacı ölçülseydi iki dosya ÖZDEŞ
+#   görünürdü, kapı yeşil verirdi ve depoya ayrışmış bir ikiz girerdi; üstelik çalışma
+#   ağacı özdeş kaldığı sürece nöbet bir daha hiç uyanmazdı. Kapının koruduğu şey
+#   deponun tarihidir, bu yüzden sorması gereken soru "bu işleme depoya ne yazacak?"
+#   sorusudur. Çalışma ağacı yüzü ölçüsüz kalmaz: `npm test` içindeki canlı nöbet ile
+#   bayraksız `sarmal yonerge-ikizi` komutu o yüzü ölçmeyi sürdürür. İki kip iki ayrı
+#   sorudur ve biri ötekinin yerine geçmez.
+#
+#   İkiz listesi TEK YERDE yaşar: cekirdek/src/yonerge-ikizi.ts → YONERGE_IKIZLERI.
+#   Bu kanca ikinci bir liste tutmaz; yeni dosya eklemek o dizide tek satırlık iştir.
+if ! node "$MOTOR" yonerge-ikizi . --sahnelenmiş >/tmp/sarmal-kapi-ikiz.log 2>&1; then
+  echo "✖ sarmal-kapı: YÖNERGE İKİZİ AYRIŞTI (sahnelenmiş yüz) — commit bloklandı:"
+  echo "─────────────────────────────────────────────"
+  cat /tmp/sarmal-kapi-ikiz.log
+  echo "─────────────────────────────────────────────"
+  echo "  → ayrışma DEPOYA yazılacak yüzdedir; diskteki iki dosya özdeş görünebilir"
+  echo "  → iki dosyayı ELLE eşitle (motor hangisinin doğru olduğunu bilemez, kopyalamaz)"
+  echo "  → sonra İKİSİNİ BİRDEN sahnele:  git add -f CLAUDE.md AGENTS.md"
+  echo "  → ya da bilinçliyse:  git commit --no-verify"
+  exit 1
+fi
+
+# — ①·c KÖK YÜZEYİ NÖBETİ (KYN-MTR-A04 · MIM-3 · STR-3) —
+#   Deponun dünyaya bakan yüzü (tanıtım, katkı rehberi, güvenlik, davranış kuralı,
+#   yürütücü yönergesi) çalışma alanının kökünde, iki varlığın da ÜSTÜNDE yaşar ve
+#   bu yüzden varlık denetiminin görüş alanına hiç girmez. Nöbet o dosyaların
+#   metnindeki kod atıflarını açık aracın kimlik evrenine vurur ve karşılıksız
+#   kalanları adresiyle bildirir. Ölçüm ayrı kapıda durur, çünkü kök bulgusunu bir
+#   varlığın karnesine yazmak iki varlığın sonucunu birbirine karıştırırdı.
+#
+#   NEDEN BLOKLAMIYOR. Kapı yalnız HATA düzeyinde durur: ilan edilmiş bir yüzeyin
+#   diskte bulunamaması ya da atıf evreninin okunamaması. Karşılıksız atıf UYARI
+#   konuşur ve işlemeyi kesmez, çünkü bulgunun onarımı metni yazan insanın
+#   kararıdır; motor kök yüzeyinin içeriğini kendiliğinden tazelemez. Uyarılar
+#   yine de basılır, dolayısıyla bayat atıf her işlemede göz önündedir.
+if ! node "$MOTOR" kok-yuzeyi . >/tmp/sarmal-kapi-kok.log 2>&1; then
+  echo "✖ sarmal-kapı: KÖK YÜZEYİ NÖBETİ HATA VERDİ — commit bloklandı:"
+  echo "─────────────────────────────────────────────"
+  cat /tmp/sarmal-kapi-kok.log
+  echo "─────────────────────────────────────────────"
+  echo "  → ilan ile disk ayrışmış: eksik yüzeyi yerine koy ya da kaydını listeden düşür"
+  echo "  → liste TEK YERDE yaşar: cekirdek/src/kok-yuzeyi.ts → KOK_YUZEYLERI"
+  echo "  → ya da bilinçliyse:  git commit --no-verify"
+  exit 1
+fi
+grep -q "⚠️" /tmp/sarmal-kapi-kok.log && {
+  echo "⚠️ sarmal-kapı: kök yüzeyinde karşılıksız atıf var (commit ENGELLENMEDİ):"
+  cat /tmp/sarmal-kapi-kok.log
+}
+
+# — ② TEST-KAPISI (EKL-F9-A11): motor KODU ya da MÜHÜRLENEN KAYNAK değiştiyse testler koşar —
+#   Plan/durum commit'lerini yavaşlatmaz; yalnız sınamaların gerçekten baktığı yollarda ateşler.
+#   ARIZA-GÜVENLİ: npm yoksa atlar. Kırmızı test = commit BLOK (sahte-yeşil tarihe girmez).
+#
+#   MÜHÜRLENEN KAYNAK NEDEN BURADA (2026-08-06 · yaşanmış kusur): Türetilmiş yüz nöbetleri
+#   kanon dosyalarının, tanı sicilinin ve sınıflama kayıtlarının sha256 özetini tutar. O gün
+#   `oz/siniflama/ortu.json` bir cümlelik düzeltme aldı, özeti değişti ve nöbet kırıldı; kapı
+#   yalnız `.ts` yollarına baktığı için sessiz kaldı ve kırmızı sınama depoya gönderildi.
+if git diff --cached --name-only | grep -qE "^${ONEK}(urun/cekirdek/(src|sinama)/.*\.ts|yasa/kanon/.*\.sar|oz/siniflama/.*\.json)$"; then
+  echo "🚪 sarmal-kapı: çekirdek kodu ya da mühürlenen kaynak değişti → test kapısı…"
+  if command -v npm >/dev/null 2>&1; then
+    if ! (cd "$VARLIK/urun/cekirdek" && npm test >/tmp/sarmal-kapi-test.log 2>&1); then
+      echo "✖ sarmal-kapı: ÇEKİRDEK TESTLERİ KIRMIZI — commit bloklandı:"
+      grep -E "✖|failing" /tmp/sarmal-kapi-test.log | head -10
+      echo "  → düzelt, ya da bilinçliyse:  git commit --no-verify"
+      exit 1
+    fi
+    echo "🚪✅ sarmal-kapı: çekirdek testleri yeşil"
+  fi
+fi
+if git diff --cached --name-only | grep -qE "^${ONEK}urun/eklenti/(src|sinama)/.*\.ts$"; then
+  echo "🚪 sarmal-kapı: eklenti kodu değişti → test kapısı…"
+  if command -v npm >/dev/null 2>&1; then
+    if ! (cd "$VARLIK/urun/eklenti" && npm test >/tmp/sarmal-kapi-test-ekl.log 2>&1); then
+      echo "✖ sarmal-kapı: EKLENTİ TESTLERİ KIRMIZI — commit bloklandı:"
+      grep -E "✖|failing" /tmp/sarmal-kapi-test-ekl.log | head -10
+      echo "  → düzelt, ya da bilinçliyse:  git commit --no-verify"
+      exit 1
+    fi
+    echo "🚪✅ sarmal-kapı: eklenti testleri yeşil"
+  fi
+fi
+
+# — ③ PROJE-ÖZEL KURALLAR (opsiyonel · içi İLERİDE dolar) —
+KURAL="$VARLIK/kanca/proje-kurallari.sh"
+[ -x "$KURAL" ] && { "$KURAL" || exit 1; }
+
+echo "🚪✅ sarmal-kapı: drift yok — commit geçti"
+exit 0

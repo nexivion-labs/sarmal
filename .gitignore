@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+
+# Loglar / geçici
+*.log
+*.tmp
+
+# Bağımlılıklar ve derleme çıktıları (üretilir — kaynak değil)
+node_modules/
+dist/
+dist-sinama/
+build/
+*.vsix
+urun/eklenti/.vscode-test/
+urun/eklenti/src/gomulu-kanon.ts
+urun/eklenti/medya/simgeler/uretilmis/
+
+# Ortam sırları
+.env
+.env.local
+
+# İskeletçi üretimi (demo çıktısı — kaynak değil)
+ogreti/ornek/uretilen/
+
+# ŞEF çalışma zamanı denetim noktası (üretilen)
+.sarmal/
+
+# Editör kasa ayarları (tercih — kaynak değil)
+.obsidian/
+
+# ── KÜRESEL YOK SAYMA KURALININ İSTİSNASI ─────────────────────────────────────
+# Kullanıcı düzeyindeki küresel gitignore `.sar` dosyalarını ve yürütücü
+# yönergelerini yok sayabilir; burada `.sar` KAYNAK KODUDUR. Depo kuralı
+# küreselden önceliklidir, bu yüzden istisna burada yaşar.
+!*.sar
+!CLAUDE.md
+!AGENTS.md

@@ -1,0 +1,149 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/motor_diksiyon_reformu.sar — 📢 MOTOR DİKSİYON REFORMU (Founder 2026-07-17)
+//
+//   Founder'ın sözüyle doğuş: "Motor uyarı metinleri de açık, anlaşılır ve
+//   güzel bir üslupla; sözdizimi maddeleri bu kurallara uygun bir şekilde
+//   reformize edilecek." DIL-1.1 hükmünün (niyet dili insan dilidir) motor sesine
+//   uygulanmasıdır; OGR-2.1 (tanı kullanıcıya sade Türkçe ve düzeltme yönüyle konuşur) ile kardeştir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski MDR-FAZ sarmalayıcısı çözüldü — zaman bağı
+// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+//   ne: "🌀 Motor tanı ve hata metinlerinin insan dili standardına taşınma dönemi"
+
+-->|
+  ## Amaç
+  🎯 Motorun kullanıcıya seslenen bütün metinlerini — tanı mesajları, hata
+  metinleri, öneri satırları ve sözdizim uyarıları — açık, dilbilgisi
+  kurallarına uyan, ne olduğunu / neden sorun olduğunu / nasıl düzeltileceğini
+  söyleyen bir Türkçeyle yazmak. Çözülen problem: kimi tanı metinleri telgraf
+  dilinde ya da proje jargonuyla yazılmıştır; yeni bir kullanıcı mesajı okuyup
+  ne yapacağını çıkaramamaktadır.
+
+  ## Kapsam
+  📦 Kapsar: çekirdek motorun ürettiği bütün kullanıcı-yüzlü metinler
+  (sözdizim çözümleyici, doğrulayıcı, denetçi, proje denetimi, kural motoru)
+  ve bu metinlere bağlı test sabitleri. Kapsamaz: karar defteri ve plan
+  metinleri (onlar DIL-1.1 hükmünün kendi BORÇ deseniyle dönüşür), eklenti arayüz
+  metinleri (ayrı tur ister).
+
+  ## Sonuç
+  ✅ Kabul: envanterdeki her tanı metni ya standarda uygun bulunmuş ya da
+  reform edilmiştir; her mesaj üç soruyu yanıtlar (ne gözlendi, neden sorun,
+  nasıl düzeltilir); tam süit ve iki denetim yeşildir.
+|<--
+
+Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle", uygular: ORK-7,
+  ne: "🪵 Tanı metni envanteri → reform ölçütü ve şablonu → dosya dosya uygulama → test hizası" ) {
+
+  Katman( kod: KAT-MDR-ENVANTER, kullanır: TAKIM-CEKIRDEK, ad: "envanter ve ölçüt",
+    ne: "🌿 Önce ölçmek: hangi metin zaten iyi, hangisi reform istiyor" ) {
+
+    AltKatman( kod: ALT-MDR-OLCUT, departman: planlama, ad: "ölçüt ve envanter",
+      ne: "🍃 Reform ölçütünün tanımlandığı ve tanı metni envanterinin çıkarıldığı konu modülü" ) {
+
+      Adım( kod: MDR-A01, durum: tamamlandı, bağımlı: [], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-MDR-ENVANTER ],
+        ne:    "📋 Tanı metni envanterini çıkarmak ve reform ölçütünü tanımlamak. Motorun ürettiği bütün kullanıcı-yüzlü metinler merkezi tanı kaydından (tani-sicili.ts) ve kaynak taramasından dökülecek, her metin DIL-1.1 ile OGR-2.1 ölçütüyle değerlendirilecek ve reform şablonu tasarlanacaktır" ) {
+        görev: "tani-sicili.ts'teki bütün tanı kayıtlarını ve kaynak dosyalardaki serbest hata metinlerini listele; her metni üç soruyla değerlendir (ne gözlendi, neden sorun, nasıl düzeltilir — üçünü de söylüyor mu); dördüncü ölçütü uygula: kural-kodu atıfları (SD-XX · K-XX · UR-XX) tek başına açıklama SAYILMAZ — kod bir adrestir, açıklama değildir; tanı metni kodun hükmünü bir cümleyle açar, kod derin okuma isteyene adres olarak yanında kalır (Founder ilkesi: 'geliştirici de ajan da aynı şeyi anlar, kimse tahminle iş yapmaz, niyet tek ve net olur'); metinleri 'uygun' ve 'reform gerekli' olarak sınıflandır; reform şablonunu tasarla (gözlem cümlesi + gerekçe + ↳ öneri satırı deseni — mevcut iyi örnekler şablonun çekirdeğidir); envanter raporunu nitelik/ defterine yaz ve Founder onayına sun"
+        kabul: [
+          "Envanter, motorun ürettiği bütün kullanıcı-yüzlü metinleri kapsıyor (tanı kaydı + kaynak taraması karşılaştırılarak doğrulanmış)",
+          "Her metnin değerlendirme sonucu (uygun / reform gerekli) gerekçesiyle kayıtlı",
+          "Çıplak kural-kodu atfı taşıyan her metin 'reform gerekli' sınıfına girmiştir (kodun hükmü açılmadan kod tek başına kalamaz)",
+          "Reform şablonu Founder tarafından onaylanmıştır"
+        ]
+        sınır: "Yalnız envanter, ölçüt ve şablon — bu Adımda hiçbir metin değiştirilmez"
+        koşu:  "2026-07-17 · KAPANIŞ: 90 sicil kodunun tamamı üretim noktasına bağlanmıştır (bulunamayan yoktur; ham çıkarım bir okuma görevine yaptırılmış, değerlendirme bu oturumda yazılmıştır). Sınıflandırma: 67 uygun · 23 reform gerekli, dört kusur sınıfında (R1 karanlık iç-kod atfı · R2 açıklamasız yabancı terim · R3 tarihçe sızıntısı · R4 üçlü eksiği). Ayrı bulgu: rbac.ts'nin üç tanı kodu sicil dışındadır. Founder üç kararı vermiştir: şablon onaylanmıştır (gözlem + hükümlü-kod gerekçe + uygulanabilir öneri); defter-dışı kısayollar (B2=A, K6, K2) mesajdan kaldırılıp kod yorumuna iner; sicil bulgusu MDR-A02 kapsamına alınmıştır. Rapor: nitelik/motor_tani_envanteri.sar. Kabul 4/4 karşılanmıştır"
+      }
+    }
+  }
+
+  Katman( kod: KAT-MDR-UYGULAMA, kullanır: TAKIM-CEKIRDEK, ad: "reform uygulaması",
+    ne: "🌿 Onaylı şablonun metinlere uygulanması — dosya dosya, testleriyle birlikte" ) {
+
+    AltKatman( kod: ALT-MDR-METIN, departman: kodlama, ad: "metin reformu",
+      ne: "🍃 Sözdizim, doğrulama, denetçi ve kural motoru metinlerinin onaylı şablona çekildiği konu modülü" ) {
+
+      Adım( kod: MDR-A02, durum: tamamlandı, bağımlı: [ MDR-A01 ], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-MDR-ENVANTER ],
+        ne:    "✍️ Sözdizim ve doğrulama metinlerini reform etmek. Sözdizim çözümleyicinin ve doğrulayıcının 'reform gerekli' işaretli metinleri onaylı şablona göre yeniden yazılacaktır" ) {
+        görev: "Envanterde 'reform gerekli' çıkan sözdizim ve doğrulama metinlerini şablona göre yeniden yaz; her metnin tanı kodunu ve tetiklenme koşulunu değiştirmeden yalnız sözünü düzelt; metne bağlı test sabitlerini aynı değişiklikte güncelle; her dosyayı kendi commit'inde kapat (STR-2.1 dosya-dosya ilerleme)"
+        kabul: [
+          "Reform edilen her metin üç soruyu yanıtlıyor (ne gözlendi, neden sorun, nasıl düzeltilir)",
+          "Hiçbir tanının kodu, düzeyi ya da tetiklenme koşulu değişmemiştir (davranış regresyonu yok — tam süit yeşil)",
+          "Proje denetimi sıfır hatayla geçiyor"
+        ]
+        sınır: "Tanı davranışı (hangi durumda tetiklenir, hangi düzeyde) bu Adımın dışıdır — yalnız metnin sözü değişir"
+        koşu:  "2026-07-17 · KAPANIŞ (üç commit, dosya-dosya · STR-2.1): ① belirtec.ts 'Beklenmeyen karakter' üçlüye tamamlandı (1861fec) ② dogrulayici.ts üç metin şablona çekildi — sahipsiz-belge öneri kazandı, bloklu-capa iç-jargonu açıldı ('ŞEF kararı BLOCKED' → 'orkestratör koşusu bloklu mühürledi'), ham-renk plan-adresi yoruma indi; metne bağlı tek assert kararlı söze güncellendi (eca114e) ③ rbac.ts üç tanı kodu kod-literal biçimine çevrilip sicile eklendi — nöbet testi artık üçünü de görmektedir (6a2a752; Founder kararı ③'ün uygulanışı). Tanı kodları ve tetiklenme koşulları değişmemiştir; süit her commit'te 701/701, denetim sıfır hata. Ayrıştırıcı serbest metinleri envanterde zaten uygun bulunmuştu — bu Adımın kapsamındaki bütün 'reform gerekli' kalemler kapanmıştır"
+      }
+
+      Adım( kod: MDR-A03, durum: tamamlandı, bağımlı: [ MDR-A01 ], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-MDR-ENVANTER ],
+        ne:    "✍️ Denetçi ve proje denetimi metinlerini reform etmek. Denetçinin, proje düzeyi denetimin ve kural motorunun 'reform gerekli' işaretli metinleri onaylı şablona göre yeniden yazılacaktır" ) {
+        görev: "Envanterde 'reform gerekli' çıkan denetçi, proje denetimi ve kural motoru metinlerini şablona göre yeniden yaz; MDR-A02 ile aynı disiplin uygulanır: tanı kodu ve koşul sabit, yalnız söz değişir, testler aynı değişiklikte güncellenir, her dosya kendi commit'inde"
+        kabul: [
+          "Reform edilen her metin üç soruyu yanıtlıyor",
+          "Tanı kodları ve tetiklenme koşulları değişmemiştir (tam süit yeşil)",
+          "İki denetim (Sarmal + kapalı ürün) sıfır hatayla geçiyor"
+        ]
+        sınır: "MDR-A02 ile aynı: davranış sabittir, yalnız diksiyon değişir"
+        koşu:  "2026-07-17 · KAPANIŞ (iki commit): ① denetci.ts on üç metin (791788c) — B2=A ve RF-T6-A05 kısayolları mesajdan çıktı, fazsız-blok önerisindeki karar tarihçesi kaldırıldı, Prose/dangling/FE-BE Türkçeleşti, yedi iç felsefe ve kural kodu hükümleriyle anılır oldu, mecazlar teknik karşılık kazandı ② kuralci.ts beş metin + dongu.ts bir metin (aa6fbf9) — K6/K2 defter-dışı numaraları kaldırıldı, CUE unification yerine daraltma hükmü yazıldı, ADM-DGS-12 çıktı, 'Adım bulunamadı' üçlüye tamamlandı. Envanterin 23 reform kaleminin TAMAMI kapanmıştır (A02: 4 + rbac sicili · A03: 19). Tanı kodları ve tetiklenme koşulları değişmemiştir; süit her commit'te 701/701, denetim sıfır hata. Not: reform yalnız BİR testi kırdı (bloklu-capa anahtar sözü) — mevcut test bağlarının büyük oranda kod-filtreli olduğunun ilk kanıtı; kesin ölçüm MDR-A04'ün işidir"
+      }
+    }
+
+    AltKatman( kod: ALT-MDR-TEST, departman: sınama, ad: "test hizası",
+      ne: "🍃 Tanı metni bağının metinden koda taşındığı konu modülü — söz düzeltmeleri test kırmaz" ) {
+
+      Adım( kod: MDR-A04, üretir: [ KOD-TANI-SICILI ], durum: tamamlandı, bağımlı: [ MDR-A02, MDR-A03 ], referans: [ DIL-1.1, OGR-2.1 ],
+        ne:    "🧪 Test bağını metinden koda taşımak. Tanı metnine dizgi eşleşmesiyle bağlanan testler, tanı KODUNA bağlanacak; böylece gelecekteki söz düzeltmeleri test kırmadan yapılabilecektir" ) {
+        görev: "Süitte tanı metnine dizgi eşleşmesiyle bağlanan testleri bul; bunları tanı koduna (ya da yapısal alana) bağlayacak biçimde yeniden yaz; metnin kendisini doğrulayan az sayıda nöbet testini bilinçli olarak metin-bağlı bırak ve bu tercihi gerekçesiyle işaretle"
+        kabul: [
+          "Tanı metni değişikliği, nöbet testleri dışında hiçbir testi kırmıyor (deneme değişikliğiyle kanıtlanmış)",
+          "Metin-bağlı bırakılan her test gerekçe yorumu taşıyor",
+          "Tam süit yeşil"
+        ]
+        sınır: "Test kapsamı daraltılmaz — bağ türü değişir, doğrulanan davranış değişmez"
+        koşu:  "2026-07-17 · KAPANIŞ: 92 mesaj-dokunan assert okuma göreviyle döküldü ve sınıflandı — 56 kod-çıpalı · 32 bilinçli nöbet (metin sözleşmesi) · 1 kırılgan · 3 belirsiz. Kırılgan bağ (kosuyaz geçersiz-enum) koda çıpalandı; iki belirsiz negatif muhafız (denetçi halef zinciri ile felsefe atfı negatif muhafızları) tanı kodlarına çıpalandı; sekiz test dosyası başına sınıflandırma referans notu kondu (gerekçe kaydı: nitelik/motor_tani_envanteri.sar MDR-A04 bölümü). DENEME KANITI: A02/A03 reformu 23 mesajı değiştirdi ve süit yalnız BİR testte kırıldı (bloklu-capa anahtar sözü — aynı değişiklikte güncellendi); bağların sağlamlığı canlı ölçümle doğrulanmıştır. Süit 701/701. Kabul 3/3 karşılanmıştır — MOTOR DİKSİYON REFORMU RAYI (A01-A04) TAMAMLANMIŞTIR"
+      }
+    }
+
+    AltKatman( kod: ALT-MDR-HIJYEN, departman: sınama, ad: "iç-kod hijyeni ve kapı",
+      ne: "🍃 Karar/plan numaralarının kullanıcı-yüzünden tam çıkarıldığı ve sızıntı kapısının kurulduğu konu modülü (Founder 2026-07-21 revizyonu)" ) {
+
+      Adım( kod: MDR-A05, durum: tamamlandı, bağımlı: [ MDR-A04 ], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-SNM-HIJYEN, KOD-SNM-ANADIZIN ],
+        ne:    "🧼 İç kod numaralarını kullanıcı-yüzünden TAM çıkarmak ve sızıntıyı bir kapıyla kalıcı önlemek. Founder revizyonu (2026-07-21): karar/plan numaraları (K-nn · SD-nn · RAY-n · RF-T… · BKM-…) kullanıcının gördüğü hiçbir tanı metninde yaşamaz — numara içeride kalır, kullanıcı akademik cümle görür. Bu, MDR-A01'in 'kod adres olarak metnin yanında kalır' duruşunu revize eder: Rust/Python/TypeScript kendi kural numaralarını dışarı sızdırmaz, biz de sızdırmayız" ) {
+        görev: "Motor tanı alanlarındaki (mesaj/oneri) tüm iç kod, İngilizce terim ve yol-haritası notu sızıntılarını akademik cümleyle değiştir — tanı kodu ve tetiklenme koşulu sabit kalır, yalnız söz değişir; sızıntıyı yapısal imkânsız kılan bir metin-hijyeni kapısı yaz (kaynak stringlerini tarar, yasak jeton bulursa test kırmızıya düşer); metne bağlı test sabitlerini aynı değişiklikte güncelle"
+        kabul: [
+          "Motor tanı alanlarında sıfır iç-kod sızıntısı (hijyen kapısının MOTOR katmanı zorlanır ve yeşildir)",
+          "Reform edilen her metin akademik, jargonsuz ve üç soruyu yanıtlıyor (ne gözlendi, neden sorun, nasıl düzeltilir)",
+          "Tanı davranışı değişmedi (tam süit yeşil · iki denetim sıfır hata)"
+        ]
+        sınır: "Eklenti arayüz metinleri (hover · otomatik-tamamlama · panel · gömülü kanon) bu Adımın DIŞINDA — MDR-A06'nın işi (## Kapsam 'ayrı tur ister' der)"
+        koşu:  "2026-07-21 · KAPANIŞ: motorda on beş artı iki tanı metni akademikleştirildi (runtime→çalışma-anı · governance→yönetişim · yedi iç oturum, plan ve karar numarası metinden çıktı · v1 ve 'sonraki tur' yol-haritası notları çıktı · takdir 'hasat' mecazı sadeleşti). İki katmanlı hijyen kapısı doğdu (tani-metni-hijyeni.test.ts): MOTOR tanı alanları ZORLANIR (sıfır) · TÜM CORPUS ÖLÇÜLÜR (todo, ~261 nokta — çoğu eklenti). Aynı sahada üç motor-kalite düzeltmesi: çıplak-adımlı-katman UYARI→BİLGİ (çıplak kademe ölçümü lafzına hizalandı — kanon 'ölçüm, ceza değil' der; per-düğüm + CLI özeti + üç test) · kayıp-kenar tamamlandı Adımda susar (yaşam-döngüsü kapısı, konisiz-adım 'olgun denetle' ilkesini yansıtır) · anadizin-plan-karışması HATA'sına dört altın-test (anadizin şekli bekçisi bir daha sessiz geçemez). Süit 826/826 yeşil (1 todo = corpus göçü) · tsc temiz · iki denetim sıfır hata"
+      }
+
+      Adım( kod: MDR-A06, durum: tamamlandı, bağımlı: [ MDR-A05 ], referans: [ DIL-1.1, OGR-2.1 ],
+        ne:    "🧼 Eklenti arayüz metinlerini iç-koddan arındırmak — MDR'nin ## Kapsam'ında 'ayrı tur ister' diye ertelenen cephe. Hijyen kapısının TÜM CORPUS ölçümü bu turu ~261 nokta olarak niceledi (gömülü kanon · MCP · öğret kartı · dil yardımı · CLI · otomatik-tamamlama · panel). İnsan geliştirici bu metinleri hover/tamamlama/panelde BİZZAT görür — öncelikli, görünür cephe" ) {
+        görev: "Hijyen kapısının TÜM CORPUS ölçümündeki her sızıntıyı akademik cümleyle değiştir (ses kalıbı MDR-A05 ile aynı); gömülü kanon (gomulu-kanon.ts) için tasarım kararı: insan-görünür tanım tertemiz kalır, kodlar ayrı bir dayanak/köken alanına taşınır — kullanıcı-dokümanı ile köken-verisi ayrılır (kullanıcı akademik tanım görür, ajan köken kodunu okur); göçün ses kalıbı önce küçük bir kalibrasyon diliminde (otomatik-tamamlama) kilitlenir, sonra hacim taşınır"
+        kabul: [
+          "Hijyen kapısının TÜM CORPUS testi sıfıra iner ve todo işareti kalkar — kapı zorlanan hâle döner",
+          "Eklenti kullanıcı-yüzü metinleri akademik, jargonsuz ve öğretendir",
+          "İki denetim sıfır hata · tam süit yeşil"
+        ]
+        sınır: "Gömülü kanonun köken alanı yalnız ajan-yüzüdür; kullanıcı-görünür metne kod sızmaz"
+        etkiler: [ KOD-OGRET ]
+        üretir: [
+          Kod( kod: KOD-SNF-KANON-TEMIZ, dosya: "oz/siniflama/kayit.json",
+               ne: "🍎 İç koddan arındırılmış sınıflama kanonu — tip, kenar ve şema tanımları akademik cümleye çevrildi; köken kodları ayrı `koken` dizilerine taşındı (ikizi rehber.json aynı turda temizlendi)." )
+        ]
+        koşu: "2026-07-28 · KAPANIŞ. Başlangıç ölçümü hijyen kapısının TÜM CORPUS testinden alındı ve 236 noktaydı; devir kaydının bildirdiği sayıyla birebir uyuştu, yani devralınan on sekiz dokunuş ölçüme zaten yansımıştı (yüzey turundan gelen yedi eklenti modülünün hiçbiri artık listede görünmüyordu). Ses kalıbı önce otomatik-tamamlama diliminde kilitlendi: kullanıcı akademik cümleyi görür, iç kod ise ayrı bir `koken` dizisinde çıplak KOD literali olarak yaşar ve hiçbir yüzeye basılmaz. Gömülü kanon elle düzenlenmedi; kaynak `oz/siniflama/*.json` düzeltildi ve `eklenti/arac/renk-uret.mjs` yeniden koşuldu, birebirliği `gomulu-esitlik` nöbeti doğruladı. ÖNEMLİ BULGU VE KAPSAM GENİŞLEMESİ: kapı sınıflama kanonunu yalnız ÜRETİLEN ikiz üzerinden görüyordu, oysa o ikiz git'te izlenmiyor; ölçüm kaynağın kendisine taşındı, üretilen ikiz çift sayımı önlemek için taramadan düşürüldü ve Founder'ın üslup hükmü için dar bir telgraf-zinciri deseni eklendi (dört parçaya bölünen ve her parçası en az iki kelime taşıyan orta nokta zinciri; ölçüldü, yanlış-pozitif sıfır). Genişletilmiş kapının yeni tabanı 172 noktaydı. Temizlik sonrası ölçüm SIFIRDIR ve `todo` işareti kalkmıştır, yani kapı artık zorlar. Kapı dört mutasyonla kanıtlandı: kanon JSON alanına karar numarası geri kondu, motor tanı metnine karar numarası geri kondu, kod taşımayan bir metin telgraf zincirine çevrildi ve `koken` muafiyetine düzyazı yazıldı; dördünde de süit kırmızıya döndü, dördü de geri alındı ve dosyaların sha256 özetleri baştaki değerlerine döndü. Beş kapı ayrı ayrı ölçüldü: çekirdek tür denetimi sıfır satır, eklenti tür denetimi sıfır satır, proje denetimi sıfır hata ile sıfır uyarı ve 320 bilgi, çekirdek süiti 879 sınamada 875 geçti, eklenti süiti 198/198. Çekirdekte kalan dört kırmızının dördü de `sinama/kararlar.test.ts` içindedir ve bu işten bağımsız olarak devralınmıştır; bu yüzden `tam süit yeşil` kabul ölçütü DÜRÜSTÇE karşılanmamıştır ve açık borç olarak devredilir. Temizlik sırasında dört sınama kırmızıya döndü, çünkü iddiaları tam da kaldırılan iç kodlara çivilenmişti; dördünün de niyeti korunarak iddia davranışa bağlandı."
+        rapor: "2026-07-28 · DEVİR ALINDI — yedi eklenti modülünde on sekiz kullanıcı metni bu Adımın hesabına yazılmıştır. Göç planının yüzey turu (BLK-GOC-YUZEY) kapanırken bağımsız denetçi, çalışma ağacında hiçbir Adımın koşu alanında beyan edilmemiş metin düzenlemeleri buldu; düzeltme halkası bunları tek tek ölçtü ve buraya devretti. Dosya ve dokunuş şudur: `eklenti/src/duzeltme.ts` beş hızlı düzeltme başlığında ve bir yapıştırılan şablon metninde (altı iç karar ve plan numarası çıktı), `eklenti/src/tamamlama.ts` altı ortak parametre açıklamasında (altı iç söz dizimi ve mutabakat numarası çıktı), `eklenti/src/ipucu.ts` iki parametre açıklamasında (governance ile runtime İngilizce terimleri Türkçeleşti), `eklenti/src/gezinme.ts` bir bilgi kutusu cümlesinde (bir iç karar numarası çıktı ve cümle tam cümleye çevrildi), `eklenti/src/takdir.ts` geribildirim kutusunun yönlendirme cümlesinde (bir iç karar numarası çıktı), `eklenti/src/yildiz.ts` bir Kuzey Yıldızı önerisinde (bir iç söz dizimi numarası çıktı) ve `eklenti/src/yolharitasi.ts` bir ipucu markdown satırında (bir iç karar numarası çıktı). Hepsi tek yönlüdür: iç karar ve plan numarası kullanıcı metninden çıkarılmış, cümle akademikleştirilmiştir; hiçbir tanı kodu, hiçbir tetiklenme koşulu ve hiçbir davranış değişmemiştir. DEVİR GEREKÇESİ: bu dokunuşlar tam olarak bu Adımın görev cümlesinin kapsamıdır ve MDR-A05 sınırı eklenti arayüz metinlerini açıkça bu Adıma bırakır; yüzey turunun kapsamı ise sunum yüzeyi ayrımıdır, metin hijyeni değildir. Yüzey turuna sahiplendirilseydi kapsam genişlemesi olur ve hijyen kapısının tek sahibi ikiye bölünürdü. AÇIK BORÇ: bu Adım kapanırken hijyen kapısının TÜM CORPUS ölçümü yeniden koşulmalı ve bu on sekiz dokunuşun ölçüme yansıdığı doğrulanmalıdır; devir sırasında ölçüm 236 noktadır (`cekirdek/sinama/tani-metni-hijyeni.test.ts`, todo işaretli)."
+      }
+    }
+  }
+}
+
+// 🍎 MDR meyveleri — Adım→ürün izi
+Kod( kod: KOD-MDR-ENVANTER, dosya: "is/nitelik/motor_tani_envanteri.sar",
+  ne: "🍎 Motor tanı metni envanteri — bütün kullanıcı-yüzlü metinlerin DIL-1.1 ile OGR-2.1 ölçütüyle değerlendirildiği rapor (MDR-A01 ürünü)" )
+Kod( kod: KOD-SNM-HIJYEN, dosya: "urun/cekirdek/sinama/tani-metni-hijyeni.test.ts",
+  ne: "🍎 Kullanıcı-yüzü metin hijyeni kapısı — iç kod/İngilizce/yol-haritası jetonunun tanı metnine sızmasını yakalar; motor katmanı zorlanır, corpus ölçülür (MDR-A05 ürünü)" )
+Kod( kod: KOD-SNM-ANADIZIN, dosya: "urun/cekirdek/sinama/anadizin-sekli.test.ts",
+  ne: "🍎 MIM-3.1 çekirdek bekçisi altın-testi — anadizin-plan-karışması HATA yolunun regresyon kanıtı (MDR-A05 ürünü)" )

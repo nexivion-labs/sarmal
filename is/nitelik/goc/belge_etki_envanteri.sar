@@ -1,0 +1,253 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/belge_etki_envanteri.sar — GOC-BELGE-A01
+//   Belge, rehber, öğretim ve türetilmiş yüzlerin kaynak, üretici, amaç,
+//   elle-korunan bölge, kabul sahibi ve bayatlık envanteri.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# Belge etki envanteri
+
+Bu kayıt 3 Ağustos 2026 tarihinde canlı çalışma ağacından ölçülmüştür. “Yüz”
+insanın doğrudan okuduğu Markdown çıktısını; “kaynak” ise öğretimi veya yüzü
+besleyen `.sar`, JSON ya da TypeScript girdisini anlatır. Tarihsel planlar,
+kapı raporları ve göç kanıtları kalıcı öğretim yüzü sayılmamıştır; eski kodu
+kanıt olarak taşımaları bu yüzden A02 içerik taramasına girmez.
+
+## Kaynak mühürleri
+
+| Mühür | Kaynak | sha256 (ilk 12) | Üretim kullanımı |
+|---|---|---:|---|
+| `SRC-KANON-8` | `yasa/kanon/{dil,mim,ogr,ork,str,tip,yas,yuz}.sar` sıralı sha256 demeti | `c18b21b79b8b` | Hüküm, omurga, Diátaxis ve tutarlılık |
+| `SRC-SINIFLAMA` | `oz/siniflama/kayit.json` | `53ca1f42882f` | Tip, alan, kenar ve sarma Reference yüzü |
+| `SRC-TANI` | `cekirdek/src/tani-sicili.ts` | `1f3d9ecb2019` | 46 hata + 16 uyarı + 8 bilgi yeni tanı kümesi |
+| `SRC-MANIFEST-TR` | `urun/eklenti/package.nls.tr.json` | `4ef9b8b66470` | Türkçe kullanıcı yüzü |
+| `SRC-MANIFEST-EN` | `urun/eklenti/package.nls.json` | `b1316f8fb6ca` | İngilizce kullanıcı yüzü |
+| `SRC-MCP` | `cekirdek/src/mcp-metinleri.ts` | `94e83d1a081d` | 18 MCP aracının iki dilli açıklamaları |
+| `SRC-DIL-BAGLAMI` | `cekirdek/src/dil-baglami.ts` | `cd4e4030d1c1` | Ajan çıktı dili |
+| `SRC-TERFI-DEVIR` | `nitelik/goc/terfi_devir_kaydi.sar` | `08bdd5ccbf05` | Bağlayıcı sayılar ve Karar J sınırı |
+
+## Amaç sözlüğü
+
+README karşılama ve yönlendirme; indeks yalnız gezinme; Reference alan ve
+kimlik başvurusu; Tutorial çalışan adım zinciri; How-To tek görevin baştan sona
+çözümü; Explanation kavramsal gerekçe; araştırma ise hüküm kurmayan tarihsel
+kanıt yüzüdür. “Üretilen bölge” işaretli bloktur; “tam üretilen” dosyanın
+tamamının aynı komutla yeniden doğduğunu söyler.
+|<--
+
+Veri( kod: VR-GOC-BELGE-KAYNAK-MUHURLERI,
+      ne: "Belge turunun sekiz kanon dosyası, canlı sınıflama, tanı sicili, iki manifest, MCP metinleri, dil bağlamı ve terfi devri kaynak mühürleri." )
+
+-->|
+## A · Kalıcı okuma yüzleri
+
+| Kimlik | Yüz | Amaç | Kaynak | Üretici | Elle korunan / üretilen sınırı | Kabul sahibi | Başlangıç mührü | A01 hükmü |
+|---|---|---|---|---|---|---|---:|---|
+| `YUZ-B01` | `README.md` | README | `SRC-KANON-8` + `SRC-SINIFLAMA` + `SRC-TANI` + `SRC-TERFI-DEVIR` | bugün yalnız `agac.ts`; A02: birleşik belge-yüzü üreticisi | giriş anlatısı korunur; `SARMAL:KANONIK-OZET` ile `SARMAL:AGAC` üretilir | GOC-BELGE-A02 | `b7760329228e` | BAYAT · yalnız eski ağaç bloğu var |
+| `YUZ-B02` | `README.en.md` | README | Türkçe README ile aynı kaynak demeti + İngilizce haneler | A02: birleşik belge-yüzü üreticisi | giriş anlatısı korunur; kanonik özet üretilir | GOC-BELGE-A02 | — | EKSİK · kökte dosya yok |
+| `YUZ-B03` | `NEDIR.md` | Explanation | `SRC-KANON-8` + `SRC-TERFI-DEVIR` | bugün elle; A02: birleşik belge-yüzü üreticisi | kısa giriş korunur; kanonik açıklama üretilir | GOC-BELGE-A02 | `7f0780140c7b` | BAYAT · eski kod, eski omurga ve yanlış kapalı-ürün anlatısı |
+| `YUZ-B04` | `KAVRAMLAR.md` | indeks | `SRC-KANON-8` + `SRC-SINIFLAMA` | bugün elle; A02: birleşik belge-yüzü üreticisi | giriş korunur; kaynak ve kavram indeksi üretilir | GOC-BELGE-A02 | `cbbe36a6d7dd` | BAYAT · eski kod, emekli tren öğretimi, eksik AltKatman |
+| `YUZ-B05` | `ROL-HARITASI.md` | Explanation | `SRC-KANON-8` + `SRC-TERFI-DEVIR` | bugün elle; A02: birleşik belge-yüzü üreticisi | giriş korunur; açık/kapalı sınır açıklaması üretilir | GOC-BELGE-A02 | `28cb81200b6b` | BAYAT · eski kod ve kapalı ürün içeriği |
+| `YUZ-B06` | `KARARLAR.md` | indeks | — | `kararlar.ts` 31 Temmuzda emekli; `icindekiler.ts` yalnız genel TOC çekirdeği | yok | GOC-BELGE-A01 | — | YOK ve YENİDEN DOĞMAYACAK; kanonun tek adresi `yasa/kanon/` |
+| `YUZ-B07` | `urun/cekirdek/README.md` | README | `SRC-KANON-8` + `cekirdek/package.json` + `cekirdek/src/` | bugün `agac.ts`; A02: birleşik belge-yüzü üreticisi | geliştirme girişi korunur; komut/dosya/kanon bölgesi üretilir | GOC-BELGE-A02 | `45976e0c620e` | BAYAT · 55/55, eski boru hattı ve eski kaynak açıklaması |
+| `YUZ-B08` | `urun/eklenti/README.md` | How-To | `SRC-KANON-8` + iki manifest + `urun/eklenti/package.json` | bugün `agac.ts`; A02: birleşik belge-yüzü üreticisi | kullanım girişi korunur; özellik/komut/geliştirme bölgesi üretilir | GOC-BELGE-A02 | `280539828ada` | BAYAT · geçersiz örnek, eski omurga, kapalı-sürüm anlatısı |
+| `YUZ-B09` | `urun/eklenti/CHANGELOG.md` | indeks | sürüm kayıtları + `SRC-TERFI-DEVIR` | elle-korunan tarihçe; A02 yalnız kullanıcı-görünür ad temizliği | tamamı elle tarihçe | GOC-BELGE-A02 | `9310544aec97` | BAYAT · emekli panel adı 7 görünür geçiş taşıyor |
+| `YUZ-B10` | `oz/siniflama/kayit.md` | Reference | `SRC-SINIFLAMA` | `siniflama.ts` / `sarmal taksonomi-uret` | kısa giriş korunur; `SARMAL:TAKSONOMI` tam üretilir | GOC-BELGE-A02 | `95638e94d750` | BAYAT · elle bölgede 95 tip/10 kenar, üretilen bölgede 101/19 |
+| `YUZ-B11` | `ogreti/ornek/OKU.md` | indeks | `ornek/` dosya envanteri + `SRC-KANON-8` | bugün elle; A02: birleşik belge-yüzü üreticisi | giriş korunur; örnek dizini üretilir | GOC-BELGE-A02 | `c3daba71537f` | BAYAT · eski kod, olmayan arşiv ve kapalı ürün içeriği |
+| `YUZ-B12` | `ogreti/sablon/OKU.md` | How-To | `sablon/*.sar` + `SRC-SINIFLAMA` | bugün elle; A02: birleşik belge-yüzü üreticisi | giriş korunur; şablon dizini ve kullanım adımları üretilir | GOC-BELGE-A02 | `a59ac2b4ec6d` | BAYAT · eski kod ve eksik üç şablon |
+| `YUZ-B13` | `oz/hatirlatici_flutter_yuzey.sar` belge bloğu | Explanation kaynağı | kendi `.sar` düğümleri + `SRC-TERFI-DEVIR` | `belgele.ts` | `.sar` kanonik kaynak; Markdown yalnız `belgele` çıktısıdır | GOC-BELGE-A02 | `7373af00bcb2` | BAYAT · satır 69 emekli panel adını kullanıcı anlatısında taşıyor |
+| `YUZ-B14` | `LICENSE.md` | Reference | Karar J · Apache-2.0 | elle-korunan lisans bildirimi | tamamı elle; SPDX ve yürür metin adresi | Founder | — | A02'de DOĞDU · kök lisans yüzü |
+| `YUZ-B15` | `urun/eklenti/LICENSE.md` | Reference | Karar J · Apache-2.0 | elle-korunan paket lisans bildirimi | tamamı elle; kök lisansla aynı lisans kimliği | Founder | `2acfbed9f77a` | BAYAT · kapalı geliştirme iddiası taşıyordu |
+
+Bu on beş kaydın on dördü yaşayan ya da A02'de doğacak yüzdür. `KARARLAR.md`
+bilinçli yokluktur: yeni bir defter veya karar ikizi üretilmeyecektir.
+|<--
+
+Veri( kod: VR-GOC-BELGE-KALICI-YUZLER,
+      ne: "Kökteki okuma yüzleri, iki ürün README'si, değişiklik indeksi, sınıflama Reference yüzü, örnek ve şablon indeksleri ile bir belge kaynağının amaç, kaynak, üretici ve sahip eşlemesi." )
+
+-->|
+## B · Rehber ve açıklama yüzleri
+
+| Kimlik | Yüz | Amaç | Kaynak | Üretici / bölge | Sahip | Mühür | Durum |
+|---|---|---|---|---|---|---:|---|
+| `YUZ-R01` | `urun/eklenti/medya/rehber/01-dil.md` | Tutorial | `SRC-KANON-8` + `SRC-SINIFLAMA` | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `5ecb714367c1` | BAYAT · Blok→Faz ve AltKatmansız omurga öğretiyor |
+| `YUZ-R02` | `urun/eklenti/medya/rehber/02-denetim.md` | How-To | `SRC-TANI` + iki manifest | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `14dc1079bf1e` | BAYAT · yüz yönlendirmesi ve güncel düzey dağılımı yok |
+| `YUZ-R03` | `urun/eklenti/medya/rehber/03-okuma.md` | How-To | YUZ-1 · YUZ-2.3 + `belgele.ts` | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `d9f278d09a3f` | YENİLENECEK · çalıştırılabilir görev sınırı makinece işaretlenecek |
+| `YUZ-R04` | `urun/eklenti/medya/rehber/04-ogrenim.md` | Tutorial | OGR-1 · OGR-2 + `ogret.ts` | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `db41ed294041` | YENİLENECEK · adım zinciri ve iki dilli kart bağı eklenecek |
+| `YUZ-R05` | `urun/eklenti/medya/rehber/05-bicim.md` | How-To | DIL-2 + canlı biçim üreticisi | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `a31ddeb65c0f` | BAYAT · eski Blok→Faz örneği taşıyor |
+| `YUZ-R06` | `urun/eklenti/medya/rehber/06-gezinme.md` | How-To | YUZ-3.2 + canlı gezinme komutu | A02 belge-yüzü üreticisi / tam üretilen | GOC-BELGE-A02 | `c6eaffb05db5` | BAYAT · Faz kodu Katman öneki taşıyor ve eski omurga örneği var |
+| `YUZ-F01` | `felsefe/ai-drift-kalkani.md` | Explanation | STR-3.2 + YAS-3.4 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `486133b2a789` | BAYAT · satır 35 eski kod ve marka/model dizisi |
+| `YUZ-F02` | `felsefe/fel-4-makine-hakem.md` | Explanation | YAS-2 · YAS-3 · YAS-4 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `80c7ce13c266` | BAYAT · satır 18 ve 28 eski kod |
+| `YUZ-F03` | `felsefe/katman-haritasi.md` | Explanation | MIM-1 + TIP-1.4 + ORK-2.1 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `912ad16ef1a2` | BAYAT · yedi eski kod atfı ve eski omurga |
+| `YUZ-F04` | `felsefe/klasor-mimarisi.md` | Explanation | MIM-3 + STR-1 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `839b6e97c580` | GÜNCEL ADAYI · bayat desen bulunmadı |
+| `YUZ-F05` | `felsefe/neden-dil-bagimsiz.md` | Explanation | DIL-4 + STR-3.2 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `8d9f2bc465e0` | BAYAT · satır 22 ve 80 eski kod, satır 80 ölü KARARLAR hedefi |
+| `YUZ-F06` | `felsefe/prizma-dort-yuz.md` | Explanation | YUZ-1 · YUZ-1.1 | bugün elle; A02 kanonik atıf temizliği | GOC-BELGE-A02 | `b13bd27e2c3a` | BAYAT · satır 108 eski kod ve ölü KARARLAR hedefi |
+
+Rehberlerin altısı da Diátaxis sınıfını dosya içinde tek bir makine işaretiyle
+taşıyacaktır. Explanation yüzlerine çalıştırılabilir kod çiti eklenmeyecek;
+eski karar eşlemesi kalıcı açıklamaya aktarılmayacaktır.
+|<--
+
+Veri( kod: VR-GOC-BELGE-REHBERLER,
+      ne: "Altı eklenti rehberi ile altı kavramsal açıklamanın tekil Diátaxis amacı, kanonik kaynağı, üretim sınırı, kabul sahibi ve başlangıç durumu." )
+
+-->|
+## C · Başvuru indeksleri ve öğretim kaynakları
+
+| Kimlik | Yüz / kaynak | Amaç | Kaynak gerçek | Üretici / bölge | Sahip | Mühür | Etki |
+|---|---|---|---|---|---|---:|---|
+| `YUZ-I01` | `bilgi/flutter_sozluk/dizin.md` | indeks | aynı raftaki üç sözlük | elle-korunan indeks | bilgi sahibi | `b7d51c855b2b` | ETKİ YOK |
+| `YUZ-I02` | `bilgi/flutter_sozluk/animasyonlar.md` | Reference | dış terim eşleme kaydı | elle-korunan bağımsız başvuru | bilgi sahibi | `a3384eed8d73` | ETKİ YOK |
+| `YUZ-I03` | `bilgi/flutter_sozluk/genel.md` | Reference | dış terim eşleme kaydı | elle-korunan bağımsız başvuru | bilgi sahibi | `1f34b0ccc872` | ETKİ YOK |
+| `YUZ-I04` | `bilgi/flutter_sozluk/renkler.md` | Reference | dış terim eşleme kaydı | elle-korunan bağımsız başvuru | bilgi sahibi | `77751b72fa23` | ETKİ YOK |
+| `YUZ-I05` | `bilgi/tasarim_sozlugu/dizin.md` | indeks | `bilgi/tasarim_sozlugu/kayit.json` | elle giriş + veri kaynağı | bilgi sahibi | `f6e6f897902f` | ETKİ YOK |
+| `YUZ-O01` | `ogrenme/adim_yazimi_becerisi.sar` | Tutorial kaynağı | kendi Beceri/Yetenek düğümleri + MIM-1.6 | `belgele.ts` / `.sar` kaynak korunur | GOC-BELGE-A02 | `372cba352473` | BAYAT · tam zincirde AltKatman yok |
+| `YUZ-O02` | `ogrenme/arac_yonlendirme_becerisi.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + OGR-2 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `6d6a8c68fe69` | ETKİ YOK |
+| `YUZ-O03` | `ogrenme/dersler.sar` | Explanation kaynağı | kendi Bellek düğümleri | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `e59dae1748cd` | TARİHSEL · dış hizmet dersleri kalıcı ürün anlatısı değildir |
+| `YUZ-O04` | `ogrenme/durum_akisi_becerisi.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + ORK-3.2 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `67ad2d54a136` | ETKİ YOK |
+| `YUZ-O05` | `ogrenme/founder_gozlemleri_2026-07-17.sar` | araştırma kaynağı | tarihli Founder gözlemleri | `belgele.ts` / `.sar` kaynak korunur | Founder | `1b63281642c8` | TARİHSEL |
+| `YUZ-O06` | `ogrenme/goc_hakem_becerisi.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + STR-2 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `9b6b9e71fdf2` | ETKİ YOK |
+| `YUZ-O07` | `ogrenme/ida_dogfood_geribildirim.sar` | araştırma kaynağı | tarihli ürün gözlemleri | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `7d6f533b193f` | TARİHSEL |
+| `YUZ-O08` | `ogrenme/kapsam_durustlugu_becerisi.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + YAS-4.1 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `f756ef6ed3f2` | ETKİ YOK |
+| `YUZ-O09` | `ogrenme/kontrolcu_olcum_becerileri.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + YAS-4.1 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `41f8d42d1a60` | ETKİ YOK |
+| `YUZ-O10` | `ogrenme/mutasyon_kaniti_becerisi.sar` | Tutorial kaynağı | kendi Beceri/Yetenek düğümleri + YAS-4.2 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `37b8664eded3` | ETKİ YOK |
+| `YUZ-O11` | `ogrenme/niyet_dili_becerisi.sar` | Explanation kaynağı | kendi Beceri/Yetenek düğümleri + DIL-4 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `6f1953659d4d` | ETKİ YOK |
+| `YUZ-O12` | `ogrenme/niyet_diyalogu_becerisi.sar` | Tutorial kaynağı | kendi Beceri/Yetenek düğümleri + OGR-1 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `d09e233f59ab` | ETKİ YOK |
+| `YUZ-O13` | `ogrenme/uretir_kenari_becerisi.sar` | How-To kaynağı | kendi Beceri/Yetenek düğümleri + MIM-2 | `belgele.ts` / `.sar` kaynak korunur | öğretim sahibi | `be446c06e1df` | ETKİ YOK |
+
+Beş bağımsız sözlük yüzü göç hükümlerini öğretmediği için yeniden üretim
+kapsamı dışındadır. On üç öğrenme kaynağından yalnız Adım yazımı kaynağı canlı
+omurga öğretimini değiştirecektir; tarihli gözlem ve dersler yürür hüküm diye
+sunulmayacaktır.
+|<--
+
+Veri( kod: VR-GOC-BELGE-OGRETIM-KAYNAKLARI,
+      ne: "Beş bağımsız başvuru yüzü ile on üç öğrenme kaynağının tekil amacı, kaynak gerçeği, üretim yolu, sahibi, mührü ve belge turu etkisi." )
+
+-->|
+## D · Kopyalanabilir öğretim şablonları
+
+Bu dosyalar yüz değil doğrudan öğretim kaynağıdır; `sarmal başla` onları
+okuduğu için üretici komutu `sablon.ts` üzerindeki `başla` yoludur. Her dosyanın
+tamamı elle-korunan kanonik şablondur ve A02 yalnız yeni kanonik şemaya göre
+onarım yapabilir.
+
+| Kimlik | Kaynak | Amaç | Kaynak sözleşmesi | Üretici | Sahip | Mühür | Durum |
+|---|---|---|---|---|---|---:|---|
+| `YUZ-S01` | `sablon/adim.sar` | How-To kaynağı | MIM-1.6 · TIP-2.3 | `sarmal başla adım` | GOC-BELGE-A02 | `1b422ae148da` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S02` | `sablon/arkayuz.sar` | How-To kaynağı | MIM-1.4 · ORK-2.3 | `sarmal başla arkayüz` | GOC-BELGE-A02 | `0ea152e27bfb` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S03` | `sablon/beceri.sar` | Tutorial kaynağı | OGR-4 · TIP-2 | `sarmal başla beceri` | GOC-BELGE-A02 | `e4de4cf96d1e` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S04` | `sablon/blok.sar` | Tutorial kaynağı | MIM-1.2–MIM-1.6 | `sarmal başla blok` | GOC-BELGE-A02 | `7128c34931a2` | BAYAT · eski omurga ve AltKatmansız Adım |
+| `YUZ-S05` | `sablon/calisma_alani.sar` | Tutorial kaynağı | MIM-1.1 · ORK-4 | `sarmal başla çalışma-alanı` | GOC-BELGE-A02 | `6fe665ff60bb` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S06` | `sablon/dongu.sar` | How-To kaynağı | TIP-1.4 · ORK-3.3 | `sarmal başla döngü` | GOC-BELGE-A02 | `18bd99fd2916` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S07` | `sablon/ekran.sar` | How-To kaynağı | YUZ-4 · ORK-2.3 | `sarmal başla ekran` | GOC-BELGE-A02 | `4c063a3730c7` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S08` | `sablon/etmen.sar` | Tutorial kaynağı | TIP-1.4 · OGR-1.1 | `sarmal başla etmen` | GOC-BELGE-A02 | `fb29e1e60e23` | AÇIK yetenek anlatısına bağlanacak |
+| `YUZ-S09` | `sablon/mekanizma.sar` | How-To kaynağı | TIP-1.4 · ORK-2.1 | `sarmal başla mekanizma` | GOC-BELGE-A02 | `33dac6fac163` | ŞEMA DENETİMİ GEREKİR |
+| `YUZ-S10` | `sablon/proje.sar` | Tutorial kaynağı | MIM-1.1–MIM-1.6 | `sarmal başla proje` | GOC-BELGE-A02 | `6ae5d32ec164` | BAYAT · eski omurga ve AltKatmansız Adım |
+| `YUZ-S11` | `sablon/sozlesme.sar` | How-To kaynağı | MIM-1.3 · ORK-2.3 | `sarmal başla sözleşme` | GOC-BELGE-A02 | `8b91f03bd63c` | ŞEMA DENETİMİ GEREKİR |
+|<--
+
+Veri( kod: VR-GOC-BELGE-SABLONLAR,
+      ne: "Başla komutunun on bir kopyalanabilir öğretim kaynağının Diátaxis amacı, kanonik madde sözleşmesi, üretici, sahip, başlangıç mührü ve göç durumu." )
+
+-->|
+## E · Tamamlayıcı kaynak ve kayıt yüzleri
+
+İlk taramanın ürün girişi olmayan fakat belge/öğretim kümesine ait yüzleri aşağıda
+tekilleştirilmiştir. Denetim raporları ve yol haritaları yürür hüküm üretmez; tarihli
+kanıt veya plan kaydı olarak elle korunur. Doğuş kaynakları `dogus.ts` paketinin,
+felsefe kaynakları `belgele.ts` okuma yüzünün girdisidir.
+
+| Kimlik | Yüz / kaynak | Amaç | Kaynak | Üretici | Sahip | A02 işlemi |
+|---|---|---|---|---|---|---|
+| `YUZ-T01` | `felsefe/cok_dosya_mimari.sar` | Explanation kaynağı | kendi düğümleri + MIM-3 | `belgele.ts` | felsefe sahibi | etki yok |
+| `YUZ-T02` | `felsefe/prizma.sar` | Explanation kaynağı | kendi düğümleri + YUZ-1 | `belgele.ts` | felsefe sahibi | eski kod ve dış atıf temizliği |
+| `YUZ-T03` | `felsefe/sozler.sar` | Explanation kaynağı | kendi düğümleri + FEL taşları | `belgele.ts` | felsefe sahibi | eski kod ve dış atıf temizliği |
+| `YUZ-T04` | `sablon/dogus/anadizin.sar` | Tutorial kaynağı | MIM-3 + sınıflama | `dogus.ts` | doğuş sahibi | tam omurga düzeltmesi |
+| `YUZ-T05` | `sablon/dogus/ilk_plan.sar` | Tutorial kaynağı | MIM-1 + YAS-1.1 | `dogus.ts` | doğuş sahibi | şema denetimi |
+| `YUZ-T06` | `sablon/dogus/dersler.sar` | Tutorial kaynağı | OGR-2 | `dogus.ts` | doğuş sahibi | şema denetimi |
+| `YUZ-T07` | `sablon/dogus/durum_devir.sar` | How-To kaynağı | STR-4 | `dogus.ts` | doğuş sahibi | şema denetimi |
+| `YUZ-T08` | `sablon/dogus/geribildirim.sar` | How-To kaynağı | OGR-4 | `dogus.ts` | doğuş sahibi | şema denetimi |
+| `YUZ-T09` | `nitelik/enforcement-denetimi.md` | araştırma | tarihli ölçüm | elle kayıt | nitelik sahibi | tarihsel, etki yok |
+| `YUZ-T10` | `nitelik/ide_asinalik.md` | Explanation | tarihli araştırma | elle kayıt | nitelik sahibi | tarihsel, etki yok |
+| `YUZ-T11` | `nitelik/kabul-kriterleri.md` | Reference | kabul araştırması | elle kayıt | Kontrolcü | tarihsel, etki yok |
+| `YUZ-T12` | `nitelik/linguist_hazirlik.md` | How-To | yayın araştırması | elle kayıt | yayın sahibi | tarihsel, etki yok |
+| `YUZ-T13` | `nitelik/sistem_muhendisligi_denetim_raporu.md` | araştırma | tarihli ölçüm | elle kayıt | Kontrolcü | tarihsel, etki yok |
+| `YUZ-T14` | `nitelik/sol_orkestrasyon_raporu.md` | araştırma | tarihli ölçüm | elle kayıt | Kontrolcü | tarihsel, etki yok |
+| `YUZ-T15` | `nitelik/superpowers_desen_bakisi.md` | araştırma | tarihli inceleme | elle kayıt | nitelik sahibi | tarihsel, etki yok |
+| `YUZ-T16` | `plan/orkestrator_gundemi.md` | indeks | yürür plan kayıtları | elle plan | plan sahibi | kök plan sınırı, dokunulmaz |
+| `YUZ-T17` | `plan/ray3_yol_haritasi.md` | indeks | yürür plan kayıtları | elle plan | plan sahibi | kök plan sınırı, dokunulmaz |
+| `YUZ-T18` | `plan/sef_yol_haritasi.md` | indeks | yürür plan kayıtları | elle plan | plan sahibi | kök plan sınırı, dokunulmaz |
+| `YUZ-T19` | `oz/ceviri/tasarim-terimleri.md` | Reference | çeviri sözlüğü | elle başvuru | çeviri sahibi | etki yok |
+| `YUZ-T20` | `ornek/heritage.design.md` | Tutorial fikstürü | örnek tasarım | örnek koşucusu | örnek sahibi | bilerek-hatalı küme sınırı, dokunulmaz |
+
+Bu yirmi kayıt kalıcı ürün özeti değildir. Plan ve tarihsel nitelik yüzleri A02
+üreticisine bağlanmamış; kaynak, üretici/koruma yolu ve sahipleri yine de envanterde
+açık bırakılmıştır.
+
+**Tazeleme notu (2026-08-08).** Yukarıdaki tablo göç turunun tarihli anlık görüntüsüdür
+ve o günkü gerçeği kaydeder; bu yüzden satırları geriye dönük olarak değiştirilmez.
+Buna karşılık üç satırın işaret ettiği dosya bugün diskte yoktur ve okuyucunun boşuna
+aramaması için burada anılır. `YUZ-T16` satırındaki orkestratör gündemi kaynak
+tekliği hükmüyle çözülmüş, on iki maddesi sahiplerine dağıtılmış ve dosya silinmiştir;
+eşleme tablosu KYN-KYN-A03 Adımının koşu kaydında yaşar. `YUZ-T17` ile `YUZ-T18`
+satırlarındaki iki yol haritası ise KYN-KYN-A01 ve KYN-KYN-A02 Adımlarıyla `.sar`
+gövdesine taşınmıştır ve karşılıkları plan rafında canlıdır. Bu üç satır artık kaynak
+değil tarihtir; ad değişikliğinin tarihsel kayıtlara hangi biçimde düşürüleceğine dair
+genel hüküm ise HTR-AD-DEGISIMI-TARIHSEL-KAYIT hatırlatıcısında karara bağlanacaktır.
+|<--
+
+Veri( kod: VR-GOC-BELGE-TAMAMLAYICI-YUZLER,
+      ne: "Üç felsefe kaynağı, beş doğuş öğretim kaynağı ve on iki tarihsel, plan, çeviri veya örnek yüzü kaynak, üretici, amaç ve sahibiyle eşler." )
+
+-->|
+## F · Bayatlık bulguları — dosya ve satır
+
+| Sınıf | Başlangıç | Dosya:satır | A02/A03 işlemi |
+|---|---:|---|---|
+| Eski `K-*` karar kodu | 47 geçiş | `README.md:4,16,34`; `KAVRAMLAR.md:31,48,50,69,76,90,91,114`; `NEDIR.md:60,74,79` (satır 79'da üç geçiş); `ROL-HARITASI.md:7,29,34,39,41` (iki geçiş), `58`; `urun/eklenti/README.md:140`; `felsefe/ai-drift-kalkani.md:35`; `felsefe/fel-4-makine-hakem.md:18,28`; `felsefe/katman-haritasi.md:3` (üç geçiş), `22,28,34,38`; `felsefe/neden-dil-bagimsiz.md:22,80`; `felsefe/prizma-dort-yuz.md:108`; `felsefe/prizma.sar:6,48,56`; `felsefe/sozler.sar:26,44,56,66,77`; `ogrenme/niyet_diyalogu_becerisi.sar:81`; `ogrenme/uretir_kenari_becerisi.sar:31`. | Kalıcı yüzde eşleme tablosu kurulmadan kanonik maddeye doğrudan bağlanır veya tarihsel atıf kaldırılır. |
+| Eski omurga | 11 açık dizi geçişi | `KAVRAMLAR.md:23,39,76`; `NEDIR.md:60`; `felsefe/klasor-mimarisi.md:14`; `felsefe/neden-dil-bagimsiz.md:59`; `ogrenme/adim_yazimi_becerisi.sar:27`; `sablon/proje.sar:2,42`; `sablon/calisma_alani.sar:7,52`. Çok satırlı eski örnekler ayrıca `urun/eklenti/medya/rehber/01-dil.md:5-27`, `05-bicim.md:13-21`, `06-gezinme.md:18-24`, `sablon/blok.sar:1-48` ve `sablon/OKU.md:23` içindedir. | Katı rejimin `Faz→Blok→Katman→AltKatman→Adım` zincirine çekilir; esnek rejim istisnası yalnız YAS-1.2'ye bağlanır. Sayım `Proje / ANA|Faz[ ›→]+Blok[ ›→]+Katman[ ›→]+Adım|Blok[ ›→]+Faz|Faz[ ›→]+Katman[ ›→]+Adım` deseninin geçiş sayısıdır. |
+| 143 maddelik kanon | 0 kalıcı yüz | Kalıcı yüzlerde yok. Tarihsel `geneldurum/yeni-omurga/00_DURUM.sar:31,37,53,55,100,1025,1045-1046` ile `git_yonetisimi.sar:44` bayat kaydı açıkça taşır; eski `kanon_v1_tutarlilik.sar` çalışma ağacında artık yoktur. | Tarihsel kayıt değiştirilmez ve tüketilmez; A03 yeni türevi yalnız `yasa/kanon/` sekizlisinden doğurur. |
+| 19 MCP aracı | 1 canlı-plan anlatısı | `urun/eklenti/plan.sar:231`; ayrıca dokunulmaz `plan/cokdillilik.sar:173` tarihsel tahmindir ve aynı dosyanın `:170` koşu kaydı ölçülmüş 18 düzeltmesini taşır. | `urun/eklenti/plan.sar` 18'e çekilir; kök `plan/*.sar` değiştirilmez. Kalıcı yüzler 18 ölçümünü kaynak metinden alır. |
+| Emekli onay paneli adı | 8 kullanıcı-anlatısı geçişi | `urun/eklenti/CHANGELOG.md:13,59,69,73,75,78,91`; `oz/hatirlatici_flutter_yuzey.sar:69` | Görünür metin “Onaylar” olur; iç dosya, tip ve sınama kimlikleri kapsam dışıdır. |
+| Eski tanı düzeyi | 0 kalıcı yüz | Canlı kalıcı yüzlerde sayısal düzey iddiası yok; doğru dağılım bu turdan önce hiçbir README'de anlatılmıyor. | Üretilen yüzler yalnız `SRC-TANI` ve `SRC-TERFI-DEVIR` ölçümünden 46 hata + 16 uyarı + 8 bilgi yazar. |
+| Sınıflama sayım drifti | 4 anlatı iddiası | `oz/siniflama/kayit.md:15,18,22,131`; aynı dosyanın üretilen `:130-156` bölgesi 14 aile + 101 tip + 19 kenarı doğru ölçüyor. | Elle sayı anlatısı kaldırılır; tam Reference alan tablosu `SRC-SINIFLAMA`dan üretilir. |
+| Ölü karar defteri hedefi | 7 bağlantı | `KAVRAMLAR.md:7,114,126`; `NEDIR.md:79`; `ROL-HARITASI.md:7`; ayrıca `felsefe/neden-dil-bagimsiz.md:80` ve `felsefe/prizma-dort-yuz.md:108` | Kanonun tek adresi olan `yasa/kanon/` sekiz bölüm indeksine yöneltilir; `KARARLAR.md` doğmaz. |
+| İngilizce kök README | 1 eksik yüz | `README.en.md` yok | Türkçe README ile aynı üretici ve kaynak demetinden doğar. |
+
+Bayatlık sayıları tarihsel plan, göç kanıtı, sınama ve kod yorumlarını içermez.
+Bu sınır kullanıcı-görünür kalıcı yüzleri temiz tutarken, denetim kanıtını
+silmemeyi sağlar.
+
+## G · Kapsama mutabakatı
+
+Envanter 76 tekil kayıt taşır: 15 kalıcı okuma kaydı, 12 rehber/açıklama,
+18 bağımsız başvuru veya öğrenme kaynağı, 11 `başla` şablonu ve 20 tamamlayıcı
+kaynak/kayıt yüzü. Başlangıçta üç yol yoktur (`README.en.md`, `LICENSE.md`,
+bilinçli emekli `KARARLAR.md`); yaşayan veya A02'de doğan yolların tamamı kaynak,
+üretici veya üretim yolu, bölge sınırı ve sahip taşır.
+Araştırma ve tarihsel raporlar yürür öğretim sayılmadığı için A02'nin kalıcı
+yüz taramasına girmez. Bilerek-hatalı sekiz örnek bu envanterde kaynak-gerçek
+ve onarım hedefi değildir.
+|<--
+
+Veri( kod: VR-GOC-BELGE-BAYATLIK,
+      ne: "Belge ve öğretim kümesindeki 47 eski karar kodu, 11 açık eski omurga dizisi, sekiz emekli panel adı, bir 19-araç plan anlatısı, dört sınıflama sayım drifti, ölü karar-defteri hedefleri ve eksik İngilizce README'nin dosya-satır kanıtı." )
+
+Veri( kod: VR-GOC-BELGE-ENVANTER-KAYDI,
+      ne: "GOC-BELGE-A01 etki envanteri 76 tekil kaydı amaç, kaynak, üretici, elle-korunan sınır ve kabul sahibiyle eşler; üç başlangıç yokluğundan KARARLAR.md bilinçli kalır, README.en.md ile Apache-2.0 kök lisans yüzü A02'de üretilir." )
+
+// Belge yüzü sayımına girmeyen uygulama meyveleri; proje kapısının dosya izi.
+Kod( kod: KOD-BELGE-YUZLERI,
+     dosya: "urun/cekirdek/src/belge-yuzleri.ts",
+     ne: "Belge turunun canlı kaynaklardan idempotent README, indeks ve Diátaxis bölgeleri üreten A02 çekirdeği" )
+Kod( kod: KOD-SNM-BELGE-YUZLERI,
+     dosya: "urun/cekirdek/sinama/belge-yuzleri.test.ts",
+     ne: "A02 üretim bölgesi, sınıf sayımı, tam Reference ve idempotens nöbeti" )
+Kod( kod: KOD-KANON-TUTARLILIK,
+     dosya: "urun/cekirdek/src/kanon-tutarlilik.ts",
+     ne: "Yalnız resmi sekizli ile canlı sicillerden A03 kanon tutarlılık yüzünü üreten çekirdek" )
+Kod( kod: KOD-SNM-KANON-TUTARLILIK,
+     dosya: "urun/cekirdek/sinama/kanon-tutarlilik.test.ts",
+     ne: "A03 için 144/144, sabit SHA, tanı kümeleri ve kaynak yalıtımı nöbeti" )

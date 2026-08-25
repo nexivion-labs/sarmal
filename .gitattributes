@@ -1,0 +1,40 @@
+# Sarmal dosyalarının GitHub'a tanıtılması.
+#
+# GitHub'ın dil tanıyıcısı (linguist) Sarmal dilini henüz bilmiyor. Bugünkü hüküm
+# şudur: ÖDÜNÇ GRAMER KULLANILMAZ ve .sar dosyaları düz metin olarak görünür.
+# Karar iki denemenin ölçülmüş sonucuna dayanır ve ikisi de saha incelemesinde
+# Founder tarafından reddedilmiştir (2026-08-08).
+#
+# BİRİNCİ DENEME · Kotlin. Gramer, Türkçe cümlelerde büyük harfle başlayan her
+# kelimeyi tip sanıp renklendiriyor ve dosyanın yarısını oluşturan anlatı metnini
+# parçalıyordu. Bozuk renk renksizlikten kötüdür.
+#
+# İKİNCİ DENEME · Markdown. Beklenen kazanç şuydu: gövdenin yüzde ellisi belge
+# bloğudur, yani zaten markdown metnidir. Ölçülmeyen ve yanlış tahmin edilen şey
+# GitHub'ın davranışıydı: bu eşleme dosyayı yalnız renklendirmekle kalmadı,
+# ÖNİZLEME sekmesiyle RENDER da etti. Markdown tek satır sonlarını paragraf
+# devamı sayar, bu yüzden bütün .sar yapısı tek bir devasa paragrafa çöktü ve
+# sonuç Kotlin'den de kötü oldu. Ders kayda geçsin: bir dış aracın davranışı
+# tahmin edilmez, denenip ölçülür.
+#
+# BUGÜNKÜ DURUM: eşleme yok. Dosya renksiz görünür fakat satır yapısı korunur ve
+# hiçbir yabancı dil adı depoya yazılmaz. `linguist-documentation` işareti
+# dosyaları dil istatistiğinden çıkarır, böylece depo sayfası yanıltmaz.
+# Kalıcı çözüm, Sarmal'ın linguist'e kendi dili olarak kabul edilmesidir; ön şart
+# olan yaygınlık eşiği ve başvuru çağrısı kök tanıtım dosyasında yazılıdır ve
+# VS Code eklentimizin TextMate grameri o başvurunun hazır malzemesidir.
+#
+# BELGE İŞARETİ (Founder hükmü 2026-08-08): Köprü yalnız RENKLENDİRME içindir;
+# depo sayfasının dil çubuğunda Sarmal'ın Kotlin gibi SAYILMASI yanıltıcıdır.
+# Ölçüm bunu gösterdi: depo Kotlin yüzde 61,9 iddiasıyla açılıyordu, oysa bu
+# depoda tek satır Kotlin yazılmamıştır ve o oran .sar dosyalarının bayt payıdır.
+# `linguist-documentation` işareti dosyaları belge sayar ve dil istatistiğinden
+# çıkarır; renklendirme sürer, sahte dil iddiası biter. Bu satırın yanına
+# `linguist-detectable=true` YAZILMAZ, çünkü o işaret belge kabulünü ezer ve
+# dosyaları istatistiğe geri sokar.
+
+*.sar linguist-documentation=true
+
+# Üretilmiş dosyalar dil istatistiğini şişirmesin.
+_Sarmal/eklenti/dist/** linguist-generated=true
+_Sarmal/eklenti/src/gomulu-kanon.ts linguist-generated=true
