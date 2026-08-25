@@ -1,0 +1,55 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\"; { echo \"⚡ Bu depo Sarmal ile yönetilir. Ham CLI yerine sarmal MCP araçlarını tercih et (denetle-proje · graf · durum-guncelle · basla · ogret · gezin · kurallar · siniflama). Oturum karşılama kartı:\"; echo \"\"; node urun/cekirdek/src/sarmal.ts ogret; } 2>/dev/null | jq -Rs '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:.}}'",
+            "timeout": 30,
+            "statusMessage": "Sarmal ogret kartı yükleniyor"
+          },
+          {
+            "type": "command",
+            "command": "echo \"🧭 ÖNCE OKU: is/durum/durum_devir.sar tek yetkili durum kaydıdır (neredeyiz · sıradaki · kilitler · açık işler); giriş dosyası sarmal_anadizin.sar altı kitaplığı ilan eder; tek yetkili yasa yasa/kanon/ rafındadır ve kural metni kurallar aracından okunur. İşleme mesajı: başlık 'tip(kapsam): özet' biçiminde ve en çok 72 karakterdir, gövde Ne/Neden/Kapı satırlarıyla iner; kural kanca/commit-msg tarafından mekanik olarak zorlanır ve kanca/pre-commit çekirdek ile eklenti süitlerini koşturur. Kapsamlı iş is/plan/ altında Adım olarak bağlanır; Founder kilidi olmayan karar uygulanmaz.\" | jq -Rs '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:.}}'",
+            "timeout": 10,
+            "statusMessage": "Durum işaretçisi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c 'if (((.tool_input.file_path // .tool_input.path) // \"\") | test(\"ogreti/(ornek|sablon)/.*\\\\.sar\")) then {hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"allow\",additionalContext:\"⚡ MCP-önce (STR-3.2): örnek/şablon .sar dosyasını ham okuyorsun. Amacın şema/tip/desen öğrenmekse sarmal MCP araçlarını kullan: siniflama (tip kayıt defteri) · kavram · gezin <KOD> · kurallar. Düzenleme-öncesi okuma meşrudur.\"}} else empty end'",
+            "timeout": 10,
+            "statusMessage": "MCP-önce kontrolü"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "mcp__sarmal__denetle",
+      "mcp__sarmal__denetle-proje",
+      "mcp__sarmal__siniflama",
+      "mcp__sarmal__gezin",
+      "mcp__sarmal__sef",
+      "mcp__sarmal__bul",
+      "mcp__sarmal__graf",
+      "mcp__sarmal__kurallar",
+      "mcp__sarmal__ogret",
+      "mcp__sarmal__karne",
+      "mcp__sarmal__kavram",
+      "mcp__sarmal__prizma",
+      "mcp__sarmal__etki",
+      "Bash(node urun/cekirdek/src/sarmal.ts denetle *)",
+      "Bash(node urun/cekirdek/src/sarmal.ts ogret)",
+      "Bash(npm test)"
+    ]
+  }
+}

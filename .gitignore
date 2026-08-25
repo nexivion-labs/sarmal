@@ -35,3 +35,8 @@ ogreti/ornek/uretilen/
 !*.sar
 !CLAUDE.md
 !AGENTS.md
+# Yürütücü oturum kancaları depo malıdır (karşılama kartı, durum işaretçisi, MCP-önce);
+# küresel kural .claude/ dizinini yok sayar, istisna burada yaşar — yalnız settings.json girer.
+!.claude/
+.claude/*
+!.claude/settings.json
