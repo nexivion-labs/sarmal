@@ -384,6 +384,25 @@ test("proje: strateji, göç sırası, sınır, bağımlılık ve ölü iz hük�
     const gizliKokTanilari = stratejiTanilari(programlar, hamlar, kodIndeksle(programlar), join("/tmp", GIZLI_KOK_ADI));
     assert.equal(gizliKokTanilari.filter((x) => x.tani.kod === "açık-gizli-sınır-ihlali").length, 0,
       "gizli ürünün kendi kökündeki öz-başvuruları açık→gizli bağ sayılmamalıdır");
+
+    // Sınırın hangi yakasında olduğumuz KLASÖR ADINDAN değil, projenin KENDİ
+    // beyanından da okunur (Founder hükmü 2026-08-26): kapalı ürün kendi deposuna
+    // ayrıldığı gün adı artık yer tutucuyla eşleşmez ve nöbet onu kendi evinde
+    // haksız yere suçlardı. Beyan `gizli` ise nöbet susar; beyan yoksa ya da
+    // `açık` ise konuşmaya devam eder — sessiz varsayım nöbeti gevşetmez.
+    const beyanliGizli = harita({
+      "anadizin.sar": `Proje( kod: PRJ-GIZLI, ad: "kapali", rejim: katı, görünürlük: gizli, ne: "kapalı ürün" ) { }\n`,
+    });
+    const beyanliTanilar = stratejiTanilari(beyanliGizli, hamlar, kodIndeksle(beyanliGizli), kok);
+    assert.equal(beyanliTanilar.filter((x) => x.tani.kod === "açık-gizli-sınır-ihlali").length, 0,
+      "görünürlük: gizli beyan eden proje kendi evinde sınır ihlaliyle suçlanamaz");
+
+    const beyanliAcik = harita({
+      "anadizin.sar": `Proje( kod: PRJ-ACIK, ad: "acik", rejim: katı, görünürlük: açık, ne: "açık araç" ) { }\n`,
+    });
+    const acikTanilar = stratejiTanilari(beyanliAcik, hamlar, kodIndeksle(beyanliAcik), kok);
+    assert.ok(acikTanilar.some((x) => x.tani.kod === "açık-gizli-sınır-ihlali"),
+      "görünürlük: açık beyan eden projede nöbet susarsa gerçek sızıntı görünmez olur");
   } finally {
     rmSync(kok, { recursive: true, force: true });
   }

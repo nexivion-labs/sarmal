@@ -3783,7 +3783,17 @@ export function stratejiTanilari(
   const gizliYolAlani = new RegExp(`(?:^|[({,]\\s*)(?:dosya|yol|girdi|çıktı|komut|betik|modül)\\s*:\\s*["'][^"']*${gizliKokEki}`);
   const gizliKodAtama = new RegExp(`\\b(?:const|let|var)\\s+[\\p{L}_$][\\p{L}\\p{N}_$]*\\s*=.*["'][^"']*${gizliKokEki}`, "u");
   const gizliKodCagri = new RegExp(`\\b(?:import|require|readFile(?:Sync)?|writeFile(?:Sync)?|open|resolve|join)\\s*\\([^)]*["'][^"']*${gizliKokEki}`);
-  const kendiGizliKoku = dizin.replace(/\\/g, "/").replace(/\/+$/, "").split("/").pop() === GIZLI_KOK_ADI;
+  // Sınırın hangi yakasında olduğumuz KLASÖR ADINDAN değil, projenin KENDİ
+  // beyanından okunur (Founder hükmü 2026-08-26). Ad ile karar vermek iki yönden
+  // de yanlıştır: kapalı ürünün gerçek adı açık depoya yazılırsa ifşa olur,
+  // yazılmazsa nöbet kapalı tarafı kendi evinde haksız yere suçlar. Beyan yoksa
+  // proje AÇIK sayılır; sessiz varsayım nöbeti gevşetmez, sıkılaştırır.
+  const kendiGizliKoku =
+    dizin.replace(/\\/g, "/").replace(/\/+$/, "").split("/").pop() === GIZLI_KOK_ADI ||
+    dugumler.some(({ d }) =>
+      d.tur === "widget" && d.ad === "Proje" &&
+      [...d.parametreler, ...d.ozellikler].some(
+        (pr) => pr.ad === "görünürlük" && pr.deger.metin === "gizli"));
   if (!kendiGizliKoku) for (const [dosya, ham] of hamlar) {
     const satirlar = ham.split(/\r?\n/);
     let belgeIci = false;
