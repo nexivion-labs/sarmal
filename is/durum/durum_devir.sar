@@ -72,6 +72,14 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
         taranıyordu, bunun elli üç bini üretilmiş gövdeydi ve tarama yüzeyi
         dışlamalarla bin sekiz yüze indi.
 
+        📎 YÜZEY NOTU (2026-08-27): Founder tarihin başlığın ALTINDA küçük puntoyla
+        durmasını istemiştir; bu, VS Code'un ağaç görünümünde mümkün değildir, çünkü
+        TreeItem tek satırdır ve punto denetimi yoktur. Ara çözüm olarak tarih satırda
+        gün ve ay ile kısaltıldı (yıl yalnız farklıysa yazılır, gün adı yazılmaz) ve
+        sayacın kırpılması durdu. Founder'ın istediği görünümün tek gerçek yolu Yol
+        Haritası panelinin Webview'e çevrilmesidir; o iş ağacın katlanma, tıklama, ikon
+        ve durum davranışlarını yeniden yazmayı gerektirir ve kendi Adımını bekler.
+
         📌 AÇIK BORÇ (ORK-4): kanon çapraz-proje ad alanını hükme bağlar
         (`PRJ-A::KOD-X`) fakat ayrıştırıcı bu sözdizimini tanımaz; `::` ayracı
         liste ayrıştırmasında hata verir. Laboratuvar ile orkestrasyonun canlı

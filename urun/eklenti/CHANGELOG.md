@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.158 — 2026-08-27 (yol haritası kodu değil adı gösterir)
+
+- **Panel artık kod yazmıyor.** Varlık satırları `PRJ-SARMAL · sarmal` yerine yalnız `Sarmal` diyor: kod makinenin kimliğidir, tip zaten ikonla söylenir ve geliştiricinin satırda okuduğu tek şey addır. Kod kaynakta yerinde durur.
+- **Adlar Türkçe başlık düzeninde.** Her sözcüğün ilk harfi büyük, bağlaç ve edatlar küçük; kimlik yazımındaki tire ve alt çizgi sözcük ayracı sayılır, böylece `nexivion-labs` yüzeyde `Nexivion Labs` olur. Büyütme yerel duyarlı yapılır, çünkü varsayılan büyütme Türkçe'de i ile ı ayrımını bozar.
+- **Faz'ın zaman bilgisi adın içinden çıktı.** Tarih artık `hedefTarih` alanından türer ve satırın kenarında gün ile ay olarak durur; yıl yalnız içinde bulunulan yıldan farklıysa yazılır. Böylece başlık kısalır, ilerleme sayacı kırpılmaz ve elle yazılmış bir ay adı alanla çelişemez.
+
 ## 0.9.156 — 2026-08-25 (yol haritasında mevsimler tarih sırasına dizilir)
 
 - **Kardeş mevsimler artık ad ya da dosya sırasıyla değil tarih sırasıyla dizilir.** Kusuru Founder canlı pencerede buldu: kök proje altında yedi mevsim listeleniyordu ve sıra ne takvimi ne de ilanı yansıtıyordu, çünkü panel mevsimleri Adım grafının rütbesi ve dosya yoluyla, motor ise aynı dosyadaki kardeş mevsimleri satır sırasıyla diziyordu. Hüküm şudur: zaman ekseni tarihten türer. Motor kardeş Fazları `hedefTarih` beyanına göre zincirler, ay hassasiyetli beyan ay sonu sayılır, tarihsiz mevsim dizilişin sonuna düşer ve eşit tarihte kaynak sırası kazanır; panel aynı anahtarı motordan okur ve ikinci bir çeviri yazmaz. Koruma çekirdek süitinde bir nöbetle kuruldu: dosyada geç yazılan erken mevsim önce gelir, tarihsiz mevsim tarihli olanların arkasına düşer.

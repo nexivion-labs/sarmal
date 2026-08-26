@@ -105,3 +105,21 @@ export function tarihRozeti(hedefTarih: string | undefined): string {
   const d = new Date(Date.UTC(yil, ay - 1, gun));
   return `${gun} ${AYLAR[ay - 1]} ${yil} ${GUNLER[d.getUTCDay()]}`;
 }
+
+/** Satırda duran KISA tarih: gün ve ay. Yıl yalnız içinde bulunulan yıldan
+ *  farklıysa yazılır ve gün adı hiç yazılmaz — ikisi de satırı uzatır ve ağaç
+ *  görünümünde uzun satır sayacı kırptırır. Tam tarih hover'da yaşar; yüzey
+ *  kısalığı bilgiyi silmez, yerini değiştirir. */
+export function tarihRozetiKisa(hedefTarih: string | undefined, buYil?: number): string {
+  if (!hedefTarih) return "";
+  const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(hedefTarih.trim());
+  if (!m) return "";
+  const yil = Number(m[1]); const ay = Number(m[2]);
+  if (ay < 1 || ay > 12) return "";
+  const simdi = buYil ?? new Date().getFullYear();
+  const yilEki = yil === simdi ? "" : ` ${yil}`;
+  if (m[3] === undefined) return `${AYLAR[ay - 1]}${yilEki}`;
+  const gun = Number(m[3]);
+  if (gun < 1 || gun > 31) return `${AYLAR[ay - 1]}${yilEki}`;
+  return `${gun} ${AYLAR[ay - 1]}${yilEki}`;
+}

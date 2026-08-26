@@ -15,7 +15,7 @@ import * as vscode from "vscode";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
-import { baslikDuzeni, tarihRozeti } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
+import { baslikDuzeni, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🗺️ PRF-A04: panel tazelemesi de olay hattı + tek-uçuş kilidi + tek-kaynak kapsam kullanır
 import { dagKur, topolojikSira, fazTarihAnahtari, type Dag } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
@@ -821,7 +821,12 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
     // satırın kenarında SOLUK yazıyla durur ve kaynağı `hedefTarih` alanıdır; elle
     // yazılmış bir ay adıyla çelişmesi bu yüzden imkânsızdır.
-    const tarih = o.tip === "Faz" ? tarihRozeti(parametre(o.dugum, "hedefTarih")?.deger.metin) : "";
+    // Satırda KISA tarih durur (31 Ağustos); tam hâli — yıl ve gün adıyla — hover'da
+    // yaşar. Gerekçe ölçümdür: tam tarih satırda dururken sayaç kırpılıyordu ve ağaç
+    // görünümü ikinci satırı desteklemediği için tek çare kısaltmaktı. Bilgi silinmedi,
+    // yeri değişti.
+    const hedefTarihDegeri = o.tip === "Faz" ? parametre(o.dugum, "hedefTarih")?.deger.metin : undefined;
+    const tarih = tarihRozetiKisa(hedefTarihDegeri);
     const sayac = planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`;
     eleman.description = kapsayici
       ? [tarih, sayac].filter(Boolean).join("  ·  ")
