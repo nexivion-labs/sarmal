@@ -29,7 +29,7 @@
   sıfırda tutar.
 |<--
 
-Proje( kod: PRJ-SARMAL, ad: "sarmal", rejim: katı, görünürlük: açık,
+Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
   ne: "🧭 Sarmal açık deposu — dil, motor ve eklentinin Nexivion Labs çatısındaki açık kaynak evi" ) {
 
   Teknoloji( kod: TEK-SARMAL-TS, ne: "TypeScript çalışma dili — motor ve eklenti bu dille yazılır, çalışma zamanı bağımlılığı sıfırdır" )

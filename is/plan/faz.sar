@@ -18,7 +18,7 @@
 //   kalır); done-blokların odunu Temmuz halkasında (büyüdükleri mevsim, MIM-1.2).
 // ═══════════════════════════════════════════════════════════════════════════
 
-Faz( kod: FAZ-2026-TEMMUZ, ad: "temmuz olgunlaşma mevsimi", hedefTarih: "2026-07-31",
+Faz( kod: FAZ-2026-TEMMUZ, ad: "Olgunlaşma Mevsimi", hedefTarih: "2026-07-31",
      ne: "🌀 Temmuz büyüme dönemi — karar hizalaması + reform + ŞEF/eklenti olgunlaşması + Gemini standartlaştırma bu mevsimde büyüdü ve MÜHÜRLENDİ (Founder devir hükmü 2026-07-21); açık iş taşıyan 6 Blok Ağustos halkasına geçti" ) {
 
   // Temmuz'da büyüyüp BİTEN on dokuz gövde bu mevsimde kapandı ve dosyaları
@@ -31,7 +31,7 @@ Faz( kod: FAZ-2026-TEMMUZ, ad: "temmuz olgunlaşma mevsimi", hedefTarih: "2026-0
   çağır BLK-MDR         // 🗣️ motor diksiyon reformu
 }
 
-Faz( kod: FAZ-2026-AGUSTOS, ad: "ağustos orkestrasyon mevsimi", hedefTarih: "2026-08-31",
+Faz( kod: FAZ-2026-AGUSTOS, ad: "Orkestrasyon Mevsimi", hedefTarih: "2026-08-31",
      ne: "🌀 Ağustos dönemi — ASIL CEPHE orkestrasyon zekâsı (DALGA-3: eşikler tek kaynak + ajan eşleyici, ZKA-A05/A06); Temmuz'dan devrolan 6 Blok'un açık işi burada olgunlaşır. Founder north-star: 'orkestrasyon zekâsına geçelim' (2026-07-21)" ) {
 
   // Temmuz'dan devrolan Blok'lar — açık iş taşıyan gövdeler (Provider deseni:

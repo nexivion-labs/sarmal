@@ -1,4 +1,4 @@
-# Sarmal (Nexivion WorkspaceFramework)
+# Sarmal — açık kaynak dil, motor ve eklenti
 
 > **Bu dosya bir işaretçidir, anayasa metni değildir (DIL-1 · normatif içerik yalnız `.sar` kaynağında yaşar).**
 > Burada yalnız KALICI kurallar ve adresler bulunur. Durum, devir, sıradaki iş,
@@ -6,11 +6,14 @@
 > onların yeri durum ve devir dosyalarıdır. Bu dosyaya durum yazılırsa ikinci bir
 > bayat kaynak doğar ve anlam sapması başlar.
 
-## 1. Tek varlık, iki depo (STR-3)
+## 1. Tek varlık, ayrı depolar (STR-3)
 
 Bu depo Sarmal'ın açık kaynak evidir: dil, motor ve eklenti burada yaşar. Kapalı
 ürün ayrı bir depoda yaşar; bu depo ona hiçbir bağımlılık taşımaz ve onun adını,
 mimarisini ya da kalıplarını anlatmaz.
+
+Çatının işaretçisi `../CLAUDE.md` dosyasındadır; dört projenin rolü, kilitli
+hükümler ve OS zemin hükümleri orada yaşar. Oturuma onu okuyarak başla.
 
 ## 2. Anadizin = projenin büyük resmi
 

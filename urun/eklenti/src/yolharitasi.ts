@@ -15,6 +15,7 @@ import * as vscode from "vscode";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
+import { baslikDuzeni, tarihRozeti } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🗺️ PRF-A04: panel tazelemesi de olay hattı + tek-uçuş kilidi + tek-kaynak kapsam kullanır
 import { dagKur, topolojikSira, fazTarihAnahtari, type Dag } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
@@ -749,7 +750,10 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // kalır ve açıklama boş ray yerine kaç proje sardığını söyler (küme kimliği).
       const sardigi = this.altVarliklar(p).length;
       const eleman = new vscode.TreeItem(
-        `${p.kod} · ${p.ad}`,
+        // YUZ (Founder hükmü 2026-08-26): yüzey KODU göstermez — kod makinenin
+        // kimliğidir ve tip zaten ikonla söylenir; geliştiricinin okuduğu tek şey
+        // ADdır ve başlık düzeniyle yazılır. Kod hover ipucunda yaşamaya devam eder.
+        baslikDuzeni(p.ad ?? p.kod),
         p.cocuklar.length || sardigi ? vscode.TreeItemCollapsibleState.Expanded
                                      : vscode.TreeItemCollapsibleState.None);
       const sayac = p.cocuklar.length ? `[${p.tamam}/${p.toplam}]` : "";
@@ -788,7 +792,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // HTR-YOLHARITASI-INSAN-ADI (DIL-1.1 ⑥ · Founder 2026-07-20): yol haritası İNSAN
       // içindir — etiket ad:'ı gösterir (ad yoksa koda düşer); kod tooltip'te yaşar
       // (satır 748) ve ikon tipi zaten söyler → tip öneki etikette tekrarlanmaz.
-      o.ad ?? o.kod,
+      baslikDuzeni(o.ad ?? o.kod),
       // 🐢 PRF-A05 (Founder rota onayı 2026-07-19): Blok da varsayılan KAPALI —
       // kalabalık mevsim Faz'ı açılınca bütün gövdeler tek karede kurulmaz;
       // gövdenin içi kullanıcı isteğiyle açılır (yalnız açılış durumu değişti).
@@ -813,8 +817,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
     // beyanı. Satır soluk + 🧊 imli; NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
     const planNeden = o.tip === "Blok" ? (parametre(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
+    // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
+    // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
+    // satırın kenarında SOLUK yazıyla durur ve kaynağı `hedefTarih` alanıdır; elle
+    // yazılmış bir ay adıyla çelişmesi bu yüzden imkânsızdır.
+    const tarih = o.tip === "Faz" ? tarihRozeti(parametre(o.dugum, "hedefTarih")?.deger.metin) : "";
+    const sayac = planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`;
     eleman.description = kapsayici
-      ? (planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`)
+      ? [tarih, sayac].filter(Boolean).join("  ·  ")
       : nedenAktif;
     const md = new vscode.MarkdownString();
     md.appendMarkdown(`**${kanonikWidgetAdi(o.tip, o.tip)} · ${o.kod}**`);
@@ -1168,7 +1178,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
       const varliklar = saglayici.varlikListesi();
       const secim = await vscode.window.showQuickPick(
         varliklar.map((v) => ({
-          label: `${v.kod} · ${v.ad}`,
+          label: baslikDuzeni(v.ad ?? v.kod),
           description: YOL_METINLERI.rayBloklari(v.tamam, v.toplam, v.cocuklar.length),
           varlik: v,
         })),

@@ -1,6 +1,6 @@
 // ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25): bu sahne kopyasında atölyede kalan çapraz haritanın eski karar kimliklerine (K4 ailesi) giden on atıf düşürülmüştür;
 //     atıfların aslı atölye deposunda tarihiyle durur, açık depo çözülmeyen kimlik taşımaz. ═══
-Faz( kod: FAZ-GOC-V1, ad: "v1 omurga göçü", hedefTarih: "2026-08-07" ) {
+Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
 
   -->|
   ## Amaç
