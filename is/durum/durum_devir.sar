@@ -18,9 +18,12 @@
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
             neredeyiz: CATI-DORT-PROJEYLE-KURULDU-YUZEY-ADI-GOSTERIYOR,
-            sıradaki: ORK-4-CAPRAZ-ATIF-BORCU-SONRA-MAGAZA-YUKLEMESI,
+            sıradaki: YUZEY-UC-BULGUSU-SONRA-ORK-4-SONRA-MAGAZA-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ ORK-4-CAPRAZ-PROJE-AD-ALANI-AYRISTIRICIDA-YOK,
+            açıkİşler: [ YUZEY-KOD-BASLIK-DUZENINE-SOKULUYOR-YTK-A01-YERINE-YTK-A01,
+                         YUZEY-FAZ-DISI-SVG-IKONLAR-SONUK,
+                         DUZENLEYICI-TEPKISI-AGIRLASTI,
+                         ORK-4-CAPRAZ-PROJE-AD-ALANI-AYRISTIRICIDA-YOK,
                          YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
                          PROJE-VE-CALISMA-ALANI-SEMBOLLERI-EKSEN-TIPLERINE,
                          GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI,
@@ -87,6 +90,37 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
         denetimi bilinçli olarak sıfır hata vermez ve bu iki deponun doğum
         işlemeleri kapıdan gerekçesi yazılı muafiyetle geçmiştir. Borç, ORK-4
         motorda karşılandığı gün kapanır ve o gün atıflar ad alanlı yazıma çevrilir.
+
+        🔍 FOUNDER TURU · OTURUM 99 GECESİ (2026-08-27, 01.20–01.25) — ÜÇ BULGU
+        ölçülmüş ve onarımsız kayda alınmıştır; gözlem turunda anında müdahale
+        edilmez, tur bitince birlikte sıralanır.
+
+        ① Kod, ad yerine başlık düzenine sokulmaktadır. Yol Haritası satırı adı
+        `baslikDuzeni(o.ad ?? o.kod)` ifadesiyle üretir; bir düğümün `ad` alanı
+        yoksa kimlik kodunun kendisi başlık düzenine girer ve `YTK-A01` satırda
+        `Ytk A01` diye görünür. Kusur 25f01da işlemesiyle doğmuştur ve yalnız
+        adsız düğümleri etkiler. Onarım yönü bellidir: dönüşüm ada uygulanır,
+        koda uygulanmaz; kod olduğu gibi yazılır. Nöbeti `baslikDuzenindeMi`
+        yüklemi üzerinden bir sınama taşır.
+
+        ② İkon kanalı Faz dışındaki eksen tiplerinde sönüktür. Hem dosya içi
+        simgelerde hem Yol Haritası panelinde Faz satırı ikonunu göstermekte,
+        Blok, Katman, AltKatman ve Adım satırları ikonsuz kalmaktadır; Onaylar
+        panelinde `.sar` dosyası satırı ise kırık resim göstergesiyle
+        çizilmektedir. Codicon kanalı sağlamdır: düğme simgeleri sorunsuz
+        görünür, dolayısıyla kopukluk yalnız SVG kanalındadır. Ölçülen zemin
+        şudur: kurulu paketin altında otuz altı üretilmiş eksen varyantının
+        tamamı diskte durur, dosyalar boş değildir ve geçerli SVG gövdesi
+        taşırlar; paket hiçbir dosya ikon teması ilan etmemektedir. Kusur bu
+        yüzden dosyanın yokluğunda değil, ikonun çözülmesinde ya da paketin
+        canlı kaynakla eşleşmemesindedir. Sonraki oturumun ilk ölçümü kurulu
+        paketin `dist` özetlerini kaynağınkiyle karşılaştırmak olmalıdır.
+
+        ③ Düzenleyici tepkisi ağırlaşmıştır. İzleme yüzeyi bu ağırlığın sebebi
+        değildir: çatı altında on yedi bin yüz doksan beş dosya vardır ve bunun
+        on beş bin altı yüz seksen dokuzu `node_modules` altında olup izlemeden
+        dışlanmıştır. Ölçüm bu yüzden eklenti tarafına, yani her değişiklikte
+        yeniden koşan ayrıştırma ve panel kurulumuna bakmalıdır.
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
