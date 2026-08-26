@@ -171,6 +171,26 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
       sınır:  "A04 hükümleri ÇİĞNENMEZ: word-wrap kapatma YOK, üç-tırnak/kaynak dönüşümü YOK (oturum 27 redleri), gramer/motor DEĞİŞMEZ — yalnız eklenti görünüm katmanı; dal-glifleri (├─/│) devam satırında ÇİZİLEMEZ (API sınırı sürer) — süreklilik hissini ton verir, glif değil"
       koşu:   "2026-07-17 · NEGATİF KAPANIŞ — ÖZELLİK GERİ ALINDI (Founder kararı: 'olmuyorsa zorlamayalım'). Üç iterasyon canlı denendi, üçü de Founder ekran-teyidiyle değerlendirildi: ① tam-satır soluk ton (0.9.61) — Founder: 'ton güzel' AMA sol bantlar hâlâ yok ② isWholeLine + inset box-shadow şeritleri (0.9.62) — bantlar devam satırlarında GÖRÜNDÜ ama aralıksız kalın levha estetiği: 'çok çirkin' ③ gradyan bant-dokusu: 1.5px hiyerarşi çizgisi + alfa-0.13 bant ritmi (0.9.63) — 'iyice bozuldu'. HÜKÜM: CSS-enjeksiyon ailesi (tek erişilebilir yol — dekorasyon API'si sanal girinti alanını adreslemez) piksel düzeyinde ÇALIŞIYOR ama gerçek bantların karakter-hücresi ritmiyle hizalanamıyor (font-px tahmini + glifsizlik) → görsel kalite eşiği tutturulamadı. girinti.ts A07-öncesi hâline döndürüldü (git show 1598a42 · davranış=0.9.60), eklenti 0.9.64 kurulu, süit 118/118. Kabul ① gözle-teyidi ALINMADI — bu kapanış özellik teslimi DEĞİL, denemenin dürüst kaydıdır: A04'ün 'word-wrap devam satırı = API sınırı, kesintisiz bütün panel/kartta yaşar' hükmü YENİDEN yürürlükte. İz: commit 0a33720 (it-1) · 53aad36 (it-2) · 6c5c856 (it-3) · geri alım bu commit"
     }
+
+    Adım( kod: VIT-K78-A08, durum: geliştirmede, öncelik: p1, onay: "onaylandı — 2026-08-26 · Founder hükmü: yüzey kodu değil adı gösterir; kod makinenin kimliğidir, tip zaten ikonla söylenir ve geliştiricinin satırda okuduğu tek şey Türkçe başlık düzeninde yazılmış addır", bağımlı: [ VIT-K78-A04 ],
+      referans: [ YUZ-1.2, YUZ-7, DIL-1.5 ],
+      üretir:   [ KOD-BASLIK, KOD-SNM-BASLIK, KOD-YOLHARITA ],
+      ne:       "🔤 Yol Haritası satırı kodu değil adı gösterir ve ad Türkçe başlık düzeninde yazılır. Founder 2026-08-26 tarihinde panelde kod ile adın yan yana yazıldığını gördü ve kodun yüzeyde yer kaplamaktan başka iş görmediğini bildirdi. Başlık düzeni çekirdekte tek işlevde yaşar, çünkü kural bir yüzeyin değil bütün yüzeylerin kuralıdır; büyütme yerel duyarlıdır, çünkü JavaScript'in varsayılan büyütmesi i ile ı ayrımını bozar. Faz'ın zaman bilgisi adın içinden çıkarılmış ve hedefTarih alanından türeyen kısa bir rozete taşınmıştır." ) {
+      görev: [
+        "Başlık düzenini çekirdekte tek işlev olarak kur: her sözcüğün ilk harfi büyük, bağlaç ile edatlar küçük, ilk sözcük her hâlde büyük; tire ve alt çizgi sözcük ayracı sayılır ve bütün dönüşümler Türkçe yerel duyarlıdır.",
+        "Yol Haritası panelinin varlık, öge ve ray seçici satırlarını bu tek kapıdan geçir; kod hover ipucunda yaşamaya devam eder ve adı olmayan düğümün kodu yüzeyde olduğu gibi durur.",
+        "Faz satırında tarihi adın içinden çıkar ve hedefTarih alanından türeyen kısa rozete taşı; tam tarih hover'da kalır.",
+        "Nöbet kur: adsız düğümün kodu yüzeyde aynen durur, Türkçe tuzağı ve bağlaç kuralı sınamayla kilitlenir; mutasyonla kanıtla."
+      ]
+      kabul: [
+        "Panelde hiçbir satır kimlik kodunu başlık düzenine sokmaz; adı olan düğüm adını başlık düzeninde, adı olmayan düğüm kodunu olduğu gibi taşır ve bu çekirdek süitindeki nöbetle ölçülür.",
+        "Türkçe büyütme yerel duyarlıdır ve istanbul sözcüğü yüzeyde İstanbul olur; bu sınamayla kilitlidir.",
+        "Çekirdek ve eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir.",
+        "Founder canlı pencerede adsız satırın kodunu olduğu gibi gördüğünü onaylamıştır; onay, canlı görünümün gözle doğrulanmasıdır."
+      ]
+      sınır: "Kaynak dosyadaki ad alanı değiştirilmez; dönüşüm yalnız yüzeyde yaşar ve tek dosyada durur. Kod hiçbir yüzeyden silinmez, hover ipucuna taşınır. Tarih bilgisi silinmez, satırdan hover'a yer değiştirir. Founder'ın istediği iki satırlı görünüm (tarih başlığın altında küçük puntoyla) ağaç görünümünde mümkün değildir ve Webview'e geçiş kendi Adımını bekler."
+      koşu: "2026-08-27 · Başlık düzeni çekirdekte baslik.ts modülünde tek kapıdan kuruldu ve Yol Haritası üç satır türünü bu kapıdan geçirdi (0.9.157 ile 0.9.158 paketleri). Founder turu aynı gece bir gerilemeyi ölçtü: dönüşüm ad yoksa koda da uygulanıyor ve YTK-A01 satırda Ytk A01 görünüyordu. Onarım tek kapıya indi: yuzeyAdi işlevi dönüşümü yalnız ada uygular ve koda dokunmaz; sekiz sınamalık nöbet çekirdek süitine girdi, mutasyon kanıtı sınamanın kendisinde yazılıdır. Adım, onarımlı paketin Founder tarafından canlı pencerede görülmesini beklediği için geliştirmede tutulmuştur."
+    }
     }
   }
 
@@ -801,3 +821,9 @@ Veri( kod: VRI-TEMA-ACIK, dosya: "urun/eklenti/temalar/sarmal-acik.json",
   ne: "🍎 Sarmal açık teması — koyu kardeşiyle aynı üreticiden doğar ve aynı palet nöbetine tabidir; açık zemin için kanonun açık eşleri kullanılır (VIT-KIMLIK-A04 meyvesi)" )
 Kod( kod: KOD-SNM-GIYDIRMESIZ-RENK, dosya: "urun/eklenti/sinama/giydirmesiz-renk.test.ts",
   ne: "🍎 Giydirmesiz renk nöbetleri — dokuz sınama: aktivasyonda kullanıcı ayarına yazılan anahtar sayısının sıfır olduğu sahte yürütücüye giden çağrılar sayılarak, kapsam ile ilan tamlığı çizelgeden, paletin kanon dışına çıkmadığı ve üretecin idempotent olduğu mutasyonla kanıtlanır (VIT-KIMLIK-A04 meyvesi)" )
+
+// 🍎 VIT-K78-A08 başlık düzeni teslimi (2026-08-27)
+Kod( kod: KOD-BASLIK, dosya: "urun/cekirdek/src/baslik.ts",
+  ne: "🍎 Türkçe başlık düzeni ve yüzey adı — bütün yüzeylerin tek kapısı: ad başlık düzenine çevrilir, kod olduğu gibi kalır, büyütme yerel duyarlıdır; Faz tarih rozetleri de burada türer (VIT-K78-A08)" )
+Kod( kod: KOD-SNM-BASLIK, dosya: "urun/cekirdek/sinama/baslik.test.ts",
+  ne: "🍎 Başlık düzeni nöbetleri — sekiz sınama: adsız düğümün kodu yüzeyde aynen durur (bulgu ① mutasyon kanıtlı), Türkçe i ile ı tuzağı, bağlaç kuralı, ayraçlar ve iki tarih rozeti (VIT-K78-A08)" )

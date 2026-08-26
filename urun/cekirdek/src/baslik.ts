@@ -80,6 +80,20 @@ export function baslikDuzenindeMi(ad: string): boolean {
   return ad === baslikDuzeni(ad);
 }
 
+/**
+ * Bir düğümün yüzeyde okunacak adı.
+ *
+ * Ad varsa başlık düzenine çevrilir; ad yoksa KOD olduğu gibi yazılır. Kod bir
+ * kimliktir, başlık değildir: `YTK-A01` yüzeyde `Ytk A01` olamaz, çünkü o
+ * yazım artık hiçbir düğümü adlandırmaz ve gezinmeyi kırar. Dönüşüm yalnız
+ * ada uygulanır; bütün yüzeyler adı bu tek kapıdan alır (Founder turu
+ * 2026-08-27 · bulgu ①: `baslikDuzeni(ad ?? kod)` kodu da başlık düzenine
+ * sokuyordu).
+ */
+export function yuzeyAdi(ad: string | undefined, kod: string): string {
+  return ad ? baslikDuzeni(ad) : kod;
+}
+
 /** `hedefTarih` alanından yüzeyde gösterilecek kısa tarih rozeti üretir.
  *  Faz adları ay bilgisini metinde taşımaz (Founder hükmü 2026-08-26); zaman
  *  bilgisi ADIN İÇİNDE değil, satırın kenarında yaşar ve kaynağı `hedefTarih`

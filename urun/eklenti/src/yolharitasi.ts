@@ -15,7 +15,7 @@ import * as vscode from "vscode";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
-import { baslikDuzeni, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
+import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🗺️ PRF-A04: panel tazelemesi de olay hattı + tek-uçuş kilidi + tek-kaynak kapsam kullanır
 import { dagKur, topolojikSira, fazTarihAnahtari, type Dag } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
@@ -753,7 +753,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
         // YUZ (Founder hükmü 2026-08-26): yüzey KODU göstermez — kod makinenin
         // kimliğidir ve tip zaten ikonla söylenir; geliştiricinin okuduğu tek şey
         // ADdır ve başlık düzeniyle yazılır. Kod hover ipucunda yaşamaya devam eder.
-        baslikDuzeni(p.ad ?? p.kod),
+        // Adsız düğümde kod OLDUĞU GİBİ yazılır — dönüşüm ada uygulanır, koda değil
+        // (Founder turu 2026-08-27 bulgu ①; tek kapı: cekirdek/baslik.yuzeyAdi).
+        yuzeyAdi(p.ad, p.kod),
         p.cocuklar.length || sardigi ? vscode.TreeItemCollapsibleState.Expanded
                                      : vscode.TreeItemCollapsibleState.None);
       const sayac = p.cocuklar.length ? `[${p.tamam}/${p.toplam}]` : "";
@@ -792,7 +794,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // HTR-YOLHARITASI-INSAN-ADI (DIL-1.1 ⑥ · Founder 2026-07-20): yol haritası İNSAN
       // içindir — etiket ad:'ı gösterir (ad yoksa koda düşer); kod tooltip'te yaşar
       // (satır 748) ve ikon tipi zaten söyler → tip öneki etikette tekrarlanmaz.
-      baslikDuzeni(o.ad ?? o.kod),
+      // Başlık düzeni YALNIZ ada uygulanır; koda düşülen satırda kod aynen kalır
+      // (Founder turu 2026-08-27 bulgu ①: `YTK-A01` bir kimliktir, `Ytk A01` değildir).
+      yuzeyAdi(o.ad, o.kod),
       // 🐢 PRF-A05 (Founder rota onayı 2026-07-19): Blok da varsayılan KAPALI —
       // kalabalık mevsim Faz'ı açılınca bütün gövdeler tek karede kurulmaz;
       // gövdenin içi kullanıcı isteğiyle açılır (yalnız açılış durumu değişti).
@@ -1183,7 +1187,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
       const varliklar = saglayici.varlikListesi();
       const secim = await vscode.window.showQuickPick(
         varliklar.map((v) => ({
-          label: baslikDuzeni(v.ad ?? v.kod),
+          label: yuzeyAdi(v.ad, v.kod),
           description: YOL_METINLERI.rayBloklari(v.tamam, v.toplam, v.cocuklar.length),
           varlik: v,
         })),
