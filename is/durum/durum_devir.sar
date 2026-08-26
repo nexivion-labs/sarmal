@@ -6,10 +6,17 @@
 //
 //   DOĞUM NOTU (2026-08-25): bu kayıt açık deponun sıfır geçmişli doğumuyla taze
 //   doğmuştur. Atölye deposunun devir tarihçesi bu depoya taşınmamıştır; o
-//   tarihçe atölyede kendi kaydıyla yaşar. Oturum sayacı burada birden başlar.
+//   tarihçe laboratuvar deposunda kendi kaydıyla yaşar (KRS-03).
+//
+//   SAYAÇ HÜKMÜ (Founder · 2026-08-26): oturum sayacı burada birden BAŞLAMAZ;
+//   projenin yaşadığı gerçek oturum sayısını taşır ve laboratuvardaki kayıtla
+//   daima aynı numarayı gösterir. Gerekçe şudur: KRS-03'ün taşınmasını yasakladığı
+//   şey devir METNİDİR, sayı değildir; iki kayıt ayrı numara taşırsa hangi işin
+//   hangi oturumda yapıldığı okunamaz hâle gelir ve depo sıfır geçmişle doğmuş
+//   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-26", oturum: 1,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-26", oturum: 98,
             neredeyiz: CATIDA-YASIYOR-YUZLER-VE-KANCALAR-BAGLI,
             sıradaki: UZAK-GONDERIM-UZLASMASI-VE-MAGAZA-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
