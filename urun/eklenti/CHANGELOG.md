@@ -5,7 +5,6 @@ Bu eklentinin kayda değer değişiklikleri burada tutulur.
 ## 0.9.159 — 2026-08-27 (adsız satırda kod olduğu gibi kalır)
 
 - **Adı olmayan düğümün kodu artık başlık düzenine sokulmuyor.** Kusuru Founder canlı pencerede buldu: `YTK-A01` gibi adsız bir düğüm Yol Haritası satırında `Ytk A01` görünüyordu, çünkü başlık dönüşümü ad bulunamayınca kodun kendisine uygulanıyordu. Hüküm şudur: dönüşüm yalnız ada uygulanır; kod bir kimliktir, başlık değildir ve yüzeyde olduğu gibi yazılır. Yüzey adı çekirdekte tek kapıdan alınır ve adsız düğümün kodunun aynen kalması sekiz sınamalık bir nöbetle kilitlenmiştir; nöbet, eski yazım geri konduğunda kırmızıya döner.
-- **Faz satırındaki kısa tarih rozeti bu paketle kullanıcıya ulaşıyor.** Kısaltma 0.9.158 kaynağına girmişti, fakat o günün paketi kısaltmadan önce derlendiği için kurulu eklenti tam tarihi göstermeye devam ediyordu; bu paket motoru güncel hâliyle taşır.
 
 ## 0.9.158 — 2026-08-27 (yol haritası kodu değil adı gösterir)
 

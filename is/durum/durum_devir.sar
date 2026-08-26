@@ -145,8 +145,9 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         geçerli gövde taşır. Yol katmanı: editör kanalının karar üreticisi üç plan
         dosyasında AST'deki her Blok, Katman, AltKatman ve Adım için karar üretmiş,
         ürettiği her yol kurulu pakette bulunmuştur; panel kanalı aynı yol üreticisini
-        çağırır. Gövde katmanı: kurulu 0.9.158 gövdesi 01.02'de, kısa tarih rozetinden
-        (f1efe86) önce derlenmiştir, fakat ikon kodu iki gövdede aynıdır. Normalizasyon
+        çağırır. Gövde katmanı: kurulu 0.9.158 gövdesi 01.02'de derlenmiştir ve kısa tarih
+        rozetini zaten taşır (bunun tersi önce iddia edilmiş, sonra küçültmeye
+        dayanıklı bir işaretle çürütülmüştür); ikon kodu iki gövdede aynıdır. Normalizasyon
         katmanı: tek ASCII dışı evre adı olan sürüyor iki gövdede de aynı kaçışla
         yazılıdır. VS Code katmanı: 00.38'de 0.9.157, 01.02'de 0.9.158 kurulmuş ve her
         kurulum eski klasörü yalnız kaldırılacak diye işaretlemiştir; VS Code kaynağı
