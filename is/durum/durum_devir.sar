@@ -16,13 +16,15 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
-            neredeyiz: CATI-DORT-PROJEYLE-KURULDU-YUZEY-ADI-GOSTERIYOR,
-            sıradaki: YUZEY-UC-BULGUSU-SONRA-ORK-4-SONRA-MAGAZA-YUKLEMESI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
+            neredeyiz: YUZEY-BULGU-BIR-KAPANDI-IKI-VE-UC-OLCULDU-PAKET-0-9-159-HAZIR,
+            sıradaki: FOUNDER-GOZU-UC-BULGU-SONRA-ORK-4-SONRA-MAGAZA-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ YUZEY-KOD-BASLIK-DUZENINE-SOKULUYOR-YTK-A01-YERINE-YTK-A01,
-                         YUZEY-FAZ-DISI-SVG-IKONLAR-SONUK,
-                         DUZENLEYICI-TEPKISI-AGIRLASTI,
+            açıkİşler: [ EKLENTI-0-9-159-KURULUM-VE-PENCERE-YENILEME-FOUNDERIN,
+                         VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
+                         YUZEY-FAZ-DISI-SVG-IKONLAR-YENIDEN-BASLAYAN-PENCEREDE-BAKILACAK,
+                         DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
+                         CATI-CODE-WORKSPACE-DOSYASI-DISKTE-YOK,
                          ORK-4-CAPRAZ-PROJE-AD-ALANI-AYRISTIRICIDA-YOK,
                          YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
                          PROJE-VE-CALISMA-ALANI-SEMBOLLERI-EKSEN-TIPLERINE,
@@ -121,6 +123,60 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
         on beş bin altı yüz seksen dokuzu `node_modules` altında olup izlemeden
         dışlanmıştır. Ölçüm bu yüzden eklenti tarafına, yani her değişiklikte
         yeniden koşan ayrıştırma ve panel kurulumuna bakmalıdır.
+
+        ⑯ OTURUM 100 (2026-08-27) — ÜÇ YÜZEY BULGUSU ÖLÇÜLDÜ, BİRİNCİSİ KAPANDI,
+        PAKET HEAD'DEN ÜRETİLDİ. Oturum, doksan dokuzuncu devrin sıradaki alanından
+        başladı ve ORK-4'e dokunmadı.
+
+        ① kapandı. Yüzey adı çekirdekte tek kapıya indi: `yuzeyAdi` işlevi dönüşümü
+        yalnız ada uygular, adı olmayan düğümün kodunu olduğu gibi yazar. Yol
+        Haritası'nın üç satır türü bu kapıdan geçer; sekiz sınamalık nöbet çekirdek
+        süitine girdi ve mutasyon kanıtı sınamanın kendisinde yazılıdır. İş, vitrin
+        planında VIT-K78-A08 olarak ilan edildi; baslik.ts ile sınaması Kod meyvesi
+        olarak bağlandı ve doksan dokuzuncu oturumdan kalan yetim meyve uyarısı
+        kapandı. Adım, onarımlı paketin Founder tarafından canlı pencerede
+        görülmesini beklediği için geliştirmede tutulur. Eklenti 0.9.159 paketi
+        mühürlenmiş HEAD'den üretildi; kurulum ve pencere yenileme Founder'ındır,
+        çünkü kurulum açık pencereye dokunur ve gözlem turu gece kapanmıştır.
+
+        ② ölçüldü ve açıklanamadı; kusur bu oturumda görülemediği için onarım
+        yazılmadı. Beş katman tek tek elendi. Dosya katmanı: kurulu paketin dört yüz
+        otuz beş medya dosyası kaynakla bayt bayt aynıdır ve otuz altı eksen varyantı
+        geçerli gövde taşır. Yol katmanı: editör kanalının karar üreticisi üç plan
+        dosyasında AST'deki her Blok, Katman, AltKatman ve Adım için karar üretmiş,
+        ürettiği her yol kurulu pakette bulunmuştur; panel kanalı aynı yol üreticisini
+        çağırır. Gövde katmanı: kurulu 0.9.158 gövdesi 01.02'de, kısa tarih rozetinden
+        (f1efe86) önce derlenmiştir, fakat ikon kodu iki gövdede aynıdır. Normalizasyon
+        katmanı: tek ASCII dışı evre adı olan sürüyor iki gövdede de aynı kaçışla
+        yazılıdır. VS Code katmanı: 00.38'de 0.9.157, 01.02'de 0.9.158 kurulmuş ve her
+        kurulum eski klasörü yalnız kaldırılacak diye işaretlemiştir; VS Code kaynağı
+        okunarak doğrulandı ki hem komut satırı kurulumu hem ana süreçteki izleyici
+        klasörü anında silmez, silme bir sonraki açılışta olur ve o açılış 01.38'de
+        gerçekleşmiştir. Dolayısıyla 01.20'de iki sürümün klasörü de diskteydi ve
+        eski pencerenin günlükleri VS Code tarafından silindiği için hangi sürümün
+        koştuğu artık okunamaz. Kalan tek ölçüm Founder'ındır: 01.38'de yeniden
+        başlayan pencerede Blok ve Katman satırları ikon taşıyorsa kusur eski pencere
+        durumuna aitti; taşımıyorsa Developer Tools konsolundaki yüklenemeyen kaynak
+        satırı tek kanıttır ve onarım o satırdan başlar.
+
+        ③ ölçüldü; karar Founder'ındır. Tuş vuruşu yolu ucuzdur: en büyük plan
+        dosyasında ayrıştırma on bir, doğrulama on iki milisaniyedir. Ağırlık tam
+        taramadadır: komut satırı denetimi yalnız sarmal kökünde iki buçuk, dört köklü
+        çatıda beş buçuk saniye sürer; eklenti her .sar kaydında iki tam turu (denetim
+        hattı üç yüz, panel hattı üç yüz elli milisaniye gecikmeyle) dört kök için tek
+        iş parçacığında koşar ve her dosya için bir belge modeli açar. Ayrıca on bir
+        ayrı değişiklik abonesi vardır ve canlı tanı yolu gecikmesizdir. Öneri sırası
+        şudur: tam turu aktif varlığın köküne daraltmak en büyük kazançtır ve MIM-1.1
+        odağının doğal uzantısıdır; disk dosyalarını belge modeli açmadan okumak
+        ikinci kazançtır; canlı tanı yoluna öteki süslerle aynı iki yüz milisaniyelik
+        gecikmeyi vermek üçüncüdür ve yazarken anında sözleşmesini değiştirdiği için
+        Founder hükmü ister. Canlı ölçüm eklentinin kendi performans kanalından
+        (Çıktı paneli, Sarmal Performans) okunur.
+
+        Yan bulgu: çatı klasöründe çalışma alanı dosyası yoktur. Çatı işaretçisi
+        `Nexivion Labs.code-workspace` adını verir, VS Code'un kendi kaydı
+        `nexivion-labs.code-workspace` yolunu gösterir ve ikisi de diskte değildir;
+        pencerenin bugün hangi tanımla açık olduğu Founder'a sorulacaktır.
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
