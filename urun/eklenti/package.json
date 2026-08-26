@@ -2,7 +2,7 @@
   "name": "sarmal",
   "displayName": "%sarmal.displayName%",
   "description": "%sarmal.description%",
-  "version": "0.9.156",
+  "version": "0.9.157",
   "publisher": "nexivion-labs",
   "license": "Apache-2.0",
   "icon": "ikonlar/sarmal-ikon.png",

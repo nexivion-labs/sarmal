@@ -16,11 +16,19 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-26", oturum: 98,
-            neredeyiz: CATIDA-YASIYOR-YUZLER-VE-KANCALAR-BAGLI,
-            sıradaki: UZAK-GONDERIM-UZLASMASI-VE-MAGAZA-YUKLEMESI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 99,
+            neredeyiz: CATI-DORT-PROJEYLE-KURULDU-YUZEY-ADI-GOSTERIYOR,
+            sıradaki: ORK-4-CAPRAZ-ATIF-BORCU-SONRA-MAGAZA-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI, EKL-F6-A01-MAGAZA-YUKLEMESI, OSS-A05-KATKI-SOZLESMESI, RFM-ONCELIK-IKI-EKSEN-REFORMU, KPS-KAPSAM-BORCU-YAYIN-SONRASI, KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI ] ) {
+            açıkİşler: [ ORK-4-CAPRAZ-PROJE-AD-ALANI-AYRISTIRICIDA-YOK,
+                         YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
+                         PROJE-VE-CALISMA-ALANI-SEMBOLLERI-EKSEN-TIPLERINE,
+                         GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI,
+                         EKL-F6-A01-MAGAZA-YUKLEMESI,
+                         OSS-A05-KATKI-SOZLESMESI,
+                         RFM-ONCELIK-IKI-EKSEN-REFORMU,
+                         KPS-KAPSAM-BORCU-YAYIN-SONRASI,
+                         KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
         aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
@@ -41,6 +49,36 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-26", oturum: 98,
         yaşar: proje kapsamlı MCP kaydı, oturum kancaları ve iki doğum gecesi
         hatırlatıcısı (çalışma alanı düğümlerinin Mini Graf'ta görünmesi ve
         çatı kökünden denetimin sınırı).
+
+        ⑮ OTURUM 99 (2026-08-26 gece — 2026-08-27) — ÇATI DÖRT PROJEYLE KURULDU,
+        YÜZEY ADI GÖSTERMEYE BAŞLADI. Founder hükmüyle eski depo laboratuvar adını
+        aldı ve arşiv değil canlı deney alanı sayıldı; kapalı ürün orkestrasyon
+        adıyla kendi özel deposunda sıfır geçmişle doğdu; site çatıya alındı ve
+        Nexivion-WorkspaceFramework adı diskten kalktı. Dört deponun üçü uzak
+        adresinde yaşar, açık deponun ilk gönderimi bilinçli olarak canlı açılışa
+        bırakılmıştır. Kadro yerleşiminde teknoloji direktörleri kendi alan
+        klasörlerinde uzmanlarının yanında kaldı ve üstlerine kademeli bir kıdemli
+        katman ilan edildi (icra · iş alanı · denetim); Flutter direktörünün pilot
+        dosyasından kalma apex ilanı yönetici türüne çevrildi. Motor tarafında iki
+        kalıcı iş yapıldı: açık-gizli sınır nöbeti artık kapalı tarafta olduğunu
+        klasör adından değil projenin kendi `görünürlük` beyanından çözüyor ve bu
+        mutasyonla kanıtlandı; yol haritası paneli kod göstermeyi bıraktı, adı
+        Türkçe başlık düzeninde yazıyor ve Faz'ın zaman bilgisini adın içinden
+        çıkarıp `hedefTarih` alanından türeyen soluk bir rozete taşıdı. Departman
+        sözlüğü MIM-1.5'in gösterdiği yoldan, çatı örtüsüyle ve yalnız ekleme
+        yaparak üç eksende genişletildi (ürün ve mühendislik · pazar ve gelir ·
+        işletme); laboratuvarda departman uyarısı yirmi dörtten sıfıra indi.
+        Ölçülen bir kusur da kapandı: çalışma alanında elli dört bin dosya
+        taranıyordu, bunun elli üç bini üretilmiş gövdeydi ve tarama yüzeyi
+        dışlamalarla bin sekiz yüze indi.
+
+        📌 AÇIK BORÇ (ORK-4): kanon çapraz-proje ad alanını hükme bağlar
+        (`PRJ-A::KOD-X`) fakat ayrıştırıcı bu sözdizimini tanımaz; `::` ayracı
+        liste ayrıştırmasında hata verir. Laboratuvar ile orkestrasyonun canlı
+        planları açık deponun Adım kodlarına atıf verdiği için o iki deponun
+        denetimi bilinçli olarak sıfır hata vermez ve bu iki deponun doğum
+        işlemeleri kapıdan gerekçesi yazılı muafiyetle geçmiştir. Borç, ORK-4
+        motorda karşılandığı gün kapanır ve o gün atıflar ad alanlı yazıma çevrilir.
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
