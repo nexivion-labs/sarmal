@@ -1605,3 +1605,67 @@ test("tür özeti ve Fikir satırı EMOJİ taşımaz: işaretler vektörel ailed
   }
 });
 
+// ── 🔭 KAPSAM KAPISI UNUTULAMAZ (Founder hükmü 2026-08-27) ───────────────────
+//   Founder'ın hükmü şudur: bir kullanıcı bir projeyi ya da çalışma alanını
+//   açtığında bu sorunları hiç yaşamamalıdır. Hükmün kalıcı karşılığı tek tek
+//   onarım değil, kusur SINIFININ tekrarını yapısal olarak imkânsız kılmaktır.
+//
+//   Bu turda ölçülen üç kusurun kökü birdi: paneller kapsamı ayrı ayrı
+//   çözüyordu. Süzgeç tam eşitlik yaptığı için çatı odağında üç panel birden
+//   boşaldı; Onaylar paneli kapsam kapısından hiç geçmediği için bütün çalışma
+//   alanını gösterdi; iki panel aidiyeti hiç söylemediği için çatı odağında
+//   kayıtların hangi projeye ait olduğu okunamadı. Üçü de tek köklü bir dünyada
+//   doğruydu ve iç içe çatı düzeninde kırıldı.
+//
+//   Aşağıdaki nöbetler o kökü tutar: kapsama kuralı tek evde kalır, panele
+//   yazan her yol o evden geçer ve yeni bir yüzey eklendiğinde kapsam kapısına
+//   bağlanmayı unutmak SESSİZ olamaz.
+
+test("KAPSAMA KURALI TEK EVDE YAŞAR: ikinci bir kapsama yazımı yoktur", () => {
+  const evler = ["yuzey-cekirdek.ts", "eklenti.ts", "onay-kuyrugu.ts", "posta-kutusu.ts"];
+  for (const ev of evler) {
+    const kaynak = readFileSync(
+      fileURLToPath(new URL(`../src/${ev}`, import.meta.url)), "utf8");
+    // Kapsama sorusunu ham `startsWith` ile soran her yer ikinci bir kuraldır:
+    // ayırıcı sınırını unutabilir ve "…-arsiv" gibi bir kardeş kökü kapsanan
+    // sayabilir. Kural yol haritası çekirdeğinde tek bir yerde yaşar.
+    assert.ok(!/kok\w*\.startsWith\(/.test(kaynak),
+      `${ev} kapsama sorusunu kendi başına soruyor; kural tek evden okunmalı`);
+  }
+});
+
+test("PANELE YAZAN HER YOL KAPSAM KAPISINDAN GEÇER", () => {
+  const kaynak = readFileSync(
+    fileURLToPath(new URL("../src/eklenti.ts", import.meta.url)), "utf8");
+  // Dört sunum yüzeyinin tamamı kapsam süzgecini defterine ya da kayıt
+  // çağrısına almak zorundadır. Bir yüzey bunu almadan panele yazarsa, o yüzey
+  // odak ne olursa olsun bütün çalışma alanını gösterir — Onaylar panelinde
+  // ölçülen kusurun ta kendisi.
+  const defterSuzgeci = kaynak.match(/panelDeGorunur\(dosya\)/g) ?? [];
+  assert.ok(defterSuzgeci.length >= 2,
+    "yüzey defterleri kapsam süzgecini almıyor; panel odağı tanımaz");
+  assert.ok(/onayKuyruguKaydi\(.*odakKapisi/.test(kaynak),
+    "Onaylar kuyruğu odak kapısına bağlanmamış; panel bütün çalışma alanını gösterir");
+  // Desen satır bazlıdır: çağrı arada kendi parantezli argümanını taşıyabilir.
+  assert.ok(/yolHaritasiKaydi\(.*odakKapisi/.test(kaynak),
+    "Yol Haritası odak kapısına bağlanmamış");
+});
+
+test("ODAK DEĞİŞİNCE BÜTÜN YÜZEYLER AYNI TURDA YENİDEN BASILIR", () => {
+  const kaynak = readFileSync(
+    fileURLToPath(new URL("../src/eklenti.ts", import.meta.url)), "utf8");
+  const kapi = /function hepsiniYenidenYayinla\(\): void \{([\s\S]*?)\n\}/.exec(kaynak);
+  assert.ok(kapi, "tek yeniden yayın kapısı yok; odak değişimi dağınık ele alınıyor");
+  // Problems, Hatırlatıcılar, Gözlemler, Fikirler ve odağa bağlı öteki yüzeyler
+  // AYNI turda basılır. Biri atlanırsa kullanıcı çelişkili iki tablo görür:
+  // bir panel yeni varlığı gösterirken öteki eskisini göstermeye devam eder.
+  for (const [ad, desen] of Object.entries({
+    Problems: /koleksiyon\.(set|delete)/,
+    "yüzey defteri": /yuzeyDefteri\.yayımla\(\)/,
+    "fikir defteri": /fikirDefteri\.yayımla\(\)/,
+    "odak dinleyicileri": /odakDinleyicileri/,
+  })) {
+    assert.ok(desen.test(kapi[1]),
+      `odak değişiminde ${ad} yeniden basılmıyor; panel bayat kalır`);
+  }
+});

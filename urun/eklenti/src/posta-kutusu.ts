@@ -197,7 +197,22 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
    */
   private rozetiGuncelle(): void {
     if (!this.gorunum) return;
-    this.gorunum.badge = panelRozeti(this.defter.kapiSayisi, postaRozetIpucu);
+    const rozet = panelRozeti(this.defter.kapiSayisi, postaRozetIpucu);
+    this.gorunum.badge = rozet;
+    // ⚠️ ÖLÇÜLMÜŞ BELİRTİ (Founder canlı bulgusu 2026-08-27): odak başka bir
+    // varlığa geçtiğinde bu panelin rozeti eski sayıda asılı kalıyordu. Belirti
+    // yalnız BU panelde görüldü; komşu üç panel aynı turda doğru sayıya oturdu
+    // ve aynı kararı okuyor. İkisi arasındaki tek fark görünüş türüdür: komşular
+    // ağaç görünüşü, bu panel webview'dir. Defterin kendisi doğrudur, çünkü
+    // durum çubuğu aynı defterden sıfır okumaktadır ve panel gövdesi boş
+    // basılmaktadır; sapan tek şey rozetin kendisidir.
+    //
+    // Bu satır o belirtiye karşı SAVUNMADIR, teşhis değildir: rozeti tanımsıza
+    // çekmek editör tarafında etkisiz kalıyorsa, sıfır değerli bir rozet aynı
+    // sonucu verir ve editör sıfırı göstermez. Yazım bilerek iki adımdır ve
+    // ikincisi koşulludur; belirtinin kaynağı editörde değil bizde çıkarsa bu
+    // satır GERİ ALINMALIDIR, çünkü o zaman ikinci yazım bir kusuru örter.
+    if (!rozet) this.gorunum.badge = { value: 0, tooltip: postaRozetIpucu(0) };
   }
 
   // ═══════════════════════════════════════════════════════════════════════

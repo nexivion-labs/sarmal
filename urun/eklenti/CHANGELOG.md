@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.164 — 2026-08-27 (kapsam kusuru sınıf olarak kapatıldı)
+
+- **Kapsam kapısına bağlanmayı unutmak artık sessiz olamıyor.** Founder'ın hükmü şuydu: bir kullanıcı bir projeyi ya da çalışma alanını açtığında bu sorunları hiç yaşamamalıdır. Bu turda ölçülen üç kusurun kökü birdi; paneller kapsamı ayrı ayrı çözüyordu ve üçü de tek köklü bir dünyada doğruydu, iç içe çatı düzeninde kırıldı. Üç nöbet o kökü tutuyor: kapsama kuralı tek evde kalır, panele yazan her yol kapsam kapısından geçer ve odak değiştiğinde bütün yüzeyler aynı turda yeniden basılır. İkincisi mutasyonla kanıtlandı; Onaylar kuyruğu odak kapısından koparıldığında nöbet kırmızıya dönüyor.
+- **Onaylar rozetinin odak değişiminden sonra eski sayıda asılı kalmasına karşı savunma kondu.** Belirti yalnız bu panelde görüldü ve komşu üç panel aynı turda doğru sayıya oturdu; aralarındaki tek fark, bu panelin bir webview olmasıdır. Defterin kendisi doğrudur, çünkü durum çubuğu aynı defterden sıfır okur ve panel gövdesi boş basılır. Bu bir savunmadır, teşhis değildir: rozeti tanımsıza çekmek editör tarafında etkisiz kalıyorsa sıfır değerli bir rozet aynı sonucu verir.
+
 ## 0.9.163 — 2026-08-27 (Onaylar hangi projenin kapısı olduğunu söylüyor)
 
 - **Onaylar panelinde dosya satırı artık projesini söylüyor.** Founder çatı odağındayken panelin on yedi kapıyı listelediğini ve hiçbirinin hangi projeye ait olduğunun okunamadığını bildirdi. Komşu üç panel proje satırını taşır; bu panel bir webview olduğu için ağaç kademesi eklemek durum yönetimini de büyütürdü, oysa soru kademe değil aidiyet soruyordu. Proje adı bu yüzden dosya satırının gri açıklamasına kondu ve sayının önünde durur: satır kesildiğinde önce sonu kaybolur, dolayısıyla dar panelde kaybolması gereken sayı, kalması gereken ise aidiyettir.
