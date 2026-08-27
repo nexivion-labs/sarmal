@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.160 — 2026-08-27 (paneller çatıda bütün çalışma alanını gösterir)
+
+- **Kapsam süzgeci artık eşitlik değil kapsama soruyor.** Kusuru Founder canlı pencerede buldu: çatı seçiliyken Hatırlatıcılar, Gözlemler ve Fikirler panelleri boşalıyordu. Sebep ölçüldü; süzgeç dosyanın varlık kökü ile odaktaki kökü birebir karşılaştırıyordu ve iç içe bir çatı düzeninde alt projelerin hiçbir dosyası bu sınavı geçemiyordu. Kural artık kapsama ilişkisidir ve tek yönlüdür: odaktaki kökün altında yaşayan her varlık görünür, üstünde ya da yanında yaşayan görünmez. Böylece çatı bütün çalışma alanını, bir alt proje yalnız kendi evini gösterir. Ters yön bilerek kapalı bırakıldı, çünkü açılsaydı bir alt projede çalışırken kardeş projelerin kayıtları da panele dolar ve odağın kendisi anlamsızlaşırdı.
+- **Onaylar paneli de aynı süzgeçten geçiyor.** Ölçüm, kapsam kapısının eklenti gövdesinde yedi yerde çağrıldığını ama onay kuyruğunda hiç çağrılmadığını gösterdi; panel bu yüzden hangi varlık seçili olursa olsun bütün çalışma alanını listeliyor ve kullanıcı komşu panellerle çelişen iki tablo görüyordu. Kuyruk artık öteki üç yüzeyin okuduğu odak kapısına bağlıdır ve odak değişince yeniden yerleşir; ikinci bir zamanlayıcı kurulmadı, çünkü tarama zaten ana tanı hattının anlık görüntüsünden beslenmektedir.
+- **Kapsama kuralı tek evde yaşıyor.** Kural yol haritasındaki varlık kümelerini kuran çekirdekte zaten vardı; ikinci bir kopya yazmak yerine o işlev adıyla dışa verildi ve yol ayırıcılarını eşitleyecek biçimde genişletildi. Ad benzerliği taşıyan kardeş bir kökün kapsanan sayılmadığı bir nöbetle kanıtlanır.
+
 ## 0.9.159 — 2026-08-27 (adsız satırda kod olduğu gibi kalır)
 
 - **Adı olmayan düğümün kodu artık başlık düzenine sokulmuyor.** Kusuru Founder canlı pencerede buldu: `YTK-A01` gibi adsız bir düğüm Yol Haritası satırında `Ytk A01` görünüyordu, çünkü başlık dönüşümü ad bulunamayınca kodun kendisine uygulanıyordu. Hüküm şudur: dönüşüm yalnız ada uygulanır; kod bir kimliktir, başlık değildir ve yüzeyde olduğu gibi yazılır. Yüzey adı çekirdekte tek kapıdan alınır ve adsız düğümün kodunun aynen kalması sekiz sınamalık bir nöbetle kilitlenmiştir; nöbet, eski yazım geri konduğunda kırmızıya döner.
