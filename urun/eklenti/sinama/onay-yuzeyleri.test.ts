@@ -836,9 +836,23 @@ test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
   // `kayitSayisi` türetimi DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu
   // yukarıdaki nöbet ayrıca ölçer. `bildirimler.ts` bu turda hiç açılmadı ve
   // özeti bilerek olduğu gibi bırakıldı.
+  // ÖZET ON ÜÇÜNCÜ KEZ BİLEREK GÜNCELLENDİ — VIT-POSTA-A06 (2026-08-27).
+  //
+  // Founder hükmü dört panelin de kendi sayı rozetini taşımasıdır. Hükmün doğuşu
+  // ölçülmüştür: rozet bugüne dek yalnız Onaylar panelinde vardı ve komşu üç
+  // panel sayısını yalnız durum çubuğunda söylüyordu, dolayısıyla kullanıcı bir
+  // panelin dolu mu boş mu olduğunu ancak onu açarak öğreniyordu. Bu turda iki
+  // panelde de değişen tek şey boş durum güncelleyicisine eklenen tek satırlık
+  // rozet atamasıdır. Rozetin KARARI saf çekirdekte tek bir yerde yaşar
+  // (yuzey-cekirdek.panelRozeti) ve sayı yine panelin KENDİ listesinden, durum
+  // çubuğunun okuduğu aynı `kayitSayisi` kaynağından türer; ikinci bir sayaç
+  // kurulmadı ve bu yüzden rozet ile durum çubuğu çelişemez. Ağacın kademe
+  // sayısı, kayıt içeriği, panel kimlikleri, yenileme ritmi ve sayaç türetimi
+  // DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu yukarıdaki nöbet
+  // ayrıca ölçer.
   const BEKLENEN: Record<string, string> = {
-    "../src/hatirlaticilar.ts": "e9da04520d05dd40",
-    "../src/bildirimler.ts": "7114f3d9cd197715",
+    "../src/hatirlaticilar.ts": "fd692560f8c81e69",
+    "../src/bildirimler.ts": "adeaa39549882d72",
   };
   for (const [dosya, beklenen] of Object.entries(BEKLENEN)) {
     assert.equal(ozet(dosya), beklenen,

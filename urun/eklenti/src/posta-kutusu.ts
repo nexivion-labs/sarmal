@@ -44,7 +44,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { GORUNUS_POSTA_KUTUSU } from "./yuzey-cekirdek.ts";
+import { GORUNUS_POSTA_KUTUSU, panelRozeti } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   postaRozetIpucu, POSTA_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
@@ -185,13 +185,18 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     this.degisti.fire();
   }
 
-  /** Başlıktaki sayı rozeti — kuyruk boşken rozet hiç görünmez. */
+  /**
+   * Başlıktaki sayı rozeti — kuyruk boşken rozet hiç görünmez.
+   *
+   * Rozetin KARARI dört panelin ortak saf çekirdeğine devredilmiştir
+   * Founder hükmü (2026-08-27) üç komşu panele de sayı rozeti getirdi ve dördü
+   * ayrı ayrı yazsaydı biri sessizce bayatlar, bir panelin sayısı ötekiyle
+   * çelişirdi. Sayı yine bu panelin KENDİ defterinden okunur; ortak olan şey
+   * sayının kaynağı değil, rozete yazılma biçimidir.
+   */
   private rozetiGuncelle(): void {
     if (!this.gorunum) return;
-    const adet = this.defter.kapiSayisi;
-    this.gorunum.badge = adet
-      ? { value: adet, tooltip: postaRozetIpucu(adet) }
-      : undefined;
+    this.gorunum.badge = panelRozeti(this.defter.kapiSayisi, postaRozetIpucu);
   }
 
   // ═══════════════════════════════════════════════════════════════════════

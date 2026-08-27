@@ -610,6 +610,21 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
         ]
         sınır: "Bu Adım tanı üretimine, kapı tespitine ve karar mantığına dokunmaz; yalnız hangi kaydın hangi pencerede GÖRÜNECEĞİNİ belirleyen süzgeci onarır. Aktif varlık odağının kendisi ile odağın nasıl seçildiği bu Adımın işi değildir ve olduğu gibi korunur. Kuyruğun bilinen mantık kusurları VIT-POSTA-A02'nin işidir ve buraya karıştırılmaz."
       }
+
+      Adım( kod: VIT-POSTA-A06, durum: geliştirmede, öncelik: p1, bağımlı: [ VIT-POSTA-A05 ],
+        ne: "Dört panelin de kendi sayı rozetini taşıması ve rozet kararının tek kaynağa bağlanması." ) {
+        koşu: "2026-08-27 · FOUNDER HÜKMÜ VE ÜRETİM TURU. Founder canlı pencerede sayı rozetinin yalnız Onaylar panelinde bulunduğunu gördü ve üç komşu panele de sayı istedi. Hükmün gerekçesi ölçülmüştür: Hatırlatıcılar, Gözlemler ve Fikirler sayılarını yalnız durum çubuğunda söylüyordu, dolayısıyla kullanıcı bir panelin dolu mu boş mu olduğunu ancak onu açarak öğreniyordu. Üç panelin görünüşü de ağaç görünüşüdür ve editör bildirimi ağaç görünüşüne rozet vermektedir, dolayısıyla hüküm doğrudan karşılanabilmiştir. RENK İSTEĞİ KARŞILANAMAMIŞTIR VE SEBEBİ ÖLÇÜLMÜŞTÜR: Founder rozetlerin panel başına farklı renklerde olmasını istedi; editör bildirimindeki rozet arayüzü yalnız gösterilecek sayıyı ve ipucu metnini taşır, renk alanı yoktur ve rozet rengi tema düzeyinde tek bir değerden gelir, görünüş başına ayrılamaz. Panelleri birbirinden ayıran şey bu yüzden renk değil, rozetin yanındaki panel adı ile her rozetin kendi ipucu cümlesidir; dört ipucu ayrı ayrı yazıldı ve her biri neyi saydığını söyler. ROZET KARARI TEK KAYNAĞA BAĞLANDI: karar saf çekirdekte yaşar ve dört panel de ona sorar, sayı ise yine her panelin KENDİ listesinden, durum çubuğunun okuduğu aynı okuyucudan türer; ikinci bir sayaç kurulmadığı için rozet ile durum çubuğu çelişemez. Sıfır, rozetin yokluğu demektir, çünkü boş panelde sıfır yazan bir rozet sürekli bir işaret gibi durur ve dikkat çekmesi gereken sayıları değersizleştirir. TURDA İKİ NÖBET ÜRETİCİYİ YAKALADI VE İKİSİ DE HAKLIYDI: komşu panellerin bayt nöbeti iki panele dokunulduğunu bildirdi ve özet gerekçesiyle birlikte on üçüncü kez bilerek tazelendi; rozet nöbeti ise kaynak metinde bir yazım kalıbı aradığı için karar ortak çekirdeğe taşınınca davranış hiç değişmediği hâlde kırmızıya döndü, bu yüzden nöbet kalıp aramasından çıkarılıp gerçek işlevi koşturan bir davranış ölçümüne çevrildi ve sıfır kuralının kaldırıldığı mutasyonla kanıtlandı. KAPANIŞ ÖLÇÜMÜ: eklenti süiti beş yüz yetmiş beş sınamayla yeşildir ve depo denetimi sıfır hata ile sıfır uyarı verir. ADIM KAPATILMADI, çünkü rozetin canlı pencerede göründüğü ancak gerçek editör kabuğunda doğrulanabilir; ayrıca Founder aynı bakışta Onaylar rozetinin odak değişiminden sonra bayat kaldığını bildirdi ve bu gözlem yeni paketle yeniden ölçülecektir.",
+        kabul: [
+          "Hatırlatıcılar, Gözlemler ve Fikirler panelleri başlıklarında kendi kayıt sayılarını gösterir.",
+          "Her rozetin ipucusu neyi saydığını kendi cümlesiyle söyler ve dört cümle birbirinden ayrışır.",
+          "Bir panel boşaldığında rozeti tümüyle kaybolur; sıfır yazan bir rozet hiçbir panelde görünmez.",
+          "Rozetteki sayı ile durum çubuğundaki aynı kavramın sayısı her turda birbirine eşittir.",
+          "Rozet kararı tek kaynakta yaşar ve dört panel de ona sorar; ikinci bir karar yazımı bulunmaz.",
+          "Eklenti süiti yeşildir ve sayısı düşmemiştir; depo denetimi sıfır hata ve sıfır uyarı verir.",
+          "Founder canlı pencerede dört panelin rozetini gözle doğrular ve odak değiştiğinde dördünün de yeni sayıya oturduğunu görür."
+        ]
+        sınır: "Bu Adım rozet RENGİNİ değiştirmeyi vaat etmez; editör bildiriminde renk alanı bulunmadığı ölçülmüştür ve taklit bir renkli rozet çizilmez. Panellerin içeriğine, ağaç kademesine, sayaç türetimine ve kapsam süzgecine dokunulmaz; kapsam VIT-POSTA-A05'in işidir. Onaylar rozetinin bayat kalma gözlemi bu Adımda bir onarım vaadi değil, yeniden ölçülecek bir bulgudur."
+      }
     }
   }
 

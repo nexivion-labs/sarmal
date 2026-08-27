@@ -34,8 +34,10 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { GORUNUS_FIKIRLER } from "./yuzey-cekirdek.ts";
-import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi } from "./yuzey-metinleri.ts";
+import { GORUNUS_FIKIRLER, panelRozeti,
+} from "./yuzey-cekirdek.ts";
+import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
+} from "./yuzey-metinleri.ts";
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
 } from "./fikir-cekirdek.ts";
@@ -111,6 +113,9 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
   private bosDurumuGuncelle(): void {
     if (!this.gorunum) return;
     this.gorunum.message = this.kayitlar.length ? undefined : YUZEY_BOS_DURUM.fikirler;
+    // 🔢 Sayı rozeti panelin KENDİ listesinden türer ve durum çubuğuyla aynı
+    // kaynağı okur; iki sayı bu yüzden çelişemez. Yazıcı tektir (ortak.ts).
+    this.gorunum.badge = panelRozeti(this.kayitSayisi, fikirRozetIpucu);
   }
 
   /**

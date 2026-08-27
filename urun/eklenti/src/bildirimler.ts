@@ -21,11 +21,12 @@ import {
   GORUNUS_BILDIRIMLER, projeyeGrupla, dosyayaGrupla, kayitGorunumu,
   panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
+  panelRozeti,
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   projeSatiriEtiketi, projeSatiriAciklamasi, projeSatiriIpucu,
-  dosyaSatiriAciklamasi, dosyaSatiriIpucu, kaydaGitBasligi,
+  dosyaSatiriAciklamasi, dosyaSatiriIpucu, kaydaGitBasligi, gozlemRozetIpucu,
 } from "./yuzey-metinleri.ts";
 import { BILDIRIM_ROZET } from "./yol-dekor.ts";
 import { satirIkonu } from "./ortak.ts";
@@ -132,6 +133,9 @@ export class Bildirimler implements vscode.TreeDataProvider<PanelOge> {
   private bosDurumuGuncelle(): void {
     if (!this.gorunum) return;
     this.gorunum.message = this.kumeler.length ? undefined : YUZEY_BOS_DURUM.bildirimler;
+    // 🔢 Sayı rozeti panelin KENDİ listesinden türer ve durum çubuğuyla aynı
+    // kaynağı okur; iki sayı bu yüzden çelişemez. Yazıcı tektir (ortak.ts).
+    this.gorunum.badge = panelRozeti(this.kayitSayisi, gozlemRozetIpucu);
   }
 
   getChildren(oge?: PanelOge): PanelOge[] {

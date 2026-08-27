@@ -29,7 +29,7 @@ import {
   postaKimligi, postaEbeveyni, acikBelgeleriUstuneYaz,
   type OnayKapisi, type KapiKaydi, type PostaDugumu,
 } from "../src/onay-cekirdek.ts";
-import { GORUNUS_POSTA_KUTUSU } from "../src/yuzey-cekirdek.ts";
+import { GORUNUS_POSTA_KUTUSU, panelRozeti} from "../src/yuzey-cekirdek.ts";
 import { panelSvgKaynagi, satirSvgKaynagi } from "../src/simge-cizelgesi.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
@@ -524,9 +524,22 @@ test("boş-durum cümlesi bekleyen kapı olmadığını anlatır ve ne yapılaca
 });
 
 test("panel boşken rozet GÖRÜNMEZ, dolduğunda sayıyı taşır", () => {
+  // NÖBET KAYNAK TARAMASINDAN DAVRANIŞ ÖLÇÜMÜNE ÇEVRİLDİ (2026-08-27). Eskiden
+  // bu dosyada `badge = adet ?` kalıbını arıyordu; kalıp aramak yazımı kilitler
+  // ama davranışı ölçmez ve rozet kararı dört panelin ortak çekirdeğine taşınınca
+  // nöbet, davranış hiç değişmediği hâlde kırmızıya döndü. Kararın kendisi artık
+  // saf çekirdekte yaşadığı için gerçek işlev koşturulup sonucu ölçülebilir.
+  assert.equal(panelRozeti(0, postaRozetIpucu), undefined,
+    "boş kuyrukta rozet görünüyor; sıfır bir işaret gibi asılı kalır");
+  const dolu = panelRozeti(3, postaRozetIpucu);
+  assert.equal(dolu?.value, 3, "rozet kapı sayısını taşımıyor");
+  assert.ok(dolu?.tooltip.includes("3"), "rozet ipucusu sayıyı söylemiyor");
+  assert.ok(panelRozeti(1, postaRozetIpucu)?.tooltip.length, "rozet ipucusuz basılıyor");
+
+  // Panel tarafı kararı KENDİ yeniden vermez, ortak çekirdeğe sorar; ikinci bir
+  // rozet kararı yazılsaydı biri sessizce bayatlar ve iki panel çelişirdi.
   const kaynak = oku("../src/posta-kutusu.ts");
-  assert.ok(/badge = adet\s*\?/.test(kaynak),
-    "rozet kapı sayısına bağlı değil; boş kuyrukta sıfır rozeti görünür");
+  assert.ok(kaynak.includes("panelRozeti("), "rozet ortak karardan geçmiyor");
   assert.ok(kaynak.includes("postaRozetIpucu"), "rozet ipucusuz basılıyor");
 });
 

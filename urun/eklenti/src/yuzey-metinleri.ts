@@ -961,6 +961,33 @@ export function postaBaglamKapiYok(kod: string): string {
 }
 
 /** Panel başlığındaki sayı rozetinin ipucu cümlesi. */
+/**
+ * Hatırlatıcılar panelinin sayı rozetindeki ipucu.
+ *
+ * Rozetler bilerek AYNI biçimde konuşur: sayı ile o sayının neyi saydığı. Founder
+ * dört panelin sayısını bir arada okur ve dördü farklı cümle kurarsa okuma her
+ * seferinde yeniden öğrenilir.
+ */
+export function hatirlaticiRozetIpucu(adet: number): string {
+  return adet === 1
+    ? yuzeyMetni("Bir açık hatırlatıcı var.", "One open reminder.")
+    : yuzeyMetni(`${adet} açık hatırlatıcı var.`, `${adet} open reminders.`);
+}
+
+/** Gözlemler panelinin sayı rozetindeki ipucu. */
+export function gozlemRozetIpucu(adet: number): string {
+  return adet === 1
+    ? yuzeyMetni("Bir gözlem var.", "One observation.")
+    : yuzeyMetni(`${adet} gözlem var.`, `${adet} observations.`);
+}
+
+/** Fikirler panelinin sayı rozetindeki ipucu. */
+export function fikirRozetIpucu(adet: number): string {
+  return adet === 1
+    ? yuzeyMetni("Bir fikir var.", "One idea.")
+    : yuzeyMetni(`${adet} fikir var.`, `${adet} ideas.`);
+}
+
 export function postaRozetIpucu(adet: number): string {
   return adet === 1
     ? yuzeyMetni("Bir kapı kararını bekliyor.", "One gate is awaiting a decision.")

@@ -22,11 +22,12 @@ import {
   GORUNUS_HATIRLATICILAR, projeyeGrupla, dosyayaGrupla, kayitGorunumu,
   hatirlaticiIsareti, panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type SatirIsareti, type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
+  panelRozeti,
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   projeSatiriEtiketi, projeSatiriAciklamasi, projeSatiriIpucu, kaydaGitBasligi,
-  dosyaSatiriAciklamasi, dosyaSatiriIpucu,
+  dosyaSatiriAciklamasi, dosyaSatiriIpucu, hatirlaticiRozetIpucu,
 } from "./yuzey-metinleri.ts";
 
 import { satirIkonu } from "./ortak.ts";
@@ -147,6 +148,9 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
   private bosDurumuGuncelle(): void {
     if (!this.gorunum) return;
     this.gorunum.message = this.kumeler.length ? undefined : YUZEY_BOS_DURUM.hatırlatıcılar;
+    // 🔢 Sayı rozeti panelin KENDİ listesinden türer ve durum çubuğuyla aynı
+    // kaynağı okur; iki sayı bu yüzden çelişemez. Yazıcı tektir (ortak.ts).
+    this.gorunum.badge = panelRozeti(this.kayitSayisi, hatirlaticiRozetIpucu);
   }
 
   /** Ağacın kökü Hatırlatıcı Projeleridir; ikinci bir kök hane yoktur. */

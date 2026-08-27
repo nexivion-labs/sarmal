@@ -32,6 +32,40 @@ import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
 export type { SunumYuzeyi };
 
 /**
+ * Bir panelin başlığında duracak sayı rozeti — dört yüzeyin TEK kararı.
+ *
+ * Founder hükmü (2026-08-27): dört panelin de kendi sayısı görünür. Rozet bugüne
+ * dek yalnız Onaylar panelinde vardı; Hatırlatıcılar, Gözlemler ve Fikirler
+ * sayılarını yalnız durum çubuğunda söylüyordu ve kullanıcı bir panelin dolu mu
+ * boş mu olduğunu ancak onu açarak öğreniyordu.
+ *
+ * SIFIR, ROZETİN YOKLUĞU DEMEKTİR. Boş panelde sıfır yazan bir rozet sürekli bir
+ * işaret gibi durur ve dikkat çekmesi gereken sayıları değersizleştirir.
+ *
+ * ROZET RENGİ AYARLANAMAZ VE BU BİR EKSİKLİK DEĞİL, ÖLÇÜLMÜŞ BİR SINIRDIR:
+ * `@types/vscode` bildirimindeki `ViewBadge` arayüzü yalnız gösterilecek sayı ile
+ * ipucu metnini taşır, renk alanı yoktur ve rozet rengi tema düzeyinde tek bir
+ * değerden gelir, görünüş başına ayrılamaz. Panelleri birbirinden ayıran şey bu
+ * yüzden renk değil, rozetin yanındaki panel adı ile her rozetin kendi ipucu
+ * cümlesidir.
+ *
+ * KARAR BURADA, ATAMA PANELDE. Bu işlev vscode kabuğuna dokunmaz ve yalnız
+ * rozetin ne olacağını söyler; böylece davranışı gerçek editör kabuğu olmadan
+ * ölçülebilir. İkinci bir rozet kararı yazılmaz: dört panel ayrı ayrı karar
+ * verseydi biri sessizce bayatlar ve bir panelin sayısı ötekiyle çelişirdi.
+ */
+export interface SayiRozeti {
+  readonly value: number;
+  readonly tooltip: string;
+}
+
+export function panelRozeti(
+  adet: number, ipucu: (adet: number) => string,
+): SayiRozeti | undefined {
+  return adet > 0 ? { value: adet, tooltip: ipucu(adet) } : undefined;
+}
+
+/**
  * Görünüş kimlikleri. Sağlayıcı kaydı bu iki sabitten okur; paket bildirimi
  * (`package.json`) ise aynı kimlikleri KENDİ metninde ayrıca yazar. Tek kaynak
  * kurulamaz, çünkü `package.json` bir JSON dosyasıdır ve bir TypeScript

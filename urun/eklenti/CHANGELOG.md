@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.161 — 2026-08-27 (dört panelin de kendi sayısı görünür)
+
+- **Hatırlatıcılar, Gözlemler ve Fikirler artık sayı rozeti taşıyor.** Founder hükmü: rozet bugüne dek yalnız Onaylar panelinde vardı ve komşu üç panel sayısını yalnız durum çubuğunda söylüyordu, dolayısıyla bir panelin dolu mu boş mu olduğu ancak o panel açılarak öğreniliyordu. Sayı her panelin kendi listesinden ve durum çubuğunun okuduğu aynı kaynaktan türer; ikinci bir sayaç kurulmadığı için rozet ile durum çubuğu çelişemez. Bir panel boşaldığında rozeti tümüyle kaybolur: boş panelde sıfır yazan bir rozet sürekli bir işaret gibi durur ve dikkat çekmesi gereken sayıları değersizleştirir.
+- **Rozet rengi panel başına ayrılamıyor ve bu ölçülmüş bir sınırdır.** Editör bildirimindeki rozet arayüzü yalnız gösterilecek sayıyı ve ipucu metnini taşır; renk alanı yoktur ve rozet rengi tema düzeyinde tek bir değerden gelir. Panelleri ayıran şey bu yüzden renk değil, rozetin yanındaki panel adı ile her rozetin kendi ipucu cümlesidir. Dört ipucu ayrı yazıldı ve her biri neyi saydığını söyler.
+- **Rozet kararı tek kaynağa bağlandı.** Dört panel de aynı karara sorar; ikinci bir rozet yazımı kurulsaydı biri sessizce bayatlar ve bir panelin sayısı ötekiyle çelişirdi.
+
 ## 0.9.160 — 2026-08-27 (paneller çatıda bütün çalışma alanını gösterir)
 
 - **Kapsam süzgeci artık eşitlik değil kapsama soruyor.** Kusuru Founder canlı pencerede buldu: çatı seçiliyken Hatırlatıcılar, Gözlemler ve Fikirler panelleri boşalıyordu. Sebep ölçüldü; süzgeç dosyanın varlık kökü ile odaktaki kökü birebir karşılaştırıyordu ve iç içe bir çatı düzeninde alt projelerin hiçbir dosyası bu sınavı geçemiyordu. Kural artık kapsama ilişkisidir ve tek yönlüdür: odaktaki kökün altında yaşayan her varlık görünür, üstünde ya da yanında yaşayan görünmez. Böylece çatı bütün çalışma alanını, bir alt proje yalnız kendi evini gösterir. Ters yön bilerek kapalı bırakıldı, çünkü açılsaydı bir alt projede çalışırken kardeş projelerin kayıtları da panele dolar ve odağın kendisi anlamsızlaşırdı.
