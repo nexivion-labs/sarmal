@@ -614,6 +614,23 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "Bu Adım kapalı taraftaki envanterin İÇERİĞİNİ değiştirmez, yalnız açık taraftan siler. Açık kaynak yapılacak minimal sürümün kapsamı bu Adımın konusu değildir; o karar dalga ayrımında verilmiştir ve burada yalnız uygulanır. Git geçmişinin fiilî temizliği yayın Adımının işidir; burada yalnız açık kaydedilir."
       }
+
+      Adım( kod: BKM-FND-A05, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YUZ-4.1, YUZ-7 ],
+        onay: "onaylandı — 2026-08-27 · Founder taşıma kopmaları turunda bu kalemin bakım Adımı olarak yazılmasına hüküm verdi",
+        üretir: [ KOD-EKL-RENK-URET ],
+        ne: "🎨 Renk üreteci çatının ayar dosyasını tazelememektedir. Üreteç yukarı yürüyerek bulduğu ilk git kökünün `.vscode/settings.json` dosyasını tazeler; 26 Ağustos 2026 taşımasından önce o kök çalışma alanının kendisiydi, bugün ise açık depodur. Çatının ayar dosyası aynı üretilmiş renk ve simge tablosunun bir kopyasını taşımaya devam eder, fakat üreteç oraya artık hiç uğramaz ve kopya kanon paleti değiştikçe sessizce bayatlar." ) {
+        görev: [
+          "Üretecin hedef seçimini ölç ve kararı tek yerde topla: bugün hangi kökü bulduğu, taşımadan önce hangi kökü bulduğu ve çatı kopyasının ne zaman yazıldığı kayda geçer.",
+          "Çözümü seç ve gerekçesini yaz: ya üreteç çatı kopyasını da tazeler, ya çatı kopyası kanon paletini taşımayı bırakır ve yalnız tema ile tarama dışlamalarını tutar. İkinci yol tek kaynağı korur ve tercih edilir; birinci yol yalnız çatı penceresinde renk gerekiyorsa seçilir.",
+          "Seçilen yolu uygula ve çatı ayar dosyasının bayatlamayacağını bir koşumla göster."
+        ]
+        kabul: [
+          "Kanon paleti değiştiğinde çatının ayar dosyası ya kendiliğinden tazelenir ya da o paleti hiç taşımadığı için bayatlayamaz; hangisi olduğu kayda yazılmıştır.",
+          "Üretecin idempotanslığı korunur: aynı kaynakla iki koşu birebir aynı çıktıyı verir.",
+          "Eklenti süiti yeşildir ve depo denetimi sıfır hata ile sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım kanon paletinin DEĞERLERİNE dokunmaz ve renk kararlarını değiştirmez; yalnız üretilmiş tablonun hangi dosyalara ulaştığını düzeltir. Çatının kendi tema tercihi Founder'ın yerel düzenidir ve korunur."
+      }
     }
   }
 }
@@ -639,3 +656,7 @@ Kod( kod: KOD-KARARLAR,
   ne: "🍎 KARARLAR md-yüzü üreticisi (SAF) — kararlarMd: eski defter rafından KARARLAR.md üretirdi (BKM-KRR-A01); defter 2026-07-31 tarihinde repo dışı arşive inince üretici emekli oldu, jenerik içindekiler çekirdeği cekirdek/src/icindekiler.ts halefinde yaşar" )
 Kod( kod: KOD-KARARLAR-NOBET,
   ne: "🍎 kararlar göçü test-nöbeti — 9 kaynak dosya parse + 90 Karar düğümü + md idempotent/senkron + örnek karar metni birebir (BKM-KRR-A01); sınadığı korpus arşive inince süit emekli oldu, şekil-drift köşe-durumu fikstur-sekil-drift.txt fikstürüne izole edildi" )
+
+// 🍎 BKM-FND-A05 renk üreteci hedefi (2026-08-27)
+Kod( kod: KOD-EKL-RENK-URET, dosya: "urun/eklenti/arac/renk-uret.mjs",
+  ne: "🍎 Renk ve gömülü kanon üreteci — kanon paletinden tema dosyalarını, anlamsal renk tablosunu ve eklentinin gömülü kanon ikizini üretir; hedef ayar dosyası seçimi BKM-FND-A05 kapsamındadır" )

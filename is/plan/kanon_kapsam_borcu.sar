@@ -122,6 +122,56 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
     //    kapalı iki deponun planları açık deponun kodlarına atıf verir oldu ve
     //    motor bu atıfları çözemedi. Founder 2026-08-27: kolay olan kopmalar
     //    oturumda kapatıldı, çapraz atıf borcu plana alındı.
+    AltKatman( kod: KPS-KAPSAM-K7, departman: kodlama, ad: "mevsim ritüeli kapısı",
+      ne: "ORK-8 mevsim ritüelinin motorda karşılığı yoktur; vadesi geçmiş mevsim ile mühürlü mevsimdeki açık iş sessiz kalır" ) {
+
+      Adım( kod: KPS-MVS-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-8, MIM-1.2, YAS-4 ],
+        onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: Temmuz mevsiminin vadesi 27 gün önce geçmiştir, altında açık Adım durmaktadır ve motor tek kelime etmemektedir",
+        üretir: [ KOD-DENETCI, KOD-TANI-SICILI ],
+        ne: "🌀 Mevsim vadesinin ve mühür dürüstlüğünün motorda karşılanması. Founder 2026-08-27 tarihinde şu açığı buldu: `FAZ-2026-TEMMUZ` mevsimi `hedefTarih: 2026-07-31` beyanıyla ilan edilmiş, metninde MÜHÜRLENDİ yazmakta ve açık iş taşıyan gövdelerin Ağustos halkasına geçtiğini söylemektedir; oysa mevsim bugün hâlâ `BLK-VITRIN` gövdesini çağırmaktadır ve o gövdenin altında sekiz açık Adım durmaktadır. Motor bunu bildirmez, çünkü vade tanıları `faz-gecikti` ile `faz-yaklaşıyor` 2026-07-27 tarihinde emekli edilmiştir ve emeklilik gerekçesi ölçüm anında canlı bahçede sıfır bulgu vermeleridir; yirmi yedi gün sonra tam da yakalayacakları durum doğmuştur. Kanon tarafında ORK-8 mevsim ritüelini dört basamaklı bir kapanışa bağlar ve gerekçesinde bizzat Temmuz mevsiminin bir yorum satırıyla kapatıldığını yazar, fakat madde bilgi düzeyindedir ve motorda hiçbir karşılığı yoktur." ) {
+        görev: [
+          "Mevsim vadesini gözlem düzeyinde konuşan bir tanı kur: vadesi geçmiş bir Faz altında açık Adım kaldığında motor bunu kaç Adımla birlikte bildirir. Tanı MIM-1.2 ile çelişmez, çünkü tarihi dayatmaz; yalnız beyan ile gerçeğin ayrıştığını söyler ve motor susmaz ilkesinin zaten uyguladığı dili kullanır.",
+          "Mühür dürüstlüğünü ölç: metninde mühürlendiği yazan ya da açık işini devrettiğini söyleyen bir mevsim hâlâ açık Adım sarıyorsa bu bir çelişkidir ve bildirilir; ölçüt metnin kendi iddiası değil grafın sayısıdır.",
+          "ORK-8'in dört kapanış basamağının hangisinin bugün ölçülebildiğini ve hangisinin ölçülemediğini kanon kapsam siciline işle; ölçülemeyen basamak dürüstçe beyan edilir.",
+          "Emekli tanıların sicildeki kaydını tazele: emeklilik gerekçesi ölçüm anında sıfır bulgu vermeleriydi ve bu gerekçenin yanlış olduğu ölçülmüştür; yerine geçen tanı sicilde eskinin halefi olarak bağlanır.",
+          "Founder'a tek soru sor ve cevabı kayda geçir: Temmuz'un çağırdığı açık gövdeler Ağustos halkasına mı devredilir, yoksa Temmuz mührü mü kaldırılır. Karar verilmeden mevsim metnine dokunulmaz."
+        ]
+        kabul: [
+          "Vadesi geçmiş bir mevsimin altında açık Adım kaldığında motor bunu bildirir ve bildirimde açık Adım sayısı ile mevsim kodu yazılıdır; bugünkü bahçede Temmuz mevsimi bu tanıyı üretir.",
+          "Mühür ile grafın çeliştiği durum ayrı bir bildirimle görünür ve mutasyonla kanıtlanmıştır: mühür metni korunup açık Adım kapatıldığında bildirim susar.",
+          "Tanılar gözlem düzeyindedir ve hiçbir kapıyı kırmızıya düşürmez; terfi ayrı bir turun işidir ve bu Adımda yapılmaz.",
+          "Kapı kapsamı ile tanı sicili yeni tanıları ilan eder, gömülü kanon ikizi tazedir ve çekirdek ile eklenti süitleri yeşildir.",
+          "Depo denetimi sıfır hata verir; yeni tanılar bilgi düzeyinde göründüğü için uyarı sayısı yalnız gerçek bulgular kadar artar."
+        ]
+        sınır: "Bu Adım tarihi dayatmaz ve hiçbir Fazın tarihini değiştirmez; MIM-1.2 hükmü aynen durur. Mevsim metinlerine, mühür cümlelerine ve çağır kenarlarına bu Adımda dokunulmaz; devir kararı Founder'ındır ve ayrı bir işlemede uygulanır."
+        dokunulmaz: [ "MIM-1.2 tarih hükmü", "Faz metinleri ve çağır kenarları", "Emekli tanıların tarihsel kaydı" ]
+      }
+    }
+
+    AltKatman( kod: KPS-KAPSAM-K6, departman: kodlama, ad: "bölüm atıfları",
+      ne: "Kanon maddelerinin ilgili listelerindeki çıplak bölüm adları gezilebilir kimliklere çevrilir" ) {
+
+      Adım( kod: KPS-BLM-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YUZ-3.2, DIL-1.1, YUZ-1.2 ],
+        onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ilgili satırındaki bölüm adlarının bağlantı taşımadığını gördü ve çevrilmesine hüküm verdi",
+        üretir: [ KOD-EKL-GOMULUKANON ],
+        ne: "🔗 Kanon maddelerinin `ilgili` listelerindeki bölüm adları bugün çıplak yazılmaktadır (`ilgili: [YAS, MIM, TIP, STR]`) ve hiçbiri gezilebilir değildir; kimlik deseni tire ister, çıplak bölüm adı kod sayılmaz ve kanonda `YAS` diye bir düğüm hiçbir zaman tanımlanmamıştır. Buna karşılık her bölümün kök maddesi düğüm olarak yaşamaktadır (YAS-0, MIM-0, TIP-0, STR-0, DIL-0, OGR-0, ORK-0, YUZ-0), dolayısıyla listenin kök kimliklere çevrilmesi atıfları tanıma gitme, atıf bulma ve atıf dekoru yüzeylerinde canlandırır." ) {
+        görev: [
+          "Sekiz kanon dosyasındaki bütün `ilgili` listelerini bölüm kök kimliklerine çevir; çevrim hem madde belge bloğundaki Hüküm cümlesinde hem de düğümün `karar` ya da kural gövdesindeki makine-okur ikizinde AYNI turda yapılır (dört-parça mutabakatı).",
+          "Çevrim mekanik bir betikle yapılır ve betik yalnız `ilgili: [ ... ]` listesine dokunur; madde metninin başka hiçbir cümlesi değişmez.",
+          "Eklentinin gömülü kanon ikizi (`urun/eklenti/src/gomulu-kanon.ts`) aynı turda yeniden üretilir; türetilmiş yüz nöbetleri mühür ayrışması yakaladığı için bu adım atlanamaz.",
+          "Nöbet kur: hiçbir kanon maddesinin `ilgili` listesinde çıplak bölüm adı kalmadığını ve her hedefin çözüldüğünü ölçen bir sınama yazılır; mutasyonla kanıtlanır."
+        ]
+        kabul: [
+          "Sekiz kanon dosyasında çıplak bölüm adı taşıyan `ilgili` listesi sıfırdır ve bu bir aramayla gösterilmiştir.",
+          "Her `ilgili` hedefi kimlik indeksinde çözülür; editörde bölüm adının üstüne gelince tanıma gidilebilir ve bu Founder tarafından canlı pencerede doğrulanmıştır.",
+          "Gömülü kanon ikizi tazedir ve türetilmiş yüz nöbetleri yeşildir; çekirdek ile eklenti süitleri regresyonsuz geçer.",
+          "Depo denetimi sıfır hata ve sıfır uyarı vermeye devam eder."
+        ]
+        sınır: "Bu Adım hiçbir maddenin hükmünü, gerekçesini, örneğini ya da zorlamasını değiştirmez; yalnız ilgili listesindeki yazımı kimliğe çevirir. Bölüm kök maddeleri yeniden adlandırılmaz ve yeni düğüm doğurulmaz."
+        dokunulmaz: [ "Madde hükmü, gerekçesi, örneği ve zorlama metni", "Bölüm kök maddelerinin kimlikleri" ]
+      }
+    }
+
     AltKatman( kod: KPS-KAPSAM-K5, departman: kodlama, ad: "çapraz-proje ad alanı",
       ne: "ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması" ) {
 
