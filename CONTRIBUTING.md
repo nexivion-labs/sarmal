@@ -44,11 +44,11 @@ node --version
 
 ## 3. Denetim kapısı — katkının asıl sınavı
 
-Depo kökünden ya da çekirdek klasöründen koşturulur; ikisi de aynı ağacı denetler.
+Çekirdek klasöründen koşturulur ve argüman depo köküdür (`../..`); tek dosya vermek proje kapısı değildir.
 
 ```bash
 cd urun/cekirdek
-node src/sarmal.ts denetle ..
+node src/sarmal.ts denetle ../..
 ```
 
 Çıktı uzundur, çünkü motor bilgi satırlarını (`ℹ`) da basar. Okumanız gereken iki yer vardır:
@@ -81,20 +81,20 @@ birleştirme isteğinizde bıraktığınız uyarının neden bilinçli olduğunu
 Hata ve uyarı satırlarını tek tek görmek isterseniz:
 
 ```bash
-node src/sarmal.ts denetle .. 2>&1 | grep -E "^(✖|⚠)"
+node src/sarmal.ts denetle ../.. 2>&1 | grep -E "^(✖|⚠)"
 ```
 
 Betik içinde kullanacaksanız çıkış kodu daha güvenilirdir: motor hata varsa sıfırdan farklı,
 temizse `0` döner.
 
 ```bash
-node src/sarmal.ts denetle .. > /dev/null 2>&1; echo $?
+node src/sarmal.ts denetle ../.. > /dev/null 2>&1; echo $?
 ```
 
 İkinci varlık (kapalı ürün deposu) ayrı denetlenir ve açık araçtan bağımsızdır:
 
 ```bash
-node src/sarmal.ts denetle ../../kapalı ürün
+node src/sarmal.ts denetle /yol/kendi-projen
 ```
 
 ## 4. Sınamalar ve tip denetimi
@@ -209,7 +209,7 @@ denetim sıfır hata, sınamalar yeşil, yazılı onay.
 |---|---|
 | `yasa/` | Kurallar ve kararlar defteri. Bir kural ancak kendi süreciyle değişir, katkı içinde yan yol olarak değil. |
 | kapalı ürün deposu | Ayrı bir varlıktır. Açık araç ile kapalı ürün arasında **çapraz bağımlılık yasaktır**; motorun `açık-gizli-sınır-ihlali` tanısı bunu ölçer. |
-| `ogreti/ornek/uretilen/` | Yalnız çalışma zamanının yazdığı mat bölge; elle yazım sapmadır. |
+| `.sarmal/` (iz kayıtları) | Yalnız çalışma zamanının yazdığı mat bölge; elle yazım sapmadır. |
 | Üretilen yüz dosyaları | `SARMAL:BÖLGE` açılış ve kapanış yorum işaretleri arasındaki alan kaynaktan üretilir; elle düzenleme bir sonraki üretimde silinir. |
 
 ## 10. Öğrenmek için
@@ -227,7 +227,7 @@ Yapay zekâ ajanıyla çalışıyorsanız aynı bilgi MCP sunucusundan gelir:
 node urun/cekirdek/src/mcp.ts
 ```
 
-Sunucu stdio üzerinden konuşur ve on yedi araç sunar (`ogret` · `denetle` · `kurallar` ·
+Sunucu stdio üzerinden konuşur ve on sekiz araç sunar (`ogret` · `denetle` · `kurallar` ·
 `siniflama` · `gezin` · `graf` ve diğerleri).
 
 Okuma haritası:
@@ -297,7 +297,7 @@ Run it from the repository root or from the core directory; both audit the same 
 
 ```bash
 cd urun/cekirdek
-node src/sarmal.ts denetle ..
+node src/sarmal.ts denetle ../..
 ```
 
 The output is long, because the engine also prints informational lines (`ℹ`). There are two
@@ -333,21 +333,21 @@ explanation: if you leave one behind, say in your pull request why it is deliber
 To list the error and warning lines one by one:
 
 ```bash
-node src/sarmal.ts denetle .. 2>&1 | grep -E "^(✖|⚠)"
+node src/sarmal.ts denetle ../.. 2>&1 | grep -E "^(✖|⚠)"
 ```
 
 Inside a script the exit code is the more reliable signal: the engine returns non-zero when
 there are errors and `0` when the tree is clean.
 
 ```bash
-node src/sarmal.ts denetle .. > /dev/null 2>&1; echo $?
+node src/sarmal.ts denetle ../.. > /dev/null 2>&1; echo $?
 ```
 
 The second entity (kapalı ürün deposu) is audited separately and stays independent of the open
 tool:
 
 ```bash
-node src/sarmal.ts denetle ../../kapalı ürün
+node src/sarmal.ts denetle /yol/kendi-projen
 ```
 
 ## 4. Tests and type checking
@@ -463,7 +463,7 @@ measures three conditions — zero audit errors, green tests, and written approv
 |---|---|
 | `yasa/` | The rules and decisions ledger. A rule changes through its own process, never as a side road inside a contribution. |
 | kapalı ürün deposu | A separate entity. **Cross-dependency between the open tool and the closed product is forbidden**, and the engine's `açık-gizli-sınır-ihlali` (open/closed boundary violation) diagnostic measures it. |
-| `ogreti/ornek/uretilen/` | A matte zone written only by the runtime; editing it by hand is drift. |
+| `.sarmal/` (trace records) | A matte zone written only by the runtime; editing it by hand is drift. |
 | Generated surfaces | Anything between the `SARMAL:BÖLGE` opening and closing comment markers is produced from source; hand edits are wiped on the next generation. |
 
 ## 10. Learning your way around

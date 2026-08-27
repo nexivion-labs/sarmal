@@ -117,6 +117,35 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         sınır: "Bu Adım yalnız çağrı yolunu üretime bağlar; terfi kapısının kendi eşik mantığı ya da hangi tanının hangi düzeye terfi edeceği bu Adımın kapsamı dışındadır."
       }
     }
+
+    // ── 26 Ağustos 2026 taşımasının ölçülmüş borcu: çatı dört projeye ayrılınca
+    //    kapalı iki deponun planları açık deponun kodlarına atıf verir oldu ve
+    //    motor bu atıfları çözemedi. Founder 2026-08-27: kolay olan kopmalar
+    //    oturumda kapatıldı, çapraz atıf borcu plana alındı.
+    AltKatman( kod: KPS-KAPSAM-K5, departman: kodlama, ad: "çapraz-proje ad alanı",
+      ne: "ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması" ) {
+
+      Adım( kod: KPS-ADA-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
+        onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır",
+        üretir: [ KOD-AYRISTIRICI, KOD-KIMLIK, KOD-DENETCI ],
+        ne: "🧭 Çapraz-proje ad alanının motorda karşılanması. ORK-4 hükmü başka projedeki hedefe kurulan her kenarın `PRJ-A::KOD-X` yazımını şart koşar; bugün ayrıştırıcı `::` ayracını liste ayrıştırmasında hata sayar, kimlik indeksi kardeş proje köklerini bilmez ve denetçi başka projedeki hedefi kırık atıf sayar. 26 Ağustos 2026 taşımasında ölçülen yüz yedi kırık atıf ile dört fazsız Blok (laboratuvar altmış üç ve bir, orkestrasyon kırk dört ve üç) bu borcun görünür yüzüdür ve iki kapalı deponun işleme kapısını kırmızı tutmaktadır; kapı ancak bu borç kapanınca muafiyetsiz geçer." ) {
+        görev: [
+          "Ayrıştırıcı `::` ayracını kimlik parçası olarak kabul eder ve `PRJ-A::KOD-X` biçimini tek bir ad alanlı kod olarak belirteçler; liste içindeki ad alanlı kodlar hata üretmez.",
+          "Kimlik indeksi çatı anadizininde raf olarak ilan edilmiş kardeş proje köklerini okur; ad alanlı kod yalnız o projenin kökünde çözülür, niteliksiz kod yalnız bulunduğu projede çözülür ve tesadüfî küresel eşleşme hiçbir zaman bağ sayılmaz.",
+          "`mevsim:` ve `çağır` kenarları ad alanlı Faz hedefini kabul eder; başka projedeki Faz'a bağlanan Blok fazsız sayılmaz ve yol haritası paneli o Bloku kendi projesinin altında gösterir.",
+          "Eklentinin tanıma gitme, atıf bulma ve atıf dekoru yüzeyleri ad alanlı kodu tanır ve kardeş kökteki tanıma gider.",
+          "Laboratuvar ile orkestrasyonun canlı planlarındaki çapraz atıflar ad alanlı yazıma çevrilir ve oturum 100'de düşürülen on dosya beyanı açık depoya yönelen yolla yeniden bağlanır."
+        ]
+        kabul: [
+          "Çekirdek süiti yeşildir; ad alanlı çözüm ile küresel eşleşme yasağı ayrı ayrı mutasyonla kanıtlanmıştır.",
+          "Laboratuvar ve orkestrasyon depolarının denetimi sıfır hata verir ve iki deponun işleme kapısı muafiyetsiz geçer.",
+          "Sarmal depo denetimi sıfır hata ve sıfır uyarı vermeye devam eder; eklenti süiti yeşildir.",
+          "Yol Haritası panelinde kapalı deponun Bloku kendi projesinin altında, açık deponun Faz'ına bağlı olarak görünür ve bu Founder tarafından canlı pencerede doğrulanmıştır."
+        ]
+        sınır: "Bu Adım kanon metnine dokunmaz; ORK-4 hükmü olduğu gibi kalır. Kod kimliklerinin projeler arasında birleştirilmesi (MIM-1.1 ortak kimlik kökü) bu Adımın işi değildir. Çözüm yalnız çatı anadizininde ilan edilmiş kardeş kökleri tanır; ilansız klasör kardeş sayılmaz."
+        dokunulmaz: [ "Kanonun kaynak metni", "Kapalı depoların plan içerikleri (yalnız atıf yazımı değişir)" ]
+      }
+    }
   }
 }
 

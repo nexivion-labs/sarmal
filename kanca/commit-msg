@@ -16,9 +16,9 @@
 # Gösterilecek kaynak adresi ada gömülmez, ÖLÇÜLÜR (GOC-A03): gövde taşındığında
 # ya da yeniden adlandırıldığında kullanıcıya bayat bir adres verilmez.
 VARLIK=""
-for aday in . */; do
+for aday in . */ ../*/; do
   aday="${aday%/}"
-  [ -f "$aday/yasa/yonetisim/surum_yonetisimi.sar" ] && { [ "$aday" = "." ] || VARLIK="$aday"; break; }
+  [ -f "$aday/yasa/yonetisim/surum_yonetisimi.sar" ] && { [ "$aday" = "." ] || VARLIK="${aday%/}"; break; }
 done
 
 MESAJ_DOSYASI="$1"

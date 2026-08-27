@@ -1,0 +1,23 @@
+{
+  // Geliştirme kolaylığı: eklentiyi paketleyip kurmadan, doğrudan kaynaktan
+  // yüklenmiş ikinci bir yürütücü penceresinde dener. Ürünün parçası değildir
+  // ve kullanıcıya hiç gitmez. Yollar depo köküne görelidir; 26 Ağustos 2026
+  // taşımasından önce bu dosya atölye deposunda `_Sarmal/eklenti` yoluyla yaşardı.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Sarmal eklentisini çalıştır",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/urun/eklenti",
+        // Yalıtım: geliştirme penceresi YALNIZ Sarmal'ı yükler; bayrak yokken
+        // kurulu bütün eklentiler de yüklenir ve bir uyarının kaynağı ayırt edilemez.
+        "--disable-extensions",
+        "${workspaceFolder}/sarmal_anadizin.sar"
+      ],
+      "outFiles": [ "${workspaceFolder}/urun/eklenti/dist/**/*.js" ],
+      "preLaunchTask": "sarmal-eklenti-build"
+    }
+  ]
+}

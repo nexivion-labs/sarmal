@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "sarmal-eklenti-build",
+      "type": "shell",
+      "command": "node esbuild.mjs",
+      "options": { "cwd": "${workspaceFolder}/urun/eklenti" },
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

@@ -36,5 +36,5 @@
 *.sar linguist-documentation=true
 
 # Üretilmiş dosyalar dil istatistiğini şişirmesin.
-_Sarmal/eklenti/dist/** linguist-generated=true
-_Sarmal/eklenti/src/gomulu-kanon.ts linguist-generated=true
+urun/eklenti/dist/** linguist-generated=true
+urun/eklenti/src/gomulu-kanon.ts linguist-generated=true

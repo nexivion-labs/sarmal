@@ -54,7 +54,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
         ]
         kabul: [
           "Kanonda oturum ritüelini tanımlayan, açılışın beş basamağı ile kapanışın beş basamağını ayrı ayrı sayan bir madde yaşamaktadır.",
-          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı vermektedir; kanon tutarlılık nöbeti yeşildir.",
+          "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı vermektedir; kanon tutarlılık nöbeti yeşildir.",
           "Founder madde metnini Onaylar panelinden tasdik etmiştir; tasdiksiz kapanış yoktur."
         ]
         üretir: [ Meyve( kod: MYV-OSS-A01, tür: Karar,
@@ -72,7 +72,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
         ]
         kabul: [
           "Kanonda denetçi kapsamını altı sabit maddeyle tanımlayan ve ORK-6.1'e dayanan bir madde yaşamaktadır.",
-          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı vermektedir; kanon tutarlılık nöbeti yeşildir.",
+          "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı vermektedir; kanon tutarlılık nöbeti yeşildir.",
           "Founder madde metnini Onaylar panelinden tasdik etmiştir."
         ]
         üretir: [ Meyve( kod: MYV-OSS-A02, tür: Karar,
@@ -90,7 +90,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
         ]
         kabul: [
           "ogrenme/kadro.sar dosyasında eklenti, yayın, site ve sınama uzmanlarını tanımlayan dört yeni Etmen L3 yetkisiyle ve izole bellekle yaşamaktadır.",
-          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı vermektedir; RBAC bekçileri hiçbir yeni Etmende tetiklenmemektedir.",
+          "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı vermektedir; RBAC bekçileri hiçbir yeni Etmende tetiklenmemektedir.",
           "Denetçi Etmeni tek L5 yetkili Etmen olarak kalmaya devam etmektedir."
         ]
         üretir: [ Meyve( kod: MYV-OSS-A04, tür: Karar,

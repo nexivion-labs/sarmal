@@ -22,7 +22,7 @@ Kendi etmenini yazma yeteneği de açık kapsamın parçasıdır: **Etmen · Bec
 
 ## Başlangıç
 
-Kurulum tek adımdır ve Node 23.6 ya da üstünü ister: `cd urun/cekirdek && npm link` komutu `sarmal` komutunu kabuğa bağlar; sürüm şartının kaynağı `urun/cekirdek/package.json` dosyasıdır. `cd cekirdek && npm test` çekirdek davranışını sınar. İlk kanonik proje kartı için `sarmal ogret`, bütün çalışma alanını denetlemek için `sarmal denetle .`, bir şablonu görmek için `sarmal başla proje` kullanılır. Onay gerektiren işler kullanıcı yüzünde **ONAYLAR** paneline gider.
+Kurulum tek adımdır ve Node 23.6 ya da üstünü ister: `cd urun/cekirdek && npm link` komutu `sarmal` komutunu kabuğa bağlar; sürüm şartının kaynağı `urun/cekirdek/package.json` dosyasıdır. `cd urun/cekirdek && npm test` çekirdek davranışını sınar. İlk kanonik proje kartı için `sarmal ogret`, bütün çalışma alanını denetlemek için `sarmal denetle .`, bir şablonu görmek için `sarmal başla proje` kullanılır. Onay gerektiren işler kullanıcı yüzünde **ONAYLAR** paneline gider.
 
 ## Belge haritası
 

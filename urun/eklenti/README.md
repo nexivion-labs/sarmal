@@ -17,9 +17,9 @@ Sarmal tamamen yereldir. Eklentinin çalışma zamanı bağımlılığı sıfır
 <!-- SARMAL:GOREV:TAM -->
 ## Görev: eklentiyi çalıştırıp bir çalışma alanını denetlemek
 
-1. `cd eklenti && npm install` ile geliştirme bağımlılıklarını kurun.
+1. `cd urun/eklenti && npm install` ile geliştirme bağımlılıklarını kurun.
 2. `npm run build` ile eklenti tip kapısını çalıştırın.
-3. Editörde `eklenti` dizinini açıp geliştirme ana bilgisayarını başlatın.
+3. Editörde depo kökünü (`.vscode/launch.json` F5 yapılandırmasıyla) ya da `urun/eklenti` dizinini açıp geliştirme ana bilgisayarını başlatın.
 4. Bir `.sar` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 

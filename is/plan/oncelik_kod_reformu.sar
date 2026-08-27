@@ -57,7 +57,7 @@ Blok( kod: BLK-RFM, mevsim: FAZ-2026-AGUSTOS,
         kabul: [
           "yasa/kanon/ork.sar içindeki ORK-3.4 maddesi önem ve acil eksenlerini ayrı ayrı tanımlar ve eski dört kademeli kümeyi yürürlükte göstermez.",
           "ORK-8 maddesinin metninde öncelik kademesi ifadesi yeni modelle çelişmez.",
-          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
+          "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
           "Founder madde metnini Onaylar panelinden tasdik etmiştir; tasdiksiz kapanış yoktur."
         ]
         sınır: "Bu Adım yalnız kanon metnine dokunur; şema, sözlük, göç ve motor işi kendi Adımlarındadır. Öncelik beyanının değeri zorlanmaz — bir işin önemi insan hükmüdür ve makine onu uyduramaz; bu ilke eski maddeden aynen taşınır."
@@ -76,7 +76,7 @@ Blok( kod: BLK-RFM, mevsim: FAZ-2026-AGUSTOS,
         ]
         kabul: [
           "Kanonda düğüm kodu biçimini, önek sicilini ve ileriye dönüklük sınırını birlikte tanımlayan bir madde yaşar ve dayanak zinciri Madde-0 köküne ulaşır.",
-          "`sarmal denetle-proje _Sarmal` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
+          "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı verir; kanon tutarlılık nöbeti yeşildir.",
           "Founder madde metnini Onaylar panelinden tasdik etmiştir."
         ]
         sınır: "Kanon maddesi kodlarının kendi standardı (DIL-5.1) bu Adımın konusu değildir ve ona dokunulmaz; bu Adım yalnız düğüm kodlarını bağlar."

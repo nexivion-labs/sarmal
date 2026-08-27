@@ -992,7 +992,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
           bağımlı:  [ GOC-YUZEY-A90, VIT-GRAF-A10, MDR-A06 ]
           referans: [ STR-2, STR-2.1, YAS-4.1, ORK-3.3 ]
           üretir:   [
-            Veri( kod: VR-GOC-YUZEY-DEVIR, dosya: "is/nitelik/goc/yuzey_devir_kaydi.sar",
+            // KÜRASYON (GOC-A08 · KRS-04 · 2026-08-27): bu kayıt laboratuvar deposunda kalır (nitelik/goc/yuzey_devir_kaydi.sar); açık depoda dosya beyanı düşürüldü.
+            Veri( kod: VR-GOC-YUZEY-DEVIR,
               ne: "Yüzey kapısının dört parçalı kapanış ve proje-kod etki devri kaydı — kapanış takvimde geç, içerikte tamdı; gecikme gerekçesi kayıtta." )
           ]
           sınır: "Dört kapanış bileşeninden biri eksikse kapı kapanmaz ve proje-kod işi seçilemez."
@@ -1358,7 +1359,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
           bağımlı:  [ GOC-PROJEKOD-A99 ]
           referans: [ TIP-2, YAS-2, YUZ-3.3, OZK-01 ]
           üretir:   [
-            Göç( kod: GC-GOC-TERFI-ZEMIN, dosya: "is/nitelik/goc/terfi_zemin_kaydi.sar",
+            // KÜRASYON (GOC-A08 · KRS-04 · 2026-08-27): bu kayıt laboratuvar deposunda kalır (nitelik/goc/terfi_zemin_kaydi.sar); açık depoda dosya beyanı düşürüldü.
+            Göç( kod: GC-GOC-TERFI-ZEMIN,
               ne: "Terfi öncesi zemin temizliği — şemada ilan edilmemiş alanların kanona kazandırılması ve kanon Kural düğümlerinin kendi sözleşmelerini taşıması. Kayıt, tür bazlı düşüş tablosunu ve Founder'a devredilen on yedi alanın tablosunu taşır." ),
             Kod( kod: KOD-SNM-TUR-DOKUMU, dosya: "urun/cekirdek/sinama/tur-dokumu.test.ts",
               ne: "🍎 Tür dökümü nöbeti — denetim çıktısının kendi bulgu sayısını gizlemesini yakalar. Bu Adımın dördüncü görevi düşüşün tanı türü bazında raporlanmasını ister; oysa çıktı dosya başına aynı türden ilk üç bulguyu listeleyip kalanını özet satırına katlıyordu ve gerçek toplam ölçülemiyordu. Nöbet hem `denetimKos` verisini hem alt-süreçte gerçekten basılan metni okur, böylece sunum katmanı sessizce yalan söylediğinde de kırmızıya döner." )
@@ -1557,7 +1559,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
           bağımlı:  [ GOC-TERFI-A90 ]
           referans: [ STR-2, STR-2.1, YAS-4.1, ORK-3.3 ]
           üretir:   [
-            Veri( kod: VR-GOC-TERFI-DEVIR, dosya: "is/nitelik/goc/terfi_devir_kaydi.sar",
+            // KÜRASYON (GOC-A08 · KRS-04 · 2026-08-27): bu kayıt laboratuvar deposunda kalır (nitelik/goc/terfi_devir_kaydi.sar); açık depoda dosya beyanı düşürüldü.
+            Veri( kod: VR-GOC-TERFI-DEVIR,
               ne: "Terfi kapısının dört parçalı kapanış ve belge etki devri kaydı — kapsam envanteri, iki aşamalı bağımsız doğrulama, dört borç sınıfının sahipliği ve belge turuna giden etki kümesi tek kayıtta." )
           ]
           sınır: "Dört kapanış bileşeninden biri eksikse kapı kapanmaz ve belge işi seçilemez."
