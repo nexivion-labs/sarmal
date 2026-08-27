@@ -17,15 +17,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
-            neredeyiz: YUZEY-BULGU-BIR-KAPANDI-IKI-VE-UC-OLCULDU-PAKET-0-9-159-HAZIR,
-            sıradaki: FOUNDER-GOZU-UC-BULGU-SONRA-ORK-4-SONRA-MAGAZA-YUKLEMESI,
+            neredeyiz: TASIMA-KOPMALARI-OLCULDU-KOLAYLARI-KAPANDI-AD-ALANI-BORCU-PLANDA,
+            sıradaki: FOUNDER-GOZU-VE-KAPALI-DEPO-MUHURLERI-SONRA-KPS-ADA-A01-SONRA-MAGAZA,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ EKLENTI-0-9-159-KURULUM-VE-PENCERE-YENILEME-FOUNDERIN,
                          VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
                          YUZEY-FAZ-DISI-SVG-IKONLAR-YENIDEN-BASLAYAN-PENCEREDE-BAKILACAK,
                          DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
-                         CATI-CODE-WORKSPACE-DOSYASI-DISKTE-YOK,
-                         ORK-4-CAPRAZ-PROJE-AD-ALANI-AYRISTIRICIDA-YOK,
+                         KAPALI-DEPOLARDAKI-ONARIMLAR-MUHURSUZ-KAPI-ORK-4-E-KADAR-KIRMIZI,
+                         KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA,
+                         CLAUDE-JSON-OLU-GIRDILER-VE-LABORATUVAR-SILMELERI-FOUNDER-KARARI,
+                         RENK-URET-CATI-AYARINI-TAZELEMIYOR,
                          YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
                          PROJE-VE-CALISMA-ALANI-SEMBOLLERI-EKSEN-TIPLERINE,
                          GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI,
@@ -174,10 +176,39 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         Founder hükmü ister. Canlı ölçüm eklentinin kendi performans kanalından
         (Çıktı paneli, Sarmal Performans) okunur.
 
-        Yan bulgu: çatı klasöründe çalışma alanı dosyası yoktur. Çatı işaretçisi
-        `Nexivion Labs.code-workspace` adını verir, VS Code'un kendi kaydı
-        `nexivion-labs.code-workspace` yolunu gösterir ve ikisi de diskte değildir;
-        pencerenin bugün hangi tanımla açık olduğu Founder'a sorulacaktır.
+        Çalışma alanı dosyası sorusu kapandı: oturum 99 kaydı (22.37–22.46) dosyanın
+        Founder seçimiyle kaldırıldığını gösterdi ("tek kök, yalnız klasörü aç");
+        bayat olan çatı işaretçisinin pencere paragrafıydı ve düzeltildi.
+
+        🧰 TAŞIMA KOPMALARI (oturum 100, ikinci yarı). Founder üç kopmayı gösterdi
+        (depo adının değişmesi, eski gövdenin silinmesi, kararın sonuçları) ve dört
+        salt-okur ajanla tam envanter istedi: yol ve ad kalıntıları, beyan ile disk
+        uyumu, araç ve git yapılandırması, hafıza ve işaretçi bayatlığı. Ölçüm şudur:
+        taşıma insan yüzlerini (CLAUDE.md dosyaları) güncellemiş, ajan yüzeylerini
+        (oturum kancaları, skill, komutlar, hafıza) ve bazı komut satırlarını eski
+        düzende bırakmıştı; arşiv rafındaki doksan dokuz kırık dosya beyanı tarih
+        olduğu için dokunulmazdır. Oturumda kapananlar: orkestrasyon örtüsüne
+        _NexivionOS örtüsünden kaybolan Beceri.yığın ve Politika.alan şemaları geri
+        kondu (381 uyarı sıfıra indi; iki kopya eşit), iki anadizine ilansız klasör
+        ilanı (kanca, ornek), on Meyve beyanı kürasyon desenine çevrildi, göç planında
+        KRS-04 gereği laboratuvarda kalan üç kaydın beyanı düşürüldü, iki kapalı
+        deponun .claude/settings.json dosyaları ile laboratuvarın reform skill'i,
+        oturum komutları, .gitattributes ve kanca günlük adları taşıma gerçeğine
+        çevrildi, commit-msg kancası üç depoda kardeş kökü tarar hâle geldi, F5 hata
+        ayıklama yapılandırması sarmal köküne ve çatıya yazıldı, katkı rehberi ile iki
+        benioku düzeltildi, site benioku Cloudflare Pages gerçeğine çevrildi, sitenin
+        eski W4 ajan profili otomatik yüklenmeyen bir ada alındı, hafızadaki on altı
+        bayat yol düzeltildi ve öksüz sarmal hafıza kopyası canlı dizine bağlandı.
+        Sayılar: orkestrasyon 53 hata · 385 uyarı → 47 · 4; laboratuvar 61 · 30 →
+        55 · 30. Kalan hataların tamamı çapraz atıf ve onların Faz bağıdır; tek ilaç
+        ORK-4'ün motorda karşılanmasıdır ve bu iş kapsam borcu planına KPS-ADA-A01
+        Adımı olarak indi. Kapalı depolardaki onarımlar çalışma ağacında mühürsüz
+        durur, çünkü her iki deponun kapısı çapraz atıflar yüzünden kırmızıdır ve
+        muafiyetli işleme Founder'ındır. Founder kararı bekleyenler: laboratuvarda
+        eski F5 dosyaları ile yetim ajan çalışma ağacının silinmesi, ~/.claude.json
+        içindeki ölü proje anahtarları ile flutter-inspector sunucusu, kanon
+        maddelerindeki bölüm adı listelerinin (ilgili) bağlantıya çevrilmesi,
+        renk-uret aracının çatı ayarını tazelememesi.
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
