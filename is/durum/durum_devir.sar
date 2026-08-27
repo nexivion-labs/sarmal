@@ -291,7 +291,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         (açık depoda on, kapalı üründe beş) ve motor yalnız bilgi düzeyli tavsiye
         verir. Kanonun hata dediği yerde motor öneri vermektedir.
 
-        🔴 ÜÇÜNCÜ AÇIK (panel kapsamı · henüz plana inmedi). Founder ölçtü: çatı
+        🟡 ÜÇÜNCÜ AÇIK ONARILDI, CANLI DOĞRULAMA BEKLİYOR (VIT-POSTA-A05).
+        Founder ölçtü: çatı
         seçiliyken Hatırlatıcılar, Gözlemler ve Fikirler boşalır, buna karşılık
         Onaylar bütün çalışma alanını gösterir. Mekanizma kanıtlıdır. Birincisi
         `panelDeGorunur` süzgeci tam eşitlik yapar (kök ile aktif varlık birebir
@@ -302,6 +303,26 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         bulunur. Doğrusu Founder'ın tarifidir: alt projede kendi onayları, çatıda
         hepsi. Taşımadan önce tek kök vardı ve eşitlik yetiyordu; iç içe çatı
         düzeni bu süzgeci kırmıştır.
+
+        Onarım aynı oturumda yapıldı ve iki kusuru birden kapattı. Süzgeç artık
+        kapsama ilişkisi kurar ve kural tek yönlüdür: odaktaki kökün altında
+        yaşayan her varlık görünür, üstünde ya da yanında yaşayan görünmez.
+        Böylece çatı bütün çalışma alanını, bir alt proje yalnız kendi evini
+        gösterir. Ters yön bilerek kapalı bırakılmıştır, çünkü açılsaydı bir alt
+        projede çalışırken kardeş projelerin kayıtları da panele dolar ve odağın
+        kendisi anlamsızlaşırdı. Onaylar paneli de aynı odak kapısına bağlandı ve
+        odak değiştiğinde yeniden yerleşir.
+
+        Onarım drift üretmeden yapıldı ve bu kayda geçsin: kapsama ilişkisi zaten
+        yol haritası çekirdeğinde yaşıyor ve varlık kümelerini kuruyordu, ancak
+        dışa açık değildi. İkinci bir kural yazmak yerine var olan işlev adıyla
+        dışa verildi ve yol ayırıcılarını eşitleyecek biçimde genişletildi;
+        böylece yol haritasındaki kümeler ile panellerin süzgeci aynı tek kaynağı
+        okur. Eklenti süiti beş yüz yetmiş beş sınamayla yeşildir ve yeni
+        nöbetlerden biri ön ek tuzağını ölçerek ad benzerliği taşıyan kardeş kökün
+        kapsanan sayılmadığını kanıtlar. Adım kapatılmadı, çünkü kapsam davranışı
+        ancak gerçek editör kabuğunda görünür; doğrulama 0.9.160 paketiyle
+        Founder'ın canlı penceresinde yapılacaktır.
 
         🟢 DEPO GÖRÜNÜRLÜĞÜ (ölçüm 2026-08-27): açık deponun uzak adresi YOKTUR ve
         bugüne dek hiçbir yere gönderilmemiştir. GitHub'da ayrı bir sarmal deposu
