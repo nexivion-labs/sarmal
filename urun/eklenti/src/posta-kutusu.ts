@@ -45,6 +45,7 @@
 
 import * as vscode from "vscode";
 import { GORUNUS_POSTA_KUTUSU, panelRozeti } from "./yuzey-cekirdek.ts";
+import { projeKimligi } from "./yolharitasi.ts";   // 🗺️ aidiyet TEK kaynaktan çözülür
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   postaRozetIpucu, POSTA_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
@@ -256,6 +257,9 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     return {
       kumeler,
       durum: this.durum,
+      // Proje çözümü Yol Haritası ile AYNI kapıdan gelir; ikinci bir kök arama
+      // yazılsaydı iki panel aynı dosyayı farklı Projeye yazabilirdi.
+      proje: (dosya: string) => projeKimligi(dosya).ad || undefined,
       simge: (dosya) => {
         if (!this.simgeKoku || !webview) return undefined;
         const s = teknolojiSimgesi(this.simgeKoku, this.simgeCizelgesi, dosya);

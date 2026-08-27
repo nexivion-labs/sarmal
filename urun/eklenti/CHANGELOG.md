@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.163 — 2026-08-27 (Onaylar hangi projenin kapısı olduğunu söylüyor)
+
+- **Onaylar panelinde dosya satırı artık projesini söylüyor.** Founder çatı odağındayken panelin on yedi kapıyı listelediğini ve hiçbirinin hangi projeye ait olduğunun okunamadığını bildirdi. Komşu üç panel proje satırını taşır; bu panel bir webview olduğu için ağaç kademesi eklemek durum yönetimini de büyütürdü, oysa soru kademe değil aidiyet soruyordu. Proje adı bu yüzden dosya satırının gri açıklamasına kondu ve sayının önünde durur: satır kesildiğinde önce sonu kaybolur, dolayısıyla dar panelde kaybolması gereken sayı, kalması gereken ise aidiyettir.
+- **Aidiyet kabukta çözülür ve Yol Haritası ile aynı kapıdan gelir.** Saf gövde dosya sisteminden proje kökü aramaz; ikinci bir kök arama yazılsaydı iki panel aynı dosyayı farklı projeye yazabilirdi. Proje çözülemezse satır yalnız sayıyı söyler ve uydurma bir ad basılmaz.
+
 ## 0.9.162 — 2026-08-27 (Fikirler hangi projenin olduğunu söylüyor)
 
 - **Fikirler paneli proje kademesini kazandı.** Founder çatı odağındayken üç fikri düz bir liste hâlinde gördü ve hangisinin hangi projeye ait olduğunun okunamadığını bildirdi. Panel tek kademeli bir ağaç çiziyordu ve bu tek köklü düzende doğruydu; çalışma alanı iç içe bir çatıya taşınıp çatı odağı bütün projeleri kapsar hâle gelince aynı liste üç projenin fikirlerini ayrımsız yığdı. Her fikir artık ait olduğu projenin satırının altında yaşıyor, proje satırı adedi söylüyor ve ipucusu proje kodunu taşıyor.

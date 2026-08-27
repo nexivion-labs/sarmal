@@ -818,8 +818,15 @@ export const TABAN_KANON_METINLERI = {
 // NÖBET-SINIRI: ONAY-YÜZEYİ-METİNLERİ BAŞLANGIÇ
 
 /** Dosya satırının yanındaki gri açıklama — o dosyada kaç kapı beklediği. */
-export function postaDosyaAciklamasi(adet: number): string {
-  return adet === 1 ? yuzeyMetni("1 kapı", "1 gate") : yuzeyMetni(`${adet} kapı`, `${adet} gates`);
+export function postaDosyaAciklamasi(adet: number, proje?: string): string {
+  const sayi = adet === 1
+    ? yuzeyMetni("1 kapı", "1 gate")
+    : yuzeyMetni(`${adet} kapı`, `${adet} gates`);
+  // PROJE ADI SAYININ ÖNÜNDE DURUR ve bu bilinçlidir: satır kesildiğinde önce
+  // sonu kaybolur, dolayısıyla dar panelde kaybolması gereken sayı, kalması
+  // gereken ise aidiyettir. Proje çözülemezse satır yalnız sayıyı söyler;
+  // uydurma bir ad basılmaz.
+  return proje ? `${proje} · ${sayi}` : sayi;
 }
 
 /**

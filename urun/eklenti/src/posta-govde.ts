@@ -327,7 +327,7 @@ export interface GovdeMetinleri {
   readonly notYerTutucu: string;
   readonly gerekceZorunlu: string;
   readonly gerekceArtik: string;
-  readonly dosyaAdedi: (adet: number) => string;
+  readonly dosyaAdedi: (adet: number, proje?: string) => string;
   readonly kapiEtiketi: (kod: string, ne: string) => string;
   readonly kapiAciklamasi: (dosyaAdi: string, satir: number) => string;
   readonly kapiIpucu: (p: { kod: string; ne: string; olcut: string; dosya: string; satir: number }) => string;
@@ -349,6 +349,22 @@ export interface GovdeGirdisi {
    * göre simge seçmesi de kendiliğinden gelen bir davranıştı ve elle kurulur.
    */
   simge(dosya: string): { readonly light: string; readonly dark: string } | undefined;
+  /**
+   * Dosyanın bağlı olduğu Projenin insan adı; çözülemezse tanımsız.
+   *
+   * ÖLÇÜLMÜŞ KUSUR (Founder canlı bulgusu 2026-08-27): çatı odağındayken panel
+   * on yedi kapıyı listeliyordu ve hiçbirinin hangi projeye ait olduğu
+   * okunamıyordu. Komşu üç panel proje satırını taşır; bu panel bir webview
+   * olduğu için ağaç kademesi eklemek durum yönetimini de büyütürdü, oysa
+   * Founder'ın sorusu kademe değil AİDİYET soruyordu. Proje adı bu yüzden dosya
+   * satırının gri açıklamasına kondu.
+   *
+   * ÇÖZÜM KABUKTA YAPILIR, GÖVDEDE DEĞİL — teknoloji simgesinin ta kendisi olan
+   * desen. Gövde saftır ve dosya sisteminden proje kökü aramaz; kabuk Yol
+   * Haritası ile AYNI çözümlemeyi çağırır, dolayısıyla iki panel aynı dosyayı
+   * farklı Projeye yazamaz.
+   */
+  proje(dosya: string): string | undefined;
   readonly nonce: string;
   /**
    * Kapı satırının geometrik balonu — satır çizelgesinin `kapi` kaynağının
@@ -477,7 +493,8 @@ function dosyaSatiri(g: GovdeGirdisi, kume: DosyaKumesi): string {
           `<img class="teknoloji tek-koyu" src="${kacisla(simge.dark)}" alt="" />`
         : ""}
       <span class="etiket">${kacisla(kume.dosyaAdi)}</span>
-      <span class="aciklama">${kacisla(g.metinler.dosyaAdedi(adet))}</span>
+      <span class="aciklama">${kacisla(
+        g.metinler.dosyaAdedi(adet, g.proje(kume.dosya)))}</span>
     </button>
     <ul class="kapilar"${acik ? "" : " hidden"}>${kume.kayitlar.map((k) => kapiSatiri(g, k)).join("")}</ul>
   </li>`;

@@ -121,6 +121,8 @@ function girdi(kayitlar: readonly KapiKaydi[], durum: PanelDurumu) {
     kumeler,
     durum,
     simge: () => ({ light: SIMGE_ACIK, dark: SIMGE_KOYU }),
+    // Aidiyet kabukta çözülür; fikstür üretimdeki kapının yerine sabit bir ad koyar.
+    proje: () => "Deneme Projesi",
     nonce: "NONCEDENEME",
     kapiSimgesi: KAPI_SIMGESI,
     kopyaSimgesi: KOPYA_SIMGESI,
@@ -1579,5 +1581,38 @@ test("satır eylemi: tık KENDİ dalından gider; Enter ve Boşluk aynı yola in
     "gezinmesine sızar ve odak boşluğa düşer");
   for (const tus of ["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft", "Home", "End", "Escape"]) {
     assert.ok(betik.includes(`"${tus}"`), `${tus} gezinmesi bu turda düşmüş`);
+  }
+});
+
+// ── 🗺️ AİDİYET: KAPI HANGİ PROJENİN? (Founder canlı bulgusu 2026-08-27) ──────
+//   Founder çatı odağındayken panelin on yedi kapıyı listelediğini ve hiçbirinin
+//   hangi projeye ait olduğunun okunamadığını bildirdi. Komşu üç panel proje
+//   satırını taşır; bu panel bir webview olduğu için ağaç kademesi eklemek durum
+//   yönetimini de büyütürdü, oysa soru kademe değil AİDİYET soruyordu.
+
+test("dosya satırı hangi projeye ait olduğunu SÖYLER", () => {
+  const html = postaGovdesiHtml(girdi(ikiDosyaliFikstur(), new PanelDurumu()));
+  assert.ok(html.includes("Deneme Projesi"),
+    "dosya satırı proje adını basmıyor; çatı odağında kapıların aidiyeti okunamaz");
+});
+
+test("proje çözülemeyen dosya UYDURMA ad taşımaz, yalnız sayıyı söyler", () => {
+  // Dürüstlük kuralı teknoloji simgesindekiyle aynıdır: yanlış bir aidiyet
+  // göstermek hiç göstermemekten kötüdür, çünkü kullanıcı onu doğru sanar.
+  const html = postaGovdesiHtml({
+    ...girdi(ikiDosyaliFikstur(), new PanelDurumu()), proje: () => undefined,
+  });
+  assert.ok(!html.includes("Deneme Projesi"), "çözülemeyen proje yine de basılmış");
+  assert.ok(/\d+ kapı/.test(html), "proje yokken sayı da kaybolmuş");
+});
+
+test("aidiyet KABUKTA çözülür: saf gövde proje kökü aramaz", () => {
+  // Gövde saf kalmalıdır; dosya sisteminden kök arayan bir gövde hem sınanamaz
+  // hem de Yol Haritası ile ayrışabilir. İkinci bir kök arama yazılsaydı iki
+  // panel aynı dosyayı farklı Projeye yazabilirdi.
+  const kaynak = oku("../src/posta-govde.ts");
+  for (const yasak of ["varlikBul", "projeKimligi", "anadizinBul", "node:fs"]) {
+    assert.ok(!kaynak.includes(yasak),
+      `saf gövde kendi kök aramasını kurmuş: ${yasak}`);
   }
 });
