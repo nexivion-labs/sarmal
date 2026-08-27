@@ -311,15 +311,35 @@ test("fikir paneli: kullanıcıya giden panel metinleri EMOJİ taşımaz (Founde
   }
 });
 
-test("fikir paneli: ağaç TEK kademedir ve komşu panellerin kademelerini ödünç almaz", () => {
+test("fikir paneli: ağaç İKİ kademedir — proje açıldı, dosya kademesi açılmadı", () => {
+  // NÖBET FOUNDER HÜKMÜYLE DARALTILDI (2026-08-27), KALDIRILMADI.
+  //
+  // Nöbet bugüne dek ağacın TEK kademe kalmasını kilitliyordu ve o kilit tek
+  // köklü düzende doğruydu: panelde tek bir projenin fikirleri yaşıyordu ve bir
+  // proje satırı hiçbir şey ayırmadan yalnız bir tık ekliyordu. Çalışma alanı iç
+  // içe bir çatıya taşınıp çatı odağı bütün projeleri kapsar hâle gelince aynı
+  // liste üç projenin fikirlerini ayrımsız yığdı ve Founder canlı pencerede
+  // sordu: "fikirler hangi projenin, belli değil." Kilit bu yüzden proje
+  // kademesine açıldı.
+  //
+  // DOSYA KADEMESİ HÂLÂ KİLİTLİDİR ve gerekçesi değişmedi. Komşu iki panelde
+  // dosya kademesi vardır, çünkü onlar yüzlerce kayıt taşır ve dosya satırı o
+  // yığını böler; Fikirler onlarca kat daha seyrek bir hanedir ve dosya kademesi
+  // orada yığın bölmez, yalnız her fikri bir tık uzağa iter. Nöbetin değeri
+  // kademe sayısında değil, kademe eklemenin SESSİZ OLAMAMASINDA yaşar.
   const kademeler = [...FIKIRLER_KAYNAK.matchAll(/tur: "([^"]+)"/g)].map((m) => m[1]);
   assert.ok(kademeler.length > 0, "panel düğümleri okunamadı");
-  assert.deepEqual([...new Set(kademeler)], ["fikir"],
-    `Fikirler ağacına yeni bir kademe girmiş: ${[...new Set(kademeler)].join(" · ")}`);
-  for (const yasak of ["projeyeGrupla", "dosyayaGrupla", "kokeGoreOzetle", "turDagilimi"]) {
+  assert.deepEqual([...new Set(kademeler)].sort(), ["fikir", "proje"],
+    `Fikirler ağacına beklenmeyen bir kademe girmiş: ${[...new Set(kademeler)].join(" · ")}`);
+  for (const yasak of ["dosyayaGrupla", "kokeGoreOzetle", "turDagilimi"]) {
     assert.ok(!FIKIRLER_KAYNAK.includes(yasak),
       `Fikirler paneli komşu panelin gruplayıcısını kullanıyor: ${yasak}`);
   }
+  // Proje kademesi komşu panellerin gruplayıcısını PAYLAŞIR ve bu bilinçlidir:
+  // ikinci bir proje gruplaması yazılsaydı biri sessizce bayatlar ve aynı kayıt
+  // iki panelde iki ayrı projeye düşerdi.
+  assert.ok(FIKIRLER_KAYNAK.includes("projeyeGrupla"),
+    "proje kademesi kendi gruplamasını kurmuş; gruplama tek kaynaktan gelmeli");
 });
 
 // ── ⑥ EKLENTİ SÜRÜMÜ İLERLEDİ ───────────────────────────────────────────────

@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.162 — 2026-08-27 (Fikirler hangi projenin olduğunu söylüyor)
+
+- **Fikirler paneli proje kademesini kazandı.** Founder çatı odağındayken üç fikri düz bir liste hâlinde gördü ve hangisinin hangi projeye ait olduğunun okunamadığını bildirdi. Panel tek kademeli bir ağaç çiziyordu ve bu tek köklü düzende doğruydu; çalışma alanı iç içe bir çatıya taşınıp çatı odağı bütün projeleri kapsar hâle gelince aynı liste üç projenin fikirlerini ayrımsız yığdı. Her fikir artık ait olduğu projenin satırının altında yaşıyor, proje satırı adedi söylüyor ve ipucusu proje kodunu taşıyor.
+- **Dosya kademesi bilerek açılmadı.** Komşu iki panelde dosya kademesi vardır, çünkü onlar yüzlerce kayıt taşır ve dosya satırı o yığını böler; Fikirler onlarca kat daha seyrek bir hanedir ve dosya kademesi orada yığın bölmez, yalnız her fikri bir tık uzağa iter. Panelin sadeliğini koruyan nöbet kaldırılmadı, yalnız proje kademesine izin verecek biçimde daraltıldı.
+
 ## 0.9.161 — 2026-08-27 (dört panelin de kendi sayısı görünür)
 
 - **Hatırlatıcılar, Gözlemler ve Fikirler artık sayı rozeti taşıyor.** Founder hükmü: rozet bugüne dek yalnız Onaylar panelinde vardı ve komşu üç panel sayısını yalnız durum çubuğunda söylüyordu, dolayısıyla bir panelin dolu mu boş mu olduğu ancak o panel açılarak öğreniliyordu. Sayı her panelin kendi listesinden ve durum çubuğunun okuduğu aynı kaynaktan türer; ikinci bir sayaç kurulmadığı için rozet ile durum çubuğu çelişemez. Bir panel boşaldığında rozeti tümüyle kaybolur: boş panelde sıfır yazan bir rozet sürekli bir işaret gibi durur ve dikkat çekmesi gereken sayıları değersizleştirir.

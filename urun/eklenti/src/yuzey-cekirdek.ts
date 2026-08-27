@@ -183,17 +183,19 @@ export function yuzeyMatrisi(
 }
 
 /** Bir Proje altında toplanan kayıtlar. */
-export interface ProjeKumesi {
+export interface ProjeKumesi<T = YuzeyKaydi> {
   readonly proje: ProjeKimligi;
-  readonly kayitlar: readonly YuzeyKaydi[];
+  readonly kayitlar: readonly T[];
 }
 
 /**
  * Kayıtları Proje koduna göre gruplar. Farklı Projelerin kayıtları asla aynı
  * kümede birleşmez; Projeler insan adına göre Türkçe sırayla dizilir.
  */
-export function projeyeGrupla(kayitlar: readonly YuzeyKaydi[]): ProjeKumesi[] {
-  const harita = new Map<string, { proje: ProjeKimligi; kayitlar: YuzeyKaydi[] }>();
+export function projeyeGrupla<T extends { proje: ProjeKimligi }>(
+  kayitlar: readonly T[],
+): ProjeKumesi<T>[] {
+  const harita = new Map<string, { proje: ProjeKimligi; kayitlar: T[] }>();
   for (const kayit of kayitlar) {
     const kume = harita.get(kayit.proje.kod);
     if (kume) kume.kayitlar.push(kayit);

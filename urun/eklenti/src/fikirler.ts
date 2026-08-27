@@ -34,9 +34,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { GORUNUS_FIKIRLER, panelRozeti,
+import {
+  GORUNUS_FIKIRLER, panelRozeti, projeyeGrupla, type ProjeKumesi,
 } from "./yuzey-cekirdek.ts";
-import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
+import {
+  YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
+  fikirProjeAciklamasi, fikirProjeIpucu,
 } from "./yuzey-metinleri.ts";
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
@@ -54,8 +57,29 @@ import type { SatirSimgesi } from "./simge-cizelgesi.ts";
  */
 const KAYIT_SIMGESI: SatirSimgesi = "fikir";
 
-/** Panel düğümü: tek bir Fikir kaydı. Ağaç tek kademedir, ara düğüm yoktur. */
-type PanelOge = { tur: "fikir"; kayit: FikirKaydi };
+/** Proje satırının işareti — Fikir hanesinin kendi ampulü, komşu panellerin
+ *  yer imi ve kutu işaretlerinden bakışta ayrılır. */
+const PROJE_SIMGESI: SatirSimgesi = "fikir";
+
+/**
+ * Panel düğümü. AĞAÇ İKİ KADEMEDİR: Proje → Fikir.
+ *
+ * ÖLÇÜLMÜŞ KUSUR (Founder canlı bulgusu 2026-08-27): panel bugüne dek düz bir
+ * liste çiziyordu ve Founder üç fikri görüp "hangi projenin, belli değil" dedi.
+ * Tek köklü düzende düz liste yetiyordu, çünkü panelde tek bir projenin fikirleri
+ * yaşıyordu; çalışma alanı iç içe bir çatıya taşınıp çatı odağı bütün projeleri
+ * kapsar hâle gelince aynı liste üç projenin fikirlerini ayrımsız yığdı.
+ *
+ * EKLENEN KADEME YALNIZ PROJEDİR VE DOSYA KADEMESİ BİLEREK AÇILMAMIŞTIR. Komşu
+ * iki panelde dosya kademesi vardır, çünkü onlar yüzlerce kayıt taşır ve dosya
+ * satırı o yığını böler; Fikirler onlarca kat daha seyrek bir hanedir ve dosya
+ * kademesi orada yığın bölmez, yalnız her fikri bir tık uzağa iter. Panelin
+ * sadeliği bir nöbetle korunuyordu ve o nöbet bu turda kaldırılmadı, yalnız
+ * Founder hükmünün açtığı tek kademeye izin verecek biçimde daraltıldı.
+ */
+type PanelOge =
+  | { tur: "proje"; kume: ProjeKumesi<FikirKaydi> }
+  | { tur: "fikir"; kayit: FikirKaydi };
 
 export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
   private degisti = new vscode.EventEmitter<PanelOge | void>();
@@ -124,8 +148,13 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
    * panelde okunan sıra kaynakta okunan sırayla aynıdır.
    */
   getChildren(oge?: PanelOge): PanelOge[] {
-    if (oge) return [];
-    return this.kayitlar.map((kayit) => ({ tur: "fikir" as const, kayit }));
+    if (!oge) {
+      return projeyeGrupla(this.kayitlar).map((kume) => ({ tur: "proje" as const, kume }));
+    }
+    if (oge.tur === "proje") {
+      return oge.kume.kayitlar.map((kayit) => ({ tur: "fikir" as const, kayit }));
+    }
+    return [];
   }
 
   getTreeItem(oge: PanelOge): vscode.TreeItem {
@@ -139,6 +168,21 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
     // arasındaki ayracı hatırlatıcı satırlarıyla AYNI işlev kurar; hane kendi
     // paneline taşınırken bu ortaklık korunmuştur, çünkü panel değişse de
     // kullanıcının okuduğu satır kuralı değişmemelidir.
+    if (oge.tur === "proje") {
+      const adet = oge.kume.kayitlar.length;
+      const item = new vscode.TreeItem(
+        oge.kume.proje.ad, vscode.TreeItemCollapsibleState.Expanded,
+      );
+      // TÜR ÖZETİ BURADA YOKTUR VE BU BİLİNÇLİDİR: komşu panellerdeki özet tanı
+      // TÜRLERİNİ sayar, oysa Fikir tek bir türdür ve "1 tür" demek hiçbir şey
+      // söylemez. Proje satırı bu yüzden yalnız adedi bildirir.
+      item.description = fikirProjeAciklamasi(adet);
+      item.tooltip = new vscode.MarkdownString(
+        fikirProjeIpucu(oge.kume.proje.ad, oge.kume.proje.kod, adet));
+      item.iconPath = satirIkonu(this.eklentiKoku, PROJE_SIMGESI, "bilgi");
+      item.contextValue = "sarmalFikirProjesi";
+      return item;
+    }
     const f = fikirGorunumu(oge.kayit);
     const item = new vscode.TreeItem(f.etiket, vscode.TreeItemCollapsibleState.None);
     item.description = f.aciklama;

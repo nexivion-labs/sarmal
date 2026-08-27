@@ -988,6 +988,24 @@ export function fikirRozetIpucu(adet: number): string {
     : yuzeyMetni(`${adet} fikir var.`, `${adet} ideas.`);
 }
 
+/** Fikirler panelindeki proje satırının gri açıklaması. */
+export function fikirProjeAciklamasi(adet: number): string {
+  return adet === 1
+    ? yuzeyMetni("1 fikir", "1 idea")
+    : yuzeyMetni(`${adet} fikir`, `${adet} ideas`);
+}
+
+/** Fikirler panelindeki proje satırının ipucu metni. */
+export function fikirProjeIpucu(ad: string, kod: string, adet: number): string {
+  const sayi = adet === 1
+    ? yuzeyMetni("1 fikir", "1 idea")
+    : yuzeyMetni(`${adet} fikir`, `${adet} ideas`);
+  return yuzeyMetni(
+    `**${ad}** · \`${kod}\`\n\nBu projede ${sayi} bekliyor.`,
+    `**${ad}** · \`${kod}\`\n\nThis project holds ${sayi}.`,
+  );
+}
+
 export function postaRozetIpucu(adet: number): string {
   return adet === 1
     ? yuzeyMetni("Bir kapı kararını bekliyor.", "One gate is awaiting a decision.")
