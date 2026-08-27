@@ -1604,3 +1604,4 @@ test("tür özeti ve Fikir satırı EMOJİ taşımaz: işaretler vektörel ailed
     assert.ok(taniKisaAdi(kod).trim().length > 0, `"${kod}" kısa adı boş döndü`);
   }
 });
+

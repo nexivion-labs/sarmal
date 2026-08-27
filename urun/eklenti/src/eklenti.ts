@@ -65,6 +65,9 @@ import {
   yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri,
   type YuzeyKaydi, type YuzeyDagilimi,
 } from "./yuzey-cekirdek.ts";
+// 🔭 Kapsama ilişkisinin TEK evi: yol haritasındaki varlık kümeleri ile panel
+// kapsam süzgeci aynı kuralı okur, ikinci bir kapsama kuralı yazılmaz.
+import { kapsamIcinde } from "./yolharitasi-cekirdek.ts";
 // 💡 KYN-YUZ-A01 · VIT-GRAF-A16: Fikir düğümleri motorun tanı akışında YAŞAMAZ
 // (Fikir bir sapma değildir ve düzeltme istemez); bu yüzden kayıtları ayrışmış
 // ağaçtan doğrudan okunur ve Fikirler panelinin kendi görünüşüne basılır. İkinci
@@ -551,7 +554,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // dosyanın İÇİNDE de konuşur — altı eksen tipinin bildirim satırı tip adının
   // solunda simgesini taşır; yollar simge-cizelgesi.ts'den, dosyaya bayt yazılmaz.
   eksenDekorKaydi(context, vscode);
-  onayKuyruguKaydi(context, postaKutusu);   // 📬 panel kuyruğun nabzından beslenir
+  onayKuyruguKaydi(context, postaKutusu, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
 
   // Ağaç kılavuz çizgileri (kesintisiz dikey + ├└ dallar + kapanış etiketi)
   dallarKaydi(context, dilAyariDegistiMi);
@@ -783,7 +786,17 @@ function odakAcik(): boolean {
 function panelDeGorunur(fsPath: string): boolean {
   if (!odakAcik() || !aktifVarlik) return true;
   const kok = varlikKoku(fsPath);
-  return !kok || kok === aktifVarlik;
+  // ÖLÇÜLMÜŞ KUSUR (Founder canlı bulgusu 2026-08-27): kural eskiden tam eşitlik
+  // yapıyordu ve çatı odaktayken alt projelerin hiçbir dosyası sınavı geçemiyor,
+  // Hatırlatıcılar, Gözlemler ile Fikirler birden boşalıyordu. Kural artık
+  // KAPSAMA ilişkisidir ve tek yönlüdür: odaktaki kökün altında yaşayan her
+  // varlık görünür, üstünde ya da yanında yaşayan görünmez. Böylece çatı bütün
+  // çalışma alanını, bir alt proje yalnız kendi evini gösterir. Ters yön bilerek
+  // kapalıdır; açılsaydı bir alt projede çalışırken kardeş projelerin kayıtları
+  // da panele dolar ve odağın kendisi anlamsızlaşırdı. Köksüz dosya HER ZAMAN
+  // görünür (MIM-1.1 ②): bir varlığa bağlanamayan dosyanın gizlenmesi onu
+  // bütünüyle erişilemez kılardı.
+  return !kok || kapsamIcinde(kok, aktifVarlik);
 }
 
 function taniYayinla(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {

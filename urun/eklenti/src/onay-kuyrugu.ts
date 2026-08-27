@@ -54,6 +54,13 @@ import {
   belgeKapilariOkumasi, belgeKodAdedi, belgeOnayKaniti, disktenOnayKaniti,
 } from "./onay-tarayici.ts";
 import type { PostaKutusu } from "./posta-kutusu.ts";
+import type { OdakKapisi } from "./minigraf.ts";   // 🔭 kapsam süzgeci TEK evden okunur
+
+/** Odak kapısı verilmediğinde kuyruk bütün çalışma alanını gösterir (sınama yolu). */
+const ONAY_TUM_KAPSAM: OdakKapisi = {
+  kapsamda: () => true,
+  degisince: () => { /* olay yok */ },
+};
 import { GORUNUS_POSTA_KUTUSU, DENETLEYICI_ONAY, KOMUT_POSTA_KUTUSU } from "./yuzey-cekirdek.ts";
 import {
   etkinKararAdi, CATISMA_SECENEKLERI, commentsEmekli,
@@ -146,6 +153,7 @@ export function onayYuzeyiOlcumleri(): Readonly<typeof olcum> {
  */
 export function onayKuyruguKaydi(
   baglam: vscode.ExtensionContext, postaKutusu?: PostaKutusu,
+  odak: OdakKapisi = ONAY_TUM_KAPSAM,
 ): void {
   // Kimlik DEĞİŞMEZ (kullanıcının Açıklamalar menü koşulları ona bağlıdır);
   // kullanıcıya görünen ad ise yeni rolü söyler: burası kuyruk değil, karar yeri.
@@ -223,7 +231,13 @@ export function onayKuyruguKaydi(
     if (!doc || !gercekDosya(doc)) return;
     const noktalar = noktalariTopla(doc);
     // Panel aynı turda tazelenir: ayrı bir tarama ya da zamanlayıcı kurulmaz.
-    postaKutusu?.yerlestirDosya(doc.uri.fsPath, noktalar);
+    // Kapsam dışı dosyanın kapıları panele YAZILMAZ ve varsa düşürülür; süzgeç
+    // öteki üç yüzeyle AYNI kapıdan okur (odakKapisi → panelDeGorunur).
+    if (odak.kapsamda(doc.uri.fsPath)) {
+      postaKutusu?.yerlestirDosya(doc.uri.fsPath, noktalar);
+    } else {
+      postaKutusu?.dusur(doc.uri.fsPath);
+    }
     // Kararı verilen kapının etkin yüzeyi kendiliğinden düşer: defter yaşayan
     // kodları görür ve açık yüzey artık o kümede değilse kapatıcısını çağırır.
     etkinYuzey.dosyaTazelendi(doc.uri.fsPath, noktalar.map((n) => n.kod));
@@ -422,7 +436,8 @@ export function onayKuyruguKaydi(
    * tarama turu yoktur.
    */
   const tumunuTara = async (): Promise<KapiKaydi[]> => {
-    const bulgular = goruntuyuAciklarlaBirlestir(await calismaAlaniniTara());
+    const bulgular = goruntuyuAciklarlaBirlestir(await calismaAlaniniTara())
+      .filter((kayit) => odak.kapsamda(kayit.dosya));
     postaKutusu?.yerlestirHepsi(bulgular);
     olcum.yerlestirmeTuru += 1;
     olcum.sonYerlesenKapi = bulgular.length;
@@ -686,6 +701,15 @@ export function onayKuyruguKaydi(
     izleyici.onDidChange((u) => void diskTazele(u)),
     izleyici.onDidDelete(diskSil),
   );
+  // 🔭 Odak değişince kuyruk yeniden yerleşir. Bu kayıt bir DÜZELTMEDİR (Founder
+  // canlı bulgusu 2026-08-27): Onaylar paneli kapsam süzgecinden hiç geçmiyor ve
+  // hangi varlık seçili olursa olsun bütün çalışma alanını gösteriyordu, oysa
+  // öteki üç yüzey odağa uyuyordu. Kullanıcı böylece çelişkili iki tablo görür.
+  // Yeni bir zamanlayıcı KURULMAZ; tur odağın kendi olayına bağlanır ve tarama
+  // ana tanı hattının anlık görüntüsünden beslendiği için ikinci bir tam tarama
+  // maliyeti doğurmaz.
+  odak.degisince(() => { void tumunuTara(); });
+
   izYaz(IZ_METINLERI.komutlarKayitli(!!postaKutusu));
   // AÇILIŞTA HİÇBİR ŞEY YAPILMAZ. Ne belge açılır, ne iş parçacığı yaratılır, ne
   // tarama başlatılır: kuyruk ana tanı hattının ilk görüntüsüyle (ya da hattın
