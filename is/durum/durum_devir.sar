@@ -17,14 +17,15 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
-            neredeyiz: TASIMA-KOPMALARI-OLCULDU-KOLAYLARI-KAPANDI-AD-ALANI-BORCU-PLANDA,
-            sıradaki: FOUNDER-GOZU-VE-KAPALI-DEPO-MUHURLERI-SONRA-KPS-ADA-A01-SONRA-MAGAZA,
+            neredeyiz: UC-YUZEY-BULGUSU-KAPANDI-MEVSIM-VADE-ACIGI-OLCULDU-VE-PLANDA,
+            sıradaki: TEMMUZ-ACIK-ADIMLARI-TRIYAJI-SONRA-KPS-MVS-A01-VE-KPS-ADA-A01-SONRA-MAGAZA,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ EKLENTI-0-9-159-KURULUM-VE-PENCERE-YENILEME-FOUNDERIN,
                          VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
                          YUZEY-FAZ-DISI-SVG-IKONLAR-YENIDEN-BASLAYAN-PENCEREDE-BAKILACAK,
                          DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
-                         KAPALI-DEPOLARDAKI-ONARIMLAR-MUHURSUZ-KAPI-ORK-4-E-KADAR-KIRMIZI,
+                         TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-SEKIZ-ACIK-ADIM-SARIYOR,
+                         KPS-MVS-A01-MEVSIM-VADE-KAPISI-ORK-8-ZORLAMA-SATIRI-FOUNDER-KAPISI,
                          KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA,
                          CLAUDE-JSON-OLU-GIRDILER-VE-LABORATUVAR-SILMELERI-FOUNDER-KARARI,
                          RENK-URET-CATI-AYARINI-TAZELEMIYOR,
@@ -209,6 +210,40 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         içindeki ölü proje anahtarları ile flutter-inspector sunucusu, kanon
         maddelerindeki bölüm adı listelerinin (ilgili) bağlantıya çevrilmesi,
         renk-uret aracının çatı ayarını tazelememesi.
+
+        🌀 MEVSİM VADE AÇIĞI (Founder ölçümü 2026-08-27 06.40). Founder motorun bir
+        açığını buldu ve ölçüm onu doğruladı. `FAZ-2026-TEMMUZ` mevsimi 2026-07-31
+        hedef tarihiyle ilan edilmiştir, metninde mühürlendiği ve açık iş taşıyan
+        gövdelerin Ağustos halkasına geçtiği yazılıdır; buna karşılık mevsim bugün
+        hâlâ `BLK-VITRIN` gövdesini çağırmakta ve o gövdenin altında sekiz açık Adım
+        durmaktadır. Motor bu çelişki hakkında tek kelime etmez. Sebep ölçülmüştür:
+        vade tanıları `faz-gecikti` ile `faz-yaklaşıyor` 2026-07-27 tarihinde emekli
+        edilmiş ve emeklilik gerekçesi ölçüm anında canlı bahçede sıfır bulgu
+        vermeleri olarak yazılmıştır; yirmi yedi gün sonra tam da yakalayacakları
+        durum doğmuştur. Bir bekçiyi o gün bulgu vermediği için emekliye ayırmanın
+        maliyeti budur ve bu ders kayda geçmiştir.
+
+        Kanon tarafında ORK-8 mevsim ritüelini dört basamaklı bir kapanışa bağlar ve
+        gerekçesinde bizzat Temmuz mevsiminin bir yorum satırıyla kapatıldığını
+        yazar; fakat maddenin zorlama satırı bugün açıkça "bu madde yeni bir tanı
+        ilan etmez" demektedir. Bu yüzden açığın motorda karşılanması yeni bir tanı
+        yazmakla bitmez, kanon maddesinin zorlama satırının değişmesini gerektirir ve
+        bu bir Founder kapısıdır: madde dört parçasıyla birlikte değişir, gömülü ikiz
+        tazelenir ve tutarlılık nöbeti yeniden koşar. İş KPS-MVS-A01 Adımına indi.
+
+        📋 TEMMUZ'UN AÇIK ADIMLARI (ölçüm 2026-08-27). Mevsim iki gövde çağırır;
+        `BLK-MDR` kapalıdır ve açık Adımı yoktur, bütün açık iş `BLK-VITRIN`
+        altındadır. Sekiz Adımın üçü fiilen teslim edilmiş görünmektedir ve yalnız
+        kapanış kanıtı ile Founder gözünü beklemektedir: VIT-GRAF-A12 ile
+        VIT-GRAF-A14 koşu kayıtları 143f98c işlemesine geriye dönük yazılmıştır,
+        VIT-KIMLIK-A04 teslimi ise sürüm günlüğünde 0.9.149 ile 0.9.154 arasında
+        anlatılır ve meyveleri ilan edilmiştir. VIT-POSTA-A02 büyük ilerleme
+        kaydetmiş, kapanışı canlı göz teyidine bırakılmıştır. Geriye gerçekten açık
+        dört iş kalır: VIT-GRAF-A17 satır eylemlerinin üzerine gelince görünmesi,
+        VIT-GRAF-A18 ipucu anlatımının ıslahı, VIT-GRAF-A19 sekme sayaç rozetleri ve
+        VIT-KIMLIK-A07 arayüz işaretleri envanteri. Dördü de yüzey işidir ve her
+        birinin kabulü Founder'ın canlı bakışını şart koşar; bu yüzden hiçbiri
+        üreticinin kendi beyanıyla kapatılamaz (ORK-6.1).
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
