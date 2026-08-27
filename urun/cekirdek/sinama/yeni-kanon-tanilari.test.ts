@@ -26,6 +26,7 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
+  mevsimVadeTanilari,
   type DiskAnlikGoruntu,
 } from "../src/denetci.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
@@ -653,9 +654,22 @@ test("orkestrasyon: tanı doğası yanlış sunum yüzeyine yönlendirilirse yak
     .filter((t) => t.tani.kod === "tanı-yüzeyi-karışması").length, 0);
 });
 
+test("proje: vadesi geçmiş mevsim açık iş sarıyorsa ORK-8 tanısı fikstürle doğar", () => {
+  // Faz ile sardığı Blok AYRI dosyalardadır — kararın neden proje kapsamında
+  // verildiğinin fikstürdeki kanıtı budur (Founder ölçümü 2026-08-27).
+  const programlar = harita({
+    "is/plan/faz.sar": `Faz( kod: FAZ-GECMIS, ad: "Mevsim", hedefTarih: "2026-07-31" ) {\n  çağır BLK-F\n}\n`,
+    "is/plan/govde.sar": `Blok( kod: BLK-F, ad: "gövde" ) {\n  Katman( kod: KAT-MVS, ad: "katman" ) {\n    AltKatman( kod: ALT-MVS, ad: "modül" ) {\n      Adım( kod: ADM-MVS, durum: geliştirmede, ne: "süren iş" )\n    }\n  }\n}\n`,
+  });
+  const t = mevsimVadeTanilari(programlar, "2026-08-27");
+  uretildi("mevsim-vadesi-geçti", t);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].tani.duzey, "bilgi");
+});
+
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 46 kabul hatada, 16 kanon-uyarı uyarıda, on kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 46 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -665,6 +679,10 @@ test("GOC-TERFI-A05: 46 kabul hatada, 16 kanon-uyarı uyarıda, on kimlik bilgid
     "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali", "seçilemez-adım-yürütümü",
     "şema-dışı-alan", "terfi-kanıtı-eksik",
     "önceliksiz-adım", "ateşlemiş-hatırlatıcı",
+    // On birincisi 2026-08-27 tarihinde Founder ölçümüyle doğdu: ORK-8 mevsim
+    // ritüelinin ilk motor karşılığıdır ve beyan ile grafın ayrıştığını söyler,
+    // düzeltilecek bir sapma bildirmez; bu yüzden doğrudan bilgi düzeyindedir.
+    "mevsim-vadesi-geçti",
   ].sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");

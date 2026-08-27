@@ -79,6 +79,11 @@ const b = (p: TaniBaglami, ad: string): boolean => {
 };
 
 export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
+  // ── Mevsim ritüeli (ORK-8) ────────────────────────────────────────────────
+  "mevsim-vadesi-geçti": {
+    mesaj: (p) => `"${a(p, "kimlik")}" mevsiminin hedef tarihi ${a(p, "vade")} günü geçmiştir, buna karşılık sardığı ${a(p, "gövde")} gövdenin altında ${a(p, "açık")} Adım hâlâ açıktır. Mevsim beyanı ile grafın söylediği ayrışmıştır: kapanmış görünen bir dönem açık iş taşıyamaz.`,
+    oneri: (p) => `Açık işi yürürlükteki mevsime devret ya da mevsimin hedef tarihini gerçeğe çek; kapanmayacak iş varsa gerekçesiyle düşür, sessiz bırakma (ORK-8 kapanış basamakları). Örnek: \`Blok( kod: BLK-…, mevsim: FAZ-<yürürlükteki> )\` yaz ve "${a(p, "kimlik")}" mevsiminin gövdesindeki \`çağır BLK-…\` satırını kaldır; bir bağ tek yerde yazılır.`,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -398,6 +403,11 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
  * kaynak dili Türkçe kaldığı için örnek kodu çevirmek geçersiz kaynak üretirdi.
  */
 export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
+  // ── Season ritual (ORK-8) ─────────────────────────────────────────────────
+  "mevsim-vadesi-geçti": {
+    mesaj: (p) => `Season "${a(p, "kimlik")}" passed its target date on ${a(p, "vade")}, yet ${a(p, "açık")} Steps remain open under the ${a(p, "gövde")} bodies it wraps. The season's own claim and the graph disagree: a period that looks closed cannot carry open work.`,
+    oneri: (p) => `Hand the open work to the current season, or move the season's target date to match reality; work that will not close must be dropped with a stated reason, never left silent (ORK-8 closing steps). Example: write \`Blok( kod: BLK-…, mevsim: FAZ-<current> )\` and remove the \`çağır BLK-…\` line from the body of "${a(p, "kimlik")}"; a link is written in one place only.`,
+  },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" carries canonical ruling text as though it were the source of truth, but the source of truth lives only in .sar form. A derived text surface cannot have authority equal to its source.`,

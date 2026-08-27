@@ -176,6 +176,11 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   // yönlendirilip yönlendirilmediği, ancak bütün koşumun tanıları toplandıktan
   // sonra karara bağlanabilir (emsali `tanı-yüzü-uyumsuz` · YUZ-3.1).
   { kod: "tanı-yüzeyi-karışması", madde: "YUZ-3.3", kanonDüzey: "uyarı", kapsam: "orkestrasyon", uretici: "denetim.ts", kademe: "uyarı" },
+  // Founder ölçümü (2026-08-27): ORK-8 mevsim ritüelini dört basamaklı bir kapanışa
+  // bağlar ve gerekçesinde bizzat Temmuz mevsiminin bir yorum satırıyla kapatıldığını
+  // yazar; madde bilgi düzeyindedir ve bugüne dek motorda hiçbir karşılığı yoktu.
+  // Kapsam projedir: Faz kendi dosyasında, sardığı Bloklar başka dosyalardadır.
+  { kod: "mevsim-vadesi-geçti", madde: "ORK-8", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */

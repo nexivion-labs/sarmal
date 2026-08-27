@@ -2608,6 +2608,83 @@ export function fazVadeTanilari(program: Program, bugun: string, dosya = ""): Ta
   return out;
 }
 
+/**
+ * Mevsim vade tanısı (PROJE kapsamı · SAF · `bugun` enjekte edilir).
+ *
+ * NEDEN PROJE KAPSAMI: bir mevsimin açık iş taşıyıp taşımadığı tek dosyadan
+ * okunamaz. Faz kendi dosyasında yaşar, sardığı Bloklar başka dosyalardadır ve
+ * bağ iki yazımdan biriyle kurulur: Fazın gövdesindeki `çağır BLK-…` satırı ya
+ * da Blokun kendi `mevsim:` alanı (MIM-1.2 ③). Karar ancak bütün programlar
+ * okunduktan sonra verilebilir.
+ *
+ * NEDEN VAR (Founder ölçümü 2026-08-27): `FAZ-2026-TEMMUZ` mevsimi 2026-07-31
+ * hedefiyle ilan edilmiş, metninde mühürlendiği yazılı olduğu hâlde altında sekiz
+ * açık Adım durmaktaydı ve motor tek kelime etmiyordu. Sebep, vade tanılarının
+ * 2026-07-27 tarihinde "ölçüm anında sıfır bulgu" gerekçesiyle emekli edilmesidir;
+ * yirmi yedi gün sonra tam da yakalayacakları durum doğmuştur. Bu tanı o dersin
+ * karşılığıdır ve bekçiyi bulgu vermediği gün emekliye ayırmanın maliyetini kapatır.
+ *
+ * NE DAYATMAZ: tarih hükmü değişmemiştir. MIM-1.2 uyarınca hedef tarih güçlü
+ * tavsiyedir; bu tanı tarihi zorlamaz, tarihsizliği ihlal saymaz ve gecikmeyi tek
+ * başına bildirmez. Yalnız BEYAN ile GRAFIN ayrıştığı yeri söyler: vadesi geçmiş
+ * bir mevsim hâlâ açık Adım sarıyorsa, mevsim kapanmamıştır. Düzey bilgidir ve
+ * hiçbir kapıyı kırmızıya düşürmez (YAS-4.1 tam-yeşil tanımına girmez).
+ */
+export function mevsimVadeTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  bugun: string,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(bugun)) return out;
+  const alan = (d: Dugum, ad: string) => [...d.parametreler, ...d.ozellikler].find((p) => p.ad === ad)?.deger;
+  const kodu = (d: Dugum): string => alan(d, "kod")?.metin ?? d.ad;
+  const bloklar = new Map<string, Dugum>();
+  const fazlar: Array<{ dosya: string; d: Dugum }> = [];
+  for (const [dosya, program] of programlar) {
+    if (INDEKS_DISI.test(dosya)) continue;   // ders dünyası muaftır (OGR-5 kapsam kanonu)
+    const gez = (d: Dugum): void => {
+      if (d.tur === "widget" && d.ad === "Blok") bloklar.set(kodu(d), d);
+      if (d.tur === "widget" && d.ad === "Faz") fazlar.push({ dosya, d });
+      for (const c of d.cocuklar) gez(c);
+    };
+    for (const b of program.bildirimler) gez(b);
+  }
+  /** Bir gövdenin altındaki tamamlanmamış Adım sayısı — durum yazılmamışsa açıktır. */
+  const acikSay = (kok: Dugum): number => {
+    let n = 0;
+    const gez = (d: Dugum): void => {
+      if (d.tur === "widget" && d.ad === "Adım" && (alan(d, "durum")?.metin ?? "beklemede") !== "tamamlandı") n++;
+      for (const c of d.cocuklar) gez(c);
+    };
+    gez(kok);
+    return n;
+  };
+  for (const { dosya, d } of fazlar) {
+    const tarih = alan(d, "hedefTarih");
+    const ham = tarih?.metin?.trim();
+    if (!ham) continue;
+    const vade = /^\d{4}-\d{2}-\d{2}$/.test(ham) ? ham : (AY_TARIH.test(ham) ? aySonu(ham) : undefined);
+    if (!vade || vade >= bugun) continue;
+    // Sarılan gövdeler üç yazımdan gelir ve tekilleştirilir: iç içe yazım, çağır
+    // kenarı ve Blokun kendi mevsim beyanı (bir bağ tek yerde yazılır; ikisi de
+    // yazılmışsa çift-mevsim-kaydı tanısı ayrıca konuşur).
+    const kod = kodu(d);
+    const govdeler = new Set<Dugum>();
+    for (const c of d.cocuklar) {
+      if (c.tur === "widget" && c.ad === "Blok") govdeler.add(c);
+      if (c.tur === "çağır") { const b = bloklar.get(c.ad); if (b) govdeler.add(b); }
+    }
+    for (const b of bloklar.values()) if (alan(b, "mevsim")?.metin === kod) govdeler.add(b);
+    let acik = 0;
+    for (const g of govdeler) acik += acikSay(g);
+    if (acik === 0) continue;
+    out.push({ dosya, tani: yeniTani("mevsim-vadesi-geçti",
+      { kimlik: kod, vade, açık: String(acik), gövde: String(govdeler.size), bugün: bugun },
+      { satir: tarih?.satir ?? d.satir, sutun: tarih?.sutun ?? d.sutun }) });
+  }
+  return out;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // YENİ KANON · PROJE KAPSAMI (motor turu ikinci halkası · elli beş tanı)
 //

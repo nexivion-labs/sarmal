@@ -67,6 +67,10 @@ const TERFI_RET_KIMLIKLERI = new Set([
   "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali", "seçilemez-adım-yürütümü",
   "şema-dışı-alan", "terfi-kanıtı-eksik",
   "önceliksiz-adım", "ateşlemiş-hatırlatıcı",
+  // On birincisi 2026-08-27 tarihinde Founder ölçümüyle doğdu (ORK-8 mevsim
+  // vadesi): beyan ile grafın ayrıştığını bildirir, düzeltilecek bir sapma değil
+  // bekleyen işi görünür kılan gözlemdir; bu yüzden Bildirimler yüzeyine düşer.
+  "mevsim-vadesi-geçti",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
@@ -312,7 +316,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 46 hata + 16 uyarı Problems'a, on kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: 46 hata + 16 uyarı Problems'a, on bir kimlik Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -325,7 +329,7 @@ test("A05 kademe hükmü: 46 hata + 16 uyarı Problems'a, on kimlik Bildirimler'
   }
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 46);
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 16);
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 10);
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 11);
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -538,15 +542,16 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
 
   // A05'te 46 hata ve 16 uyarı Problems'ta; sekiz ret bilgi kademesinde
   // Bildirimler'de kalır. 2026-08-22 tarihinde Founder onayıyla doğan iki
-  // gözlem de bilgi kademesindedir ve aynı yüzeye düşer, dolayısıyla bugünkü
-  // bildirim kümesi ondur. Kayıt iki tabanı da taşımalıdır.
+  // gözlem ile 2026-08-27 tarihinde doğan mevsim vadesi gözlemi de bilgi
+  // kademesindedir ve aynı yüzeye düşer, dolayısıyla bugünkü bildirim kümesi
+  // on birdir. Kayıt iki tabanı da taşımalıdır.
   const yeniBildirim = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "bildirimler",
   ).length;
   const yeniProblems = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "problems",
   ).length;
-  assert.equal(yeniBildirim, 10, "A05'in sekiz RET-ADAYI ile iki yeni gözlem bilgi kademesinde kalmalıdır");
+  assert.equal(yeniBildirim, 11, "A05'in sekiz RET-ADAYI ile üç yeni gözlem bilgi kademesinde kalmalıdır");
   assert.equal(yeniProblems, 62, "A05'in 46 hata ve 16 uyarı kimliği Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);

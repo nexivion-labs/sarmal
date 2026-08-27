@@ -17,15 +17,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
-            neredeyiz: UC-YUZEY-BULGUSU-KAPANDI-MEVSIM-VADE-ACIGI-OLCULDU-VE-PLANDA,
-            sıradaki: TEMMUZ-ACIK-ADIMLARI-TRIYAJI-SONRA-KPS-MVS-A01-VE-KPS-ADA-A01-SONRA-MAGAZA,
+            neredeyiz: MEVSIM-VADE-TANISI-MOTORDA-CANLI-ORK-8-ZORLAMASI-FOUNDER-HUKMUYLE-DEGISTI,
+            sıradaki: FOUNDER-KRITIK-TESPITLERI-SONRA-KPS-REJ-A01-VE-PANEL-KAPSAMI-SONRA-TEMMUZ-DEVRI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ EKLENTI-0-9-159-KURULUM-VE-PENCERE-YENILEME-FOUNDERIN,
                          VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
                          YUZEY-FAZ-DISI-SVG-IKONLAR-YENIDEN-BASLAYAN-PENCEREDE-BAKILACAK,
                          DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
                          TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-SEKIZ-ACIK-ADIM-SARIYOR,
-                         KPS-MVS-A01-MEVSIM-VADE-KAPISI-ORK-8-ZORLAMA-SATIRI-FOUNDER-KAPISI,
+                         KPS-REJ-A01-KATI-REJIM-HUKMU-PLANLARA-ULASMIYOR-ONBES-IHLAL-SESSIZ,
+                         PANEL-KAPSAMI-CATIDA-BOS-ONAYLAR-SUZGECSIZ,
+                         TEMMUZ-ACIK-GOVDESININ-AGUSTOSA-DEVRI-FOUNDER-KARARI,
                          SITE-TURKCE-H11-KENDI-PLANI-VE-DURUM-KAYDI-ACILACAK,
                          KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA,
                          CLAUDE-JSON-OLU-GIRDILER-VE-LABORATUVAR-SILMELERI-FOUNDER-KARARI,
@@ -252,6 +254,65 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         işaretçisine H11 olarak indi. Ayrıntılar, yani sayfa sırası ile dört dilli
         gövdenin sökülmesi, sitenin kendi planında kararlaştırılacaktır; o plan ile
         durum kaydı henüz yoktur ve açılması açık işler arasındadır.
+
+        ✅ MEVSİM VADE KAPISI KURULDU (2026-08-27 · KPS-MVS-A01 birinci teslim).
+        Founder'ın ölçtüğü açık motorda karşılandı. `mevsim-vadesi-geçti` tanısı
+        proje kapsamında doğdu ve canlı bahçede Temmuz mevsimini yakalıyor: hedef
+        tarihi 2026-07-31 günü geçmiştir ve sardığı iki gövdenin altında sekiz Adım
+        hâlâ açıktır. Karar proje kapsamındadır, çünkü Faz kendi dosyasında ve
+        sardığı Bloklar başka dosyalardadır; bağın üç yazımı da tanınır. Düzey
+        bilgidir ve hiçbir kapıyı kırmızıya düşürmez; tarih dayatılmaz, yalnız
+        beyan ile grafın ayrıştığı yer söylenir.
+
+        Founder hükmü (2026-08-27): ORK-8 maddesinin zorlama satırı değişti. Madde
+        bugüne dek "bu madde yeni bir tanı ilan etmez" diyordu ve motorun üçlü
+        senkron nöbeti sicildeki her tanının kanonda bir zorlama iddiası taşımasını
+        şart koştuğu için açık kanona dokunmadan kapanamıyordu. Yeni cümle ritüelin
+        ölçülebilen tek basamağını, yani açık işin devrini, bilgi düzeyinde bir
+        gözlemle tutar. Kanon mührü, tanı sicili mührü, kanon demeti mührü,
+        yönlendirme matrisi kaydı ve belge yüzü ölçümleri usulünce tazelendi.
+
+        Bu turda motor iki kez üreticiyi kendi kuralıyla yakaladı ve ikisi de
+        onarıldı: yeni tanının önerisi yapıştırılabilir iskelet taşımıyordu ve
+        öğretim-yüzü-uyumsuz tanısı bunu bildirdi; README ile eklenti benioku
+        dosyalarına elle yazılan yol düzeltmeleri ise üretilen bölgedeydi ve üreteç
+        onları geri aldı, asıl kusur `belge-yuzleri.ts` üretecinde taşıma öncesi
+        yolları (cd cekirdek, cd eklenti) taşımasıydı ve oraya yazıldı.
+
+        Kapılar: çekirdek süiti bin yüz on yedi sınamanın tamamını, eklenti süiti
+        beş yüz altmış sekiz sınamanın tamamını geçti; depo denetimi sıfır hata ve
+        sıfır uyarı verir, yeni tanı bilgi düzeyinde tek satır olarak görünür.
+
+        🔴 İKİNCİ AÇIK (KPS-REJ-A01 · henüz kapanmadı). Katı rejim hükmü YAS-1.1
+        hata düzeyindedir ve canlı bahçede hiç doğmamaktadır. Sebep ölçülmüştür:
+        üretici yalnız Proje düğümünün içindeki kademeleri gezer, oysa rejim beyanı
+        anadizinde yaşar ve planlar ayrı dosyalarda üst düzey Blok olarak durur.
+        Ölçüm: iki katı rejimli projede on beş Katman doğrudan Adım taşımaktadır
+        (açık depoda on, kapalı üründe beş) ve motor yalnız bilgi düzeyli tavsiye
+        verir. Kanonun hata dediği yerde motor öneri vermektedir.
+
+        🔴 ÜÇÜNCÜ AÇIK (panel kapsamı · henüz plana inmedi). Founder ölçtü: çatı
+        seçiliyken Hatırlatıcılar, Gözlemler ve Fikirler boşalır, buna karşılık
+        Onaylar bütün çalışma alanını gösterir. Mekanizma kanıtlıdır. Birincisi
+        `panelDeGorunur` süzgeci tam eşitlik yapar (kök ile aktif varlık birebir
+        eşit olmalıdır) ve kapsama ilişkisini tanımaz; çatı kendi varlık kökü
+        olduğu için alt projelerin hiçbir dosyası süzgeçten geçmez. İkincisi
+        Onaylar bu süzgeçten hiç geçmez: `panelDeGorunur` çağrısı eklenti
+        gövdesinde yedi yerde, onay kuyruğu ile posta kutusunda sıfır yerde
+        bulunur. Doğrusu Founder'ın tarifidir: alt projede kendi onayları, çatıda
+        hepsi. Taşımadan önce tek kök vardı ve eşitlik yetiyordu; iç içe çatı
+        düzeni bu süzgeci kırmıştır.
+
+        🟢 DEPO GÖRÜNÜRLÜĞÜ (ölçüm 2026-08-27): açık deponun uzak adresi YOKTUR ve
+        bugüne dek hiçbir yere gönderilmemiştir. GitHub'da ayrı bir sarmal deposu
+        yoktur; o ad 26 Ağustos gecesi laboratuvar adını alan deponun yönlendirmesi
+        olarak yaşar. Kuruluştaki on bir deponun on biri de özeldir. Açık açılış
+        hâlâ Founder'ın hükmünü bekler.
+
+        ℹ️ KUSUR OLMADIĞI ÖLÇÜLEN (2026-08-27): çatı ilanında Raf düğümlerinin
+        Kitaplık olmadan doğrudan ÇalışmaAlanı altında durması ihlal DEĞİLDİR;
+        kanonun sarma tablosu ÇalışmaAlanı altında Kitaplık ile Rafı birlikte
+        izinli kılar ve Kitaplık isteğe bağlı bir gruplama kademesidir.
 
         SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
         gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve

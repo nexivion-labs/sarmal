@@ -127,7 +127,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
 
       Adım( kod: KPS-MVS-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-8, MIM-1.2, YAS-4 ],
         onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: Temmuz mevsiminin vadesi 27 gün önce geçmiştir, altında açık Adım durmaktadır ve motor tek kelime etmemektedir",
-        üretir: [ KOD-DENETCI, KOD-TANI-SICILI ],
+        koşu: "2026-08-27 · BİRİNCİ TESLİM. Mevsim vade tanısı proje kapsamında kuruldu ve motor artık susmuyor: canlı bahçede FAZ-2026-TEMMUZ mevsimi için 'hedef tarihi 2026-07-31 günü geçmiştir, sardığı iki gövdenin altında sekiz Adım hâlâ açıktır' bildirimi doğuyor. Karar proje kapsamındadır, çünkü Faz kendi dosyasında, sardığı Bloklar başka dosyalardadır; bağın üç yazımı da tanınır (iç içe gövde, çağır kenarı ve Blokun kendi mevsim alanı). Düzey bilgidir ve hiçbir kapıyı kırmızıya düşürmez; tarih dayatılmaz, yalnız beyan ile grafın ayrıştığı yer söylenir. Altı sınamalık nöbet çekirdek süitine girdi ve mutasyon kanıtı dosyanın başlığında yazılıdır. Motorun kendi öğretim nöbeti bu turda üreticiye de uygulandı: ilk yazımda önerinin yapıştırılabilir iskeleti yoktu ve öğretim-yüzü-uyumsuz tanısı bunu bildirdi, öneri iskeletle yeniden yazıldı. Sayaç nöbetleri usulünce güncellendi (yeni tanı kümesi yetmiş ikiden yetmiş üçe, bilgi kademesi ondan on bire, canlı sicil yüz seksen ikiden yüz seksen üçe) ve kanon tutarlılık türevi yeniden üretildi. KALAN: ORK-8 kapanış basamaklarının kanon kapsam siciline işlenmesi, emekli vade tanılarının sicil kaydının halefiyle tazelenmesi ve Temmuz'un açık gövdesinin devredilip devredilmeyeceğine dair Founder kararı. Kanon metnine dokunulmadı.",
+        üretir: [ KOD-DENETCI, KOD-SNM-MEVSIM-VADE ],
         ne: "🌀 Mevsim vadesinin ve mühür dürüstlüğünün motorda karşılanması. Founder 2026-08-27 tarihinde şu açığı buldu: `FAZ-2026-TEMMUZ` mevsimi `hedefTarih: 2026-07-31` beyanıyla ilan edilmiş, metninde MÜHÜRLENDİ yazmakta ve açık iş taşıyan gövdelerin Ağustos halkasına geçtiğini söylemektedir; oysa mevsim bugün hâlâ `BLK-VITRIN` gövdesini çağırmaktadır ve o gövdenin altında sekiz açık Adım durmaktadır. Motor bunu bildirmez, çünkü vade tanıları `faz-gecikti` ile `faz-yaklaşıyor` 2026-07-27 tarihinde emekli edilmiştir ve emeklilik gerekçesi ölçüm anında canlı bahçede sıfır bulgu vermeleridir; yirmi yedi gün sonra tam da yakalayacakları durum doğmuştur. Kanon tarafında ORK-8 mevsim ritüelini dört basamaklı bir kapanışa bağlar ve gerekçesinde bizzat Temmuz mevsiminin bir yorum satırıyla kapatıldığını yazar, fakat madde bilgi düzeyindedir ve motorda hiçbir karşılığı yoktur." ) {
         görev: [
           "Mevsim vadesini gözlem düzeyinde konuşan bir tanı kur: vadesi geçmiş bir Faz altında açık Adım kaldığında motor bunu kaç Adımla birlikte bildirir. Tanı MIM-1.2 ile çelişmez, çünkü tarihi dayatmaz; yalnız beyan ile gerçeğin ayrıştığını söyler ve motor susmaz ilkesinin zaten uyguladığı dili kullanır.",
@@ -145,6 +146,31 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         ]
         sınır: "Bu Adım tarihi dayatmaz ve hiçbir Fazın tarihini değiştirmez; MIM-1.2 hükmü aynen durur. Mevsim metinlerine, mühür cümlelerine ve çağır kenarlarına bu Adımda dokunulmaz; devir kararı Founder'ındır ve ayrı bir işlemede uygulanır."
         dokunulmaz: [ "MIM-1.2 tarih hükmü", "Faz metinleri ve çağır kenarları", "Emekli tanıların tarihsel kaydı" ]
+      }
+    }
+
+    AltKatman( kod: KPS-KAPSAM-K8, departman: kodlama, ad: "rejim kapsamı",
+      ne: "Katı rejim hükmü yalnız Proje düğümünün içindeki kademelere ulaşır; ayrı dosyada yaşayan planlar kapsam dışında kalır" ) {
+
+      Adım( kod: KPS-REJ-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YAS-1.1, MIM-1.1, MIM-3 ],
+        onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: katı rejimli bir projede Katman doğrudan Adım taşıdığı hâlde motor hata vermiyor",
+        üretir: [ KOD-DENETCI, KOD-SNM-YENI-KANON ],
+        ne: "🏛️ Katı rejim hükmünün ayrı dosyadaki planlara ulaştırılması. YAS-1.1 katı rejimde Katman ile Adım arasında bir departman kademesi şart koşar ve ihlali HATA düzeyindedir; motorun bu tanısı bugün canlı bahçede hiç doğmamaktadır. Sebep ölçülmüştür: üretici yalnız `Proje` düğümünün İÇİNDEKİ kademeleri gezer, oysa rejim beyanı anadizinde yaşar ve planlar ayrı dosyalarda üst düzey Blok olarak durur; ikisi arasında hiçbir bağ kurulmadığı için hüküm plan dosyalarına hiç ulaşmaz. Ölçüm şudur: iki katı rejimli projede on beş Katman doğrudan Adım taşımaktadır (açık depoda on, kapalı üründe beş) ve motor bunların hiçbiri için hata üretmez; yalnız aynı olguyu bilgi düzeyinde anlatan tavsiye tanısı konuşur. Yani kanonun hata dediği yerde motor öneri vermektedir." ) {
+        görev: [
+          "Rejim çözümünü dosya kapsamından proje kapsamına çıkar: bir plan dosyasının hangi Projeye ait olduğu, kimlik indeksinin ve aktif varlık çözümünün kullandığı yolla (anadizin arayışı) bulunur; rejim o Projenin beyanından okunur.",
+          "Katı rejim normunu bütün kademelere uygula: Katman ile Adım arasında departman kademesi yoksa hata üretilir, dosyanın Proje düğümünü sarıp sarmadığına bakılmaz.",
+          "Tavsiye tanısı ile hüküm tanısının ilişkisini netleştir: esnek rejimde bilgi düzeyli öneri konuşur, katı rejimde hata konuşur ve ikisi aynı olguyu iki kez bildirmez.",
+          "Bugünkü on beş ihlalin her biri için karar al ve uygula: ya kademe açılır ya da projenin rejimi gerçeğe çekilir; kararlar gerekçesiyle kayda geçer.",
+          "Nöbet kur: anadizini bir dosyada, planı başka dosyada yaşayan katı rejimli bir fikstürde hüküm doğar; mutasyonla kanıtlanır."
+        ]
+        kabul: [
+          "Katı rejimli bir projede ayrı dosyada yaşayan bir Katman doğrudan Adım taşıdığında motor hata üretir ve bu fikstürle kanıtlanmıştır.",
+          "Esnek rejimli projede aynı yapı hata üretmez; tavsiye tanısı yerinde kalır ve çift bildirim doğmaz.",
+          "Bugünkü on beş ihlalin tamamı ya kademe açılarak ya da rejim beyanı düzeltilerek kapanmıştır; hiçbiri sessiz bırakılmamıştır.",
+          "Üç deponun denetimi bu tanı bakımından dürüst sonuç verir ve çekirdek ile eklenti süitleri yeşildir."
+        ]
+        sınır: "Bu Adım YAS-1.1 hükmünü değiştirmez ve yeni bir kanon maddesi açmaz; yalnız var olan hükmün kapsamını gerçeğe eşitler. Rejim beyanlarının kendisi bu Adımda değiştirilmez; hangi projenin katı kalacağı Founder kararıdır."
+        dokunulmaz: [ "YAS-1.1 hüküm metni", "Projelerin rejim beyanları" ]
       }
     }
 
@@ -202,3 +228,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
 // ── Meyve ilanı — kapsam sicili Adımının ürettiği kayıt gövdesi ──
 Kod( kod: KOD-KPS-SICIL, dosya: "is/nitelik/kanon_kapsam_sicili.sar",
   ne: "⚖️ Kanon kapsam sicili — doksan bir zorlama iddialı maddenin, motorun tanı sicili karşısındaki masa incelemesi dökümü; her kayıt maddesine referans kenarıyla bağlıdır ve dört dürüstlük beyanı belge bloğunda yaşar" )
+
+// 🍎 KPS-MVS-A01 birinci teslim (2026-08-27): mevsim vade nöbeti
+Kod( kod: KOD-SNM-MEVSIM-VADE, dosya: "urun/cekirdek/sinama/mevsim-vade.test.ts",
+  ne: "🍎 Mevsim vade nöbeti — altı sınama: vadesi geçmiş mevsimin açık işi bildirilir, vadesi gelmemiş mevsim susar, kapanmış mevsim rahat bırakılır, mevsim alanıyla kurulan bağ da görülür, ay hassasiyeti ay sonundan ölçülür ve ders dünyası muaftır; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MVS-A01)" )

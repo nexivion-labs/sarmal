@@ -65,6 +65,7 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   // ── Dosya-içi bekçi: dört yüzde de koşan tek aile (kapi_kapsami.sar eski satır 1). ──
   { uretici: "dogrula", modul: "dogrulayici.ts", yuzeyler: ["cli", "panel", "mcp", "tekil"] },
   { uretici: "fazVadeTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
+  { uretici: "mevsimVadeTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
 
   // ── Yapısal mutabakat (eski proje-denetim.ts'in "canlı" çağırdığı üç üretici + ana-yok). ──
   { uretici: "denetle", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },

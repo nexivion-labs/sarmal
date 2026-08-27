@@ -23,7 +23,7 @@ import { join, basename, resolve, relative } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, katmansizTeknolojiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, katmansizTeknolojiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
 } from "./denetci.ts";
@@ -337,6 +337,16 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
     const vade = koklendir("fazVadeTanilari", [...fazVadeTanilari(p, bugun, etiket)]);
     say(vade, etiket);
     bas(etiket, vade);
+  }
+
+  // ORK-8 mevsim ritüeli (Founder ölçümü 2026-08-27): vadesi geçmiş bir mevsim hâlâ
+  // açık Adım sarıyorsa beyan ile graf ayrışmıştır. Karar PROJE kapsamındadır —
+  // Faz ile sardığı Bloklar ayrı dosyalarda yaşar; bu yüzden tek-dosya turunun
+  // içinde değil, programların tamamı okunduktan sonra koşar.
+  for (const { dosya, tani } of koklendirKayit("mevsimVadeTanilari", mevsimVadeTanilari(programlar, bugun))) {
+    if (muaflar.has(dosya)) continue;
+    say([tani], dosya);
+    bas(dosya, [tani]);
   }
 
   // KRR-MUT B1: dosya-içi doğrulama KAPIDA — bilgi SÜZÜLMEZ (MIM-1 prova bulgusu).

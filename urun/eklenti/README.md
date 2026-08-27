@@ -19,11 +19,11 @@ Sarmal tamamen yereldir. Eklentinin çalışma zamanı bağımlılığı sıfır
 
 1. `cd urun/eklenti && npm install` ile geliştirme bağımlılıklarını kurun.
 2. `npm run build` ile eklenti tip kapısını çalıştırın.
-3. Editörde depo kökünü (`.vscode/launch.json` F5 yapılandırmasıyla) ya da `urun/eklenti` dizinini açıp geliştirme ana bilgisayarını başlatın.
+3. Editörde depo kökünü (F5 yapılandırması `.vscode/launch.json` dosyasındadır) ya da `urun/eklenti` dizinini açıp geliştirme ana bilgisayarını başlatın.
 4. Bir `.sar` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
-Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 172'i ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 46 hata, 16 uyarı ve 10 bilgidir; sabit yönlendirme matrisi 142/4/27 olarak ölçülür.
+Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 173'i ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 46 hata, 16 uyarı ve 11 bilgidir; sabit yönlendirme matrisi 142/4/28 olarak ölçülür.
 
 Sarmal Apache-2.0 lisanslıdır. Lisans bildirimi [LICENSE.md](LICENSE.md) dosyasındadır.
 <!-- SARMAL:URETILEN:EKLENTI-README:SON -->

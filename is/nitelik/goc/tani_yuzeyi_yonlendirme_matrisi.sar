@@ -44,8 +44,8 @@ ihlal sanmaz.
 
 ## C · Kapsam ve sayısal özet
 
-Kanonik tanı sicilinde bugün **173** kimlik vardır: yeni omurga kanonunun ilan
-ettiği **72** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
+Kanonik tanı sicilinde bugün **174** kimlik vardır: yeni omurga kanonunun ilan
+ettiği **73** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
 veri-güdümlü tanıları (`zorunluKenarlar` alanlarından gelenler) çalışma anında
 birleştirilir ve aynı iki basamaklı kuraldan geçer; bugünkü çalışma alanında
 sayıları sıfırdır.
@@ -56,8 +56,8 @@ Yüzeylere bugünkü dağılım şudur:
 |---|---|---|
 | Problems | 142 | önceki kimliklerin hata ve uyarı düzeyli olanları ile A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı |
 | Hatırlatıcılar | 4 | ileri-bağlam kümesinin dördü |
-| Bildirimler | 27 | A03 dışında kalan 10 yeni bilgi tanısı ile önceki 17 bilgi kimliği; son ikisi öncelik beyanı (ORK-3.4) ve ateşlemiş hatırlatıcı (YUZ-3.4) gözlemleridir |
-| **Toplam** | **173** | sicilin tamamı — atanmamış kimlik yoktur |
+| Bildirimler | 28 | A03 dışında kalan 11 yeni bilgi tanısı ile önceki 17 bilgi kimliği; sonuncu üçü öncelik beyanı (ORK-3.4), ateşlemiş hatırlatıcı (YUZ-3.4) ve mevsim vadesi (ORK-8) gözlemleridir |
+| **Toplam** | **174** | sicilin tamamı — atanmamış kimlik yoktur |
 
 ⚠️ NÖBETİN SINIRI — bu iki sayı birbirine karşı korunmuyor. Nöbet sicilin toplam
 boyutunu, yeni kanonun yetmişini, önceki gövdenin yüz ikisini ve ileri-bağlam

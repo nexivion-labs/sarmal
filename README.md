@@ -12,7 +12,7 @@ Sarmal, yazılım niyetini bildirimsel `.sar` kaynaklarında tutan; planı, kura
 
 Kanonun tek adresi [`yasa/kanon/`](yasa/kanon/) altındaki sekiz bölüm dosyasıdır. Bu kaynaklarda 150 tekil madde yaşar: 37 Karar ve 113 Kural. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
 
-Yeni tanı kümesi 46 hata, 16 uyarı ve 10 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 142 Problems, 4 Hatırlatıcılar ve 27 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 172'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve ajan dil bağlamı Türkçe ve İngilizce yüz taşır. İngilizce başlangıç yüzü [README.en.md](README.en.md) dosyasındadır.
+Yeni tanı kümesi 46 hata, 16 uyarı ve 11 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 142 Problems, 4 Hatırlatıcılar ve 28 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 173'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve ajan dil bağlamı Türkçe ve İngilizce yüz taşır. İngilizce başlangıç yüzü [README.en.md](README.en.md) dosyasındadır.
 
 ## Açık sınır
 

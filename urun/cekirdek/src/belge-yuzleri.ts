@@ -167,13 +167,17 @@ function olgulariOlc(kok: string): BelgeOlgulari {
     arac: Object.values(MCP_ARAC_ADI).length,
     ikiDilliTani: Object.keys(TANI_METINLERI).length + Object.keys(ONCEKI_TANI_METINLERI).length,
   };
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "46/16/10" ||
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "142/4/27" ||
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "46/16/11" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "142/4/28" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 172) {
+      olgular.ikiDilliTani !== 173) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
-  // 173 vs 174 farkının kayıtlı gerekçesi: sicilToplami (matrisin "Toplam"
+  // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
+  // motor karşılığı `mevsim-vadesi-geçti` doğdu (Founder hükmü); bilgi kademesi
+  // ondan on bire, Bildirimler yüzeyi yirmi yediden yirmi sekize ve iki dilli
+  // katalog yüz yetmiş ikiden yüz yetmiş üçe çıktı.
+  // 174 vs 175 farkının kayıtlı gerekçesi: sicilToplami (matrisin "Toplam"
   // satırı) SABIT_TANI_KODLARI'nın tamamını (ONCEKI_TANI_KODLARI + YENI_
   // TANI_KANONU = 102 + 70 = 172 kimlik) sayar. ikiDilliTani ise yalnız
   // TANI_METINLERI + ONCEKI_TANI_METINLERI statik kataloglarında gerçek
@@ -213,7 +217,7 @@ Kendi etmenini yazma yeteneği de açık kapsamın parçasıdır: **Etmen · Bec
 
 ## Başlangıç
 
-Kurulum tek adımdır ve Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. \`cd cekirdek && npm test\` çekirdek davranışını sınar. İlk kanonik proje kartı için \`sarmal ogret\`, bütün çalışma alanını denetlemek için \`sarmal denetle .\`, bir şablonu görmek için \`sarmal başla proje\` kullanılır. Onay gerektiren işler kullanıcı yüzünde **ONAYLAR** paneline gider.
+Kurulum tek adımdır ve Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. \`cd urun/cekirdek && npm test\` çekirdek davranışını sınar. İlk kanonik proje kartı için \`sarmal ogret\`, bütün çalışma alanını denetlemek için \`sarmal denetle .\`, bir şablonu görmek için \`sarmal başla proje\` kullanılır. Onay gerektiren işler kullanıcı yüzünde **ONAYLAR** paneline gider.
 
 ## Belge haritası
 
@@ -313,9 +317,9 @@ function eklentiReadme(o: BelgeOlgulari): string {
   return `<!-- SARMAL:GOREV:TAM -->
 ## Görev: eklentiyi çalıştırıp bir çalışma alanını denetlemek
 
-1. \`cd eklenti && npm install\` ile geliştirme bağımlılıklarını kurun.
+1. \`cd urun/eklenti && npm install\` ile geliştirme bağımlılıklarını kurun.
 2. \`npm run build\` ile eklenti tip kapısını çalıştırın.
-3. Editörde \`eklenti\` dizinini açıp geliştirme ana bilgisayarını başlatın.
+3. Editörde depo kökünü (F5 yapılandırması \`.vscode/launch.json\` dosyasındadır) ya da \`urun/eklenti\` dizinini açıp geliştirme ana bilgisayarını başlatın.
 4. Bir \`.sar\` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
