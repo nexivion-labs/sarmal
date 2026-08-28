@@ -16,17 +16,18 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
-            neredeyiz: MEVSIM-VADE-TANISI-MOTORDA-CANLI-ORK-8-ZORLAMASI-FOUNDER-HUKMUYLE-DEGISTI,
-            sıradaki: FOUNDER-KRITIK-TESPITLERI-SONRA-KPS-REJ-A01-VE-PANEL-KAPSAMI-SONRA-TEMMUZ-DEVRI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-28", oturum: 100,
+            neredeyiz: PANEL-KAPSAMI-VE-AIDIYET-KAPANDI-MIM-1-7-HUKME-BAGLANDI-PLAN-RAFLARI-AYRILDI,
+            sıradaki: KPS-REJ-A01-YARIM-KALDI-SONRA-DUMAN-NOBETI-VE-TEMMUZ-DEVRI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ EKLENTI-0-9-159-KURULUM-VE-PENCERE-YENILEME-FOUNDERIN,
+            açıkİşler: [ KPS-REJ-A01-YARIM-KALDI-MIM-1-7-ARAYA-GIRDI,
+                         DUMAN-NOBETI-KURULU-PAKET-DEPODAN-ESKI-KALDIGINI-PANEL-SOYLESIN,
+                         ONAYLAR-ROZETI-BAYAT-SAVUNMA-KONDU-CANLI-OLCUM-BEKLIYOR,
+                         VIT-POSTA-A05-VIT-GRAF-A19-A20-FOUNDER-CANLI-DOGRULAMASI,
+                         CATI-YONETISIM-GOVDESI-ANAYASA-KURALLAR-POLITIKALAR,
                          VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
-                         YUZEY-FAZ-DISI-SVG-IKONLAR-YENIDEN-BASLAYAN-PENCEREDE-BAKILACAK,
                          DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
-                         TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-SEKIZ-ACIK-ADIM-SARIYOR,
-                         KPS-REJ-A01-KATI-REJIM-HUKMU-PLANLARA-ULASMIYOR-ONBES-IHLAL-SESSIZ,
-                         PANEL-KAPSAMI-CATIDA-BOS-ONAYLAR-SUZGECSIZ,
+                         TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-ON-ACIK-ADIM-SARIYOR,
                          TEMMUZ-ACIK-GOVDESININ-AGUSTOSA-DEVRI-FOUNDER-KARARI,
                          SITE-TURKCE-H11-KENDI-PLANI-VE-DURUM-KAYDI-ACILACAK,
                          KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA,
@@ -254,6 +255,97 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-27", oturum: 100,
         işaretçisine H11 olarak indi. Ayrıntılar, yani sayfa sırası ile dört dilli
         gövdenin sökülmesi, sitenin kendi planında kararlaştırılacaktır; o plan ile
         durum kaydı henüz yoktur ve açılması açık işler arasındadır.
+
+        ✅ PANEL KAPSAMI VE AİDİYET SINIFI KAPANDI (2026-08-27/28).
+        Founder canlı pencerede üç kusur ölçtü ve üçünün kökü birdi: paneller
+        kapsamı ayrı ayrı çözüyordu ve üçü de tek köklü bir dünyada doğruydu, iç
+        içe çatı düzeninde kırıldı. Kapsam süzgeci tam eşitlikten kapsama
+        ilişkisine çevrildi ve kural tek yönlüdür: odaktaki kökün altında yaşayan
+        her varlık görünür, üstünde ya da yanında yaşayan görünmez. Onaylar
+        paneli ilk kez aynı odak kapısına bağlandı. Kural yol haritası
+        çekirdeğinde zaten yaşıyordu ve ikinci bir kopya yazmak yerine o işlev
+        adıyla dışa verildi.
+
+        Founder ardından hükmünü genişletti: bir kullanıcı bir projeyi ya da
+        çalışma alanını açtığında bu sorunları hiç yaşamamalıdır. Hükmün kalıcı
+        karşılığı tek tek onarım değil, kusur SINIFININ tekrarını yapısal olarak
+        imkânsız kılmaktır. Üç nöbet kuruldu: kapsama kuralı tek evde kalır,
+        panele yazan her yol kapsam kapısından geçer ve odak değişince bütün
+        yüzeyler aynı turda yeniden basılır. İkincisi mutasyonla kanıtlandı.
+
+        Aynı turda dört panelin de kendi sayı rozeti geldi (VIT-GRAF-A19),
+        Fikirler paneli proje kademesini kazandı (VIT-GRAF-A20) ve Onaylar
+        panelinde dosya satırı hangi projeye ait olduğunu söylemeye başladı.
+        Rozet rengi panel başına ayrılamadı ve sebebi ölçüldü: editör
+        bildirimindeki rozet arayüzü yalnız sayı ile ipucu taşır, renk alanı
+        yoktur. Founder'ın bu isteği karşılanamamıştır ve sınır Adımın kaydına
+        yazılmıştır.
+
+        🟡 AÇIK KALAN BELİRTİ: Onaylar rozeti odak değiştiğinde eski sayıda
+        asılı kalıyor. Belirti yalnız bu panelde görüldü; komşu üç panel aynı
+        turda doğru sayıya oturuyor ve aynı kararı okuyor. Defterin kendisi
+        doğrudur, çünkü durum çubuğu aynı defterden sıfır okur ve panel gövdesi
+        boş basılır. Sapan tek şey rozettir ve aradaki tek fark bu panelin bir
+        webview olmasıdır. Koda bir savunma kondu, fakat bunun teşhis DEĞİL
+        savunma olduğu kaynağın içine yazıldı: belirtinin kaynağı editörde değil
+        bizde çıkarsa o satır geri alınmalıdır.
+
+        ✅ MIM-1.7 · KATMAN İÇİNDE ALTKATMAN TEKİLLİĞİ HÜKME BAĞLANDI (2026-08-28).
+        Founder yol haritasında bir Adıma giden yolu adlarıyla okumak istedi ve
+        zincirin iki kademesinin aynı adı taşıdığını, tek bir Katman altında
+        kodlama kademesinin altı kez açıldığını gördü. KÖK SEBEP BİR YAZIM HATASI
+        DEĞİL BİR HÜKÜM BOŞLUĞUYDU: MIM-1.5 her AltKatmanın tam olarak bir
+        departmanı temsil ettiğini söylüyor, fakat aynı departmanın Katman içinde
+        kaç kez temsil edilebileceğini hiçbir madde yazmıyordu; kural yazılı
+        olmadığı için motorun susması da doğaldı. Madde yazıldı, motor onu hata
+        düzeyinde zorluyor ve ölçüm Katman kapsamındadır, çünkü iki ayrı Katman
+        aynı departmanı meşru biçimde açabilir. Bugünkü yirmi iki ihlalin tamamı
+        kapatıldı: on dosyada kardeş kademeler tek kademede birleşti, Adımlar
+        taşındı ve kaldırılan her kademenin adı ile beyanı yorum olarak korundu.
+        Hiçbir Adım kaybolmadı ve bu dosya dosya ölçüldü. Öğretim örneğinde de
+        bir ihlal çıktı ve öğreticiydi: arkayüz Katmanı iki kodlama kademesi
+        taşıyordu ve ikisi de aynı teknolojiye bağlıydı, yani kademe baştan
+        yanlış modellenmişti.
+
+        ✅ PLAN RAFLARI AYRILDI (2026-08-28 · Founder hükmü). Zaman ekseni ile iş
+        gövdesi ayrı raflara çekildi: mevsim ilanı `is/plan/faz/` rafında, on iki
+        iş gövdesi `is/plan/blok/` rafında yaşıyor. Kökte yalnız ikisine de ait
+        olmayan ilan dosyaları kaldı: meyve haritası, takım ile teknoloji
+        ilanları, işakışları ve özerk kararlar. Bitmiş planların rayı ile
+        mekanizma rafı bölünmedi, çünkü onları da bölmek tek klasörü üç ayrı
+        mantıkla parçalardı. İlan diskten önce gitti (MIM-3 Yapı-Önce) ve tek bir
+        bağ kırılmadı, çünkü `.sar` atıfları kodla kurulur, yolla değil; kırılan
+        tek şey metin içindeki yol anmalarıydı ve on sekiz dosyada tazelendi.
+
+        🔴 KPS-REJ-A01 YARIM KALDI VE BU KAYDA GEÇSİN. Adıma başlandı, şefin
+        bağlamı alındı ve açığın kökü kaynakta doğrulandı: `rejimTanilari`
+        üreticisi rejimi yalnız Proje düğümünün içinden okuyup yine yalnız o
+        düğümün altını geziyor, oysa rejim beyanı anadizinde yaşıyor ve planlar
+        ayrı dosyalarda üst düzey Blok olarak duruyor; dolayısıyla üretici katı
+        rejimli bir projenin planlarına hiç bakmıyor ve kanonun hata dediği on
+        beş ihlal sessiz kalıyor. Tam bu noktada Founder'ın AltKatman hükmü
+        araya girdi ve tur ona ayrıldı. Sonraki oturum bu teşhisten devam eder;
+        yeniden ölçmeye gerek yoktur.
+
+        ℹ️ ÇATIYA İKİ HATIRLATICI AÇILDI (2026-08-28). Birincisi çatının kendi
+        anayasası, kuralları ve ortak politikalarıdır; bugün hiçbiri yazılmamıştır
+        ve Founder'ın yazışma hükümleri geçici olarak o hatırlatıcının metninde
+        durmaktadır. İkincisi bir çalışma kuralıdır: bir Adım Founder'a anılırken
+        yalnız kodu söylenmez, hangi Fazın, Blokun, Katmanın ve AltKatmanın
+        altında yaşadığı ADLARIYLA gösterilir, çünkü Founder o Adımı panelde
+        gözüyle bulmak zorundadır. İkisi de kalıcı kaynak değildir ve gövde
+        açıldığında oraya taşınacaktır.
+
+        ℹ️ ÖLÇÜLEN VE KAPANAN YANLIŞ ALARM (2026-08-28): panelde görülen
+        `doğrulanamayan-tanı-iddiası` uyarısı kaynakta gerçek DEĞİLDİ. MIM-1.7
+        maddesinin tanı iddiası sicilde karşılığını bulur ve depo denetimi bu
+        tanıyı hiç üretmez; uyarı bir paket eskiliğidir, çünkü kurulu eklenti
+        tanıyı henüz tanımayan bir motoru çalıştırıyordu. Bu, HTR-SURUM-DAMGASI
+        hatırlatıcısının ikinci tedbiri olan duman nöbetinin neden gerektiğinin
+        canlı kanıtıdır: nöbet olsaydı panel kullanıcıya kurulu paketin depodan
+        eski olduğunu kendisi söylerdi. Hatırlatıcının "öncelik ikinci kademeye
+        indirildi" gerekçesi bugün yanlışlanmıştır, çünkü asıl tuzak paketin
+        üretilmemesi değil kurulmamış olmasıdır ve birinci tedbir onu kapatmaz.
 
         ✅ MEVSİM VADE KAPISI KURULDU (2026-08-27 · KPS-MVS-A01 birinci teslim).
         Founder'ın ölçtüğü açık motorda karşılandı. `mevsim-vadesi-geçti` tanısı
