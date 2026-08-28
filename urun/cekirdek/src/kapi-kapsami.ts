@@ -66,6 +66,7 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "dogrula", modul: "dogrulayici.ts", yuzeyler: ["cli", "panel", "mcp", "tekil"] },
   { uretici: "fazVadeTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
   { uretici: "mevsimVadeTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
+  { uretici: "altKatmanTekilligiTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel", "tekil"] },
 
   // ── Yapısal mutabakat (eski proje-denetim.ts'in "canlı" çağırdığı üç üretici + ana-yok). ──
   { uretici: "denetle", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },

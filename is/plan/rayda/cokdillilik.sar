@@ -87,10 +87,8 @@ Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
         ]
         sınır: "Bu Adım yalnız SÖZLÜĞE yazar. Ayrıştırıcı, biçimlendirici ve motorun tip-adı dallanmaları DEĞİŞMEZ — onlar seçenek B'nin işidir ve v2'ye ertelenmiştir. Türkçe karşılıklar silinmez ya da yeniden adlandırılmaz; İngilizce PARALEL yüzey olarak eklenir."
       }
-    }
-
-    AltKatman( kod: CDL-SOZLUK-K2, ad: "tanı metinleri", departman: kodlama,
-      ne: "motorun konuştuğu her cümlenin toplanması ve çevrilmesi" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "tanı metinleri" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: motorun konuştuğu her cümlenin toplanması ve çevrilmesi
 
       Adım( kod: CDL-A02, durum: tamamlandı, bağımlı: [ CDL-A01 ],
         koşu:     "2026-07-29 · KAPANIŞ. SAYIM: motor 180 tanı üretiyor — 171'i kaynakta sabit yazılı, 9'u kanonun `zorunluKenarlar` verisinden çalışma anında türüyor. Toplama oranı taşımadan önce sabit kümede 70/171 (%40,9), yüz seksenlik ölçekte 79/180 (%43,9) idi; kapanışta 170/171 ve 179/180 (%99,4) oldu. Tanı nesnesine gömülü kalan kullanıcı cümlesi sayısı 230'dan SIFIRA indi. Dağınıklığın haritası da ölçüldü: `denetci.ts` 98 dizgi · `dogrulayici.ts` 64 · `kuralci.ts` 40 · `rbac.ts` 9 · `dag.ts` 9 · `denetim.ts` 5 · `tema.ts` 4 · `gateway.ts` 1. TAŞIMA: mevcut desen bozulmadı, yanına ikinci hane açıldı — yeni kanonun kataloğu olduğu gibi durur, önceki kanonun cümleleri `ONCEKI_TANI_METINLERI` kataloğuna girdi. Ayrımın gerekçesi ölçülmüş bir olgudur: yeni kanonda düzey sicilin terfi kademesinden okunur, önceki kümede ise aynı tanı farklı kapılarda farklı düzeyle üretilebildiği için düzeyi üretici seçmek zorundadır. HİÇBİR METİN DEĞİŞMEDİ ve bu iki bağımsız yolla doğrulandı: taşımadan önce motorun bütün mesaj ve öneri değerlerinden 749 tekil düz metin parçası çıkarıldı, taşımadan sonra 749'unun tamamı kaynakta birebir bulundu ve kaybolan parça sayısı sıfır çıktı; ayrıca süitin tanı cümlelerini birebir iddia eden hükümlerinin hiçbiri kırılmadı. NÖBET beş hüküm koşturuyor ve en değerlisi şudur: kaynaktaki her mesaj ve öneri dizgisi için onu saran nesne çözülür, nesne bir düzey taşıyorsa — yani tanı nesnesiyse — süit kırmızıya döner. İKİ mutasyonla kanıtlandı: `döngüsel-bağımlılık` cümlesi `dag.ts` içine geri gömüldüğünde nöbet iki satırı adıyla gösterdi; sicile metinsiz bir tanı kimliği eklendiğinde kapsama hükmü kırmızıya döndü. BEYANLI TEK İSTİSNA `söz-dizim`'dir: metni bir şablon değil, belirteçleyici ile ayrıştırıcının fırlattığı on dört söz dizimi hatasının kendi cümlesidir ve kataloğa taşımak en alt katmanı en üst katmana bağımlı kılardı. İstisnanın TEK kaldığını ayrı bir hüküm ölçer, yani liste sessizce büyüyemez. ÖLÇÜMLER: çekirdek süiti 899/899 (taban 894'tü, beş hüküm eklendi, hiçbir sayı düşmedi) · denetim ✖0 · kapalı varlık ✖0 ⚠0 · tür denetimi hatasız. DEVREDEN İKİ SORU Founder hükmü bekliyor: birincisi `söz-dizim` cümlelerinin nereye taşınacağı — üç seçenek ölçülüp yazıldı, karar verilmedi; ikincisi tanı OLMAYAN kullanıcı metinleridir (`dongu.ts` on beş, `sozlesme.ts` dört, `rbac.ts` beş cümle) — bunlar `Bulgu` ve `İhlal` kayıtlarıdır, bu Adımın kapsamı dışındadır ve nöbet onları bilinçli olarak ölçmez, fakat ŞEF çıktısında kullanıcı onları da okur.",
@@ -130,6 +128,7 @@ Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
         sınır: "Bu Adım yalnız ÇEVİRİR. Tanı ekleme, kaldırma, düzey değiştirme ve metin iyileştirme bu Adımın dışındadır."
       }
     }
+
   }
 
   Katman( kod: CDL-YUZEY, kullanır: TAKIM-EKLENTI, ad: "eklenti ve araç yüzeyi",

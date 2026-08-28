@@ -23,8 +23,12 @@ test("örnek ağaç doğru klasör/dosya planına dökülür", () => {
     "dizin kimlik/arkayuz",
     "dizin kimlik/arkayuz/servisler",
     "dosya kimlik/arkayuz/servisler/kimlik_servisi.md",
-    "dizin kimlik/arkayuz/veritabani",
-    "dosya kimlik/arkayuz/veritabani/kimlik_tablosu.md",
+    // MIM-1.7 (Founder hükmü 2026-08-28): arkayüzün iki kodlama kademesi tek
+    // kademede birleşti, dolayısıyla kimlik tablosu artık servisler klasöründe
+    // yaşıyor. İki Adım da FASTAPI'ye bağlıdır ve ayrı bir teknoloji dilimi
+    // değildir; ayrı klasör onları yanlışlıkla ayrı bir sorumluluk gibi
+    // gösteriyordu.
+    "dosya kimlik/arkayuz/servisler/kimlik_tablosu.md",
     "dizin kimlik/guvenlik",
     "dizin kimlik/guvenlik/jeton",
     "dosya kimlik/guvenlik/jeton/jeton_dogrula.md",

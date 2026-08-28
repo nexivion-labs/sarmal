@@ -95,7 +95,7 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 150 || new Set(kodlar).size !== 150) {
+  if (dosyalar.length !== 8 || kodlar.length !== 151 || new Set(kodlar).size !== 151) {
     throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
   }
   return { madde: kodlar.length, karar, kural, kodlar, muhurler };
@@ -167,10 +167,10 @@ function olgulariOlc(kok: string): BelgeOlgulari {
     arac: Object.values(MCP_ARAC_ADI).length,
     ikiDilliTani: Object.keys(TANI_METINLERI).length + Object.keys(ONCEKI_TANI_METINLERI).length,
   };
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "46/16/11" ||
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "142/4/28" ||
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/16/11" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "143/4/28" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 173) {
+      olgular.ikiDilliTani !== 174) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk

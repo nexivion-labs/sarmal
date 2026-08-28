@@ -14,5 +14,5 @@ Bu rehber girişi elle korunur; görev canlı tanı ve yönlendirme ölçümünd
 3. Tanının gösterdiği kaynak satırını ve öneriyi izleyerek `.sar` kaynağını düzeltin.
 4. Aynı komutu yeniden çalıştırın; ilgili kimliğin kaybolduğunu ölçün.
 
-Yeni sicil kümesi 46 hata, 16 uyarı ve 11 bilgidir. Sabit sicilin yönlendirme matrisi 142 Problems, 4 Hatırlatıcılar ve 28 Bildirimler (Gözlemler) üretir.
+Yeni sicil kümesi 47 hata, 16 uyarı ve 11 bilgidir. Sabit sicilin yönlendirme matrisi 143 Problems, 4 Hatırlatıcılar ve 28 Bildirimler (Gözlemler) üretir.
 <!-- SARMAL:URETILEN:REHBER-DENETIM:SON -->

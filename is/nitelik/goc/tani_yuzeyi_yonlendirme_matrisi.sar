@@ -54,10 +54,10 @@ Yüzeylere bugünkü dağılım şudur:
 
 | Yüzey | Kimlik sayısı | Nereden gelir |
 |---|---|---|
-| Problems | 142 | önceki kimliklerin hata ve uyarı düzeyli olanları ile A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı |
+| Problems | 143 | önceki kimliklerin hata ve uyarı düzeyli olanları, A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı ile MIM-1.7 AltKatman tekilliği (Founder hükmü 2026-08-28) |
 | Hatırlatıcılar | 4 | ileri-bağlam kümesinin dördü |
 | Bildirimler | 28 | A03 dışında kalan 11 yeni bilgi tanısı ile önceki 17 bilgi kimliği; sonuncu üçü öncelik beyanı (ORK-3.4), ateşlemiş hatırlatıcı (YUZ-3.4) ve mevsim vadesi (ORK-8) gözlemleridir |
-| **Toplam** | **174** | sicilin tamamı — atanmamış kimlik yoktur |
+| **Toplam** | **175** | sicilin tamamı — atanmamış kimlik yoktur |
 
 ⚠️ NÖBETİN SINIRI — bu iki sayı birbirine karşı korunmuyor. Nöbet sicilin toplam
 boyutunu, yeni kanonun yetmişini, önceki gövdenin yüz ikisini ve ileri-bağlam

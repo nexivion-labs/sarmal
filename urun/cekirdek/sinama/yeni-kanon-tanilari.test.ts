@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari,
-  type DiskAnlikGoruntu,
+  type DiskAnlikGoruntu, altKatmanTekilligiTanilari,
 } from "../src/denetci.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
 import { YENI_TANI_KANONU, YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
@@ -667,9 +667,24 @@ test("proje: vadesi geçmiş mevsim açık iş sarıyorsa ORK-8 tanısı fikstü
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+// ══ MIM-1.7 · ALTKATMAN TEKİLLİĞİ (Founder hükmü 2026-08-28) ════════════════
+
+test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata doğar", () => {
+  // Kök sebep bir hüküm boşluğuydu: MIM-1.5 her AltKatmanın tam olarak bir
+  // departmanı temsil ettiğini söylüyordu, fakat aynı departmanın Katman içinde
+  // kaç kez temsil edilebileceğini hiçbir madde yazmıyordu.
+  const programlar = harita({
+    "plan.sar": `Katman( kod: KAT-X, ad: "katman" ) {
+  AltKatman( kod: ALT-A, departman: kodlama, ad: "bir" ) { Adım( kod: A1, ne: "iş" ) }
+  AltKatman( kod: ALT-B, departman: kodlama, ad: "iki" ) { Adım( kod: A2, ne: "iş" ) }
+}`,
+  });
+  uretildi("altkatman-tekilliği-ihlali", altKatmanTekilligiTanilari(programlar));
+});
+
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 46 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -688,7 +703,11 @@ test("GOC-TERFI-A05: 46 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");
   const hatada = YENI_TANI_KANONU.filter((k) => k.kademe === "hata");
   assert.deepEqual(bilgide, borclar, "sıfırdan büyük sayaçlı bir tanı yanlışlıkla terfi etmiş olabilir");
-  assert.equal(hatada.length, 46, "Founder kabulündeki hata kümesi 46 tanı olmalıdır");
+  // Kırk yedinci hata kimliği 2026-08-28 tarihinde Founder hükmüyle doğdu:
+  // MIM-1.7 AltKatman tekilliği. Kök sebep bir hüküm boşluğuydu ve madde o
+  // boşluğu kapattığı için tanı doğrudan hata düzeyinde doğdu; terfi turundan
+  // gelmedi, dolayısıyla A05'in kırk altılık aday kümesini değiştirmez.
+  assert.equal(hatada.length, 47, "Founder kabulündeki hata kümesi 47 tanı olmalıdır");
   assert.ok(hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
   assert.equal(uyarida.length, 16, "Founder hükmünde uyarıda kalan küme 16 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
@@ -748,7 +767,7 @@ test("proje: ateşlemiş hatırlatıcı ölçütü GRAFTAN türetilir, serbest m
     "serbest metin yorumlanmış — hedef Adım sürüyorken hatırlatıcı ateşlemiş sayılamaz");
 });
 
-test("kapanış: YETMİŞ kimliğin tamamı fikstürle kanıtlanmış olmalı", () => {
+test("kapanış: YETMİŞ BİR kimliğin tamamı fikstürle kanıtlanmış olmalı", () => {
   const eksik = YENI_TANI_KODLARI.filter((k) => !KANITLANAN.has(k));
   assert.deepEqual(eksik, [],
     `fikstürle kanıtlanmamış tanı kimlikleri: ${eksik.join(" · ")}`);
@@ -756,7 +775,7 @@ test("kapanış: YETMİŞ kimliğin tamamı fikstürle kanıtlanmış olmalı", 
 
 // ══ YÜZLER ARASI UYUM · ÖNERİ ŞARTI ═════════════════════════════════════════
 
-test("öneri şartı MAKİNEYLE tutulur: altmış dokuz önerinin tamamı yapıştırılabilir iskelet taşır", () => {
+test("öneri şartı MAKİNEYLE tutulur: yetmiş önerinin tamamı yapıştırılabilir iskelet taşır", () => {
   const baglam = {
     kimlik: "PRJ-ANA", ad: "Ekran", kanonik: "kullanır", alan: "renk", tip: "Meyve",
     kod: "DIL-5", onerilen: "DIL-4", rol: "birincil", dosya: "yuz/okuma.md", tur: "Kod",

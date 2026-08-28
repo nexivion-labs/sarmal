@@ -86,12 +86,8 @@ Blok( kod: BLK-REFORM, ad: "büyük reform — teftiş bulguları altı turda ka
         üretir:   [ KOD-SNM-MOTORGUVEN, KOD-SNM-DELIK ]
         sınır:    "geçiş tablosu kilitli karardaki gibi — beklemede→tamamlandı SERBEST kalır (panel tek-tık); koni kapısı BİLGİ düzeyini aşamaz (Founder S3 kilidi)"
       }
-    }
-    AltKatman(
-      kod: ALT-RF-MOTOR-KARNE-KALEMLERI, departman: kodlama,
-      ad:  "karne motor kalemleri",
-      ne:  "⚖️ Karar-kural karnesinin motor kalemleri — tanı-kenarı, GenelKural/ÖzelKural motor-vatandaşlığı, tip-doğum kapısı ve yasa göç turu",
-    ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "karne motor kalemleri" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: ⚖️ Karar-kural karnesinin motor kalemleri — tanı-kenarı, GenelKural/ÖzelKural motor-vatandaşlığı, tip-doğum kapısı ve yasa göç turu
       Adım( kod: RF-T6-A03, durum: tamamlandı,   // KAPANIŞ 2026-07-14 (sweep): Kural.tanı iddia-doğrulama CANLI — dogrulayici.ts:171 'doğrulanamayan-tanı-iddiası' bekçisi + tani-sicili + 25 kuralda tanı: kenarı + motor-guven.test.ts:248
         referans: [ CKR-KARAR-KURAL-KARNE ],
         üretir:   [ KOD-TANI-SICILI ],

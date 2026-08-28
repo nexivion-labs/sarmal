@@ -168,6 +168,9 @@ Kod( kod: KOD-YOLHARITA, dosya: "urun/eklenti/src/yolharitasi.ts",
 // ── Sınama nöbetleri (cekirdek/sinama — yetim-meyve kapsamı BKM-SNV2 nöbetleriyle açıldı; tarihsel envanter) ──
 Kod( kod: KOD-SNM-YENI-KANON, dosya: "urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts",
   ne: "🍎 sınama nöbeti — yeni kanonun altmış dokuz tanısının fikstür kanıtı; her kimlik gerçekten üretiliyor mu" )
+
+Kod( kod: KOD-SNM-ALTKATMAN-TEKILLIGI, dosya: "urun/cekirdek/sinama/altkatman-tekilligi.test.ts",
+     ne: "🍎 sınama nöbeti — MIM-1.7 AltKatman tekilliği; aynı departmanın ve aynı adın Katman içinde ikinci kez açılması hata düzeyinde yakalanır, tekilliğin Katman kapsamında ölçüldüğü ve önerinin yapıştırılabilir iskelet taşıdığı da kanıtlanır" )
 Kod( kod: KOD-SNM-AGAC, dosya: "urun/cekirdek/sinama/agac.test.ts",
   ne: "🍎 sınama nöbeti — ağaç yüzü (agacUret ├──/└── render)" )
 Kod( kod: KOD-SNM-AYRISTIRICI, dosya: "urun/cekirdek/sinama/ayristirici.test.ts",

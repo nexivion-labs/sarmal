@@ -122,10 +122,8 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-AGUSTOS,
         ]
         sınır: "Bu Adım kanon maddesi yazmaz, çünkü kanon hükmü Founder kapısıdır ve üretici kendi başına kilitli karar üretemez; Adım yalnız borcu sahiplenir, her kalemi Founder ile görüşerek gerçek evine indirir ve gerektiğinde gerçek evi kuracak yeni Adımı ya da Karar düğümünü doğurur. Günlüğün kendi künyesinin ve dosya haritası bölümünün tazelenmesi ile arşivin çift kopya durumunun giderilmesi bu Adımın kapsamı dışındadır ve kendi Adımlarını bekler."
       }
-    }
-
-    AltKatman( kod: KYN-KAYNAK-K4, departman: inceleme, ad: "yorum atıf tazeliği",
-      ne: "Kod yorumları da kaynaktır ve bayat kimliğe atıf veren bir yorum okuyucuyu yanlış yere gönderir; Founder'ın güncellik hükmü bu yüzeyi de bağlar" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "yorum atıf tazeliği" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Kod yorumları da kaynaktır ve bayat kimliğe atıf veren bir yorum okuyucuyu yanlış yere gönderir; Founder'ın güncellik hükmü bu yüzeyi de bağlar
 
       Adım( kod: KYN-ATF-A01, durum: tamamlandı, bağımlı: [], referans: [ YAS-3.4, DIL-1.4 ],
         onay: "şerhle onaylandı — 2026-08-08 · Founder'ın güncellik hükmü şudur ve bu Adım o hükmün kod yorumu yüzeyindeki karşılığıdır: MCP, araçlar, dökümanlar ve kod yorum satırları her zaman güncel tutulur. Bağımsız denetçi teslimi önce ŞERHLİ KABUL ile geçirdi ve üç engelleyici şerh açtı; düzeltme turundan sonra ikinci ölçümünü yaptı ve hükmünü ŞERHSİZ KABUL olarak yeniledi. ŞERHLER ve akıbetleri şunlardır. BİRİNCİ ŞERH en ağırıydı ve tam olarak bu Adımın önlemek için var olduğu zarardı: üretici dokuz dosyaya kaydın repo dışı arşive indiğini yazmıştı, oysa Founder 2026-08-03 tarihinde bunu bozmuş ve yaşanmış tarihin repodan çıkarılmayacağına hükmetmişti; yani kod yorumu kilitli bir kararın tersini söylüyordu ve motor bunu yakalayamazdı. Cümle doğru modele çevrildi ve denetçi arşiv adresini, taşıdığı kodları ve arşivin denetim kökü dışında kaldığını tek tek ölçerek doğruladı. İKİNCİ ŞERH bir yorumun kodun söylemediğini söylemesiydi; ölçüm bir işlevin dışa açık olduğu hâlde hiçbir çağıranı bulunmadığını gösterdi ve blok artık bu durumu dürüstçe beyan etmektedir. ÜÇÜNCÜ ŞERH motorun göremediği bir emekli kimlikti ve kaldırıldı. TAŞINAN ŞERHLER engelleyici değildir: kullanıcıya görünen iki örnek metin dize değeridir ve kayda geçmiştir, kısa biçimli emekli kalem kodları ise kod biçimine benzemedikleri için motorun görüş alanı dışındadır ve ayrı bir dokunuş ister.",
@@ -142,6 +140,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-AGUSTOS,
         dokunulmaz: [ "Kodun davranışı", "Git geçmişi", "Belge dosyalarındaki tarihsel kayıtlar" ]
       }
     }
+
 
     AltKatman( kod: KYN-KAYNAK-K3, departman: planlama, ad: "üslup hükmü",
       ne: "Yazım disiplini bugün yalnız yönerge dosyalarında yaşıyor; normatif metin ise kanonda yaşamak zorundadır" ) {
@@ -335,44 +334,8 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-AGUSTOS,
         ]
         sınır: "Bu Adım hükmü yazar; hükmü zorlayacak yeni bir bekçi bu Adımın konusu değildir ve kendi Adımını bekler."
       }
-    }
-
-    AltKatman( kod: KYN-PLAN-K3, departman: inceleme, ad: "tur kaydı incelemesi",
-      ne: "Gece turunun kalıcı kaydı yazıldı fakat Founder incelemesi olmadan mühürlenmedi" ) {
-
-      Adım( kod: KYN-TUR-A01, durum: tamamlandı, bağımlı: [], üretir: [ KOD-TUR-KAYDI-0808 ], referans: [ YUZ-1.2 ],
-        onay: "şerhle onaylandı — 2026-08-08 · Founder üç sorunun üçüne de hüküm verdi. AYRINTI DÜZEYİ hükmü şudur: tur kaydı yalnız karar değiştiren bulguları taşır, çünkü ölçüm sayıları ilgili Adımın koşu alanında zaten yaşamaktadır ve aynı sayıyı iki yerde tutmak ikinci bir bayat kaynak doğurur. EV hükmü şudur: kayıtlar nitelik rafında yaşar ve turlara ayrı bir raf açılmaz, çünkü bu kayıtlar cins olarak ölçüm ve gözlem metnidir, oysa yeni bir raf yeni bir ilan yükü getirir ve karşılığında hiçbir ayrım kazandırmaz. ÖMÜR hükmü şudur: kayıt kalıcı kalır fakat mevsim kapanışında özetlenir; özetleme işi mevsim ritüelinin hasat basamağına aittir ve ayrı bir arşivleme kuralı icat edilmez. ŞERH: bu üç hüküm BUNDAN SONRAKİ turları bağlar; 8 Ağustos kaydı olduğu gibi mühürlenmiştir ve geriye dönük olarak budanmamıştır, çünkü tarihsel bir kaydı sonradan gelen bir ölçüte göre kırpmak kaydın tanıklığını zayıflatır.",
-        koşu: "2026-08-08 · KAPANIŞ. Üç kabul ölçütünün üçü de karşılandı. Founder kaydı okudu ve üç sorunun her birine gerekçeli hüküm verdi; hükümler bu Adımın onay kaydına şerhli onay olarak işlendi. Verilen hükme göre kayıt yeniden biçimlendirilmedi ve olduğu gibi mühürlendi, çünkü ayrıntı ölçütü ileriye dönük ilan edilmiştir. Kaydın kendisi nitelik rafında dört Çıkarım ile yaşamaktadır ve bunların üçü karar değiştirmiştir: yönerge ikizi nöbetinin kör noktası bulunup kapatılmış, Fikir yüzeyinin bu depoda sınanamaz olduğu gösterilmiş ve elli bir uyarının gerçek kaynağı motor kaynağındaki bayat yorum atıfları olarak saptanmıştır.",
-        ne: "🌙 Gece turu kaydının Founder incelemesi — 8 Ağustos gece turunun sonuçları önce oturuma özel geçici bir markdown dosyasına yazılmıştı ve o alan oturumla birlikte silinir; Founder raporların .sar biçiminde ve ilanlı rafta yaşamasına hükmetti, kayıt nitelik rafına yazıldı fakat mühürlenmeden incelemeye bırakıldı" ) {
-        görev: "Kayıt nitelik rafında `gece_turu_2026_08_08.sar` dosyasında yaşar ve dört Çıkarım taşır: turun bütünü, yönerge ikizi nöbetinin kör noktası, Fikir yüzeyinin bu depoda sınanamaz oluşu ve denetimdeki uyarı artışının gerçek kaynağı. Founder kaydı okur ve üç soruyu cevaplar. Birincisi kapsamdır: tur kayıtları bundan sonra hangi ayrıntı düzeyinde tutulacak, çünkü fazla ayrıntı okunmaz ve az ayrıntı hafızayı taşımaz. İkincisi evdir: bu kayıtların rafı nitelik mi olacak yoksa turlara ayrı bir raf mı açılacak. Üçüncüsü ömürdür: kayıt kalıcı mı kalacak yoksa bir sonraki turda özetlenip arşive mi inecek."
-        kabul: [
-          "Founder kaydı okumuş ve üç sorunun her birine hüküm vermiştir",
-          "Hükümler şerhli onay olarak bu Adımın onay kaydına işlenmiştir",
-          "Verilen hükme göre kayıt ya olduğu gibi mühürlenmiş ya da yeniden biçimlendirilmiştir"
-        ]
-        sınır: "Kayıt Founder incelemesinden önce mühürlenmez. Kontrolcü kendi turunun kaydını kendisi onaylayamaz, çünkü bu üretici ile denetçinin aynı kişi olması demektir."
-      }
-    }
-
-    AltKatman( kod: KYN-PLAN-K2, departman: inceleme, ad: "durum hizalaması",
-      ne: "Planın beyan ettiği durum ile işin fiilî durumu ayrışmış olabilir; ayrışma ölçüldü ve karara bağlanmayı bekliyor" ) {
-
-      Adım( kod: KYN-HIZ-A01, durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder, referans: [ YAS-3.4 ],
-        onay: "şerhle onaylandı — 2026-08-10 · Founder'ın gece yetki devriyle kontrolcü hükmü: inceleme kontrolcü tarafından yürütülür ve üç-hüküm kuralı korunur. ŞERHLER: birinci küme olan onay hükmü taşıyıp beklemede duran otuz bir Adım, Adımın kendi koşusunun da söylediği gibi tek başına çelişki değildir ve toplu gözden geçirmeyle yetinilir; asıl inceleme ikinci ve üçüncü kümeden başlar. 'Durum ilerletme işin sahibinin hükmüyle olur' sınırı yetki devrine rağmen korunur: koşu kaydı taşıyıp beklemede duran bir Adımın ilerletilmesi, koşunun bir ölçüm turu değil işin kendisi olduğu kanıtlanmadan yapılmaz.",
-        ne: "⚖️ Beyan edilen durum ile fiilî durumun hizalanması — Founder 2026-08-08 tarihinde geçmişte tamamlanmış olduğu hâlde hâlâ beklemede görünen ya da geliştirmesi bitmiş olduğu hâlde hâlâ geliştirmede duran Adımların tespit edilmesini ve planın gerçekle hizalanmasını istedi; tarama koşuldu ve üç ayrışma kümesi ölçüldü" ) {
-        görev: "Tarama iki varlıktaki üç yüz altmış iki Adımı kapsadı ve üç küme çıkardı. Birinci kümede onay hükmü yazılmış olduğu hâlde beklemede duran otuz bir Adım vardır; bu küme tek başına çelişki sayılmaz, çünkü bir işin onaylanması onun başladığı anlamına gelmez, fakat kümenin tamamı yine de gözden geçirilmelidir. İkinci kümede koşu kaydı taşıdığı hâlde beklemede duran on beş Adım vardır ve asıl şüphe buradadır, çünkü koşu kaydı işin fiilen koşulduğunu söyler. Üçüncü kümede koşu kaydı taşıdığı hâlde geliştirmede duran beş Adım vardır ve bunların çoğu Founder'ın gözle doğrulamasını bekleyen vitrin işleridir. Her Adım Founder ile tek tek okunur ve üç hükümden biri verilir: durum ilerletilir, koşu kaydının bir ölçüm turu olduğu ve işin gerçekten başlamadığı yazılır, ya da Adım gerekçesiyle düşürülür. Hükümler şerhli onay olarak kaydedilir. İnceleme bittikten sonra motorun bu ayrışmayı kendiliğinden görmesi için bir bekçi tasarlanır."
-        kabul: [
-          "Üç kümedeki elli bir Adımın her biri Founder ile tek tek okunmuş ve her biri için üç hükümden biri verilmiştir",
-          "Verilen hükümler şerhli onay olarak kayda geçmiştir ve hiçbir Adım hükümsüz kalmamıştır",
-          "Ayrışmayı kendiliğinden gören bir bekçinin tasarımı yazılmıştır ya da neden yazılamayacağı gerekçesiyle açıklanmıştır"
-        ]
-        sınır: "Kontrolcü kendi başına durum ilerletmez. Bir işin bitip bitmediğine dair hüküm işin sahibinindir; makine yalnız ayrışmayı gösterir, çünkü koşu kaydı bazen bir ölçüm turunun kaydıdır ve o tur işin kendisini yapmamış olabilir."
-        koşu: "2026-08-08 · ÖLÇÜM. Tarama iki varlıktaki bütün .sar gövdelerini kapsadı ve örnek dünyasını dışladı. Toplam üç yüz altmış iki Adım okundu. Onay hükmü taşıdığı hâlde beklemede duran otuz bir Adım bulundu ve bunlar kaynak disiplini, performans turu, yayın içeriği, bakım olgunluğu, orkestrasyon zekâsı, sınav, vitrin, eklenti ve kapalı ürün açılış planlarına dağılmıştır. Koşu kaydı taşıdığı hâlde beklemede duran on beş Adım bulundu; bunların beşi Sol ile İDA test planındadır ve üçü eklenti yayın Katmanındadır. Koşu kaydı taşıdığı hâlde geliştirmede duran beş Adım bulundu; biri bu rayın kendi Adımıdır ve dördü vitrin gövdesindedir."
-      }
-    }
-
-    AltKatman( kod: KYN-PLAN-K1, departman: planlama, ad: "öncelik alanı",
-      ne: "Alanın anlamı kanonda yazılı değildir ve iki tip aynı kavramı iki ayrı biçimde beyan eder" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "öncelik alanı" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Alanın anlamı kanonda yazılı değildir ve iki tip aynı kavramı iki ayrı biçimde beyan eder
 
       Adım( kod: KYN-ONC-A01, durum: tamamlandı, üretir: [ KOD-KANON-ORK ], bağımlı: [], referans: [ DIL-1.2, ORK-3.2 ],
         onay: "şerhle onaylandı — 2026-08-08 · Founder hükmü kanona indirmeye izin verdi ve dört kabul ölçütü de karşılandı. BÖLÜM SEÇİMİNİN GEREKÇESİ ŞUDUR: madde orkestrasyon bölümüne ORK-3.4 koduyla indirilmiştir, çünkü öncelik bir iş sıralaması kavramıdır ve o bölümün üçüncü ailesi zaten Adım grafını, deterministik sırayı, döngü yasağını ve seçilebilir Adımı hükme bağlamaktadır; tip bölümü yalnız alanın şemasını tanımlar, oysa buradaki soru alanın ANLAMIDIR. KÜME SEÇİMİNİN GEREKÇESİ ŞUDUR: küçük harfli dört kademe seçilmiştir, çünkü dildeki bütün enum değerleri küçük harfle yazılır ve DIL-1.2 casing kuralı bu yazımı ister; ayrıca dört kademe Hatırlatıcı tipinde zaten yaşamaktaydı ve iki tipi var olan kümede buluşturmak yeni bir küme icat etmekten ucuzdur. ŞERH: madde bilinçli olarak yeni bir tanı ilan ETMEMİŞTİR, çünkü bu Adımın sınırı motorun zorlamasını üçüncü Adıma bırakır; beyanın yokluğunu görecek bekçi KYN-ONC-A03 ile doğacak ve doğduğunda bu maddeye bağlanacaktır. İKİNCİ ŞERH: önceliğin yürütme sırasını DEĞİŞTİRMEDİĞİ hükümde açıkça yazılmıştır; sıra yalnız Adım grafından türetilir, çünkü insan beyanının o hesabı bozması aynı plandan farklı koşumlar doğurur. Bu sınır ileride tartışılabilir, fakat bugün deterministik sıra hükmüne dokunmamak seçilmiştir.",
@@ -414,5 +377,39 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-AGUSTOS,
         sınır: "Motor öncelik DEĞERİNİ önermez; bir işin ne kadar acil olduğu insan hükmüdür ve makine onu uyduramaz. Bekçi yalnız beyanın yokluğunu görür."
       }
     }
+
+    AltKatman( kod: KYN-PLAN-K3, departman: inceleme, ad: "tur kaydı incelemesi",
+      ne: "Gece turunun kalıcı kaydı yazıldı fakat Founder incelemesi olmadan mühürlenmedi" ) {
+
+      Adım( kod: KYN-TUR-A01, durum: tamamlandı, bağımlı: [], üretir: [ KOD-TUR-KAYDI-0808 ], referans: [ YUZ-1.2 ],
+        onay: "şerhle onaylandı — 2026-08-08 · Founder üç sorunun üçüne de hüküm verdi. AYRINTI DÜZEYİ hükmü şudur: tur kaydı yalnız karar değiştiren bulguları taşır, çünkü ölçüm sayıları ilgili Adımın koşu alanında zaten yaşamaktadır ve aynı sayıyı iki yerde tutmak ikinci bir bayat kaynak doğurur. EV hükmü şudur: kayıtlar nitelik rafında yaşar ve turlara ayrı bir raf açılmaz, çünkü bu kayıtlar cins olarak ölçüm ve gözlem metnidir, oysa yeni bir raf yeni bir ilan yükü getirir ve karşılığında hiçbir ayrım kazandırmaz. ÖMÜR hükmü şudur: kayıt kalıcı kalır fakat mevsim kapanışında özetlenir; özetleme işi mevsim ritüelinin hasat basamağına aittir ve ayrı bir arşivleme kuralı icat edilmez. ŞERH: bu üç hüküm BUNDAN SONRAKİ turları bağlar; 8 Ağustos kaydı olduğu gibi mühürlenmiştir ve geriye dönük olarak budanmamıştır, çünkü tarihsel bir kaydı sonradan gelen bir ölçüte göre kırpmak kaydın tanıklığını zayıflatır.",
+        koşu: "2026-08-08 · KAPANIŞ. Üç kabul ölçütünün üçü de karşılandı. Founder kaydı okudu ve üç sorunun her birine gerekçeli hüküm verdi; hükümler bu Adımın onay kaydına şerhli onay olarak işlendi. Verilen hükme göre kayıt yeniden biçimlendirilmedi ve olduğu gibi mühürlendi, çünkü ayrıntı ölçütü ileriye dönük ilan edilmiştir. Kaydın kendisi nitelik rafında dört Çıkarım ile yaşamaktadır ve bunların üçü karar değiştirmiştir: yönerge ikizi nöbetinin kör noktası bulunup kapatılmış, Fikir yüzeyinin bu depoda sınanamaz olduğu gösterilmiş ve elli bir uyarının gerçek kaynağı motor kaynağındaki bayat yorum atıfları olarak saptanmıştır.",
+        ne: "🌙 Gece turu kaydının Founder incelemesi — 8 Ağustos gece turunun sonuçları önce oturuma özel geçici bir markdown dosyasına yazılmıştı ve o alan oturumla birlikte silinir; Founder raporların .sar biçiminde ve ilanlı rafta yaşamasına hükmetti, kayıt nitelik rafına yazıldı fakat mühürlenmeden incelemeye bırakıldı" ) {
+        görev: "Kayıt nitelik rafında `gece_turu_2026_08_08.sar` dosyasında yaşar ve dört Çıkarım taşır: turun bütünü, yönerge ikizi nöbetinin kör noktası, Fikir yüzeyinin bu depoda sınanamaz oluşu ve denetimdeki uyarı artışının gerçek kaynağı. Founder kaydı okur ve üç soruyu cevaplar. Birincisi kapsamdır: tur kayıtları bundan sonra hangi ayrıntı düzeyinde tutulacak, çünkü fazla ayrıntı okunmaz ve az ayrıntı hafızayı taşımaz. İkincisi evdir: bu kayıtların rafı nitelik mi olacak yoksa turlara ayrı bir raf mı açılacak. Üçüncüsü ömürdür: kayıt kalıcı mı kalacak yoksa bir sonraki turda özetlenip arşive mi inecek."
+        kabul: [
+          "Founder kaydı okumuş ve üç sorunun her birine hüküm vermiştir",
+          "Hükümler şerhli onay olarak bu Adımın onay kaydına işlenmiştir",
+          "Verilen hükme göre kayıt ya olduğu gibi mühürlenmiş ya da yeniden biçimlendirilmiştir"
+        ]
+        sınır: "Kayıt Founder incelemesinden önce mühürlenmez. Kontrolcü kendi turunun kaydını kendisi onaylayamaz, çünkü bu üretici ile denetçinin aynı kişi olması demektir."
+      }
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "durum hizalaması" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Planın beyan ettiği durum ile işin fiilî durumu ayrışmış olabilir; ayrışma ölçüldü ve karara bağlanmayı bekliyor
+
+      Adım( kod: KYN-HIZ-A01, durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder, referans: [ YAS-3.4 ],
+        onay: "şerhle onaylandı — 2026-08-10 · Founder'ın gece yetki devriyle kontrolcü hükmü: inceleme kontrolcü tarafından yürütülür ve üç-hüküm kuralı korunur. ŞERHLER: birinci küme olan onay hükmü taşıyıp beklemede duran otuz bir Adım, Adımın kendi koşusunun da söylediği gibi tek başına çelişki değildir ve toplu gözden geçirmeyle yetinilir; asıl inceleme ikinci ve üçüncü kümeden başlar. 'Durum ilerletme işin sahibinin hükmüyle olur' sınırı yetki devrine rağmen korunur: koşu kaydı taşıyıp beklemede duran bir Adımın ilerletilmesi, koşunun bir ölçüm turu değil işin kendisi olduğu kanıtlanmadan yapılmaz.",
+        ne: "⚖️ Beyan edilen durum ile fiilî durumun hizalanması — Founder 2026-08-08 tarihinde geçmişte tamamlanmış olduğu hâlde hâlâ beklemede görünen ya da geliştirmesi bitmiş olduğu hâlde hâlâ geliştirmede duran Adımların tespit edilmesini ve planın gerçekle hizalanmasını istedi; tarama koşuldu ve üç ayrışma kümesi ölçüldü" ) {
+        görev: "Tarama iki varlıktaki üç yüz altmış iki Adımı kapsadı ve üç küme çıkardı. Birinci kümede onay hükmü yazılmış olduğu hâlde beklemede duran otuz bir Adım vardır; bu küme tek başına çelişki sayılmaz, çünkü bir işin onaylanması onun başladığı anlamına gelmez, fakat kümenin tamamı yine de gözden geçirilmelidir. İkinci kümede koşu kaydı taşıdığı hâlde beklemede duran on beş Adım vardır ve asıl şüphe buradadır, çünkü koşu kaydı işin fiilen koşulduğunu söyler. Üçüncü kümede koşu kaydı taşıdığı hâlde geliştirmede duran beş Adım vardır ve bunların çoğu Founder'ın gözle doğrulamasını bekleyen vitrin işleridir. Her Adım Founder ile tek tek okunur ve üç hükümden biri verilir: durum ilerletilir, koşu kaydının bir ölçüm turu olduğu ve işin gerçekten başlamadığı yazılır, ya da Adım gerekçesiyle düşürülür. Hükümler şerhli onay olarak kaydedilir. İnceleme bittikten sonra motorun bu ayrışmayı kendiliğinden görmesi için bir bekçi tasarlanır."
+        kabul: [
+          "Üç kümedeki elli bir Adımın her biri Founder ile tek tek okunmuş ve her biri için üç hükümden biri verilmiştir",
+          "Verilen hükümler şerhli onay olarak kayda geçmiştir ve hiçbir Adım hükümsüz kalmamıştır",
+          "Ayrışmayı kendiliğinden gören bir bekçinin tasarımı yazılmıştır ya da neden yazılamayacağı gerekçesiyle açıklanmıştır"
+        ]
+        sınır: "Kontrolcü kendi başına durum ilerletmez. Bir işin bitip bitmediğine dair hüküm işin sahibinindir; makine yalnız ayrışmayı gösterir, çünkü koşu kaydı bazen bir ölçüm turunun kaydıdır ve o tur işin kendisini yapmamış olabilir."
+        koşu: "2026-08-08 · ÖLÇÜM. Tarama iki varlıktaki bütün .sar gövdelerini kapsadı ve örnek dünyasını dışladı. Toplam üç yüz altmış iki Adım okundu. Onay hükmü taşıdığı hâlde beklemede duran otuz bir Adım bulundu ve bunlar kaynak disiplini, performans turu, yayın içeriği, bakım olgunluğu, orkestrasyon zekâsı, sınav, vitrin, eklenti ve kapalı ürün açılış planlarına dağılmıştır. Koşu kaydı taşıdığı hâlde beklemede duran on beş Adım bulundu; bunların beşi Sol ile İDA test planındadır ve üçü eklenti yayın Katmanındadır. Koşu kaydı taşıdığı hâlde geliştirmede duran beş Adım bulundu; biri bu rayın kendi Adımıdır ve dördü vitrin gövdesindedir."
+      }
+    }
+
+
   }
 }

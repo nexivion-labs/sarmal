@@ -78,10 +78,8 @@ Blok( kod: BLK-SOL-IDA-TEST, ad: "Sol Gerçek-Dünya + Otonomi Saha Sınavı" ) 
         görev:   "Sol plan dahilinde kendi başına ilerler; Claude drift/eksik geribildirimlerini fabrikada işler",
         kabul:   [ "Sol'ün otonom-koşu süresi ölçüldü", "çıkan Sarmal eksikleri fabrikada düzeltildi", "gözlem metrikleri kaydedildi" ],
         bağımlı: [ ADM-SIT-PLAN ] )
-    }
-
-    AltKatman( kod: ALT-SIT-SUREC-TURNUSOL, departman: sınama, ad: "turnusol ölçüm deneyi",
-      ne: "🧪 Saha sınavının sayısal kardeşi: aynı niyet iki kolda yazdırılır ve Sarmal konisinin faydası ölçüyle karşılaştırılır" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "turnusol ölçüm deneyi" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: 🧪 Saha sınavının sayısal kardeşi: aynı niyet iki kolda yazdırılır ve Sarmal konisinin faydası ölçüyle karşılaştırılır
 
       Adım( kod: ADM-SIT-TURNUSOL, ad: "Turnusol A/B deneyi — niyet→kod çeviri ölçümü", durum: beklemede, öncelik: p3,
         onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın gerekçesi ölçüm sırasıdır: deney taban ölçümü olmadan koşulamaz ve taban ölçümü saha sınavı zincirinden gelir, dolayısıyla deney yapısal olarak kilitlidir. Kapının kapatılması aynı zamanda bir kayıt boşluğunu da kapatır, çünkü bu Adım kampanya kapanışının bilinçli beklemede envanterinde hiç sayılmamış ve bugüne kadar hiç onay damgası almamıştı; artık ertelenme kararı gerekçesiyle kayıtlıdır.",
@@ -109,5 +107,6 @@ Blok( kod: BLK-SOL-IDA-TEST, ad: "Sol Gerçek-Dünya + Otonomi Saha Sınavı" ) 
         ],
         sınır: "Deney taban ölçümü olmadan koşulamaz: gerçek örnek projede otonom koşu (ADM-SIT-OTONOM) kapanmadan bu Adım seçilemez. Deney yalnız ölçer; ölçüm sonucundan doğacak kanon maddesi, metre ya da güven puanı bu Adımın işi değildir." )
     }
+
   }
 }

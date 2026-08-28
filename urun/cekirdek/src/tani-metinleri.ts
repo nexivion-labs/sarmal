@@ -79,6 +79,14 @@ const b = (p: TaniBaglami, ad: string): boolean => {
 };
 
 export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
+  "altkatman-tekilliği-ihlali": {
+    mesaj: (p) => (a(p, "kusur") === "ad"
+      ? `Katman "${a(p, "katman")}" altında "${a(p, "deger")}" adı ikinci kez kullanılmış; ilk taşıyıcı "${a(p, "onceki")}" düğümüdür. Aynı adı taşıyan iki kademe yol haritasında art arda iki özdeş satır olarak görünür ve bir Adıma giden yol adlarıyla tarif edilemez.`
+      : `Katman "${a(p, "katman")}" altında "${a(p, "deger")}" departmanı ikinci kez açılmış; ilk kademe "${a(p, "onceki")}" düğümüdür. AltKatman bir konu başlığı değil sorumluluk kademesidir ve aynı departman ikiye bölündüğünde kabulün sahibi okunamaz hâle gelir (MIM-1.7).`),
+    oneri: (p) => (a(p, "kusur") === "ad"
+      ? `Bu kademeye kendi işini anlatan ayrı bir ad yaz, ya da iki kademe gerçekten aynı işi taşıyorsa birleştir. Örnek: \`AltKatman( kod: ${a(p, "onceki")}, ... )\` düğümünün altına taşı.`
+      : `Bu kademenin Adımlarını var olan kademenin altına taşı ve kademeyi kaldır. Örnek: \`AltKatman( kod: ${a(p, "onceki")}, departman: ${a(p, "deger")} ) { ... buradaki Adımlar ... }\`. Konu ayrımı Adım kademesinde yapılır; ikinci bir departman kademesi hiçbir şey kazandırmaz.`),
+  },
   // ── Mevsim ritüeli (ORK-8) ────────────────────────────────────────────────
   "mevsim-vadesi-geçti": {
     mesaj: (p) => `"${a(p, "kimlik")}" mevsiminin hedef tarihi ${a(p, "vade")} günü geçmiştir, buna karşılık sardığı ${a(p, "gövde")} gövdenin altında ${a(p, "açık")} Adım hâlâ açıktır. Mevsim beyanı ile grafın söylediği ayrışmıştır: kapanmış görünen bir dönem açık iş taşıyamaz.`,
@@ -403,6 +411,14 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
  * kaynak dili Türkçe kaldığı için örnek kodu çevirmek geçersiz kaynak üretirdi.
  */
 export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
+  "altkatman-tekilliği-ihlali": {
+    mesaj: (p) => (a(p, "kusur") === "ad"
+      ? `Under Katman "${a(p, "katman")}" the name "${a(p, "deger")}" is used a second time; the first holder is "${a(p, "onceki")}". Two levels sharing a name appear as two identical rows in the roadmap, and the path to a Adım can no longer be described by names.`
+      : `Under Katman "${a(p, "katman")}" the department "${a(p, "deger")}" is opened a second time; the first level is "${a(p, "onceki")}". A AltKatman is a responsibility level, not a topic heading, and splitting one department in two makes the owner of acceptance unreadable (MIM-1.7).`),
+    oneri: (p) => (a(p, "kusur") === "ad"
+      ? `Give this level its own name describing its work, or merge the two if they truly carry the same work. Örnek: move it under \`AltKatman( kod: ${a(p, "onceki")}, ... )\`.`
+      : `Move this level's Adım nodes under the existing level and remove it. Örnek: \`AltKatman( kod: ${a(p, "onceki")}, departman: ${a(p, "deger")} ) { ... the Adım nodes ... }\`. Topic separation belongs to the Adım level; a second department level adds nothing.`),
+  },
   // ── Season ritual (ORK-8) ─────────────────────────────────────────────────
   "mevsim-vadesi-geçti": {
     mesaj: (p) => `Season "${a(p, "kimlik")}" passed its target date on ${a(p, "vade")}, yet ${a(p, "açık")} Steps remain open under the ${a(p, "gövde")} bodies it wraps. The season's own claim and the graph disagree: a period that looks closed cannot carry open work.`,

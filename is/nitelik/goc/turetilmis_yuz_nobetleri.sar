@@ -28,15 +28,15 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `8d87edf0d10d5c126786302af84c570711a10ed08145350b68e0aa5dbb1c84a3` |
+| `yasa/kanon demeti (A03 formülü)` | `d159fd768354290feac642ee659c1078d52f5077992c6726392076ec532075c8` |
 | `oz/siniflama/kayit.json` | `59f750dde605b8412007959ac7685949f8fd9c5f0e7b954e750c01160e944212` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `ee7053b2e6c4a6de2dff104439c050f5bf99f084ef63767e332aa157d67daebf` |
+| `urun/cekirdek/src/tani-sicili.ts` | `a01ae95098ba293e5cecafde0fded7ec4f623808873c8db30bd00b7802be549f` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `b0f9456696c19e04c729584c96e54fcef8bb4d8d5b360980ab81420607250827` |
 | `urun/cekirdek/src/dil-baglami.ts` | `c374ef710e6133492ed2ca4b3793125c1927d7eacc92cba101a4959ab0912690` |
 | `urun/eklenti/package.nls.tr.json` | `deb6acd817424ddd885e1e8c679c0c635ff9a5c480baabfcfc9d7eb5f92859b2` |
 | `urun/eklenti/package.nls.json` | `b659db2b409f1b506b75cabe493c3210395cc859c071cf2702f8fd78052319d0` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `9ac5695512748563eb8e7feaf5b2e40436ec8a2a43a05d5630cad678b6abc80c` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `76770ed957ae51a55083da3588c85f29830060fb1ae2d030969da6011cbfe60c` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.

@@ -108,6 +108,19 @@ Kural adımAtomikliğiVeKabulü( kod: MIM-1.6,
        dayanak: MIM-1 )
 
 -->|
+### MIM-1.7 · Katman İçinde AltKatman Tekilliği [HATA]
+**Hüküm:** Bir Katman altında her çekirdek departman en fazla bir AltKatmanla temsil edilir ve iki AltKatman aynı adı taşıyamaz; o departmanın bütün işleri kendi AltKatmanının altında Adım olarak yaşar, ikinci bir departman kademesi açılarak bölünemez; dayanak: MIM-1; ilgili: [MIM, TIP, YAS].
+**Gerekçe:** AltKatman bir konu başlığı değil bir sorumluluk kademesidir ve MIM-1.5 onu tam olarak bir departmana bağlar; aynı departman ikinci kez açıldığında o sorumluluğun sahibi ikiye bölünür, kabul kimin olduğu okunamaz hâle gelir ve aynı işin iki kademede yürüdüğü bir plan doğar. Konu ayrımı Adım kademesinde zaten yapılabildiği için ikinci kademe hiçbir şey kazandırmaz, yalnız ağacı derinleştirir. Aynı adı taşıyan iki AltKatman ise yol haritasında art arda iki özdeş satır olarak görünür ve bir Adıma giden yol adlarıyla tarif edilemez hâle gelir; Founder bu kusuru 2026-08-28 tarihinde canlı panelde ölçmüş ve hükmü vermiştir.
+**Örnek:** `Katman( kod: KAT-MOTOR ) { AltKatman( kod: ALT-KOD, departman: kodlama ) { Adım( kod: ADM-01 ) Adım( kod: ADM-02 ) } }`; iki ayrı konu için ikinci bir `departman: kodlama` AltKatmanı açmak yerine her konu kendi Adımını alır.
+**Zorlama:** Yeni tanı önerisi `altkatman-tekilliği-ihlali` · HATA · “Bu Katman altında aynı departman ya da aynı ad ikinci kez açılmış; işi var olan AltKatmanın altına Adım olarak taşı.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+|<--
+Kural katmanİçindeAltKatmanTekilliği( kod: MIM-1.7,
+       ne: "MIM-1.7 · Katman İçinde AltKatman Tekilliği [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-1,
+       tanı: [ altkatman-tekilliği-ihlali ] )
+
+-->|
 ### MIM-2 · Meyve ve Üretim Yeri [HATA]
 **Hüküm:** Her Meyve tam olarak bir Adımın `üretir` bağıyla doğurduğu izlenebilir sonucu temsil eder; ürün grafı Meyvenin üreten Adımını, türünü ve varsa proje içi dosya yerini birlikte gösterir, üreticisi belirsiz Meyve kabul edilmez; dayanak: MIM-0; ilgili: [MIM, TIP, YUZ, ORK].
 **Gerekçe:** Sonuç ile onu doğuran iş arasındaki bağ koparsa değişikliğin sahibi, kabul kanıtı ve etki zinciri bulunamaz; disk ürünü planın önüne geçer.

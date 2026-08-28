@@ -75,9 +75,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Etmen tipine rol alanı eklemek bu Adımın dışındadır, çünkü şema genişlemesidir ve kendi kapısını ayrıca bekler; bu Adım yalnız iddiayı gerçeğe daraltır."
         koşu:  "2026-08-21 · ÜRETİCİ TURU: Sınıflama kaydındaki Etmen yapısal kural iddiası daraltıldı. Yetki kademesinin yalnız denetçiye verilmesi şartı onay damgasının kapsamından çıkarıldı ve iddia artık yalnız gerçekten zorlanan yarısını, yani beşinci yetki kademesi ile paylaşık belleğin birlikte yazılamamasını anlatır; ölçülmeyen şartın çağrı anındaki denetimde yaşadığı aynı satırda açıkça beyan edildi ve böylece birinci kabul maddesi karşılandı. Beş kullanımsız tipin muafiyeti sınıflama kaydının tipMuafiyetleri bölümüne gerekçesiyle indi: KimlikKökü ile KimlikSağlayıcısı, kardeş tip KimlikPolitikası emsaliyle dış proje arkayüz kovasına yazıldı; Kapı, ilk canlı kullanıcısının ZKA-A02 Adımının altı kapılı karnesi olduğu ve o Adım koştuğunda muafiyetin kendiliğinden kalkacağı beyanıyla OS vadeli kovasına yazıldı; GenelKural için canlı kullanımın 2026-07-18 tarihinde kazanılmışken genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kaybolduğu, tipin motor vatandaşı olduğu ve kanonun yürürlükte kaldığı düz yazıyla beyan edildi; Yasa için canlı kanonun kanon rafında madde tipinde yaşadığı ve Yasa düğümü olarak beyan edilmediği düz yazıyla beyan edildi, çünkü üç kovadan hiçbiri bu iki duruma dürüstçe oturmaz, motor yalnız anahtarın varlığına bakar ve ÖzelKural emsali düz yazı gerekçeyi meşru kılar. Kullanımsız tip gözlemi beşten sıfıra indi ve ikinci kabul maddesi böylece karşılandı. Dört raf aynı turda tazelendi: taksonomi yüzü taksonomi-uret komutuyla, belge yüzleri belge-yuzleri-uret komutuyla on altı yüz sıfır fark vererek, kanon tutarlılık yüzü kanon-tutarlilik-uret komutuyla, on dört öğretim kartı ogretim-uret üreteciyle yeniden üretildi; mühür defterindeki sınıflama kaydı satırı yeni özete çekildi ve tarihli tazeleme notu yazıldı, mühürlerin tuttuğunu çekirdek süitinin türetilmiş yüz nöbetleri kanıtlar. Eklentinin gömülü ikizi elle yazılmadı; renk-uret üretecinin uret işlevi, eklentinin öteki çıktı yüzeyleri karalama dizinine yönlendirilerek dar kapsamla koşuldu ve depoya yalnız gomulu-kanon.ts indi, dosya sürüm takibi dışında bir yapı ürünü olduğu için işlemeye girmez. Üçüncü kabul maddesi böylece karşılandı. ÖLÇÜMLER: proje denetimi sıfır hata ile iki uyarı verdi; iki uyarı bu Adımdan önce de var olan ve eklenti araç dosyalarının plan beyanını bekleyen yetim-meyve bulgularıdır; çekirdek süiti 1039/1039 yeşildir. KALAN: eklenti süitinin koşulması, paralel oturum o süiti kullandığı için ana oturuma devredildi; iki yetim-meyve uyarısının kapanması eklenti kulvarının işidir. Dördüncü kabul maddesi bu iki kanıt kapanınca tamamlanacağı için Adım dürüstçe geliştirmede bırakıldı. 2026-08-22 · KAPANIŞ (kontrolcü ölçümü): Üreticinin devrettiği iki kanıt bağımsız olarak ölçüldü ve kapandı. Eklenti süiti beş yüz yirmi sınamanın tamamıyla, çekirdek süiti bin kırk bir sınamanın tamamıyla yeşildir ve tip denetimi temizdir. Devredilen iki yetim meyve uyarısı, eklentinin araç rafındaki kurulum betiği ile simge üretecinin meyve haritasına beyan edilmesiyle kapatıldı; bu iki dosya diskte plan beyanı olmadan yaşadığı için denetim onları haklı olarak yetim sayıyordu. Kapanış ölçümünde açık aracın denetimi sıfır hata ve sıfır uyarı verir, dolayısıyla dördüncü kabul maddesi de karşılanmıştır ve Adım tamamlandı durumuna geçirilmiştir."
       }
-    }
-
-    AltKatman( kod: BKM-OLG-K2, departman: kodlama, ad: "drift kapıları" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "drift kapıları" kademesinden taşındı.
       Adım( kod: BKM-OLG-A09, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [], referans: [ YAS-3.4 ],
         ne:    "🕳️ Durumsuz-adım kapısı — durum: taşımayan Adım motor-kör kalıyordu; motor artık uyarıyla yakalar (EKL-F6 dersi · YAS-3.4 ruhu: motor göremediğini yakalamalı)" ) {
         görev: "denetci.ts'e durumsizAdimTanilari bekçisi: durum: alanı olmayan Adım UYARI üretir (şema varsayılanı *beklemede ama açık-adım tarayıcısı örtük varsayılanı uygulamaz — iş sessizce kaybolur). Kanıt vakası: EKL-F6-A01/A02 (Marketplace + linguist yayını) haftalarca durumsuz+görünmezdi, Founder gözle yakaladı (2026-07-21). OGR-5 örnek-dünyası (INDEKS_DISI) muaf; panele de yayılır (KTEK-PANEL emsali)"
@@ -136,10 +134,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Founder onayı olmadan durum.sar'a GEÇİŞ YOK — bu Adım onay-kapılı; şablon tasarımı serbest"
         koşu:  "2026-07-18 · KAPANIŞ: durum kaydı zaten oturumlar içinde handoff yapısına evrilmişti — Adımın işi bu yaşayan yapıyı KANONLAŞTIRMAK oldu. ① Şablon Founder onayıyla kanonda: DurumKaydı şemasına opsiyonel oturum · kilitler · açıkİşler alanları ve bölüm tanımları girdi (neredeyiz tek KOD-cümle · sıradaki öncelik zinciri · kilitler oturumlar-arası değişmez hükümler · açıkİşler kapı-durumu dahil · özet oturum anlatısı) ② boyut sınırı Founder şerhi gereği 4000→7000 yükseldi (dogrulayici DURUM_BOYUT_SINIRI + sabit kayıt boyutu kuralının canlı yasa metni + durum_devir başlığı + sınır testi: 6500 sığar, 7200 uyarılır) ③ canlı kanıt: oturum 55→56 devri tam bu şablonla KAYIPSIZ gerçekleşti (durum_devir.sar — f9701f5/7088fb2 devir commit'leri); git geçmişi = arşiv ilkesi korunuyor. Çekirdek 733/733 · eklenti 141/141 · iki denetim TAM-yeşil. Kabul 3/3 karşılanmıştır"
       }
-    }
-
-    AltKatman( kod: BKM-OLG-K4, departman: kodlama, ad: "zorlama kapıları",
-      ne: "enforcement-denetimi raporunun 4 makine-borcu — kâğıttaki kural motora iner (Founder seçimi 2026-07-11: dördü de)" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "zorlama kapıları" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: enforcement-denetimi raporunun 4 makine-borcu — kâğıttaki kural motora iner (Founder seçimi 2026-07-11: dördü de)
       Adım( kod: BKM-KAPI-A01, durum: tamamlandı, üretir: [ KOD-DOGRULAYICI ], bağımlı: [], referans: [ ],
         ne:    "📏 Durum-boyutu kapısı — DurumKaydı ≤4000 karakter kuralı MOTORA iner; durum.sar'ın fiili ihlali arşiv disipliniyle birlikte kapanır (kendi kuralını çiğneyen tek somut vaka)" ) {
         görev: "İki parça: (1) dogrulayici.ts'e DurumKaydı boyut denetimi — özet+parametreler toplamı 4000 karakteri aşarsa uyarı (YAS-4.2 kademe deseni: v1 uyarı, repo temizlenince hata terfisi; sade dil OGR-2.1). (2) durum.sar fiili ihlali kapat: '── önceki ──' altında biriken eski oturum özetleri arsiv/durum/'a tarihli dosya olarak taşınır (“üzerine-yaz” ruhu; git geçmişi zaten korur), güncel kayıt ≤4000'e iner"
@@ -180,10 +176,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "yalnız YAPISAL gömülme tespiti — içerik-benzerliği (iki mekanizmanın aynı işi yapması) tespit edilmez (o insan gözden geçirmesidir)"
       }
-    }
-
-    AltKatman( kod: ALT-BKM-OLG-SABLON-TOPARLAMA, departman: kodlama, ad: "şablon kütüphanesi toparlama",
-      ne: "🍃 Dağınık şablonların (mcp.ts gömülü string + ornek/) tek 'sablon/' kütüphanesinde toplanması" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "şablon kütüphanesi toparlama" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: 🍃 Dağınık şablonların (mcp.ts gömülü string + ornek/) tek 'sablon/' kütüphanesinde toplanması
       Adım( kod: BKM-OLG-A06, durum: tamamlandı, bağımlı: [], üretir: KOD-SABLON,
         ne:    "📐 Şablon kütüphanesi toparlama — dağınık şablonlar (mcp.ts gömülü string + ornek/) tek 'sablon/' kütüphanesine toplanır; başla hem CLI hem MCP oradan okur (açık-iş: SABLON-KUTUPHANE-TOPARLAMA · Founder 2026-07-10)" ) {
         görev: "Founder bulgusu: şablonlar dağınık (ekran/arkayüz/sözleşme bir arada değil). Çözüm: sablon/*.sar kanonik kütüphane (proje·blok·adım·sözleşme·arkayüz·ekran·etmen·mekanizma — eksik olan ARKAYÜZ + SÖZLEŞME dahil); cekirdek/src/sablon.ts tek kaynaktan okur (readFileSync + SABLON_KOK); mcp.ts gömülü SABLONLAR silinir, başla aracı sablon.ts'i çağırır; CLI `sarmal başla <tür>` eklenir (aynı kaynak, YUZ-1.2); sablon/ denetle YOKSAY'a + panel dışlamasına girer (yer-tutuculu şablon kapıyı bozmasın); OKU.md indeksi + ornek/OKU.md çapraz-referans"
@@ -194,10 +188,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "yalnız şablon toparlama — ornek/ örnekleri yeniden düzenlenmez (OKU.md küratör haritası korunur); dil sadeleştirme ayrı tur"
       }
-    }
-
-    AltKatman( kod: BKM-OLG-K5, departman: kodlama, ad: "dil ve eklenti olgunluğu",
-      ne: "hatırlatıcı gözden-geçirmesinden raya inen kalemler (Founder 2026-07-11: uygulanmamışlar planlamaya)" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "dil ve eklenti olgunluğu" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: hatırlatıcı gözden-geçirmesinden raya inen kalemler (Founder 2026-07-11: uygulanmamışlar planlamaya)
       Adım( kod: BKM-DIL-A01, durum: tamamlandı, üretir: [ KOD-YASA-SOZDIZIMI ], bağımlı: [],
         ne:    "🗣️ Dil analizi kalanları — KAPANIŞ 2026-07-12 (oturum 34, Founder'la canlı): ① çağır↔bağımlı↔kullanir ayrımı DIL-1.4 sayfasına örnekli yazıldı (kullanir=kök beyan-özelliği, KENAR DEĞİL — motor çözmez; bağ=bağımlı/çağır; tek gerçek kullanım sarmal_anadizin:97 envanterle doğrulandı) ② --> çoklu-kenar genişlemesi FOUNDER KARARIYLA GEREKÇELİ REDDEDİLDİ (DIL-1.4 karar notu: ok tek anlam taşır — ajan akıl-yükü sıfır; Founder merceği: 'özellik güzel ama ajan akıl edip kullanabilecek mi' → tek-anlam bu kaygının cevabı) ③ madde 6/7 GEREKSİZ-kapanış (dosya bilerek-hatalı ders vitrini + Proje→Tema sarması kanonda ZATEN izinli) · madde 8 kayit.md'ye kanonlandı (davranış: kardeş-İLAN + parametre-REFERANS deseni). HTR-DIL-ANALIZ pini yaşam-döngüsü gereği silindi (tarihçe git'te)" ) {
         görev: "Üç iş: (1) çağır (kod-tabanlı içe-aktarma, DIL-1.4) ile kullanir: (teknoloji beyanı) ayrımı yasada netleşir + gerekiyorsa denetim; (2) --> şekeri bugün yalnız besler üretir — çoklu kenar tipine (bağımlı vb.) genişletilir mi KARAR + uygulama; (3) 2026-07-05 analizindeki düşük-öncelikli temizlikler gözden geçirilir (analiz notu hatırlatıcıda)"
@@ -285,10 +277,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "eski-repo referansları (eski ürün deposu) ve git geçmişi DOKUNULMAZ; üretilen dış-dünya kod dosyaları (.py/.ts) DIL-1.2 kapsamı dışı (artefakt ad sınırı korunur)"
       }
-    }
-
-    AltKatman( kod: ALT-BKM-OLG-CLI, departman: kodlama, ad: "komut satırı yüzü",
-      ne: "Soğuk temas sınavının 2026-08-23 tarihinde ölçtüğü komut satırı kusurları — ham yığın izi veren komutlar ve kendini yeterince öğretmeyen bir argüman sırası" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "komut satırı yüzü" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Soğuk temas sınavının 2026-08-23 tarihinde ölçtüğü komut satırı kusurları — ham yığın izi veren komutlar ve kendini yeterince öğretmeyen bir argüman sırası
       Adım( kod: BKM-CLI-A01, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ OGR-2 ], üretir: [ KOD-CLI-KAPISI, KOD-CLI-KAPISI-NOBET ],
         ne: "2026-08-23 tarihinde bir soğuk temas sınavı koşulmuştur. Sarmal'ı hiç bilmeyen bir ajan boş bir klasörde yalnızca aracın kendi yüzeyinden öğrenerek bir plan kurmuş ve yirmi komutta sıfır hataya inmiştir, fakat yol boyunca iki kusur ölçülmüştür. Birinci kusur şudur: beş komut ham Node yığın iziyle çökmektedir ve bunlar sarmal --help, sarmal -h, sarmal help, sarmal siniflama ve sarmal durum-guncelle komutlarıdır; kullanıcıya node:fs:435 satırı ve beş satırlık bir yığın izi basılmaktadır. Kök sebep _Sarmal/cekirdek/src/sarmal.ts dosyasının 777. satırındadır: komut dağıtıcısı tanımadığı her dizeyi dosya adı saymakta ve doğrudan readFileSync çağırmaktadır, bilinmeyen komut dalı ile yardım dalı ise hiç bulunmamaktadır. Aracı kuran herkesin yazacağı ilk komut sarmal --help olduğu için bu kusur yayından önce kapanmalıdır. İkinci kusur şudur: ajan sef komutunun argüman sırasını üç denemede bulamamış ve sonunda aracın kaynak kodunu tarayarak öğrenmiştir; yani araç kendini komut satırında yeterince öğretmemektedir. Doğru davranışın örneği aracın kendi içinde zaten vardır: sarmal sef argümansız çağrıldığında çökmemekte ve ✖ sef için Adım KOD gerekli: sarmal sef <ADIM-KOD> [dizin] demektedir; kilitle alt komutu da aynı deseni taşımaktadır. Ayrıca ölçülmüştür ki CLI otuz yedi alt komut taşımaktadır, buna karşılık siniflama, durum-guncelle, kavram, prizma, bul, bicimle, iskelet ve denetle-proje yalnızca MCP aracıdır ve komut satırı karşılıkları yoktur; kullanıcı bunları yazdığında ne olacağı bu Adımda kararlaştırılmalıdır." ) {
         görev: "Komut dağıtıcısına iki eksik dal eklenir: bir yardım dalı (--help, -h, help dizeleri sarmal.ts:777'deki dosya-okuma denemesinden önce yakalanır ve kullanım özetini basar) ve bir bilinmeyen-komut dalı (tanınmayan alt komut dizeleri dosya adı sayılıp readFileSync'e düşürülmeden önce yakalanır). Her iki dal da sef ve kilitle alt komutlarının zaten taşıdığı deseni izler: kısa, sade Türkçe bir ✖ mesajı ve doğru kullanım örneği; ham yığın izi hiçbir koşulda kullanıcıya basılmaz. Sekiz yalnızca-MCP komutunun (siniflama, durum-guncelle, kavram, prizma, bul, bicimle, iskelet, denetle-proje) CLI'da yazılması durumunda verilecek davranış kararlaştırılır ve uygulanır; seçenekler arasında bu komutların MCP'ye yönlendiren açıklayıcı bir mesajla karşılanması ya da CLI karşılıklarının eklenmesi değerlendirilir, seçilen yol gerekçesiyle koşu notuna yazılır. Son olarak sef'in argüman sırasının komut satırında kendini daha iyi öğretmesi için kullanım mesajı ve --help çıktısı gözden geçirilir."
@@ -301,6 +291,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Yalnızca komut dağıtıcısının yardım ve bilinmeyen-komut dallarının eklenmesi ile sekiz yalnızca-MCP komutunun CLI davranışının kararlaştırılması bu Adımın kapsamındadır; sef'in argüman sırasının kendisinin değiştirilmesi, yeni CLI alt komutlarının MCP dışı işlevle üretilmesi ve genel argüman ayrıştırma altyapısının yeniden yazılması bu Adımın dışındadır."
       }
     }
+
+
+
+
+
   }
 
   // ══ KATMAN · SINAV-2 BULGULARI: "yeşil ama kör" delikleri kapanır ═══════════════
@@ -385,10 +380,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "eşik katmanının RUNTIME koşul motoru (DIL-3 argümanlı uygulama) bu Adım'ın işi DEĞİL — yalnız sessizlik/dürüstlük onarımı"
       }
-    }
-
-    AltKatman( kod: BKM-BUG-K2, departman: sınama, ad: "ikinci yazım körlükleri",
-      ne: "bekçi tek yazım-biçimini görüyor: parametre↔özellik · skaler↔liste · tırnaklı↔çıplak · harf-farkı" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "ikinci yazım körlükleri" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: bekçi tek yazım-biçimini görüyor: parametre↔özellik · skaler↔liste · tırnaklı↔çıplak · harf-farkı
       Adım( kod: BKM-BUG-A04, durum: tamamlandı, üretir: [ KOD-TEMA ], bağımlı: [],
         ne:    "🎨 tema parametre-körlüğü (B3 · CANLI KANIT) — KAPANIŞ 2026-07-11: renkler parametre∪özellik aranır + tema gezintisi parametre-değerlerine iner; kanit_b3 kalıcı fikstür (geçersiz hex artık hata, kontrast parametreden de hesaplanır) — Tema( renkler: {…} ) paranteziçi yazımda #ZZZZZZ bile 'Drift yok' geçiyor: temaBir yalnız özelliklere bakıyor (tema.ts:29), gez parametre-değeri widget'larına inmiyor (tema.ts:22)" ) {
         görev: "tema.ts iki onarım: (1) renkler alanı parametre∪özellik aranır (dogrulayici alanDeger deseni — aynı dersin ayna hali); (2) temaDenetle gez'i parametre değerlerindeki gömülü widget'ları da gezer (liste/harita içi dahil — dogrulayici degerdeGez deseni). Repro fikstürü: scratchpad kanit_b3.sar içeriği kalıcı teste iner"
@@ -429,10 +422,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         ]
         sınır: "dosya-adı BİÇİM denetimi (DIL-1.2 snake_case tam kuralı) beklemede kalmaya devam eder — bu Adım yalnız bastırma-deliğini kapatır"
       }
-    }
-
-    AltKatman( kod: BKM-BUG-K3, departman: sınama, ad: "dayanıklılık ve demet",
-      ne: "kabuk dayanıklılığı + tek başına Adım açmayacak küçük onarımların demeti" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "dayanıklılık ve demet" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: kabuk dayanıklılığı + tek başına Adım açmayacak küçük onarımların demeti
       Adım( kod: BKM-BUG-A08, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
         ne:    "🧯 muafiyet dayanıklılığı (C1+C2) — KAPANIŞ 2026-07-11: kilitle programlariYukle'ye indi (DRY — muaf+bozuk dosya mühürlemeyi kesmez); muaf+bozuk giriş dosyasında denetle çökmek yerine dürüst tanı + çıkış 2; CLI fikstür testli — kilitle bilerek-hatalı pragmasını tanımıyor (sarmal.ts:899 kendi yükleyicisi; muaf+bozuk dosya mühürlemeyi keser) ve giriş dosyası muaf+bozuksa denetle TypeError ile ÇÖKÜYOR (sarmal.ts:693 non-null)" ) {
         görev: "İki onarım: (1) kilitleKomutu programlariYukle'ye iner (DRY — muaf dosyanın sözdizim hatası mühürlemeyi kesmez, EBEDİ envanteri parse-olanlardan kurulur; muaf+parse-olan zaten envantere girer). (2) denetleKomutu: anaEtiket programlar'da yoksa (muaf+bozuk giriş) çökme yerine konumlu hata tanısı ('giriş dosyası bilerek-hatalı ve ayrıştırılamıyor — denetim yapılamaz', çıkış 2)"
@@ -485,6 +476,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "beş kalem KÜÇÜK kalır (A09 demet ilkesi); eklenti kapısına yeni bekçi EKLEME kararları tabloda gerekçeli beyanla ertelenebilir — sessiz eksik kalmaz"
       }
     }
+
+
   }
 
   // ══ KATMAN · FOUNDER: kod-dışı operasyonel kalemler (insan eylemi/kararı) ═══════

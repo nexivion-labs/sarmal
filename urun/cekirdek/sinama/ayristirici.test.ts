@@ -43,7 +43,12 @@ test("Faz › Blok › Katman › AltKatman › Adım ağacı iç içe çözül�
   const onyuz = blok.cocuklar[0];
   assert.equal(onyuz.ad, "Katman");
   const arkayuz = blok.cocuklar[1];
-  assert.equal(arkayuz.cocuklar.length, 2); // arkayüz → iki AltKatman (servisler/veritabani)
+  // MIM-1.7 (Founder hükmü 2026-08-28): arkayüz Katmanı altındaki iki kodlama
+  // kademesi TEK kademede birleşti. Örnek eskiden "servisler" ve "veritabani"
+  // adlarıyla iki AltKatman taşıyordu ve ikisi de kodlama departmanındaydı;
+  // hüküm aynı departmanın Katman içinde bir kez temsil edilmesini şart koşar,
+  // konu ayrımı ise Adım kademesinde yapılır. Adımların hiçbiri kaybolmadı.
+  assert.equal(arkayuz.cocuklar.length, 1); // arkayüz → tek kodlama kademesi
   const ekranlar = onyuz.cocuklar[0];
   assert.equal(ekranlar.cocuklar.length, 2); // ekranlar → iki Adım (giris/kayit)
   const adim = ekranlar.cocuklar[0];

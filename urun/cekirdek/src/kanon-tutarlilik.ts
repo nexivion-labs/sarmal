@@ -93,8 +93,8 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
     });
   }
   const kodlar = new Set(maddeler.map((m) => m.kod));
-  if (dosyalar.length !== 8 || maddeler.length !== 150 || kodlar.size !== 150) {
-    throw new Error(`Resmi kanon 150/150 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
+  if (dosyalar.length !== 8 || maddeler.length !== 151 || kodlar.size !== 151) {
+    throw new Error(`Resmi kanon 151/151 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
   }
   return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`) };
 }
@@ -158,12 +158,14 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // sapmanın yapısal olarak tekrar etmesini engeller: kanon meşru biçimde
   // büyüdüğünde güncellenecek tek bir sayı çifti kalır.
   const beklenenKarar = 37;
-  const beklenenKural = 113;
+  // 2026-08-28: MIM-1.7 AltKatman tekilliği Founder hükmüyle doğdu ve kanon
+  // meşru biçimde büyüdü; kural sayısı yüz on üçten yüz on dörde çıktı.
+  const beklenenKural = 114;
 
   // Sayı çiftleri 2026-08-24 tarihinde bilinçli olarak güncellendi: durum-boyutu
   // tanısı Founder hükmüyle emekliye ayrıldı (canlı sabit 102→101, emekli 14→15,
   // emeklilik borcu 39→38) — sabit karakter sınırı yeni kanonda norm değildir.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 73 || ONCEKI_TANI_KODLARI.length !== 101 ||
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 74 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 15 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 38 ||
       emekliCanli.length !== 0 || borcCanli.length !== 38 || yuz33.length !== 1) {
     throw new Error("Kanon/tanı kümesi değişmezleri beklenen canlı ölçümle uyuşmuyor.");
@@ -182,10 +184,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
 
   const tutarlilik: Array<[string, string, string | number, boolean]> = [
     ["Resmi kaynak dosyası", "8", olcum.muhurler.length, olcum.muhurler.length === 8],
-    ["Kanon maddesi", "150 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 150],
+    ["Kanon maddesi", "151 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 151],
     ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
-    ["Dört parçalı madde", "150/150", `${150 - eksikDortParca.length}/150`, eksikDortParca.length === 0],
-    ["Kanonik örnek", "150/150", `${150 - eksikOrnek.length}/150`, eksikOrnek.length === 0],
+    ["Dört parçalı madde", "151/151", `${151 - eksikDortParca.length}/151`, eksikDortParca.length === 0],
+    ["Kanonik örnek", "151/151", `${151 - eksikOrnek.length}/151`, eksikOrnek.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
@@ -221,7 +223,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     `Resmi sonuç ${olcum.maddeler.length}/${olcum.maddeler.length} maddedir. Tek adres \`yasa/kanon/\`; bu türev hüküm metni kurmaz.`,
     "",
-    "## Kanonik örnekler — 150/150",
+    "## Kanonik örnekler — 151/151",
     "",
     "| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |",
     "|---|---|---|---|",
@@ -277,7 +279,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `      ne: "Resmi yasa/kanon sekizlisinin ${olcum.maddeler.length}/${olcum.maddeler.length} maddesi, ${karar} Karar ve ${kural} Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )`,
     "",
     "Veri( kod: VR-GOC-TANI-MADDE-HARITASI,",
-    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle ve ORK-8 mevsim vadesiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
+    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1.7 AltKatman tekilliğiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
     "",
     "Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,",
     `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır." )`,
@@ -294,7 +296,7 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
-    madde: 150,
+    madde: 151,
     yeni: YENI_TANI_KANONU.length,
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,

@@ -2160,6 +2160,73 @@ export function docDriftTanilari(
 //   çağrısız kaldığı için birlikte kaldırıldı (STR-5 ölü iz). Ölçüm: iki tanı
 //   da canlı bahçede sıfır bulgu üretiyordu.
 
+// ═══ MIM-1.7 · AltKatman tekilliği bekçisi (Katman içinde departman TEKİLDİR) ══
+//
+//   Founder hükmü (2026-08-28): bir Katman altında her çekirdek departman en fazla
+//   bir AltKatmanla temsil edilir ve iki AltKatman aynı adı taşıyamaz. Hükmün
+//   doğuşu ölçülmüştür: Founder yol haritası panelinde bir Adıma giden yolu
+//   adlarıyla okumak istedi ve zincirin iki kademesinin aynı adı taşıdığını,
+//   ayrıca tek bir Katman altında `departman: kodlama` kademesinin altı kez
+//   açıldığını gördü. Tarama dokuz Katmanda yirmi yedi AltKatmanın bu kusuru
+//   taşıdığını gösterdi.
+//
+//   KÖK SEBEP BİR HÜKÜM BOŞLUĞUYDU, bir yazım hatası değil. MIM-1.5 her
+//   AltKatmanın tam olarak bir departmanı temsil ettiğini söylüyordu, fakat aynı
+//   departmanın Katman içinde kaç kez temsil edilebileceğini hiçbir madde
+//   yazmıyordu; kural yazılı olmadığı için plan yazarken her yeni konu için yeni
+//   bir kademe açıldı ve motorun susması da doğaldı, çünkü ihlal edilecek bir
+//   hüküm yoktu. MIM-1.7 o boşluğu kapatır ve bu bekçi onu zorlar.
+//
+//   Düzey HATADIR ve rejimden bağımsızdır. AltKatmanın kendisi esnek rejimde
+//   zorunlu değildir, fakat açılmışsa sorumluluk kademesidir ve ikiye bölünemez;
+//   MIM-1.4 teknoloji tekilliğini aynı düzeyde ve aynı gerekçeyle korur.
+//
+//   Ölçüm KATMAN kapsamındadır: yalnız bir Katmanın DOĞRUDAN çocukları
+//   karşılaştırılır. Torun AltKatmanlar başka bir Katmanın kademeleridir ve
+//   onların tekilliği kendi Katmanları içinde ölçülür; aksi hâlde iç içe yapılar
+//   birbirinin kademesini ihlal sayardı.
+export function altKatmanTekilligiTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  muaflar?: ReadonlySet<string>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const [dosya, program] of programlar) {
+    if (ogretimDunyasi(dosya)) continue;
+    if (muaflar?.has(dosya)) continue;
+    const gez = (node: Dugum): void => {
+      if (node.tur === "widget" && node.ad === "Katman") {
+        const gorulenDepartman = new Map<string, string>();
+        const gorulenAd = new Map<string, string>();
+        for (const c of node.cocuklar) {
+          if (c.tur !== "widget" || c.ad !== "AltKatman") continue;
+          const alan = (ad: string): string | undefined =>
+            [...c.parametreler, ...c.ozellikler].find((x) => x.ad === ad)?.deger.metin;
+          const kimlik = yeniKimlik(c);
+          const dep = alan("departman");
+          const ad = alan("ad");
+          if (dep) {
+            const onceki = gorulenDepartman.get(dep);
+            if (onceki) {
+              out.push({ dosya, tani: yeniTani("altkatman-tekilliği-ihlali",
+                { kimlik, katman: yeniKimlik(node), kusur: "departman", deger: dep, onceki }, c) });
+            } else gorulenDepartman.set(dep, kimlik);
+          }
+          if (ad) {
+            const onceki = gorulenAd.get(ad);
+            if (onceki) {
+              out.push({ dosya, tani: yeniTani("altkatman-tekilliği-ihlali",
+                { kimlik, katman: yeniKimlik(node), kusur: "ad", deger: ad, onceki }, c) });
+            } else gorulenAd.set(ad, kimlik);
+          }
+        }
+      }
+      for (const c of node.cocuklar) gez(c);
+    };
+    for (const d of program.bildirimler) gez(d);
+  }
+  return out;
+}
+
 // ═══ MIM-1.4 · katmansız-teknoloji bekçisi (Katman=TEKNOLOJİ ekseni) ══════════
 //
 //   MIM-1.4 aksiyomu: Katman teknoloji dilimidir — bir Takım/Teknoloji bağı taşımalı.

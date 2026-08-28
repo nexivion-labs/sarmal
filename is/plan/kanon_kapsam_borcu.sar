@@ -86,10 +86,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         ]
         sınır: "Bu Adım tanı düzeylerini kanonla hizalar; kanona yeni bir tanı eklemek ya da var olan bir tanıyı silmek bu Adımın kapsamı dışındadır."
       }
-    }
-
-    AltKatman( kod: KPS-KAPSAM-K3, departman: kodlama, ad: "mimariBağı kenar kanunu",
-      ne: "🧩 `mimariBağı` kenarının kanonda on kez geçtiği hâlde motor kaynağında ve tip sicilinde hiç bulunmamasının çözülmesi" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "mimariBağı kenar kanunu" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: 🧩 `mimariBağı` kenarının kanonda on kez geçtiği hâlde motor kaynağında ve tip sicilinde hiç bulunmamasının çözülmesi
 
       Adım( kod: KPS-KEN-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ ORK-1, ORK-1.1 ], onayBekler: founder,
         ne: "🧩 `mimariBağı` kenarı ORK-1.1 gereğince kanonda on kez geçmektedir ve yalnız Blok'tan Katman'a, Katman'dan AltKatman'a ve AltKatman'dan Adım'a mimari görünürlük kurması gereken bir kenardır. Buna karşılık bu kenar bugün ne motorun kaynak kodunda ne de tip sicilinde bulunmaktadır ve bu yüzden kanonun ilan ettiği bir kural fiilen zorlanmamaktadır." ) {
@@ -101,29 +99,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         ]
         sınır: "Bu Adım hükmü uygulamaz; hüküm Founder kapısıdır. Adım yalnız ölçer, seçenekleri gerekçesiyle sunar ve verilen Founder hükmünü kaydeder."
       }
-    }
-
-    AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
-      ne: "🚪 Terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasının ve hiçbir üreticinin onu çağırmamasının gerçek üretim yoluna bağlanması" ) {
-
-      Adım( kod: KPS-TRF-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YAS-4, YAS-4.2 ],
-        ne: "🚪 Terfi kapısı ölçümü, yani YAS-4'ün terfi ve karne kapısının motordaki karşılığı, bugün yalnız bir sınama dosyasından çağrılmaktadır ve hiçbir üretici yol bu ölçümü koşmamaktadır. Bu durum YAS-4.2'nin istediği çalışan uygulama bağını fiilen boşta bırakır, çünkü yalnız sınamadan çağrılan bir ölçüm gerçek üretim davranışının kanıtı sayılamaz." ) {
-        görev: "Terfi kapısı ölçümünün motor kaynağındaki gerçek konumu gezinme aracıyla bulunur ve onu bugün çağıran tek yolun sınama dosyası olduğu kanıtlanır. Ardından ölçüm, denetim akışının gerçek üretim yoluna, yani `denetle` ve `denetle-proje` komutlarının koştuğu zincire, bağlanır ve bu bağ en az bir üretici çağrı yoluyla doğrulanır. Bağlama bittikten sonra hem çekirdek hem eklenti süiti yeniden koşulur ve ölçümün üretim yolundan da doğru sonucu verdiği kanıtlanır."
-        kabul: [
-          "Terfi kapısı ölçümünün motor kaynağındaki tanımı ve onu bugün çağıran tek sınama yolu gezinme aracıyla kanıtlanmıştır",
-          "Ölçüm en az bir üretici yoldan, yani gerçek denetim akışından, çağrılır hâle gelmiştir ve bu bağ bağımsız ölçümle doğrulanmıştır",
-          "Çekirdek ve eklenti süitleri bağlama sonrasında yeşil kalmıştır ve açık aracın denetimi sıfır hata verir"
-        ]
-        sınır: "Bu Adım yalnız çağrı yolunu üretime bağlar; terfi kapısının kendi eşik mantığı ya da hangi tanının hangi düzeye terfi edeceği bu Adımın kapsamı dışındadır."
-      }
-    }
-
-    // ── 26 Ağustos 2026 taşımasının ölçülmüş borcu: çatı dört projeye ayrılınca
-    //    kapalı iki deponun planları açık deponun kodlarına atıf verir oldu ve
-    //    motor bu atıfları çözemedi. Founder 2026-08-27: kolay olan kopmalar
-    //    oturumda kapatıldı, çapraz atıf borcu plana alındı.
-    AltKatman( kod: KPS-KAPSAM-K7, departman: kodlama, ad: "mevsim ritüeli kapısı",
-      ne: "ORK-8 mevsim ritüelinin motorda karşılığı yoktur; vadesi geçmiş mevsim ile mühürlü mevsimdeki açık iş sessiz kalır" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "mevsim ritüeli kapısı" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: ORK-8 mevsim ritüelinin motorda karşılığı yoktur; vadesi geçmiş mevsim ile mühürlü mevsimdeki açık iş sessiz kalır
 
       Adım( kod: KPS-MVS-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-8, MIM-1.2, YAS-4 ],
         onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: Temmuz mevsiminin vadesi 27 gün önce geçmiştir, altında açık Adım durmaktadır ve motor tek kelime etmemektedir",
@@ -147,14 +124,12 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         sınır: "Bu Adım tarihi dayatmaz ve hiçbir Fazın tarihini değiştirmez; MIM-1.2 hükmü aynen durur. Mevsim metinlerine, mühür cümlelerine ve çağır kenarlarına bu Adımda dokunulmaz; devir kararı Founder'ındır ve ayrı bir işlemede uygulanır."
         dokunulmaz: [ "MIM-1.2 tarih hükmü", "Faz metinleri ve çağır kenarları", "Emekli tanıların tarihsel kaydı" ]
       }
-    }
-
-    AltKatman( kod: KPS-KAPSAM-K8, departman: kodlama, ad: "rejim kapsamı",
-      ne: "Katı rejim hükmü yalnız Proje düğümünün içindeki kademelere ulaşır; ayrı dosyada yaşayan planlar kapsam dışında kalır" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "rejim kapsamı" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Katı rejim hükmü yalnız Proje düğümünün içindeki kademelere ulaşır; ayrı dosyada yaşayan planlar kapsam dışında kalır
 
       Adım( kod: KPS-REJ-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YAS-1.1, MIM-1.1, MIM-3 ],
         onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: katı rejimli bir projede Katman doğrudan Adım taşıdığı hâlde motor hata vermiyor",
-        üretir: [ KOD-DENETCI, KOD-SNM-YENI-KANON ],
+        üretir: [ KOD-DENETCI, KOD-SNM-YENI-KANON, KOD-SNM-ALTKATMAN-TEKILLIGI ],
         ne: "🏛️ Katı rejim hükmünün ayrı dosyadaki planlara ulaştırılması. YAS-1.1 katı rejimde Katman ile Adım arasında bir departman kademesi şart koşar ve ihlali HATA düzeyindedir; motorun bu tanısı bugün canlı bahçede hiç doğmamaktadır. Sebep ölçülmüştür: üretici yalnız `Proje` düğümünün İÇİNDEKİ kademeleri gezer, oysa rejim beyanı anadizinde yaşar ve planlar ayrı dosyalarda üst düzey Blok olarak durur; ikisi arasında hiçbir bağ kurulmadığı için hüküm plan dosyalarına hiç ulaşmaz. Ölçüm şudur: iki katı rejimli projede on beş Katman doğrudan Adım taşımaktadır (açık depoda on, kapalı üründe beş) ve motor bunların hiçbiri için hata üretmez; yalnız aynı olguyu bilgi düzeyinde anlatan tavsiye tanısı konuşur. Yani kanonun hata dediği yerde motor öneri vermektedir." ) {
         görev: [
           "Rejim çözümünü dosya kapsamından proje kapsamına çıkar: bir plan dosyasının hangi Projeye ait olduğu, kimlik indeksinin ve aktif varlık çözümünün kullandığı yolla (anadizin arayışı) bulunur; rejim o Projenin beyanından okunur.",
@@ -172,10 +147,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         sınır: "Bu Adım YAS-1.1 hükmünü değiştirmez ve yeni bir kanon maddesi açmaz; yalnız var olan hükmün kapsamını gerçeğe eşitler. Rejim beyanlarının kendisi bu Adımda değiştirilmez; hangi projenin katı kalacağı Founder kararıdır."
         dokunulmaz: [ "YAS-1.1 hüküm metni", "Projelerin rejim beyanları" ]
       }
-    }
-
-    AltKatman( kod: KPS-KAPSAM-K6, departman: kodlama, ad: "bölüm atıfları",
-      ne: "Kanon maddelerinin ilgili listelerindeki çıplak bölüm adları gezilebilir kimliklere çevrilir" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "bölüm atıfları" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: Kanon maddelerinin ilgili listelerindeki çıplak bölüm adları gezilebilir kimliklere çevrilir
 
       Adım( kod: KPS-BLM-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YUZ-3.2, DIL-1.1, YUZ-1.2 ],
         onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ilgili satırındaki bölüm adlarının bağlantı taşımadığını gördü ve çevrilmesine hüküm verdi",
@@ -196,10 +169,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         sınır: "Bu Adım hiçbir maddenin hükmünü, gerekçesini, örneğini ya da zorlamasını değiştirmez; yalnız ilgili listesindeki yazımı kimliğe çevirir. Bölüm kök maddeleri yeniden adlandırılmaz ve yeni düğüm doğurulmaz."
         dokunulmaz: [ "Madde hükmü, gerekçesi, örneği ve zorlama metni", "Bölüm kök maddelerinin kimlikleri" ]
       }
-    }
-
-    AltKatman( kod: KPS-KAPSAM-K5, departman: kodlama, ad: "çapraz-proje ad alanı",
-      ne: "ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "çapraz-proje ad alanı" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması
 
       Adım( kod: KPS-ADA-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
         onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır",
@@ -222,6 +193,30 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
         dokunulmaz: [ "Kanonun kaynak metni", "Kapalı depoların plan içerikleri (yalnız atıf yazımı değişir)" ]
       }
     }
+
+
+    AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
+      ne: "🚪 Terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasının ve hiçbir üreticinin onu çağırmamasının gerçek üretim yoluna bağlanması" ) {
+
+      Adım( kod: KPS-TRF-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YAS-4, YAS-4.2 ],
+        ne: "🚪 Terfi kapısı ölçümü, yani YAS-4'ün terfi ve karne kapısının motordaki karşılığı, bugün yalnız bir sınama dosyasından çağrılmaktadır ve hiçbir üretici yol bu ölçümü koşmamaktadır. Bu durum YAS-4.2'nin istediği çalışan uygulama bağını fiilen boşta bırakır, çünkü yalnız sınamadan çağrılan bir ölçüm gerçek üretim davranışının kanıtı sayılamaz." ) {
+        görev: "Terfi kapısı ölçümünün motor kaynağındaki gerçek konumu gezinme aracıyla bulunur ve onu bugün çağıran tek yolun sınama dosyası olduğu kanıtlanır. Ardından ölçüm, denetim akışının gerçek üretim yoluna, yani `denetle` ve `denetle-proje` komutlarının koştuğu zincire, bağlanır ve bu bağ en az bir üretici çağrı yoluyla doğrulanır. Bağlama bittikten sonra hem çekirdek hem eklenti süiti yeniden koşulur ve ölçümün üretim yolundan da doğru sonucu verdiği kanıtlanır."
+        kabul: [
+          "Terfi kapısı ölçümünün motor kaynağındaki tanımı ve onu bugün çağıran tek sınama yolu gezinme aracıyla kanıtlanmıştır",
+          "Ölçüm en az bir üretici yoldan, yani gerçek denetim akışından, çağrılır hâle gelmiştir ve bu bağ bağımsız ölçümle doğrulanmıştır",
+          "Çekirdek ve eklenti süitleri bağlama sonrasında yeşil kalmıştır ve açık aracın denetimi sıfır hata verir"
+        ]
+        sınır: "Bu Adım yalnız çağrı yolunu üretime bağlar; terfi kapısının kendi eşik mantığı ya da hangi tanının hangi düzeye terfi edeceği bu Adımın kapsamı dışındadır."
+      }
+    }
+
+    // ── 26 Ağustos 2026 taşımasının ölçülmüş borcu: çatı dört projeye ayrılınca
+    //    kapalı iki deponun planları açık deponun kodlarına atıf verir oldu ve
+    //    motor bu atıfları çözemedi. Founder 2026-08-27: kolay olan kopmalar
+    //    oturumda kapatıldı, çapraz atıf borcu plana alındı.
+
+
+
   }
 }
 

@@ -463,10 +463,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           kabul: "F9 kanıtı: kayit.json tek şema evi, motor+eklenti aynı kanondan okur, nöbetçi testler birebirliği korur (0 drift)",
           ne:    "🚪 Faz kapısı: kayit.json tek şema evi · motor+eklenti aynı kanondan okur · nöbetçi testler birebirliği korur · 0 drift",
         )
-      }
-
-      // Katman 2 — paylaşımlı önbellek (RAY-3 öncesi doğru zemin)
-      AltKatman( kod: EKL-F9-K2, departman: kodlama, ad: "paylasimli-onbellek" ) {
+        // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "paylasimli-onbellek" kademesinden taşındı.
         Adım(
           kod:    EKL-F9-A06,
           durum:  tamamlandı,
@@ -481,7 +478,18 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           kabul:  "nabiz.ts geciktir(350ms): takdir.susle (belge-değişimi) + yolharitasi.tazele (dosya-olayı seli) + yildiz hesapla tek geciktiriciden; eklenti 90/90 (oturum 29)",
           ne:     "⏱️ Debounce: takdir.susle + yolharitasi.tazele 350ms geciktirilir — tuş vuruşu başına tek hesap (yildiz.ts deseni)",
         )
+        // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "meta ogrenme" kademesinden taşındı.
+        //   Taşınan kademenin beyanı: 🗃️ Kadro denetimi bulguları ders olarak hafızaya işlenir; sistem kendi hatasından öğrenir
+        Adım(
+          kod:    EKL-F9-A13,
+          durum:  tamamlandı,
+          üretir: [ KOD-DERSLER ],
+          kabul:  "F9 kanıtı: kayit.json tek şema evi, motor+eklenti aynı kanondan okur, nöbetçi testler birebirliği korur (0 drift)",
+          ne:     "🗃️ Kadro denetimi dersleri ogrenme/dersler.sar'a Bellek(tür:ders) olarak işlendi (param/özellik deliği, ölü-thread, çift-kayıt) — sistem kendi hatasından öğrenir; gelecekte tekrarlamaz",
+        )
       }
+
+      // Katman 2 — paylaşımlı önbellek (RAY-3 öncesi doğru zemin)
 
       // Katman 3 — hijyen (hızlı, mekanik)
       AltKatman( kod: EKL-F9-K3, departman: sınama, ad: "hijyen" ) {
@@ -526,19 +534,6 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       }
 
       // Katman 4 — meta: sistem kendi denetiminden öğrensin
-      AltKatman(
-        kod: ALT-EKL-F9-META, departman: kodlama,
-        ad:  "meta ogrenme",
-        ne:  "🗃️ Kadro denetimi bulguları ders olarak hafızaya işlenir; sistem kendi hatasından öğrenir",
-      ) {
-        Adım(
-          kod:    EKL-F9-A13,
-          durum:  tamamlandı,
-          üretir: [ KOD-DERSLER ],
-          kabul:  "F9 kanıtı: kayit.json tek şema evi, motor+eklenti aynı kanondan okur, nöbetçi testler birebirliği korur (0 drift)",
-          ne:     "🗃️ Kadro denetimi dersleri ogrenme/dersler.sar'a Bellek(tür:ders) olarak işlendi (param/özellik deliği, ölü-thread, çift-kayıt) — sistem kendi hatasından öğrenir; gelecekte tekrarlamaz",
-        )
-      }
     }
 
     // ── FAZ 10 · GERIBILDIRIM & CANLILIK: editor nefes alir, kadro geribildirim ogrenir ─
@@ -576,9 +571,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           kabul:  "F10 kanıtı: dört kanal (🙏❤️🏅💡) + hasat 0.9.x'te canlı, Kuzey Yıldızı ekranda doğrulandı",
           ne:     "💓 Davet kalbi: takdir bekleyen tamamlanmis Adim'in satir sonunda kalp 750ms ritimle atar (yazilinca sabit kalbe doner)",
         )
-      }
-
-      AltKatman( kod: EKL-F10-K2, departman: kodlama, ad: "canlilik" ) {
+        // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "canlilik" kademesinden taşındı.
         Adım(
           kod:    EKL-F10-A05,
           durum:  tamamlandı,
@@ -615,6 +608,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           (gomulu codicon font; workspace temasi otomatik secili)"
         )
       }
+
 
       AltKatman( kod: EKL-F10-K3, departman: sınama, ad: "kararlilik" ) {
         Adım( kod: EKL-F10-A10, üretir: [ KOD-EKL-GITIGNORE ],

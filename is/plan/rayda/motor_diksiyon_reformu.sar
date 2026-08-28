@@ -102,10 +102,8 @@ Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle",
         sınır: "Test kapsamı daraltılmaz — bağ türü değişir, doğrulanan davranış değişmez"
         koşu:  "2026-07-17 · KAPANIŞ: 92 mesaj-dokunan assert okuma göreviyle döküldü ve sınıflandı — 56 kod-çıpalı · 32 bilinçli nöbet (metin sözleşmesi) · 1 kırılgan · 3 belirsiz. Kırılgan bağ (kosuyaz geçersiz-enum) koda çıpalandı; iki belirsiz negatif muhafız (denetçi halef zinciri ile felsefe atfı negatif muhafızları) tanı kodlarına çıpalandı; sekiz test dosyası başına sınıflandırma referans notu kondu (gerekçe kaydı: nitelik/motor_tani_envanteri.sar MDR-A04 bölümü). DENEME KANITI: A02/A03 reformu 23 mesajı değiştirdi ve süit yalnız BİR testte kırıldı (bloklu-capa anahtar sözü — aynı değişiklikte güncellendi); bağların sağlamlığı canlı ölçümle doğrulanmıştır. Süit 701/701. Kabul 3/3 karşılanmıştır — MOTOR DİKSİYON REFORMU RAYI (A01-A04) TAMAMLANMIŞTIR"
       }
-    }
-
-    AltKatman( kod: ALT-MDR-HIJYEN, departman: sınama, ad: "iç-kod hijyeni ve kapı",
-      ne: "🍃 Karar/plan numaralarının kullanıcı-yüzünden tam çıkarıldığı ve sızıntı kapısının kurulduğu konu modülü (Founder 2026-07-21 revizyonu)" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "iç-kod hijyeni ve kapı" kademesinden taşındı.
+      //   Taşınan kademenin beyanı: 🍃 Karar/plan numaralarının kullanıcı-yüzünden tam çıkarıldığı ve sızıntı kapısının kurulduğu konu modülü (Founder 2026-07-21 revizyonu)
 
       Adım( kod: MDR-A05, durum: tamamlandı, bağımlı: [ MDR-A04 ], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-SNM-HIJYEN, KOD-SNM-ANADIZIN ],
         ne:    "🧼 İç kod numaralarını kullanıcı-yüzünden TAM çıkarmak ve sızıntıyı bir kapıyla kalıcı önlemek. Founder revizyonu (2026-07-21): karar/plan numaraları (K-nn · SD-nn · RAY-n · RF-T… · BKM-…) kullanıcının gördüğü hiçbir tanı metninde yaşamaz — numara içeride kalır, kullanıcı akademik cümle görür. Bu, MDR-A01'in 'kod adres olarak metnin yanında kalır' duruşunu revize eder: Rust/Python/TypeScript kendi kural numaralarını dışarı sızdırmaz, biz de sızdırmayız" ) {
@@ -137,6 +135,7 @@ Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle",
         rapor: "2026-07-28 · DEVİR ALINDI — yedi eklenti modülünde on sekiz kullanıcı metni bu Adımın hesabına yazılmıştır. Göç planının yüzey turu (BLK-GOC-YUZEY) kapanırken bağımsız denetçi, çalışma ağacında hiçbir Adımın koşu alanında beyan edilmemiş metin düzenlemeleri buldu; düzeltme halkası bunları tek tek ölçtü ve buraya devretti. Dosya ve dokunuş şudur: `eklenti/src/duzeltme.ts` beş hızlı düzeltme başlığında ve bir yapıştırılan şablon metninde (altı iç karar ve plan numarası çıktı), `eklenti/src/tamamlama.ts` altı ortak parametre açıklamasında (altı iç söz dizimi ve mutabakat numarası çıktı), `eklenti/src/ipucu.ts` iki parametre açıklamasında (governance ile runtime İngilizce terimleri Türkçeleşti), `eklenti/src/gezinme.ts` bir bilgi kutusu cümlesinde (bir iç karar numarası çıktı ve cümle tam cümleye çevrildi), `eklenti/src/takdir.ts` geribildirim kutusunun yönlendirme cümlesinde (bir iç karar numarası çıktı), `eklenti/src/yildiz.ts` bir Kuzey Yıldızı önerisinde (bir iç söz dizimi numarası çıktı) ve `eklenti/src/yolharitasi.ts` bir ipucu markdown satırında (bir iç karar numarası çıktı). Hepsi tek yönlüdür: iç karar ve plan numarası kullanıcı metninden çıkarılmış, cümle akademikleştirilmiştir; hiçbir tanı kodu, hiçbir tetiklenme koşulu ve hiçbir davranış değişmemiştir. DEVİR GEREKÇESİ: bu dokunuşlar tam olarak bu Adımın görev cümlesinin kapsamıdır ve MDR-A05 sınırı eklenti arayüz metinlerini açıkça bu Adıma bırakır; yüzey turunun kapsamı ise sunum yüzeyi ayrımıdır, metin hijyeni değildir. Yüzey turuna sahiplendirilseydi kapsam genişlemesi olur ve hijyen kapısının tek sahibi ikiye bölünürdü. AÇIK BORÇ: bu Adım kapanırken hijyen kapısının TÜM CORPUS ölçümü yeniden koşulmalı ve bu on sekiz dokunuşun ölçüme yansıdığı doğrulanmalıdır; devir sırasında ölçüm 236 noktadır (`cekirdek/sinama/tani-metni-hijyeni.test.ts`, todo işaretli)."
       }
     }
+
   }
 }
 

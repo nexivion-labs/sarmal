@@ -60,9 +60,16 @@ Blok(
     }
   }
 
-  // ── FACET 2: arkayüz (dal 🌿) — 2 Katman (çokluk) ───────────────────
+  // ── FACET 2: arkayüz (dal 🌿) ───────────────────────────────────────
+  //    MIM-1.7 (Founder hükmü 2026-08-28): bu Katman eskiden "servisler" ve
+  //    "veritabani" adlarıyla İKİ kodlama kademesi taşıyordu ve ikisi de aynı
+  //    departmandaydı. Hüküm aynı departmanın bir Katman içinde tek kademeyle
+  //    temsil edilmesini şart koşar; konu ayrımı Adım kademesinde yapılır ve
+  //    burada da öyle yapılmıştır. İkisi ayrı teknoloji dilimi de değildi,
+  //    çünkü her iki Adım da FASTAPI'ye bağlıdır.
   Katman( kod: KAT-ARKAYUZ, kullanır: FASTAPI, ad: "arkayuz" ) {
-    AltKatman( kod: KAT-SERVISLER, departman: kodlama, ad: "servisler" ) {
+    AltKatman( kod: KAT-SERVISLER, departman: kodlama, ad: "servisler",
+      ne: "Arkayüzün kodlama sorumluluğu — kimlik servisi ile onun beslediği kimlik tablosu" ) {
       Adım(
         kod:      ADM-SERVIS,
         ad:       "kimlik-servisi",
@@ -70,8 +77,7 @@ Blok(
         besler:   ADM-GIRIS,        // oturum/jeton besler → KAVUŞTURMA noktası
         referans: KRR-OTURUM,
       )
-    }
-    AltKatman( kod: KAT-VERITABANI, departman: kodlama, ad: "veritabani" ) {
+      // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "veritabani" kademesinden taşındı.
       Adım(
         kod:      ADM-TABLO,
         ad:       "kimlik-tablosu",
