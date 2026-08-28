@@ -316,7 +316,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 46 hata + 16 uyarı Problems'a, on bir kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on bir kimlik Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -327,7 +327,9 @@ test("A05 kademe hükmü: 46 hata + 16 uyarı Problems'a, on bir kimlik Bildirim
     assert.equal(yuzey, beklenen,
       `"${k.kod}" bugünkü kademesiyle (${k.kademe}) ${yuzey} yüzeyine düşüyor; A05 kararı ${beklenen} bekliyor`);
   }
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 46);
+  // Kırk yedinci hata kimliği MIM-1.7 AltKatman tekilliğidir (Founder hükmü
+  // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 47);
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 16);
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 11);
 });
@@ -552,7 +554,9 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "problems",
   ).length;
   assert.equal(yeniBildirim, 11, "A05'in sekiz RET-ADAYI ile üç yeni gözlem bilgi kademesinde kalmalıdır");
-  assert.equal(yeniProblems, 62, "A05'in 46 hata ve 16 uyarı kimliği Problems'a gitmelidir");
+  // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
+  // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
+  assert.equal(yeniProblems, 63, "A05'in 47 hata ve 16 uyarı kimliği Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,

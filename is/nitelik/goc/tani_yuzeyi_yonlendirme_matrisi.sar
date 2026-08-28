@@ -44,8 +44,8 @@ ihlal sanmaz.
 
 ## C · Kapsam ve sayısal özet
 
-Kanonik tanı sicilinde bugün **174** kimlik vardır: yeni omurga kanonunun ilan
-ettiği **73** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
+Kanonik tanı sicilinde bugün **175** kimlik vardır: yeni omurga kanonunun ilan
+ettiği **74** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
 veri-güdümlü tanıları (`zorunluKenarlar` alanlarından gelenler) çalışma anında
 birleştirilir ve aynı iki basamaklı kuraldan geçer; bugünkü çalışma alanında
 sayıları sıfırdır.

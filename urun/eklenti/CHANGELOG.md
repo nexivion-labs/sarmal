@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.165 — 2026-08-28 (bir Katman altında departman tekildir)
+
+- **Yeni hüküm: MIM-1.7 · Katman İçinde AltKatman Tekilliği.** Bir Katman altında her çekirdek departman en fazla bir AltKatmanla temsil edilir ve iki AltKatman aynı adı taşıyamaz; o departmanın bütün işleri kendi kademesinin altında Adım olarak yaşar. Kök sebep bir yazım hatası değil bir hüküm boşluğuydu: MIM-1.5 her AltKatmanın tam olarak bir departmanı temsil ettiğini söylüyordu, fakat aynı departmanın kaç kez temsil edilebileceğini hiçbir madde yazmıyordu, dolayısıyla motorun susması da doğaldı. AltKatman bir konu başlığı değil sorumluluk kademesidir; ikiye bölündüğünde kabulün sahibi okunamaz hâle gelir ve yol haritasında bir Adıma giden yol adlarıyla tarif edilemez.
+- **Motor bunu hata düzeyinde zorluyor.** Ölçüm Katman kapsamındadır: yalnız bir Katmanın doğrudan kademeleri karşılaştırılır, çünkü iki ayrı Katman aynı departmanı meşru biçimde açabilir. Öneri yapıştırılabilir iskelet taşır ve işin nereye taşınacağını gösterir.
+
 ## 0.9.164 — 2026-08-27 (kapsam kusuru sınıf olarak kapatıldı)
 
 - **Kapsam kapısına bağlanmayı unutmak artık sessiz olamıyor.** Founder'ın hükmü şuydu: bir kullanıcı bir projeyi ya da çalışma alanını açtığında bu sorunları hiç yaşamamalıdır. Bu turda ölçülen üç kusurun kökü birdi; paneller kapsamı ayrı ayrı çözüyordu ve üçü de tek köklü bir dünyada doğruydu, iç içe çatı düzeninde kırıldı. Üç nöbet o kökü tutuyor: kapsama kuralı tek evde kalır, panele yazan her yol kapsam kapısından geçer ve odak değiştiğinde bütün yüzeyler aynı turda yeniden basılır. İkincisi mutasyonla kanıtlandı; Onaylar kuyruğu odak kapısından koparıldığında nöbet kırmızıya dönüyor.

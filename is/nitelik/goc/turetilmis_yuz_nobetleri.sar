@@ -36,7 +36,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/dil-baglami.ts` | `c374ef710e6133492ed2ca4b3793125c1927d7eacc92cba101a4959ab0912690` |
 | `urun/eklenti/package.nls.tr.json` | `deb6acd817424ddd885e1e8c679c0c635ff9a5c480baabfcfc9d7eb5f92859b2` |
 | `urun/eklenti/package.nls.json` | `b659db2b409f1b506b75cabe493c3210395cc859c071cf2702f8fd78052319d0` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `76770ed957ae51a55083da3588c85f29830060fb1ae2d030969da6011cbfe60c` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `2b99b2e7a1fdbb1c5631cd22f40d59556d0e8efa4e88208c06ad170acf4f5c2d` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
