@@ -7,7 +7,7 @@
 //   hafızasından değil grafın kendisinden türemesi, açık taraf kadrosunun dört
 //   yeni uzmanla genişlemesi ve katkı sözleşmesinin Founder ile birlikte
 //   yazılması. Bu plan beş hükmü Adıma indirir. Depo ayrılığının ve kademeli
-//   aktarımın kendisi `plan/yapi_gocu.sar` dosyasında yaşar ve buraya
+//   aktarımın kendisi `plan/blok/yapi_gocu.sar` dosyasında yaşar ve buraya
 //   yinelenmez; katkı sözleşmesi Adımı yalnız o aktarımın Adımına `bağımlı:`
 //   kenarıyla bağlanır.
 // ═══════════════════════════════════════════════════════════════════════════
@@ -26,7 +26,7 @@ seçiminin mekanik türetilmesi, açık taraf kadrosunun eklenti, yayın, site v
 sınama uzmanlarıyla genişlemesi ve katkı sözleşmesinin Founder ile birlikte
 belirlenip kökteki katkı belgesiyle hizalanması. Depo ayrılığının kendisi,
 aktarım kümeleri ve ad hükümleri bu planın kapsamı dışındadır ve
-`plan/yapi_gocu.sar` dosyasında yaşar.
+`plan/blok/yapi_gocu.sar` dosyasında yaşar.
 
 ## Sonuç
 Oturum sınırında bilgi kaybı ilanlı bir ritüelle kapanır; denetçinin ölçmesi

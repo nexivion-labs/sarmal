@@ -1,7 +1,7 @@
 // ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25, git doğumu öncesi kaynaktan tazelendi): bu sahne kopyasında atölye malı kürasyon sicilinin yedi kararına giden atıflar düşürülmüş,
 //     meyve yolları altı kitaplık düzenine çevrilmiş ve atölyede kalan üç teslim (kürasyon karar sicili ile mutlak yol raporu) dış-çıktı türüne alınmıştır; atıfların aslı atölye deposunda tarihiyle durur, açık depo çözülmeyen kimlik taşımaz. ═══
 // ═══════════════════════════════════════════════════════════════════════════
-// plan/yapi_gocu.sar — 🏡 YAPI GÖÇÜ (oturum 91 hükümleri · 2026-08-21)
+// plan/blok/yapi_gocu.sar — 🏡 YAPI GÖÇÜ (oturum 91 hükümleri · 2026-08-21)
 //
 //   Founder hükmü: depolar ayrılır ve ortak bir çatı altında yaşar; bugünkü
 //   depo silinmez, arşiv olarak özel kalır; açık depo sıfır git geçmişiyle

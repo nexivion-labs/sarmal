@@ -100,7 +100,7 @@ Gereksinim( kod: GRK-KAPANIS-ORKESTRA, kim: "Founder",
   ne: "Sarmal'daki bütün açık Adımlar bitirilmeli ya da bilinçli damgayla kapatılmalı ki orkestrasyon katmanına temiz ve sağlam bir zeminle geçilebilsin (Founder sözü 2026-07-18: 'Sarmal'daki tüm adımları bitirip orkestrasyon katmanına geçelim, sağlam bir plan yapalım')" )
 
 // 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski KPN-FAZ sarmalayıcısı çözüldü — zaman bağı
-// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+// artık plan/faz/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
 //   ne: "🌀 Bütün açık rayların tek sırada bitirildiği ve orkestrasyon cephesinin açıldığı dönem; sıra yedi turdur, kaynak-gerçek yukarıdaki belge bloğudur"
 //   onay: "onaylandı — 2026-07-18 · Founder: yedi tur sırası onaylı, koşu TUR-A'dan başlar"
 

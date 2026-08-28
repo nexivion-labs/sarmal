@@ -319,11 +319,11 @@
   varlık bakışının doğuş gerekçesini anlatan açıklayıcı yorumlardır ve bu kodu, varlık
   süzgeci yüzünden çözülemeyen kodun çalışan örneği olarak kullanırlar.
   `eklenti/src/renk.ts` dosyasının yetmiş ikinci satırındaki ETM-PY-PYTEST anması ise
-  önek ile renk belirteci eşlemesinin belge örneğidir. `plan/bakim_olgunluk.sar`
+  önek ile renk belirteci eşlemesinin belge örneğidir. `plan/blok/bakim_olgunluk.sar`
   dosyasının beş yüz yetmiş ikinci satırındaki anma açık kaynak ayrımının hâlen
   yürürlükte olan hükmünü taşır. Bunlar canlı belgedir ve silinmeleri bilgi kaybıdır.
 
-  ÜÇÜNCÜ SINIF YÜRÜRLÜKTEKİ PLAN BEYANIDIR VE BİR ANMA TAŞIR. `plan/faz.sar` dosyasının
+  ÜÇÜNCÜ SINIF YÜRÜRLÜKTEKİ PLAN BEYANIDIR VE BİR ANMA TAŞIR. `plan/faz/faz.sar` dosyasının
   otuz beşinci satırı FAZ-2026-AGUSTOS düğümünün `ne` alanıdır ve içinde bulunulan
   mevsimin asıl cephesini ZKA-A05 ile ZKA-A06 kalemlerine bağlar. Bu anma tarihsel iz
   değildir, çünkü tarif ettiği mevsim henüz kapanmamıştır; silinmesi yürürlükteki bir
@@ -332,11 +332,11 @@
 
   DÖRDÜNCÜ SINIF KAPANMIŞ KAYIT ALANI VE TARİHSEL ANLATIDIR VE OTUZ BİR ANMA TAŞIR.
   Bunlar `bilgi/ray3_konsolide.sar` dosyasında on bir, `plan/kapanis_kampanyasi.sar`
-  dosyasında dokuz, `plan/reform_plani.sar` dosyasında üç, `nitelik/orkestrasyon_zemini.sar`
-  dosyasında iki, `oz/hatirlaticilar.sar` dosyasında iki, `plan/bakim_olgunluk.sar`
+  dosyasında dokuz, `plan/rayda/reform_plani.sar` dosyasında üç, `nitelik/orkestrasyon_zemini.sar`
+  dosyasında iki, `oz/hatirlaticilar.sar` dosyasında iki, `plan/blok/bakim_olgunluk.sar`
   dosyasının beş yüz kırk ikinci satırında bir, `nitelik/act_fark_analizi.sar` dosyasında
   bir, `nitelik/v1_gozden_gecirme_envanteri.sar` dosyasında bir ve
-  `plan/kaynak_disiplini.sar` dosyasının seksen üçüncü satırında bir anma biçiminde
+  `plan/blok/kaynak_disiplini.sar` dosyasının seksen üçüncü satırında bir anma biçiminde
   dağılmıştır. Bu otuz bir anmanın tamamı ya kapanmış bir Adımın onay, koşu ya da sınır
   alanının içinde ya da kapanmış bir envanterin belge bloğunda yaşamaktadır.
 

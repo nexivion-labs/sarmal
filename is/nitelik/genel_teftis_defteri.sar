@@ -5,7 +5,7 @@
 //   geçir, kör noktaları bul; en baştan reform yapalım." BEŞ bağımsız kaynak:
 //   git-arkeoloğu · dil-omurgası denetçisi · motor kör-nokta avcısı (Claude
 //   ajanları) + GPT-5.6 Terra (CANLI kod deneyleriyle) + renk kurulu (5 görüş).
-//   Reform planı: ~/.claude/plans (onaylı) + plan/reform_plani.sar (ray).
+//   Reform planı: ~/.claude/plans (onaylı) + plan/rayda/reform_plani.sar (ray).
 //   Sınıflar: 🔴 motor-bug · 🟠 beyan-boşluğu · 🟡 metin-drift · 🔵 ürünleşme.
 // ═══════════════════════════════════════════════════════════════════════════
 

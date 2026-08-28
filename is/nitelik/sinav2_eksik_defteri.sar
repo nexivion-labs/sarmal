@@ -64,4 +64,4 @@
 Karar( kod: SNV2-HUKUM, durum: kilitli,
        karar: "Sınav-2 hükmü: SINIF GEÇİLEMEDİ — sadakat kanıtlandı, mimari kapılar (YP-1 · contract-first) eksik; tüm bulgular BKM-SNV2 rayına iner, sınav-3 bu kapılar canlanmadan açılmaz",
        gerekçe: "Denetim TAM-yeşilken iki temel ilkenin sessizce çiğnenebilmesi kör-drift'in ta kendisi — kalkanın delikleri sahada, sahibin gözüyle bulundu (2026-07-11)",
-       ne: "🧪 Sınav-2 sonucu ve ray bağlantısı — bulgular yukarıdaki defterde, işler plan/bakim_olgunluk.sar BKM-SNV2 fazında" )
+       ne: "🧪 Sınav-2 sonucu ve ray bağlantısı — bulgular yukarıdaki defterde, işler plan/blok/bakim_olgunluk.sar BKM-SNV2 fazında" )

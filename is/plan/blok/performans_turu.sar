@@ -41,7 +41,7 @@
 |<--
 
 // 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski PRF-FAZ sarmalayıcısı çözüldü — zaman bağı
-// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+// artık plan/faz/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
 //   ne: "🌀 IDE kasma şikâyetinin ölçümle tanılanıp izleyici onarımlarıyla kapatıldığı dönem; Sorun kayıtları SRN-IDE-KASMA-SOL-KOSUSU ve SRN-RAY-GECIKME ② bu mevsimde kapanış notu alır"
 
 -->|

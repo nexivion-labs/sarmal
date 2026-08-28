@@ -5,7 +5,7 @@
 //   Üç kapsam tarandı: (a) kural-kapsam mutabakatı (yasa beyanı ↔ motor gerçeği)
 //   (b) boş-küme kör noktaları (varlık-tetikli bekçilerin kaçırdığı "hiç
 //   yazılmamış doğru") (c) motor kod bugları. Her bulgu dosya:satır kanıtlı;
-//   B3/B4 ayrıca CANLI repro ile doğrulandı. İşler: plan/bakim_olgunluk.sar
+//   B3/B4 ayrıca CANLI repro ile doğrulandı. İşler: plan/blok/bakim_olgunluk.sar
 //   BKM-BUG fazı (BKM-SNV2 ile birleşik koşulur — devir talimatı).
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -174,7 +174,7 @@
   (a) kapsam kelimesi kanonla uyuşmuyor (M1), (b) tek yazım-biçimini görüyor
   (B3/B4/B6 — parametre↔özellik ve skaler↔liste ikilikleri), (c) daralma
   beyansız (M2/C9). Sınav-2'nin "yeşil ama kör" dersi motor içinde de fraktal.
-  Çalışma listesi: plan/bakim_olgunluk.sar BKM-BUG fazı (A01-A10) —
+  Çalışma listesi: plan/blok/bakim_olgunluk.sar BKM-BUG fazı (A01-A10) —
   BKM-SNV2 A01-A05 ile birleşik koşulur.
 |<--
 Çıkarım( kod: CKR-BUGAVI-1, kaynak: "Founder bug-avı talimatı (oturum-32 devri) + çekirdek kaynak taraması + sinav2/kanit canlı reproları (2026-07-11)",

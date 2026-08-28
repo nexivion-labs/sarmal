@@ -1,7 +1,7 @@
 // ═══ KÜRASYON NOTU (GOC-A08 yedinci küme · 2026-08-25): bu sahne kopyasında tek oturumluk inceleme defterine (gstack) giden atıf düşürülmüştür;
 //     atıfların aslı atölye deposunda tarihiyle durur, açık depo çözülmeyen kimlik taşımaz. ═══
 // ═══════════════════════════════════════════════════════════════════════════
-// plan/kaynak_disiplini.sar — 🧭 Kaynak Disiplini ve Öğretilebilirlik Rayı
+// plan/blok/kaynak_disiplini.sar — 🧭 Kaynak Disiplini ve Öğretilebilirlik Rayı
 //
 //   Köken: 2026-08-07 tarihli büyük envanter turu. Founder şablonların ve
 //   kuralların ne kadarının gerçekten uygulandığını sordu; ölçüm doğru araçlarla

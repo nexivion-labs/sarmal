@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 // 🕰️ ZMN-A01 zarf göçü (MIM-1.2 · 2026-07-19): eski MDR-FAZ sarmalayıcısı çözüldü — zaman bağı
-// artık plan/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
+// artık plan/faz/faz.sar mevsiminden (çağır) okunur. Zarfın beyanı silinmedi — bilgi silinmez, doğru alana ayrılır — aynen:
 //   ne: "🌀 Motor tanı ve hata metinlerinin insan dili standardına taşınma dönemi"
 
 -->|

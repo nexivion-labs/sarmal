@@ -59,7 +59,14 @@ Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
 
   Kitaplık( kod: KTP-IS, yol: "is/",
     ne: "🗂️ İş kitaplığı — canlı planlar, durum kaydı ve nitelik kayıtları burada yaşar" ) {
-    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı plan dosyaları: fazlar, bloklar ve adımlar" )
+    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı planın kökü: zaman ve gövde kendi raflarında yaşar, ilan dosyaları burada durur" )
+    // Founder hükmü 2026-08-28: zaman ekseni ile iş gövdesi ayrı raflara çekildi.
+    // Gerekçe şudur: bir plan klasöründe hem mevsimler hem gövdeler yan yana
+    // durduğunda "hangi dosya takvimi, hangisi işi taşıyor" sorusu ancak dosya
+    // açılarak cevaplanır. Kök, ikisine de ait olmayan ilan dosyalarını taşır:
+    // meyve haritası, takım ve teknoloji ilanları, işakışları ve özerk kararlar.
+    Raf( kod: RAF-IS-PLAN-FAZ, yol: "plan/faz/", ne: "zaman ekseni: mevsim ilanları — Faz düğümlerinin yaşadığı raf" )
+    Raf( kod: RAF-IS-PLAN-BLOK, yol: "plan/blok/", ne: "iş gövdesi: Blok düğümleri ve altındaki Katman, AltKatman ile Adım zinciri" )
     Raf( kod: RAF-IS-PLAN-RAYDA, yol: "plan/rayda/", ne: "tamamen bitmiş planların rayı: tarih repoda kalır, plan görünür durur" )
     // Eski anadizinde ilanlı iki rafın karşılığı (GOC-A08 yedinci küme, 2026-08-25): mekanizma
     // ilanları ile göç kanıtları alt raf olarak sürer; ilansız gövde sıfır ölçütü korunur.
