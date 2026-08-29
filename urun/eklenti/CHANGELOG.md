@@ -2,6 +2,33 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.169 — 2026-08-29 (ad alanı yürütme kenarlarına indi)
+
+- **Başka projedeki bir Adıma kurulan `bağımlı` ve `besler` kenarı artık çözülüyor.** ORK-4 ayracı bugüne dek belirteçleyicide, kimlik indeksinde ve iki denetim yüzeyinde tanınıyordu; yürütme kenarını kuran graf çekirdeği ise ayraçtan habersizdi. Graf düğümlerini çıplak kodla anahtarladığı için `PRJ-A::KOD-X` yazımlı hedef hiçbir zaman bulunamıyor ve kenar kopuk sayılıyordu. Görünen yüzü şuydu: aynı hedef `referans` kenarında sessizce çözülürken `bağımlı` kenarında kopuk-zincir uyarısı basıyordu.
+- **Kardeş depoda yaşayan hedef artık kayıp değil, çapraz-proje kenarı olarak kaydediliyor.** Bu kenarlar yerel sıra hesabına girmez, çünkü hedefleri başka bir kökün grafındadır; fakat ORK-1.2'nin "kenar sessizce düşemez" hükmü gereği ayrı bir sicilde tutulurlar ve kaybolmazlar.
+- **Ölçülen sonuç:** laboratuvar deposunun kopuk-zincir uyarısı yediden sıfıra indi ve toplam uyarısı on dörtten yediye düştü; sarmal sıfır hata ile sıfır uyarıda kaldı. Ad alanı kullanmayan bir depo hiçbir ek bedel ödemez, çünkü proje kapsamları yalnız `::` taşıyan bir hedefe rastlanınca hesaplanır.
+
+## 0.9.168 — 2026-08-29 (simge ailesi yüzeye indi)
+
+- **Koni kartı ile konuşma kartı bütünüyle vektörel aileye geçti.** Yirmi beş işaret artık emoji değil, kilitli ailenin gömülü SVG üyesidir; simge kapsayıcısının tema rolünü miras aldığı için hiçbir yere ham renk yazılmaz ve şekil tipi, renk durumu anlatmayı sürdürür. Her simge `aria-hidden` taşır ve metinsel etiketin yerine değil yanına geçer.
+- **Aile üç yeni üyeyle kırk üçe çıktı:** anayasa, politika ve tercih. Üçü de ailenin ölçüsündedir, yani yirmi dört birimlik kutu, dolgusuz gövde ve yuvarlatılmış uçlar.
+- **Katman teknoloji bağı artık ad alanlı hedefi tanıyor.** Başka projedeki bir Takım ya da Teknolojiye `PRJ-A::KOD-X` yazımıyla bağlanan Katman teknoloji bağı taşımıyor sayılmaz; niteliksiz hedef ise yalnız kendi projesinde çözülür.
+
+## 0.9.167 — 2026-08-29 (çapraz proje ad alanı motorda karşılandı)
+
+- **Başka projedeki hedefe kurulan atıf artık `PRJ-A::KOD-X` yazımıyla ilan edilir.** Belirteçleyici `::` ayracını kimlik parçası olarak tanır, kimlik indeksi kardeş proje köklerini okur ve niteliksiz bir kod yalnız kendi projesinde çözülür; tesadüfî küresel eşleşme artık bağ sayılmaz (ORK-4). Kusurun görünen yüzü şuydu: kapalı ürünün Blokları, açık projenin mevsiminin altında görünüyordu.
+- **Yol haritası panelinde bir mevsim yalnız kendi projesinin gövdelerini sarar.** `mevsim` ve `çağır` kenarları ad alanlı hedefi kabul eder; hedefi kardeş depoda olan Blok fazsız sayılmaz.
+- **Tanıma gitme, atıf bulma ve atıf dekoru ad alanlı kodu tanır** ve kardeş kökteki tanıma götürür.
+- **Olay tetikli tur odaktaki varlığa daraldı ve topolojik sıra kenar imzasıyla bellenir.** Bir `.sar` kaydında hesap çekirdeği dört projeli çalışma alanında 2442 milisaniyeden 2,9 milisaniyeye indi; soğuk açılış turu bilinçli olarak tam kalır, çünkü ilk resmin eksiksiz olması gerekir.
+- **Paket tazeliği nöbeti artık kendi kanıtını silmiyor.** Süit koşarken gövdeyi yeniden derleyen çağrı kaldırıldı; bayat gövdeyle üç ardışık koşunun üçü de kırmızı, taze gövdeyle üçü de yeşil verir.
+- **Lisans atfı nöbetleri gövde yokken sebebini söyleyerek atlar,** çökmez; gövdeden bağımsız dört hüküm koşmayı sürdürür.
+
+## 0.9.166 — 2026-08-29 (kopyalama satırın üzerinde belirir)
+
+- **Kopyalama eylemi artık satırın üzerine gelindiğinde düğme olarak da beliriyor.** Founder 2026-08-16 gözle doğrulama turunda eylemin çalıştığını fakat keşfedilebilir olmadığını bildirmişti; varlığı bilinmeyen bir eylemi sağ tık menüsü görünür kılmaz. Düğme Gözlemler, Hatırlatıcılar ve Fikirler panellerinin bütün satırlarında yaşar ve Yol Haritası panelindeki koni kartı düğmesinin yerleşimini birebir izler; panel başına ayrı bir desen kurulmadı. Sağ tık menüsündeki girdi yerinde kaldı, çünkü iki erişim yolu birbirini dışlamaz ve ikisi de aynı komuta iner; ikinci bir kopyalama mantığı doğmadığı için iki yol daima aynı pano metnini üretir.
+- **Düğmenin simgesi kilitli vektörel aileden geliyor.** Eylem artık satırda sürekli görünür olduğu için işareti de hazır bir ikon kimliği olamazdı; simge, ailenin kopyalama çizimidir ve yolu tek kaynak çizelgesinden türer. Bir nöbet paket bildirimindeki iki yolun çizelgenin ürettiği yollarla birebir tuttuğunu ve dosyaların diskte yaşadığını ölçer.
+- **Fikirler panelinin proje satırında kopyalamanın çökmesi giderildi.** Kusur 0.9.162 ile proje kademesi açıldığında doğmuştu ve sağ tık yolunda gizli kalıyordu; ortak pano çevirici düğümün yalnız kademe etiketine bakıyor, Fikir kaydı taşıyan kümeyi tanı kümesi sanıyor ve blok üretimi çöküyordu. Onarım kusurun sınıfını kapatır: küme artık etiketiyle değil taşıdığı kayıtla kabul edilir, yabancı küme sıradaki panele devredilir ve Fikirler paneli kendi proje satırını komşularının kullandığı ortak birleştiriciyle cevaplar. Panele özgü ikinci bir pano biçimi doğmadı.
+
 ## 0.9.165 — 2026-08-28 (bir Katman altında departman tekildir)
 
 - **Yeni hüküm: MIM-1.7 · Katman İçinde AltKatman Tekilliği.** Bir Katman altında her çekirdek departman en fazla bir AltKatmanla temsil edilir ve iki AltKatman aynı adı taşıyamaz; o departmanın bütün işleri kendi kademesinin altında Adım olarak yaşar. Kök sebep bir yazım hatası değil bir hüküm boşluğuydu: MIM-1.5 her AltKatmanın tam olarak bir departmanı temsil ettiğini söylüyordu, fakat aynı departmanın kaç kez temsil edilebileceğini hiçbir madde yazmıyordu, dolayısıyla motorun susması da doğaldı. AltKatman bir konu başlığı değil sorumluluk kademesidir; ikiye bölündüğünde kabulün sahibi okunamaz hâle gelir ve yol haritasında bir Adıma giden yol adlarıyla tarif edilemez.
