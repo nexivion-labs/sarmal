@@ -10,8 +10,10 @@
 //   satır ayrımı yapmaz. Fikstürlü sınama: sinama/atif-ipucu.test.ts.
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** KOD sözcesi: tireli BÜYÜK-harf kimlik (gezinme/ipucu ile aynı aile). */
-export const KOD_DESENI = /[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+/gu;
+/** KOD sözcesi: tireli BÜYÜK-harf kimlik (gezinme/ipucu ile aynı aile).
+ *  ORK-4 ad alanı (`PRJ-A::KOD-X`) TEK sözcedir (KPS-ADA-A01): ayraç desenin
+ *  dışında kalsaydı dekor sözcenin iki yarısını iki ayrı atıf sanırdı. */
+export const KOD_DESENI = /[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+(?:::[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+)?/gu;
 
 export interface AtifAraligi {
   satir: number;       // 0-tabanlı
@@ -25,17 +27,25 @@ export interface AtifAraligi {
  * @param satirlar   belge satırları (0-tabanlı)
  * @param kodlar     kimlik indeksindeki TANIMLI kodlar
  * @param buradakiTanimlar bu belgedeki tanımlar — "KOD@satir" biçiminde (tanımın kendisi atıf değildir)
+ * @param adAlanliCozulur ORK-4 ad alanlı kodun kardeş kökte çözülüp çözülmediği
+ *   (KPS-ADA-A01); verilmezse ad alanlı sözce yalnız `kodlar` kümesinden geçer.
+ *   Ayrı bir kapı olmasının nedeni şudur: ad alanlı hedefin tanımı BU çalışma
+ *   alanının indeksinde yoktur ve `kodlar` kümesi onu hiçbir zaman içeremez.
  */
 export function atifAraliklariTopla(
   satirlar: readonly string[],
   kodlar: ReadonlySet<string>,
   buradakiTanimlar: ReadonlySet<string>,
+  adAlanliCozulur?: (kod: string) => boolean,
 ): AtifAraligi[] {
   const araliklar: AtifAraligi[] = [];
   for (let s = 0; s < satirlar.length; s++) {
     for (const es of satirlar[s].matchAll(KOD_DESENI)) {
       const kod = es[0];
-      if (!kodlar.has(kod)) continue;                       // tanımsız → link değil
+      const cozuldu = kod.includes("::")
+        ? (adAlanliCozulur ? adAlanliCozulur(kod) : kodlar.has(kod))
+        : kodlar.has(kod);
+      if (!cozuldu) continue;                               // tanımsız → link değil
       if (buradakiTanimlar.has(`${kod}@${s}`)) continue;    // tanımın kendisi → atıf değil
       araliklar.push({ satir: s, baslangic: es.index, bitis: es.index + kod.length, kod });
     }

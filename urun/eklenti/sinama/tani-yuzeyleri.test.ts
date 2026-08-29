@@ -21,7 +21,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { Tani, Duzey } from "../../cekirdek/src/tani.ts";
 import { beklenenSunumYuzeyi, type SunumYuzeyi } from "../../cekirdek/src/denetim.ts";
@@ -41,16 +41,18 @@ import {
   panoyaKopyalaBasligi,
   projeSatiriEtiketi, projeSatiriAciklamasi, projeSatiriIpucu, taniKisaAdi,
   fikirEtiketi,
+  kayitEtiketi, kayitIpucu, panoKaydiMetni, panoKumeMetni,
+  yuzeyKokleriniAyarla, calismaAlaninaGoreli,
 } from "../src/yuzey-metinleri.ts";
 // VIT-GRAF-A15 ikinci işi: Fikir hanesi Hatırlatıcılar panelinin İÇİNDE yaşar,
 // dolayısıyla ortak satır biçimi nöbeti iki haneyi de aynı yerde ölçer.
-import { fikirleriTopla, fikirGorunumu, type FikirKaydi } from "../src/fikir-cekirdek.ts";
+import { fikirleriTopla, fikirGorunumu, fikirPanoMetni, type FikirKaydi } from "../src/fikir-cekirdek.ts";
 import { EKSEN_TIPLERI } from "../src/simge-cizelgesi.ts";
 // NOT: `teknoloji-simgesi.ts` çalışma zamanında vscode kabuğunu içeri alır ve bu
 // birim süitinde yüklenemez; onun tek-kaynak sözleşmesi aşağıda panellerin KENDİ
 // kaynağı üstünden ölçülür (Onaylar panelinin nöbetiyle aynı yöntem).
 import { BILDIRIM_ROZET, bildirimTuru } from "../src/yol-dekor.ts";
-import { ANLAM_RENKLERI, SATIR_SIMGELERI } from "../src/simge-cizelgesi.ts";
+import { ANLAM_RENKLERI, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
@@ -1672,4 +1674,266 @@ test("ODAK DEĞİŞİNCE BÜTÜN YÜZEYLER AYNI TURDA YENİDEN BASILIR", () => {
     assert.ok(desen.test(kapi[1]),
       `odak değişiminde ${ad} yeniden basılmıyor; panel bayat kalır`);
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ✂️ KIRPMA SATIRIN İŞİDİR — ipucu penceresi kaydı kesmez (VIT-GRAF-A18)
+//
+//   HÜKMÜN DOĞUŞU. Founder 2026-08-16 tarihli canlı turda ipucu penceresini
+//   fotoğrafla belgeledi ve pencerenin satırın kırpılmış metnini olduğu gibi
+//   tekrarladığını bildirdi. Kırpma bir SUNUM kararıdır ve yalnız ağaç satırına
+//   aittir: satır dar olduğu için kesilir, buna karşılık ipucu penceresi kaydın
+//   tamamını taşımak üzere açılır. İki yüzey aynı kısaltmayı gösterirse fareyi
+//   getirmenin hiçbir kazancı kalmaz.
+//
+//   NÖBETİN KAPSAMI DÜRÜSTÇE YAZILIYOR. Aşağıdaki hükümler YÜZEY katmanını ölçer:
+//   satır etiketi kırpar, ipucu kırpmaz, ipucunun kaynak satırı çalışma alanına
+//   göreli yazılır ve pano kopyası tam yolu korur. Motorun kırpılmamış ikiz
+//   cümleyi ÜRETTİĞİNİ `cekirdek/sinama/dogrulayici.test.ts` ayrıca ölçer; burada
+//   ölçülen şey, yüzeyin o ikizi bulduğunda gösterdiği ve bulamadığında eski
+//   davranışına düştüğüdür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const KIRPMA_YOLU = "/Users/kullanici/calisma/proje/is/plan/omurga.sar";
+
+/** Ağaç satırına sığmayacak kadar uzun, tek parça bir kanonik gövde. */
+const KIRPMA_GOVDESI =
+  "Bu kayıt, ağaç satırına sığmayacak kadar uzun bir gövde taşır ve gövdenin " +
+  "tamamı okunmadan kaydın ne istediği anlaşılamaz; bu yüzden pencere gövdeyi " +
+  "kırpmadan göstermek zorundadır ve kısaltma yalnız satırın kendi işidir.";
+
+const KIRPMA_KAYDI = {
+  kod: "açık-hatırlatıcı",
+  duzey: "bilgi",
+  mesaj: `❗ Açık hatırlatıcı (HTR-ORNEK): ${KIRPMA_GOVDESI}`,
+  dosya: KIRPMA_YOLU,
+  satir: 42,
+  sutun: 3,
+  oneri: "Kararı verdiğinde durum alanına kararlaştı yaz.",
+};
+
+test("kırpma satırın işidir: uzun gövde ağaç etiketinde kesilir", () => {
+  const etiket = kayitEtiketi(KIRPMA_KAYDI.mesaj);
+  assert.ok(etiket.length < KIRPMA_KAYDI.mesaj.length, "etiket hiç kısalmadı; satır taşacak");
+  assert.ok(etiket.endsWith("…"), "etiket kesildiğini üç noktayla söylemiyor");
+});
+
+test("kırpma ipucuya taşınmaz: pencere kaydın tam gövdesini gösterir", () => {
+  const ipucu = kayitIpucu(KIRPMA_KAYDI);
+  assert.ok(ipucu.includes(KIRPMA_KAYDI.mesaj), "ipucu kaydın tam gövdesini taşımıyor");
+  assert.ok(ipucu.includes(KIRPMA_GOVDESI), "gövdenin sonu ipucuda kaybolmuş");
+  assert.ok(
+    !ipucu.includes(kayitEtiketi(KIRPMA_KAYDI.mesaj)),
+    "ipucu satır etiketinin kırpılmış metnini olduğu gibi tekrarlıyor",
+  );
+});
+
+test("kırpma ipucuya taşınmaz: pencere kendi başına da üç nokta üretmez", () => {
+  assert.equal(kayitIpucu(KIRPMA_KAYDI).includes("…"), false,
+    "ipucu penceresinde kırpma işareti belirdi");
+});
+
+test("pano kopyası tam yolu korur: kayıt bağlamını kaybetmeden yapıştırılır", () => {
+  const pano = panoKaydiMetni({
+    etiket: kayitEtiketi(KIRPMA_KAYDI.mesaj),
+    aciklama: "omurga.sar:42",
+    kod: KIRPMA_KAYDI.kod,
+    duzey: KIRPMA_KAYDI.duzey,
+    mesaj: KIRPMA_KAYDI.mesaj,
+    dosya: KIRPMA_KAYDI.dosya,
+    satir: KIRPMA_KAYDI.satir,
+    sutun: KIRPMA_KAYDI.sutun,
+    oneri: KIRPMA_KAYDI.oneri,
+  });
+  assert.ok(pano.includes(`${KIRPMA_YOLU}:42:3`), "pano bloğu tam dosya yolunu düşürdü");
+  assert.ok(pano.includes(KIRPMA_GOVDESI), "pano bloğu kaydın tam gövdesini düşürdü");
+});
+
+test("kırpma ipucuya taşınmaz: motorun ikiz cümlesi varsa pencere tam gövdeyi gösterir", () => {
+  const tamGovde = `❗ Açık hatırlatıcı (HTR-ORNEK): ${KIRPMA_GOVDESI} Gövdenin kırpılan kuyruğu da buradadır.`;
+  const ipucu = kayitIpucu({ ...KIRPMA_KAYDI, mesaj: "❗ Açık hatırlatıcı (HTR-ORNEK): kısaltılmış gövde…", tamMesaj: tamGovde });
+  assert.ok(ipucu.includes(tamGovde), "pencere motorun kırpılmamış ikizini göstermedi");
+  assert.equal(ipucu.includes("kısaltılmış gövde…"), false, "pencere kırpılmış cümleyi hâlâ basıyor");
+});
+
+test("kırpma ipucuya taşınmaz: ikiz cümle yoksa davranış değişmez", () => {
+  const ipucu = kayitIpucu(KIRPMA_KAYDI);
+  assert.ok(ipucu.includes(KIRPMA_KAYDI.mesaj),
+    "ikizsiz kayıtta pencere kendi mesajını kaybetti; eski tanılar bu yolda çalışmaya devam etmelidir");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 📍 KAYNAK SATIRI ÇALIŞMA ALANINA GÖRELİDİR (VIT-GRAF-A18)
+//
+//   Founder aynı turda ipucunun kaynak satırında upuzun bir mutlak yol
+//   bastığını bildirdi. Kullanıcının okuduğu kayıt kendi çalışma alanının
+//   içindedir ve o alanın dışını anlatan önek hiçbir şey öğretmez. Buna karşılık
+//   pano kopyası TAM yolu korur, çünkü kopyalanan metin başka bir yere
+//   yapıştırıldığında çalışma alanını yanında taşımaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("kaynak satırı: ipucu çalışma alanına göreli yol basar, pano tam yolu korur", () => {
+  yuzeyKokleriniAyarla(["/Users/kullanici/calisma/proje"]);
+  try {
+    const ipucu = kayitIpucu(KIRPMA_KAYDI);
+    assert.ok(ipucu.includes("Kaynak: is/plan/omurga.sar:42:3"), `ipucu göreli yol basmadı:\n${ipucu}`);
+    assert.equal(ipucu.includes(KIRPMA_YOLU), false, "ipucu hâlâ mutlak yol taşıyor");
+    const pano = panoKaydiMetni({
+      etiket: kayitEtiketi(KIRPMA_KAYDI.mesaj), aciklama: "omurga.sar:42",
+      kod: KIRPMA_KAYDI.kod, duzey: KIRPMA_KAYDI.duzey, mesaj: KIRPMA_KAYDI.mesaj,
+      dosya: KIRPMA_KAYDI.dosya, satir: KIRPMA_KAYDI.satir, sutun: KIRPMA_KAYDI.sutun,
+    });
+    assert.ok(pano.includes(`${KIRPMA_YOLU}:42:3`), "pano kopyası tam yolu düşürdü");
+  } finally {
+    yuzeyKokleriniAyarla([]);
+  }
+});
+
+test("kaynak satırı: iç içe köklerden EN UZUNU seçilir, kapsamayan kök yolu kısaltmaz", () => {
+  yuzeyKokleriniAyarla(["/Users/kullanici", "/Users/kullanici/calisma/proje", "/baska/kok"]);
+  try {
+    assert.equal(calismaAlaninaGoreli(KIRPMA_YOLU), "is/plan/omurga.sar",
+      "iç içe kökler arasından en uzunu seçilmedi");
+    assert.equal(calismaAlaninaGoreli("/hicbir/kokte/olmayan.sar"), "/hicbir/kokte/olmayan.sar",
+      "hiçbir kökün kapsamadığı yol kısaltıldı; kullanıcıya var olmayan bir yol gösterilir");
+  } finally {
+    yuzeyKokleriniAyarla([]);
+  }
+});
+
+test("kaynak satırı: kök bağlanmamışsa yol olduğu gibi kalır", () => {
+  yuzeyKokleriniAyarla([]);
+  assert.equal(calismaAlaninaGoreli(KIRPMA_YOLU), KIRPMA_YOLU,
+    "kök bilinmezken yol kısaltıldı; bilinmeyen bir kökü tahmin etmek yanlış yol gösterir");
+});
+
+// ── ⑭ SATIR İÇİ KOPYALAMA DÜĞMESİ (VIT-GRAF-A17) ────────────────────────────
+//
+//   Founder 2026-08-16 gözle doğrulama turunda kopyalamanın çalıştığını fakat
+//   KEŞFEDİLEBİLİR olmadığını bildirdi: eylem yalnız sağ tık menüsünde yaşıyordu
+//   ve varlığı bilinmeyen bir eylemi menü görünür kılmaz. Hüküm şudur: aynı komut
+//   satırın üzerine gelindiğinde beliren bir düğme olarak da sunulur, sağ tık
+//   girdisi yerinde kalır ve iki yol TEK komuta iner.
+//
+//   Aşağıdaki nöbetler dört şeyi ölçer ve hiçbiri ötekinden türetilmez:
+//   düğmenin üç panelde de ilan edildiğini, sağ tık girdisinin kaldırılmadığını,
+//   ikinci bir kopyalama mantığının doğmadığını ve düğmenin simgesinin vektörel
+//   aileden geldiğini.
+
+/** Paket bildiriminin komut ve menü haneleri — nöbet kendi kopyasını okur. */
+const PAKET_YUZEYI = JSON.parse(oku("../package.json")) as {
+  contributes: {
+    commands: Array<{ command: string; title: string; icon?: string | { light: string; dark: string } }>;
+    menus: Record<string, Array<{ command: string; when?: string; group?: string }>>;
+  };
+};
+const SATIR_MENUSU = PAKET_YUZEYI.contributes.menus["view/item/context"] ?? [];
+const UC_PANEL_GORUNUSU = [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER];
+
+test("satır içi kopyalama düğmesi üç panelde de ilan edilmiştir ve sağ tık girdisi YERİNDE KALIR", () => {
+  for (const gorunus of UC_PANEL_GORUNUSU) {
+    const girdiler = SATIR_MENUSU.filter(
+      (g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${gorunus}`);
+    assert.ok(girdiler.some((g) => g.group === "inline"),
+      `"${gorunus}" görünüşünde satır içi kopyalama düğmesi ilan edilmemiş; eylem yalnız ` +
+      "sağ tık menüsünde kalır ve Founder'ın bildirdiği keşfedilebilirlik kusuru geri gelir");
+    assert.ok(girdiler.some((g) => g.group === "9_cutcopypaste"),
+      `"${gorunus}" görünüşünün sağ tık kopyalama girdisi kaldırılmış; iki erişim yolu ` +
+      "birbirini DIŞLAMAZ ve Adımın hükmü girdinin kalmasını şart koşar (VIT-GRAF-A17)");
+  }
+});
+
+test("düğmenin yerleşimi Yol Haritası koni kartı EMSALİNİ izler — panel başına ayrı desen kurulmaz", () => {
+  // Emsal ölçülür, varsayılmaz: koni kartı düğmesi aynı menü haritasında ve aynı
+  // `inline` kümesinde yaşar. Emsal bir gün başka bir mekanizmaya taşınırsa bu
+  // nöbet kırmızıya döner ve iki panelin iki ayrı desene ayrışması sessiz olmaz.
+  const emsal = SATIR_MENUSU.find((g) => g.command === "sarmal.koniKart");
+  assert.ok(emsal, "koni kartı düğmesi satır menüsünde bulunamadı; emsal ölçülemiyor");
+  assert.equal(emsal.group, "inline",
+    "emsal düğme artık `inline` kümesinde değil; kopyalama düğmesi emsalden ayrışmış olur");
+  for (const gorunus of UC_PANEL_GORUNUSU) {
+    const satirIci = SATIR_MENUSU.find(
+      (g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${gorunus}` && g.group === "inline");
+    assert.equal(satirIci?.group, emsal.group,
+      `"${gorunus}" düğmesi emsalin kümesini kullanmıyor; panel başına ayrı desen doğmuş`);
+  }
+});
+
+test("iki erişim yolu TEK komuta iner; İKİNCİ BİR KOPYALAMA MANTIĞI doğmamıştır", () => {
+  // ① Menü hanesinde kopyalamaya götüren bütün girdilerin komut kimliği tektir.
+  const kopyaGirdileri = SATIR_MENUSU.filter((g) => /Kopyala/i.test(g.command));
+  const kimlikler = new Set(kopyaGirdileri.map((g) => g.command));
+  assert.equal(kimlikler.size, 1,
+    `satır menüsünde ${kimlikler.size} ayrı kopyalama komutu var (${[...kimlikler].join(", ")}); ` +
+    "iki erişim yolu ayrı komuta inerse iki yol zamanla farklı metin üretir");
+  assert.equal(kopyaGirdileri.length, UC_PANEL_GORUNUSU.length * 2,
+    "üç panelin ikişer girdisi (sağ tık ve satır içi) beklenirken sayı tutmadı");
+  // ② Gövdede komut BİR KEZ kaydedilir ve panoya yazan tek el odur.
+  const eklenti = oku("../src/eklenti.ts");
+  const kayitSayisi = eklenti.match(/registerCommand\("sarmal\.satiriKopyala"/g)?.length ?? 0;
+  assert.equal(kayitSayisi, 1,
+    `kopyalama komutu gövdede ${kayitSayisi} kez kaydedilmiş; satır içi düğme için ikinci bir ` +
+    "işleyici yazılmış olabilir ve o işleyici zamanla asıl komuttan ayrışır");
+  // ③ Üç panelin hiçbiri panoya kendisi yazmaz; sağlayıcı yalnız METNİ hesaplar.
+  for (const ad of ["hatirlaticilar.ts", "bildirimler.ts", "fikirler.ts"]) {
+    const kaynak = oku(`../src/${ad}`);
+    assert.ok(!kaynak.includes("clipboard"),
+      `${ad} panoya kendisi yazıyor; pano yazan tek el komut olmalıdır (VIT-GRAF-A13 sözleşmesi)`);
+  }
+});
+
+test("satır içi düğmenin simgesi VEKTÖREL aileden gelir — hazır ikon kimliğine düşülmez", () => {
+  // Düğme artık satırda GÖRÜNÜR; codicon kimliği kalsaydı Founder'ın 2026-08-04
+  // hükmüne aykırı bir işaret dört panelin ortasında sürekli duruyor olurdu.
+  const komut = PAKET_YUZEYI.contributes.commands.find((k) => k.command === "sarmal.satiriKopyala");
+  assert.ok(komut, "kopyalama komutu paket bildiriminde ilan edilmemiş");
+  assert.ok(typeof komut.icon === "object" && komut.icon !== null,
+    `kopyalama düğmesinin simgesi hazır ikon kimliğidir (${JSON.stringify(komut.icon)}); ` +
+    "satırda görünen her işaret vektörel aileden gelir (VIT-KIMLIK-A05)");
+  assert.ok((SATIR_SIMGELERI as readonly string[]).includes("kopya"),
+    "kopyalama işareti satır ailesinde ilan edilmemiş; düğme ailede karşılığı olmayan bir simge kullanıyor");
+  assert.equal(komut.icon.light, satirSvgVaryanti("kopya", "duz", "acik"),
+    "düğmenin açık tema simgesi çizelgenin ürettiği yoldan ayrışmış");
+  assert.equal(komut.icon.dark, satirSvgVaryanti("kopya", "duz", "koyu"),
+    "düğmenin koyu tema simgesi çizelgenin ürettiği yoldan ayrışmış");
+  for (const yol of [komut.icon.light, komut.icon.dark])
+    assert.ok(existsSync(fileURLToPath(new URL(`../${yol}`, import.meta.url))),
+      `düğmenin simgesi diskte yok: ${yol} — düğme boş bir kutuya bakar`);
+});
+
+// ── ⑭b DÜĞMENİN BELİRDİĞİ HER SATIR BİR CEVAP ÜRETİR ────────────────────────
+//
+//   ÖLÇÜLMÜŞ KUSUR (2026-08-29). Düğme satırın türüne bakmaz ve üç panelin HER
+//   satırında belirir; dolayısıyla her satırın bir cevabı olmak zorundadır.
+//   Fikirler panelinin proje satırı bu şartı karşılamıyordu: ortak pano
+//   çevirici düğümün yalnız `tur` etiketine bakıyor, Fikir kaydı taşıyan kümeyi
+//   kendi evreninden sanıyor ve blok üretimi `tani.mesaj` okunamadığı için
+//   çöküyordu. Kusur sağ tık yolunda da vardı fakat gizliydi; düğme onu bir
+//   fare hareketi uzağa getirir. Aşağıdaki iki nöbet hem kapıyı hem de kapının
+//   NEDEN var olduğunu ölçer.
+
+test("yabancı küme ortak çeviriciden GEÇMEZ — Fikirler proje satırı tanı çevirisine düşmez", () => {
+  const f = fikirKaydi(FIKIR_KAYNAGI);
+  const kume = projeyeGrupla([f] as never)[0];
+  assert.ok(kume.kayitlar.length > 0, "fikstür boş küme üretti; nöbet hiçbir şey ölçmez");
+  assert.equal(panoDugumu({ tur: "proje", kume }), undefined,
+    "ortak çevirici Fikir kaydı taşıyan kümeyi tanı kümesi sandı; blok üretimi çöker");
+  // KAPININ GEREKÇESİ ÖLÇÜLÜR: kapı olmasaydı üretim tam olarak burada patlardı.
+  assert.throws(() => panoMetni({ tur: "küme", baslik: kume.proje.ad, kayitlar: [f] as never }),
+    /mesaj/,
+    "Fikir kaydı tanı bloğuna sokulduğunda artık patlamıyor; kapının gerekçesi ölçülemez hâle gelmiş");
+});
+
+test("Fikirler proje satırı kendi panelinden ORTAK birleştiriciyle cevap alır", () => {
+  const f = fikirKaydi(FIKIR_KAYNAGI);
+  const kume = projeyeGrupla([f] as never)[0];
+  const beklenen = panoKumeMetni(kume.proje.ad, kume.kayitlar.map((k) => fikirPanoMetni(k as never)));
+  assert.ok(beklenen.startsWith(kume.proje.ad), "küme bloğu başlığını taşımıyor");
+  assert.ok(beklenen.includes("FKR-ORTAK"), "küme bloğu Fikrin kimliğini düşürmüş");
+  assert.ok(beklenen.includes("/p/plan/fikirler.sar"), "küme bloğu tam kaynak yolunu düşürmüş");
+  // Panelin o kapıyı GERÇEKTEN taşıdığı ve ikinci bir biçim icat etmediği ölçülür.
+  assert.ok(/d\.tur === "proje"[\s\S]{0,600}?panoKumeMetni\(/.test(FIKIRLER_KAYNAK),
+    "Fikirler paneli proje satırını ortak birleştiriciye bağlamıyor; satır ya çöker ya cevapsız kalır");
+  assert.ok(/d\.tur === "fikir"[\s\S]{0,200}?fikirPanoMetni\(/.test(FIKIRLER_KAYNAK),
+    "Fikirler paneli kayıt satırının pano kapısını kaybetmiş");
 });

@@ -39,7 +39,7 @@ import {
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
-  fikirProjeAciklamasi, fikirProjeIpucu,
+  fikirProjeAciklamasi, fikirProjeIpucu, panoKumeMetni,
 } from "./yuzey-metinleri.ts";
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
@@ -205,9 +205,22 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
    */
   panoMetni(oge: unknown): { metin: string; adet: number } | undefined {
     if (typeof oge !== "object" || oge === null || !("tur" in oge)) return undefined;
-    const d = oge as { tur: string; kayit?: FikirKaydi };
-    if (d.tur !== "fikir" || !d.kayit) return undefined;
-    return { metin: fikirPanoMetni(d.kayit), adet: 1 };
+    const d = oge as { tur: string; kayit?: FikirKaydi; kume?: ProjeKumesi<FikirKaydi> };
+    if (d.tur === "fikir" && d.kayit) return { metin: fikirPanoMetni(d.kayit), adet: 1 };
+    // PROJE SATIRI DA KOPYALANIR VE KOMŞU PANELLERİN KURALINI İZLER
+    // (VIT-GRAF-A17). Kopyalama eylemi artık satırın üzerine gelindiğinde
+    // düğme olarak da belirdiği için her satırın bir cevabı olmak zorundadır;
+    // görünen ama iş görmeyen bir düğme, keşfedilebilirlik adına eklenmiş
+    // olmasına rağmen keşfedileni boşa çıkarır. Küme hiçbir kaydı düşürmez ve
+    // blokları ORTAK birleştirici dizer (yuzey-metinleri.panoKumeMetni);
+    // panele özgü ikinci bir pano biçimi doğmaz.
+    if (d.tur === "proje" && d.kume?.proje && d.kume.kayitlar) {
+      return {
+        metin: panoKumeMetni(d.kume.proje.ad, d.kume.kayitlar.map(fikirPanoMetni)),
+        adet: d.kume.kayitlar.length,
+      };
+    }
+    return undefined;
   }
 
   getParent(): PanelOge | undefined { return undefined; }

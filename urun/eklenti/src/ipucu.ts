@@ -9,7 +9,7 @@ import * as vscode from "vscode";
 import { agacYüz } from "../../cekirdek/src/agac.ts";   // ağaç-yüzü turu
 import { snfBul, rehberBul, simgeSec } from "./ortak.ts";
 // SAF veri mantığı — fikstürlü testte (NTK-A01): tanım taraması + hüküm eki + blok tespiti
-import { kodTanimlariTara, kararMetniEki, blokIcindeMi, tanimOzetiCikar } from "./ipucu-cekirdek.ts";
+import { kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzetiCikar } from "./ipucu-cekirdek.ts";
 // VIT-GRAF-A14: satır-regex'in kaçırdığı (çok satırlı yazılmış) tanımlar için AST yedeği —
 // kimlik indeksi dekorla AYNI evrendir; süslü sözcenin ipucusuz kalması yapısal olarak kapanır.
 import { kimlikIndeksi, INDEKS_DISI, dosyaOkuGuvenli } from "../../cekirdek/src/kimlik.ts";
@@ -91,11 +91,49 @@ function kimlikYedekIpucu(
     aralik);
 }
 
-/** İmleç bir -->| ... |<-- belge bloğunun İÇİNDE mi? — mantık saf çekirdekte (ipucu-cekirdek.ts). */
-function blokIcinde(doc: vscode.TextDocument, pos: vscode.Position): boolean {
+/** İmlecin bulunduğu satıra kadarki metin — iki bekçi de aynı diziyi okur. */
+function satirlaraKadar(doc: vscode.TextDocument, pos: vscode.Position): string[] {
   const satirlar: string[] = [];
   for (let s = 0; s <= pos.line; s++) satirlar.push(doc.lineAt(s).text);
-  return blokIcindeMi(satirlar, pos.line, pos.character);
+  return satirlar;
+}
+
+/** İmleç bir -->| ... |<-- belge bloğunun İÇİNDE mi? — mantık saf çekirdekte (ipucu-cekirdek.ts). */
+function blokIcinde(doc: vscode.TextDocument, pos: vscode.Position): boolean {
+  return blokIcindeMi(satirlaraKadar(doc, pos), pos.line, pos.character);
+}
+
+/** İmleç bir yorumun İÇİNDE mi? — mantık saf çekirdekte (ipucu-cekirdek.ts). */
+function yorumIcinde(doc: vscode.TextDocument, pos: vscode.Position): boolean {
+  return yorumIcindeMi(satirlaraKadar(doc, pos), pos.line, pos.character);
+}
+
+/**
+ * İNSAN METNİ İÇİNDEKİ KOD ATFININ İPUCUSU — belge bloğu ile yorumun ORTAK
+ * istisnası. İki bölge de insan metnidir ve ikisinde de parametre ile tip
+ * kartları susar; buna karşılık bir KOD atfına gelen okuyucu hedefi dosya
+ * açmadan görür. Karar tek yerde yaşar, çünkü iki bölgede iki ayrı kopya
+ * yazılırsa biri düzeltilirken öteki sessizce bayatlar.
+ */
+async function insanMetniKodIpucu(
+  doc: vscode.TextDocument, pos: vscode.Position, etkinDil: CiktiDili,
+): Promise<vscode.Hover | undefined> {
+  const kodAralik = doc.getWordRangeAtPosition(pos, /[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+/u);
+  if (!kodAralik) return undefined;
+  const kelime = doc.getText(kodAralik);
+  const kayit = (await kodIndeksle()).get(kelime);
+  if (kayit) {
+    const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
+    const goreli = vscode.workspace.asRelativePath(kayit.dosya);
+    return baloncuk(
+      `🧩 **${kelime}** — ${gorunenTip}` +
+      (kayit.ne ? `\n\n${kayit.ne}` : "") +
+      kararMetniEki(kayit) +
+      `\n\n📍 [${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
+      kodAralik);
+  }
+  // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım).
+  return kimlikYedekIpucu(kelime, doc, kodAralik, etkinDil);
 }
 
 export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
@@ -119,24 +157,8 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
       //    NTK-A01 (Founder isteği): KOD atıfları İSTİSNADIR — belge bloğundaki DIL-1.1 gibi
       //    bir atfa gelen kullanıcı, hedefi dosya açmadan ipucu penceresinde görür.
       if (blokIcinde(doc, pos)) {
-        const kodAralik = doc.getWordRangeAtPosition(pos, /[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+/u);
-        if (kodAralik) {
-          const kelime = doc.getText(kodAralik);
-          const kayit = (await kodIndeksle()).get(kelime);
-          if (kayit) {
-            const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
-            const goreli = vscode.workspace.asRelativePath(kayit.dosya);
-            return baloncuk(
-              `🧩 **${kelime}** — ${gorunenTip}` +
-              (kayit.ne ? `\n\n${kayit.ne}` : "") +
-              kararMetniEki(kayit) +
-              `\n\n📍 [${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
-              kodAralik);
-          }
-          // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım).
-          const yedek = kimlikYedekIpucu(kelime, doc, kodAralik, etkinDil);
-          if (yedek) return yedek;
-        }
+        const kodIpucu = await insanMetniKodIpucu(doc, pos, etkinDil);
+        if (kodIpucu) return kodIpucu;
         const tag = doc.getWordRangeAtPosition(pos, /<\/?[\p{L}\p{N}_-]+(\s[^>]*)?>/u);
         if (tag) {
           const ad = /<\/?([\p{L}\p{N}_-]+)/u.exec(doc.getText(tag))?.[1] ?? "";
@@ -144,6 +166,17 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
           return baloncuk(bolumEtiketiIpucu(ad, aciklama), tag);
         }
         return undefined;
+      }
+
+      // ── Yorum İÇİ: yorum da belge bloğu gibi İNSAN METNİDİR — parametre ve tip
+      //    kartları burada susar (HTR-IPUCU-YORUM-KORUMASI · Founder ekran görüntüsü
+      //    2026-08-08). Ölçülen kusur şuydu: bir yorumda geçen sıradan Türkçe "her"
+      //    sözcüğünün üstüne gelindiğinde motor onu Sarmal parametresi sanıp koleksiyon
+      //    kartını açıyor ve okuyucuyu yanıltıyordu. KOD atıfları burada da İSTİSNADIR,
+      //    çünkü belge bloğunda aynı istisna Founder isteğiyle tanınmıştır ve atıf
+      //    görünümü yorum satırını zaten kapsar; iki yüzey aynı kuralı söylemelidir.
+      if (yorumIcinde(doc, pos)) {
+        return await insanMetniKodIpucu(doc, pos, etkinDil);
       }
 
       // ── EMJ-A03: kanon emojisi — YAZIMDAKİ emojiye emoji↔ad baloncuğu.

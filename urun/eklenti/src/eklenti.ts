@@ -78,7 +78,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği
-import { gurultuMu, sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit
+import { gurultuMu, sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -90,6 +90,7 @@ import {
   panoyaYazildi,
   panoyaKopyalanacakSatirYok,
   yuzeyDiliniAyarla,
+  yuzeyKokleriniAyarla,
 } from "./yuzey-metinleri.ts";
 
 let koleksiyon: vscode.DiagnosticCollection;
@@ -180,8 +181,16 @@ export interface SarmalEklentiYuzu {
   postaKapilari(): { dosya: string; kod: string }[];
 }
 
+/** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
+function yuzeyKokleriniTazele(): void {
+  yuzeyKokleriniAyarla((vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+}
+
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
+  // 📍 Kaynak satırı çalışma alanına göreli yazılsın diye kökler kataloga bağlanır;
+  //    klasör kümesi değişince bağ tazelenir, yoksa yol eski köke göre kısalırdı.
+  yuzeyKokleriniTazele();
   koleksiyon = vscode.languages.createDiagnosticCollection("sarmal");
   context.subscriptions.push(koleksiyon);
 
@@ -197,6 +206,24 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // komutla olur. KOMUT TEKTİR, çünkü VS Code satırın hangi panelden geldiğini
   // söylemez: metin kararını üç sağlayıcı da AYNI saf çekirdekten alır ve komut
   // yalnız panoya yazar. Metin bulunamazsa hiçbir şey yazılmaz ve sebep söylenir.
+  //
+  // 🖱️ VIT-GRAF-A17: aynı komut artık İKİNCİ bir erişim yolundan da çağrılır.
+  // Founder 2026-08-16 gözle doğrulama turunda kopyalamanın çalıştığını fakat
+  // keşfedilebilir olmadığını bildirdi; sağ tık menüsü, varlığı bilinmeyen bir
+  // eylemi görünür kılmaz. Bu yüzden üç panelin satırına, üzerine gelindiğinde
+  // beliren bir düğme kondu. Düğme paket bildirimindeki `view/item/context`
+  // haritasına `inline` kümesiyle yazılır ve Yol Haritası panelindeki koni kartı
+  // düğmesinin emsalini birebir izler; panel başına ayrı bir desen kurulmaz.
+  //
+  // BU GÖVDE DEĞİŞMEDİ VE DEĞİŞMEMELİDİR. İki erişim yolu da BU komuta iner,
+  // dolayısıyla ikinci bir kopyalama mantığı doğmaz ve iki yol aynı pano metnini
+  // üretir; ayrı bir düğme işleyicisi yazılsaydı iki yol zamanla ayrışır ve
+  // kullanıcı hangi yolu seçtiğine göre farklı metin alırdı. VIT-POSTA-A04'ün
+  // yaşadığı iç içe düğme tuzağı burada doğmaz, çünkü tuzak webview'in HTML
+  // ağacına aitti: orada satırın kendisi bir düğme öğesiydi ve içine ikinci bir
+  // düğme yuvalanamıyordu. Ağaç görünüşünde satır bir HTML düğmesi değildir ve
+  // eylem yuvası editörün kendi menü haritasından gelir; satırın tek tık
+  // davranışı (`sarmal.dosyaAc`) ile klavye gezinmesi bu yüzden aynen korunur.
   context.subscriptions.push(
     vscode.commands.registerCommand("sarmal.satiriKopyala", async (oge: unknown) => {
       const pano = hatirlaticilar?.panoMetni(oge) ?? bildirimler?.panoMetni(oge)
@@ -339,9 +366,20 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     const donguHar = new Map<string, Tani[]>();
     const panelUreticileri = panelCaprazUreticiKumesi();
     const bugun = new Date().toISOString().slice(0, 10);
-    for (const kok of vscode.workspace.workspaceFolders ?? []) {
+    // ⚡ PRF-A06: olay-tetikli tur ODAKTAKİ varlığa daralır. Ölçüm (2026-08-29):
+    // `denetimKos` sarmal kökünde 1828 ms, çatı kökünde 4229 ms — ikisi de
+    // bölünmez senkron bloktur ve o pencerede yazım takılır. Daraltmanın hükmü
+    // MIM-1.1'dir: odak açıkken paneller zaten yalnız odaktaki varlığı gösterir,
+    // dolayısıyla odak dışında hesaplanan çapraz tanı üretildiği anda süzgeçte
+    // eleniyordu. Soğuk açılış ile ayar/dil/odak turları TAM koşar (Adım sınırı).
+    const darKok = turKapsami(
+      tetik, aktifVarlik, odakAcik(),
+      (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+    const denetlenenKokler = darKok !== undefined
+      ? [darKok]
+      : (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+    for (const kokYol of denetlenenKokler) {
       try {
-        const kokYol = kok.uri.fsPath;
         const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
         const snfYol = varlikDosyasiBul(kokYol, join("oz", "siniflama", "kayit.json"), koklar);
         if (!snfYol) continue;   // taban kanon bu kökte bulunamadı → tam-orkestrasyon anlamsız (gömülü kanona düşülür, canlı tanı akışı bozulmaz)
@@ -375,7 +413,15 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // dosya (ders malzemesi) DENETLEHEPSI yolundan da paneli kirletemez — tek-dosya
       // `denetle` süzgecinin ikizi; CLI muafiyetiyle simetri kapandı (kapi_kapsami).
       if (doc.getText().split("\n", 5).some((s) => BILEREK_HATALI.test(s))) { taniSil(doc.uri, false); continue; }
-      const capraz = donguHar.get(fsPath) ?? [];
+      // ⚡ PRF-A06: tur daraltılmışsa kapsam DIŞINDAKİ dosyanın çapraz tanısı bu
+      // turda hiç hesaplanmamıştır. Boş liste yazmak onları SİLERDİ ve odak
+      // dışındaki varlığın kayıtları sessizce kaybolurdu; bunun yerine önceki
+      // turun sonucu olduğu gibi korunur. Korunan kayıt odak oraya döndüğünde
+      // tazelenir: odak değişimi tam tur ister (aktifVarligiGuncelle).
+      const kapsamDisi = darKok !== undefined && !kapsamIcinde(fsPath, darKok);
+      const capraz = kapsamDisi
+        ? (caprazOnbellek.get(fsPath) ?? [])
+        : (donguHar.get(fsPath) ?? []);
       caprazOnbellek.set(fsPath, capraz);   // SRN-PANEL-DALGA: tek-dosya yolu düzenlemede bunları da yayınlar
       // Üçüncü argüman YAYINI KAPATIR. Tam tarama yüzlerce belge gezer; her belgede
       // çizim tetiklenseydi Bildirimler paneli tur başına onlarca kez yeniden
@@ -398,7 +444,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // ve ikinci bir ayrıştırması kalmaz — ölçülen maliyet açılışta iki yüz doksan
     // sekiz `openTextDocument` çağrısıydı ve bu bildirimle sıfıra iner.
     anaGoruntuyuBildir(programlar);
-    mercek.turBitti({ tetik, süreMs: Date.now() - turBasi, dosyaSayısı: dosyalar.length });   // 🔬 PRF-A01
+    // 🔬 PRF-A01 · ⚡ PRF-A06: dar tur kanalda kapsamıyla birlikte okunur.
+    mercek.turBitti({
+      tetik, süreMs: Date.now() - turBasi, dosyaSayısı: dosyalar.length,
+      kapsam: darKok !== undefined ? basename(darKok) : undefined,
+    });
   };
   // 🧯 PRF-A02 tek-uçuş kilidi: tam-proje denetimi ÜST ÜSTE BİNMEZ — koşarken
   // gelen istekler tek bayrağa iner (mercek 'atlanan' sayar), tur bitince bir
@@ -408,7 +458,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // RED-1 R1: çöken tur sessiz yutulmaz — kanala düşer (kilit yine asılı kalmaz).
     (h) => perfKanal.appendLine(IZ_METINLERI.denetimCoktu(h instanceof Error ? h.message : String(h))));
 
+  // ⚡ PRF-A06: odak değişimi tam tur ister — kanca kilit kurulduktan SONRA
+  // bağlanır, böylece açılış turu (aşağıda) ikinci bir turu tetiklemez.
   aktifVarligiGuncelle(vscode.window.activeTextEditor);   // MIM-1.1 ②: açılış odağı aktif dosyadan
+  odakTuruIste = (t) => denetimKilidi.iste(t);
   denetimKilidi.iste("başlangıç"); // başlangıç: tüm çalışma-alanı + ORK-1.2 DAG döngü denetimi
   void kimlikIndeksiniTara(); // 🗂️ EKL-F11-A01: kimlik indeksi arka-planda dolar (activate'i bekletmez)
   vscode.workspace.textDocuments.forEach(denetle); // hâlihazırda AÇIK belgeler (çalışma-alanı dışı dahil) hemen denetlensin
@@ -480,6 +533,14 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     vscode.workspace.onDidCloseTextDocument((doc) => {
       belgeKapandi(doc);
       if (INDEKS_DISI.test(doc.uri.fsPath)) kimlikIndeksi.dosyaSil(doc.uri.fsPath);
+    }),
+    // 📍 Çalışma alanına klasör eklenip çıkarıldığında kökler tazelenir ve paneller
+    //    yeniden çizilir; aksi hâlde ipucunun kaynak satırı artık var olmayan bir
+    //    köke göre kısalır ve kullanıcıya yanlış bir yol gösterir (VIT-GRAF-A18).
+    vscode.workspace.onDidChangeWorkspaceFolders(() => {
+      yuzeyKokleriniTazele();
+      hatirlaticilar?.diliTazele();
+      bildirimler?.diliTazele();
     }),
     // Ayar değişince tüm çalışma-alanını yeniden değerlendir.
     vscode.workspace.onDidChangeConfiguration((e) => {
@@ -871,12 +932,21 @@ function hepsiniYenidenYayinla(): void {
   for (const dinleyici of odakDinleyicileri) dinleyici();
 }
 
+/** ⚡ PRF-A06: odak DEĞİŞTİĞİNDE yeni odağın çapraz tanılarını tazeleyecek tam
+ *  tur isteyen kanca (activate kurar). Daraltılmış turlar odak dışındaki
+ *  varlığın kaydını KORUR ama tazelemez; odak oraya döndüğünde resmin güncel
+ *  olması bu tura bağlıdır. Kanca kurulmadan (saf sınama) davranış eskisi gibidir. */
+let odakTuruIste: ((tetik: string) => void) | undefined;
+
 function aktifVarligiGuncelle(editor: vscode.TextEditor | undefined): void {
   if (!editor || editor.document.uri.scheme !== "file") return;   // yapışkan: panel boşalmaz
   const kok = varlikKoku(editor.document.uri.fsPath);
   if (!kok || kok === aktifVarlik) return;                        // köksüz → yapışkan
   aktifVarlik = kok;
   hepsiniYenidenYayinla();
+  // Odak turu TAM koşar (turKapsami 'odak' tetiğini daraltmaz): yeni odağın
+  // çapraz tanıları en son ne zaman hesaplandıysa o hâldedir ve tazelenmelidir.
+  odakTuruIste?.("odak");
 }
 
 // ── 🗂️ EKL-F11-A01: kimlik indeksi beslemesi ────────────────────────────────

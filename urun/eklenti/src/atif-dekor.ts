@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";
+import { kimlikIndeksi, INDEKS_DISI, adAlanliTanimlar } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı kardeş kökte çözülür (KPS-ADA-A01)
 import { atifAraliklariTopla } from "./atif-cekirdek.ts";   // SAF karar mantığı — fikstürlü testte (NTK-A01)
 
 /** Link görünümü — tema link rengi + altı çizgi (kullanıcının tanıdığı evrensel işaret). */
@@ -39,7 +39,11 @@ export function atifDekorBoya(editor: vscode.TextEditor | undefined): void {
 
   const satirlar: string[] = [];
   for (let s = 0; s < doc.lineCount; s++) satirlar.push(doc.lineAt(s).text);
-  editor.setDecorations(tur, atifAraliklariTopla(satirlar, kodlar, buradakiTanimlar)
+  // ORK-4 (KPS-ADA-A01): ad alanlı sözcenin tanımı bu çalışma alanının indeksinde
+  // değil kardeş kökte yaşar; dekor onu tanıma gitme yüzeyiyle AYNI çekirdekten sorar.
+  const adAlanliCozulur = (kod: string): boolean =>
+    adAlanliTanimlar(kod, doc.uri.fsPath).length > 0;
+  editor.setDecorations(tur, atifAraliklariTopla(satirlar, kodlar, buradakiTanimlar, adAlanliCozulur)
     .map((a) => new vscode.Range(a.satir, a.baslangic, a.satir, a.bitis)));
 }
 

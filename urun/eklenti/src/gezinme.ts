@@ -17,12 +17,15 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { kimlikIndeksi, gezinmeSuzgeci, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";
+import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
 import { GEZINME_METINLERI, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 
 /** Kod sözcesi: tire/alt-çizgi İÇEREN tam sözce (EKL-F11-A01 · şüphedeDur).
- *  VS Code'un varsayılan sözcük deseni tirede böler — buradaki desen bölmez. */
-const KOD_SOZCUK = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*(?:\.[0-9]+){0,2}/;
+ *  VS Code'un varsayılan sözcük deseni tirede böler — buradaki desen bölmez.
+ *  ORK-4 ad alanı ayracı (`::`) da sözcenin İÇİNDEDİR (KPS-ADA-A01): ayraç
+ *  dışarıda kalsaydı imleç `PRJ-A::KOD-X` üstündeyken yalnız yarısı seçilir ve
+ *  F12 ad alanının kendisini arardı. */
+const KOD_SOZCUK = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*(?:::[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*)?(?:\.[0-9]+){0,2}/;
 
 export function gezinmeKaydi(
   context: vscode.ExtensionContext,
@@ -61,8 +64,12 @@ export function gezinmeKaydi(
         const kod = kodAl(doc, poz);
         if (!kod) return undefined;
         tazele(doc);
-        return kimlikIndeksi.tanimlar(kod, suzgec(doc))
-          .map((t) => yer(t.dosya, t.satir, t.sutun, kod.length));
+        const yerel = kimlikIndeksi.tanimlar(kod, suzgec(doc));
+        // ORK-4 (KPS-ADA-A01): ad alanlı kodun tanımı yüklü evrende değil, çatının
+        // duyurduğu kardeş kökte yaşar; yerel indeks sustuğunda oraya bakılır.
+        const kaynak = doc.uri.scheme === "file" ? doc.uri.fsPath : undefined;
+        const tanimlar = yerel.length || !kaynak ? yerel : adAlanliTanimlar(kod, kaynak);
+        return tanimlar.map((t) => yer(t.dosya, t.satir, t.sutun, t.kod.length));
       },
     }),
     // ⇧F12 · Tüm Referanslar — atıflar + (istenirse) tanımın kendisi.
@@ -75,8 +82,13 @@ export function gezinmeKaydi(
         const yerler = kimlikIndeksi.atiflar(kod, s)
           .map((a) => yer(a.dosya, a.satir, a.sutun, kod.length));
         if (baglam.includeDeclaration) {
-          yerler.push(...kimlikIndeksi.tanimlar(kod, s)
-            .map((t) => yer(t.dosya, t.satir, t.sutun, kod.length)));
+          // ORK-4: ad alanlı kodun tanımı kardeş köktedir; yerel indeks susunca
+          // ⇧F12 de tanıma gitme ile AYNI çekirdekten okur (YUZ-1.2).
+          const yerelTanimlar = kimlikIndeksi.tanimlar(kod, s);
+          const kaynak = doc.uri.scheme === "file" ? doc.uri.fsPath : undefined;
+          const tanimlar = yerelTanimlar.length || !kaynak
+            ? yerelTanimlar : adAlanliTanimlar(kod, kaynak);
+          yerler.push(...tanimlar.map((t) => yer(t.dosya, t.satir, t.sutun, t.kod.length)));
         }
         return yerler;
       },

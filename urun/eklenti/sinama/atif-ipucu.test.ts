@@ -8,13 +8,15 @@
 //     (karar: "…") da yakalanır — K-XX ipucusu hükmü dosya açmadan gösterir.
 //   ③ Karar metni eki — başlıkla aynıysa yinelenmez, 420 karakterde kesilir.
 //   ④ Belge bloğu tespiti — -->| |<-- karakter hassas iç/dış ayrımı.
+//   ⑤ Yorum tespiti — HTR-IPUCU-YORUM-KORUMASI: yorum da insan metnidir ve
+//     belge bloğuyla aynı susma kuralına bağlıdır; KOD atfı istisnadır.
 //   Koşum: cd eklenti && npm test
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { atifAraliklariTopla, KOD_DESENI } from "../src/atif-cekirdek.ts";
-import { kodTanimlariTara, kararMetniEki, blokIcindeMi } from "../src/ipucu-cekirdek.ts";
+import { kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi } from "../src/ipucu-cekirdek.ts";
 
 // ── ① Link kararı (atif-cekirdek) ────────────────────────────────────────────
 
@@ -130,4 +132,78 @@ test("özet katmanı: Karar'ın özet: alanı yakalanır ve ipucu ekinde HÜKÜM
 test("özet katmanı: özetsiz karar eski davranışını korur (yalnız hüküm eki)", () => {
   const ek = kararMetniEki({ ne: "başlık", hukum: "hüküm" });
   assert.ok(!ek.includes("Özet") && ek.includes("⚖️ **Karar metni:** hüküm"));
+});
+
+// ── ⑤ Yorum tespiti (HTR-IPUCU-YORUM-KORUMASI) ──────────────────────────────
+//
+//   Founder 2026-08-08 tarihinde ekran görüntüsüyle şunu gösterdi: bir yorumda
+//   geçen sıradan Türkçe "her" sözcüğünün üstüne gelindiğinde motor onu Sarmal
+//   parametresi sanıp koleksiyon kartını açıyor ve okuyucuyu yanıltıyordu.
+//   Aşağıdaki nöbetler, yorumun belge bloğuyla aynı susma kuralına bağlandığını
+//   ve susmanın kaynağın söz dizimini bilerek verildiğini ölçer.
+
+test("yorum tespiti: satır yorumunun İÇİ yorumdur, öncesi yorum değildir", () => {
+  const satir = `  durum: beklemede   // her satır bir işi anlatır`;
+  const yorumBasi = satir.indexOf("//");
+  assert.equal(yorumIcindeMi([satir], 0, yorumBasi - 1), false, "yorumdan önceki kod yorum sayıldı");
+  assert.equal(yorumIcindeMi([satir], 0, satir.indexOf("her") + 1), true, "yorumdaki sözcük korunmadı");
+});
+
+test("yorum tespiti: dizgi içindeki eğik çizgi çifti yorum değildir", () => {
+  const satir = `  ne: "adres https://ornek.tr/her sayfası"`;
+  assert.equal(yorumIcindeMi([satir], 0, satir.indexOf("her") + 1), false,
+    "dizgi içindeki // yorum sanıldı; gerçek ipucu yanlışlıkla susturulur");
+});
+
+test("yorum tespiti: çok satırlı blok yorumu kapanana kadar sürer", () => {
+  const satirlar = ["/* her", "   satır", "*/ ne: her"];
+  assert.equal(yorumIcindeMi(satirlar, 0, 4), true, "blok yorumunun ilk satırı korunmadı");
+  assert.equal(yorumIcindeMi(satirlar, 1, 5), true, "blok yorumunun orta satırı korunmadı");
+  assert.equal(yorumIcindeMi(satirlar, 2, 8), false, "blok yorumu kapandıktan sonrası hâlâ yorum sayıldı");
+});
+
+test("yorum tespiti: belge bloğunun içi yorum sayılmaz — orayı blok bekçisi karşılar", () => {
+  const satirlar = ["-->|", "  // her satır", "|<--"];
+  assert.equal(yorumIcindeMi(satirlar, 1, 8), false,
+    "belge bloğu içindeki satır iki bekçiye birden düştü; sorumluluk tek bekçide olmalıdır");
+  assert.equal(blokIcindeMi(satirlar, 1, 8), true, "belge bloğu bekçisi kendi bölgesini görmüyor");
+});
+
+test("yorum tespiti: yorumsuz kod satırı hiçbir sütunda yorum değildir", () => {
+  const satir = `Adım( kod: ADM-BIR, ne: "her iş" )`;
+  for (let s = 0; s < satir.length; s++) {
+    assert.equal(yorumIcindeMi([satir], 0, s), false, `sütun ${s} yanlışlıkla yorum sayıldı`);
+  }
+});
+
+// ── ⑥ ORK-4 · ad alanlı atıf (KPS-ADA-A01) ──────────────────────────────────
+//   Mutasyon kanıtı: atif-cekirdek.ts içindeki KOD_DESENI'nden `::` dalı
+//   çıkarıldığında aşağıdaki ilk sınama KIRILIR — desen `PRJ-A::KOD-X` sözcesini
+//   iki ayrı atıf sayar ve dekor ad alanının yalnız yarısını boyar. Ayrı bir
+//   mutasyon olarak `adAlanliCozulur` kapısı yok sayılıp `kodlar.has` kullanılırsa
+//   ikinci sınama kırılır: kardeş kökte çözülen hedef link işareti alamaz.
+
+test("ORK-4: ad alanlı sözce TEK atıf aralığıdır", () => {
+  const araliklar = atifAraliklariTopla(
+    ["Blok( kod: BLK-ORK-ZEKA, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS )"],
+    new Set(["PRJ-SARMAL::FAZ-2026-AGUSTOS"]), new Set());
+  assert.equal(araliklar.length, 1);
+  assert.equal(araliklar[0].kod, "PRJ-SARMAL::FAZ-2026-AGUSTOS");
+});
+
+test("ORK-4: ad alanlı hedef kardeş kök kapısından çözülünce link işareti alır", () => {
+  const satirlar = ["Blok( kod: BLK-X, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS )"];
+  const kapisiz = atifAraliklariTopla(satirlar, new Set(["BLK-X"]), new Set(["BLK-X@0"]));
+  assert.equal(kapisiz.length, 0, "kapı yokken ad alanlı hedef yerel indekste bulunamaz");
+  const kapili = atifAraliklariTopla(satirlar, new Set(["BLK-X"]), new Set(["BLK-X@0"]),
+    (kod) => kod === "PRJ-SARMAL::FAZ-2026-AGUSTOS");
+  assert.deepEqual(kapili.map((a) => a.kod), ["PRJ-SARMAL::FAZ-2026-AGUSTOS"]);
+});
+
+test("ORK-4: niteliksiz sözceler ad alanı kapısından ETKİLENMEZ (geriye uyum)", () => {
+  const araliklar = atifAraliklariTopla(
+    ["bağımlı: [ ADM-BIR, YOK-BOYLE-KOD ]"], new Set(["ADM-BIR"]), new Set(),
+    () => true);
+  assert.deepEqual(araliklar.map((a) => a.kod), ["ADM-BIR"],
+    "ad alanı kapısı yalnız ayraç taşıyan sözceye bakar");
 });

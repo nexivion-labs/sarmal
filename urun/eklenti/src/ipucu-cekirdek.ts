@@ -11,6 +11,9 @@ import { kararMetniIpucuEki } from "./yuzey-metinleri.ts";
 //     başlıkla aynıysa yinelenmez, okunur uzunlukta kesilir.
 //   ③ blokIcindeMi — imleç -->| |<-- belge bloğunun içinde mi (karakter
 //     hassas): blok içinde parametre/tip ipuçları susar, KOD atfı istisnadır.
+//   ④ yorumIcindeMi — imleç bir yorumun içinde mi (satır yorumu ya da çok
+//     satırlı blok yorumu). Yorum da belge bloğu gibi insan metnidir ve aynı
+//     susma kuralına bağlıdır; KOD atfı orada da istisnadır.
 //   Fikstürlü sınama: sinama/atif-ipucu.test.ts.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -71,6 +74,66 @@ export function tanimOzetiCikar(metin: string, kod: string): { tip: string; ad?:
   if (!baglam) return undefined;
   const ne = baglam.alanlar.find(([alan]) => alan === "ne")?.[1];
   return { tip: baglam.dugum.tip, ad: baglam.dugum.ad, ne };
+}
+
+/**
+ * İmleç bir YORUMUN içinde mi? Hem eğik çizgi çiftiyle açılan satır yorumu,
+ * yani imden satır sonuna kadarki bölge, hem de yıldızlı imlerle açılıp
+ * kapanan çok satırlı blok yorumu bu soruya evet cevabı verir.
+ *
+ * HÜKMÜN DOĞUŞU. İpucu sağlayıcısı belge bloklarını susturuyor fakat yorumları
+ * susturmuyordu; Founder bu boşluğu ekran görüntüsüyle sahada gösterdi
+ * (HTR-IPUCU-YORUM-KORUMASI · 2026-08-08). Yorumdaki sıradan Türkçe "her"
+ * sözcüğünün üstüne gelen okuyucuya motor Sarmal koleksiyon kartını açıyor ve
+ * okuru yanıltıyordu. Yorum satırı da belge bloğu gibi insan metnidir,
+ * dolayısıyla aynı korumayı hak eder.
+ *
+ * TARAMA BELİRTEÇLEYİCİNİN KURALLARINI AYNALAR ve konuma dek yürür: bir dizgi
+ * içindeki eğik çizgi çifti yorum sayılmaz, belge bloğunun içindeki yorum imi de
+ * yorum sayılmaz, çünkü orayı `blokIcindeMi` kendi kuralıyla karşılar. Gerekçesi
+ * şudur: bir imi bağlamından koparıp aramak, kaynağın söz dizimini bilmeyen bir
+ * tahmine döner ve yanlış yerde susarak gerçek ipucunu öldürür.
+ */
+export function yorumIcindeMi(satirlar: readonly string[], satir: number, sutun: number): boolean {
+  let blokYorum = false, ucluDizgi = false, belgeBlok = false;
+  for (let s = 0; s <= satir && s < satirlar.length; s++) {
+    const metin = satirlar[s];
+    const sinir = s === satir ? sutun : metin.length;
+    let j = 0;
+    while (j < sinir) {
+      if (belgeBlok) {
+        const kapa = metin.indexOf("|<--", j);
+        if (kapa === -1 || kapa >= sinir) { j = sinir; break; }
+        belgeBlok = false; j = kapa + 4; continue;
+      }
+      if (blokYorum) {
+        const kapa = metin.indexOf("*/", j);
+        if (kapa === -1 || kapa >= sinir) { j = sinir; break; }
+        blokYorum = false; j = kapa + 2; continue;
+      }
+      if (ucluDizgi) {
+        const kapa = metin.indexOf('"""', j);
+        if (kapa === -1 || kapa >= sinir) { j = sinir; break; }
+        ucluDizgi = false; j = kapa + 3; continue;
+      }
+      if (metin.startsWith("-->|", j)) { belgeBlok = true; j += 4; continue; }
+      if (metin.startsWith("/*", j)) { blokYorum = true; j += 2; continue; }
+      if (metin.startsWith("//", j)) {
+        if (s === satir) return true;   // imleç satır yorumunun içindedir
+        break;                          // satır yorumu satır sonunda biter
+      }
+      if (metin.startsWith('"""', j)) { ucluDizgi = true; j += 3; continue; }
+      if (metin[j] === '"') {           // tek satır dizgi (kaçış destekli)
+        let k = j + 1;
+        while (k < metin.length && metin[k] !== '"') { if (metin[k] === "\\") k++; k++; }
+        j = k + 1; continue;
+      }
+      j++;
+    }
+    // Kapanmamış blok yorumu imleç satırına taşmışsa imleç o yorumun içindedir.
+    if (s === satir && blokYorum) return true;
+  }
+  return false;
 }
 
 /** İmleç bir -->| ... |<-- belge bloğunun İÇİNDE mi? (karakter hassas) */
