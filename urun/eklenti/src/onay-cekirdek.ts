@@ -18,6 +18,25 @@ import { degerBicimle } from "../../cekirdek/src/deger-yaz.ts";
 /** Onay kapısı imzası: kabul ölçütü Founder onayını şart koşuyor. */
 export const ONAY_DESENI = /founder[^"]{0,40}onay/iu;
 
+/** Mekanik kapı beyanının alan adı — tek yerde yaşar, iki yüzey onu okur. */
+export const BEKLER_ALANI = "onayBekler";
+
+/**
+ * `onayBekler` alanının AYRIŞTIRICI KAYDI — konum tahmini burada yasaktır.
+ *
+ * Kayıt yalnız ayrıştırıcının bildirdiği başlangıçları taşır: alan adının
+ * belirteç konumu ile değerin belirteç konumu. Değerin BİTİŞİ ayrıştırıcı
+ * kaydında yoktur ve uydurulmaz; silme aralığı yazım anında kaynak metinle
+ * bayt düzeyinde doğrulanarak KANITLANIR (`beklerSilmeAraligi`).
+ */
+export interface BeklerKaydi {
+  readonly satir: number;        // alan adının satırı (0-tabanlı)
+  readonly adSutun: number;      // alan adının sütunu (0-tabanlı)
+  readonly degerSatir: number;   // değerin satırı (0-tabanlı)
+  readonly degerSutun: number;   // değerin sütunu (0-tabanlı)
+  readonly metin: string;        // ayrıştırılmış değer (şema enum'u: "founder")
+}
+
 /** Bir kapının karar bağlamı — pencere Adım satırını örttüğü için amaç ve ölçüt burada taşınır. */
 export interface OnayKapisi {
   satir: number;          // Adım açılış satırı (0-tabanlı)
@@ -33,6 +52,14 @@ export interface OnayKapisi {
    * uyuşmuyorsa yazım yapılmaz — tahmine yazmak dosyayı sessizce bozar.
    */
   durumMetin: string;
+  /**
+   * Kapı MEKANİK alanla beyan edilmişse o alanın ayrıştırıcı kaydı; kapı yalnız
+   * kabul cümlesinden tanınmışsa yoktur. Founder hükmü (2026-08-29) bu alanın
+   * `onay` yazımıyla birlikte kalkmasını şart koşar: `onayBekler` kapının HENÜZ
+   * BEKLEDİĞİNİ, `onay` ise kararın VERİLDİĞİNİ söyler ve ikisi aynı düğümde
+   * durursa aynı olgu iki yerden okunur (ORK-1 ihlali).
+   */
+  bekler?: BeklerKaydi;
 }
 
 /** Ayrışmış ağaçta onay bekleyen Adımları bulur: durum açık + kabul'de onay imzası + onay: henüz yok. */
@@ -53,7 +80,8 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
       // şuydu: Founder'ın şart koştuğu on kapının beşi, kabul cümlesi desene
       // uymadığı için kuyruğa hiç görünmüyordu — düz metinden kapı çıkarmak bir
       // sonraki farklı cümlede yine kaçırır. Desen yalnız geçiş dönemi yedeğidir.
-      const mekanikBeyan = alan("onayBekler")?.deger.metin === "founder";
+      const beklerAlani = alan(BEKLER_ALANI);
+      const mekanikBeyan = beklerAlani?.deger.metin === "founder";
       if (acik && !kararVerilmis && (olcut || mekanikBeyan) && durum) {
         const ne = alan("ne")?.deger.metin ?? "";
         kapilar.push({
@@ -66,6 +94,15 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
           durumSatir: durum.deger.satir - 1,
           durumSutun: durum.deger.sutun - 1 + (durum.deger.metin?.length ?? 0),
           durumMetin: durum.deger.metin ?? "",
+          bekler: beklerAlani && beklerAlani.deger.metin !== undefined
+            ? {
+                satir: beklerAlani.satir - 1,
+                adSutun: beklerAlani.sutun - 1,
+                degerSatir: beklerAlani.deger.satir - 1,
+                degerSutun: beklerAlani.deger.sutun - 1,
+                metin: beklerAlani.deger.metin,
+              }
+            : undefined,
         });
       }
     }
@@ -90,12 +127,30 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
 export function adimOnayDegeri(
   bildirimler: readonly Dugum[], kod: string,
 ): string | undefined {
+  return adimAlanDegeri(bildirimler, kod, "onay");
+}
+
+/**
+ * Bir Adımın `onayBekler` değerini kodla bulur — Founder hükmünün (2026-08-29)
+ * ölçüsü budur. Karar yazıldıktan sonra bu değer TANIMSIZ olmak zorundadır;
+ * hâlâ duruyorsa alan kaldırılamamış demektir ve yazım başarı bildiremez.
+ */
+export function adimBeklerDegeri(
+  bildirimler: readonly Dugum[], kod: string,
+): string | undefined {
+  return adimAlanDegeri(bildirimler, kod, BEKLER_ALANI);
+}
+
+/** İki yüzeyin paylaştığı dar çekirdek: kodla bulunan TEK Adımın bir alanı. */
+function adimAlanDegeri(
+  bildirimler: readonly Dugum[], kod: string, aranan: string,
+): string | undefined {
   const bulunanlar: (string | undefined)[] = [];
   const gez = (d: Dugum): void => {
     if (d.ad === "Adım") {
       const alan = (ad: string) =>
         d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
-      if (alan("kod")?.deger.metin === kod) bulunanlar.push(alan("onay")?.deger.metin);
+      if (alan("kod")?.deger.metin === kod) bulunanlar.push(alan(aranan)?.deger.metin);
     }
     for (const c of d.cocuklar) gez(c);
   };
@@ -197,6 +252,123 @@ export function eklemeNoktasiDenetimi(
   }
   const bulunan = satirMetni.slice(Math.max(0, sutun - beklenen.length), sutun);
   return bulunan === beklenen ? { tur: "doğru" } : { tur: "uyuşmuyor", beklenen, bulunan };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧹 `onayBekler` ALANININ KALDIRILMASI (Founder hükmü · 2026-08-29)
+//
+//   HÜKÜM: onay yazıldığında `onayBekler` alanı kalkar. GEREKÇE: `onayBekler`
+//   kapının HENÜZ karar beklediğini, `onay` ise kararın VERİLDİĞİNİ ilan eder;
+//   ikisi aynı düğümde durursa aynı olgu iki yerden okunur ve hangisinin canlı
+//   olduğu ancak ikisi karşılaştırılarak anlaşılır, oysa ORK-1 bir olgunun tek
+//   yerde yazılmasını şart koşar. Kuyruk davranışta zaten doğrudur; kusur
+//   KAYNAĞIN DÜRÜSTLÜĞÜNDEDİR ve sapmayı panelin kendi onay eylemi üretir.
+//
+//   KALDIRMA, EKLEMENİN DÜŞTÜĞÜ TUZAĞA AÇIKTIR ve aynı disiplinle kapatılır.
+//   Ayrıştırıcının değer kaydında BİTİŞ konumu yoktur (`Deger` yalnız satır ve
+//   sütun taşır); bitişi `sütun + metin.uzunluk` diye hesaplamak tırnaklı ya da
+//   alışılmadık biçimli bir değerde iki karakter şaşar ve silme, komşu alanın
+//   içine taşar. Bu yüzden bitiş HESAPLANMAZ, KANITLANIR: kaydedilen iki gerçek
+//   başlangıç (ad ve değer) kaynak metinde bayt düzeyinde sınanır, değerin ham
+//   biçimi (tırnaksız ya da tırnaklı) kaynağa sorulur ve ayırıcı virgül yine
+//   kaynaktan okunur. Hipotezlerden hiçbiri tutmuyorsa aralık üretilmez ve
+//   yazım hattı hiçbir şey yazmaz — tahmine silmek, tahmine yazmakla aynı
+//   sessiz veri bozmadır.
+//
+//   Normalizasyon nöbeti burada da koşar: sütunlar NFC'ye normalleştirilmiş
+//   metinden hesaplanır, silme ise ham editör satırına gider (bkz. yukarıdaki
+//   NFD bulgusu). Ham satır NFC değilse iki konum sistemi ayrışmıştır ve silme
+//   yapılmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Tek satır üstünde kanıtlanmış bir kaynak aralığı (0-tabanlı, yarı açık). */
+export interface SatirAraligi {
+  readonly satir: number;
+  readonly baslangic: number;
+  readonly bitis: number;
+}
+
+export type BeklerSilmesi =
+  | { readonly tur: "yok" }
+  | { readonly tur: "aralık"; readonly aralik: SatirAraligi; readonly silinecek: string }
+  | { readonly tur: "doğrulanamadı"; readonly beklenen: string; readonly bulunan: string };
+
+/** Ad içi karakter (belirteçleyicideki AD_IC ile aynı sınıf) — sınır kanıtı. */
+const AD_ICI = /[\p{L}\p{N}_]/u;
+
+/**
+ * `onayBekler` alanının kaldırılacağı aralığı KANITLAR.
+ *
+ * Kanıt zinciri şudur ve her halkası kaynak metinle sınanır: ① alan adı,
+ * ayrıştırıcının bildirdiği sütunda birebir durur; ② ad ile değer arasında
+ * yalnız iki nokta ve boşluk vardır; ③ değerin ham biçimi, ayrıştırılmış
+ * metinle tırnaksız ya da tırnaklı olarak birebir örtüşür ve bir ad
+ * karakteriyle devam etmez; ④ alanı listeden ayıran virgül ya değerden sonra
+ * ya addan önce kaynakta gerçekten durur. Halkalardan biri kopuyorsa aralık
+ * üretilmez.
+ */
+export function beklerSilmeAraligi(
+  satirMetni: string | undefined, bekler: BeklerKaydi | undefined,
+): BeklerSilmesi {
+  if (!bekler) return { tur: "yok" };
+  const bek = (bulunan: string): BeklerSilmesi =>
+    ({ tur: "doğrulanamadı", beklenen: `${BEKLER_ALANI}: ${bekler.metin}`, bulunan });
+
+  // Çok satıra yayılmış alan bu katmanın iddiası değildir; tek satır kanıtlanır.
+  if (bekler.satir !== bekler.degerSatir) return bek(ONAY_CEKIRDEK_METINLERI.cokSatirliAlan);
+  if (satirMetni === undefined) return bek(ONAY_CEKIRDEK_METINLERI.satirYok);
+  if (satirMetni.normalize("NFC") !== satirMetni) return bek(ONAY_CEKIRDEK_METINLERI.nfcUyusmazligi);
+  if (!bekler.metin) return bek("");
+
+  // ① Alan adı kayıtlı sütunda birebir durmalı.
+  const adSonu = bekler.adSutun + BEKLER_ALANI.length;
+  if (satirMetni.slice(bekler.adSutun, adSonu) !== BEKLER_ALANI) {
+    return bek(satirMetni.slice(bekler.adSutun, adSonu));
+  }
+  // ② Ad ile değer arasında yalnız iki nokta ve boşluk olmalı.
+  const ara = satirMetni.slice(adSonu, bekler.degerSutun);
+  if (!/^[ \t]*:[ \t]*$/.test(ara)) return bek(ara);
+
+  // ③ Değerin HAM biçimi kaynaktan okunur; bitiş hesaplanmaz, sınanır.
+  const tirnakli = `"${bekler.metin}"`;
+  let degerSonu: number;
+  if (satirMetni.startsWith(tirnakli, bekler.degerSutun)) {
+    degerSonu = bekler.degerSutun + tirnakli.length;
+  } else if (
+    satirMetni.startsWith(bekler.metin, bekler.degerSutun)
+    && !AD_ICI.test(satirMetni[bekler.degerSutun + bekler.metin.length] ?? "")
+  ) {
+    degerSonu = bekler.degerSutun + bekler.metin.length;
+  } else {
+    return bek(satirMetni.slice(bekler.degerSutun, bekler.degerSutun + tirnakli.length));
+  }
+
+  // ④ Ayırıcı virgül: önce değerden SONRAKİNE, yoksa addan ÖNCEKİNE bakılır.
+  //    Alan listeden çıkarken yanında TEK ayırıcı götürür; ikisini birden
+  //    götürmek komşu alanları birleştirir, hiçbirini götürmemek çift virgül
+  //    bırakır ve dosya ayrıştırılamaz olur.
+  let baslangic = bekler.adSutun;
+  let bitis = degerSonu;
+  const sonraki = /^[ \t]*,[ \t]*/.exec(satirMetni.slice(degerSonu));
+  if (sonraki) {
+    bitis = degerSonu + sonraki[0].length;
+    // Alan satırın kuyruğundaysa geride boşluk artığı kalmasın: silme satır
+    // sonuna kadar uzar ve alandan önceki ayırıcı boşluk da yutulur.
+    if (satirMetni.slice(bitis).trim() === "") {
+      bitis = satirMetni.length;
+      const onceki = /[ \t]+$/.exec(satirMetni.slice(0, bekler.adSutun));
+      if (onceki) baslangic = bekler.adSutun - onceki[0].length;
+    }
+  } else {
+    const onceki = /,[ \t]*$/.exec(satirMetni.slice(0, bekler.adSutun));
+    if (!onceki) return bek(ONAY_CEKIRDEK_METINLERI.ayiriciYok);
+    baslangic = bekler.adSutun - onceki[0].length;
+  }
+  return {
+    tur: "aralık",
+    aralik: { satir: bekler.satir, baslangic, bitis },
+    silinecek: satirMetni.slice(baslangic, bitis),
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -831,6 +1003,16 @@ export type KararSonucu =
   | {
       readonly tur: "eklemeNoktasıDoğrulanamadı"; readonly kod: string;
       readonly beklenen: string; readonly bulunan: string;
+    }
+  /**
+   * `onayBekler` alanının silme aralığı kaynakla doğrulanamadı ya da yazımdan
+   * sonra alan hâlâ duruyor. Founder hükmü (2026-08-29) alanın onayla birlikte
+   * kalkmasını şart koştuğu için karar YARIM yazılamaz: doğrulama yazımdan önce
+   * düşerse hiçbir şey yazılmaz, sonra düşerse başarı bildirilmez.
+   */
+  | {
+      readonly tur: "beklerAlanıKaldırılamadı"; readonly kod: string;
+      readonly beklenen: string; readonly bulunan: string;
     };
 
 /**
@@ -839,7 +1021,16 @@ export type KararSonucu =
  * indirmek, bozulan dosyayı sessizce başarı sayan zincirin ilk halkasıydı.
  */
 export type OnayKaniti =
-  | { readonly tur: "değer"; readonly onay: string | undefined }
+  | {
+      readonly tur: "değer"; readonly onay: string | undefined;
+      /**
+       * Aynı Adımın `onayBekler` değeri. Founder hükmünün (2026-08-29) ölçüsü
+       * budur ve kanıt burada taşınır, çünkü "onay yazıldı" ile "bekleme ilanı
+       * kalktı" İKİ AYRI olgudur; ikisini tek okumada sormamak, sapmayı yeniden
+       * doğuran yolun ta kendisiydi.
+       */
+      readonly bekler?: string | undefined;
+    }
   | { readonly tur: "ayrıştırılamadı" };
 
 /**
@@ -861,11 +1052,17 @@ export interface YazimKabugu {
   kodluAdimSayisi(kod: string): number;
   /** Hedef satırın kaynak metni — ekleme noktası yazılmadan ÖNCE bununla doğrulanır. */
   satirMetni(satir: number): string | undefined;
-  /** `onay:` ekini kapının durum değerinin sonuna yazar (applyEdit). */
-  ekle(kapi: OnayKapisi, ek: string): Promise<boolean>;
+  /**
+   * `onay:` ekini kapının durum değerinin sonuna yazar ve — verilmişse —
+   * KANITLANMIŞ aralığı siler (applyEdit). İki iş TEK düzenlemededir: karar
+   * yazılıp bekleme ilanı ayrı bir turda kaldırılsaydı arada bir çökme ya da
+   * reddedilen söz, düğümü tam da hükmün yasakladığı çift beyanlı hâlde
+   * bırakırdı.
+   */
+  ekle(kapi: OnayKapisi, ek: string, silme?: SatirAraligi): Promise<boolean>;
   /** Belgeyi diske indirir; başarısız kayıtta yanlış döner. */
   kaydet(): Promise<boolean>;
-  /** Kaydetme başarısızsa bellekteki eki güvenle geri alır. */
+  /** Kaydetme başarısızsa bellekteki düzenlemeyi güvenle geri alır. */
   ekiGeriAl(): Promise<boolean>;
   /** Bellekteki ayrıştırılmış Adımın onay kanıtı. */
   bellektekiOnay(kod: string): OnayKaniti;
@@ -944,10 +1141,42 @@ export async function kararIsle(
       };
     }
 
+    // ⑤b `onayBekler` ALANININ SİLME ARALIĞI DA KANITLANIR (Founder · 2026-08-29).
+    //    Alan yoksa (kapı yalnız kabul cümlesinden tanınmışsa) silinecek bir şey
+    //    yoktur ve yazım olduğu gibi sürer. Alan varsa aralık kaynakla bayt
+    //    düzeyinde kanıtlanır; kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz. Yarım yazım
+    //    yasaktır, çünkü `onay` yazılıp `onayBekler` kalırsa hükmün yasakladığı
+    //    çift beyan tam da panelin kendi eylemiyle yeniden doğar.
+    const silme = beklerSilmeAraligi(
+      kapi.bekler ? kabuk.satirMetni(kapi.bekler.satir) : undefined, kapi.bekler);
+    if (silme.tur === "doğrulanamadı") {
+      return {
+        tur: "beklerAlanıKaldırılamadı", kod,
+        beklenen: silme.beklenen, bulunan: silme.bulunan,
+      };
+    }
+
     const kayit = onayKaydiMetni(istek.damga, istek.gun, istek.not);
     // ⑥ Tek düzenleme; reddedilen söz de açık hatadır.
+    //
+    //    İKİ İŞLEM BİRBİRİNE DEĞEBİLİR. `onayBekler` alanı `durum` alanının hemen
+    //    ardından geliyor ve listenin SON alanıysa, silme kendinden önceki
+    //    virgülü alır ve o virgül tam da eklemenin yapılacağı noktada başlar.
+    //    Editör aynı belgede kesişen iki düzenlemeyi reddedebilir ve sıraları da
+    //    belirsizdir. Ekleme noktası bu durumda silmenin BİTİŞİNE taşınır: iki
+    //    nokta arasındaki metnin tamamı zaten siliniyor, dolayısıyla üretilen
+    //    belge bayt birebir aynıdır ve her iki nokta da kanıtlanmıştır.
+    const araliktaMi = silme.tur === "aralık"
+      && silme.aralik.satir === kapi.durumSatir
+      && silme.aralik.baslangic <= kapi.durumSutun
+      && kapi.durumSutun <= silme.aralik.bitis;
+    const yazimKapisi = araliktaMi && silme.tur === "aralık"
+      ? { ...kapi, durumSutun: silme.aralik.bitis } : kapi;
     let uygulandi: boolean;
-    try { uygulandi = await kabuk.ekle(kapi, onayEkiMetni(kayit)); }
+    try {
+      uygulandi = await kabuk.ekle(
+        yazimKapisi, onayEkiMetni(kayit), silme.tur === "aralık" ? silme.aralik : undefined);
+    }
     catch (e) { return { tur: "uygulanamadı", kod, neden: hataMetni(e) }; }
     if (!uygulandi) return { tur: "uygulanamadı", kod, neden: "reddedildi" };
 
@@ -978,6 +1207,13 @@ export async function kararIsle(
     if (bellek.onay !== kayit) {
       return { tur: "bellekUyuşmazlığı", kod, beklenen: kayit, bulunan: bellek.onay ?? "" };
     }
+    if (bellek.bekler !== undefined) {
+      return {
+        tur: "beklerAlanıKaldırılamadı", kod,
+        beklenen: ONAY_CEKIRDEK_METINLERI.beklerKalkmali,
+        bulunan: `${BEKLER_ALANI}: ${bellek.bekler}`,
+      };
+    }
 
     // ⑨ Aynı dosya HEDEFLİ olarak geri okunur — ikinci bir tarama değildir.
     let disk: OnayKaniti;
@@ -988,6 +1224,13 @@ export async function kararIsle(
     }
     if (disk.onay !== kayit) {
       return { tur: "diskUyuşmazlığı", kod, beklenen: kayit, bulunan: disk.onay ?? "" };
+    }
+    if (disk.bekler !== undefined) {
+      return {
+        tur: "beklerAlanıKaldırılamadı", kod,
+        beklenen: ONAY_CEKIRDEK_METINLERI.beklerKalkmali,
+        bulunan: `${BEKLER_ALANI}: ${disk.bekler}`,
+      };
     }
     return { tur: "başarı", kod, kayit };
   } finally {

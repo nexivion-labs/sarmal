@@ -36,6 +36,39 @@ function yuzeyMetni(tr: string, en: string): string {
   return dilHanesi({ tr, en }, yuzeyDili);
 }
 
+// ── 📍 ÇALIŞMA ALANI KÖKLERİ — kaynak satırının okunur yazımı (VIT-GRAF-A18) ──
+//
+//   Founder 2026-08-16 tarihli canlı turda ipucu penceresinin kaynak satırında
+//   upuzun bir mutlak yol bastığını bildirdi. Kullanıcının okuduğu satır kendi
+//   çalışma alanının içindedir ve o alanın dışını anlatan yüz karakterlik önek
+//   hiçbir şey öğretmez; okunur olan, kökten sonraki parçadır.
+//
+//   KÖK BURAYA KAPIDAN VERİLİR, TÜRETİLMEZ. Katalog saf kalmalıdır ve editör
+//   kabuğunu tanımaz; kökleri yalnız `eklenti.ts` bilir ve etkin dille aynı
+//   desende buraya bağlar. Kök bağlanmamışsa yol OLDUĞU GİBİ basılır, çünkü
+//   bilinmeyen bir kökü tahmin etmek kullanıcıya var olmayan bir yol gösterir.
+let yuzeyKokleri: readonly string[] = [];
+
+/** Çalışma alanı kökleri yalnız `eklenti.ts` kabuğundan türetilir ve kataloğa buradan verilir. */
+export function yuzeyKokleriniAyarla(kokler: readonly string[]): void {
+  yuzeyKokleri = [...kokler];
+}
+
+/**
+ * Mutlak yolu çalışma alanı köküne göreli yazar. Birden çok kök varsa yolu
+ * gerçekten kapsayan EN UZUN kök seçilir, çünkü iç içe geçmiş iki kökten kısa
+ * olanı seçmek kullanıcıya kendi projesinin adını ikinci kez okutur. Hiçbir kök
+ * yolu kapsamıyorsa yol olduğu gibi döner ve kayıt yerini kaybetmez.
+ */
+export function calismaAlaninaGoreli(yol: string): string {
+  let enUzunOnek = "";
+  for (const kok of yuzeyKokleri) {
+    const onek = kok.endsWith("/") ? kok : `${kok}/`;
+    if (yol.startsWith(onek) && onek.length > enUzunOnek.length) enUzunOnek = onek;
+  }
+  return enUzunOnek ? yol.slice(enUzunOnek.length) : yol;
+}
+
 /** Kaynaktaki Türkçe `ne` yalnız okuma yüzünde etkin sözlük hanesine iner. */
 export function kanonikWidgetDuzYazisi(tip: string, turkce: string): string {
   if (!yuzeyDili) throw new Error("Yüzey dili etkin dil kapısından bağlanmadı.");
@@ -465,6 +498,13 @@ export function kayitAciklamasi(dosyaAdi: string, satir: number): string {
 /**
  * Kaydın ipucu metni. Kanonik tanı nesnesinin hiçbir alanı kaybolmaz: kimlik,
  * düzey, tam mesaj, kaynak konumu ve düzeltme önerisi birlikte görünür.
+ *
+ * KIRPILMAMIŞ GÖVDE (VIT-GRAF-A18). Motor, ağaç satırına ve komut satırına sığsın
+ * diye düğümün gövdesini kısaltarak tanı mesajına gömer; pencere ise kaydın
+ * tamamını taşımak üzere açılır. Bu yüzden tanı, kırpılmamış gövdeyle kurulmuş
+ * ikinci bir cümleyi `tamMesaj` alanında ayrıca taşır ve pencere varsa onu
+ * gösterir. Alan yoksa davranış değişmez ve kısa cümle basılır; böylece bu
+ * alanı taşımayan tanılar da eskisi gibi çalışır.
  */
 export function kayitIpucu(p: {
   kod: string;
@@ -474,13 +514,18 @@ export function kayitIpucu(p: {
   satir: number;
   sutun: number;
   oneri?: string;
+  tamMesaj?: string;
 }): string {
   const duzey = yuzeyDili === "en"
     ? ({ hata: "error", uyarı: "warning", bilgi: "information" } as Record<string, string>)[p.duzey] ?? p.duzey
     : p.duzey;
+  // 📍 İpucu penceresinde kaynak satırı çalışma alanına GÖRELİ yazılır; tam yol
+  //    pano kopyasında yaşamaya devam eder (panoKaydiMetni bu değişimden etkilenmez).
+  const govde = p.tamMesaj?.trim() ? p.tamMesaj : p.mesaj;
+  const kaynak = `${calismaAlaninaGoreli(p.dosya)}:${p.satir}:${p.sutun}`;
   const satirlar = yuzeyDili === "en"
-    ? [`**${p.kod}** · ${duzey} severity`, "", p.mesaj, "", `Source: ${p.dosya}:${p.satir}:${p.sutun}`]
-    : [`**${p.kod}** · ${p.duzey} düzeyi`, "", p.mesaj, "", `Kaynak: ${p.dosya}:${p.satir}:${p.sutun}`];
+    ? [`**${p.kod}** · ${duzey} severity`, "", govde, "", `Source: ${kaynak}`]
+    : [`**${p.kod}** · ${p.duzey} düzeyi`, "", govde, "", `Kaynak: ${kaynak}`];
   if (p.oneri?.trim()) satirlar.push("", yuzeyMetni(`Ne yapmalı: ${p.oneri.trim()}`, `What to do: ${p.oneri.trim()}`));
   satirlar.push("", yuzeyMetni(
     "Satıra gitmek için bu kaydın üzerine tıklayın.",
@@ -1183,6 +1228,23 @@ export function kararEklemeNoktasiDogrulanamadi(
   );
 }
 
+/**
+ * `onayBekler` alanı kaldırılamadı (Founder hükmü · 2026-08-29). İki yol bu
+ * mesaja çıkar: silme aralığı yazımdan ÖNCE kaynakla doğrulanamadı (o hâlde
+ * hiçbir şey yazılmamıştır) ya da yazımdan SONRA alan hâlâ duruyor (o hâlde
+ * kayıt diske inmiştir ve alan elle kaldırılmalıdır). Metin ikisini de karşılar,
+ * çünkü kullanıcıya söylenmesi gereken tek şey aynıdır: düğüm bugün iki beyanı
+ * birden taşıyabilir ve kaynağın dürüstlüğü elle geri kurulmalıdır.
+ */
+export function kararBeklerKaldirilamadi(
+  kod: string, beklenen: string, bulunan: string,
+): string {
+  return yuzeyMetni(
+    `${kod}: onayBekler alanı kaldırılamadı. Beklenen "${beklenen}"; bulunan "${bulunan}". Onay yazıldığında bu alanın kalkması gerekir, çünkü bekleme ilanı ile verilmiş karar aynı düğümde birlikte duramaz. Alanı Adım satırından elle kaldır ve kaynağı bir kez daha denetle.`,
+    `${kod}: the onayBekler field could not be removed. Expected "${beklenen}"; found "${bulunan}". The field must disappear when an approval is written, because a pending declaration and a recorded decision cannot coexist on one node. Remove the field from the Step row by hand and audit the source once more.`,
+  );
+}
+
 /** Kanıtlı başarı: üç kanıt da alındıktan sonra basılır. Metin işaretsizdir
  *  (YUZ-4.2): arayüz işareti emojiyle değil, yüzeyin kendi ikon ailesiyle
  *  verilir ve bildirim kutusunda zaten ikon yeri yoktur. */
@@ -1368,6 +1430,24 @@ export const ONAY_CEKIRDEK_METINLERI = {
     return yuzeyMetni(
       "(satır NFC değil — normalizasyon uyuşmazlığı, yazım güvenli değil)",
       "(line is not NFC — normalization mismatch; writing is unsafe)",
+    );
+  },
+  get cokSatirliAlan(): string {
+    return yuzeyMetni(
+      "(alan birden çok satıra yayılmış — silme aralığı kanıtlanamaz)",
+      "(the field spans several lines — the deletion range cannot be proven)",
+    );
+  },
+  get beklerKalkmali(): string {
+    return yuzeyMetni(
+      "(onay yazıldı — onayBekler alanı kalkmış olmalıydı)",
+      "(the approval was written — the onayBekler field should have been removed)",
+    );
+  },
+  get ayiriciYok(): string {
+    return yuzeyMetni(
+      "(alanın virgül ayırıcısı kaynakta bulunamadı)",
+      "(the field's comma separator was not found in the source)",
     );
   },
 } as const;

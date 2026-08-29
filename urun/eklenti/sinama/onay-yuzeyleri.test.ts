@@ -37,8 +37,10 @@ import {
   onayKapilariTopla, kapilariTopla, EtkinKararDefteri,
   kapiCoz, kararIsle, UcusDefteri, BicimAskisi, adimOnayDegeri,
   onayKaydiMetni, onayEkiMetni, adimKodAdedi, eklemeNoktasiniDogrula,
+  adimBeklerDegeri, beklerSilmeAraligi, BEKLER_ALANI,
   type OnayKapisi, type KapiKaydi, type TaramaKabugu, type ProgramGoruntusu,
-  type YazimKabugu, type CatismaSecimi, type OnayKaniti,
+  type YazimKabugu, type CatismaSecimi, type OnayKaniti, type BeklerKaydi,
+  type BeklerSilmesi,
 } from "../src/onay-cekirdek.ts";
 import {
   GORUNUS_POSTA_KUTUSU, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
@@ -943,7 +945,9 @@ function sahteBelge(dosya: string, metin: string, secenek: {
     catismaSorusu: 0,
     kaydetmeSayisi: 0,
     eklemeSayisi: 0,
-    ek: undefined as { satir: number; sutun: number; uzunluk: number } | undefined,
+    // Geri alma artık ÖNCEKİ SATIR METİNLERİNİ tutar: aynı turda hem ekleme hem
+    // silme yapılabildiği için kaydedilmiş konumlar iki işlemden sonra kayar.
+    geriYukleme: undefined as { satir: number; metin: string }[] | undefined,
   };
   const askı = secenek.askiDefteri ?? new BicimAskisi();
   const coz = (kaynak: string) => ayristir(belirtecle(kaynak)).bildirimler;
@@ -964,14 +968,36 @@ function sahteBelge(dosya: string, metin: string, secenek: {
       catch { return 0; }
     },
     satirMetni: (satir) => durum.bellek.split("\n")[satir],
-    async ekle(kapi, ek) {
+    async ekle(kapi, ek, silme) {
       durum.eklemeSayisi += 1;
       const satirlar = durum.bellek.split("\n");
+      // ⚠️ SÖZLEŞME: ekleme noktası SİLİNEN bölgenin içine düşemez. Bir editör aynı
+      // belgede kesişen iki düzenlemeyi reddedebilir ve reddetmese bile sıraları
+      // belirsizdir; nokta silinen metnin içindeyse üretilen belge uygulama
+      // sırasına göre değişir. Fikstür kabuğu bu belirsizliği ÜSTLENMEZ, hata
+      // verir — üretim, noktayı silmenin bitişine taşıyarak belirsizliği hiç
+      // doğurmamakla yükümlüdür.
+      if (silme && silme.satir === kapi.durumSatir
+        && silme.baslangic <= kapi.durumSutun && kapi.durumSutun < silme.bitis) {
+        throw new Error("ekleme noktası silinen bölgenin içine düşüyor; düzenleme belirsiz");
+      }
+      const dokunulan = [...new Set(silme ? [kapi.durumSatir, silme.satir] : [kapi.durumSatir])];
+      const yedek = dokunulan.map((s) => ({ satir: s, metin: satirlar[s]! }));
+      // Üretimdeki sözleşmenin aynısı: ekleme ile silme TEK düzenlemededir ve
+      // ikisi de ÖZGÜN konumlara uygulanır — sıra bir işlemin ötekinin konumunu
+      // kaydırmasına izin veremez, bu yüzden silme önce alınır.
+      if (silme) {
+        const s = satirlar[silme.satir]!;
+        satirlar[silme.satir] = s.slice(0, silme.baslangic) + s.slice(silme.bitis);
+      }
       const hedef = satirlar[kapi.durumSatir]!;
-      satirlar[kapi.durumSatir] = hedef.slice(0, kapi.durumSutun) + ek + hedef.slice(kapi.durumSutun);
+      const kayma = silme && silme.satir === kapi.durumSatir && silme.bitis <= kapi.durumSutun
+        ? silme.bitis - silme.baslangic : 0;
+      const nokta = kapi.durumSutun - kayma;
+      satirlar[kapi.durumSatir] = hedef.slice(0, nokta) + ek + hedef.slice(nokta);
       durum.bellek = satirlar.join("\n");
       durum.kirli = true;
-      durum.ek = { satir: kapi.durumSatir, sutun: kapi.durumSutun, uzunluk: ek.length };
+      durum.geriYukleme = yedek;
       return true;
     },
     async kaydet() {
@@ -995,22 +1021,24 @@ function sahteBelge(dosya: string, metin: string, secenek: {
       }
     },
     async ekiGeriAl() {
-      if (!durum.ek) return false;
+      if (!durum.geriYukleme) return false;
       const satirlar = durum.bellek.split("\n");
-      const hedef = satirlar[durum.ek.satir]!;
-      satirlar[durum.ek.satir] =
-        hedef.slice(0, durum.ek.sutun) + hedef.slice(durum.ek.sutun + durum.ek.uzunluk);
+      for (const y of durum.geriYukleme) satirlar[y.satir] = y.metin;
       durum.bellek = satirlar.join("\n");
-      durum.ek = undefined;
+      durum.geriYukleme = undefined;
       return true;
     },
     bellektekiOnay: (kod): OnayKaniti => {
-      try { return { tur: "değer", onay: adimOnayDegeri(coz(durum.bellek), kod) }; }
-      catch { return { tur: "ayrıştırılamadı" }; }
+      try {
+        const b = coz(durum.bellek);
+        return { tur: "değer", onay: adimOnayDegeri(b, kod), bekler: adimBeklerDegeri(b, kod) };
+      } catch { return { tur: "ayrıştırılamadı" }; }
     },
     async disktekiOnay(kod): Promise<OnayKaniti> {
-      try { return { tur: "değer", onay: adimOnayDegeri(coz(durum.disk), kod) }; }
-      catch { return { tur: "ayrıştırılamadı" }; }
+      try {
+        const b = coz(durum.disk);
+        return { tur: "değer", onay: adimOnayDegeri(b, kod), bekler: adimBeklerDegeri(b, kod) };
+      } catch { return { tur: "ayrıştırılamadı" }; }
     },
   };
   return { durum, kabuk, askı };
@@ -1819,4 +1847,269 @@ test("KAPI TANIMA: _Sarmal ağacında desene BAĞIMLI kapı yoktur — fark sıf
   t.diagnostic(kuyrukSayisi > 0
     ? `_Sarmal ağacında ${kuyrukSayisi} açık kapı ölçüldü; hepsi mekanik beyanlıdır`
     : "_Sarmal ağacında bekleyen kapı yok — özellik boş küme üstünde doğrulandı");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// J · `onayBekler` ONAYLA BİRLİKTE KALKAR (Founder hükmü · 2026-08-29)
+//
+//   ÖLÇÜLMÜŞ KUSUR. Founder canlı pencerede Onaylar panelinden iki kapıyı
+//   onayladı, ardından kaynağa döndü ve onaylanmış Adımın hâlâ
+//   `onayBekler: founder` alanını taşıdığını gördü. Kuyruk davranışta doğrudur
+//   ve onaylanmış kapıyı listeden düşürür; kusur KAYNAĞIN DÜRÜSTLÜĞÜNDEDİR,
+//   çünkü `onayBekler` kapının HENÜZ karar beklediğini, `onay` ise kararın
+//   VERİLDİĞİNİ ilan eder ve ikisi aynı düğümde durunca aynı olgu iki yerden
+//   okunur (ORK-1 ihlali). Sapmayı panelin KENDİ onay eylemi üretiyordu.
+//
+//   NÖBETİN ERİŞİMİ ÜÇ KATLIDIR. Birinci kat silme aralığının kanıtını ölçer:
+//   aralık kaynak metinle örtüşmüyorsa hiç üretilmez. İkinci kat yazım hattını
+//   uçtan uca koşturur ve karardan sonra alanın gerçekten kalktığını, dosyanın
+//   ayrıştırılabilir kaldığını ve kapının düştüğünü ölçer. Üçüncü kat gerçek
+//   `_Sarmal` ağacını tarar ve iki alanı birlikte taşıyan Adım kalmadığını
+//   ölçer — hükmün kapsam ölçümü bu kattadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+/** Kanıtlanmış aralığı kaynağa uygular — nöbetler sonucu ağaçla ölçebilsin diye. */
+const uygula = (kaynak: string, sonuc: BeklerSilmesi): string => {
+  assert.equal(sonuc.tur, "aralık", "silme aralığı üretilmemişken uygulanmaya çalışıldı");
+  if (sonuc.tur !== "aralık") return kaynak;
+  const satirlar = kaynak.split("\n");
+  const s = satirlar[sonuc.aralik.satir]!;
+  satirlar[sonuc.aralik.satir] = s.slice(0, sonuc.aralik.baslangic) + s.slice(sonuc.aralik.bitis);
+  return satirlar.join("\n");
+};
+
+/** Fikstür: mekanik beyanlı kapı; alan satırın ORTASINDA, ardından başka alan var. */
+const BEKLEYEN_ORTA = zincir(
+  `Adım( kod: MEK-A01, durum: beklemede, onayBekler: founder, öncelik: p1, ne: "🧪 mekanik kapı" )`);
+/** Fikstür: alan satırın KUYRUĞUNDA — ardından yalnız satır sonu gelir. */
+const BEKLEYEN_KUYRUK = zincir(
+  `Adım( kod: MEK-A02, durum: beklemede, ne: "🧪 kuyrukta beyan", onayBekler: founder,`,
+  `        öncelik: p1 )`);
+/** Fikstür: alan listenin SONUNDA — ardından virgül değil kapanış geliyor. */
+const BEKLEYEN_SON = zincir(
+  `Adım( kod: MEK-A03, durum: beklemede, ne: "🧪 son alan", onayBekler: founder )`);
+/** Fikstür: alan `durum`un HEMEN ARDINDAN geliyor ve listenin son alanı — silme,
+ *  eklemenin yapılacağı noktadan başlar ve iki düzenleme birbirine değer. */
+const BEKLEYEN_BITISIK = zincir(
+  `Adım( kod: MEK-A05, ne: "🧪 bitişik alan", durum: beklemede, onayBekler: founder )`);
+/** Fikstür: değer TIRNAKLI yazılmış — bitiş hesaplanırsa iki karakter şaşar. */
+const BEKLEYEN_TIRNAKLI = zincir(
+  `Adım( kod: MEK-A04, durum: beklemede, ne: "🧪 tırnaklı beyan", onayBekler: "founder", öncelik: p1 )`);
+
+/** Bir kaynaktaki tek kapının bekler kaydı ve o kaydın yaşadığı satır metni. */
+function beklerDeneyi(kaynak: string): { kapi: OnayKapisi; satir: string } {
+  const [kapi] = kapilar(kaynak);
+  assert.ok(kapi, "fikstür kapı üretmedi; nöbet boş küme üstünde koşuyor");
+  assert.ok(kapi.bekler, "kapı mekanik beyanın ayrıştırıcı kaydını taşımıyor");
+  return { kapi: kapi!, satir: kaynak.split("\n")[kapi!.bekler!.satir]! };
+}
+
+test("BEKLER SİLME: satır ortasındaki alan, ayırıcı virgülüyle birlikte kanıtlanır", () => {
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_ORTA);
+  const sonuc = beklerSilmeAraligi(satir, kapi.bekler);
+  assert.equal(sonuc.tur, "aralık", "meşru bir alanda silme aralığı üretilmedi");
+  assert.equal(sonuc.tur === "aralık" && sonuc.silinecek, "onayBekler: founder, ",
+    "silinecek dilim alanın kendisi ve TEK ayırıcısı değil; komşu alanlara taşıyor");
+  // Silme uygulandığında dosya hâlâ ayrıştırılır ve komşu alanlar yerindedir.
+  const sonrasi = uygula(BEKLEYEN_ORTA, sonuc);
+  assert.ok(sonrasi.includes("durum: beklemede, öncelik: p1"),
+    "komşu alanlar birleşmedi ya da ayırıcı kayboldu");
+  assert.equal(adimBeklerDegeri(bildirimler(sonrasi), "MEK-A01"), undefined,
+    "alan silindiği hâlde ağaçta hâlâ okunuyor");
+});
+
+test("BEKLER SİLME: satır kuyruğundaki alan geride boşluk artığı bırakmaz", () => {
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_KUYRUK);
+  const sonuc = beklerSilmeAraligi(satir, kapi.bekler);
+  assert.equal(sonuc.tur, "aralık");
+  assert.equal(sonuc.tur === "aralık" && sonuc.silinecek, " onayBekler: founder,",
+    "kuyruktaki alan silinirken önündeki ayırıcı boşluk geride kaldı");
+  const sonrasi = uygula(BEKLEYEN_KUYRUK, sonuc);
+  assert.ok(!/[ \t]+$/m.test(sonrasi), "silme geride sondaki boşluk bıraktı");
+  assert.equal(adimBeklerDegeri(bildirimler(sonrasi), "MEK-A02"), undefined);
+});
+
+test("BEKLER SİLME: listenin SON alanında ayırıcı önden alınır", () => {
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_SON);
+  const sonuc = beklerSilmeAraligi(satir, kapi.bekler);
+  assert.equal(sonuc.tur, "aralık");
+  assert.equal(sonuc.tur === "aralık" && sonuc.silinecek, ", onayBekler: founder",
+    "son alan silinirken kendinden ÖNCEKİ ayırıcı alınmadı; çift virgül ya da " +
+    "eksik virgül dosyayı ayrıştırılamaz hâle getirir");
+  const sonrasi = uygula(BEKLEYEN_SON, sonuc);
+  assert.equal(adimBeklerDegeri(bildirimler(sonrasi), "MEK-A03"), undefined);
+});
+
+test("BEKLER SİLME: TIRNAKLI değerde bitiş hesaplanmaz, kaynaktan kanıtlanır", () => {
+  // Bu, ekleme noktasını bozan tuzağın kaldırma yüzündeki ikizidir: bitiş
+  // `sütun + metin.uzunluk` diye hesaplansaydı kapanış tırnağı geride kalır ve
+  // dosya söz dizimini kaybederdi. Nöbet bunu hem dilimle hem ayrıştırmayla ölçer.
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_TIRNAKLI);
+  const sonuc = beklerSilmeAraligi(satir, kapi.bekler);
+  assert.equal(sonuc.tur, "aralık", "tırnaklı değerde silme aralığı üretilmedi");
+  assert.equal(sonuc.tur === "aralık" && sonuc.silinecek, `onayBekler: "founder", `,
+    "tırnaklı değerin kapanış tırnağı silme aralığının dışında kaldı");
+  const sonrasi = uygula(BEKLEYEN_TIRNAKLI, sonuc);
+  assert.doesNotThrow(() => bildirimler(sonrasi),
+    "tırnaklı değerin silinmesi belgeyi bozdu");
+  assert.equal(adimBeklerDegeri(bildirimler(sonrasi), "MEK-A04"), undefined);
+});
+
+test("BEKLER SİLME: kayan kayıt kaynağa uymuyorsa aralık ÜRETİLMEZ", () => {
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_ORTA);
+  const kaymis: BeklerKaydi = { ...kapi.bekler!, adSutun: kapi.bekler!.adSutun + 2 };
+  const sonuc = beklerSilmeAraligi(satir, kaymis);
+  assert.equal(sonuc.tur, "doğrulanamadı",
+    "kayan kayıt için silme aralığı üretildi; silme komşu alanın içine taşardı");
+});
+
+test("BEKLER SİLME: NFC olmayan (NFD) satırda silme DURUR", () => {
+  const { kapi, satir } = beklerDeneyi(BEKLEYEN_ORTA);
+  const nfd = satir.normalize("NFD");
+  assert.notEqual(nfd, satir, "fikstür NFD'de farklılaşmıyor; nöbet ölçmüyor");
+  assert.equal(beklerSilmeAraligi(nfd, kapi.bekler).tur, "doğrulanamadı",
+    "iki konum sistemi ayrışmışken silme yapıldı; kaymış aralık sahte-geçti");
+});
+
+test("BEKLER SİLME: alan yoksa silinecek de yoktur — desenle tanınan kapı yazılabilir", () => {
+  const [kapi] = kapilar(KAPILI_KAYNAK);
+  assert.equal(kapi!.bekler, undefined, "desenle tanınan kapıda mekanik kayıt doğmuş");
+  assert.equal(beklerSilmeAraligi("her neyse", undefined).tur, "yok");
+});
+
+test("YAZIM: karar yazılınca `onayBekler` alanı KALKAR ve dosya ayrıştırılabilir kalır", async () => {
+  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const sonuc = await kararIsle(new UcusDefteri(), kabuk,
+    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+
+  assert.equal(sonuc.tur, "başarı", `karar "${sonuc.tur}" ile bitti`);
+  const kayit = onayKaydiMetni(ISTEK.damga, ISTEK.gun, ISTEK.not);
+  assert.equal(adimOnayDegeri(bildirimler(durum.disk), "MEK-A01"), kayit,
+    "karar diske inmedi");
+  // HÜKMÜN KENDİSİ: bekleme ilanı kalkmış olmalıdır.
+  assert.equal(adimBeklerDegeri(bildirimler(durum.disk), "MEK-A01"), undefined,
+    "onay yazıldı fakat `onayBekler` alanı duruyor; sapmayı panelin kendi eylemi üretiyor");
+  assert.equal(durum.bellek, durum.disk, "bellek ile disk ayrıştı");
+  // Kapı düştü: ne mekanik beyan ne de yazılmamış karar kaldı.
+  assert.equal(kapilar(durum.disk).length, 0, "karar verilen kapı kuyrukta duruyor");
+  // Karar TEK satıra dokundu; silme ikinci bir satırı kirletmedi.
+  assert.equal(degisenSatir(BEKLEYEN_ORTA, durum.disk), 1,
+    "karar bir satırdan fazlasını değiştirdi");
+});
+
+test("YAZIM: TIRNAKLI beyanda da alan kalkar ve belge bozulmaz", async () => {
+  const { durum, kabuk } = sahteBelge("/depo/plan/tirnakli-beyan.sar", BEKLEYEN_TIRNAKLI);
+  const sonuc = await kararIsle(new UcusDefteri(), kabuk,
+    { ...ISTEK, dosya: "/depo/plan/tirnakli-beyan.sar", kod: "MEK-A04" });
+  assert.equal(sonuc.tur, "başarı", `tırnaklı beyanda karar "${sonuc.tur}" ile bitti`);
+  assert.doesNotThrow(() => bildirimler(durum.disk), "tırnaklı beyan belgeyi bozdu");
+  assert.equal(adimBeklerDegeri(bildirimler(durum.disk), "MEK-A04"), undefined);
+});
+
+test("YAZIM: silme ekleme noktasına DEĞSE bile tek düzenleme doğru belge üretir", async () => {
+  // `durum`un hemen ardından gelen son alanda silme, kendinden önceki virgülü
+  // alır ve o virgül tam da eklemenin yapılacağı noktadadır. İki düzenleme aynı
+  // konumda başlarsa sıraları belirsizdir; nöbet üretilen belgeyi ölçer.
+  const { durum, kabuk } = sahteBelge("/depo/plan/bitisik.sar", BEKLEYEN_BITISIK);
+  const sonuc = await kararIsle(new UcusDefteri(), kabuk,
+    { ...ISTEK, dosya: "/depo/plan/bitisik.sar", kod: "MEK-A05" });
+  assert.equal(sonuc.tur, "başarı", `bitişik düzenlemede karar "${sonuc.tur}" ile bitti`);
+  assert.doesNotThrow(() => bildirimler(durum.disk), "bitişik düzenleme belgeyi bozdu");
+  const agac = bildirimler(durum.disk);
+  assert.equal(adimOnayDegeri(agac, "MEK-A05"),
+    onayKaydiMetni(ISTEK.damga, ISTEK.gun, ISTEK.not), "karar yazılmadı");
+  assert.equal(adimBeklerDegeri(agac, "MEK-A05"), undefined, "bekleme ilanı duruyor");
+  // `durum` değeri kararın altında kalmadı: kayıt onun YANINA yazıldı.
+  assert.ok(durum.disk.includes(`durum: beklemede, onay: `),
+    `karar durum değerinin yanına yazılmadı: ${durum.disk.split("\n")[3]}`);
+});
+
+test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", async () => {
+  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  // Kaynak satırı ayrıştırıcının bildirdiği konumdan iki karakter kaydırılmış
+  // gibi okutulur: kanıt zinciri kopar ve yazım hattı durmak zorundadır.
+  const kaydiran: YazimKabugu = {
+    ...kabuk,
+    satirMetni: (satir) => {
+      const ham = durum.bellek.split("\n")[satir];
+      return ham === undefined ? undefined : ham.replace("onayBekler: founder", "onayBeKLer= founder");
+    },
+  };
+  const sonuc = await kararIsle(new UcusDefteri(), kaydiran,
+    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+  assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
+    `kanıtsız silme "${sonuc.tur}" ile bitti; ya dosya bozuldu ya hata yanlış konuştu`);
+  assert.equal(durum.eklemeSayisi, 0, "kanıtlanamayan silmeye rağmen yazıldı");
+  assert.equal(durum.bellek, BEKLEYEN_ORTA, "bellekteki metin değişti");
+  assert.equal(durum.disk, BEKLEYEN_ORTA, "diskteki metin değişti");
+});
+
+test("YAZIM: alan yazımdan SONRA hâlâ duruyorsa BAŞARI bildirilmez", async () => {
+  // Kabuk kararı yazar fakat bekleme ilanını bırakır — onarım sökülürse üretimin
+  // kendisi tam olarak böyle davranır. Kanıt zinciri bunu yakalamak zorundadır.
+  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const yarim: YazimKabugu = {
+    ...kabuk,
+    ekle: (kapi, ek) => kabuk.ekle(kapi, ek),      // silme aralığı bilerek DÜŞÜRÜLÜR
+  };
+  const sonuc = await kararIsle(new UcusDefteri(), yarim,
+    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+  assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
+    "karar yazılıp bekleme ilanı kalmışken başarı bildirildi; hüküm ölçülmüyor");
+  assert.equal(adimBeklerDegeri(bildirimler(durum.bellek), "MEK-A01"), "founder",
+    "deney kurulumu tutmadı; nöbet ölçmek istediği hâli üretmedi");
+});
+
+test("GERİ ALMA: kaydetme başarısızsa ekleme DE silme DE geri alınır", async () => {
+  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA, { kaydetBasarili: false });
+  const sonuc = await kararIsle(new UcusDefteri(), kabuk,
+    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+  assert.equal(sonuc.tur, "kaydedilemedi");
+  assert.equal(sonuc.tur === "kaydedilemedi" && sonuc.geriAlindi, true);
+  assert.equal(durum.bellek, BEKLEYEN_ORTA,
+    "geri alma yalnız eklemeyi kaldırdı; silinen alan geri gelmedi ve kullanıcının " +
+    "dosyası kararsız bir hâlde bırakıldı");
+  assert.equal(durum.disk, BEKLEYEN_ORTA);
+});
+
+test("ÇİFT BEYAN: _Sarmal ağacında `onay` ile `onayBekler` birlikte taşıyan Adım yoktur", (t) => {
+  const kok = yol("../../..");                       // _Sarmal
+  const sarDosyalari = (dizin: string, gorece: string): string[] => {
+    const bulunan: string[] = [];
+    for (const ad of readdirSync(dizin, { withFileTypes: true })) {
+      const altGorece = gorece ? `${gorece}/${ad.name}` : ad.name;
+      if (sarKapsamDisi(altGorece)) continue;
+      if (ad.isDirectory()) bulunan.push(...sarDosyalari(join(dizin, ad.name), altGorece));
+      else if (ad.name.endsWith(".sar")) bulunan.push(join(dizin, ad.name));
+    }
+    return bulunan;
+  };
+  const alan = (d: Dugum, ad: string) =>
+    d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
+
+  const ciftBeyanli: string[] = [];
+  let adimSayisi = 0;
+  for (const dosya of sarDosyalari(kok, "")) {
+    let agac: readonly Dugum[];
+    try { agac = ayristir(belirtecle(readFileSync(dosya, "utf8"))).bildirimler; }
+    catch { continue; }        // bilerek-hatalı örnekler ayrı nöbetin konusudur
+    const gez = (d: Dugum): void => {
+      if (d.ad === "Adım") {
+        adimSayisi += 1;
+        if (alan(d, "onay") && alan(d, BEKLER_ALANI)) {
+          ciftBeyanli.push(`${relative(kok, dosya)}#${alan(d, "kod")?.deger.metin ?? "?"}`);
+        }
+      }
+      for (const c of d.cocuklar) gez(c);
+    };
+    for (const b of agac) gez(b);
+  }
+
+  assert.deepEqual(ciftBeyanli, [] as string[],
+    "Bu Adımlar hem verilmiş kararı hem bekleme ilanını taşıyor: " + ciftBeyanli.join(", ") +
+    " — `onayBekler` kapının HENÜZ beklediğini, `onay` ise kararın VERİLDİĞİNİ söyler; " +
+    "ikisi birlikte durunca aynı olgu iki yerden okunur ve kaynağa bakan bir insan ya da " +
+    "ajan, kararı verilmiş bir kapıyı bekliyor sanır (ORK-1 · Founder hükmü 2026-08-29).");
+  t.diagnostic(`_Sarmal ağacında ${adimSayisi} Adım ölçüldü; çift beyanlı yok`);
 });

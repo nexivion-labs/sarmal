@@ -29,7 +29,7 @@
 import * as vscode from "vscode";
 import { TARAMA_DISLAMA_GLOB, sarKapsamDisi } from "./izleyici-cekirdek.ts";
 import {
-  onayKapilariTopla, kapilariTopla, adimOnayDegeri, adimKodAdedi,
+  onayKapilariTopla, kapilariTopla, adimOnayDegeri, adimBeklerDegeri, adimKodAdedi,
   type OnayKapisi, type KapiKaydi, type ProgramGoruntusu, type TaramaKabugu,
   type OnayKaniti,
 } from "./onay-cekirdek.ts";
@@ -95,7 +95,14 @@ export function belgeKodAdedi(doc: vscode.TextDocument, kod: string): number {
 export function belgeOnayKaniti(doc: vscode.TextDocument, kod: string): OnayKaniti {
   const program = programAl(doc);
   if (!program) return { tur: "ayrıştırılamadı" };
-  return { tur: "değer", onay: adimOnayDegeri(program.bildirimler, kod) };
+  return {
+    tur: "değer",
+    onay: adimOnayDegeri(program.bildirimler, kod),
+    // Founder hükmü (2026-08-29): karar yazıldıktan sonra bekleme ilanı DURAMAZ.
+    // Kanıt tek okumada toplanır, çünkü iki olguyu ayrı turlarda sormak, sapmanın
+    // fark edilmeden diske inmesine izin veren yolun ta kendisiydi.
+    bekler: adimBeklerDegeri(program.bildirimler, kod),
+  };
 }
 
 /**
@@ -116,7 +123,12 @@ export async function disktenOnayKaniti(
   // ve kullanıcı yalnız bir uyuşmazlık görüyordu; şimdi çağıran dosyanın bozulmuş
   // olabileceğini açıkça söyler ve kapı listede kalır.
   try {
-    return { tur: "değer", onay: adimOnayDegeri(ayristir(belirtecle(metin)).bildirimler, kod) };
+    const bildirimler = ayristir(belirtecle(metin)).bildirimler;
+    return {
+      tur: "değer",
+      onay: adimOnayDegeri(bildirimler, kod),
+      bekler: adimBeklerDegeri(bildirimler, kod),
+    };
   } catch { return { tur: "ayrıştırılamadı" }; }
 }
 

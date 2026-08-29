@@ -40,7 +40,7 @@ import {
   UcusDefteri, EtkinKararDefteri, kararIsle, kapiCoz, onayEkiMetni, dosyaAdiniAl,
   acikBelgeleriUstuneYaz,
   type OnayKapisi, type KapiKaydi, type YazimKabugu, type CatismaSecimi,
-  type KararSonucu,
+  type KararSonucu, type SatirAraligi,
 } from "./onay-cekirdek.ts";
 // ⏸️ Karar yazımı belge biçimlemez: yazıcının kendi kaydetmesi süresince
 // biçimlendirici YALNIZ o belge için askıya alınır (ölçülmüş Kusur 1).
@@ -68,7 +68,7 @@ import {
   kirliBelgeSorusu, kararUcusta, kararKapiYok, kararKimlikCakismasi,
   kararUygulanamadi, kararKaydedilemedi, kararBellekUyusmazligi,
   kararDiskUyusmazligi, kararBasarili, kararIptalEdildi,
-  kararBelgeAyrisilamadi, kararEklemeNoktasiDogrulanamadi,
+  kararBelgeAyrisilamadi, kararEklemeNoktasiDogrulanamadi, kararBeklerKaldirilamadi,
   EKLENTI_KABUK_METINLERI, IZ_METINLERI, ONAY_YUZEY_METINLERI,
 } from "./yuzey-metinleri.ts";
 // 🧾 Gerekçe ölçüsü SAF gövdededir; panel ile komut sınırı AYNI kuralı kullanır.
@@ -257,9 +257,13 @@ export function onayKuyruguKaydi(
   /** Editör kabuğu: saf yazım hattının vscode'a bakan tek yüzü. */
   const yazimKabugu = (doc: vscode.TextDocument): YazimKabugu => {
     const dosyaAdi = dosyaAdiniAl(doc.uri.fsPath);
-    // Geri alma için ekin konumu ve uzunluğu: kaydetme başarısız olursa bellekteki
-    // ek aynı yerden silinir ve kullanıcının dosyası karar öncesindeki hâline döner.
-    let ek: { satir: number; sutun: number; uzunluk: number } | undefined;
+    // Geri alma için DOKUNULAN SATIRLARIN ÖNCEKİ METNİ tutulur. Eskiden yalnız
+    // ekin konumu ile uzunluğu saklanırdı; düzenleme tek bir ekleme olduğu sürece
+    // bu yeterliydi, oysa artık aynı turda bir silme de yapılabiliyor ve iki
+    // işlemden sonra kaydedilmiş konumlar kaymış olur. Satırın önceki metnini
+    // olduğu gibi geri yazmak konum aritmetiği istemez; kullanıcının dosyası
+    // karar öncesindeki hâline bayt birebir döner.
+    let geriYukleme: readonly { satir: number; metin: string }[] | undefined;
     return {
       kirliMi: () => doc.isDirty,
       async catismaSor(kod: string): Promise<CatismaSecimi> {
@@ -277,11 +281,21 @@ export function onayKuyruguKaydi(
       // Ekleme noktasının bayt doğrulaması bu satır üstünde yapılır (Kusur 1).
       satirMetni: (satir: number) =>
         satir >= 0 && satir < doc.lineCount ? doc.lineAt(satir).text : undefined,
-      async ekle(kapi: OnayKapisi, metin: string): Promise<boolean> {
+      async ekle(kapi: OnayKapisi, metin: string, silme?: SatirAraligi): Promise<boolean> {
+        // İki iş TEK düzenlemededir: metin dışarıdan gelir, silme aralığı ise
+        // çekirdekte kaynakla kanıtlanmıştır. Kabuk ne metni kurar ne aralığı
+        // hesaplar; yalnız uygular.
+        const dokunulan = [...new Set(silme ? [kapi.durumSatir, silme.satir] : [kapi.durumSatir])];
+        const yedek = dokunulan.map((s) => ({ satir: s, metin: doc.lineAt(s).text }));
         const duzenleme = new vscode.WorkspaceEdit();
         duzenleme.insert(doc.uri, new vscode.Position(kapi.durumSatir, kapi.durumSutun), metin);
+        if (silme) {
+          duzenleme.delete(doc.uri, new vscode.Range(
+            new vscode.Position(silme.satir, silme.baslangic),
+            new vscode.Position(silme.satir, silme.bitis)));
+        }
         const oldu = await vscode.workspace.applyEdit(duzenleme);
-        if (oldu) ek = { satir: kapi.durumSatir, sutun: kapi.durumSutun, uzunluk: metin.length };
+        if (oldu) geriYukleme = yedek;
         return oldu;
       },
       async kaydet(): Promise<boolean> {
@@ -293,13 +307,14 @@ export function onayKuyruguKaydi(
         finally { bicimAskisi.serbestBirak(doc.uri.fsPath); }
       },
       async ekiGeriAl(): Promise<boolean> {
-        if (!ek) return false;
+        if (!geriYukleme) return false;
+        // Satırın tamamı önceki metniyle değiştirilir; ne ekin uzunluğu ne de
+        // silinenin yeri yeniden hesaplanır. Düzenleme satır SAYISINI değiştirmez,
+        // dolayısıyla satır numaraları hâlâ aynı satırları gösterir.
         const geri = new vscode.WorkspaceEdit();
-        geri.delete(doc.uri, new vscode.Range(
-          new vscode.Position(ek.satir, ek.sutun),
-          new vscode.Position(ek.satir, ek.sutun + ek.uzunluk)));
+        for (const y of geriYukleme) geri.replace(doc.uri, doc.lineAt(y.satir).range, y.metin);
         const oldu = await vscode.workspace.applyEdit(geri);
-        if (oldu) ek = undefined;
+        if (oldu) geriYukleme = undefined;
         return oldu;
       },
       bellektekiOnay: (kod: string) => belgeOnayKaniti(doc, kod),
@@ -366,6 +381,13 @@ export function onayKuyruguKaydi(
         break;
       case "eklemeNoktasıDoğrulanamadı":
         vscode.window.showErrorMessage(kararEklemeNoktasiDogrulanamadi(
+          sonuc.kod, sonuc.beklenen, sonuc.bulunan));
+        break;
+      case "beklerAlanıKaldırılamadı":
+        // Founder hükmü (2026-08-29): karar yazıldığında bekleme ilanı kalkar.
+        // Panel bilerek tazelenmez; kaynağın hâli belirsizdir ve kullanıcı ona
+        // bakmalıdır — sessiz bir tazeleme kapıyı düşürüp sorunu gizleyebilirdi.
+        vscode.window.showErrorMessage(kararBeklerKaldirilamadi(
           sonuc.kod, sonuc.beklenen, sonuc.bulunan));
         break;
     }
