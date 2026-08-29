@@ -165,3 +165,69 @@ export class TekUcusKilidi {
       });
   }
 }
+
+// ── ⚡ PRF-A06: TAM TURUN KAPSAMI ────────────────────────────────────────────
+//
+//   Ölçülmüş kusur (2026-08-29, bu Adımın ölçüm merceği): eklenti her olay
+//   dalgasında ÇAPRAZ-DOSYA denetimini çalışma alanının bütününe koşturuyordu.
+//   Ölçüm şudur: çekirdek denetim gövdesi (`denetimKos`) yalnız sarmal kökünde
+//   1828 milisaniye, dört projeyi kapsayan çatı kökünde 4229 milisaniye
+//   sürmektedir. Bu süre bölünmez ve senkrondur; eklenti süreci o pencerede
+//   başka hiçbir işi işleyemez, terminalde ya da editörde yazılan tuş o
+//   pencerenin sonuna kadar bekler.
+//
+//   Onarımın dayanağı MIM-1.1'in kendi hükmüdür. Aktif varlık odağı açıkken
+//   paneller ZATEN yalnız odaktaki varlığın kayıtlarını gösterir; odağın
+//   dışında kalan varlıklar için hesaplanan çapraz tanılar üretildikleri anda
+//   süzgeçte elenir. Yani bugün çatı ölçeğinde ödenen maliyetin bir bölümü,
+//   sonucu hiçbir yüzeye basılmayan bir hesabın maliyetidir. Kapsamı odağa
+//   daraltmak yeni bir kural icat etmez; hesabı, sonucunun zaten görüldüğü
+//   sınıra çeker.
+//
+//   Daraltma YALNIZ olay-tetikli turlarda geçerlidir. Soğuk açılış, ayar, dil
+//   ve odak değişimi turları TAM koşar, çünkü ilk resmin eksiksiz olması
+//   gerekir (bu Adımın sınırı bunu açıkça hükme bağlar) ve odak değiştiğinde
+//   yeni odağın resmi henüz hiç kurulmamıştır.
+
+/** Tam turu daraltmayan, yani daima BÜTÜN çalışma alanını tarayan tetikler.
+ *  Bunlar bir dosya olayı değil, dünyanın yeniden kurulduğu anlardır. */
+const TAM_TUR_TETIKLERI: ReadonlySet<string> = new Set([
+  "başlangıç", "ayar", "dil", "odak", "klasör",
+]);
+
+/**
+ * Bir turun ÇAPRAZ-DOSYA denetiminin koşacağı kök — daraltma yoksa `undefined`.
+ *
+ * `undefined` dönmesi "tam tur" demektir ve çağıran taraf bugünkü davranışını
+ * birebir sürdürür; bir kök dönmesi "yalnız bu kökün altı yeniden hesaplansın"
+ * demektir. İşlev saftır ve vscode tanımaz, dolayısıyla nöbeti host istemez.
+ *
+ * @param tetik            turu başlatan olayın adı
+ * @param aktifVarlik      MIM-1.1 yapışkan odağı (varlık kök dizini)
+ * @param odakAcik         `sarmal.aktifVarlikOdagi` ayarı
+ * @param calismaKokleri   çalışma alanı klasörleri
+ */
+export function turKapsami(
+  tetik: string,
+  aktifVarlik: string | undefined,
+  odakAcik: boolean,
+  calismaKokleri: readonly string[],
+): string | undefined {
+  // Odak kapalıysa bütün varlıkların tanıları panelde görünür; daraltma
+  // görünen tanıyı düşürürdü ve bu bir performans kazancı değil kayıp olurdu.
+  if (!odakAcik || !aktifVarlik) return undefined;
+  if (TAM_TUR_TETIKLERI.has(tetik)) return undefined;
+  // Odak bir çalışma alanı klasörünün TA KENDİSİ ise daraltacak bir şey yoktur;
+  // kapsam zaten o kökün kapsamıdır ve daraltma sahte bir kazanç gösterirdi.
+  if (calismaKokleri.some((k) => esitKok(k, aktifVarlik))) return undefined;
+  // Odak çalışma alanının dışındaysa (kapsam-dışı bir dosya açıkken olur)
+  // daraltma yapılmaz: tur o kökü hiç taramayacağı için resim boşalırdı.
+  if (!calismaKokleri.some((k) => altKapsamda(aktifVarlik, k))) return undefined;
+  return aktifVarlik;
+}
+
+const duzle = (y: string): string => y.replace(/\\/g, "/").replace(/\/+$/, "");
+const esitKok = (a: string, b: string): boolean => duzle(a) === duzle(b);
+/** `yol`, `ustKok`un altında mı (kökün kendisi HARİÇ)? */
+const altKapsamda = (yol: string, ustKok: string): boolean =>
+  duzle(yol).startsWith(`${duzle(ustKok)}/`);

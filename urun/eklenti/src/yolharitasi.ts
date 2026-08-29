@@ -28,9 +28,12 @@ import { GOMULU_KAYIT } from "./gomulu-kanon.ts";   // tip simgeleri kanondan �
 import { anadizinBul, mevsimNormalize } from "../../cekirdek/src/denetci.ts";   // DIL-1.2: varlık girişi desenle bulunur · MIM-1.2 ③: mevsim çevrimi MOTORDA tek nokta (zaman-ekseni turu)
 import { durumTuret, kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi
 import { miniGrafKaydi, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
-import { EKSEN_TIPLERI, eksenSvgVaryanti, type EksenTipi, type SatirSimgesi, type AnlamRengi } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A03/A05: geometrik aile TEK kaynaktan
+import {
+  EKSEN_TIPLERI, eksenSvgVaryanti, aileyeCevir, satirSvgGovdesi,
+  type EksenTipi, type SatirSimgesi, type AnlamRengi,
+} from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A03/A05: geometrik aile TEK kaynaktan · A07: webview işaretleri de buradan
 import { satirIkonu } from "./ortak.ts";   // VIT-KIMLIK-A05: satır simgelerinin iki-tema köprüsü
-import { varlikUstleri, enDerinVarlik, varlikSimgesi } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten
+import { varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği
 import {
   IZ_METINLERI, YOL_METINLERI, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
 } from "./yuzey-metinleri.ts";
@@ -188,6 +191,8 @@ border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255
 h1{padding:.2rem .8rem}
 h2{padding:.1rem .65rem}
 .k{color:var(--vscode-descriptionForeground)}
+.sr-simge{vertical-align:-0.14em;margin-right:.35em}
+.sr-durum{display:inline-flex;align-items:center}
 ul{padding-left:1.2rem}
 a{color:var(--vscode-textLink-foreground);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -201,7 +206,13 @@ const WIDGET_AILE = new Map<string, string>(
 );
 
 /** #7: kural otoritesi → rozet + sıra (YAS-2.3 · YAS-2.4 · anayasa > politika > tercih). */
-const OTORITE_ROZET: Record<string, string> = { anayasa: "⚖️ anayasa", politika: "📋 politika", tercih: "🔧 tercih" };
+// VIT-KIMLIK-A07: rozet artık emoji taşımaz — ailedeki simgenin ADINI ve
+// metinsel etiketini ayrı taşır; işaret sunum, etiket anlamdır (YUZ-4.2).
+const OTORITE_ROZET: Record<string, { simge: SatirSimgesi; ad: string }> = {
+  anayasa:  { simge: "anayasa",  ad: "anayasa" },
+  politika: { simge: "politika", ad: "politika" },
+  tercih:   { simge: "tercih",   ad: "tercih" },
+};
 const OTORITE_SIRA: Record<string, number> = { anayasa: 3, politika: 2, tercih: 1 };
 
 /** Bir .sar programından plan ögelerini süzer (Blok kökleri, iç içe serbest). */
@@ -362,7 +373,16 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   /** 🐢 PRF-A05 saha bulgusu 2 (Founder kanal ekranı: ilk genişletme ~950 ms): topolojik
    *  sıra yenile()'de ZATEN kurulur — saklanır ve etkiCoz'a enjekte edilir; Adım-başına
    *  tüm-graf sıralaması (ilk hesap dahil) tamamen biter. */
-  private topoSira: string[] = [];
+  private topoSira: readonly string[] = [];
+  /** ⚡ PRF-A06: topolojik sıra belleği — kenar yapısı değişmediği sürece sıra
+   *  YENİDEN HESAPLANMAZ. Ölçüm (2026-08-29): hesap çatı ölçeğinde 2093 ms,
+   *  imza 1,6 ms; yani düz yazıya ya da duruma dokunan her kayıt bugüne dek iki
+   *  saniyelik bölünmez bir bloğu boşuna ödüyordu. Bellek yalnız imzaya bakar,
+   *  dolayısıyla kenar değişen turda eskisi gibi tam hesap koşar. */
+  private siraBellegi = new SiraBellegi();
+  /** ⚡ PRF-A06: son turun kenar imzası — etki önbelleğinin turlar arası
+   *  yaşamasının koşulu budur (etkiCoz yalnız kenarları ve sırayı okur). */
+  private sonImza: string | undefined;
 
   /** 🐢 PRF-A05: etki sonucu TEK hesaplanır — aynı yenile turunda ikinci etkiCoz koşusu yok. */
   private etkiAl(kod: string): EtkiSonuc | undefined {
@@ -500,11 +520,20 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // rütbesi çocuklarının EN GEÇinden TÜRETİLİR (panel aynadır, DIL-2: kenar yaprakta
     // bir kez; kenarsız öğe rütbesiz kalır ve kaynak sırasını korur — serbest iş).
     this.dag = dagKur(programlar);   // VIT-GRAF-A03: graf saklanır — kenar düğümleri buradan
-    // 🐢 PRF-A05: graf değişti — kenar/etki önbellekleri yalnız BURADA boşalır
+    // 🐢 PRF-A05: graf değişti — kenar grubu önbelleği yalnız BURADA boşalır
     // (yenile-ömürlü sözleşme: bayat veri gösterilmez, aç/kapa hesap tetiklemez).
+    // Bu önbellek düz yazıyı, durumu ve kabul sayısını da okuduğu için kenar
+    // yapısı değişmese bile her turda boşaltılır; davranışı PRF-A05'teki gibidir.
     this.bilgiOnbellek.clear();
-    this.etkiOnbellek.clear();
-    const { sira } = topolojikSira(this.dag);
+    // ⚡ PRF-A06: kenar imzası — topolojik sıra ile etki kapanışı bu yapının SAF
+    // işlevleridir, dolayısıyla yapı değişmediği turda ikisi de hâlâ geçerlidir.
+    // Ölçüm (2026-08-29): imza 1,6 ms · sıra hesabı çatı ölçeğinde 2093 ms.
+    const imza = grafImzasi(this.dag.dugumler);
+    // Etki önbelleği YALNIZ yapı değiştiğinde boşalır. Bayat sonuç göstermesi
+    // imkânsızdır: etkiCoz yalnız `sonrakiler` kenarlarını ve topolojik sırayı
+    // okur, ikisi de imzanın kapsamındadır.
+    if (imza !== this.sonImza) { this.etkiOnbellek.clear(); this.sonImza = imza; }
+    const { sira } = this.siraBellegi.al(imza, () => topolojikSira(this.dag!).sira);
     this.topoSira = sira;   // 🐢 PRF-A05: kenar grupları aynı sırayı paylaşır (etkiAl enjeksiyonu)
     const rutbeHarita = new Map(sira.map((k, i) => [k, i]));
     const rutbe = (o: Oge): number => {
@@ -906,6 +935,36 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     return eleman;
   }
 
+  /** VIT-KIMLIK-A07: webview metnindeki arayüz işaretlerini kilitli vektörel
+   *  aileye çevirir. Kök yoksa (saf sınama kurulumu) metin DOKUNULMADAN döner —
+   *  panel çökmez ve metinsel etiket her hâlde yerinde kalır (YUZ-4.2). */
+  private aile(metin: string): string {
+    const kok = this.eklentiKoku;
+    if (!kok) return metin;
+    return aileyeCevir(metin, (g) => readFileSync(join(kok.fsPath, g), "utf8"));
+  }
+
+  /** Ailenin bir üyesini webview'e ADIYLA basar. Emoji anahtarı üzerinden
+   *  geçmez: yüzeyin kendi yazdığı işaret doğrudan aile adıyla anılır ve
+   *  kaynakta emoji kalmaz. */
+  private ikon(ad: SatirSimgesi): string {
+    const kok = this.eklentiKoku;
+    if (!kok) return "";
+    return satirSvgGovdesi(ad, (g) => readFileSync(join(kok.fsPath, g), "utf8"));
+  }
+
+  /** Durum rozetinin webview karşılığı. YUZ-4 kilidi burada da geçerlidir:
+   *  ŞEKİL sabittir (nokta), RENK durumdan gelir ve tema ROLÜNDEN okunur —
+   *  ham renk değeri hiçbir yere yazılmaz (YUZ-4.1). Rol adının tek kaynağı
+   *  DURUM_ROZET çizelgesidir; webview'de CSS değişkenine çevrilir. */
+  private durumIkonu(durum: Durum): string {
+    const kok = this.eklentiKoku;
+    if (!kok) return "";
+    const rol = (DURUM_ROZET[durum] ?? DURUM_ROZET["beklemede"]).renk.replace(/\./g, "-");
+    const govde = satirSvgGovdesi("nokta", (g) => readFileSync(join(kok.fsPath, g), "utf8"));
+    return `<span class="sr-durum" style="color:var(--vscode-${rol})">${govde}</span>`;
+  }
+
   /** VIT-GRAF-A04: koni detay KARTI — Adım'ın koni alanları + graf kenarları tek
    *  webview'de (Founder kart fikri · 2026-07-10). YALNIZ okuma; yazım koniYaz kapısında. */
   koniKartHtml(o: Oge): string {
@@ -915,8 +974,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     const e = this.etkiAl(o.kod);   // 🐢 PRF-A05: kart da önbellekten okur
     const atlaLink = (kod: string): string => {
       const h = this.dag?.dugumler.get(kod);
-      const r = h?.durum ? (DURUM_ROZET[h.durum as Durum]?.emoji ?? "·") : "·";
-      const metin = `${r} ${kacir(kod)}${h ? ` <span class="k">(${kacir(kanonikWidgetAdi(h.tip, h.tip))})</span>` : ""}`;
+      const r = h?.durum ? this.durumIkonu(h.durum as Durum) : "";
+      const metin = `${r}${kacir(kod)}${h ? ` <span class="k">(${kacir(kanonikWidgetAdi(h.tip, h.tip))})</span>` : ""}`;
       return h
         ? `<a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([h.dosya, h.satir]))}">${metin}</a>`
         : metin;
@@ -926,7 +985,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
         ? `<ul>${kodlar.map((k) => `<li>${atlaLink(k)}${not ? ` <span class="k">${not(k)}</span>` : ""}</li>`).join("")}</ul>`
         : `<p class="k">${YOL_METINLERI.yok}</p>`;
     const alan = (baslik: string, metin: string): string =>
-      `<h2>${baslik}</h2><pre>${kacir(metin)}</pre>`;
+      `<h2>${this.aile(baslik)}</h2><pre>${kacir(metin)}</pre>`;
     const gecisliKume = new Set(e?.gecisli ?? []);
 
     // #7 (Founder açık-ucu): "Adım bir Kural/Anayasa'ya bağlıysa bağlı kuralları göster."
@@ -943,14 +1002,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     const kuralSatiri = (k: KuralBilgi): string => {
       const rozet = OTORITE_ROZET[k.otorite ?? "tercih"] ?? OTORITE_ROZET["tercih"];
       const uri = this.kuralUri.get(k);
-      const baslik = `${k.ebedi ? "🔒 " : ""}${kacir(k.kod)}`;
+      const baslik = `${k.ebedi ? this.ikon("kilit") : ""}${kacir(k.kod)}`;
       const bag = uri
         ? `<a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([uri.fsPath, k.d.satir]))}">${baslik}</a>`
         : baslik;
       const ne = kuralNe(k);
       const hamKapsam = k.kapsam ?? "";
       const kapsam = kanonikWidgetAdi(hamKapsam, hamKapsam);
-      const ust = `${rozet}${YOL_METINLERI.kuralKapsami(k.katman ? kacir(k.katman) : "", kacir(kapsam))}`;
+      const ust = `${this.ikon(rozet.simge)}${rozet.ad}${YOL_METINLERI.kuralKapsami(k.katman ? kacir(k.katman) : "", kacir(kapsam))}`;
       return `<li>${bag} <span class="k">${ust}</span>${ne ? `<br><span class="k">${kacir(ne)}</span>` : ""}</li>`;
     };
     // genel yasa TÜM düğümlere düşer → katlı (salience): sayı görünür, liste tıkla-aç.
@@ -958,13 +1017,13 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       ? `<details><summary class="k">${YOL_METINLERI.genelYasa(joker.length)}</summary><ul>${joker.map(kuralSatiri).join("")}</ul></details>`
       : "";
     const kurallarBolum = hedefli.length
-      ? `<h2>${YOL_METINLERI.bagliKurallar(hedefli.length)}</h2><ul>${hedefli.map(kuralSatiri).join("")}</ul>${jokerBolum}`
-      : `<h2>${YOL_METINLERI.bagliKurallar()}</h2><p class="k">${YOL_METINLERI.ozelKuralYok}</p>${jokerBolum}`;
+      ? `<h2>${this.aile(YOL_METINLERI.bagliKurallar(hedefli.length))}</h2><ul>${hedefli.map(kuralSatiri).join("")}</ul>${jokerBolum}`
+      : `<h2>${this.aile(YOL_METINLERI.bagliKurallar())}</h2><p class="k">${YOL_METINLERI.ozelKuralYok}</p>${jokerBolum}`;
 
     return `<!DOCTYPE html><html lang="${YOL_METINLERI.webDili}"><meta charset="UTF-8">${WEBVIEW_STIL}<body>
-<h1>🃏 ${rozet.emoji} ${kacir(o.kod)}</h1>
+<h1>${this.ikon("kart")}${this.durumIkonu(o.durum)}${kacir(o.kod)}</h1>
 <p class="k">${kacir(kanonikWidgetAdi(o.tip, o.tip))} · ${kacir(o.durum)} ·
-<a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([o.dosya.fsPath, o.satir]))}">${YOL_METINLERI.dosyadaAc}</a></p>
+<a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([o.dosya.fsPath, o.satir]))}">${this.aile(YOL_METINLERI.dosyadaAc)}</a></p>
 <p>${kacir(kanonikWidgetDuzYazisi(o.tip, o.ne))}</p>
 ${alan(YOL_METINLERI.alan("görev"), koni.görev)}
 ${alan(YOL_METINLERI.alan("kabul"), koni.kabul)}
@@ -973,9 +1032,9 @@ ${koni.dokunulmaz !== "<!-- TODO -->" ? alan(YOL_METINLERI.alan("dokunulmaz"), k
 ${koni.referans !== "<!-- TODO -->" ? alan(YOL_METINLERI.alan("referans"), koni.referans) : ""}
 ${koniAlani(o.dugum, "rapor") !== "<!-- TODO -->" ? alan(YOL_METINLERI.alan("rapor"), koniAlani(o.dugum, "rapor")) : ""}
 ${koniAlani(o.dugum, "yama") !== "<!-- TODO -->" ? alan(YOL_METINLERI.alan("yama"), koniAlani(o.dugum, "yama")) : ""}
-<h2>${YOL_METINLERI.bagimliDugumler}</h2>${liste(d?.oncekiler ?? [])}
-<h2>${YOL_METINLERI.etkiledigiDugumler}</h2>${liste([...(e?.dogrudan ?? []), ...(e?.gecisli ?? [])],
-      (k) => gecisliKume.has(k) ? YOL_METINLERI.gecisli : YOL_METINLERI.dogrudan)}
+<h2>${this.aile(YOL_METINLERI.bagimliDugumler)}</h2>${liste(d?.oncekiler ?? [])}
+<h2>${this.aile(YOL_METINLERI.etkiledigiDugumler)}</h2>${liste([...(e?.dogrudan ?? []), ...(e?.gecisli ?? [])],
+      (k) => this.aile(gecisliKume.has(k) ? YOL_METINLERI.gecisli : YOL_METINLERI.dogrudan))}
 ${kurallarBolum}
 </body></html>`;
   }
@@ -1149,13 +1208,18 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
         "sarmalKonusma", YOL_METINLERI.konusmaBasligi(kayit?.rol, kayit?.adım),
         vscode.ViewColumn.Beside, {});
       const imza = kayit?.ajanİmza as { kod?: string; ad?: string } | undefined;
+      // VIT-KIMLIK-A07: konuşma kartının işaretleri de kilitli aileden gelir;
+      // okuyucu eklenti kökünden beslenir ve gömülü SVG temanın rengini miras alır.
+      const oku = (g: string): string => readFileSync(join(context.extensionUri.fsPath, g), "utf8");
+      const aile = (metin: string): string => aileyeCevir(metin, oku);
+      const ikon = (ad: SatirSimgesi): string => satirSvgGovdesi(ad, oku);
       panel.webview.html = `<!DOCTYPE html><html lang="${YOL_METINLERI.webDili}"><meta charset="UTF-8">${WEBVIEW_STIL}<body>
-<h1>🔬 ${kacir(kayit?.rol)} · ${kacir(kayit?.adım)}</h1>
-<p class="k">${YOL_METINLERI.konusmaOzeti(kacir(kayit?.zaman), kacir(imza ? `${imza.kod} (${imza.ad})` : "—"), kacir(kayit?.tokenGiriş ?? "?"), kacir(kayit?.tokenÇıkış ?? "?"), kacir(kayit?.sıra))}</p>
+<h1>${ikon("kosum")}${kacir(kayit?.rol)} · ${kacir(kayit?.adım)}</h1>
+<p class="k">${aile(YOL_METINLERI.konusmaOzeti(kacir(kayit?.zaman), kacir(imza ? `${imza.kod} (${imza.ad})` : "—"), kacir(kayit?.tokenGiriş ?? "?"), kacir(kayit?.tokenÇıkış ?? "?"), kacir(kayit?.sıra)))}</p>
 ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
-  ? `<p class="k">${YOL_METINLERI.beceriler(kacir((kayit.beceriler as string[]).join(" · ")))}</p>` : ""}
-<h2>${YOL_METINLERI.hamPrompt}</h2><pre>${kacir(kayit?.hamPrompt)}</pre>
-<h2>${YOL_METINLERI.hamYanit}</h2><pre>${kacir(JSON.stringify(kayit?.hamYanıt, null, 2))}</pre>
+  ? `<p class="k">${aile(YOL_METINLERI.beceriler(kacir((kayit.beceriler as string[]).join(" · "))))}</p>` : ""}
+<h2>${aile(YOL_METINLERI.hamPrompt)}</h2><pre>${kacir(kayit?.hamPrompt)}</pre>
+<h2>${aile(YOL_METINLERI.hamYanit)}</h2><pre>${kacir(JSON.stringify(kayit?.hamYanıt, null, 2))}</pre>
 </body></html>`;
     }),
     izleyici.onDidCreate((u) => panelHatti.olay(goreli(u), "sar-olayı")),

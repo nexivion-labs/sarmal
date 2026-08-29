@@ -64,3 +64,84 @@ export function enDerinVarlik<T extends { kokDizin: string }>(varliklar: readonl
   }
   return secim;
 }
+
+// ── ⚡ PRF-A06: KENAR YAPISI İMZASI VE TOPOLOJİK SIRA BELLEĞİ ────────────────
+//
+//   Ölçülmüş kusur (2026-08-29, bu Adımın ölçüm merceği): panel tazelemesi her
+//   turda `topolojikSira` işlevini bütün grafa yeniden koşturuyordu. İşlevin
+//   maliyeti düğüm sayısıyla karesel büyür, çünkü sırada bir sonraki düğümü
+//   seçen yardımcısı her adımda bütün anahtar listesini yeniden kurup
+//   sıralamaktadır. Ölçüm şudur: sarmal kökünde bin üç yüz altmış iki düğüm için
+//   üç yüz yetmiş altı milisaniye, dört projeyi kapsayan çatı kökünde iki bin
+//   dokuz yüz otuz iki düğüm için iki bin doksan üç milisaniye. Bu süre, tur
+//   koşarken eklenti sürecinin bölünmeden bloke olduğu süredir ve Founder'ın
+//   yazarken duyduğu takılmanın ölçülmüş kaynağıdır.
+//
+//   Onarımın dayanağı şudur: sıra, kenar yapısının SAF bir işlevidir. Bir `.sar`
+//   kaydının büyük çoğunluğu düz yazıya (`ne:`, `koşu:`, `rapor:`) ya da duruma
+//   dokunur ve kenar yapısına hiç dokunmaz; böyle bir turda önceki sıra hâlâ
+//   birebir doğrudur ve yeniden hesaplanması saf israftır. İmza kenar yapısının
+//   kanonik özetidir ve iki milisaniyenin altında kurulur; imza değişmediyse
+//   hesap hiç koşmaz, değiştiyse eskisi gibi tam hesap koşar. Böylece hiçbir
+//   turda bayat sıra gösterilmez ve kenar değiştiren turda gerileme olmaz.
+//
+//   Motorun kendisine (cekirdek/dag.ts) DOKUNULMAMIŞTIR: bu Adımın sınırı
+//   çekirdeği artımlı hâle getirmeyi dışarıda bırakır. Karesel maliyet orada
+//   durmaya devam eder ve ayrı bir Adımın konusudur; burada yalnız o maliyetin
+//   kaç kez ödendiği düşürülür.
+
+/** İmzanın okuduğu en dar düğüm yüzü — çekirdeğin `Dag` tipine bağlanmadan
+ *  yapısal olarak eşleşir, böylece çekirdek imzası değişse de bu dosya
+ *  vscode'suz ve motor-bağımsız kalır. */
+export interface KenarliDugum {
+  readonly oncekiler: readonly string[];
+  readonly sonrakiler: readonly string[];
+}
+
+/**
+ * Kenar yapısının kanonik özeti — topolojik sıranın ve etki kapanışının
+ * bağlı olduğu TEK girdi.
+ *
+ * Özet, düğüm anahtarlarına göre SIRALANIR: `dagKur` haritasını dosya keşif
+ * sırasıyla kurar ve aynı graf iki turda farklı ekleme sırasıyla doğabilir.
+ * Sıralama olmasaydı yapı hiç değişmediği hâlde imza değişir, önbellek ıskalar
+ * ve kazanç sessizce kaybolurdu. Kenar listeleri de sıralanır: aynı gerekçe
+ * onlar için de geçerlidir.
+ *
+ * Ayraçlar (`<`, `>`, `;`) kod ile kenar listesi arasındaki sınırı belirsiz
+ * bırakmaz; ayraçsız birleştirmede iki ayrı grafın aynı dizeye çökmesi
+ * mümkündür ve o durumda değişen bir yapı değişmemiş sayılırdı.
+ */
+export function grafImzasi(dugumler: ReadonlyMap<string, KenarliDugum>): string {
+  const parcalar: string[] = [];
+  for (const kod of [...dugumler.keys()].sort()) {
+    const d = dugumler.get(kod)!;
+    parcalar.push(kod, "<", [...d.oncekiler].sort().join(","),
+                  ">", [...d.sonrakiler].sort().join(","), ";");
+  }
+  return parcalar.join("");
+}
+
+/**
+ * Topolojik sıra belleği: aynı kenar yapısı için hesabı bir kez koşar.
+ *
+ * Bellek YALNIZ imzaya bakar ve başka hiçbir şeye bakmaz; bu yüzden bayat sıra
+ * döndürmesi imkânsızdır — yapı değiştiği anda imza da değişir ve hesap koşar.
+ * `yenidenHesaplandi` alanı nöbetin ölçtüğü kanıttır: hesabın koşup koşmadığı
+ * süre ölçümüne değil bu bayrağa bakılarak sınanır, çünkü süre ölçümü makinenin
+ * anlık yüküne göre dalgalanır ve nöbeti kırılgan yapardı.
+ */
+export class SiraBellegi {
+  private imza: string | undefined;
+  private sira: readonly string[] = [];
+
+  al(imza: string, hesapla: () => readonly string[]): { sira: readonly string[]; yenidenHesaplandi: boolean } {
+    if (this.imza === imza) return { sira: this.sira, yenidenHesaplandi: false };
+    this.imza = imza;
+    this.sira = hesapla();
+    return { sira: this.sira, yenidenHesaplandi: true };
+  }
+
+  /** Belleği boşaltır — bir sonraki istek hesabı koşturur. */
+  unut(): void { this.imza = undefined; this.sira = []; }
+}

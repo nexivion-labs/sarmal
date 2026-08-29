@@ -21,6 +21,21 @@ export interface TurBilgi {
   süreMs: number;
   /** Turda taranan .sar dosya sayısı */
   dosyaSayısı: number;
+  /**
+   * ⚡ PRF-A06: turun çapraz-dosya denetiminin DARALTILDIĞI varlık kökü; tam
+   * turda verilmez. Değer tetik alanına iliştirilir, çünkü kanal satırının
+   * biçimi yüzey metinlerinde tek kaynaktan yaşar ve bu Adım o kaynağa
+   * dokunmaz. Founder kanalda dar turu tam turdan ayırt edebilmelidir: aksi
+   * hâlde düşen süre, işin hızlanmasından mı yoksa kapsamın daralmasından mı
+   * geldiği okunamaz bir sayı olurdu.
+   */
+  kapsam?: string;
+}
+
+/** Tetik etiketini kapsam işaretiyle birleştirir — dar tur kanalda görünür
+ *  olur ve süre karşılaştırması kapsamıyla birlikte okunur. */
+export function tetikEtiketi(bilgi: TurBilgi): string {
+  return bilgi.kapsam ? `${bilgi.tetik} · dar kapsam=${bilgi.kapsam}` : bilgi.tetik;
 }
 
 export class PerformansMercegi {
@@ -62,7 +77,7 @@ export class PerformansMercegi {
       .map(([kaynak, sayı]) => `${kaynak} ${sayı}`)
       .join(" · ") || IZ_METINLERI.olayYok;
     const satır = IZ_METINLERI.performansTuru({
-      saat, sure: bilgi.süreMs, dosya: bilgi.dosyaSayısı, tetik: bilgi.tetik,
+      saat, sure: bilgi.süreMs, dosya: bilgi.dosyaSayısı, tetik: tetikEtiketi(bilgi),
       olaylar: olayDökümü, suzulen: this.süzülen, atlanan: this.atlanan,
       ertelenen: this.ertelenen,
     });
