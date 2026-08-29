@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: bilgi & tecrübe (karar·formül·sözlük·fikir·deney). Ailede 8 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: ebd69128
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: fd91f4ed
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -15,7 +15,7 @@ Bilgi ailesi şu soruyu cevaplar: bu iş neden böyle yapıldı ve bunu nereden 
 
 Ailenin metaforu birikmiş tecrübedir ve üyeleri aynı bilginin farklı olgunluk kademelerini temsil eder. Fikir ham ve taahhütsüz olandır; kendi durumunu ve hangi koşulda yeniden ele alınacağını bildiren bir dönüş tetikleyicisi taşır, olgunlaşırsa Karara yükselir. Karar bağlayıcı olandır; hükmünü ve gerekçesini ayrı ayrı yazar, kilitlendiğinde uygulamayı bağlar ve besler ya da referans kenarıyla Adımın bağlam konisine girer. Çıkarım dışarıdan damıtılan içgörüdür ve kaynağını beyan etmek zorundadır, çünkü kaynağı yazılmayan içgörü doğrulanamaz. Deney hipotezini ve sonucunu taşır ve Kararı besler. Felsefe bir ilkeyi savunan manifestodur, tezini açıkça yazar ve hem Kararı hem Yasayı besler. Formül bilimsel dayanağı, Sözlük alan terimlerini, Mockup ise dış tasarım gerçeğini taşır ve özetlenmeden olduğu gibi referans alınır. Ailenin yasa ailesiyle ilişkisi tek yönlüdür ve bilinçlidir: karar hükmü doğurur, hüküm kanona iner, kanondaki kural da `dayanak` kenarıyla kendisini doğuran karara geri işaret eder.
 
-Canlı örnek Sarmal'ın kendi fikir rafındadır. `oz/fikirler.sar` dosyasında `FKR-ANLATIM-KANITI` kodlu bir Fikir yaşar; durum alanına yazdığı `park` değeriyle beklemede olduğunu bildirir ve `dönüşTetikleyici` alanında "v1 yayın yüzeyi konuşulduğunda ya da Sarmal ilk kez depo dışından birine gösterileceği zaman" koşulunu yazar. Düğümün gövdesi hem savı hem karşı savı taşır, çünkü taahhütsüz bir fikrin dürüst kaydı ancak iki tarafı da yazınca tamamlanır. Ailenin en olgun üyesi de canlıdır: `ogreti/felsefe/prizma.sar` dosyasındaki `Felsefe( kod: FEL-5` düğümü tek kaynaktan doğan dört yüz tezini savunur ve dayandığı kanon maddelerine referans kenarıyla bağlanır. İki düğümü de `gezin` aracına kodlarını sorarak açabilirsin.
+Fikir tipinin bu depoda bugün canlı bir örneği yoktur ve bunun sebebi dersin kendisidir: deponun üç fikri 2026-08-28 tarihinde verilen bir hükümle kapalı tarafa indirilmiştir, çünkü üçü de henüz tartılmamış ürün düşünceleriydi ve karar verilmeden önce yönü ilan etmiş olurlardı. Tipin yazımı yine de tek satırda görülür: `Fikir( kod: FKR-ORNEK, durum: park, dönüşTetikleyici: "düşüncenin hangi koşulda yeniden ele alınacağı", ne: "savı ve karşı savı birlikte taşıyan gövde" )`. Dürüst bir fikir kaydı iki tarafı da yazar, çünkü yalnız savı yazılan düşünce okuyucuya karar gibi görünür ve taahhütsüzlüğünü kaybeder. Ailenin en olgun üyesi de canlıdır: `ogreti/felsefe/prizma.sar` dosyasındaki `Felsefe( kod: FEL-5` düğümü tek kaynaktan doğan dört yüz tezini savunur ve dayandığı kanon maddelerine referans kenarıyla bağlanır. İki düğümü de `gezin` aracına kodlarını sorarak açabilirsin.
 <!-- /SARMAL:ANLATI -->
 
 <!-- SARMAL:AILE_ISKELETI -->

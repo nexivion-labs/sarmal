@@ -35,7 +35,7 @@ kalır; rol ataması grafın kendisinden mekanik türer; açık taraf kadrosu
 bugün uzmansız kalan dört alanda genişler; katkı sözleşmesi Founder ile
 mutabık kalınarak yeni depo yerleşimiyle hizalanır.
 |<--
-Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
+Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
   ne: "🏛️ Açık kaynak yönetişimi — oturum ritüeli, denetçi kapsamı, mekanik rol seçimi, kadro genişlemesi ve katkı sözleşmesi" ) {
 
   Katman( kod: KAT-OSS-YONETISIM, kullanır: TEK-SARMAL, ad: "acik-kaynak-yonetisimi",
@@ -44,7 +44,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
     AltKatman( kod: ALT-OSS-PLANLAMA, departman: planlama, ad: "planlama departmanının yönetişim kalemleri",
       ne: "📋 Açık kaynak yönetişiminin planlama departmanına düşen dört kaleminin toplanması: oturum ritüelinin kanona inmesi, denetçi kapsamının altı sabit maddeye bağlanması, açık taraf kadrosunun dört yeni uzmanla genişlemesi ve katkı sözleşmesinin Founder ile belirlenmesi" ) {
 
-      Adım( kod: OSS-A01, durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
+      Adım( kod: OSS-A01, durum: beklemede, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
         referans: [ ORK-8, KNT-11 ],
         ne: "🕰️ Oturum ritüelinin kanona inmesi. Founder 2026-08-23 tarihinde şu tespiti onaylamıştır: kanon bugün yalnız mevsim ölçeğinde bir ritüel tanımlamaktadır ve oturum ölçeğinde ilanlı bir ritüel yoktur, bu boşluk yüzünden bilgi kaybı tam oturum sınırında gerçekleşmektedir. Founder'ın onayladığı hükme göre açılış beş basamaktan oluşacaktır: varlığın seçilip adıyla bildirilmesi, anadizin ile durum devrinin ve kilitli kararların kaynaktan okunması, dört ölçümün ayrı ayrı alınması, ateşlemiş hatırlatıcı kuyruğunun okunması ve oturumun tek cümlelik hedefinin yazılması. Kapanış da beş basamaktan oluşacaktır: aynı dört ölçümün tekrarlanması, biten Adımların koşu kaydının yazılıp meyvelerinin hasat edilmesi, açık işin devredilip kapanmayacak işin gerekçesiyle düşürülmesi, devir kaydının yazılması ve işlemenin yapılması. Bu Adımın işi onaylanan hükmü kanon metnine indirmektir; madde metni Founder ile birlikte yazılacağı için Adım onay bekler durumdadır." ) {
         görev: [
@@ -62,7 +62,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
         sınır: "Bu Adım yalnız kanon metnine dokunur; oturum ritüelini fiilen işleten oturum-ac ve oturum-kapat becerilerinin yeni maddeyle hizalanması bu Adımın kapsamı dışındadır ve gerektiğinde ayrı bir Adıma bağlanır."
       }
 
-      Adım( kod: OSS-A02, durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
+      Adım( kod: OSS-A02, durum: beklemede, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
         referans: [ ORK-6.1, KNT-4, KNT-6 ],
         ne: "🔍 Denetçi kapsamının altı sabit maddeye bağlanması. Founder 2026-08-23 tarihinde şu tespiti onaylamıştır: ORK-6.1 maddesi denetçinin neyi görebileceğini söylemekte, buna karşılık neyi ölçmesi gerektiğini söylememektedir ve bu boşluk denetimin kalitesini kontrolcünün o günkü dikkatine bağlamaktadır. Founder'ın onayladığı hükme göre denetçinin kapsamı şu altı sabit maddeye bağlanacaktır: kabul maddelerinin tek tek kendi ölçümüyle ölçülmesi, nöbetin mutasyonla kanıtlanması, dört ölçümün ayrı ayrı bildirilmesi, sahte yeşilin aranması, Adımın sınır alanının aşılıp aşılmadığının denetlenmesi ve hükmün kabul, şartlı kabul ya da red olarak verilmesi. Bu Adım da kanon maddesi doğuracağı için onay bekler durumdadır." ) {
         görev: [

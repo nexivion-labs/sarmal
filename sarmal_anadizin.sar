@@ -48,13 +48,13 @@ Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
   }
 
   Kitaplık( kod: KTP-OZ, yol: "oz/",
-    ne: "🌱 Öz kitaplığı — tip sistemi, kontrolcü anayasası, birleştirilmiş hatırlatıcı kaydı, fikirler ve çeviri kaynakları burada yaşar" ) {
+    ne: "🌱 Öz kitaplığı — tip sistemi, kontrolcü anayasası, birleştirilmiş hatırlatıcı kaydı ve çeviri kaynakları burada yaşar" ) {
     Raf( kod: RAF-OZ-SINIFLAMA, yol: "siniflama/", ne: "tip sistemi kaydı ve rehberi: aileler, şemalar, kenarlar ve renk paleti" ) {
       // SNF-0 tip kanonunun kimliği eski ilandaki gibi rafın altında yaşar; planlar bu koda referans verir.
       Sınıflama( kod: SNF-0, ne: "geçerli tip, kenar ve sarma kümesi — .sar grameri buradan doğrulanır" )
     }
     Raf( kod: RAF-OZ-CEVIRI, yol: "ceviri/", ne: "çok dillilik kaynakları: sözlükler ve çeviri katmanı" )
-    Raf( kod: RAF-OZ-KAYIT, yol: "kayit/", ne: "öz kayıtları: kontrolcü anayasası, birleşik hatırlatıcı kaydı ve ayıklanmış fikirler (Founder onayı 2026-08-24)" )
+    Raf( kod: RAF-OZ-KAYIT, yol: "kayit/", ne: "öz kayıtları: kontrolcü anayasası ve birleşik hatırlatıcı kaydı (Founder onayı 2026-08-24; fikir parkı 2026-08-28 hükmüyle laboratuvara indi)" )
   }
 
   Kitaplık( kod: KTP-IS, yol: "is/",

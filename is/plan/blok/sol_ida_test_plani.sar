@@ -46,35 +46,35 @@ Blok( kod: BLK-SOL-IDA-TEST, ad: "Sol Gerçek-Dünya + Otonomi Saha Sınavı" ) 
     AltKatman( kod: ALT-SIT-SUREC-ASAMALAR, departman: sınama, ad: "saha sınavı aşama zinciri",
       ne: "🍃 kurulum→bağlam→prompt→ray→otonom sırasıyla ilerleyen saha sınavı aşamalarını taşır" ) {
 
-      Adım( kod: ADM-SIT-MCP, ad: "MCP kurulumu — Codex'e Sarmal MCP", durum: tamamlandı,
+      Adım( kod: ADM-SIT-MCP, ad: "MCP kurulumu — Codex'e Sarmal MCP", durum: beklemede,
         görev: "Sarmal MCP'yi Codex'e tanıt ki Sol dosya okumadan araçlarla çalışsın",
         kabul: [ "~/.codex/config.toml [mcp_servers.sarmal] eklendi", "initialize handshake OK (serverInfo sarmal 0.6.0)", "13 araç erişilebilir" ],
         sınır: "MCP hâlâ kaynak-deposundan kanon okur (dev modu); ürünleşme ayrı kol. Tarihsel not: bu Adım IDA döneminde kapandı (kurulum proje-bağımsızdır, geçerliliğini korur)" )
 
       Adım( kod: ADM-SIT-BAGLAM, öncelik: p3,
-        onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Hükmün gerekçesi iki katmanlıdır. Birincisi dışsal koşuldur: bu Adım sınav sahası olacak gerçek örnek projenin bağlamını ister ve o bağlamı yalnız Founder verebilir, dolayısıyla iş bugün başlatılamaz ve kapıyı açık tutmak kararsızlık değil beklemedir. İkincisi panel dürüstlüğüdür: kararı verilmiş bir iş Onaylar panelinde karar bekliyormuş gibi durursa panel yalan söyler ve gerçekten cevap bekleyen kapılar görünmez olur. İş unutulmaz, çünkü Adım beklemede durumunda rayda kalmaya devam eder ve motor tamamlanmamış Adımı gündemde tutar.",
-        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Sınav zinciri dış koşula bağlıdır: gerçek örnek projenin bağlamını yalnız Founder verebilir. Metin bayat iddia taşımaz ve v1 yayınını bloklamaz. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): Founder kararı 2026-07-19 kayıtlı — koşu, eklenti olgunlaşınca Founder'ın göstereceği gerçek örnek projede; bağlamı Founder verir", ad: "Örnek proje bağlamını al (Founder'dan)", durum: beklemede,
+        onay:  "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Hükmün gerekçesi iki katmanlıdır. Birincisi dışsal koşuldur: bu Adım sınav sahası olacak gerçek örnek projenin bağlamını ister ve o bağlamı yalnız Founder verebilir, dolayısıyla iş bugün başlatılamaz ve kapıyı açık tutmak kararsızlık değil beklemedir. İkincisi panel dürüstlüğüdür: kararı verilmiş bir iş Onaylar panelinde karar bekliyormuş gibi durursa panel yalan söyler ve gerçekten cevap bekleyen kapılar görünmez olur. İş unutulmaz, çünkü Adım beklemede durumunda rayda kalmaya devam eder ve motor tamamlanmamış Adımı gündemde tutar.",
+        koşu:  "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Sınav zinciri dış koşula bağlıdır: gerçek örnek projenin bağlamını yalnız Founder verebilir. Metin bayat iddia taşımaz ve v1 yayınını bloklamaz. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): Founder kararı 2026-07-19 kayıtlı — koşu, eklenti olgunlaşınca Founder'ın göstereceği gerçek örnek projede; bağlamı Founder verir", ad: "Örnek proje bağlamını al (Founder'dan)", durum: beklemede,
         görev: "Founder, sınav sahası olacak gerçek örnek projenin bağlamını + boş-proje yolunu verir; Claude bağlamda tutar",
         kabul: [ "proje ne yapıyor·hedef·teknoloji·öncelikler net", "boş-proje yolu alındı" ],
         sınır: "Founder DERSİ: projeyi TANIMADAN Sol'ü yönlendirme YASAK — bağlam Founder'dan. Saha koşusu eklenti olgunlaşınca açılır (Founder kararı 2026-07-19)" )
 
       Adım( kod: ADM-SIT-PROMPT,
-        onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın kendi gerekçesi yapısaldır: başlama promptu örnek projenin bağlamı olmadan kurulamaz ve bağlam Adımı da aynı hükümle ertelenmiştir, dolayısıyla bu halka öncülünden önce açılamaz. Kapının kapatılması işin düşürülmesi anlamına gelmez; Adım beklemede durumunda rayda kalır ve zincirin kökü açıldığında sırası kendiliğinden gelir.",
-        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincirin kökü olan bağlam Adımıyla aynı kapıdadır ve metin temizdir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zinciri — BAGLAM ile aynı kapı (Founder'ın örnek projesi bekleniyor)", ad: "Sol başlama promptunu kur", durum: beklemede, öncelik: p3,
+        onay:    "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın kendi gerekçesi yapısaldır: başlama promptu örnek projenin bağlamı olmadan kurulamaz ve bağlam Adımı da aynı hükümle ertelenmiştir, dolayısıyla bu halka öncülünden önce açılamaz. Kapının kapatılması işin düşürülmesi anlamına gelmez; Adım beklemede durumunda rayda kalır ve zincirin kökü açıldığında sırası kendiliğinden gelir.",
+        koşu:    "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincirin kökü olan bağlam Adımıyla aynı kapıdadır ve metin temizdir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zinciri — BAGLAM ile aynı kapı (Founder'ın örnek projesi bekleniyor)", ad: "Sol başlama promptunu kur", durum: beklemede, öncelik: p3,
         görev:   "Örnek-proje bağlamıyla Sol'e başlama promptu: (a) MCP başla→kurallar→siniflama öğren (b) proje hedefini planla (c) denetle-proje ile otonom ilerle",
         kabul:   [ "prompt Sol'ün otonom-koşu modunu tetikliyor (önce ray, sonra plan dahilinde ilerle)" ],
         bağımlı: [ ADM-SIT-MCP, ADM-SIT-BAGLAM ] )
 
       Adım( kod: ADM-SIT-PLAN,
-        onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın gerekçesi zincirin kapalılığıdır: Sol'ün örnek projenin rayını kurabilmesi başlama promptuna, o da bağlama bağlıdır ve ikisi de ertelenmiştir, dolayısıyla Adım bugün seçilebilir değildir. Metin süreç tanımı olarak günceldir ve bayat bir iddia taşımaz, bu yüzden ertelenirken tazelenmesi gerekmemiştir.",
-        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincir kapalı olduğu için seçilemez ve metin süreç tanımı olarak günceldir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zinciri — BAGLAM ile aynı kapı", ad: "Sol örnek projenin rayını kurar", durum: beklemede, öncelik: p3,
+        onay:    "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın gerekçesi zincirin kapalılığıdır: Sol'ün örnek projenin rayını kurabilmesi başlama promptuna, o da bağlama bağlıdır ve ikisi de ertelenmiştir, dolayısıyla Adım bugün seçilebilir değildir. Metin süreç tanımı olarak günceldir ve bayat bir iddia taşımaz, bu yüzden ertelenirken tazelenmesi gerekmemiştir.",
+        koşu:    "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincir kapalı olduğu için seçilemez ve metin süreç tanımı olarak günceldir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zinciri — BAGLAM ile aynı kapı", ad: "Sol örnek projenin rayını kurar", durum: beklemede, öncelik: p3,
         görev:   "Sol, örnek projenin <proje>_anadizin.sar + plan/ (Faz→Blok→Katman→Adım + koni) yapısını kurar",
         kabul:   [ "denetle-proje TAM-yeşil (ya da yalnız meşru bilgi)", "koni-dolu ray izlenebilir" ],
         bağımlı: [ ADM-SIT-PROMPT ] )
 
       Adım( kod: ADM-SIT-OTONOM,
-        onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adım zincirin son işlevsel halkasıdır ve öncülü olan ray kurulumu ertelendiği için kendisi de ertelenmiştir. Adımın asıl değeri gözlem üretmesidir, çünkü Sol'ün otonom koşusunda ortaya çıkan Sarmal eksikleri motorun kendi işine döner; bu değer kaybolmaz, yalnız yayının ardına ötelenir.",
-        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincirin son işlevsel halkasıdır ve metin temizdir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zincirinin son halkası — BAGLAM ile aynı kapı", ad: "Sol otonom ilerler + gözlem", durum: beklemede, öncelik: p3,
+        onay:    "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adım zincirin son işlevsel halkasıdır ve öncülü olan ray kurulumu ertelendiği için kendisi de ertelenmiştir. Adımın asıl değeri gözlem üretmesidir, çünkü Sol'ün otonom koşusunda ortaya çıkan Sarmal eksikleri motorun kendi işine döner; bu değer kaybolmaz, yalnız yayının ardına ötelenir.",
+        koşu:    "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Zincirin son işlevsel halkasıdır ve metin temizdir. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): ADM-SIT zincirinin son halkası — BAGLAM ile aynı kapı", ad: "Sol otonom ilerler + gözlem", durum: beklemede, öncelik: p3,
         görev:   "Sol plan dahilinde kendi başına ilerler; Claude drift/eksik geribildirimlerini fabrikada işler",
         kabul:   [ "Sol'ün otonom-koşu süresi ölçüldü", "çıkan Sarmal eksikleri fabrikada düzeltildi", "gözlem metrikleri kaydedildi" ],
         bağımlı: [ ADM-SIT-PLAN ] )
@@ -82,9 +82,9 @@ Blok( kod: BLK-SOL-IDA-TEST, ad: "Sol Gerçek-Dünya + Otonomi Saha Sınavı" ) 
       //   Taşınan kademenin beyanı: 🧪 Saha sınavının sayısal kardeşi: aynı niyet iki kolda yazdırılır ve Sarmal konisinin faydası ölçüyle karşılaştırılır
 
       Adım( kod: ADM-SIT-TURNUSOL, ad: "Turnusol A/B deneyi — niyet→kod çeviri ölçümü", durum: beklemede, öncelik: p3,
-        onay: "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın gerekçesi ölçüm sırasıdır: deney taban ölçümü olmadan koşulamaz ve taban ölçümü saha sınavı zincirinden gelir, dolayısıyla deney yapısal olarak kilitlidir. Kapının kapatılması aynı zamanda bir kayıt boşluğunu da kapatır, çünkü bu Adım kampanya kapanışının bilinçli beklemede envanterinde hiç sayılmamış ve bugüne kadar hiç onay damgası almamıştı; artık ertelenme kararı gerekçesiyle kayıtlıdır.",
-        koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Deney taban ölçümü olmadan koşulamaz ve yapısal kilitlidir; ayrıca bu Adım kampanya kapanışının bilinçli beklemede envanterinde sayılmamış ve onay damgası hiç verilmemişti — bu kapı o kayıt boşluğunu kapatır. Kontrolcü önerisi: v1 sonrasına beklemede kalsın.",
-        ne: "Sarmal'ın fayda iddiasını A/B deneyiyle sayıya bağlamak.",
+        onay:  "şerhle onaylandı — 2026-08-08 · Founder saha sınavı zincirinin tamamını v1 yayınının ardına erteledi ve kapısını kapattı. Bu Adımın gerekçesi ölçüm sırasıdır: deney taban ölçümü olmadan koşulamaz ve taban ölçümü saha sınavı zincirinden gelir, dolayısıyla deney yapısal olarak kilitlidir. Kapının kapatılması aynı zamanda bir kayıt boşluğunu da kapatır, çünkü bu Adım kampanya kapanışının bilinçli beklemede envanterinde hiç sayılmamış ve bugüne kadar hiç onay damgası almamıştı; artık ertelenme kararı gerekçesiyle kayıtlıdır.",
+        koşu:  "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Deney taban ölçümü olmadan koşulamaz ve yapısal kilitlidir; ayrıca bu Adım kampanya kapanışının bilinçli beklemede envanterinde sayılmamış ve onay damgası hiç verilmemişti — bu kapı o kayıt boşluğunu kapatır. Kontrolcü önerisi: v1 sonrasına beklemede kalsın.",
+        ne:    "Sarmal'ın fayda iddiasını A/B deneyiyle sayıya bağlamak.",
         görev: [
           "Aynı işi iki kolda yazdır: kontrol kolunda düz tarif metni, deney kolunda Sarmal konisi (Adım kabulü, Sözleşme alan kuralları ve Beceri antiDesen bağlamı) verilir.",
           "İki kolda aynı modeli, aynı tur bütçesini ve aynı görev tanımını kullan; kolları birbirinden habersiz koş.",
@@ -99,11 +99,11 @@ Blok( kod: BLK-SOL-IDA-TEST, ad: "Sol Gerçek-Dünya + Otonomi Saha Sınavı" ) 
           "Başarı kapısı iki eşikle okunur: deney kolunda sınıf-1 bulgular en az yüzde elli azalmıştır ve kabul kanıtı kapsaması en az yüzde doksandır.",
           "Eşik geçilmediyse sonuç olduğu gibi yazılır; deney başarısız da kapanabilir ve bu kapanış geçerli bir sonuçtur."
         ],
-        bağımlı: [ ADM-SIT-OTONOM ],
+        bağımlı:  [ ADM-SIT-OTONOM ],
         referans: [ MIM-1.6, YAS-4.1, YAS-4.2, ORK-6.1, ORK-6.2 ],
-        üretir: [
+        üretir:   [
           Veri( kod: VR-SIT-TURNUSOL-DEFTER,
-                ne: "🍎 Turnusol A/B deneyinin ölçüm defteri — iki kolun ham sayıları, rubrik hükmü ve eşik okuması; hedef: `_Sarmal/nitelik/turnusol_olcum_defteri.sar`." )
+            ne: "🍎 Turnusol A/B deneyinin ölçüm defteri — iki kolun ham sayıları, rubrik hükmü ve eşik okuması; hedef: `_Sarmal/nitelik/turnusol_olcum_defteri.sar`." )
         ],
         sınır: "Deney taban ölçümü olmadan koşulamaz: gerçek örnek projede otonom koşu (ADM-SIT-OTONOM) kapanmadan bu Adım seçilemez. Deney yalnız ölçer; ölçüm sonucundan doğacak kanon maddesi, metre ya da güven puanı bu Adımın işi değildir." )
     }

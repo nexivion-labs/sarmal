@@ -25,23 +25,61 @@ Faz( kod: FAZ-2026-TEMMUZ, ad: "Olgunlaşma Mevsimi", hedefTarih: "2026-07-31",
   // 2026-07-31 tarihinde repo dışı arşive indi (adres Karar F kaydındadır);
   // çağır kenarları arşivdeki gövdelere işaret edemeyeceği için düşürüldü —
   // odunların tam listesi arşiv mühür kaydında ve git tarihçesindedir.
-  // Açık işi kalan gövdeler Ağustos'a taşındı (aşağıda); Temmuz'da başlayıp
-  // repoda canlı kalan iki gövde şunlardır:
-  çağır BLK-VITRIN      // vitrin/graf yüzü
+  // Açık işi kalan gövdeler devredildi ve devrin son ayağı 2026-08-29 tarihinde
+  // atıldı: vitrin gövdesi Temmuz'un altında on açık Adımla duruyordu ve mevsimin
+  // vadesi yirmi dokuz gün önce geçtiği hâlde kapanmış görünüyordu; gövde Eylül
+  // halkasına taşındı. Temmuz'da büyüyüp işi tamamen biten tek gövde şudur:
   çağır BLK-MDR         // 🗣️ motor diksiyon reformu
 }
 
-Faz( kod: FAZ-2026-AGUSTOS, ad: "Orkestrasyon Mevsimi", hedefTarih: "2026-08-31",
-     ne: "🌀 Ağustos dönemi — ASIL CEPHE orkestrasyon zekâsı (DALGA-3: eşikler tek kaynak + ajan eşleyici, ZKA-A05/A06); Temmuz'dan devrolan 6 Blok'un açık işi burada olgunlaşır. Founder north-star: 'orkestrasyon zekâsına geçelim' (2026-07-21)" ) {
+// ── AD DEĞİŞİKLİĞİ VE DEVİR (Founder hükmü · 2026-08-29) ────────────────────
+//   HÜKÜM: Ağustos mevsiminin adı "Orkestrasyon Mevsimi" iken "Çatı Mevsimi"
+//   olmuştur ve açık iş taşıyan gövdeler Eylül halkasına devredilmiştir.
+//   GEREKÇE iki katlıdır. Birincisi adın gerçeği anlatmamasıdır: mevsim 21
+//   Temmuz'da orkestrasyon cephesi hedefiyle açılmıştı, oysa Ağustos'ta fiilen
+//   büyüyen iş çatının kurulması, açık deponun doğumu, kadronun kendi deposuna
+//   ayrılması, panel kapsam onarımları ve yayın hazırlığı oldu; cephenin kendisi
+//   H4 hükmüyle kendi deposuna taşındı ve bu mevsimin işi olmaktan çıktı.
+//   İkincisi ad çakışmasıdır: kapalı ürünün adı 26 Ağustos'ta `orkestrasyon`
+//   olarak bağlandığı için, açık depoda aynı adı taşıyan bir mevsim dışarıdan
+//   kapalı ürünün kod adı gibi okunmaktadır (STR-3).
+//   SINIR: yalnız `ad` ile `ne` alanları değişmiştir. `FAZ-2026-AGUSTOS` kodu
+//   korunmuştur, dolayısıyla hiçbir atıf ve hiçbir `mevsim` kenarı kırılmamıştır;
+//   Adımların koşu kayıtları ile tarihleri olduğu gibi durur (TARİH-TAHRİF-EDİLMEZ).
+// ────────────────────────────────────────────────────────────────────────────
+Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
+     ne: "🌀 Ağustos dönemi — çatının kurulduğu ve dört projenin kendi köklerine ayrıldığı mevsim: açık depo sıfır geçmişle doğdu, kapalı ürün kendi deposuna taşındı, laboratuvar deney alanı oldu ve site çatıya alındı; panel kapsam kusuru sınıf olarak kapatıldı, MIM-1.7 hükme bağlandı ve plan rafları ayrıldı. Mevsim 2026-08-29 tarihinde kapanmış, açık iş taşıyan on bir gövde Eylül halkasına devredilmiştir" ) {
 
-  // Temmuz'dan devrolan Blok'lar — açık iş taşıyan gövdeler (Provider deseni:
-  // aynı Blok kimliği, biten Adımlar tarihsel, açık Adımlar bu mevsimin işi).
-  çağır BLK-REFORM      // 🏛️ RF-T4-A01 metin/yüzey hizalaması (belge süpürmesi + Founder mini-kararı)
-  çağır BLK-KPN         // 🏁 KPN-A04 orkestrasyon açılış oturumu (RAY-3 envanteri + ACT fark analizi gündemde) → DALGA-3 kapısı
-  çağır BLK-BAKIM       // 📦 BKM-FND-A03 STR-3 fiziksel taşıma (ayrı planlı tur rezervasyonu)
-  çağır BLK-PRF         // ⚡ PRF-A06 TAM-TUR maliyet gözlemi (veri orkestrasyon mesaisinde birikir)
-  çağır BLK-SINAV3      // 🎓 SNV4-A01 tam-steril sınav turu (ayrı pencere)
-  çağır BLK-COKDILLILIK // 🌍 yayın dil kapısı: İngilizce okuma yüzeyi — v1'in KRİTİK YOLUNDA, çünkü minimum-güçlü ilk çıkış kapısının üç şartından biri budur ve depo bu şart sağlanmadan açılmaz (Founder hükmü 2026-07-28: seçenek A şimdi, seçenek B v2'ye)
-  çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı (Marketplace + GitHub linguist) — yayın dil kapısı ve STR-3 kapılı, orkestrasyon sonrası; biten eklenti Adımları tarihsel (Provider deseni)
-  çağır BLK-SOL-IDA-TEST // 🧪 ADM-SIT×4 Sol/IDA gerçek-dünya testi (Founder'ın örnek projesi bekleniyor — bu Blok Founder'ca hariç tutuldu, kapı Founder'da)
+  // Bu mevsimde büyüyen ve işi TAMAMEN biten gövdeler burada tarihsel olarak
+  // kalır (MIM-1.2: gövde büyüdüğü mevsimde yaşar). Açık iş taşıyan gövdeler
+  // Eylül'e taşındı ve aşağıda değil orada listelenir.
+  çağır BLK-REFORM      // 🏛️ RF-T4-A01 metin ile yüzey hizalaması — on üç Adımın tamamı kapandı
+  çağır BLK-KPN         // 🏁 kapanış kampanyası — beş Adımın tamamı kapandı
+  çağır BLK-COKDILLILIK // 🌍 yayın dil kapısı: İngilizce okuma yüzeyi — v1'in kritik yolundaydı ve bu mevsimde kapandı (Founder hükmü 2026-07-28: seçenek A şimdi, seçenek B v2'ye)
+}
+
+// ── EYLÜL HALKASI (Founder hükmü · 2026-08-29) ──────────────────────────────
+//   HÜKÜM: Sarmal'ın kendi zaman ekseninde Eylül mevsimi açılmıştır ve adı
+//   "Lansman Mevsimi"dir.
+//   GEREKÇE: v1'in bitiş tanımı iki olaydır, yani eklentinin mağazaya yüklenmesi
+//   ile açık deponun halka açılması, ve ikisi de Eylül'e düşmektedir; buna
+//   karşılık ürünün kendi ekseninde Eylül'ü karşılayan bir halka yoktu ve bütün
+//   açık iş vadesi 31 Ağustos'ta dolan bir mevsimin altında duruyordu. Lansman
+//   takvimi laboratuvarda kendi Fazlarıyla yaşamayı sürdürür; bu halka ürünün
+//   mühendislik işini taşır ve o takvimle aynı ayı anlatır.
+//   PROVIDER DESENİ: aşağıdaki gövdeler kimliklerini korur; biten Adımları
+//   büyüdükleri mevsimde tarihsel olarak kalır, açık Adımları bu mevsimin işidir.
+//   Bağını `mevsim` alanıyla kuran gövdeler burada YİNELENMEZ, çünkü bir bağ tek
+//   yerde yazılır (MIM-1.3); onlar kendi dosyalarında Eylül'e bağlanmıştır.
+// ────────────────────────────────────────────────────────────────────────────
+Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
+     ne: "🌀 Eylül dönemi — v1'in iki bitiş olayı bu mevsimde gerçekleşir: eklenti mağazaya yüklenir ve açık depo canlı yayında halka açılır. Kritik yol küratörlü aktarımın kapanışından mağaza yüklemesine, oradan taze klon provasına ve canlı açılışa uzanır; Ağustos'tan devrolan on bir gövdenin açık işi bu halkada olgunlaşır" ) {
+
+  // Ağustos'tan devrolan gövdeler — `çağır` ile bağlananlar (2026-08-29 devri).
+  çağır BLK-VITRIN      // 🎨 vitrin ile graf yüzü — on açık Adım; çoğu teslim edilmiş olup Founder'ın canlı pencere bakışını bekler
+  çağır BLK-BAKIM       // 📦 bakım ve olgunluk — on dört açık Adım; eklenti denetim turunun on bir kalemi burada yaşar
+  çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı: mağaza yüklemesi ile GitHub dil kimliği başvurusu — v1'in kritik yolunda
+  çağır BLK-PRF         // ⚡ PRF-A06 tam tur maliyet gözlemi
+  çağır BLK-SINAV3      // 🎓 SNV4-A01 tam steril sınav turu (ayrı pencere ister)
+  çağır BLK-SOL-IDA-TEST // 🧪 Sol ile IDA gerçek dünya testi — Founder'ın örnek projesi beklendiği için bilinçli olarak açık tutulur, kapı Founder'dadır
 }

@@ -3056,7 +3056,8 @@
     "Kural": "OS-vadeli",
     "Kapı": "OS-vadeli; ilk canlı kullanıcısı ZKA-A02 Adımının altı kapılı karnesidir ve o Adım koştuğunda bu muafiyet kendiliğinden kalkar.",
     "GenelKural": "Canlı kullanım 2026-07-18 tarihinde kazanılmıştı; genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kayboldu. Tip motor vatandaşıdır ve kanon yürürlüktedir, kullanıcısı ise arşivdedir.",
-    "Yasa": "Canlı kanon, kanon rafında madde tipinde yaşar ve Yasa düğümü olarak beyan edilmez; üç kovadan hiçbiri bu duruma dürüstçe oturmadığı için gerekçe düz yazıyla beyan edilmektedir."
+    "Yasa": "Canlı kanon, kanon rafında madde tipinde yaşar ve Yasa düğümü olarak beyan edilmez; üç kovadan hiçbiri bu duruma dürüstçe oturmadığı için gerekçe düz yazıyla beyan edilmektedir.",
+    "Fikir": "Founder hükmü 2026-08-28: deponun üç fikri kapalı tarafa indirildi ve açık depoda canlı Fikir düğümü kalmadı. Tip ürün için gerçektir ve kullanıcı bahçelerinde yaşar; muafiyet bu deponun kendi bahçesiyle sınırlıdır. Hüküm yalnız o üç fikri bağladığı için açık depoya yeni bir fikir yazıldığı gün bu satır düşer."
   },
   "emojiYazimi": {
     "not": "EMOJİ TAKMA ADLARI (Founder onaylı kanon, 2026-07-17): her emoji, karşılık geldiği Türkçe yazımın EŞDEĞER takma adıdır. Belirteçleyici tek yönlü normalleştirir, yani emojiyi kanonik ada çevirir; böylece iki yazım yüzü de aynı grafı üretir. Tek anlam kuralı gereği bir emoji tek bir kavrama bağlıdır. Çekirdekteki eşi src/emoji-yazim.ts dosyasıdır ve eşitliği nöbet testiyle korunur.",

@@ -48,7 +48,7 @@
   kapısı ölçümü gerçek üretim yolundan çağrılır hâle gelmiştir.
 |<--
 
-Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
+Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
   ne: "🧭 Oturum doksan üçte bulunan kanon kapsam borcunun dört cephesi — kapsam sicili, tanı kademesi hizalaması, mimariBağı kenar kanunu ve terfi kapısı ölçümü — tek rayda plan Adımına iner" ) {
 
   // ══ KATMAN · KANON KAPSAM BORCU: kanonun tanı sözleşmesinin motordaki karşılığı ══
@@ -127,8 +127,54 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
       // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "rejim kapsamı" kademesinden taşındı.
       //   Taşınan kademenin beyanı: Katı rejim hükmü yalnız Proje düğümünün içindeki kademelere ulaşır; ayrı dosyada yaşayan planlar kapsam dışında kalır
 
-      Adım( kod: KPS-REJ-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YAS-1.1, MIM-1.1, MIM-3 ],
+      Adım( kod: KPS-REJ-A01, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YAS-1.1, MIM-1.1, MIM-3 ],
         onay: "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: katı rejimli bir projede Katman doğrudan Adım taşıdığı hâlde motor hata vermiyor",
+        koşu: """
+              2026-08-28 · TESLİM. Rejim çözümü dosya kapsamından proje kapsamına
+              çıkarıldı. Her Proje düğümü kendi dosyasının diziniyle bir kapsam
+              öneki kurar ve bir plan dosyası, kendisini kapsayan EN YAKIN köke
+              aittir; bu, kimlik indeksinin yaptığı anadizin yürüyüşünün saf
+              ikizidir ve disk okumadığı için denetimin her yüzeyinde aynı cevabı
+              verir. Ön ek klasör ayracıyla bittiği için ad benzerliği taşıyan
+              kardeş kök kapsanan sayılmaz ve iç içe çatı düzeninde alt proje
+              kendi rejimini yaşar. Kök çözümü TEK evde yaşar: katı norm ile
+              geçiş borcu tanısı ve çift bildirim kapısı aynı işlevi okur, ikinci
+              bir kapsama yazımı doğmadı.
+
+              Çift bildirim kapatıldı. `çıplak-adımlı-katman` dosya kapsamında
+              ölçülür ve rejimi bilemez; katı rejimin kapsadığı dosyalarda o
+              tavsiye hem sayımdan hem gösterimden düşer, çünkü aynı olgu
+              `katı-rejim-altkatman-eksik` ile hata düzeyinde konuşur. Esnek
+              rejimde tavsiye yerinde kalır ve öneri kanalı ölmez.
+
+              ÖLÇÜM DÜZELTMESİ. Adımın metnine yazılan "on beş ihlal" sayısı
+              gerçeği yansıtmamaktadır. Açık depodaki on Katmanın onu da öğretim
+              dünyasında (`ogreti/ornek/`) yaşamaktadır ve ürün hükmü oraya
+              inmez; bu muafiyet motorda zaten yerleşiktir. Gerçek ihlal sayısı
+              beştir ve tamamı kapalı ürünün açılış planındadır. Beşinin de
+              altına departman kademesi açıldı: zemin, kadro ve taşıma Katmanları
+              karar işi taşıdığı için planlama, politika ile dilim Katmanları
+              TypeScript ürettiği için kodlama departmanına bağlandı. On iki
+              Adımın tamamı korundu, sırası değişmedi ve bu dosya dosya ölçüldü.
+
+              ÖLÇÜLMEMİŞ ALTINCI İHLAL BULUNDU. Motorun kendi doğuş şablonu
+              anadizinde `rejim: katı` ilan ederken ilk planında Katmanı doğrudan
+              Adım taşıtıyordu; yani `sarmal doğuş` ile doğan her proje ilk
+              denetiminde hata verecek durumdaydı ve bunu bugüne dek hiçbir nöbet
+              görmedi, çünkü tanı ayrı dosyadaki plana ulaşmıyordu. Şablona
+              planlama departmanlı bir kademe kondu ve doğuş süiti gerçek denetimle
+              sıfır hata verdiğini doğruladı.
+
+              YOLDA ONARILAN İKİ KUSUR. Birincisi tanı sicilinde MIM-1.7 kaydının
+              `kapsam` alanı izinli olmayan bir değer taşıyordu ve depo tip
+              denetimi kırmızıydı; doğru değere çekildi. İkincisi bu düzeltme iki
+              türetilmiş yüzün mührünü değiştirdi ve ikisi de kaynaktan tazelendi.
+
+              KAPILAR: çekirdek süiti bin yüz yirmi altı sınamanın tamamını,
+              eklenti süiti beş yüz seksen bir sınamanın tamamını geçti. Açık depo
+              denetimi sıfır hata verir; kapalı üründe katı rejim ihlali kalmadı ve
+              kalan hataların tamamı bilinen ORK-4 çapraz atıf borcudur.
+              """,
         üretir: [ KOD-DENETCI, KOD-SNM-YENI-KANON, KOD-SNM-ALTKATMAN-TEKILLIGI ],
         ne: "🏛️ Katı rejim hükmünün ayrı dosyadaki planlara ulaştırılması. YAS-1.1 katı rejimde Katman ile Adım arasında bir departman kademesi şart koşar ve ihlali HATA düzeyindedir; motorun bu tanısı bugün canlı bahçede hiç doğmamaktadır. Sebep ölçülmüştür: üretici yalnız `Proje` düğümünün İÇİNDEKİ kademeleri gezer, oysa rejim beyanı anadizinde yaşar ve planlar ayrı dosyalarda üst düzey Blok olarak durur; ikisi arasında hiçbir bağ kurulmadığı için hüküm plan dosyalarına hiç ulaşmaz. Ölçüm şudur: iki katı rejimli projede on beş Katman doğrudan Adım taşımaktadır (açık depoda on, kapalı üründe beş) ve motor bunların hiçbiri için hata üretmez; yalnız aynı olguyu bilgi düzeyinde anlatan tavsiye tanısı konuşur. Yani kanonun hata dediği yerde motor öneri vermektedir." ) {
         görev: [
@@ -172,9 +218,12 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-AGUSTOS,
       // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "çapraz-proje ad alanı" kademesinden taşındı.
       //   Taşınan kademenin beyanı: ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması
 
-      Adım( kod: KPS-ADA-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
+      Adım( kod: KPS-ADA-A01, durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
         onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır",
-        üretir: [ KOD-AYRISTIRICI, KOD-KIMLIK, KOD-DENETCI ],
+        // KOD-BELIRTEC 2026-08-29 tarihinde teslim listesine eklendi: ad alanı ayracı
+        // belirteçleyicide yaşar, çünkü `::` sözcenin ortasında yutulmazsa ayrıştırıcı
+        // onu iki ayrı belirteç olarak görür ve tek bir KOD değeri kuramaz.
+        üretir: [ KOD-BELIRTEC, KOD-AYRISTIRICI, KOD-KIMLIK, KOD-DENETCI ],
         ne: "🧭 Çapraz-proje ad alanının motorda karşılanması. ORK-4 hükmü başka projedeki hedefe kurulan her kenarın `PRJ-A::KOD-X` yazımını şart koşar; bugün ayrıştırıcı `::` ayracını liste ayrıştırmasında hata sayar, kimlik indeksi kardeş proje köklerini bilmez ve denetçi başka projedeki hedefi kırık atıf sayar. 26 Ağustos 2026 taşımasında ölçülen yüz yedi kırık atıf ile dört fazsız Blok (laboratuvar altmış üç ve bir, orkestrasyon kırk dört ve üç) bu borcun görünür yüzüdür ve iki kapalı deponun işleme kapısını kırmızı tutmaktadır; kapı ancak bu borç kapanınca muafiyetsiz geçer." ) {
         görev: [
           "Ayrıştırıcı `::` ayracını kimlik parçası olarak kabul eder ve `PRJ-A::KOD-X` biçimini tek bir ad alanlı kod olarak belirteçler; liste içindeki ad alanlı kodlar hata üretmez.",

@@ -34,7 +34,7 @@ kez geçer; yeni doğan her kod ilanlı bir biçim kuralına ve önek siciline
 yaslanır, sonraki boş kodu araç önerir. İki varlığın denetimi sıfır hata ve
 sıfır uyarıda kalır.
 |<--
-Blok( kod: BLK-RFM, mevsim: FAZ-2026-AGUSTOS,
+Blok( kod: BLK-RFM, mevsim: FAZ-2026-EYLUL,
       ne: "⚖️ öncelik modelinin iki eksene ayrılması ve kod atamalarının standarda bağlanması" ) {
 
   Katman( kod: KAT-RFM-KANON, ad: "kanon-katmani", ne: "kanon maddeleri ve sözlük — .sar kaynağı",

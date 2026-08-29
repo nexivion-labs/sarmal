@@ -480,6 +480,188 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
 
   }
 
+  // ══ KATMAN · EKLENTİ DENETİM TURU (2026-08-28): dört salt-okur ölçüm, yirmi bulgu ═
+  // Founder kapsamlı bir eklenti denetimi istedi ve bulguların önce plana inmesine,
+  // sonra ayrı bir oturumda tek tek ele alınmasına hükmetti. Dört ölçüm koştu: kanon
+  // uyumu (kontrolcü, ajansız), süit dürüstlüğü, vaat ile gerçeğin farkı ve kapı
+  // kapsamı ilanı (üçü salt-okur ajan). Bu Katman o turun bulgu rayıdır; hiçbir bulgu
+  // bu turda onarılmamıştır (gözlem turu kuralı). Bulgular üç kabul kapısına ayrılır:
+  // Founder kararı isteyenler planlama, kod onarımları kodlama, nöbet onarımları
+  // sınama kademesindedir. Tur boyunca ölçülüp TEMİZ çıkan alanlar ayrıca kayda
+  // geçmiştir, çünkü sessizlik kanıt değildir: on dokuz komutun on dokuzu kayıtlı,
+  // altı panelin altısı canlı, elli altı kaynak dosyasının tamamı ilanlı, doksan
+  // yerelleştirme anahtarının tamamı iki dilde karşılıklı, eklentide düzeyi yeniden
+  // yazan ya da kimlikle süzen tek bir yol yok, otuz beş kullanıcı bildiriminin otuz
+  // beşi katalogdan, kapsama ve yüzey ayırma işlevleri mutasyona dayanıklı.
+  Katman( kod: BKM-DNT, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "eklenti denetim turu",
+    ne: "🔍 Eklentinin dört eksende ölçülen bulguları: kanon ile ilanın ayrışması, vaat edilip görünmeyen yüzeyler, davranışı korunmayan kaynak yarısı ve kendi kanıtını yok eden nöbet" ) {
+
+    AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "kapsam kararları",
+      ne: "⚖️ Motorun değil Founder'ın verebileceği kararlar: hangi tanının hangi yüzeyde görüneceği ve kaydın gerçeği nasıl söyleyeceği" ) {
+
+      Adım( kod: BKM-DNT-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1 ],
+        üretir: [ KOD-KAPI-KAPSAMI ],
+        ne: "⚖️ Kırk üreticinin yüzey kararının Founder hükmüyle verilmesi. Kapı kapsamı ilanı altmış bir üreticinin kırkını yalnız komut satırına ayırmaktadır ve bu kırk satırın otuz yedisi hiçbir gerekçe taşımaz; blok yorumu kararı açıklamak yerine kararın o Adımda ele alınmadığını yazar. Kaydın kendisi (`is/nitelik/kapi_kapsami.sar`) ve KYN-MTR-A05 Adımının sınır alanı yüzey kararının Founder hükmü olduğunu söyler, fakat o hüküm hiç verilmemiş ve hiçbir halef Adıma bağlanmamıştır; kırk satır bilinçli bir kararın kaydı değil, verilmemiş bir kararın bugünkü fotoğrafıdır. Ölçüm ağırdır: on beş üreticinin ürettiği elli dokuz tanı kimliği için kanon maddesinin zorlama satırı Problems ya da Bildirimler yüzeyi isterken ilan yalnız komut satırı der; aralarında hata düzeyinde olanlar (kimlik omurgası, mühür kırılması, ebedî kural silinmesi) ve panel yüzeyi hükmünün bekçisi olan YUZ maddelerinin kendi tanıları da vardır. Sicildeki yüz yetmiş beş kimliğin seksen dördü bugün panele yapısal olarak ulaşamamaktadır. Bu Adım kırk satırın her biri için karar verir: ya ilan kanona çekilir ya da kanon maddesinin yüzey cümlesi Founder kapısından değiştirilir; üçüncü bir yol yoktur, çünkü kanon ile motorun ayrışması aracın sattığı güvencenin merkezindedir." ) {
+        görev: [
+          "On beş kanon ayrışmasını (rejim, omurga, ilişki sınıfı, kimlik, şef akışı, dil kanonu, öğretim, strateji, tip evreni, terfi kanıtı, yüz, mühür, birleşim çatışması, ebedî kural) Founder ile tek tek gözden geçir; her biri için ya ilana panel yüzeyi eklenir ya da kanon maddesinin yüzey cümlesi değiştirilir ve karar gerekçesiyle ilan satırının üstüne yazılır.",
+          "Kanonun yüzey beyanı taşımadığı dokuz üretici için kararı Founder verir ve gerekçesi yazılır; kanonun yalnız komut satırı dediği on beş üretici bugünkü hâlinde kalır ve bu da gerekçe olarak yazılır.",
+          "Kararlar verildikten sonra kanon ile ilanın uyumunu ölçen genel nöbet kurulur (BKM-DNT-A11); nöbet bu Adımdan önce kurulursa on beş ayrışma yüzünden kırmızı doğar ve karar yerine gürültü üretir."
+        ]
+        kabul: [
+          "Kırk komut satırı girdisinin her biri ilanda bir gerekçe cümlesi taşır ve gerekçesiz girdi sayısı sıfırdır.",
+          "Kanon maddesinin yüzey cümlesi ile ilanın yüzey listesi arasında ayrışma kalmamıştır; kalanlar Founder hükmüyle kanon tarafında değiştirilmiştir ve o değişiklikler kanon mührünü usulünce tazelemiştir.",
+          "Panele ulaşamayan kimlik sayısı yeniden ölçülmüş ve kayda yazılmıştır."
+        ]
+        sınır: "Bu Adım tek başına hiçbir üreticiye panel yüzeyi eklemez ve hiçbir kanon maddesini değiştirmez; yalnız kararları toplar. Kararların uygulanması, karar başına ayrı bir işleme olarak bu Adımın koşu kaydında izlenir. Ateşlemiş hatırlatıcı (2026-08-28) ve önceliksiz Adım (BKM-DNT-A04) kararları bu Adımdan önce verilmiştir, çünkü kanon o ikisi için Bildirimler yüzeyini açıkça yazmaktadır."
+        dokunulmaz: [ "Kapsam nöbetinin ad kümesi eşitliği sözleşmesi", "Panel süzgecinin üretici damgasıyla süzme mekanizması" ]
+      }
+
+      Adım( kod: BKM-DNT-A02, durum: beklemede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.3, YUZ-7 ],
+        üretir: [ VR-GOC-YUZEY-YONLENDIRME ],
+        ne: "📋 Yönlendirme matrisi kaydının yönlendirme ile ulaşmayı ayırması. Kayıt bugün sicilin tamamını üç yüzeye dağıtır ve her kaydın tam olarak bir yüzeye ulaştığını yazar; oysa ölçüm yüz yetmiş beş kimliğin seksen dördünün hiçbir yüzeye ulaşmadığını göstermiştir. Kaydın cümlesi yönlendirme için doğru, ulaşma için yanlıştır ve aradaki farkı hiçbir yerde konuşmaz. Ayrıca kaydın makine-okur Çıkarım düğümü yüz yetmiş bir kimlik ve yirmi dört Bildirimler derken çizelgesi yüz yetmiş beş ve yirmi sekiz der; düzyazısı önceki gövdeyi yüz iki sayarken çizelge yüz bir sayar. Aynı dosyada iki toplam yaşamaktadır ve kaydın kendi uyarısında önceden ilan ettiği sessiz bayatlama gerçekleşmiştir. Bu Adım, kaydın yönlendirme ile ulaşma sütunlarını ayırır, sayılarını canlı sicilden üretir ve iki sütunun eşitsizliğini nöbete bağlar." ) {
+        görev: [
+          "Kayda 'ulaşır' sütunu ekle: her kimlik için yönlendirildiği yüzey ile üreticisinin ilanındaki yüzeylerin kesişimi yazılır; boş kesişim 'ulaşmaz' olarak görünür.",
+          "Çıkarım düğümünün ve düzyazının sayılarını çizelgeyle eşitle ve üçünü de tek üreticiden türet; elle yazılan sayı kalmaz.",
+          "Nöbeti kaydın toplamını değil, yönlendirme ile ulaşma arasındaki farkı ölçecek biçimde genişlet; fark BKM-DNT-A01 sonrası sıfıra inmelidir ve inmezse kalanlar gerekçeli olarak listelenir."
+        ]
+        kabul: [
+          "Kayıtta yönlendirilen ve ulaşan yüzey ayrı sütunlarda okunur ve ikisi de canlı sicilden üretilmiştir.",
+          "Kaydın üç sayı kaynağı (Çıkarım düğümü, düzyazı, çizelge) aynı toplamı söyler ve bir nöbet bunu ölçer."
+        ]
+        sınır: "KYN-YUZ-A02 Adımı bu kaydın bayat sayılarını zaten gerçeğe çekmektedir; bu Adım o düzeltmeyi yinelemez, yalnız ulaşma sütununu ve fark nöbetini ekler. Sıra bağımlılığı gerçektir: ulaşma sütunu BKM-DNT-A01 kararlarından önce doldurulursa seksen dört satır 'ulaşmaz' der ve karar verilince yeniden yazılır."
+      }
+
+      Adım( kod: BKM-DNT-A03, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
+        üretir: [ KOD-DENETCI ],
+        ne: "🧹 Plan hijyeni: kenarsız geliştirme, çift ilanlı dosya ve yapışık düğüm. Üç küçük borç tek turda kapanır. Birincisi, VIT-GRAF-A20 ile VIT-POSTA-A05 Adımları geliştirmede olduğu hâlde ne üretir ne referans kenarı taşır ve motor bunu zaten iki bilgi tanısıyla söylemektedir; bitince ürettikleri dosyanın izi plandan okunamayacaktır. İkincisi, üç kaynak dosyası birden fazla Kod kimliğiyle ilanlıdır: eklenti gövdesi meyve haritasında ve göç planında, yüzey metin kataloğu vitrin planında ve göç planında, yol haritası ise üç kimlik altında yaşar; etki ve graf sorguları aynı dosyayı ayrı düğümler sayar ve hiçbir nöbet çift ilanı ölçmez, çünkü yetim-meyve kapısı ilansız kalmayı ölçer, iki kez ilan edilmeyi ölçmez. Üçüncüsü, vitrin planının meyve bloğunda iki Kod düğümü satır başı olmadan tek satıra yapışmıştır; ayrıştırıcı kabul eder, insan gözü görmez." ) {
+        görev: [
+          "İki geliştirmedeki Adıma üretir ve referans kenarlarını yaz; hedef dosyalar ilanlıdır, yalnız kenar eksiktir.",
+          "Üç dosyanın çift ilanını tekle: göç planındaki KD-GOC ilanları tarihsel olarak kalır ve sonraki Adımlar onları hedefler ya da meyve haritasındakiler düşürülür; karar dosya başına verilir ve gerekçesi yazılır.",
+          "Aynı dosyayı ikinci kez ilan eden Kod düğümünü yakalayan bir nöbet kur; nöbet çift ilanı uyarı düzeyinde bildirir ve bugünkü üç çift onun ilk fikstürüdür.",
+          "Yapışık düğümü kendi satırına al."
+        ]
+        kabul: [
+          "Motor bu iki Adım için meyvesiz-geliştirme ve referanssız-geliştirme tanısı üretmez.",
+          "Bir kaynak dosyasının Kod ilanı tektir ve çift ilan nöbeti fikstürle kanıtlanmıştır.",
+          "Vitrin planının meyve bloğunda her Kod düğümü kendi satırında başlar."
+        ]
+        sınır: "Göç planındaki ilanlar tarihtir ve silinmez; tekleme tarihsel olanı korur, canlı olanı seçer. KYN-YUZ-A02 ile A03 Adımlarının göç kimliklerine bağlanması 2026-08-28 tarihinde yapılmıştır ve bu Adımın konusu değildir."
+      }
+    }
+
+    AltKatman( kod: BKM-DNT-K2, departman: kodlama, ad: "yüzey onarımları",
+      ne: "🔧 Kanonun açıkça istediği ya da manifestin vadettiği hâlde görünmeyen dört yüzey parçası" ) {
+
+      Adım( kod: BKM-DNT-A04, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-3.4, YUZ-3.3 ],
+        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI ],
+        ne: "🔔 Önceliksiz Adım bildiriminin panele ulaşması. Bu, 2026-08-28 tarihinde onarılan ateşlemiş hatırlatıcı kusurunun birebir ikizidir ve aynı kanon turunda doğmuş üçlünün üçüncü üyesidir: ORK-3.4 maddesinin zorlama satırı `önceliksiz-adım` tanısı için kelimesi kelimesine 'proje CLI ve Bildirimler' der, yönlendirme matrisi onu Bildirimler hanesinde sayar, buna karşılık üreticisi ilanda yalnız komut satırı taşır ve panel süzgeci onu yapısal olarak eler. KYN-MTR-A05 Adımının kendi problem metni bu iki tanıyı adıyla birlikte anmaktadır; kardeşi onarıldı, bu onarılmadı. Üçlünün üçüncüsü olan mevsim vadesi zaten panel yüzeyi taşımaktadır. Karar Founder'a sorulmaz, çünkü kanon yüzeyi açıkça yazmıştır; Adım ateşlemiş hatırlatıcı onarımının deseniyle tek satır ve iki nöbetten ibarettir." ) {
+        görev: [
+          "İlanda üreticiye panel yüzeyini ekle ve gerekçeyi satırın üstüne yaz.",
+          "Küme nöbetini genişlet: üretici panel süzgeci kümesinde bulunmalıdır.",
+          "Uçtan uca nöbet kur: öncelik alanı olmayan bir Adım taşıyan fikstürde tanı doğar, köken damgası üreticiyi gösterir ve panel süzgecinden geçer; ilan geri alınırsa iki nöbet birden kırmızıya döner."
+        ]
+        kabul: [ "Önceliksiz Adım tanısı Gözlemler hanesine ulaşır; bu fikstürle kanıtlanmış ve mutasyonla doğrulanmıştır." ]
+        sınır: "Yalnız bu üretici; öteki otuz dokuz komut satırı girdisi BKM-DNT-A01 kararını bekler."
+      }
+
+      Adım( kod: BKM-DNT-A05, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ MIM-3, YUZ-3.3 ],
+        üretir: [ Kod( kod: KOD-EKL-MANIFEST, dosya: "urun/eklenti/package.json", ne: "🍎 Eklenti manifesti — komutlar, paneller, menüler, temalar ve yerelleştirme anahtarlarının ilanı" ), KOD-YOLHARITA-GENISLETME ],
+        ne: "🪟 Manifestin göç artıkları: görünmeyen düğme ve boş kalan panel. Birincisi, editör başlığındaki 'İskeleti Kur' düğmesi yalnız `ana.sar` adlı dosyada görünecek biçimde koşullanmıştır; oysa canlı adlandırma `*_anadizin.sar` desenidir ve bunu doğuş komutu, yol haritasının tarama deseni ve eklentinin kendi sürüm günlüğü üç ayrı yerden doğrular. Komut paletten çalışır, düğme kanonik adı kullanan hiçbir projede belirmez; bu, göç sırasında manifestin kaynakla birlikte taşınmamasından doğan bir artıktır ve manifest nöbetleri editör başlığı ile görünüm başlığı menü gruplarını hiç ölçmediği için bugüne dek yaşamıştır. İkincisi, altı panelin beşi boş durumda bir cümle söylerken Yol Haritası hiçbir şey söylemez: ağaç görünümü mesaj almaz ve manifestte karşılama katkısı yoktur, dolayısıyla varlıksız bir çalışma alanında panel açıklamasız bomboş kalır." ) {
+        görev: [
+          "Düğmenin koşulunu `*_anadizin.sar` desenine çevir ve eski adı yalnız geçiş yedeği olarak koru.",
+          "Yol Haritası'na katalogdan beslenen bir boş durum cümlesi ver; cümle öteki panellerin boş durum desenini izler ve siz üslubundadır.",
+          "Manifest nöbetini editör başlığı ile görünüm başlığı menü gruplarına genişlet; her menü girdisinin koşulundaki dosya adı deseni canlı adlandırmayla eşleşmelidir."
+        ]
+        kabul: [
+          "Kanonik adlı bir anadizin açıkken düğme editör başlığında görünür ve bu bir nöbetle ölçülür.",
+          "Varlıksız bir çalışma alanında Yol Haritası boş durum cümlesini gösterir; cümle katalogdadır ve iki dilde karşılığı vardır.",
+          "Beş menü grubunun beşi de manifest nöbetinin kapsamındadır."
+        ]
+        sınır: "Düğmenin işlevi değişmez; yalnız görünürlük koşulu gerçeğe çekilir. Canlı pencere doğrulaması Founder'ındır."
+      }
+
+      Adım( kod: BKM-DNT-A06, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ MIM-3 ],
+        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI ],
+        ne: "📜 Kapı kapsamı ilanının fiilî davranışın ölçümü hâline gelmesi. İlanın başlık yorumu kapsamı 'bugünkü fiilî davranışın ölçümü' diye tanımlar, fakat üç yerde gerçekten ayrışır. Birincisi, `dogusEksikTanilari` üreticisi yalnız MCP yüzeyinde koşar ve ilanda hiç yoktur; kapsam nöbeti bunu göremez, çünkü yalnız denetim hattının kaynağını okur ve MCP çağrı kümesini taramaz. İkincisi, AltKatman tekilliği üreticisi tek-dosya yüzeyini ilan eder, oysa tek-dosya yolu yalnız doğrulayıcıyı çağırır ve bu üreticiye hiç uğramaz; beyan ölçüm değildir. Üçüncüsü, MCP'nin proje denetimi aracı komut satırını alt süreç olarak koşturur, dolayısıyla altmış bir üreticinin tamamı fiilen MCP yüzeyinde çalışır ve çıktısı ajana ulaşır, oysa ilan yalnız doğrulayıcıya MCP yazar. Üçü de nöbetsizdir ve nöbetsiz oldukları için sessizdir." ) {
+        görev: [
+          "Kapsam nöbetini MCP ve tek-dosya yollarını da tarayacak biçimde genişlet; her yüzey için gerçek çağrı kümesi kaynaktan çıkarılır ve ilanla karşılaştırılır.",
+          "Doğuş eksiği üreticisini ilana MCP yüzeyiyle ekle; AltKatman tekilliğinin tek-dosya beyanını ya gerçeğe çek ya da tek-dosya yoluna bağla.",
+          "Alt süreç köprüsüyle MCP'ye ulaşan üreticiler için ilanda tek bir kural cümlesi yaz: komut satırı yüzeyi taşıyan her üretici proje denetimi aracı üstünden MCP'ye de ulaşır; tek tek MCP yazılmaz, kural yazılır."
+        ]
+        kabul: [
+          "Kapsam nöbeti dört yüzeyin dördünde ilan ile gerçek çağrı kümesini eşitler ve bugünkü üç ayrışma onun ilk fikstürüdür.",
+          "İlanda beyan edilip çağrılmayan ya da çağrılıp beyan edilmeyen üretici sayısı her yüzeyde sıfırdır."
+        ]
+        sınır: "Hangi üreticinin hangi yüzeyde koşacağı kararı bu Adımın değil BKM-DNT-A01'in konusudur; bu Adım yalnız ilanın gerçeği söylemesini sağlar."
+      }
+
+      Adım( kod: BKM-DNT-A07, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
+        üretir: [ KOD-EKL-ONIZLEME ],
+        ne: "🎨 Önizlemenin yedek paletinin elle ikiz olmaktan çıkması. Önizleme dosyası ağaç ve aile renklerini 'kanon yokken devreye girer' notuyla elle yazılmış iki haritada taşır. Ölçüm iki şey gösterdi. Birincisi, harita kanondan sapmıştır: öz ailesinin rengi yedekte başka, kanonda başkadır. İkincisi, dal ulaşılmazdır: sınıflama çözücüsü kanon bulamadığında gömülü kanona düşer ve gömülü kanon paleti zaten taşır, dolayısıyla yedek haritaya düşen `??` dalı fiilen hiç çalışmaz. Sapmış ve ölü bir kopya, YUZ-1.2'nin yasakladığı elle ikizin ta kendisidir; hiçbir nöbet iki haritayı kanona karşı ölçmez. Renk dosyasındaki kardeş haritalar (aile ve önek simgeleri) ise palet drift nöbetiyle korunmaktadır ve bu Adımın dışındadır." ) {
+        görev: [ "Yedek haritaları kaldır ve gömülü kanona düşen yolu tek yedek olarak bırak; kaldırılamıyorsa iki haritayı palet drift nöbetine bağla ve sapmayı düzelt." ]
+        kabul: [ "Önizleme kaynağında kanondan bağımsız yazılmış renk değeri kalmaz ya da kalanlar palet drift nöbetiyle kanona eşitlenir; nöbet mutasyonla kanıtlanmıştır." ]
+        sınır: "Gömülü kanon üreteci ve palet drift nöbeti değişmez."
+      }
+    }
+
+    AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "nöbet onarımları",
+      ne: "🧪 Süit dürüstlüğü ölçümünün bulguları: kendi kanıtını yok eden nöbet, davranışı korunmayan kaynak yarısı ve boş kümeye karşı korumasız iddialar" ) {
+
+      Adım( kod: BKM-DNT-A08, durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, YUZ-7 ],
+        üretir: [ KOD-SNM-PAKET-TAZELIGI ],
+        ne: "🕰️ Paket tazeliği nöbetinin kendi kanıtını yok etmekten vazgeçmesi. Süitin kararsız görünen tek nöbeti bulundu ve birebir üretildi: tazelik nöbeti derlenmiş gövdenin değişiklik zamanını tanı sicilinin kaynağıyla karşılaştırır, fakat süit betiği gövdeyi üretmez; buna karşılık paket girişi duman sınaması bir sınamanın içinde derleyiciyi çağırıp gövdeyi yeniden yazar. Dolayısıyla sicil düzenlendikten sonraki ilk koşum bayat gövdeyi görüp kırmızı yanar, aynı koşum yan etkiyle gövdeyi tazeler ve sonraki koşumlar yeşile döner. Nöbet ölçtüğü kusuru bir kez bildirir ve kanıtını kendi eliyle siler; adının yakalanamamasının sebebi budur. Bu bir zamanlama yarışı değil durum bağımlılığıdır ve altı kez aynı sonucu vermiştir. Süitin kendisi değiştirilmemiş ağaçta on iki koşumda on iki kez yeşildir; kararsızlık yalnız ilk koşumun ölçtüğü durumu onarmasından doğar." ) {
+        görev: [
+          "Süit betiğine derlemeyi ekle ya da duman sınamasındaki derleme çağrısını kaldırıp derlemeyi süitin ön koşulu yap; iki yol da nöbetin bir kez kırmızı yanıp sonra susmasını imkânsız kılar.",
+          "Tazelik nöbetini, gövde bayatsa her koşumda kırmızı yanacak ve gövde tazelenmeden yeşile dönmeyecek biçimde kur; aynı nöbetin ikinci sınaması gövde içeriğini derleme sırasında okuyabildiği için yırtık okuma ihtimalini de kapat."
+        ]
+        kabul: [ "Sicil düzenlendikten sonra süit arka arkaya üç kez koşulduğunda üçü de aynı sonucu verir; bayat gövdeyle üçü de kırmızı, taze gövdeyle üçü de yeşildir ve bu fikstürle kanıtlanmıştır." ]
+        sınır: "Nöbetin ölçtüğü şey (gövdenin sicilden eski olmaması) değişmez; yalnız ölçümün yan etkisi kaldırılır."
+      }
+
+      Adım( kod: BKM-DNT-A09, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, ORK-6.1 ],
+        üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA ],
+        ne: "🛡️ Eklentinin editöre bakan yarısının davranış nöbeti kazanması. Elli altı kaynak dosyasının otuz dördü hiçbir sınama tarafından modül olarak yüklenmez ve ayrım keskindir: yüklenmeyen her dosya editör kabuğunu ithal eder ve süitte bir kabuk sahtesi yoktur; bu yarı yaklaşık yedi bin dört yüz satırdır ve en büyük üç yüzey dosyasını (yol haritası, onay kuyruğu, onaylar paneli) kapsar. Bedeli ölçülmüştür ve kuramsal değildir: onaylar panelinde boş gerekçeli kararı durduran dal kaldırıldığında süit yeşil kalmıştır, kapıya gitme satır çözümü sıfıra indirildiğinde yeşil kalmıştır, rozet koşulu tersine çevrildiğinde yeşil kalmıştır; hatırlatıcı sayacı iki katına çıkarıldığında ise tek koruma olan bayt özeti güncellenince süit yine yeşil kalmıştır. Bayt özeti bir davranış nöbeti değil değişiklik dedektörüdür ve deponun kendi yorumu özetin on iki kez 'bilerek güncellendiğini' yazar; tören hâline gelmiş bir dedektör hiçbir şeyi korumaz. Sınama kütlesinin beşte biri (bin beş yüz elli beş iddianın üç yüz elli dördü) kaynak metnini düzenli ifadeyle okur ve bu sınır dürüstçe yazılmıştır, fakat gerçek davranış hataları o sınırdan geçmektedir. Gerçek editör süiti bu boşluğu kapatabilecek tek yerdir ve bugün otuz dört dosyanın yalnız ikisine uğrar." ) {
+        görev: [
+          "Onaylar paneli, onay kuyruğu ve hatırlatıcılar için editör kabuğundan bağımsız bir davranış katmanı ayır ya da kabuk sahtesi kur; boş gerekçe dalı, kapıya gitme satırı, rozet koşulu ve hatırlatıcı sayacı ilk dört fikstürdür ve dördü de mutasyonla kanıtlanır.",
+          "Bayt özeti nöbetini davranış nöbetine çevir ya da kaldır; özet güncelleme töreni sona erer.",
+          "Gerçek editör süitini en büyük üç yüzey dosyasına genişlet; her dosya için en az bir davranış senaryosu editör kabuğunda koşar."
+        ]
+        kabul: [
+          "Bugün hayatta kalan dört mutasyonun dördü de kırmızı verir ve bu, her biri için ayrı nöbetle kanıtlanmıştır.",
+          "Bayt özeti nöbeti kalkmıştır ya da yalnız davranış nöbeti bulunmayan dosyalar için geçici olarak durur ve gerekçesi yazılıdır.",
+          "Hiçbir sınama tarafından yüklenmeyen dosya sayısı ölçülmüş ve kayda yazılmıştır; sayı otuz dörtten düşmüştür ve düşüş dosya adıyla listelenmiştir."
+        ]
+        sınır: "Kaynak metnini okuyan iddialar kaldırılmaz; onlar bilinçli bir sınırdır ve davranış nöbeti gelene kadar yerinde kalır. Yol haritası dosyasının bin iki yüz satırı bu Adımın kapsamında değildir; o dosya kendi turunu ister."
+        dokunulmaz: [ "Süit betiğinin sıfır bağımlılık sözleşmesi (STR-3.1)", "Kaynak metnini okuyan iddiaların dürüstlük notu" ]
+      }
+
+      Adım( kod: BKM-DNT-A10, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YAS-4.1 ],
+        üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA ],
+        ne: "🔬 Üç küçük nöbet hijyeni. Birincisi, biçimleme süiti fikstür listesini örnek rafından diske bakarak doldurur ve her örnek için iki sınama üretir; listenin alt sınırını ölçen iddia olmadığı için raf boşalırsa süit sessizce onlarca sınama eksik koşar ve yine yeşil raporlar; beş yüz seksen bir sayısı bir sözleşme değil dosya sisteminin türevidir. İkincisi, onay yüzeyleri süitinde iki kod yolunun ürettiği kapı listeleri derin eşitlikle karşılaştırılır fakat dolu oldukları ölçülmez; iki yol da boş dizi döndürürse iddia geçer ve nöbet hiçbir şey ölçmemiş olur; aynı dosyanın başka yerlerinde bu tuzağa karşı açık doluluk iddiaları vardır, burada unutulmuştur. Üçüncüsü, onaylar paneli süitinde saf bir işlev aynı argümanlarla iki kez çağrılıp sonuçları karşılaştırılır; bu tanım gereği doğru bir totolojidir ve taranan bin beş yüz elli beş iddia içinde bulunan tek örnektir." ) {
+        görev: [
+          "Biçimleme süitine örnek sayısı için alt sınır iddiası ekle; sayı bugünkü kırk yedinin altına düşerse süit kırmızı yanar.",
+          "Onay yüzeyleri süitindeki derin eşitlik iddiasının önüne doluluk iddiası koy.",
+          "Totolojik iddiayı gerçek bir ölçümle değiştir ya da kaldır."
+        ]
+        kabul: [ "Üç nöbetin üçü de boş küme ya da eksik fikstür üstünde kırmızı yanar ve bu mutasyonla kanıtlanmıştır." ]
+        sınır: "Yalnız bu üç iddia; süitin geri kalanı ölçülmüş ve klasik boş nöbet desenlerinden temiz çıkmıştır."
+      }
+
+      Adım( kod: BKM-DNT-A11, durum: beklemede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.1, YUZ-3.3 ],
+        üretir: [ KOD-SNM-KAPI-KAPSAMI ],
+        ne: "⚖️ Kanon ile ilanın uyumunu ölçen genel nöbet. Kapsam nöbeti bugün yalnız iki ad kümesinin eşitliğini ölçer: ilandaki üretici adları ile denetim hattının gerçekten çağırdığı üretici adları. Girdisinde ne tanı kimliği ne kanon maddesi ne yüzey adı vardır ve yüzey listesine hiç dokunmaz; bir girdinin yüzey listesi tümüyle silinmedikçe nöbet hiçbir yüzey değişikliğini görmez. Kanon ekseninde bugün var olan tek koruma, ateşlemiş hatırlatıcı için 2026-08-28 tarihinde yazılan iki iddiadır; genel bir kanon-ilan uyum nöbeti yoktur ve bugünkü sınıftan bir ayrışma onun altında sessizce yaşayabilir, nitekim on beş üreticide yaşamaktadır. Nöbet kurulabilir, çünkü kanonun zorlama satırındaki yüzey beyanı ile sicilin madde ve üretici eşlemesi makine-okurdur." ) {
+        görev: [
+          "Sicildeki her kimlik için kanon maddesinin zorlama satırındaki yüzey cümlesini oku, üreticisini bul, ilanın yüzey listesiyle karşılaştır; kanon Problems ya da Bildirimler diyorsa üretici panel yüzeyi taşımak zorundadır.",
+          "Kanon 'Zorlanmaz' diyen ya da yüzey beyanı taşımayan maddeleri nöbetin dışında bırak ve dışarıda kalanları raporda say.",
+          "Nöbeti BKM-DNT-A01 kararlarından sonra kur; kararlardan önce kurulursa on beş ayrışma yüzünden kırmızı doğar."
+        ]
+        kabul: [ "Nöbet kanon ile ilan arasındaki her yüzey ayrışmasını kimlik, madde ve üretici adıyla bildirir; bir üreticinin panel yüzeyi ilandan düşürüldüğünde ve kanon o yüzeyi istiyorsa süit kırmızıya döner, bu mutasyonla kanıtlanmıştır." ]
+        sınır: "Nöbet karar vermez; ayrışmayı bildirir. Hangi tarafın değişeceği BKM-DNT-A01'in hükmüdür."
+      }
+    }
+  }
+
+
   // ══ KATMAN · FOUNDER: kod-dışı operasyonel kalemler (insan eylemi/kararı) ═══════
   // Teknoloji bağı istisnası: kod-DIŞI ray (Founder eylem/karar kalemleri) — teknoloji bağı
   // bilinçli YOK; katmansız-teknoloji bilgisi burada DÜRÜST kalıntıdır.

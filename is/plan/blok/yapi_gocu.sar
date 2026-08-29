@@ -32,7 +32,7 @@ tarihiyle özel kalır; hiçbir kapı, panel ya da sınama taşıma yüzünden
 sessizce körleşmez.
 |<--
 
-Blok( kod: BLK-YAPI-GOCU, mevsim: FAZ-2026-AGUSTOS, uygular: ANY-KONTROLCU,
+Blok( kod: BLK-YAPI-GOCU, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
   ne: "🏡 Depo ayrılığı ve çatı kuruluşu — ölç, karar ver, onar, taşı sırasıyla yürüyen göç gövdesi" ) {
 
   Katman( kod: KAT-GOC-KAYNAK, kullanır: TEK-SARMAL, ad: "goc-kaynak",

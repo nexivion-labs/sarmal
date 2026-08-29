@@ -29,9 +29,9 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon demeti (A03 formülü)` | `d159fd768354290feac642ee659c1078d52f5077992c6726392076ec532075c8` |
-| `oz/siniflama/kayit.json` | `59f750dde605b8412007959ac7685949f8fd9c5f0e7b954e750c01160e944212` |
+| `oz/siniflama/kayit.json` | `c8f0a1573b02e48a5e1b4697c958935d6f085abb4e141b70acfc73c00b618802` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `a01ae95098ba293e5cecafde0fded7ec4f623808873c8db30bd00b7802be549f` |
+| `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `b0f9456696c19e04c729584c96e54fcef8bb4d8d5b360980ab81420607250827` |
 | `urun/cekirdek/src/dil-baglami.ts` | `c374ef710e6133492ed2ca4b3793125c1927d7eacc92cba101a4959ab0912690` |
 | `urun/eklenti/package.nls.tr.json` | `deb6acd817424ddd885e1e8c679c0c635ff9a5c480baabfcfc9d7eb5f92859b2` |
