@@ -13,7 +13,7 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { INDEKS_DISI } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır
+import { INDEKS_DISI, adAlaniAyir, projeKapsamlari, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01)
 
 /** Graf düğümü — `kod` taşıyan bir widget (çoğunlukla Adım). */
 export interface DagDugum {
@@ -88,6 +88,27 @@ export interface Dag {
    *  (hedef kendi kapsayıcısı → genişleme kendini içerir) hâlleri kaydedilir;
    *  `ozBagimlilikTanilari` HATA üretir — bir iş kendinden önce gelemez. */
   oz: Array<{ kaynak: string; hedef: string; kenar: "bağımlı" | "besler"; dosya: string; satir: number; sutun: number }>;
+  /** ORK-4 · ÇAPRAZ-PROJE YÜRÜTME KENARI (KPS-ADA-A01): ad alanlı hedefi bu grafın
+   *  evreninde değil KARDEŞ bir projede çözülen `bağımlı`/`besler` kenarları. Kenar
+   *  kopuk DEĞİLDİR — hedefi gerçekten vardır, yalnız başka bir deponun kökünde
+   *  yaşadığı için bu grafta bir düğüme karşılık gelmez ve yerel sıra hesabına
+   *  giremez. ORK-1.2 ① hükmü gereği yine de sessiz düşmez: kenar burada kaydolur,
+   *  böylece "yedi kenar nereye gitti" sorusunun ölçülebilir bir cevabı olur. */
+  disProje: Array<{ kaynak: string; hedef: string; kenar: "bağımlı" | "besler"; dosya: string; satir: number; sutun: number }>;
+}
+
+/**
+ * `dagKur` seçenekleri. Bugün tek kalemi ORK-4 kardeş kök kapısıdır ve bilinçli
+ * olarak ENJEKTE edilir: `dagKur` saf kalır (STR-3.1), disk okuması çağıranın
+ * elindedir ve sınama yüzü kapıyı bir dize kümesiyle taklit edebilir.
+ */
+export interface DagSecenegi {
+  /**
+   * ORK-4 · ad alanlı bir hedef kardeş projenin kökünde çözülüyor mu? Yalnız ad
+   * alanı YÜKLÜ EVRENDE bulunamadığında sorulur; verilmezse kardeş kök hiç
+   * okunmaz ve çözülmeyen ad alanlı hedef kopuk sayılır (bugünkü davranış).
+   */
+  adAlaniCozulur?: (hedef: string, kaynakDosya: string) => boolean;
 }
 
 export interface SiraSonuc {
@@ -151,8 +172,20 @@ export function fazKarsilastir(a: { hedefTarih?: string; satir: number }, b: { h
  *   `A bağımlı B` → B, A'dan ÖNCE (B ∈ A.oncekiler · A ∈ B.sonrakiler — türetilir).
  *   `A besler  B` → A, B'den ÖNCE (A ∈ B.oncekiler · B ∈ A.sonrakiler — türetilir).
  * Yalnız İKİ ucu da tanımlı kenarlar bağlanır (çözülmeyen hedef = referansTanilari işi).
+ *
+ * ORK-4 · ÇAPRAZ-PROJE AD ALANI (KPS-ADA-A01 · ikinci tur). Yürütme kenarının
+ * hedefi `PRJ-A::KOD-X` yazımını taşıyabilir ve bu yazım bu modülde ÇÖZÜLMEDİĞİ
+ * için kenar sessizce kopuyordu. Kusur canlı ölçülmüştür: laboratuvarın yedi
+ * yürütme kenarının tamamı ad alanlı hedefe yönelmekte ve yedisinin de hedefi
+ * açık deponun kökünde gerçekten tanımlı bulunmakta, buna karşılık `dugumler`
+ * haritası çıplak KOD ile anahtarlandığı için ad alanlı anahtarın aranması daima
+ * boş dönmekteydi. Aynı ad alanı referans, uygular ve kullanır kenarlarında dört
+ * modülde tanındığı hâlde yürütme kenarında tanınmıyordu; onarım o boşluğu
+ * kapatır ve hükmü GEVŞETMEZ: ad alanlı hedef yalnız kendi projesinin kapsamında
+ * aranır, niteliksiz KOD'un çözümüne hiç dokunulmaz ve tesadüfî küresel eşleşme
+ * hiçbir yeni yol kazanmaz.
  */
-export function dagKur(programlar: ReadonlyMap<string, Program>): Dag {
+export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSecenegi): Dag {
   const dugumler = new Map<string, DagDugum>();
   // kapsayıcı KOD → altındaki yaprak Adım KOD'ları (kapsayıcı-hedef genişlemesi için)
   const yapraklar = new Map<string, string[]>();
@@ -258,6 +291,41 @@ export function dagKur(programlar: ReadonlyMap<string, Program>): Dag {
 
   const kopuk: Dag["kopuk"] = [];
   const oz: Dag["oz"] = [];
+  const disProje: Dag["disProje"] = [];
+
+  // ── ORK-4 · ad alanlı yürütme hedefinin çözümü (KPS-ADA-A01 · ikinci tur) ──
+  //   Proje kapsamları TEMBEL hesaplanır: `::` taşıyan bir hedefe gerçekten
+  //   rastlanmadıkça tek bir ağaç bile dolaşılmaz, dolayısıyla ad alanı
+  //   kullanmayan bir deponun grafı hiçbir ek bedel ödemez. Bu, kimlik
+  //   çözümündeki kardeş kök okumasının tembelliğiyle aynı hükmün ikizidir.
+  let kapsamOnbellegi: readonly ProjeKapsami[] | undefined;
+  const kapsamlar = (): readonly ProjeKapsami[] => (kapsamOnbellegi ??= projeKapsamlari(programlar));
+
+  /** Bir yürütme kenarı hedefinin bu graftaki karşılığı. */
+  type HedefCozum =
+    | { tur: "yerel"; kod: string }   // bu grafta bir düğüme çözüldü — kenar kurulur
+    | { tur: "dış" }                  // kardeş projede çözüldü — bu grafın dışında, kopuk değil
+    | { tur: "kopuk" };               // hiçbir yerde çözülmedi — ORK-1.2 ① uyarısı
+
+  const hedefiCoz = (hedef: string, kaynakDosya: string): HedefCozum => {
+    const { adAlani, yerel } = adAlaniAyir(hedef);
+    // Niteliksiz hedef: bugünkü davranış birebir korunur (hüküm gevşetilmez de,
+    // sıkılaştırılmaz da — bu Adımın işi ad alanlı hedefi grafa indirmektir).
+    if (adAlani === undefined) return dugumler.has(hedef) ? { tur: "yerel", kod: hedef } : { tur: "kopuk" };
+    // ① Ad alanı YÜKLÜ evrende bir Proje kapsamıysa (çatı penceresi) hedef yalnız
+    //    o kapsamın altında aranır; küresel eşleşme burada da bağ değildir.
+    const hedefKapsamlar = kapsamlar().filter((k) => k.kod === adAlani);
+    if (hedefKapsamlar.length) {
+      const d = dugumler.get(yerel);
+      return d && hedefKapsamlar.some((k) => onekKapsar(k.onek, d.dosya))
+        ? { tur: "yerel", kod: yerel }
+        : { tur: "kopuk" };
+    }
+    // ② Ad alanı yüklü değilse (deponun kendi kökünden koşulan denetim) kararı
+    //    kardeş kök kapısı verir. Kapı yoksa hedef çözülemez ve kopuk sayılır.
+    return secenek?.adAlaniCozulur?.(hedef, kaynakDosya) ? { tur: "dış" } : { tur: "kopuk" };
+  };
+
   const kenarGez = (node: Dugum, dosya: string): void => {
     // RF-T6-A02 sertleştirme: kuralTanım da kenar beyan edebilir (dayanak: K-nn) —
     // kimliği adı (DIL-3); widget'larla aynı kenar mantığından geçer.
@@ -269,12 +337,27 @@ export function dagKur(programlar: ReadonlyMap<string, Program>): Dag {
           oz.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
           return;
         }
-        if (!dugumler.has(t)) {   // çözülmeyen uç: kenar düşer ama artık SESSİZ değil (ORK-1.2 ①)
+        // ORK-4: hedef ad alanlıysa kendi projesinin kapsamında çözülür; kardeş
+        // depoda çözülen hedef bu grafın dışındadır ve kopuk sayılmaz.
+        const cozum = hedefiCoz(t, dosya);
+        if (cozum.tur === "dış") {
+          disProje.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
+          return;
+        }
+        if (cozum.tur === "kopuk") {   // çözülmeyen uç: kenar düşer ama artık SESSİZ değil (ORK-1.2 ①)
           kopuk.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
           return;
         }
+        // Bundan sonrası ÇÖZÜLMÜŞ yerel kod üzerinden yürür: ad alanlı yazım
+        // (`PRJ-A::KOD-X`) burada çıplak KOD'a inmiştir ve graf tek anahtar tanır.
+        const h = cozum.kod;
+        // Öz-bağımlılığın ad alanlı hâli: `PRJ-A::KENDİSİ` de kendine kenardır.
+        if (h === kod) {
+          oz.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
+          return;
+        }
         // Dolaylı öz: hedef kendi kapsayıcısı — genişleme kendini içerir (ORK-3.1 yan etkisi).
-        if (genislet(t).includes(kod)) {
+        if (genislet(h).includes(kod)) {
           oz.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
         }
         // VIT-GRAF-A12 · ZEMİN KAYDI: kapsayıcının Takım/Teknoloji hedefli `bağımlı`
@@ -282,12 +365,12 @@ export function dagKur(programlar: ReadonlyMap<string, Program>): Dag {
         // çağrısında hedefi yaprak Adımlara açtığı için kapsayıcıda hiçbir iz
         // kalmıyordu; bu YALNIZ EK bir kayıttır — kenarEkle davranışı değişmez.
         if (kenar === "bağımlı") {
-          const kaynakD = dugumler.get(kod), hedefD = dugumler.get(t);
+          const kaynakD = dugumler.get(kod), hedefD = dugumler.get(h);
           if (kaynakD && hedefD && KAPSAYICI_TIPLERI.has(kaynakD.tip) && ZEMIN_TIPLERI.has(hedefD.tip)) {
-            if (!(kaynakD.zemin ??= []).includes(t)) kaynakD.zemin.push(t);
+            if (!(kaynakD.zemin ??= []).includes(h)) kaynakD.zemin.push(h);
           }
         }
-        kenar === "bağımlı" ? kenarEkle(t, kod) : kenarEkle(kod, t);
+        kenar === "bağımlı" ? kenarEkle(h, kod) : kenarEkle(kod, h);
       };
       const bag = param(node, "bağımlı");
       if (bag) for (const t of kenarHedefleri(bag)) isle("bağımlı", t);   // A bağımlı B → B önce
@@ -358,7 +441,7 @@ export function dagKur(programlar: ReadonlyMap<string, Program>): Dag {
   };
   for (const [dosya, program] of programlar) for (const b of program.bildirimler) kenarGez(b, dosya);
 
-  return { dugumler, kopuk, oz };
+  return { dugumler, kopuk, oz, disProje };
 }
 
 /**

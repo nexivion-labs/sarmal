@@ -35,7 +35,7 @@ import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { dogrula } from "./dogrulayici.ts";
-import { dogusEksikTanilari, anadizinBul } from "./denetci.ts";  // doğuş-rehberi turu: MIM-3'ün tek-dosya yüzü
+import { dogusEksikTanilari, anadizinBul, adAlaniKapisi } from "./denetci.ts";  // doğuş-rehberi turu: MIM-3'ün tek-dosya yüzü
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, type Siniflama } from "./siniflama.ts";
 import { ogretKarti } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
 import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
@@ -442,7 +442,9 @@ function grafAraci(dizin: string, kok?: string): { metin: string; isError: boole
   if (!programlar.size) {
     return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
   }
-  const çıktı = grafYuz(dagKur(programlar), kok);
+  // ORK-4 (KPS-ADA-A01): CLI ikizinin taşıdığı ad alanı kapısı burada da taşınır.
+  const kapi = adAlaniKapisi(programlar, dizin);
+  const çıktı = grafYuz(dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) }), kok);
   if (çıktı === undefined) {
     return { metin: `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`, isError: true };
   }

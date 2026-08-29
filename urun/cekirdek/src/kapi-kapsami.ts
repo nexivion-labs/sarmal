@@ -120,7 +120,15 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "halefTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "teknolojisizYuzeyTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "onceliksizAdimTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
-  { uretici: "atesleyenHatirlaticiTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
+  // YUZ-3.4 · PANEL YÜZEYİ FOUNDER KARARIYLA EKLENDİ (2026-08-28). Madde bu tanının
+  // "proje CLI ve Bildirimler" yüzeylerinde görünmesini zorlar ve yönlendirme matrisi
+  // onu Bildirimler hanesinde sayar; buna karşılık üretici yalnız komut satırına
+  // ayrıldığı için ateşleme anı Founder'ın baktığı panelde hiç görünmüyordu. Ölçüm
+  // 2026-08-28 tarihinde yapıldı: hedef Adım tamamlandığında tanı komut satırında
+  // doğuyor, panel süzgecinden ise üretici damgası yüzünden yapısal olarak
+  // geçemiyordu. Hatırlatıcının bütün vaadi hatırlatma ANINDA görünmektir; o an
+  // görünmezse mekanizmanın son halkası kopuktur.
+  { uretici: "atesleyenHatirlaticiTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
   { uretici: "dilTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "uygulanmamisKararTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "beceriDriftTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
@@ -161,8 +169,12 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
 const YARDIMCI_ISLEVLER: ReadonlySet<string> = new Set([
   "anadizinBul", "beyanliDayanaksizKurallar", "dagKur", "dayanaksizKararlar",
   "dayanaksizKurallar", "dersAcikAdimSayisi", "diskTara", "ebediEnvanter",
-  "karneOzeti", "kodIndeksle", "planlamaEvresiMi", "programlariYukle",
-  "yerelEvre1Yumusat", "evre1Yumusat",
+  // `kodTanimlariIndeksle` (KPS-ADA-A01) `kodIndeksle` ile aynı ailedendir: tanı
+  // üretmez, ORK-4 kapsam kararının okuduğu tanım haritasını kurar. `adAlaniKapisi`
+  // ise o haritanın üstüne ORK-4 kardeş kök kapısını kurar ve yine tanı üretmez;
+  // kapının kendisi bir ölçüm değil, ölçenlerin ortak sorduğu sorudur.
+  "adAlaniKapisi", "karneOzeti", "katiRejimliDosyalar", "kodIndeksle", "kodTanimlariIndeksle", "planlamaEvresiMi",
+  "programlariYukle", "yerelEvre1Yumusat", "evre1Yumusat",
 ]);
 
 /**

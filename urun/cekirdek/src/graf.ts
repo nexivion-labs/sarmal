@@ -94,7 +94,7 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
 
   // özet alt-graf üzerinden (filtreli mini-Dag — karne mantığı TEK kaynak kalır)
   const özetDag: Dag = küme
-    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz }
+    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje }
     : dag;
 
   return { ...(kök ? { kök } : {}), düğümler, kopuk, özet: karneOzeti(özetDag) };

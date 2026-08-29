@@ -26,7 +26,7 @@
 //   çevirmen nereye bakacağını arayarak bulmak zorunda kalmaz.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import type { Duzey, Tani } from "./tani.ts";
+import type { Duzey, Tani, TaniDilMetni } from "./tani.ts";
 import type { SozDizimHatasi } from "./belirtec.ts";
 import { YENI_TANI_INDEKS } from "./tani-sicili.ts";
 import { dilHanesi, type CiktiDili } from "./cevir.ts";
@@ -71,6 +71,18 @@ const d = (p: TaniBaglami, ad: string): readonly string[] => {
   if (Array.isArray(v)) return v as readonly string[];
   return v === undefined || v === "" ? [] : [String(v)];
 };
+
+/**
+ * Kırpılmamış ikiz cümleyi yalnız GERÇEKTEN kazanç varsa alana koyar.
+ *
+ * Gövde zaten kırpma eşiğinin altındaysa iki cümle birebir aynı çıkar; aynı
+ * metni ikinci bir alanda taşımak hem kaydı şişirir hem de okuyucuya var olmayan
+ * bir fark olduğunu düşündürür. Bu yüzden ikiz, kısa cümleden farklı olduğunda
+ * yazılır ve aksi hâlde alan hiç doğmaz.
+ */
+function tamMesajEki(tamMesaj: string | undefined, mesaj: string): { tamMesaj?: string } {
+  return tamMesaj && tamMesaj !== mesaj ? { tamMesaj } : {};
+}
 
 /** Bağlam alanını mantıksal bayrak olarak okur — koşullu cümle burada kurulur. */
 const b = (p: TaniBaglami, ad: string): boolean => {
@@ -800,11 +812,11 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   "gateway-izin-biçim": {
     mesaj: (p) => {
       if (a(p, "kusur") === "biçim") return `Etmen "${a(p, "etmen")}": mcpİzinleri girdisi '${a(p, "ham")}' biçimsiz — 'MCP-KOD:mod' bekleniyor`;
-      if (a(p, "kusur") === "mod") return `Etmen "${a(p, "etmen")}": mcpİzinleri '${a(p, "ham")}' geçersiz mod '${a(p, "mod")}' — oku|yaz|çağır olmalı`;
+      if (a(p, "kusur") === "mod") return `Etmen "${a(p, "etmen")}": mcpİzinleri '${a(p, "ham")}' geçersiz mod taşıyor. Mod yalnız oku, yaz ya da çağır olabilir; '${a(p, "mod")}' bu üçünden biri değildir.`;
       return `Etmen "${a(p, "etmen")}": mcpİzinleri tanımsız araç '${a(p, "araç")}' — MCP/Araç düğümü yok`;
     },
     oneri: (p) => {
-      if (a(p, "kusur") === "biçim") return "Her izni 'ARAÇ-KOD:oku|yaz|çağır' yaz.";
+      if (a(p, "kusur") === "biçim") return "Her izni 'ARAÇ-KOD:mod' biçiminde yaz ve mod yerine oku, yaz ya da çağır kiplerinden birini koy.";
       if (a(p, "kusur") === "mod") return "Mod'u oku/yaz/çağır'dan seç.";
       return "Aracı bir MCP/Araç widget'ı olarak ilan et ya da KOD'u düzelt.";
     },
@@ -903,7 +915,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
               return `'${a(p, "dizin")}' dizininde giriş dosyası yok — her proje bir giriş dosyasıyla başlar. Beklenen ad: <varlık>_anadizin.sar (eski ana.sar da tanınır).`;
           }
         default:
-          return `"${a(p, "ad")}" (${a(p, "kimlik")}) → ${a(p, "ihlal", `Kural "${a(p, "kod")}" ihlal edildi`)} [kural: ${a(p, "kod")}]`;
+          return `"${a(p, "ad")}" (${a(p, "kimlik")}) düğümünde şu kural ihlal edildi: ${a(p, "ihlal", `Kural "${a(p, "kod")}" ihlal edildi`)} [kural: ${a(p, "kod")}]`;
       }
     },
     oneri: (p) => {
@@ -911,7 +923,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         case "giriş-ayrıştırılamıyor":
           return "Giriş dosyasının söz-dizimini düzelt ya da bilerek-hatalı pragmasını kaldır — muafiyet fikstürler içindir, giriş için değil.";
         case "ad-kuralı":
-          return `Yeniden adlandır: '${a(p, "ad")}' → '${a(p, "onerilen")}'.`;
+          return `'${a(p, "ad")}' adını '${a(p, "onerilen")}' olarak değiştir.`;
         case "girişsiz-dizin":
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
@@ -936,8 +948,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "çıplak-adımlı-katman": {
     mesaj: (p) => b(p, "özet")
-      ? `${a(p, "sayı")} Katman, Adımlarını doğrudan taşıyor; önerilen düzen bunları konu modüllerine (AltKatman) toplamaktır (Katman → AltKatman → Adım). Örnek: ${a(p, "örnekler")}${s(p, "sayı") > 3 ? " …" : ""}`
-      : "Bu Katman, Adımları doğrudan taşıyor; önerilen düzen, iş parçalarını konu modüllerine (AltKatman) toplayıp Katman → AltKatman → Adım sırasını kurmaktır.",
+      ? `${a(p, "sayı")} Katman, Adımlarını doğrudan taşıyor; önerilen düzen bunları konu modüllerine (AltKatman) toplamak ve her Katmanın altına önce bir AltKatman, o kademenin altına da Adımları yerleştirmektir. Örnek: ${a(p, "örnekler")}${s(p, "sayı") > 3 ? " …" : ""}`
+      : "Bu Katman, Adımları doğrudan taşıyor; önerilen düzen, iş parçalarını konu modüllerine (AltKatman) toplamak ve Katmanın altına önce bir AltKatman, o kademenin altına da Adımları yerleştirmektir.",
     oneri: (p) => b(p, "özet")
       ? "Adımları konularına göre AltKatman modüllerine gruplayabilirsin; ayrıntı dosya başına tekil denetimde görünür."
       : "Adımları konularına göre AltKatman() modüllerine gruplayabilirsin; her AltKatman bir konu dalıdır ve Adımlar onun altında yaşar.",
@@ -1033,12 +1045,12 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
       ? `🔔 ${a(p, "sayı")} açık/kararlaşmış hatırlatıcı (❗${a(p, "açık")} açık · ➡️${a(p, "kararlaşmış")} kararlaşmış) — hepsi görünür, tek özet. Örnek: ${a(p, "örnek")}${s(p, "sayı") > 3 ? " …" : ""}`
       : `❗ Açık hatırlatıcı (${a(p, "kimlik")}): ${a(p, "ne", "")}`,
     oneri: (p) => b(p, "özet")
-      ? "Hedef aktifleşince koniyle otomatik gelir (🔔 Bağlı Hatırlatıcılar panelinde); karar → durum: kararlaştı + hatırlat: ADIM-KOD; bitince → tamamlandı. Tek tek bak: sarmal gezin <hatırlatıcının kodu>."
-      : "Hedef aktifleşince koniyle otomatik gelir. Karar verilince → durum: kararlaştı + hatırlat: ADIM-KOD (zincire girer); bitince → tamamlandı.",
+      ? "Hedef aktifleştiğinde hatırlatıcı koniyle birlikte 🔔 Bağlı Hatırlatıcılar panelinde kendiliğinden görünür. Kararı verdiğinde durum alanına kararlaştı yaz ve hatırlat: ADIM-KOD alanıyla kaydı zincire bağla; iş bittiğinde durumu tamamlandı yap. Kayıtlara tek tek bakmak için sarmal gezin <hatırlatıcının kodu> komutunu koştur."
+      : "Hedef aktifleştiğinde hatırlatıcı koniyle birlikte kendiliğinden gelir. Kararı verdiğinde durum alanına kararlaştı yaz ve hatırlat: ADIM-KOD alanını ekle; kayıt böylece zincire girer. İş bittiğinde durumu tamamlandı yap.",
   },
   "kararlaşmış-hatırlatıcı": {
     mesaj: (p) => `❗➡️ Kararlaşmış hatırlatıcı (${a(p, "kimlik")})${p["hedef"] ? ` — zincirdeki Adım: ${a(p, "hedef")}` : " — HEDEFSİZ (zincire girmemiş!)"}: ${a(p, "ne", "")}`,
-    oneri: () => "Üç geçerli yol: mevcut Adım'a ekle | araya yeni Adım aç | hedef tamamlandıysa kodu ANINDA güncelle (Sarmal hizalar). İş zincirde bitince → durum: tamamlandı.",
+    oneri: () => "Üç geçerli yol vardır. Birincisi, işi mevcut bir Adıma eklemektir. İkincisi, araya yeni bir Adım açmaktır. Üçüncüsü, hedef zaten tamamlandıysa hatırlatıcının kodunu ANINDA güncellemektir ve Sarmal zinciri kendisi hizalar. İş zincirde bittiğinde durum alanına tamamlandı yaz.",
   },
   "politika-dayanaksız": {
     mesaj: (p) => `⚓ Politika (${a(p, "kimlik")}) hiçbir karara yaslanmıyor — hangi KARAR bu politikayı doğurdu?`,
@@ -1124,7 +1136,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "yer-uyuşmazlığı": {
     mesaj: (p) => `'${a(p, "kod")}' kanonik yerinde değil: '${a(p, "beklenen")}' olmalı, diskte '${a(p, "gerçek")}'.`,
-    oneri: (p) => `Dosyayı kanonik yerine taşı: '${a(p, "gerçek")}' → '${a(p, "beklenen")}' — kod kanundur, klasör onun aynasıdır (FEL-3: dosya yapısı beyandan türer).`,
+    oneri: (p) => `Dosyayı '${a(p, "gerçek")}' konumundan kanonik yeri olan '${a(p, "beklenen")}' konumuna taşı; kod kanundur ve klasör onun aynasıdır (FEL-3: dosya yapısı beyandan türer).`,
   },
   "harf-farkı": {
     mesaj: (p) => `'${a(p, "yol")}' ilan edilmiş; diskte yalnız BÜYÜK/küçük harf farkıyla eşleşen bir ${a(p, "tür")} var — macOS bunu aynı sayar, Linux "dosya yok" der (çapraz-platform kırılması).`,
@@ -1152,7 +1164,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "olgunluk-onayı": {
     mesaj: (p) => `🔒 Plan olgun görünüyor (${a(p, "adımSayısı")} Adım koni-dolu, kod HENÜZ başlamamış) — planlamadan kodlamaya geçiş anı. Kodlamaya başlamadan İNSAN OLGUNLUK ONAYI al ("plan hazır, koda geçebiliriz"). Motor hatırlatır, KESMEZ.`,
-    oneri: () => "Planı son gözden geçir: koni-tam mı? denetle-temiz mi? Teknoloji sürümleri kilitli mi? → insan onayı → kodlamaya geç (ilk Adım'ı ŞEF'e ver). Olgunlaşmamış plan üstüne kod, plandan kopuşla biter.",
+    oneri: () => "Planı son kez gözden geçir ve üç soruyu yanıtla: koni tam mı, denetim temiz mi, Teknoloji sürümleri kilitli mi? Üçü de evetlendikten sonra insan onayını al ve ilk Adımı ŞEF'e vererek kodlamaya geç. Olgunlaşmamış plan üstüne yazılan kod, plandan kopuşla biter.",
   },
   "ad-ayracı": {
     mesaj: (p) => `Dosya adında tire var ('${a(p, "ad")}') — Sarmal dosya adlarında ayraç alt-çizgidir.`,
@@ -1188,11 +1200,11 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: (p) => `'${a(p, "kod")}' hâlâ yaşıyorsa tanımını ilan et; adı değiştiyse metni güncelle; geçmişi anlatıyorsa (bayat atıf) bu bilgi doğaldır.`,
   },
   "kırık-halef": {
-    mesaj: (p) => `Karar "${a(p, "kod")}" revize → halef "${a(p, "halef")}" ama böyle bir Karar tanımlı DEĞİL (karşılıksız atıf).`,
+    mesaj: (p) => `Karar "${a(p, "kod")}" revize damgası taşıyor ve halefi olarak "${a(p, "halef")}" kararını gösteriyor, fakat böyle bir Karar tanımlı DEĞİLDİR; atıf karşılıksız kalmıştır.`,
     oneri: () => "halef: değerini hükmü güncelleyen gerçek bir Karar KOD'una düzelt (ya da revize damgasını kaldır).",
   },
   "halef-döngü": {
-    mesaj: (p) => `Karar "${a(p, "kod")}" halef zinciri DÖNGÜ oluşturuyor (${d(p, "zincir").join(" → ")}) — güncel hüküm belirsiz.`,
+    mesaj: (p) => `Karar "${a(p, "kod")}" halef zinciri DÖNGÜ oluşturuyor; zincir şu kararları sırayla izleyip başladığı yere dönüyor: ${d(p, "zincir").join(", ")}. Bu yüzden güncel hüküm belirsizdir.`,
     oneri: () => "Zincir yürürlükteki (revize-olmayan) bir kararda BİTMELİ; fazla halef damgasını kaldır ya da doğru halefi göster.",
   },
   "yinelenen-kod": {
@@ -1209,7 +1221,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "kapsayıcı-kenar": {
     mesaj: (p) => `'${a(p, "ad")}' bir KAPSAYICIDIR — kenar (${a(p, "kenar")}) yalnız Adım'da beyan edilir; kapsayıcının sırası çocuklarından hesaplanır.`,
-    oneri: () => "Kenarı ilgili Adım'a indir (hedef kapsayıcı olabilir: bağımlı: [BLOK-KODU] → motor yapraklara genişletir). Yalnız Katman'ın Takım/Teknoloji bağı serbesttir.",
+    oneri: () => "Kenarı ilgili Adıma indir. Kenarın hedefi bir kapsayıcı olabilir; bağımlı: [BLOK-KODU] yazdığında motor bağı yapraklara kendisi genişletir. Bu kademede yalnız Katmanın Takım ve Teknoloji bağı serbesttir.",
   },
   "yanlış-alan": {
     mesaj: () => "KOD listesi taşıyan kenarın adı 'bağımlı'dır — 'bağımlılık' diye bir alan yok (sıra, bağımlı kenarından hesaplanır).",
@@ -1236,7 +1248,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: () => 'Köke raf ilanı ekle (raflar: { belge: "açıklama" } ya da Kitaplık/Raf düğümleri) — şablon: sarmal başla proje; plan-yalnız erken evredeysen bile hedef yapıyı şimdi ilan et.',
   },
   "anadizin-plan-karışması": {
-    mesaj: (p) => `'${a(p, "kök")}' anadizin(kök) doğrudan '${a(p, "bulunan")}' (plan düğümü) içeriyor — anadizin MİMARİ çizer (Kitaplık/Raf/yol); plan (Faz→Blok→Katman→Adım) plan/ rafında AYRI .sar'da yaşar (kuruluş kuralı: önce anadizin mimariyi çizer, plan ayrı dosyada büyür).`,
+    mesaj: (p) => `'${a(p, "kök")}' anadizin kökü doğrudan '${a(p, "bulunan")}' plan düğümünü içeriyor. Anadizin MİMARİ çizer ve Kitaplık, Raf ile yol ilanlarını taşır; Faz kademesinden Blok, Katman ve Adım kademelerine inen plan ise plan/ rafında AYRI bir .sar dosyasında yaşar. Kuruluş kuralı şudur: önce anadizin mimariyi çizer, plan sonra ayrı dosyada büyür.`,
     oneri: () => 'Plan düğümlerini plan/ altında ayrı .sar\'a taşı; kökte plan/ için Raf ilan et (Raf( kod: RAF-PLAN, yol: "plan/" )). Şablon: sarmal başla proje.',
   },
   "kavuşumsuz-paralellik": {
@@ -1246,12 +1258,12 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   "silo-blok": {
     mesaj: (p) => `'${a(p, "kod")}' Blok yalnız ${b(p, "önyüz") ? "önyüz (yuzey)" : "arkayüz (arkayuz)"} düğümü taşıyor, karşı yüz ve güvenlik yok — dikey dilim değil, silo (önyüz+arkayüz+güvenlik bir Blok'ta kavuşmalı).`,
     oneri: (p) => b(p, "önyüz")
-      ? "Blok'a arkayüz (Uç/Servis) + güvenlik (Güvenlik/Mekanizma) ekle ve Ekran→Uç kavuşumunu Sözleşme üzerinden kur — dikey dilim; ya da bu Blok bilinçli tek-yüz ise ayrı Katman/proje-soul notu düş."
-      : "Blok'a önyüz (Ekran/Form) + güvenlik (Güvenlik/Mekanizma) ekle ve Ekran→Uç kavuşumunu Sözleşme üzerinden kur — dikey dilim; ya da bu Blok bilinçli tek-yüz ise proje-soul notu düş.",
+      ? "Bloka bir arkayüz düğümü (Uç ya da Servis) ve bir güvenlik düğümü (Güvenlik ya da Mekanizma) ekle, sonra Ekran ile Uç arasındaki kavuşumu Sözleşme üzerinden kur; Blok böylece dikey bir dilim olur. Bu Blok bilinçli olarak tek yüzlüyse ayrı bir Katman notu ya da proje-soul notu düş."
+      : "Bloka bir önyüz düğümü (Ekran ya da Form) ve bir güvenlik düğümü (Güvenlik ya da Mekanizma) ekle, sonra Ekran ile Uç arasındaki kavuşumu Sözleşme üzerinden kur; Blok böylece dikey bir dilim olur. Bu Blok bilinçli olarak tek yüzlüyse bir proje-soul notu düş.",
   },
   "kavuşumsuz-dilim": {
     mesaj: (p) => `'${a(p, "kod")}' Blok hem yüzey ('${a(p, "önyüz")}') hem arkayüz ('${a(p, "arkayüz")}') düğümü taşıyor ama aralarında KAVUŞUM yok — önyüz ve arkayüz var, birbirine bağlanmamış (dikey dilim ama kavuşumsuz).`,
-    oneri: (p) => `Yüzey ile arkayüzü kavuştur: ya doğrudan '${a(p, "önyüz")}' → çağırır/kullanir → '${a(p, "arkayüz")}', ya da contract-first — ortak Sözleşme ilan et ('${a(p, "arkayüz")}' üretir SZL-…, '${a(p, "önyüz")}' referans verir). İki yüz Sözleşme'de buluşsun.`,
+    oneri: (p) => `Yüzey ile arkayüzü kavuştur. Birinci yol doğrudan bağdır: '${a(p, "önyüz")}' düğümünü çağırır ya da kullanır kenarıyla '${a(p, "arkayüz")}' düğümüne bağla. İkinci yol önce sözleşme yaklaşımıdır: ortak bir Sözleşme ilan et, '${a(p, "arkayüz")}' onu SZL-… koduyla üretsin ve '${a(p, "önyüz")}' ona referans versin. İki yüz Sözleşmede buluşsun.`,
   },
   "bilinmeyen-kapsam": {
     mesaj: (p) => `Kural "${a(p, "kod")}" kapsamı çözülmüyor: "${a(p, "kapsam")}" ne aile, ne tip, ne tanımlı KOD — bu kuralın kapsamı BOŞ KÜME (hiçbir düğüme uygulanmaz).`,
@@ -1315,7 +1327,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "durumsuz-adım": {
     mesaj: (p) => `Adım "${a(p, "kod")}" durum: taşımıyor — motor onu açık-iş gündeminde GÖREMEZ (şema varsayılanı beklemede'dir ama tarayıcı örtük varsayılanı uygulamaz, iş sessizce kaybolur).`,
-    oneri: () => "durum: beklemede | geliştirmede | tamamlandı beyan et — örtük varsayılana güvenme; durumu yazılmayan bir Adım gözden kolayca kaçar.",
+    oneri: () => "Adıma bir durum yaz ve değeri beklemede, geliştirmede ya da tamamlandı kiplerinden biri olsun; örtük varsayılana güvenme, çünkü durumu yazılmayan bir Adım gözden kolayca kaçar.",
   },
   "açık-adım": {
     mesaj: (p) => b(p, "özet")
@@ -1390,7 +1402,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
       return `Etmen "${a(p, "etmen")}": mcpİzinleri names undefined tool '${a(p, "araç")}' — there is no matching MCP/Araç node.`;
     },
     oneri: (p) => {
-      if (a(p, "kusur") === "biçim") return "Write each permission as 'ARAÇ-KOD:oku|yaz|çağır'.";
+      if (a(p, "kusur") === "biçim") return "Write each permission in the 'ARAÇ-KOD:mod' form, where the mode is one of oku, yaz and çağır.";
       if (a(p, "kusur") === "mod") return "Choose the mode from oku, yaz and çağır.";
       return "Declare the tool as an MCP/Araç widget or correct its CODE.";
     },
@@ -1485,7 +1497,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
               return `The directory '${a(p, "dizin")}' has no entry file — every project begins with one. The expected name is <varlık>_anadizin.sar; legacy ana.sar is also recognized.`;
           }
         default:
-          return `"${a(p, "ad")}" (${a(p, "kimlik")}) → ${a(p, "ihlal", `Rule "${a(p, "kod")}" was violated`)} [rule: ${a(p, "kod")}]`;
+          return `The node "${a(p, "ad")}" (${a(p, "kimlik")}) violates a rule: ${a(p, "ihlal", `Rule "${a(p, "kod")}" was violated`)} [rule: ${a(p, "kod")}]`;
       }
     },
     oneri: (p) => {
@@ -1493,7 +1505,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         case "giriş-ayrıştırılamıyor":
           return "Correct the entry file's syntax or remove its intentionally-invalid pragma; that exemption is for fixtures, not entry files.";
         case "ad-kuralı":
-          return `Rename it: '${a(p, "ad")}' → '${a(p, "onerilen")}'.`;
+          return `Rename '${a(p, "ad")}' to '${a(p, "onerilen")}'.`;
         case "girişsiz-dizin":
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
@@ -1518,8 +1530,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "çıplak-adımlı-katman": {
     mesaj: (p) => b(p, "özet")
-      ? `${a(p, "sayı")} Katman nodes directly contain their Adımlar; the recommended structure groups them into topic modules (AltKatman), forming Katman → AltKatman → Adım. Example: ${a(p, "örnekler")}${s(p, "sayı") > 3 ? " …" : ""}`
-      : "This Katman directly contains Adımlar; the recommended structure groups work items into topic modules (AltKatman) and establishes the Katman → AltKatman → Adım order.",
+      ? `${a(p, "sayı")} Katman nodes directly contain their Adımlar; the recommended structure groups them into topic modules (AltKatman), so that every Katman holds an AltKatman and every AltKatman holds its own Adımlar. Example: ${a(p, "örnekler")}${s(p, "sayı") > 3 ? " …" : ""}`
+      : "This Katman directly contains Adımlar; the recommended structure groups work items into topic modules (AltKatman), so that the Katman holds an AltKatman and the AltKatman holds its own Adımlar.",
     oneri: (p) => b(p, "özet")
       ? "You can group Adımlar into AltKatman modules by topic; per-file auditing shows the individual detail."
       : "You can group Adımlar by topic into AltKatman() modules; each AltKatman is a topic branch, and its Adımlar live beneath it.",
@@ -1619,7 +1631,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "kararlaşmış-hatırlatıcı": {
     mesaj: (p) => `❗➡️ Decided reminder (${a(p, "kimlik")})${p["hedef"] ? ` — Adım in the chain: ${a(p, "hedef")}` : " — NO TARGET (not in the chain!)"}: ${a(p, "ne", "")}`,
-    oneri: () => "There are three valid paths: add it to an existing Adım | open a new Adım between existing work | if the target is complete, update the code IMMEDIATELY so Sarmal realigns it. When its work finishes in the chain, write durum: tamamlandı.",
+    oneri: () => "There are three valid paths. First, add the work to an existing Adım. Second, open a new Adım between existing work. Third, if the target is already complete, update the code IMMEDIATELY so that Sarmal realigns the chain. When the work finishes in the chain, write durum: tamamlandı.",
   },
   "politika-dayanaksız": {
     mesaj: (p) => `⚓ Politika (${a(p, "kimlik")}) rests on no decision — which KARAR created this policy?`,
@@ -1703,7 +1715,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "yer-uyuşmazlığı": {
     mesaj: (p) => `'${a(p, "kod")}' is not in its canonical location: it should be '${a(p, "beklenen")}', but on disk it is '${a(p, "gerçek")}'.`,
-    oneri: (p) => `Move the file to its canonical location: '${a(p, "gerçek")}' → '${a(p, "beklenen")}'. The code is law and the directory mirrors it; under FEL-3, file structure derives from the declaration.`,
+    oneri: (p) => `Move the file from '${a(p, "gerçek")}' to its canonical location '${a(p, "beklenen")}'. The code is law and the directory mirrors it; under FEL-3, file structure derives from the declaration.`,
   },
   "harf-farkı": {
     mesaj: (p) => `'${a(p, "yol")}' is declared, but the only matching ${a(p, "tür")} on disk differs in letter case — macOS treats them as equal while Linux reports “file not found,” causing a cross-platform break.`,
@@ -1768,11 +1780,11 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   // ── Execution graph, planning and remaining guards (68–100) ─────────────
   "kırık-halef": {
-    mesaj: (p) => `Karar "${a(p, "kod")}" is marked revize → halef "${a(p, "halef")}", but no such Karar is defined; the reference is unresolved.`,
+    mesaj: (p) => `Karar "${a(p, "kod")}" is marked revize and names "${a(p, "halef")}" as its halef, but no such Karar is defined; the reference is unresolved.`,
     oneri: () => "Correct the halef: value to the real Karar CODE that updates the ruling, or remove the revize stamp.",
   },
   "halef-döngü": {
-    mesaj: (p) => `The successor chain of Karar "${a(p, "kod")}" forms a CYCLE (${d(p, "zincir").join(" → ")}), so the current ruling is ambiguous.`,
+    mesaj: (p) => `The successor chain of Karar "${a(p, "kod")}" forms a CYCLE, because it walks through ${d(p, "zincir").join(", ")} and returns to where it began, so the current ruling is ambiguous.`,
     oneri: () => "The chain must END at a decision that remains in force and is not revize; remove the extra halef stamp or point it to the correct successor.",
   },
   "yinelenen-kod": {
@@ -1816,7 +1828,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: () => 'Add a shelf declaration to the root (raflar: { belge: "açıklama" } or Kitaplık/Raf nodes) — şablon: sarmal başla proje. Declare the target structure now even during an early plan-only stage.',
   },
   "anadizin-plan-karışması": {
-    mesaj: (p) => `Anadizin root '${a(p, "kök")}' directly contains plan node '${a(p, "bulunan")}' — anadizin draws ARCHITECTURE (Kitaplık/Raf/yol), while the plan (Faz→Blok→Katman→Adım) lives in a SEPARATE .sar file on the plan/ shelf. The founding rule draws architecture first and grows the plan separately.`,
+    mesaj: (p) => `Anadizin root '${a(p, "kök")}' directly contains plan node '${a(p, "bulunan")}'. An anadizin draws ARCHITECTURE and carries the Kitaplık, Raf and yol declarations, while the plan, which descends from Faz through Blok and Katman down to Adım, lives in a SEPARATE .sar file on the plan/ shelf. The founding rule draws architecture first and grows the plan separately.`,
     oneri: () => 'Move plan nodes into a separate .sar under plan/; declare a Raf for plan/ at the root (Raf( kod: RAF-PLAN, yol: "plan/" )). Şablon: sarmal başla proje.',
   },
   "kavuşumsuz-paralellik": {
@@ -1826,12 +1838,12 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   "silo-blok": {
     mesaj: (p) => `Blok '${a(p, "kod")}' contains only a ${b(p, "önyüz") ? "front-end (yuzey)" : "back-end (arkayuz)"} node, without its opposite face or security — this is a silo, not a vertical slice. Front end, back end and security converge in one Blok.`,
     oneri: (p) => b(p, "önyüz")
-      ? "Add arkayüz (Uç/Servis) + güvenlik (Güvenlik/Mekanizma) to the Blok and establish Ekran→Uç convergence through Sözleşme, forming a vertical slice; if it is intentionally single-faced, add a separate Katman/proje-soul note."
-      : "Add önyüz (Ekran/Form) + güvenlik (Güvenlik/Mekanizma) to the Blok and establish Ekran→Uç convergence through Sözleşme, forming a vertical slice; if it is intentionally single-faced, add a proje-soul note.",
+      ? "Add a back-end node (Uç or Servis) and a security node (Güvenlik or Mekanizma) to the Blok, then establish the convergence between Ekran and Uç through Sözleşme so that the Blok becomes a vertical slice. If the Blok is intentionally single-faced, add a separate Katman note or a proje-soul note."
+      : "Add a front-end node (Ekran or Form) and a security node (Güvenlik or Mekanizma) to the Blok, then establish the convergence between Ekran and Uç through Sözleşme so that the Blok becomes a vertical slice. If the Blok is intentionally single-faced, add a proje-soul note.",
   },
   "kavuşumsuz-dilim": {
     mesaj: (p) => `Blok '${a(p, "kod")}' contains both surface '${a(p, "önyüz")}' and back-end '${a(p, "arkayüz")}', but there is NO CONVERGENCE between them — this vertical slice has both faces, but they are not connected.`,
-    oneri: (p) => `Converge the surface and back end: either connect '${a(p, "önyüz")}' → çağırır/kullanir → '${a(p, "arkayüz")}' directly, or use contract-first by declaring a shared Sözleşme ('${a(p, "arkayüz")}' üretir SZL-…, '${a(p, "önyüz")}' referans verir). Let both faces meet at Sözleşme.`,
+    oneri: (p) => `Converge the surface and the back end. The first path is a direct binding: connect '${a(p, "önyüz")}' to '${a(p, "arkayüz")}' with a çağırır or kullanır edge. The second path is contract-first: declare a shared Sözleşme, let '${a(p, "arkayüz")}' produce it as SZL-… and let '${a(p, "önyüz")}' reference it. Let both faces meet at Sözleşme.`,
   },
   "bilinmeyen-kapsam": {
     mesaj: (p) => `The scope of Kural "${a(p, "kod")}" does not resolve: "${a(p, "kapsam")}" is neither a family, a type nor a defined CODE — this rule has the EMPTY SET as its scope and applies to no node.`,
@@ -1895,7 +1907,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "durumsuz-adım": {
     mesaj: (p) => `Adım "${a(p, "kod")}" carries no durum: field, so the engine CANNOT SEE it in the open-work agenda. The schema default is beklemede, but the scanner does not apply an implicit default, and the work silently disappears.`,
-    oneri: () => "Declare durum: beklemede | geliştirmede | tamamlandı. Do not rely on an implicit default; an Adım with no written status is easily overlooked.",
+    oneri: () => "Declare a durum on the Adım and let its value be one of beklemede, geliştirmede and tamamlandı. Do not rely on an implicit default, because an Adım with no written status is easily overlooked.",
   },
   "açık-adım": {
     mesaj: (p) => b(p, "özet")
@@ -1937,7 +1949,7 @@ export const IKIZ_NOBET_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = {
   "ikiz-ayrışması": {
     mesaj: (p) => b(p, "özet")
       ? `İkiz ayrışması (${ikizYuzAdi(p)}) — '${a(p, "çıpaYol")}' ile '${a(p, "karşıYol")}' arasında toplam ${s(p, "toplam")} satır ayrışıyor; ilk ${s(p, "gösterilen")} tanesi yukarıda adresiyle listelendi, kalan ${s(p, "toplam") - s(p, "gösterilen")} satır bu özet satırının arkasında saklıdır.`
-      : `İkiz ayrışması (${ikizYuzAdi(p)}) — '${a(p, "çıpaYol")}' ile '${a(p, "karşıYol")}' ${s(p, "satırNo")}. satırda ayrılıyor: ${a(p, "çıpaYol")} → ${ikizSatirYuzu(p, "çıpa", "(satır yok — dosya burada bitiyor)", "(boş satır)")} · ${a(p, "karşıYol")} → ${ikizSatirYuzu(p, "karşı", "(satır yok — dosya burada bitiyor)", "(boş satır)")}`,
+      : `İkiz ayrışması (${ikizYuzAdi(p)}) — '${a(p, "çıpaYol")}' ile '${a(p, "karşıYol")}' ${s(p, "satırNo")}. satırda ayrılıyor: '${a(p, "çıpaYol")}' dosyası ${ikizSatirYuzu(p, "çıpa", "(satır yok — dosya burada bitiyor)", "(boş satır)")} taşırken '${a(p, "karşıYol")}' dosyası ${ikizSatirYuzu(p, "karşı", "(satır yok — dosya burada bitiyor)", "(boş satır)")} taşıyor.`,
     oneri: (p) => b(p, "özet")
       ? (b(p, "sahne")
         ? `Farkın tamamını deponun sahnelenmiş yüzünde karşılaştır; diskteki dosyalar özdeş görünebilir. Örnek: \`diff <(git show :./'${a(p, "çıpaYol")}') <(git show :./'${a(p, "karşıYol")}')\``
@@ -1968,7 +1980,7 @@ export const IKIZ_NOBET_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>> 
   "ikiz-ayrışması": {
     mesaj: (p) => b(p, "özet")
       ? `Twin divergence (${ikizYuzAdiEn(p)}) — '${a(p, "çıpaYol")}' and '${a(p, "karşıYol")}' differ on ${s(p, "toplam")} lines in total; the first ${s(p, "gösterilen")} are listed above with their addresses, and the remaining ${s(p, "toplam") - s(p, "gösterilen")} lines stand behind this summary line.`
-      : `Twin divergence (${ikizYuzAdiEn(p)}) — '${a(p, "çıpaYol")}' and '${a(p, "karşıYol")}' differ on line ${s(p, "satırNo")}: ${a(p, "çıpaYol")} → ${ikizSatirYuzu(p, "çıpa", "(no such line — the file ends here)", "(empty line)")} · ${a(p, "karşıYol")} → ${ikizSatirYuzu(p, "karşı", "(no such line — the file ends here)", "(empty line)")}`,
+      : `Twin divergence (${ikizYuzAdiEn(p)}) — '${a(p, "çıpaYol")}' and '${a(p, "karşıYol")}' differ on line ${s(p, "satırNo")}: '${a(p, "çıpaYol")}' carries ${ikizSatirYuzu(p, "çıpa", "(no such line — the file ends here)", "(empty line)")} while '${a(p, "karşıYol")}' carries ${ikizSatirYuzu(p, "karşı", "(no such line — the file ends here)", "(empty line)")}.`,
     oneri: (p) => b(p, "özet")
       ? (b(p, "sahne")
         ? `Compare the whole difference on the staged face; the files on disk may look identical. Example: \`diff <(git show :./'${a(p, "çıpaYol")}') <(git show :./'${a(p, "karşıYol")}')\``
@@ -2158,7 +2170,11 @@ export const ORTAK_TANI_METINLERI_EN: Readonly<Record<string, (p: TaniBaglami) =
 /** Bir tanının kimlik/konum/düzeyini koruyup yalnız okuma yüzünü seçer. */
 export function taniDilineCevir(tani: Tani, dil: CiktiDili): Tani {
   const metin = tani.dilMetinleri?.[dil];
-  return metin ? { ...tani, mesaj: metin.mesaj, oneri: metin.oneri } : tani;
+  if (!metin) return tani;
+  // Kırpılmamış ikiz de haneyle birlikte döner; yoksa üst alan da düşer, çünkü
+  // seçilen dilin ikizi yokken önceki dilin ikizini bırakmak iki dili karıştırır.
+  const { tamMesaj: _eski, ...kalan } = tani;
+  return { ...kalan, mesaj: metin.mesaj, oneri: metin.oneri, ...tamMesajEki(metin.tamMesaj, metin.mesaj) };
 }
 
 /** Ayrıştırıcının dinamik söz-dizim cümlesini iki paralel tanı hanesine bağlar. */
@@ -2187,16 +2203,19 @@ export function eskiTani(
   baglam: TaniBaglami,
   konum: { satir?: number; sutun?: number },
   dil: CiktiDili = "tr",
+  tamBaglam?: TaniBaglami,
 ): Tani {
   const kataloglar = { tr: ONCEKI_TANI_METINLERI, en: ONCEKI_TANI_METINLERI_EN } as const;
   const haneler = {
     tr: {
       mesaj: kataloglar.tr[kod]?.mesaj(baglam),
       oneri: kataloglar.tr[kod]?.oneri?.(baglam),
+      tamMesaj: tamBaglam && kataloglar.tr[kod]?.mesaj(tamBaglam),
     },
     en: {
       mesaj: kataloglar.en[kod]?.mesaj(baglam),
       oneri: kataloglar.en[kod]?.oneri?.(baglam),
+      tamMesaj: tamBaglam && kataloglar.en[kod]?.mesaj(tamBaglam),
     },
   };
   if (!haneler.tr.mesaj || !haneler.en.mesaj) throw new Error(`Tanı metni yok: ${kod}`);
@@ -2208,9 +2227,18 @@ export function eskiTani(
     satir: konum.satir ?? 0,
     sutun: konum.sutun ?? 0,
     ...(metin.oneri === undefined ? {} : { oneri: metin.oneri }),
+    ...tamMesajEki(metin.tamMesaj, metin.mesaj),
     dilMetinleri: {
-      tr: { mesaj: haneler.tr.mesaj, ...(haneler.tr.oneri === undefined ? {} : { oneri: haneler.tr.oneri }) },
-      en: { mesaj: haneler.en.mesaj, ...(haneler.en.oneri === undefined ? {} : { oneri: haneler.en.oneri }) },
+      tr: {
+        mesaj: haneler.tr.mesaj,
+        ...(haneler.tr.oneri === undefined ? {} : { oneri: haneler.tr.oneri }),
+        ...tamMesajEki(haneler.tr.tamMesaj, haneler.tr.mesaj),
+      },
+      en: {
+        mesaj: haneler.en.mesaj,
+        ...(haneler.en.oneri === undefined ? {} : { oneri: haneler.en.oneri }),
+        ...tamMesajEki(haneler.en.tamMesaj, haneler.en.mesaj),
+      },
     },
   };
 }
@@ -2225,6 +2253,7 @@ export function yeniTani(
   baglam: TaniBaglami,
   konum: { satir?: number; sutun?: number },
   dil: CiktiDili = "tr",
+  tamBaglam?: TaniBaglami,
 ): Tani {
   const kataloglar = { tr: TANI_METINLERI, en: TANI_METINLERI_EN } as const;
   const tr = kataloglar.tr[kod];
@@ -2233,10 +2262,14 @@ export function yeniTani(
   if (!tr || !en || !kayit) {
     throw new Error(`Tanı metni ya da sicil kaydı yok: ${kod}`);
   }
-  const haneler = {
-    tr: { mesaj: tr.mesaj(baglam), oneri: tr.oneri(baglam) },
-    en: { mesaj: en.mesaj(baglam), oneri: en.oneri(baglam) },
+  // Cümle her dil için bir kez kurulur; kırpılmamış ikiz istendiğinde aynı şablon
+  // ikinci kez, bu kez tam gövdeyle koşturulur. Metin elle kesilip yapıştırılmaz,
+  // çünkü iki yüz tek şablondan doğmazsa zamanla birbirinden ayrışır.
+  const hane = (katalog: TaniMetni): TaniDilMetni => {
+    const mesaj = katalog.mesaj(baglam);
+    return { mesaj, oneri: katalog.oneri(baglam), ...tamMesajEki(tamBaglam && katalog.mesaj(tamBaglam), mesaj) };
   };
+  const haneler = { tr: hane(tr), en: hane(en) };
   const metin = dilHanesi(haneler, dil);
   return {
     duzey: kayit.kademe,
@@ -2245,6 +2278,7 @@ export function yeniTani(
     satir: konum.satir ?? 0,
     sutun: konum.sutun ?? 0,
     oneri: metin.oneri,
+    ...tamMesajEki(metin.tamMesaj, metin.mesaj),
     dilMetinleri: haneler,
   };
 }

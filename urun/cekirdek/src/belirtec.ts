@@ -320,12 +320,24 @@ export function belirtecle(kaynak: string): Belirtec[] {
     if (AD_BAS.test(c)) {
       let ham = "";
       let noktaDerinligi = 0;
+      let adAlaniYutuldu = false;
       while (i < kaynak.length) {
         const ch = kaynak[i];
         if (AD_IC.test(ch)) { ham += ch; ilerle(); continue; }
         // tire yalnızca iki sözcük-parçası arasında yutulur (KOD birleşimi)
         if (ch === "-" && i + 1 < kaynak.length && AD_IC.test(kaynak[i + 1])) {
           ham += ch; ilerle(); continue;
+        }
+        // ORK-4 çapraz-proje ad alanı (KPS-ADA-A01): `::` iki kimlik parçası
+        // ARASINDA bir kez yutulur ve `PRJ-A::KOD-X` TEK ad belirteci olur;
+        // ayrıştırıcı onu bedelsiz olarak tek bir KOD değeri sayar ve liste
+        // içindeki ad alanlı kodlar hata üretmez. Ayraç yalnız iki yanı da
+        // kimlik olan yerde yutulur, dolayısıyla `ad: değer` yazımının tek
+        // iki noktası bu daldan etkilenmez. İkinci bir ayraç yutulmaz: ORK-4
+        // tek kademeli ad alanı tanımlar ve `A::B::C` bugün geçersizdir.
+        if (ch === ":" && !adAlaniYutuldu && kaynak[i + 1] === ":"
+            && i + 2 < kaynak.length && AD_BAS.test(kaynak[i + 2])) {
+          ham += "::"; adAlaniYutuldu = true; ilerle(2); continue;
         }
         // nokta yalnızca ardından rakam gelirse yutulur (Karar D — madde kodu hiyerarşisi)
         if (ch === "." && noktaDerinligi < 2 && i + 1 < kaynak.length && RAKAM.test(kaynak[i + 1])) {

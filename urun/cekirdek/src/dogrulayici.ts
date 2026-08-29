@@ -855,10 +855,14 @@ function hatirlatmaDenetle(d: Dugum, b: Baglam): void {
   const durum = alanDeger(d, "durum");
   const ne = alanDeger(d, "ne") ?? "";
   const kisa = ne.length > 90 ? ne.slice(0, 90) + "…" : ne;
+  // VIT-GRAF-A18: kırpma KOMUT SATIRI ile ağaç etiketi içindir ve orada kalır;
+  // ipucu penceresi kaydın tamamını taşımak üzere açıldığı için tanı, aynı
+  // cümlenin kırpılmamış ikizini ayrıca taşır. `mesaj` alanı değişmez.
+  const tamNe = { kimlik: kimlik(d), ne };
   // DIL-4 ② (oturum 29): işaret ÜNLEM — hatırlatıcı dikkat ister, raptiye değil.
   if (durum === "açık") {
     b.out.push(eskiTani("açık-hatırlatıcı", "bilgi",
-      { kimlik: kimlik(d), ne: kisa }, { satir: d.satir, sutun: d.sutun }));
+      { kimlik: kimlik(d), ne: kisa }, { satir: d.satir, sutun: d.sutun }, "tr", tamNe));
     return;
   }
   // TIP-1.12 ② yaşam döngüsü: kararlaştı = iş ZİNCİRDE olmalı — hatırlat: hedefi şema
@@ -866,7 +870,8 @@ function hatirlatmaDenetle(d: Dugum, b: Baglam): void {
   if (durum === "kararlaştı") {
     const hedef = alanDeger(d, "hatırlat");
     b.out.push(eskiTani("kararlaşmış-hatırlatıcı", "bilgi",
-      { kimlik: kimlik(d), hedef, ne: kisa }, { satir: d.satir, sutun: d.sutun }));
+      { kimlik: kimlik(d), hedef, ne: kisa }, { satir: d.satir, sutun: d.sutun },
+      "tr", { ...tamNe, hedef }));
   }
 }
 
@@ -955,7 +960,8 @@ function bellekTerfiDenetle(d: Dugum, b: Baglam): void {
   const ne = alanDeger(d, "ne") ?? "";
   const kisa = ne.length > 70 ? ne.slice(0, 70) + "…" : ne;
   b.out.push(eskiTani("beceri-terfisi", "uyarı",
-    { kimlik: kimlik(d), ne: kisa }, { satir: d.satir, sutun: d.sutun }));
+    { kimlik: kimlik(d), ne: kisa }, { satir: d.satir, sutun: d.sutun },
+    "tr", { kimlik: kimlik(d), ne }));
 }
 
 /** Adım durum enum'u (EKL-F7-A01 · STR-4): beklemede → geliştirmede → tamamlandı | bloklu.
@@ -976,7 +982,7 @@ function adimDurumDenetle(d: Dugum, b: Baglam): void {
     const ne = alanDeger(d, "ne") ?? "";
     b.out.push(eskiTani("geliştirmede-çapa", "bilgi",
       { kimlik: kimlik(d), ne: ne.length > 70 ? ne.slice(0, 70) + "…" : ne },
-      { satir: d.satir, sutun: d.sutun }));
+      { satir: d.satir, sutun: d.sutun }, "tr", { kimlik: kimlik(d), ne }));
     return;
   }
   if (p.deger.metin === "bloklu") {
@@ -986,7 +992,7 @@ function adimDurumDenetle(d: Dugum, b: Baglam): void {
     // MDR-A02: "ŞEF kararı BLOCKED" iç-jargonu açıldı (R1) — yeni kullanıcı ŞEF'i/BLOCKED'ı bilmez.
     b.out.push(eskiTani("bloklu-çapa", "uyarı",
       { kimlik: kimlik(d), ne: ne.length > 70 ? ne.slice(0, 70) + "…" : ne },
-      { satir: d.satir, sutun: d.sutun }));
+      { satir: d.satir, sutun: d.sutun }, "tr", { kimlik: kimlik(d), ne }));
     return;
   }
   if (p.deger.metin === "doğrulanmamış") {
@@ -995,7 +1001,7 @@ function adimDurumDenetle(d: Dugum, b: Baglam): void {
     const ne = alanDeger(d, "ne") ?? "";
     b.out.push(eskiTani("doğrulanmamış-çapa", "uyarı",
       { kimlik: kimlik(d), ne: ne.length > 70 ? ne.slice(0, 70) + "…" : ne },
-      { satir: d.satir, sutun: d.sutun }));
+      { satir: d.satir, sutun: d.sutun }, "tr", { kimlik: kimlik(d), ne }));
     return;
   }
   if (adimDurumlari(b).has(p.deger.metin)) return;

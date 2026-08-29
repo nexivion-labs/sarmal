@@ -9,6 +9,7 @@ import { ayristir } from "../src/ayristirici.ts";
 import { dogrula, dayanaksizKurallar } from "../src/dogrulayici.ts";
 import { siniflamaYukle } from "../src/siniflama.ts";
 import { YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
+import { taniDilineCevir } from "../src/tani-metinleri.ts";
 
 const snf = siniflamaYukle(fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)));
 const dnt = (kaynak: string) => dogrula(ayristir(belirtecle(kaynak)), snf);
@@ -667,4 +668,65 @@ test("HTR-A04 DOC-1: adım-dışı çapa dönüşTetikleyici İSTER; çapa=adım
 test("HTR-A04 DOC-2: kural metni ÇAPA sıralamasını 'öncelik' değil 'çapa' olarak adlandırır (p0-p3 ayrı)", () => {
   assert.match(HTR_SEMA.kural, /Çapa önem sırası/, "çapa sıralaması açıkça 'çapa' olarak adlandırılmalı");
   assert.match(HTR_SEMA.kural, /öncelik alanından ayrıdır/, "p0-p3 öncelik alanından ayrıştığı belirtilmeli");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ✂️ KIRPILMAMIŞ İKİZ CÜMLE — pencere kaydın tamamını görür (VIT-GRAF-A18)
+//
+//   HÜKMÜN DOĞUŞU. Founder 2026-08-16 tarihli canlı turda ipucu penceresinin
+//   satırın kırpılmış metnini olduğu gibi tekrarladığını bildirdi. Kırpma bir
+//   SUNUM kararıdır: komut satırının bir satırı ve ağacın bir etiketi sınırlıdır,
+//   buna karşılık ipucu penceresi kaydın tamamını taşımak üzere açılır.
+//
+//   ÇÖZÜM KIRPMAYI SÖKMEZ, İKİNCİ BİR CÜMLE EKLER. Adımın sınırı komut satırı
+//   çıktısının bilgi içeriğinin değişmemesini şart koşar; bu yüzden `mesaj` alanı
+//   kırpılmış hâlini aynen korur ve tanı, aynı olgunun kırpılmamış gövdeyle
+//   kurulmuş ikizini `tamMesaj` alanında AYRICA taşır. Cümle iki kez kurulur,
+//   metin elle kesilip yapıştırılmaz; böylece iki yüz aynı şablondan doğar ve
+//   ikisi arasında yalnız gövde uzunluğu farklıdır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Kırpma eşiğini kesin aşan, tek parça bir düğüm gövdesi. */
+const UZUN_NE = "Bu gövde kırpma eşiğini kesin olarak aşar ve bu yüzden komut satırına " +
+  "basılan cümlede kısaltılır; okuyucunun kaydın tamamını görebilmesi ise ipucu " +
+  "penceresinin işidir ve bu nöbet tam olarak o ayrımı ölçmektedir.";
+
+test("VIT-GRAF-A18: hatırlatıcı tanısı kırpılmış mesajı ile kırpılmamış ikizini birlikte taşır", () => {
+  const t = dnt(`Hatırlatıcı( kod: HTR-UZUN, durum: açık, çapa: nitelik, ne: "${UZUN_NE}" )`)
+    .find((x) => x.kod === "açık-hatırlatıcı");
+  assert.ok(t, "açık-hatırlatıcı tanısı üretilmedi");
+  assert.ok(t.mesaj.endsWith("…"), "komut satırı mesajı kırpılmış hâlini kaybetti");
+  assert.ok(!t.mesaj.includes(UZUN_NE), "komut satırı mesajı uzadı; Adımın sınırı bunu yasaklar");
+  assert.ok(t.tamMesaj, "kırpılmamış ikiz cümle üretilmedi");
+  assert.ok(t.tamMesaj.includes(UZUN_NE), "ikiz cümle kaydın tam gövdesini taşımıyor");
+  assert.equal(t.tamMesaj.includes("…"), false, "ikiz cümlede kırpma işareti kaldı");
+  assert.ok(t.tamMesaj.includes("HTR-UZUN"), "ikiz cümle kaydın kimliğini düşürmüş");
+});
+
+test("VIT-GRAF-A18: kırpma eşiğinin altındaki gövdede ikinci alan hiç doğmaz", () => {
+  const t = dnt('Hatırlatıcı( kod: HTR-KISA, durum: açık, çapa: nitelik, ne: "Kısa gövde." )')
+    .find((x) => x.kod === "açık-hatırlatıcı");
+  assert.ok(t, "açık-hatırlatıcı tanısı üretilmedi");
+  assert.equal(t.mesaj.includes("…"), false, "kısa gövde boş yere kırpıldı");
+  assert.equal(t.tamMesaj, undefined,
+    "kısa gövdede ikiz alan doğdu; aynı metni iki alanda taşımak kaydı şişirir ve var olmayan bir fark ima eder");
+});
+
+test("VIT-GRAF-A18: ikiz cümle iki dil hanesinde de yaşar ve dil seçimiyle birlikte döner", () => {
+  const t = dnt(`Hatırlatıcı( kod: HTR-DIL, durum: açık, çapa: nitelik, ne: "${UZUN_NE}" )`)
+    .find((x) => x.kod === "açık-hatırlatıcı");
+  assert.ok(t?.dilMetinleri, "dil haneleri yok");
+  assert.ok(t.dilMetinleri.tr.tamMesaj?.includes(UZUN_NE), "Türkçe hane ikizi taşımıyor");
+  assert.ok(t.dilMetinleri.en.tamMesaj?.includes(UZUN_NE), "İngilizce hane ikizi taşımıyor");
+  const en = taniDilineCevir(t, "en");
+  assert.equal(en.tamMesaj, t.dilMetinleri.en.tamMesaj, "dil çevirisi ikizi haneyle birlikte taşımadı");
+  assert.notEqual(en.tamMesaj, t.dilMetinleri.tr.tamMesaj, "dil çevirisinde Türkçe ikiz İngilizce haneye sızdı");
+});
+
+test("VIT-GRAF-A18: geliştirmede çapası da kırpılmamış ikizini taşır", () => {
+  const t = dnt(`Adım( kod: ADM-UZUN, durum: geliştirmede, ne: "${UZUN_NE}" )`)
+    .find((x) => x.kod === "geliştirmede-çapa");
+  assert.ok(t, "geliştirmede-çapa tanısı üretilmedi");
+  assert.ok(t.mesaj.endsWith("…"), "komut satırı mesajı kırpılmış hâlini kaybetti");
+  assert.ok(t.tamMesaj?.includes(UZUN_NE), "ikiz cümle kaydın tam gövdesini taşımıyor");
 });

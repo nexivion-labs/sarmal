@@ -22,7 +22,7 @@ import { agaciYaz } from "./yazdir.ts";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, taksonomiMd, taksonomiBlokUygula } from "./siniflama.ts";
 import { iskeletPlani, iskeletYaz } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, katmansizTeknolojiTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari } from "./denetci.ts";
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, katmansizTeknolojiTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari } from "./denetci.ts";
 import { sefKomutu, programHaritasi } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü (CLI ve MCP aynı çekirdek)
 import { gezinKomutu, dizindenIndeks , INDEKS_DISI } from "./kimlik.ts";   // EKL-F11-A05: F12/⇧F12'nin CLI ikizi · kanıt-ekseni turu: denetim metin-atıf gözü
@@ -644,7 +644,10 @@ if (yol === "graf") {
     console.error(`✖ ${hatalar.length} sözdizim hatası — önce düzelt (sarmal <dosya> ile bak).`);
     process.exit(2);
   }
-  const çıktı = grafYuz(dagKur(programlar), kok);
+  // ORK-4 (KPS-ADA-A01): graf yüzü de ad alanı kapısını taşır — aynı hedef
+  // denetimde çözülüp grafta kopuk görünemez (tek kurucu: adAlaniKapisi).
+  const kapi = adAlaniKapisi(programlar, dizin);
+  const çıktı = grafYuz(dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) }), kok);
   if (çıktı === undefined) {
     console.error(`✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`);
     process.exit(1);

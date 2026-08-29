@@ -22,7 +22,7 @@ import { ayristir } from "../src/ayristirici.ts";
 import { dogrula, sekilDriftTanilari } from "../src/dogrulayici.ts";
 import { kuralDenetle } from "../src/kuralci.ts";
 import {
-  kodIndeksle, rejimTanilari, omurgaTanilari, iliskiSinifiTanilari, authTanilari,
+  kodIndeksle, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari,
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
@@ -128,6 +128,78 @@ test("proje: rejim beyanı eksik, katı rejim normu ve geçiş uyumsuzluğu", ()
   }));
   uretildi("katı-rejim-altkatman-eksik", kati);
   uretildi("rejim-geçiş-uyumsuzluğu", kati);
+});
+
+// ══ KPS-REJ-A01 · REJİM PROJE KAPSAMINDADIR ═════════════════════════════════
+//   Rejim beyanı anadizinde yaşar, planlar ayrı dosyalarda üst düzey Blok olarak
+//   durur. Üretici yalnız Proje düğümünün ALTINI gezdiği sürece kanonun HATA
+//   dediği ihlaller sessiz kalıyordu (canlı ölçüm 2026-08-27: kapalı üründe beş
+//   Katman doğrudan Adım taşırken motor yalnız bilgi düzeyli tavsiye veriyordu).
+//   Aşağıdaki nöbetler tam o yerleşimi kurar ve hükmün dosya sınırını geçtiğini,
+//   ama proje sınırını GEÇMEDİĞİNİ kanıtlar.
+
+test("proje: katı rejim hükmü ayrı dosyadaki plana ulaşır ve sınırını aşmaz", () => {
+  const AYRIK_PLAN = `Blok( kod: BLK-EV ) {\n  Katman( kod: KAT-EV, ad: "k" ) {\n    Adım( kod: ADM-EV, ne: "iş" )\n  }\n}\n`;
+
+  const ayrik = rejimTanilari(harita({
+    "ev/ev_anadizin.sar": `Proje( kod: PRJ-EV, rejim: katı )\n`,
+    "ev/is/plan/govde.sar": AYRIK_PLAN,
+  }));
+  const bulgu = ayrik.filter((x) => x.tani.kod === "katı-rejim-altkatman-eksik");
+  assert.equal(bulgu.length, 1, "ayrı dosyada yaşayan plan katı rejim hükmünden kaçamaz");
+  // MUTASYON KANITI: bulgu Proje düğümünün dosyasında DEĞİL, planın kendi
+  // dosyasında doğar. Proje düğümünün altını gezen eski yazım bu satırı hiçbir
+  // koşulda üretemezdi; nöbetin kırmızıya dönmesi kapsamın geri daralmasıdır.
+  assert.equal(bulgu[0].dosya, "ev/is/plan/govde.sar");
+
+  // Esnek rejimde aynı yerleşim hüküm üretmez — tavsiye tanısı yerini korur (YAS-1.2).
+  const esnek = rejimTanilari(harita({
+    "ev/ev_anadizin.sar": `Proje( kod: PRJ-EV, rejim: esnek )\n`,
+    "ev/is/plan/govde.sar": AYRIK_PLAN,
+  }));
+  assert.equal(esnek.filter((x) => x.tani.kod === "katı-rejim-altkatman-eksik").length, 0,
+    "esnek rejimde katı norm konuşursa rejim ayrımı anlamsızlaşır");
+
+  // ÖN EK TUZAĞI: ad benzerliği taşıyan kardeş kök kapsanan sayılmaz; aksi hâlde
+  // `ev-arsiv/` deposu komşusunun rejimini miras alırdı.
+  const kardes = rejimTanilari(harita({
+    "ev/ev_anadizin.sar": `Proje( kod: PRJ-EV, rejim: katı )\n`,
+    "ev-arsiv/plan/govde.sar": `Blok( kod: BLK-ARS ) {\n  Katman( kod: KAT-ARS, ad: "k" ) {\n    Adım( kod: ADM-ARS, ne: "iş" )\n  }\n}\n`,
+  }));
+  assert.equal(kardes.filter((x) => x.tani.kod === "katı-rejim-altkatman-eksik").length, 0,
+    "kardeş kök ön ek benzerliğiyle kapsanırsa MIM-1.1 kimlik ayrılığı çiğnenir");
+
+  // İÇ İÇE ÇATI: en yakın anadizin kazanır. Alt projenin esnek beyanı kendi
+  // evinde geçerlidir; çatının katı hükmü yalnız çatının kendi planına iner.
+  const icice = rejimTanilari(harita({
+    "cati_anadizin.sar": `Proje( kod: PRJ-CATI, rejim: katı )\n`,
+    "alt/alt_anadizin.sar": `Proje( kod: PRJ-ALT, rejim: esnek )\n`,
+    "alt/plan/govde.sar": `Blok( kod: BLK-ALT ) {\n  Katman( kod: KAT-ALT, ad: "k" ) {\n    Adım( kod: ADM-ALT, ne: "iş" )\n  }\n}\n`,
+    "plan/cati_govde.sar": `Blok( kod: BLK-CTI ) {\n  Katman( kod: KAT-CTI, ad: "k" ) {\n    Adım( kod: ADM-CTI, ne: "iş" )\n  }\n}\n`,
+  }));
+  const iciceBulgu = icice.filter((x) => x.tani.kod === "katı-rejim-altkatman-eksik");
+  assert.equal(iciceBulgu.length, 1, "alt proje kendi rejimini yaşar, çatınınkini değil");
+  assert.equal(iciceBulgu[0].dosya, "plan/cati_govde.sar");
+});
+
+test("proje: katı rejimin kapsadığı dosyalar tavsiye tanısını susturur", () => {
+  // TEK OLGU TEK BİLDİRİM: katı rejimde olgu `katı-rejim-altkatman-eksik` ile
+  // HATA düzeyinde konuşur; aynı olguyu bilgi düzeyinde anlatan tavsiye
+  // (`çıplak-adımlı-katman`) orada susar. Denetim hattı bu kümeyi okur.
+  const kati = katiRejimliDosyalar(harita({
+    "ev/ev_anadizin.sar": `Proje( kod: PRJ-EV, rejim: katı )\n`,
+    "ev/is/plan/govde.sar": `Blok( kod: BLK-EV ) { }\n`,
+    "dis/plan/baska.sar": `Blok( kod: BLK-DIS ) { }\n`,
+  }));
+  assert.ok(kati.has("ev/is/plan/govde.sar"), "katı kökün altındaki plan kapsama girer");
+  assert.ok(kati.has("ev/ev_anadizin.sar"), "kökün kendi dosyası da kapsamdadır");
+  assert.ok(!kati.has("dis/plan/baska.sar"), "kökün dışındaki dosya katı kapsama giremez");
+
+  const esnekKapsam = katiRejimliDosyalar(harita({
+    "ev/ev_anadizin.sar": `Proje( kod: PRJ-EV, rejim: esnek )\n`,
+    "ev/is/plan/govde.sar": `Blok( kod: BLK-EV ) { }\n`,
+  }));
+  assert.equal(esnekKapsam.size, 0, "esnek rejimde tavsiye susturulursa öneri kanalı ölür");
 });
 
 test("proje: omurga kökü, teknoloji tekilliği, atomiklik ve meyve hükümleri", () => {

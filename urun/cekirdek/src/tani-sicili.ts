@@ -181,7 +181,7 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   // yazar; madde bilgi düzeyindedir ve bugüne dek motorda hiçbir karşılığı yoktu.
   // Kapsam projedir: Faz kendi dosyasında, sardığı Bloklar başka dosyalardadır.
   { kod: "mevsim-vadesi-geçti", madde: "ORK-8", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
-  { kod: "altkatman-tekilliği-ihlali", madde: "MIM-1.7", kanonDüzey: "hata", kapsam: "dosya", uretici: "denetci.ts", kademe: "hata" },
+  { kod: "altkatman-tekilliği-ihlali", madde: "MIM-1.7", kanonDüzey: "hata", kapsam: "tek-dosya", uretici: "denetci.ts", kademe: "hata" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */

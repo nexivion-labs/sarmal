@@ -28,7 +28,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname, resolve, basename } from "node:path";
 import { belirtecle } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
-import type { Deger, Dugum } from "./sozdizim.ts";
+import type { Deger, Dugum, Program } from "./sozdizim.ts";
 
 /** Bir kod'un TANIMI: kod: parametresinin (ya da Tip/Kural adının) konumu. */
 export interface Tanim {
@@ -71,7 +71,11 @@ export interface DosyaKaydi {
 // Kod deseni: BÜYÜK-harf/rakam parçaları '-' ile ≥2 parça (EKL-F11-A01 · DIL-1.2).
 // Tek parça ("TAM", "YOK") ve harfsiz eşleşme (tarih: 2026-07-11) kod SAYILMAZ.
 const KOD_PARCASI = "[A-Z0-9ÇĞİÖŞÜ_]+";
-const KOD_DESENI = new RegExp(`${KOD_PARCASI}(?:-${KOD_PARCASI})+`, "g");
+const KOD_GOVDESI = `${KOD_PARCASI}(?:-${KOD_PARCASI})+`;
+// ORK-4 (KPS-ADA-A01): ad alanlı kod TEK sözcedir. `::` ayracı olmasaydı metin
+// katmanı `PRJ-A::KOD-X` yazımını iki ayrı koda bölerdi ve gezinme yüzeyleri
+// ad alanının yarısına atlardı; ayraç bu yüzden desenin içinde yaşar.
+const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?`, "g");
 const SINIR_DISI = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_-]/; // bitişikse eşleşme kod değildir
 const HARF_VAR = /[A-ZÇĞİÖŞÜ]/;
 
@@ -204,6 +208,332 @@ export function varlikAdi(dosya: string): string | undefined {
     d = ust;
   }
   return undefined;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · ÇAPRAZ-PROJE AD ALANI (KPS-ADA-A01)
+//
+//   Kanon hükmü şudur: niteliksiz bir KOD yalnız bulunduğu Projenin içinde
+//   çözülür; başka bir Projedeki hedefe kurulan her kenar `PRJ-A::KOD-X`
+//   biçimindeki açık ad alanını taşır ve tesadüfî küresel kod eşleşmesi hiçbir
+//   zaman geçerli bağ sayılmaz. Bu bölüm o hükmün motordaki karşılığıdır.
+//
+//   BORCUN DOĞUŞU ÖLÇÜLMÜŞTÜR. 26 Ağustos 2026 tarihli depo ayrılığından önce
+//   dört gövde tek depoda yaşıyordu ve `mevsim: FAZ-2026-AGUSTOS` yazımı aynı
+//   proje içinde bir atıftı. Ayrılıktan sonra aynı satırlar çapraz proje atıfı
+//   hâline geldi, fakat kimlik çözümü proje sınırı tanımadığı için motor hiç ses
+//   çıkarmadı: bugün `FAZ-2026-AGUSTOS` yalnız `sarmal/is/plan/faz/faz.sar`
+//   dosyasında tanımlıdır, buna karşılık ona üç ayrı projeden beş Blok
+//   bağlanmaktadır ve yalnız biri meşrudur. Çatı penceresinde kapalı ürünün
+//   Blokları açık aracın Fazının altında görünüyordu; kusur buradaydı.
+//
+//   KAPSAM ÖNEKİ AYIRICIYLA BİTER. Bir Projenin kapsamı, Proje düğümünü taşıyan
+//   dosyanın dizinidir ve önek klasör ayracıyla kapatılır. Ayırıcı kasıtlıdır:
+//   çıplak `startsWith` kullanılsaydı ad benzerliği taşıyan kardeş bir kök
+//   (`sarmal-arsiv/`) `sarmal/` tarafından kapsanmış sayılırdı. Aynı tuzağın
+//   emsali denetçinin rejim kapsamı çözümüdür ve o çözüm bu bölümdeki
+//   `kapsamOneki` işlevine bağlanmıştır; ikinci bir kapsama kuralı yazılmaz,
+//   çünkü iki kural olsaydı biri sessizce bayatlar ve rejim ile kimlik aynı
+//   dosya için farklı proje söylerdi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Ad alanı ayracı (ORK-4) — `PRJ-A::KOD-X` yazımının ortasındaki iki nokta. */
+export const AD_ALANI_AYRACI = "::";
+
+/** Bir kodun ad alanı ile yerel parçası; ayraç yoksa `adAlani` tanımsızdır. */
+export interface AdAlanliKod {
+  adAlani?: string;
+  yerel: string;
+}
+
+/**
+ * Bir kodu ad alanı ile yerel parçasına ayırır. Ayraç yoksa, kodun başındaysa
+ * ya da sonundaysa kod niteliksiz sayılır ve olduğu gibi geri döner — yarım
+ * yazılmış bir ad alanı sessizce meşru bir bağa dönüşemez.
+ */
+export function adAlaniAyir(kod: string): AdAlanliKod {
+  const yer = kod.indexOf(AD_ALANI_AYRACI);
+  if (yer <= 0) return { yerel: kod };
+  const yerel = kod.slice(yer + AD_ALANI_AYRACI.length);
+  if (!yerel || yerel.includes(AD_ALANI_AYRACI)) return { yerel: kod };
+  return { adAlani: kod.slice(0, yer), yerel };
+}
+
+/**
+ * Bir dosyanın kapsam öneki — dizini, ayırıcıyla biter. Ayırıcı kasıtlıdır: ad
+ * benzerliği taşıyan kardeş kök (`sarmal-arsiv/`) `sarmal/` tarafından
+ * kapsanmış sayılmaz. Kök dosyanın öneki boş dizedir ve her dosyayı kapsar.
+ */
+export function kapsamOneki(dosya: string): string {
+  const egik = dosya.replace(/\\/g, "/");
+  const son = egik.lastIndexOf("/");
+  return son < 0 ? "" : egik.slice(0, son + 1);
+}
+
+/** Verilen kapsam öneki dosyayı kapsıyor mu? Boş önek (kök) her dosyayı kapsar. */
+export function onekKapsar(onek: string, dosya: string): boolean {
+  if (!onek) return true;
+  return dosya.replace(/\\/g, "/").startsWith(onek);
+}
+
+/** Yüklü evrendeki bir Proje kökü: düğümün kodu ve kapsadığı önek. */
+export interface ProjeKapsami {
+  kod: string;
+  onek: string;
+  dosya: string;
+}
+
+/** Bir düğüm ağacında verilen adı taşıyan widget'ları dolaşır. */
+function widgetGez(n: Dugum, ad: string, gor: (d: Dugum) => void): void {
+  if (n.tur === "widget" && n.ad === ad) gor(n);
+  for (const c of n.cocuklar) widgetGez(c, ad, gor);
+  for (const p of [...n.parametreler, ...n.ozellikler]) {
+    const dolas = (d: Deger): void => {
+      if (d.dugum) widgetGez(d.dugum, ad, gor);
+      d.ogeler?.forEach(dolas);
+      d.ciftler?.forEach((c) => dolas(c.deger));
+    };
+    dolas(p.deger);
+  }
+}
+
+/** Bir düğümün `kod` alanı (parametre ya da özellik olarak yazılmış olabilir). */
+function dugumKodu(n: Dugum): string | undefined {
+  const p = [...n.parametreler, ...n.ozellikler]
+    .find((x) => x.ad === "kod" && (x.deger.tur === "kod" || x.deger.tur === "metin"));
+  return p?.deger.metin;
+}
+
+/**
+ * Yüklü programlardan Proje kapsamlarını çıkarır. Her Proje düğümü kendi
+ * dosyasının DİZİNİYLE bir kapsam kurar; bu, anadizin yürüyüşünün saf ikizidir
+ * ve disk okumadığı için denetimin her yüzeyinde aynı cevabı verir. Ders
+ * dünyası (INDEKS_DISI) kök saymaz: ürün hükmü oraya inmez ve şablon içindeki
+ * örnek Proje bildirimleri gerçek bir sınır doğurmaz.
+ */
+export function projeKapsamlari(programlar: ReadonlyMap<string, Program>): ProjeKapsami[] {
+  const kapsamlar: ProjeKapsami[] = [];
+  for (const [dosya, program] of programlar) {
+    if (INDEKS_DISI.test(dosya)) continue;
+    for (const b of program.bildirimler) {
+      widgetGez(b, "Proje", (d) => {
+        const kod = dugumKodu(d);
+        if (kod) kapsamlar.push({ kod, onek: kapsamOneki(dosya), dosya });
+      });
+    }
+  }
+  return kapsamlar;
+}
+
+/**
+ * Dosyayı kapsayan EN YAKIN Proje — iç içe çatı düzeninde en uzun önek, yani
+ * alt proje kazanır. Hiçbir kapsam eşleşmiyorsa dosya köksüzdür; köksüz dosya
+ * (çatı ilanı, ders dünyası) sınır çizmez ve herkese görünür kalır.
+ */
+export function sahipProjeKapsami(
+  dosya: string,
+  kapsamlar: readonly ProjeKapsami[],
+): ProjeKapsami | undefined {
+  let kazanan: ProjeKapsami | undefined;
+  for (const k of kapsamlar) {
+    if (!onekKapsar(k.onek, dosya)) continue;
+    if (!kazanan || k.onek.length > kazanan.onek.length) kazanan = k;
+  }
+  return kazanan;
+}
+
+/** Çatı ilanında raf olarak duyurulmuş bir kardeş proje kökü. */
+export interface KardesProje {
+  /** Kardeş kökün kendi anadizininde ilan ettiği Proje kodu (PRJ-…). */
+  kod: string;
+  /** Kökün mutlak dizini. */
+  kok: string;
+}
+
+/** Bir programda ÇalışmaAlanı altında ilan edilmiş raf yollarını toplar. */
+function calismaAlaniRaflari(program: Program): string[] {
+  const yollar: string[] = [];
+  for (const b of program.bildirimler) {
+    widgetGez(b, "ÇalışmaAlanı", (ca) => {
+      widgetGez(ca, "Raf", (raf) => {
+        const yol = [...raf.parametreler, ...raf.ozellikler]
+          .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
+        if (yol) yollar.push(yol);
+      });
+    });
+  }
+  return yollar;
+}
+
+/** Bir dizindeki *_anadizin.sar dosyalarını ayrıştırıp döndürür (okunamayan atlanır). */
+function anadizinProgramlari(dizin: string): Program[] {
+  let girisler: string[];
+  try { girisler = readdirSync(dizin); } catch { return []; }
+  const out: Program[] = [];
+  for (const g of girisler) {
+    if (!g.endsWith("_anadizin.sar") && g !== "ana.sar") continue;
+    try { out.push(ayristir(belirtecle(readFileSync(join(dizin, g), "utf8")))); }
+    catch { /* kırık anadizin çatı çözümünü düşürmez */ }
+  }
+  return out;
+}
+
+/**
+ * Çatı ilanında duyurulmuş kardeş proje köklerini çözer. Başlangıç dizininden
+ * yukarı yürünür ve ÇalışmaAlanı ile raf ilanı TAŞIYAN ilk anadizin çatı
+ * sayılır; projenin kendi anadizini (Proje taşır, raf ilanıyla ÇalışmaAlanı
+ * taşımaz) yürüyüşü durdurmaz. Her rafın kökündeki anadizinden o projenin kodu
+ * okunur. İlansız klasör kardeş SAYILMAZ: çözüm yalnız çatının duyurduğu
+ * kökleri tanır ve diskteki tesadüfî bir komşu klasör ad alanı doğuramaz.
+ */
+export function catiKardesleri(baslangicDizin: string): KardesProje[] {
+  let d = resolve(baslangicDizin);
+  for (let i = 0; i < 12; i++) {
+    for (const program of anadizinProgramlari(d)) {
+      const raflar = calismaAlaniRaflari(program);
+      if (!raflar.length) continue;
+      const kardesler: KardesProje[] = [];
+      for (const yol of raflar) {
+        const kok = resolve(d, yol);
+        for (const p of anadizinProgramlari(kok)) {
+          for (const b of p.bildirimler) {
+            widgetGez(b, "Proje", (pr) => {
+              const kod = dugumKodu(pr);
+              if (kod && !kardesler.some((k) => k.kod === kod)) kardesler.push({ kod, kok });
+            });
+          }
+        }
+      }
+      if (kardesler.length) return kardesler;
+    }
+    const ust = dirname(d);
+    if (ust === d) break;
+    d = ust;
+  }
+  return [];
+}
+
+/** Bir kardeş kökteki TANIMLI kodların kümesi — ad alanlı hedefin sınandığı evren. */
+export function projeninKodlari(kok: string): ReadonlySet<string> {
+  const kume = new Set<string>();
+  for (const t of dizindenIndeks(kok).tumTanimlar()) kume.add(t.kod);
+  return kume;
+}
+
+/** ORK-4 çözümünün dışa açık yüzü — bir kenar hedefi gerçekten bağlanıyor mu? */
+export interface AdAlaniKapsami {
+  /** Hedef, bu kaynak dosyadan ORK-4 hükmüne göre çözülüyor mu? */
+  cozulur(hedef: string, kaynakDosya: string): boolean;
+  /** Ad alanının kardeş kökü — yüzeyler tanıma gitmek için buradan okur. */
+  kardesKok(adAlani: string): string | undefined;
+}
+
+/** `adAlaniKapsamiKur` seçenekleri; disk bağımlılıkları sınama için enjekte edilir. */
+export interface AdAlaniSecenegi {
+  /** Yüklü evrendeki Proje kapsamları. */
+  kapsamlar: readonly ProjeKapsami[];
+  /** Bir kodun yüklü evrendeki TÜM tanım dosyaları. */
+  tanimDosyalari: (kod: string) => readonly string[];
+  /** Kardeş kökleri çözmek için başlangıç dizini (verilmezse çatı okunmaz). */
+  kokDizin?: string;
+  /** Kardeş kök listesi — verilirse çatı diskten okunmaz (sınama yüzü). */
+  kardesler?: readonly KardesProje[];
+  /** Bir kardeş kökün kod kümesi — verilirse disk taranmaz (sınama yüzü). */
+  kardesKodlari?: (kok: string) => ReadonlySet<string>;
+}
+
+/**
+ * ORK-4 çözücüsünü kurar. Çatı okuması ile kardeş kök taraması TEMBELDİR: ad
+ * alanlı bir koda gerçekten rastlanmadıkça hiçbir disk erişimi yapılmaz,
+ * dolayısıyla ad alanı kullanmayan bir projenin denetimi hiçbir bedel ödemez.
+ * Bir kez okunan kardeş kök çözücünün ömrü boyunca bellekte kalır.
+ */
+export function adAlaniKapsamiKur(secenek: AdAlaniSecenegi): AdAlaniKapsami {
+  const { kapsamlar, tanimDosyalari, kokDizin } = secenek;
+  let kardesler: readonly KardesProje[] | undefined = secenek.kardesler;
+  const kodOnbellegi = new Map<string, ReadonlySet<string>>();
+
+  const kardesListesi = (): readonly KardesProje[] => {
+    if (kardesler === undefined) kardesler = kokDizin ? catiKardesleri(kokDizin) : [];
+    return kardesler;
+  };
+  const kardesKok = (adAlani: string): string | undefined =>
+    kardesListesi().find((k) => k.kod === adAlani)?.kok;
+  const kardesKodKumesi = (kok: string): ReadonlySet<string> => {
+    let kume = kodOnbellegi.get(kok);
+    if (!kume) {
+      kume = secenek.kardesKodlari ? secenek.kardesKodlari(kok) : projeninKodlari(kok);
+      kodOnbellegi.set(kok, kume);
+    }
+    return kume;
+  };
+
+  const cozulur = (hedef: string, kaynakDosya: string): boolean => {
+    const { adAlani, yerel } = adAlaniAyir(hedef);
+    if (adAlani !== undefined) {
+      // ① Ad alanı yüklü evrende bir Proje kapsamına karşılık geliyorsa hedef
+      //    YALNIZ o kapsamın altında aranır — küresel eşleşme burada da bağ değildir.
+      const kapsam = kapsamlar.filter((k) => k.kod === adAlani);
+      if (kapsam.length) {
+        return tanimDosyalari(yerel).some((d) => kapsam.some((k) => onekKapsar(k.onek, d)));
+      }
+      // ② Ad alanı yüklü değilse çatının duyurduğu kardeş kökten okunur.
+      const kok = kardesKok(adAlani);
+      return kok !== undefined && kardesKodKumesi(kok).has(yerel);
+    }
+    // Niteliksiz kod: yalnız kaynağın kendi projesinde çözülür.
+    const dosyalar = tanimDosyalari(yerel);
+    if (!dosyalar.length) return false;
+    const sahip = sahipProjeKapsami(kaynakDosya, kapsamlar);
+    if (!sahip) return true;   // köksüz kaynak — sınır çizilmez (gezinmeSuzgeci deseni)
+    return dosyalar.some((d) => {
+      if (INDEKS_DISI.test(d)) return true;                    // ders dünyası herkese açıktır
+      const tanimSahibi = sahipProjeKapsami(d, kapsamlar);
+      return !tanimSahibi || tanimSahibi.kod === sahip.kod;     // köksüz tanım herkese görünür
+    });
+  };
+
+  return { cozulur, kardesKok };
+}
+
+// ── Ad alanlı gezinme: kardeş kökteki tanıma gitmek (KPS-ADA-A01 · dördüncü madde) ──
+//   Tanıma gitme, atıf bulma ve atıf dekoru yüzeylerinin ortak çekirdeği. Yüzeyler
+//   ad alanını kendileri çözmez: hepsi buradan okur, dolayısıyla F12'nin gittiği yer
+//   ile dekorun bağladığı yer bir daha ayrışamaz (YUZ-1.2 · üç yüz tek çekirdek).
+
+/** Kardeş kök indeksleri — bir kök oturum boyunca bir kez taranır. */
+const kardesIndeksOnbellegi = new Map<string, KimlikIndeksi>();
+
+/** Kardeş kök önbelleğini boşaltır; kardeş depo değiştiğinde ve sınamada çağrılır. */
+export function kardesOnbelleginiTemizle(): void {
+  kardesIndeksOnbellegi.clear();
+}
+
+/** Bir kardeş kökün kimlik indeksi — ilk çağrıda taranır, sonra bellekten döner. */
+export function kardesIndeksi(kok: string): KimlikIndeksi {
+  let indeks = kardesIndeksOnbellegi.get(kok);
+  if (!indeks) {
+    indeks = dizindenIndeks(kok);
+    kardesIndeksOnbellegi.set(kok, indeks);
+  }
+  return indeks;
+}
+
+/**
+ * Ad alanlı bir kodun KARDEŞ kökteki tanım konumları. Kaynak dosyanın
+ * dizininden çatıya yürünür, ad alanının duyurduğu kök bulunur ve kodun yerel
+ * parçası orada aranır. Kod niteliksizse ya da ad alanı çatıda ilan edilmemişse
+ * boş liste döner; ilansız klasör kardeş sayılmaz ve gezinme oraya atlamaz.
+ *
+ * Bu geçiş MIM-1.1 varlık sınırını OKUR-YALNIZ aşar ve bir bağımlılık kurmaz:
+ * ad alanlı yazım zaten "başka projeye bakıyorum" beyanının kendisidir.
+ */
+export function adAlanliTanimlar(kod: string, kaynakDosya: string): Tanim[] {
+  const { adAlani, yerel } = adAlaniAyir(kod);
+  if (adAlani === undefined) return [];
+  const kok = catiKardesleri(dirname(resolve(kaynakDosya))).find((k) => k.kod === adAlani)?.kok;
+  if (!kok) return [];
+  return kardesIndeksi(kok).tanimlar(yerel);
 }
 
 /** KPN-A01: bir dosyanın bölge/varlık rozeti — ders dünyası regex'ten, varlık adı

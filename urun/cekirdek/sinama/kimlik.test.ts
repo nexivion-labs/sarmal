@@ -14,6 +14,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { KimlikIndeksi, dosyayiTara, gezinRaporu, dugumBaglami } from "../src/kimlik.ts";
+import { belirtecle } from "../src/belirtec.ts";
+import { ayristir } from "../src/ayristirici.ts";
 
 const PLAN = `// Yorumda atıf: BKM-ARC-A02 raporundan indi.
 Faz( kod: EKL-F11, ad: "ide-asinalik" ) {
@@ -264,4 +266,167 @@ test("KPN-A01: gezinRaporu çok-tanımda rozet basar ve uyarı şablon/varlık/d
   assert.ok(rapor.includes("📋 şablon"), "şablon kopyası rozetli olmalı");
   assert.ok(rapor.includes("🧭 sarmal"), "gerçek tanım varlık rozetli olmalı");
   assert.ok(/rozetlere bak/.test(rapor), "çok-tanım uyarısı rozet ayrımını öğretmeli");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · ÇAPRAZ-PROJE AD ALANI (KPS-ADA-A01)
+//
+//   İki hüküm AYRI AYRI nöbete bağlanır ve her biri kendi mutasyonuyla
+//   kanıtlanır. Birincisi ad alanlı çözümdür: `PRJ-A::KOD-X` yalnız o Projenin
+//   kapsamında aranır. İkincisi küresel eşleşme yasağıdır: niteliksiz bir KOD
+//   başka bir Projedeki eş adlı tanıma tesadüfen bağlanamaz.
+//
+//   MUTASYON KANITI — AD ALANLI ÇÖZÜM. `adAlaniAyir` işlevindeki ayırma satırı
+//   kodu olduğu gibi geri döndürecek biçimde bozulduğunda (yani ad alanı hiç
+//   ayrıştırılmadığında) "ad alanlı hedef yalnız kendi projesinde çözülür"
+//   sınaması KIRILIR: hedef artık niteliksiz sayılır ve kaynağın kendi
+//   projesinde aranıp bulunamaz.
+//
+//   MUTASYON KANITI — KÜRESEL EŞLEŞME YASAĞI. `adAlaniKapsamiKur` içindeki
+//   niteliksiz dalın kapsam karşılaştırması `true` döndürecek biçimde
+//   gevşetildiğinde "niteliksiz kod kardeş projeye bağlanmaz" sınaması KIRILIR:
+//   çözücü sarmaldaki tanımı orkestrasyondan meşru sayar. İki mutasyon ayrı
+//   sınamaları düşürür; hiçbiri ötekinin yerini tutmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("ORK-4: adAlaniAyir ad alanını ayırır, yarım yazımı niteliksiz sayar", async () => {
+  const { adAlaniAyir } = await import("../src/kimlik.ts");
+  assert.deepEqual(adAlaniAyir("PRJ-SARMAL::FAZ-2026-AGUSTOS"),
+    { adAlani: "PRJ-SARMAL", yerel: "FAZ-2026-AGUSTOS" });
+  assert.deepEqual(adAlaniAyir("FAZ-2026-AGUSTOS"), { yerel: "FAZ-2026-AGUSTOS" });
+  assert.deepEqual(adAlaniAyir("::FAZ-X"), { yerel: "::FAZ-X" }, "başta ayraç ad alanı doğurmaz");
+  assert.deepEqual(adAlaniAyir("PRJ-X::"), { yerel: "PRJ-X::" }, "sonda ayraç ad alanı doğurmaz");
+  assert.deepEqual(adAlaniAyir("A-1::B-2::C-3"), { yerel: "A-1::B-2::C-3" }, "iki kademe geçersiz");
+});
+
+test("ORK-4: kapsam öneki klasör ayırıcısıyla biter — ad benzeri kardeş kök kapsanmaz", async () => {
+  const { kapsamOneki, onekKapsar } = await import("../src/kimlik.ts");
+  assert.equal(kapsamOneki("sarmal/sarmal_anadizin.sar"), "sarmal/");
+  assert.equal(kapsamOneki("anadizin.sar"), "", "kök dosyanın öneki boştur");
+  assert.equal(onekKapsar("sarmal/", "sarmal/is/plan/faz.sar"), true);
+  assert.equal(onekKapsar("sarmal/", "sarmal-arsiv/is/plan/faz.sar"), false,
+    "ad benzerliği taşıyan kardeş kök kapsanan sayılamaz");
+  assert.equal(onekKapsar("", "her/hangi/dosya.sar"), true, "boş önek her dosyayı kapsar");
+});
+
+/** Founder'ın 2026-08-29 tarihinde canlı yakaladığı kusurun fikstür ikizi: tek
+ *  Fazı olan bir açık projeye, kapalı bir projeden aynı adla bağlanan Blok. */
+const CATI_PROGRAMLARI = (): Map<string, ReturnType<typeof ayristirKaynak>> => new Map([
+  ["sarmal/sarmal_anadizin.sar", ayristirKaynak('Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı )')],
+  ["sarmal/is/plan/faz/faz.sar", ayristirKaynak('Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi" )')],
+  ["orkestrasyon/orkestrasyon_anadizin.sar", ayristirKaynak('Proje( kod: PRJ-ORKESTRASYON, ad: "Orkestrasyon", rejim: katı )')],
+  ["orkestrasyon/plan/zeka.sar", ayristirKaynak('Blok( kod: BLK-ORK-ZEKA, mevsim: FAZ-2026-AGUSTOS )')],
+]);
+
+function ayristirKaynak(kaynak: string) {
+  return ayristir(belirtecle(kaynak));
+}
+
+test("ORK-4: niteliksiz kod kardeş projeye BAĞLANMAZ (küresel eşleşme yasağı)", async () => {
+  const { adAlaniKapsamiKur, projeKapsamlari } = await import("../src/kimlik.ts");
+  const programlar = CATI_PROGRAMLARI();
+  const kapsam = adAlaniKapsamiKur({
+    kapsamlar: projeKapsamlari(programlar),
+    tanimDosyalari: (kod) => kod === "FAZ-2026-AGUSTOS" ? ["sarmal/is/plan/faz/faz.sar"] : [],
+    kardesler: [],
+  });
+  assert.equal(kapsam.cozulur("FAZ-2026-AGUSTOS", "sarmal/is/plan/rayda/yayin.sar"), true,
+    "kendi projesindeki tanım çözülür");
+  assert.equal(kapsam.cozulur("FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+    "başka projedeki eş adlı tanım tesadüfî eşleşmedir ve bağ sayılmaz");
+});
+
+test("ORK-4: ad alanlı hedef YALNIZ o projenin kapsamında çözülür", async () => {
+  const { adAlaniKapsamiKur, projeKapsamlari } = await import("../src/kimlik.ts");
+  const programlar = CATI_PROGRAMLARI();
+  const kapsam = adAlaniKapsamiKur({
+    kapsamlar: projeKapsamlari(programlar),
+    tanimDosyalari: (kod) => kod === "FAZ-2026-AGUSTOS" ? ["sarmal/is/plan/faz/faz.sar"] : [],
+    kardesler: [],
+  });
+  assert.equal(kapsam.cozulur("PRJ-SARMAL::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), true,
+    "açıkça yazılmış ad alanı proje sınırını meşru biçimde geçer");
+  assert.equal(kapsam.cozulur("PRJ-ORKESTRASYON::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+    "ad alanı yanlış projeyi gösteriyorsa hedef çözülmez");
+  assert.equal(kapsam.cozulur("PRJ-YOK::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+    "ilan edilmemiş ad alanı bağ doğurmaz");
+});
+
+test("ORK-4: ad alanı yüklü değilse çatının duyurduğu kardeş kökten okunur", async () => {
+  const { adAlaniKapsamiKur } = await import("../src/kimlik.ts");
+  const kapsam = adAlaniKapsamiKur({
+    kapsamlar: [{ kod: "PRJ-LABORATUVAR", onek: "", dosya: "laboratuvar_anadizin.sar" }],
+    tanimDosyalari: () => [],
+    kardesler: [{ kod: "PRJ-SARMAL", kok: "/ws/sarmal" }],
+    kardesKodlari: (kok) => new Set(kok === "/ws/sarmal" ? ["FAZ-2026-AGUSTOS"] : []),
+  });
+  assert.equal(kapsam.cozulur("PRJ-SARMAL::FAZ-2026-AGUSTOS", "plan/bulgu.sar"), true);
+  assert.equal(kapsam.cozulur("PRJ-SARMAL::FAZ-YOK", "plan/bulgu.sar"), false,
+    "kardeş kökte tanımlı olmayan yerel kod çözülmez");
+  assert.equal(kapsam.kardesKok("PRJ-SARMAL"), "/ws/sarmal");
+  assert.equal(kapsam.kardesKok("PRJ-YOK"), undefined);
+});
+
+test("ORK-4: proje kapsamı en uzun önekten çözülür; ders dünyası kök saymaz", async () => {
+  const { projeKapsamlari, sahipProjeKapsami } = await import("../src/kimlik.ts");
+  const programlar = new Map([
+    ["sarmal/sarmal_anadizin.sar", ayristirKaynak("Proje( kod: PRJ-SARMAL, rejim: katı )")],
+    ["sarmal/ogreti/ornek/ders_anadizin.sar", ayristirKaynak("Proje( kod: PRJ-DERS, rejim: esnek )")],
+  ]);
+  const kapsamlar = projeKapsamlari(programlar);
+  assert.deepEqual(kapsamlar.map((k) => k.kod), ["PRJ-SARMAL"],
+    "ders dünyasındaki Proje bildirimi gerçek bir sınır doğurmaz");
+  assert.equal(sahipProjeKapsami("sarmal/is/plan/x.sar", kapsamlar)?.kod, "PRJ-SARMAL");
+  assert.equal(sahipProjeKapsami("baska/yer.sar", kapsamlar), undefined, "köksüz dosya sınır çizmez");
+});
+
+test("ORK-4: metin katmanı ad alanlı kodu TEK sözce olarak görür", () => {
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("plan.sar", "// PRJ-SARMAL::FAZ-2026-AGUSTOS mevsimine bağlıdır\n");
+  assert.equal(i.atiflar("PRJ-SARMAL::FAZ-2026-AGUSTOS").length, 1);
+  assert.equal(i.atiflar("FAZ-2026-AGUSTOS").length, 0,
+    "ad alanının yarısı ayrı bir atıf sayılamaz");
+  assert.equal(i.atiflar("PRJ-SARMAL").length, 0);
+});
+
+test("ORK-4: adAlanliTanimlar çatı rafından kardeş kökteki tanıma gider", async () => {
+  const { adAlanliTanimlar, catiKardesleri, kardesOnbelleginiTemizle } = await import("../src/kimlik.ts");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+
+  const cati = mkdtempSync(join(tmpdir(), "sarmal-ork4-"));
+  try {
+    writeFileSync(join(cati, "cati_anadizin.sar"),
+      'ÇalışmaAlanı( kod: CAL-X, ne: "çatı" ) {\n'
+      + '  Raf( kod: RAF-A, yol: "acik/", ne: "açık" )\n'
+      + '  Raf( kod: RAF-B, yol: "kapali/", ne: "kapalı" )\n}\n');
+    mkdirSync(join(cati, "acik", "plan"), { recursive: true });
+    mkdirSync(join(cati, "kapali", "plan"), { recursive: true });
+    writeFileSync(join(cati, "acik", "acik_anadizin.sar"),
+      'Proje( kod: PRJ-ACIK, ad: "Açık", rejim: katı, ne: "açık araç" )');
+    writeFileSync(join(cati, "acik", "plan", "faz.sar"),
+      'Faz( kod: FAZ-AGUSTOS, ad: "Çatı Mevsimi" )');
+    writeFileSync(join(cati, "kapali", "kapali_anadizin.sar"),
+      'Proje( kod: PRJ-KAPALI, ad: "Kapalı", rejim: katı, ne: "kapalı ürün" )');
+    const kapaliPlan = join(cati, "kapali", "plan", "zeka.sar");
+    writeFileSync(kapaliPlan, "Blok( kod: BLK-ZEKA, mevsim: PRJ-ACIK::FAZ-AGUSTOS )");
+
+    kardesOnbelleginiTemizle();
+    assert.deepEqual(catiKardesleri(join(cati, "kapali", "plan")).map((k) => k.kod).sort(),
+      ["PRJ-ACIK", "PRJ-KAPALI"], "çatının duyurduğu iki kök de tanınır");
+
+    const bulunan = adAlanliTanimlar("PRJ-ACIK::FAZ-AGUSTOS", kapaliPlan);
+    assert.equal(bulunan.length, 1);
+    assert.equal(bulunan[0].kod, "FAZ-AGUSTOS");
+    assert.ok(bulunan[0].dosya.endsWith(join("acik", "plan", "faz.sar")), bulunan[0].dosya);
+
+    assert.deepEqual(adAlanliTanimlar("FAZ-AGUSTOS", kapaliPlan), [],
+      "niteliksiz kod kardeş köke atlamaz — küresel eşleşme bağ değildir");
+    assert.deepEqual(adAlanliTanimlar("PRJ-YOK::FAZ-AGUSTOS", kapaliPlan), [],
+      "ilansız ad alanı kardeş sayılmaz");
+    kardesOnbelleginiTemizle();
+  } finally {
+    rmSync(cati, { recursive: true, force: true });
+  }
 });

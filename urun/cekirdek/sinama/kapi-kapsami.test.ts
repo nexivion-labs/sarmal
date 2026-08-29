@@ -93,6 +93,12 @@ test("panelCaprazUreticiKumesi: per-dosya yol cross süzgeçte YOK, cross ailesi
   // denetleHepsi yolundan gelir.
   assert.ok(capraz.has("dagTanilari"), "cross-file üretici panel süzgecinde olmalı");
   assert.ok(capraz.has("gizliBagimlilikTanilari"), "cross-file üretici panel süzgecinde olmalı");
+  // YUZ-3.4 NÖBETİ (Founder kararı 2026-08-28): ateşleyen hatırlatıcı bildirimi
+  // panele ULAŞMAK ZORUNDADIR. Madde tanıyı "proje CLI ve Bildirimler" yüzeylerine
+  // yönlendirir; üretici panel yüzeyini kaybederse hatırlatma anı yalnız komut
+  // satırında kalır ve hatırlatıcının bütün vaadi sessizce boşa düşer.
+  assert.ok(capraz.has("atesleyenHatirlaticiTanilari"),
+    "ateşlemiş-hatırlatıcı panele ulaşmalı — YUZ-3.4 Bildirimler yüzeyini şart koşar");
   // SINIR NÖBETİ (Founder'a ayrılmış kapsam kararı): yalnız komut satırına ayrılmış
   // üreticiler panel süzgecine giremez. Bu satırların kırmızıya dönmesi, birinin
   // ilanda bir üreticiye panel yüzeyi eklediği anlamına gelir — o değişiklik
@@ -143,6 +149,83 @@ const FIKSTUR_PLAN = `Faz( kod: FAZ-FX, ad: "fx mevsimi", ne: "fikstür dönemi"
   }
 }
 `;
+
+// YUZ-3.4 · UÇTAN UCA: hatırlatma ANI panele ulaşır mı? Yukarıdaki küme sınaması
+// ilanın doğru yazıldığını ölçer; bu fikstür ilanın gerçek akışta karşılığı olduğunu
+// ölçer. Ayrım önemlidir, çünkü ilan doğru yazılıp tanı yine de köken damgası
+// taşımazsa süzgeç körleşir ve tanı panelden sessizce düşer.
+const FIKSTUR_ATESLEME_ANA = `-->|
+## Amaç
+Ateşlemiş hatırlatıcı nöbetinin fikstür ağacıdır; hedefi tamamlanmış bir hatırlatıcı taşır.
+## Kapsam
+Bir plan rafı, tamamlanmış tek Adım ve ona bağlanmış bir hatırlatıcı bulunur.
+## Sonuç
+Sınama, ateşleme tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
+|<--
+Proje( kod: PRJ-FXH, ad: "fxh", rejim: katı, ne: "ateşleme nöbetinin fikstürü" ) {
+  Teknoloji( kod: TEK-FXH, ne: "fikstür teknolojisi" )
+  Raf( kod: RAF-FXH-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}
+
+Hatırlatıcı(
+  kod:              HTR-FXH,
+  durum:            kararlaştı,
+  çapa:             nitelik,
+  hatırlat:         ADM-FXH,
+  dönüşTetikleyici: "hedef Adım tamamlandığında",
+  ne:               "Ateşleme nöbetinin fikstür hatırlatıcısıdır ve hedefi tamamlanmış olduğu için ateşlemiş sayılmalıdır.",
+)
+`;
+
+const FIKSTUR_ATESLEME_PLAN = `Faz( kod: FAZ-FXH, ad: "fxh mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
+  -->|
+  ## Amaç
+  Ateşleme tanısını doğuran tamamlanmış Adımı taşımak için kurulmuş gövdedir.
+  ## Kapsam
+  Bir teknoloji katmanı, bir departman modülü ve tek tamamlanmış adım bulunur.
+  ## Sonuç
+  Hatırlatıcının hedefi kapandığı için ateşleme tanısı doğar ve sınama bunu ölçer.
+  |<--
+  Blok( kod: BLK-FXH, ne: "fikstür işi" ) {
+    Katman( kod: KAT-FXH, ad: "fxhkatman", ne: "fikstür katmanı", kullanır: TEK-FXH ) {
+      AltKatman( kod: ALT-FXH, ad: "fxhmodul", departman: kodlama, ne: "fikstür modülü" ) {
+        Adım( kod: ADM-FXH, durum: tamamlandı, ne: "hatırlatıcının beklediği hedefi kapatmak",
+              görev: "bu adım yalnız sınama fikstürüdür ve hiçbir iş yapmaz",
+              kabul: [ "hedef kapandığı için bağlı hatırlatıcı ateşlemiş sayılır" ] )
+      }
+    }
+  }
+}
+`;
+
+test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden GEÇER", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-atesleme-"));
+  try {
+    writeFileSync(join(kok, "fxh_anadizin.sar"), FIKSTUR_ATESLEME_ANA, "utf8");
+    mkdirSync(join(kok, "plan"));
+    writeFileSync(join(kok, "plan", "fxh_plan.sar"), FIKSTUR_ATESLEME_PLAN, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-28", tamListe: true });
+    const paneller = panelCaprazUreticiKumesi();
+    let atesleme = 0;
+    let panelegecen = 0;
+    for (const rapor of sonuc.akis) {
+      for (const t of rapor.tanilar) {
+        if (t.kod !== "ateşlemiş-hatırlatıcı") continue;
+        atesleme += 1;
+        const uretici = sonuc.koken.get(t);
+        assert.equal(uretici, "atesleyenHatirlaticiTanilari",
+          "ateşleme tanısının köken damgası kendi üreticisini göstermeli; damgasız tanı süzgecin körü olur");
+        if (uretici !== undefined && paneller.has(uretici)) panelegecen += 1;
+      }
+    }
+    assert.ok(atesleme >= 1,
+      "fikstür en az bir ateşleme tanısı üretmeli — üretmiyorsa nöbetin zemini çökmüştür ve panel yolu ölçülemez");
+    assert.equal(panelegecen, atesleme,
+      "ateşleme tanısı panel süzgecinden geçmedi — hatırlatma ANI yalnız komut satırında kalır ve hatırlatıcının vaadi boşa düşer (YUZ-3.4)");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
 
 test("köken süzgeci (fikstürlü): cli-only üreticinin kenar-metin tanısı panele SIZAMAZ ve akıştaki her tanı köken damgası taşır", () => {
   const kok = mkdtempSync(join(tmpdir(), "sarmal-koken-"));

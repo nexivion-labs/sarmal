@@ -102,3 +102,38 @@ test("sürüm numarası sayı belirteci kalır (Karar D güvenliği)", () => {
   assert.equal(b[0].tur, "sayı");
   assert.equal(b[0].deger, "0.9.7");
 });
+
+// ── ORK-4 · çapraz-proje ad alanı belirteçlemesi (KPS-ADA-A01) ───────────────
+//   Mutasyon kanıtı: belirtec.ts içindeki `::` dalı kaldırıldığında aşağıdaki
+//   ilk iki sınama KIRILIR — ayraç iki ayrı `ikiNokta` belirteci olarak çıkar,
+//   `PRJ-A::KOD-X` tek ad olmaktan çıkar ve liste içindeki ad alanlı kod
+//   ayrıştırıcıda söz dizimi hatası doğurur.
+
+test("ORK-4: ad alanlı kod TEK ad belirteci olur", () => {
+  const b = belirtecle("PRJ-SARMAL::FAZ-2026-AGUSTOS");
+  assert.equal(b[0].tur, "ad");
+  assert.equal(b[0].deger, "PRJ-SARMAL::FAZ-2026-AGUSTOS");
+  assert.equal(b[1].tur, "dosyaSonu");
+});
+
+test("ORK-4: ad alanı yalnız BİR kez yutulur — ikinci ayraç kimlik parçası değildir", () => {
+  const b = belirtecle("A-1::B-2::C-3");
+  assert.equal(b[0].deger, "A-1::B-2");
+  assert.equal(b[1].tur, "ikiNokta");
+  assert.equal(b[2].tur, "ikiNokta");
+  assert.equal(b[3].deger, "C-3");
+});
+
+test("ORK-4: alan yazımının tek iki noktası ad alanı sanılmaz", () => {
+  const b = belirtecle("mevsim: PRJ-SARMAL::FAZ-X");
+  assert.equal(b[0].deger, "mevsim");
+  assert.equal(b[1].tur, "ikiNokta");
+  assert.equal(b[2].deger, "PRJ-SARMAL::FAZ-X");
+});
+
+test("ORK-4: ayracın ardından kimlik gelmiyorsa yutulmaz (yarım yazım hata kalır)", () => {
+  const b = belirtecle("PRJ-X::");
+  assert.equal(b[0].deger, "PRJ-X");
+  assert.equal(b[1].tur, "ikiNokta");
+  assert.equal(b[2].tur, "ikiNokta");
+});

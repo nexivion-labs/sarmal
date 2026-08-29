@@ -71,10 +71,13 @@ test("①: ÇÖZÜLEN atıf sessiz — .sar'da tanımlı kod tanı üretmez (yan
   assert.deepEqual(metinAtifTanilari(indeks, kodIndeks), []);
 });
 
-test("①: .md frontmatter kimlikleri (ekKodlar) çözer — referansTanilari ile AYNI kod evreni", () => {
+test("①: .md başlığındaki kimlik metin atfını ÇÖZMEZ — kod evreni yalnız .sar (ek evren emekli)", () => {
   const { indeks, kodIndeks } = kurulum({ "felsefe/x.md": "Bkz. K-9 (dil-bağımsızlık)." });
-  assert.equal(metinAtifTanilari(indeks, kodIndeks).length, 1, "ekKodlar'sız: karşılıksız");
-  assert.deepEqual(metinAtifTanilari(indeks, kodIndeks, new Set(["K-9"])), [], "ekKodlar ile: çözülür");
+  // EK EVREN EMEKLİ (2026-08-28 · HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ): metin
+  // katmanı da kimlik evrenini yalnız `.sar` kaynaklarından kurar; türetilmiş
+  // bir yüzü kimlik kaynağı saymak elle ikiz yasağının tersidir.
+  assert.equal(metinAtifTanilari(indeks, kodIndeks).length, 1,
+    "kaynakta doğmamış kimlik karşılıksız atıf olarak bildirilmeli");
 });
 
 // ── ② AİLE ÖN-EKİ SÜZGECİ — Adım'ın kalbi ──────────────────────────────────

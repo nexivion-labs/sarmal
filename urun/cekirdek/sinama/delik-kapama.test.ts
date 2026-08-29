@@ -257,3 +257,63 @@ test("HTR-A03 CLI: 5 açık hatırlatıcı → DRİFT'te tek özet satırı (per
   assert.equal(satirlar.length, 1, `açık-hatırlatıcı satırı TEK olmalı (özet); gelen ${satirlar.length}`);
   assert.match(satirlar[0], /5 açık\/kararlaşmış hatırlatıcı/, "özet 5 sayısını gösterir");
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · YÜRÜTME KENARI KAPISININ UÇTAN UCA BAĞI (KPS-ADA-A01 · ikinci tur)
+//
+//   `dag.test.ts` içindeki nöbetler `dagKur` işlevinin MANTIĞINI ölçer; bu nöbet
+//   ise DENETİM AKIŞININ o mantığa gerçekten bağlı olduğunu ölçer. Ayrım
+//   önemlidir: mantık doğru olduğu hâlde `denetim.ts` kapıyı `dagKur` çağrısına
+//   geçirmezse bütün birim nöbetleri yeşil kalır ve kopuk-zincir uyarıları
+//   sessizce geri döner. Ölçülmüş kusur tam olarak buydu.
+//
+//   MUTASYON KANITI: `denetim.ts` içindeki `dagKur(programlar, { adAlaniCozulur:
+//   … })` çağrısından ikinci argüman silindiğinde birinci hüküm düşer
+//   ("çözülen çapraz kenar kopuk-zincir bildirmemeli"). Geri alınmıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** İki projeli çatı fikstürü kurar ve KAPALI projenin kökünü döndürür. */
+function catiFiksturuKur(hedefKodu: string): string {
+  const cati = mkdtempSync(join(tmpdir(), "sarmal-ork4-"));
+  writeFileSync(join(cati, "cati_anadizin.sar"),
+    `ÇalışmaAlanı( kod: CA-DENEME, ad: "deneme", ne: "iki projeli çatı fikstürü" ) {\n`
+    + `  Raf( kod: RAF-ACIK, yol: "acik/", ne: "açık proje" )\n`
+    + `  Raf( kod: RAF-KAPALI, yol: "kapali/", ne: "kapalı proje" )\n}\n`);
+
+  mkdirSync(join(cati, "acik", "plan"), { recursive: true });
+  writeFileSync(join(cati, "acik", "acik_anadizin.sar"),
+    `Proje( kod: PRJ-ACIK, ad: "acik", ne: "açık proje" ) {\n`
+    + `  Raf( kod: RAF-A-PLAN, yol: "plan/", ne: "planlar" )\n}\n`);
+  writeFileSync(join(cati, "acik", "plan", "is.sar"),
+    `Blok( kod: BLK-A, ne: "açık işler" ) { Katman( kod: KAT-A, ad: "k", ne: "k" ) {\n`
+    + `  Adım( kod: ADM-HEDEF, durum: beklemede, ne: "kardeş kökteki hedef" )\n} }\n`);
+
+  mkdirSync(join(cati, "kapali", "plan"), { recursive: true });
+  writeFileSync(join(cati, "kapali", "kapali_anadizin.sar"),
+    `Proje( kod: PRJ-KAPALI, ad: "kapali", ne: "kapalı proje" ) {\n`
+    + `  Raf( kod: RAF-K-PLAN, yol: "plan/", ne: "planlar" )\n}\n`);
+  writeFileSync(join(cati, "kapali", "plan", "is.sar"),
+    `Blok( kod: BLK-K, ne: "kapalı işler" ) { Katman( kod: KAT-K, ad: "k", ne: "k" ) {\n`
+    + `  Adım( kod: ADM-KAYNAK, durum: beklemede, ne: "çapraz kenar taşıyan iş", bağımlı: [ ${hedefKodu} ] )\n} }\n`);
+  return join(cati, "kapali");
+}
+
+function denetimCiktisi(dizin: string): string {
+  const kok = fileURLToPath(new URL("..", import.meta.url));
+  const s = spawnSync(process.execPath, [join(kok, "src", "sarmal.ts"), "denetle", dizin, "--tam-liste"],
+    { encoding: "utf8", timeout: 120000 });
+  return (s.stdout ?? "") + (s.stderr ?? "");
+}
+
+test("ORK-4 uçtan uca: kardeş kökte çözülen ad alanlı yürütme kenarı DENETİMDE kopuk-zincir bildirmez", () => {
+  const cikti = denetimCiktisi(catiFiksturuKur("PRJ-ACIK::ADM-HEDEF"));
+  assert.ok(!cikti.includes("kopuk-zincir"),
+    `çatının duyurduğu kardeş kökte çözülen kenar kopuk sayılmamalı:\n${cikti.slice(0, 1200)}`);
+});
+
+test("ORK-4 uçtan uca: kardeş kökte de bulunmayan ad alanlı hedef DENETİMDE kopuk-zincir bildirir", () => {
+  const cikti = denetimCiktisi(catiFiksturuKur("PRJ-ACIK::ADM-YOK"));
+  assert.ok(cikti.includes("kopuk-zincir"),
+    `gerçekten çözülmeyen hedef sessiz kalmamalı:\n${cikti.slice(0, 1200)}`);
+  assert.ok(cikti.includes("PRJ-ACIK::ADM-YOK"), "uyarı hedefi adıyla anmalı");
+});

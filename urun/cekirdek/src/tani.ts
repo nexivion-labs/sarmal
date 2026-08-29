@@ -11,6 +11,8 @@ export type Duzey = "hata" | "uyarı" | "bilgi";
 export interface TaniDilMetni {
   mesaj: string;
   oneri?: string;
+  /** Kırpılmamış gövdeyle kurulmuş ikiz cümle — açıklaması `Tani.tamMesaj` alanındadır. */
+  tamMesaj?: string;
 }
 
 export interface Tani {
@@ -37,4 +39,20 @@ export interface Tani {
    * satır yalnız kendini temsil eder.
    */
   ozetlenen?: number;
+  /**
+   * AYNI OLGUNUN KIRPILMAMIŞ CÜMLESİ (VIT-GRAF-A18).
+   *
+   * Bir tanı, düğümün gövdesini mesajına gömerken onu kısaltmak zorundadır:
+   * komut satırının bir satırı ve ağacın bir etiketi sınırlıdır ve oraya sığmayan
+   * cümle okunmaz hâle gelir. Buna karşılık ipucu penceresi kaydın TAMAMINI
+   * taşımak üzere açılır; pencere de kısaltılmışı gösterirse fareyi getirmenin
+   * hiçbir kazancı kalmaz (Founder canlı bulgusu · 2026-08-16).
+   *
+   * Bu alan bu yüzden vardır ve `mesaj` alanına DOKUNMAZ: `mesaj` kırpılmış hâlini
+   * korur, dolayısıyla komut satırı çıktısının bilgi içeriği değişmez; `tamMesaj`
+   * ise aynı cümlenin kırpılmamış gövdeyle kurulmuş ikizidir ve yalnız pencere
+   * gibi yeri geniş olan yüzeyler onu okur. Alan isteğe bağlıdır: taşımayan tanı
+   * eskisi gibi çalışır ve yüzey kısa cümleye düşer.
+   */
+  tamMesaj?: string;
 }

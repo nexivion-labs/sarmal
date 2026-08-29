@@ -23,14 +23,14 @@ import { join, basename, resolve, relative } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
 } from "./denetci.ts";
 import { dagKur, dagTanilari, durumTutarlilikTanilari, kopukZincirTanilari, kayipKenarTanilari, ozBagimlilikTanilari, karneOzeti } from "./dag.ts";
 import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import type { EbediKilit } from "./kuralci.ts";
-import { rejimTanilari, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
+import { rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
 import { dizindenIndeks, INDEKS_DISI } from "./kimlik.ts";
 import { YENI_TANI_INDEKS, taniSicili } from "./tani-sicili.ts";
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
@@ -200,6 +200,14 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   }
   const plan = iskeletPlani(ana, snf);
   const indeks = kodIndeksle(programlar);
+  // ORK-4 · ÇAPRAZ-PROJE AD ALANI (KPS-ADA-A01): referans çözümü proje sınırını
+  // tanır. Niteliksiz KOD yalnız kaynağın kendi Projesinde aranır, ad alanlı KOD
+  // (`PRJ-A::KOD-X`) yalnız o Projenin kökünde; tesadüfî küresel eşleşme bağ
+  // sayılmaz. Kardeş kök okuması TEMBELDİR — ad alanı kullanmayan bir depo
+  // denetiminde hiçbir ek disk erişimi doğmaz.
+  // Kapının kurucusu TEKTİR (`adAlaniKapisi`): graf yüzü de aynı kurucudan alır,
+  // böylece bir hedef bir yüzeyde çözülüp ötekinde kopuk görünemez.
+  const adAlaniKapsami = adAlaniKapisi(programlar, dizin);
 
   // Ham kaynak metinleri (belirteç girişte normalleştirdiği için diskten yeniden
   // okunur). İki tüketicisi var: dil denetçisi ve yeni kanonun şekil nöbeti —
@@ -257,16 +265,15 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   bas(anaEtiket, yapisal);
 
   // TAM kapsam (BKM-BUG-A02 · bug-avı M2): referans denetimi TÜM .sar'lara.
-  const mdKodlar = new Set(disk.girdiler.filter((g) => g.kod).map((g) => g.kod!));
   for (const [etiket, p] of programlar) {
     if (muaflar.has(etiket)) continue;
-    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, mdKodlar));
+    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, { dosya: etiket, cozulur: (h) => adAlaniKapsami.cozulur(h, etiket) }));
     say(refTanilari, etiket);
     bas(etiket, refTanilari);
   }
 
   // kanıt-ekseni turu (B9): .md/.ts METİN atıfları — indeksler AYRI (çift tarama bilinçli · STR-2.1).
-  for (const { dosya, tani } of koklendirKayit("metinAtifTanilari", metinAtifTanilari(dizindenIndeks(dizin), indeks, mdKodlar))) {
+  for (const { dosya, tani } of koklendirKayit("metinAtifTanilari", metinAtifTanilari(dizindenIndeks(dizin), indeks))) {
     const etiket = relative(dizin, dosya) || dosya;   // köke-göreli etiket (raporla sözleşmesi)
     if (muaflar.has(etiket)) continue;
     say([tani], etiket);
@@ -365,11 +372,17 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   // TEK özete iner — 100+ satırlık sel önemli uyarıyı boğar (dikkat yorgunluğu =
   // uyarıların önemsenmemesinin makine tarafı); sayım korunur, ayrıntı panel/tekilde.
   const CIPLAK_KOD = "çıplak-adımlı-katman";
+  // YAS-1.1 · TEK OLGU TEK BİLDİRİM (KPS-REJ-A01): `çıplak-adımlı-katman` dosya
+  // kapsamında ölçülür ve rejimi bilemez. Katı rejimde aynı olgu
+  // `katı-rejim-altkatman-eksik` ile HATA düzeyinde konuştuğu için bilgi düzeyli
+  // tavsiye orada hem sayımdan hem gösterimden düşer; esnek rejimde yerinde kalır.
+  const katiKapsam = katiRejimliDosyalar(programlar, muaflar);
   const hatirlaticiTanilari: Array<{ dosya: string; tani: Tani }> = [];
   const ciplakTanilari: Array<{ dosya: string; tani: Tani }> = [];
   for (const [etiket, p] of programlar) {
     if (muaflar.has(etiket)) continue;   // bilerek-hatalı: tanı raporlanmaz (listede görünür)
-    const dosyaIci = koklendir("dogrula", dogrula(p, snf, etiket, hamlar.get(etiket), { ozetle }));   // RF-T6-A04: ÖzelKural hedef-süzgeci · ham metin: şekil nöbeti
+    const dosyaIci = koklendir("dogrula", dogrula(p, snf, etiket, hamlar.get(etiket), { ozetle }))   // RF-T6-A04: ÖzelKural hedef-süzgeci · ham metin: şekil nöbeti
+      .filter((t) => !(t.kod === CIPLAK_KOD && katiKapsam.has(etiket)));
     say(dosyaIci, etiket);   // sayım TÜM tanılar (davranış korunur)
     bas(etiket, dosyaIci.filter((t) => !HTR_TANI_KODLAR.has(t.kod) && t.kod !== CIPLAK_KOD));
     for (const t of dosyaIci.filter((t) => HTR_TANI_KODLAR.has(t.kod))) hatirlaticiTanilari.push({ dosya: etiket, tani: t });
@@ -397,7 +410,10 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   }
 
   // ORK-3.1: DAG döngü-denetimi — bağımlı/besler grafiği çevrimselse hata (saf dag.ts).
-  const dag = dagKur(programlar);
+  // ORK-4 (KPS-ADA-A01 · ikinci tur): yürütme kenarı da ad alanını tanır. Kardeş
+  // kök kapısı referans çözümünün TA KENDİSİDİR — ikinci bir çözücü kurulmaz, yoksa
+  // aynı hedef bir yüzeyde çözülür ötekinde kopuk görünürdü.
+  const dag = dagKur(programlar, { adAlaniCozulur: (h, d) => adAlaniKapsami.cozulur(h, d) });
   for (const { dosya, tani } of koklendirKayit("dagTanilari", dagTanilari(dag))) {
     say([tani], dosya);
     bas(dosya, [tani]);

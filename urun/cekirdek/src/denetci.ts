@@ -37,7 +37,7 @@ import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { INDEKS_DISI, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan
+import { INDEKS_DISI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -782,8 +782,38 @@ export interface KodTanim {
 export type KodIndeks = Map<string, KodTanim>;
 
 /** Projedeki tüm programlardan KOD indeksini çıkarır (saf). */
-export function kodIndeksle(programlar: ReadonlyMap<string, Program>): KodIndeks {
-  const indeks: KodIndeks = new Map();
+/**
+ * Bir kodun TÜM tanım konumları. `kodIndeksle` yalnız İLK tanımı taşır ve o
+ * seçim ORK-4 kapsam kararını veremez: aynı kod iki projede yaşayabilir ve ilk
+ * tanım hangi projeden geldiyse öteki proje kendi kodunu göremez hâle gelirdi.
+ * Kapsam kararı bu haritadan okunur; iki harita tek gezintiden türer.
+ */
+export type KodTumTanimlar = ReadonlyMap<string, readonly KodTanim[]>;
+
+/**
+ * ORK-4 kardeş kök kapısının TEK kurucusu (KPS-ADA-A01 · ikinci tur). Ad alanlı
+ * bir hedefin gerçekten çözülüp çözülmediğini soran her yüzey — denetim, graf ve
+ * grafın MCP ikizi — kapıyı buradan alır. İkinci bir kurucu bilinçli olarak
+ * yazılmaz: aynı hedefin bir yüzeyde çözülüp ötekinde kopuk görünmesi, onarılan
+ * kusurun ta kendisidir. Kardeş kök okuması kurucunun kendisinde değil kapının
+ * içinde TEMBELDİR; ad alanı kullanmayan bir depo hiçbir disk erişimi ödemez.
+ */
+export function adAlaniKapisi(programlar: ReadonlyMap<string, Program>, dizin: string): AdAlaniKapsami {
+  const tumTanimlar = kodTanimlariIndeksle(programlar);
+  return adAlaniKapsamiKur({
+    kapsamlar: projeKapsamlari(programlar),
+    tanimDosyalari: (kod) => (tumTanimlar.get(kod) ?? []).map((t) => t.dosya),
+    kokDizin: dizin,
+  });
+}
+
+export function kodTanimlariIndeksle(programlar: ReadonlyMap<string, Program>): KodTumTanimlar {
+  const indeks = new Map<string, KodTanim[]>();
+  const ekle = (kod: string, tanim: KodTanim): void => {
+    const liste = indeks.get(kod);
+    if (liste) liste.push(tanim);
+    else indeks.set(kod, [tanim]);
+  };
   for (const [dosya, program] of programlar) {
     const gez = (node: Dugum): void => {
       // kanıt-ekseni turu (bonus): ÖZELLİK bloğu da gezilir — kimlik.ts:144 (gezgin) ikisine de
@@ -791,21 +821,25 @@ export function kodIndeksle(programlar: ReadonlyMap<string, Program>): KodIndeks
       // denetçi için GÖRÜNMEZDİ → ona yapılan her atıf sahte "kırık-referans"tı.
       const kod = [...node.parametreler, ...node.ozellikler].find((p) => p.ad === "kod");
       if (kod && (kod.deger.tur === "kod" || kod.deger.tur === "metin") && kod.deger.metin) {
-        // ilk tanım kazanır — yinelenen tanım ayrı drift türü (v2)
-        if (!indeks.has(kod.deger.metin)) {
-          indeks.set(kod.deger.metin, { dosya, tip: node.ad, satir: node.satir, sutun: node.sutun });
-        }
+        ekle(kod.deger.metin, { dosya, tip: node.ad, satir: node.satir, sutun: node.sutun });
       }
       // Kural/Tip tanımları ADLARIYLA da çağrılır (`uygular: şüphedeDur`) —
       // ad indekse girer ki adres çözülsün (DIL-3/TIP-1).
-      if ((node.tur === "kuralTanım" || node.tur === "tipTanım") && !indeks.has(node.ad)) {
-        indeks.set(node.ad, { dosya, tip: node.tur, satir: node.satir, sutun: node.sutun });
+      if (node.tur === "kuralTanım" || node.tur === "tipTanım") {
+        ekle(node.ad, { dosya, tip: node.tur, satir: node.satir, sutun: node.sutun });
       }
       for (const c of node.cocuklar) gez(c);
       icin(node, (d) => { if (d.tur === "widget" && d.dugum) gez(d.dugum); });
     };
     for (const b of program.bildirimler) gez(b);
   }
+  return indeks;
+}
+
+export function kodIndeksle(programlar: ReadonlyMap<string, Program>): KodIndeks {
+  const indeks: KodIndeks = new Map();
+  // ilk tanım kazanır — yinelenen tanım ayrı drift türü (v2)
+  for (const [kod, liste] of kodTanimlariIndeksle(programlar)) indeks.set(kod, liste[0]);
   return indeks;
 }
 
@@ -843,13 +877,43 @@ const DEFTER_KODU = /^K-\d{1,3}$/;
  *   • `çağır KOD`       → indekste yoksa hata.
  *   • kenar hedefi (KOD) → indekste yoksa hata — İSTİSNALAR:
  *       `üretir` meyvesi çoğu zaman ilan edilmez (henüz üretilmemiştir) → uyarı;
- *       `ekKodlar` (.md frontmatter kimlikleri — FEL-n gibi artefakt kodları) → çözülür;
  *       KARARLAR defter kaydı (K-nn) → sessizce meşru sayılır (göç motor turu A10 kapanışı:
  *       `defter-referansı` bilgi tanısı emekli edildi; atıf artık tanı doğurmaz).
+ *
+ * EK EVREN EMEKLİ EDİLDİ (2026-08-28 · HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ). Gövde
+ * bir zamanlar markdown başlık bloğundaki kimlikleri de çözüm evrenine katıyordu
+ * ve hiçbir `.sar` kaynağında doğmamış bir kimlik yalnız bir başlıkta geçtiği
+ * için çözülmüş sayılıyordu; kanon lafzen `.sar` derken motor başka türlü
+ * davranıyor, kapı da yeşil yanıyordu. Muafiyetin dayandığı boşluk kapandı:
+ * felsefe ilkeleri kaynakta doğdu ve muafiyet kapatılarak ölçüldüğünde denetim
+ * sıfır hata ile sıfır uyarı verdi, yani ek evren artık tek bir bulgu bile
+ * susturmuyordu. Türetilmiş bir yüzü kimlik kaynağı mertebesine çıkarmak elle
+ * ikiz yasağının tersidir; bu yüzden muafiyet kanona yazılmadı, kaldırıldı.
  */
-export function referansTanilari(program: Program, indeks: KodIndeks, snf: Siniflama, ekKodlar?: ReadonlySet<string>): Tani[] {
+/**
+ * ORK-4 kapsam kapısı (KPS-ADA-A01): verilmezse çözüm bugünkü küresel indeks
+ * eşleşmesidir; verilirse hedef, kaynağın kendi Projesinde ya da açıkça yazılmış
+ * ad alanının kökünde aranır ve tesadüfî küresel eşleşme bağ SAYILMAZ.
+ */
+export interface ReferansKapsami {
+  /** Denetlenen dosyanın yolu — kapsam kararı buradan verilir. */
+  dosya: string;
+  /** Hedef bu kaynaktan çözülüyor mu? */
+  cozulur: (hedef: string) => boolean;
+}
+
+export function referansTanilari(
+  program: Program,
+  indeks: KodIndeks,
+  snf: Siniflama,
+  kapsam?: ReferansKapsami,
+): Tani[] {
   const tanilar: Tani[] = [];
   const kenarlar = new Set(snf.kenarTipleri.map((k) => k.ad));
+  // Ders dünyası kapsam dışıdır: örnek ve şablon gövdeleri kasıtlı olarak
+  // kendi küçük evrenlerinde yazılır ve proje sınırı onlara inmez (OGR-5).
+  const cozulur = (hedef: string): boolean =>
+    kapsam && !INDEKS_DISI.test(kapsam.dosya) ? kapsam.cozulur(hedef) : indeks.has(hedef);
 
   const hedefDenetle = (kenar: string, d: Deger): void => {
     if (d.tur === "liste") { for (const o of d.ogeler ?? []) hedefDenetle(kenar, o); return; }
@@ -867,8 +931,7 @@ export function referansTanilari(program: Program, indeks: KodIndeks, snf: Sinif
         { satir: d.satir, sutun: d.sutun }));
       return;
     }
-    if (d.tur !== "kod" || !d.metin || indeks.has(d.metin)) return;
-    if (ekKodlar?.has(d.metin)) return;   // .md artefakt kimliği — kod evreni .sar+md (A02)
+    if (d.tur !== "kod" || !d.metin || cozulur(d.metin)) return;
     // RF-T6-A02 + Sol gözlemi ⑤: `dayanak` hedefi bir Karar DÜĞÜMÜ olmak zorundadır —
     // K-nn biçimli eksik hedef defter-istisnasıyla bilgiye İNEMEZ (kırık-referans kalır);
     // aksi hâlde var olmayan sayısal bir koda bağlanan kural sessizce yeşil görünürdü.
@@ -888,7 +951,9 @@ export function referansTanilari(program: Program, indeks: KodIndeks, snf: Sinif
 
   const gez = (node: Dugum): void => {
     if (node.tur === "çağır") {
-      if (!indeks.has(node.ad)) {
+      // `çağır` hedefi de ad alanlı yazılabilir (ORK-4): bir Faz kardeş projedeki
+      // Bloku `çağır PRJ-X::BLK-Y` ile halkasına alır ve kapsam kapısı onu çözer.
+      if (!cozulur(node.ad)) {
         tanilar.push(eskiTani("kırık-referans", "hata",
           { hedef: node.ad, kusur: "çağır" }, { satir: node.satir, sutun: node.sutun }));
       }
@@ -966,13 +1031,10 @@ function kodAilesi(kod: string): string {
  * çok-dosyalıdır → repo'nun yerleşik çok-dosya deseni (`adAyraciTanilari` ·
  * `ebediTanilar` · `muhurTanilari`) izlendi: `{ dosya, tani }`.
  *
- * @param ekKodlar .md frontmatter kimlikleri (FEL-n gibi artefakt kodları) —
- *   `referansTanilari` ile AYNI kod evreni; çözer ama aile DOĞURMAZ.
  */
 export function metinAtifTanilari(
   indeks: KimlikIndeksi,
   kodIndeks: KodIndeks,
-  ekKodlar?: ReadonlySet<string>,
 ): Array<{ dosya: string; tani: Tani }> {
   // ① Aile kümesi YALNIZ .sar tanımlarından türer (Adım'ın kalbi).
   const aileler = new Set<string>();
@@ -983,7 +1045,7 @@ export function metinAtifTanilari(
 
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const a of indeks.tumAdaylar(METIN_ATIF_DOSYASI)) {
-    if (kodIndeks.has(a.kod) || ekKodlar?.has(a.kod)) continue;   // çözülüyor — atıf sağlam
+    if (kodIndeks.has(a.kod)) continue;   // çözülüyor — atıf sağlam
     if (!aileler.has(kodAilesi(a.kod))) continue;                 // ① aile ön-eki
     if (!KOD_SEKLI.test(a.kod)) continue;                         // ② kod şekli
     const md = a.dosya.endsWith(".md");
@@ -1119,35 +1181,69 @@ export function programlariYukle(dizin: string, anaYolu?: string): ProgramYuk {
  * eklenmez (çift kenar üretilmez; uyarıyı hiyerarsiTanilari basar). Hedef Faz
  * bulunamazsa çevrim uygulanmaz — Blok mevsimsiz kalır, fazsız-blok dürüstçe
  * ateşlenir (sessiz başarı taklidi yok).
+ *
+ * ORK-4 KAPSAM SINIRI (KPS-ADA-A01). Çevrim proje sınırını tanır: niteliksiz bir
+ * `mevsim:` değeri YALNIZ Blokun kendi Projesindeki Faz'a bağlanır, ad alanlı bir
+ * değer (`PRJ-A::FAZ-X`) ise yalnız o ad alanının kapsamındaki Faz'a. Kusur canlı
+ * ölçülmüştür: dört projeye ayrılmadan önce yazılmış `mevsim: FAZ-2026-AGUSTOS`
+ * satırları ayrılıktan sonra çapraz proje atfına dönüştü ve küresel eşleşme
+ * yüzünden kapalı ürünün Blokları çatı penceresinde açık aracın Fazının altında
+ * göründü. Tesadüfî eşleşme bağ sayılmadığı için o Bloklar artık kendi
+ * projelerinin altında kalır.
  */
 export function mevsimNormalize(programlar: ReadonlyMap<string, Program>): void {
   const kodOku = (n: Dugum): string | undefined =>
     (n.parametreler.find((x) => x.ad === "kod") ?? n.ozellikler.find((x) => x.ad === "kod"))?.deger.metin;
 
-  // 1) Faz düğümleri (kod → düğüm) + her Faz'ın halihazır çağır kümesi
-  const fazlar = new Map<string, Dugum>();
+  const kapsamlar = projeKapsamlari(programlar);
+
+  // 1) Faz düğümleri (kod → düğüm listesi) + her Faz'ın halihazır çağır kümesi.
+  //    Liste tutulur çünkü aynı Faz kodu iki projede yaşayabilir; hangisinin
+  //    bağlanacağına kapsam karar verir, ilk eşleşme değil.
+  const fazlar = new Map<string, { d: Dugum; dosya: string }[]>();
   const fazinCagirdiklari = new Map<Dugum, Set<string>>();
-  const fazTara = (n: Dugum): void => {
+  const fazTara = (n: Dugum, dosya: string): void => {
     if (n.tur === "widget" && n.ad === "Faz") {
       const kod = kodOku(n);
-      if (kod && !fazlar.has(kod)) fazlar.set(kod, n);
+      if (kod) {
+        const liste = fazlar.get(kod);
+        if (liste) liste.push({ d: n, dosya });
+        else fazlar.set(kod, [{ d: n, dosya }]);
+      }
       // Eski SANAL kenarlar önce temizlenir: uzun-ömürlü AST önbelleklerinde (eklenti
       // paylaşımlı önbelleği) çevrim aynı düğüme tekrar koşar — sanal kenar her koşuda
       // güncel gerçeğin türevi olarak yeniden kurulur, bayat kenar kalamaz (idempotent).
       n.cocuklar = n.cocuklar.filter((c) => !(c.tur === "çağır" && c.parametreler.some((x) => x.ad === "sanal")));
       fazinCagirdiklari.set(n, new Set(n.cocuklar.filter((c) => c.tur === "çağır").map((c) => c.ad)));
     }
-    for (const c of n.cocuklar) fazTara(c);
+    for (const c of n.cocuklar) fazTara(c, dosya);
   };
-  for (const p of programlar.values()) for (const b of p.bildirimler) fazTara(b);
+  for (const [dosya, p] of programlar) for (const b of p.bildirimler) fazTara(b, dosya);
+
+  /** ORK-4: bu Blokun mevsim beyanına gerçekten karşılık gelen Faz düğümü. */
+  const hedefFaz = (mevsim: string, blokDosyasi: string): Dugum | undefined => {
+    const { adAlani, yerel } = adAlaniAyir(mevsim);
+    const adaylar = fazlar.get(yerel) ?? [];
+    if (adAlani !== undefined) {
+      const hedefKapsamlar = kapsamlar.filter((k) => k.kod === adAlani);
+      if (!hedefKapsamlar.length) return undefined;   // ad alanı yüklü değil: kenar kurulamaz
+      return adaylar.find((a) => hedefKapsamlar.some((k) => onekKapsar(k.onek, a.dosya)))?.d;
+    }
+    const sahip = sahipProjeKapsami(blokDosyasi, kapsamlar);
+    if (!sahip) return adaylar[0]?.d;               // köksüz kaynak: sınır çizilmez
+    return adaylar.find((a) => {
+      const fazSahibi = sahipProjeKapsami(a.dosya, kapsamlar);
+      return !fazSahibi || fazSahibi.kod === sahip.kod;
+    })?.d;
+  };
 
   // 2) mevsim: taşıyan Blok'lar → hedef Faz'a sanal çağır
-  const blokTara = (n: Dugum): void => {
+  const blokTara = (n: Dugum, dosya: string): void => {
     if (n.tur === "widget" && n.ad === "Blok") {
       const mevsim = [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "mevsim")?.deger.metin;
       const kod = kodOku(n);
       if (mevsim && kod) {
-        const faz = fazlar.get(mevsim);
+        const faz = hedefFaz(mevsim, dosya);
         const mevcutlar = faz ? fazinCagirdiklari.get(faz) : undefined;
         if (faz && mevcutlar && !mevcutlar.has(kod)) {
           faz.cocuklar.push({
@@ -1159,9 +1255,9 @@ export function mevsimNormalize(programlar: ReadonlyMap<string, Program>): void 
         }
       }
     }
-    for (const c of n.cocuklar) blokTara(c);
+    for (const c of n.cocuklar) blokTara(c, dosya);
   };
-  for (const p of programlar.values()) for (const b of p.bildirimler) blokTara(b);
+  for (const [dosya, p] of programlar) for (const b of p.bildirimler) blokTara(b, dosya);
 }
 
 /** Yol etiketini POSIX ayraçlı hâle getirir (mutlak fsPath da göreli etiket de aynı dili konuşsun). */
@@ -1893,7 +1989,14 @@ export function hiyerarsiTanilari(
       const mevsimP = [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "mevsim");
       const planP = [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "planlanmamış");
       const planNeden = planP ? degerMetni(planP.deger).trim() : "";
-      if (!fazAltinda && !fazinCagirdigi.has(kod)) {
+      // ORK-4 (KPS-ADA-A01): ad alanlı `mevsim:` beyanı bir zaman bağıdır ve Blok
+      // fazsız SAYILMAZ — hedef Faz kardeş projede yaşadığı için bu denetimin
+      // yüklü evreninde düğüm olarak görünmeyebilir. Ad alanının gerçekten
+      // çözülüp çözülmediği bu nöbetin değil `referansTanilari` işlevinin işidir;
+      // her nöbet tek olgu ölçer ve aynı kusur iki kez konuşmaz.
+      const caprazMevsim = mevsimP !== undefined
+        && adAlaniAyir(degerMetni(mevsimP.deger)).adAlani !== undefined;
+      if (!fazAltinda && !fazinCagirdigi.has(kod) && !caprazMevsim) {
         if (planP && planNeden) {
           // Hâl ③ — BEYAN: tarih taklidi yok, dürüst erteleme. Görünür kalır ama yol kesmez.
           out.push({ dosya, tani: eskiTani("planlanmamış-gövde", "bilgi",
@@ -2242,10 +2345,53 @@ export function altKatmanTekilligiTanilari(
 //   Dürüst-beyan kaçışı: teknolojisiz Katman MEŞRUYSA (süreç katmanı gibi)
 //   `teknolojiBağımsız: "gerekçe"` beyanıyla bekçi susar — boş gerekçe sayılmaz
 //   (planlanmamış: deseninin Katman ikizi; ad DIL-1.2 gereği camelCase).
+//
+//   ORK-4 KAPSAM SINIRI (KPS-ADA-A01 · Founder canlı ölçümü 2026-08-29). Bekçi
+//   proje sınırını tanır ve bunu `hiyerarsiTanilari` ile AYNI hükümle yapar.
+//   Niteliksiz bir hedef yalnız Katmanın kendi Projesinde çözülür; başka bir
+//   projedeki eş adlı Takım tesadüfî eşleşmedir ve teknoloji bağı sayılmaz.
+//   Ad alanlı bir hedef (`PRJ-A::TAKIM-X`) ise BAĞIN KENDİSİDİR: Katman
+//   teknoloji zeminini açıkça beyan etmiştir ve "teknoloji bağı taşımıyor"
+//   denemez. Kusur canlı ölçülmüştür: kapalı depolardaki üç Katman ad alanlı
+//   `kullanır` kenarı taşıdığı ve hedefi çözüldüğü hâlde bekçi bağ görmüyordu;
+//   çözülen bir bağın taşınmıyor sayılması çelişkidir.
+//
+//   HEDEFİN TİPİ, ÇÖZÜLEBİLDİĞİ YERDE ÖLÇÜLÜR. Ad alanı yüklü evrende bir Proje
+//   kapsamına karşılık geliyorsa (çatı penceresi) tip gerçekten okunur ve yanlış
+//   tipe bağlanan Katman yine uyarı alır. Ad alanı yüklü DEĞİLSE (deponun kendi
+//   kökünden koşulan denetim) tip okunamaz ve beyan olduğu gibi kabul edilir;
+//   hedefin gerçekten var olup olmadığı bu nöbetin değil `referansTanilari`
+//   işlevinin işidir, çünkü her nöbet tek olgu ölçer ve aynı kusur iki kez
+//   konuşmaz.
 export function katmansizTeknolojiTanilari(
   programlar: ReadonlyMap<string, Program>,
 ): Array<{ dosya: string; tani: Tani }> {
   const indeks = kodIndeksle(programlar);
+  const kapsamlar = projeKapsamlari(programlar);
+  const tumTanimlar = kodTanimlariIndeksle(programlar);
+  const TEKNOLOJI_TIPLERI = new Set(["Takım", "Teknoloji"]);
+
+  /** ORK-4: bu hedef, bu Katmanın dosyasından bakıldığında teknoloji bağı mıdır? */
+  const teknolojiHedefi = (hedef: string, katmanDosyasi: string): boolean => {
+    const { adAlani, yerel } = adAlaniAyir(hedef);
+    if (adAlani !== undefined) {
+      const hedefKapsamlar = kapsamlar.filter((k) => k.kod === adAlani);
+      if (!hedefKapsamlar.length) return true;          // kardeş depo yüklü değil: beyan bağdır
+      const tanimlar = (tumTanimlar.get(yerel) ?? [])
+        .filter((t) => hedefKapsamlar.some((k) => onekKapsar(k.onek, t.dosya)));
+      if (!tanimlar.length) return true;                // çözülmüyor: kırık-referans'ın işi
+      return tanimlar.some((t) => TEKNOLOJI_TIPLERI.has(t.tip));
+    }
+    const sahip = sahipProjeKapsami(katmanDosyasi, kapsamlar);
+    if (!sahip) return TEKNOLOJI_TIPLERI.has(indeks.get(hedef)?.tip ?? "");
+    return (tumTanimlar.get(hedef) ?? []).some((t) => {
+      if (!TEKNOLOJI_TIPLERI.has(t.tip)) return false;
+      if (INDEKS_DISI.test(t.dosya)) return true;       // ders dünyası herkese açıktır
+      const tanimSahibi = sahipProjeKapsami(t.dosya, kapsamlar);
+      return !tanimSahibi || tanimSahibi.kod === sahip.kod;
+    });
+  };
+
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const [dosya, program] of programlar) {
     const gez = (node: Dugum): void => {
@@ -2261,10 +2407,7 @@ export function katmansizTeknolojiTanilari(
         for (const alanAdi of ["kullanır", "bağımlı"] as const) {
           topla([...node.parametreler, ...node.ozellikler].find((p) => p.ad === alanAdi)?.deger);
         }
-        const teknolojiBagi = hedefler.some((h) => {
-          const t = indeks.get(h)?.tip;
-          return t === "Takım" || t === "Teknoloji";
-        });
+        const teknolojiBagi = hedefler.some((h) => teknolojiHedefi(h, dosya));
         const beyan = [...node.parametreler, ...node.ozellikler]
           .find((p) => p.ad === "teknolojiBağımsız")?.deger?.metin?.trim();
         if (!teknolojiBagi && !beyan) {
@@ -2818,10 +2961,85 @@ function ogretimDunyasi(dosya: string): boolean {
 
 // ── Rejim (üç tanı) ─────────────────────────────────────────────────────────
 
+// Kapsam öneki çözümü `kimlik.ts` içindeki `kapsamOneki` işlevine bağlıdır
+// (KPS-ADA-A01): rejim kapsamı ile ORK-4 ad alanı kapsamı AYNI kuralı okur,
+// çünkü iki kopya olsaydı biri sessizce bayatlar ve aynı dosya için rejim
+// başka, kimlik başka proje söylerdi.
+
+/** Rejim çözümünün kök kaydı — Proje düğümü, beyanı ve kapsadığı ön ek. */
+interface RejimKoku {
+  onek: string;
+  dosya: string;
+  d: Dugum;
+  kimlik: string;
+  beyanlar: Param[];
+  rejim?: string;
+  departmansiz: number;
+}
+
+/**
+ * MIM-1.1 · rejim köklerinin envanteri. Her Proje düğümü kendi dosyasının
+ * DİZİNİYLE bir kapsam öneki kurar; bu, kimlik indeksinin ve aktif varlık
+ * çözümünün yaptığı anadizin yürüyüşünün SAF ikizidir — disk okumaz, yüklü
+ * programların kendisinden türer ve bu yüzden denetimin her yüzeyinde aynı
+ * cevabı verir. Ders dünyası (INDEKS_DISI) kök saymaz: ürün hükmü oraya inmez.
+ */
+function rejimKokleri(dugumler: readonly Yerlesim[]): RejimKoku[] {
+  const kokler: RejimKoku[] = [];
+  for (const { dosya, d } of dugumler) {
+    if (d.tur !== "widget" || d.ad !== "Proje") continue;
+    if (ogretimDunyasi(dosya)) continue;
+    const beyanlar = [...d.parametreler, ...d.ozellikler].filter((p) => p.ad === "rejim");
+    kokler.push({
+      onek: kapsamOneki(dosya), dosya, d, kimlik: yeniKimlik(d), beyanlar,
+      rejim: beyanlar.length === 1 ? beyanlar[0].deger.metin : undefined,
+      departmansiz: 0,
+    });
+  }
+  return kokler;
+}
+
+/** Dosyayı kapsayan EN YAKIN Proje kökü — iç içe çatı düzeninde en uzun ön ek,
+ *  yani alt proje kazanır; çatının kendi kökü onun üstünde kalır ve konuşmaz. */
+function sahipKok(dosya: string, kokler: readonly RejimKoku[]): RejimKoku | undefined {
+  const egik = dosya.replace(/\\/g, "/");
+  let kazanan: RejimKoku | undefined;
+  for (const k of kokler) {
+    if (!egik.startsWith(k.onek)) continue;
+    if (!kazanan || k.onek.length > kazanan.onek.length) kazanan = k;
+  }
+  return kazanan;
+}
+
+/** Katı rejimin kapsadığı dosyalar — ÇİFT BİLDİRİM kapısı. `çıplak-adımlı-katman`
+ *  dosya kapsamında ölçülür ve rejimi bilemez; katı rejimde aynı olgu
+ *  `katı-rejim-altkatman-eksik` ile HATA düzeyinde konuştuğu için bilgi düzeyli
+ *  tavsiye orada susar. Esnek rejimde tavsiye yerinde kalır (YAS-1.2). */
+export function katiRejimliDosyalar(
+  programlar: ReadonlyMap<string, Program>,
+  muaflar?: ReadonlySet<string>,
+): Set<string> {
+  const dugumler = yeniDugumler(programlar, muaflar);
+  const kokler = rejimKokleri(dugumler);
+  const out = new Set<string>();
+  if (!kokler.length) return out;
+  for (const dosya of programlar.keys()) {
+    if (muaflar?.has(dosya) || ogretimDunyasi(dosya)) continue;
+    if (sahipKok(dosya, kokler)?.rejim === "katı") out.add(dosya);
+  }
+  return out;
+}
+
 /**
  * Rejim sözleşmesi: her Proje zorlama rejimini tam bir kez ve yalnız katı ya da
  * esnek değeriyle beyan eder; katı rejimde Katman doğrudan Adım taşıyamaz ve
  * beyan ile yapı ayrıştığında motor yapıyı kendiliğinden dönüştürmez.
+ *
+ * KAPSAM (KPS-REJ-A01): hüküm PROJE kapsamındadır, dosya kapsamında değil. Rejim
+ * beyanı anadizinde yaşar ve planlar ayrı dosyalarda üst düzey Blok olarak durur;
+ * bu yüzden norm, Proje düğümünün ALTINI gezerek değil, her kademenin SAHİBİ
+ * çözülerek uygulanır. Önceki yazım yalnız Proje düğümünü sarmalayan dosyaya
+ * bakıyordu ve kanonun hata dediği ihlaller sessiz kalıyordu.
  */
 export function rejimTanilari(
   programlar: ReadonlyMap<string, Program>,
@@ -2829,51 +3047,46 @@ export function rejimTanilari(
 ): Array<{ dosya: string; tani: Tani }> {
   const out: Array<{ dosya: string; tani: Tani }> = [];
   const izinli = new Set(["katı", "esnek"]);
+  const dugumler = yeniDugumler(programlar, muaflar);
+  const kokler = rejimKokleri(dugumler);
 
-  for (const { dosya, d } of yeniDugumler(programlar, muaflar)) {
-    if (d.tur !== "widget" || d.ad !== "Proje") continue;
+  // ① Beyan sözleşmesi — Proje düğümünün kendi dosyasında ölçülür.
+  for (const k of kokler) {
+    if (k.beyanlar.length === 0) {
+      out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik", { kimlik: k.kimlik }, k.d) });
+    } else if (k.beyanlar.length > 1) {
+      out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik",
+        { kimlik: k.kimlik, kusur: ` ve beyanı ${k.beyanlar.length} kez yazmış` }, k.beyanlar[1]) });
+    } else if (!izinli.has(k.beyanlar[0].deger.metin ?? "")) {
+      out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik",
+        { kimlik: k.kimlik, kusur: `; beyan "${k.beyanlar[0].deger.metin ?? ""}" değerini taşıyor` }, k.beyanlar[0]) });
+    }
+  }
+  if (!kokler.length) return out;
+
+  // ② Katı rejim normu: Katman → Adım yolu en az bir departman kademesinden geçer.
+  //    Katman başına TEK tanı — ilk Adım çocuğunda ateşlenir (panel/CLI seli önlenir).
+  for (const { dosya, d } of dugumler) {
+    if (d.tur !== "widget" || d.ad !== "Katman") continue;
     if (ogretimDunyasi(dosya)) continue;
-    const beyanlar = [...d.parametreler, ...d.ozellikler].filter((p) => p.ad === "rejim");
-    const kimlik = yeniKimlik(d);
+    if (sahipKok(dosya, kokler)?.rejim !== "katı") continue;
+    const ilkAdim = d.cocuklar.find((c) => c.tur === "widget" && c.ad === "Adım");
+    if (ilkAdim) out.push({ dosya, tani: yeniTani("katı-rejim-altkatman-eksik", { kimlik: yeniKimlik(d) }, ilkAdim) });
+  }
 
-    if (beyanlar.length === 0) {
-      out.push({ dosya, tani: yeniTani("rejim-beyanı-eksik", { kimlik }, d) });
-    } else if (beyanlar.length > 1) {
-      out.push({ dosya, tani: yeniTani("rejim-beyanı-eksik",
-        { kimlik, kusur: ` ve beyanı ${beyanlar.length} kez yazmış` }, beyanlar[1]) });
-    } else if (!izinli.has(beyanlar[0].deger.metin ?? "")) {
-      out.push({ dosya, tani: yeniTani("rejim-beyanı-eksik",
-        { kimlik, kusur: `; beyan "${beyanlar[0].deger.metin ?? ""}" değerini taşıyor` }, beyanlar[0]) });
-    }
-
-    const rejim = beyanlar.length === 1 ? beyanlar[0].deger.metin : undefined;
-    if (rejim !== "katı") continue;
-
-    // Katı rejim normu: Katman → Adım yolu en az bir departman kademesinden geçer.
-    const katiGez = (n: Dugum): void => {
-      if (n.ad === "Katman") {
-        for (const c of n.cocuklar) {
-          if (c.tur === "widget" && c.ad === "Adım") {
-            out.push({ dosya, tani: yeniTani("katı-rejim-altkatman-eksik", { kimlik: yeniKimlik(n) }, c) });
-            break;
-          }
-        }
-      }
-      for (const c of n.cocuklar) katiGez(c);
-    };
-    katiGez(d);
-
-    // Rejim geçişi: katı rejimde departman beyanı taşımayan kademeler geçiş borcudur.
-    let departmansiz = 0;
-    const gecisGez = (n: Dugum): void => {
-      if (n.ad === "AltKatman" && !yeniAlanMetin(n, "departman")) departmansiz++;
-      for (const c of n.cocuklar) gecisGez(c);
-    };
-    gecisGez(d);
-    if (departmansiz > 0) {
-      out.push({ dosya, tani: yeniTani("rejim-geçiş-uyumsuzluğu",
-        { kimlik, rejim: "katı", kusur: `${departmansiz} departman kademesi hangi sorumluluğu taşıdığını beyan etmiyor` }, d) });
-    }
+  // ③ Rejim geçişi: katı rejimde departman beyanı taşımayan kademeler geçiş
+  //    borcudur; sayım projede toplanır ve tek satırda Proje düğümüne asılır.
+  for (const { dosya, d } of dugumler) {
+    if (d.tur !== "widget" || d.ad !== "AltKatman") continue;
+    if (ogretimDunyasi(dosya)) continue;
+    if (yeniAlanMetin(d, "departman")) continue;
+    const sahip = sahipKok(dosya, kokler);
+    if (sahip?.rejim === "katı") sahip.departmansiz++;
+  }
+  for (const k of kokler) {
+    if (k.rejim !== "katı" || k.departmansiz === 0) continue;
+    out.push({ dosya: k.dosya, tani: yeniTani("rejim-geçiş-uyumsuzluğu",
+      { kimlik: k.kimlik, rejim: "katı", kusur: `${k.departmansiz} departman kademesi hangi sorumluluğu taşıdığını beyan etmiyor` }, k.d) });
   }
   return out;
 }

@@ -11,8 +11,9 @@ import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { iskeletPlani } from "../src/iskeletci.ts";
 import { siniflamaYukle } from "../src/siniflama.ts";
-import { denetle, diskTara, kodIndeksle, donguTanilari, referansTanilari, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, beyansizYapiDenetle, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, dogusEksikProjeTanilari, olgunlukOnayiTanilari, kodBasladiMi, anadizinEvreBeyani, planlamaEvresiMi, evre1Yumusat, kuralTanilari, type DiskAnlikGoruntu } from "../src/denetci.ts";
+import { denetle, diskTara, kodIndeksle, donguTanilari, referansTanilari, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, beyansizYapiDenetle, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, dogusEksikProjeTanilari, olgunlukOnayiTanilari, kodBasladiMi, anadizinEvreBeyani, planlamaEvresiMi, evre1Yumusat, kuralTanilari, kodTanimlariIndeksle, type DiskAnlikGoruntu } from "../src/denetci.ts";
 import type { Program } from "../src/sozdizim.ts";
+import { adAlaniKapsamiKur, projeKapsamlari } from "../src/kimlik.ts";
 import { dogrula as tekDosyaDogrula } from "../src/dogrulayici.ts";
 
 const snf = siniflamaYukle(fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)));
@@ -563,12 +564,16 @@ test("YAS-2.3: muaf (bilerek-hatalı) dosyanın kapsam tanıları atlanır", () 
 });
 
 // ── BKM-BUG-A02: kırık-referans TAM kapsam — md-kod evreni · defter atfı (A10'da emekli) · giriş-dışı dosya ─
-test("A02: .md frontmatter kimliği (ekKodlar) kenar hedefini çözer; K-nn defter atfı SESSİZ (A10 emekliliği)", () => {
+test("A02: .md başlığındaki kimlik kenar hedefini ÇÖZMEZ (ek evren emekli); K-nn defter atfı SESSİZ (A10 emekliliği)", () => {
   const p = derle('Adım( kod: ADM-REF, durum: beklemede, ne: "t", referans: [ FEL-9, K-40, YOK-HEDEF ] )');
   const indeks = kodIndeksle(new Map([["a.sar", p]]));
-  const t = referansTanilari(p, indeks, snf, new Set(["FEL-9"]));
-  // MDR-A04: negatif muhafız kırık-referans koduna çıpalandı (çıpasız mesaj araması yasak).
-  assert.equal(t.filter((x) => x.kod === "kırık-referans" && x.mesaj.includes("FEL-9")).length, 0, "md-kod çözülmeli");
+  const t = referansTanilari(p, indeks, snf);
+  // EK EVREN EMEKLİ (2026-08-28 · HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ): bir kimlik
+  // yalnız markdown başlığında geçtiği için çözülmüş SAYILMAZ; kanon lafzen
+  // `.sar` kaynağı der ve motor artık aynı şeyi söyler. Bu satır muafiyetin
+  // sessizce geri dönmesini engelleyen nöbettir.
+  assert.equal(t.filter((x) => x.kod === "kırık-referans" && x.mesaj.includes("FEL-9")).length, 1,
+    "kaynakta doğmamış kimlik çözülmüş sayılırsa kapı yeniden yalan söyler");
   // GOC-MOTOR-A10: `defter-referansı` emekli edildi — atıf sessizce meşrudur.
   assert.equal(t.filter((x) => x.kod === "defter-referansı").length, 0,
     "emekli tanı 'defter-referansı' geri dönmüş");
@@ -1485,4 +1490,185 @@ test("durumsuz-adım: durum taşımayan Adım UYARI alır; durumlu Adım susar; 
   // ③ örnek-dünyası (INDEKS_DISI) muaf — ders malzemesi kısalık için durum atlayabilir
   assert.equal(durumsizAdimTanilari(p("ornek/vitrin.sar",
     'Katman( kod: KAT-D3, ad: "y" ) { Adım( kod: ADM-ORNEK, ne: "ders" ) }')).length, 0);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · ÇAPRAZ-PROJE AD ALANI — mevsim çevrimi ve fazsız-blok (KPS-ADA-A01)
+//
+//   Founder 2026-08-29 tarihinde çatı penceresinde açık aracın "Çatı Mevsimi"
+//   Fazını açtı ve altında KAPALI ürünün Bloklarını gördü; tıklayınca editör
+//   kapalı deponun plan dosyasını açtı. Kusurun kökü ölçülmüştür: FAZ-2026-AGUSTOS
+//   yalnız sarmal deposunda tanımlıdır, buna karşılık ona üç projeden beş Blok
+//   `mevsim:` alanıyla bağlanmaktadır ve yalnız biri meşrudur. Mevsim çevrimi
+//   proje sınırını tanımadığı için beşine de sanal kenar kuruyordu.
+//
+//   MUTASYON KANITI. `mevsimNormalize` içindeki `hedefFaz` çözümünde niteliksiz
+//   dalın kapsam karşılaştırması kaldırılıp ilk aday döndürüldüğünde aşağıdaki
+//   "kardeş projedeki Faz'a bağlanmaz" sınaması KIRILIR: kapalı projenin Bloku
+//   yeniden açık projenin Fazının çocuğu olur. Ad alanlı dalın kapsam süzgeci
+//   kaldırıldığında ise "ad alanı yanlış projeyi gösteriyorsa kenar kurulmaz"
+//   sınaması kırılır. İki mutasyon iki ayrı sınamayı düşürür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const caprazCati = (mevsim: string): Map<string, Program> => new Map([
+  ["sarmal/sarmal_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-SARMAL, rejim: katı )"))],
+  ["sarmal/is/plan/faz/faz.sar", ayristir(belirtecle('Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi" ) { }'))],
+  ["orkestrasyon/orkestrasyon_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-ORKESTRASYON, rejim: katı )"))],
+  ["orkestrasyon/plan/zeka.sar", ayristir(belirtecle(`Blok( kod: BLK-ORK-ZEKA, mevsim: ${mevsim} )`))],
+]);
+
+/** Faz düğümünün mevsim çevriminden doğan SANAL çağır çocukları. */
+const sanalCagirlar = (programlar: Map<string, Program>): string[] => {
+  const faz = programlar.get("sarmal/is/plan/faz/faz.sar")!.bildirimler[0];
+  return faz.cocuklar.filter((c) => c.tur === "çağır").map((c) => c.ad);
+};
+
+test("ORK-4: niteliksiz mevsim KARDEŞ projedeki Faz'a bağlanmaz (Founder kusuru)", async () => {
+  const { mevsimNormalize } = await import("../src/denetci.ts");
+  const programlar = caprazCati("FAZ-2026-AGUSTOS");
+  mevsimNormalize(programlar);
+  assert.deepEqual(sanalCagirlar(programlar), [],
+    "kapalı projenin Bloku açık projenin Fazının altında görünemez");
+});
+
+test("ORK-4: ad alanlı mevsim kardeş projedeki Faz'a MEŞRU biçimde bağlanır", async () => {
+  const { mevsimNormalize } = await import("../src/denetci.ts");
+  const programlar = caprazCati("PRJ-SARMAL::FAZ-2026-AGUSTOS");
+  mevsimNormalize(programlar);
+  assert.deepEqual(sanalCagirlar(programlar), ["BLK-ORK-ZEKA"]);
+});
+
+test("ORK-4: ad alanı yanlış projeyi gösteriyorsa kenar kurulmaz", async () => {
+  const { mevsimNormalize } = await import("../src/denetci.ts");
+  const programlar = caprazCati("PRJ-ORKESTRASYON::FAZ-2026-AGUSTOS");
+  mevsimNormalize(programlar);
+  assert.deepEqual(sanalCagirlar(programlar), []);
+});
+
+test("ORK-4: aynı proje içindeki mevsim bağı ESKİSİ GİBİ kurulur (geriye uyum)", async () => {
+  const { mevsimNormalize } = await import("../src/denetci.ts");
+  const programlar: Map<string, Program> = new Map([
+    ["sarmal_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-SARMAL, rejim: katı )"))],
+    ["is/plan/faz.sar", ayristir(belirtecle("Faz( kod: FAZ-A ) { }"))],
+    ["is/plan/blok.sar", ayristir(belirtecle("Blok( kod: BLK-B, mevsim: FAZ-A )"))],
+  ]);
+  mevsimNormalize(programlar);
+  const faz = programlar.get("is/plan/faz.sar")!.bildirimler[0];
+  assert.deepEqual(faz.cocuklar.filter((c) => c.tur === "çağır").map((c) => c.ad), ["BLK-B"]);
+});
+
+test("ORK-4: ad alanlı mevsim taşıyan Blok FAZSIZ sayılmaz", async () => {
+  const { hiyerarsiTanilari } = await import("../src/denetci.ts");
+  const yalniz: Map<string, Program> = new Map([
+    ["plan/zeka.sar", ayristir(belirtecle("Blok( kod: BLK-ORK-ZEKA, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS )"))],
+  ]);
+  assert.equal(hiyerarsiTanilari(yalniz).filter((t) => t.tani.kod === "fazsız-blok").length, 0,
+    "hedef Faz kardeş depoda olduğu için yüklü evrende görünmez; beyan yine de zaman bağıdır");
+  const niteliksiz: Map<string, Program> = new Map([
+    ["plan/zeka.sar", ayristir(belirtecle("Blok( kod: BLK-ORK-ZEKA, mevsim: FAZ-2026-AGUSTOS )"))],
+  ]);
+  assert.equal(hiyerarsiTanilari(niteliksiz).filter((t) => t.tani.kod === "fazsız-blok").length, 1,
+    "niteliksiz beyan çözülmediğinde fazsız-blok dürüstçe ateşlenir");
+});
+
+test("ORK-4: referans kapsamı verilmezse çözüm ESKİSİ GİBİ küresel kalır (geriye uyum)", () => {
+  const p = ayristir(belirtecle("Adım( kod: ADM-X, durum: beklemede, bağımlı: [ ADM-Y ] )"));
+  const indeks = kodIndeksle(new Map([["a.sar", ayristir(belirtecle("Adım( kod: ADM-Y, durum: beklemede )"))]]));
+  assert.equal(referansTanilari(p, indeks, snf).length, 0);
+});
+
+test("ORK-4: referans kapsamı verildiğinde tesadüfî küresel eşleşme kırık-referans olur", () => {
+  const programlar: Map<string, Program> = new Map([
+    ["sarmal/sarmal_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-SARMAL, rejim: katı )"))],
+    ["sarmal/plan/a.sar", ayristir(belirtecle("Adım( kod: ADM-Y, durum: beklemede )"))],
+    ["orkestrasyon/orkestrasyon_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-ORKESTRASYON, rejim: katı )"))],
+  ]);
+  const indeks = kodIndeksle(programlar);
+  const tumTanimlar = kodTanimlariIndeksle(programlar);
+  const kapsam = adAlaniKapsamiKur({
+    kapsamlar: projeKapsamlari(programlar),
+    tanimDosyalari: (kod) => (tumTanimlar.get(kod) ?? []).map((t) => t.dosya),
+    kardesler: [],
+  });
+  const kaynak = "orkestrasyon/plan/b.sar";
+  const p = ayristir(belirtecle("Adım( kod: ADM-X, durum: beklemede, bağımlı: [ ADM-Y ] )"));
+  const kirik = referansTanilari(p, indeks, snf,
+    { dosya: kaynak, cozulur: (h) => kapsam.cozulur(h, kaynak) });
+  assert.equal(kirik.length, 1);
+  assert.equal(kirik[0].kod, "kırık-referans");
+  const adAlanli = ayristir(belirtecle("Adım( kod: ADM-X, durum: beklemede, bağımlı: [ PRJ-SARMAL::ADM-Y ] )"));
+  assert.equal(referansTanilari(adAlanli, indeks, snf,
+    { dosya: kaynak, cozulur: (h) => kapsam.cozulur(h, kaynak) }).length, 0,
+    "ad alanlı yazım aynı hedefi meşru biçimde çözer");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · ad alanlı `kullanır` teknoloji bağıdır (KPS-ADA-A01 · Founder 2026-08-29)
+//
+//   Founder canlı pencerede şunu ölçtü: `orkestrasyon/plan/sef_yol_haritasi.sar`
+//   ile `ray3_yol_haritasi.sar` dosyalarındaki iki Katman `kullanır:
+//   PRJ-SARMAL::TAKIM-CEKIRDEK` yazdığı ve hedef çözüldüğü hâlde bekçi
+//   "teknoloji bağı taşımıyor" diyordu. Çözülen bir bağın taşınmıyor sayılması
+//   çelişkidir; sınıf, üçüncü görev maddesinde `mevsim` için kapatılan sınıfın
+//   aynısıdır ve aynı hükümle kapanır.
+//
+//   MUTASYON KANITI. `teknolojiHedefi` içindeki ad alanlı dal kaldırılıp hedef
+//   niteliksizmiş gibi çözülürse "ad alanlı kullanır teknoloji bağıdır" sınaması
+//   KIRILIR. Ayrı bir mutasyon olarak niteliksiz daldaki kapsam karşılaştırması
+//   gevşetilirse "niteliksiz hedef kardeş projeye bağlanmaz" sınaması kırılır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const katmanUyarilari = async (programlar: Map<string, Program>): Promise<string[]> => {
+  const { katmansizTeknolojiTanilari } = await import("../src/denetci.ts");
+  return katmansizTeknolojiTanilari(programlar)
+    .filter((t) => t.tani.kod === "katmansız-teknoloji")
+    .map((t) => t.tani.mesaj.match(/"([A-Z0-9-]+)"/)?.[1] ?? "?");
+};
+
+test("ORK-4: ad alanlı kullanır TEKNOLOJİ BAĞIDIR — kardeş depo yüklü değilken de", async () => {
+  const yalniz: Map<string, Program> = new Map([
+    ["orkestrasyon_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-ORKESTRASYON, rejim: katı )"))],
+    ["plan/sef.sar", ayristir(belirtecle('Katman( kod: SEFH-MEKANIZMA, kullanır: PRJ-SARMAL::TAKIM-CEKIRDEK, ad: "şef" )'))],
+  ]);
+  assert.deepEqual(await katmanUyarilari(yalniz), [],
+    "hedef kardeş depoda yaşadığı için tipi okunamaz; beyan olduğu gibi bağdır");
+});
+
+test("ORK-4: ad alanı YÜKLÜ ise hedefin tipi gerçekten ölçülür", async () => {
+  const cati = (hedefTipi: string): Map<string, Program> => new Map([
+    ["sarmal/sarmal_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-SARMAL, rejim: katı )"))],
+    ["sarmal/is/plan/takimlar.sar", ayristir(belirtecle(`${hedefTipi}( kod: TAKIM-CEKIRDEK, ad: "çekirdek" )`))],
+    ["orkestrasyon/orkestrasyon_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-ORKESTRASYON, rejim: katı )"))],
+    ["orkestrasyon/plan/sef.sar", ayristir(belirtecle('Katman( kod: SEFH-MEKANIZMA, kullanır: PRJ-SARMAL::TAKIM-CEKIRDEK, ad: "şef" )'))],
+  ]);
+  assert.deepEqual(await katmanUyarilari(cati("Takım")), [],
+    "hedef gerçekten Takım ise bağ vardır");
+  assert.deepEqual(await katmanUyarilari(cati("Adım")), ["SEFH-MEKANIZMA"],
+    "ad alanı çözülse bile yanlış tipe bağlanan Katman uyarı almalıdır");
+});
+
+test("ORK-4: niteliksiz hedef KARDEŞ projedeki teknolojiye bağlanmaz", async () => {
+  const capraz: Map<string, Program> = new Map([
+    ["sarmal/sarmal_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-SARMAL, rejim: katı )"))],
+    ["sarmal/is/plan/takimlar.sar", ayristir(belirtecle('Teknoloji( kod: TEK-SARMAL, ad: "sarmal" )'))],
+    ["orkestrasyon/orkestrasyon_anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-ORKESTRASYON, rejim: katı )"))],
+    ["orkestrasyon/plan/kat.sar", ayristir(belirtecle('Katman( kod: KAT-X, kullanır: TEK-SARMAL, ad: "x" )'))],
+  ]);
+  assert.deepEqual(await katmanUyarilari(capraz), ["KAT-X"],
+    "tesadüfî küresel eşleşme teknoloji bağı sayılamaz");
+});
+
+test("ORK-4: aynı proje içindeki teknoloji bağı ESKİSİ GİBİ susturur (geriye uyum)", async () => {
+  const yerel: Map<string, Program> = new Map([
+    ["anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-TEK, rejim: katı )"))],
+    ["plan/tek.sar", ayristir(belirtecle('Teknoloji( kod: TEK-YOUTUBE, ad: "youtube" )'))],
+    ["plan/kat.sar", ayristir(belirtecle('Katman( kod: KAT-Y, kullanır: TEK-YOUTUBE, ad: "y" )'))],
+  ]);
+  assert.deepEqual(await katmanUyarilari(yerel), []);
+  const bagsiz: Map<string, Program> = new Map([
+    ["anadizin.sar", ayristir(belirtecle("Proje( kod: PRJ-TEK, rejim: katı )"))],
+    ["plan/kat.sar", ayristir(belirtecle('Katman( kod: KAT-Z, ad: "z" )'))],
+  ]);
+  assert.deepEqual(await katmanUyarilari(bagsiz), ["KAT-Z"],
+    "hiç kenar taşımayan Katman uyarısını korumalıdır");
 });

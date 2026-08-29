@@ -487,3 +487,108 @@ test("VIT-GRAF-A12 · beyanYolu `dosya:` BEYANIDIR, düğümün kaynağı olan `
   assert.equal(d.dosya, "t.sar", "düğümün yaşadığı .sar kaynağı — beyanla karışmamalı");
   assert.notEqual(d.beyanYolu, d.dosya);
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORK-4 · ÇAPRAZ-PROJE YÜRÜTME KENARI (KPS-ADA-A01 · ikinci tur)
+//
+//   Ölçülmüş kusur: ad alanı ayracı referans, kimlik, denetim ve denetçi
+//   modüllerinde tanınıyordu, buna karşılık yürütme kenarını kuran `dag.ts`
+//   onu hiç tanımıyordu. Laboratuvarın yedi yürütme kenarının tamamı bu yüzden
+//   kopuk-zincir uyarısı basıyordu; altısı ad alanlı hedefin kardeş kökte
+//   gerçekten tanımlı olduğu hâllerdi.
+//
+//   MUTASYON KANITI — KARDEŞ KÖK KAPISI. `dag.ts` içindeki `hedefiCoz` işlevinin
+//   ② şıkkında `secenek?.adAlaniCozulur?.(hedef, kaynakDosya)` çağrısı `false`
+//   sabitiyle değiştirildiğinde birinci hüküm düşer ("çapraz kenar kopuk
+//   sayılmamalı"); `true` sabitiyle değiştirildiğinde ikinci hüküm düşer
+//   ("kardeş kökte de bulunmayan hedef kopuk kalmalı"). İkisi de geri alınmıştır.
+//
+//   MUTASYON KANITI — KÜRESEL EŞLEŞME YASAĞI. Aynı işlevin ① şıkkındaki
+//   `hedefKapsamlar.some((k) => onekKapsar(k.onek, d.dosya))` süzgeci `true`
+//   sabitiyle değiştirildiğinde üçüncü hüküm düşer: ad alanı yüklü evrende
+//   çözülürken tesadüfî küresel eşleşme bağ hâline gelir. Geri alınmıştır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("ORK-4: kardeş kökte çözülen ad alanlı yürütme kenarı KOPUK sayılmaz", () => {
+  const dag = dagKur(progla(sar(`Adım( kod: A, bağımlı: PRJ-UZAK::ADM-UZAK, ne: "a" )`)),
+    { adAlaniCozulur: (h) => h === "PRJ-UZAK::ADM-UZAK" });
+  assert.deepEqual(dag.kopuk, [], "hedefi kardeş kökte yaşayan kenar kopuk-zincir üretmemeli");
+  assert.equal(dag.disProje.length, 1, "kenar sessizce düşmez, çapraz-proje siciline iner");
+  assert.equal(dag.disProje[0].hedef, "PRJ-UZAK::ADM-UZAK");
+  assert.equal(dag.disProje[0].kenar, "bağımlı");
+  assert.deepEqual(dag.dugumler.get("A")!.oncekiler, [], "yerel sıra hesabı kardeş düğümü içermez");
+});
+
+test("ORK-4: kardeş kökte de bulunmayan ad alanlı hedef KOPUK kalır", () => {
+  const dag = dagKur(progla(sar(`Adım( kod: A, bağımlı: PRJ-UZAK::ADM-YOK, ne: "a" )`)),
+    { adAlaniCozulur: () => false });
+  assert.equal(dag.disProje.length, 0);
+  assert.equal(dag.kopuk.length, 1, "çözülmeyen hedef ad alanlı olsa da kopuk-zincirdir");
+  assert.equal(dag.kopuk[0].hedef, "PRJ-UZAK::ADM-YOK");
+});
+
+test("ORK-4: kapı verilmezse kardeş kök okunmaz — ad alanlı hedef kopuk sayılır", () => {
+  const dag = dagKur(progla(sar(`Adım( kod: A, bağımlı: PRJ-UZAK::ADM-UZAK, ne: "a" )`)));
+  assert.equal(dag.kopuk.length, 1, "kapısız çağrı bugünkü davranışı korur");
+  assert.equal(dag.disProje.length, 0);
+});
+
+/** İki Projeli çatı fikstürü: aynı KOD iki depoda yaşar, kapsam hangisinin
+ *  bağlanacağına karar verir (ORK-4 · tesadüfî küresel eşleşme bağ değildir). */
+function catiFiksturu(): Map<string, Program> {
+  const proje = (kod: string, adim: string) => ayristir(belirtecle(
+    `Proje( kod: ${kod}, ne: "p" )\n`
+    + `Blok( kod: BLK-${kod}, ne: "b" ) { Katman( kod: KAT-${kod}, ad: "k" ) {\n`
+    + `  Adım( kod: ${adim}, ne: "hedef" )\n} }`));
+  return new Map([
+    ["acik/anadizin.sar", proje("PRJ-ACIK", "ADM-ORTAK")],
+    ["kapali/anadizin.sar", proje("PRJ-KAPALI", "ADM-KAYNAK")],
+  ]);
+}
+
+test("ORK-4: ad alanı YÜKLÜ evrende çözülürse kenar gerçekten grafa iner", () => {
+  const programlar = catiFiksturu();
+  const kaynak = ayristir(belirtecle(
+    `Proje( kod: PRJ-KAPALI, ne: "p" )\n`
+    + `Blok( kod: BLK-K2, ne: "b" ) { Katman( kod: KAT-K2, ad: "k" ) {\n`
+    + `  Adım( kod: ADM-KAYNAK, bağımlı: PRJ-ACIK::ADM-ORTAK, ne: "kaynak" )\n} }`));
+  programlar.set("kapali/plan.sar", kaynak);
+  const dag = dagKur(programlar);
+  assert.deepEqual(dag.kopuk, [], "ad alanı yüklü evrende çözülür, kopuk olmamalı");
+  assert.deepEqual(dag.disProje, [], "yüklü evrende çözülen kenar dış-proje sicilinde değil grafta yaşar");
+  assert.deepEqual(dag.dugumler.get("ADM-KAYNAK")!.oncekiler, ["ADM-ORTAK"],
+    "ad alanlı hedef çıplak KOD'a inip yürütme sırasını kurmalı");
+  assert.deepEqual(dag.dugumler.get("ADM-ORTAK")!.sonrakiler, ["ADM-KAYNAK"], "ters-türetme de kurulmalı");
+});
+
+test("ORK-4: ad alanı yüklü ama hedef O PROJENİN kapsamında değilse bağ kurulmaz (küresel eşleşme yasağı)", () => {
+  const programlar = new Map([
+    ["acik/anadizin.sar", ayristir(belirtecle(`Proje( kod: PRJ-ACIK, ne: "p" )`))],
+    ["kapali/anadizin.sar", ayristir(belirtecle(
+      `Proje( kod: PRJ-KAPALI, ne: "p" )\n`
+      + `Blok( kod: BLK-K, ne: "b" ) { Katman( kod: KAT-K, ad: "k" ) {\n`
+      + `  Adım( kod: ADM-YEREL, ne: "hedef" )\n`
+      + `  Adım( kod: ADM-KAYNAK, bağımlı: PRJ-ACIK::ADM-YEREL, ne: "kaynak" )\n} }`))],
+  ]);
+  // ADM-YEREL yalnız KAPALI projede yaşar; PRJ-ACIK ad alanıyla istenmesi
+  // tesadüfî eşleşmedir ve kapı bu kenarı kurmaz.
+  const dag = dagKur(programlar, { adAlaniCozulur: () => true });
+  assert.deepEqual(dag.dugumler.get("ADM-KAYNAK")!.oncekiler, [],
+    "başka projenin ad alanıyla istenen yerel düğüm bağlanmamalı");
+  assert.equal(dag.kopuk.length, 1, "yüklü ad alanının kapsamında bulunmayan hedef kopuktur");
+  assert.equal(dag.kopuk[0].hedef, "PRJ-ACIK::ADM-YEREL");
+  assert.equal(dag.disProje.length, 0, "yüklü ad alanı kardeş kök kapısına DÜŞMEZ");
+});
+
+test("ORK-4: ad alanlı öz-bağımlılık da öz-bağımlılıktır (kendi projesine nitelikli atıf)", () => {
+  const programlar = new Map([
+    ["kapali/anadizin.sar", ayristir(belirtecle(
+      `Proje( kod: PRJ-KAPALI, ne: "p" )\n`
+      + `Blok( kod: BLK-K, ne: "b" ) { Katman( kod: KAT-K, ad: "k" ) {\n`
+      + `  Adım( kod: ADM-KAYNAK, bağımlı: PRJ-KAPALI::ADM-KAYNAK, ne: "kaynak" )\n} }`))],
+  ]);
+  const dag = dagKur(programlar);
+  assert.equal(dag.oz.length, 1, "bir iş kendinden önce gelemez — ad alanlı yazım kaçış yolu değildir");
+  assert.equal(dag.oz[0].hedef, "PRJ-KAPALI::ADM-KAYNAK");
+  assert.deepEqual(dag.kopuk, []);
+});
