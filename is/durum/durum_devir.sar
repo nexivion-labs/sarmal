@@ -16,21 +16,25 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-28", oturum: 100,
-            neredeyiz: PANEL-KAPSAMI-VE-AIDIYET-KAPANDI-MIM-1-7-HUKME-BAGLANDI-PLAN-RAFLARI-AYRILDI,
-            sıradaki: KPS-REJ-A01-YARIM-KALDI-SONRA-DUMAN-NOBETI-VE-TEMMUZ-DEVRI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-29", oturum: 102,
+            neredeyiz: CANLI-PENCERE-TURU-KOSULDU-YEDI-ADIM-FOUNDER-GOZUYLE-KAPANDI-AD-ALANI-YURUTME-KENARLARINA-INDI,
+            sıradaki: CANLI-PENCERE-TURUNUN-KALAN-DORT-ADIMI-SONRA-DORT-FAZSIZ-BLOKUN-EVI-FOUNDER-HUKMU,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ KPS-REJ-A01-YARIM-KALDI-MIM-1-7-ARAYA-GIRDI,
+            açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
+                         BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
+                         KYN-YUZ-A02-UC-CAPA-GOZLEMLERE-ATESLEMIS-HATIRLATICILARA,
+                         KYN-YUZ-A03-ATESLEMIS-HATIRLATICIYA-PANELDEN-KAPATMA,
+                         HATIRLATICI-TURU-KALAN-YIRMI-KALEM-P0-KAPANDI,
                          DUMAN-NOBETI-KURULU-PAKET-DEPODAN-ESKI-KALDIGINI-PANEL-SOYLESIN,
-                         ONAYLAR-ROZETI-BAYAT-SAVUNMA-KONDU-CANLI-OLCUM-BEKLIYOR,
-                         VIT-POSTA-A05-VIT-GRAF-A19-A20-FOUNDER-CANLI-DOGRULAMASI,
+                         ONAYLAR-ROZETI-BAYAT-SAVUNMA-KONDU-CANLI-OLCUM-YAPILDI-KAPANDI-2026-08-29,
+                         VIT-POSTA-A05-VIT-GRAF-A19-A20-FOUNDER-CANLI-DOGRULAMASI-KAPANDI-2026-08-29,
                          CATI-YONETISIM-GOVDESI-ANAYASA-KURALLAR-POLITIKALAR,
                          VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
                          DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
                          TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-ON-ACIK-ADIM-SARIYOR,
                          TEMMUZ-ACIK-GOVDESININ-AGUSTOSA-DEVRI-FOUNDER-KARARI,
                          SITE-TURKCE-H11-KENDI-PLANI-VE-DURUM-KAYDI-ACILACAK,
-                         KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA,
+                         KPS-ADA-A01-ORK-4-AD-ALANI-MOTORDA-URETIM-BITTI-DORDUNCU-OLCUT-FOUNDER-GOZU,
                          CLAUDE-JSON-OLU-GIRDILER-VE-LABORATUVAR-SILMELERI-FOUNDER-KARARI,
                          RENK-URET-CATI-AYARINI-TAZELEMIYOR,
                          YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
@@ -40,7 +44,14 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-28", oturum: 100,
                          OSS-A05-KATKI-SOZLESMESI,
                          RFM-ONCELIK-IKI-EKSEN-REFORMU,
                          KPS-KAPSAM-BORCU-YAYIN-SONRASI,
-                         KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI ] ) {
+                         KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI,
+                         TURUN-KALAN-DORDU-VIT-KIMLIK-A07-A04-PRF-A06-BKM-DNT-A08,
+                         DORT-FAZSIZ-BLOKUN-EVI-FOUNDER-HUKMU-PANELDEKI-DORT-HATA,
+                         YUZ-4.2-YENI-METNI-ONAYLANDI-KANONA-INECEK,
+                         VIT-POSTA-A02-ACIK-KALAN-UC-GOREV-MADDESI,
+                         HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
+                         SIMGE-CIZELGESI-NOBETI-TEK-BASINA-KOSUNCA-KIRMIZI,
+                         ACIK-DEPONUN-UZAK-ADRESI-YOK-ILK-GONDERIM-CANLI-ACILIS ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
         aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
@@ -427,8 +438,500 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-28", oturum: 100,
         kanonun sarma tablosu ÇalışmaAlanı altında Kitaplık ile Rafı birlikte
         izinli kılar ve Kitaplık isteğe bağlı bir gruplama kademesidir.
 
-        SIRADAKİ: uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve ilk
-        gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
+        ✅ KPS-REJ-A01 KAPANDI · REJİM HÜKMÜ PROJE KAPSAMINA ÇIKTI (2026-08-28).
+        Katı rejim hükmü artık ayrı dosyada yaşayan plana ulaşıyor. Her Proje
+        düğümü kendi dosyasının diziniyle bir kapsam öneki kurar ve bir plan
+        dosyası kendisini kapsayan EN YAKIN köke aittir; bu, kimlik indeksinin
+        yaptığı anadizin yürüyüşünün saf ikizidir ve disk okumadığı için
+        denetimin her yüzeyinde aynı cevabı verir. Ön ek klasör ayracıyla
+        bittiği için ad benzerliği taşıyan kardeş kök kapsanan sayılmaz, iç içe
+        çatı düzeninde ise alt proje kendi rejimini yaşar. Çift bildirim de
+        kapandı: katı rejimin kapsadığı dosyalarda bilgi düzeyli tavsiye hem
+        sayımdan hem gösterimden düşer, çünkü aynı olgu hata düzeyinde konuşur.
+
+        Adımın metnindeki ON BEŞ İHLAL SAYISI YANLIŞTI ve bu kayda geçsin:
+        açık depodaki onun onu da öğretim dünyasında yaşamaktadır ve ürün hükmü
+        oraya inmez; muafiyet motorda zaten yerleşiktir. Gerçek ihlal beşti ve
+        tamamı kapalı ürünün açılış planındaydı; beşinin altına da departman
+        kademesi açıldı, on iki Adım korundu ve sırası değişmedi.
+
+        ÖLÇÜLMEMİŞ ALTINCI İHLAL BULUNDU VE ÖNEMLİDİR: motorun kendi doğuş
+        şablonu anadizinde katı rejim ilan ederken ilk planında Katmanı doğrudan
+        Adım taşıtıyordu. Yani doğuş komutuyla doğan her proje ilk denetiminde
+        hata verecek durumdaydı ve bunu hiçbir nöbet görmedi, çünkü tanı ayrı
+        dosyadaki plana ulaşmıyordu. Founder'ın panel turunda verdiği hüküm
+        ("bir kullanıcı bir projeyi açtığında bu sorunları hiç yaşamamalıdır")
+        tam bu sınıfa düşer. Şablona planlama departmanlı kademe kondu ve doğuş
+        süiti gerçek denetimle sıfır hata verdiğini doğruladı. Yolda iki kusur
+        daha kapandı: tanı sicilinde MIM-1.7 kaydının kapsam alanı izinli
+        olmayan bir değer taşıyordu ve depo tip denetimi kırmızıydı; düzeltme
+        iki türetilmiş yüzün mührünü değiştirdi ve ikisi de kaynaktan tazelendi.
+
+        🌱 ÜÇ FİKİR AÇIK DEPODAN İNDİ (2026-08-28 · Founder hükmü). Fikirler
+        laboratuvarın kendi fikir parkına taşındı; hükmün gerekçesi üçünün de
+        ürünün anlatımını, giriş kapısını ve kadro yüzeyini konu almasıdır.
+        Founder'ın şerhi kayda aynen geçer: kural BÜTÜN fikirler için değil,
+        yalnız bugün mevcut olan bu üç fikir için geçerlidir. Taşımanın bedeli
+        motor tarafından bildirildi ve karşılandı: Fikir tipi bu bahçede
+        kullanımsız kaldığı için muafiyeti gerekçesiyle beyan edildi, muafiyet
+        geçicidir ve açık depoya yeni bir fikir yazıldığı gün düşer; bayat
+        kalan öğretim kartı da gerçeğe çekildi. Bunun bir yüzey sonucu vardır:
+        Fikirler paneli bu depoda artık boş görünür ve VIT-GRAF-A20'nin canlı
+        doğrulaması için açık tarafta veri kalmamıştır.
+
+        ✅ HATIRLATICI ZİNCİRİNİN SON HALKASI ONARILDI (2026-08-28 · Founder
+        kararı). Founder mekanizmanın gerçekten çalışıp çalışmadığını sordu ve
+        üç kanal tek tek ölçüldü. Birincisi çalışıyordu: bir Adım işlenmeye
+        başlandığında ona `hatırlat` kenarıyla bağlı hatırlatıcı şefin
+        brifingine kendiliğinden düşüyor ve bu canlı çağrıyla görüldü; koniye
+        düşmeyi çapa değil kenarın varlığı belirlemektedir. İkincisi de
+        çalışıyordu fakat yalnız komut satırında: hedef Adım tamamlandığında
+        `ateşlemiş-hatırlatıcı` tanısı doğuyor ve bu, hedefin durumu geçici
+        olarak ilerletilip geri alınarak mutasyonla kanıtlandı. ÜÇÜNCÜ KANAL
+        KOPUKTU. YUZ-3.4 maddesi tanının "proje CLI ve Bildirimler"
+        yüzeylerinde görünmesini zorlar ve yönlendirme matrisi onu Bildirimler
+        hanesinde sayar; buna karşılık kapı kapsamı ilanında üretici yalnız
+        komut satırına ayrılmıştı ve panel süzgeci üretici damgasına baktığı
+        için tanı panele yapısal olarak geçemiyordu. Yani hatırlatıcının bütün
+        vaadi olan hatırlatma ANI, Founder'ın baktığı yerde hiç görünmüyordu.
+
+        Onarım tek satırdır ve kaynağın kendisi bu satırın Founder kararı
+        istediğini yazmaktadır: üreticiye panel yüzeyi eklendi. İki nöbet
+        kuruldu ve ikisi de mutasyonla kanıtlandı; ilan geri alındığında ikisi
+        birden kırmızıya döner. Birincisi ilanın doğru yazıldığını, ikincisi
+        ilanın gerçek akışta karşılığı olduğunu ölçer: fikstürde hedefi
+        tamamlanmış bir hatırlatıcı kurulur, tanının köken damgası sınanır ve
+        panel süzgecinden geçtiği doğrulanır. Ayrım bilinçlidir, çünkü ilan
+        doğru yazılıp tanı köken damgası taşımazsa süzgeç körleşir ve tanı
+        panelden sessizce düşer.
+
+        Zincirin kalan zayıflığı kayda geçsin: ateşleyen hatırlatıcıyı kapatmak
+        hâlâ insana aittir ve tanı bilgi düzeyinde olduğu için hiçbir kapıyı
+        kırmızıya düşürmez. Bu kanonun tercihidir; bugün üç kararlaşmış
+        hatırlatıcının hedefi de beklemede olduğu için hiçbiri ateşlememiştir.
+
+        🔔 HATIRLATICI SÖZLEŞMESİ ÖLÇÜLDÜ VE İKİ ADIM AÇILDI (2026-08-28).
+        Founder hatırlatıcıların gerçekten çalışıp çalışmadığını sordu ve üç kanal
+        tek tek ölçüldü; ikisi çalışıyordu, üçüncüsü (ateşleme anının panele
+        ulaşması) kopuktu ve Founder kararıyla aynı gün onarıldı. Ardından Founder
+        panelde iki cinsin yan yana durduğunu gösterdi: on beş çan ile dokuz elmas.
+        Hüküm şudur: Hatırlatıcılar hanesi kullanıcının YAZDIĞI taahhütleri taşır,
+        Gözlemler hanesi motorun ÖLÇTÜĞÜ durumları; üç çapa kimliği Gözlemler'e
+        iner, ateşlemiş hatırlatıcı Hatırlatıcılar'a çıkar (KYN-YUZ-A02) ve
+        ateşlemiş satır panelden kapatılabilir hâle gelir (KYN-YUZ-A03). Kademe adı
+        "fikir yüzeyi"nden "panel haneleri"ne çekildi (MIM-1.7).
+
+        🔍 EKLENTİ DENETİM TURU PLANA İNDİ (2026-08-28 · BKM-DNT · on bir Adım).
+        Founder kapsamlı denetim istedi; dört ölçüm koştu (kanon uyumu kontrolcü
+        eliyle ajansız, süit dürüstlüğü, vaat ile gerçek, kapsam ilanı üç salt-okur
+        ajanla). Hiçbir bulgu bu turda onarılmadı; on bir Adım üç kademede
+        (kapsam kararları · yüzey onarımları · nöbet onarımları) bakım Blokuna
+        indi ve ayrı oturumda tek tek ele alınacak. En ağır bulgu şudur: altmış
+        bir üreticinin kırkı yalnız komut satırındadır, bunun on beşinde kanon
+        maddesi Problems ya da Bildirimler yüzeyi isterken ilan komut satırı der
+        ve sicildeki yüz yetmiş beş kimliğin seksen dördü panele hiç ulaşmaz;
+        kapsam kararı Founder hükmüdür ve o hüküm hiç verilmemiştir, kırk satır
+        verilmemiş bir kararın fotoğrafıdır (BKM-DNT-A01). Kararsız nöbet
+        şüphesi çözüldü ve birebir üretildi: paket tazeliği nöbeti ölçtüğü kusuru
+        bir kez bildirip kanıtını kendi eliyle siliyor (BKM-DNT-A08). Eklentinin
+        editöre bakan yarısı (otuz dört dosya, yaklaşık yedi bin dört yüz satır)
+        hiçbir sınama tarafından yüklenmiyor ve dört gerçek davranış mutasyonu
+        süitten yeşil geçti (BKM-DNT-A09). Turun kendi kusuru da kayda geçsin:
+        dört ajandan biri kendi altına beş ajan açtı, çünkü brifingde yasak
+        yoktu; yedi ajan durduruldu, yasak hafızaya indi ve bundan sonra her
+        brifingin ilk satırı olacak. Ayrıca turun bulgusu sanılan bir çift ilan
+        kontrolcünün aynı gün kendi eklediği iki Kod meyvesiydi; geri alındı.
+
+        📌 HATIRLATICI TURU YARIM: yirmi altı kalemin yalnız tek p0'ı kapandı
+        (HTR-FELSEFE-KIMLIKLERI-KAYNAKSIZ; ek evren muafiyeti emekli, iki
+        sınama nöbete çevrildi). Kalan yirmi kalem sonraki oturumun işidir. Kanon
+        tamamlanan hatırlatıcının yerinde kaldığını yazar; kayıt dosyasının kendi
+        yorumu silinmesini emrediyordu ve kanon üstündür, silme yapılmadı.
+
+        📍 OTURUM 101 KAPANIŞI (2026-08-28 · 16.20). Founder dinlenmek için
+        oturumu kapattı. GÜNÜN İŞİ MÜHÜRSÜZDÜR: otuz üç dosya çalışma ağacında
+        değişik durur (motor onarımları, doğuş şablonu, fikirlerin laboratuvara
+        inişi, iki plan, bu kayıt); denetim sıfır hata sıfır uyarı, çekirdek
+        süiti bin yüz yirmi yedi ve eklenti süiti beş yüz seksen bir sınamayla
+        yeşildir. İşleme Founder'ındır. Kurulu paket (0.9.165) günün onarımını
+        taşımaz; paket üretimi kontrolcünün, kurulum Founder'ındır.
+
+        SIRADAKİ OTURUMUN SIRASI (Founder ile 2026-08-28 akşamı kararlaştı):
+        ① Karar istemeyen üç iş kontrolcü eliyle kapanır ve Founder gözü yalnız
+        kapanışta gerekir: BKM-DNT-A04 (önceliksiz Adım panele, ateşleme
+        onarımının ikizi), BKM-DNT-A08 (paket tazeliği nöbetinin kendi kanıtını
+        silmesi), KYN-YUZ-A02 (üç çapa Gözlemler'e, ateşlemiş Hatırlatıcılar'a).
+        ② BKM-DNT-A01 Founder ile birlikte: kırk üreticinin yüzey kararı, kalem
+        kalem ve gerekçesi ilana yazılarak; bu Adım A02 ile A11'i açar ve yayın
+        öncesi kapanmalıdır. ③ Hatırlatıcı turunun kalan yirmi kalemi; iki p1
+        çatıdadır ve doğrudan Founder hükmünü bekler. ④ BKM-DNT-A09 (editöre
+        bakan otuz dört dosyaya davranış nöbeti) kendi oturumunu ister.
+        YAPILMAYACAK: yeni ajan turu açılmaz, bulgu yeterince birikmiştir; bu
+        bakım rayı v1'in kritik yolunu (GOC-A08 → EKL-F6-A01 → YTK-A20 →
+        YTK-A22) yutmaz.
+
+        🌀 OTURUM 102 (2026-08-29) — MEVSİM RİTÜELİ KOŞTU VE ZAMAN EKSENİ
+        GERÇEĞE ÇEKİLDİ. Founder Ağustos mevsiminin adını sorguladı ve iki kusuru
+        birden gösterdi: ad kapalı ürünün adıyla çakışıyordu ve mevsimin tarif
+        ettiği iş bu ayda fiilen yapılan iş değildi. Ölçüm ikisini de doğruladı ve
+        üçüncü bir kusur daha buldu: Temmuz mevsimi yirmi dokuz gündür vadesi
+        geçmiş görünüyordu, çünkü on açık Adım taşıyan vitrin gövdesi hâlâ onun
+        altındaydı; buna karşılık ürünün kendi ekseninde Eylül'ü karşılayan hiçbir
+        halka yoktu ve elli dokuz açık Adımın tamamı vadesi 31 Ağustos'ta dolacak
+        bir mevsimin altında duruyordu.
+
+        Founder hükmüyle Ağustos "Çatı Mevsimi" adını aldı, Eylül "Lansman
+        Mevsimi" olarak açıldı ve açık iş taşıyan on bir gövde Eylül halkasına
+        devredildi. Devrin dağılımı şudur: altı gövde `çağır` kenarıyla, beş gövde
+        kendi dosyasındaki `mevsim` alanıyla bağlanmıştır ve bir bağ tek yerde
+        yazıldığı için hiçbir gövde iki yazımı birden taşımaz (MIM-1.3). Ağustos'ta
+        yalnız işi tamamen biten üç gövde tarihsel olarak kalmıştır.
+
+        SIZINTI SORUSU ÖLÇÜLDÜ VE CEVABI KAYDA GEÇSİN. Founder mevsimin kapalı
+        ürüne dair bir ifşa taşıyıp taşımadığını sordu. İçerik sızıntısı 2026-08-05
+        tarihinde bağımsız denetimle zaten ölçülmüş, ayarlanmış karar sabitleri
+        açık taraftan cerrahi olarak silinmiş ve nöbetçi içerik biçimli sızıntıyı
+        görecek biçimde büyütülmüştü; ölçüm bugün de o temizliğin yerinde durduğunu
+        gösterdi. Ölçülmemiş olan tek şey ad okumasıydı: bütün sızıntı ölçümleri 5
+        Ağustos'ta yapılmıştı, oysa kapalı ürünün adı 26 Ağustos'ta bağlanmıştı ve
+        yirmi bir günlük bu aralıkta adın anlamı değişmişti. Ad değişikliği bu
+        açığı kapatır.
+
+        SINIR VE KANIT: yalnız `ad` ile `ne` alanları değişmiştir, `FAZ-2026-AGUSTOS`
+        kodu korunmuştur ve hiçbir atıf kırılmamıştır. Kapı ölçümü sıfır hata ile
+        sıfır uyarı vermeye devam etmektedir; asıl kanıt `mevsim-vadesi-geçti`
+        tanısının kaybolmasıdır, çünkü Temmuz artık yalnız işi kapanmış bir gövde
+        sarmaktadır. Karne 347 Adım ile 288 tamamlanmış kalemi korur.
+
+        🔴 BU OTURUMUN AÇIK UCU: iki üretici ajan koşmaktadır ve ikisi de bir
+        makine donması yüzünden bir kez yarıda kalmıştır. VIT-KIMLIK-A07 ajanı
+        durmadan önce yirmi yeni satır simgesi çizmiştir ve simgeler diskte
+        `urun/eklenti/medya/simgeler/` altında izlenmeyen dosyalar olarak
+        durmaktadır; ölçüm üçünü açarak aile kuralına uyduklarını doğrulamıştır ve
+        Founder tamamını beğendiğini bildirerek uygulanmalarına hüküm vermiştir.
+        Ajan ikinci turda simgeleri çizelgeye bağladı ve TESLİM BAĞIMSIZ ÖLÇÜMLE
+        DOĞRULANDI: çizelgede kırk, diskte kırk satır simgesi vardır ve iki küme
+        birebir örtüşür, yani ne çizelgede karşılıksız ad ne diskte bağlanmamış
+        dosya kalmıştır; yeni kaynakların hiçbirine renk gömülmemiştir ve
+        hepsi yuvarlatılmış uç ölçüsünü taşır; üreteç sekiz yüz sekiz dosyalık
+        gövdeyi verir, yani elli iki kaynak ile yedi yüz elli altı varyant. Nöbet
+        beş ayrı sökme denemesiyle kanıtlanmıştır ve beşinde de süit kırmızıya
+        dönmüştür. Adım kapatılmamıştır, çünkü kapanışı üç şey birden ister:
+        Founder'ın canlı pencere bakışı, YUZ-4.2 maddesinin Founder onayı ve
+        geçişin bütün yüzeylerde uygulanması.
+
+        📐 TURUN ASIL BULGUSU BİR SINIRDIR VE KAYDA GEÇSİN: arayüz işaretlerinin
+        çoğunluğu vektörel ailenin fiziksel olarak ULAŞAMADIĞI yüzeylerde yaşar.
+        Komut paleti başlığı yalnız gömülü ikon yazı tipinin sözdizimini kabul
+        eder, bildirim ile tanı iletileri düz metindir ve durum çubuğu yalnız o
+        yazı tipini basabilir; aileye geçiş yalnız dört yüzeyde mümkündür, yani
+        ağaç öğesinin ikon alanı, panel ile etkinlik çubuğu ikonu, webview içindeki
+        işaretleme ve editör dekorasyonunun ikon alanı. Bunun sonucu şudur:
+        Adımın dördüncü görev maddesi tek bir iş değil iki ayrı iştir; ulaşılabilen
+        yüzeyde işaret aileden gelir, ulaşılamayan yüzeyde işaret kaldırılır ya da
+        metne çevrilir. İkinci yarı bir bilgi kaybı doğurduğu için Founder
+        kararıdır ve verilmemiştir. Ölçüm ayrıca şunu göstermiştir: kullanıcıya
+        görünen yüzeylerde doksan ayrı emoji kullanılmaktadır ve bunların elli
+        tanesi iki dil kaydında, yani doğrudan komut paleti başlıklarında yaşar.
+
+        ✅ VIT-GRAF-A18 DE TESLİM ETTİ VE DÖRT ÖLÇÜTÜN DÖRDÜ DE KARŞILANDI.
+        Motorun otuz tanı metni düzyazıya çekildi; ok işareti taşıyan yirmi dokuz
+        satırın tamamı ile dikey çizgiyle seçenek sıralayan dört kurucu tam cümleye
+        çevrildi. İpucu penceresi artık kaydın kırpılmamış gövdesini gösterir ve
+        kaynak satırını çalışma alanına göreli yazar; pano kopyası tam yolu
+        korumayı sürdürür ve bu ayrım nöbetlidir. Yol seçimi kayda değer: kırpma
+        SÖKÜLMEDİ, çünkü Adımın sınırı komut satırı çıktısının bilgi içeriğinin
+        değişmemesini şart koşar; tam gövde tanı kaydında ayrı bir alanda taşınır
+        ve onu yalnız ipucu okur. İpucu sağlayıcısının yorum satırlarını
+        korumaması açığı da aynı turda kapandı, dolayısıyla HTR-IPUCU-YORUM-KORUMASI
+        hatırlatıcısının beklediği dokunuş gerçekleşmiştir.
+
+        TURUN İKİ ÖĞRETİCİ ANI KAYDA GEÇSİN. Birincisi hijyen nöbetindeki kırmızının
+        teşhisidir: kontrolcü iki ihtimal önermişti ve ikisi de yanlıştı; gerçek
+        sebep, ajanın yorumu anlatırken yazdığı gövdenin gerçek bir yorum kapatma
+        imi taşıması ve yorumu erken kapatıp altındaki düzyazıyı koda çevirmesiydi.
+        Nöbet haklıydı ve onarım nöbeti gevşeterek değil kırık yorumu düzelterek
+        yapıldı. İkincisi ajanın kendi işini geri almasıdır: denetçiye eklediği bir
+        ikizi, hiçbir yüzeyin okumadığını ölçtükten sonra hak edilmemiş kapsam
+        sayıp geri almıştır.
+
+        KAPI KONTROLCÜ TARAFINDAN BAĞIMSIZ ÖLÇÜLDÜ ve ajanların sayıları kabul
+        edilmeden yeniden üretildi: çekirdek süiti bin yüz otuz dört sınamanın
+        tamamını, eklenti süiti beş yüz doksan sekiz sınamanın tamamını geçti;
+        iki tür denetimi de sıfır çıkış kodu verdi ve depo denetimi sıfır hata ile
+        sıfır uyarı verdi. Sınırın korunduğu birebir kanıtlandı: turun başında
+        saklanan denetim çıktısı ile turun sonundaki çıktı otuz yedi bin iki yüz
+        on altı baytla aynıdır ve aralarındaki fark boştur.
+
+        VIT-GRAF-A17 Adımı, kendisini bekleten dosya çakışması kalktığı için aynı
+        oturumda açıldı ve koşmaktadır. Üç ajanın hiçbiri kendi Adımını
+        kapatmayacaktır; dokuz Adımın kapanışı Founder'ın tek bir canlı pencere
+        turunda vereceği hükme bağlıdır ve turun hazırlığı yazılıdır.
+
+        🌙 OTURUM 102 GECESİ — DÖRT AJAN İNDİ, ORK-4 BORCU KAPANDI, 0.9.167
+        PAKETLENDİ. Dört üretici ajan koştu ve dördünün de teslimi kontrolcü
+        tarafından bağımsız ölçümle doğrulandı; hiçbiri kendi Adımını kapatmadı,
+        çünkü on ikisinin kapanışı Founder'ın tek bir canlı pencere turuna
+        bağlıdır.
+
+        ① VIT-KIMLIK-A07: yirmi yeni satır simgesi çizelgeye bağlandı ve aile
+        yirmiden kırka çıktı; çizelge ile disk birebir örtüşür. Turun asıl bulgusu
+        bir sınırdır: arayüz işaretlerinin çoğunluğu vektörel ailenin fiziksel
+        olarak ulaşamadığı yüzeylerde yaşar, çünkü komut paleti yalnız gömülü ikon
+        yazı tipini, bildirim ile tanı iletileri yalnız düz metni kabul eder.
+        Dolayısıyla geçiş iki ayrı iştir ve ikinci yarısı bilgi kaybı doğurduğu
+        için Founder kararıdır. YUZ-4.2 için madde taslağı yazıldı, kanona
+        inmedi.
+
+        ② VIT-GRAF-A18: motorun otuz tanı metni düzyazıya çekildi, ipucu penceresi
+        kaydın kırpılmamış gövdesini gösterir hâle geldi ve kaynak satırı çalışma
+        alanına göreli yazılır oldu; pano kopyası tam yolu korur. Kırpma
+        SÖKÜLMEDİ, çünkü Adımın sınırı komut satırı çıktısının değişmemesini şart
+        koşar; tam gövde tanı kaydında ayrı bir alanda taşınır. Sınırın korunduğu
+        birebir kanıtlandı: turun başındaki denetim çıktısı ile sonundaki çıktı
+        otuz yedi bin iki yüz on altı baytla aynıdır ve farkı boştur.
+        HTR-IPUCU-YORUM-KORUMASI hatırlatıcısının beklediği dokunuş da bu turda
+        gerçekleşti.
+
+        ③ VIT-GRAF-A17: satır içi kopyalama düğmesi üç panele geldi, sağ tık
+        girdileri yerinde kaldı ve iki yol tek komuta iner. Ajan yolda gerçek bir
+        çökmeyi bulup onardı: Fikirler panelinin proje satırında kopyalama
+        tanımsız alan okumasıyla çöküyordu ve kusur 0.9.162 ile proje kademesi
+        açıldığında doğmuştu.
+
+        ④ KPS-ADA-A01 (iki turda): ORK-4 çapraz proje ad alanı motorda karşılandı.
+        Belirteçleyici `::` ayracını tanır, kimlik indeksi kardeş proje köklerini
+        okur, niteliksiz kod yalnız kendi projesinde çözülür ve tesadüfî küresel
+        eşleşme bağ sayılmaz; `mevsim` ile `çağır` ad alanlı hedefi kabul eder ve
+        eklentinin gezinme yüzeyleri de tanır. Ardından Founder hükmüyle birleşik
+        yol koşuldu ve doksan dokuz atıf ad alanlı yazıma çevrildi. ÖLÇÜLEN
+        SONUÇ: laboratuvar elli dört hatadan ÜÇ hataya, orkestrasyon kırk yedi
+        hatadan SEKİZ hataya, çatı görünümü üç yüz seksen iki hatadan İKİ YÜZ
+        DOKSAN İKİ hataya indi; sarmal sıfırda kaldı ve o depoya hiç yazılmadı.
+        Dokuz dosyanın dokuzunda da değişen her satır yalnız önek taşır ve bu
+        satır satır sınandı. Founder'ın canlı bulgusu kapandı: Çatı Mevsimi artık
+        yalnız sarmalın kendi gövdelerini sarıyor.
+
+        ⑤ PRF-A06: Founder'ın kasma şikâyetinin teşhisi ölçümle kondu ve şikâyetin
+        sandığı yerde değildi. Blok genişletmenin kendisi ucuzdur, çünkü altmış
+        Adımın etki kapanışı on bir milisaniye sürer; ağırlık genişletmenin içine
+        düştüğü TUR PENCERESİNDEDİR, çünkü her kayıt iki tam turu bölünmez senkron
+        bloklar hâlinde koşturur. İki onarım yapıldı: topolojik sıra kenar
+        imzasıyla bellenir ve olay tetikli tur odaktaki varlığa daralır. Kazanç
+        ölçüldü: dört projeli çalışma alanında hesap çekirdeği iki bin dört yüz
+        kırk iki milisaniyeden iki virgül dokuz milisaniyeye indi, yani tur başına
+        iki bin dört yüz otuz dokuz milisaniyelik bloke süre kalktı. Soğuk açılış
+        bilinçli olarak tam kalır. AJANIN BİLDİRDİĞİ DAVRANIŞ DELTASI KAYDA
+        GEÇSİN: dar tur, odak dışındaki varlığın çapraz tanılarını silmez fakat
+        tazelemez, ayrıca odak sarmal iken çapraz denetim çatı kökü yerine sarmal
+        kökünden koşar; bu, çatı kökünden koşulan denetimin sahte hata ürettiği
+        bilinen kusur karşısında daha doğrudur, buna karşılık Sorunlar panelindeki
+        sayıyı değiştirebilir ve Founder'ın turunda özellikle bakılacak kalem
+        budur. Çekirdekteki karesel topolojik sıra yerinde durur ve ayrı bir
+        Adımın konusudur.
+
+        ⑥ BKM-DNT-A08 (iki turda): paket tazeliği nöbeti kendi kanıtını silmeyi
+        bıraktı. Kusur önce birebir üretildi, sonra süitin ortasındaki derleme
+        çağrısı kaldırıldı; bayat gövdeyle üç ardışık koşunun üçü de kırmızı, taze
+        gövdeyle üçü de yeşildir ve gövde zaman damgası hiç oynamaz. İkinci turda
+        kendi yan etkisi kapatıldı: lisans atfı nöbetleri gövde yokken çökmek
+        yerine sebebini söyleyerek atlar ve gövdeden bağımsız dört hüküm koşmayı
+        sürdürür.
+
+        📦 GECENİN SON HÂLİ — 0.9.168 ÜRETİLDİ VE FOUNDER TARAFINDAN KURULDU.
+        Simge ailesi yüzeye indi: koni kartı ile konuşma kartı bütünüyle aileye
+        geçti ve yirmi beş işaret tüketici kazandı. Mekanizma gömülü SVG'dir,
+        çünkü `img` etiketi `currentColor` çözmez ve simgeyi temadan koparırdı;
+        böylece hiçbir yere ham renk yazılmadı ve her simge `aria-hidden` taşıyıp
+        metinsel etiketin yanında durur, yerine geçmez. Aile üç yeni üyeyle kırk
+        üçe çıktı (anayasa, politika, tercih) ve bu üçü Founder'ın gözünü bekler.
+        Dört üye hâlâ bağlanmamıştır: üçü yalnız dosya izni yüzünden bekler ve
+        biri ağaç açıklamasına ait olduğu için ulaşılamaz yarıdadır. Aynı turda
+        Katman teknoloji bağı da ad alanlı hedefi tanır hâle geldi.
+
+        KAPI (kontrolcü ölçümü, bütün ajanlar indikten sonra): çekirdek süiti bin
+        yüz elli dokuz, eklenti süiti altı yüz yirmi bir sınamanın tamamını geçti;
+        iki tür denetimi sıfır çıkış kodu verdi ve sarmal denetimi sıfır hata ile
+        sıfır uyarı verdi. Gece başındaki tabanlar bin yüz yirmi yedi ile beş yüz
+        altmış sekizdi.
+
+        📦 PAKET 0.9.167 ÜRETİLDİ VE GÜNLÜK GİRDİSİ YAZILDI; kurulum Founder'ındır.
+        Paketleme sırasında gövde üretim kipinde derlendiği için ardından
+        geliştirme kipine geri alındı, çünkü küçültme lisans atfı nöbetinin izini
+        sürdüğü yolları siler; o kusur HTR-PAKETLEME-ATIF-NOBETINI-KIRIYOR
+        kaydında yaşar.
+
+        🔴 FOUNDER'IN GÖRDÜĞÜ DÖRT SORUN BAYAT PAKETTEN GELİYORDU VE BU KAYDA
+        GEÇSİN. Founder 05.19'da Sorunlar panelinde dört söz-dizim hatası gördü;
+        dördü de kapalı üründeki ad alanlı satırlara aitti ve dördü de iki nokta
+        ayracını tanımadığını söylüyordu. Ölçüm şudur: komut satırından koşan
+        denetim aynı dosyalarda sıfır söz-dizim hatası verir ve kurulu eklenti
+        0.9.165 sürümündedir, yani ayracı tanıyan motor pakete henüz girmemiştir.
+        Bu, HTR-SURUM-DAMGASI-TUZAGI hatırlatıcısının aynı gece birinci kademeye
+        yükseltilmesinin canlı kanıtıdır: asıl tuzak paketin üretilmemesi değil
+        kurulmamış olmasıdır.
+
+        🔔 HATIRLATICI TURU: iki kalem kanıtla kapandı ve biri yeni açıldı.
+        HTR-SURUM-DAMGASI-TUZAGI önceliğini indiren gerekçe yanlışlandığı için
+        birinci kademeye yükseltildi; HTR-IPUCU-YORUM-KORUMASI teslimi kaydına
+        işlendi fakat hedefiyle birlikte kapanacağı için açık bırakıldı; yeni
+        HTR-PAKETLEME-ATIF-NOBETINI-KIRIYOR kaydı açıldı, çünkü paketleme lisans
+        atfı nöbetini kırmakta ve nöbet kullanıcıya giden gövdeyi değil geliştirme
+        gövdesini ölçmektedir. Kalan on altı kalem Founder hükmü bekler.
+
+        📋 KAPI (kontrolcü ölçümü, dört ajan indikten sonra): çekirdek süiti bin
+        yüz elli beş sınamanın tamamını, eklenti süiti altı yüz on yedi sınamanın
+        tamamını geçti; iki tür denetimi sıfır çıkış kodu verdi ve sarmal denetimi
+        sıfır hata ile sıfır uyarı verdi.
+
+        🎯 FOUNDER'I BEKLEYEN ÜÇ HÜKÜM. Birincisi dört Blokun evidir: laboratuvar
+        ile orkestrasyonun hiçbir fazı o işi örtmez ve ikisi açıkça dışarıda
+        bırakır, dolayısıyla o Bloklar açık taraftaki Ağustos motor işinin kaydıdır
+        ve gerçek evleri sarmaldır; seçenekler mevsimde ad alanına izin vermek,
+        kapalı depolara mühendislik fazı açmak ya da Blokları sarmala taşımaktır.
+        İkincisi hiçbir depoda tanımlı olmayan üç hedeftir (FKR-TEK-CATI-ACIK-KAYNAK
+        ile iki CKR-GSTACK kaydı). Üçüncüsü ölçülen bir beyan sapmasıdır:
+        laboratuvardaki yayın takvimi dosyası kendi başlığında yerel kalacağını ve
+        gitignore kaydına girdiğini yazar, oysa dosya izlenmektedir ve gitignore
+        bütün sar dosyalarını açıkça izlemeye geri almaktadır.
+
+        ═══ OTURUM 102 · İKİNCİ VARDİYA — CANLI PENCERE TURU KOŞULDU ═══
+
+        🎯 YEDİ ADIM FOUNDER'IN GÖZÜYLE KAPANDI VE VİTRİN GRAFININ BÜTÜN ADIMLARI
+        BİTTİ. Tur on iki Adım olarak kuruldu ve yedisi bu vardiyada kapandı:
+        VIT-GRAF-A12, A14, A17, A18, A19, A20 ile VIT-POSTA-A05. Her kapanış
+        Adımın kendi onay alanına ölçümüyle ve gerekçesiyle indi; hiçbiri yalnız
+        beyana dayanmaz. Founder üç ekran kaydı ile altı ekran görüntüsü üretti ve
+        kontrolcü kayıtları kare kare ölçtü. Karne iki yüz seksen sekizden iki yüz
+        doksan beşe çıktı.
+
+        ⚖️ TURDA ÜÇ FOUNDER HÜKMÜ DOĞDU VE ÜÇÜ DE KAYDA GEÇTİ. Birincisi Fikirler
+        panelinin ölçütüne düşülen şerhtir: kabul metni üç projenin fikirlerinin
+        ayrı satırlarda toplanmasını ister, oysa ölçüm bütün fikirlerin tek projede
+        olduğunu gösterdi; sapmanın sebebi kusur değil 2026-08-28 tarihli hükümdür
+        ve o hüküm üç fikri açık depodan laboratuvara indirmiştir. İkincisi ipucu
+        penceresinin uzun kayıtta kesilmesine dair sınır beyanıdır: Founder onarım
+        yapılmamasına hükmetti, çünkü kayda tıklandığında kaynağın tam satırına
+        gidilmektedir ve taşan kayıt sayısı birkaç tanedir; kontrolcünün kaynak
+        satırını yukarı alma önerisi bu hükümle reddedilmiştir. Üçüncüsü ve en
+        kalıcısı şudur: ONAY YAZILDIĞINDA `onayBekler` ALANI KALKAR. Founder
+        Onaylar panelinden iki kapıyı onayladı, kaynağa dönüp alanın hâlâ durduğunu
+        gördü ve hükmü verdi; gerekçe ORK-1'dir, çünkü bekleme ilanı ile karar
+        kaydı birlikte durduğunda aynı olgu iki yerden okunur. Kapsam ölçüldü ve
+        üç depoda yedi Adım her iki alanı taşımaktadır; sapmayı panelin kendi onay
+        eylemi ürettiği için önce yazıcı onarılacaktır.
+
+        🔧 ORK-4 AD ALANI YÜRÜTME KENARLARINA İNDİ (KPS-ADA-A01 üçüncü tur).
+        Founder'ın panelinde gördüğü on bir sorun ölçüldü ve ikiye ayrıldı: dört
+        hata fazsız Bloklardan, yedi uyarı ise kopuk yürütme kenarlarından
+        geliyordu. Teşhis şudur: ayraç belirteçleyicide, kimlik indeksinde ve iki
+        denetim yüzeyinde tanınıyordu, fakat yürütme kenarını kuran tek modül olan
+        dag.ts ayraçtan habersizdi; graf düğümleri çıplak kodla anahtarlandığı için
+        ad alanlı hedef hiç bulunamıyordu. Doksan iki atıfın sessizce çözülüp
+        yedisinin kopmasının tek sebebi buydu, çünkü çözülenlerin hepsi referans,
+        uygular ve kullanır kenarlarıydı. ÖLÇÜLEN SONUÇ: laboratuvarın kopuk-zincir
+        uyarısı yediden sıfıra, toplam uyarısı on dörtten yediye indi; yedi kenar
+        kaybolmadı, kopuk sicilinden çapraz-proje siciline geçti. Çekirdek süiti
+        bin yüz elli dokuzdan bin yüz altmış yediye çıktı ve düşen sınama yoktur.
+        Dört mutasyonun dördü kırmızıyı gösterdi; en değerlisi denetim akışının
+        kapıya bağlılığını ölçendir, çünkü kapı argümanı silindiğinde bütün birim
+        nöbetleri yeşil kalıyor ve yedi uyarı sessizce geri dönüyordu.
+
+        🔴 KONTROLCÜNÜN İKİ HATASI BU KAYDA GEÇSİN. Birincisi bir yazım kusurudur:
+        kapanış onayı yazılırken zaten onay alanı taşıyan bir Adıma ikinci alan
+        eklendi ve motor ilk değeri okuduğu için tarihçe sessizce düşüyordu; kusur
+        Founder'ın panelinde görüldü, iki alan tek alanda birleştirildi ve tarihçe
+        korundu. İkincisi bir ölçüm kusurudur ve daha ağırdır: kontrolcü grep ile
+        ölçüp EKL-F6-A01 Adımının tanımlı olmadığı hükmünü verdi ve bu yanlış
+        öncülü bir ajan brifingine yazdı; ajan gezin aracıyla ölçtü ve Adımın
+        eklenti_olgunlastirma.sar dosyasının iki yüz on dördüncü satırında, çok
+        satırlı yazımla ve hizalama boşluklarıyla tanımlı olduğunu gösterdi. Aynı
+        tuzağa aynı oturumda ikinci kez düşülmüştür; ders kalıcı hafızaya yazıldı.
+
+        📦 PAKET 0.9.169 ÜRETİLDİ VE FOUNDER TARAFINDAN KURULDU. Eski paket
+        dosyaları Founder isteğiyle silindi ve dizinde yalnız yürürlükteki sürüm
+        kaldı. Paketlemeden sonra gövde geliştirme kipine geri alındı.
+
+        📋 KAPI (kontrolcü ölçümü): çekirdek süiti bin yüz altmış yedi, eklenti
+        süiti altı yüz yirmi bir sınamanın tamamını geçti; iki tür denetimi sıfır
+        çıkış kodu verdi. Depo denetimleri: sarmal sıfır hata ile sıfır uyarı,
+        laboratuvar üç hata ile yedi uyarı, orkestrasyon sekiz hata ile bir uyarı.
+
+        🎯 FOUNDER'I BEKLEYEN BİRİNCİ İŞ DEĞİŞMEDİ: dört fazsız Blokun evi. Panelde
+        kalan dört hata bunlardır ve seçenekler mevsimde ad alanına izin vermek,
+        kapalı depolara mühendislik fazı açmak ya da Blokları sarmala taşımaktır.
+        Turun kalan dört Adımı da Founder gözü beklemektedir: VIT-KIMLIK-A07,
+        VIT-KIMLIK-A04, PRF-A06 ve BKM-DNT-A08.
+
+        ═══ SONRAKİ OTURUMUN İŞ LİSTESİ — SIRAYLA ═══
+
+        Bu bölüm sonraki oturumun ilk okuduğu yerdir ve iş sırasına göre yazılmıştır.
+        Hiçbir kalem burada kapanmış sayılmaz; kapanan iş bu listeden çıkarılır ve
+        yerine ne yapıldığı yukarıdaki koşu paragraflarına yazılır.
+
+        ① CANLI PENCERE TURUNUN KALAN DÖRT ADIMI. Tur on iki Adım olarak kurulmuş
+        ve yedisi kapanmıştır; kalan dördü Founder gözü beklemektedir ve hiçbiri
+        kontrolcü tarafından kapatılamaz. Sırasıyla şunlardır. VIT-KIMLIK-A07 için
+        altı ölçütün beşi karşılanmıştır ve kalan tek engel YUZ-4.2 maddesinin
+        kanona inmesidir; madde metni Founder tarafından onaylanmıştır, yazılması
+        ikinci maddenin işidir. VIT-KIMLIK-A04 için beş ölçütün dördü 2026-08-22
+        tarihinde ölçülmüştür ve kalan tek şey temiz bir VS Code profilinde bir
+        kaynak dosyası açıldığında hiçbir teklif çıkmadığının, buna karşılık
+        renklerin geldiğinin gözle görülmesidir. PRF-A06 için onarım ölçülmüştür ve
+        tur penceresi iki bin dört yüz kırk iki milisaniyeden iki virgül dokuz
+        milisaniyeye inmiştir; Founder'ın bakması gereken şey blok genişletmenin
+        artık kasıp kasmadığı ve dar turun Sorunlar panelindeki sayıyı değiştirip
+        değiştirmediğidir. BKM-DNT-A08 için nöbet kendi kanıtını silmeyi bırakmıştır
+        ve ölçüm süittedir; Founder'ın bakacağı yüzey, kurulu paketin depodan eski
+        kaldığını panelin söyleyip söylemediğidir.
+
+        ② YUZ-4.2 MADDESİ KANONA İNECEK. Founder 2026-08-29 tarihinde yeni metni
+        onaylamıştır ve taslak üç değişiklik taşır: madde başlığı İkon Görüntü
+        Katmanı yerine Arayüz İşaret Katmanı olur, kural adı arayüzİşaretKatmanı
+        biçimine geçer ve kod YUZ-4.2 aynen korunur, böylece hiçbir atıf kırılmaz.
+        Hükmün özü şudur: arayüz işaretleri kilitli vektörel aileden gelir ve
+        kullanıcıya görünen yüzey metinlerinde emoji arayüz işareti olarak
+        kullanılamaz; emojinin meşru kaldığı iki alan ayrı ayrı sayılır ve bunlar
+        kaynak anlatımı ile takdir yüzeyidir. Zorlama alanı dürüstçe yazılmıştır:
+        mekanik zorlama bugün denetçide değil eklenti süitindedir ve kullanıcı
+        projelerine inen bir tanı bulunmadığı beyan edilmiş borç olarak
+        kaydedilmiştir. Madde indiğinde VIT-KIMLIK-A07 de kapanabilir hâle gelir.
+
+        ③ DÖRT FAZSIZ BLOKUN EVİ — FOUNDER HÜKMÜ. Sorunlar panelinde kalan dört
+        hata bunlardır ve başka hiçbir açık bulgu yoktur. Bloklar laboratuvarda
+        BLK-V1-BULGU-KAPATMA, orkestrasyonda BLK-ORK-ZEKA, BLK-RAY3 ve
+        BLK-SEF-HARITA kayıtlarıdır. Ölçüm şudur: kapalı tarafın hiçbir fazı bu işi
+        örtmemekte ve iki faz onu açıkça dışarıda bırakmaktadır. Seçenekler
+        üçtür ve karar Founder'ındır: mevsim alanında ad alanlı hedefe izin vermek,
+        kapalı depolara birer mühendislik fazı açmak ya da Blokları sarmala taşımak.
+        Kontrolcü önerisi üçüncüsüdür, çünkü bu Bloklar açık taraftaki Ağustos
+        motor işinin kaydıdır.
+
+        ④ VIT-POSTA-A02 ADIMININ AÇIK KALAN ÜÇ GÖREV MADDESİ. Founder'ın 2026-08-29
+        tarihli onayBekler hükmü karşılanmış ve kapatılmıştır, fakat Adım açık
+        kalmaya devam eder çünkü üç maddesi hiç koşulmamıştır: açılış tarama
+        maliyetinin gerçek sayılarla ölçülmesi, kapı tanıma yönteminde eski düz
+        metin yedeğinin emekli edilip edilmeyeceği kararı ve kapı kimlik çapasının
+        yinelenen Adım kodlarına karşı sağlamlaştırılması.
+
+        ⑤ İKİ NÖBET BORCU. Birincisi kapalı taraftadır ve ajan tarafından dürüstçe
+        bildirilmiştir: onayBekler çift beyanını yakalayan korpus nöbetinin erişimi
+        STR-3 gereği yalnız açık depodur, dolayısıyla orkestrasyonda aynı sapmanın
+        tekrarını bugün hiçbir nöbet ölçmemektedir. İkincisi nöbet hijyenidir:
+        simge-cizelgesi.test.ts dosyasındaki iki sınama başka bir dosyanın kurduğu
+        dil kapısına bağımlıdır ve tek başına koşturulduğunda "Yüzey dili etkin dil
+        kapısından bağlanmadı" diyerek kırmızı verir; tam süitte yeşildir. Simge
+        üzerinde çalışan biri tam da o dosyayı tek başına koşturur ve sahte kırmızı
+        görür.
+
+        ⑥ AÇIK DEPONUN UZAK ADRESİ YOKTUR VE BU BİLİNÇLİDİR. Bu oturumda üç depo
+        işlendi; laboratuvar ile orkestrasyon uzak adreslerine gönderildi, sarmal
+        ise yalnız yerelde işlendi çünkü uzak adresi hiç kurulmamıştır. İlk
+        gönderim YTK-A22 gereği canlı açılışa bırakılmıştır ve uzak adres eklemek
+        Founder hükmü ister; hiçbir oturum bunu kendiliğinden yapmaz.
+
+        SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
+        ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
         lansman takvimi işler. Yayın belge kararları (KRR-YBI) Founder
         onayını beklemektedir. Depo lansman gününe kadar özel kalır.
         """
