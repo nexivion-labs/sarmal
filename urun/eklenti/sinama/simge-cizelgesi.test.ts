@@ -25,6 +25,7 @@ import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import { ADIM_YASAM_DURUMLARI } from "../../cekirdek/src/durum.ts";
 import {
+  ARAYUZ_ISARETI, aileyeCevir, satirSvgGovdesi, govdeBellegiBosalt,
   EKSEN_TIPLERI, eksenSvgKaynagi, eksenSvgVaryanti, tipSimgesi,
   DOSYA_IKON_KAYNAGI, DOSYA_IKONU, SIMGE_RAFI,
   PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE,
@@ -32,6 +33,7 @@ import {
   ADIM_EVRESI, eksenDekorKararlari, eksenDekorKaydi,
 } from "../src/simge-cizelgesi.ts";
 import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
+import { YOL_METINLERI } from "../src/yuzey-metinleri.ts";   // VIT-KIMLIK-A07: iki kartın BASTIĞI metinler kaynaktan okunur
 
 const KOK = fileURLToPath(new URL("..", import.meta.url));
 const oku = (goreli: string): string => readFileSync(join(KOK, goreli), "utf8");
@@ -193,9 +195,9 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     cpSync(join(KOK, SIMGE_RAFI), join(gecici, "raf"), { recursive: true });
     rmSync(join(gecici, "raf", "uretilmis"), { recursive: true, force: true });
     const { yazilan } = uret({ RAF: join(gecici, "raf"), URETILMIS: join(gecici, "cikti") });
-    // 6 eksen × 3 evre × 2 tema = 36 · 20 satır × 9 anlam × 2 tema = 360 → 396
-    // (istasyon simgesi EKL-F7-A09 küme kimliğiyle katıldı: 19 → 20 satır)
-    assert.equal(yazilan.length, 396, "üretici 396 varyant dökmeli (6×3×2 eksen + 20×9×2 satır)");
+    // 6 eksen × 3 evre × 2 tema = 36 · 43 satır × 9 anlam × 2 tema = 774 → 810
+    // (A07 envanteri yirmi, otorite işaretleri üç simge ekledi: 20 → 43 satır)
+    assert.equal(yazilan.length, 810, "üretici 810 varyant dökmeli (6×3×2 eksen + 43×9×2 satır)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');
@@ -219,15 +221,27 @@ test("satır nöbeti: raf ile satır çizelgesi AYNI simgeleri kapsar — eksik 
     "raf ile çizelge ayrıştı; satır SVG'si silmek/eklemek çizelgeyle BİRLİKTE yapılır (VIT-KIMLIK-A03 dersi)");
   // KYN-YUZ-A01 ile aile on dokuza çıkmıştı (Fikir hanesi kendi simgesini
   // aldı); EKL-F7-A09 küme kimliğiyle YİRMİYE çıktı — çalışma alanı satırı
-  // artık sefer değil kendi İSTASYON simgesini taşır.
-  assert.equal(raf.length, 20, "satır ailesi YİRMİ simgedir (panellerin kayıt ve grup satırları, Onaylar eylemleri, Fikir satırı ve istasyon)");
+  // artık sefer değil kendi İSTASYON simgesini taşır. VIT-KIMLIK-A07
+  // envanteri, ailede karşılığı bulunmayan yirmi arayüz işareti daha saydı
+  // (koni kartı başlıkları, konuşma kartı hanesi, satır-içi dekorlar) ve
+  // aile KIRKA çıktı. Sayı bilerek güncellenmiştir; nöbetin değeri sayının
+  // kendisinde değil, güncellemenin sessiz olamamasındadır.
+  // A07'nin ikinci turunda koni kartının kural satırı aileye bağlanınca üç
+  // otorite işaretinin (anayasa · politika · tercih) ailede karşılığı olmadığı
+  // ölçüldü ve üçü çizildi; aile KIRK ÜÇE çıktı.
+  assert.equal(raf.length, 43, "satır ailesi KIRK ÜÇ simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti)");
 });
 
 test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler ve renk GÖMÜLMEZ (YUZ-4.1)", () => {
   for (const ad of SATIR_SIMGELERI) {
     const yol = satirSvgKaynagi(ad);
+    assert.ok(existsSync(join(KOK, yol)),
+      `satır nöbeti: ${yol} çizelgede ilan edilmiş ama RAFTA YOK — ilan ile kaynak birlikte doğar (VIT-KIMLIK-A07)`);
     const icerik = oku(yol);
-    for (const nitelik of ['viewBox="0 0 24 24"', 'fill="none"', 'stroke="currentColor"', 'stroke-width="1.7"'])
+    // Ölçü VIT-KIMLIK-A07 Adımının yazdığı çizim ölçüsüdür: yirmi dört birimlik
+    // kutu, dolgusuz gövde, currentColor konturu ve YUVARLATILMIŞ UÇLAR.
+    for (const nitelik of ['viewBox="0 0 24 24"', 'fill="none"', 'stroke="currentColor"',
+      'stroke-width="1.7"', 'stroke-linecap="round"', 'stroke-linejoin="round"'])
       assert.ok(icerik.includes(nitelik),
         `satır nöbeti: ${yol} çizim dilinden ayrılıyor — ${nitelik} yok`);
     assert.ok(!/#[0-9A-Fa-f]{3,8}\b/.test(icerik),
@@ -235,7 +249,7 @@ test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler v
   }
 });
 
-test("satır nöbeti: on dokuz satır simgesinin içeriği birbirinden FARKLIDIR — grup ile kayıt aynı simgeyi taşıyamaz", () => {
+test("satır nöbeti: satır simgelerinin içeriği birbirinden FARKLIDIR — grup ile kayıt aynı simgeyi taşıyamaz", () => {
   const icerikler = SATIR_SIMGELERI.map((ad) => oku(satirSvgKaynagi(ad)));
   for (let i = 0; i < icerikler.length; i++)
     for (let j = i + 1; j < icerikler.length; j++)
@@ -488,4 +502,224 @@ test("A06 performans: art arda belge değişimleri debounce ile TEK boyamaya ine
   assert.equal(boyamalar.length, 2,
     "A06 nöbeti: üç ardışık değişim gecikme sonunda TEK boyamaya inmeli");
   for (const a of context.subscriptions) a.dispose();
+});
+
+// ── ARAYÜZ İŞARETİ NÖBETİ (VIT-KIMLIK-A07 · Founder hükmü 2026-08-05) ───────
+//    Founder geliştirme ortamında emojiyle çizilmiş düğmeler gördü ve ayrımı
+//    verdi: emoji, KAYNAK METNİNİN kendi anlatımında (Adım ve Kural
+//    gövdelerindeki niyet cümleleri) ve ETMEN DAVRANIŞININ TAKDİR EDİLDİĞİ
+//    yüzeyde meşru bir anlatım aracıdır; buna karşılık kullanıcıya görünen
+//    arayüz işaretleri (düğme, satır, panel başlığı, durum çubuğu, ağaç öğesi,
+//    bildirim) kilitli vektörel aileden gelir.
+//
+//    Bu nöbet o ayrımı ÖLÇER ve gerilemeyi durdurur. Üç şeyi bilerek kapsam
+//    dışında tutar, çünkü oralarda emoji hükmen meşrudur:
+//      • KAYNAK ANLATIMI — .sar gövdeleri, kanonun gömülü aynası
+//        (gomulu-kanon.ts) ve dilin emoji eşad katmanı (emoji-yuz.ts): orada
+//        emoji bir arayüz işareti değil, dilin kendi yazımıdır.
+//      • TAKDİR YÜZEYİ — takdir.ts ve geribildirim kanalları: Founder'ın
+//        kadroya kalp notu emojiyle konuşur ve öyle kalır.
+//      • KOD YORUMU — geliştirici gözüne bakan iç kayıt kullanıcıya hiç
+//        ulaşmaz; bu yüzden ölçüm yorum bölgesini AYIRIR ve yalnız kod/dizgi
+//        bölgesini sayar.
+
+/** Bir TypeScript kaynağının YALNIZ kod/dizgi bölgesi — yorumlar atılır.
+ *  Ölçüm buradan geçer, çünkü kod yorumundaki emoji kullanıcıya ulaşmaz ve
+ *  Founder hükmüyle meşrudur; sayılırsa nöbet yanlış alarm üretir. */
+export function kodBolgesi(kaynak: string): string {
+  let blokYorum = false;
+  let kod = "";
+  for (const satir of kaynak.split("\n")) {
+    let j = 0;
+    let dizgi: string | undefined;
+    let k = "";
+    while (j < satir.length) {
+      const c = satir[j];
+      const c2 = satir.slice(j, j + 2);
+      if (blokYorum) { if (c2 === "*/") { blokYorum = false; j += 2; continue; } j++; continue; }
+      if (dizgi !== undefined) {
+        if (c === "\\") { k += satir.slice(j, j + 2); j += 2; continue; }
+        if (c === dizgi) dizgi = undefined;
+        k += c; j++; continue;
+      }
+      if (c === '"' || c === "'" || c === "`") { dizgi = c; k += c; j++; continue; }
+      if (c2 === "//") break;
+      if (c2 === "/*") { blokYorum = true; j += 2; continue; }
+      k += c; j++;
+    }
+    kod += k + "\n";
+  }
+  return kod;
+}
+
+/** Kod/dizgi bölgesindeki resimsi işaret sayısı (Unicode Extended_Pictographic). */
+export function arayuzEmojiSayisi(kaynak: string): number {
+  return [...kodBolgesi(kaynak).matchAll(/\p{Extended_Pictographic}/gu)].length;
+}
+
+/** SIFIR KUŞAK — bugün TEMİZ olan kullanıcı yüzeyleri. VIT-KIMLIK-A05 bu beş
+ *  panel kabuğunu hazır ikondan ve emojiden kurtardı; ölçüm 2026-08-29 günü
+ *  hepsinde SIFIRDIR ve sıfır kalmalıdır. Buraya bir emoji geri konursa süit
+ *  kırmızıya döner — Adımın "gerilemeyi nöbetle durdur" maddesi budur. */
+const SIFIR_KUSAK = [
+  "src/hatirlaticilar.ts", "src/bildirimler.ts", "src/fikirler.ts",
+  "src/posta-kutusu.ts", "src/posta-govde.ts",
+  "src/durum-cubugu.ts", "src/yuzey-cekirdek.ts", "src/satirici.ts",
+  "src/gorsel-esad.ts", "src/minigraf.ts", "src/nabiz.ts", "src/anahat.ts",
+  "src/cam.ts", "src/palet.ts", "src/dallar.ts", "src/gezinme.ts", "src/tamamlama.ts",
+] as const;
+
+/** BORÇ TAVANI — bugün HÂLÂ emoji taşıyan kullanıcı yüzeyleri ve ölçülmüş
+ *  sayıları. Bu kalemler Adımın DÖRDÜNCÜ görev maddesinin (geçişi bütün
+ *  yüzeylerde uygulamak) işidir ve ayrı bir turda kapanır. Tavan bir ÜST
+ *  sınırdır: sayı artarsa süit kırmızıya döner (gerileme durur), azalırsa
+ *  yeşil kalır (temizlik turu nöbete takılmaz). Ölçüm 2026-08-29. */
+const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [
+  ["src/yolharitasi.ts", 7],        // YALNIZ ağaç etiketi/açıklaması kaldı — webview aileye geçti (A07)
+  ["src/yol-dekor.ts", 5],          // DURUM_ROZET emoji kolonu
+  ["src/onizleme.ts", 2],           // önizleme webview'inin hata kutusu
+  ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekoru
+  ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekoru
+  ["src/minigraf-cekirdek.ts", 1],  // mini graf webview'inin hata satırı
+];
+
+test("arayüz nöbeti: SIFIR KUŞAK yüzeylerinde emoji SIFIRDIR (yorum bölgesi ayrılır, kaynak anlatımı kapsam dışıdır)", () => {
+  for (const dosya of SIFIR_KUSAK) {
+    const n = arayuzEmojiSayisi(oku(dosya));
+    assert.equal(n, 0,
+      `arayüz nöbeti: ${dosya} kod/dizgi bölgesinde ${n} emoji taşıyor — ` +
+      "kullanıcıya görünen işaret kilitli vektörel aileden gelir (Founder hükmü 2026-08-05). " +
+      "Emoji bir NİYET CÜMLESİNDEyse yorum bölgesine ait olmalıdır.");
+  }
+});
+
+test("arayüz nöbeti: borç tavanı AŞILAMAZ — temizlik yeşil kalır, gerileme kırmızıya döner", () => {
+  for (const [dosya, tavan] of BORC_TAVANI) {
+    const n = arayuzEmojiSayisi(oku(dosya));
+    assert.ok(n <= tavan,
+      `arayüz nöbeti: ${dosya} ölçümü ${n}, tavanı ${tavan} — yüzeye emoji GERİ KONDU. ` +
+      "Tavan yalnız temizlik yönünde, ölçülerek indirilir.");
+  }
+});
+
+test("arayüz nöbeti MUTASYONLA KANITLI: ölçüm dizgideki emojiyi yakalar, yorumdakine dokunmaz", () => {
+  // Kanıt gerçek üretim içeriği üzerinde verilir: bugün temiz olan bir panel
+  // kabuğu diskten okunur, ona bir emoji EKLENİR ve nöbetin düştüğü görülür.
+  const temiz = oku("src/hatirlaticilar.ts");
+  assert.equal(arayuzEmojiSayisi(temiz), 0, "mutasyon kanıtı: taban temiz olmalı");
+
+  // ① Dizgiye konan emoji YAKALANIR — gerileme yolu kapalıdır.
+  const dizgiMutanti = temiz.replace(
+    /^import /m, 'const sahteEtiket = "🔔 hatırlatıcı";\nimport ');
+  assert.ok(arayuzEmojiSayisi(dizgiMutanti) > 0,
+    "mutasyon kanıtı: dizgiye konan emoji nöbetten SESSİZCE geçti — nöbet yüzeyi korumuyor");
+
+  // ② Yoruma konan emoji YAKALANMAZ — meşru niyet cümlesi yanlış alarm üretmez.
+  const yorumMutanti = temiz.replace(/^import /m, "// 🔔 niyet cümlesi\nimport ");
+  assert.equal(arayuzEmojiSayisi(yorumMutanti), 0,
+    "mutasyon kanıtı: yorumdaki emoji yanlış alarm üretti — kaynak anlatımı kapsam DIŞIDIR");
+
+  // ③ Blok yorumu ve JSDoc da anlatımdır.
+  assert.equal(arayuzEmojiSayisi("/** 🍎 meyve anlatımı */\nconst a = 1;"), 0,
+    "mutasyon kanıtı: blok yorumundaki emoji yanlış alarm üretti");
+  assert.equal(arayuzEmojiSayisi('const a = "🍎";'), 1,
+    "mutasyon kanıtı: dizgideki emoji sayılmadı");
+});
+
+// ── WEBVIEW HANESİ NÖBETLERİ (VIT-KIMLIK-A07 · dördüncü görev maddesinin ─────
+//    ULAŞILABİLİR yarısı). Koni kartı ile konuşma kartı, işaretlerini artık
+//    kilitli aileden alır. Bu nöbetler üç şeyi ölçer: çizelgenin ailede gerçek
+//    karşılığı olduğunu, gömülü SVG'nin renk taşımadığını ve iki kartın BASTIĞI
+//    yüzey metinlerinde emoji kalmadığını.
+
+/** Nöbetin dosya okuyucusu — üretimdeki okuyucunun sınama ikizi. */
+const govdeOku = (goreli: string): string => oku(goreli);
+
+test("webview nöbeti: arayüz işareti çizelgesinin her karşılığı ailede GERÇEKTEN vardır", () => {
+  const aile = new Set<string>(SATIR_SIMGELERI);
+  for (const [isaret, ad] of Object.entries(ARAYUZ_ISARETI)) {
+    assert.ok(aile.has(ad),
+      `webview nöbeti: "${isaret}" işareti "${ad}" adına çevriliyor ama bu ad satır ailesinde yok — ` +
+      "çizelge ile aile ayrıştı; işaret eklemek simgeyi de eklemeyi gerektirir");
+    assert.ok(existsSync(join(KOK, satirSvgKaynagi(ad))),
+      `webview nöbeti: "${ad}" ailede ilanlı ama rafta kaynağı yok`);
+  }
+});
+
+test("webview nöbeti: gömülü SVG currentColor konturunu KORUR ve ham renk taşımaz (YUZ-4.1)", () => {
+  govdeBellegiBosalt();
+  for (const ad of SATIR_SIMGELERI) {
+    const govde = satirSvgGovdesi(ad, govdeOku);
+    assert.ok(govde.includes('stroke="currentColor"'),
+      `webview nöbeti: ${ad} gömülü gövdesi currentColor konturunu yitirmiş — webview'de tema rengini miras alamaz`);
+    assert.ok(!/#[0-9A-Fa-f]{3,8}\b/.test(govde),
+      `webview nöbeti: ${ad} gömülü gövdesinde somut renk var — renk yalnız tema rolünden gelir`);
+    assert.ok(govde.includes('aria-hidden="true"'),
+      `webview nöbeti: ${ad} gömülü gövdesi aria-hidden taşımıyor — ikon metinsel etiketi İKAME EDEMEZ (YUZ-4.2)`);
+    assert.ok(govde.startsWith("<svg ") && govde.endsWith("</svg>"),
+      `webview nöbeti: ${ad} gömülü gövdesi tek bir svg elemanı değil`);
+  }
+});
+
+/** İki webview kartının BASTIĞI yüzey metinleri. Kart gövdesi bu metinleri
+ *  aileyeCevir süzgecinden geçirir; süzgeç sonrası emoji kalırsa Founder'ın
+ *  2026-08-05 hükmü o yüzeyde çiğnenmiş demektir. */
+function kartYuzeyMetinleri(): Array<readonly [string, string]> {
+  return [
+    ["koni alanı görev", YOL_METINLERI.alan("görev")],
+    ["koni alanı kabul", YOL_METINLERI.alan("kabul")],
+    ["koni alanı sınır", YOL_METINLERI.alan("sınır")],
+    ["koni alanı dokunulmaz", YOL_METINLERI.alan("dokunulmaz")],
+    ["koni alanı referans", YOL_METINLERI.alan("referans")],
+    ["koni alanı rapor", YOL_METINLERI.alan("rapor")],
+    ["koni alanı yama", YOL_METINLERI.alan("yama")],
+    ["bağlı kurallar", YOL_METINLERI.bagliKurallar(3)],
+    ["bağlı kurallar sayısız", YOL_METINLERI.bagliKurallar()],
+    ["dosyada aç", YOL_METINLERI.dosyadaAc],
+    ["bağımlı düğümler", YOL_METINLERI.bagimliDugumler],
+    ["etkilediği düğümler", YOL_METINLERI.etkiledigiDugumler],
+    ["kenar notu geçişli", YOL_METINLERI.gecisli],
+    ["kenar notu doğrudan", YOL_METINLERI.dogrudan],
+    ["konuşma özeti", YOL_METINLERI.konusmaOzeti("12:00", "ETM-X", "10", "20", "3")],
+    ["konuşma becerileri", YOL_METINLERI.beceriler("BCR-X")],
+    ["ham istem", YOL_METINLERI.hamPrompt],
+    ["ham yanıt", YOL_METINLERI.hamYanit],
+  ] as const;
+}
+
+test("webview nöbeti: iki kartın bastığı yüzey metinlerinde süzgeç sonrası emoji SIFIRDIR", () => {
+  govdeBellegiBosalt();
+  for (const [ad, metin] of kartYuzeyMetinleri()) {
+    const cevrilmis = aileyeCevir(metin, govdeOku);
+    const kalan = [...cevrilmis.matchAll(/\p{Extended_Pictographic}/gu)].map((m) => m[0]);
+    assert.deepEqual(kalan, [],
+      `webview nöbeti: "${ad}" yüzeyinde ${JSON.stringify(kalan)} işareti aileye çevrilemedi — ` +
+      "ARAYUZ_ISARETI çizelgesine karşılığını ekle (ailede yoksa önce simgeyi çiz)");
+  }
+});
+
+test("webview nöbeti MUTASYONLA KANITLI: çizelgeden düşen işaret yüzeyde ÇIPLAK kalır ve nöbet düşer", () => {
+  govdeBellegiBosalt();
+  // ① Taban: koni kartının 'görev' başlığı süzgeçten emojisiz çıkar.
+  const baslik = YOL_METINLERI.alan("görev");
+  assert.ok(/\p{Extended_Pictographic}/u.test(baslik),
+    "mutasyon kanıtı: taban metin bir işaret taşımalı, yoksa nöbet boşa ölçer");
+  assert.ok(!/\p{Extended_Pictographic}/u.test(aileyeCevir(baslik, govdeOku)),
+    "mutasyon kanıtı: taban süzgeçten emojisiz çıkmalı");
+
+  // ② Mutasyon: çizelgeyi taklit eden bir süzgeç, o işareti TANIMASIN.
+  //    aileyeCevir çizelgeyi modül düzeyinde okuduğu için mutasyon burada
+  //    çizelgenin KENDİSİ üzerinden ölçülür: karşılığı olmayan bir işaret
+  //    dokunulmadan geçmelidir — sessizce SİLİNMEMELİDİR, çünkü silinen işaret
+  //    nöbetten de kaçar ve yüzey sessizce bozulur.
+  const tanimsiz = "🦖";
+  assert.equal(aileyeCevir(`${tanimsiz} deneme`, govdeOku), `${tanimsiz} deneme`,
+    "mutasyon kanıtı: çizelgede karşılığı olmayan işaret sessizce silindi — kayıp işaret nöbetten kaçar");
+
+  // ③ Kapsam kanıtı: çizelgedeki HER işaret gerçekten değişiyor mu?
+  for (const isaret of Object.keys(ARAYUZ_ISARETI)) {
+    const cikti = aileyeCevir(isaret, govdeOku);
+    assert.ok(cikti.startsWith("<svg "),
+      `mutasyon kanıtı: "${isaret}" işareti süzgeçten SVG olarak çıkmadı — çizelge satırı ölü`);
+  }
 });

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kart: bir düğümün koni özeti — başlık bandı ve gövde alanı taşıyan dikey kart. -->
+  <rect x="5.2" y="2.8" width="13.6" height="18.4" rx="2"/>
+  <path d="M5.2 8 H18.8"/>
+  <circle cx="12" cy="14.6" r="2.6"/>
+</svg>

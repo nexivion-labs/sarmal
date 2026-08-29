@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Anayasa: en yüksek otoritenin terazisi — direk, kaide ve iki kefeli kiriş. -->
+  <path d="M12 4.4 V20.4"/>
+  <path d="M7.6 20.4 H16.4"/>
+  <path d="M4 8 H20"/>
+  <path d="M4 8 L1.9 12.8 H6.1 Z"/>
+  <path d="M20 8 L17.9 12.8 H22.1 Z"/>
+</svg>

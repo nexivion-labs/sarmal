@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Referans: dayanılan hükmün açık kitabı — iki yaprak ve ortadaki sırt. -->
+  <path d="M12 7.6 A2.4 2.4 0 0 0 9.6 5.2 H3.6 V17.2 H9.6 A2.4 2.4 0 0 1 12 19.6 Z"/>
+  <path d="M12 7.6 A2.4 2.4 0 0 1 14.4 5.2 H20.4 V17.2 H14.4 A2.4 2.4 0 0 0 12 19.6 Z"/>
+</svg>

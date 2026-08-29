@@ -170,6 +170,37 @@ export const SATIR_SIMGELERI = [
   "ret",              // Onaylar karar düğmesi: ret (eski ⛔ emoji)
   "devam",            // taşan kenar listesinin '… +N daha' satırı
   "fikir",            // Fikirler panelinin kayıt satırı (KYN-YUZ-A01 · VIT-GRAF-A16)
+  // ── VIT-KIMLIK-A07 · envanterin eksik ilan ettiği yirmi işaret ─────────────
+  //    Founder 2026-08-05 hükmü: geliştirme ortamında görünen her işaret
+  //    kilitli vektörel aileden gelir. Aşağıdaki yirmi ad, envanterin ARAYÜZ
+  //    İŞARETİ sınıfına koyduğu ve ailede karşılığı BULUNMAYAN kalemlerdir;
+  //    her satırın yorumu, işaretin bugün hangi emojiyle ve hangi yüzeyde
+  //    çizildiğini söyler. Yüzeylere BAĞLANMA işi bu Adımın dördüncü görev
+  //    maddesidir ve ayrı bir turda yapılır — bu hane şimdilik ailenin
+  //    kapsamını ilan eder, tüketicisini değil.
+  "gorev",            // koni kartının 'görev' başlığı (eski 🎯 · yolharitasi webview)
+  "sinir",            // koni kartının 'sınır' başlığı (eski 🚧 · yolharitasi webview)
+  "dokunulmaz",       // koni kartının 'dokunulmaz' başlığı (eski 🛑 · yolharitasi webview)
+  "referans",         // koni kartının 'referans' başlığı (eski 📚 · yolharitasi webview)
+  "yama",             // koni kartının 'yama' başlığı (eski 🩹 · yolharitasi webview)
+  "kural",            // koni kartının 'bağlı kurallar' başlığı (eski 📏 · yolharitasi webview)
+  "kart",             // koni kartının kendi başlığı (eski 🃏 · yolharitasi webview)
+  "dogrudan",         // doğrudan kenar işareti (eski ⚡ · koni kartı etki listesi)
+  "gecisli",          // geçişli kenar işareti (eski 🌊 · koni kartı etki listesi)
+  "zaman",            // koşum dökümünün saati (eski 🕐 · konuşma kartı webview)
+  "kisi",             // koşum dökümünün ajan/insan tarafı (eski 👤 · konuşma kartı webview)
+  "jeton",            // koşumun token bütçesi (eski 🎫 · konuşma kartı webview)
+  "giden",            // ŞEF'in ham istemi (eski 📤 · konuşma kartı webview)
+  "gelen",            // etmenin ham yanıtı (eski 📥 · konuşma kartı webview)
+  "terfi",            // terfi bekleyen bellek dersi (eski 🎓 · yildiz satır-içi dekoru)
+  "kilit",            // ebedi/kilitli düğüm (eski 🔒 · Yol Haritası kural satırı)
+  "planlanmamis",     // mevsime bağlanmamış Blok (eski 🧊 · Yol Haritası sayaç satırı)
+  "tip",              // ipucu balonunun tip rozeti (eski 🧩 · hover markdown)
+  "konum",            // imlecin durduğu aktif varlık (eski 📍 · Yol Haritası açıklaması)
+  "beceri",           // etmenin beceri sayacı (eski ⚙️ · Yol Haritası etmen satırı)
+  "anayasa",          // kural otoritesi: anayasa (eski ⚖️ · koni kartı kural satırı)
+  "politika",         // kural otoritesi: politika (eski 📋 · koni kartı kural satırı)
+  "tercih",           // kural otoritesi: tercih (eski 🔧 · koni kartı kural satırı)
 ] as const;
 export type SatirSimgesi = (typeof SATIR_SIMGELERI)[number];
 
@@ -374,4 +405,102 @@ export function eksenDekorKaydi(
       } },
   );
   gorunenleriBoya();
+}
+
+// ── WEBVIEW HANESİ (VIT-KIMLIK-A07 · dördüncü görev maddesinin ULAŞILABİLİR ──
+//    yarısı). Founder 2026-08-05 hükmü arayüz işaretlerini kilitli vektörel
+//    aileye bağlar. Ölçüm, hükmün uygulanabildiği yüzeyin dört tane olduğunu
+//    gösterdi: ağaç öğesinin ikon alanı, panel ile etkinlik çubuğu ikonu,
+//    editör dekorasyonunun ikon alanı ve WEBVIEW İÇİNDEKİ İŞARETLEME. İlk üçü
+//    daha önceki hanelerde yaşar; bu hane dördüncüsünü kurar.
+//
+//    MEKANİZMA (ölçülmüş gerekçe): webview'e simge <img> ile değil GÖMÜLÜ SVG
+//    olarak girer. Gerekçe YUZ-4.1'dir — <img> etiketi currentColor ÇÖZMEZ ve
+//    simgeyi temadan kopuk sabit bir renge mahkûm eder; gömülü SVG ise
+//    kapsayıcısının renk rolünü miras alır, dolayısıyla renk değeri hiçbir
+//    yerde yazılmaz. Erişilebilirlik korunur: simge `aria-hidden` işaretlidir
+//    ve METİN ETİKETİN YERİNE GEÇMEZ, yalnız yanında durur (YUZ-4.2).
+
+/** Gömülü SVG önbelleği — aynı simge her boyamada diskten okunmaz. */
+const govdeBellek = new Map<string, string>();
+
+/**
+ * Bir satır simgesinin webview'e GÖMÜLECEK ham SVG gövdesi. `oku` parametresi
+ * dosya okuyucusudur ve çağıran tarafından verilir; bu modül `node:fs` bağımlısı
+ * DEĞİLDİR ve saflığını (vscode'suz, yan etkisiz) korur.
+ */
+export function satirSvgGovdesi(
+  ad: SatirSimgesi,
+  oku: (goreliYol: string) => string,
+): string {
+  let govde = govdeBellek.get(ad);
+  if (govde === undefined) {
+    govde = oku(satirSvgKaynagi(ad))
+      .replace(/^\s*<svg /, '<svg class="sr-simge" width="1em" height="1em" aria-hidden="true" focusable="false" ')
+      .replace(/\n\s*/g, " ")
+      .trim();
+    govdeBellek.set(ad, govde);
+  }
+  return govde;
+}
+
+/** Sınama kolaylığı: gömülü SVG önbelleğini boşaltır (mutasyon nöbeti kullanır). */
+export function govdeBellegiBosalt(): void { govdeBellek.clear(); }
+
+/**
+ * ARAYÜZ İŞARETİ ÇİZELGESİ — bugün yüzeylerde emojiyle çizilen her işaretin
+ * ailedeki karşılığı. Çizelge TEK KAYNAKTIR: bir yüzey "hangi simge" diye
+ * sormaz, metnini `aileyeCevir` süzgecinden geçirir ve karşılık buradan gelir.
+ * Böylece aynı emoji iki yüzeyde iki ayrı simgeye çevrilemez.
+ *
+ * Kapsam yalnız ULAŞILABİLİR yüzeylerdir. Ailenin fiziksel olarak ulaşamadığı
+ * yüzeyler (komut paleti başlığı yalnız codicon alır, bildirim ve tanı iletisi
+ * düz metindir, durum çubuğu yalnız codicon yazı tipi basar, ağaç öğesinin
+ * etiketi ve açıklaması resim taşımaz) bu çizelgenin dışındadır; oralardaki
+ * işaretin akıbeti Founder kararıdır ve bu Adımda hükme bağlanmamıştır.
+ */
+export const ARAYUZ_ISARETI: Readonly<Record<string, SatirSimgesi>> = {
+  "🃏": "kart",             // koni kartının başlığı
+  "🎯": "gorev",            // koni alanı: görev
+  "✅": "kabul",            // koni alanı: kabul
+  "🚧": "sinir",            // koni alanı: sınır
+  "🛑": "dokunulmaz",       // koni alanı: dokunulmaz
+  "📚": "referans",         // koni alanı: referans
+  "📄": "dosya",            // koni alanı: rapor
+  "🩹": "yama",             // koni alanı: yama
+  "📏": "kural",            // koni kartı: bağlı kurallar
+  "📂": "dosya",            // koni kartı: dosyada aç
+  "⬅️": "baglanti-geri",    // koni kartı: bağımlı olduğu düğümler
+  "➡️": "baglanti-ileri",   // koni kartı: etkilediği düğümler
+  "⚡": "dogrudan",         // kenar notu: doğrudan
+  "🌊": "gecisli",          // kenar notu: geçişli
+  "🔒": "kilit",            // ebedi kural
+  "⚖️": "anayasa",          // kural otoritesi: anayasa
+  "📋": "politika",         // kural otoritesi: politika
+  "🔧": "tercih",           // kural otoritesi: tercih
+  "🔬": "kosum",            // konuşma kartının başlığı
+  "🕐": "zaman",            // konuşma özeti: saat
+  "👤": "kisi",             // konuşma özeti: ajan
+  "🎫": "jeton",            // konuşma özeti: token
+  "⚙️": "beceri",           // konuşma kartı: beceriler
+  "📤": "giden",            // konuşma kartı: ham istem
+  "📥": "gelen",            // konuşma kartı: ham yanıt
+};
+
+const ISARET_DESENI = new RegExp(
+  Object.keys(ARAYUZ_ISARETI)
+    .sort((a, b) => b.length - a.length)   // uzun eşleşme önce: "⚙️" (VS16'lı) "⚙"den önce denenir
+    .map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|"), "gu");
+
+/**
+ * Bir yüzey metnindeki her arayüz işaretini ailedeki karşılığıyla değiştirir.
+ * Çizelgede karşılığı olmayan işaret DOKUNULMADAN geçer — sessizce silinmez,
+ * çünkü kaybolan bir işaret nöbetten de kaçar; kalanı arayüz nöbeti sayar.
+ */
+export function aileyeCevir(metin: string, oku: (goreliYol: string) => string): string {
+  return metin.replace(ISARET_DESENI, (e) => {
+    const ad = ARAYUZ_ISARETI[e];
+    return ad ? satirSvgGovdesi(ad, oku) : e;
+  });
 }

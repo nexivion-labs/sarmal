@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Kilit: gerekçesiz açılmayan ebedi hüküm — kapalı gövde ve boyunduruk. -->
+  <rect x="4.4" y="10.4" width="15.2" height="9.6" rx="1.8"/>
+  <path d="M8 10.4 V7.6 a4 4 0 0 1 8 0 V10.4"/>
+  <path d="M12 14 V16.4"/>
+</svg>

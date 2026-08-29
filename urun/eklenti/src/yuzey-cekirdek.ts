@@ -500,9 +500,13 @@ export function kayitGorunumu(kayit: YuzeyKaydi): KayitGorunumu {
     satirKodu: kod,
     kodluEtiket: kodluEtiket(kod, etiket),
     aciklama: kayitAciklamasi(dosyaAdi, t.satir),
+    // VIT-GRAF-A18: pencere kaydın kırpılmamış gövdesini gösterir. Kırpma satır
+    // etiketinin işidir ve `etiket` alanında kalır; tanının taşıdığı kırpılmamış
+    // ikiz varsa ipucu onu okur, yoksa davranış eskisi gibi kısa cümleye düşer.
     ipucu: kayitIpucu({
       kod: t.kod, duzey: t.duzey, mesaj: t.mesaj,
       dosya: kayit.dosya, satir: t.satir, sutun: t.sutun, oneri: t.oneri,
+      tamMesaj: t.tamMesaj,
     }),
     dosya: kayit.dosya,
     satir: t.satir,
@@ -558,6 +562,20 @@ export function panoAdedi(dugum: PanoDugumu): number {
 }
 
 /**
+ * Bir küme düğümünün kayıtları GERÇEKTEN tanı kaydı mıdır? Karar kaydın
+ * kendisine bakılarak verilir, düğümün etiketine bakılarak değil: üç panelin
+ * ağacı da `proje` adlı bir kademe çizer, fakat o kademenin altında yaşayan
+ * kayıt her panelde aynı şey değildir. Tanımadığı kümeye `undefined` dönülür ve
+ * uydurma bir blok panoya yazılmaz.
+ */
+function taniKumesi(kayitlar: readonly unknown[] | undefined): readonly YuzeyKaydi[] | undefined {
+  if (!Array.isArray(kayitlar)) return undefined;
+  const tanili = kayitlar.every(
+    (k) => typeof k === "object" && k !== null && "tani" in k);
+  return tanili ? (kayitlar as readonly YuzeyKaydi[]) : undefined;
+}
+
+/**
  * Bir panel ağacı düğümünü panoya kopyalanabilir kümeye çevirir.
  *
  * ÇEVİRİ TEK YERDE YAŞAR. İki panelin düğümleri aynı çekirdek tiplerini taşır
@@ -565,20 +583,31 @@ export function panoAdedi(dugum: PanoDugumu): number {
  * aynı satırın iki panelde farklı metin üretmesine yol açardı. Tanınmayan düğüm
  * için `undefined` döner ve çağıran sessizce hiçbir şey kopyalamaz; uydurma bir
  * blok panoya yazılmaz.
+ *
+ * DÜĞÜM ETİKETİ YETMEZ, TAŞIDIĞI KAYIT DA ÖLÇÜLÜR (VIT-GRAF-A17 · 2026-08-29
+ * ölçümü). Fikirler paneli de bir `proje` düğümü çizer ve o düğümün kümesi tanı
+ * kaydı değil Fikir kaydı taşır; çevirici yalnız `tur` etiketine baktığı sürece
+ * o kümeyi kendi evreninden sanıyor ve `tani.mesaj` okunamadığı için komut
+ * çöküyordu. Kusur ölçülmüş ve sondayla yeniden üretilmiştir. Onarım, kümenin
+ * kabul şartını etiketten KAYDA taşır: yabancı küme artık `undefined` döner,
+ * çağıran zinciri sıradaki panele devreder ve her panel kendi kaydını kendi
+ * metniyle konuşur. Bu, kusurun sınıfını kapatır — panel ağacına yarın eklenecek
+ * başka bir `proje` kümesi de aynı kapıdan elenir.
  */
 export function panoDugumu(oge: unknown): PanoDugumu | undefined {
   if (typeof oge !== "object" || oge === null || !("tur" in oge)) return undefined;
   const d = oge as {
     tur: string;
-    kume?: { proje?: ProjeKimligi; dosya?: string; kayitlar?: readonly YuzeyKaydi[] };
+    kume?: { proje?: ProjeKimligi; dosya?: string; kayitlar?: readonly unknown[] };
     kayit?: YuzeyKaydi;
   };
   if (d.tur === "kayıt" && d.kayit?.tani) return { tur: "kayıt", kayit: d.kayit };
-  if (d.tur === "proje" && d.kume?.proje && d.kume.kayitlar) {
-    return { tur: "küme", baslik: d.kume.proje.ad, kayitlar: d.kume.kayitlar };
+  const kayitlar = taniKumesi(d.kume?.kayitlar);
+  if (d.tur === "proje" && d.kume?.proje && kayitlar) {
+    return { tur: "küme", baslik: d.kume.proje.ad, kayitlar };
   }
-  if (d.tur === "dosya" && d.kume?.dosya && d.kume.kayitlar) {
-    return { tur: "küme", baslik: d.kume.dosya, kayitlar: d.kume.kayitlar };
+  if (d.tur === "dosya" && d.kume?.dosya && kayitlar) {
+    return { tur: "küme", baslik: d.kume.dosya, kayitlar };
   }
   return undefined;
 }

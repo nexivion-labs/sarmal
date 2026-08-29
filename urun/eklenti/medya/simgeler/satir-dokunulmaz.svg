@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Dokunulmaz: sekizgen dur işareti ve içindeki çarpı — el sürülmeyen alan. -->
+  <path d="M8.6 3.6 H15.4 L20.4 8.6 V15.4 L15.4 20.4 H8.6 L3.6 15.4 V8.6 Z"/>
+  <path d="M9.4 9.4 L14.6 14.6"/>
+  <path d="M14.6 9.4 L9.4 14.6"/>
+</svg>

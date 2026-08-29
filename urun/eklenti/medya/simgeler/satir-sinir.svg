@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sınır: geçilmeyecek çizgi — bariyer kirişi, iki ayağı ve eğik şeritleri. -->
+  <rect x="2.8" y="7.4" width="18.4" height="4.6" rx="0.9"/>
+  <path d="M6.8 12 V20.6"/>
+  <path d="M17.2 12 V20.6"/>
+  <path d="M9.2 7.4 L12.6 12"/>
+  <path d="M14.4 7.4 L17.8 12"/>
+</svg>
