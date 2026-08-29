@@ -16,7 +16,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -86,9 +86,37 @@ test("A04: yazı tipinin diskteki künyesi bildirimde YAZAN ölçümle birebirdi
 //   telif sahibi, telif satırı ve lisans adının hem NOTICE.md hem de pakedin
 //   kendisiyle giden eklenti/LICENSE.md içinde anıldığını ölçer. Bir kitaplık
 //   gövdeye girip atıf metinlerinden birine girmezse süit kızarır.
+//
+//   GÖVDE YOKSA BU NÖBETLER ÇÖKMEZ, SEBEBİNİ SÖYLEYEREK ATLAR. Derlenmiş gövde
+//   bir yapı ürünüdür, depoda izlenmez ve süitin ÖN KOŞULUDUR; süit onu kendisi
+//   üretmez. Bu dosya 2026-08-29 tarihine kadar gövdeyi modül yükleme anında
+//   koşulsuz okuyordu, dolayısıyla gövdesi olmayan bir ağaçta dosyanın TAMAMI
+//   bir dosya bulunamadı hatasıyla çöküyor ve gövdeye hiç bağlı olmayan dört
+//   A04 nöbetini de beraberinde götürüyordu. Kusur o tarihe kadar bir yarışın
+//   arkasında gizliydi: kardeş duman sınaması süitin ortasında derleyiciyi
+//   çağırıp gövdeyi yazıyor ve yarışı genellikle kazanıyordu. O yan etki
+//   kaldırılınca davranış belirli hâle geldi ve depoyu yeni klonlayan bir
+//   katılımcının göreceği ilk şey anlaşılır bir atlama iletisi değil bir çökme
+//   olurdu. Bu yüzden gövdeye bağlı üç A05 hükmü kardeşlerinin (paket-tazeligi
+//   ve paket-girisi-duman) atlama desenine çevrilmiştir ve ileti onlarla aynı
+//   dili konuşur. Nöbetlerin ÖLÇTÜĞÜ şey değişmemiştir: gövde varken üçü de
+//   bugünkü sertlikte koşar, değişen yalnız gövde YOKKEN verilen cevaptır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const GOVDE = oku("../dist/eklenti.js");
+const GOVDE_YOLU = fileURLToPath(new URL("../dist/eklenti.js", import.meta.url));
+
+/** Gövde bir yapı ürünüdür ve depoda izlenmez; yoksa A05 nöbetleri sebebini söyleyerek atlar. */
+const govdeVar = existsSync(GOVDE_YOLU);
+
+/** Atlama gerekçesi; kardeş nöbetlerdeki metinle birebir aynıdır ve okuyanı derlemeye yönlendirir. */
+const GOVDE_YOK = "dist/eklenti.js henüz derlenmemiş — önce `npm run build` koşulur";
+
+/**
+ * Gövde yoksa boş dizedir, fakat aşağıdaki üç nöbeti koruyan şey bu boş dize
+ * değil atlama koşuludur: iz araması boş gövdede zaten başarısız olur ve bu
+ * güvenli yöndür, çünkü sessiz bir yeşil değil açık bir kırmızı üretir.
+ */
+const GOVDE = govdeVar ? readFileSync(GOVDE_YOLU, "utf8") : "";
 
 interface KitaplikKaydi {
   ad: string;
@@ -159,7 +187,7 @@ const KITAPLIKLAR: KitaplikKaydi[] = [
   },
 ];
 
-test("A05: gövdede iz sürülen her kitaplık gerçekten gömülü kalmıştır", () => {
+test("A05: gövdede iz sürülen her kitaplık gerçekten gömülü kalmıştır", { skip: govdeVar ? false : GOVDE_YOK }, () => {
   for (const k of KITAPLIKLAR)
     assert.ok(GOVDE.includes(k.izYolu),
       `${k.ad} için beklenen kaynak yol izi gövdede yok: "${k.izYolu}". `
@@ -167,7 +195,7 @@ test("A05: gövdede iz sürülen her kitaplık gerçekten gömülü kalmıştır
       + "hâlâ gömülüyse esbuild çıktısı değişmiş olabilir ve iz güncellenmelidir.");
 });
 
-test("A05: gövdeye gömülü her kitaplık NOTICE.md içinde tam olarak anılır", () => {
+test("A05: gövdeye gömülü her kitaplık NOTICE.md içinde tam olarak anılır", { skip: govdeVar ? false : GOVDE_YOK }, () => {
   for (const k of KITAPLIKLAR) {
     if (!GOVDE.includes(k.izYolu)) continue; // yalnız gövdede gerçekten bulunanlar zorunludur
     for (const [alanAdi, deger] of Object.entries({
@@ -178,7 +206,7 @@ test("A05: gövdeye gömülü her kitaplık NOTICE.md içinde tam olarak anılı
   }
 });
 
-test("A05: gövdeye gömülü her kitaplık PAKETLE GİDEN LICENSE.md içinde de tam olarak anılır", () => {
+test("A05: gövdeye gömülü her kitaplık PAKETLE GİDEN LICENSE.md içinde de tam olarak anılır", { skip: govdeVar ? false : GOVDE_YOK }, () => {
   for (const k of KITAPLIKLAR) {
     if (!GOVDE.includes(k.izYolu)) continue;
     for (const [alanAdi, deger] of Object.entries({

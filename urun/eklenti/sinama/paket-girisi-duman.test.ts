@@ -1,26 +1,36 @@
 // paket-girisi-duman.test.ts — VS Code açmadan gerçek dağıtım girişini yükler.
-// Kaynak modülleri değil, `node esbuild.mjs` ile o anda üretilmiş ve
-// package.json içinde ilan edilmiş CJS girişini sınar.
+// Kaynak modülleri değil, package.json içinde ilan edilmiş CJS girişini sınar.
+//
+//   BU SINAMA NEDEN ARTIK DERLEME YAPMAZ. Bu dosya 2026-08-29 tarihine kadar
+//   sınamanın ilk işi olarak `node esbuild.mjs` koşturuyor ve derlenmiş gövdeyi
+//   süitin ORTASINDA yeniden yazıyordu. Yan etkinin bedeli kardeş nöbette
+//   ölçülmüştür: paket tazeliği nöbeti gövdenin tanı sicili kaynağından eski
+//   olmadığını sınar, dolayısıyla bayat bir gövdeyle koşan ilk tur kırmızı
+//   yanar, aynı tur buradaki derleme sayesinde gövdeyi tazeler ve ikinci tur
+//   yeşile döner; nöbet ölçtüğü kusurun kanıtını kendi eliyle siler ve
+//   kararsız görünür. İkinci bir bedel daha vardır: gövde süit koşarken
+//   yeniden yazıldığı için aynı gövdeyi metin olarak okuyan kardeş sınamalar
+//   yarım yazılmış bir dosya görebilir. Derleme bu yüzden süitin bir adımı
+//   değil ÖN KOŞULUDUR ve `npm run build` ile koşulur; gövde yoksa bu sınama
+//   sebebini söyleyerek atlar. Atlama deseninin emsali kardeş nöbettir
+//   (paket-tazeligi.test.ts).
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PAKET_YOLU = fileURLToPath(new URL("../package.json", import.meta.url));
 const EKLENTI_KOKU = dirname(PAKET_YOLU);
+const paket = JSON.parse(readFileSync(PAKET_YOLU, "utf8")) as { main: string };
+const giris = resolve(EKLENTI_KOKU, paket.main);
 
-test("barınaksız duman: paketlenmiş giriş yüklenir ve activate fonksiyondur", () => {
-  execFileSync(process.execPath, ["esbuild.mjs"], {
-    cwd: EKLENTI_KOKU,
-    encoding: "utf8",
-    stdio: "pipe",
-  });
+/** Gövde bir yapı ürünüdür ve depoda izlenmez; yoksa sınama sebebini söyleyerek atlar. */
+const govdeVar = existsSync(giris);
 
-  const paket = JSON.parse(readFileSync(PAKET_YOLU, "utf8")) as { main: string };
-  const giris = resolve(EKLENTI_KOKU, paket.main);
+test("barınaksız duman: paketlenmiş giriş yüklenir ve activate fonksiyondur", { skip: govdeVar ? false : "dist/eklenti.js henüz derlenmemiş — önce `npm run build` koşulur" }, () => {
   const yukleyici = String.raw`
     const assert = require("node:assert/strict");
     const Module = require("node:module");
