@@ -1382,9 +1382,17 @@ export const EKLENTI_KABUK_METINLERI = {
 export const IZ_METINLERI = {
   denetimCoktu: (hata: string): string => yuzeyMetni(`⛔ denetim turu çöktü: ${hata}`, `⛔ validation run failed: ${hata}`),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
-  performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number }): string => yuzeyMetni(
-    `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}`,
-    `🔬 ${p.saat} validation run: ${p.sure} ms · ${p.dosya} files · trigger=${p.tetik} | intervening events: ${p.olaylar} · filtered ${p.suzulen} · skipped ${p.atlanan} · deferred ${p.ertelenen}`,
+  performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string }): string => yuzeyMetni(
+    `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
+    `🔬 ${p.saat} validation run: ${p.sure} ms · ${p.dosya} files · trigger=${p.tetik} | intervening events: ${p.olaylar} · filtered ${p.suzulen} · skipped ${p.atlanan} · deferred ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
+  ),
+  // 📄 PRF-KP-A02: denetim turu satırının belge bölümü. Açma sayısı sabit
+  // sıfırdır ve açıkça yazılır, çünkü turun belge açmadığı iddiası ancak gözle
+  // okunur bir sayıyla doğrulanır; sayı sabittir, çünkü turun kabuğunda belge
+  // açan bir üye yoktur ve olmaması tip düzeyinde zorlanır (tur-belgesi.ts).
+  turBelgeleri: (p: { aciktan: number; diskten: number; atlanan: number; okunanBayt: number }): string => yuzeyMetni(
+    `belgeler: açıktan ${p.aciktan} · diskten ${p.diskten} · atlanan ${p.atlanan} · açma 0 · okunan ${p.okunanBayt} bayt`,
+    `documents: from editor ${p.aciktan} · from disk ${p.diskten} · skipped ${p.atlanan} · opened 0 · read ${p.okunanBayt} bytes`,
   ),
   get olayYok(): string { return yuzeyMetni("olay yok", "no events"); },
   izTuru: (saat: string, sure: number, tetik: string): string => yuzeyMetni(

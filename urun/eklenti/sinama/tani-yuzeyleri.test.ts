@@ -434,7 +434,10 @@ test("toplu tarama yayını canlı yolda gerçekten kapatılır: eklenti döngü
   const sonu = kaynak.indexOf("const denetimKilidi");
   assert.ok(basi > 0 && sonu > basi, "denetleHepsi gövdesi eklenti kaynağında bulunamadı");
   const govde = kaynak.slice(basi, sonu);
-  assert.ok(govde.includes("...capraz], false)"),
+  // Yayın bayrağı ÜÇÜNCÜ argümandır ve `false` olmalıdır; desen dördüncü argümanı
+  // (turun kendi ağacından gelen program) kabul eder, çünkü nöbetin ölçtüğü şey
+  // çağrının şekli değil YAYININ KAPALI olmasıdır.
+  assert.ok(/\.\.\.capraz\], false[,)]/.test(govde),
     "toplu tarama döngüsü dağıtımı yayın AÇIKKEN çağırıyor; panel her belgede yeniden çizilir");
   assert.ok(govde.includes("taniSil(doc.uri, false)"),
     "toplu tarama döngüsündeki tanı silme yayını kapatmıyor; tur içinde ara çizim doğar");
@@ -444,7 +447,11 @@ test("toplu tarama yayını canlı yolda gerçekten kapatılır: eklenti döngü
   // Tek-dosya yolu yayını KAPATMAZ: bir tuş vuruşunda panel tazelenmelidir.
   const tekDosyaBasi = kaynak.indexOf("const denetle = (");
   assert.ok(tekDosyaBasi > 0 && tekDosyaBasi < basi, "tek-dosya denetleme yolu bulunamadı");
-  assert.ok(kaynak.slice(tekDosyaBasi, basi).includes("...cross]);"),
+  // Yayın bayrağı eskiden atlanıp varsayılana bırakılıyordu; 2026-08-29'dan beri
+  // AÇIKÇA `true` yazılır, çünkü aynı çağrı artık dördüncü argümanı da taşır ve
+  // atlanan bir bayrak okuyanı yanıltırdı. Ölçülen şey yine aynıdır: tek-dosya
+  // yolu yayını KAPATAMAZ, yoksa yazarken hatırlatıcılar tazelenmez.
+  assert.ok(/\.\.\.cross\], true[,)]/.test(kaynak.slice(tekDosyaBasi, basi)),
     "tek-dosya yolu da yayını kapatmış; hatırlatıcılar yazarken tazelenmez");
 });
 

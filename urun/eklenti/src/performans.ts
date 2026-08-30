@@ -30,6 +30,23 @@ export interface TurBilgi {
    * geldiği okunamaz bir sayı olurdu.
    */
   kapsam?: string;
+  /**
+   * 📄 PRF-KP-A02: turun belgelerinin nereden geldiğinin sayımı ve diskten
+   * okunan toplam bayt. Kanal satırının sonuna dikey çizgiyle ayrılmış bir
+   * belge bölümü olarak düşer; bölümün biçimi yüzey metinlerinde yaşar. Bölüm
+   * isteğe bağlıdır, çünkü mercek belge toplamayan bir turu da özetleyebilir
+   * ve orada uydurma bir sıfır basmak ölçüm değil boşluk gösterirdi.
+   */
+  belgeler?: {
+    /** Editörde zaten açık olduğu için okunmayan dosya sayısı. */
+    açıktan: number;
+    /** Diskten ham okunan dosya sayısı. */
+    diskten: number;
+    /** Okunamadığı ya da dili `sarmal` olmadığı için turun dışında kalan dosya sayısı. */
+    atlanan: number;
+    /** Diskten okunan ham bayt toplamı; kanalda yuvarlanmadan bayt olarak yazılır. */
+    okunanBayt: number;
+  };
 }
 
 /** Tetik etiketini kapsam işaretiyle birleştirir — dar tur kanalda görünür
@@ -76,10 +93,19 @@ export class PerformansMercegi {
     const olayDökümü = [...this.olaylar.entries()]
       .map(([kaynak, sayı]) => `${kaynak} ${sayı}`)
       .join(" · ") || IZ_METINLERI.olayYok;
+    // 📄 PRF-KP-A02: belge bölümü yalnız verildiğinde basılır. Bayt toplamı
+    // yuvarlanmadan, ham bayt olarak yazılır; kilobayta yuvarlamak tek baytlık
+    // okumayı bir kilobayt gösterir ve sayıyı ölçüm olmaktan çıkarırdı.
+    const belgeler = bilgi.belgeler
+      ? IZ_METINLERI.turBelgeleri({
+          aciktan: bilgi.belgeler.açıktan, diskten: bilgi.belgeler.diskten,
+          atlanan: bilgi.belgeler.atlanan, okunanBayt: bilgi.belgeler.okunanBayt,
+        })
+      : undefined;
     const satır = IZ_METINLERI.performansTuru({
       saat, sure: bilgi.süreMs, dosya: bilgi.dosyaSayısı, tetik: tetikEtiketi(bilgi),
       olaylar: olayDökümü, suzulen: this.süzülen, atlanan: this.atlanan,
-      ertelenen: this.ertelenen,
+      ertelenen: this.ertelenen, belgeler,
     });
     this.olaylar.clear();
     this.süzülen = 0;

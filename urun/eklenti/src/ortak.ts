@@ -65,7 +65,12 @@ export function rozetRenkleri(): typeof ROZET_YEDEK {
 
 /** Belgeden yukarı yürüyüp oz/siniflama/kayit.json'u bulur (önbellekli); varsa
  *  çalışma-alanı örtüsüyle (oz/siniflama/ortu.json) enum'ları ADDITIVE birleştirir. */
-export function snfBul(doc: vscode.TextDocument): Siniflama | undefined {
+/** Bu iki işlevin belgeden istediği tek şey KİMLİKTİR; imza `TextDocument`
+ *  yerine o en az yüze bağlanır ki tur yolu diskten kurulan kayıtla da
+ *  çalışsın (PRF-A06 · turun `openTextDocument` bağımlılığı söküldü). */
+type KimlikliBelge = { readonly uri: vscode.Uri };
+
+export function snfBul(doc: KimlikliBelge): Siniflama | undefined {
   const yol = yukariAra(doc, path.join("oz", "siniflama", "kayit.json"));
   let taban: Siniflama;
   if (!yol) {
@@ -123,7 +128,7 @@ export function simgeSec(snf: Siniflama, tipAd: string, aile: string): string | 
   return snf.tipSimgeleri?.[tipAd] ?? snf.aileSimgeleri?.[aile];
 }
 
-function yukariAra(doc: vscode.TextDocument, goreli: string, kardesGeriDusus = true): string | undefined {
+function yukariAra(doc: KimlikliBelge, goreli: string, kardesGeriDusus = true): string | undefined {
   const dizin = path.dirname(doc.uri.fsPath);
   // Örtü (ortu.json) varlığa özeldir: kardeş taramadan ÖNCE dur — OS örtüsü
   // _Sarmal görünümüne sızmasın (STR-3). Yalnız taban kanon kardeşten ödünç alınır.

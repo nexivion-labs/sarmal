@@ -50,7 +50,7 @@ Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
 
       Adım( kod: PRF-TA-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A01 ],
         referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
-        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR, KOD-TUR-BELGESI ],
         ne:       "🔧 Tur görüntüsünün üretilmesi ve tek yayın. Denetim turu zaten bütün dosyaları ayrıştırıp mevsim çevrimini uygulamaktadır; eksik olan bu sonucun tek bir kayıt olarak yayınlanmasıdır." ) {
         görev:    [
           "Turun program haritası, yol kümesi, kırık ve okunamayan sayıları `TurGoruntusu` olarak toplanır ve turun tek yayın noktasında bildirilir.",

@@ -2,6 +2,30 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.173 — 2026-08-30 (belge turu kapıdan geçiyor)
+
+- **Denetim turu kanal satırı artık belgelerin nereden geldiğini sayıyla yazıyor.** Satırın sonuna dikey çizgiyle ayrılmış bir belge bölümü eklendi: açıktan, diskten, atlanan, açma ve okunan ham bayt. Açma sayısı sabit sıfırdır ve açıkça yazılır, çünkü turun belge açmadığı iddiası ancak gözle okunur bir sayıyla doğrulanır; ilk üç sayının toplamı taranan dosya sayısına eşittir. Bayt sayısı diskten okunan ham baytın toplamıdır, çözülmüş metnin uzunluğu değildir ve yuvarlanmaz.
+- **Diskten okunan kaydın satırları VS Code belge modeliyle aynı sözleşmede bölünüyor.** Eski sözleşme yalnız yeni satırda bölüyor ve CRLF dosyada her satırın sonunda taşıyıcı dönüş bırakıyordu; tanı aralığı rastlantıyla doğru çıkıyordu. Yalnız taşıyıcı dönüşle biten dosya bilinçle kapsam dışıdır: VS Code onu üç satır, disk kaydı tek satır sayar ve sözcükleyici yeni satırı saydığı için disk kaydı motorla uyumludur.
+- **Kapalı bir dosyanın dil eşlemesi tur kapsamını değiştirmez ve bu bir davranış farkıdır.** Turun kapsamı dosya araması evreniyle, yani `.sar` uzantısıyla belirlenir; kapalı dosyanın dil kimliği yoktur ve onu öğrenmenin tek yolu belgeyi açmaktır, oysa açmak 0.9.170 ile sökülen kusurun kendisidir. Eski tur `files.associations` ile başka bir dile eşlenmiş kapalı `.sar` dosyalarını sessizce eliyordu; yeni tur onları denetler. Açık belgede dil süzgeci korunur, çünkü kullanıcı o belgeyi bilinçle başka dile almıştır.
+- **Editörün açmayı reddettiği büyüklükteki dosya artık turdan düşmüyor.** Eski tur onu sessizce eliyordu; yeni tur diskten okur ve boyut sınırı koymaz. Okunan toplam ham bayt kanal satırına düşer ki anormal büyüme görünür olsun.
+- **Program haritasının kurulumu editör kabuğundan saf modüle indi.** Açık belge paylaşılan sürüm anahtarlı önbellekten, disk kaydı doğrudan ayrıştırmadan gelir ve disk kaydı önbelleğe yazılmaz; söz dizimi kırık belge haritaya girmez. Kurulum artık editör kabuğu olmadan sınanabilir.
+
+## 0.9.172 — 2026-08-29 (Fikir programı çağırandan gelir · tip denetimi sıfırlandı)
+
+- **Tanı dağıtım noktası artık kendi ayrıştırma önbelleğini çağırmıyor; programı çağıran veriyor.** Kusur tip denetimiyle bulundu ve sessiz kalacak sınıftandı: paylaşılan önbellek belge SÜRÜMÜNE anahtarlıdır, oysa turun diskten okuduğu kaydın sürümü yoktur. Sürümsüz bir kayıt bir kez yazıldığında sonsuza dek taze sayılır ve dosya diskte değişse bile Fikirler paneli o dosya için bayat kalırdı. Editör yolu programı yine paylaşılan önbellekten, tur yolu ise turun kendi ağacından verir; ikinci bir ayrıştırma hiçbir yolda doğmaz.
+- **Sınama kapsamının tip denetimi temizlendi.** İki üretici araç düz ESM JavaScript'tir ve bildirim dosyaları olmadığı için onları içe aktaran altı satır editörde kırmızı görünüyordu; sınama kapsamı bu dosyaların tiplerini kaynağın kendisinden çıkaracak biçimde ayarlandı. Ölçüm: beş yapılandırmanın beşi de sıfır tip hatası verir. Elle bildirim dosyası yazmak ikinci bir yüz üretip bayatlayacağı için seçilmedi.
+
+## 0.9.171 — 2026-08-29 (git görünümü dosyanın yerine geçemez)
+
+- **Açık belge haritası artık yalnız `file` şemasındaki belgeleri alıyor.** Bir önceki sürümde tur, açık belgeleri yalnız dosya yoluna göre eşliyordu; oysa editörün açık belge listesi dosyaların yanında git karşılaştırma görünümlerini, çıktı kanallarını ve adsız tamponları da taşır ve bunların yolu aynı dosyayı gösterir. Süzgeçsiz eşleme, bir dosyanın tanısını onun git'teki ESKİ sürümünden üretebiliyordu; kullanıcı o zaman kaynağında bulunmayan bir hatayı panelde görür ve hatayı kendi dosyasında arardı. Kusur canlı pencerede değil kod okumasıyla bulundu ve iki nöbetle bağlandı.
+
+## 0.9.170 — 2026-08-29 (tur artık dosya açmıyor)
+
+- **Olay-tetikli denetim turu hiçbir `.sar` dosyasını `openTextDocument` ile açmıyor.** Founder'ın canlı penceresinde ölçülen tur otuz dört buçuk saniye sürüyordu ve bu sürenin yalnız yaklaşık yedi saniyesi gerçek işti: iki yüz yetmiş altı dosyanın ayrıştırılması ile doğrulanması iki bin yüz kırk dört, çapraz denetim ise sarmal kökünde beş yüz yetmiş dokuz milisaniye ölçüldü. Geri kalan yaklaşık yirmi yedi saniye, her dosya için bir belge modeli kurup dil hizmetlerini uyandıran açma çağrısıydı; oysa turun belgeden istediği yalnız metin, satırlar ve kimliktir.
+- **Editörde zaten açık olan belge daima önceliklidir.** Açık belge bellekten alınır ve o dosya için disk hiç okunmaz; böylece kaydedilmemiş bir düzenlemenin tanısı diskteki eski metinden üretilmez ve panel kullanıcının gördüğü metni anlatır.
+- **Kapsam ve budama davranışı değişmedi.** Tur yine bütün çalışma alanını gezer, Onaylar kuyruğu yine turun kendi ağacından beslenir ve panel kayıtlarının budanması aynı kümeyle yapılır; bu sürümde değişen tek şey belgenin nereden geldiğidir.
+- **Karar saf modüle indi ve nöbete bağlandı.** Belge toplama mantığı editör kabuğundan ayrıldı; beş nöbet açık belge önceliğini, disk yolunu, okunamayan dosyanın turu düşürmemesini, dil süzgecini ve satır yüzünü ölçer ve açık belge önceliği kaldırıldığında süit kırmızıya döner.
+
 ## 0.9.169 — 2026-08-29 (ad alanı yürütme kenarlarına indi)
 
 - **Başka projedeki bir Adıma kurulan `bağımlı` ve `besler` kenarı artık çözülüyor.** ORK-4 ayracı bugüne dek belirteçleyicide, kimlik indeksinde ve iki denetim yüzeyinde tanınıyordu; yürütme kenarını kuran graf çekirdeği ise ayraçtan habersizdi. Graf düğümlerini çıplak kodla anahtarladığı için `PRJ-A::KOD-X` yazımlı hedef hiçbir zaman bulunamıyor ve kenar kopuk sayılıyordu. Görünen yüzü şuydu: aynı hedef `referans` kenarında sessizce çözülürken `bağımlı` kenarında kopuk-zincir uyarısı basıyordu.

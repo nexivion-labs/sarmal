@@ -210,8 +210,26 @@ test("fikir paneli: İKİNCİ TARAMA KURULMAZ — kayıtlar paylaşılan ayrış
   const cagrilar = EKLENTI_KAYNAK.match(/fikirleriTopla\(/g) ?? [];
   assert.equal(cagrilar.length, 1,
     `Fikir toplayıcısı ${cagrilar.length} yerden çağrılıyor; ikinci bir toplama yolu doğmuş`);
-  assert.ok(/const fikirProgrami = programAl\(doc\);/.test(EKLENTI_KAYNAK),
-    "Fikir kayıtları paylaşılan ayrıştırma önbelleğinden okunmuyor; ikinci bir ayrıştırma doğmuş");
+  // Program DAĞITIM NOKTASINDA üretilmez, çağırandan gelir. Mekanizma 2026-08-29
+  // tarihinde değişti ve gerekçesi ölçülmüş bir kusurdur: `programAl` önbelleği
+  // belge SÜRÜMÜNE anahtarlıdır, diskten okunan kaydın sürümü yoktur ve sürümsüz
+  // bir kayıt bir kez yazıldığında sonsuza dek taze sayılırdı; dosya diskte
+  // değişse bile Fikirler paneli bayat kalırdı. Nöbetin ölçtüğü şey mekanizma
+  // değil, İKİNCİ BİR AYRIŞTIRMANIN DOĞMAMASIDIR.
+  assert.ok(/const fikirProgrami = program;/.test(EKLENTI_KAYNAK),
+    "Fikir programı dağıtım noktasında üretiliyor; çağırandan gelmeli");
+  const dagitimGovdesi = /function yuzeylereDagit\([\s\S]*?\n\}/.exec(EKLENTI_KAYNAK)?.[0] ?? "";
+  assert.ok(dagitimGovdesi.length > 0, "yuzeylereDagit gövdesi bulunamadı");
+  for (const yasak of ["programAl(", "ayristir(", "belirtecle("]) {
+    assert.ok(!dagitimGovdesi.includes(yasak),
+      `dağıtım noktası kendi ayrıştırma yolunu kuruyor (${yasak}); ikinci bir ayrıştırma doğmuş`);
+  }
+  // İki çağıran da programı ZATEN elinde olan kaynaktan verir: editör yolu
+  // paylaşılan sürüm-anahtarlı önbellekten, tur yolu turun kendi ağacından.
+  assert.ok(/\.\.\.cross\], true, programAl\(doc\)\)/.test(EKLENTI_KAYNAK),
+    "tek-dosya yolu programı paylaşılan önbellekten vermiyor");
+  assert.ok(/\.\.\.capraz\], false, programlar\.get\(fsPath\)\)/.test(EKLENTI_KAYNAK),
+    "tur yolu programı turun kendi ağacından vermiyor; ikinci bir ayrıştırma doğar");
   // Panelin kendisi hiçbir veri yolu ya da tazeleme ritmi kurmaz.
   for (const yasak of ["findFiles", "openTextDocument", "readFile", "setInterval", "setTimeout",
     "createFileSystemWatcher", "workspace.fs"]) {

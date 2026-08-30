@@ -27,7 +27,8 @@ import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
 import { varlikDosyasiBul } from "./kanon-kesif.ts";
-import { programAl, belgeKapandi } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
+import { programAl, belgeKapandi } from "./onbellek.ts";
+import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
 import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";  // EKL-F11-A01/A05: kimlik indeksi (çekirdekte — MCP/CLI ile ortak)
 import { gezinmeKaydi } from "./gezinme.ts";               // EKL-F11-A02/A03: F12 · ⇧F12 · F2 · ⌘T
 import { imzaSaglayici } from "./imza.ts";                 // EKL-F11-A04: ( imza yardımı
@@ -306,7 +307,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // Tek-dosya (anlık) + son taramanın ÇAPRAZ tanıları (önbellekten) — panel
     // dalgası kapanır (proje taraması çapraz tanıları düzenlemede de görünür kalır).
     const cross = caprazOnbellek.get(doc.uri.fsPath) ?? [];
-    yuzeylereDagit(doc, [...tanilaCekirdek(doc), ...cross]);   // MIM-1.1 ②: yayın aktif-varlık süzgecinden geçer
+    yuzeylereDagit(doc, [...tanilaCekirdek(doc), ...cross], true, programAl(doc));   // MIM-1.1 ②: yayın aktif-varlık süzgecinden geçer
   };
 
   // DİSKTEKİ .sar — çalışma alanı geneli tarama + ORK-1.2 CROSS-FILE DAG döngü denetimi:
@@ -328,17 +329,46 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne olayları süzülmeden kalır;
     // çekirdek YOKSAY kanonuyla da aynı evren (denetci.ts disk yürüyüşü onlara inmez).
     const dosyalar = await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB);
-    const programlar = new Map<string, Program>();
-    const doclar = new Map<string, vscode.TextDocument>();
-    for (const uri of dosyalar) {
-      try {
-        const doc = await vscode.workspace.openTextDocument(uri);
-        if (doc.languageId !== "sarmal") continue;
-        doclar.set(uri.fsPath, doc);
-        const program = programAl(doc);   // EKL-F9-A06: editör süsleriyle AYNI önbellek
-        if (program) programlar.set(uri.fsPath, program);
-      } catch { /* söz-dizim kırık: tanila tek-dosyada yakalar, DAG'a girmez */ }
-    }
+    // ⚡ PRF-A06 KALICI ONARIMI (2026-08-29 · Founder kararı): tur artık HİÇBİR
+    // dosyayı `openTextDocument` ile AÇMAZ. Ölçüm şuydu: otuz dört buçuk
+    // saniyelik turun yalnız yaklaşık yedi saniyesi saf çekirdekteydi (iki yüz
+    // yetmiş altı dosyanın ayrıştırılması ile `dogrula` iki bin yüz kırk dört
+    // ms, çapraz denetim sarmal kökünde beş yüz yetmiş dokuz ms); geri kalan
+    // yaklaşık yirmi yedi saniye iki yüz yetmiş altı belge AÇMA çağrısıydı.
+    // Karar saf modüldedir (tur-belgesi.ts) ve burası yalnız kabuktur; kabuğun
+    // hiçbir üyesi belge açmaz. Açık editör bellekten I/O'suz gelir ve DAİMA
+    // önceliklidir, çünkü kaydedilmemiş düzenlemenin tanısı diskteki eski
+    // metinden üretilirse panel kullanıcının gördüğü metni anlatmaz.
+    // Şema süzgeci zorunludur: `textDocuments` git karşılaştırma görünümlerini ve
+    // çıktı kanallarını da taşır, onların `fsPath` değeri aynı yolu gösterir ve
+    // süzgeçsiz bir harita dosyanın tanısını git'teki ESKİ sürümünden üretirdi.
+    const açıkBelgeler = açıkBelgeHaritası(vscode.workspace.textDocuments);
+    // 🛡️ PRF-KP-A05: erişim sınırı — kök dışı ya da dışlanan yol `oku` üyesine
+    // ulaşmaz; merceğin "taranan" sayısı da bu süzülmüş listeden gelir ki kanaldaki
+    // özdeşlik (açıktan + diskten + atlanan = taranan) yapısal olarak korunsun.
+    const yollar = erisimSiniri(dosyalar.map((u) => u.fsPath), (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+    const { belgeler: doclar, sayaç: belgeSayacı, okunanBayt } = await turBelgeleriniTopla(
+      yollar,
+      {
+        açıkBelge: (fsPath) => açıkBelgeler.get(fsPath),
+        dilKimliği: (fsPath) => açıkBelgeler.get(fsPath)?.languageId,
+        oku: async (fsPath) => {
+          try {
+            const uri = vscode.Uri.file(fsPath);
+            const ham = await vscode.workspace.fs.readFile(uri);
+            // PRF-KP-A02: bayt sayısı çözmeden önce ham tampondan alınır; çözücü
+            // bayt sırası imini soyar ve geçersiz baytı yer tutucuya çevirir.
+            return { belge: diskBelgesi(uri, new TextDecoder("utf-8").decode(ham)), bayt: ham.byteLength };
+          } catch { return undefined; }   // silinmiş/erişilemeyen dosya turu DÜŞÜRMEZ
+        },
+      });
+    // 📄 PRF-KP-A02: program haritası saf modülde kurulur (tur-belgesi.ts) ve
+    // editör kabuğu olmadan sınanır. Açık belge paylaşılan sürüm-anahtarlı
+    // önbellekten okunur (EKL-F9-A06: editör süsleriyle AYNI parse); diskten
+    // gelen kaydın sürümü yoktur ve önbelleği kirletmemesi için doğrudan
+    // ayrıştırılır. Söz dizimi kırık belge haritaya girmez: tek-dosya yolu
+    // onu yakalar, DAG'a girmez.
+    const programlar = turProgramlariniKur(doclar, açıkBelgeler, programAl);
     // 🕰️ MIM-1.2 ③ (zaman-ekseni turu): mevsim çevrimi TANI turunda da koşar — Blok'un `mevsim:`
     // kenarı sanal çağır'a normalize edilmeden hiyerarsiTanilari fazsız-blok basardı
     // (Founder saha bulgusu 2026-07-19: panel yolu çevrimliydi, tanı yolu çevrimsiz
@@ -426,7 +456,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // Üçüncü argüman YAYINI KAPATIR. Tam tarama yüzlerce belge gezer; her belgede
       // çizim tetiklenseydi Bildirimler paneli tur başına onlarca kez yeniden
       // çizilirdi. Turun tek yayını aşağıda, döngü bittikten sonra yapılır.
-      yuzeylereDagit(doc, [...tanilaCekirdek(doc), ...capraz], false);   // MIM-1.1 ②
+      yuzeylereDagit(doc, [...tanilaCekirdek(doc), ...capraz], false, programlar.get(fsPath));   // MIM-1.1 ②
     }
     // Bu turda görülmeyen (kapanmış/dışlanmış) dosyaların bayat çapraz önbelleği
     // temizlenir — silinen tanı düzenlemede geri gelmesin.
@@ -445,9 +475,13 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // sekiz `openTextDocument` çağrısıydı ve bu bildirimle sıfıra iner.
     anaGoruntuyuBildir(programlar);
     // 🔬 PRF-A01 · ⚡ PRF-A06: dar tur kanalda kapsamıyla birlikte okunur.
+    // 📄 PRF-KP-A02: belge sayacı merceğe bağlanır; kanal satırı açıktan,
+    // diskten ve atlanan sayıları ile sıfır açma çağrısını ve okunan toplamı
+    // basar. Açıktan artı diskten artı atlanan, taranan dosya sayısına eşittir.
     mercek.turBitti({
-      tetik, süreMs: Date.now() - turBasi, dosyaSayısı: dosyalar.length,
+      tetik, süreMs: Date.now() - turBasi, dosyaSayısı: yollar.length,   // 🛡️ PRF-KP-A05: süzülmüş liste
       kapsam: darKok !== undefined ? basename(darKok) : undefined,
+      belgeler: { ...belgeSayacı, okunanBayt },
     });
   };
   // 🧯 PRF-A02 tek-uçuş kilidi: tam-proje denetimi ÜST ÜSTE BİNMEZ — koşarken
@@ -698,7 +732,7 @@ async function iskeletKur(): Promise<void> {
  * yalnız yayın sınırında (taniYapTani) yapılır. Böylece düzey eşlemesi de tek
  * yerde kaldı: tek-dosya yolu ile proje taraması artık aynı kodu koşuyor.
  */
-function tanilaCekirdek(doc: vscode.TextDocument): Tani[] {
+function tanilaCekirdek(doc: BelgeYuzu): Tani[] {
   const dil = etkinDil();
   const metin = doc.getText();
 
@@ -781,7 +815,8 @@ const fikirDefteri = new FikirDefteri(
  * yapar; aksi hâlde her belge için ayrı bir çizim tetiklenirdi.
  */
 function yuzeylereDagit(
-  doc: vscode.TextDocument, tanilar: readonly Tani[], yayımlansın = true,
+  doc: BelgeYuzu, tanilar: readonly Tani[], yayımlansın: boolean,
+  program: Program | undefined,
 ): void {
   const proje = projeKimligi(doc.uri.fsPath);
   const dil = etkinDil();
@@ -799,7 +834,12 @@ function yuzeylereDagit(
   // toplu taramayı kapsar, dolayısıyla kullanıcı bir Fikir yazdığı an panelde
   // belirir ve sildiği an düşer. Belge ayrıştırılamıyorsa o dosyanın Fikirleri
   // defterden düşer — Hatırlatıcı hanesinin bozuk belgede yaptığının aynısı.
-  const fikirProgrami = programAl(doc);
+  // Program ÇAĞIRANDAN gelir; burada `programAl` çağrılamaz çünkü o önbellek
+  // belge SÜRÜMÜNE anahtarlıdır ve diskten okunan kaydın sürümü yoktur: sürümsüz
+  // bir kayıt bir kez yazıldığında `undefined === undefined` karşılaştırmasıyla
+  // sonsuza dek taze sayılır ve dosya diskte değişse bile Fikirler paneli bayat
+  // kalırdı. Editör yolu önbelleği kendi çağırır, tur yolu turun kendi ağacını verir.
+  const fikirProgrami = program;
   fikirDefteri.yaz(
     doc.uri.fsPath,
     fikirProgrami
@@ -975,7 +1015,7 @@ async function kimlikIndeksiniTara(): Promise<void> {
 /** Bir çekirdek Tani'sini (satır·sütun·mesaj·öneri·düzey·kod) vscode tanısına
  *  çevirir — TEK yer (proje taraması ve tek-dosya çapraz-önbellek aynı eşlemeyi
  *  kullanır, düzey/renk tutarsızlığı yapısal olarak imkânsız · SRN-PANEL-DALGA). */
-function taniYapTani(doc: vscode.TextDocument, t: Tani): vscode.Diagnostic {
+function taniYapTani(doc: BelgeYuzu, t: Tani): vscode.Diagnostic {
   return taniYap(doc, t.satir, t.sutun, t.oneri ? `${t.mesaj}\n↳ ${t.oneri}` : t.mesaj,
     t.duzey === "hata" ? vscode.DiagnosticSeverity.Error
       : t.duzey === "uyarı" ? vscode.DiagnosticSeverity.Warning
@@ -984,7 +1024,7 @@ function taniYapTani(doc: vscode.TextDocument, t: Tani): vscode.Diagnostic {
 
 /** (satır,sütun) 1-tabanlı konumdan, oradaki sözceyi kapsayan bir tanı üretir. */
 function taniYap(
-  doc: vscode.TextDocument,
+  doc: BelgeYuzu,
   satir: number,
   sutun: number,
   mesaj: string,
