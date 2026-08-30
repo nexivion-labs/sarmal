@@ -139,16 +139,21 @@ export interface BelgeSayacı {
 export async function turBelgeleriniTopla(
   yollar: readonly string[],
   kabuk: BelgeKabugu,
-): Promise<{ belgeler: Map<string, BelgeYuzu>; sayaç: BelgeSayacı; okunanBayt: number }> {
+): Promise<{ belgeler: Map<string, BelgeYuzu>; sayaç: BelgeSayacı; okunanBayt: number; dilDışı: string[] }> {
   const belgeler = new Map<string, BelgeYuzu>();
   const sayaç: BelgeSayacı = { açıktan: 0, diskten: 0, atlanan: 0 };
   let okunanBayt = 0;
+  // PRF-TA-A02 denetimi: dili elle değiştirilmiş açık belge OKUNABİLİR bir dosyadır,
+  // yalnız kullanıcı onu bilinçle başka dile almıştır. Sayaçta `atlanan` içinde
+  // kalır (kanal özdeşliği: açıktan + diskten + atlanan = taranan), fakat yolu
+  // ayrıca döner ki tur görüntüsü onu okunamayanla karıştırmasın.
+  const dilDışı: string[] = [];
   for (const yol of yollar) {
     const açık = kabuk.açıkBelge(yol);
     if (açık) {
       // Açık belgenin dili elle değiştirilmişse dosya turun dışındadır; bu,
       // eski `openTextDocument` yolundaki `languageId !== "sarmal"` süzgecinin ikizidir.
-      if (kabuk.dilKimliği(yol) !== "sarmal") { sayaç.atlanan += 1; continue; }
+      if (kabuk.dilKimliği(yol) !== "sarmal") { sayaç.atlanan += 1; dilDışı.push(yol); continue; }
       belgeler.set(yol, açık);
       sayaç.açıktan += 1;
       continue;
@@ -159,7 +164,7 @@ export async function turBelgeleriniTopla(
     sayaç.diskten += 1;
     okunanBayt += okunan.bayt;
   }
-  return { belgeler, sayaç, okunanBayt };
+  return { belgeler, sayaç, okunanBayt, dilDışı };
 }
 
 /**

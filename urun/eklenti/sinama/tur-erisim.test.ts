@@ -234,6 +234,8 @@ const SARMAL_KOK = fileURLToPath(new URL("../../../", import.meta.url));
 /** Nöbetin kapsadığı üç dosya: saf modül, belge yolu nöbeti ve bu dosyanın kendisi. */
 const SINIR_DOSYALARI = [
   "../src/tur-belgesi.ts", "./tur-belgesi.test.ts", "./tur-erisim.test.ts",
+  // PRF-TA-A06: tek ağaç Blokunun yeni modülleri de sınır nöbetindedir.
+  "../src/tur-goruntusu.ts", "../src/yolharitasi-cekirdek.ts", "./tur-goruntusu.test.ts",
 ].map((y) => fileURLToPath(new URL(y, import.meta.url)));
 
 test("STR-3: belge yüzü modülü ile nöbetleri kapalı ürünün adını ve yolunu anmaz", (t) => {

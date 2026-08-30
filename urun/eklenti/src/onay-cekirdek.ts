@@ -634,7 +634,8 @@ export class EtkinKararDefteri {
 //   İKİ YOL VARDIR VE İKİSİ AYNI KURALI KULLANIR. Birinci yol ana tanı hattının
 //   ürettiği URI–bildirim anlık görüntüsüdür; onay yüzeyi orada hazır duran
 //   ağaçtan kapıları çıkarır ve hiçbir dosyaya dokunmaz. İkinci yol yalnız ana
-//   hat susmuşsa koşar: her kapsam içi dosya EN ÇOK BİR KEZ okunur, saf
+//   hattın görüntüsü HENÜZ GELMEDİYSE koşar (PRF-TA-A03: hat susmaz, görüntü
+//   gecikebilir): her kapsam içi dosya EN ÇOK BİR KEZ okunur, saf
 //   ayrıştırıcıdan geçirilir ve tam ağaç paylaşımlı belge önbelleğine
 //   KONULMAZ. Eskiden tek yol vardı ve o yol her dosyayı `openTextDocument`
 //   ile açıp paylaşımlı önbelleğe yazıyordu; ölçülen maliyet açılışta iki yüz

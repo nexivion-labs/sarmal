@@ -18,8 +18,9 @@
 //   sözdizim ağacını paylaşımlı belge önbelleğine yazıyordu; ölçülen maliyet
 //   bugünkü çalışma ağacında iki yüz doksan sekiz belgeydi. Artık kapı listesi
 //   ana tanı hattının zaten ürettiği anlık görüntüden çıkar. Yedek tur yalnız
-//   ana hat susmuşsa koşar, dosyayı `workspace.fs.readFile` ile bir kez okur ve
-//   ağacı paylaşımlı önbelleğe KOYMAZ.
+//   görüntü HENÜZ GELMEDİYSE koşar (PRF-TA-A03: hat susmaz, denetim kapalıyken de
+//   yayın yapar), dosyayı `workspace.fs.readFile` ile bir kez okur ve ağacı
+//   paylaşımlı önbelleğe KOYMAZ.
 //
 //   Bu modül vscode kabuğu ister; kapı tanıma kuralı, defter ve tarama düzeni
 //   saf çekirdekte yaşar (onay-cekirdek.ts) ve nöbet onları kabuk kurmadan
@@ -34,6 +35,7 @@ import {
   type OnayKaniti,
 } from "./onay-cekirdek.ts";
 import { programAl } from "./onbellek.ts";
+import { turGoruntusunuDinle } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A02: turun tek yayını
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program, Dugum } from "../../cekirdek/src/sozdizim.ts";
@@ -133,21 +135,30 @@ export async function disktenOnayKaniti(
 }
 
 // ── 🔭 ANA TANI HATTININ ANLIK GÖRÜNTÜSÜ ────────────────────────────────────
-//   eklenti.ts tam tanı turunu bitirince ürettiği URI–Program haritasını buraya
-//   bildirir; kapı çıkarma işini KENDİSİ yapmaz (ana hat kapı tanımaz). Denetim
-//   ayarı kapalıysa aynı hat "sustum" der ve onay yüzeyi tek yedek tur koşar.
-//   Onay yüzeyinin açılışta beklediği şey bu iki bildirimden biridir; ikisi de
-//   gelmeden yedek tarama başlamaz, dolayısıyla iki tur yarışmaz.
+//   Ana tanı turu bitince ürettiği ağacı TEK NOKTADAN yayınlar (tur-goruntusu.ts)
+//   ve bu modül o yayının abonesidir; kapı çıkarma işini tur KENDİSİ yapmaz (ana
+//   hat kapı tanımaz). Denetim ayarı kapalıyken de hat SUSMAZ: tur koşar ve
+//   görüntüsünü yayınlar, yalnız tanı üretmez (PRF-TA-A03 ikinci tur). Onay
+//   yüzeyinin açılışta beklediği tek şey bu görüntüdür; gelmeden yedek tarama
+//   başlamaz, dolayısıyla iki tur yarışmaz. Eski "hat sustu" bildirimi üçüncü
+//   turda söküldü (denetçi bulgusu): dışa açık ölü bir kapı, bir gün çağrıldığında
+//   görüntüsüz ikinci bir yol olarak geri dönerdi.
+//
+//   🗺️ PRF-TA-A02: görüntüyü bildiren işlev DIŞA AÇILMAZ ve yayının abonesinden
+//   başka çağıranı yoktur. Gerekçe ölçülmüştür: dışa açık bir bildirim kapısı,
+//   turun tek yayınının yanında ikinci bir besleme yolu olarak yaşayabilir ve o
+//   yol bir gün kullanıldığında onay yüzeyi ile panel iki ayrı gerçeği gösterir.
+//   Kapı kapalıyken "ikinci yol yoktur" cümlesi bir temenni değil, derleyicinin
+//   zorladığı bir olgudur.
 
 let anaGoruntu: ProgramGoruntusu | undefined;
-let anaHatSustu = false;
 const goruntuOlayi = new vscode.EventEmitter<void>();
 
-/** Ana hat ya da onun susuşu haber verildiğinde atar. */
+/** Ana hattın görüntüsü haber verildiğinde atar. */
 export const anaGoruntuDegisti = goruntuOlayi.event;
 
 /** Ana tanı turunun sonucu: kapsam süzgecinden geçirilip görüntü olarak saklanır. */
-export function anaGoruntuyuBildir(programlar: ReadonlyMap<string, Program>): void {
+function anaGoruntuyuBildir(programlar: ReadonlyMap<string, Program>): void {
   const harita = new Map<string, readonly Dugum[]>();
   for (const [yol, program] of programlar) {
     // Ana hat ile onay yüzeyi TEK EVRENDE ölçer: glob aynı olsa da dosya-tarafı
@@ -156,23 +167,22 @@ export function anaGoruntuyuBildir(programlar: ReadonlyMap<string, Program>): vo
     harita.set(yol, program.bildirimler);
   }
   anaGoruntu = harita;
-  anaHatSustu = false;
   goruntuOlayi.fire();
 }
 
-/** Ana tanı hattı kapalı: görüntü gelmeyecek, yedek tur meşrudur. */
-export function anaHattiSustur(): void {
-  anaGoruntu = undefined;
-  anaHatSustu = true;
-  goruntuOlayi.fire();
-}
+// 🗺️ PRF-TA-A02: tarayıcının ana görüntüsü turun TEK yayınından beslenir. Abonelik
+// modül ömrü boyunca yaşar ve bırakılmaz, çünkü tarayıcı eklentinin ömrü kadar
+// vardır; bırakılan bir abonelik onay yüzeyini sessizce bayat bırakırdı. Ayrıca
+// abone burada, verinin sahibi olan modülde kurulur: kabuk (eklenti.ts) hangi
+// yüzeyin hangi yayına bağlandığını bilmez ve bilmediği bir bağı koparamaz.
+turGoruntusunuDinle((goruntu) => anaGoruntuyuBildir(goruntu.programlar));
 
-/** Ana hattın kaderi belli mi? (görüntü geldi ya da hat sustuğunu bildirdi) */
-export function anaHatKarariVerildiMi(): boolean {
-  return anaGoruntu !== undefined || anaHatSustu;
-}
-
-/** Bugün elde bir ana görüntü var mı? Nöbet bu kapıdan ölçer. */
+/**
+ * Bugün elde bir ana görüntü var mı? Ana hattın kaderi de tam olarak budur:
+ * susuş yolu söküldüğü için tek olay kalmıştır (görüntü geldi). Bu yüzden aynı
+ * yüklemi taşıyan ikinci dışa açık ad üçüncü turda kaldırıldı ve nöbetle yasaklandı:
+ * bir yüklemin iki adı bir gün ayrışır ve iki yüzey farklı şeye "hazır" der.
+ */
 export function anaGoruntuHazirMi(): boolean {
   return anaGoruntu !== undefined;
 }
@@ -180,7 +190,6 @@ export function anaGoruntuHazirMi(): boolean {
 /** Nöbet ve yeniden kurulum için: bildirilen görüntüyü unutur. */
 export function anaGoruntuyuUnut(): void {
   anaGoruntu = undefined;
-  anaHatSustu = false;
 }
 
 // ── 📏 TARAYICI SAYAÇLARI ───────────────────────────────────────────────────

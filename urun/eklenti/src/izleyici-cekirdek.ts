@@ -190,9 +190,14 @@ export class TekUcusKilidi {
 //   yeni odağın resmi henüz hiç kurulmamıştır.
 
 /** Tam turu daraltmayan, yani daima BÜTÜN çalışma alanını tarayan tetikler.
- *  Bunlar bir dosya olayı değil, dünyanın yeniden kurulduğu anlardır. */
+ *  Bunlar bir dosya olayı değil, dünyanın yeniden kurulduğu anlardır.
+ *
+ *  🗺️ PRF-TA-A03: 'el-ile' de bu kümededir. Yol haritasının yenileme düğmesi
+ *  artık panelin kendi turunu değil bir denetim turunu ister; kullanıcı o düğmeye
+ *  bastığında odaktaki varlığın değil BÜTÜN çalışma alanının yeniden kurulmasını
+ *  bekler, dolayısıyla el ile istenen tur daraltılamaz. */
 const TAM_TUR_TETIKLERI: ReadonlySet<string> = new Set([
-  "başlangıç", "ayar", "dil", "odak", "klasör",
+  "başlangıç", "ayar", "dil", "odak", "klasör", "el-ile",
 ]);
 
 /**

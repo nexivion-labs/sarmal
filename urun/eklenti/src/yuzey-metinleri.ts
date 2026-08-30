@@ -1634,6 +1634,13 @@ export const YOL_METINLERI = {
   yavasGenisletme: (sure: number, kim: string, adet: number): string => yuzeyMetni(`${sure} ms · ${kim} · ${adet} çocuk`, `${sure} ms · ${kim} · ${adet} children`),
   kirikDosya: (adet: number): string => yuzeyMetni(`⚠ ${adet} dosya ayrıştırılamadı`, `⚠ ${adet} file${adet === 1 ? "" : "s"} could not be parsed`),
   get kirikDosyaAciklamasi(): string { return yuzeyMetni("sözdizimi kırık — harita bu dosyaları göremiyor", "syntax is broken — the map cannot see these files"); },
+  // 🗺️ PRF-TA-A03: okunamayan dosya ayrı sayılır. Turun görüntüsü kırık ile
+  // okunamayanı iki ayrı kümede taşır ve panel de onları ayırmak zorundadır:
+  // sözdizimi kırık dosya YAZILARAK onarılır, okunamayan dosya ise silinmiş ya
+  // da erişilemez durumdadır ve kullanıcı ikisine aynı şeyi yapamaz. Sayı
+  // görüntüden gelir, ad listesi gelmez; panel bilmediği adı uydurmaz.
+  okunamayanDosya: (adet: number): string => yuzeyMetni(`⚠ ${adet} dosya okunamadı`, `⚠ ${adet} file${adet === 1 ? "" : "s"} could not be read`),
+  get okunamayanDosyaAciklamasi(): string { return yuzeyMetni("diskten okunamadı — silinmiş ya da erişilemeyen dosya", "could not be read from disk — a deleted or inaccessible file"); },
   bilgiGrubuIpucu: (etiket: string, aciklama: string): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}\ngenişlet → hedefe tıklayın: düğüme atla`, `${etiket}${aciklama ? `\n${aciklama}` : ""}\nexpand → select a target to jump to its node`),
   bilgiIpucu: (etiket: string, aciklama: string, hedef: boolean): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\ntıklayın: düğüme atla" : ""}`, `${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\nselect to jump to the node" : ""}`),
   get dugumeAtla(): string { return yuzeyMetni("Düğüme atla", "Jump to node"); },

@@ -311,8 +311,11 @@ test("açılışta hiçbir iş parçacığı yaratılmaz: modül sonunda koşuls
     "modül sonunda hâlâ koşulsuz bir açılış taraması var");
   assert.ok(kaynak.includes("anaGoruntuDegisti("),
     "kuyruk ana tanı hattının görüntüsünü beklemiyor; kendi turunu kurar");
-  assert.ok(kaynak.includes("anaHatKarariVerildiMi()"),
-    "ana hattın kaderi belli olmadan yedek tarama başlatılabiliyor; iki tur yarışır");
+  assert.ok(kaynak.includes("anaGoruntuHazirMi()"),
+    "ana hattın görüntüsü gelmeden yedek tarama başlatılabiliyor; iki tur yarışır");
+  // Üçüncü tur (denetçi bulgusu): hazırlık yüklemi TEK dışa açık ad taşır.
+  assert.ok(!/anaHatKarariVerildiMi/.test(oku("../src/onay-tarayici.ts") + kaynak),
+    "aynı yüklemin ikinci dışa açık adı geri geldi; iki ad bir gün ayrışır");
   assert.ok(!/\bkutuAc\b/.test(kaynak),
     "her bulgu için pencere açan eski işlev (kutuAc) hâlâ yaşıyor");
 });
@@ -406,11 +409,34 @@ test("onay yüzeyi açılışta belge AÇMAZ: openTextDocument yalnız kullanıc
 });
 
 test("ana tanı hattı kapı TANIMAZ: yalnız ortak ağacı taşır", () => {
+  // 🗺️ PRF-TA-A02: aktarım yolu değişti, hüküm değişmedi. Ana hat ürettiği ağacı
+  // artık tarayıcıya doğrudan çağrıyla değil, turun TEK yayınıyla iletir; tarayıcı
+  // o yayının abonesidir. Ölçü bu yüzden iki yüzden bakar: kabuk yayınlıyor mu ve
+  // tarayıcı kendini yayından mı besliyor.
   const eklenti = oku("../src/eklenti.ts");
-  assert.ok(eklenti.includes("anaGoruntuyuBildir(programlar)"),
-    "tam tanı turu ürettiği görüntüyü onay tarayıcısına iletmiyor");
-  assert.ok(eklenti.includes("anaHattiSustur()"),
-    "denetim kapalıyken hat susuşunu bildirmiyor; Posta Kutusu sonsuza dek boş kalır");
+  const tarayici = oku("../src/onay-tarayici.ts");
+  assert.ok(eklenti.includes("turGoruntusunuYayinla({ programlar,"),
+    "tam tanı turu ürettiği görüntüyü yayınlamıyor; onay yüzeyi turun ağacını göremez");
+  assert.ok(tarayici.includes("turGoruntusunuDinle("),
+    "tarayıcı ana görüntüsünü turun yayınından almıyor; besleme yolu koptu");
+  assert.equal((eklenti.match(/anaGoruntuyuBildir\s*\(/g) ?? []).length, 0,
+    "kabuk tarayıcıyı doğrudan besliyor; turun tek yayınının yanında ikinci bir bildirim yolu var");
+  // PRF-TA-A03 ikinci tur (denetçi bulgusu): denetim kapalıyken hat SUSMAZ; tur
+  // yine koşar ve görüntüsünü yayınlar, yalnız tanı üretmez. Kapalı dal erken
+  // dönmez ve susuş bildirimi çağrılmaz; yoksa Yol Haritası ile Onaylar boş kalır.
+  const kapaliBasi = eklenti.indexOf("const taniKapali = !denetimAcik();");
+  const kapaliSonu = eklenti.indexOf("const turBasi = Date.now();", kapaliBasi);
+  assert.ok(kapaliBasi >= 0 && kapaliSonu > kapaliBasi, "denetim kapalı dalı bulunamadı");
+  assert.ok(!eklenti.slice(kapaliBasi, kapaliSonu).includes("return;"),
+    "denetim kapalıyken tur erken dönüyor; görüntü yayınlanmaz ve okuma yüzeyleri boş kalır");
+  assert.equal((eklenti.match(/anaHattiSustur\s*\(/g) ?? []).length, 0,
+    "kabuk hâlâ hat susuşu bildiriyor; kapalı denetimde görüntü yayınlanmalı, hat susmamalı");
+  // Üçüncü tur (denetçi bulgusu): susuş kapısı tarayıcıda dışa açık ÖLÜ API olarak da
+  // yaşayamaz; dışa açık kalsaydı bir gün çağrılır ve görüntüsüz ikinci yol geri dönerdi.
+  const tarayiciKaynagi = oku("../src/onay-tarayici.ts");
+  assert.ok(!/anaHattiSustur|anaHatSustu/.test(tarayiciKaynagi),
+    "tarayıcıda hat susuşu API'si ya da bayrağı hâlâ yaşıyor; ölü kapı ikinci yol olarak geri dönebilir");
+  assert.ok(/if \(!taniKapali\) \{/.test(eklenti), "tanı üretimi denetim ayarına bağlanmamış");
   assert.ok(!/onayKapilariTopla|OnayKapisi/.test(eklenti),
     "eklenti.ts kapı tanımaya başlamış; kapı kuralı iki yerde yaşıyor");
 });

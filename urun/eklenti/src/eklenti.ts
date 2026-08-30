@@ -48,7 +48,11 @@ import { eksenDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06: eksen
 import { onayKuyruguKaydi, onayYuzeyiOlcumleri } from "./onay-kuyrugu.ts"; // NTK-A08: Founder karar gelen-kutusu
 // 📬 VIT-POSTA-A03: ana tanı turunun anlık görüntüsü onay tarayıcısına AKTARILIR;
 // kapıyı ana hat değil tarayıcı tanır. eklenti.ts kapı bilmez, yalnız ağacı taşır.
-import { anaGoruntuyuBildir, anaHattiSustur, tarayiciOlcumleri } from "./onay-tarayici.ts";
+// 🗺️ PRF-TA-A02: aktarım artık doğrudan çağrı değildir — tur görüntüyü tek noktadan
+// yayınlar, tarayıcı o yayının abonesidir. PRF-TA-A03: hattın susuşu diye bir olay
+// yoktur; denetim kapalıyken de görüntü yayınlanır, yalnız tanı üretilmez.
+import { tarayiciOlcumleri } from "./onay-tarayici.ts";   // PRF-TA-A03: susuş bildirimi diye bir olay yok, görüntü kapalı denetimde de yayınlanır
+import { turGoruntusunuYayinla } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A02: turun tek yayın noktası
 import { dallarKaydi } from "./dallar.ts";
 import { satiriciKaydi } from "./satirici.ts";
 import { onizlemeKaydi } from "./onizleme.ts";
@@ -314,14 +318,16 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // tüm .sar'lar TEK grafa girer; döngüsel-bağımlılık (dosyalar arası olabilir)
   // Problems'te ilgili dosyada görünür. Tek-dosya `tanila` cross-file'ı göremezdi.
   const denetleHepsi = async (tetik = "?"): Promise<void> => {
-    // Denetim kapalıyken üç yüzey de susar — biri açık kalıp bayat kayıt gösteremez.
-    // 📬 VIT-POSTA-A03: onay yüzeyi bu turun görüntüsünü bekler; hat susacaksa
-    // bunu AÇIKÇA söylemek zorundadır, yoksa Onaylar sonsuza dek boş kalır.
-    if (!denetimAcik()) {
+    // Denetim kapalıyken TANI yüzeyleri susar — biri açık kalıp bayat kayıt
+    // gösteremez. Fakat tur yine koşar ve GÖRÜNTÜSÜNÜ yayınlar (PRF-TA-A03 ikinci
+    // tur, denetçi bulgusu): ayar sözleşmesi kapatınca yalnız tanının susacağını
+    // söyler; Yol Haritası ile Onaylar okuma yüzeyidir ve görüntüden beslenir.
+    // Görüntü tanı kapısından ayrılmıştır, ikinci bir tarama yolu doğmaz; eski
+    // "hat sustu" bildirimi kalktı, çünkü hat susmaz, yalnız tanı üretmez.
+    const taniKapali = !denetimAcik();
+    if (taniKapali) {
       koleksiyon.clear(); taniDefteri.clear(); yuzeyDefteri.temizle();
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
-      anaHattiSustur();
-      return;
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
     // arsiv/ + ornek/ + fikstur/ hariç: ürün değil, kasıtlı drift → paneli kirletmesin.
@@ -347,7 +353,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // ulaşmaz; merceğin "taranan" sayısı da bu süzülmüş listeden gelir ki kanaldaki
     // özdeşlik (açıktan + diskten + atlanan = taranan) yapısal olarak korunsun.
     const yollar = erisimSiniri(dosyalar.map((u) => u.fsPath), (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
-    const { belgeler: doclar, sayaç: belgeSayacı, okunanBayt } = await turBelgeleriniTopla(
+    const { belgeler: doclar, sayaç: belgeSayacı, okunanBayt, dilDışı } = await turBelgeleriniTopla(
       yollar,
       {
         açıkBelge: (fsPath) => açıkBelgeler.get(fsPath),
@@ -405,6 +411,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     const darKok = turKapsami(
       tetik, aktifVarlik, odakAcik(),
       (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+    // ⚙️ Tanı üretimi yalnız denetim AÇIKKEN koşar; görüntü yayını aşağıda her
+    // iki hâlde de tek çağrıdır (tur-goruntusu.test.ts KAYNAK nöbeti onu sayar).
+    // Kapsam etiketi (darKok) her iki hâlde de hesaplanır, çünkü görüntü onu taşır.
+    if (!taniKapali) {
     const denetlenenKokler = darKok !== undefined
       ? [darKok]
       : (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
@@ -468,12 +478,21 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // hayalet olarak kalmaz ve tur başına yalnız bir çizim istenir.
     fikirDefteri.buda(new Set(doclar.keys()));
     fikirDefteri.yayımla();
-    // 📬 VIT-POSTA-A03: onay kapıları bu turun ZATEN ürettiği ağaçtan çıkar. Ana
-    // hat kapı TANIMAZ ve kapı listesi kurmaz; yalnız ortak ayrıştırma sonucunu
-    // taşır. Böylece onay yüzeyinin ikinci bir tam turu, ikinci bir dosya okuması
-    // ve ikinci bir ayrıştırması kalmaz — ölçülen maliyet açılışta iki yüz doksan
-    // sekiz `openTextDocument` çağrısıydı ve bu bildirimle sıfıra iner.
-    anaGoruntuyuBildir(programlar);
+    }   // tanı üretimi (denetim açık)
+    // 📬 VIT-POSTA-A03 · 🗺️ PRF-TA-A02: turun TEK GÖRÜNTÜ YAYINI. Onay kapıları
+    // bu turun ZATEN ürettiği ağaçtan çıkar; ana hat kapı TANIMAZ ve kapı listesi
+    // kurmaz, yalnız ortak ayrıştırma sonucunu taşır. Böylece onay yüzeyinin
+    // ikinci bir tam turu, ikinci bir dosya okuması ve ikinci bir ayrıştırması
+    // kalmaz — ölçülen maliyet açılışta iki yüz doksan sekiz `openTextDocument`
+    // çağrısıydı ve bu bildirimle sıfıra iner.
+    //
+    // Yayın TEKTİR ve tüketiciye göre çoğalmaz: onay tarayıcısı ile (PRF-TA-A03
+    // sonrası) yol haritası paneli aynı kayda abone olur. Kayıt turun kendi
+    // ağacını taşır; `programlar` haritası mevsim çevrimi uygulandıktan sonra
+    // olduğu gibi verilir ve daraltma yalnız `kapsam` etiketine yazılır, çünkü
+    // dar tur belge toplamayı ve ayrıştırmayı değil, yalnız çapraz denetimin
+    // köklerini daraltır (PRF-TA-A01 sözleşmesi).
+    turGoruntusunuYayinla({ programlar, yollar, belgeler: doclar, dilDışı, tetik, kapsam: darKok });
     // 🔬 PRF-A01 · ⚡ PRF-A06: dar tur kanalda kapsamıyla birlikte okunur.
     // 📄 PRF-KP-A02: belge sayacı merceğe bağlanır; kanal satırı açıktan,
     // diskten ve atlanan sayıları ile sıfır açma çağrısını ve okunan toplamı
@@ -660,7 +679,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   takdirKaydi(context);         // 💛 Founder takdir kalbi (Founder 14:30)
 
   // 🚂 Yol Haritası paneli (EKL-F7): plan ağacı kutucuklu kendi evinde
-  yolHaritasiYuzeyi = yolHaritasiKaydi(context, (s) => perfKanal.appendLine(s), odakKapisi, meyveKapisi);   // 🗺️ PRF-A04: panel turları da kanala düşer · 🔭 mini graf odağı · 🍎 meyve kapısı
+  // 🗺️ PRF-TA-A03: beşinci argüman panelin TUR İSTEME kapısıdır. Panelin kendi turu
+  // yoktur; el ile yenileme düğmesi gövdenin TEK kilidinden 'el-ile' tetikli bir
+  // denetim turu ister ve panel o turun yayınından beslenir. İkinci bir kilit ya da
+  // ikinci bir tur gövdesi doğmaz.
+  yolHaritasiYuzeyi = yolHaritasiKaydi(context, (s) => perfKanal.appendLine(s), odakKapisi, meyveKapisi, (t) => denetimKilidi.iste(t));   // 🗺️ PRF-A04: panel turları da kanala düşer · 🔭 mini graf odağı · 🍎 meyve kapısı
 
   // 🎨 Çalışma Alanını Giydir (BKM-SNV2-A03): dış projede görünüm paritesi —
   // imzasız çalışma alanında bir kez sorar; bizim repo imzalı olduğundan sessiz.

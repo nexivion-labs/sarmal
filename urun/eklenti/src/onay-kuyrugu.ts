@@ -50,7 +50,7 @@ import { bicimAskisi } from "./bicimlendir.ts";
 // bir düzenli ifade yaşıyordu ve ikisi ayrışmıştı (RED-2 dersi).
 import {
   calismaAlaniniTara, kuyrukBelgesiMi, belgeKapilari, kapsamDisi,
-  anaGoruntuDegisti, anaHatKarariVerildiMi,
+  anaGoruntuDegisti, anaGoruntuHazirMi,
   belgeKapilariOkumasi, belgeKodAdedi, belgeOnayKaniti, disktenOnayKaniti,
 } from "./onay-tarayici.ts";
 import type { PostaKutusu } from "./posta-kutusu.ts";
@@ -701,8 +701,8 @@ export function onayKuyruguKaydi(
     izleyici,
     gecikmeliTazele,
     davetKalbi, davetDolu, davetBos, degisti,
-    // Ana tanı hattı görüntüsünü tazeleyince (ya da sustuğunu bildirince) kuyruk
-    // yeniden yerleşir. Onay yüzeyi kendi tam turunu KURMAZ.
+    // Ana tanı hattı görüntüsünü tazeleyince kuyruk yeniden yerleşir. Onay yüzeyi
+    // kendi tam turunu KURMAZ. (PRF-TA-A03: susuş bildirimi diye bir olay yoktur.)
     anaGoruntuDegisti(() => { void tumunuTara().then(() => { susle(); degisti.fire(); }); }),
     vscode.languages.registerCodeLensProvider("sarmal", lensSaglayici),
     vscode.commands.registerCommand(KOMUT_POSTA_KUTUSU, postaKutusunaOdaklan),
@@ -734,15 +734,15 @@ export function onayKuyruguKaydi(
 
   izYaz(IZ_METINLERI.komutlarKayitli(!!postaKutusu));
   // AÇILIŞTA HİÇBİR ŞEY YAPILMAZ. Ne belge açılır, ne iş parçacığı yaratılır, ne
-  // tarama başlatılır: kuyruk ana tanı hattının ilk görüntüsüyle (ya da hattın
-  // "sustum" bildirimiyle) dolar. İki tur bu yüzden yarışmaz — onay hattı ana
-  // turun kaderi belli olmadan yedek taramayı başlatmaz.
+  // tarama başlatılır: kuyruk ana tanı hattının ilk görüntüsüyle dolar. Denetim
+  // ayarı kapalıyken de görüntü gelir, çünkü hat susmaz, yalnız tanı üretmez
+  // (PRF-TA-A03 ikinci tur); "sustum" bildirimi yoktur. İki tur bu yüzden
+  // yarışmaz — onay hattı görüntü gelmeden yedek taramayı başlatmaz.
   //
-  // TEK İSTİSNA: ana hattın kaderi bu modül kurulmadan ÖNCE belli olmuş olabilir.
-  // Denetim ayarı kapalıyken tam tur ilk `await` noktasına hiç varmadan susuşunu
-  // bildirir ve bu, eklenti etkinleşmesinin daha erken bir satırında olur. O
-  // durumda olay bir daha atmaz; kuyruk burada bir kez doldurulur.
-  if (anaHatKarariVerildiMi()) {
+  // TEK İSTİSNA: görüntü bu modül kurulmadan ÖNCE yayınlanmış olabilir (geç
+  // kurulum, yeniden kurulum, sınama). O durumda olay bir daha atmaz; kuyruk
+  // burada bir kez doldurulur.
+  if (anaGoruntuHazirMi()) {
     void tumunuTara().then(() => { susle(); degisti.fire(); });
   }
 }

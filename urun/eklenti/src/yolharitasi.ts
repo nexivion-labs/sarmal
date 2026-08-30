@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
-import { sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🗺️ PRF-A04: panel tazelemesi de olay hattı + tek-uçuş kilidi + tek-kaynak kapsam kullanır
+import { OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🛰️ iz hattı hâlâ kendi olay hattıyla ve kendi kilidiyle koşar (PRF-TA-A03 sınırı)
 import { dagKur, topolojikSira, fazTarihAnahtari, type Dag } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
 import { koniCikar, koniAlani } from "../../cekirdek/src/koni.ts";     // VIT-GRAF-A04: kart koniyi TEK kaynaktan çıkarır; koniAlani → rapor/yama (STR-4 · NTK-A07)
@@ -25,15 +25,22 @@ import { degerBicimle, satirdaDegerDegistir } from "../../cekirdek/src/deger-yaz
 import { geciktir, nabizAbone } from "./nabiz.ts";   // EKL-F9-A07/A08: tek geciktirici + tek kalp (aktif-varlık nabzı ZRF-A06)
 import { programAl } from "./onbellek.ts";   // VIT-GRAF-A05: imleç-takibi paylaşımlı AST'den okur
 import { GOMULU_KAYIT } from "./gomulu-kanon.ts";   // tip simgeleri kanondan — koni-kartı/hover yüzü (ikon katmanı YUZ-4.2)
-import { anadizinBul, mevsimNormalize } from "../../cekirdek/src/denetci.ts";   // DIL-1.2: varlık girişi desenle bulunur · MIM-1.2 ③: mevsim çevrimi MOTORDA tek nokta (zaman-ekseni turu)
-import { durumTuret, kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi
+import { anadizinBul } from "../../cekirdek/src/denetci.ts";   // DIL-1.2: varlık girişi desenle bulunur (yalnız tur DIŞI aidiyet sorusu için)
+import { belirtecle } from "../../cekirdek/src/belirtec.ts";   // 🪆 varlık kimliği AĞAÇTAN okunur; ikinci bir okuma kuralı yazılmaz
+import { ayristir } from "../../cekirdek/src/ayristirici.ts";
+import { kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi (Adım sayaçlarının türetmesi PRF-TA-A03 ile çekirdeğe indi)
 import { miniGrafKaydi, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
 import {
   EKSEN_TIPLERI, eksenSvgVaryanti, aileyeCevir, satirSvgGovdesi,
   type EksenTipi, type SatirSimgesi, type AnlamRengi,
 } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A03/A05: geometrik aile TEK kaynaktan · A07: webview işaretleri de buradan
 import { satirIkonu } from "./ortak.ts";   // VIT-KIMLIK-A05: satır simgelerinin iki-tema köprüsü
-import { varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği
+import {
+  varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi,
+  anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur,
+  type PlanOgesi, type PlanVarligi, type VarlikKimligi,
+} from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
+import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
   IZ_METINLERI, YOL_METINLERI, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
 } from "./yuzey-metinleri.ts";
@@ -44,7 +51,34 @@ import {
 //    (ikon şekli + kod öneki + girinti) — yazıya tip yüklemek yasak.
 import { dekorCoz, DURUM_ROZET, DURUM_ANAHTAR, DURUM_ANLAMI, type Durum } from "./yol-dekor.ts";
 
-const PLAN_TIPLERI = new Set(["Blok", "Faz", "Katman", "AltKatman", "Adım"]);
+// ── 📏 PANEL SAYAÇLARI (PRF-TA-A03) ─────────────────────────────────────────
+//   Kabul ölçütü "panelin doğrudan dosya araması ve belge açma sayısı sıfırdır"
+//   diyor. Bir iddia ancak sayılabiliyorsa kanıtlanabilir; sayaçlar bu yüzden
+//   üretimin içindedir ve dış yüzden okunur (onay-tarayici.ts `tarayiciOlcumleri`
+//   deseni).
+//
+//   SAYAÇLAR CANLIDIR ve bu bilinçlidir: `dosyaAramasi` ile `belgeAcma` bu
+//   modüldeki HER `findFiles` ve HER `openTextDocument` çağrısını sayar, hiç
+//   kıpırdamayan bir sayaç hiçbir şey ölçmediği için. Bugün ikisini de PANEL TURU
+//   artırmaz: arama yalnız izlerin kendi hattında (Adımın sınırı dışında), belge
+//   açma yalnız kullanıcının kendi gezinmesinde (satıra atlama ile kutucuk yazımı)
+//   yaşar. Ölçüt bu yüzden bir TUR ölçütüdür: bir panel turunda `goruntuTuru` bir
+//   artarken bu iki sayaç kıpırdamaz, ki gerçek kabuk nöbeti (PRF-TA-A04) tam
+//   olarak bunu okuyabilsin.
+const panelSayacı = {
+  goruntuTuru: 0, tamDegisim: 0, izTuru: 0, dosyaAramasi: 0, belgeAcma: 0,
+};
+
+/** Panelin bugünkü sayaçları — nöbet bu kapıdan okur. */
+export function panelOlcumleri(): Readonly<typeof panelSayacı> {
+  return { ...panelSayacı };
+}
+
+/** Nöbet için: sayaçları sıfırlar. Üretim yolu bunu çağırmaz. */
+export function panelOlcumleriniSifirla(): void {
+  panelSayacı.goruntuTuru = 0; panelSayacı.tamDegisim = 0; panelSayacı.izTuru = 0;
+  panelSayacı.dosyaAramasi = 0; panelSayacı.belgeAcma = 0;
+}
 
 // Tip kimliği ŞEKİLDE yaşar (YUZ-4 aynen): kapsayıcı satırın şekli
 // Founder'ın 2026-07-28'de galeriden seçtiği GEOMETRİK SVG ailesidir
@@ -73,19 +107,9 @@ export class YolRenklendirici implements vscode.FileDecorationProvider {
 /** 🏦 VARLIK EKSENİ (MIM-1, Founder 2026-07-06): panel kökü = gerçek varlık/proje
  *  düğümü (ÇalışmaAlanı|Proje|Uygulama — ana.sar'dan). Bloklar altına biner;
  *  aidiyet = dosyanın bağlı olduğu ana.sar kökü (MIM-3: klasör=ayna, kod=kanun). */
-interface Varlik {
-  tur: "varlık";
-  tip: string;                 // ÇalışmaAlanı | Proje | Uygulama
-  kod: string;
-  ad: string;
-  kokDizin: string;            // ana.sar'ın dizini
-  anaSar: string;              // ana.sar tam yolu
-  cocuklar: Oge[];
-  tamam: number;
-  toplam: number;
-  gelistirmede: number;        // YUZ-4: "sürüyor" evresi geliştirmedeyi de sayar
-  bloklu: number;              // YUZ-4: blokaj ! rozeti köke kadar tırmanır
-}
+//  PRF-TA-A03: kaydın kendisi vscode'suz çekirdektedir (yolharitasi-cekirdek.ts);
+//  panel yalnız kimlik türünü, yani gerçek `Uri`yi yerine koyar.
+type Varlik = PlanVarligi<vscode.Uri>;
 type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup;
 // (YUZ-4 süpürmesi: VARLIK_SIMGE emoji haritası kalktı — varlık satırı da kanuna uyar:
 //  şekil=sefer (satır çizelgesinin sefer simgesi · tren dili), renk=durum, tip hover'da.)
@@ -140,35 +164,10 @@ const KENAR_USTU = 8;
 // da ölçülür (tazeleme 🗺️ · iz 🛰️ · genişletme 🐢: panelin üç yolu tamam).
 const YAVAS_GENISLETME_ESIK_MS = 30;
 
-interface Oge {
-  tur: "oge";                  // ayraç (discriminated union: PanelOge = Varlik | Oge)
-  tip: string;                 // Blok | Faz | Katman | Adım
-  kod: string;
-  ad?: string;                 // HTR-YOLHARITASI-INSAN-ADI: panel etiketi (insan yüzü; yoksa koda düşer)
-  ne: string;
-  durum: Durum;                // Adım için dosyadan; kapsayıcıda türetilir
-  dosya: vscode.Uri;
-  satir: number;               // düğüm başlangıcı (durum-yazıcı buradan arar)
-  durumSatir?: number;         // mevcut durum: DEĞERİNİN konumu (varsa)
-  durumSutun?: number;
-  durumUzunluk?: number;
-  cocuklar: Oge[];
-  tamam: number;               // türetilmiş sayaç (Adım: 0|1)
-  toplam: number;
-  gelistirmede: number;        // YUZ-4: kapsayıcı "sürüyor" kanıtı (durumTuret)
-  bloklu: number;              // YUZ-4: bloklu-içerir bayrağı (Adım: 0|1; kapsayıcı: toplam)
-  dugum: Dugum;                // AST düğümü — koni kartı TEK kaynaktan çıkarır (VIT-GRAF-A04)
-  kabulSayisi: number;         // kabul madde adedi (↳ kabul özet satırı — VIT-GRAF-A03)
-  hedefTarih?: string;         // Faz tarifesi (MIM-1: 🚄 varış zamanı — hover'da)
-  cagirlar?: string[];         // gövdedeki `çağır KOD` hedefleri (MIM-1 ③ Provider deseni)
-}
-
-function parametre(d: Dugum, ad: string) {
-  // A11/E1 (bug-avı): alan HEM parametre HEM gövde-özelliği yazılabilir (motor
-  // alanDeger dersi) — yalnız-parametre okuma, gövde-durumlu Adım'ı panelde
-  // yanlış rozetliyordu (ikinci-yazım körlüğünün eklenti ikizi).
-  return d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
-}
+//  PRF-TA-A03: plan satırının kaydı da, onu kuran öğe toplayıcısı da vscode'suz
+//  çekirdektedir. Panel yalnız kimlik türünü yerine koyar: gerçek `Uri` taşınır,
+//  çünkü tanı yayını ile satıra atlama dosyayı ona göre adresler.
+type Oge = PlanOgesi<vscode.Uri>;
 
 /** Webview HTML kaçışı — ham metin güvenli basılır (konuşma detayı + koni kartı ortak). */
 function kacir(s: unknown): string {
@@ -215,86 +214,52 @@ const OTORITE_ROZET: Record<string, { simge: SatirSimgesi; ad: string }> = {
 };
 const OTORITE_SIRA: Record<string, number> = { anayasa: 3, politika: 2, tercih: 1 };
 
-/** Bir .sar programından plan ögelerini süzer (Blok kökleri, iç içe serbest). */
-function ogeleriTopla(bildirimler: Dugum[], dosya: vscode.Uri): Oge[] {
-  const kokler: Oge[] = [];
-  const yap = (d: Dugum): Oge => {
-    const durumP = parametre(d, "durum");
-    const durum = (durumP?.deger.metin as Durum) || "beklemede";
-    const kabulP = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "kabul");
-    const oge: Oge = {
-      tur: "oge",
-      tip: d.ad,
-      kod: parametre(d, "kod")?.deger.metin ?? d.ad,
-      ad: parametre(d, "ad")?.deger.metin,   // HTR-YOLHARITASI-INSAN-ADI: etiket kaynağı (yoksa koda düşer)
-      ne: parametre(d, "ne")?.deger.metin ?? "",
-      durum,
-      dosya,
-      satir: d.satir,
-      durumSatir: durumP?.deger.satir,
-      durumSutun: durumP?.deger.sutun,
-      durumUzunluk: durumP?.deger.metin?.length,
-      cocuklar: [],
-      tamam: 0,
-      toplam: 0,
-      gelistirmede: 0,
-      bloklu: 0,
-      dugum: d,
-      kabulSayisi: kabulP ? (kabulP.deger.tur === "liste" ? (kabulP.deger.ogeler?.length ?? 0) : 1) : 0,
-      hedefTarih: parametre(d, "hedefTarih")?.deger.metin,
-      cagirlar: d.cocuklar.filter((c) => c.tur === "çağır").map((c) => c.ad),
-    };
-    for (const c of d.cocuklar) if (PLAN_TIPLERI.has(c.ad)) oge.cocuklar.push(yap(c));
-    if (d.ad === "Adım") {
-      // YUZ-4 tekleşmesi: Adım sayaçları da kanonik durumTuret'ten (elle üçüncü tanım doğmaz).
-      const t = durumTuret([durum]);
-      oge.toplam = t.toplam; oge.tamam = t.tamam;
-      oge.gelistirmede = t.gelistirmede; oge.bloklu = t.bloklu;
-    } else {
-      for (const c of oge.cocuklar) {
-        oge.tamam += c.tamam; oge.toplam += c.toplam;
-        oge.gelistirmede += c.gelistirmede; oge.bloklu += c.bloklu;
-      }
-      // Renk kurulu BUG ①: kapsayıcının KENDİ durum: bloklu beyanı sayaçtan kaçıyordu —
-      // bloklu kapsayıcı artık rozetsiz kalamaz.
-      if (durum === "bloklu") oge.bloklu += 1;
-    }
-    return oge;
-  };
-  const gez = (d: Dugum): void => {
-    // MIM-1: kök Blok VEYA Faz olabilir (yeni diziliş: Faz zaman eksenidir, Blok'u sarar);
-    // alt kademeler yap() içinde (PLAN_TIPLERI).
-    if (d.ad === "Blok" || d.ad === "Faz") { kokler.push(yap(d)); return; }
-    for (const c of d.cocuklar) gez(c);
-  };
-  for (const b of bildirimler) gez(b);
-  return kokler;
+const varlikOnbellek = new Map<string, VarlikKimligi>();
+
+/**
+ * TUR DIŞI aidiyet sorusunun cevabı: bir dosyadan yukarı yürünür ve girişi olan
+ * ilk dizin varlık kökü sayılır (DIL-1.2 deseni `*_anadizin.sar`; eski `ana.sar`
+ * da tanınır).
+ *
+ * Bu yol panelin TUR yolundan ayrıdır ve bilerek öyledir. Panel kendi ağacını
+ * turun görüntüsünden kurar ve orada hiçbir dosya aramaz; buradaki soru ise
+ * "şu an açık olan şu dosya hangi projeye ait" biçimindedir, turun evrenine
+ * bağlı değildir ve kapsam dışı bir dosya için de sorulur (Onaylar ile tanı
+ * yüzeylerinin aidiyet satırı). Kimliğin ÇIKARILMASI yine de tek kuraldır:
+ * giriş dosyası ayrıştırılır ve kimlik çekirdeğin `varlikKimligi` işlevinden
+ * okunur, dolayısıyla iki yüzey aynı dosyayı farklı Projeye yazamaz.
+ */
+// 🗺️ PRF-TA-A03 ikinci tur (denetçi bulgusu: kök bulma kuralı ikiydi): aidiyet
+// sorusu ÖNCE turun görüntüsüne sorulur ve panelle aynı çözücüyle (anadizin
+// haritası + yukarı yürüyüş) cevaplanır; dosya turun evreninin dışındaysa diske
+// düşülür. Üçüncü tur (denetçi bulgusu: üyelik üst dizinle ölçülüyordu ve dışlanmış
+// iç içe bir kök dıştaki görüntü köküne bağlanıyordu): üyelik görüntünün YOL
+// KÜMESİYLE ölçülür ve kararı çekirdeğin `evrenCozucu` işlevi verir; bu dosya
+// yalnız yedeği (disk yürüyüşü) sağlar. Çözücü görüntünün sıra numarasına bağlıdır
+// ve yeni yayında yeniden kurulur; bayat kimlik taşınmaz.
+let goruntuCozucu: { sıra: number; coz: (yol: string) => VarlikKimligi } | undefined;
+
+function varlikBul(dosyaYolu: string): VarlikKimligi {
+  const g = sonTurGoruntusu();
+  if (!g) return diskYuruyusu(dosyaYolu);   // henüz tur yok: yalnız disk
+  if (!goruntuCozucu || goruntuCozucu.sıra !== g.sıra) {
+    goruntuCozucu = { sıra: g.sıra, coz: evrenCozucu(g.yollar, (anaSar) => g.programlar.get(anaSar), diskYuruyusu) };
+  }
+  return goruntuCozucu.coz(dosyaYolu);
 }
 
-const varlikOnbellek = new Map<string, Omit<Varlik, "cocuklar" | "tamam" | "toplam" | "gelistirmede" | "bloklu">>();
-
-/** Dosyadan yukarı yürü: anadizin'li ilk dizin = varlık kökü (DIL-1.2 deseni:
- *  *_anadizin.sar; eski ana.sar da tanınır); kimliği giriş dosyasının
- *  KÖK düğümünden oku (tip + kod + ad) — panel icat etmez, dili aynalar (MIM-1). */
-function varlikBul(dosyaYolu: string): Omit<Varlik, "cocuklar" | "tamam" | "toplam" | "gelistirmede" | "bloklu"> {
+/** Evren DIŞI dosyanın aidiyeti: eski yukarı yürüyüş (tur DIŞI aidiyet sorusu). */
+function diskYuruyusu(dosyaYolu: string): VarlikKimligi {
   let dizin = dirname(dosyaYolu);
   for (let i = 0; i < 12; i++) {
     const bellek = varlikOnbellek.get(dizin);
     if (bellek) return bellek;
     const anaSar = anadizinBul(dizin);
     if (anaSar) {
-      let tip = "Proje", kod = basename(dizin), ad = basename(dizin);
-      try {
-        const metin = readFileSync(anaSar, "utf8");
-        const kokEs = /^(ÇalışmaAlanı|Proje|Uygulama)\(/mu.exec(metin);
-        if (kokEs) {
-          tip = kokEs[1];
-          const govde = metin.slice(kokEs.index);
-          kod = /\bkod:\s*([A-Za-zÇĞİÖŞÜçğıöşü0-9-]+(?:\.[0-9]+){0,2})/u.exec(govde)?.[1] ?? kod;
-          ad = /\bad:\s*"([^"]+)"/u.exec(govde)?.[1] ?? ad;
-        }
-      } catch { /* klasör kimliği yeter */ }
-      const sonuc = { tur: "varlık" as const, tip, kod, ad, kokDizin: dizin, anaSar };
+      let program: Program | undefined;
+      try { program = ayristir(belirtecle(readFileSync(anaSar, "utf8"))); }
+      catch { program = undefined; }   // okunamayan ya da kırık giriş: klasör kimliği yeter
+      const sonuc = varlikKimligi(program, dizin, anaSar);
       varlikOnbellek.set(dizin, sonuc);
       return sonuc;
     }
@@ -302,15 +267,15 @@ function varlikBul(dosyaYolu: string): Omit<Varlik, "cocuklar" | "tamam" | "topl
     if (ust === dizin) break;
     dizin = ust;
   }
-  return { tur: "varlık", tip: "Proje", kod: basename(dirname(dosyaYolu)),
-           ad: basename(dirname(dosyaYolu)), kokDizin: dirname(dosyaYolu), anaSar: "" };
+  const kok = dirname(dosyaYolu);
+  return { tur: "varlık", tip: "Proje", kod: basename(kok), ad: basename(kok), kokDizin: kok, anaSar: "" };
 }
 
 /**
  * Bir dosyanın bağlı olduğu Projenin kimliği (kod ile insan adı). Tanı sunum
  * yüzeyleri (Hatırlatıcılar ile Bildirimler) kayıtlarını bu kimliğe göre
- * gruplar ve Yol Haritası ile AYNI çözümlemeyi kullanır; ikinci bir kök arama
- * yazılmaz, dolayısıyla iki panel aynı dosyayı farklı Projeye yazamaz.
+ * gruplar ve Yol Haritası ile AYNI kimlik çıkarma kuralını kullanır; ikinci bir
+ * okuma kuralı yazılmaz, dolayısıyla iki panel aynı dosyayı farklı Projeye yazamaz.
  */
 export function projeKimligi(dosyaYolu: string): { kod: string; ad: string } {
   const v = varlikBul(dosyaYolu);
@@ -349,6 +314,10 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   }
   /** YUZ-4 karşı-tanısı: ayrıştırılamayan dosyalar sessiz kaybolmaz — kök satırda sayılır. */
   private kirikDosyalar: string[] = [];
+  /** 🗺️ PRF-TA-A03: diskten OKUNAMAYIP atlanan dosya sayısı — kırıktan ayrı sayılır.
+   *  Görüntü bu küme için ad listesi taşımaz, yalnız sayı taşır; panel bilmediği
+   *  adı uydurmaz ve sayıyı susmaktansa söyler. */
+  private okunamayanSayisi = 0;
   /** IZLE-A03: Adım KOD → trace kayıtları (.sarmal/trace/*.jsonl — koşum alt-düğümleri). */
   private izler = new Map<string, IzKaydi[]>();
   /** VIT-GRAF-A03: yenile()'nin kurduğu Dag saklanır — kenar/etki düğümleri tuş başına
@@ -410,6 +379,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // RED-2: yerel haritada kurup ATOMİK takas — eşzamanlı iz/panel turları
     // birbirinin yarım hâlini görmez (izler hiçbir an boş pencerede kalmaz).
     const yeniIzler = new Map<string, IzKaydi[]>();
+    panelSayacı.dosyaAramasi += 1;   // iz hattının KENDİ araması; panel turu bu sayacı artırmaz
     const dosyalar = await vscode.workspace.findFiles("**/.sarmal/trace/*.jsonl", "**/node_modules/**");
     const bulunan = new Set<string>();
     for (const uri of dosyalar) {
@@ -448,6 +418,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
    *  350 ms geciktirme + küçük iz turu, tam-tur kuyruğundan bağımsız. */
   async izTazele(tetik = "iz-olayı"): Promise<void> {
     const turBasi = Date.now();
+    panelSayacı.izTuru += 1;
     await this.izleriYukle();
     this.degisti.fire();
     this.olcum?.(IZ_METINLERI.izTuru(
@@ -455,41 +426,54 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     ));
   }
 
-  async yenile(tetik = "?"): Promise<void> {
+  /**
+   * 🗺️ PANEL TURU (PRF-TA-A03): tek veri kaynağı turun görüntüsüdür.
+   *
+   * Panel eskiden burada kendi taramasını koşturuyordu: tur başına iki dosya
+   * araması, taranan her dosya için bir `openTextDocument` çağrısı ve turun
+   * ZATEN kurduğu ağacın ikinci bir kopyası. Kanalda ölçülen panel turu yirmi
+   * bin dokuz milisaniyeydi ve soğuk açılışta yarışı kaybeden dosya sahte kırık
+   * damgası yiyordu. Artık hesap bir kez yapılır, sonucu tur yayınlar ve panel o
+   * yayının abonesidir; buradaki iş yalnız ağacın kurulmasıdır.
+   *
+   * İşlev SENKRONDUR ve bu bilinçli bir seçimdir: görüntü hazır geldiği için
+   * beklenecek bir şey yoktur ve bekleme noktası olmayan bir tur, iki yayın
+   * arasında birbirine karışamaz. İz hattı kendi kilidiyle ve kendi turuyla
+   * yaşamaya devam eder (Adımın sınırı).
+   *
+   * Mevsim çevrimi BURADA KOŞMAZ: tur onu yayından önce koşturur ve bunu
+   * tur-goruntusu.test.ts ⑤ KAYNAK nöbeti kilitler. İkinci bir çevrim, turun
+   * paylaştığı ağacı boşuna yeniden yazardı.
+   */
+  yenile(goruntu: TurGoruntusu): void {
     const turBasi = Date.now();   // 🗺️ PRF-A04: panel turu mercekten okunur
-    await this.izleriYukle();   // IZLE-A03: koşum düğümleri ağaçla birlikte tazelenir
-    // PRF-A04 (RED-1 D1 hizası): dışlama globu izleyici süzgeciyle TEK kaynaktan.
-    const dosyalar = await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB);
-    // DIL-1.2 ad göçü onarımı (Founder saha bulgusu 2026-07-18: "OS rayda görünüyordu,
-    // görünmez oldu"): Blok'suz kök yedeği eski `ana.sar` adını arıyordu; varlık
-    // girişleri artık `*_anadizin.sar` — iki desen birlikte aranır, iki varlık yan
-    // yana RAY'da kalır (Founder kararı 2026-07-06: Blok'suz kök de RAY'dır).
-    const analar = await vscode.workspace.findFiles(
-      "**/{ana.sar,*_anadizin.sar}", TARAMA_DISLAMA_GLOB);
+    panelSayacı.goruntuTuru += 1;
+    const tetik = goruntu.tetik;
+    // Program haritası turun KENDİ ağacıdır; kopyalanmaz, çünkü kopya bir sonraki
+    // turda bayatlayan ikinci bir gerçektir (tur-goruntusu.ts sözleşmesi).
+    const programlar = goruntu.programlar;
+    // Kimlik ÜRETİCİSİ: çekirdek yalnız taşır, kabuk kurar. Gerçek `Uri` taşınır,
+    // çünkü satıra atlama ile tanı yayını dosyayı ona göre adresler.
+    const kimlik = (yol: string): vscode.Uri => vscode.Uri.file(yol);
     const yeni: Oge[] = [];
-    const kirik: string[] = [];
-    const programlar = new Map<string, Program>();
     this.kurallar = [];
     this.kuralUri.clear();
-    for (const uri of dosyalar) {
-      try {
-        // PRF-A04: paylaşımlı AST önbelleği (onbellek.programAl) — denetim turuyla
-        // aynı (uri, versiyon) ikinci kez AYRIŞTIRILMAZ; çifte parse borcu kapandı.
-        const program = programAl(await vscode.workspace.openTextDocument(uri));
-        if (!program) { kirik.push(uri.fsPath); continue; }   // sözdizim kırık — kök satırda sayılır
-        programlar.set(uri.fsPath, program);
-        yeni.push(...ogeleriTopla(program.bildirimler, uri));
-        // #7: çalışma alanı geneli kurallar — koni kartı düğüme düşenleri süzer
-        for (const k of kurallariCikar(program)) { this.kurallar.push(k); this.kuralUri.set(k, uri); }
-      } catch { kirik.push(uri.fsPath); }   // YUZ-4 karşı-tanısı: sessiz kayıp YOK — kök satırda sayılır
+    for (const [yol, program] of programlar) {
+      const uri = kimlik(yol);
+      yeni.push(...ogeleriTopla(program.bildirimler, uri));
+      // #7: çalışma alanı geneli kurallar — koni kartı düğüme düşenleri süzer
+      for (const k of kurallariCikar(program)) { this.kurallar.push(k); this.kuralUri.set(k, uri); }
     }
-    this.kirikDosyalar = kirik;
-    // 🕰️ MIM-1.2 ③ (zaman-ekseni turu): Blok-tarafı `mevsim:` kenarı sanal çağır'a normalize edilir —
-    // çevrim MOTORDA tek noktadır (DIL-2 çift-mantık yasağı; panel kendi çevirisini yazmaz).
-    // Faz ögelerinin çağır listesi normalize SONRASI tazelenir (Oge.dugum aynı AST düğümü):
-    // aşağıdaki çağır-çevrimi iki yazımı da aynı taşıma mantığıyla kapsar.
-    mevsimNormalize(programlar);
-    for (const o of yeni) if (o.tip === "Faz") o.cagirlar = o.dugum.cocuklar.filter((c) => c.tur === "çağır").map((c) => c.ad);
+    // YUZ-4 karşı-tanısı: kaybolan dosya SESSİZ kaybolmaz. İki liste ayrıdır ve
+    // ayrı kalmalıdır (A01 sözleşmesi): sözdizimi kırık dosya YAZILARAK onarılır,
+    // okunamayan dosya ise silinmiş ya da erişilemezdir. Panelin bunları tek
+    // satırda toplaması, kullanıcıya yapamayacağı bir onarımı önerirdi.
+    this.kirikDosyalar = [...goruntu.kirik];
+    this.okunamayanSayisi = goruntu.okunamayan;
+    // DIL-1.2 ad göçü: varlık girişleri `*_anadizin.sar`, eski ad `ana.sar`. Liste
+    // turun yol kümesinden AD ÖLÇÜTÜYLE süzülür; ikinci bir dosya araması yoktur
+    // (Founder kararı 2026-07-06: Blok'suz kök de RAY'dır).
+    const anadizinler = anadizinHaritasi(goruntu.yollar);
     // kararlı taban sırası: dosya yolu + satır (topolojik eşitlikte kaynak sırası kazanır)
     yeni.sort((a, b) => a.dosya.fsPath.localeCompare(b.dosya.fsPath) || a.satir - b.satir);
 
@@ -559,26 +543,12 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       for (const o of liste) topolojikSirala(o.cocuklar);
     };
 
-    // MIM-1: Bloklar varlık köklerine biner (ÇalışmaAlanı/Proje/Uygulama)
-    varlikOnbellek.clear();
-    const harita = new Map<string, Varlik>();
-    for (const oge of yeni) {
-      const kimlik = varlikBul(oge.dosya.fsPath);
-      let v = harita.get(kimlik.kokDizin);
-      if (!v) { v = { ...kimlik, cocuklar: [], tamam: 0, toplam: 0, gelistirmede: 0, bloklu: 0 }; harita.set(kimlik.kokDizin, v); }
-      v.cocuklar.push(oge);
-      v.tamam += oge.tamam;
-      v.toplam += oge.toplam;
-      v.gelistirmede += oge.gelistirmede;
-      v.bloklu += oge.bloklu;   // YUZ-4: blokaj rozeti köke (varlık satırına) kadar tırmanır
-    }
-    // 🚆 Blok'suz ana.sar kökleri de RAY'dır (Founder 2026-07-06 13:00):
-    // iki varlık yan yana görünür — henüz blok dikilmemiş bahçe de istasyondadır.
-    for (const uri of analar) {
-      const kimlik = varlikBul(uri.fsPath);
-      if (!harita.has(kimlik.kokDizin))
-        harita.set(kimlik.kokDizin, { ...kimlik, cocuklar: [], tamam: 0, toplam: 0, gelistirmede: 0, bloklu: 0 });
-    }
+    // MIM-1: Bloklar varlık köklerine biner (ÇalışmaAlanı/Proje/Uygulama). Kurulum
+    // saf çekirdektedir; çözücü TUR ÖMÜRLÜDÜR ve girişini turun kendi ağacından
+    // okur, dolayısıyla panel varlık kimliği için de hiçbir dosyaya dokunmaz.
+    varlikOnbellek.clear();   // tur dışı aidiyet belleği turla birlikte tazelenir
+    const coz = varlikCozucu(anadizinler, (anaSar) => programlar.get(anaSar));
+    const harita = varliklariKur(yeni, anadizinler, coz, (u) => u.fsPath);
     // 🔗 ORK-1.2: her varlığın Blok'ları + tüm alt-kardeşler topolojik sıraya dizilir
     // (BLK-DOGUS gibi çok-bağımlı bloklar kendiliğinden en alta iner).
     for (const v of harita.values()) topolojikSirala(v.cocuklar);
@@ -587,10 +557,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // ZRF-A06: varlık nesneleri yeniden kuruldu — bayat aktif referansı taze eşine bağlanır.
     this.aktifVarlik = undefined;
     this.aktifligiGuncelle(vscode.window.activeTextEditor);
+    // Turun TEK tam değişim olayı. Sayaç bunu üretimin içinden sayar ki "tur başına
+    // tam bir değişim olayı" bir temenni değil, ölçülmüş bir olgu olsun.
+    panelSayacı.tamDegisim += 1;
     this.degisti.fire();
     // 🗺️ PRF-A04: panel turu kanala düşer — A01 merceğinin kör noktası kapandı.
+    // Dosya sayısı turun süzülmüş yol kümesinden gelir; panelin kendi sayımı yoktur.
     this.olcum?.(IZ_METINLERI.panelTuru(
-      new Date().toTimeString().slice(0, 8), Date.now() - turBasi, dosyalar.length, tetik,
+      new Date().toTimeString().slice(0, 8), Date.now() - turBasi, goruntu.yollar.length, tetik,
     ));
   }
 
@@ -693,10 +667,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   private cocuklariUret(oge?: PanelOge): PanelOge[] {
     if (!oge) {
-      // YUZ-4: kırık-dosya karşı-tanısı — panel "her şey yolunda" YALANI söyleyemez;
-      // ayrıştırılamayan dosyalar kök satırda sayı + tıkla-aç listesiyle görünür.
+      // YUZ-4: karşı-tanı — panel "her şey yolunda" YALANI söyleyemez. Haritaya
+      // giremeyen dosyalar kök satırda sayıyla görünür ve İKİ AYRI grupta durur
+      // (PRF-TA-A03 · A01 sözleşmesi): sözdizimi kırık dosya yazılarak onarılır ve
+      // adı bilindiği için tıkla-aç listesiyle gelir; okunamayan dosya ise silinmiş
+      // ya da erişilemezdir, görüntü onun için ad taşımaz ve panel ad uydurmaz.
+      const uyarilar: PanelOge[] = [];
       if (this.kirikDosyalar.length) {
-        const grup: BilgiGrup = {
+        uyarilar.push({
           tur: "bilgi-grup", simge: "uyari", anlam: "uyari",
           etiket: YOL_METINLERI.kirikDosya(this.kirikDosyalar.length),
           aciklama: YOL_METINLERI.kirikDosyaAciklamasi,
@@ -705,10 +683,18 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
             etiket: basename(yol), aciklama: yol,
             hedef: { dosya: vscode.Uri.file(yol), satir: 1 },
           })),
-        };
-        return [grup, ...this.kokVarliklar()];
+        });
       }
-      return this.kokVarliklar();
+      // Okunamayan küme YAPRAK satırdır, grup değil: açılacak bir çocuğu yoktur ve
+      // boş açılan bir grup kullanıcıya kaybolmuş bir liste vaat ederdi.
+      if (this.okunamayanSayisi) {
+        uyarilar.push({
+          tur: "bilgi", simge: "uyari", anlam: "uyari",
+          etiket: YOL_METINLERI.okunamayanDosya(this.okunamayanSayisi),
+          aciklama: YOL_METINLERI.okunamayanDosyaAciklamasi,
+        });
+      }
+      return [...uyarilar, ...this.kokVarliklar()];
     }
     if (oge.tur === "koşum" || oge.tur === "bilgi") return [];   // koşum/bilgi yapraktır
     if (oge.tur === "bilgi-grup") return oge.cocuklar;           // VIT-GRAF-A06: kenar grubu açılır
@@ -849,7 +835,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     }
     // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
     // beyanı. Satır soluk + 🧊 imli; NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
-    const planNeden = o.tip === "Blok" ? (parametre(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
+    const planNeden = o.tip === "Blok" ? (planAlani(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
     // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
     // satırın kenarında SOLUK yazıyla durur ve kaynağı `hedefTarih` alanıdır; elle
@@ -858,7 +844,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // yaşar. Gerekçe ölçümdür: tam tarih satırda dururken sayaç kırpılıyordu ve ağaç
     // görünümü ikinci satırı desteklemediği için tek çare kısaltmaktı. Bilgi silinmedi,
     // yeri değişti.
-    const hedefTarihDegeri = o.tip === "Faz" ? parametre(o.dugum, "hedefTarih")?.deger.metin : undefined;
+    const hedefTarihDegeri = o.tip === "Faz" ? planAlani(o.dugum, "hedefTarih")?.deger.metin : undefined;
     const tarih = tarihRozetiKisa(hedefTarihDegeri);
     const sayac = planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`;
     eleman.description = kapsayici
@@ -1053,6 +1039,7 @@ ${kurallarBolum}
     if (sinif === "bilgi") {
       void vscode.window.setStatusBarMessage(YOL_METINLERI.geriAlma(o.kod, o.durum, yeni), 5000);
     }
+    panelSayacı.belgeAcma += 1;   // kullanıcı gezinmesi — panel TURU belge açmaz
     const doc = await vscode.workspace.openTextDocument(o.dosya);
     const edit = new vscode.WorkspaceEdit();
     if (o.durumSatir !== undefined && o.durumSutun !== undefined && o.durumUzunluk) {
@@ -1077,12 +1064,15 @@ ${kurallarBolum}
   }
 }
 
-/** Paneli kur: ağaç + kutucuk olayları + dosya izleyici + koni-kartı menüsü.
- *  PRF-A04: olcum verilirse panel turları 'Sarmal Performans' kanalına düşer. */
+/** Paneli kur: ağaç + kutucuk olayları + tur görüntüsü aboneliği + koni-kartı menüsü.
+ *  PRF-A04: olcum verilirse panel turları 'Sarmal Performans' kanalına düşer.
+ *  PRF-TA-A03: `turIste` gövdeden gelir ve el ile yenileme düğmesi bir DENETİM TURU
+ *  ister; panelin kendi turu, kendi kilidi ve kendi izleyicisi yoktur. */
 export function yolHaritasiKaydi(context: vscode.ExtensionContext,
                                  olcum?: (satir: string) => void,
                                  odak?: OdakKapisi,
-                                 meyve?: MeyveKapisi): { diliTazele(): void } {
+                                 meyve?: MeyveKapisi,
+                                 turIste?: (tetik: string) => void): { diliTazele(): void } {
   // YUZ-4: panel satırları DURUM renginde + blokaj ! rozeti (sarmal-yol:// dekorasyonu)
   context.subscriptions.push(vscode.window.registerFileDecorationProvider(new YolRenklendirici()));
   const saglayici = new YolHaritasi();
@@ -1173,20 +1163,31 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
     }),
   );
 
-  const izleyici = vscode.workspace.createFileSystemWatcher("**/*.sar");
-  // 🗺️ PRF-A04: panel tazelemesi de tek-uçuş kilidi + olay hattından geçer —
-  // yenile() üst üste binmez (koşarken gelen istek tek telafi turuna iner),
-  // gürültü olayları (gizli dizin/derleme çıkışı .sar'ları) panel turu tetiklemez.
-  // Süzgeç denetim hattıyla TEK KAYNAK (izleyici-cekirdek · RED-1 D1 hizası).
-  const panelKilidi = new TekUcusKilidi(async (tetik) => {
-    await saglayici.yenile(tetik);
-    miniGraf.tazele();   // VIT-GRAF-A08: graf yeniden kuruldu — mini graf taze veriyle çizer
-  }, undefined,
-    (h) => saglayici.olcum?.(IZ_METINLERI.turCoktu("panel", h instanceof Error ? h.message : String(h))));
+  // ── 🗺️ PRF-TA-A03: PANEL TURUN YAYININA ABONEDİR ──────────────────────────
+  //    Panelin kendi `**/*.sar` izleyicisi, üç yüz elli milisaniyelik olay hattı,
+  //    tek-uçuş kilidi ve açılış tetiği KALKTI. Gerekçe ölçülmüştür: denetim turu
+  //    zaten aynı dosyaları topluyor, ayrıştırıyor ve mevsim çevrimini uyguluyordu;
+  //    panelin ikinci hattı aynı işi ikinci kez yapıyor, üstelik iki hat yarıştığı
+  //    için soğuk açılışta kaybeden dosya sahte kırık damgası yiyordu. Artık tek
+  //    hat vardır, tek kilit vardır (gövdedeki `denetimKilidi`) ve panel o hattın
+  //    sonucunu dinler. Mini Graf de AYNI dinleyicide tazelenir: graf panelin
+  //    kurduğu Dag'ı okur ve ayrı bir tetik ikinci bir çizim turu doğururdu.
   const goreli = (u: vscode.Uri): string => vscode.workspace.asRelativePath(u, false);
-  const panelHatti = new OlayHatti({ gurultu: sarGurultuMu, gecikmeMs: 350,
-    iste: (t) => panelKilidi.iste(t) });   // 350ms — dosya-olayı seli tek yenilemeye iner (EKL-F9-A07)
-  const tazele = (): void => panelKilidi.iste("el-ile");   // yenile düğmesi geciktirmesiz
+  const goruntuyuIsle = (g: TurGoruntusu): void => {
+    saglayici.yenile(g);
+    miniGraf.tazele();
+  };
+  context.subscriptions.push({ dispose: turGoruntusunuDinle(goruntuyuIsle) });
+  // Geç kurulan tüketici ilk turu kaçırmasın (tur-goruntusu.ts `sonTurGoruntusu`
+  // sözleşmesi). Bu bir TUR İSTEĞİ değildir: elde bir kayıt varsa panel kendini
+  // ondan doldurur, yoksa ilk yayını bekler ve hiçbir tarama başlatmaz.
+  const acilistakiGoruntu = sonTurGoruntusu();
+  if (acilistakiGoruntu) goruntuyuIsle(acilistakiGoruntu);
+  // El ile yenileme bir DENETİM TURU ister; 'el-ile' tetiği tam tur kümesindedir
+  // (izleyici-cekirdek · TAM_TUR_TETIKLERI), çünkü kullanıcı düğmeye bastığında
+  // bütün çalışma alanının yeniden kurulmasını bekler. Gövde kapıyı vermediyse
+  // düğme sessizdir: panel kendi turunu KURAMAZ, ikinci bir tur gövdesi doğmaz.
+  const tazele = (): void => turIste?.("el-ile");
   // IZLE-A03: trace yazımı → panel ≤1sn (350ms debounce dahil) — 'anlık' ölçülür (lig uzlaşısı).
   // Trace yolları .sarmal altındadır (süzgeç onları bilerek eler) → kendi hattı süzgeçsizdir.
   // RED-2 onarımı: iz yolu KENDİ kilidiyle koşar — tam panel turunun (findFiles+AST+DAG)
@@ -1197,9 +1198,14 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
   const izHatti = new OlayHatti({ gurultu: () => false, gecikmeMs: 350,
     iste: (t) => izKilidi.iste(t) });
   const izTazele = (u: vscode.Uri): void => izHatti.olay(goreli(u), "iz-olayı");
+  // İzler açılışta bir kez yüklenir. Eskiden bu yükleme panelin kendi tam turunun
+  // içindeydi ve o tur kalktığı için yükleme kendi hattına indi; hat aynı hattır,
+  // yalnız ilk isteği kendisi verir. Aksi hâlde koşum satırları eklenti açıldıktan
+  // sonra ilk trace yazımına kadar boş kalırdı.
+  izKilidi.iste("başlangıç");
 
   context.subscriptions.push(
-    gorunum, izleyici, izIzleyici,
+    gorunum, izIzleyici,
     izIzleyici.onDidCreate(izTazele), izIzleyici.onDidChange(izTazele), izIzleyici.onDidDelete(izTazele),
     // IZLE-A04: koşum düğümüne tıkla → tam konuşma webview'i (ham prompt · ham yanıt ·
     // model · ajan imzası · token — hiçbir alan gizlenmez; onizleme.ts webview deseni)
@@ -1222,9 +1228,6 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
 <h2>${aile(YOL_METINLERI.hamYanit)}</h2><pre>${kacir(JSON.stringify(kayit?.hamYanıt, null, 2))}</pre>
 </body></html>`;
     }),
-    izleyici.onDidCreate((u) => panelHatti.olay(goreli(u), "sar-olayı")),
-    izleyici.onDidChange((u) => panelHatti.olay(goreli(u), "sar-olayı")),
-    izleyici.onDidDelete((u) => panelHatti.olay(goreli(u), "sar-olayı")),
     gorunum.onDidChangeCheckboxState(async (e) => {
       for (const [oge, hal] of e.items) {
         if (oge.tur !== "oge") continue;   // durumYaz yalnız Oge (Adım) alır — varlık/koşum'da checkbox yok
@@ -1241,6 +1244,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
       kartGoster(oge);
     }),
     vscode.commands.registerCommand("sarmal.dosyaAc", async (yol: string, satir: number) => {
+      panelSayacı.belgeAcma += 1;   // kullanıcı gezinmesi — panel TURU belge açmaz
       const doc = await vscode.workspace.openTextDocument(yol);
       await vscode.window.showTextDocument(doc,
         { selection: new vscode.Range(Math.max(0, satir - 1), 0, Math.max(0, satir - 1), 0) });
@@ -1259,7 +1263,9 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
       if (secim) await gorunum.reveal(secim.varlik, { expand: 2, focus: true, select: true });
     }),
   );
-  panelKilidi.iste("başlangıç");
+  // Açılış tetiği YOKTUR: ilk resmi turun ilk yayını getirir (gövdedeki
+  // `denetimKilidi.iste("başlangıç")`). Panelin ayrıca tetiklemesi, aynı ağacı iki
+  // kez kuran ve soğuk açılışta birbiriyle yarışan ikinci hattın ta kendisiydi.
   return {
     diliTazele(): void {
       saglayici.diliTazele();
