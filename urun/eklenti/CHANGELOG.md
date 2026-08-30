@@ -9,6 +9,7 @@ Bu eklentinin kayda değer değişiklikleri burada tutulur.
 - **Kapalı bir dosyanın dil eşlemesi tur kapsamını değiştirmez ve bu bir davranış farkıdır.** Turun kapsamı dosya araması evreniyle, yani `.sar` uzantısıyla belirlenir; kapalı dosyanın dil kimliği yoktur ve onu öğrenmenin tek yolu belgeyi açmaktır, oysa açmak 0.9.170 ile sökülen kusurun kendisidir. Eski tur `files.associations` ile başka bir dile eşlenmiş kapalı `.sar` dosyalarını sessizce eliyordu; yeni tur onları denetler. Açık belgede dil süzgeci korunur, çünkü kullanıcı o belgeyi bilinçle başka dile almıştır.
 - **Editörün açmayı reddettiği büyüklükteki dosya artık turdan düşmüyor.** Eski tur onu sessizce eliyordu; yeni tur diskten okur ve boyut sınırı koymaz. Okunan toplam ham bayt kanal satırına düşer ki anormal büyüme görünür olsun.
 - **Program haritasının kurulumu editör kabuğundan saf modüle indi.** Açık belge paylaşılan sürüm anahtarlı önbellekten, disk kaydı doğrudan ayrıştırmadan gelir ve disk kaydı önbelleğe yazılmaz; söz dizimi kırık belge haritaya girmez. Kurulum artık editör kabuğu olmadan sınanabilir.
+- **Topolojik sıra koşulsuz eşdeğer hâle geldi.** Yığından çıkarılan her düğümün in-derecesi çıkarma anında yeniden doğrulanır; simetrik olmayan bir grafta geçici sıfırda kuyruğa alınıp sonradan negatife düşen düğüm artık yerleşemez ve eski gövdeyle aynı döngü kümesine düşer. Bağımsız denetçi 250.047 girdilik taramada sıfır fark ölçtü.
 
 ## 0.9.172 — 2026-08-29 (Fikir programı çağırandan gelir · tip denetimi sıfırlandı)
 

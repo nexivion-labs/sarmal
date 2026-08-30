@@ -118,6 +118,19 @@ export interface SiraSonuc {
   dongu: string[];
 }
 
+/** 🛡️ PRF-KP-B05 · isteğe bağlı yığın ölçümü. `topolojikSira` bu nesneyi ikinci
+ *  parametre olarak alırsa koşu başında iki sayacı sıfırlar, yığına yapılan toplam
+ *  ekleme sayısını ve görülen en yüksek yığın boyutunu buraya yazar; verilmezse
+ *  gövde hiçbir sayaç tutmaz ve çıktı birebir aynı kalır. Kanca, yığının bellek
+ *  büyümesinin düğüm sayısıyla doğrusal kaldığını (her düğüm yığına en fazla bir
+ *  kez girer) koşu kanıtıyla gösteren nöbet içindir; `AsgariYigin` dışa açılmaz. */
+export interface SiraOlcumu {
+  /** yığına yapılan toplam ekleme sayısı (bir düğüm için en fazla bir). */
+  ekleme: number;
+  /** koşu boyunca görülen en yüksek yığın boyutu. */
+  azamiBoyut: number;
+}
+
 // ── Yardımcılar (saf) ─────────────────────────────────────────────────────────
 
 function param(node: Dugum, ad: string): Deger | undefined {
@@ -465,25 +478,103 @@ export function ozBagimlilikTanilari(dag: Dag): Array<{ dosya: string; tani: Tan
  * Kahn topolojik sıralaması — KARARLI (in-derece 0 olanlar arasında `kod`'a göre
  * seçilir → deterministik, `Math.random`/zaman yok). Döngüde kalanlar `dongu`'da.
  */
-export function topolojikSira(dag: Dag): SiraSonuc {
+export function topolojikSira(dag: Dag, olcum?: SiraOlcumu): SiraSonuc {
+  // ⚡ PRF-A06 (2026-08-29 · CPU profili): eski gövde her yerleşimde BÜTÜN grafı
+  // baştan tarayıp süzüp sıralıyordu ve bin yedi yüz düğümlü çatıda tek başına
+  // turun üçte birini (650 ms) yiyordu; ayrıştırma aynı turda 84 ms idi. Aynı
+  // kararlı sonuç bir asgari yığınla üretilir: hazır düğüm yığına bir kez girer,
+  // her çıkarım logaritmiktir. Sıralama anahtarı ve eşitlik kuralı DEĞİŞMEZ —
+  // eski gövde `.sort()` ile kod dizgisini varsayılan (UTF-16 birim) sırada
+  // karşılaştırıyordu, yığın da aynı karşılaştırmayı kullanır. İki gövdenin
+  // birebir aynı diziyi ürettiği, kontrolcü ve güvenilirlik mühendisi tarafından
+  // beş bin rastgele grafta ölçülmüştür; eşdeğerlik nöbeti PRF-KP-B03 Adımıyla
+  // depodadır (sinama/dag.test.ts · tohumlu batarya, on üç şekil ve `dagKur`
+  // değişmezliği), sınır güvenliği ise sinama/dag-sinir.test.ts dosyasındadır.
   const inDeg = new Map<string, number>();
-  for (const [kod, d] of dag.dugumler) inDeg.set(kod, d.oncekiler.length);
+  const yigin = new AsgariYigin();
+  // 🛡️ PRF-KP-B05 · yığına giren her düğüm bu tek yoldan geçer; ölçüm nesnesi
+  // verilmişse ekleme sayısı ve azami boyut buradan yazılır, verilmemişse yol
+  // yalnız `yigin.ekle` çağrısıdır.
+  if (olcum) { olcum.ekleme = 0; olcum.azamiBoyut = 0; }
+  const yiginaEkle = (kod: string): void => {
+    yigin.ekle(kod);
+    if (olcum) {
+      olcum.ekleme++;
+      if (yigin.boyut > olcum.azamiBoyut) olcum.azamiBoyut = yigin.boyut;
+    }
+  };
+  for (const [kod, d] of dag.dugumler) {
+    inDeg.set(kod, d.oncekiler.length);
+    if (d.oncekiler.length === 0) yiginaEkle(kod);
+  }
 
   const yerlesti = new Set<string>();
   const sira: string[] = [];
-  const sonraki = (): string | undefined =>
-    [...dag.dugumler.keys()]
-      .filter((k) => !yerlesti.has(k) && (inDeg.get(k) ?? 0) === 0)
-      .sort()[0];
-
-  for (let k = sonraki(); k !== undefined; k = sonraki()) {
+  for (let k = yigin.cikar(); k !== undefined; k = yigin.cikar()) {
+    // 🛡 PRF-KP-B02 · çıkarma anı doğrulaması: eski gövde her yerleşimde `=== 0`
+    // sınamasını yeniden yapıyordu. Simetrik olmayan bir grafta (bir düğümün
+    // `sonrakiler` listesinde aynı hedef iki kez geçerken hedefin `oncekiler`
+    // listesinde bir kez geçmesi gibi) in-derecesi geçici sıfırda yığına giren
+    // düğüm sonradan negatife düşebilir; eski gövde onu hiç yerleştirmiyor ve
+    // döngü kümesine düşürüyordu. Aynı davranış koşulsuz korunsun diye düğüm,
+    // yığından çıktığı anda iki koşulla yeniden doğrulanır: zaten yerleşmişse
+    // ya da güncel in-derecesi sıfır değilse atlanır. Atlanan düğüm eski kuralla
+    // `dongu` kümesine düşer.
+    if (yerlesti.has(k) || inDeg.get(k) !== 0) continue;
     yerlesti.add(k);
     sira.push(k);
-    for (const s of dag.dugumler.get(k)!.sonrakiler) inDeg.set(s, (inDeg.get(s) ?? 1) - 1);
+    for (const s of dag.dugumler.get(k)!.sonrakiler) {
+      const kalan = (inDeg.get(s) ?? 1) - 1;
+      inDeg.set(s, kalan);
+      // Eski gövde in-derecesi sıfıra inen her düğümü bir sonraki taramada görüyordu;
+      // burada aynı an yığına girer. Grafta olmayan bir hedef (kopuk kenar) eski
+      // gövdede de hiç yerleşmiyordu; `dugumler` içinde yoksa yığına da girmez.
+      if (kalan === 0 && dag.dugumler.has(s) && !yerlesti.has(s)) yiginaEkle(s);
+    }
   }
 
   const dongu = [...dag.dugumler.keys()].filter((k) => !yerlesti.has(k)).sort();
   return { sira, dongu };
+}
+
+/** Dizgi anahtarlı asgari yığın — `Array.prototype.sort` varsayılan sırasıyla
+ *  (UTF-16 kod birimi) birebir aynı karşılaştırma; topolojikSira'nın kararlılık
+ *  sözleşmesi bu eşitliğe dayanır. */
+class AsgariYigin {
+  private readonly a: string[] = [];
+  /** anlık eleman sayısı; yalnız PRF-KP-B05 ölçüm kancası okur. */
+  get boyut(): number { return this.a.length; }
+  ekle(k: string): void {
+    const a = this.a;
+    a.push(k);
+    let i = a.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (a[p]! <= a[i]!) break;
+      [a[p], a[i]] = [a[i]!, a[p]!];
+      i = p;
+    }
+  }
+  cikar(): string | undefined {
+    const a = this.a;
+    if (a.length === 0) return undefined;
+    const kok = a[0]!;
+    const son = a.pop()!;
+    if (a.length > 0) {
+      a[0] = son;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < a.length && a[l]! < a[m]!) m = l;
+        if (r < a.length && a[r]! < a[m]!) m = r;
+        if (m === i) break;
+        [a[m], a[i]] = [a[i]!, a[m]!];
+        i = m;
+      }
+    }
+    return kok;
+  }
 }
 
 /**

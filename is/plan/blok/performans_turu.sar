@@ -369,6 +369,7 @@ Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
 
       Adım( kod: PRF-KP-B05, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama, denetim iki tur). ÜRETİM: güvenlik üreticisi yeni dosya dag-sinir.test.ts yazdı; dört bozuk girdi (negatif in-derece, grafta olmayan uç, öz-döngü, boş graf ve tek düğüm) ile on bin düğümlük ölçek fikstürleri ve ayrı iş parçacığında iki saniyelik sert süre sınırı; dört girdide eski gövdeyle döngü kümesi birebir ölçüldü. DENETİM BİRİNCİ TUR RED: yığın belleğinin doğrusal büyümesi fikstürsüzdü. Denetçinin önerdiği en ucuz fikstür uygulandı: dag.ts içine varsayılan kapalı isteğe bağlı ölçüm kancası (ekleme sayısı ve azami yığın boyutu; yığın sınıfı dışa açılmadı) ve bin, iki bin, dört bin, sekiz bin düğümde bağımsız grafta ekleme ile azami boyut tam n, yelpazede ekleme n ve azami boyut n eksi bir, zincirde azami boyut bir; kancasız çıktı kancalı çıktıyla birebir. KAPI (kontrolcü koşusu): çekirdek süiti bin yüz doksan iki sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı. DENETİM İKİNCİ TUR ONAY (Codex, Sol, salt okur). ÜRETİCİ ŞERHİ: kanca koşu başında sayaçları sıfırlar; bellek doğrusallığı yığın eleman sayısıyla gösterildi, bayt düzeyinde heap ölçülmedi, çünkü kararsız olurdu.", bağımlı: [ PRF-KP-B02 ],
         referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-SNM-DAG-SINIR ],
         ne:       "🛡️ Yığın gövdesinin sınır güvenliği. Motor kullanıcı projelerinde de koşar ve bozuk bir graf çökme ya da sonsuz döngü üretmemelidir." ) {
         görev:    [
           "Negatif in-derece, grafta olmayan hedef, öz-döngü ve boş graf girdilerinde gövdenin sonlandığı ve döngü kümesini doğru verdiği nöbetle ölçülür.",
@@ -413,6 +414,9 @@ Kod( kod: KOD-DAG-YIGIN, dosya: "urun/cekirdek/src/dag.ts",
 
 Kod( kod: KOD-PRF-SNM-DAG, dosya: "urun/cekirdek/sinama/dag.test.ts",
   ne: "🍎 Topolojik sıra eşdeğerlik, değişmezlik ve sınır nöbetleri (PRF-KP-B03 ve PRF-KP-B05 ürünü)" )
+
+Kod( kod: KOD-PRF-SNM-DAG-SINIR, dosya: "urun/cekirdek/sinama/dag-sinir.test.ts",
+  ne: "🍎 Topolojik sıranın bozuk girdi ve ölçek nöbetleri — negatif in-derece, grafta olmayan uç, öz-döngü, boş graf, on bin düğüm, ayrı iş parçacığında sert süre sınırı (PRF-KP-B05 ürünü)" )
 
 Kod( kod: KOD-PRF-SNM-TUR-ERISIM, dosya: "urun/eklenti/sinama/tur-erisim.test.ts",
   ne: "🍎 Turun erişim sınırı nöbetleri — kök dışı ve dışlanan yol okunmaz, hata sızıntısı yok, STR-3 (PRF-KP-A05 ürünü)" )

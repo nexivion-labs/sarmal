@@ -8,6 +8,7 @@ import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import type { Program } from "../src/sozdizim.ts";
 import { dagKur, topolojikSira, dagTanilari, blokRayi, secilebilirAdimlar, siradakiAdim } from "../src/dag.ts";
+import type { Dag, DagDugum, SiraSonuc } from "../src/dag.ts";   // PRF-KP-B03: rastgele batarya `Dag` nesnesini doğrudan kurar
 
 function progla(kaynak: string): Map<string, Program> {
   return new Map([["t.sar", ayristir(belirtecle(kaynak))]]);
@@ -591,4 +592,326 @@ test("ORK-4: ad alanlı öz-bağımlılık da öz-bağımlılıktır (kendi proj
   assert.equal(dag.oz.length, 1, "bir iş kendinden önce gelemez — ad alanlı yazım kaçış yolu değildir");
   assert.equal(dag.oz[0].hedef, "PRJ-KAPALI::ADM-KAYNAK");
   assert.deepEqual(dag.kopuk, []);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRF-KP-B03 · Topolojik sıra nöbetleri (2026-08-30)
+//
+//   `topolojikSira` 2026-08-29 tarihinde asgari yığına taşındı (PRF-A06) ve
+//   çıkarma anı doğrulamasını PRF-KP-B02 ile aldı. Aşağıdaki nöbetler üç şeyi
+//   ölçer: yığın gövdesinin eski gövdeyle birebir aynı sonucu verdiğini (tohumlu
+//   rastgele batarya ve on üç sabit şekil), `dagKur` çıktısının eşdeğerlik
+//   koşulunu (her düğümde simetrik ve yinelenmesiz kenar listeleri) gerçekten
+//   sağladığını ve yığın gövdesinin simetrik OLMAYAN girdide de eski kuralı
+//   koruduğunu. Rastgele graflar ve sabit şekiller `dagKur` yolundan değil
+//   doğrudan `Dag` nesnesi olarak kurulur; böylece simetrik olmayan, yinelenen
+//   ve kopuk kenarlar da üretilir ve PRF-KP-B02 doğrulaması koşulsuz sınanır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Eski referans gövde. Bu işlev, 2026-08-29 öncesi `topolojikSira` gövdesinin
+ * birebir kopyasıdır: her yerleşimde bütün grafı baştan tarayıp süzen ve
+ * `.sort()` ile en küçük kodu seçen Kahn gövdesi. Yalnız ad değiştirilmiş,
+ * gövdeye dokunulmamıştır. Üretim kodu bu işlevi çağırmaz; yalnız eşdeğerlik
+ * referansı olarak yaşar. Yavaştır, fakat küçük graflarda doğruluğu apaçık
+ * olduğu için ölçü olarak seçilmiştir.
+ */
+function referansTopolojikSira(dag: Dag): SiraSonuc {
+  const inDeg = new Map<string, number>();
+  for (const [kod, d] of dag.dugumler) inDeg.set(kod, d.oncekiler.length);
+
+  const yerlesti = new Set<string>();
+  const sira: string[] = [];
+  const sonraki = (): string | undefined =>
+    [...dag.dugumler.keys()]
+      .filter((k) => !yerlesti.has(k) && (inDeg.get(k) ?? 0) === 0)
+      .sort()[0];
+
+  for (let k = sonraki(); k !== undefined; k = sonraki()) {
+    yerlesti.add(k);
+    sira.push(k);
+    for (const s of dag.dugumler.get(k)!.sonrakiler) inDeg.set(s, (inDeg.get(s) ?? 1) - 1);
+  }
+
+  const dongu = [...dag.dugumler.keys()].filter((k) => !yerlesti.has(k)).sort();
+  return { sira, dongu };
+}
+
+/** Bir düğümün ham yazımı: kod, öncüller ve ardıllar. Listeler bilerek
+ *  bağımsızdır; simetrik olmayan girdi bu üçlüyle üretilir. */
+type HamDugum = [kod: string, oncekiler: string[], sonrakiler: string[]];
+
+/** Doğrudan `Dag` kurar ve `dagKur` yolunu atlar; böylece `kenarEkle` içindeki
+ *  içerme denetiminin hiç görmediği simetrik olmayan, yinelenen ve kopuk kenar
+ *  listeleri de sınanabilir. Düğümler verilen sırayla haritaya girer. */
+function hamDag(satirlar: HamDugum[]): Dag {
+  const dugumler = new Map<string, DagDugum>();
+  for (const [kod, oncekiler, sonrakiler] of satirlar) {
+    dugumler.set(kod, { kod, tip: "Adım", dosya: "ham.sar", satir: 0, sutun: 0,
+      oncekiler: [...oncekiler], sonrakiler: [...sonrakiler] });
+  }
+  return { dugumler, kopuk: [], oz: [], disProje: [] };
+}
+
+/** Simetrik graf kısayolu: kenar listesi iki yöne birden yazılır. Sabit
+ *  şekillerin çoğu bu yoldan kurulur; simetrik olmayanlar `hamDag` ile yazılır. */
+function simetrikDag(kodlar: string[], kenarlar: Array<[once: string, sonra: string]>): Dag {
+  const satirlar = new Map<string, HamDugum>(kodlar.map((k) => [k, [k, [], []]]));
+  for (const [once, sonra] of kenarlar) {
+    satirlar.get(once)![2].push(sonra);
+    satirlar.get(sonra)![1].push(once);
+  }
+  return hamDag([...satirlar.values()]);
+}
+
+/** Tohumlu doğrusal eşlenik üreteç. `Math.random` kullanılmaz; aynı tohum her
+ *  koşuda aynı graf dizisini verir ve bir kırmızı sonuç numarasıyla yeniden
+ *  üretilebilir. Sabitler Numerical Recipes'ten alınmıştır; dönüş [0, 1) aralığındadır. */
+function tohumluUretec(tohum: number): () => number {
+  let durum = tohum >>> 0;
+  return () => {
+    durum = (Math.imul(durum, 1664525) + 1013904223) >>> 0;
+    return durum / 4294967296;
+  };
+}
+
+/** Rastgele bataryanın kod havuzu: Türkçe harfler, büyük ve küçük harf
+ *  çakışmaları, temel düzlem dışı karakterler (vekil çiftler), rakamla başlayan
+ *  ve alt çizgiyle başlayan kodlar. Amaç, yığının UTF-16 kod birimi
+ *  karşılaştırmasını `.sort()` varsayılanıyla her karakter sınıfında yüzleştirmektir. */
+const KOD_HAVUZU: readonly string[] = [
+  "A", "a", "B", "b", "C", "c", "Ç", "ç", "I", "ı", "İ", "i", "Ö", "ö", "Ü", "ü", "Ş", "ş", "Ğ", "ğ",
+  "É", "é", "𝔸", "😀", "A-1", "a-1", "AB", "Ab", "aB", "ab", "Z", "z", "0", "1", "10", "2", "_", "Ça", "ça", "ÇA",
+];
+
+/** Sıfır ile on üç düğümlü rastgele bir graf üretir. Kenar denemeleri dört
+ *  yazımdan birini seçer: simetrik kenar, yalnız ileri yön, yalnız geri yön ve
+ *  grafta olmayan bir uca giden kopuk kenar. Öz-döngü (kaynak ile hedef aynı)
+ *  ve aynı kenarın yinelenmesi engellenmez; ikisi de bilinçli girdidir, çünkü
+ *  eşdeğerlik koşulsuz ölçülmektedir. */
+function rastgeleDag(r: () => number): Dag {
+  const n = Math.floor(r() * 14);
+  const havuz = [...KOD_HAVUZU];
+  const kodlar: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const j = i + Math.floor(r() * (havuz.length - i));
+    [havuz[i], havuz[j]] = [havuz[j]!, havuz[i]!];
+    kodlar.push(havuz[i]!);
+  }
+  const satirlar: HamDugum[] = kodlar.map((kod) => [kod, [], []]);
+  const deneme = n === 0 ? 0 : Math.floor(r() * (2 * n + 1));
+  for (let e = 0; e < deneme; e++) {
+    const i = Math.floor(r() * n), j = Math.floor(r() * n);
+    const z = r();
+    if (z < 0.5) { satirlar[i]![2].push(kodlar[j]!); satirlar[j]![1].push(kodlar[i]!); }
+    else if (z < 0.7) satirlar[i]![2].push(kodlar[j]!);
+    else if (z < 0.9) satirlar[j]![1].push(kodlar[i]!);
+    else if (z < 0.95) satirlar[i]![2].push("YOK-" + Math.floor(r() * 3));
+    else satirlar[j]![1].push("YOK-" + Math.floor(r() * 3));
+  }
+  return hamDag(satirlar);
+}
+
+/** Eşdeğerlik koşulunun ölçüsü (PRF-KP-B01 koşu kaydı): her düğümün `oncekiler`
+ *  ile `sonrakiler` listeleri yinelenmesiz, uçları grafta, öz-döngüsüz ve karşı
+ *  listede birebir karşılıklı olmalıdır. Bulunan her kusur bir cümle olarak
+ *  döner; kusur yoksa dizi boştur. */
+function degismezlikKusurlari(dag: Dag): string[] {
+  const kusurlar: string[] = [];
+  for (const d of dag.dugumler.values()) {
+    if (new Set(d.oncekiler).size !== d.oncekiler.length) kusurlar.push(`${d.kod}: öncül listesi yineleniyor (${d.oncekiler.join(", ")})`);
+    if (new Set(d.sonrakiler).size !== d.sonrakiler.length) kusurlar.push(`${d.kod}: ardıl listesi yineleniyor (${d.sonrakiler.join(", ")})`);
+    if (d.oncekiler.includes(d.kod) || d.sonrakiler.includes(d.kod)) kusurlar.push(`${d.kod}: öz-döngü kenara inmiş`);
+    for (const o of d.oncekiler) {
+      const od = dag.dugumler.get(o);
+      if (!od) kusurlar.push(`${d.kod}: öncül ${o} grafta yok`);
+      else if (!od.sonrakiler.includes(d.kod)) kusurlar.push(`${o} → ${d.kod}: öncül yazılı, ardıl türetilmemiş`);
+    }
+    for (const s of d.sonrakiler) {
+      const sd = dag.dugumler.get(s);
+      if (!sd) kusurlar.push(`${d.kod}: ardıl ${s} grafta yok`);
+      else if (!sd.oncekiler.includes(d.kod)) kusurlar.push(`${d.kod} → ${s}: ardıl yazılı, öncül yok`);
+    }
+  }
+  return kusurlar;
+}
+
+/** Gerçek tek yönlü asimetri: iki ucu da grafta olan bir kenarın yalnız bir
+ *  listede yazılı olması. Yineleme, öz-döngü ve grafta olmayan uç bu ölçüye
+ *  girmez; onlar `degismezlikKusurlari` içinde ayrı sayılır. Batarya bu iki
+ *  sayıyı ayrı raporlar ki "simetrik olmayan" sözü gerçek asimetriyi ansın. */
+function tekYonluKenarVar(dag: Dag): boolean {
+  for (const d of dag.dugumler.values()) {
+    for (const o of d.oncekiler) { const od = dag.dugumler.get(o); if (od && !od.sonrakiler.includes(d.kod)) return true; }
+    for (const s of d.sonrakiler) { const sd = dag.dugumler.get(s); if (sd && !sd.oncekiler.includes(d.kod)) return true; }
+  }
+  return false;
+}
+
+/** Bir grafı hata iletisinde okunur kılar: kod, öncüller, ardıllar. */
+const grafYazimi = (dag: Dag): string =>
+  JSON.stringify([...dag.dugumler.values()].map((d) => [d.kod, d.oncekiler, d.sonrakiler]));
+
+test("PRF-KP-B03 · beş bin tohumlu rastgele grafta yığın gövdesi eski gövdeyle birebirdir (simetrik olmayan girdiler dâhil)", (t) => {
+  const r = tohumluUretec(20260830);
+  let degismezlikKusurlu = 0, tekYonlu = 0, dongulu = 0, kusurluDurum = 0;
+  for (let i = 0; i < 5000; i++) {
+    const dag = rastgeleDag(r);
+    if (degismezlikKusurlari(dag).length) degismezlikKusurlu++;
+    if (tekYonluKenarVar(dag)) tekYonlu++;
+    const beklenen = referansTopolojikSira(dag);
+    const gercek = topolojikSira(dag);
+    if (beklenen.dongu.length) dongulu++;
+    // Hata iletisi yalnız fark bulununca kurulur; beş bin döngüde dizgi üretmek gereksizdir.
+    if (JSON.stringify(gercek) !== JSON.stringify(beklenen)) {
+      kusurluDurum++;
+      assert.deepEqual(gercek, beklenen, `graf #${i} (tohum 20260830) iki gövdede ayrıştı: ${grafYazimi(dag)}`);
+    }
+  }
+  assert.equal(kusurluDurum, 0);
+  // Bataryanın dişi olduğu ölçülür: değişmezlik kusurlu (yineleme, öz-döngü, kopuk uç ya da tek yön),
+  // gerçek tek yönlü asimetri taşıyan ve döngü içeren graflar gerçekten üretilmiştir. Sayılar tohuma
+  // bağlı ve deterministiktir; eşikler ölçülen değerin belirgin altında tutulur.
+  assert.ok(degismezlikKusurlu >= 2500, `değişmezlik kusurlu graf sayısı beklenenden az: ${degismezlikKusurlu}`);
+  assert.ok(tekYonlu >= 1500, `gerçek tek yönlü asimetri taşıyan graf sayısı beklenenden az: ${tekYonlu}`);
+  assert.ok(tekYonlu <= degismezlikKusurlu, "tek yönlü asimetri değişmezlik kusurunun alt kümesidir");
+  assert.ok(dongulu >= 500, `döngü içeren graf sayısı beklenenden az: ${dongulu}`);
+  // Ölçülen sayılar plan kaydına yazılır; değişirse kayıt da değişmelidir.
+  t.diagnostic(`PRF-KP-B03 batarya · değişmezlik kusurlu ${degismezlikKusurlu} · tek yönlü ${tekYonlu} · döngülü ${dongulu}`);
+});
+
+/** Sabit şekiller: her biri hem yığın gövdesinde hem referans gövdede beklenen
+ *  sonucu vermelidir. Beklenen sonuçlar elle yazılmıştır; referans gövdeyle de
+ *  karşılaştırılır ki fikstürün kendisi yanlış yazılmışsa o da yakalansın. */
+interface OzelSekil { ad: string; dag: () => Dag; sira: string[]; dongu: string[] }
+
+/** Türkçe ve UTF-16 kümesi. Beklenen sıra kod birimi sırasıdır: Latin büyük
+ *  harf (0x41, 0x49), Latin küçük harf (0x61, 0x63, 0x69), Latin-1 ek (Ç 0xC7,
+ *  Ü 0xDC, é 0xE9), Latin genişletilmiş (İ 0x130, ı 0x131) ve vekil çiftler
+ *  (𝔸 0xD835, 😀 0xD83D). Yerel (locale) sıralama bu diziyi vermez; sözleşme
+ *  bilinçli olarak `.sort()` varsayılanıdır. */
+const UTF16_KUMESI = ["😀-1", "𝔸-1", "ı-3", "İ-2", "é", "Ü-1", "ÇAP-1", "i-1", "cap-1", "a-1", "I-1", "A-1"];
+const UTF16_SIRASI = ["A-1", "I-1", "a-1", "cap-1", "i-1", "ÇAP-1", "Ü-1", "é", "İ-2", "ı-3", "𝔸-1", "😀-1"];
+
+const OZEL_SEKILLER: OzelSekil[] = [
+  { ad: "boş graf", dag: () => simetrikDag([], []), sira: [], dongu: [] },
+  { ad: "tek düğüm", dag: () => simetrikDag(["TEK"], []), sira: ["TEK"], dongu: [] },
+  { ad: "üç düğümlü zincir, kaynak sırası ters",
+    dag: () => simetrikDag(["C", "B", "A"], [["A", "B"], ["B", "C"]]), sira: ["A", "B", "C"], dongu: [] },
+  { ad: "elmas: iki yoldan aynı hedefe",
+    dag: () => simetrikDag(["D", "C", "B", "A"], [["A", "B"], ["A", "C"], ["B", "D"], ["C", "D"]]),
+    sira: ["A", "B", "C", "D"], dongu: [] },
+  { ad: "Türkçe ve UTF-16 kümesi, bağımsız düğümler kod birimi sırasında",
+    dag: () => simetrikDag(UTF16_KUMESI, []), sira: UTF16_SIRASI, dongu: [] },
+  { ad: "Türkçe ve UTF-16 kümesi, vekil çiftli düğüm Latin düğümün önüne kenarla geçer",
+    dag: () => simetrikDag(UTF16_KUMESI, [["😀-1", "A-1"]]),
+    sira: [...UTF16_SIRASI.filter((k) => k !== "A-1"), "A-1"], dongu: [] },
+  { ad: "iki çocuklu yığın batırması: sekiz hazır düğüm dururken yedi düğüm aynı anda serbest kalır ve diziye iç içe girer",
+    dag: () => simetrikDag(
+      ["C4", "B7", "A", "B2", "C1", "B9", "B4", "C5", "B1", "B6", "C3", "B3", "B8", "C2", "B5"],
+      [["A", "B2"], ["A", "B4"], ["A", "B6"], ["A", "B8"], ["A", "C1"], ["A", "C3"], ["A", "C5"]]),
+    sira: ["A", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "C1", "C2", "C3", "C4", "C5"], dongu: [] },
+  { ad: "döngü artı kuyruk: döngüye asılı kuyruk da döngü kümesine düşer",
+    dag: () => simetrikDag(["T2", "T1", "Z", "Y", "X", "Q", "P"],
+      [["Q", "X"], ["X", "Y"], ["Y", "Z"], ["Z", "X"], ["Z", "T1"], ["T1", "T2"]]),
+    sira: ["P", "Q"], dongu: ["T1", "T2", "X", "Y", "Z"] },
+  { ad: "öz-döngü yazılmış düğüm hiç yerleşmez",
+    dag: () => hamDag([["A", ["A"], ["A"]], ["B", [], []]]), sira: ["B"], dongu: ["A"] },
+  { ad: "kopuk ardıl yerleşimi bozmaz, hayalet öncül düğümü döngüye düşürür",
+    dag: () => hamDag([["A", [], ["YOK"]], ["B", ["HAYALET"], []]]), sira: ["A"], dongu: ["B"] },
+  { ad: "karşı deney (PRF-KP-B01): A.sonrakiler iki kez B, B.oncekiler bir kez A → sıra A, döngü B",
+    dag: () => hamDag([["A", [], ["B", "B"]], ["B", ["A"], []]]), sira: ["A"], dongu: ["B"] },
+  { ad: "ters asimetri: ardıl yazılı, öncül yazılmamış düğüm zaten yerleşmişse negatife düşmesi zararsızdır",
+    dag: () => hamDag([["B", [], ["A"]], ["A", [], []]]), sira: ["A", "B"], dongu: [] },
+  { ad: "büyük hazır küme: yüz bağımsız düğüm karışık sırada girer, alfabetik ilk kod olan batak en sona düşer",
+    dag: () => {
+      const r = tohumluUretec(7);
+      const kodlar = Array.from({ length: 100 }, (_, i) => "D" + String(i).padStart(3, "0"));
+      for (let i = kodlar.length - 1; i > 0; i--) {
+        const j = Math.floor(r() * (i + 1));
+        [kodlar[i], kodlar[j]] = [kodlar[j]!, kodlar[i]!];
+      }
+      return simetrikDag(["A-BATAK", ...kodlar], kodlar.map((k): [string, string] => [k, "A-BATAK"]));
+    },
+    sira: [...Array.from({ length: 100 }, (_, i) => "D" + String(i).padStart(3, "0")), "A-BATAK"], dongu: [] },
+];
+
+for (const [i, sekil] of OZEL_SEKILLER.entries()) {
+  test(`PRF-KP-B03 · şekil ${i + 1}/${OZEL_SEKILLER.length} · ${sekil.ad}`, () => {
+    const dag = sekil.dag();
+    const beklenen = { sira: sekil.sira, dongu: sekil.dongu };
+    assert.deepEqual(referansTopolojikSira(dag), beklenen, "referans gövde beklenen sonucu vermeli (fikstür doğru yazılmış mı?)");
+    assert.deepEqual(topolojikSira(dag), beklenen, "yığın gövdesi beklenen sonucu vermeli");
+  });
+}
+
+/** Değişmezlik nöbetinin okuduğu fikstür programları. Kenar biçimleri bilinçli
+ *  olarak çeşitlidir: aynı hedef iki kez yazılmış `bağımlı`, kapsayıcı hedefli
+ *  yazımın açık yazımla çakışması, aynı çiftin `besler` ile `bağımlı` yoluyla
+ *  iki uçtan yazılması, öz-bağımlılık, çözülmeyen uç, dosyalar arası kenar ve
+ *  Kapı'lı Faz zinciri (MIM-1.2). Her biri `kenarEkle` içindeki içerme denetimi
+ *  ile ters yön yazımını ayrı bir yoldan zorlar. */
+function degismezlikFiksturu(): Map<string, Program> {
+  const kaynaklar: Record<string, string> = {
+    "plan/a.sar": `
+Blok( kod: BLK-A, ne: "a bloğu" ) {
+  Katman( kod: KAT-A1, ad: "birinci" ) {
+    AltKatman( kod: ALT-A1, ad: "alt" ) {
+      Adım( kod: A1, ne: "bir" )
+      Adım( kod: A2, bağımlı: [ A1, A1 ], ne: "iki" )
+      Adım( kod: A3, bağımlı: [ A1, A2, ALT-A1 ], ne: "üç" )
+      Adım( kod: A4, bağımlı: A2, besler: A5, ne: "dört" )
+      Adım( kod: A5, bağımlı: A4, ne: "beş" )
+      Adım( kod: A6, bağımlı: A6, ne: "altı" )
+      Adım( kod: A7, bağımlı: YOK-BOYLE-KOD, ne: "yedi" )
+    }
+  }
+  Katman( kod: KAT-A2, ad: "ikinci", bağımlı: KAT-A1 ) {
+    Adım( kod: A8, bağımlı: [ A1, KAT-A1 ], ne: "sekiz" )
+    Adım( kod: A9, besler: [ A8, BLK-B ], ne: "dokuz" )
+  }
+}`,
+    "plan/b.sar": `
+Blok( kod: BLK-B, ne: "b bloğu", bağımlı: BLK-A ) {
+  Katman( kod: KAT-B1, ad: "b bir" ) {
+    Adım( kod: B1, bağımlı: A9, ne: "bir" )
+    Adım( kod: B2, bağımlı: [ B1, A3 ], besler: B3, ne: "iki" )
+    Adım( kod: B3, bağımlı: B2, ne: "üç" )
+  }
+}`,
+    "plan/c.sar": `
+Proje( kod: PRJ-C, ad: "zaman" ) {
+  Faz( kod: FZ-C1, ad: "birinci mevsim", hedefTarih: "2026-01" ) {
+    Blok( kod: BLK-C1, ne: "c bir" ) {
+      Adım( kod: C1, ne: "bir", durum: tamamlandı )
+      Adım( kod: C2, bağımlı: C1, ne: "iki", durum: tamamlandı )
+    }
+    Kapı( kod: KAPI-C1, ne: "birinci kapı" )
+  }
+  Faz( kod: FZ-C2, ad: "ikinci mevsim", hedefTarih: "2026-02" ) {
+    Blok( kod: BLK-C2, ne: "c iki" ) {
+      Adım( kod: C3, bağımlı: [ C2, B3 ], ne: "üç" )
+      Adım( kod: C4, bağımlı: BLK-C1, ne: "dört" )
+    }
+  }
+}`,
+  };
+  return new Map(Object.entries(kaynaklar).map(([dosya, kaynak]) => [dosya, ayristir(belirtecle(kaynak))]));
+}
+
+test("PRF-KP-B03 · dagKur değişmezliği: gerçek program kümesinde her düğümün öncül ve ardıl listeleri simetrik ve yinelenmesizdir", () => {
+  const dag = dagKur(degismezlikFiksturu());
+  const kenar = [...dag.dugumler.values()].reduce((toplam, d) => toplam + d.oncekiler.length, 0);
+  // Nöbetin boşa dönmediği ölçülür: fikstür yeterince düğüm ve kenar taşımalıdır.
+  assert.ok(dag.dugumler.size >= 20, `fikstür en az yirmi düğüm taşımalı: ${dag.dugumler.size}`);
+  assert.ok(kenar >= 40, `fikstür en az kırk kenar taşımalı: ${kenar}`);
+  assert.deepEqual(degismezlikKusurlari(dag), []);
+  // Eşdeğerlik koşulu sağlanınca iki gövde gerçek grafta da birebirdir ve döngü yalnız öz-bağımlı düğümdedir.
+  const beklenen = referansTopolojikSira(dag);
+  assert.deepEqual(topolojikSira(dag), beklenen);
+  assert.deepEqual(beklenen.dongu, [], "fikstür döngüsüzdür; öz-bağımlılık kenara inmez, sicile iner");
+  // İki öz-bağımlılık beklenir: A6'nın doğrudan kendine yazdığı kenar ve A3'ün kendi
+  // kapsayıcısı ALT-A1'e yazdığı dolaylı kenar (genişleme kendini içerir).
+  assert.equal(dag.oz.length, 2, "doğrudan (A6) ve dolaylı (A3 → ALT-A1) öz-bağımlılık sicile düşmeli");
+  assert.equal(dag.kopuk.length, 1, "A7'nin çözülmeyen ucu kopuk sicile düşmeli");
 });
