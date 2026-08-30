@@ -27,6 +27,7 @@ import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralT
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
 } from "./denetci.ts";
+import { belirtecMemosuyla } from "./belirtec.ts";   // ⚡ PRF-MK-A03: tur ömürlü belirteç memosu
 import { dagKur, dagTanilari, durumTutarlilikTanilari, kopukZincirTanilari, kayipKenarTanilari, ozBagimlilikTanilari, karneOzeti } from "./dag.ts";
 import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import type { EbediKilit } from "./kuralci.ts";
@@ -135,6 +136,12 @@ export interface DenetimSonucu {
  * Akış sırası denetleKomutu'nun tarihsel rapor sırasının birebir korunmasıdır.
  */
 export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonucu {
+  // ⚡ PRF-MK-A03: bütün tur tek belirteç memosu kapsamında koşar; aynı dosya
+  // yükleyicide ve kimlik indeksinde bir kez belirteçlenir, tur bitince memo düşer.
+  return belirtecMemosuyla(() => denetimKosGovde(dizin, secenek));
+}
+
+function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu {
   // Köken haritası: her tanı, akışa girdiği yerde üreticisinin adıyla damgalanır.
   // Damga akış sırasını, sayaçları ve tanı içeriğini DEĞİŞTİRMEZ — davranış
   // sözleşmesi korunur; harita yalnız yüzey süzgeçlerinin okuduğu ek bilgidir.
@@ -177,7 +184,9 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
 
   // Tüm .sar'ları TEK ortak yükleyiciyle ayrıştır (denetci: sef ile DRY paylaşımlı).
   // Muaf dosya PARSE edilir (KOD/EBEDİ korunur), tanısı aşağıda atlanır.
-  const { programlar, muaflar, hatalar } = programlariYukle(dizin, anaYolu ? anaAdi : undefined);
+  // ⚡ PRF-MK-A03: aynı anlık görüntü yükleyiciye verilir, disk bir kez taranır;
+  // ham metinler yükleyicinin zaten okuduğu kaynaklardır ve bir daha okunmaz.
+  const { programlar, muaflar, hatalar, hamlar } = programlariYukle(dizin, anaYolu ? anaAdi : undefined, disk);
   if (hatalar.length) {
     // İlk muaf-olmayan sözdizim hatası kapıyı kapatır (davranış korundu — çıkış 2).
     const h = hatalar[0];
@@ -209,14 +218,9 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   // böylece bir hedef bir yüzeyde çözülüp ötekinde kopuk görünemez.
   const adAlaniKapsami = adAlaniKapisi(programlar, dizin);
 
-  // Ham kaynak metinleri (belirteç girişte normalleştirdiği için diskten yeniden
-  // okunur). İki tüketicisi var: dil denetçisi ve yeni kanonun şekil nöbeti —
-  // ikisi de aynı okumayı paylaşır, dosya iki kez okunmaz.
-  const hamlar = new Map<string, string>();
-  for (const etiket of programlar.keys()) {
-    try { hamlar.set(etiket, readFileSync(join(dizin, etiket), "utf8")); }
-    catch { /* dış-spec sanal etiketi (ana.sar) diskte bu yolda olmayabilir */ }
-  }
+  // Ham kaynak metinleri yükleyiciden gelir (PRF-MK-A03): belirteç girişte
+  // normalleştirdiği için ham metin gerekir, fakat yükleyici o metni zaten okumuştur.
+  // Tüketicileri dil denetçisi, yeni kanonun şekil nöbeti ve strateji tanılarıdır.
 
   let toplamHata = 0;
   let toplamUyari = 0;
@@ -636,7 +640,7 @@ export function denetimKos(dizin: string, secenek: DenetimSecenek): DenetimSonuc
   kapiKos("iş bölümü", "sefAkisiTanilari", () => sefAkisiTanilari(programlar, muaflar));
   kapiKos("dil ve numara grafı", "dilKanonTanilari", () => dilKanonTanilari(programlar, disk, dizin, muaflar));
   kapiKos("öğretim", "ogretimTanilari", () => ogretimTanilari(programlar, snf, disk, dizin, muaflar));
-  kapiKos("strateji ve göç", "stratejiTanilari", () => stratejiTanilari(programlar, hamlar, indeks, dizin, muaflar));
+  kapiKos("strateji ve göç", "stratejiTanilari", () => stratejiTanilari(programlar, hamlar, indeks, dizin, muaflar, disk));
   kapiKos("tip evreni", "tipEvreniTanilari", () => tipEvreniTanilari(snf, siniflamaOrtuYukle(dizin), anaEtiket));
   kapiKos("terfi kanıtı", "terfiKanitiTanilari", () => terfiKanitiTanilari(programlar, muaflar));
   kapiKos("yüzeyler", "yuzTanilari", () => yuzTanilari(programlar, snf, disk, dizin, muaflar));

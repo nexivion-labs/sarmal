@@ -57,7 +57,13 @@ export interface DiskAnlikGoruntu {
 const YOKSAY = new Set([".git", "node_modules", "__pycache__", ".DS_Store", "dist", "out", "arsiv", "fikstur", "sablon"]);
 
 /** Kökten gerçek ağacı okur (etkili). Gizli (.-önekli) girdiler ve YOKSAY atlanır. */
+/** Nöbet için (PRF-MK-A03): bir turda diskin kaç kez tarandığı ölçülür. */
+const diskTaraSayac = { cagri: 0 };
+export function diskTaraSayaci(): number { return diskTaraSayac.cagri; }
+export function diskTaraSayaciniSifirla(): void { diskTaraSayac.cagri = 0; }
+
 export function diskTara(kok: string): DiskAnlikGoruntu {
+  diskTaraSayac.cagri += 1;
   const girdiler: DiskGirdi[] = [];
   const gez = (goreli: string): void => {
     const tam = goreli ? join(kok, goreli) : kok;
@@ -1126,6 +1132,11 @@ export interface ProgramYuk {
   muaflar: Set<string>;
   /** muaf-OLMAYAN sözdizim hataları (atma yok — çağıran karar verir: dur / atla). */
   hatalar: Array<{ etiket: string; satir: number; sutun: number; mesaj: string }>;
+  /** ⚡ PRF-MK-A03: yüklenirken zaten okunan ham metinler (etiket → kaynak). Tüketici
+   *  diski bir daha okumaz. Dış anadizin istisnası KORUNUR: "ana.sar" etiketi yalnız
+   *  dizinin kendi ana.sar dosyası diskte varsa ve onun içeriğiyle haritaya girer;
+   *  bu, denetimKos'un eski yeniden okuma döngüsünün birebir davranışıdır. */
+  hamlar: Map<string, string>;
 }
 
 /**
@@ -1137,8 +1148,9 @@ export interface ProgramYuk {
  * olurdu). Muaf-OLMAYAN sözdizim hatası `hatalar`'a toplanır, o dosya `programlar`'a
  * girmez; muaf dosyanın sözdizim hatası sessiz atlanır (bilerek-hatalı meşru).
  */
-export function programlariYukle(dizin: string, anaYolu?: string): ProgramYuk {
-  const disk = diskTara(dizin);
+export function programlariYukle(dizin: string, anaYolu?: string, disk?: DiskAnlikGoruntu): ProgramYuk {
+  // ⚡ PRF-MK-A03: çağıran anlık görüntüyü verdiyse disk yeniden taranmaz.
+  disk ??= diskTara(dizin);
   const sarlar: Array<[string, string]> = anaYolu ? [["ana.sar", anaYolu]] : [];
   for (const g of disk.girdiler) {
     if (g.tur !== "dosya" || !g.yol.endsWith(".sar")) continue;
@@ -1150,6 +1162,7 @@ export function programlariYukle(dizin: string, anaYolu?: string): ProgramYuk {
   const programlar = new Map<string, Program>();
   const muaflar = new Set<string>();
   const hatalar: ProgramYuk["hatalar"] = [];
+  const hamlar = new Map<string, string>();
   for (const [etiket, tamYol] of sarlar) {
     const kaynak = readFileSync(tamYol, "utf8");
     if (kaynak.split("\n", 5).some((s) => BILEREK_HATALI.test(s))) muaflar.add(etiket);
@@ -1162,9 +1175,27 @@ export function programlariYukle(dizin: string, anaYolu?: string): ProgramYuk {
       }
       throw e;
     }
+    // ⚡ PRF-MK-A03 (denetçi bulgusu · MK-A06): ham metin YALNIZ ayrıştırma
+    // başarıyla bittikten sonra haritaya girer. Eski `denetimKos` hamları
+    // `programlar.keys()` üzerinden okuduğu için ayrıştırılamayan bir dosyanın
+    // hamı hiç doğmazdı; erken eklemek, bilerek-hatalı (muaf) ve gerçekten
+    // ayrıştırılamayan bir dosyayı ham tabanlı tanı döngülerine sokar ve eski
+    // davranışta olmayan bulgular üretirdi (ölçüldü: normalizasyon-uyumsuz,
+    // açık-gizli-sınır-ihlali). Anahtar kümesi böylece `programlar` ile birebirdir;
+    // BİREBİRLİĞİN TEK İSTİSNASI aşağıdaki dış anadizin dalıdır (denetçi bulgusu ·
+    // MK-A06 ikinci tur): dış bir giriş dosyası "ana.sar" etiketiyle ayrıştırılır ve
+    // `programlar` haritasına girer, fakat dizinin KENDİ altında bir "ana.sar" yoksa
+    // hamı doğmaz. Bu kasıtlı ve tarihsel bir davranıştır, çünkü eski döngü de hamı
+    // dizin altındaki yoldan okuyup yokluğu yutuyordu; istisna kendi nöbetini taşır.
+    //
+    // Dış anadizin etiketi ("ana.sar") diskte dizinin altında yoksa haritaya girmez;
+    // varsa eski davranış gibi dizindeki dosyanın içeriği girer (istisna korunur).
+    if (anaYolu && etiket === "ana.sar") {
+      try { hamlar.set(etiket, readFileSync(join(dizin, etiket), "utf8")); } catch { /* yok: haritaya girmez */ }
+    } else hamlar.set(etiket, kaynak);
   }
   mevsimNormalize(programlar);
-  return { programlar, muaflar, hatalar };
+  return { programlar, muaflar, hatalar, hamlar };
 }
 
 /**
@@ -3999,6 +4030,13 @@ const GIZLI_ESIK_IZLERI: ReadonlyArray<{ bolum: string; ne: string; re: RegExp }
     re: /≤\s*\d+\s*kanca[^\n]{0,14}≤\s*\d+\s*ms/iu },
 ];
 
+/** PRF-MK-A02 · eşik izi ön denetimi (saf, dışa açık — nöbet buradan ölçer): metin
+ *  altı izden en az birini bütünüyle taşıyor mu. Satır bazlı tarama yalnız bu
+ *  kapıdan geçen dosyada koşar; kapı yanlış olumsuz üretemez. */
+export function esikIziOnDenetimi(ham: string): boolean {
+  return GIZLI_ESIK_IZLERI.some((iz) => iz.re.test(ham));
+}
+
 /**
  * AÇIK KAYNAK MİNİMAL SÜRÜMÜN MEŞRU SABİTLERİ (Founder dalga hükmü 2026-08-05).
  * Orkestrasyon zekâsı iki dalgaya ayrılmıştır; birinci dalga Sarmal içinde açık
@@ -4034,6 +4072,8 @@ export function stratejiTanilari(
   indeks: KodIndeks,
   dizin: string,
   muaflar?: ReadonlySet<string>,
+  /** ⚡ PRF-MK-A03: turun anlık görüntüsü verilirse belge taraması diski yeniden taramaz. */
+  disk?: DiskAnlikGoruntu,
 ): Array<{ dosya: string; tani: Tani }> {
   const out: Array<{ dosya: string; tani: Tani }> = [];
   const dugumler = yeniDugumler(programlar, muaflar).filter((y) => !ogretimDunyasi(y.dosya));
@@ -4152,6 +4192,10 @@ export function stratejiTanilari(
       [...d.parametreler, ...d.ozellikler].some(
         (pr) => pr.ad === "görünürlük" && pr.deger.metin === "gizli"));
   if (!kendiGizliKoku) for (const [dosya, ham] of hamlar) {
+    // ⚡ PRF-MK-A02 · içerme ön denetimi: satır döngüsü zaten `satir.includes(gizliKokEki)`
+    // ile eliyor; ek hiçbir satırda geçmiyorsa dosya hiç bölünmez. Yanlış olumsuz
+    // üretemez, çünkü bir satırda geçen ek bütün metinde de geçer.
+    if (!ham.includes(gizliKokEki)) continue;
     const satirlar = ham.split(/\r?\n/);
     let belgeIci = false;
     for (let i = 0; i < satirlar.length; i++) {
@@ -4177,13 +4221,20 @@ export function stratejiTanilari(
   // kaynakta konuşur, yoksa aynı sızıntı iki kez sayılır.
   if (!kendiGizliKoku) {
     const belgeler = new Map<string, string>(hamlar);
-    for (const g of diskTara(dizin).girdiler) {
+    for (const g of (disk ?? diskTara(dizin)).girdiler) {
       if (g.tur !== "dosya" || !g.yol.endsWith(".md")) continue;
       if (ogretimDunyasi(g.yol)) continue;
       const metin = dosyaOku(dizin, g.yol);
       if (metin !== undefined) belgeler.set(g.yol, metin);
     }
     for (const [dosya, ham] of belgeler) {
+      // ⚡ PRF-MK-A02 · bütün-dosya ön denetimi: altı desen önce dosyanın tamamına
+      // uygulanır; hiçbiri geçmiyorsa satır döngüsü hiç koşmaz. Desenler çapa ve
+      // çok satır bayrağı taşımadığı için bir satırda eşleşen desen dosyanın
+      // bütününde de eşleşir (satır, bütünün alt dizgisidir); ön denetim yalnız
+      // yanlış OLUMLU üretebilir ve o da satır döngüsünde elenir. Ölçüm: yüz doksan
+      // altı dosyanın sıfırı geçer, kırk üçten yirmi bir milisaniyeye (PERFORMANS.md 3e).
+      if (!esikIziOnDenetimi(ham)) continue;
       const satirlar = ham.split(/\r?\n/);
       let uretilenBolge = false;
       for (let i = 0; i < satirlar.length; i++) {

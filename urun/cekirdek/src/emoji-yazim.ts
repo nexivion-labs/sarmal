@@ -55,6 +55,9 @@ export const EMOJI_SOZCELER: readonly string[] =
 
 /** Kaynakta i konumunda bir emoji takma-adı var mı? Varsa sözceyi ve kanonik adı döndürür. */
 export function emojiEsle(kaynak: string, i: number): { sozce: string; ad: string } | undefined {
+  // ⚡ PRF-MK-A04 · ASCII kısa devresi: hiçbir sözce ASCII ile başlamaz (nöbet bunu
+  // kilitler); ad dışı her ASCII karakterde otuz sözceyi denemek boşa maliyettir.
+  if (kaynak.charCodeAt(i) < 0x80) return undefined;
   for (const sozce of EMOJI_SOZCELER) {
     if (kaynak.startsWith(sozce, i)) return { sozce, ad: EMOJI_TAKMA.get(sozce)! };
   }

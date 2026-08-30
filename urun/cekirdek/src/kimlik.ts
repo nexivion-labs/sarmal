@@ -101,6 +101,12 @@ export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
   const satirlar = metin.split("\n");
   for (let i = 0; i < satirlar.length; i++) {
     const satir = satirlar[i];
+    // ⚡ PRF-MK-A02 · tire ön süzgeci: KOD_GOVDESI en az iki parçayı tireyle bağlar
+    // (`(?:-PARÇA)+`), dolayısıyla tire taşımayan satırda desen eşleşemez ve
+    // regex hiç koşmaz. Ölçüm: satırların yalnız yaklaşık dörtte biri tire taşır;
+    // sarmal taraması yüz yirmi sekizden altmış, çatı yüz yetmiş ikiden seksen bir
+    // milisaniyeye indi ve aday kümeleri birebir aynı kaldı (PERFORMANS.md 3a).
+    if (!satir.includes("-")) continue;
     for (const es of satir.matchAll(KOD_DESENI)) {
       const once = satir[es.index - 1];
       const sonra = satir[es.index + es[0].length];

@@ -566,18 +566,41 @@ function gez(d: Dugum, ebeveyn: Dugum | undefined, b: Baglam): void {
  * parametre/özellik adı küçük harfle başlar. Türkçe harf destekli (toLocale, "tr").
  * İç-yapı analizi (bitişik kelime sınırı) v2'ye; dosya adları ad-ihlali kapısının işidir.
  */
+/** ⚡ PRF-MK-A02 · ilk karakter memosu. `toLocaleUpperCase("tr")` her düğümde ve her
+ *  parametrede yeniden çağrılıyordu ve ad biçimi denetimi turda yirmi iki milisaniye
+ *  yiyordu; ad sayısı yüzlerken ilk karakter kümesi onlarcadır. Harita YALNIZ ilk
+ *  karakterle sınırlıdır: anahtar tek kod noktası, değer onun Türkçe büyük ve küçük
+ *  karşılığıdır; ad gövdesi haritaya girmez ki harita süreç ömründe büyümesin.
+ *  Türkçe eşleme korunur: i → İ, ı → I, I → ı, İ → i. */
+const ILK_KARAKTER_MEMOSU = new Map<string, { buyuk: string; kucuk: string; harf: boolean }>();
+export function ilkKarakterBicimi(c: string): { buyuk: string; kucuk: string; harf: boolean } {
+  let k = ILK_KARAKTER_MEMOSU.get(c);
+  if (!k) {
+    k = { buyuk: c.toLocaleUpperCase("tr"), kucuk: c.toLocaleLowerCase("tr"), harf: /\p{L}/u.test(c) };
+    ILK_KARAKTER_MEMOSU.set(c, k);
+  }
+  return k;
+}
+/** Nöbet için: memo boyutu okunur (haritanın ilk karakterle sınırlı kaldığı ölçülür). */
+export function ilkKarakterMemoBoyutu(): number { return ILK_KARAKTER_MEMOSU.size; }
+
 function adBicimiDenetle(d: Dugum, b: Baglam): void {
   const ilk = d.ad?.[0];
-  if (ilk && /\p{L}/u.test(ilk) && ilk !== ilk.toLocaleUpperCase("tr")) {
-    b.out.push(eskiTani("ad-biçimi", "uyarı",
-      { ad: d.ad, kusur: "tip", onerilen: `${ilk.toLocaleUpperCase("tr")}${d.ad.slice(1)}` },
-      { satir: d.satir, sutun: d.sutun }));
+  if (ilk) {
+    const k = ilkKarakterBicimi(ilk);
+    if (k.harf && ilk !== k.buyuk) {
+      b.out.push(eskiTani("ad-biçimi", "uyarı",
+        { ad: d.ad, kusur: "tip", onerilen: `${k.buyuk}${d.ad.slice(1)}` },
+        { satir: d.satir, sutun: d.sutun }));
+    }
   }
   for (const p of [...d.parametreler, ...d.ozellikler]) {
     const pi = p.ad?.[0];
-    if (pi && /\p{L}/u.test(pi) && pi !== pi.toLocaleLowerCase("tr")) {
+    if (!pi) continue;
+    const k = ilkKarakterBicimi(pi);
+    if (k.harf && pi !== k.kucuk) {
       b.out.push(eskiTani("ad-biçimi", "uyarı",
-        { ad: p.ad, kusur: "parametre", onerilen: `${pi.toLocaleLowerCase("tr")}${p.ad.slice(1)}` },
+        { ad: p.ad, kusur: "parametre", onerilen: `${k.kucuk}${p.ad.slice(1)}` },
         { satir: p.satir, sutun: p.sutun }));
     }
   }

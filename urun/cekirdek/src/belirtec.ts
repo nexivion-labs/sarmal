@@ -70,8 +70,48 @@ const TEKLI: Record<string, BelirtecTuru> = {
   ":": "ikiNokta", ",": "virgül",
 };
 
+// ── ⚡ PRF-MK-A03 · TUR ÖMÜRLÜ BELİRTEÇ MEMOSU ──────────────────────────────────
+//   Bir denetim turunda aynı dosya iki kez belirteçleniyordu: önce program yükleyici,
+//   sonra kimlik indeksi (dosyayiTara). Belirteçleme saftır ve girdi metnine
+//   bağlıdır; içerik anahtarlı memo bu yüzden KESİNDİR. Memo yalnız açık bir kapsam
+//   içinde yaşar (`belirtecMemosuyla`) ve kapsam kapanınca düşer; süreç ömürlü
+//   sınırsız harita denetçi tarafından reddedilmiştir. Kapsam dışındaki çağrı
+//   (eklenti, komut satırı araçları) eskisi gibi her seferinde hesaplar.
+//   Dönen dizi PAYLAŞILIR: ayrıştırıcı imleçle okur ve belirteçleri değiştirmez;
+//   ağaç paylaşılmaz, çünkü mevsim çevrimi ağaca sanal çocuk ekler.
+let belirtecMemosu: Map<string, Belirtec[]> | undefined;
+const belirtecSayac = { cagri: 0, hesap: 0 };
+
+/** Verilen işi tur ömürlü memo kapsamında koşturur; iş bitince (hata dâhil) memo düşer. */
+export function belirtecMemosuyla<T>(is: () => T): T {
+  const dis = belirtecMemosu;          // iç içe kapsam: dıştaki korunur, içteki kendi haritasını kurar
+  belirtecMemosu = new Map();
+  try { return is(); }
+  finally { belirtecMemosu = dis; }
+}
+
+/** Nöbet için: çağrı ve gerçek hesap sayısı; fark memo isabetidir. */
+export function belirtecSayaci(): { cagri: number; hesap: number } { return { ...belirtecSayac }; }
+/** Nöbet için: sayaçları sıfırlar. Üretim yolu bunu çağırmaz. */
+export function belirtecSayaciniSifirla(): void { belirtecSayac.cagri = 0; belirtecSayac.hesap = 0; }
+/** Nöbet için: açık memonun giriş sayısı; kapsam dışında sıfır (memo yok). */
+export function belirtecMemoBoyutu(): number { return belirtecMemosu?.size ?? 0; }
+
 /** .sar kaynağını belirteçlere ayırır. Son belirteç daima "dosyaSonu". */
 export function belirtecle(kaynak: string): Belirtec[] {
+  belirtecSayac.cagri += 1;
+  const memoAnahtari = kaynak;
+  if (belirtecMemosu) {
+    const hazir = belirtecMemosu.get(memoAnahtari);
+    if (hazir) return hazir;
+  }
+  const sonuc = belirtecleHesapla(kaynak);
+  belirtecSayac.hesap += 1;
+  belirtecMemosu?.set(memoAnahtari, sonuc);
+  return sonuc;
+}
+
+function belirtecleHesapla(kaynak: string): Belirtec[] {
   // ⚠️ TÜRKÇE-KARAKTER GÜVENLİĞİ (DIL-1): kaynağı NFC'ye normalize et. macOS
   // dosyaları / bazı editörler ş·ğ·ö·ü·ç·İ'yi NFD (taban + birleşen) saklar;
   // NFD "Sözleşme" ≠ NFC "Sözleşme" string-eşitlikte → sahte bilinmeyen-tip.
@@ -89,6 +129,22 @@ export function belirtecle(kaynak: string): Belirtec[] {
       i++;
     }
   };
+  // ⚡ PRF-MK-A04 · toplu ilerleme: `ilerle(n)` ile birebir aynı satır ve sütun
+  // sonucunu verir, fakat karakter döngüsü yerine dilimdeki yeni satırları sayar.
+  // Yalnız dilimleme yolunda kullanılır; tek karakterlik adımlar `ilerle` ile kalır.
+  const atla = (n: number): void => {
+    if (n <= 0) return;
+    const dilim = kaynak.slice(i, i + n);
+    const sonYeniSatir = dilim.lastIndexOf("\n");
+    if (sonYeniSatir < 0) { sutun += n; }
+    else {
+      let yeniSatir = 0;
+      for (let k = dilim.indexOf("\n"); k >= 0; k = dilim.indexOf("\n", k + 1)) yeniSatir++;
+      satir += yeniSatir;
+      sutun = 1 + (n - sonYeniSatir - 1);
+    }
+    i += n;
+  };
 
   while (i < kaynak.length) {
     const c = kaynak[i];
@@ -102,8 +158,10 @@ export function belirtecle(kaynak: string): Belirtec[] {
       const bsS = satir, bsSu = sutun;
       ilerle(3);
       if (kaynak[i] === " ") ilerle(); // tek baş boşluk düşer ("/// metin")
-      let icerik = "";
-      while (i < kaynak.length && kaynak[i] !== "\n") { icerik += kaynak[i]; ilerle(); }
+      // ⚡ PRF-MK-A04 · dilimleme: satır sonu indeksle bulunur, içerik tek dilimde alınır.
+      const satirSonu = kaynak.indexOf("\n", i);
+      const icerik = kaynak.slice(i, satirSonu < 0 ? kaynak.length : satirSonu);
+      atla(icerik.length);
       belirtecler.push({ tur: "belge", deger: icerik.replace(/[ \t]+$/, ""), satir: bsS, sutun: bsSu });
       continue;
     }
@@ -140,17 +198,18 @@ export function belirtecle(kaynak: string): Belirtec[] {
     if (c === "-" && kaynak[i + 1] === "-" && kaynak[i + 2] === ">" && kaynak[i + 3] === "|") {
       const bsS = satir, bsSu = sutun;
       ilerle(4); // -->|
-      let ham = "";
-      while (i < kaynak.length && !(kaynak[i] === "|" && kaynak.slice(i + 1, i + 4) === "<--")) {
-        ham += kaynak[i];
-        ilerle();
-      }
-      if (i >= kaynak.length) {
+      // ⚡ PRF-MK-A04 · dilimleme: kapanış İLK geçtiği yerde aranır (eski döngüyle aynı
+      // sözleşme), içerik tek dilimde alınır, konum toplu ilerlemeyle taşınır. Kapanış
+      // bulunamayınca aynı hata aynı blok başı konumuyla atılır.
+      const kapanis = kaynak.indexOf("|<--", i);
+      if (kapanis < 0) {
         throw new SozDizimHatasi(
           "Kapanmamış belge bloğu — kapanış |<-- eksik.", bsS, bsSu,
           "Unclosed document block — missing closing |<--.",
         );
       }
+      const ham = kaynak.slice(i, kapanis);
+      atla(ham.length);
       ilerle(4); // |<--
       belirtecler.push({ tur: "belge", deger: blokKirp(ham), satir: bsS, sutun: bsSu });
       continue;
@@ -248,17 +307,16 @@ export function belirtecle(kaynak: string): Belirtec[] {
     // """çok-satırlı değer""" (DIL-2.2) — girinti ilk içerik satırına göre kırpılır.
     if (c === '"' && kaynak[i + 1] === '"' && kaynak[i + 2] === '"') {
       ilerle(3);
-      let ham = "";
-      while (i < kaynak.length && !(kaynak[i] === '"' && kaynak[i + 1] === '"' && kaynak[i + 2] === '"')) {
-        ham += kaynak[i];
-        ilerle();
-      }
-      if (i >= kaynak.length) {
+      // ⚡ PRF-MK-A04 · dilimleme: kapanış ilk geçtiği yerde aranır, içerik tek dilimde alınır.
+      const kapanis = kaynak.indexOf('"""', i);
+      if (kapanis < 0) {
         throw new SozDizimHatasi(
           'Kapanmamış çok-satırlı değer — kapanış """ eksik.', bsSatir, bsSutun,
           'Unclosed multiline value — missing closing """.',
         );
       }
+      const ham = kaynak.slice(i, kapanis);
+      atla(ham.length);
       ilerle(3);
       belirtecler.push({ tur: "metin", deger: ucluKirp(ham), satir: bsSatir, sutun: bsSutun });
       continue;
