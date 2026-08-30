@@ -508,3 +508,79 @@ Hatırlatıcı(
   tarih:            2026-08-25,
   ne:               "Çatı kökünden koşan denetim, kapsanan projelerin meyve yollarını ve ebedi kilidini kendi köklerinden değil çatı kökünden çözmektedir; bu 2026-08-25 gecesi ölçülmüştür: depo kendi kökünden sıfır hata verirken çatı kökünden aynı ağaç mühürsüz ebedi kural ve diskte yok görünen tamamlanmış meyveler bildirmiştir. Kanon her üretken ağacın kimliğinin kendi Proje düğümünden türediğini söyler (MIM-1.1) ve motor çok projeli çatıyı proje-tanı-kimliği-uyumsuz tanısıyla dürüstçe reddeder; eksik olan, çatı kökünden koşan denetimin her kapsanan projeyi kendi köküyle ayrı ayrı koşturup bulguları proje kimliğiyle gruplamasıdır. Bugünkü doğru kullanım her projenin kendi kökünden denetlenmesidir ve örnek çatı bunu belgesinde söyler."
 )
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 📌 ORTAK ÇALIŞMA KURALLARININ UYGULANMASI (Founder hükmü 2026-08-30)
+//   Founder dört ortak çalışma kuralını hükme bağlamış ve kurallar aynı gün
+//   kanona inmiştir (DIL-1.6 · MIM-3.3 · ORK-3.5 · ORK-9 ve yüzey karşılığı
+//   YUZ-3.5). Founder'ın açık talimatı şudur: kurallar KARAR olarak yazılır,
+//   fakat HEMEN UYGULANMAZ; uygulamanın plana inmesi için hatırlatıcı açılır ve
+//   ayrıntılara sonraki oturumlarda inilir. Aşağıdaki beş kayıt o talimatın
+//   karşılığıdır ve her biri kendi maddesinin uygulama borcunu taşır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Hatırlatıcı(
+  kod:              HTR-KADEME-ADLARI-UYUMU,
+  durum:            açık,
+  çapa:             yasa,
+  dönüşTetikleyici: "Kanon uyum turu açıldığında ya da bir plan dosyasında kademe adı düzenlenmek istendiğinde; en geç yeni bir Blok yazılmadan önce",
+  öncelik:          p1,
+  tarih:            2026-08-30,
+  ne:               "DIL-1.6 maddesi Faz, Blok, Katman ve AltKatman bildirimlerinin ad alanını taşımasını ve adın anlamlı sözcüklerinin büyük harfle başlamasını hükme bağlamıştır; bugünkü ağaç bu hükme uymamaktadır ve uyumsuzluk 2026-08-30 tarihinde ölçülmüştür. Ölçüm şudur: depoda iki yüz yirmi bir plan kademesi bulunmakta, bunların on birinin adı hiç yazılmamış ve yüz doksan dördünün adı küçük harfle başlamaktadır, dolayısıyla iki yüz beş kademe hükmün dışındadır. İşin kapsamı yalnız canlı plan değildir ve dört ayağı vardır. Birinci ayak sınıflama şemasıdır, çünkü Blok tipi ad alanını bugün zorunlu saymamakta, Faz, Katman ile AltKatman saymaktadır; şemaya ad eklenmesi hükmün tek mekanik dayanağıdır ve mühürlü kaynağa dokunduğu için türetilmiş yüzleri de tazeler. İkinci ayak şablonlar ile doğuş paketidir, çünkü Blok şablonu ad taşımamakta ve doğuş paketinin ürettiği ilk plan dört kademeyi de küçük harfli adlarla yazmaktadır, dolayısıyla bugün doğan her yeni proje hükmü ihlal ederek doğmaktadır. Üçüncü ayak öğretim yüzleridir, çünkü plan ailesinin öğretim kartı Blokun zorunlu alanını yalnız kod olarak öğretmektedir. Dördüncü ayak canlı ağacın onarımıdır ve sınama fikstürlerini de kapsar, çünkü ad alanı zorunlu hâle geldiğinde on dört sınama dosyasındaki Blok fikstürleri doğrulayıcıdan geçmez. Kanon maddesi bugün hiçbir tanı ilan etmemektedir ve bu bilinçlidir: kanonun ilan ettiği her tanının aynı turda sicilde ve bir üreticide bulunması gerekir, dolayısıyla adsız kademe ile ad yazımı tanıları bu Adımda zorlama yazılırken doğar ve maddenin Zorlama paragrafı o gün tazelenir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-BLOK-DURUM-KAYITLARI,
+  durum:            açık,
+  çapa:             yasa,
+  dönüşTetikleyici: "Bir Blokun devir metni yazılmak istendiğinde ya da ana durum kaydı bir Blokun metniyle şiştiğinde; en geç performans mevsimi kapandığında",
+  öncelik:          p1,
+  tarih:            2026-08-30,
+  ne:               "MIM-3.3 maddesi her Blokun kendi durum kaydını taşımasını, kaydın is/durum/blok_durum dizininde blok kodunu taşıyan bir durum_devir dosyasında yaşamasını ve ana kaydın durum taşıyan bütün Bloklara referans kenarıyla atıf vermesini hükme bağlamıştır. Bugün tek bir proje kaydı vardır, bin yüz seksen altı satırdır ve bütün Blokların devir metnini birlikte taşımaktadır; maddenin gerekçesinde tarif edilen kusur budur. İşin beş ayağı vardır. Birinci ayak rafın ilan edilmesidir, çünkü yapı-önce hükmü uyarınca anadizinde ilan edilmemiş bir dizinde doğan gövde ilansız gövde tanısına düşer. İkinci ayak mevcut kaydın ayrıştırılmasıdır ve bu yalnız bir kopyalama işi değildir, çünkü hangi paragrafın hangi Bloka ait olduğu okunarak kararlaştırılır. Üçüncü ayak atıf kenarlarının yazılmasıdır ve hükmün en kritik parçası budur, çünkü dosyaların diskte yan yana durması onları bir graf yapmaz ve motor durum evrenini yalnız bu kenarlardan görür. Dördüncü ayak zorlamadır: kaydı olmayan Blok ile ana kayda bağlanmamış kayıt bugün ölçülmemektedir ve iki tanı bu Adımda doğar, madde de o gün ilanla tazelenir. Beşinci ayak doğuş paketi ile oturum ritüelleridir, çünkü doğuş paketi tek kayıt üretmekte ve oturum açılış ile kapanış ritüelleri Blok kaydını hiç bilmemektedir. Ana kaydın kilitler listesindeki tek durum kaynağı kilidi de bu Adımda düşer, çünkü hüküm onu yürürlükten kaldırmıştır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DURUM-YUZEYI,
+  durum:            açık,
+  çapa:             gelecek,
+  dönüşTetikleyici: "Blok durum kayıtları doğduğunda ya da bir sonraki yüzey turu açıldığında",
+  öncelik:          p2,
+  tarih:            2026-08-30,
+  ne:               "YUZ-3.5 maddesi durum kayıtlarının kendi sunum yüzeyi olmasını ve bu yüzeyin Hatırlatıcılar, Fikirler ile Bildirimler yüzeyleriyle aynı kademede Durumlar adıyla yaşamasını hükme bağlamıştır. Founder'ın istediği davranış şudur: geliştirici, hatırlatıcıları ve gözlemleri panelden izlediği gibi her projenin durum belgelerini de bu pencereden izleyebilmelidir. Yüzey çalışma alanındaki her projenin ana kaydını ve o kayda referans kenarıyla bağlı Blok kayıtlarını proje kökü altında gruplayarak gösterir, her satırdan kaynağına gidilir ve hiçbir satır kaynaktan bağımsız üretilmez; yüzey kaydı düzenleyemez, çünkü düzenlenebilir bir durum paneli kaydın ikinci bir yazarını doğurur. Bu iş Blok durum kayıtlarının doğmasına bağlıdır ve ondan önce başlatılamaz, çünkü yüzeyin göstereceği evren o kayıtlardan ve aralarındaki kenarlardan oluşur. İşin kapsamı eklentinin görünüm sözleşmesine yeni bir görünüm eklemeyi, o görünümü turun yayınından beslemeyi ve panelin veri yolu sınırını korumayı içerir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-BLOK-TESLIM-HALKASI-UYUMU,
+  durum:            açık,
+  çapa:             yasa,
+  dönüşTetikleyici: "Yeni bir mevsime ya da Bloka başlanmadan önce, işleme disiplini konuşulduğunda ve halkanın alt ayrıntıları Founder ile kararlaştırılacağı zaman; uzak depo doğduğunda istek ile gönderim kademeleri de yürürlüğe girer",
+  öncelik:          p1,
+  tarih:            2026-08-30,
+  ne:               "ORK-9 maddesi Blokun işinin tek bir teslim halkasıyla yürümesini hükme bağlamıştır: Blok başına tek dal, Adım başına atomik işleme ve Blok kapanınca birleştirme isteğinin kapanması. Bu hüküm bugünkü yazılı düzenle doğrudan çelişmektedir ve çelişki 2026-08-30 tarihinde ölçülmüştür. Sürüm yönetişimi kaynağı konu dalını bir istisna saymakta, oysa ORK-9 Blok dalını kural saymaktadır; aynı kaynak işleme tanesini bir mantıksal değişiklik olarak tanımlamakta, oysa ORK-9 taneyi Adım olarak sıkılaştırmaktadır. Katkı rehberi de aynı iki tanımı iki dilde taşımakta ve dal adı sözleşmesini konu olarak yazmaktadır. İşin dört ayağı vardır. Birinci ayak sürüm yönetişimi kaynağının dal modeli ile işleme tanesi bölümlerinin yeniden yazılmasıdır. İkinci ayak katkı rehberinin Türkçe ve İngilizce yüzlerinin eşlenmesidir. Üçüncü ayak kanca sözleşmesidir: işleme başlığının Adımı göstermesi ve dal adının denetlenmesi kancalarda zorlanabilir, ve bunun için ayrılmış fakat bugün boş bırakılmış bir yuva vardır. Dördüncü ayak istek ile gönderim kademelerinin yürürlüğüdür ve bir ön koşula bağlıdır: birleştirme isteği uzak depo gerektirir, açık deponun uzağı bugün yoktur, dolayısıyla o kademe uzak doğduğu gün başlar ve o güne kadar dalın ana dala alınması Founder onayıyla yapılır. FOUNDER TAMAMLAMASI (2026-08-30, aynı gün, ilk hükmün ardından): halkanın kademeleri şöyle netleştirilmiştir ve madde bu hâliyle düzeltilmiştir. Dal FAZ birimindedir ve her mevsim için bir dal açılır; birleştirme isteği BLOK birimindedir ve her Blok için bir istek açılır; işleme ADIM birimindedir ve her Adım, bağlı olduğu Katman ile AltKatmanın aynı işte değişen gövdesiyle birlikte atomik olarak işlenir; işleme ile gönderim edimi ise oturumun SONUNDA yapılır. Founder ayrıca halkanın ALT AYRINTILARININ birlikte düşünülüp kararlaştırılacağını beyan etmiştir ve bu hatırlatıcı o müzakerenin de kaydıdır; kararlaştırılacak kalemler bugün şunlardır ve liste kapalı değildir. Birincisi dal adının biçimidir, yani Faz kodunun dal adına nasıl gireceği. İkincisi işleme başlığının biçimidir, yani Adım kodunun başlıkta mı gövdede mi görüneceği ve bugünkü tip ile kapsam yazımının bununla nasıl uzlaşacağı. Üçüncüsü birleştirme isteğinin gövde sözleşmesidir, yani isteğin hangi kanıtı taşıyacağı ve Blokun kapı sonucunun orada nasıl gösterileceği. Dördüncüsü oturum sonu ediminin basamaklarıdır, yani gövdenin Adımlara hangi ölçütle bölüneceği ve bölünemeyen bir gövdenin ne yapılacağı. Beşincisi bir Adımın işi birden çok oturuma yayıldığında ne olacağıdır, çünkü hüküm edimi oturum sonuna bağlamakta fakat yarım kalan Adımın gövdesini nereye bırakacağını söylememektedir. Bu kalemler bir sonraki oturumlarda Founder ile birlikte kararlaştırılacak ve karara bağlananlar maddeye inecektir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-BLOK-SIRASI-UYUMU,
+  durum:            açık,
+  çapa:             yasa,
+  dönüşTetikleyici: "Bir mevsim açılırken ya da hangi Bloka geçileceği kararlaştırılırken; Blok bağımlılığı kenar olarak yazılmak istendiğinde",
+  öncelik:          p1,
+  tarih:            2026-08-30,
+  ne:               "ORK-3.5 maddesi Blokların çalışma sırasının önce bağımlılıktan, bağımlılığın ayırmadığı yerde öncelik kademesinden türetilmesini hükme bağlamıştır. Hükmün bugün zorlanamamasının tek sebebi şudur: Bloklar arasında hiçbir yürütme kenarı yazılmamaktadır ve motorun sırası yalnız Adım düzeyinde koşmaktadır, dolayısıyla Blok sırası ölçülemez. İşin üç ayağı vardır. Birinci ayak Blok bağımlılığının kenar olarak ilan edilmesidir ve bu bir tip kararıdır, çünkü bugünkü yürütme kenarlarının uçları yalnız Adımdır; kenarın Adım kenarlarından türetilip türetilmeyeceği ya da ayrı yazılıp yazılmayacağı bu Adımda kararlaştırılır. İkinci ayak zorlamadır: öncülü açık bir Blokun Adımının geliştirmeye alınması ile düşük kademeli bir Blokun yüksek kademelinin önüne geçmesi tanıyla bildirilir ve madde o gün ilanla tazelenir. Üçüncü ayak ritüeldir: oturum açılışı bugün doğrudan Adım seçmektedir, oysa hüküm oturumun işe Blok seçerek başladığını söyler, dolayısıyla ritüele Blok seçimi basamağı girer ve seçimin gerekçesi Blokun durum kaydına yazılır. Bu işin doğal evi öncelik ve kod reformu Blokudur, çünkü öncelik kademelerinin iki eksene açılması aynı Blokta beklemektedir."
+)
+
+// 📌 BLOKUN FAZI KENDİ DOSYASINDA GÖRÜNMÜYOR (Founder gözlemi 2026-08-30).
+//   Founder canlı pencerede iki dosyayı yan yana koyup farkı göstermiştir ve
+//   hükmü şudur: bütün Bloklar bağlı olduğu Fazda görünmelidir. Sebep ölçülmüş
+//   ve üç ayrı yazım düzeninin bir arada yaşadığı görülmüştür; hangisinin norm
+//   olacağı Founder ile birlikte kararlaştırılacaktır.
+Hatırlatıcı(
+  kod:              HTR-BLOKUN-FAZI-DOSYADA-GORUNMUYOR,
+  durum:            açık,
+  çapa:             yasa,
+  dönüşTetikleyici: "Bir Blok dosyası açıldığında ve hangi mevsime ait olduğu okunamadığında; yeni bir Blok yazılmadan önce ya da mevsim ilanı düzenlendiğinde",
+  öncelik:          p1,
+  tarih:            2026-08-30,
+  ne:               "Founder 2026-08-30 tarihinde şunu gözlemlemiştir: bir Blok dosyası açıldığında o Blokun hangi Faza bağlı olduğu dosyanın içinde görünmemekte, bazı dosyalarda ise görünmektedir; hüküm şudur ki bütün Bloklar bağlı olduğu Fazda görünmelidir. Sebep ölçülmüştür ve tek bir kusur değil, bir arada yaşayan üç ayrı yazım düzenidir. Birinci düzende Faz düğümü Blokları kendi gövdesinde fiziksel olarak sarar ve ikisi aynı dosyada yaşar; göç planı bu düzendedir ve Founder'ın Fazı gördüğü dosya budur, çünkü düzenleyicinin kırıntı yolu kök düğüm olarak Fazı gösterir. İkinci düzende Blok kendi dosyasının kökünde durur ve Faza mevsim alanıyla bağlanır; motor bu alanı Faz düğümüne sanal bir çağır kenarına normalize eder ve bağ dosyada okunur, buna karşılık bugün yalnız iki Blok bu düzendedir. Üçüncü düzende bağ yalnız mevsim ilanının kendisinde yaşar, yani Faz dosyası çağır kenarıyla Bloku kapsar ve Blokun kendi dosyasında Faza dair hiçbir iz bulunmaz; bugün on dört bağın tamamı bu düzendedir ve performans mevsiminin beş Blokunun tamamı buradadır, dolayısıyla Founder'ın gördüğü boşluk bu düzenin doğrudan sonucudur. Kararlaştırılacak olan şudur ve seçim üç ihtimal arasındadır. Birinci ihtimal mevsim alanını bütün Bloklarda zorunlu kılmaktır; bu, bağı Blokun kendi dosyasında okunur hâle getirir, fakat bugünkü kanonun tek bağ tek yer hükmüyle çatışır ve iki yazım birlikte kullanılırsa çift mevsim kaydı uyarısı doğar, dolayısıyla Faz dosyasındaki çağır kenarlarının düşürülmesi ya da bu uyarının anlamının yeniden tanımlanması gerekir. İkinci ihtimal bağın yerini değiştirmeden yalnız YÜZEYİ düzeltmektir; bu durumda kaynak olduğu gibi kalır ve Blok dosyası açıldığında mevsimi kırıntı yolunda, satır merceğinde ya da gezin kartında grafın kendisinden okunarak gösterilir, çünkü motor bağı zaten bilmektedir ve okuyucunun görmediği şey kaynak değil sunumdur. Üçüncü ihtimal göç planındaki gibi fiziksel sarmaya dönmektir; bu en görünür düzendir fakat bir Fazın bütün Bloklarını tek dosyaya toplar ve dosya boyutu ile eşzamanlı çalışma bakımından pahalıdır. Kontrolcünün ölçüme dayalı görüşü ikinci ihtimaldir, çünkü bağ bugün zaten tekil ve doğru yerdedir ve görünmeyen şey bağ değil onun sunumudur. FOUNDER DARALTMASI (2026-08-30, aynı gün): Founder hükmü şudur ki bir Blok çağır kenarıyla çağrılsa dahi bağlı olduğu Faz o dosyada görünmelidir. Bu hüküm seçimi kesinleştirmektedir: bağın yeri değişmez ve mevsim ilanındaki çağır kenarları düşürülmez, çünkü hüküm bağın taşınmasını değil GÖRÜNMESİNİ istemektedir; dolayısıyla birinci ile üçüncü ihtimal elenmiş, çözüm ikinci ihtimalin yani yüzey yolunun içinde aranacaktır. Çözülecek soru şudur: Blok dosyası açıkken o Blokun mevsimi, kaynağa hiçbir satır eklenmeden grafın kendisinden okunarak hangi yüzeyde ve hangi biçimde gösterilecektir; aday yüzeyler kırıntı yolu, satır merceği, gezin kartı ve Yol Haritası başlığıdır ve bunların hangisinin ya da hangilerinin taşıyacağı ölçülerek kararlaştırılacaktır. Founder ayrıca bu işin bugünkü mevsimin önüne geçmemesini, önce elde koşan işin bitirilmesini istemiştir, dolayısıyla kalem bu hatırlatıcıda bekler. Karar verildiğinde uygulama plana iner ve gerekirse kanonun yüzey maddesi tazelenir."
+)
+

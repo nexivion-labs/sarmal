@@ -110,7 +110,7 @@ test("② + ④ temiz kopyada on altı yüzün ilk ve ikinci koşusu sıfır far
   assert.deepEqual(ilk.degisen, [],
     `üretilen yüz canlı üreticiden ayrışmış (elle değişiklik ya da bayat yüz): ${ilk.degisen.join(", ")}`);
   assert.equal(ilk.degismeyen.length, BELGE_YUZU_HEDEFLERI.length);
-  assert.deepEqual({ madde: ilk.kanonMaddesi, arac: ilk.aracSayisi }, { madde: 151, arac: 18 });
+  assert.deepEqual({ madde: ilk.kanonMaddesi, arac: ilk.aracSayisi }, { madde: 156, arac: 18 });
   const ikinci = belgeYuzleriniUret(sb);
   assert.deepEqual(ikinci.degisen, [], "ikinci koşu fark verdi — idempotens drift");
 });
@@ -118,10 +118,10 @@ test("② + ④ temiz kopyada on altı yüzün ilk ve ikinci koşusu sıfır far
 test("② kırmızı fikstür: üretilen bölgeye elle dokunan bayt ilk koşuda yakalanır ve onarılır", () => {
   const sb = sandboxKur();
   const readme = join(sb, "README.md");
-  writeFileSync(readme, readFileSync(readme, "utf8").replace("151 tekil madde", "149 tekil madde"), "utf8");
+  writeFileSync(readme, readFileSync(readme, "utf8").replace("156 tekil madde", "149 tekil madde"), "utf8");
   const koşu = belgeYuzleriniUret(sb);
   assert.deepEqual(koşu.degisen, ["README.md"], "elle değiştirilen üretilen bölge ilk koşuda görünmedi");
-  assert.ok(readFileSync(readme, "utf8").includes("151 tekil madde"), "nöbet yüzü kanonik ölçüme onarmadı");
+  assert.ok(readFileSync(readme, "utf8").includes("156 tekil madde"), "nöbet yüzü kanonik ölçüme onarmadı");
   assert.deepEqual(belgeYuzleriniUret(sb).degisen, [], "onarım sonrası koşu sıfır fark vermeli");
 });
 

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// yasa/kanon/dil.sar — 🗣️ DİL bölümü · v1 kanonu (17 madde)
+// yasa/kanon/dil.sar — 🗣️ DİL bölümü · v1 kanonu (18 madde)
 //   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
 //   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
 //   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
@@ -93,6 +93,18 @@ Kural yorumÇağrıVeAkışYazımı( kod: DIL-1.4,
 Kural anlatımBütünlüğü( kod: DIL-1.5,
        ne: "DIL-1.5 · Anlatım Bütünlüğü [BİLGİ]",
        otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: DIL-1 )
+
+-->|
+### DIL-1.6 · Plan Kademelerinin Adı [UYARI]
+**Hüküm:** Faz, Blok, Katman ve AltKatman bildirimlerinin her biri `ad` alanını taşır ve bu alan boş bırakılamaz; ad kodun açılımı değil insanın okuyacağı bir addır, Türkçe yazım kurallarına uyar ve her anlamlı sözcüğü büyük harfle başlar, bağlaç ile edatlar küçük kalır; kısaltma, telgraf yazımı ve yalnız küçük harften kurulu ad yazılamaz; dayanak: DIL-1; ilgili: [DIL, MIM, YUZ].
+**Gerekçe:** Adsız bir kademe yüzeylerde yalnız koduyla görünür ve kod bir kimliktir, anlam taşımaz; Founder paneli açtığında hangi kutunun hangi işi tuttuğunu koddan çıkaramaz ve her okuma kaynağa inmeyi gerektirir. Adın yazımının serbest bırakılması ise aynı ağaçta üç ayrı yazım düzeni doğurur ve panelin ray satırı ile graf etiketi birbiriyle uyumsuz görünür; adın nizami yazılması bir süs değil, kademeyi bir bakışta ayırt edilebilir kılan tek şeydir. Kural Adımı kapsamına almaz, çünkü Adımın anlamını `ne` alanı taşır ve Adım sayısı kademelerin sayısından bir kat büyüktür.
+**Örnek:** Doğru: `Blok( kod: BLK-PRF-TEKAGAC, ad: "Tek Ağaç" )` ve `AltKatman( kod: ALT-TA-INCELEME, ad: "Tek Ağaç Denetimi ve Canlı Ölçüm" )`; yanlış: `Blok( kod: BLK-PRF-TEKAGAC )` ya da `AltKatman( kod: ALT-TA-INCELEME, ad: "tek ağaç denetimi ve canlı ölçüm" )`.
+**Zorlama:** Bugün zorlanmaz ve bu madde henüz hiçbir tanı İLAN ETMEZ; ilan bir taahhüttür ve kanonun ilan ettiği her tanının aynı turda sicilde ve bir üreticide bulunması gerekir (A08 üçlü senkron), dolayısıyla ilan ancak zorlama gerçekten yazıldığında düşülür. Hükmün `ad` alanının VARLIĞI ayağı ölçülebilirdir ve şema kapısından zorlanacaktır, çünkü Faz, Katman ile AltKatman şemaları `ad` alanını bugün zaten zorunlu saymakta, yalnız Blok şeması saymamaktadır; yazım ayağı da ölçülebilirdir, çünkü adın ilk harfi metinden okunur. Zorlamanın yazılması, bugünkü ağaçtaki uyumsuz kademelerin onarılmasıyla aynı işin parçasıdır ve o iş bir hatırlatıcıyla plana bağlanmıştır; zorlama o Adımda doğduğunda bu paragraf tanı ilanıyla birlikte tazelenir. O güne kadar uyum insan kapısında sınanır.
+|<--
+Kural planKademelerininAdı( kod: DIL-1.6,
+       ne: "DIL-1.6 · Plan Kademelerinin Adı [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: plan,
        dayanak: DIL-1 )
 
 -->|

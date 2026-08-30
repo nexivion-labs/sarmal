@@ -93,8 +93,8 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
     });
   }
   const kodlar = new Set(maddeler.map((m) => m.kod));
-  if (dosyalar.length !== 8 || maddeler.length !== 151 || kodlar.size !== 151) {
-    throw new Error(`Resmi kanon 151/151 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
+  if (dosyalar.length !== 8 || maddeler.length !== 156 || kodlar.size !== 156) {
+    throw new Error(`Resmi kanon 156/156 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
   }
   return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`) };
 }
@@ -157,10 +157,13 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // kesişimi yok" hatasıyla yakalamıştı. Tek değişkene indirgemek bu sınıftan bir
   // sapmanın yapısal olarak tekrar etmesini engeller: kanon meşru biçimde
   // büyüdüğünde güncellenecek tek bir sayı çifti kalır.
-  const beklenenKarar = 37;
-  // 2026-08-28: MIM-1.7 AltKatman tekilliği Founder hükmüyle doğdu ve kanon
-  // meşru biçimde büyüdü; kural sayısı yüz on üçten yüz on dörde çıktı.
-  const beklenenKural = 114;
+  // 2026-08-30: Founder dört ortak çalışma kuralını hükme bağladı ve kanon meşru
+  // biçimde büyüdü. ORK-9 (Blok Teslim Halkası) bir Karar olarak doğdu ve Karar
+  // sayısı otuz yediden otuz sekize çıktı; DIL-1.6 (Plan Kademelerinin Adı),
+  // MIM-3.3 (Blok Durum Kaydı), ORK-3.5 (Blok Sırası) ile YUZ-3.5 (Durum Yüzeyi)
+  // Kural olarak doğdu ve kural sayısı yüz on dörtten yüz on sekize çıktı.
+  const beklenenKarar = 38;
+  const beklenenKural = 118;
 
   // Sayı çiftleri 2026-08-24 tarihinde bilinçli olarak güncellendi: durum-boyutu
   // tanısı Founder hükmüyle emekliye ayrıldı (canlı sabit 102→101, emekli 14→15,
@@ -184,10 +187,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
 
   const tutarlilik: Array<[string, string, string | number, boolean]> = [
     ["Resmi kaynak dosyası", "8", olcum.muhurler.length, olcum.muhurler.length === 8],
-    ["Kanon maddesi", "151 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 151],
+    ["Kanon maddesi", "156 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 156],
     ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
-    ["Dört parçalı madde", "151/151", `${151 - eksikDortParca.length}/151`, eksikDortParca.length === 0],
-    ["Kanonik örnek", "151/151", `${151 - eksikOrnek.length}/151`, eksikOrnek.length === 0],
+    ["Dört parçalı madde", "156/156", `${156 - eksikDortParca.length}/156`, eksikDortParca.length === 0],
+    ["Kanonik örnek", "156/156", `${156 - eksikOrnek.length}/156`, eksikOrnek.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
@@ -223,7 +226,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     `Resmi sonuç ${olcum.maddeler.length}/${olcum.maddeler.length} maddedir. Tek adres \`yasa/kanon/\`; bu türev hüküm metni kurmaz.`,
     "",
-    "## Kanonik örnekler — 151/151",
+    "## Kanonik örnekler — 156/156",
     "",
     "| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |",
     "|---|---|---|---|",
@@ -296,7 +299,7 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
-    madde: 151,
+    madde: 156,
     yeni: YENI_TANI_KANONU.length,
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,

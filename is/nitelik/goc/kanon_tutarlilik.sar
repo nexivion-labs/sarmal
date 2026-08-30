@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:5ab11cf7163d01ff41b271edc9fba9838eef61f0a283c29a38bb64a1fbee3a98
+// KAYNAK-MUHRU kanon-demeti-sha256:021963f25f868304b79585e821508a5987f60b50f4ad1c43ee2cb80cbcef0176
 
 -->|
 # Kanon tutarlılık yüzü
@@ -11,15 +11,15 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon/dil.sar` | `3454c635035b35eb70ffdd4128e46be22702073e7f67025edea53f8b1a4ad3e7` |
-| `yasa/kanon/mim.sar` | `42665be3f4a29abff60e3f1002ee8f80193053d42fb64a4043fe6836041525fe` |
+| `yasa/kanon/dil.sar` | `8dfaea26ac5b79d16b2cb7c3bfaae6df2806149a99e18b85b203e455accba8a1` |
+| `yasa/kanon/mim.sar` | `582c62fe3d617f11a35e434ea926e29fd2057cb979593a0ce4b1889aaa0c2cf3` |
 | `yasa/kanon/ogr.sar` | `d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46` |
-| `yasa/kanon/ork.sar` | `b938725bcbf4cab2dcf2b21077cb3109878be4016b35af539084c37df8303fe7` |
+| `yasa/kanon/ork.sar` | `d31462c25b1fcd5627cc92394ae6339341e1a5ca7ed669585d212ded749550d8` |
 | `yasa/kanon/str.sar` | `a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d` |
 | `yasa/kanon/tip.sar` | `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068` |
 | `yasa/kanon/yas.sar` | `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49` |
-| `yasa/kanon/yuz.sar` | `d6caf9cefad8c24a04aa1eb0972b7eb14a47bb5cbfc12ca451b6bff68c20d96c` |
-| kanon demeti | `5ab11cf7163d01ff41b271edc9fba9838eef61f0a283c29a38bb64a1fbee3a98` |
+| `yasa/kanon/yuz.sar` | `826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c` |
+| kanon demeti | `021963f25f868304b79585e821508a5987f60b50f4ad1c43ee2cb80cbcef0176` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
 | `oz/siniflama/kayit.json` | `c8f0a1573b02e48a5e1b4697c958935d6f085abb4e141b70acfc73c00b618802` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -29,17 +29,17 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Ölçü | Beklenen | Gerçek | Sonuç |
 |---|---:|---:|---|
 | Resmi kaynak dosyası | 8 | 8 | GEÇTİ |
-| Kanon maddesi | 151 tekil | 151 | GEÇTİ |
-| Rol dağılımı | 37 Karar + 114 Kural | 37 Karar + 114 Kural | GEÇTİ |
-| Dört parçalı madde | 151/151 | 151/151 | GEÇTİ |
-| Kanonik örnek | 151/151 | 151/151 | GEÇTİ |
+| Kanon maddesi | 156 tekil | 156 | GEÇTİ |
+| Rol dağılımı | 38 Karar + 118 Kural | 38 Karar + 118 Kural | GEÇTİ |
+| Dört parçalı madde | 156/156 | 156/156 | GEÇTİ |
+| Kanonik örnek | 156/156 | 156/156 | GEÇTİ |
 | Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
 | Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
 | Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
 
-Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
+Resmi sonuç 156/156 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
 
-## Kanonik örnekler — 151/151
+## Kanonik örnekler — 156/156
 
 | Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |
 |---|---|---|---|
@@ -50,6 +50,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `DIL-1.3` | Kural | `dil.sar` | Doğru: `koşul: güven >= 0.7 ve durum != bloklu` ve `hedefler: [ ADM-01, ADM-02 ]`; yanlış: `koşul: güven = 0.7` veya şemanın sayı beklediği alana serbest metin yazmak. |
 | `DIL-1.4` | Kural | `dil.sar` | Doğru: `Adım( kod: ADM-01 ) { --> ADM-02 }` yalnız ADM-01'in ADM-02'yi beslediğini anlatır; yanlış: aynı oku ebeveynlik veya genel referans işareti saymak. |
 | `DIL-1.5` | Kural | `dil.sar` | Doğru: “Bu Adım hükmü kanona indirir; üslubun mekanik olarak ölçülmesi kapsam dışında bırakılmıştır, çünkü dilbilgisi denetimi makine için güvenilir değildir.”; yanlış: “hüküm kanona · ölçüm sonraya · kapsam dışı”. |
+| `DIL-1.6` | Kural | `dil.sar` | Doğru: `Blok( kod: BLK-PRF-TEKAGAC, ad: "Tek Ağaç" )` ve `AltKatman( kod: ALT-TA-INCELEME, ad: "Tek Ağaç Denetimi ve Canlı Ölçüm" )`; yanlış: `Blok( kod: BLK-PRF-TEKAGAC )` ya da `AltKatman( kod: ALT-TA-INCELEME, ad: "tek ağaç denetimi ve canlı ölçüm" )`. |
 | `DIL-2` | Karar | `dil.sar` | Doğru: belge içindeki `A \| B` satırı ile altındaki girintili şekil aynen kalır; yanlış: tek bir boru karakterini kapanış saymak veya göreli boşlukları yeniden akıtmak. |
 | `DIL-2.1` | Kural | `dil.sar` | Doğru: belge bloğunu doğrudan `Karar( kod: KAR-01 )` izler; yanlış: belge ile Karar arasına `ne:` özelliği koymak veya kapsamı belge sonrasında kapatmak. |
 | `DIL-2.2` | Kural | `dil.sar` | Doğru: biçimlendirme öncesi ve sonrası çok satırlı değerin sözcükleri ile göreli sütunları aynıdır; yanlış: satırları birleştirmek, yorumu yeniden yazmak veya hizalı sütunu kaydırmak. |
@@ -75,6 +76,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `MIM-3` | Karar | `mim.sar` | `Kitaplık( kod: KTP-KAYNAK, yol: "src/" ) { Raf( kod: RAF-KIMLIK, yol: "kimlik/" ) }` ilanı diskte `src/kimlik/` ile aynı yerde ve aynı adla bulunur. |
 | `MIM-3.1` | Kural | `mim.sar` | Doğru: `Katman { AltKatman { Adım } }`; yanlış: `Proje { Adım }` veya `Adım { Katman }`. |
 | `MIM-3.2` | Kural | `mim.sar` | `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder; Ekran içeriği ayrı kaynakta yaşar. |
+| `MIM-3.3` | Kural | `mim.sar` | Doğru: `is/durum/blok_durum/blk-prf-tekagac_durum_devir.sar` dosyası `DurumKaydı( kod: DRM-BLK-PRF-TEKAGAC, referans: [ BLK-PRF-TEKAGAC ] )` kökünü taşır ve ana kayıt `DurumKaydı( kod: DRM-SARMAL, referans: [ BLK-PRF-TEKAGAC, BLK-PRF-MIKRO ] )` satırıyla durum taşıyan Blokları sayar. Yanlış: bütün Blokların devir metnini ana kayıtta biriktirmek, Blokun kaydını plan dosyasının yanına koymak ya da kaydı yazıp ana kayda atıf vermemek. |
 | `MIM-4` | Kural | `mim.sar` | Proje kökü ve disk aynası MIM altında tanımlanır; tip alanları TIP, rejim istisnası YAS ve yürütme bağı ORK tarafından yalnızca kendi sözleşmesi kadar tamamlanır. |
 | `OGR-0` | Karar | `ogr.sar` | Kanonik akış: `kanon → Tutorial · How-To · Reference · Explanation → hover · tanı önerisi · Beceri`; ok hangi öğretim yüzünün hangi kaynaktan türediğini gösterir. |
 | `OGR-1` | Karar | `ogr.sar` | SNF-0 alan kataloğu `Reference`, ilk geçerli projeyi kurduran yürüyüş `Tutorial` olur; tek belge kendisini hem eksiksiz sicil hem başlangıç dersi ilan edemez. |
@@ -106,6 +108,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `ORK-3.2` | Kural | `ork.sar` | ADM-A tamamlandı, ADM-B `geliştirmede` ve `bağımlı: [ ADM-A ]` ise B seçilebilir; ADM-C `bağımlı: [ ADM-B ]` iken B bitmeden C seçilemez. |
 | `ORK-3.3` | Kural | `ork.sar` | `Döngü( kod: DNG-TEMIZLIK, tetik: koşul, koşar: [ ADM-DENETLE ], durunca: "karne.hata == 0", turLimiti: 5 )` hedefli ve sınırlıdır; kabul ölçütü karşılanmamış `Kapı` geçilmiş sayılamaz. |
 | `ORK-3.4` | Kural | `ork.sar` | Doğru: `Adım( kod: ADM-YAYIN, öncelik: p0 )` yayını bloklayan işi, `Hatırlatıcı( kod: HTR-01, öncelik: p3 )` tarih taahhüdü olmayan kaydı gösterir; yanlış: aynı ağaçta `P1` ile `p1` değerlerinin birlikte kullanılması ya da yüksek kademeli bir işin öncülünden önce seçilmesi. |
+| `ORK-3.5` | Kural | `ork.sar` | Doğru: `BLK-PRF-PANELKIPI` Blokunun bütün Adımları `BLK-PRF-TEKAGAC` Blokunun kapanmasını bekliyorsa Tek Ağaç önce koşar; iki Blok da bağımsızsa `p0` kademeli olan önce, ikisi de `p0` ise kanonik KOD sırasıyla küçük olan önce gelir. Yanlış: sırada bekleyen bir Bloka yalnız dosyası açık olduğu ya da işi kolay göründüğü için başlamak. |
 | `ORK-4` | Kural | `ork.sar` | PRJ-B içinden PRJ-A'nın `SZL-KIMLIK` düğümüne doğru atıf `PRJ-A::SZL-KIMLIK`tir; yalnız `SZL-KIMLIK` yazmak yerel PRJ-B kapsamının dışına çıkamaz. |
 | `ORK-5` | Karar | `ork.sar` | `KimlikKökü( kod: KMK-ORTAK ) { KimlikSağlayıcısı( kod: KMS-GOOGLE, tür: google ) }` ve `Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )`; PRJ-ANA yine ayrı Proje kimliğidir. |
 | `ORK-5.1` | Kural | `ork.sar` | `KimlikSağlayıcısı( kod: KMS-APPLE, tür: apple )` taban kataloğundadır; `kurumsalKimlik` eklenecekse önce ÇalışmaAlanı örtüsünde sağlayıcı enumuna katkı yapılır. |
@@ -118,6 +121,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `ORK-7` | Kural | `ork.sar` | MIM Adımın mimari yerini, TIP alan ve kenar şemasını, YAS tanı düzeyini, OGR öğretim yüzünü tanımlar; Adımın ne zaman seçileceği ve teslimin nasıl doğrulanacağı ORK hükümlerine geri bağlanır. |
 | `ORK-8` | Karar | `ork.sar` | Doğru kapanış sırası şudur: `Faz( kod: FAZ-01 )` halkasındaki Adımlar ölçülür, biten Adımların Meyveleri hasat edilip mevsim kaydına yazılır, açık kalan `ADM-YAYIN` bir sonraki mevsime devredilir ve mevsim mühürlenir; yanlış olan, mevsimi yalnız dosyanın başına bir yorum satırı yazarak kapatmak ve açık işi devretmeden bırakmaktır. |
 | `ORK-8.1` | Kural | `ork.sar` | Doğru: bir tur kaydı nitelik rafında `Çıkarım( kod: CKR-TUR-01, ... )` düğümüyle yaşar ve yalnız o turda değişen hükmü anlatır; yanlış: turun bütün ölçüm sayılarını Adımın koşu alanından kopyalayıp tur kaydına ikinci kez yazmak ya da bu kayıtlar için yeni bir raf açmak. |
+| `ORK-9` | Karar | `ork.sar` | Doğru sıra şudur: `FAZ-2026-PERFORMANS` mevsimine başlanırken `faz/2026-performans` dalı açılır; `BLK-PRF-TEKAGAC` Blokunun işi bittiğinde o Blok için bir birleştirme isteği açılır ve Blokun bütün Adımları kapandığında istek kapanır; oturum sonunda gövde Adımlarına bölünerek işlenir ve `PRF-TA-A03` işlemesi o Adımın gövdesiyle birlikte `KAT-TA-KOD` ile `ALT-TA-URETIM` ilanlarının aynı işte değişen satırlarını da taşır. Yanlış olan, her Blok için ayrı dal açmak, üç Adımın işini tek işlemede toplamak, iki Blokun işini aynı istekte sunmak ya da iş akarken parça parça işleyip yarım gövdeyi tarihe yazmaktır. |
 | `STR-0` | Karar | `str.sar` | Kanonik akış: `unutma kapısı → etki sıralı göç → aşama temizliği → geriye yazım → yayın → ölü iz temizliği`. |
 | `STR-1` | Karar | `str.sar` | Doğru: `dayanak: STR-0`; yanlış: `dayanak:` değerini emekli bir kodla yazmak veya o kodu yorum içinde saklamak. |
 | `STR-1.1` | Kural | `str.sar` | Doğru zincir: `STR-1.1 → STR-1 → STR-0`; yanlış: tanımsız bir bölüm önekine dayanmak, var olmayan maddeyi hedeflemek veya iki hükmü birbirine dayandırmak. |
@@ -188,6 +192,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `YUZ-3.2` | Kural | `yuz.sar` | `ADM-GIRIS üretir EKR-GIRIS` bağı Adımdan Ekrana giden `üretir`, Ekrandan Adıma gelen üretim-kökeni olarak görünür; mimari sarma bağı diye yeniden etiketlenmez. |
 | `YUZ-3.3` | Kural | `yuz.sar` | `rejim-beyanı-eksik` HATA düzeyiyle Problems'te, `Hatırlatıcı( durum: açık )` kendi kanonik kimliğiyle Hatırlatıcılar'da, bilgi düzeyli bir durum veya vade işareti Bildirimler'de görünür; her biri kodunu ve düzeyini yüzeyler arasında değiştirmeden korur. |
 | `YUZ-3.4` | Kural | `yuz.sar` | Doğru: bir Hatırlatıcı `durum: kararlaştı` ve `hatırlat: ADM-SIRADAKI` yazımıyla beklerken, ADM-SIRADAKI tamamlandığı anda ateşlemiş sayılır ve kapatılmayı bekler; yanlış: aynı düğümün o Adım kapandıktan sonra da uykudakilerle aynı grupta, ayırt edilmeden durması. |
+| `YUZ-3.5` | Kural | `yuz.sar` | Doğru: `Durumlar` yüzeyi `PRJ-SARMAL` kökü altında ana kaydı ve ona bağlı `DRM-BLK-PRF-TEKAGAC` ile `DRM-BLK-PRF-MIKRO` kayıtlarını sıralar, her satır tıklanınca kaynak dosyanın ilgili satırına gider. Yanlış: durumu yalnız dosya ağacından okumak, kaydı panelden düzenletmek ya da ana kayda bağlı olmayan bir dosyayı yüzeyde durum diye göstermek. |
 | `YUZ-4` | Karar | `yuz.sar` | `Ekran( kod: EKR-GIRIS, referans: ADM-GIRIS, tema: TEM-ANA, görünürlük: açık )` kimlik, köken, tema ve görünürlük bağlarını açıklar; yerel renkle ve üretici bağı olmadan bırakılan adsız ekran eksiktir. |
 | `YUZ-4.1` | Kural | `yuz.sar` | Doğru: `Tema( kod: TEM-ANA, renkler: [ birincil, yüzey, nötr ], ne: "Ana tema" )`; yanlış: bir `Kart` üzerinde `renk: "#0A84FF"` yazarak tema rolünü atlamak. |
 | `YUZ-4.2` | Kural | `yuz.sar` | Doğru: panelin karar düğmesi kilitli aileden gelen onay işaretini ve “Onayla” erişilebilir etiketini taşır, bir `Adım` gövdesindeki niyet cümlesi ise emojisini korur; yanlış: aynı düğmeyi emojiyle çizmek ya da işareti etiketsiz basıp anlamı yalnız çizime bırakmak. |
@@ -423,7 +428,7 @@ Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühür
 |<--
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
-      ne: "Resmi yasa/kanon sekizlisinin 151/151 maddesi, 37 Karar ve 114 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
+      ne: "Resmi yasa/kanon sekizlisinin 156/156 maddesi, 38 Karar ve 118 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
 
 Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
       ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1.7 AltKatman tekilliğiyle 74 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 15 uygulanmış emekli kimlik ve 38 açık emeklilik borcu ayrı kümeler olarak ölçülür." )

@@ -10,7 +10,7 @@ Bu giriş elle korunur; aşağıdaki gezinme indeksi canlı kaynaklardan üretil
 
 | Aranan kavram | Tek kaynak | Okuma yüzü |
 |---|---|---|
-| Kanonik hüküm | `yasa/kanon/` içindeki sekiz dosya | `151` madde; metin burada yinelenmez |
+| Kanonik hüküm | `yasa/kanon/` içindeki sekiz dosya | `156` madde; metin burada yinelenmez |
 | Tip, alan, enum ve sarma | `oz/siniflama/kayit.json` | [tam Reference tablosu](oz/siniflama/kayit.md) |
 | Tanı kimliği ve düzeyi | `urun/cekirdek/src/tani-sicili.ts` | 47 hata · 16 uyarı · 11 bilgi |
 | Araç metni | `urun/cekirdek/src/mcp-metinleri.ts` | 18 iki dilli MCP aracı |

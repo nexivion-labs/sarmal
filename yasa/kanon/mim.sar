@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// yasa/kanon/mim.sar — 🏗️ MİMARİ bölümü · v1 kanonu (15 madde)
+// yasa/kanon/mim.sar — 🏗️ MİMARİ bölümü · v1 kanonu (16 madde)
 //   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
 //   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
 //   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
@@ -194,6 +194,18 @@ Kural rafVeKitaplıkYapısı( kod: MIM-3.2,
        otorite: anayasa, katman: niyet, kapsam: genel,
        dayanak: MIM-3,
        tanı: [ rafsız-anadizin ] )
+
+-->|
+### MIM-3.3 · Blok Durum Kaydı [UYARI]
+**Hüküm:** Her Blok kendi durum kaydını taşır; bu kayıt planın durum rafının altındaki `blok_durum` klasöründe, yani `is/durum/blok_durum/<blok-kodu>_durum_devir.sar` yolunda yaşar ve kökü bir `DurumKaydı` düğümüdür. Blokun kaydı yalnız o Blokun nerede kaldığını, sıradaki işini ve devir metnini tutar, başka bir Blokun durumunu yazamaz ve kendi Blokuna `referans` kenarıyla bağlanır. Projenin ana durum kaydı ise durum taşıyan bütün Bloklara `referans` kenarıyla atıf verir; bu atıf bir nezaket değil grafın kendisidir ve motor durum evrenini yalnız bu kenarlardan görür. Ana kayıt Blok kayıtlarının yerine geçemez ve yalnız Bloklar üstü işi, yani mevsimi, sürümü ve çatı kararını taşır; dayanak: MIM-3; ilgili: [MIM, ORK, YUZ, STR].
+**Gerekçe:** Tek bir proje kaydı, Blok sayısı arttıkça bütün Blokların devir metnini aynı dosyada biriktirir; dosya büyüdükçe hangi paragrafın hangi Bloka ait olduğu okunamaz hâle gelir ve bir Blokta çalışan oturum kendi işini bulmak için ilgisiz onlarca paragrafı taramak zorunda kalır. Kaydın Blok başına ayrılması aynı zamanda eşzamanlı çalışmayı mümkün kılar, çünkü iki Blokta çalışan iki oturum artık aynı dosyanın aynı satırlarına yazmaz. Kaydın planın durum rafı altında toplanmasının sebebi şudur: durum plan içeriği değildir ve plan dosyalarının yanına serpiştirilirse plan rafı iki cins gövde taşımaya başlar; ayrı bir `blok_durum` klasörü ise bütün Blok kayıtlarını tek yerde toplar ve hangi Blokların durum taşıdığı sorusu bir dizin listesiyle cevaplanır. Atfın kenar olarak yazılmasının sebebi ayrıdır ve daha ağırdır: dosyaların diskte yan yana durması onları bir graf yapmaz, dolayısıyla motor ne kaydı olmayan bir Bloku ne de Bloku olmayan bir kaydı görebilir. Kenar yazıldığında durum evreni grafın parçası olur; yetim kayıt, kayıtsız Blok ve kırık atıf motorun bugün zaten koştuğu tanılarla ölçülebilir hâle gelir ve durum kaydı bir düzyazı olmaktan çıkıp denetlenebilir bir gövdeye dönüşür.
+**Örnek:** Doğru: `is/durum/blok_durum/blk-prf-tekagac_durum_devir.sar` dosyası `DurumKaydı( kod: DRM-BLK-PRF-TEKAGAC, referans: [ BLK-PRF-TEKAGAC ] )` kökünü taşır ve ana kayıt `DurumKaydı( kod: DRM-SARMAL, referans: [ BLK-PRF-TEKAGAC, BLK-PRF-MIKRO ] )` satırıyla durum taşıyan Blokları sayar. Yanlış: bütün Blokların devir metnini ana kayıtta biriktirmek, Blokun kaydını plan dosyasının yanına koymak ya da kaydı yazıp ana kayda atıf vermemek.
+**Zorlama:** Bu madde bugün hiçbir tanı İLAN ETMEZ, çünkü kanonun ilan ettiği her tanının aynı turda sicilde ve bir üreticide bulunması gerekir (A08 üçlü senkron) ve ilan ancak zorlama gerçekten yazıldığında düşülür. Buna karşılık hükmün en kritik ayağı olan ATIF bugün canlı zorlanmaktadır: `referans` kenarı çözülmeyen bir koda yönelirse `kırık-referans` tanısı doğar, dolayısıyla ana kaydın saydığı bir Blok silindiğinde ya da kodu değiştiğinde graf bunu aynı turda bildirir ve durum evreni kendiliğinden çürümez. Kaydın YOKLUĞU ile ana kayda BAĞLANMAMIŞ bir kaydın ölçülmesi ise ayrı bir zorlama işidir ve bir hatırlatıcıyla plana bağlanmıştır; o Adım kapandığında bu paragraf tanı ilanıyla birlikte tazelenir. Kaydın İÇERİĞİNİN güncelliği hiçbir tanıyla ölçülemez, çünkü bir devir metninin bayat olup olmadığı anlam yargısıdır ve insan kapısında sınanır.
+|<--
+Kural blokDurumKaydı( kod: MIM-3.3,
+       ne: "MIM-3.3 · Blok Durum Kaydı [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: Blok,
+       dayanak: MIM-3 )
 
 -->|
 ### MIM-4 · Doğuş Omurgası ve Yapı Kural Aileleri [BİLGİ]

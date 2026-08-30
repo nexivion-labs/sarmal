@@ -15,23 +15,23 @@ import {
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
-  "dil.sar:3454c635035b35eb70ffdd4128e46be22702073e7f67025edea53f8b1a4ad3e7",
-  "mim.sar:42665be3f4a29abff60e3f1002ee8f80193053d42fb64a4043fe6836041525fe",
+  "dil.sar:8dfaea26ac5b79d16b2cb7c3bfaae6df2806149a99e18b85b203e455accba8a1",
+  "mim.sar:582c62fe3d617f11a35e434ea926e29fd2057cb979593a0ce4b1889aaa0c2cf3",
   "ogr.sar:d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46",
-  "ork.sar:b938725bcbf4cab2dcf2b21077cb3109878be4016b35af539084c37df8303fe7",
+  "ork.sar:d31462c25b1fcd5627cc92394ae6339341e1a5ca7ed669585d212ded749550d8",
   "str.sar:a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d",
   "tip.sar:0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068",
   "yas.sar:159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49",
-  "yuz.sar:d6caf9cefad8c24a04aa1eb0972b7eb14a47bb5cbfc12ca451b6bff68c20d96c",
+  "yuz.sar:826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c",
 ] as const;
 
-test("resmi sekizli 151/151 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
+test("resmi sekizli 156/156 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
   const olcum = kanonMaddeleriniOlc(KOK);
-  assert.equal(olcum.maddeler.length, 151);
-  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 151);
+  assert.equal(olcum.maddeler.length, 156);
+  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 156);
   assert.deepEqual(
     { karar: olcum.maddeler.filter((m) => m.rol === "Karar").length, kural: olcum.maddeler.filter((m) => m.rol === "Kural").length },
-    { karar: 37, kural: 114 },
+    { karar: 38, kural: 118 },
   );
   assert.equal(olcum.maddeler.filter((m) => m.ornek === "—").length, 0);
   assert.equal(olcum.maddeler.filter((m) => !m.dortParcaTam).length, 0);
@@ -70,7 +70,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const ikinci = kanonTutarlilikMetni(KOK);
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
-  assert.match(ilk, /Resmi sonuç 151\/151 maddedir/);
+  assert.match(ilk, /Resmi sonuç 156\/156 maddedir/);
   assert.match(ilk, /69 yeni tanı tabanı YUZ-3\.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1\.7 AltKatman tekilliğiyle 74/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);

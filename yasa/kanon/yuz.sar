@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// yasa/kanon/yuz.sar — 🪟 YÜZEYLER bölümü · v1 kanonu (19 madde)
+// yasa/kanon/yuz.sar — 🪟 YÜZEYLER bölümü · v1 kanonu (20 madde)
 //   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
 //   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
 //   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
@@ -175,6 +175,18 @@ Kural ateşlemişHatırlatıcınınGörünürlüğü( kod: YUZ-3.4,
        otorite: anayasa, katman: niyet, kapsam: genel,
        dayanak: YUZ-3,
        tanı: [ ateşlemiş-hatırlatıcı ] )
+
+-->|
+### YUZ-3.5 · Durum Yüzeyi [BİLGİ]
+**Hüküm:** Durum kayıtlarının kendi sunum yüzeyi vardır ve bu yüzey Hatırlatıcılar, Fikirler ile Bildirimler yüzeyleriyle aynı kademede, `Durumlar` adıyla yaşar; yüzey çalışma alanındaki her projenin ana durum kaydını ve o kayda `referans` kenarıyla bağlı Blok durum kayıtlarını proje kökü altında gruplayarak gösterir, her satırdan kaynağına gidilir ve gösterilen her satır kaynaktan türetilir; yüzey kendi durumunu icat edemez, kaydı düzenleyemez ve grafın dışından beslenemez; dayanak: YUZ-3; ilgili: [YUZ, MIM, ORK].
+**Gerekçe:** Durum kaydı bugün yalnız dosya elle açılarak okunur ve bu, kaydın en çok okunan gövde olmasına rağmen hiçbir yüzeyi bulunmayan tek kayıt cinsi olması demektir; geliştirici hatırlatıcıyı, fikri ve gözlemi panelden görürken nerede kaldığının cevabını aramak için dosya ağacına inmek zorundadır. Blok başına kayıt hükmü bu eksikliği ağırlaştırır, çünkü bir dosya on dosyaya bölündüğünde elle açarak okuma yöntemi ölçeklenmez ve kayıtların çokluğu tek tek okunamayacak bir yığına döner. Yüzeyin kardeş yüzeylerle aynı kademede olması bilinçlidir: durum da hatırlatıcı ile gözlem gibi zamanla değişen, projeye bağlı ve kaynaktan türetilen bir kayıttır, dolayısıyla ayrı bir pencere değil aynı ailenin bir üyesidir. Yüzeyin kaydı düzenleyememesi ise tek kaynak hükmünün doğrudan sonucudur; düzenlenebilir bir durum paneli kaydın ikinci bir yazarını doğurur ve hangi metnin canlı olduğu okunamaz hâle gelir.
+**Örnek:** Doğru: `Durumlar` yüzeyi `PRJ-SARMAL` kökü altında ana kaydı ve ona bağlı `DRM-BLK-PRF-TEKAGAC` ile `DRM-BLK-PRF-MIKRO` kayıtlarını sıralar, her satır tıklanınca kaynak dosyanın ilgili satırına gider. Yanlış: durumu yalnız dosya ağacından okumak, kaydı panelden düzenletmek ya da ana kayda bağlı olmayan bir dosyayı yüzeyde durum diye göstermek.
+**Zorlama:** Zorlanmaz — niyet katmanı; bir yüzeyin var olup olmadığı kaynak metninden değil ürünün paketinden okunur ve bu madde yeni bir tanı ilan etmez. Hükmün besleme ayağı dolaylı olarak tutulur: yüzey yalnız `referans` kenarından beslendiği için ana kayda bağlanmamış bir dosya yüzeyde görünmez ve bağı kırık bir atıf `kırık-referans` tanısına düşer, dolayısıyla yüzeyin gösterdiği evren ile grafın gördüğü evren aynı kaynaktan gelir. Yüzeyin varlığı ile kardeş yüzeylerle aynı kademede durması insan kapısında sınanır ve eklentinin görünüm sözleşmesinde ilan edilir.
+|<--
+Kural durumYüzeyi( kod: YUZ-3.5,
+       ne: "YUZ-3.5 · Durum Yüzeyi [BİLGİ]",
+       otorite: anayasa, katman: niyet, kapsam: DurumKaydı,
+       dayanak: YUZ-3 )
 
 -->|
 ### YUZ-4 · Kimlik, Tema ve Erişilebilirlik [HATA]
