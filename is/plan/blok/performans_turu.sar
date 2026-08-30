@@ -9,6 +9,14 @@
 //   yükünü düşüren onarımlar, en son Founder his teyidiyle saha kapanışı.
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ── MEVSİM YENİDEN KURULDU (2026-08-30 · Founder hükmü · OZK-12) ─────────────────
+//   Blok Eylül'den FAZ-2026-PERFORMANS mevsimine taşındı ve tek günlük performans denetim
+//   mevsiminin omurgası oldu. PRF-A06 şemsiye Adımdır ve dört kardeş Blokun inceleme
+//   Adımlarına bağımlı olarak en son kapanır. Bugünkü iki onarımın kapıdan geçirilmesi
+//   bu Blokta beş departmanlı iki Katman olarak yaşar: eklenti (belge turu) ve çekirdek
+//   (topolojik sıra). Tarihsel ders: Temmuz turu kalem kalem onardı ve her kalem sonraki
+//   turda yeniden kastı; bu mevsim kalemi değil mimariyi onarır.
+
 -->|
   # ⚡ Performans Turu — eklenti izleyici yükü ölçülür ve düşürülür
 
@@ -139,7 +147,7 @@ Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
         koşu:  "2026-07-19 · UYGULAMA BİTTİ (damga: doğrulanmamış — kapanış kapısı Founder göz-teyidi, kanıtsız tamamlanma dili): yolharitasi.ts genişletme yolu onarıldı — ① bilgiOnbellek + etkiOnbellek (yenile-ömürlü): kenar grupları ve etkiCoz kapanış sonuçları Adım koduna anahtarlandı, önbellekler YALNIZ yenile() graf kurulumunda boşalır; Faz aç/kapa yeniden hesap tetiklemez, koni kartı (koniKartHtml) da aynı önbellekten okur — aynı yenile turunda ikinci etkiCoz koşusu yapısal olarak yoktur (etkiAl tek kapı) ② koşum satırları bilinçli önbellek DIŞI: iz canlılığı korunur (izTazele hızlı yolu koşumları this.izler'den taze kurar) ③ 🐢 yavaş-genişletme merceği: getChildren süresi 30 ms eşiğini aşarsa 'Sarmal Performans' kanalına tek satır düşer (süre · düğüm · çocuk sayısı) — panelin üç yolu da ölçülür (🗺️ tazeleme · 🛰️ iz · 🐢 genişletme) ④ kapsam eki (Founder rota onayı): Blok satırları varsayılan KAPALI — kalabalık mevsim Faz'ı açılınca yalnız Blok başlıkları kurulur, tek karede tüm ağaç kurulumu biter. Eklenti süiti 165/165 · build yeşil. Dürüst sınır: önbellek davranışının birim testi yok (YolHaritasi sınıfı vscode-bağımlı, saf modül değil — mekanizma kod-okuma + saha merceğiyle kanıtlanır); Founder kasmanın geçtiğini gözle teyit edince tamamlandı damgası basılır --- 2026-07-19 · SAHA BULGUSU 2 + ONARIM (0.9.94 kanal ekranı, Founder): 🐢 merceği İLK sahada avını yakaladı — '🐢 yavaş genişletme: 957 ms · BKM-FND-A01' + '952 ms · BKM-FND-A03' (arada 🗺️ turu yok → önbellek doluydu; yavaşlık her Adımın İLK hesabındaydı: etkiCoz her çağrıda topolojikSira'yı TÜM grafa [1470 düğüm] yeniden koşturuyor). Onarım: yenile()'nin zaten kurduğu topolojik sıra saklanır (topoSira) ve etkiCoz'a enjekte edilir — etki.ts'e davranış-koruyucu opsiyonel hazirSira parametresi (sınır istisnası gerekçeli; denklik testi: tüm düğümlerde enjekte-sıra ≡ yerinde-hesap). Çekirdek 789/789 · eklenti 165/165 · 0.9.95 paketlendi+kuruldu. Başlangıç turlarının ağırlığı (🗺️ 9545 ms · denetim 12003 ms · 240 dosya, tetik=başlangıç) AYRI sınıf: soğuk açılış tam taraması — bu Adımın genişletme kapsamı dışı, gözlem sürerse yeni Sorun düğümü açılır --- 2026-07-19 · SAHA KAPANIŞI (0.9.95, VS Code güncellemesi sonrası devrede): Founder göz-teyidi kendi sözleriyle: 'kasma tamamen sona erdi' — kalabalık mevsim Faz'ı + terminal yazımı senaryosunda takılma yok. Kabul ①'in saha ayağı kapandı; doğrulanmamış→tamamlandı geçişi bu teyitle basıldı (kanıt = Founder saha hükmü + 789/789·165/165 süit sicili). Terminal-gecikme belirtisinin de bu turla birlikte kaybolması dikkat çekici: açık Adımların her turda Adım-başına ~950 ms yeniden kurulması muhtemel ortak kökmüş — PRF-A06 (tam-tur sınıfı) gözlem modunda beklemede kalır, kanal sayısı birikirse oradan devam edilir"
       }
 
-      Adım( kod: PRF-A06, koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Acil kasma sorunu önceki Adımda çözülmüş ve göz teyidi alınmıştı; bu Adım gözlem modundadır ve verisi orkestrasyon mesaisinde birikecektir. Kontrolcü önerisi: gözlemde kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): gözlem işi — TAM-TUR maliyet verisi orkestrasyon mesaisi sırasında birikir, ölçüm o zaman anlamlı", durum: geliştirmede, öncelik: p2, onay: "onaylandı — 2026-08-08", bağımlı: [ PRF-A05 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU ],
+      Adım( kod: PRF-A06, koşu: "2026-08-30 · MEVSİM YENİDEN KURULDU (Founder hükmü · yetki devri · OZK-12). Bu Adım tek gezici kalem olmaktan çıkıp tek günlük performans denetim mevsiminin şemsiyesi oldu ve en son kapanır. Kaynağı üç ölçümdür. Birincisi Founder'ın canlı penceresidir: 2026-08-29 tarihinde olay-tetikli denetim turu otuz dört bin dört yüz seksen milisaniye, panel turu yirmi bin dokuz milisaniye ölçüldü. İkincisi kontrolcünün iki onarımıdır: tur artık belge açmaz (aynı tetikle kırk iki bin dört yüz ondan beş bin yedi yüz yetmiş dokuz milisaniyeye) ve topolojik sıra bir asgari yığınla koşar (çatıda bin dokuz yüz altmış yediden üç virgül dört milisaniyeye). Üçüncüsü üç uzman raporu ile bağımsız denetçinin şartlı onayıdır; denetçi dört eksik saydı ve onlar bu Blokun kapı Adımlarında kapanır. Kabul ölçütleri Founder'ın dört şartıdır ve sayıları karar kaydındadır. Önceki kayıt: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): Acil kasma sorunu önceki Adımda çözülmüş ve göz teyidi alınmıştı; bu Adım gözlem modundadır ve verisi orkestrasyon mesaisinde birikecektir. Kontrolcü önerisi: gözlemde kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): gözlem işi — TAM-TUR maliyet verisi orkestrasyon mesaisi sırasında birikir, ölçüm o zaman anlamlı", durum: geliştirmede, öncelik: p0, onay: "onaylandı — 2026-08-08", bağımlı: [ PRF-A05, PRF-KP-A04, PRF-KP-B04, PRF-TA-A05, PRF-MK-A06, PRF-PK-A05, PRF-IS-A05 ], referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ], üretir: [ KOD-DAG-YIGIN ],
         ne:    "🏋️ TAM-TUR maliyetini düşürmek — üçüncü ve ayrı performans sınıfı. Founder saha bulgusu (2026-07-19 sabah, 0.9.94 kanal ekranı + terminal gözlemi): 'terminalden yazı yazarken gecikme hissediyorum, özellikle yol haritası açıkken.' Kanal sayıları sınıfı ayırıyor: 🗺️ panel turu 9545 ms · denetim turu 12003 ms (240 dosya, tetik=başlangıç). Tanı hipotezi: her .sar olayı (terminaldeki ajan commit'leri dahil) TAM tur tetikliyor — 240 dosyanın tamamı openTextDocument ile açılıp taranıyor, dagKur+topolojik+sıralama senkron koşuyor; 9-12 saniyelik senkron JS bloğu eklenti sürecini kilitliyor, terminal/editör yazımı o pencerede takılıyor. PRF-A05'in genişletme önbelleği bu sınıfa İLAÇ DEĞİL (o Adım-genişletme yoluydu, bu tam-tur yolu)" ) {
         görev: [
           "Ölç ve doğrula: olağan çalışma seansında (ajan terminalde commit atarken) 🗺️/denetim tur sıklığı ve süreleri kanaldan toplanır — 'başlangıç 9.5 s' ile 'olay-tetikli tur' süresi ayrıştırılır (soğuk/sıcak farkı)",
@@ -174,6 +182,203 @@ Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
         koşu:  "2026-07-19 · SAHA KAPANIŞI (Founder, 0.9.91 kurulu + pencere yenilenmiş): gerçek Sol yükü sahada yaşandı — koşu-2 ve koşu-3 kabul denetimleri (git clone --local + npm ci + süit koşuları) bizzat yük senaryosuydu, Founder kanalı koşular boyunca canlı izledi (gözle-okunuş teyidi). HÜKÜM Founder sözleriyle: 'performans eskisinden daha iyi durumda; yol haritasında kasma artık yok, Sol çalışma yaparken IDE'de hissedilen gecikme şu an için yok; gözlemlemeye devam edeceğim, şimdilik konu kapanmıştır.' 1500 ms varsayılanı saha gözleminde sorun çıkarmadı — değer teyit edildi (değişiklik gerekmedi). DÜRÜST KALINTI: kanal satırlarının sayısal dökümü koşu kaydına inmeden Founder konuyu kapattı — Sol koşu-3 raporundaki bağımsız ölçümler (1201 ms meşgul panelde iz 351,3 ms · trace hızlı yolu p95 0,9 ms) sayısal kanıt olarak bu kaydın adresidir; gözlem sürer, yeni bulgu yeni Sorun düğümü açar (Founder: 'ilerde herhangi bir bulgu olursa bildiririm'). İki Sorun kaydına kapanış notu düşüldü"
       }
 
+
+      Adım( kod: PRF-KP-A03, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · ÜRETİM BİTTİ, DENETİM BEKLİYOR (sezon limiti arası). Temiz bağlamlı sınama üreticisi yalnız tur-belgesi.test.ts dosyasına on bir nöbet ekledi: denetleHepsi gövdesinde belge açma çağrısı sıfır ve saf modül çağrıları var; yuzeylereDagit gövdesi belge okumaz (ayrıştırma üçlüsü fikir paneli nöbetinde zaten kilitli, atıfla anıldı); CRLF üç satır ve ilk satır temiz; bayt sırası imini kabuk soyar, kayıt soymaz; boş dosya tek satır; yalnız taşıyıcı dönüşle biten dosya bilinçle tek satır; disk kaydı önbelleğe yazılmaz ve önbellek yalnız açık belge için bir kez çağrılır; açık belge önbellekten okunur; kırık disk belgesi haritaya girmez; imli dosyada ham bayt on sekiz; toplam yalnız diskten okunanları sayar. DÖRT MUTASYON: açık belge önceliği kaldırılınca üç, disk kaydı önbelleğe verilince iki, belge açma geri konunca bir, satır bölmesi yalnız yeni satır olunca bir nöbet kırmızı yandı; her biri yedekten geri alındı ve iki kaynak dosyasının sağlama toplamı tabanla birebir ölçüldü. Üretici ölçümü altı yüz elli üç sınama, iki tip denetimi sıfır hata. ÜRETİCİ ŞERHİ: tur-belgesi.ts izlenmeyen dosya olduğu için birebirlik kanıtı git farkı değil sağlama toplamıdır; yalnız taşıyıcı dönüş ucundaki sözcükleyici gerekçesi A01 kaydından alınmış, bağımsız ölçülmemiştir. KAPI (kontrolcü koşusu): eklenti süiti altı yüz elli üç sınamanın tamamını geçti, depo denetimi sıfır hata ile sıfır uyarı. DENETİM: bağımsız denetçi (Codex, Sol, salt okur) ONAY verdi; hedefli dosyayı bağımsız koşturup on sekiz sınamayı geçirdi, iki tip denetimini sıfır hatayla yineledi, yamanın yalnız sınama dosyasını eklediğini nesne özetiyle doğruladı ve sınır hükmünün karşılandığını yazdı. KAPANIŞ 2026-08-30, sezon limiti arası sırasında.", bağımlı: [ PRF-KP-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "🧪 Belge turu nöbetlerinin depoya inmesi. Denetçinin birinci eksiği şudur: açma yasağı saf modülde ölçülüyor fakat eklenti kabuğuna çağrının geri konmasını hiçbir nöbet engellemiyor." ) {
+        görev:    [
+          "`denetleHepsi` gövdesinde `openTextDocument` çağrı sayısını sıfırda tutan bir kaynak metni nöbeti yazılır; onay yüzeyleri sınamasındaki desen izlenir.",
+          "CRLF, BOM ve boş dosya fikstürleri `diskBelgesi` için yazılır; satır sayısı ve satır metni VS Code sözleşmesiyle karşılaştırılır.",
+          "Program haritası için üç fikstür yazılır: disk kaydı önbelleğe yazılmaz, açık belge önbellekten okunur, söz dizimi kırık belge haritaya girmez.",
+          "Dört mutasyon koşulur ve her biri kendi nöbetini kırar: açık belge önceliği kaldırılır, disk programı önbelleğe yazılır, açma çağrısı geri konur ve satır bölmesi yalnız `\\n` yapılır."
+        ]
+        kabul:    [
+          "Dört mutasyonun dördü kırmızıyı gösterir ve geri alınınca yeşile döner; bu, koşu kaydında mutasyon adıyla yazılıdır.",
+          "Eklenti süiti önceki sayının altına düşmeden yeşildir."
+        ]
+        sınır:    "Nöbetler davranışı değiştirmez; yalnız var olan davranışı kilitler."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-EKLENTI-PLAN, ad: "belge turu planlaması", departman: planlama,
+      ne: "🗺️ Belge turu onarımının kapıdan geçirilmesi için tabanın ölçüldüğü ve üç açık kararın yazıldığı planlama dalı." ) {
+
+      Adım( kod: PRF-KP-A01, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · PLANLAMA KAPANDI (kontrolcü). TABAN, tetik adıyla: eklenti 0.9.169 iken olay-tetikli denetim turu sar-olayı tetiğiyle otuz dört bin dört yüz seksen ve odak tetiğiyle kırk iki bin dört yüz on milisaniye; 0.9.172 kurulduktan sonra odak tetiğiyle beş bin yedi yüz yetmiş dokuz milisaniye; panel turu 0.9.169 iken sar-olayı tetiğiyle otuz bir bin dokuz yüz altmış milisaniye ve 0.9.172 kurulup pencere yenilendikten sonra başlangıç tetiğiyle yirmi bin dokuz milisaniye; hepsi iki yüz yetmiş altı dosyalı çatıda ve Founder'ın Sarmal Performans kanalından okunmuştur. DENETÇİ ŞERHİ (2026-08-30, ilk hüküm red): panel tabanı ilk kayıtta tetik adsız yazılmıştı ve kanal tetik alanı ürettiği için bu bir eksikti; tetik adları eklendi. Denetçi ayrıca kanal biçimi kararının bugünkü `TurBilgi` arayüzünde karşılığı olmadığını not etti; bu doğrudur ve arayüzün genişletilmesi PRF-KP-A02'nin işidir. ÜÇ KARAR. Birincisi satır bölme sözleşmesidir: disk kaydı satırları `\\r?\\n` ile böler. Gerekçe ölçülmüştür; güvenilirlik mühendisi CRLF dosyada satırın sondaki taşıyıcı dönüşü taşıdığını, denetçi ise iki satırlık CRLF girdide ilk satırın uzunluğunu iki bulmuştur; tanı aralığı bugün rastlantıyla doğru çıkmaktadır, çünkü sözcük deseni taşıyıcı dönüşte durur, fakat sözleşme VS Code belge modelinden sapmaktadır. Yalnız taşıyıcı dönüşle biten dosya bilinçle kapsam dışıdır: VS Code onu üç satır, disk kaydı tek satır sayar ve sözcükleyici yeni satırı saydığı için disk kaydı motorla uyumludur; bu uç beyan edilir, onarılmaz. İkincisi kapalı dosyanın dil eşlemesidir: turun kapsamı dosya araması evreniyle, yani uzantıyla belirlenir, dil eşlemesiyle değil; açık belgede dil süzgeci korunur, çünkü kullanıcı o belgeyi bilinçle başka dile almıştır. Gerekçe şudur: kapalı dosyanın dil kimliği yoktur ve onu öğrenmenin tek yolu belgeyi açmaktır, oysa açmak tam da sökülen kusurdur; eski tur bu dosyaları eliyordu, yeni tur denetler ve fark değişiklik günlüğünde beyan edilir. Üçüncüsü büyük dosyadır: VS Code'un açmayı reddettiği büyüklükteki dosyayı eski tur eliyordu, yeni tur diskten okur; boyut sınırı konmaz, fakat turun okuduğu toplam bayt merceğe düşer ki anormal büyüme görünür olsun. VS Code'un sınırı belgelenmiş bir değerdir ve bu turda ölçülmemiştir. KANAL BİÇİMİ: denetim turu satırının sonuna dikey çizgiyle ayrılmış bir belge bölümü eklenir ve dört sayı taşır: açıktan, diskten, atlanan ve açma; açma sayısı sabit sıfırdır ve açıkça yazılır, çünkü turun belge açmadığı iddiası ancak gözle okunur bir sayıyla doğrulanır. Sonraki kodlama Adımı bu dört kararı değiştirmeden uygular. DENETİM: bağımsız denetçi (Codex, Sol, salt okur) ilk turda tek sebeple reddetti, tetik adları eklendikten sonra ikinci turda ONAY verdi; hükmün cümlesi şudur: panel tabanları artık tetik adlarıyla kaydedilmiştir ve ilk kabul ölçütündeki tek eksik kapanmıştır. KONTROLCÜ ŞERHİ: ikinci denetim koşusu kırk dakika stdin beklediği için takıldı, çünkü komut bir heredoc'un ardına eklenmişti ve girdi kapanmamıştı; süreç öldürülüp girdi açıkça kapalı olarak yeniden başlatıldı ve altı dakikada bitti. Bu ders koşu protokolüne geçer: denetçi komutu daima girdisi kapalı çağrılır.", bağımlı: [ PRF-A05 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "📐 Belge turu onarımının kapı planı ve taban ölçümü. Denetçi 2026-08-30 tarihinde onarımı şartlı onayladı ve dört eksik saydı; bu Adım o eksiklerin her biri için sözleşmeyi yazar ve önce sayısını alır." ) {
+        görev:    [
+          "Sarmal Performans kanalındaki tabanı kayda al: olay-tetikli denetim turu iki yüz yetmiş altı dosyada beş bin yedi yüz yetmiş dokuz milisaniye ve panel turu yirmi bin dokuz milisaniyedir; ölçüm tetik adıyla birlikte yazılır.",
+          "Üç açık kararı yaz ve gerekçelendir: disk kaydının satır bölme sözleşmesi VS Code ile hizalanacak biçimde `\\r?\\n` olur; kapalı bir kaynak dosyasının başka bir dile eşlenmesi tur kapsamını değiştirmez ve bu dürüstçe beyan edilir; editörün açmayı reddettiği büyüklükteki dosya diskten okunur ve boyut sınırı merceğe düşer.",
+          "`belgeSayacı` alanının kanal satırındaki biçimini kararlaştır: satır açıktan, diskten ve atlanan sayılarını taşır ve açma çağrısı sayısını sıfır olarak açıkça yazar."
+        ]
+        kabul:    [
+          "Taban sayılar tetik adıyla birlikte koşu kaydındadır.",
+          "Üç karar gerekçesiyle yazılmıştır ve sonraki kodlama Adımı bunları değiştirmeden uygular."
+        ]
+        sınır:    "Bu Adım kod yazmaz; yalnız ölçer ve karar yazar. Kararlar denetçinin dört eksiğinin dışına çıkmaz."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-EKLENTI-KOD, ad: "belge turu kodlaması", departman: kodlama,
+      ne: "🔧 Denetçinin saydığı dört eksiğin kapatıldığı ve program haritası kurulumunun saf modüle taşındığı üretim dalı." ) {
+
+      Adım( kod: PRF-KP-A02, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama koşuldu, denetim iki tur). ÜRETİM: temiz bağlamlı üretici ajan dört dosyaya dokundu; disk kaydı satırları taşıyıcı dönüş seçimli yeni satırla bölünür, belge sayacı merceğin tur satırına dikey çizgiyle ayrılmış bir bölüm olarak bağlandı ve program haritasının kurulumu editör kabuğundan saf modüle indi; disk kaydı önbelleğe yazılmaz, söz dizimi kırık belge haritaya girmez. DENETİM BİRİNCİ TUR RED, üç sebeple: bayt ölçümü ham bayt değil çözülmüş metnin yukarı yuvarlanmış kilobaytıydı, kapalı dosyanın dil eşlemesi farkı değişiklik günlüğünde beyan edilmemişti ve iki yüz yetmiş altı dosyalı canlı kanal satırı sunulmamıştı. Üçü işlendi: kabuk ham baytı çözümden önce döndürür ve sayaç yalnız onu toplar, kanal tam bayt yazar ve yuvarlamaz; değişiklik günlüğünün 0.9.173 bölümü dil farkını ve büyük dosya davranışını beyan eder; paket 0.9.173 kurulup pencere yenilendi ve Founder'ın kanalı okundu. CANLI ÖLÇÜM (0.9.173, 2026-08-30 01.00.56, tetik başlangıç): iki yüz seksen dosyada açıktan bir, diskten iki yüz yetmiş dokuz, atlanan sıfır, açma sıfır ve okunan dört milyon yedi yüz doksan iki bin dört yüz yetmiş bayt; evren bu gece doğan dört plan dosyasıyla iki yüz yetmiş altıdan iki yüz seksene çıkmıştır ve özdeşlik tutar. Aynı kanalda olay-tetikli tur disk olayı tetiğiyle iki bin dokuz yüz otuz iki milisaniye ölçüldü; dün otuz dört bin dört yüz seksendi. DENETİM İKİNCİ TUR ONAY: bağımsız denetçi (Codex, Sol, salt okur) üç sebebin üçünün kapandığını dosya ve satırla yazdı, bağımsız disk sayımıyla iki yüz seksen dosyanın toplam baytından açık dosyanın baytını düşerek kanalın sayısını birebir üretti ve hedefli on sekiz sınamayı geçirdi. KAPI (kontrolcü koşusu): eklenti süiti altı yüz kırk iki sınamanın tamamını geçti, iki tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı. ÜRETİCİ ŞERHİ: okunan bayt sayaç yapısının dışında, toplama işlevinin üçüncü dönüş alanında yaşar; bu, var olan dört nöbetin sayaç eşitlik iddiasına dokunmamak içindir ve denetçi bunu kabul edilebilir bulmuştur.", bağımlı: [ PRF-KP-A01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🔧 Belge turu onarımının dört eksiğinin kapatılması. Turun belge açmadığı iddiası bugün ölçülmüyor, satır bölmesi CRLF dosyada sapıyor, sayaç merceğe ulaşmıyor ve program haritası kabukta kurulduğu için sınanamıyor." ) {
+        görev:    [
+          "`diskBelgesi` satırları `\\r?\\n` ile böler; BOM zaten soyulmaktadır ve boş dosya tek satır sayılır.",
+          "`belgeSayacı` merceğin `turBitti` satırına bağlanır ve kanalda açıktan, diskten, atlanan sayıları ile sıfır açma çağrısı okunur.",
+          "Program haritasının kurulumu `denetleHepsi` kabuğundan `tur-belgesi.ts` modülüne taşınır: açık belge paylaşılan sürüm anahtarlı önbellekten, disk kaydı doğrudan ayrıştırmadan gelir ve disk kaydı önbelleğe yazılmaz; `yuzeylereDagit` gövdesi hiçbir ayrıştırma yolu çağırmaz.",
+          "İki yeni dosya plan meyvesi olarak ilan edilir ve depo denetimi uyarısı düşer."
+        ]
+        kabul:    [
+          "Kanal satırı iki yüz yetmiş altı dosyalı çatıda açıktan artı diskten artı atlanan eşittir iki yüz yetmiş altı ve açma çağrısı sıfır yazar.",
+          "Program haritası kurulumu saf modüldedir ve editör kabuğu olmadan sınanır.",
+          "Depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır:    "Turun kapsamı, budaması ve yayın disiplini değişmez; değişen yalnız belgenin nereden geldiği ve bunun nasıl ölçüldüğüdür. Açık belge daima diskten önceliklidir."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-EKLENTI-INCELEME, ad: "belge turu denetimi", departman: inceleme,
+      ne: "🔍 Belge turu onarımının bağımsız denetçiden geçtiği ve canlı pencerede ölçüldüğü inceleme dalı." ) {
+
+      Adım( kod: PRF-KP-A04, durum: geliştirmede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-KP-A03, PRF-KP-A05 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "🔍 Belge turu onarımının bağımsız denetimi ve canlı ölçümü. Üretici ile denetçi ayrıdır; bu Adımın hükmünü üretici değil, salt okur kipte koşan bağımsız denetçi verir." ) {
+        görev:    [
+          "Bağımsız denetçi (Codex, Sol modeli, salt okur) kabul ölçütlerini kaynaktan okur ve nöbetlerin mutasyon kanıtını kendisi yeniden koşturur.",
+          "Founder'ın canlı penceresinde iki yüz yetmiş altı dosyalı kanal satırı okunur ve koşu kaydına aynen yazılır.",
+          "Denetçi hükmü onay ise Adım kapanır; red ise bulgular kodlama Adımına geri döner ve tur yeniden koşar."
+        ]
+        kabul:    [
+          "Denetçi hükmü koşu kaydında aynen durur ve onaydır.",
+          "Canlı kanal satırı açma çağrısı sıfır yazar."
+        ]
+        sınır:    "Bu Adım kod değiştirmez. Denetçi ile üretici aynı ajan olamaz."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-EKLENTI-GUVENLIK, ad: "belge turu erişim sınırı", departman: güvenlik,
+      ne: "🛡️ Turun disk erişiminin çalışma alanı sınırında kaldığının ve kapalı ürüne dair hiçbir izin açık depoya sızmadığının ölçüldüğü güvenlik dalı." ) {
+
+      Adım( kod: PRF-KP-A05, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama, denetim iki tur). ÜRETİM: temiz bağlamlı güvenlik üreticisi tur-belgesi.ts içine `erisimSiniri` işlevini ve yeni dosya tur-erisim.test.ts içine erişim sınırı nöbetlerini yazdı: kök dışı yol, dışlama globundaki gizli dizin, hata iletisinde mutlak yol sızıntısı, `dosyaSayısı` kaynak nöbeti ve STR-3 sızıntı nöbeti; STR-3 nöbeti gizli kök yer tutucusunu, depo dışına çözülen göreli yol sabitlerini, makine yollarını ve çatıda dinamik keşfedilen kardeş varlık adlarını arar ve sıfır bulgu verdi. DENETİM BİRİNCİ TUR RED (Codex, Sol, salt okur): iç içe çalışma alanı köklerinde meşru yol ilk köke göre daralıyordu ve merceğe yazılan dosya sayısı süzgeç öncesi evreni bildiriyordu. ONARIM: bir yol, köklerden herhangi birine göre kapsam içi ve aynı köke göre dışlama dışıysa geçer; mercek süzülmüş listenin uzunluğunu yazar ve kaynak nöbeti bu bağı kilitler; iki kök sırası da ayrı nöbetle ölçülür. KAPI (kontrolcü koşusu): eklenti süiti altı yüz altmış üç sınamanın tamamını geçti, tip denetimi sıfır hata, derleme temiz, depo denetimi sıfır hata ile sıfır uyarı. DENETİM İKİNCİ TUR ONAY: hedefli koşu on sınamanın tamamını beş yüz kırk milisaniyede geçti, hiçbir dosya değiştirilmedi. ÜRETİCİ ŞERHİ: sınır yalnız yolu süzer, okuma evrenini büyütmez ya da küçültmez; mimari ayrılık dize taramasıyla değil, yeni modülün yalnız açık çekirdeğe ve açık eklenti yardımcılarına ithalat vermesiyle kanıtlanır.", bağımlı: [ PRF-KP-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🛡️ Belge turunun erişim sınırı. Tur artık diski kendisi okuduğu için okuduğu evrenin sınırı bir güvenlik sorusudur." ) {
+        görev:    [
+          "Turun okuduğu her yolun çalışma alanı köklerinden birinin altında olduğu ve dışlama globundaki gizli dizinlerin hiç okunmadığı bir nöbetle ölçülür.",
+          "Okuma hatası mesajı mutlak yolu kullanıcı yüzeyine sızdırmaz; hata yalnız merceğe sayı olarak düşer.",
+          "STR-3 sızıntı nöbeti koşulur: yeni modül ve sınaması kapalı ürünün adını, mimarisini ya da yolunu anmaz."
+        ]
+        kabul:    [
+          "Kapsam dışı bir yol enjekte edildiğinde nöbet kırmızıya döner.",
+          "STR-3 nöbeti sıfır bulgu verir."
+        ]
+        sınır:    "Bu Adım okuma evrenini genişletmez ya da daraltmaz; yalnız sınırı kilitler."
+      }
+    }
+  }
+
+  Katman( kod: KAT-PRF-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek kapı katmanı",
+    ne: "🌿 Topolojik sıra onarımının kapıdan geçirildiği çekirdek katmanı (dag.ts · dag.test.ts); 2026-08-30 mevsim kuruluşuyla doğdu" ) {
+
+    AltKatman( kod: ALT-PRF-CEKIRDEK-PLAN, ad: "topolojik sıra planlaması", departman: planlama,
+      ne: "🗺️ Yığın onarımının eşdeğerlik koşulunun yazıldığı ve tabanın ölçüldüğü planlama dalı." ) {
+
+      Adım( kod: PRF-KP-B01, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · PLANLAMA KAPANDI (kontrolcü). EŞDEĞERLİK KOŞULU: eski gövde ile yığın gövdesi yalnız her düğümün `oncekiler` ve `sonrakiler` listeleri birbirinin simetriği ve yinelenmesizken aynı sonucu verir; `dagKur` içindeki `kenarEkle` (dag.ts, kenar ekleme işlevi) öz-döngüyü ve çözülmeyen ucu atlayıp iki yönü içerme denetimiyle koruduğu için üretimde koşul sağlanır, fakat bu değişmezliği hiçbir nöbet ölçmemektedir ve PRF-KP-B03 onu depoya indirir. KARŞI DENEY, kontrolcü tarafından bağımsız yeniden koşuldu: `A.sonrakiler` içinde `B` iki kez ve `B.oncekiler` içinde `A` bir kez geçerken eski gövde sırayı yalnız A, döngüyü B olarak verir; bugünkü yığın gövdesi sırayı A ve B, döngüyü boş verir; çıkarma anı doğrulaması eklenmiş prototip ise eskisiyle birebir sonucu verir ve simetrik üç düğümlü zincirde üç gövde de eştir. TASARIM: yığından çıkarılan her düğüm için iki koşul yeniden doğrulanır, düğüm zaten yerleşmişse ya da güncel in-derecesi sıfır değilse atlanır; böylece geçici sıfırda kuyruğa alınıp sonradan negatife düşen düğüm yerleşemez ve eski gövdenin `=== 0` sınamasıyla aynı davranış koşulsuz sağlanır. Sıralama anahtarı ve eşitlik kuralı değişmez. TABAN, kaynağıyla: kontrolcü ölçümünde çatıda iki bin dokuz yüz otuz üç düğümde eski gövde bin dokuz yüz altmış yedi, yeni gövde üç virgül dört milisaniye; denetçi ölçümünde sarmal grafında bin yedi yüz kırk iki düğümde eski gövde altı yüz yirmi sekiz, beş yüz seksen beş ve beş yüz seksen altı, yeni gövde dört virgül üç, üç virgül dört ve iki virgül bir milisaniye; güvenilirlik ölçümünde çatıda üç bin üç yüz yetmiş düğümde iki bin dört yüz altmış altı virgül sekizden dört virgül altı milisaniyeye. Düğüm sayılarının farkı ad alanı çözümü ve mevsim çevrimi seçeneklerinden gelir ve eşdeğerlik hükmünü değiştirmez.", bağımlı: [ PRF-A05 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "📐 Topolojik sıra onarımının kapı planı. Güvenilirlik mühendisi eşdeğerliğin bir koşula bağlı olduğunu buldu; denetçi de yığında kümesi önerisini karşı deneyle reddetti ve çıkarma anı doğrulamasını istedi." ) {
+        görev:    [
+          "Eşdeğerlik koşulu yazılır: iki gövde yalnız `oncekiler` ile `sonrakiler` listeleri simetrik ve yinelenmesizken aynı sonucu verir; `dagKur` bu koşulu korur fakat hiçbir nöbet bunu ölçmez.",
+          "Çıkarma anı doğrulamasının tasarımı yazılır: yığından çıkan düğümün in-derecesi sıfır değilse ya da düğüm zaten yerleşmişse atlanır; karşı deney `A.sonrakiler` içinde `B` iki kez geçerken eski gövdeyle birebir sonuç vermelidir.",
+          "Taban kayda alınır: çatıda eski gövde bin dokuz yüz altmış yedi, yeni gövde üç virgül dört milisaniye; denetçi ölçümü bin yedi yüz kırk iki düğümde sıcak turlarda dört virgül üç, üç virgül dört ve iki virgül bir milisaniyedir."
+        ]
+        kabul:    [
+          "Koşul ve tasarım koşu kaydında yazılıdır.",
+          "Taban sayılar kaynağıyla birlikte kayıttadır."
+        ]
+        sınır:    "Bu Adım kod yazmaz."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-CEKIRDEK-KOD, ad: "topolojik sıra kodlaması", departman: kodlama,
+      ne: "🔧 Yığın gövdesinin koşulsuz eşdeğer hâle getirildiği üretim dalı." ) {
+
+      Adım( kod: PRF-KP-B02, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama koşuldu). ÜRETİM: temiz bağlamlı üretici ajan yalnız dag.ts dosyasına dokundu; yığından çıkarılan her düğüm için iki koşullu çıkarma anı doğrulaması eklendi ve kaynak yorumundaki karşılıksız nöbet iddiası düzeltildi. ÖLÇÜM: karşı deneyde eski gövde, doğrulamasız yığın ve doğrulamalı yığın sırasıyla A ile B, A ve B ile boş, A ile B döngü verdi; onarım sonrası yeni gövde eskisiyle birebirdir. Kontrolcü dört gerçek depoda sırayı birebir ölçtü ve medyanlar sıfır virgül üç ile dört virgül sıfır milisaniye arasındaydı; üretici beş bin rastgele grafta sıfır fark ve gerçek grafta iki virgül dört milisaniye medyan ölçtü; bağımsız denetçi dokuz sıcak turda üç virgül dokuz milisaniye medyan ölçtü ve ayrıca iki yüz elli bin kırk yedi girdilik kendi taramasında eski ile doğrulamalı gövde arasında sıfır fark buldu. KAPI (kontrolcü koşusu): çekirdek süiti bin yüz altmış yedi sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı. DENETİM: bağımsız denetçi (Codex, Sol, salt okur) ONAY verdi; gerekçesi karşı deneyin birebirliği, gerçek graf çıktısının korunması, sıcak medyanın sınırın altında kalması ve sıralama sözleşmesinin değişmemesidir. ÜRETİCİ ŞERHİ: yığına ekleme koşulundaki yerleşmiş düğüm sınaması doğrulamadan sonra gereksiz kalmıştır, zararsız olduğu için dokunulmamıştır; sadeleştirme isteniyorsa ayrı kalemdir.", bağımlı: [ PRF-KP-B01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-DAG-YIGIN ],
+        ne:       "🔧 Çıkarma anında in-derece doğrulaması. Yığın gövdesi bugün simetrik olmayan bir grafta eski gövdeden ayrışmaktadır; doğrulama bu ayrışmayı koşulsuz kapatır." ) {
+        görev:    [
+          "`topolojikSira` yığından çıkardığı her düğümde in-derecenin sıfır olduğunu ve düğümün yerleşmediğini yeniden doğrular; sağlanmıyorsa düğüm atlanır ve döngü kümesine eski kuralla düşer.",
+          "Karşı deney kodlanır: `A.sonrakiler` içinde `B` iki kez, `B.oncekiler` içinde `A` bir kez geçerken eski ve yeni gövde birebir aynı sıra ve döngü verir.",
+          "Kaynak yorumundaki nöbetle ölçülmüştür cümlesi depoda karşılığı olan nöbete işaret edecek biçimde düzeltilir; karşılıksız iddia kaynakta kalmaz."
+        ]
+        kabul:    [
+          "Karşı deneyde iki gövde birebir aynıdır.",
+          "Gerçek Sarmal grafında çıktı değişmemiştir ve sıcak medyan on milisaniyeyi aşmaz."
+        ]
+        sınır:    "Sıralama anahtarı ve eşitlik kuralı değişmez; kararlılık sözleşmesi korunur."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-CEKIRDEK-SINAMA, ad: "topolojik sıra nöbetleri", departman: sınama,
+      ne: "🧪 Eşdeğerlik ve değişmezlik nöbetlerinin depoya indiği kalite dalı." ) {
+
+      Adım( kod: PRF-KP-B03, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama koşuldu). ÜRETİM: temiz bağlamlı sınama üreticisi yalnız dag.test.ts dosyasına on beş sınama ekledi: eski referans gövde satır satır kopya olarak, tohumlu beş bin rastgele grafta iki gövdenin birebirliği (üç bin dokuz yüz altmış değişmezlik kusurlu graf, bunların üç bin üç yüz doksan ikisi iki ucu da grafta olan tek yönlü kenar taşıdığı için gerçek asimetriktir, ve üç bin altı yüz kırk dört döngülü graf; sayılar PRF-KP-B04 hükmüyle ayrıştırılıp bağımsız ölçümle doğrulanmıştır; graflar dagKur'dan geçmeden doğrudan kurulur), on üç özel şekil ve dagKur değişmezlik nöbeti. MUTASYON KANITI: kenarEkle içindeki ters yön silinince on bir sınama kırmızı yandı ve değişmezlik nöbeti doksan üç kusur saydı; çıkarma anı doğrulaması silinince tam iki sınama kırmızı yandı, rastgele batarya ve karşı deney. Her ikisi geri alındı ve dag.ts sağlama toplamının mutasyon öncesiyle aynı kaldığı hem üretici hem kontrolcü tarafından ölçüldü. KAPI (kontrolcü koşusu): çekirdek süiti bin yüz seksen iki sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı; dag.test.ts tek başına altı yüz yirmi beş milisaniye. DENETİM: bağımsız denetçi (Codex, Sol, salt okur) ONAY verdi; referans gövdenin eski gövdeyle satır satır aynı olduğunu, bataryanın gerçekten simetrik olmayan girdi ürettiğini ve süre iddiasını hedefli koşuyla doğruladı. ÜRETİCİ ŞERHİ: değişmezlik ölçüsü öz-döngü ve grafta olmayan ucu da kusur sayar, yani PRF-KP-B01 koşulunun biraz genişletilmiş hâlidir; gerçek program kümesi olarak canlı depo değil dosya içi üç fikstür kullanılmıştır.", bağımlı: [ PRF-KP-B02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-SNM-DAG ],
+        ne:       "🧪 Topolojik sıra nöbetlerinin depoya inmesi. Bugün yalnız üç düğümlü bir alfabetik sınama vardır ve kontrolcünün beş bin graflık ölçümü karalama dizininde kalmıştır." ) {
+        görev:    [
+          "`dag.test.ts` içine eski referans gövde on satırlık saf işlev olarak konur ve tohumlu beş bin rastgele grafta iki gövdenin birebir aynı sonucu verdiği ölçülür.",
+          "Sabit Türkçe ve UTF-16 kümesi, iki çocuklu yığın batırması, döngü artı kuyruk ve büyük hazır kümeler ayrı fikstürlerle sınanır.",
+          "`dagKur` çıktısının simetrik ve yinelenmesiz olduğunu ölçen değişmezlik nöbeti yazılır.",
+          "İki mutasyon koşulur: `kenarEkle` içindeki ters yön yazımı silindiğinde değişmezlik nöbeti, çıkarma doğrulaması silindiğinde simetrik olmayan fikstür kırmızı yanar."
+        ]
+        kabul:    [
+          "Beş bin graf ve on üç özel şekil birebirdir.",
+          "İki mutasyon kendi nöbetini kırar ve geri alınınca yeşile döner."
+        ]
+        sınır:    "Nöbetler çekirdek süitinin süresini belirgin biçimde uzatmaz; beş bin graf küçük tutulur."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-CEKIRDEK-INCELEME, ad: "topolojik sıra denetimi ve işleme", departman: inceleme,
+      ne: "🔍 Onarımın bağımsız denetimden geçtiği ve üç ayrı işlemeye bölündüğü inceleme dalı." ) {
+
+      Adım( kod: PRF-KP-B04, durum: geliştirmede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · DENETİM KAPANDI, İŞLEME FOUNDER SÖZÜNÜ BEKLİYOR. DENETİM (Codex, Sol, salt okur) ŞARTLI ONAY verdi: hedefli koşu altmış altı sınamanın tamamını bin üç yüz altmış yedi milisaniyede geçti; ölçüm kancasında davranışsal açık bulunmadı ve bin sekiz yüz elli düğümlü canlı grafta yirmi bir sıcak turun medyanı kancasız iki virgül dokuz beş iki, kancalı iki virgül dokuz beş dört milisaniye ölçüldü; referans gövde HEAD ile birebirdir; beş iş parçacıklı sert sınır nöbeti süit maliyetinin büyük bölümüdür (altı yüz doksan dokuz milisaniye) ve girdi sayısı büyütülürse izlenir. İKİ ŞART İŞLENDİ (kontrolcü): birincisi, dag.ts içindeki yorum B03 nöbetinin ileride ineceğini söylüyordu, nöbetin depoda olduğu yazıldı; ikincisi, bataryanın simetrik olmayan sayacı bütün değişmezlik kusurlarını sayıyordu, sayaç değişmezlik kusurlu adını aldı ve iki ucu grafta olan tek yönlü kenarı ölçen ayrı sayaç ile alt küme nöbeti eklendi; ölçüm üç bin dokuz yüz altmış değişmezlik kusurlu, üç bin üç yüz doksan iki gerçek tek yönlü ve üç bin altı yüz kırk dört döngülü graf verdi, denetçinin bağımsız üç bin üç yüz doksan iki sayısıyla birebirdir ve B03 koşu kaydı buna göre düzeltildi. KAPI (kontrolcü koşusu): çekirdek süiti bin yüz doksan iki sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı. ÜÇÜNCÜ İŞLEME: yama HEAD üzerine temiz uygulanıp güncel gövdeden temiz geri alınabilmektedir; dosya listesi dag.ts, dag.test.ts ve dag-sinir.test.ts; kod bakımından başka dosyaya bağımlı değildir, depo kapısı bakımından yeni sınama dosyasının meyve ilanı planda olduğu için plan işlemesinden sonra üçüncü sırada alınır. Üç işleme Founder sözüyle yapılır; söz henüz verilmemiştir ve bu Adım işlemeler yeşil kapıdan geçince kapanır.", bağımlı: [ PRF-KP-B03, PRF-KP-B05 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "🔍 Topolojik sıra onarımının bağımsız denetimi ve üç işleme. Denetçi yirmi iki dosyalık farkın tek işleme olarak alınmasını reddetti; kanon, hijyen ve durum değişiklikleri birinci, belge turu ikinci, yığın üçüncü işlemedir." ) {
+        görev:    [
+          "Bağımsız denetçi eşdeğerlik ve değişmezlik nöbetlerini yeniden koşturur ve hükmünü yazar.",
+          "Üç işleme Founder'ın sözüyle yapılır; kontrolcü kendiliğinden işlemez.",
+          "Her işleme sonrasında iki süit, beş tip denetimi ve depo denetimi koşulur."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır.",
+          "Üç işleme ayrı ayrı geri alınabilir ve her biri yeşil kapıdan geçmiştir."
+        ]
+        sınır:    "İşleme sırası denetçinin hükmüdür ve değiştirilmez."
+      }
+    }
+
+    AltKatman( kod: ALT-PRF-CEKIRDEK-GUVENLIK, ad: "yığın gövdesinin sınır güvenliği", departman: güvenlik,
+      ne: "🛡️ Bozuk girdide gövdenin çökmediğinin ve sonsuz döngüye girmediğinin ölçüldüğü güvenlik dalı." ) {
+
+      Adım( kod: PRF-KP-B05, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-30 · KAPANIŞ (on aşama, denetim iki tur). ÜRETİM: güvenlik üreticisi yeni dosya dag-sinir.test.ts yazdı; dört bozuk girdi (negatif in-derece, grafta olmayan uç, öz-döngü, boş graf ve tek düğüm) ile on bin düğümlük ölçek fikstürleri ve ayrı iş parçacığında iki saniyelik sert süre sınırı; dört girdide eski gövdeyle döngü kümesi birebir ölçüldü. DENETİM BİRİNCİ TUR RED: yığın belleğinin doğrusal büyümesi fikstürsüzdü. Denetçinin önerdiği en ucuz fikstür uygulandı: dag.ts içine varsayılan kapalı isteğe bağlı ölçüm kancası (ekleme sayısı ve azami yığın boyutu; yığın sınıfı dışa açılmadı) ve bin, iki bin, dört bin, sekiz bin düğümde bağımsız grafta ekleme ile azami boyut tam n, yelpazede ekleme n ve azami boyut n eksi bir, zincirde azami boyut bir; kancasız çıktı kancalı çıktıyla birebir. KAPI (kontrolcü koşusu): çekirdek süiti bin yüz doksan iki sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı. DENETİM İKİNCİ TUR ONAY (Codex, Sol, salt okur). ÜRETİCİ ŞERHİ: kanca koşu başında sayaçları sıfırlar; bellek doğrusallığı yığın eleman sayısıyla gösterildi, bayt düzeyinde heap ölçülmedi, çünkü kararsız olurdu.", bağımlı: [ PRF-KP-B02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "🛡️ Yığın gövdesinin sınır güvenliği. Motor kullanıcı projelerinde de koşar ve bozuk bir graf çökme ya da sonsuz döngü üretmemelidir." ) {
+        görev:    [
+          "Negatif in-derece, grafta olmayan hedef, öz-döngü ve boş graf girdilerinde gövdenin sonlandığı ve döngü kümesini doğru verdiği nöbetle ölçülür.",
+          "Yığının bellek büyümesi düğüm sayısıyla doğrusal kalır; bu bir fikstürle gösterilir."
+        ]
+        kabul:    [
+          "Dört bozuk girdinin dördünde gövde sonlanır ve çökmez.",
+          "Döngü tespiti eski gövdeyle aynıdır."
+        ]
+        sınır:    "Bu Adım davranışı değiştirmez."
+      }
     }
   }
 }
@@ -196,3 +401,8 @@ Kod( kod: KOD-YOLHARITA-GENISLETME, dosya: "urun/eklenti/src/yolharitasi.ts",
 
 Kod( kod: KOD-YOLHARITA-YENILE, dosya: "urun/eklenti/src/yolharitasi.ts",
   ne: "🍎 Panel tazeleme onarımı — yenile() paylaşımlı AST önbelleğine geçer, tek-uçuş kilidi + gürültü süzgeci panel izleyicisine iner, panel turları mercekte görünür (PRF-A04 ürünü)" )
+Kod( kod: KOD-DAG-YIGIN, dosya: "urun/cekirdek/src/dag.ts",
+  ne: "🍎 Topolojik sıranın asgari yığınla koşması — çatıda bin dokuz yüz altmış yediden üç virgül dört milisaniyeye; çıkarma anı doğrulaması PRF-KP-B02 ile gelir (PRF-A06 ürünü · 2026-08-29)" )
+
+Kod( kod: KOD-PRF-SNM-DAG, dosya: "urun/cekirdek/sinama/dag.test.ts",
+  ne: "🍎 Topolojik sıra eşdeğerlik, değişmezlik ve sınır nöbetleri (PRF-KP-B03 ve PRF-KP-B05 ürünü)" )

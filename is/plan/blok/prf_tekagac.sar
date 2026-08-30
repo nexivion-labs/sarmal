@@ -1,0 +1,157 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/blok/prf_tekagac.sar — 🗺️ Tek Ağaç — yol haritası denetim turunun ağacından beslenir
+//
+//   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
+//   2026-08-30). Kaynağı üç uzman raporu ve bağımsız denetçinin şartlı onayıdır;
+//   karar paketi OZK-12 kaydındadır. Blok, yazılım firması disipliniyle beş departmana
+//   ayrılır: planlama, kodlama, sınama, inceleme ve güvenlik.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🗺️ Tek Ağaç — yol haritası denetim turunun ağacından beslenir
+
+  ## Amaç
+  🎯 Yol haritası panelinin kendi ayrı taramasını kaldırmak ve paneli denetim turunun tek ağacına bağlamak. Çözülen problem şudur: panel her kaydetmede iki dosya araması, iki yüz yetmiş altı belge açma ve ayrı bir graf kurar; kanalda panel turu yirmi bin dokuz milisaniyedir ve soğuk açılışta yarışı kaybeden dosya sahte kırık damgası yer.
+
+  ## Kapsam
+  📦 Kapsar: tur görüntüsü sözleşmesi, panelin görüntüden beslenmesi, tetik tekleştirme, altı nöbet ve canlı ölçüm. Kapsamaz: panelin bilgi mimarisi, kenar grubu etiketleri, izlerin kendi hattı ve çekirdek motor.
+
+  ## Sonuç
+  ✅ Kabul: panelin doğrudan dosya araması ve belge açma sayısı sıfırdır; eski ve yeni yol aynı kod kümesini verir; Founder'ın canlı penceresinde panel turu doksan beşinci yüzdelikte beş yüz milisaniyenin altındadır.
+|<--
+
+Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
+  ne: "🗺️ Yol haritası panelinin denetim turunun tek ağacına bağlanması; ayrı tarama, ayrı graf ve sahte kırık damgası kalkar" ) {
+
+  Katman( kod: KAT-TA-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti tek ağaç katmanı",
+    ne: "🌿 Tur görüntüsünün üretildiği ve panelin ona bağlandığı eklenti katmanı (eklenti.ts · yolharitasi.ts · tur-belgesi.ts)" ) {
+
+    AltKatman( kod: ALT-TA-PLAN, ad: "tek ağaç planlaması", departman: planlama,
+      ne: "🗺️ Tur görüntüsü sözleşmesinin tasarlandığı ve panel tabanının ölçüldüğü planlama dalı." ) {
+
+      Adım( kod: PRF-TA-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-KP-A04, PRF-KP-B04 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
+        ne:       "📐 Tur görüntüsü sözleşmesinin tasarımı ve panel tabanı. Yol haritası bugün kendi ayrı taramasını koşturur: iki dosya araması, iki yüz yetmiş altı belge açma ve ayrı bir graf; kanalda panel turu yirmi bin dokuz milisaniyedir." ) {
+        görev:    [
+          "`TurGoruntusu` kaydı tasarlanır: programlar, yollar, söz dizimi kırık dosyalar, okunamayan sayısı ve tetik; kayıt editör kabuğu olmayan modülde yaşar ve turun sonunda tek bildirimle yayınlanır.",
+          "Tetik tekleştirme planı yazılır: panelin kendi izleyicisi, olay hattı ve açılış tetiği kalkar; el ile yenileme turu ister ve `turKapsami` tam tur kümesine el ile tetiği eklenir.",
+          "Taban ölçülür: panelin doğrudan dosya araması ve belge açma sayısı ile kanaldaki panel turu süresi kayda alınır."
+        ]
+        kabul:    [
+          "Sözleşme alanlarıyla yazılıdır ve onay tarayıcısının görüntü deseniyle uyumludur.",
+          "Taban sayılar kayıttadır."
+        ]
+        sınır:    "Bu Adım kod yazmaz; panelin bilgi mimarisine dokunmaz."
+      }
+    }
+
+    AltKatman( kod: ALT-TA-KOD, ad: "tek ağaç kodlaması", departman: kodlama,
+      ne: "🔧 Görüntünün üretildiği ve panelin ona bağlandığı üretim dalı." ) {
+
+      Adım( kod: PRF-TA-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🔧 Tur görüntüsünün üretilmesi ve tek yayın. Denetim turu zaten bütün dosyaları ayrıştırıp mevsim çevrimini uygulamaktadır; eksik olan bu sonucun tek bir kayıt olarak yayınlanmasıdır." ) {
+        görev:    [
+          "Turun program haritası, yol kümesi, kırık ve okunamayan sayıları `TurGoruntusu` olarak toplanır ve turun tek yayın noktasında bildirilir.",
+          "Onay tarayıcısının ana görüntü bildirimi aynı kaynaktan beslenir; ikinci bir bildirim yolu doğmaz.",
+          "Daraltılmış turda görüntünün program haritası tam turla aynı kalır, çünkü daraltma yalnız çapraz denetimi etkiler."
+        ]
+        kabul:    [
+          "Tur başına tek görüntü yayını vardır ve içeriği turun kendi ağacıdır.",
+          "Daraltılmış turda görüntü boyutu tam turla eşittir; bu nöbetle ölçülür."
+        ]
+        sınır:    "Turun kapsamı ve kabuk desenine dokunulmaz."
+      }
+
+      Adım( kod: PRF-TA-A03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
+        üretir:   [ KOD-PRF-YOLHARITA-TEKAGAC, KOD-PRF-YOLHARITA-CEKIRDEK ],
+        ne:       "🔧 Panelin görüntüden beslenmesi. Panelin iki dosya araması, belge açma döngüsü, kendi izleyicisi ve açılış tetiği kalkar; öğe toplama ve varlık kurulumu editör kabuğu olmayan çekirdeğe çekilir ki geçiş eşdeğerliği ölçülebilsin." ) {
+        görev:    [
+          "`yenile` görüntüyü alır: programlar doğrudan görüntüden, anadizinler yol kümesinden ad ölçütüyle, kırık listesi görüntünün kırık kümesinden gelir; okunamayan ayrı sayılır.",
+          "Panel izleyicisi, olay hattı ve açılış tetiği kalkar; panel görüntü yayınının dinleyicisi olur ve Mini Graf aynı dinleyicide tazelenir.",
+          "El ile yenileme komutu turu ister; tam tur kümesine el ile tetiği eklenir.",
+          "Öğe toplama ve varlık kurulumu `yolharitasi-cekirdek.ts` emsaliyle kimlik üreticisi alan saf çekirdeğe çekilir."
+        ]
+        kabul:    [
+          "Panelin doğrudan dosya araması ve belge açma sayısı sıfırdır.",
+          "Eski ve yeni yolda iki yüz yetmiş altı dosyanın düğüm kodları ve sayaçları birebirdir.",
+          "Panel tur başına tam bir değişim olayı üretir."
+        ]
+        sınır:    "Panelin görsel dili, kenar grubu etiketleri, kalp atışı ve izlerin kendi hattı değişmez."
+      }
+    }
+
+    AltKatman( kod: ALT-TA-SINAMA, ad: "tek ağaç nöbetleri", departman: sınama,
+      ne: "🧪 Altı nöbetin yazıldığı ve mutasyonla kanıtlandığı kalite dalı." ) {
+
+      Adım( kod: PRF-TA-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
+        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        ne:       "🧪 Tek ağaç nöbetleri. Denetçi altı nöbet istedi ve her birinin mutasyonla kanıtlanmasını şart koştu." ) {
+        görev:    [
+          "Gerçek kabukta panelin dosya araması ve belge açma sayısı sıfır ölçülür; onay tarayıcısının sayaç deseni izlenir. Gerçek kabuk süitinin dizini bugün plana bağlı değildir; bu Adım o dizine dokunduğu için beş dosyayı birlikte meyve ilan eder, çünkü tek dosyayı ilan etmek dört kardeşi yetim bırakır ve bu ölçülmüştür.",
+          "Daraltılmış turda görüntü boyutu tam turla aynıdır; kırık ile okunamayan kümeleri kesişmez; tur panelde tek değişim olayı üretir; turdan sonra paylaşılan önbellekte yalnız açık belgeler vardır; görüntüden kurulan ağaç eski taramayla aynı kod kümesini verir.",
+          "Üç mutasyon koşulur: doğrudan tarama geri konur, kırık ile okunamayan birleştirilir, ikinci yayın eklenir; her biri kendi nöbetini kırar."
+        ]
+        kabul:    [
+          "Altı nöbet yeşildir ve üç mutasyon kırmızıyı gösterir.",
+          "Eklenti süiti önceki sayının altına düşmez."
+        ]
+        sınır:    "Nöbetler davranışı değiştirmez."
+      }
+    }
+
+    AltKatman( kod: ALT-TA-INCELEME, ad: "tek ağaç denetimi ve canlı ölçüm", departman: inceleme,
+      ne: "🔍 Founder'ın birinci ölçütünün canlı pencerede ölçüldüğü inceleme dalı." ) {
+
+      Adım( kod: PRF-TA-A05, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A04, PRF-TA-A06 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
+        ne:       "🔍 Tek ağaç onarımının bağımsız denetimi ve canlı ölçümü. Founder'ın birinci ölçütü yol haritasının azami süratle çalışmasıdır ve kabul iki yüz yetmiş altı dosyalı çatıda beş yüz milisaniyelik doksan beşinci yüzdeliktir." ) {
+        görev:    [
+          "Bağımsız denetçi altı nöbeti ve üç mutasyonu yeniden koşturur.",
+          "Founder'ın canlı penceresinde panel turu satırı üç kez okunur; taban yirmi bin dokuz milisaniyeden en az yüzde doksan düşüş ve doksan beşinci yüzdelik beş yüz milisaniye altı aranır."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır.",
+          "Panel turu doksan beşinci yüzdelik beş yüz milisaniyenin altındadır ve taban düşüşü yüzde doksanı aşar."
+        ]
+        sınır:    "Bu Adım kod değiştirmez."
+      }
+    }
+
+    AltKatman( kod: ALT-TA-GUVENLIK, ad: "panelin veri yolu sınırı", departman: güvenlik,
+      ne: "🛡️ Panelin ikinci bir veri yolu kurmadığının kilitlendiği güvenlik dalı." ) {
+
+      Adım( kod: PRF-TA-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1, STR-3 ],
+        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        ne:       "🛡️ Panelin veri yolu sınırı. Fikirler panelinin deseniyle aynıdır: panel kendi başına dosya aramaz, açmaz, okumaz ve izleyici kurmaz." ) {
+        görev:    [
+          "Yol haritası kaynağında dosya araması, belge açma, dosya okuma, zamanlayıcı ve izleyici çağrılarını yasaklayan kaynak metni nöbeti yazılır.",
+          "STR-3 sızıntı nöbeti koşulur."
+        ]
+        kabul:    [
+          "Nöbet yeşildir ve yasaklı çağrı eklendiğinde kırmızıya döner.",
+          "STR-3 nöbeti sıfır bulgu verir."
+        ]
+        sınır:    "Bu Adım davranışı değiştirmez."
+      }
+    }
+  }
+}
+
+Kod( kod: KOD-PRF-EKLENTI-TUR, dosya: "urun/eklenti/src/eklenti.ts",
+  ne: "🍎 Denetim turunun belge toplama ve görüntü yayını — tur belge açmaz, görüntüyü tek noktadan yayınlar (PRF-KP-A02 ve PRF-TA-A02 ürünü)" )
+
+Kod( kod: KOD-PRF-YOLHARITA-TEKAGAC, dosya: "urun/eklenti/src/yolharitasi.ts",
+  ne: "🍎 Yol haritasının görüntüden beslenmesi — kendi taraması, izleyicisi ve açılış tetiği kalkar (PRF-TA-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-YOLHARITA-CEKIRDEK, dosya: "urun/eklenti/src/yolharitasi-cekirdek.ts",
+  ne: "🍎 Öğe toplama ve varlık kurulumunun editör kabuğu olmayan çekirdeği — geçiş eşdeğerliği burada ölçülür (PRF-TA-A03 ürünü)" )
+
+
+Kod( kod: KOD-PRF-SNM-PERFORMANS, dosya: "urun/eklenti/sinama/performans.test.ts",
+  ne: "🍎 Tur kapsamı, görüntü boyutu ve panel veri yolu sınırı nöbetleri (PRF-TA-A04 ve PRF-TA-A06 ürünü)" )
+

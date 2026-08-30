@@ -1,0 +1,170 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/blok/prf_mikro.sar — 🔬 Mikro-Onarımlar — çekirdek motorun ölçülmüş altı sıcak noktası
+//
+//   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
+//   2026-08-30). Kaynağı üç uzman raporu ve bağımsız denetçinin şartlı onayıdır;
+//   karar paketi OZK-12 kaydındadır. Blok, yazılım firması disipliniyle beş departmana
+//   ayrılır: planlama, kodlama, sınama, inceleme ve güvenlik.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🔬 Mikro-Onarımlar — çekirdek motorun ölçülmüş altı sıcak noktası
+
+  ## Amaç
+  🎯 Performans sorumlusunun profille bulduğu ve bağımsız denetçinin onayladığı altı davranış koruyucu onarımı uygulamak. Çözülen problem şudur: dizin her turda diskten baştan taranır, aynı dosya ikinci kez belirteçlenir, ham metin ikinci kez okunur ve bloklar karakter karakter biriktirilir.
+
+  ## Kapsam
+  📦 Kapsar: tire ön süzgeci, strateji ön denetimi, ad-biçimi memosu, tur ömürlü belirteç memosu, disk ve ham paylaşımı, blok dilimleme ile emoji kısa devresi. Kapsamaz: belge ham paylaşımı, süreç ömürlü önbellekler, abstract sözdizimi ağacı paylaşımı ve şekil nöbetinin kısaltılması.
+
+  ## Sonuç
+  ✅ Kabul: altı onarımın çıktısı referans fikstürleriyle birebirdir; altı mutasyonun her biri kendi nöbetini kırar; `denetimKos` sarmalda yedi yüz, çatıda bin yüz milisaniyenin altındadır.
+|<--
+
+Blok( kod: BLK-PRF-MIKRO, ad: "mikro-onarımlar", uygular: ORK-7,
+  ne: "🔬 Çekirdek motorun altı ölçülmüş sıcak noktasının davranış koruyucu onarımı" ) {
+
+  Katman( kod: KAT-MK-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek mikro-onarım katmanı",
+    ne: "🌿 Kimlik indeksi, belirteçleyici, denetim orkestrasyonu ve doğrulayıcının dokunulduğu çekirdek katmanı" ) {
+
+    AltKatman( kod: ALT-MK-PLAN, ad: "mikro-onarım planlaması", departman: planlama,
+      ne: "🗺️ Altı onarımın sırasının ve referans fikstürlerinin belirlendiği planlama dalı." ) {
+
+      Adım( kod: PRF-MK-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-KP-B04 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "📐 Altı mikro-onarımın planı ve referans fikstürleri. Denetçi yedi öneriden altısını onayladı ve her biri için davranış eşitliğinin referansla ölçülmesini şart koştu; belge ham paylaşımı ölçülmediği için ertelendi." ) {
+        görev:    [
+          "Altı onarımın sırası yazılır: tire ön süzgeci, strateji ön denetimi ve ad-biçimi memosu birinci; tur ömürlü belirteç memosu ve disk ile ham paylaşımı ikinci; blok dilimleme ile emoji kısa devresi üçüncü.",
+          "Referans fikstürleri üretilir ve saklanır: üç yüz seksen bir ve beş yüz seksen altı dosyada `dosyayiTara` çıktısı, üç yüz yirmi altı dosyada belirteç dizileri, altı strateji deseni ile iki muafiyetin olumlu ve olumsuz matrisi, bütün canlı adlarda ad-biçimi sonucu.",
+          "Taban kayda alınır: `denetimKos` sarmal kökünde dokuz yüz kırk bir, çatı kökünde bin beş yüz on üç milisaniyedir."
+        ]
+        kabul:    [
+          "Sıra ve referans fikstürleri kayıttadır.",
+          "Taban sayılar kayıttadır."
+        ]
+        sınır:    "Bu Adım kod yazmaz. Belge ham paylaşımı bu Blokta yoktur."
+      }
+    }
+
+    AltKatman( kod: ALT-MK-KOD, ad: "mikro-onarım kodlaması", departman: kodlama,
+      ne: "🔧 Altı onarımın üç Adımda uygulandığı üretim dalı." ) {
+
+      Adım( kod: PRF-MK-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-KIMLIK-SUZGEC, KOD-PRF-DENETCI-DISK, KOD-PRF-DOGRULAYICI-MEMO ],
+        ne:       "🔧 Tire ön süzgeci, strateji ön denetimi ve ad-biçimi memosu. Üçü de ölçülmüştür: kimlik taraması yüz yirmi sekizden altmışa, eşik izi kırk üçten yirmi bire, ad biçimi yirmi ikiden ikiye iner." ) {
+        görev:    [
+          "Kimlik indeksinin metin katmanında tire taşımayan satır atlanır; kod deseni yapısal olarak tire gerektirir.",
+          "Strateji tanılarında altı desen önce dosya bütününe uygulanır ve gizli yol döngüsü içerme ön denetimiyle korunur; ön denetim yanlış olumsuz üretemez.",
+          "Ad biçimi denetiminde ilk karakter için büyük ve küçük karşılık haritası tutulur; harita ilk karakterle sınırlıdır."
+        ]
+        kabul:    [
+          "Üç onarımın çıktısı referans fikstürleriyle birebirdir.",
+          "Ölçülen süre kazancı koşu kaydında önce ve sonra olarak yazılıdır."
+        ]
+        sınır:    "Hiçbir onarım tanı içeriğini, sırasını ya da sayısını değiştirmez."
+      }
+
+      Adım( kod: PRF-MK-A03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-DENETIM-DISK, KOD-PRF-DENETCI-DISK ],
+        ne:       "🔧 Tur ömürlü belirteç memosu ile disk ve ham paylaşımı. Denetçi memoyu yalnız tur ömürlü ya da sayıca sınırlı olarak onayladı; süreç ömürlü sınırsız harita reddedildi." ) {
+        görev:    [
+          "Belirteç dizisi turun kendi ömründe içerik anahtarlı memoda tutulur ve tur bitince düşer; kimlik indeksi aynı dosyayı ikinci kez belirteçlemez.",
+          "`programlariYukle` isteğe bağlı disk anlık görüntüsü alır ve ham metin haritasını döndürür; `denetimKos` ham okumayı bir daha yapmaz ve strateji tanılarına aynı anlık görüntü verilir.",
+          "Dış anadizinin diskte yoksa haritaya girmemesi istisnası korunur."
+        ]
+        kabul:    [
+          "Bir turda `diskTara` çağrısı bire iner ve belirteçleme sayısı yinelenen dosya sayısı kadar azalır.",
+          "Ham metinler referansla birebirdir."
+        ]
+        sınır:    "Memo süreç ömürlü olamaz; abstract sözdizimi ağacı paylaşılmaz, çünkü mevsim çevrimi ağaca sanal çocuk ekler."
+      }
+
+      Adım( kod: PRF-MK-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-BELIRTEC-DILIM ],
+        ne:       "🔧 Blok dilimleme ve emoji kısa devresi. Belge, üç tırnak ve yorum blokları karakter karakter biriktirilmektedir; dilimleme üç yüz yirmi altı dosyada yüz altmıştan yüz on sekiz milisaniyeye iner ve belirteç dizileri birebir kalır." ) {
+        görev:    [
+          "Üç blok döngüsü indeks arama, dilimleme ve toplu ilerleme ile yeniden yazılır; sonlandırıcı bulunamadığında aynı hata aynı konumla atılır.",
+          "Emoji eşleşmesinde ASCII karakter kısa devreyle atlanır; hiçbir sözce ASCII ile başlamadığı ölçülmüştür."
+        ]
+        kabul:    [
+          "Üç yüz yirmi altı dosyada belirteç dizileri referansla birebirdir.",
+          "Kapanışın ilk karakterde, son karakterde, metin ortasında ve hiç bulunmadığı dört fikstür yeşildir."
+        ]
+        sınır:    "Belirteç sözleşmesi ve hata konumları değişmez."
+      }
+    }
+
+    AltKatman( kod: ALT-MK-SINAMA, ad: "mikro-onarım nöbetleri", departman: sınama,
+      ne: "🧪 Altı mutasyonun her birinin kendi nöbetini kırdığının kanıtlandığı kalite dalı." ) {
+
+      Adım( kod: PRF-MK-A05, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A04 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        üretir:   [ KOD-PRF-SNM-DAG ],
+        ne:       "🧪 Mikro-onarım nöbetleri. Denetçi altı mutasyon saydı ve her birinin ayrı bir nöbeti kırmasını şart koştu." ) {
+        görev:    [
+          "Altı mutasyon koşulur: yanlış tire ölçütü, sabit memo anahtarı, enjekte diskin yok sayılması, ters ön denetim, yanlış Türkçe harf dönüşümü ve ilk kapanış yerine son kapanışın seçilmesi.",
+          "Referans eşitlikleri süite iner: `dosyayiTara` çıktısı, belirteç dizileri, strateji matrisi ve ad-biçimi sonuçları."
+        ]
+        kabul:    [
+          "Altı mutasyonun altısı kendi nöbetini kırar ve geri alınınca yeşile döner.",
+          "Çekirdek süiti önceki sayının altına düşmez."
+        ]
+        sınır:    "Nöbet dosyaları çekirdek sınama rafındadır; hangi dosyaya gireceği üretim sırasında ilan edilir."
+      }
+    }
+
+    AltKatman( kod: ALT-MK-INCELEME, ad: "mikro-onarım denetimi", departman: inceleme,
+      ne: "🔍 Bağımsız denetimin ve süre ölçümünün yapıldığı inceleme dalı." ) {
+
+      Adım( kod: PRF-MK-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A05, PRF-MK-A07 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12 ],
+        ne:       "🔍 Mikro-onarımların bağımsız denetimi ve süre ölçümü. Denetçinin kabul ettiği ölçülmüş katkılar toplamı sarmalda yaklaşık iki yüz yetmiş, çatıda yaklaşık dört yüz on milisaniyedir." ) {
+        görev:    [
+          "Bağımsız denetçi altı mutasyonu ve referans eşitliklerini yeniden koşturur.",
+          "`denetimKos` üç sıcak turda ölçülür: sarmal yedi yüz, çatı bin yüz milisaniyenin altında aranır."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır.",
+          "Sarmal medyanı yedi yüz, çatı medyanı bin yüz milisaniyenin altındadır."
+        ]
+        sınır:    "Founder'ın bir saniyelik disk ölçütü bu Blokta değil panel kipi Blokunda kapanır."
+      }
+    }
+
+    AltKatman( kod: ALT-MK-GUVENLIK, ad: "memo sınırı ve güvenlik nöbetlerinin korunması", departman: güvenlik,
+      ne: "🛡️ Memonun bellek sınırının ve STR-3 sınır nöbetinin zayıflamadığının ölçüldüğü güvenlik dalı." ) {
+
+      Adım( kod: PRF-MK-A07, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-MK-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3 ],
+        ne:       "🛡️ Memo sınırı ve güvenlik nöbetlerinin korunması. Strateji ön denetimi STR-3 sınır nöbetinin ta kendisini hızlandırır; hızlanırken zayıflamadığı ayrıca kanıtlanmalıdır." ) {
+        görev:    [
+          "Belirteç memosunun tur sonunda boşaldığı ve süreç ömrü boyunca büyümediği nöbetle ölçülür.",
+          "Eşik izi ve gizli yol taramasının ön denetimden sonra da aynı olumlu kümeyi bulduğu, yani hiçbir sızıntının kaçmadığı olumlu fikstürlerle gösterilir."
+        ]
+        kabul:    [
+          "Memo tur sonunda boştur.",
+          "Olumlu sızıntı fikstürlerinin tamamı ön denetimden sonra da yakalanır."
+        ]
+        sınır:    "Bu Adım güvenlik üreticilerinin kapsamını değiştirmez."
+      }
+    }
+  }
+}
+
+Kod( kod: KOD-PRF-KIMLIK-SUZGEC, dosya: "urun/cekirdek/src/kimlik.ts",
+  ne: "🍎 Kimlik indeksinin tire ön süzgeci ve tur ömürlü belirteç memosu (PRF-MK-A02 ve PRF-MK-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-BELIRTEC-DILIM, dosya: "urun/cekirdek/src/belirtec.ts",
+  ne: "🍎 Blok dilimleme ve emoji kısa devresi (PRF-MK-A04 ürünü)" )
+
+Kod( kod: KOD-PRF-DENETIM-DISK, dosya: "urun/cekirdek/src/denetim.ts",
+  ne: "🍎 Disk anlık görüntüsünün ve ham metin haritasının tek kez alınıp paylaşılması (PRF-MK-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-DENETCI-DISK, dosya: "urun/cekirdek/src/denetci.ts",
+  ne: "🍎 `programlariYukle` disk parametresi, ham dönüşü ve strateji ön denetimi (PRF-MK-A02 ve PRF-MK-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-DOGRULAYICI-MEMO, dosya: "urun/cekirdek/src/dogrulayici.ts",
+  ne: "🍎 Ad biçimi denetiminin ilk karakter memosu (PRF-MK-A02 ürünü)" )
+

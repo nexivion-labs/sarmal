@@ -1,0 +1,203 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/blok/prf_panelkipi.sar — 🧭 Panel Kipi — denetim motoru yalnız panelin kullandığı üreticileri koşturur
+//
+//   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
+//   2026-08-30). Kaynağı üç uzman raporu ve bağımsız denetçinin şartlı onayıdır;
+//   karar paketi OZK-12 kaydındadır. Blok, yazılım firması disipliniyle beş departmana
+//   ayrılır: planlama, kodlama, sınama, inceleme ve güvenlik.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧭 Panel Kipi — denetim motoru yalnız panelin kullandığı üreticileri koşturur
+
+  ## Amaç
+  🎯 Denetim motoruna bir panel kipi eklemek ve turun kendi program haritasını motora enjekte etmek. Çözülen problem şudur: çatıda motor koşusunun dörtte üçü panelin hiç kullanmadığı üreticilere gitmekte ve aynı dosyalar turda üçüncü kez yüklenmektedir.
+
+  ## Kapsam
+  📦 Kapsar: yüzey parametresi, ilana dayalı üretici atlama, program enjeksiyonu, eşitlik nöbeti ve Founder'ın ikinci ölçütünün canlı ölçümü. Kapsamaz: komut satırı tam kipinin sözleşmesi, üretici ilanının kendisi ve işçi iş parçacığı.
+
+  ## Sonuç
+  ✅ Kabul: panel kipi akışı tam kipin süzülmüş akışıyla birebirdir; komut satırı sözleşmesi değişmemiştir; Founder'ın canlı penceresinde denetim turu doksan beşinci yüzdelikte bin milisaniyenin altındadır.
+|<--
+
+Blok( kod: BLK-PRF-PANELKIPI, ad: "panel kipi", uygular: ORK-7,
+  ne: "🧭 Denetim motorunun panel kipi ve program enjeksiyonu; motor yalnız panelin kullandığı işi yapar" ) {
+
+  Katman( kod: KAT-PK-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek panel kipi katmanı",
+    ne: "🌿 Denetim orkestrasyonu ve kapı kapsamı ilanının dokunulduğu çekirdek katmanı" ) {
+
+    AltKatman( kod: ALT-PK-PLAN, ad: "panel kipi planlaması", departman: planlama,
+      ne: "🗺️ Yüzey parametresinin ve üretici atlama listesinin tasarlandığı planlama dalı." ) {
+
+      Adım( kod: PRF-PK-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A05, PRF-MK-A06 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        ne:       "📐 Panel kipinin tasarımı. Mimar ölçtü: çatıda bin altı yüz yetmiş altı milisaniyelik koşunun bin seksen dokuz milisaniyesi panelin hiç kullanmadığı üreticilere gitmektedir; panelin kullandığı on dokuz üretici altmış altı milisaniyedir." ) {
+        görev:    [
+          "`DenetimSecenek` içine yüzey parametresi tasarlanır; üreticilerin hangi yüzeyde koşacağı yalnız `kapi-kapsami.ts` ilanından okunur ve ikinci bir liste doğmaz.",
+          "Turun kendi program haritasını enjekte edebileceği isteğe bağlı parametre tasarlanır; verilmezse `programlariYukle` eski davranışıyla koşar.",
+          "Güvenlik gözüyle atlama listesi incelenir: STR-3 sınır nöbeti gibi güvenlik üreticilerinin panelde kalıp kalmayacağı gerekçesiyle yazılır.",
+          "Taban kayda alınır: çatıda üç sıcak tur medyanı yaklaşık bin dört yüz otuz milisaniyedir."
+        ]
+        kabul:    [
+          "Tasarım ve atlama listesi gerekçesiyle kayıttadır.",
+          "Taban sayı kayıttadır."
+        ]
+        sınır:    "Bu Adım kod yazmaz. Komut satırı tam kipinin sözleşmesi değişmez."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-KOD, ad: "panel kipi kodlaması", departman: kodlama,
+      ne: "🔧 Panel kipinin ve program enjeksiyonunun çekirdeğe eklendiği üretim dalı." ) {
+
+      Adım( kod: PRF-PK-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        üretir:   [ KOD-PRF-DENETIM-PANELKIPI, KOD-PRF-KAPI-KAPSAMI ],
+        ne:       "🔧 Panel kipi. Panel yüzeyi istendiğinde ilanda yalnız komut satırına ayrılmış üreticiler hiç koşmaz; kimlik indeksinin metin atfı taraması, ham okuma ve gövde içi doğrulama bu kipte atlanır." ) {
+        görev:    [
+          "`denetimKos` yüzey parametresini alır ve üreticileri ilana göre atlar; atlanan üretici tanı üretmez ve köken haritasına girmez.",
+          "Tam kip varsayılan kalır; komut satırı ve bin yüz altmış yedi sınamalık sözleşme değişmez."
+        ]
+        kabul:    [
+          "Panel kipinin akışı, tam kipin panel üreticileriyle süzülmüş akışıyla kimlik, düzey, dosya, konum, mesaj, öneri ve köken bakımından birebirdir.",
+          "Komut satırı tam kipi değişmemiştir."
+        ]
+        sınır:    "Atlama kararı yalnız ilandan okunur; bu kodda üretici adı yazılmaz."
+      }
+
+      Adım( kod: PRF-PK-A03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        üretir:   [ KOD-PRF-DENETCI-DISK ],
+        ne:       "🔧 Program haritası enjeksiyonu. Tur zaten bütün dosyaları ayrıştırdığı için çekirdek aynı dosyaları üçüncü kez yüklemek zorunda değildir." ) {
+        görev:    [
+          "`denetimKos` isteğe bağlı program haritası alır; verildiğinde `programlariYukle` koşmaz ve mevsim çevrimi idempotent olduğu için ikinci uygulama zararsızdır.",
+          "Enjekte edilen harita ile diskten yüklenen haritanın aynı tanı akışını verdiği nöbetle ölçülür."
+        ]
+        kabul:    [
+          "Enjekte yolda tanı akışı disk yoluyla birebirdir.",
+          "Harita verilmediğinde eski davranış birebir korunur."
+        ]
+        sınır:    "Enjeksiyon dışlama evrenini değiştirmez; farklı evren farklı sonuç verir ve bu bilinçli olarak tur evreniyle hizalanır."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-SINAMA, ad: "panel kipi eşitlik nöbeti", departman: sınama,
+      ne: "🧪 Panel kipinin tam kiple eşitliğinin mutasyonla kanıtlandığı kalite dalı." ) {
+
+      Adım( kod: PRF-PK-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        ne:       "🧪 Panel kipi eşitlik nöbeti. Denetçinin şartı tek cümledir: panel kipinin akışı tam kipin süzülmüş akışıyla birebir olmadıkça teslim sayılmaz." ) {
+        görev:    [
+          "Eşitlik nöbeti yazılır ve yedi alan karşılaştırılır.",
+          "İki mutasyon koşulur: bir panel üreticisi atlandığında ve yalnız komut satırına ayrılmış bir üretici panele alındığında nöbet kırmızıya döner."
+        ]
+        kabul:    [
+          "Eşitlik nöbeti yeşildir ve iki mutasyon kırmızıyı gösterir.",
+          "Çekirdek süiti önceki sayının altına düşmez."
+        ]
+        sınır:    "Nöbet dosyası çekirdek sınama rafındadır; adı üretim sırasında ilan edilir."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-INCELEME, ad: "panel kipi denetimi ve disk ölçütü", departman: inceleme,
+      ne: "🔍 Founder'ın ikinci ölçütünün ölçüldüğü inceleme dalı." ) {
+
+      Adım( kod: PRF-PK-A05, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A04, PRF-PK-A06, PRF-PK-B03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        ne:       "🔍 Panel kipinin bağımsız denetimi ve disk ölçütü. Founder'ın ikinci ölçütü diskin bir saniyeyi geçmeyen kontrolüdür; kabul iki yüz yetmiş altı dosyalı çatıda denetim turunun bin milisaniyelik doksan beşinci yüzdeliğidir." ) {
+        görev:    [
+          "Bağımsız denetçi eşitlik nöbetini ve mutasyonları yeniden koşturur.",
+          "Çatıda üç sıcak tur ölçülür: medyan tabandan en az yüzde elli düşmeli, enjekte yolda üç yüz milisaniyeyi aşmamalıdır.",
+          "Founder'ın canlı penceresinde denetim turu satırı üç kez okunur ve doksan beşinci yüzdelik bin milisaniyenin altında aranır."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır.",
+          "Canlı denetim turu doksan beşinci yüzdelikte bin milisaniyenin altındadır.",
+          "Enjekte yolda çekirdek medyanı üç yüz milisaniyenin altındadır."
+        ]
+        sınır:    "Bu Adım kod değiştirmez. İşçi kararı bu ölçümden sonra verilir."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-GUVENLIK, ad: "panel kipinde güvenlik üreticileri", departman: güvenlik,
+      ne: "🛡️ Atlanan üreticilerin arasında güvenlik nöbetinin olmadığının ya da atlanmasının gerekçelendirildiğinin ölçüldüğü güvenlik dalı." ) {
+
+      Adım( kod: PRF-PK-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3, STR-3 ],
+        ne:       "🛡️ Panel kipinde güvenlik üreticileri. Panel kipi yalnız komut satırına ayrılmış üreticileri atlar; STR-3 sınır nöbeti gibi bir güvenlik üreticisi sessizce panelden düşmemelidir." ) {
+        görev:    [
+          "Atlanan üretici listesi güvenlik gözüyle incelenir ve her güvenlik üreticisi için panelde kalma ya da atlanma kararı gerekçesiyle yazılır.",
+          "Kapalı ürüne dair sızıntı tanısının hangi yüzeyde görüneceği ilanda açıkça durur."
+        ]
+        kabul:    [
+          "Güvenlik üreticilerinin akıbeti gerekçesiyle kayıttadır.",
+          "STR-3 nöbeti panelde ya da komut satırında görünmeye devam eder."
+        ]
+        sınır:    "Bu Adım ilanı değiştirmez; yalnız ilanı okur ve gerekçe yazar."
+      }
+    }
+  }
+
+  Katman( kod: KAT-PK-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti bağ katmanı",
+    ne: "🌿 Turun panel kipine bağlandığı eklenti katmanı; üç departmanla yürür, planlama ve güvenlik çekirdek katmanında birlikte ölçülür" ) {
+
+    AltKatman( kod: ALT-PK-EKLENTI-KOD, ad: "turun panel kipini kullanması", departman: kodlama,
+      ne: "🔧 Eklentinin turunu panel kipine ve program enjeksiyonuna bağlayan küçük üretim dalı; bu bağın planlaması ve güvenliği çekirdek katmanının aynı adlı dallarında birlikte ölçülür." ) {
+
+      Adım( kod: PRF-PK-B01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🔧 Turun panel kipini kullanması. Tur artık çekirdeğe yüzey ve program haritasını verir." ) {
+        görev:    [
+          "`denetleHepsi` içindeki `denetimKos` çağrısı panel yüzeyini ve turun kendi program haritasını geçirir.",
+          "Kanal satırı tur süresini kip adıyla birlikte yazar ki önce ve sonra karşılaştırması kapsamıyla okunsun."
+        ]
+        kabul:    [
+          "Tur panel kipiyle koşar ve kanal satırı kipi yazar.",
+          "Panel tanıları önceki turla birebirdir."
+        ]
+        sınır:    "Tuş vuruşu yolu değişmez."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-EKLENTI-SINAMA, ad: "panel kipi bağının nöbeti", departman: sınama,
+      ne: "🧪 Bağın kaynak metni nöbetiyle kilitlendiği kalite dalı." ) {
+
+      Adım( kod: PRF-PK-B02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-B01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        ne:       "🧪 Panel kipi bağının nöbeti. Turun tam kipe geri düşmesi sessiz bir gerileme olurdu." ) {
+        görev:    [
+          "Turun `denetimKos` çağrısının yüzey ve program haritası geçirdiği kaynak metni nöbetiyle ölçülür.",
+          "Mutasyon koşulur: yüzey parametresi kaldırılınca nöbet kırmızıya döner."
+        ]
+        kabul:    [
+          "Nöbet yeşildir ve mutasyon kırmızıyı gösterir."
+        ]
+        sınır:    "Nöbet davranışı değiştirmez."
+      }
+    }
+
+    AltKatman( kod: ALT-PK-EKLENTI-INCELEME, ad: "bağın denetimi", departman: inceleme,
+      ne: "🔍 Bağın bağımsız denetçiden geçtiği inceleme dalı." ) {
+
+      Adım( kod: PRF-PK-B03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-B02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
+        ne:       "🔍 Panel kipi bağının bağımsız denetimi." ) {
+        görev:    [
+          "Bağımsız denetçi nöbeti ve mutasyonu yeniden koşturur ve panel tanılarının önceki turla birebir olduğunu ölçer."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır."
+        ]
+        sınır:    "Bu Adım kod değiştirmez."
+      }
+    }
+  }
+}
+
+Kod( kod: KOD-PRF-DENETIM-PANELKIPI, dosya: "urun/cekirdek/src/denetim.ts",
+  ne: "🍎 Denetim orkestrasyonunun yüzey parametresi ve program enjeksiyonu (PRF-PK-A02 ve PRF-PK-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-KAPI-KAPSAMI, dosya: "urun/cekirdek/src/kapi-kapsami.ts",
+  ne: "🍎 Üreticilerin yüzey ilanı — panel kipinin tek atlama kaynağı (PRF-PK-A02 ürünü)" )
+

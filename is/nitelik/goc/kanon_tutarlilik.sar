@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:d159fd768354290feac642ee659c1078d52f5077992c6726392076ec532075c8
+// KAYNAK-MUHRU kanon-demeti-sha256:5ab11cf7163d01ff41b271edc9fba9838eef61f0a283c29a38bb64a1fbee3a98
 
 -->|
 # Kanon tutarlılık yüzü
@@ -18,8 +18,8 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/str.sar` | `a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d` |
 | `yasa/kanon/tip.sar` | `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068` |
 | `yasa/kanon/yas.sar` | `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49` |
-| `yasa/kanon/yuz.sar` | `c5498c0e350b3b5b6d037e273bb92909aba2e8d64dd88b6ad5c55ff0eb2cc0e7` |
-| kanon demeti | `d159fd768354290feac642ee659c1078d52f5077992c6726392076ec532075c8` |
+| `yasa/kanon/yuz.sar` | `d6caf9cefad8c24a04aa1eb0972b7eb14a47bb5cbfc12ca451b6bff68c20d96c` |
+| kanon demeti | `5ab11cf7163d01ff41b271edc9fba9838eef61f0a283c29a38bb64a1fbee3a98` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
 | `oz/siniflama/kayit.json` | `c8f0a1573b02e48a5e1b4697c958935d6f085abb4e141b70acfc73c00b618802` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -190,7 +190,7 @@ Resmi sonuç 151/151 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `YUZ-3.4` | Kural | `yuz.sar` | Doğru: bir Hatırlatıcı `durum: kararlaştı` ve `hatırlat: ADM-SIRADAKI` yazımıyla beklerken, ADM-SIRADAKI tamamlandığı anda ateşlemiş sayılır ve kapatılmayı bekler; yanlış: aynı düğümün o Adım kapandıktan sonra da uykudakilerle aynı grupta, ayırt edilmeden durması. |
 | `YUZ-4` | Karar | `yuz.sar` | `Ekran( kod: EKR-GIRIS, referans: ADM-GIRIS, tema: TEM-ANA, görünürlük: açık )` kimlik, köken, tema ve görünürlük bağlarını açıklar; yerel renkle ve üretici bağı olmadan bırakılan adsız ekran eksiktir. |
 | `YUZ-4.1` | Kural | `yuz.sar` | Doğru: `Tema( kod: TEM-ANA, renkler: [ birincil, yüzey, nötr ], ne: "Ana tema" )`; yanlış: bir `Kart` üzerinde `renk: "#0A84FF"` yazarak tema rolünü atlamak. |
-| `YUZ-4.2` | Kural | `yuz.sar` | `Adım` kaynakta kanonik adıyla kalır; ağaç yüzü yanında kilitli Adım ikonunu ve “Adım” erişilebilir etiketini gösterebilir, ikon dosyası kaynak kimliğe yazılmaz. |
+| `YUZ-4.2` | Kural | `yuz.sar` | Doğru: panelin karar düğmesi kilitli aileden gelen onay işaretini ve “Onayla” erişilebilir etiketini taşır, bir `Adım` gövdesindeki niyet cümlesi ise emojisini korur; yanlış: aynı düğmeyi emojiyle çizmek ya da işareti etiketsiz basıp anlamı yalnız çizime bırakmak. |
 | `YUZ-5` | Kural | `yuz.sar` | Doğru: `Ekran( kod: EKR-YONETIM, görünürlük: gizli, açılmaKoşulu: KAP-YETKI-01 )`; yanlış: gizli ekranı koşulsuz bırakmak veya `görünürlük: bazen` yazmak. |
 | `YUZ-6` | Kural | `yuz.sar` | TIP yüzey tiplerinin şemasını, OGR öğretim türetimini tanımlar; `.sar` ile türetilmiş yüz arasındaki otorite ve görünürlük sınırı YUZ hükümlerine geri bağlanır. |
 | `YUZ-7` | Kural | `yuz.sar` | Doğru: bir Adım kimliği emekliye ayrıldığında o kimliği örnek olarak gösteren araç açıklaması, onu anan belge cümlesi ve ona işaret eden kod yorumu aynı turda yaşayan halefe çevrilir; yanlış: yalnız kaynağı ilerletip araç açıklamasını eski kimlikle bırakmak ya da yüzeyin başlığını güncel diye etiketleyip tazelemenin yerine saymak. |

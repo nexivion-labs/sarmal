@@ -72,6 +72,16 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
 //   Bağını `mevsim` alanıyla kuran gövdeler burada YİNELENMEZ, çünkü bir bağ tek
 //   yerde yazılır (MIM-1.3); onlar kendi dosyalarında Eylül'e bağlanmıştır.
 // ────────────────────────────────────────────────────────────────────────────
+Faz( kod: FAZ-2026-PERFORMANS, ad: "Performans Denetim Mevsimi", hedefTarih: "2026-08-30",
+     ne: "⚡ Tek günlük performans denetim mevsimi (Founder hükmü 2026-08-30 · OZK-12). Founder dört kabul ölçütü koydu: yol haritası azami süratle çalışır, diskin kontrolü bir saniyeyi geçmez, editörde en ufak gecikme olmaz ve motor her şeyi anlık gösterir; sayıları karar kaydındadır. Mevsim beş Blok taşır: omurga BLK-PRF ile dört kardeşi. Sıra denetçinin hükmüdür: önce iki onarımın kapısı, sonra tek ağaç ve mikro-onarımlar, sonra panel kipi, en son ölçüm kapılı işçi. Founder'ın sözü şudur: bu şartlar yerine gelmeli, çünkü daha yapılacak çok iş vardır; zemin oturmadan üstüne kat çıkılmaz." ) {
+
+  çağır BLK-PRF            // ⚡ omurga — PRF-A06 şemsiyesi ve bugünkü iki onarımın kapı Adımları
+  çağır BLK-PRF-TEKAGAC    // 🗺️ yol haritası denetim turunun tek ağacına bağlanır
+  çağır BLK-PRF-MIKRO      // 🔬 çekirdek motorun ölçülmüş altı sıcak noktası
+  çağır BLK-PRF-PANELKIPI  // 🧭 motor yalnız panelin kullandığı üreticileri koşturur
+  çağır BLK-PRF-ISCI       // 🧵 motor ana iş parçacığından çıkar — ölçüm kapılı
+}
+
 Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
      ne: "🌀 Eylül dönemi — v1'in iki bitiş olayı bu mevsimde gerçekleşir: eklenti mağazaya yüklenir ve açık depo canlı yayında halka açılır. Kritik yol küratörlü aktarımın kapanışından mağaza yüklemesine, oradan taze klon provasına ve canlı açılışa uzanır; Ağustos'tan devrolan on bir gövdenin açık işi bu halkada olgunlaşır" ) {
 
@@ -79,7 +89,6 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   çağır BLK-VITRIN      // 🎨 vitrin ile graf yüzü — on açık Adım; çoğu teslim edilmiş olup Founder'ın canlı pencere bakışını bekler
   çağır BLK-BAKIM       // 📦 bakım ve olgunluk — on dört açık Adım; eklenti denetim turunun on bir kalemi burada yaşar
   çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı: mağaza yüklemesi ile GitHub dil kimliği başvurusu — v1'in kritik yolunda
-  çağır BLK-PRF         // ⚡ PRF-A06 tam tur maliyet gözlemi
   çağır BLK-SINAV3      // 🎓 SNV4-A01 tam steril sınav turu (ayrı pencere ister)
   çağır BLK-SOL-IDA-TEST // 🧪 Sol ile IDA gerçek dünya testi — Founder'ın örnek projesi beklendiği için bilinçli olarak açık tutulur, kapı Founder'dadır
 }

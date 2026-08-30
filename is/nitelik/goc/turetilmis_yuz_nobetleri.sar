@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `d159fd768354290feac642ee659c1078d52f5077992c6726392076ec532075c8` |
+| `yasa/kanon demeti (A03 formülü)` | `5ab11cf7163d01ff41b271edc9fba9838eef61f0a283c29a38bb64a1fbee3a98` |
 | `oz/siniflama/kayit.json` | `c8f0a1573b02e48a5e1b4697c958935d6f085abb4e141b70acfc73c00b618802` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
@@ -267,6 +267,24 @@ ayırır ve yazan araçların yıkıcılık ipucu da yazılır. Kaynağın mühr
 ekleme yüzünden ilerlemiştir; araç adları, parametre adları, şema tipleri ve
 zorunlu alanlar değişmemiş, dolayısıyla çağrı uyumluluğu korunmuştur.
 
+
+Tazeleme notu (2026-08-29 · YUZ-4.2 maddesinin arayüz işaret katmanına
+çevrilmesi): Kanonun YUZ bölümünde YUZ-4.2 maddesi İkon Görüntü Katmanı
+başlığından Arayüz İşaret Katmanı başlığına geçirildi ve makine taşıyıcısının
+kural adı `ikonGörüntüKatmanı` yerine `arayüzİşaretKatmanı` oldu; madde kodu
+YUZ-4.2 olarak aynen korunduğu için maddeye yönelen hiçbir atıf kırılmadı ve
+gezinme aracıyla ölçülen iki gelen atıf da yerinde kaldı. Değişikliğin özü
+hükmün konusunu emoji sözlüğünden arayüz işaretine taşımaktır: madde artık
+kullanıcıya görünen her arayüz işaretinin kilitli vektörel aileden geldiğini ve
+yüzey metinlerinde emojinin arayüz işareti olarak kullanılamayacağını doğrudan
+söyler, emojinin meşru kaldığı iki alanı, yani kaynak anlatımı ile takdir
+yüzeyini ayrı ayrı sayar. Zorlama alanı dürüstçe yazıldı: mekanik zorlama
+motorun tanı sicilinde değil eklenti süitindeki yüzey nöbetlerindedir ve
+kullanıcı projelerine inen bir tanı bulunmadığı beyan edilmiş borç olarak
+kaydedilmiştir. Kanon dosyasının baytları değiştiği için kanon demeti mührü
+ilerledi ve yukarıdaki tablo bu koşuya çekildi; kanon tutarlılık yüzü yeniden
+üretildi, on altı belge yüzü ise sıfır farkla aynı kaldı çünkü madde metni
+üretilen bölgelerin hiçbirini beslemiyor.
 ## B · Üretici koşuları — hedef bölge ve ikinci koşu farkı
 
 Altı üretici ailesi de temiz ortamda başarıyla koştu; hiçbir üreticinin

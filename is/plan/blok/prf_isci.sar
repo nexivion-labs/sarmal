@@ -1,0 +1,146 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/blok/prf_isci.sar — 🧵 İşçi — denetim motoru ana iş parçacığından çıkar
+//
+//   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
+//   2026-08-30). Kaynağı üç uzman raporu ve bağımsız denetçinin şartlı onayıdır;
+//   karar paketi OZK-12 kaydındadır. Blok, yazılım firması disipliniyle beş departmana
+//   ayrılır: planlama, kodlama, sınama, inceleme ve güvenlik.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧵 İşçi — denetim motoru ana iş parçacığından çıkar
+
+  ## Amaç
+  🎯 Denetim motorunu editörün ana iş parçacığından bir işçi iş parçacığına taşımak. Çözülen problem şudur: motor koşarken editör hiçbir tuşa cevap veremez, çünkü koşu bölünmez bir senkron bloktur; ölçülen en uzun boşluk bin dört yüz otuz dokuz milisaniyedir ve Founder'ın en ufak gecikme yok ölçütü ana iş parçacığında tutturulamaz.
+
+  ## Kapsam
+  📦 Kapsar: paketlenmiş işçinin ölçümü, ölçüme bağlı üretim kararı, motorun ve kalan bloğun taşınması, olay döngüsü merceği, işçi nöbetleri ve Founder'ın üçüncü ve dördüncü ölçütlerinin canlı ölçümü. Kapsamaz: turun `await` dilimleriyle yayılması, alt süreç yedeğinin ölçülmeden kabulü ve tuş vuruşu yolu.
+
+  ## Sonuç
+  ✅ Kabul: tur sırasında ana iş parçacığının en uzun bölünmez bloğu on altı milisaniyeyi aşmaz; kaydetten panele gecikme doksan beşinci yüzdelikte beş yüz milisaniyenin altındadır; Founder yazarken takılma olmadığını gözle teyit etmiştir.
+|<--
+
+Blok( kod: BLK-PRF-ISCI, ad: "işçi", uygular: ORK-7,
+  ne: "🧵 Denetim motorunun ölçüm kapılı olarak işçi iş parçacığına taşınması; Founder'ın kasma yok ölçütünün kapısı" ) {
+
+  Katman( kod: KAT-IS-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti işçi katmanı",
+    ne: "🌿 Derleme zinciri, tur ve işçi protokolünün yaşadığı eklenti katmanı" ) {
+
+    AltKatman( kod: ALT-IS-PLAN, ad: "işçi ölçümü ve kararı", departman: planlama,
+      ne: "🗺️ Paketlenmiş işçinin ölçüldüğü ve üretim kararının ölçüme bağlandığı planlama dalı." ) {
+
+      Adım( kod: PRF-IS-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A05 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
+        üretir:   [ KOD-PRF-ESBUILD ],
+        ne:       "📐 Paketlenmiş işçinin ölçümü ve karar. Mimar deneyde ölçtü: motor bir işçi iş parçacığında koşarken ana iş parçacığının en uzun boşluğu bin dört yüz otuz dokuzdan altı virgül sekiz ile on beş virgül altı milisaniyeye iner. Denetçi paketlenmiş ortam ölçülmeden üretimi reddetti; Founder'ın üçüncü ölçütü ise ana iş parçacığında koşan hiçbir turla tutturulamaz." ) {
+        görev:    [
+          "Derleme zincirine ikinci giriş eklenir ve paketlenmiş işçi kurulu eklentide yüklenir; yüklenebilirlik ve başlatma bedeli ölçülür.",
+          "Alt süreç yedeği aynı protokolle ölçülür; ölçülmeyen yedek kabul edilmez.",
+          "Tel protokolü tasarlanır: her tanıya köken alanı eklenir, sonuç yapısal klonla taşınır ve yalnız akış ile köken geçer.",
+          "Karar yazılır: sayılar geçerse üretim Adımı açılır, geçmezse Founder'a döner."
+        ]
+        kabul:    [
+          "Yüklenebilirlik, başlatma bedeli ve taşıma maliyeti sayıyla kayıttadır.",
+          "Karar gerekçesiyle kayıttadır."
+        ]
+        sınır:    "Bu Adım motoru işçiye taşımaz; yalnız ölçer ve karar yazar."
+      }
+    }
+
+    AltKatman( kod: ALT-IS-KOD, ad: "motorun işçiye taşınması", departman: kodlama,
+      ne: "🔧 Ölçüm geçerse motorun ve kalan bloğun işçiye taşındığı üretim dalı." ) {
+
+      Adım( kod: PRF-IS-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A01 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🔧 Motorun işçiye taşınması. `denetimKos` işçide koşar; tek uçuş kilidi işçi meşgulken bekleyen tetiği yine tek telafi turuna indirir ve çöken işçi kanala düşer." ) {
+        görev:    [
+          "Tur çapraz denetimi işçiye gönderir ve sonucu tel protokolüyle alır; işçi diskten okur ve bu bugünkü davranışın aynısıdır.",
+          "Çöken işçi kilidi asılı bırakmaz ve kanala tek satır düşer.",
+          "Ana iş parçacığında kalan blok ölçülür ve olay döngüsü boşluk merceği kanala bağlanır."
+        ]
+        kabul:    [
+          "Tur sırasında ana iş parçacığının en uzun bölünmez bloğu kanalda okunur.",
+          "Sonuç sözleşmesi seri hâlde birebirdir."
+        ]
+        sınır:    "Bu Adım ancak PRF-IS-A01 kararı olumluysa başlar."
+      }
+
+      Adım( kod: PRF-IS-A03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
+        üretir:   [ KOD-PRF-EKLENTI-TUR ],
+        ne:       "🔧 Kalan bloğun taşınması. Mimar tahmin etti: ayrıştırma ve tek dosya doğrulaması ana iş parçacığında yaklaşık altı yüz milisaniye bırakır; bu blok ölçülür ve on altı milisaniye eşiğini aşıyorsa işçiye taşınır." ) {
+        görev:    [
+          "Kalan blok ölçülür; eşiği aşıyorsa açık tamponların metni işçiye gönderilir ve tanılar dosya başına geri gelir, ya da ağaç yapısal klonla taşınır; iki yolun maliyeti ölçülüp ucuz olan seçilir.",
+          "Tuş vuruşu yolu ana iş parçacığında kalır, çünkü tek dosya ve anlıktır."
+        ]
+        kabul:    [
+          "Tur sırasında ana iş parçacığının en uzun bölünmez bloğu on altı milisaniyeyi aşmaz."
+        ]
+        sınır:    "Tuş vuruşu yolu değişmez."
+      }
+    }
+
+    AltKatman( kod: ALT-IS-SINAMA, ad: "işçi nöbetleri", departman: sınama,
+      ne: "🧪 İşçi sözleşmesinin ve çökme davranışının kilitlendiği kalite dalı." ) {
+
+      Adım( kod: PRF-IS-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A03 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
+        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        ne:       "🧪 İşçi nöbetleri. İşçi çöktüğünde kilidin asılı kalması ve sonucun tel üstünde bozulması iki sessiz kusurdur." ) {
+        görev:    [
+          "Olay döngüsü boşluk merceği nöbete bağlanır; tur sırasında en uzun blok sayı olarak okunur.",
+          "İşçi çöktüğünde kilidin serbest kaldığı ve kanala düşüldüğü nöbetle ölçülür.",
+          "Tel üstünden geçen sonucun akış ve köken bakımından ana iş parçacığı sonucuyla birebir olduğu ölçülür."
+        ]
+        kabul:    [
+          "Üç nöbet yeşildir; işçi çökmesi mutasyonla kırmızıyı gösterir."
+        ]
+        sınır:    "Nöbetler davranışı değiştirmez."
+      }
+    }
+
+    AltKatman( kod: ALT-IS-INCELEME, ad: "işçi denetimi ve Founder ölçütleri", departman: inceleme,
+      ne: "🔍 Founder'ın üçüncü ve dördüncü ölçütünün canlı pencerede ölçüldüğü inceleme dalı." ) {
+
+      Adım( kod: PRF-IS-A05, durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PRF-IS-A04, PRF-IS-A06 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
+        ne:       "🔍 İşçi taşımasının bağımsız denetimi ve Founder ölçütleri. Üçüncü ölçüt editörde en ufak gecikmenin olmamasıdır ve sayısı ana iş parçacığının on altı milisaniyelik en uzun bloğudur; dördüncü ölçüt anlık gösterimdir ve sayısı kaydetten panele beş yüz milisaniyelik doksan beşinci yüzdeliktir." ) {
+        görev:    [
+          "Bağımsız denetçi üç nöbeti yeniden koşturur.",
+          "Founder'ın canlı penceresinde tur sırasında en uzun blok ve kaydetten panele gecikme üç kez okunur.",
+          "Founder yazarken ve yol haritası açıkken takılma olmadığını gözle teyit eder; bu PRF-A06'nın saha kapısıdır."
+        ]
+        kabul:    [
+          "Denetçi hükmü onaydır.",
+          "En uzun bölünmez blok on altı milisaniyeyi, kaydetten panele gecikme doksan beşinci yüzdelikte beş yüz milisaniyeyi aşmaz.",
+          "Founder gözle teyit etmiştir."
+        ]
+        sınır:    "Bu Adım kod değiştirmez."
+      }
+    }
+
+    AltKatman( kod: ALT-IS-GUVENLIK, ad: "işçi sandbox sınırı", departman: güvenlik,
+      ne: "🛡️ İşçinin yalnız çalışma alanını okuduğunun, yazmadığının ve ağa çıkmadığının kilitlendiği güvenlik dalı." ) {
+
+      Adım( kod: PRF-IS-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A02 ],
+        referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1, STR-3 ],
+        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        ne:       "🛡️ İşçi sandbox sınırı. Ayrı bir iş parçacığı ayrı bir erişim yüzeyidir; sınırı açıkça çizilmeli ve nöbetle kilitlenmelidir." ) {
+        görev:    [
+          "İşçinin yalnız çalışma alanı köklerini okuduğu, hiçbir dosyaya yazmadığı ve ağ modülü yüklemediği kaynak metni ve davranış nöbetleriyle ölçülür.",
+          "İşçi hata mesajları mutlak yol sızdırmaz; STR-3 sızıntı nöbeti işçi girişini de kapsar."
+        ]
+        kabul:    [
+          "Nöbetler yeşildir; yazma ya da ağ çağrısı eklendiğinde kırmızıya döner.",
+          "STR-3 nöbeti sıfır bulgu verir."
+        ]
+        sınır:    "Sıfır bağımlılık ilkesi korunur; işçi yalnız Node çekirdek modüllerini kullanır."
+      }
+    }
+  }
+}
+
+Kod( kod: KOD-PRF-ESBUILD, dosya: "urun/eklenti/esbuild.mjs",
+  ne: "🍎 Derleme zincirinin ikinci girişi — paketlenmiş işçi (PRF-IS-A01 ürünü)" )
+

@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-29", oturum: 102,
-            neredeyiz: CANLI-PENCERE-TURU-KOSULDU-YEDI-ADIM-FOUNDER-GOZUYLE-KAPANDI-AD-ALANI-YURUTME-KENARLARINA-INDI,
-            sıradaki: CANLI-PENCERE-TURUNUN-KALAN-DORT-ADIMI-SONRA-DORT-FAZSIZ-BLOKUN-EVI-FOUNDER-HUKMU,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-30", oturum: 102,
+            neredeyiz: BLK-PRF-KAPI-SEKIZ-ADIM-KAPANDI-B04-ISLEME-BEKLIYOR-A04-CODEX-DENETIMINDE,
+            sıradaki: A04-HUKMU-SONRA-UC-ISLEME-FOUNDER-SOZU-SONRA-BLK-PRF-TEKAGAC,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -47,10 +47,10 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-29", oturum: 102,
                          KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI,
                          TURUN-KALAN-DORDU-VIT-KIMLIK-A07-A04-PRF-A06-BKM-DNT-A08,
                          DORT-FAZSIZ-BLOKUN-EVI-FOUNDER-HUKMU-PANELDEKI-DORT-HATA,
-                         YUZ-4.2-YENI-METNI-ONAYLANDI-KANONA-INECEK,
-                         VIT-POSTA-A02-ACIK-KALAN-UC-GOREV-MADDESI,
+                         YUZ-4.2-ARAYUZ-ISARET-KATMANI-KANONA-INDI-KAPANDI-2026-08-29,
+                         VIT-POSTA-A02-DUZ-METIN-YEDEGININ-EMEKLILIGI-FOUNDER-KARARI,
                          HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
-                         SIMGE-CIZELGESI-NOBETI-TEK-BASINA-KOSUNCA-KIRMIZI,
+                         NOBET-HIJYENI-ON-DOSYADA-ONARILDI-KAPANDI-2026-08-29,
                          ACIK-DEPONUN-UZAK-ADRESI-YOK-ILK-GONDERIM-CANLI-ACILIS ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
@@ -863,41 +863,208 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-29", oturum: 102,
         Turun kalan dört Adımı da Founder gözü beklemektedir: VIT-KIMLIK-A07,
         VIT-KIMLIK-A04, PRF-A06 ve BKM-DNT-A08.
 
+
+        ═══ OTURUM 102 · ÜÇÜNCÜ VARDİYA — KANON MADDESİ İNDİ, İKİ BORÇ ÖLÇÜLDÜ ═══
+
+        ⚖️ YUZ-4.2 MADDESİ KANONA İNDİ VE İŞ LİSTESİNİN İKİNCİ MADDESİ KAPANDI.
+        Founder'ın onayladığı yeni metin yazıldı: madde başlığı İkon Görüntü
+        Katmanı yerine Arayüz İşaret Katmanı oldu, makine taşıyıcısının kural adı
+        arayüzİşaretKatmanı biçimine geçti ve madde kodu YUZ-4.2 aynen korundu,
+        bu yüzden maddeye yönelen iki gelen atıf da kırılmadan yerinde kaldı.
+        Hüküm artık konusunu doğrudan söyler: kullanıcıya görünen her arayüz
+        işareti kilitli vektörel aileden gelir ve yüzey metinlerinde emoji arayüz
+        işareti olarak kullanılamaz; emojinin meşru kaldığı iki alan, yani kaynak
+        anlatımı ile takdir yüzeyi, madde metninde ayrı ayrı sayılmıştır. Zorlama
+        alanı dürüstçe yazıldı ve iki şey ayrıldı: mekanik zorlama bugün motorun
+        tanı sicilinde değil eklenti süitindeki yüzey nöbetlerindedir, kullanıcı
+        projelerine inen bir tanı ise yoktur ve bu, maddenin kendi metninde beyan
+        edilmiş açık borçtur. Türetilmiş yüzler aynı turda ilerletildi: kanon
+        tutarlılık yüzü yeniden üretildi, on altı belge yüzü sıfır farkla aynı
+        kaldı ve kanon demeti mührü hem nöbet kaydında hem çekirdek süitindeki
+        sabitte ilerletildi; iki mühür bağımsız hesapla birbirini doğruladı.
+
+        🧹 NÖBET HİJYENİ BORCU KAPANDI VE BORÇ KAYITTA YAZILDIĞINDAN ON KAT
+        BÜYÜK ÇIKTI. Kayıt borcu tek dosya olarak yazıyordu; ölçüm on dosya
+        gösterdi ve bunlar atif-ipucu, fikir-paneli, fikir-yuzeyi, minigraf,
+        onay-yuzeyleri, palette-drift, performans, posta-kutusu, simge-cizelgesi
+        ile tani-yuzeyleri sınama dosyalarıdır. Kök sebep tekti: yüzey dili
+        kapısı yalnız `npm test` betiğindeki ön-yükleme ile bağlanıyordu,
+        dolayısıyla bir dosyayı tek başına koşturan herkes "Yüzey dili etkin dil
+        kapısından bağlanmadı" diyen sahte kırmızıyı görüyordu. Onarım her
+        dosyanın kapıyı kendi kurmasıdır ve bağ ESM önbelleği yüzünden iki kez
+        koşmaz. ÖLÇÜLEN SONUÇ: on dosyanın onu da tek başına koşturulduğunda
+        yeşildir ve tam süit altı yüz otuz beş sınamayla, yani düşmeden, yeşil
+        kalmıştır. Onarımın kanıtı turun kendisidir: aynı on dosya onarımdan
+        önce kırmızı, sonra yeşil ölçülmüştür.
+
+        📐 VIT-POSTA-A02'NİN ÜÇ AÇIK MADDESİNDEN İKİSİ KAPANDI, BİRİ FOUNDER'A
+        HAZIRLANDI. BİRİNCİSİ AÇILIŞ TARAMA MALİYETİDİR ve gerçek sayılarla
+        ölçüldü: tarayıcının kendi dışlama evreni birebir tekrarlanarak sarmal tek
+        başına doksan yedi dosya ve iki bin üç yüz doksan altı kilobayt ölçüldü,
+        dosya arama sekiz, okuma yirmi sekiz ve ayrıştırma seksen dört
+        milisaniye sürdü, toplam yüz yirmi milisaniyedir; Founder'ın gerçek
+        penceresi olan dört projeli çatıda ise iki yüz yetmiş altı dosya ve dört
+        bin altı yüz kırk sekiz kilobayt ölçüldü ve toplam iki yüz on dokuz ile
+        iki yüz seksen sekiz milisaniye arasında kaldı, kırık dosya sıfırdır.
+        DÜRÜST SINIR ŞUDUR: bu sayı ham okuma ile ayrıştırmanın TABANIDIR;
+        eklentinin açılış turu her dosyayı ayrıca `openTextDocument` ile açtığı
+        için gerçek maliyet bu tabanın üstündedir ve o fark yalnız VS Code
+        içinde ölçülebilir. Founder'ın bildirdiği yol haritası kasmasıyla bağ ise
+        ÖLÇÜLEREK REDDEDİLİR: kasmanın kökü PRF-A05 turunda her Adım
+        genişletmesinde tüm graf üzerinde yeniden koşan topolojik sıra hesabıydı,
+        Adım başına yaklaşık dokuz yüz elli milisaniye ölçülmüş, onarılmış ve
+        Founder gözüyle kapanmıştı; açılış taraması ayrı bir sınıftır ve o gün
+        ayrıca ölçülmüştür. İKİNCİSİ ÇAPA TEKİLLİĞİDİR ve kayıt bayat çıktı:
+        onarım zaten yerindedir, yinelenen Adım kodu belirsiz çapa sayılır, yazım
+        durur ve nöbet kapalı ikizli bir fikstürle bunu mutasyonla kanıtlar.
+        ÜÇÜNCÜSÜ DÜZ METİN YEDEĞİNİN EMEKLİLİĞİDİR ve karar Founder'ındır;
+        kontrolcü yalnız ölçümü hazırladı. ÖLÇÜM ŞUDUR: üç depoda on beş açık
+        kapı vardır, on üçü hem mekanik beyanı hem düz metin cümlesini taşır,
+        ikisi yalnız mekanik beyanla tanınır ve YALNIZ DÜZ METİNLE tanınan kapı
+        sayısı SIFIRDIR. Yani yedek bugün kaldırılsa hiçbir kapı kuyruktan
+        düşmez. Kaldırmanın bedeli gelecektedir: alanı yazılmamış yeni bir kapı
+        sessizce görünmez olur ve bunu yakalayacak gözlem bugün yoktur, çünkü
+        `onayBekler` alanı motorun tanı sicilinde değil yalnız eklentide yaşar.
+
+        📋 KAPI (kontrolcü ölçümü): çekirdek süiti bin yüz altmış yedi, eklenti
+        süiti altı yüz otuz beş sınamanın tamamını geçti. Depo denetimleri: sarmal
+        sıfır hata ile sıfır uyarı, laboratuvar üç hata ile yedi uyarı, yani bu
+        turdan önceki ölçümünde kaldı.
+
+
+        🔴 CANLI BULGU (2026-08-29 · 22.09) — PRF-A06 BUGÜN GEÇMİYOR VE
+        DARALTMA MALİYETİN AKIŞ AŞAĞISINA KONMUŞ. Founder'ın penceresinde
+        Sarmal Performans kanalı şunu yazdı: panel turu otuz bir bin dokuz yüz
+        altmış milisaniye, denetim turu otuz dört bin dört yüz seksen
+        milisaniye, ikisi de iki yüz yetmiş altı dosya üzerinde ve tetik
+        sar-olayıdır. Satır dar kapsam=sarmal demektedir, oysa sarmal tek
+        başına doksan yedi dosyadır; etiket ile sayı birbirini tutmamaktadır ve
+        ipucu buydu. KONTROLCÜ ÖLÇÜMÜ ÜÇ KALEMDİR. Birincisi saf çekirdek
+        yoludur: iki yüz yetmiş altı dosyanın ayrıştırılması ile her birine
+        `dogrula` koşulması toplam iki bin yüz kırk dört milisaniye sürer ve bu
+        yol daraltılmamaktadır. İkincisi çapraz denetimdir: `denetimKos` çatı
+        kökünde beş bin beş yüz yetmiş bir, sarmal kökünde beş yüz yetmiş dokuz
+        milisaniyedir ve daraltmanın kazandırdığı tek şey bu farktır. Üçüncüsü
+        artakalandır: ölçülen iki kalem toplandığında otuz dört buçuk saniyenin
+        yalnız yaklaşık yedi saniyesi açıklanır ve geri kalan yaklaşık yirmi
+        yedi saniye VS Code katmanındadır. TEŞHİS YAPISALDIR: tur önce
+        `findFiles` ile bütün çalışma alanını bulur ve her dosyayı
+        `openTextDocument` ile açar, daraltma kararı olan `darKok` ise ancak bu
+        döngüden SONRA hesaplanır; dolayısıyla daraltma dosya açmayı yapısal
+        olarak azaltamaz ve yalnız çapraz denetime iner. DÜRÜST SINIR:
+        `openTextDocument` maliyeti VS Code dışında ölçülemez ve bu tur
+        doğrudan ölçülmemiştir; artakalan çıkarma yoluyla bulunmuştur ve
+        deponun kendi kaydı aynı çağrıyı ağır olarak adlandırmaktadır. İKİ
+        ONARIM YOLU VARDIR: ucuz olanı daraltmayı dosya döngüsünün ÖNÜNE almak
+        ve kapsam dışındaki dosyaları hiç açmamaktır, ki bu turu iki yüz yetmiş
+        altı dosyadan doksan yediye indirir; kalıcı olanı ise tur yolunun
+        `openTextDocument` yerine onay tarayıcısının zaten kullandığı ham disk
+        okumasına geçmesidir. Karar Founder'ındır.
+
+
+        ═══ OTURUM 102 · DÖRDÜNCÜ VARDİYA (2026-08-29 gece — 2026-08-30) — PERFORMANS MEVSİMİ KURULDU ═══
+
+        🔴 CANLI KASMA ÖLÇÜLDÜ VE MİMARİ OLARAK TEŞHİS EDİLDİ. Founder'ın penceresinde
+        olay-tetikli denetim turu otuz dört bin dört yüz seksen, panel turu yirmi bin
+        dokuz milisaniye okundu. İki onarım yazıldı ve paketlendi (0.9.172): tur artık
+        hiçbir belgeyi `openTextDocument` ile açmaz (aynı tetikle kırk iki bin dört yüz
+        ondan beş bin yedi yüz yetmiş dokuza) ve topolojik sıra asgari yığınla koşar
+        (çatıda bin dokuz yüz altmış yediden üç virgül dört milisaniyeye; dört depoda
+        çıktı birebir). Kontrolcü kendi kodunda iki kusur daha buldu ve kapattı: git
+        görünümü belgelerinin yola göre eşlenmesi ve sürümsüz disk kaydının paylaşılan
+        önbelleği kirletmesi. Founder'ın gösterdiği altı TypeScript hatası sınama
+        kapsamının tip ayarıyla kapandı; beş yapılandırma sıfır hata verdi.
+
+        👥 ÜÇ UZMAN VE BİR DENETÇİ KOŞTU. Mimar yedi ayrı tarama yolu ve turda üç kez
+        ayrıştırma saydı; çekirdek koşusunun bin seksen dokuz milisaniyesinin panelin
+        hiç kullanmadığı üreticilere gittiğini ve işçi iş parçacığının ana iş parçacığı
+        boşluğunu bin dört yüz otuz dokuzdan on beş milisaniyenin altına indirdiğini
+        ölçtü. Performans sorumlusu kalan sıcak noktaları profille buldu. Güvenilirlik
+        mühendisi iki onarımı beş bin rastgele grafta doğruladı ve tek koşullu farkı
+        yakaladı. Bağımsız denetçi (Codex, Sol) ŞARTLI ONAY verdi: dört eksik, yığında
+        kümesinin reddi, çıkarma anı doğrulaması ve üç ayrı işleme.
+
+        ⚖️ FOUNDER YETKİ DEVRETTİ, PAKET ONAYLANDI (OZK-12). Dört kabul ölçütü sayıya
+        indi: panel turu beş yüz, denetim turu bin, en uzun bölünmez blok on altı,
+        kaydetten panele beş yüz milisaniye; hepsi iki yüz yetmiş altı dosyalı çatıda.
+        FAZ-2026-PERFORMANS mevsimi 2026-08-30 hedefiyle kuruldu; BLK-PRF Eylül'den
+        taşındı ve dört kardeş Blok doğdu: tek ağaç, mikro-onarımlar, panel kipi, işçi.
+        Her Katman beş departmana ayrıldı; otuz sekiz yeni Adım yazıldı. Founder'ın
+        simge isteği VIT-KIMLIK-A08 olarak PRF-A06'ya bağımlı yazıldı. Depo denetimi
+        sıfır hata ve sıfır uyarı; karne üç yüz seksen altı Adım, sıfır kırmızı.
+
+        🚀 ORKESTRASYON BAŞLADI. Her Adım on aşamayla yürür; planlama Adımlarını
+        kontrolcü yazar, kodlama Adımlarını temiz bağlamlı Opus ajanları üretir,
+        inceleme Adımlarını Codex Sol denetler. İlk iki Adım PRF-KP-A01 ve PRF-KP-B01.
+
+
+        ⏸️ ARA (2026-08-30 · 01.30 civarı) — SEZON KULLANIM LİMİTİ, FOUNDER ARA VERDİ.
+        Kapanan Adımlar: PRF-KP-A01, A02, B01, B02 (dördü de Codex Sol onayıyla; A01 ve
+        A02 ilk turda red aldı, düzeltilip ikinci turda onaylandı). Paket 0.9.173 kurulu;
+        canlı kanal iki yüz seksen dosyada açıktan bir, diskten iki yüz yetmiş dokuz,
+        açma sıfır, ham bayt dört milyon yedi yüz doksan iki bin dört yüz yetmiş yazdı;
+        olay-tetikli tur iki bin dokuz yüz otuz iki milisaniyeye indi (dün otuz dört bin).
+        KESİLDİĞİ AN: PRF-KP-B03 üretimi bitti ve kontrolcü kapısı yeşil (1182/1182, tip
+        sıfır, depo sıfır/sıfır), Codex hükmü ara verildikten hemen sonra düştü
+        ve ONAY idi; B03 kapatıldı, kaydı Adımın koşu alanındadır. PRF-KP-A03 üreticisi ara sırasında bitirdi: on bir nöbet, dört mutasyon
+        kanıtı; üretim notu Adımın koşu alanındadır; kontrolcü kapısı yeşil (eklenti
+        653/653, depo sıfır/sıfır). Codex denetimi ara sırasında arka planda başlatıldı
+        (scratchpad/denetci/HUKUM-KP-A03.md; scratchpad silinmişse denetim yeniden
+        koşulur). Hüküm ara sırasında düştü ve ONAY idi; A03 kapatıldı. Kapı Adımlarından altısı tamam, kalan dördü A05, B05 (güvenlik, yeniden başlatılacak) ile A04, B04 (inceleme). PRF-KP-A05 ve B05 üreticileri okuma aşamasındayken durduruldu,
+        hiçbir dosyaya dokunmadılar; durumları geliştirmede kaldı ve yeniden başlatılır
+        (A05 yeni dosya tur-erisim.test.ts, B05 yeni dosya dag-sinir.test.ts yazacak;
+        Kod meyveleri doğunca ilan edilir). SIRA: B03 hükmü → B03 kapanışı → A03 raporu
+        ve kapısı → A03 Codex → A05/B05 yeniden → A04/B04 inceleme (Codex + üç ayrı
+        işleme için Founder sözü) → BLK-PRF-TEKAGAC.
+        DERS: Codex daima `< /dev/null` ile çağrılır; heredoc'un ardına eklenen çağrı
+        kırk dakika stdin bekledi. Dosya çakışmasını önlemek için aynı anda koşan
+        üreticilere ayrı sınama dosyaları verilir.
+
+
+        🔄 DEVAM (2026-08-30 sabaha karşı, limit sıfırlandıktan sonra). Founder hükmü:
+        Claude ajanları sırayla tek tek koşar, paralel çoklu ajan sezon limitini
+        tüketir (hafızaya yazıldı). B05 kapandı: ilk Codex hükmü red (bellek
+        doğrusallığı fikstürsüz), denetçinin önerdiği varsayılan kapalı ölçüm
+        kancasıyla ikinci tur onay; çekirdek 1192/1192. A05 üretimi iki turda bitti:
+        ilk hüküm red (iç içe köklerde meşru yol daralıyor, dosyaSayısı süzgeç öncesi),
+        düzeltildi, kontrolcü kapısı yeşil (eklenti 663/663, tip sıfır, derleme, depo
+        sıfır/sıfır), ikinci Codex hükmü ONAY geldi ve A05 kapandı. B04 denetimi
+        ŞARTLI ONAY ile bitti: dag.ts yorumundaki B03 zaman drifti ve bataryanın
+        yanlış adlı asimetri sayacı düzeltildi (üç bin dokuz yüz altmış değişmezlik
+        kusurlu grafın üç bin üç yüz doksan ikisi gerçek tek yönlüdür, denetçi sayısıyla
+        birebir), çekirdek 1192/1192, tip sıfır, depo sıfır/sıfır; Adım İŞLEME
+        FOUNDER SÖZÜNÜ BEKLİYOR ve işlemeler yeşil kapıdan geçince kapanır. A04
+        açıldı; Codex eklenti Katmanının bütününü ve canlı kanal kaydını okuyor
+        (HUKUM-KP-A04.md, arka planda). ÜÇ AYRI İŞLEME (kanon+hijyen+durum,
+        belge turu, yığın) için Founder'a söz yeniden soruldu.
+        Kapanan kapı Adımları: A01, A02, A03, A05, B01, B02, B03, B05; karne 302 yeşil.
+
         ═══ SONRAKİ OTURUMUN İŞ LİSTESİ — SIRAYLA ═══
 
         Bu bölüm sonraki oturumun ilk okuduğu yerdir ve iş sırasına göre yazılmıştır.
         Hiçbir kalem burada kapanmış sayılmaz; kapanan iş bu listeden çıkarılır ve
         yerine ne yapıldığı yukarıdaki koşu paragraflarına yazılır.
 
+        ⓪ PERFORMANS MEVSİMİ (FAZ-2026-PERFORMANS · OZK-12). Bütün diğer işlerin
+        önündedir, çünkü Founder'ın sözü şudur: bu şartlar yerine gelmeli, daha
+        yapılacak çok iş var. Sıra denetçinin hükmüdür: BLK-PRF kapı Adımları,
+        sonra tek ağaç ve mikro-onarımlar, sonra panel kipi, en son ölçüm kapılı
+        işçi; PRF-A06 en son kapanır ve VIT-KIMLIK-A08 ondan sonra başlar.
+
         ① CANLI PENCERE TURUNUN KALAN DÖRT ADIMI. Tur on iki Adım olarak kurulmuş
         ve yedisi kapanmıştır; kalan dördü Founder gözü beklemektedir ve hiçbiri
         kontrolcü tarafından kapatılamaz. Sırasıyla şunlardır. VIT-KIMLIK-A07 için
-        altı ölçütün beşi karşılanmıştır ve kalan tek engel YUZ-4.2 maddesinin
-        kanona inmesidir; madde metni Founder tarafından onaylanmıştır, yazılması
-        ikinci maddenin işidir. VIT-KIMLIK-A04 için beş ölçütün dördü 2026-08-22
-        tarihinde ölçülmüştür ve kalan tek şey temiz bir VS Code profilinde bir
-        kaynak dosyası açıldığında hiçbir teklif çıkmadığının, buna karşılık
-        renklerin geldiğinin gözle görülmesidir. PRF-A06 için onarım ölçülmüştür ve
-        tur penceresi iki bin dört yüz kırk iki milisaniyeden iki virgül dokuz
-        milisaniyeye inmiştir; Founder'ın bakması gereken şey blok genişletmenin
-        artık kasıp kasmadığı ve dar turun Sorunlar panelindeki sayıyı değiştirip
-        değiştirmediğidir. BKM-DNT-A08 için nöbet kendi kanıtını silmeyi bırakmıştır
+        altı ölçütün beşi karşılanmıştır ve kalan tek engel Founder'ın canlı
+        pencerede paneli ve editörü gözle doğrulamasıdır; YUZ-4.2 maddesi 2026-08-29
+        tarihinde kanona inmiştir ve altıncı ölçüt bu yüzden karşılanmıştır. PRF-A06 bugün canlı pencerede ÖLÇÜLDÜ ve
+        GEÇMEDİ: olay-tetikli tur otuz dört buçuk saniye sürmektedir ve daraltma
+        maliyetin akış aşağısına konduğu için dosya açmayı azaltmamaktadır;
+        ayrıntı yukarıdaki canlı bulgu paragrafındadır ve Founder'ın vereceği şey
+        göz teyidi değil onarım yolu kararıdır. BKM-DNT-A08 için nöbet kendi kanıtını silmeyi bırakmıştır
         ve ölçüm süittedir; Founder'ın bakacağı yüzey, kurulu paketin depodan eski
         kaldığını panelin söyleyip söylemediğidir.
 
-        ② YUZ-4.2 MADDESİ KANONA İNECEK. Founder 2026-08-29 tarihinde yeni metni
-        onaylamıştır ve taslak üç değişiklik taşır: madde başlığı İkon Görüntü
-        Katmanı yerine Arayüz İşaret Katmanı olur, kural adı arayüzİşaretKatmanı
-        biçimine geçer ve kod YUZ-4.2 aynen korunur, böylece hiçbir atıf kırılmaz.
-        Hükmün özü şudur: arayüz işaretleri kilitli vektörel aileden gelir ve
-        kullanıcıya görünen yüzey metinlerinde emoji arayüz işareti olarak
-        kullanılamaz; emojinin meşru kaldığı iki alan ayrı ayrı sayılır ve bunlar
-        kaynak anlatımı ile takdir yüzeyidir. Zorlama alanı dürüstçe yazılmıştır:
-        mekanik zorlama bugün denetçide değil eklenti süitindedir ve kullanıcı
-        projelerine inen bir tanı bulunmadığı beyan edilmiş borç olarak
-        kaydedilmiştir. Madde indiğinde VIT-KIMLIK-A07 de kapanabilir hâle gelir.
-
-        ③ DÖRT FAZSIZ BLOKUN EVİ — FOUNDER HÜKMÜ. Sorunlar panelinde kalan dört
+        ② DÖRT FAZSIZ BLOKUN EVİ — FOUNDER HÜKMÜ. Sorunlar panelinde kalan dört
         hata bunlardır ve başka hiçbir açık bulgu yoktur. Bloklar laboratuvarda
         BLK-V1-BULGU-KAPATMA, orkestrasyonda BLK-ORK-ZEKA, BLK-RAY3 ve
         BLK-SEF-HARITA kayıtlarıdır. Ölçüm şudur: kapalı tarafın hiçbir fazı bu işi
@@ -907,24 +1074,31 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-29", oturum: 102,
         Kontrolcü önerisi üçüncüsüdür, çünkü bu Bloklar açık taraftaki Ağustos
         motor işinin kaydıdır.
 
-        ④ VIT-POSTA-A02 ADIMININ AÇIK KALAN ÜÇ GÖREV MADDESİ. Founder'ın 2026-08-29
-        tarihli onayBekler hükmü karşılanmış ve kapatılmıştır, fakat Adım açık
-        kalmaya devam eder çünkü üç maddesi hiç koşulmamıştır: açılış tarama
-        maliyetinin gerçek sayılarla ölçülmesi, kapı tanıma yönteminde eski düz
-        metin yedeğinin emekli edilip edilmeyeceği kararı ve kapı kimlik çapasının
-        yinelenen Adım kodlarına karşı sağlamlaştırılması.
+        ③ VIT-POSTA-A02 ADIMININ TEK AÇIK MADDESİ: DÜZ METİN YEDEĞİNİN
+        EMEKLİLİĞİ — FOUNDER KARARI. Adımın üç açık maddesinden ikisi 2026-08-29
+        tarihinde kapandı: açılış tarama maliyeti gerçek sayılarla ölçülüp kayda
+        geçti ve çapa tekilliğinin zaten onarılmış olduğu ölçülerek görüldü.
+        Kalan madde bir karardır ve kontrolcü yalnız ölçümü hazırlamıştır: bugün
+        üç depoda on beş açık kapının hiçbiri yalnız düz metin desenine bağlı
+        değildir, dolayısıyla yedek şu anda kaldırılsa kuyruktan tek kapı bile
+        düşmez. Kaldırmanın bedeli gelecektedir ve şudur: `onayBekler` alanı
+        yazılmamış yeni bir kapı sessizce görünmez olur, çünkü o alan motorun
+        tanı sicilinde değil yalnız eklentide yaşamaktadır ve bugün böyle bir
+        gözlem yoktur. Founder yedeği emekli etmeye hükmederse aynı turda
+        motorda bir gözlem tanısı doğması gerekir; bu, kararın bedelidir ve
+        kararın kendisi Founder'ındır.
 
-        ⑤ İKİ NÖBET BORCU. Birincisi kapalı taraftadır ve ajan tarafından dürüstçe
-        bildirilmiştir: onayBekler çift beyanını yakalayan korpus nöbetinin erişimi
-        STR-3 gereği yalnız açık depodur, dolayısıyla orkestrasyonda aynı sapmanın
-        tekrarını bugün hiçbir nöbet ölçmemektedir. İkincisi nöbet hijyenidir:
-        simge-cizelgesi.test.ts dosyasındaki iki sınama başka bir dosyanın kurduğu
-        dil kapısına bağımlıdır ve tek başına koşturulduğunda "Yüzey dili etkin dil
-        kapısından bağlanmadı" diyerek kırmızı verir; tam süitte yeşildir. Simge
-        üzerinde çalışan biri tam da o dosyayı tek başına koşturur ve sahte kırmızı
-        görür.
+        ④ KAPALI TARAFIN NÖBET BORCU AÇIK KALIR. İki borçtan ikincisi, yani
+        nöbet hijyeni, 2026-08-29 tarihinde kapandı ve on sınama dosyası artık
+        tek başına koşturulduğunda sahte kırmızı vermez. Açık kalan birinci
+        borç bir mimari sınırdır ve ajan tarafından dürüstçe bildirilmiştir:
+        onayBekler çift beyanını yakalayan korpus nöbetinin erişimi STR-3 gereği
+        yalnız açık depodur, dolayısıyla orkestrasyonda aynı sapmanın tekrarını
+        bugün hiçbir nöbet ölçmemektedir. Bu borç bir yazım kusuru değildir ve
+        kapatılması açık ile kapalı taraf arasındaki erişim sınırına dair bir
+        karar ister.
 
-        ⑥ AÇIK DEPONUN UZAK ADRESİ YOKTUR VE BU BİLİNÇLİDİR. Bu oturumda üç depo
+        ⑤ AÇIK DEPONUN UZAK ADRESİ YOKTUR VE BU BİLİNÇLİDİR. Bu oturumda üç depo
         işlendi; laboratuvar ile orkestrasyon uzak adreslerine gönderildi, sarmal
         ise yalnız yerelde işlendi çünkü uzak adresi hiç kurulmamıştır. İlk
         gönderim YTK-A22 gereği canlı açılışa bırakılmıştır ve uzak adres eklemek

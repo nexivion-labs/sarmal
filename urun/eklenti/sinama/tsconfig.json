@@ -5,7 +5,15 @@
   // (allowImportingTsExtensions·strict·Node16) miras alır; yalnız kapsamı ekler, tip node.
   // Build/test esbuild+node:test ile; tsc emit yok — bu config yalnız editör/tip-denetimi.
   "extends": "../tsconfig.json",
+  // allowJs: iki üretici araç (arac/renk-uret.mjs · arac/simge-uret.mjs) düz ESM
+  // JavaScript'tir ve bu kapsamın dışında yaşar; bildirim dosyaları olmadığı için
+  // editör onları içe aktaran altı satırı `strict` altında TS7016 ile kırmızı
+  // gösteriyordu. Ölçüm: bayrak açıldığında altı hatanın altısı düşer ve YENİ hata
+  // doğmaz. Araçlara elle bir .d.mts yazmak ikinci bir yüz üretir ve bayatlar;
+  // tipleri kaynağın kendisinden çıkarmak tek kaynağı korur. Derlemeye etkisi yoktur,
+  // çünkü bu yapılandırma yalnız editör ile tip denetimi içindir.
   "compilerOptions": {
+    "allowJs": true,
     "types": ["node"]
   },
   "include": ["."]

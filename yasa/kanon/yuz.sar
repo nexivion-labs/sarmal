@@ -202,14 +202,14 @@ Kural renkVeRolTekKaynağı( kod: YUZ-4.1,
        tanı: [ düşük-kontrast, geçersiz-renk, ham-renk ] )
 
 -->|
-### YUZ-4.2 · İkon Görüntü Katmanı [BİLGİ]
-**Hüküm:** Görüntü yüzleri tip, kenar, durum ve eylemleri göstermek için kaynak düzeyindeki Unicode emoji sözlüğünden bağımsız, kilitli ve tek anlamlı bir ikon seti kullanır; ikon yalnız sunum işaretidir, kanonik adı değiştiremez ve metinsel ya da erişilebilir etiketi ikame edemez; dayanak: YUZ-4; ilgili: [YUZ, DIL].
-**Gerekçe:** Kaynak emojisinin çizim sistemine bağlanması dosyayı görüntüleyiciye bağımlı kılar; etiketsiz ikon ise tema, platform veya yardımcı teknoloji değiştiğinde anlamı kaybettirir.
-**Örnek:** `Adım` kaynakta kanonik adıyla kalır; ağaç yüzü yanında kilitli Adım ikonunu ve “Adım” erişilebilir etiketini gösterebilir, ikon dosyası kaynak kimliğe yazılmaz.
-**Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
+### YUZ-4.2 · Arayüz İşaret Katmanı [BİLGİ]
+**Hüküm:** Kullanıcıya görünen her arayüz işareti kilitli vektörel simge ailesinden gelir ve bu aile tek kaynaktan okunur; düğme, satır, panel başlığı, durum çubuğu, ağaç öğesi ve bildirim gibi yüzey metinlerinde emoji arayüz işareti olarak kullanılamaz; işaret yalnız sunum katmanında yaşar, kanonik adı değiştiremez ve metinsel ya da erişilebilir etiketi ikame edemez; emojinin meşru kaldığı iki alan bu yasağın dışındadır ve ayrı ayrı sayılır, bunlardan birincisi kaynak anlatımıdır, yani Adım ile Kural gövdelerindeki niyet cümleleri ve dilin kendi emoji yazımı, ikincisi ise takdir yüzeyidir, yani etmen davranışının insan diliyle takdir edildiği yer; dayanak: YUZ-4; ilgili: [YUZ, DIL].
+**Gerekçe:** Emoji platforma göre başka çizilir, rengini temadan almaz, ölçüsü denetlenemez ve yardımcı teknolojide anlamını kaybeder; bu dört sebep bir arada aynı yüzeyin iki makinede iki ayrı ürün gibi görünmesine ve işaretin taşıdığı anlamın okunamamasına yol açar. Buna karşılık kaynak metnindeki emoji bir arayüz işareti değil anlatım aracıdır ve dilin kendi yazımıdır; aynı yasağın oraya genişletilmesi anlatımı yoksullaştırır ve emoji yazımını geçersiz kılardı. Ayrım bu yüzden işaretin çizim biçimine göre değil, kime ve hangi katmanda göründüğüne göre kurulur.
+**Örnek:** Doğru: panelin karar düğmesi kilitli aileden gelen onay işaretini ve “Onayla” erişilebilir etiketini taşır, bir `Adım` gövdesindeki niyet cümlesi ise emojisini korur; yanlış: aynı düğmeyi emojiyle çizmek ya da işareti etiketsiz basıp anlamı yalnız çizime bırakmak.
+**Zorlama:** Bu madde yeni bir tanı ilan etmez ve motorun tanı sicilinde bir bekçisi yoktur; bugünkü mekanik zorlama eklenti süitindeki yüzey nöbetlerinde yaşar ve kullanıcıya basılan bir yüzey metnine emoji geri konduğunda koşu kırmızı yanar. Bu nöbetler onay, fikir ve posta yüzeyleri ile arayüz işareti çizelgesini kapsar; kaynak anlatımını ve takdir yüzeyini ise hükmen kapsam dışında tutar, çünkü oradaki emoji meşrudur. Zorlamanın erişemediği alan dürüstçe beyan edilir: kullanıcı projelerine inen bir tanı bulunmadığı için Sarmal dışında kurulan bir yüzeyde aynı sapma bugün ölçülmez ve bu, kapatılmamış bir borçtur; borcu kapatacak bekçi doğduğunda kendi Adımıyla doğar ve bu maddeye bağlanır.
 |<--
-Kural ikonGörüntüKatmanı( kod: YUZ-4.2,
-       ne: "YUZ-4.2 · İkon Görüntü Katmanı [BİLGİ]",
+Kural arayüzİşaretKatmanı( kod: YUZ-4.2,
+       ne: "YUZ-4.2 · Arayüz İşaret Katmanı [BİLGİ]",
        otorite: anayasa, katman: niyet, kapsam: genel,
        dayanak: YUZ-4 )
 

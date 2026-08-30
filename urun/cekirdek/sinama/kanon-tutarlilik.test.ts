@@ -22,7 +22,7 @@ const KANON_SHA = [
   "str.sar:a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d",
   "tip.sar:0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068",
   "yas.sar:159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49",
-  "yuz.sar:c5498c0e350b3b5b6d037e273bb92909aba2e8d64dd88b6ad5c55ff0eb2cc0e7",
+  "yuz.sar:d6caf9cefad8c24a04aa1eb0972b7eb14a47bb5cbfc12ca451b6bff68c20d96c",
 ] as const;
 
 test("resmi sekizli 151/151 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {

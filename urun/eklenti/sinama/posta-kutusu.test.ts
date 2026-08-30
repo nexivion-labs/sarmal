@@ -17,6 +17,10 @@
 //   Koşum: cd eklenti && npm test
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Yüzey dili kapısını bu dosya kendi kurar: `npm test` ön-yüklemesi olmadan tek
+// başına koşturulduğunda sahte kırmızı vermesin (ön-yükleme ile aynı bağ, ESM
+// önbelleği yüzünden iki kez koşmaz).
+import "./dil-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
