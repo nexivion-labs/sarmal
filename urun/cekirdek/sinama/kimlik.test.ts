@@ -430,3 +430,25 @@ test("ORK-4: adAlanliTanimlar çatı rafından kardeş kökteki tanıma gider", 
     rmSync(cati, { recursive: true, force: true });
   }
 });
+
+// ── EKL-F10-A12 · Founder geribildirim kanalları kartta ──────────────────────
+//   Founder'ın PRF-A01'e yazdığı takdir yalnız git farkında görünüyordu; gezin
+//   kartı dört kanalı hiç basmıyordu. Kart artık kanalı koni alanı gibi basar
+//   ve kanalı olmayan Adımda satır doğmaz (STR-4).
+test("EKL-F10-A12: bağlam kartı dört geribildirim kanalını basar, kanal yoksa satır doğmaz", () => {
+  const kaynak = `Katman( kod: KAT-G, ad: "geribildirim katmanı", ne: "k" ) {
+  Adım( kod: ADM-G1, durum: tamamlandı, takdir: "Tebrikler, harika işçilik", öneri: "yorumları kısalt", ne: "takdirli iş" )
+  Adım( kod: ADM-G2, durum: tamamlandı, ne: "sessiz iş" )
+}`;
+  const b = dugumBaglami(kaynak, "ADM-G1");
+  const alanlar = new Map(b!.alanlar);
+  assert.equal(alanlar.get("takdir"), "Tebrikler, harika işçilik");
+  assert.equal(alanlar.get("öneri"), "yorumları kısalt");
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("/kart/g.sar", kaynak);
+  const r1 = gezinRaporu(i, "ADM-G1", () => kaynak);
+  assert.ok(r1.includes("  takdir: Tebrikler, harika işçilik"), r1);
+  assert.ok(r1.includes("  öneri: yorumları kısalt"), r1);
+  const r2 = gezinRaporu(i, "ADM-G2", () => kaynak);
+  for (const k of ["teşekkür", "takdir", "onur", "öneri"]) assert.ok(!r2.includes(`  ${k}:`), `kanalsız Adımda '${k}' satırı doğmamalı:\n${r2}`);
+});

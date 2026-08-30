@@ -714,8 +714,15 @@ export interface Baglam {
   alanlar: [string, string][];
 }
 
-/** Kartta gösterilen koni alanları — Adım'ın anlamını taşıyan çekirdek. */
-const KART_ALANLARI = ["durum", "ne", "bağımlı", "üretir", "kullanır", "referans", "kabul"];
+/** Founder geribildirim kanalları (STR-4 · EKL-F10-A01): eklentinin tamamlanan
+ *  Adıma parametre olarak yazdığı dört kanal. Adlar eklentideki tanımla aynıdır ve
+ *  motor onları çevirmez; kart ve ŞEF bu listeden okur (EKL-F10-A12). */
+export const GERIBILDIRIM_KANALLARI: readonly string[] = ["teşekkür", "takdir", "onur", "öneri"];
+
+/** Kartta gösterilen koni alanları — Adım'ın anlamını taşıyan çekirdek. Dört
+ *  geribildirim kanalı da karttadır: Founder'ın bir Adıma yazdığı takdir ajanın
+ *  ilk baktığı yerde görünmezse geribildirim döngüsü kâğıtta kalır (EKL-F10-A12). */
+const KART_ALANLARI = ["durum", "ne", "bağımlı", "üretir", "kullanır", "referans", "kabul", ...GERIBILDIRIM_KANALLARI];
 
 function baglamOzeti(n: Dugum): BaglamDugumu {
   const al = (ad: string): string | undefined =>

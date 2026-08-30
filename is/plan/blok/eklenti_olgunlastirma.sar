@@ -607,6 +607,23 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           ne:    "⭐ Urun-ikon temasi: ampul glyph'i Kuzey Yildizi'na cevrildi
           (gomulu codicon font; workspace temasi otomatik secili)"
         )
+        Adım( kod: EKL-F10-A12, durum: tamamlandı, öncelik: p1, bağımlı: [ EKL-F10-A01 ], referans: [ STR-4 ],
+          üretir: [ KOD-KIMLIK, KOD-SEF, KOD-MCP ],
+          koşu: "2026-08-30 sabah · KAPANIŞ (kontrolcü üretimi; Founder saha bulgusu aynı saat). ÖLÇÜM: Founder'ın PRF-A01 Adımına eklentiden yazdığı takdir gezin kartında, bul indeksinde ve ŞEF paketinde görünmüyordu; kart yedi koni alanını basıyor, bul yalnız kod, ad, görev ve belge alanlarını arıyor, ŞEF paketi geribildirimi gelecek aşama olarak bırakmıştı. ONARIM: kimlik.ts dört kanalı dışa açık bir sabitle tanımlar ve kart alanlarına ekler; mcp.ts bul aracı kanal metnini de arar ve eşleşen alanı kanal adıyla raporlar; sef.ts paketi hedef Adımın ve bağımlı olduğu Adımların kanallarını kaynak sırasıyla toplar, prompt Bağımlılık bölmesinden sonra Founder Geribildirimi başlığı altında basar ve kanal yoksa bölüm doğmaz. Kanal adları eklentideki tanımla aynıdır ve motor onları çevirmez. NÖBET: üç nöbet yazıldı ve üç mutasyonla kanıtlandı; kart kanalları listeden çıkarılınca kart nöbeti, paketin toplama satırları körleştirilince ŞEF nöbeti, bul aracının kanal süzgeci hiç eşleşmez kılınınca bul nöbeti tek başına kırmızı yandı, her biri geri alındı ve üç dosyanın sağlama toplamı mutasyon öncesiyle birebir ölçüldü. KAPI (kontrolcü): çekirdek süiti bin yüz doksan beş sınamanın tamamını geçti, tip denetimi sıfır hata, depo denetimi sıfır hata ile sıfır uyarı; eklenti süiti bu kapıda koşulmadı, çünkü aynı anda PRF-TA-A02 üreticisi eklenti dosyalarını değiştiriyordu ve o kapı üreticinin teslimiyle birlikte ölçülür. KONTROLCÜ ŞERHİ: çalışan MCP sunucusu kaynağı açılışta yüklediği için onarım ancak sunucu yeniden bağlanınca canlı görünür; Founder'ın takdiri o ana kadar yalnız kaynakta ve süitte ölçülüdür. Mutasyon geri alımında ilk denemede git checkout kullanıldı ve bu, işlenmemiş kimlik.ts düzenlemesini de sildi; düzenleme aynen yeniden uygulanıp sağlama toplamıyla doğrulandı ve kural not edildi: işlenmemiş dosyada geri alma yedek kopyayla yapılır.",
+          onay: "onaylandı — 2026-08-30 sabah · Founder saha bulgusu: 'takdir gönderdim, gördün mü; bunu sarmal mcp ile göremez misin?' Kontrolcü ölçtü ve kusuru doğruladı.",
+          ne:    "❤️ Dört geribildirim kanalı motorun ajan yüzeylerine iner. EKL-F10-A01 kanalların koniyle ajana taşınacağını vadetmişti; ölçüm, ŞEF paketinin, gezin bağlam kartının ve bul indeksinin dört kanalı hiç okumadığını gösterdi: Founder'ın PRF-A01 Adımına yazdığı takdir yalnız git farkında görünüyordu ve ajan onu MCP üzerinden göremiyordu." ) {
+          görev: [
+            "gezin bağlam kartı dört kanal parametresini (teşekkür, takdir, onur, öneri) koni alanları gibi basar; kanal yoksa satır doğmaz.",
+            "ŞEF paketi hedef Adımın ve bağımlı olduğu Adımların kanallarını toplar ve prompt Bağımlılık bölmesinden sonra Founder geribildirimi başlığı altında basar; geribildirim yoksa bölüm doğmaz (STR-4: ajan hangi davranışın takdir edildiğini kaynaktan öğrenir).",
+            "bul aracı dört kanalın metnini de arar; eşleşen alan raporda kanal adıyla görünür.",
+            "Üç nöbet yazılır ve mutasyonla kanıtlanır: kart kanalı basar, prompt bölümü yalnız kanal varken doğar, bul kanal metnini bulur."
+          ]
+          kabul: [
+            "gezin PRF-A01 kartında takdir satırı görünür ve bul aracı takdir metnini bulur; çekirdek süiti önceki sayının altına düşmez.",
+            "Kanalı olmayan bir Adımın ŞEF promptunda geribildirim bölümü yoktur."
+          ]
+          sınır: "Eklentinin kanal yazımı ve hasat komutu değişmez; kanal adları eklentideki tanımla aynıdır ve motor onları çevirmez."
+        }
       }
 
 

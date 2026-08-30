@@ -438,3 +438,20 @@ test("GOC-A10: dogus aracı — tur verilmezse soruyu döndürür ve dosya yazma
     rmSync(kok, { recursive: true, force: true });
   }
 });
+
+// ── EKL-F10-A12 · bul aracı dört geribildirim kanalının metnini de arar ────────
+test("EKL-F10-A12: bul aracı takdir metnini bulur ve eşleşen alanı kanal adıyla raporlar", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-mcp-geribildirim-"));
+  writeFileSync(join(kok, "deneme_anadizin.sar"), 'Proje( kod: PRJ-GB, ad: "d", ne: "deneme kökü" )\n');
+  writeFileSync(join(kok, "plan.sar"), [
+    'Faz( kod: FZ-GB, ad: "geribildirim fazı" ) {',
+    '  Adım( kod: ADM-GB-A, ne: "ölçüm merceği", durum: tamamlandı, takdir: "Tebrikler, harika işçilik çıkarmışsınız" )',
+    '}',
+    "",
+  ].join("\n"));
+  const s = mcpAraciTam("bul", { dizin: kok, metin: "harika işçilik" });
+  assert.equal(s.isError, false, s.metin);
+  assert.match(s.metin, /\[Adım ADM-GB-A\] takdir: Tebrikler, harika işçilik/, s.metin);
+  const yok = mcpAraciTam("bul", { dizin: kok, metin: "hiç geçmeyen ifade" });
+  assert.match(yok.metin, /geribildirim alanında geçmiyor/, yok.metin);
+});

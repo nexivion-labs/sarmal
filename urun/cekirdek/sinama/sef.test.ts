@@ -859,3 +859,27 @@ test("SONUÇ NÖBETİ — GERÇEK depoda çözülen her referansın hükmü prom
   assert.ok(!paket!.beceriler.some((b) => b.kod === "VTR-BCR-FORM"),
     "kampanya kapanış Adımına form reçetesi düşmez");
 });
+
+// ── EKL-F10-A12 · Founder geribildirimi ŞEF paketine ve prompt'a iner (STR-4) ──
+test("EKL-F10-A12: ŞEF paketi hedefin ve zemininin geribildirimini taşır; prompt bölümü yalnız kanal varken doğar", () => {
+  const sar = `Katman( kod: KG ){
+  Adım( kod: G0, durum: tamamlandı, görev: "zemin", takdir: "tam isabet", öneri: "yorumları kısalt" )
+  Adım( kod: G1, görev: "üstüne inşa", bağımlı: [ G0 ], teşekkür: "eline sağlık" )
+  Adım( kod: G2, görev: "sessiz" )
+}`;
+  const prog = new Map([["g.sar", ayristir(belirtecle(sar))]]);
+  const p1 = baglamMontajla(prog, "G1")!;
+  assert.deepEqual(p1.geribildirim, [
+    { adım: "G1", kanal: "teşekkür", not: "eline sağlık" },
+    { adım: "G0", kanal: "takdir", not: "tam isabet" },
+    { adım: "G0", kanal: "öneri", not: "yorumları kısalt" },
+  ], "önce hedefin kanalları, sonra bağımlı zeminin kanalları, kaynak sırasıyla");
+  const prompt = promptUret(p1);
+  assert.match(prompt, /## ❤️ Founder Geribildirimi/);
+  assert.ok(prompt.indexOf("## 🔗 Bağımlılık") < prompt.indexOf("## ❤️ Founder Geribildirimi"), "geribildirim bölümü bağımlılık bölmesinden sonra gelir");
+  assert.match(prompt, /- G1 · teşekkür: eline sağlık/);
+  assert.match(prompt, /- G0 · takdir: tam isabet/);
+  const p2 = baglamMontajla(prog, "G2")!;
+  assert.equal(p2.geribildirim, undefined, "kanalsız Adımda bileşen doğmaz");
+  assert.doesNotMatch(promptUret(p2), /Founder Geribildirimi/);
+});

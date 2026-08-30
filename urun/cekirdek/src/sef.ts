@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import type { Program, Dugum, Deger } from "./sozdizim.ts";
 import { kodIndeksle, programlariYukle } from "./denetci.ts";
 import { koniCikar } from "./koni.ts";
+import { GERIBILDIRIM_KANALLARI } from "./kimlik.ts";   // EKL-F10-A12: Founder geribildirim kanalları
 import type { Koni } from "./koni.ts";
 import { paramMetni, degerMetni } from "./yolcoz.ts";
 import { ifadeDegerlendir } from "./kuralci.ts";
@@ -141,7 +142,26 @@ export interface BaglamPaket {
    *  kavramVeri verilmezse bileşen doğmaz (geriye uyumlu). Token kırpmasının
    *  ilk adayıdır; STR-3: anahtar çözümü deterministik AÇIK, anlamsal seçim GİZLİ. */
   kavramÖnerileri?: KavramÖneri[];
+  /** EKL-F10-A12 (STR-4): Founder'ın hedef Adıma ve onun bağımlı olduğu Adımlara
+   *  yazdığı dört kanal (teşekkür · takdir · onur · öneri). Ajan hangi davranışın
+   *  takdir edildiğini kaynaktan öğrenir; kanal yoksa bileşen doğmaz. */
+  geribildirim?: GeribildirimÖzet[];
   // Gelecek (runtime-state · sonraki aşamalar): anayasa · bellek · profil · kontrol noktası.
+}
+
+/** Bir Adıma yazılmış tek kanal notu (EKL-F10-A12). */
+export interface GeribildirimÖzet { adım: string; kanal: string; not: string }
+
+/** Bir Adım düğümündeki dört kanalı sırayla toplar; parametre ve gövde özelliği
+ *  ikisi de okunur, boş not atlanır. Saf işlevdir ve prompt'tan bağımsız sınanır. */
+export function geribildirimTopla(node: Dugum, adımKod: string): GeribildirimÖzet[] {
+  const out: GeribildirimÖzet[] = [];
+  for (const kanal of GERIBILDIRIM_KANALLARI) {
+    const p = node.parametreler.find((x) => x.ad === kanal) ?? node.ozellikler.find((x) => x.ad === kanal);
+    const not = p?.deger.metin?.trim();
+    if (not) out.push({ adım: adımKod, kanal, not });
+  }
+  return out;
 }
 
 /** KVR-A08: bağlam haritasının ŞEF'e taşıdığı tek öneri kaydı (TIP-3: üye = kanon yolu). */
@@ -612,10 +632,19 @@ export function baglamMontajla(
     ? kavramOnerileriCoz(kavramVeri, node.ad,
         [...node.parametreler, ...node.ozellikler].map((p) => p.ad))
     : undefined;
+  // EKL-F10-A12: geribildirim önce hedef Adımdan, sonra üstüne inşa edilen bağımlı
+  // Adımlardan toplanır; sıra kaynak sırasıdır ve aynı paket aynı prompt'u üretir.
+  const geribildirim: GeribildirimÖzet[] = geribildirimTopla(node, adimKod);
+  for (const r of referanslar) {
+    if (r.tür !== "bağımlılık" || !r.çözüldü) continue;
+    const hedef = kodluDugumBul(programlar, r.kod);
+    if (hedef && hedef.ad === "Adım") geribildirim.push(...geribildirimTopla(hedef, r.kod));
+  }
   return { adimKod, koni: koniCikar(node), referanslar, meyveler: meyveleriCoz(programlar, node),
            beceriler, kancalar,
            hatırlatıcılar: bagliHatirlaticilar(programlar, adimKod), öncekiDurak, etmen,
-           ...(kavramÖnerileri && kavramÖnerileri.length ? { kavramÖnerileri } : {}) };
+           ...(kavramÖnerileri && kavramÖnerileri.length ? { kavramÖnerileri } : {}),
+           ...(geribildirim.length ? { geribildirim } : {}) };
 }
 
 /** Kanon yolunu ("onyuz.bilesen.menü") kanonda çözüp Flutter eşlemesini döndürür (saf).
@@ -1016,6 +1045,14 @@ export function promptUret(paket: BaglamPaket): string {
   };
   kenarBölmesi("referans", "## 📎 Referans (hedefin HÜKMÜ — bağlayıcıdır, kod değil metin okunur)", k.referans);
   kenarBölmesi("bağımlılık", "## 🔗 Bağımlılık (üstüne inşa ettiğin zemin)", k.bağımlı);
+  // EKL-F10-A12 (STR-4): Founder'ın hedefe ve zeminine yazdığı kanallar. Bölüm yalnız
+  // kanal varken doğar; ajan hangi davranışın takdir edildiğini ya da neyin daha
+  // iyi yapılması istendiğini kaynaktan okur, iddiadan değil.
+  if (paket.geribildirim?.length) {
+    s.push("## ❤️ Founder Geribildirimi (STR-4 — takdir edilen davranışı sürdür, öneriyi uygula)");
+    for (const g of paket.geribildirim) s.push(`- ${g.adım} · ${g.kanal}: ${g.not}`);
+    s.push("");
+  }
   // Önceki Durak (D.3): çok-adımlı akışta bir önceki Adım'ın durum-devri (handoff)
   if (paket.öncekiDurak) {
     const d = paket.öncekiDurak;

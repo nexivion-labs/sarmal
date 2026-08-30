@@ -47,7 +47,7 @@ import { dagKur } from "./dag.ts";
 import { grafYuz } from "./graf.ts";  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";  // şablon kütüphanesi tek kaynak (YUZ-1.2)
 import { iskeletPlani, iskeletYaz } from "./iskeletci.ts";  // GBR-A04/#7: iskelet aracı CLI --iskelet ile TEK çekirdek (YUZ-1.2)
-import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli } from "./kimlik.ts"; // EKL-F11-A05: gezin aracı = eklentinin F12/⇧F12'siyle aynı çekirdek (YUZ-1.2)
+import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI } from "./kimlik.ts"; // EKL-F11-A05: gezin aracı = eklentinin F12/⇧F12'siyle aynı çekirdek (YUZ-1.2)
 import { etkiMetni } from "./etki.ts";        // BKM-MCP-A01: etki aracı = CLI etki yüzüyle aynı çekirdek (YUZ-1.2)
 import { bicimle } from "./bicimle.ts";       // BKM-MCP-A01: biçim motoru çekirdekte — eklenti de buradan içe alır
 import { yansıt, type Yüz } from "./prizma.ts";
@@ -601,11 +601,17 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
       const kod = p("kod");
       const ad = p("ne") ?? p("ad");
       const gorev = d.ozellikler.find((x) => x.ad === "görev")?.deger.metin;
-      // eşleşen İLK alan raporlanır (kod > ad > görev > belge) — tek düğüm tek satır.
+      // EKL-F10-A12: Founder'ın dört geribildirim kanalı da aranır; eşleşen kanal
+      // raporda kendi adıyla görünür ki ajan takdiri MCP'den bulabilsin (STR-4).
+      const kanal = GERIBILDIRIM_KANALLARI
+        .map((k) => [k, p(k) ?? d.ozellikler.find((x) => x.ad === k)?.deger.metin] as const)
+        .find(([, v]) => v && norm(v).includes(aranan));
+      // eşleşen İLK alan raporlanır (kod > ad > görev > belge > kanal) — tek düğüm tek satır.
       const alan = kod && norm(kod).includes(aranan) ? ["kod", kod]
         : ad && norm(ad).includes(aranan) ? ["ad", ad]
         : gorev && norm(gorev).includes(aranan) ? ["görev", gorev]
-        : d.belge && norm(d.belge).includes(aranan) ? ["belge", d.belge] : undefined;
+        : d.belge && norm(d.belge).includes(aranan) ? ["belge", d.belge]
+        : kanal ? [kanal[0], kanal[1] as string] : undefined;
       if (alan) {
         toplam++;
         if (sonuclar.length < SONUC_SINIRI) {
@@ -618,7 +624,7 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
     for (const b of program.bildirimler) gez(b);
   }
   if (!toplam) {
-    return { metin: `🔎 "${metin}" hiçbir düğümün KOD/ad/görev/belge alanında geçmiyor (${programlar.size} .sar tarandı — boş ≠ hata).`, isError: false };
+    return { metin: `🔎 "${metin}" hiçbir düğümün KOD/ad/görev/belge/geribildirim alanında geçmiyor (${programlar.size} .sar tarandı — boş ≠ hata).`, isError: false };
   }
   const kirpNotu = toplam > SONUC_SINIRI ? `\n… ilk ${SONUC_SINIRI} gösterildi (toplam ${toplam} — aramayı daralt).` : "";
   return {
