@@ -17,8 +17,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-30", oturum: 102,
-            neredeyiz: BLK-PRF-KAPI-SEKIZ-ADIM-KAPANDI-B04-ISLEME-BEKLIYOR-A04-CODEX-DENETIMINDE,
-            sıradaki: A04-HUKMU-SONRA-UC-ISLEME-FOUNDER-SOZU-SONRA-BLK-PRF-TEKAGAC,
+            neredeyiz: MIKRO-BLOKU-BITTI-KURALLAR-KANONDA-ISLENDI-MOLA,
+            sıradaki: KURALLARI-KONUS-HATIRLATICILARI-AC-SONRA-TA-A04-URETICI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -1035,9 +1035,211 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-30", oturum: 102,
         birebir), çekirdek 1192/1192, tip sıfır, depo sıfır/sıfır; Adım İŞLEME
         FOUNDER SÖZÜNÜ BEKLİYOR ve işlemeler yeşil kapıdan geçince kapanır. A04
         açıldı; Codex eklenti Katmanının bütününü ve canlı kanal kaydını okuyor
-        (HUKUM-KP-A04.md, arka planda). ÜÇ AYRI İŞLEME (kanon+hijyen+durum,
-        belge turu, yığın) için Founder'a söz yeniden soruldu.
-        Kapanan kapı Adımları: A01, A02, A03, A05, B01, B02, B03, B05; karne 302 yeşil.
+        (HUKUM-KP-A04.md, arka planda). ÜÇ İŞLEME Founder sözüyle sırayla indi:
+        904fdb9 kanon, hijyen, plan ve durum; a849d6e belge turu; a1e81e6 yığın.
+        Plan-önce sırası ilk denemede kapıdan geçmedi (birinci ağaçta meyve dosyası
+        eksik, beş hata), meyve ilanları dosyalarıyla birlikte indirildi; her işleme
+        temiz klonda kendi ağacıyla yeşil ölçüldü ve yığın sırasıyla temiz geri
+        alınıyor; ayrıntı PRF-KP-B04 koşu kaydındadır. B04 kapandı. A04'ün Codex
+        koşusu kullanım limitine takıldı ve limit açılınca (05:26) yeniden başlar.
+        Kapanan kapı Adımları: A01, A02, A03, A05, B01, B02, B03, B04, B05.
+        TEK AĞAÇ BLOKU AÇILDI (Founder: geç de bitirelim): PRF-TA-A01 sözleşmesi ve
+        tabanı koşu kaydına yazıldı fakat Adım KP-A04 kapanmadan kapanamıyor, motor
+        durum-tutarsızlığı ile durdurdu; A04 hükmüyle birlikte kapanır. PRF-TA-A02
+        üreticisi (Opus, temiz bağlam, brifing scratchpad/uretici/BRIFING-TA-A02.md)
+        05:20'de başlatıldı; görüntü modülü tur-goruntusu.ts yeni dosya olarak
+        doğacak ve Kod ilanını kontrolcü yazacak. A04 Codex hükmü ONAY geldi (üç
+        kabul dışı kalıntı kayda geçti: büyük dosya sınırı yok ve beyanlı, disk
+        çözümü UTF-8 sabit, erişim sınırı sembolik bağ ölçmez); A04 ve ardından
+        TA-A01 kapandı; BLK-PRF kapı Katmanlarının on Adımının tamamı kapalı.
+        FOUNDER SAHA BULGUSU (aynı saat): Founder PRF-A01'e takdir yazdı, ajan onu
+        MCP'den göremedi; kontrolcü ölçtü, EKL-F10-A12 açıldı ve aynı saatte
+        kapandı: gezin kartı, bul indeksi ve ŞEF paketi dört kanalı taşır (üç nöbet,
+        üç mutasyon, çekirdek 1195/1195). Onarım MCP sunucusu yeniden bağlanınca
+        canlı görünür. Çalışma ağacında çekirdek üç kaynak, üç sınama, üç plan ve
+        durum kaydı işlenmemiş; işleme sözü Founder'ındır.
+        TA-A02 KAPANDI (üretici Opus, kapı yeşil, Codex ilk tur RED: okunamayan
+        sözleşmeden genişti; kontrolcü dilDışı alanını ayırdı ve A01 sözleşmesine
+        ek yazdı; ikinci tur ONAY). Eklenti 671/671. TA-A03 (panelin görüntüye
+        bağlanması) üreticisi başlatıldı; brifing scratchpad/uretici/BRIFING-TA-A03.md.
+        PRF-MK-A01 (mikro onarım planlaması) üretici koşarken kontrolcü tarafından
+        kapatıldı: sıra, referans fikstürleri (scratchpad/fikstur, sağlamalar koşu
+        kaydında) ve taban kayıtta. MK-A02 de kontrolcü tarafından aynı saatte
+        kapatıldı (tire süzgeci, eşik izi ön denetimi, ilk karakter memosu; aynı
+        veride eski ve yeni kodla tanı dökümü birebir; beş nöbet, üç mutasyon;
+        çekirdek 1200/1200). MK-A03 de kapandı (tur ömürlü belirteç memosu, tek disk
+        taraması, ham paylaşımı; tanı dökümü birebir; iki mutasyon; çekirdek
+        1203/1203; denetimKos sarmal 1.101 → 726 ms). MK-A04 (blok dilimleme, emoji
+        kısa devresi; 330 dosyada birebir, 359 → 222 ms), MK-A05 (on dört nöbet, altı
+        mutasyon toplu) ve MK-A07 (memo sınırı, olumlu sızıntı fikstürleri) de
+        kapandı; çekirdek 1209/1209. MK-A06 Codex denetimi ve sessiz süre ölçümü
+        TA-A03 hükmünden sonra (kota için sırayla). TA-A03 üretici teslim etti,
+        kontrolcü kapısı yeşil (eklenti 679/679), Codex okuyor; sonra A06'yı
+        kontrolcü yapar, A04 üreticiye gider, A05 Founder canlı ölçümüdür (0.9.174
+        paketi gerekir). Founder 06:47'de 0.9.173 kanalında iyileşme gördü; sayılar
+        yük altında ve eski paketle ölçüldü, taban sayılmaz.
+        ☕ MOLA (2026-08-30 07:10, Founder isteği). Codex TA-A03'e RED verdi; üç
+        sebep koşu kaydındadır. ONARIM PLANI (mola sonrası, kontrolcü yapar, sonra
+        Codex ikinci tur): (1) sarmal.denetim kapalıyken de tur belge toplayıp
+        program haritasını kurar ve GÖRÜNTÜYÜ YAYINLAR, yalnız tanı üretmez ve
+        tanı yüzeylerini susturur (ikinci veri yolu doğmaz; eklenti.ts denetleHepsi
+        erken dönüş dalı bölünür); (2) eşdeğerlik nöbeti REFERANS GÖVDE deseniyle
+        yazılır (dag deseni): eski öğe toplama ve regex kimlik okuma sınamaya kopya
+        olarak taşınır, yüz bir dosyalık açık evren ile sentetik çok köklü fikstürde
+        karşılaştırılır; iki yüz seksen dosyalık çatı karşılaştırması kontrolcü
+        betiğiyle (eski gövde klon, yeni gövde çalışma ağacı) ölçülüp kaydedilir,
+        gerçek kabuk sayımı TA-A04'e kalır; (3) projeKimligi tek kurala iner: dosya
+        turun evrenindeyse görüntünün anadizin haritasından, değilse diskten (tek
+        çıkarıcı, tek kök bulucu); bu tercih Founder'a gerekçesiyle sunulur.
+        TA-A06 nöbeti yazıldı ve kapı yeşil (eklenti 680/680), kapanışı A03'e bağlı.
+        MK-A06 için sessiz ölçüm alındı (sarmal 631, çatı 978 ms; kabul içinde),
+        Codex denetimi mola sonrası. Klon ~/Library/Caches/sarmal-klon-9124edf
+        duruyor (kapı ölçümü için).
+        MOLA SONRASI (07:30–08:05): TA-A03 onarım turu bitti; üç sebep kapatıldı
+        (kapalı denetimde görüntü yayını, referans gövdeli eşdeğerlik + sentetik
+        fikstür + 280 dosyalık çatı betiği birebir, tek kök bulma kuralı); kapı
+        yeşil (eklenti 681/681, çekirdek 1209/1209, beş tip sıfır, depo 0/0).
+        Codex ikinci tur koşuyor (HUKUM-TA-A03-2.md). Onay gelince A03 ve A06
+        kapanır, TA-A04 üreticisi başlar, MK-A06 Codex'e gider.
+
+        MOLA SONRASI İKİ (10:00–10:45): Codex ikinci tur RED verdi; tek sebep,
+        evren üyeliğinin yol kümesiyle ölçülmemesiydi (dışlanmış iç içe kök
+        ogreti/ornek/altin_yol dıştaki köke bağlanıyordu). Onarım: evrenCozucu
+        çekirdeğe indi, kabuk yalnız disk yedeğini verir; tarayıcıdaki ölü
+        anaHattiSustur söküldü; referans kolu üretimin hiçbir yardımcısını
+        kullanmaz; iki KÖK KURALI nöbeti ve dört mutasyon (her biri kendi nöbetini
+        kırdı). Kapı yeşil (eklenti 683/683, çekirdek 1209/1209, beş tip sıfır,
+        depo 0/0; çatı betiği 280/827/4 birebir). Codex üçüncü tur koşuyor
+        (HUKUM-TA-A03-3.md; kum havuzuna geçici dizin yazma izni verildi ki
+        sentetik fikstür de koşsun). Ayrıntı A03 koşu kaydındadır.
+
+        ═══ FOUNDER HÜKMÜ 2026-08-30 · DÖRT ORTAK ÇALIŞMA KURALI ═══
+
+        Founder oturumun ortasında dört ortak çalışma kuralını hükme bağladı ve
+        bunların Nexivion Labs ile Sarmal için ORTAK olduğunu, her iki tarafta da
+        yayımlanacağını beyan etti. Talimat ikiye ayrıldı: kurallar KARAR olarak
+        kanona yazılacak, fakat HEMEN UYGULANMAYACAK; uygulamanın plana inmesi
+        için hatırlatıcı açılacak ve ayrıntılara sonraki oturumlarda inilecek.
+
+        KANONA İNEN BEŞ MADDE (her biri konusunun kanonik sahibi olan bölüme):
+        DIL-1.6 Plan Kademelerinin Adı, MIM-3.3 Blok Durum Kaydı, ORK-3.5 Blok
+        Sırası, ORK-9 Blok Teslim Halkası ve yüzey karşılığı YUZ-3.5 Durum
+        Yüzeyi. Kanon 151 maddeden 156 maddeye çıktı; rol dağılımı 38 Karar ile
+        118 Kural oldu, değişmezler bilinçli insan onayıyla güncellendi, sekiz
+        dosyanın mührü ile kanon demeti tazelendi ve türetilmiş yüzler yeniden
+        üretildi.
+
+        ÜÇ ONARIM (kanon eklemesinin kırdığı nöbetler): madde sayısı sabiti sekiz
+        yerde 156'ya alındı; kanonun ilan ettiği tanı önerileri geri çekildi,
+        çünkü A08 üçlü senkron sözleşmesi kanonun ilan ettiği her tanının aynı
+        turda sicilde ve bir üreticide bulunmasını şart koşar ve ilan bir
+        taahhüttür, dolayısıyla zorlama yazılana kadar ilan düşülmez; kanon
+        geçici iş kimliğine atıf veremediği için hatırlatıcı kodları madde
+        metninden çıkarıldı (unutma kapısı).
+
+        KOD KAPSAMINI DARALTMA KARARI (kontrolcü): ORK bölümünde genel kapsamlı
+        kural sayısı yirmilik koni eşiğine dayalıydı ve ORK-3.5 eklenince sekiz
+        Karar düğümü birden uyarı verdi. Eşiği büyütmek yerine kapsam daraltıldı:
+        ORK-3.5 ile MIM-3.3 yalnız Blok düğümlerine, DIL-1.6 plan ailesine,
+        YUZ-3.5 ise DurumKaydı düğümlerine düşer. Bu hem uyarıyı kaldırdı hem de
+        hükümleri doğrulaştırdı, çünkü Blok sırası kuralının bir Meyve düğümüne
+        düşmesi zaten anlamsızdı.
+
+        ÖLÇÜLEN UYUM BORCU: depoda 221 plan kademesi var; 11'inin adı hiç yok ve
+        194'ünün adı küçük harfle başlıyor, yani 205 kademe DIL-1.6 dışında.
+        Ayrıca Blok şeması ad alanını zorunlu saymıyor, Blok şablonu ile doğuş
+        paketi adsız ve küçük harfli kademe üretiyor, sürüm yönetişimi konu dalını
+        istisna sayarak ORK-9 ile çelişiyor ve tek durum kaynağı kilidi MIM-3.3
+        ile çelişiyor. Bunların tamamı beş hatırlatıcıya bağlandı.
+
+        AÇILAN YEDİ HATIRLATICI: sarmal tarafında kademe adları uyumu, Blok durum
+        kayıtları, Durum yüzeyi, Blok teslim halkası uyumu ve Blok sırası uyumu;
+        çatı tarafında uzak depo düzeni ile ortak çalışma kurallarının çatı
+        yönetişim gövdesine inmesi. Çatı CLAUDE.md dosyasına H12 ve H13 hükümleri
+        yazıldı ve kuralların metni oraya KOPYALANMADI, yalnız kanon adresleri
+        verildi (DIL-1).
+
+        UZAK DEPO: Founder hükmü şudur; bu aşamalar bittiğinde Sarmal'ın uzak
+        deposu açılacak ve hangi depoların hangi amaçla kullanılacağı o gün
+        bildirilecektir. Karar yazıldı, uygulama bilinçle bekletildi. ORK-9'un
+        üçüncü basamağı (birleştirme isteği) bu ön koşula bağlıdır.
+
+        MK-A06: Codex birinci tur RED verdi ve tek sebep gerçek bir kusurdu; ham
+        metin ayrıştırmadan önce haritaya giriyor, muaf ve ayrıştırılamayan bir
+        dosya ham tabanlı tanı döngülerine sızıyordu. Onarıldı, kenarı kuran nöbet
+        yazıldı, mutasyonla kanıtlandı; ikinci tur bekliyor. Süre kabulü denetçinin
+        bağımsız ölçümüyle geçti (Sarmal 673,5 ms · çatı 1.000,3 ms).
+
+        ═══ MOLA (2026-08-30 · öğleden önce) ═══
+
+        Founder dinlenmeye çekildi. Hiçbir ajan koşmuyor, arka planda iş yok ve
+        TA-A04 üreticisi BAŞLATILMADI; brifing kontrolü sırasında durduruldu.
+
+        BU TURDA KAPANAN ÜÇ ADIM. PRF-TA-A03 dört denetim turundan sonra onay
+        aldı: birinci ve ikinci tur RED, üçüncü tur şartlı onay, dördüncü tur
+        onay. Üçüncü turun dört şartı da karşılandı ve denetçi son turda ilk kez
+        YAZMA İZİNLİ kum havuzunda koştuğu için yüz on üç sınamanın tamamını
+        kendi ortamında yeşil ölçtü; önceki üç turda salt okur kum havuzu geçici
+        dizin açamadığı için fikstür kuran nöbetler EPERM ile kırmızı kalıyordu.
+        PRF-TA-A06 kapanışı A03'e bağlıydı ve onunla birlikte kapandı. PRF-MK-A06
+        üç turdan sonra kapandı; denetçi gerçek bir kusur bulmuştu ve onarım
+        sonrası kendi karşı deneyiyle iki tanının artık doğmadığını gösterdi.
+        BLK-PRF-MIKRO Bloku böylece TAMAMEN KAPANDI (yedi Adımın yedisi).
+
+        DENETÇİ TURUNDA AĞACA DOKUNULMADIĞININ KANITI: yazma izni verildiği için
+        tur öncesi ve sonrası bin üç yüz seksen iki dosyanın SHA-256 sağlaması
+        alındı; denetçi kaynaklı hiçbir fark bulunmadı, değişen iki dosya
+        kontrolcünün kendi ORK-9 düzeltmesi ile hatırlatıcı kaydıdır.
+
+        MEVSİM SAYIMI: yirmi altı Adım kapandı, on sekiz açık. BLK-PRF bir açık
+        (PRF-A06, Founder gözü), BLK-PRF-TEKAGAC iki açık (TA-A04 üretici,
+        TA-A05 Founder ölçümü), BLK-PRF-MIKRO sıfır, BLK-PRF-PANELKIPI dokuz,
+        BLK-PRF-ISCI altı. Depo denetimi sıfır hata sıfır uyarı.
+
+        FOUNDER'IN AYNI TURDAKİ İKİ TAMAMLAMASI. Birincisi ORK-9 düzeltmesidir:
+        dal FAZ birimindedir, birleştirme isteği BLOK, atomik işleme ise ADIM ile
+        onun Katman ve AltKatmanının aynı işte değişen gövdesi; işleme ile
+        gönderim edimi oturum sonunda yapılır. Madde bu hâliyle yeniden yazıldı ve
+        alt ayrıntılar için beş kalemlik müzakere listesi hatırlatıcıya işlendi.
+        İkincisi Faz görünürlüğü gözlemidir: bir Blok dosyası açıldığında hangi
+        Faza bağlı olduğu görünmüyor. Sebep ölçüldü ve üç yazım düzeninin bir
+        arada yaşadığı bulundu; on dört bağın tamamı mevsim ilanındaki çağır
+        kenarındadır ve Blokun kendi dosyasında iz bırakmaz. Founder daraltması
+        şudur: bağ çağır ile kalır, çözüm YÜZEY tarafında aranır; aday yüzeyler
+        kırıntı yolu, satır merceği, gezin kartı ve Yol Haritası başlığıdır.
+        Founder bu işin mevsimin önüne geçmemesini istedi.
+
+        UYANDIKTAN SONRA İLK İŞ: TA-A04 üreticisi (temiz bağlamlı Opus, brifing
+        scratchpad/uretici/BRIFING-TA-A04.md). Brifing güncellendi (taban 683,
+        A03'ün son hâli zemin olarak yazıldı, performans.test.ts ile
+        tur-goruntusu.test.ts'e dokunma yasağı kondu). Üretici bitince kapı,
+        sonra Codex; ardından TA-A05 için 0.9.174 paketi ve Founder ölçümü.
+
+        İŞLENMEMİŞ GÖVDE: çalışma ağacında elli civarı dosya işlenmemiş duruyor
+        (kanon maddeleri, hatırlatıcılar, motor onarımları, plan kayıtları, çatı
+        dosyaları). Hiçbiri işlenmedi ve hiçbir gönderim yapılmadı; işleme sözü
+        Founder'ındır.
+
+        FOUNDER TALİMATI (mola öncesi): işlemeler ŞİMDİLİK ESKİ DÜZENLE atılır,
+        yani gövde konusuna göre gruplanır ve ana dalda kalır; ORK-9'un getirdiği
+        Faz dalı ile Adım başına atomik işleme düzenine geçiş bugün UYGULANMAZ,
+        çünkü ağaçtaki gövde o kural doğmadan önce ve Adımlar arasında iç içe
+        üretilmiştir, dolayısıyla geriye dönük bir bölme sahte bir tane üretirdi.
+        Yeni düzen bir sonraki oturumda kuralların konuşulmasıyla yürürlüğe girer.
+        Bu turda denenip geri alınan `faz/2026-performans` dalı boş silindi.
+
+        SONRAKİ OTURUMUN AÇILIŞI (Founder'ın sözüyle): önce dört yeni kural ile
+        bugünkü iki tamamlaması konuşulur, sonra gereken hatırlatıcılar açılır ve
+        kurallar uygulanmaya başlanır; ondan sonra mevsimin kalan işine dönülür.
+        Mevsimin sıradaki işi TA-A04 üreticisidir ve brifingi hazırdır
+        (scratchpad/uretici/BRIFING-TA-A04.md); ardından kapı, Codex, sonra TA-A05
+        için 0.9.174 paketi ve Founder'ın canlı ölçümü gelir.
+
+        AÇIK HATIRLATICI SAYISI YİRMİ ÜÇE ÇIKTI. Bugün açılan sekizi şunlardır:
+        sarmal tarafında kademe adları uyumu, Blok durum kayıtları, Durum yüzeyi,
+        Blok teslim halkası uyumu, Blok sırası uyumu ve Blokun Fazının dosyada
+        görünmemesi; çatı tarafında uzak depo düzeni ile ortak çalışma
+        kurallarının çatı yönetişim gövdesine inmesi.
 
         ═══ SONRAKİ OTURUMUN İŞ LİSTESİ — SIRAYLA ═══
 
