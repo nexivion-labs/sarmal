@@ -570,6 +570,24 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   varlikListesi(): Varlik[] { return this.varliklar; }
 
+  /**
+   * 📏 Panelin ŞU AN gösterdiği plan kodları — salt okur ölçüm kapısı (PRF-TA-A04).
+   *
+   * Emsali `postaKapilari()` kapısıdır ve var olma gerekçesi birebir aynıdır: VS
+   * Code bir ağaç görünüşünün içeriğini dışarıya vermez, dolayısıyla "görüntüden
+   * kurulan ağaç eski taramayla AYNI kod kümesini verir" cümlesi gerçek kabukta
+   * ancak böyle bir kapıdan ölçülebilir. Kapı hiçbir şey hesaplamaz ve hiçbir şey
+   * değiştirmez: kurulmuş ağacı gezer ve kodların bir kopyasını verir.
+   */
+  panelKodlari(): string[] {
+    const kodlar: string[] = [];
+    const gez = (liste: readonly Oge[]): void => {
+      for (const o of liste) { kodlar.push(o.kod); gez(o.cocuklar); }
+    };
+    for (const v of this.varliklar) gez(v.cocuklar);
+    return kodlar;
+  }
+
   /** VIT-GRAF-A05: KOD'dan panel Oge'si — canlı-harita imleç takibi buradan bulur. */
   kodlaBul(kod: string): Oge | undefined {
     const ara = (l: Oge[]): Oge | undefined => {
@@ -1064,6 +1082,19 @@ ${kurallarBolum}
   }
 }
 
+/**
+ * Panelin gövdeye verdiği yüz: dil tazelemesi ile salt okur ölçüm kapısı.
+ *
+ * `kodlar()` PRF-TA-A04 nöbeti içindir ve eklentinin dış yüzüne bağlanır
+ * (eklenti.ts `SarmalEklentiYuzu`); panelin gösterdiği ağaç başka türlü
+ * dışarıdan okunamaz.
+ */
+export interface YolHaritasiYuzu {
+  diliTazele(): void;
+  /** Panelin ŞU AN gösterdiği plan kodları — salt okur. */
+  kodlar(): string[];
+}
+
 /** Paneli kur: ağaç + kutucuk olayları + tur görüntüsü aboneliği + koni-kartı menüsü.
  *  PRF-A04: olcum verilirse panel turları 'Sarmal Performans' kanalına düşer.
  *  PRF-TA-A03: `turIste` gövdeden gelir ve el ile yenileme düğmesi bir DENETİM TURU
@@ -1072,7 +1103,7 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
                                  olcum?: (satir: string) => void,
                                  odak?: OdakKapisi,
                                  meyve?: MeyveKapisi,
-                                 turIste?: (tetik: string) => void): { diliTazele(): void } {
+                                 turIste?: (tetik: string) => void): YolHaritasiYuzu {
   // YUZ-4: panel satırları DURUM renginde + blokaj ! rozeti (sarmal-yol:// dekorasyonu)
   context.subscriptions.push(vscode.window.registerFileDecorationProvider(new YolRenklendirici()));
   const saglayici = new YolHaritasi();
@@ -1267,6 +1298,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
   // `denetimKilidi.iste("başlangıç")`). Panelin ayrıca tetiklemesi, aynı ağacı iki
   // kez kuran ve soğuk açılışta birbiriyle yarışan ikinci hattın ta kendisiydi.
   return {
+    kodlar: () => saglayici.panelKodlari(),
     diliTazele(): void {
       saglayici.diliTazele();
       miniGraf.tazele();

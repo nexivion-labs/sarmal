@@ -34,3 +34,18 @@ export function programAl(doc: vscode.TextDocument): Program | undefined {
 export function belgeKapandi(doc: vscode.TextDocument): void {
   bellek.delete(doc.uri.toString());
 }
+
+/**
+ * 📏 Paylaşılan önbelleğin bugünkü anahtarları — nöbet bu kapıdan okur (PRF-TA-A04).
+ *
+ * Kapı SALT OKURDUR ve hiçbir davranış değiştirmez: anahtar listesinin bir
+ * kopyasını verir, belleğe yazmaz ve ondan silmez. Var olma gerekçesi ölçümdür:
+ * "turdan sonra paylaşılan önbellekte YALNIZ açık belgeler vardır" cümlesi ancak
+ * bellek dışarıdan sayılabiliyorsa kanıtlanabilir. Nöbet kaynağı kendi içine
+ * alarak ölçemez, çünkü gerçek kabuk süiti paketlenirken modülün İKİNCİ bir
+ * örneği doğar ve o örneğin belleği daima boştur (onay-tarayici.ts
+ * `tarayiciOlcumleri` kapısının gerekçesiyle aynı).
+ */
+export function onbellekAnahtarlari(): string[] {
+  return [...bellek.keys()];
+}

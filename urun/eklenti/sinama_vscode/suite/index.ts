@@ -13,6 +13,7 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "panel-gorunum.test.js"));
   mocha.addFile(path.resolve(__dirname, "onay-yuzeyi.test.js"));   // VIT-POSTA-A03
   mocha.addFile(path.resolve(__dirname, "gorunum-varsayilani.test.js"));   // EKL-F6-A04 kanıt ölçümü
+  mocha.addFile(path.resolve(__dirname, "tek-agac.test.js"));   // 🗺️ PRF-TA-A04 tek ağaç nöbetleri
 
   return new Promise((resolve, reject) => {
     try {

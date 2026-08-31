@@ -27,7 +27,7 @@ import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
 import { varlikDosyasiBul } from "./kanon-kesif.ts";
-import { programAl, belgeKapandi } from "./onbellek.ts";
+import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
 import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";  // EKL-F11-A01/A05: kimlik indeksi (çekirdekte — MCP/CLI ile ortak)
 import { gezinmeKaydi } from "./gezinme.ts";               // EKL-F11-A02/A03: F12 · ⇧F12 · F2 · ⌘T
@@ -52,11 +52,11 @@ import { onayKuyruguKaydi, onayYuzeyiOlcumleri } from "./onay-kuyrugu.ts"; // NT
 // yayınlar, tarayıcı o yayının abonesidir. PRF-TA-A03: hattın susuşu diye bir olay
 // yoktur; denetim kapalıyken de görüntü yayınlanır, yalnız tanı üretilmez.
 import { tarayiciOlcumleri } from "./onay-tarayici.ts";   // PRF-TA-A03: susuş bildirimi diye bir olay yok, görüntü kapalı denetimde de yayınlanır
-import { turGoruntusunuYayinla } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A02: turun tek yayın noktası
+import { turGoruntusunuYayinla, turGoruntusuOlcumleri, sonTurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A02: turun tek yayın noktası · PRF-TA-A04: salt okur ölçüm kapıları
 import { dallarKaydi } from "./dallar.ts";
 import { satiriciKaydi } from "./satirici.ts";
 import { onizlemeKaydi } from "./onizleme.ts";
-import { yolHaritasiKaydi, projeKimligi } from "./yolharitasi.ts";
+import { yolHaritasiKaydi, panelOlcumleri, projeKimligi, type YolHaritasiYuzu } from "./yolharitasi.ts";
 import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts";   // 🔔 YUZ-3.3 ikinci yüzey
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
@@ -101,6 +101,17 @@ import {
 let koleksiyon: vscode.DiagnosticCollection;
 let durumCubugu: DurumCubugu | undefined;
 
+// ── 📏 TUR SAYACI (PRF-TA-A04) ───────────────────────────────────────────────
+//   "Tur panelde TEK değişim olayı üretir" cümlesi ancak turun kendisi
+//   sayılabiliyorsa kanıtlanabilir. Panel sayacı (`tamDegisim`) ile yayın sayacı
+//   (`yayın`) kaç ÇİZİM ve kaç YAYIN olduğunu söyler, fakat ikisi de bir turda
+//   ikinci bir yayın eklendiğinde birlikte artar ve eşitlikleri bozulmaz; ölçüm
+//   ancak üçüncü, bağımsız bir sayaçla yalanlanabilir hâle gelir. Sayaç turun
+//   BAŞINDA artar, dolayısıyla çöken bir tur da sayılır ve "tur koştu ama
+//   yayınlamadı" hâli görünür kalır. Kapı salt okurdur, davranış değiştirmez ve
+//   üretim yolu onu hiç okumaz (yolharitasi.ts `panelSayacı` emsali).
+const turSayacı = { tur: 0 };
+
 /**
  * Motorun tanı koleksiyonundaki belirli düzeydeki tanı sayısı. Durum çubuğu
  * bu işlevi çağırır; kendi listesini TUTMAZ, koleksiyonu her seferinde okur.
@@ -141,7 +152,7 @@ let fikirler: Fikirler | undefined;
 //   kuyruğuna verilir; kuyruk kendi nabzıyla (kaydetme · geciktirmeli yazım
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
 let postaKutusu: PostaKutusu | undefined;
-let yolHaritasiYuzeyi: { diliTazele(): void } | undefined;
+let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
 
 /**
  * Eklentinin dış yüzü. VS Code `activate` işlevinin döndürdüğü nesneyi
@@ -184,6 +195,58 @@ export interface SarmalEklentiYuzu {
    * ölçülebilir; VS Code bir görünüşün içeriğini dışarıya vermez.
    */
   postaKapilari(): { dosya: string; kod: string }[];
+  /**
+   * 🗺️ Yol haritası panelinin bugünkü sayaçları (PRF-TA-A03 · yolharitasi.ts
+   * `panelOlcumleri`). Kabul ölçütü "panelin doğrudan dosya araması ve belge
+   * açma sayısı sıfırdır" diyor ve o sayı gerçek editör kabuğunda ölçülmelidir
+   * (PRF-TA-A04 birinci görev maddesi). Kapı `onayOlcumleri` emsalini birebir
+   * izler ve VAR OLMA GEREKÇESİ AYNIDIR: gerçek kabuk süiti esbuild ile
+   * paketlendiği için nöbet `yolharitasi.ts` modülünü kendi içine alsaydı canlı
+   * eklentininkinden AYRI bir örneğin sayaçlarını okur ve panel yüz kere dosya
+   * arasa bile sıfır görürdü.
+   */
+  panelOlcumleri(): {
+    goruntuTuru: number;
+    tamDegisim: number;
+    izTuru: number;
+    dosyaAramasi: number;
+    belgeAcma: number;
+  };
+  /**
+   * 🗺️ Turun yayın sayaçları (tur-goruntusu.ts `turGoruntusuOlcumleri`) ile
+   * turun kendi sayacı. `tur` alanı `denetleHepsi` çağrılarını sayar ve tek
+   * başına anlamsızdır; anlamı `yayın` ile karşılaştırıldığında doğar: tur
+   * başına birden çok yayın düşerse panel bir turda birden çok kez çizilir.
+   */
+  turOlcumleri(): {
+    yayın: number;
+    dinleyiciÇağrısı: number;
+    dinleyiciHatası: number;
+    sıra: number;
+    dinleyici: number;
+    tur: number;
+  };
+  /**
+   * 🗺️ Son yayınlanan tur görüntüsünün SALT OKUR özeti; hiç yayın olmadıysa
+   * `undefined`. Kayıt olduğu gibi verilmez, çünkü `programlar` haritası turun
+   * kendi ağaçlarını taşır ve onu dış yüze koymak nöbete ayrıştırılmış ağaçları
+   * elleme imkânı verirdi; özet yalnız SAYILABİLİR olanı taşır. Dört kümenin
+   * kesişmezliği ile dar/tam tur eşitliği buradan ölçülür.
+   */
+  sonGoruntuOzeti(): {
+    sıra: number;
+    tetik: string;
+    kapsam: string | undefined;
+    programlar: string[];
+    yollar: string[];
+    kirik: string[];
+    okunamayan: number;
+    dilDışı: string[];
+  } | undefined;
+  /** ⚡ Paylaşılan AST önbelleğinin anahtarları (onbellek.ts) — salt okur. */
+  onbellekAnahtarlari(): string[];
+  /** 🚂 Yol Haritası panelinin ŞU AN gösterdiği plan kodları — salt okur. */
+  yolHaritasiKodlari(): string[];
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -318,6 +381,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // tüm .sar'lar TEK grafa girer; döngüsel-bağımlılık (dosyalar arası olabilir)
   // Problems'te ilgili dosyada görünür. Tek-dosya `tanila` cross-file'ı göremezdi.
   const denetleHepsi = async (tetik = "?"): Promise<void> => {
+    turSayacı.tur += 1;   // 📏 PRF-TA-A04: turun kendisi sayılır (salt okur ölçüm)
     // Denetim kapalıyken TANI yüzeyleri susar — biri açık kalıp bayat kayıt
     // gösteremez. Fakat tur yine koşar ve GÖRÜNTÜSÜNÜ yayınlar (PRF-TA-A03 ikinci
     // tur, denetçi bulgusu): ayar sözleşmesi kapatınca yalnız tanının susacağını
@@ -695,6 +759,21 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     yuzeyKayitlari: () => yuzeyDefteri.gorunenler(),
     onayOlcumleri: () => ({ ...onayYuzeyiOlcumleri(), ...tarayiciOlcumleri() }),
     postaKapilari: () => postaKutusu?.kapiKodlari() ?? [],
+    // 🗺️ PRF-TA-A04 salt okur ölçüm kapıları: hepsi üretimin KENDİ sayaçlarını
+    // ve son görüntüsünü olduğu gibi verir; hiçbiri hesap yapmaz, hiçbiri yazmaz.
+    panelOlcumleri: () => panelOlcumleri(),
+    turOlcumleri: () => ({ ...turGoruntusuOlcumleri(), tur: turSayacı.tur }),
+    sonGoruntuOzeti: () => {
+      const g = sonTurGoruntusu();
+      if (!g) return undefined;
+      return {
+        sıra: g.sıra, tetik: g.tetik, kapsam: g.kapsam,
+        programlar: [...g.programlar.keys()], yollar: [...g.yollar],
+        kirik: [...g.kirik], okunamayan: g.okunamayan, dilDışı: [...g.dilDışı],
+      };
+    },
+    onbellekAnahtarlari: () => onbellekAnahtarlari(),
+    yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
   };
 }
 
