@@ -13,7 +13,7 @@
 // Sonraki plan dosyaları yeni Blok'u zamana üç yolla bağlar (bir bağ tek yerde · DIL-2):
 // Faz gövdesine iç içe yazım · Faz'ın çağır listesi · Blok( ..., mevsim: FAZ-… ) alanı;
 // önceliklendirme bekleyen iş için dürüst beyan: planlanmamış: "neden metni".
-Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "dogus",
+Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
   ne: "🌀 Kuruluş dönemi — mimari kararlar verilir, proje gerçek planına kavuşur" ) {
 
   -->|
@@ -30,19 +30,19 @@ Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "dogus",
     ✅ Kabul: denetle sıfır hata verir; anadizin teknolojili ve gerçek
     niyetli; bu planda koni-dolu ilk gerçek iş Bloku yazılmıştır.
   |<--
-  Blok( kod: BLK-{{KOD}}-KURULUS, ad: "kurulus",
+  Blok( kod: BLK-{{KOD}}-KURULUS, ad: "Kuruluş",
     ne: "🪵 Projenin temel atma işi: mimari diyalog, teknoloji ilanı ve ilk gerçek planın yazımı" ) {
 
     // NOT: Katman'ın Takım bağı ADM-KURULUS-01 kapanınca beyan edilir —
     // Katman( ..., kullanır: TAKIM-X ) biçiminde (MIM-1.4 teknoloji ekseni · tek hedef).
-    Katman( kod: KAT-{{KOD}}-MIMARI, ad: "mimari",
+    Katman( kod: KAT-{{KOD}}-MIMARI, ad: "Mimari",
       ne: "🌿 Teknoloji henüz seçilmedi — ADM-KURULUS-01 kapanınca bu Katman seçilen Takım'a bağlanır" ) {
 
       // YAS-1.1 (katı rejim): Katman ile Adım arasındaki yol en az bir departman
       // kademesinden geçer. Anadizin `rejim: katı` ilan ettiği için bu AltKatman
       // ZORUNLUDUR; kaldırılırsa doğan proje ilk denetiminde hata verir. Departman
       // beşlisi: planlama · kodlama · sınama · inceleme · güvenlik (MIM-1.5).
-      AltKatman( kod: ALT-{{KOD}}-PLANLAMA, ad: "planlama", departman: planlama,
+      AltKatman( kod: ALT-{{KOD}}-PLANLAMA, ad: "Planlama", departman: planlama,
         ne: "📋 Kuruluşun karar işi: mimari diyalog, ilan ve ilk gerçek planın yazımı" ) {
 
         Adım( kod: ADM-KURULUS-01, durum: beklemede, bağımlı: [],

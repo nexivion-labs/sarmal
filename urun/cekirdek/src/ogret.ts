@@ -38,7 +38,7 @@ Proje( kod: PRJ-ILK, ad: "ilk_proje", rejim: katı, ne: "Sarmal ile ilk proje" )
   Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
 }`;
 
-export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "mvp", ne: "ilk sürüm dönemi", hedefTarih: "2026-12-31" ) {
+export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", ne: "ilk sürüm dönemi", hedefTarih: "2026-12-31" ) {
   // ⚠️ Belge bloğu KENDİNDEN SONRAKİ düğüme bağlanır — bu belge Blok'undur, Faz'ın değil.
   //    Her Blok kendi belge bloğunu taşır (Amaç · Kapsam · Sonuç zorunludur).
   -->|
@@ -49,10 +49,10 @@ export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "mvp", ne: "ilk sürüm dön
   ## Sonuç
   Adımlar kapanınca gövde biter; kapanış kanıtı koşu alanına yazılır.
   |<--
-  Blok( kod: BLK-CEKIRDEK, ne: "çekirdek iş" ) {
-    Katman( kod: KAT-ARKAYUZ, ad: "arkayuz", ne: "arka yüz teknolojisi", kullanır: TEK-TS ) {
+  Blok( kod: BLK-CEKIRDEK, ad: "Çekirdek Gövde", ne: "çekirdek iş" ) {
+    Katman( kod: KAT-ARKAYUZ, ad: "Arka Yüz", ne: "arka yüz teknolojisi", kullanır: TEK-TS ) {
       // Katman → AltKatman → Adım: Adımlar departman modüllerinde toplanır.
-      AltKatman( kod: ALT-KODLAMA, ad: "kodlama", departman: kodlama, ne: "kod yazım modülü" ) {
+      AltKatman( kod: ALT-KODLAMA, ad: "Kodlama", departman: kodlama, ne: "kod yazım modülü" ) {
         Adım( kod: ADM-ILK, durum: beklemede, ne: "ilk işin amacı ve çözdüğü problem",
               görev: "yapılacak işlemler burada tam cümlelerle anlatılır",
               kabul: [ "sınanabilir bitiş koşulu burada yazılır" ] )

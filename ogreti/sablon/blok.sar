@@ -12,7 +12,7 @@
   ## Sonuç
   <kabul: blok ne olunca "bitti">
 |<--
-Blok( kod: BLK-Ornek, ne: "<blok amacı>", uygular: ORK-7 ) {
+Blok( kod: BLK-Ornek, ad: "<Blokun Adı>", ne: "<blok amacı>", uygular: ORK-7 ) {
 
   // Katman = TEKNOLOJİ dilimi (MIM-1.4): Takım bağı Katman'da beyan edilir —
   // katmansız-teknoloji bekçisi burada Takım/Teknoloji bağı arar (uyarı düzeyi;
@@ -23,8 +23,8 @@ Blok( kod: BLK-Ornek, ne: "<blok amacı>", uygular: ORK-7 ) {
   // birbirine DOĞRUDAN değil SÖZLEŞME üzerinden kavuşur — önyüz modülünün Adımı
   // ve arkayüz modülünün Adımı aynı SZL-X'e bağımlı: verir; kavuşumsuz-dilim /
   // sözleşmesiz-uç bekçileri bu buluşmayı denetler.
-  Katman( kod: KAT-Ornek, ad: "<katman-adı>", kullanır: TAKIM-Ornek ) {   // MIM-1.4: tek Takım/Teknoloji hedefi — ör. TAKIM-ONYUZ
-    AltKatman( kod: AKT-Ornek, departman: kodlama, ad: "<konu-modülü>" ) {   // ör. "kimlik" · "sepet" — AltKatman bir konu departmanıdır
+  Katman( kod: KAT-Ornek, ad: "<Katmanın Adı>", kullanır: TAKIM-Ornek ) {   // MIM-1.4: tek Takım/Teknoloji hedefi — ör. TAKIM-ONYUZ
+    AltKatman( kod: AKT-Ornek, departman: kodlama, ad: "<Konu Modülü>" ) {   // ör. "kimlik" · "sepet" — AltKatman bir konu departmanıdır
       Adım( kod: ADM-01, ad: "<kısa-ad>",
             görev: "<NE yapılacak — çalgıcının tahmin etmesine gerek kalmayacak DETAY>",
             kabul: [ "<kabul ölçütü 1>", "<ölçüt 2>" ],

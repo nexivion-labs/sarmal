@@ -46,15 +46,15 @@ Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu 
 //    Blok = DİKEY DİLİM: önyüz + arkayüz + güvenlik BİRLİKTE (silo değil · MIM-1.3 · TIP-1.4);
 //    Blok bunları KAVUŞTURUR (Ekran →çağırır→ Uç →sözleşme→ Sözleşme · ORK-2.3):
 //
-//    Faz( kod: FAZ-MVP, ad: "mvp", hedefTarih: "2027-06-30" ) {
-//      Blok( kod: BLK-Ornek, ne: "<bir özelliği baştan sona kesen dikey dilim>" ) {
-//        Katman( kod: KAT-Onyuz, ad: "önyüz", kullanır: TAKIM-ONYUZ ) {
-//          AltKatman( kod: ALT-Onyuz, ad: "<departman-modülü>", departman: kodlama ) {
+//    Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", hedefTarih: "2027-06-30" ) {
+//      Blok( kod: BLK-Ornek, ad: "<Blokun Adı>", ne: "<bir özelliği baştan sona kesen dikey dilim>" ) {
+//        Katman( kod: KAT-Onyuz, ad: "Ön Yüz", kullanır: TAKIM-ONYUZ ) {
+//          AltKatman( kod: ALT-Onyuz, ad: "<Departman Modülü>", departman: kodlama ) {
 //            Adım( kod: ADM-01, ad: "<kısa-ad>", görev: "<DETAYLI niyet>", kabul: [ "<ölçüt>" ], durum: beklemede )
 //          }
 //        }
-//        Katman( kod: KAT-Arkayuz, ad: "arkayüz", kullanır: TAKIM-ARKAYUZ ) {
-//          AltKatman( kod: ALT-Arkayuz, ad: "<departman-modülü>", departman: kodlama ) {
+//        Katman( kod: KAT-Arkayuz, ad: "Arka Yüz", kullanır: TAKIM-ARKAYUZ ) {
+//          AltKatman( kod: ALT-Arkayuz, ad: "<Departman Modülü>", departman: kodlama ) {
 //            Adım( kod: ADM-02, ad: "<kısa-ad>", görev: "<niyet>", durum: beklemede )
 //          }
 //        }

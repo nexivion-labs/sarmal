@@ -338,11 +338,11 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
   },
   "katı-rejim-altkatman-eksik": {
     mesaj: (p) => `Katman "${a(p, "kimlik")}" katı rejimde doğrudan Adım taşıyor. Katı rejimde her Katman ile Adım arasındaki yol en az bir departman kademesinden geçer.`,
-    oneri: (p) => `Araya departman kademesi koy. Örnek: \`Katman( kod: ${a(p, "kimlik")} ) { AltKatman( kod: ALT-KODLAMA, ad: "kodlama", departman: kodlama ) { Adım( kod: <ADIM> ) } }\` yerleşimini kur.`,
+    oneri: (p) => `Araya departman kademesi koy. Örnek: \`Katman( kod: ${a(p, "kimlik")} ) { AltKatman( kod: ALT-KODLAMA, ad: "Kodlama", departman: kodlama ) { Adım( kod: <ADIM> ) } }\` yerleşimini kur.`,
   },
   "rejim-geçiş-uyumsuzluğu": {
     mesaj: (p) => `Proje "${a(p, "kimlik")}" rejimini "${a(p, "rejim")}" olarak beyan ediyor ama yapı bu rejimi sağlamıyor (${a(p, "kusur")}). Motor mevcut yapıyı kendiliğinden sarmaz, taşımaz ya da silmez.`,
-    oneri: () => `Aykırı düğümleri elle düzelt ya da rejimi geri al. Örnek: eksik departman kademelerini \`AltKatman( kod: ALT-KODLAMA, ad: "kodlama", departman: kodlama )\` ile ekle; hazır değilsen \`rejim: esnek\` yazıp geçişi sonraya bırak.`,
+    oneri: () => `Aykırı düğümleri elle düzelt ya da rejimi geri al. Örnek: eksik departman kademelerini \`AltKatman( kod: ALT-KODLAMA, ad: "Kodlama", departman: kodlama )\` ile ekle; hazır değilsen \`rejim: esnek\` yazıp geçişi sonraya bırak.`,
   },
   "hüküm-türü-uyumsuz": {
     mesaj: (p) => `"${a(p, "kimlik")}" hükmünün rolü seçilen yasa tipiyle uyuşmuyor: ${a(p, "kusur")}. Niyet, zorlama, üst sınır, işletim ve dış yükümlülük rolleri birbirinin otoritesini üstlenemez.`,
@@ -659,11 +659,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "katı-rejim-altkatman-eksik": {
     mesaj: (p) => `Katman "${a(p, "kimlik")}" directly contains an Adım under the strict regime. In that regime, every path from Katman to Adım passes through at least one department level.`,
-    oneri: (p) => `Insert a department level. Example: create \`Katman( kod: ${a(p, "kimlik")} ) { AltKatman( kod: ALT-KODLAMA, ad: "kodlama", departman: kodlama ) { Adım( kod: <ADIM> ) } }\`.`,
+    oneri: (p) => `Insert a department level. Example: create \`Katman( kod: ${a(p, "kimlik")} ) { AltKatman( kod: ALT-KODLAMA, ad: "Kodlama", departman: kodlama ) { Adım( kod: <ADIM> ) } }\`.`,
   },
   "rejim-geçiş-uyumsuzluğu": {
     mesaj: (p) => `Proje "${a(p, "kimlik")}" declares regime "${a(p, "rejim")}", but its structure does not satisfy that regime (${a(p, "kusur")}). The engine does not automatically wrap, move or delete the existing structure.`,
-    oneri: () => `Correct the nonconforming nodes by hand or restore the previous regime. Example: add missing department levels with \`AltKatman( kod: ALT-KODLAMA, ad: "kodlama", departman: kodlama )\`; if you are not ready, write \`rejim: esnek\` and defer the transition.`,
+    oneri: () => `Correct the nonconforming nodes by hand or restore the previous regime. Example: add missing department levels with \`AltKatman( kod: ALT-KODLAMA, ad: "Kodlama", departman: kodlama )\`; if you are not ready, write \`rejim: esnek\` and defer the transition.`,
   },
   "hüküm-türü-uyumsuz": {
     mesaj: (p) => `The role of ruling "${a(p, "kimlik")}" does not match the selected law type: ${a(p, "kusur")}. Intent, enforcement, upper-bound, operational and external-obligation roles cannot assume one another's authority.`,
