@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.175 — 2026-08-31 (tek ağaç gerçek kabukta nöbete bağlandı)
+
+- **Panelin turun yayınına bağlanması artık gerçek VS Code kabuğunda altı nöbetle korunuyor.** Bir panel turunda dosya araması ile belge açma sayacının kıpırdamadığı, daraltılmış turun görüntü boyutunun tam turla aynı olduğu, kırık ile okunamayan kümelerinin kesişmediği ve dört kümenin taranan yolu bölüştüğü, turun panelde tek değişim olayı ürettiği, turun diskten okuduğu hiçbir dosyayı paylaşılan belleğe yazmadığı ve görüntüden kurulan panel ağacının eski taramayla aynı kod kümesini verdiği ölçülüyor. Üç mutasyon her birinin kendi nöbetini kırdığını kanıtladı.
+- **Nöbetler ölçümü eklentinin dış yüzünden okuyor, kendi ithalinden değil.** Gerçek kabuk testleri paketlendiğinde ithal edilen üretim modülünün ikinci bir örneği test paketine girer ve o örneğin sayaçları daima sıfır kalır; sayacı kendi ithalinden okuyan bir nöbet, canlı panel yüz kere dosya arasa bile sahte yeşil yanardı. Bu yüzden eklentinin dışa açık yüzüne beş salt okur ölçüm kapısı ile bir tur sayacı eklendi. Hiçbiri hesap yapmaz, yazmaz ve üretim yolunda okunmaz; davranış değişmedi.
+- **Gerçek kabuk süitinin gövdesi ilk kez plana bağlandı.** Dizin deponun doğduğu geceden beri plana bağlı değildi; yedi dosyanın tamamı meyve olarak ilan edildi, çünkü tek dosyayı ilan etmek kardeşlerini yetim bırakır ve süitin plandaki izi yine okunamaz kalırdı.
+
 ## 0.9.174 — 2026-08-31 (panel turun tek yayınından beslenir)
 
 - **Yol Haritası ile Onaylar artık kendi taramalarını koşturmuyor; turun TEK yayınına abone.** Denetim turu ağacını tek noktadan yayınlar ve iki yüzey o yayından beslenir; panelin kendi dosya araması, belge açması, dosya izleyicisi, üç yüz elli milisaniyelik olay hattı ve açılış tetiği kalktı. Ölçüm şuydu: aynı evren her turda iki kez taranıyor ve iki yüzey aynı dosyayı farklı gösterebiliyordu. Eşdeğerlik, panelin bu sürümden önceki gövdesi sınamaya kopyalanarak ölçüldü; iki yüz seksen dosyalık çatı ölçümünde sekiz yüz yirmi yedi düğüm ile dört varlık kökü birebir çıktı.
