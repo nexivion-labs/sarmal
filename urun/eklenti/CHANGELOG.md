@@ -2,6 +2,15 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.174 — 2026-08-31 (panel turun tek yayınından beslenir)
+
+- **Yol Haritası ile Onaylar artık kendi taramalarını koşturmuyor; turun TEK yayınına abone.** Denetim turu ağacını tek noktadan yayınlar ve iki yüzey o yayından beslenir; panelin kendi dosya araması, belge açması, dosya izleyicisi, üç yüz elli milisaniyelik olay hattı ve açılış tetiği kalktı. Ölçüm şuydu: aynı evren her turda iki kez taranıyor ve iki yüzey aynı dosyayı farklı gösterebiliyordu. Eşdeğerlik, panelin bu sürümden önceki gövdesi sınamaya kopyalanarak ölçüldü; iki yüz seksen dosyalık çatı ölçümünde sekiz yüz yirmi yedi düğüm ile dört varlık kökü birebir çıktı.
+- **Denetim ayarı kapalıyken paneller artık boş kalmıyor.** Eski davranışta ayar kapatıldığında tur erken dönüyor ve Yol Haritası ile Onaylar beslenmesiz kalıyordu; oysa ayarın sözleşmesi kapatınca yalnız TANININ susacağını söyler. Tur artık her iki hâlde de koşar ve görüntüsünü yayınlar, yalnız tanı üretimi ayara bağlıdır. "Hat sustu" bildirimi diye bir olay kalmadı.
+- **Bir dosyanın hangi Projeye ait olduğu tek kuraldan okunuyor.** Aidiyet sorusu önce turun görüntüsüne sorulur ve panelle aynı çözücüyle cevaplanır; üyelik görüntünün yol kümesiyle ölçülür, evren dışı dosya ise disk yürüyüşüne düşer. Eski çözümde iki ayrı kök bulma kuralı vardı ve dışlanmış iç içe bir kök yanlış projeye bağlanabiliyordu.
+- **Varlık kimliği ham metinde düzenli ifadeyle değil giriş dosyasının ağacından okunuyor.** Eski okuma, kökün kendi `kod` alanı eksikken başka bir düğümün kodunu varlığa yazabiliyordu; yeni okuma yalnız kökün kendi alanlarını okur ve alan yoksa klasör adına düşer.
+- **Çekirdek motorun altı ölçülmüş sıcak noktası davranış korunarak onarıldı.** Kimlik taramasında tire ön süzgeci, eşik izinin bütün-dosya ön denetimi, gizli yol içerme ön denetimi, ad biçiminin ilk karakter memosu, tur ömürlü belirteç memosu ile tek disk taraması, blok dilimlemede toplu ilerleme ve emoji eşlemesinin ASCII kısa devresi. Bağımsız denetçi ölçümünde bir ısınmadan sonraki üç sıcak turun medyanı bu depoda 666,8 milisaniye, çatıda 1.077,1 milisaniyedir.
+- **Founder geribildirimi ŞEF brifingine ve aramaya iniyor.** Dört kanal (teşekkür, takdir, onur, öneri) kart alanlarına girdi; ŞEF brifingi hedef ve bağımlı Adımlardan geribildirim toplayıp kendi bölmesinde basar, `bul` aracı da bu kanalların metnini arar. Kanal metni kaynakta yaşadığı hâlde yalnız insan gözüne görünüyorsa kayıt değil süs olur.
+
 ## 0.9.173 — 2026-08-30 (belge turu kapıdan geçiyor)
 
 - **Denetim turu kanal satırı artık belgelerin nereden geldiğini sayıyla yazıyor.** Satırın sonuna dikey çizgiyle ayrılmış bir belge bölümü eklendi: açıktan, diskten, atlanan, açma ve okunan ham bayt. Açma sayısı sabit sıfırdır ve açıkça yazılır, çünkü turun belge açmadığı iddiası ancak gözle okunur bir sayıyla doğrulanır; ilk üç sayının toplamı taranan dosya sayısına eşittir. Bayt sayısı diskten okunan ham baytın toplamıdır, çözülmüş metnin uzunluğu değildir ve yuvarlanmaz.
