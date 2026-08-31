@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 103,
-            neredeyiz: 0.9.174-KURULDU-YAYIN-HAZIRLIGI-OLCULDU,
-            sıradaki: YAYIN-ONCESI-SEKIZ-KALEM-YA-DA-TA-A04-URETICI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 104,
+            neredeyiz: 0.9.175-KURULDU-PRF-TA-A04-KAPANDI,
+            sıradaki: PRF-TA-A05-FOUNDER-CANLI-OLCUMU,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -51,7 +51,12 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 103,
                          VIT-POSTA-A02-DUZ-METIN-YEDEGININ-EMEKLILIGI-FOUNDER-KARARI,
                          HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
                          NOBET-HIJYENI-ON-DOSYADA-ONARILDI-KAPANDI-2026-08-29,
-                         ACIK-DEPONUN-UZAK-ADRESI-YOK-ILK-GONDERIM-CANLI-ACILIS ] ) {
+                         ACIK-DEPONUN-UZAK-ADRESI-YOK-ILK-GONDERIM-CANLI-ACILIS,
+                         PAKETLEME-SONRASI-SUIT-SAHTE-KIRMIZI-ISLEME-KAPISINI-BLOKLADI,
+                         GERCEK-KABUK-SUITI-ONBES-KIRMIZI-VE-HIC-KAPIDA-KOSMUYOR,
+                         BELGEKAPANDI-YOLU-HICBIR-NOBETLE-KORUNMUYOR,
+                         KILAVUZ-CIZGILERI-FONTA-BAGIMLI-GOZLEM,
+                         HTR-SINAMA-SONUCU-YUZEYSIZ-FOUNDER-DEGERLENDIRMESI ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
         aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
@@ -1297,6 +1302,77 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 103,
         FAZ-2026-AGUSTOS kodu sarmal deposunda tanımlıdır ve kusur çapraz proje
         ad alanı borcudur.
 
+        ═══ OTURUM 104 · 2026-08-31 ═══
+
+        PRF-TA-A04 KAPANDI. Tek ağaç nöbetleri gerçek VS Code kabuğunda
+        yazıldı ve altısı da yeşil ölçüldü: bir panel turunda dosya araması ile
+        belge açma sayacının kıpırdamaması, daraltılmış turun görüntü boyutunun
+        tam turla aynı olması, kırık ile okunamayan kümelerinin kesişmemesi ve
+        dört kümenin taranan yolu bölüşmesi, turun panelde tek değişim olayı
+        üretmesi, turun diskten okuduğunu paylaşılan belleğe yazmaması ve
+        görüntüden kurulan panel ağacının eski taramayla aynı kod kümesini
+        vermesi. Üç mutasyon her birinin kendi nöbetini kırdığını kanıtladı.
+        Turda bir üretici ile bir denetçi çalıştı; Codex'in oturum belirteci
+        süresi dolduğu için denetçi Founder hükmüyle Claude olarak gönderildi.
+
+        ÜRETİCİNİN ÇÖZDÜĞÜ ASIL SORUN SAHTE YEŞİLDİR. Gerçek kabuk testleri
+        paketlendiğinde ithal edilen üretim modülünün ikinci bir örneği test
+        paketine girer ve o örneğin sayaçları daima sıfır kalır; sayacı kendi
+        ithalinden okuyan bir nöbet, canlı panel yüz kere dosya arasa bile yeşil
+        yanardı. Ölçüm bu yüzden eklentinin etkinleşme dönüşünden okunur ve
+        yüze beş salt okur ölçüm kapısı ile bir tur sayacı eklendi; emsali onay
+        yüzeyinin ölçüm kapısıdır. Denetçi bu riski iki bağımsız kanıtla
+        çürüttü: paketlenmiş nöbette üretim modüllerinden sıfır kopya vardır ve
+        mutasyonlar tam da o modülleri değiştirerek nöbetleri kırmıştır.
+
+        KAPI İLE DENETİM BİRER GERÇEK KUSUR YAKALADI. Kontrolcü kapısı yeni
+        nöbet dosyasında beş tip hatası buldu ve onardı; üretici bunu ölçememişti,
+        çünkü tip denetleyicisi eklenti dizininde değil çekirdekte kuruludur.
+        Bağımsız denetim ise şartlı onay verdi ve esas bulgusu şudur: beşinci
+        nöbetin manşet iddiası boş küme üstünde koşuyordu. Denetçi kapanış
+        işlevini tamamen boşaltan bir mutasyon kurdu, mutasyonun canlı derlemeye
+        girdiğini doğruladı ve nöbetin buna rağmen yeşil kaldığını gösterdi;
+        sebep, üreticinin bir yarışı gerekçe göstererek koyduğu daraltmanın
+        diskte artık olmayan kayıtları elemesidir, oysa bu korpusta kapanan tek
+        belge sınıfı tam da onlardır.
+
+        DÖRT ŞARTIN DÖRDÜ KARŞILANDI. Kapanış yolunu canlı bir adayla ölçmek üç
+        kez denendi ve kurulamadı: nöbetin açtığı belgenin sekmesi hedefli olarak
+        kapanmakta ve kalan sekme sayısı sıfır ölçülmektedir, buna karşılık kabuk
+        belgeyi belge listesinden düşürmemektedir; aynı ölçümde komşu süitin açık
+        bıraktığı onlarca dolgu belgesi de listede durmaktadır. Bu yüzden
+        denetçinin sunduğu ikinci yol seçildi ve nöbetin adı fiilen ölçtüğü şeye
+        çekildi, çünkü ölçmediği bir değişmezi adıyla taşıyan nöbet olmayan bir
+        güvenlik hissi verir. Kalan üç şart karşılandı: yarış devredilen risk
+        olarak kayda geçti, gerçek kabuk süitinin yedi dosyası meyve olarak ilan
+        edildi ve Adımın üretir kenarı düzeltildi, nöbet başlığındaki taban sayısı
+        gerçeğe çekildi.
+
+        ÜÇ BULGU ÖLÇÜLDÜ VE ONARILMADAN KAYDA GEÇTİ. Birincisi, eklenti
+        paketlendikten sonra derleme çıktısı küçültülmüş hâlde kalmakta ve birim
+        süitinin iki sınaması sahte kırmızı vermektedir; bugün bu kusur işleme
+        kapısını fiilen bloke etmiştir ve kapı zorlanmamış, geliştirme derlemesi
+        üretilerek dürüstçe geçilmiştir. İkincisi, gerçek kabuk süiti on beş
+        kırmızı taşımaktadır ve dizini deponun doğduğu 2026-08-25 gecesinden beri
+        hiç değişmemiştir, üstelik hiçbir kapıda koşmamaktadır; kırmızıların en
+        eskisi bir komut imzasının testte yedi, üretimde altı argüman olmasıdır ve
+        o imza doğum gecesinden beri aynıdır, yani o dört sınama bu depoda hiç
+        yeşil olmamıştır. Üçüncüsü, Founder'ın ekran görüntüsünden doğan gözlemdir:
+        kılavuz çizgileri gerçek çizim değil girintiye basılan karakterlerdir ve
+        hizalaması fonta bağımlıdır; Founder'ın kendi penceresinde düzgün
+        görünmekte, varsayılan fontla açılan test kabuğunda kaymaktadır.
+
+        FOUNDER'IN SORUSUNDAN BİR HATIRLATICI DOĞDU. Bir nöbetin kırmızı yanması
+        panelde neden anlık görülemediği sorulmuş ve konunun ayrıntılı
+        değerlendirilmek üzere kayda bağlanması istenmiştir; kayıt
+        HTR-SINAMA-SONUCU-YUZEYSIZ koduyla açılmıştır ve beş soruyu taşımaktadır.
+        Sebep mimaridir: paneller denetim turundan beslenir, süit ise ayrı bir
+        dünyadır ve sonucunu bir yüzeye taşıyan hiçbir gövde yoktur.
+
+        0.9.175 PAKETLENDİ VE KURULDU. Dört işleme ana dala atıldı ve dördü de
+        kapıdan geçti; hiçbir gönderim yapılmadı, çünkü açık deponun uzak adresi
+        yoktur.
+
         ═══ SONRAKİ OTURUMUN İŞ LİSTESİ — SIRAYLA ═══
 
         Bu bölüm sonraki oturumun ilk okuduğu yerdir ve iş sırasına göre yazılmıştır.
@@ -1308,6 +1384,14 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 103,
         yapılacak çok iş var. Sıra denetçinin hükmüdür: BLK-PRF kapı Adımları,
         sonra tek ağaç ve mikro-onarımlar, sonra panel kipi, en son ölçüm kapılı
         işçi; PRF-A06 en son kapanır ve VIT-KIMLIK-A08 ondan sonra başlar.
+        BUGÜNKÜ DURAK: mevsimde on yedi Adım açıktır ve sıradaki iş PRF-TA-A05,
+        yani Founder'ın canlı penceresinde yapacağı ölçümdür. Ölçümün paketi
+        kuruludur (0.9.175) ve aranan sayı şudur: panel turunun doksan beşinci
+        yüzdeliği iki yüz yetmiş altı dosyalı çatıda beş yüz milisaniyenin
+        altına inmeli ve yirmi bin dokuz milisaniyelik tabandan düşüş yüzde
+        doksanı aşmalıdır. Bu ölçüm kontrolcü tarafından yapılamaz. Zincirin
+        devamı ölçüme bağlıdır: PRF-PK-A01 panel kipi tasarımı, PRF-TA-A05 ile
+        PRF-MK-A06 kapandığı gün seçilebilir hâle gelir.
 
         ① CANLI PENCERE TURUNUN KALAN DÖRT ADIMI. Tur on iki Adım olarak kurulmuş
         ve yedisi kapanmıştır; kalan dördü Founder gözü beklemektedir ve hiçbiri
