@@ -86,9 +86,9 @@ Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
     AltKatman( kod: ALT-TA-SINAMA, ad: "tek ağaç nöbetleri", departman: sınama,
       ne: "🧪 Altı nöbetin yazıldığı ve mutasyonla kanıtlandığı kalite dalı." ) {
 
-      Adım( kod: PRF-TA-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A03 ],
+      Adım( kod: PRF-TA-A04, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", koşu: "2026-08-31 · ÜRETİM, KAPI, BAĞIMSIZ DENETİM VE ŞART KARŞILAMA. ÜRETİM (temiz bağlamlı Opus üreticisi, elli beş dakika): altı nöbet gerçek VS Code kabuğunda yeni bir dosyaya yazıldı (sinama_vscode/suite/tek-agac.test.ts) ve süite bağlandı (suite/index.ts ile esbuild-sinama.mjs). Nöbetler ölçümü eklentinin dış yüzünden okur, çünkü gerçek kabuk testleri esbuild ile paketlendiğinde ithal edilen üretim modülünün İKİNCİ bir örneği test paketine girer ve o örneğin sayaçları daima sıfır kalır; sayacı kendi ithalinden okuyan bir nöbet canlı panel yüz kere dosya arasa bile sahte yeşil yanardı. Bu yüzden eklentinin dışa açık yüzüne beş salt okur ölçüm kapısı ile bir tur sayacı eklendi (panelOlcumleri, turOlcumleri, sonGoruntuOzeti, onbellekAnahtarlari, yolHaritasiKodlari); emsali VIT-POSTA-A03'ün onayOlcumleri kapısıdır ve gerekçesi aynıdır. Üç mutasyon koşuldu ve her biri kendi nöbetini kırdı: doğrudan tarama geri konunca SIFIR, kırık ile okunamayan birleşince AYRIM, ikinci yayın eklenince TEK DEĞİŞİM. KONTROLCÜ KAPISI (bağımsız): eklenti 683 sınamanın 683 tanesi, çekirdek 1210 sınamanın 1210 tanesi, depo denetimi sıfır hata ile sıfır uyarı, gerçek kabukta altı nöbetin altısı yeşil. Kapı üreticinin işinde BİR KUSUR BULDU ve onardı: yeni nöbet dosyası beş tip hatası taşıyordu (Thenable ile Promise uyuşmazlığı) ve üretici bunu ölçememişti, çünkü tip denetleyicisi eklenti dizininde değil çekirdekte kuruludur; turPenceresi yardımcısının imzası gerçeğe çekilerek beş hata birden kapandı ve beş yapılandırmanın beşinde de tip sıfır oldu. ÖLÇÜLEN İKİ TABAN KUSURU (bu Adıma ait değildir, kayda geçirilmiştir): birincisi, eklenti paketlendikten sonra dist gövdesi küçültülmüş hâlde kaldığı için birim süiti iki sınamada sahte kırmızı verir ve geliştirme derlemesi üretilince ikisi de yeşile döner; ikincisi, gerçek kabuk süiti on beş kırmızı taşımaktadır ve dizini deponun doğduğu 2026-08-25 gecesinden beri hiç değişmemiştir, üstelik hiçbir kapıda koşmamaktadır. BAĞIMSIZ DENETİM (temiz bağlamlı Opus denetçisi; Codex'in oturum belirteci süresi dolduğu için Founder hükmüyle Claude denetçisi gönderildi): ŞARTLI ONAY. Denetçi bütün sayıları kendi koşusunda birebir yeniden üretti, sahte yeşil riskini iki bağımsız kanıtla çürüttü (paketlenmiş nöbette üretim modüllerinden sıfır kopya bulunması ve mutasyonlarının tam da o modülleri değiştirerek nöbetleri kırması), davranış sınırının ihlal edilmediğini eklenen kapıların hiçbirinin üretim yolunda okunmadığını göstererek doğruladı ve ağaca dokunmadığını dört yüz doksan altı dosyanın sağlamasıyla beyan etti. ESAS BULGU: beşinci nöbetin manşet iddiası boş küme üstünde koşuyordu; denetçi belgeKapandi işlevini tamamen boşaltan bir mutasyon kurdu, mutasyonun canlı derlemeye girdiğini doğruladı ve nöbetin buna rağmen yeşil kaldığını gösterdi. Sebep, üreticinin bir yarışı gerekçe göstererek koyduğu daraltmanın diskte artık olmayan kayıtları elemesidir; oysa bu korpusta kapanan tek belge sınıfı tam da onlardır, dolayısıyla daraltma kanıtın var olduğu tek popülasyonu elemiştir. DÖRT ŞARTIN KARŞILANMASI (kontrolcü): birincisi, kapanış yolunu canlı bir adayla ölçmek üç kez denenmiş ve kurulamamıştır; nöbetin kendi açtığı belgenin sekmesi hedefli olarak kapatılmakta ve kalan sekme sayısı sıfır ölçülmektedir, buna karşılık kabuk belgeyi belge listesinden düşürmemektedir ve aynı ölçümde komşu süitin açık bıraktığı onlarca dolgu belgesi de listede durmaktadır, yani belge yaşam döngüsü bu kabukta nöbetin denetleyebileceği bir şey değildir; bu yüzden denetçinin sunduğu ikinci yol seçilmiş ve nöbetin adı fiilen ölçtüğü şeye çekilmiştir, çünkü ölçmediği bir değişmezi adıyla taşıyan nöbet olmayan bir güvenlik hissi verir. İkincisi, kapanış olayı ile turun açık belge anlık görüntüsü arasındaki yarış devredilen risk olarak bu kayıtta ve nöbet dosyasının kendi gerekçesinde yaşamaktadır; belgeKapandi yolu bugün hiçbir nöbetle korunmamaktadır ve bu açıkça yazılıdır. Üçüncüsü, gerçek kabuk süitinin yedi dosyası meyve olarak ilan edilmiş ve Adımın üretir kenarı düzeltilmiştir; kenar bugüne kadar PRF-TA-A06'nın malını göstermekteydi ve yeni nöbet dosyası planın grafında sahipsizdi. Dördüncüsü, nöbet dosyasının başlığındaki taban sayısı yirmi iki geçen ve on beş kalan olarak gerçeğe çekilmiş, kararsız sınamanın tabanı yirmi bire düşürebileceği ayrıca yazılmıştır. KAPI (şartlar karşılandıktan sonra): eklenti 683 sınamanın 683 tanesi, çekirdek 1210 sınamanın 1210 tanesi, beş yapılandırmada tip sıfır, depo denetimi sıfır hata ile sıfır uyarı, gerçek kabuk yirmi sekiz geçen ve on beş kalan, yani taban aşılmamıştır ve altı nöbetin altısı yeşildir. AÇILAN HATIRLATICI: Founder aynı gün bir nöbetin kırmızı yanmasının panelde neden anlık görülemediğini sormuş ve konunun ayrıntılı değerlendirilmek üzere hatırlatıcıya bağlanmasını istemiştir; kayıt HTR-SINAMA-SONUCU-YUZEYSIZ koduyla açılmıştır ve beş soruyu karara bağlanmak üzere taşımaktadır.", bağımlı: [ PRF-TA-A03 ],
         referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
-        üretir:   [ KOD-PRF-SNM-PERFORMANS ],
+        üretir:   [ KOD-PRF-SNM-TEKAGAC, KOD-PRF-KABUK-SURUCU, KOD-PRF-KABUK-KOPRU, KOD-PRF-KABUK-AKTIVASYON, KOD-PRF-KABUK-PANEL, KOD-PRF-KABUK-ONAY, KOD-PRF-KABUK-GORUNUM ],
         ne:       "🧪 Tek ağaç nöbetleri. Denetçi altı nöbet istedi ve her birinin mutasyonla kanıtlanmasını şart koştu." ) {
         görev:    [
           "Gerçek kabukta panelin dosya araması ve belge açma sayısı sıfır ölçülür; onay tarayıcısının sayaç deseni izlenir. Gerçek kabuk süitinin dizini bugün plana bağlı değildir; bu Adım o dizine dokunduğu için beş dosyayı birlikte meyve ilan eder, çünkü tek dosyayı ilan etmek dört kardeşi yetim bırakır ve bu ölçülmüştür.",
@@ -159,5 +159,34 @@ Kod( kod: KOD-PRF-SNM-TUR-GORUNTUSU, dosya: "urun/eklenti/sinama/tur-goruntusu.t
   ne: "🍎 Tur görüntüsü nöbetleri — tur başına tek yayın, daraltılmış turda eşit harita, kırık ile okunamayan kümelerinin ayrılığı (PRF-TA-A02 ürünü)" )
 
 Kod( kod: KOD-PRF-SNM-PERFORMANS, dosya: "urun/eklenti/sinama/performans.test.ts",
-  ne: "🍎 Tur kapsamı, görüntü boyutu ve panel veri yolu sınırı nöbetleri (PRF-TA-A04 ve PRF-TA-A06 ürünü)" )
+  ne: "🍎 Tur kapsamı, görüntü boyutu ve panel veri yolu sınırı nöbetleri (PRF-TA-A06 ürünü)" )
+
+// ── 🖥️ GERÇEK KABUK SÜİTİ (PRF-TA-A04 · meyve ilanı) ────────────────────────
+//   Bu dizin PRF-TA-A04 gününe kadar plana hiç bağlı değildi ve deponun doğduğu
+//   2026-08-25 gecesinden beri değişmemişti. Adım bu dizine dokunduğu için
+//   gövdesi bütün olarak ilan edilir: tek dosyayı ilan etmek kardeşlerini yetim
+//   bırakır ve süitin plandaki izi yine okunamaz kalır. Adımın metni beş dosya
+//   der, gerçekte altı kardeş dosya vardır ve yenisiyle yedi olur; ilan sayıya
+//   değil diske uyar.
+
+Kod( kod: KOD-PRF-KABUK-SURUCU, dosya: "urun/eklenti/sinama_vscode/calistir.ts",
+  ne: "🍎 Gerçek kabuk sürücüsü — VS Code indirilir, eklenti geliştirme kipinde yüklenir, örnek korpusu çalışma alanı olarak açılır" )
+
+Kod( kod: KOD-PRF-KABUK-KOPRU, dosya: "urun/eklenti/sinama_vscode/suite/index.ts",
+  ne: "🍎 Mocha köprüsü — kabuk süitinin dosyaları buradan yüklenir; yeni bir nöbet dosyası buraya bağlanmazsa hiç koşmaz" )
+
+Kod( kod: KOD-PRF-KABUK-AKTIVASYON, dosya: "urun/eklenti/sinama_vscode/suite/aktivasyon.test.ts",
+  ne: "🍎 Etkinleşme nöbetleri — eklentinin gerçekten aktifleştiği, komutların kayıtlı olduğu ve tanının canlı olduğu ölçülür" )
+
+Kod( kod: KOD-PRF-KABUK-PANEL, dosya: "urun/eklenti/sinama_vscode/suite/panel-gorunum.test.ts",
+  ne: "🍎 Panel satırlarının gerçek görünüşü — simge kimliği ve tema rolü yalnız gerçek kabukta okunabilir" )
+
+Kod( kod: KOD-PRF-KABUK-ONAY, dosya: "urun/eklenti/sinama_vscode/suite/onay-yuzeyi.test.ts",
+  ne: "🍎 Onay yüzeyinin canlı ölçümü — çift yüzey kusurunun gerçek kabuktaki nöbeti (VIT-POSTA-A03 ürünü)" )
+
+Kod( kod: KOD-PRF-KABUK-GORUNUM, dosya: "urun/eklenti/sinama_vscode/suite/gorunum-varsayilani.test.ts",
+  ne: "🍎 Görünüm varsayılanı nöbeti — biçim eklentiden gelir ve renk dayatılmaz (EKL-F6-A04 kanıt ölçümü)" )
+
+Kod( kod: KOD-PRF-SNM-TEKAGAC, dosya: "urun/eklenti/sinama_vscode/suite/tek-agac.test.ts",
+  ne: "🍎 Tek ağaç nöbetleri — panelin turun yayınına bağlanmasının gerçek kabuktaki altı ölçümü: sıfır sayaç, daraltma eşitliği, küme ayrımı, tek değişim, önbellek sınırı ve ağaç eşdeğerliği (PRF-TA-A04 ürünü)" )
 
