@@ -179,6 +179,8 @@ Kod( kod: KOD-SNM-BELGELE, dosya: "urun/cekirdek/sinama/belgele.test.ts",
   ne: "🍎 sınama nöbeti — MD yüzü (DIL-2 sarmal belge)" )
 Kod( kod: KOD-SNM-BELIRTEC, dosya: "urun/cekirdek/sinama/belirtec.test.ts",
   ne: "🍎 sınama nöbeti — belirteçleyici (lexer, emoji-güvenli)" )
+Kod( kod: KOD-SNM-CIKTI-TAMLIGI, dosya: "urun/cekirdek/sinama/cikti-tamligi.test.ts",
+  ne: "🍎 sınama nöbeti — makine yüzünün boruya EKSİKSİZ teslimi; nöbet kendi büyük fikstürünü üretir ve 64 KB'ı aşan yansıt ile belge çıktısını gerçek boruyla tüketip dosya çıktısıyla bayt bayt karşılaştırır (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR)" )
 Kod( kod: KOD-SNM-CEVIR, dosya: "urun/cekirdek/sinama/cevir.test.ts",
   ne: "🍎 sınama nöbeti — çeviri katmanı (üç sözlük)" )
 Kod( kod: KOD-SNM-DAG, dosya: "urun/cekirdek/sinama/dag.test.ts",

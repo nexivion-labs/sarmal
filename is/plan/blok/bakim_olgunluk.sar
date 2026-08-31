@@ -812,7 +812,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
 
 // 🍎 Meyve ilanları (dosya-seviye · MIM-2.1 üretim-yeri)
 Kod( kod: KOD-CLI-KAPISI, dosya: "urun/cekirdek/src/sarmal.ts",
-  ne: "🍎 Komut satırı yardım ve bilinmeyen-komut kapısı — --help/-h/help dalları ile tanınmayan alt komutlar, ham Node yığın izi basmadan sef/kilitle deseniyle karşılanır; yalnızca-MCP sekiz komutun CLI davranışı da bu kapıdan karar bulur (BKM-CLI-A01)" )
+  ne: "🍎 Komut satırı yardım ve bilinmeyen-komut kapısı — --help/-h/help dalları ile tanınmayan alt komutlar, ham Node yığın izi basmadan sef/kilitle deseniyle karşılanır; yalnızca-MCP sekiz komutun CLI davranışı da bu kapıdan karar bulur (BKM-CLI-A01). Aynı dosya ÇIKIŞ KAPISINI da taşır: çıkış akışlarının tanıtıcısı dağıtıcıdan önce bloklamaya alınır, böylece doksan iki süreç sonlandırma çağrısının hiçbiri kuyrukta bekleyen çıktıyı düşüremez (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR)" )
 Kod( kod: KOD-CLI-KAPISI-NOBET, dosya: "urun/cekirdek/sinama/cli-kapisi.test.ts",
   ne: "🍎 komut satırı kapısı test-nöbeti — yardım dalı, bilinmeyen-komut dalı ve dürüst dosya hatası yirmi iki sınamayla regresyona kilitlenir (BKM-CLI-A01)" )
 Kod( kod: KOD-SABLON, dosya: "urun/cekirdek/src/sablon.ts",

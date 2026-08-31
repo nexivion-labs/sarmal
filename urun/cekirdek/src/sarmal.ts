@@ -128,6 +128,40 @@ import type { EbediKilit } from "./kuralci.ts";
 import type { Program, Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 
+// ── Çıkış kapısı: makine yüzü boruya EKSİKSİZ teslim edilir ─────────────────
+//   ÖLÇÜLMÜŞ KUSUR (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR · 2026-08-31). POSIX'te
+//   `process.stdout` bir BORUYA bağlıyken yazma ASENKRONDUR: tek bir büyük
+//   `write()` çağrısında çekirdek boru tamponunun aldığı kadarı (64 KiB)
+//   eşzamanlı gider, geri kalanı kullanıcı alanı kuyruğuna girer. Bu dosyanın
+//   her dağıtım kolu çıktısını bastıktan hemen sonra `process.exit()` çağırır
+//   ve `process.exit()` kuyruğu boşaltmadan süreci kapatır; kuyrukta bekleyen
+//   bayt SESSİZCE kaybolur, hiçbir hata basılmaz ve çıkış kodu sıfır kalır.
+//   Ölçüm şudur: `yansıt <büyük>.sar --json | wc -c` tam 65.536 bayt (geçersiz
+//   JSON) verir, aynı çağrı bir dosyaya yönlendirilince 212.389 bayt (geçerli
+//   JSON) verir. Dosya ve uçbirim etkilenmez, çünkü POSIX'te ikisine yazma
+//   zaten eşzamanlıdır; kusur yalnız boruda, yani ajanların ve alt-süreç
+//   köprülerinin tükettiği yolda yaşar.
+//
+//   ONARIM TEK KAPIDIR. Altmış küsur `process.exit()` çağrısını tek tek
+//   sarmalamak yerine, standart akışların tanıtıcısı DAĞITICI HİÇ ÇALIŞMADAN
+//   ÖNCE bloklamaya alınır. Bloklu tanıtıcıda her `write()` baytları teslim
+//   etmeden dönmez, dolayısıyla `process.exit()` çağrıldığı anda kuyrukta
+//   hiçbir şey kalmaz. Komutların ÜRETTİĞİ İÇERİK bir bayt değişmez; değişen
+//   tek şey çıktının eksiksiz teslim edilmesidir.
+//
+//   FAIL-SAFE. `_handle` Node'un belgelenmemiş iç yüzeyidir (yargs'ın uzun
+//   yıllardır taşıdığı `set-blocking` bağımlılığının kullandığı desenin ta
+//   kendisi). Tanıtıcının bulunmadığı ya da `setBlocking` taşımadığı bir
+//   ortamda kapı sessizce hiçbir şey yapmaz ve davranış bugünküyle aynı kalır;
+//   kapının kendisi hiçbir koşulda çökmez.
+function ciktiKapisiniEsZamanliyaAl(): void {
+  for (const akis of [process.stdout, process.stderr]) {
+    const tanitici = (akis as unknown as { _handle?: { setBlocking?: (blokla: boolean) => void } })._handle;
+    if (typeof tanitici?.setBlocking === "function") tanitici.setBlocking(true);
+  }
+}
+ciktiKapisiniEsZamanliyaAl();
+
 const args = process.argv.slice(2);
 const yol = args[0];
 
