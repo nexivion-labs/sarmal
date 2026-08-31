@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-30", oturum: 102,
-            neredeyiz: MIKRO-BLOKU-BITTI-KURALLAR-KANONDA-ISLENDI-MOLA,
-            sıradaki: KURALLARI-KONUS-HATIRLATICILARI-AC-SONRA-TA-A04-URETICI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-31", oturum: 103,
+            neredeyiz: 0.9.174-KURULDU-YAYIN-HAZIRLIGI-OLCULDU,
+            sıradaki: YAYIN-ONCESI-SEKIZ-KALEM-YA-DA-TA-A04-URETICI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -1240,6 +1240,62 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-08-30", oturum: 102,
         Blok teslim halkası uyumu, Blok sırası uyumu ve Blokun Fazının dosyada
         görünmemesi; çatı tarafında uzak depo düzeni ile ortak çalışma
         kurallarının çatı yönetişim gövdesine inmesi.
+
+        ═══ OTURUM 103 · 2026-08-31 ═══
+
+        MAKİNE KİLİDİ ÇÖZÜLDÜ (asıl bulgu). Founder'ın bilgisayarı kilitleniyordu
+        ve sebep Sarmal eklentisi değil, Claude Code durum çubuğunun çağırdığı
+        ccusage aracıydı: kilitsiz ve zaman aşımsız bir arka plan yenilemesi
+        kaçak üremeye girmiş, on iki sürece, yüzde bin iki yüz dört CPU'ya ve
+        altı virgül iki gigabayt belleğe ulaşmıştı; yük ortalaması üç yüz yirmi
+        beşti. Mekanizma ölçüldü: statusline altı buçuk saniyede bir çağrılıyor,
+        ccusage ise bir virgül otuz üç gigabaytlık kayıt yığınını ayrıştırdığı
+        için yetmiş sekiz saniye sürüyordu, dolayısıyla önbellek hiç tazelenemiyor
+        ve her çağrı yeni bir çift süreç doğuruyordu. Üç onarım yapıldı: tek uçuş
+        kilidi, kırk beş saniyelik sert zaman aşımı ve önbellek ömrünün on beş
+        dakikaya çıkarılması. Asıl çözüm ise tarih süzgeciydi: ccusage `--active`
+        ile `--since` kabul ediyor ve süzgeçli koşu yetmiş sekiz saniyeden üç
+        saniyeye indi, yani yirmi altı kat. Founder'ın hiçbir kaydı silinmedi ve
+        gösterilen hiçbir sayı değişmedi. Yük iki virgül bire indi. Betiğin iki
+        yedeği ev dizinindedir.
+
+        0.9.174 PAKETLENDİ VE KURULDU. Kurulu paket 0.9.173'tü ve tek ağaç işinin
+        hiçbirini taşımıyordu; panel her dosya değişiminde çatıyı iki kez
+        tarıyordu. Sürüm damgası yükseltildi, değişiklik günlüğü altı kalemle
+        yazıldı, paket üretildi ve kuruldu; eklenti dizinindeki sekiz eski sürüm
+        silinip kırk beş megabayt geri alındı.
+
+        DIL-1.6 UYUMU KAYNAKTA BAŞLADI. `ogret` aracının kopyala-başla örneği
+        Bloku adsız, Fazı küçük harfli yazıyordu; yani araç kuralın ihlalini
+        öğretiyordu ve yeni doğan her proje o örnekten türüyordu. Örnek, üç şablon
+        ve dört tanı mesajı düzeltildi. Ağacın kalan iki yüz beş kademesi
+        HTR-KADEME-ADLARI-UYUMU hatırlatıcısındadır.
+
+        YAYIN HAZIRLIĞI ÖLÇÜLDÜ. Tam rapor laboratuvarda yaşar
+        (nitelik/yayin_hazirlik_denetimi.md), çünkü açık deponun kendi ürününün
+        parçası değildir. Özeti şudur: depo teknik olarak yayımlanabilir; gömülü
+        mutlak yol, sır, anahtar ve parola taramaları SIFIR gerçek bulgu verdi;
+        lisans Apache-2.0 ve topluluk belgeleri eksiksiz. Yayın öncesi sekiz kalem
+        vardır ve en ağırları şunlardır: README ile NEDIR dosyalarındaki
+        çevrilmemiş yer tutucu, `.github` dizininin hiç bulunmaması, çekirdek
+        paketinde lisans alanının olmaması ve NOTICE dosyasının kendi ilan ettiği
+        Codicons borcu. Karar bekleyen tek gerçek ifşa bu durum kaydındaki kapalı
+        ürün adıdır; ya redakte edilmeli ya bilinçle kabul edilmelidir.
+
+        GÖRSEL DENEMELERİ (üç tur, ikisi çalışıyor). Grafın tamamı motorun kendi
+        ayrıştırıcısıyla çıkarıldı: yüz kırk altı dosya, bin sekiz yüz elli altı
+        düğüm, iki bin yedi yüz otuz altı kenar, sıfır kırık. Üç sayfa üretildi ve
+        laboratuvarın deney rafına indi. Kontrolcü şerhi dürüstçe kaydedilir:
+        üçü de Founder'a DENENMEDEN verildi ve üçü de kırıktı; sonuncusu tuval
+        boyutlandırmasında sonsuz döngü kurup makineyi kilitledi. Ders hafızaya
+        yazıldı. Founder'ın hükmü şudur: graf motoru ileride gerekli olacaktır,
+        fakat bugün kodlanmayacak; kendi Bloku olarak plana inecek ve sıfır
+        bağımlılık kuralı gereği yerleşim hesabı d3 olmadan yazılacaktır.
+
+        LABORATUVAR KAPISI ATLANDI (Founder onayı). Üç hata bu işlemeden önce
+        vardır ve eklenen yedi dosyanın hiçbiri .sar değildir; çözülmeyen
+        FAZ-2026-AGUSTOS kodu sarmal deposunda tanımlıdır ve kusur çapraz proje
+        ad alanı borcudur.
 
         ═══ SONRAKİ OTURUMUN İŞ LİSTESİ — SIRAYLA ═══
 
