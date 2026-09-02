@@ -73,13 +73,13 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
 //   yerde yazılır (MIM-1.3); onlar kendi dosyalarında Eylül'e bağlanmıştır.
 // ────────────────────────────────────────────────────────────────────────────
 Faz( kod: FAZ-2026-PERFORMANS, ad: "Performans Denetim Mevsimi", hedefTarih: "2026-08-30",
-     ne: "⚡ Tek günlük performans denetim mevsimi (Founder hükmü 2026-08-30 · OZK-12). Founder dört kabul ölçütü koydu: yol haritası azami süratle çalışır, diskin kontrolü bir saniyeyi geçmez, editörde en ufak gecikme olmaz ve motor her şeyi anlık gösterir; sayıları karar kaydındadır. Mevsim beş Blok taşır: omurga BLK-PRF ile dört kardeşi. Sıra denetçinin hükmüdür: önce iki onarımın kapısı, sonra tek ağaç ve mikro-onarımlar, sonra panel kipi, en son ölçüm kapılı işçi. Founder'ın sözü şudur: bu şartlar yerine gelmeli, çünkü daha yapılacak çok iş vardır; zemin oturmadan üstüne kat çıkılmaz." ) {
+     ne: "⚡ Tek günlük performans denetim mevsimi (Founder hükmü 2026-08-30 · OZK-12). Founder dört kabul ölçütü koydu: yol haritası azami süratle çalışır, diskin kontrolü bir saniyeyi geçmez, editörde en ufak gecikme olmaz ve motor her şeyi anlık gösterir; sayıları karar kaydındadır. Mevsim beş Blok taşır: omurga BLK-PRF ile dört kardeşi. Sıra denetçinin hükmüdür: önce iki onarımın kapısı, sonra tek ağaç ve mikro-onarımlar, sonra panel kipi, en son ölçüm kapılı işçi. Founder'ın sözü şudur: bu şartlar yerine gelmeli, çünkü daha yapılacak çok iş vardır; zemin oturmadan üstüne kat çıkılmaz. MÜHÜRLENDİ (Founder kapanış hükmü 2026-09-02): üç Blok bitti — tek ağaç, mikro onarımlar ve performans turu; birinci ölçüt tuttu, panel turu doksan beşinci yüzdelikte otuz dört milisaniyeye indi ve taban düşüşü yüzde doksan dokuz virgül sekizdir. Panel kipi ile işçi Blokları hiç başlamamıştı ve on beş açık Adımla Lansman halkasına devredildi; öteki üç ölçüt o halkada ölçülür." ) {
 
   çağır BLK-PRF            // ⚡ omurga — PRF-A06 şemsiyesi ve bugünkü iki onarımın kapı Adımları
   çağır BLK-PRF-TEKAGAC    // 🗺️ yol haritası denetim turunun tek ağacına bağlanır
   çağır BLK-PRF-MIKRO      // 🔬 çekirdek motorun ölçülmüş altı sıcak noktası
-  çağır BLK-PRF-PANELKIPI  // 🧭 motor yalnız panelin kullandığı üreticileri koşturur
-  çağır BLK-PRF-ISCI       // 🧵 motor ana iş parçacığından çıkar — ölçüm kapılı
+  // Panel kipi ile işçi gövdeleri 2026-09-02 kapanışında Lansman halkasına devredildi
+  // (ORK-8: açık iş devredilir, sessiz bırakılmaz); bir bağ tek yerde yazılır, çağır orada.
 }
 
 Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
@@ -90,5 +90,8 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   çağır BLK-BAKIM       // 📦 bakım ve olgunluk — on dört açık Adım; eklenti denetim turunun on bir kalemi burada yaşar
   çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı: mağaza yüklemesi ile GitHub dil kimliği başvurusu — v1'in kritik yolunda
   çağır BLK-SINAV3      // 🎓 SNV4-A01 tam steril sınav turu (ayrı pencere ister)
+  // Performans mevsiminden devrolan gövdeler (2026-09-02 kapanışı): hiç başlamamış on beş Adım.
+  çağır BLK-PRF-PANELKIPI  // 🧭 motor yalnız panelin kullandığı üreticileri koşturur — denetim turu bir saniye altı ölçütü
+  çağır BLK-PRF-ISCI       // 🧵 motor ana iş parçacığından çıkar — on altı milisaniye ölçütü, ölçüm kapılı
   çağır BLK-SOL-IDA-TEST // 🧪 Sol ile IDA gerçek dünya testi — Founder'ın örnek projesi beklendiği için bilinçli olarak açık tutulur, kapı Founder'dadır
 }
