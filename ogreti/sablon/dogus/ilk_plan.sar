@@ -36,6 +36,7 @@ Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
     // NOT: Katman'ın Takım bağı ADM-KURULUS-01 kapanınca beyan edilir —
     // Katman( ..., kullanır: TAKIM-X ) biçiminde (MIM-1.4 teknoloji ekseni · tek hedef).
     Katman( kod: KAT-{{KOD}}-MIMARI, ad: "Mimari",
+      teknolojiBağımsız: "Bu Katman teknoloji SEÇEN karar işidir, teknoloji KULLANAN yapım işi değildir; bağlanacağı Takım henüz doğmamıştır ve ADM-KURULUS-01 kapanınca kullanır: kenarıyla bağlanır.",
       ne: "🌿 Teknoloji henüz seçilmedi — ADM-KURULUS-01 kapanınca bu Katman seçilen Takım'a bağlanır" ) {
 
       // YAS-1.1 (katı rejim): Katman ile Adım arasındaki yol en az bir departman
@@ -45,7 +46,7 @@ Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
       AltKatman( kod: ALT-{{KOD}}-PLANLAMA, ad: "Planlama", departman: planlama,
         ne: "📋 Kuruluşun karar işi: mimari diyalog, ilan ve ilk gerçek planın yazımı" ) {
 
-        Adım( kod: ADM-KURULUS-01, durum: beklemede, bağımlı: [],
+        Adım( kod: ADM-KURULUS-01, durum: beklemede, bağımlı: [], öncelik: p1,
           ne: "🏛️ Mimari diyaloğu yürütmek ve projeyi gerçek kimliğine kavuşturmak. MCP `başla` aracının mimari diyaloğu izlenir: kapsayıcı tipi doğru mu (Proje / ÇalışmaAlanı), teknolojiler ve takımlar nelerdir, teknoloji hangi klasörleri doğurur. Sonuçlar anadizine ilan edilir, bu planın devamı gerçek iş Bloklarıyla yazılır" ) {
           görev: "MCP `başla` rehberini oku ve mimari diyaloğun üç sorusunu cevapla; Teknoloji ve Takım düğümlerini anadizine ilan et; bu Katmanı kullanır kenarıyla kurulan Takım'a bağla; anadizindeki yönerge metinlerini (Amaç/Kapsam/Sonuç ve ne alanları) projenin gerçek cümleleriyle değiştir; ilk gerçek iş Blokunu koni-dolu Adımlarla bu dosyaya ekle"
           kabul: [ "anadizinde en az bir Teknoloji ve bir Takım ilanlı; katmanlar Takım'a bağlı", "anadizinin bütün yönerge metinleri gerçek proje cümleleriyle değişti", "denetle sıfır hata veriyor ve ilk gerçek iş Bloku koni-dolu yazıldı" ]

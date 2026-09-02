@@ -20,7 +20,9 @@
 // örneği); esnek seçersen gerekçesini bu satırın yanına yaz.
 Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu proje ne yapar>" ) {
 
-  // ① TEKNOLOJİ — her şeyin abisi (ORK-2.4: Flutter seçilmeden ekran doğmaz).
+  // ① TEKNOLOJİ — her şeyin abisi (ORK-2.4: Katman teknolojiye bağlanmadan iş
+  //    dalı doğmaz). AŞAĞIDAKİ YIĞIN YALNIZCA ÖRNEKTİR ve hiçbir projenin
+  //    varsayılanı değildir; kendi projende kendi teknolojilerini ilan edersin.
   //    İlansız KOD kırık-referanstır (DIL-1.4; A3 tuzağı): Takım'ın bağımlı listesindeki
   //    her üye çözülen bir Teknoloji ilanına işaret etmeli.
   Teknoloji( kod: FLUTTER, ne: "önyüz çerçevesi — tek kod-tabanı, çok platform" )

@@ -1159,7 +1159,7 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: () => "Önce <varlık>_anadizin.sar + Teknoloji/Takım ilan et (şablon: sarmal başla) ve plan Adımlarını Takım'a `bağımlı:` ile bağla; anadizinli projedeysen bütünü `sarmal denetle <dizin>` ile denetle.",
   },
   "doğuş-sırası": {
-    mesaj: (p) => `Projede plan düğümü ('${a(p, "plan")}') var ama HİÇBİR dosyada doğuş omurgası yok — ne Teknoloji/Takım ilanı ne temel kök (Proje/Uygulama) ne çağır köprüsü. Plan, temeli atılmamış bir projeye yazılıyor (kuruluş sırası: önce teknoloji ve yasa ilanı, sonra plan).`,
+    mesaj: (p) => `Projede plan düğümü ('${a(p, "plan")}') var ama hiçbir dosyada TEKNOLOJİ omurgası yok: ne bir Teknoloji ya da Takım ilanı ne de onlara giden bir çağır köprüsü bulunuyor. Anadizindeki Proje kökü tek başına omurga sayılmaz, çünkü teknolojisi ilan edilmemiş bir projede plan hangi yığın üzerinde yürüyeceğini söyleyemez. Kuruluş sırası şudur: önce teknoloji ilanı, sonra plan.`,
     oneri: () => "Önce <varlık>_anadizin.sar + Teknoloji/Takım ilan et (şablon: sarmal başla); plan Adımlarını Takım'a bağla. Anadizinli projedeysen bütünü `sarmal denetle <kök>` ile denetle (fragman tek başına değil).",
   },
   "olgunluk-onayı": {
@@ -1738,7 +1738,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: () => "First declare <varlık>_anadizin.sar + Teknoloji/Takım (şablon: sarmal başla) and connect plan Adımları to the Takım with `bağımlı:`; in a project with an anadizin, audit the whole with `sarmal denetle <dizin>`.",
   },
   "doğuş-sırası": {
-    mesaj: (p) => `The project contains plan node '${a(p, "plan")}', but NO file contains a founding backbone — there is no Teknoloji/Takım declaration, foundational root (Proje/Uygulama) or çağır bridge. The plan is being written before the project's foundation; technology and law declarations come first, then the plan.`,
+    mesaj: (p) => `The project contains plan node '${a(p, "plan")}', but no file declares a TECHNOLOGY backbone: there is neither a Teknoloji or Takım declaration nor a çağır bridge reaching one. A bare Proje root in the anadizin does not count as a backbone, because a project whose technology is undeclared cannot say which stack its plan will run on. The founding order is technology first, plan second.`,
     oneri: () => "First declare <varlık>_anadizin.sar + Teknoloji/Takım (şablon: sarmal başla), then bind plan Adımları to the Takım. In a project with an anadizin, audit the whole with `sarmal denetle <kök>`, not the fragment alone.",
   },
   "olgunluk-onayı": {

@@ -31,9 +31,11 @@
 Proje( kod: PRJ-{{KOD}}, ad: "{{AD}}", rejim: katı,
   ne: "Bu alan projenin tek cümlelik tanımıdır — doğuş paketinin bıraktığı bu yönergeyi kendi cümlenle değiştir" ) {
 
-  // ① TEKNOLOJİ — her şeyin abisi: Flutter seçilmeden ekran doğmaz (ORK-2.4).
-  //    Teknoloji( kod: FLUTTER, ne: "önyüz çerçevesi" ) biçiminde ilan et;
-  //    sonra Takım( kod: TAKIM-ONYUZ, bağımlı: [ FLUTTER ] ) ile yığına bağla.
+  // ① TEKNOLOJİ — her şeyin abisi: bir Katman teknolojiye bağlanmadan iş dalı
+  //    doğmaz (ORK-2.4). Teknoloji seçimi İNSAN KARARIDIR ve doğuş paketi hiçbir
+  //    yığını varsaymaz; kararı MCP `başla` aracının mimari diyaloğunda verirsin.
+  //    Kalıp şudur: Teknoloji( kod: <YIĞIN-KODU>, ne: "<rolü>" ) ile ilan et, sonra
+  //    Takım( kod: TAKIM-<ALAN>, bağımlı: [ <YIĞIN-KODU> ] ) ile yığına bağla.
   //    Plan Katmanları Takım'a bağlanır. İlansız kod KIRIK REFERANSTIR (DIL-1.4).
 
   // ② MİMARİ — klasör ağacı. Doğuş paketi üç temel rafı hazır ilan eder;

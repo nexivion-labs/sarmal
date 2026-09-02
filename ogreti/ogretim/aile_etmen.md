@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: kimlik + yetenek + bellek + tetikleyici. Ailede 5 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: fd91f4ed
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 2cc7ec5e
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -31,7 +31,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | 🤖 Bellek | etmenin izole hafızası (ogrenme/); hata/öğrenilen buraya | kod · tür · ne |
 | 🤖 Etmen | kimlik+beceri+izole bellek+anayasa+hook+tetikleyici | kod · tür · uzmanlık · yetki · bellek · ne · uygular |
 | 🤖 Tetikleyici | "ne zaman kullan" koşulu; eşleşince Beceri otomatik fire (TRG) | kod · koşul · ne |
-| 🤖 Yetenek | stack-agnostik yetenek ilanı (F-2): Beceri `sağlar:` ile bağlanır — aynı yeteneğin Flutter/React uygulamaları ayrı Beceriler | kod · ne |
+| 🤖 Yetenek | stack-agnostik yetenek ilanı (F-2): Beceri `sağlar:` ile bağlanır — aynı yeteneğin farklı yığınlardaki uygulamaları ayrı Beceriler | kod · ne |
 
 ### İzinli sarma ilişkileri
 

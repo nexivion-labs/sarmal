@@ -77,8 +77,8 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     `tip kanonu ${k.surum} · üretim: ${tarih}. Kanon değişince yeniden üretilir; ` +
     `düzeltme gerekiyorsa kaynağı (oz/siniflama/kayit.json ya da üretici şablonu) düzelt.`,
     "",
-    "Bu proje **Sarmal** ile yönetilir: klasör/dosya hiyerarşisi ve kuralları, Flutter'ın",
-    "widget ağacı gibi bildirimsel `.sar` dosyalarında tanımlanır. Sarmal kod üretmez,",
+    "Bu proje **Sarmal** ile yönetilir: klasör/dosya hiyerarşisi ve kuralları, iç içe",
+    "geçen bildirimsel `.sar` dosyalarında bir ağaç olarak tanımlanır. Sarmal kod üretmez,",
     "**niyet** üretir — kodu senin gibi bir AI ajanı yazar; motor (denetçi) plan ile disk",
     "arasındaki sapmayı (drift) yakalar ve Türkçe tanılarla yol gösterir. Bu dosya dilin",
     "HARİTASIDIR, kesin cevabın kendisi değildir: canlı hüküm her zaman araçtadır —",
@@ -92,8 +92,8 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     `type canon ${k.surum} · generated: ${tarih}. Regenerate it when canon changes; ` +
     `if a correction is needed, fix the source (oz/siniflama/kayit.json or the producer template).`,
     "",
-    "This project is managed with **Sarmal**: folder/file hierarchy and rules are declared in",
-    "declarative `.sar` files, much like Flutter's widget tree. Sarmal does not produce code;",
+    "This project is managed with **Sarmal**: folder/file hierarchy and rules are declared as",
+    "a nested tree in declarative `.sar` files. Sarmal does not produce code;",
     "it produces **intent** — an AI agent like you writes the code, while the engine (checker)",
     "detects drift between plan and disk and guides you with diagnostics. This file is the",
     "MAP of the language, not the final answer: the live ruling is always in the tools — consult",
@@ -253,8 +253,13 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "      // Katman → AltKatman → Adım: Adımlar departman modüllerinde toplanır.",
     "      AltKatman( kod: ALT-ONYUZ-KOD, ad: \"kodlama\", departman: kodlama,",
     "        ne: \"☘️ Önyüz kodlama modülü\" ) {",
-    // Örnek kod adı bölünmüş: atıf bekçisi (karşılıksız-metin-atfı) öğretim örneğini
-    // bizim canlımızda çözülecek gerçek bir kod sanmasın — üretilen içerik bütündür.
+    // Örnek kod adı bölünmüş — GEREKÇE 2026-09-01'de DEĞİŞTİ. Eski gerekçe atıf
+    // bekçisiydi ve o gerekçe düştü: bekçi artık kod çiti içini öğretim örneği
+    // sayıyor (kimlik.ts · ornekCitleriniBosalt), dolayısıyla doğan proje sahte
+    // uyarı almıyor. Bölme yine de duruyor, çünkü İKİNCİ bir nöbet onu istiyor:
+    // tanı-metni hijyeni, bu üreticinin kullanıcıya giden dizelerinde çıplak Adım
+    // kodu deseni görmek istemez ve o nöbetin muafiyeti yalnız YORUMLARI kapsar,
+    // dizeleri değil. İki nöbet iki ayrı şey ölçüyor; hile ikincisinin kapısıdır.
     "        Adım( kod: ADM-GIR" + "IS-01, durum: beklemede, bağımlı: [],",
     "          ne: \"🍃 Giriş ekranını kurmak — kullanıcı e-posta+parola ile oturum açar\" ) {",
     "          görev: \"Giriş ekranı bileşenini yaz; form doğrulamasını ekle; oturum ucuna bağla\"",
@@ -440,7 +445,10 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "Tasarım/yazılım kavramlarının makine kanonu **TEKTİR**: `bilgi/tasarim_sozlugu/kayit.json`.",
     "Bir kavramın kimliği kanondaki **yoludur** (örnek: `onyuz.bilesen.menü`) — kavram adı uydurma,",
     `önce kanona bak. Bölümler ve kavram sayıları: ${bolumOzeti}.`,
-    "Her kavram Türkçe nötr ad → stack eşlemesi taşır (Flutter kanonik; React/SwiftUI + Python/Node/Go muadil).",
+    "Her kavram Türkçe nötr ad taşır ve yanında birden çok yığın için karşılık sunar. Bu eşleme",
+    "yalnız bir KARŞILIK TABLOSUDUR ve projenin teknolojisini BELİRLEMEZ: teknoloji, anadizinde",
+    "`Teknoloji` düğümüyle ilan edilendir. Sözlükte bir yığının adını görmen o yığının seçildiği",
+    "anlamına gelmez — teknoloji kararı insanındır ve ilan edilmeden hiçbir yığın varsayılmaz.",
     "",
     "Kullanıcının niyeti belirsizse (\"üstte bir menü olsun\" gibi) `bilgi/tasarim_sozlugu/baglam-haritasi.json`",
     "rehberindir: bağlam (düğüm tipi ya da `tip.alan`, en özel anahtar kazanır) → aday kavram aileleri" +
@@ -454,8 +462,10 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "There is exactly **ONE** machine canon for design/software concepts:",
     "`bilgi/tasarim_sozlugu/kayit.json`. A concept's identity is its **path** in canon (for example,",
     `\`onyuz.bilesen.menü\`) — do not invent a concept name; consult canon first. Sections and concept counts: ${bolumOzeti}.`,
-    "Each concept carries a neutral Turkish name → stack mapping (Flutter canonical; React/SwiftUI plus",
-    "Python/Node/Go counterparts).",
+    "Each concept carries a neutral Turkish name plus counterparts for several stacks. That mapping is",
+    "a LOOKUP TABLE only and does NOT set the project's technology: the technology is whatever the",
+    "anadizin declares with a `Teknoloji` node. Seeing a stack name in the dictionary does not mean",
+    "that stack was chosen — the technology decision is the human's, and none is assumed until declared.",
     "",
     "When the user's intent is ambiguous (such as \"put a menu at the top\"), use",
     "`bilgi/tasarim_sozlugu/baglam-haritasi.json` as your guide: context (node type or `tip.alan`; the most",

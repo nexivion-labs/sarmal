@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: bağımlı (adaptör: teknoloji·mcp·araç·model·ortam). Ailede 6 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: fd91f4ed
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 2cc7ec5e
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -32,7 +32,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | 🔌 Model | AI model registry/routing | kod · kimlik · ne |
 | 🔌 Ortam | dev/staging/prod ortamı | kod · ne |
 | 🔌 Takım | teknoloji takımı — bir arada benimsenen tutarlı yığın (bağımlı: üyeler); proje/etmen takımı bir bütün çağırır | kod · ne · bağımlı |
-| 🔌 Teknoloji | işin yaslandığı somut dış sistem — yazılım yığını (Flutter · Next · FastAPI) ya da işin yürütüldüğü kanal (Google İşletme Profili · Meta hesapları) | kod · ne |
+| 🔌 Teknoloji | işin yaslandığı somut dış sistem — bir yazılım yığınının önyüz, sunucu ya da veri katmanı ya da işin yürütüldüğü kanal (Google İşletme Profili · Meta hesapları) | kod · ne |
 
 ### İzinli sarma ilişkileri
 

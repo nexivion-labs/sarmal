@@ -244,7 +244,7 @@
     {
       "ad": "Yetenek",
       "aile": "etmen",
-      "ne": "stack-agnostik yetenek ilanı (F-2): Beceri `sağlar:` ile bağlanır — aynı yeteneğin Flutter/React uygulamaları ayrı Beceriler"
+      "ne": "stack-agnostik yetenek ilanı (F-2): Beceri `sağlar:` ile bağlanır — aynı yeteneğin farklı yığınlardaki uygulamaları ayrı Beceriler"
     },
     {
       "ad": "Beceri",
@@ -395,7 +395,7 @@
     {
       "ad": "Teknoloji",
       "aile": "teknoloji",
-      "ne": "işin yaslandığı somut dış sistem — yazılım yığını (Flutter · Next · FastAPI) ya da işin yürütüldüğü kanal (Google İşletme Profili · Meta hesapları)"
+      "ne": "işin yaslandığı somut dış sistem — bir yazılım yığınının önyüz, sunucu ya da veri katmanı ya da işin yürütüldüğü kanal (Google İşletme Profili · Meta hesapları)"
     },
     {
       "ad": "Takım",
