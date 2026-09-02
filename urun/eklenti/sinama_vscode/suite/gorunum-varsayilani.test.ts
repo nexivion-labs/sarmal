@@ -61,18 +61,24 @@ describe("EKL-F6-A04 — biçim eklentiden gelir, renk dayatılmaz", () => {
     }
   });
 
-  it("RENK DAYATILMAZ: eklenti hiçbir dizgi rengini kullanıcının yapılandırmasına sokmaz", () => {
+  it("RENK VARSAYILAN GELİR: anlamsal renk pakette ilanlıdır, dizgi rengi ilanı yoktur", () => {
+    // Founder 2026-09-02: EKL-F6-A04'ün 2026-08-22 hükmü "hiç renk gelmesin" diye
+    // yanlış okunmuştu; kastedilen, rengin gelmesi ve kullanıcının onu AYARLARDAN
+    // değiştirebilmesidir. configurationDefaults bir dayatma değildir, çünkü
+    // kullanıcının kendi ayarı her koşulda üstündür (aşağıdaki KULLANICI AYARI
+    // ÜSTÜNDÜR nöbeti bunu gerçek oturumda ölçer). İki anahtar bilinçle ayrılır.
     const vars = paketIlani().varsayilanlar;
     assert.ok(!("editor.tokenColorCustomizations" in vars),
-      "paket yeniden dizgi rengi ilan ediyor — bu ilan boyayıcıya ulaşmaz ve çalışıyormuş gibi durur");
-    assert.ok(!("editor.semanticTokenColorCustomizations" in vars),
-      "paket yeniden anlamsal renk ilan ediyor — bu ilan ekrana ulaşır ve tam da bu yüzden yasaktır: "
-      + "kullanıcının seçtiği temayı varsayılan yoluyla ezer (hüküm 2026-08-24: renk dayatılmaz)");
+      "paket dizgi rengi ilan ediyor — bu ilan boyayıcıya ulaşmaz ve çalışıyormuş gibi durur");
+    const anlamsal = vars["editor.semanticTokenColorCustomizations"] as { rules?: Record<string, string> } | undefined;
+    assert.ok(anlamsal?.rules && Object.keys(anlamsal.rules).length >= 30,
+      "paket anlamsal renk ilan etmiyor — kanon paleti yalnız Sarmal temasını seçen kullanıcıda görünür, "
+      + "doğan her yeni projede niyet metinleri kullanıcının temasının tek rengine düşer");
     assert.ok(!("editor.semanticHighlighting.enabled" in vars),
-      "paket anlamsal vurguyu bütün diller için küresel zorluyor — bu tercih temanındır");
+      "paket anlamsal vurguyu bütün diller için küresel zorluyor — tercih [sarmal] dil bloğunda yaşamalı");
     const etkin = vscode.workspace.getConfiguration().get<TmBlok>("editor.tokenColorCustomizations");
     assert.ok(!etkin?.textMateRules?.length,
-      "temiz bir çalışma alanında etkin textMate kuralı var — bir yerden renk dayatılıyor demektir");
+      "temiz bir çalışma alanında etkin textMate kuralı var — çalışmayan bir ilan bir yerden sızıyor demektir");
   });
 
   it("KAPSAM KÖPRÜSÜ: kullanıcının kendi teması Sarmal'ı boyayabilsin diye ilan yerindedir", () => {
@@ -85,13 +91,16 @@ describe("EKL-F6-A04 — biçim eklentiden gelir, renk dayatılmaz", () => {
       "ilan edilen tip ile kapsam karşılığı olan tip kümesi ayrışmış — kapsamsız tip kullanıcının temasında renksiz kalır");
   });
 
-  it("anlamsal renk kuralı temiz zeminde YOKTUR — boyama kullanıcının temasınındır", () => {
+  it("anlamsal renk kuralı temiz zeminde ETKİNDİR — hiçbir şey yazmayan kullanıcı kanonun paletini görür", () => {
+    // Ölçüm gerçek oturumda: paketin varsayılanı etkin yapılandırmaya ulaşır ve
+    // otuz bir anlamsal tipin tamamı renk alır; niyet metni tipi de (sarmalDizgi)
+    // aralarındadır, çünkü dizgiler bir aydır TextMate kapsamına bırakılıyor ve
+    // o kapsamın rengi paketten ekrana hiç ulaşmıyordu.
     const etkin = vscode.workspace.getConfiguration()
       .get<{ rules?: Record<string, string> }>("editor.semanticTokenColorCustomizations");
-    assert.ok(!etkin?.rules || Object.keys(etkin.rules).length === 0,
-      "temiz bir çalışma alanında etkin anlamsal renk kuralı var — hiçbir şey yazmayan "
-      + "kullanıcının temasına renk dayatılıyor demektir; kanon paleti yalnız iki Sarmal "
-      + "temasıyla ve giydir komutuyla gelir");
+    assert.ok(etkin?.rules && Object.keys(etkin.rules).length >= 30,
+      "temiz bir çalışma alanında etkin anlamsal renk kuralı yok — varsayılan ilan boyayıcıya ulaşmıyor");
+    assert.ok(etkin.rules.sarmalDizgi, "niyet metni tipi renk almıyor — dizgiler temanın rengine düşer");
   });
 
   it("kanon paleti isteyene tema seçicisinden gelir: iki Sarmal teması ilan edilmiştir", () => {
