@@ -88,7 +88,51 @@ const HARF_VAR = /[A-ZÇĞİÖŞÜ]/;
 // YAPISAL kenardır — gezin onu ATIF değil tipli GİDEN bağ olarak izler.
 const GIDEN_KENAR_PARAM: ReadonlySet<string> = new Set(["bağımlı", "besler", "hatırlat", "üretir", "dayanak"]);
 
+/** Örnek kaynak çiti — `sar` etiketli açılış. Etiketsiz çit ölçülmeye devam eder,
+ *  çünkü depo hakkında olgusal iddia (raf ağacı gibi) taşıyabilir. */
+const ORNEK_CIT_ACILIS = /^\s*```+\s*sar\s*$/iu;
+
+/** Herhangi bir çit satırı — kapanışı tanımak için açılıştan bağımsız aranır. */
+const CIT_SATIRI = /^\s*```/u;
+
+/**
+ * `sar` etiketli çit bloklarının içini boşaltır (saf). Satır SAYISI korunur,
+ * çünkü bulgunun adresi kullanıcının dosyada gideceği yerdir ve satırları kaydıran
+ * bir temizlik adresi yalanlar. Blok kapanmadan dosya biterse kalan satırlar da
+ * boşaltılır; kapanmamış bir örnek bloğunu düz metin saymak, o bloğun tamamını
+ * sahte bulgu kaynağına çevirirdi.
+ *
+ * TEK KAYNAK: kök yüzeyi kapısı ile .md/.ts metin-atıf kapısı (dosyayiTara) aynı
+ * kuralı buradan okur; kural ikizlenirse iki kapı sessizce ayrışır.
+ */
+export function ornekCitleriniBosalt(metin: string): string {
+  const satirlar = metin.split("\n");
+  let ornekIcinde = false;
+  const cikti = satirlar.map((satir) => {
+    if (!ornekIcinde) {
+      if (ORNEK_CIT_ACILIS.test(satir)) { ornekIcinde = true; return ""; }
+      return satir;
+    }
+    if (CIT_SATIRI.test(satir)) { ornekIcinde = false; return ""; }
+    return "";
+  });
+  return cikti.join("\n");
+}
+
 export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
+  // ÖĞRETİM ÖRNEĞİ KAPISI (.md/.ts): ```sar çitinin içi örnektir, atıf değildir.
+  // Ölçülen kusur (2026-09-01): doğuş paketinin ürettiği AGENTS.md bir örnek plan
+  // taşır ve o örnekteki Adım kodu hiçbir .sar'da çözülmez; doğan HER proje ilk
+  // denetiminde sahte `karşılıksız-metin-atfı` alıyordu, dosya iki kopya olduğu
+  // için de uyarı iki kez sayılıyordu. Üretici bunu kaynağında kodu ikiye bölerek
+  // atlatıyordu ("ADM-GIR" + "IS-01"); o hile yalnız BU depoyu koruyor, üretilen
+  // dosyada harfler birleştiği için müşterinin evini korumuyordu. Boşaltma kuralı
+  // ikizlenmez: kök yüzeyi kapısının kullandığı `ornekCitleriniBosalt` TEK
+  // kaynaktır ve yalnız `sar` etiketli çiti örnek sayar — etiketsiz ``` bloğu
+  // deponun kendisi hakkında olgusal iddia taşıyabildiği için ölçülmeye devam eder.
+  // .sar dosyaları kapsam dışıdır: oradaki belge blokları gezin'in atıf listesini
+  // besler ve bu kapı onlara dokunmaz.
+  if (!sarMi) metin = ornekCitleriniBosalt(metin);
   const tanimlar: DosyaKaydi["tanimlar"] = [];
   const giden: GidenKenar[] = [];
   // Aday anahtarı konum bazlı — AST ile metin katmanı aynı sözceyi bulunca teklenir.

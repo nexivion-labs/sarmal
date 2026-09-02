@@ -191,32 +191,10 @@ export const GIZLI_KOK_ADI = "_KapaliUrun";   // kapalı ürünün gerçek klas�
 /** Kimlik şekli: en az bir parçası rakam taşıyan bir kuyrukla biter (ikinci süzgeç). */
 const KOD_SEKLI = /-[A-ZÇĞİÖŞÜ_]*\d[A-Z0-9ÇĞİÖŞÜ_]*$/u;
 
-/** `sar` etiketli çit bloğunun açılış satırı — örnek KAYNAK burada başlar. */
-const ORNEK_CIT_ACILIS = /^\s*```+\s*sar\s*$/iu;
-
-/** Herhangi bir çit satırı — kapanışı tanımak için açılıştan bağımsız aranır. */
-const CIT_SATIRI = /^\s*```/u;
-
-/**
- * `sar` etiketli çit bloklarının içini boşaltır (saf). Satır SAYISI korunur,
- * çünkü bulgunun adresi kullanıcının dosyada gideceği yerdir ve satırları kaydıran
- * bir temizlik adresi yalanlar. Blok kapanmadan dosya biterse kalan satırlar da
- * boşaltılır; kapanmamış bir örnek bloğunu düz metin saymak, o bloğun tamamını
- * sahte bulgu kaynağına çevirirdi.
- */
-export function ornekCitleriniBosalt(metin: string): string {
-  const satirlar = metin.split("\n");
-  let ornekIcinde = false;
-  const cikti = satirlar.map((satir) => {
-    if (!ornekIcinde) {
-      if (ORNEK_CIT_ACILIS.test(satir)) { ornekIcinde = true; return ""; }
-      return satir;
-    }
-    if (CIT_SATIRI.test(satir)) { ornekIcinde = false; return ""; }
-    return "";
-  });
-  return cikti.join("\n");
-}
+// Çit boşaltması TEK kaynakta yaşar (kimlik.ts) — kök yüzeyi kapısı ile .md/.ts
+// metin-atıf kapısı aynı kuralı paylaşır; re-export dışarıdaki çağrıyı korur.
+export { ornekCitleriniBosalt } from "./kimlik.ts";
+import { ornekCitleriniBosalt } from "./kimlik.ts";   // bu dosyanın kendi kullanımı için
 
 /**
  * Kök yüzeylerindeki KARŞILIKSIZ kod atıflarını bulur (SAF — diske dokunmaz;

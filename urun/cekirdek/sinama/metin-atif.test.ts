@@ -155,3 +155,46 @@ test("④: özellikte tanımlı koda yapılan .md atfı artık SAHTE kırık-ref
   indeks.dosyaGuncelle("rapor.md", "ADM-OZ-1 tamamlandı.");
   assert.deepEqual(metinAtifTanilari(indeks, kodIndeks), []);
 });
+
+// ── ⑤ KOD ÇİTİ KÖRLÜĞÜ: öğretim örneği atıf değildir (2026-09-01) ──────────
+//
+//   Ölçülen kusur: doğuş paketinin ürettiği AGENTS.md bir örnek plan taşır ve
+//   içindeki `ADM-GIRIS-01` hiçbir .sar'da çözülmez. Doğan HER proje ilk
+//   denetiminde sahte bir `karşılıksız-metin-atfı` alıyordu; dosya çalışma alanı
+//   ile proje kökünde iki kez bulunduğu için uyarı da iki kez sayılıyordu.
+//   Üretici bunu kaynağında kodu ikiye bölerek atlatıyordu; o hile yalnız BU
+//   depoyu koruyordu, üretilen dosyada harfler birleştiği için müşterinin evini
+//   korumuyordu. Kaçış artık nöbette ve kapsamı bilinçle dardır: .md/.ts.
+
+test("⑤: .md kod çiti İÇİNDEKİ karşılıksız kod öğretim örneğidir — tanı ÜRETMEZ", () => {
+  const { indeks, kodIndeks } = kurulum({
+    "AGENTS.md": "Örnek plan:\n\n```sar\nAdım( kod: ADM-DGS-99, durum: beklemede )\n```\n",
+  });
+  assert.deepEqual(metinAtifTanilari(indeks, kodIndeks), [],
+    "kod çiti içi örnektir; doğan proje ilk gününde sahte uyarı almamalı");
+});
+
+test("⑤: kod çiti DIŞINDAKİ karşılıksız kod hâlâ yakalanır — süzgeç fazla geniş değil", () => {
+  const { indeks, kodIndeks } = kurulum({
+    "AGENTS.md": "Gövdede ADM-DGS-99 geçiyor.\n\n```sar\nAdım( kod: ADM-DGS-98 )\n```\n",
+  });
+  const t = metinAtifTanilari(indeks, kodIndeks);
+  assert.equal(t.length, 1, "yalnız çit DIŞINDAKİ aday tanı almalı");
+  assert.ok(t[0].tani.mesaj.includes("ADM-DGS-99"), "yakalanan aday çit dışındaki olmalı");
+});
+
+test("⑤: kapanmamış çit dosyanın kalanını yutmaz sayılır — açık çit sonuna dek örnektir", () => {
+  const { indeks, kodIndeks } = kurulum({
+    "AGENTS.md": "```sar\nAdım( kod: ADM-DGS-99 )\n",   // kapanış çiti YOK
+  });
+  assert.deepEqual(metinAtifTanilari(indeks, kodIndeks), [],
+    "kapanmamış çit bilinçli olarak sonuna dek sürer — örnek blok yarıda kesilmez");
+});
+
+test("⑤: .sar belge bloğundaki kod çiti DOKUNULMADI — gezin atıf listesi eksilmez", () => {
+  const indeks = new KimlikIndeksi();
+  indeks.dosyaGuncelle("plan/x.sar", 'Adım( kod: ADM-DGS-13, durum: beklemede, ne: "x" )\n-->|\n```\nADM-DGS-99\n```\n|<--\n');
+  const kodlar = indeks.tumAdaylar().map((a) => a.kod);
+  assert.ok(kodlar.includes("ADM-DGS-99"),
+    "kapsam .md/.ts ile sınırlı; .sar aday evreni bu turdan etkilenmez");
+});
