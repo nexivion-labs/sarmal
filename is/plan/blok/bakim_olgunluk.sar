@@ -809,6 +809,54 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
       }
     }
   }
+  // ═══ KABUK OLGUNLUĞU — endüstri ölçümü 2026-09-02 ═══════════════════════════
+  //   Founder yayın öncesi kodun endüstri standardına uzaklığını sordu; on kalemlik
+  //   ölçüm yüzde yetmiş verdi. Üstte olduğu yerler test disiplini, sıfır çalışma
+  //   bağımlılığı ve işleme kapısıdır; altta olduğu üç kalem araç zinciridir ve
+  //   Founder "bunlar kabul edilebilir değil" hükmünü verdi. Üçü burada yaşar.
+  Katman( kod: BKM-KBK, ad: "Kabuk Olgunluğu",
+    teknolojiBağımsız: "Sürekli tümleştirme, dil denetimi ve dosya bölme işleri iki paketi birden kapsar ve tek bir yığına bağlanmaz; araç zinciri deponun kabuğudur, gövdesi değil.",
+    ne: "🧰 Deponun dışarıdan ilk görülen kabuğu: sürekli tümleştirme rozeti, dil denetimi ve dosya boyutu. İçerik endüstrinin üstünde, kabuk altındaydı." ) {
+
+    AltKatman( kod: ALT-BKM-KBK-ZINCIR, ad: "Araç Zinciri", departman: kodlama,
+      ne: "🔗 Kapıların depo dışından da görünür olması: yerel kapılar bugün her işlemede koşuyor fakat uzak depoda hiçbir rozet yok, dil denetimi hiç kurulmamış." ) {
+
+      Adım( kod: BKM-KBK-A01, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, STR-3.1 ],
+        ne:     "🟢 Sürekli tümleştirme akışının kurulması. Depo bugün yerel işleme kapılarıyla korunmaktadır ve her işlemede çekirdek ile eklenti süitleri koşmaktadır, fakat bu koruma yalnız işleyenin makinesinde yaşar; uzak depoda hiçbir akış yoktur ve depo açıldığında ilk bakan kişi yeşil rozet görmeyecektir. Açık kaynakta rozet güven işaretidir ve yokluğu bakımsızlık okunur." ) {
+        görev:  "GitHub Actions akışı yazılır: çekirdek süiti, eklenti süiti, iki paketin tip denetimi ve deponun kendi denetimi dört ayrı iş olarak koşar; Node sürümü tip sıyırma bayrağını destekleyen en düşük kararlı sürüme sabitlenir; akış her gönderimde ve her birleştirme isteğinde tetiklenir. Uzak depo henüz yokken dosya yazılır ve yerel olarak act ya da eşdeğeriyle kuru koşulur; ilk gönderimde yeşil koşması beklenir."
+        kabul:  [
+          "Akış dosyası dört işi tanımlar ve her iş tek başına başarısız olabilir; bir işin kırmızısı ötekini gizlemez.",
+          "Node sürümü sabittir ve yerel kapının kullandığı bayraklarla birebirdir; yerelde yeşil olan uzakta da yeşildir.",
+          "Deponun kendi denetimi akışta koşar ve sıfır hata ile sıfır uyarı şartı akışın kendisinde yazılıdır; Sarmal kendi kapısını kendi üstünde herkese gösterir.",
+          "README rozet satırı taşır ve rozet akışın adına bağlıdır."
+        ]
+        sınır:  "Bu Adım yayın ya da paketleme akışı kurmaz; yalnız doğrulama akışı kurar. Mağaza yüklemesi ve sürüm etiketleme ayrı Adımların işidir."
+      }
+
+      Adım( kod: BKM-KBK-A02, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, DIL-1.5 ],
+        ne:     "🧹 Dil denetiminin kurulması ve mevcut bulguların kapatılması. Ölçüm 2026-09-02: ESLint'in önerilen kural kümesi çekirdekte altmış sekiz hata ile beş uyarı, eklentide on hata ile üç uyarı veriyor; toplam seksen altı bulgunun yetmiş beşi kullanılmayan değişken ya da içe aktarma, yedisi açık any, üçü boş ifade. Kırk yedi bin satırda seksen altı bulgu az sayılır fakat sıfır değildir ve dil denetimi olmayan bir depo dışarıdan bakımsız okunur." ) {
+        görev:  "İki pakete ortak bir ESLint yapılandırması yazılır ve typescript-eslint önerilen kümesi temel alınır; seksen altı bulgu tek tek kapatılır ve hiçbiri susturulmaz, susturma gerekiyorsa gerekçesi satırında yazılır; dil denetimi işleme kapısına ve sürekli tümleştirme akışına bağlanır; kendi biçimlendiricinin kapsamı ile ESLint'in kapsamı ayrılır ve ikisinin çakışmadığı bir nöbetle gösterilir."
+        kabul:  [
+          "İki pakette ESLint sıfır hata ve sıfır uyarı verir.",
+          "İşleme kapısı dil denetimini koşar ve kırmızıda işlemeyi bloklar; bu mutasyonla kanıtlanır.",
+          "Susturulan kural sayısı ve her birinin gerekçesi yapılandırma dosyasında okunur; gerekçesiz susturma yoktur.",
+          "Çekirdek ile eklenti süitleri dil denetimi sonrası yeşildir ve davranış değişmemiştir."
+        ]
+        sınır:  "Bu Adım biçimlendirme kuralı koymaz; biçim Sarmal'ın kendi biçimlendiricisinindir. Yalnız hata sınıfı kurallar ve kullanılmayan kod denetlenir."
+      }
+
+      Adım( kod: BKM-KBK-A03, durum: beklemede, öncelik: p2, bağımlı: [ BKM-KBK-A02 ], referans: [ YAS-4.1, MIM-1.6 ],
+        ne:     "✂️ Denetçi dosyasının bölünmesi — YAYIN SONRASI. Çekirdeğin denetçi dosyası bugün dört bin beş yüz kırk dört satırdır ve endüstrinin bin satırlık tavanının dört buçuk katıdır; içinde onlarca bağımsız bekçi yaşar ve her biri kendi dosyasında yaşayabilir. Founder 2026-09-02 tarihinde bunu kabul edilebilir bulmadı, fakat yayından altı gün önce motorun kalbini bölmek provaları böler; bu yüzden Adım yayın sonrasının ilk işi olarak açılır ve niyet bugünden görünür kılınır." ) {
+        görev:  "Denetçi dosyasındaki bekçiler işlevlerine göre kümelenir ve her küme kendi modülüne taşınır; dışa açık imza değişmez ve mevcut bin iki yüz sınamanın tamamı dokunulmadan yeşil kalır; bölme her kümede ayrı işlemeyle yapılır ki bir kümenin kusuru ötekini kirletmesin; bölme sonrası en büyük dosya bin satırın altında kalır."
+        kabul:  [
+          "Çekirdekte bin satırı aşan kaynak dosya kalmaz; üretilen dosyalar bu sayımın dışındadır ve dışta oldukları kayıtta yazılıdır.",
+          "Bölme öncesi ve sonrası çekirdek süiti aynı sınama sayısıyla yeşildir; hiçbir nöbet değiştirilmemiş ya da silinmemiştir.",
+          "Dışa açık imzalar birebir korunmuştur ve eklenti süiti değişiklik olmadan yeşildir."
+        ]
+        sınır:  "Bu Adım davranış değiştirmez, kural eklemez, kural silmez; yalnız dosya sınırlarını taşır. Yayın öncesi başlatılmaz."
+      }
+    }
+  }
 }
 
 // 🍎 Meyve ilanları (dosya-seviye · MIM-2.1 üretim-yeri)
@@ -836,3 +884,4 @@ Kod( kod: KOD-KARARLAR-NOBET,
 // 🍎 BKM-FND-A05 renk üreteci hedefi (2026-08-27)
 Kod( kod: KOD-EKL-RENK-URET, dosya: "urun/eklenti/arac/renk-uret.mjs",
   ne: "🍎 Renk ve gömülü kanon üreteci — kanon paletinden tema dosyalarını, anlamsal renk tablosunu ve eklentinin gömülü kanon ikizini üretir; hedef ayar dosyası seçimi BKM-FND-A05 kapsamındadır" )
+
