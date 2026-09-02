@@ -806,9 +806,12 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Bu Adım kapalı taraftaki envanterin İÇERİĞİNİ değiştirmez, yalnız açık taraftan siler. Açık kaynak yapılacak minimal sürümün kapsamı bu Adımın konusu değildir; o karar dalga ayrımında verilmiştir ve burada yalnız uygulanır. Git geçmişinin fiilî temizliği yayın Adımının işidir; burada yalnız açık kaydedilir."
       }
 
-      Adım( kod: BKM-FND-A05, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YUZ-4.1, YUZ-7 ],
+      Adım( kod: BKM-FND-A05, durum: geliştirmede, öncelik: p3, bağımlı: [], referans: [ YUZ-4.1, YUZ-7 ],
         onay: "onaylandı — 2026-08-27 · Founder taşıma kopmaları turunda bu kalemin bakım Adımı olarak yazılmasına hüküm verdi",
         üretir: [ KOD-EKL-RENK-URET ],
+        koşu: Koşum( kod: KSM-BKM-FND-A05, tarih: 2026-09-02, mühür: BLOCKED, karar: eskalasyon,
+          kanıt: "çatı .vscode/settings.json · üreteç koşusu öncesi ve sonrası aynı sağlama (a17cf5bb) · paket ile çatı tablolarının karşılaştırması",
+          ne: "Üretecin hedefi ölçüldü: yukarı yürüyüp bulduğu ilk git kökü bugün açık depodur, taşımadan önce çatının kendisiydi ve çatı kopyası o günden beri tazelenmemişti; anlamsal tabloda sarmalDizgi kuralı eksikti. İkinci yol seçildi ve dizgi rengi, anlamsal renk ile sarmal dil bloğu kopyaları çatıdan kaldırıldı, çünkü birincisi ekrana ulaşmıyor, öteki ikisi 0.9.178 paketinin varsayılanından üst küme olarak geliyor; üreteç koşturuldu ve çatı dosyasına dokunmadığı sağlamayla gösterildi. Açık kalem tektir ve Founder kararı ister: çatıdaki on bir tezgâh rengi kanonun rozet paletinden üretilmiş bir kopyadır ve Founder Dark 2026 temasını kullandığı için o renkleri bugün yalnız bu kopyadan görmektedir; kopya kalırsa bayatlayabilir, kalkarsa Sorunlar panelinin renkleri temanın varsayılanına döner ya da sarmal-koyu teması seçilir." ),
         ne: "🎨 Renk üreteci çatının ayar dosyasını tazelememektedir. Üreteç yukarı yürüyerek bulduğu ilk git kökünün `.vscode/settings.json` dosyasını tazeler; 26 Ağustos 2026 taşımasından önce o kök çalışma alanının kendisiydi, bugün ise açık depodur. Çatının ayar dosyası aynı üretilmiş renk ve simge tablosunun bir kopyasını taşımaya devam eder, fakat üreteç oraya artık hiç uğramaz ve kopya kanon paleti değiştikçe sessizce bayatlar." ) {
         görev: [
           "Üretecin hedef seçimini ölç ve kararı tek yerde topla: bugün hangi kökü bulduğu, taşımadan önce hangi kökü bulduğu ve çatı kopyasının ne zaman yazıldığı kayda geçer.",
