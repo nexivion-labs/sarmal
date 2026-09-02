@@ -16,8 +16,8 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-01", oturum: 105,
-            neredeyiz: 0.9.175-KURULDU-SAHA-SINAVI-CANLI-BASLADI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-02", oturum: 106,
+            neredeyiz: 0.9.178-KURULDU-RENK-YOLU-VE-DOGUS-PAKETI-ONARILDI,
             sıradaki: PRF-TA-A05-FOUNDER-CANLI-OLCUMU,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
@@ -56,7 +56,13 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-01", oturum: 105,
                          GERCEK-KABUK-SUITI-ONBES-KIRMIZI-VE-HIC-KAPIDA-KOSMUYOR,
                          BELGEKAPANDI-YOLU-HICBIR-NOBETLE-KORUNMUYOR,
                          KILAVUZ-CIZGILERI-FONTA-BAGIMLI-GOZLEM,
-                         HTR-SINAMA-SONUCU-YUZEYSIZ-FOUNDER-DEGERLENDIRMESI ] ) {
+                         HTR-SINAMA-SONUCU-YUZEYSIZ-FOUNDER-DEGERLENDIRMESI,
+                         RENK-URET-CATI-AYARINI-TAZELEMIYOR-KAPANDI-2026-09-02,
+                         HTR-ATIF-AILE-SUZGECI-KOR-SEKSEN-BES-AILE-FOUNDER-DENGE-KARARI,
+                         TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
+                         DOGUS-PAKETI-VSCODE-AYARI-VE-KANON-URETMIYOR-KARAR-BEKLIYOR,
+                         FOTO-HASADI-YIRMI-BIR-DEPO-ON-YONTEM-FOUNDER-DEGERLENDIRMESI,
+                         SONNET-YASAGININ-DAYANDIGI-OLCUM-BAYAT-YENIDEN-OLCULMELI ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
         aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
@@ -1481,6 +1487,75 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-01", oturum: 105,
         ise yalnız yerelde işlendi çünkü uzak adresi hiç kurulmamıştır. İlk
         gönderim YTK-A22 gereği canlı açılışa bırakılmıştır ve uzak adres eklemek
         Founder hükmü ister; hiçbir oturum bunu kendiliğinden yapmaz.
+
+        ═══ OTURUM 106 · 2026-09-02 · RENK YOLU VE DOĞUŞ PAKETİ ═══
+
+        ① BİR MÜŞTERİ PROJESİ SAHA SINAVINI AÇTI VE ÜÇ KUSUR AYNI KÖKTEN ÇIKTI.
+        Founder bir müşteri firması için doğuş paketiyle gerçek bir proje doğurdu
+        ve ilk gün üç şikâyet bildirdi: plana yazılmış bir teknoloji adı, mavi
+        görünen niyet metinleri ve durum çubuğunda sürekli yanan taban kanon
+        işareti. Üçünün de kaynağı ürünün kendisiydi; ajan hiçbir dosyaya
+        dokunmamıştı ve bu ölçülerek gösterildi, çünkü üretilen üç dosya
+        şablonlarla birebir aynı satır sayısındaydı.
+
+        ② TEKNOLOJİ ADI SEKİZ YERDEN KALDIRILDI VE BİR ATIF YANLIŞ HÜKME
+        GİDİYORDU. Doğuş şablonları bir yığını örnek diye anıyordu, okuyan ise
+        onu varsayılan sanıyordu; Founder bile bir an ajanın seçtiğini sandı.
+        Tasarım sözlüğü Founder hükmüyle yerinde bırakıldı ve yalnız eşlemenin
+        bir karşılık tablosu olduğu, teknolojiyi belirlemediği açıkça yazıldı.
+        Aynı şablonlar çözülen fakat yanlış hükme giden bir atıf da taşıyordu:
+        anılan madde Kullanır Kenarı hükmüdür ve hiçbir teknoloji adı geçirmez.
+
+        ③ DOĞUŞ PAKETİ KENDİ DENETİMİNİ KİRLETİYORDU. Ürettiği ajan brifingi bir
+        örnek plan taşıyor ve içindeki Adım kodu hiçbir kaynakta çözülmüyordu,
+        dolayısıyla doğan her proje ilk denetiminde sahte bir uyarı alıyordu.
+        Üretici bunu kaynağında kodu ikiye bölerek atlatıyordu ve o hile yalnız
+        bu depoyu koruyordu. Kaçış nöbete alındı; boşaltma kuralı ikizlenmedi,
+        kök yüzeyi kapısıyla tek kaynakta paylaşıldı. Şablonun beyan eksikleri de
+        kapandı ve yeni doğan projede tanı sayısı sekizden dörde, uyarı ikiden
+        bire indi; kalan tek uyarı Founder'ın kendi hükmüyle kasıtlıdır.
+
+        ④ RENK HÜKMÜ BİR AYDIR YANLIŞ UYGULANIYORDU. Kayıttaki "renk kullanıcıya
+        dayatılmaz" cümlesi "hiç renk gelmesin" diye okunmuştu; Founder bu okumayı
+        düzeltti ve kastedilenin varsayılanın gelmesi, kullanıcının ise ayarlardan
+        değiştirebilmesi olduğunu bildirdi. Varsayılan bir dayatma değildir, çünkü
+        kullanıcının kendi ayarı her koşulda üstündedir. Otuz anlamsal renk kuralı
+        pakete indi; anlamsal vurgu küresel değil yalnız dil bloğunda açıldı ve
+        dizgi rengi ilanı bilinçle dışarıda bırakıldı, çünkü o ilanın boyayıcıya
+        ulaşmadığı iki bağımsız ölçümle saptanmıştır.
+
+        ⑤ ASIL KUSUR BAŞKA YERDEYDİ VE BİR AY YAŞADI. Niyet metinleri yalnız
+        TextMate kapsamıyla boyanıyordu ve o kapsamın rengi paketin ilanından
+        boyayıcıya hiç ulaşmaz; kanonun beyazı bu yüzden yalnız deponun kendi ayar
+        dosyasını taşıyan pencerede görünüyordu. Bir ay boyunca çalışmayan yol
+        onarılmaya çalışıldı. Dizgi çalışan yola alındı: otuz birinci anlamsal tip
+        oldu, rengini kanonun kendi değerinden alıyor. Kusurun ömrünün sebebi de
+        kapandı, çünkü token üretimini ölçen hiçbir nöbet yoktu; renk sağlayıcısı
+        dışa açıktı fakat hiçbir sınama onu çağırmıyordu. Founder canlı pencerede
+        gözle onayladı.
+
+        ⑥ TABAN KANON İŞARETİ GÜRÜLTÜ ÜRETİYORDU. Kanon araması yukarı yürüdüğü
+        için bu deponun kökü dışında çalışan herkes o işareti alıyordu. Koşul
+        işaretin kendi gerekçesine göre daraltıldı: örtüsüz projede gömülü kanon
+        eksik değil Sarmal kanonunun kendisidir ve işaret basılmaz; örtü varsa
+        fakat taban bulunamıyorsa gerçek kusur odur ve işaret basılır.
+
+        ⑦ ÖLÇÜLEN AMA ONARILMAYANLAR. Metin atıf bekçisinin aile süzgeci seksen
+        beş aileyi tamamen görmemektedir ve önyüz disiplininin kökeni olarak
+        ilan edilen iki kod hiçbir kaynakta tanımlı değildir; onarım bir denge
+        kararıdır ve hatırlatıcıya yazılarak Founder'a bırakılmıştır. Paketleme
+        sonrası sahte kırmızı bu turda dördüncü kez ölçüldü ve bu sefer işleme
+        kapısını fiilen bloke etti. Doğuş paketi hâlâ ne kanon ne düzenleyici
+        ayarı üretmektedir. Tasarım sistemi hükmünün bekçi yarısı kanona madde
+        ister ve o madde Founder kapısıdır; şablon yarısı bu turda yapıldı.
+
+        ⑧ İKİ YÜZ KIRK ÜÇ EKRAN FOTOĞRAFI HASAT EDİLDİ. Founder'ın telefonundan
+        aktarılan kareler tek ajanla okundu ve yirmi bir depo, on iki araç, on
+        yöntem ile sekiz fikir laboratuvarın bilgi rafına indi. En değerlisi tek
+        kişilik işletme için açık kaynaklı bir komuta merkezidir ve Z1 hükmünün
+        tarif ettiği iş alanı ekseninin çalışan hâlidir. Bir uyarı da çıktı:
+        üretimde Sonnet yasağının dayandığı ölçüm bayatlamıştır ve hüküm
+        kendiliğinden düşmez fakat yeniden ölçülmelidir.
 
         SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
         ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
