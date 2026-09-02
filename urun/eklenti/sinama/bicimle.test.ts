@@ -23,6 +23,18 @@ for (const d of readdirSync(KOK + "ogreti/ornek", { recursive: true }) as string
   if (d.endsWith(".sar") && !d.includes("bozuk")) ornekler.push(KOK + "ogreti/ornek/" + d);
 }
 
+// BKM-DNT-A10: fikstür listesi diskten dolduğu için alt sınırı ölçülmezse raf
+// boşaldığında süit sessizce onlarca sınama eksik koşar ve yine yeşil raporlar;
+// sınama sayısı bir sözleşme değil dosya sisteminin türeviydi. Bugünkü raf kırk
+// yedi örnek taşır (kök anadizin hariç); sayı bunun altına düşerse süit kırmızı
+// yanar ve eksilen fikstür adıyla aranır.
+const ORNEK_ALT_SINIRI = 47;
+test(`biçimleme fikstürü: örnek rafı en az ${ORNEK_ALT_SINIRI} dosya taşır (raf boşalırsa süit susmaz)`, () => {
+  const rafSayisi = ornekler.length - 1;   // kök anadizin listeye elle eklenir, rafın parçası değildir
+  assert.ok(rafSayisi >= ORNEK_ALT_SINIRI,
+    `örnek rafı ${rafSayisi} dosyaya düşmüş; en az ${ORNEK_ALT_SINIRI} bekleniyordu — eksilen fikstürlerin sınamaları sessizce koşmadı`);
+});
+
 const agac = (kaynak: string): string => agaciYaz(ayristir(belirtecle(kaynak)));
 
 for (const yol of ornekler) {

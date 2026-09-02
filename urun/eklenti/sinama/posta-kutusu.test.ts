@@ -1053,8 +1053,14 @@ test("taslak: her KAPININ kutusu ayrıdır; başka kapıyı açmak metni silmez"
   assert.equal(durum.taslak(bir), "birinci kapının gerekçesi",
     "ikinci kapıya yazmak birinci kapının metnini ezdi");
   assert.equal(durum.taslakSayisi, 2, "iki ayrı kapının taslağı tek yuvada tutuluyor");
-  // Aynı kapının üç seçeneği TEK taslağı paylaşır: kutu ortak girdidir.
-  assert.equal(notKimligi("/depo/x.sar", "A1"), notKimligi("/depo/x.sar", "A1"));
+  // Aynı kapının üç seçeneği TEK taslağı paylaşır: kutu ortak girdidir. Ölçüm
+  // şudur (BKM-DNT-A10): üç rolün karar kimlikleri birbirinden ayrıdır, taslak
+  // kimliği ise rol taşımaz ve üçünden hiçbirine eşit değildir; eski iddia aynı
+  // saf çağrıyı kendisiyle karşılaştıran bir totolojiydi ve hiçbir şey ölçmüyordu.
+  const kararlar = ["onay", "red", "ertele"].map((rol) => kararKimligi("/depo/x.sar", "A1", rol));
+  assert.equal(new Set(kararlar).size, 3, "üç rolün karar kimliği ayrışmıyor; seçenekler tek düğmeye çöker");
+  assert.ok(!kararlar.includes(notKimligi("/depo/x.sar", "A1")),
+    "taslak kimliği bir karar kimliğiyle çakışıyor; seçenek değiştirmek taslağı role bağlar");
   assert.ok(!notKimligi("/depo/x.sar", "A1").includes("onay"),
     "taslak kimliği role bağlanmış; kullanıcı seçenek değiştirince metnini kaybeder");
 });

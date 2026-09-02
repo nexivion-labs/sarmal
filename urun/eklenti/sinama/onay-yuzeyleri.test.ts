@@ -170,6 +170,11 @@ test("iki yol AYNI kapıları döndürür: görüntü yolu ile yedek yol ayrış
 
   const iz = (k: readonly KapiKaydi[]): string[] =>
     k.map((b) => `${b.dosya}:${b.kapi.satir}:${b.kapi.kod}:${b.kapi.olcut}`);
+  // BKM-DNT-A10: derin eşitlik tek başına boş kümeyi de kabul eder; iki yol da boş
+  // dizi döndürürse iddia geçer ve nöbet hiçbir şey ölçmemiş olur. Fikstür iki
+  // dosyada üç kapı taşır; doluluk önce ölçülür, eşitlik sonra.
+  assert.equal(iz(yedekten).length, 3,
+    `yedek yol fikstürün üç kapısını bulmadı (${iz(yedekten).length}); boş küme üstünde eşitlik ölçüm değildir`);
   assert.deepEqual(iz(yedekten), iz(goruntuden),
     "iki yol farklı kapı üretti; kullanıcı ana hat açık ve kapalıyken iki gerçek görür");
 });

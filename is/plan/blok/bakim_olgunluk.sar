@@ -648,8 +648,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         dokunulmaz: [ "Süit betiğinin sıfır bağımlılık sözleşmesi (STR-3.1)", "Kaynak metnini okuyan iddiaların dürüstlük notu" ]
       }
 
-      Adım( kod: BKM-DNT-A10, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YAS-4.1 ],
+      Adım( kod: BKM-DNT-A10, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YAS-4.1 ],
         üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA ],
+        koşu: Koşum( kod: KSM-BKM-DNT-A10, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
+          kanıt: "urun/eklenti/sinama/bicimle.test.ts · onay-yuzeyleri.test.ts · posta-kutusu.test.ts · 277/277 · üç mutasyonun her biri 1 kırmızı",
+          ne: "Biçimleme süitine örnek rafı için kırk yedi dosyalık alt sınır iddiası, onay yüzeyleri süitindeki derin eşitliğin önüne üç kapılık doluluk iddiası kondu ve onaylar panelindeki totolojik iddia üç rolün karar kimliklerinin ayrıştığını ve taslak kimliğinin hiçbirine eşit olmadığını ölçen gerçek bir iddiayla değiştirildi. Üç mutasyon ayrı ayrı koşturuldu: raf beşe indirilince, kapı kümesi boşaltılınca ve rol ayrımı sökülünce ilgili nöbet kırmızı yandı; geri alınınca üç süit yeşile döndü." ),
         ne: "🔬 Üç küçük nöbet hijyeni. Birincisi, biçimleme süiti fikstür listesini örnek rafından diske bakarak doldurur ve her örnek için iki sınama üretir; listenin alt sınırını ölçen iddia olmadığı için raf boşalırsa süit sessizce onlarca sınama eksik koşar ve yine yeşil raporlar; beş yüz seksen bir sayısı bir sözleşme değil dosya sisteminin türevidir. İkincisi, onay yüzeyleri süitinde iki kod yolunun ürettiği kapı listeleri derin eşitlikle karşılaştırılır fakat dolu oldukları ölçülmez; iki yol da boş dizi döndürürse iddia geçer ve nöbet hiçbir şey ölçmemiş olur; aynı dosyanın başka yerlerinde bu tuzağa karşı açık doluluk iddiaları vardır, burada unutulmuştur. Üçüncüsü, onaylar paneli süitinde saf bir işlev aynı argümanlarla iki kez çağrılıp sonuçları karşılaştırılır; bu tanım gereği doğru bir totolojidir ve taranan bin beş yüz elli beş iddia içinde bulunan tek örnektir." ) {
         görev: [
           "Biçimleme süitine örnek sayısı için alt sınır iddiası ekle; sayı bugünkü kırk yedinin altına düşerse süit kırmızı yanar.",
