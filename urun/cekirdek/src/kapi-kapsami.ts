@@ -119,7 +119,13 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "adAyraciTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "halefTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
   { uretici: "teknolojisizYuzeyTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
-  { uretici: "onceliksizAdimTanilari", modul: "denetci.ts", yuzeyler: ["cli"] },
+  // ORK-3.4 · PANEL YÜZEYİ EKLENDİ (BKM-DNT-A04 · 2026-09-02). Madde bu tanının
+  // "proje CLI ve Bildirimler" yüzeylerinde görünmesini zorlar ve yönlendirme
+  // matrisi onu Bildirimler hanesinde sayar; üretici ise 2026-08-28 tarihinde
+  // onarılan ateşlemiş hatırlatıcı ikizinin aksine yalnız komut satırında kalmıştı
+  // ve panel süzgeci onu yapısal olarak eliyordu. Karar Founder'a sorulmadı, çünkü
+  // kanon yüzeyi zaten açıkça yazmaktadır; ilan yalnız kanona uyduruldu.
+  { uretici: "onceliksizAdimTanilari", modul: "denetci.ts", yuzeyler: ["cli", "panel"] },
   // YUZ-3.4 · PANEL YÜZEYİ FOUNDER KARARIYLA EKLENDİ (2026-08-28). Madde bu tanının
   // "proje CLI ve Bildirimler" yüzeylerinde görünmesini zorlar ve yönlendirme matrisi
   // onu Bildirimler hanesinde sayar; buna karşılık üretici yalnız komut satırına

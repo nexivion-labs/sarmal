@@ -553,8 +553,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
     AltKatman( kod: BKM-DNT-K2, departman: kodlama, ad: "yüzey onarımları",
       ne: "🔧 Kanonun açıkça istediği ya da manifestin vadettiği hâlde görünmeyen dört yüzey parçası" ) {
 
-      Adım( kod: BKM-DNT-A04, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-3.4, YUZ-3.3 ],
+      Adım( kod: BKM-DNT-A04, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ ORK-3.4, YUZ-3.3 ],
         üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI ],
+        koşu: Koşum( kod: KSM-BKM-DNT-A04, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
+          kanıt: "urun/cekirdek/sinama/kapi-kapsami.test.ts · küme nöbeti ve ORK-3.4 uçtan uca nöbeti · 8/8 · ilan geri alınınca 2 kırmızı",
+          ne: "İlanda önceliksiz Adım üreticisine panel yüzeyi eklendi ve gerekçe satırın üstüne yazıldı; küme nöbeti üreticiyi panel süzgecinde arar ve beyansız tek açık Adımlık fikstürle uçtan uca nöbet kuruldu. İlan geri alındığında iki nöbet birden kırmızıya döndü, geri konunca sekiz sınama yeşile döndü; eklentinin yüzey nöbeti yüz sınamayla yeşildir. Açık kalem yoktur." ),
         ne: "🔔 Önceliksiz Adım bildiriminin panele ulaşması. Bu, 2026-08-28 tarihinde onarılan ateşlemiş hatırlatıcı kusurunun birebir ikizidir ve aynı kanon turunda doğmuş üçlünün üçüncü üyesidir: ORK-3.4 maddesinin zorlama satırı `önceliksiz-adım` tanısı için kelimesi kelimesine 'proje CLI ve Bildirimler' der, yönlendirme matrisi onu Bildirimler hanesinde sayar, buna karşılık üreticisi ilanda yalnız komut satırı taşır ve panel süzgeci onu yapısal olarak eler. KYN-MTR-A05 Adımının kendi problem metni bu iki tanıyı adıyla birlikte anmaktadır; kardeşi onarıldı, bu onarılmadı. Üçlünün üçüncüsü olan mevsim vadesi zaten panel yüzeyi taşımaktadır. Karar Founder'a sorulmaz, çünkü kanon yüzeyi açıkça yazmıştır; Adım ateşlemiş hatırlatıcı onarımının deseniyle tek satır ve iki nöbetten ibarettir." ) {
         görev: [
           "İlanda üreticiye panel yüzeyini ekle ve gerekçeyi satırın üstüne yaz.",

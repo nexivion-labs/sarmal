@@ -99,6 +99,12 @@ test("panelCaprazUreticiKumesi: per-dosya yol cross süzgeçte YOK, cross ailesi
   // satırında kalır ve hatırlatıcının bütün vaadi sessizce boşa düşer.
   assert.ok(capraz.has("atesleyenHatirlaticiTanilari"),
     "ateşlemiş-hatırlatıcı panele ulaşmalı — YUZ-3.4 Bildirimler yüzeyini şart koşar");
+  // ORK-3.4 NÖBETİ (BKM-DNT-A04 · 2026-09-02): önceliksiz Adım bildirimi de panele
+  // ULAŞMAK ZORUNDADIR. Madde tanıyı "proje CLI ve Bildirimler" yüzeylerine yönlendirir;
+  // ateşlemiş hatırlatıcı ikizinin onarımından sonra bu üretici tek başına komut
+  // satırında kalmıştı ve beyansız açık Adım Founder'ın baktığı panelde hiç görünmüyordu.
+  assert.ok(capraz.has("onceliksizAdimTanilari"),
+    "önceliksiz-adım panele ulaşmalı — ORK-3.4 Bildirimler yüzeyini şart koşar");
   // SINIR NÖBETİ (Founder'a ayrılmış kapsam kararı): yalnız komut satırına ayrılmış
   // üreticiler panel süzgecine giremez. Bu satırların kırmızıya dönmesi, birinin
   // ilanda bir üreticiye panel yüzeyi eklediği anlamına gelir — o değişiklik
@@ -222,6 +228,74 @@ test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden
       "fikstür en az bir ateşleme tanısı üretmeli — üretmiyorsa nöbetin zemini çökmüştür ve panel yolu ölçülemez");
     assert.equal(panelegecen, atesleme,
       "ateşleme tanısı panel süzgecinden geçmedi — hatırlatma ANI yalnız komut satırında kalır ve hatırlatıcının vaadi boşa düşer (YUZ-3.4)");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
+// Fikstür: öncelik beyanı taşımayan tek açık Adımlık en küçük çalışma alanı.
+// Ateşleme fikstürüyle aynı gövdeyi kullanır; tek fark Adımın açık (beklemede)
+// olması ve `öncelik` alanını taşımamasıdır. Nöbet, ORK-3.4 tanısının köken
+// damgasını ve panel süzgecinden geçişini ölçer.
+const FIKSTUR_ONCELIKSIZ_ANA = `-->|
+## Amaç
+Önceliksiz Adım nöbetinin fikstür ağacıdır; öncelik beyanı olmayan tek açık Adım taşır.
+## Kapsam
+Bir plan rafı ve beyansız tek açık Adım bulunur.
+## Sonuç
+Sınama, önceliksiz Adım tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
+|<--
+Proje( kod: PRJ-FXO, ad: "fxo", rejim: katı, ne: "önceliksiz Adım nöbetinin fikstürü" ) {
+  Teknoloji( kod: TEK-FXO, ne: "fikstür teknolojisi" )
+  Raf( kod: RAF-FXO-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+}
+`;
+
+const FIKSTUR_ONCELIKSIZ_PLAN = `Faz( kod: FAZ-FXO, ad: "fxo mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
+  -->|
+  ## Amaç
+  Önceliksiz Adım tanısını doğuran açık Adımı taşımak için kurulmuş gövdedir.
+  ## Kapsam
+  Bir teknoloji katmanı, bir departman modülü ve öncelik beyanı olmayan tek açık adım bulunur.
+  ## Sonuç
+  Adım açık ve beyansız olduğu için önceliksiz Adım tanısı doğar ve sınama bunu ölçer.
+  |<--
+  Blok( kod: BLK-FXO, ad: "fxo bloğu", ne: "fikstür işi" ) {
+    Katman( kod: KAT-FXO, ad: "fxokatman", ne: "fikstür katmanı", kullanır: TEK-FXO ) {
+      AltKatman( kod: ALT-FXO, ad: "fxomodul", departman: kodlama, ne: "fikstür modülü" ) {
+        Adım( kod: ADM-FXO, durum: beklemede, ne: "öncelik beyanı olmayan açık adım",
+              görev: "bu adım yalnız sınama fikstürüdür ve hiçbir iş yapmaz",
+              kabul: [ "adım açık ve beyansız olduğu için önceliksiz Adım tanısı doğar" ] )
+      }
+    }
+  }
+}
+`;
+
+test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-onceliksiz-"));
+  try {
+    writeFileSync(join(kok, "fxo_anadizin.sar"), FIKSTUR_ONCELIKSIZ_ANA, "utf8");
+    mkdirSync(join(kok, "plan"));
+    writeFileSync(join(kok, "plan", "fxo_plan.sar"), FIKSTUR_ONCELIKSIZ_PLAN, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-02", tamListe: true });
+    const paneller = panelCaprazUreticiKumesi();
+    let onceliksiz = 0;
+    let panelegecen = 0;
+    for (const rapor of sonuc.akis) {
+      for (const t of rapor.tanilar) {
+        if (t.kod !== "önceliksiz-adım") continue;
+        onceliksiz += 1;
+        const uretici = sonuc.koken.get(t);
+        assert.equal(uretici, "onceliksizAdimTanilari",
+          "önceliksiz Adım tanısının köken damgası kendi üreticisini göstermeli; damgasız tanı süzgecin körü olur");
+        if (uretici !== undefined && paneller.has(uretici)) panelegecen += 1;
+      }
+    }
+    assert.ok(onceliksiz >= 1,
+      "fikstür en az bir önceliksiz Adım tanısı üretmeli — üretmiyorsa nöbetin zemini çökmüştür ve panel yolu ölçülemez");
+    assert.equal(panelegecen, onceliksiz,
+      "önceliksiz Adım tanısı panel süzgecinden geçmedi — beyansız açık Adım yalnız komut satırında kalır (ORK-3.4)");
   } finally {
     rmSync(kok, { recursive: true, force: true });
   }
