@@ -455,3 +455,37 @@ test("EKL-F10-A12: bul aracı takdir metnini bulur ve eşleşen alanı kanal ad�
   const yok = mcpAraciTam("bul", { dizin: kok, metin: "hiç geçmeyen ifade" });
   assert.match(yok.metin, /geribildirim alanında geçmiyor/, yok.metin);
 });
+
+// ── SUNUCU TALİMATI: initialize yanıtı `instructions` taşır (Founder 2026-09-02) ──
+//
+//   Ölçülmüş kusur: alan boştu ve ajan Sarmal deposunda bile ölçümü ham grep ile
+//   yapıyor, araçlar dururken yanlış sayı üretiyordu. Founder aynı düzeltmeyi iki
+//   oturumda iki kez verdi. Talimat ürünün içindedir; istemci onu ajanın sistem
+//   bağlamına ekler ve hiçbir kullanıcının ayarına ya da hafızasına muhtaç değildir.
+
+function mcpBaslat(ortam: Record<string, string> = {}): { instructions?: string; serverInfo?: { version?: string } } {
+  const istek = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }) + "\n";
+  const ham = execFileSync(process.execPath, [MCP], {
+    input: istek, encoding: "utf8", timeout: 30_000, env: { ...process.env, ...ortam },
+  });
+  const yanit = JSON.parse(ham.trim().split("\n").filter(Boolean)[0]) as { result: { instructions?: string; serverInfo?: { version?: string } } };
+  return yanit.result;
+}
+
+test("SUNUCU TALİMATI: initialize yanıtı instructions alanı taşır ve araçları ÖNCE kullanmayı söyler", () => {
+  const r = mcpBaslat();
+  assert.ok(typeof r.instructions === "string" && r.instructions.length > 200,
+    "initialize yanıtında instructions yok ya da boş — ajan sunucunun ne için var olduğunu sistem bağlamından okuyamaz");
+  for (const arac of ["denetle-proje", "gezin", "graf", "sef", "siniflama", "durum-guncelle"])
+    assert.ok(r.instructions.includes(arac), `talimat ${arac} aracını anmıyor — ajan onu ne zaman kullanacağını bilemez`);
+  assert.match(r.instructions, /ÖNCE|FIRST/, "talimat önceliği söylemiyor — 'önce araçlara sor' cümlesi olmadan grep refleksi sürer");
+  assert.match(r.instructions, /grep/, "talimat ham aramayı adıyla yasaklamıyor");
+});
+
+test("SUNUCU TALİMATI: dil kapısından geçer — İngilizce istemci İngilizce talimat alır", () => {
+  const tr = mcpBaslat({ SARMAL_DIL: "tr" });
+  const en = mcpBaslat({ SARMAL_DIL: "en" });
+  assert.match(String(tr.instructions), /Sarmal ile yönetilir/, "Türkçe hane gelmedi");
+  assert.match(String(en.instructions), /governed by Sarmal/, "İngilizce hane gelmedi");
+  assert.notEqual(tr.instructions, en.instructions, "iki dil aynı metni döndürdü — dil kapısı talimata uygulanmıyor");
+});

@@ -40,8 +40,8 @@ import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, type Siniflama 
 import { ogretKarti } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
 import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
-import { cevir, etkinCiktiDili } from "./cevir.ts";
-import { MCP_ARAC_ADI, mcpAracSemalari } from "./mcp-metinleri.ts";
+import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
+import { MCP_ARAC_ADI, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
 import { dagKur } from "./dag.ts";
 import { grafYuz } from "./graf.ts";  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
@@ -60,7 +60,7 @@ import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 
 // ── sabitler ─────────────────────────────────────────────────────────────────
-const SUNUCU = { name: "sarmal", version: "0.14.0" };  // 0.14.0: GOC-A10 dogus aracı tür sorusu (tur · proje alanları, tur yoksa yazmadan sorar). 0.13.0: MIM-1.2 nazik rejim (tarih güçlü tavsiye — doğuş rehberi ④ + ogret kartı; sahte-faz kalktı). 0.12.0: zaman-ekseni turu zaman bağı öğretimi (mevsim:/planlanmamış: — ogret kartı + doğuş rehberi ④ tam-zincir düzeltmesi: bayat 'rütbe-atlama serbest' kalktı). 0.11.0: davranış-katmanı turu ogret beceri-dağıtımı + 17 araca NE ZAMAN cümlesi (18 araç). 0.10.0: EMJ-A05 karne aracı (17 araç) — onaylı ⭐ skalası + kadro dökümü. 0.9.0: KVR-A09 kavram (16). 0.8.0: DPK-A02 dogus (15). 0.7.0: GBR-A04/#7 iskelet (14). 0.6.0: BKM-MCP-A01 (6)
+const SUNUCU = { name: "sarmal", version: "0.15.0" };  // 0.15.0: initialize yanıtı sunucu talimatı taşıyor (instructions — ajan araçları ÖNCE kullansın, Founder 2026-09-02). 0.14.0: GOC-A10 dogus aracı tür sorusu (tur · proje alanları, tur yoksa yazmadan sorar). 0.13.0: MIM-1.2 nazik rejim (tarih güçlü tavsiye — doğuş rehberi ④ + ogret kartı; sahte-faz kalktı). 0.12.0: zaman-ekseni turu zaman bağı öğretimi (mevsim:/planlanmamış: — ogret kartı + doğuş rehberi ④ tam-zincir düzeltmesi: bayat 'rütbe-atlama serbest' kalktı). 0.11.0: davranış-katmanı turu ogret beceri-dağıtımı + 17 araca NE ZAMAN cümlesi (18 araç). 0.10.0: EMJ-A05 karne aracı (17 araç) — onaylı ⭐ skalası + kadro dökümü. 0.9.0: KVR-A09 kavram (16). 0.8.0: DPK-A02 dogus (15). 0.7.0: GBR-A04/#7 iskelet (14). 0.6.0: BKM-MCP-A01 (6)
 const PROTOKOL = "2024-11-05"; // istemci başka sürüm isterse onunkini yansıtırız
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const YASA_KOK = fileURLToPath(new URL("../../../yasa/kanon/", import.meta.url));
@@ -867,6 +867,9 @@ function isle(istek: Istek): Cevap | null {
           protocolVersion: typeof params?.protocolVersion === "string" ? params.protocolVersion : PROTOKOL,
           capabilities: { tools: {} },
           serverInfo: SUNUCU,
+          // Sunucu talimatı: istemci bunu ajanın sistem bağlamına ekler. Ürünün
+          // kendi "önce beni kullan" cümlesidir; kullanıcı ayarına muhtaç değildir.
+          instructions: dilHanesi(MCP_SUNUCU_TALIMATI, MCP_DILI),
         },
       };
     case "tools/list":

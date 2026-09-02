@@ -701,6 +701,35 @@ export type McpMetinKatalogu = Readonly<Record<string, {
  * Her araç ve her parametre tarifinde yayımlanan iki dil hanesi dolu mu?
  * Eksik yol listesi boş değilse çeviri kapsama nöbeti süiti kırmızıya çevirir.
  */
+// ═══════════════════════════════════════════════════════════════════════════
+// SUNUCU TALİMATI — MCP `initialize` yanıtının `instructions` alanı.
+//
+//   Protokol bu alanı sunucunun kendi kullanım talimatı için ayırır; istemci
+//   (Claude Code ve benzerleri) onu ajanın sistem bağlamına "sunucu talimatı"
+//   olarak ekler. Bugüne dek boştu ve bedeli ölçüldü: ajan Sarmal deposunda bile
+//   ölçümü ham grep ve el yazması ayrıştırmayla yapıyor, araçlar dururken
+//   yanlış sayı üretiyordu. Founder aynı düzeltmeyi iki oturumda iki kez verdi
+//   (2026-08-31 · 2026-09-02) ve hatırlatma yükünün kendisinde olmaması
+//   gerektiğini söyledi. Talimat ürünün içindedir; hiçbir kullanıcının ayar
+//   dosyasına, kancasına ya da hafızasına muhtaç değildir.
+// ═══════════════════════════════════════════════════════════════════════════
+export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
+  tr: [
+    "Bu proje Sarmal ile yönetilir: plan, kural, tip ve durum yalnız .sar dosyalarında yaşar ve bu sunucunun araçları onların tek yetkili okuma yüzüdür.",
+    "Yapı, ilerleme, bağımlılık ya da sağlık sorusu geldiğinde ÖNCE bu araçlara sor: bütün projenin hükmü için denetle-proje, bir kodun tanımı ve atıfları için gezin, graf ve karne için graf, bir değişikliğin etki alanı için etki, tip şeması için siniflama, bir Adıma başlamadan önce sef, yazmadan önce basla.",
+    "Araçlar istemcide ertelenmiş olabilir ve ilk çağrıdan önce yüklenmeleri gerekebilir; yüklemek bir çağrıdır, atlamak yanlış sayıya mal olur.",
+    ".sar dosyalarını ham grep, sed ya da el yazması ayrıştırıcıyla okumak anti-desendir: hızlı görünür fakat yanlış şeyi sayar ve yanlış güven verir. Ham arama yalnız .sar dışı dosyalar ve henüz ilan edilmemiş şeyler için meşrudur.",
+    "Adım durumunu elle düzenleme; tek yazım kapısı durum-guncelle aracıdır.",
+  ].join(" "),
+  en: [
+    "This project is governed by Sarmal: plans, rules, types and status live only in .sar files, and this server's tools are their sole authoritative reading surface.",
+    "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting a Step, basla before writing.",
+    "The tools may be deferred in the client and need loading before the first call; loading is one call, skipping it costs a wrong number.",
+    "Reading .sar files with raw grep, sed or a hand-written parser is an anti-pattern: it looks fast but counts the wrong thing and gives false confidence. Raw search is legitimate only for non-.sar files and for things not yet declared.",
+    "Do not edit a Step's status by hand; the single write gate is the durum-guncelle tool.",
+  ].join(" "),
+};
+
 export function mcpMetinKapsamaEksikleri(
   katalog: McpMetinKatalogu = MCP_ARAC_METINLERI,
 ): readonly string[] {
