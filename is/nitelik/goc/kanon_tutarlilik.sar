@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:021963f25f868304b79585e821508a5987f60b50f4ad1c43ee2cb80cbcef0176
+// KAYNAK-MUHRU kanon-demeti-sha256:2b1d9cb8219b5926d3a8c56fed3c619908e592c68bb168ea48b1a8e2ac97a31f
 
 -->|
 # Kanon tutarlılık yüzü
@@ -11,7 +11,7 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon/dil.sar` | `8dfaea26ac5b79d16b2cb7c3bfaae6df2806149a99e18b85b203e455accba8a1` |
+| `yasa/kanon/dil.sar` | `e8b836bd7164d678ab91b7ef1dc5883cce3fd5c30360bf0971898f292e74c33a` |
 | `yasa/kanon/mim.sar` | `582c62fe3d617f11a35e434ea926e29fd2057cb979593a0ce4b1889aaa0c2cf3` |
 | `yasa/kanon/ogr.sar` | `d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46` |
 | `yasa/kanon/ork.sar` | `d31462c25b1fcd5627cc92394ae6339341e1a5ca7ed669585d212ded749550d8` |
@@ -19,7 +19,7 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/tip.sar` | `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068` |
 | `yasa/kanon/yas.sar` | `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49` |
 | `yasa/kanon/yuz.sar` | `826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c` |
-| kanon demeti | `021963f25f868304b79585e821508a5987f60b50f4ad1c43ee2cb80cbcef0176` |
+| kanon demeti | `2b1d9cb8219b5926d3a8c56fed3c619908e592c68bb168ea48b1a8e2ac97a31f` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -29,17 +29,17 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Ölçü | Beklenen | Gerçek | Sonuç |
 |---|---:|---:|---|
 | Resmi kaynak dosyası | 8 | 8 | GEÇTİ |
-| Kanon maddesi | 156 tekil | 156 | GEÇTİ |
-| Rol dağılımı | 38 Karar + 118 Kural | 38 Karar + 118 Kural | GEÇTİ |
-| Dört parçalı madde | 156/156 | 156/156 | GEÇTİ |
-| Kanonik örnek | 156/156 | 156/156 | GEÇTİ |
+| Kanon maddesi | 157 tekil | 157 | GEÇTİ |
+| Rol dağılımı | 38 Karar + 119 Kural | 38 Karar + 119 Kural | GEÇTİ |
+| Dört parçalı madde | 157/157 | 157/157 | GEÇTİ |
+| Kanonik örnek | 157/157 | 157/157 | GEÇTİ |
 | Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
 | Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
 | Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
 
-Resmi sonuç 156/156 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
+Resmi sonuç 157/157 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
 
-## Kanonik örnekler — 156/156
+## Kanonik örnekler — 157/157
 
 | Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |
 |---|---|---|---|
@@ -51,6 +51,7 @@ Resmi sonuç 156/156 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `DIL-1.4` | Kural | `dil.sar` | Doğru: `Adım( kod: ADM-01 ) { --> ADM-02 }` yalnız ADM-01'in ADM-02'yi beslediğini anlatır; yanlış: aynı oku ebeveynlik veya genel referans işareti saymak. |
 | `DIL-1.5` | Kural | `dil.sar` | Doğru: “Bu Adım hükmü kanona indirir; üslubun mekanik olarak ölçülmesi kapsam dışında bırakılmıştır, çünkü dilbilgisi denetimi makine için güvenilir değildir.”; yanlış: “hüküm kanona · ölçüm sonraya · kapsam dışı”. |
 | `DIL-1.6` | Kural | `dil.sar` | Doğru: `Blok( kod: BLK-PRF-TEKAGAC, ad: "Tek Ağaç" )` ve `AltKatman( kod: ALT-TA-INCELEME, ad: "Tek Ağaç Denetimi ve Canlı Ölçüm" )`; yanlış: `Blok( kod: BLK-PRF-TEKAGAC )` ya da `AltKatman( kod: ALT-TA-INCELEME, ad: "tek ağaç denetimi ve canlı ölçüm" )`. |
+| `DIL-1.7` | Kural | `dil.sar` | Doğru: `koşu: Koşum( kod: KSM-ADM-01, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul, kanıt: "sinama/kimlik.test.ts · 4/4", ne: "Kimlik denetimi anlamsal simgeye taşındı ve dört nöbetle kilitlendi. Süit yeşildir. Founder görünümü canlı pencerede doğruladı ve son kabul maddesi kapandı." )`; yanlış: `koşu: "2026-09-02 · ... — ÖNCEKİ KAYIT: 2026-08-24 · ... — ÖNCEKİ KAYIT: ..."` zinciriyle on bir turun metnini tek dizgede biriktirmek. |
 | `DIL-2` | Karar | `dil.sar` | Doğru: belge içindeki `A \| B` satırı ile altındaki girintili şekil aynen kalır; yanlış: tek bir boru karakterini kapanış saymak veya göreli boşlukları yeniden akıtmak. |
 | `DIL-2.1` | Kural | `dil.sar` | Doğru: belge bloğunu doğrudan `Karar( kod: KAR-01 )` izler; yanlış: belge ile Karar arasına `ne:` özelliği koymak veya kapsamı belge sonrasında kapatmak. |
 | `DIL-2.2` | Kural | `dil.sar` | Doğru: biçimlendirme öncesi ve sonrası çok satırlı değerin sözcükleri ile göreli sütunları aynıdır; yanlış: satırları birleştirmek, yorumu yeniden yazmak veya hizalı sütunu kaydırmak. |
@@ -428,7 +429,7 @@ Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühür
 |<--
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
-      ne: "Resmi yasa/kanon sekizlisinin 156/156 maddesi, 38 Karar ve 118 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
+      ne: "Resmi yasa/kanon sekizlisinin 157/157 maddesi, 38 Karar ve 119 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
 
 Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
       ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1.7 AltKatman tekilliğiyle 74 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 15 uygulanmış emekli kimlik ve 38 açık emeklilik borcu ayrı kümeler olarak ölçülür." )

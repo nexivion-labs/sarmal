@@ -10,7 +10,7 @@ Sarmal is an open workspace language that keeps software intent in declarative `
 
 ## One source, measured surfaces
 
-The only canonical address is the eight section files under [`yasa/kanon/`](yasa/kanon/). They contain 156 unique articles: 38 Decisions and 118 Rules. Documents are derived reading surfaces, not a second canon.
+The only canonical address is the eight section files under [`yasa/kanon/`](yasa/kanon/). They contain 157 unique articles: 38 Decisions and 119 Rules. Documents are derived reading surfaces, not a second canon.
 
 The new diagnostic set contains 47 errors, 16 warnings, and 11 informational diagnostics. The fixed registry routing matrix sends 143 items to Problems, 4 to Reminders, and 28 to Notifications (Observations). All 174 diagnostic messages, the descriptions of 18 MCP tools, the manifest, welcome card, and agent language context have Turkish and English surfaces.
 

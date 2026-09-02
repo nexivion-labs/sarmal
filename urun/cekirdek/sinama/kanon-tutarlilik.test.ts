@@ -15,7 +15,7 @@ import {
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
-  "dil.sar:8dfaea26ac5b79d16b2cb7c3bfaae6df2806149a99e18b85b203e455accba8a1",
+  "dil.sar:e8b836bd7164d678ab91b7ef1dc5883cce3fd5c30360bf0971898f292e74c33a",
   "mim.sar:582c62fe3d617f11a35e434ea926e29fd2057cb979593a0ce4b1889aaa0c2cf3",
   "ogr.sar:d6e132fbb7b28e36ebadab1ea8f8bfe4ed7f727a817321e3b727a5d2254f2f46",
   "ork.sar:d31462c25b1fcd5627cc92394ae6339341e1a5ca7ed669585d212ded749550d8",
@@ -25,13 +25,13 @@ const KANON_SHA = [
   "yuz.sar:826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c",
 ] as const;
 
-test("resmi sekizli 156/156 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
+test("resmi sekizli 157/157 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
   const olcum = kanonMaddeleriniOlc(KOK);
-  assert.equal(olcum.maddeler.length, 156);
-  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 156);
+  assert.equal(olcum.maddeler.length, 157);
+  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 157);
   assert.deepEqual(
     { karar: olcum.maddeler.filter((m) => m.rol === "Karar").length, kural: olcum.maddeler.filter((m) => m.rol === "Kural").length },
-    { karar: 38, kural: 118 },
+    { karar: 38, kural: 119 },
   );
   assert.equal(olcum.maddeler.filter((m) => m.ornek === "—").length, 0);
   assert.equal(olcum.maddeler.filter((m) => !m.dortParcaTam).length, 0);
@@ -70,7 +70,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const ikinci = kanonTutarlilikMetni(KOK);
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
-  assert.match(ilk, /Resmi sonuç 156\/156 maddedir/);
+  assert.match(ilk, /Resmi sonuç 157\/157 maddedir/);
   assert.match(ilk, /69 yeni tanı tabanı YUZ-3\.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1\.7 AltKatman tekilliğiyle 74/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
