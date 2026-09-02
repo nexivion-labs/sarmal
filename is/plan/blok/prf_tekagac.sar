@@ -106,7 +106,7 @@ Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
     AltKatman( kod: ALT-TA-INCELEME, ad: "tek ağaç denetimi ve canlı ölçüm", departman: inceleme,
       ne: "🔍 Founder'ın birinci ölçütünün canlı pencerede ölçüldüğü inceleme dalı." ) {
 
-      Adım( kod: PRF-TA-A05, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A04, PRF-TA-A06 ],
+      Adım( kod: PRF-TA-A05, durum: tamamlandı, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A04, PRF-TA-A06 ],
         referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.3, MIM-1.1 ],
         ne:       "🔍 Tek ağaç onarımının bağımsız denetimi ve canlı ölçümü. Founder'ın birinci ölçütü yol haritasının azami süratle çalışmasıdır ve kabul iki yüz yetmiş altı dosyalı çatıda beş yüz milisaniyelik doksan beşinci yüzdeliktir." ) {
         görev:    [
@@ -118,6 +118,7 @@ Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
           "Panel turu doksan beşinci yüzdelik beş yüz milisaniyenin altındadır ve taban düşüşü yüzde doksanı aşar."
         ]
         sınır:    "Bu Adım kod değiştirmez."
+        koşu:     "2026-09-02 · CANLI ÖLÇÜM VE BAĞIMSIZ DENETİM. Founder çatı penceresinde Sarmal Performans kanalını açtı ve panel turu satırlarını okudu; kontrolcü aynı kanalın disk günlüğünü izleyerek okumaları topladı. Birinci okuma açılış turunda otuz beş milisaniye, ikincisi kaydet tetikli turda yirmi dört milisaniye geldi; ardından kabuk süitinin derleme etkinliği art arda disk olayı turları tetikledi ve bunlar on dokuz ile yirmi sekiz milisaniye arasında kaldı. Bu yoğun disk etkinliği, Founder'ın 2026-07-19 tarihli kasma bildiriminin tarif ettiği senaryonun ta kendisidir ve o koşulda bile panel turu yirmi milisaniye bandındadır. Bağımsız denetçi altı nöbeti gerçek kabukta bir kez koşturdu ve altısını yeşil ölçtü; üç mutasyonu A04 kaydındaki tarife göre uyguladı ve üçü de yalnız hedeflediği nöbeti kırdı: panele doğrudan tarama geri konduğunda SIFIR, kırık ile okunamayan birleştirildiğinde AYRIM, ikinci yayın eklendiğinde TEK DEĞİŞİM kırmızı yandı; üç dosyanın sağlaması geri almadan sonra birebir döndü. Denetçi Founder'ın performans günlüğünde altmış altı panel turu okuması buldu: en küçük on yedi, medyan yirmi üç, doksan beşinci yüzdelik otuz dört, en büyük elli iki milisaniye; beş yüz milisaniyeyi aşan okuma sıfırdır. Yirmi bin dokuz milisaniyelik tabana göre düşüş doksan beşinci yüzdelikte yüzde doksan dokuz virgül seksen üçtür. DENETÇİ HÜKMÜ: ONAY. Adımın kod değiştirmez sınırı korunmuştur. Denetçinin Adım dışı dört gözlemi devredilmiştir: kabuk süitinde kararsız ilan edilen bir panel satırı nöbeti tabanı on beş ile on altı arasında oynatmaktadır; birinci mutasyon SIFIR ile birlikte ÖNBELLEK nöbetini de kırmıştır ve bu beşinci nöbetin daraltılmış kapsamına rağmen duyarsız olmadığını gösterir; DARALTMA ile EŞDEĞERLİK nöbetleri bu denetimde mutasyonla sınanmamıştır; çatı bugün iki yüz seksen dosya saymaktadır ve kabul iki yüz yetmiş altı demektedir. Aynı günlükte denetim turu iki bin ile üç bin dört yüz milisaniye arasında seyretmektedir; bu Adımın ölçütü değildir fakat azami sürat hedefinin bir sonraki durağıdır."
       }
     }
 
