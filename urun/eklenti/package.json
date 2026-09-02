@@ -434,7 +434,7 @@
       "editor/title": [
         {
           "command": "sarmal.iskeletKur",
-          "when": "editorLangId == sarmal && resourceFilename == ana.sar",
+          "when": "editorLangId == sarmal && (resourceFilename =~ /_anadizin\\.sar$/ || resourceFilename == ana.sar)",
           "group": "navigation@0"
         },
         {

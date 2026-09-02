@@ -117,6 +117,28 @@ export const YUZEY_ACIKLAMALARI = {
  * anlatır.
  */
 export const YUZEY_BOS_DURUM = {
+  /**
+   * Yol Haritası panelinin boşluk cümlesi (BKM-DNT-A05). Altı panelin beşi boş
+   * durumda bir cümle söylerken bu panel hiçbir şey söylemiyordu; varlıksız bir
+   * çalışma alanında kullanıcı bomboş bir kutuya bakıyor ve panelin ne zaman
+   * dolacağını hiçbir yerden okuyamıyordu. Cümle öteki panellerin desenini izler:
+   * panelin neyi gösterdiğini, hangi dosyayla dolacağını ve o dosyayı nasıl
+   * doğurabileceğini söyler.
+   */
+  get yolHaritası(): string {
+    return yuzeyMetni(
+      "Haritada gösterilecek bir varlık yok. Yol Haritası, çalışma alanınızdaki " +
+        "her varlığın planını Faz, Blok, Katman ve Adım zinciri olarak gösterir; " +
+        "bir varlık kendini bir anadizin dosyasıyla, yani adı _anadizin.sar ile " +
+        "biten bir dosyayla ilan eder. Boş bir klasörde Doğuş komutunu çalıştırın " +
+        "ya da var olan bir projenin anadizinini açın; ilan yazıldığı an harita dolar.",
+      "There is nothing to show on the map yet. The roadmap shows the plan of every " +
+        "entity in your workspace as a chain of phases, blocks, layers and steps; " +
+        "an entity declares itself with a root file whose name ends in _anadizin.sar. " +
+        "Run the Genesis command in an empty folder or open the root file of an " +
+        "existing project; the map fills in the moment the declaration is written.",
+    );
+  },
   get hatırlatıcılar(): string {
     return yuzeyMetni(
       "Bekleyen bir hatırlatıcınız yok. Bir işi bilerek sonraya bırakacağınız " +

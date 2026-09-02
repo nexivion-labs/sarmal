@@ -42,7 +42,7 @@ import {
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
-  IZ_METINLERI, YOL_METINLERI, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
+  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
 } from "./yuzey-metinleri.ts";
 
 // ── YUZ-4 RENK KANUNU (Founder kilidi 2026-07-12): renk = YALNIZ DURUM kanalı.
@@ -554,6 +554,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     for (const v of harita.values()) topolojikSirala(v.cocuklar);
     this.varliklar = [...harita.values()].sort((a, b) => a.ad.localeCompare(b.ad, "tr"));
     this.varlikUst = varlikUstleri(this.varliklar);   // 🪆 EKL-F7-A09: küme ilişkisi her turda taze kurulur
+    this.bosDurumuGuncelle();   // BKM-DNT-A05: varlıksız alanda panel susmaz, nasıl dolacağını söyler
     // ZRF-A06: varlık nesneleri yeniden kuruldu — bayat aktif referansı taze eşine bağlanır.
     this.aktifVarlik = undefined;
     this.aktifligiGuncelle(vscode.window.activeTextEditor);
@@ -566,6 +567,17 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     this.olcum?.(IZ_METINLERI.panelTuru(
       new Date().toTimeString().slice(0, 8), Date.now() - turBasi, goruntu.yollar.length, tetik,
     ));
+  }
+
+  /**
+   * BKM-DNT-A05: Yol Haritası'nın boş durum cümlesi. Öteki paneller gibi cümle
+   * katalogdan gelir ve görünüm nesnesinin `message` alanına yazılır; varlık
+   * listesi dolduğu an cümle geri çekilir. Ölçüt varlık sayısıdır, kırık dosya
+   * uyarıları değil: kırık dosya satırı zaten kendi cümlesini taşır.
+   */
+  bosDurumuGuncelle(): void {
+    if (!this.gorunum) return;
+    this.gorunum.message = this.varliklar.length ? undefined : YUZEY_BOS_DURUM.yolHaritası;
   }
 
   varlikListesi(): Varlik[] { return this.varliklar; }

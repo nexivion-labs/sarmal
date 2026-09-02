@@ -568,8 +568,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Yalnız bu üretici; öteki otuz dokuz komut satırı girdisi BKM-DNT-A01 kararını bekler."
       }
 
-      Adım( kod: BKM-DNT-A05, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ MIM-3, YUZ-3.3 ],
+      Adım( kod: BKM-DNT-A05, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ MIM-3, YUZ-3.3 ],
         üretir: [ Kod( kod: KOD-EKL-MANIFEST, dosya: "urun/eklenti/package.json", ne: "🍎 Eklenti manifesti — komutlar, paneller, menüler, temalar ve yerelleştirme anahtarlarının ilanı" ), KOD-YOLHARITA-GENISLETME ],
+        koşu: Koşum( kod: KSM-BKM-DNT-A05, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
+          kanıt: "urun/eklenti/sinama/manifest-menuleri.test.ts · 3/3 · eski koşul geri konunca 1 kırmızı · eklenti süiti 692/692",
+          ne: "İskeleti Kur düğmesinin koşulu *_anadizin.sar desenine çevrildi ve eski ad geçiş yedeği olarak kaldı; Yol Haritası varlıksız alanda katalogdan gelen iki dilli boş durum cümlesini gösteriyor. Yeni manifest nöbeti beş menü grubunu birden kapsıyor, dosya adı koşulu taşıyan her girdiyi kanonik ad, eski ad ve sıradan dosya üstünde ölçüyor ve eski koşul geri konduğunda kırmızıya dönüyor. Canlı pencerede düğmenin görünmesi Founder'ın bakışına bırakılmıştır." ),
         ne: "🪟 Manifestin göç artıkları: görünmeyen düğme ve boş kalan panel. Birincisi, editör başlığındaki 'İskeleti Kur' düğmesi yalnız `ana.sar` adlı dosyada görünecek biçimde koşullanmıştır; oysa canlı adlandırma `*_anadizin.sar` desenidir ve bunu doğuş komutu, yol haritasının tarama deseni ve eklentinin kendi sürüm günlüğü üç ayrı yerden doğrular. Komut paletten çalışır, düğme kanonik adı kullanan hiçbir projede belirmez; bu, göç sırasında manifestin kaynakla birlikte taşınmamasından doğan bir artıktır ve manifest nöbetleri editör başlığı ile görünüm başlığı menü gruplarını hiç ölçmediği için bugüne dek yaşamıştır. İkincisi, altı panelin beşi boş durumda bir cümle söylerken Yol Haritası hiçbir şey söylemez: ağaç görünümü mesaj almaz ve manifestte karşılama katkısı yoktur, dolayısıyla varlıksız bir çalışma alanında panel açıklamasız bomboş kalır." ) {
         görev: [
           "Düğmenin koşulunu `*_anadizin.sar` desenine çevir ve eski adı yalnız geçiş yedeği olarak koru.",
