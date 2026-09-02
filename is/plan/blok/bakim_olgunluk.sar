@@ -608,8 +608,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
     AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "nöbet onarımları",
       ne: "🧪 Süit dürüstlüğü ölçümünün bulguları: kendi kanıtını yok eden nöbet, davranışı korunmayan kaynak yarısı ve boş kümeye karşı korumasız iddialar" ) {
 
-      Adım( kod: BKM-DNT-A08, durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, YUZ-7 ],
+      Adım( kod: BKM-DNT-A08, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, YUZ-7 ],
         üretir: [ KOD-SNM-PAKET-TAZELIGI ],
+        koşu: Koşum( kod: KSM-BKM-DNT-A08, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
+          kanıt: "urun/eklenti/sinama/paket-tazeligi.test.ts · üç ardışık koşu · 4/4 · 4/4 · 4/4",
+          ne: "Duman sınamasındaki derleme çağrısı 2026-08-29 tarihinde kaldırıldı ve derleme süitin ön koşulu oldu; tazelik nöbeti bayat gövdede her koşumda kırmızı yanacak biçimde kuruldu ve üçüncü fikstür kararı iki yönde, üç ardışık çağrıda diske dokunmadan kanıtlıyor. Nöbet 2026-09-02 tarihinde salt okur olarak üç kez koşturuldu ve üçü de dört sınamayla yeşildir. Açık kalem yoktur." ),
         ne: "🕰️ Paket tazeliği nöbetinin kendi kanıtını yok etmekten vazgeçmesi. Süitin kararsız görünen tek nöbeti bulundu ve birebir üretildi: tazelik nöbeti derlenmiş gövdenin değişiklik zamanını tanı sicilinin kaynağıyla karşılaştırır, fakat süit betiği gövdeyi üretmez; buna karşılık paket girişi duman sınaması bir sınamanın içinde derleyiciyi çağırıp gövdeyi yeniden yazar. Dolayısıyla sicil düzenlendikten sonraki ilk koşum bayat gövdeyi görüp kırmızı yanar, aynı koşum yan etkiyle gövdeyi tazeler ve sonraki koşumlar yeşile döner. Nöbet ölçtüğü kusuru bir kez bildirir ve kanıtını kendi eliyle siler; adının yakalanamamasının sebebi budur. Bu bir zamanlama yarışı değil durum bağımlılığıdır ve altı kez aynı sonucu vermiştir. Süitin kendisi değiştirilmemiş ağaçta on iki koşumda on iki kez yeşildir; kararsızlık yalnız ilk koşumun ölçtüğü durumu onarmasından doğar." ) {
         görev: [
           "Süit betiğine derlemeyi ekle ya da duman sınamasındaki derleme çağrısını kaldırıp derlemeyi süitin ön koşulu yap; iki yol da nöbetin bir kez kırmızı yanıp sonra susmasını imkânsız kılar.",
