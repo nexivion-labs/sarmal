@@ -18,19 +18,16 @@ import hljs from "highlight.js";
 import { belgeMd } from "../../cekirdek/src/belgele.ts";
 import { agacYüz } from "../../cekirdek/src/agac.ts";
 import { SozDizimHatasi } from "../../cekirdek/src/belirtec.ts";
-import { snfBul } from "./ortak.ts";
+import { GOMULU_SNF, snfBul } from "./ortak.ts";
 import { ONIZLEME_METINLERI } from "./yuzey-metinleri.ts";
 
-// YEDEK palet — asıl kaynak SNF kanonu (renkPaleti); bunlar kanon yokken devreye girer.
-const AGAC_RENK: Record<string, string> = {
-  "ÇalışmaAlanı": "#8A6E58", "Uygulama": "#9A7A5C", "Proje": "#AC814F",
-  "Blok": "#C0925C", "Faz": "#D0A878", "Katman": "#D8BE94", "AltKatman": "#E2CFAA", "Adım": "#8CC152",
-};
-const AILE_RENK: Record<string, string> = {
-  temel: "#AC814F", plan: "#C0925C", bilgi: "#4ec9b0", orkestrasyon: "#c9b458",
-  etmen: "#c586c0", yuzey: "#ce9178", yasa: "#e06c6c", teknoloji: "#5b97a3",
-  urun: "#C173CE", surec: "#9c7256", nitelik: "#b56a8e", oz: "#8a94a0",
-};
+// Ağaç ve aile renklerinin TEK kaynağı sınıflama kanonudur (renkPaleti). Bu
+// dosya 2026-09-02 tarihine kadar "kanon yokken devreye girer" notuyla elle
+// yazılmış iki yedek harita taşıyordu; ölçüm ikisinin de hem kanondan sapmış
+// (öz ailesinin rengi yedekte başkaydı) hem de ulaşılmaz olduğunu gösterdi,
+// çünkü sınıflama çözücüsü kanon bulamadığında zaten gömülü kanona düşer ve o
+// kanon paleti taşır. Sapmış ve ölü bir kopya YUZ-1.2'nin yasakladığı elle
+// ikizdir; kaldırıldı ve tek yedek gömülü kanon bırakıldı (BKM-DNT-A07).
 
 // markdown-it: yerli önizlemenin motoru — html açık (kodBoya span'ları için).
 // Yabancı dil kod-çitleri kendi renkleriyle (highlight.js).
@@ -131,10 +128,13 @@ function sayfaUret(doc: vscode.TextDocument): string {
     let metin: string;
     if (doc.isDirty) { metin = doc.getText(); }
     else { try { metin = readFileSync(doc.uri.fsPath, "utf8"); } catch { metin = doc.getText(); } }
-    const snf = snfBul(doc);
-    const aile = new Map<string, string>((snf?.widgetTipleri ?? []).map((t) => [t.ad, t.aile]));
-    const agacR = snf?.renkPaleti?.agacRenkleri ?? AGAC_RENK;   // tek-kaynak: SNF (EKL-F4-A04)
-    const aileR = snf?.renkPaleti?.aileler ?? AILE_RENK;
+    // Çözücü yalnız bozuk bir kayıt dosyasında tanımsız döner; o hâlde de yedek
+    // elle yazılmış bir harita değil, paketle gelen gömülü kanondur.
+    const snf = snfBul(doc) ?? GOMULU_SNF;
+    const aile = new Map<string, string>((snf.widgetTipleri ?? []).map((t) => [t.ad, t.aile]));
+    const palet = snf.renkPaleti ?? GOMULU_SNF.renkPaleti;
+    const agacR = palet?.agacRenkleri ?? {};   // tek-kaynak: SNF (EKL-F4-A04)
+    const aileR = palet?.aileler ?? {};
     const kitap = md.render(belgeMd(metin, {
       boya: true,
       tipRenk: (ad) => agacR[ad] ?? aileR[aile.get(ad) ?? ""],

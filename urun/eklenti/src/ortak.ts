@@ -18,7 +18,7 @@ import { tabanKanonaDusuldu, tabanKanonBulundu } from "./taban-kanon.ts";
  *  dist'e bundle'lar. Kaynak hâlâ oz/siniflama; bu build'de dökülen kopyadır (tek-kaynak).
  *  doğuş-rehberi turu: gömülü kanon da normalize edilir — `*varsayılan` işaretleri çözülmeden
  *  enum bekçisine girerse dış projede sahte geçersiz-enum doğar (siniflamaYukle ikizi). */
-const GOMULU_SNF = siniflamaNormalize(GOMULU_KAYIT as unknown as Siniflama);
+export const GOMULU_SNF = siniflamaNormalize(GOMULU_KAYIT as unknown as Siniflama);
 
 /** Bir widget tipinin eğitici açıklaması (rehber.json). */
 export interface RehberGiris {

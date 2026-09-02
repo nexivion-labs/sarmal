@@ -602,8 +602,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Hangi üreticinin hangi yüzeyde koşacağı kararı bu Adımın değil BKM-DNT-A01'in konusudur; bu Adım yalnız ilanın gerçeği söylemesini sağlar."
       }
 
-      Adım( kod: BKM-DNT-A07, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
+      Adım( kod: BKM-DNT-A07, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
         üretir: [ KOD-EKL-ONIZLEME ],
+        koşu: Koşum( kod: KSM-BKM-DNT-A07, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
+          kanıt: "urun/eklenti/sinama/onizleme-palet.test.ts · 2/2 · harita geri konup yedek koparılınca 2 kırmızı · palet drift nöbeti değişmedi",
+          ne: "Önizlemedeki iki elle yedek harita kaldırıldı ve çözücü tanımsız döndüğünde tek yedek olarak paketle gelen gömülü kanon bırakıldı. Yeni nöbet mantık bölgesinde kanondan bağımsız renk değeri kalmadığını, yedeğin gömülü kanona düştüğünü ve gömülü paletin yedi ağaç tipi ile bütün aileleri boyadığını ölçüyor. CSS bloğundaki renkler bilinçle dışarıda bırakıldı, çünkü onların kanona bağlanması EKL-F6-A05 Adımının işidir." ),
         ne: "🎨 Önizlemenin yedek paletinin elle ikiz olmaktan çıkması. Önizleme dosyası ağaç ve aile renklerini 'kanon yokken devreye girer' notuyla elle yazılmış iki haritada taşır. Ölçüm iki şey gösterdi. Birincisi, harita kanondan sapmıştır: öz ailesinin rengi yedekte başka, kanonda başkadır. İkincisi, dal ulaşılmazdır: sınıflama çözücüsü kanon bulamadığında gömülü kanona düşer ve gömülü kanon paleti zaten taşır, dolayısıyla yedek haritaya düşen `??` dalı fiilen hiç çalışmaz. Sapmış ve ölü bir kopya, YUZ-1.2'nin yasakladığı elle ikizin ta kendisidir; hiçbir nöbet iki haritayı kanona karşı ölçmez. Renk dosyasındaki kardeş haritalar (aile ve önek simgeleri) ise palet drift nöbetiyle korunmaktadır ve bu Adımın dışındadır." ) {
         görev: [ "Yedek haritaları kaldır ve gömülü kanona düşen yolu tek yedek olarak bırak; kaldırılamıyorsa iki haritayı palet drift nöbetine bağla ve sapmayı düzelt." ]
         kabul: [ "Önizleme kaynağında kanondan bağımsız yazılmış renk değeri kalmaz ya da kalanlar palet drift nöbetiyle kanona eşitlenir; nöbet mutasyonla kanıtlanmıştır." ]
