@@ -1,3 +1,13 @@
+Sarmal
+Copyright 2026 Nexivion Labs
+
+This product includes software developed at Nexivion Labs (https://nexivionlabs.io).
+
+Sarmal is licensed under the Apache License, Version 2.0; see LICENSE.md.
+The third-party assets listed below are distributed under their own terms.
+
+---
+
 # Üçüncü Taraf Bildirimleri · Third-Party Notices
 
 Bu depo aşağıdaki üçüncü taraf varlığı yeniden dağıtır. Her varlığın sahibi,
