@@ -76,18 +76,33 @@ test("A04: paket, ekrana ulaşmayan dizgi rengi ilanını TAŞIMAZ", () => {
     + "semanticTokenScopes ile temalar/sarmal-*.json üzerindendir.");
 });
 
-test("A04: paket, anlamsal renk kuralını ve vurgu zorlamasını da TAŞIMAZ — renk dayatılmaz", () => {
+test("A04: paket anlamsal renk kuralını VARSAYILAN olarak ilan eder — kullanıcı ayarı üstün kalır", () => {
   const varsayilanlar = paket.contributes.configurationDefaults ?? {};
-  assert.ok(!("editor.semanticTokenColorCustomizations" in varsayilanlar),
-    "package.json otuz anlamsal renk kuralını yeniden varsayılan olarak ilan ediyor. Bu ilan "
-    + "ekrana gerçekten ulaşır ve tam da bu yüzden yasaktır: kullanıcının seçtiği temanın "
-    + "renklerini varsayılan yoluyla ezmek bir dayatmadır (EKL-F6-A04 hükmü · 2026-08-24). "
-    + "Kanon paleti isteyene iki Sarmal temasıyla gelir; deponun kendi görünümü ise "
-    + ".vscode/settings.json içindeki depo tercihinde yaşar.");
+  const anlamsal = varsayilanlar["editor.semanticTokenColorCustomizations"] as
+    { enabled?: boolean; rules?: Record<string, unknown>; "[*Light*]"?: { rules?: Record<string, unknown> } } | undefined;
+  assert.ok(anlamsal,
+    "package.json anlamsal renk kuralını ilan etmiyor. Founder 2026-09-02 tarihinde EKL-F6-A04 "
+    + "kaydındaki hükmün okunuşunu düzeltmiştir: kastedilen rengin hiç gelmemesi değil, "
+    + "kullanıcının onu AYARLARDAN DEĞİŞTİREBİLMESİDİR. İlan bir dayatma değildir, çünkü "
+    + "kullanıcının kendi ayarı her koşulda varsayılanın üstündedir. İlan sökülürse doğan her "
+    + "yeni projede otuz anlamsal tip, kullanıcının temasının tek rengine düşer ve ayrım kaybolur.");
+  assert.equal(anlamsal.enabled, true, "anlamsal renklendirme ilanı etkin olmalı");
+  assert.equal(Object.keys(anlamsal.rules ?? {}).length, 31,
+    "otuz bir anlamsal tipin tamamı varsayılan renk almalı — eksik tip kullanıcının temasının rengine düşer");
+  assert.ok(Object.keys(anlamsal["[*Light*]"]?.rules ?? {}).length > 0,
+    "açık temalar için ayrı kural kümesi yok — koyu zemin renkleri açık zeminde kontrast kaybeder");
+});
+
+test("A04: anlamsal vurgu KÜRESEL zorlanmaz — yalnız sarmal dil bloğunda açılır", () => {
+  const varsayilanlar = paket.contributes.configurationDefaults ?? {};
   assert.ok(!("editor.semanticHighlighting.enabled" in varsayilanlar),
     "package.json anlamsal vurguyu bütün diller ve bütün temalar için küresel olarak zorluyor. "
-    + "Bu tercih temanındır: iki Sarmal teması onu kendi gövdesinde `semanticHighlighting` "
-    + "alanıyla taşır ve başka hiçbir temanın kararı eklenti tarafından ezilmez.");
+    + "Renk hükmü Sarmal dilinin görünümünü bağlar, başka dillerin kararını değil; vurgu "
+    + "tercihi `[sarmal]` dil bloğunda yaşamalıdır.");
+  const dilBlogu = varsayilanlar["[sarmal]"] as Record<string, unknown> | undefined;
+  assert.equal(dilBlogu?.["editor.semanticHighlighting.enabled"], true,
+    "sarmal dil bloğu anlamsal vurguyu açmıyor — vurgu kapalıyken anlamsal renk kuralları hiç "
+    + "uygulanmaz ve otuz tipin tamamı dilbilgisi renklerine düşer.");
 });
 
 test("A04: anlamsal kapsam köprüsü ilan edilir ve her kapsam yerleşik bir köke düşer", () => {

@@ -74,10 +74,21 @@ export function snfBul(doc: KimlikliBelge): Siniflama | undefined {
   const yol = yukariAra(doc, path.join("oz", "siniflama", "kayit.json"));
   let taban: Siniflama;
   if (!yol) {
-    // EKL-F6-A04: düşüş artık SESSİZ DEĞİLDİR. Gömülü kanon kör kalmayı önler,
-    // fakat kullanıcı hangi kanonla çalıştığını bilmek zorundadır; işaret durum
-    // çubuğunda belirir ve kanon bulunduğu anda kaybolur.
-    tabanKanonaDusuldu(doc.uri.fsPath);
+    // EKL-F6-A04: düşüş SESSİZ DEĞİLDİR, fakat işaretin koşulu 2026-09-02'de
+    // daraltılmıştır. O hükmün gerekçesi şudur: kullanıcı, gördüğü şeyin
+    // PROJESİNİN KENDİ tip sistemi olduğunu sanmasın. Gömülü kanon eksik bir
+    // kanon değildir, Sarmal'ın kanonunun ta kendisidir; projenin kendi katkısı
+    // ise örtüde (oz/siniflama/ortu.json) yaşar. Dolayısıyla iki hâl ayrılır.
+    // Örtü YOKSA proje kendi tipini hiç eklememiştir ve gömülü kanon tam
+    // karşılığıdır: işaret gürültüdür ve basılmaz. Örtü VARSA fakat taban
+    // bulunamıyorsa gerçek kusur budur, çünkü örtü tabana eklenerek yüklenir ve
+    // tabansız örtü sessizce düşer; kullanıcı kendi ilan ettiği tipleri
+    // göremezken sebebini hiçbir yerden okuyamaz. Ölçülen bedel: kanon araması
+    // yukarı yürüdüğü için Sarmal deposunun kendi kökü dışında çalışan HERKES
+    // eski koşulda uyarı alıyordu ve doğan her yeni proje ilk gününde bu
+    // işaretle karşılanıyordu, oysa hiçbirinin tip sistemi eksik değildi.
+    if (yukariAra(doc, path.join("oz", "siniflama", "ortu.json"), false)) tabanKanonaDusuldu(doc.uri.fsPath);
+    else tabanKanonBulundu();
     taban = GOMULU_SNF;   // U4/YUZ-3: dış projede gömülü kanona düş (kör kalma)
   } else {
     tabanKanonBulundu();

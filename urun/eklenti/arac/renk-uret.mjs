@@ -3,9 +3,11 @@
 //
 //   Amaç:   Eklentinin tüm renkleri SNF-0'dan (oz/siniflama/kayit.json →
 //           renkPaleti) türetilir; package.json'a elle boya YAZILMAZ.
-//   Kapsam: anlamsal simge → TextMate kapsam ilanı, iki renk teması ve deponun
-//           kendi çalışma-alanı tercihi. configurationDefaults RENK TAŞIMAZ
-//           (EKL-F6-A04 hükmü: renk dayatılmaz, tam görünüm temayla gelir).
+//   Kapsam: anlamsal simge → TextMate kapsam ilanı, iki renk teması, paketin
+//           anlamsal renk varsayılanı ve deponun kendi çalışma-alanı tercihi.
+//           configurationDefaults anlamsal rengi VARSAYILAN olarak taşır
+//           (Founder 2026-09-02: renk gelir, kullanıcı ayarlardan değiştirir);
+//           tokenColorCustomizations taşımaz, çünkü o ilan boyayıcıya ulaşmaz.
 //   Sonuç:  SNF değişir → build → yüzey kendiliğinden uyar; sapma imkânsız
 //           (eski OS "palette_drift" dersinin yapısal çözümü).
 //   Çalıştıran: npm run build (esbuild'den ÖNCE — bkz. package.json scripts).
@@ -86,6 +88,7 @@ const KAPSAM_KOD   = ["constant.other.kod.sar", "constant.other", "entity.name.c
 // Kenar alanları (bağımlı·besler) planın akışını kurar; bu yüzden genel karşılıkları
 // akış anahtarıdır — kullanıcının teması onları kendi kontrol-akışı rengiyle boyar.
 const KAPSAM_KENAR = ["keyword.control.flow.sar", "keyword.control.flow", "keyword.control"];
+const KAPSAM_DIZGI = ["string.quoted.double.sar", "string.quoted.double", "string.quoted", "string"];
 
 /** İlan edilen her anlamsal simge tipinin TextMate karşılığı — kapsamsız tip
  *  bırakılamaz; nöbet (giydirmesiz-renk.test.ts) ilan ile bu çizelgeyi küme
@@ -106,6 +109,7 @@ const SIMGE_KAPSAM = {
   sarmalParam: KAPSAM_PARAM,
   sarmalKod: KAPSAM_KOD,
   sarmalKenar: KAPSAM_KENAR,
+  sarmalDizgi: KAPSAM_DIZGI,   // 📝 niyet metni — kullanıcının KENDİ teması da boyayabilsin
   // K2 imza önekleri: hepsi KOD'dur, yalnız imza rengi ayrışır.
   sarmalKodEtmen: KAPSAM_KOD,  sarmalKodBeceri: KAPSAM_KOD,
   sarmalKodBellek: KAPSAM_KOD, sarmalKodHatir: KAPSAM_KOD,
@@ -129,6 +133,7 @@ function anlamsalKurallar(palet) {
     sarmalDavranis: aileler.davranis, sarmalArkayuz: aileler.arkayuz,
     sarmalParam: sade.parametre,       sarmalKod: sade.kod,
     sarmalKenar: sade.kenar,           // 🔗 bağımlı·besler — bağımlılık iskeleti özgü renk (YUZ-4.1)
+    sarmalDizgi: sade.dizgi,           // 📝 niyet metni — kanonun beyazı (Founder 2026-09-02)
   };
   for (const [grup, token] of Object.entries(ONEK_TOKEN)) {
     const renk = (palet.kodOnekleri ?? {})[grup];
@@ -279,20 +284,33 @@ export function uret(yollar = {}) {
   const paket = JSON.parse(readFileSync(PAKET, "utf8"));
   const { sadeRenkler: sade } = palet;
 
-  // ── HİÇBİR RENK PAKETE İLAN EDİLMEZ (EKL-F6-A04 · hüküm 2026-08-22/24) ─────
-  // Hüküm şudur: renk dayatılmaz ve tam görünüm temayla gelir. textMate ilanı
-  // ekrana ulaşmadığı iki kez ölçüldüğü için zaten sökülmüştü; anlamsal kurallar
-  // ise ekrana ULAŞTIKLARI hâlde sökülür, çünkü kullanıcının seçtiği temanın
-  // renklerini varsayılan yoluyla ezmek de bir dayatmadır. Anlamsal vurgunun
-  // küresel zorlaması aynı gerekçeyle kalkar; iki Sarmal teması bu tercihi
-  // kendi gövdesinde taşır. Ürünün renk yolu iki yüzeyden ibarettir:
-  // semanticTokenScopes köprüsü kullanıcının KENDİ temasına, kanon paleti
-  // isteyene iki Sarmal temasına. Silme burada kalıcıdır: anahtarlardan biri
-  // pakete elle geri konursa bir sonraki build onu yine söker ve renk-yolu
-  // nöbeti build beklemeden kırmızı yanar.
+  // ── RENK VARSAYILAN OLARAK GELİR, DAYATILMAZ (Founder hükmü · 2026-09-02) ──
+  // HÜKMÜN DÜZELTİLMESİ: EKL-F6-A04 kaydındaki 2026-08-22 hükmü "renk kullanıcıya
+  // dayatılmaz" cümlesiyle yazılmış ve uygulamada "hiçbir renk ilan edilmez" diye
+  // okunmuştu. Founder 2026-09-02 tarihinde bu okumayı düzeltmiştir: kastedilen
+  // şey rengin hiç gelmemesi değil, KULLANICININ AYARLARDAN DEĞİŞTİREBİLMESİDİR.
+  // `configurationDefaults` tam olarak bunu yapar ve bir dayatma değildir, çünkü
+  // kullanıcının kendi ayarı her koşulda üstündür; bu üstünlük gerçek düzenleyici
+  // oturumunda ölçülmüştür (kullanıcı hanesine değer yazılınca varsayılan geri
+  // çekilir, değer silinince geri gelir). Eski okumanın bedeli ölçülmüştür: kanon
+  // paletini yalnız Sarmal temasını seçen görüyordu, dolayısıyla doğan her yeni
+  // projede otuz anlamsal tip kullanıcının kendi temasının tek rengine düşüyor ve
+  // ayrım kayboluyordu.
+  //
+  // İKİ ANAHTAR AYRILIR VE SEBEPLERİ FARKLIDIR. `tokenColorCustomizations` ilan
+  // edilmez, çünkü bu ilan boyayıcıya hiç ulaşmaz ve iki bağımsız ölçümle böyle
+  // saptanmıştır; çalışmadığı hâlde duran bir beyan kapıya yalan söyletir. Buna
+  // karşılık `semanticTokenColorCustomizations` ekrana ULAŞIR ve hükmün konusu
+  // odur. Anlamsal vurgu ise küresel olarak zorlanmaz; yalnız `[sarmal]` dil
+  // bloğunda açılır, böylece başka hiçbir dilin ve temanın kararı ezilmez.
   delete paket.contributes.configurationDefaults["editor.tokenColorCustomizations"];
-  delete paket.contributes.configurationDefaults["editor.semanticTokenColorCustomizations"];
   delete paket.contributes.configurationDefaults["editor.semanticHighlighting.enabled"];
+  paket.contributes.configurationDefaults["editor.semanticTokenColorCustomizations"] = {
+    enabled: true,
+    rules: anlamsalKurallar(palet),
+    "[*Light*]": { rules: acikAnlamsalKurallar(palet) },
+  };
+  paket.contributes.configurationDefaults["[sarmal]"]["editor.semanticHighlighting.enabled"] = true;
 
   // ── Deponun KENDİ çalışma-alanı tercihi ───────────────────────────────────
   // Bu dosya ürünün bir yüzeyi değildir; yalnız bu deponun tercihidir ve
@@ -384,5 +402,5 @@ export { SIMGE_KAPSAM, anlamsalKurallar, acikAnlamsalKurallar };
 // Doğrudan çalıştırma (npm run build): varsayılan yollara üret.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   uret();
-  console.log("🎨 kanondan üretildi → package.json (kapsam ilanı + tema katkısı; renk ilanı YOK) + .vscode/settings.json (depo tercihi: textMate + anlamsal) + temalar/sarmal-koyu·acik.json + gomulu-kanon.ts (U4)");
+  console.log("🎨 kanondan üretildi → package.json (kapsam ilanı + tema katkısı + anlamsal renk varsayılanı) + .vscode/settings.json (depo tercihi: textMate + anlamsal) + temalar/sarmal-koyu·acik.json + gomulu-kanon.ts (U4)");
 }

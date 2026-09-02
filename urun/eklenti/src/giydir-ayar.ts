@@ -56,6 +56,7 @@ export function giydirAyarlari(kayit: Record<string, unknown> = GOMULU_KAYIT): R
     sarmalDavranis: aileler.davranis,  sarmalArkayuz: aileler.arkayuz,
     sarmalParam: sade.parametre,       sarmalKod: sade.kod,
     sarmalKenar: sade.kenar,
+    sarmalDizgi: sade.dizgi,   // niyet metni — renk-uret ile TEK kaynak (Founder 2026-09-02)
   };
   for (const [grup, token] of Object.entries(ONEK_TOKEN)) {
     const renk = (palet.kodOnekleri ?? {})[grup];

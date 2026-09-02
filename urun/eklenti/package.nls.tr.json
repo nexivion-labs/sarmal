@@ -24,6 +24,7 @@
   "semantic.parameter": "parametre adı (soluk)",
   "semantic.code": "KOD/değer (soluk)",
   "semantic.edge": "🔗 kenar alanı — bağımlılık iskeletini kuran bağımlı ve besler parametreleri",
+  "semantic.string": "Sarmal: niyet metni (dizgi değeri)",
   "semantic.codeAgent": "KOD imzası: etmen dünyası (ETM·ORK·ANY)",
   "semantic.codeSkill": "KOD imzası: beceri/yetenek (BCR·YTN)",
   "semantic.codeMemory": "KOD imzası: bellek/tetik/kanca (BLK·TTK·KNC)",

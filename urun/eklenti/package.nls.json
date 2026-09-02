@@ -24,6 +24,7 @@
   "semantic.parameter": "parameter name (muted)",
   "semantic.code": "CODE/value (muted)",
   "semantic.edge": "🔗 edge field — the dependsOn and feeds parameters that form the dependency structure",
+  "semantic.string": "Sarmal: intent text (string value)",
   "semantic.codeAgent": "CODE signature: agent domain (ETM·ORK·ANY)",
   "semantic.codeSkill": "CODE signature: skill/capability (BCR·YTN)",
   "semantic.codeMemory": "CODE signature: memory/trigger/hook (BLK·TTK·KNC)",

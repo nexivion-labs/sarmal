@@ -181,7 +181,12 @@ function kanonModulu(vscode: unknown): KanonModulu {
   return modul;
 }
 
-test("A04 DAVRANIŞ: kanon bulunamayınca taban kanona düşüldüğü SÖYLENİR (sessiz düşüş yasak)", () => {
+test("A04 DAVRANIŞ: ÖRTÜSÜZ projede gömülü kanon normaldir — işaret GÖSTERİLMEZ", () => {
+  // Founder 2026-09-02: işaretin koşulu daraltıldı. Gerekçe hükmün kendi
+  // cümlesindedir — kullanıcı, gördüğünün PROJESİNİN KENDİ tip sistemi olduğunu
+  // sanmasın. Örtü yoksa proje kendi tipini hiç eklememiştir ve gömülü kanon
+  // onun tam karşılığıdır; eski koşulda ise kanon araması yukarı yürüdüğü için
+  // Sarmal deposunun kendi kökü dışında çalışan HERKES bu işareti alıyordu.
   const alan = gecici("sarmal-kanonsuz-");
   const belge = join(alan, "bos.sar");
   writeFileSync(belge, "Faz( kod: F1, ad: \"deneme\" )\n", "utf8");
@@ -189,10 +194,31 @@ test("A04 DAVRANIŞ: kanon bulunamayınca taban kanona düşüldüğü SÖYLENİ
   const { cubuk, vscode } = sahteYurutucu([alan]);
   const modul = kanonModulu(vscode);
   const isaret = new modul.TabanKanonCubugu();
+
+  assert.ok(modul.snfBul({ uri: { fsPath: belge } }), "gömülü taban kanon yine de dönmeli — kör kalmak onarım değildir");
+  assert.equal(modul.tabanKanonDurumu().düşüldü, false,
+    "örtüsüz projede işaret yakıldı — doğan her yeni proje ilk gününde sahte uyarıyla karşılanır");
+  assert.equal(cubuk.gorunur, false, "durum çubuğu işareti gürültü olarak gösterildi");
+  isaret.dispose();
+});
+
+test("A04 DAVRANIŞ: ÖRTÜLÜ projede taban bulunamazsa düşüş SÖYLENİR (sessiz düşüş yasak)", () => {
+  // Gerçek kusur budur: örtü tabana EKLENEREK yüklenir, dolayısıyla taban
+  // bulunamadığında kullanıcının kendi ilan ettiği tipler sessizce düşer ve
+  // sebebi hiçbir yerden okunamaz.
+  const alan = gecici("sarmal-ortulu-");
+  const belge = join(alan, "bos.sar");
+  writeFileSync(belge, "Faz( kod: F1, ad: \"deneme\" )\n", "utf8");
+  mkdirSync(join(alan, "oz", "siniflama"), { recursive: true });
+  writeFileSync(join(alan, "oz", "siniflama", "ortu.json"), JSON.stringify({ departmanlar: ["uyumluluk"] }), "utf8");
+
+  const { cubuk, vscode } = sahteYurutucu([alan]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
   assert.equal(cubuk.gorunur, false, "kanon henüz sorulmadan işaret görünmemeli");
 
   assert.ok(modul.snfBul({ uri: { fsPath: belge } }), "gömülü taban kanon yine de dönmeli — kör kalmak onarım değildir");
-  assert.equal(modul.tabanKanonDurumu().düşüldü, true, "düşüş kaydedilmedi — kullanıcı hangi kanonla çalıştığını bilemez");
+  assert.equal(modul.tabanKanonDurumu().düşüldü, true, "düşüş kaydedilmedi — kullanıcı kendi tiplerinin neden yüklenmediğini bilemez");
   assert.equal(cubuk.gorunur, true, "durum çubuğu işareti gösterilmedi — düşüş SESSİZ kaldı");
   assert.match(String(cubuk.metin), /Sarmal/, "işaret hangi araca ait olduğunu söylemeli");
   assert.match(String(cubuk.ipucu), /anadizin/, "ipucu çözümü söylemeli: ilan edilmiş bir varlık kökü");

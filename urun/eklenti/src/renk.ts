@@ -60,7 +60,7 @@ const ONEK_TOKEN: Record<string, string> = {
 const TOKEN_LISTE = [
   "sarmalBahce", "sarmalAgac", "sarmalKok", "sarmalGovde", "sarmalDal", "sarmalAltDal", "sarmalYaprak", "sarmalMeyve",
   "sarmalBilgi", "sarmalOrkestrasyon", "sarmalEtmen", "sarmalYuzey", "sarmalYasa", "sarmalTeknoloji", "sarmalSurec", "sarmalNitelik", "sarmalOz", "sarmalDavranis", "sarmalArkayuz",
-  "sarmalParam", "sarmalKod", "sarmalKenar",
+  "sarmalParam", "sarmalKod", "sarmalKenar", "sarmalDizgi",
   ...Object.values(ONEK_TOKEN),
 ];
 const PARAM = TOKEN_LISTE.indexOf("sarmalParam");
@@ -95,7 +95,19 @@ export function renkSaglayici(): vscode.DocumentSemanticTokensProvider {
       };
 
       const degerTokenla = (v: Deger): void => {
-        if (v.tur === "kod" && v.metin) ekle(v.satir, v.sutun, v.metin.length, kodDizini(v.metin));
+        // DİZGİ (Founder 2026-09-02): niyet metinleri anlamsal token ALIR. Kusur
+        // bir aydır açıktı ve yeri yanlış aranıyordu: dizgiler yalnız TextMate
+        // kapsamıyla (string.quoted.double.sar) boyanıyordu, o kapsamın rengi ise
+        // paketin configurationDefaults ilanından boyayıcıya HİÇ ulaşmaz (iki
+        // bağımsız ölçüm). Dolayısıyla kanonun beyazı yalnız deponun kendi ayar
+        // dosyasını taşıyan pencerede görünüyor, doğan her projede niyet metinleri
+        // editörün kendi dizgi rengine (maviye) düşüyordu. Anlamsal token yolu ise
+        // çalışmaktadır ve otuz tip bugün oradan gelmektedir; dizgi de o yola alındı.
+        // Çok satırlı dizgi ATLANIR, çünkü bir anlamsal token satır sınırını aşamaz;
+        // o hâl TextMate kapsamında kalır ve tema onu boyar.
+        if (v.tur === "metin" && v.metin !== undefined && !v.metin.includes("\n"))
+          ekle(v.satir, v.sutun, v.metin.length + 2, TOKEN_LISTE.indexOf("sarmalDizgi"));   // +2: açan ve kapayan tırnak
+        else if (v.tur === "kod" && v.metin) ekle(v.satir, v.sutun, v.metin.length, kodDizini(v.metin));
         else if (v.tur === "widget" && v.dugum) gez(v.dugum);
         else if (v.tur === "liste") for (const o of v.ogeler ?? []) degerTokenla(o);
         else if (v.tur === "harita") for (const c of v.ciftler ?? []) { ekle(c.satir, c.sutun, c.ad.length, PARAM); degerTokenla(c.deger); }

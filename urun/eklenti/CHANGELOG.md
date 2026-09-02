@@ -2,6 +2,22 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.178 — 2026-09-02 (niyet metinleri her projede beyaz)
+
+- **Dizgi değerleri artık anlamsal token alıyor.** Founder bir aydır süren kusuru bildirdi: niyet metinleri (`ne`, `görev`, `kabul`, `sınır`) doğan projelerde editörün kendi dizgi rengine düşüyor ve mavi görünüyordu. Kusurun yeri bir aydır yanlış aranmıştı. Dizgiler yalnız TextMate kapsamıyla boyanıyordu ve o kapsamın rengi paketin ilanından boyayıcıya hiç ulaşmaz; bu iki bağımsız ölçümle saptanmış bir VS Code davranışıdır. Dolayısıyla kanonun beyazı yalnız deponun kendi ayar dosyasını taşıyan pencerede görünüyordu. Dizgi bugün çalışan yola alındı: otuz birinci anlamsal tip olarak ilan edildi, rengini kanonun kendi dizgi değerinden alıyor ve kapsam köprüsüyle kullanıcının kendi teması da onu boyayabiliyor.
+- **Kusurun bir ay yaşamasının sebebi de kapandı.** Token üretimini ölçen hiçbir nöbet yoktu; renk sağlayıcısı dışa açıktı fakat hiçbir sınama onu çağırmıyordu. Sağlayıcı artık sahte bir yürütücüyle gerçekten koşturuluyor ve üretilen token akışı sayılıyor. Dört nöbet eklendi: dizginin token aldığı, tokenin tırnakları da kapsadığı, çok satırlı dizginin bilinçle atlandığı (bir anlamsal token satır sınırını aşamaz) ve kod değerinin dizgi tokenine düşmediği ölçülüyor. Mutasyonda dizgi dalı söküldüğünde iki nöbet birden kırmızı yandı.
+
+## 0.9.177 — 2026-09-02 (taban kanon işareti yalnız gerçek kusurda yanıyor)
+
+- **Durum çubuğundaki "taban kanon" işareti artık her projede yanmıyor.** Ölçüm gürültünün kaynağını gösterdi: kanon araması dosyadan yukarı yürüdüğü için Sarmal deposunun kendi kökü dışında çalışan herkes bu işareti alıyordu ve doğuş paketiyle doğan her yeni proje ilk gününde onunla karşılanıyordu, oysa hiçbirinin tip sistemi eksik değildi. İşaretin kendi gerekçesi kullanıcının gördüğünü projesinin kendi tip sistemi sanmamasıdır; bu gerekçeye göre iki hâl ayrıldı. Örtü dosyası yoksa proje kendi tipini hiç eklememiştir ve gömülü kanon eksik bir kanon değil Sarmal kanonunun ta kendisidir, işaret basılmaz. Örtü varsa fakat taban bulunamıyorsa gerçek kusur budur ve işaret basılır, çünkü örtü tabana eklenerek yüklenir; tabansız örtü sessizce düşer ve kullanıcı kendi ilan ettiği tipleri göremezken sebebini hiçbir yerden okuyamaz.
+- **İki hâl de nöbete bağlandı ve mutasyonla kanıtlandı.** Koşul söküldüğünde örtüsüz nöbet kırmızı yandı, geri alındığında dosya sağlaması birebir döndü.
+
+## 0.9.176 — 2026-09-02 (renk varsayılan olarak geliyor, kullanıcı ayarından değiştirilebiliyor)
+
+- **Kanon paleti artık kurulur kurulmaz her projede görünüyor.** Founder, eklentinin renk hükmünün yanlış uygulandığını bildirdi: hüküm rengin kullanıcı tarafından ayarlardan değiştirilebilmesini istiyordu, rengin hiç gelmemesini değil. Paket bugüne kadar hiçbir anlamsal renk ilan etmiyordu ve kanon paletini yalnız Sarmal temasını seçen kullanıcı görüyordu; doğan her yeni projede otuz anlamsal tip kullanıcının kendi temasının tek rengine düşüyor ve ayrım kayboluyordu. Ölçüm bunu doğruladı: kapsam köprüsü otuz simgeyi yalnız dört TextMate kümesine bağlıyor ve on dokuzu tek kümede topluyor. Artık paket otuz anlamsal renk kuralını açık tema eşleriyle birlikte varsayılan olarak ilan ediyor. Bu bir dayatma değildir: kullanıcının kendi ayarı her koşulda varsayılanın üstündedir.
+- **Anlamsal vurgu küresel değil, yalnız Sarmal dilinde açılıyor.** Vurgu tercihi bütün diller için zorlanırsa başka dillerin ve temaların kararı ezilir; tercih bu yüzden `[sarmal]` dil bloğunda yaşıyor.
+- **Dizgi rengi ilanı hâlâ yok ve bu bilinçli.** O ilanın boyayıcıya ulaşmadığı iki bağımsız ölçümle saptanmıştır; çalışmadığı hâlde duran bir beyan kapıya yalan söyletir. İki anahtarın gerekçesi ayrıdır ve nöbetleri de ayrıdır.
+
 ## 0.9.175 — 2026-08-31 (tek ağaç gerçek kabukta nöbete bağlandı)
 
 - **Panelin turun yayınına bağlanması artık gerçek VS Code kabuğunda altı nöbetle korunuyor.** Bir panel turunda dosya araması ile belge açma sayacının kıpırdamadığı, daraltılmış turun görüntü boyutunun tam turla aynı olduğu, kırık ile okunamayan kümelerinin kesişmediği ve dört kümenin taranan yolu bölüştüğü, turun panelde tek değişim olayı ürettiği, turun diskten okuduğu hiçbir dosyayı paylaşılan belleğe yazmadığı ve görüntüden kurulan panel ağacının eski taramayla aynı kod kümesini verdiği ölçülüyor. Üç mutasyon her birinin kendi nöbetini kırdığını kanıtladı.
