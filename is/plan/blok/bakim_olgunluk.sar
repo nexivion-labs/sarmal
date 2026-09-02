@@ -569,7 +569,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
       }
 
       Adım( kod: BKM-DNT-A05, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ MIM-3, YUZ-3.3 ],
-        üretir: [ Kod( kod: KOD-EKL-MANIFEST, dosya: "urun/eklenti/package.json", ne: "🍎 Eklenti manifesti — komutlar, paneller, menüler, temalar ve yerelleştirme anahtarlarının ilanı" ), KOD-YOLHARITA-GENISLETME ],
+        üretir: [ Kod( kod: KOD-EKL-MANIFEST, dosya: "urun/eklenti/package.json", ne: "🍎 Eklenti manifesti — komutlar, paneller, menüler, temalar ve yerelleştirme anahtarlarının ilanı" ), KOD-YOLHARITA-GENISLETME, KOD-SNM-MANIFEST-MENULERI ],
         koşu: Koşum( kod: KSM-BKM-DNT-A05, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
           kanıt: "urun/eklenti/sinama/manifest-menuleri.test.ts · 3/3 · eski koşul geri konunca 1 kırmızı · eklenti süiti 692/692",
           ne: "İskeleti Kur düğmesinin koşulu *_anadizin.sar desenine çevrildi ve eski ad geçiş yedeği olarak kaldı; Yol Haritası varlıksız alanda katalogdan gelen iki dilli boş durum cümlesini gösteriyor. Yeni manifest nöbeti beş menü grubunu birden kapsıyor, dosya adı koşulu taşıyan her girdiyi kanonik ad, eski ad ve sıradan dosya üstünde ölçüyor ve eski koşul geri konduğunda kırmızıya dönüyor. Canlı pencerede düğmenin görünmesi Founder'ın bakışına bırakılmıştır." ),
@@ -603,7 +603,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
       }
 
       Adım( kod: BKM-DNT-A07, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
-        üretir: [ KOD-EKL-ONIZLEME ],
+        üretir: [ KOD-EKL-ONIZLEME, KOD-SNM-ONIZLEME-PALET ],
         koşu: Koşum( kod: KSM-BKM-DNT-A07, tarih: 2026-09-02, mühür: VERIFIED, karar: kabul,
           kanıt: "urun/eklenti/sinama/onizleme-palet.test.ts · 2/2 · harita geri konup yedek koparılınca 2 kırmızı · palet drift nöbeti değişmedi",
           ne: "Önizlemedeki iki elle yedek harita kaldırıldı ve çözücü tanımsız döndüğünde tek yedek olarak paketle gelen gömülü kanon bırakıldı. Yeni nöbet mantık bölgesinde kanondan bağımsız renk değeri kalmadığını, yedeğin gömülü kanona düştüğünü ve gömülü paletin yedi ağaç tipi ile bütün aileleri boyadığını ölçüyor. CSS bloğundaki renkler bilinçle dışarıda bırakıldı, çünkü onların kanona bağlanması EKL-F6-A05 Adımının işidir." ),
@@ -902,4 +902,10 @@ Kod( kod: KOD-KARARLAR-NOBET,
 // 🍎 BKM-FND-A05 renk üreteci hedefi (2026-08-27)
 Kod( kod: KOD-EKL-RENK-URET, dosya: "urun/eklenti/arac/renk-uret.mjs",
   ne: "🍎 Renk ve gömülü kanon üreteci — kanon paletinden tema dosyalarını, anlamsal renk tablosunu ve eklentinin gömülü kanon ikizini üretir; hedef ayar dosyası seçimi BKM-FND-A05 kapsamındadır" )
+
+// 🍎 BKM-DNT-A05 ve BKM-DNT-A07 nöbetleri (2026-09-02)
+Kod( kod: KOD-SNM-MANIFEST-MENULERI, dosya: "urun/eklenti/sinama/manifest-menuleri.test.ts",
+  ne: "🍎 Manifest menü nöbeti — beş menü grubunu birden kapsar, dosya adı koşulu taşıyan her girdiyi kanonik anadizin adı, eski ad ve sıradan dosya üstünde ölçer ve Yol Haritası boş durum cümlesinin iki dilde katalogdan geldiğini doğrular" )
+Kod( kod: KOD-SNM-ONIZLEME-PALET, dosya: "urun/eklenti/sinama/onizleme-palet.test.ts",
+  ne: "🍎 Önizleme palet nöbeti — önizleme kaynağının mantık bölgesinde kanondan bağımsız renk kalmadığını, tek yedeğin gömülü kanon olduğunu ve gömülü paletin bütün tipleri boyadığını ölçer; CSS bloğu EKL-F6-A05 kapsamındadır" )
 
