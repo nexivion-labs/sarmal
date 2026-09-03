@@ -1,0 +1,164 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// nitelik/goc/aktarim_kayitlari.sar — 🚚 AÇIK DEPONUN AKTARIM KAYITLARI (GOC-A08)
+//   Kademeli küratörlü aktarımın on iki kümesinin tarihli koşu kayıtları ve
+//   doğum denetiminin sonucu. Metin GOC-A08 Adımının koşu alanında yaşıyordu;
+//   DIL-1.7 uyarınca koşu alanı yalnız son mührü taşır ve deneyin kendisi
+//   nitelik kaydına iner. Girişler 2026-09-03 tarihinde buraya aynen taşındı.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+# 🚚 Açık Deponun Aktarım Kayıtları — kümeler, kapılar ve doğum
+
+Aşağıdaki kayıtlar aktarımın günlerini anlatır. Her kümenin kapısı dört
+parçadır: git izli listeden dosya bazlı kopya, bayt karşılaştırması, kapalı iz el
+ölçümü ve sahne denetiminin tam yeşili. Depo 2026-08-25 gecesi tek doğum
+işlemesiyle doğmuştur: beş yüz yirmi dokuz dosya, yüz altmış üç .sar, diskteki
+sayıyla birebir; kanca kapısında çekirdek ve eklenti süitleri yeşildir.
+
+## 2026-08-25
+
+AKTARIM BAŞLADI (Founder yetki devriyle kontrolcü sırayı seçti): kritik yol mağaza Adımının
+bağımlı kenarından geçtiği için aktarım öne alındı ve kümeler kolaydan zora dizildi; her kümenin
+kapısı dört parçadır — git izli listeden dosya bazlı kopya, bayt karşılaştırması, kapalı iz el
+ölçümü ve sahne denetiminin tam yeşili. KÜME 2, KANCA: iki git kancası izli listeden kopyalandı
+ve bayt özdeşliği doğrulandı; sahne kopyasında yeni yerleşim uyarlaması yapıldı ve fark satır
+sayısıyla kayıtlıdır — işleme mesajı kancasında yönetişim kaynağının yolu beş satırda yonetisim
+rafına çevrildi, işleme kapısı kancasında motor arama yolu, motor değişkeni, iki test kapısı
+deseni ve iki dizin geçişi yedi satırda urun kitaplığına çevrildi, iki dosyanın başlığındaki
+eski depo adı kaldırıldı; çalıştırma izinleri korunmuş olarak ölçüldü. Kancaların yeni depoya
+core.hooksPath kaydıyla bağlanması git doğumu anının işidir ve kesim listesine not edildi. KÜME
+3, FELSEFE: on dosya izli listeden kopyalandı ve onu da bayt özdeş doğrulandı. El ölçümü iki
+kümede üç eşleşme buldu ve üçü de açık dilin kendi sınır beyanları olarak meşru sayıldı; eski
+depo adı ile kapalı ürün adı sahne kopyalarında sıfır kez geçer. Küme sonrası sahne denetimi tam
+yeşildir: motor sustu, yüz seksen sekiz düğüm, felsefe kararları dayanak haritasına girdi ve
+Felsefe tipi canlı kullanıma döndü. Yasa ile özün mekanik dilimi önceki oturumlarda inmişti ve
+bu kaydın küme sayımı onları birinci küme sayar. KÜME 4, ÖĞRENME VE KONTROLCÜ ANAYASASI (aynı
+gün): on beceri kartı ile kadro ilanı izli listeden kopyalandı ve on birinin bayt özdeşliği
+doğrulandı; kürasyon hükmü gereği iki iç defter (Founder gözlem defteri ile dogfood
+geribildirimi) girmedi ve dersler defterinin yerine boş tohum doğdu. Kadro ilanı için verilen
+temizlenerek girer hükmü ölçümle yeniden okundu: dosyadaki kapalı ürün anmalarının tamamı varlık
+ayrılığını anlatan meşru sınır beyanlarıdır ve mimari ifşa taşımaz, dolayısıyla temizlenecek
+kalem sıfır çıktı ve dosya bayt özdeş girdi. Küme denetimi bağımlılık sırasını canlı yakaladı:
+iki beceri kartının uygular kenarı kontrolcü anayasasına çözülmeden sahne kırık referans hatası
+verdi; öz kayıt kümesinin ilk kalemi olan kontrolcü anayasası bayt özdeşliği ve sıfır el ölçümü
+eşleşmesiyle kayıt rafına indi ve sahne iki yüz elli altı düğümle yeniden tam yeşile döndü,
+motor sustu. KÜME 5, ŞABLON VE ÖRNEK (aynı gün): şablon rafının on altı dosyası ile örnek
+korpusunun otuz sekiz dosyası göreli yollar korunarak izli listeden kopyalandı ve tamamının bayt
+özdeşliği doğrulandı; türetilmiş iki okuma yüzü ile kürasyon hükmünün dışarıda bıraktığı altı
+kalem (iç durum anlık görüntüsü, dış araç kopyası, kişiye özel prova, motor gizliliğini hükme
+bağlayan vitrin, kişiye özel format masası ve orkestratör kalıp defteri) girmedi, boş üretim
+klasörünün kaderi ürün kümesinin sınama yol uyarlamasıyla birlikte kararlaştırılacak. Üç
+kürasyon dokunuşu sahne kopyalarında yapıldı ve kaynaklara dokunulmadı: etmen şablonundaki
+kapalı ürün adı şablonun kendi sınır beyanına çevrildi, zengin Adım örneğindeki kişi adı Founder
+unvanına döndü ve teknoloji örneğindeki üç gerçek model kimliği ile model değerlendirme
+cümleleri kurgusal örneklere indirildi, çünkü lig kadrosu ile model yorumları kürasyon hükmü
+gereği açığa çıkmaz. Bilerek hatalı ders muafiyetinin ayrı bir listede değil dosyaların kendi
+pragmasında yaşadığı ölçüldü ve giren dört ders dosyasını sahne motoru kendiliğinden tanıdı. El
+ölçümü iki kümede sıfır eşleşme verdi ve sahne altı yüz sekiz düğümle tam yeşildir, motor
+susmayı sürdürür. KÜME 6, BİLGİ VE FİKİRLER (aynı gün): tasarım sözlüğünün üç kaynağı bilgi
+rafına, flutter sözlüğünün dört yüzü teknoloji sözlükleri deseninin ilk sakini olarak sozluk
+rafının flutter klasörüne bayt özdeş indi; beş ön madde alanındaki kişi adı önceki dokunuşla
+tutarlı biçimde Founder unvanına çevrildi ve iç kalem beş bilgi kaydı kürasyon hükmü gereği
+girmedi. Fikirler dosyası düğüm düğüm ayıklandı: beş park kaydından açık ürünü ilgilendiren üçü
+(anlatım kanıtı, markdown giriş kapısı ve özelleştirme paneli) kayıt rafına taşındı, ticari
+strateji müzakeresi taşıyan tek çatı fikri ile kapalı ürünün oturum arayüzü fikri atölyede kaldı
+ve kopyanın başlığına kürasyon notu düşüldü. Sahne altı yüz on bir düğümle tam yeşildir.
+BİRLEŞİK HATIRLATICI KAYDININ SIRASI BİLİNÇLİ ERTELENDİ: kararlaşmış düğümlerin hatırlat
+kenarları canlı planlardaki Adımlara çözülür ve o planlar henüz sahneye inmedi; kayıt, iş
+kümesinin plan dilimi indikten sonra düğüm düğüm redaksiyonla taşınacaktır, aksi sıra sahneyi
+kırık referansla doğururdu. KÜME 7, İŞ (aynı gün, gece): iş kümesi git izli yüz elli üç dosyadan
+kürasyon sicili ile türetilen altmış sekiz dosyayla indi ve seksen beş dosya atölyede kaldı;
+girenler yirmi iki canlı ve rayda plan, iş kitaplığının plan rafına eklenti_olgunlastirma adıyla
+inen eklenti planı, yirmi iki üst düzey nitelik kaydı, göç rafından yirmi kanıt ve dayandıkları
+Adımlar vitrin planında taşındığı için onay akışı üçlüsüdür. Kopyaların altmış sekizi bayt özdeş
+doğrulandı; ardından yalnız sahne kopyalarında on beş dosyada iki yüz doksan iki dosya ve yol
+beyanı altı kitaplık düzenine çevrildi. Sahne ilanına eski anadizinde zaten ilanlı iki rafın
+karşılığı (plan/mekanizma ile nitelik/goc) ve SNF-0 sınıflama düğümü yazıldı; durum kaydı üçüncü
+kürasyon kararı gereği taşınmadı ve sahnede taze doğum kaydı yazıldı. Kürasyon dokunuşları sahne
+kopyalarında yapıldı, kaynaklara dokunulmadı: atölyede kalan kayıtlara giden yirmi altı atıf
+altı dosyada görünür kürasyon notuyla düşürüldü (çapraz haritanın eski karar kimlikleri,
+kürasyon sicili, iç mutfak defterleri ve tarihsel markdown ikizleri), atölyede kalan on iki
+teslimin dosya beyanı meyve haritasında Kod düğümü ile üretir kenarı korunarak düşürüldü, göç
+planındaki bir meyve dış-çıktı türüne çevrildi ve ikon galerisi mockup'ı beyansız bırakıldı. El
+ölçümü yetmiş üç eşleşme verdi ve sıfıra indirildi: altmış altı kapalı ürün adı nötr ifadeye,
+makine kullanıcı adı taşıyan üç mutlak yol göreli köke, iki kişi adı Founder unvanına çevrildi
+ve yüz on dört satır değişti. Sahne denetimi bu kümenin kendi kesiminde temizdir fakat tam yeşil
+değildir ve bu bilinçli sıranın sonucudur: iki yüz kırk sekiz hata ile iki yüz bir uyarının
+tamamı henüz inmemiş kümelere bakar, iki yüz otuz iki meyve yolu ürün kümesine, on dördü öğretim
+rafına, biri kök yüzlere ve tek kırık atıf birleşik hatırlatıcı kaydına; karne bin altı yüz elli
+dokuz düğüm ve üç yüz yirmi altı Adımdır. Sıfır hata görülmeden sonraki kümeye geçilmez hükmü bu
+kümede ürün kümesiyle birlikte okunur ve sonraki küme ürün kümesidir. KÜME 8, ÜRÜN (aynı gece,
+KAPANDI): Founder taşımanın hedefini netleştirdi — çalışma bundan sonra yalnız Nexivion-Labs
+çatısı altında sürecek ve eski depoya dönülmeyecek. Git izli yedi yüz beş ürün dosyasından üç
+yüz altısı bayt özdeş sahneye indi; dışarıda kalan üç yüz doksan dokuz kalem üç yüz doksan beş
+üretilmiş simge, gömülü kanon, eklentinin plan dosyası ve eski üç depoya uzanan iki kabul
+fikstürüdür. Kök bağları bir kademe derinleşti ve raf adlarına çevrildi (seksen üç dosya); iki
+nöbetli sabit kararı verildi: atıf evreni kök ile aynı ağaç olduğu için nokta oldu, gizli kök
+adı açık depoda ilan edilmediği için nötr yer tutucuya indi ve gerçek ad çatı düzeyinde
+bağlanacaktır; eski üç depoya uzanan D5 kabul bloğu açık depoya girmedi. Kapalı adlar sahne
+kopyalarında nötrlendi. Kök yüzler kürasyonla indi: beş üretilen belge açık aracın kökünden,
+katkı, güvenlik, gizlilik, davranış kuralı ile yürütücü yönergesi ikizi depo kökünden;
+yönergenin iki varlık bölümü tek varlığa göre yeniden yazıldı ve taze gitignore yazıldı. Ölçümle
+bir sicil düzeltmesi yapıldı: hata terfi kapı kaydını çekirdeğin canlı bir nöbeti okuduğu için
+dördüncü kararın kendi ilkesiyle taşındı. Türetilmiş yüz nöbetinin mühür tablosu yeni yollarla
+yeniden mühürlendi; belge yüzleri ve kanon tutarlılık sicili sahne motoruyla üretildi. Kapanış
+turunda kalan on yedi sınama kökünden ölçüldü ve kapatıldı: komut satırı kapısının alt
+sınamaları zaten geçiyordu ve çıktıdaki çarpı işaretleri alt sürecin kendi iletileriydi; kapalı
+iki fikstürün yerine tarafsız bir fikstür projesi yazıldı, program toplama sınamaları mekanizma
+rafının yeni yoluna bağlandı, bağlantı nöbeti felsefe ile sözlük yüzlerinin yeni yollarını
+öğrendi ve eşiği ölçülen altmış altı bağlantıya göre kondu, iki felsefe yüzündeki tip kaydı
+bağlantısı bir kademe derinleşti, biçimleme sınaması örnek korpusunu öğreti rafında buldu.
+Öğretim rafı da bu turda indi: on dört öğretim kartı öğreti kitaplığının öğretim rafına yol
+uyarlamasıyla geldi, raf anadizinde ilan edildi ve öğretim üreticisi yeni rafa idempotent
+üretir. Planı atölyede kalan üç Adımın ürettiği dört dosya (eşleyici modülü ile üç nöbet
+sınaması) meyve haritasında kürasyon notuyla Kod düğümü olarak ilan edildi ve katkı rehberindeki
+iki tablo hücresi üretim bölgesi işaretini harfiyen taşıdığı için idempotans nöbetini
+tetikliyordu, hücreler işareti anlatacak biçimde yeniden yazıldı. Kapılar: çekirdek süiti bin
+doksan yedi sınamanın tamamını, eklenti süiti beş yüz elli sınamanın tamamını geçti; sahne
+denetimi tek hata ile sıfır uyarıya indi ve o tek hata hatırlatıcı kaydı kümesinin çözeceği
+kırık atıftır; kapalı ad, kişi adı ve eski yol kalıntısı el ölçümüyle yüz kırk dosyada sıfırdır.
+KÜME 10, HATIRLATICI KAYDI (aynı gece, KAPANDI): birleşik hatırlatıcı kaydı otuz iki düğümüyle
+düğüm düğüm ölçüldü ve yirmi iki düğüm metni bayt bayt korunarak öz kitaplığının kayıt rafına
+indi. On düğüm atölyede kaldı: yedi düğümlük site incelemesi kuyruğu ile yayın akışı düğümü
+yerel yayın mutfağının kalemidir, ajan ortamı ile yürütücü entegrasyonu düğümleri kapalı ürünün
+orkestrasyon zeminine bakar ve v1 borç oturumu atölye içi yönetişim kalemidir. Önceki oturumun
+tamamlanmış düğümleri dışarıda bırakma eğilimi ölçümle düzeltildi: ray varlık hiyerarşisi düğümü
+tamamlanmış olduğu hâlde eklenti planının bir Adımı ona referans kenarıyla bağlıdır ve
+tamamlanmış düğümler aracın kendi tarihi olarak atıf hedefi kalır; bu hüküm kaydın kürasyon
+notuna yazıldı. Atölyede kalan düğümleri düz metinle anan iki nitelik kaydına görünür kürasyon
+notu eklendi; başlık yorumundaki kapalı ürün simetrisi anması düşürüldü ve kapalı iz el
+ölçümüyle sıfırdır. Kapılar: sahne denetimi sıfır hata ile sıfır uyarıya indi (tek kırık atıf bu
+kümeyle kapandı), çekirdek süiti bin doksan yedi sınamanın tamamını geçti. Öğretme yüzü
+(GOC-A10) ile belge iskeleti (GOC-A11) aynı gece kendi Adımlarında kapandı ve sahneye yamalandı;
+sıradaki iş git doğumu, ardından çatı taşınması ve atölye dönüşümüdür.. KÜME 12, GİT DOĞUMU VE
+ÇATI (aynı gece, KAPANDI): sahnenin plan kopyası kaynaktan kürasyonla tazelendi, durum kaydı
+doğum kaydı olarak yazıldı, kişi adı ile kapalı ürün adının son varyantları da nötrlendi ve
+kalıntı dört yüz seksen dosyada sıfıra indi; kancalar bağlandı ve açık depo tek doğum
+işlemesiyle doğdu: beş yüz yirmi dokuz dosya, yüz altmış üç .sar (diskteki sayıyla birebir),
+kanca kapısında çekirdek ve eklenti süitleri yeşil. Depo çatı konumuna taşındı (Nexivion-
+Labs/sarmal), yeni kökten denetim sıfır hata verdi; Founder'ın 24 Ağustos tarihli çatı gövdesi
+(ortak kimlik kökü hükmüyle) ve ebedi kilidi çatı konumuna alındı ve boşalan sahne klasörü
+kaldırıldı. Yürütücü bağları depoya girdi: proje kapsamlı MCP kaydı göreli motor yoluyla, oturum
+kancaları küresel yok sayma kuralına dar istisnayla; oturum hafızası yeni proje dizinine
+kopyalandı. İki gözlem hatırlatıcı olarak ileri-bağlandı: çalışma alanı düğümlerinin Mini
+Graf'ta görünmesi (Founder isteği) ve çatı kökünden koşan denetimin kapsanan projeleri kendi
+köklerinden çözmemesi (ölçüldü: depo kendi kökünden sıfır, çatı kökünden iki yüz yetmiş iki
+sahte hata). KALAN: eski deponun Nexivion-Labs/atolye adıyla arşive dönüşmesi (oturumu bozacağı
+için Founder'ın kendi oturumunda yapılır), uzak gönderim (özel depo 2026-07-01'den beri var;
+sıfır geçmiş uzlaşması ve ilk gönderim Founder'ın canlı açılışıdır) ve yerel yayın mutfağının
+çatı altında kendi projesine geçmesi. Bu Adım Founder onayı bekler; kapanış hükmü Founder'ındır.
+
+## 2026-08-26
+
+GİT YAPILANDIRMASI ÖLÇÜLDÜ (kontrolcü): taşımadan sonra üç git kökü ölçüldü; açık depo ile
+atölyenin kancaları göreli yoldadır, kimlik ve yok sayma istisnaları sağlamdır, kökteki özel
+yedek deposunun (.git-ozel) çalışma ağacı eski mutlak yola bağlı kalıp koptuğu için göreli yola
+alındı ve her dizinden çalıştığı doğrulandı. Uzlaşmanın somut biçimi görüldü: GitHub'daki
+nexivion-labs/sarmal özel deposu atölyenin geçmişini taşır, açık depo ise aynı adı paket
+bildiriminde yayın adresi olarak ilan eder. Founder uzak açılışı ve bekleyen gönderimleri
+(atölye on, özel yedek bir işleme) erteledi; uzlaşma canlı açılıştan önce verilir ve
+kontrolcünün önerdiği yol eski deponun atolye adına taşınıp sarmal adının taze açılmasıdır.
+|<--
+Çıkarım( kod: GOC-AKTARIM-KAYITLARI,
+         kaynak: "GOC-A08 Adımının tarihli koşu girişleri; doğum işlemesi 1aea086",
+         ne: "🚚 Açık deponun küratörlü aktarımı on iki kümede tamamlandı ve depo 2026-08-25 gecesi tam yeşil denetimle, yüz altmış üç .sar dosyasıyla doğdu. Kayıt aktarımın tarihli deneyidir; DIL-1.7 uyarınca Adımın koşu alanından nitelik rafına taşınmıştır." )
