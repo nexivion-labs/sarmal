@@ -213,10 +213,25 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       Adım(
         kod:     EKL-F6-A01,
         durum:   beklemede, öncelik: p1, onay: "onaylandı — 2026-08-08",
-        koşu:    "2026-08-24 · YAYIN YOLU GÖÇE BAĞLANDI (Founder hükmü): Founder, yayının yeni mimariye taşınmış depodan yapılacağını ve bugünkü depodan hiçbir yayına çıkılmayacağını aynı gün hükme bağladı; mağaza yüklemesi bu hükümle küratörlü aktarımın arkasına geçti ve bağ düzyazı olarak değil GOC-A08 bağımlı kenarı olarak yazıldı. Yirmi altı ve yirmi yedi Ağustos hedefi artık göç rayının hızına bağlıdır. — AYNI GÜN ÖNCEKİ KAYIT: VİTRİN METİNLERİ YERİNE İNDİ (kontrolcü): Founder vitrin taslağını okudu ve onayladı; onayla birlikte mağaza kimliği ile vitrin anlatısı kaynağa indi. Kısa mağaza açıklaması iki dil dosyasında yenilendi ve eski açıklamadaki uzun çizgi yazım hükmü gereği kaldırıldı; vitrin anlatısı eklenti README dosyasının elle korunan bölgesine beş paragraf hâlinde yerleşti ve bölgenin hiçbir çizgi işareti taşımadığı mekanik taramayla doğrulandı. Görünen ad Sarmal (.sar) olarak korundu. Ekran görüntüsü planı ile ilk sürüm notu taslağı yükleme turunda kullanılmak üzere hazırdır ve yayın mutfağı hükmü gereği depo dışında masaüstünde yaşar. Eklenti birim süiti beş yüz elli dört sınamayla yeşildir ve iki dil dosyasının anahtar kümeleri doksan anahtarla birebir eşittir. Adım beklemede kalır, çünkü mekanik kapısında EKL-F6-A05 önizleme Adımı hâlâ açıktır ve Founder o bağı ya işletecek ya kapıdan çıkaracaktır. — ÖNCEKİ KAYIT: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): Bekletme gerekçesi olan İngilizce okuma yüzeyi engeli büyük ölçüde karşılanmıştır: yüz yetmiş tanı ve on sekiz araç iki dillidir, İngilizce benioku köktedir ve lisans yürürlüktedir. Yayın zamanlaması Founder hükmüdür. Kontrolcü önerisi: yayın kararı temiz geçmişli public depo işiyle birlikte hükme bağlansın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): yayın için erken (Founder 2026-07-06) — İngilizce okuma yüzeyi kapanmadan Marketplace'e çıkılmaz, ayrıca dogfood-vitrin ön-koşulu bekler; açılış orkestrasyon mesaisinden sonra — DEVİR 2026-07-21: durumsuzdu (motor-kör), durum: beklemede eklendi + Blok Ağustos'a taşındı — DEVİR 2026-07-29: iki şart düzyazıdan bağımlı: kenarına indi (Founder hükmü: yayın hazırlığı karar numarası değil plan koşuludur), kapıyı artık motor tutar — DEVİR 2026-07-31: dogfood-vitrin öncülü olan halka turu kapanıp arşive indiği için o kenar düşürüldü, kalan kapı çok-dillilik adımlarıdır",
-        bağımlı: [ CDL-A04, CDL-A05, CDL-A06, CDL-A07, EKL-F6-A04, EKL-F6-A05, EKL-F7-A09, GOC-A08 ],
+        koşu:    Koşum( kod: KSM-EKL-F6-A01, tarih: 2026-09-03, mühür: BLOCKED, karar: eskalasyon,
+          kanıt: "urun/eklenti/package.json (publisher nexivion-labs · 0.9.178 · Apache-2.0 · depo adresi) · vsce ls 898 dosya, 1,25 MB · paket içeriği nöbeti · vitrin metinleri 2026-08-24 · sürüm notu ve ekran görüntüsü planı masaüstünde",
+          ne: "Hazırlık tamamdır: manifest yayın alanlarını taşır, paket içeriği nöbetle korunur, vitrin anlatısı ile mağaza açıklaması iki dilde yerindedir ve 0.9.178 paketi kurulu ve gözle doğrulanmıştır. Mekanik kapı 2026-09-03 tarihinde açıldı, çünkü sekiz bağımlının yedisi tamamlandı ve önizleme yeniden tasarımını Founder 2026-09-02 tarihinde yayın sonrasına alarak kenardan çıkardı. Kalan tek iş yayının kendisidir ve Founder'ın yayıncı hesabına ve 9 Eylül takvimine bağlıdır." ),
+        bağımlı: [ CDL-A04, CDL-A05, CDL-A06, CDL-A07, EKL-F6-A04, EKL-F7-A09, GOC-A08 ],
         ne:      "🛍️ VS Code Marketplace yayını: vitrin metni, ekran görüntüleri, sürüm notları (akademik üslup)",
-      )
+      ) {
+        görev: [
+          "Yayıncı hesabını ve erişim anahtarını Founder kurar; anahtar hiçbir dosyaya yazılmaz ve yalnız yayın komutunun ortamında yaşar.",
+          "Sürüm numarası yayın sürümüne çekilir, sürüm günlüğü o sürümün girdisini taşır ve paket yayın öncesi taze klondan derlenip kurularak gözle doğrulanır.",
+          "Ekran görüntüleri ve mağaza vitrini masaüstündeki plana göre alınır ve eklenti benioku dosyasının elle korunan bölgesine bağlanır.",
+          "Yayın komutu Founder'ın gözü önünde koşturulur; mağaza sayfası açıldığında ad, yayıncı, sürüm, lisans ve depo bağlantısı doğrulanır."
+        ]
+        kabul: [
+          "Eklenti mağazada nexivion-labs yayıncısı altında, doğru sürüm ve Apache-2.0 lisansıyla görünür ve temiz bir VS Code kurulumuna mağazadan kurulup bir .sar dosyasını boyar.",
+          "Mağaza sayfasındaki depo bağlantısı açık depoya gider ve sürüm günlüğü sayfada okunur.",
+          "Erişim anahtarı depoda, kayıtta ve işleme tarihçesinde yoktur."
+        ]
+        sınır: "Bu Adım yalnız mağaza yayınıdır. Uzak deponun açılması YTK-A22 Adımının, MCP dizin başvurusu EKL-F6-A03 Adımının ve linguist başvurusu EKL-F6-A02 Adımının işidir; önizleme yeniden tasarımı (EKL-F6-A05) Founder hükmüyle yayın sonrasına alınmıştır ve bu kapının parçası değildir."
+      }
       Adım( kod: EKL-F6-A02, durum: beklemede, öncelik: p3, onay: "onaylandı — 2026-08-08", bağımlı: [ EKL-F6-A01 ], koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Gerekçe bugün de doğrudur: dil tanıma barı ancak yayın ve benimseme sonrası dolar. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): yayın için erken — EKL-F6-A01 ile aynı kapıya bağlıdır ve o adımdan sonra gelir; dil kimliği başvurusu yayınla birlikte; GitHub linguist barı (yüzlerce repo kullanımı) da henüz karşılanmıyor — DEVİR 2026-07-21: durum eklendi — DEVİR 2026-07-29: 'aynı kapı' düzyazısı bağımlı: kenarına indi", ne: "🐙 GitHub linguist başvurusu: .sar uzantısı dil olarak tanımlanır
         (ad + renk + örnek korpus)" )
 
@@ -271,6 +286,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
         }
 
         Adım( kod: EKL-F6-A05, durum: beklemede, öncelik: p1, bağımlı: [],
+          onay: "yayın sonrasına ertelendi — 2026-09-02 · Founder önizleme yüzünün yeniden tasarımını mağaza yayınının ardına aldı ve Adım EKL-F6-A01 kapısından çıkarıldı; gerekçe, yeniden tasarımın Founder'ın iki seçenek arasında canlı seçimini gerektirmesi ve yayını bekletmeye değmemesidir. Önizleme bugünkü hâliyle çalışmaktadır ve yalnız düzen, renk ile yineleme kusurları taşımaktadır.",
           ne:    "🖼️ Önizleme yüzünün yeniden tasarlanması. Founder 2026-08-21 tarihinde önizleme kipini canlı pencerede inceledi ve üç kusuru adıyla bildirdi. Birincisi renk düzenidir: yüzey birbiriyle ilgisiz yeşil ve turuncu bloklar basmakta, bu renkler kanonun tip paletinden türememektedir. İkincisi yapı ağacı bölümüdür: bölüm bir ağaç vaat etmesine karşılık düz bir kod listesi göstermekte ve hiyerarşiyi hiç anlatmamaktadır. Üçüncüsü yinelemedir: aynı madde metni önce belge bölgesinden biçimli olarak basılmakta, hemen ardından düğümün kendi alanından ikinci kez ham olarak tekrarlanmaktadır; ayrıca dosya başındaki teknik yorum bandı içerik gibi gösterilmektedir." ) {
           görev: [
             "Renk düzenini kanon paletine bağla. Önizlemede kullanılan her renk tip ailesinden ya da tema belirtecinden türemelidir; elle seçilmiş dolgu renkleri kaldırılır.",
