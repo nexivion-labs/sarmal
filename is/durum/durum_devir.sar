@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-02", oturum: 106,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-03", oturum: 107,
             neredeyiz: PERFORMANS-MEVSIMI-MUHURLENDI-YAYIN-YOLU-9-EYLUL,
-            sıradaki: CI-BKM-KBK-A01-VE-ESLINT-BKM-KBK-A02-SONRA-YAYIN-YOLU,
+            sıradaki: ESLINT-BKM-KBK-A02-SONRA-YAYIN-YOLU-SONRA-ANLATIM-SLAYTLARI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -1609,8 +1609,24 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-02", oturum: 106,
         tezgâh rengi Founder kararıyla yerel tercih olarak kaldı. ADM-SIT-PLAN müşteri projesinin
         rayı kurulmadığı için açık; VIT-POSTA-A02 OZK-08 onayını bekler.
 
-        SIRADAKİ: BKM-KBK-A01 (CI) ve BKM-KBK-A02 (ESLint), sonra yayın yolu (GOC-A08 kapanışı, EKL-F6-A01, YTK-A20..A22).
-        E-posta ve uzak depo en sonda.
+        ⑪ OTURUM 107 · 2026-09-03 · CI KURULDU VE SIRA HÜKME BAĞLANDI. Dört
+        işli doğrulama akışı yazıldı ve temiz klonda birebir koşuldu; gömülü
+        kanon ikizinin temiz klon tuzağı akışa ve katkı rehberine indi
+        (BKM-KBK-A01 kapandı). Founder önündeki işlerin sırasını onayladı ve tek
+        tek ilerlenmesini istedi: ① ESLint (BKM-KBK-A02) · ② yayın yolu Adımları
+        (GOC-A08 kapanışı, EKL-F6-A01 metinleri, YTK-A20..A22) · ③ anlatım
+        slaytları (tek HTML, Nexivion Labs kimliği; neden tasarlandı ve yaşanan
+        problemler, metro ile yol haritası, IDE yüzeyleri ve dört panel, tanı
+        sistemi: 175 kimlik, yeni kanonda 74'ü 50 hata + 21 uyarı + 3 bilgi;
+        hata bloklar, uyarı yerelde bloklamaz fakat CI'da kırmızıdır, bilgi
+        yalnız gösterir) · ④ uzak depo açılışı ve mağaza yüklemesi (Founder
+        onayıyla) · ⑤ ilk video ve YouTube kanalı · ⑥ sitede Sarmal alanı ve
+        site eksikleri; site ile sosyal medya planları çatıda Sarmal ile yazılır.
+        Ses kipi Founder'ın kendi ayarında hold'dan tap'e çevrildi, çünkü
+        terminal tuş bırakma olayı göndermez ve basılı tutma tahmini takılıyordu.
+
+        SIRADAKİ: BKM-KBK-A02 (ESLint, 86 bulgu), sonra yayın yolu. E-posta ve
+        uzak depo en sonda.
 
         SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
         ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
