@@ -18,7 +18,7 @@
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-03", oturum: 107,
             neredeyiz: PERFORMANS-MEVSIMI-MUHURLENDI-YAYIN-YOLU-9-EYLUL,
-            sıradaki: ANLATIM-SLAYTLARI-BASLIK-BASLIK-METIN-ONAYI-SONRA-7-9-EYLUL-YAYIN,
+            sıradaki: FOUNDER-DIKTESI-SEKIZ-AYLIK-PROBLEMLER-SONRA-SARMAL-SONRA-SLAYT,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -1641,11 +1641,19 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-03", oturum: 107,
         tarayıcıda gösterildi; ilk içerik başlığı (dert ve köken hikâyesi) henüz
         yazılmadı. Ses kipi tap, kayıt tuşu ctrl+y (boşluk dikteden çıkarıldı).
 
-        SIRADAKİ: slayt başlıkları sırayla — ① dert ve köken hikâyesi · ② üç fark
-        · ③ dil ve omurga · ④ motor ve tanı sistemi · ⑤ kanon sekizlisi · ⑥ editör
-        yüzü ve dört panel · ⑦ ajanla çalışma · ⑧ açık ile kapalının sınırı ve
-        davet. Her başlık: metin sohbete → onay → slayta. Sonra 7–9 Eylül yayın
-        Adımları. E-posta ve uzak depo en sonda.
+        ⑬ AYNI OTURUM · ANLATIM YÖNTEMİ DEĞİŞTİ. Founder kontrolcünün yazdığı
+        köken hikâyesi taslaklarını reddetti, çünkü kalıp metin herkesin
+        sunumuna benzer; yalnız enkaz sahnesi kaldı. Yeni yöntem: Founder kameraya
+        anlatır gibi dikte eder, kontrolcü yalnız cümleleri toparlar ve kurgu
+        notunu ayrı yazar, hiçbir şey eklemez. Metin `anlatim/06-founder-anlatimi.md`
+        dosyasında birikir; bugün giriş, patronluk, sistem kuran mühendis, kural
+        MD'de kalamaz, köprü sorusu, spec-driven'ın doğuşu, kendi spec'imiz, kim
+        kullanmalı ve çok dilli yığın bölümleri temize çekildi. Founder sekiz aylık
+        yaşanmış problemleri anlatacağı yerde kaldı. Dikte tuşu ctrl+y çalışıyor.
+
+        SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
+        olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
+        girer. Sonra 7–9 Eylül yayın Adımları. E-posta ve uzak depo en sonda.
 
         SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
         ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
