@@ -1,6 +1,8 @@
 <!-- SARMAL:ELLE-KORUNAN:BAS -->
 # Sarmal
 
+[![kapı](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml/badge.svg)](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml)
+
 Bu kısa giriş elle korunur; aşağıdaki ürün özeti kanonik kaynaklardan üretilir.
 <!-- SARMAL:ELLE-KORUNAN:SON -->
 

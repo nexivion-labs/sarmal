@@ -51,6 +51,14 @@ cd urun/cekirdek
 node src/sarmal.ts denetle ../..
 ```
 
+Temiz bir klonda denetimden önce bir kez gömülü kanon üreticisini koşturun; eklentinin
+`src/gomulu-kanon.ts` dosyası üretilir ve izlenmez, plan onu teslim olarak beyan ettiği için
+dosya yokken denetim tek bir hata verir. Üretici bağımlılık kurmaz ve saniyeler içinde biter:
+
+```bash
+node urun/eklenti/arac/renk-uret.mjs
+```
+
 Çıktı uzundur, çünkü motor bilgi satırlarını (`ℹ`) da basar. Okumanız gereken iki yer vardır:
 **özet satırı** ve **karne satırı.**
 
@@ -298,6 +306,15 @@ Run it from the repository root or from the core directory; both audit the same 
 ```bash
 cd urun/cekirdek
 node src/sarmal.ts denetle ../..
+```
+
+In a fresh clone, run the embedded canon generator once before auditing; the extension's
+`src/gomulu-kanon.ts` is generated and untracked, and because the plan declares it as a
+deliverable the audit reports one error while the file is missing. The generator installs
+nothing and finishes in seconds:
+
+```bash
+node urun/eklenti/arac/renk-uret.mjs
 ```
 
 The output is long, because the engine also prints informational lines (`ℹ`). There are two

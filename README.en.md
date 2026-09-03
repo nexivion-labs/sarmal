@@ -1,6 +1,8 @@
 <!-- SARMAL:ELLE-KORUNAN:BAS -->
 # Sarmal
 
+[![kapı](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml/badge.svg)](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml)
+
 This short introduction is manually preserved; the product summary below is generated from canonical sources.
 <!-- SARMAL:ELLE-KORUNAN:SON -->
 

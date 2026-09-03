@@ -839,7 +839,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
     AltKatman( kod: ALT-BKM-KBK-ZINCIR, ad: "Araç Zinciri", departman: kodlama,
       ne: "🔗 Kapıların depo dışından da görünür olması: yerel kapılar bugün her işlemede koşuyor fakat uzak depoda hiçbir rozet yok, dil denetimi hiç kurulmamış." ) {
 
-      Adım( kod: BKM-KBK-A01, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, STR-3.1 ],
+      Adım( kod: BKM-KBK-A01, durum: tamamlandı, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, STR-3.1 ],
+        üretir: [ KOD-CI-KAPI ],
+        koşu: Koşum( kod: KSM-BKM-KBK-A01, tarih: 2026-09-03, mühür: VERIFIED, karar: kabul,
+          kanıt: ".github/workflows/kapi.yml · temiz klonda dört işin komutları birebir koşuldu: çekirdek 1222/1222, eklenti 695/695, iki tsc temiz, depo denetimi drift yok",
+          ne: "Dört bağımsız işli akış yazıldı, Node 24'e sabitlendi ve deponun kendi denetiminde sıfır uyarı şartı özet satırının ölçümüyle akışa yazıldı; iki README rozet satırı taşıyor ve eklentiye tip denetimi betiği eklendi. Kuru koşu temiz klonda yapıldı ve bir tuzak buldu: gömülü kanon ikizi üretilip izlenmediği için üretici koşmadan denetim kırmızıdır, akışa ve katkı rehberine üretim adımı eklendi. Yerel Node 25 olduğu için 24 uyumluluğu ilk uzak koşuda ölçülecektir; riskli çalışma zamanı API taraması boş çıktı." ),
         ne:     "🟢 Sürekli tümleştirme akışının kurulması. Depo bugün yerel işleme kapılarıyla korunmaktadır ve her işlemede çekirdek ile eklenti süitleri koşmaktadır, fakat bu koruma yalnız işleyenin makinesinde yaşar; uzak depoda hiçbir akış yoktur ve depo açıldığında ilk bakan kişi yeşil rozet görmeyecektir. Açık kaynakta rozet güven işaretidir ve yokluğu bakımsızlık okunur." ) {
         görev:  "GitHub Actions akışı yazılır: çekirdek süiti, eklenti süiti, iki paketin tip denetimi ve deponun kendi denetimi dört ayrı iş olarak koşar; Node sürümü tip sıyırma bayrağını destekleyen en düşük kararlı sürüme sabitlenir; akış her gönderimde ve her birleştirme isteğinde tetiklenir. Uzak depo henüz yokken dosya yazılır ve yerel olarak act ya da eşdeğeriyle kuru koşulur; ilk gönderimde yeşil koşması beklenir."
         kabul:  [
@@ -902,6 +906,10 @@ Kod( kod: KOD-KARARLAR-NOBET,
 // 🍎 BKM-FND-A05 renk üreteci hedefi (2026-08-27)
 Kod( kod: KOD-EKL-RENK-URET, dosya: "urun/eklenti/arac/renk-uret.mjs",
   ne: "🍎 Renk ve gömülü kanon üreteci — kanon paletinden tema dosyalarını, anlamsal renk tablosunu ve eklentinin gömülü kanon ikizini üretir; hedef ayar dosyası seçimi BKM-FND-A05 kapsamındadır" )
+
+// 🍎 BKM-KBK-A01 doğrulama akışı (2026-09-03)
+Kod( kod: KOD-CI-KAPI, dosya: ".github/workflows/kapi.yml",
+  ne: "🍎 Sürekli tümleştirme akışı — çekirdek süiti, eklenti süiti, iki paketin tip denetimi ve deponun kendi denetimi dört bağımsız iş olarak her gönderimde ve birleştirme isteğinde koşar; komutlar yerel işleme kapısıyla birebirdir" )
 
 // 🍎 BKM-DNT-A05 ve BKM-DNT-A07 nöbetleri (2026-09-02)
 Kod( kod: KOD-SNM-MANIFEST-MENULERI, dosya: "urun/eklenti/sinama/manifest-menuleri.test.ts",

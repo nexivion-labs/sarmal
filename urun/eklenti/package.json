@@ -918,6 +918,7 @@
   },
   "scripts": {
     "build": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs",
+    "tip-denetle": "tsc --noEmit -p .",
     "watch": "node esbuild.mjs --watch",
     "package": "vsce package --no-dependencies",
     "vscode:prepublish": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs --production",
@@ -935,7 +936,8 @@
     "esbuild": "^0.28.1",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.3.0",
-    "mocha": "^11.7.6"
+    "mocha": "^11.7.6",
+    "typescript": "^5.9.3"
   },
   "licenseFile": "LICENSE.md"
 }
