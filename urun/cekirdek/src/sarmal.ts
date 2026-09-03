@@ -14,18 +14,18 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from "node:fs";
-import { join, dirname, basename, resolve, relative } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { agaciYaz } from "./yazdir.ts";
-import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
+import { dogrula } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, taksonomiMd, taksonomiBlokUygula } from "./siniflama.ts";
 import { iskeletPlani, iskeletYaz } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, katmansizTeknolojiTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari } from "./denetci.ts";
+import { adAlaniKapisi, programlariYukle, anadizinBul } from "./denetci.ts";
 import { sefKomutu, programHaritasi } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü (CLI ve MCP aynı çekirdek)
-import { gezinKomutu, dizindenIndeks , INDEKS_DISI } from "./kimlik.ts";   // EKL-F11-A05: F12/⇧F12'nin CLI ikizi · kanıt-ekseni turu: denetim metin-atıf gözü
+import { gezinKomutu } from "./kimlik.ts";   // EKL-F11-A05: F12/⇧F12'nin CLI ikizi · kanıt-ekseni turu: denetim metin-atıf gözü
 import { donguKos, donguIzle } from "./makro-dongu.ts";   // ORK-3.3: makro-döngü koşucusu
 import { sefDogrulaKomutu } from "./sozlesme.ts";
 import { sefDonguKomutu, sefAkisKomutu, sefParalelKomutu, demoEtmenYap, adimEtiketiBul, programlariTopla } from "./dongu.ts";
@@ -37,8 +37,8 @@ import { taniKodCoz } from "./tani-sicili.ts";   // göç motor turu A02 kapanı
 import { sefGatewayKomutu } from "./gateway.ts";
 import { nvidiaEtmenYap, sefAracKanitKomutu, üretimKöprüsüYap } from "./kopru/nvidia.ts";
 import { ligKomutu, LIG_MODELLER } from "./kopru/lig.ts";
-import { dagKur, dagTanilari, durumTutarlilikTanilari, kopukZincirTanilari, kayipKenarTanilari, ozBagimlilikTanilari, karneOzeti, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar } from "./dag.ts";
-import { denetimKos, kilitOku } from "./denetim.ts";   // saf denetim çekirdeği — bu kabuk yalnız sunum yapar
+import { dagKur, dagTanilari, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar } from "./dag.ts";
+import { denetimKos } from "./denetim.ts";   // saf denetim çekirdeği — bu kabuk yalnız sunum yapar
 import { icindekilerBloku } from "./icindekiler.ts";   // MD içindekiler çekirdeği (eski defter üreticisinden devralındı)
 import { belgeYuzleriniUret } from "./belge-yuzleri.ts";
 import { kanonTutarlilikUret } from "./kanon-tutarlilik.ts";
@@ -113,7 +113,7 @@ function geriYaziciSeç(dizin: string, sozlesmeDizin?: string): SonYaz | undefin
       : `✍️  --yaz başarısız (fail-safe, dosyaya dokunulmadı): ${gy.sebep}`);
   };
 }
-import { ebediEnvanter, ebediTanilar, muhurTanilari, EBEDI_KILIT_ADI } from "./kuralci.ts";
+import { ebediEnvanter, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import { belgeMd } from "./belgele.ts";
 import { yansıt, type Yüz } from "./prizma.ts";
 import { agacYüz, agacBlokUygula } from "./agac.ts";
@@ -125,7 +125,7 @@ import { cevir } from "./cevir.ts";
 import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
 import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MTR-A04: kök yüzeyi nöbeti de kök kapısıdır ve varlık karnesine yazmaz
 import type { EbediKilit } from "./kuralci.ts";
-import type { Program, Dugum } from "./sozdizim.ts";
+import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 
 // ── Çıkış kapısı: makine yüzü boruya EKSİKSİZ teslim edilir ─────────────────

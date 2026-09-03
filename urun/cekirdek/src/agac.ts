@@ -46,7 +46,7 @@ function isimBul(n: YalınDüğüm): string {
 }
 
 // ── bir düğümün yorumu: `ne` alanı (+ opsiyonel kod/kararlılık etiketleri) ────
-function yorumBul(n: YalınDüğüm, sec: AgacSecenek): string {
+function yorumBul(n: YalınDüğüm, _sec: AgacSecenek): string {
   const ne = n.alanlar["ne"];
   let y = typeof ne === "string" ? ne.replace(/\s*⏎\s*/g, " ").trim() : "";
   const kar = n.alanlar["kararlılık"];

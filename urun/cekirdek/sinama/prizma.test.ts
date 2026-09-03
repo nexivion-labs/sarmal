@@ -11,7 +11,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
-import { yalınla, jsonYüz, yamlYüz, xmlYüz } from "../src/prizma.ts";
+import { yalınla, jsonYüz, yamlYüz, xmlYüz, type YalınDüğüm } from "../src/prizma.ts";
 
 // Söz-dizim-geçerli örnek: kod + params + liste + gövde-özelliği + çocuk.
 const ÖRNEK = `Blok( kod: BLK-X, ne: "başlık: özel", besler: [ HDF-1, HDF-2 ] ) {
@@ -24,7 +24,7 @@ function yalın() {
 }
 
 test("yalınla: kod öne çıkar, param+özellik birleşir, çocuk özyineli", () => {
-  const n = yalın() as any;
+  const n = yalın() as YalınDüğüm & { alanlar: Record<string, unknown>; çocuklar: YalınDüğüm[] };
   assert.equal(n.tip, "Blok");
   assert.equal(n.kod, "BLK-X");                       // kod alanlardan ayıklandı
   assert.equal(n.alanlar.ne, "başlık: özel");

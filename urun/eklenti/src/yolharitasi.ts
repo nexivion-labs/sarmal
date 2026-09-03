@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
@@ -984,7 +984,6 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   /** VIT-GRAF-A04: koni detay KARTI — Adım'ın koni alanları + graf kenarları tek
    *  webview'de (Founder kart fikri · 2026-07-10). YALNIZ okuma; yazım koniYaz kapısında. */
   koniKartHtml(o: Oge): string {
-    const rozet = DURUM_ROZET[o.durum] ?? DURUM_ROZET["beklemede"];
     const koni = koniCikar(o.dugum);                      // TEK kaynak: cekirdek/koni.ts
     const d = this.dag?.dugumler.get(o.kod);
     const e = this.etkiAl(o.kod);   // 🐢 PRF-A05: kart da önbellekten okur

@@ -8,7 +8,7 @@
 //   ③ tek-uçuş kilidi (üst üste binmez · istek kaybolmaz · çöküş raporlanır)
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { test } from "node:test";
+import { test, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { gurultuMu, sarGurultuMu, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "../src/izleyici-cekirdek.ts";
 
@@ -71,7 +71,7 @@ test("hat: iz yolu tam-tur kuyruğuna GİRMEZ — meşgul panel turunda bile ba�
 /** 10 olaylık dalga — aralıklar 100–700 ms (bir git komut zincirinin ritmi). */
 const DALGA_ZAMANLARI = [0, 100, 700, 800, 1400, 2100, 2200, 2900, 3600, 4300];
 
-const dalgaKostur = (t: any, hat: OlayHatti, yollar: string[]): void => {
+const dalgaKostur = (t: TestContext, hat: OlayHatti, yollar: string[]): void => {
   let simdi = 0;
   DALGA_ZAMANLARI.forEach((z, i) => {
     t.mock.timers.tick(z - simdi); simdi = z;

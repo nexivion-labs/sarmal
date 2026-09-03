@@ -1,4 +1,4 @@
-# Sarmal'ın doğrulama akışı (BKM-KBK-A01). Dört iş birbirinden bağımsız koşar ve
+# Sarmal'ın doğrulama akışı (BKM-KBK-A01 · BKM-KBK-A02). Beş iş birbirinden bağımsız koşar ve
 # her biri tek başına kırmızı olabilir; bir işin kırmızısı ötekini gizlemez.
 # Komutlar yerel işleme kapısının (kanca/pre-commit) koşturduklarıyla birebirdir;
 # yerelde yeşil olan burada da yeşildir. Bu akış yalnız doğrular: paketleme,
@@ -79,6 +79,27 @@ jobs:
       - name: eklenti tip denetimi
         working-directory: urun/eklenti
         run: npm run tip-denetle
+
+  dil-denetimi:
+    name: dil denetimi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_SURUMU }}
+      - name: çekirdek bağımlılıkları
+        working-directory: urun/cekirdek
+        run: npm ci
+      - name: çekirdek dil denetimi
+        working-directory: urun/cekirdek
+        run: npm run dil-denetle
+      - name: eklenti bağımlılıkları
+        working-directory: urun/eklenti
+        run: npm ci
+      - name: eklenti dil denetimi
+        working-directory: urun/eklenti
+        run: npm run dil-denetle
 
   depo-denetimi:
     name: deponun kendi denetimi

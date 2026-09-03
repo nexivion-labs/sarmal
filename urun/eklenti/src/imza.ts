@@ -31,7 +31,7 @@ function acikCagriTipi(doc: vscode.TextDocument, poz: vscode.Position): string |
       if (c === '"') icerde = !icerde;
       if (icerde) continue;
       if (c === "(") acilislar.push(i);
-      else if (c === ")") acilislar.length ? acilislar.pop() : derinlik++;
+      else if (c === ")") { if (acilislar.length) acilislar.pop(); else derinlik++; }
     }
     // bu satırda kapanmamış açılış varsa: en içteki, geriden gelen kapanışları düşerek
     while (derinlik > 0 && acilislar.length) { acilislar.pop(); derinlik--; }

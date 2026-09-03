@@ -14,10 +14,13 @@
     "sar": "node src/sarmal.ts",
     "test": "node --test --test-concurrency=1 \"sinama/*.test.ts\"",
     "tip-denetle": "tsc --noEmit",
+    "dil-denetle": "eslint .",
     "mcp": "node src/mcp.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.0",
-    "typescript": "^5.9.3"
+    "eslint": "^10.9.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.69.0"
   }
 }

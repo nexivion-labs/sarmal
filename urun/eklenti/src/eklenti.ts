@@ -10,7 +10,6 @@
 import * as vscode from "vscode";
 
 import { dirname, basename, join, isAbsolute } from "node:path";
-import { existsSync } from "node:fs";
 
 import { belirtecle, SozDizimHatasi } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";

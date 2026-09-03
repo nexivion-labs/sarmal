@@ -9,7 +9,7 @@
 //   GİZLİ politika — burada yok).
 // ═══════════════════════════════════════════════════════════════════════════
 
-import type { Dag, DagDugum } from "./dag.ts";
+import type { Dag } from "./dag.ts";
 import { topolojikSira } from "./dag.ts";
 
 export interface EtkiSonuc {

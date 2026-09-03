@@ -19,7 +19,7 @@
 //   öncesiyle BİREBİRDİR — hiçbir tanı ailesi eklenmez/çıkarılmaz/taşınmaz.
 // ═══════════════════════════════════════════════════════════════════════════
 import { existsSync, readFileSync } from "node:fs";
-import { join, basename, resolve, relative } from "node:path";
+import { join, basename, relative } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";

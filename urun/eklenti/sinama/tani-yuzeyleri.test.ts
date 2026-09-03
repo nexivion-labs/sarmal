@@ -34,7 +34,7 @@ import {
   yuzeyeAyir, projeyeGrupla, kokeGoreOzetle, kayitGorunumu, dagitimKusurlari,
   yuzeyMatrisi, kaydinYuzeyi, YuzeyDefteri, meyveKokleri,
   GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER,
-  dosyayaGrupla, yuzeyDosyaAdiniAl, dugumKodu, satirKodu, kodluEtiket,
+  dosyayaGrupla, yuzeyDosyaAdiniAl, dugumKodu, kodluEtiket,
   hatirlaticiIsareti, HATIRLATICI_ISARETLERI, panoMetni, panoDugumu,
   DURUM_CUBUGU_GIRDILERI, turDagilimi, OZET_TUR_SAYISI,
   type YuzeyKaydi, type YuzeyDagilimi, type SatirIsareti,

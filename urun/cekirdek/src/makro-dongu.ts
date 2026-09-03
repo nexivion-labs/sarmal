@@ -213,7 +213,7 @@ export function donguIzle(
 
   return new Promise((coz) => {
     const bitir = (cikis: number, gerekce: string): void => {
-      saat && clearInterval(saat);
+      if (saat) clearInterval(saat);
       izleyici?.close();
       coz({ cikis, turlar, gerekce });
     };

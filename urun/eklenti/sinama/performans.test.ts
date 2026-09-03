@@ -175,7 +175,7 @@ test("mercek: dar tur kanalda kapsamıyla görünür, tam tur işaretsiz kalır"
 //   tamamı PRF-TA-A06'nın işidir.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { readFileSync, readdirSync, statSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join as yolBirlestir } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -188,7 +188,7 @@ import { SAR_DISLANANLAR } from "../src/izleyici-cekirdek.ts";
 import { diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "../src/tur-belgesi.ts";
 import { turGoruntusunuUnut, turGoruntusunuYayinla } from "../src/tur-goruntusu.ts";
 import {
-  anadizinHaritasi, anadizinYoluMu, evrenCozucu, ogeleriTopla, varlikCozucu, varlikKimligi, varliklariKur,
+  anadizinHaritasi, anadizinYoluMu, evrenCozucu, ogeleriTopla, varlikCozucu, varliklariKur,
   type PlanOgesi, type VarlikKimligi,
 } from "../src/yolharitasi-cekirdek.ts";
 

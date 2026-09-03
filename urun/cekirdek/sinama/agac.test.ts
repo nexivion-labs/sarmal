@@ -76,7 +76,7 @@ test("alt-ağaç kökü: kokAd verilince kök satırı o ad olur (kapsam ①)", 
 });
 
 // ── ADM-AGAC-R1/S2: README oto-blok idempotenliği + elle bölge koruması ───────
-import { agacBlokUygula, dugumBul, AGAC_BAS, AGAC_SON } from "../src/agac.ts";
+import { agacBlokUygula, AGAC_BAS, AGAC_SON } from "../src/agac.ts";
 
 test("S2 · agacBlokUygula: iki üretim bit-birebir aynı; işaret dışı README metni korunur", () => {
   const agac = "kok/\n├── a/  # bir\n└── b/  # iki";

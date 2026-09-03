@@ -110,6 +110,25 @@ grep -q "⚠️" /tmp/sarmal-kapi-kok.log && {
   cat /tmp/sarmal-kapi-kok.log
 }
 
+# — ①ʹ DİL-KAPISI (BKM-KBK-A02): sahnelenen .ts varsa ESLint koşar; kırmızı = commit BLOK —
+#   Kapsam bilinçle dardır: yalnız hata sınıfı kurallar ve kullanılmayan kod; biçim
+#   Sarmal'ın kendi biçimlendiricisinindir (urun/eslint.ortak.mjs). Süit kapısından
+#   önce koşar, çünkü saniyeler sürer ve kırmızıysa dakikalarca süiti beklemeye gerek yoktur.
+#   ARIZA-GÜVENLİ: npm ya da kurulu eslint yoksa atlar (geliştiriciyi kilitlemez).
+for PAKET in cekirdek eklenti; do
+  if git diff --cached --name-only | grep -qE "^${ONEK}urun/${PAKET}/(src|sinama|sinama_vscode)/.*\.ts$"; then
+    if command -v npm >/dev/null 2>&1 && [ -x "$VARLIK/urun/$PAKET/node_modules/.bin/eslint" ]; then
+      if ! (cd "$VARLIK/urun/$PAKET" && npm run --silent dil-denetle >/tmp/sarmal-kapi-dil-$PAKET.log 2>&1); then
+        echo "✖ sarmal-kapı: DİL DENETİMİ KIRMIZI ($PAKET) — commit bloklandı:"
+        grep -E "error|✖" /tmp/sarmal-kapi-dil-$PAKET.log | head -12
+        echo "  → düzelt (susturma yalnız gerekçesiyle), ya da bilinçliyse:  git commit --no-verify"
+        exit 1
+      fi
+      echo "🚪✅ sarmal-kapı: dil denetimi temiz ($PAKET)"
+    fi
+  fi
+done
+
 # — ② TEST-KAPISI (EKL-F9-A11): motor KODU ya da MÜHÜRLENEN KAYNAK değiştiyse testler koşar —
 #   Plan/durum commit'lerini yavaşlatmaz; yalnız sınamaların gerçekten baktığı yollarda ateşler.
 #   ARIZA-GÜVENLİ: npm yoksa atlar. Kırmızı test = commit BLOK (sahte-yeşil tarihe girmez).

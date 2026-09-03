@@ -383,7 +383,7 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
             if (!(kaynakD.zemin ??= []).includes(h)) kaynakD.zemin.push(h);
           }
         }
-        kenar === "bağımlı" ? kenarEkle(h, kod) : kenarEkle(kod, h);
+        if (kenar === "bağımlı") kenarEkle(h, kod); else kenarEkle(kod, h);
       };
       const bag = param(node, "bağımlı");
       if (bag) for (const t of kenarHedefleri(bag)) isle("bağımlı", t);   // A bağımlı B → B önce

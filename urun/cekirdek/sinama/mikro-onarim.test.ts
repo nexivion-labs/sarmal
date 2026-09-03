@@ -246,7 +246,10 @@ test("PRF-MK-A04 · dilimlenmiş bloklar dört fikstürde eski gövdeyle birebir
 test("PRF-MK-A04 · kapanış hiç yoksa aynı hata aynı konumla atılır", () => {
   for (const [ad, kaynak] of Object.entries(HATALI)) {
     const beklenen = ESKI_ANLIK[ad] as { mesaj: string; satir: number; sutun: number };
-    assert.throws(() => belirtecle(kaynak), (e: any) => e.message === beklenen.mesaj && e.satir === beklenen.satir && e.sutun === beklenen.sutun,
+    assert.throws(() => belirtecle(kaynak), (e: unknown) => {
+      const h = e as { message: string; satir: number; sutun: number };
+      return h.message === beklenen.mesaj && h.satir === beklenen.satir && h.sutun === beklenen.sutun;
+    },
       `'${ad}' hatası eski gövdeden ayrıştı`);
   }
 });

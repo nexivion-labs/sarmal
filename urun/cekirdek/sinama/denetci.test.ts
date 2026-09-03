@@ -2,7 +2,7 @@
 // MDR-A04 bağ sınıflandırması: bu dosyadaki mesaj-metnine dokunan assert'ler ya kod-çıpalı ikincil kontroldür ya da bilinçli metin sözleşmesidir (nöbet); çıpasız tanı araması yasaktır. Tam döküm: nitelik/motor_tani_envanteri.sar (MDR-A04 bölümü).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
@@ -301,8 +301,9 @@ test("CLI denetle: temiz proje çıkış 0 · drift'li proje çıkış 4 · ana-
   const kos = (dizin: string): { kod: number; cikti: string } => {
     try {
       return { kod: 0, cikti: execFileSync(process.execPath, [CLI, "denetle", dizin], { encoding: "utf8" }) };
-    } catch (e: any) {
-      return { kod: e.status ?? -1, cikti: (e.stdout ?? "") + (e.stderr ?? "") };
+    } catch (e) {
+      const h = e as { status?: number; stdout?: string; stderr?: string };
+      return { kod: h.status ?? -1, cikti: (h.stdout ?? "") + (h.stderr ?? "") };
     }
   };
 
@@ -592,7 +593,7 @@ test("A02 CLI: giriş-DIŞI dosyadaki kırık referans denetle kapısında yakal
     writeFileSync(join(kok, "is.sar"), 'Adım( kod: ADM-A02, durum: beklemede, ne: "x", referans: [ HAYALET-HEDEF ] )\n');
     let kod = 0, cikti = "";
     try { cikti = execFileSync(process.execPath, [CLI, "denetle", kok], { encoding: "utf8" }); }
-    catch (e: any) { kod = e.status ?? -1; cikti = (e.stdout ?? "") + (e.stderr ?? ""); }
+    catch (e) { const h = e as { status?: number; stdout?: string; stderr?: string }; kod = h.status ?? -1; cikti = (h.stdout ?? "") + (h.stderr ?? ""); }
     assert.equal(kod, 4, cikti);
     assert.match(cikti, /is\.sar.*kırık-referans.*HAYALET-HEDEF/s);
   } finally {
@@ -683,7 +684,7 @@ test("A08 CLI: muaf+bozuk dosya kilitle'yi KESMEZ; muaf+bozuk GİRİŞ denetle'y
   const CLI = fileURLToPath(new URL("../src/sarmal.ts", import.meta.url));
   const kos = (args: string[]): { kod: number; cikti: string } => {
     try { return { kod: 0, cikti: execFileSync(process.execPath, [CLI, ...args], { encoding: "utf8" }) }; }
-    catch (e: any) { return { kod: e.status ?? -1, cikti: (e.stdout ?? "") + (e.stderr ?? "") }; }
+    catch (e) { const h = e as { status?: number; stdout?: string; stderr?: string }; return { kod: h.status ?? -1, cikti: (h.stdout ?? "") + (h.stderr ?? "") }; }
   };
   const kok = mkdtempSync(join(tmpdir(), "sarmal-a08-"));
   try {
@@ -938,7 +939,6 @@ test("#10: framework klasör adları ([dil]·(hukuki)·@panel) ad-standardını 
 //   Öneksiz giriş dosyası (anadizin.sar/ana.sar) yalnız proje-düzeyinde 'ana-yok'
 //   patlıyordu; tek-dosya görünümü "mutlu" kalıyordu. Bekçi beklenen adı tek
 //   bakışta söyler — doğru adlı giriş sessiz kalır (yanlış-pozitif yok).
-const KOK = 'Proje( kod: PRJ-X, ad: "ida", ne: "x" ) { Teknoloji( kod: T, ne: "y" ) }';
 
 // ── GOC-MOTOR-A10 · EMEKLİLİK NÖBETİ: giriş dosyası önek bekçisi kaldırıldı ──
 //   `öneksiz-anadizin` ile `eski-giriş-adı` emekli edildi. Eski ihlal fikstürleri

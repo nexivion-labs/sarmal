@@ -31,7 +31,6 @@ import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katm
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
-import { durumTuret, adimDurumlariTopla } from "./durum.ts";   // durum tek kaynaktan türetilir: "bitti" tanımı tek yerde yaşar
 import { ZEMIN_TIPLERI } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın)
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
@@ -326,7 +325,6 @@ function frontmatterKod(tamYol: string): string | undefined {
 export function denetle(plan: IskeletPlan, disk: DiskAnlikGoruntu): Tani[] {
   const tanilar: Tani[] = [];
   const diskTur = new Map<string, "dizin" | "dosya">(disk.girdiler.map((g) => [g.yol, g.tur]));
-  const planYol = new Set(plan.ogeler.map((o) => o.yol));
   // Harf-duyarsız görünümler: macOS/Windows'ta 'Dev-Checkpoints' ile
   // 'dev-checkpoints' AYNI dizindir — büyük harf kayıp değil, ad ihlalidir
   // (artefakt adı küçük ASCII-kebap yazılır; DIL-1.2 ad sözleşmesinin komşusu).
@@ -1756,7 +1754,6 @@ export function siloBlokTanilari(
       if (onVar === arkaVar) continue;   // ikisi de var (dilim) ya da ikisi de yok (ince) → temiz
       if (guvVar) continue;              // güvenlik kavuşumu var → susar
       const kod = blok.parametreler.find((x) => x.ad === "kod")?.deger.metin ?? "?";
-      const yuz = onVar ? "önyüz (yuzey)" : "arkayüz (arkayuz)";
       out.push({
         dosya,
         tani: eskiTani("silo-blok", "uyarı",
@@ -3614,8 +3611,7 @@ export function sefAkisiTanilari(
 
 // ── Dil ve numara grafı (beş tanı) ──────────────────────────────────────────
 
-/** Kanonik bölüm önekleri — madde kodlarının kapalı evreni. */
-const KANON_ONEKLERI: readonly string[] = ["MIM", "DIL", "TIP", "YAS", "YUZ", "STR", "OGR", "ORK"];
+/** Madde kodlarının kapalı evreni: sekiz kanonik bölüm öneki ve numara. */
 const MADDE_KODU = /^(MIM|DIL|TIP|YAS|YUZ|STR|OGR|ORK)-(\d+(?:\.\d+)*)$/;
 /** Hedef tipi kanonda sabitlenmiş kenarlar. */
 const KENAR_HEDEF_TIPI: Readonly<Record<string, string>> = {

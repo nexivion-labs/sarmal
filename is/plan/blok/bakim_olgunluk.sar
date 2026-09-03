@@ -855,7 +855,11 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır:  "Bu Adım yayın ya da paketleme akışı kurmaz; yalnız doğrulama akışı kurar. Mağaza yüklemesi ve sürüm etiketleme ayrı Adımların işidir."
       }
 
-      Adım( kod: BKM-KBK-A02, durum: beklemede, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, DIL-1.5 ],
+      Adım( kod: BKM-KBK-A02, durum: tamamlandı, öncelik: p0, bağımlı: [], referans: [ YAS-4.1, DIL-1.5 ],
+        üretir: [ KOD-DIL-DENETIMI-ORTAK, KOD-DIL-DENETIMI-CEKIRDEK, KOD-DIL-DENETIMI-EKLENTI, KOD-SNM-DIL-DENETIMI-KAPSAMI ],
+        koşu: Koşum( kod: KSM-BKM-KBK-A02, tarih: 2026-09-03, mühür: VERIFIED, karar: kabul,
+          kanıt: "iki pakette eslint çıkış 0 ve tsc çıkış 0 · sinama/dil-denetimi-kapsami.test.ts 4/4 ve iki mutasyonda 2 kırmızı · kırmızı dosya sahnelenince kanca işlemeyi blokladı",
+          ne: "Ortak ESLint yapılandırması iki pakete kuruldu; typescript-eslint önerilen kümesi temel alındı ve iki daraltma gerekçesiyle yapılandırmada yazıldı. Yüz altı bulgunun tamamı kapatıldı ve hiçbiri susturulmadı: yetmiş yedi kullanılmayan içe aktarma silindi, ölü sabitler ve parktaki pencere açıcı söküldü, on beş açık any tiplerle değiştirildi, üç çıplak ifade dallanmaya çevrildi. Dil denetimi işleme kancasına ve akışa beşinci iş olarak bağlandı; kapsam nöbeti iki yapılandırmada biçim kuralı bulunmadığını ve çekirdek kuralların açık olduğunu ölçüyor." ),
         ne:     "🧹 Dil denetiminin kurulması ve mevcut bulguların kapatılması. Ölçüm 2026-09-02: ESLint'in önerilen kural kümesi çekirdekte altmış sekiz hata ile beş uyarı, eklentide on hata ile üç uyarı veriyor; toplam seksen altı bulgunun yetmiş beşi kullanılmayan değişken ya da içe aktarma, yedisi açık any, üçü boş ifade. Kırk yedi bin satırda seksen altı bulgu az sayılır fakat sıfır değildir ve dil denetimi olmayan bir depo dışarıdan bakımsız okunur." ) {
         görev:  "İki pakete ortak bir ESLint yapılandırması yazılır ve typescript-eslint önerilen kümesi temel alınır; seksen altı bulgu tek tek kapatılır ve hiçbiri susturulmaz, susturma gerekiyorsa gerekçesi satırında yazılır; dil denetimi işleme kapısına ve sürekli tümleştirme akışına bağlanır; kendi biçimlendiricinin kapsamı ile ESLint'in kapsamı ayrılır ve ikisinin çakışmadığı bir nöbetle gösterilir."
         kabul:  [
@@ -906,6 +910,16 @@ Kod( kod: KOD-KARARLAR-NOBET,
 // 🍎 BKM-FND-A05 renk üreteci hedefi (2026-08-27)
 Kod( kod: KOD-EKL-RENK-URET, dosya: "urun/eklenti/arac/renk-uret.mjs",
   ne: "🍎 Renk ve gömülü kanon üreteci — kanon paletinden tema dosyalarını, anlamsal renk tablosunu ve eklentinin gömülü kanon ikizini üretir; hedef ayar dosyası seçimi BKM-FND-A05 kapsamındadır" )
+
+// 🍎 BKM-KBK-A02 dil denetimi (2026-09-03)
+Kod( kod: KOD-DIL-DENETIMI-ORTAK, dosya: "urun/eslint.ortak.mjs",
+  ne: "🍎 İki paketin ortak dil denetimi yapılandırması — yalnız hata sınıfı kurallar ve kullanılmayan kod; biçim kuralı taşımaz ve iki daraltmanın gerekçesi dosyada yazılıdır" )
+Kod( kod: KOD-DIL-DENETIMI-CEKIRDEK, dosya: "urun/cekirdek/eslint.config.mjs",
+  ne: "🍎 Çekirdeğin dil denetimi girişi — ortak yapılandırmayı kaynak ve sınama ağacına uygular" )
+Kod( kod: KOD-DIL-DENETIMI-EKLENTI, dosya: "urun/eklenti/eslint.config.mjs",
+  ne: "🍎 Eklentinin dil denetimi girişi — ortak yapılandırmayı uygular, üretilmiş gömülü kanon ikizini dışarıda tutar" )
+Kod( kod: KOD-SNM-DIL-DENETIMI-KAPSAMI, dosya: "urun/cekirdek/sinama/dil-denetimi-kapsami.test.ts",
+  ne: "🍎 Dil denetimi kapsam nöbeti — iki yapılandırmayı yükler, biçim kuralı bulunmadığını ve çekirdek kuralların açık olduğunu ölçer" )
 
 // 🍎 BKM-KBK-A01 doğrulama akışı (2026-09-03)
 Kod( kod: KOD-CI-KAPI, dosya: ".github/workflows/kapi.yml",

@@ -8,10 +8,8 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { belgeMd, belgeGovdesiMd } from "../src/belgele.ts";
 
-const KOK = new URL("../../..", import.meta.url).pathname;
 
 test("belgele: şekil tag'i → başlık satırı + kod-çiti, içerik karaktere karakter", () => {
   const md = belgeGovdesiMd('<şekil ad="Düzenek" kaynak="s.2">\n  │Güney│  [3, 1]^T\n</şekil>');

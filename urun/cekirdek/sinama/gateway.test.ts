@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import {
-  beyanÇöz, araçİzinDenetle, gatewayGrafDenetle, BOŞ_MATRIS, MODLAR,
+  beyanÇöz, araçİzinDenetle, gatewayGrafDenetle, MODLAR,
 } from "../src/gateway.ts";
 import type { Mod, İzinMatrisi } from "../src/gateway.ts";
 

@@ -65,7 +65,7 @@ test("çıkarma boşluk ister; tireli ad KOD birleşimi kalır", () => {
 });
 
 test('tek "=" Türkçe hatayla reddedilir (== önerisi)', () => {
-  assert.throws(() => belirtecle("x = 1"), (e: any) =>
+  assert.throws(() => belirtecle("x = 1"), (e: unknown) =>
     e instanceof SozDizimHatasi && /==/.test(e.message));
 });
 

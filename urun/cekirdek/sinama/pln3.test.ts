@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { belirtecle } from "../src/belirtec.ts";
@@ -59,8 +59,8 @@ test("RPR-1 bulgu 1: tek-dosya drift → çıkış kodu 4 (denetle ile TEK sözl
     let kod = 0;
     try {
       execFileSync(process.execPath, [CLI, yol], { encoding: "utf8" });
-    } catch (e: any) {
-      kod = e.status;
+    } catch (e) {
+      kod = (e as { status: number }).status;
     }
     assert.equal(kod, 4);
   } finally {

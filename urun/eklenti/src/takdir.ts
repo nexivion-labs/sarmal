@@ -97,35 +97,9 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
   };
   const acikKutular = new Map<string, vscode.CommentThread>();
 
-  // NOT (0.9.75): lens artık liste akışına gittiğinden bu pencere açıcı çağrılmıyor —
-  // VS Code Comments çizimini geri getirirse lens buraya yeniden bağlanabilir (parkta).
-  const kutuAc = (uri: vscode.Uri, n: GeribildirimNoktasi): void => {
-    const anahtar = uri.toString() + ":" + n.satir;
-    // ÖLÜ REFERANS NÖBETİ (Eklenti uzmanı teşhisi): kullanıcı pencereyi native
-    // kapattığında thread dispose edilir ama haritadan silinmez; atılmışı
-    // diriltmek "bir daha açılmıyor" bugunu doğurur. Her seferinde TAZE thread.
-    acikKutular.get(anahtar)?.dispose();
-    acikKutular.delete(anahtar);
-    // Karşılama notu: comment'i olan thread GC edilmez (boş-taslak riski kalkar).
-    const karsilama: vscode.Comment = {
-      body: new vscode.MarkdownString(
-        TAKDIR_METINLERI.karsilama(n.kod)),
-      mode: vscode.CommentMode.Preview,
-      author: { name: "Sarmal" },
-    };
-    const kutucuk = kutu.createCommentThread(uri, new vscode.Range(n.satir, 0, n.satir, 0), [karsilama]);
-    kutucuk.label = TAKDIR_METINLERI.etiket(n.kod);
-    kutucuk.canReply = true;
-    kutucuk.collapsibleState = vscode.CommentThreadCollapsibleState.Expanded;
-    // İmleç ve görüş alanı satıra gitsin — pencere gözün önünde doğsun
-    const editor = vscode.window.activeTextEditor;
-    if (editor?.document.uri.toString() === uri.toString()) {
-      editor.selection = new vscode.Selection(n.satir, 0, n.satir, 0);
-      editor.revealRange(new vscode.Range(n.satir, 0, n.satir, 0),
-        vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-    }
-    acikKutular.set(anahtar, kutucuk);
-  };
+  // NOT (0.9.75): lens liste akışına gittiği için editör-içi pencere açıcı (kutuAc)
+  // çağrılmaz oldu ve 2026-09-03 tarihinde dil denetimiyle söküldü; gövdesi git
+  // tarihçesinde yaşar. VS Code Comments çizimi geri gelirse oradan diriltilir.
 
   /** Kanal notunun tek yazıcısı: parametreyi Adım'a işler (yeni ekler / mevcudu değiştirir). */
   const kanalYaz = async (doc: vscode.TextDocument, satir: number, param: string, emoji: string, metin: string): Promise<void> => {
@@ -234,7 +208,7 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
 
   // Lens tıklaması LİSTE akışına gider (0.9.75): VS Code 1.128 Comments arayüzünü
   // hiç çizmedi (onay kuyruğu saha bulgusuyla aynı) — kanal seçimi + not kutusu
-  // her sürümde çalışan yapı taşlarıdır; editör-içi pencere (kutuAc) çizen
+  // her sürümde çalışan yapı taşlarıdır; editör-içi pencere (sökülen kutuAc) çizen
   // sürümlerde + işaretinden hâlâ açılabilir (bonus yüzey).
   const geribildirimYaz = async (n: GeribildirimNoktasi): Promise<void> => {
     const editor = vscode.window.activeTextEditor;

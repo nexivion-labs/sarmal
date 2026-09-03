@@ -22,7 +22,6 @@ import {
 import {
   TAMAMLAMA_METINLERI,
   TAMAMLAMA_ORTAK_PARAMETRELERI,
-  aileAdi,
   enumDegeriDetayi,
   emojiEsdegerDetayi,
   ifadePaletiBelgesi,
@@ -258,7 +257,7 @@ function paramOnerileri(
   const items: vscode.CompletionItem[] = [];
 
   // F5-A01: içinde bulunulan TİPİN şeması ÖNCE — ★ zorunlu, ◇ birindenBiri, opsiyonel
-  const sema: any = tip ? (snf as any).semalar?.[tip] : undefined;
+  const sema = tip ? snf.semalar?.[tip] : undefined;
   if (sema) {
     const eklenen = new Set<string>();
     const ekle = (ham: string, rozet: string, sira: string): void => {

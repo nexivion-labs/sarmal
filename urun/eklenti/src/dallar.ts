@@ -29,16 +29,6 @@ import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST ö
 import type { Program, Dugum } from "../../cekirdek/src/sozdizim.ts";
 import { kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 
-/** Derinlik paleti — ağaç gradyanı (kök kahvesi → yaprak yeşili → meyve moru). */
-const CIZGI_PALETI = [
-  "rgba(196,150,96,0.95)",   // kök (kahve)
-  "rgba(210,164,108,0.92)",  // gövde
-  "rgba(222,184,132,0.90)",  // dal kabuğu
-  "rgba(150,205,92,0.92)",   // yaprak yeşili
-  "rgba(137,186,115,0.88)",  // filiz
-  "rgba(203,125,216,0.88)",  // meyve (mor)
-];
-
 const GENISLIK = 2;          // seviye başına sütun (.sar girintisi = 2 boşluk)
 
 // Tek taban tür — glif/renk/konum her aralıkta ayrıca (renderOptions) verilir.

@@ -11,7 +11,6 @@
 import { ZEMIN_TIPLERI, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";
 import { durumTuret, kapsayiciEvre } from "../../cekirdek/src/durum.ts";
 import { DURUM_ROZET, type Durum } from "./yol-dekor.ts";
-import { GOMULU_KAYIT } from "./gomulu-kanon.ts";
 import { MINI_GRAF_METINLERI, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 import { tipSimgesi } from "./simge-cizelgesi.ts";
 

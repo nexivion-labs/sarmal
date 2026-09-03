@@ -37,7 +37,7 @@ import { nabizAbone, geciktir } from "./nabiz.ts";    // EKL-F9-A07/A08: tek kal
 // SAF karar mantığı — fikstürlü testte (NTK-A08 · VIT-POSTA-A03). "Aynı anda en
 // fazla bir karar yüzeyi" sözleşmesi de saf defterde yaşar ve nöbet onu koşturur.
 import {
-  UcusDefteri, EtkinKararDefteri, kararIsle, kapiCoz, onayEkiMetni, dosyaAdiniAl,
+  UcusDefteri, EtkinKararDefteri, kararIsle, kapiCoz, dosyaAdiniAl,
   acikBelgeleriUstuneYaz,
   type OnayKapisi, type KapiKaydi, type YazimKabugu, type CatismaSecimi,
   type KararSonucu, type SatirAraligi,

@@ -41,7 +41,7 @@ import {
   postaKapiIpucu, postaRozetIpucu, postaKararIpucu, kapiyaGitBasligi,
   POSTA_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik, notBasligi,
   kararKapiYok,
-  postaKopyaEtiketi, postaKopyaIpucu, postaKapiBaglami,
+  postaKopyaEtiketi, postaKapiBaglami,
   postaBaglamKopyalandi, postaBaglamKapiYok,
 } from "../src/yuzey-metinleri.ts";
 // 📬 Panelin GERÇEK gövdesi — nöbet artık kaynak metnine bakarak tahmin etmez,

@@ -616,18 +616,6 @@ test("A · aynı paket aynı prompt'u üretir (determinizm bozulmadı)", () => {
     "aynı kaynaktan iki kez montajlanan paket de aynı prompt'u verir");
 });
 
-/** Referans bölmesinin (📎 + 🔗) kart gövdesini ölçer — başlık ve not hariç. */
-function referansGovdesi(prompt: string): string {
-  const böl = (baş: string): string => {
-    const i = prompt.indexOf(baş);
-    if (i === -1) return "";
-    const son = prompt.indexOf("\n## ", i + 1);
-    return prompt.slice(i, son === -1 ? undefined : son);
-  };
-  return [böl("## 📎 Referans"), böl("## 🔗 Bağımlılık")].join("\n")
-    .split("\n").filter((r) => r.startsWith("### ") || r.startsWith("- ")).join("\n");
-}
-
 test("A · referans bölmesi TAVANI AŞMAZ — kenar sayısı ne olursa olsun (adil pay)", () => {
   // Her hükmü tavanın kendisi kadar uzun kenarlarla yükle: tek kart bile tavanı yerdi.
   for (const n of [1, 4, 12, 40, 120]) {

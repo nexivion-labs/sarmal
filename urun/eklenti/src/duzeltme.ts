@@ -30,7 +30,7 @@ import {
 
 export function duzeltmeSaglayici(): vscode.CodeActionProvider {
   return {
-    provideCodeActions(doc, aralik, baglam) {
+    provideCodeActions(doc, aralik, _baglam) {
       const eylemler: vscode.CodeAction[] = [];
 
       // EKL-F4-A01 · uzun niyet → DIL-2.2 üç-tırnak katlaması (ÖNERİ — imleç satırında)

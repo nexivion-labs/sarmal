@@ -99,10 +99,10 @@ interface Istek {
   jsonrpc?: string;
   id?: number | string | null;
   method?: string;
-  params?: any;
+  params?: unknown;
 }
 type Cevap = { jsonrpc: "2.0"; id: number | string | null } & (
-  | { result: any }
+  | { result: unknown }
   | { error: { code: number; message: string } }
 );
 
@@ -242,7 +242,7 @@ function kurallarAraci(kategori?: string): { metin: string; isError: boolean } {
 }
 
 // ── araç: siniflama (SNF-0 kanonu) ──────────────────────────────────────────
-function siniflamaAraci(tip?: string): { metin: string; yapisal: any; isError: boolean } {
+function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isError: boolean } {
   const tipler: Array<{ ad: string; aile: string; ne: string; caprazRoller?: string[] }> = snfHam.widgetTipleri ?? [];
   if (tip) {
     const t = tipler.find((x) => x.ad === tip);
@@ -290,7 +290,7 @@ function siniflamaAraci(tip?: string): { metin: string; yapisal: any; isError: b
   // genel bakış
   const aileGrup: Record<string, string[]> = {};
   for (const t of tipler) (aileGrup[t.aile] ??= []).push(t.ad);
-  const kenarlar = (snfHam.kenarTipleri ?? []).map((e: any) => `${e.ad}: ${e.ne ?? ""}`);
+  const kenarlar = (snfHam.kenarTipleri ?? []).map((e: { ad: string; ne?: string }) => `${e.ad}: ${e.ne ?? ""}`);
   const satirlar = [
     `── 🗂️ SNF-0 kanonu — ${tipler.length} tip · ${(snfHam.kenarTipleri ?? []).length} kenar ──`,
     "",
@@ -696,9 +696,13 @@ function hata(id: number | string | null, code: number, mesaj: string): Cevap {
   return { jsonrpc: "2.0", id, error: { code, message: mesaj } };
 }
 
-function aracCagir(id: number | string | null, params: any): Cevap {
-  const ad = params?.name;
-  const arg0 = params?.arguments ?? {};
+/** tools/call parametreleri: araç adı ve serbest argüman haritası. Alanlar tek tek daraltılır. */
+type AracCagriParametreleri = { name?: string; arguments?: Record<string, unknown> };
+
+function aracCagir(id: number | string | null, params: unknown): Cevap {
+  const p = (params ?? {}) as AracCagriParametreleri;
+  const ad = p.name;
+  const arg0 = p.arguments ?? {};
 
   if (ad === MCP_ARAC_ADI.sef) {
     const s = sefAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.adim === "string" ? arg0.adim : "");
@@ -798,7 +802,7 @@ function aracCagir(id: number | string | null, params: any): Cevap {
   }
   if (ad !== MCP_ARAC_ADI.denetle) return hata(id, -32602, `Bilinmeyen araç: ${ad}`);
 
-  const arg = params?.arguments ?? {};
+  const arg = p.arguments ?? {};
   let kaynak: string;
   if (typeof arg.kaynak === "string") {
     kaynak = arg.kaynak;
@@ -864,7 +868,7 @@ function isle(istek: Istek): Cevap | null {
         jsonrpc: "2.0",
         id,
         result: {
-          protocolVersion: typeof params?.protocolVersion === "string" ? params.protocolVersion : PROTOKOL,
+          protocolVersion: typeof (params as { protocolVersion?: unknown } | undefined)?.protocolVersion === "string" ? (params as { protocolVersion: string }).protocolVersion : PROTOKOL,
           capabilities: { tools: {} },
           serverInfo: SUNUCU,
           // Sunucu talimatı: istemci bunu ajanın sistem bağlamına ekler. Ürünün
