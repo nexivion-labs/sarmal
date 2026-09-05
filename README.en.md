@@ -3,6 +3,8 @@
 
 [![kapı](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml/badge.svg)](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml)
 
+## THE HUMAN IS THE ENGINEER, AI IS THE HIGH-SPEED TRAIN, SARMAL IS THE RAIL THAT CARRIES IT TO THE TARGET WITHOUT DRIFTING
+
 Sarmal is an open-source language that keeps a software project's plan, rules and decisions in `.sar` files. Those files are readable by people and checkable by machines: the engine compares the plan with the disk on every save, the VS Code extension shows the result in panels, and the MCP server hands the same information to AI agents. Sarmal does not generate code; it makes the why and the order of the code impossible to lose.
 
 ## The problem it solves
@@ -51,13 +53,37 @@ Once the file is written and the reference fixed, the engine notices something e
 
 Declare the folder and the scorecard is clean: sixteen nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
 
+## The working tree
+
+Everything in Sarmal is a tree and its root is the project's entry file. A project born from the starter kit looks like this on disk:
+
+```
+randevu/
+├── randevu_anadizin.sar   entry file: the Project, its Shelves, Technology and Team are declared here
+├── plan/                  Faz → Blok → Katman → AltKatman → Adım → Meyve → file
+│   ├── ilk_plan.sar
+│   └── randevu.sar
+├── durum/durum_devir.sar  where we left off: the end-of-session handover record
+├── ogrenme/               lessons and feedback; memory graduates into skills here
+├── AGENTS.md              agent instructions (byte-identical twin of CLAUDE.md)
+└── src/                   code; every folder opened on disk must be declared in the entry file
+```
+
+The logic is four sentences. First, structure is declared before it exists: the entry file lists every folder as a Shelf with its purpose, and an undeclared folder is drift to the engine. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity that may span seasons, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
+
 ## What changes for agents
 
 The MCP server exposes the same files to an agent through eighteen tools. `sef` assembles an Adım's cone, that is its task, acceptance criteria, boundary, rationale and last run summary, into a single prompt; `gezin` returns a code's definition and every reference to it; `etki` tells which Adım are affected when a node is touched; `denetle-proje` returns the verdict for the whole project. The agent queries the graph instead of scanning files, and context survives a new session because it lives in the source, not in the chat. Producer and reviewer are separate roles; closing an Adım requires evidence, and the engine surfaces closings that have none.
 
-## Who it is for
+## IF YOU ARE BUILDING A SMALL PROJECT WITH ONE TECHNOLOGY AND ONE AGENT, SARMAL IS NOT RECOMMENDED FOR YOU
 
-Long-lived projects run by one to three people, dense with decisions, where agents do most of the work. Not for a five-hundred-person monorepo; mature tools exist there and Sarmal would become a second source of truth. It does not compete with Git: Git keeps the history of lines, Sarmal keeps the plan-level meaning of the same change. It does not compete with an issue tracker either: it keeps no task list, it measures whether the work matches reality.
+Let us be honest: for a single-language, single-technology job of a few weeks, Sarmal is heavy. A canon of one hundred fifty-seven articles, seventy-four diagnostics and a six-level plan tree is a ceremony a three-screen app cannot carry; a good README and Git are enough there. Sarmal's value shows in the third week, when you look for the rationale of a decision or when the code drifts from the plan; before that you only pay its price.
+
+## IF YOU ARE BRINGING ABOUT TEN TECHNOLOGIES TOGETHER WITH SEVERAL AI AGENTS, OR BUILDING A SECTORAL OR PERSONAL OPERATING SYSTEM, SARMAL WAS MADE FOR THIS
+
+Where several agents work on the same plan, where about ten technologies from backend to mobile, from database to infrastructure meet in one product, where decisions must stay valid for months and agents do most of the work, Sarmal is exactly in place. Agents query the same graph instead of scanning files, each technology binds to its own team in its own Katman, decisions keep their rationale, and when the plan and the disk diverge the engine carries it to a human. For anyone building an operating system that runs a company's or a person's whole work with a staff of agents, Sarmal is that staff's shared language and auditor; this repository itself is the first instance of that arrangement.
+
+It is still not for a five-hundred-person monorepo; mature tools exist there and Sarmal would become a second source of truth. It does not compete with Git: Git keeps the history of lines, Sarmal keeps the plan-level meaning of the same change. It does not compete with an issue tracker either: it keeps no task list, it measures whether the work matches reality.
 
 The language surface is Turkish by design: keywords, diagnostics and the canon are written in Turkish, and the extension and MCP texts are bilingual. English aliases for keywords are a planned second-version decision.
 

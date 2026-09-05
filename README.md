@@ -3,6 +3,8 @@
 
 [![kapı](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml/badge.svg)](https://github.com/nexivion-labs/sarmal/actions/workflows/kapi.yml)
 
+## İNSAN MAKİNİST, AI HIZLI TREN, SARMAL HEDEFE SAPMADAN GÖTÜREN RAY
+
 Sarmal, bir yazılım projesinin planını, kurallarını ve kararlarını `.sar` dosyalarında tutan açık kaynak bir dildir. Bu dosyalar insan için okunur, makine için denetlenebilir: motor her kaydetmede planı diskle karşılaştırır, VS Code eklentisi sonucu panellerde gösterir, MCP sunucusu aynı bilgiyi yapay zekâ ajanlarına verir. Sarmal kod üretmez; kodun neden ve hangi sırayla yazıldığını kaybolmaz hâle getirir.
 
 ## Hangi derdi çözüyor
@@ -51,13 +53,37 @@ Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder:
 
 Klasör ilan edilince karne temizdir: on altı düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
 
+## Çalışma ağacı
+
+Sarmal'da her şey bir ağaçtır ve ağacın kökü projenin giriş dosyasıdır. Doğuş paketiyle doğan bir proje diskte şöyle durur:
+
+```
+randevu/
+├── randevu_anadizin.sar   giriş dosyası: Proje, Raflar, Teknoloji ve Takım burada ilan edilir
+├── plan/                  Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya
+│   ├── ilk_plan.sar
+│   └── randevu.sar
+├── durum/durum_devir.sar  nerede kaldık: oturum sonu devir kaydı
+├── ogrenme/               dersler ve geribildirim; Bellek buradan Beceriye yükselir
+├── AGENTS.md              ajan yönergesi (CLAUDE.md ile bayt özdeş ikiz)
+└── src/                   kod; diskte açılan her klasör giriş dosyasında ilan edilmek zorundadır
+```
+
+Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası hangi klasörün ne için var olduğunu Raf olarak yazar ve ilansız klasör motor için drifttir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve mevsimler arasında sürebilir, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
+
 ## Ajanlar için ne değişiyor
 
 Aynı dosyaları MCP sunucusu ajana on sekiz araçla açar. `sef` bir Adımın konisini, yani görevini, kabul ölçütünü, sınırını, dayanağını ve son koşu özetini tek istemde toplar; `gezin` bir kodun tanımını ve bütün atıflarını verir; `etki` bir düğüme dokununca hangi Adımların etkileneceğini söyler; `denetle-proje` bütün projenin hükmünü döndürür. Ajan dosya taramak yerine grafı sorar ve oturum değişince bağlam kaybolmaz, çünkü bağlam sohbette değil kaynaktadır. Üretici ile denetçi ayrıdır; bir Adımın kapanışı kanıt ister ve kanıt olmayan kapanışı motor gösterir.
 
-## Kimin için
+## TEK TEKNOLOJİYLE, TEK AJANLA KÜÇÜK BİR PROJE YAPACAKSANIZ SARMAL SİZE TAVSİYE EDİLMEZ
 
-Uzun ömürlü, az kişiyle yürüyen, kararı yoğun ve işin çoğunu ajanların yaptığı projeler için. Beş yüz kişilik bir monorepo için değil; orada olgun araçlar vardır ve Sarmal ikinci bir gerçek kaynağı olur. Git'e rakip değildir: Git satırın tarihini tutar, Sarmal aynı değişikliğin plan düzeyindeki anlamını. İş takip aracına da rakip değildir: iş listesi tutmaz, işin gerçekle tutarlılığını ölçer.
+Dürüst olalım: tek dilli, tek teknolojili, birkaç haftalık bir iş için Sarmal ağırdır. Yüz elli yedi maddelik bir kanon, yetmiş dört tanı ve altı kademeli bir plan ağacı, üç ekranlık bir uygulamanın taşıyamayacağı bir törendir; o işte iyi bir README ve Git yeter. Sarmal'ın değeri üçüncü haftada, bir kararın gerekçesini ararken ya da kod plandan koptuğunda hissedilir; ondan önce yalnız bedelini ödersiniz.
+
+## BİRDEN ÇOK YAPAY ZEKÂ AJANIYLA ON CİVARI TEKNOLOJİYİ BİR ARAYA GETİRİYORSANIZ YA DA SEKTÖREL VEYA KİŞİSEL BİR İŞLETİM SİSTEMİ KURUYORSANIZ SARMAL BUNUN İÇİN YAPILDI
+
+Birden çok ajanın aynı planda çalıştığı, arka yüzden mobil uygulamaya, veritabanından altyapıya on civarı teknolojinin tek ürün içinde buluştuğu, kararların aylarca geçerli kalması gereken ve işin çoğunu ajanların yaptığı projelerde Sarmal tam yerindedir. Ajanlar dosya taramak yerine aynı grafı sorar, her teknoloji kendi Katmanında kendi Takımına bağlanır, kararlar gerekçesiyle kalır ve plan ile disk ayrıştığında motor bunu insana taşır. Bir işletmenin ya da bir kişinin bütün işini ajan kadrosuyla yürüten bir işletim sistemi kurmak isteyen için Sarmal o kadronun ortak dili ve denetçisidir; bu deponun kendisi o düzenin ilk örneğidir.
+
+Beş yüz kişilik bir monorepo için yine değildir; orada olgun araçlar vardır ve Sarmal ikinci bir gerçek kaynağı olur. Git'e rakip değildir: Git satırın tarihini tutar, Sarmal aynı değişikliğin plan düzeyindeki anlamını. İş takip aracına da rakip değildir: iş listesi tutmaz, işin gerçekle tutarlılığını ölçer.
 
 Bu depo Sarmal'ın kendisiyle yönetilir: `is/` altındaki plan, durum kaydı ve hatırlatıcılar dilin kendi üstünde koştuğunun kanıtıdır ve olduğu gibi açıktır.
 
