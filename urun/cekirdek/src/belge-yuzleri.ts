@@ -201,55 +201,89 @@ function olgulariOlc(kok: string): BelgeOlgulari {
 }
 
 function kokReadme(o: BelgeOlgulari): string {
-  return `Sarmal, yazılım niyetini bildirimsel \`.sar\` kaynaklarında tutan; planı, kuralları, ajan bağlamını ve denetim yüzlerini aynı kaynaktan besleyen açık bir çalışma alanı dilidir.
+  return `## Kurulum
 
-## Tek kaynak ve ölçülen yüzler
+Çekirdek Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. Eklenti mağazada yayımlandığında oradan kurulur; o güne kadar \`urun/eklenti\` içinde \`npm install && npm run build\` ile derlenir ve F5 ile geliştirme penceresinde koşar ([urun/eklenti/README.md](urun/eklenti/README.md)). MCP sunucusu \`node urun/cekirdek/src/mcp.ts\` komutuyla stdio üzerinden başlar; Claude Code için \`claude mcp add sarmal -- node <depo>/urun/cekirdek/src/mcp.ts\` yeterlidir.
 
-Kanonun tek adresi [\`yasa/kanon/\`](yasa/kanon/) altındaki sekiz bölüm dosyasıdır. Bu kaynaklarda ${o.kanon.madde} tekil madde yaşar: ${o.kanon.karar} Karar ve ${o.kanon.kural} Kural. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
+## İlk beş dakika
 
-Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${o.ikiDilliTani}'i, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve ajan dil bağlamı Türkçe ve İngilizce yüz taşır. İngilizce başlangıç yüzü [README.en.md](README.en.md) dosyasındadır.
+1. \`sarmal doğuş <klasör> --tur proje --ad <Ad>\` boş bir klasörde giriş dosyasını, ilk planı, durum kaydını ve ajan yönergesini doğurur.
+2. \`sarmal denetle <klasör>\` ilk hükmü verir; doğan proje sıfır hata ile başlar ve tek açık Adımı kuruluş diyaloğudur.
+3. Kuruluş Adımı kod yazmaz: teknolojiyi ve takımı giriş dosyasına ilan eder, doğuş paketinin bıraktığı yönerge metinlerini kendi cümlelerinle doldurur.
+4. \`sarmal sef <ADIM-KOD> <klasör>\` bir Adımın konisini ajana verilecek istem olarak basar; \`sarmal sonraki <klasör>\` koşulabilir Adımları listeler.
+5. \`sarmal ogret\` karşılama kartını, \`sarmal başla\` şablon kütüphanesini, \`sarmal gezin <KOD> <klasör>\` bir kodun tanımı ile atıflarını gösterir.
 
-## Açık sınır
+## Raf haritası
 
-Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; bu belge o ürünün içeriğini anlatmaz.
+[\`yasa/kanon/\`](yasa/kanon/) kanonun tek adresidir: sekiz bölüm dosyasında ${o.kanon.madde} tekil madde yaşar, ${o.kanon.karar} Karar ve ${o.kanon.kural} Kural. [\`oz/siniflama/\`](oz/siniflama/) tip sistemidir; [\`ogreti/\`](ogreti/) şablonları, örnekleri ve öğretim yüzlerini taşır; [\`is/\`](is/) Sarmal'ın kendi planı, durum kaydı ve hatırlatıcılarıdır; [\`urun/cekirdek/\`](urun/cekirdek/) motor, komut satırı ve MCP sunucusu, [\`urun/eklenti/\`](urun/eklenti/) VS Code eklentisidir. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
 
-Kendi etmenini yazma yeteneği de açık kapsamın parçasıdır: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` kimliği ve yetkisi, \`Beceri\` uygulanabilir bilgisini, \`Tetikleyici\` ne zaman devreye gireceğini bildirir; \`sef\` ise Adım konisini bu bağlamla kurar.
+## Öğren
 
-## Başlangıç
+[NEDIR.md](NEDIR.md) kavramsal açıklamayı, [KAVRAMLAR.md](KAVRAMLAR.md) başvuru indeksini, [ROL-HARITASI.md](ROL-HARITASI.md) açık/kapalı rol sınırını, [urun/eklenti/README.md](urun/eklenti/README.md) eklentiyi kullanma görevini ve [oz/siniflama/kayit.md](oz/siniflama/kayit.md) tam tip/alan Reference tablosunu verir. Kendi etmenini yazma yeteneği açık kapsamın parçasıdır: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` kimliği ve yetkisi, \`Beceri\` uygulanabilir bilgisini, \`Tetikleyici\` ne zaman devreye gireceğini bildirir; \`sef\` ise Adım konisini bu bağlamla kurar.
 
-Kurulum tek adımdır ve Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. \`cd urun/cekirdek && npm test\` çekirdek davranışını sınar. İlk kanonik proje kartı için \`sarmal ogret\`, bütün çalışma alanını denetlemek için \`sarmal denetle .\`, bir şablonu görmek için \`sarmal başla proje\` kullanılır. Onay gerektiren işler kullanıcı yüzünde **ONAYLAR** paneline gider.
+## Katkı ve lisans
 
-## Belge haritası
+Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), güvenlik bildirimi [SECURITY.md](SECURITY.md) dosyasındadır. Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır; üçüncü taraf atıfları [NOTICE.md](NOTICE.md) dosyasında yaşar. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; bu belge o ürünün içeriğini anlatmaz.
 
-[NEDIR.md](NEDIR.md) kavramsal açıklamayı, [KAVRAMLAR.md](KAVRAMLAR.md) başvuru indeksini, [ROL-HARITASI.md](ROL-HARITASI.md) açık/kapalı rol sınırını, [urun/eklenti/README.md](urun/eklenti/README.md) eklentiyi kullanma görevini ve [oz/siniflama/kayit.md](oz/siniflama/kayit.md) tam tip/alan Reference tablosunu verir.`;
+## Ölçülen yüzler
+
+Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${o.ikiDilliTani}'i, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.`;
 }
 
 function kokReadmeEn(o: BelgeOlgulari): string {
-  return `Sarmal is an open workspace language that keeps software intent in declarative \`.sar\` sources and derives plans, rules, agent context, and diagnostic reading surfaces from those sources.
+  return `## Installation
 
-## One source, measured surfaces
+The core requires Node 23.6 or newer: \`cd urun/cekirdek && npm link\` binds the \`sarmal\` command to your shell; the version requirement lives in \`urun/cekirdek/package.json\`. The extension installs from the marketplace once published; until then it is built inside \`urun/eklenti\` with \`npm install && npm run build\` and run with F5 in a development window ([urun/eklenti/README.md](urun/eklenti/README.md)). The MCP server starts over stdio with \`node urun/cekirdek/src/mcp.ts\`; for Claude Code, \`claude mcp add sarmal -- node <repo>/urun/cekirdek/src/mcp.ts\` is enough.
 
-The only canonical address is the eight section files under [\`yasa/kanon/\`](yasa/kanon/). They contain ${o.kanon.madde} unique articles: ${o.kanon.karar} Decisions and ${o.kanon.kural} Rules. Documents are derived reading surfaces, not a second canon.
+## First five minutes
 
-The new diagnostic set contains ${o.hata} errors, ${o.uyari} warnings, and ${o.bilgi} informational diagnostics. The fixed registry routing matrix sends ${o.problems} items to Problems, ${o.hatirlaticilar} to Reminders, and ${o.bildirimler} to Notifications (Observations). All ${o.ikiDilliTani} diagnostic messages, the descriptions of ${o.arac} MCP tools, the manifest, welcome card, and agent language context have Turkish and English surfaces.
+1. \`sarmal doğuş <folder> --tur proje --ad <Name>\` creates the entry file, the first plan, the status record and the agent instructions in an empty folder.
+2. \`sarmal denetle <folder>\` gives the first verdict; a newborn project starts with zero errors and its only open Adım is the founding dialogue.
+3. The founding Adım writes no code: it declares the technology and the team in the entry file and replaces the starter kit's instruction texts with your own sentences.
+4. \`sarmal sef <ADIM-CODE> <folder>\` prints an Adım's cone as the prompt to hand to an agent; \`sarmal sonraki <folder>\` lists the Adım that can run now.
+5. \`sarmal ogret\` shows the welcome card, \`sarmal başla\` the template library, and \`sarmal gezin <CODE> <folder>\` a code's definition with every reference to it.
 
-## Open boundary
+## Shelf map
 
-Sarmal is open under [Apache-2.0](LICENSE.md). A separate closed product is managed with Sarmal; this document does not describe its contents.
+[\`yasa/kanon/\`](yasa/kanon/) is the only address of the canon: eight section files hold ${o.kanon.madde} unique articles, ${o.kanon.karar} Decisions and ${o.kanon.kural} Rules. [\`oz/siniflama/\`](oz/siniflama/) is the type system; [\`ogreti/\`](ogreti/) carries templates, examples and teaching surfaces; [\`is/\`](is/) is Sarmal's own plan, status record and reminders; [\`urun/cekirdek/\`](urun/cekirdek/) is the engine, CLI and MCP server, [\`urun/eklenti/\`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
-Writing your own agent is part of the open capability: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` declares identity and authority, \`Beceri\` holds applicable knowledge, \`Tetikleyici\` states when it applies, and \`sef\` assembles that context around an Adım.
+## Learn
 
-## Start
+[NEDIR.md](NEDIR.md) is the conceptual explanation (Turkish), [KAVRAMLAR.md](KAVRAMLAR.md) the reference index, [ROL-HARITASI.md](ROL-HARITASI.md) the open/closed role boundary, [urun/eklenti/README.md](urun/eklenti/README.md) the how-to for the extension and [oz/siniflama/kayit.md](oz/siniflama/kayit.md) the full type and field reference. Writing your own agent is part of the open capability: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` declares identity and authority, \`Beceri\` holds applicable knowledge, \`Tetikleyici\` states when it applies, and \`sef\` assembles that context around an Adım.
 
-Installation is a single step and requires Node 23.6 or newer: \`cd urun/cekirdek && npm link\` binds the \`sarmal\` command to your shell; the version requirement lives in \`urun/cekirdek/package.json\`. Use \`sarmal ogret\` for the canonical welcome card, \`sarmal denetle .\` to check a workspace, and \`sarmal başla proje\` to inspect the project template. Work that needs approval appears in the **APPROVALS (ONAYLAR)** panel. The Turkish primary surface is [README.md](README.md).`;
+## Contributing and license
+
+Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), security reporting in [SECURITY.md](SECURITY.md). Sarmal is open under [Apache-2.0](LICENSE.md); third-party attributions live in [NOTICE.md](NOTICE.md). A separate closed product is managed with Sarmal; this document does not describe its contents.
+
+## Measured surfaces
+
+The new diagnostic set contains ${o.hata} errors, ${o.uyari} warnings, and ${o.bilgi} informational diagnostics. The fixed registry routing matrix sends ${o.problems} items to Problems, ${o.hatirlaticilar} to Reminders, and ${o.bildirimler} to Notifications (Observations). ${o.ikiDilliTani} diagnostic messages, the descriptions of ${o.arac} MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.`;
 }
 
 function nedir(o: BelgeOlgulari): string {
-  return `## Niyetin çalışan haritası
+  return `## Problem
 
-Sarmal, kaynak kodun yerine geçen bir programlama dili değildir. İnsan ve etmenin üzerinde uzlaştığı niyeti, yapıyı, işi ve sınırları tek bir graf içinde görünür kılar. Diskteki gerçek ile bildirilen plan ayrıştığında denetim bunu tanı olarak gösterir; araçlar ve okuma yüzleri aynı anlam ağacından türediği için ikinci bir eş-yetkili belge kurulmaz.
+Yapay zekâ ajanlarıyla yürüyen bir projede bilgi üç yerde dağılır: plan sohbet geçmişinde, karar bir önceki oturumun bağlamında, gerçek ise diskte. Üçü birbirinden habersiz ilerler. Kod plandan önde koşar, tamamlandı denen iş kanıt taşımaz, bir kararın neden verildiği unutulur ve ajan her oturuma sıfırdan başlar. Bu kusur ajanın yeteneğiyle değil, projenin hafızasının makinenin okuyamadığı biçimlerde durmasıyla ilgilidir. Markdown belgeleri de bunu çözmez, çünkü bir belgenin gerçekle çeliştiğini hiçbir şey ölçmez; belge yazıldığı gün doğrudur ve sessizce bayatlar.
 
-Kanon ${o.kanon.madde} maddelik sekiz bölümden oluşur ve yalnız \`yasa/kanon/\` altında yaşar. Katı üretim omurgası \`ÇalışmaAlanı → Auth → Proje[*] → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
+## Yaklaşım
+
+Sarmal niyeti kodun yerine değil kodun önüne koyar. Plan, kural, karar ve durum tek bir kaynak biçiminde, \`.sar\` dosyalarında yazılır; bu dosyalar bir dilin cümleleridir, serbest metin değildir. Motor kaynağı okur, bir graf kurar ve her kaydetmede grafı gerçekle karşılaştırır: ilan edilen dosya diskte var mı, kapanmış görünen iş kanıt taşıyor mu, atıf verilen kod tanımlı mı, açılan klasör ilan edilmiş mi, bir Adım öncülü bitmeden başlamış mı. Ayrışma bir tanı olarak görünür ve tanının ağırlığı kanonda yazılıdır. Editör eklentisi bu tanıları panellerde gösterir, komut satırı aynı hükmü verir, MCP sunucusu aynı grafı ajana açar. Üç yüz de aynı kaynaktan türediği için ikinci bir gerçek doğmaz.
+
+Sarmal kaynak kodun yerine geçen bir programlama dili değildir ve kod üretmez. Sürüm denetimine rakip değildir: Git satırın tarihini tutar, Sarmal aynı değişikliğin plan düzeyindeki anlamını. İş takip aracına rakip değildir: iş listesi tutmaz, işin beyanla tutarlılığını ölçer.
+
+## Dört eksen
+
+Bir plan dört eksende yazılır ve katı üretim omurgası \`ÇalışmaAlanı → Proje → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Faz zamandır ve bir mevsimi ya da halkayı adlandırır. Blok iştir; bir Blok tek bir kimlik taşır ve mevsimler arasında sürebilir. Katman teknolojidir ve bir Takıma ya da Teknolojiye bağlanır; AltKatman o teknolojinin içindeki konu modülüdür. Adım akıştır ve en küçük yürütme birimidir: görevini, kabul ölçütünü, sınırını, dayandığı kararı ve ürettiği Meyveyi beyan eder; bağımlılığı yalnız \`bağımlı\` kenarıyla ve yalnız Adımdan Adıma yazılır. Meyve teslimdir ve dosya-zorunlu türlerde diskte çözülen bir yol taşır. Bu zincir dışında kalan her şey (kararlar, kurallar, sözleşmeler, etmenler, hatırlatıcılar, durum kayıtları) aynı grafta düğümdür ve Adımlar onlara kenarla bağlanır. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
+
+## Kapı
+
+Sarmal'ın kendi disiplini iki ayrımdan doğar. Birincisi üretici ile denetçinin ayrılığıdır: bir Adımı yapan el onu kabul edemez, kabul ölçütü bağımsız ölçülür ve sayısal iddia ölçülmeden kabul edilmez. İkincisi kanıt şartıdır: bir Adım kapanırken koşu kaydı ve teslim kenarı ister; kanıt olmayan kapanış tanı olarak görünür. Kanon ${o.kanon.madde} maddeden oluşur ve yalnız \`yasa/kanon/\` altındaki sekiz bölümde yaşar; her maddenin bir zorlama paragrafı vardır ve o paragraf hangi tanının maddeyi makineye zorlattığını söyler. Tanı sicili ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyi taşır: hata bloklar, uyarı yerelde geçer fakat sürekli tümleştirmede kırmızıdır, bilgi yalnız gösterir. Kanonun iddia edip motorun zorlamadığı bir madde bir borçtur ve o borç da planda bir Adım olarak yaşar.
+
+Ajan tarafında kapı ŞEF mekanizmasıdır. ŞEF bir Adımın konisini toplar, ajana verir, dönen çıktıyı sözleşmeye vurur ve mührü atar; ajan planı doğrudan değiştirmez, yalnız Adımın durumunu tek yazım kapısından ilerletir. Böylece bir ajanın yaptığı iş her zaman bir Adıma, o Adım bir Bloka ve Blok bir mevsime bağlı kalır.
+
+## Sınır
+
+Sarmal ${o.kanon.madde} maddelik bir kanonla ağır bir dildir ve bunu gizlemez; değeri üçüncü haftada, bir kararın gerekçesini ararken ya da drift yakalandığında hissedilir. Tatlı noktası uzun ömürlü, az kişiyle yürüyen, kararı yoğun ve işin çoğunu ajanların yaptığı projelerdir; büyük ekiplerin monorepolarında olgun araçlar vardır ve Sarmal ikinci bir gerçek kaynağı olur. Dilin yüzü bilinçle Türkçedir: anahtar sözcükler, tanılar ve kanon Türkçe yazılır, eklenti ile MCP metinleri iki dillidir; İngilizce eş anlamlı anahtar sözcükler ikinci sürümün kararıdır.
 
 Sarmal Apache-2.0 ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; açık dilin belgesi o ürünün içeriğini taşımaz. Bu ayrım, açık dilin kendi etmenini yazma yeteneğini kapsamasına engel değildir: Etmen, Beceri, Tetikleyici ve sef açık araç zinciridir.`;
 }
