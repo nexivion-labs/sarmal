@@ -1694,7 +1694,14 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         bağladı: uzağa yeniden gönderim ve görünürlüğün açığa çevrilmesi ancak o
         söylediğinde yapılır. GitHub'daki kapı iki işte kırmızıdır (tip denetimi ve
         çekirdek süiti eklenti bağımlılıklarını bulamıyor); onarım Founder sözüyle.
-        Dokuz yayın belge kararı (KRR-YBI) tasdik beklemektedir.
+        Akşam Founder "bu akşam yayınlayalım gitsin" hükmünü verdi; dokuz KRR-YBI
+        kararı kilitlendi, GitHub kapısı iki işte onarıldı, README'nin girişi derdi
+        ve motorun gerçek çıktısıyla bir örneği anlatır biçimde yeniden yazıldı,
+        NEDIR beş bölüme çıktı ve Founder metni okuyup "gönder" dedi. Depo
+        2026-09-05 akşamı Founder'ın "repoyu da aç" sözüyle HERKESE AÇIK oldu:
+        https://github.com/nexivion-labs/sarmal (ae73041, kapı beşte beş yeşil).
+        Kendi planındaki canlı açılış sahnesi (YTK-A22) böylece düştü; video ve
+        mağaza yüklemesi (EKL-F6-A01) ayrı işler olarak sürer.
 
         SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
         olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
@@ -1707,9 +1714,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         kurulumunda Founder'ın Onaylar paneli yerleşimi bir kez sıfırlanır.
         E-posta ve uzak depo en sonda.
 
-        SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
-        ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve
-        lansman takvimi işler. Yayın belge kararları (KRR-YBI) Founder
-        onayını beklemektedir. Depo lansman gününe kadar özel kalır.
+        SIRADAKİ (kalıcı): açık depo 2026-09-05'te doğdu ve halka açıldı; sırada
+        eklentinin mağazaya yüklenmesi (EKL-F6-A01, Founder'ın eliyle), ilk video
+        ve lansman takvimi vardır. Uzak depo yalnız Founder sözüyle gönderim alır.
         """
 }
