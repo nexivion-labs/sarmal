@@ -1685,9 +1685,16 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         sınama fikstürlerinden ve kaynak yorumlarından söküldü (STR-3), README
         üretecindeki bozuk "kapalı ürün" cümlesi düzeltildi, örnek dosyadaki
         gerçek görünümlü e-posta example.com oldu ve çalışma alanı ayarından
-        kişisel anahtarlar düştü. Müşteri adı yalnız tarihçedeki beş işlemede
-        kalmıştır; tarihçe kararı (olduğu gibi, ezilmiş ya da adı süzülmüş)
-        Founder'ındır. Dokuz yayın belge kararı (KRR-YBI) tasdik beklemektedir.
+        kişisel anahtarlar düştü. Founder adın tarihçeden de süzülmesine ve bir
+        daha bulaşmamasına hükmetti: ad beş işlemenin eski sürümlerinden süzüldü,
+        KNT-16 maddesi yazıldı ve işleme kancası depo dışında yaşayan bir yasak
+        sözcük listesiyle sahnelenen içeriği tarar oldu. Founder kuruluş altında
+        yayınlanmasına hükmetti; nexivion-labs/sarmal özel olarak doğdu ve ana dal
+        bir kez gönderildi, ardından Founder gönderimi ve açılışı kendi sözüne
+        bağladı: uzağa yeniden gönderim ve görünürlüğün açığa çevrilmesi ancak o
+        söylediğinde yapılır. GitHub'daki kapı iki işte kırmızıdır (tip denetimi ve
+        çekirdek süiti eklenti bağımlılıklarını bulamıyor); onarım Founder sözüyle.
+        Dokuz yayın belge kararı (KRR-YBI) tasdik beklemektedir.
 
         SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
         olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta

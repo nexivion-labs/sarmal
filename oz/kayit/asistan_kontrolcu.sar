@@ -96,6 +96,10 @@ Anayasa( kod: ANY-KONTROLCU, ad: "kontrolcü-asistan-anayasası", sürüm: "1.1"
   Kural önceKırmızıSonraYeşil( kod: KNT-15, otorite: anayasa, katman: niyet, kapsam: genel,
         dayanak: YAS-4,
         ne: "Üretir çıktısı Kod olan bir Adımın brifingine, koddan önce başarısız olan bir sınamanın yazılması ve kırmızı yandığının görülmesi şartı yazılır; kod ancak o sınama kırmızıyken yazılmaya başlanır ve yeşile döndüğü teslimde gösterilir. Kapsam bilinçle dardır: belge, plan ve yalnız yapılandırma üreten Adımlarda başarısız sınama evresi tören maliyetidir ve şart yazılmaz. Gerekçe şudur: kanıt disiplini ile sahte yeşil avı zaten yaşamaktadır, eksik olan yalnız sıradır ve sıra insan kapısında zorlanır. Aday 2026-07-11 tarihli desen madenciliğinin ikinci adayıdır; karar 2026-08-10 tarihinde Founder yetki devriyle sınırlı kapsamla kabul edilmiş ve 2026-09-05 tarihindeki hatırlatıcı triyajında bu maddeye inmiştir, çünkü şart brifingi bağlar ve brifingin anayasası kanon değil bu kayıttır; zorlanamayan bir kanon maddesi ise kapsam borcunu büyütürdü." )
+
+  Kural açıkDepoyaYabancıAdYazılmaz( kod: KNT-16, otorite: anayasa, katman: niyet, kapsam: genel,
+        dayanak: STR-3,
+        ne: "Açık depoya müşteri ya da kişi adı, gerçek görünümlü e-posta adresi, kapalı ürünün düğüm kodu, plan dosyası adı ya da mimari anlatısı yazılmaz; gerektiğinde 'bir müşteri projesi', 'kapalı ürün' ya da kurgusal komşu proje adı kullanılır ve örnek e-postalar example.com alanında yazılır. Gerekçe ölçüldü: 2026-09-05 açık kaynak hazırlığında bir müşterinin firma adı durum kaydında ve bir Koşum kanıtında, kapalı ürünün gerçek plan dosyası adları ile Blok kodları ise dört sınama fikstüründe ve sekiz kaynak yorumunda bulundu; hepsi dosyalardan silindi ve ad tarihçeden süzüldü. Founder aynı gün bir daha bulaşmamasına hükmetti. Zorlama iki katlıdır: işleme kancası, depo dışında yaşayan bir yasak sözcük listesiyle sahnelenen içeriği tarar ve eşleşmede işlemeyi reddeder (liste depoya girmez, çünkü yasak adların kendisi de yasaktır); kontrolcü ise brifing ve kayıt yazarken bu maddeyi uygular." )
 }
 
 -->|

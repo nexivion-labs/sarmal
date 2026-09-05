@@ -162,6 +162,30 @@ if git diff --cached --name-only | grep -qE "^${ONEK}urun/eklenti/(src|sinama)/.
   fi
 fi
 
+# — ④ YASAK SÖZCÜK TARAMASI (KNT-16 · liste depo DIŞINDA yaşar) —
+#   Açık depoya müşteri ya da kişi adı, gerçek e-posta ve kapalı ürünün kodları
+#   yazılmaz. Yasak adların kendisi de yasak olduğu için liste depoda değil
+#   kullanıcının makinesinde durur; liste yoksa tarama atlanır ve bunu söyler.
+YASAK="${SARMAL_YASAK_LISTESI:-$HOME/.config/sarmal/yasak-sozcukler.txt}"
+if [ -f "$YASAK" ]; then
+  DESEN_DOSYASI=$(mktemp)
+  grep -vE '^[[:space:]]*(#|$)' "$YASAK" > "$DESEN_DOSYASI"
+  if [ -s "$DESEN_DOSYASI" ]; then
+    BULGU=$(git diff --cached -U0 --no-color | grep -E '^\+' | grep -vE '^\+\+\+' | grep -inE -f "$DESEN_DOSYASI" | head -5)
+    if [ -n "$BULGU" ]; then
+      echo "✖ sarmal-kapı: YASAK AD YA DA KOD sahnelenen içerikte (KNT-16) — commit bloklandı:"
+      printf '%s\n' "$BULGU" | cut -c1-160 | sed 's/^/  · /'
+      echo "  → adı sil; 'bir müşteri projesi' ya da 'kapalı ürün' de. Liste: $YASAK"
+      rm -f "$DESEN_DOSYASI"
+      exit 1
+    fi
+  fi
+  rm -f "$DESEN_DOSYASI"
+  echo "🚪✅ sarmal-kapı: yasak sözcük taraması temiz"
+else
+  echo "🚪 sarmal-kapı: yasak sözcük listesi yok ($YASAK) → tarama atlandı"
+fi
+
 # — ③ PROJE-ÖZEL KURALLAR (opsiyonel · içi İLERİDE dolar) —
 KURAL="$VARLIK/kanca/proje-kurallari.sh"
 [ -x "$KURAL" ] && { "$KURAL" || exit 1; }
