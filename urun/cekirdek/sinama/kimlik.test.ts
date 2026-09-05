@@ -285,7 +285,7 @@ test("KPN-A01: gezinRaporu çok-tanımda rozet basar ve uyarı şablon/varlık/d
 //   MUTASYON KANITI — KÜRESEL EŞLEŞME YASAĞI. `adAlaniKapsamiKur` içindeki
 //   niteliksiz dalın kapsam karşılaştırması `true` döndürecek biçimde
 //   gevşetildiğinde "niteliksiz kod kardeş projeye bağlanmaz" sınaması KIRILIR:
-//   çözücü sarmaldaki tanımı orkestrasyondan meşru sayar. İki mutasyon ayrı
+//   çözücü sarmaldaki tanımı komşu projeden meşru sayar. İki mutasyon ayrı
 //   sınamaları düşürür; hiçbiri ötekinin yerini tutmaz.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -314,8 +314,8 @@ test("ORK-4: kapsam öneki klasör ayırıcısıyla biter — ad benzeri kardeş
 const CATI_PROGRAMLARI = (): Map<string, ReturnType<typeof ayristirKaynak>> => new Map([
   ["sarmal/sarmal_anadizin.sar", ayristirKaynak('Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı )')],
   ["sarmal/is/plan/faz/faz.sar", ayristirKaynak('Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi" )')],
-  ["orkestrasyon/orkestrasyon_anadizin.sar", ayristirKaynak('Proje( kod: PRJ-ORKESTRASYON, ad: "Orkestrasyon", rejim: katı )')],
-  ["orkestrasyon/plan/zeka.sar", ayristirKaynak('Blok( kod: BLK-ORK-ZEKA, mevsim: FAZ-2026-AGUSTOS )')],
+  ["komsu/komsu_anadizin.sar", ayristirKaynak('Proje( kod: PRJ-KOMSU, ad: "Komşu Proje", rejim: katı )')],
+  ["komsu/plan/govde.sar", ayristirKaynak('Blok( kod: BLK-KOMSU-GOVDE, mevsim: FAZ-2026-AGUSTOS )')],
 ]);
 
 function ayristirKaynak(kaynak: string) {
@@ -332,7 +332,7 @@ test("ORK-4: niteliksiz kod kardeş projeye BAĞLANMAZ (küresel eşleşme yasa�
   });
   assert.equal(kapsam.cozulur("FAZ-2026-AGUSTOS", "sarmal/is/plan/rayda/yayin.sar"), true,
     "kendi projesindeki tanım çözülür");
-  assert.equal(kapsam.cozulur("FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+  assert.equal(kapsam.cozulur("FAZ-2026-AGUSTOS", "komsu/plan/govde.sar"), false,
     "başka projedeki eş adlı tanım tesadüfî eşleşmedir ve bağ sayılmaz");
 });
 
@@ -344,11 +344,11 @@ test("ORK-4: ad alanlı hedef YALNIZ o projenin kapsamında çözülür", async 
     tanimDosyalari: (kod) => kod === "FAZ-2026-AGUSTOS" ? ["sarmal/is/plan/faz/faz.sar"] : [],
     kardesler: [],
   });
-  assert.equal(kapsam.cozulur("PRJ-SARMAL::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), true,
+  assert.equal(kapsam.cozulur("PRJ-SARMAL::FAZ-2026-AGUSTOS", "komsu/plan/govde.sar"), true,
     "açıkça yazılmış ad alanı proje sınırını meşru biçimde geçer");
-  assert.equal(kapsam.cozulur("PRJ-ORKESTRASYON::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+  assert.equal(kapsam.cozulur("PRJ-KOMSU::FAZ-2026-AGUSTOS", "komsu/plan/govde.sar"), false,
     "ad alanı yanlış projeyi gösteriyorsa hedef çözülmez");
-  assert.equal(kapsam.cozulur("PRJ-YOK::FAZ-2026-AGUSTOS", "orkestrasyon/plan/zeka.sar"), false,
+  assert.equal(kapsam.cozulur("PRJ-YOK::FAZ-2026-AGUSTOS", "komsu/plan/govde.sar"), false,
     "ilan edilmemiş ad alanı bağ doğurmaz");
 });
 

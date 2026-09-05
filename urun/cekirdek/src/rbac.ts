@@ -2,8 +2,8 @@
 // rbac.ts — Etmen yetki (RBAC) zorlaması (RAY-3 · Aşama 4 · D.1)
 //
 //   Bu zorlama, ŞEF runtime çalışmasının yetki kaleminden doğmuştur. O kalemin
-//   plan kaydı bugün repo İÇİNDE, `arsiv/omurga-v0-plan-kapali/orkestrasyon/sef_plani.sar`
-//   gövdesinde yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
+//   plan kaydı bugün bu deponun dışında, laboratuvar arşivindeki eski omurga
+//   planında yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
 //   Adım kodu motorun çözebileceği bir tanım vermez; bu yüzden köken burada kodla
 //   değil anlatıyla anılır.
 //

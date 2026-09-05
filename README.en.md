@@ -18,7 +18,7 @@ The new diagnostic set contains 47 errors, 16 warnings, and 11 informational dia
 
 ## Open boundary
 
-Sarmal is open under [Apache-2.0](LICENSE.md). kapalı ürün is a separate closed product managed with Sarmal; this document does not describe its contents.
+Sarmal is open under [Apache-2.0](LICENSE.md). A separate closed product is managed with Sarmal; this document does not describe its contents.
 
 Writing your own agent is part of the open capability: **Etmen · Beceri · Tetikleyici + sef**. `Etmen` declares identity and authority, `Beceri` holds applicable knowledge, `Tetikleyici` states when it applies, and `sef` assembles that context around an Adım.
 

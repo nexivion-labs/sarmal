@@ -211,7 +211,7 @@ Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyi
 
 ## Açık sınır
 
-Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır. kapalı ürün, **Sarmal ile yönetilen ayrı kapalı ürün**dür; bu belge o ürünün içeriğini anlatmaz.
+Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; bu belge o ürünün içeriğini anlatmaz.
 
 Kendi etmenini yazma yeteneği de açık kapsamın parçasıdır: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` kimliği ve yetkisi, \`Beceri\` uygulanabilir bilgisini, \`Tetikleyici\` ne zaman devreye gireceğini bildirir; \`sef\` ise Adım konisini bu bağlamla kurar.
 
@@ -235,7 +235,7 @@ The new diagnostic set contains ${o.hata} errors, ${o.uyari} warnings, and ${o.b
 
 ## Open boundary
 
-Sarmal is open under [Apache-2.0](LICENSE.md). kapalı ürün is a separate closed product managed with Sarmal; this document does not describe its contents.
+Sarmal is open under [Apache-2.0](LICENSE.md). A separate closed product is managed with Sarmal; this document does not describe its contents.
 
 Writing your own agent is part of the open capability: **Etmen · Beceri · Tetikleyici + sef**. \`Etmen\` declares identity and authority, \`Beceri\` holds applicable knowledge, \`Tetikleyici\` states when it applies, and \`sef\` assembles that context around an Adım.
 
@@ -251,7 +251,7 @@ Sarmal, kaynak kodun yerine geçen bir programlama dili değildir. İnsan ve etm
 
 Kanon ${o.kanon.madde} maddelik sekiz bölümden oluşur ve yalnız \`yasa/kanon/\` altında yaşar. Katı üretim omurgası \`ÇalışmaAlanı → Auth → Proje[*] → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
 
-Sarmal Apache-2.0 ile açıktır. kapalı ürün, Sarmal ile yönetilen ayrı kapalı üründür; açık dilin belgesi kapalı ürünün içeriğini taşımaz. Bu ayrım, açık dilin kendi etmenini yazma yeteneğini kapsamasına engel değildir: Etmen, Beceri, Tetikleyici ve sef açık araç zinciridir.`;
+Sarmal Apache-2.0 ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; açık dilin belgesi o ürünün içeriğini taşımaz. Bu ayrım, açık dilin kendi etmenini yazma yeteneğini kapsamasına engel değildir: Etmen, Beceri, Tetikleyici ve sef açık araç zinciridir.`;
 }
 
 function roller(): string {
@@ -259,7 +259,7 @@ function roller(): string {
 
 Founder kanonik yönü ve açık/kapalı ürün sınırını karara bağlar. Üretici, verilmiş koni içindeki ürünü ve kanıtı üretir; Kontrolcü kabul ölçütünü bağımsız ölçer. ŞEF işi seçer, Adım konisini kurar ve Etmen · Beceri · Tetikleyici bağlamını \`sef\` yüzüne taşır. Hiçbir rol kanonik hükmü bir Markdown yüzünde değiştiremez.
 
-Sarmal Apache-2.0 lisanslı açık dildir. kapalı ürün, Sarmal ile yönetilen ayrı kapalı üründür; rol haritası onun içeriğini değil yalnız sınırını bildirir. Kullanıcı onayı gereken eylemler ONAYLAR panelinde görünür.`;
+Sarmal Apache-2.0 lisanslı açık dildir. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; rol haritası onun içeriğini değil yalnız sınırını bildirir. Kullanıcı onayı gereken eylemler ONAYLAR panelinde görünür.`;
 }
 
 function kavramlar(o: BelgeOlgulari): string {

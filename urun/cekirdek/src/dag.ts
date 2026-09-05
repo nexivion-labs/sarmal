@@ -591,8 +591,8 @@ export function motorSirala(adimlar: readonly string[], dag: Dag): string[] {
 
 // ── ADIM-SEÇİCİ (RAY-3 · ŞEF runtime envanteri) ──────────────────────────────
 //   Bu bölüm, ŞEF runtime çalışmasının Adım-seçici kaleminden doğmuştur. O kalemin
-//   plan kaydı bugün repo İÇİNDE, `arsiv/omurga-v0-plan-kapali/orkestrasyon/sef_plani.sar`
-//   gövdesinde yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
+//   plan kaydı bugün bu deponun dışında, laboratuvar arşivindeki eski omurga
+//   planında yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
 //   Adım kodu motorun çözebileceği bir tanım vermez; bu yüzden köken burada kodla
 //   değil anlatıyla anılır.
 //   ŞEF döngüsünün "sıradaki koşulabilir işi seç" ucu. STR-3 AÇIK mekanizma:

@@ -171,8 +171,8 @@ export function siniflamaYukle(yol: string): Siniflama {
 // ── ÇALIŞMA-ALANI ÖRTÜSÜ ─────────────────────────────────────────────────────
 //   Örtü mekanizmasının iki kökeni vardır ve bugün ikisi de canlı bir ilan taşımaz;
 //   bu yüzden köken burada kodla değil anlatıyla anılır. Birinci köken ŞEF runtime
-//   çalışmasının taksonomi kalemidir; plan kaydı repo İÇİNDE,
-//   `arsiv/omurga-v0-plan-kapali/orkestrasyon/sef_plani.sar` gövdesinde yaşar, fakat
+//   çalışmasının taksonomi kalemidir; plan kaydı bu deponun dışında,
+//   laboratuvar arşivindeki eski omurga planında yaşar, fakat
 //   arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı Adım kodu motorun
 //   çözebileceği bir tanım vermez. İkinci köken Beceri.yığın taksonomisini izleyen
 //   Hatırlatıcıdır; o Hatırlatıcı 2026-07-11 gözden geçirmesinde tamamlanmış bulunup

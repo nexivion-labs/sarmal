@@ -18,7 +18,7 @@ Yeni tanı kümesi 47 hata, 16 uyarı ve 11 bilgi düzeyindedir. Sabit sicilin y
 
 ## Açık sınır
 
-Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır. kapalı ürün, **Sarmal ile yönetilen ayrı kapalı ürün**dür; bu belge o ürünün içeriğini anlatmaz.
+Sarmal [Apache-2.0](LICENSE.md) lisansı ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; bu belge o ürünün içeriğini anlatmaz.
 
 Kendi etmenini yazma yeteneği de açık kapsamın parçasıdır: **Etmen · Beceri · Tetikleyici + sef**. `Etmen` kimliği ve yetkisi, `Beceri` uygulanabilir bilgisini, `Tetikleyici` ne zaman devreye gireceğini bildirir; `sef` ise Adım konisini bu bağlamla kurar.
 

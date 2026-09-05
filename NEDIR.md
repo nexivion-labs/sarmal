@@ -12,5 +12,5 @@ Sarmal, kaynak kodun yerine geçen bir programlama dili değildir. İnsan ve etm
 
 Kanon 157 maddelik sekiz bölümden oluşur ve yalnız `yasa/kanon/` altında yaşar. Katı üretim omurgası `ÇalışmaAlanı → Auth → Proje[*] → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya` zinciridir. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
 
-Sarmal Apache-2.0 ile açıktır. kapalı ürün, Sarmal ile yönetilen ayrı kapalı üründür; açık dilin belgesi kapalı ürünün içeriğini taşımaz. Bu ayrım, açık dilin kendi etmenini yazma yeteneğini kapsamasına engel değildir: Etmen, Beceri, Tetikleyici ve sef açık araç zinciridir.
+Sarmal Apache-2.0 ile açıktır. Sarmal ile yönetilen ayrı bir kapalı ürün vardır; açık dilin belgesi o ürünün içeriğini taşımaz. Bu ayrım, açık dilin kendi etmenini yazma yeteneğini kapsamasına engel değildir: Etmen, Beceri, Tetikleyici ve sef açık araç zinciridir.
 <!-- SARMAL:URETILEN:KOK-NEDIR:SON -->

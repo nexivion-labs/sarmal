@@ -1,12 +1,4 @@
 {
-  "files.autoSave": "afterDelay",
-  "files.autoSaveDelay": 1000,
-  "// Önizleme sekmesi kapalı (Founder 2026-08-07)": "Gezginden tek tıkla açılan dosya varsayılan olarak geçici sekmede açılır ve bir sonraki tıkta yerini yeni dosyaya bırakır; birden çok .sar dosyasını yan yana tutmak imkânsız hâle geliyordu. Kapatıldı: her açılan dosya kalıcı sekme olur.",
-  "workbench.editor.enablePreview": false,
-  "workbench.editor.enablePreviewFromQuickOpen": false,
-  "// GitLens avatar kapatma (Founder 2026-07-21)": "GitLens commit e-postalarını Gravatar'dan eşleyip YABANCI yüzler basıyordu (fatih@nexivionlabs.io + vscode@... internetten alakasız avatarlar); gravatars kapalı → renkli baş-harf kullanılır, internet çekmez",
-  "gitlens.gravatars": false,
-  "gitlens.defaultGravatarsStyle": "robohash",
   "// .sar UI = %100 NATIVE Sarmal": "üçüncü-parti indent-rainbow + errorlens .sar için susturuldu; özellikleri girinti.ts + satirici.ts native karşılıyor (Founder 2026-07-09)",
   "indentRainbow.excludedLanguages": [
     "plaintext",
@@ -15,7 +7,6 @@
   "errorLens.excludePatterns": [
     "**/*.sar"
   ],
-  "liveServer.settings.port": 5501,
   "editor.tokenColorCustomizations": {
     "textMateRules": [
       {
@@ -179,10 +170,6 @@
   },
   "editor.lightbulb.enabled": "on",
   "workbench.productIconTheme": "sarmal-kuzey-yildizi",
-  "gitlens.currentLine.enabled": false,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.hovers.currentLine.over": "annotation",
-  "gitlens.hovers.avatars": false,
   "editor.semanticTokenColorCustomizations": {
     "enabled": true,
     "rules": {

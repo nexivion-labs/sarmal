@@ -189,7 +189,7 @@ test("yorum tespiti: yorumsuz kod satırı hiçbir sütunda yorum değildir", ()
 
 test("ORK-4: ad alanlı sözce TEK atıf aralığıdır", () => {
   const araliklar = atifAraliklariTopla(
-    ["Blok( kod: BLK-ORK-ZEKA, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS )"],
+    ["Blok( kod: BLK-KOMSU-GOVDE, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS )"],
     new Set(["PRJ-SARMAL::FAZ-2026-AGUSTOS"]), new Set());
   assert.equal(araliklar.length, 1);
   assert.equal(araliklar[0].kod, "PRJ-SARMAL::FAZ-2026-AGUSTOS");

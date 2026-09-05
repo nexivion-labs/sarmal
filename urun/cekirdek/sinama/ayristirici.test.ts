@@ -91,7 +91,7 @@ test("widget değeri ayrıştırılır (DIL-1.3 · Flutter kalbi)", () => {
 
 test("ORK-4: ad alanlı kod tek KOD değeridir ve listede hata üretmez", () => {
   const p = ayristir(belirtecle(
-    'Blok( kod: BLK-ORK-ZEKA, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS, bağımlı: [ PRJ-SARMAL::ADM-BIR, ADM-IKI ] )'));
+    'Blok( kod: BLK-KOMSU-GOVDE, mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS, bağımlı: [ PRJ-SARMAL::ADM-BIR, ADM-IKI ] )'));
   const blok = p.bildirimler[0];
   const mevsim = blok.parametreler.find((x) => x.ad === "mevsim")!;
   assert.equal(mevsim.deger.tur, "kod");
@@ -102,7 +102,7 @@ test("ORK-4: ad alanlı kod tek KOD değeridir ve listede hata üretmez", () => 
 });
 
 test("ORK-4: çağır hedefi ad alanlı yazılabilir", () => {
-  const p = ayristir(belirtecle("çağır PRJ-ORKESTRASYON::BLK-ORK-ZEKA"));
+  const p = ayristir(belirtecle("çağır PRJ-KOMSU::BLK-KOMSU-GOVDE"));
   assert.equal(p.bildirimler[0].tur, "çağır");
-  assert.equal(p.bildirimler[0].ad, "PRJ-ORKESTRASYON::BLK-ORK-ZEKA");
+  assert.equal(p.bildirimler[0].ad, "PRJ-KOMSU::BLK-KOMSU-GOVDE");
 });

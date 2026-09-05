@@ -2,8 +2,8 @@
 // toolround.ts — 🔄 GERÇEK TOOL-ROUND
 //
 //   Bu akış, ŞEF runtime çalışmasının tool-round kaleminden doğmuştur. O kalemin
-//   plan kaydı bugün repo İÇİNDE, `arsiv/omurga-v0-plan-kapali/orkestrasyon/sef_plani.sar`
-//   gövdesinde yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
+//   plan kaydı bugün bu deponun dışında, laboratuvar arşivindeki eski omurga
+//   planında yaşar. Arşiv gövdesi CANLI bir `.sar` ilanı olmadığı için taşıdığı
 //   Adım kodu motorun çözebileceği bir tanım vermez; bu yüzden köken burada kodla
 //   değil anlatıyla anılır.
 //

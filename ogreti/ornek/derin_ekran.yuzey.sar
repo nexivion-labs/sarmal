@@ -28,7 +28,7 @@ Ekran( kod: EKR-Profil, görünürlük: açık, ne: "Kullanıcı profil ekranı"
     Kart( kod: KRT-Bilgi, görünürlük: açık, ne: "kullanıcı bilgi kartı" ) {
       Sütun( kod: STN-Alanlar, görünürlük: açık, ne: "bilgi alanları dikey diz" ) {
         Metin( kod: MTN-Ad, görünürlük: açık, ne: "Ahmet Yılmaz", stil: başlık2 ) { }
-        Metin( kod: MTN-Eposta, görünürlük: açık, ne: "ahmet@nexivion.io", stil: gövde ) { }
+        Metin( kod: MTN-Eposta, görünürlük: açık, ne: "ahmet@example.com", stil: gövde ) { }
         Satır( kod: STR-Eylemler, görünürlük: açık, ne: "buton satırı" ) {
           Düğme( kod: DGM-Duzenle, görünürlük: açık, ne: "Düzenle", gider: EKR-ProfilDuzenle ) { }
           Düğme( kod: DGM-Kaydet, görünürlük: açık, ne: "Kaydet", çağırır: UC-ProfilGuncelle ) { }

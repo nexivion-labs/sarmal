@@ -1394,7 +1394,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         ═══ OTURUM 105 · 2026-09-01 ═══
 
         SAHA SINAVI CANLI BAŞLADI. Founder gerçek bir müşteri projesi açmıştır
-        (bir müşteri firması, masaüstünde ayrı klasör ve ayrı depo) ve harici bir
+        (bir mühendislik firmasının sitesi, masaüstünde ayrı klasör ve ayrı depo) ve harici bir
         ajana tek satır kod yazmadan önce Sarmal MCP ile planlama yaptırmaktadır.
         Bu koşu BLK-SOL-IDA-TEST Blokunun ta kendisidir ve o Blok, Founder'ın
         gerçek örnek projesi beklendiği için 2026-07-19 tarihinden beri bilinçle
@@ -1462,8 +1462,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
 
         ② DÖRT FAZSIZ BLOKUN EVİ — FOUNDER HÜKMÜ. Sorunlar panelinde kalan dört
         hata bunlardır ve başka hiçbir açık bulgu yoktur. Bloklar laboratuvarda
-        BLK-V1-BULGU-KAPATMA, orkestrasyonda BLK-ORK-ZEKA, BLK-RAY3 ve
-        BLK-SEF-HARITA kayıtlarıdır. Ölçüm şudur: kapalı tarafın hiçbir fazı bu işi
+        BLK-V1-BULGU-KAPATMA ile kapalı üründeki üç gövdedir. Ölçüm şudur: kapalı tarafın hiçbir fazı bu işi
         örtmemekte ve iki faz onu açıkça dışarıda bırakmaktadır. Seçenekler
         üçtür ve karar Founder'ındır: mevsim alanında ad alanlı hedefe izin vermek,
         kapalı depolara birer mühendislik fazı açmak ya da Blokları sarmala taşımak.
@@ -1489,7 +1488,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         tek başına koşturulduğunda sahte kırmızı vermez. Açık kalan birinci
         borç bir mimari sınırdır ve ajan tarafından dürüstçe bildirilmiştir:
         onayBekler çift beyanını yakalayan korpus nöbetinin erişimi STR-3 gereği
-        yalnız açık depodur, dolayısıyla orkestrasyonda aynı sapmanın tekrarını
+        yalnız açık depodur, dolayısıyla kapalı üründe aynı sapmanın tekrarını
         bugün hiçbir nöbet ölçmemektedir. Bu borç bir yazım kusuru değildir ve
         kapatılması açık ile kapalı taraf arasındaki erişim sınırına dair bir
         karar ister.
@@ -1680,7 +1679,15 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         oturumda kapandı (onay panelinin görünüş kimliği sarmalOnaylar oldu, iç
         ad temizliği mağaza yüklemesinden önce bitti, eklenti 695/695 ve çekirdek
         1226/1226 yeşil) ve üç fikir laboratuvarın parkına indi; laboratuvar
-        sayacı da 108'e çekildi.
+        sayacı da 108'e çekildi. Founder ardından açık kaynağa hazırlığı sordu;
+        ölçüm beş temizlik kalemi çıkardı ve Founder hepsinin silinmesine hükmetti:
+        müşteri adı kayıtlardan çıktı, kapalı ürünün plan dosyası adları ile kodları
+        sınama fikstürlerinden ve kaynak yorumlarından söküldü (STR-3), README
+        üretecindeki bozuk "kapalı ürün" cümlesi düzeltildi, örnek dosyadaki
+        gerçek görünümlü e-posta example.com oldu ve çalışma alanı ayarından
+        kişisel anahtarlar düştü. Müşteri adı yalnız tarihçedeki beş işlemede
+        kalmıştır; tarihçe kararı (olduğu gibi, ezilmiş ya da adı süzülmüş)
+        Founder'ındır. Dokuz yayın belge kararı (KRR-YBI) tasdik beklemektedir.
 
         SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
         olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
