@@ -8,6 +8,10 @@
 //   yerini ayırır ve kapsam dışı olduğunu işaretler. Yollar açık deponun altı
 //   kitaplıklı yerleşimine göre yazılmıştır (GOC-A09).
 // ═══════════════════════════════════════════════════════════════════════════
+//
+//   TASDİK (Founder · 2026-09-05): Founder deponun bu akşam açık kaynağa çıkmasına
+//   hükmetti ve dokuz kararın bugünkü belgelerle yayına gitmesini tasdik etti; dokuz
+//   kaydın durumu bekliyor'dan kilitli'ye çekildi, metinlere dokunulmadı.
 
 -->|
   # 📄 Yayın Belge İskeleti — açık depoyla giden belgelerin iskeleti ve sınırı
@@ -25,61 +29,61 @@
   yinelenmez (YUZ-1.2), belge ya türetilmiş yüzdür ya da insan yüzüdür.
 
   ## Sonuç
-  ✅ Kabul: aşağıdaki kararlar Founder onayına sunulmuştur (durum: bekliyor;
-  kilit yalnız Founder sözüyle iner), her belge için iskelet ile sınır
+  ✅ Kabul: aşağıdaki kararlar Founder onayına sunulmuş ve 2026-09-05 tarihinde
+  Founder sözüyle kilitlenmiştir (durum: kilitli), her belge için iskelet ile sınır
   yazılıdır ve eğitim metninin yeri boş bırakılmış olarak işaretlidir.
 |<--
 
-Karar( kod: KRR-YBI-01-BELGE-KUMESI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-01-BELGE-KUMESI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Yayınla giden belge kümesinin tam listesi",
   özet: "Açık depoyla birlikte on dokuz belge yayına gider; yedisi elle yazılan insan yüzüdür, on ikisi kaynaktan üretilen türetilmiş yüzdür.",
   karar: "Yayınla giden belge kümesi şudur. Elle yazılan insan yüzleri: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, PRIVACY.md, NOTICE.md, LICENSE.md ve CLAUDE.md ile onun bayt özdeş ikizi AGENTS.md. Kaynaktan üretilen türetilmiş yüzler: README.md, README.en.md, NEDIR.md, KAVRAMLAR.md, ROL-HARITASI.md, urun/cekirdek/README.md, urun/eklenti/README.md, urun/eklenti/medya/rehber/01-dil.md ile 06-gezinme.md arasındaki altı rehber, oz/siniflama/kayit.md, ogreti/ornek/OKU.md ve ogreti/sablon/OKU.md. Bu listeye girmeyen hiçbir markdown yayın belgesi sayılmaz.",
   gerekçe: "Belge kümesi ilan edilmezse yayın günü hangi dosyanın tanıtım, hangisinin iç mutfak olduğu belirsiz kalır ve türetilmiş bir yüze elle dokunma riski doğar; liste üretici sicilinden ve kök yüzey nöbetinden ölçülerek çıkarılmıştır." )
 
-Karar( kod: KRR-YBI-02-README-ISKELETI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-02-README-ISKELETI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Kök README çiftinin başlık iskeleti ve sınırı",
   özet: "README.md ile README.en.md aynı iskeleti iki dilde taşır: karşılama, Sarmal nedir, kurulum, ilk beş dakika, raf haritası, öğren, katkı ve lisans işaretçileri.",
   karar: "Kök README çifti şu başlık sırasını taşır: birinci bölüm tek paragraflık karşılama ve Sarmal'ın ne olduğu, ikinci bölüm kurulum (eklenti mağazadan, çekirdek depodan), üçüncü bölüm ilk beş dakika (doğuş komutu ve ilk denetim), dördüncü bölüm altı kitaplığın raf haritası, beşinci bölüm öğren (Founder'ın eğitim metnine ve öğreti kitaplığına bağlantı), altıncı bölüm katkı, güvenlik ve lisans işaretçileri. README pazarlama cümlesi kurmaz, kanon maddesi yinelemez ve üretilen bölgelerinin dışına elle metin almaz; İngilizce README aynı iskeletin çevirisidir, ek bölüm taşımaz.",
   gerekçe: "README deponun ilk okunan sayfasıdır ve iki dilin iskeleti ayrışırsa bakımı ikiye katlanır; bölüm sırası okuyucunun 'nedir, nasıl kurulur, nasıl başlanır, nerede ne var' sorularının sırasıdır." )
 
-Karar( kod: KRR-YBI-03-ACIKLAMA-VE-DIZIN-YUZLERI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-03-ACIKLAMA-VE-DIZIN-YUZLERI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Açıklama ve dizin yüzlerinin iskeleti ve sınırı",
   özet: "NEDIR.md açıklama, KAVRAMLAR.md dizin, ROL-HARITASI.md açıklama amacıyla üretilir; hiçbiri elle düzenlenmez.",
   karar: "NEDIR.md dilin ne olduğunu ve neyi çözdüğünü Diátaxis açıklama türünde anlatır ve başlıkları problem, yaklaşım, dört eksen, kapı ve sınır olarak sıralanır. KAVRAMLAR.md kavram dizinidir ve yalnız kavram adı ile kanon yolunu taşır. ROL-HARITASI.md rollerin (Founder, kontrolcü, üretici, denetçi) hangi kapıdan geçtiğini açıklar. Üçü de belge yüzü üreticisinden doğar; elle düzenleme bir sonraki üretimde silinir ve bu yüzden yasaktır.",
   gerekçe: "Açıklama yüzleri kanonun anlatı gölgesidir; kanon değişince elle bakım bayatlar, üretim ise tek kaynaktan tazelenir (YUZ-7)." )
 
-Karar( kod: KRR-YBI-04-TOPLULUK-BELGELERI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-04-TOPLULUK-BELGELERI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Topluluk belgelerinin iskeleti ve sınırı",
   özet: "CONTRIBUTING, SECURITY, CODE_OF_CONDUCT ve PRIVACY elle yazılan insan yüzleridir; her biri iki dilde tek dosyada yaşar ve hüküm metni taşımaz.",
   karar: "CONTRIBUTING.md şu iskeleti taşır: kaynağın nerede yaşadığı, kapıdan geçiş (denetim ve süitler), işleme mesajı biçimi, üretilen yüzlere dokunmama kuralı ve katkı akışı; bu iskelet bugün yazılıdır ve korunur. SECURITY.md zafiyet bildirim yolunu, yanıt süresini ve sorumluluk sınırını; CODE_OF_CONDUCT.md davranış beklentisini ve bildirim yolunu; PRIVACY.md eklentinin hangi veriyi toplamadığını ve nereye hiçbir şey göndermediğini anlatır. Dördü de Türkçe ile İngilizceyi aynı dosyada taşır, kanon hükmünü alıntılamaz ve yalnız kanon yoluna bağlantı verir.",
   gerekçe: "Topluluk belgeleri dış dünyanın beklediği standart adlarla aranır ve iki dilin tek dosyada yaşaması ikiz sapmasını önler; hüküm metni taşımamaları YUZ-1.2'nin elle ikiz yasağıdır." )
 
-Karar( kod: KRR-YBI-05-LISANS-VE-ATIF, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-05-LISANS-VE-ATIF, durum: kilitli, uygulama: kendinden-tam,
   ne: "Lisans ve atıf işaretçilerinin sınırı",
   özet: "LICENSE.md dış dünyaya ait standart metindir ve kimlik evrenine atıf vermez; NOTICE.md üçüncü taraf atıflarını taşır ve yalnız atıf nöbeti ile birlikte değişir.",
   karar: "LICENSE.md lisansın standart tam metnidir; içine hiçbir proje anlatısı, kod atfı ya da yorum girmez ve kök yüzey nöbeti bu dosyayı kapsam dışı tutar. NOTICE.md üçüncü taraf bileşenlerin ad, sürüm, lisans ve kaynak satırlarını taşır; her satır atıf nöbetiyle (GOC-A04) ölçülür ve nöbetsiz satır eklenmez. Eklentinin paketine giren lisans kopyası urun/eklenti/LICENSE.md kök lisansın bayt özdeş ikizidir.",
   gerekçe: "Lisans metni dış hukuk belgesidir ve değiştirilmesi lisansı bozar; atıf listesi ise mekanik olarak doğrulanabilir tek yerdir ve elle eklenen satır ölçülemez borç yaratır." )
 
-Karar( kod: KRR-YBI-06-KURULUM-ANLATIMI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-06-KURULUM-ANLATIMI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Kurulum adımlarının yeri ve sınırı",
   özet: "Kurulum iki yerde anlatılır: kök README'nin kurulum bölümünde kısa yol, urun/eklenti/README.md içinde mağaza yüzü ve tam adımlar; sürüm numarası yalnız paket bildiriminden okunur.",
   karar: "Kurulum anlatımı kök README'nin kurulum bölümünde üç adımı geçmez: eklentiyi mağazadan kur, depoyu klonla, ilk denetimi koş. Tam adımlar, gereksinimler ve sorun giderme urun/eklenti/README.md içinde yaşar; bu dosya mağazanın da yüzü olduğu için How-To türündedir. Çekirdeğin komut satırı kurulumu urun/cekirdek/README.md içinde anlatılır. Hiçbir belge sürüm numarasını elle yazmaz; sürüm paket bildiriminden üretilir.",
   gerekçe: "Kurulum adımlarının iki yerde tam yazılması ilk sürüm değişikliğinde birini bayatlatır; kısa yol ile tam anlatımın ayrılması hem mağaza okuyucusunu hem depo okuyucusunu doğru yere gönderir." )
 
-Karar( kod: KRR-YBI-07-YURUTUCU-YONERGESI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-07-YURUTUCU-YONERGESI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Yürütücü yönergesi ikizinin sınırı",
   özet: "CLAUDE.md ile AGENTS.md bayt özdeş ikizdir, yalnız kalıcı kural ve adres taşır ve durum içeriği almaz.",
   karar: "CLAUDE.md ve AGENTS.md aynı içeriği taşır ve ikiz nöbeti bayt özdeşliğini korur. Dosya bir işaretçidir: kanonun, tip sisteminin, durum kaydının ve planların adreslerini ve kalıcı asistan protokolünü anlatır; zamanla değişen hiçbir içerik (durum, devir, sıradaki iş) buraya yazılmaz. Yayınla giden sürüm tek varlık ve iki depo düzenini anlatır, kapalı ürünün adını ya da mimarisini anmaz.",
   gerekçe: "Yönerge dosyası her ajan oturumunun ilk okuduğu metindir; durum içeriği alırsa ikinci bir bayat kaynak doğar ve kapalı ürün anması açık deponun sınırını ihlal eder (STR-3)." )
 
-Karar( kod: KRR-YBI-08-FOUNDER-EGITIM-METNI-YERI, durum: bekliyor, uygulama: ertelendi,
+Karar( kod: KRR-YBI-08-FOUNDER-EGITIM-METNI-YERI, durum: kilitli, uygulama: ertelendi,
   ertelemeGerekçesi: "Rafın ilanı ve yer tutucu bugün yazılmıştır; kök README bağlantısı ile metnin kendisi Founder eğitim metnini yazdığı gün girer.",
   ne: "Founder'ın eğitim metni için ayrılan yer ve kapsam dışı işareti",
   özet: "Eğitim metni ogreti/egitim/ rafında yaşayacaktır; raf anadizinde ilan edilir, bugün yalnız yer tutucu bir OKU.md taşır ve metnin kendisi bu Adımın kapsamı dışındadır.",
   karar: "Founder'ın yazacağı eğitim metni öğreti kitaplığında ogreti/egitim/ rafında yaşar. Raf sarmal_anadizin.sar dosyasında RAF-OGRETI-EGITIM koduyla ilan edilir ve bugün yalnız yerin ayrıldığını ve metnin henüz yazılmadığını söyleyen bir OKU.md taşır. Kök README'nin öğren bölümü bu rafa bağlantı verir. Metnin kendisi, biçimi ve uzunluğu Founder'ındır; bu kayıt ve GOC-A11 Adımı metni yazmaz, taslağını çıkarmaz ve iskeletini dayatmaz.",
   gerekçe: "Founder metni en sona bıraktığını bildirmiştir; yerin bugünden ilan edilmesi yayın belgelerinin bağlantılarını kırmadan bekletir, metnin kapsam dışı işaretlenmesi ise bir ajanın yerini doldurmaya kalkmasını önler." )
 
-Karar( kod: KRR-YBI-09-URETIM-KAYNAGI, durum: bekliyor, uygulama: kendinden-tam,
+Karar( kod: KRR-YBI-09-URETIM-KAYNAGI, durum: kilitli, uygulama: kendinden-tam,
   ne: "Türetilmiş yüz ile insan yüzünün üretim disiplini",
   özet: "Türetilmiş yüzler yalnız belge yüzü üreticisinden yenilenir, insan yüzleri işaretli üretim bölgesi dışında elle yazılır; ikisi de kanon ikizi olamaz.",
   karar: "Türetilmiş yüzler (KRR-YBI-01 listesindeki on iki belge) yalnız çekirdeğin belge yüzü üreticisiyle yenilenir ve üretim künyesi taşır; elle düzenleme yasaktır ve idempotans nöbeti aynı kaynaktan farklı çıktı görürse uyarır. İnsan yüzleri (yedi belge) elle yazılır, içlerinde üretim bölgesi varsa o bölgeye dokunulmaz ve bölge işaretinin harfiyen yazımı yalnız üretici koduna aittir. Hiçbir belge kanon maddesinin metnini taşımaz; belge kanon yoluna bağlanır.",

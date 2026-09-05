@@ -29,6 +29,11 @@ jobs:
       - name: bağımlılıklar
         working-directory: urun/cekirdek
         run: npm ci
+      # Dil denetimi kapsam sınaması iki paketin eslint yapılandırmasını içe alır;
+      # eklentinin eklentileri kurulu değilse çekirdek süiti o iki sınamada düşer.
+      - name: eklenti bağımlılıkları
+        working-directory: urun/eklenti
+        run: npm ci
       - name: çekirdek süiti
         working-directory: urun/cekirdek
         run: npm test
