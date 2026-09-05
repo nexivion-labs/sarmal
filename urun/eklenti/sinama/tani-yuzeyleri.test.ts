@@ -1639,7 +1639,7 @@ test("tür özeti ve Fikir satırı EMOJİ taşımaz: işaretler vektörel ailed
 //   bağlanmayı unutmak SESSİZ olamaz.
 
 test("KAPSAMA KURALI TEK EVDE YAŞAR: ikinci bir kapsama yazımı yoktur", () => {
-  const evler = ["yuzey-cekirdek.ts", "eklenti.ts", "onay-kuyrugu.ts", "posta-kutusu.ts"];
+  const evler = ["yuzey-cekirdek.ts", "eklenti.ts", "onay-kuyrugu.ts", "onay-paneli.ts"];
   for (const ev of evler) {
     const kaynak = readFileSync(
       fileURLToPath(new URL(`../src/${ev}`, import.meta.url)), "utf8");

@@ -675,7 +675,7 @@
           "contextualTitle": "%view.observations%"
         },
         {
-          "id": "sarmalPostaKutusu",
+          "id": "sarmalOnaylar",
           "type": "webview",
           "name": "%view.approvals%",
           "icon": "medya/simgeler/panel-onaylar.svg",

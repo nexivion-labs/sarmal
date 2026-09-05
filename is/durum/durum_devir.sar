@@ -1676,7 +1676,11 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         Founder Onaylar panelinden altı Adımı onayladı: KPS-KEN-A01, KYN-HASAT-A01,
         RFM-KANON-A01, RFM-KANON-A02, PRF-IS-A05 ve VIT-KIMLIK-A08. Kapı: depo
         denetimi sıfır hata ve sıfır uyarı, karne 1908 düğüm ve 408 Adım.
-        Değişiklikler işlenmedi; işleme Founder kararıyla yapılır.
+        Founder ardından bütün işi devretti: triyaj işlendi, VIT-POSTA-A07 aynı
+        oturumda kapandı (onay panelinin görünüş kimliği sarmalOnaylar oldu, iç
+        ad temizliği mağaza yüklemesinden önce bitti, eklenti 695/695 ve çekirdek
+        1226/1226 yeşil) ve üç fikir laboratuvarın parkına indi; laboratuvar
+        sayacı da 108'e çekildi.
 
         SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
         olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
@@ -1685,8 +1689,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         Sonra 7–9 Eylül yayın Adımları. Onaylanan altı Adımdan dördünün bağımlılığı
         boştur ve sırası Founder'ındır (RFM-KANON-A01 · RFM-KANON-A02 · KPS-KEN-A01
         · KYN-HASAT-A01); PRF-IS-A05 ile VIT-KIMLIK-A08 öncüllerini bekler.
-        VIT-POSTA-A07 mağaza yüklemesinden önce yapılırsa bedelsizdir, sonra bir
-        sürüm sınırı bekler. Kanon Uyum Bloku mağaza yüklemesinin arkasındadır.
+        Kanon Uyum Bloku mağaza yüklemesinin arkasındadır. Bir sonraki paket
+        kurulumunda Founder'ın Onaylar paneli yerleşimi bir kez sıfırlanır.
         E-posta ve uzak depo en sonda.
 
         SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve

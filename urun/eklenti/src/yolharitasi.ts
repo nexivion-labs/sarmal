@@ -585,7 +585,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   /**
    * 📏 Panelin ŞU AN gösterdiği plan kodları — salt okur ölçüm kapısı (PRF-TA-A04).
    *
-   * Emsali `postaKapilari()` kapısıdır ve var olma gerekçesi birebir aynıdır: VS
+   * Emsali `onayKapilari()` kapısıdır ve var olma gerekçesi birebir aynıdır: VS
    * Code bir ağaç görünüşünün içeriğini dışarıya vermez, dolayısıyla "görüntüden
    * kurulan ağaç eski taramayla AYNI kod kümesini verir" cümlesi gerçek kabukta
    * ancak böyle bir kapıdan ölçülebilir. Kapı hiçbir şey hesaplamaz ve hiçbir şey

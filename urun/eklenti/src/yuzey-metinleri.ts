@@ -21,7 +21,7 @@
 
 // Yalnız TİP alınır; çalışma zamanında hiçbir bağ kurulmaz (derlemede silinir).
 // Katalog gövdeyi tanımaz, gövdenin İSTEDİĞİ demetin şeklini tanır.
-import type { GovdeMetinleri } from "./posta-govde.ts";
+import type { GovdeMetinleri } from "./onay-govde.ts";
 import { dilHanesi, sozlukAdi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
@@ -106,7 +106,7 @@ export const YUZEY_ACIKLAMALARI = {
   get bildirimler(): string {
     return yuzeyMetni("düzeltme istemeyen ölçümler", "measurements that do not require a fix");
   },
-  get postaKutusu(): string {
+  get onayPaneli(): string {
     return yuzeyMetni("kararınızı bekleyen kapılar", "gates awaiting your decision");
   },
 } as const;
@@ -185,7 +185,7 @@ export const YUZEY_BOS_DURUM = {
         "that requires a fix lands in the Problems tab instead.",
     );
   },
-  get postaKutusu(): string {
+  get onayPaneli(): string {
     return yuzeyMetni(
       "Kararınızı bekleyen bir kapı yok. Bir Adımın kabul ölçütü sizin " +
         "onayınızı şart koştuğunda kapısı buraya kendiliğinden düşer; " +
@@ -835,7 +835,7 @@ export const DURUM_CUBUGU_METINLERI = {
   get gözlemler(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Gözlemler", "Observations"), eylem: yuzeyMetni("Tıklayınca Gözlemler paneli açılır.", "Select to open the Observations panel.") }; },
   get hatırlatıcılar(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Hatırlatıcılar", "Reminders"), eylem: yuzeyMetni("Tıklayınca Hatırlatıcılar paneli açılır.", "Select to open the Reminders panel.") }; },
   get fikirler(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Fikirler", "Ideas"), eylem: yuzeyMetni("Tıklayınca Fikirler paneli açılır.", "Select to open the Ideas panel.") }; },
-  get postaKutusu(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Onaylar", "Approvals"), eylem: yuzeyMetni("Tıklayınca Onaylar paneli açılır.", "Select to open the Approvals panel.") }; },
+  get onayPaneli(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Onaylar", "Approvals"), eylem: yuzeyMetni("Tıklayınca Onaylar paneli açılır.", "Select to open the Approvals panel.") }; },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -869,7 +869,7 @@ export const TABAN_KANON_METINLERI = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 📬 POSTA KUTUSU — Founder onayı bekleyen kapıların panel metinleri
+// 📬 ONAYLAR PANELİ — Founder onayı bekleyen kapıların panel metinleri
 //
 //   Kapı kayıtları motorun tanı akışından gelmez; onay tarayıcısından gelir.
 //   Metinleri yine de bu katalogda yaşar, çünkü çevrilecek tek dosya budur ve
@@ -885,7 +885,7 @@ export const TABAN_KANON_METINLERI = {
 // NÖBET-SINIRI: ONAY-YÜZEYİ-METİNLERİ BAŞLANGIÇ
 
 /** Dosya satırının yanındaki gri açıklama — o dosyada kaç kapı beklediği. */
-export function postaDosyaAciklamasi(adet: number, proje?: string): string {
+export function onayDosyaAciklamasi(adet: number, proje?: string): string {
   const sayi = adet === 1
     ? yuzeyMetni("1 kapı", "1 gate")
     : yuzeyMetni(`${adet} kapı`, `${adet} gates`);
@@ -902,7 +902,7 @@ export function postaDosyaAciklamasi(adet: number, proje?: string): string {
  * son kısım kaybolur (Founder canlı bulgusu 2026-07-28, Bildirimler panelinde
  * ölçüldü). Yolun tamamına ihtiyaç duyan kullanıcı onu ipucunda bulur.
  */
-export function postaDosyaIpucu(dosya: string, adet: number): string {
+export function onayDosyaIpucu(dosya: string, adet: number): string {
   return yuzeyMetni(
     `Bu dosyada ${adet === 1 ? "bir" : adet} kapı kararını bekliyor.\n\nKaynak: ${dosya}`,
     `${adet === 1 ? "One gate is" : `${adet} gates are`} awaiting a decision in this file.\n\nSource: ${dosya}`,
@@ -914,14 +914,14 @@ export function postaDosyaIpucu(dosya: string, adet: number): string {
  * Kimlik burada öne alınır, çünkü kullanıcı kararı kimliğe göre arar ve
  * kimliği kararın kaydında yeniden görür; amaç cümlesi kimliği tamamlar.
  */
-export function postaKapiEtiketi(kod: string, ne: string): string {
+export function onayKapiEtiketi(kod: string, ne: string): string {
   const amac = yolusuzlastir(ne).trim();
   const tam = amac ? `${kod} — ${amac}` : yuzeyMetni(`${kod} — amacı yazılmamış Adım`, `${kod} — Step with no stated purpose`);
   return tam.length > 120 ? `${tam.slice(0, 117)}…` : tam;
 }
 
 /** Kapı satırının yanındaki gri açıklama — dosya adı ve satır numarası. */
-export function postaKapiAciklamasi(dosyaAdi: string, satir: number): string {
+export function onayKapiAciklamasi(dosyaAdi: string, satir: number): string {
   return `${dosyaAdi}:${satir}`;
 }
 
@@ -930,7 +930,7 @@ export function postaKapiAciklamasi(dosyaAdi: string, satir: number): string {
  * kimliği, Adımın amacı, onayı şart koşan kabul ölçütü ve kaynağın tam konumu.
  * Kullanıcı dosyayı açmadan neye karar vereceğini okur.
  */
-export function postaKapiIpucu(p: {
+export function onayKapiIpucu(p: {
   kod: string;
   ne: string;
   olcut: string;
@@ -953,7 +953,7 @@ export function postaKapiIpucu(p: {
  * kutusu kapının hemen altında, ÜÇ SEÇENEĞİN ÜSTÜNDE durur ve üçünün ORTAK
  * girdisidir. Artık hiçbir aşamada pencerenin tepesinde bir giriş kutusu açılmaz.
  */
-export function postaKararIpucu(p: {
+export function onayKararIpucu(p: {
   kod: string; damga: string; notIster: boolean;
 }): string {
   const notTr = p.notIster
@@ -980,11 +980,11 @@ export function postaKararIpucu(p: {
  * Asıl niyet kapının bağlamını karar için asistan sohbetine taşımaktı; her kapı
  * bu yüzden açık bir kopyalama eylemi taşır.
  */
-export function postaKopyaEtiketi(): string {
+export function onayKopyaEtiketi(): string {
   return yuzeyMetni("Bağlamı kopyala", "Copy context");
 }
 
-export function postaKopyaIpucu(kod: string): string {
+export function onayKopyaIpucu(kod: string): string {
   return yuzeyMetni(
     `**${kod}** kapısının tam bağlamını (kimlik, kaynak konumu, Adımın durumu, amacı ve onay isteyen ölçüt) panoya kopyalar. Hiçbir karar yazmaz; kopyaladığın bloğu karar vermek için asistan sohbetine ya da başka bir yere yapıştırabilirsin.`,
     `Copies the full context of gate **${kod}** (identity, source location, Step status, purpose and the criterion requiring approval) to the clipboard. It writes no decision; paste the copied block into an assistant chat or anywhere else to reason about it.`,
@@ -997,7 +997,7 @@ export function postaKopyaIpucu(kod: string): string {
  * onay tarihçesi panelin defterinde YAŞAMAZ (onay kaydı yazılmış Adım kuyruğa
  * hiç girmez); blok bu yüzden var olmayan bir tarihçe uydurmaz.
  */
-export function postaKapiBaglami(p: {
+export function onayKapiBaglami(p: {
   kod: string; ne: string; olcut: string; dosya: string; satir: number; durum: string;
 }): string {
   return yuzeyMetni(
@@ -1019,7 +1019,7 @@ export function postaKapiBaglami(p: {
 }
 
 /** Kopyalama bildirimi. Kapının KODU geçer: kullanıcı hangi kapıyı taşıdığını görür. */
-export function postaBaglamKopyalandi(kod: string): string {
+export function onayBaglamKopyalandi(kod: string): string {
   return yuzeyMetni(
     `${kod} kapısının bağlamı panoya kopyalandı.`,
     `The context of gate ${kod} was copied to the clipboard.`,
@@ -1027,7 +1027,7 @@ export function postaBaglamKopyalandi(kod: string): string {
 }
 
 /** Kapı defterden düşmüşse panoya hiçbir şey yazılmaz ve sebep açıkça söylenir. */
-export function postaBaglamKapiYok(kod: string): string {
+export function onayBaglamKapiYok(kod: string): string {
   return yuzeyMetni(
     `${kod} kapısının bağlamı kopyalanamadı, çünkü kapı panelin defterinde artık bulunmuyor; bu arada karara bağlanmış olabilir. Panoya hiçbir şey yazılmadı.`,
     `The context of gate ${kod} could not be copied because the gate is no longer in the panel's ledger; it may have been decided meanwhile. Nothing was written to the clipboard.`,
@@ -1080,7 +1080,7 @@ export function fikirProjeIpucu(ad: string, kod: string, adet: number): string {
   );
 }
 
-export function postaRozetIpucu(adet: number): string {
+export function onayRozetIpucu(adet: number): string {
   return adet === 1
     ? yuzeyMetni("Bir kapı kararını bekliyor.", "One gate is awaiting a decision.")
     : yuzeyMetni(`${adet} kapı kararını bekliyor.`, `${adet} gates are awaiting a decision.`);
@@ -1119,7 +1119,7 @@ export function etkinKararAdi(): string {
 }
 
 /** Onaylar panelini açan komutun kullanıcıya görünen adı. */
-export function postaKutusunuAcBasligi(): string {
+export function onayPaneliniAcBasligi(): string {
   return yuzeyMetni(
     "Onaylar panelini aç (Founder kararını bekleyen kapılar)",
     "Open the Approvals panel (gates awaiting the Founder's decision)",
@@ -2169,31 +2169,31 @@ export function bildirimRozetMetni(tur: "bilgi" | "uyarı" | "hata"): string {
 // ═══════════════════════════════════════════════════════════════════════════
 // 📦 GÖVDENİN METİN DEMETİ — panel ile nöbet AYNI demeti okur
 //
-//   Saf gövde (posta-govde.ts) kullanıcıya görünen hiçbir cümleyi kendisi
+//   Saf gövde (onay-govde.ts) kullanıcıya görünen hiçbir cümleyi kendisi
 //   üretmez; hepsini bu demetten alır. Demet burada, katalogda yaşar ve hem
-//   üretim (posta-kutusu.ts) hem nöbet aynı nesneyi kullanır. İkinci bir demet
+//   üretim (onay-paneli.ts) hem nöbet aynı nesneyi kullanır. İkinci bir demet
 //   yazılsaydı nöbet, kullanıcının GÖRMEDİĞİ metinleri ölçer ve hiçbir şey
 //   kanıtlamamış olurdu — bu depoda daha önce yakalanmış sahte nöbet deseni.
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POSTA_GOVDE_METINLERI: GovdeMetinleri = {
+export const ONAY_GOVDE_METINLERI: GovdeMetinleri = {
   get htmlDili(): string { return yuzeyDili === "tr" ? "tr" : "en"; },
   get ariaOnaylar(): string { return yuzeyMetni("Onaylar", "Approvals"); },
   get notBasligi(): string { return notBasligi(); },
   get notYerTutucu(): string { return notYerTutucu(); },
   get gerekceZorunlu(): string { return gerekceZorunlu(); },
   get gerekceArtik(): string { return gerekceArtik(); },
-  dosyaAdedi: postaDosyaAciklamasi,
-  kapiEtiketi: postaKapiEtiketi,
-  kapiAciklamasi: postaKapiAciklamasi,
-  kapiIpucu: postaKapiIpucu,
-  dosyaIpucu: postaDosyaIpucu,
-  kararIpucu: postaKararIpucu,
+  dosyaAdedi: onayDosyaAciklamasi,
+  kapiEtiketi: onayKapiEtiketi,
+  kapiAciklamasi: onayKapiAciklamasi,
+  kapiIpucu: onayKapiIpucu,
+  dosyaIpucu: onayDosyaIpucu,
+  kararIpucu: onayKararIpucu,
   kararEtiketi: (rol: string): string => ({
     onay: yuzeyMetni("Onayla", "Approve"),
     şerh: yuzeyMetni("Şerhle onayla", "Approve with note"),
     ret: yuzeyMetni("Reddet", "Reject"),
   })[rol] ?? rol,
-  get kopyaEtiketi(): string { return postaKopyaEtiketi(); },
-  kopyaIpucu: postaKopyaIpucu,
+  get kopyaEtiketi(): string { return onayKopyaEtiketi(); },
+  kopyaIpucu: onayKopyaIpucu,
 };

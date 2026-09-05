@@ -294,7 +294,7 @@ test("satır nöbeti: hiçbir panel hazır ikon kimliğine GERİ DÜŞMEZ — co
   //     teknoloji-simgesi.ts'dir ve dosyanın teknoloji kimliğini taşır.
   const paneller = [
     "src/yolharitasi.ts", "src/hatirlaticilar.ts",
-    "src/bildirimler.ts", "src/posta-kutusu.ts", "src/posta-govde.ts",
+    "src/bildirimler.ts", "src/onay-paneli.ts", "src/onay-govde.ts",
   ];
   for (const dosya of paneller) {
     const kaynak = oku(dosya);
@@ -567,7 +567,7 @@ export function arayuzEmojiSayisi(kaynak: string): number {
  *  kırmızıya döner — Adımın "gerilemeyi nöbetle durdur" maddesi budur. */
 const SIFIR_KUSAK = [
   "src/hatirlaticilar.ts", "src/bildirimler.ts", "src/fikirler.ts",
-  "src/posta-kutusu.ts", "src/posta-govde.ts",
+  "src/onay-paneli.ts", "src/onay-govde.ts",
   "src/durum-cubugu.ts", "src/yuzey-cekirdek.ts", "src/satirici.ts",
   "src/gorsel-esad.ts", "src/minigraf.ts", "src/nabiz.ts", "src/anahat.ts",
   "src/cam.ts", "src/palet.ts", "src/dallar.ts", "src/gezinme.ts", "src/tamamlama.ts",

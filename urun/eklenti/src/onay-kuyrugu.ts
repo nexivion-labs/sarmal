@@ -9,7 +9,7 @@
 //
 //   İKİ İŞLEVSEL YÜZEY VARDIR (Founder canlı bulgusu 2026-07-28: "Açıklamalar
 //   paneli ile Onaylar aynı on bir kapıyı gösteriyor").
-//     ① POSTA KUTUSU, çalışma alanındaki bütün açık kapıların TEK KALICI
+//     ① ONAYLAR PANELİ, çalışma alanındaki bütün açık kapıların TEK KALICI
 //        KUYRUĞUDUR: sayılır, dosyaya göre gruplanır, göz gezdirilir.
 //     ② COMMENTS iş parçacığı, yalnız kullanıcının seçtiği TEK kapının ETKİN
 //        KARAR YÜZEYİDİR. Ancak kullanıcı o kapıyı açtığında yaratılır ve aynı
@@ -20,8 +20,8 @@
 //   EMEKLİ EDİLEN KARARIN KAYDI. Bu dosyada 0.9.74'ten beri şu hüküm yazılıydı:
 //   "ESAS YÜZEY seçim listesidir — VS Code 1.128 Comments arayüzünü hiç
 //   çizmedi." O hüküm bir OLAĞANÜSTÜ DURUM önlemiydi ve o gün doğruydu. VS Code
-//   pencereleri yeniden çizdiğinde önlem emekliye ayrılmadı; üstüne Posta
-//   Kutusu paneli eklendi ve kullanıcı aynı kuyruğu iki panelde görmeye başladı.
+//   pencereleri yeniden çizdiğinde önlem emekliye ayrılmadı; üstüne Onaylar
+//   paneli eklendi ve kullanıcı aynı kuyruğu iki panelde görmeye başladı.
 //   Kusur bir ihmal değil, emekli edilmemiş bir kararın kalıntısıydı. Seçim
 //   listesi yolu bu turda kaldırıldı: `kararSor` artık yoktur ve hiçbir giriş
 //   noktası ikinci bir karar arayüzü açmaz.
@@ -53,7 +53,7 @@ import {
   anaGoruntuDegisti, anaGoruntuHazirMi,
   belgeKapilariOkumasi, belgeKodAdedi, belgeOnayKaniti, disktenOnayKaniti,
 } from "./onay-tarayici.ts";
-import type { PostaKutusu } from "./posta-kutusu.ts";
+import type { OnayPaneli } from "./onay-paneli.ts";
 import type { OdakKapisi } from "./minigraf.ts";   // 🔭 kapsam süzgeci TEK evden okunur
 
 /** Odak kapısı verilmediğinde kuyruk bütün çalışma alanını gösterir (sınama yolu). */
@@ -61,7 +61,7 @@ const ONAY_TUM_KAPSAM: OdakKapisi = {
   kapsamda: () => true,
   degisince: () => { /* olay yok */ },
 };
-import { GORUNUS_POSTA_KUTUSU, DENETLEYICI_ONAY, KOMUT_POSTA_KUTUSU } from "./yuzey-cekirdek.ts";
+import { GORUNUS_ONAYLAR, DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU } from "./yuzey-cekirdek.ts";
 import {
   etkinKararAdi, CATISMA_SECENEKLERI, commentsEmekli,
   gerekceZorunlu, gerekceArtik,
@@ -74,7 +74,7 @@ import {
 // 🧾 Gerekçe ölçüsü SAF gövdededir; panel ile komut sınırı AYNI kuralı kullanır.
 // İki ayrı yerde iki kural yazılsaydı biri ötekinden ayrışır ve vaat ile davranış
 // yine ikiye bölünürdü (RED-2 dersi).
-import { gerekceyiOlc } from "./posta-govde.ts";
+import { gerekceyiOlc } from "./onay-govde.ts";
 
 /** Karar seçenekleri — komut kimliği + yazılan damga. */
 const SECENEKLER = [
@@ -147,12 +147,12 @@ export function onayYuzeyiOlcumleri(): Readonly<typeof olcum> {
 }
 
 /**
- * @param postaKutusu Onaylar paneli (VIT-POSTA-A01) — kapıların tek kalıcı
+ * @param onayPaneli Onaylar paneli (VIT-POSTA-A01) — kapıların tek kalıcı
  *   kuyruğu. Verilmezse yalnız etkin karar yüzeyi ve kod merceği yaşar; panel
  *   kendi taramasını KURMAZ, bu modülün nabzından beslenir.
  */
 export function onayKuyruguKaydi(
-  baglam: vscode.ExtensionContext, postaKutusu?: PostaKutusu,
+  baglam: vscode.ExtensionContext, onayPaneli?: OnayPaneli,
   odak: OdakKapisi = ONAY_TUM_KAPSAM,
 ): void {
   // Kimlik DEĞİŞMEZ (kullanıcının Açıklamalar menü koşulları ona bağlıdır);
@@ -234,9 +234,9 @@ export function onayKuyruguKaydi(
     // Kapsam dışı dosyanın kapıları panele YAZILMAZ ve varsa düşürülür; süzgeç
     // öteki üç yüzeyle AYNI kapıdan okur (odakKapisi → panelDeGorunur).
     if (odak.kapsamda(doc.uri.fsPath)) {
-      postaKutusu?.yerlestirDosya(doc.uri.fsPath, noktalar);
+      onayPaneli?.yerlestirDosya(doc.uri.fsPath, noktalar);
     } else {
-      postaKutusu?.dusur(doc.uri.fsPath);
+      onayPaneli?.dusur(doc.uri.fsPath);
     }
     // Kararı verilen kapının etkin yüzeyi kendiliğinden düşer: defter yaşayan
     // kodları görür ve açık yüzey artık o kümede değilse kapatıcısını çağırır.
@@ -424,7 +424,7 @@ export function onayKuyruguKaydi(
   const kararYaz = () => async (): Promise<void> => {
     izYaz(IZ_METINLERI.commentsEmekliYonlendirme);
     vscode.window.showInformationMessage(commentsEmekli());
-    await postaKutusunaOdaklan();
+    await onayPanelineOdaklan();
   };
 
   /**
@@ -460,7 +460,7 @@ export function onayKuyruguKaydi(
   const tumunuTara = async (): Promise<KapiKaydi[]> => {
     const bulgular = goruntuyuAciklarlaBirlestir(await calismaAlaniniTara())
       .filter((kayit) => odak.kapsamda(kayit.dosya));
-    postaKutusu?.yerlestirHepsi(bulgular);
+    onayPaneli?.yerlestirHepsi(bulgular);
     olcum.yerlestirmeTuru += 1;
     olcum.sonYerlesenKapi = bulgular.length;
     if (bulgular.length) olcum.kapiGorulduMu = true;
@@ -476,8 +476,8 @@ export function onayKuyruguKaydi(
   // kimliği korunan tek kuyruğa, Onaylar görünüşüne odaklanır. Eskiden bu
   // komut her çağrıda tam tarama yapıp bir seçim listesi açıyordu ve böylece
   // panelin yanında ikinci bir "asıl kuyruk" gibi duruyordu.
-  const postaKutusunaOdaklan = async (): Promise<void> => {
-    await vscode.commands.executeCommand(`${GORUNUS_POSTA_KUTUSU}.focus`);
+  const onayPanelineOdaklan = async (): Promise<void> => {
+    await vscode.commands.executeCommand(`${GORUNUS_ONAYLAR}.focus`);
   };
 
   // ⚡ ANLIK KUYRUK (Sorunlar sekmesi davranışı): yazarken biriken belgeler tek
@@ -507,7 +507,7 @@ export function onayKuyruguKaydi(
     etkinYuzey.dosyaSilindi(uri.fsPath);
     olcumuEsitle();
     // Silinen dosyanın kapıları panelden de düşer; iki yüzey aynı anda temizlenir.
-    postaKutusu?.dusur(uri.fsPath);
+    onayPaneli?.dusur(uri.fsPath);
   };
 
   // ── 💛 satır sonu nabzı: onay bekleyen kapı, geribildirim kalbi gibi ATAR ────
@@ -540,10 +540,10 @@ export function onayKuyruguKaydi(
     davetBoya();
   };
 
-  // ── 📬 karar lensi: kapı satırının üstünde tek tık → POSTA KUTUSU ───────────
+  // ── 📬 karar lensi: kapı satırının üstünde tek tık → ONAYLAR PANELİ ───────────
   //   Mercek bir KISAYOLDUR ve artık DÜRÜSTTÜR: kendi karar arayüzünü açmaz,
-  //   görünmeyen bir Comments penceresi kurmaz, yalnız aynı kapıyı Posta
-  //   Kutusunda seçili ve açık hâle getirir. Eski hâlinde başlık "karar ver"
+  //   görünmeyen bir Comments penceresi kurmaz, yalnız aynı kapıyı Onaylar
+  //   panelinde seçili ve açık hâle getirir. Eski hâlinde başlık "karar ver"
   //   diyordu ve tıklayan kullanıcı hiçbir şey görmüyordu (ölçülmüş Kusur 6).
   const degisti = new vscode.EventEmitter<void>();
   const lensSaglayici: vscode.CodeLensProvider = {
@@ -569,8 +569,8 @@ export function onayKuyruguKaydi(
       return;
     }
     izYaz(IZ_METINLERI.mercek(n.kod));
-    await postaKutusunaOdaklan();
-    const bulundu = await postaKutusu?.gosterVeAc(doc.uri.fsPath, n.kod);
+    await onayPanelineOdaklan();
+    const bulundu = await onayPaneli?.gosterVeAc(doc.uri.fsPath, n.kod);
     if (!bulundu) {
       vscode.window.showInformationMessage(ONAY_YUZEY_METINLERI.paneldeBulunamadi(n.kod));
     }
@@ -602,7 +602,7 @@ export function onayKuyruguKaydi(
    *   yazılmaz.
    * @returns Yazım hattının sonucu; panel taslağı yalnız kanıtlı başarıda düşürür.
    */
-  const postaKararVer = async (
+  const onayKararVer = async (
     dosya: string, satir: number, kod: string,
     damga: string, notIster: boolean, not?: string,
   ): Promise<KararSonucu | undefined> => {
@@ -639,7 +639,7 @@ export function onayKuyruguKaydi(
    * kısaca söylenir. İptal ile boş kutu AYRI şeylerdir — boş kutu kullanıcıyı
    * kutunun yanında uyarır, iptal ise kapıyı olduğu gibi bırakır.
    */
-  const postaKararIptal = (kod: string): void => {
+  const onayKararIptal = (kod: string): void => {
     izYaz(IZ_METINLERI.kararIptal(kod));
     vscode.window.setStatusBarMessage(kararIptalEdildi(kod), 4_000);
   };
@@ -650,7 +650,7 @@ export function onayKuyruguKaydi(
    * (ölçüm: `canlı yüzey: 1`); kullanıcı dosyaya gidip boşluk buluyordu.
    * Hedef kapı da artık YALNIZ dosya+kod ile bulunur.
    */
-  const postaKapisiAc = async (dosya: string, satir: number, kod: string): Promise<void> => {
+  const onayKapisiAc = async (dosya: string, satir: number, kod: string): Promise<void> => {
     let doc: vscode.TextDocument;
     try {
       olcum.acilanBelge += 1; olcum.olaydanAcilanBelge += 1;   // kullanıcı eylemi
@@ -693,7 +693,7 @@ export function onayKuyruguKaydi(
     // │ editör önizleme kipinde açıldığı hâlde odak oraya kayabiliyordu ve
     // │ kullanıcının bir sonraki tıklaması yine boşa düşerdi.
     // └────────────────────────────────────────────────────────────────────────
-    await postaKutusu?.gosterVeAc(dosya, kod);
+    await onayPaneli?.gosterVeAc(dosya, kod);
   };
 
   baglam.subscriptions.push(
@@ -705,11 +705,11 @@ export function onayKuyruguKaydi(
     // kendi tam turunu KURMAZ. (PRF-TA-A03: susuş bildirimi diye bir olay yoktur.)
     anaGoruntuDegisti(() => { void tumunuTara().then(() => { susle(); degisti.fire(); }); }),
     vscode.languages.registerCodeLensProvider("sarmal", lensSaglayici),
-    vscode.commands.registerCommand(KOMUT_POSTA_KUTUSU, postaKutusunaOdaklan),
+    vscode.commands.registerCommand(KOMUT_ONAY_KUYRUGU, onayPanelineOdaklan),
     vscode.commands.registerCommand("sarmal.onayKarar", onayKarar),
-    vscode.commands.registerCommand("sarmal.postaKapisiAc", postaKapisiAc),
-    vscode.commands.registerCommand("sarmal.postaKararVer", postaKararVer),
-    vscode.commands.registerCommand("sarmal.postaKararIptal", postaKararIptal),
+    vscode.commands.registerCommand("sarmal.onayKapisiAc", onayKapisiAc),
+    vscode.commands.registerCommand("sarmal.onayKararVer", onayKararVer),
+    vscode.commands.registerCommand("sarmal.onayKararIptal", onayKararIptal),
     // Emekli Comments karar komutları: kimlikleri korunur, hüküm yazmazlar.
     ...SECENEKLER.map((s) => vscode.commands.registerCommand(s.komut, kararYaz())),
     vscode.window.onDidChangeActiveTextEditor((e) => { tazele(e?.document); susle(); degisti.fire(); }),
@@ -732,7 +732,7 @@ export function onayKuyruguKaydi(
   // maliyeti doğurmaz.
   odak.degisince(() => { void tumunuTara(); });
 
-  izYaz(IZ_METINLERI.komutlarKayitli(!!postaKutusu));
+  izYaz(IZ_METINLERI.komutlarKayitli(!!onayPaneli));
   // AÇILIŞTA HİÇBİR ŞEY YAPILMAZ. Ne belge açılır, ne iş parçacığı yaratılır, ne
   // tarama başlatılır: kuyruk ana tanı hattının ilk görüntüsüyle dolar. Denetim
   // ayarı kapalıyken de görüntü gelir, çünkü hat susmaz, yalnız tanı üretmez

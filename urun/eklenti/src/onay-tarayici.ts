@@ -3,7 +3,7 @@
 //
 //   Founder onayı bekleyen kapıların çalışma alanı genelindeki listesi BURADA
 //   üretilir ve yalnız burada üretilir. Tüketicisi Onaylar panelidir
-//   (posta-kutusu.ts); onay kuyruğu (onay-kuyrugu.ts) aynı listeyi panele
+//   (onay-paneli.ts); onay kuyruğu (onay-kuyrugu.ts) aynı listeyi panele
 //   yerleştirir ve seçilen tek kapı için karar yüzeyini açar. İki ayrı tarayıcı
 //   yazılsaydı biri sessizce bayatlar ve kullanıcı iki farklı gerçekle
 //   karşılaşırdı (RED-2 dersi: elle ikiz liste yasak).

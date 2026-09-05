@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// posta-kutusu.ts — 📬 POSTA KUTUSU GÖRÜNÜŞÜ (kanonun dördüncü sunum yüzeyi)
+// onay-paneli.ts — 📬 ONAYLAR PANELİ GÖRÜNÜŞÜ (kanonun dördüncü sunum yüzeyi)
 //
 //   Founder onayı bekleyen kapılar burada yaşar. Bugüne kadar bu yüzey bir AĞAÇ
 //   GÖRÜNÜŞÜYDÜ ve kararın gerekçesi `showInputBox` ile isteniyordu. Founder aynı
 //   şikâyeti ÜÇ KEZ söyledi; sonuncusu şudur: "ya ben bir şerh metni yazmak için
-//   ta en yukarıya bakmak zorunda mıyım? posta kutusunun metin alanı için niye bu
+//   ta en yukarıya bakmak zorunda mıyım? onaylar panelinin metin alanı için niye bu
 //   kadar uzak bir noktaya dikkatimi yoğunlaştırmak zorundayım?"
 //
 //   ŞİKÂYET HAKLIYDI VE ÇÖZÜMÜ TEKTİ. Ölçüm (varsayım değil, `@types/vscode`
@@ -33,9 +33,9 @@
 //
 //   SAĞLAYICI KARAR VERMEZ VE TARAMAZ. Kapı listesi tek bir gözden gelir
 //   (onay-tarayici.ts); ağacın kurulumu saf çekirdektedir (onay-cekirdek.ts);
-//   gövde ile gerekçe ölçüsü saf gövdededir (posta-govde.ts); kullanıcı metinleri
+//   gövde ile gerekçe ölçüsü saf gövdededir (onay-govde.ts); kullanıcı metinleri
 //   katalogdadır (yuzey-metinleri.ts). Burada yalnız editör kabuğuna çevirme işi
-//   yapılır ve hüküm YİNE tek yazıcıya (`sarmal.postaKararVer` → `kararIsle`)
+//   yapılır ve hüküm YİNE tek yazıcıya (`sarmal.onayKararVer` → `kararIsle`)
 //   iner.
 //
 //   İKİNCİ BİR ZAMANLAYICI YOKTUR. Panel kendi nabzını kurmaz; onay kuyruğunun
@@ -44,22 +44,22 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { GORUNUS_POSTA_KUTUSU, panelRozeti } from "./yuzey-cekirdek.ts";
+import { GORUNUS_ONAYLAR, panelRozeti } from "./yuzey-cekirdek.ts";
 import { projeKimligi } from "./yolharitasi.ts";   // 🗺️ aidiyet TEK kaynaktan çözülür
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
-  postaRozetIpucu, POSTA_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
-  postaKapiBaglami, postaBaglamKopyalandi, postaBaglamKapiYok,
+  onayRozetIpucu, ONAY_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
+  onayKapiBaglami, onayBaglamKopyalandi, onayBaglamKapiYok,
 } from "./yuzey-metinleri.ts";
 import {
-  OnayDefteri, postaKimligi,
+  OnayDefteri, onayKimligi,
   type KapiKaydi, type OnayKapisi,
 } from "./onay-cekirdek.ts";
 import {
-  PanelDurumu, postaGovdesiHtml, postaIcGovdesi, gerekceyiOlc, secenekBul,
+  PanelDurumu, onayGovdesiHtml, onayIcGovdesi, gerekceyiOlc, secenekBul,
   notKimligi, odakNiyeti, KARAR_SECENEKLERI,
   type GovdeGirdisi, type PanelMesaji,
-} from "./posta-govde.ts";
+} from "./onay-govde.ts";
 // 🏷️ Founder hükmü 2026-07-28: her satır ilgili olduğu dosyanın TEKNOLOJİ simgesini
 // taşır. Çizelge eklentinin kendi dil ilanından türer — tek kaynak (teknoloji-simgesi.ts).
 import { eklentiCizelgesi, teknolojiSimgesi, type SimgeCizelgesi } from "./teknoloji-simgesi.ts";
@@ -76,7 +76,7 @@ function nonceUret(): string {
   return n;
 }
 
-export class PostaKutusu implements vscode.WebviewViewProvider {
+export class OnayPaneli implements vscode.WebviewViewProvider {
   /**
    * Panel içeriği değişti. Durum çubuğu bu olaydan beslenir (ölçülmüş kusur
    * KUSUR-DURUM-ÇUBUĞU: panelde on dört kapı varken durum çubuğu sıfır gösteriyordu). Ağaç
@@ -150,7 +150,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
 
   /** Dil ayarı değiştiğinde rozet, açıklama ve gövdeyi aynı turda yeniler. */
   diliTazele(): void {
-    if (this.gorunum) this.gorunum.description = YUZEY_ACIKLAMALARI.postaKutusu;
+    if (this.gorunum) this.gorunum.description = YUZEY_ACIKLAMALARI.onayPaneli;
     this.cizdir();
   }
 
@@ -197,7 +197,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
    */
   private rozetiGuncelle(): void {
     if (!this.gorunum) return;
-    const rozet = panelRozeti(this.defter.kapiSayisi, postaRozetIpucu);
+    const rozet = panelRozeti(this.defter.kapiSayisi, onayRozetIpucu);
     this.gorunum.badge = rozet;
     // ⚠️ ÖLÇÜLMÜŞ BELİRTİ (Founder canlı bulgusu 2026-08-27): odak başka bir
     // varlığa geçtiğinde bu panelin rozeti eski sayıda asılı kalıyordu. Belirti
@@ -212,7 +212,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     // sonucu verir ve editör sıfırı göstermez. Yazım bilerek iki adımdır ve
     // ikincisi koşulludur; belirtinin kaynağı editörde değil bizde çıkarsa bu
     // satır GERİ ALINMALIDIR, çünkü o zaman ikinci yazım bir kusuru örter.
-    if (!rozet) this.gorunum.badge = { value: 0, tooltip: postaRozetIpucu(0) };
+    if (!rozet) this.gorunum.badge = { value: 0, tooltip: onayRozetIpucu(0) };
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -228,7 +228,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
       // Dış kaynağa hiç bağlanılmaz (STR-3.1): yalnız eklentinin kendi kökü.
       localResourceRoots: this.simgeKoku ? [this.simgeKoku] : [],
     };
-    gorunum.description = YUZEY_ACIKLAMALARI.postaKutusu;
+    gorunum.description = YUZEY_ACIKLAMALARI.onayPaneli;
     gorunum.webview.onDidReceiveMessage((m: PanelMesaji) => { void this.mesaj(m); });
     // Görünüş gizlenip yeniden açıldığında belge sıfırdan kurulur; durum eklenti
     // tarafında yaşadığı için açıklık da taslaklar da yerinde gelir.
@@ -266,7 +266,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     const kumeler = this.defter.kumeler();
     // Dosya satırları AÇIK başlar; kullanıcı kapattıysa kapalı kalır.
     for (const k of kumeler) {
-      this.durum.dosyayiVarsayilanAc(postaKimligi({ tur: "dosya", dosya: k.dosya }));
+      this.durum.dosyayiVarsayilanAc(onayKimligi({ tur: "dosya", dosya: k.dosya }));
     }
     const webview = this.gorunum?.webview;
     return {
@@ -287,15 +287,15 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
       kopyaSimgesi: this.kopyaSimgesi(),
       kararSimgeleri: this.kararSimgeleri(),
       cspKaynak: webview?.cspSource ?? "",
-      bosCumle: YUZEY_BOS_DURUM.postaKutusu,
-      metinler: POSTA_GOVDE_METINLERI,
+      bosCumle: YUZEY_BOS_DURUM.onayPaneli,
+      metinler: ONAY_GOVDE_METINLERI,
     };
   }
 
   /** Belgeyi BAŞTAN basar — yalnız görünüş çözüldüğünde ya da geri göründüğünde. */
   private belgeyiBas(): void {
     if (!this.gorunum) return;
-    this.gorunum.webview.html = postaGovdesiHtml(this.girdi());
+    this.gorunum.webview.html = onayGovdesiHtml(this.girdi());
   }
 
   /**
@@ -306,14 +306,14 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
   private govdeyiTazele(odakNot?: string): void {
     if (!this.gorunum) return;
     void this.gorunum.webview.postMessage({
-      tur: "gövde", html: postaIcGovdesi(this.girdi()), odakNot,
+      tur: "gövde", html: onayIcGovdesi(this.girdi()), odakNot,
     });
   }
 
   // ═══════════════════════════════════════════════════════════════════════
   // 📨 PANELDEN GELEN MESAJLAR
   //
-  //   Sağlayıcı KARAR VERMEZ: hükmü yazan tek el `sarmal.postaKararVer`
+  //   Sağlayıcı KARAR VERMEZ: hükmü yazan tek el `sarmal.onayKararVer`
   //   komutudur ve o da saf `kararIsle` hattına iner. Buradaki tek yargı
   //   GEREKÇE ÖLÇÜSÜDÜR ve o da saf gövdenin işlevidir (`gerekceyiOlc`) —
   //   burada ikinci bir kural yazılmaz.
@@ -337,15 +337,15 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
         // TEK TIK: satır açıldı (yukarıdaki "aç" mesajı) ve Adım kaynağında
         // önizleme kipinde, odağı çalmadan gösterilir.
         await vscode.commands.executeCommand(
-          "sarmal.postaKapisiAc", m.dosya, this.satirBul(m.dosya, m.kod), m.kod);
+          "sarmal.onayKapisiAc", m.dosya, this.satirBul(m.dosya, m.kod), m.kod);
         return;
       case "iptal": {
         // İPTAL İLE BOŞ KUTU AYRI ŞEYLERDİR. İptal hiçbir kayıt yazmaz ve kapı
         // satırı kapanır; taslak defterde KALIR, çünkü vazgeçmek silmek değildir.
-        const kimlik = postaKimligi({ tur: "kapı", dosya: m.dosya, kod: m.kod });
+        const kimlik = onayKimligi({ tur: "kapı", dosya: m.dosya, kod: m.kod });
         this.durum.acikligiYaz(kimlik, false);
         this.govdeyiTazele();
-        await vscode.commands.executeCommand("sarmal.postaKararIptal", m.kod);
+        await vscode.commands.executeCommand("sarmal.onayKararIptal", m.kod);
         return;
       }
       case "kararVer":
@@ -377,15 +377,15 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     if (!kayit) {
       // Kapı bu arada karara bağlanmış olabilir; panoya hiçbir şey yazılmaz
       // ve sessiz kalınmaz — sebep kullanıcıya açıkça söylenir.
-      void vscode.window.showWarningMessage(postaBaglamKapiYok(kod));
+      void vscode.window.showWarningMessage(onayBaglamKapiYok(kod));
       return;
     }
-    await vscode.env.clipboard.writeText(postaKapiBaglami({
+    await vscode.env.clipboard.writeText(onayKapiBaglami({
       kod, ne: kayit.kapi.ne, olcut: kayit.kapi.olcut,
       dosya, satir: kayit.kapi.satir + 1, durum: kayit.kapi.durumMetin,
     }));
     // Bildirim kapının KODUNU taşır: kullanıcı hangi kapıyı taşıdığını görür.
-    void vscode.window.showInformationMessage(postaBaglamKopyalandi(kod));
+    void vscode.window.showInformationMessage(onayBaglamKopyalandi(kod));
   }
 
   /**
@@ -413,7 +413,7 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     }
     this.durum.hatayiSil(notId);
     const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-      "sarmal.postaKararVer", m.dosya, m.satir, m.kod,
+      "sarmal.onayKararVer", m.dosya, m.satir, m.kod,
       secenek.damga, secenek.notIster, olcu.not);
     // Karar diske kanıtlanarak indiyse kapı kapandı: taslağı da defterden düşer.
     if (sonuc?.tur === "başarı") this.durum.taslagiSil(notId);
@@ -429,8 +429,8 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
     const kume = this.defter.kumeler().find((k) => k.dosya === dosya);
     const kayit = kume?.kayitlar.find((k) => k.kapi.kod === kod);
     if (!kayit || !this.gorunum) return false;
-    this.durum.acikligiYaz(postaKimligi({ tur: "dosya", dosya }), true);
-    this.durum.acikligiYaz(postaKimligi({ tur: "kapı", dosya, kod }), true);
+    this.durum.acikligiYaz(onayKimligi({ tur: "dosya", dosya }), true);
+    this.durum.acikligiYaz(onayKimligi({ tur: "kapı", dosya, kod }), true);
     this.gorunum.show(true);
     this.govdeyiTazele();
     // Kod merceğinden gelen yol da kullanıcının KENDİ açtığı bir kapıdır; odak
@@ -442,15 +442,15 @@ export class PostaKutusu implements vscode.WebviewViewProvider {
 
 /**
  * Görünüşü kurar ve sağlayıcıyı döndürür. Görünüş KİMLİĞİ DEĞİŞMEZ
- * (`sarmalPostaKutusu`): kimlik değişirse kullanıcının panel yerleşimi sıfırlanır.
+ * (`sarmalOnaylar`): kimlik değişirse kullanıcının panel yerleşimi sıfırlanır.
  * Başlık, başlık altı açıklaması ve boş-durum cümlesi tek kaynaktan
  * (yuzey-cekirdek · yuzey-metinleri) okunur; paket bildirimiyle eşitliği nöbet ölçer.
  */
-export function postaKutusuKaydi(context: vscode.ExtensionContext): PostaKutusu {
-  const saglayici = new PostaKutusu();
+export function onayPaneliKaydi(context: vscode.ExtensionContext): OnayPaneli {
+  const saglayici = new OnayPaneli();
   saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(GORUNUS_POSTA_KUTUSU, saglayici, {
+    vscode.window.registerWebviewViewProvider(GORUNUS_ONAYLAR, saglayici, {
       // Kullanıcı başka panele geçip döndüğünde yazdığı gerekçe DURMALIDIR.
       // Bağlam korunmasa bile taslak defteri metni geri koyardı; ikisi birlikte
       // hem metni hem kaydırma konumunu korur.

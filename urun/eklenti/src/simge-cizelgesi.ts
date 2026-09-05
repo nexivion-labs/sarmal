@@ -107,14 +107,14 @@ export function eksenSvgVaryanti(tip: EksenTipi, evre: KapsayiciEvre, tema: Simg
 //    panelin aynı simgeyi taşıması Founder'ın 2026-07-28 canlı bulgusuydu ve
 //    o kusurun geri gelmemesi simge-cizelgesi.test.ts nöbetiyle ölçülür.
 //    Anahtar, package.json'daki görünüş KİMLİĞİDİR (kapsayıcı dahil değil);
-//    "sarmalBildirimler" ile "sarmalPostaKutusu" iç kimlikleri eski adları
+//    "sarmalBildirimler" ile "sarmalOnaylar" iç kimlikleri eski adları
 //    taşır ve v1 sonrası temizlenecektir — görünen adlar Gözlemler ve
 //    Onaylar'dır, simge dosya adları da görünen adı izler.
 
 /** Beş panel görünüşünün kimliği — package.json `views["sarmal-yol"]` kapsamı. */
 export const PANEL_GORUNUSLERI = [
   "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
-  "sarmalPostaKutusu", "sarmalMiniGraf",
+  "sarmalOnaylar", "sarmalMiniGraf",
 ] as const;
 export type PanelGorunusu = (typeof PANEL_GORUNUSLERI)[number];
 
@@ -124,7 +124,7 @@ const PANEL_SVG_AD: Record<PanelGorunusu, string> = {
   sarmalHatirlaticilar: "hatirlaticilar",
   sarmalFikirler: "fikirler",
   sarmalBildirimler: "gozlemler",
-  sarmalPostaKutusu: "onaylar",
+  sarmalOnaylar: "onaylar",
   sarmalMiniGraf: "minigraf",
 };
 

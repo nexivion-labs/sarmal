@@ -372,13 +372,13 @@ export function beklerSilmeAraligi(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 📬 POSTA KUTUSU VERİ MODELİ (VIT-POSTA-A01 · KOD-POSTA-PANEL'in saf yarısı)
+// 📬 ONAYLAR PANELİ VERİ MODELİ (VIT-POSTA-A01 · KOD-POSTA-PANEL'in saf yarısı)
 //
 //   Panelin ağacı burada kurulur: hangi kapı hangi dosyanın altında yaşar, kaç
 //   kapı bekliyor, iki yerleşim aynı mı. Model BU DOSYADA yaşar çünkü vscode
-//   istemeyen tek onay modülü budur; nöbet (sinama/posta-kutusu.test.ts) editör
+//   istemeyen tek onay modülü budur; nöbet (sinama/onay-paneli.test.ts) editör
 //   kabuğu kurmadan gerçek davranışı koşturabilsin diye saf kalması şarttır.
-//   Panel sağlayıcısı (posta-kutusu.ts) yalnız bu modelin çıktısını editör
+//   Panel sağlayıcısı (onay-paneli.ts) yalnız bu modelin çıktısını editör
 //   kabuğuna çevirir ve hiçbir karar vermez.
 //
 //   DEFTER TEK KAYNAKTAN DOLAR. Kapı listesini üreten tek göz onay-tarayici.ts
@@ -781,7 +781,7 @@ export function acikBelgeleriUstuneYaz(
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** Panel ağacındaki bir satırın kaynak kimliği — görünen metinden bağımsızdır. */
-export type PostaDugumu =
+export type OnayDugumu =
   | { readonly tur: "dosya"; readonly dosya: string }
   | { readonly tur: "kapı"; readonly dosya: string; readonly kod: string }
   | { readonly tur: "karar"; readonly dosya: string; readonly kod: string; readonly rol: string };
@@ -794,9 +794,9 @@ export type PostaDugumu =
  * ada sahip iki dosya bu yüzden asla aynı kimliği taşımaz ve iki ayrı dosyadaki
  * aynı kodlu kapı tek kapı sanılmaz.
  */
-export function postaKimligi(dugum: PostaDugumu): string {
-  if (dugum.tur === "dosya") return `posta·dosya·${dugum.dosya}`;
-  const kapi = `posta·kapı·${dugum.dosya}·${dugum.kod}`;
+export function onayKimligi(dugum: OnayDugumu): string {
+  if (dugum.tur === "dosya") return `panel·dosya·${dugum.dosya}`;
+  const kapi = `panel·kapı·${dugum.dosya}·${dugum.kod}`;
   return dugum.tur === "kapı" ? kapi : `${kapi}·${dugum.rol}`;
 }
 
@@ -805,7 +805,7 @@ export function postaKimligi(dugum: PostaDugumu): string {
  * ediyordu; bu, `TreeView.reveal` çağrısını kullanılamaz kılıyordu ve kod
  * merceğinin doğru kapıyı panelde göstermesi bu zincire bağlıdır.
  */
-export function postaEbeveyni(dugum: PostaDugumu): PostaDugumu | undefined {
+export function onayEbeveyni(dugum: OnayDugumu): OnayDugumu | undefined {
   if (dugum.tur === "dosya") return undefined;
   if (dugum.tur === "karar") return { tur: "kapı", dosya: dugum.dosya, kod: dugum.kod };
   return { tur: "dosya", dosya: dugum.dosya };
@@ -817,7 +817,7 @@ export function postaEbeveyni(dugum: PostaDugumu): PostaDugumu | undefined {
 //   Ölçüm 2026-07-29 (prob 1 · P4): `kaydiIsle` kapıyı önce SATIRA göre arıyordu
 //   ve iki kapılı bir dosyada `PRB-A01` istendiği hâlde `PRB-A02` onaylandı.
 //   Bayat satır çapası kararı yanlış Adıma yazabiliyordu. Kardeş işlev
-//   `postaKapisiAc` bunu zaten doğru yapıyordu; fark tam olarak buradaydı.
+//   `onayKapisiAc` bunu zaten doğru yapıyordu; fark tam olarak buradaydı.
 //
 //   YENİ SÖZLEŞME: kod bağlayıcıdır. Satır yalnız ek doğrulama ve gezinme
 //   bilgisidir; tek başına hiçbir zaman karar hedefi seçemez. Aynı dosyada aynı
@@ -849,7 +849,7 @@ export function kapiCoz(
 // ═══════════════════════════════════════════════════════════════════════════
 // 🔒 UÇUŞ DEFTERİ — aynı kapıya iki kez yazılmaz
 //
-//   Hızlı çift tıklamada iki `postaKararVer` çağrısı da başlıyor ve sonuç
+//   Hızlı çift tıklamada iki `onayKararVer` çağrısı da başlıyor ve sonuç
 //   komutların zamanlamasına kalıyordu: ya ikinci çağrı kapıyı bulamıyor, ya
 //   ikinci düzenleme reddediliyor, ya da aynı konuma İKİNCİ bir `onay:` alanı
 //   ekleniyordu. Kusur sonucun kendisi değil, sonucun tıklama hızına

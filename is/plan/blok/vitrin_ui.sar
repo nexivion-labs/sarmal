@@ -677,8 +677,8 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
         sınır: "Graf aracının düğüm alanlarını döndürmesi ve ayrı bir sorgu aracı bu Adımın dışındadır; soru bir panel görünümüyle cevaplanır."
       }
 
-      Adım( kod: VIT-POSTA-A07, ad: "Emekli Adın İç Kimlikten Temizlenmesi", durum: beklemede, öncelik: p1, bağımlı: [ VIT-POSTA-A02 ],
-        referans: [ HTR-POSTA-ADI-IC-KIMLIKTE-YASIYOR ],
+      Adım( kod: VIT-POSTA-A07, ad: "Emekli Adın İç Kimlikten Temizlenmesi", durum: tamamlandı, öncelik: p1, bağımlı: [],
+        referans: [ HTR-POSTA-ADI-IC-KIMLIKTE-YASIYOR ], üretir: [ KOD-POSTA-PANEL, KOD-POSTA-GOVDE, KOD-SNM-POSTA ],
         ne: "🏷️ Onay panelinin emekli adı Posta Kutusu kullanıcı yüzünden temizlenmiş fakat iç kimlikte yaşamaktadır: görünüş kimliği sarmalPostaKutusu, dört dosya adı, kaynak ile sınamada üç yüz doksan altı geçiş. Görünüş kimliğini değiştirmek kurulu her kullanıcının panel yerleşimini sıfırlar; dolayısıyla temizlik mağaza yüklemesinden ÖNCE yapılırsa bedeli sıfırdır, sonra yapılırsa bir sürüm sınırına bağlanmalıdır. Plan Adım kodları tarihsel kayıttır ve değiştirilmez." ) {
         görev: [
           "Görünüş kimliğini, dört dosya adını ve kaynak ile sınamadaki geçişleri onay adına çevir; paket bildirimi, dil dosyaları ve gömülü ikizler aynı turda tazelenir.",
@@ -690,6 +690,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
           "Eklenti süiti yeşildir ve Onaylar paneli aynı yerde, aynı adla açılır."
         ]
         sınır: "Kapanmış Adımların VIT-POSTA kodları ve koşu kayıtları değişmez; tarih tahrif edilmez."
+        koşu: Koşum( kod: KSM-VIT-POSTA-A07, tarih: 2026-09-05, mühür: VERIFIED, karar: kabul, kanıt: "eklenti süiti 695/695 · çekirdek süiti 1226/1226 · tsc ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · kaynak ve sınamada posta sözcüğü yalnız VIT-POSTA plan kodlarında, Founder alıntısında ve adın düşüşünü anlatan tek yorumda kaldı", ne: "Görünüş kimliği sarmalPostaKutusu sarmalOnaylar oldu; üç kaynak dosyası onay-paneli, onay-govde ve onay-paneli.test adını aldı, eski posta.svg silindi, otuz civarı tanımlayıcı ile üç iç komut kimliği onay adına çevrildi ve ağaç düğümü kimlik öneki onay rolüyle çakışmasın diye panel· oldu. İş mağaza yüklemesinden önce bittiği için yerleşimi sıfırlanan tek kullanıcı Founder'dır. Öncül kenarı düşürüldü, çünkü VIT-POSTA-A02'nin kalan işi Founder'ın gözle doğrulamasıdır ve kaynağa dokunmaz." )
       }
     }
   }
@@ -878,13 +879,13 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
 }
 
 // 🍎 VIT-POSTA ve VIT-KIMLIK meyveleri — Adım→kod izi
-Kod( kod: KOD-POSTA-GOVDE, dosya: "urun/eklenti/src/posta-govde.ts",
+Kod( kod: KOD-POSTA-GOVDE, dosya: "urun/eklenti/src/onay-govde.ts",
   ne: "🍎 Posta Kutusunun panel içi gövdesi — kapı satırının altında açılan gerekçe kutusu ve onun altındaki üç karar seçeneği. Founder'ın hükmü gereği not artık pencerenin tepesindeki giriş kutusunda değil, gözün olduğu yerde yazılır; ölçüldü ki VS Code'un giriş kutusu yüzeylerinde konum alanı YOKTUR ve ağaç satırı metin alanı barındıramaz, dolayısıyla bu tek yoldu" )
-Kod( kod: KOD-POSTA-PANEL, dosya: "urun/eklenti/src/posta-kutusu.ts",
+Kod( kod: KOD-POSTA-PANEL, dosya: "urun/eklenti/src/onay-paneli.ts",
   ne: "🍎 Posta Kutusu paneli — Founder onayı bekleyen kapıların kalıcı ağaç görünüşü; kayda tıklanınca kapıya gidilir ve karar akışı açılır" )
 Kod( kod: KOD-ONAY-TARAYICI, dosya: "urun/eklenti/src/onay-tarayici.ts",
   ne: "🍎 Onay kapılarının TEK tarayıcısı — hem komut hem panel buradan beslenir; iki tüketicinin farklı sayı üretmesi yapısal olarak imkânsızdır" )
-Kod( kod: KOD-SNM-POSTA, dosya: "urun/eklenti/sinama/posta-kutusu.test.ts",
+Kod( kod: KOD-SNM-POSTA, dosya: "urun/eklenti/sinama/onay-paneli.test.ts",
   ne: "🍎 Posta Kutusu nöbetleri — tek tarayıcı, simge ayrımı, ata/çocuk kademe farkı, boş kuyruk cümlesi" )
 Kod( kod: KOD-DURUM-CUBUGU, dosya: "urun/eklenti/src/durum-cubugu.ts",
   ne: "🍎 Dört yüzeyin durum çubuğu sayaçları — sayılar panellerden TÜRETİLİR, ikinci sayaç tutulmaz" )

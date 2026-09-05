@@ -94,7 +94,7 @@ export const GORUNUS_FIKIRLER = "sarmalFikirler";
  * bağlanmaz; kimliği yine de burada durur, çünkü paket bildirimiyle eşitliği
  * ölçen nöbet bütün görünüş kimliklerini tek yerden okur.
  */
-export const GORUNUS_POSTA_KUTUSU = "sarmalPostaKutusu";
+export const GORUNUS_ONAYLAR = "sarmalOnaylar";
 
 /**
  * 📬 ONAY YÜZEYİNİN DEĞİŞMEZ KİMLİKLERİ (VIT-POSTA-A03).
@@ -107,7 +107,7 @@ export const GORUNUS_POSTA_KUTUSU = "sarmalPostaKutusu";
  * burada durur ki nöbet paket bildirimiyle eşitliği tek kaynaktan ölçebilsin.
  */
 export const DENETLEYICI_ONAY = "sarmal-onay";
-export const KOMUT_POSTA_KUTUSU = "sarmal.onayKuyrugu";
+export const KOMUT_ONAY_KUYRUGU = "sarmal.onayKuyrugu";
 
 /** Kaydın geldiği Proje kimliği — panel gruplaması bu kimlikten kurulur. */
 export interface ProjeKimligi {
@@ -805,7 +805,7 @@ interface Girdi {
   readonly simge: string;
   /** Metin kataloğundaki yüzey anahtarı. Katalog kabukta okunur; saf çekirdek
    *  ona bağımlı olmaz, yalnız anahtarın kendisini taşır. */
-  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "postaKutusu";
+  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "onayPaneli";
   readonly komut: string;
   readonly say: (k: SayacKaynagi) => number;
 }
@@ -830,7 +830,7 @@ export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
   // ilkesinin arayüz karşılığıdır: aynı gerçeğin iki gösterimi zamanla ayrışır ve
   // ayrışmasa bile okuyanı yorar. Sarmal yalnız KENDİ üç yüzeyini basar; sorunları
   // platformun sayacına bırakır.
-  { simge: "$(mail)",          metin: "postaKutusu",   komut: `${GORUNUS_POSTA_KUTUSU}.focus`,   say: (k) => k.kapı() },
+  { simge: "$(mail)",          metin: "onayPaneli",   komut: `${GORUNUS_ONAYLAR}.focus`,   say: (k) => k.kapı() },
   { simge: "$(bell)",          metin: "hatırlatıcılar", komut: `${GORUNUS_HATIRLATICILAR}.focus`, say: (k) => k.hatırlatıcı() },
   { simge: "$(lightbulb)",     metin: "fikirler",      komut: `${GORUNUS_FIKIRLER}.focus`,       say: (k) => k.fikir() },
   { simge: "$(eye)",           metin: "gözlemler",     komut: `${GORUNUS_BILDIRIMLER}.focus`,    say: (k) => k.gözlem() },

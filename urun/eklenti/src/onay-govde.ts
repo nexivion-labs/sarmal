@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// posta-govde.ts — 📬 POSTA KUTUSUNUN SAF GÖVDESİ (panel içi karar yüzeyi)
+// onay-govde.ts — 📬 ONAYLAR PANELİNİN SAF GÖVDESİ (panel içi karar yüzeyi)
 //
 //   Founder üç kez aynı şeyi söyledi (sonuncusu 2026-07-29): "ya ben bir şerh
-//   metni yazmak için ta en yukarıya bakmak zorunda mıyım? posta kutusunun metin
+//   metni yazmak için ta en yukarıya bakmak zorunda mıyım? onaylar panelinin metin
 //   alanı için niye bu kadar uzak bir noktaya dikkatimi yoğunlaştırmak
 //   zorundayım?" İki kez giriş kutusuyla idare edilmeye çalışıldı; ikisi de
 //   olmadı, çünkü kusur giriş kutusunun İÇERİĞİNDE değil KONUMUNDAYDI.
@@ -21,8 +21,8 @@
 //   o alanı PANELİN KENDİ İÇİNDE çizmektir; bu da bir webview görünüşü demektir.
 //   Bu dosya o görünüşün SAF yarısıdır: veri modeli, açıklık/taslak defteri,
 //   gerekçe doğrulaması ve gövde metni burada, vscode istemeden yaşar. Nöbet
-//   (sinama/posta-kutusu.test.ts) böylece editör kabuğu kurmadan gerçek gövdeyi
-//   koşturur; kabuk yarısı (posta-kutusu.ts) yalnız çizer ve mesaj taşır.
+//   (sinama/onay-paneli.test.ts) böylece editör kabuğu kurmadan gerçek gövdeyi
+//   koşturur; kabuk yarısı (onay-paneli.ts) yalnız çizer ve mesaj taşır.
 //
 //   BETİK BURADA MEŞRUDUR, MİNİ GRAFTA DEĞİL. Mini Graf bir GÖSTERGEDİR ve
 //   betiksiz kalır (minigraf.ts · enableScripts: false). Onaylar bir KARAR
@@ -50,7 +50,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type { DosyaKumesi, KapiKaydi } from "./onay-cekirdek.ts";
-import { postaKimligi } from "./onay-cekirdek.ts";
+import { onayKimligi } from "./onay-cekirdek.ts";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ⚖️ ÜÇ KARAR — üçü de hüküm yazar
@@ -97,12 +97,12 @@ export function secenekBul(rol: string): KararSecenegi | undefined {
  * yazıp fikrini değiştirip başka bir seçeneğe basarsa aynı metni kullanır.
  */
 export function notKimligi(dosya: string, kod: string): string {
-  return `${postaKimligi({ tur: "kapı", dosya, kod })}·not`;
+  return `${onayKimligi({ tur: "kapı", dosya, kod })}·not`;
 }
 
 /** Bir karar düğmesinin kararlı kimliği — dosya yolu, kapı kodu ve rolden doğar. */
 export function kararKimligi(dosya: string, kod: string, rol: string): string {
-  return postaKimligi({ tur: "karar", dosya, kod, rol });
+  return onayKimligi({ tur: "karar", dosya, kod, rol });
 }
 
 /**
@@ -110,7 +110,7 @@ export function kararKimligi(dosya: string, kod: string, rol: string): string {
  * bir role değil: eylem karar yazmaz, yalnız kapının bağlamını panoya taşır.
  */
 export function kopyaKimligi(dosya: string, kod: string): string {
-  return `${postaKimligi({ tur: "kapı", dosya, kod })}·kopya`;
+  return `${onayKimligi({ tur: "kapı", dosya, kod })}·kopya`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -384,7 +384,7 @@ export interface GovdeGirdisi {
 
 // Kapı satırının simgesi MESAJ BALONUDUR (kapı, yanıtlanmayı bekleyen bir
 // SORUDUR) ve VIT-KIMLIK-A05 ile geometrik ailenin satır çizelgesine geçti:
-// çizim `medya/simgeler/satir-kapi.svg` kaynağında yaşar, kabuk (posta-kutusu)
+// çizim `medya/simgeler/satir-kapi.svg` kaynağında yaşar, kabuk (onay-paneli)
 // onu çizelge yolundan okur ve gövdeye METİN olarak verir. Gövde saf kalır
 // (dosya okumaz); balon currentColor konturlu olduğu için rengi CSS'teki
 // tema değişkeninden alır — dikkat sarısı anlamı aynen korunur (YUZ-4.1).
@@ -439,7 +439,7 @@ function kapiGovdesi(g: GovdeGirdisi, kayit: KapiKaydi): string {
 /** Tek bir kapı satırı ve altındaki gövde (önce kutu, sonra üç seçenek). */
 function kapiSatiri(g: GovdeGirdisi, kayit: KapiKaydi): string {
   const { dosya, kapi } = kayit;
-  const kimlik = postaKimligi({ tur: "kapı", dosya, kod: kapi.kod });
+  const kimlik = onayKimligi({ tur: "kapı", dosya, kod: kapi.kod });
   const acik = g.durum.acikMi(kimlik);
   const ipucu = g.metinler.kapiIpucu({
     kod: kapi.kod, ne: kapi.ne, olcut: kapi.olcut, dosya, satir: kapi.satir + 1,
@@ -478,7 +478,7 @@ function dosyaAdi(yol: string): string {
 
 /** Bir dosya kümesi: başlık satırı ve altındaki kapılar. */
 function dosyaSatiri(g: GovdeGirdisi, kume: DosyaKumesi): string {
-  const kimlik = postaKimligi({ tur: "dosya", dosya: kume.dosya });
+  const kimlik = onayKimligi({ tur: "dosya", dosya: kume.dosya });
   const acik = g.durum.acikMi(kimlik);
   const simge = g.simge(kume.dosya);
   const adet = kume.kayitlar.length;
@@ -509,7 +509,7 @@ function dosyaSatiri(g: GovdeGirdisi, kume: DosyaKumesi): string {
  * Tazelemede yalnız bu iç gövde gönderilir; betik onu yerine koyar ve odağı
  * geri yerleştirir.
  */
-export function postaIcGovdesi(g: GovdeGirdisi): string {
+export function onayIcGovdesi(g: GovdeGirdisi): string {
   return g.kumeler.length === 0
     ? `<p class="bos-durum">${kacisla(g.bosCumle)}</p>`
     : `<ul class="dosyalar">${g.kumeler.map((k) => dosyaSatiri(g, k)).join("")}</ul>`;
@@ -521,7 +521,7 @@ export function postaIcGovdesi(g: GovdeGirdisi): string {
  * metni ancak DURUM kaybederse düşürebilir — ve durum DOM'da değil, eklenti
  * tarafında `PanelDurumu` içinde yaşar.
  */
-export function postaGovdesiHtml(g: GovdeGirdisi): string {
+export function onayGovdesiHtml(g: GovdeGirdisi): string {
   return `<!DOCTYPE html>
 <html lang="${kacisla(g.metinler.htmlDili)}">
 <head>
@@ -531,7 +531,7 @@ export function postaGovdesiHtml(g: GovdeGirdisi): string {
 <style nonce="${g.nonce}">${GOVDE_BICEMI}</style>
 </head>
 <body>
-<div id="kok" aria-label="${kacisla(g.metinler.ariaOnaylar)}">${postaIcGovdesi(g)}</div>
+<div id="kok" aria-label="${kacisla(g.metinler.ariaOnaylar)}">${onayIcGovdesi(g)}</div>
 <script nonce="${g.nonce}">${GOVDE_BETIGI}</script>
 </body>
 </html>`;

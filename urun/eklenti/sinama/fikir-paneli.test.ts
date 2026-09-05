@@ -237,7 +237,7 @@ test("fikir paneli: İKİNCİ TARAMA KURULMAZ — kayıtlar paylaşılan ayrış
       `Fikirler paneli ikinci bir veri yolu ya da tazeleme ritmi kuruyor: ${yasak}`);
   }
   // Komşu yüzeylerden de hiçbir şey içeri almaz.
-  for (const yasak of ["onay-cekirdek", "onay-tarayici", "onay-kuyrugu", "posta-kutusu",
+  for (const yasak of ["onay-cekirdek", "onay-tarayici", "onay-kuyrugu", "onay-paneli",
     "CommentThread", "clipboard"]) {
     assert.ok(!FIKIRLER_KAYNAK.includes(yasak),
       `Fikirler paneli komşu bir yüzeye bağlanmış: ${yasak}`);

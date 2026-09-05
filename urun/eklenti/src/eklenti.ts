@@ -59,7 +59,7 @@ import { yolHaritasiKaydi, panelOlcumleri, projeKimligi, type YolHaritasiYuzu } 
 import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts";   // 🔔 YUZ-3.3 ikinci yüzey
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
-import { postaKutusuKaydi, type PostaKutusu } from "./posta-kutusu.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
+import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
@@ -144,13 +144,13 @@ let bildirimler: Bildirimler | undefined;
 //   doğruluğu 2026-08-09 tarihinde canlı görünümde ölçüldü.
 let fikirler: Fikirler | undefined;
 
-// ── 📬 VIT-POSTA-A01 DÖRDÜNCÜ YÜZEY: POSTA KUTUSU ────────────────────────────
+// ── 📬 VIT-POSTA-A01 DÖRDÜNCÜ YÜZEY: ONAYLAR PANELİ ────────────────────────────
 //   Founder onayı bekleyen kapılar. Bu yüzey motorun tanı akışından beslenmez;
 //   onay tarayıcısından beslenir ve bu yüzden yüzey defterine bağlanmaz. Kayıt
 //   noktası yine burasıdır: panel etkinleşmede TAM BİR KEZ kurulur ve onay
 //   kuyruğuna verilir; kuyruk kendi nabzıyla (kaydetme · geciktirmeli yazım
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
-let postaKutusu: PostaKutusu | undefined;
+let onayPaneli: OnayPaneli | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
 
 /**
@@ -193,7 +193,7 @@ export interface SarmalEklentiYuzu {
    * "Karara bağlanan kapı panelden düşer" cümlesi ancak buradan GERÇEKTEN
    * ölçülebilir; VS Code bir görünüşün içeriğini dışarıya vermez.
    */
-  postaKapilari(): { dosya: string; kod: string }[];
+  onayKapilari(): { dosya: string; kod: string }[];
   /**
    * 🗺️ Yol haritası panelinin bugünkü sayaçları (PRF-TA-A03 · yolharitasi.ts
    * `panelOlcumleri`). Kabul ölçütü "panelin doğrudan dosya araması ve belge
@@ -266,7 +266,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   hatirlaticilar = hatirlaticilarKaydi(context);
   fikirler = fikirlerKaydi(context);
   bildirimler = bildirimlerKaydi(context);
-  postaKutusu = postaKutusuKaydi(context);
+  onayPaneli = onayPaneliKaydi(context);
   // 📋 VIT-GRAF-A13: ağaç panellerinin satırı sağ tık menüsünden panoya iner.
   // Founder'ın cümlesi şudur: "hatırlatıcı ve bildirim metinlerini
   // kopyalayamıyorum." Ağaç görünüşlerinde metin seçilemez; kopyalama ancak bir
@@ -316,16 +316,16 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // büyüyen bir sayı gösterirdi. Kendi paneli doğunca sayı da kendi adıyla
     // konuşur oldu ve yine ikinci bir sayaç kurulmadı.
     fikir: () => fikirler?.kayitSayisi ?? 0,
-    kapı: () => postaKutusu?.kapiSayisi ?? 0,
+    kapı: () => onayPaneli?.kapiSayisi ?? 0,
   });
   context.subscriptions.push(durumCubugu);
   // 🔗 Panel ile durum çubuğu AYNI OLAYDAN beslenir. Ölçülmüş kusur (KUSUR-DURUM-ÇUBUĞU):
   // Onaylar değiştiğinde durum çubuğu tazelenmiyordu ve kullanıcı panelde
   // on dört kapı varken durum çubuğunda sıfır görebiliyordu. İKİNCİ BİR SAYAÇ,
   // TARAMA YA DA ÇİZELGE KURULMAZ: sayı yine panelin kendi defterinden türer
-  // (`postaKutusu.kapiSayisi`), yalnız tazeleme aynı ağaç olayına bağlanır.
+  // (`onayPaneli.kapiSayisi`), yalnız tazeleme aynı ağaç olayına bağlanır.
   context.subscriptions.push(sayaclariOlayaBagla(
-    (dinleyici) => postaKutusu!.onDegisti(dinleyici),
+    (dinleyici) => onayPaneli!.onDegisti(dinleyici),
     () => durumCubugu?.tazele(),
   ));
   durumCubugu.tazele();
@@ -667,7 +667,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         hatirlaticilar?.diliTazele();
         fikirler?.diliTazele();
         bildirimler?.diliTazele();
-        postaKutusu?.diliTazele();
+        onayPaneli?.diliTazele();
         yolHaritasiYuzeyi?.diliTazele();
         denetimKilidi.iste("dil");
       }
@@ -731,7 +731,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // dosyanın İÇİNDE de konuşur — altı eksen tipinin bildirim satırı tip adının
   // solunda simgesini taşır; yollar simge-cizelgesi.ts'den, dosyaya bayt yazılmaz.
   eksenDekorKaydi(context, vscode);
-  onayKuyruguKaydi(context, postaKutusu, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
+  onayKuyruguKaydi(context, onayPaneli, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
 
   // Ağaç kılavuz çizgileri (kesintisiz dikey + ├└ dallar + kapanış etiketi)
   dallarKaydi(context, dilAyariDegistiMi);
@@ -757,7 +757,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   return {
     yuzeyKayitlari: () => yuzeyDefteri.gorunenler(),
     onayOlcumleri: () => ({ ...onayYuzeyiOlcumleri(), ...tarayiciOlcumleri() }),
-    postaKapilari: () => postaKutusu?.kapiKodlari() ?? [],
+    onayKapilari: () => onayPaneli?.kapiKodlari() ?? [],
     // 🗺️ PRF-TA-A04 salt okur ölçüm kapıları: hepsi üretimin KENDİ sayaçlarını
     // ve son görüntüsünü olduğu gibi verir; hiçbiri hesap yapmaz, hiçbiri yazmaz.
     panelOlcumleri: () => panelOlcumleri(),
@@ -783,7 +783,7 @@ export function deactivate(): void {
   hatirlaticilar = undefined;
   fikirler = undefined;       // 💡 VIT-GRAF-A16: kapanmış görünüşe Fikir basılmasın
   bildirimler = undefined;
-  postaKutusu = undefined;       // kapanmış görünüme kapı yazılmasın
+  onayPaneli = undefined;       // kapanmış görünüme kapı yazılmasın
   odakDinleyicileri.length = 0;  // kapanmış görünüme odak haberi gitmesin
   yuzeyDefteri.temizle(false);   // tutamaklar bırakıldı; kapanışta çizim istenmez
   fikirDefteri.temizle(false);   // 💡 KYN-YUZ-A01: Fikir hanesi de sessizce boşalır

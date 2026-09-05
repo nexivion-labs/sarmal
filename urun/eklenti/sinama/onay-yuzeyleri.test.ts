@@ -2,7 +2,7 @@
 // onay-yuzeyleri.test.ts — 🧭 ÇİFT YÜZEY KUSURUNUN NÖBETİ (VIT-POSTA-A03)
 //
 //   Founder canlı görünümde iki paneli yan yana gördü ve şunu bildirdi:
-//   Açıklamalar paneli ile Posta Kutusu AYNI on bir kapıyı gösteriyor. Bu nöbet
+//   Açıklamalar paneli ile Onaylar paneli AYNI on bir kapıyı gösteriyor. Bu nöbet
 //   o kusurun kapandığını ve bir daha açılamayacağını ölçer.
 //
 //   ÖLÇÜM İKİ CİNSTENDİR VE İKİSİ DE AÇIKÇA SÖYLENİR.
@@ -47,13 +47,13 @@ import {
   type BeklerSilmesi,
 } from "../src/onay-cekirdek.ts";
 import {
-  GORUNUS_POSTA_KUTUSU, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
-  DENETLEYICI_ONAY, KOMUT_POSTA_KUTUSU, sayaclariOlayaBagla,
+  GORUNUS_ONAYLAR, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
+  DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU, sayaclariOlayaBagla,
 } from "../src/yuzey-cekirdek.ts";
 // Emoji nöbeti artık tek tek metin ÇAĞIRMAZ: erişimini kaynaktaki sınır
 // işaretlerinden okur ve bölgenin tamamını süpürür, dolayısıyla elle içe
 // aktarılmış bir metin listesi tutmaya gerek kalmadı.
-import { etkinKararAdi, postaKutusunuAcBasligi } from "../src/yuzey-metinleri.ts";
+import { etkinKararAdi, onayPaneliniAcBasligi } from "../src/yuzey-metinleri.ts";
 import { sarKapsamDisi } from "../src/izleyici-cekirdek.ts";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -68,7 +68,7 @@ const PAKET = JSON.parse(oku("../package.json")) as {
 const PAKET_NLS_TR = JSON.parse(oku("../package.nls.tr.json")) as Record<string, string>;
 const PAKET_NLS_EN = JSON.parse(oku("../package.nls.json")) as Record<string, string>;
 const ETKIN_KARAR_ADI = etkinKararAdi();
-const POSTA_KUTUSUNU_AC_BASLIGI = postaKutusunuAcBasligi();
+const ONAY_PANELINI_AC_BASLIGI = onayPaneliniAcBasligi();
 
 /**
  * OZK-09 ile emekliye ayrılan üç karar komutu. Kimlikleri KORUNUR — kullanıcının
@@ -325,16 +325,16 @@ test("açılışta hiçbir iş parçacığı yaratılmaz: modül sonunda koşuls
     "her bulgu için pencere açan eski işlev (kutuAc) hâlâ yaşıyor");
 });
 
-test("komut ikinci bir kuyruk YARATMAZ: yalnız Posta Kutusu görünüşüne odaklanır", () => {
+test("komut ikinci bir kuyruk YARATMAZ: yalnız Onaylar paneli görünüşüne odaklanır", () => {
   const kaynak = oku("../src/onay-kuyrugu.ts");
   assert.ok(!kaynak.includes("showQuickPick"),
     "onay yüzeyi hâlâ bir seçim listesi açıyor; ikinci bir karar arayüzü yaşıyor");
   // Ölçü ÇAĞRI ve TANIM biçimine bakar; tarihsel kaydın adı anmasına değil.
   assert.ok(!/\bkararSor\s*[(=]/.test(kaynak),
     "emekli edilen kararSor akışı hâlâ kaynakta; iki karar yolu vardır");
-  assert.ok(kaynak.includes("`${GORUNUS_POSTA_KUTUSU}.focus`"),
-    "komut Posta Kutusu görünüşüne odaklanmıyor");
-  const basi = kaynak.indexOf("const postaKutusunaOdaklan");
+  assert.ok(kaynak.includes("`${GORUNUS_ONAYLAR}.focus`"),
+    "komut Onaylar paneli görünüşüne odaklanmıyor");
+  const basi = kaynak.indexOf("const onayPanelineOdaklan");
   const sonu = kaynak.indexOf("// ⚡ ANLIK KUYRUK");
   assert.ok(basi > 0 && sonu > basi, "komut gövdesi kaynakta bulunamadı");
   const govde = kaynak.slice(basi, sonu);
@@ -362,19 +362,19 @@ test("hiçbir giriş noktası Comments karar penceresi YARATMAZ; kimlik korunur"
   // ② DENETLEYİCİ KİMLİĞİ KORUNUR: kullanıcının menü koşulları ona bağlıdır.
   assert.ok(kaynak.includes("createCommentController(DENETLEYICI_ONAY, etkinKararAdi())"),
     "denetleyici kimliği kaldırılmış; kullanıcının Açıklamalar menü koşulları kırılır");
-  // ③ Kod merceği artık Posta Kutusunu açar ve doğru kapıyı gösterir.
+  // ③ Kod merceği artık Onaylar panelini açar ve doğru kapıyı gösterir.
   const b = kaynak.indexOf("const onayKarar = async");
   const s = kaynak.indexOf("* 📬 PANEL İÇİ KARAR");
   assert.ok(b > 0 && s > b, "onayKarar gövdesi kaynakta bulunamadı");
   const mercek = kaynak.slice(b, s);
-  assert.ok(mercek.includes("postaKutusunaOdaklan()") && mercek.includes("gosterVeAc("),
-    "kod merceği Posta Kutusunda doğru kapıyı göstermiyor");
+  assert.ok(mercek.includes("onayPanelineOdaklan()") && mercek.includes("gosterVeAc("),
+    "kod merceği Onaylar panelinde doğru kapıyı göstermiyor");
   assert.ok(!/showQuickPick|kaydiIsle\(/.test(mercek),
     "kod merceği kendi karar arayüzünü açıyor ya da doğrudan yazıyor");
   // ④ "Kapıya git" YALNIZ kaynağı açar.
-  const kb = kaynak.indexOf("const postaKapisiAc = async");
+  const kb = kaynak.indexOf("const onayKapisiAc = async");
   const ks = kaynak.indexOf("baglam.subscriptions.push(");
-  assert.ok(kb > 0 && ks > kb, "postaKapisiAc gövdesi kaynakta bulunamadı");
+  assert.ok(kb > 0 && ks > kb, "onayKapisiAc gövdesi kaynakta bulunamadı");
   const git = kaynak.slice(kb, ks);
   assert.ok(git.includes("kapiyaGit("), "kapıya git satırı kaynağı açmıyor");
   assert.ok(!/showQuickPick|kaydiIsle\(/.test(git),
@@ -382,10 +382,10 @@ test("hiçbir giriş noktası Comments karar penceresi YARATMAZ; kimlik korunur"
   // ⑤ Panel yine AYNI İKİ KOMUTA bağlıdır ve kendi karar arayüzünü kurmaz.
   //    Yüzey ağaçtan panel içi karar yüzeyine geçti, fakat hüküm yazan el
   //    değişmedi: panel yalnız komutu çağırır, hükmü `kararIsle` yazar.
-  const panel = oku("../src/posta-kutusu.ts");
-  assert.ok(panel.includes('"sarmal.postaKapisiAc"'),
+  const panel = oku("../src/onay-paneli.ts");
+  assert.ok(panel.includes('"sarmal.onayKapisiAc"'),
     "panel kapı satırını Adıma götüren komuta bağlı değil");
-  assert.ok(panel.includes('"sarmal.postaKararVer"'),
+  assert.ok(panel.includes('"sarmal.onayKararVer"'),
     "panel kararı tek yazıcı komutuna indirmiyor");
   assert.ok(!panel.includes("showQuickPick") && !panel.includes("kaydiIsle("),
     "panel kendi karar arayüzünü açıyor ya da doğrudan yazıyor");
@@ -449,17 +449,17 @@ test("ana tanı hattı kapı TANIMAZ: yalnız ortak ağacı taşır", () => {
 // ── ⑤ KALEM 7 — KİMLİKLER DEĞİŞMEZ, YALNIZ ADLAR ROLÜ ANLATIR ───────────────
 
 test("kimlikler sabittir: görünüş, komut ve denetleyici kimliği birebir korunur", () => {
-  assert.equal(GORUNUS_POSTA_KUTUSU, "sarmalPostaKutusu",
+  assert.equal(GORUNUS_ONAYLAR, "sarmalOnaylar",
     "görünüş kimliği değişti; kullanıcının panel yerleşimi sıfırlanır");
-  assert.equal(KOMUT_POSTA_KUTUSU, "sarmal.onayKuyrugu",
+  assert.equal(KOMUT_ONAY_KUYRUGU, "sarmal.onayKuyrugu",
     "komut kimliği değişti; kullanıcının kısayolu kopar");
   assert.equal(DENETLEYICI_ONAY, "sarmal-onay",
     "denetleyici kimliği değişti; Açıklamalar menü koşulları düğmeleri bulamaz");
 
   const gorunusler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  assert.ok(gorunusler.includes(GORUNUS_POSTA_KUTUSU),
+  assert.ok(gorunusler.includes(GORUNUS_ONAYLAR),
     "paket bildirimindeki görünüş kimliği sabitten ayrıştı");
-  const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_POSTA_KUTUSU);
+  const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_ONAY_KUYRUGU);
   assert.ok(komut, "paket bildiriminde komut kimliği yok");
 
   const menuler = PAKET.contributes.menus["comments/commentThread/context"]
@@ -472,9 +472,9 @@ test("kimlikler sabittir: görünüş, komut ve denetleyici kimliği birebir kor
 });
 
 test("kullanıcıya görünen adlar rolü anlatır: hiçbiri ikinci bir KUYRUK adı taşımaz", () => {
-  const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_POSTA_KUTUSU)!;
+  const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_ONAY_KUYRUGU)!;
   const komutAnahtari = /^%([^%]+)%$/.exec(komut.title)?.[1];
-  assert.equal(komutAnahtari ? PAKET_NLS_TR[komutAnahtari] : komut.title, POSTA_KUTUSUNU_AC_BASLIGI,
+  assert.equal(komutAnahtari ? PAKET_NLS_TR[komutAnahtari] : komut.title, ONAY_PANELINI_AC_BASLIGI,
     "komutun görünen adı katalogdan gelmiyor");
   assert.ok(!/kuyru/i.test(komut.title),
     `komut hâlâ kendini bir kuyruk gibi adlandırıyor: ${komut.title}`);
@@ -530,7 +530,7 @@ test("emekli karar komutları KOMUT PALETİNDE görünmez: ikinci bir karar giri
     assert.equal(girdi!.when, "false",
       `${kimlik} paletten gizlenmemiş; koşulu: ${girdi!.when}`);
   }
-  const kuyrukGirdisi = palet.find((m) => m.command === KOMUT_POSTA_KUTUSU);
+  const kuyrukGirdisi = palet.find((m) => m.command === KOMUT_ONAY_KUYRUGU);
   assert.equal(kuyrukGirdisi, undefined,
     "Onaylar panelini açan komut da paletten gizlenmiş; kullanıcının TEK kısayolu kayboldu");
   const menuler = PAKET.contributes.menus["comments/commentThread/context"]
@@ -626,7 +626,7 @@ test("emoji muafiyeti TEKTİR ve CANLIDIR: ölü muafiyet kaynakta duramaz", () 
 test("onay modüllerine gömülü emoji yoktur: tek istisna nabız süsünün sönük yarısıdır", () => {
   const modul = [
     "onay-kuyrugu.ts", "onay-cekirdek.ts", "onay-tarayici.ts",
-    "posta-govde.ts", "posta-kutusu.ts",
+    "onay-govde.ts", "onay-paneli.ts",
   ];
   const bulunan: string[] = [];
   for (const ad of modul) {
@@ -744,7 +744,7 @@ test("tek yazıcı korunur: onay: metnini üreten tek yer çekirdektir", () => {
 test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
   for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts"]) {
     const kaynak = oku(dosya);
-    for (const yasak of ["onay-cekirdek", "onay-tarayici", "onay-kuyrugu", "posta-kutusu",
+    for (const yasak of ["onay-cekirdek", "onay-tarayici", "onay-kuyrugu", "onay-paneli",
       "createCommentController", "CommentThread"]) {
       assert.ok(!kaynak.includes(yasak),
         `${dosya} onay yüzeyine bağlanmış: ${yasak}`);
@@ -832,7 +832,7 @@ test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
   // tek kaynağından okur; kayıt satırı kendi kodunu söyler ve Hatırlatıcılar
   // hanesinde işaret kayıt türüne göre ayrışır; her satır sağ tık menüsünden
   // panoya inebilir. Onay yüzeyine hiçbir bağ kurulmadı: iki panel hâlâ
-  // `onay-cekirdek` · `onay-tarayici` · `onay-kuyrugu` · `posta-kutusu`
+  // `onay-cekirdek` · `onay-tarayici` · `onay-kuyrugu` · `onay-paneli`
   // adlarının hiçbirini içermez ve bunu yukarıdaki nöbet ayrıca ölçer. Panel
   // kimlikleri, yenileme ritmi ve sayaç türetimi DEĞİŞMEDİ.
   // ÖZET ONUNCU KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A15 (2026-08-08).
@@ -919,7 +919,7 @@ test("durum çubuğu Sarmal'ın kendi yüzeylerini gösterir ve her sayı kaynak
   // ikinci bir kavramın sayısını eklemek kullanıcıya açıklamasız büyüyen bir
   // sayı gösterirdi. Hane kendi paneline taşınınca sayı da kendi adıyla
   // konuşabilir hâle geldi ve yine ikinci bir sayaç kurulmadı.
-  for (const beklenen of ["gözlemler", "hatırlatıcılar", "fikirler", "postaKutusu"]) {
+  for (const beklenen of ["gözlemler", "hatırlatıcılar", "fikirler", "onayPaneli"]) {
     assert.ok(yuzeyler.has(beklenen as never), `durum çubuğunda "${beklenen}" yüzeyi yok`);
   }
   assert.ok(!yuzeyler.has("sorunlar" as never),
@@ -1648,12 +1648,12 @@ test("SAYAÇ KÖPRÜSÜ: üretim panel olayını durum çubuğuna GERÇEKTEN ba�
   const kaynak = oku("../src/eklenti.ts");
   assert.ok(/sayaclariOlayaBagla\(/.test(kaynak),
     "panel olayı ile durum çubuğu arasında abonelik yok; panel on dört derken durum çubuğu sıfır kalır");
-  assert.ok(/postaKutusu!\.onDegisti\(dinleyici\)/.test(kaynak),
-    "köprü Posta Kutusunun değişim olayına bağlanmıyor");
+  assert.ok(/onayPaneli!\.onDegisti\(dinleyici\)/.test(kaynak),
+    "köprü Onaylar panelinin değişim olayına bağlanmıyor");
   assert.ok(/durumCubugu\?\.tazele\(\)/.test(kaynak),
     "köprü durum çubuğunu tazelemiyor");
   // İKİNCİ SAYAÇ YASAĞI: sayı yine panelin kendi defterinden türer.
-  assert.ok(/kapı: \(\) => postaKutusu\?\.kapiSayisi \?\? 0/.test(kaynak),
+  assert.ok(/kapı: \(\) => onayPaneli\?\.kapiSayisi \?\? 0/.test(kaynak),
     "durum çubuğu kapı sayısını panelin defterinden türetmiyor; ikinci bir sayaç doğmuş");
 });
 
@@ -1789,7 +1789,7 @@ test("ÖLÇÜM: üretim sayaçları SABİT ATAMAZ, saf defterden okur", () => {
 test("YÜZEY YASAĞI: onay yüzeyinin HİÇBİR dosyası görünür karar nesnesi yaratmaz", () => {
   const dosyalar = [
     "../src/onay-kuyrugu.ts", "../src/onay-cekirdek.ts", "../src/onay-tarayici.ts",
-    "../src/posta-kutusu.ts", "../src/posta-govde.ts",
+    "../src/onay-paneli.ts", "../src/onay-govde.ts",
   ];
   const suclular = dosyalar.filter((d) => /createCommentThread\s*\(/.test(oku(d)));
   assert.deepEqual(suclular, [] as string[],
