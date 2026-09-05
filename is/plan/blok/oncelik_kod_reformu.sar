@@ -43,7 +43,7 @@ Blok( kod: BLK-RFM, mevsim: FAZ-2026-EYLUL,
     AltKatman( kod: ALT-RFM-YASA, ad: "yasa", departman: planlama,
                ne: "kanon madde metinlerinin yazımı ve Founder tasdiki" ) {
 
-      Adım( kod: RFM-KANON-A01, durum: beklemede, öncelik: p1, onayBekler: founder,
+      Adım( kod: RFM-KANON-A01, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p1,
         bağımlı: [],
         referans: [ ORK-3.4, ORK-8 ],
         rapor: "SIRALAMA HÜKMÜ — Founder 2026-08-18: Adımın raya alınması tasdik edildi ve koşum sırası vitrin üçlüsü ile site odak oturumunun arkasına konuldu, çünkü v1 kritik yoluna üçüncü bir cephe açmamak seçildi. Onay alanı bilinçli olarak yazılmamıştır, çünkü bu kapının asıl tasdiki yazılacak madde metnine verilecektir ve kapıyı şimdi kapatmak o tasdiki Onaylar panelinden düşürür. Founder ayrıca HTR-TASIYICI-MUTABAKAT-KORLUGU hatırlatıcısının bu Adıma bağlanmasına hükmetti, çünkü o hatırlatıcının tetikleyicisi kanona bir sonraki madde eklenmesini bekler ve bu Adım o maddenin kendisidir; madde yazılırken taşıyıcı alan ile belge metninin eşitliğini ölçen bekçinin yeri sorusu birlikte ele alınır.",
@@ -63,7 +63,7 @@ Blok( kod: BLK-RFM, mevsim: FAZ-2026-EYLUL,
         sınır: "Bu Adım yalnız kanon metnine dokunur; şema, sözlük, göç ve motor işi kendi Adımlarındadır. Öncelik beyanının değeri zorlanmaz — bir işin önemi insan hükmüdür ve makine onu uyduramaz; bu ilke eski maddeden aynen taşınır."
       }
 
-      Adım( kod: RFM-KANON-A02, durum: beklemede, öncelik: p1, onayBekler: founder,
+      Adım( kod: RFM-KANON-A02, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p1,
         bağımlı: [],
         referans: [ DIL-5.1, DIL-5.2 ],
         rapor: "SIRALAMA HÜKMÜ — Founder 2026-08-18: Adımın raya alınması tasdik edildi ve koşum sırası RFM-KANON-A01 ile aynı hükme tabidir, yani vitrin üçlüsü ile site odak oturumunun arkasındadır. Onay alanı bilinçli olarak yazılmamıştır, çünkü bu kapının asıl tasdiki yazılacak madde metnine verilecektir ve kapıyı şimdi kapatmak o tasdiki Onaylar panelinden düşürür.",
@@ -140,6 +140,22 @@ Blok( kod: BLK-RFM, mevsim: FAZ-2026-EYLUL,
           "`sarmal denetle-proje` iki varlıkta sıfır hata ve sıfır uyarı verir; süitler yeşildir."
         ]
         sınır: "Araç öneri verir, dayatmaz; kodu kaynağa yazan el insanın ya da üretici ajanın elidir ve araç hiçbir dosyayı kendiliğinden değiştirmez."
+      }
+
+      Adım( kod: RFM-BLOK-A01, ad: "Blok Sırasının Zorlanması", durum: beklemede, öncelik: p1,
+        bağımlı: [ RFM-KANON-A01, RFM-MOTOR-A01 ],
+        referans: [ ORK-3.5, HTR-BLOK-SIRASI-UYUMU ],
+        ne: "🪜 ORK-3.5 hükmünün uygulanması: Blok bağımlılığı kenar olarak ilan edilir, öncülü açık bir Blokun Adımının geliştirmeye alınması ile düşük kademeli Blokun yüksek kademelinin önüne geçmesi tanıyla bildirilir ve oturum açılış ritüeline Blok seçimi basamağı girer. Bugün Bloklar arasında hiçbir yürütme kenarı yoktur ve sıra yalnız Adım düzeyinde koşar; üç ayak HTR-BLOK-SIRASI-UYUMU kaydındadır." ) {
+        görev: [
+          "Blok bağımlılığının Adım kenarlarından türetilip türetilmeyeceğini ya da ayrı yazılıp yazılmayacağını ölçerek kararlaştır ve tip sicilinde ilan et; bugünkü yürütme kenarlarının uçları yalnız Adımdır.",
+          "İki tanıyı doğur: öncülü açık Blokun Adımı geliştirmeye alındığında ve düşük önemli Blok yüksek önemlinin önüne geçtiğinde; ORK-3.5 maddesinin zorlama paragrafını tazele.",
+          "Oturum açılış ritüeline Blok seçimi basamağını yaz; seçimin gerekçesi Blokun durum kaydına iner."
+        ]
+        kabul: [
+          "Blok sırası graftan okunur; iki tanı fikstürde kırmızı yanar ve canlı ağaçta sessizdir.",
+          "`sarmal denetle-proje` iki varlıkta sıfır hata ve sıfır uyarı verir; süitler yeşildir."
+        ]
+        sınır: "Adım düzeyindeki sıra motoru değişmez; Blok sırası onun üstüne eklenir. Blok durum kaydı henüz yoksa seçim gerekçesi ana kayda yazılır."
       }
     }
   }

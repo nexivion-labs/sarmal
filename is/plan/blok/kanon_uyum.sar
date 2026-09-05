@@ -1,0 +1,160 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// plan/blok/kanon_uyum.sar — 🧩 Kanon Uyum Bloku
+//
+//   Köken: Founder'ın 2026-08-30 tarihli dört ortak çalışma kuralı (çatı H12 ·
+//   DIL-1.6 · MIM-3.3 · YUZ-3.5 · ORK-3.5 · ORK-9), 2026-09-02 tarihli koşu hükmü
+//   (DIL-1.7) ve aynı günlerin canlı pencere gözlemleri. Kurallar kanona indiği
+//   gün bilinçle uygulanmamış, hatırlatıcı olarak bekletilmiştir; 2026-09-05
+//   tarihli hatırlatıcı triyajı bekleyen uygulama borcunu bu Bloka indirmiştir.
+//   Her Adım kendi hatırlatıcısına referans verir; ayrıntılı ölçüm ve iş ayakları
+//   o kayıtlarda yaşar ve burada yinelenmez. Blok Lansman Mevsimine bağlıdır ve
+//   Adımları mağaza yüklemesinin arkasına dizilmiştir; mevsim değişecekse bağ tek
+//   yerde, yani bu dosyadaki `mevsim` alanında değişir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+-->|
+  # 🧩 Kanon Uyum Bloku
+
+  ## Amaç
+  Kanona 2026-08-30 ile 2026-09-02 arasında inen hükümlerin bugünkü ağaca
+  uygulanmasıdır. Hükümler kanona indiği gün bilinçle uygulanmamıştır, çünkü uyum
+  iki yüzden çok kademeyi, iki yüz iki koşu kaydını, şemayı, şablonları, doğuş
+  paketini ve oturum ritüellerini kapsayan bir iştir ve yarısı yapılmış bir uyum
+  bugünkünden daha tutarsız bir ağaç bırakır. Bu Blok o uyumu bağımlılık sırasıyla
+  ve tek mevsimde kapatır.
+
+  ## Kapsam
+  Kademe adları (DIL-1.6), Blok durum kayıtları (MIM-3.3), Durumlar yüzeyi
+  (YUZ-3.5), koşu alanının Koşum kaydına göçü ile kanıtsız kapanış nöbeti
+  (DIL-1.7), teslim halkası (ORK-9) ve Blokun Fazının kendi dosyasında görünmesi.
+  Blok sırasının zorlanması (ORK-3.5) kapsam dışıdır ve öncelik reformu Blokunda
+  yaşar, çünkü iki eksenli öncelik modeline bağlıdır.
+
+  ## Sonuç
+  Altı hükmün her biri motor tarafından zorlanır ya da yüzeyde görünür, kanon
+  maddelerinin zorlama paragrafları tanı ilanıyla tazelenmiştir ve iki varlığın
+  denetimi sıfır hata ile sıfır uyarıda kalır. Bloka bağlı hatırlatıcıların tamamı
+  kapanmıştır.
+|<--
+Blok( kod: BLK-UYUM, ad: "Kanon Uyum Bloku", mevsim: FAZ-2026-EYLUL,
+      ne: "🧩 2026-08-30 ile 2026-09-02 arasında kanona inen hükümlerin bugünkü ağaca uygulanması; yayın sonrasına bilinçle bırakılmış uyum borcu" ) {
+
+  Katman( kod: KAT-UYM-KAYNAK, ad: "Kaynak ve Motor", kullanır: TEK-TYPESCRIPT,
+          ne: "şema, plan ağacı, durum kayıtları ve zorlama tanıları" ) {
+
+    AltKatman( kod: ALT-UYM-AGAC, ad: "Ağaç Uyumu", departman: kodlama,
+               ne: "kademe adları, durum kayıtları, koşu göçü ve teslim halkası" ) {
+
+      Adım( kod: UYM-AD-A01, ad: "Kademe Adlarının Hükme Uyması", durum: beklemede, öncelik: p1,
+        bağımlı: [ EKL-F6-A01 ],
+        referans: [ DIL-1.6, HTR-KADEME-ADLARI-UYUMU ],
+        ne: "🏷️ DIL-1.6 hükmünün ağaca uygulanması: iki yüz beş kademe ad kazanır ya da adı yazım kuralına çekilir; Blok şemasına ad alanı zorunlu olarak girer; şablonlar, doğuş paketi ve öğretim kartı hükme uyar; adsız kademe ile ad yazımı tanıları doğar ve maddenin zorlama paragrafı tazelenir. Ölçüm ve dört ayak HTR-KADEME-ADLARI-UYUMU kaydındadır." ) {
+        görev: [
+          "Sınıflama kaydında Blok tipine ad alanını zorunlu ekle ve türetilmiş yüzleri aynı turda tazele.",
+          "Blok şablonunu, doğuş paketinin ürettiği ilk planı ve plan ailesinin öğretim kartını ad alanı ile yazım kuralına uydur.",
+          "Canlı ağaçtaki on bir adsız kademeye ad ver ve yüz doksan dört kademenin adını Türkçe yazım kuralına çek; on dört sınama dosyasındaki Blok fikstürlerini aynı turda düzelt.",
+          "Adsız kademe ile ad yazımı tanılarını sicile, üreticiye ve iki dilli metne birlikte yaz; DIL-1.6 maddesinin zorlama paragrafını tanı kimlikleriyle tazele."
+        ]
+        kabul: [
+          "Ağaçta adsız Faz, Blok, Katman ya da AltKatman kalmaz; iki tanı fikstürde kırmızı yanar ve canlı ağaçta sessizdir.",
+          "Doğuş paketinin ürettiği plan dört kademeyi de hükme uygun adla yazar ve bu bir nöbetle korunur.",
+          "`sarmal denetle-proje` iki varlıkta sıfır hata ve sıfır uyarı verir; çekirdek ve eklenti süitleri yeşildir."
+        ]
+        sınır: "Adlar değişir, kodlar değişmez; kapanmış Adımların metnine ve tarihine dokunulmaz."
+      }
+
+      Adım( kod: UYM-DRM-A01, ad: "Blok Durum Kayıtlarının Doğması", durum: beklemede, öncelik: p1,
+        bağımlı: [ EKL-F6-A01 ],
+        referans: [ MIM-3.3, HTR-BLOK-DURUM-KAYITLARI ],
+        ne: "🗂️ MIM-3.3 hükmünün uygulanması: is/durum/blok_durum rafı anadizine ilan edilir, bin yüz seksen altı satırlık ana kayıt Blok kayıtlarına ayrıştırılır, ana kayıt her Blok kaydına referans kenarıyla bağlanır, kaydı olmayan Blok ile bağlanmamış kayıt tanıları doğar ve doğuş paketi ile oturum ritüelleri Blok kaydını öğrenir. Beş ayak HTR-BLOK-DURUM-KAYITLARI kaydındadır." ) {
+        görev: [
+          "Rafı önce anadizine ilan et; ilansız dizinde doğan gövde ilansız gövde tanısına düşer.",
+          "Ana kaydı okuyarak hangi paragrafın hangi Bloka ait olduğunu kararlaştır ve Blok kayıtlarını aç; hiçbir cümle çöpe gitmez.",
+          "Ana kayıttan her Blok kaydına referans kenarını yaz ve kilitler listesindeki tek durum kaynağı kilidini düşür.",
+          "Kaydı olmayan Blok ile ana kayda bağlanmamış kayıt tanılarını doğur ve MIM-3.3 maddesinin zorlama paragrafını tazele; doğuş paketi ile açılış ve kapanış ritüellerine Blok kaydını öğret."
+        ]
+        kabul: [
+          "Durum taşıyan her Blokun kendi kaydı vardır ve ana kayıt hepsine referans kenarıyla bağlıdır; motor bu evreni graftan okur.",
+          "İki yeni tanı fikstürde kırmızı yanar ve canlı ağaçta sessizdir.",
+          "`sarmal denetle-proje` sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Kayıtların içeriği yeniden yazılmaz, yalnız taşınır ve bağlanır; tarih tahrif edilmez."
+      }
+
+      Adım( kod: UYM-KOSU-A01, ad: "Koşu Alanının Koşum Kaydına Göçü", durum: beklemede, öncelik: p1,
+        bağımlı: [ UYM-DRM-A01 ],
+        referans: [ DIL-1.7, HTR-KOSU-GUNLUGU-GOCU, HTR-KANITSIZ-KAPANIS-NOBETSIZ ],
+        ne: "📜 DIL-1.7 hükmünün uygulanması: iki yüz iki serbest dizge koşu Koşum kaydına dönüştürülür, uzun koşuların cümleleri kanıt, blokaj ve ders diye üçe ayrılıp git'e, Blok kaydına ve Bellek düğümlerine iner; zorlama tanıları ile işleme kancasının Adım satırı şartı yazılır; ŞEF koniye yalnız son Koşum mührünü alır. Aynı turda kanıtsız kapanış nöbeti kurulur: yol haritası kutucuğu bir Adımı tamamlandı yaparken Koşum kaydı yoksa kaydı ister. Ölçümler HTR-KOSU-GUNLUGU-GOCU ve HTR-KANITSIZ-KAPANIS-NOBETSIZ kayıtlarındadır." ) {
+        görev: [
+          "İki yüz iki koşuyu DIL-1.7 biçiminde Koşum kaydına dönüştür; yirmi üç uzun koşunun cümlelerini üçe ayır ve her sınıfı kendi evine indir.",
+          "Serbest dizge koşu, önceki kayıt zinciri, özet uzunluğu ve tamamlanmış Adımın koşu kaydının değişmesi için tanıları doğur; işleme kancasına Adım satırı şartını yaz; DIL-1.7 maddesinin zorlama paragrafını tazele.",
+          "ŞEF konisini son Koşum özeti, kanıt işaretçisi ve ilgili Blok devriyle sınırla; tarihçe koniye girmez.",
+          "Yol haritası kutucuğunun kapanış anına Koşum kaydı denetimini koy: kayıt yoksa kullanıcı uyarılır ya da kayıt istenir; yüz otuz altı tarihî kapanış doldurulmaz, kanıt disiplininden önceki kapanışlar olarak beyan edilir."
+        ]
+        kabul: [
+          "Planda serbest dizge koşu sıfırdır ve tanı fikstürde kırmızı yanar.",
+          "Panelden Koşum kaydı olmadan kapatılan Adım fikstürde uyarı üretir ve kapanış kanıt ister; bu mutasyonla kanıtlanmıştır.",
+          "ŞEF çıktısı tarihçe taşımaz; `sarmal denetle-proje` sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Tarihî kapanışlara geriye dönük koşu yazılmaz; tanı yalnız ileriye bakar."
+      }
+
+      Adım( kod: UYM-HALKA-A01, ad: "Teslim Halkasının Yazılı Düzene İnmesi", durum: beklemede, öncelik: p1,
+        bağımlı: [ EKL-F6-A01 ], onayBekler: founder,
+        referans: [ ORK-9, HTR-BLOK-TESLIM-HALKASI-UYUMU ],
+        ne: "🔁 ORK-9 hükmünün uygulanması: sürüm yönetişimi kaynağının dal modeli ile işleme tanesi bölümleri Faz dalı, Blok isteği ve Adım işlemesine göre yeniden yazılır; katkı rehberinin iki dili eşlenir; kanca yuvasına Adım satırı ile dal adı denetimi girer. Halkanın beş alt kalemi bu Adımın açılışında Founder ile kararlaştırılır ve maddeye iner; kalemler HTR-BLOK-TESLIM-HALKASI-UYUMU kaydındadır." ) {
+        görev: [
+          "Beş alt kalemi Founder ile kararlaştır: dal adının biçimi, işleme başlığının biçimi, birleştirme isteğinin gövde sözleşmesi, oturum sonu ediminin basamakları ve birden çok oturuma yayılan Adımın gövdesi; kararları ORK-9 maddesine indir.",
+          "Sürüm yönetişimi kaynağının dal modeli ile işleme tanesi bölümlerini ve katkı rehberinin Türkçe ile İngilizce yüzlerini hükme göre yeniden yaz.",
+          "Kanca yuvasına işleme başlığının Adımı göstermesi ve dal adının denetimi şartını yaz."
+        ]
+        kabul: [
+          "Sürüm yönetişimi kaynağı, katkı rehberi ve ORK-9 maddesi aynı halkayı anlatır; çelişki nöbetle ölçülmüştür.",
+          "Kanca Adım satırı taşımayan işlemeyi ve biçim dışı dal adını reddeder; bu mutasyonla kanıtlanmıştır.",
+          "Founder beş kalemin kararını Onaylar panelinden tasdik etmiştir; `sarmal denetle-proje` sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Birleştirme isteği ile gönderim kademeleri uzak depo gerektirir ve uzak doğduğu gün yürürlüğe girer (çatı H13); o güne kadar dalın ana dala alınması Founder onayıyla yapılır."
+      }
+    }
+  }
+
+  Katman( kod: KAT-UYM-YUZEY, ad: "Eklenti Yüzeyi", kullanır: TAKIM-EKLENTI,
+          ne: "hükümlerin editörde görünen karşılıkları" ) {
+
+    AltKatman( kod: ALT-UYM-PANEL, ad: "Panel ve Mercek", departman: kodlama,
+               ne: "Durumlar yüzeyi ve Blokun Fazının görünmesi" ) {
+
+      Adım( kod: UYM-DRM-A02, ad: "Durumlar Yüzeyi", durum: beklemede, öncelik: p2,
+        bağımlı: [ UYM-DRM-A01 ], onayBekler: founder,
+        referans: [ YUZ-3.5, HTR-DURUM-YUZEYI ],
+        ne: "🪟 YUZ-3.5 hükmünün uygulanması: durum kayıtları Hatırlatıcılar, Fikirler ve Bildirimler ile aynı kademede Durumlar adıyla kendi yüzeyini kazanır; yüzey her projenin ana kaydını ve ona referans kenarıyla bağlı Blok kayıtlarını proje kökü altında gruplar, her satırdan kaynağına gidilir ve yüzey kaydı düzenlemez." ) {
+        görev: [
+          "Eklentinin görünüm sözleşmesine Durumlar görünümünü ekle ve görünümü turun yayınından besle; panelin veri yolu sınırını koru.",
+          "Ağacı proje kökü altında ana kayıt ve Blok kayıtları olarak kur; hiçbir satır kaynaktan bağımsız üretilmez ve tıklama kaynağa gider.",
+          "Kapsam süzgecini komşu panellerle aynı tek kaynaktan al."
+        ]
+        kabul: [
+          "Durumlar paneli çalışma alanındaki her projenin ana ve Blok kayıtlarını gruplayarak gösterir; Founder canlı pencerede gözle doğrular.",
+          "Panel kaydı düzenleyemez ve bu bir nöbetle korunur.",
+          "Eklenti süiti yeşildir."
+        ]
+        sınır: "Yüzey yalnız gösterir; kayıt yazımı ve oturum ritüelleri bu Adımın dışındadır."
+      }
+
+      Adım( kod: UYM-FAZ-A01, ad: "Blokun Fazının Dosyasında Görünmesi", durum: beklemede, öncelik: p2,
+        bağımlı: [ EKL-F6-A01 ], onayBekler: founder,
+        referans: [ MIM-1.3, HTR-BLOKUN-FAZI-DOSYADA-GORUNMUYOR ],
+        ne: "🌀 Founder'ın 2026-08-30 hükmünün uygulanması: bir Blok çağır kenarıyla çağrılsa dahi bağlı olduğu Faz o dosyada görünür. Bağın yeri değişmez; mevsim grafın kendisinden okunarak yüzeyde gösterilir. Hangi yüzeyin taşıyacağı, yani kırıntı yolu, satır merceği, gezin kartı ya da Yol Haritası başlığı, ölçülerek kararlaştırılır." ) {
+        görev: [
+          "Aday dört yüzeyi ölç ve hangisinin ya da hangilerinin mevsimi taşıyacağını gerekçesiyle kararlaştır; kaynağa hiçbir satır eklenmez.",
+          "Seçilen yüzeyde mevsimi graftan okuyarak göster ve nöbetle koru: çağır kenarıyla bağlı bir Blok dosyası açıldığında mevsim adı görünür."
+        ]
+        kabul: [
+          "Yalnız çağır kenarıyla bağlı bir Blok dosyası açıldığında mevsimi görünür; Founder canlı pencerede gözle doğrular.",
+          "Kaynak dosyalara mevsim satırı eklenmemiştir ve çift mevsim kaydı uyarısı doğmamıştır."
+        ]
+        sınır: "Bağın yeri ve kanonun tek bağ tek yer hükmü değişmez; gerekirse kanonun yüzey maddesi tazelenir, mimari maddesi tazelenmez."
+      }
+    }
+  }
+}

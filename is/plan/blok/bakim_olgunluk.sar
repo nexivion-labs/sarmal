@@ -612,6 +612,22 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         kabul: [ "Önizleme kaynağında kanondan bağımsız yazılmış renk değeri kalmaz ya da kalanlar palet drift nöbetiyle kanona eşitlenir; nöbet mutasyonla kanıtlanmıştır." ]
         sınır: "Gömülü kanon üreteci ve palet drift nöbeti değişmez."
       }
+
+      Adım( kod: BKM-DNT-A15, ad: "Doğuş Paketinin Yok Sayma İstisnası", durum: beklemede, öncelik: p1, bağımlı: [],
+        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
+        ne: "🛡️ Doğuş paketinin ürettiği köke `!*.sar` istisnası taşıyan bir `.gitignore` yazması ya da var olan dosyaya istisnayı eklemesi; yönerge ikizi nöbetinin küresel yok sayma bilgisinin `.sar` desenini de kapsaması. 2026-09-05 ölçümü: küresel yok sayma kuralı `*.sar` deseni taşıyan bir makinede doğan projede on yedi `.sar` dosyasının sıfırı izleniyordu ve ilk dış kullanıcı bunu proje hafızasının tek diskte kalması olarak bildirdi." ) {
+        görev: [
+          "Doğuş paketine `.gitignore` üretimini ekle: dosya yoksa `!*.sar` istisnasıyla yazılır, varsa istisna eksikse eklenir ve hiçbir mevcut satır silinmez.",
+          "Yönerge ikizi nöbetinin kurulum tuzağı notunu ve ölçümünü `.sar` desenini kapsayacak biçimde genişlet.",
+          "Nöbet kur: küresel yok sayma kuralı `*.sar` içeren bir fikstür deposunda doğan proje `git check-ignore` ile ölçüldüğünde hiçbir `.sar` yok sayılmaz."
+        ]
+        kabul: [
+          "Doğuş paketiyle doğan projede `.sar` dosyaları küresel yok sayma kuralına rağmen izlenir; bu fikstürle kanıtlanmıştır.",
+          "Var olan `.gitignore` dosyasının satırları korunur ve istisna tek kez yazılır.",
+          "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Kullanıcının küresel yok sayma dosyasına dokunulmaz; istisna yalnız projenin kendi dosyasında yaşar."
+      }
     }
 
     AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "nöbet onarımları",
@@ -674,6 +690,54 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         kabul: [ "Nöbet kanon ile ilan arasındaki her yüzey ayrışmasını kimlik, madde ve üretici adıyla bildirir; bir üreticinin panel yüzeyi ilandan düşürüldüğünde ve kanon o yüzeyi istiyorsa süit kırmızıya döner, bu mutasyonla kanıtlanmıştır." ]
         sınır: "Nöbet karar vermez; ayrışmayı bildirir. Hangi tarafın değişeceği BKM-DNT-A01'in hükmüdür."
       }
+
+      Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: beklemede, öncelik: p1, bağımlı: [],
+        referans: [ YAS-4.1, HTR-SURUM-DAMGASI-TUZAGI, HTR-PAKETLEME-ATIF-NOBETINI-KIRIYOR ],
+        ne: "📦 Paketlemenin iki tuzağının tek turda kapatılması. Birincisi kurulu paketin bayatlığıdır: depoda taze paket üretilse bile editörde eski gövde koşmayı sürdürür ve panel bunu söylemez; Founder 2026-08-28 tarihinde sahte bir tanı uyarısını gerçek sanıp tur harcamıştır. İkincisi paketlemenin lisans atfı nöbetini kırmasıdır: küçültme kaynak yol izlerini sildiği için paketlemenin ardından koşan süit kırmızıya döner ve nöbet kullanıcıya giden gövdeyi hiç ölçmez; kusur 2026-08-31 tarihinde işleme kapısını fiilen bloke etmiştir. Mekanizmalar iki hatırlatıcıda kaynak satırıyla ölçülmüştür." ) {
+        görev: [
+          "Geliştirme çalışma alanında eklenti açılışında kurulu paketin sürümünü depodaki paket bildiriminin sürümüyle karşılaştıran bir duman nöbeti kur; ayrışma Bildirimler yüzeyinde tek satırla bildirilir ve mağazadan kurulan paketlerde nöbet susar.",
+          "Atıf nöbetini iz sürmekten çıkarıp kitaplığın gövdedeki varlığını küçültmeye dayanıklı bir imzayla ölçer hâle getir; nöbet üretim gövdesini de ölçer ve paketlemenin hemen ardından yeşil kalır.",
+          "İki davranışı mutasyonla kanıtla: bayat sürüm fikstürü uyarı üretir, kitaplığı düşürülmüş üretim gövdesi nöbeti kırmızıya çevirir."
+        ]
+        kabul: [
+          "Depodaki sürüm kurulu paketten ileri olduğunda panel bunu söyler; mağaza kurulumunda hiçbir uyarı doğmaz.",
+          "Paketlemenin hemen ardından koşan eklenti süiti yeşildir ve atıf nöbeti üretim gövdesini ölçer; bu mutasyonla kanıtlanmıştır.",
+          "Eklenti süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Sürüm numarasını ilerletme kuralı ve CHANGELOG nöbeti değişmez; paketleme akışının kendisi yeniden yazılmaz."
+      }
+
+      Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: beklemede, öncelik: p1, bağımlı: [],
+        referans: [ HTR-OLCMEDEN-KAP-IDDIASI-BASKA-YUZEYDE ],
+        ne: "🧰 Ölçmeden kap iddiası kuran kalıbın denetim komutu dışındaki üç yüzeyden sökülmesi: iskelet aracı verilen yolun bir kap olup olmadığını ölçmeden içinde giriş dosyası yok cümlesini basar; dış şema bayrağıyla var olmayan yol verildiğinde hiçbir nöbet yolu ölçmez ve öneri kullanıcının kullandığı bayrağı anmaz; İngilizce tanı cümlesini eski kap iddiasına döndüren mutasyon kapıdan yeşil geçer. Üç kalem aynı kusur sınıfının yüzleridir ve 2026-08-09 tarihinde bağımsız denetçi tarafından ölçülmüştür." ) {
+        görev: [
+          "İskelet aracına yolun varlığı ile kap olup olmadığı ölçümünü koy; olmayan yol ile dosya yolu için ayrı ve doğru cümle bas.",
+          "Dış şema bayrağının yol ölçümünü nöbete bağla ve öneriyi kullanıcının fiilen kullandığı bayrağı anacak biçimde yaz.",
+          "Çeviri nöbetini yalnız anahtar ile alan eşliğinden çıkarıp iddia düzeyine yükselt: İngilizce cümle kap iddiasına dönerse süit kırmızı yanar; mutasyonla kanıtla."
+        ]
+        kabul: [
+          "İskelet aracı olmayan yolda ve dosya yolunda kap iddiası kurmaz; iki fikstürle kanıtlanmıştır.",
+          "Dış şema bayrağı olmayan yolda dürüst hata döner ve öneri doğru bayrağı anar.",
+          "İngilizce kap iddiası mutasyonu kapıdan geçemez; çekirdek süiti yeşildir."
+        ]
+        sınır: "Denetim komutunun V1B-TANI-A01 ile kapanmış onarımına dokunulmaz."
+      }
+
+      Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
+        referans: [ YUZ-3.3, HTR-SINAMA-SONUCU-YUZEYSIZ ],
+        ne: "🧪 Kırmızı yanan bir nöbetin yalnız uçbirimde yaşaması kusurunun kapatılması. Founder 2026-08-31 tarihinde sorduğunda ölçülmüştür: paneller denetim turundan beslenir, süit ayrı bir dünyadır ve sonucunu hiçbir yüzeye taşıyan gövde yoktur; gerçek kabuk süiti on beş kırmızı taşımakta ve hiçbir kapıda koşmamaktadır, çünkü 2026-09-03 tarihinde kurulan sürekli tümleştirme akışı yalnız birim süitlerini koşturur. Beş karar kalemi HTR-SINAMA-SONUCU-YUZEYSIZ kaydındadır ve Founder ayrıntılı değerlendirme istemiştir." ) {
+        görev: [
+          "Beş kalemi Founder ile kararlaştır: sonucun yüzeyi, hangi süitin besleneceği, tazeleme anı, sonucun nereden okunacağı ve gerçek kabuk süitinin hangi kapıda koşacağı.",
+          "Gerçek kabuk süitinin on beş kırmızısını dört aile hâlinde kapat ve süiti kararlaştırılan kapıya bağla; hiçbir kapıda koşmayan süit kalmaz.",
+          "Kararlaştırılan yüzeyi kur: süit makine okunur bir rapor üretir, yüzey o raporu okur ve bayat raporu tarihini söyleyerek gösterir."
+        ]
+        kabul: [
+          "Gerçek kabuk süiti yeşildir ve bir kapıda koşar; bu kapı sürekli tümleştirme akışında ya da işleme kancasında görünür.",
+          "Kırmızı bir nöbet kararlaştırılan yüzeyde görünür ve Founder canlı pencerede gözle doğrular.",
+          "Depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Kaydetme anında süit koşturulmaz; performans mevsiminin kazanımı geri verilmez."
+      }
     }
   }
 
@@ -722,6 +786,35 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "kapi_kapsami.sar yeni araçların satırlarını taşıyor; denetle TAM-yeşil ve iki süit + tsc temiz"
         ]
         sınır: "denetleKomutu SAF refaktörü bu Adımın işi DEĞİL (RAY-3 önkoşulu, ayrı ray) — alt-süreç köprüsü bilinçli ara-çözümdür ve kapi_kapsami'de beyanlıdır; durum-guncelle Adım dışı tip/alan yazamaz"
+      }
+
+      Adım( kod: BKM-MCP-A02, ad: "MCP Sunucusunun Kaynak Değişiminde Tazelenmesi", durum: beklemede, öncelik: p1, bağımlı: [ BKM-MCP-A01 ],
+        referans: [ HTR-MCP-SUREC-BAYATLIGI ],
+        ne: "🔄 MCP sunucusu şemayı açılışta belleğe alır ve kaynak değişince kendini tazelemez; 2026-08-08 tarihinde sınıflama kaydındaki öncelik kümesi diskte değiştiği hâlde çalışan sunucu eski kümeyi bildirmeye devam etmiştir. Tehlike sessizliğindedir: sunucuya soran ajan yanlış şemayı doğru sanır. Üç seçenek hatırlatıcıda yazılıdır; en ucuzu her araç çağrısında kaynağın mührünü karşılaştırıp gerekirse tazelemektir." ) {
+        görev: [
+          "Sunucunun belleğe aldığı her kaynağın mührünü tut; araç çağrısında mühür değişmişse kaynağı yeniden yükle ve cevaba tazelendiğini tek satırla yaz.",
+          "Nöbet kur: sınıflama kaydı çalışan sunucunun altında değiştirildiğinde bir sonraki siniflama çağrısı yeni şemayı döndürür."
+        ]
+        kabul: [
+          "Kaynak değişiminden sonraki ilk araç çağrısı güncel şemayı döndürür; bu uçtan uca sınamayla kanıtlanmıştır.",
+          "Değişmeyen kaynakta ek maliyet ölçülebilir değildir; çekirdek süiti yeşildir."
+        ]
+        sınır: "Dosya izleme gözcüsü kurulmaz; tazeleme çağrı anında ve mühür karşılaştırmasıyla yapılır."
+      }
+
+      Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],
+        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
+        ne: "📏 İlk dış kullanıcının iki kusuru: graf aracının çıktısı elli beş bin karakteri aşıp istemci sınırında dosyaya düşmüş ve ajan yalnız kuyruğunu okumuştur; sunucu talimatındaki tek yazma cümlesi bütün .sar içeriğine genellenmiş ve ajan şema ile kabul ölçütünü düzenleyemediğini sanmıştır. Bul aracının sonuç sınırı vardır, graf aracının yoktur." ) {
+        görev: [
+          "Graf aracına özet kipi ya da sayfalama ekle: varsayılan çıktı karne ve kök kademesini verir, ayrıntı kök koduyla istenir; bul aracının sonuç sınırı deseni izlenir.",
+          "Sunucu talimatındaki yazma cümlesini üç parçaya aç: yalnız durum alanı durum-guncelle ile yazılır, öteki alanlar düzenlenip denetimden geçer, kabul ölçütü ile şema sürümü gibi hüküm niteliğindeki değişiklikler Founder onayı ister; İngilizce yüzü eşle.",
+          "Nöbet kur: altı yüz Adımlık fikstürde graf aracının varsayılan çıktısı istemci sınırının altında kalır."
+        ]
+        kabul: [
+          "Graf aracının varsayılan çıktısı büyük fikstürde sınırın altındadır ve ayrıntı istendiğinde tam çıktı gelir; bu sınamayla kanıtlanmıştır.",
+          "Talimat iki dilde üç parçayı da taşır ve iki dillilik nöbeti yeşildir."
+        ]
+        sınır: "Graf serileştiricisinin kendisi değişmez; yalnız MCP yüzü özetler. Yeni bir yazma aracı doğmaz."
       }
       Adım( kod: BKM-KRR-A01, durum: tamamlandı, bağımlı: [], üretir: [KOD-KARARLAR, KOD-KARARLAR-NOBET],
         // KAPANIŞ 2026-07-12: 90/90 karar → yasa/kararlar/ 9 dosya (8 küme + defter_cercevesi: rezerve numara yeri +

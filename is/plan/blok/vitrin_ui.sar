@@ -191,6 +191,20 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
       sınır: "Kaynak dosyadaki ad alanı değiştirilmez; dönüşüm yalnız yüzeyde yaşar ve tek dosyada durur. Kod hiçbir yüzeyden silinmez, hover ipucuna taşınır. Tarih bilgisi silinmez, satırdan hover'a yer değiştirir. Founder'ın istediği iki satırlı görünüm (tarih başlığın altında küçük puntoyla) ağaç görünümünde mümkün değildir ve Webview'e geçiş kendi Adımını bekler."
       koşu: "2026-08-27 · Başlık düzeni çekirdekte baslik.ts modülünde tek kapıdan kuruldu ve Yol Haritası üç satır türünü bu kapıdan geçirdi (0.9.157 ile 0.9.158 paketleri). Founder turu aynı gece bir gerilemeyi ölçtü: dönüşüm ad yoksa koda da uygulanıyor ve YTK-A01 satırda Ytk A01 görünüyordu. Onarım tek kapıya indi: yuzeyAdi işlevi dönüşümü yalnız ada uygular ve koda dokunmaz; sekiz sınamalık nöbet çekirdek süitine girdi, mutasyon kanıtı sınamanın kendisinde yazılıdır. Onarımlı paket 0.9.159 olarak üretildi, Founder tarafından kuruldu ve canlı pencerede doğrulandı (2026-08-27 06.20): adı olmayan satır kimlik kodunu olduğu gibi taşıyor. Aynı bakışta ikinci yüzey bulgusu da kapandı; Faz dışındaki eksen tipleri ikonlarını göstermektedir, yani kusur kaynakta değil eski pencerenin taşıdığı paket durumundaydı ve beş katmanlık eleme bunu işaret etmişti."
     }
+
+    Adım( kod: VIT-K78-A09, ad: "Gezinme Reddinin Sebebini Söyleyen Yüzey", durum: beklemede, öncelik: p2, bağımlı: [], onayBekler: founder,
+      referans: [ STR-3, HTR-GEZINME-SESSIZ-RET ],
+      ne: "🧭 Kimlik penceresi bazı kodlarda açılıp bazılarında açılmamakta ve kullanıcı farkın sebebini görememektedir. Üç sebep ölçülmüş ve üçü de bilinçlidir: varlık sınırı (STR-3), ders dünyası süzgeci ve tanım yokluğu. Yüzey sessiz kaldığı için kural keyfî görünmektedir; reddin sebebini söyleyen bir yüzey kuralı öğretici kılar." ) {
+      görev: [
+        "Kimlik gezinmesi reddedildiğinde üç sebepten hangisinin geçerli olduğunu tek satırlık bir bildirimle söyle; bildirim sebebi ve gerekiyorsa kanon maddesini anar.",
+        "Nöbet kur: üç ret sebebinin her biri fikstürde kendi cümlesini üretir ve tanımlı kodda hiçbir bildirim doğmaz."
+      ]
+      kabul: [
+        "Reddedilen gezinmede kullanıcı sebebi görür; Founder canlı pencerede üç sebebi gözle doğrular.",
+        "Tanımlı kodda gezinme davranışı değişmemiştir; eklenti süiti yeşildir."
+      ]
+      sınır: "Ret kuralları değişmez; yalnız sebep görünür kılınır."
+    }
     }
   }
 
@@ -493,6 +507,21 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
         ]
         sınır: "Bu Adım fikir kayıtlarının kendi satır metnine, simgesine, tıklama davranışına ve pano metnine dokunmaz. Fikir üretimine ve motorun fikir okumasına da dokunulmaz; değişen tek şey panelin ağaç düzenidir. Dosya kademesi bu Adımın kapsamı dışındadır ve açılması ayrı bir hüküm ister."
       }
+
+      Adım( kod: VIT-GRAF-A21, ad: "Çalışma Alanı Kümelerinin Mini Grafa İnmesi", durum: beklemede, öncelik: p2, bağımlı: [ EKL-F6-A01 ], onayBekler: founder,
+        referans: [ HTR-CALISMA-ALANI-MINI-GRAF ],
+        ne: "🕸️ Founder'ın 2026-08-25 isteği: çalışma alanı düğümleri Mini Graf yüzeyinde de görünür. Bugün Mini Graf yalnız proje kökünün altını çizer; yol haritası paneli ise aynı hiyerarşiyi 0.9.155 sürümünden beri iç içe kümeler modeliyle basar. İş o kapsama modelinin Mini Grafa taşınmasıdır ve mağaza yüklemesinden sonraki ilk eklenti işi olarak sıraya girer." ) {
+        görev: [
+          "Yol haritasının kapsama modelini tek kaynaktan al ve Mini Graf çiziminde çatı ile kapsanan projeleri iç içe kümeler olarak çiz.",
+          "Betiksiz webview disiplinini koru; betik yokluğu nöbeti yeşil kalır."
+        ]
+        kabul: [
+          "Çatı odağında Mini Graf çatı ile kapsanan projeleri iç içe kümeler olarak çizer; Founder canlı pencerede gözle doğrular.",
+          "Kapsama modeli komşu panelle aynı kaynaktan gelir; ikinci bir yazım yoktur.",
+          "Eklenti süiti yeşildir."
+        ]
+        sınır: "Tuval etkileşimi, yani yakınlaştırma, kaydırma ve sürükleme bu Adımın dışındadır."
+      }
     }
   }
 
@@ -630,6 +659,37 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
           "Founder canlı pencerede çatı ile alt proje arasında geçiş yaparak dört panelin davranışını gözle doğrular."
         ]
         sınır: "Bu Adım tanı üretimine, kapı tespitine ve karar mantığına dokunmaz; yalnız hangi kaydın hangi pencerede GÖRÜNECEĞİNİ belirleyen süzgeci onarır. Aktif varlık odağının kendisi ile odağın nasıl seçildiği bu Adımın işi değildir ve olduğu gibi korunur. Kuyruğun bilinen mantık kusurları VIT-POSTA-A02'nin işidir ve buraya karıştırılmaz."
+      }
+
+      Adım( kod: VIT-POSTA-A06, ad: "Founder Kapısı Listesinin Onaylar Yüzeyinde Yaşaması", durum: beklemede, öncelik: p1, bağımlı: [ VIT-POSTA-A02 ], onayBekler: founder,
+        referans: [ YUZ-3.3, HTR-FOUNDER-KAPISI-SORGULANAMIYOR ],
+        ne: "🧑‍⚖️ Founder'ın 2026-08-31 tarihli sorusu, yani bugün benden ne bekleniyor, hiçbir araçtan doğrudan cevaplanamamaktadır; graf aracı onayBekler alanını döndürmez, bul aracı üç yüz düğüm getirir. Kontrolcünün ölçüme dayalı görüşü Onaylar yüzeyini genişletmektir: açık Adımların Founder eylemi isteyen kısmı da o kuyruğa aittir. Ölçütün kendisi de tekleşir: Founder kapısı yalnız onayBekler alanından okunur; kabul metni ve durum kaydı listesi yedek olmaktan çıkar." ) {
+        görev: [
+          "Onaylar panelinde, Founder onayı bekleyen kapıların yanına açık Adımların onayBekler alanı taşıyan kısmını ayrı bir grup olarak bas; satır Adımın dosyasına gider.",
+          "Ölçütü tekleştir: kabul metnindeki onay cümlesi desenini panel beslemesinden çıkar ve kanonun geçiş dönemi yedeği ifadesini yürürlükten kaldır; bugün yalnız kabul metniyle kapı taşıyan Adımlara onayBekler alanını yaz.",
+          "Nöbet kur: onayBekler taşıyan açık Adım panelde görünür, taşımayan görünmez."
+        ]
+        kabul: [
+          "Founder Onaylar panelinden kendisini bekleyen bütün Adımları tek listede görür ve canlı pencerede gözle doğrular.",
+          "Depoda kapı taşıyıp onayBekler alanı taşımayan açık Adım sıfırdır; bu ölçülmüştür.",
+          "Eklenti süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Graf aracının düğüm alanlarını döndürmesi ve ayrı bir sorgu aracı bu Adımın dışındadır; soru bir panel görünümüyle cevaplanır."
+      }
+
+      Adım( kod: VIT-POSTA-A07, ad: "Emekli Adın İç Kimlikten Temizlenmesi", durum: beklemede, öncelik: p1, bağımlı: [ VIT-POSTA-A02 ],
+        referans: [ HTR-POSTA-ADI-IC-KIMLIKTE-YASIYOR ],
+        ne: "🏷️ Onay panelinin emekli adı Posta Kutusu kullanıcı yüzünden temizlenmiş fakat iç kimlikte yaşamaktadır: görünüş kimliği sarmalPostaKutusu, dört dosya adı, kaynak ile sınamada üç yüz doksan altı geçiş. Görünüş kimliğini değiştirmek kurulu her kullanıcının panel yerleşimini sıfırlar; dolayısıyla temizlik mağaza yüklemesinden ÖNCE yapılırsa bedeli sıfırdır, sonra yapılırsa bir sürüm sınırına bağlanmalıdır. Plan Adım kodları tarihsel kayıttır ve değiştirilmez." ) {
+        görev: [
+          "Görünüş kimliğini, dört dosya adını ve kaynak ile sınamadaki geçişleri onay adına çevir; paket bildirimi, dil dosyaları ve gömülü ikizler aynı turda tazelenir.",
+          "Kullanıcıya dönük hiçbir metnin değişmediğini ölç: Türkçe ve İngilizce sekme adları ile simge aynı kalır.",
+          "İş mağaza yüklemesinden önce yapılamazsa sürüm notuna panel yerleşiminin sıfırlanacağını yaz."
+        ]
+        kabul: [
+          "Kaynak, sınama ve dosya adlarında posta sözcüğü yalnız tarihsel plan kodlarında geçer; bu ölçülmüştür.",
+          "Eklenti süiti yeşildir ve Onaylar paneli aynı yerde, aynı adla açılır."
+        ]
+        sınır: "Kapanmış Adımların VIT-POSTA kodları ve koşu kayıtları değişmez; tarih tahrif edilmez."
       }
     }
   }
@@ -795,7 +855,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
         sınır: "Bu Adım kaynak dosyalarındaki niyet cümlelerine DOKUNMAZ: Adım ve Kural gövdelerindeki emojiler Founder hükmüyle yerinde kalır, çünkü orada emoji bir arayüz işareti değil anlatım aracıdır. Etmen davranışının takdir edildiği yüzey de kapsam dışıdır. Renk paleti, tip anlamları ve panel kimlikleri değişmez; değişen yalnız işaretin ÇİZİM KAYNAĞIDIR."
       }
 
-      Adım( kod: VIT-KIMLIK-A08, durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ VIT-KIMLIK-A07, PRF-A06 ],
+      Adım( kod: VIT-KIMLIK-A08, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p1, bağımlı: [ VIT-KIMLIK-A07, PRF-A06 ],
         referans: [ YUZ-4.2, YUZ-4.1, YUZ-1.2, OZK-12 ],
         üretir:   [ KOD-SIMGE-CIZELGE ],
         ne:       "🎨 SİMGELERİN KAYNAK DOSYADA PARAMETRELERİN YANINDA GÖRÜNMESİ. Founder 2026-08-30 tarihinde kırk simgelik aileyi (tabaka yüzü) gösterdi ve şu isteği verdi: bu simgeler editörde, dosyanın içinde, ilgili oldukları parametrelerin yanında görünsün. Aile zaten parametre adlarıyla çizilmiştir: görev, sınır, referans, kabul, kural, kart, doğrudan, geçişli, zaman, kişi, jeton, giden, gelen, terfi, kilit, planlanmamış, tip, konum, beceri ve kardeşleri. VIT-KIMLIK-A06 tip bildirim satırlarına geometrik simge basmıştır; bu Adım aynı deseni parametre satırlarına uzatır." ) {

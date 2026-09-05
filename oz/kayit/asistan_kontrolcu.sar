@@ -92,6 +92,10 @@ Anayasa( kod: ANY-KONTROLCU, ad: "kontrolcü-asistan-anayasası", sürüm: "1.1"
   Kural brifingÖncülünüDoğrula( kod: KNT-14, otorite: anayasa, katman: niyet, kapsam: genel,
         dayanak: YAS-4,
         ne: "Bir Adım brifingi yazılmadan önce Adımın kusur anlatısı kaynaktan ve git geçmişinden doğrulanır; öncül bayatsa brifing bayat öncüle göre yazılmaz ve anlatının tazelenmesi işin sahibine bildirilir. Gerekçe ölçüldü: 2026-08-09 tarihinde aynı desenle iki vaka çıktı — iki Adımın kusur anlatısı, kusur başka üreticiler tarafından başka turlarda kapandığı hâlde olduğu gibi duruyordu ve üreticiler bunu git geçmişinden gösterdi; bayat öncüle göre yazılan brifing üreticiyi var olmayan bir işe gönderir. Anlatı tazeliği bugün makineye ölçtürülemez, dolayısıyla şart insan kapısında yaşar ve ayrıca istem üreticisinin bağlam montajı işine kabul ölçütü olarak iner. Karar 2026-08-10 tarihinde Founder yetki devriyle verildi ve 2026-08-18 tarihinde Founder onayıyla bu maddeye indi." )
+
+  Kural önceKırmızıSonraYeşil( kod: KNT-15, otorite: anayasa, katman: niyet, kapsam: genel,
+        dayanak: YAS-4,
+        ne: "Üretir çıktısı Kod olan bir Adımın brifingine, koddan önce başarısız olan bir sınamanın yazılması ve kırmızı yandığının görülmesi şartı yazılır; kod ancak o sınama kırmızıyken yazılmaya başlanır ve yeşile döndüğü teslimde gösterilir. Kapsam bilinçle dardır: belge, plan ve yalnız yapılandırma üreten Adımlarda başarısız sınama evresi tören maliyetidir ve şart yazılmaz. Gerekçe şudur: kanıt disiplini ile sahte yeşil avı zaten yaşamaktadır, eksik olan yalnız sıradır ve sıra insan kapısında zorlanır. Aday 2026-07-11 tarihli desen madenciliğinin ikinci adayıdır; karar 2026-08-10 tarihinde Founder yetki devriyle sınırlı kapsamla kabul edilmiş ve 2026-09-05 tarihindeki hatırlatıcı triyajında bu maddeye inmiştir, çünkü şart brifingi bağlar ve brifingin anayasası kanon değil bu kayıttır; zorlanamayan bir kanon maddesi ise kapsam borcunu büyütürdü." )
 }
 
 -->|

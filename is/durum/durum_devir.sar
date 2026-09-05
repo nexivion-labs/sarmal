@@ -16,7 +16,7 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-03", oturum: 107,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
             neredeyiz: PERFORMANS-MEVSIMI-MUHURLENDI-YAYIN-YOLU-9-EYLUL,
             sıradaki: FOUNDER-DIKTESI-SEKIZ-AYLIK-PROBLEMLER-SONRA-SARMAL-SONRA-SLAYT,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
@@ -1657,11 +1657,36 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-03", oturum: 107,
         yalnız `is/plan/blok/kanon_kapsam_borcu.sar` dosyasının biçimleyici farkı
         vardır ve dokunulmamıştır.
 
+        ⑭ OTURUM 108 · 2026-09-05 · İLK DIŞ TANIKLIK VE HATIRLATICI TRİYAJI.
+        Founder, Sarmal'ı bir müşteri sitesi projesinde kullanan ajanın
+        değerlendirmesini getirdi; dört kusur aynı gün ölçüldü ve tanıklık
+        HTR-ILK-DIS-KULLANICI-TANIGI kaydına indi. En ağır bulgu Sarmal'a değil
+        o projeye aitti: küresel yok sayma kuralı `*.sar` desenini taşıdığı için
+        istisnasız depoda on yedi kayıt izlenmiyordu; doğuş paketi istisnayı
+        yazmadığı için kusur BKM-DNT-A15 Adımına indi. Ardından Founder yetki
+        devriyle otuz sekiz hatırlatıcının tamamı okundu ve her birine karar
+        verildi: yirmi kayıt `hatırlat` kenarıyla plana bağlandı (yedisi yeni
+        Kanon Uyum Blokuna, BLK-UYUM; on üçü bakım, vitrin, kaynak disiplini ve
+        öncelik reformu Bloklarına), HTR-KIRMIZI-YESIL KNT-15 maddesiyle kapandı,
+        HTR-CATI-KOKUNDEN-DENETIM gerekçesiyle açık kaldı, üç kayıt Fikir olarak
+        oz/kayit/fikirler.sar dosyasına taşındı ve üç kayıt gereksiz bulunup
+        silindi; gerekçeler hatırlatıcı dosyasının başlık notundadır. On sekiz
+        yeni Adım doğdu ve açık Adım sayısı elli sekizden yetmiş altıya çıktı.
+        Founder Onaylar panelinden altı Adımı onayladı: KPS-KEN-A01, KYN-HASAT-A01,
+        RFM-KANON-A01, RFM-KANON-A02, PRF-IS-A05 ve VIT-KIMLIK-A08. Kapı: depo
+        denetimi sıfır hata ve sıfır uyarı, karne 1908 düğüm ve 408 Adım.
+        Değişiklikler işlenmedi; işleme Founder kararıyla yapılır.
+
         SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
         olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
         girer. Founder hükmü: anlatımdaki her iddia gerçek, kaynaklı dünya
         araştırmasıyla desteklenir ve kaynaklar 06 dosyasının altına yazılır.
-        Sonra 7–9 Eylül yayın Adımları. E-posta ve uzak depo en sonda.
+        Sonra 7–9 Eylül yayın Adımları. Onaylanan altı Adımdan dördünün bağımlılığı
+        boştur ve sırası Founder'ındır (RFM-KANON-A01 · RFM-KANON-A02 · KPS-KEN-A01
+        · KYN-HASAT-A01); PRF-IS-A05 ile VIT-KIMLIK-A08 öncüllerini bekler.
+        VIT-POSTA-A07 mağaza yüklemesinden önce yapılırsa bedelsizdir, sonra bir
+        sürüm sınırı bekler. Kanon Uyum Bloku mağaza yüklemesinin arkasındadır.
+        E-posta ve uzak depo en sonda.
 
         SIRADAKİ (kalıcı): uzak depo ile sıfır geçmiş uzlaşması Founder'ındır ve
         ilk gönderim canlı açılıştır; ardından eklenti mağazaya yüklenir ve

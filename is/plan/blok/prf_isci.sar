@@ -103,7 +103,7 @@ Blok( kod: BLK-PRF-ISCI, ad: "işçi", uygular: ORK-7,
     AltKatman( kod: ALT-IS-INCELEME, ad: "işçi denetimi ve Founder ölçütleri", departman: inceleme,
       ne: "🔍 Founder'ın üçüncü ve dördüncü ölçütünün canlı pencerede ölçüldüğü inceleme dalı." ) {
 
-      Adım( kod: PRF-IS-A05, durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PRF-IS-A04, PRF-IS-A06 ],
+      Adım( kod: PRF-IS-A05, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p0, bağımlı: [ PRF-IS-A04, PRF-IS-A06 ],
         referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, STR-3.1 ],
         ne:       "🔍 İşçi taşımasının bağımsız denetimi ve Founder ölçütleri. Üçüncü ölçüt editörde en ufak gecikmenin olmamasıdır ve sayısı ana iş parçacığının on altı milisaniyelik en uzun bloğudur; dördüncü ölçüt anlık gösterimdir ve sayısı kaydetten panele beş yüz milisaniyelik doksan beşinci yüzdeliktir." ) {
         görev:    [
