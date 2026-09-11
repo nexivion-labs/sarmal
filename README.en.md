@@ -118,7 +118,7 @@ The core requires Node 23.6 or newer: `cd urun/cekirdek && npm link` binds the `
 
 ## Shelf map
 
-[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 159 unique articles, 38 Decisions and 121 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
+[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 160 unique articles, 38 Decisions and 122 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
 ## Learn
 

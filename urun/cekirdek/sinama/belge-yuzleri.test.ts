@@ -71,9 +71,9 @@ test("işaretli üretim bölgesi elle korunan girişi korur ve idempotenttir", (
   assert.equal(ucuncu, ikinci);
 });
 
-test("belge üreticisinin resmi kanon ölçümü 159/159'dir", () => {
+test("belge üreticisinin resmi kanon ölçümü 160/160'dir", () => {
   const olcum = kanonOlc(KOK);
   assert.deepEqual({ madde: olcum.madde, karar: olcum.karar, kural: olcum.kural, tekil: new Set(olcum.kodlar).size },
-    { madde: 159, karar: 38, kural: 121, tekil: 159 });
+    { madde: 160, karar: 38, kural: 122, tekil: 160 });
   assert.equal(olcum.muhurler.length, 8);
 });

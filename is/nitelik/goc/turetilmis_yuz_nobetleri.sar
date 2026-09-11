@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `003b8a69a9ab8994403c5452c335421cca6d14185ed6d6b26d83a96bc760d43e` |
+| `yasa/kanon demeti (A03 formülü)` | `7d96c6769f066e8527d36f074425892149a2b2a3c6e44f441a6bdf1e75d90156` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c739add6c44115e0b45c16351b8cbbe4541cfb6b5d345d732adfefa0fdcc1470` |
@@ -397,6 +397,51 @@ Yirmi altı yüz tarandı: on altı üretilen yüz, iki lisans yüzü, altı fel
 açıklaması ve iki bağımsız sözlük indeksi. Yetmiş iki göreli bağlantının
 tamamı var olan kanonik hedefe çözülür; kırık bağlantı sıfırdır ve hiçbir yüz
 emekli KARARLAR defterine bağlanmaz. Nöbet süitte kalıcıdır.
+
+Tazeleme notu (2026-09-10 · öncelik modeli reformu ile düğüm kodu standardı):
+Önceki notun ölçülmeden bıraktığı kanon demeti bu turda ölçülmüş ve tazelenmiştir,
+çünkü kanon metnini bekleten el işini tamamlamıştır. Turda üç iş kanona inmiştir.
+Birincisi ORK-3.4 maddesinin revizyonudur: dört kademeli `öncelik` kümesi Founder'ın
+2026-08-10 tarihli hükmüyle yürürlükten kaldırılmış, yerine birbirinden bağımsız
+`önem` ve `acil` eksenleri konmuş, düşürülen hüküm gerekçesiyle birlikte maddenin
+başındaki yorum bloğuna tarihçe olarak yazılmış ve ORK-8 mevsim ritüelinin açılış
+basamağı yeni modele hizalanmıştır. İkincisi DIL-1.8 maddesinin doğuşudur: düğüm
+kodunun biçimi, projenin anadizininde yaşayan önek sicili ve standardın yalnız yeni
+kodları bağlaması tek maddede hükme bağlanmıştır. Üçüncüsü ORK-3.5 ile ORK-8.2
+maddelerinin tazelenmesidir: Blok sırası yeni iki eksene göre okunur ve oturum
+açılışı beş basamaktan altı basamağa çıkarak Blok seçimini kendi basamağı yapar.
+Bu üç iş kanonun yalnız orkestrasyon ve dil dosyalarının baytlarını değiştirdiği
+için kaynak mühürlerinden yalnız kanon demeti ilerlemiştir; sınıflama kaydı ile
+örtü, tanı sicili, araç metinleri, dil bağlamı, eklentinin iki dil hanesi ve
+yönlendirme matrisi bu turda birebir aynı ölçülmüştür ve dokunulmamıştır.
+Ölçümün bağlı bir sonucu burada dürüstçe beyan edilir: DIL-1.8 maddesi kanonu yüz
+elli dokuz maddeden yüz altmış maddeye, otuz sekiz Karar ile yüz yirmi bir Kural
+dağılımını otuz sekiz Karar ile yüz yirmi iki Kural dağılımına taşımıştır, oysa
+motorun kanon tutarlılık ile belge yüzü üreticileri eski sayıyı dondurmaktadır ve
+bu yüzden türetilmiş yüzler bu turda YENİDEN ÜRETİLEMEMİŞTİR. Dondurulmuş sayıların
+tazelenmesi ile on altı yüzün yeniden üretilmesi motor ağacının işidir ve bu kayıt
+o iş yapılana kadar yalnız kaynak mührünü taşır.
+
+Tazeleme notu (2026-09-10 · dondurulmuş sayıların tazelenmesi): Önceki notun
+bekletilmiş bıraktığı iş bu turda tamamlanmıştır. Kanon tutarlılık üreticisindeki
+(`urun/cekirdek/src/kanon-tutarlilik.ts`) resmi madde guard'ı ile Kural sabiti ve
+belge yüzleri üreticisindeki (`urun/cekirdek/src/belge-yuzleri.ts`) madde guard'ı
+yüz elli dokuzdan yüz altmışa, yüz yirmi birden yüz yirmi ikiye çekilmiştir; aynı
+sayılar `urun/cekirdek/sinama/kanon-tutarlilik.test.ts`,
+`urun/cekirdek/sinama/belge-yuzleri.test.ts` ve
+`urun/cekirdek/sinama/turetilmis-yuz-nobetleri.test.ts` dosyalarındaki sabit
+beklentilerle birlikte tazelenmiş, ilk dosyadaki `dil.sar` ve `ork.sar` SHA-256
+satırları da canlı dosyalardan yeniden ölçülerek güncellenmiştir. Bu turda
+`yasa/kanon demeti (A03 formülü)` mührü bağımsız olarak yeniden ölçülmüştür:
+sekiz kanon dosyasının SHA-256 değerleri `shasum -a 256` ile elden alınmış, A03
+formülüyle demete indirgenmiş ve sonuç yukarıdaki tablodaki satırla birebir aynı
+çıkmıştır, çünkü kanon dosyalarının baytları önceki notun kapanışından bu yana
+değişmemiştir; satır bu yüzden değiştirilmemiş, yalnız bağımsız ölçümle
+doğrulanmıştır. Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret`
+üreticileri yeniden koşturulmuş, kanon tutarlılık yüzü ile on altı belge yüzü
+güncel yüz altmış madde ölçümüyle yeniden üretilmiş ve ikinci koşu sıfır fark
+vermiştir. Bu tazelemenin ardından çekirdek süiti bin üç yüz on sekiz sınamanın
+tamamıyla yeşile dönmüştür.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,
