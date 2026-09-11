@@ -613,20 +613,30 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Gömülü kanon üreteci ve palet drift nöbeti değişmez."
       }
 
-      Adım( kod: BKM-DNT-A15, ad: "Doğuş Paketinin Yok Sayma İstisnası", durum: beklemede, öncelik: p1, bağımlı: [],
-        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
-        ne: "🛡️ Doğuş paketinin ürettiği köke `!*.sar` istisnası taşıyan bir `.gitignore` yazması ya da var olan dosyaya istisnayı eklemesi; yönerge ikizi nöbetinin küresel yok sayma bilgisinin `.sar` desenini de kapsaması. 2026-09-05 ölçümü: küresel yok sayma kuralı `*.sar` deseni taşıyan bir makinede doğan projede on yedi `.sar` dosyasının sıfırı izleniyordu ve ilk dış kullanıcı bunu proje hafızasının tek diskte kalması olarak bildirdi." ) {
+      Adım( kod: BKM-DNT-A15, ad: "Doğan Kökün Kapısı", durum: tamamlandı, öncelik: p1, bağımlı: [],
+        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI, HTR-DOGUS-PAKETI-KANCA-VE-OGRETI-KARTI ],
+        üretir: [ KOD-DOGUS, KOD-SNM-DOGUS ],
+        ne: "🛡️ Doğuş paketinin doğurduğu kökü kapısız bırakmaması. Kontrolcü 2026-09-09 tarihinde paketin ürettiği dosya listesini kaynaktan bağımsız olarak ölçmüştür ve paket bugün yalnız altı dosya yazmaktadır: giriş ilanı, durum devir kaydı, iki öğrenme dosyası, ilk plan ve ajan dil bağlamı. Ölçüm beş dosyanın hiç doğmadığını göstermiştir ve beşinin de tek bir sonucu vardır: doğan kök tek başına açıldığında ürünün kendi kapıları orada çalışmaz. Birincisi yok sayma dosyası doğmaz, dolayısıyla küresel yok sayma kuralı `*.sar` deseni taşıyan bir makinede doğan projenin hafızası depoya hiç girmez; 2026-09-05 ölçümünde on yedi kaynak dosyasının sıfırı izleniyordu ve ilk dış kullanıcı bunu proje hafızasının tek diskte kalması olarak bildirmiştir. İkincisi yürütücü ayar dosyası doğmaz, dolayısıyla doğan kök Sarmal sunucusunu bulamaz ve ajan ürünün araçlarına hiç erişemez. Üçüncüsü yönerge ikizinin yalnız bir kanadı yazılır; paket ajan dil bağlamını üretmekte, ikizin öteki kanadını üretmemektedir ve bu yüzden doğan projede ikiz nöbeti kendi konusunu bulamaz. Dördüncüsü kanca yazılmaz, dolayısıyla ilk kaynak yazımından sonra denetim kendiliğinden koşmaz ve ajanın kapıyı atlaması hiçbir mekanizmayla engellenmez. Beşincisi kanon işaretçisi yazılmaz, dolayısıyla eklenti tip sistemi kaydını bulamaz ve panel o kökte kör kalır." ) {
         görev: [
-          "Doğuş paketine `.gitignore` üretimini ekle: dosya yoksa `!*.sar` istisnasıyla yazılır, varsa istisna eksikse eklenir ve hiçbir mevcut satır silinmez.",
+          "Doğuş paketine yok sayma dosyası üretimini ekle: dosya yoksa `!*.sar` istisnasıyla yazılır, varsa istisna eksikse eklenir ve hiçbir mevcut satır silinmez.",
+          "Doğuş paketine yürütücü ayar dosyası üretimini ekle: doğan kök Sarmal sunucusunu kardeş kurulumdan ya da paket adından çözer ve ajan ilk turdan itibaren ürünün araçlarını kullanır.",
+          "Doğuş paketine yönerge ikizinin eksik kanadını ekle: iki dosya bayt özdeş doğar ve ikiz nöbeti doğan projede kendi konusunu bulur.",
+          "Doğuş paketine kapı kancasını ekle: her kaynak yazımından sonra denetim kendiliğinden koşar ve hata ajana geri döner; kancanın kurulumu doğan kökün kendi sınırında kalır ve kullanıcının makinesindeki küresel ayarlara dokunulmaz.",
+          "Doğuş paketine kanon işaretçisini ekle: doğan kök tek başına açıldığında eklenti tip sistemi kaydını çözer ve panel kör kalmaz.",
+          "Kancanın yanlış pozitifini onar: kanca bugün komut metninde giriş ilanı desenini gördüğü an reddetmekte, o desenin gerçekten bir yazım hedefi olup olmadığını ölçmemektedir; kontrolcü 2026-09-09 tarihinde proje dışındaki bir çalışma notuna yazarken bu retle karşılaşmıştır. Kanca yalnız gerçek yazım hedefini ölçer ve deseni yalnızca anan komutu geçirir.",
           "Yönerge ikizi nöbetinin kurulum tuzağı notunu ve ölçümünü `.sar` desenini kapsayacak biçimde genişlet.",
-          "Nöbet kur: küresel yok sayma kuralı `*.sar` içeren bir fikstür deposunda doğan proje `git check-ignore` ile ölçüldüğünde hiçbir `.sar` yok sayılmaz."
+          "Nöbet kur: küresel yok sayma kuralı `*.sar` içeren bir fikstür deposunda doğan proje `git check-ignore` ile ölçüldüğünde hiçbir `.sar` yok sayılmaz.",
+          "Nöbet kur: doğan kök tek başına açıldığında beş dosyanın beşi de yerindedir ve kanca gerçek bir yazımda ateşleyip deseni yalnızca anan bir komutta ateşlemez."
         ]
         kabul: [
           "Doğuş paketiyle doğan projede `.sar` dosyaları küresel yok sayma kuralına rağmen izlenir; bu fikstürle kanıtlanmıştır.",
-          "Var olan `.gitignore` dosyasının satırları korunur ve istisna tek kez yazılır.",
+          "Var olan yok sayma dosyasının satırları korunur ve istisna tek kez yazılır.",
+          "Doğan kök tek başına açıldığında yürütücü ayar dosyası, yönerge ikizinin iki kanadı, kanca ve kanon işaretçisi yerindedir; bu, doğan bir fikstür kökünde dosya dosya ölçülmüştür.",
+          "Kanca gerçek bir giriş ilanı yazımını reddeder ve deseni yalnızca anan bir komutu geçirir; ikisi de nöbetle kanıtlanmıştır.",
           "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
         ]
-        sınır: "Kullanıcının küresel yok sayma dosyasına dokunulmaz; istisna yalnız projenin kendi dosyasında yaşar."
+        sınır: "Kullanıcının küresel yok sayma dosyasına ve makinesindeki küresel kanca kurulumuna dokunulmaz; doğan kökün kapıları yalnız o kökün kendi dosyalarında yaşar. Bu Adım öğretim kartı yazmaz ve karşılama kartına dokunmaz; doğuşun öğretisi BKM-DNT-A16 Adımının işidir."
+        koşu: "2026-09-10 · KAPANDI. Doğan ağaç altı dosyadan on üçe, çalışma alanı sekizden yirmi ikiye çıktı; beş eksik kapının beşi de yerine kondu ve Kitaplık hükmü şablonlara indi. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz otuz yedide bin iki yüz otuz yedi, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; gerçek bir çalışma alanı doğurulup denetlendiğinde sıfır hata verdi, altı kaynak dosyasının altısı da küresel yok sayma kuralına rağmen izlendi ve var olan bir yok sayma dosyasının dört satırı korunarak istisna tam bir kez yazıldı. Açık kalan tek kalem Adımın sınırı gereğidir ve dürüstçe beyan edilir: onarılmış kanca mantığı üründedir, Founder'ın makinesindeki küresel kanca kurulumu hâlâ eski gövdeyi taşımaktadır ve tazelenmesi Founder kararıdır."
       }
     }
 

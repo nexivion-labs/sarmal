@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "sarmal": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["{{MOTORMCP}}"],
+      "env": {
+        "SARMAL_DOGUM": "{{TARIH}}"
+      }
+    }
+  }
+}

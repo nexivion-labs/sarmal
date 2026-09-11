@@ -254,20 +254,30 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "DOĞUŞ PAKETİ (DPK-A02 · flutter-create paritesi): hedef dizinde ÇALIŞIR proje doğurur — " +
-        "anadizin + durum/durum_devir + ogrenme/dersler+geribildirim + plan/ilk_plan (katı rejimde " +
-        "tam-zincir, koni-dolu ilk Adım). ÖNCE SORAR: tur alanı proje ise hedef doğrudan Proje kökü olur; " +
+        "giriş ilanı (Kitaplık kademeli) + is/durum/durum_devir + ogreti/ogrenme/dersler+geribildirim + " +
+        "is/plan/ilk_plan (katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
+        "küresel yok sayma kuralına karşı `!*.sar` istisnası, Sarmal sunucusunu çözen yürütücü ayarı, " +
+        "bayt özdeş yönerge ikizi (CLAUDE.md ≡ AGENTS.md), doğuş kilidi ile denetim kancası ve kanon " +
+        "işaretçisi; hepsi doğan kökün KENDİ dosyalarında yaşar, küresel ayara dokunulmaz. " +
+        "ÖNCE SORAR: tur alanı proje ise hedef doğrudan Proje kökü olur; " +
         "calisma-alani ise hedef ÇalışmaAlanı kökü olur ve ilk proje onun altında kendi köküyle doğar (MIM-1.1); " +
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
-        "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır. " +
+        "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
+        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
         "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir." +
         " NE ZAMAN: boş dizinde çalışır bir Sarmal projesi doğurman istendiğinde.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
-        "anadizin; durum/durum_devir; ogrenme/dersler plus geribildirim; and plan/ilk_plan " +
-        "(a complete strict-mode backbone with a cone-filled first Adım). IT ASKS FIRST: with tur = proje the target becomes the Proje root; " +
+        "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
+        "and is/plan/ilk_plan (a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
+        "a `!*.sar` exception against the global ignore rule, an executor setting that resolves the Sarmal server, " +
+        "a byte-identical instruction twin (CLAUDE.md ≡ AGENTS.md), a birth lock plus an audit hook, and a canon pointer; " +
+        "all of them live in the new root's OWN files and the global settings are left untouched. " +
+        "IT ASKS FIRST: with tur = proje the target becomes the Proje root; " +
         "with tur = calisma-alani the target becomes the ÇalışmaAlanı root and the first project is born beneath it with its own root (MIM-1.1); " +
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
+        "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
         "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools." +
         " WHEN: when you need a working Sarmal project created in an empty directory.",
     ),

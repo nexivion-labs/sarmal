@@ -1127,8 +1127,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         : `'${a(p, "yer")}/' bir kitaplıktır ve kitaplıkta raflar durur; buna karşılık burada ilanı bulunmayan ${a(p, "sayı")} kaynak dosyası doğrudan yaşıyor (${ornek}${artan}). Kitaplığın ilanı bu gövdeleri kapsamaz, çünkü kitaplık yalnız raf taşımaya beyan edilmiştir.`;
     },
     oneri: (p) => b(p, "kök")
-      ? `Bu gövdeleri toplayacak rafı ${a(p, "giriş")} dosyasında ilan et ve dosyaları oraya taşı. Örnek: \`Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" )\`. Gövde bu ağaca ait değilse dışına çıkar; ilanı senin yerine motor yazmaz, çünkü bir gövdenin hangi rafa ait olduğu bir niyet kararıdır.`
-      : `Kitaplığın altına gövdeyi toplayacak bir raf ilan et ve dosyaları oraya taşı. Örnek: \`Raf( kod: RAF-…, yol: "${a(p, "yer")}/…/", ne: "bu rafın neyi topladığı" )\`. Gövde başka bir yere aitse kitaplığın dışına çıkar; ilanı senin yerine motor yazmaz, çünkü bir gövdenin hangi rafa ait olduğu bir niyet kararıdır.`,
+      ? `Bu gövdeleri toplayacak rafı ${a(p, "giriş")} dosyasında ilan et ve dosyaları oraya taşı; kökün altına çıplak Raf yazılmaz, çünkü raf Kitaplığın İÇİNDE yaşar. Örnek: \`Kitaplık( kod: KTP-…, yol: "…/", ne: "bu kitaplığın neyi topladığı" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. Gövde bu ağaca ait değilse dışına çıkar; ilanı senin yerine motor yazmaz, çünkü bir gövdenin hangi rafa ait olduğu bir niyet kararıdır.`
+      : `Kitaplığın İÇİNE gövdeyi toplayacak bir raf ilan et ve dosyaları oraya taşı; rafın yolu kitaplığa GÖREDİR, kitaplığın adını rafa yeniden yazma. Örnek: \`Kitaplık( kod: KTP-…, yol: "${a(p, "yer")}/" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. Gövde başka bir yere aitse kitaplığın dışına çıkar; ilanı senin yerine motor yazmaz, çünkü bir gövdenin hangi rafa ait olduğu bir niyet kararıdır.`,
   },
   "teknolojisiz-yüzey": {
     mesaj: (p) => `${a(p, "yüzey")} ilan edilmiş ama proje hiçbir teknoloji seçmemiş — teknoloji seçilmeden ekran/uç doğamaz.`,
@@ -1248,8 +1248,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: () => 'Köke raf ilanı ekle (raflar: { belge: "açıklama" } ya da Kitaplık/Raf düğümleri) — şablon: sarmal başla proje; plan-yalnız erken evredeysen bile hedef yapıyı şimdi ilan et.',
   },
   "anadizin-plan-karışması": {
-    mesaj: (p) => `'${a(p, "kök")}' anadizin kökü doğrudan '${a(p, "bulunan")}' plan düğümünü içeriyor. Anadizin MİMARİ çizer ve Kitaplık, Raf ile yol ilanlarını taşır; Faz kademesinden Blok, Katman ve Adım kademelerine inen plan ise plan/ rafında AYRI bir .sar dosyasında yaşar. Kuruluş kuralı şudur: önce anadizin mimariyi çizer, plan sonra ayrı dosyada büyür.`,
-    oneri: () => 'Plan düğümlerini plan/ altında ayrı .sar\'a taşı; kökte plan/ için Raf ilan et (Raf( kod: RAF-PLAN, yol: "plan/" )). Şablon: sarmal başla proje.',
+    mesaj: (p) => `'${a(p, "kök")}' anadizin kökü doğrudan '${a(p, "bulunan")}' plan düğümünü içeriyor. Anadizin MİMARİ çizer ve Kitaplık, Raf ile yol ilanlarını taşır; Faz kademesinden Blok, Katman ve Adım kademelerine inen plan ise işin Kitaplığı içindeki plan rafında, yani is/plan/ altında, AYRI bir .sar dosyasında yaşar. Kuruluş kuralı şudur: önce anadizin mimariyi çizer, plan sonra ayrı dosyada büyür.`,
+    oneri: () => 'Plan düğümlerini is/plan/ altında ayrı .sar\'a taşı; rafı Kitaplığın İÇİNDE ilan et, çünkü kökün altına çıplak Raf yazılmaz (Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }). Şablon: sarmal başla proje.',
   },
   "kavuşumsuz-paralellik": {
     mesaj: (p) => `'${a(p, "kod")}' (${d(p, "takımlar").join("+")}) farklı takımın Adımına ('${a(p, "hedef")}' · ${d(p, "hedefTakımları").join("+")}) DOĞRUDAN bağımlı — ön/arka birbirine zincirlendi, paralel koşamaz; kavuşum Sözleşme üzerinden olmalı.`,
@@ -1706,8 +1706,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         : `'${a(p, "yer")}/' is a library, and a library holds shelves; yet ${a(p, "sayı")} undeclared source file(s) live directly inside it (${ornek}${artan}). The library's declaration does not cover these bodies, because a library is declared to hold shelves only.`;
     },
     oneri: (p) => b(p, "kök")
-      ? `Declare a shelf in ${a(p, "giriş")} to hold these bodies and move the files there. Örnek: \`Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" )\`. If a body does not belong to this tree, move it outside; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`
-      : `Declare a shelf under the library to hold these bodies and move the files there. Örnek: \`Raf( kod: RAF-…, yol: "${a(p, "yer")}/…/", ne: "bu rafın neyi topladığı" )\`. If a body belongs elsewhere, move it out of the library; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`,
+      ? `Declare a shelf in ${a(p, "giriş")} to hold these bodies and move the files there; a bare Raf is never written directly under the root, because a shelf lives INSIDE a Kitaplık. Örnek: \`Kitaplık( kod: KTP-…, yol: "…/", ne: "bu kitaplığın neyi topladığı" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. If a body does not belong to this tree, move it outside; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`
+      : `Declare a shelf INSIDE the library to hold these bodies and move the files there; a shelf path is RELATIVE to its library, so do not repeat the library name in it. Örnek: \`Kitaplık( kod: KTP-…, yol: "${a(p, "yer")}/" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. If a body belongs elsewhere, move it out of the library; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`,
   },
   "teknolojisiz-yüzey": {
     mesaj: (p) => `${a(p, "yüzey")} is declared, but the project has selected no technology — a screen or endpoint cannot be born before technology is selected.`,
@@ -1828,8 +1828,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: () => 'Add a shelf declaration to the root (raflar: { belge: "açıklama" } or Kitaplık/Raf nodes) — şablon: sarmal başla proje. Declare the target structure now even during an early plan-only stage.',
   },
   "anadizin-plan-karışması": {
-    mesaj: (p) => `Anadizin root '${a(p, "kök")}' directly contains plan node '${a(p, "bulunan")}'. An anadizin draws ARCHITECTURE and carries the Kitaplık, Raf and yol declarations, while the plan, which descends from Faz through Blok and Katman down to Adım, lives in a SEPARATE .sar file on the plan/ shelf. The founding rule draws architecture first and grows the plan separately.`,
-    oneri: () => 'Move plan nodes into a separate .sar under plan/; declare a Raf for plan/ at the root (Raf( kod: RAF-PLAN, yol: "plan/" )). Şablon: sarmal başla proje.',
+    mesaj: (p) => `Anadizin root '${a(p, "kök")}' directly contains plan node '${a(p, "bulunan")}'. An anadizin draws ARCHITECTURE and carries the Kitaplık, Raf and yol declarations, while the plan, which descends from Faz through Blok and Katman down to Adım, lives in a SEPARATE .sar file on the plan shelf inside the iş Kitaplık, that is under is/plan/. The founding rule draws architecture first and grows the plan separately.`,
+    oneri: () => 'Move plan nodes into a separate .sar under is/plan/; declare the shelf INSIDE a Kitaplık, because a bare Raf is never written directly under the root (Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }). Şablon: sarmal başla proje.',
   },
   "kavuşumsuz-paralellik": {
     mesaj: (p) => `'${a(p, "kod")}' (${d(p, "takımlar").join("+")}) DIRECTLY depends on Adım '${a(p, "hedef")}' from another team (${d(p, "hedefTakımları").join("+")}) — front and back are chained and cannot run in parallel; convergence must occur through Sözleşme.`,

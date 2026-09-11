@@ -17,12 +17,64 @@
 //   nöbetler onu gerçek fikstür ağaçlarına karşı doğrudan koşturur.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { existsSync, readdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, isAbsolute, join } from "node:path";
 import { anadizinBul } from "../../cekirdek/src/denetci.ts";
 
 /** Yukarı yürüyüşün kat sınırı — emsal iki çağrı yerinde de on ikidir. */
 const KAT_SINIRI = 12;
+
+// ── 🪧 KANON İŞARETÇİSİ (BKM-DNT-A15) ───────────────────────────────────────
+//   Ölçülmüş kusur şudur: doğuş paketiyle doğan bir kök TEK BAŞINA açıldığında
+//   `oz/siniflama/kayit.json` hiçbir yerde bulunamaz ve `eklenti.ts` içindeki
+//   tam-orkestrasyon turu o kökü sessizce ATLAR; panelin proje kapsamlı tanıları
+//   o ağaçta hiç doğmaz. Kayıt bulunamayınca renk ve ipucu gömülü kanona düştüğü
+//   için kusur görünmez kalır: kullanıcı panelin boş olmasını "temiz" sanar.
+//
+//   ONARIM KOPYA DEĞİL ADRESTİR. Doğan köke kanonun kendisi yazılsaydı doksan
+//   altı kilobaytlık kayıt her projede ikizlenir ve ilk kanon güncellemesinde
+//   bayatlardı; dahası motorun yalnız kanon sahibinin kendi deposunda koşturduğu
+//   kapılar (kullanımsız-tip gibi) her doğan ağaçta uyanırdı. Bu yüzden doğan kök
+//   yalnız bir İŞARETÇİ taşır ve işaretçi, kendisini doğuran kurulumun kökünü
+//   bildirir.
+//
+//   İŞARETÇİ YALNIZ TABANI SUNAR. Çözüm listesi bilinçle iki dosyayla sınırlıdır:
+//   taban kayıt ile onun öğretici ikizi. Çalışma-alanı örtüsü (`ortu.json`) bu
+//   listeye ALINMAZ, çünkü örtü bir varlığın KENDİ tip katkısıdır ve işaretçi
+//   üstünden ödünç alınsaydı doğuran kurulumun örtüsü doğan projenin görünümüne
+//   sızardı; bu STR-3'ün kırmızı çizgisidir.
+const ISARETCI_DOSYASI = join("oz", "siniflama", "isaretci.json");
+const ISARETCININ_SUNDUGU = new Set([
+  join("oz", "siniflama", "kayit.json"),
+  join("oz", "siniflama", "rehber.json"),
+]);
+
+/** İşaretçinin diskteki şekli — yalnız doğuran kurulumun kökünü bildirir. */
+interface KanonIsaretcisi { kanonKoku?: unknown }
+
+/**
+ * Bir dizinden yukarı yürüyüp kanon işaretçisini arar ve bildirdiği kurulum
+ * kökünü döndürür. Bozuk ya da göreli adres taşıyan işaretçi YOK sayılır:
+ * çözülemeyen bir adres, adres olmamaktan daha kötüdür, çünkü var olmayan bir
+ * dosyaya işaret eden kayıt sonraki her aramayı yanıltır.
+ */
+function isaretciKokuBul(baslangicDizin: string): string | undefined {
+  let dizin = baslangicDizin;
+  for (let i = 0; i < KAT_SINIRI; i++) {
+    const aday = join(dizin, ISARETCI_DOSYASI);
+    if (existsSync(aday)) {
+      try {
+        const veri = JSON.parse(readFileSync(aday, "utf8")) as KanonIsaretcisi;
+        const kok = veri.kanonKoku;
+        if (typeof kok === "string" && kok.length > 0 && isAbsolute(kok)) return kok;
+      } catch { /* okunamayan işaretçi yok sayılır — yukarı yürüyüş sürer */ }
+    }
+    const ust = dirname(dizin);
+    if (ust === dizin) break;
+    dizin = ust;
+  }
+  return undefined;
+}
 
 /**
  * Bir dosyanın bağlı olduğu VARLIK KÖKÜ: yukarı yürünür ve `*_anadizin.sar`
@@ -121,6 +173,16 @@ export function varlikDosyasiBul(
         if (existsSync(aday)) return aday;
       }
     } catch { /* kök okunamadıysa sessiz geç */ }
+  }
+  // EN SON ÇARE: kanon işaretçisi. Buraya ancak diskte hiçbir gerçek kayıt
+  // bulunamadığında gelinir, dolayısıyla işaretçi var olan bir kanonu ASLA
+  // gölgelemez; yalnız hiç kanonu olmayan bir kökü kör bırakmaktan kurtarır.
+  if (!ISARETCININ_SUNDUGU.has(goreli)) return undefined;
+  for (const baslangic of [baslangicDizin, ...calismaAlaniKokleri]) {
+    const kurulum = isaretciKokuBul(baslangic);
+    if (!kurulum) continue;
+    const aday = join(kurulum, goreli);
+    if (existsSync(aday)) return aday;
   }
   return undefined;
 }

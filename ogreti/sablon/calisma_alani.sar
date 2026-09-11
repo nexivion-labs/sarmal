@@ -49,5 +49,13 @@
   //      Kitaplık( kod: KTP-AKADEMI, yol: "akademi/", ne: "akademi app ağacı" )
   //    }   // AYNI taban/kimlik'e bağlanır → tek-auth korunur, sıfır yeniden-düzen.
 
-  Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan ağacı — her Uygulamanın planı Faz→Blok→Katman→AltKatman→Adım AYRI .sar'da (MIM-1)" )
+  // ④ İŞ KİTAPLIĞI — KİTAPLIK KADEMESİ ZORUNLUDUR (Founder hükmü 2026-09-09):
+  //    raflar Kitaplıkların İÇİNDE yaşar ve kökün altına çıplak Raf yazılmaz.
+  //    Zaman ekseni bu dosyada DEĞİL, planın kendi dosyasındadır: çalışma alanı
+  //    doğrudan Faz içeremez, çünkü çatı birden çok bağımsız projeyi sarar ve
+  //    çatıya yazılan bir mevsim hangi projenin takvimi olduğunu söyleyemez.
+  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı — plan ve durum rafları burada yaşar" ) {
+    Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan ağacı — her Uygulamanın planı Faz→Blok→Katman→AltKatman→Adım AYRI .sar'da (MIM-1)" )
+    Raf( kod: RAF-DURUM, yol: "durum/", ne: "durum devri — oturum sonu 'nerede kaldık' kaydı" )
+  }
 }

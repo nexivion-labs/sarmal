@@ -122,7 +122,7 @@ import { grafYuz } from "./graf.ts";
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";
 import { designmdTema, temaDesignmd } from "./tema-designmd.ts";
 import { cevir } from "./cevir.ts";
-import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
+import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI, yokSaymaRaporu } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
 import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MTR-A04: kök yüzeyi nöbeti de kök kapısıdır ve varlık karnesine yazmaz
 import type { EbediKilit } from "./kuralci.ts";
 import type { Dugum } from "./sozdizim.ts";
@@ -238,6 +238,12 @@ if (yol === "yonerge-ikizi") {
   const kip = args.includes("--sahnelenmiş") ? "sahnelenmiş" : "çalışma-ağacı";
   const tanilar = yonergeIkiziDenetle(kok, YONERGE_IKIZLERI, kip);
   console.log(ikizRaporu(tanilar, YONERGE_IKIZLERI, kip));
+  // Aynı kurulum tuzağının ikinci yüzü: ikizler bayt özdeş olsa bile küresel yok
+  // sayma kuralı onları (ve bütün `.sar` kaynağını) depodan uzak tutuyor olabilir.
+  // Ölçüm bilgi düzeyindedir ve çıkış kodunu DOLDURMAZ, çünkü istisnanın yokluğu
+  // bir ayrışma değil bir kurulum eksiğidir ve işlemeyi durdurmak onun karşılığı
+  // olmaz; görünmez kalması ise tam olarak ölçülmüş kusurdur (BKM-DNT-A15).
+  console.log(yokSaymaRaporu(kok));
   process.exit(tanilar.some((t) => t.duzey === "hata") ? 4 : 0);
 }
 

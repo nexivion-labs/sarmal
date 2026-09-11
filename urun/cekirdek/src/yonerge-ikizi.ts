@@ -49,16 +49,31 @@
 //   modülünde ve kendi kapı yüzünde yaşaması, kapsamının çalışma alanı kökü olduğunu
 //   yapısal olarak beyan eder.
 //
-//   ⚠️ KURULUM TUZAĞI — `AGENTS.md` KÜRESEL YOK SAYMA KURALINDADIR. Kullanıcının
-//   `~/.gitignore_global` dosyası `CLAUDE.md` ve `AGENTS.md` adlarını yok saydığı
-//   için bu iki dosya depoya ancak `git add -f CLAUDE.md AGENTS.md` ile eklenir.
-//   Sıradan `git add` sessizce hiçbir şey yapmaz ve dosya izlenmeden kalır. Tuzağın
-//   eski hâli şuydu: nöbet çalışır, diskteki dosyaları okur ve yeşil verir; oysa
-//   depoda o dosyanın eski sürümü ya da hiçbir sürümü durur. Sahnelenmiş kip bu
-//   deliği kapatır, çünkü depoya hiç girmemiş bir ikiz index yüzünde YOKTUR ve
-//   nöbet onu `ikiz-eksik-dosya` hatasıyla bildirir. Yine de yeni bir yürütücü adı
-//   ikiz listesine eklenirken zorlama adımı unutulmamalıdır; nöbet artık unutmayı
+//   ⚠️ KURULUM TUZAĞI — YÜRÜTÜCÜ YÖNERGESİ VE `.sar` KAYNAĞI KÜRESEL YOK SAYMA
+//   KURALINDADIR. Kullanıcının `~/.gitignore_global` dosyası `CLAUDE.md` ve
+//   `AGENTS.md` adlarını yok saydığı için bu iki dosya depoya ancak
+//   `git add -f CLAUDE.md AGENTS.md` ile eklenir. Sıradan `git add` sessizce
+//   hiçbir şey yapmaz ve dosya izlenmeden kalır. Tuzağın eski hâli şuydu: nöbet
+//   çalışır, diskteki dosyaları okur ve yeşil verir; oysa depoda o dosyanın eski
+//   sürümü ya da hiçbir sürümü durur. Sahnelenmiş kip bu deliği kapatır, çünkü
+//   depoya hiç girmemiş bir ikiz index yüzünde YOKTUR ve nöbet onu
+//   `ikiz-eksik-dosya` hatasıyla bildirir. Yine de yeni bir yürütücü adı ikiz
+//   listesine eklenirken zorlama adımı unutulmamalıdır; nöbet artık unutmayı
 //   yakalar, fakat yakalamak ile baştan doğru yapmak aynı şey değildir.
+//
+//   TUZAĞIN ÜÇÜNCÜ VE EN AĞIR DESENİ `*.sar` (2026-09-05 ölçümü · BKM-DNT-A15).
+//   Aynı küresel dosya `*.sar` desenini de yok saymaktadır ve bu, iki yürütücü
+//   yönergesinden çok daha geniş bir yarayı açar: o makinede doğan bir projenin
+//   BÜTÜN hafızası depoya hiç girmez. Ölçüm kuramsal değildir. Nexivion'un üç
+//   deposu tuzağı kendi `.gitignore` dosyalarındaki `!*.sar` istisnasıyla aşmakta
+//   ve dört yüz on dokuz kaynak dosyasını izlemektedir; istisnası olmayan bir
+//   müşteri deposunda ise on yedi kaynak dosyasının SIFIRI izleniyordu ve ürünü
+//   ilk kez kullanan dış ajan bunu "proje hafızası tek diskte kalıyor" diye
+//   bildirmiştir. Bu yüzden desen listesi ile istisna ölçümü artık bu modülde
+//   yaşar (`KURESEL_YOK_SAYMA_DESENLERI` · `yokSaymaIstisnasiEksikleri`) ve tek
+//   kaynaktır: doğuş paketi doğan köke yazacağı istisnayı buradan alır, kök
+//   kapısı ise aynı listeyi ölçüp eksik istisnayı adresiyle bildirir. İki yerde
+//   iki liste tutulsaydı biri bayatlar ve hangisinin bağlayıcı olduğu okunamazdı.
 //
 //   KARIŞTIRILMAMASI GEREKEN İKİNCİ `AGENTS.md`. Motorun `doğuş` komutu, YENİ
 //   DOĞAN bir projenin köküne ayrı bir `AGENTS.md` yazar ve onun içeriği dil
@@ -107,6 +122,69 @@ export const YONERGE_IKIZLERI: readonly IkizKumesi[] = [
       "iki ayrı kurala uyar ve hangi metnin bağlayıcı olduğu belirsizleşir (YUZ-1.2).",
   },
 ];
+
+// ── KÜRESEL YOK SAYMA TUZAĞININ ÖLÇÜMÜ (BKM-DNT-A15) ────────────────────────
+
+/**
+ * KÜRESEL YOK SAYMA DESENLERİ — TEK KAYNAK. Kullanıcı düzeyindeki yok sayma
+ * kuralının bu ürünün kaynaklarını vurabilecek desenleri burada, tek listede
+ * yaşar. Liste iki tüketiciye hizmet eder ve ikisi de kendi kopyasını tutmaz:
+ * doğuş paketi doğan köke yazacağı istisna satırlarını buradan üretir, kök
+ * kapısı ise var olan yok sayma dosyasında eksik istisnayı buradan ölçer.
+ *
+ * Sıra anlamlıdır ve korunur: en geniş desen (`*.sar`) başta durur, çünkü eksik
+ * istisna raporu okunurken en ağır kaybın ilk satırda görünmesi gerekir.
+ */
+export const KURESEL_YOK_SAYMA_DESENLERI: readonly string[] = ["*.sar", "CLAUDE.md", "AGENTS.md"];
+
+/** Desenlerin `.gitignore` istisna satırı hâli: `*.sar` → `!*.sar`. */
+export function yokSaymaIstisnaSatirlari(
+  desenler: readonly string[] = KURESEL_YOK_SAYMA_DESENLERI,
+): string[] {
+  return desenler.map((d) => `!${d}`);
+}
+
+/**
+ * Bir yok sayma dosyasının metninde EKSİK olan istisna satırlarını döndürür (SAF).
+ *
+ * Karşılaştırma satır bazlıdır ve yorum satırları elenir, çünkü `# !*.sar` yazan
+ * bir yorum istisnayı KURMAZ; yalnız anar. Baştaki ve sondaki boşluk kırpılır,
+ * çünkü git de kırpar ve nöbetin gerçeği git'in gördüğü gerçektir. Dosya hiç
+ * yoksa (`undefined`) bütün istisnalar eksiktir: yok sayma dosyası olmayan bir
+ * kökte küresel kural tek başına hüküm sürer.
+ */
+export function yokSaymaIstisnasiEksikleri(
+  icerik: string | undefined,
+  desenler: readonly string[] = KURESEL_YOK_SAYMA_DESENLERI,
+): string[] {
+  const gerekli = yokSaymaIstisnaSatirlari(desenler);
+  if (icerik === undefined) return gerekli;
+  const satirlar = new Set(
+    icerik.split("\n").map((s) => s.trim()).filter((s) => s.length > 0 && !s.startsWith("#")),
+  );
+  return gerekli.filter((g) => !satirlar.has(g));
+}
+
+/**
+ * Kökün yok sayma dosyasını okuyup eksik istisnaları raporlar (etkili katman).
+ * Rapor tek satırdır ve ölçtüğü dosyayı adıyla söyler; eksik varsa onarımın
+ * ne olduğunu da yazar, çünkü bu kusurun onarımı üç satır eklemekten ibarettir
+ * ve kullanıcıyı belgeye göndermek gereksiz bir turdur.
+ */
+export function yokSaymaRaporu(kok: string, desenler: readonly string[] = KURESEL_YOK_SAYMA_DESENLERI): string {
+  const yol = join(kok, ".gitignore");
+  const icerik = existsSync(yol) ? readFileSync(yol, "utf8") : undefined;
+  const eksikler = yokSaymaIstisnasiEksikleri(icerik, desenler);
+  if (eksikler.length === 0) {
+    return `🛡️✅ küresel yok sayma istisnası: tam — .gitignore ${yokSaymaIstisnaSatirlari(desenler).join(" · ")} satırlarını taşıyor`;
+  }
+  const nerede = icerik === undefined ? ".gitignore dosyası yok" : ".gitignore eksik";
+  return [
+    `🛡️⛔ küresel yok sayma istisnası: ${eksikler.length} eksik — ${nerede} (${kok})`,
+    `   → şu satırları ${kok}/.gitignore dosyasının sonuna ekle: ${eksikler.join(" · ")}`,
+    "   → ölçmek için: git check-ignore -v <dosya> — hangi kuralın yok saydığını söyler",
+  ].join("\n");
+}
 
 /**
  * Nöbetin ölçtüğü YÜZ. Kip yalnız içeriğin nereden okunduğunu değil, tanının

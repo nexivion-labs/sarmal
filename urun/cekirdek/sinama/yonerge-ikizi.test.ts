@@ -412,3 +412,86 @@ test("canlı: çalışma ağacı yüzü kip eklendikten sonra da ölçülmeye de
   assert.deepEqual(tanilar.map((t) => t.mesaj), [], "çalışma ağacı yüzünde ayrışma var");
   assert.match(ikizRaporu(tanilar), /çalışma ağacı yüzü/);
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BKM-DNT-A15 · KURULUM TUZAĞININ ÜÇÜNCÜ DESENİ: `*.sar`
+//
+//   Nöbetin bugüne kadarki ölçümü ikizlerin bayt özdeşliğiydi ve kurulum tuzağını
+//   yalnız iki yürütücü adı için biliyordu. Ölçüm artık aynı tuzağın en ağır
+//   desenini de kapsıyor: küresel yok sayma kuralı `*.sar` taşıdığında projenin
+//   bütün hafızası depoya hiç girmez. Aşağıdaki nöbetler bunu varsayımla değil
+//   gerçek bir git deposunda `git check-ignore` ile ölçer.
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { mkdirSync } from "node:fs";
+import {
+  KURESEL_YOK_SAYMA_DESENLERI, yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri, yokSaymaRaporu,
+} from "../src/yonerge-ikizi.ts";
+
+const CALISMA_ALANI_KOKU = fileURLToPath(new URL("../../../", import.meta.url));
+
+test("BKM-DNT-A15 · desen listesi `.sar` kaynağını da kapsar ve istisna satırları ondan türer", () => {
+  assert.ok(KURESEL_YOK_SAYMA_DESENLERI.includes("*.sar"),
+    "kurulum tuzağının en ağır deseni listede yok — proje hafızası ölçüm dışı kalır");
+  assert.ok(KURESEL_YOK_SAYMA_DESENLERI.includes("CLAUDE.md"));
+  assert.ok(KURESEL_YOK_SAYMA_DESENLERI.includes("AGENTS.md"));
+  assert.deepEqual(yokSaymaIstisnaSatirlari(), ["!*.sar", "!CLAUDE.md", "!AGENTS.md"]);
+});
+
+test("BKM-DNT-A15 · canlı: bu deponun kendi kökü üç istisnayı da taşır", () => {
+  const rapor = yokSaymaRaporu(CALISMA_ALANI_KOKU);
+  assert.match(rapor, /🛡️✅/u, `bu deponun yok sayma istisnası eksik:\n${rapor}`);
+  assert.deepEqual(
+    yokSaymaIstisnasiEksikleri(readFileSync(join(CALISMA_ALANI_KOKU, ".gitignore"), "utf8")),
+    [],
+  );
+});
+
+test("BKM-DNT-A15 · mutasyon: istisna satırı düşürülünce ölçüm kırmızıya döner", () => {
+  const tam = readFileSync(join(CALISMA_ALANI_KOKU, ".gitignore"), "utf8");
+  // Korumayı METİN ÜSTÜNDE söküyoruz: diskteki dosyaya dokunulmaz, fakat ölçülen
+  // şey gerçek içeriktir ve tek satır düştüğünde nöbetin kırmızıya dönmesi
+  // gerekir. Dönmüyorsa nöbet bu korumayı sınamıyordur.
+  const eksik = tam.split("\n").filter((s) => s.trim() !== "!*.sar").join("\n");
+  assert.deepEqual(yokSaymaIstisnasiEksikleri(eksik), ["!*.sar"],
+    "istisna düşürüldü ama ölçüm hâlâ yeşil — nöbet bu korumayı sınamıyor");
+});
+
+test("BKM-DNT-A15 · gerçek depoda ölçüm: istisnasız kök `.sar` kaybeder, istisnalı kök korur", () => {
+  const ust = mkdtempSync(join(tmpdir(), "sarmal-yoksayma-"));
+  try {
+    const kural = join(ust, "kuresel");
+    writeFileSync(kural, KURESEL_YOK_SAYMA_DESENLERI.join("\n") + "\n", "utf8");
+
+    const depoKur = (ad: string, gitignore?: string): string => {
+      const kok = join(ust, ad);
+      mkdirSync(kok, { recursive: true });
+      execFileSync("git", ["-C", kok, "init", "-q"], { stdio: "ignore" });
+      execFileSync("git", ["-C", kok, "config", "core.excludesFile", kural], { stdio: "ignore" });
+      if (gitignore !== undefined) writeFileSync(join(kok, ".gitignore"), gitignore, "utf8");
+      writeFileSync(join(kok, "deneme.sar"), "// kaynak\n", "utf8");
+      writeFileSync(join(kok, "CLAUDE.md"), "yönerge\n", "utf8");
+      return kok;
+    };
+    const yokSayiliyorMu = (kok: string, dosya: string): boolean => {
+      try {
+        execFileSync("git", ["-C", kok, "check-ignore", "-q", dosya], { stdio: "ignore" });
+        return true;
+      } catch { return false; }
+    };
+
+    // ① İSTİSNASIZ kök — ölçülen kusurun ta kendisi: hafıza depoya girmiyor.
+    const cıplak = depoKur("cıplak");
+    assert.equal(yokSayiliyorMu(cıplak, "deneme.sar"), true, "istisnasız kökte `.sar` yok sayılmıyor — fikstür kusuru yeniden üretemiyor");
+    assert.equal(yokSayiliyorMu(cıplak, "CLAUDE.md"), true);
+    assert.deepEqual(yokSaymaIstisnasiEksikleri(undefined), yokSaymaIstisnaSatirlari());
+
+    // ② İSTİSNALI kök — onarımın kendisi.
+    const korunan = depoKur("korunan", yokSaymaIstisnaSatirlari().join("\n") + "\n");
+    assert.equal(yokSayiliyorMu(korunan, "deneme.sar"), false, "istisna yazıldığı hâlde `.sar` hâlâ yok sayılıyor");
+    assert.equal(yokSayiliyorMu(korunan, "CLAUDE.md"), false);
+    assert.match(yokSaymaRaporu(korunan), /🛡️✅/u);
+  } finally {
+    rmSync(ust, { recursive: true, force: true });
+  }
+});

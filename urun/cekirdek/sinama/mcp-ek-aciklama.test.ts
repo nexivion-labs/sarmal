@@ -188,7 +188,7 @@ test("EKL-F6-A03 nöbeti ③: okur/yazar beyanı gerçek disk davranışıyla ö
     // Şablon: doğuş paketinin ürettiği geçerli proje (denetle'den sıfır hata ile çıkar).
     const sablon = join(kok, "sablon");
     dogusYaz(sablon, "deneme");
-    const ornekKaynak = readFileSync(join(sablon, "plan", "ilk_plan.sar"), "utf8");
+    const ornekKaynak = readFileSync(join(sablon, "is", "plan", "ilk_plan.sar"), "utf8");
 
     /** Araç kendi taze kopyasında koşsun — tur birbirini kirletmesin. */
     const alanKur = (etiket: string): string => {

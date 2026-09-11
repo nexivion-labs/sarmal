@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// plan/ilk_plan.sar — 🗺️ İLK PLAN (doğuş paketi üretti: {{TARIH}})
+// is/plan/ilk_plan.sar — 🗺️ İLK PLAN (doğuş paketi üretti: {{TARIH}})
 //
 //   MIM-1 dört ekseni: Faz=ZAMAN (klasör açmaz) → Blok=İŞ → Katman=TEKNOLOJİ →
 //   Adım=AKIŞ. Her Adım koni taşır (görev · kabul · bağımlı · sınır) — yalın
