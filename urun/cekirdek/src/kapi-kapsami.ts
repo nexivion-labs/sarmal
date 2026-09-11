@@ -253,6 +253,10 @@ const YARDIMCI_ISLEVLER: ReadonlySet<string> = new Set([
   // kapının kendisi bir ölçüm değil, ölçenlerin ortak sorduğu sorudur.
   "adAlaniKapisi", "karneOzeti", "katiRejimliDosyalar", "kodIndeksle", "kodTanimlariIndeksle", "planlamaEvresiMi",
   "programlariYukle", "yerelEvre1Yumusat", "evre1Yumusat",
+  // BKM-DNT-A13: `yolTuru` bir yolun diskteki cinsini ölçer ve TANI ÜRETMEZ;
+  // denetci.ts'ten dışa açılmasının sebebi ölçümün ikinci bir yüzeyde (iskelet
+  // aracı) yeniden yazılmasını önlemektir. Ölçen değil, ölçenlerin sorduğu soru.
+  "yolTuru",
 ]);
 
 /**

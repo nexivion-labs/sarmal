@@ -35,7 +35,7 @@ import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { dogrula } from "./dogrulayici.ts";
-import { dogusEksikTanilari, anadizinBul, adAlaniKapisi } from "./denetci.ts";  // doğuş-rehberi turu: MIM-3'ün tek-dosya yüzü
+import { dogusEksikTanilari, anadizinBul, adAlaniKapisi, yolTuru } from "./denetci.ts";  // doğuş-rehberi turu: MIM-3'ün tek-dosya yüzü
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, type Siniflama } from "./siniflama.ts";
 import { ogretKarti, dogusAnlatisi } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
 import { beceriKartiBul } from "./beceri-karti.ts";   // BKM-DNT-A16: konu kartı araması tek gövdeden okunur
@@ -542,9 +542,28 @@ function denetleProjeAraci(dizin: string): { metin: string; isError: boolean } {
  *  Çekirdek CLI --iskelet ile TEK kaynak (iskeletPlani + iskeletYaz · YUZ-1.2). Güvenli
  *  varsayılan ÖNİZLEME (uret=false diske dokunmaz); mevcut yapı EZİLMEZ. */
 function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: boolean } {
+  // BKM-DNT-A13 · ÖLÇMEDEN KAP İDDİASI YASAĞI. Bu yüzey, denetim komutunda
+  // V1B-TANI-A01 ile kapatılan kusurun ikizini taşıyordu: hem diskte hiç
+  // bulunmayan bir yol hem de bir DOSYA yolu verildiğinde "içinde giriş dosyası
+  // yok" cümlesini basıyor, yani verilen yolun bir KAP olduğunu hiç ölçmeden
+  // iddia ediyordu (bağımsız denetçi ölçümü · 2026-08-09). Ölçüm artık ÖNCE
+  // yapılır ve üç durumun her biri kendi doğru cümlesini alır.
+  const tur = yolTuru(dizin);
+  if (tur === "yok") {
+    return {
+      metin: `✖ '${dizin}' yolu diskte bulunamadı; iskelet, var olmayan bir yolun içinde giriş dosyası arayamadığı için durdu. Yolu düzelt ya da o kökü önce doğur: dogus { hedef: "${dizin}", tur: "proje" }.`,
+      isError: true,
+    };
+  }
+  if (tur === "dosya") {
+    return {
+      metin: `✖ '${dizin}' bir dosyadır, dizin değildir; iskelet ise ilanı bir DİZİNİN içindeki giriş dosyasından okur ve verilen yol dizin olmadığı için arama hiç başlayamadı. İskeleti dosyanın bulunduğu dizine koş: iskelet { dizin: "${dirname(dizin)}" }.`,
+      isError: true,
+    };
+  }
   const anaAdi = anadizinBul(dizin);
   if (!anaAdi || !existsSync(anaAdi)) {
-    return { metin: `✖ '${dizin}' içinde giriş dosyası yok (ana-yok) — önce <varlık>_anadizin.sar yaz (başla { tür }), sonra iskelet.`, isError: true };
+    return { metin: `✖ '${dizin}' dizininde giriş dosyası yok (ana-yok) — önce giriş ilanını yaz (başla { tür }), sonra iskelet.`, isError: true };
   }
   let program;
   try {

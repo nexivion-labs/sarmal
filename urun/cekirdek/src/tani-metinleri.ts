@@ -906,6 +906,12 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         case "girişsiz-dizin":
           // Cümle yalnız ÖLÇÜLEN durumu iddia eder: yolun bir kap olduğu
           // varsayımı, o yol gerçekten bir dizin olarak ölçülmedikçe kurulmaz.
+          // BKM-DNT-A13: yol `--ana` bayrağından geldiğinde cümle de bayrağın
+          // ne beklediğini söyler — "dizininde giriş dosyası yok" demek burada
+          // yanlış olurdu, çünkü kullanıcı dizin değil bir DOSYA vermek istemişti.
+          if (b(p, "disBeyan") && a(p, "hedef", "dizin") === "dizin") {
+            return `'${a(p, "dizin")}' bir dizindir; \`--ana\` ise giriş ilanının kendisini, yani tek bir DOSYA yolunu bekler ve verilen yol dosya olmadığı için okuma hiç başlayamadı.`;
+          }
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
               return `'${a(p, "dizin")}' bir dosyadır, dizin değildir; proje denetimi ise giriş dosyasını bir dizinin içinde arar ve verilen yol dizin olmadığı için arama hiç başlayamadı.`;
@@ -925,6 +931,22 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         case "ad-kuralı":
           return `'${a(p, "ad")}' adını '${a(p, "onerilen")}' olarak değiştir.`;
         case "girişsiz-dizin":
+          // BKM-DNT-A13: öneri, kullanıcının FİİLEN kullandığı bayrağı anar.
+          // Ölçülen kusur şuydu: `--ana` ile var olmayan bir spec dosyası
+          // verildiğinde öneri "var olan bir proje dizini ver" diyordu, oysa
+          // kullanıcı dizin değil bir GİRİŞ DOSYASI vermişti ve bayrağın adı
+          // önerinin hiçbir yerinde geçmiyordu; kullanıcı kendi komutunu
+          // önerinin içinde bulamıyordu.
+          if (b(p, "disBeyan")) {
+            switch (a(p, "hedef", "dizin")) {
+              case "dizin":
+                return "`--ana` bir DOSYA bekler, dizin değil: giriş ilanının kendi yolunu ver (`--ana <varlık>_anadizin.sar`). Dizin üzerinde koşmak istiyorsan bayrağı hiç verme; denetim giriş dosyasını dizinin içinde kendisi arar.";
+              case "yok":
+                return "`--ana` ile verdiğin yol diskte yok: yazımını düzelt ya da bayrağı kaldır. Bayrak verilmediğinde denetim giriş dosyasını dizinin içinde desenle arar (`<varlık>_anadizin.sar`).";
+              default:
+                return "`--ana` ile verdiğin dosya bir giriş ilanı değil; ilanın hiyerarşi, raf ve teknoloji beyanlarını taşıdığından emin ol ya da bayrağı kaldır.";
+            }
+          }
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
               return "Proje denetimini dosyanın bulunduğu dizine koş (`sarmal denetle <dizin>`); yalnız bu tek dosyayı denetlemek istiyorsan dosyayı doğrudan motora ver (`sarmal <dosya.sar>`), çünkü tek-dosya denetimi ayrı bir kiptir.";
@@ -1488,6 +1510,12 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         case "ad-kuralı":
           return `'${a(p, "yol")}' violates the naming rule — it must use lowercase ASCII with no spaces, diacritics or uppercase letters, and underscores as separators.`;
         case "girişsiz-dizin":
+          // BKM-DNT-A13: İngilizce yüz de yalnız ÖLÇÜLENİ iddia eder ve `--ana`
+          // bayrağını anar; çeviri nöbeti artık cümlenin NE İDDİA ETTİĞİNİ ölçer,
+          // dolayısıyla bu daldan kap iddiasına dönmek kapıdan geçemez.
+          if (b(p, "disBeyan") && a(p, "hedef", "dizin") === "dizin") {
+            return `'${a(p, "dizin")}' is a directory, whereas \`--ana\` expects the entry declaration itself, that is a single FILE path, so with a non-file path the read never began.`;
+          }
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
               return `'${a(p, "dizin")}' is a file rather than a directory; a project audit looks for the entry file inside a directory, so with a non-directory path the search never began.`;
@@ -1507,6 +1535,16 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         case "ad-kuralı":
           return `Rename '${a(p, "ad")}' to '${a(p, "onerilen")}'.`;
         case "girişsiz-dizin":
+          if (b(p, "disBeyan")) {
+            switch (a(p, "hedef", "dizin")) {
+              case "dizin":
+                return "`--ana` expects a FILE, not a directory: give the entry declaration's own path (`--ana <varlık>_anadizin.sar`). To run over a directory, omit the flag entirely; the audit then finds the entry file inside the directory itself.";
+              case "yok":
+                return "The path you gave to `--ana` is not on disk: correct the spelling or drop the flag. Without the flag the audit looks for the entry file inside the directory by pattern (`<varlık>_anadizin.sar`).";
+              default:
+                return "The file you gave to `--ana` is not an entry declaration; make sure it carries the hierarchy, shelf and technology declarations, or drop the flag.";
+            }
+          }
           switch (a(p, "hedef", "dizin")) {
             case "dosya":
               return "Run the project audit on the directory that contains the file (`sarmal denetle <dizin>`); to audit that single file instead, hand it straight to the engine (`sarmal <dosya.sar>`), because single-file auditing is a separate mode.";

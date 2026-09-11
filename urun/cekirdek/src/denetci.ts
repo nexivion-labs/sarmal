@@ -474,7 +474,11 @@ export function kuralTanilari(plan: IskeletPlan, disk: DiskAnlikGoruntu): Tani[]
  * Verilen yolun disk üzerindeki gerçek türünü ölçer. Tanı metni bu ölçüme
  * dayanır; ölçülmeyen bir kap iddiası cümleye giremez.
  */
-function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
+// BKM-DNT-A13: ölçüm artık DIŞA AÇIK. Aynı kusur sınıfı (ölçmeden kap iddiası)
+// iskelet aracı yüzeyinde canlı kalmıştı, çünkü bu işlev yalnız bu dosyanın
+// içinde yaşıyordu ve öteki yüzeyler ölçmeden cümle kuruyordu. Tek kaynak: iki
+// yüz de buradan okur, dolayısıyla biri onarılıp öteki bayat kalamaz (YUZ-1.2).
+export function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
   try { return statSync(yol).isDirectory() ? "dizin" : "dosya"; }
   catch { return "yok"; }
 }
@@ -492,9 +496,15 @@ function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
  * birinde yalnız ölçtüğü şeyi iddia eder (öğretim ile tanının aynı şeyi
  * söylemesi hükmü).
  */
-export function anaYokTanisi(yol: string): Tani {
+/**
+ * `disBeyan` (BKM-DNT-A13): yol kullanıcının `--ana` bayrağından mı geldi?
+ * Geldiyse öneri o bayrağı ANAR; yoksa kullanıcı kendi komutunu önerinin içinde
+ * bulamaz ve dizin önerisiyle dosya beyanı birbirine karışır.
+ */
+export function anaYokTanisi(yol: string, disBeyan = false): Tani {
   return eskiTani("kural-ihlali", "hata",
-    { kusur: "girişsiz-dizin", dizin: yol, hedef: yolTuru(yol) }, { satir: 0, sutun: 0 });
+    { kusur: "girişsiz-dizin", dizin: yol, hedef: yolTuru(yol), ...(disBeyan ? { disBeyan: true } : {}) },
+    { satir: 0, sutun: 0 });
 }
 
 // göç motor turu A10 kapanışı (2026-07-27): `eski-giriş-adı` ile `öneksiz-anadizin` emekli

@@ -31,7 +31,7 @@ import { belirtecMemosuyla } from "./belirtec.ts";   // ⚡ PRF-MK-A03: tur öm�
 import { dagKur, dagTanilari, durumTutarlilikTanilari, kopukZincirTanilari, kayipKenarTanilari, ozBagimlilikTanilari, karneOzeti } from "./dag.ts";
 import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import type { EbediKilit } from "./kuralci.ts";
-import { rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
+import { yolTuru, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
 import { dizindenIndeks, INDEKS_DISI } from "./kimlik.ts";
 import { YENI_TANI_INDEKS, taniSicili } from "./tani-sicili.ts";
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
@@ -169,9 +169,14 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // MIM-3 ①: giriş dosyası DESENLE bulunur (*_anadizin.sar; geçişte eski ana.sar tanınır).
   const anaYolu = secenek.anaYolu;
   const anaAdi = anaYolu ?? anadizinBul(dizin);
-  if (!anaAdi || !existsSync(anaAdi)) {
+  // BKM-DNT-A13 · ÖLÇMEDEN OKUMA YASAĞI. Eski kapı yalnız varlığı ölçüyordu ve
+  // bir DİZİN de var olduğu için kapıdan geçiyordu; akış birkaç satır sonra o
+  // dizini dosya gibi okumaya çalışıp ham `EISDIR` yığın izini kullanıcının
+  // yüzüne döküyordu (ölçüm 2026-09-10: `denetle <dizin> --ana /tmp`). Yolun
+  // CİNSİ artık okumadan önce ölçülür ve dizin dürüst bir tanıya çevrilir.
+  if (!anaAdi || !existsSync(anaAdi) || (anaYolu !== undefined && yolTuru(anaAdi) === "dizin")) {
     const s = bos(4);
-    s.akis.push({ dosya: dizin, tanilar: koklendir("anaYokTanisi", [anaYokTanisi(anaYolu ?? dizin)]) });
+    s.akis.push({ dosya: dizin, tanilar: koklendir("anaYokTanisi", [anaYokTanisi(anaYolu ?? dizin, anaYolu !== undefined)]) });
     return s;
   }
   const anaEtiket = anaYolu ? "ana.sar" : basename(anaAdi);

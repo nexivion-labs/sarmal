@@ -874,8 +874,27 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         koşu: "2026-09-10 · KAPANDI. Kabul ölçütü CANLI kanıtlandı: eklenti üretim kipinde paketlendi ve hemen ardından süit koşuldu, yedi yüz beşte yedi yüz beş yeşil çıktı; ardından geliştirme gövdesi geri derlendi ve orada da yedi yüz beşte yedi yüz beş yeşil kaldı, yani nöbet iki kipte de doğru çalışıyor. Bu, hatırlatıcının doğduğu tuzağın kapandığı andır, çünkü daha önce paketlemenin ardından koşan süit kırmızı yanıyordu. Birinci tuzak için ölçüm şudur: küçültülmüş bir üretim gövdesi derlenip bakıldığında yedi kitaplığın YEDİSİNİN de yol izi o gövdede yoktur, aynı izler geliştirme gövdesinde vardır; yani atıf nöbeti bugüne kadar kullanıcıya giden yapıyı hiç ölçmemiştir. Her kitaplık için küçültmeye dayanıklı imza türetildi ve yeni nöbet kendi zeminini de sınıyor, çünkü yol izi küçültülmüş gövdede durursa kırmızı yanıyor ve bu, kusurun tarifinin çürüdüğü anlamına geliyor. İkinci tuzak için sürüm karşılaştırması saf bir gövde olarak yazıldı ve sözlük sırası tuzağı özellikle kapatıldı, çünkü tuzağın doğduğu ölçek tam olarak orasıdır ve sözlükte dokuzuncu alt sürüm yüz otuz yedinciden ileri sayılmaktadır. YOLDA ÜÇÜNCÜ BİR KUSUR bulundu ve aynı sınıftandır: paket girişi duman sınaması sahte düzenleyici nesnesinin anahtarlarını gövde metninden sabit bir ad arayarak çıkarıyordu, küçültme ad alanını yeniden adlandırdığı için desen hiçbir ada denk gelmiyor ve paketleme sonrası ilk koşum kurucu bulunamadı hatasıyla düşüyordu; ad alanı değişkeninin adı artık gövdeden çıkarılıyor ve bu, süitin paketleme sonrası yeşil kalmasının ikinci şartıydı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti yedi yüz beşte yedi yüz beş; üç mutasyonun üçü de kırmızıya düştü. AÇIK KALAN TEK KALEM dürüstçe beyan edilir: ayrışmanın Bildirimler yüzeyine tek satır olarak basılması yapılmadı, çünkü o yüzeye basılan her kayıt kanonik bir tanı kimliği taşımakta ve yeni bir tanı kimliği sicil, üretici ve kanon maddesinden oluşan üçlü senkronu gerektirmektedir; kanon maddesi yazmak hüküm niteliğinde bir değişikliktir ve Founder onayı ister. Karar gövdesi hazırdır ve nöbetlidir; yüzeye bağlanması tek bir kanon maddesiyle açılır."
       }
 
-      Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: beklemede, öncelik: p1, bağımlı: [],
+      Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: tamamlandı, öncelik: p1, bağımlı: [],
         referans: [ HTR-OLCMEDEN-KAP-IDDIASI-BASKA-YUZEYDE ],
+        üretir: [
+          Kod( kod: KOD-SNM-KAP-IDDIASI, dosya: "urun/cekirdek/sinama/olcmeden-kap-iddiasi.test.ts", ne: "🍎 Ölçmeden kap iddiası nöbeti — iskelet aracının olmayan yol ile dosya yolunda iddia kurmadığı, gerçek girişsiz dizinde kurmaya devam ettiği ve dış giriş bayrağının dizin alınca çökmeyip dürüst tanı döndürdüğü ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (üretici · taze süreç) ──
+        //   Üç kalemin üçü de canlı olarak yeniden üretildi. ① İskelet aracı hem
+        //   `/tmp/kesinlikle-yok-boyle-dizin-12345` yolunda hem de bir DOSYA
+        //   yolunda "içinde giriş dosyası yok" cümlesini basıyordu; ölçüm artık
+        //   önce yapılıyor ve üç durum kendi cümlesini alıyor. ② Dış giriş
+        //   bayrağı `--ana` ile var olmayan bir yol verildiğinde cümle doğruydu
+        //   fakat öneri "var olan bir proje DİZİNİ ver" diyordu ve bayrağın adını
+        //   hiç anmıyordu; kullanıcı kendi komutunu önerinin içinde bulamıyordu.
+        //   Aynı bayrağa bir DİZİN verildiğinde ise motor ham bir okuma hatasıyla
+        //   çöküyor ve yığın izini kullanıcının yüzüne döküyordu; bu, hatırlatıcının
+        //   tarif ettiğinden daha ağır bir kusurdu ve ölçüm sırasında bulundu.
+        //   ③ İngilizce cümleyi eski kap iddiasına döndüren mutasyon artık
+        //   kapıdan geçemiyor: çeviri nöbeti anahtar eşliğinden iddia düzeyine
+        //   yükseltildi ve cümlenin NE İDDİA ETTİĞİNİ ölçüyor. Nöbetin körlük
+        //   sınavı da yazıldı: gerçekten girişsiz bir dizinde iddia KURULMAK
+        //   zorundadır, yoksa bütün cümleleri boşaltmak da nöbeti yeşil bırakırdı.
         ne: "🧰 Ölçmeden kap iddiası kuran kalıbın denetim komutu dışındaki üç yüzeyden sökülmesi: iskelet aracı verilen yolun bir kap olup olmadığını ölçmeden içinde giriş dosyası yok cümlesini basar; dış şema bayrağıyla var olmayan yol verildiğinde hiçbir nöbet yolu ölçmez ve öneri kullanıcının kullandığı bayrağı anmaz; İngilizce tanı cümlesini eski kap iddiasına döndüren mutasyon kapıdan yeşil geçer. Üç kalem aynı kusur sınıfının yüzleridir ve 2026-08-09 tarihinde bağımsız denetçi tarafından ölçülmüştür." ) {
         görev: [
           "İskelet aracına yolun varlığı ile kap olup olmadığı ölçümünü koy; olmayan yol ile dosya yolu için ayrı ve doğru cümle bas.",
@@ -888,6 +907,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "İngilizce kap iddiası mutasyonu kapıdan geçemez; çekirdek süiti yeşildir."
         ]
         sınır: "Denetim komutunun V1B-TANI-A01 ile kapanmış onarımına dokunulmaz."
+        koşu: "2026-09-10 · KAPANDI. Üç kalemin üçü de ölçülüp kapandı. İskelet aracı hem var olmayan bir yolda hem de bir dosya yolunda içinde giriş dosyası yok diyordu; ölçüm artık iddiadan ÖNCE yapılmakta ve üç durum kendi doğru cümlesini almaktadır. Ölçüm yeniden yazılmadı, denetim komutundaki yol türü ölçücüsü dışa açıldı ve iki yüz aynı kaynaktan okuyor. Dış şema bayrağının önerisi bayrağın adını hiç anmıyordu ve artık iki dilde de anıyor. Çeviri nöbeti anahtar eşliğinden iddia düzeyine yükseltildi; bu, hatırlatıcının en önemli kalemiydi, çünkü İngilizce cümleyi eski kap iddiasına döndüren mutasyon eskiden kapıdan yeşil geçiyordu. KAYITTA OLMAYAN DAHA AĞIR BİR KUSUR ölçülüp onarıldı: dış şema bayrağına bir DİZİN verildiğinde motor ham bir okuma hatasıyla çöküyor ve çalışma ortamının yığın izini kullanıcının yüzüne döküyordu; sebep kapının yalnız varlığı ölçüp cinsi ölçmemesiydi, çünkü bir dizin de var olduğu için kapıdan geçiyor ve birkaç satır sonra dosya gibi okunmaya çalışılıyordu. Kontrolcü bunu bağımsız olarak sınadı ve artık dizin verildiğinde de var olmayan yol verildiğinde de dürüst bir tanı dönüyor, yığın izi yok. Nöbetlere körlük sınavı da kondu: gerçekten girişsiz bir dizinde cümlenin iddiayı KURMASI şart, yoksa nöbet bütün cümleleri boşaltmakla da yeşil kalırdı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; üç mutasyonun üçü de kırmızıya düştü."
       }
 
       Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
