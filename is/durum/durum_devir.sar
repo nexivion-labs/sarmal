@@ -74,6 +74,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
                          CODEX-MCP-AYARI-SILINEN-ESKI-DEPO-YOLUNA-ISARET-EDIYOR,
                          SOL-IDA-SINAVI-CANLI-KOSUYOR-PLANDA-BEKLEMEDE-GORUNUYOR,
                          YAYIN-KARARLARI-LISANS-APACHE-EKL-F6-A05-ERTELE-GOC-A08-KAPAT-UZAK-ONCE-OZEL,
+                         DURUMLAR-PANELI-GELISTIRMEYE-ALINDI-YAYINI-BEKLEMEZ-UYM-DRM-A01-A02,
+                         MINI-GRAF-CALISMA-ALANI-KUMELERI-GELISTIRMEYE-ALINDI-MAGAZA-SONRASI-VIT-GRAF-A21,
                          E-POSTA-VE-UZAK-DEPO-ACMA-EN-SONA ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
@@ -1864,5 +1866,15 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
         sürümüne yükseltildi ve kuruldu; pencere yeniden yüklendiğinde panel komut
         satırıyla aynı motoru kullanır. Git'e hiçbir şey işlenmemiş ve
         gönderilmemiştir; inceleme ve onay Founder'ındır.
+
+        FOUNDER HÜKMÜ · 2026-09-11 · DURUMLAR PANELİ VE MİNİ GRAF: Founder,
+        kanonun YUZ-3.5 maddesinin öngördüğü Durumlar panelinin (UYM-DRM-A02 ve
+        onun öncülü olan Blok durum kayıtlarının doğması, UYM-DRM-A01) ve Mini
+        Graf yüzeyinde çalışma alanı kümelerinin görünmesinin (VIT-GRAF-A21)
+        geliştirmeye alınmasına hükmetmiştir. Founder, Durumlar panelinin kendi
+        yerini alması için mağaza yüklemesinin beklenmesine gerek olmadığını,
+        buna karşılık Mini Graf işinin mağaza yüklemesinden sonra yürüyeceğini
+        beyan etmiştir. İki işin ayrıntıları ve plan kenarlarının bu hükme göre
+        güncellenmesi, Founder'ın zamanı geldiğinde vereceği tarife bağlıdır.
         """
 }
