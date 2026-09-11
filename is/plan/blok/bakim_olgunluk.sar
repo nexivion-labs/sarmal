@@ -1009,8 +1009,36 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         koşu: "2026-09-10 · KAPANDI. Sınıflama kaydı artık süreç başında değil çağrı anında tazedir; mühür değişiklik zamanı ile boyuttan kurulur, çünkü içerik özeti almak dosyayı okumayı gerektirir ve kaçınılmak istenen bedel tam olarak odur. Bozuk yazımda son doğru şema korunur, çünkü yarım yazılmış bir dosyaya düşmektense bilinen doğru şemayla cevap vermek yeğdir. Maliyet ölçülmüştür: değişmeyen kaynakta okuma başına dört virgül yedi mikrosaniye, aynı kaynağın tam yüklemesi ise sıfır virgül seksen dokuz milisaniyedir, yani yaklaşık yüz doksan kat pahalıdır ve panel turu dört yüz milisaniye ölçeğinde olduğu için bedel ölçüm gürültüsünün altındadır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz yetmiş altıda bin iki yüz yetmiş altı, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; iki mutasyonun ikisi de kırmızıya düştü. ÖNEMLİ SINIR dürüstçe beyan edilir ve bu oturumda iki kez canlı yaşanmıştır: bu mekanizma VERİ bayatlığını çözer, KOD bayatlığını çözmez. Sunucunun kendi modülleri süreç başında yüklenir, dolayısıyla motorun gövdesi değiştiğinde süreç yeniden başlatılmadıkça eski davranış sürer; graf aracı ile doğuş aracı bu oturumda tam olarak bu ikinci türden bayat cevap vermiştir. İki bayatlık aynı belirtiyi verdiği için ayrım kayda yazılmıştır, yoksa onarım yanlış yerde aranır."
       }
 
-      Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],
+      Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: tamamlandı, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],
         referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
+        üretir: [
+          Kod( kod: KOD-SNM-GRAF-OZET, dosya: "urun/cekirdek/sinama/graf-ozet-kipi.test.ts", ne: "🍎 Graf özet kipi nöbeti — altı yüz Adımlık fikstürde varsayılan çıktının istemci sınırının altında kaldığı, ayrıntının kök koduyla tam geldiği ve özetin kopuk uçları gizlemediği ölçülür" )
+        ],
+        // ── 2026-09-10 · ÇIKTI BOYUTU ÖLÇÜMÜ (üretici · taze süreç) ──
+        //   Bu deponun tam graf çıktısı 436.698 karakter ve 19.194 satırdır; ilk
+        //   dış kullanıcının bildirdiği 55.916 karakterin yaklaşık sekiz katıdır.
+        //   Özet kipiyle varsayılan çıktı yirmi beş bin karakterlik istemci
+        //   sınırının altına indi ve karne, kök kademesi, tip dökümü ile kopuk
+        //   uçları taşımayı sürdürüyor; ayrıntı kök koduyla tam JSON döner.
+        //   Serileştiriciye dokunulmadı: `grafYuz` olduğu gibi durur ve özet aynı
+        //   `grafCikar` çekirdeğinden türer, dolayısıyla ikinci bir graf mantığı
+        //   doğmadı. Kırpılmış bir cevabın nasıl açılacağını söylememek kullanıcıyı
+        //   tahmine bıraktığı için çıktının son satırı ayrıntı çağrısını yazar.
+        // ── 2026-09-10 · ÖLÇÜM TAZELEMESİ (kontrolcü) ──
+        //   Sunucunun kendi talimat gövdesi bugün beş cümledir ve beşincisi hâlâ
+        //   tek başına Adım durumunun elle düzenlenmemesini söylemektedir. Kilidin
+        //   YALNIZ durum alanında olduğu, öteki alanların düzenlenip denetimden
+        //   geçtiği ve kabul ölçütü ile şema sürümü gibi hüküm niteliğindeki
+        //   değişikliklerin Founder onayı istediği hâlâ yazılı değildir; dış
+        //   kullanıcının yazma kapısını kapalı sanmasının sebebi bu tek cümledir.
+        //   Aynı gövdede ikinci bir eksik ölçülmüştür: talimat yalnız "yazmadan
+        //   önce başla" demekte, doğuş ile iskelet araçlarının adını hiç anmamakta
+        //   ve boş dizinde ağacı elle yazma yasağını taşımamaktadır. Bu ikinci
+        //   eksik BKM-DNT-A15 turunda ARAÇ AÇIKLAMALARINA indi fakat sunucunun
+        //   talimat gövdesine inmedi; ikisi aynı cümle kümesinde yaşadığı için
+        //   aynı turda kapanır.
+        //   Graf sınırı da bu oturumda bizzat yaşandı: kapalı ürünün grafı iki yüz
+        //   doksan sekiz bin karakter döndü ve istemci sınırında dosyaya düştü.
         ne: "📏 İlk dış kullanıcının iki kusuru: graf aracının çıktısı elli beş bin karakteri aşıp istemci sınırında dosyaya düşmüş ve ajan yalnız kuyruğunu okumuştur; sunucu talimatındaki tek yazma cümlesi bütün .sar içeriğine genellenmiş ve ajan şema ile kabul ölçütünü düzenleyemediğini sanmıştır. Bul aracının sonuç sınırı vardır, graf aracının yoktur." ) {
         görev: [
           "Graf aracına özet kipi ya da sayfalama ekle: varsayılan çıktı karne ve kök kademesini verir, ayrıntı kök koduyla istenir; bul aracının sonuç sınırı deseni izlenir.",
@@ -1022,6 +1050,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Talimat iki dilde üç parçayı da taşır ve iki dillilik nöbeti yeşildir."
         ]
         sınır: "Graf serileştiricisinin kendisi değişmez; yalnız MCP yüzü özetler. Yeni bir yazma aracı doğmaz."
+        koşu: "2026-09-10 · KAPANDI. Ölçüm ilk dış kullanıcının bildirdiğinden çok daha ağır çıktı: bu deponun tam graf çıktısı dört yüz otuz altı bin altı yüz doksan sekiz karakter ve on dokuz bin yüz doksan dört satırdır, yani bildirilen elli beş bin dokuz yüz on altı karakterin yaklaşık sekiz katıdır. Özet kipiyle canlı araç çıktısı dört bin beş yüz elli beş karaktere indi, yani doksan altı kat küçüldü ve karneyi, kök kademesini, tip dökümünü ve kopuk uçları taşımayı sürdürüyor; ayrıntı kök koduyla istendiğinde tam çıktı dönüyor. Serileştiriciye dokunulmadı ve özet aynı graf çekirdeğinden türetildi, dolayısıyla ikinci bir graf mantığı doğmadı. Nöbet altı yüz Adımlık bir fikstürle kuruldu ve önce tam çıktının sınırı gerçekten aştığını ölçüyor, yoksa özet kipi hiçbir şey kanıtlamazdı. Yazma talimatı üç parçaya açıldı ve iki dilde eşlendi: yalnız durum alanı kilitlidir, öteki bütün alanlar düzenlenip denetimden geçer ve kapı onlar için kapalı değildir, kabul ölçütü ile şema sürümü gibi hüküm niteliğindeki değişiklikler Founder onayı ister. Bu üçüncü parça, dış kullanıcının yazma kapısını tümüyle kapalı sanmasına yol açan tek cümlenin karşılığıdır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz yetmiş altıda bin iki yüz yetmiş altı, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; dört mutasyonun dördü kırmızıya düştü."
       }
       Adım( kod: BKM-KRR-A01, durum: tamamlandı, bağımlı: [], üretir: [KOD-KARARLAR, KOD-KARARLAR-NOBET],
         // KAPANIŞ 2026-07-12: 90/90 karar → yasa/kararlar/ 9 dosya (8 küme + defter_cercevesi: rezerve numara yeri +

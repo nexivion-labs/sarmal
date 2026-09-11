@@ -100,6 +100,50 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
   return { ...(kök ? { kök } : {}), düğümler, kopuk, özet: karneOzeti(özetDag) };
 }
 
+/**
+ * ÖZET YÜZÜ (BKM-MCP-A03). Tam graf bu depoda 436.698 karakter ve 19.194 satır
+ * ölçülmüştür (2026-09-10); ilk dış kullanıcı 2026-09-05 tarihinde 55.916
+ * karakterlik bir çıktının istemci sınırını aşıp dosyaya düştüğünü ve yalnız
+ * kuyruğunu okuyabildiğini bildirmiştir. Sınırı aşan bir cevap, cevap değildir.
+ *
+ * Bu yüz SERİLEŞTİRİCİYİ DEĞİŞTİRMEZ — `grafYuz` olduğu gibi durur ve ayrıntı
+ * isteyen onu çağırmaya devam eder. Özet, aynı `grafCikar` çekirdeğinden türer;
+ * ikinci bir graf mantığı doğmaz (YUZ-1.2). İçerik üç bölümdür: karne, kök
+ * kademesi (kapsayanı olmayan düğümler) ve tip dökümü. Ayrıntı kök koduyla
+ * istenir ve çıktının son satırı bunu açıkça söyler, çünkü kırpılmış bir cevabın
+ * nasıl açılacağını söylememek kullanıcıyı tahmine bırakır.
+ */
+export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<KOD>" }'): string {
+  const KOK_SINIRI = 40;
+  const kokler = g.düğümler.filter((d) => d.kapsayan === undefined);
+  const tipSayisi = new Map<string, number>();
+  for (const d of g.düğümler) tipSayisi.set(d.tip, (tipSayisi.get(d.tip) ?? 0) + 1);
+  const tipDokumu = [...tipSayisi.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "tr"))
+    .map(([tip, n]) => `${tip} ${n}`)
+    .join(" · ");
+  const gosterilen = kokler.slice(0, KOK_SINIRI);
+  const satirlar = [
+    "🕸️ GRAF — ÖZET KİPİ (varsayılan). Tam düğüm listesi ayrıntı kipindedir.",
+    "",
+    `📋 Karne: ${JSON.stringify(g.özet)}`,
+    `🔢 Düğüm ${g.düğümler.length} · kök kademesi ${kokler.length} · kopuk uç ${g.kopuk.length}`,
+    `🗂️ Tip dökümü: ${tipDokumu || "(düğüm yok)"}`,
+    "",
+    `🌱 KÖK KADEMESİ${kokler.length > KOK_SINIRI ? ` (ilk ${KOK_SINIRI})` : ""}:`,
+    ...gosterilen.map((d) => `   ${d.kod} [${d.tip}]${d.durum ? ` · ${d.durum}` : ""} — ${d.dosya}:${d.satır}`),
+    ...(kokler.length > KOK_SINIRI ? [`   … ${kokler.length - KOK_SINIRI} kök daha var (ayrıntı için kök kodu ver).`] : []),
+  ];
+  if (g.kopuk.length) {
+    const ilk = g.kopuk.slice(0, 10);
+    satirlar.push("", `🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`);
+    for (const k of ilk) satirlar.push(`   ${k.kaynak} → ${k.hedef}`);
+    if (g.kopuk.length > 10) satirlar.push(`   … ${g.kopuk.length - 10} kopuk uç daha.`);
+  }
+  satirlar.push("", `🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`);
+  return satirlar.join("\n") + "\n";
+}
+
 /** JSON yüzü (saf render): 2-boşluk girintili, determinist. */
 export function grafYuz(dag: Dag, kök?: string): string | undefined {
   const g = grafCikar(dag, kök);

@@ -46,7 +46,7 @@ import { MCP_ARAC_ADI, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinl
 import { tazeKaynak } from "./taze-kaynak.ts";   // BKM-MCP-A02: çağrı anında mühür karşılaştırması
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
 import { dagKur } from "./dag.ts";
-import { grafYuz } from "./graf.ts";  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
+import { grafCikar, grafOzetYuzu } from "./graf.ts";   // BKM-MCP-A03: özet kipi aynı çekirdekten türer  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";  // şablon kütüphanesi tek kaynak (YUZ-1.2)
 import { iskeletPlani, iskeletYaz } from "./iskeletci.ts";  // GBR-A04/#7: iskelet aracı CLI --iskelet ile TEK çekirdek (YUZ-1.2)
 import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI } from "./kimlik.ts"; // EKL-F11-A05: gezin aracı = eklentinin F12/⇧F12'siyle aynı çekirdek (YUZ-1.2)
@@ -454,11 +454,19 @@ function grafAraci(dizin: string, kok?: string): { metin: string; isError: boole
   }
   // ORK-4 (KPS-ADA-A01): CLI ikizinin taşıdığı ad alanı kapısı burada da taşınır.
   const kapi = adAlaniKapisi(programlar, dizin);
-  const çıktı = grafYuz(dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) }), kok);
-  if (çıktı === undefined) {
+  const dag = dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) });
+  // BKM-MCP-A03: VARSAYILAN ÖZETTİR. Tam graf bu depoda 436.698 karakter ölçüldü
+  // ve ilk dış kullanıcının istemcisinde 55.916 karakterlik bir çıktı sınırı aşıp
+  // dosyaya düşmüştü; ajan yalnız kuyruğunu okuyabiliyordu. Ayrıntı kök koduyla
+  // istenir ve o yol tam JSON'u olduğu gibi döndürür (serileştirici değişmedi).
+  const g = grafCikar(dag, kok);
+  if (g === undefined) {
     return { metin: `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`, isError: true };
   }
-  return { metin: çıktı, isError: false };
+  if (kok === undefined) {
+    return { metin: grafOzetYuzu(g, `${MCP_ARAC_ADI.graf} { dizin, kok: "<KOD>" }`), isError: false };
+  }
+  return { metin: JSON.stringify(g, null, 2) + "\n", isError: false };
 }
 
 function baslaAraci(tur?: string): { metin: string; isError: boolean } {

@@ -730,7 +730,11 @@ export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
     "Yeni bir ağaç, anadizin ya da mimari ELLE YAZILMAZ ve bu yasak boş bir dizinde de geçerlidir; sıra zorunludur: basla rehberi okunur, dogus ağacı doğurur, iskelet ilandaki eksik yapıyı diske indirir ve her .sar yazımından sonra denetle-proje koşar. Doğuş anında hiçbir beceri kartı ateşleyemez, çünkü kartlar yalnız geliştirmede bir Adım varken ateşler; o anın öğretisi ogret ile basla çıktılarındadır ve ikisi de boş dizinde koşar.",
     "Araçlar istemcide ertelenmiş olabilir ve ilk çağrıdan önce yüklenmeleri gerekebilir; yüklemek bir çağrıdır, atlamak yanlış sayıya mal olur.",
     ".sar dosyalarını ham grep, sed ya da el yazması ayrıştırıcıyla okumak anti-desendir: hızlı görünür fakat yanlış şeyi sayar ve yanlış güven verir. Ham arama yalnız .sar dışı dosyalar ve henüz ilan edilmemiş şeyler için meşrudur.",
-    "Adım durumunu elle düzenleme; tek yazım kapısı durum-guncelle aracıdır.",
+    // BKM-MCP-A03: bu cümle tek parçayken bütün .sar içeriğine genellendi ve ilk dış
+    // kullanıcı yazma kapısını fiilen kapalı sanıp şema sürümü ile kabul ölçütü
+    // değişikliğini yapamadığını bildirdi (2026-09-05). Kilitli olan yalnız durum
+    // alanıdır; ayrım üç parçaya açıldı, çünkü yazılmayan ayrım tahmin edilir.
+    "Yazma kapısı üç parçadır ve üçünü karıştırma. BİRİNCİSİ: bir Adımın `durum:` alanı elle düzenlenmez, tek yazım kapısı durum-guncelle aracıdır. İKİNCİSİ: öteki bütün alanlar — ne, görev, kabul metni, sınır, bağımlı, referans ve gövde — normal biçimde düzenlenir ve denetimden geçer; bu alanlar için kapı KAPALI DEĞİLDİR. ÜÇÜNCÜSÜ: hüküm niteliğindeki değişiklikler, yani bir Adımın kabul ölçütünü gevşetmek ya da şema/kanon sürümünü değiştirmek, Founder onayı ister ve onaysız yapılmaz.",
   ].join(" "),
   en: [
     "This project is governed by Sarmal: plans, rules, types and status live only in .sar files, and this server's tools are their sole authoritative reading surface.",
@@ -738,7 +742,7 @@ export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
     "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while a Step is in progress; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
     "The tools may be deferred in the client and need loading before the first call; loading is one call, skipping it costs a wrong number.",
     "Reading .sar files with raw grep, sed or a hand-written parser is an anti-pattern: it looks fast but counts the wrong thing and gives false confidence. Raw search is legitimate only for non-.sar files and for things not yet declared.",
-    "Do not edit a Step's status by hand; the single write gate is the durum-guncelle tool.",
+    "The write gate has three parts; do not conflate them. FIRST: a Step's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening a Step's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
   ].join(" "),
 };
 

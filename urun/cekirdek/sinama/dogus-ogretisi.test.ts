@@ -258,3 +258,22 @@ test("BKM-DNT-A16: CLI ikizi konu kartını döndürür — 'henüz yolda' cevab
   assert.doesNotMatch(cikti, /henüz yolda/u, "bayat yönlendirme cümlesi kalkmalı");
   assert.doesNotMatch(cikti, /SARMAL KARŞILAMA KARTI/u, "konulu çağrı karşılama kartına düşmemeli");
 });
+
+// ── BKM-MCP-A03: yazma kapısının üç parçası, iki dilde ─────────────────────────
+/** Ölçülen kusur: talimat tek cümleyken bütün .sar içeriğine genellendi ve ilk dış
+ *  kullanıcı yazma kapısını fiilen kapalı sanıp şema sürümü ile kabul ölçütü
+ *  değişikliğini yapamadığını bildirdi (2026-09-05). Yazılmayan ayrım tahmin edilir. */
+test("BKM-MCP-A03: sunucu talimatı yazma kapısının ÜÇ parçasını da taşır (iki dil)", () => {
+  const tr = MCP_SUNUCU_TALIMATI.tr;
+  assert.match(tr, /BİRİNCİSİ/u, "birinci parça: yalnız durum alanı kilitli");
+  assert.match(tr, /durum-guncelle/u);
+  assert.match(tr, /İKİNCİSİ/u, "ikinci parça: öteki alanlar düzenlenip denetimden geçer");
+  assert.match(tr, /kapı KAPALI DEĞİLDİR/u, "kapının açık olduğu açıkça yazılmalı");
+  assert.match(tr, /ÜÇÜNCÜSÜ/u, "üçüncü parça: hüküm niteliğindeki değişiklik Founder onayı ister");
+  assert.match(tr, /Founder onayı ister/u);
+  const en = MCP_SUNUCU_TALIMATI.en;
+  for (const [ad, desen] of [["FIRST", /FIRST/u], ["SECOND", /SECOND/u], ["THIRD", /THIRD/u],
+    ["gate not closed", /gate is NOT closed/u], ["Founder approval", /Founder approval/u]] as const) {
+    assert.match(en, desen, `İngilizce yüz '${ad}' parçasını taşımalı`);
+  }
+});

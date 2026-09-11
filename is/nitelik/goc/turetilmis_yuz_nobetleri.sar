@@ -32,7 +32,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c739add6c44115e0b45c16351b8cbbe4541cfb6b5d345d732adfefa0fdcc1470` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `8cd58974df692976b76c673145f9d6c76b615a361cf8948b541d0b41bd899a37` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `d11817e3b9f2de3a955a6bc87c9e9e749d20eccb2693e4cec05fdeca7cdc174f` |
 | `urun/cekirdek/src/dil-baglami.ts` | `0a52abaa324203222261a860af02ff56c43e0b37d4def8f97dd8ce0e59675ab7` |
 | `urun/eklenti/package.nls.tr.json` | `55baeb49c9a0dc46f9c612638a33c4268ec3ae1da98741ad89656cf18b0d3fbe` |
 | `urun/eklenti/package.nls.json` | `782d9834d9caed2e3a3306a3fad41301149d19efae7fcc5d78eefc9ecf38e067` |
