@@ -115,8 +115,10 @@ npm test           # node --test "sinama/*.test.ts"
 npm run tip-denetle # tsc --noEmit
 ```
 
-Şu anda çekirdekte **899 sınama** vardır ve hepsi yeşildir. Kırmızı bir sınamayla katkı
-gönderilmez; sahte yeşil tarihe girmez.
+Bağlayıcı sınama sayısı her zaman koşunun kendi bastığı `pass` satırıdır; bu rehbere yazılan
+sayı yalnız son ölçümün tarihini taşır. Son ölçüm 2026-09-10 tarihinde alınmıştır ve çekirdek
+süiti **1298 sınama** ile tam yeşildir. Kırmızı bir sınamayla katkı gönderilmez; sahte yeşil
+tarihe girmez.
 
 VS Code eklentisinin kendi derleme ve sınama komutları `urun/eklenti/package.json`
 içindedir; eklentiye dokunuyorsanız `urun/eklenti/README.md` dosyasını okuyun.
@@ -139,6 +141,14 @@ sessizce atlar.
 | ① | **Sapma denetimi** | `sarmal denetle .` koşar. Hata varsa işleme **bloklanır**; uyarı geçer. Sapma tarihe girmez. |
 | ② | **Süit kapısı** | Yalnız `urun/cekirdek/{src,sinama}` ya da `urun/eklenti/{src,sinama}` altında `.ts` değişikliği hazırlandıysa ateşlenir ve ilgili `npm test` koşar. **Kırmızı süit işlemeyi bloklar.** Plan ve durum işlemeleri bu kapıda yavaşlamaz. |
 | ③ | **Proje-özel kurallar** | `kanca/proje-kurallari.sh` varsa koşar. Bugün bu dosya **yoktur**; kapı bilerek ince tutulmuştur ve ileride doldurulacaktır. |
+
+Aynı klasörde ikinci bir kanca daha yaşar: **`kanca/commit-msg`**. Bu kanca işleme mesajının
+kendisini ölçer ve başlığın en çok yetmiş iki karakter olmasını, `tip(kapsam): özet` biçimine
+uymasını, nokta ayracıyla etiket dizilmemesini, özette art arda üç büyük harfli sözcük
+bulunmamasını ve başlığın nokta ile bitmemesini şart koşar; ayrıca ortak-yazar, iz ve
+imza-altı satırlarını reddeder ve beş dosyayı ya da yüz satırı aşan bir işlemede gövdeye
+`Ne:` ile `Neden:` satırlarını zorunlu kılar. Biçimin tam metni
+`yasa/yonetisim/surum_yonetisimi.sar` kaynağında yaşar ve bu rehber onu yinelemez.
 
 **Kancayı doğrulama-yok bayrağıyla atlamak yasaktır.** Kanca kendi çıktısında `--no-verify`
 kaçışını gösterir, ama bu kaçış yalnız kancanın kendisinin arızalandığı hâl içindir; kırmızı
@@ -168,6 +178,13 @@ hâle gelir.
 **Bütün işleme mesajları ve açıklamalar tam Türkçedir.** İngilizce sözcük geçmez; iç jargon
 ve eski kod atfı geçmez.
 
+**Dil ve üslup şartı katkı metinlerini de bağlar.** Kanonun `DIL-1.5` maddesi kanonik kaynağa
+yazılan her metnin akademik üslupla ve tam cümlelerle kurulmasını şart koşar; bu şart yalnız
+`.sar` alanlarını değil, işleme mesajlarının gövdesini ve birleştirme isteğinin metnini de
+kapsar. Pratikte bunun anlamı şudur: eksiltili yapı, madde imiyle sıralanmış çıplak sözcük
+öbeği ve gerekçesiz hüküm kayıt sayılmaz. Maddenin bağlayıcı metni `yasa/kanon/dil.sar`
+kaynağındadır ve bu rehber onu yinelemez, yalnız adresini verir.
+
 Başlık biçimi `<tip>(<kapsam>): <özet>` şeklindedir. Özet emir ya da durum kipindedir,
 en çok 72 karakterdir ve sonunda nokta yoktur.
 
@@ -187,7 +204,7 @@ denetim geçti) ve `Kontrol noktası:` (hangi etiket kondu) eklenir:
 özellik(araç): süit kapısını eklenti tarafına genişlet
 Ne: İşleme öncesi kanca artık eklenti sınamalarını da koşuyor.
 Neden: Eklenti kodu kırmızıyken işlemenin geçmesi sahte yeşil üretiyordu.
-Kapı: denetle 0 hata · çekirdek süiti 899 yeşil.
+Kapı: denetle 0 hata · çekirdek süiti 1298 yeşil.
 ```
 
 Ortak-yazar satırı, iz satırı ve imza-altı **eklenmez** — ne işleme mesajına, ne
@@ -211,14 +228,32 @@ Birleştirme kararı bu depoda tek yetkiyle verilir ve üretici ile denetleyen r
 katkıyı siz gönderirsiniz, birleştirmeyi bakım sorumlusu onaylar. Kapı üç şart ölçer —
 denetim sıfır hata, sınamalar yeşil, yazılı onay.
 
+Bu ayrılık bir nezaket kuralı değil, kanonun `ORK-6.1` maddesinde yaşayan bir hükümdür ve
+katkı sürecindeki karşılığı şudur: bir katkıyı gönderen taraf o katkıya kabul hükmü veremez,
+denetleyen taraf yalnız teslimin kendisini, isteğin ilan ettiği kabul ölçütlerini ve yeniden
+üretilebilir kanıtı görür, üreticinin çalışma bağlamına ya da gerekçelendirme konuşmasına
+dayanan bir kabul verilmez. Bunun sizin için pratik sonucu, `Kapı (kontrol)` bölümünde
+yazdığınız her sayının denetleyen tarafça sizin çıktınıza bakılmadan yeniden koşulabilir
+olmasıdır; yeniden koşulamayan bir sayı kanıt değil beyandır. Maddenin bağlayıcı metni
+`yasa/kanon/ork.sar` kaynağındadır.
+
 ## 9. Ne değişmez
 
 | Yer | Neden dokunulmaz |
 |---|---|
-| `yasa/` | Kurallar ve kararlar defteri. Bir kural ancak kendi süreciyle değişir, katkı içinde yan yol olarak değil. |
+| `yasa/` | Kurallar ve kararlar defteri. Bir kural ancak kendi süreciyle değişir, katkı içinde yan yol olarak değil. Kanon maddesi yalnız Founder kapısından geçer; birleştirme isteği tek başına bir madde doğuramaz. |
 | kapalı ürün deposu | Ayrı bir varlıktır. Açık araç ile kapalı ürün arasında **çapraz bağımlılık yasaktır**; motorun `açık-gizli-sınır-ihlali` tanısı bunu ölçer. |
 | `.sarmal/` (iz kayıtları) | Yalnız çalışma zamanının yazdığı mat bölge; elle yazım sapmadır. |
 | Üretilen yüz dosyaları | `SARMAL:BÖLGE` açılış ve kapanış yorum işaretleri arasındaki alan kaynaktan üretilir; elle düzenleme bir sonraki üretimde silinir. |
+
+**Kanon maddesi Founder kapısıdır.** `yasa/kanon/` altındaki sekiz bölüm dosyasına yeni bir
+madde yazmak, var olan bir maddenin hükmünü değiştirmek ya da bir maddeyi emekliye ayırmak
+katkı akışının içinden yapılamaz; bu üç işlem yalnız Founder'ın yazılı tasdikiyle gerçekleşir
+ve tasdik gelmeden açılan bir birleştirme isteği kapıdan geçmez. Bir maddenin eksik ya da
+yanlış olduğunu düşünüyorsanız yapmanız gereken şey maddeyi düzenlemek değil, gerekçenizi
+yazılı olarak bildirmektir; kanonun büyümesi ölçülmüş bir gerekçe ile Founder hükmünü birlikte
+ister. Bu şartın sebebi şudur: kanon motorun her koşuda ölçtüğü kapıların kaynağıdır ve bir
+maddenin sessizce değişmesi, o maddeye dayanan bütün tanıların anlamını aynı anda kaydırır.
 
 ## 10. Öğrenmek için
 
@@ -377,8 +412,10 @@ npm test            # node --test "sinama/*.test.ts"
 npm run tip-denetle # tsc --noEmit
 ```
 
-The core currently has **899 tests** and all of them pass. Do not send a contribution with a
-red test; a false green must never enter the history.
+The authoritative test count is always the `pass` line the run itself prints; the figure
+written into this guide only records when it was last measured. The last measurement was taken
+on 2026-09-10, and the core suite is fully green with **1298 tests**. Do not send a
+contribution with a red test; a false green must never enter the history.
 
 The VS Code extension has its own build and test scripts in `urun/eklenti/package.json`.
 If you are working on the extension, read `urun/eklenti/README.md` first.
@@ -401,6 +438,14 @@ instead of locking you out.
 | ① | **Drift audit** | Runs `sarmal denetle .`. Any error **blocks** the commit; warnings pass. Drift never enters the history. |
 | ② | **Test suite gate** | Fires only when the staged changes include `.ts` files under `urun/cekirdek/{src,sinama}` or `urun/eklenti/{src,sinama}`, and runs the matching `npm test`. **A red suite blocks the commit.** Plan and status commits are not slowed down by this gate. |
 | ③ | **Project-specific rules** | Runs `kanca/proje-kurallari.sh` if it exists. That file **does not exist today**; the gate is deliberately kept thin and will be filled in later. |
+
+A second hook lives in the same directory: **`kanca/commit-msg`**. It measures the commit
+message itself and requires the subject line to be at most seventy-two characters, to follow
+the `tip(kapsam): özet` shape, to avoid stringing labels together with a `·` separator, to
+avoid three consecutive all-capital words in the summary, and to carry no trailing period. It
+also rejects co-author, trailer and sign-off lines, and it requires `Ne:` and `Neden:` lines in
+the body whenever a commit touches five files or a hundred lines. The binding text of the
+format lives in `yasa/yonetisim/surum_yonetisimi.sar`; this guide does not repeat it.
 
 **Bypassing the hook with a no-verify flag is not allowed.** The hook prints the `--no-verify`
 escape in its own output, but that escape exists for the case where the hook itself
@@ -430,6 +475,14 @@ and a rename in the same commit, because that commit can no longer be reverted c
 internal jargon, no references to retired identifiers. If you do not write Turkish, say so in
 your pull request and a maintainer will help you word the message.
 
+**The language and style requirement binds contribution texts as well.** Article `DIL-1.5` of
+the canon requires every text written into a canonical source to be composed in academic prose
+and in complete sentences, and that requirement covers not only `.sar` fields but also the body
+of a commit message and the text of a pull request. In practice this means that elliptical
+constructions, bare word groups strung together as bullet items, and rulings given without a
+stated reason do not count as a record. The binding text of the article lives in
+`yasa/kanon/dil.sar`; this guide does not repeat it, it only gives the address.
+
 The subject line follows `<type>(<scope>): <summary>`. The summary is imperative or
 descriptive, at most 72 characters, with no trailing period.
 
@@ -450,7 +503,7 @@ For a larger change the body carries `Ne:` (what) and `Neden:` (why) lines, plus
 özellik(araç): süit kapısını eklenti tarafına genişlet
 Ne: İşleme öncesi kanca artık eklenti sınamalarını da koşuyor.
 Neden: Eklenti kodu kırmızıyken işlemenin geçmesi sahte yeşil üretiyordu.
-Kapı: denetle 0 hata · çekirdek süiti 899 yeşil.
+Kapı: denetle 0 hata · çekirdek süiti 1298 yeşil.
 ```
 
 Co-author lines, tool trailers and sign-off footers are **not added** — neither to commit
@@ -474,14 +527,34 @@ Merges are approved by a single authority in this repository, and the author and
 roles are kept separate: you send the contribution, a maintainer approves the merge. The gate
 measures three conditions — zero audit errors, green tests, and written approval.
 
+That separation is not a courtesy convention but a ruling that lives in article `ORK-6.1` of
+the canon, and its counterpart in the contribution process is this: the party who sends a
+contribution cannot pronounce acceptance on it, the reviewing party sees only the delivery
+itself, the acceptance criteria the request declares, and reproducible evidence, and no
+acceptance may rest on the author's working context or on a conversation in which the author
+justified the work. The practical consequence for you is that every figure you write in the
+`Kapı (kontrol)` section must be re-runnable by the reviewer without looking at your output; a
+figure that cannot be re-run is a claim, not evidence. The binding text of the article lives in
+`yasa/kanon/ork.sar`.
+
 ## 9. What never changes
 
 | Location | Why it is off limits |
 |---|---|
-| `yasa/` | The rules and decisions ledger. A rule changes through its own process, never as a side road inside a contribution. |
+| `yasa/` | The rules and decisions ledger. A rule changes through its own process, never as a side road inside a contribution. A canon article passes only through the Founder's gate; a pull request cannot bring one into being on its own. |
 | kapalı ürün deposu | A separate entity. **Cross-dependency between the open tool and the closed product is forbidden**, and the engine's `açık-gizli-sınır-ihlali` (open/closed boundary violation) diagnostic measures it. |
 | `.sarmal/` (trace records) | A matte zone written only by the runtime; editing it by hand is drift. |
 | Generated surfaces | Anything between the `SARMAL:BÖLGE` opening and closing comment markers is produced from source; hand edits are wiped on the next generation. |
+
+**A canon article passes only through the Founder's gate.** Writing a new article into one of
+the eight section files under `yasa/kanon/`, changing the ruling of an existing article, or
+retiring an article cannot be done from inside the contribution flow; these three operations
+happen only with the Founder's written approval, and a pull request opened before that approval
+arrives does not pass the gate. If you believe an article is missing or wrong, what you should
+do is not to edit the article but to state your reasoning in writing; growth of the canon
+requires a measured reason and a Founder ruling together. The reason for this condition is
+that the canon is the source of the gates the engine measures on every run, and an article
+that changes quietly shifts the meaning of every diagnostic resting on it at the same moment.
 
 ## 10. Learning your way around
 
@@ -498,7 +571,7 @@ If you work with an AI agent, the same knowledge is served over MCP:
 node urun/cekirdek/src/mcp.ts
 ```
 
-The server speaks over stdio and exposes seventeen tools (`ogret` · `denetle` · `kurallar` ·
+The server speaks over stdio and exposes eighteen tools (`ogret` · `denetle` · `kurallar` ·
 `siniflama` · `gezin` · `graf` and others).
 
 Reading map:

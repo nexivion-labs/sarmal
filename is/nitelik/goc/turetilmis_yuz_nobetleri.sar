@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `2b1d9cb8219b5926d3a8c56fed3c619908e592c68bb168ea48b1a8e2ac97a31f` |
+| `yasa/kanon demeti (A03 formülü)` | `003b8a69a9ab8994403c5452c335421cca6d14185ed6d6b26d83a96bc760d43e` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `c739add6c44115e0b45c16351b8cbbe4541cfb6b5d345d732adfefa0fdcc1470` |
@@ -301,6 +301,18 @@ kaynak mühürlerinden yalnız o iki satır ilerledi; kanon demeti, sınıflama
 kaydı ve tanı sicili dokunulmadan kaldı. Belge yüzleri üreticisi aynı koşuda
 yeniden koşturuldu, ilk koşu öğrenim rehberinin tek yüzünü tazeledi ve ikinci
 koşu sıfır fark verdi.
+
+Tazeleme notu (2026-09-10 · denetçi kapsamı ve oturum ritüeli maddeleri):
+Kanonun orkestrasyon bölümüne ORK-6.4 (Denetçi Kapsamı) ile ORK-8.2 (Oturum
+Ritüeli) Kural maddeleri indi ve kanon yüz elli yedi maddeden yüz elli dokuz
+maddeye çıktı; Kural sayısı yüz on dokuzdan yüz yirmi bire yükseldi, Karar
+sayısı otuz sekizde değişmeden kaldı. Ekleme yalnız `yasa/kanon/ork.sar`
+dosyasının baytlarını değiştirdiği için kaynak mühürlerinden yalnız kanon
+demeti ilerledi; sınıflama kaydı, tanı sicili ve öteki kaynaklar bu turda
+dokunulmadan kaldı, çünkü iki maddenin hiçbiri yeni bir tanı ilan etmemiştir.
+Kanon tutarlılık yüzü ile belge okuma yüzleri aynı koşuda üreticileriyle
+yeniden üretildi.
+
 ## B · Üretici koşuları — hedef bölge ve ikinci koşu farkı
 
 Altı üretici ailesi de temiz ortamda başarıyla koştu; hiçbir üreticinin
