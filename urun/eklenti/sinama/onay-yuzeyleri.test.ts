@@ -887,8 +887,27 @@ test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
   // sayısı, kayıt içeriği, panel kimlikleri, yenileme ritmi ve sayaç türetimi
   // DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu yukarıdaki nöbet
   // ayrıca ölçer.
+  // ÖZET ON DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A03 (2026-09-10).
+  //
+  // Hatırlatıcı mekanizmasının üçüncü halkası, yani KAPATMA, bugüne kadar yalnız
+  // elle dosya düzenlemesiyle mümkündü; Founder bunu boş gürültü olarak adlandırdı
+  // ve haklıydı, çünkü hatırlatan fakat kapattırmayan bir bildirim kullanıcının
+  // dikkat bütçesinden yer alır ve karşılığında eylem sunmaz. Bu turda
+  // `hatirlaticilar.ts` iki şey kazandı: satırın bağlam değeri artık ATEŞLEMİŞ ile
+  // uykuda bekleyen kaydı ayırır (karar saf çekirdekte, `hatirlaticiKapatilabilir`)
+  // ve kullanıcının başlattığı bir kapatma kapısı eklendi. Kapı, Adım durumunu
+  // yazan tek yazar kapısının hatırlatıcı ikizidir: yalnız `durum` alanına dokunur,
+  // konumu ayrıştırıcıdan alır, yazımdan önce kaynakla bayt düzeyinde doğrular ve
+  // en küçük şüphede dosyaya dokunmadan dürüst hata döner. Kayıt SİLİNMEZ (SNF-0).
+  //
+  // ONAY YÜZEYİNE HİÇBİR BAĞ KURULMADI ve iki panel hâlâ `onay-cekirdek` ·
+  // `onay-tarayici` · `onay-kuyrugu` · `onay-paneli` adlarının hiçbirini içermez;
+  // bunu yukarıdaki nöbet ayrıca ölçer. Panel kimliği, veri kaynağı, yenileme
+  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ: kapatma sonrası tazeleme panelin
+  // kendi taramasından değil gövdenin TEK denetim kilidinden istenir.
+  // `bildirimler.ts` bu turda hiç açılmadı ve özeti bilerek olduğu gibi bırakıldı.
   const BEKLENEN: Record<string, string> = {
-    "../src/hatirlaticilar.ts": "fd692560f8c81e69",
+    "../src/hatirlaticilar.ts": "4bf07ba296fe58cc",
     "../src/bildirimler.ts": "adeaa39549882d72",
   };
   for (const [dosya, beklenen] of Object.entries(BEKLENEN)) {

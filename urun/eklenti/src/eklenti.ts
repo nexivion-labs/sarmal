@@ -302,6 +302,13 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       await vscode.env.clipboard.writeText(pano.metin);
       vscode.window.setStatusBarMessage(panoyaYazildi(pano.adet), 4000);
     }),
+    // ✅ ATEŞLEMİŞ HATIRLATICIYI KAPAT (KYN-YUZ-A03). Komut yalnız bir kapı
+    // açar; hüküm, doğrulama ve yazım sağlayıcının tek yazar kapısındadır ve
+    // ikinci bir yazım yolu doğmaz. Tazeleme gövdenin KENDİ denetim kilidinden
+    // istenir; panel kendi taramasını kurmaz.
+    vscode.commands.registerCommand("sarmal.hatirlaticiKapat", async (oge: unknown) => {
+      await hatirlaticilar?.kapat(oge, (t) => denetimKilidi.iste(t));
+    }),
   );
   // Sayaçlar panellerin KENDİ kümelerinden ve motorun tanı koleksiyonundan okunur.
   durumCubugu = new DurumCubugu({

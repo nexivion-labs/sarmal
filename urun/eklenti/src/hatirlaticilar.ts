@@ -23,12 +23,19 @@ import {
   hatirlaticiIsareti, panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type SatirIsareti, type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
   panelRozeti,
+  // ✅ KYN-YUZ-A03: ateşlemiş hatırlatıcının kapatılması — karar SAF çekirdekte
+  hatirlaticiKapatilabilir, hatirlaticiDurumAlani, hatirlaticiKapatmaAraligi,
+  BAGLAM_HATIRLATICI, BAGLAM_HATIRLATICI_ATESLEDI,
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   projeSatiriEtiketi, projeSatiriAciklamasi, projeSatiriIpucu, kaydaGitBasligi,
   dosyaSatiriAciklamasi, dosyaSatiriIpucu, hatirlaticiRozetIpucu,
+  HATIRLATICI_KAPATMA_METINLERI,
 } from "./yuzey-metinleri.ts";
+import { belirtecle } from "../../cekirdek/src/belirtec.ts";
+import { ayristir } from "../../cekirdek/src/ayristirici.ts";
+import { satirdaDegerDegistir } from "../../cekirdek/src/deger-yaz.ts";
 
 import { satirIkonu } from "./ortak.ts";
 import { eksenSvgVaryanti, type SatirSimgesi } from "./simge-cizelgesi.ts";
@@ -216,7 +223,12 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
     item.description = g.aciklama;
     item.tooltip = new vscode.MarkdownString(g.ipucu);
     item.iconPath = this.isaretIkonu(hatirlaticiIsareti(g.kod));
-    item.contextValue = "sarmalHatirlatici";
+    // ✅ EYLEM YUVASI YALNIZ ATEŞLEMİŞ SATIRDA AÇILIR (KYN-YUZ-A03). Uykuda
+    // bekleyen hatırlatıcı bilinçle eylemsizdir: hedefi kapanmamış bir taahhüdü
+    // tek tıkla düşürmek sessiz vazgeçmeye kapı açar (Adımın sınır hükmü).
+    // Karar burada VERİLMEZ, saf çekirdekten okunur.
+    item.contextValue = hatirlaticiKapatilabilir(oge.kayit)
+      ? BAGLAM_HATIRLATICI_ATESLEDI : BAGLAM_HATIRLATICI;
     item.command = {
       command: "sarmal.dosyaAc",
       title: kaydaGitBasligi(),
@@ -260,6 +272,70 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
   panoMetni(oge: unknown): { metin: string; adet: number } | undefined {
     const d = panoDugumu(oge);
     return d ? { metin: panoMetni(d), adet: panoAdedi(d) } : undefined;
+  }
+
+  /**
+   * ✅ ATEŞLEMİŞ HATIRLATICIYI KAPATIR (KYN-YUZ-A03).
+   *
+   * TEK YAZAR KAPISININ HATIRLATICI İKİZİDİR ve onun sözleşmesini aynen taşır:
+   * yalnız `durum` alanı yazılır, konum ayrıştırıcıdan gelir, yazımdan önce
+   * kaynak metinle bayt düzeyinde doğrulanır ve EN KÜÇÜK ŞÜPHEDE dosyaya
+   * dokunulmadan dürüst hata döner. Kayıt SİLİNMEZ; kanon tamamlanan
+   * hatırlatıcının yerinde kaldığını yazar (SNF-0).
+   *
+   * TAZELEME AYRI BİR TARAMA KURMAZ: kapatma diske indiğinde gövdenin kendi
+   * denetim turu istenir ve hane o turun yayınıyla yeniden basılır; ikinci bir
+   * tarama hattı doğarsa panel ile durum çubuğu ayrışır.
+   */
+  async kapat(oge: unknown, turIste?: (tetik: string) => void): Promise<boolean> {
+    const secili = oge as PanelOge | undefined;
+    if (!secili || secili.tur !== "kayıt" || !hatirlaticiKapatilabilir(secili.kayit)) {
+      void vscode.window.showWarningMessage(HATIRLATICI_KAPATMA_METINLERI.kapatilamaz);
+      return false;
+    }
+    const g = kayitGorunumu(secili.kayit);
+    const doc = await vscode.workspace.openTextDocument(secili.kayit.dosya);
+    const kaynak = doc.getText();
+    let alan: ReturnType<typeof hatirlaticiDurumAlani>;
+    try {
+      alan = hatirlaticiDurumAlani(ayristir(belirtecle(kaynak)).bildirimler, g.satirKodu);
+    } catch {
+      // AYRIŞTIRMA HATASI BAŞARI SAYILAMAZ. Bozuk bir dosyaya konum tahminiyle
+      // yazmak, onarımı imkânsız bir sessiz bozulma üretirdi.
+      void vscode.window.showErrorMessage(
+        HATIRLATICI_KAPATMA_METINLERI.basarisiz(g.satirKodu, HATIRLATICI_KAPATMA_METINLERI.ayristirilamadi));
+      return false;
+    }
+    const sonuc = hatirlaticiKapatmaAraligi(kaynak, alan, satirdaDegerDegistir);
+    if (sonuc.tur === "zaten-kapalı") {
+      void vscode.window.setStatusBarMessage(HATIRLATICI_KAPATMA_METINLERI.zatenKapali(g.satirKodu), 4000);
+      return false;
+    }
+    if (sonuc.tur !== "aralık") {
+      void vscode.window.showErrorMessage(
+        HATIRLATICI_KAPATMA_METINLERI.basarisiz(g.satirKodu, sonuc.neden));
+      return false;
+    }
+    // SON KONTROL DİSKİN KENDİSİNDEDİR: ölçüm ile yazım arasında belge değişmiş
+    // olabilir; değiştiyse yazım yapılmaz ve kullanıcı bunu öğrenir.
+    if (doc.lineAt(sonuc.satir).text !== sonuc.eskiSatir) {
+      void vscode.window.showErrorMessage(
+        HATIRLATICI_KAPATMA_METINLERI.basarisiz(g.satirKodu, HATIRLATICI_KAPATMA_METINLERI.belgeDegisti));
+      return false;
+    }
+    const duzenle = new vscode.WorkspaceEdit();
+    duzenle.replace(doc.uri,
+      new vscode.Range(sonuc.satir, 0, sonuc.satir, sonuc.eskiSatir.length), sonuc.yeniSatir);
+    if (!await vscode.workspace.applyEdit(duzenle)) {
+      void vscode.window.showErrorMessage(
+        HATIRLATICI_KAPATMA_METINLERI.basarisiz(g.satirKodu, HATIRLATICI_KAPATMA_METINLERI.yazilamadi));
+      return false;
+    }
+    await doc.save();
+    vscode.window.setStatusBarMessage(HATIRLATICI_KAPATMA_METINLERI.kapatildi(g.satirKodu), 4000);
+    // AYNI TURDA TAZELEME: kullanıcı ikinci bir tarama beklemez.
+    turIste?.("hatırlatıcı-kapatma");
+    return true;
   }
 
   getParent(): PanelOge | undefined { return undefined; }

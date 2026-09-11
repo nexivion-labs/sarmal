@@ -28,6 +28,7 @@ import { bildirimTuru, type BildirimTuru } from "./yol-dekor.ts";
 // bu yüzden ondan yalnız ad kümelerinin TİPİ ödünç alınabilir.
 import type { AnlamRengi, SatirSimgesi, EksenTipi } from "./simge-cizelgesi.ts";
 import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
+import type { Dugum } from "../../cekirdek/src/sozdizim.ts";   // YALNIZ TİP — modül SAF kalır
 
 export type { SunumYuzeyi };
 
@@ -934,3 +935,149 @@ export function meyveKokleri(
   }
   return kokler;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ✅ ATEŞLEMİŞ HATIRLATICININ KAPATILMASI (KYN-YUZ-A03 · YUZ-3.4 · TIP-1.12)
+//
+//   ÖLÇÜLMÜŞ KUSUR. Hatırlatıcı mekanizmasının üç halkası vardır ve ikisi
+//   çalışmaktadır: bağlı Adım işlenmeye başlayınca hatırlatıcı brifinge düşer,
+//   Adım tamamlanınca motor ateşleme tanısını üretir ve tanı panelde görünür.
+//   ÜÇÜNCÜ HALKA, yani kapatma, bugün yalnız elle dosya düzenlemesiyle
+//   mümkündür. Hatırlatan fakat kapattırmayan bir bildirim kullanıcının dikkat
+//   bütçesinden yer alır ve karşılığında eylem sunmaz.
+//
+//   EYLEM YALNIZ ATEŞLEMİŞ SATIRDA YAŞAR. Uykuda bekleyen hatırlatıcı bilinçle
+//   kapsam dışıdır (Adımın sınır hükmü): hedefi kapanmamış bir taahhüdü tek
+//   tıkla düşürmek sessiz vazgeçmeye kapı açar.
+//
+//   KAPATMA SİLMEZ. Kanon tamamlanan kaydın yerinde kaldığını yazar
+//   (SNF-0 · Hatırlatıcı kuralı); değişen TEK şey `durum` alanının değeridir.
+//
+//   KONUM TAHMİN EDİLMEZ. Aralık ayrıştırıcının bildirdiği konumdan doğar ve
+//   yazımdan önce KAYNAK SATIRLA bayt düzeyinde doğrulanır; en küçük şüphede
+//   dosyaya dokunulmaz ve dürüst bir "doğrulanamadı" döner. Bu, onay kapısının
+//   `beklerSilmeAraligi` deseninin ta kendisidir ve ikinci bir yazım felsefesi
+//   kurulmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Kapatma eyleminin yazdığı tek değer — enum kanondan gelir, burada icat edilmez. */
+export const HATIRLATICI_KAPALI_DEGERI = "tamamlandı";
+
+/** Ateşleme tanısının kanonik kimliği — iki yüzey de bu tek sabiti okur. */
+export const ATESLEMIS_TANI = "ateşlemiş-hatırlatıcı";
+
+/**
+ * Bir panel kaydına kapatma eylemi sunulur mu? YALNIZ ateşlemiş hatırlatıcıya
+ * sunulur; açık fakat uykuda bekleyen hatırlatıcı ile öteki hane kayıtları
+ * eylemsizdir.
+ */
+export function hatirlaticiKapatilabilir(kayit: Pick<YuzeyKaydi, "tani">): boolean {
+  return kayit.tani.kod === ATESLEMIS_TANI;
+}
+
+/** Kapatma aralığının ölçüm sonucu — yazım yalnız `aralık` dönüşünde yapılır. */
+export type HatirlaticiKapatmasi =
+  | {
+      readonly tur: "aralık";
+      /** 0-tabanlı satır — editör satır düzeni. */
+      readonly satir: number;
+      /** Değiştirilecek satırın YENİ tam metni; kabuk onu olduğu gibi yazar. */
+      readonly yeniSatir: string;
+      /** Değiştirilen eski satır — kabuk yazmadan önce diskle karşılaştırır. */
+      readonly eskiSatir: string;
+    }
+  | { readonly tur: "doğrulanamadı"; readonly neden: string }
+  | { readonly tur: "zaten-kapalı" };
+
+/**
+ * Kaynak metinde verilen Hatırlatıcı düğümünün `durum` alanını kapalı değere
+ * çeken satır değişimini ÜRETİR — ve hiçbir şey yazmaz.
+ *
+ * `bul` çağrısı ayrıştırıcının bildirimlerini gezer; konum kaydı ondan gelir.
+ * Bu modül vscode'suz ve ayrıştırıcısız kalsın diye düğüm arama işi çağırana
+ * bırakılır: kabuk zaten ayrışmış ağaca sahiptir, ikinci bir tam tur açmak
+ * panelin bütün nabız disiplinini bozardı.
+ */
+export function hatirlaticiKapatmaAraligi(
+  kaynak: string,
+  alan: { readonly satir: number; readonly sutun: number; readonly metin: string } | undefined,
+  degerDegistir: (satirMetni: string, sutun: number, uzunluk: number, yeni: string) => string | null,
+): HatirlaticiKapatmasi {
+  if (!alan) return { tur: "doğrulanamadı", neden: "durum alanı bulunamadı" };
+  if (alan.metin === HATIRLATICI_KAPALI_DEGERI) return { tur: "zaten-kapalı" };
+
+  const satirlar = kaynak.split("\n");
+  const satirNo = alan.satir - 1;                    // ayrıştırıcı 1-tabanlıdır
+  const eskiSatir = satirlar[satirNo];
+  if (eskiSatir === undefined) {
+    return { tur: "doğrulanamadı", neden: "kayıt satırı kaynakta yok" };
+  }
+  // ① NFC MUTABAKATI. Sütun, ayrıştırıcının gördüğü metinden hesaplanmıştır;
+  //    ham satır başka bir normalizasyondaysa iki konum sistemi ayrışır ve
+  //    kaymış bir dilim sahte-geçebilir (onay kapısının ölçülmüş dersi).
+  if (eskiSatir !== eskiSatir.normalize("NFC")) {
+    return { tur: "doğrulanamadı", neden: "kaynak satırı NFC değil" };
+  }
+  // ② KAYNAKLA BAYT DOĞRULAMASI. Bildirilen konumda gerçekten bildirilen değer
+  //    duruyor mu? Durmuyorsa konum bayattır ve yazım dosyayı bozardı.
+  const bas = alan.sutun - 1;
+  const gorulen = eskiSatir.slice(bas, bas + alan.metin.length);
+  const tirnakli = eskiSatir[bas] === '"';
+  if (!tirnakli && gorulen !== alan.metin) {
+    return { tur: "doğrulanamadı", neden: `konum bayat: beklenen "${alan.metin}", bulunan "${gorulen}"` };
+  }
+  const yeniSatir = degerDegistir(eskiSatir, alan.sutun, alan.metin.length, HATIRLATICI_KAPALI_DEGERI);
+  if (yeniSatir === null) {
+    return { tur: "doğrulanamadı", neden: "değer sınırı çözülemedi" };
+  }
+  // ③ DEĞİŞİM TEK SATIRDA VE TEK ALANDA KALIR. Satır sayısı değişirse ya da
+  //    değişim beklenenden geniş bir yerden başlıyorsa yazım yapılmaz.
+  if (yeniSatir.includes("\n")) {
+    return { tur: "doğrulanamadı", neden: "değişim satır sınırını aştı" };
+  }
+  return { tur: "aralık", satir: satirNo, yeniSatir, eskiSatir };
+}
+
+/**
+ * Ayrışmış ağaçta verilen kodlu Hatırlatıcı düğümünün `durum` alanının
+ * AYRIŞTIRICI KAYDINI bulur; bulamazsa ya da kod BİRDEN ÇOK Hatırlatıcıda
+ * geçiyorsa `undefined` döner.
+ *
+ * BELİRSİZ KİMLİKTE YAZMAK YASAKTIR. Aynı kod iki düğümde yaşıyorsa hangisinin
+ * kastedildiği ölçülemez ve yanlış düğümü kapatmak, kullanıcının hiç vazgeçmediği
+ * bir taahhüdü sessizce düşürmek olurdu (onay kapısının çapa tekilliği dersi).
+ */
+export function hatirlaticiDurumAlani(
+  bildirimler: readonly Dugum[], kod: string,
+): { readonly satir: number; readonly sutun: number; readonly metin: string } | undefined {
+  const bulunanlar: Array<{ satir: number; sutun: number; metin: string }> = [];
+  const gez = (d: Dugum): void => {
+    if (d.ad === "Hatırlatıcı") {
+      const alan = (ad: string) =>
+        d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
+      if (alan("kod")?.deger.metin === kod) {
+        const durum = alan("durum");
+        if (durum?.deger.metin !== undefined) {
+          bulunanlar.push({
+            satir: durum.deger.satir, sutun: durum.deger.sutun, metin: durum.deger.metin,
+          });
+        } else {
+          bulunanlar.push({ satir: -1, sutun: -1, metin: "" });   // alanı yok — yazım durur
+        }
+      }
+    }
+    for (const c of d.cocuklar) gez(c);
+  };
+  for (const b of bildirimler) gez(b);
+  if (bulunanlar.length !== 1) return undefined;          // yok ya da belirsiz → yazma
+  return bulunanlar[0]!.satir < 0 ? undefined : bulunanlar[0];
+}
+
+/**
+ * Hatırlatıcı satırlarının bağlam değerleri — eylem yuvasının açılıp
+ * kapanmasını bunlar belirler ve paket bildiriminin menü koşulu bu iki adı okur.
+ * İki değer TEK YERDE yaşar, çünkü ad manifestte ve kaynakta ayrı yazılırsa
+ * eylem sessizce görünmez olur ve bunu hiçbir tür denetimi yakalamaz.
+ */
+export const BAGLAM_HATIRLATICI = "sarmalHatirlatici";
+export const BAGLAM_HATIRLATICI_ATESLEDI = "sarmalHatirlaticiAtesledi";

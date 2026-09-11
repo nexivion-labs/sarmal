@@ -1574,6 +1574,40 @@ export const GEZINME_METINLERI = {
   ),
 } as const;
 
+/**
+ * ✅ ATEŞLEMİŞ HATIRLATICININ KAPATILMASI (KYN-YUZ-A03).
+ *
+ * Başarı cümlesi durum çubuğuna, başarısızlık cümlesi hata yüzeyine gider ve
+ * ikisi de kaydın KODUNU anar; kod olmadan kullanıcı hangi hatırlatıcının
+ * kapandığını ya da kapanmadığını ölçemez. Başarısızlık cümlesi sebebini de
+ * söyler, çünkü "olmadı" demek kullanıcıyı kaynağa körlemesine gönderir.
+ */
+export const HATIRLATICI_KAPATMA_METINLERI = {
+  get kapatilamaz(): string {
+    return yuzeyMetni(
+      "Bu satır kapatılamaz: kapatma yalnız ATEŞLEMİŞ hatırlatıcıya uygulanır. Uykuda bekleyen bir hatırlatıcı, hedefi henüz kapanmamış bir taahhüttür.",
+      "This row cannot be closed: closing applies only to a FIRED reminder. A sleeping reminder is a commitment whose target has not closed yet.");
+  },
+  kapatildi: (kod: string): string => yuzeyMetni(
+    `${kod} kapatıldı — hatırlatıcı yerinde kalır, yalnız durumu tamamlandı oldu.`,
+    `${kod} was closed. The reminder stays in place; only its state became completed.`),
+  zatenKapali: (kod: string): string => yuzeyMetni(
+    `${kod} zaten kapalı — dosyaya dokunulmadı.`,
+    `${kod} is already closed; the file was left untouched.`),
+  basarisiz: (kod: string, neden: string): string => yuzeyMetni(
+    `${kod} kapatılamadı ve dosyaya DOKUNULMADI. Sebep: ${neden}. Kaynağı açıp durum alanını elle yazabilirsin.`,
+    `${kod} could not be closed and the file was left UNTOUCHED. Reason: ${neden}. You may open the source and set the state field by hand.`),
+  get ayristirilamadi(): string {
+    return yuzeyMetni("dosya ayrıştırılamadı", "the file could not be parsed");
+  },
+  get belgeDegisti(): string {
+    return yuzeyMetni("belge ölçümden sonra değişti", "the document changed after the measurement");
+  },
+  get yazilamadi(): string {
+    return yuzeyMetni("düzenleme uygulanamadı", "the edit could not be applied");
+  },
+} as const;
+
 export const GIYDIR_METINLERI = {
   get soru(): string { return yuzeyMetni("🌀 Bu çalışma alanında Sarmal görünümü giydirilmemiş — kanondaki renk/dekor ayarları uygulansın mı? (yalnız bu çalışma alanına yazılır)", "🌀 This workspace does not have the Sarmal appearance applied. Apply the canonical color and decoration settings? (Only this workspace is changed.)"); },
   get giydir(): string { return yuzeyMetni("Giydir", "Apply appearance"); },

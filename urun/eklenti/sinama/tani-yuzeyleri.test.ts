@@ -1432,8 +1432,25 @@ test("İKİNCİ TARAMA KURULMAZ: iki panel de özeti KENDİ elindeki kümeden ve
     assert.ok(/turDagilimi\(oge\.kume\.kayitlar\)/.test(kaynak),
       `${ad} tür özetini panelin kendi kümesinden türetmiyor`);
     // Panel kendi tarama ya da sayma yolunu açmaz: dosya okumaz, kayıt saymaz.
+    //
+    // NÖBETİN ERİŞİMİ VERİ YOLUYLA SINIRLIDIR (KYN-YUZ-A03 · 2026-09-10). Ölçtüğü
+    // kusur bir panelin KENDİ BESLEMESİNİ kurmasıdır: panel diski tarar, ikinci bir
+    // sayaç doğar ve durum çubuğuyla çelişir. KULLANICININ BAŞLATTIĞI bir yazım
+    // eylemi bu kusurun örneği DEĞİLDİR ve aynı yasağa girmez — Yol Haritası
+    // panelinin `durumYaz` kapısı da belgeyi kullanıcı eylemiyle açar ve açılışı
+    // sayaca yazar. Bu yüzden ölçüm, kapatma eyleminin gövdesi ÇIKARILDIKTAN
+    // sonraki kaynak üstünde koşar; gövdenin kendi disiplini (tek yazar kapısı,
+    // bayt doğrulaması, tazelemenin gövdenin KENDİ kilidinden istenmesi) kendi
+    // nöbetindedir: sinama/hatirlatici-kapatma.test.ts.
+    const veriYolu = kaynak.replace(/\n  async kapat\([\s\S]*?\n  \}\n/, "\n");
+    if (kaynak.includes("  async kapat(")) {
+      assert.notEqual(veriYolu, kaynak,
+        `${ad} kapatma gövdesi kaynaktan ayrılamadı; nöbet yanlış metni ölçüyor`);
+      assert.ok(!veriYolu.includes("async kapat("),
+        `${ad} kapatma gövdesinin yalnız bir kısmı ayrıldı; ölçüm eksik koşar`);
+    }
     for (const yasak of ["findFiles", "readFile", "openTextDocument", "createFileSystemWatcher"]) {
-      assert.ok(!kaynak.includes(yasak), `${ad} tür özeti için ikinci bir tarama kurmuş: ${yasak}`);
+      assert.ok(!veriYolu.includes(yasak), `${ad} tür özeti için ikinci bir tarama kurmuş: ${yasak}`);
     }
     for (const [ad2, kusur] of Object.entries(sayacKusurlari(kaynak))) {
       assert.equal(kusur, undefined, `${ad} kendi tür sayacını tutuyor (${ad2}): ${kusur}`);

@@ -49,6 +49,7 @@
   "command.preview": "Preview",
   "command.returnToSource": "Return to Source",
   "command.refreshRoadmap": "Refresh Roadmap",
+  "command.closeReminder": "Close Reminder",
   "command.switchTrack": "🚆 Switch Track (select entity/project)",
   "command.writeAppreciation": "💛 Write appreciation (a heart note for the team)",
   "command.writeFeedback": "🙏❤️🏅💡 Write feedback (select channel)",
