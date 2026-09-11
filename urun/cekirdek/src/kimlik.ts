@@ -465,6 +465,111 @@ export function kesinProjeKapsami(
   return ayrisik ? undefined : kazanan;
 }
 
+/**
+ * Çatı ilanının duyurduğu TEK bir raf: hangi ÇalışmaAlanı, hangi öneki sarıyor
+ * (KPS-CAT-A01 · MIM-1.1). `ProjeKapsami`nin bir kademe YUKARISIDIR ve aynı
+ * disiplini taşır: kapsam yolun kendisinden değil, çatının kendi İLANINDAN
+ * doğar. Bir klasörün çatının yanında durması onu çatının çocuğu yapmaz;
+ * çocukluk yalnız ilan edilmiş bir Kitaplık ya da Raf satırından türer.
+ */
+export interface CatiKapsami {
+  /** ÇalışmaAlanı düğümünün kodu (CAL-…). */
+  kod: string;
+  /** Rafın kapsadığı önek — çatı dosyasının dizini + ilan edilen yol. */
+  onek: string;
+  /** İlanın yaşadığı dosya. */
+  dosya: string;
+}
+
+/**
+ * ÇalışmaAlanı düğümünün DOĞRUDAN çocuğu olan Kitaplık/Raf yolları.
+ *
+ * Yalnız doğrudan çocuk okunur, çünkü çatı ilanındaki `yol` değeri kendi
+ * ebeveynine görelidir: `Kitaplık( yol: "oz/" ) { Raf( yol: "siniflama/" ) }`
+ * yazımında iç rafın yolu çatı köküne değil `oz/` klasörüne görelidir ve
+ * düzleştirilirse çatı köküne "siniflama/" diye yanlış bir kapsam yazılır.
+ * `catiKardesleri` düzleştirmeyi kaldırabilir, çünkü orada uydurma bir yol
+ * diskte karşılık bulamayıp sessizce düşer; burada ise grafa KENAR yazılır ve
+ * yanlış bir kenar sessizce düşmez, yanlış aidiyeti gerçek gibi gösterir.
+ */
+function catiRafYollari(ca: Dugum): string[] {
+  const yollar: string[] = [];
+  for (const c of ca.cocuklar) {
+    if (c.tur !== "widget" || (c.ad !== "Kitaplık" && c.ad !== "Raf")) continue;
+    const yol = [...c.parametreler, ...c.ozellikler]
+      .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
+    if (yol && !yollar.includes(yol)) yollar.push(yol);
+  }
+  return yollar;
+}
+
+/** Bir ilan yolunu ("birinci_proje/") çatı dosyasının dizinine göre öneke çevirir. */
+function rafOneki(catiDosyasi: string, yol: string): string {
+  const temiz = yol.replace(/\\/g, "/").replace(/^\.\//, "");
+  const sonlu = temiz.endsWith("/") ? temiz : `${temiz}/`;
+  return `${kapsamOneki(catiDosyasi)}${sonlu}`;
+}
+
+/**
+ * Yüklü programlardan ÇATI kapsamlarını çıkarır: her ÇalışmaAlanı düğümü,
+ * doğrudan ilan ettiği her Kitaplık/Raf için bir kapsam kurar. Bu, Proje
+ * kapsamlarının saf ikizidir ve disk okumaz. Ders dünyası (INDEKS_DISI) kök
+ * saymaz: şablon içindeki örnek bir çatı ilanı gerçek bir sınır doğurmaz ve
+ * ürün ağacının aidiyetine karışmaz — aynı hüküm `projeKapsamlari` için de
+ * geçerlidir, dolayısıyla iki kademe aynı evreni görür.
+ */
+export function catiKapsamlari(programlar: ReadonlyMap<string, Program>): CatiKapsami[] {
+  const kapsamlar: CatiKapsami[] = [];
+  for (const [dosya, program] of programlar) {
+    if (INDEKS_DISI.test(dosya)) continue;
+    for (const b of program.bildirimler) {
+      widgetGez(b, "ÇalışmaAlanı", (ca) => {
+        const kod = dugumKodu(ca);
+        if (!kod) return;
+        for (const yol of catiRafYollari(ca)) kapsamlar.push({ kod, onek: rafOneki(dosya, yol), dosya });
+      });
+    }
+  }
+  return kapsamlar;
+}
+
+/**
+ * Dosyayı sarmalayan ÇATI — YALNIZ bağ tekil ve kesinse (KPS-CAT-A01).
+ *
+ * Disiplin `kesinProjeKapsami` ile birebir aynıdır ve gerekçesi de aynıdır:
+ * grafa bir içerme kenarı yazmak "bu Proje şu çatının altında yaşıyor"
+ * cümlesini kurmaktır; tahminle kurulursa panel yanlış aidiyeti gerçek gibi
+ * gösterir. Aynı derinlikte iki AYRI ÇalışmaAlanı kodu bulunursa bağ kurulmaz
+ * ve Proje kökü köksüz kalır; sessiz başarı taklidi yapılmaz. Aynı çatının
+ * aynı öneki iki kez ilan etmesi belirsizlik DEĞİLDİR ve bağı engellemez.
+ */
+export function kesinCatiKapsami(
+  dosya: string,
+  kapsamlar: readonly CatiKapsami[],
+): CatiKapsami | undefined {
+  if (INDEKS_DISI.test(dosya)) return undefined;
+  let derinlik = -1;
+  let kazanan: CatiKapsami | undefined;
+  let ayrisik = false;
+  for (const k of kapsamlar) {
+    if (!onekKapsar(k.onek, dosya)) continue;
+    if (k.onek.length > derinlik) { derinlik = k.onek.length; kazanan = k; ayrisik = false; continue; }
+    if (k.onek.length === derinlik && kazanan && k.kod !== kazanan.kod) ayrisik = true;
+  }
+  return ayrisik ? undefined : kazanan;
+}
+
+/**
+ * Çatının bir rafı bu dosyayı GERÇEKTEN sarıyor mu — bağ kurulabilsin ya da
+ * kurulamasın. `kesinCatiKapsami` belirsizlikte susar; bu yordam ise susmanın
+ * sebebini ölçülebilir kılar: çatının altında yaşayıp çatıya bağlanamayan bir
+ * Proje kökü, ancak "kapsanıyor ama çözülmüyor" ikilisiyle görünür olur.
+ */
+export function catiAltindaMi(dosya: string, kapsamlar: readonly CatiKapsami[]): boolean {
+  if (INDEKS_DISI.test(dosya)) return false;
+  return kapsamlar.some((k) => onekKapsar(k.onek, dosya));
+}
+
 /** Çatı ilanında raf olarak duyurulmuş bir kardeş proje kökü. */
 export interface KardesProje {
   /** Kardeş kökün kendi anadizininde ilan ettiği Proje kodu (PRJ-…). */

@@ -36,6 +36,10 @@ export interface GrafYuzu {
   düğümler: GrafDugum[];
   /** çözülmeyen kenar uçları — kopuk varken graf "tam" gibi DAVRANMAZ (dürüst çıktı). */
   kopuk: Dag["kopuk"];
+  /** MIM-1.1 (KPS-CAT-A01): çatının rafı altında yaşayıp çatıya bağlanamayan
+   *  Proje kökleri. Boş olduğunda alan hiç yazılmaz — tek projeli bir deponun
+   *  graf çıktısı bu alandan tek bayt bile etkilenmez. */
+  çatısız?: Dag["catisiz"];
   özet: KarneOzeti;
 }
 
@@ -93,11 +97,16 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
     .sort((a, b) => `${a.kaynak}→${a.hedef}`.localeCompare(`${b.kaynak}→${b.hedef}`, "tr"));
 
   // özet alt-graf üzerinden (filtreli mini-Dag — karne mantığı TEK kaynak kalır)
+  const çatısız = dag.catisiz.filter((c) => içinde(c.proje));
   const özetDag: Dag = küme
-    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje }
+    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje, catisiz: çatısız }
     : dag;
 
-  return { ...(kök ? { kök } : {}), düğümler, kopuk, özet: karneOzeti(özetDag) };
+  return {
+    ...(kök ? { kök } : {}), düğümler, kopuk,
+    ...(çatısız.length ? { çatısız } : {}),
+    özet: karneOzeti(özetDag),
+  };
 }
 
 /**
@@ -139,6 +148,12 @@ export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<K
     satirlar.push("", `🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`);
     for (const k of ilk) satirlar.push(`   ${k.kaynak} → ${k.hedef}`);
     if (g.kopuk.length > 10) satirlar.push(`   … ${g.kopuk.length - 10} kopuk uç daha.`);
+  }
+  // MIM-1.1 (KPS-CAT-A01): bağın kurulamadığı hâl susmaz — çatının altında
+  // yaşayıp çatıya bağlanamayan Proje kökü burada adıyla görünür.
+  if (g.çatısız?.length) {
+    satirlar.push("", `🏛️ ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (${g.çatısız.length}):`);
+    for (const c of g.çatısız) satirlar.push(`   ${c.proje} — ${c.dosya}:${c.satir} · ${c.sebep}`);
   }
   satirlar.push("", `🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`);
   return satirlar.join("\n") + "\n";

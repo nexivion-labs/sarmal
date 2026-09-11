@@ -345,6 +345,70 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         dokunulmaz: [ "OGR-5 kanon maddesinin kaynak metni", "Ders ve örnek ağaçlarının kendi içerikleri" ]
         koşu: "2026-09-10 · KAPANDI. Kusur ölçüldüğünden büyük çıktı: aynı işi yapan tek bir liste değil, birbirinden habersiz beş ayrı çıplak ad listesi vardı ve ikisi aynı adı taşımadığı için örnek rafı öteki dörtten farklı davranıyordu; hepsi kendi evine demirlendi ve sınama fikstürleri için ikinci bir yere demirli desen eklendiği üretici tarafından açıkça beyan edildi. Kontrolcünün bağımsız ölçümü: şablon kitaplığının adı beş farklı değerle denendi ve beşinde de karne yirmi sekiz düğüm ile bir Adım verdi, oysa onarımdan önce üçü yirmi ikide kalıyordu; Sarmal'ın kendi ürün karnesi değişmedi. Kapılar sessiz pencerede kontrolcü tarafından koşuldu: iki tür denetimi sıfır, depo denetimi sıfır hata ve çıkış kodu sıfır, çekirdek süiti bin iki yüz doksan sekizde bin iki yüz doksan sekiz, eklenti süiti yedi yüz kırk ikide yedi yüz kırk iki; ayakta duran sekiz uyarının sekizi de bu Adımın dışındaki koni-taşması kapısına aittir ve Founder hükmü beklemektedir."
       }
+
+      // ── 2026-09-10 · KÖKSÜZLÜK AYRIMININ KAYDI (üretici ölçümü · KPS-CAT-A01) ──
+      //   Adımın ikinci görevi köksüz düğüm türlerini ikiye ayırmayı ve ayrımı
+      //   kayda yazmayı ister. Ayrım bir zevk meselesi değildir; ölçüt tek
+      //   cümledir ve MIM-1'in kendisinden gelir: BİR DÜĞÜM İÇERME KENARI ALIR
+      //   ANCAK VE ANCAK ÜRETİM OMURGASINDA YAŞIYORSA. Omurga kanonda yazılıdır
+      //   ve `ÇalışmaAlanı→Auth→Proje→Faz→Blok→Katman→AltKatman→Adım` zinciridir.
+      //   Omurga dışındaki her tip bağını TİPLİ KENARDAN kurar: Kural ile Karar
+      //   `dayanak`, Meyve `üretir`, Hatırlatıcı `hatırlat`, Etmen `yönetir` ve
+      //   `kullanır`, Kapsama ile Çıkarım `referans` kenarıyla bağlanır. Bu
+      //   düğümlere klasörden bir içerme kenarı yazmak, kenarın anlamını
+      //   boşaltırdı: "kapsayan" artık "aynı klasörde duruyor" demeye başlar ve
+      //   omurga bir dizin ağacına indirgenirdi.
+      //
+      //   ÖLÇÜM (çatı kökünden, onarımdan sonra · 4403 düğüm · 1620 köksüz):
+      //     ① ders dünyası ....... 152 — şablon, örnek ve fikstür; kendi
+      //        evrenlerinde yaşarlar ve ürün ağacının aidiyetine hiç girmezler.
+      //     ② arşiv rafı ......... 319 — laboratuvarın dondurulmuş tarihi;
+      //        bugünkü omurgaya bağlanamaz, çünkü bağlanacağı gövde bölünmeden
+      //        önceki depodadır.
+      //     ③ plan kademesi ...... 0 — KUSUR HANESİ BUDUR VE BUGÜN BOŞTUR.
+      //        Ürün ağacında kapsayanı olmayan tek bir Faz, Blok, Katman,
+      //        AltKatman ya da Adım kalmamıştır; KPS-FAZ-A01 alt yarıyı,
+      //        bu Adım üst yarıyı kapatmıştır.
+      //     ④ omurga dışı tipler . 1149 — Kod 320 · Kural 122 · Etmen 110 ·
+      //        Çıkarım 94 · Kapsama 93 · Karar 82 · Hatırlatıcı 65 · Teknoloji 33
+      //        ve kuyrukta altmışa yakın tip. Hepsi tasarımı gereği köksüzdür.
+      //
+      //   İKİ HANENİN HÜKMÜ AYRIDIR. ③ hanesindeki bir düğüm KUSURDUR ve
+      //   kapatılması gerekir, çünkü omurgada yaşayıp omurgaya bağlanmamıştır.
+      //   ④ hanesindeki bir düğüm kusur DEĞİLDİR ve hiçbir yüzey onu eksik diye
+      //   göstermemelidir. Bu ayrım bugüne kadar hiçbir yerde yazılı olmadığı
+      //   için yüzde otuz yedilik köksüzlük oranı bir sağlık göstergesi sanılıyor
+      //   ve yanlış okunuyordu: oranın kendisi hiçbir şey söylemez, yalnız ③
+      //   hanesi söyler.
+      //
+      //   BAĞIN KURULAMADIĞI HÂL SUSMAZ. Çevrim yalnız ilan tekil ve kesinken
+      //   kenar yazar; sustuğu her hâl `Dag.catisiz` listesinde sayılır ve graf
+      //   özet yüzünde "ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ" başlığıyla adıyla
+      //   görünür. Ölçüm iki koşulun kesişimidir: düğüm köksüz KALMIŞ ve dosyası
+      //   çatının ilan ettiği bir rafın altında YAŞIYOR. Çatısı hiç olmayan bir
+      //   Proje kökü listeye girmez, çünkü olmayan bir bağın kurulamaması kusur
+      //   değildir; tek projeli deponun regresyon kalkanı da budur.
+      Adım( kod: KPS-CAT-A01, ad: "Çatının Projelerini Evlat Edinmesi", durum: tamamlandı, öncelik: p0,
+        bağımlı: [ KPS-FAZ-A01 ], referans: [ MIM-1.1, MIM-1.2, YUZ-3.1 ],
+        üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-KPS-FAZ-COZUCU, KOD-GRAF-YUZ, KOD-SNM-CATI-PROJE ],
+        ne: "🏛️ Bir Projenin hangi çalışma alanının altında yaşadığının grafta görünmesi. Bu kusur 2026-09-10 tarihinde Founder'ın bir graf görselini göstermesi üzerine ölçülmüştür ve bu sabah kapatılan Faz ile Proje arasındaki bağ kusurunun bir kademe YUKARISIDIR. Ölçüm şudur: çatı kökünden çözülen graf dört bin üç yüz doksan düğüm ve on beş kök döndürmekte, fakat çalışma alanı düğümü ile onun altında yaşayan Proje kökleri arasında hiçbir kenar bulunmamaktadır; Nexivion Labs çalışma alanı grafta vardır ve sarmal, laboratuvar ile orkestrasyon Projeleri onun ALTINDA değil YANINDA öksüz durmaktadır. Aynı ölçüm ikinci bir açığı da göstermiştir: dört bin üç yüz doksan düğümün bin altı yüz on üçünün, yani yüzde otuz yedisinin hiç kapsayanı yoktur ve bunlar ağırlıkla Kod, Karar, Çıkarım, Kural ile Etmen türlerindedir; bu türlerin hangisinin kendi projesine bağlanması gerektiği, hangisinin tasarımı gereği köksüz olduğu bugün hiçbir yerde yazılı değildir. Kusurun görünür bedeli şudur: hiçbir yüzey ağaçları yan yana dizemez, çünkü hangi ağacın hangi çatıya ait olduğu graftan okunamaz." ) {
+        görev: [
+          "Yükleme çevriminde Proje ile ÇalışmaAlanı arasındaki kapsama bağını kur; bağ, Projenin kök dizininin çatının ilan ettiği bir Kitaplık ya da Rafın altında yaşamasından türer ve normalleştirme TEK noktada yapılır, tıpkı mevsim ile Faz çevrimlerinde olduğu gibi.",
+          "Kapsayanı olmayan düğüm türlerini tek tek ölç ve ikiye ayır: kendi projesine bağlanması gereken türler ile tasarımı gereği köksüz kalan türler. Ayrımı kayda yaz; bugün bu ayrım yazılı olmadığı için hiçbir yüzey hangi köksüzlüğün kusur olduğunu söyleyemez.",
+          "Bağın kurulamadığı hâli bildiren bir ölçüm yaz: çatının ilan ettiği bir rafın altında yaşayan fakat çatıya bağlanamayan bir Proje kökü görünür olsun.",
+          "Nöbet kur: çok projeli bir çatının grafında her Proje kökünün kapsayanı o çatının düğümüdür ve tek projeli bir depoda hiçbir şey değişmez."
+        ]
+        kabul: [
+          "Çatı kökünden çözülen grafta çatının ilan ettiği her Proje kökünün kapsayan alanı çalışma alanı düğümüdür; ölçüm çatının kendi kökünde tekrarlanır ve sayı yazılır.",
+          "Kapsayanı olmayan düğüm oranı ölçülmüş ve türlere göre ikiye ayrılmıştır; ayrım gerekçesiyle kayıtlıdır.",
+          "Tek projeli bir deponun grafı bu değişiklikten önceki düğüm ve kenar sayısını korur; ürün karnesi değişmez.",
+          "Nöbet mutasyonla kanıtlanmıştır: çevrim söküldüğünde nöbet kırmızıya döner.",
+          "Çekirdek ile eklenti süitleri yeşildir; depo denetimi sıfır hata verir."
+        ]
+        sınır: "Bu Adım kod tekilliği sorununa DOKUNMAZ; kardeş projelerin aynı kodu taşıması ayrı bir Adımın işidir ve bu Adım yalnız kapsama kenarını kurar. Kanon metnine dokunulmaz."
+        dokunulmaz: [ "MIM-1.1 maddesinin kaynak metni", "Faz ile Proje arasındaki bağ (KPS-FAZ-A01 turunda kuruldu)" ]
+        koşu: "2026-09-10 · KAPANDI. Kapsama kenarı yükleme çevriminde tek noktada kuruldu ve gerçek çatıda ölçüldü: dört bin dört yüz üç düğümde kapsama kenarı iki bin yedi yüz seksenden iki bin yedi yüz seksen üçe çıktı, üç Proje kökü de çalışma alanı düğümünün altındadır ve köksüzlük ders dünyası, laboratuvar arşivi ve omurga dışı tipler olarak üçe ayrılıp kayda yazıldı; plan kademesinde köksüz kalan sıfırdır. Tek projeli depoda graf çıktısı bayt bayt aynıdır, karne dört yüz on yedi Adımda değişmemiştir, altı mutasyon nöbeti kırmızıya çevirmiştir ve kontrolcü dört kapıyı bağımsız ölçmüştür: iki tsc sıfır, çekirdek bin üç yüz otuz beşte bin üç yüz otuz beş, eklenti yedi yüz elli beşte yedi yüz elli beş, depo denetimi sıfır hata."
+      }
     }
 
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
@@ -422,6 +486,10 @@ Kod( kod: KOD-KPS-FAZ-CEVRIMI, dosya: "urun/cekirdek/src/dag.ts",
 
 Kod( kod: KOD-KPS-FAZ-COZUCU, dosya: "urun/cekirdek/src/kimlik.ts",
   ne: "🎯 Kesin Proje kapsamı çözücüsü — bir dosyanın Proje kökünü YALNIZ bağ tekil ve kesinse döndüren gövde; aynı derinlikte iki ayrı Proje kodu bulunursa ve dosya ders dünyasında yaşıyorsa bağ kurulmaz, çünkü grafa içerme kenarı yazmak tahminle yapılamaz" )
+
+// 🍎 KPS-CAT-A01 teslimi (2026-09-10): çatının Projelerini evlat edinmesi — çatı çevrimi ve nöbeti
+Kod( kod: KOD-SNM-CATI-PROJE, dosya: "urun/cekirdek/sinama/cati-proje-kenari.test.ts",
+  ne: "🍎 Çatı-Proje kenarı nöbeti — on sınama: çatının ilan ettiği her Proje kökünün kapsayanı çalışma alanıdır, zincir Adımdan çatıya kesintisiz yürür, iç içe yazım dokunulmaz kalır, çatısız tek projeli depoda hiçbir şey değişmez, ilansız klasör kardeş sayılmaz, iç rafın yolu çatı kapsamı doğurmaz, ayrışık çatıda bağ kurulmaz ve susulmaz, ders dünyası kapısı kendi kademesinde ölçülür, örnek çatı ürün Projesini evlat edinemez ve çevrim yalnız Proje tipine iner; beş mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-CAT-A01)" )
 
 Kod( kod: KOD-SNM-FAZ-PROJE, dosya: "urun/cekirdek/sinama/faz-proje-kenari.test.ts",
   ne: "🍎 Faz-Proje kenarı nöbeti — yedi sınama: iki Projeli fikstürde her Fazın kapsayanı kendi Projesidir, zincir Adımdan Projeye kesintisiz yürür, iç içe yazım dokunulmaz kalır, kök dışındaki plan dosyası köksüz kalır, ayrışık kökte bağ kurulmaz, ders dünyası muaftır ve çevrim yalnız plan kademelerine iner; dört mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-FAZ-A01)" )

@@ -13,7 +13,7 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { DERS_DUNYASI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01)
+import { DERS_DUNYASI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, catiKapsamlari, kesinCatiKapsami, catiAltindaMi, type ProjeKapsami, type CatiKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01) · MIM-1.1: klasör→ÇalışmaAlanı çözümü TEK kaynaktan (KPS-CAT-A01)
 
 /** MIM-1.2 · katı üretim omurgasının plan kademeleri — proje çevriminin öznesi.
  *  Bir Proje kökü YALNIZ bu tiplere içerme kenarı verir; kanon, karar, hatırlatıcı
@@ -107,6 +107,15 @@ export interface Dag {
    *  giremez. ORK-1.2 ① hükmü gereği yine de sessiz düşmez: kenar burada kaydolur,
    *  böylece "yedi kenar nereye gitti" sorusunun ölçülebilir bir cevabı olur. */
   disProje: Array<{ kaynak: string; hedef: string; kenar: "bağımlı" | "besler"; dosya: string; satir: number; sutun: number }>;
+  /** MIM-1.1 · ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (KPS-CAT-A01). Çatının ilan ettiği
+   *  bir rafın altında yaşayan, dolayısıyla çatının çocuğu OLMASI GEREKEN, fakat
+   *  bağı tekil ve kesin çözülemediği için köksüz bırakılan Proje kökleri. Bağ
+   *  kurulamadığında çevrim susar (sessiz başarı taklidi yapmaz) ve susmanın
+   *  kendisi burada ölçülebilir hâle gelir: aksi hâlde "çatı bu projeyi neden
+   *  yutmuyor" sorusunun cevabı hiçbir yüzeyde okunamazdı. Bağ kurulduğunda ya
+   *  da ortada hiç çatı yokken bu liste BOŞTUR — tek projeli bir depo bu
+   *  alandan hiç etkilenmez. */
+  catisiz: Array<{ proje: string; dosya: string; satir: number; sutun: number; sebep: string }>;
 }
 
 /**
@@ -249,6 +258,40 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
     return kod;
   };
 
+  // ①b· ÇATI ÇEVRİMİ (KPS-CAT-A01 · MIM-1.1 · Founder ölçümü 2026-09-10):
+  //    üst kademesiz bir PROJE kökü, kendisini sarmalayan ÇalışmaAlanına
+  //    `kapsayan` olarak normalize edilir. Çevrim proje çevriminin bir kademe
+  //    YUKARISIDIR ve onunla aynı üç disiplini taşır. Birincisi, klasör→çatı
+  //    çözümü burada YENİDEN HESAPLANMAZ; kimlik.ts'in tek kaynağından
+  //    (catiKapsamlari + kesinCatiKapsami) okunur ve bu modül yalnız çözülen
+  //    kökü içerme kenarına çevirir. İkincisi, iç içe yazımla zaten bir
+  //    kapsayıcının içinde duran Proje dokunulmaz kalır: bağın yazım yeri
+  //    değişmez, yalnız yazılmamış yerde türetilir. Üçüncüsü, bağ ancak ilan
+  //    TEKİL VE KESİNSE kurulur; aynı derinlikte iki ayrı çatı kodu varsa
+  //    çevrim susar ve susma `catisiz` listesinde ölçülür.
+  //
+  //    Ölçülmüş kusur (Founder 2026-09-10): çatı kökünden çözülen graf dört bin
+  //    üç yüz doksan düğüm ve on beş kök döndürüyor, fakat çalışma alanı düğümü
+  //    ile onun altında yaşayan Proje kökleri arasında hiçbir kenar
+  //    bulunmuyordu; Nexivion Labs çatısı grafta VAR, sarmal · laboratuvar ve
+  //    orkestrasyon Projeleri onun ALTINDA değil YANINDA öksüz duruyordu.
+  //    Kusurun bedeli şudur: hiçbir yüzey ağaçları yan yana dizemez, çünkü
+  //    hangi ağacın hangi çatıya ait olduğu graftan okunamaz.
+  //
+  //    SINIR: çevrimin öznesi YALNIZ `Proje` tipidir. Kanon, karar, kod,
+  //    hatırlatıcı ve durum düğümleri çatıdan kök almaz; onların köksüzlüğü bir
+  //    kusur değil tasarımdır ve ayrımın gerekçesi planın kayıt bloğundadır.
+  let catiOnbellegi: readonly CatiKapsami[] | undefined;
+  const catilar = (): readonly CatiKapsami[] => (catiOnbellegi ??= catiKapsamlari(programlar));
+  const dosyaCatisi = new Map<string, string | undefined>();
+  /** Bu dosyanın üst kademesiz Proje köküne binecek ÇalışmaAlanı kodu. */
+  const catiKoku = (dosya: string): string | undefined => {
+    if (dosyaCatisi.has(dosya)) return dosyaCatisi.get(dosya);
+    const kod = kesinCatiKapsami(dosya, catilar())?.kod;
+    dosyaCatisi.set(dosya, kod);
+    return kod;
+  };
+
   // ① düğümleri topla (ilk tanım kazanır — kodIndeksle ile tutarlı) + yaprak haritası
   //    kapsayan = en yakın KOD'lu ata (içerme kenarı graf yüzüne türetilir — ORK-1.2)
   const toplaGez = (node: Dugum, dosya: string, kapsayan?: string): string[] => {
@@ -269,11 +312,12 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
         beyanYolu: dosyaP?.tur === "metin" ? dosyaP.metin : undefined,
         hedefTarih: tarihP?.metin,
         // ①· proje çevrimi: yalnız üst kademesiz PLAN düğümü klasörden kök alır.
+        // ①b· çatı çevrimi: yalnız üst kademesiz PROJE kökü klasörden çatı alır.
         // Zaten bir kapsayıcının içinde yazılmış düğüm (iç içe yazım) dokunulmaz
         // kalır — bağın yazım yeri değişmez, yalnız yazılmamış yerde türetilir.
         kapsayan: kapsayan
           ?? (PLAN_KADEMELERI.has(node.ad) ? projeKoku(dosya)
-            : undefined),
+            : node.ad === "Proje" ? catiKoku(dosya) : undefined),
         oncekiler: [], sonrakiler: [] });
     }
     // RF-T6-A02 sertleştirme (Sol ⑤): Kural BİLDİRİMLERİ (kuralTanım — `Kural ad(...)`)
@@ -501,7 +545,23 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   };
   for (const [dosya, program] of programlar) for (const b of program.bildirimler) kenarGez(b, dosya);
 
-  return { dugumler, kopuk, oz, disProje };
+  // ①c· ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ ÖLÇÜMÜ (KPS-CAT-A01). Çevrim yalnız bağ
+  //    tekil ve kesinken kenar yazar; sustuğu her hâl burada sayılır ki susma
+  //    sessizlik olmasın. Ölçüm iki koşulun kesişimidir: düğüm köksüz KALMIŞ ve
+  //    dosyası çatının ilan ettiği bir rafın altında YAŞIYOR. Çatısı hiç olmayan
+  //    bir Proje kökü — tek projeli bir deponun kendi kökü gibi — bu listeye
+  //    GİRMEZ, çünkü orada bağlanacak bir çatı yoktur ve olmayan bir bağın
+  //    kurulamaması bir kusur değildir.
+  const catisiz: Dag["catisiz"] = [];
+  for (const d of dugumler.values()) {
+    if (d.tip !== "Proje" || d.kapsayan !== undefined) continue;
+    if (!catiAltindaMi(d.dosya, catilar())) continue;
+    catisiz.push({ proje: d.kod, dosya: d.dosya, satir: d.satir, sutun: d.sutun,
+      sebep: "çatının ilan ettiği bir rafın altında yaşıyor fakat aynı derinlikte birden çok ÇalışmaAlanı kodu onu kapsıyor; bağ tekil olmadığı için kurulmadı" });
+  }
+  catisiz.sort((a, b) => a.proje.localeCompare(b.proje, "tr"));
+
+  return { dugumler, kopuk, oz, disProje, catisiz };
 }
 
 /**
