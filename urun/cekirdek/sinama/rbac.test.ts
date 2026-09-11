@@ -174,10 +174,13 @@ test("V1B-RBAC-A01 ④ ders dünyasındaki ihlal iki yüzeyde de aynı hükmü a
   // yolunda ölçüyordu ve ayrışmayı ASLA yakalayamazdı.
   const kok = mkdtempSync(join(tmpdir(), "sarmal-rbac-ders-"));
   try {
-    mkdirSync(join(kok, "ornek"), { recursive: true });
+    // KPS-IND-A01: ders dünyası ADIYLA değil YERİYLE tanınır — fikstür öğreti
+    // kitaplığının altına konur, çünkü kökün altındaki çıplak `ornek/` artık
+    // kullanıcının kendi kitaplığıdır ve ürün sayılır.
+    mkdirSync(join(kok, "ogreti", "ornek"), { recursive: true });
     writeFileSync(join(kok, "fx_anadizin.sar"),
       'Proje( kod: PRJ-FX, ad: "fx", ne: "ders dünyası kapsam nöbeti", rejim: esnek )\n', "utf8");
-    writeFileSync(join(kok, "ornek", "ders_kadro.sar"), İHLALLİ_KADRO, "utf8");
+    writeFileSync(join(kok, "ogreti", "ornek", "ders_kadro.sar"), İHLALLİ_KADRO, "utf8");
 
     const { ana, alt } = ikiYuzeyinSayisi(kok);
     assert.equal(ana, alt,

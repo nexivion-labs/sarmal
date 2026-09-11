@@ -33,15 +33,22 @@ Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu 
   Takım( kod: TAKIM-ONYUZ, ne: "önyüz yığını", bağımlı: [ FLUTTER, BLOC, GOROUTER ] )
   Takım( kod: TAKIM-ARKAYUZ, ne: "arkayüz yığını", bağımlı: [ FASTAPI, POSTGRES ] )
 
-  // ② MİMARİ — klasör ağacı (Kitaplık/Raf + yol: · MIM-3 Yapı-Önce). İlan edilen her
+  // ② MİMARİ — klasör ağacı (Kitaplık → Raf + yol: · MIM-3 Yapı-Önce). İlan edilen her
   //    yol diske iner (sarmal <ana.sar> --iskelet <hedef>); makine sonra TAKİP eder.
+  //    KİTAPLIK KADEMESİ ZORUNLUDUR (Founder hükmü 2026-09-09): dallanan her klasör
+  //    Kitaplıktır ve raflar Kitaplıkların İÇİNDE yaşar; kökün altına çıplak Raf
+  //    yazılmaz. Doğuş paketinin ürettiği giriş ilanı da bu mimariyi kurar, yani
+  //    öğretim yüzeyi ile üretim yüzeyi tek mimariyi anlatır.
   Kitaplık( kod: KTP-TABAN, yol: "taban/", ne: "ortak zemin — tüm ağaçların paylaştığı" ) {
     Raf( kod: RAF-SOZLESME, yol: "sozlesmeler/", ne: "Sözleşme — FE↔BE ORTAK DİLİ (contract-first · rayın kökü)" )
     Raf( kod: RAF-KIMLIK, yol: "kimlik/", ne: "tek giriş/auth zemini (çok-uygulama tek-auth · varsa)" )
   }
   Kitaplık( kod: KTP-ONYUZ, yol: "onyuz/", ne: "önyüz ağacı — TAKIM-ONYUZ üretir (Ekran→Yığın→...)" )
   Kitaplık( kod: KTP-ARKAYUZ, yol: "arkayuz/", ne: "arkayüz ağacı — TAKIM-ARKAYUZ üretir (Servis→Uç→Sözleşme)" )
-  Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan ağacı — Faz→Blok→Katman→AltKatman→Adım AYRI .sar'da (MIM-1)" )
+  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı — plan ve durum rafları burada yaşar" ) {
+    Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan ağacı — Faz→Blok→Katman→AltKatman→Adım AYRI .sar'da (MIM-1)" )
+    Raf( kod: RAF-DURUM, yol: "durum/", ne: "durum devri — oturum sonu 'nerede kaldık' kaydı" )
+  }
 }
 
 // ③ PLAN — anadizinde DEĞİL, plan/ altında AYRI .sar'da (ör. plan/mvp_plani.sar).

@@ -184,7 +184,7 @@ import { durumTuret } from "../../cekirdek/src/durum.ts";   // referans gövde: 
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { anadizinBul, mevsimNormalize } from "../../cekirdek/src/denetci.ts";
-import { SAR_DISLANANLAR } from "../src/izleyici-cekirdek.ts";
+import { SAR_DISLANANLAR, sarKapsamDisi } from "../src/izleyici-cekirdek.ts";
 import { diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "../src/tur-belgesi.ts";
 import { turGoruntusunuUnut, turGoruntusunuYayinla } from "../src/tur-goruntusu.ts";
 import {
@@ -209,17 +209,21 @@ const yolAl = (yol: string): string => yol;
 function sarDosyalariniTara(kok: string): string[] {
   const dislanan = new Set<string>(SAR_DISLANANLAR);
   const bulunan: string[] = [];
-  const in_ = (dizin: string): void => {
+  // KPS-IND-A01: ad tabanlı liste ucuz ön süzgeçtir; ders rafının hükmünü
+  // `sarKapsamDisi` verir ve ölçüm KÖK-GÖRELİ yol üstünde yapılır.
+  const in_ = (dizin: string, goreli: string): void => {
     for (const girdi of readdirSync(dizin, { withFileTypes: true })) {
+      const alt = goreli ? `${goreli}/${girdi.name}` : girdi.name;
       if (girdi.isDirectory()) {
         if (girdi.name.startsWith(".") || dislanan.has(girdi.name)) continue;
-        in_(yolBirlestir(dizin, girdi.name));
+        if (sarKapsamDisi(`${alt}/x.sar`)) continue;
+        in_(yolBirlestir(dizin, girdi.name), alt);
       } else if (girdi.name.endsWith(".sar")) {
         bulunan.push(yolBirlestir(dizin, girdi.name));
       }
     }
   };
-  in_(kok);
+  in_(kok, "");
   return bulunan.sort();
 }
 
@@ -671,7 +675,8 @@ test("KÖK KURALI: evren üyeliği yol kümesiyle ölçülür; dışlanmış iç
 
   // Evren DIŞI, dışlanmış iç içe kök: `ogreti/ornek/altin_yol` kendi girişini taşır
   // (ÇalışmaAlanı CAL-BAHCE) ve `ornek` tam taramanın dışındadır (SAR_DISLANANLAR).
-  assert.ok((SAR_DISLANANLAR as readonly string[]).includes("ornek"), "fikstürün dayandığı dışlama kalkmış; nöbet başka bir dışlanmış kök seçmeli");
+  assert.ok(sarKapsamDisi("ogreti/ornek/altin_yol/altin_yol_anadizin.sar"),
+    "fikstürün dayandığı dışlama kalkmış; nöbet başka bir dışlanmış kök seçmeli");
   const bahce = yolBirlestir(DEPO_KOKU, "ogreti", "ornek", "altin_yol");
   const dis = yolBirlestir(bahce, "herhangi.sar");   // dosyanın kendisi gerekmez; aidiyet dizinden sorulur
   const k = coz(dis);

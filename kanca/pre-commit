@@ -46,6 +46,20 @@ if ! node "$MOTOR" denetle "$VARLIK" >/tmp/sarmal-kapi.log 2>&1; then
   exit 1
 fi
 
+# — ①·a DOSYA MÜHRÜ OLAYI (KPS-MHR-A01 · MIM-3.4 · Founder hükmü 2026-09-11) —
+#   Bir dosyanın mühürlenmesi işleme kapısında GÖRÜNÜR bir olaydır. Bu işleme bir
+#   `.sar` dosyasını adının başına yazılan arşiv, eğitim ya da sonra mührüyle
+#   canlı kaynaktan ayırıyorsa kapı onu adıyla basar. Kapı işlemeyi DURDURMAZ,
+#   çünkü mühür dosya sahibinin meşru beyanıdır; yalnız sessiz kalmasını engeller.
+#   Mührün tanınması motorun tek çözücüsündedir; buradaki desen yalnız sahnelenen
+#   yeni adları süzer ve hüküm vermez: geçersiz etiketi motorun denetimi bildirir.
+MUHURLER=$(git diff --cached --name-status -M --diff-filter=AR 2>/dev/null \
+  | awk -F'\t' '{print $NF}' | grep -E '(^|/)@[A-Z]+@_[^/]*\.sar$')
+if [ -n "$MUHURLER" ]; then
+  echo "📛 sarmal-kapı: bu işleme şu dosyaları mühürlüyor (MIM-3.4):"
+  printf '%s\n' "$MUHURLER" | sed 's/^/   • /'
+fi
+
 # — ①·b YÖNERGE İKİZİ NÖBETİ (KYN-MTR-A02 · YUZ-1.2) —
 #   Kökteki CLAUDE.md ile AGENTS.md aynı yönergenin iki adıdır. Biri değişip öteki
 #   kalırsa tek yönerge ikiye bölünür ve iki ajan iki ayrı kurala uyar; nöbet bu

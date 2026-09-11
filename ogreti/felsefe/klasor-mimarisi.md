@@ -28,5 +28,7 @@ MIM-3 bu ayrımı ve mutabakatı tanımlar.
 
 Bu mekanizmanın değeri klasör seçmek değil, seçilmiş mimariyi tekrar üretilebilir ve
 ölçülebilir tutmaktır. Aynı fiziksel olgu iki yerde sahiplenilmez; anadizin mimariyi,
-`plan/` rafı ise Fazdan Adıma iş omurgasını taşır. Kanonik hükmün tek adresi
+`is/plan/` rafı ise Fazdan Adıma iş omurgasını taşır. Dallanan klasör bir Kitaplıktır ve raflar
+Kitaplıkların içinde yaşar; kökün altına çıplak raf dizilmez, çünkü ağaç büyüdükçe giriş dosyası
+okunamaz bir raf listesine döner. Kanonik hükmün tek adresi
 `yasa/kanon/` altındaki sekiz bölüm dosyasıdır.

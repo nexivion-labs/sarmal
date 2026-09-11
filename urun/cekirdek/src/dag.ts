@@ -13,11 +13,28 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { INDEKS_DISI, adAlaniAyir, projeKapsamlari, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, AD_ALANI_AYRACI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, sahipProjeKapsami, onekKapsar, catiKapsamlari, kesinCatiKapsami, catiAltindaMi, type ProjeKapsami, type CatiKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01) · MIM-1.1: klasör→ÇalışmaAlanı çözümü TEK kaynaktan (KPS-CAT-A01)
+
+/** MIM-1.2 · katı üretim omurgasının plan kademeleri — proje çevriminin öznesi.
+ *  Bir Proje kökü YALNIZ bu tiplere içerme kenarı verir; kanon, karar, hatırlatıcı
+ *  ve durum düğümleri planın zaman ekseninde yaşamaz ve klasörden kök almaz.
+ *
+ *  Süzgecin ikinci ve ölçülmüş bir görevi daha vardır: Proje düğümünün KENDİSİ de
+ *  kendi kökünün altında yaşadığı için, süzgeç kalkarsa Proje kendi kendisinin
+ *  kapsayanı olur ve `kapsayan` zinciri bir öz-halkaya kapanır. Mutasyon ölçümü
+ *  (2026-09-10) bunu somut olarak gösterdi: süzgeç sökülünce `grafCikar` alt-graf
+ *  ata yürüyüşü (`while (a) … a = kapsayan`) sonlanmadı ve nöbet dosyası beş
+ *  dakikada bitmedi. Tip süzgeci bu halkanın doğmasını yapısal olarak engeller. */
+const PLAN_KADEMELERI: ReadonlySet<string> = new Set(["Faz", "Blok", "Katman", "AltKatman", "Adım"]);
 
 /** Graf düğümü — `kod` taşıyan bir widget (çoğunlukla Adım). */
 export interface DagDugum {
   kod: string;
+  /** ORK-4 · KOD AD ALANI (KPS-KOD-A01): kod kardeş bir Projede de ilan edilmişse
+   *  `kod` alanı `PRJ::KOD` anahtarını taşır ve düğümün ilan edildiği ÇIPLAK kod
+   *  burada durur. Kod ortak değilse alan hiç dolmaz — tek projeli bir deponun
+   *  grafı bu alandan tek bayt etkilenmez. */
+  yerelKod?: string;
   tip: string;            // Adım · Faz · Blok …
   dosya: string;
   satir: number;
@@ -95,6 +112,28 @@ export interface Dag {
    *  giremez. ORK-1.2 ① hükmü gereği yine de sessiz düşmez: kenar burada kaydolur,
    *  böylece "yedi kenar nereye gitti" sorusunun ölçülebilir bir cevabı olur. */
   disProje: Array<{ kaynak: string; hedef: string; kenar: "bağımlı" | "besler"; dosya: string; satir: number; sutun: number }>;
+  /** MIM-1.1 · ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (KPS-CAT-A01). Çatının ilan ettiği
+   *  bir rafın altında yaşayan, dolayısıyla çatının çocuğu OLMASI GEREKEN, fakat
+   *  bağı tekil ve kesin çözülemediği için köksüz bırakılan Proje kökleri. Bağ
+   *  kurulamadığında çevrim susar (sessiz başarı taklidi yapmaz) ve susmanın
+   *  kendisi burada ölçülebilir hâle gelir: aksi hâlde "çatı bu projeyi neden
+   *  yutmuyor" sorusunun cevabı hiçbir yüzeyde okunamazdı. Bağ kurulduğunda ya
+   *  da ortada hiç çatı yokken bu liste BOŞTUR — tek projeli bir depo bu
+   *  alandan hiç etkilenmez. */
+  catisiz: Array<{ proje: string; dosya: string; satir: number; sutun: number; sebep: string }>;
+  /** ORK-4 · KARDEŞ PROJELERDE ORTAK KOD (KPS-KOD-A01 · Founder hükmü 2026-09-10).
+   *  Aynı çatı altında birden çok Proje kökünün ilan ettiği kodlar ve hangi
+   *  Projelerde ilan edildikleri. Bu bir KUSUR DEĞİL BEKLENEN DURUMDUR: şablondan
+   *  doğan her müşteri aynı Kitaplık ve Raf kodlarını taşır ve taşımalıdır; liste
+   *  tanı üretmez, yalnız çevrimin hangi kodları `PRJ::KOD` anahtarına aldığını
+   *  ölçülebilir kılar. Tek projeli bir depoda BOŞTUR. */
+  ortakKod: Array<{ kod: string; projeler: string[] }>;
+  /** ORK-4 · AD ALANI OLMADAN AYRIŞAMAYAN PROJE KÖKÜ (KPS-KOD-A01). Aynı Proje
+   *  kodu birden çok kök dizinde ilan edilmişse ad alanının kendisi çoğalmıştır:
+   *  `PRJ-A::KOD` iki ayrı kökü aynı anda gösterir ve çevrim onları ayıramaz.
+   *  Çevrim bu hâlde SUSAR (bugünkü ilk-tanım davranışı korunur) fakat susma
+   *  burada adıyla ölçülür; araç "ayrıştırdım" demez, ayrıştıramadığını söyler. */
+  ayrisamayan: Array<{ kod: string; dosyalar: string[] }>;
 }
 
 /**
@@ -203,11 +242,129 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   // kapsayıcı KOD → altındaki yaprak Adım KOD'ları (kapsayıcı-hedef genişlemesi için)
   const yapraklar = new Map<string, string[]>();
 
+  // ①· PROJE ÇEVRİMİ (KPS-FAZ-A01 · MIM-1.2 · HTR-FAZ-PROJE-KENARI-GRAFTA-YOK):
+  //    bir plan dosyasının yaşadığı Proje kökü, o dosyanın ÜST KADEMESİZ plan
+  //    düğümlerine `kapsayan` olarak normalize edilir. Çevrim mevsim
+  //    normalizasyonunun ikizidir ve aynı disiplini taşır: klasör→Proje çözümü
+  //    burada YENİDEN HESAPLANMAZ, kimlik.ts'in tek kaynağından (projeKapsamlari
+  //    + kesinProjeKapsami) okunur; bu modül yalnız çözülen kökü içerme kenarına
+  //    çevirir. Ölçülmüş kusur (Founder 2026-09-09): `kapsayan` yalnız İÇ İÇE
+  //    YAZIMDAN türediği için klasörle kurulan bağ grafta hiç görünmüyordu —
+  //    PRJ-SARMAL kökü sorulduğunda otuz üç düğümün tamamı Kitaplık, Raf,
+  //    Teknoloji ve Sınıflama olarak dönüyor, üç canlı Fazın hiçbiri alt grafa
+  //    girmiyordu. MIM-1.2'nin Blok↔Faz yarısı motorda zorlanırken Faz↔Proje
+  //    yarısı hiç kurulmamıştı; bu çevrim o yarıyı kurar.
+  //
+  //    SINIR: bağ yalnız klasör ilişkisi TEKİL VE KESİN olduğunda kurulur. Dosya
+  //    hiçbir Proje kökünün altında yaşamıyorsa ya da aynı derinlikte iki AYRI
+  //    Proje kodu onu kapsıyorsa çevrim uygulanmaz ve düğüm köksüz kalır
+  //    (kesinProjeKapsami). Tesadüfî eşleşme hiçbir zaman bağ sayılmaz.
+  //
+  //   Proje kapsamları TEMBEL hesaplanır ve bu graftaki İKİ okur (proje çevrimi ile
+  //   ORK-4 ad alanı çözümü) AYNI önbelleği paylaşır: bir depo ne plan düğümü ne
+  //   `::` taşıyan hedef içeriyorsa tek bir ağaç bile dolaşılmaz, taşıyorsa da
+  //   kapsam listesi koşu başına yalnız bir kez kurulur. Bu, kimlik çözümündeki
+  //   kardeş kök okumasının tembelliğiyle aynı hükmün ikizidir.
+  let kapsamOnbellegi: readonly ProjeKapsami[] | undefined;
+  const kapsamlar = (): readonly ProjeKapsami[] => (kapsamOnbellegi ??= projeKapsamlari(programlar));
+  const dosyaKoku = new Map<string, string | undefined>();
+  /** Bu dosyanın üst kademesiz plan düğümlerine binecek Proje kodu (dosya başına bir kez). */
+  const projeKoku = (dosya: string): string | undefined => {
+    if (dosyaKoku.has(dosya)) return dosyaKoku.get(dosya);
+    const kod = kesinProjeKapsami(dosya, kapsamlar())?.kod;
+    dosyaKoku.set(dosya, kod);
+    return kod;
+  };
+
+  // ①b· ÇATI ÇEVRİMİ (KPS-CAT-A01 · MIM-1.1 · Founder ölçümü 2026-09-10):
+  //    üst kademesiz bir PROJE kökü, kendisini sarmalayan ÇalışmaAlanına
+  //    `kapsayan` olarak normalize edilir. Çevrim proje çevriminin bir kademe
+  //    YUKARISIDIR ve onunla aynı üç disiplini taşır. Birincisi, klasör→çatı
+  //    çözümü burada YENİDEN HESAPLANMAZ; kimlik.ts'in tek kaynağından
+  //    (catiKapsamlari + kesinCatiKapsami) okunur ve bu modül yalnız çözülen
+  //    kökü içerme kenarına çevirir. İkincisi, iç içe yazımla zaten bir
+  //    kapsayıcının içinde duran Proje dokunulmaz kalır: bağın yazım yeri
+  //    değişmez, yalnız yazılmamış yerde türetilir. Üçüncüsü, bağ ancak ilan
+  //    TEKİL VE KESİNSE kurulur; aynı derinlikte iki ayrı çatı kodu varsa
+  //    çevrim susar ve susma `catisiz` listesinde ölçülür.
+  //
+  //    Ölçülmüş kusur (Founder 2026-09-10): çatı kökünden çözülen graf dört bin
+  //    üç yüz doksan düğüm ve on beş kök döndürüyor, fakat çalışma alanı düğümü
+  //    ile onun altında yaşayan Proje kökleri arasında hiçbir kenar
+  //    bulunmuyordu; Nexivion Labs çatısı grafta VAR, sarmal · laboratuvar ve
+  //    orkestrasyon Projeleri onun ALTINDA değil YANINDA öksüz duruyordu.
+  //    Kusurun bedeli şudur: hiçbir yüzey ağaçları yan yana dizemez, çünkü
+  //    hangi ağacın hangi çatıya ait olduğu graftan okunamaz.
+  //
+  //    SINIR: çevrimin öznesi YALNIZ `Proje` tipidir. Kanon, karar, kod,
+  //    hatırlatıcı ve durum düğümleri çatıdan kök almaz; onların köksüzlüğü bir
+  //    kusur değil tasarımdır ve ayrımın gerekçesi planın kayıt bloğundadır.
+  let catiOnbellegi: readonly CatiKapsami[] | undefined;
+  const catilar = (): readonly CatiKapsami[] => (catiOnbellegi ??= catiKapsamlari(programlar));
+  const dosyaCatisi = new Map<string, string | undefined>();
+  /** Bu dosyanın üst kademesiz Proje köküne binecek ÇalışmaAlanı kodu. */
+  const catiKoku = (dosya: string): string | undefined => {
+    if (dosyaCatisi.has(dosya)) return dosyaCatisi.get(dosya);
+    const kod = kesinCatiKapsami(dosya, catilar())?.kod;
+    dosyaCatisi.set(dosya, kod);
+    return kod;
+  };
+
+  // ①c· KOD AD ALANI ÇEVRİMİ (KPS-KOD-A01 · ORK-4 · Founder hükmü 2026-09-10:
+  //    TEKDÜZELİK KORUNUR, TEKİLLİK ÇATIDA KURULUR). Graf kodla anahtarlanır ve
+  //    ilk tanım kazanır; bu, tek projeli bir depoda doğru, iki kardeş projeli bir
+  //    çatıda yanlıştır. Ölçüm (2026-09-10, doğuş paketiyle doğmuş iki kardeş):
+  //    giriş ilanlarındaki sekiz kodun sekizi aynıdır (üç Kitaplık, dört Raf ve
+  //    kuruluş Adımının kodu), çatı grafında her birinin TEK düğümü kalıyor ve kazanan
+  //    proje tarama sırasına bağlı çıkıyordu; ikinci projenin karnesi on dört
+  //    yerine altı düğüm gösteriyordu, fark tam sekizdi.
+  //
+  //    Founder çözümü kodlara önek eklemek DEĞİL, çakışmayı BİRLEŞTİRME ANINDA
+  //    çözmektir: kod projenin içinde kısa ve tekdüze kalır (şablon müşteriye
+  //    hiçbir kod değişmeden kopyalanır, beceri kartı RAF-PLAN'ı yüz müşteride
+  //    aynı adla anar), graf onu hangi Proje kökünün altında bulduğuna göre
+  //    ayırır. Mekanizma ORK-4'ün kendisidir: niteliksiz kod yalnız bulunduğu
+  //    Proje içinde çözülür; ayrıştırılan düğümün anahtarı `PRJ-A::KOD-X` olur.
+  //
+  //    ÜÇ DİSİPLİN. Birincisi, çevrim YALNIZ ORTAK kodlara iner: bir kod tek bir
+  //    Proje kökünde ilanlıysa anahtarı çıplak kalır, dolayısıyla tek projeli bir
+  //    deponun grafı tek bayt değişmez. İkincisi, klasör→Proje çözümü burada
+  //    yeniden hesaplanmaz; proje çevriminin okuduğu `projeKoku` (kimlik.ts ·
+  //    kesinProjeKapsami) aynı cevabı verir ve ders dünyası ile köksüz dosyalar
+  //    hiç ad alanı almaz. Üçüncüsü, çevrim ayıramadığı yerde SUSAR ve susmayı
+  //    ölçer: aynı Proje kodu iki kökte ilanlıysa ad alanı çoğalmıştır ve bu
+  //    `ayrisamayan` listesinde adıyla görünür; ortak kodların kendisi ise
+  //    `ortakKod` listesinde beklenen durum olarak sayılır, tanı üretmez.
+  const kodProjeleri = new Map<string, Set<string>>();
+  const ilanGez = (node: Dugum, dosya: string): void => {
+    const kod = node.tur === "widget" ? kodDeger(node)
+      : node.tur === "kuralTanım" ? (kodDeger(node) ?? node.ad) : undefined;
+    // Proje kodu ad alanının KENDİSİDİR; `PRJ-A::PRJ-A` diye bir anahtar yoktur.
+    if (kod && !(node.tur === "widget" && node.ad === "Proje")) {
+      const p = projeKoku(dosya);
+      if (p) (kodProjeleri.get(kod) ?? kodProjeleri.set(kod, new Set()).get(kod)!).add(p);
+    }
+    for (const c of node.cocuklar) ilanGez(c, dosya);
+  };
+  for (const [dosya, program] of programlar) for (const b of program.bildirimler) ilanGez(b, dosya);
+  const ortakKodHaritasi = new Map<string, string[]>();
+  for (const [kod, projeler] of kodProjeleri) {
+    if (projeler.size > 1) ortakKodHaritasi.set(kod, [...projeler].sort((a, b) => a.localeCompare(b, "tr")));
+  }
+  /** Bir ilan ya da hedef kodunun bu graftaki ANAHTARI: ortak kod, dosyanın Projesi altında `PRJ::KOD` olur. */
+  const anahtar = (kod: string, dosya: string): string => {
+    if (!ortakKodHaritasi.has(kod)) return kod;
+    const p = projeKoku(dosya);
+    return p ? `${p}${AD_ALANI_AYRACI}${kod}` : kod;
+  };
+
   // ① düğümleri topla (ilk tanım kazanır — kodIndeksle ile tutarlı) + yaprak haritası
   //    kapsayan = en yakın KOD'lu ata (içerme kenarı graf yüzüne türetilir — ORK-1.2)
   const toplaGez = (node: Dugum, dosya: string, kapsayan?: string): string[] => {
-    const kod = kodDeger(node);
-    if (kod && node.tur === "widget" && !dugumler.has(kod)) {
+    const hamKod = kodDeger(node);
+    // ①c· ortak kod bu dosyanın Projesi altında `PRJ::KOD` anahtarını alır.
+    const kod = hamKod !== undefined ? anahtar(hamKod, dosya) : undefined;
+    if (kod && hamKod && node.tur === "widget" && !dugumler.has(kod)) {
       const durumP = param(node, "durum");
       const neP = param(node, "ne");
       const adP = param(node, "ad");
@@ -216,22 +373,30 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       const dosyaP = param(node, "dosya");
       // MIM-1.2: Faz'ın zaman beyanı düğüme iner — kardeş sırası buradan türer.
       const tarihP = node.ad === "Faz" ? param(node, "hedefTarih") : undefined;
-      dugumler.set(kod, { kod, tip: node.ad, dosya, satir: node.satir, sutun: node.sutun,
+      dugumler.set(kod, { kod, ...(kod !== hamKod ? { yerelKod: hamKod } : {}), tip: node.ad, dosya, satir: node.satir, sutun: node.sutun,
         durum: durumP?.tur === "metin" || durumP?.tur === "kod" ? durumP.metin : undefined,
         ad: adP?.tur === "metin" ? adP.metin : undefined,
         ne: neP?.tur === "metin" ? neP.metin : undefined,
         beyanYolu: dosyaP?.tur === "metin" ? dosyaP.metin : undefined,
         hedefTarih: tarihP?.metin,
-        kapsayan, oncekiler: [], sonrakiler: [] });
+        // ①· proje çevrimi: yalnız üst kademesiz PLAN düğümü klasörden kök alır.
+        // ①b· çatı çevrimi: yalnız üst kademesiz PROJE kökü klasörden çatı alır.
+        // Zaten bir kapsayıcının içinde yazılmış düğüm (iç içe yazım) dokunulmaz
+        // kalır — bağın yazım yeri değişmez, yalnız yazılmamış yerde türetilir.
+        kapsayan: kapsayan
+          ?? (PLAN_KADEMELERI.has(node.ad) ? projeKoku(dosya)
+            : node.ad === "Proje" ? catiKoku(dosya) : undefined),
+        oncekiler: [], sonrakiler: [] });
     }
     // RF-T6-A02 sertleştirme (Sol ⑤): Kural BİLDİRİMLERİ (kuralTanım — `Kural ad(...)`)
     // de grafa kaydolur: dayanak kenarının kural ucu düğümsüz kalmasın, graf/gezin
     // kural→karar yönünü iki uçlu yürüyebilsin. Kimlik: kod parametresi varsa o,
     // yoksa kural adı (DIL-3 adıyla çağrılır).
     if (node.tur === "kuralTanım") {
-      const kkod = kod ?? node.ad;
+      const kkodHam = hamKod ?? node.ad;
+      const kkod = kkodHam ? anahtar(kkodHam, dosya) : undefined;
       if (kkod && !dugumler.has(kkod)) {
-        dugumler.set(kkod, { kod: kkod, tip: "Kural", dosya, satir: node.satir, sutun: node.sutun,
+        dugumler.set(kkod, { kod: kkod, ...(kkod !== kkodHam ? { yerelKod: kkodHam } : {}), tip: "Kural", dosya, satir: node.satir, sutun: node.sutun,
           durum: undefined, kapsayan, oncekiler: [], sonrakiler: [] });
       }
     }
@@ -307,12 +472,7 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   const disProje: Dag["disProje"] = [];
 
   // ── ORK-4 · ad alanlı yürütme hedefinin çözümü (KPS-ADA-A01 · ikinci tur) ──
-  //   Proje kapsamları TEMBEL hesaplanır: `::` taşıyan bir hedefe gerçekten
-  //   rastlanmadıkça tek bir ağaç bile dolaşılmaz, dolayısıyla ad alanı
-  //   kullanmayan bir deponun grafı hiçbir ek bedel ödemez. Bu, kimlik
-  //   çözümündeki kardeş kök okumasının tembelliğiyle aynı hükmün ikizidir.
-  let kapsamOnbellegi: readonly ProjeKapsami[] | undefined;
-  const kapsamlar = (): readonly ProjeKapsami[] => (kapsamOnbellegi ??= projeKapsamlari(programlar));
+  //   Kapsam listesi yukarıdaki paylaşılan tembel `kapsamlar()` okurundan gelir.
 
   /** Bir yürütme kenarı hedefinin bu graftaki karşılığı. */
   type HedefCozum =
@@ -322,9 +482,18 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
 
   const hedefiCoz = (hedef: string, kaynakDosya: string): HedefCozum => {
     const { adAlani, yerel } = adAlaniAyir(hedef);
-    // Niteliksiz hedef: bugünkü davranış birebir korunur (hüküm gevşetilmez de,
-    // sıkılaştırılmaz da — bu Adımın işi ad alanlı hedefi grafa indirmektir).
-    if (adAlani === undefined) return dugumler.has(hedef) ? { tur: "yerel", kod: hedef } : { tur: "kopuk" };
+    // Niteliksiz hedef: bugünkü davranış korunur (hüküm gevşetilmez de,
+    // sıkılaştırılmaz da); tek fark ORTAK kodun kaynağın kendi Projesi altında
+    // çözülmesidir (KPS-KOD-A01 · ORK-4: niteliksiz kod yalnız bulunduğu Proje
+    // içinde çözülür). Köksüz bir kaynak ortak koda çıplak bakar; çıplak düğüm
+    // yoksa hedef kopuktur — tesadüfî kardeş eşleşmesi bağ sayılmaz.
+    if (adAlani === undefined) {
+      const k = anahtar(hedef, kaynakDosya);
+      return dugumler.has(k) ? { tur: "yerel", kod: k } : { tur: "kopuk" };
+    }
+    // Ad alanlı hedefin bu grafta AYRIŞTIRILMIŞ karşılığı varsa (kod ortaktı ve
+    // çevrim onu `PRJ::KOD` anahtarına aldı) hedef doğrudan o düğümdür.
+    if (dugumler.has(hedef)) return { tur: "yerel", kod: hedef };
     // ① Ad alanı YÜKLÜ evrende bir Proje kapsamıysa (çatı penceresi) hedef yalnız
     //    o kapsamın altında aranır; küresel eşleşme burada da bağ değildir.
     const hedefKapsamlar = kapsamlar().filter((k) => k.kod === adAlani);
@@ -342,11 +511,15 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   const kenarGez = (node: Dugum, dosya: string): void => {
     // RF-T6-A02 sertleştirme: kuralTanım da kenar beyan edebilir (dayanak: K-nn) —
     // kimliği adı (DIL-3); widget'larla aynı kenar mantığından geçer.
-    const kod = kodDeger(node) ?? (node.tur === "kuralTanım" ? node.ad : undefined);
-    if (kod && (node.tur === "widget" || node.tur === "kuralTanım")) {
+    const hamKod = kodDeger(node) ?? (node.tur === "kuralTanım" ? node.ad : undefined);
+    // ①c· kaynağın anahtarı da ilan anahtarıyla aynı çevrimden geçer (KPS-KOD-A01).
+    const kod = hamKod !== undefined && (node.tur === "widget" || node.tur === "kuralTanım") ? anahtar(hamKod, dosya) : undefined;
+    if (kod && hamKod) {
+      /** Yumuşak kenar hedefinin bu graftaki düğümü: ortak kod kaynağın Projesi altında, ad alanlı yazım kendi anahtarıyla. */
+      const hedefDugumu = (t: string): DagDugum | undefined => dugumler.get(anahtar(t, dosya)) ?? dugumler.get(t);
       const isle = (kenar: "bağımlı" | "besler", t: string): void => {
         // ÖZ-BAĞIMLILIK (TUR-2): kendine kenar sessizce atlanmaz — HATA sicili.
-        if (t === kod) {
+        if (t === hamKod || t === kod) {
           oz.push({ kaynak: kod, hedef: t, kenar, dosya, satir: node.satir, sutun: node.sutun });
           return;
         }
@@ -396,9 +569,9 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       if (kul) {
         const kaynakD = dugumler.get(kod);
         for (const t of kenarHedefleri(kul)) {
-          const hedefD = dugumler.get(t);
+          const hedefD = hedefDugumu(t);
           if (kaynakD && hedefD && KAPSAYICI_TIPLERI.has(kaynakD.tip) && ZEMIN_TIPLERI.has(hedefD.tip)) {
-            if (!(kaynakD.zemin ??= []).includes(t)) kaynakD.zemin.push(t);
+            if (!(kaynakD.zemin ??= []).includes(hedefD.kod)) kaynakD.zemin.push(hedefD.kod);
           }
         }
       }
@@ -408,8 +581,8 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       if (htr) {
         const kaynak = dugumler.get(kod);
         for (const t of kenarHedefleri(htr)) {
-          if (kaynak) (kaynak.hatırlatıyor ??= []).push(t);   // kaynağın gideni (beyan — hedef çözülmese de)
-          const hedef = dugumler.get(t);
+          const hedef = hedefDugumu(t);
+          if (kaynak) (kaynak.hatırlatıyor ??= []).push(hedef?.kod ?? t);   // kaynağın gideni (beyan — hedef çözülmese de)
           if (hedef && !(hedef.hatırlatanlar ??= []).includes(kod)) hedef.hatırlatanlar.push(kod);   // hedefe gelen
         }
       }
@@ -418,8 +591,8 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       if (dyn) {
         const kaynak = dugumler.get(kod);
         for (const t of kenarHedefleri(dyn)) {
-          if (kaynak) (kaynak.dayanıyor ??= []).push(t);
-          const hedef = dugumler.get(t);
+          const hedef = hedefDugumu(t);
+          if (kaynak) (kaynak.dayanıyor ??= []).push(hedef?.kod ?? t);
           if (hedef && !(hedef.dayananlar ??= []).includes(kod)) hedef.dayananlar.push(kod);
         }
       }
@@ -430,8 +603,9 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       if (urt) {
         const kaynak = dugumler.get(kod);
         for (const t of kenarHedefleri(urt)) {
-          if (kaynak && !(kaynak.üretiyor ??= []).includes(t)) kaynak.üretiyor.push(t);   // beyan — hedef çözülmese de
-          const hedef = dugumler.get(t);
+          const hedef = hedefDugumu(t);
+          const h = hedef?.kod ?? t;
+          if (kaynak && !(kaynak.üretiyor ??= []).includes(h)) kaynak.üretiyor.push(h);   // beyan — hedef çözülmese de
           if (hedef && !(hedef.üretenler ??= []).includes(kod)) hedef.üretenler.push(kod);
         }
       }
@@ -445,7 +619,7 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       if (node.tur === "widget" && node.ad === "Faz") {
         for (const c of node.cocuklar) {
           if (c.tur !== "çağır") continue;
-          const hedef = dugumler.get(c.ad);
+          const hedef = hedefDugumu(c.ad);
           if (hedef && hedef.tip === "Blok" && !hedef.mevsim) hedef.mevsim = kod;
         }
       }
@@ -454,7 +628,67 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   };
   for (const [dosya, program] of programlar) for (const b of program.bildirimler) kenarGez(b, dosya);
 
-  return { dugumler, kopuk, oz, disProje };
+  // ①c· ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ ÖLÇÜMÜ (KPS-CAT-A01). Çevrim yalnız bağ
+  //    tekil ve kesinken kenar yazar; sustuğu her hâl burada sayılır ki susma
+  //    sessizlik olmasın. Ölçüm iki koşulun kesişimidir: düğüm köksüz KALMIŞ ve
+  //    dosyası çatının ilan ettiği bir rafın altında YAŞIYOR. Çatısı hiç olmayan
+  //    bir Proje kökü — tek projeli bir deponun kendi kökü gibi — bu listeye
+  //    GİRMEZ, çünkü orada bağlanacak bir çatı yoktur ve olmayan bir bağın
+  //    kurulamaması bir kusur değildir.
+  const catisiz: Dag["catisiz"] = [];
+  for (const d of dugumler.values()) {
+    if (d.tip !== "Proje" || d.kapsayan !== undefined) continue;
+    if (!catiAltindaMi(d.dosya, catilar())) continue;
+    catisiz.push({ proje: d.kod, dosya: d.dosya, satir: d.satir, sutun: d.sutun,
+      sebep: "çatının ilan ettiği bir rafın altında yaşıyor fakat aynı derinlikte birden çok ÇalışmaAlanı kodu onu kapsıyor; bağ tekil olmadığı için kurulmadı" });
+  }
+  catisiz.sort((a, b) => a.proje.localeCompare(b.proje, "tr"));
+
+  // ①d· ORTAK KOD ÖLÇÜMÜ ile AYRIŞAMAYAN PROJE KÖKÜ (KPS-KOD-A01). Birincisi
+  //    beklenen durumu sayar ve tanı üretmez; ikincisi çevrimin sustuğu yeri
+  //    adıyla söyler: aynı Proje kodu birden çok kök dizinde ilanlıysa
+  //    `PRJ::KOD` ad alanı iki kökü birden gösterir ve hiçbir kod ad alanıyla
+  //    çözülemez. Tek projeli bir depoda iki liste de BOŞTUR.
+  const ortakKod = [...ortakKodHaritasi.entries()]
+    .map(([kod, projeler]) => ({ kod, projeler }))
+    .sort((a, b) => a.kod.localeCompare(b.kod, "tr"));
+  const projeOnekleri = new Map<string, Map<string, string>>();
+  for (const k of kapsamlar()) {
+    (projeOnekleri.get(k.kod) ?? projeOnekleri.set(k.kod, new Map()).get(k.kod)!).set(k.onek, k.dosya);
+  }
+  const ayrisamayan: Dag["ayrisamayan"] = [];
+  for (const [kod, onekler] of projeOnekleri) {
+    if (onekler.size > 1) ayrisamayan.push({ kod, dosyalar: [...onekler.values()].sort((a, b) => a.localeCompare(b, "tr")) });
+  }
+  ayrisamayan.sort((a, b) => a.kod.localeCompare(b.kod, "tr"));
+
+  return { dugumler, kopuk, oz, disProje, catisiz, ortakKod, ayrisamayan };
+}
+
+/**
+ * Çıplak bir kodun bu grafta AYRIŞTIRILMIŞ karşılıkları (KPS-KOD-A01). Kod
+ * kardeş projelerde ortaksa çevrim onu `PRJ::KOD` anahtarlarına almıştır ve
+ * çıplak `dugumler.get(kod)` boş döner; bir kodu adıyla arayan her yüzey
+ * (graf kökü, etki, gezinme) "yok" demeden önce buraya sorar ve bulduğu
+ * seçeneklerin HEPSİNİ projesiyle gösterir — sessizce birini seçmek bugünkü
+ * kusurun tekrarıdır. Kod ortak değilse liste boştur.
+ */
+export function adAlaniSecenekleri(dag: Dag, kod: string): string[] {
+  const o = dag.ortakKod.find((x) => x.kod === kod);
+  if (!o) return [];
+  return o.projeler.map((p) => `${p}${AD_ALANI_AYRACI}${kod}`).filter((k) => dag.dugumler.has(k));
+}
+
+/**
+ * Bir kodu adıyla arayan yüzeylerin ortak "yok" cümlesi (KPS-KOD-A01): kod
+ * gerçekten yoksa eski cümle aynen kalır; ortaksa araç seçenekleri projesiyle
+ * sıralar ve hangisinin kastedildiğini SORAR. Tek bir yüzeyin kendi cümlesini
+ * kurması, üç yüzün üç ayrı şey söylemesi demekti (YUZ-1.2).
+ */
+export function dugumYokMetni(dag: Dag, kod: string, yoksa: string): string {
+  const secenekler = adAlaniSecenekleri(dag, kod);
+  if (!secenekler.length) return yoksa;
+  return `✖ '${kod}' kodu bu çatıda ${secenekler.length} kardeş Projede birden ilanlı; hangisini kastettiğini ad alanıyla söyle (ORK-4):\n${secenekler.map((s) => `  ${s}`).join("\n")}`;
 }
 
 /**
@@ -627,7 +861,7 @@ export interface SecilebilirAdim {
  * koşulabilir?" sorusunun deterministik cevabı. Ölçüt:
  *   • durum ∈ { beklemede, geliştirmede }  (tamamlandı/bloklu/doğrulanmamış hariç)
  *   • bütün Adım öncülleri tamamlandı (öncül bitmeden ardıl koşamaz — ORK-3.1)
- * Ders dünyası (INDEKS_DISI) ürün gündemine girmez (OGR-5). geliştirmede olanlar
+ * Ders dünyası (DERS_DUNYASI) ürün gündemine girmez (OGR-5). geliştirmede olanlar
  * ÖNE alınır (aktif cephe — ORK-3.2: yarım işi bitir, yeni açma), ardından beklemede
  * hazırlar; her küme kendi içinde topolojik rütbede (kararlı).
  */
@@ -637,7 +871,7 @@ export function secilebilirAdimlar(dag: Dag): SecilebilirAdim[] {
   const aday: SecilebilirAdim[] = [];
   for (const [kod, d] of dag.dugumler) {
     if (d.tip !== "Adım") continue;
-    if (INDEKS_DISI.test(d.dosya)) continue;                       // OGR-5: ders dünyası gündeme girmez
+    if (DERS_DUNYASI.test(d.dosya)) continue;                       // OGR-5: ders dünyası gündeme girmez
     if (d.durum !== "beklemede" && d.durum !== "geliştirmede") continue;
     // Adım öncülleri: durumsuz/Adım-dışı kenarlar (Teknoloji bağımlılığı) elenir.
     const bekleyen = d.oncekiler.filter((o) => !onculAcik(o, dag));
@@ -815,14 +1049,119 @@ export function karneOzeti(dag: Dag): KarneOzeti {
   const adimDurumlari: (string | undefined)[] = [];
   for (const [, d] of dag.dugumler) {
     if (d.tip !== "Adım") continue;
-    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (INDEKS_DISI) Adımlar
+    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (DERS_DUNYASI) Adımlar
     // ürün karnesine girmez — karne satırı ürün ağacının gerçeğini söyler.
     // Ders dünyası gizlenmez: sayısı denetim çıktısında ayrı satırla raporlanır.
-    if (INDEKS_DISI.test(d.dosya)) continue;
+    if (DERS_DUNYASI.test(d.dosya)) continue;
     adimDurumlari.push(d.durum);
     if (d.durum) durumlar[d.durum] = (durumlar[d.durum] ?? 0) + 1;
   }
   return { dugum: dag.dugumler.size, adim: durumTuret(adimDurumlari).toplam, durumlar };
+}
+
+/**
+ * PROJE SAHİPLİĞİ — bir dosyanın hangi Proje koduna ait olduğunun TEK cevabı
+ * (KPS-AYR-A01 · YAS-3.3). Karne, graf ve bulgu gruplaması bu tek yordamdan
+ * okur; üç yüzeyin ayrı ayrı sahiplik hesaplaması, üçünün aynı dosyayı üç ayrı
+ * projeye yazabilmesi demekti ve kanon bunu açıkça yasaklar.
+ *
+ * Neden `sahipProjeKapsami` ile ölçülür, `kesinProjeKapsami` ile değil: içerme
+ * KENARI yazmak ile bulgu GRUPLAMAK ayrı iddialardır. Kenar bir cümledir ve
+ * yanlışsa panelde yalan söyler, bu yüzden belirsizlikte susar. Gruplama ise
+ * TAM olmak zorundadır: her bulgunun bir evi olmalıdır, yoksa bulgu tablodan
+ * düşer ve sessizce kaybolur. Belirsizlikte en yakın kök kazanır, çünkü hiçbir
+ * eve girmemektense en yakın eve girmek okunabilir bir sonuçtur.
+ */
+export function projeSahibi(dosya: string, kapsamlar: readonly ProjeKapsami[]): string | undefined {
+  return sahipProjeKapsami(dosya, kapsamlar)?.kod;
+}
+
+/**
+ * PROJE KÖKLERİ — çatı kökünden koşan denetimin KENDİ KÖKÜNE DEVRETTİĞİ Projeler
+ * (KPS-AYR-A01 ikinci yarı · MIM-1.1 · YAS-3.3).
+ *
+ * Kök, `projeSahibi` yordamının okuduğu Proje kapsamlarının TA KENDİSİNDEN
+ * türer; bir dosyanın hangi Projeye ait olduğu ile hangi kökten ölçüleceği
+ * aynı listeden okunur ve ikinci bir çözücü yazılmaz. İki hesap ayrı yaşasaydı
+ * bir dosya bir Projenin hanesinde sayılıp başka bir kökten ölçülebilirdi.
+ *
+ * Devredilen kök, bir ALT dizindeki giriş dosyasında (MIM-3 · `*_anadizin.sar`,
+ * eski `ana.sar`) ilan edilmiş Projedir, çünkü denetimin o kökten koşabilmesi
+ * için orada bir giriş dosyası bulunmak zorundadır. Koşulan kökün kendisinde
+ * ilan edilen Proje (boş önek) devredilmez: tek projeli bir depo kendi kökünden
+ * koşar ve liste boş döner. Giriş dosyası dışında ilan edilmiş bir Proje de
+ * devredilmez; o Projenin bulguları yine `projeSahibi` ile kendi hanesine
+ * düşer, yalnız kök çözümü kapsayan kökte kalır. İç içe kökler için yalnız EN
+ * DIŞTAKİ döner; içteki, dıştakinin kendi koşumunda aynı yordamla devredilir
+ * ve böylece çatı kökünden okunan tablo her kökün kendi tablosuyla birebir
+ * aynı kalır. Ders dünyası listeye hiç girmez, çünkü `projeKapsamlari` onu
+ * zaten kök saymaz.
+ */
+export function projeKokleri(kapsamlar: readonly ProjeKapsami[]): ProjeKapsami[] {
+  const girisMi = (k: ProjeKapsami): boolean => {
+    const ad = k.dosya.replace(/\\/g, "/").slice(k.onek.length);
+    return !ad.includes("/") && (ad.endsWith("_anadizin.sar") || ad === "ana.sar");
+  };
+  const adaylar = kapsamlar.filter((k) => k.onek !== "" && girisMi(k));
+  const kokler: ProjeKapsami[] = [];
+  for (const k of adaylar) {
+    if (adaylar.some((u) => u.onek.length < k.onek.length && onekKapsar(u.onek, k.dosya))) continue;
+    if (kokler.some((v) => v.onek === k.onek)) continue;   // aynı önekte tek koşum
+    kokler.push(k);
+  }
+  return kokler;
+}
+
+/** Tek bir Projenin karnesi — kodu, insan adı ve kendi düğüm/Adım sayıları. */
+export interface ProjeKarnesi extends KarneOzeti {
+  kod: string;
+  ad?: string;
+}
+
+/**
+ * ÇOK PROJELİ KARNE (KPS-AYR-A01). Bugüne kadar karne çalışma alanı düzeyinde
+ * TEK bir sayı basıyordu; yüz müşterili bir çatıda o sayı hiçbir müşterinin
+ * karnesi olmaz ve hangi projenin kaç açık Adımı olduğu okunamazdı.
+ *
+ * Sahiplik grafın kendisinden okunur: bir düğümün Projesi, `kapsayan` zinciri
+ * yukarı yürünerek bulunan ilk `Proje` düğümüdür. Zincir bir Projeye varmıyorsa
+ * (omurga dışı tipler — kanon, kayıt, kadro) dosya sahipliğine düşülür; iki yol
+ * da aynı kaynağı okur, dolayısıyla graf kimliği ile karne kimliği ayrışamaz.
+ * Ders dünyası `karneOzeti` ile aynı hükümle elenir — ikinci bir muafiyet
+ * tanımı doğmaz.
+ */
+export function projeKarneleri(dag: Dag, kapsamlar: readonly ProjeKapsami[]): ProjeKarnesi[] {
+  /** Düğümün Projesi: önce graf zinciri, sonra dosya sahipliği. */
+  const sahip = (d: DagDugum): string | undefined => {
+    if (d.tip === "Proje") return d.kod;
+    let a = d.kapsayan;
+    for (let i = 0; a && i < 32; i++) {
+      const ata = dag.dugumler.get(a);
+      if (!ata) break;
+      if (ata.tip === "Proje") return ata.kod;
+      a = ata.kapsayan;
+    }
+    return projeSahibi(d.dosya, kapsamlar);
+  };
+  const kutu = new Map<string, { ad?: string; dugum: number; adimDurumlari: (string | undefined)[]; durumlar: Record<string, number> }>();
+  const al = (kod: string) => {
+    let k = kutu.get(kod);
+    if (!k) { k = { dugum: 0, adimDurumlari: [], durumlar: {} }; kutu.set(kod, k); }
+    return k;
+  };
+  for (const d of dag.dugumler.values()) {
+    if (d.tip === "Proje") al(d.kod).ad = d.ad;
+    const kod = sahip(d);
+    if (!kod) continue;
+    const k = al(kod);
+    k.dugum++;
+    if (d.tip !== "Adım" || DERS_DUNYASI.test(d.dosya)) continue;
+    k.adimDurumlari.push(d.durum);
+    if (d.durum) k.durumlar[d.durum] = (k.durumlar[d.durum] ?? 0) + 1;
+  }
+  return [...kutu.entries()]
+    .map(([kod, k]) => ({ kod, ...(k.ad ? { ad: k.ad } : {}), dugum: k.dugum, adim: durumTuret(k.adimDurumlari).toplam, durumlar: k.durumlar }))
+    .sort((a, b) => a.kod.localeCompare(b.kod, "tr"));
 }
 
 // ── Denetim tanıları (döngü = hata) ───────────────────────────────────────────

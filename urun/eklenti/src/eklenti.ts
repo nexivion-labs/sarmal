@@ -82,7 +82,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği
-import { gurultuMu, sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
+import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -302,6 +302,13 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       await vscode.env.clipboard.writeText(pano.metin);
       vscode.window.setStatusBarMessage(panoyaYazildi(pano.adet), 4000);
     }),
+    // ✅ ATEŞLEMİŞ HATIRLATICIYI KAPAT (KYN-YUZ-A03). Komut yalnız bir kapı
+    // açar; hüküm, doğrulama ve yazım sağlayıcının tek yazar kapısındadır ve
+    // ikinci bir yazım yolu doğmaz. Tazeleme gövdenin KENDİ denetim kilidinden
+    // istenir; panel kendi taramasını kurmaz.
+    vscode.commands.registerCommand("sarmal.hatirlaticiKapat", async (oge: unknown) => {
+      await hatirlaticilar?.kapat(oge, (t) => denetimKilidi.iste(t));
+    }),
   );
   // Sayaçlar panellerin KENDİ kümelerinden ve motorun tanı koleksiyonundan okunur.
   durumCubugu = new DurumCubugu({
@@ -393,11 +400,15 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
-    // arsiv/ + ornek/ + fikstur/ hariç: ürün değil, kasıtlı drift → paneli kirletmesin.
-    // RED-1 D1: dışlama globu izleyici süzgeciyle TEK KAYNAKTAN (izleyici-cekirdek)
-    // hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne olayları süzülmeden kalır;
-    // çekirdek YOKSAY kanonuyla da aynı evren (denetci.ts disk yürüyüşü onlara inmez).
-    const dosyalar = await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB);
+    // Öğreti kitaplığının ALTINDAKİ ders rafları hariç: ürün değil, kasıtlı drift
+    // → paneli kirletmesin. RED-1 D1: evren izleyici süzgeciyle TEK KAYNAKTAN
+    // (izleyici-cekirdek) hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne
+    // olayları süzülmeden kalır; çekirdek YOKSAY kanonuyla da aynı evren.
+    // KPS-IND-A01: glob yalnız ada bakabildiği için ucuz ön süzgeçtir; son hükmü
+    // `sarKapsamDisi` verir ve ders rafını YERİNE göre eler, böylece kullanıcının
+    // kendi kökü altındaki `sablon/` kitaplığı panelde TAM görünür.
+    const dosyalar = (await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB))
+      .filter((u) => !sarKapsamDisi(vscode.workspace.asRelativePath(u, false)));
     // ⚡ PRF-A06 KALICI ONARIMI (2026-08-29 · Founder kararı): tur artık HİÇBİR
     // dosyayı `openTextDocument` ile AÇMAZ. Ölçüm şuydu: otuz dört buçuk
     // saniyelik turun yalnız yaklaşık yedi saniyesi saf çekirdekteydi (iki yüz
@@ -1095,7 +1106,8 @@ function aktifVarligiGuncelle(editor: vscode.TextEditor | undefined): void {
 // drift malzemesi indeksi kirletmez. Varlık SINIRI burada çizilmez — indeks her
 // varlığı tutar, gezinme sorguları (A02) aktif-varlık süzgeciyle daraltır.
 async function indeksDosyaTazele(uri: vscode.Uri): Promise<void> {
-  if (uri.scheme !== "file" || INDEKS_DISI.test(uri.fsPath)) return;
+  // MIM-3.4 (KPS-MHR-A01): mühürlü dosya kod dizinine girmez — motorun `dizindenIndeks` davranışıyla aynı.
+  if (uri.scheme !== "file" || INDEKS_DISI.test(uri.fsPath) || muhurluSarMi(uri.fsPath)) return;
   try {
     const veri = await vscode.workspace.fs.readFile(uri);
     kimlikIndeksi.dosyaGuncelle(uri.fsPath, new TextDecoder().decode(veri));
@@ -1109,7 +1121,10 @@ async function kimlikIndeksiniTara(): Promise<void> {
     "**/*.{sar,md,ts}",   // YUZ-3.2 ④: .md/.ts atıf evreni (tanım hep .sar'da)
     // 2026-07-19: gizli dizinler ('.*') dışlamaya eklendi — .claude/worktrees ajan
     // kopyaları atıf indeksine sızmasın (onay-kuyruğu saha bulgusuyla aynı sınıf).
-    "**/{arsiv,ornek,node_modules,fikstur,sablon,dist,dist-sinama,.*}/**");
+    // KPS-IND-A01: glob yalnız BAĞIMLILIK, DERLEME ÇIKTISI ve gizli dizinleri eler;
+    // ders rafı ada göre değil yere göre elenir ve o hükmü indeksDosyaTazele'deki
+    // INDEKS_DISI deseni verir (öğreti kitaplığına demirli).
+    "**/{node_modules,dist,dist-sinama,out,__pycache__,.*}/**");
   await Promise.all(dosyalar.map(indeksDosyaTazele));
 }
 

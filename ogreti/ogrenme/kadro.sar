@@ -52,10 +52,14 @@ başladığında `sef` aracı o Adımın konisini bu havuzdaki uzmanın kimliği
 anayasasıyla birlikte sunar; üretici bağlamı elle toplamak zorunda kalmaz.
 
 ## Kapsam
-Üç uzman ve bir anayasa. Motor uzmanı çekirdek kaynağını, öğretim uzmanı belge
-yüzeyini, denetçi ise kapıyı taşır. Denetçi ebedî olarak izole bellekle ve L5
-yetkisiyle doğar; kanon bu ikisini birlikte şart koşar ve motor çalışma anında
-zorlar. Kadro açık taraftadır ve kapalı üründeki kadroyla hiçbir bağı yoktur.
+Altı uzman ve bir anayasa. Motor uzmanı çekirdek kaynağını, öğretim uzmanı belge
+yüzeyini, eklenti uzmanı eklenti kaynağı ile paketleme zincirini, yayın uzmanı
+deponun dışarı bakan yüzeyini, sınama uzmanı iki süiti ve denetçi ise kapıyı
+taşır. Beş üretici uzman L3 yetkisiyle doğar; denetçi ise ebedî olarak izole
+bellekle ve tek L5 yetkisiyle doğar, çünkü kanon bu ikisini birlikte şart koşar
+ve motor çalışma anında zorlar. Kadro açık taraftadır, kapalı üründeki kadroyla
+hiçbir bağı yoktur ve bu deponun kapsamı dışında kalan varlıklar için uzman
+ilan etmez.
 
 ## Sonuç
 Açık taraftaki her üretim Adımı bir uzmana atanabilir hâle gelir ve `sef` çıktısı
@@ -63,7 +67,7 @@ rolü, anayasayı ve beceriyi birlikte taşır. "Kendi etmenini yaz" iddiasını
 kanıtı açık bahçede doğar.
 |<--
 Orkestrasyon( kod: ORK-SAR-URETIM, ad: "acik-taraf-uretim",
-              ne: "👥 Açık taraf üretim kadrosu — motor · öğretim · denetim uzmanları" ) {
+              ne: "👥 Açık taraf üretim kadrosu — motor, öğretim, eklenti, yayın, sınama uzmanları ile bağımsız kapı denetçisi" ) {
 
   Etmen( kod: ETM-SAR-MOTOR, tür: uzman, uzmanlık: "motor-kaynagi",
          yetki: L3, bellek: izole, uygular: ANY-SAR-URETICI,
@@ -92,6 +96,39 @@ Orkestrasyon( kod: ORK-SAR-URETIM, ad: "acik-taraf-uretim",
             ne: "Bir iddiayı ölçmek yetmez; ölçüm aracının çıktısını da doğru okumak gerekir.",
             neden: "2026-08-06 turunda karakter sayan bir ölçüt bayt sayan bir araçla ölçüldü ve yanlış sonuç raporlandı; aynı gün bir başka ölçümde arama deseni tutmadığı için dört sıfır yanlış bildirildi.",
             nasılUygula: "Ölçüm aracının neyi saydığını önce doğrula; sonuç beklenenden çok saparsa aracı sorgula, kaynağı değil.",
+            aşama: bellek )
+  }
+
+  Etmen( kod: ETM-SAR-EKLENTI, tür: uzman, uzmanlık: "eklenti-kaynagi",
+         yetki: L3, bellek: izole, uygular: ANY-SAR-URETICI,
+         ne: "🧩 Eklenti uzmanı — VS Code eklentisinin kaynağı ile paketleme zinciri üzerinde çalışır; panel, boyacı, tanı yüzeyi ve tamamlama gövdesini yazar, renk üreticisinden paket dosyasına uzanan zinciri koşturur ve her değişikliği eklenti süiti ile filtresiz denetimle kanıtlar" ) {
+    Bellek( kod: BLK-SAR-EKLENTI, tür: ders,
+            ne: "Eklentinin gömülü kanon kaynağı depoda izlenmez ve üretici koşulmadan denetim tek bir hata verir; temiz bir klonda ölçüm almadan önce renk üreticisi koşturulur.",
+            neden: "Plan bu dosyayı teslim olarak beyan eder, buna karşılık dosya üretilmiş ve izlenmemiş bir gövdedir; üretici koşulmadığında eksiklik eklentinin değil planın kusuru gibi okunur ve yanlış yerde aranır.",
+            nasılUygula: "Temiz bir klonda ilk ölçümden önce eklenti araç klasöründeki renk üreticisini koştur, sonra denetimi al; hata sayısını üretici koşmadan bildirme.",
+            kanıt: "CONTRIBUTING.md · Denetim kapısı bölümü, temiz klon paragrafı",
+            aşama: bellek )
+  }
+
+  Etmen( kod: ETM-SAR-YAYIN, tür: uzman, uzmanlık: "yayin-yuzeyi",
+         yetki: L3, bellek: izole, uygular: ANY-SAR-URETICI,
+         ne: "📦 Yayın uzmanı — deponun dışarı bakan yüzeyi üzerinde çalışır; sürüm mührünü, mağaza künyesini, kök okuma yüzlerini ve yayın kayıtlarını hazırlar, her yayın iddiasını gerçek koşuyla kanıtlar ve hiçbir sayıyı ölçmeden yazmaz" ) {
+    Bellek( kod: BLK-SAR-YAYIN, tür: ders,
+            ne: "Açık depoya giden hiçbir metin kapalı tarafın kimliğini taşıyamaz; müşteri adı, kişi adı, gerçek görünümlü elektronik posta adresi ve kapalı ürünün kodları yayın yüzeyine giremez.",
+            neden: "Açmak geri alınamaz bir edimdir ve bir kez gönderilmiş ad depo tarihçesinde kalır; bu yüzden yasak, yayının kendisinden önce ölçülmesi gereken bir kapıdır.",
+            nasılUygula: "Yayına giden her metni gönderim öncesinde yasak sözcük kapısından geçir ve kapının çıktısını raporla; kapı kırmızıyken gönderim yapılmaz.",
+            kanıt: "KNT-16 · açıkDepoyaYabancıAdYazılmaz",
+            aşama: bellek )
+  }
+
+  Etmen( kod: ETM-SAR-SINAMA, tür: uzman, uzmanlık: "sinama-suiti",
+         yetki: L3, bellek: izole, uygular: ANY-SAR-URETICI,
+         ne: "🧪 Sınama uzmanı — çekirdek ile eklentinin sınama süitleri üzerinde çalışır; yeni nöbetleri yazar, var olan nöbetlerin gerçekten ölçtüğünü doğrular ve her süit iddiasını koşu çıktısının kendi sayısıyla bildirir" ) {
+    Bellek( kod: BLK-SAR-SINAMA, tür: ders,
+            ne: "Yeşil bir sınama tek başına koruma kanıtı değildir; kurulan her nöbet korunan gövde kasten bozularak kırmızıya döndürülmeli ve bozma geri alınmalıdır.",
+            neden: "Ölçüldü: bir nöbet dört çağrı yerinden yalnız birini koruyordu ve bir başkası boş küme üstünde koştuğu için hiçbir şey ölçmüyordu; ikisi de kurulmuş sayılıyordu.",
+            nasılUygula: "Nöbeti yazdıktan sonra korunan satırı boz, süitin kırmızıya döndüğünü göster, bozmayı geri al ve mutasyon tablosunu satır satır raporla.",
+            kanıt: "KNT-4 · nöbetiMutasyonlaKanıtla",
             aşama: bellek )
   }
 }

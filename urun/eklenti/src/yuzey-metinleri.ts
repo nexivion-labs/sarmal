@@ -22,6 +22,7 @@
 // Yalnız TİP alınır; çalışma zamanında hiçbir bağ kurulmaz (derlemede silinir).
 // Katalog gövdeyi tanımaz, gövdenin İSTEDİĞİ demetin şeklini tanır.
 import type { GovdeMetinleri } from "./onay-govde.ts";
+import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
 import { dilHanesi, sozlukAdi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
@@ -1516,48 +1517,48 @@ export function iskeletKuruldu(olusan: number, atlanan: number): string {
 export const DUZELTME_METINLERI = {
   get beceriTerfisi(): string {
     return yuzeyMetni(
-      "🎓 Beceri iskeleti oluştur ve olgunlaşan kaydı ona bağla",
-      "🎓 Create a Skill scaffold and bind the matured record to it",
+      "Beceri iskeleti oluştur ve olgunlaşan kaydı ona bağla",
+      "Create a Skill scaffold and bind the matured record to it",
     );
   },
   get tabloyuHizala(): string {
-    return yuzeyMetni("📊 Tabloyu hizala (sütunlar nizami)", "📊 Align table (orderly columns)");
+    return yuzeyMetni("Tabloyu hizala (sütunlar nizami)", "Align table (orderly columns)");
   },
   get uzunNiyetiKatla(): string {
     return yuzeyMetni(
-      "📏 Uzun niyeti üç tırnaklı çok satırlı biçime katla",
-      "📏 Fold long intent into triple-quoted multiline form",
+      "Uzun niyeti üç tırnaklı çok satırlı biçime katla",
+      "Fold long intent into triple-quoted multiline form",
     );
   },
   get kosuyaBasla(): string {
     return yuzeyMetni(
-      "🔨 Koşuya başla — durumu geliştirmede yap (işe başlarken işaretlenir)",
-      "🔨 Start the run — set status to in progress",
+      "Koşuya başla — durumu geliştirmede yap (işe başlarken işaretlenir)",
+      "Start the run — set status to in progress",
     );
   },
   get adimiTamamla(): string {
     return yuzeyMetni(
-      "🏁 Adımı tamamla — durum: tamamlandı (üretir: meyvesini yazmayı unutma)",
-      "🏁 Complete the Step — set status to done (remember to declare its fruit with üretir:)",
+      "Adımı tamamla — durum: tamamlandı (üretir: meyvesini yazmayı unutma)",
+      "Complete the Step — set status to done (remember to declare its fruit with üretir:)",
     );
   },
   get kararOzetiEkle(): string {
     return yuzeyMetni(
-      "💡 Karar'a özet alanı ekle — bağlamı bilmeyen de okuyabilsin",
-      "💡 Add a summary field to the Decision so it is readable without prior context",
+      "Karar'a özet alanı ekle — bağlamı bilmeyen de okuyabilsin",
+      "Add a summary field to the Decision so it is readable without prior context",
     );
   },
 } as const;
 
 export function alaniMaddeleBasligi(alan: string): string {
   return yuzeyMetni(
-    `📝 ${alan} alanını madde listesine çevir — her iş kendi maddesinde dursun`,
-    `📝 Convert the ${alan} field to a list — keep each task in its own item`,
+    `${alan} alanını madde listesine çevir — her iş kendi maddesinde dursun`,
+    `Convert the ${alan} field to a list — keep each task in its own item`,
   );
 }
 
 export function onerilenYazimaDuzelt(oneri: string): string {
-  return yuzeyMetni(`🔧 "${oneri}" olarak düzelt`, `🔧 Change to "${oneri}"`);
+  return yuzeyMetni(`"${oneri}" olarak düzelt`, `Change to "${oneri}"`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1572,6 +1573,66 @@ export const GEZINME_METINLERI = {
     `'${kod}' kimliği ${adet} dosyanın adında da geçiyor. Metin atıfları güncellendi; dosyaların yeniden adlandırılmasını sen yapmalısın.`,
     `Identity '${kod}' also occurs in ${adet} filename${adet === 1 ? "" : "s"}. Text references were updated; you must rename the files yourself.`,
   ),
+  // 🚧 GEZİNME REDDİNİN SEBEBİ (VIT-K78-A09 · HTR-GEZINME-SESSIZ-RET). Üç kural
+  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, sebebi adıyla
+  // söyler ve dayanağı olan kanon maddesini anar ki kural öğretici olsun.
+  retDersDunyasi: (kod: string): string => yuzeyMetni(
+    `'${kod}' tanımı öğreti rafında (arşiv · örnek · fikstür · şablon) yaşıyor; ürün dosyasından ders dünyasına gezinilmez (OGR-5).`,
+    `The definition of '${kod}' lives on a teaching shelf (archive · example · fixture · template); navigation from a product file into the teaching world is not permitted (OGR-5).`,
+  ),
+  retVarlikSiniri: (kod: string): string => yuzeyMetni(
+    `'${kod}' tanımı başka bir varlığın kökünde yaşıyor; varlık sınırı gezinmeyi durdurur (STR-3 · MIM-1.1).`,
+    `The definition of '${kod}' lives under a different entity root; the entity boundary stops navigation (STR-3 · MIM-1.1).`,
+  ),
+  retTanimYok: (kod: string): string => yuzeyMetni(
+    `'${kod}' ağaçta yalnız metin atfı olarak geçiyor; tanımı olmadığı için gidilecek bir düğüm yok.`,
+    `'${kod}' occurs in the tree only as a text reference; it has no definition, so there is no node to navigate to.`,
+  ),
+} as const;
+
+/**
+ * Ret sebebini kullanıcı cümlesine çevirir — kabuk sebep adını metne KENDİ
+ * çevirmez, çünkü ikinci bir çeviri noktası iki dilin ayrışmasına kapı açar
+ * (YUZ-1.2 deseni: aynı hüküm iki yerde yaşamaz).
+ */
+export function gezinmeRetCumlesi(sebep: GezinmeRetSebebi, kod: string): string {
+  if (sebep === "ders-dünyası") return GEZINME_METINLERI.retDersDunyasi(kod);
+  if (sebep === "varlık-sınırı") return GEZINME_METINLERI.retVarlikSiniri(kod);
+  return GEZINME_METINLERI.retTanimYok(kod);
+}
+
+/**
+ * ✅ ATEŞLEMİŞ HATIRLATICININ KAPATILMASI (KYN-YUZ-A03).
+ *
+ * Başarı cümlesi durum çubuğuna, başarısızlık cümlesi hata yüzeyine gider ve
+ * ikisi de kaydın KODUNU anar; kod olmadan kullanıcı hangi hatırlatıcının
+ * kapandığını ya da kapanmadığını ölçemez. Başarısızlık cümlesi sebebini de
+ * söyler, çünkü "olmadı" demek kullanıcıyı kaynağa körlemesine gönderir.
+ */
+export const HATIRLATICI_KAPATMA_METINLERI = {
+  get kapatilamaz(): string {
+    return yuzeyMetni(
+      "Bu satır kapatılamaz: kapatma yalnız ATEŞLEMİŞ hatırlatıcıya uygulanır. Uykuda bekleyen bir hatırlatıcı, hedefi henüz kapanmamış bir taahhüttür.",
+      "This row cannot be closed: closing applies only to a FIRED reminder. A sleeping reminder is a commitment whose target has not closed yet.");
+  },
+  kapatildi: (kod: string): string => yuzeyMetni(
+    `${kod} kapatıldı — hatırlatıcı yerinde kalır, yalnız durumu tamamlandı oldu.`,
+    `${kod} was closed. The reminder stays in place; only its state became completed.`),
+  zatenKapali: (kod: string): string => yuzeyMetni(
+    `${kod} zaten kapalı — dosyaya dokunulmadı.`,
+    `${kod} is already closed; the file was left untouched.`),
+  basarisiz: (kod: string, neden: string): string => yuzeyMetni(
+    `${kod} kapatılamadı ve dosyaya DOKUNULMADI. Sebep: ${neden}. Kaynağı açıp durum alanını elle yazabilirsin.`,
+    `${kod} could not be closed and the file was left UNTOUCHED. Reason: ${neden}. You may open the source and set the state field by hand.`),
+  get ayristirilamadi(): string {
+    return yuzeyMetni("dosya ayrıştırılamadı", "the file could not be parsed");
+  },
+  get belgeDegisti(): string {
+    return yuzeyMetni("belge ölçümden sonra değişti", "the document changed after the measurement");
+  },
+  get yazilamadi(): string {
+    return yuzeyMetni("düzenleme uygulanamadı", "the edit could not be applied");
+  },
 } as const;
 
 export const GIYDIR_METINLERI = {
@@ -1654,14 +1715,14 @@ export const YOL_METINLERI = {
   kabul: (adet: number): string => yuzeyMetni(`↳ kabul · ${adet} madde`, `↳ acceptance · ${adet} item${adet === 1 ? "" : "s"}`),
   get koniDetayi(): string { return yuzeyMetni("detay: koni kartı", "details: cone card"); },
   yavasGenisletme: (sure: number, kim: string, adet: number): string => yuzeyMetni(`${sure} ms · ${kim} · ${adet} çocuk`, `${sure} ms · ${kim} · ${adet} children`),
-  kirikDosya: (adet: number): string => yuzeyMetni(`⚠ ${adet} dosya ayrıştırılamadı`, `⚠ ${adet} file${adet === 1 ? "" : "s"} could not be parsed`),
+  kirikDosya: (adet: number): string => yuzeyMetni(`${adet} dosya ayrıştırılamadı`, `${adet} file${adet === 1 ? "" : "s"} could not be parsed`),
   get kirikDosyaAciklamasi(): string { return yuzeyMetni("sözdizimi kırık — harita bu dosyaları göremiyor", "syntax is broken — the map cannot see these files"); },
   // 🗺️ PRF-TA-A03: okunamayan dosya ayrı sayılır. Turun görüntüsü kırık ile
   // okunamayanı iki ayrı kümede taşır ve panel de onları ayırmak zorundadır:
   // sözdizimi kırık dosya YAZILARAK onarılır, okunamayan dosya ise silinmiş ya
   // da erişilemez durumdadır ve kullanıcı ikisine aynı şeyi yapamaz. Sayı
   // görüntüden gelir, ad listesi gelmez; panel bilmediği adı uydurmaz.
-  okunamayanDosya: (adet: number): string => yuzeyMetni(`⚠ ${adet} dosya okunamadı`, `⚠ ${adet} file${adet === 1 ? "" : "s"} could not be read`),
+  okunamayanDosya: (adet: number): string => yuzeyMetni(`${adet} dosya okunamadı`, `${adet} file${adet === 1 ? "" : "s"} could not be read`),
   get okunamayanDosyaAciklamasi(): string { return yuzeyMetni("diskten okunamadı — silinmiş ya da erişilemeyen dosya", "could not be read from disk — a deleted or inaccessible file"); },
   bilgiGrubuIpucu: (etiket: string, aciklama: string): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}\ngenişlet → hedefe tıklayın: düğüme atla`, `${etiket}${aciklama ? `\n${aciklama}` : ""}\nexpand → select a target to jump to its node`),
   bilgiIpucu: (etiket: string, aciklama: string, hedef: boolean): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\ntıklayın: düğüme atla" : ""}`, `${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\nselect to jump to the node" : ""}`),
@@ -1670,24 +1731,24 @@ export const YOL_METINLERI = {
   get konusmaDetayi(): string { return yuzeyMetni("Konuşma Detayı", "Conversation Details"); },
   get bosRay(): string { return yuzeyMetni("ray döşendi — vagon bekleniyor", "track laid — awaiting a car"); },
   // 🪆 EKL-F7-A09: kapsayıcı varlık satırı kaç projeyi sardığını söyler (küme kimliği).
-  kumeAciklama: (sayi: number): string => yuzeyMetni(`🪆 ${sayi} proje`, `🪆 ${sayi} project${sayi === 1 ? "" : "s"}`),
+  kumeAciklama: (sayi: number): string => yuzeyMetni(`${sayi} proje`, `${sayi} project${sayi === 1 ? "" : "s"}`),
   varlikIpucu: (tip: string, kod: string, kok: string, blok: number, bloklu: number): string => {
     const gorunenTip = kanonikWidgetAdi(tip, tip);
     return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\n⛔ altında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n⛔ ${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
   },
-  aktifAciklama: (aciklama: string): string => yuzeyMetni(`📍 aktif · ${aciklama}`, `📍 active · ${aciklama}`),
+  aktifAciklama: (aciklama: string): string => yuzeyMetni(`aktif · ${aciklama}`, `active · ${aciklama}`),
   aktifIpucu: (ipucu: string): string => yuzeyMetni(`📍 AKTİF VARLIK — imleç bu projede\n${ipucu}`, `📍 ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
   get varligaOdaklan(): string { return yuzeyMetni("Varlığa odaklan", "Focus entity"); },
-  get gelistiriliyor(): string { return yuzeyMetni("🟡 geliştiriliyor", "🟡 in progress"); },
+  get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
   tarife: (tarih: string): string => yuzeyMetni(`\n\n🚄 tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n🚄 schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
   planlanmamis: (neden: string): string => yuzeyMetni(`\n\n🧊 **planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n🧊 **unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
   blokluAlt: (adet: number): string => yuzeyMetni(` · ⛔ altında ${adet} bloklu`, ` · ⛔ ${adet} blocked below`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
   yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(`🚫 ${turkce}`, `🚫 Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
   geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`ℹ️ ${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `ℹ️ ${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
-  kartBasligi: (kod: string): string => `🃏 ${kod}`,
+  kartBasligi: (kod: string): string => kod,
   rayBloklari: (tamam: number, toplam: number, adet: number): string => yuzeyMetni(`[${tamam}/${toplam}] · ${adet} blok`, `[${tamam}/${toplam}] · ${adet} block${adet === 1 ? "" : "s"}`),
-  get raySec(): string { return yuzeyMetni("🚆 Hangi rayın makinisti olalım?", "🚆 Which track should we drive?"); },
+  get raySec(): string { return yuzeyMetni("Hangi rayın makinisti olalım?", "Which track should we drive?"); },
   get webDili(): string { return yuzeyDili === "en" ? "en" : "tr"; },
   get yok(): string { return yuzeyMetni("— yok —", "— none —"); },
   kuralKapsami: (katman: string, kapsam: string): string => yuzeyMetni(`${katman ? ` · ${katman}` : ""} · kapsam: ${kapsam}`, `${katman ? ` · ${katman}` : ""} · scope: ${kapsam}`),
@@ -1703,7 +1764,7 @@ export const YOL_METINLERI = {
   })[alan],
   get bagimliDugumler(): string { return yuzeyMetni("⬅️ bağımlı olduğu düğümler", "⬅️ nodes it depends on"); },
   get etkiledigiDugumler(): string { return yuzeyMetni("➡️ etkilediği düğümler", "➡️ nodes it affects"); },
-  konusmaBasligi: (rol: unknown, adim: unknown): string => yuzeyMetni(`🔬 Konuşma — ${String(rol ?? "?")} · ${String(adim ?? "")}`, `🔬 Conversation — ${String(rol ?? "?")} · ${String(adim ?? "")}`),
+  konusmaBasligi: (rol: unknown, adim: unknown): string => yuzeyMetni(`Konuşma — ${String(rol ?? "?")} · ${String(adim ?? "")}`, `Conversation — ${String(rol ?? "?")} · ${String(adim ?? "")}`),
   konusmaOzeti: (zaman: string, ajan: string, giris: string, cikis: string, sira: string): string => yuzeyMetni(`🕐 ${zaman} · 👤 ajan: <b>${ajan}</b> · 🎫 token: <b>${giris}</b> → <b>${cikis}</b> · sıra #${sira}`, `🕐 ${zaman} · 👤 agent: <b>${ajan}</b> · 🎫 tokens: <b>${giris}</b> → <b>${cikis}</b> · sequence #${sira}`),
   beceriler: (beceriler: string): string => yuzeyMetni(`⚙️ beceriler: ${beceriler}`, `⚙️ skills: ${beceriler}`),
   get hamPrompt(): string { return yuzeyMetni("📤 ŞEF'in ham prompt'u", "📤 Raw lead prompt"); },
@@ -1761,8 +1822,8 @@ export const TAMAMLAMA_METINLERI = {
   get yetkiKademesi(): string { return yuzeyMetni("yetki kademesi", "clearance tier"); },
   get tipografiRolu(): string {
     return yuzeyMetni(
-      "🎨 tipografi ROLÜ (Tema sözleşmesi — sayısal değer teknoloji temasında yaşar)",
-      "🎨 typography ROLE (Theme contract — the numeric value lives in the technology theme)",
+      "tipografi ROLÜ (Tema sözleşmesi — sayısal değer teknoloji temasında yaşar)",
+      "typography ROLE (Theme contract — the numeric value lives in the technology theme)",
     );
   },
 } as const;
@@ -1781,8 +1842,8 @@ export function enumDegeriDetayi(param: string, tip?: string): string {
 
 export function ifadePaletiDetayi(kategori: string, es?: string): string {
   return yuzeyMetni(
-    `🎨 ifade paleti · ${kategori}${es ? ` · kanonik eşleme: ${es}` : ""}`,
-    `🎨 expression palette · ${kategori}${es ? ` · canonical mapping: ${es}` : ""}`,
+    `ifade paleti · ${kategori}${es ? ` · kanonik eşleme: ${es}` : ""}`,
+    `expression palette · ${kategori}${es ? ` · canonical mapping: ${es}` : ""}`,
   );
 }
 
@@ -2134,7 +2195,7 @@ export function kararMetniIpucuEki(ozet: string | undefined, hukum: string | und
 
 export const ONIZLEME_METINLERI = {
   get htmlDili(): string { return yuzeyDili === "tr" ? "tr" : "en"; },
-  get agacBasligi(): string { return yuzeyMetni("🌳 Yapı Ağacı", "🌳 Structure Tree"); },
+  get agacBasligi(): string { return yuzeyMetni("Yapı Ağacı", "Structure Tree"); },
   get sozDizimBasligi(): string { return yuzeyMetni("Söz dizimi hatası", "Syntax error"); },
   get duzelinceYenilenir(): string {
     return yuzeyMetni(

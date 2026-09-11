@@ -24,9 +24,12 @@
 
   ## Sonuç
   ✅ Kabul: dört projenin her biri KENDİ kökünden `denetle` kapısından sıfır
-  hatayla geçer; çatı kökünden tek koşu ise MIM-1.1 gereği kimlik ayrımı
-  ister ve motor bunu proje-tanı-kimliği-uyumsuz tanısıyla dürüstçe söyler,
-  çünkü bulgular tek bir dizin kimliğinde birleşemez. Kapalı ürün ile arşiv
+  hatayla geçer; çatı kökünden tek koşu da aynı sonucu verir, çünkü motor
+  her Proje kökünü kendi kökünden koşturur ve bulgularını o Projenin koduyla
+  ayrı bir hanede basar (MIM-1.1 · YAS-3.3). Çatı kökünden okunan her hane,
+  o projenin kendi kökünden okunan tablosuyla birebir aynıdır; bu yüzden
+  projeleri tek tek kendi köklerinden denetlemek artık zorunlu bir kullanım
+  değil, yalnız bir tercihtir. Kapalı ürün ile arşiv
   `görünürlük: gizli`, açık araç ile site `görünürlük: açık` taşır ve çatı
   hiçbir projenin içeriğini anlatmaz.
 |<--

@@ -22,12 +22,13 @@ import { kodIndeksle, referansTanilari, teknolojisizYuzeyTanilari } from "../src
 import { kuralDenetle } from "../src/kuralci.ts";
 import { gecisSinifla, YEDEK_GECISLER } from "../src/durum.ts";
 import { adimDurumYaz } from "../src/koniYaz.ts";
-import { SABIT_TANI_KODLARI, YENI_TANI_KODLARI, YENI_TANI_KANONU, taniSicili, katlanmisAd, taniKodCoz, terfiKapisiKusurlari } from "../src/tani-sicili.ts";
+import { SABIT_TANI_KODLARI, YENI_TANI_KODLARI, YENI_TANI_KANONU, ONCEKI_TANI_KODLARI, taniSicili, katlanmisAd, taniKodCoz, terfiKapisiKusurlari } from "../src/tani-sicili.ts";
 import { metinsizYeniTanilar, sicilsizTaniMetinleri } from "../src/tani-metinleri.ts";
 import { orkestrasyonTanilari } from "../src/denetim.ts";
 import { kurallariCikar } from "../src/kuralci.ts";
 import { readdirSync } from "node:fs";
 import type { Program } from "../src/sozdizim.ts";
+import type { Duzey } from "../src/tani.ts";
 import type { Siniflama } from "../src/siniflama.ts";
 
 const SNF: Siniflama = JSON.parse(
@@ -482,10 +483,15 @@ test("RF-T6-A05: örnek/vitrin kullanımı CANLI değildir — bekçi yine BİLG
   const { kullanimsizTipTanilari } = await import("../src/denetci.ts");
   const snf = { widgetTipleri: [{ ad: "SadeceOrnekte", aile: "test" }], tipMuafiyetleri: {} } as unknown as Parameters<typeof kullanimsizTipTanilari>[1];
   const src = `ANA( kod: ANA-T ){ SadeceOrnekte( kod: X-1 ) }`;
-  const programlar = new Map([["ornek/vitrin.sar", ayristir(belirtecle(src))]]);
+  const programlar = new Map([["ogreti/ornek/vitrin.sar", ayristir(belirtecle(src))]]);
   const tanilar = kullanimsizTipTanilari(programlar, snf, "anadizin.sar");
-  assert.equal(tanilar.length, 1, "örnek/ altındaki kullanım canlı sayılmaz → hâlâ kullanımsız");
+  assert.equal(tanilar.length, 1, "ders rafındaki kullanım canlı sayılmaz → hâlâ kullanımsız");
   assert.ok(tanilar[0].tani.mesaj.includes("SadeceOrnekte"));
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi `ornek/` kitaplığı CANLI bahçedir ve
+  // oradaki kullanım tipi canlı sayar (Founder hükmü 2026-09-10).
+  assert.equal(kullanimsizTipTanilari(
+    new Map([["ornek/musteri/vitrin.sar", ayristir(belirtecle(src))]]), snf, "anadizin.sar").length, 0,
+    "kullanıcı ağacındaki örnek kitaplığı canlı bahçe sayılmalı");
 });
 
 // ── Yapısal-hiyerarşi (Founder MECBURİ · MIM-1 · 2026-07-14): tam zincir zorlaması
@@ -748,8 +754,25 @@ function kanonYeniTaniIddialari(): Map<string, string> {
       if (!satir.includes("**Zorlama:**")) continue;
       // "yeni tanı önerisi `kimlik` · DÜZEY" kalıbı — yalnız YENİ ilanlar sayılır;
       // aynı satırdaki korunan tanılar (`geçersiz-enum` gibi) bu kalıba girmez.
-      for (const m of satir.matchAll(/[Yy]eni tanı önerisi\s+`([^`]+)`\s*·\s*(HATA|UYARI|BİLGİ)/g)) {
-        iddialar.set(m[1], m[2] === "HATA" ? "hata" : m[2] === "UYARI" ? "uyarı" : "bilgi");
+      // KPS-MHR-A01 (2026-09-11): MIM-3.4 maddesinin Founder onaylı metni üç yeni
+      // tanıyı TEK bir "Yeni tanı önerisi" ifadesinin ardından noktalı virgülle
+      // sıralar. Liste bu yüzden ifadeden sonra noktalı virgülle devam eden
+      // "`kimlik` · DÜZEY" öğeleriyle birlikte okunur; tırnak içindeki tanı
+      // cümlesi noktalı virgül taşıyabildiği için “…” bölümleri atlanır. Liste
+      // biçime uymayan ilk öğede biter, dolayısıyla ifadeden önce yazılmış korunan
+      // tanılar yine sayılmaz. Listenin DEVAMINDAKİ bir öğe önceki gövdenin korunan
+      // bir tanısıysa (DIL-1'deki `normalizasyon-uyumsuz` gibi) yeni ilan sayılmaz,
+      // çünkü korunan tanı tanımı gereği bir öneri değildir; ilk öğe her zaman
+      // ifadenin doğrudan konusudur ve süzülmez.
+      const OGE = String.raw`\`[^\`]+\`\s*·\s*(?:HATA|UYARI|BİLGİ)(?:[^;“]|“[^”]*”)*`;
+      for (const m of satir.matchAll(new RegExp(String.raw`[Yy]eni tanı önerisi\s+(${OGE}(?:;\s*${OGE})*)`, "g"))) {
+        let ilk = true;
+        for (const o of m[1].matchAll(/`([^`]+)`\s*·\s*(HATA|UYARI|BİLGİ)/g)) {
+          const devamdakiKorunan = !ilk && (ONCEKI_TANI_KODLARI as readonly string[]).includes(o[1]);
+          ilk = false;
+          if (devamdakiKorunan) continue;
+          iddialar.set(o[1], o[2] === "HATA" ? "hata" : o[2] === "UYARI" ? "uyarı" : "bilgi");
+        }
       }
     }
   }
@@ -917,7 +940,7 @@ test("A06 gerçek kapı: 46 uyarı→hata terfisi sıra+sayaç+üçlü kanıt+a�
     kusurlar.push(...terfiKapisiKusurlari({
       kod: aday.kod, onceki: "uyarı", sonraki: kayit.kademe,
       sayaclar: [0, 0],
-      ucluKanit: { uygulama: aday.uygulama, dogrulama: aday.dogrulama, kanon: aday.kanon },
+      ucluKanit: { uygulama: aday.uygulama, doğrulama: aday.dogrulama, kanon: aday.kanon },
       acikKabul,
     }));
   }
@@ -931,7 +954,7 @@ test("A06 KIRMIZI FİKSTÜRLER: atlama, açık sayaç, eksik üçlü kanıt ve k
   const temiz = {
     kod: "kanonik-kaynak-biçimi", onceki: "uyarı" as const, sonraki: "hata" as const,
     sayaclar: [0, 0],
-    ucluKanit: { uygulama: "denetci.ts", dogrulama: "motor-guven.test.ts", kanon: "dil.sar" },
+    ucluKanit: { uygulama: "denetci.ts", doğrulama: "motor-guven.test.ts", kanon: "dil.sar" },
     acikKabul: "2026-08-03 · Founder açık kabulü",
   };
   assert.deepEqual(terfiKapisiKusurlari(temiz), [], "temiz kapı fikstürü geçmelidir");
@@ -939,7 +962,7 @@ test("A06 KIRMIZI FİKSTÜRLER: atlama, açık sayaç, eksik üçlü kanıt ve k
     "bilgi→hata atlaması kırmızı olmadı");
   assert.match(terfiKapisiKusurlari({ ...temiz, sayaclar: [0, 1] }).join("\n"), /sayaçlar/,
     "açık sayaç kırmızı olmadı");
-  assert.match(terfiKapisiKusurlari({ ...temiz, ucluKanit: { ...temiz.ucluKanit, dogrulama: "" } }).join("\n"), /üçlü kanıt/,
+  assert.match(terfiKapisiKusurlari({ ...temiz, ucluKanit: { ...temiz.ucluKanit, doğrulama: "" } }).join("\n"), /üçlü kanıt/,
     "eksik doğrulama ayağı kırmızı olmadı");
   assert.match(terfiKapisiKusurlari({ ...temiz, acikKabul: "" }).join("\n"), /açık kabul/,
     "kapalı Founder kabulü kırmızı olmadı");
@@ -957,6 +980,60 @@ test("A06 KIRMIZI FİKSTÜR: yüzey sicil düzeyini yeniden derecelendirirse mot
   const bulgu = sonuc.find((x) => x.tani.kod === "tanı-yüzü-uyumsuz");
   assert.ok(bulgu, "sicilde hata olan kimlik yüzeyde uyarıya indirildi ama nöbet kırmızı olmadı");
   assert.match(bulgu.tani.mesaj, /sicil bugünkü kademeyi "hata".*yüzey "uyarı"/);
+  // KPS-TRF-A01: DÜŞÜRME yönü bir terfi değildir; kapı burada konuşmaz ve
+  // bu bulgunun bugünkü sözleşmesi olduğu gibi kalır.
+  assert.doesNotMatch(bulgu.tani.mesaj, /terfi kapısından geçmemiştir/,
+    "düşürme yönündeki sapma terfi kapısının hükmüyle gerekçelendirilmiş");
+});
+
+// ── KPS-TRF-A01 · terfi kapısı ölçümünün üretim yoluna bağlanması ────────────
+//   Ölçüm (`terfiKapisiKusurlari`) bu Adımdan önce YALNIZ bu sınama dosyasından
+//   çağrılıyordu; hiçbir üretici yol onu koşmuyordu ve YAS-4.2'nin istediği
+//   "çalışan uygulama bağı" fiilen boştaydı. Aşağıdaki iki nöbet bağın
+//   kurulduğunu ve bir daha sessizce sökülemeyeceğini ölçer.
+
+/** Sicilde bugün BİLGİ kademesinde duran ilk kimlik — kaçak terfi fikstürü. */
+const BILGI_KADEMELI_KAYIT = YENI_TANI_KANONU.find((k) => k.kademe === "bilgi")!;
+
+function yuzUyumsuzlugu(duzey: Duzey, kod: string): string | undefined {
+  return orkestrasyonTanilari({
+    uretilen: [{ dosya: "a.sar", tani: {
+      duzey, kod, mesaj: "m", satir: 1, sutun: 1,
+      oneri: "Yapıştır-düzelt: `Karar( kod: DIL-1 )` yaz.",
+    } }],
+    projeKapisi: [], projeKodlari: new Set<string>(), atlananKapilar: [],
+    sicil: new Set(YENI_TANI_KODLARI), anaEtiket: "ana.sar",
+  }).find((x) => x.tani.kod === "tanı-yüzü-uyumsuz")?.tani.mesaj;
+}
+
+test("KPS-TRF-A01: kaçak terfiyi ÜRETİM yolunda terfi kapısının kendi hükmü gerekçelendirir", () => {
+  const kod = BILGI_KADEMELI_KAYIT.kod;
+
+  // ① Tek kademe yukarı (bilgi→uyarı): sıra kapısı geçilir, fakat canlı sayaç
+  //    ile yetkili açık kabul kapıları koşum anında geçilemez.
+  const tekKademe = yuzUyumsuzlugu("uyarı", kod);
+  assert.ok(tekKademe, `"${kod}" bilgi kademesindeyken uyarı basıldı ama nöbet kırmızı olmadı`);
+  assert.match(tekKademe, /terfi kapısından geçmemiştir/,
+    "yükseltme yönündeki sapma terfi kapısının hükmüyle gerekçelendirilmedi");
+  assert.match(tekKademe, /canlı sayaçlar/, "canlı sayaç kapısı üretim yolunda konuşmadı");
+  assert.match(tekKademe, /yetkili açık kabul yoktur/, "açık kabul kapısı üretim yolunda konuşmadı");
+  assert.doesNotMatch(tekKademe, /düzey atlama/, "tek kademelik yükseltme atlama sayıldı");
+
+  // ② Kademe atlayarak (bilgi→hata): sıra kapısı da düşer.
+  const atlama = yuzUyumsuzlugu("hata", kod);
+  assert.ok(atlama, `"${kod}" bilgi kademesindeyken hata basıldı ama nöbet kırmızı olmadı`);
+  assert.match(atlama, /düzey atlama/, "kademe atlayan yükseltme sıra kapısında düşmedi");
+});
+
+test("KPS-TRF-A01: terfi kapısı ölçümünü artık bir ÜRETİCİ modül çağırır, yalnız sınama değil", () => {
+  const srcDizin = fileURLToPath(new URL("../src/", import.meta.url));
+  const cagiranlar = readdirSync(srcDizin)
+    .filter((ad) => ad.endsWith(".ts") && ad !== "tani-sicili.ts")
+    .filter((ad) => /terfiKapisiKusurlari\s*\(/.test(readFileSync(join(srcDizin, ad), "utf8")));
+  assert.ok(cagiranlar.length > 0,
+    "terfi kapısı ölçümünü hiçbir üretici modül çağırmıyor; ölçüm yine yalnız sınamadan koşuyor");
+  assert.ok(cagiranlar.includes("denetim.ts"),
+    `denetle ve denetle-proje komutlarının koştuğu akış ölçümü çağırmıyor (bugünkü çağıranlar: ${cagiranlar.join(" · ") || "yok"})`);
 });
 
 test("A06 KIRMIZI FİKSTÜR: atlanan kapıyla sahte tam-yeşil ilanı hata üretir", () => {

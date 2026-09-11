@@ -55,6 +55,21 @@
   kenarının akıbeti KPS-KEN-A01 ve terfi kapısının üretim yoluna bağlanması
   KPS-TRF-A01 Adımlarının işidir.
 
+  ## Ek · 2026-09-10 · ORK-8 sicile girdi (KPS-MVS-A01 ikinci teslim)
+  🔏 Sicilin ilk teslimi ORK-8 maddesini Zorlama satırındaki zorlanmaz ilanı
+  yüzünden elli dokuzluk muaf kümesinde saymıştı. Madde 2026-08-27 tarihinde
+  `mevsim-vadesi-geçti`, 2026-09-10 tarihinde `mevsim-mührü-çelişkili` tanısını
+  ilan ettiği için artık zorlama iddiası taşımaktadır ve KSC-ORK-8 kaydıyla
+  sicile alınmıştır. Sayım etkisi şudur: kapsanan madde doksan birden doksan
+  ikiye çıkar, muaf küme elli dokuzdan elli sekize iner ve KISMİ kova otuz
+  yediden otuz sekize çıkar; TAM ile HİÇ kovaları değişmez. Yukarıdaki üç
+  dürüstlük beyanının sayıları ilk teslimin sayılarıdır ve tarihsel olarak
+  olduğu gibi bırakılmıştır; KSC-ORK-8 kaydı bir masa incelemesi değil davranış
+  ölçümüdür ve o kaydın dört kapanış basamağının hangisinin ölçüldüğü, hangisinin
+  ölçülemediği kendi gerekçesinde madde madde yazılıdır. ORK bölümünün başlığı
+  on yedi maddeyi anmaya devam eder, çünkü KSC-ORK-8 kaydı bölümün sonunda ek
+  olarak durur ve başlığın sayısı ilk teslimin sayısıdır.
+
   ## Sonuç
   ✅ Doksan bir maddenin tamamı kovasına gerekçesiyle yerleşmiştir ve kovasız
   madde yoktur; her kayıt maddesine referans kenarıyla bağlıdır ve gezinme
@@ -170,6 +185,17 @@ Kapsama( kod: KSC-ORK-6.2, referans: [ ORK-6.2 ],
   ne: "KISMİ (masa incelemesi) — Oturumun tek Adım yürütmesi sicildeki oturum-adım-sınırı tanısıyla hedef düzeyde kayıtlıdır; fakat oturum sınırının gerçekten korunduğu ancak koşum kayıtlarından ölçülebilir ve bu izleme bugün kurulmadığı için hükmün davranış dilimi fiilen desk kaydında kalmaktadır." )
 Kapsama( kod: KSC-ORK-6.3, referans: [ ORK-6.3 ],
   ne: "KISMİ (masa incelemesi) — Yetki kademeleri ve kapalı varsayılan geçitler önceki evrendeki dört rbac tanısı ile gateway-izin-biçim tanısına ve canlı kalkan sınamalarına bağlıdır; buna karşılık her üretim sorumluluğunun tekil Takım sahipliğine bağlanması dilimi hiçbir tanıya inmemiştir ve sicilin madde bağı bu hükme kurulmamıştır." )
+
+// KPS-MVS-A01 ikinci teslim eki (2026-09-10 · kontrolcü hükmü · Founder yetki devriyle):
+//   ORK-8 bu sicilin ilk teslimi yazıldığında Zorlama satırında kendini zorlanmaz
+//   ilan ediyordu ve muaf kümesindeydi. 2026-08-27 tarihinde `mevsim-vadesi-geçti`,
+//   2026-09-10 tarihinde `mevsim-mührü-çelişkili` tanısını ilan ettiği için madde
+//   artık zorlama iddiası taşımaktadır ve sicile girer. Aşağıdaki kayıt masa
+//   incelemesi değil DAVRANIŞ ölçümüdür: iki tanının fikstürü ve canlı bahçedeki
+//   bulgusu bu tarihte koşularak doğrulanmıştır. Sayım etkisi belge bloğunun ek
+//   bölümünde yazılıdır.
+Kapsama( kod: KSC-ORK-8, referans: [ ORK-8 ],
+  ne: "KISMİ (davranış ölçümü · 2026-09-10) — Hükmün kapanış ritüeli dört basamaktır ve bugün yalnız üçüncü basamak ile dördüncü basamağın bir dilimi makineyle ölçülmektedir. Üçüncü basamak olan açık işin sonraki mevsime devri iki tanıyla ölçülür: vadesi geçmiş bir mevsimin altında açık Adım kalmışsa mevsim-vadesi-geçti, metninde açık işini devrettiğini yazan bir mevsimin altında açık Adım kalmışsa mevsim-mührü-çelişkili bilgi düzeyinde bildirir; ikisi de sicilde maddesine bağlıdır ve aynı çözücüyü okur. Dördüncü basamak olan mührün yalnız dürüstlük dilimi ölçülür: metninde mühürlendiğini yazan bir mevsim hâlâ açık Adım sarıyorsa mevsim-mührü-çelişkili bildirir; buna karşılık mührün VARLIĞI ölçülemez, çünkü Faz şeması bir mühür alanı taşımaz ve mühür yalnız beyan metninde yaşar, mühürlenmiş mevsime yeni Adım yazılması da ölçülemez, çünkü Adımın yazıldığı an grafta yaşamaz. Birinci basamak olan kapanış ölçümünün alınması ölçülemez, çünkü ölçümün kendisi grafta bir düğüm değildir; sahte-tam-yeşil tanısı yalnız beyan edilmiş bir yeşilin sayısal eşiğini sınar, ölçümün alınıp alınmadığını değil. İkinci basamak olan Meyvelerin hasat edilip mevsim kaydının yazılması yalnız dolaylı olarak tutulur: yetim-meyve diskte yaşayıp plana bağlanmayan ürünü bildirir, fakat mevsim kaydının yazılıp yazılmadığı hiçbir tanıya bağlanmamıştır. Açılış basamaklarından hedefin yazılması ve önem kademesinin verilmesi ölçülmez; önceliksiz-adım yalnız Adımın öncelik alanını yoklar, mevsime giriş anını bilmez. Kapanmayacak işin gerekçesiyle düşürülmesi de ölçülmez, çünkü düşürme kararı bir metin yargısıdır." )
 
 // ── STR bölümü — 9 zorlama iddialı madde ──
 Kapsama( kod: KSC-STR-1, referans: [ STR-1 ],

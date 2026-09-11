@@ -2,13 +2,18 @@
 // {{AD}}_anadizin.sar — 🌿 ÇALIŞMA ALANI GİRİŞ DOSYASI (MIM-1.1 · MIM-3 · doğuş paketi üretti: {{TARIH}})
 //
 //   Bu dosya çalışma alanının ÇATI İLANIDIR: hangi bağımsız Proje köklerini
-//   sardığını Raf düğümleriyle söyler. Çatı bir git deposu DEĞİLDİR; her proje
-//   kendi klasöründe, kendi anadiziniyle ve kendi deposunda yaşar (MIM-3).
-//   Yeni bir proje katıldığında bedeli bir klasör ile buraya eklenecek bir
-//   Raf satırından ibarettir. Her üretken ağacın tanı, graf ve sahiplik
-//   kimliği kendi Proje düğümünden türer; çatı kimlikleri birleştirmez (MIM-1.1).
+//   sardığını söyler. Çatı bir git deposu DEĞİLDİR; her proje kendi klasöründe,
+//   kendi anadiziniyle ve kendi deposunda yaşar (MIM-3). Yeni bir proje
+//   katıldığında bedeli bir klasör ile buraya eklenecek bir Kitaplık satırından
+//   ibarettir. Her üretken ağacın tanı, graf ve sahiplik kimliği kendi Proje
+//   düğümünden türer; çatı kimlikleri birleştirmez (MIM-1.1).
 //
-//   🧭 İLK İŞİN: {{PROJE}}/plan/ilk_plan.sar içindeki kuruluş Adımını koş —
+//   ⛔ ZAMAN EKSENİ BURADA YAŞAMAZ (Founder hükmü 2026-09-09). Çalışma alanı
+//   doğrudan Faz İÇEREMEZ: mevsim ilanı bir projenin işidir ve o projenin plan
+//   dosyasında yaşar. Gerekçe şudur: çatı birden çok bağımsız projeyi sarar ve
+//   çatıya yazılan bir mevsim, hangi projenin takvimi olduğunu söyleyemez.
+//
+//   🧭 İLK İŞİN: {{PROJE}}/is/plan/ilk_plan.sar içindeki kuruluş Adımını koş —
 //   ilk proje kendi kökünde doğmuştur ve mimari diyalog orada tarif edilir.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -32,8 +37,15 @@
 ÇalışmaAlanı( kod: CAL-{{KOD}}, ad: "{{AD}}",
   ne: "Bu alan çalışma alanının tek cümlelik tanımıdır — doğuş paketinin bıraktığı bu yönergeyi kendi cümlenle değiştir" ) {
 
-  // Her proje kendi anadiziniyle kendi klasöründe doğar; çatı yalnız rafı ilan
-  // eder ve projenin içeriğini anlatmaz. Yeni proje = yeni klasör + yeni Raf satırı.
-  Raf( kod: RAF-{{PROJEKOD}}, yol: "{{PROJE}}/",
-    ne: "İlk proje — kendi kökü {{PROJE}}/{{PROJE}}_anadizin.sar dosyasındadır ve kendi deposunda yaşar" )
+  // KİTAPLIK KADEMESİ ZORUNLUDUR (Founder hükmü 2026-09-09). Bir proje klasörü
+  // dallanan bir klasördür, dolayısıyla Kitaplıktır; raflar ise Kitaplıkların
+  // İÇİNDE yaşar ve çatının köküne çıplak Raf yazılmaz. Yeni proje katıldığında
+  // yapılacak iş bir klasör açmak ve buraya bir Kitaplık satırı eklemektir.
+  Kitaplık( kod: KTP-{{PROJEKOD}}, yol: "{{PROJE}}/",
+    ne: "İlk proje — kendi kökü {{PROJE}}/{{PROJE}}_anadizin.sar dosyasındadır, kendi mimarisini kendi ilan eder ve kendi deposunda yaşar" )
+
+  Kitaplık( kod: KTP-OZ, yol: "oz/",
+    ne: "Özün kitaplığı — çatının kendi kimlik ve tip kayıtları; ürünün kanonuna açılan işaretçi buradadır" ) {
+    Raf( kod: RAF-SINIFLAMA, yol: "siniflama/", ne: "Tip sistemi işaretçisi — eklenti kanon kaydını bu raftan çözer, kanonun kopyası buraya yazılmaz" )
+  }
 }

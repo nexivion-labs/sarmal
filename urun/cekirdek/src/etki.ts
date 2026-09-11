@@ -10,7 +10,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type { Dag } from "./dag.ts";
-import { topolojikSira } from "./dag.ts";
+import { topolojikSira, dugumYokMetni } from "./dag.ts";
 
 export interface EtkiSonuc {
   kod: string;
@@ -64,7 +64,8 @@ function satir(dag: Dag, kod: string, onek: string): string {
 /** İnsan yüzü (saf render): rozetli etki listesi ya da dürüst "bekleyen yok". */
 export function etkiMetni(dag: Dag, kod: string): string {
   const e = etkiCoz(dag, kod);
-  if (!e) return `✖ '${kod}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kod}).`;
+  // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
+  if (!e) return dugumYokMetni(dag, kod, `✖ '${kod}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kod}).`);
   const bas = `💥 Etki analizi — ${kod}: bu düğüme dokunursan…`;
   const bolum = (baslik: string, kodlar: string[]): string[] =>
     kodlar.length ? [baslik, ...kodlar.map((k) => satir(dag, k, "  "))] : [];

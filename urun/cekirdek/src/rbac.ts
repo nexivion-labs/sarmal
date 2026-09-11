@@ -44,7 +44,7 @@
 import type { Program, Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
-import { INDEKS_DISI } from "./kimlik.ts";   // OGR-5 ders-dünyası sınırı tek kaynaktan okunur
+import { DERS_DUNYASI } from "./kimlik.ts";   // OGR-5 ders-dünyası sınırı tek kaynaktan okunur
 import { programVeMuaflar } from "./sef.ts";
 
 export type Bellek = "izole" | "paylaşık";
@@ -103,7 +103,7 @@ function alanVar(node: Dugum, ad: string): boolean {
  * RBAC'ın YARGILADIĞI program kümesi — kapsam kuralının TEK tanımı (saf).
  *
  * İki şey elenir ve ikisinin de gerekçesi kendi hükmündedir. Ders dünyası
- * (`INDEKS_DISI`: arsiv · ornek · fikstur · sablon …) OGR-5 gereği elenir, çünkü
+ * (`DERS_DUNYASI`: ogreti/ altındaki arsiv · ornek · fikstur · sablon rafları) OGR-5 gereği elenir, çünkü
  * o dosyalar kasıtlı olarak hatalıdır ve ürün bulgusu sayılmaları öğretim
  * malzemesini kusur diye gösterir. Muaf ("bilerek-hatalı") dosyalar elenir,
  * çünkü muafiyet o dosyanın tanılarının bilerek feragat edildiğinin ilanıdır ve
@@ -121,7 +121,7 @@ export function rbacKapsami(
   muaflar?: ReadonlySet<string>,
 ): ReadonlyMap<string, Program> {
   return new Map(
-    [...programlar].filter(([dosya]) => !muaflar?.has(dosya) && !INDEKS_DISI.test(dosya)),
+    [...programlar].filter(([dosya]) => !muaflar?.has(dosya) && !DERS_DUNYASI.test(dosya)),
   );
 }
 

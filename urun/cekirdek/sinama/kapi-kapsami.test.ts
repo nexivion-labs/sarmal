@@ -21,12 +21,13 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   KAPI_KAPSAMI, cliGercekUreticileri, kapsamNobeti, yuzeyUreticiKumesi, panelCaprazUreticiKumesi,
+  kanonUyumNobeti, yuzeyGercekUreticileri, yuzeyKapsamNobeti, mcpEtkinUreticiler,
   type KapiGirdisi,
 } from "../src/kapi-kapsami.ts";
 import { denetimKos } from "../src/denetim.ts";
@@ -34,9 +35,14 @@ import { denetimKos } from "../src/denetim.ts";
 const DENETIM_YOLU = fileURLToPath(new URL("../src/denetim.ts", import.meta.url));
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 
+// BKM-DNT-A06 (2026-09-10): ilan artık YALNIZ komut satırında koşan üreticilerden
+// ibaret değildir; `dogusEksikTanilari` yalnız MCP yüzeyinde çağrılır. Bu yüzden
+// komut satırı nöbeti ilanın TAMAMINI değil `cli` yüzeyli alt kümesini karşılaştırır.
+const CLI_ILANI = KAPI_KAPSAMI.filter((g) => g.yuzeyler.includes("cli"));
+
 test("kapı-kapsamı nöbeti: bugünkü ilan ile CLI'nin gerçekten çağırdığı üretici kümesi TAM eşleşir (sıfır sapma)", () => {
   const gercek = cliGercekUreticileri(DENETIM_YOLU);
-  const sapma = kapsamNobeti(gercek);
+  const sapma = kapsamNobeti(gercek, CLI_ILANI);
   assert.deepEqual(sapma, [],
     `ilan ile denetim.ts'in gerçek çağrı kümesi arasında sapma var: ${JSON.stringify(sapma)}`);
 });
@@ -44,15 +50,16 @@ test("kapı-kapsamı nöbeti: bugünkü ilan ile CLI'nin gerçekten çağırdı�
 test("kapı-kapsamı nöbeti: ilana SAHTE bir kimlik eklenince nöbet kırmızıya döner (mutasyon 1 — ilan-fazlası)", () => {
   const gercek = cliGercekUreticileri(DENETIM_YOLU);
   const sahteGirdi: KapiGirdisi = {
-    uretici: "uydurmaTanilariYokVeHicOlmayacak", modul: "denetci.ts", yuzeyler: ["cli"],
+    uretici: "uydurmaTanilariYokVeHicOlmayacak", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli"],
+    cliGerekcesi: "Mutasyon fikstürü — gerçek bir üretici değildir.",
   };
-  const mutasyonluIlan = [...KAPI_KAPSAMI, sahteGirdi];
+  const mutasyonluIlan = [...CLI_ILANI, sahteGirdi];
   const sapma = kapsamNobeti(gercek, mutasyonluIlan);
   assert.equal(sapma.length, 1, "tek bir sapma bekleniyor — yalnız eklenen sahte kimlik");
   assert.deepEqual(sapma[0], { tur: "ilan-fazlası", uretici: "uydurmaTanilariYokVeHicOlmayacak" },
     "nöbet sahte kimliği 'ilan-fazlası' olarak damgalamalı: ilanda var, CLI'de gerçekten çağrılmıyor");
   // Geri alma kanıtı: mutasyonsuz ilan yine sıfır sapma verir — kaynağa hiç dokunulmadı.
-  assert.deepEqual(kapsamNobeti(gercek, KAPI_KAPSAMI), [], "geri alındıktan sonra nöbet yeniden yeşil");
+  assert.deepEqual(kapsamNobeti(gercek, CLI_ILANI), [], "geri alındıktan sonra nöbet yeniden yeşil");
 });
 
 test("kapı-kapsamı nöbeti: gerçek bir üretici ilandan SİLİNİNCE nöbet kırmızıya döner (mutasyon 2 — kayıt-fazlası)", () => {
@@ -62,13 +69,13 @@ test("kapı-kapsamı nöbeti: gerçek bir üretici ilandan SİLİNİNCE nöbet k
   // üreticisi, panelde de koşuyor); bu satır ilandan çıkarılır.
   const silinecek = "denetle";
   assert.ok(gercek.has(silinecek), "test önkoşulu: 'denetle' CLI'de gerçekten çağrılmalı");
-  const mutasyonluIlan = KAPI_KAPSAMI.filter((g) => g.uretici !== silinecek);
+  const mutasyonluIlan = CLI_ILANI.filter((g) => g.uretici !== silinecek);
   const sapma = kapsamNobeti(gercek, mutasyonluIlan);
   assert.equal(sapma.length, 1, "tek bir sapma bekleniyor — yalnız silinen 'denetle' girdisi");
   assert.deepEqual(sapma[0], { tur: "kayıt-fazlası", uretici: "denetle" },
     "nöbet silinen üreticiyi 'kayıt-fazlası' olarak damgalamalı: CLI gerçekten çağırıyor, ilan artık susuyor");
   // Geri alma kanıtı: orijinal ilan yine sıfır sapma verir.
-  assert.deepEqual(kapsamNobeti(gercek, KAPI_KAPSAMI), [], "geri alındıktan sonra nöbet yeniden yeşil");
+  assert.deepEqual(kapsamNobeti(gercek, CLI_ILANI), [], "geri alındıktan sonra nöbet yeniden yeşil");
 });
 
 test("kapı-kapsamı ilanı: her girdi tekil bir üretici adı taşır (yinelenen ilan satırı yok)", () => {
@@ -105,14 +112,18 @@ test("panelCaprazUreticiKumesi: per-dosya yol cross süzgeçte YOK, cross ailesi
   // satırında kalmıştı ve beyansız açık Adım Founder'ın baktığı panelde hiç görünmüyordu.
   assert.ok(capraz.has("onceliksizAdimTanilari"),
     "önceliksiz-adım panele ulaşmalı — ORK-3.4 Bildirimler yüzeyini şart koşar");
-  // SINIR NÖBETİ (Founder'a ayrılmış kapsam kararı): yalnız komut satırına ayrılmış
-  // üreticiler panel süzgecine giremez. Bu satırların kırmızıya dönmesi, birinin
-  // ilanda bir üreticiye panel yüzeyi eklediği anlamına gelir — o değişiklik
-  // Founder kararı ister ve bu sınamayı da o kararla birlikte güncellemek gerekir.
-  assert.ok(!capraz.has("referansTanilari"),
-    "referansTanilari yalnız komut satırına ayrılmıştır; panel süzgecine girmesi Founder kararı olmadan kapsam genişlemesidir");
-  assert.ok(!capraz.has("metinAtifTanilari"),
-    "metinAtifTanilari yalnız komut satırına ayrılmıştır; panel süzgecine girmesi Founder kararı olmadan kapsam genişlemesidir");
+  // KANON NÖBETİ (BKM-DNT-A01 · Founder hükmü 2026-09-09). Bu iki satır 2026-09-10
+  // tarihinde TERSİNE ÇEVRİLMİŞTİR ve tersine çevrilme gerekçesi şudur: eski hâlleri
+  // `referansTanilari` ile `metinAtifTanilari` üreticilerinin panele GİRMEMESİNİ şart
+  // koşuyordu, oysa Founder'ın canlı kanıtı tam da bu üreticiden doğmuştur — komut
+  // satırı `kırık-referans` uyarısı verirken panel "sorun algılanmadı" demiştir.
+  // YUZ-3.1 hiçbir yüzün tanıyı gizlemesine izin vermez, YUZ-3.3 hata ile uyarıyı
+  // Problems yüzeyine yollar; dolayısıyla hata ya da uyarı basan bir üreticinin
+  // panelden düşmesi kapsam dar tutma değil, doğrudan kanon ihlalidir.
+  assert.ok(capraz.has("referansTanilari"),
+    "referansTanilari hata düzeyinde tanı basar (kırık-referans) — YUZ-3.1 gizleme yasağı gereği panele ULAŞMALIDIR");
+  assert.ok(capraz.has("metinAtifTanilari"),
+    "metinAtifTanilari uyarı düzeyinde tanı basar — YUZ-3.3 uyarıyı Problems yüzeyine yollar");
   assert.ok(!capraz.has("orkestrasyonTanilari"),
     "orkestrasyonTanilari ilanda yoktur ve panel süzgecine hiçbir yoldan giremez");
 });
@@ -301,7 +312,10 @@ test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER",
   }
 });
 
-test("köken süzgeci (fikstürlü): cli-only üreticinin kenar-metin tanısı panele SIZAMAZ ve akıştaki her tanı köken damgası taşır", () => {
+/** BKM-DNT-A01: nöbetin YÖNÜ tersine çevrildi. Eskiden `kenar-metin` tanısının panele
+ *  sızmaması ölçülüyordu; Founder hükmünden sonra ölçülen şey onun panele ULAŞMASIDIR.
+ *  Köken damgası nöbeti olduğu gibi korunur: damgasız tanı süzgecin körü olur. */
+test("köken süzgeci (fikstürlü): uyarı düzeyli kenar-metin tanısı panele ULAŞIR ve akıştaki her tanı köken damgası taşır", () => {
   const kok = mkdtempSync(join(tmpdir(), "sarmal-koken-"));
   try {
     writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
@@ -310,7 +324,7 @@ test("köken süzgeci (fikstürlü): cli-only üreticinin kenar-metin tanısı p
     const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-23", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let kenarMetin = 0;
-    let sizinti = 0;
+    let paneleUlasan = 0;
     const kokensizler: string[] = [];
     for (const rapor of sonuc.akis) {
       for (const t of rapor.tanilar) {
@@ -320,16 +334,266 @@ test("köken süzgeci (fikstürlü): cli-only üreticinin kenar-metin tanısı p
         kenarMetin += 1;
         assert.equal(uretici, "referansTanilari",
           "fikstürdeki kenar-metin tanısının köken damgası referans üreticisini göstermeli");
-        if (uretici !== undefined && paneller.has(uretici)) sizinti += 1;
+        if (uretici !== undefined && paneller.has(uretici)) paneleUlasan += 1;
       }
     }
     assert.ok(kenarMetin >= 1,
       "fikstür en az bir kenar-metin tanısı üretmeli — üretmiyorsa sınamanın zemini çökmüş demektir, sızıntı ölçülemez");
-    assert.equal(sizinti, 0,
-      "SIZINTI: yalnız komut satırına ayrılmış üreticinin kenar-metin tanısı panel süzgecinden geçti — Founder'a ayrılmış kapsam kararı kazara verilmiş olur");
+    assert.equal(paneleUlasan, kenarMetin,
+      "KÖRLÜK: uyarı düzeyli kenar-metin tanısı panel süzgecinden geçemedi — komut satırında görünüp panelde görünmeyen tanı YUZ-3.1'in gizleme yasağını çiğner");
     assert.deepEqual(kokensizler, [],
       "akıştaki her tanı köken damgası taşımalı; damgasız tanı süzgecin körü olur ve panelden sessizce düşer");
   } finally {
     rmSync(kok, { recursive: true, force: true });
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BKM-DNT-A01 · KANON UYUM NÖBETİ — "hiç görünmeme" hâlini gören aile
+//
+//   Var olan iki nöbet yalnız o koşuda FİİLEN ÜRETİLMİŞ tanılar üstünde döner;
+//   panelde hiç koşmayan bir üretici hiç tanı üretmediği için o kümelere hiç
+//   girmez ve nöbetler yapısal olarak yalnız FARKLI GÖRÜNME hâlini görür.
+//   Aşağıdaki aile tabanını İLAN EDİLEN ÜRETİCİ KÜMESİNDEN alır, dolayısıyla
+//   bir üreticinin kanonun gerektirdiği yüzeyde hiç bulunmamasını da görür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("BKM-DNT-A01: canlı ilan kanonla uyumludur — hata/uyarı basıp panele ulaşamayan üretici SIFIRDIR", () => {
+  const sapmalar = kanonUyumNobeti();
+  assert.deepEqual(sapmalar, [],
+    `ilan kanondan ayrıştı: ${JSON.stringify(sapmalar)}`);
+});
+
+test("BKM-DNT-A01: yalnız komut satırında kalan her girdi gerekçe taşır ve yalnız bilgi kademesindedir", () => {
+  const cliOnly = KAPI_KAPSAMI.filter((g) => !g.yuzeyler.includes("panel"));
+  assert.ok(cliOnly.length > 0, "ölçümün zemini: en az bir CLI-only girdi bulunmalı");
+  const gerekcesiz = cliOnly.filter((g) => !g.cliGerekcesi?.trim()).map((g) => g.uretici);
+  assert.deepEqual(gerekcesiz, [], "gerekçesiz CLI girdisi sessiz bir gizleme kararıdır");
+  // BKM-DNT-A06: tek meşru istisna, aynı hükmü panele basan bir İKİZİ adıyla
+  // beyan eden girdidir; beyan ölçülür — ikiz ilanda panelde yaşamak zorundadır.
+  const panelliler = new Set(KAPI_KAPSAMI.filter((g) => g.yuzeyler.includes("panel")).map((g) => g.uretici));
+  const bilgiDisi = cliOnly
+    .filter((g) => g.kademe !== "bilgi" && !(g.panelIkizi && panelliler.has(g.panelIkizi)))
+    .map((g) => `${g.uretici}:${g.kademe}`);
+  assert.deepEqual(bilgiDisi, [],
+    "panelsiz bir girdi ya yalnız bilgi düzeyinde konuşur ya da panelde yaşayan bir ikiz beyan eder (YUZ-3.3)");
+  const ikizli = cliOnly.filter((g) => g.panelIkizi);
+  for (const g of ikizli) {
+    assert.ok(panelliler.has(g.panelIkizi!),
+      `${g.uretici} ikizi olarak ${g.panelIkizi} beyan ediyor ama o üretici panelde yaşamıyor`);
+  }
+});
+
+test("BKM-DNT-A01 · mutasyon: bir üreticinin panel yüzeyi ilandan DÜŞÜRÜLÜNCE nöbet kırmızıya döner", () => {
+  const kurban = KAPI_KAPSAMI.find((g) => g.kademe === "hata" && g.yuzeyler.includes("panel"));
+  assert.ok(kurban, "ölçümün zemini: hata basan panelli bir üretici bulunmalı");
+  const mutasyonlu: KapiGirdisi[] = KAPI_KAPSAMI.map((g) => g.uretici === kurban.uretici
+    ? { ...g, yuzeyler: g.yuzeyler.filter((y) => y !== "panel") }
+    : g);
+  const sapmalar = kanonUyumNobeti(mutasyonlu);
+  const panelsiz = sapmalar.filter((s) => s.tur === "panelsiz-kademe");
+  assert.deepEqual(panelsiz, [{ tur: "panelsiz-kademe", uretici: kurban.uretici, kademe: "hata" }],
+    "panel yüzeyi düşürülen hata üreticisi 'panelsiz-kademe' sapması vermeli — bu, HİÇ GÖRÜNMEME hâlidir");
+  // Geri alma kanıtı: mutasyonsuz ilan yine sıfır sapma verir (kaynağa dokunulmadı).
+  assert.deepEqual(kanonUyumNobeti(KAPI_KAPSAMI), [], "geri alındıktan sonra nöbet yeniden yeşil");
+});
+
+test("BKM-DNT-A01 · mutasyon: CLI girdisinin gerekçesi silinince nöbet kırmızıya döner", () => {
+  const kurban = KAPI_KAPSAMI.find((g) => !g.yuzeyler.includes("panel") && g.kademe === "bilgi" && !g.panelIkizi);
+  assert.ok(kurban, "ölçümün zemini: ikizsiz, bilgi kademeli bir CLI-only girdi bulunmalı");
+  const mutasyonlu: KapiGirdisi[] = KAPI_KAPSAMI.map((g) => g.uretici === kurban.uretici
+    ? { uretici: g.uretici, modul: g.modul, kademe: g.kademe, yuzeyler: g.yuzeyler }
+    : g);
+  const sapmalar = kanonUyumNobeti(mutasyonlu);
+  assert.deepEqual(sapmalar, [{ tur: "gerekçesiz-cli", uretici: kurban.uretici, kademe: kurban.kademe }],
+    "gerekçesi silinen CLI girdisi 'gerekçesiz-cli' sapması vermeli");
+});
+
+/** İKİNCİ KÖRLÜK: var olan yönlendirme nöbeti tablo verilmediğinde tümüyle susar.
+ *  Bu nöbet susmayı ayrışma sayar — ölçülemeyen hüküm ölçülmüş sayılamaz. */
+test("BKM-DNT-A01: ilan tablosu BOŞ verilince nöbet susmaz, tablonun yokluğunu bildirir", () => {
+  const sapmalar = kanonUyumNobeti([]);
+  assert.deepEqual(sapmalar, [{ tur: "ilan-yok", uretici: "(ilan tablosu boş)" }],
+    "boş tabloya sessiz kalmak, yapılmamış bir yönlendirmeyi doğru saymaktır");
+});
+
+/** Beyan elle yazılır fakat elle KALMAZ: gerçek bir denetim koşusundan gözlenen
+ *  kademe, ilandaki beyanla karşılaştırılır. Beyanın gözlenenin ALTINDA kalması
+ *  (bilgi denilen üreticinin hata basması) sessiz bir gizleme kaynağıdır. */
+test("BKM-DNT-A01 · görgül: gerçek koşumlarda gözlenen kademe ilandaki beyanı AŞMAZ", () => {
+  const sira = { bilgi: 0, "uyarı": 1, hata: 2 } as const;
+  const beyan = new Map(KAPI_KAPSAMI.map((g) => [g.uretici, g.kademe]));
+  const gozlenen = new Map<string, "hata" | "uyarı" | "bilgi">();
+  const topla = (kok: string): void => {
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-10", tamListe: true });
+    for (const rapor of sonuc.akis) {
+      for (const t of rapor.tanilar) {
+        const uretici = sonuc.koken.get(t);
+        if (uretici === undefined) continue;
+        const onceki = gozlenen.get(uretici);
+        if (onceki === undefined || sira[t.duzey] > sira[onceki]) gozlenen.set(uretici, t.duzey);
+      }
+    }
+  };
+  // ① Deponun kendisi TEMİZDİR (sıfır hata · sıfır uyarı), dolayısıyla yalnız bilgi
+  //    düzeyli üreticileri ateşler; tek başına bu koşum nöbete diş vermez.
+  topla(fileURLToPath(new URL("../../..", import.meta.url)));
+  // ② Bu yüzden BOZUK bir fikstür de koşulur: kırık atıf ile tırnaklı hedef,
+  //    hata ve uyarı düzeyli üreticileri ateşler ve beyanı gerçekten sınar.
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-gorgul-"));
+  try {
+    writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
+    mkdirSync(join(kok, "plan"));
+    writeFileSync(join(kok, "plan", "fx_plan.sar"), FIKSTUR_PLAN, "utf8");
+    topla(kok);
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+  assert.ok(gozlenen.size >= 8, `ölçümün zemini: koşumlar en az sekiz üreticiyi ateşlemeli (gözlenen ${gozlenen.size})`);
+  const hataUyari = [...gozlenen.values()].filter((d) => d !== "bilgi").length;
+  assert.ok(hataUyari >= 1, "ölçümün zemini: en az bir hata ya da uyarı düzeyli üretici ateşlemeli — yoksa nöbetin dişi yoktur");
+  const eksikBeyan: string[] = [];
+  for (const [uretici, duzey] of gozlenen) {
+    const b = beyan.get(uretici);
+    if (b === undefined) continue;   // ilanda olmayan üretici kapsamNobeti'nin işidir
+    if (sira[duzey] > sira[b]) eksikBeyan.push(`${uretici}: beyan ${b}, gözlenen ${duzey}`);
+  }
+  assert.deepEqual(eksikBeyan, [],
+    "beyan gözlenenin altında kalamaz — düşük beyan, üreticiyi kanonun gerektirdiği yüzeyden sessizce düşürür");
+});
+
+/**
+ * STATİK KADEME NÖBETİ (BKM-DNT-A01 · görgül nöbetin körünü kapatır).
+ *
+ * Görgül nöbet yalnız o koşumda FİİLEN ateşlenen kademeleri görür: deponun kendisi
+ * temiz olduğu için oradaki üreticiler bilgi düzeyinde konuşur ve `hata` basabilen
+ * bir üretici `bilgi` diye beyan edilse bile görgül nöbet susar. Mutasyon ölçümü
+ * 2026-09-10 tarihinde bunu göstermiştir: `omurgaTanilari` beyanı `bilgi`ye
+ * düşürüldüğünde süit yeşil kalmıştır. Bu nöbet o körü kapatır — kademeyi
+ * üreticinin KENDİ gövdesinden yeniden türetir ve beyanla karşılaştırır.
+ *
+ * Türetim depth-0'dır, yani yalnız üreticinin kendi gövdesindeki tanı çağrılarını
+ * okur. Geçişli tarama bilinçli olarak KULLANILMAZ: paylaşılan yardımcılar üstünden
+ * kirlenip yalnız bilgi basan üreticileri hata gibi gösterdiği ölçülmüştür. Gövdesi
+ * yerine bir yardımcıya devreden dört üretici tek tek kaynaktan doğrulanıp aşağıya
+ * yazılmıştır; devir tablosu değişirse bu nöbet kırmızı yanar ve tablo tazelenir.
+ */
+const DEVREDEN_URETICILER: Readonly<Record<string, readonly ("hata" | "uyarı" | "bilgi")[]>> = {
+  // beyansizYapiDenetle → eskiTani("beyansız-yapı", "hata", …)
+  beyansizYapiTanilari: ["hata"],
+  // kuralci.ciftCatismasi → eskiTani("kural-çatışması", "hata", …) üç ayrı dalda
+  dosyalararasiCatismaTanilari: ["hata"],
+  // eskiTani("karşılıksız-metin-atfı", md ? "bilgi" : "uyarı", …) — üçlü koşul
+  metinAtifTanilari: ["bilgi", "uyarı"],
+  // duzey parametresi varsayılan "bilgi"; denetim.ts tek çağrı yerinde üç argüman verir
+  ilansizGovdeDenetle: ["bilgi"],
+};
+
+test("BKM-DNT-A01 · statik: ilandaki kademe, üreticinin kendi gövdesinden türetilenle BİREBİR aynıdır", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { YENI_TANI_INDEKS } = await import("../src/tani-sicili.ts");
+  const src = fileURLToPath(new URL("../src/", import.meta.url));
+  const kaynak = new Map(["denetci.ts", "dag.ts", "kuralci.ts", "dogrulayici.ts"]
+    .map((m) => [m, readFileSync(join(src, m), "utf8")] as const));
+  const sira = { bilgi: 0, "uyarı": 1, hata: 2 } as const;
+  const govde = (metin: string, ad: string): string | undefined => {
+    const es = new RegExp(`^export (?:async )?function \\*?${ad}\\s*[(<]`, "m").exec(metin);
+    if (!es) return undefined;
+    const son = metin.indexOf("\n}\n", es.index);
+    return son < 0 ? metin.slice(es.index) : metin.slice(es.index, son + 3);
+  };
+  const ayrisan: string[] = [];
+  const olcumsuz: string[] = [];
+  for (const girdi of KAPI_KAPSAMI) {
+    const kademeler = new Set<string>(DEVREDEN_URETICILER[girdi.uretici] ?? []);
+    const g = govde(kaynak.get(girdi.modul) ?? "", girdi.uretici);
+    if (g === undefined) { olcumsuz.push(girdi.uretici); continue; }
+    for (const m of g.matchAll(/yeniTani\(\s*"([^"]+)"/gu)) {
+      const kayit = YENI_TANI_INDEKS.get(m[1]);
+      if (kayit) kademeler.add(kayit.kademe);
+    }
+    for (const m of g.matchAll(/eskiTani\(\s*"[^"]+"\s*,\s*"(hata|uyarı|bilgi)"/gu)) kademeler.add(m[1]);
+    const bilinen = [...kademeler].filter((k): k is "hata" | "uyarı" | "bilgi" => k in sira);
+    if (!bilinen.length) { olcumsuz.push(girdi.uretici); continue; }
+    const turetilen = bilinen.sort((a, b) => sira[b] - sira[a])[0];
+    if (turetilen !== girdi.kademe) ayrisan.push(`${girdi.uretici}: ilan ${girdi.kademe}, gövde ${turetilen}`);
+  }
+  assert.deepEqual(olcumsuz, [], "her ilan girdisinin kademesi gövdesinden ölçülebilmeli");
+  assert.deepEqual(ayrisan, [],
+    "ilandaki kademe üreticinin gövdesinden ayrıştı — düşük beyan üreticiyi kanonun gerektirdiği yüzeyden sessizce düşürür");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BKM-DNT-A06 · DÖRT YÜZEYLİ KAPSAM NÖBETİ
+//
+//   Eski nöbet yalnız komut satırı akışının kaynağını okuyordu ve üç ayrışma bu
+//   körlüğün altında sessizce yaşıyordu: `dogusEksikTanilari` yalnız MCP'de
+//   koşup ilanda hiç yoktu, AltKatman tekilliği tek-dosya yüzeyini beyan edip o
+//   yola hiç uğramıyordu ve alt süreç köprüsüyle MCP'ye ulaşan altmış bir
+//   üretici hiçbir yerde yazılı değildi. Aşağıdaki nöbetler üçünü de ölçer.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const YUZEY_KAYNAKLARI = {
+  denetim: readFileSync(fileURLToPath(new URL("../src/denetim.ts", import.meta.url)), "utf8"),
+  mcp: readFileSync(fileURLToPath(new URL("../src/mcp.ts", import.meta.url)), "utf8"),
+  cli: readFileSync(fileURLToPath(new URL("../src/sarmal.ts", import.meta.url)), "utf8"),
+};
+
+test("BKM-DNT-A06: ölçülebilir üç yüzeyin üçünde de ilan ile gerçek çağrı kümesi eşittir", () => {
+  const sapmalar = yuzeyKapsamNobeti(YUZEY_KAYNAKLARI);
+  assert.deepEqual(sapmalar, [],
+    `yüzey ilanı gerçekle ayrıştı: ${JSON.stringify(sapmalar)}`);
+});
+
+test("BKM-DNT-A06: nöbet gerçekten ölçüyor — üç yüzeyin kümesi boş değildir ve birbirinden farklıdır", () => {
+  const gercek = yuzeyGercekUreticileri(YUZEY_KAYNAKLARI);
+  assert.ok((gercek.cli?.size ?? 0) > 50, "komut satırı kümesi ölçülemedi");
+  assert.ok((gercek.mcp?.size ?? 0) >= 2, "MCP'nin doğrudan çağrı kümesi ölçülemedi");
+  assert.equal(gercek.tekil?.size, 1, "tek-dosya yolu yalnız `dogrula` çağırır");
+  assert.ok(gercek.tekil?.has("dogrula"));
+  assert.ok(gercek.mcp?.has("dogusEksikTanilari"),
+    "MCP doğrudan çağrı kümesi doğuş eksiği üreticisini içermeli — A06'nın kapattığı birinci ayrışma");
+  assert.ok(!gercek.tekil?.has("altKatmanTekilligiTanilari"),
+    "tek-dosya yolu AltKatman tekilliğine uğramaz — A06'nın kapattığı ikinci ayrışma");
+  assert.equal(gercek.panel, undefined, "panel yüzeyinin kaynağı bu pakette değildir ve ölçülemez");
+});
+
+test("BKM-DNT-A06 · mutasyon: MCP'de çağrılan üretici ilandan silinince nöbet KIRMIZI yanar", () => {
+  const mutasyonlu = KAPI_KAPSAMI.filter((g) => g.uretici !== "dogusEksikTanilari");
+  const sapmalar = yuzeyKapsamNobeti(YUZEY_KAYNAKLARI, mutasyonlu);
+  assert.deepEqual(sapmalar, [{ yuzey: "mcp", tur: "kayıt-fazlası", uretici: "dogusEksikTanilari" }],
+    "MCP'de gerçekten çağrılan üretici ilandan düşünce 'kayıt-fazlası' doğmalı");
+  assert.deepEqual(yuzeyKapsamNobeti(YUZEY_KAYNAKLARI, KAPI_KAPSAMI), [], "geri alınca nöbet yeşile döner");
+});
+
+test("BKM-DNT-A06 · mutasyon: koşmayan bir yüzey ilana yazılınca nöbet KIRMIZI yanar", () => {
+  const mutasyonlu: KapiGirdisi[] = KAPI_KAPSAMI.map((g) => g.uretici === "altKatmanTekilligiTanilari"
+    ? { ...g, yuzeyler: [...g.yuzeyler, "tekil" as const] }
+    : g);
+  const sapmalar = yuzeyKapsamNobeti(YUZEY_KAYNAKLARI, mutasyonlu);
+  assert.deepEqual(sapmalar, [{ yuzey: "tekil", tur: "ilan-fazlası", uretici: "altKatmanTekilligiTanilari" }],
+    "tek-dosya yoluna hiç uğramayan üreticinin `tekil` beyanı 'ilan-fazlası' vermeli");
+  assert.deepEqual(yuzeyKapsamNobeti(YUZEY_KAYNAKLARI, KAPI_KAPSAMI), [], "geri alınca nöbet yeşile döner");
+});
+
+test("BKM-DNT-A06 · mutasyon: tek-dosya bölgesinin işareti silinince nöbet SUSMAZ", () => {
+  const isaretsiz = {
+    ...YUZEY_KAYNAKLARI,
+    cli: YUZEY_KAYNAKLARI.cli.replace("// ── YÜZEY:tekil · BAŞLANGIÇ ──", "// (işaret silindi)"),
+  };
+  assert.notEqual(isaretsiz.cli, YUZEY_KAYNAKLARI.cli, "mutasyon deseni kaynağa uymadı");
+  const sapmalar = yuzeyKapsamNobeti(isaretsiz);
+  assert.ok(sapmalar.some((s) => s.yuzey === "tekil" && s.uretici.includes("çağrı bölgesi kaynakta bulunamadı")),
+    "ölçülemeyen yüzey sessizce geçilemez — ölçülemeyen hüküm ölçülmüş sayılamaz");
+});
+
+test("BKM-DNT-A06: alt süreç köprüsü kuralı — komut satırı yüzeyli her üretici MCP'de de etkindir", () => {
+  const etkin = mcpEtkinUreticiler(YUZEY_KAYNAKLARI);
+  const cliKumesi = yuzeyUreticiKumesi("cli");
+  for (const uretici of cliKumesi) {
+    assert.ok(etkin.has(uretici), `${uretici} komut satırında koşuyor; köprü üstünden MCP'de de etkin olmalı`);
+  }
+  assert.ok(etkin.has("dogusEksikTanilari"), "doğrudan MCP çağrısı da etkin kümededir");
+  assert.ok(etkin.size > cliKumesi.size,
+    "köprü kümesi komut satırı kümesinden GENİŞ olmalı — eşitse doğrudan çağrılar sayılmıyor demektir");
 });

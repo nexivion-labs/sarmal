@@ -154,12 +154,12 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "Sarmal öğretim kapısı: konusuz çağrı KANONDAN üretilen karşılama kartını döndürür " +
         "(kopyalanabilir minimal proje + tam omurga + koni alanları + zorunlu kenarlar — CLI `sarmal ogret` ile AYNI kaynaktan üretilir); " +
-        "`konu` verilirse ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI'). " +
+        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI'). " +
         "NE ZAMAN: Sarmal'la ilk temasında; bir tanı 'bkz: BCR-…' işaretçisi gösterdiğinde; bir kuralın nasıl uygulanacağını sormak istediğinde.",
       () =>
         "Sarmal's learning gateway: a call without `konu` returns the welcome card generated FROM THE CANON " +
         "(a copyable minimal project, the complete backbone, cone fields, and required edges—from the SAME source as CLI `sarmal ogret`); " +
-        "when `konu` is provided, it returns the FULL matching Beceri card from the ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI'). " +
+        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI'). " +
         "WHEN: on your first contact with Sarmal; when a diagnostic shows a 'bkz: BCR-…' marker; or when you want to learn how to apply a rule.",
     ),
     inputSchema: {
@@ -178,7 +178,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "NE ZAMAN: kullanıcı bir öğeyi adını bilmeden tarif ettiğinde ya da koniye kavram yazmadan önce. " +
         "`kelime` ver → kanon yolu + Flutter/React/SwiftUI + arkayüz eşlemesi + TR↔EN terim döner; " +
         "`baglam` ver (ör. 'Ekran', 'Adım.görev') → o bağlamın aday kavram aileleri (soru + üyeler, tam eşlemeli) döner. " +
-        "Veri DİSKTEN okunur, böylece kanon her zaman günceldir (bilgi/tasarim_sozlugu). " +
+        "Veri DİSKTEN okunur, böylece kanon her zaman günceldir (ogreti/bilgi/tasarim_sozlugu). " +
         "SINIR: araç ÖNERİ sunar, seçim yapmaz — seçeneği kullanıcıya Türkçe adı ve tanımıyla sun, " +
         "seçilen kavramı koniye KANON YOLUYLA yaz, terimi bir kez öğret ve dayatma.",
       () =>
@@ -186,7 +186,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "WHEN: when the user describes an element without knowing its name, or before writing a concept into the cone. " +
         "Provide `kelime` to receive the canon path, Flutter/React/SwiftUI and backend mappings, and the TR↔EN term; " +
         "provide `baglam` (for example, 'Ekran' or 'Adım.görev') to receive candidate concept families for that context (question plus fully mapped members). " +
-        "Data is read FROM DISK so the canon stays current (bilgi/tasarim_sozlugu). " +
+        "Data is read FROM DISK so the canon stays current (ogreti/bilgi/tasarim_sozlugu). " +
         "BOUNDARY: the tool offers OPTIONS; it does not choose. Present each option with its Turkish name and definition, " +
         "write the selected concept into the cone BY ITS CANON PATH, teach the term once, and do not impose it.",
     ),
@@ -254,20 +254,30 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "DOĞUŞ PAKETİ (DPK-A02 · flutter-create paritesi): hedef dizinde ÇALIŞIR proje doğurur — " +
-        "anadizin + durum/durum_devir + ogrenme/dersler+geribildirim + plan/ilk_plan (katı rejimde " +
-        "tam-zincir, koni-dolu ilk Adım). ÖNCE SORAR: tur alanı proje ise hedef doğrudan Proje kökü olur; " +
+        "giriş ilanı (Kitaplık kademeli) + is/durum/durum_devir + ogreti/ogrenme/dersler+geribildirim + " +
+        "is/plan/ilk_plan (katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
+        "küresel yok sayma kuralına karşı `!*.sar` istisnası, Sarmal sunucusunu çözen yürütücü ayarı, " +
+        "bayt özdeş yönerge ikizi (CLAUDE.md ≡ AGENTS.md), doğuş kilidi ile denetim kancası ve kanon " +
+        "işaretçisi; hepsi doğan kökün KENDİ dosyalarında yaşar, küresel ayara dokunulmaz. " +
+        "ÖNCE SORAR: tur alanı proje ise hedef doğrudan Proje kökü olur; " +
         "calisma-alani ise hedef ÇalışmaAlanı kökü olur ve ilk proje onun altında kendi köküyle doğar (MIM-1.1); " +
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
-        "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır. " +
+        "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
+        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
         "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir." +
         " NE ZAMAN: boş dizinde çalışır bir Sarmal projesi doğurman istendiğinde.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
-        "anadizin; durum/durum_devir; ogrenme/dersler plus geribildirim; and plan/ilk_plan " +
-        "(a complete strict-mode backbone with a cone-filled first Adım). IT ASKS FIRST: with tur = proje the target becomes the Proje root; " +
+        "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
+        "and is/plan/ilk_plan (a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
+        "a `!*.sar` exception against the global ignore rule, an executor setting that resolves the Sarmal server, " +
+        "a byte-identical instruction twin (CLAUDE.md ≡ AGENTS.md), a birth lock plus an audit hook, and a canon pointer; " +
+        "all of them live in the new root's OWN files and the global settings are left untouched. " +
+        "IT ASKS FIRST: with tur = proje the target becomes the Proje root; " +
         "with tur = calisma-alani the target becomes the ÇalışmaAlanı root and the first project is born beneath it with its own root (MIM-1.1); " +
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
+        "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
         "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools." +
         " WHEN: when you need a working Sarmal project created in an empty directory.",
     ),
@@ -572,7 +582,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "(yapısal ikizler) · md (belge yüzü). CLI prizma ile AYNI çekirdeği kullanır; kaynak " +
         "TEK, yüzler türetilir — elle ikiz tutma yasak. Ajan yapısal işleme için json'u, " +
         "insan-okur özet için md'yi ister." +
-        " NE ZAMAN: .sar içeriğini başka formatta (json · yaml · md) tüketmen gerektiğinde.",
+        " NE ZAMAN: .sar içeriğini başka formatta (json · yaml · xml · md) tüketmen gerektiğinde.",
       () =>
         "🔺 Prizma surfaces: projects one .sar source into the requested surface—json, yaml, or xml structural twins, or the md document surface. " +
         "It uses the SAME core as CLI prizma. The source stays SINGLE and the surfaces are derived; do not maintain manual twins. " +
@@ -717,16 +727,22 @@ export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
   tr: [
     "Bu proje Sarmal ile yönetilir: plan, kural, tip ve durum yalnız .sar dosyalarında yaşar ve bu sunucunun araçları onların tek yetkili okuma yüzüdür.",
     "Yapı, ilerleme, bağımlılık ya da sağlık sorusu geldiğinde ÖNCE bu araçlara sor: bütün projenin hükmü için denetle-proje, bir kodun tanımı ve atıfları için gezin, graf ve karne için graf, bir değişikliğin etki alanı için etki, tip şeması için siniflama, bir Adıma başlamadan önce sef, yazmadan önce basla.",
+    "Yeni bir ağaç, anadizin ya da mimari ELLE YAZILMAZ ve bu yasak boş bir dizinde de geçerlidir; sıra zorunludur: basla rehberi okunur, dogus ağacı doğurur, iskelet ilandaki eksik yapıyı diske indirir ve her .sar yazımından sonra denetle-proje koşar. Doğuş anında hiçbir beceri kartı ateşleyemez, çünkü kartlar yalnız geliştirmede bir Adım varken ateşler; o anın öğretisi ogret ile basla çıktılarındadır ve ikisi de boş dizinde koşar.",
     "Araçlar istemcide ertelenmiş olabilir ve ilk çağrıdan önce yüklenmeleri gerekebilir; yüklemek bir çağrıdır, atlamak yanlış sayıya mal olur.",
     ".sar dosyalarını ham grep, sed ya da el yazması ayrıştırıcıyla okumak anti-desendir: hızlı görünür fakat yanlış şeyi sayar ve yanlış güven verir. Ham arama yalnız .sar dışı dosyalar ve henüz ilan edilmemiş şeyler için meşrudur.",
-    "Adım durumunu elle düzenleme; tek yazım kapısı durum-guncelle aracıdır.",
+    // BKM-MCP-A03: bu cümle tek parçayken bütün .sar içeriğine genellendi ve ilk dış
+    // kullanıcı yazma kapısını fiilen kapalı sanıp şema sürümü ile kabul ölçütü
+    // değişikliğini yapamadığını bildirdi (2026-09-05). Kilitli olan yalnız durum
+    // alanıdır; ayrım üç parçaya açıldı, çünkü yazılmayan ayrım tahmin edilir.
+    "Yazma kapısı üç parçadır ve üçünü karıştırma. BİRİNCİSİ: bir Adımın `durum:` alanı elle düzenlenmez, tek yazım kapısı durum-guncelle aracıdır. İKİNCİSİ: öteki bütün alanlar — ne, görev, kabul metni, sınır, bağımlı, referans ve gövde — normal biçimde düzenlenir ve denetimden geçer; bu alanlar için kapı KAPALI DEĞİLDİR. ÜÇÜNCÜSÜ: hüküm niteliğindeki değişiklikler, yani bir Adımın kabul ölçütünü gevşetmek ya da şema/kanon sürümünü değiştirmek, Founder onayı ister ve onaysız yapılmaz.",
   ].join(" "),
   en: [
     "This project is governed by Sarmal: plans, rules, types and status live only in .sar files, and this server's tools are their sole authoritative reading surface.",
     "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting a Step, basla before writing.",
+    "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while a Step is in progress; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
     "The tools may be deferred in the client and need loading before the first call; loading is one call, skipping it costs a wrong number.",
     "Reading .sar files with raw grep, sed or a hand-written parser is an anti-pattern: it looks fast but counts the wrong thing and gives false confidence. Raw search is legitimate only for non-.sar files and for things not yet declared.",
-    "Do not edit a Step's status by hand; the single write gate is the durum-guncelle tool.",
+    "The write gate has three parts; do not conflate them. FIRST: a Step's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening a Step's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
   ].join(" "),
 };
 

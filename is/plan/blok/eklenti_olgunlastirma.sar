@@ -738,6 +738,29 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       }
     }
 
+    // ── FAZ 12 · VİTRİN GÖRSELLERİ: iki README'nin ilk ekran görüntüleri (Founder 2026-09-08) ──
+    Katman( kod: EKL-F12, kullanır: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
+      ne: "🖼️ Kök README ile mağaza README'sinin görselsiz olduğu 2026-09-08 gecesi ölçülmüştür: iki yüzde toplam bir rozet, sıfır ekran görüntüsü, sıfır görsel dil. Bu Katman gerçek koşudan çekilmiş kareleri iki yüze yerleştirir; kare üretilmez, çekilir." ) {
+      AltKatman( kod: ALT-EKL-F12-VITRIN, departman: planlama, ad: "Mağaza ve Depo Vitrini",
+        ne: "🖼️ Depo vitrini kök README, mağaza vitrini eklenti README'sidir; ikisi aynı kareleri aynı raftan okur ve mağaza göreli yolu paketleme sırasında depo adresine çevirir" ) {
+        Adım( kod: EKL-F12-A01, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YUZ-2.1 ],
+          ad: "Gerçek Koşudan İki Kare",
+          üretir: [ Meyve( kod: MYV-EKL-F12-A01, tür: dış-çıktı,
+            ne: "İki ekran görüntüsü (urun/eklenti/medya/ekran/denetle.png ve editor.png) ile bu görsellere atıf veren iki README dokunuşu; mağaza sayfası dış yüzeydir ve görseli depodan okur" ) ],
+          ne: "📸 Kök README ve mağaza README'sine gerçek koşudan çekilmiş ekran görüntülerinin girmesi. Founder 2026-09-08 tarihinde iki README'nin görselsiz olduğunu tespit etmiş ve karelerin üretilmiş bir kart değil gerçek ekran görüntüsü olmasına hükmetmiştir; gerekçe, README'nin çıktı gerçektir iddiasını görselin de taşımasıdır. Birinci kare Terminal'de koşan sarmal denetle komutunun tam çıktısıdır ve README'deki örnek projede kırık-referans ile meyve-dosyası-eksik hatalarını gösterir; ikinci kare aynı projenin editördeki hâlidir: Yol Haritası, Mini Graf, anlamsal renklendirme ve Sorunlar paneli. Ölçülen kısıt kayda geçer: README'nin üç örnek tanısı olan kırık-referans, meyve-dosyası-eksik ve beyansız-yapı, kapı kapsamı ilanında yalnız komut satırı yüzeyine ayrıldığı için editörün Sorunlar panelinde görünmez; bu yüzden hata karesi terminalden, panel karesi editörden çekilmiştir ve panel kapsamı kararı BKM-DNT-A01 Adımının Founder hükmüne bağlıdır." ) {
+          görev: "Doğuş paketiyle doğan örnek projede README'deki Blok'u yaz; sarmal denetle çıktısını gerçek Terminal penceresinden ve aynı projeyi Sarmal Dark temasıyla açılmış editörden ekran görüntüsü olarak çek; kareleri urun/eklenti/medya/ekran/ rafına koy; kök README'nin örnek bölümüne ve eklenti README'sinin panel paragrafına birer atıfla yerleştir; ekran klasörünü paket dışlamasına ekle ve mağaza README'sindeki göreli görsel yolunun paketleme sırasında doğru depo adresine çevrildiğini ölç."
+          kabul: [
+            "İki README'de en az birer gerçek ekran görüntüsü atfı vardır ve atıf verilen dosyalar diskte çözülür.",
+            "Kareler üretilmiş kart değil ekran görüntüsüdür; metin motorun bastığı çıktıyla birebir aynıdır.",
+            "sarmal denetle sarmal kökünde sıfır hata verir ve beyansız yapı tanısı ekran rafı için ateşlemez.",
+            "Mağaza README'sindeki göreli görsel yolunun paketleme sırasında doğru GitHub adresine çevrildiği ölçülmüştür."
+          ]
+          sınır: "Görsel için Sorunlar paneline yeni tanı taşınmaz; kapı kapsamı kararı BKM-DNT-A01 Adımınındır. README metni yeniden yazılmaz; yalnız görsel ve birer açıklama cümlesi eklenir."
+        }
+        koşu: "2026-09-10 · KAPANDI. İki kare diskte duruyor ve dört ölçütün dördü de ölçüldü: Türkçe kök belgesi iki, İngilizce kök belgesi iki ve mağaza belgesi bir atıf taşıyor; İngilizce belgeye ayrıca Türkçe belgede olup onda eksik olan editör cümlesi de çevrilerek eklendi, çünkü ikinci kare o cümleye bağlıdır. Atıf verilen iki dosya diskte çözülüyor, depo denetimi sıfır hata veriyor ve ekran rafı beyansız yapı tanısı üretmiyor. Mağaza belgesi göreli yol değil doğrudan depo adresi taşıdığı için paketleme sırasında çevrilecek bir yol yoktur ve paketleme dışlaması o rafı bilinçle dışarıda bırakır; bu ölçüt kendiliğinden sağlanmıştır."
+      }
+    }
+
     // ── Bu plandaki Adımların meyveleri ──────────────────────────────────────────
     Kod( kod: KOD-YOLHARITA-CEKIRDEK, dosya: "urun/eklenti/src/yolharitasi-cekirdek.ts",
       ne: "🍎 Varlık kümesi çekirdeği — birbirini kapsayan varlık köklerinin üst ve alt ilişkisini kuran ve bir yolun en derin varlığını seçen saf işlevler; panel yalnız buradan okur ve birim nöbeti bu dosyayı sınar" )

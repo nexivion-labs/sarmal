@@ -7,6 +7,8 @@ Bu eklenti, Sarmal dilini Visual Studio Code içinde eksiksiz bir dil deneyimine
 
 Editörün yan yüzeyleri planı görünür kılar. Yol Haritası paneli fazları, blokları ve adımları durumlarıyla listeler; Mini Graf bağımlılık iskeletini çizer; Onaylar paneli karar bekleyen kapıları toplar; Hatırlatıcılar ve Gözlemler panelleri motorun nöbetlerini insan diliyle aktarır. Durum çubuğu bu yüzeylerin sayaçlarını taşır ve tip sistemi kaydı bulunamadığında gömülü taban kanonla çalışıldığını açıkça söyler; hiçbir düşüş sessiz değildir.
 
+![Visual Studio Code içinde Sarmal: solda Yol Haritası ve Mini Graf, ortada renklendirilmiş plan dosyası, altta Sorunlar paneli](https://github.com/nexivion-labs/sarmal/raw/HEAD/urun/eklenti/medya/ekran/editor.png)
+
 Renk konusunda ilkemiz nettir: eklenti size hiçbir renk dayatmaz. Dilbilgisi yerleşik kapsam adları ürettiği için kurulum anında sizin kendi temanız Sarmal kaynağını boyar. Kanonun kendi paletini isteyenler için Sarmal Koyu ve Sarmal Açık temaları pakette hazırdır ve tema seçicisinden tek tıkla gelir; Kuzey Yıldızı ürün simgesi teması da aynı ailenin parçasıdır.
 
 Sarmal tamamen yereldir. Eklentinin çalışma zamanı bağımlılığı sıfırdır, hiçbir ağ çağrısı yapmaz ve hiçbir veriyi dışarı taşımaz; bu iddia beyan değil ölçümdür ve gizlilik politikasında okuyucunun kendisinin tekrarlayabileceği bir yöntemle anlatılır. Yapay zekâ ajanlarıyla çalışanlar için Sarmal çekirdeği on sekiz araçlık bir MCP sunucusu taşır; ajanlar planı bu araçlarla okur, adımların bağlamını şeften alır ve durumu tek yetkili kapıdan ilerletir. Sarmal, Apache 2.0 lisansıyla yayımlanır ve Nexivion Labs tarafından geliştirilmektedir.
@@ -23,7 +25,7 @@ Sarmal tamamen yereldir. Eklentinin çalışma zamanı bağımlılığı sıfır
 4. Bir `.sar` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
-Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 174'i ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 47 hata, 16 uyarı ve 11 bilgidir; sabit yönlendirme matrisi 143/4/28 olarak ölçülür.
+Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 178'i ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 47 hata, 17 uyarı ve 14 bilgidir; sabit yönlendirme matrisi 144/3/32 olarak ölçülür.
 
 Sarmal Apache-2.0 lisanslıdır. Lisans bildirimi [LICENSE.md](LICENSE.md) dosyasındadır.
 <!-- SARMAL:URETILEN:EKLENTI-README:SON -->

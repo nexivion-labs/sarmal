@@ -29,6 +29,9 @@ import {
 // EMJ-A03 (OGR-3.1 geriye-bağlantısı): emoji yazımı ajan bağlamına kanondan derlenir —
 // tablolar kayit.json emojiYazimi ile nöbetli çekirdek eşidir, kopya taşınmaz.
 import { EMOJI_TIPLER, EMOJI_PARAMETRELER, EMOJI_DURUMLAR } from "./emoji-yazim.ts";
+// KPS-MHR-A01 (OGR-3 geriye-bağlantısı · MIM-3.4): dosya mühürleri ajan bağlamına
+// karşılama kartı ve doğuş rehberiyle AYNI üreticiden gelir — ikinci metin yazılmaz.
+import { dosyaMuhruOgretisi } from "./ogret.ts";
 
 // Bu üç yol modül yüklenirken değil, ilk gerçek okumada çözülür. Sebebi
 // ölçülmüştür: eklenti esbuild ile CommonJS paketine çevrildiğinde `import.meta.url`
@@ -442,7 +445,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
   ekle([
     "## Kavram sözlüğü ve bağlam haritası",
     "",
-    "Tasarım/yazılım kavramlarının makine kanonu **TEKTİR**: `bilgi/tasarim_sozlugu/kayit.json`.",
+    "Tasarım/yazılım kavramlarının makine kanonu **TEKTİR**: `ogreti/bilgi/tasarim_sozlugu/kayit.json`.",
     "Bir kavramın kimliği kanondaki **yoludur** (örnek: `onyuz.bilesen.menü`) — kavram adı uydurma,",
     `önce kanona bak. Bölümler ve kavram sayıları: ${bolumOzeti}.`,
     "Her kavram Türkçe nötr ad taşır ve yanında birden çok yığın için karşılık sunar. Bu eşleme",
@@ -450,7 +453,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "`Teknoloji` düğümüyle ilan edilendir. Sözlükte bir yığının adını görmen o yığının seçildiği",
     "anlamına gelmez — teknoloji kararı insanındır ve ilan edilmeden hiçbir yığın varsayılmaz.",
     "",
-    "Kullanıcının niyeti belirsizse (\"üstte bir menü olsun\" gibi) `bilgi/tasarim_sozlugu/baglam-haritasi.json`",
+    "Kullanıcının niyeti belirsizse (\"üstte bir menü olsun\" gibi) `ogreti/bilgi/tasarim_sozlugu/baglam-haritasi.json`",
     "rehberindir: bağlam (düğüm tipi ya da `tip.alan`, en özel anahtar kazanır) → aday kavram aileleri" +
     ` (bugün: ${Object.keys(harita.aileler).map((a) => `**${a}**`).join(" · ")}).`,
     "Harita **ÖNERİR, zorlamaz** — tanı ya da kural üretmez. Ailenin sorusunu kullanıcıya Türkçe",
@@ -460,7 +463,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "## Concept dictionary and context map",
     "",
     "There is exactly **ONE** machine canon for design/software concepts:",
-    "`bilgi/tasarim_sozlugu/kayit.json`. A concept's identity is its **path** in canon (for example,",
+    "`ogreti/bilgi/tasarim_sozlugu/kayit.json`. A concept's identity is its **path** in canon (for example,",
     `\`onyuz.bilesen.menü\`) — do not invent a concept name; consult canon first. Sections and concept counts: ${bolumOzeti}.`,
     "Each concept carries a neutral Turkish name plus counterparts for several stacks. That mapping is",
     "a LOOKUP TABLE only and does NOT set the project's technology: the technology is whatever the",
@@ -468,7 +471,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "that stack was chosen — the technology decision is the human's, and none is assumed until declared.",
     "",
     "When the user's intent is ambiguous (such as \"put a menu at the top\"), use",
-    "`bilgi/tasarim_sozlugu/baglam-haritasi.json` as your guide: context (node type or `tip.alan`; the most",
+    "`ogreti/bilgi/tasarim_sozlugu/baglam-haritasi.json` as your guide: context (node type or `tip.alan`; the most",
     "specific key wins) → candidate concept families" +
     ` (today: ${Object.keys(harita.aileler).map((a) => `**${a}**`).join(" · ")}).`,
     "The map **SUGGESTS; it does not impose** — it produces no diagnostic or rule. Ask the family's",
@@ -476,6 +479,15 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "and teach the term once — never force it.",
     "",
   ]);
+
+  // OGR-3 geriye-bağlantısı (KPS-MHR-A01): MIM-3.4 dosya mühürleri. Etiketler mühür
+  // kümesinden, tanılar sicilden okunur; bölümün gövdesi karşılama kartıyla aynıdır.
+  b.push(
+    y("## Dosya mühürleri — canlı kaynaktan açık beyanla ayrılma", "## File seals — leaving the live source by explicit declaration"),
+    "",
+    ...dosyaMuhruOgretisi(dil),
+    "",
+  );
 
   ekle([
     "## Araç haritası — MCP `sarmal` sunucusu",
@@ -498,7 +510,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "| `durum-guncelle` | Adım durumunu güvenli yazmak (durum makinesi korumalı) |",
     "",
     "Bir Adımı işlemeye başlamadan önce `sef` çağrılır; koni, kısıtlar ve o Adımda ateşleyen",
-    "beceri kartları oradan gelir. Kartlar `ogrenme/` rafında yaşar; bütçe payına sığmayıp",
+    "beceri kartları oradan gelir. Kartlar `ogreti/ogrenme/` rafında yaşar; bütçe payına sığmayıp",
     "✂️ damgasıyla kırpılan bir kartın tam metnini `gezin <KART-KODU>` ile açarsın.",
     "",
     "## Çalışma düzeni",
@@ -529,7 +541,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "| `durum-guncelle` | Update Step status safely (state-machine guarded) |",
     "",
     "Call `sef` before working on a Step; its cone, constraints, and the skill cards triggered for that",
-    "Step come from there. Cards live on the `ogrenme/` shelf; if a card is trimmed with a ✂️ mark",
+    "Step come from there. Cards live on the `ogreti/ogrenme/` shelf; if a card is trimmed with a ✂️ mark",
     "because it does not fit its budget share, open the full text with `gezin <KART-KODU>`.",
     "",
     "## Working routine",

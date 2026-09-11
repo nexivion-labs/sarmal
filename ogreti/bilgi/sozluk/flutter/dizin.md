@@ -12,7 +12,7 @@ guncellendi: 2026-07-01
 
 # 🗂️ Flutter → Türkçe Sözlük
 
-> **Ne:** Flutter/Dart terimlerinin Türkçe karşılıkları. **Neden:** Sarmal'ın Türkçe UI-widget'ları (Yüzey fazı) ve teknoloji-widget'ları bu karşılıklardan adlandırılır (örn. `Scaffold→İskelet`, `Column→Sütun`, `Row→Satır`, `Container→Kapsayıcı`). **İleri-bağlı:** `durum/durum-guncel.md` H-1 (frontend Türkçeleştirme Hatırlatıcısı).
+> **Ne:** Flutter/Dart terimlerinin Türkçe karşılıkları. **Neden:** Sarmal'ın Türkçe UI-widget'ları (Yüzey fazı) ve teknoloji-widget'ları bu karşılıklardan adlandırılır (örn. `Scaffold→İskelet`, `Column→Sütun`, `Row→Satır`, `Container→Kapsayıcı`).
 > **İlke:** Teknoloji özel isimleri (Flutter, Skia, Impeller, Riverpod, Dio…) evrensel kalır (DIL-1.1 muaf).
 
 ## Dosyalar

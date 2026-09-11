@@ -154,7 +154,7 @@ function konum(html: string, isaret: string, ne: string): number {
 const TEK_DOSYA = "/depo/_Sarmal/plan/goc_plani.sar";
 function tekKapiliFikstur(ne = "🧪 Karar bekleyen tek iş"): KapiKaydi[] {
   const bulunan = kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "${ne}", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "${ne}", kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(bulunan.length, 1, "fikstür kapı üretmedi; nöbet boş küme üstünde koşar");
   return bulunan.map((kapi) => ({ dosya: TEK_DOSYA, kapi }));
 }
@@ -162,10 +162,10 @@ function tekKapiliFikstur(ne = "🧪 Karar bekleyen tek iş"): KapiKaydi[] {
 /** İki dosyada toplam üç kapı üreten fikstür — nöbet boş küme üstünde koşmaz. */
 function ikiDosyaliFikstur(): KapiKaydi[] {
   const plan = kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "🧪 Birinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`,
-    `Adım( kod: A2, durum: geliştirmede, ne: "🧪 İkinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "🧪 Birinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`,
+    `Adım( kod: A2, onayBekler: founder, durum: geliştirmede, ne: "🧪 İkinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   const vitrin = kapilar(zincir(
-    `Adım( kod: B9, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: B9, onayBekler: founder, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   return [
     ...plan.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/goc_plani.sar", kapi })),
     ...vitrin.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/vitrin_ui.sar", kapi })),
@@ -244,7 +244,7 @@ test("defter: silinen dosyanın kapıları düşer, olmayan dosyanın silinmesi 
 
 test("kayıt etiketi kapı kodunu ve Adımın amacını taşır; MUTLAK YOL etikete sızmaz", () => {
   const [kapi] = kapilar(zincir(
-    `Adım( kod: VIT-POSTA-A01, durum: beklemede, ne: "📬 Onay kuyruğunu panele çevirmek", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: VIT-POSTA-A01, onayBekler: founder, durum: beklemede, ne: "📬 Onay kuyruğunu panele çevirmek", kabul: [ ${ONAYLI_OLCUT} ] )`));
   const etiket = onayKapiEtiketi(kapi.kod, kapi.ne);
   assert.ok(etiket.includes("VIT-POSTA-A01"), "etiket kapı kodunu taşımıyor");
   assert.ok(etiket.includes("Onay kuyruğunu panele çevirmek"), "etiket Adımın amacını taşımıyor");
@@ -259,7 +259,7 @@ test("kayıt açıklaması dosya:satır söyler ve satır 1-tabanlı okunur", ()
 test("kayıt ipucu karar için gereken her şeyi taşır: kimlik, amaç, ÖLÇÜT ve tam yol", () => {
   const tamYol = "/Users/biri/Belgeler/proje/_Sarmal/plan/goc_plani.sar";
   const [kapi] = kapilar(zincir(
-    `Adım( kod: A7, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A7, onayBekler: founder, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   const ipucu = onayKapiIpucu({
     kod: kapi.kod, ne: kapi.ne, olcut: kapi.olcut, dosya: tamYol, satir: kapi.satir + 1,
   });
@@ -330,11 +330,20 @@ test("tek evren: kapsam süzgeci glob ile AYNI listeden türer", () => {
   }
 });
 
-test("tek evren: ÖLÇÜLEN ayrışma kapandı — sablon/ ve __pycache__ artık iki yüzde de dışlanır", () => {
-  assert.ok(sarKapsamDisi("_Sarmal/sablon/adim.sar"),
-    "sablon/ tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
+test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ artık iki yüzde de dışlanır", () => {
+  assert.ok(sarKapsamDisi("_Sarmal/ogreti/sablon/adim.sar"),
+    "öğreti kitaplığının şablon rafı tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
   assert.ok(sarKapsamDisi("ogreti/sablon/dogus/ilk_plan.sar"),
     "sablon/ alt dizini de dışlanmalı");
+  // KPS-IND-A01 NÖBETİ (Founder 2026-09-10): ders dışlaması kendi evine demirlidir.
+  // Kullanıcının kendi kökü altındaki `sablon/` kitaplığı KAPSAM İÇİDİR; kapsam
+  // dışı sayılırsa kuyruk o ağacın bütün kapılarını sessizce yutar.
+  assert.ok(!sarKapsamDisi("_Sarmal/sablon/kurumsal/is/plan/plan.sar"),
+    "kullanıcı ağacındaki şablon kitaplığı kapsam dışına düştü — kusur geri geldi");
+  assert.ok(!sarKapsamDisi("_Sarmal/arsiv/2025/plan.sar"),
+    "kullanıcı ağacındaki arşiv kitaplığı kapsam dışına düştü");
+  assert.ok(!sarKapsamDisi("_Sarmal/fikstur/musteri/plan.sar"),
+    "kullanıcı ağacındaki fikstür kitaplığı kapsam dışına düştü");
   assert.ok(sarKapsamDisi("cekirdek/__pycache__/x.sar"),
     "__pycache__ tam taramada dışlanıyor ama olay tarafında geçiyordu");
   assert.ok(sarKapsamDisi(".claude/worktrees/ajan/plan.sar"),
@@ -347,7 +356,7 @@ test("tek evren: ölçüm yalnız DİZİN parçalarına bakar — glob semantiğ
   // Glob `**/{…}/**` dizin segmentlerine bakar, dosya adına bakmaz.
   assert.ok(!sarKapsamDisi("plan/dist.sar"), "dosya adı dizin sanıldı");
   assert.ok(!sarKapsamDisi("goc_plani.sar"), "kök dosyası kapsam dışına düştü");
-  assert.ok(sarKapsamDisi("a/ornek/b/c.sar"), "ara dizin ölçülmüyor");
+  assert.ok(sarKapsamDisi("a/ogreti/ornek/b/c.sar"), "ara dizin ölçülmüyor");
 });
 
 test("tek evren: onay kuyruğunda ELLE yazılmış ikiz dışlama listesi kalmadı", () => {
@@ -617,7 +626,7 @@ test("kimlik: kapı kimliği ETİKETTEN değil KAYNAKTAN doğar — etiket deği
   assert.equal(once, sonra, "kapı kimliği değişti; açılma ve seçim durumu korunamaz");
   // Kimlik görünen metinden hiçbir parça taşımaz.
   const [kapi] = kapilar(zincir(
-    `Adım( kod: VIT-POSTA-A01, durum: beklemede, ne: "📬 amaç metni", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: VIT-POSTA-A01, onayBekler: founder, durum: beklemede, ne: "📬 amaç metni", kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.ok(!once.includes(onayKapiEtiketi(kapi.kod, kapi.ne)),
     `kimliğe görünen etiket sızmış: ${once}`);
 });
@@ -1099,7 +1108,7 @@ test("güvenlik: içerik güvenlik politikası dar tutulur ve DIŞ KAYNAĞA hiç
 
 test("güvenlik: kullanıcı verisi gövdeye KAÇIŞSIZ girmez", () => {
   const kotu = kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "<script>alert(1)</script> & \\"tırnak\\"", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "<script>alert(1)</script> & \\"tırnak\\"", kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(kotu.length, 1, "fikstür kapı üretmedi");
   const durum = kapiyiAc(new PanelDurumu(), TEK_DOSYA, "A1");
   durum.taslakYaz(notKimligi(TEK_DOSYA, "A1"), "</textarea><script>alert(2)</script>");
@@ -1625,4 +1634,49 @@ test("aidiyet KABUKTA çözülür: saf gövde proje kökü aramaz", () => {
     assert.ok(!kaynak.includes(yasak),
       `saf gövde kendi kök aramasını kurmuş: ${yasak}`);
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧑‍⚖️ VIT-POSTA-A06 · ÖLÇÜT TEKLEŞTİ — PANEL BESLEMESİNİN NÖBETİ
+//
+//   FOUNDER'IN SORUSU BUDUR (2026-08-31): bugün benden ne bekleniyor? Cevabın
+//   tek yeri Onaylar panelidir ve panelin beslemesi tek ölçüte bağlanmıştır:
+//   `onayBekler: founder`. Kabul metnindeki onay cümlesi bir GEÇİŞ YEDEĞİYDİ
+//   (OZK-08) ve bu Adımla yürürlükten kalktı.
+//
+//   NÖBET PANELİN KENDİ BELGESİNİ ÖLÇER, çekirdeğin dönüşünü değil: karar doğru
+//   olsa bile gövde onu basmazsa Founder yine göremez. İki Adım aynı fikstürde
+//   yan yana durur ki fark tek değişkenden doğsun — birinde mekanik beyan vardır,
+//   ötekinde yalnız kabul cümlesi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("PANEL BESLEMESİ: onayBekler taşıyan açık Adım panelde GÖRÜNÜR", () => {
+  const bulunan = kapilar(zincir(
+    `Adım( kod: BEYANLI-A01, onayBekler: founder, durum: beklemede, ne: "🧪 mekanik beyanlı kapı", kabul: [ "sıradan ölçüt" ] )`));
+  assert.equal(bulunan.length, 1, "mekanik beyanlı açık Adım panel beslemesine hiç girmedi");
+  const html = govde(bulunan.map((kapi) => ({ dosya: TEK_DOSYA, kapi })));
+  assert.ok(html.includes("BEYANLI-A01"),
+    "beyanlı kapı panelin belgesine basılmadı; Founder kendisini bekleyen işi göremez");
+});
+
+test("PANEL BESLEMESİ: YALNIZ kabul cümlesi taşıyan açık Adım panelde GÖRÜNMEZ", () => {
+  const bulunan = kapilar(zincir(
+    `Adım( kod: DESENLI-A02, durum: beklemede, ne: "🧪 yalnız kabul cümlesi", kabul: [ ${ONAYLI_OLCUT} ] )`));
+  assert.equal(bulunan.length, 0,
+    "kabul cümlesi tek başına hâlâ panele kapı besliyor; geçiş yedeği yürürlükten kalkmamış");
+  const html = govde([]);
+  assert.ok(!html.includes("DESENLI-A02"), "beslenmeyen kapı yine de belgeye sızmış");
+});
+
+test("PANEL BESLEMESİ: iki Adım yan yanayken YALNIZ beyanlı olan geçer", () => {
+  // Tek değişkenli ölçüm: aynı dosyada, aynı durumda, aynı kabul cümlesiyle iki
+  // Adım durur ve aralarındaki TEK fark mekanik beyandır.
+  const bulunan = kapilar(zincir(
+    `Adım( kod: BEYANLI-A03, onayBekler: founder, durum: beklemede, ne: "🧪 beyanlı", kabul: [ ${ONAYLI_OLCUT} ] )`,
+    `Adım( kod: DESENLI-A04, durum: beklemede, ne: "🧪 beyansız", kabul: [ ${ONAYLI_OLCUT} ] )`));
+  assert.deepEqual(bulunan.map((k) => k.kod), ["BEYANLI-A03"],
+    "panel beslemesi ölçütü tekleştirmemiş; iki ayrı dil aynı soruyu cevaplıyor");
+  const html = govde(bulunan.map((kapi) => ({ dosya: TEK_DOSYA, kapi })));
+  assert.ok(html.includes("BEYANLI-A03") && !html.includes("DESENLI-A04"),
+    "panelin belgesi çekirdeğin hükmüyle ayrışmış");
 });

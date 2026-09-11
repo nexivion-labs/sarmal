@@ -1,12 +1,13 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // {{AD}}_anadizin.sar — 🌱 PROJE GİRİŞ DOSYASI (MIM-3 · doğuş paketi üretti: {{TARIH}})
 //
-//   Bu dosya projenin ANAYASASIDIR: mimariyi (Kitaplık/Raf → klasör ağacı) ve
+//   Bu dosya projenin ANAYASASIDIR: mimariyi (Kitaplık → Raf → klasör ağacı) ve
 //   teknolojileri İLAN eder; makine ne yazarsan ONU takip eder. Plan buraya
-//   GÖMÜLMEZ — plan/ rafında ayrı .sar dosyalarında yaşar (MIM-1).
+//   GÖMÜLMEZ — plan/ rafında ayrı .sar dosyalarında yaşar (MIM-1). Zaman ekseni,
+//   yani Faz kademesi, bu dosyada hiç bulunmaz; onun yeri planın kendi dosyasıdır.
 //
-//   🧭 İLK İŞİN: plan/ilk_plan.sar'daki ADM-KURULUS-01 Adımını koş — mimari
-//   diyalog orada tarif edilir. Yardım: MCP `başla` (rehber + şablonlar),
+//   🧭 İLK İŞİN: is/plan/ilk_plan.sar dosyasındaki ADM-KURULUS-01 Adımını koş —
+//   mimari diyalog orada tarif edilir. Yardım: MCP `başla` (rehber + şablonlar),
 //   `kurallar` (yürürlük), `siniflama` (tip kanonu), `denetle` (drift aynası).
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -38,9 +39,24 @@ Proje( kod: PRJ-{{KOD}}, ad: "{{AD}}", rejim: katı,
   //    Takım( kod: TAKIM-<ALAN>, bağımlı: [ <YIĞIN-KODU> ] ) ile yığına bağla.
   //    Plan Katmanları Takım'a bağlanır. İlansız kod KIRIK REFERANSTIR (DIL-1.4).
 
-  // ② MİMARİ — klasör ağacı. Doğuş paketi üç temel rafı hazır ilan eder;
-  //    teknoloji seçilince kendi Kitaplık/Raf'larını (onyuz/ arkayuz/ taban/) ekle.
-  Raf( kod: RAF-PLAN,    yol: "plan/",    ne: "Plan ağacı — Faz→Blok→Katman→AltKatman→Adım ayrı .sar dosyalarında (MIM-1)" )
-  Raf( kod: RAF-DURUM,   yol: "durum/",   ne: "Durum devri — oturum sonu 'nerede kaldık' kaydı (kaynak-gerçek repo'da)" )
-  Raf( kod: RAF-OGRENME, yol: "ogrenme/", ne: "Bellek→Beceri döngüsü — dersler ve geribildirim hasadı burada birikir" )
+  // ② MİMARİ — klasör ağacı. KİTAPLIK KADEMESİ ZORUNLUDUR (Founder hükmü
+  //    2026-09-09): dallanan her klasör bir Kitaplıktır ve raflar Kitaplıkların
+  //    İÇİNDE yaşar; kökün altına çıplak Raf yazılmaz. Gerekçe şudur: kök, ağaç
+  //    büyüdükçe okunamaz bir raf listesine döner ve hangi rafın hangi işe ait
+  //    olduğu ilandan okunamaz hâle gelir. Doğuş paketi üç Kitaplığı hazır ilan
+  //    eder; teknoloji seçilince kendi Kitaplıklarını (onyuz/ arkayuz/ taban/)
+  //    aynı kademede eklersin.
+  Kitaplık( kod: KTP-IS, yol: "is/",
+    ne: "İşin kitaplığı — planın ve durumun rafları burada yaşar; işin bugünkü hâli buradan okunur" ) {
+    Raf( kod: RAF-PLAN,  yol: "plan/",  ne: "Plan ağacı — Faz→Blok→Katman→AltKatman→Adım ayrı .sar dosyalarında (MIM-1)" )
+    Raf( kod: RAF-DURUM, yol: "durum/", ne: "Durum devri — oturum sonu 'nerede kaldık' kaydı (kaynak-gerçek repo'da)" )
+  }
+  Kitaplık( kod: KTP-OGRETI, yol: "ogreti/",
+    ne: "Öğretinin kitaplığı — projenin kendi belleği ve geribildirim hasadı burada birikir" ) {
+    Raf( kod: RAF-OGRENME, yol: "ogrenme/", ne: "Bellek→Beceri döngüsü — dersler ve geribildirim hasadı burada birikir" )
+  }
+  Kitaplık( kod: KTP-OZ, yol: "oz/",
+    ne: "Özün kitaplığı — projenin kendi kimlik ve tip kayıtları; ürünün kanonuna açılan işaretçi buradadır" ) {
+    Raf( kod: RAF-SINIFLAMA, yol: "siniflama/", ne: "Tip sistemi işaretçisi — eklenti kanon kaydını bu raftan çözer, kanonun kopyası buraya yazılmaz" )
+  }
 }

@@ -49,6 +49,7 @@
   "command.preview": "Önizleme",
   "command.returnToSource": "Kaynağa Dön",
   "command.refreshRoadmap": "Yol Haritasını Yenile",
+  "command.closeReminder": "Hatırlatıcıyı Kapat",
   "command.switchTrack": "🚆 Ray Değiştir (varlık/proje seç)",
   "command.writeAppreciation": "💛 Takdir yaz (kadroya kalp notu)",
   "command.writeFeedback": "🙏❤️🏅💡 Geribildirim yaz (kanal seç)",

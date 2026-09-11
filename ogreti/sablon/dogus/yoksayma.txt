@@ -1,0 +1,35 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# .gitignore — {{AD}} (doğuş paketi üretti: {{TARIH}})
+#
+#   Bu dosyanın en önemli satırları en alttadır. Kullanıcı düzeyindeki küresel
+#   yok sayma kuralı (`~/.gitignore_global`) `*.sar` desenini taşıyabilir; o
+#   makinede doğan bir projenin bütün hafızası depoya HİÇ girmez ve tek diskte
+#   kalır. Depo kuralı küreselden önceliklidir, bu yüzden istisna burada yaşar.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# İşletim sistemi artıkları
+.DS_Store
+Thumbs.db
+
+# Loglar ve geçici dosyalar
+*.log
+*.tmp
+
+# Bağımlılıklar ve derleme çıktıları (üretilir — kaynak değil)
+node_modules/
+dist/
+build/
+
+# Ortam sırları — anahtar ve parola depoya girmez
+.env
+.env.local
+
+# ── KÜRESEL YOK SAYMA KURALININ İSTİSNASI (silme) ────────────────────────────
+# Aşağıdaki üç satır projenin hafızasını korur. `.sar` dosyaları bu projede
+# KAYNAK KODUDUR; yürütücü yönergesi ikizi (CLAUDE.md ≡ AGENTS.md) ise ajanın
+# ilk turda okuduğu tek yönergedir. Üçü de küresel kuralda yok sayılıyor
+# olabilir ve istisna yazılmazsa sessizce izlenmeden kalırlar. Ölçmek için:
+# `git check-ignore -v <dosya>` komutu hangi kuralın yok saydığını söyler.
+!*.sar
+!CLAUDE.md
+!AGENTS.md

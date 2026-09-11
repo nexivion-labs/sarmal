@@ -44,7 +44,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
     AltKatman( kod: ALT-OSS-PLANLAMA, departman: planlama, ad: "planlama departmanının yönetişim kalemleri",
       ne: "📋 Açık kaynak yönetişiminin planlama departmanına düşen dört kaleminin toplanması: oturum ritüelinin kanona inmesi, denetçi kapsamının altı sabit maddeye bağlanması, açık taraf kadrosunun dört yeni uzmanla genişlemesi ve katkı sözleşmesinin Founder ile belirlenmesi" ) {
 
-      Adım( kod: OSS-A01, durum: beklemede, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
+      Adım( kod: OSS-A01, durum: tamamlandı, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
         referans: [ ORK-8, KNT-11 ],
         ne: "🕰️ Oturum ritüelinin kanona inmesi. Founder 2026-08-23 tarihinde şu tespiti onaylamıştır: kanon bugün yalnız mevsim ölçeğinde bir ritüel tanımlamaktadır ve oturum ölçeğinde ilanlı bir ritüel yoktur, bu boşluk yüzünden bilgi kaybı tam oturum sınırında gerçekleşmektedir. Founder'ın onayladığı hükme göre açılış beş basamaktan oluşacaktır: varlığın seçilip adıyla bildirilmesi, anadizin ile durum devrinin ve kilitli kararların kaynaktan okunması, dört ölçümün ayrı ayrı alınması, ateşlemiş hatırlatıcı kuyruğunun okunması ve oturumun tek cümlelik hedefinin yazılması. Kapanış da beş basamaktan oluşacaktır: aynı dört ölçümün tekrarlanması, biten Adımların koşu kaydının yazılıp meyvelerinin hasat edilmesi, açık işin devredilip kapanmayacak işin gerekçesiyle düşürülmesi, devir kaydının yazılması ve işlemenin yapılması. Bu Adımın işi onaylanan hükmü kanon metnine indirmektir; madde metni Founder ile birlikte yazılacağı için Adım onay bekler durumdadır." ) {
         görev: [
@@ -60,9 +60,10 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
         üretir: [ Meyve( kod: MYV-OSS-A01, tür: Karar,
                   ne: "Oturum ritüeli kanon maddesinin hüküm, gerekçe, örnek ve zorlama metni" ) ]
         sınır: "Bu Adım yalnız kanon metnine dokunur; oturum ritüelini fiilen işleten oturum-ac ve oturum-kapat becerilerinin yeni maddeyle hizalanması bu Adımın kapsamı dışındadır ve gerektiğinde ayrı bir Adıma bağlanır."
+        koşu: "2026-09-10 · KAPANDI. Oturum ritüeli ORK-8.2 maddesi olarak kanona indi ve açılışın beş ile kapanışın beş basamağı ayrı ayrı sayıldı; madde ORK-8 kararına dayanak kenarıyla bağlandı ve niyet katmanında doğduğu için yeni bir tanı ilan etmemektedir. Kontrolcünün bağımsız ölçümü: madde kanonda yerinde, kanon toplamı yüz elli dokuza çıktı, RBAC temiz ve depo denetimi sıfır hata verdi. Ayakta duran sekiz uyarı bu Adımın metninden değil ORK bölümünün büyüklüğünden doğmaktadır ve koni-taşması kapısı olarak Founder hükmü beklemektedir."
       }
 
-      Adım( kod: OSS-A02, durum: beklemede, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
+      Adım( kod: OSS-A02, durum: tamamlandı, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
         referans: [ ORK-6.1, KNT-4, KNT-6 ],
         ne: "🔍 Denetçi kapsamının altı sabit maddeye bağlanması. Founder 2026-08-23 tarihinde şu tespiti onaylamıştır: ORK-6.1 maddesi denetçinin neyi görebileceğini söylemekte, buna karşılık neyi ölçmesi gerektiğini söylememektedir ve bu boşluk denetimin kalitesini kontrolcünün o günkü dikkatine bağlamaktadır. Founder'ın onayladığı hükme göre denetçinin kapsamı şu altı sabit maddeye bağlanacaktır: kabul maddelerinin tek tek kendi ölçümüyle ölçülmesi, nöbetin mutasyonla kanıtlanması, dört ölçümün ayrı ayrı bildirilmesi, sahte yeşilin aranması, Adımın sınır alanının aşılıp aşılmadığının denetlenmesi ve hükmün kabul, şartlı kabul ya da red olarak verilmesi. Bu Adım da kanon maddesi doğuracağı için onay bekler durumdadır." ) {
         görev: [
@@ -78,9 +79,10 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
         üretir: [ Meyve( kod: MYV-OSS-A02, tür: Karar,
                   ne: "Denetçi kapsamı kanon maddesinin hüküm, gerekçe, örnek ve zorlama metni" ) ]
         sınır: "Bu Adım yalnız kanon metnine dokunur; denetçi Etmeninin bu maddeyi fiilen uygulayıp uygulamadığının ölçülmesi ayrı bir denetim turunun konusudur."
+        koşu: "2026-09-10 · KAPANDI, BİR SAPMA BEYANIYLA. Denetçi kapsamı ORK-6.4 maddesi olarak kanona indi ve altı sabit madde her biri kendi ölçüm aracını adıyla anacak biçimde yazıldı. SAPMA ŞUDUR: Adım dayanak kenarının ORK-6.1 alt maddesine bağlanmasını istiyordu, motor bunu kenar-tip uyuşmazlığı hatasıyla reddetti çünkü dayanak kenarının hedefi Karar tipinde olmak zorundadır ve kanonun hiçbir maddesinde alt maddeye dayanak yazılmamıştır; yapısal alan ORK-6 oldu ve ORK-6.1 hem hükmün açılış cümlesinde hem gerekçede adıyla anılarak boşluğu kapatılan madde olarak gösterildi. Bu sapmanın tasdiki Founder'ındır."
       }
 
-      Adım( kod: OSS-A04, durum: beklemede, öncelik: p2, bağımlı: [],
+      Adım( kod: OSS-A04, durum: geliştirmede, öncelik: p2, bağımlı: [],
         referans: [ ORK-6.3, TAKIM-EKLENTI, ETM-KONTROLCU, ETM-SAR-MOTOR, ETM-SAR-OGRETIM, ETM-SAR-DENETCI ],
         ne: "👥 Kadronun dört yeni uzmanla genişlemesi. Bugün açık tarafta yalnız dört Etmen ilanlıdır ve bunlar kontrolcü, motor uzmanı, öğretim uzmanı ile denetçidir; buna karşılık Eklenti Takımı ilan edilmiş olmasına karşın eklentinin kendi uzmanı yoktur, yayın, site ve sınama işlerinin de uzmanı yoktur. Founder 2026-08-23 tarihinde dört yeni uzmanın ilan edilmesini onaylamıştır: eklenti uzmanı, yayın uzmanı, site uzmanı ve sınama uzmanı. Founder'ın onayladığı hükme göre dördü de L3 üretici yetkisiyle doğacak ve denetçi tek L5 yetkili Etmen olarak kalmayı sürdürecektir." ) {
         görev: [
@@ -96,9 +98,10 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
         üretir: [ Meyve( kod: MYV-OSS-A04, tür: Karar,
                   ne: "Eklenti, yayın, site ve sınama uzmanlarının ilan kararı" ) ]
         sınır: "Bu Adım yalnız açık taraf kadrosunu genişletir; kapalı üründeki etmen kadrosuna dokunmaz ve dört yeni uzmanın hangi Adımlara fiilen atanacağı OSS-A03'teki mekanik seçim mekanizmasının konusudur."
+        koşu: "2026-09-10 · FOUNDER HÜKMÜ: SİTE UZMANI BEKLETİLİR. Founder kalemin acelesi olmadığını ve orkestrasyon işine geçildiğinde ele alınacağını bildirmiştir; uzman bugün ilan edilmez ve bu bir eksiklik değil bilinçli bir bekleyiştir. Gerekçe ölçümle uyumludur: sitenin ayrı bir varlık olarak çatının kendi düzeyine taşınması 2026-08-26 tarihinde gerçekleşmiştir ve açık depoya, hiçbir Adımın atayamayacağı bir uzman ilan etmek sessiz bir sapma doğururdu. 2026-09-10 · ÜÇTE ÜÇ BİTTİ, DÖRDÜNCÜSÜ ÖLÇÜMLE BLOKLANDI. Eklenti, yayın ve sınama uzmanları kadroya indi; üçü de uzman türünde, üçüncü yetki kademesinde, izole bellekli ve her biri kanıt alanı dolu kendi Belleğiyle ilan edildi, RBAC ölçümü temiz döndü. SİTE UZMANI BİLİNÇLE YAZILMADI ve gerekçesi ölçülmüştür: bu Adım 2026-08-23 tarihinde yazılmış, sitenin ayrı bir varlık olarak çatının kendi düzeyine taşınması ise 2026-08-26 tarihinde gerçekleşmiştir, dolayısıyla Adımın bu kalemi bayattır ve açık depoya hiçbir Adımın atayamayacağı bir uzman ilan etmek sessiz bir sapma doğururdu. Üreticinin önerisi site uzmanının sitenin kendi kadrosunda doğmasıdır; kalemin akıbeti Founder kapısındadır."
       }
 
-      Adım( kod: OSS-A05, durum: beklemede, öncelik: p2, bağımlı: [ GOC-A08 ],
+      Adım( kod: OSS-A05, durum: tamamlandı, öncelik: p2, bağımlı: [ GOC-A08 ],
         referans: [ ORK-6.1, DIL-1.5 ],
         ne: "📜 Katkı sözleşmesinin Founder ile belirlenmesi. Açık kaynak yayınından sonra depoya katkı verecek geliştiricilerin uyması gereken kurallar bugün yazılı değildir; kökteki CONTRIBUTING.md dosyası bugünkü tek depoya göre yazılmıştır ve denetim kapısını, kanca kurulumunu, dal modelini, işleme disiplinini ve birleştirme isteği biçimini tarif etmektedir, buna karşılık üretici ile denetçi ayrılığının katkı sürecine nasıl yansıyacağını, kanon maddesinin Founder kapısı olduğunu ve dil ile üslup şartını katkı düzeyinde açıkça bağlamamaktadır. Bu Adım katkı sözleşmesini Founder ile birlikte belirleyecektir ve kapsamına işleme mesajı biçimi, kapı disiplini, üretici ile denetçi ayrılığı, kanon maddesinin Founder kapısı olduğu hükmü ve dil ile üslup şartı girecektir. Adım aktarım Adımına bağımlıdır, çünkü bugünkü kökteki katkı belgesi ayrılık sonrası doğacak açık depoda yeni bir kökten yayımlanacaktır ve sözleşme depo doğmadan yayımlanamaz." ) {
         görev: [
@@ -114,6 +117,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
         üretir: [ Meyve( kod: MYV-OSS-A05, tür: Karar,
                   ne: "Katkı sözleşmesinin kapsam kararı ve CONTRIBUTING.md hizalamasının gerekçesi" ) ]
         sınır: "Bu Adım GOC-A08'in aktarımı tamamlanmadan koşulamaz; depo doğmadan katkı sözleşmesi yayımlanmaz. Bu Adım kanon metnine dokunmaz, yalnız kökteki katkı belgelerini hizalar."
+        koşu: "2026-09-10 · KAPANDI. Katkı sözleşmesine üç bağlayıcı hüküm iki dilde adıyla girdi: üretici ile denetçi ayrılığının katkı sürecindeki karşılığı, kanon maddesinin Founder kapısı olduğu hüküm ve dil ile üslup şartının işleme gövdesini de bağladığı kural; hiçbiri kanon metnini alıntılamamakta, yalnız adresini vermektedir. Aynı turda üç bayat iddia ölçülüp düzeltildi: süit sayısı sekiz yüz doksan dokuzdan bin iki yüz doksan sekize çekildi, İngilizce yüzdeki araç sayısı on yediden on sekize düzeltildi ve hiç anlatılmamış olan işleme mesajı kancası belgeye girdi. Davranış kuralları belgesi tarandı ve hizalanacak bölümü bulunmadığı için aynen bırakıldı."
       }
     }
 

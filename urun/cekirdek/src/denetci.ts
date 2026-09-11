@@ -23,6 +23,7 @@
 
 import { readdirSync, readFileSync, existsSync, statSync, type Dirent } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";   // KPS-MHR-A01: sonraya bırakılmış dosyanın bekleme süresi git'e sorulur
 import type { IskeletPlan } from "./iskeletci.ts";
 import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
 import type { Siniflama } from "./siniflama.ts";
@@ -34,9 +35,9 @@ import { kebaba, degerMetni } from "./yolcoz.ts";
 import { ZEMIN_TIPLERI } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın)
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
-import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER } from "./kuralci.ts";
+import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { INDEKS_DISI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -50,10 +51,34 @@ export interface DiskGirdi {
 
 export interface DiskAnlikGoruntu {
   girdiler: DiskGirdi[];
+  /**
+   * MIM-3.4 · KPS-MHR-A01: arşiv ya da sonra mührü taşıyan `.sar` dosyaları.
+   * Bu dosyalar `girdiler` listesine GİRMEZ; dolayısıyla yükleyici onları okumaz,
+   * disk mutabakatı, ilan yokluğu ve yetim bekçileri onları görmez. Ayrı listede
+   * tutulmalarının tek sebebi mührün sessiz olmamasıdır: denetim onları türüyle
+   * ve adıyla listeler. Eğitim mührü burada değildir, çünkü o dosya okunur.
+   */
+  muhurlular?: DiskGirdi[];
 }
 
-/** Tarama dışı: araç/altyapı gürültüsü drift değildir. */
-const YOKSAY = new Set([".git", "node_modules", "__pycache__", ".DS_Store", "dist", "out", "arsiv", "fikstur", "sablon"]);
+/** Tarama dışı: araç/altyapı gürültüsü drift değildir. Bu küme yalnız BAĞIMLILIK
+ *  ve DERLEME ÇIKTISI adlarını taşır ve yol parçası nerede geçerse geçsin
+ *  uygulanır — gerekçesi öğretimle ilgili değildir, bu gövdeler insan eliyle
+ *  yazılmadığı için kaynak sayılmaz (KPS-IND-A01 · Founder hükmü 2026-09-10). */
+const YOKSAY = new Set([".git", "node_modules", "__pycache__", ".DS_Store", "dist", "out"]);
+
+/** AYRIŞTIRILMAYAN SENTETİK GÖVDE — yer tutucu taşıyan şablon, kapatılmış arşiv ve
+ *  sınama fikstürü. İki demirli evi vardır ve ikisi de klasörün ADINDAN değil
+ *  YERİNDEN tanınır: öğreti kitaplığının altındaki ders rafları (OGR-5) ile bir
+ *  sınama rafının altındaki fikstür klasörü (sentetik sınama malzemesi —
+ *  `METIN_ATIF_DOSYASI` süzgecinin `*.test.ts` gerekçesinin aynısı). Kullanıcının
+ *  kendi kökünün altında açtığı aynı adlı bir kitaplık ÜRÜNDÜR ve taranır;
+ *  kusurun kendisi buydu (KPS-IND-A01 · Founder hükmü 2026-09-10).
+ *  Örnek rafı bilerek dışarıdadır: OGR-5 öğretim malzemesinin karneye girmemesini
+ *  ister fakat DOĞRULANMASINI zorunlu kılar, dolayısıyla örnek korpusu
+ *  ayrıştırılmaya devam eder ve tanılarını almaya devam eder. */
+const AYRISTIRILMAZ_SENTETIK =
+  /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|fikstur|sablon)|sinama\/(?:[^/]+\/)*fikstur)(\/|$)/;
 
 /** Kökten gerçek ağacı okur (etkili). Gizli (.-önekli) girdiler ve YOKSAY atlanır. */
 /** Nöbet için (PRF-MK-A03): bir turda diskin kaç kez tarandığı ölçülür. */
@@ -64,6 +89,7 @@ export function diskTaraSayaciniSifirla(): void { diskTaraSayac.cagri = 0; }
 export function diskTara(kok: string): DiskAnlikGoruntu {
   diskTaraSayac.cagri += 1;
   const girdiler: DiskGirdi[] = [];
+  const muhurlular: DiskGirdi[] = [];
   const gez = (goreli: string): void => {
     const tam = goreli ? join(kok, goreli) : kok;
     for (const d of readdirSync(tam, { withFileTypes: true })) {
@@ -74,15 +100,18 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
         // YOKSAY klasörü KAYDEDİLİR (kayıp-yapı görsün, yapı-aynası tam) ama İÇİNE
         // İNİLMEZ — içeriği parse/taranmaz (şablon placeholder'ı · arşiv · build çöpü).
         girdiler.push({ tur: "dizin", yol });
-        if (!YOKSAY.has(d.name)) gez(yol);
+        // Sentetik gövde sınaması TAM YOLA yapılır, klasör adına değil (KPS-IND-A01).
+        if (!YOKSAY.has(d.name) && !AYRISTIRILMAZ_SENTETIK.test(yol)) gez(yol);
       } else if (d.isFile()) {
         if (YOKSAY.has(d.name)) continue;   // dosya adı YOKSAY'daysa atla (nadir)
+        // MIM-3.4: arşiv ve sonra mühürlü kaynak okunmaz; yalnız listelenmek üzere ayrılır.
+        if (d.name.endsWith(".sar") && okunmazMuhurlu(d.name)) { muhurlular.push({ tur: "dosya", yol }); continue; }
         girdiler.push({ tur: "dosya", yol, kod: yol.endsWith(".md") ? frontmatterKod(join(kok, yol)) : undefined });
       }
     }
   };
   gez("");
-  return { girdiler };
+  return { girdiler, muhurlular };
 }
 
 /** Yapı-aynasının İKİNCİ yönü (MIM-3 çift-yönlü · Founder 2026-07-11 "her klasör
@@ -155,6 +184,148 @@ export function beyansizYapiTanilari(plan: IskeletPlan, kok: string, anaEtiket =
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// DOSYA MÜHÜRLERİ BEKÇİSİ — MIM-3.4 · KPS-MHR-A01 (Founder hükmü 2026-09-11)
+//
+//   Mühür hiçbir zaman sessiz değildir: her denetim mühürlü dosyaları türüyle ve
+//   adıyla listeler. Arşiv ile eğitim mühürleri `dosya-mührü` gözlemiyle, sonra
+//   mührü ise bekleme süresini söyleyen `sonraya-bırakılmış-dosya` hatırlatmasıyla
+//   listelenir; aynı dosya iki satırla sayılmaz. Mühür biçimine uymayan ad
+//   `geçersiz-dosya-adı` uyarısını alır.
+//
+//   Bulgular giriş dosyasına yazılır ve dosyanın yolu cümlenin içinde durur.
+//   Sebep ölçülmüştür: arşiv ile sonra mühürlü dosya hiçbir yüzeyin tarama
+//   evrenine girmez, dolayısıyla bulgu dosyanın kendisine yazılsaydı eklentinin
+//   paneli onu hiç yayımlayamaz ve motor ile panel iki ayrı sayı söylerdi. Giriş
+//   dosyası disk mutabakatının zaten konuştuğu yerdir (`beyansız-yapı` emsali).
+//
+//   BEKLEME SÜRESİNİN KAYNAĞI ölçülerek seçilmiştir (2026-09-11). Dosyanın
+//   değişiklik tarihi kullanılamaz, çünkü yeniden adlandırma onu korur ve süre
+//   dosyanın içeriğinin yaşını söylerdi. Birinci kaynak git'tir: mühürlü yolun
+//   depoya en son EKLENDİĞİ işlemenin günü, yani mührün işlendiği gündür ve
+//   klonlamadan sağ çıkar. Mühür henüz işlenmemişse dosyanın durum değişikliği
+//   tarihi okunur; yeniden adlandırma bu tarihi günceller, dolayısıyla o an
+//   mühürlenme anına en yakın ölçümdür. Hangi kaynağın okunduğu cümlede yazar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Bir sonra mührünün tarihi ve kaynağı. */
+export interface MuhurTarihi { tarih: string; kaynak: "git" | "dosya" }
+
+/** Tarih çözücüsü — üretici saf kalsın diye enjekte edilir (sınamalar kendi çözücüsünü verir). */
+export type MuhurTarihiCozucu = (kok: string, yol: string) => MuhurTarihi | undefined;
+
+/** ETKİLİ: önce git'e (mühürlü yolun son eklendiği işleme), yoksa dosya durum tarihine sorar. */
+export function muhurTarihiCoz(kok: string, yol: string): MuhurTarihi | undefined {
+  try {
+    const cikti = execFileSync("git", ["-C", kok, "log", "-1", "--no-renames", "--diff-filter=A", "--format=%as", "--", yol],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cikti)) return { tarih: cikti, kaynak: "git" };
+  } catch { /* git yok ya da dizin bir depo değil — dosya tarihine düşülür */ }
+  try { return { tarih: statSync(join(kok, yol)).ctime.toISOString().slice(0, 10), kaynak: "dosya" }; }
+  catch { return undefined; }
+}
+
+const GUN_MS = 86_400_000;
+
+/** Dosya adındaki büyük harfleri küçültür; ASCII `I` noktalı `i` olur, çünkü dosya adı ASCII kalmalıdır. */
+function kucukAd(ad: string): string {
+  return ad.replace(/\p{Lu}/gu, (h) => (h === "I" || h === "İ" ? "i" : h.toLocaleLowerCase("tr")));
+}
+
+/** Kusurlu bir adın yapıştırılabilir düzeltmesi; öneri kurulamıyorsa tanımsız döner. */
+function onerilenDosyaAdi(yol: string): string | undefined {
+  const kesim = yol.lastIndexOf("/");
+  const dizin = kesim < 0 ? "" : yol.slice(0, kesim + 1);
+  const ad = kesim < 0 ? yol : yol.slice(kesim + 1);
+  const kusur = dosyaAdiKusuru(yol);
+  if (!kusur) return undefined;
+  if (kusur.kusur === "büyük-harf") return dizin + kucukAd(ad);
+  const m = DOSYA_MUHRU_BICIMI.exec(ad);
+  if (kusur.kusur === "mühür-sonrası-büyük-harf" && m) return dizin + m[0] + kucukAd(ad.slice(m[0].length));
+  if (kusur.kusur === "bilinmeyen-etiket" && m) return dizin + kucukAd(ad.slice(m[0].length));
+  // bozuk biçim: etiket büyük/küçük harf farkıyla kümedeyse doğru biçim önerilir.
+  const gevsek = /^@+([^@]*)@*_?(.*)$/.exec(ad);
+  if (gevsek && DOSYA_MUHRU_KUMESI.has(gevsek[1].toUpperCase()) && gevsek[2]) {
+    return `${dizin}@${gevsek[1].toUpperCase()}@_${kucukAd(gevsek[2])}`;
+  }
+  return dizin + kucukAd(ad.replace(/^@+/, ""));
+}
+
+/** Mühürsüz canlı ad — mührü kaldırma önerisinin hedefi. */
+function muhursuzYol(yol: string): string {
+  const kesim = yol.lastIndexOf("/");
+  const ad = kesim < 0 ? yol : yol.slice(kesim + 1);
+  return (kesim < 0 ? "" : yol.slice(0, kesim + 1)) + ad.replace(DOSYA_MUHRU_BICIMI, "");
+}
+
+/**
+ * MIM-3.4 bekçisi (SAF — tarih çözücüsü enjekte edilir). Disk anlık görüntüsündeki
+ * `.sar` dosyalarını tek çözücüden (`dosyaMuhru` · `dosyaAdiKusuru`) geçirir.
+ */
+export function dosyaMuhruTanilari(
+  disk: DiskAnlikGoruntu,
+  kok: string,
+  bugun: string,
+  anaEtiket = "ana.sar",
+  tarihCoz: MuhurTarihiCozucu = muhurTarihiCoz,
+): Array<{ dosya: string; tani: Tani }> {
+  const konum = { satir: 0, sutun: 0 };
+  const kume = [...DOSYA_MUHRU_KUMESI.keys()].map((e) => `@${e}@_`).join(" · ");
+  const sarlar = [...disk.girdiler, ...(disk.muhurlular ?? [])]
+    .filter((g) => g.tur === "dosya" && g.yol.endsWith(".sar"))
+    .map((g) => g.yol)
+    .sort((a, b) => a.localeCompare(b, "tr"));
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const yol of sarlar) {
+    const muhur = dosyaMuhru(yol);
+    if (muhur?.tur === "sonra") {
+      const t = tarihCoz(kok, yol);
+      const gun = t ? Math.max(0, Math.floor((Date.parse(bugun) - Date.parse(t.tarih)) / GUN_MS)) : undefined;
+      out.push({ dosya: anaEtiket, tani: yeniTani("sonraya-bırakılmış-dosya", {
+        yol, etiket: muhur.etiket, gün: gun ?? "?", tarih: t?.tarih ?? "?", kaynak: t?.kaynak ?? "yok", canlı: muhursuzYol(yol),
+      }, konum) });
+    } else if (muhur) {
+      out.push({ dosya: anaEtiket, tani: yeniTani("dosya-mührü", {
+        yol, etiket: muhur.etiket, tür: muhur.tur, canlı: muhursuzYol(yol),
+      }, konum) });
+    }
+    const kusur = dosyaAdiKusuru(yol);
+    if (kusur) {
+      out.push({ dosya: anaEtiket, tani: yeniTani("geçersiz-dosya-adı", {
+        yol, kusur: kusur.kusur, etiket: "etiket" in kusur ? kusur.etiket : undefined, küme: kume, öneri: onerilenDosyaAdi(yol),
+      }, konum) });
+    }
+  }
+  return out;
+}
+
+/**
+ * MIM-3.4 ebedî engeli (ETKİLİ): arşiv mührü taşıyan dosyalardaki ebedî kuralları
+ * bulur. Arşiv dosyası graf, kod dizini, karne ve tanı sayımına girmez; bu okuma
+ * yalnız ebedî kuralın graftan sessizce düşmesini engellemek içindir, çünkü ebedî
+ * kuralı graftan çıkarmak onu silmektir. Ayrıştırılamayan dosyada ham metin
+ * ebedî bayrağı taşıyorsa kod okunamadığı hâlde engel yine konuşur.
+ */
+export function arsivEbediEnvanteri(
+  kok: string,
+  disk: DiskAnlikGoruntu,
+): Map<string, { yol: string; satir: number; sutun: number }> {
+  const env = new Map<string, { yol: string; satir: number; sutun: number }>();
+  for (const g of disk.muhurlular ?? []) {
+    if (g.tur !== "dosya" || dosyaMuhru(g.yol)?.tur !== "arşiv") continue;
+    let kaynak: string;
+    try { kaynak = readFileSync(join(kok, g.yol), "utf8"); } catch { continue; }
+    let program: Program | undefined;
+    try { program = ayristir(belirtecle(kaynak)); } catch { program = undefined; }
+    if (program) {
+      for (const [kod, e] of ebediEnvanter(new Map([[g.yol, program]]))) env.set(kod, { yol: g.yol, satir: e.satir, sutun: e.sutun });
+    } else if (/\bebedi\s*:\s*evet\b/.test(kaynak)) {
+      env.set(`${g.yol}#?`, { yol: g.yol, satir: 0, sutun: 0 });
+    }
+  }
+  return env;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // İLAN YOKLUĞU BEKÇİSİ — kitaplığa konmuş ilansız kaynak gövdesi
 //
 //   Yapı-Önce hükmü bugüne dek yalnız KLASÖR düzeyinde zorlanıyordu: kökte
@@ -190,9 +361,16 @@ export function beyansizYapiTanilari(plan: IskeletPlan, kok: string, anaEtiket =
  *  parçası bu kümedeyse dosya bildirilmez (üretilen · örnek · şablon · sınama
  *  fikstürü · arşiv · araç çıktısı). */
 const ILANSIZ_MUAF_KLASOR: ReadonlySet<string> = new Set([
-  "sablon", "arsiv", "fikstur", "sinama", "ornek", "vitrin", "vitrinler",
-  "uretilen", "dist", "out", "node_modules", "__pycache__",
+  "sinama", "vitrin", "vitrinler", "uretilen", "dist", "out",
+  "node_modules", "__pycache__",
 ]);
+
+// Ders raflarının muafiyeti ADA değil YERE bağlıdır (KPS-IND-A01 · Founder hükmü
+// 2026-09-10) ve deseni TEK KAYNAKTAN, kimlik gövdesindeki `DERS_DUNYASI`
+// ilanından okunur: arşiv, örnek, fikstür ve şablon yalnız öğreti kitaplığının
+// altında ders rafıdır. Kullanıcının kendi kökü altında aynı adı taşıyan bir
+// kitaplık ÜRÜNDÜR ve ilansız gövdesi bildirilmek zorundadır; muafiyeti oraya
+// taşımak bütün bir kullanıcı ağacını sessiz yeşile çevirirdi.
 
 /** Bekçinin ilan aradığı kaynak uzantısı — normatif metin yalnız burada yaşar. */
 const ILANSIZ_KAYNAK_UZANTI = ".sar";
@@ -259,7 +437,9 @@ export function ilansizGovdeDenetle(
     if (ilanliDosya.has(yol)) continue;                          // dosya düzeyinde ilan edilmiş
     if (izKokler.some((k) => yol === k || yol.startsWith(k + "/"))) continue;   // sahipli ayak izi
     const dizin = ustDizin(yol);
-    if (dizin.split("/").some((parca) => ILANSIZ_MUAF_KLASOR.has(parca))) continue;   // muafiyet listesi
+    if (dizin.split("/").some((parca) => ILANSIZ_MUAF_KLASOR.has(parca))
+        || DERS_DUNYASI.test(dizin)
+        || DERS_DUNYASI.test(g.yol)) continue;   // muafiyet: ad tabanlı küme + yere demirli ders rafı + eğitim mührü (MIM-3.4)
     // Üst-düzey klasörün kendisi ilansızsa kök başka bir bekçinin (beyansız-yapı)
     // işidir; aynı olguyu iki kez bildirmek gerçek nedeni örter.
     const ustDuzey = dizin === "" ? "" : dizin.split("/")[0];
@@ -474,7 +654,11 @@ export function kuralTanilari(plan: IskeletPlan, disk: DiskAnlikGoruntu): Tani[]
  * Verilen yolun disk üzerindeki gerçek türünü ölçer. Tanı metni bu ölçüme
  * dayanır; ölçülmeyen bir kap iddiası cümleye giremez.
  */
-function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
+// BKM-DNT-A13: ölçüm artık DIŞA AÇIK. Aynı kusur sınıfı (ölçmeden kap iddiası)
+// iskelet aracı yüzeyinde canlı kalmıştı, çünkü bu işlev yalnız bu dosyanın
+// içinde yaşıyordu ve öteki yüzeyler ölçmeden cümle kuruyordu. Tek kaynak: iki
+// yüz de buradan okur, dolayısıyla biri onarılıp öteki bayat kalamaz (YUZ-1.2).
+export function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
   try { return statSync(yol).isDirectory() ? "dizin" : "dosya"; }
   catch { return "yok"; }
 }
@@ -492,9 +676,15 @@ function yolTuru(yol: string): "dosya" | "dizin" | "yok" {
  * birinde yalnız ölçtüğü şeyi iddia eder (öğretim ile tanının aynı şeyi
  * söylemesi hükmü).
  */
-export function anaYokTanisi(yol: string): Tani {
+/**
+ * `disBeyan` (BKM-DNT-A13): yol kullanıcının `--ana` bayrağından mı geldi?
+ * Geldiyse öneri o bayrağı ANAR; yoksa kullanıcı kendi komutunu önerinin içinde
+ * bulamaz ve dizin önerisiyle dosya beyanı birbirine karışır.
+ */
+export function anaYokTanisi(yol: string, disBeyan = false): Tani {
   return eskiTani("kural-ihlali", "hata",
-    { kusur: "girişsiz-dizin", dizin: yol, hedef: yolTuru(yol) }, { satir: 0, sutun: 0 });
+    { kusur: "girişsiz-dizin", dizin: yol, hedef: yolTuru(yol), ...(disBeyan ? { disBeyan: true } : {}) },
+    { satir: 0, sutun: 0 });
 }
 
 // göç motor turu A10 kapanışı (2026-07-27): `eski-giriş-adı` ile `öneksiz-anadizin` emekli
@@ -746,7 +936,8 @@ export function yerelEvre1Yumusat(tanilar: Tani[], plan: IskeletPlan): Tani[] {
 
 export function anadizinBul(dizin: string): string | undefined {
   try {
-    const adaylar = readdirSync(dizin).filter((a) => a.endsWith("_anadizin.sar")).sort();
+    // MIM-3.4: mühürlü bir giriş dosyası canlı giriş sayılmaz (tek çözücü: dosyaMuhru).
+    const adaylar = readdirSync(dizin).filter((a) => a.endsWith("_anadizin.sar") && !dosyaMuhru(a)).sort();
     if (adaylar.length) return join(dizin, adaylar[0]);
   } catch { /* dizin okunamadı — eski ada düş */ }
   const eski = join(dizin, "ana.sar");
@@ -917,7 +1108,7 @@ export function referansTanilari(
   // Ders dünyası kapsam dışıdır: örnek ve şablon gövdeleri kasıtlı olarak
   // kendi küçük evrenlerinde yazılır ve proje sınırı onlara inmez (OGR-5).
   const cozulur = (hedef: string): boolean =>
-    kapsam && !INDEKS_DISI.test(kapsam.dosya) ? kapsam.cozulur(hedef) : indeks.has(hedef);
+    kapsam && !DERS_DUNYASI.test(kapsam.dosya) ? kapsam.cozulur(hedef) : indeks.has(hedef);
 
   const hedefDenetle = (kenar: string, d: Deger): void => {
     if (d.tur === "liste") { for (const o of d.ogeler ?? []) hedefDenetle(kenar, o); return; }
@@ -1006,7 +1197,7 @@ export function referansTanilari(
 //       önce yüksek kesinlikli dar kapı, gürültü ölçülüp temizlenince genişler.
 //
 //   Kapsam-dışı: `*.test.ts` — inline fikstürlerin uydurma kodları kasıtlı
-//   sentetik malzemedir; INDEKS_DISI'nın `fikstur/` gerekçesinin aynısı. Süzgeç
+//   sentetik malzemedir; ders dünyası muafiyetinin `fikstur/` gerekçesinin aynısı. Süzgeç
 //   DENETİM yüzüne özeldir: gezgin (F12) test dosyalarını görmeye devam eder.
 //
 //   Düzey (STR-4 kademe · acceptance #3): .md → BİLGİ (prose'da bayat atıf meşru:
@@ -1292,11 +1483,6 @@ export function mevsimNormalize(programlar: ReadonlyMap<string, Program>): void 
 /** Yol etiketini POSIX ayraçlı hâle getirir (mutlak fsPath da göreli etiket de aynı dili konuşsun). */
 const yolNormal = (etiket: string): string => etiket.replace(/\\/g, "/");
 
-/** Yolun bir parçası verilen ad mı — 'ornek' klasörü mutlak yolda da tanınır. */
-function yolParcasiVar(etiket: string, ad: string): boolean {
-  return yolNormal(etiket).split("/").includes(ad);
-}
-
 /**
  * MIM-3: bir VARLIĞIN girişi `<varlık>_anadizin.sar` dosyasıdır (eski `ana.sar`
  * adı da tanınır) ve o dosyanın bulunduğu dizin varlığın SINIRIDIR.
@@ -1344,7 +1530,9 @@ export function varlikSinirlari(etiketler: Iterable<string>): Map<string, string
  * uyarı ÜRETİLMEZ; çakışma yalnız tek bir varlığın içinde anlamlıdır.
  */
 export function yinelenenKodTanilari(programlar: ReadonlyMap<string, Program>): Array<{ dosya: string; tani: Tani }> {
-  const omurgaMi = (e: string): boolean => !yolParcasiVar(e, "ornek");
+  // KPS-IND-A01: omurga ayrımı klasör ADINDAN değil ders rafının YERİNDEN türer —
+  // kullanıcının kendi `ornek/` kitaplığı omurgadır ve çakışması bildirilir.
+  const omurgaMi = (e: string): boolean => !DERS_DUNYASI.test(yolNormal(e));
   const sinir = varlikSinirlari(programlar.keys());
   /** Anahtar: varlık sınırı + KOD — iki varlığın aynı kodu iki ayrı kovaya düşer. */
   const kodSahipleri = new Map<string, { kod: string; sahipler: string[] }>();
@@ -1920,8 +2108,12 @@ export function kapsamTanilari(
   return out;
 }
 
-/** Bahçe-dışı dosya (örnek/sınama/vitrin/fikstür) — kullanım sayımına girmez. */
-const BAHCE_DISI = /(^|\/)(ornek|sinama|vitrin|fikstur)(\/|$)|(_ornek|_vitrin|_fikstur)/;
+/** Bahçe-dışı dosya (ders rafı · sınama · vitrin) — kullanım sayımına girmez.
+ *  KPS-IND-A01: ders rafı YERİNE göre tanınır; kullanıcının kendi `ornek/`
+ *  kitaplığı canlı bahçedir ve oradaki kullanım tipi canlı sayar. */
+const BAHCE_DISI_AD = /(^|\/)(sinama|vitrin)(\/|$)|(_ornek|_vitrin|_fikstur)/;
+const bahceDisiMi = (dosya: string): boolean =>
+  DERS_DUNYASI.test(yolNormal(dosya)) || BAHCE_DISI_AD.test(yolNormal(dosya));
 
 /**
  * RF-T6-A05 · kullanımsız-tip bekçisi (tip-doğum kapısı · Founder onayı 2026-07-14):
@@ -1946,7 +2138,7 @@ export function kullanimsizTipTanilari(
     icin(n, (d) => { if (d.tur === "widget" && d.dugum) say(d.dugum); });
   };
   for (const [dosya, p] of programlar) {
-    if (BAHCE_DISI.test(dosya)) continue;   // yalnız CANLI bahçe kullanımı sayılır
+    if (bahceDisiMi(dosya)) continue;   // yalnız CANLI bahçe kullanımı sayılır
     for (const b of p.bildirimler) say(b);
   }
   const out: Array<{ dosya: string; tani: Tani }> = [];
@@ -2061,8 +2253,10 @@ export function hiyerarsiTanilari(
     for (const c of n.cocuklar) gez(c, altFaz, dosya);
   };
   for (const [dosya, p] of programlar) {
-    // örnek/şablon/sınama/vitrin = öğretim/scaffold/test dosyaları — yapı zorlanmaz (canlı plan değil)
-    if (/(^|\/)(ornek|sablon|sinama|vitrin|fikstur)(\/|$)/.test(dosya)) continue;
+    // Öğretim/scaffold/test dosyaları — yapı zorlanmaz (canlı plan değil). Ders
+    // rafları YERİNE göre tanınır (KPS-IND-A01): kullanıcının kendi kökü altındaki
+    // `ornek/` ya da `sablon/` kitaplığı canlı plandır ve yapısı zorlanır.
+    if (DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya)) continue;
     for (const b of p.bildirimler) gez(b, false, dosya);
   }
   return out;
@@ -2072,7 +2266,7 @@ export function hiyerarsiTanilari(
  * Dayanak nöbeti (RF-T6-A02 · Sol ⑤ — eşleme ÖNCESİ şart): bir kuralın onu
  * doğuran karara makinece okunabilir bir `dayanak:` bağıyla bağlanıp bağlanmadığı
  * denetlenir. Tek çıktısı `dayanaksız-kural` bilgi tanısıdır; ders dünyası
- * (INDEKS_DISI · OGR-5) ve bilinçli `dayanaksız: "gerekçe"` beyanı muaftır.
+ * (DERS_DUNYASI · OGR-5) ve bilinçli `dayanaksız: "gerekçe"` beyanı muaftır.
  * Kırık dayanak hedefi bu nöbetin değil `referansTanilari` işlevinin işidir.
  *
  * göç motor turu A10 kapanışı (2026-07-27): bu işlev eskiden hedef tarafını da denetleyen iki
@@ -2115,7 +2309,7 @@ export function dayanakTanilari(
       // "gerekçe") borç değildir.
       const dolu = hedefler.some((h) => h.metin);
       const beyan = alanOku(d, "dayanaksız")?.trim();
-      if (!dolu && !beyan && !INDEKS_DISI.test(dosya)) {
+      if (!dolu && !beyan && !DERS_DUNYASI.test(dosya)) {
         out.push({ dosya, tani: eskiTani("dayanaksız-kural", "bilgi",
           { kod: kuralAd }, { satir: d.satir, sutun: d.sutun }) });
       }
@@ -2143,7 +2337,7 @@ export function dayanaksizKararlar(programlar: ReadonlyMap<string, Program>): st
     [...d.parametreler, ...d.ozellikler].find((x) => x.ad === ad)?.deger.metin;
   const gez = (d: Dugum, dersDunyasi: boolean): void => {
     // Yalnız AÇIKÇA kilitli kararlar sayılır (durumsuz Karar düğümü vitrin/örnek
-    // malzemesi olabilir); ders dünyası (INDEKS_DISI) envantere hiç girmez.
+    // malzemesi olabilir); ders dünyası (DERS_DUNYASI) envantere hiç girmez.
     if (!dersDunyasi && d.tur === "widget" && d.ad === "Karar") {
       const kod = alanOku(d, "kod");
       if (kod && alanOku(d, "durum") === "kilitli") kilitli.add(kod);
@@ -2156,7 +2350,7 @@ export function dayanaksizKararlar(programlar: ReadonlyMap<string, Program>): st
     icin(d, (v) => { if (v.tur === "widget" && v.dugum) gez(v.dugum, dersDunyasi); });
   };
   for (const [dosya, p] of programlar) {
-    const ders = INDEKS_DISI.test(dosya);
+    const ders = DERS_DUNYASI.test(dosya);
     for (const b of p.bildirimler) gez(b, ders);
   }
   return [...kilitli].filter((k) => !hedefler.has(k)).sort((a, b) => a.localeCompare(b, "tr"));
@@ -2414,7 +2608,7 @@ export function katmansizTeknolojiTanilari(
     if (!sahip) return TEKNOLOJI_TIPLERI.has(indeks.get(hedef)?.tip ?? "");
     return (tumTanimlar.get(hedef) ?? []).some((t) => {
       if (!TEKNOLOJI_TIPLERI.has(t.tip)) return false;
-      if (INDEKS_DISI.test(t.dosya)) return true;       // ders dünyası herkese açıktır
+      if (DERS_DUNYASI.test(t.dosya)) return true;       // ders dünyası herkese açıktır
       const tanimSahibi = sahipProjeKapsami(t.dosya, kapsamlar);
       return !tanimSahibi || tanimSahibi.kod === sahip.kod;
     });
@@ -2623,7 +2817,7 @@ export function beceriDriftTanilari(
 //   gözle yakaladı. Ders: örtük varsayılana güvenmek drift üretir; motor
 //   göremediğini yakalamalı (STR-3.2 model-bağımsızlık ruhu). Bu bekçi durumsuz
 //   Adım'ı UYARI ile yüzeye çıkarır — "durumunu açıkça beyan et".
-//   Muafiyet: OGR-5 örnek-dünyası (INDEKS_DISI) + bilerek-hatalı — ders
+//   Muafiyet: OGR-5 örnek-dünyası (DERS_DUNYASI) + bilerek-hatalı — ders
 //   malzemesi kısalık için durum atlayabilir (gündeme girmez).
 export function durumsizAdimTanilari(
   programlar: ReadonlyMap<string, Program>,
@@ -2632,7 +2826,7 @@ export function durumsizAdimTanilari(
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const [dosya, program] of programlar) {
     if (muaflar?.has(dosya)) continue;
-    if (INDEKS_DISI.test(dosya)) continue;   // OGR-5 örnek-dünyası muaf
+    if (DERS_DUNYASI.test(dosya)) continue;   // OGR-5 örnek-dünyası muaf
     const gez = (d: Dugum): void => {
       if (d.tur === "widget" && d.ad === "Adım") {
         const durum = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "durum")?.deger?.metin;
@@ -2657,11 +2851,11 @@ export function acikAdimTanilari(
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const [dosya, program] of programlar) {
     if (muaflar?.has(dosya)) continue;
-    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (INDEKS_DISI — ornek/
+    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (DERS_DUNYASI — ogreti/ornek/
     // arsiv/fikstur/sablon…) açık Adımlar ürün gündemine GİRMEZ — kasıtlı açık
     // ders malzemesidir. Gizlenmez: sayısı dersAcikAdimSayisi ile ayrı satırda
     // raporlanır. Kapsam ölçütü tek kaynak (kimlik.ts kanonu — elle ikiz yasak).
-    if (INDEKS_DISI.test(dosya)) continue;
+    if (DERS_DUNYASI.test(dosya)) continue;
     const gez = (d: Dugum): void => {
       if (d.tur === "widget" && d.ad === "Adım") {
         const alan = (ad: string) => [...d.parametreler, ...d.ozellikler].find((p) => p.ad === ad)?.deger?.metin;
@@ -2686,7 +2880,7 @@ export function acikAdimTanilari(
 }
 
 /**
- * OGR-5 · ÖRNEK-DÜNYASI SAYACI: ders kapsamındaki (INDEKS_DISI) açık Adımların
+ * OGR-5 · ÖRNEK-DÜNYASI SAYACI: ders kapsamındaki (DERS_DUNYASI) açık Adımların
  * sayısını verir. Ürün gündemi (acikAdimTanilari) bu Adımları saymaz; motor yine
  * de SUSMAZ ilkesine sadıktır — bu sayı denetim çıktısında ayrı ve tek
  * bilgilendirici satırla görünür ("örnek dünyasında N açık Adım — ders
@@ -2696,7 +2890,7 @@ export function dersAcikAdimSayisi(programlar: ReadonlyMap<string, Program>): nu
   const ACIK = new Set(["beklemede", "geliştirmede"]);
   let sayi = 0;
   for (const [dosya, program] of programlar) {
-    if (!INDEKS_DISI.test(dosya)) continue;
+    if (!DERS_DUNYASI.test(dosya)) continue;
     const gez = (d: Dugum): void => {
       if (d.tur === "widget" && d.ad === "Adım") {
         const durum = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "durum")?.deger?.metin;
@@ -2800,7 +2994,7 @@ function aySonu(ay: string): string {
  * kalmıştır: ay hassasiyetiyle yazılmış hedef tarihte motor nazikçe gün sorar
  * (`günsüz-tarih` · bilgi). Gecikme, yaklaşan vade ve tarihsizlik nöbetleri
  * emekli edildi; MIM-1.2 uyarınca tarih güçlü tavsiyedir ve eksikliği ihlal değildir.
- * @param dosya programın yolu — MIM-1.2 zaman hatırlatmaları ders dünyasını (INDEKS_DISI ·
+ * @param dosya programın yolu — MIM-1.2 zaman hatırlatmaları ders dünyasını (DERS_DUNYASI ·
  *   OGR-5 kapsam kanonu) muaf tutar; boş verilirse muafiyet uygulanmaz (ürün sayılır).
  */
 export function fazVadeTanilari(program: Program, bugun: string, dosya = ""): Tani[] {
@@ -2828,7 +3022,7 @@ export function fazVadeTanilari(program: Program, bugun: string, dosya = ""): Ta
       // ay hassasiyetiyle ay-sonu esaslı çalışır; tarihsiz/belirsiz yalnız hatırlatılır.
       const vade = tamTarih ?? (ayTarih ? aySonu(ayTarih) : undefined);
       if (vade) {
-        if (ayTarih && !INDEKS_DISI.test(dosya)) {
+        if (ayTarih && !DERS_DUNYASI.test(dosya)) {
           out.push(eskiTani("günsüz-tarih", "bilgi",
             { kod, ayTarihi: ayTarih, vade }, { satir: tarih!.satir, sutun: tarih!.sutun }));
         }
@@ -2846,14 +3040,76 @@ export function fazVadeTanilari(program: Program, bugun: string, dosya = ""): Ta
   return out;
 }
 
+/** Bir mevsimin (Faz) çözümü — iki mevsim bekçisinin ORTAK okuduğu tek kayıt. */
+interface MevsimCozumu {
+  dosya: string;
+  faz: Dugum;
+  kod: string;
+  /** `hedefTarih` alanının değeri (varsa); vade bekçisi ham metni ve konumu buradan okur. */
+  tarih: Deger | undefined;
+  /** `ne` alanının değeri (varsa); mühür bekçisi beyanı ve konumu buradan okur. */
+  beyan: Deger | undefined;
+  /** Sarılan gövdeler — üç yazımdan tekilleştirilmiş küme. */
+  govdeler: ReadonlySet<Dugum>;
+  /** Gövdelerin altındaki tamamlanmamış Adım sayısı — durum yazılmamışsa açıktır. */
+  acik: number;
+}
+
 /**
- * Mevsim vade tanısı (PROJE kapsamı · SAF · `bugun` enjekte edilir).
+ * Mevsim çözücüsü (PROJE kapsamı · SAF). Her Fazın sardığı gövdeleri ve o
+ * gövdelerin altındaki açık Adım sayısını çözer; `mevsimVadeTanilari` ile
+ * `mevsimMuhurTanilari` bu çözümü OKUR, ikinci bir çözücü yazmaz (KPS-MVS-A01
+ * ikinci teslim hükmü: "aynı çözücü, ikinci yazım yok").
  *
  * NEDEN PROJE KAPSAMI: bir mevsimin açık iş taşıyıp taşımadığı tek dosyadan
  * okunamaz. Faz kendi dosyasında yaşar, sardığı Bloklar başka dosyalardadır ve
- * bağ iki yazımdan biriyle kurulur: Fazın gövdesindeki `çağır BLK-…` satırı ya
- * da Blokun kendi `mevsim:` alanı (MIM-1.2 ③). Karar ancak bütün programlar
- * okunduktan sonra verilebilir.
+ * bağ üç yazımdan biriyle kurulur: iç içe gövde, Fazın gövdesindeki `çağır BLK-…`
+ * satırı ya da Blokun kendi `mevsim:` alanı (MIM-1.2 ③). Karar ancak bütün
+ * programlar okunduktan sonra verilebilir. Sarılan gövdeler tekilleştirilir;
+ * bir bağ iki yerde yazılmışsa `çift-mevsim-kaydı` tanısı ayrıca konuşur.
+ */
+function mevsimleriCoz(programlar: ReadonlyMap<string, Program>): MevsimCozumu[] {
+  const alan = (d: Dugum, ad: string) => [...d.parametreler, ...d.ozellikler].find((p) => p.ad === ad)?.deger;
+  const kodu = (d: Dugum): string => alan(d, "kod")?.metin ?? d.ad;
+  const bloklar = new Map<string, Dugum>();
+  const fazlar: Array<{ dosya: string; d: Dugum }> = [];
+  for (const [dosya, program] of programlar) {
+    if (DERS_DUNYASI.test(dosya)) continue;   // ders dünyası muaftır (OGR-5 kapsam kanonu)
+    const gez = (d: Dugum): void => {
+      if (d.tur === "widget" && d.ad === "Blok") bloklar.set(kodu(d), d);
+      if (d.tur === "widget" && d.ad === "Faz") fazlar.push({ dosya, d });
+      for (const c of d.cocuklar) gez(c);
+    };
+    for (const b of program.bildirimler) gez(b);
+  }
+  /** Bir gövdenin altındaki tamamlanmamış Adım sayısı — durum yazılmamışsa açıktır. */
+  const acikSay = (kok: Dugum): number => {
+    let n = 0;
+    const gez = (d: Dugum): void => {
+      if (d.tur === "widget" && d.ad === "Adım" && (alan(d, "durum")?.metin ?? "beklemede") !== "tamamlandı") n++;
+      for (const c of d.cocuklar) gez(c);
+    };
+    gez(kok);
+    return n;
+  };
+  const out: MevsimCozumu[] = [];
+  for (const { dosya, d } of fazlar) {
+    const kod = kodu(d);
+    const govdeler = new Set<Dugum>();
+    for (const c of d.cocuklar) {
+      if (c.tur === "widget" && c.ad === "Blok") govdeler.add(c);
+      if (c.tur === "çağır") { const b = bloklar.get(c.ad); if (b) govdeler.add(b); }
+    }
+    for (const b of bloklar.values()) if (alan(b, "mevsim")?.metin === kod) govdeler.add(b);
+    let acik = 0;
+    for (const g of govdeler) acik += acikSay(g);
+    out.push({ dosya, faz: d, kod, tarih: alan(d, "hedefTarih"), beyan: alan(d, "ne"), govdeler, acik });
+  }
+  return out;
+}
+
+/**
+ * Mevsim vade tanısı (PROJE kapsamı · SAF · `bugun` enjekte edilir).
  *
  * NEDEN VAR (Founder ölçümü 2026-08-27): `FAZ-2026-TEMMUZ` mevsimi 2026-07-31
  * hedefiyle ilan edilmiş, metninde mühürlendiği yazılı olduğu hâlde altında sekiz
@@ -2874,51 +3130,66 @@ export function mevsimVadeTanilari(
 ): Array<{ dosya: string; tani: Tani }> {
   const out: Array<{ dosya: string; tani: Tani }> = [];
   if (!/^\d{4}-\d{2}-\d{2}$/.test(bugun)) return out;
-  const alan = (d: Dugum, ad: string) => [...d.parametreler, ...d.ozellikler].find((p) => p.ad === ad)?.deger;
-  const kodu = (d: Dugum): string => alan(d, "kod")?.metin ?? d.ad;
-  const bloklar = new Map<string, Dugum>();
-  const fazlar: Array<{ dosya: string; d: Dugum }> = [];
-  for (const [dosya, program] of programlar) {
-    if (INDEKS_DISI.test(dosya)) continue;   // ders dünyası muaftır (OGR-5 kapsam kanonu)
-    const gez = (d: Dugum): void => {
-      if (d.tur === "widget" && d.ad === "Blok") bloklar.set(kodu(d), d);
-      if (d.tur === "widget" && d.ad === "Faz") fazlar.push({ dosya, d });
-      for (const c of d.cocuklar) gez(c);
-    };
-    for (const b of program.bildirimler) gez(b);
-  }
-  /** Bir gövdenin altındaki tamamlanmamış Adım sayısı — durum yazılmamışsa açıktır. */
-  const acikSay = (kok: Dugum): number => {
-    let n = 0;
-    const gez = (d: Dugum): void => {
-      if (d.tur === "widget" && d.ad === "Adım" && (alan(d, "durum")?.metin ?? "beklemede") !== "tamamlandı") n++;
-      for (const c of d.cocuklar) gez(c);
-    };
-    gez(kok);
-    return n;
-  };
-  for (const { dosya, d } of fazlar) {
-    const tarih = alan(d, "hedefTarih");
-    const ham = tarih?.metin?.trim();
+  for (const m of mevsimleriCoz(programlar)) {
+    const ham = m.tarih?.metin?.trim();
     if (!ham) continue;
     const vade = /^\d{4}-\d{2}-\d{2}$/.test(ham) ? ham : (AY_TARIH.test(ham) ? aySonu(ham) : undefined);
     if (!vade || vade >= bugun) continue;
-    // Sarılan gövdeler üç yazımdan gelir ve tekilleştirilir: iç içe yazım, çağır
-    // kenarı ve Blokun kendi mevsim beyanı (bir bağ tek yerde yazılır; ikisi de
-    // yazılmışsa çift-mevsim-kaydı tanısı ayrıca konuşur).
-    const kod = kodu(d);
-    const govdeler = new Set<Dugum>();
-    for (const c of d.cocuklar) {
-      if (c.tur === "widget" && c.ad === "Blok") govdeler.add(c);
-      if (c.tur === "çağır") { const b = bloklar.get(c.ad); if (b) govdeler.add(b); }
-    }
-    for (const b of bloklar.values()) if (alan(b, "mevsim")?.metin === kod) govdeler.add(b);
-    let acik = 0;
-    for (const g of govdeler) acik += acikSay(g);
-    if (acik === 0) continue;
-    out.push({ dosya, tani: yeniTani("mevsim-vadesi-geçti",
-      { kimlik: kod, vade, açık: String(acik), gövde: String(govdeler.size), bugün: bugun },
-      { satir: tarih?.satir ?? d.satir, sutun: tarih?.sutun ?? d.sutun }) });
+    if (m.acik === 0) continue;
+    out.push({ dosya: m.dosya, tani: yeniTani("mevsim-vadesi-geçti",
+      { kimlik: m.kod, vade, açık: String(m.acik), gövde: String(m.govdeler.size), bugün: bugun },
+      { satir: m.tarih?.satir ?? m.faz.satir, sutun: m.tarih?.sutun ?? m.faz.sutun }) });
+  }
+  return out;
+}
+
+/** Mevsim beyanındaki mühür iddiası: yalnız geçmiş zamanlı, olumlu cümle sayılır. */
+const MUHUR_IDDIASI = /mühürlen(?:di|miş)/;
+/** Mevsim beyanındaki devir iddiası: açık işin başka halkaya devredildiğini söyleyen cümle. */
+const DEVIR_IDDIASI = /devr(?:edildi|edilmiş|etti|etmiş)/;
+
+/**
+ * Bir mevsim beyanının mühür ya da devir iddiası taşıyıp taşımadığını okur.
+ * Olumsuz ve gelecek zamanlı yazımlar ("mühürlenmemiştir", "devredilecek") ve
+ * içeri devri anlatan "devrolan" iddia SAYILMAZ; bekçi yalnız kapanmış olduğunu
+ * SÖYLEYEN bir mevsimi grafla karşılaştırır. Türkçe küçük harfe indirgeme
+ * `toLocaleLowerCase("tr")` iledir, çünkü "MÜHÜRLENDİ" yazımındaki noktalı büyük
+ * İ başka yerel ayarda "i" harfine inmez.
+ */
+function muhurIddiasi(beyan: string | undefined): "mühür" | "devir" | undefined {
+  if (!beyan) return undefined;
+  const metin = beyan.toLocaleLowerCase("tr");
+  if (MUHUR_IDDIASI.test(metin)) return "mühür";
+  if (DEVIR_IDDIASI.test(metin)) return "devir";
+  return undefined;
+}
+
+/**
+ * Mühür dürüstlüğü tanısı (PROJE kapsamı · SAF · tarih gerektirmez).
+ *
+ * NEDEN VAR (KPS-MVS-A01 ikinci görev kalemi · kontrolcü hükmü 2026-09-10):
+ * ORK-8 mevsimi dört basamaklı bir kapanışa bağlar ve son basamak mühürdür;
+ * `Faz` şeması bir mühür alanı taşımadığı için mühür bugün yalnız beyan
+ * metninde yaşar. Metninde mühürlendiğini ya da açık işini devrettiğini yazan
+ * bir mevsim hâlâ açık Adım sarıyorsa beyan ile graf çelişmektedir ve ölçüt
+ * metnin iddiası değil GRAFIN SAYISIDIR. Çözücü `mevsimVadeTanilari` ile
+ * ortaktır; bu bekçi tarih okumaz, dolayısıyla vadesi gelmemiş fakat erken
+ * mühürlenmiş bir mevsimi de görür.
+ *
+ * NE DAYATMAZ: mührü zorunlu kılmaz, mühürsüz mevsimi ihlal saymaz ve mühür
+ * cümlesine dokunmaz. Düzey bilgidir ve hiçbir kapıyı kırmızıya düşürmez.
+ */
+export function mevsimMuhurTanilari(
+  programlar: ReadonlyMap<string, Program>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const m of mevsimleriCoz(programlar)) {
+    const iddia = muhurIddiasi(m.beyan?.metin);
+    if (!iddia) continue;
+    if (m.acik === 0) continue;
+    out.push({ dosya: m.dosya, tani: yeniTani("mevsim-mührü-çelişkili",
+      { kimlik: m.kod, iddia, açık: String(m.acik), gövde: String(m.govdeler.size) },
+      { satir: m.beyan?.satir ?? m.faz.satir, sutun: m.beyan?.sutun ?? m.faz.sutun }) });
   }
   return out;
 }
@@ -2984,7 +3255,7 @@ function yeniDugumler(programlar: ReadonlyMap<string, Program>, muaflar?: Readon
 
 /** Ders/örnek dünyası bilinçli olarak eksik yazılır — ürün hükmü oraya inmez. */
 function ogretimDunyasi(dosya: string): boolean {
-  return INDEKS_DISI.test(dosya);
+  return DERS_DUNYASI.test(dosya);
 }
 
 // ── Rejim (üç tanı) ─────────────────────────────────────────────────────────
@@ -3010,7 +3281,7 @@ interface RejimKoku {
  * DİZİNİYLE bir kapsam öneki kurar; bu, kimlik indeksinin ve aktif varlık
  * çözümünün yaptığı anadizin yürüyüşünün SAF ikizidir — disk okumaz, yüklü
  * programların kendisinden türer ve bu yüzden denetimin her yüzeyinde aynı
- * cevabı verir. Ders dünyası (INDEKS_DISI) kök saymaz: ürün hükmü oraya inmez.
+ * cevabı verir. Ders dünyası (DERS_DUNYASI) kök saymaz: ürün hükmü oraya inmez.
  */
 function rejimKokleri(dugumler: readonly Yerlesim[]): RejimKoku[] {
   const kokler: RejimKoku[] = [];
@@ -3142,7 +3413,11 @@ function dosyaBeyaniKusuru(yol: string, diskYollari: ReadonlySet<string>): strin
   if (!yol) return "dosya beyanı yazılmamış";
   if (yol.startsWith("/") || yol.startsWith("..")) return `beyan edilen yol proje kökünün dışına taşıyor ("${yol}")`;
   const temiz = yol.replace(/^\.\//, "");
-  if (temiz.split("/").some((parca) => parca.startsWith(".") || YOKSAY.has(parca))) return undefined;
+  // Beyanın diskte çözülmesi ancak taranmış bir yer için sorulabilir: taranmayan
+  // gövdenin dosyaları anlık görüntüde hiç yoktur ve yokluk kusur değildir. Bu
+  // yüzden muafiyet, tarayıcının SORDUĞU sorunun aynısını sorar (KPS-IND-A01).
+  if (temiz.split("/").some((parca) => parca.startsWith(".") || YOKSAY.has(parca))
+      || AYRISTIRILMAZ_SENTETIK.test(temiz)) return undefined;
   if (!diskYollari.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
   return undefined;
 }
@@ -3789,7 +4064,7 @@ export function onceliksizAdimTanilari(
 ): Array<{ dosya: string; tani: Tani }> {
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const [dosya, prog] of programlar) {
-    if (BAHCE_DISI.test(dosya)) continue;   // ders dünyası kapsam dışıdır
+    if (bahceDisiMi(dosya)) continue;   // ders dünyası kapsam dışıdır
     const eksik: Array<{ kimlik: string; satir: number; sutun: number }> = [];
     const gez = (n: Dugum): void => {
       if (n.tur === "widget" && n.ad === "Adım") {
@@ -3834,7 +4109,7 @@ export function atesleyenHatirlaticiTanilari(
           const kod = yeniAlanMetin(n, "kod");
           const durum = yeniAlanMetin(n, "durum");
           if (kod && durum) adimDurumu.set(kod, durum);
-        } else if (n.ad === "Hatırlatıcı" && !BAHCE_DISI.test(dosya)) {
+        } else if (n.ad === "Hatırlatıcı" && !bahceDisiMi(dosya)) {
           hatirlaticilar.push({ dosya, dugum: n });
         }
       }

@@ -222,11 +222,137 @@ export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
 /** Sorgu süzgeci — tüketici varlık sınırını buradan çizer (MIM-1.1 deseni). */
 export type DosyaSuzgeci = (dosya: string) => boolean;
 
-/** İndeks kapsamı DIŞI dizinler — denetleHepsi ile AYNI dünya görüşü: kasıtlı
- *  drift malzemesi (arsiv/ornek/fikstur/sablon) gezinme indeksini kirletmez;
- *  dist* derlenmiş kopyadır (YUZ-3.2 ④ ile .ts kapsama girince eklendi).
- *  Saf regex; eklenti beslemesi de MCP/CLI dizin taraması da bunu kullanır. */
-export const INDEKS_DISI = /(^|\/)(arsiv|ornek|fikstur|sablon|node_modules|dist|dist-sinama)(\/|$)/;
+// ── KPS-IND-A01 · DIŞLAMANIN İKİYE AYRILMASI (Founder hükmü 2026-09-10) ──────
+//   Bu iki desen 2026-09-10 tarihine kadar tek bir listeydi ve o liste denetlenen
+//   HER ağacın HER yol parçasına uygulanıyordu. Ölçüm iki koşumla yapıldı ve iki
+//   koşum arasındaki tek fark bir klasörün adıydı: `sablon/` adlı bir kitaplığın
+//   altında yaşayan Proje kökü graftan tamamen düşüyor, karne on yedi düğümden
+//   beşe iniyor ve denetim o ağaç için sıfır hata diyordu, çünkü hiç bakmadığı
+//   bir yere hata üretemez. Sessiz görünmezlik yanlış bir yeşile dönüşüyordu ve
+//   bu, YUZ-3.1 hükmünün yasakladığı şeyin ta kendisidir.
+//
+//   ÖRNEK ADININ FARKLI DAVRANIŞI DA ÖLÇÜLDÜ ve sebebi nitelendirildi: liste
+//   tekbiçimli değildi, çünkü aynı niyeti İKİ AYRI küme taşıyordu. Diskin
+//   yürüyüşünü yöneten küme (`denetci.ts` YOKSAY) arşiv, fikstür ve şablon
+//   adlarını taşıyor fakat örnek adını TAŞIMIYORDU; bu desen ise dördünü birden
+//   taşıyordu. Sonuç şuydu: `ornek/` adlı bir klasörün dosyaları ayrıştırılıyor
+//   ve grafa giriyordu (düğüm sayısı TAM kalıyordu), buna karşılık OGR-5 kapıları
+//   bu deseni okuduğu için o düğümlerin Adımları karneye ve gündeme girmiyor,
+//   Proje kökleri kapsam kurmuyor ve graf geçişi seyreliyordu. Öteki üç adda iki
+//   küme aynı hükmü verdiğinden klasör hiç açılmıyor, ağaç tümden düşüyor ve
+//   üstüne sahte bir `kayıp-yapı` bulgusu doğuyordu.
+//
+//   Founder hükmü şudur: ders dünyasının karne dışında tutulması bir klasör
+//   ADINDAN değil, o klasörün ÖĞRETİ KİTAPLIĞI ALTINDA yaşamasından türer.
+//   Bu yüzden desen ikiye ayrılır ve iki desenin gerekçesi ayrı olduğu için
+//   adları da ayrıdır. OGR-5 hükmünün METNİNE dokunulmamıştır; değişen yalnız
+//   niyetin hangi yolla tanındığıdır.
+
+// ── KPS-MHR-A01 · DOSYA MÜHÜRLERİ (MIM-3.4 · Founder hükmü 2026-09-11) ───────
+//   Bir `.sar` dosyasının canlı kaynak olmaktan çıkarıldığı, dosya ADININ başına
+//   yazılan bir mühürle beyan edilir: `@ETİKET@_ad.sar`. Mühür tanıması bu tek
+//   noktada yaşar; yükleme, disk mutabakatı, kod dizini, graf, karne, açık iş
+//   gündemi ve eklentinin tarama süzgeci aynı çözücüyü okur. İkinci bir desen
+//   yazılmaz, çünkü iki desen aynı dosyaya iki ayrı hüküm verir ve bu, KPS-IND-A01
+//   turunda ölçülen kusurun ta kendisidir.
+//
+//   Taban küme KAPALIDIR ve üç mühürden oluşur. Arşiv ile sonra mühürlü dosyalar
+//   OKUNMAZ; eğitim mühürlü dosya okunur ve doğrulanır fakat ders dünyası gibi
+//   karneye ve gündeme sayılmaz. Bu yüzden eğitim mührü aşağıdaki ders dünyası
+//   deseninin İÇİNE bağlanır: OGR-5 muafiyetini soran her çağrı yeri mührü de
+//   kendiliğinden görür ve ikinci bir muafiyet dalı açılmaz.
+//
+//   Örtü genişletmesi (TIP-2.5) bu turda BAĞLANMADI: örtü mekanizması yalnız
+//   `semalar → tip → enum → alan` kümelerine değer ekler, oysa mühür kümesi bir
+//   tipin alanı değildir ve her yeni etikete bir davranış da atanmak zorundadır;
+//   ikisi de yeni bir şema ister ve yeni şema Founder kararıdır (Adım sınırı).
+
+/** Mührün davranış türü — üç mühür üç ayrı davranıştır. */
+export type MuhurTuru = "arşiv" | "eğitim" | "sonra";
+
+/** TABAN KÜME (kapalı): etiket → davranış. Etiket büyük ASCII harfleriyle yazılır. */
+export const DOSYA_MUHRU_KUMESI: ReadonlyMap<string, MuhurTuru> = new Map<string, MuhurTuru>([
+  ["ARSIV", "arşiv"],
+  ["EGITIM", "eğitim"],
+  ["SONRA", "sonra"],
+]);
+
+/** Mühür biçimi — dosya adının BAŞINDA `@`, büyük ASCII etiket ve `@_`. */
+export const DOSYA_MUHRU_BICIMI = /^@([A-Z]+)@_/;
+
+/** Çözülmüş dosya mührü. */
+export interface DosyaMuhru { etiket: string; tur: MuhurTuru }
+
+/** Yolun son parçası; ayraç hem `/` hem `\` olabilir (eklenti Windows yolunda da koşar). */
+function yolunDosyaAdi(yol: string): string {
+  const kesim = Math.max(yol.lastIndexOf("/"), yol.lastIndexOf("\\"));
+  return kesim < 0 ? yol : yol.slice(kesim + 1);
+}
+
+/** TEK ÇÖZÜCÜ: yolun dosya adı kapalı kümeden geçerli bir mühür taşıyorsa onu döndürür. */
+export function dosyaMuhru(yol: string): DosyaMuhru | undefined {
+  const m = DOSYA_MUHRU_BICIMI.exec(yolunDosyaAdi(yol));
+  const tur = m ? DOSYA_MUHRU_KUMESI.get(m[1]) : undefined;
+  return m && tur ? { etiket: m[1], tur } : undefined;
+}
+
+/** Motorun İÇERİĞİNİ OKUMADIĞI mühürlü dosya: arşiv ya da sonra mührü. */
+export function okunmazMuhurlu(yol: string): boolean {
+  const tur = dosyaMuhru(yol)?.tur;
+  return tur === "arşiv" || tur === "sonra";
+}
+
+/** Dosya adının MIM-3.4 biçim kusuru. */
+export type DosyaAdiKusuru =
+  | { kusur: "büyük-harf" }
+  | { kusur: "bilinmeyen-etiket"; etiket: string }
+  | { kusur: "bozuk-biçim" }
+  | { kusur: "mühür-sonrası-büyük-harf"; etiket: string };
+
+/**
+ * Bir `.sar` dosya adının mühür biçimine uyup uymadığını ölçer. Dosya adında
+ * büyük harf yalnız mühüre ayrılmıştır: mühürsüz ad büyük harf taşıyamaz, mührü
+ * izleyen ad küçük harfle sürer, biçimi `@X@_` olan fakat etiketi kümede
+ * bulunmayan ad ile `@` ile başlayıp biçime uymayan ad sessiz geçmez.
+ */
+export function dosyaAdiKusuru(yol: string): DosyaAdiKusuru | undefined {
+  const ad = yolunDosyaAdi(yol);
+  const m = DOSYA_MUHRU_BICIMI.exec(ad);
+  if (m) {
+    if (!DOSYA_MUHRU_KUMESI.has(m[1])) return { kusur: "bilinmeyen-etiket", etiket: m[1] };
+    return /\p{Lu}/u.test(ad.slice(m[0].length)) ? { kusur: "mühür-sonrası-büyük-harf", etiket: m[1] } : undefined;
+  }
+  if (ad.startsWith("@")) return { kusur: "bozuk-biçim" };
+  return /\p{Lu}/u.test(ad) ? { kusur: "büyük-harf" } : undefined;
+}
+
+/** Eğitim mührünün etiketi — ders dünyası deseni onu kümeden okur, elle yazmaz. */
+const EGITIM_ETIKETI = [...DOSYA_MUHRU_KUMESI].find(([, tur]) => tur === "eğitim")![0];
+
+/** OGR-5 · DERS DÜNYASI — öğreti kitaplığının ALTINDAKİ ders rafları (arşiv ·
+ *  örnek · fikstür · şablon), hangi derinlikte olurlarsa olsunlar. Gerekçe
+ *  OGR-5'tir: öğretim malzemesi ürün karnesine, gündemine ve ürün kimliğine
+ *  girmez. Demirleme `ogreti/` kitaplığınadır: kullanıcının kendi kökünün
+ *  altında açtığı `sablon/`, `arsiv/` ya da `fikstur/` adlı bir kitaplık ürünün
+ *  kendi öğreti rafı DEĞİLDİR ve bu desen ona dokunmaz. Adının başında eğitim
+ *  mührü (`@EGITIM@_`) taşıyan dosya da, nerede yaşarsa yaşasın, ders dünyasıdır
+ *  (MIM-3.4 · KPS-MHR-A01); etiket elle yazılmaz, mühür kümesinden okunur. */
+export const DERS_DUNYASI = new RegExp(
+  String.raw`(^|\/)ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)(\/|$)` +
+  // KPS-MHR-A01 · MIM-3.4: eğitim mührü taşıyan dosya da ders dünyasıdır (OGR-5).
+  `|(^|\/)@${EGITIM_ETIKETI}@_[^/]*$`,
+);
+
+/** BAĞIMLILIK VE DERLEME ÇIKTISI — yol parçası NEREDE geçerse geçsin taranmaz.
+ *  Gerekçe ders dünyasınınkinden ayrıdır ve öğretimle ilgisi yoktur: bu gövdeler
+ *  insan eliyle yazılmaz, bir paket yöneticisinin ya da derleyicinin ürünüdür,
+ *  dolayısıyla kaynak sayılamaz ve hiçbir ağaçta drift ölçümüne girmez. */
+export const URETILMIS_GOVDE = /(^|\/)(?:node_modules|dist|dist-sinama)(\/|$)/;
+
+/** İNDEKS KAPSAMI DIŞI = ders dünyası ∪ üretilmiş gövde. Kimlik indeksinin ve
+ *  eklenti beslemesinin kapsam kararı iki gerekçeyi birlikte sorar; OGR-5
+ *  muafiyeti soran çağrı yerleri ise `DERS_DUNYASI` desenini tek başına okur. */
+export const INDEKS_DISI = /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)|node_modules|dist|dist-sinama)(\/|$)/;
 
 /** İndekslenen dosya uzantıları (YUZ-3.2 ④): .sar TAM (tanım+atıf), .md/.ts yalnız ATIF. */
 export const INDEKS_DOSYASI = /\.(sar|md|ts)$/;
@@ -250,7 +376,8 @@ export function varlikAdi(dosya: string): string | undefined {
   let d = dirname(resolve(dosya));
   for (let i = 0; i < 12; i++) {
     try {
-      const giris = readdirSync(d).find((g) => g.endsWith("_anadizin.sar") || g === "ana.sar");
+      // MIM-3.4: mühürlü bir giriş dosyası canlı varlık girişi sayılmaz.
+      const giris = readdirSync(d).find((g) => (g.endsWith("_anadizin.sar") || g === "ana.sar") && !dosyaMuhru(g));
       if (giris) return giris === "ana.sar" ? basename(d) : giris.replace(/_anadizin\.sar$/, "");
     } catch { /* okunamayan dizin — yürümeye devam */ }
     const ust = dirname(d);
@@ -392,6 +519,143 @@ export function sahipProjeKapsami(
   return kazanan;
 }
 
+/**
+ * Dosyanın klasörden okunan Proje kökü — YALNIZ bağ tekil ve kesinse (KPS-FAZ-A01).
+ *
+ * `sahipProjeKapsami` en uzun öneki kazandırır ve eşitlik hâlinde ilk gördüğünü
+ * döndürür; bu, sınır çizmek ve görünürlük süzmek için yeterlidir, çünkü orada
+ * yanlış tarafta kalmanın bedeli yalnız bir sonucun gizlenmesidir. Grafa bir
+ * içerme kenarı YAZMAK ise başka bir iddiadır: "bu Faz şu Projenin zaman
+ * dilimidir" cümlesi tahminle kurulursa panel yanlış aidiyeti gerçek gibi
+ * gösterir. Bu yüzden burada eşit derinlikte iki AYRI Proje kodu bulunursa bağ
+ * kurulmaz ve düğüm köksüz kalır; sessiz başarı taklidi yapılmaz.
+ *
+ * Aynı Proje kodunun aynı önekte iki kez ilan edilmesi belirsizlik DEĞİLDİR
+ * (yinelenen ilan kendi nöbetinin işidir) ve bağı engellemez; ayrışma yalnız
+ * KODLAR farklıysa vardır. Ders dünyası (INDEKS_DISI) hiç sorulmaz: şablon ile
+ * örnek kendi evrenlerinde yaşar ve ürün Projesinin zaman eksenine binmez.
+ */
+export function kesinProjeKapsami(
+  dosya: string,
+  kapsamlar: readonly ProjeKapsami[],
+): ProjeKapsami | undefined {
+  if (INDEKS_DISI.test(dosya)) return undefined;
+  let derinlik = -1;
+  let kazanan: ProjeKapsami | undefined;
+  let ayrisik = false;
+  for (const k of kapsamlar) {
+    if (!onekKapsar(k.onek, dosya)) continue;
+    if (k.onek.length > derinlik) { derinlik = k.onek.length; kazanan = k; ayrisik = false; continue; }
+    if (k.onek.length === derinlik && kazanan && k.kod !== kazanan.kod) ayrisik = true;
+  }
+  return ayrisik ? undefined : kazanan;
+}
+
+/**
+ * Çatı ilanının duyurduğu TEK bir raf: hangi ÇalışmaAlanı, hangi öneki sarıyor
+ * (KPS-CAT-A01 · MIM-1.1). `ProjeKapsami`nin bir kademe YUKARISIDIR ve aynı
+ * disiplini taşır: kapsam yolun kendisinden değil, çatının kendi İLANINDAN
+ * doğar. Bir klasörün çatının yanında durması onu çatının çocuğu yapmaz;
+ * çocukluk yalnız ilan edilmiş bir Kitaplık ya da Raf satırından türer.
+ */
+export interface CatiKapsami {
+  /** ÇalışmaAlanı düğümünün kodu (CAL-…). */
+  kod: string;
+  /** Rafın kapsadığı önek — çatı dosyasının dizini + ilan edilen yol. */
+  onek: string;
+  /** İlanın yaşadığı dosya. */
+  dosya: string;
+}
+
+/**
+ * ÇalışmaAlanı düğümünün DOĞRUDAN çocuğu olan Kitaplık/Raf yolları.
+ *
+ * Yalnız doğrudan çocuk okunur, çünkü çatı ilanındaki `yol` değeri kendi
+ * ebeveynine görelidir: `Kitaplık( yol: "oz/" ) { Raf( yol: "siniflama/" ) }`
+ * yazımında iç rafın yolu çatı köküne değil `oz/` klasörüne görelidir ve
+ * düzleştirilirse çatı köküne "siniflama/" diye yanlış bir kapsam yazılır.
+ * `catiKardesleri` düzleştirmeyi kaldırabilir, çünkü orada uydurma bir yol
+ * diskte karşılık bulamayıp sessizce düşer; burada ise grafa KENAR yazılır ve
+ * yanlış bir kenar sessizce düşmez, yanlış aidiyeti gerçek gibi gösterir.
+ */
+function catiRafYollari(ca: Dugum): string[] {
+  const yollar: string[] = [];
+  for (const c of ca.cocuklar) {
+    if (c.tur !== "widget" || (c.ad !== "Kitaplık" && c.ad !== "Raf")) continue;
+    const yol = [...c.parametreler, ...c.ozellikler]
+      .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
+    if (yol && !yollar.includes(yol)) yollar.push(yol);
+  }
+  return yollar;
+}
+
+/** Bir ilan yolunu ("birinci_proje/") çatı dosyasının dizinine göre öneke çevirir. */
+function rafOneki(catiDosyasi: string, yol: string): string {
+  const temiz = yol.replace(/\\/g, "/").replace(/^\.\//, "");
+  const sonlu = temiz.endsWith("/") ? temiz : `${temiz}/`;
+  return `${kapsamOneki(catiDosyasi)}${sonlu}`;
+}
+
+/**
+ * Yüklü programlardan ÇATI kapsamlarını çıkarır: her ÇalışmaAlanı düğümü,
+ * doğrudan ilan ettiği her Kitaplık/Raf için bir kapsam kurar. Bu, Proje
+ * kapsamlarının saf ikizidir ve disk okumaz. Ders dünyası (INDEKS_DISI) kök
+ * saymaz: şablon içindeki örnek bir çatı ilanı gerçek bir sınır doğurmaz ve
+ * ürün ağacının aidiyetine karışmaz — aynı hüküm `projeKapsamlari` için de
+ * geçerlidir, dolayısıyla iki kademe aynı evreni görür.
+ */
+export function catiKapsamlari(programlar: ReadonlyMap<string, Program>): CatiKapsami[] {
+  const kapsamlar: CatiKapsami[] = [];
+  for (const [dosya, program] of programlar) {
+    if (INDEKS_DISI.test(dosya)) continue;
+    for (const b of program.bildirimler) {
+      widgetGez(b, "ÇalışmaAlanı", (ca) => {
+        const kod = dugumKodu(ca);
+        if (!kod) return;
+        for (const yol of catiRafYollari(ca)) kapsamlar.push({ kod, onek: rafOneki(dosya, yol), dosya });
+      });
+    }
+  }
+  return kapsamlar;
+}
+
+/**
+ * Dosyayı sarmalayan ÇATI — YALNIZ bağ tekil ve kesinse (KPS-CAT-A01).
+ *
+ * Disiplin `kesinProjeKapsami` ile birebir aynıdır ve gerekçesi de aynıdır:
+ * grafa bir içerme kenarı yazmak "bu Proje şu çatının altında yaşıyor"
+ * cümlesini kurmaktır; tahminle kurulursa panel yanlış aidiyeti gerçek gibi
+ * gösterir. Aynı derinlikte iki AYRI ÇalışmaAlanı kodu bulunursa bağ kurulmaz
+ * ve Proje kökü köksüz kalır; sessiz başarı taklidi yapılmaz. Aynı çatının
+ * aynı öneki iki kez ilan etmesi belirsizlik DEĞİLDİR ve bağı engellemez.
+ */
+export function kesinCatiKapsami(
+  dosya: string,
+  kapsamlar: readonly CatiKapsami[],
+): CatiKapsami | undefined {
+  if (INDEKS_DISI.test(dosya)) return undefined;
+  let derinlik = -1;
+  let kazanan: CatiKapsami | undefined;
+  let ayrisik = false;
+  for (const k of kapsamlar) {
+    if (!onekKapsar(k.onek, dosya)) continue;
+    if (k.onek.length > derinlik) { derinlik = k.onek.length; kazanan = k; ayrisik = false; continue; }
+    if (k.onek.length === derinlik && kazanan && k.kod !== kazanan.kod) ayrisik = true;
+  }
+  return ayrisik ? undefined : kazanan;
+}
+
+/**
+ * Çatının bir rafı bu dosyayı GERÇEKTEN sarıyor mu — bağ kurulabilsin ya da
+ * kurulamasın. `kesinCatiKapsami` belirsizlikte susar; bu yordam ise susmanın
+ * sebebini ölçülebilir kılar: çatının altında yaşayıp çatıya bağlanamayan bir
+ * Proje kökü, ancak "kapsanıyor ama çözülmüyor" ikilisiyle görünür olur.
+ */
+export function catiAltindaMi(dosya: string, kapsamlar: readonly CatiKapsami[]): boolean {
+  if (INDEKS_DISI.test(dosya)) return false;
+  return kapsamlar.some((k) => onekKapsar(k.onek, dosya));
+}
+
 /** Çatı ilanında raf olarak duyurulmuş bir kardeş proje kökü. */
 export interface KardesProje {
   /** Kardeş kökün kendi anadizininde ilan ettiği Proje kodu (PRJ-…). */
@@ -405,11 +669,20 @@ function calismaAlaniRaflari(program: Program): string[] {
   const yollar: string[] = [];
   for (const b of program.bildirimler) {
     widgetGez(b, "ÇalışmaAlanı", (ca) => {
-      widgetGez(ca, "Raf", (raf) => {
-        const yol = [...raf.parametreler, ...raf.ozellikler]
-          .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
-        if (yol) yollar.push(yol);
-      });
+      // KİTAPLIK KADEMESİ (Founder hükmü 2026-09-09 · ölçüm 2026-09-10): çatı
+      // artık kardeş projeleri `Kitaplık` olarak duyurur, çünkü dallanan her
+      // klasör bir Kitaplıktır ve kökün altına çıplak Raf yazılmaz. Bu okuyucu
+      // yalnız `Raf` düğümlerini tarıyordu ve hükümden SONRA doğan her çalışma
+      // alanına yapısal olarak kör kalıyordu: kardeş kök bulunamadığı için doğru
+      // yazılmış bir çapraz atıf "ad alanı görünmüyor" hükmü alıyordu. İki tip de
+      // okunur; `Raf` hükümden önce doğmuş çatılar için geriye dönük uyumdur.
+      for (const tip of ["Kitaplık", "Raf"]) {
+        widgetGez(ca, tip, (dugum) => {
+          const yol = [...dugum.parametreler, ...dugum.ozellikler]
+            .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
+          if (yol && !yollar.includes(yol)) yollar.push(yol);
+        });
+      }
     });
   }
   return yollar;
@@ -421,7 +694,7 @@ function anadizinProgramlari(dizin: string): Program[] {
   try { girisler = readdirSync(dizin); } catch { return []; }
   const out: Program[] = [];
   for (const g of girisler) {
-    if (!g.endsWith("_anadizin.sar") && g !== "ana.sar") continue;
+    if ((!g.endsWith("_anadizin.sar") && g !== "ana.sar") || dosyaMuhru(g)) continue;   // MIM-3.4: mühürlü giriş canlı değildir
     try { out.push(ayristir(belirtecle(readFileSync(join(dizin, g), "utf8")))); }
     catch { /* kırık anadizin çatı çözümünü düşürmez */ }
   }
@@ -537,7 +810,7 @@ export function adAlaniKapsamiKur(secenek: AdAlaniSecenegi): AdAlaniKapsami {
     const sahip = sahipProjeKapsami(kaynakDosya, kapsamlar);
     if (!sahip) return true;   // köksüz kaynak — sınır çizilmez (gezinmeSuzgeci deseni)
     return dosyalar.some((d) => {
-      if (INDEKS_DISI.test(d)) return true;                    // ders dünyası herkese açıktır
+      if (DERS_DUNYASI.test(d)) return true;                   // ders dünyası herkese açıktır (OGR-5)
       const tanimSahibi = sahipProjeKapsami(d, kapsamlar);
       return !tanimSahibi || tanimSahibi.kod === sahip.kod;     // köksüz tanım herkese görünür
     });
@@ -589,14 +862,16 @@ export function adAlanliTanimlar(kod: string, kaynakDosya: string): Tanim[] {
 /** KPN-A01: bir dosyanın bölge/varlık rozeti — ders dünyası regex'ten, varlık adı
  *  anadizin yürüyüşünden. Gezin raporu tanımları bununla etiketler. */
 export function bolgeEtiketi(dosya: string, varlikAdiBul: (yol: string) => string | undefined = varlikAdi): string {
-  const m = dosya.match(/(^|\/)(arsiv|ornek|fikstur|sablon)(\/|$)/);
+  // KPS-IND-A01: rozet de kendi evine demirlidir — kullanıcının kökü altındaki
+  // `sablon/` bir ders rafı değildir ve varlık adıyla etiketlenir (YUZ-3.1).
+  const m = dosya.match(/(^|\/)ogreti\/(?:[^/]+\/)*?(arsiv|ornek|fikstur|sablon)(\/|$)/);
   if (m) return BOLGE_ROZETLERI[m[2]] ?? m[2];
   const ad = varlikAdiBul(dosya);
   return ad ? `🧭 ${ad}` : "🧭 köksüz";
 }
 
 /** KPN-A01: gezinme sonuç süzgeci — üç yüzün (F12/⇧F12/F2) ortak sınır bilinci.
- *  ① Ürün kaynaklı gezinmede ders-dünyası (INDEKS_DISI) kopyaları sonuç listesine
+ *  ① Ürün kaynaklı gezinmede ders-dünyası (DERS_DUNYASI) kopyaları sonuç listesine
  *    girmez; kaynak dosyanın KENDİSİ her zaman görünür (belge-içi gezinme yaşar).
  *  ② Kaynak ders dünyasındaysa süzme uygulanmaz — şablon/örnek kendi evreninde
  *    serbest gezinir (vscode-test dersi: ornek/ içinde F12 ölmemeli).
@@ -606,11 +881,11 @@ export function gezinmeSuzgeci(
   kaynakYolu: string | undefined,
   varlikKoku: (yol: string) => string | undefined,
 ): DosyaSuzgeci {
-  const kaynakDersDunyasi = kaynakYolu !== undefined && INDEKS_DISI.test(kaynakYolu);
+  const kaynakDersDunyasi = kaynakYolu !== undefined && DERS_DUNYASI.test(kaynakYolu);
   const kok = kaynakYolu ? varlikKoku(kaynakYolu) : undefined;
   return (dosya) => {
     if (dosya === kaynakYolu) return true;
-    if (!kaynakDersDunyasi && INDEKS_DISI.test(dosya)) return false;
+    if (!kaynakDersDunyasi && DERS_DUNYASI.test(dosya)) return false;
     if (!kok) return true;                            // köksüz kaynak: varlık sınırı çizilmez
     const k = varlikKoku(dosya);
     return !k || k === kok;                           // köksüz dosya hep görünür (MIM-1.1 deseni)
@@ -727,8 +1002,12 @@ export function dizindenIndeks(dizin: string): KimlikIndeksi {
       if (g.name.startsWith(".")) continue;   // .git/.sarmal gibi gizli dizinler
       const yol = join(d, g.name);
       if (g.isDirectory()) {
-        if (!INDEKS_DISI.test("/" + g.name + "/")) gez(yol);
-      } else if (INDEKS_DOSYASI.test(g.name)) {
+        // KPS-IND-A01: sınama TAM YOLA yapılır, klasör adına değil — ders dışlaması
+        // öğreti kitaplığına demirlendiği için ad tek başına hüküm veremez.
+        if (!INDEKS_DISI.test(yol.replaceAll("\\", "/") + "/")) gez(yol);
+      } else if (INDEKS_DOSYASI.test(g.name) && !dosyaMuhru(g.name)) {
+        // KPS-MHR-A01 · MIM-3.4: mühürlü dosya kod dizinine girmez — arşiv ile sonra
+        // okunmaz, eğitim ise ders rafı gibi indeks kapsamının dışındadır.
         try { indeks.dosyaGuncelle(yol, readFileSync(yol, "utf8")); }
         catch { /* okunamayan dosya atlanır */ }
       }
@@ -823,9 +1102,87 @@ export function dugumBaglami(metin: string, kod: string): Baglam | undefined {
   return sonuc;
 }
 
-export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi): string {
-  const tanimlar = indeks.tanimlar(kod);
-  const atiflar = indeks.atiflar(kod);
+/**
+ * ORK-4 ÇÖZÜMÜNÜN GEZİNME YÜZÜ (KPS-ADA-A01). Ad alanlı bir kodun tanımı ham
+ * kimlikle aranırsa hiçbir zaman bulunmaz, çünkü indekste `PRJ-A::KOD-X` diye
+ * bir tanım yoktur — tanım `KOD-X` adıyla, `PRJ-A` kapsamının altında yaşar.
+ *
+ * Ölçüm (2026-09-10): `gezin PRJ-SARMAL::TAKIM-CEKIRDEK` çağrısı bu depoda
+ * "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş" diyordu, oysa `PRJ-SARMAL`
+ * bu deponun kendi Proje kodudur ve `TAKIM-CEKIRDEK` is/plan/takimlar.sar
+ * dosyasında ilanlıdır. Yani araç, kanonun ORK-4 hükmünü uyguladığı hâlde
+ * gezinme yüzünde uygulamıyor ve doğru yazılmış bir çapraz atfa kırık diyordu.
+ *
+ * Çözüm üç durumludur ve üçüncüsü dürüstlük içindir: ad alanı YÜKLÜ evrende bir
+ * Proje ise tanım o projenin kapsamında aranır; yüklü değilse çatının duyurduğu
+ * kardeş kökten okunur; ikisi de olmuyorsa araç "tanım yok" demez, AD ALANININ
+ * çözülemediğini söyler. Aradaki fark küçük görünür fakat büyüktür: birincisi
+ * atfın yanlış olduğunu, ikincisi ölçümün yapılamadığını bildirir.
+ */
+export interface AdAlanliCozum {
+  tanimlar: Tanim[];
+  /** Ad alanı çözülemediyse okunabilir gerekçe; çözüldüyse tanımsız. */
+  cozulemedi?: string;
+}
+
+export function adAlanliGezinCozumu(indeks: KimlikIndeksi, kod: string, tarananDizin?: string): AdAlanliCozum {
+  const { adAlani, yerel } = adAlaniAyir(kod);
+  if (adAlani === undefined) return { tanimlar: [] };
+  // ① Ad alanı YÜKLÜ evrende bir Proje mi? Öyleyse yerel parça o Projenin
+  //    kapsam öneki altında aranır — küresel eşleşme burada da bağ değildir.
+  const projeTanimlari = indeks.tanimlar(adAlani).filter((t) => t.tip === "Proje");
+  if (projeTanimlari.length) {
+    const onekler = projeTanimlari.map((t) => kapsamOneki(t.dosya));
+    const kapsamli = indeks.tanimlar(yerel).filter((t) => onekler.some((o) => onekKapsar(o, t.dosya)));
+    if (kapsamli.length) return { tanimlar: kapsamli };
+    return { tanimlar: [], cozulemedi: `ad alanı "${adAlani}" bu evrende çözüldü fakat "${yerel}" o Projenin kapsamında ilan edilmemiş — atıf gerçekten kırık` };
+  }
+  // ② Ad alanı yüklü değilse çatının duyurduğu kardeş kökten okunur.
+  // Kardeş arama başlangıcı TARANAN DİZİNDİR, sürecin çalışma dizini değil:
+  // aynı sorunun cevabı çağıranın nerede durduğuna göre değişemez (YUZ-1.2).
+  const kardes = tarananDizin === undefined
+    ? undefined
+    : catiKardesleri(tarananDizin).find((k) => k.kod === adAlani);
+  if (kardes) {
+    const kardesTanimlari = kardesIndeksi(kardes.kok).tanimlar(yerel);
+    if (kardesTanimlari.length) return { tanimlar: kardesTanimlari };
+    return { tanimlar: [], cozulemedi: `kardeş kök "${adAlani}" bulundu (${kardes.kok}) fakat "${yerel}" orada ilan edilmemiş — atıf gerçekten kırık` };
+  }
+  // ③ Ölçüm yapılamadı: muafiyet DÜRÜSTÇE bildirilir, sessiz geçiş yoktur.
+  return { tanimlar: [], cozulemedi: `ad alanı "${adAlani}" bu kökten görünmüyor: ne yüklü evrende bir Proje kodu, ne de çatı ilanında duyurulmuş bir kardeş kök. Atıf KIRIK DEĞİL, ÖLÇÜLEMEZ; çatı köküne çıkıp denetimi oradan koştur ya da kardeş kökü çatı ilanına ekle` };
+}
+
+/**
+ * Her tanımın ait olduğu Proje kodu (KPS-KOD-A01). Sahiplik kimlik.ts'in tek
+ * kaynağından okunur (projeKapsamlari + sahipProjeKapsami); ders dünyası ve
+ * köksüz dosya `undefined` döner. Yüklü evrende Proje ilanı yoksa liste
+ * tümüyle tanımsızdır ve gezinme yüzü bugünkü gibi davranır.
+ */
+function tanimProjeleri(indeks: KimlikIndeksi, tanimlar: readonly Tanim[]): (string | undefined)[] {
+  const kapsamlar: ProjeKapsami[] = indeks.tumTanimlar()
+    .filter((t) => t.tip === "Proje" && !INDEKS_DISI.test(t.dosya))
+    .map((t) => ({ kod: t.kod, onek: kapsamOneki(t.dosya), dosya: t.dosya }));
+  if (!kapsamlar.length) return tanimlar.map(() => undefined);
+  return tanimlar.map((t) => DERS_DUNYASI.test(t.dosya) ? undefined : sahipProjeKapsami(t.dosya, kapsamlar)?.kod);
+}
+
+/** Ad alanlı kodun, ad alanı yüklü evrende bir Proje ise o kapsamdaki çıplak atıfları (yoksa boş). */
+function adAlanliKapsamAtiflari(indeks: KimlikIndeksi, kod: string): Atif[] {
+  const { adAlani, yerel } = adAlaniAyir(kod);
+  if (adAlani === undefined) return [];
+  const onekler = indeks.tanimlar(adAlani).filter((t) => t.tip === "Proje").map((t) => kapsamOneki(t.dosya));
+  if (!onekler.length) return [];
+  return indeks.atiflar(yerel, (dosya) => onekler.some((o) => onekKapsar(o, dosya)));
+}
+
+export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
+  const hamTanimlar = indeks.tanimlar(kod);
+  // ORK-4: ham kimlikle bulunamayan ad alanlı kod, kanon hükmüyle yeniden çözülür.
+  const adAlanli = hamTanimlar.length ? { tanimlar: hamTanimlar } : adAlanliGezinCozumu(indeks, kod, tarananDizin);
+  const tanimlar = hamTanimlar.length ? hamTanimlar : adAlanli.tanimlar;
+  // KPS-KOD-A01: ad alanlı sorguda (`PRJ-A::KOD`) atıflar o Projenin kapsamındaki
+  // ÇIPLAK yazımı da kapsar — proje içinden `KOD` diye anılan şey aynı düğümdür.
+  const atiflar = [...indeks.atiflar(kod), ...adAlanliKapsamAtiflari(indeks, kod)];
   const giden = indeks.giden(kod);   // hatırlatıcı-rayı turu: beyanlı çıkış kenarları (ileri-bağlama)
   if (!tanimlar.length && !atiflar.length) {
     return `✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`;
@@ -837,13 +1194,33 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   // kodlarda hangi kapının gerçek olduğu (varlık · şablon · örnek) tek bakışta okunur.
   bolumler.push(tanimlar.length
     ? `TANIM (${tanimlar.length}):\n${tanimlar.map((t) => `${satir(t)}  [${t.tip}${t.ad ? ` · ${t.ad}` : ""}] · ${rozet(t.dosya)}`).join("\n")}`
-    : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
+    // Ad alanlı kodda "tanım yok" demek yanlış bir hükümdür: ölçüm yapılamamış
+    // olabilir. Araç hangisi olduğunu söyler (ORK-4 · KPS-ADA-A01).
+    : adAlanli.cozulemedi
+      ? `TANIM: çözülemedi — ${adAlanli.cozulemedi}.`
+      : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
+  // KPS-KOD-A01 · ORK-4: aynı kod birden çok KARDEŞ Projede ilanlıysa araç
+  // sessizce ilkini seçmez — her Projenin tanımı kendi kartıyla gösterilir ve
+  // hangisinin kastedildiği `PRJ::KOD` yazımıyla SORULUR. Ders dünyası kopyaları
+  // (şablon · örnek) bu sayıma girmez: onlar kardeş değil öğreti malzemesidir.
+  const projeler = tanimProjeleri(indeks, tanimlar);
+  const kardesProjeler = [...new Set(projeler.filter((p): p is string => p !== undefined))];
+  const cokProjeli = kardesProjeler.length > 1;
+  if (cokProjeli) {
+    const { yerel } = adAlaniAyir(kod);
+    bolumler.push(`🔀 '${yerel}' ${kardesProjeler.length} kardeş Projede birden ilanlı (beklenen durum: şablondan doğan projeler aynı kodu taşır). Hangisini kastettiğini ad alanıyla söyle (ORK-4):\n${kardesProjeler.map((p) => `  ${p}${AD_ALANI_AYRACI}${yerel}`).join("\n")}`);
+  }
   // NTK-A06 · BAĞLAM KARTI: üst zincir + kardeşler + çocuklar + koni özeti — ajan,
   // "bu Adım hangi Blok'ta, yanında ne var, ne iş yapar" sorularını tek çağrıda alır.
+  // Çok projeli hâlde kart HER Projenin tanımı için ayrı basılır ve Projesiyle etiketlenir.
   if (tanimlar.length && dosyaOku) {
-    const metin = dosyaOku(tanimlar[0].dosya);
-    const b = metin ? dugumBaglami(metin, kod) : undefined;
-    if (b) {
+    const kartTanimlari = cokProjeli
+      ? tanimlar.filter((t, i) => projeler[i] !== undefined && tanimlar.findIndex((u, j) => projeler[j] === projeler[i]) === i)
+      : [tanimlar[0]];
+    for (const tanim of kartTanimlari) {
+      const metin = dosyaOku(tanim.dosya);
+      const b = metin ? dugumBaglami(metin, adAlaniAyir(kod).yerel) : undefined;
+      if (!b) continue;
       const adres = (x: BaglamDugumu): string =>
         `${x.tip}${x.kod ? ` ${x.kod}` : ""}${x.ad ? ` (${x.ad})` : ""}`;
       const kart: string[] = [];
@@ -851,7 +1228,8 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
       if (b.kardesler.length) kart.push(`  kardeşler (${b.kardesler.length}): ${b.kardesler.map(adres).join(" · ")}`);
       if (b.cocuklar.length) kart.push(`  çocuklar (${b.cocuklar.length}): ${b.cocuklar.map(adres).join(" · ")}`);
       for (const [a, v] of b.alanlar) kart.push(`  ${a}: ${v}`);
-      if (kart.length) bolumler.push(`BAĞLAM KARTI:\n${kart.join("\n")}`);
+      const proje = cokProjeli ? projeler[tanimlar.indexOf(tanim)] : undefined;
+      if (kart.length) bolumler.push(`BAĞLAM KARTI${proje ? ` · ${proje}` : ""}:\n${kart.join("\n")}`);
     }
   }
   // ATIFLAR (gelen): boşsa "kimse kullanmıyor" — AMA GİDEN kenarı varsa bu düğüm
@@ -873,7 +1251,7 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
 /** `sarmal gezin <KOD> [dizin]` — F12/⇧F12'nin CLI ikizi (YUZ-1.2 dogfood). */
 export function gezinKomutu(dizin: string, kod: string): number {
   const indeks = dizindenIndeks(dizin);
-  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli);
+  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli, bolgeEtiketi, dizin);
   console.log(rapor);
   return rapor.startsWith("✖") ? 4 : 0;
 }

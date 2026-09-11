@@ -116,16 +116,19 @@ test("SINIR: iç içe köklerde yol, kapsayan HERHANGİ bir köke göre meşruys
 // ── ② DIŞLAMA: GİZLİ VE DIŞLANAN DİZİNLER OKUNMAZ ─────────────────────────────
 
 test("DIŞLAMA: gizli ve dışlanan dizinlerin yolları oku üyesine ulaşmaz", async () => {
-  // Adımın saydığı yedi ad burada AÇIKÇA yazılır ve tek kaynakla (SAR_DISLANANLAR)
-  // kesiştirilir; listeden bir ad düşerse bu nöbet onu görür.
-  const beklenen = ["node_modules", "dist", "arsiv", "fikstur", "sablon", "ornek"];
+  // KPS-IND-A01 (Founder 2026-09-10): ad tabanlı dışlama artık YALNIZ bağımlılık
+  // ve derleme çıktısıdır; ders rafları öğreti kitaplığına demirlidir ve yol
+  // olarak yazılır. Listeden bir ad düşerse bu nöbet onu görür.
+  const beklenen = ["node_modules", "dist", "out", "__pycache__"];
   for (const ad of beklenen) {
     assert.ok((SAR_DISLANANLAR as readonly string[]).includes(ad), `dışlama listesinden düşmüş: ${ad}`);
   }
+  const dersRaflari = ["ogreti/arsiv", "ogreti/ornek", "ogreti/fikstur", "ogreti/sablon"];
   const gizliler = [".git", ".vscode", ".claude"];
   const içeride = `${KÖK}/is/plan/h.sar`;
   const dışlananlar = [
     ...beklenen.map((ad) => `${KÖK}/${ad}/x.sar`),
+    ...dersRaflari.map((yol) => `${KÖK}/${yol}/x.sar`),
     ...gizliler.map((ad) => `${KÖK}/${ad}/x.sar`),
     `${KÖK}/urun/node_modules/paket/y.sar`,   // iç içe: parça ortada da olsa dışlanır
     `${KÖK}/urun/eklenti/dist/z.sar`,

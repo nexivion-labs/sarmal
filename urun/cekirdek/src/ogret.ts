@@ -12,6 +12,9 @@
 
 import type { Siniflama } from "./siniflama.ts";
 import { KONI_ALANLARI } from "./koni.ts";
+import { MCP_ARAC_ADI } from "./mcp-metinleri.ts";   // araç adları protokol kimliğidir — anlatı onları sicilden okur
+import { DOSYA_MUHRU_KUMESI, type MuhurTuru } from "./kimlik.ts";   // KPS-MHR-A01: mühür kümesi tek çözücünün yanından okunur
+import { YENI_TANI_KANONU } from "./tani-sicili.ts";   // KPS-MHR-A01: MIM-3.4 tanıları sicilden okunur
 import {
   dilHanesi,
   etkinCiktiDili,
@@ -24,18 +27,23 @@ import {
 /** Kopyalanabilir MİNİMAL GEÇERLİ proje — kartın kendi kendini kanıtlayan çekirdeği:
  *  test iki dosyayı diske yazar ve `denetle` ⛔0 bekler (kart yalan söyleyemez).
  *  İKİ dosya bilinçlidir (MIM-1.3 kuruluş kuralı): anadizin MİMARİYİ çizer, plan
- *  AYRI dosyada (plan/ rafında) büyür — tek-dosya örneği bu kuralı ihlal ederdi. */
+ *  AYRI dosyada (is/plan/ rafında) büyür — tek-dosya örneği bu kuralı ihlal ederdi. */
 export const MINIMAL_ANADIZIN = `-->|
 ## Amaç
 Sarmal ile ilk proje — bu dosya mimariyi çizer, plan ayrı dosyada büyür.
 ## Kapsam
-Bir teknoloji ilanı ve plan rafı; ilk iş plan/ilk_plan.sar dosyasındadır.
+Bir teknoloji ilanı ve işin kitaplığı; ilk iş is/plan/ilk_plan.sar dosyasındadır.
 ## Sonuç
 denetle ⛔0 — kart örneği kendini kanıtlar.
 |<--
 Proje( kod: PRJ-ILK, ad: "ilk_proje", rejim: katı, ne: "Sarmal ile ilk proje" ) {
   Teknoloji( kod: TEK-TS, ne: "TypeScript çalışma dili" )
-  Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+  // ⚠️ KİTAPLIK KADEMESİ ZORUNLUDUR (Founder hükmü 2026-09-09): dallanan her klasör
+  //    bir Kitaplıktır ve raflar Kitaplıkların İÇİNDE yaşar; kökün altına çıplak Raf
+  //    yazılmaz, çünkü kök ağaç büyüdükçe okunamaz bir raf listesine döner.
+  Kitaplık( kod: KTP-IS, yol: "is/", ne: "İşin kitaplığı — planın rafı burada yaşar" ) {
+    Raf( kod: RAF-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+  }
 }`;
 
 export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", ne: "ilk sürüm dönemi", hedefTarih: "2026-12-31" ) {
@@ -62,6 +70,210 @@ export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", ne: 
     }
   }
 }`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🌱 DOĞUŞ ANLATISI — BKM-DNT-A16 · Founder hükmü 2026-09-09
+//
+//   Ölçülmüş kök sebep şudur: beceri kartları yalnız bir Adım `geliştirmede`
+//   durumundayken ateşler, dolayısıyla henüz hiçbir Adımı bulunmayan BOŞ bir
+//   ağaçta hiçbir kart ateşleyemez. Doğuş anı, öğretinin ulaşamadığı tek andır
+//   ve yanlış ağacın kurulduğu an tam olarak o andır. Bu yüzden öğreti burada,
+//   ajanın atlayamayacağı iki kanaldan verilir: boş dizinde de koşan rehber
+//   (`basla`) ve oturum açılışında kendiliğinden basılan karşılama kartı
+//   (`ogret`). Metin TEK yerde yaşar ve üç çağrı yerinden okunur (YUZ-1.2);
+//   elle ikizlenirse kanallardan biri sessizce bayatlar.
+//
+//   Araç adları kanonik sicilden (MCP_ARAC_ADI) okunur: bir araç yeniden
+//   adlandırıldığında anlatı kendiliğinden tazelenir, elle bakım gerekmez.
+// ═══════════════════════════════════════════════════════════════════════════
+export function dogusAnlatisi(dil: CiktiDili = etkinCiktiDili()): string {
+  const y = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
+  const A = MCP_ARAC_ADI;
+  const b: string[] = [];
+
+  // ① NE İÇİN VARIZ — ürünün hedefi (FEL-1 · FEL-2 tezlerinin ajan yüzü).
+  b.push(y(
+    "🌍 NE İÇİN VARIZ — bir ağaç kurmadan önce bunu oku.",
+    "🌍 WHAT WE EXIST FOR — read this before you build a tree.",
+  ));
+  b.push(y(
+    "   Sarmal kod üretmez, NİYET üretir: klasör düzenini, teknoloji bağını ve işin",
+    "   Sarmal does not produce code, it produces INTENT: it writes the folder layout, the",
+  ));
+  b.push(y(
+    "   sırasını bildirimsel `.sar` dosyalarına yazar, sonra planla disk arasındaki",
+    "   technology binding and the order of work into declarative `.sar` files, then measures",
+  ));
+  b.push(y(
+    "   ayrışmayı ölçer. Hedef şudur: uzun ömürlü, az kişili, karar yoğun ve ajan",
+    "   the drift between plan and disk. The goal is this: long-lived, small-team,",
+  ));
+  b.push(y(
+    "   ağırlıklı işi insan ile ajan BİRLİKTE yürütebilsin. İnsan niyeti ve onayı",
+    "   decision-heavy, agent-heavy work carried out by human and agent TOGETHER. The human",
+  ));
+  b.push(y(
+    "   verir, ajan üretir, motor ikisi arasındaki farkı görünür kılar. Bu yüzden bir",
+    "   gives the intent and the approval, the agent produces, and the engine makes the gap",
+  ));
+  b.push(y(
+    "   ağaç kurmak klasör açmak değil, bir işin kalıcı hafızasını yazmaktır.",
+    "   between them visible. Building a tree is not creating folders; it is writing the durable memory of a body of work.",
+  ));
+  b.push("");
+
+  // ② KADEMELİ DOĞUŞ — araç sırası kanonik sicilden okunur.
+  b.push(y(
+    "🪜 AĞAÇ TEK HAMLEDE DEĞİL, KADEME KADEME KURULUR — her kademe insan onayından geçer.",
+    "🪜 A TREE IS BUILT TIER BY TIER, NEVER IN ONE STROKE — every tier passes human approval.",
+  ));
+  b.push(y(
+    `   Sıra zorunludur ve elle yazımın yerine geçer: ① \`${A.basla}\` yazmadan önce rehberi`,
+    `   The order is mandatory and replaces hand-writing: ① \`${A.basla}\` gives the guide and the`,
+  ));
+  b.push(y(
+    `   ve kademe şablonunu verir (BOŞ dizinde de koşar) · ② \`${A.dogus}\` çalışır ağacı ARAÇ`,
+    `   tier template before you write (it runs in an EMPTY directory too) · ② \`${A.dogus}\` lets the`,
+  ));
+  b.push(y(
+    `   olarak doğurur · ③ \`${A.iskelet}\` ilandaki eksik yapıyı diske indirir · ④ her \`.sar\``,
+    `   TOOL give birth to a working tree · ③ \`${A.iskelet}\` lands the declared-but-missing structure on`,
+  ));
+  b.push(y(
+    `   yazımından sonra \`${A.denetleProje}\` koşar ve çıktısı OKUNMADAN sonraki kademeye geçilmez.`,
+    `   disk · ④ after every \`.sar\` write \`${A.denetleProje}\` runs, and no next tier starts before its output is read.`,
+  ));
+  b.push(y(
+    "   Kademeler ayrı onay duraklarıdır ve şu sırayla açılır: kapsayıcı tipi seçimi →",
+    "   The tiers are separate approval stops and open in this order: choosing the container type →",
+  ));
+  b.push(y(
+    "   Teknoloji ile Takım ilanı → Kitaplık ve Raf mimarisi → plan ekseni (② bölümündeki",
+    "   declaring Technology and Team → the Kitaplık/Raf architecture → the plan axes (the chain in",
+  ));
+  b.push(y(
+    "   zincir). Üst kademe onaylanmadan alt kademe yazılmaz; bir kademe atlanıp doğrudan",
+    "   section ②). No lower tier is written before the upper one is approved; skipping a tier and",
+  ));
+  b.push(y(
+    "   altındaki açılmaz. Giriş ilanı MİMARİYİ çizer, plan AYRI dosyada büyür ve zaman",
+    "   opening the one below it is forbidden. The entry declaration draws the ARCHITECTURE, the plan",
+  ));
+  b.push(y(
+    "   ekseni (Faz) giriş ilanına HİÇ yazılmaz (bekçi: anadizin-plan-karışması).",
+    "   grows in a SEPARATE file, and the time axis (Faz) is NEVER written into the entry declaration.",
+  ));
+  b.push("");
+
+  // ③ DİYALOG DİSİPLİNİ — planlama yavaştır.
+  b.push(y(
+    "💬 PLANLAMA YAVAŞTIR: ÖNCE KONUŞ, SONRA YAZ.",
+    "💬 PLANNING IS SLOW: TALK FIRST, WRITE AFTERWARDS.",
+  ));
+  b.push(y(
+    "   Bir ağaç kurmadan önce mimariyi KONUŞ. Önce yalnız giriş ilanını çıkar ve",
+    "   Discuss the architecture before you build a tree. Produce only the entry declaration first",
+  ));
+  b.push(y(
+    "   onaylat; plan dosyasını ancak ilan onaylandıktan sonra aç. Her kademede somut",
+    "   and have it approved; open the plan file only after that approval. At every tier offer",
+  ));
+  b.push(y(
+    "   seçenekler sun, her seçeneği tek cümleyle tanımla ve seçimi kullanıcıya bırak —",
+    "   concrete options, define each in one sentence, and leave the choice to the user — never",
+  ));
+  b.push(y(
+    `   kendi başına tahmin etme. Belirsizlik gördüğünde varsayım değil SORU üret; bu`,
+    `   guess on your own. When you meet ambiguity, produce a QUESTION, not an assumption; the`,
+  ));
+  b.push(y(
+    `   disiplinin ayrıntılı yüzü \`${A.ogret} { konu: "niyet-diyalogu" }\` kartındadır.`,
+    `   detailed face of this discipline lives in the \`${A.ogret} { konu: "niyet-diyalogu" }\` card.`,
+  ));
+  b.push(y(
+    "   🚫 ÖLÇÜLMÜŞ ANTİ-DESENLER — beşi de gerçek koşumlarda kaydedildi:",
+    "   🚫 MEASURED ANTI-PATTERNS — all five were recorded in real runs:",
+  ));
+  b.push(y(
+    "     • boş dizinde ağacı ELLE yazmak ve doğuş araçlarını hiç çağırmamak;",
+    "     • hand-writing the tree in an empty directory and never calling the birth tools;",
+  ));
+  b.push(y(
+    `     • şema aracını rehber yerine kullanmak — \`${A.siniflama}\` neyin İZİNLİ olduğunu`,
+    `     • using the schema tool as a guide — \`${A.siniflama}\` says what is PERMITTED, while the`,
+  ));
+  b.push(y(
+    `       söyler, düzen ise neyin DOĞRU olduğunu; düzen ÖNCE okunur;`,
+    `       layout says what is CORRECT; the layout is read FIRST;`,
+  ));
+  b.push(y(
+    "     • bir kademeyi atlayıp doğrudan alt kademeyi açmak;",
+    "     • skipping a tier and opening the one below it directly;",
+  ));
+  b.push(y(
+    "     • zaman eksenini (Faz) giriş ilanına yazmak;",
+    "     • writing the time axis (Faz) into the entry declaration;",
+  ));
+  b.push(y(
+    "     • üretilen dosyayı denetlemeden teslim etmek.",
+    "     • delivering a produced file without checking it.",
+  ));
+  b.push("");
+  // ④ DOSYA MÜHÜRLERİ (KPS-MHR-A01 · MIM-3.4 · OGR-3): doğuş anı, ajanın bir
+  //    dosyayı "eski" diye yeniden adlandırmaya ya da silmeye en yatkın olduğu
+  //    andır; canlı kaynaktan ayırmanın tek meşru yolu burada öğretilir.
+  b.push(...dosyaMuhruOgretisi(dil));
+  return b.join("\n");
+}
+
+/** Mühür türünün davranış cümlesi — iki dilde tek yerde yazılır. */
+const MUHUR_DAVRANISI: Readonly<Record<MuhurTuru, { tr: string; en: string }>> = {
+  "arşiv": {
+    tr: "işi bitmiş, dondurulmuş tarih; motor okumaz, dosya graf, kod dizini, karne ve açık iş gündemi dışında kalır",
+    en: "finished, frozen history; the engine does not read it and the file stays outside the graph, the code index, the scorecard and the open-work agenda",
+  },
+  "eğitim": {
+    tr: "öğretim malzemesi; okunur ve sözleşmelerine göre doğrulanır, fakat karneye ve yürütme gündemine sayılmaz",
+    en: "teaching material; it is read and validated against its contracts, but not counted in the scorecard or the execution agenda",
+  },
+  "sonra": {
+    tr: "sonraya bırakılmış iş; içerik okunmaz, dosya bekleme süresiyle birlikte Hatırlatıcılar yüzeyinde görünür kalır",
+    en: "deferred work; its content is not read, and the file stays visible on the Reminders surface together with its waiting time",
+  },
+};
+
+/**
+ * 📛 DOSYA MÜHRÜ ÖĞRETİSİ (KPS-MHR-A01 · OGR-3). Karşılama kartı, doğuş rehberi
+ * ve doğan projenin ajan bağlamı bu tek üreticiden okur (YUZ-1.2). Etiketler
+ * mühür kümesinden, tanı kimlikleri ve düzeyleri tanı sicilinden gelir; bağlayıcı
+ * metin kanonda kalır ve kart onu yinelemez, adresini verir (`kurallar mim`).
+ */
+export function dosyaMuhruOgretisi(dil: CiktiDili = etkinCiktiDili()): string[] {
+  const y = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
+  const b: string[] = [];
+  b.push(y(
+    "📛 DOSYA MÜHÜRLERİ — bir `.sar` dosyasını canlı kaynaktan ayırmanın tek meşru yolu (kanon: MIM-3.4 · `kurallar mim`).",
+    "📛 FILE SEALS — the only legitimate way to take a `.sar` file out of the live source (canon: MIM-3.4 · `kurallar mim`).",
+  ));
+  b.push(y(
+    "   Mühür dosya ADININ başına yazılır: `@ETİKET@_ad.sar`. Etiket büyük ASCII harfleriyle yazılır ve mührü izleyen ad küçük harfle sürer. Dosyayı silme, taşıma ya da adına \"eski\" ekleme; mühürle.",
+    "   The seal is written at the START of the file NAME: `@ETİKET@_ad.sar`. The tag uses upper-case ASCII letters and the name after the seal continues in lower case. Do not delete, move or rename the file to \"old\"; seal it.",
+  ));
+  for (const [etiket, tur] of DOSYA_MUHRU_KUMESI) {
+    // İm `▸` seçildi: `•` imi bu anlatıda ölçülmüş anti-desenlere ayrılmıştır ve nöbet onları sayar.
+    b.push(`     ▸ \`@${etiket}@_\` — ${dil === "tr" ? MUHUR_DAVRANISI[tur].tr : MUHUR_DAVRANISI[tur].en}`);
+  }
+  const tanilar = YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.4").map((t) => `\`${t.kod}\` (${t.kademe})`).join(" · ");
+  b.push(y(
+    `   Küme kapalıdır. Mühür sessiz değildir: her denetim mühürlü dosyayı türüyle ve adıyla listeler ve biçime uymayan adı uyarır — ${tanilar}.`,
+    `   The set is closed. A seal is never silent: every check lists the sealed file with its type and name and warns about a name that breaks the form — ${tanilar}.`,
+  ));
+  b.push(y(
+    "   Mühür bir bulguyu susturmak için kullanılamaz ve ebedî kural taşıyan dosya arşiv mührü alamaz (`ebedi-ihlal`).",
+    "   A seal cannot be used to silence a finding, and a file carrying an eternal rule cannot take the archive seal (`ebedi-ihlal`).",
+  ));
+  return b;
+}
 
 /** Karşılama kartını kanondan derler (saf). Tek iskelet, iki düzyazı hanesi. */
 export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): string {
@@ -90,6 +302,11 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     "not produce code, it produces INTENT — the engine checks plan↔disk drift.",
   ));
   b.push("");
+  // 🌱 DOĞUŞ ANLATISI (BKM-DNT-A16): kartın en ağır bölümü buradadır, çünkü boş bir
+  //    dizinde ajanın GÖRDÜĞÜ İLK ŞEY bu karttır ve hiçbir beceri kartı o anda
+  //    ateşleyemez. Metin `basla` rehberiyle AYNI üreticiden gelir (YUZ-1.2).
+  b.push(dogusAnlatisi(dil));
+  b.push("");
   b.push(y(
     "① KOPYALA-BAŞLA — iki dosya: anadizin MİMARİYİ çizer, plan AYRI dosyada büyür;",
     "① COPY AND START — two files: the root file draws the ARCHITECTURE; the plan grows in a SEPARATE file;",
@@ -102,7 +319,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   b.push("─── ilk_proje_anadizin.sar ───");
   b.push(MINIMAL_ANADIZIN);
   b.push("");
-  b.push("─── plan/ilk_plan.sar ───");
+  b.push("─── is/plan/ilk_plan.sar ───");
   b.push(MINIMAL_PLAN);
   b.push("");
   b.push(y(
@@ -252,8 +469,8 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     "   critical constraints, and the skill cards triggered for that Step as a ready prompt;",
   ));
   b.push(y(
-    "   bu araç verir; bağlamı elle toplamaya çalışma. Beceri kartları `ogrenme/` rafında",
-    "   do not gather context by hand. Skill cards live on the `ogrenme/` shelf and `sef`",
+    "   bu araç verir; bağlamı elle toplamaya çalışma. Beceri kartları `ogreti/ogrenme/` rafında",
+    "   do not gather context by hand. Skill cards live on the `ogreti/ogrenme/` shelf and `sef`",
   ));
   b.push(y(
     "   yaşar ve `sef` bunları kendiliğinden enjekte eder; bir kart bütçe payına sığmayıp",
@@ -264,12 +481,12 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     "   with a ✂️ mark, open its full text with `sarmal gezin <KART-KODU>`.",
   ));
   b.push(y(
-    "   Kontrolcü asistanın anayasası, kuralları ve Etmen tanımı `oz/asistan_kontrolcu.sar`",
+    "   Kontrolcü asistanın anayasası, kuralları ve Etmen tanımı `oz/kayit/asistan_kontrolcu.sar`",
     "   The controller assistant's constitution, rules, and Agent declaration are in",
   ));
   b.push(y(
     "   dosyasındadır; bu depoda çalışıyorsan işe oradan başlarsın.",
-    "   `oz/asistan_kontrolcu.sar`; if you work in this repository, start there.",
+    "   `oz/kayit/asistan_kontrolcu.sar`; if you work in this repository, start there.",
   ));
   b.push("");
   // 🤖 Asistan Protokolü (ADM-STD-OGRET-PROTOKOL · STR-3.2 ④): her yürütücü

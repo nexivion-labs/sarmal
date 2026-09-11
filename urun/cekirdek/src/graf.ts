@@ -17,6 +17,10 @@ import { etkiCoz } from "./etki.ts";
 /** Tek düğümün dışa açık hâli — alan sırası SABİT (determinist çıktı). */
 export interface GrafDugum {
   kod: string;
+  /** KPS-KOD-A01 · ORK-4: kod kardeş projelerde ortaksa `kod` alanı `PRJ::KOD`
+   *  anahtarıdır ve ilan edilen çıplak kod burada durur; ortak değilse alan hiç
+   *  yazılmaz (tek projeli deponun çıktısı bayt bayt aynı kalır). */
+  yerelKod?: string;
   tip: string;            // Adım · Katman · Faz · Blok …
   dosya: string;
   satır: number;
@@ -36,6 +40,17 @@ export interface GrafYuzu {
   düğümler: GrafDugum[];
   /** çözülmeyen kenar uçları — kopuk varken graf "tam" gibi DAVRANMAZ (dürüst çıktı). */
   kopuk: Dag["kopuk"];
+  /** MIM-1.1 (KPS-CAT-A01): çatının rafı altında yaşayıp çatıya bağlanamayan
+   *  Proje kökleri. Boş olduğunda alan hiç yazılmaz — tek projeli bir deponun
+   *  graf çıktısı bu alandan tek bayt bile etkilenmez. */
+  çatısız?: Dag["catisiz"];
+  /** ORK-4 (KPS-KOD-A01): kardeş projelerde ortak kodlar — BEKLENEN durum, tanı
+   *  değil; hangi kodun hangi Projelerde `PRJ::KOD` anahtarına alındığını söyler.
+   *  Boşsa alan hiç yazılmaz. */
+  ortakKod?: Dag["ortakKod"];
+  /** ORK-4 (KPS-KOD-A01): aynı Proje kodunu taşıyan birden çok kök — ad alanı
+   *  çoğalmıştır ve çevrim ayıramaz; susma burada adıyla görünür. Boşsa yazılmaz. */
+  ayrışamayan?: Dag["ayrisamayan"];
   özet: KarneOzeti;
 }
 
@@ -76,7 +91,9 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
     .filter((d) => içinde(d.kod))
     .sort((a, b) => a.kod.localeCompare(b.kod, "tr"))
     .map((d) => ({
-      kod: d.kod, tip: d.tip, dosya: d.dosya, satır: d.satir,
+      kod: d.kod,
+      ...(d.yerelKod ? { yerelKod: d.yerelKod } : {}),
+      tip: d.tip, dosya: d.dosya, satır: d.satir,
       ...(d.durum ? { durum: d.durum } : {}),
       ...(d.kapsayan ? { kapsayan: d.kapsayan } : {}),
       ...(d.mevsim ? { mevsim: d.mevsim } : {}),
@@ -93,11 +110,83 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
     .sort((a, b) => `${a.kaynak}→${a.hedef}`.localeCompare(`${b.kaynak}→${b.hedef}`, "tr"));
 
   // özet alt-graf üzerinden (filtreli mini-Dag — karne mantığı TEK kaynak kalır)
+  const çatısız = dag.catisiz.filter((c) => içinde(c.proje));
+  // KPS-KOD-A01: ortak kod ölçümü alt-grafta yalnız kümedeki anahtarlara iner.
+  const ortakKod = dag.ortakKod
+    .map((o) => ({ kod: o.kod, projeler: o.projeler.filter((p) => içinde(`${p}::${o.kod}`)) }))
+    .filter((o) => o.projeler.length);
   const özetDag: Dag = küme
-    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje }
+    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje, catisiz: çatısız, ortakKod, ayrisamayan: dag.ayrisamayan }
     : dag;
 
-  return { ...(kök ? { kök } : {}), düğümler, kopuk, özet: karneOzeti(özetDag) };
+  return {
+    ...(kök ? { kök } : {}), düğümler, kopuk,
+    ...(çatısız.length ? { çatısız } : {}),
+    ...(ortakKod.length ? { ortakKod } : {}),
+    ...(dag.ayrisamayan.length ? { ayrışamayan: dag.ayrisamayan } : {}),
+    özet: karneOzeti(özetDag),
+  };
+}
+
+/**
+ * ÖZET YÜZÜ (BKM-MCP-A03). Tam graf bu depoda 436.698 karakter ve 19.194 satır
+ * ölçülmüştür (2026-09-10); ilk dış kullanıcı 2026-09-05 tarihinde 55.916
+ * karakterlik bir çıktının istemci sınırını aşıp dosyaya düştüğünü ve yalnız
+ * kuyruğunu okuyabildiğini bildirmiştir. Sınırı aşan bir cevap, cevap değildir.
+ *
+ * Bu yüz SERİLEŞTİRİCİYİ DEĞİŞTİRMEZ — `grafYuz` olduğu gibi durur ve ayrıntı
+ * isteyen onu çağırmaya devam eder. Özet, aynı `grafCikar` çekirdeğinden türer;
+ * ikinci bir graf mantığı doğmaz (YUZ-1.2). İçerik üç bölümdür: karne, kök
+ * kademesi (kapsayanı olmayan düğümler) ve tip dökümü. Ayrıntı kök koduyla
+ * istenir ve çıktının son satırı bunu açıkça söyler, çünkü kırpılmış bir cevabın
+ * nasıl açılacağını söylememek kullanıcıyı tahmine bırakır.
+ */
+export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<KOD>" }'): string {
+  const KOK_SINIRI = 40;
+  const kokler = g.düğümler.filter((d) => d.kapsayan === undefined);
+  const tipSayisi = new Map<string, number>();
+  for (const d of g.düğümler) tipSayisi.set(d.tip, (tipSayisi.get(d.tip) ?? 0) + 1);
+  const tipDokumu = [...tipSayisi.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "tr"))
+    .map(([tip, n]) => `${tip} ${n}`)
+    .join(" · ");
+  const gosterilen = kokler.slice(0, KOK_SINIRI);
+  const satirlar = [
+    "🕸️ GRAF — ÖZET KİPİ (varsayılan). Tam düğüm listesi ayrıntı kipindedir.",
+    "",
+    `📋 Karne: ${JSON.stringify(g.özet)}`,
+    `🔢 Düğüm ${g.düğümler.length} · kök kademesi ${kokler.length} · kopuk uç ${g.kopuk.length}`,
+    `🗂️ Tip dökümü: ${tipDokumu || "(düğüm yok)"}`,
+    "",
+    `🌱 KÖK KADEMESİ${kokler.length > KOK_SINIRI ? ` (ilk ${KOK_SINIRI})` : ""}:`,
+    ...gosterilen.map((d) => `   ${d.kod} [${d.tip}]${d.durum ? ` · ${d.durum}` : ""} — ${d.dosya}:${d.satır}`),
+    ...(kokler.length > KOK_SINIRI ? [`   … ${kokler.length - KOK_SINIRI} kök daha var (ayrıntı için kök kodu ver).`] : []),
+  ];
+  if (g.kopuk.length) {
+    const ilk = g.kopuk.slice(0, 10);
+    satirlar.push("", `🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`);
+    for (const k of ilk) satirlar.push(`   ${k.kaynak} → ${k.hedef}`);
+    if (g.kopuk.length > 10) satirlar.push(`   … ${g.kopuk.length - 10} kopuk uç daha.`);
+  }
+  // MIM-1.1 (KPS-CAT-A01): bağın kurulamadığı hâl susmaz — çatının altında
+  // yaşayıp çatıya bağlanamayan Proje kökü burada adıyla görünür.
+  if (g.çatısız?.length) {
+    satirlar.push("", `🏛️ ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (${g.çatısız.length}):`);
+    for (const c of g.çatısız) satirlar.push(`   ${c.proje} — ${c.dosya}:${c.satir} · ${c.sebep}`);
+  }
+  // ORK-4 (KPS-KOD-A01): ortak kod BEKLENEN durumdur ve tanı değildir; yüz onu
+  // ölçüm olarak basar ki "yüz müşterinin Kitaplığı nereye gitti" sorusunun
+  // cevabı okunsun. Ayrışamayan kök ise çevrimin sustuğu yerdir ve susmaz.
+  if (g.ortakKod?.length) {
+    satirlar.push("", `🔀 KARDEŞ PROJELERDE ORTAK KOD (${g.ortakKod.length} · beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür):`);
+    for (const o of g.ortakKod) satirlar.push(`   ${o.kod} → ${o.projeler.join(" · ")}`);
+  }
+  if (g.ayrışamayan?.length) {
+    satirlar.push("", `⚠️ AD ALANI OLMADAN AYRIŞAMAYAN PROJE KÖKÜ (${g.ayrışamayan.length} · aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için çevrim bu kökleri AYIRAMADI ve ilk tanım kazandı):`);
+    for (const a of g.ayrışamayan) satirlar.push(`   ${a.kod} — ${a.dosyalar.join(" · ")}`);
+  }
+  satirlar.push("", `🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`);
+  return satirlar.join("\n") + "\n";
 }
 
 /** JSON yüzü (saf render): 2-boşluk girintili, determinist. */

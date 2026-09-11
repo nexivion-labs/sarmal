@@ -26,7 +26,7 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
-  mevsimVadeTanilari,
+  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari,
 } from "../src/denetci.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
@@ -252,15 +252,16 @@ test("proje: Kod düğümünün dosya beyanı Meyve ile aynı disk doğrulaması
       `Kod( kod: KOD-ARTI, dosya: "src/var.ts + src/ikinci.ts", ne: "artı ile birleştirilmiş beyan tek yol olarak çözülmez" )`,
       `Kod( kod: KOD-VAR, dosya: "src/var.ts", ne: "diskte çözülen meşru beyan" )`,
       `Kod( kod: KOD-BEYANSIZ, ne: "dosyasız Kod bu turda muaftır — alanı zorunlu kılmak kanon hükmü ister" )`,
-      `Kod( kod: KOD-KOR-NOKTA, dosya: "sablon/dongu.sar", ne: "YOKSAY klasörünün içeriği taramada yaşamaz; ölçülemeyen beyan suçlanmaz" )`,
+      `Kod( kod: KOD-KOR-NOKTA, dosya: "ogreti/sablon/dongu.sar", ne: "taranmayan sentetik gövdenin içeriği anlık görüntüde yaşamaz; ölçülemeyen beyan suçlanmaz" )`,
+      `Kod( kod: KOD-KULLANICI-SABLON, dosya: "sablon/kurumsal/yok.ts", ne: "KPS-IND-A01 nöbeti: kullanıcının kendi şablon kitaplığı TARANIR, dolayısıyla karşılıksız beyanı suçlanır" )`,
       "",
     ].join("\n"),
   });
   const t = omurgaTanilari(programlar, kodIndeksle(programlar), bosDisk(["src/var.ts"]));
   const kodBulgulari = t.filter((x) => x.tani.kod === "meyve-dosyası-eksik");
   const kimlikler = kodBulgulari.map((x) => x.tani.mesaj.match(/Kod "([^"]+)"/)?.[1]).sort();
-  assert.deepEqual(kimlikler, ["KOD-ARTI", "KOD-BOS", "KOD-DISARI", "KOD-YOK"],
-    "dört ihlal ateşlemeli; meşru yol, beyansız düğüm ve kör-nokta yolu susmalıdır");
+  assert.deepEqual(kimlikler, ["KOD-ARTI", "KOD-BOS", "KOD-DISARI", "KOD-KULLANICI-SABLON", "KOD-YOK"],
+    "beş ihlal ateşlemeli; meşru yol, beyansız düğüm ve öğreti kitaplığındaki kör-nokta susmalıdır");
   uretildi("meyve-dosyası-eksik", kodBulgulari);
   // Cümle düğümü kendi adıyla anar ve iki dil hanesi birlikte dolar (Kod'a "Meyve" denmez).
   const yok = kodBulgulari.find((x) => x.tani.mesaj.includes("KOD-YOK"))!.tani;
@@ -620,17 +621,32 @@ test("kural: hüküm türü, sözleşme üçlüsü ve terfi kapısı", () => {
 });
 
 test("orkestrasyon: tanı sözleşmesi, kapsam, Proje kimliği ve yüz tutarlılığı", () => {
+  // KPS-AYR-A01: hüküm artık Proje kökü SAYISINI değil gruplamanın TAMLIĞINI
+  // ölçer. İki kökün yan yana durması tek başına kusur değildir; kusur, bir
+  // bulgunun hiçbir Proje evine giremeyip çatı kimliğinde kalmasıdır. Fikstür
+  // bu yüzden iki ayrı kökün DIŞINDA bir plan dosyası taşır: o dosyanın
+  // bulgusu evsiz kalır ve tanı gerçek sebebiyle doğar.
   const kok = mkdtempSync(join(tmpdir(), "sarmal-ork-"));
   try {
+    mkdirSync(join(kok, "bir"), { recursive: true });
+    mkdirSync(join(kok, "iki"), { recursive: true });
+    mkdirSync(join(kok, "disarida"), { recursive: true });
     writeFileSync(join(kok, "fikstur_anadizin.sar"),
       `-->|\n## Amaç\nFikstür.\n## Kapsam\nFikstür.\n## Sonuç\nFikstür.\n|<--\n`
       + `ÇalışmaAlanı( kod: CAL-FIK ) {\n`
-      + `  Proje( kod: PRJ-BIR )\n`
-      + `  Proje( kod: PRJ-IKI )\n`
+      + `  Kitaplık( kod: KTP-BIR, yol: "bir/", ne: "Birinci kök." )\n`
+      + `  Kitaplık( kod: KTP-IKI, yol: "iki/", ne: "İkinci kök." )\n`
+      + `  Kitaplık( kod: KTP-DIS, yol: "disarida/", ne: "Hiçbir Projenin malı olmayan gövde." )\n`
       + `}\n`, "utf8");
+    writeFileSync(join(kok, "bir", "bir_anadizin.sar"), `Proje( kod: PRJ-BIR, rejim: esnek )\n`, "utf8");
+    writeFileSync(join(kok, "iki", "iki_anadizin.sar"), `Proje( kod: PRJ-IKI, rejim: esnek )\n`, "utf8");
+    writeFileSync(join(kok, "disarida", "plan.sar"),
+      `Adım( kod: ADM-EVSIZ, durum: beklemede, ne: "Hiçbir Proje kökünün altında yaşamayan iş." )\n`, "utf8");
     const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-07-27" });
     const tumu = sonuc.akis.flatMap((r) => r.tanilar);
     uretildi("proje-tanı-kimliği-uyumsuz", tumu);
+    const kimlik = tumu.find((x) => x.kod === "proje-tanı-kimliği-uyumsuz")!;
+    assert.match(kimlik.mesaj, /disarida\/plan\.sar/, "tanı evsiz dosyayı adıyla söylemeli");
     assert.equal(sonuc.atlananKapilar?.length ?? 0, 0,
       `zorunlu denetim kapısı düştü: ${(sonuc.atlananKapilar ?? []).join(" · ")}`);
   } finally {
@@ -641,10 +657,11 @@ test("orkestrasyon: tanı sözleşmesi, kapsam, Proje kimliği ve yüz tutarlıl
 test("YAS-3.3 regresyonu: örnek dünyasındaki Proje ürün kimliği sayımına girmez", () => {
   const kok = mkdtempSync(join(tmpdir(), "sarmal-ork-ornek-"));
   try {
-    mkdirSync(join(kok, "ornek"), { recursive: true });
+    // KPS-IND-A01: ders dünyası öğreti kitaplığına demirlidir; fikstür oraya konur.
+    mkdirSync(join(kok, "ogreti", "ornek"), { recursive: true });
     writeFileSync(join(kok, "fikstur_anadizin.sar"),
       `Proje( kod: PRJ-URUN, rejim: esnek )\n`, "utf8");
-    writeFileSync(join(kok, "ornek", "ders.sar"),
+    writeFileSync(join(kok, "ogreti", "ornek", "ders.sar"),
       `Proje( kod: PRJ-DERS, rejim: esnek )\n`, "utf8");
     const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-07-27" });
     const kimlikTanilari = sonuc.akis.flatMap((r) => r.tanilar)
@@ -739,6 +756,50 @@ test("proje: vadesi geçmiş mevsim açık iş sarıyorsa ORK-8 tanısı fikstü
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+test("proje: mühürlendiğini yazan mevsim açık iş sarıyorsa ORK-8 mühür tanısı fikstürle doğar", () => {
+  // Ölçüt metnin iddiası değil grafın sayısıdır; tarih okunmaz, çözücü vade
+  // bekçisiyle ortaktır (KPS-MVS-A01 ikinci teslim · kontrolcü hükmü 2026-09-10).
+  const programlar = harita({
+    "is/plan/faz.sar": `Faz( kod: FAZ-MUHURLU, ad: "Mevsim", ne: "Bu mevsim MÜHÜRLENDİ" ) {\n  çağır BLK-M\n}\n`,
+    "is/plan/govde.sar": `Blok( kod: BLK-M, ad: "gövde" ) {\n  Katman( kod: KAT-MHR, ad: "katman" ) {\n    AltKatman( kod: ALT-MHR, ad: "modül" ) {\n      Adım( kod: ADM-MHR, durum: beklemede, ne: "bekleyen iş" )\n    }\n  }\n}\n`,
+  });
+  const t = mevsimMuhurTanilari(programlar);
+  uretildi("mevsim-mührü-çelişkili", t);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].tani.duzey, "bilgi");
+});
+
+// ══ MIM-3.4 · DOSYA MÜHÜRLERİ (KPS-MHR-A01 · Founder hükmü 2026-09-11) ═══════
+
+test("proje: arşiv, eğitim ve sonra mühürlü dosyalar listelenir, biçime uymayan ad uyarı alır", () => {
+  // Arşiv ile sonra mühürlü dosyalar disk anlık görüntüsünde AYRI listede durur
+  // ve hiçbir yükleyici onları okumaz; eğitim mühürlü dosya okunur ve olağan
+  // listede kalır. Tarih çözücüsü enjekte edilir, çünkü bekleme süresi git'e ya
+  // da dosyanın durum tarihine sorulur ve sınama takvime bağlanamaz.
+  const disk: DiskAnlikGoruntu = {
+    girdiler: [
+      { tur: "dosya", yol: "is/plan/@EGITIM@_ders.sar" },
+      { tur: "dosya", yol: "is/plan/Rapor.sar" },
+      { tur: "dosya", yol: "is/plan/@FOO@_x.sar" },
+    ],
+    muhurlular: [
+      { tur: "dosya", yol: "arsiv/@ARSIV@_eski.sar" },
+      { tur: "dosya", yol: "is/plan/@SONRA@_bekleyen.sar" },
+    ],
+  };
+  const t = dosyaMuhruTanilari(disk, "/yok", "2026-09-11", "x_anadizin.sar", () => ({ tarih: "2026-09-01", kaynak: "git" }));
+  uretildi("dosya-mührü", t);
+  uretildi("sonraya-bırakılmış-dosya", t);
+  uretildi("geçersiz-dosya-adı", t);
+  const kod = (k: string): Array<{ dosya: string; tani: Tani }> => t.filter((x) => x.tani.kod === k);
+  assert.equal(kod("dosya-mührü").length, 2, "arşiv ile eğitim mühürlü iki dosya listelenmeli");
+  assert.equal(kod("sonraya-bırakılmış-dosya").length, 1, "sonra mühürlü dosya tek satırla listelenmeli");
+  assert.match(kod("sonraya-bırakılmış-dosya")[0].tani.mesaj, /10 gündür bekliyor/);
+  assert.equal(kod("geçersiz-dosya-adı").length, 2, "büyük harfli ad ile bilinmeyen etiket ayrı ayrı uyarılmalı");
+  assert.ok(kod("geçersiz-dosya-adı").every((x) => x.tani.duzey === "uyarı"));
+  assert.ok(t.every((x) => x.dosya === "x_anadizin.sar"), "bulgular giriş dosyasına yazılmalı ki panel onları yayımlayabilsin");
+});
+
 // ══ MIM-1.7 · ALTKATMAN TEKİLLİĞİ (Founder hükmü 2026-08-28) ════════════════
 
 test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata doğar", () => {
@@ -756,7 +817,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -770,6 +831,15 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
     // ritüelinin ilk motor karşılığıdır ve beyan ile grafın ayrıştığını söyler,
     // düzeltilecek bir sapma bildirmez; bu yüzden doğrudan bilgi düzeyindedir.
     "mevsim-vadesi-geçti",
+    // On ikincisi 2026-09-10 tarihinde kontrolcü hükmüyle doğdu: ORK-8 kapanışının
+    // dördüncü basamağı olan mührün dürüstlüğü. Metnin iddiası ile grafın sayısının
+    // çeliştiğini söyler, düzeltilecek bir sapma dayatmaz; doğrudan bilgi düzeyindedir.
+    "mevsim-mührü-çelişkili",
+    // On üçüncüsü ile on dördüncüsü 2026-09-11 tarihinde Founder hükmüyle doğdu
+    // (MIM-3.4 dosya mühürleri): mühürlü dosyayı listeleyen gözlem ile sonraya
+    // bırakılmış dosyanın bekleme hatırlatması. İkisi de bir sapma bildirmez,
+    // mührün sessiz olmamasını sağlar; kanon ikisini de bilgi düzeyinde yazar.
+    "dosya-mührü", "sonraya-bırakılmış-dosya",
   ].sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");
@@ -781,7 +851,10 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
   // gelmedi, dolayısıyla A05'in kırk altılık aday kümesini değiştirmez.
   assert.equal(hatada.length, 47, "Founder kabulündeki hata kümesi 47 tanı olmalıdır");
   assert.ok(hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
-  assert.equal(uyarida.length, 16, "Founder hükmünde uyarıda kalan küme 16 tanı olmalıdır");
+  // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
+  // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
+  // sıfırdır; terfi turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
+  assert.equal(uyarida.length, 17, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 uyarısı 17 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 
@@ -790,14 +863,22 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
 test("proje: öncelik beyanı olmayan AÇIK Adım gözlem üretir, tamamlanmış olan üretmez", () => {
   const programlar = harita({
     "plan.sar":
+      // KYN-ONC-A03 mutasyon ölçümü (2026-09-10): fikstürde ÖNCEDEN tek beyansız
+      // Adım vardı ve gruplama sökülse bile bulgu sayısı bir kalıyordu, yani
+      // üçüncü tasarım sınırı (gürültü) hiçbir nöbetle korunmuyordu. İKİNCİ
+      // beyansız Adım o körlüğü kapatır: gruplama sökülürse sayı ikiye çıkar.
       `Adım( kod: ADM-BEYANSIZ, durum: beklemede, ne: "iş" )\n` +
+      `Adım( kod: ADM-BEYANSIZ-IKI, durum: geliştirmede, ne: "iş" )\n` +
       `Adım( kod: ADM-BEYANLI, durum: geliştirmede, öncelik: p1, ne: "iş" )\n` +
       `Adım( kod: ADM-KAPALI, durum: tamamlandı, ne: "iş", koşu: "bitti" )\n`,
   });
   const t = onceliksizAdimTanilari(programlar);
   uretildi("önceliksiz-adım", t);
-  assert.equal(t.length, 1, "bulgular kapsayıcıya göre gruplanmalı — dosya başına tek gözlem");
+  assert.equal(t.length, 1,
+    "bulgular kapsayıcıya göre gruplanmalı — İKİ beyansız Adım tek gözlemde toplanır, çünkü elli üç ayrı satır gerçek nedeni örter");
   assert.match(t[0].tani.mesaj, /ADM-BEYANSIZ/, "gözlem beyansız Adımı adıyla anmalı");
+  assert.match(t[0].tani.mesaj, /ADM-BEYANSIZ-IKI/, "gruplanan gözlem ikinci beyansız Adımı da anmalı");
+  assert.match(t[0].tani.mesaj, /2/, "gözlem kaç Adımın beyansız olduğunu sayıyla söylemeli");
   assert.ok(!t[0].tani.mesaj.includes("ADM-KAPALI"),
     "tamamlanmış Adım gözleme girmiş — biten işin sıralaması artık anlam taşımaz");
   assert.ok(!t[0].tani.mesaj.includes("ADM-BEYANLI"), "beyanlı Adım gözleme girmiş");
@@ -805,11 +886,16 @@ test("proje: öncelik beyanı olmayan AÇIK Adım gözlem üretir, tamamlanmış
 
 test("proje: ders dünyası öncelik gözleminin DIŞINDADIR", () => {
   const programlar = harita({
-    "ornek/ders.sar": `Adım( kod: ORN-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
+    "ogreti/ornek/ders.sar": `Adım( kod: ORN-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
     "sinama/fikstur.sar": `Adım( kod: SNM-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
   });
   assert.deepEqual(onceliksizAdimTanilari(programlar), [],
     "örnek ve sınama gövdeleri öğretim malzemesidir ve kasıtlı olarak eksik yazılabilir");
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi kökü altındaki `ornek/` kitaplığı ders
+  // rafı DEĞİLDİR; oradaki beyansız Adım gözleme girer (Founder hükmü 2026-09-10).
+  assert.equal(onceliksizAdimTanilari(harita({
+    "ornek/musteri/plan.sar": `Adım( kod: KLL-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
+  })).length, 1, "kullanıcı ağacındaki örnek kitaplığı öncelik gözleminden kaçmamalı");
 });
 
 test("proje: hedefi tamamlanmış hatırlatıcı ATEŞLEMİŞ sayılır, uykudaki sayılmaz", () => {
@@ -868,6 +954,10 @@ test("öneri şartı ölçüttür, beyan değil: düzyazı bir örnek cümlesi n
   assert.equal(yapistirilabilirOrnekVar("Şunu düzelt. Örnek: `kaldır`"), false,
     "yapısal jeton taşımayan kısa parça yapıştırılabilir sayılmamalı");
   assert.equal(yapistirilabilirOrnekVar("Şunu düzelt. Örnek: `rejim: katı` yaz."), true);
+  // KPS-MHR-A01: ad düzeltmesinin iskeleti iki yollu tek bir taşıma komutudur.
+  assert.equal(yapistirilabilirOrnekVar('Adı düzelt. Örnek: `git mv "is/Rapor.sar" "is/rapor.sar"`.'), true);
+  assert.equal(yapistirilabilirOrnekVar("Adı düzelt. Örnek: `git mv`."), false, "yolsuz komut iskelet sayılmamalı");
+  assert.equal(yapistirilabilirOrnekVar('Adı düzelt. Örnek: `git mv "tek-yol"`.'), false, "tek yollu komut iskelet sayılmamalı");
   assert.equal(yapistirilabilirOrnekVar("`rejim: katı` yaz."), false,
     "örnek işareti olmadan geçilmemeli");
 });
@@ -982,3 +1072,106 @@ test("D-6: ham kaynağı `dogrula()`'ya geçiren DÖRT çağrı yerinin dördü 
 // üzerinden ilerler ve elinde dosyanın ham metni bulunmaz. Şekil hükümleri
 // kullanıcıya görünen dört yüzeyde konuşur; iç döngüde sessizlikleri kayıp
 // değildir. Bu cümle, halka 2 denetiminin B-1 kapanış şartının son maddesidir.
+
+// ══ KPS-KAD-A01 · KADEME AYRIŞMASININ SİCİLLE BAĞLANMASI ═══════════════════
+//
+//   Sekiz tanı kanonun öngördüğü düzeyin ALTINDA üretilir ve bu ayrışma bilinçli
+//   bir terfi borcudur, kaza değildir. Borç kayda yazıldı (KPS-KAD-A01 gövdesi);
+//   bu nöbet kaydın bayatlamasını engeller. YAS-4 terfiyi sıralı basamağa ve
+//   temizlik kapısına bağlar, dolayısıyla kümenin sessizce büyümesi ya da bir
+//   tanının kapı geçilmeden yükseltilmesi kanon ihlalidir.
+
+test("KPS-KAD-A01: kanon düzeyiyle bugünkü kademesi ayrışan tanı kümesi TAM OLARAK sekizdir", () => {
+  const ayrisan = YENI_TANI_KANONU.filter((k) => k.kademe !== k.kanonDüzey);
+  assert.deepEqual(ayrisan.map((k) => k.kod).sort(), [
+    "adım-atomikliği", "beceri-kartı-eksik", "kullanır-kenarı-ihlali",
+    "seçilemez-adım-yürütümü", "terfi-kanıtı-eksik", "yürütme-kenarı-sözleşmesi",
+    "üretim-kökeni-ihlali", "şema-dışı-alan",
+  ].sort(), "terfi borcu kümesi değişti — KPS-KAD-A01 kaydı da aynı turda tazelenmelidir");
+});
+
+test("KPS-KAD-A01: ayrışan her tanı BUGÜN bilgi kademesindedir — basamak atlanmamıştır", () => {
+  for (const k of YENI_TANI_KANONU.filter((x) => x.kademe !== x.kanonDüzey)) {
+    assert.equal(k.kademe, "bilgi",
+      `"${k.kod}" bilgi kademesinden çıkmış; YAS-4 terfiyi sıralı basamağa bağlar ve atlama yasaktır`);
+  }
+});
+
+test("KPS-KAD-A01: kanonun HATA dediği yerde bilgi basan tanılar TAM OLARAK üçtür", () => {
+  const hataBorcu = YENI_TANI_KANONU
+    .filter((k) => k.kanonDüzey === "hata" && k.kademe === "bilgi").map((k) => k.kod).sort();
+  assert.deepEqual(hataBorcu,
+    ["kullanır-kenarı-ihlali", "yürütme-kenarı-sözleşmesi", "üretim-kökeni-ihlali"].sort(),
+    "kanonun hata dediği yerde bilgi basan küme değişti; bu kümenin her üyesi YAS-4.2'nin üç kanıtını ayrı ayrı ister");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KPS-IND-A01 · DERS DIŞLAMASININ KENDİ EVİNE DEMİRLENMESİ (Founder 2026-09-10)
+//
+//   Kusur 2026-09-10 tarihinde iki koşumla ölçüldü ve iki koşum arasındaki tek
+//   fark bir klasörün ADIYDI: `sablon/` adlı bir kitaplığın altında yaşayan Proje
+//   kökü graftan tamamen düşüyor, karne on yedi düğümden beşe iniyor ve denetim o
+//   ağaç için sıfır hata diyordu, çünkü hiç bakmadığı bir yere hata üretemez.
+//   Bu nöbet o iki koşumu tek sınamada donduruyor: aynı ağaç iki kez kurulur, tek
+//   fark kitaplığın adıdır ve İKİ KOŞUM AYNI SAYIYI vermek zorundadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Tek Proje kökü taşıyan bir kitaplığı verilen adla kurar ve karne sayısını döndürür. */
+function kitaplikKarnesi(kitaplikAdi: string): { dugum: number; adim: number; kayipYapi: number; bulgu: number } {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-ind-a01-"));
+  try {
+    mkdirSync(join(kok, kitaplikAdi, "kurumsal", "plan"), { recursive: true });
+    writeFileSync(join(kok, "cati_anadizin.sar"),
+      `ÇalışmaAlanı( kod: CAL-CATI, ad: "cati", ne: "ölçüm çatısı" ) {\n` +
+      `  Kitaplık( kod: KTP-KUTU, yol: "${kitaplikAdi}/", ne: "kitaplık" ) {\n` +
+      `    Kitaplık( kod: KTP-KURUMSAL, yol: "kurumsal/", ne: "kendi kökü olan proje" )\n` +
+      `  }\n}\n`, "utf8");
+    writeFileSync(join(kok, kitaplikAdi, "kurumsal", "kurumsal_anadizin.sar"),
+      `Proje( kod: PRJ-KURUMSAL, ad: "kurumsal", rejim: esnek, ne: "kullanıcının kendi projesi" ) {\n` +
+      `  Raf( kod: RAF-KURUMSAL-PLAN, yol: "plan/", ne: "plan rafı" )\n}\n`, "utf8");
+    writeFileSync(join(kok, kitaplikAdi, "kurumsal", "plan", "plan.sar"),
+      `Blok( kod: BLK-KURUMSAL, ad: "Kurumsal Açılış", ne: "🏢 açılış işi" ) {\n` +
+      `  Adım( kod: KRM-A01, durum: beklemede, ne: "🏢 açılış sayfası", görev: "sayfa kurulur" )\n}\n`, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-10" });
+    const tanilar = sonuc.akis.flatMap((r) => r.tanilar);
+    return {
+      dugum: sonuc.karne?.dugum ?? 0,
+      adim: sonuc.karne?.adim ?? 0,
+      kayipYapi: tanilar.filter((t) => t.kod === "kayıp-yapı").length,
+      // Toplam bulgu da ölçülür: ad tabanlı üçüncü bir muafiyet listesi (ilansız
+      // gövde bekçisi gibi) kullanıcı ağacını sessizce muaf tutarsa sayı ayrışır.
+      bulgu: tanilar.length,
+    };
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+}
+
+test("KPS-IND-A01: kullanıcı kitaplığının adı karneyi değiştirmez — iki koşum aynı sayıyı verir", () => {
+  const kalip = kitaplikKarnesi("kalip");       // listede hiç geçmeyen kıyas adı
+  for (const ad of ["sablon", "arsiv", "fikstur", "ornek"]) {
+    const olculen = kitaplikKarnesi(ad);
+    assert.deepEqual(olculen, kalip,
+      `"${ad}" adlı kullanıcı kitaplığı kıyas adından farklı ölçüldü — ders dışlaması kendi evinden taşmış`);
+  }
+  assert.equal(kalip.kayipYapi, 0, "kıyas koşumu sahte kayıp-yapı üretmemeli");
+  assert.ok(kalip.adim >= 1, "kullanıcı kitaplığının Adımı karnede sayılmalı");
+});
+
+test("KPS-IND-A01: öğreti kitaplığının altındaki ders rafı karne dışında kalmayı sürdürür", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-ind-a01-ders-"));
+  try {
+    mkdirSync(join(kok, "ogreti", "ornek"), { recursive: true });
+    writeFileSync(join(kok, "ders_anadizin.sar"),
+      `Proje( kod: PRJ-DERS-KOK, ad: "ders", rejim: esnek, ne: "ders kökü" ) {\n` +
+      `  Kitaplık( kod: KTP-OGRETI, yol: "ogreti/", ne: "öğreti kitaplığı" ) {\n` +
+      `    Raf( kod: RAF-ORNEK, yol: "ornek/", ne: "örnek korpus" )\n` +
+      `  }\n}\n`, "utf8");
+    writeFileSync(join(kok, "ogreti", "ornek", "ders.sar"),
+      `Adım( kod: ADM-DERS-MUAF, durum: beklemede, ne: "ders", görev: "ders malzemesi" )\n`, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-10" });
+    assert.equal(sonuc.karne?.adim, 0, "OGR-5: ders Adımı ürün karnesine girmez");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});

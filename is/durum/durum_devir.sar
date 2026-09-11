@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
-            neredeyiz: PERFORMANS-MEVSIMI-MUHURLENDI-YAYIN-YOLU-9-EYLUL,
-            sıradaki: FOUNDER-DIKTESI-SEKIZ-AYLIK-PROBLEMLER-SONRA-SARMAL-SONRA-SLAYT,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
+            neredeyiz: CATI-KOK-DENETIMI-VE-DOSYA-MUHURLERI-0-9-181-KURULDU,
+            sıradaki: FOUNDER-KAPISI-EBEDI-KURAL-SONRA-ARSIV-MUHRU-LABORATUVARDA,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -74,6 +74,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
                          CODEX-MCP-AYARI-SILINEN-ESKI-DEPO-YOLUNA-ISARET-EDIYOR,
                          SOL-IDA-SINAVI-CANLI-KOSUYOR-PLANDA-BEKLEMEDE-GORUNUYOR,
                          YAYIN-KARARLARI-LISANS-APACHE-EKL-F6-A05-ERTELE-GOC-A08-KAPAT-UZAK-ONCE-OZEL,
+                         DURUMLAR-PANELI-GELISTIRMEYE-ALINDI-YAYINI-BEKLEMEZ-UYM-DRM-A01-A02,
+                         MINI-GRAF-CALISMA-ALANI-KUMELERI-GELISTIRMEYE-ALINDI-MAGAZA-SONRASI-VIT-GRAF-A21,
                          E-POSTA-VE-UZAK-DEPO-ACMA-EN-SONA ] ) {
   özet: """
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
@@ -1703,19 +1705,176 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-05", oturum: 108,
         Kendi planındaki canlı açılış sahnesi (YTK-A22) böylece düştü; video ve
         mağaza yüklemesi (EKL-F6-A01) ayrı işler olarak sürer.
 
-        SIRADAKİ: Founder anlatmaya devam eder (sekiz aylık problemler, sonra çözüm
-        olarak Sarmal); metin 06 dosyasında birikir; bölümler onaylandıkça slayta
-        girer. Founder hükmü: anlatımdaki her iddia gerçek, kaynaklı dünya
-        araştırmasıyla desteklenir ve kaynaklar 06 dosyasının altına yazılır.
-        Sonra 7–9 Eylül yayın Adımları. Onaylanan altı Adımdan dördünün bağımlılığı
-        boştur ve sırası Founder'ındır (RFM-KANON-A01 · RFM-KANON-A02 · KPS-KEN-A01
-        · KYN-HASAT-A01); PRF-IS-A05 ile VIT-KIMLIK-A08 öncüllerini bekler.
-        Kanon Uyum Bloku mağaza yüklemesinin arkasındadır. Bir sonraki paket
-        kurulumunda Founder'ın Onaylar paneli yerleşimi bir kez sıfırlanır.
-        E-posta ve uzak depo en sonda.
+        OTURUM KAPANIŞI (6 Eylül gecesi): Founder açılıştan sonra README'ye üç
+        şey istedi ve yazıldı: slogan büyük harfli başlık olarak (İNSAN MAKİNİST,
+        AI HIZLI TREN, SARMAL HEDEFE SAPMADAN GÖTÜREN RAY), çalışma ağacının
+        mantığı doğuş ağacı üzerinden dört cümleyle ve kitle sınırı iki dürüst
+        büyük başlıkla (tek teknolojili küçük iş için tavsiye edilmez; çok ajanlı,
+        on civarı teknolojili ya da sektörel/kişisel işletim sistemi kuran için
+        yapıldı). e79816c açık depoya gönderildi, kapı beşte beş yeşil. Oturum
+        burada Founder'ın kararıyla kapandı; çalışma ağacı temiz, uzak ile yerel
+        aynı işlemede. Depo açık ve henüz sessizdir; ilk ziyaretler Founder'ın
+        ilk paylaşımıyla gelir.
+
+        SIRADAKİ: Eklentinin mağazaya yüklenmesi (EKL-F6-A01) Founder'ın eliyle
+        koşar; yayıncı anahtarı hiçbir dosyaya yazılmaz. Anlatım metni 06
+        dosyasında birikmeye devam eder ve videonun kurgusu değişmiştir: depo
+        zaten açık olduğu için canlı açılış sahnesi yoktur, video ürünü anlatır.
+        Founder hükmü: anlatımdaki her iddia gerçek, kaynaklı dünya araştırmasıyla
+        desteklenir ve kaynaklar 06 dosyasının altına yazılır. Onaylanan altı
+        Adımdan dördünün bağımlılığı boştur ve sırası Founder'ındır (RFM-KANON-A01
+        · RFM-KANON-A02 · KPS-KEN-A01 · KYN-HASAT-A01); PRF-IS-A05 ile
+        VIT-KIMLIK-A08 öncüllerini bekler. Kanon Uyum Bloku mağaza yüklemesinin
+        arkasındadır. Bir sonraki paket kurulumunda Founder'ın Onaylar paneli
+        yerleşimi bir kez sıfırlanır. Açık depoya her gönderim Founder sözüyle
+        yapılır; tarihçe artık yeniden yazılamaz ve yasak sözcük kancası her
+        işlemede koşar.
 
         SIRADAKİ (kalıcı): açık depo 2026-09-05'te doğdu ve halka açıldı; sırada
         eklentinin mağazaya yüklenmesi (EKL-F6-A01, Founder'ın eliyle), ilk video
         ve lansman takvimi vardır. Uzak depo yalnız Founder sözüyle gönderim alır.
+
+        OTURUM 111 (10 Eylül · doğuşun kademelenmesi ve tanının panele inmesi):
+        Founder bir çalışma sözleşmesi verdi: kontrolcü kod yazmaz, tek bir üretici
+        ajan hem planı hem kodu üretir, kontrolcü .sar üzerinde çalışır, denetler ve
+        ölçer. Sözleşme gereği bu oturumda kontrolcü hiçbir üretim kodu yazmamıştır.
+        On iki Adım mühürlendi ve dördü açık kaldı; açık kalanların ikisi Founder
+        kapısındadır, ikisi motor tarafı bitmiş olduğu hâlde kabul ölçütünün kalan
+        ayağını beklemektedir.
+
+        Oturumun kökündeki dert şuydu: yeni bir Sarmal ağacı kurulurken ajan acele
+        edip yanılıyordu ve aynı çatı 9 Eylül günü iki kez kurulup iki kez silindi.
+        Kusurun ürün tarafı ölçüldü ve kapatıldı. Doğuş paketi bir projeyi altı
+        dosyayla doğuruyordu ve doğan kök kapısızdı; bugün on üç dosya yazıyor ve
+        kökte yok sayma istisnası, sunucu kaydı, yönerge ikizi, yürütücü ayarı, iki
+        kanca ile kanon işaretçisi bulunuyor. Çalışma alanı türü sekiz dosyadan yirmi
+        ikiye çıktı. Kitaplık kademesi hem doğuşta hem öğretimde zorunlu hâle geldi.
+        Öğretim kapısı boş dizinde de koşuyor ve üç yeni bölüm basıyor: Sarmal'ın ne
+        için var olduğu, ağacın kademe kademe ve insan onayıyla kurulduğu ve
+        planlamanın yavaş olduğu. Gerçek koşumlarda kaydedilmiş beş anti-desen de
+        karta indi.
+
+        Founder'ın işaret ettiği ikinci kusur da kapandı: bir uyarı panelde
+        görünmüyordu. Ölçüm motorun tanı üreticilerinden yalnız yirmi ikisinin panele
+        ulaştığını, hata ya da uyarı basıp panele hiç ulaşamayan otuz üretici
+        bulunduğunu gösterdi. Panel bugün elli iki üreticiden beslenmektedir ve
+        panele ulaşamayan hata veya uyarı üreticisi sayısı sıfırdır; yalnız komut
+        satırında kalan dokuz girdinin dokuzu da bilgi düzeyindedir ve her biri
+        gerekçesini yazılı taşır. Zaman ekseni projeye bağlandı: proje kökünden
+        çözülen graf otuz üç düğümden yedi yüzün üzerine çıktı ve beş Fazın beşi de
+        Proje kapsayanına oturdu. Çapraz proje ad alanı motorda kuruldu; kapalı
+        depolarda ölçülen on bir atıf hatasının sekizi kapandı.
+
+        Belge yüzleri doğan ağacın gerçek adresine çekildi ve üç sayısal iddia
+        yeniden ölçüldü. İkisi yanlış çıktı: kök belgeleri tanı sayısını yetmiş dört
+        yazıyordu, canlı sicil yüz yetmiş beş vermektedir; örnek projenin karnesi on
+        altı düğüm yazıyordu, gerçek koşum yirmi düğüm vermektedir. Kanon madde
+        sayısı yüz elli yediden yüz on dokuza indirildi, çünkü yüz elli yedi bütün
+        depodaki Kural düğümü sayısıdır ve kanon sekizlisi yüz on dokuz maddedir. Bir
+        tanı alıntısının satır ile sütun numarası da gerçek koşumla düzeltildi.
+        Öğretim yüzeylerinin bir bölümü var olmayan bir rafı adres gösteriyordu ve
+        altı üretim metni kitaplık önekiyle tazelendi; sızıntıyı yaşatan nöbet tek
+        yolu aradığı için genişletildi ve kendi doğruluğunu da ölçen bir aileye
+        çevrildi.
+
+        BUGÜN ÖLÇÜLEN VE ONARILMAYAN BEŞ BULGU hatırlatıcı kuyruğuna indi. En ağırı
+        şudur: motorun indeks dışı bıraktığı klasör adları sabit bir listede yaşar ve
+        liste denetlenen her ağacın her yol parçasına uygulanır. Şablon, arşiv,
+        fikstür ya da derleme çıktısı adını taşıyan bir klasörün altındaki Proje kökü
+        graftan tamamen düşmekte, karne yirmi sekiz düğümden yirmi ikiye inmekte ve
+        denetim o ağaç için sıfır hata demektedir; sessiz görünmezlik yanlış bir
+        yeşile dönüşmektedir. Bulgu iki koşumla, tek fark klasör adı olacak biçimde
+        kanıtlanmıştır. Kusur Founder'ın kurmak istediği ajans çatısının merkezine
+        düşer, çünkü o çatının üç ana kitaplığından biri web sitesi şablonlarıdır ve
+        her şablon kendi Proje köküdür. Onarımın üç yolu da kanonun OGR-5 hükmüne
+        dokunduğu için seçim Founder kapısındadır. Öteki dört bulgu şunlardır: doğan
+        ağacın sunucu kaydı motor yolunu mutlak yazar ve uyarı yalnız doğum anında
+        görünür; gezinme aracı deve gövdeli bir kaynak sembolünü adresleyemez ve
+        bulunamadı yerine hiç yok der; geribildirim hasadı sabit bir raf adına yazar
+        ve doğan ağacın rafıyla ayrışır; sunucu araç açıklamalarındaki bir örnek Adım
+        kodu hiçbir yerde tanımlı değildir.
+
+        AJANS PROVASI: çatı denemesi kuruldu ve her proje kendi kökünden sıfır hata
+        verdi. Çatı kökünden koşulan denetim iki kusur gösterir; birincisi yukarıdaki
+        şablon görünmezliğidir, ikincisi çatı denetiminin kapsanan projeleri kendi
+        kimliklerinden çözmemesidir ve o zaten kayıtlı bir açıktır. Founder gerçek
+        ağacı adım adım birlikte kurmak istediğini bildirmiştir; bu yüzden ajans
+        ağacı çatı altına KURULMAMIŞTIR ve prova ağacı geçici alanda kalmıştır.
+
+        Git'e bugün hiçbir şey işlenmemiş ve hiçbir şey gönderilmemiştir; inceleme ve
+        onay Founder'ındır.
+
+        KAPANIŞ ÖLÇÜMÜ VE PAKET: dört kapı kontrolcü tarafından bağımsız koşuldu ve
+        dördü de yeşildir. Çekirdek tür denetimi sıfır hata, eklenti tür denetimi sıfır
+        hata, proje denetimi bin dokuz yüz otuz iki düğüm ve dört yüz on üç Adım ile
+        sıfır hata ve sıfır uyarı verdi ve çıkış kodu sıfırdır; çekirdek süiti bin iki
+        yüz doksan beşte bin iki yüz doksan beş, eklenti süiti yedi yüz sekizde yedi
+        yüz sekizdir. Eklenti sürümü 0.9.178'den 0.9.179'a yükseltildi, değişiklik
+        günlüğüne on bir maddelik bir girdi yazıldı ve paket sekiz yüz doksan dokuz
+        dosyayla üretilip kuruldu.
+
+        OTURUM SAYACI NOTU: bu kayıt yüz on bir numarasını taşır. Gerekçe şudur:
+        laboratuvar kaydı yüz dokuz numarasında ve 8 Eylül tarihindedir, 9 Eylül ile
+        10 Eylül oturumları onu yüz on ve yüz on bir yapar. Sayaçların eşitliğini
+        bugün hiçbir nöbet ölçmemektedir ve iki kayıt bu oturumdan önce zaten
+        ayrışmıştı; eşitlik el ölçümüyle korunmuştur ve laboratuvar kaydı kendi
+        oturumunda tazelenmelidir.
+        OTURUM 111 DEVAMI (10 Eylül akşamı ile 11 Eylül gecesi · çatı kökünden tek
+        denetim ve dosya mühürleri): oturum gece yarısını geçerek sürdüğü için
+        numarası değişmemiş, kaydın tarihi 11 Eylül olarak tazelenmiştir. Founder'ın
+        hükmüyle ders dışlaması kendi evine demirlendi (KPS-IND-A01) ve ajans
+        çatısının önündeki üç motor borcu kapatıldı. Çatı artık altındaki Proje
+        köklerini sahiplenmektedir (KPS-CAT-A01). Aynı şablondan doğan kardeş
+        projelerin kodları tek düğüme çökmek yerine kendi Projeleri altında ayrı
+        yaşamaktadır (KPS-KOD-A01; iki kalemi açıktır). Çatı kökünden koşan tek bir
+        denetim her projeyi kendi kökünden ölçmekte ve Sarmal hanesi çatı kökünden
+        üç yüz altmış beş hatadan sıfıra inerek kendi kökündeki tabloyla birebir aynı
+        hâle gelmiştir (KPS-AYR-A01). Mevsim mührünün dürüstlüğünü gören bekçi de
+        doğmuş ve ilk bulgusunu Sarmal'ın kendi planında vermiştir: performans
+        mevsiminin mührü PRF-A06 şemsiyesini açık bırakmıştır (KPS-MVS-A01).
+
+        Gece Founder panel ile komut satırının farklı sayılar gösterdiğini bildirdi.
+        Ölçüm üç sebep ayırdı: panel açık dosyanın projesini sayar, paneldeki eklenti
+        o anda sabahki motoru taşımaktadır ve paneller bulguları türüne göre ayırır.
+        Gerçek kusur yalnız ikincisiydi ve yeni paketle kapatıldı; aynı belirti gece
+        ikinci kez yaşandığı için sürüm damgası hatırlatıcısı yeniden açıldı. Tüm
+        çatının bin iki yüz yetmiş bir hata ve uyarısının yüzde doksan altısının
+        laboratuvarın arşivinden geldiği ölçülünce Founder dosya mühürlerine
+        hükmetti: dosya adının başına yazılan arşiv, eğitim ve sonra mühürleri
+        kanona MIM-3.4 maddesi olarak indi, kanon yüz altmış bir maddeye çıktı ve
+        mekanizma motora, eklentiye, kancaya ve öğretim yüzlerine aynı turda işlendi
+        (KPS-MHR-A01). Biçim ölçümle seçilmiştir; köşeli parantez ile diyez kabukta
+        sorun çıkarmış, `@` işareti çıkarmamıştır.
+
+        Kapatılmayı bekleyen dokuz hatırlatıcı tek tek okundu; altısı hedefleri
+        gerçekten bittiği için kapandı, üçü kaygıları durduğu için açık hâle alındı.
+        Arşivin mühürlenmesi için ön ölçüm yapıldı ve mühürlemenin çalışan hiçbir
+        bağı kırmayacağı gösterildi. FOUNDER KAPISINDA BEKLEYENLER şunlardır:
+        arşivdeki ebedî kuralın mührü; laboratuvar ile orkestrasyon depolarındaki üç
+        kırık atıf; KPS-KOD-A01'in şablon kopyası kalemi; PRF-A06'nın devri; örtüyle
+        mühür genişletmesi; küresel kancanın yeniden adlandırmayı görmemesi; izleme
+        kancasının başlatılması ve çatı işaretçisindeki bayat cümle.
+
+        KAPANIŞ ÖLÇÜMÜ VE PAKET: dört kapı kontrolcü tarafından bağımsız koşuldu ve dördü de yeşildir.
+        Çekirdek ile eklenti tür denetimleri sıfır hata verdi, çekirdek süiti bin üç
+        yüz yetmiş ikide bin üç yüz yetmiş iki, eklenti süiti yedi yüz elli yedide
+        yedi yüz elli yedidir; proje denetimi bin dokuz yüz yetmiş düğüm ve dört yüz
+        on sekiz Adım ile sıfır hata ve sekiz uyarı verdi ve sekiz uyarının sekizi de
+        Founder kararını bekleyen koni taşmasıdır. Çatı kökünden koşan denetimde
+        Sarmal hanesi kendi kökündeki tabloyla aynıdır; laboratuvarın yedi yüz kırk
+        beş hatası arşivin mühürlenmesini beklemektedir. Eklenti gece önce 0.9.180, sonra 0.9.181
+        sürümüne yükseltildi ve kuruldu; pencere yeniden yüklendiğinde panel komut
+        satırıyla aynı motoru kullanır. Git'e hiçbir şey işlenmemiş ve
+        gönderilmemiştir; inceleme ve onay Founder'ındır.
+
+        FOUNDER HÜKMÜ · 2026-09-11 · DURUMLAR PANELİ VE MİNİ GRAF: Founder,
+        kanonun YUZ-3.5 maddesinin öngördüğü Durumlar panelinin (UYM-DRM-A02 ve
+        onun öncülü olan Blok durum kayıtlarının doğması, UYM-DRM-A01) ve Mini
+        Graf yüzeyinde çalışma alanı kümelerinin görünmesinin (VIT-GRAF-A21)
+        geliştirmeye alınmasına hükmetmiştir. Founder, Durumlar panelinin kendi
+        yerini alması için mağaza yüklemesinin beklenmesine gerek olmadığını,
+        buna karşılık Mini Graf işinin mağaza yüklemesinden sonra yürüyeceğini
+        beyan etmiştir. İki işin ayrıntıları ve plan kenarlarının bu hükme göre
+        güncellenmesi, Founder'ın zamanı geldiğinde vereceği tarife bağlıdır.
         """
 }

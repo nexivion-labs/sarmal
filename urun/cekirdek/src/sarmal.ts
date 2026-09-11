@@ -37,7 +37,7 @@ import { taniKodCoz } from "./tani-sicili.ts";   // göç motor turu A02 kapanı
 import { sefGatewayKomutu } from "./gateway.ts";
 import { nvidiaEtmenYap, sefAracKanitKomutu, üretimKöprüsüYap } from "./kopru/nvidia.ts";
 import { ligKomutu, LIG_MODELLER } from "./kopru/lig.ts";
-import { dagKur, dagTanilari, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar } from "./dag.ts";
+import { dagKur, dagTanilari, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar, dugumYokMetni } from "./dag.ts";
 import { denetimKos } from "./denetim.ts";   // saf denetim çekirdeği — bu kabuk yalnız sunum yapar
 import { icindekilerBloku } from "./icindekiler.ts";   // MD içindekiler çekirdeği (eski defter üreticisinden devralındı)
 import { belgeYuzleriniUret } from "./belge-yuzleri.ts";
@@ -122,7 +122,7 @@ import { grafYuz } from "./graf.ts";
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";
 import { designmdTema, temaDesignmd } from "./tema-designmd.ts";
 import { cevir } from "./cevir.ts";
-import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
+import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI, yokSaymaRaporu } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
 import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MTR-A04: kök yüzeyi nöbeti de kök kapısıdır ve varlık karnesine yazmaz
 import type { EbediKilit } from "./kuralci.ts";
 import type { Dugum } from "./sozdizim.ts";
@@ -238,6 +238,12 @@ if (yol === "yonerge-ikizi") {
   const kip = args.includes("--sahnelenmiş") ? "sahnelenmiş" : "çalışma-ağacı";
   const tanilar = yonergeIkiziDenetle(kok, YONERGE_IKIZLERI, kip);
   console.log(ikizRaporu(tanilar, YONERGE_IKIZLERI, kip));
+  // Aynı kurulum tuzağının ikinci yüzü: ikizler bayt özdeş olsa bile küresel yok
+  // sayma kuralı onları (ve bütün `.sar` kaynağını) depodan uzak tutuyor olabilir.
+  // Ölçüm bilgi düzeyindedir ve çıkış kodunu DOLDURMAZ, çünkü istisnanın yokluğu
+  // bir ayrışma değil bir kurulum eksiğidir ve işlemeyi durdurmak onun karşılığı
+  // olmaz; görünmez kalması ise tam olarak ölçülmüş kusurdur (BKM-DNT-A15).
+  console.log(yokSaymaRaporu(kok));
   process.exit(tanilar.some((t) => t.duzey === "hata") ? 4 : 0);
 }
 
@@ -627,10 +633,16 @@ if (yol === "etki") {
 //    Şablon kütüphanesi (sablon/*.sar) tek kaynaktan okunur; MCP başla aracıyla
 //    aynı sablon.ts'i çağırır (YUZ-1.2). Tür yoksa liste, tür varsa dolu şablon.
 if (yol === "başla" || yol === "basla") {
+  // Doğuş anlatısı öğretim kapısının gövdesinde yaşar ve rehberin iki yüzü onu
+  // oradan okur (YUZ-1.2); tembel yükleme öteki komutların açılışını yavaşlatmaz.
+  const { dogusAnlatisi } = await import("./ogret.ts");
   const tur = args[1];
   if (!tur || tur.startsWith("--")) {
     console.log([
       "🌱 SARMAL ŞABLON KÜTÜPHANESİ — kanonik şablonlar sablon/ altında yaşar.",
+      "",
+      // BKM-DNT-A16: rehberin iki yüzü (CLI · MCP) aynı doğuş anlatısını taşır.
+      dogusAnlatisi(),
       "",
       mimariDiyalog(),
       "",
@@ -653,6 +665,7 @@ if (yol === "başla" || yol === "basla") {
   const anadizinKok = turKucuk === "proje" || turKucuk === "çalışmaalanı" || turKucuk === "calismaalani";
   console.log([
     s.baslik, "",
+    ...(anadizinKok ? [dogusAnlatisi(), ""] : []),
     ...(turKucuk === "proje" ? [mimariDiyalog(), ""] : []),
     "📋 ŞABLON (kopyala, doldur — <...> yer-tutucuları gerçek değerle değiştir):",
     "", s.sablon, "",
@@ -681,9 +694,11 @@ if (yol === "graf") {
   // ORK-4 (KPS-ADA-A01): graf yüzü de ad alanı kapısını taşır — aynı hedef
   // denetimde çözülüp grafta kopuk görünemez (tek kurucu: adAlaniKapisi).
   const kapi = adAlaniKapisi(programlar, dizin);
-  const çıktı = grafYuz(dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) }), kok);
+  const dag = dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) });
+  const çıktı = grafYuz(dag, kok);
   if (çıktı === undefined) {
-    console.error(`✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`);
+    // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
+    console.error(dugumYokMetni(dag, kok!, `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`));
     process.exit(1);
   }
   process.stdout.write(çıktı);
@@ -728,11 +743,18 @@ if (yol === "icindekiler") {
 //    Kart KANONDAN üretilir (ogret.ts — YUZ-1.2: bayatlamaz). Konu kartları (beceri
 //    dağıtımı) davranış-katmanı turu'ün işi; konulu çağrı dürüstçe karşılama kartına yönlendirir.
 if (yol === "ogret") {
+  // BKM-DNT-A16: CLI ikizi konu kartını artık GERÇEKTEN döndürür. Eski gövde
+  // "konu kartları henüz yolda" diyip karşılama kartını basıyordu; oysa kartlar
+  // MCP yüzünde çalışıyordu ve iki yüz aynı soruya iki cevap veriyordu (YUZ-1.2).
   const { ogretKarti } = await import("./ogret.ts");
-  const snf = siniflamaYukle(SNF_YOL);
-  if (args[1] && !args[1].startsWith("--")) {
-    console.log(`ℹ️ Konu kartları henüz yolda (davranış-katmanı turu — MCP beceri dağıtımı); şimdilik karşılama kartı:\n`);
+  const konu = args[1] && !args[1].startsWith("--") ? args[1] : undefined;
+  if (konu) {
+    const { beceriKartiBul } = await import("./beceri-karti.ts");
+    const kart = beceriKartiBul(konu);
+    console.log(kart.metin);
+    process.exit(kart.isError ? 1 : 0);
   }
+  const snf = siniflamaYukle(SNF_YOL);
   console.log(ogretKarti(snf));
   process.exit(0);
 }
@@ -919,6 +941,11 @@ if (!yolDurumu.isFile()) {
   process.exit(1);
 }
 
+// ── YÜZEY:tekil · BAŞLANGIÇ ── (BKM-DNT-A06) Tek-dosya yüzeyinin üretici çağrı
+//   bölgesi. Kapı kapsamı nöbeti (`yuzeyGercekUreticileri`) bu iki işaret
+//   arasını tarar ve ilanın `tekil` sütunuyla karşılaştırır; işaretler
+//   silinirse nöbet susmaz, bölgenin yokluğunu bildirir. Bölgeye yeni bir
+//   üretici çağrısı girerse ilana da `tekil` yüzeyi yazılmak zorundadır.
 try {
   const kaynak = readFileSync(yol, "utf8");
   const program = ayristir(belirtecle(kaynak));
@@ -953,6 +980,7 @@ try {
   }
   throw e;
 }
+// ── YÜZEY:tekil · BİTİŞ ──
 
 function iskeletiUret(
   program: Parameters<typeof iskeletPlani>[0],
@@ -1047,6 +1075,35 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   const dayanakNotu = dy.urun > 0
     ? `\n⚖️ Dayanak eşleme: ürün ${dy.urun} kural dayanaksız — nöbet işaretledi (Problems/denetim; dayanak: K-nn yaz ya da dayanaksız: "gerekçe" beyan et)${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`
     : `\n⚖️ Dayanak haritası TAM: ürün kuralları bağlı${dy.beyanli ? ` (bilinçli-beyanlı ${dy.beyanli} dahil)` : ""} · ders-dünyası ${dy.ornek} örnek kuralı kasıtlı olarak dayanaksızdır${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`;
+  // ── PROJE AYRIMI (KPS-AYR-A01 · YAS-3.3) ────────────────────────────────────
+  //   Çatı kökünden koşulan denetim, bulguları hangi Projenin taşıdığını ADIYLA
+  //   söyler. Bugüne kadar doğru kullanım "her projeyi kendi kökünden denetle"
+  //   idi ve bu sınır belgede yazılıydı; o cümle bu blokla emekli olur, çünkü
+  //   çatı kökünden okunan tablo artık her projenin kendi haneleriyle gelir.
+  //   Tek projeli bir depoda liste BOŞTUR ve bu blok tek bayt basmaz.
+  const projeBloku = (): string => {
+    const projeSayisi = s.projeGruplari.filter((p) => !p.catininKendisi).length;
+    if (projeSayisi < 2) return "";
+    const satirlar = s.projeGruplari.map((p) => {
+      const ad = p.catininKendisi ? "çatının kendi ilanı (hiçbir Projenin malı değil)" : p.ad ? `${p.ad} (${p.kod})` : p.kod;
+      const k = p.karne;
+      const kd2 = k?.durumlar ?? {};
+      const karne = k ? ` · ${k.dugum} düğüm · ${k.adim} Adım → 🟢 ${kd2["tamamlandı"] ?? 0} · 🟡 ${kd2["geliştirmede"] ?? 0} · 🔵 ${kd2["beklemede"] ?? 0}` : "";
+      return `   ${ad} — ✖ ${p.hata} hata · ⚠ ${p.uyari} uyarı · ℹ ${p.bilgi} bilgi · ${p.dosyaSayisi} dosya${karne}`;
+    }).join("\n");
+    // KPS-KOD-A01 · ORK-4: kardeş projelerin ortak kodları BEKLENEN durumdur ve
+    // tanı üretmez; sayı burada okunur ki "ikinci projenin sekiz düğümü nereye
+    // gitti" sorusu bir daha sorulmasın. Ayrışamayan kök ise çevrimin sustuğu
+    // yerdir: aynı Proje kodu iki kökte ilanlıysa ad alanı ayıramaz ve bunu söyler.
+    const ak = s.adAlani;
+    const ortak = ak.ortakKod.length
+      ? `\n   🔀 kardeş projelerde ortak kod: ${ak.ortakKod.length} (beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür): ${ak.ortakKod.map((o) => o.kod).join(" · ")}`
+      : "";
+    const ayrisamayan = ak.ayrisamayan.length
+      ? `\n   ⚠️ ad alanı olmadan ayrışamayan Proje kökü: ${ak.ayrisamayan.map((a) => `${a.kod} (${a.dosyalar.join(" · ")})`).join("; ")} — aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için graf bu kökleri AYIRAMADI ve ilk tanım kazandı`
+      : "";
+    return `\n\n🏛️ PROJE AYRIMI — ${projeSayisi} Proje kökü. Her hanenin kimliği dizin yolu değil tekil Proje kodudur (YAS-3.3); bir Proje taşınsa hanesi adıyla korunur ve ayrı Projelerin bulguları birleşmez:\n${satirlar}${ortak}${ayrisamayan}`;
+  };
   const karneSatiri = `📋 Karne (ürün): ${krn.dugum} düğüm · ${krn.adim} Adım → 🟢 ${kd["tamamlandı"] ?? 0} · 🟡 ${kd["geliştirmede"] ?? 0} · 🔵 ${kd["beklemede"] ?? 0} · ⛔ ${kd["bloklu"] ?? 0}${dayanakNotu}${dersNotu}`;
   // MOTOR SUSMAZ (Founder 2026-07-14): açık adım varken motor "bitti/TAM-yeşil" DEMEZ.
   const acikSayi = s.acikAdimlar.length;
@@ -1075,15 +1132,15 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   };
   if (s.toplamHata + s.toplamUyari === 0) {
     if (acikSayi === 0) {
-      console.log(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).${muafNotu}\n${karneSatiri}${turBloku()}`);
+      console.log(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).${muafNotu}\n${karneSatiri}${projeBloku()}${turBloku()}`);
       return 0;
     }
-    console.log(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.${muafNotu}\n${karneSatiri}${acikBlok()}${turBloku()}`);
+    console.log(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.${muafNotu}\n${karneSatiri}${projeBloku()}${acikBlok()}${turBloku()}`);
     return 0;
   }
   const riskli = [...s.dosyaTanilari.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
     .map(([d, n]) => `${d} (${n})`).join(" · ");
-  console.log(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──${muafNotu}\n${karneSatiri}${riskli ? `\n🔥 En çok tanı: ${riskli}` : ""}${acikBlok()}${turBloku()}`);
+  console.log(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──${muafNotu}\n${karneSatiri}${projeBloku()}${riskli ? `\n🔥 En çok tanı: ${riskli}` : ""}${acikBlok()}${turBloku()}`);
   return s.cikis;
 }
 
@@ -1295,7 +1352,7 @@ function rayKomutu(dizin: string): number {
 
 // ── `omurga <dizin>` — Akış omurgası CANLI (akis_omurgasi.sar'ın çalışan yüzü) ──
 //    Projenin hangi durakta olduğunu DURUMDAN hesaplar + her durağın motora İŞLİ
-//    bekçilerini gösterir. Harita (plan/akis_omurgasi.sar) betimler; bu komut YÜRÜTÜR.
+//    bekçilerini gösterir. Harita (is/plan/akis_omurgasi.sar) betimler; bu komut YÜRÜTÜR.
 function omurgaKomutu(dizin: string): number {
   const { programlar, hatalar } = programlariYukle(dizin);
   if (hatalar.length) {
@@ -1342,7 +1399,7 @@ function omurgaKomutu(dizin: string): number {
     { ikon: dur(hepsiBitti, kodlanan > 0), ad: "✅ DURUM", durum: `🟢 ${durumSay.get("tamamlandı") ?? 0} · 🚧 ${durumSay.get("geliştirmede") ?? 0} · 🔵 ${durumSay.get("beklemede") ?? 0}${(durumSay.get("doğrulanmamış") ?? 0) > 0 ? ` · 🟠 ${durumSay.get("doğrulanmamış")}` : ""}`, bekci: "açık-adım (MOTOR-SUSMAZ) · durum-tutarsızlığı · gayrimeşru-geçiş · faz-vade" },
   ];
 
-  console.log(`🧭 AKIŞ OMURGASI — ${dizin} (harita: plan/akis_omurgasi.sar · her durağın bekçileri motora İŞLİ)\n`);
+  console.log(`🧭 AKIŞ OMURGASI — ${dizin} (harita: is/plan/akis_omurgasi.sar · her durağın bekçileri motora İŞLİ)\n`);
   console.log("  EVRE 1 · PLAN ──────────────────────────────────────────────");
   for (let i = 0; i < 5; i++) { const d = duraklar[i]; console.log(`  ${d.ikon} ${d.ad} — ${d.durum}\n      🛡️ ${d.bekci}`); }
   console.log("  EVRE 2 · KOD ───────────────────────────────────────────────");

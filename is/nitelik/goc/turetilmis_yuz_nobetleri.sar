@@ -28,15 +28,15 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `2b1d9cb8219b5926d3a8c56fed3c619908e592c68bb168ea48b1a8e2ac97a31f` |
+| `yasa/kanon demeti (A03 formülü)` | `b6183a49a514a675899fd674a7584b6b6930335b4c2de82b4d75696fdd06c577` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `c61012706b814a1289e81b6d06c5480d4fed07851fc50fb776d122457eca2885` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `e57634c13f40ec95f7ba169ee8f4a05d91c26d50cb66d9283698afe7e71210fd` |
-| `urun/cekirdek/src/dil-baglami.ts` | `03820c89a2646a04edf50d4c323caffd52a977173cbc9d44d562bbc606ca4c5f` |
-| `urun/eklenti/package.nls.tr.json` | `152f6b433f605e45973d92ae307cff47b801ab20ee3a111d9b00c71c7d3f5c5e` |
-| `urun/eklenti/package.nls.json` | `1f983290a57a013ac4720f063a5d2b2c6aa8e76723a0299065bdaa0d64152d8d` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `2b99b2e7a1fdbb1c5631cd22f40d59556d0e8efa4e88208c06ad170acf4f5c2d` |
+| `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `d11817e3b9f2de3a955a6bc87c9e9e749d20eccb2693e4cec05fdeca7cdc174f` |
+| `urun/cekirdek/src/dil-baglami.ts` | `482e3c45e6f1740e3135147b03c49d3d0ee017e5e4e4eeb40ca3acbb6c067651` |
+| `urun/eklenti/package.nls.tr.json` | `55baeb49c9a0dc46f9c612638a33c4268ec3ae1da98741ad89656cf18b0d3fbe` |
+| `urun/eklenti/package.nls.json` | `782d9834d9caed2e3a3306a3fad41301149d19efae7fcc5d78eefc9ecf38e067` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d415520c858516d861a7758523b41d4981dc4486d05562947aae96e763c33c8c` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
@@ -285,6 +285,34 @@ kaydedilmiştir. Kanon dosyasının baytları değiştiği için kanon demeti m�
 ilerledi ve yukarıdaki tablo bu koşuya çekildi; kanon tutarlılık yüzü yeniden
 üretildi, on altı belge yüzü ise sıfır farkla aynı kaldı çünkü madde metni
 üretilen bölgelerin hiçbirini beslemiyor.
+
+Tazeleme notu (2026-09-10 · kitaplık öneki düşmüş öğretim adresleri): Doğan
+ağacın gerçek adresleri boş bir dizinde ölçüldü ve üretim metinlerinin bir
+bölümünün kitaplık öneki düşmüş çıplak raf adresi öğrettiği görüldü. Doğuş
+paketi öğrenme kartlarını `ogreti/ogrenme/` altına yazmasına rağmen karşılama
+kartı, yönerge ikizi, rehber üreteci ve öğretim aracının açıklaması kartların
+çıplak `ogrenme/` rafında yaşadığını söylüyordu; aynı biçimde tasarım
+sözlüğünün makine kanonu `ogreti/bilgi/tasarim_sozlugu` adresinde durduğu hâlde
+kavram aracının açıklaması ile yönerge ikizi onu çıplak `bilgi/tasarim_sozlugu`
+olarak gösteriyordu. Her iki adres de kitaplık önekiyle tazelendi ve prizma
+aracının Türkçe hanesinde eksik kalan xml yüzü İngilizce haneyle eşitlendi.
+Değişen kaynaklar araç metinleri ile dil bağlamı dosyalarıdır, bu yüzden
+kaynak mühürlerinden yalnız o iki satır ilerledi; kanon demeti, sınıflama
+kaydı ve tanı sicili dokunulmadan kaldı. Belge yüzleri üreticisi aynı koşuda
+yeniden koşturuldu, ilk koşu öğrenim rehberinin tek yüzünü tazeledi ve ikinci
+koşu sıfır fark verdi.
+
+Tazeleme notu (2026-09-10 · denetçi kapsamı ve oturum ritüeli maddeleri):
+Kanonun orkestrasyon bölümüne ORK-6.4 (Denetçi Kapsamı) ile ORK-8.2 (Oturum
+Ritüeli) Kural maddeleri indi ve kanon yüz elli yedi maddeden yüz elli dokuz
+maddeye çıktı; Kural sayısı yüz on dokuzdan yüz yirmi bire yükseldi, Karar
+sayısı otuz sekizde değişmeden kaldı. Ekleme yalnız `yasa/kanon/ork.sar`
+dosyasının baytlarını değiştirdiği için kaynak mühürlerinden yalnız kanon
+demeti ilerledi; sınıflama kaydı, tanı sicili ve öteki kaynaklar bu turda
+dokunulmadan kaldı, çünkü iki maddenin hiçbiri yeni bir tanı ilan etmemiştir.
+Kanon tutarlılık yüzü ile belge okuma yüzleri aynı koşuda üreticileriyle
+yeniden üretildi.
+
 ## B · Üretici koşuları — hedef bölge ve ikinci koşu farkı
 
 Altı üretici ailesi de temiz ortamda başarıyla koştu; hiçbir üreticinin
@@ -328,23 +356,23 @@ On altı yüzün ve karar indeksinin bu koşudaki mühürleri (ilk 12):
 
 | Yüz | Mühür |
 |---|---:|
-| `README.md` | `a49e2feb7ab7` |
-| `README.en.md` | `7a4f2fe74862` |
-| `NEDIR.md` | `fa55e409fa1c` |
-| `KAVRAMLAR.md` | `3a5580609e43` |
-| `ROL-HARITASI.md` | `095f92ddeda0` |
-| `cekirdek/README.md` | `b43ca1bbc49f` |
-| `eklenti/README.md` | `887b7debe28d` |
-| `eklenti/medya/rehber/01-dil.md` | `816fd8e9ab0c` |
-| `eklenti/medya/rehber/02-denetim.md` | `61dcd8c836db` |
+| `README.md` | `0800166617f3` |
+| `README.en.md` | `d751215ffd3b` |
+| `NEDIR.md` | `8dd7e50429b8` |
+| `KAVRAMLAR.md` | `cf4ba8be6fed` |
+| `ROL-HARITASI.md` | `d6df87f81ac3` |
+| `cekirdek/README.md` | `f5d451aa259f` |
+| `eklenti/README.md` | `4322de8692ce` |
+| `eklenti/medya/rehber/01-dil.md` | `19fce1d0fa3e` |
+| `eklenti/medya/rehber/02-denetim.md` | `f0b22751b032` |
 | `eklenti/medya/rehber/03-okuma.md` | `2e73b98228bf` |
-| `eklenti/medya/rehber/04-ogrenim.md` | `60ffb8027b29` |
+| `eklenti/medya/rehber/04-ogrenim.md` | `7b2bf83e62ce` |
 | `eklenti/medya/rehber/05-bicim.md` | `93ba169269d1` |
 | `eklenti/medya/rehber/06-gezinme.md` | `44e7a7577024` |
-| `oz/siniflama/kayit.md` | `a8a11d765f13` |
-| `ornek/OKU.md` | `067ed133ed5a` |
+| `oz/siniflama/kayit.md` | `3926993a3c8d` |
+| `ornek/OKU.md` | `85d6290b0664` |
 | `sablon/OKU.md` | `db19f1fd1bf0` |
-| `nitelik/goc/kanon_tutarlilik.sar` | `38729bdcd981` |
+| `nitelik/goc/kanon_tutarlilik.sar` | `deec4fba816f` |
 
 ## D · Kırmızı fikstürler ve mutasyon kanıtları
 
@@ -369,6 +397,115 @@ Yirmi altı yüz tarandı: on altı üretilen yüz, iki lisans yüzü, altı fel
 açıklaması ve iki bağımsız sözlük indeksi. Yetmiş iki göreli bağlantının
 tamamı var olan kanonik hedefe çözülür; kırık bağlantı sıfırdır ve hiçbir yüz
 emekli KARARLAR defterine bağlanmaz. Nöbet süitte kalıcıdır.
+
+Tazeleme notu (2026-09-10 · yüzey dili haneleri): Vitrin turunda hatırlatıcı
+kapatma eylemi ile gezinme reddinin sebep cümleleri yüzeye indi ve her ikisi de
+kendi etiketini iki dilde ilan etti; bu yüzden eklentinin Türkçe ve İngilizce
+dil haneleri baytça ilerledi ve yukarıdaki tablonun o iki satırı canlı ölçüme
+çekildi. Öteki kaynaklar dokunulmadan kaldı: tanı sicili, araç metinleri, dil
+bağlamı, sınıflandırma kaydı ile örtü ve yönlendirme matrisi mühürleri birebir
+aynı ölçüldü. Değişen şey kanon ya da tanı değil, yalnız kullanıcıya görünen
+iki yeni eylemin adıdır.
+
+Tazeleme notu (2026-09-10 · yönlendirme matrisinde ulaşma sütunu): BKM-DNT-A02
+Adımı yönlendirme matrisi kaydına ulaşma sütununu ekledi, kaydın üç sayı
+kaynağını (Çıkarım düğümü · düzyazı · çizelge) tek canlı ölçüme çekti ve önceki
+gövdenin kademe dağılımını elle doğrulanan bir cümleden `oncekiKademeOlcumu`
+üretecine bağladı; bu yüzden yukarıdaki tablonun yalnız yönlendirme matrisi
+satırı ilerledi. Ayrışmanın kendisi kayda geçmelidir: Çıkarım düğümü 171 kimlik
+ile 143/4/24 dağılımı yazarken çizelge 175 kimlik ile 143/2/30 yazıyordu ve
+düzyazı önceki gövdeyi iki yerde yüz iki sayıyordu, oysa gövde yüz birdir.
+Öteki kaynaklar bu turda dokunulmadan kaldı: sınıflama kaydı ile örtü, tanı
+sicili, araç metinleri, dil bağlamı ve eklentinin iki dil hanesi birebir aynı
+ölçüldü. Kanon demeti bu turda ÖLÇÜLMEDİ ve tazelenmedi, çünkü kanon metni aynı
+oturumda başka bir elin altındadır ve iki elin aynı satıra yazması mührü
+anlamsız kılar.
+
+Tazeleme notu (2026-09-10 · kapı kapsamı ilanı altmış ikiye çıktı): BKM-DNT-A06
+Adımı kapsam nöbetini dört yüzeyi de tarayacak biçimde genişletti ve ilanın üç
+ayrışması kapandı; ilan altmış bir girdiden altmış ikiye çıktığı için yönlendirme
+matrisinin ulaşma çizelgesi ile Çıkarım düğümü aynı turda canlı ölçüme çekildi ve
+o satır ikinci kez ilerledi. Ayrışmalar şunlardı: `dogusEksikTanilari` yalnız MCP
+yüzeyinde koştuğu hâlde ilanda hiç yoktu, `altKatmanTekilligiTanilari` tek-dosya
+yüzeyini beyan ettiği hâlde o yola hiç uğramıyordu ve alt süreç köprüsüyle MCP'ye
+ulaşan komut satırı kümesi hiçbir yerde yazılı değildi. Tablonun başka hiçbir
+satırına dokunulmadı.
+
+Tazeleme notu (2026-09-10 · öncelik modeli reformu ile düğüm kodu standardı):
+Önceki notun ölçülmeden bıraktığı kanon demeti bu turda ölçülmüş ve tazelenmiştir,
+çünkü kanon metnini bekleten el işini tamamlamıştır. Turda üç iş kanona inmiştir.
+Birincisi ORK-3.4 maddesinin revizyonudur: dört kademeli `öncelik` kümesi Founder'ın
+2026-08-10 tarihli hükmüyle yürürlükten kaldırılmış, yerine birbirinden bağımsız
+`önem` ve `acil` eksenleri konmuş, düşürülen hüküm gerekçesiyle birlikte maddenin
+başındaki yorum bloğuna tarihçe olarak yazılmış ve ORK-8 mevsim ritüelinin açılış
+basamağı yeni modele hizalanmıştır. İkincisi DIL-1.8 maddesinin doğuşudur: düğüm
+kodunun biçimi, projenin anadizininde yaşayan önek sicili ve standardın yalnız yeni
+kodları bağlaması tek maddede hükme bağlanmıştır. Üçüncüsü ORK-3.5 ile ORK-8.2
+maddelerinin tazelenmesidir: Blok sırası yeni iki eksene göre okunur ve oturum
+açılışı beş basamaktan altı basamağa çıkarak Blok seçimini kendi basamağı yapar.
+Bu üç iş kanonun yalnız orkestrasyon ve dil dosyalarının baytlarını değiştirdiği
+için kaynak mühürlerinden yalnız kanon demeti ilerlemiştir; sınıflama kaydı ile
+örtü, tanı sicili, araç metinleri, dil bağlamı, eklentinin iki dil hanesi ve
+yönlendirme matrisi bu turda birebir aynı ölçülmüştür ve dokunulmamıştır.
+Ölçümün bağlı bir sonucu burada dürüstçe beyan edilir: DIL-1.8 maddesi kanonu yüz
+elli dokuz maddeden yüz altmış maddeye, otuz sekiz Karar ile yüz yirmi bir Kural
+dağılımını otuz sekiz Karar ile yüz yirmi iki Kural dağılımına taşımıştır, oysa
+motorun kanon tutarlılık ile belge yüzü üreticileri eski sayıyı dondurmaktadır ve
+bu yüzden türetilmiş yüzler bu turda YENİDEN ÜRETİLEMEMİŞTİR. Dondurulmuş sayıların
+tazelenmesi ile on altı yüzün yeniden üretilmesi motor ağacının işidir ve bu kayıt
+o iş yapılana kadar yalnız kaynak mührünü taşır.
+
+Tazeleme notu (2026-09-10 · dondurulmuş sayıların tazelenmesi): Önceki notun
+bekletilmiş bıraktığı iş bu turda tamamlanmıştır. Kanon tutarlılık üreticisindeki
+(`urun/cekirdek/src/kanon-tutarlilik.ts`) resmi madde guard'ı ile Kural sabiti ve
+belge yüzleri üreticisindeki (`urun/cekirdek/src/belge-yuzleri.ts`) madde guard'ı
+yüz elli dokuzdan yüz altmışa, yüz yirmi birden yüz yirmi ikiye çekilmiştir; aynı
+sayılar `urun/cekirdek/sinama/kanon-tutarlilik.test.ts`,
+`urun/cekirdek/sinama/belge-yuzleri.test.ts` ve
+`urun/cekirdek/sinama/turetilmis-yuz-nobetleri.test.ts` dosyalarındaki sabit
+beklentilerle birlikte tazelenmiş, ilk dosyadaki `dil.sar` ve `ork.sar` SHA-256
+satırları da canlı dosyalardan yeniden ölçülerek güncellenmiştir. Bu turda
+`yasa/kanon demeti (A03 formülü)` mührü bağımsız olarak yeniden ölçülmüştür:
+sekiz kanon dosyasının SHA-256 değerleri `shasum -a 256` ile elden alınmış, A03
+formülüyle demete indirgenmiş ve sonuç yukarıdaki tablodaki satırla birebir aynı
+çıkmıştır, çünkü kanon dosyalarının baytları önceki notun kapanışından bu yana
+değişmemiştir; satır bu yüzden değiştirilmemiş, yalnız bağımsız ölçümle
+doğrulanmıştır. Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret`
+üreticileri yeniden koşturulmuş, kanon tutarlılık yüzü ile on altı belge yüzü
+güncel yüz altmış madde ölçümüyle yeniden üretilmiş ve ikinci koşu sıfır fark
+vermiştir. Bu tazelemenin ardından çekirdek süiti bin üç yüz on sekiz sınamanın
+tamamıyla yeşile dönmüştür.
+Tazeleme notu (2026-09-10 · ORK-8 mühür bekçisi · KPS-MVS-A01 ikinci teslim):
+Kontrolcü hükmüyle mühür dürüstlüğü bekçisi `mevsim-mührü-çelişkili` doğdu ve
+ORK-8 maddesinin Zorlama satırındaki "mevsimin mühürlenip mühürlenmediği hiçbir
+tanıyla görülmez" cümlesi aynı turda tazelendi; bu yüzden kanon demetinin mührü,
+`ork.sar` dosyasının `urun/cekirdek/sinama/kanon-tutarlilik.test.ts` içindeki
+SHA-256 satırı, tanı sicilinin mührü (yeni kayıt ile emekli halef haritası) ve
+yönlendirme matrisinin mührü (sicil yüz yetmiş beşten yüz yetmiş altıya,
+Bildirimler otuzdan otuz bire, ilan altmış ikiden altmış üçe) birlikte ilerledi.
+Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticileri yeniden
+koşturuldu: kanon tutarlılık yüzü tazelendi, on altı belge yüzünün altısı değişti,
+onu aynı kaldı ve ikinci koşu sıfır fark verdi. Yukarıdaki on altı yüz tablosu bu
+koşunun kısa mühürleriyle yeniden yazıldı; tablonun önceki satırlarının çoğu bu
+turdan önce de bayattı, çünkü aynı günün önceki turları yüzleri yeniden üretmiş
+fakat bu bilgi tablosunu tazelememişti; tablo makine nöbetine bağlı değildir,
+nöbet yalnız A bölümünü okur.
+Tazeleme notu (2026-09-11 · MIM-3.4 dosya mühürleri · KPS-MHR-A01): Founder
+hükmüyle MIM-3.4 maddesi Kural olarak kanona indi ve OGR-5 maddesinin Hüküm
+metnine eğitim mührünü anan tek bir cümle eklendi; kanon yüz altmıştan yüz
+altmış bir maddeye, Kural sayısı yüz yirmi ikiden yüz yirmi üçe çıktı. Bu
+yüzden kanon demetinin mührü ile `mim.sar` ve `ogr.sar` dosyalarının
+`urun/cekirdek/sinama/kanon-tutarlilik.test.ts` içindeki SHA-256 satırları
+ilerledi. Aynı turda üç tanı doğdu (`dosya-mührü`, `sonraya-bırakılmış-dosya`,
+`geçersiz-dosya-adı`), dolayısıyla tanı sicilinin mührü ve yönlendirme
+matrisinin mührü de ilerledi (sicil yüz yetmiş dokuz kimlik; Problems yüz kırk
+dört, Hatırlatıcılar üç, Bildirimler otuz iki; ilan altmış dört girdi). Dil
+bağlamı üreticisi dosya mühürlerini doğan projenin ajan bağlamına işlediği için
+onun mührü de ilerledi; sınıflama kaydı, örtü, MCP metinleri ve iki dil dosyası
+değişmedi. Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticileri
+yeniden koşturuldu: kanon tutarlılık yüzü tazelendi, on altı belge yüzünün altısı
+değişti, onu aynı kaldı ve ikinci koşu sıfır fark verdi. Yukarıdaki on altı yüz
+tablosu bu turda tazelenmedi, çünkü makine nöbetine bağlı değildir.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,
@@ -381,3 +518,4 @@ Kod( kod: KOD-SNM-TUREV-YUZ,
 
 Sınama( kod: SNM-TUREV-YUZ-02,
         ne: "🧪 Dört kırmızı fikstür mutasyonla kanıtlandı: sandbox kanon mutasyonu demet mührünü düşürür, üretilen bölgeye elle dokunan bayt ilk koşuda yakalanıp onarılır, kaynak ilerleyip yüz eski kalınca bayat öğretim nöbeti yüzü bayat sayıp tazeler ve üreticiye enjekte edilen koşu-zamanı damgası idempotens nöbetini kırmızıya düşürür. Bağlantı nöbeti yirmi altı yüzdeki yetmiş iki göreli bağlantının tamamını kanonik hedefe çözer; kırık bağlantı sıfırdır ve emekli KARARLAR defteri bağlantı hedefi olarak yasaklıdır." )
+

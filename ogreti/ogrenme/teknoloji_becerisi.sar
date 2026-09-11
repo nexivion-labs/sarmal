@@ -1,0 +1,89 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/teknoloji_becerisi.sar — 🌿 TEKNOLOJİ BECERİSİ (BKM-DNT-A16)
+//
+//   Düstur: kural ZORLAR (YAS-2), beceri ÖĞRETİR (bu dosya · OGR-2.2). Bu kart,
+//   bir ağaçta teknolojinin nasıl İLAN edildiğini ve plan Katmanlarının ona
+//   nasıl bağlandığını öğretir. Doğuşu ölçülmüş bir boşluktur: 2026-09-09
+//   tarihinde yapılan denetim, öğretim aracının Teknoloji konusu için kart
+//   bulunamadı hatası döndürdüğünü ölçmüştür; kart yalnız on iki dosya için
+//   vardı ve yeni ağaç kurarken en çok gereken iki kavramın kartı yoktu.
+//   Kaynak hükümler: MIM-1.4 (Katman teknoloji tekilliği), ORK-2.4 (teknoloji
+//   bağı olmayan iş dalı doğmaz) ve doğuş paketinin teknoloji yönergesi.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-TEKNOLOJI, ne: "teknolojiyi giriş ilanında bir kez ilan etmek, plan Katmanlarını ona tek hedefli bir bağla bağlamak ve teknoloji seçimini insana bırakmak" )
+
+-->|
+  ## Amaç
+  🎯 Çözülen problem: bir ajan plan yazarken Katmanları teknolojiye bağlamayı
+  atlamakta ya da teknolojiyi kendi başına seçmektedir. İkisinin de bedeli
+  aynıdır: teknolojisiz bir Katmanın sahipliği belirsizdir, çok teknolojili bir
+  Katman ise derleme, sınama ve sorumluluk sınırlarını birbirine karıştırır.
+  Teknoloji seçimi bir tercih değil bir kurum kararıdır ve insana aittir.
+
+  ## Teknoloji her şeyin abisidir
+  ORK-2.4 hükmünün pratik karşılığı şudur: bir Katman teknolojiye bağlanmadan
+  iş dalı doğmaz. Sıra bu yüzden tersine çevrilemez — önce Teknoloji ilan
+  edilir, sonra Takım o yığına bağlanır, en sonunda plan Katmanı Takıma
+  bağlanır. İlan edilmemiş bir koda verilen bağ kırık referanstır (DIL-1.4) ve
+  motor onu aynı turda bildirir.
+
+  ## Üç düğüm ve aralarındaki kenar
+  1. **Teknoloji** yığının kendisini ilan eder ve giriş ilanında yaşar:
+     `Teknoloji( kod: TEK-TS, ne: "TypeScript çalışma dili" )`.
+  2. **Takım** o yığına bağlanan sorumluluk birimidir:
+     `Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] )`.
+  3. **Katman** plan tarafındaki teknoloji dilimidir ve bağını `kullanır:`
+     kenarıyla kurar: `Katman( kod: KAT-ARKAYUZ, kullanır: TAKIM-ARKAYUZ )`.
+  Hedef TEKTİR. Bir Katman birden çok Teknoloji kullanamaz; iki teknoloji
+  gerekiyorsa iki Katman kurulur (MIM-1.4).
+
+  ## Teknoloji bilinmiyorsa: tahmin etme, sor
+  Doğuş paketi hiçbir yığını varsaymaz ve bu bilinçlidir. Teknoloji henüz
+  seçilmemişse ajan kendiliğinden bir yığın atamaz; kullanıcıya somut
+  seçenekler sunar ve seçimi ona bırakır. Karar mimari diyalogda verilir ve
+  ancak verildikten sonra ilana iner.
+
+  ## Teknoloji-bağımsız Katman dürüst bir beyandır
+  Bir Katman gerçekten teknoloji SEÇEN karar işiyse — teknoloji KULLANAN yapım
+  işi değilse — bunu susarak değil beyan ederek söyler:
+  `Katman( kod: KAT-MIMARI, teknolojiBağımsız: "gerekçe" )`. Beyan gerekçe
+  taşımak zorundadır; gerekçesiz bir beyan bekçiyi susturmanın kestirme yolu
+  hâline gelir ve o kestirme, planın sessizce yalan söylemesiyle biter.
+  `katmansız-teknoloji` tanısı bu boşluğu görünür kılar; tanıyı beyanla
+  kapatmak meşrudur, sahte bir yığın adıyla kapatmak değildir.
+
+  ## Teknoloji klasör doğurur
+  Teknoloji seçimi mimariye iner: seçilen yığın kendi Kitaplıklarını doğurur
+  (örneğin `onyuz/`, `arkayuz/`, `taban/`) ve bu Kitaplıklar giriş ilanında
+  aynı kademede ilan edilir. Raflar Kitaplıkların İÇİNDE yaşar; kökün altına
+  çıplak Raf yazılmaz (MIM-3.2 · Founder hükmü 2026-09-09). Ayrıca üretilebilir
+  her artefakt kodunun düşeceği yeri `dosya:` beyanıyla kendisi söyler; üreten
+  taraf klasör uydurmaz.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyi kullanan ajanın yazdığı planda her Katman ya tek bir
+  Takım/Teknoloji hedefine `kullanır:` kenarıyla bağlıdır ya da gerekçeli bir
+  teknoloji-bağımsız beyanı taşır; teknoloji kullanıcıya sorularak seçilmiştir
+  ve giriş ilanında bir kez ilan edilmiştir.
+|<--
+
+Beceri( kod: BCR-TEKNOLOJI,
+        sağlar: YTN-TEKNOLOJI,
+        yığın: evrensel,
+        ne: "Teknolojiyi giriş ilanında bir kez ilan ettirir, Takım üzerinden plan Katmanına tek hedefli bir kullanır kenarıyla bağlatır ve teknoloji seçimini ajanın tahminine değil kullanıcının kararına bırakır",
+        neZaman: "Yeni bir ağacın giriş ilanı yazılırken; bir plan Katmanı açılırken ya da bir Katman teknoloji bağı taşımadığı için katmansız-teknoloji tanısı doğduğunda; bir Bloka ikinci bir teknoloji girdiğinde",
+        anlatır: [ "katmansız-teknoloji", "çok-teknolojili-katman" ],
+        kurallar: [
+          "Sırayı tersine çevirme: önce Teknoloji ilan edilir, sonra Takım o yığına bağlanır, en son plan Katmanı Takıma kullanır kenarıyla bağlanır — teknolojiye bağlanmamış bir Katmandan iş dalı doğmaz (ORK-2.4)",
+          "Bir Katmana tek hedef ver: Katman birden çok Teknoloji kullanamaz, çünkü çok teknolojili Katman derleme, sınama ve sorumluluk sınırlarını karıştırır; iki teknoloji gerekiyorsa iki Katman kur (MIM-1.4)",
+          "Teknolojiyi kendin seçme: doğuş paketi hiçbir yığını varsaymaz ve bu bilinçlidir — seçenekleri tek cümlelik tanımlarıyla sun, kararı kullanıcıya bırak ve ancak karar verildikten sonra ilana yaz",
+          "Teknoloji gerçekten yoksa susma, BEYAN et: teknolojiBağımsız alanına gerekçesini yaz; gerekçesiz beyan bekçiyi susturmanın kestirmesidir ve plan o kestirmeyle sessizce yalan söylemeye başlar",
+          "Sahte yığın adıyla tanı kapatma: var olmayan bir Teknoloji koduna verilen bağ kırık referanstır (DIL-1.4) ve motor onu aynı turda bildirir",
+          "Teknoloji seçimini mimariye indir: seçilen yığın kendi Kitaplıklarını doğurur ve bu Kitaplıklar giriş ilanında aynı kademede ilan edilir; raflar Kitaplıkların İÇİNDE yaşar, kökün altına çıplak Raf yazılmaz (MIM-3.2)",
+          "Üretilebilir artefaktın üretim yerini kendisine söylet: Ekran, Uç, Tablo, Servis ve Kimlik düğümleri kodunun düşeceği yeri dosya: beyanıyla bildirir; üreten taraf klasör uydurmaz"
+        ],
+        kabul: "Planda her Katman ya tek bir Takım/Teknoloji hedefine kullanır kenarıyla bağlıdır ya da gerekçeli bir teknoloji-bağımsız beyanı taşır; teknoloji giriş ilanında bir kez ilan edilmiştir ve seçimi kullanıcı vermiştir",
+        örnek: "Kullanıcı: 'arka yüzü de ekleyelim' → Ajan sorar: 'arka yüz hangi yığınla yürüsün — ① TypeScript üstünde Node, ② Python üstünde FastAPI, ③ başka bir şey mi?' Seçim gelince giriş ilanına Teknoloji( kod: TEK-TS, ne: \"TypeScript çalışma dili\" ) ve Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] ) düğümlerini yazar, plan tarafında Katman( kod: KAT-ARKAYUZ, kullanır: TAKIM-ARKAYUZ ) kenarını kurar ve yazımdan sonra denetimi koşturur",
+        antiDesen: "Katmanı teknolojiye hiç bağlamadan plan yazmak ya da bağı iki hedefli yazmak; teknolojiyi kullanıcıya sormadan ajanın kendi alışkanlığından seçmesi; teknolojiBağımsız beyanını gerekçesiz kullanarak bekçiyi susturmak. Üçü de kapıyı yeşil bırakır ve planı yalan söyler hâle getirir — motor yanlış etiketi yakalayamaz",
+        uygular: MIM-1.4 )

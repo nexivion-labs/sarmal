@@ -23,8 +23,10 @@ const KAYIT_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", impo
 const SOZLUK_YOL = fileURLToPath(new URL("../../../oz/ceviri/dil-sozlugu.json", import.meta.url));
 const SNF = siniflamaYukle(KAYIT_YOL);
 
+// BKM-DNT-A16: kart üç doğuş bölümü kazandı (🌍 hedef · 🪜 kademeli onay · 💬 diyalog
+// disiplini). İskelet nöbeti onları da sayar; iki dil aynı bölümleri taşımak zorundadır.
 const kartIskeleti = (metin: string): string[] => metin.split("\n")
-  .map((satir) => satir.match(/^(🚪|①|②|③|④|⚖️|⑤|🚦|🤖)/u)?.[1])
+  .map((satir) => satir.match(/^(🚪|🌍|🪜|💬|①|②|③|④|⚖️|⑤|🚦|🤖)/u)?.[1])
   .filter((x): x is string => x !== undefined);
 
 const markdownBaslikDuzeyleri = (metin: string): number[] => metin.split("\n")
@@ -81,15 +83,17 @@ test("CDL-A06: `.sar` örnekleri iki dilde de aynı kanonik Türkçe kaynaktır"
 test("CDL-A06: iki dil aynı bölüm iskeletini taşır; başlık silme mutasyonu yakalanır", () => {
   const kartTr = ogretKarti(SNF, "tr");
   const kartEn = ogretKarti(SNF, "en");
-  const kartBeklenen = ["🚪", "①", "②", "③", "④", "⚖️", "⑤", "🚦", "🤖"];
+  const kartBeklenen = ["🚪", "🌍", "🪜", "💬", "①", "②", "③", "④", "⚖️", "⑤", "🚦", "🤖"];
   assert.deepEqual(kartIskeleti(kartTr), kartBeklenen);
   assert.deepEqual(kartIskeleti(kartEn), kartBeklenen);
 
   const baglamTr = dilBaglami("2026-08-02", "tr");
   const baglamEn = dilBaglami("2026-08-02", "en");
   assert.deepEqual(markdownBaslikDuzeyleri(baglamEn), markdownBaslikDuzeyleri(baglamTr));
-  assert.equal(ikinciSeviyeBasliklar(baglamTr).length, 12, "Türkçe yüzde 12 ana bölüm olmalı");
-  assert.equal(ikinciSeviyeBasliklar(baglamEn).length, 12, "İngilizce yüzde 12 ana bölüm olmalı");
+  // KPS-MHR-A01 (2026-09-11): OGR-3 gereği dosya mühürleri ajan bağlamına kendi
+  // bölümüyle işlendi; iki yüz de on üç ana bölüm taşır.
+  assert.equal(ikinciSeviyeBasliklar(baglamTr).length, 13, "Türkçe yüzde 13 ana bölüm olmalı");
+  assert.equal(ikinciSeviyeBasliklar(baglamEn).length, 13, "İngilizce yüzde 13 ana bölüm olmalı");
 
   const kartMutasyonu = kartEn.split("\n").filter((satir) => !satir.startsWith("③ ")).join("\n");
   assert.notDeepEqual(kartIskeleti(kartMutasyonu), kartIskeleti(kartTr),

@@ -44,16 +44,19 @@ const ANADIZIN = `Proje( kod: ANA, ad: "deneme", rejim: esnek,
   Kitaplık( kod: KTP-BILGI, yol: "bilgi/", ne: "kitaplık — yalnız raf taşır",
     raflar: { sozluk: "raf düzeyinde beyan edilmiş gövde deseni" } )
   Raf( kod: RAF-PLAN, yol: "plan/", ne: "raf — gövde taşımaya ilan edilmiştir" )
-  Kitaplık( kod: KTP-ORNEK, yol: "ornek/", ne: "örnek dünyası — muaf",
-    raflar: { uretilen: "üretilen dosyalar — muaf" } )
-  Kitaplık( kod: KTP-SABLON, yol: "sablon/", ne: "şablon rafı — muaf", raflar: {} )
+  Kitaplık( kod: KTP-OGRETI, yol: "ogreti/", ne: "öğreti kitaplığı — ders rafları burada yaşar" ) {
+    Kitaplık( kod: KTP-ORNEK, yol: "ornek/", ne: "örnek dünyası — muaf",
+      raflar: { uretilen: "üretilen dosyalar — muaf" } )
+    Kitaplık( kod: KTP-SABLON, yol: "sablon/", ne: "şablon rafı — muaf", raflar: {} )
+  }
+  Kitaplık( kod: KTP-KULLANICI, yol: "sablon/", ne: "KULLANICININ kendi şablon kitaplığı — MUAF DEĞİL (KPS-IND-A01)", raflar: {} )
 }
 `;
 
 /** Fikstürü geçici bir kökte kurar; dönen yol çağıranın sorumluluğundadır. */
 function fiksturKur(): string {
   const kok = mkdtempSync(join(tmpdir(), "sarmal-ilansiz-"));
-  for (const dizin of ["bilgi/sozluk", "plan", "ornek/uretilen", "sablon"]) {
+  for (const dizin of ["bilgi/sozluk", "plan", "ogreti/ornek/uretilen", "ogreti/sablon", "sablon"]) {
     mkdirSync(join(kok, dizin), { recursive: true });
   }
   const yaz = (yol: string, govde: string): void =>
@@ -66,9 +69,13 @@ function fiksturKur(): string {
   // İlanlı gövdeler ve muaf dünyalar: hiçbiri tanı üretmemelidir.
   yaz("plan/canli_is.sar", 'Bellek( kod: BLK-PLAN, ne: "rafın altındaki gövde" )\n');
   yaz("bilgi/sozluk/kitap.sar", 'Bellek( kod: BLK-SOZLUK, ne: "kompakt rafın altındaki gövde" )\n');
-  yaz("ornek/deneme.sar", 'Bellek( kod: BLK-ORNEK, ne: "örnek dünyası" )\n');
-  yaz("ornek/uretilen/cikti.sar", 'Bellek( kod: BLK-URETILEN, ne: "üretilen dosya" )\n');
-  yaz("sablon/kalip.sar", 'Bellek( kod: BLK-SABLON, ne: "şablon rafı" )\n');
+  yaz("ogreti/ornek/deneme.sar", 'Bellek( kod: BLK-ORNEK, ne: "örnek dünyası" )\n');
+  yaz("ogreti/ornek/uretilen/cikti.sar", 'Bellek( kod: BLK-URETILEN, ne: "üretilen dosya" )\n');
+  yaz("ogreti/sablon/kalip.sar", 'Bellek( kod: BLK-SABLON, ne: "şablon rafı" )\n');
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi `sablon/` kitaplığı ders rafı DEĞİLDİR;
+  // oradaki ilansız gövde BİLDİRİLMEK zorundadır, yoksa bütün bir kullanıcı ağacı
+  // sessizce muaf kalır ve denetim yanlış yeşile döner (Founder hükmü 2026-09-10).
+  yaz("sablon/kullanici_kacagi.sar", 'Bellek( kod: BLK-KULLANICI, ne: "kullanıcı şablonundaki ilansız gövde" )\n');
   return kok;
 }
 
@@ -84,8 +91,11 @@ test("ilansız-gövde: kitaplığa ve köke konan ilansız kaynak dosyası tanı
   try {
     const tanilar = bekciyiKos(kok);
     const yerler = tanilar.map((t) => t.kod);
-    assert.deepEqual(yerler, ["ilansız-gövde", "ilansız-gövde"],
-      `beklenen iki kök yerine şu tanılar üretildi: ${JSON.stringify(tanilar.map((t) => t.mesaj))}`);
+    assert.deepEqual(yerler, ["ilansız-gövde", "ilansız-gövde", "ilansız-gövde"],
+      `beklenen üç kök yerine şu tanılar üretildi: ${JSON.stringify(tanilar.map((t) => t.mesaj))}`);
+    // Üçüncü kök KPS-IND-A01 nöbetidir: kullanıcının kendi şablon kitaplığı.
+    assert.ok(tanilar.some((t) => /'sablon\/'/.test(t.mesaj) && /kullanici_kacagi\.sar/.test(t.mesaj)),
+      "kullanıcı ağacındaki şablon kitaplığı ilansız-gövde muafiyetini ÇALMAMALI");
     // Kök bulgusu ile kitaplık bulgusu ayrı cümlelerle konuşur; ikisi de kendi
     // kapsayıcısını adıyla anar, çünkü düzeltme o kapsayıcının ilanına yazılır.
     const kokTanisi = tanilar.find((t) => /kökünde/.test(t.mesaj));
@@ -179,7 +189,7 @@ test("ilansız-gövde: bekçi Problems yüzeyine yayılır ve ilan satırını g
     const bulgular = denetimKos(kok, { snfYol: SNF_YOL }).akis
       .flatMap((r) => r.tanilar.map((tani) => ({ dosya: r.dosya, tani })))
       .filter((k) => k.tani.kod === "ilansız-gövde");
-    assert.equal(bulgular.length, 2, "canlı yüzeyde bekçi susuyor");
+    assert.equal(bulgular.length, 3, "canlı yüzeyde bekçi susuyor");
     for (const { dosya, tani } of bulgular) {
       assert.ok(dosya.endsWith("deneme_anadizin.sar"),
         "tanı giriş dosyasına bağlanmalı, çünkü düzeltme oraya yazılır");

@@ -50,10 +50,16 @@ test("dil bağlamı üretilen-dosya beyanı taşır ve STR-3 sınırını korur"
     "orkestrasyon zekâsı bağlama SIZMAMALI (STR-3 — yalnız açık dil anlatılır)");
 });
 
-test("doğuş manifesti dil bağlamını taşır: AGENTS.md altıncı dosya", () => {
+test("doğuş manifesti dil bağlamını YÖNERGE İKİZİNİN İKİ KANADINDA da taşır", () => {
   const m = dogusManifesti("deneme", "2026-07-17");
+  // BKM-DNT-A15: dil bağlamı tek bir dosya değil, bayt özdeş bir ikizdir. Sayı
+  // iddiası kaldırıldı ve yerine ilişki iddiası yazıldı: manifestin uzunluğu
+  // kökün kapıları büyüdükçe değişir, fakat iki kanadın özdeşliği değişmez ve
+  // asıl korunması gereken sözleşme odur.
   const agents = m.find((d) => d.yol === "AGENTS.md");
+  const claude = m.find((d) => d.yol === "CLAUDE.md");
   assert.ok(agents, "AGENTS.md manifestte olmalı");
+  assert.ok(claude, "CLAUDE.md manifestte olmalı — ikizin öteki kanadı eksik");
   assert.match(agents!.icerik, /Sarmal Dil Bağlamı/u);
-  assert.equal(m.length, 6, "manifest 6 dosyadır (5 iskelet + dil bağlamı)");
+  assert.equal(claude!.icerik, agents!.icerik, "yönerge ikizi manifestte ayrışmış");
 });

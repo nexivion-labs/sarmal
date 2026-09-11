@@ -615,8 +615,16 @@ ${projeGrafiSvg(graf)}
 </body></html>`;
 }
 
-/** Veri yokken dürüst boş hâl. */
+/** Veri yokken dürüst boş hâl.
+ *
+ *  VIT-KIMLIK-A07: buradaki 🕸️ işareti KALDIRILDI ve yerine ailenin bir üyesi
+ *  KONMADI. Gerekçe ölçümdür: bu modül SAF'tır (vscode ve node:fs bağımlısı
+ *  değildir) ve gömülü SVG bir dosya okuyucusu ister; okuyucuyu buraya taşımak
+ *  saflığı kırar, imzayı değiştirir ve mini grafın çekirdeğini kabuğa bağlar.
+ *  YUZ-4.2 zaten ikonun metinsel etiketi İKAME EDEMEYECEĞİNİ söyler; işaret
+ *  düştüğünde cümle tek başına aynı şeyi söyler. Ailenin bu yüzeye ulaşması
+ *  istenirse doğru yol, `bosHtml` çağıranının işareti dışarıdan vermesidir. */
 export function bosHtml(mesaj: string): string {
   return `<!DOCTYPE html><html lang="${MINI_GRAF_METINLERI.dil}"><meta charset="UTF-8">${STIL}<body>
-<p class="k">🕸️ ${kacir(mesaj)}</p></body></html>`;
+<p class="k">${kacir(mesaj)}</p></body></html>`;
 }

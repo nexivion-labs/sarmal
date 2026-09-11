@@ -2,7 +2,7 @@
   "name": "sarmal",
   "displayName": "%sarmal.displayName%",
   "description": "%sarmal.description%",
-  "version": "0.9.178",
+  "version": "0.9.182",
   "publisher": "nexivion-labs",
   "license": "Apache-2.0",
   "icon": "ikonlar/sarmal-ikon.png",
@@ -428,6 +428,15 @@
           "light": "medya/simgeler/uretilmis/satir-kopya-duz-acik.svg",
           "dark": "medya/simgeler/uretilmis/satir-kopya-duz-koyu.svg"
         }
+      },
+      {
+        "command": "sarmal.hatirlaticiKapat",
+        "title": "%command.closeReminder%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/satir-onay-basari-acik.svg",
+          "dark": "medya/simgeler/uretilmis/satir-onay-basari-koyu.svg"
+        }
       }
     ],
     "menus": {
@@ -475,6 +484,16 @@
           "command": "sarmal.satiriKopyala",
           "when": "view == sarmalHatirlaticilar",
           "group": "inline"
+        },
+        {
+          "command": "sarmal.hatirlaticiKapat",
+          "when": "view == sarmalHatirlaticilar && viewItem == sarmalHatirlaticiAtesledi",
+          "group": "1_modification"
+        },
+        {
+          "command": "sarmal.hatirlaticiKapat",
+          "when": "view == sarmalHatirlaticilar && viewItem == sarmalHatirlaticiAtesledi",
+          "group": "inline@0"
         },
         {
           "command": "sarmal.satiriKopyala",
@@ -545,6 +564,10 @@
         },
         {
           "command": "sarmal.onayReddet",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.hatirlaticiKapat",
           "when": "false"
         }
       ]

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// yasa/kanon/mim.sar — 🏗️ MİMARİ bölümü · v1 kanonu (16 madde)
+// yasa/kanon/mim.sar — 🏗️ MİMARİ bölümü · v1 kanonu (17 madde)
 //   GOC-SPEC-A06 (Karar E) üretimi: kanonun maddeleri YAS-2 rollerine göre kod
 //   taşıyan gerçek düğümlerdir. Madde metni (Hüküm·Gerekçe·Örnek·Zorlama) her
 //   düğümün belge bloğunda AYNEN korunur (kararlar rafı deseni); karar/gerekçe
@@ -206,6 +206,19 @@ Kural blokDurumKaydı( kod: MIM-3.3,
        ne: "MIM-3.3 · Blok Durum Kaydı [UYARI]",
        otorite: anayasa, katman: niyet, kapsam: Blok,
        dayanak: MIM-3 )
+
+-->|
+### MIM-3.4 · Dosya Mühürleri [UYARI]
+**Hüküm:** Bir `.sar` dosyasının canlı kaynak olmaktan çıkarıldığı, yalnız dosya adının başına yazılan bir dosya mührüyle beyan edilir. Mühür `@ETİKET@_` biçimindedir; etiket büyük ASCII harfleriyle yazılır ve mührü izleyen ad küçük harfle sürer. Taban küme üç mühürden oluşur: `@ARSIV@_` işi bitmiş ve dondurulmuş tarihi bildirir, motor böyle bir dosyayı okumaz ve dosya graf, kod dizini, karne ile açık iş gündeminin dışında kalır; `@EGITIM@_` dosyayı OGR-5 uyarınca öğretim dünyasına alır, motor dosyayı okur ve sözleşmelerine göre doğrular, fakat bulgularını ürün karnesine ve yürütme gündemine saymaz; `@SONRA@_` sonraya bırakılmış işi bildirir, motor içeriği okumaz, buna karşılık dosyayı bekleme süresiyle birlikte hatırlatıcı yüzeyinde görünür tutar. Taban küme kapalıdır ve yalnız TIP-2.5 katkılı örtüsüyle genişletilebilir. Mühür taşımayan bir `.sar` dosyasının adı büyük harf taşıyamaz, çünkü dosya adında büyük harf yalnız mühüre ayrılmıştır. Mühür hiçbir zaman sessiz değildir: her denetim mühürlü dosyaları türüyle ve adıyla listeler. Mühür bir bulguyu susturmak için kullanılamaz ve ebedî kural taşıyan bir dosya arşiv mührü alamaz, çünkü ebedî kuralı graftan çıkarmak onu silmektir; dayanak: MIM-3; ilgili: [MIM, DIL, OGR, YAS].
+**Gerekçe:** 2026-09-10 tarihli ölçüm tüm çatıdaki bin iki yüz yetmiş bir hata ve uyarının yüzde doksan altısının laboratuvarın arşiv rafından geldiğini göstermiştir. Bu bulgular gerçektir, çünkü depolar bölündüğünde arşivdeki atıfların hedefleri başka depolara taşınmıştır; fakat dondurulmuş tarih düzeltilmeyeceği için bulgular yalnız canlı işteki üç gerçek hatayı gömmektedir. Arşivin eskiden muaf olmasını sağlayan kural klasör adından tahmin yürütüyordu ve aynı kural kullanıcının kendi şablon ile arşiv klasörlerini sessizce yuttuğu için aynı gün Founder hükmüyle kaldırılmıştır; mühür bu örtük tahminin yerine açık bir beyan koyar ve kararı dosyanın sahibine bırakır. Biçim ölçümle seçilmiştir: köşeli parantez kabukta desen sayılıp hata vermiş, diyez işareti yorum sayılıp komutun anlamını sessizce değiştirmiş ve `.gitignore` dosyasında etkisiz kalmıştır; `@` işareti ise zsh ve bash kabuklarında, genişletilmiş desen seçenekleri açıkken ve git ile `.gitignore` deseninde tırnaksız çalışmıştır. Küçük harf şartı mevcut hiçbir dosyayı etkilemez, çünkü üç depodaki dört yüz yirmi üç `.sar` dosyasının hiçbirinin adı büyük harf taşımamaktadır. Mührün sessiz olmaması ve bulgu susturmanın yasaklanması, mekanizmanın sahte yeşil üreten bir kaçış kapısına dönüşmesini önlemek içindir.
+**Örnek:** Doğru: `arsiv/@ARSIV@_gstack_inceleme.sar` graf dışında kalır ve denetim çıktısında adıyla listelenir; `deney/fikstur/@EGITIM@_eski_proje_core.sar` doğrulanır, fakat kırık atıfları karneye girmez. Yanlış: `@arsiv@_x.sar` gibi küçük harfli bir etiket, `[ARSIV]x.sar` ya da `#ARSIV#x.sar` biçimi, mühürsüz `Rapor.sar` adı ve kapıyı yeşile çevirmek için hata veren canlı bir plan dosyasına `@SONRA@_` mührü eklemek.
+**Zorlama:** Yeni tanı önerisi `dosya-mührü` · BİLGİ · “Dosya mühürlü ve graf dışında; mührün türü ve dosyanın adı listelenir.” · yüzey: proje CLI ve Gözlemler; `sonraya-bırakılmış-dosya` · BİLGİ · “Dosya sonraya bırakılmış ve belirtilen gün sayısıdır bekliyor.” · yüzey: Hatırlatıcılar ve proje CLI; `geçersiz-dosya-adı` · UYARI · “Dosya adı büyük harf taşıyor fakat geçerli bir dosya mührü değil; adı küçük harfle yaz ya da kapalı kümeden bir mühür kullan.” · yüzey: Problems ve proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`. Ebedî kural taşıyan bir dosyaya arşiv mührü konması mevcut `ebedi-ihlal` tanısıyla HATA düzeyinde durdurulur. Bir dosyanın mühürlenmesi işleme kapısında görünür bir olaydır ve kanca yeni mühürlenen dosyayı o anda bildirir. Tanılar motor desteğiyle aynı turda sicile ve üreticiye iner. OGR-3 uyarınca hüküm aynı değişiklikte ajan bağlam paketine, karşılama kartına, `ogret` yüzüne ve doğuş rehberine işlenir.
+|<--
+Kural dosyaMühürleri( kod: MIM-3.4,
+       ne: "MIM-3.4 · Dosya Mühürleri [UYARI]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-3,
+       tanı: [ dosya-mührü, ebedi-ihlal, geçersiz-dosya-adı, sonraya-bırakılmış-dosya ] )
 
 -->|
 ### MIM-4 · Doğuş Omurgası ve Yapı Kural Aileleri [BİLGİ]

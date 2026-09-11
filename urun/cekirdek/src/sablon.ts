@@ -101,7 +101,7 @@ export function mimariDiyalog(): string {
     "      Kavramın adını uydurma; `kavram` aracına sor ve koniye kanonik yoluyla yaz.",
     "",
     "⚠️ ALTIN KURAL: Anadizin MİMARİ çizer (Kitaplık/Raf/yol = klasör ağacı). Plan",
-    "   (Faz→Blok→Katman→Adım) anadizine GÖMÜLMEZ — plan/ altında AYRI .sar'da yaşar",
+    "   (Faz→Blok→Katman→Adım) anadizine GÖMÜLMEZ — is/plan/ altında AYRI .sar'da yaşar",
     "   (bekçi: anadizin-plan-karışması). Blok = DİKEY DİLİM: ön+arka+güvenlik BİRLİKTE,",
     "   silo değil; Blok bunları KAVUŞTURUR (bekçi: silo-blok · kavuşumsuz-paralellik).",
   ].join("\n");

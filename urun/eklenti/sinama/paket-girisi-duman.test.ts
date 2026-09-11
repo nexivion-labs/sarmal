@@ -39,12 +39,39 @@ test("barınaksız duman: paketlenmiş giriş yüklenir ve activate fonksiyondur
     // esbuild, "import * as vscode" erişimlerini __toESM/__copyProps ile SAHİP
     // anahtarlar üzerinden kopyalar; salt get trap'li bir Proxy'nin anahtarları
     // kopyaya girmez ve "X is not a constructor" doğar. Bu yüzden pakette geçen
-    // bütün vscodeN.X adları dist metninden dinamik çıkarılır ve Proxy ownKeys
+    // bütün adalani.X adları dist metninden dinamik çıkarılır ve Proxy ownKeys
     // ile getOwnPropertyDescriptor trap'leri o kümeyi ilan eder — mock kendini
     // paketin gerçek API yüzeyine göre günceller, elle liste bayatlayamaz.
+    //
+    // BKM-DNT-A12 · KÜÇÜLTMEYE DAYANIKLI ÇIKARIM. Desen eskiden vscodeN.X
+    // sabit adını arıyordu; küçültme ad alanını yeniden adlandırdığı için
+    // (ölçüm 2026-09-10: üretim gövdesinde ad alanı G değişkenine bağlanıyor) desen
+    // hiçbir ada denk gelmiyor, mock boş anahtar kümesiyle doğuyor ve paketleme
+    // sonrası ilk koşum "SemanticTokensLegend is not a constructor" ile
+    // düşüyordu. Ad alanı değişkeninin ADI artık gövdeden ÇIKARILIR: hangi
+    // değişkene vscode modülü bağlanmışsa onun üye erişimleri toplanır.
     const distMetni = readFileSync(${JSON.stringify(giris)}, "utf8");
     const adlar = new Set(["default"]);
-    for (const es of distMetni.matchAll(/vscode\d*\.([A-Za-z_$][\w$]*)/g)) adlar.add(es[1]);
+    // Ad alanı değişkeninin adı gövdeden çıkarılır; küçültme onu yeniden
+    // adlandırdığında bile üye erişimleri bulunur. Dinamik düzenli ifade
+    // KURULMAZ: kaçış kuralları bu betiğin içinde iki kez yorumlanır ve kırılgandır.
+    const adAlanlari = new Set(["vscode"]);
+    for (const es of distMetni.matchAll(/([A-Za-z_]\w*)\s*=\s*(?:[A-Za-z_]\w*\()?\s*require\("vscode"\)/g)) {
+      adAlanlari.add(es[1]);
+    }
+    // Üye erişimlerini metni tarayarak topla (indexOf ile — kaçışsız ve kesin).
+    for (const ad of adAlanlari) {
+      let p = distMetni.indexOf(ad + ".");
+      while (p >= 0) {
+        const oncesi = p === 0 ? "" : distMetni[p - 1];
+        if (!/[A-Za-z0-9_$]/.test(oncesi)) {
+          const kalan = distMetni.slice(p + ad.length + 1);
+          const es = /^([A-Za-z_][A-Za-z0-9_]*)/.exec(kalan);
+          if (es) adlar.add(es[1]);
+        }
+        p = distMetni.indexOf(ad + ".", p + 1);
+      }
+    }
     const sahteVscode = new Proxy(function () {}, {
       get(_hedef, anahtar) {
         if (anahtar === "then") return undefined;

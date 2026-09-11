@@ -13,6 +13,7 @@ import { kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzet
 // VIT-GRAF-A14: satır-regex'in kaçırdığı (çok satırlı yazılmış) tanımlar için AST yedeği —
 // kimlik indeksi dekorla AYNI evrendir; süslü sözcenin ipucusuz kalması yapısal olarak kapanır.
 import { kimlikIndeksi, INDEKS_DISI, dosyaOkuGuvenli } from "../../cekirdek/src/kimlik.ts";
+import { TARAMA_DISLAMA_GLOB } from "./izleyici-cekirdek.ts";   // KPS-IND-A01: tarama evreni tek kaynaktan
 // EMJ-A03: emoji yüzü — kanon emojisine hover'da emoji↔ad karşılığı; Türkçe
 // baloncuklara emoji eşdeğeri satırı (iki yüz birbirini öğretir).
 import { emojiDeseni, emojiSozceCoz, emojiKarsiligi, yazimDisiMi } from "./emoji-yuz.ts";
@@ -51,7 +52,9 @@ async function kodIndeksle(): Promise<Map<string, KodKaydi>> {
   if (kodIndeks && simdi - kodIndeksZamani < 20_000) return kodIndeks;
   const indeks = new Map<string, KodKaydi>();
   const dosyalar = await vscode.workspace.findFiles(
-    "**/*.sar", "**/{arsiv,node_modules,fikstur}/**");
+    // KPS-IND-A01: dışlama ada göre değil YERE göre yapılır — kullanıcının kendi
+    // kökü altındaki `arsiv/` ya da `fikstur/` kitaplığı ipucu evreninden düşmez.
+    "**/*.sar", TARAMA_DISLAMA_GLOB);
   for (const uri of dosyalar) {
     try {
       // Tarama mantığı saf çekirdekte (ipucu-cekirdek.ts) — ilk tanım kazanır (dedup burada).

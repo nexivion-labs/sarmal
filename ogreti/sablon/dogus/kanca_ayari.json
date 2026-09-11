@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/kanca/dogus-kilidi.sh\"",
+            "timeout": 15,
+            "statusMessage": "Doğuş kilidi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/kanca/denetim-kapisi.sh\"",
+            "timeout": 90,
+            "statusMessage": "Sarmal denetim kapısı"
+          }
+        ]
+      }
+    ]
+  }
+}

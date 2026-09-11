@@ -500,25 +500,87 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
     AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "kapsam kararları",
       ne: "⚖️ Motorun değil Founder'ın verebileceği kararlar: hangi tanının hangi yüzeyde görüneceği ve kaydın gerçeği nasıl söyleyeceği" ) {
 
-      Adım( kod: BKM-DNT-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1 ],
+      Adım( kod: BKM-DNT-A01, ad: "Tanının Panele Ulaşması", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1, HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE, HTR-README-ORNEK-TANILARI-PANELDE-YOK ],
+        onay: "yön kanonda zaten kararlaştırılmıştır — 2026-09-09 · Founder, bir tanıyı hem ajanın hem insanın aynı anda görmesi gerektiğini hatırlatmış ve bunun yeni bir karar değil Sarmal'ın değişmez ilkelerinden biri olduğunu, kararın çok önceden verildiğini bildirmiştir. Kaynaktan doğrulanmıştır ve ilke kanonda iki maddede yaşamaktadır. YUZ-3.1 her görünür ihlalin Problems, hover, komut satırı ve satır yüzlerinden uygulanabilenlerin TÜMÜNDE aynı kod, düzey ve yönlendirmeyle sunulmasını, hiçbir yüzün tanıyı yeniden derecelendirememesini ya da GİZLEYEMEMESİNİ hükme bağlamaktadır. YUZ-3.3 ise hata ve uyarı düzeyli driftin Problems yüzeyine, yalnız bilgi düzeyli ölçüm ile durum işaretlerinin Bildirimler yüzeyine gitmesini hükme bağlamaktadır. Bu iki madde birlikte okunduğunda bu Adımın yönü tektir ve iki yönlü bir seçim yoktur: kapı kapsamı ilanı kanona uydurulur, kanon ilana uydurulmaz. Ölçülen ihlalin büyüklüğü şudur: altmış bir üreticinin otuz dokuzu yalnız komut satırındadır ve bunların altısı hata düzeyinde tanı basmaktadır; hata basan altı üreticinin panelden düşmesi YUZ-3.1'in gizleme yasağının doğrudan ihlalidir. Uyarı düzeyi de aynı hükme girmektedir, çünkü YUZ-3.3 uyarıyı hata ile aynı yüzeye yollamaktadır; dolayısıyla ilanda yalnız bilgi düzeyinde konuşan üreticiler komut satırında kalabilir ve bu ayrım ölçülerek çıkarılır. Adımın gövde metni kanon ile ilan arasında iki yönlü bir müzakere varmış gibi yazılmıştır; bu çerçeve yanlıştır ve aynı turda düzeltilir.",
+        // ── 2026-09-10 · KADEME ÖLÇÜMÜ VE PANEL BEDELİ (üretici ölçümü) ──
+        //   Ölçüm üreticilerin KENDİ gövdelerinden yapıldı: her üreticinin bastığı
+        //   tanı kimlikleri kaynaktan çıkarıldı, `yeniTani` kimlikleri sicilin terfi
+        //   kademesinden, `eskiTani` çağrıları ise düzey argümanından okundu.
+        //   Yardımcıya devreden dört üretici (beyansizYapiTanilari · metinAtifTanilari ·
+        //   dosyalararasiCatismaTanilari · ilansizGovdeDenetle) tek tek kaynaktan
+        //   doğrulandı, çünkü geçişli tarama paylaşılan yardımcılar üstünden kirlenip
+        //   yalnız bilgi basan üreticileri hata gibi gösteriyordu.
+        //
+        //   ÖNCEKİ HÂL: 61 ilan girdisi · 22 panelli · 39 yalnız komut satırında.
+        //   Yalnız komut satırındaki 39 girdinin 30'u hata ya da uyarı düzeyinde
+        //   konuşuyordu (18 hata · 12 uyarı) ve YUZ-3.1'in gizleme yasağını çiğniyordu.
+        //   Adımın gövdesindeki ön ölçüm hata basan üretici sayısını altı olarak
+        //   yazmıştı; bağımsız sayım bu rakamın üç katından fazlasını göstermiştir.
+        //
+        //   BUGÜNKÜ HÂL: 61 girdi · 52 panelli · 9 yalnız komut satırında; dokuzunun
+        //   dokuzu da YALNIZ bilgi düzeyinde konuşur ve dokuzu da gerekçe cümlesi
+        //   taşır. Hata ya da uyarı basıp panele ulaşamayan üretici sayısı SIFIRDIR.
+        //
+        //   PANEL BEDELİ: panel turu `denetimKos` TAM akışını zaten koşmaktadır ve
+        //   ilan yalnız hangi tanının Problems yüzeyine geçeceğini süzmektedir.
+        //   Ölçüm bunu doğrulamıştır: eski ilanla tur 469 ms, yeni ilanla 428 ms
+        //   sürmüştür ve aradaki fark ölçüm gürültüsüdür, çünkü motor iki hâlde de
+        //   aynı üreticileri koşturur. Değişen tek şey panele GEÇEN tanı sayısıdır:
+        //   bu depoda 1 iken 52 olmuştur. Kararın motor maliyeti sıfırdır; artan şey
+        //   yalnız gösterimdir ve gösterim maliyeti panel kipiyle çözülür.
+        //
+        // ── 2026-09-09 · CANLI KANIT (kontrolcü ölçümü, oturum içinde üretildi) ──
+        //   Founder plan dosyasına bir düğüm yazdı, komut satırı denetimi bir uyarı
+        //   verdi ve editörün Sorunlar paneli aynı anda "Çalışma alanında sorun
+        //   algılanmadı" dedi; Founder bunu kendi penceresinde görüp bildirdi.
+        //   Uyarı `kırık-referans` idi ve onu üreten `referansTanilari` bu ilanda
+        //   yalnız komut satırına ayrılmıştır. Aynı turda `geçersiz-enum` tanısı
+        //   panele ULAŞTI, dolayısıyla körlük tanı ailesine göre değişmektedir ve
+        //   kullanıcı hangi ailenin görüneceğini hiçbir yüzeyden okuyamaz.
+        //   Kapsam ölçümü aynı gün yenilendi: ilanda altmış bir üretici vardır,
+        //   otuz dokuzu YALNIZ komut satırındadır ve yirmi ikisi panele ulaşır.
+        //   Otuz dokuzun içinde bugün iki ayrı olayın sebebi olan iki üretici
+        //   birden durmaktadır: `anadizinSekliTanilari` (yeni bir ağaç yanlış
+        //   kurulduğunda hata düzeyinde konuşan bekçi) ve `referansTanilari`.
+        //   Yani Founder'ın yanlış ağacın üstüne inşa etmesinin ve plandaki
+        //   hatayı anlık yakalayamamasının kaynağı bu ilanın kendisidir.
+        //
+        //   KONTROLCÜNÜN ÖN ÖLÇÜMÜ YANLIŞ ÇIKTI — düzeltme kayda geçer. Kontrolcü
+        //   otuz dokuz üreticinin yalnız ALTISININ hata bastığını yazmış ve bunu
+        //   kaynak taramasıyla çıkarılmış bir ön ölçüm olarak, bağımsız doğrulama
+        //   şartıyla beyan etmişti. Doğrulama üretici tarafından yapılmış ve sayı
+        //   üç kattan fazla çıkmıştır: yalnız komut satırındaki otuz dokuz girdinin
+        //   OTUZU hata ya da uyarı basmaktadır, yani on sekizi hata ve on ikisi
+        //   uyarıdır. Kontrolcünün taraması üretici işlevlerinin gövdesini kaba bir
+        //   düzenli ifadeyle bölmüş ve dolaylı çağrıyla üretilen tanıları saymamıştı.
+        //   Ders tek cümledir: ön ölçüm karar hazırlar, hüküm vermez; bu ayrımı
+        //   yazmak ölçümü yanlış olmaktan kurtarmaz, yalnız yanlışı yakalanabilir
+        //   kılar. YUZ-3.3 uyarıyı hata ile aynı yüzeye yolladığı için otuzun
+        //   tamamı panele taşınmıştır.
         üretir: [ KOD-KAPI-KAPSAMI ],
         ne: "⚖️ Kırk üreticinin yüzey kararının Founder hükmüyle verilmesi. Kapı kapsamı ilanı altmış bir üreticinin kırkını yalnız komut satırına ayırmaktadır ve bu kırk satırın otuz yedisi hiçbir gerekçe taşımaz; blok yorumu kararı açıklamak yerine kararın o Adımda ele alınmadığını yazar. Kaydın kendisi (`is/nitelik/kapi_kapsami.sar`) ve KYN-MTR-A05 Adımının sınır alanı yüzey kararının Founder hükmü olduğunu söyler, fakat o hüküm hiç verilmemiş ve hiçbir halef Adıma bağlanmamıştır; kırk satır bilinçli bir kararın kaydı değil, verilmemiş bir kararın bugünkü fotoğrafıdır. Ölçüm ağırdır: on beş üreticinin ürettiği elli dokuz tanı kimliği için kanon maddesinin zorlama satırı Problems ya da Bildirimler yüzeyi isterken ilan yalnız komut satırı der; aralarında hata düzeyinde olanlar (kimlik omurgası, mühür kırılması, ebedî kural silinmesi) ve panel yüzeyi hükmünün bekçisi olan YUZ maddelerinin kendi tanıları da vardır. Sicildeki yüz yetmiş beş kimliğin seksen dördü bugün panele yapısal olarak ulaşamamaktadır. Bu Adım kırk satırın her biri için karar verir: ya ilan kanona çekilir ya da kanon maddesinin yüzey cümlesi Founder kapısından değiştirilir; üçüncü bir yol yoktur, çünkü kanon ile motorun ayrışması aracın sattığı güvencenin merkezindedir." ) {
         görev: [
-          "On beş kanon ayrışmasını (rejim, omurga, ilişki sınıfı, kimlik, şef akışı, dil kanonu, öğretim, strateji, tip evreni, terfi kanıtı, yüz, mühür, birleşim çatışması, ebedî kural) Founder ile tek tek gözden geçir; her biri için ya ilana panel yüzeyi eklenir ya da kanon maddesinin yüzey cümlesi değiştirilir ve karar gerekçesiyle ilan satırının üstüne yazılır.",
-          "Kanonun yüzey beyanı taşımadığı dokuz üretici için kararı Founder verir ve gerekçesi yazılır; kanonun yalnız komut satırı dediği on beş üretici bugünkü hâlinde kalır ve bu da gerekçe olarak yazılır.",
-          "Kararlar verildikten sonra kanon ile ilanın uyumunu ölçen genel nöbet kurulur (BKM-DNT-A11); nöbet bu Adımdan önce kurulursa on beş ayrışma yüzünden kırmızı doğar ve karar yerine gürültü üretir."
+          "İlanı kanona uydur: hata ya da uyarı düzeyinde tanı basan her üretici panel yüzeyine de yazılır, çünkü YUZ-3.3 iki kademeyi de Problems yüzeyine yollamakta ve YUZ-3.1 hiçbir yüzün tanıyı gizlemesine izin vermemektedir. Yön tektir ve kanon maddesi bu Adımda değiştirilmez.",
+          "Hangi üreticinin hangi kademede konuştuğunu üreticinin kendi gövdesinden ölç ve listeyi kayda yaz: yalnız bilgi düzeyinde konuşan üreticiler komut satırında kalabilir ve kalma gerekçesi ilan satırının üstüne yazılır. Ön ölçüm altmış bir üreticinin otuz dokuzunun yalnız komut satırında olduğunu ve bunlardan altısının hata bastığını göstermiştir; kesin sayım bu Adımda bağımsız olarak yenilenir.",
+          "Kanonun yüzey beyanı taşımadığı üreticiler için beyanı kanondan türet: tanının kademesi hangi yüzeyi gerektiriyorsa o yazılır; beyansız üretici için Founder'a soru taşınmaz, çünkü kural kademeyi zaten yüzeye bağlamaktadır.",
+          "Panelin performans bedelini ölç ve kayda yaz: taşınan üreticilerin panel turuna eklediği süre, panel kipi ölçümünün taban sayılarıyla karşılaştırmalı olarak verilir. Bedel ölçülür fakat hükmü değiştirmez; hüküm kanondadır ve maliyet panel kipiyle çözülür.",
+          "Kanon ile ilanın uyumunu ölçen genel nöbet kurulur (BKM-DNT-A11) ve bu kez ayrışmanın gerçek hâlini görecek biçimde kurulur: bir üreticinin bir yüzeyde farklı görünmesi kadar, o yüzeyde HİÇ görünmemesi de ayrışmadır. Bugün ilan edilmiş iki nöbetin neden ateşlemediği 2026-09-09 tarihinde kaynaktan ölçülmüştür ve sebep üç katmanlıdır. BİRİNCİSİ, iki nöbet de yalnız o koşuda FİİLEN ÜRETİLMİŞ tanıların üzerinde dönmektedir; birincisi üretilen tanının düzeyini sicildeki kademeyle ve aynı koşudaki öteki düzeylerle karşılaştırmakta, ikincisi üretilen tanının yönlendirildiği yüzeyi beklenen yüzeyle karşılaştırmaktadır. Panelde hiç koşmayan bir üretici hiçbir tanı üretmez, dolayısıyla iki kümeye de hiç girmez; nöbetler yapısal olarak yalnız FARKLI GÖRÜNME hâlini görür ve HİÇ GÖRÜNMEME hâlini göremez. İKİNCİSİ, ikinci nöbet yönlendirme tablosu verilmediğinde tümüyle susmaktadır ve kodun kendi gerekçesi bunu yapılmamış bir yönlendirmenin bozulmuş sayılamayacağı biçiminde yazmaktadır; gerekçe makuldür fakat sonucu sessizliktir. ÜÇÜNCÜSÜ, nöbetin kendisi panel yüzeyine çıkmamaktadır ve bunu kapı kapsamı ilanının kendi yorum satırı yazmaktadır; yani bir tanının bir yüzeye ulaşmadığını bildirecek bekçi tam da o yüzeye kendisi ulaşamamaktadır. Onarım bu üç katmanı birden kapatır: nöbet ÜRETİLEN tanılar kümesini değil İLAN EDİLEN üretici kümesini taban alır ve bir üreticinin kanonun gerektirdiği yüzeyde ilan edilmemiş olmasını başlı başına ayrışma sayar; yönlendirme tablosu verilmediğinde susmak yerine tablonun yokluğunu bildirir; ve nöbet kendi hükmü gereği panel yüzeyine çıkar."
         ]
         kabul: [
-          "Kırk komut satırı girdisinin her biri ilanda bir gerekçe cümlesi taşır ve gerekçesiz girdi sayısı sıfırdır.",
-          "Kanon maddesinin yüzey cümlesi ile ilanın yüzey listesi arasında ayrışma kalmamıştır; kalanlar Founder hükmüyle kanon tarafında değiştirilmiştir ve o değişiklikler kanon mührünü usulünce tazelemiştir.",
-          "Panele ulaşamayan kimlik sayısı yeniden ölçülmüş ve kayda yazılmıştır."
+          "Yalnız komut satırında kalan her ilan girdisi bir gerekçe cümlesi taşır ve gerekçesiz girdi sayısı sıfırdır.",
+          "Hata ya da uyarı düzeyinde tanı basıp panele ulaşamayan üretici sayısı SIFIRDIR; bu sayı üreticilerin kendi gövdelerinden bağımsız olarak ölçülmüş ve kayda yazılmıştır.",
+          "Komut satırında kalan üreticilerin tamamı yalnız bilgi düzeyinde konuşmaktadır ve bu da aynı ölçümle gösterilmiştir.",
+          "Kanon maddesi bu Adımda değiştirilmemiştir; ayrışma yalnız ilan tarafında kapanmıştır.",
+          "Panelin ölçülen performans bedeli kayıttadır ve panel kipi taban sayılarıyla karşılaştırılmıştır.",
+          "Bir üreticinin bir yüzeyde hiç görünmemesi hâlini gören nöbet canlıdır; bu, bir üreticiyi geçici olarak ilandan düşürüp nöbetin kırmızıya döndüğü gösterilerek kanıtlanmıştır."
         ]
-        sınır: "Bu Adım tek başına hiçbir üreticiye panel yüzeyi eklemez ve hiçbir kanon maddesini değiştirmez; yalnız kararları toplar. Kararların uygulanması, karar başına ayrı bir işleme olarak bu Adımın koşu kaydında izlenir. Ateşlemiş hatırlatıcı (2026-08-28) ve önceliksiz Adım (BKM-DNT-A04) kararları bu Adımdan önce verilmiştir, çünkü kanon o ikisi için Bildirimler yüzeyini açıkça yazmaktadır."
+        sınır: "Bu Adım hiçbir kanon maddesini değiştirmez; ayrışma yalnız ilan tarafında kapatılır. Bu cümlenin önceki hâli Adımın kendi onay alanıyla çelişiyordu ve 2026-09-10 tarihinde düzeltilmiştir: eski metin Adımın hiçbir üreticiye panel yüzeyi eklemeyeceğini, yalnız kararları toplayacağını yazıyordu, oysa onay alanı yönün Founder hükmüyle kapandığını ve ilanın kanona uydurulacağını bildirmektedir. İki yönlü müzakere çerçevesi yanlıştı ve onay alanı onun aynı turda düzeltileceğini zaten yazmıştır. Kapsam dışı kalan tek kalem şudur: kanon uyum nöbetinin kendi tanısını panel yüzeyine basması bir tanı kimliği ile ona karşılık gelen kanon maddesini gerektirir, dolayısıyla kanona dokunmayı yasaklayan bu sınırın dışındadır ve ayrı bir Adımın işidir. Ateşlemiş hatırlatıcı (2026-08-28) ve önceliksiz Adım (BKM-DNT-A04) kararları bu Adımdan önce verilmiştir, çünkü kanon o ikisi için Bildirimler yüzeyini açıkça yazmaktadır."
+        koşu: "2026-09-10 · KAPANDI. İlan kanona uyduruldu ve ayrışma tek yönde kapandı: altmış bir girdinin panele ulaşanı yirmi ikiden elli ikiye çıktı, yalnız komut satırında kalan dokuz girdinin dokuzu da yalnız bilgi düzeyinde konuşmakta ve her biri gerekçe cümlesi taşımaktadır; hata ya da uyarı basıp panele ulaşamayan üretici sayısı sıfırdır. Bu deponun kendi koşusunda panele geçen tanı sayısı birden elli ikiye çıkmıştır ve motorun maliyeti değişmemiştir, çünkü denetim aynı üreticileri iki hâlde de koşturmaktadır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz altmış ikide bin iki yüz altmış iki, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; kontrolcü ayrıca kendi mutasyonunu koşturdu ve atıf üreticisini panelden düşürdüğünde on beş nöbetin altısı kırmızıya döndü, kaynak birebir geri konduğunda on beşi de yeşile döndü. Kontrolcünün ön ölçümü yanlış çıkmış ve düzeltilmiştir: hata basan üretici sayısı altı değil, hata ile uyarı basan girdi sayısı otuzdur. Kapsam dışı kalan tek kalem kanon uyum nöbetinin kendi tanısını panele basmasıdır ve o iş kanon maddesi gerektirdiği için ayrı bir Adımı bekler."
         dokunulmaz: [ "Kapsam nöbetinin ad kümesi eşitliği sözleşmesi", "Panel süzgecinin üretici damgasıyla süzme mekanizması" ]
       }
 
-      Adım( kod: BKM-DNT-A02, durum: beklemede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.3, YUZ-7 ],
-        üretir: [ VR-GOC-YUZEY-YONLENDIRME ],
+      Adım( kod: BKM-DNT-A02, durum: tamamlandı, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.3, YUZ-7 ],
+        üretir: [ VR-GOC-YUZEY-YONLENDIRME, KOD-YUZEY-ULASMA, KOD-SNM-YUZEY-ULASMA ],
         ne: "📋 Yönlendirme matrisi kaydının yönlendirme ile ulaşmayı ayırması. Kayıt bugün sicilin tamamını üç yüzeye dağıtır ve her kaydın tam olarak bir yüzeye ulaştığını yazar; oysa ölçüm yüz yetmiş beş kimliğin seksen dördünün hiçbir yüzeye ulaşmadığını göstermiştir. Kaydın cümlesi yönlendirme için doğru, ulaşma için yanlıştır ve aradaki farkı hiçbir yerde konuşmaz. Ayrıca kaydın makine-okur Çıkarım düğümü yüz yetmiş bir kimlik ve yirmi dört Bildirimler derken çizelgesi yüz yetmiş beş ve yirmi sekiz der; düzyazısı önceki gövdeyi yüz iki sayarken çizelge yüz bir sayar. Aynı dosyada iki toplam yaşamaktadır ve kaydın kendi uyarısında önceden ilan ettiği sessiz bayatlama gerçekleşmiştir. Bu Adım, kaydın yönlendirme ile ulaşma sütunlarını ayırır, sayılarını canlı sicilden üretir ve iki sütunun eşitsizliğini nöbete bağlar." ) {
         görev: [
           "Kayda 'ulaşır' sütunu ekle: her kimlik için yönlendirildiği yüzey ile üreticisinin ilanındaki yüzeylerin kesişimi yazılır; boş kesişim 'ulaşmaz' olarak görünür.",
@@ -530,10 +592,31 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Kaydın üç sayı kaynağı (Çıkarım düğümü, düzyazı, çizelge) aynı toplamı söyler ve bir nöbet bunu ölçer."
         ]
         sınır: "KYN-YUZ-A02 Adımı bu kaydın bayat sayılarını zaten gerçeğe çekmektedir; bu Adım o düzeltmeyi yinelemez, yalnız ulaşma sütununu ve fark nöbetini ekler. Sıra bağımlılığı gerçektir: ulaşma sütunu BKM-DNT-A01 kararlarından önce doldurulursa seksen dört satır 'ulaşmaz' der ve karar verilince yeniden yazılır."
+        koşu: "2026-09-10 · KAPANDI. Kaydın üç sayı kaynağı gerçekten ayrışmıştı ve üçü de farklı şey söylüyordu: bir yer yüz yetmiş bir kimlik derken çizelge yüz yetmiş beş diyordu, düzyazı ise önceki gövdeyi iki yerde yüz iki sayıyordu, oysa gerçeği yüz birdi. Üçü de tek üretece bağlandı ve toplamın sicil boyutunu vermesi yapısal olarak zorunlu hâle geldi. Yönlendirme ile ULAŞMA ayrı çizelgeye çıkarıldı, çünkü bir tanının bir yüzeye yönlendirilmiş olması o yüzeye ulaştığı anlamına gelmiyordu. Kayıttaki kademe dağılımı da elle doğrulanmaktan çıkıp motor kaynağından ölçülür oldu ve eski dağılımın hem bayat hem yanlış taban üzerinden yazıldığı görüldü."
       }
 
       Adım( kod: BKM-DNT-A03, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
         üretir: [ KOD-DENETCI ],
+        // ── 2026-09-10 · GÖZLEM: geçici fikstür ortak kapıyı kırmızıya çeviriyor ──
+        //   Kontrolcü bu tarihte kapının kırmızı yandığını ve yazımının engellendiğini
+        //   bildirmiştir; sebep `ogreti/ornek/altin_yol/_ta04-nobet.sar` dosyasıdır.
+        //   Ölçüm dosyanın sahibini bulmuştur: gerçek kabuk süitindeki tek-ağaç nöbeti
+        //   (urun/eklenti/sinama_vscode/suite/tek-agac.test.ts, `geciciSar`) fikstürü
+        //   koşum boyunca DEPO AĞACININ İÇİNE yazar ve süit bitince siler. Dosya
+        //   yalnız o bir dakika boyunca yaşar, fakat o pencerede aynı ağaçta çalışan
+        //   herkesin denetimi yedi hata bildirir (fazsız-blok · proje-köksüz-üretim),
+        //   çünkü kanca o klasörü ayrı bir varlık kökü sayar.
+        //   ÖNEMLİ AYRIM: fikstürü depo dışına taşımak ÇÖZÜM DEĞİLDİR ve nöbeti
+        //   bozar. Nöbetin kendi yorumu sebebini yazmaktadır: tur daraltması ancak
+        //   odaktaki varlık çalışma alanı kökünün ALTINDA bir kökse yapılır,
+        //   dolayısıyla fikstür tanımı gereği ağacın içinde olmak zorundadır.
+        //   Kapının bu dosyayı ayırt edememesi asıl kusurdur: alt çizgiyle başlayan
+        //   ya da bilinen geçici desenleri taşıyan bir dosyayı üretim gövdesinden
+        //   ayıran bir kural yoktur. Çözüm adayları şunlardır ve karar Founder'ındır:
+        //   motorun ders dünyası dışlama desenine (INDEKS_DISI) geçici önek eklemek,
+        //   ya da nöbetin fikstürü çalışma alanının altında fakat denetim evreninin
+        //   dışında kalan bir rafa yazması. Kanca Founder'ın makinesinde yaşadığı için
+        //   bu turda davranışı DEĞİŞTİRİLMEMİŞTİR; gözlem kayda geçirilmiştir.
         ne: "🧹 Plan hijyeni: kenarsız geliştirme, çift ilanlı dosya ve yapışık düğüm. Üç küçük borç tek turda kapanır. Birincisi, VIT-GRAF-A20 ile VIT-POSTA-A05 Adımları geliştirmede olduğu hâlde ne üretir ne referans kenarı taşır ve motor bunu zaten iki bilgi tanısıyla söylemektedir; bitince ürettikleri dosyanın izi plandan okunamayacaktır. İkincisi, üç kaynak dosyası birden fazla Kod kimliğiyle ilanlıdır: eklenti gövdesi meyve haritasında ve göç planında, yüzey metin kataloğu vitrin planında ve göç planında, yol haritası ise üç kimlik altında yaşar; etki ve graf sorguları aynı dosyayı ayrı düğümler sayar ve hiçbir nöbet çift ilanı ölçmez, çünkü yetim-meyve kapısı ilansız kalmayı ölçer, iki kez ilan edilmeyi ölçmez. Üçüncüsü, vitrin planının meyve bloğunda iki Kod düğümü satır başı olmadan tek satıra yapışmıştır; ayrıştırıcı kabul eder, insan gözü görmez." ) {
         görev: [
           "İki geliştirmedeki Adıma üretir ve referans kenarlarını yaz; hedef dosyalar ilanlıdır, yalnız kenar eksiktir.",
@@ -587,8 +670,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Düğmenin işlevi değişmez; yalnız görünürlük koşulu gerçeğe çekilir. Canlı pencere doğrulaması Founder'ındır."
       }
 
-      Adım( kod: BKM-DNT-A06, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ MIM-3 ],
-        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI ],
+      Adım( kod: BKM-DNT-A06, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ MIM-3 ],
+        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI, KOD-CLI-KAPISI ],
         ne: "📜 Kapı kapsamı ilanının fiilî davranışın ölçümü hâline gelmesi. İlanın başlık yorumu kapsamı 'bugünkü fiilî davranışın ölçümü' diye tanımlar, fakat üç yerde gerçekten ayrışır. Birincisi, `dogusEksikTanilari` üreticisi yalnız MCP yüzeyinde koşar ve ilanda hiç yoktur; kapsam nöbeti bunu göremez, çünkü yalnız denetim hattının kaynağını okur ve MCP çağrı kümesini taramaz. İkincisi, AltKatman tekilliği üreticisi tek-dosya yüzeyini ilan eder, oysa tek-dosya yolu yalnız doğrulayıcıyı çağırır ve bu üreticiye hiç uğramaz; beyan ölçüm değildir. Üçüncüsü, MCP'nin proje denetimi aracı komut satırını alt süreç olarak koşturur, dolayısıyla altmış bir üreticinin tamamı fiilen MCP yüzeyinde çalışır ve çıktısı ajana ulaşır, oysa ilan yalnız doğrulayıcıya MCP yazar. Üçü de nöbetsizdir ve nöbetsiz oldukları için sessizdir." ) {
         görev: [
           "Kapsam nöbetini MCP ve tek-dosya yollarını da tarayacak biçimde genişlet; her yüzey için gerçek çağrı kümesi kaynaktan çıkarılır ve ilanla karşılaştırılır.",
@@ -600,6 +683,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "İlanda beyan edilip çağrılmayan ya da çağrılıp beyan edilmeyen üretici sayısı her yüzeyde sıfırdır."
         ]
         sınır: "Hangi üreticinin hangi yüzeyde koşacağı kararı bu Adımın değil BKM-DNT-A01'in konusudur; bu Adım yalnız ilanın gerçeği söylemesini sağlar."
+        koşu: "2026-09-10 · KAPANDI. Kapı kapsamı ilanı artık dört yüzeyi birden tarıyor ve Adımın saydığı üç ayrışmanın üçü de kapandı; ikisi nöbetin ilk fikstürü oldu. Doğuş eksikliğini bildiren üretici ilanda HİÇ yoktu ve yalnız sunucu yolundan çağrılıyordu, ilana girdi; alt katman tekilliği üreticisinin tek-dosya beyanı ölçümle yanlış çıktı ve düştü; alt süreç köprüsü üretici başına değil kural olarak yazıldı. Bir tasarım kararı gerekçesiyle beyana çevrildi: panele ulaşmayan bir uyarı üreticisine yüzey vermek bir YÜZEY kararıdır ve bu Adımın sınırı onu başka bir Adıma bırakır, bu yüzden var olan düzen panel ikizi beyanıyla ölçülür hâle getirildi ve ikizin gerçekten panelde yaşadığı mutasyonla kanıtlandı. Her yüzeyde ilan fazlası ve kayıt fazlası sıfırdır."
       }
 
       Adım( kod: BKM-DNT-A07, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
@@ -613,20 +697,97 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Gömülü kanon üreteci ve palet drift nöbeti değişmez."
       }
 
-      Adım( kod: BKM-DNT-A15, ad: "Doğuş Paketinin Yok Sayma İstisnası", durum: beklemede, öncelik: p1, bağımlı: [],
-        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
-        ne: "🛡️ Doğuş paketinin ürettiği köke `!*.sar` istisnası taşıyan bir `.gitignore` yazması ya da var olan dosyaya istisnayı eklemesi; yönerge ikizi nöbetinin küresel yok sayma bilgisinin `.sar` desenini de kapsaması. 2026-09-05 ölçümü: küresel yok sayma kuralı `*.sar` deseni taşıyan bir makinede doğan projede on yedi `.sar` dosyasının sıfırı izleniyordu ve ilk dış kullanıcı bunu proje hafızasının tek diskte kalması olarak bildirdi." ) {
+      Adım( kod: BKM-DNT-A15, ad: "Doğan Kökün Kapısı", durum: tamamlandı, öncelik: p1, bağımlı: [],
+        referans: [ HTR-ILK-DIS-KULLANICI-TANIGI, HTR-DOGUS-PAKETI-KANCA-VE-OGRETI-KARTI ],
+        üretir: [ KOD-DOGUS, KOD-SNM-DOGUS ],
+        ne: "🛡️ Doğuş paketinin doğurduğu kökü kapısız bırakmaması. Kontrolcü 2026-09-09 tarihinde paketin ürettiği dosya listesini kaynaktan bağımsız olarak ölçmüştür ve paket bugün yalnız altı dosya yazmaktadır: giriş ilanı, durum devir kaydı, iki öğrenme dosyası, ilk plan ve ajan dil bağlamı. Ölçüm beş dosyanın hiç doğmadığını göstermiştir ve beşinin de tek bir sonucu vardır: doğan kök tek başına açıldığında ürünün kendi kapıları orada çalışmaz. Birincisi yok sayma dosyası doğmaz, dolayısıyla küresel yok sayma kuralı `*.sar` deseni taşıyan bir makinede doğan projenin hafızası depoya hiç girmez; 2026-09-05 ölçümünde on yedi kaynak dosyasının sıfırı izleniyordu ve ilk dış kullanıcı bunu proje hafızasının tek diskte kalması olarak bildirmiştir. İkincisi yürütücü ayar dosyası doğmaz, dolayısıyla doğan kök Sarmal sunucusunu bulamaz ve ajan ürünün araçlarına hiç erişemez. Üçüncüsü yönerge ikizinin yalnız bir kanadı yazılır; paket ajan dil bağlamını üretmekte, ikizin öteki kanadını üretmemektedir ve bu yüzden doğan projede ikiz nöbeti kendi konusunu bulamaz. Dördüncüsü kanca yazılmaz, dolayısıyla ilk kaynak yazımından sonra denetim kendiliğinden koşmaz ve ajanın kapıyı atlaması hiçbir mekanizmayla engellenmez. Beşincisi kanon işaretçisi yazılmaz, dolayısıyla eklenti tip sistemi kaydını bulamaz ve panel o kökte kör kalır." ) {
         görev: [
-          "Doğuş paketine `.gitignore` üretimini ekle: dosya yoksa `!*.sar` istisnasıyla yazılır, varsa istisna eksikse eklenir ve hiçbir mevcut satır silinmez.",
+          "Doğuş paketine yok sayma dosyası üretimini ekle: dosya yoksa `!*.sar` istisnasıyla yazılır, varsa istisna eksikse eklenir ve hiçbir mevcut satır silinmez.",
+          "Doğuş paketine yürütücü ayar dosyası üretimini ekle: doğan kök Sarmal sunucusunu kardeş kurulumdan ya da paket adından çözer ve ajan ilk turdan itibaren ürünün araçlarını kullanır.",
+          "Doğuş paketine yönerge ikizinin eksik kanadını ekle: iki dosya bayt özdeş doğar ve ikiz nöbeti doğan projede kendi konusunu bulur.",
+          "Doğuş paketine kapı kancasını ekle: her kaynak yazımından sonra denetim kendiliğinden koşar ve hata ajana geri döner; kancanın kurulumu doğan kökün kendi sınırında kalır ve kullanıcının makinesindeki küresel ayarlara dokunulmaz.",
+          "Doğuş paketine kanon işaretçisini ekle: doğan kök tek başına açıldığında eklenti tip sistemi kaydını çözer ve panel kör kalmaz.",
+          "Kancanın yanlış pozitifini onar: kanca bugün komut metninde giriş ilanı desenini gördüğü an reddetmekte, o desenin gerçekten bir yazım hedefi olup olmadığını ölçmemektedir; kontrolcü 2026-09-09 tarihinde proje dışındaki bir çalışma notuna yazarken bu retle karşılaşmıştır. Kanca yalnız gerçek yazım hedefini ölçer ve deseni yalnızca anan komutu geçirir.",
           "Yönerge ikizi nöbetinin kurulum tuzağı notunu ve ölçümünü `.sar` desenini kapsayacak biçimde genişlet.",
-          "Nöbet kur: küresel yok sayma kuralı `*.sar` içeren bir fikstür deposunda doğan proje `git check-ignore` ile ölçüldüğünde hiçbir `.sar` yok sayılmaz."
+          "Nöbet kur: küresel yok sayma kuralı `*.sar` içeren bir fikstür deposunda doğan proje `git check-ignore` ile ölçüldüğünde hiçbir `.sar` yok sayılmaz.",
+          "Nöbet kur: doğan kök tek başına açıldığında beş dosyanın beşi de yerindedir ve kanca gerçek bir yazımda ateşleyip deseni yalnızca anan bir komutta ateşlemez."
         ]
         kabul: [
           "Doğuş paketiyle doğan projede `.sar` dosyaları küresel yok sayma kuralına rağmen izlenir; bu fikstürle kanıtlanmıştır.",
-          "Var olan `.gitignore` dosyasının satırları korunur ve istisna tek kez yazılır.",
+          "Var olan yok sayma dosyasının satırları korunur ve istisna tek kez yazılır.",
+          "Doğan kök tek başına açıldığında yürütücü ayar dosyası, yönerge ikizinin iki kanadı, kanca ve kanon işaretçisi yerindedir; bu, doğan bir fikstür kökünde dosya dosya ölçülmüştür.",
+          "Kanca gerçek bir giriş ilanı yazımını reddeder ve deseni yalnızca anan bir komutu geçirir; ikisi de nöbetle kanıtlanmıştır.",
           "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
         ]
-        sınır: "Kullanıcının küresel yok sayma dosyasına dokunulmaz; istisna yalnız projenin kendi dosyasında yaşar."
+        sınır: "Kullanıcının küresel yok sayma dosyasına ve makinesindeki küresel kanca kurulumuna dokunulmaz; doğan kökün kapıları yalnız o kökün kendi dosyalarında yaşar. Bu Adım öğretim kartı yazmaz ve karşılama kartına dokunmaz; doğuşun öğretisi BKM-DNT-A16 Adımının işidir."
+        koşu: "2026-09-10 · KAPANDI. Doğan ağaç altı dosyadan on üçe, çalışma alanı sekizden yirmi ikiye çıktı; beş eksik kapının beşi de yerine kondu ve Kitaplık hükmü şablonlara indi. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz otuz yedide bin iki yüz otuz yedi, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; gerçek bir çalışma alanı doğurulup denetlendiğinde sıfır hata verdi, altı kaynak dosyasının altısı da küresel yok sayma kuralına rağmen izlendi ve var olan bir yok sayma dosyasının dört satırı korunarak istisna tam bir kez yazıldı. Açık kalan tek kalem Adımın sınırı gereğidir ve dürüstçe beyan edilir: onarılmış kanca mantığı üründedir, Founder'ın makinesindeki küresel kanca kurulumu hâlâ eski gövdeyi taşımaktadır ve tazelenmesi Founder kararıdır."
+      }
+
+      Adım( kod: BKM-DNT-A16, ad: "Doğuşun Öğretisi", durum: tamamlandı, öncelik: p1, bağımlı: [ BKM-DNT-A15 ],
+        referans: [ HTR-AJAN-KAPI-ATLAMA-DESENI-METINLE-KAPANMAZ, HTR-DOGUS-PAKETI-KANCA-VE-OGRETI-KARTI ],
+        üretir: [
+          Kod( kod: KOD-BECERI-KARTI, dosya: "urun/cekirdek/src/beceri-karti.ts", ne: "🍎 Konu kartı araması — ogret { konu } çağrısının tek gövdesi; anahtar sıkıştırması Türkçe yazımı ASCII dosya adına denk düşürür ve raf adresi kurulumdan çözüldüğü için kart boş dizinde de yanıt verir" ),
+          Kod( kod: KOD-SNM-DOGUS-OGRETISI, dosya: "urun/cekirdek/sinama/dogus-ogretisi.test.ts", ne: "🍎 Doğuş anının öğretisi nöbeti — boş fikstür dizininde konu kartları, anlatının üç bölümü, beş anti-desen, rehber ile kartın tek üreticiden doğduğu, bayat plan adresinin kalmadığı ve sunucu talimatının doğuş araçlarını andığı ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (kontrolcü · BKM-DNT-A15 kapandıktan hemen sonra) ──
+        //   Doğuş paketi ile rehber şablonları Kitaplık hükmüne göre tazelendi,
+        //   fakat ÜÇÜNCÜ bir öğretim yüzeyi eski mimaride kaldı ve ölçüldü.
+        //   Karşılama kartının kaynağında (ogret.ts) "Kitaplık" sözcüğü SIFIR kez
+        //   geçmektedir; kartın örneği Rafı doğrudan kökün altına yazmakta
+        //   (`Raf( kod: RAF-PLAN, yol: "plan/" )`) ve plan dosyasının adresini
+        //   `plan/ilk_plan.sar` olarak göstermektedir. Oysa doğan ağaçta o dosya
+        //   artık `is/plan/ilk_plan.sar` adresindedir; kart var olmayan bir yol
+        //   öğretmektedir. Aynı bayat adres belge yüzleri üretecinde de durmaktadır.
+        //   Bu yüzeyin ağırlığı ötekilerden fazladır: boş bir dizinde ajanın
+        //   GÖRDÜĞÜ İLK ŞEY karşılama kartıdır ve oturum açılışında kendiliğinden
+        //   basılır. Doğuş paketi ne kadar doğru üretirse üretsin, kart yanlış
+        //   öğrettiği sürece ajan yanlış ağacı elle yazmayı sürdürür. Ders tek
+        //   cümledir: bir mimari kararı üç öğretim yüzeyinin üçüne birden inmedikçe
+        //   uygulanmış sayılmaz.
+        //
+        // ── 2026-09-10 · ÖĞRETİNİN ULAŞMA TABLOSU (üretici ölçümü · taze süreçten) ──
+        //   Sütunlar: KANAL · hangi araçtan · hangi anda ateşler · BOŞ dizinde koşar mı.
+        //   Ölçüt tek cümledir: ateşlemeyen kart öğreti sayılmaz.
+        //
+        //   ① Sunucu talimatı .......... MCP initialize · oturum açılışında, hiçbir araç
+        //      çağrılmadan · BOŞ DİZİNDE ÇALIŞIR. Doğuş araçlarını (dogus · iskelet ·
+        //      ogret) adıyla anar ve boş dizinde elle yazma yasağını yazar.
+        //   ② Karşılama kartı .......... `ogret` (konusuz) · ilk temasta ve oturum
+        //      açılışında kendiliğinden · BOŞ DİZİNDE ÇALIŞIR. Doğuş anlatısının üç
+        //      bölümünü (hedef · kademeli onay · diyalog disiplini) taşır.
+        //   ③ Doğuş rehberi ............ `basla` (türlü ve türsüz) · yazmadan ÖNCE ·
+        //      BOŞ DİZİNDE ÇALIŞIR. Kartla AYNI anlatı gövdesini basar (tek üretici).
+        //   ④ Konu kartları ............ `ogret { konu }` · ajan bir kavramı sorduğunda ·
+        //      BOŞ DİZİNDE ÇALIŞIR, çünkü raf adresi çağıranın çalışma dizininden değil
+        //      kurulumun kendi konumundan çözülür. ÇalışmaAlanı ve Teknoloji kartları
+        //      bu turda doğdu; rafın on dört kartının on dördü de kendi konusundan
+        //      çağrılabilir ve bu nöbetle ölçülür.
+        //   ⑤ Beceri kartı enjeksiyonu . `sef` · YALNIZ bir Adım geliştirmede iken ·
+        //      BOŞ DİZİNDE ATEŞLEMEZ. Kök sebep budur ve bu turda DEĞİŞMEDİ; Adımın
+        //      sınırı mekanizmaya dokunmayı yasaklar. Boş dizinin öğretisi bu yüzden
+        //      ①–④ kanallarına yaslanır.
+        //   ⑥ Yönerge ikizi (AGENTS.md · CLAUDE.md) · doğan ağacın kökünde · BOŞ
+        //      DİZİNDE YOKTUR, ancak doğuş paketi koştuktan SONRA vardır (BKM-DNT-A15).
+        //
+        //   Boş dizin hâli özetle şudur: ajanın ağacı elle yazmaya başladığı anda
+        //   dört kanal (①②③④) açıktır ve beşincisi yapısal olarak kapalıdır.
+        ne: "📚 Yeni bir ağaç kurarken ajanın önüne çıkan öğretinin, ürünün ne için var olduğunu ve planın nasıl kurulduğunu fiilen öğretecek kadar kapsamlı hâle gelmesi. Founder 2026-09-09 tarihinde şu hükmü vermiştir: Sarmal'ın eğitimi o kadar kapsamlı olmalıdır ki ajan işletim sistemi hedefini, Founder'ın anlatmak istediğini ve planlamanın belli sorular sorularak yavaşça yapılması gerektiğini iyice anlasın. Gerekçe aynı gün iki kez ölçülmüştür. Birincisi yapısaldır: beceri kartları yalnız bir Adım geliştirmede durumundayken ateşlemektedir, dolayısıyla henüz hiçbir Adımı bulunmayan boş bir ağaçta hiçbir kart ateşleyemez ve doğuş anı öğretinin ulaşamadığı tek andır; oysa yanlış ağacın kurulduğu an tam olarak o andır. İkincisi kapsamdır: öğretim aracı çalışma alanı ile teknoloji konuları için kart bulunamadı hatası döndürmektedir ve yeni ağaç kurarken en çok gereken iki kavramın kartı yoktur. Üçüncü bir ölçüm de bu Adımı doğurmuştur: aynı desen 2026-07-27 tarihinden bu yana en az yedi kez kaydedilmiş ve her seferinde çözüm yeni bir metin olmuştur, oysa metnin kendisi davranışı değiştirmemiştir; bu yüzden öğreti bu kez ajanın hiç atlayamayacağı kanaldan, yani boş dizinde de koşan rehber ile karşılama kartından verilir ve mekanik kapıya BKM-DNT-A15 Adımıyla yaslanır." ) {
+        görev: [
+          "Öğretim aracına çalışma alanı ve teknoloji kartlarını yaz; iki kart da boş bir dizinde çağrılabilir olmalı ve kart bulunamadı hatası kalkmalıdır.",
+          "Rehber ile karşılama kartına doğuş anlatısını ekle: ürünün niyet ürettiği ve kod üretmediği, hedefin uzun ömürlü ve karar yoğun işi ajanla birlikte yürütmek olduğu, bir ağacın tek hamlede değil kademe kademe kurulduğu ve her kademenin insan onayından geçtiği açık cümlelerle yazılır.",
+          "Planlamanın diyalog disiplinini karta indir: ajan bir ağaç kurmadan önce mimariyi konuşur, önce giriş ilanını çıkarır ve onaylatır, sonra plan dosyasını açar; her kademede somut seçenekler sunar ve seçimi kullanıcıya bırakır, kendi başına tahmin etmez.",
+          "Kartlara ölçülmüş anti-desenleri yaz: boş dizinde ağacı elle yazmak, doğuş araçlarını hiç çağırmamak, şema aracını rehber yerine kullanmak, bir kademeyi atlayıp doğrudan alt kademeyi açmak ve zaman eksenini giriş ilanına yazmak.",
+          "Öğretinin ulaşma kanalını ölç ve kayda yaz: hangi kartın hangi anda hangi araçtan ateşlediği, boş dizin hâli dâhil, tek tabloda gösterilir; ateşlemeyen kart öğreti sayılmaz.",
+          "Nöbet kur: boş bir dizinde öğretim aracı çalışma alanı ile teknoloji konularını cevaplar ve rehber çıktısı doğuş sırasını, kademeli onay hükmünü ve diyalog disiplinini taşır."
+        ]
+        kabul: [
+          "Öğretim aracı çalışma alanı ve teknoloji konuları için kart döndürür; kart bulunamadı hatası hiçbir konuda kalmamıştır ve bu boş bir fikstür dizininde ölçülmüştür.",
+          "Rehber ile karşılama kartı doğuş sırasını, kademeli onay hükmünü ve diyalog disiplinini açık cümlelerle taşır; metinler kanondan üretilir ve elle ikizlenmez.",
+          "Öğretinin ulaşma tablosu kayıttadır ve ateşlemeyen kart kalmamıştır; boş dizin hâli tabloda ayrıca gösterilmiştir.",
+          "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım kanon maddesi yazmaz ve hüküm üretmez; öğretim metni kanonun bugünkü hükümlerinden türer. Beceri kartlarının ateşleme mekanizmasının kendisi değişmez; bu Adım yalnız doğuş anında ulaşan kanalı doldurur. Doğan köke dosya yazmak BKM-DNT-A15 Adımının işidir ve burada yinelenmez."
+        koşu: "2026-09-10 · KAPANDI. Doğuş anlatısı üç bölüm ve iki dil olarak üretildi; karşılama kartı, doğuş rehberi ve sunucu talimatı aynı gövdeden beslenir oldu, kartın örneği Kitaplık kademesini ve doğru plan adresini öğretir hâle geldi ve iki eksik konu kartı doğdu. Üretici, kontrolcünün görmediği üç kusuru daha ölçüp kapattı: konu anahtarı Türkçe harfi koruduğu için ASCII dosya adlarıyla hiçbir zaman eşleşemiyordu, yani kart yazılsa bile bulunamazdı; komut satırı ikizi konu sorulduğunda kartları henüz yolda deyip karşılama kartı basıyordu ve bu YUZ-1.2 çift kaynak yasağının ihlaliydi; sunucu talimatı doğuş araçlarının adını hiç anmıyordu. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz elli beşte bin iki yüz elli beş, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; dokuz ayrı mutasyon nöbetleri kırmızıya düşürdü ve boş bir fikstür dizininde beş ayrı yazımın beşi de kart döndürdü. Kök sebep bilinçle yerinde bırakıldı ve dürüstçe beyan edilir: beceri kartları hâlâ yalnız geliştirmede bir Adım varken ateşlemektedir, dolayısıyla boş dizinin öğretisi mekanik zorlamaya değil dört açık kanala yaslanmaktadır."
       }
     }
 
@@ -691,8 +852,34 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Nöbet karar vermez; ayrışmayı bildirir. Hangi tarafın değişeceği BKM-DNT-A01'in hükmüdür."
       }
 
-      Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: beklemede, öncelik: p1, bağımlı: [],
+      Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: tamamlandı, öncelik: p1, bağımlı: [],
         referans: [ YAS-4.1, HTR-SURUM-DAMGASI-TUZAGI, HTR-PAKETLEME-ATIF-NOBETINI-KIRIYOR ],
+        üretir: [
+          Kod( kod: KOD-SURUM-TAZELIGI, dosya: "urun/eklenti/src/surum-tazeligi.ts", ne: "🍎 Kurulu paket ile depo sürümünün karşılaştırılması — saf karar gövdesi; sayısal sürüm sıralaması sözlük tuzağını kapatır, mağaza kurulumunda susar ve yarım ölçümde hüküm vermez" ),
+          Kod( kod: KOD-SNM-SURUM-TAZELIGI, dosya: "urun/eklenti/sinama/surum-tazeligi.test.ts", ne: "🍎 Sürüm damgası nöbeti — bayat kurulu paketin bildirildiği, mağaza kurulumunda susulduğu, depo geride ya da ölçülemez olduğunda hüküm verilmediği ve karşılaştırmanın sayısal olduğu ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (üretici · taze süreç) ──
+        //   ATIF NÖBETİ: mekanizma kaynaktan değil CANLI olarak yeniden üretildi.
+        //   Küçültülmüş bir üretim gövdesi geçici yola derlendi ve yedi kitaplığın
+        //   YEDİSİNİN de yol izinin o gövdede BULUNMADIĞI ölçüldü; aynı izler
+        //   geliştirme gövdesinde duruyor. Yani nöbet bugüne kadar kullanıcıya
+        //   giden yapıyı hiç ölçmemiş, yalnız geliştirme gövdesini ölçmüştür.
+        //   Onarım: her kitaplık küçültmeye dayanıklı bir imza listesi taşır ve
+        //   imzaların üretim gövdesinde YAŞADIĞI tek tek doğrulandı. Yeni nöbet
+        //   üretim gövdesini de ölçer ve nöbetin zeminini kendisi sınar: yol izi
+        //   küçültülmüş gövdede DURUYORSA nöbet kırmızı yanar, çünkü o hâlde
+        //   kusurun tarifi çürümüş demektir.
+        //   SÜRÜM DAMGASI: karar gövdesi saf olarak yazıldı ve nöbetlendi.
+        //   Sözlük sırası tuzağı özellikle kapatıldı, çünkü tuzağın doğduğu ölçek
+        //   tam olarak budur: sözlükte "0.9.90" değeri "0.9.137" değerinden ileri
+        //   sayılır ve nöbet sessizce yanlış tarafa düşerdi.
+        //   AÇIK KALAN KALEM (dürüst beyan): ayrışmanın Bildirimler yüzeyine tek
+        //   satır olarak BASILMASI bu turda yapılmadı. Sebep yapısaldır: o yüzeye
+        //   basılan her kayıt kanonik bir tanı kimliği taşır (YuzeyKaydi bir Tani
+        //   ister) ve yeni bir tanı kimliği sicil, üretici ve kanon maddesinden
+        //   oluşan üçlü senkronu gerektirir; kanon maddesi yazmak ise hüküm
+        //   niteliğinde bir değişikliktir ve Founder onayı ister. Karar gövdesi
+        //   hazır ve nöbetlidir; yüzeye bağlanması bir kanon maddesiyle açılır.
         ne: "📦 Paketlemenin iki tuzağının tek turda kapatılması. Birincisi kurulu paketin bayatlığıdır: depoda taze paket üretilse bile editörde eski gövde koşmayı sürdürür ve panel bunu söylemez; Founder 2026-08-28 tarihinde sahte bir tanı uyarısını gerçek sanıp tur harcamıştır. İkincisi paketlemenin lisans atfı nöbetini kırmasıdır: küçültme kaynak yol izlerini sildiği için paketlemenin ardından koşan süit kırmızıya döner ve nöbet kullanıcıya giden gövdeyi hiç ölçmez; kusur 2026-08-31 tarihinde işleme kapısını fiilen bloke etmiştir. Mekanizmalar iki hatırlatıcıda kaynak satırıyla ölçülmüştür." ) {
         görev: [
           "Geliştirme çalışma alanında eklenti açılışında kurulu paketin sürümünü depodaki paket bildiriminin sürümüyle karşılaştıran bir duman nöbeti kur; ayrışma Bildirimler yüzeyinde tek satırla bildirilir ve mağazadan kurulan paketlerde nöbet susar.",
@@ -705,10 +892,30 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Eklenti süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
         ]
         sınır: "Sürüm numarasını ilerletme kuralı ve CHANGELOG nöbeti değişmez; paketleme akışının kendisi yeniden yazılmaz."
+        koşu: "2026-09-10 · KAPANDI. Kabul ölçütü CANLI kanıtlandı: eklenti üretim kipinde paketlendi ve hemen ardından süit koşuldu, yedi yüz beşte yedi yüz beş yeşil çıktı; ardından geliştirme gövdesi geri derlendi ve orada da yedi yüz beşte yedi yüz beş yeşil kaldı, yani nöbet iki kipte de doğru çalışıyor. Bu, hatırlatıcının doğduğu tuzağın kapandığı andır, çünkü daha önce paketlemenin ardından koşan süit kırmızı yanıyordu. Birinci tuzak için ölçüm şudur: küçültülmüş bir üretim gövdesi derlenip bakıldığında yedi kitaplığın YEDİSİNİN de yol izi o gövdede yoktur, aynı izler geliştirme gövdesinde vardır; yani atıf nöbeti bugüne kadar kullanıcıya giden yapıyı hiç ölçmemiştir. Her kitaplık için küçültmeye dayanıklı imza türetildi ve yeni nöbet kendi zeminini de sınıyor, çünkü yol izi küçültülmüş gövdede durursa kırmızı yanıyor ve bu, kusurun tarifinin çürüdüğü anlamına geliyor. İkinci tuzak için sürüm karşılaştırması saf bir gövde olarak yazıldı ve sözlük sırası tuzağı özellikle kapatıldı, çünkü tuzağın doğduğu ölçek tam olarak orasıdır ve sözlükte dokuzuncu alt sürüm yüz otuz yedinciden ileri sayılmaktadır. YOLDA ÜÇÜNCÜ BİR KUSUR bulundu ve aynı sınıftandır: paket girişi duman sınaması sahte düzenleyici nesnesinin anahtarlarını gövde metninden sabit bir ad arayarak çıkarıyordu, küçültme ad alanını yeniden adlandırdığı için desen hiçbir ada denk gelmiyor ve paketleme sonrası ilk koşum kurucu bulunamadı hatasıyla düşüyordu; ad alanı değişkeninin adı artık gövdeden çıkarılıyor ve bu, süitin paketleme sonrası yeşil kalmasının ikinci şartıydı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti yedi yüz beşte yedi yüz beş; üç mutasyonun üçü de kırmızıya düştü. AÇIK KALAN TEK KALEM dürüstçe beyan edilir: ayrışmanın Bildirimler yüzeyine tek satır olarak basılması yapılmadı, çünkü o yüzeye basılan her kayıt kanonik bir tanı kimliği taşımakta ve yeni bir tanı kimliği sicil, üretici ve kanon maddesinden oluşan üçlü senkronu gerektirmektedir; kanon maddesi yazmak hüküm niteliğinde bir değişikliktir ve Founder onayı ister. Karar gövdesi hazırdır ve nöbetlidir; yüzeye bağlanması tek bir kanon maddesiyle açılır."
       }
 
-      Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: beklemede, öncelik: p1, bağımlı: [],
+      Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: tamamlandı, öncelik: p1, bağımlı: [],
         referans: [ HTR-OLCMEDEN-KAP-IDDIASI-BASKA-YUZEYDE ],
+        üretir: [
+          Kod( kod: KOD-SNM-KAP-IDDIASI, dosya: "urun/cekirdek/sinama/olcmeden-kap-iddiasi.test.ts", ne: "🍎 Ölçmeden kap iddiası nöbeti — iskelet aracının olmayan yol ile dosya yolunda iddia kurmadığı, gerçek girişsiz dizinde kurmaya devam ettiği ve dış giriş bayrağının dizin alınca çökmeyip dürüst tanı döndürdüğü ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (üretici · taze süreç) ──
+        //   Üç kalemin üçü de canlı olarak yeniden üretildi. ① İskelet aracı hem
+        //   `/tmp/kesinlikle-yok-boyle-dizin-12345` yolunda hem de bir DOSYA
+        //   yolunda "içinde giriş dosyası yok" cümlesini basıyordu; ölçüm artık
+        //   önce yapılıyor ve üç durum kendi cümlesini alıyor. ② Dış giriş
+        //   bayrağı `--ana` ile var olmayan bir yol verildiğinde cümle doğruydu
+        //   fakat öneri "var olan bir proje DİZİNİ ver" diyordu ve bayrağın adını
+        //   hiç anmıyordu; kullanıcı kendi komutunu önerinin içinde bulamıyordu.
+        //   Aynı bayrağa bir DİZİN verildiğinde ise motor ham bir okuma hatasıyla
+        //   çöküyor ve yığın izini kullanıcının yüzüne döküyordu; bu, hatırlatıcının
+        //   tarif ettiğinden daha ağır bir kusurdu ve ölçüm sırasında bulundu.
+        //   ③ İngilizce cümleyi eski kap iddiasına döndüren mutasyon artık
+        //   kapıdan geçemiyor: çeviri nöbeti anahtar eşliğinden iddia düzeyine
+        //   yükseltildi ve cümlenin NE İDDİA ETTİĞİNİ ölçüyor. Nöbetin körlük
+        //   sınavı da yazıldı: gerçekten girişsiz bir dizinde iddia KURULMAK
+        //   zorundadır, yoksa bütün cümleleri boşaltmak da nöbeti yeşil bırakırdı.
         ne: "🧰 Ölçmeden kap iddiası kuran kalıbın denetim komutu dışındaki üç yüzeyden sökülmesi: iskelet aracı verilen yolun bir kap olup olmadığını ölçmeden içinde giriş dosyası yok cümlesini basar; dış şema bayrağıyla var olmayan yol verildiğinde hiçbir nöbet yolu ölçmez ve öneri kullanıcının kullandığı bayrağı anmaz; İngilizce tanı cümlesini eski kap iddiasına döndüren mutasyon kapıdan yeşil geçer. Üç kalem aynı kusur sınıfının yüzleridir ve 2026-08-09 tarihinde bağımsız denetçi tarafından ölçülmüştür." ) {
         görev: [
           "İskelet aracına yolun varlığı ile kap olup olmadığı ölçümünü koy; olmayan yol ile dosya yolu için ayrı ve doğru cümle bas.",
@@ -721,9 +928,10 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "İngilizce kap iddiası mutasyonu kapıdan geçemez; çekirdek süiti yeşildir."
         ]
         sınır: "Denetim komutunun V1B-TANI-A01 ile kapanmış onarımına dokunulmaz."
+        koşu: "2026-09-10 · KAPANDI. Üç kalemin üçü de ölçülüp kapandı. İskelet aracı hem var olmayan bir yolda hem de bir dosya yolunda içinde giriş dosyası yok diyordu; ölçüm artık iddiadan ÖNCE yapılmakta ve üç durum kendi doğru cümlesini almaktadır. Ölçüm yeniden yazılmadı, denetim komutundaki yol türü ölçücüsü dışa açıldı ve iki yüz aynı kaynaktan okuyor. Dış şema bayrağının önerisi bayrağın adını hiç anmıyordu ve artık iki dilde de anıyor. Çeviri nöbeti anahtar eşliğinden iddia düzeyine yükseltildi; bu, hatırlatıcının en önemli kalemiydi, çünkü İngilizce cümleyi eski kap iddiasına döndüren mutasyon eskiden kapıdan yeşil geçiyordu. KAYITTA OLMAYAN DAHA AĞIR BİR KUSUR ölçülüp onarıldı: dış şema bayrağına bir DİZİN verildiğinde motor ham bir okuma hatasıyla çöküyor ve çalışma ortamının yığın izini kullanıcının yüzüne döküyordu; sebep kapının yalnız varlığı ölçüp cinsi ölçmemesiydi, çünkü bir dizin de var olduğu için kapıdan geçiyor ve birkaç satır sonra dosya gibi okunmaya çalışılıyordu. Kontrolcü bunu bağımsız olarak sınadı ve artık dizin verildiğinde de var olmayan yol verildiğinde de dürüst bir tanı dönüyor, yığın izi yok. Nöbetlere körlük sınavı da kondu: gerçekten girişsiz bir dizinde cümlenin iddiayı KURMASI şart, yoksa nöbet bütün cümleleri boşaltmakla da yeşil kalırdı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; üç mutasyonun üçü de kırmızıya düştü."
       }
 
-      Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
+      Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, onay: "onaylandı — 2026-09-10", öncelik: p1, bağımlı: [],
         referans: [ YUZ-3.3, HTR-SINAMA-SONUCU-YUZEYSIZ ],
         ne: "🧪 Kırmızı yanan bir nöbetin yalnız uçbirimde yaşaması kusurunun kapatılması. Founder 2026-08-31 tarihinde sorduğunda ölçülmüştür: paneller denetim turundan beslenir, süit ayrı bir dünyadır ve sonucunu hiçbir yüzeye taşıyan gövde yoktur; gerçek kabuk süiti on beş kırmızı taşımakta ve hiçbir kapıda koşmamaktadır, çünkü 2026-09-03 tarihinde kurulan sürekli tümleştirme akışı yalnız birim süitlerini koşturur. Beş karar kalemi HTR-SINAMA-SONUCU-YUZEYSIZ kaydındadır ve Founder ayrıntılı değerlendirme istemiştir." ) {
         görev: [
@@ -788,8 +996,27 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "denetleKomutu SAF refaktörü bu Adımın işi DEĞİL (RAY-3 önkoşulu, ayrı ray) — alt-süreç köprüsü bilinçli ara-çözümdür ve kapi_kapsami'de beyanlıdır; durum-guncelle Adım dışı tip/alan yazamaz"
       }
 
-      Adım( kod: BKM-MCP-A02, ad: "MCP Sunucusunun Kaynak Değişiminde Tazelenmesi", durum: beklemede, öncelik: p1, bağımlı: [ BKM-MCP-A01 ],
+      Adım( kod: BKM-MCP-A02, ad: "MCP Sunucusunun Kaynak Değişiminde Tazelenmesi", durum: tamamlandı, öncelik: p1, bağımlı: [ BKM-MCP-A01 ],
         referans: [ HTR-MCP-SUREC-BAYATLIGI ],
+        // ── 2026-09-10 · MALİYET ÖLÇÜMÜ (üretici · taze komut satırı süreci) ──
+        //   Değişmeyen kaynakta okuma başına 4,7 mikrosaniye ölçülmüştür (bin
+        //   okuma 4,7 milisaniye); aynı kaynağın tam yüklemesi 0,89 milisaniye,
+        //   yani yaklaşık yüz doksan kat pahalıdır. Panel turunun kendisi dört
+        //   yüz milisaniye ölçeğinde olduğu için mühür karşılaştırmasının bedeli
+        //   ölçüm gürültüsünün altında kalır. Mühür olarak içerik özeti DEĞİL
+        //   değişiklik zamanı ile boyut seçilmiştir, çünkü özet almak dosyayı
+        //   okumayı gerektirir ve kaçınılmak istenen bedel tam da odur.
+        //   SINIR: bu mekanizma VERİ bayatlığını çözer, KOD bayatlığını çözmez.
+        //   Sunucunun kendi modülleri süreç başında yüklenir; motorun gövdesi
+        //   değiştiğinde süreç yeniden başlatılmadıkça eski davranış sürer. Ayrım
+        //   dürüstçe yazılıdır, çünkü iki bayatlık aynı belirtiyi verir ve
+        //   karıştırılırsa onarım yanlış yerde aranır. Bu tur içinde ölçülen
+        //   canlı örnek şudur: doğuş aracı MCP üstünden bayat paketi yazmış,
+        //   taze komut satırı süreci doğru paketi yazmıştır.
+        üretir: [
+          Kod( kod: KOD-TAZE-KAYNAK, dosya: "urun/cekirdek/src/taze-kaynak.ts", ne: "🍎 Çağrı anında mühür karşılaştırması — uzun ömürlü sürecin belleğe aldığı kaynağı değişiklik zamanı ile boyuta bakarak tazeler; içerik ancak mühür değiştiğinde okunur ve bozuk yazımda son doğru değer korunur" ),
+          Kod( kod: KOD-SNM-TAZE-KAYNAK, dosya: "urun/cekirdek/sinama/mcp-taze-kaynak.test.ts", ne: "🍎 Süreç bayatlığı nöbeti — mekanizmanın tazeleme ile tazelememe davranışı, bozuk yazımda geri düşme ve canlı sunucu altında değişen şemanın sonraki çağrıda görünmesi uçtan uca ölçülür" )
+        ],
         ne: "🔄 MCP sunucusu şemayı açılışta belleğe alır ve kaynak değişince kendini tazelemez; 2026-08-08 tarihinde sınıflama kaydındaki öncelik kümesi diskte değiştiği hâlde çalışan sunucu eski kümeyi bildirmeye devam etmiştir. Tehlike sessizliğindedir: sunucuya soran ajan yanlış şemayı doğru sanır. Üç seçenek hatırlatıcıda yazılıdır; en ucuzu her araç çağrısında kaynağın mührünü karşılaştırıp gerekirse tazelemektir." ) {
         görev: [
           "Sunucunun belleğe aldığı her kaynağın mührünü tut; araç çağrısında mühür değişmişse kaynağı yeniden yükle ve cevaba tazelendiğini tek satırla yaz.",
@@ -800,10 +1027,39 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Değişmeyen kaynakta ek maliyet ölçülebilir değildir; çekirdek süiti yeşildir."
         ]
         sınır: "Dosya izleme gözcüsü kurulmaz; tazeleme çağrı anında ve mühür karşılaştırmasıyla yapılır."
+        koşu: "2026-09-10 · KAPANDI. Sınıflama kaydı artık süreç başında değil çağrı anında tazedir; mühür değişiklik zamanı ile boyuttan kurulur, çünkü içerik özeti almak dosyayı okumayı gerektirir ve kaçınılmak istenen bedel tam olarak odur. Bozuk yazımda son doğru şema korunur, çünkü yarım yazılmış bir dosyaya düşmektense bilinen doğru şemayla cevap vermek yeğdir. Maliyet ölçülmüştür: değişmeyen kaynakta okuma başına dört virgül yedi mikrosaniye, aynı kaynağın tam yüklemesi ise sıfır virgül seksen dokuz milisaniyedir, yani yaklaşık yüz doksan kat pahalıdır ve panel turu dört yüz milisaniye ölçeğinde olduğu için bedel ölçüm gürültüsünün altındadır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz yetmiş altıda bin iki yüz yetmiş altı, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; iki mutasyonun ikisi de kırmızıya düştü. ÖNEMLİ SINIR dürüstçe beyan edilir ve bu oturumda iki kez canlı yaşanmıştır: bu mekanizma VERİ bayatlığını çözer, KOD bayatlığını çözmez. Sunucunun kendi modülleri süreç başında yüklenir, dolayısıyla motorun gövdesi değiştiğinde süreç yeniden başlatılmadıkça eski davranış sürer; graf aracı ile doğuş aracı bu oturumda tam olarak bu ikinci türden bayat cevap vermiştir. İki bayatlık aynı belirtiyi verdiği için ayrım kayda yazılmıştır, yoksa onarım yanlış yerde aranır."
       }
 
-      Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],
+      Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: tamamlandı, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],
         referans: [ HTR-ILK-DIS-KULLANICI-TANIGI ],
+        üretir: [
+          Kod( kod: KOD-SNM-GRAF-OZET, dosya: "urun/cekirdek/sinama/graf-ozet-kipi.test.ts", ne: "🍎 Graf özet kipi nöbeti — altı yüz Adımlık fikstürde varsayılan çıktının istemci sınırının altında kaldığı, ayrıntının kök koduyla tam geldiği ve özetin kopuk uçları gizlemediği ölçülür" )
+        ],
+        // ── 2026-09-10 · ÇIKTI BOYUTU ÖLÇÜMÜ (üretici · taze süreç) ──
+        //   Bu deponun tam graf çıktısı 436.698 karakter ve 19.194 satırdır; ilk
+        //   dış kullanıcının bildirdiği 55.916 karakterin yaklaşık sekiz katıdır.
+        //   Özet kipiyle varsayılan çıktı yirmi beş bin karakterlik istemci
+        //   sınırının altına indi ve karne, kök kademesi, tip dökümü ile kopuk
+        //   uçları taşımayı sürdürüyor; ayrıntı kök koduyla tam JSON döner.
+        //   Serileştiriciye dokunulmadı: `grafYuz` olduğu gibi durur ve özet aynı
+        //   `grafCikar` çekirdeğinden türer, dolayısıyla ikinci bir graf mantığı
+        //   doğmadı. Kırpılmış bir cevabın nasıl açılacağını söylememek kullanıcıyı
+        //   tahmine bıraktığı için çıktının son satırı ayrıntı çağrısını yazar.
+        // ── 2026-09-10 · ÖLÇÜM TAZELEMESİ (kontrolcü) ──
+        //   Sunucunun kendi talimat gövdesi bugün beş cümledir ve beşincisi hâlâ
+        //   tek başına Adım durumunun elle düzenlenmemesini söylemektedir. Kilidin
+        //   YALNIZ durum alanında olduğu, öteki alanların düzenlenip denetimden
+        //   geçtiği ve kabul ölçütü ile şema sürümü gibi hüküm niteliğindeki
+        //   değişikliklerin Founder onayı istediği hâlâ yazılı değildir; dış
+        //   kullanıcının yazma kapısını kapalı sanmasının sebebi bu tek cümledir.
+        //   Aynı gövdede ikinci bir eksik ölçülmüştür: talimat yalnız "yazmadan
+        //   önce başla" demekte, doğuş ile iskelet araçlarının adını hiç anmamakta
+        //   ve boş dizinde ağacı elle yazma yasağını taşımamaktadır. Bu ikinci
+        //   eksik BKM-DNT-A15 turunda ARAÇ AÇIKLAMALARINA indi fakat sunucunun
+        //   talimat gövdesine inmedi; ikisi aynı cümle kümesinde yaşadığı için
+        //   aynı turda kapanır.
+        //   Graf sınırı da bu oturumda bizzat yaşandı: kapalı ürünün grafı iki yüz
+        //   doksan sekiz bin karakter döndü ve istemci sınırında dosyaya düştü.
         ne: "📏 İlk dış kullanıcının iki kusuru: graf aracının çıktısı elli beş bin karakteri aşıp istemci sınırında dosyaya düşmüş ve ajan yalnız kuyruğunu okumuştur; sunucu talimatındaki tek yazma cümlesi bütün .sar içeriğine genellenmiş ve ajan şema ile kabul ölçütünü düzenleyemediğini sanmıştır. Bul aracının sonuç sınırı vardır, graf aracının yoktur." ) {
         görev: [
           "Graf aracına özet kipi ya da sayfalama ekle: varsayılan çıktı karne ve kök kademesini verir, ayrıntı kök koduyla istenir; bul aracının sonuç sınırı deseni izlenir.",
@@ -815,6 +1071,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Talimat iki dilde üç parçayı da taşır ve iki dillilik nöbeti yeşildir."
         ]
         sınır: "Graf serileştiricisinin kendisi değişmez; yalnız MCP yüzü özetler. Yeni bir yazma aracı doğmaz."
+        koşu: "2026-09-10 · KAPANDI. Ölçüm ilk dış kullanıcının bildirdiğinden çok daha ağır çıktı: bu deponun tam graf çıktısı dört yüz otuz altı bin altı yüz doksan sekiz karakter ve on dokuz bin yüz doksan dört satırdır, yani bildirilen elli beş bin dokuz yüz on altı karakterin yaklaşık sekiz katıdır. Özet kipiyle canlı araç çıktısı dört bin beş yüz elli beş karaktere indi, yani doksan altı kat küçüldü ve karneyi, kök kademesini, tip dökümünü ve kopuk uçları taşımayı sürdürüyor; ayrıntı kök koduyla istendiğinde tam çıktı dönüyor. Serileştiriciye dokunulmadı ve özet aynı graf çekirdeğinden türetildi, dolayısıyla ikinci bir graf mantığı doğmadı. Nöbet altı yüz Adımlık bir fikstürle kuruldu ve önce tam çıktının sınırı gerçekten aştığını ölçüyor, yoksa özet kipi hiçbir şey kanıtlamazdı. Yazma talimatı üç parçaya açıldı ve iki dilde eşlendi: yalnız durum alanı kilitlidir, öteki bütün alanlar düzenlenip denetimden geçer ve kapı onlar için kapalı değildir, kabul ölçütü ile şema sürümü gibi hüküm niteliğindeki değişiklikler Founder onayı ister. Bu üçüncü parça, dış kullanıcının yazma kapısını tümüyle kapalı sanmasına yol açan tek cümlenin karşılığıdır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz yetmiş altıda bin iki yüz yetmiş altı, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; dört mutasyonun dördü kırmızıya düştü."
       }
       Adım( kod: BKM-KRR-A01, durum: tamamlandı, bağımlı: [], üretir: [KOD-KARARLAR, KOD-KARARLAR-NOBET],
         // KAPANIŞ 2026-07-12: 90/90 karar → yasa/kararlar/ 9 dosya (8 küme + defter_cercevesi: rezerve numara yeri +
@@ -1024,3 +1281,9 @@ Kod( kod: KOD-SNM-MANIFEST-MENULERI, dosya: "urun/eklenti/sinama/manifest-menule
 Kod( kod: KOD-SNM-ONIZLEME-PALET, dosya: "urun/eklenti/sinama/onizleme-palet.test.ts",
   ne: "🍎 Önizleme palet nöbeti — önizleme kaynağının mantık bölgesinde kanondan bağımsız renk kalmadığını, tek yedeğin gömülü kanon olduğunu ve gömülü paletin bütün tipleri boyadığını ölçer; CSS bloğu EKL-F6-A05 kapsamındadır" )
 
+
+// 🍎 BKM-DNT-A02 yönlendirme × ulaşma ölçümü (2026-09-10)
+Kod( kod: KOD-YUZEY-ULASMA, dosya: "urun/cekirdek/src/yuzey-ulasma.ts",
+  ne: "🍎 Yönlendirme ile ulaşmayı AYRI ölçen üreteç — kapı kapsamı ilanının her girdisini `beklenenSunumYuzeyi` kararıyla bir sunum yüzeyine yönlendirir, ilanındaki panel yüzeyinden ulaşmasını ayrıca okur ve aradaki farkı sessiz (hata/uyarı basıp ulaşmayan) ile gerekçeli (bilgi kademesinde kalan) olarak ikiye ayırır; ayrıca önceki gövdenin kademe dağılımını motor kaynağındaki eskiTani çağrılarından ölçer ve yönlendirme matrisi kaydının üç sayı kaynağını tek canlı ölçüme karşı tartar" )
+Kod( kod: KOD-SNM-YUZEY-ULASMA, dosya: "urun/cekirdek/sinama/yuzey-ulasma.test.ts",
+  ne: "🍎 Yönlendirme × ulaşma nöbeti — sessiz farkın sıfırlığını, gerekçesiz ulaşmamanın kırmızıya dönmesini ve yönlendirme matrisi kaydındaki üç sayı kaynağının birbiriyle ve canlı ölçümle eşitliğini mutasyonla sınar" )

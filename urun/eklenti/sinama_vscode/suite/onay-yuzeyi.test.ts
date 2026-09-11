@@ -42,7 +42,7 @@ interface OnayYuzu {
     dosyaAramasi: number;
     anaGoruntuHazir: boolean;
   };
-  postaKapilari(): { dosya: string; kod: string }[];
+  onayKapilari(): { dosya: string; kod: string }[];
 }
 
 const gecicilerSil: string[] = [];
@@ -52,7 +52,7 @@ const KAPILI_KAYNAK =
   `Faz( kod: F1, ad: "geçici deneme" ) {\n` +
   `  Blok( kod: B1, ad: "geçici iş" ) {\n` +
   `    Katman( kod: KT1, ad: "geçici teknoloji" ) {\n` +
-  `      Adım( kod: GECICI-A01, durum: beklemede, ne: "🧪 karar bekleyen geçici iş",\n` +
+  `      Adım( kod: GECICI-A01, durum: beklemede, onayBekler: founder, ne: "🧪 karar bekleyen geçici iş",\n` +
   `        kabul: [ "Tasarım Founder tarafından onaylanmıştır — onaysız uygulanmaz" ] )\n` +
   `    }\n` +
   `  }\n` +
@@ -132,7 +132,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
       "kapılar ana görüntüden hiç üretilmemiş; panel boş kalır");
   });
 
-  it("KUYRUK: Posta Kutusu görünüşü kayıtlıdır ve komut ikinci bir liste açmaz", async () => {
+  it("KUYRUK: Onaylar görünüşü kayıtlıdır ve komut ikinci bir liste açmaz", async () => {
     await yuz();
     const komutlar = await vscode.commands.getCommands(true);
     assert.ok(komutlar.includes("sarmal.onayKuyrugu"),
@@ -183,7 +183,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     // bir kapı taşıyordu ve nöbet boş küme üstünde koşmuyor.
     const son = y.onayOlcumleri();
     assert.ok(son.kapiGorulduMu,
-      "bütün tur boyunca Posta Kutusuna bir tek kapı bile inmedi; nöbet boş küme üstünde koştu");
+      "bütün tur boyunca Onaylar paneline bir tek kapı bile inmedi; nöbet boş küme üstünde koştu");
     assert.strictEqual(son.acilanBelge, son.olaydanAcilanBelge,
       `bu modül ${son.acilanBelge - son.olaydanAcilanBelge} belgeyi sebepsiz açtı; ` +
       "tam tarama yolu yine belge açmaya başlamış");
@@ -209,7 +209,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
 
     // Adım açılış satırı kaynakta dördüncü satırdır (0-tabanlı üç).
     const oncekiAcilan = y.onayOlcumleri().acilanBelge;
-    await vscode.commands.executeCommand("sarmal.postaKapisiAc", uri.fsPath, 3, "GECICI-A01");
+    await vscode.commands.executeCommand("sarmal.onayKapisiAc", uri.fsPath, 3, "GECICI-A01");
     let o = y.onayOlcumleri();
     assert.strictEqual(o.canliIsParcacigi, 0,
       `"Kapıya git" ${o.canliIsParcacigi} karar penceresi kurdu; kullanıcı çizilmeyen bir yüzeye gönderiliyor`);
@@ -227,7 +227,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
       `imleç ${editor!.selection.active.line}. satırda; kapı 3. satırdaydı`);
 
     // İkinci tıklama da hiçbir yüzey doğurmaz.
-    await vscode.commands.executeCommand("sarmal.postaKapisiAc", uri.fsPath, 3, "GECICI-A01");
+    await vscode.commands.executeCommand("sarmal.onayKapisiAc", uri.fsPath, 3, "GECICI-A01");
     o = y.onayOlcumleri();
     assert.strictEqual(o.yaratilanYuzey, 0, "ikinci tıklama Comments nesnesi doğurdu");
     assert.strictEqual(o.canliIsParcacigi, 0, "ikinci tıklamadan sonra canlı yüzey var");
@@ -271,7 +271,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     const basla = Date.now();
     const sonuc = await Promise.race([
       vscode.commands.executeCommand<{ tur: string } | undefined>(
-        "sarmal.postaKararVer", uri.fsPath, 3, "GECICI-A01",
+        "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01",
         "şerhle onaylandı", "📝", true, "panel içi gerekçe denemesi"),
       new Promise((r) => setTimeout(() => r("ZAMAN_AŞIMI"), 12_000)),
     ]);
@@ -319,7 +319,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     ];
     for (const [damga, notIster, not] of denemeler) {
       const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-        "sarmal.postaKararVer", uri.fsPath, 3, "GECICI-A01", damga, "🧪", notIster, not);
+        "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", damga, "🧪", notIster, not);
       assert.strictEqual(sonuc, undefined,
         `"${damga}" (${JSON.stringify(not)}) yazım hattına geçti; karar yazılmamalıydı`);
       const diskte = fs.readFileSync(uri.fsPath, "utf8");
@@ -340,7 +340,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     await new Promise((r) => setTimeout(r, 800));
 
     const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-      "sarmal.postaKararVer", uri.fsPath, 3, "GECICI-A01", "reddedildi", "⛔", true,
+      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "reddedildi", "⛔", true,
       "  bu tasarım kabul edilmedi  ");
     assert.strictEqual(sonuc?.tur, "başarı", `ret kararı kanıtlanamadı: ${JSON.stringify(sonuc)}`);
     const diskte = fs.readFileSync(uri.fsPath, "utf8");
@@ -387,7 +387,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
 
     const uri = geciciSar("_gecici-dusme.sar", KAPILI_KAYNAK);
     const kapidaMi = () =>
-      y.postaKapilari().some((k) => k.kod === "GECICI-A01" && k.dosya === uri.fsPath);
+      y.onayKapilari().some((k) => k.kod === "GECICI-A01" && k.dosya === uri.fsPath);
     const vardi = await bekle(() => kapidaMi(), 25_000);
     assert.ok(vardi, "kapı panele hiç inmedi; nöbet boş küme üstünde koşuyor");
 
@@ -395,7 +395,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     // sonra karar verilir. Dosyanın açık olması kusurun koşuludur: karar
     // yazıcısı belgeyi kendisi kaydettiği için belge TEMİZ kalır ve yalnız
     // KİRLİ belgeleri koruyan eski süzgeç tam gerektiği anda devre dışı kalırdı.
-    await vscode.commands.executeCommand("sarmal.postaKapisiAc", uri.fsPath, 3, "GECICI-A01");
+    await vscode.commands.executeCommand("sarmal.onayKapisiAc", uri.fsPath, 3, "GECICI-A01");
     await new Promise((r) => setTimeout(r, 300));
 
     // TURU BAŞLAT ve turu BEKLEMEDEN kararı ver: tur kararı çevreler.
@@ -404,7 +404,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     await tdoc.save();
 
     const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-      "sarmal.postaKararVer", uri.fsPath, 3, "GECICI-A01", "onaylandı", "✅", false, "");
+      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "onaylandı", "✅", false, "");
     assert.strictEqual(sonuc?.tur, "başarı", `karar kanıtlanamadı: ${JSON.stringify(sonuc)}`);
     assert.ok(/onay:\s*"onaylandı/.test(fs.readFileSync(uri.fsPath, "utf8")),
       "karar diske inmedi; ölçüm yanlış yeri gösteriyor");
@@ -428,7 +428,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     for (const d of dolgular) try { fs.unlinkSync(d.fsPath); } catch { /* zaten yok */ }
   });
 
-  it("KOD MERCEĞİ: kapıyı Posta Kutusunda açar, Comments nesnesi yaratmaz", async () => {
+  it("KOD MERCEĞİ: kapıyı Onaylar panelinde açar, Comments nesnesi yaratmaz", async () => {
     const y = await yuz();
     const uri = geciciSar("_gecici-mercek.sar", KAPILI_KAYNAK);
     const doc = await vscode.workspace.openTextDocument(uri);
@@ -440,7 +440,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     const bizimki = (merceklar ?? []).filter((l) => l.command?.command === "sarmal.onayKarar");
     assert.ok(bizimki.length > 0, "kapının üstünde Sarmal kod merceği yok");
     // Mercek başlığı artık karar VAAT ETMEZ; paneli açacağını dürüstçe söyler.
-    assert.ok(/Posta Kutusunda aç/.test(bizimki[0]!.command!.title),
+    assert.ok(/Onaylar panelinde aç/.test(bizimki[0]!.command!.title),
       `mercek hâlâ olmayan bir karar penceresi vaat ediyor: ${bizimki[0]!.command!.title}`);
 
     await vscode.commands.executeCommand("sarmal.onayKarar", bizimki[0]!.command!.arguments![0]);
@@ -456,7 +456,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     await yuz();
     // Kimlikler paket bildiriminden okunur; görünüşün kayıtlı olduğunu odak
     // komutunun HATA VERMEMESİ gösterir (kayıtsız görünüşe odaklanılamaz).
-    for (const kimlik of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalPostaKutusu"]) {
+    for (const kimlik of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalOnaylar"]) {
       await vscode.commands.executeCommand(`${kimlik}.focus`);
     }
   });

@@ -41,7 +41,7 @@ import {
   onayKapilariTopla, kapilariTopla, EtkinKararDefteri,
   kapiCoz, kararIsle, UcusDefteri, BicimAskisi, adimOnayDegeri,
   onayKaydiMetni, onayEkiMetni, adimKodAdedi, eklemeNoktasiniDogrula,
-  adimBeklerDegeri, beklerSilmeAraligi, BEKLER_ALANI,
+  adimBeklerDegeri, beklerSilmeAraligi, BEKLER_ALANI, ONAY_DESENI,
   type OnayKapisi, type KapiKaydi, type TaramaKabugu, type ProgramGoruntusu,
   type YazimKabugu, type CatismaSecimi, type OnayKaniti, type BeklerKaydi,
   type BeklerSilmesi,
@@ -93,10 +93,10 @@ const bildirimler = (kaynak: string): readonly Dugum[] => ayristir(belirtecle(ka
 const kapilar = (kaynak: string): OnayKapisi[] => onayKapilariTopla(bildirimler(kaynak));
 
 const IKI_KAPILI = zincir(
-  `Adım( kod: A1, durum: beklemede, ne: "🧪 Birinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`,
-  `Adım( kod: A2, durum: geliştirmede, ne: "🧪 İkinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "🧪 Birinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`,
+  `Adım( kod: A2, onayBekler: founder, durum: geliştirmede, ne: "🧪 İkinci karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
 const TEK_KAPILI = zincir(
-  `Adım( kod: B9, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  `Adım( kod: B9, onayBekler: founder, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
 
 /** Çağrı sayan sahte kabuk — "sıfır okuma" iddiasını olguya çeviren şey budur. */
 function sayanKabuk(dosyalar: ReadonlyMap<string, string>, yollar?: readonly string[]): {
@@ -662,22 +662,22 @@ test("emekli karar komutlarının katalog adları iki dilde de emoji taşımaz",
 
 test("kapı tanıma üç koşulu korur: açık durum + onay imzalı ölçüt + onay yazılmamış", () => {
   assert.equal(kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 1,
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 1,
     "beklemede + onay ölçütü kapı üretmedi");
   assert.equal(kapilar(zincir(
-    `Adım( kod: A1, durum: bitti, ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 0,
+    `Adım( kod: A1, onayBekler: founder, durum: bitti, ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 0,
     "kapanmış durum kapı üretti");
   assert.equal(kapilar(zincir(
     `Adım( kod: A1, durum: beklemede, ne: "iş", kabul: [ "Sıradan bir ölçüt" ] )`)).length, 0,
     "onay imzası taşımayan ölçüt kapı üretti");
   assert.equal(kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, onay: "onaylandı — 2026-07-17", ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 0,
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, onay: "onaylandı — 2026-07-17", ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`)).length, 0,
     "kararı verilmiş kapı yeniden açıldı; DİSKTE YAZILI ESKİ KAYIT okunmuyor");
 });
 
 test("gidiş-dönüş: kaydiIsle'nin yazdığı onay: kaydı kapıyı KAPATIR ve biçimi aynıdır", () => {
   const kaynak = zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "🧪 karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "🧪 karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
   const [kapi] = kapilar(kaynak);
   assert.ok(kapi, "fikstür kapı üretmedi; nöbet boş küme üstünde koşuyor");
 
@@ -887,8 +887,27 @@ test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
   // sayısı, kayıt içeriği, panel kimlikleri, yenileme ritmi ve sayaç türetimi
   // DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu yukarıdaki nöbet
   // ayrıca ölçer.
+  // ÖZET ON DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A03 (2026-09-10).
+  //
+  // Hatırlatıcı mekanizmasının üçüncü halkası, yani KAPATMA, bugüne kadar yalnız
+  // elle dosya düzenlemesiyle mümkündü; Founder bunu boş gürültü olarak adlandırdı
+  // ve haklıydı, çünkü hatırlatan fakat kapattırmayan bir bildirim kullanıcının
+  // dikkat bütçesinden yer alır ve karşılığında eylem sunmaz. Bu turda
+  // `hatirlaticilar.ts` iki şey kazandı: satırın bağlam değeri artık ATEŞLEMİŞ ile
+  // uykuda bekleyen kaydı ayırır (karar saf çekirdekte, `hatirlaticiKapatilabilir`)
+  // ve kullanıcının başlattığı bir kapatma kapısı eklendi. Kapı, Adım durumunu
+  // yazan tek yazar kapısının hatırlatıcı ikizidir: yalnız `durum` alanına dokunur,
+  // konumu ayrıştırıcıdan alır, yazımdan önce kaynakla bayt düzeyinde doğrular ve
+  // en küçük şüphede dosyaya dokunmadan dürüst hata döner. Kayıt SİLİNMEZ (SNF-0).
+  //
+  // ONAY YÜZEYİNE HİÇBİR BAĞ KURULMADI ve iki panel hâlâ `onay-cekirdek` ·
+  // `onay-tarayici` · `onay-kuyrugu` · `onay-paneli` adlarının hiçbirini içermez;
+  // bunu yukarıdaki nöbet ayrıca ölçer. Panel kimliği, veri kaynağı, yenileme
+  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ: kapatma sonrası tazeleme panelin
+  // kendi taramasından değil gövdenin TEK denetim kilidinden istenir.
+  // `bildirimler.ts` bu turda hiç açılmadı ve özeti bilerek olduğu gibi bırakıldı.
   const BEKLENEN: Record<string, string> = {
-    "../src/hatirlaticilar.ts": "fd692560f8c81e69",
+    "../src/hatirlaticilar.ts": "4bf07ba296fe58cc",
     "../src/bildirimler.ts": "adeaa39549882d72",
   };
   for (const [dosya, beklenen] of Object.entries(BEKLENEN)) {
@@ -1089,8 +1108,8 @@ function degisenSatir(once: string, sonra: string): number {
 }
 
 const KAPILI_KAYNAK = zincir(
-  `Adım( kod: PRB-A01, durum: beklemede, ne: "🧪 birinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`,
-  `Adım( kod: PRB-A02, durum: beklemede, ne: "🧪 ikinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  `Adım( kod: PRB-A01, onayBekler: founder, durum: beklemede, ne: "🧪 birinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`,
+  `Adım( kod: PRB-A02, onayBekler: founder, durum: beklemede, ne: "🧪 ikinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
 
 const ISTEK = {
   dosya: "/depo/plan/prob.sar", kod: "PRB-A01", satir: 3,
@@ -1118,8 +1137,8 @@ test("KAPI ÇÖZÜMÜ: bayat satır başka kapıyı gösterse bile GÖNDERİLEN 
 
 test("KAPI ÇÖZÜMÜ: aynı dosyada yinelenen kod yazılabilir hedef ÜRETMEZ", () => {
   const ikiz = zincir(
-    `Adım( kod: IKIZ, durum: beklemede, ne: "🧪 birinci", kabul: [ ${ONAYLI_OLCUT} ] )`,
-    `Adım( kod: IKIZ, durum: beklemede, ne: "🧪 ikinci", kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: IKIZ, onayBekler: founder, durum: beklemede, ne: "🧪 birinci", kabul: [ ${ONAYLI_OLCUT} ] )`,
+    `Adım( kod: IKIZ, onayBekler: founder, durum: beklemede, ne: "🧪 ikinci", kabul: [ ${ONAYLI_OLCUT} ] )`);
   const kapilar = onayKapilariTopla(ayristir(belirtecle(ikiz)).bildirimler);
   assert.equal(kapilar.length, 2, "fikstür iki ikiz kapı üretmedi");
   const cozum = kapiCoz(kapilar, "IKIZ", kapilar[0]!.satir);
@@ -1143,8 +1162,8 @@ test("YAZIM: karar SATIRA değil KODA yazılır — bayat satırla çağrı bile
 
 test("YAZIM: yinelenen kodda yazım DURUR ve hiçbir düzenleme uygulanmaz", async () => {
   const ikiz = zincir(
-    `Adım( kod: IKIZ, durum: beklemede, ne: "🧪 birinci", kabul: [ ${ONAYLI_OLCUT} ] )`,
-    `Adım( kod: IKIZ, durum: beklemede, ne: "🧪 ikinci", kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: IKIZ, onayBekler: founder, durum: beklemede, ne: "🧪 birinci", kabul: [ ${ONAYLI_OLCUT} ] )`,
+    `Adım( kod: IKIZ, onayBekler: founder, durum: beklemede, ne: "🧪 ikinci", kabul: [ ${ONAYLI_OLCUT} ] )`);
   const { durum, kabuk } = sahteBelge(ISTEK.dosya, ikiz);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk, { ...ISTEK, kod: "IKIZ" });
 
@@ -1159,8 +1178,8 @@ test("YAZIM: kod KAPALI bir ikizde de geçiyorsa çapa belirsizdir ve yazım DUR
   // KAPALI bir Adımda da geçiyorsa "dosya+kod" çapası tek bir Adımı göstermez;
   // açık olanı seçmek de bir tahmindir ve tahmine yazmak sessiz yanlış yazımdır.
   const ikizliBelge = zincir(
-    `Adım( kod: IKIZ, durum: tamamlandı, ne: "🧪 kapanmış ikiz", kabul: [ ${ONAYLI_OLCUT} ] )`,
-    `Adım( kod: IKIZ, durum: beklemede, ne: "🧪 açık kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: IKIZ, onayBekler: founder, durum: tamamlandı, ne: "🧪 kapanmış ikiz", kabul: [ ${ONAYLI_OLCUT} ] )`,
+    `Adım( kod: IKIZ, onayBekler: founder, durum: beklemede, ne: "🧪 açık kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
   // Fikstür elverişlidir: açık kapılar arasında IKIZ TEK'tir, yani eski bekçi
   // (yalnız açık kapıları sayan kapiCoz) bu yazımı GEÇİRİRDİ.
   assert.equal(onayKapilariTopla(bildirimler(ikizliBelge)).filter((k) => k.kod === "IKIZ").length, 1,
@@ -1182,7 +1201,7 @@ test("YAZIM: kod KAPALI bir ikizde de geçiyorsa çapa belirsizdir ve yazım DUR
 //   "Beklenmeyen karakter" hatasıyla duruyor — dosya söz dizimini kaybediyor.
 
 const TIRNAKLI_KAYNAK = zincir(
-  `Adım( kod: TRN-A01, durum: "beklemede", ne: "🧪 tırnaklı durum", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  `Adım( kod: TRN-A01, onayBekler: founder, durum: "beklemede", ne: "🧪 tırnaklı durum", kabul: [ ${ONAYLI_OLCUT} ] )`);
 
 test("EKLEME NOKTASI: tırnaklı değerde hesap kaynağa uymaz ve KÖR yazım dosyayı bozar (tehlike kanıtı)", () => {
   // Fikstür elverişlidir: tırnaklı durum değeri de meşru bir açık kapı üretir.
@@ -1269,11 +1288,16 @@ test("EKLEME NOKTASI: geribildirim yüzeyi (takdir) AYNI doğrulamadan geçer �
     "doğrulama var ama sonucu yazımı DURDURMUYOR; denetim süs olmuş");
 });
 
-test("MEKANİK KAPI: onayBekler alanı kabul deseni OLMADAN kapı üretir; yedek desen de yaşar", () => {
-  // Kalıcı onarımın nöbeti (VIT-POSTA-A02): kapı artık düz metin tahmini değil
-  // şema alanıdır. Ölçülen kusur, desene uymayan beş meşru kapının kuyruğa hiç
-  // görünmemesiydi. Bu nöbet üç kolu ölçer: alan tek başına kapı üretir, karar
-  // verilmiş Adımda üretmez, desenli eski yol da yaşamaya devam eder.
+test("MEKANİK KAPI: ölçüt TEKTİR — kapı yalnız onayBekler alanından okunur", () => {
+  // ÖLÇÜLMÜŞ TARİHÇE İKİ AŞAMALIDIR. VIT-POSTA-A02 kalıcı onarımı kapıyı düz
+  // metin tahmininden şema alanına taşıdı, çünkü ölçülen kusur desene uymayan
+  // beş meşru kapının kuyruğa hiç görünmemesiydi (OZK-02); desen o gün GEÇİŞ
+  // YEDEĞİ olarak bırakıldı. VIT-POSTA-A06 geçişi bitirir ve yedeği kaldırır:
+  // iki ölçüt aynı soruyu iki ayrı dille cevaplarsa hangisinin bağlayıcı olduğu
+  // okunamaz, ayrıca düz metin bir sonraki farklı cümlede yine kaçırır.
+  //
+  // NÖBET ÜÇ KOLU ÖLÇER: ① alan tek başına kapı üretir ② karar verilmiş Adımda
+  // üretmez ③ YALNIZ kabul cümlesi taşıyan Adım artık kapı ÜRETMEZ.
   const kaynak = zincir(
     `Adım( kod: MEK-A01, durum: beklemede, onayBekler: founder, ne: "🧪 mekanik beyan", kabul: [ "sıradan ölçüt — onay cümlesi YOK" ] )`);
   const [kapi] = onayKapilariTopla(bildirimler(kaynak));
@@ -1285,10 +1309,17 @@ test("MEKANİK KAPI: onayBekler alanı kabul deseni OLMADAN kapı üretir; yedek
     `Adım( kod: MEK-A02, durum: beklemede, onayBekler: founder, onay: "onaylandı — 2026-07-30", ne: "🧪 kararı verilmiş", kabul: [ "ölçüt" ] )`);
   assert.equal(onayKapilariTopla(bildirimler(kararli)).length, 0,
     "kararı verilmiş mekanik kapı hâlâ kuyrukta; kapı kapanmıyor");
-  const desenli = zincir(
-    `Adım( kod: MEK-A03, durum: beklemede, ne: "🧪 eski desen", kabul: [ ${ONAYLI_OLCUT} ] )`);
-  assert.equal(onayKapilariTopla(bildirimler(desenli)).length, 1,
-    "desen yedeği öldü; geçiş dönemindeki mevcut kapılar kuyruktan düşer");
+  const yalnizDesen = zincir(
+    `Adım( kod: MEK-A03, durum: beklemede, ne: "🧪 yalnız kabul cümlesi", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  assert.equal(onayKapilariTopla(bildirimler(yalnizDesen)).length, 0,
+    "kabul cümlesi tek başına hâlâ kapı üretiyor; geçiş yedeği yürürlükten kalkmamış (VIT-POSTA-A06)");
+  // ÖLÇÜT SUNUMDA YAŞAMAYA DEVAM EDER: mekanik beyanı OLAN bir Adımda kabul
+  // cümlesi hâlâ satırın altında gösterilir — kaldırılan tanıma, gösterim değil.
+  const ikisi = zincir(
+    `Adım( kod: MEK-A06, durum: beklemede, onayBekler: founder, ne: "🧪 ikisi birden", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  const [zengin] = onayKapilariTopla(bildirimler(ikisi));
+  assert.match(zengin!.olcut, /Founder tarafından onaylanmıştır/u,
+    "mekanik kapının kabul cümlesi sunumdan da düştü; kullanıcı kapının ne istediğini okuyamaz");
 });
 
 // ── C · KULLANICININ TASLAĞI VE DOSYANIN BİÇİMİ ─────────────────────────────
@@ -1553,7 +1584,7 @@ test("KANIT: başarı yolu BİR uygulama, BİR kaydetme ve BİR hedefli disk oku
 
 test("YARIŞ: sürüm anahtarlı önbellek, yazım sonrası doğrulamaya bayat ağaç veremez", async () => {
   const { programAl } = await import("../src/onbellek.ts");
-  const once = zincir(`Adım( kod: YRS-A01, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )`);
+  const once = zincir(`Adım( kod: YRS-A01, onayBekler: founder, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )`);
   const kayit = "onaylandı — 2026-07-30";
   const sonra = once.replace("durum: beklemede", `durum: beklemede, onay: ${degerBicimle(kayit)}`);
   const belge = {
@@ -1822,7 +1853,7 @@ test("YÜZEY YASAĞI: onay yüzeyinin HİÇBİR dosyası görünür karar nesnes
 //   Kapalı ürün `_KapaliUrun` bu süitin konusu değildir ve açık aracın nöbeti
 //   kapalı ürünün içeriğine bağlanamaz; oradaki ölçüm kendi varlığının işidir.
 
-test("KAPI TANIMA: _Sarmal ağacında desene BAĞIMLI kapı yoktur — fark sıfırdır", (t) => {
+test("KAPI TANIMA: _Sarmal ağacında beyansız kapı yoktur — fark sıfırdır", (t) => {
   const kok = yol("../../..");                       // _Sarmal
   const sarDosyalari = (dizin: string, gorece: string): string[] => {
     const bulunan: string[] = [];
@@ -1851,15 +1882,24 @@ test("KAPI TANIMA: _Sarmal ağacında desene BAĞIMLI kapı yoktur — fark sıf
     //    kural evreni kurulmadan.
     const kapilar = onayKapilariTopla(bildirimler);
     kuyrukSayisi += kapilar.length;
-    const gorulenKodlar = new Set(kapilar.map((k) => k.kod));
 
-    // ② Aynı Adımlar mekanik beyanı da taşıyor mu?
+    // ② VIT-POSTA-A06 ÖLÇÜSÜ: kapı taşıyıp mekanik beyanı taşımayan AÇIK Adım
+    //    var mı? Ölçüt tekleştikten sonra soru tersine döner ve asıl soru budur:
+    //    A02 zamanında ölçü "kuyruğun gördüğü kapı beyanı da taşıyor mu" idi ve
+    //    bugün o ölçü kendiliğinden doğrudur, çünkü kuyruk zaten yalnız beyanı
+    //    okumaktadır. Bir kapının sessizce düşmesinin bugünkü TEK yolu, Founder
+    //    kapısını hâlâ yalnız kabul cümlesiyle ilan eden bir Adımdır: kuyruk onu
+    //    artık görmez ve OZK-02'de ölçülen kusur geri gelir.
     const gez = (d: Dugum): void => {
       if (d.ad === "Adım") {
-        const kod = alan(d, "kod")?.deger.metin ?? "?";
-        if (gorulenKodlar.has(kod)
+        const durum = alan(d, "durum")?.deger.metin;
+        const acik = durum === "beklemede" || durum === "geliştirmede";
+        const kararVerilmis = alan(d, "onay") !== undefined;
+        const kabulCumlesi = (alan(d, "kabul")?.deger.ogeler ?? [])
+          .some((o) => o.metin && ONAY_DESENI.test(o.metin));
+        if (acik && !kararVerilmis && kabulCumlesi
           && alan(d, "onayBekler")?.deger.metin !== "founder") {
-          deseneBagimli.push(`${relative(kok, dosya)}#${kod}`);
+          deseneBagimli.push(`${relative(kok, dosya)}#${alan(d, "kod")?.deger.metin ?? "?"}`);
         }
       }
       for (const c of d.cocuklar) gez(c);
@@ -1871,10 +1911,11 @@ test("KAPI TANIMA: _Sarmal ağacında desene BAĞIMLI kapı yoktur — fark sıf
     `_Sarmal ağacında ayrıştırılamayan .sar var; kapı ölçümü eksik koşar: ${okunamayan.join(", ")}`);
 
   assert.deepEqual(deseneBagimli, [] as string[],
-    "Bu kapılar kuyruğa YALNIZ kabul cümlesi deseniyle giriyor ve mekanik " +
+    "Bu AÇIK Adımlar Founder kapısını yalnız kabul cümlesiyle ilan ediyor ve mekanik " +
     "`onayBekler: founder` beyanını taşımıyor: " + deseneBagimli.join(", ") +
-    " — desen bir geçiş yedeğidir (OZK-08); daha dar bir cümle yazıldığı gün bu " +
-    "kapı sessizce kuyruktan düşer ve OZK-02'de ölçülen kusur geri gelir.");
+    " — geçiş yedeği VIT-POSTA-A06 ile yürürlükten kalktı, dolayısıyla bu kapılar " +
+    "Onaylar kuyruğunda GÖRÜNMEZ ve OZK-02'de ölçülen kusur geri gelmiş olur. " +
+    "Onarım: Adım satırına `onayBekler: founder` alanını yaz.");
 
   // Küme boşsa bu bir kusur DEĞİLDİR (Founder kapıları onayladıkça sayı düşer),
   // fakat gizlenmez de: okuyan kişi eşitliğin kaç kapı üstünde doğrulandığını
@@ -2007,9 +2048,14 @@ test("BEKLER SİLME: NFC olmayan (NFD) satırda silme DURUR", () => {
     "iki konum sistemi ayrışmışken silme yapıldı; kaymış aralık sahte-geçti");
 });
 
-test("BEKLER SİLME: alan yoksa silinecek de yoktur — desenle tanınan kapı yazılabilir", () => {
+// VIT-POSTA-A06 · ÖLÇÜT TEKLEŞTİ. Bu nöbetin eski öncülü artık KURULAMAZ:
+// "desenle tanınan kapı" diye bir şey yoktur, çünkü kapı yalnız `onayBekler`
+// alanından okunur ve o alanı taşıyan her kapının mekanik kaydı da vardır. Geriye
+// silme kapısının kendi savunması kalır: kayıt verilmemişse silinecek aralık
+// üretilmez ve yazım yine de yapılabilir.
+test("BEKLER SİLME: mekanik kayıt verilmediğinde silinecek aralık üretilmez", () => {
   const [kapi] = kapilar(KAPILI_KAYNAK);
-  assert.equal(kapi!.bekler, undefined, "desenle tanınan kapıda mekanik kayıt doğmuş");
+  assert.ok(kapi?.bekler, "kapı mekanik beyanla tanındığı hâlde ayrıştırıcı kaydı doğmadı");
   assert.equal(beklerSilmeAraligi("her neyse", undefined).tur, "yok");
 });
 

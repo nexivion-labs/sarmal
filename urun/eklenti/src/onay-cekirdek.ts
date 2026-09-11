@@ -15,7 +15,19 @@ import { ONAY_CEKIRDEK_METINLERI } from "./yuzey-metinleri.ts";
 import type { Dugum } from "../../cekirdek/src/sozdizim.ts";
 import { degerBicimle } from "../../cekirdek/src/deger-yaz.ts";
 
-/** Onay kapısı imzası: kabul ölçütü Founder onayını şart koşuyor. */
+/**
+ * Founder onayını anan kabul cümlesinin imzası.
+ *
+ * BU DESEN ARTIK KAPI TANIMAZ (VIT-POSTA-A06). Bir zamanlar kuyruğun TEK gözüydü
+ * ve ölçülen kusuru o üretti: OZK-02, Founder'ın şart koştuğu on açık kapının
+ * yalnız beşinin kuyruğa düştüğünü ölçtü, çünkü desen kırk karakterlik bir
+ * pencereye yaslanıyordu ve daha uzun ya da başka kurulmuş bir cümle sessizce
+ * kaçıyordu. OZK-08 kalıcı yolu seçti ve deseni GEÇİŞ YEDEĞİ ilan etti; bu Adım
+ * geçişi bitirir ve ölçütü tekleştirir: kapı YALNIZ `onayBekler` alanından
+ * okunur. Desenin bugünkü tek görevi SUNUMDUR — kapı satırının altında hangi
+ * kabul cümlesinin gösterileceğini seçer. Bir cümlenin gösterilmemesi kapıyı
+ * düşürmez; kapının varlığı mekanik beyanın kendisidir.
+ */
 export const ONAY_DESENI = /founder[^"]{0,40}onay/iu;
 
 /** Mekanik kapı beyanının alan adı — tek yerde yaşar, iki yüzey onu okur. */
@@ -75,14 +87,16 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
       const kararVerilmis = alan("onay") !== undefined;
       const kabul = alan("kabul");
       const olcut = (kabul?.deger.ogeler ?? []).find((o) => o.metin && ONAY_DESENI.test(o.metin));
-      // MEKANİK KAPI BEYANI (VIT-POSTA-A02 kalıcı onarımı): `onayBekler: founder`
-      // alanı kapıyı şemadan bildirir ve düz metin tahmini biter. Ölçülen kusur
-      // şuydu: Founder'ın şart koştuğu on kapının beşi, kabul cümlesi desene
-      // uymadığı için kuyruğa hiç görünmüyordu — düz metinden kapı çıkarmak bir
-      // sonraki farklı cümlede yine kaçırır. Desen yalnız geçiş dönemi yedeğidir.
+      // ÖLÇÜT TEKTİR (VIT-POSTA-A06). Kapı YALNIZ mekanik beyandan okunur:
+      // `onayBekler: founder`. Kabul cümlesi deseni bir GEÇİŞ YEDEĞİYDİ ve bu
+      // Adımla yürürlükten kalktı; bugün yalnız hangi cümlenin satır altında
+      // gösterileceğini seçer. GEREKÇE ŞUDUR: iki ölçüt aynı soruyu iki ayrı
+      // dille cevaplar ve hangisinin bağlayıcı olduğu okunamaz hâle gelir; düz
+      // metinden kapı çıkarmak ise bir sonraki farklı cümlede yine kaçırır
+      // (OZK-02'de ölçülen kusur budur ve on kapının beşini düşürmüştü).
       const beklerAlani = alan(BEKLER_ALANI);
       const mekanikBeyan = beklerAlani?.deger.metin === "founder";
-      if (acik && !kararVerilmis && (olcut || mekanikBeyan) && durum) {
+      if (acik && !kararVerilmis && mekanikBeyan && durum) {
         const ne = alan("ne")?.deger.metin ?? "";
         kapilar.push({
           satir: d.satir - 1,

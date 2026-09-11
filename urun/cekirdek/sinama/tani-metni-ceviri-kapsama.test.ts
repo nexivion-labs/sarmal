@@ -88,6 +88,11 @@ const BAGLAMLAR: readonly TaniBaglami[] = [
   { kusur: "giriş-ayrıştırılamıyor" },
   { kusur: "ad-kuralı" },
   { kusur: "girişsiz-dizin" },
+  // BKM-DNT-A13: `--ana` bayrağının dalları da matrise girer. Hedef üçlüsü
+  // (dosya · dizin · yok) zaten aşağıda dolaşılıyordu, fakat dış beyan dalı
+  // dolaşılmıyordu ve o dalda kap iddiası kuran bir çeviri sessizce yaşardı.
+  { kusur: "girişsiz-dizin", hedef: "dizin", disBeyan: true },
+  { kusur: "girişsiz-dizin", hedef: "yok", disBeyan: true },
   { kusur: "girişsiz-dizin", hedef: "dosya" },
   { kusur: "girişsiz-dizin", hedef: "dizin" },
   { kusur: "girişsiz-dizin", hedef: "yok" },
@@ -310,4 +315,72 @@ test("anlatım bütünlüğü nöbetinin iki istisnası dar tutulur", () => {
   assert.deepEqual(telegrafikImler("Örnek: `| sütun | değer |` satırını koru."), []);
   assert.deepEqual(telegrafikImler("Yeniden adlandır: 'a' → 'b'."), ["ok işareti"]);
   assert.deepEqual(telegrafikImler("Üç yol: ekle | aç | güncelle."), ["dikey çizgi"]);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BKM-DNT-A13 · İDDİA DÜZEYİNDE ÇEVİRİ NÖBETİ
+//
+//   Bağımsız denetçi 2026-08-09 tarihinde şunu göstermiştir: İngilizce cümleyi
+//   eski KAP İDDİASINA geri döndüren mutasyon kapıdan YEŞİL geçmektedir, çünkü
+//   çeviri nöbeti yalnız anahtar ile alan eşliğini ölçmekte, cümlenin NE İDDİA
+//   ETTİĞİNİ ölçmemektedir. Bugünkü metin doğrudur fakat sessizce bayatlayabilir.
+//
+//   Bu nöbet iddiayı ölçer: yol bir DOSYA ise, diskte YOK ise ya da `--ana`
+//   bayrağına bir DİZİN verilmişse, hiçbir dilin cümlesi "bu dizinde giriş
+//   dosyası yok" biçiminde bir kap iddiası kuramaz. Ölçülmeyen kap iddiası
+//   kullanıcıyı var olmayan bir dizinin içini aramaya yöneltir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Kap iddiası imzaları — iki dilde, cümlenin NE DEDİĞİNİ arar. */
+const KAP_IDDIASI: readonly RegExp[] = [
+  /dizininde giriş dosyası yok/u,
+  /içinde giriş dosyası yok/u,
+  /has no entry file/u,
+  /no entry file inside/u,
+];
+
+test("BKM-DNT-A13: ölçülmüş dosya · yok · bayrak-dizin dallarında hiçbir dil KAP İDDİASI kurmaz", () => {
+  const daller: ReadonlyArray<{ ad: string; baglam: TaniBaglami }> = [
+    { ad: "hedef=dosya", baglam: { kusur: "girişsiz-dizin", dizin: "/x/y.sar", hedef: "dosya" } },
+    { ad: "hedef=yok", baglam: { kusur: "girişsiz-dizin", dizin: "/x/yok", hedef: "yok" } },
+    { ad: "--ana + dizin", baglam: { kusur: "girişsiz-dizin", dizin: "/tmp", hedef: "dizin", disBeyan: true } },
+    { ad: "--ana + yok", baglam: { kusur: "girişsiz-dizin", dizin: "/x/yok.sar", hedef: "yok", disBeyan: true } },
+  ];
+  const ihlaller: string[] = [];
+  for (const { ad, baglam } of daller) {
+    for (const [dil, katalog] of [["tr", ONCEKI_TANI_METINLERI], ["en", ONCEKI_TANI_METINLERI_EN]] as const) {
+      const girdi = katalog["kural-ihlali"];
+      assert.ok(girdi, "kural-ihlali kataloğu bulunmalı");
+      for (const [alan, uret] of [["mesaj", girdi.mesaj], ["oneri", girdi.oneri]] as const) {
+        if (!uret) continue;
+        const cumle = uret(baglam) ?? "";
+        for (const desen of KAP_IDDIASI) {
+          if (desen.test(cumle)) ihlaller.push(`${dil}.${alan} [${ad}] → ${cumle}`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(ihlaller, [],
+    "ölçülmüş dalda kap iddiası kuran cümle, kullanıcıyı var olmayan bir dizinin içini aramaya yöneltir");
+});
+
+test("BKM-DNT-A13: varsayılan dal (gerçekten girişsiz DİZİN) kap iddiasını kurmaya DEVAM eder", () => {
+  // Nöbetin körlük sınavı: iddia yasağı yalnız ÖLÇÜLMÜŞ dallarda geçerlidir.
+  // Gerçekten bir dizin girişsizse cümle onu söylemek ZORUNDADIR, yoksa nöbet
+  // bütün cümleleri boşaltmakla da yeşil kalırdı.
+  const baglam: TaniBaglami = { kusur: "girişsiz-dizin", dizin: "/x/proje", hedef: "dizin" };
+  const tr = ONCEKI_TANI_METINLERI["kural-ihlali"]?.mesaj(baglam) ?? "";
+  const en = ONCEKI_TANI_METINLERI_EN["kural-ihlali"]?.mesaj(baglam) ?? "";
+  assert.match(tr, /dizininde giriş dosyası yok/u, "gerçek girişsiz dizinde Türkçe cümle iddiayı kurmalı");
+  assert.match(en, /has no entry file/u, "gerçek girişsiz dizinde İngilizce cümle iddiayı kurmalı");
+});
+
+test("BKM-DNT-A13: `--ana` dalında iki dilin önerisi de BAYRAĞI anar", () => {
+  for (const [dil, katalog] of [["tr", ONCEKI_TANI_METINLERI], ["en", ONCEKI_TANI_METINLERI_EN]] as const) {
+    for (const hedef of ["dizin", "yok"] as const) {
+      const oneri = katalog["kural-ihlali"]?.oneri?.({ kusur: "girişsiz-dizin", dizin: "/x", hedef, disBeyan: true }) ?? "";
+      assert.match(oneri, /--ana/u,
+        `${dil} önerisi (hedef=${hedef}) kullanıcının fiilen kullandığı bayrağı anmalı; anmayan öneri kullanıcıyı kendi komutunun dışına yönlendirir`);
+    }
+  }
 });

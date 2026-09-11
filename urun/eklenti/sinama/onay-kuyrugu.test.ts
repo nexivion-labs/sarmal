@@ -30,7 +30,7 @@ const ONAYLI_OLCUT = `"Tasarım Founder tarafından onaylanmıştır — onaysı
 
 test("kapı tanıma: beklemede + Founder-onay ölçütü + onay yok → kapı VAR", () => {
   const k = kapilar(zincir(
-    `Adım( kod: A1, durum: beklemede, ne: "🧪 Deneme amacı", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "🧪 Deneme amacı", kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(k.length, 1);
   assert.equal(k[0].kod, "A1");
   assert.equal(k[0].ne, "🧪 Deneme amacı");
@@ -39,20 +39,20 @@ test("kapı tanıma: beklemede + Founder-onay ölçütü + onay yok → kapı VA
 
 test("kapı tanıma: geliştirmede durumundaki Adım da kuyruğa girer", () => {
   const k = kapilar(zincir(
-    `Adım( kod: A2, durum: geliştirmede, kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A2, onayBekler: founder, durum: geliştirmede, kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(k.length, 1);
   assert.equal(k[0].kod, "A2");
 });
 
 test("kapı tanıma: onay: kaydı yazılmış kapı kuyruğa GİRMEZ (karar verilmiştir)", () => {
   const k = kapilar(zincir(
-    `Adım( kod: A3, durum: beklemede, onay: "onaylandı — 2026-07-17", kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A3, onayBekler: founder, durum: beklemede, onay: "onaylandı — 2026-07-17", kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(k.length, 0);
 });
 
 test("kapı tanıma: tamamlandı durumundaki Adım kuyruğa girmez", () => {
   const k = kapilar(zincir(
-    `Adım( kod: A4, durum: tamamlandı, kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A4, onayBekler: founder, durum: tamamlandı, kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(k.length, 0);
 });
 
@@ -64,7 +64,7 @@ test("kapı tanıma: Founder-onay imzası taşımayan kabul kapı açmaz", () =>
 
 test("kapı tanıma: durumsuz Adım kapı açmaz (açıklık beyanı şarttır)", () => {
   const k = kapilar(zincir(
-    `Adım( kod: A6, kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: A6, onayBekler: founder, kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.equal(k.length, 0);
 });
 
@@ -76,7 +76,7 @@ test("imza deseni: büyük/küçük harf ve ara sözcükler tanınır", () => {
 
 test("derin ağaç: kapı, Faz›Blok›Katman zincirinin dibinde de bulunur ve satır 0-tabanlıdır", () => {
   const kaynak = zincir(
-    `Adım( kod: A7, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: A7, onayBekler: founder, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )`);
   const k = kapilar(kaynak);
   assert.equal(k.length, 1);
   // Adım fikstürde 4. satırdadır (1-tabanlı) → 0-tabanlı 3.
@@ -86,7 +86,7 @@ test("derin ağaç: kapı, Faz›Blok›Katman zincirinin dibinde de bulunur ve 
 
 test("gidiş-dönüş kanıtı: onay kaydı yazım noktasına eklenince kapı KAPANIR", () => {
   const kaynak = zincir(
-    `Adım( kod: A8, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
+    `Adım( kod: A8, onayBekler: founder, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
   const [kapi] = kapilar(kaynak);
   assert.ok(kapi, "kapı önce açık olmalı");
   // kaydiIsle'nin yaptığı ekleme birebir: durum değerinin sonuna `, onay: "…"`.
@@ -105,7 +105,7 @@ test("kırpma: uzun amaç 320, uzun ölçüt 160 karakterde kırpılır", () => 
   const uzunNe = "Ç".repeat(400);
   const uzunOlcut = "Founder onayından geçen " + "ç".repeat(200);
   const k = kapilar(zincir(
-    `Adım( kod: A9, durum: beklemede, ne: "${uzunNe}", kabul: [ "${uzunOlcut}" ] )`));
+    `Adım( kod: A9, onayBekler: founder, durum: beklemede, ne: "${uzunNe}", kabul: [ "${uzunOlcut}" ] )`));
   assert.equal(k.length, 1);
   assert.equal(k[0].ne.length, 321);        // 320 + "…"
   assert.ok(k[0].ne.endsWith("…"));
@@ -115,8 +115,8 @@ test("kırpma: uzun amaç 320, uzun ölçüt 160 karakterde kırpılır", () => 
 
 test("çoklu kapı: aynı belgede birden çok açık kapı ayrı ayrı listelenir", () => {
   const k = kapilar(zincir(
-    `Adım( kod: C1, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )\n` +
-    `      Adım( kod: C2, durum: geliştirmede, kabul: [ ${ONAYLI_OLCUT} ] )\n` +
-    `      Adım( kod: C3, durum: tamamlandı, kabul: [ ${ONAYLI_OLCUT} ] )`));
+    `Adım( kod: C1, onayBekler: founder, durum: beklemede, kabul: [ ${ONAYLI_OLCUT} ] )\n` +
+    `      Adım( kod: C2, onayBekler: founder, durum: geliştirmede, kabul: [ ${ONAYLI_OLCUT} ] )\n` +
+    `      Adım( kod: C3, onayBekler: founder, durum: tamamlandı, kabul: [ ${ONAYLI_OLCUT} ] )`));
   assert.deepEqual(k.map((x) => x.kod), ["C1", "C2"]);
 });

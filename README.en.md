@@ -15,7 +15,7 @@ Sarmal pulls that memory into a single source. A plan is written on four axes: t
 
 ## How it works: a real example
 
-Suppose a small project born from the starter kit contains this Blok (`plan/randevu.sar`):
+Suppose a small project born from the starter kit contains this Blok (`is/plan/randevu.sar`):
 
 ```sar
 Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
@@ -38,20 +38,29 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 The first Adım claims to be done, but `src/randevu.ts` does not exist on disk; the second Adım references a decision nobody wrote. `sarmal denetle .` reports it like this (real output, lines wrapped; messages are in Turkish today):
 
 ```
-✖ plan/randevu.sar:9:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
   bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ plan/randevu.sar:11:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
 ```
+
+![sarmal denetle output in a terminal: kırık-referans and meyve-dosyası-eksik errors, the summary line and the scorecard](urun/eklenti/medya/ekran/denetle.png)
+
+The block above shows only the two errors; the screenshot is the same run in full and carries the warning and info lines too.
 
 Once the file is written and the reference fixed, the engine notices something else: the `src/` folder exists on disk but was never declared in the project's entry file.
 
 ```
 ✖ [beyansız-yapı] 'src/' diskte var ama randevu_anadizin.sar'da ilan edilmemiş — açılan her
   klasör giriş dosyasında bildirilmelidir; ilansız yapı zamanla plandan kopar.
+   ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Declare the folder and the scorecard is clean: sixteen nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
+Declare the folder and the scorecard is clean: twenty nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
+
+The same plan also lives in the editor: the Roadmap tree, the Mini Graph and the Problems panel read the same source, and a diagnostic lands the moment the file is saved.
+
+![Sarmal inside Visual Studio Code: the Roadmap and Mini Graph on the left, the highlighted plan file in the middle, the Problems panel at the bottom](urun/eklenti/medya/ekran/editor.png)
 
 ## The working tree
 
@@ -59,17 +68,26 @@ Everything in Sarmal is a tree and its root is the project's entry file. A proje
 
 ```
 randevu/
-├── randevu_anadizin.sar   entry file: the Project, its Shelves, Technology and Team are declared here
-├── plan/                  Faz → Blok → Katman → AltKatman → Adım → Meyve → file
-│   ├── ilk_plan.sar
-│   └── randevu.sar
-├── durum/durum_devir.sar  where we left off: the end-of-session handover record
-├── ogrenme/               lessons and feedback; memory graduates into skills here
-├── AGENTS.md              agent instructions (byte-identical twin of CLAUDE.md)
-└── src/                   code; every folder opened on disk must be declared in the entry file
+├── randevu_anadizin.sar        entry: Proje → Kitaplık → Raf, plus Technology and Team
+├── is/                         the library of work
+│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → file
+│   │   ├── ilk_plan.sar
+│   │   └── randevu.sar
+│   └── durum/durum_devir.sar   where we left off: the end-of-session handover record
+├── ogreti/ogrenme/             lessons and feedback; memory graduates into skills here
+├── oz/siniflama/isaretci.json  type-canon pointer; the extension resolves its canon from this shelf
+├── CLAUDE.md · AGENTS.md       agent instructions (the two are byte-identical twins)
+├── .mcp.json                   registration of the Sarmal MCP server; agents bind to the tools here
+├── .claude/                    settings.json and kanca/: the audit gate and the birth lock
+├── .gitignore                  a "!*.sar" exception; a global ignore cannot swallow the plan's memory
+└── src/                        code; every folder opened on disk must be declared in the entry file
 ```
 
-The logic is four sentences. First, structure is declared before it exists: the entry file lists every folder as a Shelf with its purpose, and an undeclared folder is drift to the engine. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity that may span seasons, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
+In the drawing `randevu.sar` and `src/` belong to the work itself; the remaining thirteen files
+are all written by the `dogus` tool and none of them is created by hand. Choose the
+workspace kind and the same kit is born twice: once for the roof, once for the first project under it.
+
+The logic is four sentences. First, structure is declared before it exists: the entry file declares every branching folder as a Kitaplık and every leaf folder inside it as a Raf, and an undeclared folder is drift to the engine. The Kitaplık level cannot be skipped; bare shelves under the root turn the entry file into an unreadable list as the tree grows. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity that may span seasons, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
 
 ## What changes for agents
 
@@ -77,7 +95,7 @@ The MCP server exposes the same files to an agent through eighteen tools. `sef` 
 
 ## IF YOU ARE BUILDING A SMALL PROJECT WITH ONE TECHNOLOGY AND ONE AGENT, SARMAL IS NOT RECOMMENDED FOR YOU
 
-Let us be honest: for a single-language, single-technology job of a few weeks, Sarmal is heavy. A canon of one hundred fifty-seven articles, seventy-four diagnostics and a six-level plan tree is a ceremony a three-screen app cannot carry; a good README and Git are enough there. Sarmal's value shows in the third week, when you look for the rationale of a decision or when the code drifts from the plan; before that you only pay its price.
+Let us be honest: for a single-language, single-technology job of a few weeks, Sarmal is heavy. A canon of one hundred nineteen articles, one hundred seventy-five diagnostics and a six-level plan tree is a ceremony a three-screen app cannot carry; a good README and Git are enough there. Sarmal's value shows in the third week, when you look for the rationale of a decision or when the code drifts from the plan; before that you only pay its price.
 
 ## IF YOU ARE BRINGING ABOUT TEN TECHNOLOGIES TOGETHER WITH SEVERAL AI AGENTS, OR BUILDING A SECTORAL OR PERSONAL OPERATING SYSTEM, SARMAL WAS MADE FOR THIS
 
@@ -108,7 +126,7 @@ The core requires Node 23.6 or newer: `cd urun/cekirdek && npm link` binds the `
 
 ## Shelf map
 
-[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 157 unique articles, 38 Decisions and 119 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
+[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 161 unique articles, 38 Decisions and 123 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
 ## Learn
 
@@ -120,5 +138,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 47 errors, 16 warnings, and 11 informational diagnostics. The fixed registry routing matrix sends 143 items to Problems, 4 to Reminders, and 28 to Notifications (Observations). 174 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 47 errors, 17 warnings, and 14 informational diagnostics. The fixed registry routing matrix sends 144 items to Problems, 3 to Reminders, and 32 to Notifications (Observations). 178 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

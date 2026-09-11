@@ -66,7 +66,7 @@ export interface YeniTaniKaydi {
 /** göç terfi turu A06 kapanışı'nın uygulama · doğrulama · kanon iddiası üçlüsü. */
 export interface TerfiUcluKaniti {
   uygulama: string;
-  dogrulama: string;
+  doğrulama: string;
   kanon: string;
 }
 
@@ -181,7 +181,24 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   // yazar; madde bilgi düzeyindedir ve bugüne dek motorda hiçbir karşılığı yoktu.
   // Kapsam projedir: Faz kendi dosyasında, sardığı Bloklar başka dosyalardadır.
   { kod: "mevsim-vadesi-geçti", madde: "ORK-8", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-MVS-A01 ikinci teslim (kontrolcü hükmü 2026-09-10 · Founder yetki devriyle): ORK-8
+  // kapanışının dördüncü basamağı olan mührün dürüstlüğü. `Faz` şeması mühür alanı
+  // taşımadığı için mühür yalnız beyan metninde yaşar; metninde mühürlendiğini ya da
+  // açık işini devrettiğini yazan bir mevsim hâlâ açık Adım sarıyorsa beyan ile graf
+  // çelişir. Ölçüt metnin iddiası değil grafın sayısıdır; kapsam projedir ve çözücü
+  // vade bekçisiyle ortaktır. Gözlemdir, sapma bildirmez; bu yüzden bilgi düzeyindedir.
+  { kod: "mevsim-mührü-çelişkili", madde: "ORK-8", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "altkatman-tekilliği-ihlali", madde: "MIM-1.7", kanonDüzey: "hata", kapsam: "tek-dosya", uretici: "denetci.ts", kademe: "hata" },
+  // KPS-MHR-A01 (Founder hükmü 2026-09-11): MIM-3.4 dosya mühürleri. Mühür hiçbir
+  // zaman sessiz değildir: arşiv ile eğitim mühürlü dosya bir gözlemle, sonraya
+  // bırakılmış dosya bekleme süresini söyleyen bir hatırlatmayla listelenir; ikisi
+  // de düzeltilecek bir sapma bildirmez ve bilgi düzeyindedir. Mühür biçimine
+  // uymayan ad ise kanonun yazdığı uyarı düzeyinde doğar; Sarmal'ın kendi
+  // ağacında sayacı sıfırdır, çünkü üç depodaki hiçbir `.sar` adı büyük harf
+  // taşımamaktadır. Kapsam projedir: karar diskin anlık görüntüsünden verilir.
+  { kod: "dosya-mührü", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "sonraya-bırakılmış-dosya", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "geçersiz-dosya-adı", madde: "MIM-3.4", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */
@@ -226,6 +243,23 @@ export const EMEKLI_TANI_KODLARI: readonly string[] = [
   "dayanak-hedef-tür", "defter-referansı", "durum-boyutu", "eski-giriş-adı", "faz-gecikti", "faz-tarihsiz",
   "faz-yaklasiyor", "hatırlatıcı-vade", "kırıntı-adım", "tek-cocuk-kapsayici", "uzak-vade", "öneksiz-anadizin",
 ];
+
+/**
+ * Emekli bir kimliğin yerine geçen canlı halefi (KPS-MVS-A01 · 2026-09-10).
+ *
+ * Göç motor turu A10 (2026-07-27) üç Faz takvim tanısını "ölçüm anında canlı
+ * bahçede sıfır bulgu" gerekçesiyle emekli etmişti. Founder 2026-08-27 tarihinde
+ * bu gerekçenin yanlış olduğunu ölçtü: yirmi yedi gün sonra vadesi geçmiş bir
+ * mevsim açık iş taşıyordu ve motor susuyordu. Emeklinin tarihsel kaydına
+ * dokunulmaz (kimlik EMEKLI_TANI_KODLARI listesinde kalır); bu harita yalnız
+ * hangi canlı tanının o dersi devraldığını söyler. Halefsiz bırakılan iki kimlik
+ * bilinçlidir: `faz-yaklasiyor` yaklaşan vadeyi bildiriyordu ve MIM-1.2 uyarınca
+ * yaklaşan tarih bir kanon zorlaması değildir; `faz-tarihsiz` tarihsizliği ihlal
+ * sayıyordu ve MIM-1.2 tarihi güçlü tavsiyeye indirdiği için o dersin halefi yoktur.
+ */
+export const EMEKLI_TANI_HALEFI: ReadonlyMap<string, string> = new Map([
+  ["faz-gecikti", "mevsim-vadesi-geçti"],
+]);
 
 /** Emeklilik kararı bulunmasına rağmen sabit ya da sınıflama-türevli sicilde hâlâ duran uyumluluk borcu. */
 export const EMEKLILIK_BORCU_TANI_KODLARI: readonly string[] = [

@@ -283,3 +283,60 @@ test("A04: her tablo TEK YERDE yaşar — biçim pakette, renk depo tercihinde",
   assert.equal(ayar["[sarmal]"], undefined,
     "biçim tercihleri hem depoda hem pakette — mağazadan kuran kullanıcının gördüğü biçim depo ikiziyle ayrışabilir");
 });
+
+// ── 5) KANON İŞARETÇİSİ: doğan kök tek başına açıldığında panel kör kalmaz ───
+//   Ölçülen kusur (BKM-DNT-A15): doğuş paketiyle doğan bir kökte hiçbir kanon
+//   kaydı yoktur; `eklenti.ts` tam-orkestrasyon turunda kaydı bulamayınca o kökü
+//   ATLAR ve panelin proje kapsamlı tanıları o ağaçta hiç doğmaz. Onarım kopya
+//   değil ADRESTİR: doğan kök yalnız bir işaretçi taşır.
+
+test("BKM-DNT-A15: kanon işaretçisi taban kaydı çözer — kopya olmadan panel kör kalmaz", () => {
+  const alan = gecici("sarmal-isaretci-");
+  const kurulum = varlikKur(alan, "sarmal_kurulumu", { kanon: true });
+  const dogan = varlikKur(alan, "dogan_proje");           // kanon YOK — doğuş paketi kopya yazmaz
+  const isaretciDizin = join(dogan, "oz", "siniflama");
+  mkdirSync(isaretciDizin, { recursive: true });
+
+  // ① İşaretçi YOKKEN: kayıt çözülemez ve panel bu kökte kör kalır.
+  assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), undefined,
+    "işaretçisiz kökte kayıt çözülüyor — fikstür ölçülen kusuru yeniden üretemiyor");
+
+  // ② İşaretçi VARKEN: kayıt doğuran kurulumdan çözülür.
+  writeFileSync(join(isaretciDizin, "isaretci.json"),
+    JSON.stringify({ kanonKoku: kurulum, kayit: KAYIT_GORELI }), "utf8");
+  assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), join(kurulum, KAYIT_GORELI),
+    "işaretçi taban kaydı çözmedi — panel hâlâ kör");
+
+  // ③ İşaretçi ÖRTÜYÜ sunmaz: doğuran kurulumun kendi tip katkısı doğan projeye
+  //    sızarsa varlık ayrılığı bulanır (STR-3 kırmızı çizgisi).
+  const ortuGoreli = join("oz", "siniflama", "ortu.json");
+  writeFileSync(join(kurulum, ortuGoreli), JSON.stringify({ semalar: {} }), "utf8");
+  assert.equal(varlikDosyasiBul(dogan, ortuGoreli, [dogan]), undefined,
+    "işaretçi örtüyü de sunuyor — kurulumun tip katkısı doğan projenin görünümüne sızar");
+
+  // ④ İşaretçi var olan bir kaydı GÖLGELEMEZ: gerçek kayıt her zaman önce gelir.
+  mkdirSync(join(dogan, "oz", "siniflama"), { recursive: true });
+  copyFileSync(GERCEK_KAYIT, join(dogan, KAYIT_GORELI));
+  assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), join(dogan, KAYIT_GORELI),
+    "kökün kendi kaydı varken işaretçi öne geçti — son çare olmaktan çıkmış");
+});
+
+test("BKM-DNT-A15: bozuk ya da göreli adres taşıyan işaretçi YOK sayılır", () => {
+  const alan = gecici("sarmal-isaretci-bozuk-");
+  const dogan = varlikKur(alan, "dogan_proje");
+  const isaretciDizin = join(dogan, "oz", "siniflama");
+  mkdirSync(isaretciDizin, { recursive: true });
+  const isaretci = join(isaretciDizin, "isaretci.json");
+
+  for (const [ad, icerik] of [
+    ["ayrıştırılamayan json", "{ bu json değil"],
+    ["alanı olmayan kayıt", JSON.stringify({ baska: "şey" })],
+    ["göreli adres", JSON.stringify({ kanonKoku: "../sarmal" })],
+    ["boş adres", JSON.stringify({ kanonKoku: "" })],
+    ["diskte olmayan adres", JSON.stringify({ kanonKoku: join(alan, "hic_yok") })],
+  ] as const) {
+    writeFileSync(isaretci, icerik, "utf8");
+    assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), undefined,
+      `${ad}: çözülemeyen işaretçi kayıt döndürdü — var olmayan adres, adres olmamaktan kötüdür`);
+  }
+});

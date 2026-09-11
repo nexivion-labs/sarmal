@@ -288,7 +288,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
       // Panel başlığı bu melezliği kendisi itiraf ediyordu: "15 × açık hatırlatıcı
       // · 9 × geliştirmede çapa". Hüküm şudur: Hatırlatıcılar hanesi kullanıcının
       // YAZDIĞI taahhütleri taşır, Gözlemler hanesi motorun ÖLÇTÜĞÜ durumları.
-      Adım( kod: KYN-YUZ-A02, durum: beklemede, öncelik: p1, bağımlı: [ KYN-YUZ-A01 ], referans: [ YUZ-3.3, YUZ-3.4 ],
+      Adım( kod: KYN-YUZ-A02, durum: tamamlandı, öncelik: p1, bağımlı: [ KYN-YUZ-A01 ], referans: [ YUZ-3.3, YUZ-3.4 ],
         üretir: [ KOD-DENETIM, KD-GOC-YUZEY-CEKIRDEK, KD-GOC-YUZEY-HATIRLATICILAR ],
         onay: "onaylandı — 2026-08-28 · Founder iki ekran görüntüsüyle sordu ve hükmünü verdi: geliştirmede çapası Hatırlatıcılar hanesine değil Gözlemler hanesine aittir; üç çapa kimliği birlikte taşınır",
         ne: "🔔 Hatırlatıcılar hanesinin yalnız Hatırlatıcı düğümlerini taşıması. YUZ-3.3 üç sunum yüzeyini tipe göre ayırır: kullanıcının bilinçli Hatırlatıcı düğümleri Hatırlatıcılar hanesine, bilgi düzeyli ölçüm ile durum işaretleri Gözlemler hanesine gider. Motor bugün bu sınırı bir küme ile genişletmektedir: `açık-adım`, `geliştirmede-çapa` ve `bloklu-çapa` kimlikleri ileri bağlam sayılıp Hatırlatıcılar hanesine yönlendirilir, oysa üçü de bir Adımın durum alanından türeyen ölçümdür ve kullanıcının yazdığı bir taahhüt değildir. Sonuç Founder'ın panelde gördüğü melezliktir: yirmi dört kaydın on beşi çan, dokuzu elmastır ve kullanıcı aynı listede hem hatırlatmayı hem durumu okumak zorunda kalır. Aynı turda ters yöndeki kusur da kapanır: hedefi tamamlanmış bir hatırlatıcının ateşleme bildirimi bugün Gözlemler hanesine düşer, oysa YUZ-3.4 onu hatırlatıcının kendisine ait bir olay sayar ve kullanıcı hatırlatıcıyı kapatmak için iki hane arasında gidip gelmek zorunda kalır. Bu Adım kümeyi daraltır, ateşlemeyi Hatırlatıcılar hanesine alır ve aynı düğüm için iki satır basılmasını önler." ) {
@@ -306,6 +306,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
           "Çekirdek ve eklenti süitleri yeşildir; proje denetimi sıfır hata ve sıfır uyarı verir; kapanış Founder'ın canlı pencerede iki haneyi gözle doğrulamasını ister."
         ]
         sınır: "Tanıların kimliği, düzeyi ve mesajı değişmez; bu Adım yalnız yönlendirmeyi kanonun lafzına çeker. Hatırlatıcının kapatılması eylemi bu Adımın dışındadır ve KYN-YUZ-A03 Adımına aittir, çünkü ikisi ayrı kabul kapılarıdır (MIM-1.6). Yol Haritası panelinin Adım durum gösterimi değişmez; geliştirmede olan Adım orada zaten kendi simgesini taşır."
+        koşu: "2026-09-10 · KAPANDI. Düzeltme iki yönlüdür ve ikinci yönü kayıtta yoktu. Birinci yön hanenin fazlasını çıkarmaktır: Hatırlatıcılar hanesi dört kimlikten ikiye indi, çünkü açık Adım ile iki çapa kimliği bir Hatırlatıcı düğümü değil Adımın kendi durumundan doğan bilgi düzeyli ölçümlerdir ve üçü Gözlemler hanesine taşındı; o hanede kaldıkları sürece kullanıcı açık bir Adımı bilinçli bir ileri bağlam sanıyordu. İkinci yön daha ağır bir eksiği kapatır: ateşlemiş hatırlatıcı kimliği kümede HİÇ YOKTU ve bilgi düzeyli olduğu için Gözlemler hanesine düşüyordu, oysa YUZ-3.4 ateşlemiş bir Hatırlatıcının uykudakilerden ayırt edilmesini hükme bağlar ve iki hâl aynı hanede yan yana durmadıkça ayırt etme hükmü yerine gelemez; ayrım renkle kuruldu ve ikisi de çanını korudu, çünkü ikisi de bilinçli işarettir. Aynı düğüm için iki tanı doğduğunda haneye tek satır basılır ve ateşlemiş olan kazanır. Üretici burada bir kez yanlış katman seçtiğini ve nöbetin kendisini yakaladığını dürüstçe bildirmiştir: tekilleştirme önce konumla anahtarlanmış, fikstürde aynı satırda duran ilgisiz kayıtlar tek düğüm sanılmış ve yedi nöbet kırmızı yanmıştır; doğrusu modülün zaten taşıdığı düğüm kodu çekirdeğinden alınmıştır, çünkü ikinci bir çıkarım deseni yazmak aynı kusurun ad değiştirerek yaşaması olurdu. Matris kaydı canlı sicilden ölçülerek gerçeğe çekildi ve sayılar Adımın hedefleriyle birebir tuttu: yeni kanon yetmiş dört, önceki gövde yüz bir, Hatırlatıcılar iki, Gözlemler otuz. Üç ayrı nöbet üreticiyi yakaladı ve üçü de haklıydı, üçü de gevşetilmeden tazelendi. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti yedi yüz sekizde yedi yüz sekiz; üç mutasyonun üçü de kırmızıya düştü."
         dokunulmaz: [ "YUZ-3.3 ve YUZ-3.4 hüküm metinleri", "Tanı sicili kimlikleri ve düzeyleri", "Yol Haritası panelinin durum simgeleri" ]
       }
 
@@ -314,8 +315,8 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
       // bunu nereden görür ve nasıl kapatır? Ateşleme anı 2026-08-28 tarihinde panel
       // yüzeyine alındı; kapatma ise hâlâ elle dosya düzenlemesi ister ve bu, panelin
       // "hatırlat" vaadini yarım bırakır: hatırlatır ama kapattırmaz.
-      Adım( kod: KYN-YUZ-A03, durum: beklemede, öncelik: p2, bağımlı: [ KYN-YUZ-A02 ], referans: [ YUZ-3.4, TIP-1.12 ],
-        üretir: [ KD-GOC-YUZEY-HATIRLATICILAR, KD-GOC-YUZEY-CEKIRDEK ],
+      Adım( kod: KYN-YUZ-A03, durum: tamamlandı, öncelik: p2, bağımlı: [ KYN-YUZ-A02 ], referans: [ YUZ-3.4, TIP-1.12 ],
+        üretir: [ KD-GOC-YUZEY-HATIRLATICILAR, KD-GOC-YUZEY-CEKIRDEK, KD-SNM-HATIRLATICI-KAPATMA, KOD-EKL-MANIFEST ],
         onay: "onaylandı — 2026-08-28 · Founder: ateşlenen hatırlatıcının ateşlenip plana girdiğini gösteren bir işaret olmalı ki geliştirici onu kapatabilsin ve boş gürültü olmasın",
         ne: "✅ Ateşlemiş hatırlatıcının panelden kapatılabilmesi. Hatırlatıcı mekanizmasının üç halkası vardır ve ikisi çalışmaktadır: `hatırlat` kenarıyla bağlı Adım işlenmeye başlandığında hatırlatıcı şefin brifingine düşer; o Adım tamamlandığında motor ateşleme tanısını üretir ve tanı artık panelde görünür. Üçüncü halka, yani kapatma, bugün yalnız elle dosya düzenlemesiyle mümkündür: kullanıcı kaynak dosyayı açar, durum alanını bulur ve değeri kendisi yazar. Founder bunu boş gürültü olarak adlandırdı ve haklıdır; hatırlatan fakat kapattırmayan bir bildirim, kullanıcının dikkat bütçesinden yer alır ve karşılığında eylem sunmaz. Bu Adım ateşlemiş satıra bir kapatma eylemi ekler; eylem, Adım durumunu güncelleyen tek yazar kapısının hatırlatıcı ikizidir ve dosyaya başka hiçbir alanla dokunmaz." ) {
         görev: [
@@ -332,6 +333,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
         ]
         sınır: "Kapatma eylemi hatırlatıcıyı silmez; kanon tamamlanan kaydın yerinde kaldığını yazar (SNF-0 · Hatırlatıcı kuralı). Gereksiz işaretleme ve silme bu Adımın dışındadır. Eylem yalnız ateşlemiş düğüme uygulanır; uykuda bekleyen hatırlatıcıyı panelden kapatmak bilerek sunulmaz, çünkü hedefi kapanmamış bir taahhüdü tek tıkla düşürmek sessiz vazgeçmeye kapı açar."
         dokunulmaz: [ "Hatırlatıcı şeması ve durum enumu", "Tek yazar kapısının kilit ve koruma sözleşmesi", "Hatırlatıcı düğümünün durum dışındaki alanları" ]
+        koşu: "2026-09-10 · KAPANDI. Ateşlemiş hatırlatıcının kapatılması uçtan uca kuruldu ve son iki satırı olan manifest kaydı da yerine kondu; komut ilanı simgesiyle birlikte, bağlam menüsü ile satır içi eylem yalnız ateşlemiş satıra bağlı, komut paleti bilinçle gizli. Yazım tek yazar kapısının sözleşmesini aynen taşıyor: konum ayrıştırıcıdan gelir, kaynakla bayt doğrulaması yapılır, belirsiz kimlikte yazılmaz, kayıt silinmez ve yalnız durum alanı tamamlandı değerine çekilir. Kontrolcünün bağımsız ölçümü: manifestte komut bir, menü girdisi iki ve ikisi de ateşlemiş bağlam değerine bağlı, kapatma nöbeti yirmide yirmi yeşil, eklenti süiti yedi yüz elli ikide yedi yüz elli iki."
       }
     }
   }
@@ -436,7 +438,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
         sınır: "Kapalı ürünün Adımları bu turun dışındadır ve kendi varlığının turunda ele alınır (STR-3). Kademe vermek işi yapmak değildir; sıralama işin kendisini başlatmaz."
       }
 
-      Adım( kod: KYN-ONC-A03, durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [ KYN-ONC-A01 ], referans: [ YAS-3.4 ],
+      Adım( kod: KYN-ONC-A03, durum: tamamlandı, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [ KYN-ONC-A01 ], referans: [ YAS-3.4 ],
         ne: "🔎 Önceliksiz açık Adımın hatırlatılması — bir alan yazılı olduğu hâlde hiç kullanılmıyorsa motor onu istemiyor demektir; ölçüm bunu kanıtladı, çünkü alan şemada aylardır duruyor ve üç yüz Adımın hiçbiri onu taşımıyor" ) {
         görev: "Denetçiye bir bekçi eklenir ve açık durumdaki bir Adım öncelik alanı taşımıyorsa gözlem düzeyinde tanı üretir. Tasarımda üç sınır gözetilir. Birincisi kapsamdır: tamamlanmış Adımlar bu bekçinin dışındadır, çünkü biten işin sıralaması artık anlam taşımaz. İkincisi düzeydir: sicilin terfi kapısı yeni hükmün doğrudan uyarıda doğmasını yasaklar, bu yüzden bekçi gözlem düzeyinde doğar ve terfisi ayrı bir kararla gelir. Üçüncüsü gürültü sınırıdır: bulgular Adım başına tek tek değil kapsayıcıya göre gruplanır, çünkü elli üç ayrı satır gerçek nedeni örter."
         kabul: [
@@ -445,6 +447,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
           "Bulgular kapsayıcıya göre gruplanır ve çekirdek ile eklenti süitleri yeşildir"
         ]
         sınır: "Motor öncelik DEĞERİNİ önermez; bir işin ne kadar acil olduğu insan hükmüdür ve makine onu uyduramaz. Bekçi yalnız beyanın yokluğunu görür."
+        koşu: "2026-09-10 · KAPANDI, fakat kapanışın gövdesi beklenenden başkadır ve dürüstçe yazılır. Adımın istediği bekçi ZATEN VARDI ve üç tasarım sınırını da doğru uyguluyordu: yalnız beklemede ile geliştirmede Adımlara bakıyor, bilgi düzeyinde konuşuyor ve bulguları dosya başına grupluyor; fikstürlü nöbetleri de yerindeydi, yani bu Adım yeni bir gövde istemiyordu. Asıl teslim, mutasyon kanıtının ortaya çıkardığı KÖRLÜĞÜN onarımıdır: üçüncü tasarım sınırı olan gruplama hiçbir nöbetle korunmuyordu ve gruplama sökülüp Adım başına ayrı satır bastırıldığında süit YEŞİL kalıyordu. Sebep fikstürdeydi, çünkü dosyada yalnız BİR beyansız Adım vardı ve gruplama sökülse bile bulgu sayısı bir kalıyordu; nöbet hiçbir şey ölçmüyordu. Fikstüre ikinci bir beyansız Adım eklendi ve artık gruplama sökülünce sayı ikiye çıkıp nöbet kırmızıya dönüyor. Bu, yalnız yeşil süite bakmanın neden kanıt sayılmadığının canlı örneğidir ve kayda o yüzden geçer. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen sekizde bin iki yüz seksen sekiz, eklenti süiti yedi yüz sekizde yedi yüz sekiz; üç mutasyonun üçü de kırmızıya düşmektedir ve üçüncüsü onarımdan önce yeşil kalıyordu. Canlı bahçede bu tanı bugün sıfır bulgu vermektedir, yani açık Adımların hepsi öncelik beyanı taşımaktadır."
       }
     }
 
@@ -483,3 +486,8 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
 
   }
 }
+
+// 🍎 KYN-YUZ meyveleri — Adım→kod izi (KD-GOC-YUZEY-* ilanları göç planında yaşar;
+//    burada yalnız bu rayda doğan yeni nöbet ilan edilir ve ikizlenmez).
+Kod( kod: KD-SNM-HATIRLATICI-KAPATMA, dosya: "urun/eklenti/sinama/hatirlatici-kapatma.test.ts",
+  ne: "🍎 Ateşlemiş hatırlatıcının kapatılması nöbetleri — eylem yalnız ateşlemiş satırda görünür, kapatma yalnız durum alanını değiştirir ve dosyanın geri kalanı bayt bayt aynı kalır, dört ret hâlinde dosyaya dokunulmadan dürüst hata döner" )
