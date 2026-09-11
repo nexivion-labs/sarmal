@@ -1,0 +1,102 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ogrenme/calisma_alani_becerisi.sar — 🏡 ÇALIŞMA ALANI BECERİSİ (BKM-DNT-A16)
+//
+//   Düstur: kural ZORLAR (YAS-2), beceri ÖĞRETİR (bu dosya · OGR-2.2). Bu kart,
+//   yeni bir ağaç kurulurken ilk verilen kararı — kapsayıcı tipi ile kimlik
+//   kökünün nerede yaşayacağını — öğretir. Doğuşu ölçülmüş bir boşluktur:
+//   2026-09-09 tarihinde bir ajan boş bir dizinde yeni bir çalışma alanı ağacını
+//   doğuş araçlarını hiç çağırmadan elle yazmış, on üç kez şema aracını çağırıp
+//   öğretim araçlarını bir kez bile çağırmamıştır; aynı gün yapılan denetim
+//   öğretim aracının ÇalışmaAlanı konusu için kart bulunamadı hatası döndürdüğünü
+//   ölçmüştür. Yeni ağaç kurarken en çok gereken kavramın kartı yoktu.
+//   Kaynak hükümler: MIM-1.1 (proje kökleri ve kimlik), MIM-3.2 (Kitaplık ve
+//   Raf), MIM-1.2 ile Founder hükmü 2026-09-09 (zaman ekseni çatıda yaşamaz).
+// ═══════════════════════════════════════════════════════════════════════════
+
+Yetenek( kod: YTN-CALISMA-ALANI, ne: "yeni bir ağacın kapsayıcı tipini kullanıcıyla birlikte seçmek ve kökü kademeli olarak, her kademede onay alarak kurmak" )
+
+-->|
+  ## Amaç
+  🎯 Çözülen problem: yeni bir ağaç kuran ajan, kapsayıcı tipini bugünkü tek
+  teslimata bakarak seçmekte ve çoğu kez yanlış seçmektedir. Kapsayıcı, bir
+  ağacın en geri alınamaz kararıdır: yanlış seçilen kapsayıcı sonradan
+  değiştirildiğinde bütün kimlikler, bütün klasör yolları ve bütün atıflar
+  yeniden yazılır. Bu beceri kararı bir tahmine değil bir diyaloğa bağlar ve
+  ağacı tek hamlede değil kademe kademe kurdurur.
+
+  ## Üç kapsayıcı ve aralarındaki fark
+  1. **Proje** tek uygulamanın tek ağacıdır; kimlik kendi içinde yaşar ve
+     başka bir ürünle paylaşılmaz. Küçük ve tek teslimatlı iş buraya girer.
+  2. **Uygulama** bir ÇalışmaAlanının İÇİNDE yaşayan bir uygulamadır; kendi
+     teknolojisini taşır ve ortak tabana `çağır` kenarıyla bağlanır.
+  3. **ÇalışmaAlanı** bir çatıdır: altında birden çok bağımsız Proje kökü
+     yaşar, her biri kendi anadizinini ve kendi deposunu taşır. MIM-1.1
+     hükmü şunu söyler: her üretken ağacın tanı, graf ve sahiplik kimliği
+     KENDİ Proje düğümünden türer; ortak kimlik kullanımı Proje kimliklerini
+     birleştirmez. Ortak Auth kullanılacaksa bu `KimlikKökü` ile İLAN edilir.
+
+  ## Karar kuralı ve karar sorusu
+  Ölçüt bugünkü teslimat değil UZUN VADELİ ŞEKİLDİR. Kullanıcıya sorulacak
+  soru şudur: "İleride başka bir uygulama ya da başka bir teknoloji bu çatının
+  altına girecek mi; kimlik ortak mı olacak?" Cevap evet ise ÇalışmaAlanı
+  seçilir ve bugünkü tek uygulama onun İÇİNE Uygulama olarak konur. Cevap
+  hayır ise Proje seçilir. Ajan bu soruyu kendi kendine cevaplamaz; iki
+  seçeneği de tek cümlelik tanımıyla sunar ve seçimi kullanıcıya bırakır.
+
+  ## Kademeli kuruluş (her kademe ayrı bir onay durağıdır)
+  Bir ağaç tek hamlede yazılmaz. Sıra şudur ve her basamağın çıktısı bir
+  sonrakine geçmeden önce kullanıcıya gösterilir:
+  1. **Kapsayıcı tipi** seçilir (yukarıdaki diyalog).
+  2. **Giriş ilanı** yalnız iskelet hâlinde çıkarılır ve onaylatılır; içerik
+     onaydan sonra yazılır.
+  3. **Teknoloji ve Takım** ilan edilir; teknoloji seçimi insan kararıdır.
+  4. **Kitaplık ve Raf** mimarisi yazılır (MIM-3.2). Kitaplık ana fiziksel
+     alanı, Raf onun içindeki sorumluluk bölümünü ilan eder. KİTAPLIK
+     KADEMESİ ZORUNLUDUR (Founder hükmü 2026-09-09): dallanan her klasör bir
+     Kitaplıktır ve raflar Kitaplıkların İÇİNDE yaşar; kökün altına çıplak Raf
+     yazılmaz, çünkü kök ağaç büyüdükçe okunamaz bir raf listesine döner.
+  5. **Plan** ancak bundan sonra, kendi dosyasında açılır.
+
+  ## Zaman ekseni çatıda yaşamaz
+  ÇalışmaAlanı doğrudan Faz İÇEREMEZ ve Faz giriş ilanına hiç yazılmaz.
+  Gerekçe şudur: çatı birden çok bağımsız projeyi sarar ve çatıya yazılan bir
+  mevsim hangi projenin takvimi olduğunu söyleyemez. Mevsim ilanı bir projenin
+  işidir ve o projenin plan dosyasında yaşar; giriş ilanına plan gövdesi
+  girerse motor `anadizin-plan-karışması` tanısını üretir.
+
+  ## Araç sırası — ağaç elle yazılmaz
+  Boş bir dizinde ağacı elle yazmak bu becerinin doğrudan yasakladığı
+  davranıştır. Sıra zorunludur: `basla` rehberi ile kademe şablonunu verir,
+  `dogus` çalışır ağacı doğurur (tür sorusu sorulmadan yazmaz), `iskelet`
+  ilandaki eksik yapıyı diske indirir ve her `.sar` yazımından sonra
+  `denetle-proje` koşar. Bu araçların üçü de boş bir dizinde çalışır;
+  dolayısıyla "araç yoktu" diye bir gerekçe yoktur.
+
+  ## Sonuç
+  ✅ Kabul: bu beceriyi kullanan ajanın kurduğu ağaçta kapsayıcı tipi
+  kullanıcıya sorularak seçilmiştir, giriş ilanı plan gövdesi taşımaz, her
+  Raf bir Kitaplığın içindedir ve ağacın hiçbir dosyası doğuş araçları
+  çağrılmadan elle yazılmamıştır.
+|<--
+
+Beceri( kod: BCR-CALISMA-ALANI,
+        sağlar: YTN-CALISMA-ALANI,
+        yığın: evrensel,
+        ne: "Yeni bir ağacın kapsayıcı tipini (Proje · Uygulama · ÇalışmaAlanı) uzun vadeli şekle bakarak ve kullanıcıya sorarak seçtirir, kökü kademe kademe kurdurur ve her kademeyi insan onayından geçirir",
+        neZaman: "Boş ya da henüz giriş ilanı bulunmayan bir dizinde yeni bir ağaç kurulacağında; var olan bir ağaca ikinci bir proje ya da uygulama katılacağında; giriş ilanının mimarisi ilk kez yazılırken ya da elden geçirilirken",
+        anlatır: [ "anadizin-plan-karışması", "rafsız-anadizin", "proje-köksüz-üretim" ],
+        kurallar: [
+          "Kapsayıcı tipini kendin seçme: üç seçeneği tek cümlelik tanımlarıyla sun ve kullanıcıya sor — ölçüt bugünkü tek teslimat değil uzun vadeli şekildir, çünkü kapsayıcıyı sonradan değiştirmek bütün kimlikleri ve yolları yeniden yazmayı gerektirir",
+          "Ortak Auth kullanılacaksa bunu KimlikKökü düğümüyle İLAN et; ortak kimlik kullanmak Proje kimliklerini birleştirmez ve her üretken ağacın tanı, graf ve sahiplik kimliği kendi Proje düğümünden türer (MIM-1.1)",
+          "Ağacı tek hamlede yazma: önce kapsayıcı tipi, sonra giriş ilanının iskeleti, sonra Teknoloji ile Takım, sonra Kitaplık ile Raf mimarisi, en son plan dosyası — her kademenin çıktısı bir sonrakine geçmeden kullanıcıya gösterilir",
+          "Mimari işte önce yalnız iskeleti göster ve onaylat; içeriği onaydan sonra yaz — onaysız yazılan içerik, kullanıcı kapsayıcıyı değiştirdiğinde çöpe gider",
+          "Kitaplık kademesini atlama: dallanan her klasör bir Kitaplıktır ve raflar Kitaplıkların İÇİNDE yaşar; kökün altına çıplak Raf yazılırsa kök, ağaç büyüdükçe okunamaz bir raf listesine döner (MIM-3.2)",
+          "Zaman eksenini giriş ilanına yazma: ÇalışmaAlanı doğrudan Faz içeremez ve Faz hiçbir giriş ilanında yaşamaz; mevsim ilanı bir projenin işidir ve o projenin plan dosyasında yaşar (bekçi: anadizin-plan-karışması)",
+          "Ağacı elle yazma: boş dizinde bile sıra zorunludur — basla rehberi verir, dogus ağacı doğurur, iskelet eksik yapıyı diske indirir ve her .sar yazımından sonra denetle-proje koşar; üç araç da boş dizinde çalışır",
+          "Şema aracını rehber yerine kullanma: siniflama neyin İZİNLİ olduğunu söyler, düzen ise neyin DOĞRU olduğunu; düzen ÖNCE okunur ve şemadan türetilen bir ağaç kanona uygun görünüp yanlış kurulabilir",
+          "Doğan ağacı denetlemeden teslim etme: her .sar yazımından sonra denetimi koştur ve çıktısını OKU; okunmamış bir kapı geçilmiş sayılmaz"
+        ],
+        kabul: "Kurulan ağaçta kapsayıcı tipi kullanıcıya sorularak seçilmiştir, giriş ilanı plan gövdesi taşımaz, her Raf bir Kitaplığın içindedir ve hiçbir dosya doğuş araçları çağrılmadan elle yazılmamıştır",
+        örnek: "Kullanıcı: 'yeni bir ajans projesi kuralım' → Ajan önce sorar: '① tek uygulama mı olacak (Proje), ② ileride başka uygulamalar da bu çatıya girecek ve kimlik ortak mı olacak (ÇalışmaAlanı)?' Kullanıcı ikinciyi seçer → Ajan basla rehberini okur, dogus aracını çalışma alanı türüyle çağırır, doğan giriş ilanının iskeletini kullanıcıya gösterir, onay alınca Teknoloji ile Takımı ilan eder, Kitaplık ile Raf mimarisini yazar ve planı ancak bundan sonra kendi dosyasında açar; her yazımın ardından denetimi koşturur",
+        antiDesen: "Boş dizinde giriş ilanını ve plan dosyalarını elle yazıp doğuş araçlarını hiç çağırmamak; kapsayıcı tipini kullanıcıya sormadan bugünkü tek teslimata bakarak seçmek; rafları kökün altına çıplak yazıp Kitaplık kademesini atlamak; Fazı giriş ilanına koymak. Dördü de gerçek koşumlarda ölçülmüştür ve dördünün de bedeli ağacın silinip yeniden kurulması olmuştur",
+        uygular: MIM-1.1 )

@@ -367,7 +367,7 @@ function rehberDil(): string {
 ## Çalışan ilk zincir
 
 1. \`ilk_proje_anadizin.sar\` dosyasını oluşturun ve \`sarmal ogret\` kartındaki anadizin örneğini kopyalayın.
-2. \`plan/ilk_plan.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın.
+2. \`is/plan/ilk_plan.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın.
 3. Kökten \`sarmal denetle .\` komutunu çalıştırın.
 4. Tanı varsa öneriyi kaynağa uygulayın ve aynı komutu yeniden çalıştırın.
 
@@ -405,7 +405,7 @@ function rehberOgrenim(): string {
 1. Terminalde \`sarmal ogret\` çalıştırın.
 2. Karttaki iki dosyayı belirtilen konumlara kopyalayın.
 3. \`sarmal denetle .\` ile örneği doğrulayın.
-4. Bir tanının \`bkz\` işaretçisi varsa \`ogrenme/\` rafındaki ilgili Beceri kaynağını okuyun ve yeniden denetleyin.
+4. Bir tanının \`bkz\` işaretçisi varsa \`ogreti/ogrenme/\` rafındaki ilgili Beceri kaynağını okuyun ve yeniden denetleyin.
 
 Karşılama kartı sınıflama, koni alanları ve zorunlu kenarlardan üretilir; Türkçe ve İngilizce aynı yapı kaynağını kullanır.`;
 }

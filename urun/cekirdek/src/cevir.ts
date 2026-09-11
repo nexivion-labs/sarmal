@@ -2,7 +2,7 @@
 // cevir.ts — Sarmal çeviri katmanı (DÖRT sözlük, tek kapı)
 //
 //   ① dil-sozlugu.json → Sarmal keyword i18n (Ekran↔Screen) · view-layer (karar A)
-//   ② bilgi/tasarim_sozlugu/kayit.json → TR kavram → Flutter/React/SwiftUI + arkayüz
+//   ② ogreti/bilgi/tasarim_sozlugu/kayit.json → TR kavram → Flutter/React/SwiftUI + arkayüz
 //      (kapsayıcı→Container; TEK KANON — TIP-3 ②: eski ikiz stack-eslemesi.json emekli)
 //   ③ tasarim-terimleri.md → TR↔EN tasarım kavramı (hover↔üzerine gelme)
 //   ④ sarmal-kavramlari.json → Sarmal'IN KENDİ kavramı (koni · kavuşum) + kanonik dayanağı

@@ -37,7 +37,8 @@ import { ayristir } from "./ayristirici.ts";
 import { dogrula } from "./dogrulayici.ts";
 import { dogusEksikTanilari, anadizinBul, adAlaniKapisi } from "./denetci.ts";  // doğuş-rehberi turu: MIM-3'ün tek-dosya yüzü
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, type Siniflama } from "./siniflama.ts";
-import { ogretKarti } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
+import { ogretKarti, dogusAnlatisi } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
+import { beceriKartiBul } from "./beceri-karti.ts";   // BKM-DNT-A16: konu kartı araması tek gövdeden okunur
 import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
 import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
@@ -368,7 +369,7 @@ function kavramAraci(kelime?: string, baglam?: string): { metin: string; isError
   }
   if (baglam) {
     const veri = kavramVerisiYukle();
-    if (!veri) return { metin: "✖ kavram verisi yüklenemedi — bilgi/tasarim_sozlugu altındaki harita ya da kanon okunamadı.", isError: true };
+    if (!veri) return { metin: "✖ kavram verisi yüklenemedi — ogreti/bilgi/tasarim_sozlugu altındaki harita ya da kanon okunamadı.", isError: true };
     const bağlamKaydı = veri.harita.bağlamlar?.[baglam];
     if (!bağlamKaydı) {
       s.push(`'${baglam}' haritada tanımlı bir bağlam değil. Tanımlı anahtarlar: ${Object.keys(veri.harita.bağlamlar ?? {}).join(" · ")}`);
@@ -397,27 +398,14 @@ function kavramAraci(kelime?: string, baglam?: string): { metin: string; isError
  *  bayat indeks riskine karşı doğruluk tercih edildi (önbellek gerekirse sonra). */
 // EMJ-A05: CLI `sarmal karne` ile BİREBİR aynı çekirdek (karneRaporu) — çift mantık yok (YUZ-1.2).
 /** davranış-katmanı turu (OGR-2.2): öğretim kapısı — konusuz: kanondan karşılama kartı (CLI ile
- *  AYNI üretici — YUZ-1.2 çift-kaynak yasak); konulu: ogrenme/ rafındaki eşleşen
+ *  AYNI üretici — YUZ-1.2 çift-kaynak yasak); konulu: ogreti/ogrenme/ rafındaki eşleşen
  *  Beceri kartının TAM metni (tek kaynak: kartın kendisi — özet türetilmez). */
 function ogretAraci(konu?: string): { metin: string; isError: boolean } {
   if (!konu?.trim()) return { metin: ogretKarti(snf), isError: false };
-  const kok = join(SNF_YOL, "..", "..", "..");   // oz/siniflama/kayit.json → repo kökü
-  const rafi = join(kok, "ogreti", "ogrenme");
-  const anahtar = konu.trim().toLocaleLowerCase("tr").replace(/[^a-zçğıöşü0-9]+/g, "_");
-  try {
-    const adaylar = readdirSync(rafi).filter((a) => a.endsWith(".sar"));
-    for (const dosya of adaylar) {
-      const icerik = readFileSync(join(rafi, dosya), "utf8");
-      const kodM = icerik.match(/Beceri\(\s*kod:\s*([A-ZÇĞİÖŞÜ0-9-]+(?:\.[0-9]+){0,2})/u);
-      const kodEs = kodM && kodM[1].toLocaleLowerCase("tr").replace(/[^a-zçğıöşü0-9]+/g, "_") === anahtar;
-      if (kodEs || dosya.replace(/\.sar$/, "").includes(anahtar)) {
-        return { metin: `📚 ${dosya} (ogrenme/ rafı — kartın tam metni):\n\n${icerik}`, isError: false };
-      }
-    }
-    return { metin: `✖ '${konu}' ile eşleşen beceri kartı bulunamadı. Mevcut kartlar: ${adaylar.join(" · ")}\n\nKarşılama kartı için konusuz çağır.`, isError: true };
-  } catch (e) {
-    return { metin: `✖ ogrenme rafı okunamadı: ${(e as Error).message}`, isError: true };
-  }
+  // BKM-DNT-A16: arama gövdesi beceri-karti.ts'e taşındı — CLI ikizi de oradan okur
+  // (YUZ-1.2). Raf adresi kurulumun kendi konumundan çözülür, çağıranın çalışma
+  // dizininden DEĞİL; bu yüzden konu kartı boş bir dizinde de yanıt verir.
+  return beceriKartiBul(konu);
 }
 
 function karneAraci(dizin: string): { metin: string; isError: boolean } {
@@ -459,6 +447,11 @@ function baslaAraci(tur?: string): { metin: string; isError: boolean } {
       metin: [
         "🌱 SARMAL DOĞUŞ REHBERİ — yazmadan ÖNCE oku; motor yalnız denetlemez, yönlendirir de.",
         "",
+        // BKM-DNT-A16: rehber ile karşılama kartı AYNI anlatıyı taşır (tek üretici,
+        // YUZ-1.2). Bu araç boş bir dizinde de koştuğu için doğuş anının öğretisi
+        // ajana buradan da ulaşır; kart okunmamış olsa bile kanal kapanmaz.
+        dogusAnlatisi(),
+        "",
         mimariDiyalog(),
         "",
         omurga,
@@ -484,7 +477,9 @@ function baslaAraci(tur?: string): { metin: string; isError: boolean } {
     metin: [
       s.baslik,
       "",
-      ...(["proje", "çalışmaalanı"].includes(tur.toLocaleLowerCase("tr")) ? [mimariDiyalog(), ""] : []),
+      // Kök türlerinde (yeni ağaç doğuyor) doğuş anlatısı da basılır: kademeli onay
+      // ile diyalog disiplini tam da bu iki türde atlanmaktadır (BKM-DNT-A16).
+      ...(["proje", "çalışmaalanı"].includes(tur.toLocaleLowerCase("tr")) ? [dogusAnlatisi(), "", mimariDiyalog(), ""] : []),
       omurga,
       "",
       "📋 ŞABLON (kopyala, doldur — <...> yer-tutucuları gerçek değerle değiştir):",

@@ -638,6 +638,73 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Kullanıcının küresel yok sayma dosyasına ve makinesindeki küresel kanca kurulumuna dokunulmaz; doğan kökün kapıları yalnız o kökün kendi dosyalarında yaşar. Bu Adım öğretim kartı yazmaz ve karşılama kartına dokunmaz; doğuşun öğretisi BKM-DNT-A16 Adımının işidir."
         koşu: "2026-09-10 · KAPANDI. Doğan ağaç altı dosyadan on üçe, çalışma alanı sekizden yirmi ikiye çıktı; beş eksik kapının beşi de yerine kondu ve Kitaplık hükmü şablonlara indi. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz otuz yedide bin iki yüz otuz yedi, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; gerçek bir çalışma alanı doğurulup denetlendiğinde sıfır hata verdi, altı kaynak dosyasının altısı da küresel yok sayma kuralına rağmen izlendi ve var olan bir yok sayma dosyasının dört satırı korunarak istisna tam bir kez yazıldı. Açık kalan tek kalem Adımın sınırı gereğidir ve dürüstçe beyan edilir: onarılmış kanca mantığı üründedir, Founder'ın makinesindeki küresel kanca kurulumu hâlâ eski gövdeyi taşımaktadır ve tazelenmesi Founder kararıdır."
       }
+
+      Adım( kod: BKM-DNT-A16, ad: "Doğuşun Öğretisi", durum: tamamlandı, öncelik: p1, bağımlı: [ BKM-DNT-A15 ],
+        referans: [ HTR-AJAN-KAPI-ATLAMA-DESENI-METINLE-KAPANMAZ, HTR-DOGUS-PAKETI-KANCA-VE-OGRETI-KARTI ],
+        üretir: [
+          Kod( kod: KOD-BECERI-KARTI, dosya: "urun/cekirdek/src/beceri-karti.ts", ne: "🍎 Konu kartı araması — ogret { konu } çağrısının tek gövdesi; anahtar sıkıştırması Türkçe yazımı ASCII dosya adına denk düşürür ve raf adresi kurulumdan çözüldüğü için kart boş dizinde de yanıt verir" ),
+          Kod( kod: KOD-SNM-DOGUS-OGRETISI, dosya: "urun/cekirdek/sinama/dogus-ogretisi.test.ts", ne: "🍎 Doğuş anının öğretisi nöbeti — boş fikstür dizininde konu kartları, anlatının üç bölümü, beş anti-desen, rehber ile kartın tek üreticiden doğduğu, bayat plan adresinin kalmadığı ve sunucu talimatının doğuş araçlarını andığı ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (kontrolcü · BKM-DNT-A15 kapandıktan hemen sonra) ──
+        //   Doğuş paketi ile rehber şablonları Kitaplık hükmüne göre tazelendi,
+        //   fakat ÜÇÜNCÜ bir öğretim yüzeyi eski mimaride kaldı ve ölçüldü.
+        //   Karşılama kartının kaynağında (ogret.ts) "Kitaplık" sözcüğü SIFIR kez
+        //   geçmektedir; kartın örneği Rafı doğrudan kökün altına yazmakta
+        //   (`Raf( kod: RAF-PLAN, yol: "plan/" )`) ve plan dosyasının adresini
+        //   `plan/ilk_plan.sar` olarak göstermektedir. Oysa doğan ağaçta o dosya
+        //   artık `is/plan/ilk_plan.sar` adresindedir; kart var olmayan bir yol
+        //   öğretmektedir. Aynı bayat adres belge yüzleri üretecinde de durmaktadır.
+        //   Bu yüzeyin ağırlığı ötekilerden fazladır: boş bir dizinde ajanın
+        //   GÖRDÜĞÜ İLK ŞEY karşılama kartıdır ve oturum açılışında kendiliğinden
+        //   basılır. Doğuş paketi ne kadar doğru üretirse üretsin, kart yanlış
+        //   öğrettiği sürece ajan yanlış ağacı elle yazmayı sürdürür. Ders tek
+        //   cümledir: bir mimari kararı üç öğretim yüzeyinin üçüne birden inmedikçe
+        //   uygulanmış sayılmaz.
+        //
+        // ── 2026-09-10 · ÖĞRETİNİN ULAŞMA TABLOSU (üretici ölçümü · taze süreçten) ──
+        //   Sütunlar: KANAL · hangi araçtan · hangi anda ateşler · BOŞ dizinde koşar mı.
+        //   Ölçüt tek cümledir: ateşlemeyen kart öğreti sayılmaz.
+        //
+        //   ① Sunucu talimatı .......... MCP initialize · oturum açılışında, hiçbir araç
+        //      çağrılmadan · BOŞ DİZİNDE ÇALIŞIR. Doğuş araçlarını (dogus · iskelet ·
+        //      ogret) adıyla anar ve boş dizinde elle yazma yasağını yazar.
+        //   ② Karşılama kartı .......... `ogret` (konusuz) · ilk temasta ve oturum
+        //      açılışında kendiliğinden · BOŞ DİZİNDE ÇALIŞIR. Doğuş anlatısının üç
+        //      bölümünü (hedef · kademeli onay · diyalog disiplini) taşır.
+        //   ③ Doğuş rehberi ............ `basla` (türlü ve türsüz) · yazmadan ÖNCE ·
+        //      BOŞ DİZİNDE ÇALIŞIR. Kartla AYNI anlatı gövdesini basar (tek üretici).
+        //   ④ Konu kartları ............ `ogret { konu }` · ajan bir kavramı sorduğunda ·
+        //      BOŞ DİZİNDE ÇALIŞIR, çünkü raf adresi çağıranın çalışma dizininden değil
+        //      kurulumun kendi konumundan çözülür. ÇalışmaAlanı ve Teknoloji kartları
+        //      bu turda doğdu; rafın on dört kartının on dördü de kendi konusundan
+        //      çağrılabilir ve bu nöbetle ölçülür.
+        //   ⑤ Beceri kartı enjeksiyonu . `sef` · YALNIZ bir Adım geliştirmede iken ·
+        //      BOŞ DİZİNDE ATEŞLEMEZ. Kök sebep budur ve bu turda DEĞİŞMEDİ; Adımın
+        //      sınırı mekanizmaya dokunmayı yasaklar. Boş dizinin öğretisi bu yüzden
+        //      ①–④ kanallarına yaslanır.
+        //   ⑥ Yönerge ikizi (AGENTS.md · CLAUDE.md) · doğan ağacın kökünde · BOŞ
+        //      DİZİNDE YOKTUR, ancak doğuş paketi koştuktan SONRA vardır (BKM-DNT-A15).
+        //
+        //   Boş dizin hâli özetle şudur: ajanın ağacı elle yazmaya başladığı anda
+        //   dört kanal (①②③④) açıktır ve beşincisi yapısal olarak kapalıdır.
+        ne: "📚 Yeni bir ağaç kurarken ajanın önüne çıkan öğretinin, ürünün ne için var olduğunu ve planın nasıl kurulduğunu fiilen öğretecek kadar kapsamlı hâle gelmesi. Founder 2026-09-09 tarihinde şu hükmü vermiştir: Sarmal'ın eğitimi o kadar kapsamlı olmalıdır ki ajan işletim sistemi hedefini, Founder'ın anlatmak istediğini ve planlamanın belli sorular sorularak yavaşça yapılması gerektiğini iyice anlasın. Gerekçe aynı gün iki kez ölçülmüştür. Birincisi yapısaldır: beceri kartları yalnız bir Adım geliştirmede durumundayken ateşlemektedir, dolayısıyla henüz hiçbir Adımı bulunmayan boş bir ağaçta hiçbir kart ateşleyemez ve doğuş anı öğretinin ulaşamadığı tek andır; oysa yanlış ağacın kurulduğu an tam olarak o andır. İkincisi kapsamdır: öğretim aracı çalışma alanı ile teknoloji konuları için kart bulunamadı hatası döndürmektedir ve yeni ağaç kurarken en çok gereken iki kavramın kartı yoktur. Üçüncü bir ölçüm de bu Adımı doğurmuştur: aynı desen 2026-07-27 tarihinden bu yana en az yedi kez kaydedilmiş ve her seferinde çözüm yeni bir metin olmuştur, oysa metnin kendisi davranışı değiştirmemiştir; bu yüzden öğreti bu kez ajanın hiç atlayamayacağı kanaldan, yani boş dizinde de koşan rehber ile karşılama kartından verilir ve mekanik kapıya BKM-DNT-A15 Adımıyla yaslanır." ) {
+        görev: [
+          "Öğretim aracına çalışma alanı ve teknoloji kartlarını yaz; iki kart da boş bir dizinde çağrılabilir olmalı ve kart bulunamadı hatası kalkmalıdır.",
+          "Rehber ile karşılama kartına doğuş anlatısını ekle: ürünün niyet ürettiği ve kod üretmediği, hedefin uzun ömürlü ve karar yoğun işi ajanla birlikte yürütmek olduğu, bir ağacın tek hamlede değil kademe kademe kurulduğu ve her kademenin insan onayından geçtiği açık cümlelerle yazılır.",
+          "Planlamanın diyalog disiplinini karta indir: ajan bir ağaç kurmadan önce mimariyi konuşur, önce giriş ilanını çıkarır ve onaylatır, sonra plan dosyasını açar; her kademede somut seçenekler sunar ve seçimi kullanıcıya bırakır, kendi başına tahmin etmez.",
+          "Kartlara ölçülmüş anti-desenleri yaz: boş dizinde ağacı elle yazmak, doğuş araçlarını hiç çağırmamak, şema aracını rehber yerine kullanmak, bir kademeyi atlayıp doğrudan alt kademeyi açmak ve zaman eksenini giriş ilanına yazmak.",
+          "Öğretinin ulaşma kanalını ölç ve kayda yaz: hangi kartın hangi anda hangi araçtan ateşlediği, boş dizin hâli dâhil, tek tabloda gösterilir; ateşlemeyen kart öğreti sayılmaz.",
+          "Nöbet kur: boş bir dizinde öğretim aracı çalışma alanı ile teknoloji konularını cevaplar ve rehber çıktısı doğuş sırasını, kademeli onay hükmünü ve diyalog disiplinini taşır."
+        ]
+        kabul: [
+          "Öğretim aracı çalışma alanı ve teknoloji konuları için kart döndürür; kart bulunamadı hatası hiçbir konuda kalmamıştır ve bu boş bir fikstür dizininde ölçülmüştür.",
+          "Rehber ile karşılama kartı doğuş sırasını, kademeli onay hükmünü ve diyalog disiplinini açık cümlelerle taşır; metinler kanondan üretilir ve elle ikizlenmez.",
+          "Öğretinin ulaşma tablosu kayıttadır ve ateşlemeyen kart kalmamıştır; boş dizin hâli tabloda ayrıca gösterilmiştir.",
+          "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım kanon maddesi yazmaz ve hüküm üretmez; öğretim metni kanonun bugünkü hükümlerinden türer. Beceri kartlarının ateşleme mekanizmasının kendisi değişmez; bu Adım yalnız doğuş anında ulaşan kanalı doldurur. Doğan köke dosya yazmak BKM-DNT-A15 Adımının işidir ve burada yinelenmez."
+        koşu: "2026-09-10 · KAPANDI. Doğuş anlatısı üç bölüm ve iki dil olarak üretildi; karşılama kartı, doğuş rehberi ve sunucu talimatı aynı gövdeden beslenir oldu, kartın örneği Kitaplık kademesini ve doğru plan adresini öğretir hâle geldi ve iki eksik konu kartı doğdu. Üretici, kontrolcünün görmediği üç kusuru daha ölçüp kapattı: konu anahtarı Türkçe harfi koruduğu için ASCII dosya adlarıyla hiçbir zaman eşleşemiyordu, yani kart yazılsa bile bulunamazdı; komut satırı ikizi konu sorulduğunda kartları henüz yolda deyip karşılama kartı basıyordu ve bu YUZ-1.2 çift kaynak yasağının ihlaliydi; sunucu talimatı doğuş araçlarının adını hiç anmıyordu. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz elli beşte bin iki yüz elli beş, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; dokuz ayrı mutasyon nöbetleri kırmızıya düşürdü ve boş bir fikstür dizininde beş ayrı yazımın beşi de kart döndürdü. Kök sebep bilinçle yerinde bırakıldı ve dürüstçe beyan edilir: beceri kartları hâlâ yalnız geliştirmede bir Adım varken ateşlemektedir, dolayısıyla boş dizinin öğretisi mekanik zorlamaya değil dört açık kanala yaslanmaktadır."
+      }
     }
 
     AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "nöbet onarımları",

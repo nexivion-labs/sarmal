@@ -527,6 +527,16 @@ Hatırlatıcı(
 )
 
 Hatırlatıcı(
+  kod:              HTR-AJAN-KAPI-ATLAMA-DESENI-METINLE-KAPANMAZ,
+  durum:            açık,
+  çapa:             nitelik,
+  dönüşTetikleyici: "Ajan disiplinine dair yeni bir metin, yani anayasa maddesi, beceri kartı, yönerge satırı ya da bellek notu yazılmak istendiğinde; o metin yazılmadan önce",
+  öncelik:          p1,
+  tarih:            2026-09-09,
+  ne:               "Bir ajanın ürünün kendi aracını atlayıp elle ya da ham taramayla iş yapması ve sonucun yanlış çıkması, 2026-07-27 tarihinden 2026-09-09 tarihine kadar tarihli olarak en az yedi kez kaydedilmiştir: kontrolcü anayasası aynı hastalığa yedi kez düşüldüğünü yazmış, brifing dersi dokuz ajanın gönderilip şefin bir kez bile çağrılmadığını kaydetmiş, kilitli karar dersi hiçbirinin hatırlanmadığını yazmış, hizalanmış kod alanı dersi kusurun tekrar ettiğini söylemiş, MCP araçları dersi iki ayrı tarihte düzeltilmiş, ilk dış kullanıcı tanıklığı talimatın tek cümlesinin genellenip yazma kapısının kapalı sanıldığını göstermiş ve bugün yeni bir ağaç doğuş araçları çağrılmadan elle yazılmıştır. Her seferinde çözüm metin olmuştur: bir anayasa maddesi, iki beceri kartı, beş bellek notu, bir talimat sürümü ve tavsiye düzeyinde bir kanca; hiçbiri engelleyici değildir. Ürünün kendi kaydı hükmü 2026-07-27 tarihinde vermiştir: asistan o kartı okumuştu, yani liste davranış değiştirmemektedir. Beceri kartları yalnız bir Adım geliştirmede durumundayken ateşlediği için boş bir ağaçta yapısal olarak hiç ateşleyememekte, kontrolcü anayasasının on altı kuralı da niyet katmanında yaşamaktadır. Bu hatırlatıcı bir yasak koyar: bu desen için sekizinci metin, yanına mekanik bir zorlama kurulmadan yazılmaz. Mekanik zorlama şudur: her .sar yazımından sonra denetimi kendiliğinden koşturan ve hatayı ajana zorla döndüren bir yürütücü kancası, henüz var olmayan bir anadizinin elle yazımını reddeden bir kanca ve doğuş paketinin doğurduğu köke bu kancaları da yazması; Founder'ın makinesinde bu kancalar 2026-09-09 tarihinde kurulmuştur ve ürüne inmesi BKM-DNT-A15 Adımına bağlıdır. Ders tek cümledir: kapıyı çağıran mekanizma insan öfkesi olmamalıdır."
+)
+
+Hatırlatıcı(
   kod:              HTR-FAZ-PROJE-KENARI-GRAFTA-YOK,
   durum:            açık,
   çapa:             mimari,

@@ -23,8 +23,10 @@ const KAYIT_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", impo
 const SOZLUK_YOL = fileURLToPath(new URL("../../../oz/ceviri/dil-sozlugu.json", import.meta.url));
 const SNF = siniflamaYukle(KAYIT_YOL);
 
+// BKM-DNT-A16: kart üç doğuş bölümü kazandı (🌍 hedef · 🪜 kademeli onay · 💬 diyalog
+// disiplini). İskelet nöbeti onları da sayar; iki dil aynı bölümleri taşımak zorundadır.
 const kartIskeleti = (metin: string): string[] => metin.split("\n")
-  .map((satir) => satir.match(/^(🚪|①|②|③|④|⚖️|⑤|🚦|🤖)/u)?.[1])
+  .map((satir) => satir.match(/^(🚪|🌍|🪜|💬|①|②|③|④|⚖️|⑤|🚦|🤖)/u)?.[1])
   .filter((x): x is string => x !== undefined);
 
 const markdownBaslikDuzeyleri = (metin: string): number[] => metin.split("\n")
@@ -81,7 +83,7 @@ test("CDL-A06: `.sar` örnekleri iki dilde de aynı kanonik Türkçe kaynaktır"
 test("CDL-A06: iki dil aynı bölüm iskeletini taşır; başlık silme mutasyonu yakalanır", () => {
   const kartTr = ogretKarti(SNF, "tr");
   const kartEn = ogretKarti(SNF, "en");
-  const kartBeklenen = ["🚪", "①", "②", "③", "④", "⚖️", "⑤", "🚦", "🤖"];
+  const kartBeklenen = ["🚪", "🌍", "🪜", "💬", "①", "②", "③", "④", "⚖️", "⑤", "🚦", "🤖"];
   assert.deepEqual(kartIskeleti(kartTr), kartBeklenen);
   assert.deepEqual(kartIskeleti(kartEn), kartBeklenen);
 

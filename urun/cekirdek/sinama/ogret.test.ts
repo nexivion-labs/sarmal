@@ -26,8 +26,8 @@ test("DVR-A01: kartın minimal örneği KENDİNİ KANITLAR — iki dosya şema h
   }
   const dizin = mkdtempSync(join(tmpdir(), "ogret-"));
   writeFileSync(join(dizin, "ilk_proje_anadizin.sar"), MINIMAL_ANADIZIN);
-  mkdirSync(join(dizin, "plan"));
-  writeFileSync(join(dizin, "plan", "ilk_plan.sar"), MINIMAL_PLAN);
+  mkdirSync(join(dizin, "is", "plan"), { recursive: true });
+  writeFileSync(join(dizin, "is", "plan", "ilk_plan.sar"), MINIMAL_PLAN);
   // KYN-MTR-A05: yapısal-mutabakat katmanı artık `denetimKos` (CLI'nin çağırdığı
   // TEK gövde) üstünden ölçülür — proje-denetim.ts'in küçültülmüş yeniden yazımı emekli oldu.
   const yapi = denetimKos(dizin, { snfYol: SNF_YOL }).akis
@@ -48,8 +48,8 @@ test("DVR-A01: kartın minimal örneği KENDİNİ KANITLAR — iki dosya şema h
 test("DVR-A01: kartın minimal örneği UYARI da üretmez — kanonik örnek anti-desen öğretemez", () => {
   const dizin = mkdtempSync(join(tmpdir(), "ogret-uyari-"));
   writeFileSync(join(dizin, "ilk_proje_anadizin.sar"), MINIMAL_ANADIZIN);
-  mkdirSync(join(dizin, "plan"));
-  writeFileSync(join(dizin, "plan", "ilk_plan.sar"), MINIMAL_PLAN);
+  mkdirSync(join(dizin, "is", "plan"), { recursive: true });
+  writeFileSync(join(dizin, "is", "plan", "ilk_plan.sar"), MINIMAL_PLAN);
   // KYN-MTR-A05: bkz. yukarıdaki nöbet — aynı gerekçeyle `denetimKos` çağrılır.
   const uyarilar = denetimKos(dizin, { snfYol: SNF_YOL }).akis
     .flatMap((r) => r.tanilar.map((t) => ({ dosya: r.dosya, tani: t })))
@@ -68,8 +68,8 @@ test("DVR-A01: kartın minimal örneği UYARI da üretmez — kanonik örnek ant
 test("DVR-A01: kartın örneği TAM denetimden geçer — CLI denetle boru hattı (denetimKos) hatasız ve uyarısız", () => {
   const dizin = mkdtempSync(join(tmpdir(), "ogret-tam-"));
   writeFileSync(join(dizin, "ilk_proje_anadizin.sar"), MINIMAL_ANADIZIN);
-  mkdirSync(join(dizin, "plan"));
-  writeFileSync(join(dizin, "plan", "ilk_plan.sar"), MINIMAL_PLAN);
+  mkdirSync(join(dizin, "is", "plan"), { recursive: true });
+  writeFileSync(join(dizin, "is", "plan", "ilk_plan.sar"), MINIMAL_PLAN);
   const sonuc = denetimKos(dizin, { snfYol: SNF_YOL });
   assert.equal(sonuc.toplamHata, 0, "kart örneği tam denetimde hata taşıyamaz — kartın ⛔0 vaadi CLI boru hattında kanıtlanır");
   assert.equal(sonuc.toplamUyari, 0, "kart örneği tam denetimde uyarı da taşıyamaz");

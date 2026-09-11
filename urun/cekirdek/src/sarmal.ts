@@ -633,10 +633,16 @@ if (yol === "etki") {
 //    Şablon kütüphanesi (sablon/*.sar) tek kaynaktan okunur; MCP başla aracıyla
 //    aynı sablon.ts'i çağırır (YUZ-1.2). Tür yoksa liste, tür varsa dolu şablon.
 if (yol === "başla" || yol === "basla") {
+  // Doğuş anlatısı öğretim kapısının gövdesinde yaşar ve rehberin iki yüzü onu
+  // oradan okur (YUZ-1.2); tembel yükleme öteki komutların açılışını yavaşlatmaz.
+  const { dogusAnlatisi } = await import("./ogret.ts");
   const tur = args[1];
   if (!tur || tur.startsWith("--")) {
     console.log([
       "🌱 SARMAL ŞABLON KÜTÜPHANESİ — kanonik şablonlar sablon/ altında yaşar.",
+      "",
+      // BKM-DNT-A16: rehberin iki yüzü (CLI · MCP) aynı doğuş anlatısını taşır.
+      dogusAnlatisi(),
       "",
       mimariDiyalog(),
       "",
@@ -659,6 +665,7 @@ if (yol === "başla" || yol === "basla") {
   const anadizinKok = turKucuk === "proje" || turKucuk === "çalışmaalanı" || turKucuk === "calismaalani";
   console.log([
     s.baslik, "",
+    ...(anadizinKok ? [dogusAnlatisi(), ""] : []),
     ...(turKucuk === "proje" ? [mimariDiyalog(), ""] : []),
     "📋 ŞABLON (kopyala, doldur — <...> yer-tutucuları gerçek değerle değiştir):",
     "", s.sablon, "",
@@ -734,11 +741,18 @@ if (yol === "icindekiler") {
 //    Kart KANONDAN üretilir (ogret.ts — YUZ-1.2: bayatlamaz). Konu kartları (beceri
 //    dağıtımı) davranış-katmanı turu'ün işi; konulu çağrı dürüstçe karşılama kartına yönlendirir.
 if (yol === "ogret") {
+  // BKM-DNT-A16: CLI ikizi konu kartını artık GERÇEKTEN döndürür. Eski gövde
+  // "konu kartları henüz yolda" diyip karşılama kartını basıyordu; oysa kartlar
+  // MCP yüzünde çalışıyordu ve iki yüz aynı soruya iki cevap veriyordu (YUZ-1.2).
   const { ogretKarti } = await import("./ogret.ts");
-  const snf = siniflamaYukle(SNF_YOL);
-  if (args[1] && !args[1].startsWith("--")) {
-    console.log(`ℹ️ Konu kartları henüz yolda (davranış-katmanı turu — MCP beceri dağıtımı); şimdilik karşılama kartı:\n`);
+  const konu = args[1] && !args[1].startsWith("--") ? args[1] : undefined;
+  if (konu) {
+    const { beceriKartiBul } = await import("./beceri-karti.ts");
+    const kart = beceriKartiBul(konu);
+    console.log(kart.metin);
+    process.exit(kart.isError ? 1 : 0);
   }
+  const snf = siniflamaYukle(SNF_YOL);
   console.log(ogretKarti(snf));
   process.exit(0);
 }
@@ -1301,7 +1315,7 @@ function rayKomutu(dizin: string): number {
 
 // ── `omurga <dizin>` — Akış omurgası CANLI (akis_omurgasi.sar'ın çalışan yüzü) ──
 //    Projenin hangi durakta olduğunu DURUMDAN hesaplar + her durağın motora İŞLİ
-//    bekçilerini gösterir. Harita (plan/akis_omurgasi.sar) betimler; bu komut YÜRÜTÜR.
+//    bekçilerini gösterir. Harita (is/plan/akis_omurgasi.sar) betimler; bu komut YÜRÜTÜR.
 function omurgaKomutu(dizin: string): number {
   const { programlar, hatalar } = programlariYukle(dizin);
   if (hatalar.length) {
