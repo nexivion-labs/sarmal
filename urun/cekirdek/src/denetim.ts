@@ -33,7 +33,8 @@ import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EB
 import type { EbediKilit } from "./kuralci.ts";
 import { yolTuru, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
 import { dizindenIndeks, INDEKS_DISI } from "./kimlik.ts";
-import { YENI_TANI_INDEKS, taniSicili } from "./tani-sicili.ts";
+import { YENI_TANI_INDEKS, taniSicili, terfiKapisiKusurlari } from "./tani-sicili.ts";
+import type { YeniTaniKaydi } from "./tani-sicili.ts";
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
 import type { Tani, Duzey } from "./tani.ts";
 // göç motor turu A09 kapanışı (2026-07-27): halka 2 orkestrasyon tanılarını bu dosyaya taşırken
@@ -834,6 +835,42 @@ export function beklenenSunumYuzeyi(tani: Tani): SunumYuzeyi {
 }
 
 /**
+ * Yüzeyde sicilin bugünkü kademesinden YUKARI çıkan bir düzey, koşum anında
+ * yapılmış bir TERFİDİR; yönetişim kanonu terfiyi dört kapıya bağlar (sıra ·
+ * canlı sayaçların sıfırlığı · üçlü kanıt · yetkili açık kabul) ve o dört
+ * kapının motordaki tek ölçümü `terfiKapisiKusurlari` işlevidir.
+ *
+ * Bu çağrı, ölçümü sınama dosyasından çıkarıp `denetle` ile `denetle-proje`
+ * komutlarının koştuğu gerçek denetim akışına bağlar (KPS-TRF-A01): ölçüm
+ * artık üretici bir yoldan koşar ve verdiği hüküm bulgunun gerekçesine yazılır.
+ * Kapının kendi eşik mantığına DOKUNULMAZ ve hangi tanının hangi düzeye terfi
+ * edeceği burada kararlaştırılmaz; bu işlev yalnız hükmü okur ve aktarır.
+ *
+ * Girdinin dört ayağı koşum anında dürüstçe doldurulur: uygulama bağı sicilin
+ * üretici dosyası, kanon ayağı maddesidir; buna karşılık tekrar üretilebilir
+ * doğrulama kaydı ile yetkili açık kabul koşum anında motorun elinde YOKTUR ve
+ * bu yüzden boş geçilir — bir terfi kaydı denetim koşusunun içinde doğmaz.
+ * Dolayısıyla koşum anında yapılan bir yükseltme hiçbir kapıdan geçemez ve
+ * hükmün kendisi budur: üretici, bir tanının düzeyini kendi başına yükseltemez.
+ */
+function kacakTerfiHukmu(
+  kayit: YeniTaniKaydi, yuzeyDuzeyleri: ReadonlySet<string>, canliSayac: number,
+): string {
+  const yukselenler = [...yuzeyDuzeyleri].filter((d): d is Duzey =>
+    d in DUZEY_AGIRLIGI && DUZEY_AGIRLIGI[d as Duzey] < DUZEY_AGIRLIGI[kayit.kademe]);
+  if (!yukselenler.length) return "";
+  const kusurlar = yukselenler.flatMap((sonraki) => terfiKapisiKusurlari({
+    kod: kayit.kod, onceki: kayit.kademe, sonraki,
+    sayaclar: [canliSayac],
+    ucluKanit: { uygulama: kayit.uretici, doğrulama: "", kanon: kayit.madde },
+    acikKabul: "",
+  }));
+  if (!kusurlar.length) return "";
+  const gerekce = kusurlar.map((k) => k.replace(`${kayit.kod}: `, "")).join(" · ");
+  return `; bu yükseltme bir terfidir ve terfi kapısından geçmemiştir (${gerekce})`;
+}
+
+/**
  * Yeni kanonun orkestrasyon hükümleri: tanı sözleşmesinin tamlığı, tek-dosya ile
  * Proje kapsamlarının karışmaması, tanı kimliğinin Proje kodundan türemesi,
  * yüzler arasında düzey bozulmaması, önerinin düzeltmeyi öğretmesi ve atlanan
@@ -878,15 +915,20 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   // düzeyde gösterilemez; aynı kimlik aynı koşumda iki ayrı düzeyde de görünemez.
   {
     const duzeyler = new Map<string, Set<string>>();
+    const canliSayaclar = new Map<string, number>();
     for (const { tani } of g.uretilen) {
       if (!duzeyler.has(tani.kod)) duzeyler.set(tani.kod, new Set());
       duzeyler.get(tani.kod)!.add(tani.duzey);
+      canliSayaclar.set(tani.kod, (canliSayaclar.get(tani.kod) ?? 0) + 1);
     }
     for (const [kod, kume] of duzeyler) {
       const kayit = YENI_TANI_INDEKS.get(kod);
       if (kayit && [...kume].some((duzey) => duzey !== kayit.kademe)) {
+        // Terfi kapısı ÜRETİM yolundan koşar: yükseltme yönündeki sapmanın
+        // gerekçesini kanonun kendi dört kapısı yazar (KPS-TRF-A01).
+        const terfiHukmu = kacakTerfiHukmu(kayit, kume, canliSayaclar.get(kod) ?? 0);
         out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
-          { kod, kusur: `sicil bugünkü kademeyi "${kayit.kademe}" ilan ediyor, yüzey "${[...kume].join(" ve ")}" gösteriyor` },
+          { kod, kusur: `sicil bugünkü kademeyi "${kayit.kademe}" ilan ediyor, yüzey "${[...kume].join(" ve ")}" gösteriyor${terfiHukmu}` },
           { satir: 1, sutun: 1 }) });
         continue;
       }

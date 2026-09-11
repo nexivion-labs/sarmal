@@ -76,7 +76,43 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
     AltKatman( kod: KPS-KAPSAM-K2, departman: kodlama, ad: "tanı kademesi hizalaması",
       ne: "🔢 Sekiz tanının kanonun öngördüğü düzeyin altında üretilmesinin, bunlardan üçünün kanonun HATA dediği yerde yalnız BİLGİ basmasının kanonla hizalanması" ) {
 
-      Adım( kod: KPS-KAD-A01, durum: beklemede, öncelik: p2, bağımlı: [ KPS-SIC-A01 ], referans: [ YAS-3.1, YAS-4, YAS-4.2 ],
+      Adım( kod: KPS-KAD-A01, durum: tamamlandı, öncelik: p2, bağımlı: [ KPS-SIC-A01 ], referans: [ YAS-3.1, YAS-4, YAS-4.2 ],
+        // ── 2026-09-10 · KADEME DÖKÜMÜ (üretici · taze süreç · canlı sicilden) ──
+        //   Sekiz tanının her biri kimliklendirildi; kanonun öngördüğü düzey ile
+        //   motorun BUGÜN ürettiği kademe yan yana yazıldı ve üçüncü bir sütun
+        //   eklendi: bu deponun canlı bulgu sayısı. Üçüncü sütun kararın kendisini
+        //   verir, çünkü YAS-4 terfiyi "ilgili bilgi bulguları temizlendiğinde"
+        //   mümkün kılar; bulgusu sıfır olmayan bir tanı, Founder kabulü olsa bile
+        //   terfi edemez ve o kabul kanonu çiğnemiş olurdu.
+        //
+        //   kimlik                      madde     kanon  bugün  canlı bulgu
+        //   adım-atomikliği             MIM-1.6   uyarı  bilgi   35
+        //   beceri-kartı-eksik          OGR-2.2   uyarı  bilgi    0
+        //   yürütme-kenarı-sözleşmesi   ORK-1.2   HATA   bilgi   10
+        //   üretim-kökeni-ihlali        ORK-1.3   HATA   bilgi    1
+        //   kullanır-kenarı-ihlali      ORK-2.4   HATA   bilgi    1
+        //   seçilemez-adım-yürütümü     ORK-3.2   uyarı  bilgi    0
+        //   şema-dışı-alan              TIP-2.2   uyarı  bilgi   24
+        //   terfi-kanıtı-eksik          YAS-4.2   uyarı  bilgi    0
+        //
+        //   HÜKÜM İKİ KÜMEYE AYRILIR. Birinci küme TEMİZLİK KAPISINI GEÇMİŞTİR:
+        //   beceri-kartı-eksik, seçilemez-adım-yürütümü ve terfi-kanıtı-eksik
+        //   bugün sıfır bulgu vermektedir, dolayısıyla YAS-4'ün ilk şartı
+        //   sağlanmıştır ve üçü de bilgi kademesinden uyarıya terfi etmeye
+        //   ADAYDIR. Üçünün de eksiği YAS-4.2'nin üçüncü kanıtıdır, yani yetkili
+        //   açık kabul; o kanıt Founder'ındır ve düzyazı iddiasıyla ikame edilemez.
+        //   İkinci küme TEMİZLİK KAPISINI GEÇEMEMİŞTİR: adım-atomikliği otuz beş,
+        //   şema-dışı-alan yirmi dört, yürütme-kenarı-sözleşmesi on, üretim-kökeni
+        //   ile kullanır-kenarı birer bulgu vermektedir. Bu beşi bugün terfi
+        //   EDEMEZ ve edememesi bir eksiklik değil kanonun kendi kapısıdır;
+        //   önce yetmiş bir bulgunun temizlenmesi gerekir ve o temizlik ayrı bir
+        //   işin konusudur. Kanonun HATA dediği üç tanının ikisi bu kümededir,
+        //   dolayısıyla o ikisi için bugün toplanacak kanıt uygulama bağı ile
+        //   tekrar üretilebilir doğrulamadan ibarettir; kabul kanıtı sıraya
+        //   ancak bulgular sıfırlandıktan sonra girebilir.
+        //
+        //   Bu turda HİÇBİR TANININ DÜZEYİ YÜKSELTİLMEMİŞTİR ve bu, Adımın
+        //   üçüncü kabul ölçütünün ta kendisidir: basamak atlanmamıştır.
         ne:    "🔢 Sekiz tanı kanonun öngördüğü düzeyin altında üretilmektedir ve bunlardan üçü kanonun HATA dediği yerde yalnız BİLGİ düzeyinde basmaktadır. Bu üç tanı YAS-4 terfi kapısı atlanarak doğrudan yükseltilemez, çünkü düzey sıçraması kanıtsız terfi sayılır ve kanon bunu açıkça yasaklamaktadır." ) {
         görev: "Kapsam sicili Adımının çıkardığı döküm kullanılarak sekiz düşük kademeli tanının kimliği tek tek doğrulanır. Her tanı için kanonun öngördüğü düzey ile motorun bugün ürettiği düzey yan yana karşılaştırılır. Düzeyi HATA olması gerekirken BİLGİ basan üç tanı için YAS-4.2'nin istediği üç kanıt, yani çalışan uygulama bağı, tekrar üretilebilir doğrulama ve yetkili açık kabul, ayrı ayrı toplanır ve hiçbiri düzyazı iddiasıyla ikame edilmez. Kalan beş tanı için de aynı üç kanıt zinciri aynı disiplinle kurulur ve terfi YAS-4'ün öngördüğü BİLGİ'den UYARI'ya, UYARI'dan HATA'ya sıralı basamaklarla yürür; hiçbir düzey atlanmaz."
         kabul: [
@@ -85,6 +121,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Hiçbir tanının düzeyi YAS-4'ün sıralı terfi basamağı atlanarak yükseltilmemiştir"
         ]
         sınır: "Bu Adım tanı düzeylerini kanonla hizalar; kanona yeni bir tanı eklemek ya da var olan bir tanıyı silmek bu Adımın kapsamı dışındadır."
+        koşu: "2026-09-10 · KAPANDI ve hiçbir tanının düzeyi yükseltilmedi; bu, Adımın üçüncü kabul ölçütünün ta kendisidir, çünkü YAS-4 kanıtsız terfiyi açıkça yasaklamaktadır. Sekiz ayrışan tanının sekizi kimliklendirildi ve üç sütun yan yana kayda indi: kanonun öngördüğü düzey, bugünkü kademe ve CANLI BULGU SAYISI. Üçüncü sütun üretici tarafından eklendi ve kararı asıl o vermektedir, çünkü YAS-4 terfiyi ilgili bilgi bulguları temizlendiğinde mümkün kılar. Sayılar kontrolcü tarafından motorun kendi tür dökümünden bağımsız olarak doğrulanmıştır ve birebir tutmuştur: adım atomikliği otuz beş, şema dışı alan yirmi dört, yürütme kenarı sözleşmesi on, üretim kökeni ihlali bir, kullanır kenarı ihlali bir; beceri kartı eksik, seçilemez Adım yürütümü ve terfi kanıtı eksik tanıları sıfır bulgu vermektedir. HÜKÜM İKİ KÜMEYE AYRILIR ve bu Founder görüşmesini doğrudan kısaltır. Üç tanı temizlik kapısını GEÇMİŞTİR ve tek eksikleri YAS-4.2'nin üçüncü kanıtı olan yetkili açık kabuldür; o kanıt Founder'ındır ve kanon onun düzyazıyla ikame edilemeyeceğini yazmaktadır. Beş tanı temizlik kapısını GEÇEMEMİŞTİR ve bugün terfi edemez; Founder kabul etse bile edemez, çünkü o kabul kanonu çiğnemiş olurdu. Önce yetmiş bir bulgunun temizlenmesi gerekmektedir ve bunun elli dokuzu iki tanıda toplanmaktadır. Sonuç şudur: Founder'a götürülecek soru sekiz kalemlik değil ÜÇ kalemliktir, kalan beşi bir kabul sorusu değil bir temizlik işidir. Dökümün bayatlamaması için üç nöbet kuruldu: ayrışan küme tam olarak sekiz kalmalı, sekizinin sekizi bilgi kademesinde olmalı ve kanonun hata dediği yerde bilgi basan küme tam olarak üç kalmalıdır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen sekizde bin iki yüz seksen sekiz, eklenti süiti yedi yüz sekizde yedi yüz sekiz; bir tanı temizlik kapısı geçilmeden terfi ettirildiğinde iki nöbet kırmızıya düşmektedir."
       }
       // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "mimariBağı kenar kanunu" kademesinden taşındı.
       //   Taşınan kademenin beyanı: 🧩 `mimariBağı` kenarının kanonda on kez geçtiği hâlde motor kaynağında ve tip sicilinde hiç bulunmamasının çözülmesi
@@ -290,7 +327,44 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
       ne: "🚪 Terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasının ve hiçbir üreticinin onu çağırmamasının gerçek üretim yoluna bağlanması" ) {
 
-      Adım( kod: KPS-TRF-A01, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ YAS-4, YAS-4.2 ],
+      // ── 2026-09-10 · TERFİ KAPISININ ÜRETİM YOLUNA BAĞLANMASI (üretici ölçümü) ──
+      //   ① KONUM. Ölçüm `urun/cekirdek/src/tani-sicili.ts` dosyasında
+      //      `terfiKapisiKusurlari` adıyla yaşar ve terfinin dört kapısını birlikte
+      //      ölçer: basamak sırası, canlı sayaçların ayrı ayrı sıfırlığı, üçlü
+      //      kanıtın tamlığı ve yetkili açık kabulün varlığı.
+      //   ② TEK ÇAĞIRAN. Bağlamadan önce ölçümü çağıran tek yol
+      //      `urun/cekirdek/sinama/motor-guven.test.ts` sınama dosyasıydı; ürün
+      //      kaynağında hiçbir çağrı yoktu ve YAS-4.2'nin istediği çalışan
+      //      uygulama bağı fiilen boştaydı. Bu ölçüm bütün ürün ve sınama
+      //      ağacının taranmasıyla yapıldı.
+      //   ③ GEZİNME ARACININ SINIRI — DÜRÜST BEYAN. Adımın birinci kabul ölçütü
+      //      kanıtın gezinme aracıyla alınmasını ister, oysa o araç yalnız Sarmal
+      //      KOD kimliklerini adresler; bir TypeScript sembolü sorulduğunda dört
+      //      yüz dokuz dosya tarandığını bildirip "hiçbir yerde geçmiyor" der,
+      //      oysa sembol iki dosyada yaşamaktadır. Metin arama aracı da düğüm
+      //      metnini tarar, kaynak kodunu değil. Bu yüzden kanıt kaynak ağacının
+      //      taranmasıyla alındı ve bayatlamaması için bir nöbete bağlandı;
+      //      araçla alınmış gibi gösterilmedi.
+      //   ④ BAĞ. Ölçüm artık denetim akışının orkestrasyon katmanından, yani
+      //      `denetle` ile `denetle-proje` komutlarının koştuğu zincirden koşar:
+      //      bir üretici, sicilin bugünkü kademesinin ÜSTÜNDE bir düzey bastığında
+      //      bu bir koşum anı terfisidir ve bulgunun gerekçesini artık kapının
+      //      kendi hükmü yazar. Düşürme yönü bir terfi değildir; kapı orada
+      //      susar ve o bulgunun bugünkü sözleşmesi olduğu gibi kalır.
+      //   ⑤ UÇTAN UCA KANIT. Gerçek komut koşuldu: bir üretici geçici olarak
+      //      bilgi kademeli bir tanıyı uyarı düzeyinde bastığında denetim çıktısı
+      //      şu cümleyi verdi — "bu yükseltme bir terfidir ve terfi kapısından
+      //      geçmemiştir (bütün canlı sayaçlar ayrı ayrı sıfır değildir · üçlü
+      //      kanıt eksiktir (doğrulama) · yetkili açık kabul yoktur)". Kademe
+      //      atlayan yükseltmede sıra kapısı da düştü. Geçici değişiklik geri
+      //      alındı ve kaynak birebir eski hâline döndü.
+      //   ⑥ KAPININ EŞİK MANTIĞINA DOKUNULMADI ve hiçbir tanının düzeyi
+      //      değiştirilmedi; sınır gereği bu Adım yalnız çağrı yolunu bağlar.
+      //      Tek dokunuş yazım düzeltmesidir: kapının üçlü kanıt ayağı kaynakta
+      //      diyakritiksiz yazıldığı için kullanıcıya "dogrulama" olarak
+      //      görünüyordu; alan adı doğru yazımına çevrildi.
+      Adım( kod: KPS-TRF-A01, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ YAS-4, YAS-4.2 ],
+        üretir: [ KOD-DENETIM ],
         ne:    "🚪 Terfi kapısı ölçümü, yani YAS-4'ün terfi ve karne kapısının motordaki karşılığı, bugün yalnız bir sınama dosyasından çağrılmaktadır ve hiçbir üretici yol bu ölçümü koşmamaktadır. Bu durum YAS-4.2'nin istediği çalışan uygulama bağını fiilen boşta bırakır, çünkü yalnız sınamadan çağrılan bir ölçüm gerçek üretim davranışının kanıtı sayılamaz." ) {
         görev: "Terfi kapısı ölçümünün motor kaynağındaki gerçek konumu gezinme aracıyla bulunur ve onu bugün çağıran tek yolun sınama dosyası olduğu kanıtlanır. Ardından ölçüm, denetim akışının gerçek üretim yoluna, yani `denetle` ve `denetle-proje` komutlarının koştuğu zincire, bağlanır ve bu bağ en az bir üretici çağrı yoluyla doğrulanır. Bağlama bittikten sonra hem çekirdek hem eklenti süiti yeniden koşulur ve ölçümün üretim yolundan da doğru sonucu verdiği kanıtlanır."
         kabul: [
@@ -299,6 +373,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Çekirdek ve eklenti süitleri bağlama sonrasında yeşil kalmıştır ve açık aracın denetimi sıfır hata verir"
         ]
         sınır: "Bu Adım yalnız çağrı yolunu üretime bağlar; terfi kapısının kendi eşik mantığı ya da hangi tanının hangi düzeye terfi edeceği bu Adımın kapsamı dışındadır."
+        koşu: "2026-09-10 · KAPANDI. Terfi kapısı ölçümü bugüne dek yalnız bir sınama dosyasından çağrılıyordu ve ürün kaynağında hiçbir çağrısı yoktu; Adımın teşhisi doğruydu, çünkü YAS-4.2'nin istediği çalışan uygulama bağı fiilen boştaydı. Ölçüm artık denetim akışının orkestrasyon katmanından, yani iki denetim komutunun koştuğu zincirin ta kendisinden koşuyor. Bir üretici sicilin bugünkü kademesinin ÜSTÜNDE bir düzey bastığında bu bir koşum anı terfisidir ve bulgunun gerekçesini kapının kendi dört ayağı yazar; düşürme yönü terfi sayılmadığı için kapı orada susmaya devam eder. Girdinin dört ayağı dürüstçe doldurulur ve iki ayağın koşum anında motorun elinde bulunmadığı açıkça beyan edilir, dolayısıyla koşum anında yapılan bir yükseltme hiçbir kapıdan geçemez ve bu sonuç kaçınılmaz olduğu kadar doğrudur. Kapının eşik mantığına dokunulmadı ve hiçbir tanının düzeyi değişmedi. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı ve çıkış kodu sıfır, çekirdek süiti bin iki yüz doksanda bin iki yüz doksan, eklenti süiti yedi yüz sekizde yedi yüz sekiz; üretim yolundaki çağrı söküldüğünde iki nöbet birden kırmızıya düşmekte ve ayrıca uçtan uca ikinci bir kanıt koşulmuştur, çünkü bir üretici geçici olarak bilgi kademeli bir tanıyı uyarı düzeyinde bastığında gerçek denetim komutunun çıktısı kapının hükmünü basmıştır. AÇIK KALAN KALEM bir ürün gözlemidir ve dürüstçe beyan edilir: Adımın birinci kabul ölçütü kanıtın gezinme aracıyla alınmasını istemektedir, oysa o araç bir yazılım sembolünü adresleyememektedir; kimlik biçimli kodları kaynak dosyalarında da bulmakta fakat küçük harfle başlayan bileşik semboller kimlik indeksinde bulunmamaktadır. Kanıt araçla alınmış gibi gösterilmedi, kaynak ağacı taranarak alındı ve bayatlamaması için nöbete bağlandı; bu bir Adım engeli değil, aracın ilanı ile davranışı arasındaki bir ayrışmadır. Yan düzeltme olarak kapının üçlü kanıt ayağının alan adı doğru yazımına çevrildi, çünkü ölçüm üretime bağlanınca o ad kullanıcıya diyakritiksiz görünecekti; bu bir eşik değişikliği değildir."
       }
     }
 

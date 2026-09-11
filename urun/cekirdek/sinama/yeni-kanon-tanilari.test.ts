@@ -982,3 +982,36 @@ test("D-6: ham kaynağı `dogrula()`'ya geçiren DÖRT çağrı yerinin dördü 
 // üzerinden ilerler ve elinde dosyanın ham metni bulunmaz. Şekil hükümleri
 // kullanıcıya görünen dört yüzeyde konuşur; iç döngüde sessizlikleri kayıp
 // değildir. Bu cümle, halka 2 denetiminin B-1 kapanış şartının son maddesidir.
+
+// ══ KPS-KAD-A01 · KADEME AYRIŞMASININ SİCİLLE BAĞLANMASI ═══════════════════
+//
+//   Sekiz tanı kanonun öngördüğü düzeyin ALTINDA üretilir ve bu ayrışma bilinçli
+//   bir terfi borcudur, kaza değildir. Borç kayda yazıldı (KPS-KAD-A01 gövdesi);
+//   bu nöbet kaydın bayatlamasını engeller. YAS-4 terfiyi sıralı basamağa ve
+//   temizlik kapısına bağlar, dolayısıyla kümenin sessizce büyümesi ya da bir
+//   tanının kapı geçilmeden yükseltilmesi kanon ihlalidir.
+
+test("KPS-KAD-A01: kanon düzeyiyle bugünkü kademesi ayrışan tanı kümesi TAM OLARAK sekizdir", () => {
+  const ayrisan = YENI_TANI_KANONU.filter((k) => k.kademe !== k.kanonDüzey);
+  assert.deepEqual(ayrisan.map((k) => k.kod).sort(), [
+    "adım-atomikliği", "beceri-kartı-eksik", "kullanır-kenarı-ihlali",
+    "seçilemez-adım-yürütümü", "terfi-kanıtı-eksik", "yürütme-kenarı-sözleşmesi",
+    "üretim-kökeni-ihlali", "şema-dışı-alan",
+  ].sort(), "terfi borcu kümesi değişti — KPS-KAD-A01 kaydı da aynı turda tazelenmelidir");
+});
+
+test("KPS-KAD-A01: ayrışan her tanı BUGÜN bilgi kademesindedir — basamak atlanmamıştır", () => {
+  for (const k of YENI_TANI_KANONU.filter((x) => x.kademe !== x.kanonDüzey)) {
+    assert.equal(k.kademe, "bilgi",
+      `"${k.kod}" bilgi kademesinden çıkmış; YAS-4 terfiyi sıralı basamağa bağlar ve atlama yasaktır`);
+  }
+});
+
+test("KPS-KAD-A01: kanonun HATA dediği yerde bilgi basan tanılar TAM OLARAK üçtür", () => {
+  const hataBorcu = YENI_TANI_KANONU
+    .filter((k) => k.kanonDüzey === "hata" && k.kademe === "bilgi").map((k) => k.kod).sort();
+  assert.deepEqual(hataBorcu,
+    ["kullanır-kenarı-ihlali", "yürütme-kenarı-sözleşmesi", "üretim-kökeni-ihlali"].sort(),
+    "kanonun hata dediği yerde bilgi basan küme değişti; bu kümenin her üyesi YAS-4.2'nin üç kanıtını ayrı ayrı ister");
+});
+

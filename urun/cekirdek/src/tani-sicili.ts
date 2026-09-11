@@ -66,7 +66,7 @@ export interface YeniTaniKaydi {
 /** göç terfi turu A06 kapanışı'nın uygulama · doğrulama · kanon iddiası üçlüsü. */
 export interface TerfiUcluKaniti {
   uygulama: string;
-  dogrulama: string;
+  doğrulama: string;
   kanon: string;
 }
 
