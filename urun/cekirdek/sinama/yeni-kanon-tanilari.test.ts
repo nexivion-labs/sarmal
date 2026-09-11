@@ -790,14 +790,22 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
 test("proje: öncelik beyanı olmayan AÇIK Adım gözlem üretir, tamamlanmış olan üretmez", () => {
   const programlar = harita({
     "plan.sar":
+      // KYN-ONC-A03 mutasyon ölçümü (2026-09-10): fikstürde ÖNCEDEN tek beyansız
+      // Adım vardı ve gruplama sökülse bile bulgu sayısı bir kalıyordu, yani
+      // üçüncü tasarım sınırı (gürültü) hiçbir nöbetle korunmuyordu. İKİNCİ
+      // beyansız Adım o körlüğü kapatır: gruplama sökülürse sayı ikiye çıkar.
       `Adım( kod: ADM-BEYANSIZ, durum: beklemede, ne: "iş" )\n` +
+      `Adım( kod: ADM-BEYANSIZ-IKI, durum: geliştirmede, ne: "iş" )\n` +
       `Adım( kod: ADM-BEYANLI, durum: geliştirmede, öncelik: p1, ne: "iş" )\n` +
       `Adım( kod: ADM-KAPALI, durum: tamamlandı, ne: "iş", koşu: "bitti" )\n`,
   });
   const t = onceliksizAdimTanilari(programlar);
   uretildi("önceliksiz-adım", t);
-  assert.equal(t.length, 1, "bulgular kapsayıcıya göre gruplanmalı — dosya başına tek gözlem");
+  assert.equal(t.length, 1,
+    "bulgular kapsayıcıya göre gruplanmalı — İKİ beyansız Adım tek gözlemde toplanır, çünkü elli üç ayrı satır gerçek nedeni örter");
   assert.match(t[0].tani.mesaj, /ADM-BEYANSIZ/, "gözlem beyansız Adımı adıyla anmalı");
+  assert.match(t[0].tani.mesaj, /ADM-BEYANSIZ-IKI/, "gruplanan gözlem ikinci beyansız Adımı da anmalı");
+  assert.match(t[0].tani.mesaj, /2/, "gözlem kaç Adımın beyansız olduğunu sayıyla söylemeli");
   assert.ok(!t[0].tani.mesaj.includes("ADM-KAPALI"),
     "tamamlanmış Adım gözleme girmiş — biten işin sıralaması artık anlam taşımaz");
   assert.ok(!t[0].tani.mesaj.includes("ADM-BEYANLI"), "beyanlı Adım gözleme girmiş");

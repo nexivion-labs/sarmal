@@ -437,7 +437,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
         sınır: "Kapalı ürünün Adımları bu turun dışındadır ve kendi varlığının turunda ele alınır (STR-3). Kademe vermek işi yapmak değildir; sıralama işin kendisini başlatmaz."
       }
 
-      Adım( kod: KYN-ONC-A03, durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [ KYN-ONC-A01 ], referans: [ YAS-3.4 ],
+      Adım( kod: KYN-ONC-A03, durum: tamamlandı, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [ KYN-ONC-A01 ], referans: [ YAS-3.4 ],
         ne: "🔎 Önceliksiz açık Adımın hatırlatılması — bir alan yazılı olduğu hâlde hiç kullanılmıyorsa motor onu istemiyor demektir; ölçüm bunu kanıtladı, çünkü alan şemada aylardır duruyor ve üç yüz Adımın hiçbiri onu taşımıyor" ) {
         görev: "Denetçiye bir bekçi eklenir ve açık durumdaki bir Adım öncelik alanı taşımıyorsa gözlem düzeyinde tanı üretir. Tasarımda üç sınır gözetilir. Birincisi kapsamdır: tamamlanmış Adımlar bu bekçinin dışındadır, çünkü biten işin sıralaması artık anlam taşımaz. İkincisi düzeydir: sicilin terfi kapısı yeni hükmün doğrudan uyarıda doğmasını yasaklar, bu yüzden bekçi gözlem düzeyinde doğar ve terfisi ayrı bir kararla gelir. Üçüncüsü gürültü sınırıdır: bulgular Adım başına tek tek değil kapsayıcıya göre gruplanır, çünkü elli üç ayrı satır gerçek nedeni örter."
         kabul: [
@@ -446,6 +446,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
           "Bulgular kapsayıcıya göre gruplanır ve çekirdek ile eklenti süitleri yeşildir"
         ]
         sınır: "Motor öncelik DEĞERİNİ önermez; bir işin ne kadar acil olduğu insan hükmüdür ve makine onu uyduramaz. Bekçi yalnız beyanın yokluğunu görür."
+        koşu: "2026-09-10 · KAPANDI, fakat kapanışın gövdesi beklenenden başkadır ve dürüstçe yazılır. Adımın istediği bekçi ZATEN VARDI ve üç tasarım sınırını da doğru uyguluyordu: yalnız beklemede ile geliştirmede Adımlara bakıyor, bilgi düzeyinde konuşuyor ve bulguları dosya başına grupluyor; fikstürlü nöbetleri de yerindeydi, yani bu Adım yeni bir gövde istemiyordu. Asıl teslim, mutasyon kanıtının ortaya çıkardığı KÖRLÜĞÜN onarımıdır: üçüncü tasarım sınırı olan gruplama hiçbir nöbetle korunmuyordu ve gruplama sökülüp Adım başına ayrı satır bastırıldığında süit YEŞİL kalıyordu. Sebep fikstürdeydi, çünkü dosyada yalnız BİR beyansız Adım vardı ve gruplama sökülse bile bulgu sayısı bir kalıyordu; nöbet hiçbir şey ölçmüyordu. Fikstüre ikinci bir beyansız Adım eklendi ve artık gruplama sökülünce sayı ikiye çıkıp nöbet kırmızıya dönüyor. Bu, yalnız yeşil süite bakmanın neden kanıt sayılmadığının canlı örneğidir ve kayda o yüzden geçer. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen sekizde bin iki yüz seksen sekiz, eklenti süiti yedi yüz sekizde yedi yüz sekiz; üç mutasyonun üçü de kırmızıya düşmektedir ve üçüncüsü onarımdan önce yeşil kalıyordu. Canlı bahçede bu tanı bugün sıfır bulgu vermektedir, yani açık Adımların hepsi öncelik beyanı taşımaktadır."
       }
     }
 
