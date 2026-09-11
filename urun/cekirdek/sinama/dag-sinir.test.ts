@@ -42,7 +42,7 @@ function hamDag(satirlar: HamDugum[]): Dag {
     dugumler.set(kod, { kod, tip: "Adım", dosya: "sinir.sar", satir: 0, sutun: 0,
       oncekiler: [...oncekiler], sonrakiler: [...sonrakiler] });
   }
-  return { dugumler, kopuk: [], oz: [], disProje: [], catisiz: [] };
+  return { dugumler, kopuk: [], oz: [], disProje: [], catisiz: [], ortakKod: [], ayrisamayan: [] };
 }
 
 /** Gövdeyi süreç içinde duvar saatiyle koşar. Çökerse hatayı nedenle birlikte

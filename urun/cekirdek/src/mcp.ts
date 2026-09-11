@@ -45,11 +45,11 @@ import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
 import { MCP_ARAC_ADI, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
 import { tazeKaynak } from "./taze-kaynak.ts";   // BKM-MCP-A02: çağrı anında mühür karşılaştırması
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
-import { dagKur } from "./dag.ts";
+import { dagKur, dugumYokMetni } from "./dag.ts";
 import { grafCikar, grafOzetYuzu } from "./graf.ts";   // BKM-MCP-A03: özet kipi aynı çekirdekten türer  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";  // şablon kütüphanesi tek kaynak (YUZ-1.2)
 import { iskeletPlani, iskeletYaz } from "./iskeletci.ts";  // GBR-A04/#7: iskelet aracı CLI --iskelet ile TEK çekirdek (YUZ-1.2)
-import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI } from "./kimlik.ts"; // EKL-F11-A05: gezin aracı = eklentinin F12/⇧F12'siyle aynı çekirdek (YUZ-1.2)
+import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI, projeKapsamlari, sahipProjeKapsami } from "./kimlik.ts"; // EKL-F11-A05: gezin aracı = eklentinin F12/⇧F12'siyle aynı çekirdek (YUZ-1.2)
 import { etkiMetni } from "./etki.ts";        // BKM-MCP-A01: etki aracı = CLI etki yüzüyle aynı çekirdek (YUZ-1.2)
 import { bicimle } from "./bicimle.ts";       // BKM-MCP-A01: biçim motoru çekirdekte — eklenti de buradan içe alır
 import { yansıt, type Yüz } from "./prizma.ts";
@@ -461,7 +461,8 @@ function grafAraci(dizin: string, kok?: string): { metin: string; isError: boole
   // istenir ve o yol tam JSON'u olduğu gibi döndürür (serileştirici değişmedi).
   const g = grafCikar(dag, kok);
   if (g === undefined) {
-    return { metin: `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`, isError: true };
+    // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
+    return { metin: dugumYokMetni(dag, kok!, `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`), isError: true };
   }
   if (kok === undefined) {
     return { metin: grafOzetYuzu(g, `${MCP_ARAC_ADI.graf} { dizin, kok: "<KOD>" }`), isError: false };
@@ -639,6 +640,16 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
   const aranan = norm(metin);
   const sonuclar: string[] = [];
   let toplam = 0;
+  // KPS-KOD-A01 · ORK-4: çatı penceresinde (birden çok Proje kökü) her sonuç
+  // kendi Projesiyle etiketlenir — aynı kod iki projede çıktığında hangisinin
+  // hangisi olduğu yol tahminine bırakılmaz. Tek projeli depoda etiket basılmaz.
+  const kapsamlar = projeKapsamlari(programlar);
+  const cokProjeli = new Set(kapsamlar.map((k) => k.kod)).size > 1;
+  const projeEtiketi = (etiket: string): string => {
+    if (!cokProjeli) return "";
+    const p = sahipProjeKapsami(etiket, kapsamlar)?.kod;
+    return p ? `[${p}] ` : "[çatı] ";
+  };
   for (const [etiket, program] of programlar) {
     const gez = (d: Dugum): void => {
       const p = (ad: string): string | undefined => d.parametreler.find((x) => x.ad === ad)?.deger.metin;
@@ -660,7 +671,7 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
         toplam++;
         if (sonuclar.length < SONUC_SINIRI) {
           const kisa = alan[1].length > 100 ? alan[1].slice(0, 97) + "…" : alan[1];
-          sonuclar.push(`  ${etiket}:${d.satir}:${d.sutun}  [${d.ad}${kod ? ` ${kod}` : ""}] ${alan[0]}: ${kisa.replace(/\n/g, " · ")}`);
+          sonuclar.push(`  ${projeEtiketi(etiket)}${etiket}:${d.satir}:${d.sutun}  [${d.ad}${kod ? ` ${kod}` : ""}] ${alan[0]}: ${kisa.replace(/\n/g, " · ")}`);
         }
       }
       for (const c of d.cocuklar) gez(c);

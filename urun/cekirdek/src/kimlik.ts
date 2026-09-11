@@ -1064,12 +1064,37 @@ export function adAlanliGezinCozumu(indeks: KimlikIndeksi, kod: string, tarananD
   return { tanimlar: [], cozulemedi: `ad alanı "${adAlani}" bu kökten görünmüyor: ne yüklü evrende bir Proje kodu, ne de çatı ilanında duyurulmuş bir kardeş kök. Atıf KIRIK DEĞİL, ÖLÇÜLEMEZ; çatı köküne çıkıp denetimi oradan koştur ya da kardeş kökü çatı ilanına ekle` };
 }
 
+/**
+ * Her tanımın ait olduğu Proje kodu (KPS-KOD-A01). Sahiplik kimlik.ts'in tek
+ * kaynağından okunur (projeKapsamlari + sahipProjeKapsami); ders dünyası ve
+ * köksüz dosya `undefined` döner. Yüklü evrende Proje ilanı yoksa liste
+ * tümüyle tanımsızdır ve gezinme yüzü bugünkü gibi davranır.
+ */
+function tanimProjeleri(indeks: KimlikIndeksi, tanimlar: readonly Tanim[]): (string | undefined)[] {
+  const kapsamlar: ProjeKapsami[] = indeks.tumTanimlar()
+    .filter((t) => t.tip === "Proje" && !INDEKS_DISI.test(t.dosya))
+    .map((t) => ({ kod: t.kod, onek: kapsamOneki(t.dosya), dosya: t.dosya }));
+  if (!kapsamlar.length) return tanimlar.map(() => undefined);
+  return tanimlar.map((t) => DERS_DUNYASI.test(t.dosya) ? undefined : sahipProjeKapsami(t.dosya, kapsamlar)?.kod);
+}
+
+/** Ad alanlı kodun, ad alanı yüklü evrende bir Proje ise o kapsamdaki çıplak atıfları (yoksa boş). */
+function adAlanliKapsamAtiflari(indeks: KimlikIndeksi, kod: string): Atif[] {
+  const { adAlani, yerel } = adAlaniAyir(kod);
+  if (adAlani === undefined) return [];
+  const onekler = indeks.tanimlar(adAlani).filter((t) => t.tip === "Proje").map((t) => kapsamOneki(t.dosya));
+  if (!onekler.length) return [];
+  return indeks.atiflar(yerel, (dosya) => onekler.some((o) => onekKapsar(o, dosya)));
+}
+
 export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
   const hamTanimlar = indeks.tanimlar(kod);
   // ORK-4: ham kimlikle bulunamayan ad alanlı kod, kanon hükmüyle yeniden çözülür.
   const adAlanli = hamTanimlar.length ? { tanimlar: hamTanimlar } : adAlanliGezinCozumu(indeks, kod, tarananDizin);
   const tanimlar = hamTanimlar.length ? hamTanimlar : adAlanli.tanimlar;
-  const atiflar = indeks.atiflar(kod);
+  // KPS-KOD-A01: ad alanlı sorguda (`PRJ-A::KOD`) atıflar o Projenin kapsamındaki
+  // ÇIPLAK yazımı da kapsar — proje içinden `KOD` diye anılan şey aynı düğümdür.
+  const atiflar = [...indeks.atiflar(kod), ...adAlanliKapsamAtiflari(indeks, kod)];
   const giden = indeks.giden(kod);   // hatırlatıcı-rayı turu: beyanlı çıkış kenarları (ileri-bağlama)
   if (!tanimlar.length && !atiflar.length) {
     return `✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`;
@@ -1086,12 +1111,28 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
     : adAlanli.cozulemedi
       ? `TANIM: çözülemedi — ${adAlanli.cozulemedi}.`
       : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
+  // KPS-KOD-A01 · ORK-4: aynı kod birden çok KARDEŞ Projede ilanlıysa araç
+  // sessizce ilkini seçmez — her Projenin tanımı kendi kartıyla gösterilir ve
+  // hangisinin kastedildiği `PRJ::KOD` yazımıyla SORULUR. Ders dünyası kopyaları
+  // (şablon · örnek) bu sayıma girmez: onlar kardeş değil öğreti malzemesidir.
+  const projeler = tanimProjeleri(indeks, tanimlar);
+  const kardesProjeler = [...new Set(projeler.filter((p): p is string => p !== undefined))];
+  const cokProjeli = kardesProjeler.length > 1;
+  if (cokProjeli) {
+    const { yerel } = adAlaniAyir(kod);
+    bolumler.push(`🔀 '${yerel}' ${kardesProjeler.length} kardeş Projede birden ilanlı (beklenen durum: şablondan doğan projeler aynı kodu taşır). Hangisini kastettiğini ad alanıyla söyle (ORK-4):\n${kardesProjeler.map((p) => `  ${p}${AD_ALANI_AYRACI}${yerel}`).join("\n")}`);
+  }
   // NTK-A06 · BAĞLAM KARTI: üst zincir + kardeşler + çocuklar + koni özeti — ajan,
   // "bu Adım hangi Blok'ta, yanında ne var, ne iş yapar" sorularını tek çağrıda alır.
+  // Çok projeli hâlde kart HER Projenin tanımı için ayrı basılır ve Projesiyle etiketlenir.
   if (tanimlar.length && dosyaOku) {
-    const metin = dosyaOku(tanimlar[0].dosya);
-    const b = metin ? dugumBaglami(metin, kod) : undefined;
-    if (b) {
+    const kartTanimlari = cokProjeli
+      ? tanimlar.filter((t, i) => projeler[i] !== undefined && tanimlar.findIndex((u, j) => projeler[j] === projeler[i]) === i)
+      : [tanimlar[0]];
+    for (const tanim of kartTanimlari) {
+      const metin = dosyaOku(tanim.dosya);
+      const b = metin ? dugumBaglami(metin, adAlaniAyir(kod).yerel) : undefined;
+      if (!b) continue;
       const adres = (x: BaglamDugumu): string =>
         `${x.tip}${x.kod ? ` ${x.kod}` : ""}${x.ad ? ` (${x.ad})` : ""}`;
       const kart: string[] = [];
@@ -1099,7 +1140,8 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
       if (b.kardesler.length) kart.push(`  kardeşler (${b.kardesler.length}): ${b.kardesler.map(adres).join(" · ")}`);
       if (b.cocuklar.length) kart.push(`  çocuklar (${b.cocuklar.length}): ${b.cocuklar.map(adres).join(" · ")}`);
       for (const [a, v] of b.alanlar) kart.push(`  ${a}: ${v}`);
-      if (kart.length) bolumler.push(`BAĞLAM KARTI:\n${kart.join("\n")}`);
+      const proje = cokProjeli ? projeler[tanimlar.indexOf(tanim)] : undefined;
+      if (kart.length) bolumler.push(`BAĞLAM KARTI${proje ? ` · ${proje}` : ""}:\n${kart.join("\n")}`);
     }
   }
   // ATIFLAR (gelen): boşsa "kimse kullanmıyor" — AMA GİDEN kenarı varsa bu düğüm

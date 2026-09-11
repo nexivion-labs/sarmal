@@ -650,7 +650,7 @@ function hamDag(satirlar: HamDugum[]): Dag {
     dugumler.set(kod, { kod, tip: "Adım", dosya: "ham.sar", satir: 0, sutun: 0,
       oncekiler: [...oncekiler], sonrakiler: [...sonrakiler] });
   }
-  return { dugumler, kopuk: [], oz: [], disProje: [], catisiz: [] };
+  return { dugumler, kopuk: [], oz: [], disProje: [], catisiz: [], ortakKod: [], ayrisamayan: [] };
 }
 
 /** Simetrik graf kısayolu: kenar listesi iki yöne birden yazılır. Sabit

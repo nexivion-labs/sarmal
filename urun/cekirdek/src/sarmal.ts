@@ -37,7 +37,7 @@ import { taniKodCoz } from "./tani-sicili.ts";   // göç motor turu A02 kapanı
 import { sefGatewayKomutu } from "./gateway.ts";
 import { nvidiaEtmenYap, sefAracKanitKomutu, üretimKöprüsüYap } from "./kopru/nvidia.ts";
 import { ligKomutu, LIG_MODELLER } from "./kopru/lig.ts";
-import { dagKur, dagTanilari, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar } from "./dag.ts";
+import { dagKur, dagTanilari, motorSirala, topolojikSira, blokRayi, secilebilirAdimlar, dugumYokMetni } from "./dag.ts";
 import { denetimKos } from "./denetim.ts";   // saf denetim çekirdeği — bu kabuk yalnız sunum yapar
 import { icindekilerBloku } from "./icindekiler.ts";   // MD içindekiler çekirdeği (eski defter üreticisinden devralındı)
 import { belgeYuzleriniUret } from "./belge-yuzleri.ts";
@@ -694,9 +694,11 @@ if (yol === "graf") {
   // ORK-4 (KPS-ADA-A01): graf yüzü de ad alanı kapısını taşır — aynı hedef
   // denetimde çözülüp grafta kopuk görünemez (tek kurucu: adAlaniKapisi).
   const kapi = adAlaniKapisi(programlar, dizin);
-  const çıktı = grafYuz(dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) }), kok);
+  const dag = dagKur(programlar, { adAlaniCozulur: (h, d) => kapi.cozulur(h, d) });
+  const çıktı = grafYuz(dag, kok);
   if (çıktı === undefined) {
-    console.error(`✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`);
+    // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
+    console.error(dugumYokMetni(dag, kok!, `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`));
     process.exit(1);
   }
   process.stdout.write(çıktı);

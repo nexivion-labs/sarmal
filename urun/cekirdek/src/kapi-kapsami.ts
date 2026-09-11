@@ -252,6 +252,12 @@ const YARDIMCI_ISLEVLER: ReadonlySet<string> = new Set([
   // ise o haritanın üstüne ORK-4 kardeş kök kapısını kurar ve yine tanı üretmez;
   // kapının kendisi bir ölçüm değil, ölçenlerin ortak sorduğu sorudur.
   "adAlaniKapisi", "karneOzeti", "katiRejimliDosyalar", "kodIndeksle", "kodTanimlariIndeksle", "planlamaEvresiMi",
+  // KPS-KOD-A01: `adAlaniSecenekleri` çıplak bir kodun kardeş projelerdeki
+  // `PRJ::KOD` karşılıklarını, `dugumYokMetni` ise o seçenekleri soran "yok"
+  // cümlesini KURAR; ikisi de graf, etki ve gezinme yüzlerinin ortak metin
+  // yardımcısıdır ve TANI ÜRETMEZ. Tanı basmayan bir gövdeye yüzey beyanı
+  // vermek ölçülmeyen bir zorlamayı canlı göstermek olurdu.
+  "adAlaniSecenekleri", "dugumYokMetni",
   "programlariYukle", "yerelEvre1Yumusat", "evre1Yumusat",
   // BKM-DNT-A13: `yolTuru` bir yolun diskteki cinsini ölçer ve TANI ÜRETMEZ;
   // denetci.ts'ten dışa açılmasının sebebi ölçümün ikinci bir yüzeyde (iskelet

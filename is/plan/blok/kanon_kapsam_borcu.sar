@@ -409,6 +409,43 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         dokunulmaz: [ "MIM-1.1 maddesinin kaynak metni", "Faz ile Proje arasındaki bağ (KPS-FAZ-A01 turunda kuruldu)" ]
         koşu: "2026-09-10 · KAPANDI. Kapsama kenarı yükleme çevriminde tek noktada kuruldu ve gerçek çatıda ölçüldü: dört bin dört yüz üç düğümde kapsama kenarı iki bin yedi yüz seksenden iki bin yedi yüz seksen üçe çıktı, üç Proje kökü de çalışma alanı düğümünün altındadır ve köksüzlük ders dünyası, laboratuvar arşivi ve omurga dışı tipler olarak üçe ayrılıp kayda yazıldı; plan kademesinde köksüz kalan sıfırdır. Tek projeli depoda graf çıktısı bayt bayt aynıdır, karne dört yüz on yedi Adımda değişmemiştir, altı mutasyon nöbeti kırmızıya çevirmiştir ve kontrolcü dört kapıyı bağımsız ölçmüştür: iki tsc sıfır, çekirdek bin üç yüz otuz beşte bin üç yüz otuz beş, eklenti yedi yüz elli beşte yedi yüz elli beş, depo denetimi sıfır hata."
       }
+
+      Adım( kod: KPS-KOD-A01, ad: "Kardeş Projelerde Kod Tekilliği", durum: geliştirmede, öncelik: p0,
+        bağımlı: [ KPS-CAT-A01, KPS-ADA-A01 ], referans: [ ORK-4, MIM-1.1 ],
+        üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-GRAF-YUZ, KOD-SNM-KARDES-KOD ],
+        // ── FOUNDER HÜKMÜ · 2026-09-10 · TEKDÜZELİK KORUNUR, TEKİLLİK ÇATIDA KURULUR ──
+        //   Founder, kod çakışmasının Ajans için düzeltilirken işletim sistemi
+        //   hedefini bozmaması gerektiğini bildirmiştir. Hüküm şudur: her projeye
+        //   kendi öneki verilerek kodların ayrıştırılması YASAKTIR, çünkü OS'un
+        //   temeli her müşteri projesinin içeriden bakınca AYNI görünmesidir.
+        //   Gerekçe üç kalemdir. Birincisi şablondan müşteri doğurmak: berber
+        //   şablonu yeni müşteriye kopyalandığında hiçbir kod elle değişmemelidir,
+        //   yoksa yüz müşteride kopyalama imkânsız hâle gelir. İkincisi ajanın bir
+        //   kez öğrenip her yerde kullanması: bir beceri kartı planın rafını
+        //   RAF-PLAN diye anıyorsa bu cümle yüz müşterinin yüzünde de doğru
+        //   olmalıdır. Üçüncüsü çatının ortak kuralının tek yerde durması: atıf
+        //   hedefi müşteriden müşteriye değişirse ortak kural diye bir şey kalmaz.
+        //   Dolayısıyla çözüm kodları ayrıştırmak değil, çakışmayı BİRLEŞTİRME
+        //   ANINDA çözmektir; kod projenin içinde kısa ve tekdüze kalır, graf onu
+        //   hangi Proje kökünün altında bulduğuna göre ayırır.
+        ne: "🔗 Aynı kodu taşıyan kardeş projelerin çatı grafında birbirini yutmasının bitmesi. Ölçüm 2026-09-10 tarihinde iki kardeş proje üzerinde yapılmıştır ve ikisi de doğuş paketiyle doğmuştur: giriş ilanlarındaki kodlar yan yana konduğunda Proje kodu dışında sekiz kodun sekizi de aynı çıkmıştır, yani ikisi de aynı Kitaplık ve Raf kodlarını ilan etmektedir. Graf kodla anahtarlandığı için çatıda bu kodların tek bir düğümü kalmakta ve kazanan projenin hangisi olacağı tarama sırasına bağlı olmaktadır; ölçümde şablon kitaplığının adı değiştirildiğinde kazanan proje de değişmiştir. Kusurun ağırlığı ölçekte görünür: yüz müşterili bir çatıda doksan dokuz müşterinin Kitaplık kademesi çatı grafından düşer ve Founder'ın zorunlu kıldığı kademe tam da çatı düzeyinde kaybolur. Kusur sessizdir, çünkü hiçbir tanı çakışmayı bildirmemekte ve ürün karnesindeki düğüm sayısı doğru kalmaktadır." ) {
+        görev: [
+          "Çapraz proje ad alanı mekanizmasını giriş ilanlarındaki kodlara da uygula: bir kod hangi Proje kökünün altında ilan edilmişse graf onu o kökün ad alanında tutar ve kardeş projelerin aynı adlı kodları ayrı düğümler olarak yaşar. Mekanizma KPS-ADA-A01 turunda atıflar için kurulmuştur; bu Adım onun kapsamını genişletir.",
+          "Araç yüzlerini bu ayrıma göre elden geçir: bir kodu adıyla arayan gezinme, etki ve arama araçları birden çok projede aynı adı bulduğunda hangisini kastettiğini SORMALI ya da hepsini projesiyle birlikte göstermelidir; sessizce birini seçmek bugünkü kusurun tekrarıdır.",
+          "Çakışmanın kendisini bildiren bir ölçüm yaz: aynı çatı altında iki proje aynı kodu ilan ettiğinde bu bir kusur değil BEKLENEN durumdur ve tanı üretmez, fakat bir kod ad alanı olmadan çözülemiyorsa araç bunu dürüstçe söyler.",
+          "Nöbet kur: iki kardeş proje aynı Kitaplık kodunu ilan ettiğinde çatı grafında iki ayrı düğüm yaşar ve her birinin kapsayanı kendi Projesidir; tek projeli bir depoda hiçbir şey değişmez."
+        ]
+        kabul: [
+          "Bir şablon projesi HİÇBİR KODU DEĞİŞTİRİLMEDEN müşteri klasörüne kopyalanabilir ve çatı grafında iki proje de kendi Kitaplık kademesiyle ayrı ayrı görünür; bu ölçüt Founder hükmünün doğrudan sınavıdır ve işletim sistemi hedefinin bozulmadığını ölçer.",
+          "Çatı grafında kardeş projelerin aynı adlı kodları ayrı düğümlerdir ve her birinin kapsayanı kendi Proje kökündür; ölçüm iki projeli bir çatıda sayıyla yazılır.",
+          "Bir kodu adıyla arayan araçlar birden çok karşılık bulduğunda hepsini projesiyle birlikte gösterir; sessizce tek bir karşılık seçen hiçbir yol kalmamıştır.",
+          "Tek projeli bir deponun grafı ve ürün karnesi bu değişiklikten önceki sayıyı korur.",
+          "Nöbet mutasyonla kanıtlanmıştır; çekirdek ile eklenti süitleri yeşildir ve depo denetimi sıfır hata verir."
+        ]
+        sınır: "Doğuş paketinin ürettiği kodlara ÖNEK EKLENMEZ ve kodlar projeden projeye değiştirilmez; Founder hükmü bunu açıkça yasaklamıştır. Çözüm yalnız birleştirme anındadır. Kanonun ORK-4 maddesinin metnine dokunmak gerekirse bu Founder kapısıdır ve ayrıca sorulur."
+        dokunulmaz: [ "Doğuş paketinin ürettiği kod adları", "ORK-4 maddesinin kaynak metni" ]
+        koşu: "2026-09-10 · DÖRT ÖLÇÜTTEN ÜÇÜ KAPANDI. Kardeş projelerin aynı adlı kodları çatı grafında kendi Projeleri altında PRJ::KOD anahtarıyla ayrı düğüm olarak yaşar, çıplak atıf yalnız kendi Projesinde çözülür ve gezinme, etki ile arama araçları birden çok karşılığı Projesiyle gösterir; ajans deneme çatısında iki proje on dörder düğüm ve sekiz ortak kodla ölçülmüş, altı mutasyon nöbeti kırmızıya çevirmiş ve kontrolcü kapıları bağımsız ölçmüştür (çekirdek bin üç yüz elli beş, eklenti yedi yüz elli beş, depo denetimi sıfır hata). Açık kalan iki kalem şudur: bayt bayt kopyalanan bir şablon Proje kodunu da taşıdığı için ayrışamaz ve motor bunu adıyla bildirir, kabul ölçütünün bu yönde okunması Founder kararını beklemektedir; eklentinin yol haritası ile mini graf panelleri düğümü hâlâ çıplak kodla aradığı için çatı penceresinde ortak kodlu bir düğümün kenar bilgisi boş kalır (yolharitasi-cekirdek.ts:233)."
+      }
     }
 
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
@@ -490,6 +527,10 @@ Kod( kod: KOD-KPS-FAZ-COZUCU, dosya: "urun/cekirdek/src/kimlik.ts",
 // 🍎 KPS-CAT-A01 teslimi (2026-09-10): çatının Projelerini evlat edinmesi — çatı çevrimi ve nöbeti
 Kod( kod: KOD-SNM-CATI-PROJE, dosya: "urun/cekirdek/sinama/cati-proje-kenari.test.ts",
   ne: "🍎 Çatı-Proje kenarı nöbeti — on sınama: çatının ilan ettiği her Proje kökünün kapsayanı çalışma alanıdır, zincir Adımdan çatıya kesintisiz yürür, iç içe yazım dokunulmaz kalır, çatısız tek projeli depoda hiçbir şey değişmez, ilansız klasör kardeş sayılmaz, iç rafın yolu çatı kapsamı doğurmaz, ayrışık çatıda bağ kurulmaz ve susulmaz, ders dünyası kapısı kendi kademesinde ölçülür, örnek çatı ürün Projesini evlat edinemez ve çevrim yalnız Proje tipine iner; beş mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-CAT-A01)" )
+
+// 🍎 KPS-KOD-A01 teslimi (2026-09-10): kardeş projelerde kod tekilliği — kod ad alanı çevrimi ve nöbeti
+Kod( kod: KOD-SNM-KARDES-KOD, dosya: "urun/cekirdek/sinama/kardes-kod-tekilligi.test.ts",
+  ne: "🍎 Kardeş kod tekilliği nöbeti — on bir sınama: iki kardeş Projenin aynı adlı kodları çatı grafında ayrı düğümlerdir ve her birinin kapsayanı kendi Projesidir, iki kardeşin karnesi eşittir, çıplak atıf yalnız kendi Projesinde çözülür, ad alanlı atıf kardeşin ayrıştırılmış düğümüne bağlanır, köksüz kaynak tesadüfî eşleşme kurmaz, araçlar çıplak ortak kodu sessizce seçmeyip seçenekleri projesiyle sorar, graf özet yüzü ortak kodu beklenen durum olarak basar, gezinme yüzü iki kardeşi de projesiyle gösterir, tek projeli depoda hiçbir şey değişmez, ders dünyası kopyası kardeş sayılmaz ve aynı Proje kodunu taşıyan iki kök susmadan adıyla bildirilir; altı mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-KOD-A01)" )
 
 Kod( kod: KOD-SNM-FAZ-PROJE, dosya: "urun/cekirdek/sinama/faz-proje-kenari.test.ts",
   ne: "🍎 Faz-Proje kenarı nöbeti — yedi sınama: iki Projeli fikstürde her Fazın kapsayanı kendi Projesidir, zincir Adımdan Projeye kesintisiz yürür, iç içe yazım dokunulmaz kalır, kök dışındaki plan dosyası köksüz kalır, ayrışık kökte bağ kurulmaz, ders dünyası muaftır ve çevrim yalnız plan kademelerine iner; dört mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-FAZ-A01)" )

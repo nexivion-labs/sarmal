@@ -17,6 +17,10 @@ import { etkiCoz } from "./etki.ts";
 /** Tek düğümün dışa açık hâli — alan sırası SABİT (determinist çıktı). */
 export interface GrafDugum {
   kod: string;
+  /** KPS-KOD-A01 · ORK-4: kod kardeş projelerde ortaksa `kod` alanı `PRJ::KOD`
+   *  anahtarıdır ve ilan edilen çıplak kod burada durur; ortak değilse alan hiç
+   *  yazılmaz (tek projeli deponun çıktısı bayt bayt aynı kalır). */
+  yerelKod?: string;
   tip: string;            // Adım · Katman · Faz · Blok …
   dosya: string;
   satır: number;
@@ -40,6 +44,13 @@ export interface GrafYuzu {
    *  Proje kökleri. Boş olduğunda alan hiç yazılmaz — tek projeli bir deponun
    *  graf çıktısı bu alandan tek bayt bile etkilenmez. */
   çatısız?: Dag["catisiz"];
+  /** ORK-4 (KPS-KOD-A01): kardeş projelerde ortak kodlar — BEKLENEN durum, tanı
+   *  değil; hangi kodun hangi Projelerde `PRJ::KOD` anahtarına alındığını söyler.
+   *  Boşsa alan hiç yazılmaz. */
+  ortakKod?: Dag["ortakKod"];
+  /** ORK-4 (KPS-KOD-A01): aynı Proje kodunu taşıyan birden çok kök — ad alanı
+   *  çoğalmıştır ve çevrim ayıramaz; susma burada adıyla görünür. Boşsa yazılmaz. */
+  ayrışamayan?: Dag["ayrisamayan"];
   özet: KarneOzeti;
 }
 
@@ -80,7 +91,9 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
     .filter((d) => içinde(d.kod))
     .sort((a, b) => a.kod.localeCompare(b.kod, "tr"))
     .map((d) => ({
-      kod: d.kod, tip: d.tip, dosya: d.dosya, satır: d.satir,
+      kod: d.kod,
+      ...(d.yerelKod ? { yerelKod: d.yerelKod } : {}),
+      tip: d.tip, dosya: d.dosya, satır: d.satir,
       ...(d.durum ? { durum: d.durum } : {}),
       ...(d.kapsayan ? { kapsayan: d.kapsayan } : {}),
       ...(d.mevsim ? { mevsim: d.mevsim } : {}),
@@ -98,13 +111,19 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
 
   // özet alt-graf üzerinden (filtreli mini-Dag — karne mantığı TEK kaynak kalır)
   const çatısız = dag.catisiz.filter((c) => içinde(c.proje));
+  // KPS-KOD-A01: ortak kod ölçümü alt-grafta yalnız kümedeki anahtarlara iner.
+  const ortakKod = dag.ortakKod
+    .map((o) => ({ kod: o.kod, projeler: o.projeler.filter((p) => içinde(`${p}::${o.kod}`)) }))
+    .filter((o) => o.projeler.length);
   const özetDag: Dag = küme
-    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje, catisiz: çatısız }
+    ? { dugumler: new Map([...dag.dugumler].filter(([k]) => küme.has(k))), kopuk, oz: dag.oz, disProje: dag.disProje, catisiz: çatısız, ortakKod, ayrisamayan: dag.ayrisamayan }
     : dag;
 
   return {
     ...(kök ? { kök } : {}), düğümler, kopuk,
     ...(çatısız.length ? { çatısız } : {}),
+    ...(ortakKod.length ? { ortakKod } : {}),
+    ...(dag.ayrisamayan.length ? { ayrışamayan: dag.ayrisamayan } : {}),
     özet: karneOzeti(özetDag),
   };
 }
@@ -154,6 +173,17 @@ export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<K
   if (g.çatısız?.length) {
     satirlar.push("", `🏛️ ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (${g.çatısız.length}):`);
     for (const c of g.çatısız) satirlar.push(`   ${c.proje} — ${c.dosya}:${c.satir} · ${c.sebep}`);
+  }
+  // ORK-4 (KPS-KOD-A01): ortak kod BEKLENEN durumdur ve tanı değildir; yüz onu
+  // ölçüm olarak basar ki "yüz müşterinin Kitaplığı nereye gitti" sorusunun
+  // cevabı okunsun. Ayrışamayan kök ise çevrimin sustuğu yerdir ve susmaz.
+  if (g.ortakKod?.length) {
+    satirlar.push("", `🔀 KARDEŞ PROJELERDE ORTAK KOD (${g.ortakKod.length} · beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür):`);
+    for (const o of g.ortakKod) satirlar.push(`   ${o.kod} → ${o.projeler.join(" · ")}`);
+  }
+  if (g.ayrışamayan?.length) {
+    satirlar.push("", `⚠️ AD ALANI OLMADAN AYRIŞAMAYAN PROJE KÖKÜ (${g.ayrışamayan.length} · aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için çevrim bu kökleri AYIRAMADI ve ilk tanım kazandı):`);
+    for (const a of g.ayrışamayan) satirlar.push(`   ${a.kod} — ${a.dosyalar.join(" · ")}`);
   }
   satirlar.push("", `🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`);
   return satirlar.join("\n") + "\n";
