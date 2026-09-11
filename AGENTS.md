@@ -87,6 +87,11 @@ kanon canlıdır. Tipi `siniflama` aracına sor; uydurma tip adı kullanma.
 - **TEK FORMAT:** içerik `.sar` dosyasında yaşar; işaretçi dosyaya içerik biriktirme.
 - **KAPI:** üretici ile denetçi ayrıdır; her teslim kapıdan geçer ve sayısal iddia
   bağımsız ölçülmeden kabul edilmez.
+- **DOĞUŞ:** yeni bir Sarmal ağacı, anadizin ya da mimari elle yazılmaz; sıra `basla` → `dogus` → `iskelet` →
+  her `.sar` yazımından sonra `denetle-proje`. Şema (`siniflama`) neyin izinli olduğunu, düzen
+  (`sarmal_anadizin.sar` · `is/plan/faz/faz.sar`) neyin doğru olduğunu söyler; düzen önce okunur. Faz anadizine
+  yazılmaz. Mimari işte önce iskelet Founder'a gösterilir, içerik onaydan sonra yazılır (Founder hükmü
+  2026-09-09 · küresel kanca `~/.claude/hooks/sarmal-kapi-*.sh` zorlar).
 
 ## 7. Founder sözünün kayda geçirilmesi (yazım hükmü)
 
