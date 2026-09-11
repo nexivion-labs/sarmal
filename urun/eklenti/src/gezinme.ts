@@ -18,7 +18,8 @@
 
 import * as vscode from "vscode";
 import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
-import { GEZINME_METINLERI, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
+import { GEZINME_METINLERI, gezinmeRetCumlesi, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
+import { gezinmeRetSebebi } from "./gezinme-cekirdek.ts";   // VIT-K78-A09: sessiz ret biter
 
 /** Kod sözcesi: tire/alt-çizgi İÇEREN tam sözce (EKL-F11-A01 · şüphedeDur).
  *  VS Code'un varsayılan sözcük deseni tirede böler — buradaki desen bölmez.
@@ -52,6 +53,27 @@ export function gezinmeKaydi(
       kimlikIndeksi.dosyaGuncelle(doc.uri.fsPath, doc.getText());
   };
 
+  // 🚧 SESSİZ RET BİTER (VIT-K78-A09 · HTR-GEZINME-SESSIZ-RET). Gezinme
+  // durduğunda sebebi TEK SATIRLIK bir bildirimle söylenir. Kural DEĞİŞMEZ:
+  // burada yalnız zaten verilmiş kararın sebebi okunur ve cümleye çevrilir.
+  // Sebep ölçülemiyorsa yüzey susar — uydurma sebep basmak, sessizlikten daha
+  // kötüdür (YUZ-3.1: yanlış sebep de bir gizlemedir).
+  const retBildir = (doc: vscode.TextDocument, kod: string, gorunenSayi: number): void => {
+    // BAŞARILI GEZİNMEDE HİÇBİR ÖLÇÜM YAPILMAZ. Ret ölçümü indekse iki süzgeçsiz
+    // sorgu daha sorar; bunu her F12'de ödemek, yalnız reddin sebebini söylemek
+    // için sıcak yolu yavaşlatmak olurdu.
+    if (gorunenSayi > 0) return;
+    const kaynakYolu = doc.uri.scheme === "file" ? doc.uri.fsPath : undefined;
+    const sebep = gezinmeRetSebebi({
+      kaynakYolu,
+      gorunenSayi,
+      tumTanimlar: kimlikIndeksi.tanimlar(kod).map((t) => t.dosya),
+      atifVar: kimlikIndeksi.atiflar(kod).length > 0,
+      varlikKoku,
+    });
+    if (sebep) void vscode.window.showInformationMessage(gezinmeRetCumlesi(sebep, kod));
+  };
+
   const yer = (dosya: string, satir: number, sutun: number, uzunluk: number): vscode.Location =>
     new vscode.Location(
       vscode.Uri.file(dosya),
@@ -69,6 +91,9 @@ export function gezinmeKaydi(
         // duyurduğu kardeş kökte yaşar; yerel indeks sustuğunda oraya bakılır.
         const kaynak = doc.uri.scheme === "file" ? doc.uri.fsPath : undefined;
         const tanimlar = yerel.length || !kaynak ? yerel : adAlanliTanimlar(kod, kaynak);
+        // Ölçü BÜTÜN yolların sonundadır: ad alanlı kardeş kök de sustuysa
+        // gezinme gerçekten reddedilmiştir ve sebebi söylenir.
+        retBildir(doc, kod, tanimlar.length);
         return tanimlar.map((t) => yer(t.dosya, t.satir, t.sutun, t.kod.length));
       },
     }),

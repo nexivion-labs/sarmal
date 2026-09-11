@@ -22,6 +22,7 @@
 // Yalnız TİP alınır; çalışma zamanında hiçbir bağ kurulmaz (derlemede silinir).
 // Katalog gövdeyi tanımaz, gövdenin İSTEDİĞİ demetin şeklini tanır.
 import type { GovdeMetinleri } from "./onay-govde.ts";
+import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
 import { dilHanesi, sozlukAdi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
@@ -1572,7 +1573,33 @@ export const GEZINME_METINLERI = {
     `'${kod}' kimliği ${adet} dosyanın adında da geçiyor. Metin atıfları güncellendi; dosyaların yeniden adlandırılmasını sen yapmalısın.`,
     `Identity '${kod}' also occurs in ${adet} filename${adet === 1 ? "" : "s"}. Text references were updated; you must rename the files yourself.`,
   ),
+  // 🚧 GEZİNME REDDİNİN SEBEBİ (VIT-K78-A09 · HTR-GEZINME-SESSIZ-RET). Üç kural
+  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, sebebi adıyla
+  // söyler ve dayanağı olan kanon maddesini anar ki kural öğretici olsun.
+  retDersDunyasi: (kod: string): string => yuzeyMetni(
+    `'${kod}' tanımı öğreti rafında (arşiv · örnek · fikstür · şablon) yaşıyor; ürün dosyasından ders dünyasına gezinilmez (OGR-5).`,
+    `The definition of '${kod}' lives on a teaching shelf (archive · example · fixture · template); navigation from a product file into the teaching world is not permitted (OGR-5).`,
+  ),
+  retVarlikSiniri: (kod: string): string => yuzeyMetni(
+    `'${kod}' tanımı başka bir varlığın kökünde yaşıyor; varlık sınırı gezinmeyi durdurur (STR-3 · MIM-1.1).`,
+    `The definition of '${kod}' lives under a different entity root; the entity boundary stops navigation (STR-3 · MIM-1.1).`,
+  ),
+  retTanimYok: (kod: string): string => yuzeyMetni(
+    `'${kod}' ağaçta yalnız metin atfı olarak geçiyor; tanımı olmadığı için gidilecek bir düğüm yok.`,
+    `'${kod}' occurs in the tree only as a text reference; it has no definition, so there is no node to navigate to.`,
+  ),
 } as const;
+
+/**
+ * Ret sebebini kullanıcı cümlesine çevirir — kabuk sebep adını metne KENDİ
+ * çevirmez, çünkü ikinci bir çeviri noktası iki dilin ayrışmasına kapı açar
+ * (YUZ-1.2 deseni: aynı hüküm iki yerde yaşamaz).
+ */
+export function gezinmeRetCumlesi(sebep: GezinmeRetSebebi, kod: string): string {
+  if (sebep === "ders-dünyası") return GEZINME_METINLERI.retDersDunyasi(kod);
+  if (sebep === "varlık-sınırı") return GEZINME_METINLERI.retVarlikSiniri(kod);
+  return GEZINME_METINLERI.retTanimYok(kod);
+}
 
 /**
  * ✅ ATEŞLEMİŞ HATIRLATICININ KAPATILMASI (KYN-YUZ-A03).
