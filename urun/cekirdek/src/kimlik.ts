@@ -437,11 +437,20 @@ function calismaAlaniRaflari(program: Program): string[] {
   const yollar: string[] = [];
   for (const b of program.bildirimler) {
     widgetGez(b, "ÇalışmaAlanı", (ca) => {
-      widgetGez(ca, "Raf", (raf) => {
-        const yol = [...raf.parametreler, ...raf.ozellikler]
-          .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
-        if (yol) yollar.push(yol);
-      });
+      // KİTAPLIK KADEMESİ (Founder hükmü 2026-09-09 · ölçüm 2026-09-10): çatı
+      // artık kardeş projeleri `Kitaplık` olarak duyurur, çünkü dallanan her
+      // klasör bir Kitaplıktır ve kökün altına çıplak Raf yazılmaz. Bu okuyucu
+      // yalnız `Raf` düğümlerini tarıyordu ve hükümden SONRA doğan her çalışma
+      // alanına yapısal olarak kör kalıyordu: kardeş kök bulunamadığı için doğru
+      // yazılmış bir çapraz atıf "ad alanı görünmüyor" hükmü alıyordu. İki tip de
+      // okunur; `Raf` hükümden önce doğmuş çatılar için geriye dönük uyumdur.
+      for (const tip of ["Kitaplık", "Raf"]) {
+        widgetGez(ca, tip, (dugum) => {
+          const yol = [...dugum.parametreler, ...dugum.ozellikler]
+            .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
+          if (yol && !yollar.includes(yol)) yollar.push(yol);
+        });
+      }
     });
   }
   return yollar;
@@ -855,8 +864,61 @@ export function dugumBaglami(metin: string, kod: string): Baglam | undefined {
   return sonuc;
 }
 
-export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi): string {
-  const tanimlar = indeks.tanimlar(kod);
+/**
+ * ORK-4 ÇÖZÜMÜNÜN GEZİNME YÜZÜ (KPS-ADA-A01). Ad alanlı bir kodun tanımı ham
+ * kimlikle aranırsa hiçbir zaman bulunmaz, çünkü indekste `PRJ-A::KOD-X` diye
+ * bir tanım yoktur — tanım `KOD-X` adıyla, `PRJ-A` kapsamının altında yaşar.
+ *
+ * Ölçüm (2026-09-10): `gezin PRJ-SARMAL::TAKIM-CEKIRDEK` çağrısı bu depoda
+ * "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş" diyordu, oysa `PRJ-SARMAL`
+ * bu deponun kendi Proje kodudur ve `TAKIM-CEKIRDEK` is/plan/takimlar.sar
+ * dosyasında ilanlıdır. Yani araç, kanonun ORK-4 hükmünü uyguladığı hâlde
+ * gezinme yüzünde uygulamıyor ve doğru yazılmış bir çapraz atfa kırık diyordu.
+ *
+ * Çözüm üç durumludur ve üçüncüsü dürüstlük içindir: ad alanı YÜKLÜ evrende bir
+ * Proje ise tanım o projenin kapsamında aranır; yüklü değilse çatının duyurduğu
+ * kardeş kökten okunur; ikisi de olmuyorsa araç "tanım yok" demez, AD ALANININ
+ * çözülemediğini söyler. Aradaki fark küçük görünür fakat büyüktür: birincisi
+ * atfın yanlış olduğunu, ikincisi ölçümün yapılamadığını bildirir.
+ */
+export interface AdAlanliCozum {
+  tanimlar: Tanim[];
+  /** Ad alanı çözülemediyse okunabilir gerekçe; çözüldüyse tanımsız. */
+  cozulemedi?: string;
+}
+
+export function adAlanliGezinCozumu(indeks: KimlikIndeksi, kod: string, tarananDizin?: string): AdAlanliCozum {
+  const { adAlani, yerel } = adAlaniAyir(kod);
+  if (adAlani === undefined) return { tanimlar: [] };
+  // ① Ad alanı YÜKLÜ evrende bir Proje mi? Öyleyse yerel parça o Projenin
+  //    kapsam öneki altında aranır — küresel eşleşme burada da bağ değildir.
+  const projeTanimlari = indeks.tanimlar(adAlani).filter((t) => t.tip === "Proje");
+  if (projeTanimlari.length) {
+    const onekler = projeTanimlari.map((t) => kapsamOneki(t.dosya));
+    const kapsamli = indeks.tanimlar(yerel).filter((t) => onekler.some((o) => onekKapsar(o, t.dosya)));
+    if (kapsamli.length) return { tanimlar: kapsamli };
+    return { tanimlar: [], cozulemedi: `ad alanı "${adAlani}" bu evrende çözüldü fakat "${yerel}" o Projenin kapsamında ilan edilmemiş — atıf gerçekten kırık` };
+  }
+  // ② Ad alanı yüklü değilse çatının duyurduğu kardeş kökten okunur.
+  // Kardeş arama başlangıcı TARANAN DİZİNDİR, sürecin çalışma dizini değil:
+  // aynı sorunun cevabı çağıranın nerede durduğuna göre değişemez (YUZ-1.2).
+  const kardes = tarananDizin === undefined
+    ? undefined
+    : catiKardesleri(tarananDizin).find((k) => k.kod === adAlani);
+  if (kardes) {
+    const kardesTanimlari = kardesIndeksi(kardes.kok).tanimlar(yerel);
+    if (kardesTanimlari.length) return { tanimlar: kardesTanimlari };
+    return { tanimlar: [], cozulemedi: `kardeş kök "${adAlani}" bulundu (${kardes.kok}) fakat "${yerel}" orada ilan edilmemiş — atıf gerçekten kırık` };
+  }
+  // ③ Ölçüm yapılamadı: muafiyet DÜRÜSTÇE bildirilir, sessiz geçiş yoktur.
+  return { tanimlar: [], cozulemedi: `ad alanı "${adAlani}" bu kökten görünmüyor: ne yüklü evrende bir Proje kodu, ne de çatı ilanında duyurulmuş bir kardeş kök. Atıf KIRIK DEĞİL, ÖLÇÜLEMEZ; çatı köküne çıkıp denetimi oradan koştur ya da kardeş kökü çatı ilanına ekle` };
+}
+
+export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
+  const hamTanimlar = indeks.tanimlar(kod);
+  // ORK-4: ham kimlikle bulunamayan ad alanlı kod, kanon hükmüyle yeniden çözülür.
+  const adAlanli = hamTanimlar.length ? { tanimlar: hamTanimlar } : adAlanliGezinCozumu(indeks, kod, tarananDizin);
+  const tanimlar = hamTanimlar.length ? hamTanimlar : adAlanli.tanimlar;
   const atiflar = indeks.atiflar(kod);
   const giden = indeks.giden(kod);   // hatırlatıcı-rayı turu: beyanlı çıkış kenarları (ileri-bağlama)
   if (!tanimlar.length && !atiflar.length) {
@@ -869,7 +931,11 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   // kodlarda hangi kapının gerçek olduğu (varlık · şablon · örnek) tek bakışta okunur.
   bolumler.push(tanimlar.length
     ? `TANIM (${tanimlar.length}):\n${tanimlar.map((t) => `${satir(t)}  [${t.tip}${t.ad ? ` · ${t.ad}` : ""}] · ${rozet(t.dosya)}`).join("\n")}`
-    : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
+    // Ad alanlı kodda "tanım yok" demek yanlış bir hükümdür: ölçüm yapılamamış
+    // olabilir. Araç hangisi olduğunu söyler (ORK-4 · KPS-ADA-A01).
+    : adAlanli.cozulemedi
+      ? `TANIM: çözülemedi — ${adAlanli.cozulemedi}.`
+      : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
   // NTK-A06 · BAĞLAM KARTI: üst zincir + kardeşler + çocuklar + koni özeti — ajan,
   // "bu Adım hangi Blok'ta, yanında ne var, ne iş yapar" sorularını tek çağrıda alır.
   if (tanimlar.length && dosyaOku) {
@@ -905,7 +971,7 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
 /** `sarmal gezin <KOD> [dizin]` — F12/⇧F12'nin CLI ikizi (YUZ-1.2 dogfood). */
 export function gezinKomutu(dizin: string, kod: string): number {
   const indeks = dizindenIndeks(dizin);
-  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli);
+  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli, bolgeEtiketi, dizin);
   console.log(rapor);
   return rapor.startsWith("✖") ? 4 : 0;
 }

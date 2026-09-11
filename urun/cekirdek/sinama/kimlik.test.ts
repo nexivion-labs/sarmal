@@ -452,3 +452,90 @@ test("EKL-F10-A12: bağlam kartı dört geribildirim kanalını basar, kanal yok
   const r2 = gezinRaporu(i, "ADM-G2", () => kaynak);
   for (const k of ["teşekkür", "takdir", "onur", "öneri"]) assert.ok(!r2.includes(`  ${k}:`), `kanalsız Adımda '${k}' satırı doğmamalı:\n${r2}`);
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KPS-ADA-A01 · AD ALANLI GEZİNME — üç durumlu dürüst çözüm
+//
+//   Ölçüm (2026-09-10): `gezin PRJ-SARMAL::TAKIM-CEKIRDEK` bu depoda "TANIM: yok
+//   — bu kod hiçbir yerde ilan edilmemiş" diyordu, oysa PRJ-SARMAL bu deponun
+//   kendi Proje kodudur ve TAKIM-CEKIRDEK is/plan/takimlar.sar dosyasında
+//   ilanlıdır. Araç ORK-4 hükmünü denetim yüzünde uyguluyor, gezinme yüzünde
+//   uygulamıyordu; doğru yazılmış bir çapraz atfa kırık diyordu.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("KPS-ADA-A01: ad alanı YÜKLÜ evrendeki Proje ise tanım o projenin kapsamında bulunur", async () => {
+  const { adAlanliGezinCozumu } = await import("../src/kimlik.ts");
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("urun/urun_anadizin.sar", 'Proje( kod: PRJ-URUN, ad: "urun", ne: "x" ) { Takım( kod: TAKIM-CEKIRDEK, ne: "y" ) }');
+  const c = adAlanliGezinCozumu(i, "PRJ-URUN::TAKIM-CEKIRDEK");
+  assert.equal(c.tanimlar.length, 1, "ad alanlı kod kendi projesinin kapsamında çözülmeli");
+  assert.equal(c.tanimlar[0].dosya, "urun/urun_anadizin.sar");
+  assert.equal(c.cozulemedi, undefined, "çözülen kodda gerekçe cümlesi olmaz");
+});
+
+test("KPS-ADA-A01: KÜRESEL EŞLEŞME YASAĞI — ad alanı dışındaki eş kod bağ sayılmaz", async () => {
+  const { adAlanliGezinCozumu } = await import("../src/kimlik.ts");
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("a/a_anadizin.sar", 'Proje( kod: PRJ-A, ad: "a", ne: "x" )');
+  // Aynı kod BAŞKA projenin altında yaşıyor; ad alanı PRJ-A dediği için bağ KURULMAZ.
+  i.dosyaGuncelle("b/plan.sar", 'Takım( kod: TAKIM-ORTAK, ne: "y" )');
+  const c = adAlanliGezinCozumu(i, "PRJ-A::TAKIM-ORTAK");
+  assert.deepEqual(c.tanimlar, [], "başka projedeki eş kod tesadüfî eşleşmedir, bağ değildir");
+  assert.match(c.cozulemedi ?? "", /o Projenin kapsamında ilan edilmemiş/u,
+    "kapsam dışı kalan kod için araç 'gerçekten kırık' demeli");
+});
+
+test("KPS-ADA-A01: ad alanı hiç çözülemiyorsa araç 'tanım yok' DEMEZ, ölçülemediğini söyler", async () => {
+  const { adAlanliGezinCozumu } = await import("../src/kimlik.ts");
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("plan.sar", "// PRJ-UZAK::KOD-X atfı burada geçiyor\n");
+  const c = adAlanliGezinCozumu(i, "PRJ-UZAK::KOD-X");
+  assert.deepEqual(c.tanimlar, []);
+  assert.match(c.cozulemedi ?? "", /KIRIK DEĞİL, ÖLÇÜLEMEZ/u,
+    "muafiyet dürüstçe bildirilmeli — sessiz geçiş de yanlış hüküm de yasaktır");
+});
+
+test("KPS-ADA-A01: gezin raporu ad alanlı kodun tanımını GÖSTERİR (yüzey ile çekirdek ayrışmaz)", () => {
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("urun/urun_anadizin.sar", 'Proje( kod: PRJ-URUN, ad: "urun", ne: "x" ) { Takım( kod: TAKIM-CEKIRDEK, ne: "y" ) }');
+  i.dosyaGuncelle("plan.sar", "// PRJ-URUN::TAKIM-CEKIRDEK atfı\n");
+  const rapor = gezinRaporu(i, "PRJ-URUN::TAKIM-CEKIRDEK");
+  assert.match(rapor, /TANIM \(1\)/u, "ad alanlı kod gezin yüzünde de çözülmeli");
+  assert.doesNotMatch(rapor, /hiçbir yerde ilan edilmemiş/u, "doğru yazılmış atfa kırık denemez");
+});
+
+/** Founder hükmü 2026-09-09 sonrası çatı kardeşleri Kitaplık olarak duyurur;
+ *  okuyucu yalnız Raf tarıyordu ve hükümden sonra doğan her çatıya kör kalıyordu. */
+test("KPS-ADA-A01: çatı kardeşleri KİTAPLIK olarak duyurulduğunda da okunur (Kitaplık hükmü)", async () => {
+  const { catiKardesleri, kardesOnbelleginiTemizle } = await import("../src/kimlik.ts");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const cati = mkdtempSync(join(tmpdir(), "sarmal-ktp-"));
+  try {
+    writeFileSync(join(cati, "cati_anadizin.sar"),
+      'ÇalışmaAlanı( kod: CAL-C, ad: "c", ne: "çatı" ) {\n'
+      + '  Kitaplık( kod: KTP-B, yol: "proje_b/", ne: "kardeş proje" )\n}\n', "utf8");
+    mkdirSync(join(cati, "proje_b"));
+    writeFileSync(join(cati, "proje_b", "proje_b_anadizin.sar"),
+      'Proje( kod: PRJ-B, ad: "b", ne: "kardeş" ) { Takım( kod: TAKIM-B, ne: "y" ) }\n', "utf8");
+    kardesOnbelleginiTemizle();
+    const kardesler = catiKardesleri(join(cati, "proje_b"));
+    assert.deepEqual(kardesler.map((k) => k.kod), ["PRJ-B"],
+      "Kitaplık olarak duyurulmuş kardeş kök çözülmeli — yalnız Raf taramak hükümden sonraki her çatıya kör kalır");
+  } finally {
+    rmSync(cati, { recursive: true, force: true });
+    kardesOnbelleginiTemizle();
+  }
+});
+
+/** Canlı depo nöbeti: bu deponun KENDİ ad alanlı atfı çözülmeli. Ölçülen kusurun
+ *  birebir ikizidir ve kaynak değişirse kırmızı yanar. */
+test("KPS-ADA-A01 · canlı: bu deponun PRJ-SARMAL::TAKIM-CEKIRDEK atfı gezin yüzünde çözülür", async () => {
+  const { dizindenIndeks } = await import("../src/kimlik.ts");
+  const { fileURLToPath } = await import("node:url");
+  const kok = fileURLToPath(new URL("../../..", import.meta.url));
+  const rapor = gezinRaporu(dizindenIndeks(kok), "PRJ-SARMAL::TAKIM-CEKIRDEK", undefined, undefined, kok);
+  assert.match(rapor, /TANIM \(1\)/u, "canlı depoda ad alanlı atıf çözülmeli");
+  assert.match(rapor, /takimlar\.sar/u, "tanım is/plan/takimlar.sar dosyasında bulunmalı");
+});
