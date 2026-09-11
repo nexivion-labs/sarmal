@@ -939,6 +939,11 @@ if (!yolDurumu.isFile()) {
   process.exit(1);
 }
 
+// ── YÜZEY:tekil · BAŞLANGIÇ ── (BKM-DNT-A06) Tek-dosya yüzeyinin üretici çağrı
+//   bölgesi. Kapı kapsamı nöbeti (`yuzeyGercekUreticileri`) bu iki işaret
+//   arasını tarar ve ilanın `tekil` sütunuyla karşılaştırır; işaretler
+//   silinirse nöbet susmaz, bölgenin yokluğunu bildirir. Bölgeye yeni bir
+//   üretici çağrısı girerse ilana da `tekil` yüzeyi yazılmak zorundadır.
 try {
   const kaynak = readFileSync(yol, "utf8");
   const program = ayristir(belirtecle(kaynak));
@@ -973,6 +978,7 @@ try {
   }
   throw e;
 }
+// ── YÜZEY:tekil · BİTİŞ ──
 
 function iskeletiUret(
   program: Parameters<typeof iskeletPlani>[0],

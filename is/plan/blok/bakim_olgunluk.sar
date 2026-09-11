@@ -500,20 +500,82 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
     AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "kapsam kararları",
       ne: "⚖️ Motorun değil Founder'ın verebileceği kararlar: hangi tanının hangi yüzeyde görüneceği ve kaydın gerçeği nasıl söyleyeceği" ) {
 
-      Adım( kod: BKM-DNT-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1 ],
+      Adım( kod: BKM-DNT-A01, ad: "Tanının Panele Ulaşması", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1, HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE, HTR-README-ORNEK-TANILARI-PANELDE-YOK ],
+        onay: "yön kanonda zaten kararlaştırılmıştır — 2026-09-09 · Founder, bir tanıyı hem ajanın hem insanın aynı anda görmesi gerektiğini hatırlatmış ve bunun yeni bir karar değil Sarmal'ın değişmez ilkelerinden biri olduğunu, kararın çok önceden verildiğini bildirmiştir. Kaynaktan doğrulanmıştır ve ilke kanonda iki maddede yaşamaktadır. YUZ-3.1 her görünür ihlalin Problems, hover, komut satırı ve satır yüzlerinden uygulanabilenlerin TÜMÜNDE aynı kod, düzey ve yönlendirmeyle sunulmasını, hiçbir yüzün tanıyı yeniden derecelendirememesini ya da GİZLEYEMEMESİNİ hükme bağlamaktadır. YUZ-3.3 ise hata ve uyarı düzeyli driftin Problems yüzeyine, yalnız bilgi düzeyli ölçüm ile durum işaretlerinin Bildirimler yüzeyine gitmesini hükme bağlamaktadır. Bu iki madde birlikte okunduğunda bu Adımın yönü tektir ve iki yönlü bir seçim yoktur: kapı kapsamı ilanı kanona uydurulur, kanon ilana uydurulmaz. Ölçülen ihlalin büyüklüğü şudur: altmış bir üreticinin otuz dokuzu yalnız komut satırındadır ve bunların altısı hata düzeyinde tanı basmaktadır; hata basan altı üreticinin panelden düşmesi YUZ-3.1'in gizleme yasağının doğrudan ihlalidir. Uyarı düzeyi de aynı hükme girmektedir, çünkü YUZ-3.3 uyarıyı hata ile aynı yüzeye yollamaktadır; dolayısıyla ilanda yalnız bilgi düzeyinde konuşan üreticiler komut satırında kalabilir ve bu ayrım ölçülerek çıkarılır. Adımın gövde metni kanon ile ilan arasında iki yönlü bir müzakere varmış gibi yazılmıştır; bu çerçeve yanlıştır ve aynı turda düzeltilir.",
+        // ── 2026-09-10 · KADEME ÖLÇÜMÜ VE PANEL BEDELİ (üretici ölçümü) ──
+        //   Ölçüm üreticilerin KENDİ gövdelerinden yapıldı: her üreticinin bastığı
+        //   tanı kimlikleri kaynaktan çıkarıldı, `yeniTani` kimlikleri sicilin terfi
+        //   kademesinden, `eskiTani` çağrıları ise düzey argümanından okundu.
+        //   Yardımcıya devreden dört üretici (beyansizYapiTanilari · metinAtifTanilari ·
+        //   dosyalararasiCatismaTanilari · ilansizGovdeDenetle) tek tek kaynaktan
+        //   doğrulandı, çünkü geçişli tarama paylaşılan yardımcılar üstünden kirlenip
+        //   yalnız bilgi basan üreticileri hata gibi gösteriyordu.
+        //
+        //   ÖNCEKİ HÂL: 61 ilan girdisi · 22 panelli · 39 yalnız komut satırında.
+        //   Yalnız komut satırındaki 39 girdinin 30'u hata ya da uyarı düzeyinde
+        //   konuşuyordu (18 hata · 12 uyarı) ve YUZ-3.1'in gizleme yasağını çiğniyordu.
+        //   Adımın gövdesindeki ön ölçüm hata basan üretici sayısını altı olarak
+        //   yazmıştı; bağımsız sayım bu rakamın üç katından fazlasını göstermiştir.
+        //
+        //   BUGÜNKÜ HÂL: 61 girdi · 52 panelli · 9 yalnız komut satırında; dokuzunun
+        //   dokuzu da YALNIZ bilgi düzeyinde konuşur ve dokuzu da gerekçe cümlesi
+        //   taşır. Hata ya da uyarı basıp panele ulaşamayan üretici sayısı SIFIRDIR.
+        //
+        //   PANEL BEDELİ: panel turu `denetimKos` TAM akışını zaten koşmaktadır ve
+        //   ilan yalnız hangi tanının Problems yüzeyine geçeceğini süzmektedir.
+        //   Ölçüm bunu doğrulamıştır: eski ilanla tur 469 ms, yeni ilanla 428 ms
+        //   sürmüştür ve aradaki fark ölçüm gürültüsüdür, çünkü motor iki hâlde de
+        //   aynı üreticileri koşturur. Değişen tek şey panele GEÇEN tanı sayısıdır:
+        //   bu depoda 1 iken 52 olmuştur. Kararın motor maliyeti sıfırdır; artan şey
+        //   yalnız gösterimdir ve gösterim maliyeti panel kipiyle çözülür.
+        //
+        // ── 2026-09-09 · CANLI KANIT (kontrolcü ölçümü, oturum içinde üretildi) ──
+        //   Founder plan dosyasına bir düğüm yazdı, komut satırı denetimi bir uyarı
+        //   verdi ve editörün Sorunlar paneli aynı anda "Çalışma alanında sorun
+        //   algılanmadı" dedi; Founder bunu kendi penceresinde görüp bildirdi.
+        //   Uyarı `kırık-referans` idi ve onu üreten `referansTanilari` bu ilanda
+        //   yalnız komut satırına ayrılmıştır. Aynı turda `geçersiz-enum` tanısı
+        //   panele ULAŞTI, dolayısıyla körlük tanı ailesine göre değişmektedir ve
+        //   kullanıcı hangi ailenin görüneceğini hiçbir yüzeyden okuyamaz.
+        //   Kapsam ölçümü aynı gün yenilendi: ilanda altmış bir üretici vardır,
+        //   otuz dokuzu YALNIZ komut satırındadır ve yirmi ikisi panele ulaşır.
+        //   Otuz dokuzun içinde bugün iki ayrı olayın sebebi olan iki üretici
+        //   birden durmaktadır: `anadizinSekliTanilari` (yeni bir ağaç yanlış
+        //   kurulduğunda hata düzeyinde konuşan bekçi) ve `referansTanilari`.
+        //   Yani Founder'ın yanlış ağacın üstüne inşa etmesinin ve plandaki
+        //   hatayı anlık yakalayamamasının kaynağı bu ilanın kendisidir.
+        //
+        //   KONTROLCÜNÜN ÖN ÖLÇÜMÜ YANLIŞ ÇIKTI — düzeltme kayda geçer. Kontrolcü
+        //   otuz dokuz üreticinin yalnız ALTISININ hata bastığını yazmış ve bunu
+        //   kaynak taramasıyla çıkarılmış bir ön ölçüm olarak, bağımsız doğrulama
+        //   şartıyla beyan etmişti. Doğrulama üretici tarafından yapılmış ve sayı
+        //   üç kattan fazla çıkmıştır: yalnız komut satırındaki otuz dokuz girdinin
+        //   OTUZU hata ya da uyarı basmaktadır, yani on sekizi hata ve on ikisi
+        //   uyarıdır. Kontrolcünün taraması üretici işlevlerinin gövdesini kaba bir
+        //   düzenli ifadeyle bölmüş ve dolaylı çağrıyla üretilen tanıları saymamıştı.
+        //   Ders tek cümledir: ön ölçüm karar hazırlar, hüküm vermez; bu ayrımı
+        //   yazmak ölçümü yanlış olmaktan kurtarmaz, yalnız yanlışı yakalanabilir
+        //   kılar. YUZ-3.3 uyarıyı hata ile aynı yüzeye yolladığı için otuzun
+        //   tamamı panele taşınmıştır.
         üretir: [ KOD-KAPI-KAPSAMI ],
         ne: "⚖️ Kırk üreticinin yüzey kararının Founder hükmüyle verilmesi. Kapı kapsamı ilanı altmış bir üreticinin kırkını yalnız komut satırına ayırmaktadır ve bu kırk satırın otuz yedisi hiçbir gerekçe taşımaz; blok yorumu kararı açıklamak yerine kararın o Adımda ele alınmadığını yazar. Kaydın kendisi (`is/nitelik/kapi_kapsami.sar`) ve KYN-MTR-A05 Adımının sınır alanı yüzey kararının Founder hükmü olduğunu söyler, fakat o hüküm hiç verilmemiş ve hiçbir halef Adıma bağlanmamıştır; kırk satır bilinçli bir kararın kaydı değil, verilmemiş bir kararın bugünkü fotoğrafıdır. Ölçüm ağırdır: on beş üreticinin ürettiği elli dokuz tanı kimliği için kanon maddesinin zorlama satırı Problems ya da Bildirimler yüzeyi isterken ilan yalnız komut satırı der; aralarında hata düzeyinde olanlar (kimlik omurgası, mühür kırılması, ebedî kural silinmesi) ve panel yüzeyi hükmünün bekçisi olan YUZ maddelerinin kendi tanıları da vardır. Sicildeki yüz yetmiş beş kimliğin seksen dördü bugün panele yapısal olarak ulaşamamaktadır. Bu Adım kırk satırın her biri için karar verir: ya ilan kanona çekilir ya da kanon maddesinin yüzey cümlesi Founder kapısından değiştirilir; üçüncü bir yol yoktur, çünkü kanon ile motorun ayrışması aracın sattığı güvencenin merkezindedir." ) {
         görev: [
-          "On beş kanon ayrışmasını (rejim, omurga, ilişki sınıfı, kimlik, şef akışı, dil kanonu, öğretim, strateji, tip evreni, terfi kanıtı, yüz, mühür, birleşim çatışması, ebedî kural) Founder ile tek tek gözden geçir; her biri için ya ilana panel yüzeyi eklenir ya da kanon maddesinin yüzey cümlesi değiştirilir ve karar gerekçesiyle ilan satırının üstüne yazılır.",
-          "Kanonun yüzey beyanı taşımadığı dokuz üretici için kararı Founder verir ve gerekçesi yazılır; kanonun yalnız komut satırı dediği on beş üretici bugünkü hâlinde kalır ve bu da gerekçe olarak yazılır.",
-          "Kararlar verildikten sonra kanon ile ilanın uyumunu ölçen genel nöbet kurulur (BKM-DNT-A11); nöbet bu Adımdan önce kurulursa on beş ayrışma yüzünden kırmızı doğar ve karar yerine gürültü üretir."
+          "İlanı kanona uydur: hata ya da uyarı düzeyinde tanı basan her üretici panel yüzeyine de yazılır, çünkü YUZ-3.3 iki kademeyi de Problems yüzeyine yollamakta ve YUZ-3.1 hiçbir yüzün tanıyı gizlemesine izin vermemektedir. Yön tektir ve kanon maddesi bu Adımda değiştirilmez.",
+          "Hangi üreticinin hangi kademede konuştuğunu üreticinin kendi gövdesinden ölç ve listeyi kayda yaz: yalnız bilgi düzeyinde konuşan üreticiler komut satırında kalabilir ve kalma gerekçesi ilan satırının üstüne yazılır. Ön ölçüm altmış bir üreticinin otuz dokuzunun yalnız komut satırında olduğunu ve bunlardan altısının hata bastığını göstermiştir; kesin sayım bu Adımda bağımsız olarak yenilenir.",
+          "Kanonun yüzey beyanı taşımadığı üreticiler için beyanı kanondan türet: tanının kademesi hangi yüzeyi gerektiriyorsa o yazılır; beyansız üretici için Founder'a soru taşınmaz, çünkü kural kademeyi zaten yüzeye bağlamaktadır.",
+          "Panelin performans bedelini ölç ve kayda yaz: taşınan üreticilerin panel turuna eklediği süre, panel kipi ölçümünün taban sayılarıyla karşılaştırmalı olarak verilir. Bedel ölçülür fakat hükmü değiştirmez; hüküm kanondadır ve maliyet panel kipiyle çözülür.",
+          "Kanon ile ilanın uyumunu ölçen genel nöbet kurulur (BKM-DNT-A11) ve bu kez ayrışmanın gerçek hâlini görecek biçimde kurulur: bir üreticinin bir yüzeyde farklı görünmesi kadar, o yüzeyde HİÇ görünmemesi de ayrışmadır. Bugün ilan edilmiş iki nöbetin neden ateşlemediği 2026-09-09 tarihinde kaynaktan ölçülmüştür ve sebep üç katmanlıdır. BİRİNCİSİ, iki nöbet de yalnız o koşuda FİİLEN ÜRETİLMİŞ tanıların üzerinde dönmektedir; birincisi üretilen tanının düzeyini sicildeki kademeyle ve aynı koşudaki öteki düzeylerle karşılaştırmakta, ikincisi üretilen tanının yönlendirildiği yüzeyi beklenen yüzeyle karşılaştırmaktadır. Panelde hiç koşmayan bir üretici hiçbir tanı üretmez, dolayısıyla iki kümeye de hiç girmez; nöbetler yapısal olarak yalnız FARKLI GÖRÜNME hâlini görür ve HİÇ GÖRÜNMEME hâlini göremez. İKİNCİSİ, ikinci nöbet yönlendirme tablosu verilmediğinde tümüyle susmaktadır ve kodun kendi gerekçesi bunu yapılmamış bir yönlendirmenin bozulmuş sayılamayacağı biçiminde yazmaktadır; gerekçe makuldür fakat sonucu sessizliktir. ÜÇÜNCÜSÜ, nöbetin kendisi panel yüzeyine çıkmamaktadır ve bunu kapı kapsamı ilanının kendi yorum satırı yazmaktadır; yani bir tanının bir yüzeye ulaşmadığını bildirecek bekçi tam da o yüzeye kendisi ulaşamamaktadır. Onarım bu üç katmanı birden kapatır: nöbet ÜRETİLEN tanılar kümesini değil İLAN EDİLEN üretici kümesini taban alır ve bir üreticinin kanonun gerektirdiği yüzeyde ilan edilmemiş olmasını başlı başına ayrışma sayar; yönlendirme tablosu verilmediğinde susmak yerine tablonun yokluğunu bildirir; ve nöbet kendi hükmü gereği panel yüzeyine çıkar."
         ]
         kabul: [
-          "Kırk komut satırı girdisinin her biri ilanda bir gerekçe cümlesi taşır ve gerekçesiz girdi sayısı sıfırdır.",
-          "Kanon maddesinin yüzey cümlesi ile ilanın yüzey listesi arasında ayrışma kalmamıştır; kalanlar Founder hükmüyle kanon tarafında değiştirilmiştir ve o değişiklikler kanon mührünü usulünce tazelemiştir.",
-          "Panele ulaşamayan kimlik sayısı yeniden ölçülmüş ve kayda yazılmıştır."
+          "Yalnız komut satırında kalan her ilan girdisi bir gerekçe cümlesi taşır ve gerekçesiz girdi sayısı sıfırdır.",
+          "Hata ya da uyarı düzeyinde tanı basıp panele ulaşamayan üretici sayısı SIFIRDIR; bu sayı üreticilerin kendi gövdelerinden bağımsız olarak ölçülmüş ve kayda yazılmıştır.",
+          "Komut satırında kalan üreticilerin tamamı yalnız bilgi düzeyinde konuşmaktadır ve bu da aynı ölçümle gösterilmiştir.",
+          "Kanon maddesi bu Adımda değiştirilmemiştir; ayrışma yalnız ilan tarafında kapanmıştır.",
+          "Panelin ölçülen performans bedeli kayıttadır ve panel kipi taban sayılarıyla karşılaştırılmıştır.",
+          "Bir üreticinin bir yüzeyde hiç görünmemesi hâlini gören nöbet canlıdır; bu, bir üreticiyi geçici olarak ilandan düşürüp nöbetin kırmızıya döndüğü gösterilerek kanıtlanmıştır."
         ]
-        sınır: "Bu Adım tek başına hiçbir üreticiye panel yüzeyi eklemez ve hiçbir kanon maddesini değiştirmez; yalnız kararları toplar. Kararların uygulanması, karar başına ayrı bir işleme olarak bu Adımın koşu kaydında izlenir. Ateşlemiş hatırlatıcı (2026-08-28) ve önceliksiz Adım (BKM-DNT-A04) kararları bu Adımdan önce verilmiştir, çünkü kanon o ikisi için Bildirimler yüzeyini açıkça yazmaktadır."
+        sınır: "Bu Adım hiçbir kanon maddesini değiştirmez; ayrışma yalnız ilan tarafında kapatılır. Bu cümlenin önceki hâli Adımın kendi onay alanıyla çelişiyordu ve 2026-09-10 tarihinde düzeltilmiştir: eski metin Adımın hiçbir üreticiye panel yüzeyi eklemeyeceğini, yalnız kararları toplayacağını yazıyordu, oysa onay alanı yönün Founder hükmüyle kapandığını ve ilanın kanona uydurulacağını bildirmektedir. İki yönlü müzakere çerçevesi yanlıştı ve onay alanı onun aynı turda düzeltileceğini zaten yazmıştır. Kapsam dışı kalan tek kalem şudur: kanon uyum nöbetinin kendi tanısını panel yüzeyine basması bir tanı kimliği ile ona karşılık gelen kanon maddesini gerektirir, dolayısıyla kanona dokunmayı yasaklayan bu sınırın dışındadır ve ayrı bir Adımın işidir. Ateşlemiş hatırlatıcı (2026-08-28) ve önceliksiz Adım (BKM-DNT-A04) kararları bu Adımdan önce verilmiştir, çünkü kanon o ikisi için Bildirimler yüzeyini açıkça yazmaktadır."
+        koşu: "2026-09-10 · KAPANDI. İlan kanona uyduruldu ve ayrışma tek yönde kapandı: altmış bir girdinin panele ulaşanı yirmi ikiden elli ikiye çıktı, yalnız komut satırında kalan dokuz girdinin dokuzu da yalnız bilgi düzeyinde konuşmakta ve her biri gerekçe cümlesi taşımaktadır; hata ya da uyarı basıp panele ulaşamayan üretici sayısı sıfırdır. Bu deponun kendi koşusunda panele geçen tanı sayısı birden elli ikiye çıkmıştır ve motorun maliyeti değişmemiştir, çünkü denetim aynı üreticileri iki hâlde de koşturmaktadır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz altmış ikide bin iki yüz altmış iki, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; kontrolcü ayrıca kendi mutasyonunu koşturdu ve atıf üreticisini panelden düşürdüğünde on beş nöbetin altısı kırmızıya döndü, kaynak birebir geri konduğunda on beşi de yeşile döndü. Kontrolcünün ön ölçümü yanlış çıkmış ve düzeltilmiştir: hata basan üretici sayısı altı değil, hata ile uyarı basan girdi sayısı otuzdur. Kapsam dışı kalan tek kalem kanon uyum nöbetinin kendi tanısını panele basmasıdır ve o iş kanon maddesi gerektirdiği için ayrı bir Adımı bekler."
         dokunulmaz: [ "Kapsam nöbetinin ad kümesi eşitliği sözleşmesi", "Panel süzgecinin üretici damgasıyla süzme mekanizması" ]
       }
 
@@ -587,8 +649,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Düğmenin işlevi değişmez; yalnız görünürlük koşulu gerçeğe çekilir. Canlı pencere doğrulaması Founder'ındır."
       }
 
-      Adım( kod: BKM-DNT-A06, durum: beklemede, öncelik: p2, bağımlı: [], referans: [ MIM-3 ],
-        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI ],
+      Adım( kod: BKM-DNT-A06, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ MIM-3 ],
+        üretir: [ KOD-KAPI-KAPSAMI, KOD-SNM-KAPI-KAPSAMI, KOD-CLI-KAPISI ],
         ne: "📜 Kapı kapsamı ilanının fiilî davranışın ölçümü hâline gelmesi. İlanın başlık yorumu kapsamı 'bugünkü fiilî davranışın ölçümü' diye tanımlar, fakat üç yerde gerçekten ayrışır. Birincisi, `dogusEksikTanilari` üreticisi yalnız MCP yüzeyinde koşar ve ilanda hiç yoktur; kapsam nöbeti bunu göremez, çünkü yalnız denetim hattının kaynağını okur ve MCP çağrı kümesini taramaz. İkincisi, AltKatman tekilliği üreticisi tek-dosya yüzeyini ilan eder, oysa tek-dosya yolu yalnız doğrulayıcıyı çağırır ve bu üreticiye hiç uğramaz; beyan ölçüm değildir. Üçüncüsü, MCP'nin proje denetimi aracı komut satırını alt süreç olarak koşturur, dolayısıyla altmış bir üreticinin tamamı fiilen MCP yüzeyinde çalışır ve çıktısı ajana ulaşır, oysa ilan yalnız doğrulayıcıya MCP yazar. Üçü de nöbetsizdir ve nöbetsiz oldukları için sessizdir." ) {
         görev: [
           "Kapsam nöbetini MCP ve tek-dosya yollarını da tarayacak biçimde genişlet; her yüzey için gerçek çağrı kümesi kaynaktan çıkarılır ve ilanla karşılaştırılır.",
@@ -600,6 +662,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "İlanda beyan edilip çağrılmayan ya da çağrılıp beyan edilmeyen üretici sayısı her yüzeyde sıfırdır."
         ]
         sınır: "Hangi üreticinin hangi yüzeyde koşacağı kararı bu Adımın değil BKM-DNT-A01'in konusudur; bu Adım yalnız ilanın gerçeği söylemesini sağlar."
+        koşu: "2026-09-10 · KAPANDI. Kapı kapsamı ilanı artık dört yüzeyi birden tarıyor ve Adımın saydığı üç ayrışmanın üçü de kapandı; ikisi nöbetin ilk fikstürü oldu. Doğuş eksikliğini bildiren üretici ilanda HİÇ yoktu ve yalnız sunucu yolundan çağrılıyordu, ilana girdi; alt katman tekilliği üreticisinin tek-dosya beyanı ölçümle yanlış çıktı ve düştü; alt süreç köprüsü üretici başına değil kural olarak yazıldı. Bir tasarım kararı gerekçesiyle beyana çevrildi: panele ulaşmayan bir uyarı üreticisine yüzey vermek bir YÜZEY kararıdır ve bu Adımın sınırı onu başka bir Adıma bırakır, bu yüzden var olan düzen panel ikizi beyanıyla ölçülür hâle getirildi ve ikizin gerçekten panelde yaşadığı mutasyonla kanıtlandı. Her yüzeyde ilan fazlası ve kayıt fazlası sıfırdır."
       }
 
       Adım( kod: BKM-DNT-A07, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YUZ-1.2, YUZ-4.1 ],
