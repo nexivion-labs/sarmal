@@ -15,7 +15,7 @@ Sarmal bu hafızayı tek bir kaynağa indirir. Plan dört eksende yazılır: zam
 
 ## Nasıl çalışıyor: gerçek bir örnek
 
-Doğuş paketiyle doğan küçük bir projede şu Blok yazılmış olsun (`plan/randevu.sar`):
+Doğuş paketiyle doğan küçük bir projede şu Blok yazılmış olsun (`is/plan/randevu.sar`):
 
 ```sar
 Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
@@ -38,9 +38,9 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 Birinci Adım tamamlandı diyor ama `src/randevu.ts` diskte yok; ikinci Adım hiç yazılmamış bir karara atıf veriyor. `sarmal denetle .` bunu şöyle bildirir (çıktı gerçektir, satırlar kırılmıştır):
 
 ```
-✖ plan/randevu.sar:9:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
   bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ plan/randevu.sar:11:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
 ```
 
@@ -49,9 +49,10 @@ Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder:
 ```
 ✖ [beyansız-yapı] 'src/' diskte var ama randevu_anadizin.sar'da ilan edilmemiş — açılan her
   klasör giriş dosyasında bildirilmelidir; ilansız yapı zamanla plandan kopar.
+   ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Klasör ilan edilince karne temizdir: on altı düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
+Klasör ilan edilince karne temizdir: yirmi düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
 
 ## Çalışma ağacı
 
@@ -59,17 +60,26 @@ Sarmal'da her şey bir ağaçtır ve ağacın kökü projenin giriş dosyasıdı
 
 ```
 randevu/
-├── randevu_anadizin.sar   giriş dosyası: Proje, Raflar, Teknoloji ve Takım burada ilan edilir
-├── plan/                  Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya
-│   ├── ilk_plan.sar
-│   └── randevu.sar
-├── durum/durum_devir.sar  nerede kaldık: oturum sonu devir kaydı
-├── ogrenme/               dersler ve geribildirim; Bellek buradan Beceriye yükselir
-├── AGENTS.md              ajan yönergesi (CLAUDE.md ile bayt özdeş ikiz)
-└── src/                   kod; diskte açılan her klasör giriş dosyasında ilan edilmek zorundadır
+├── randevu_anadizin.sar        giriş: Proje → Kitaplık → Raf, Teknoloji ve Takım burada ilan edilir
+├── is/                         işin kitaplığı
+│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya
+│   │   ├── ilk_plan.sar
+│   │   └── randevu.sar
+│   └── durum/durum_devir.sar   nerede kaldık: oturum sonu devir kaydı
+├── ogreti/ogrenme/             dersler ve geribildirim; Bellek buradan Beceriye yükselir
+├── oz/siniflama/isaretci.json  tip kanonu işaretçisi; eklenti kanon kaydını bu raftan çözer
+├── CLAUDE.md · AGENTS.md       ajan yönergesi (ikisi bayt özdeş ikizdir)
+├── .mcp.json                   Sarmal MCP sunucusunun kaydı — ajan araçlara buradan bağlanır
+├── .claude/                    settings.json ve kanca/: denetim kapısı ile doğuş kilidi
+├── .gitignore                  "!*.sar" istisnası; küresel yok sayma plan hafızasını yutamaz
+└── src/                        kod; diskte açılan her klasör giriş dosyasında ilan edilmek zorundadır
 ```
 
-Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası hangi klasörün ne için var olduğunu Raf olarak yazar ve ilansız klasör motor için drifttir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve mevsimler arasında sürebilir, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
+Çizimdeki `randevu.sar` ile `src/` klasörü işin kendisine aittir; geri kalan on üç dosyanın
+tamamını `dogus` aracı yazar ve hiçbiri elle kurulmaz. Çalışma alanı türü seçilirse
+aynı paket iki kere doğar: bir kere çatı için, bir kere de çatının altındaki ilk proje için.
+
+Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası dallanan her klasörü Kitaplık, bir Kitaplığın içindeki her yaprak klasörü Raf olarak yazar ve ilansız klasör motor için drifttir. Kitaplık kademesi atlanamaz; kökün altına çıplak Raf dizilirse ağaç büyüdükçe giriş dosyası okunamaz bir liste hâline gelir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve mevsimler arasında sürebilir, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
 
 ## Ajanlar için ne değişiyor
 
@@ -77,7 +87,7 @@ Aynı dosyaları MCP sunucusu ajana on sekiz araçla açar. `sef` bir Adımın k
 
 ## TEK TEKNOLOJİYLE, TEK AJANLA KÜÇÜK BİR PROJE YAPACAKSANIZ SARMAL SİZE TAVSİYE EDİLMEZ
 
-Dürüst olalım: tek dilli, tek teknolojili, birkaç haftalık bir iş için Sarmal ağırdır. Yüz elli yedi maddelik bir kanon, yetmiş dört tanı ve altı kademeli bir plan ağacı, üç ekranlık bir uygulamanın taşıyamayacağı bir törendir; o işte iyi bir README ve Git yeter. Sarmal'ın değeri üçüncü haftada, bir kararın gerekçesini ararken ya da kod plandan koptuğunda hissedilir; ondan önce yalnız bedelini ödersiniz.
+Dürüst olalım: tek dilli, tek teknolojili, birkaç haftalık bir iş için Sarmal ağırdır. Yüz on dokuz maddelik bir kanon, yüz yetmiş beş tanı ve altı kademeli bir plan ağacı, üç ekranlık bir uygulamanın taşıyamayacağı bir törendir; o işte iyi bir README ve Git yeter. Sarmal'ın değeri üçüncü haftada, bir kararın gerekçesini ararken ya da kod plandan koptuğunda hissedilir; ondan önce yalnız bedelini ödersiniz.
 
 ## BİRDEN ÇOK YAPAY ZEKÂ AJANIYLA ON CİVARI TEKNOLOJİYİ BİR ARAYA GETİRİYORSANIZ YA DA SEKTÖREL VEYA KİŞİSEL BİR İŞLETİM SİSTEMİ KURUYORSANIZ SARMAL BUNUN İÇİN YAPILDI
 
