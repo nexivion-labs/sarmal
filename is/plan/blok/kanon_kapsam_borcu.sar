@@ -241,6 +241,47 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         sınır:      "Bu Adım kanon metnine dokunmaz; ORK-4 hükmü olduğu gibi kalır. Kod kimliklerinin projeler arasında birleştirilmesi (MIM-1.1 ortak kimlik kökü) bu Adımın işi değildir. Çözüm yalnız çatı anadizininde ilan edilmiş kardeş kökleri tanır; ilansız klasör kardeş sayılmaz."
         dokunulmaz: [ "Kanonun kaynak metni", "Kapalı depoların plan içerikleri (yalnız atıf yazımı değişir)" ]
       }
+
+      Adım( kod: KPS-FAZ-A01, ad: "Fazın Projeye Bağlanması", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ MIM-1.2, HTR-FAZ-PROJE-KENARI-GRAFTA-YOK ],
+        üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-KPS-FAZ-COZUCU, KOD-SNM-FAZ-PROJE ],
+        ne: "🌀 Fazın hangi Projenin zaman dilimi olduğunun graftan okunabilmesi. MIM-1.2 hükmü Fazın Proje içindeki zaman dilimini kurduğunu hata düzeyinde yazmakta, motor ise bu hükmün yalnız Blok ile Faz arasındaki yarısını zorlamakta, Faz ile Proje arasındaki yarısını hiç kurmamaktadır. Ölçüm kontrolcü tarafından 2026-09-09 tarihinde bağımsız olarak yapılmıştır ve şudur: Sarmal'ın kendi Proje kökü sorulduğunda graf otuz üç düğüm döndürmekte, bu düğümlerin tamamı Kitaplık, Raf, Teknoloji ve Sınıflama olmakta, sıfır Faz, sıfır Blok ve sıfır Adım gelmektedir; üç canlı Fazın kapsayan alanı boştur. Kusurun kökü şudur: kapsayan alanı yalnız iç içe yazımdan türemektedir ve plan dosyaları kendi Proje köklerinin altında yaşadıkları hâlde bu klasör bağı grafa kenar olarak inmemektedir. Klasör bağının motorda bilindiği ayrıca ölçülmüştür, çünkü proje köksüz üretim bekçisi bir üretken düğümün hangi Proje kökünün altında yaşadığını klasörden okumaktadır. Sonucun iki somut bedeli vardır: bir Fazın hangi projeye ait olduğu graftan okunamaz ve iki projeli bir çalışma alanında iki Faz yan yana durduğunda aidiyeti yalnız dosya yolu söyler." ) {
+        görev: [
+          "Yükleyici, bir plan dosyasının yaşadığı Proje kökünü o dosyadaki üst kademesiz plan düğümlerine kapsayan olarak normalize etsin; çevrim mevsim normalizasyonunun ikizidir ve motorda tek noktada yaşar.",
+          "Normalizasyon yalnız klasör bağının tekil ve kesin olduğu yerde kurulsun: dosya bir Proje kökünün altında yaşamıyorsa ya da birden çok kök adayı varsa çevrim uygulanmaz ve düğüm köksüz kalır; sessiz başarı taklidi yapılmaz.",
+          "Projesiz Faz bekçisi bu Adımda DOĞMAZ ve KPS-FAZ-A02 Adımına devredilir. Sebep 2026-09-10 tarihinde ölçülmüştür ve bu Adımın kendi iç çelişkisidir: bekçiyi doğurmak sicile bir tanı kaydı eklemeyi, sicile eklenen her tanı ise kanonda ona karşılık gelen bir zorlama iddiası yazmayı zorunlu kılmaktadır; oysa bu Adımın dokunulmaz listesi kanonun kaynak metnini kapsamaktadır. Üretici bekçiyi denemiş, motorun üçlü senkron nöbeti onu sicilde olup kanonda karşılığı bulunmayan tanı gerekçesiyle durdurmuş ve üretici kanona dokunmayıp ölü gövde de yazmamıştır; davranış doğrudur, kusur Adımın yazımındadır.",
+          "Yol haritası paneli Fazları ait oldukları projenin altında göstersin; iki projeli bir çalışma alanında iki Fazın aidiyeti panelden okunsun.",
+          "Nöbet kur: iki Projeli bir fikstür çalışma alanında her Fazın kapsayanı kendi Projesidir, kök dışında yaşayan bir plan dosyasının Fazı köksüz kalır ve bekçi onu bildirir."
+        ]
+        kabul: [
+          "Sarmal'ın kendi Proje kökü sorulduğunda graf o projenin Fazlarını, Bloklarını ve Adımlarını döndürür; bugünkü sıfır sayısı ölçümle karşılaştırmalı olarak kayda yazılmıştır.",
+          "İki Projeli fikstürde her Fazın kapsayanı kendi Projesidir ve tesadüfî eşleşme hiçbir zaman bağ sayılmaz; ikisi de mutasyonla kanıtlanmıştır.",
+          "Yol Haritası panelinde Fazlar kendi projelerinin altında görünür; ölçüm panelin aidiyeti graftan değil kendi klasör yürüyüşünden çözdüğünü ve iki Projeli fikstürde zaten doğru sonuç verdiğini göstermiştir, dolayısıyla bu ölçüt kod değişikliği olmadan karşılanmıştır.",
+          "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım kanon metnine dokunmaz; MIM-1.2 hükmü olduğu gibi kalır. Bağın yazım yeri değişmez ve hiçbir plan dosyasına elle kapsayan kenarı eklenmez; bağ klasörden türetilir. Çapraz proje ad alanının çözümü KPS-ADA-A01, projesiz Faz bekçisi ise KPS-FAZ-A02 Adımının işidir ve burada yinelenmez."
+        dokunulmaz: [ "Kanonun kaynak metni", "Plan dosyalarının iç içe yazımı" ]
+        koşu: "2026-09-10 · KAPANDI. Proje çevrimi kimlik çözücüsünde tek kaynakta doğdu ve graf kurulumunda okundu; Sarmal'ın kendi Proje kökü sorulduğunda dönen düğüm sayısı otuz üçten yedi yüz üçe çıktı ve beş Fazın beşi de Proje kapsayanına bağlandı, ürün ağacında köksüz plan düğümü kalmadı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: tür denetimi sıfır hata, proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz kırk dörtte bin iki yüz kırk dört, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; dört ayrı mutasyon nöbetleri kırmızıya düşürdü ve denetim süresinde gerileme ölçülmedi. Projesiz Faz bekçisi bu Adımda doğmadı ve gerekçesi dürüstçe beyan edilir: bekçi kanona bir zorlama satırı yazmayı gerektirmektedir, o metin bu Adımın dokunulmazıdır ve iş KPS-FAZ-A02 Adımına devredilmiştir."
+      }
+
+      Adım( kod: KPS-FAZ-A02, ad: "Projesiz Faz Bekçisi", durum: beklemede, onay: "onaylandı — 2026-09-10", öncelik: p2, bağımlı: [ KPS-FAZ-A01 ],
+        referans: [ MIM-1.2, YAS-3.4 ],
+
+        ne: "🛡️ Bir Fazın hiçbir Projeye çözülememesini bildiren bekçinin doğması. KPS-FAZ-A01 turunda Faz ile Proje arasındaki bağ motorda kuruldu, fakat bağın KURULAMADIĞI hâli bildiren bir tanı doğmadı ve sebebi 2026-09-10 tarihinde ölçüldü: sicile kayıtlı her tanının kanonda kendisine karşılık gelen bir zorlama iddiası taşıması gerekmektedir ve motorun üçlü senkron nöbeti bunu hata düzeyinde zorlamaktadır, oysa önceki Adımın dokunulmaz listesi kanonun kaynak metnini kapsıyordu. Bu Adım o kapıyı Founder önüne taşır. Bugünkü gerçek şudur: ürün ağacında köksüz plan düğümü kalmamıştır fakat ders dünyasında on yedi köksüz düğüm vardır, dolayısıyla doğrudan hata düzeyi seçilirse ders malzemesi kırmızıya döner ve kademeli bir düzey gerekir. Ayrıca ölçüm bir ayrışma daha bildirmiştir: kök dışında yaşayan bir plan dosyası için yol haritası paneli klasör adından sahte bir Proje üretmekte, motor ise aynı düğümü dürüstçe köksüz bırakmaktadır; iki yüzey aynı olguda iki ayrı gerçek söylemektedir ve bekçi doğarken bu ayrışma da kapanır." ) {
+        görev: [
+          "Founder hükmü alınır: MIM-1.2 maddesine projesiz Fazı bildiren bir zorlama iddiası satırı eklenir mi, eklenirse hangi düzeyde. Kanon metnine dokunmak Founder kapısıdır ve üretici kendi başına kilitli karar üretemez.",
+          "Hüküm alındıktan sonra tanı sicile eklenir ve bekçi motorda doğar; düzey ders dünyasını kırmızıya boyamayacak biçimde kademeli kurulur ve muafiyetin gerekçesi kayda yazılır.",
+          "Panel ile motorun ayrışması kapanır: kök dışında yaşayan bir plan dosyası için panel sahte Proje uydurmaz, motorun dürüst köksüz hükmünü gösterir.",
+          "Nöbet kur: kök dışında yaşayan bir Faz bekçiyi ateşler, kök altında yaşayan bir Faz ateşlemez ve ders dünyasındaki on yedi düğüm beyanlı muafiyetiyle sessiz kalır."
+        ]
+        kabul: [
+          "Kanon maddesi Founder hükmüyle tazelenmiştir ve sicildeki tanı ile kanondaki zorlama iddiası arasında ayrışma yoktur; üçlü senkron nöbeti yeşildir.",
+          "Bekçi canlıdır ve mutasyonla kanıtlanmıştır: çevrim geçici olarak söküldüğünde bekçi kırmızıya döner.",
+          "Ders dünyasındaki on yedi köksüz düğüm beyanlı muafiyetle sessizdir ve muafiyet gerekçesiyle kayıtlıdır.",
+          "Panel ile motor aynı olguda aynı gerçeği söyler; sahte Proje üretimi kalmamıştır.",
+          "Çekirdek ile eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım Faz ile Proje arasındaki bağın kendisine dokunmaz; o bağ KPS-FAZ-A01 turunda kurulmuştur ve çalışmaktadır. Kanon metnine yalnız Founder hükmü geldikten sonra ve yalnız hükmün tarif ettiği kadar dokunulur."
+      }
     }
 
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
@@ -273,3 +314,13 @@ Kod( kod: KOD-KPS-SICIL, dosya: "is/nitelik/kanon_kapsam_sicili.sar",
 // 🍎 KPS-MVS-A01 birinci teslim (2026-08-27): mevsim vade nöbeti
 Kod( kod: KOD-SNM-MEVSIM-VADE, dosya: "urun/cekirdek/sinama/mevsim-vade.test.ts",
   ne: "🍎 Mevsim vade nöbeti — altı sınama: vadesi geçmiş mevsimin açık işi bildirilir, vadesi gelmemiş mevsim susar, kapanmış mevsim rahat bırakılır, mevsim alanıyla kurulan bağ da görülür, ay hassasiyeti ay sonundan ölçülür ve ders dünyası muaftır; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MVS-A01)" )
+
+// 🍎 KPS-FAZ-A01 teslimi (2026-09-10): Fazın Projeye bağlanması — çevrim, çözücü ve nöbet
+Kod( kod: KOD-KPS-FAZ-CEVRIMI, dosya: "urun/cekirdek/src/dag.ts",
+  ne: "🌀 Proje çevrimi — bir plan dosyasının yaşadığı Proje kökünü o dosyanın üst kademesiz plan düğümlerine kapsayan olarak normalize eden gövde; mevsim normalizasyonunun ikizidir, klasörden Projeye çözümü kimlik modülünün tek kaynağından okur ve bağı yalnız plan kademelerine indirir" )
+
+Kod( kod: KOD-KPS-FAZ-COZUCU, dosya: "urun/cekirdek/src/kimlik.ts",
+  ne: "🎯 Kesin Proje kapsamı çözücüsü — bir dosyanın Proje kökünü YALNIZ bağ tekil ve kesinse döndüren gövde; aynı derinlikte iki ayrı Proje kodu bulunursa ve dosya ders dünyasında yaşıyorsa bağ kurulmaz, çünkü grafa içerme kenarı yazmak tahminle yapılamaz" )
+
+Kod( kod: KOD-SNM-FAZ-PROJE, dosya: "urun/cekirdek/sinama/faz-proje-kenari.test.ts",
+  ne: "🍎 Faz-Proje kenarı nöbeti — yedi sınama: iki Projeli fikstürde her Fazın kapsayanı kendi Projesidir, zincir Adımdan Projeye kesintisiz yürür, iç içe yazım dokunulmaz kalır, kök dışındaki plan dosyası köksüz kalır, ayrışık kökte bağ kurulmaz, ders dünyası muaftır ve çevrim yalnız plan kademelerine iner; dört mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-FAZ-A01)" )

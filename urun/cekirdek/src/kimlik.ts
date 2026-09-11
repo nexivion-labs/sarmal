@@ -392,6 +392,38 @@ export function sahipProjeKapsami(
   return kazanan;
 }
 
+/**
+ * Dosyanın klasörden okunan Proje kökü — YALNIZ bağ tekil ve kesinse (KPS-FAZ-A01).
+ *
+ * `sahipProjeKapsami` en uzun öneki kazandırır ve eşitlik hâlinde ilk gördüğünü
+ * döndürür; bu, sınır çizmek ve görünürlük süzmek için yeterlidir, çünkü orada
+ * yanlış tarafta kalmanın bedeli yalnız bir sonucun gizlenmesidir. Grafa bir
+ * içerme kenarı YAZMAK ise başka bir iddiadır: "bu Faz şu Projenin zaman
+ * dilimidir" cümlesi tahminle kurulursa panel yanlış aidiyeti gerçek gibi
+ * gösterir. Bu yüzden burada eşit derinlikte iki AYRI Proje kodu bulunursa bağ
+ * kurulmaz ve düğüm köksüz kalır; sessiz başarı taklidi yapılmaz.
+ *
+ * Aynı Proje kodunun aynı önekte iki kez ilan edilmesi belirsizlik DEĞİLDİR
+ * (yinelenen ilan kendi nöbetinin işidir) ve bağı engellemez; ayrışma yalnız
+ * KODLAR farklıysa vardır. Ders dünyası (INDEKS_DISI) hiç sorulmaz: şablon ile
+ * örnek kendi evrenlerinde yaşar ve ürün Projesinin zaman eksenine binmez.
+ */
+export function kesinProjeKapsami(
+  dosya: string,
+  kapsamlar: readonly ProjeKapsami[],
+): ProjeKapsami | undefined {
+  if (INDEKS_DISI.test(dosya)) return undefined;
+  let derinlik = -1;
+  let kazanan: ProjeKapsami | undefined;
+  let ayrisik = false;
+  for (const k of kapsamlar) {
+    if (!onekKapsar(k.onek, dosya)) continue;
+    if (k.onek.length > derinlik) { derinlik = k.onek.length; kazanan = k; ayrisik = false; continue; }
+    if (k.onek.length === derinlik && kazanan && k.kod !== kazanan.kod) ayrisik = true;
+  }
+  return ayrisik ? undefined : kazanan;
+}
+
 /** Çatı ilanında raf olarak duyurulmuş bir kardeş proje kökü. */
 export interface KardesProje {
   /** Kardeş kökün kendi anadizininde ilan ettiği Proje kodu (PRJ-…). */

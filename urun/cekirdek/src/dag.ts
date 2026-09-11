@@ -13,7 +13,19 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { INDEKS_DISI, adAlaniAyir, projeKapsamlari, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01)
+import { INDEKS_DISI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01)
+
+/** MIM-1.2 · katı üretim omurgasının plan kademeleri — proje çevriminin öznesi.
+ *  Bir Proje kökü YALNIZ bu tiplere içerme kenarı verir; kanon, karar, hatırlatıcı
+ *  ve durum düğümleri planın zaman ekseninde yaşamaz ve klasörden kök almaz.
+ *
+ *  Süzgecin ikinci ve ölçülmüş bir görevi daha vardır: Proje düğümünün KENDİSİ de
+ *  kendi kökünün altında yaşadığı için, süzgeç kalkarsa Proje kendi kendisinin
+ *  kapsayanı olur ve `kapsayan` zinciri bir öz-halkaya kapanır. Mutasyon ölçümü
+ *  (2026-09-10) bunu somut olarak gösterdi: süzgeç sökülünce `grafCikar` alt-graf
+ *  ata yürüyüşü (`while (a) … a = kapsayan`) sonlanmadı ve nöbet dosyası beş
+ *  dakikada bitmedi. Tip süzgeci bu halkanın doğmasını yapısal olarak engeller. */
+const PLAN_KADEMELERI: ReadonlySet<string> = new Set(["Faz", "Blok", "Katman", "AltKatman", "Adım"]);
 
 /** Graf düğümü — `kod` taşıyan bir widget (çoğunlukla Adım). */
 export interface DagDugum {
@@ -203,6 +215,40 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   // kapsayıcı KOD → altındaki yaprak Adım KOD'ları (kapsayıcı-hedef genişlemesi için)
   const yapraklar = new Map<string, string[]>();
 
+  // ①· PROJE ÇEVRİMİ (KPS-FAZ-A01 · MIM-1.2 · HTR-FAZ-PROJE-KENARI-GRAFTA-YOK):
+  //    bir plan dosyasının yaşadığı Proje kökü, o dosyanın ÜST KADEMESİZ plan
+  //    düğümlerine `kapsayan` olarak normalize edilir. Çevrim mevsim
+  //    normalizasyonunun ikizidir ve aynı disiplini taşır: klasör→Proje çözümü
+  //    burada YENİDEN HESAPLANMAZ, kimlik.ts'in tek kaynağından (projeKapsamlari
+  //    + kesinProjeKapsami) okunur; bu modül yalnız çözülen kökü içerme kenarına
+  //    çevirir. Ölçülmüş kusur (Founder 2026-09-09): `kapsayan` yalnız İÇ İÇE
+  //    YAZIMDAN türediği için klasörle kurulan bağ grafta hiç görünmüyordu —
+  //    PRJ-SARMAL kökü sorulduğunda otuz üç düğümün tamamı Kitaplık, Raf,
+  //    Teknoloji ve Sınıflama olarak dönüyor, üç canlı Fazın hiçbiri alt grafa
+  //    girmiyordu. MIM-1.2'nin Blok↔Faz yarısı motorda zorlanırken Faz↔Proje
+  //    yarısı hiç kurulmamıştı; bu çevrim o yarıyı kurar.
+  //
+  //    SINIR: bağ yalnız klasör ilişkisi TEKİL VE KESİN olduğunda kurulur. Dosya
+  //    hiçbir Proje kökünün altında yaşamıyorsa ya da aynı derinlikte iki AYRI
+  //    Proje kodu onu kapsıyorsa çevrim uygulanmaz ve düğüm köksüz kalır
+  //    (kesinProjeKapsami). Tesadüfî eşleşme hiçbir zaman bağ sayılmaz.
+  //
+  //   Proje kapsamları TEMBEL hesaplanır ve bu graftaki İKİ okur (proje çevrimi ile
+  //   ORK-4 ad alanı çözümü) AYNI önbelleği paylaşır: bir depo ne plan düğümü ne
+  //   `::` taşıyan hedef içeriyorsa tek bir ağaç bile dolaşılmaz, taşıyorsa da
+  //   kapsam listesi koşu başına yalnız bir kez kurulur. Bu, kimlik çözümündeki
+  //   kardeş kök okumasının tembelliğiyle aynı hükmün ikizidir.
+  let kapsamOnbellegi: readonly ProjeKapsami[] | undefined;
+  const kapsamlar = (): readonly ProjeKapsami[] => (kapsamOnbellegi ??= projeKapsamlari(programlar));
+  const dosyaKoku = new Map<string, string | undefined>();
+  /** Bu dosyanın üst kademesiz plan düğümlerine binecek Proje kodu (dosya başına bir kez). */
+  const projeKoku = (dosya: string): string | undefined => {
+    if (dosyaKoku.has(dosya)) return dosyaKoku.get(dosya);
+    const kod = kesinProjeKapsami(dosya, kapsamlar())?.kod;
+    dosyaKoku.set(dosya, kod);
+    return kod;
+  };
+
   // ① düğümleri topla (ilk tanım kazanır — kodIndeksle ile tutarlı) + yaprak haritası
   //    kapsayan = en yakın KOD'lu ata (içerme kenarı graf yüzüne türetilir — ORK-1.2)
   const toplaGez = (node: Dugum, dosya: string, kapsayan?: string): string[] => {
@@ -222,7 +268,13 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
         ne: neP?.tur === "metin" ? neP.metin : undefined,
         beyanYolu: dosyaP?.tur === "metin" ? dosyaP.metin : undefined,
         hedefTarih: tarihP?.metin,
-        kapsayan, oncekiler: [], sonrakiler: [] });
+        // ①· proje çevrimi: yalnız üst kademesiz PLAN düğümü klasörden kök alır.
+        // Zaten bir kapsayıcının içinde yazılmış düğüm (iç içe yazım) dokunulmaz
+        // kalır — bağın yazım yeri değişmez, yalnız yazılmamış yerde türetilir.
+        kapsayan: kapsayan
+          ?? (PLAN_KADEMELERI.has(node.ad) ? projeKoku(dosya)
+            : undefined),
+        oncekiler: [], sonrakiler: [] });
     }
     // RF-T6-A02 sertleştirme (Sol ⑤): Kural BİLDİRİMLERİ (kuralTanım — `Kural ad(...)`)
     // de grafa kaydolur: dayanak kenarının kural ucu düğümsüz kalmasın, graf/gezin
@@ -307,12 +359,7 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   const disProje: Dag["disProje"] = [];
 
   // ── ORK-4 · ad alanlı yürütme hedefinin çözümü (KPS-ADA-A01 · ikinci tur) ──
-  //   Proje kapsamları TEMBEL hesaplanır: `::` taşıyan bir hedefe gerçekten
-  //   rastlanmadıkça tek bir ağaç bile dolaşılmaz, dolayısıyla ad alanı
-  //   kullanmayan bir deponun grafı hiçbir ek bedel ödemez. Bu, kimlik
-  //   çözümündeki kardeş kök okumasının tembelliğiyle aynı hükmün ikizidir.
-  let kapsamOnbellegi: readonly ProjeKapsami[] | undefined;
-  const kapsamlar = (): readonly ProjeKapsami[] => (kapsamOnbellegi ??= projeKapsamlari(programlar));
+  //   Kapsam listesi yukarıdaki paylaşılan tembel `kapsamlar()` okurundan gelir.
 
   /** Bir yürütme kenarı hedefinin bu graftaki karşılığı. */
   type HedefCozum =
