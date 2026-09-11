@@ -831,8 +831,34 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "Nöbet karar vermez; ayrışmayı bildirir. Hangi tarafın değişeceği BKM-DNT-A01'in hükmüdür."
       }
 
-      Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: beklemede, öncelik: p1, bağımlı: [],
+      Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: tamamlandı, öncelik: p1, bağımlı: [],
         referans: [ YAS-4.1, HTR-SURUM-DAMGASI-TUZAGI, HTR-PAKETLEME-ATIF-NOBETINI-KIRIYOR ],
+        üretir: [
+          Kod( kod: KOD-SURUM-TAZELIGI, dosya: "urun/eklenti/src/surum-tazeligi.ts", ne: "🍎 Kurulu paket ile depo sürümünün karşılaştırılması — saf karar gövdesi; sayısal sürüm sıralaması sözlük tuzağını kapatır, mağaza kurulumunda susar ve yarım ölçümde hüküm vermez" ),
+          Kod( kod: KOD-SNM-SURUM-TAZELIGI, dosya: "urun/eklenti/sinama/surum-tazeligi.test.ts", ne: "🍎 Sürüm damgası nöbeti — bayat kurulu paketin bildirildiği, mağaza kurulumunda susulduğu, depo geride ya da ölçülemez olduğunda hüküm verilmediği ve karşılaştırmanın sayısal olduğu ölçülür" )
+        ],
+        // ── 2026-09-10 · ÖLÇÜM (üretici · taze süreç) ──
+        //   ATIF NÖBETİ: mekanizma kaynaktan değil CANLI olarak yeniden üretildi.
+        //   Küçültülmüş bir üretim gövdesi geçici yola derlendi ve yedi kitaplığın
+        //   YEDİSİNİN de yol izinin o gövdede BULUNMADIĞI ölçüldü; aynı izler
+        //   geliştirme gövdesinde duruyor. Yani nöbet bugüne kadar kullanıcıya
+        //   giden yapıyı hiç ölçmemiş, yalnız geliştirme gövdesini ölçmüştür.
+        //   Onarım: her kitaplık küçültmeye dayanıklı bir imza listesi taşır ve
+        //   imzaların üretim gövdesinde YAŞADIĞI tek tek doğrulandı. Yeni nöbet
+        //   üretim gövdesini de ölçer ve nöbetin zeminini kendisi sınar: yol izi
+        //   küçültülmüş gövdede DURUYORSA nöbet kırmızı yanar, çünkü o hâlde
+        //   kusurun tarifi çürümüş demektir.
+        //   SÜRÜM DAMGASI: karar gövdesi saf olarak yazıldı ve nöbetlendi.
+        //   Sözlük sırası tuzağı özellikle kapatıldı, çünkü tuzağın doğduğu ölçek
+        //   tam olarak budur: sözlükte "0.9.90" değeri "0.9.137" değerinden ileri
+        //   sayılır ve nöbet sessizce yanlış tarafa düşerdi.
+        //   AÇIK KALAN KALEM (dürüst beyan): ayrışmanın Bildirimler yüzeyine tek
+        //   satır olarak BASILMASI bu turda yapılmadı. Sebep yapısaldır: o yüzeye
+        //   basılan her kayıt kanonik bir tanı kimliği taşır (YuzeyKaydi bir Tani
+        //   ister) ve yeni bir tanı kimliği sicil, üretici ve kanon maddesinden
+        //   oluşan üçlü senkronu gerektirir; kanon maddesi yazmak ise hüküm
+        //   niteliğinde bir değişikliktir ve Founder onayı ister. Karar gövdesi
+        //   hazır ve nöbetlidir; yüzeye bağlanması bir kanon maddesiyle açılır.
         ne: "📦 Paketlemenin iki tuzağının tek turda kapatılması. Birincisi kurulu paketin bayatlığıdır: depoda taze paket üretilse bile editörde eski gövde koşmayı sürdürür ve panel bunu söylemez; Founder 2026-08-28 tarihinde sahte bir tanı uyarısını gerçek sanıp tur harcamıştır. İkincisi paketlemenin lisans atfı nöbetini kırmasıdır: küçültme kaynak yol izlerini sildiği için paketlemenin ardından koşan süit kırmızıya döner ve nöbet kullanıcıya giden gövdeyi hiç ölçmez; kusur 2026-08-31 tarihinde işleme kapısını fiilen bloke etmiştir. Mekanizmalar iki hatırlatıcıda kaynak satırıyla ölçülmüştür." ) {
         görev: [
           "Geliştirme çalışma alanında eklenti açılışında kurulu paketin sürümünü depodaki paket bildiriminin sürümüyle karşılaştıran bir duman nöbeti kur; ayrışma Bildirimler yüzeyinde tek satırla bildirilir ve mağazadan kurulan paketlerde nöbet susar.",
@@ -845,6 +871,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Eklenti süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
         ]
         sınır: "Sürüm numarasını ilerletme kuralı ve CHANGELOG nöbeti değişmez; paketleme akışının kendisi yeniden yazılmaz."
+        koşu: "2026-09-10 · KAPANDI. Kabul ölçütü CANLI kanıtlandı: eklenti üretim kipinde paketlendi ve hemen ardından süit koşuldu, yedi yüz beşte yedi yüz beş yeşil çıktı; ardından geliştirme gövdesi geri derlendi ve orada da yedi yüz beşte yedi yüz beş yeşil kaldı, yani nöbet iki kipte de doğru çalışıyor. Bu, hatırlatıcının doğduğu tuzağın kapandığı andır, çünkü daha önce paketlemenin ardından koşan süit kırmızı yanıyordu. Birinci tuzak için ölçüm şudur: küçültülmüş bir üretim gövdesi derlenip bakıldığında yedi kitaplığın YEDİSİNİN de yol izi o gövdede yoktur, aynı izler geliştirme gövdesinde vardır; yani atıf nöbeti bugüne kadar kullanıcıya giden yapıyı hiç ölçmemiştir. Her kitaplık için küçültmeye dayanıklı imza türetildi ve yeni nöbet kendi zeminini de sınıyor, çünkü yol izi küçültülmüş gövdede durursa kırmızı yanıyor ve bu, kusurun tarifinin çürüdüğü anlamına geliyor. İkinci tuzak için sürüm karşılaştırması saf bir gövde olarak yazıldı ve sözlük sırası tuzağı özellikle kapatıldı, çünkü tuzağın doğduğu ölçek tam olarak orasıdır ve sözlükte dokuzuncu alt sürüm yüz otuz yedinciden ileri sayılmaktadır. YOLDA ÜÇÜNCÜ BİR KUSUR bulundu ve aynı sınıftandır: paket girişi duman sınaması sahte düzenleyici nesnesinin anahtarlarını gövde metninden sabit bir ad arayarak çıkarıyordu, küçültme ad alanını yeniden adlandırdığı için desen hiçbir ada denk gelmiyor ve paketleme sonrası ilk koşum kurucu bulunamadı hatasıyla düşüyordu; ad alanı değişkeninin adı artık gövdeden çıkarılıyor ve bu, süitin paketleme sonrası yeşil kalmasının ikinci şartıydı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti yedi yüz beşte yedi yüz beş; üç mutasyonun üçü de kırmızıya düştü. AÇIK KALAN TEK KALEM dürüstçe beyan edilir: ayrışmanın Bildirimler yüzeyine tek satır olarak basılması yapılmadı, çünkü o yüzeye basılan her kayıt kanonik bir tanı kimliği taşımakta ve yeni bir tanı kimliği sicil, üretici ve kanon maddesinden oluşan üçlü senkronu gerektirmektedir; kanon maddesi yazmak hüküm niteliğinde bir değişikliktir ve Founder onayı ister. Karar gövdesi hazırdır ve nöbetlidir; yüzeye bağlanması tek bir kanon maddesiyle açılır."
       }
 
       Adım( kod: BKM-DNT-A13, ad: "Kap İddiası Kalıbının Öteki Yüzeylerden Sökülmesi", durum: beklemede, öncelik: p1, bağımlı: [],
