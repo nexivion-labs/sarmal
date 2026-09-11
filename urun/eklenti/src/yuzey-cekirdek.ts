@@ -162,7 +162,42 @@ export function yuzeyeAyir(kayitlar: readonly YuzeyKaydi[]): YuzeyDagilimi {
       default: problems.push(kayit); break;
     }
   }
-  return { problems, hatırlatıcılar, bildirimler };
+  return { problems, hatırlatıcılar: tekSatiraIndir(hatırlatıcılar), bildirimler };
+}
+
+/**
+ * AYNI HATIRLATICI İÇİN TEK SATIR (KYN-YUZ-A02). Bir Hatırlatıcı düğümü aynı
+ * turda hem `açık-hatırlatıcı` hem `ateşlemiş-hatırlatıcı` tanısı doğurabilir:
+ * düğüm hâlâ açıktır (birincisi) ve bağlandığı Adım tamamlanmıştır (ikincisi).
+ * İkisi de doğrudur, fakat hanede yan yana basılırsa kullanıcı tek bir düğümü
+ * iki iş sanır ve hanenin sayısı gerçeği iki katına çıkarır.
+ *
+ * ATEŞLEMİŞ OLAN KAZANIR, çünkü daha bilgilidir: "bu hatırlatıcı açık" cümlesi
+ * ateşlemiş olanın içinde zaten vardır, tersi ise doğru değildir — ateşleme
+ * bilgisi açık olma bilgisinden türetilemez. Kimlik, tanının konumundan değil
+ * DÜĞÜMÜN kendi kimliğinden okunur; aynı düğümün iki tanısı aynı dosyada ve
+ * aynı satırda doğar, dolayısıyla dosya ile satır çifti düğümü tekilleştirir.
+ */
+function tekSatiraIndir(kayitlar: readonly YuzeyKaydi[]): YuzeyKaydi[] {
+  // Tekilleştirme anahtarı KONUM DEĞİL DÜĞÜM KİMLİĞİDİR. Konumla anahtarlamak
+  // ilk denemede fikstürde çöktü: aynı dosyanın aynı satırında duran ilgisiz
+  // kayıtlar tek düğüm sanıldı. Kimlik, bu modülün zaten taşıdığı `dugumKodu`
+  // çekirdeğinden okunur; ikinci bir çıkarım deseni yazmak aynı kusurun ad
+  // değiştirerek yaşamasına yol açardı (bu dosyanın kendi düsturu).
+  const atesleyen = new Set<string>();
+  for (const k of kayitlar) {
+    if (k.tani.kod !== "ateşlemiş-hatırlatıcı") continue;
+    const id = dugumKodu(k.tani.mesaj);
+    if (id) atesleyen.add(`${k.dosya}::${id}`);
+  }
+  if (!atesleyen.size) return [...kayitlar];
+  return kayitlar.filter((k) => {
+    if (k.tani.kod !== "açık-hatırlatıcı") return true;
+    const id = dugumKodu(k.tani.mesaj);
+    // Kimliği okunamayan kaydı DÜŞÜRMEYİZ: ölçemediğimiz için silmek, sessizce
+    // bilgi kaybetmektir ve bu hanenin bütün vaadi görünürlüktür.
+    return id === undefined || !atesleyen.has(`${k.dosya}::${id}`);
+  });
 }
 
 /**
@@ -435,19 +470,25 @@ export type SatirIsareti =
 /**
  * Hatırlatıcılar yüzeyine düşen dört kayıt türünün işaretleri.
  *
- * DÖRDÜ DE BAKIŞTA AYRILIR VE AYRIM ANLAMDAN GELİR. Hatırlatıcı düğümü çanını
- * korur, çünkü kullanıcının bilerek astığı işaret odur. Açık Adım ile
- * geliştirmedeki çapa Adım eksen simgesini taşır — Founder'ın hükmü budur — ve
- * ikisi kendi EVRESİYLE ayrılır: biri henüz başlamamıştır, öteki sürüyordur.
- * Bloklu çapa ise uyarı üçgeniyle ve hata rengiyle konuşur, çünkü o bir bekleme
- * değil bir DURMA hâlidir ve eksen ailesinin evre dili bunu söyleyemez (eksen
- * varyantları bilerek üç evre taşır ve bloklu olanı nötr boyar).
+ * ÇİZELGE 2026-09-10 TARİHİNDE DARALDI. Eskiden dört kimlik taşıyordu; üçü
+ * (`açık-adım`, `geliştirmede-çapa`, `bloklu-çapa`) bir Hatırlatıcı düğümü
+ * değil Adımın kendi durum ölçümüdür ve YUZ-3.3 gereği artık Gözlemler
+ * hanesine düşer, dolayısıyla bu çizelgede yerleri kalmadı. Çizelgenin kapsamı
+ * elle değil SİCİLDEN türetilerek nöbetlenir: yüzeye beşinci bir kimlik
+ * düşerse nöbet anında kırmızı yanar.
+ *
+ * İKİSİ BAKIŞTA AYRILIR VE AYRIM ANLAMDAN GELİR. İkisi de çanı taşır, çünkü
+ * ikisi de kullanıcının bilerek astığı işarettir; ayrım RENKTEDİR. Uykuda
+ * bekleyen hatırlatıcı uyarı sarısıyla durur: beklediği an henüz gelmemiştir.
+ * ATEŞLEMİŞ olan başarı yeşiliyle konuşur, çünkü beklediği Adım TAMAMLANMIŞTIR
+ * ve haber iyidir; kullanıcıdan istenen tek şey hatırlatıcıyı kapatmaktır.
+ * YUZ-3.4'ün şart koştuğu "uykudakilerden ayırt edilir" hükmü bu renk
+ * ayrımıyla yerine gelir ve ayrım grafın kendi kenarından türer, serbest
+ * metinli dönüş tetikleyicisinin yorumundan değil.
  */
 export const HATIRLATICI_ISARETLERI: Readonly<Record<string, SatirIsareti>> = {
-  "açık-hatırlatıcı":  { aile: "satır", simge: "can", anlam: "uyari" },
-  "açık-adım":         { aile: "eksen", tip: "Adım", evre: "bekliyor" },
-  "geliştirmede-çapa": { aile: "eksen", tip: "Adım", evre: "sürüyor" },
-  "bloklu-çapa":       { aile: "satır", simge: "uyari", anlam: "hata" },
+  "açık-hatırlatıcı":     { aile: "satır", simge: "can", anlam: "uyari" },
+  "ateşlemiş-hatırlatıcı": { aile: "satır", simge: "can", anlam: "basari" },
 };
 
 /**

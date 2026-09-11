@@ -28,19 +28,35 @@ uyuştuğunu ayrıca ölçer.
 Kural iki basamaklıdır ve basamak sırası önemlidir.
 
 **Birinci basamak — doğa.** Tanının kimliği ileri-bağlam kümesinde ise kayıt
-Hatırlatıcılar yüzeyine gider. Bu küme motorda sabittir ve dört kimlik taşır:
-`açık-hatırlatıcı`, `açık-adım`, `bloklu-çapa`, `geliştirmede-çapa`. Bunlar
-düzeltilecek bir sapma değildir; kullanıcının bilerek açık bıraktığı ve
-unutmak istemediği işlerdir.
+Hatırlatıcılar yüzeyine gider. Küme 2026-09-10 tarihinde KYN-YUZ-A02 Adımıyla
+daraltılmıştır ve bugün İKİ kimlik taşır: `açık-hatırlatıcı` ile
+`ateşlemiş-hatırlatıcı`. İkisinin ortak yanı bir HATIRLATICI DÜĞÜMÜNDEN
+türemeleridir; YUZ-3.3 bu haneyi "kullanıcının bilinçli Hatırlatıcı düğümleri"
+için ayırır ve lafız budur.
+
+Daraltmanın gerekçesi ölçülmüştür. Küme eskiden `açık-adım`, `bloklu-çapa` ve
+`geliştirmede-çapa` kimliklerini de taşıyordu; üçü de bir Hatırlatıcı düğümü
+DEĞİLDİR ve Adımın kendi durumundan doğan bilgi düzeyli ölçümlerdir. Üçü
+Hatırlatıcılar hanesinde kaldığı sürece kullanıcı açık bir Adımı bilinçli bir
+ileri bağlam sanıyor ve hanenin "hatırlat" vaadi durum ölçümleriyle
+sulanıyordu; üçü bugün Gözlemler hanesine gider. Aynı turda ters yönde bir
+eksik de kapanmıştır: `ateşlemiş-hatırlatıcı` kümede HİÇ YOKTU ve bilgi düzeyli
+olduğu için Gözlemler hanesine düşüyordu, oysa YUZ-3.4 ateşlemiş bir
+Hatırlatıcının uykudakilerden AYIRT EDİLMESİNİ hükme bağlar ve iki hâl aynı
+hanede yan yana durmadıkça ayırt etme hükmü yerine gelemez.
+
+Aynı Hatırlatıcı düğümü için iki kimlik birden doğduğunda haneye TEK satır
+basılır ve ateşlemiş olan kazanır, çünkü daha bilgilidir: "bu hatırlatıcı açık"
+cümlesi ateşlemiş olanın içinde zaten vardır, tersi ise doğru değildir.
 
 **İkinci basamak — düzey.** Kimlik ileri-bağlam kümesinde değilse düzeyine
 bakılır: bilgi düzeyli kayıt Bildirimler yüzeyine, hata ve uyarı düzeyli kayıt
 Problems yüzeyine gider.
 
-Basamak sırası ölçülebilir bir fark yaratır. `bloklu-çapa` uyarı düzeyinde
-üretilir; düzey basamağı önce koşsaydı Problems'a düşerdi. Doğa basamağı önce
-koştuğu için Hatırlatıcılar'da yaşar ve kullanıcı onu çözülmesi gereken bir
-ihlal sanmaz.
+Basamak sırası hâlâ önemlidir ve sırası değişmemiştir: doğa basamağı düzey
+basamağından önce koşar, dolayısıyla bir Hatırlatıcı kimliği hangi düzeyde
+üretilirse üretilsin kendi hanesine gider. Daralan şey sıra değil, doğa
+basamağının tanıdığı kimlik kümesidir.
 
 ## C · Kapsam ve sayısal özet
 
@@ -55,8 +71,8 @@ Yüzeylere bugünkü dağılım şudur:
 | Yüzey | Kimlik sayısı | Nereden gelir |
 |---|---|---|
 | Problems | 143 | önceki kimliklerin hata ve uyarı düzeyli olanları, A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı ile MIM-1.7 AltKatman tekilliği (Founder hükmü 2026-08-28) |
-| Hatırlatıcılar | 4 | ileri-bağlam kümesinin dördü |
-| Bildirimler | 28 | A03 dışında kalan 11 yeni bilgi tanısı ile önceki 17 bilgi kimliği; sonuncu üçü öncelik beyanı (ORK-3.4), ateşlemiş hatırlatıcı (YUZ-3.4) ve mevsim vadesi (ORK-8) gözlemleridir |
+| Hatırlatıcılar | 2 | Hatırlatıcı düğümünden türeyen iki kimlik (`açık-hatırlatıcı` ile `ateşlemiş-hatırlatıcı`) |
+| Bildirimler | 30 | bilgi düzeyli ölçüm ve durum işaretleri; 2026-09-10 daraltmasıyla `açık-adım`, `bloklu-çapa` ve `geliştirmede-çapa` çapaları da buraya taşındı ve `ateşlemiş-hatırlatıcı` buradan Hatırlatıcılar hanesine gitti |
 | **Toplam** | **175** | sicilin tamamı — atanmamış kimlik yoktur |
 
 ⚠️ NÖBETİN SINIRI — bu iki sayı birbirine karşı korunmuyor. Nöbet sicilin toplam

@@ -806,13 +806,26 @@ export interface OrkestrasyonGirdisi {
 export type SunumYuzeyi = "problems" | "hatırlatıcılar" | "bildirimler";
 
 /**
- * İleri-bağlam doğası taşıyan kimlikler: bunlar düzeltilecek bir sapma değil,
- * kullanıcının BİLİNÇLİ olarak açık bıraktığı işaretlerdir ve YUZ-3.3 onları
- * Hatırlatıcılar yüzeyine yollar. Çapraz harita bu dördünü "durum/ileri-bağlam
- * çıpası — YUZ-3.3'e taşındı, emekli değil" diye kaydeder.
+ * Hatırlatıcılar hanesine yalnız HATIRLATICI DÜĞÜMÜNDEN türeyen kimlikler girer
+ * (KYN-YUZ-A02 · YUZ-3.3 lafzı). Küme 2026-09-10 tarihinde daraltıldı ve gerekçe
+ * kanonun kendi cümlesidir: madde bu haneyi "kullanıcının bilinçli Hatırlatıcı
+ * düğümleri" için ayırır, oysa küme üç ÇAPA kimliğini de taşıyordu.
+ *
+ * `açık-adım`, `bloklu-çapa` ve `geliştirmede-çapa` bir Hatırlatıcı düğümü
+ * DEĞİLDİR; bunlar Adımın kendi durumundan doğan bilgi düzeyli ölçümlerdir ve
+ * YUZ-3.3 bilgi düzeyli ölçüm ile durum işaretlerini Bildirimler (Gözlemler)
+ * hanesine yollar. Üçü Hatırlatıcılar hanesinde kaldığı sürece kullanıcı, açık
+ * bir Adımı bilinçli bir ileri bağlam sanıyor ve hanenin "hatırlat" vaadi
+ * ölçümlerle sulanıyordu.
+ *
+ * `ateşlemiş-hatırlatıcı` ise kümede HİÇ YOKTU ve bu daha ağır bir kusurdu:
+ * YUZ-3.4 ateşlemiş bir Hatırlatıcının uykudakilerden AYIRT EDİLMESİNİ hükme
+ * bağlar, oysa bilgi düzeyli olduğu için Gözlemler hanesine düşüyor ve
+ * uykudaki kardeşinden ayrı bir panele gidiyordu; iki hâl aynı hanede yan yana
+ * durmadıkça ayırt etme hükmü yerine gelemez.
  */
 const ILERI_BAGLAM_KIMLIKLERI: ReadonlySet<string> =
-  new Set(["açık-hatırlatıcı", "açık-adım", "bloklu-çapa", "geliştirmede-çapa"]);
+  new Set(["açık-hatırlatıcı", "ateşlemiş-hatırlatıcı"]);
 
 /** Bir tanının doğasından hangi sunum yüzeyine ait olduğunu türetir (YUZ-3.3). */
 export function beklenenSunumYuzeyi(tani: Tani): SunumYuzeyi {

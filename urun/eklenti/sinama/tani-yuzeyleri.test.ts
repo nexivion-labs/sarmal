@@ -51,7 +51,6 @@ import {
 // VIT-GRAF-A15 ikinci işi: Fikir hanesi Hatırlatıcılar panelinin İÇİNDE yaşar,
 // dolayısıyla ortak satır biçimi nöbeti iki haneyi de aynı yerde ölçer.
 import { fikirleriTopla, fikirGorunumu, fikirPanoMetni, type FikirKaydi } from "../src/fikir-cekirdek.ts";
-import { EKSEN_TIPLERI } from "../src/simge-cizelgesi.ts";
 // NOT: `teknoloji-simgesi.ts` çalışma zamanında vscode kabuğunu içeri alır ve bu
 // birim süitinde yüklenemez; onun tek-kaynak sözleşmesi aşağıda panellerin KENDİ
 // kaynağı üstünden ölçülür (Onaylar panelinin nöbetiyle aynı yöntem).
@@ -114,10 +113,12 @@ function ucDogaliFikstur(): YuzeyKaydi[] {
   return [
     kayit("bilinmeyen-tip", "hata"),                       // düzeltilecek sapma
     kayit("çıplak-adımlı-katman", "uyarı"),                // düzeltilecek sapma
-    kayit("açık-hatırlatıcı", "bilgi"),                    // bilinçli ileri bağlam
-    kayit("açık-adım", "bilgi"),                           // bilinçli ileri bağlam
-    kayit("bloklu-çapa", "bilgi"),                         // bilinçli ileri bağlam
-    kayit("geliştirmede-çapa", "bilgi"),                   // bilinçli ileri bağlam
+    // KYN-YUZ-A02: yalnız Hatırlatıcı DÜĞÜMÜNDEN türeyen iki kimlik ileri bağlamdır.
+    kayit("açık-hatırlatıcı", "bilgi"),                    // bilinçli ileri bağlam (Hatırlatıcı düğümü)
+    kayit("ateşlemiş-hatırlatıcı", "bilgi"),               // bilinçli ileri bağlam (Hatırlatıcı düğümü · YUZ-3.4)
+    kayit("açık-adım", "bilgi"),                           // durum ölçümü → Gözlemler
+    kayit("bloklu-çapa", "bilgi"),                         // durum ölçümü → Gözlemler
+    kayit("geliştirmede-çapa", "bilgi"),                   // durum ölçümü → Gözlemler
     kayit("kullanımsız-tip", "bilgi"),                     // salt bilgilendirme
     kayit("olgunluk-onayı", "bilgi"),                      // salt bilgilendirme
   ];
@@ -135,9 +136,12 @@ test("yüzey ayrımı: hata ve uyarı Problems'ta, bilinçli işaretler Hatırla
   assert.ok(d.bildirimler.length > 0, "Bildirimler yüzeyi fikstürde boş kaldı; nöbet ölçmüyor demektir");
 
   assert.deepEqual(d.problems.map((k) => k.tani.kod), ["bilinmeyen-tip", "çıplak-adımlı-katman"]);
+  // Hatırlatıcılar hanesi YALNIZ Hatırlatıcı düğümlerini gösterir; üç çapa
+  // kimliği bilgi düzeyi gereği Gözlemler hanesine düşer (YUZ-3.3 lafzı).
   assert.deepEqual(d.hatırlatıcılar.map((k) => k.tani.kod),
-    ["açık-hatırlatıcı", "açık-adım", "bloklu-çapa", "geliştirmede-çapa"]);
-  assert.deepEqual(d.bildirimler.map((k) => k.tani.kod), ["kullanımsız-tip", "olgunluk-onayı"]);
+    ["açık-hatırlatıcı", "ateşlemiş-hatırlatıcı"]);
+  assert.deepEqual(d.bildirimler.map((k) => k.tani.kod),
+    ["açık-adım", "bloklu-çapa", "geliştirmede-çapa", "kullanımsız-tip", "olgunluk-onayı"]);
 });
 
 test("yüzey ayrımı: sızma yok — bir yüzeyin kaydı öteki iki yüzeyde bulunmaz", () => {
@@ -195,7 +199,7 @@ test("mutasyon · Bildirimler: bilgi kaydı Hatırlatıcılar'a taşınırsa nö
     bildirimler: dogru.bildirimler.filter((k) => k !== bil),
   };
   const kusurlar = dagitimKusurlari(girdi, bozuk);
-  assert.ok(kusurlar.some((c) => c.includes("kullanımsız-tip") && c.includes("bildirimler")),
+  assert.ok(kusurlar.some((c) => c.includes(bil.tani.kod) && c.includes("bildirimler")),
     `Bildirimler mutasyonu yakalanmadı; nöbet sahte olurdu. Dönen kusurlar: ${JSON.stringify(kusurlar)}`);
 });
 
@@ -329,7 +333,13 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on bir kimlik Bildirim
     `yeni kanon kayıt sayısı beklenenden az: ${YENI_TANI_KANONU.length}`);
   for (const k of YENI_TANI_KANONU) {
     const yuzey = beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 });
-    const beklenen = TERFI_RET_KIMLIKLERI.has(k.kod) ? "bildirimler" : "problems";
+    // KYN-YUZ-A02: `ateşlemiş-hatırlatıcı` bir HATIRLATICI DÜĞÜMÜNDEN türer ve
+    // YUZ-3.4 onu uykudaki kardeşiyle AYNI hanede ister; terfi reddi onu bilgi
+    // düzeyinde tutar fakat hanesini Gözlemler yapmaz. Doğa basamağı düzey
+    // basamağından önce koştuğu için kimlik kendi hanesine gider.
+    const beklenen = k.kod === "ateşlemiş-hatırlatıcı"
+      ? "hatırlatıcılar"
+      : TERFI_RET_KIMLIKLERI.has(k.kod) ? "bildirimler" : "problems";
     assert.equal(yuzey, beklenen,
       `"${k.kod}" bugünkü kademesiyle (${k.kademe}) ${yuzey} yüzeyine düşüyor; A05 kararı ${beklenen} bekliyor`);
   }
@@ -368,11 +378,19 @@ test("A06 KIRMIZI FİKSTÜR: yüzey hata tanısını uyarıya yeniden derecelend
 
 test("kayıt tazeliği: yayımlanan yönlendirme matrisi kaydı türetilmiş gerçekle uyuşur", () => {
   const kayitMetni = oku("../../../is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar");
-  // Kayıt, ileri-bağlam kimliklerini tek tek yazar; motorun kümesiyle eşleşmeli.
-  for (const kod of ["açık-hatırlatıcı", "açık-adım", "bloklu-çapa", "geliştirmede-çapa"]) {
+  // KYN-YUZ-A02: küme daraltıldı. Hatırlatıcılar hanesine YALNIZ Hatırlatıcı
+  // düğümünden türeyen iki kimlik girer; üç çapa kimliği bilgi düzeyi gereği
+  // Gözlemler hanesine düşer (YUZ-3.3 lafzı). Kayıt beş kimliği de yazar,
+  // fakat her birini KENDİ hanesiyle yazar.
+  for (const kod of ["açık-hatırlatıcı", "ateşlemiş-hatırlatıcı"]) {
     assert.ok(kayitMetni.includes(kod), `yönlendirme matrisi kaydında "${kod}" kimliği yok`);
     assert.equal(kaydinYuzeyi(kayit(kod, "bilgi")), "hatırlatıcılar",
-      `"${kod}" motorda artık Hatırlatıcılar yüzeyine gitmiyor; kayıt bayatladı`);
+      `"${kod}" bir Hatırlatıcı düğümünden türer ve Hatırlatıcılar hanesine gitmelidir`);
+  }
+  for (const kod of ["açık-adım", "bloklu-çapa", "geliştirmede-çapa"]) {
+    assert.ok(kayitMetni.includes(kod), `yönlendirme matrisi kaydında "${kod}" kimliği yok`);
+    assert.equal(kaydinYuzeyi(kayit(kod, "bilgi")), "bildirimler",
+      `"${kod}" bir Hatırlatıcı DÜĞÜMÜ değildir; bilgi düzeyli durum işareti Gözlemler hanesine gider`);
   }
 });
 
@@ -558,15 +576,17 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // A05'te 46 hata ve 16 uyarı Problems'ta; sekiz ret bilgi kademesinde
   // Bildirimler'de kalır. 2026-08-22 tarihinde Founder onayıyla doğan iki
   // gözlem ile 2026-08-27 tarihinde doğan mevsim vadesi gözlemi de bilgi
-  // kademesindedir ve aynı yüzeye düşer, dolayısıyla bugünkü bildirim kümesi
-  // on birdir. Kayıt iki tabanı da taşımalıdır.
+  // kademesindedir. KYN-YUZ-A02 (2026-09-10) bu on birden BİRİNİ çıkardı:
+  // `ateşlemiş-hatırlatıcı` bilgi kademesinde kalmayı sürdürür fakat bir
+  // Hatırlatıcı düğümünden türediği için YUZ-3.4 gereği Hatırlatıcılar hanesine
+  // gider, dolayısıyla yeni kanonun Gözlemler kümesi o gün ONA inmişti.
   const yeniBildirim = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "bildirimler",
   ).length;
   const yeniProblems = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "problems",
   ).length;
-  assert.equal(yeniBildirim, 11, "A05'in sekiz RET-ADAYI ile üç yeni gözlem bilgi kademesinde kalmalıdır");
+  assert.equal(yeniBildirim, 10, "A05'in sekiz RET-ADAYI ile üç yeni gözlem bilgi kademesinde kalmalıdır");
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
   assert.equal(yeniProblems, 63, "A05'in 47 hata ve 16 uyarı kimliği Problems'a gitmelidir");
@@ -1062,7 +1082,7 @@ test("İKİ PANEL AYNI DESENİ KULLANIR: biri kodu başa alıp öteki almazsa s�
 
 // ── ⑫e KAYIT TÜRÜNE GÖRE İŞARET AYRIŞIR ─────────────────────────────────────
 
-test("Hatırlatıcılar işaretleri: dört kayıt türü dört ayrı işaret taşır", () => {
+test("Hatırlatıcılar işaretleri: iki kayıt türü iki ayrı işaret taşır", () => {
   const anahtar = (i: SatirIsareti): string =>
     i.aile === "satır" ? `satır:${i.simge}:${i.anlam}` : `eksen:${i.tip}:${i.evre}`;
   const isaretler = Object.values(HATIRLATICI_ISARETLERI).map(anahtar);
@@ -1072,11 +1092,14 @@ test("Hatırlatıcılar işaretleri: dört kayıt türü dört ayrı işaret ta�
   assert.deepEqual(hatirlaticiIsareti("açık-hatırlatıcı"),
     { aile: "satır", simge: "can", anlam: "uyari" },
     "hatırlatıcı düğümünün çanı değişmiş");
-  // Founder hükmü: açık Adım KENDİ EKSEN simgesini taşır.
-  const adim = hatirlaticiIsareti("açık-adım");
-  assert.equal(adim.aile, "eksen", "açık Adım eksen ailesinin simgesini taşımıyor");
-  assert.ok(adim.aile === "eksen" && (EKSEN_TIPLERI as readonly string[]).includes(adim.tip),
-    "eksen işareti kanonik eksen tipinden gelmiyor");
+  // YUZ-3.4: ATEŞLEMİŞ hatırlatıcı uykudakinden AYIRT EDİLİR. İkisi de çanı
+  // taşır (ikisi de bilinçli işarettir); ayrım renktedir ve anlamdan gelir —
+  // beklenen Adım tamamlandığı için haber iyidir ve başarı rengiyle konuşur.
+  assert.deepEqual(hatirlaticiIsareti("ateşlemiş-hatırlatıcı"),
+    { aile: "satır", simge: "can", anlam: "basari" },
+    "ateşlemiş hatırlatıcı uykudakinden ayırt edilmiyor; YUZ-3.4 ayrımı şart koşar");
+  assert.notDeepEqual(hatirlaticiIsareti("ateşlemiş-hatırlatıcı"), hatirlaticiIsareti("açık-hatırlatıcı"),
+    "iki hâl aynı işareti taşırsa ayırt etme hükmü yerine gelmez");
 });
 
 test("işaret çizelgesi yüzeyin TAMAMINI kapsar: yeni bir kimlik düşerse nöbet kırmızıya döner", () => {
@@ -1947,4 +1970,60 @@ test("Fikirler proje satırı kendi panelinden ORTAK birleştiriciyle cevap alı
     "Fikirler paneli proje satırını ortak birleştiriciye bağlamıyor; satır ya çöker ya cevapsız kalır");
   assert.ok(/d\.tur === "fikir"[\s\S]{0,200}?fikirPanoMetni\(/.test(FIKIRLER_KAYNAK),
     "Fikirler paneli kayıt satırının pano kapısını kaybetmiş");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KYN-YUZ-A02 · HANE AYRIMI VE TEK SATIR HÜKMÜ
+//
+//   YUZ-3.3 Hatırlatıcılar hanesini "kullanıcının bilinçli Hatırlatıcı
+//   düğümleri" için ayırır. Küme eskiden üç ÇAPA kimliğini de taşıyordu ve
+//   kullanıcı açık bir Adımı bilinçli bir ileri bağlam sanıyordu; ters yönde
+//   `ateşlemiş-hatırlatıcı` kümede hiç yoktu ve YUZ-3.4'ün ayırt etme hükmü
+//   yerine gelmiyordu. Aşağıdaki nöbetler iki yönü de tutar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("KYN-YUZ-A02: üç çapa kimliği Gözlemler hanesine düşer, iki hatırlatıcı kimliği kendi hanesinde kalır", () => {
+  for (const kod of ["açık-adım", "bloklu-çapa", "geliştirmede-çapa"]) {
+    assert.equal(beklenenSunumYuzeyi({ duzey: "bilgi", kod, mesaj: "", satir: 1, sutun: 1 }), "bildirimler",
+      `"${kod}" bir Hatırlatıcı DÜĞÜMÜ değildir; bilgi düzeyli durum işareti Gözlemler hanesine gider`);
+  }
+  for (const kod of ["açık-hatırlatıcı", "ateşlemiş-hatırlatıcı"]) {
+    assert.equal(beklenenSunumYuzeyi({ duzey: "bilgi", kod, mesaj: "", satir: 1, sutun: 1 }), "hatırlatıcılar",
+      `"${kod}" bir Hatırlatıcı düğümünden türer ve kendi hanesinde kalmalıdır`);
+  }
+  const haneye_dusenler = [...taniSicili()].filter((kod) =>
+    beklenenSunumYuzeyi({ duzey: "bilgi", kod, mesaj: "", satir: 1, sutun: 1 }) === "hatırlatıcılar");
+  assert.deepEqual([...haneye_dusenler].sort(), ["ateşlemiş-hatırlatıcı", "açık-hatırlatıcı"].sort(),
+    "Hatırlatıcılar hanesi yalnız bilinçli ileri bağlam beyanından türeyen kimlikleri taşır");
+});
+
+test("KYN-YUZ-A02: aynı Hatırlatıcı düğümü için haneye TEK satır basılır ve ateşlemiş olan kazanır", () => {
+  const proje = { kod: "PRJ-T", kok: "/x" } as unknown as YuzeyKaydi["proje"];
+  const kayitOlustur = (kod: string, mesaj: string, satir: number): YuzeyKaydi => ({
+    proje, dosya: "/x/plan.sar",
+    tani: { duzey: "bilgi", kod, mesaj, satir, sutun: 1, oneri: "ö" },
+  });
+  const d = yuzeyeAyir([
+    kayitOlustur("açık-hatırlatıcı", "❗ Açık hatırlatıcı (HTR-BIR): ne", 10),
+    kayitOlustur("ateşlemiş-hatırlatıcı", '"HTR-BIR" hatırlatıcısının beklediği "ADM-X" Adımı tamamlandı', 10),
+    kayitOlustur("açık-hatırlatıcı", "❗ Açık hatırlatıcı (HTR-IKI): ne", 20),
+  ]);
+  assert.deepEqual(d.hatırlatıcılar.map((k) => k.tani.kod),
+    ["ateşlemiş-hatırlatıcı", "açık-hatırlatıcı"],
+    "HTR-BIR için tek satır kalmalı (ateşlemiş kazanır), HTR-IKI kendi satırını korumalı");
+  const kimlikler = d.hatırlatıcılar.map((k) => dugumKodu(k.tani.mesaj));
+  assert.deepEqual(kimlikler, ["HTR-BIR", "HTR-IKI"], "iki ayrı düğüm iki ayrı satır olarak durmalı");
+});
+
+test("KYN-YUZ-A02: ateşlemesi olmayan düğümün açık satırı DÜŞMEZ (tekilleştirme kör değildir)", () => {
+  const proje = { kod: "PRJ-T", kok: "/x" } as unknown as YuzeyKaydi["proje"];
+  const k = (kod: string, mesaj: string): YuzeyKaydi => ({
+    proje, dosya: "/x/plan.sar", tani: { duzey: "bilgi", kod, mesaj, satir: 5, sutun: 1, oneri: "ö" },
+  });
+  const d = yuzeyeAyir([
+    k("açık-hatırlatıcı", "❗ Açık hatırlatıcı (HTR-UYKUDA): ne"),
+    k("ateşlemiş-hatırlatıcı", '"HTR-BASKA" hatırlatıcısının beklediği "ADM-Y" Adımı tamamlandı'),
+  ]);
+  assert.equal(d.hatırlatıcılar.length, 2,
+    "başka bir düğümün ateşlemesi, uykudaki düğümün satırını düşüremez");
 });

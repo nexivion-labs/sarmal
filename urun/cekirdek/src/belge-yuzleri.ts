@@ -168,7 +168,12 @@ function olgulariOlc(kok: string): BelgeOlgulari {
     ikiDilliTani: Object.keys(TANI_METINLERI).length + Object.keys(ONCEKI_TANI_METINLERI).length,
   };
   if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/16/11" ||
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "143/4/28" ||
+      // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
+      // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
+      // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
+      // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
+      // değişmedi, yalnız iki hane arasında yer değiştirdi.
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "143/2/30" ||
       olgular.arac !== 18 ||
       olgular.ikiDilliTani !== 174) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
