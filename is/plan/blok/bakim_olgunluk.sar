@@ -928,8 +928,27 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         sınır: "denetleKomutu SAF refaktörü bu Adımın işi DEĞİL (RAY-3 önkoşulu, ayrı ray) — alt-süreç köprüsü bilinçli ara-çözümdür ve kapi_kapsami'de beyanlıdır; durum-guncelle Adım dışı tip/alan yazamaz"
       }
 
-      Adım( kod: BKM-MCP-A02, ad: "MCP Sunucusunun Kaynak Değişiminde Tazelenmesi", durum: beklemede, öncelik: p1, bağımlı: [ BKM-MCP-A01 ],
+      Adım( kod: BKM-MCP-A02, ad: "MCP Sunucusunun Kaynak Değişiminde Tazelenmesi", durum: tamamlandı, öncelik: p1, bağımlı: [ BKM-MCP-A01 ],
         referans: [ HTR-MCP-SUREC-BAYATLIGI ],
+        // ── 2026-09-10 · MALİYET ÖLÇÜMÜ (üretici · taze komut satırı süreci) ──
+        //   Değişmeyen kaynakta okuma başına 4,7 mikrosaniye ölçülmüştür (bin
+        //   okuma 4,7 milisaniye); aynı kaynağın tam yüklemesi 0,89 milisaniye,
+        //   yani yaklaşık yüz doksan kat pahalıdır. Panel turunun kendisi dört
+        //   yüz milisaniye ölçeğinde olduğu için mühür karşılaştırmasının bedeli
+        //   ölçüm gürültüsünün altında kalır. Mühür olarak içerik özeti DEĞİL
+        //   değişiklik zamanı ile boyut seçilmiştir, çünkü özet almak dosyayı
+        //   okumayı gerektirir ve kaçınılmak istenen bedel tam da odur.
+        //   SINIR: bu mekanizma VERİ bayatlığını çözer, KOD bayatlığını çözmez.
+        //   Sunucunun kendi modülleri süreç başında yüklenir; motorun gövdesi
+        //   değiştiğinde süreç yeniden başlatılmadıkça eski davranış sürer. Ayrım
+        //   dürüstçe yazılıdır, çünkü iki bayatlık aynı belirtiyi verir ve
+        //   karıştırılırsa onarım yanlış yerde aranır. Bu tur içinde ölçülen
+        //   canlı örnek şudur: doğuş aracı MCP üstünden bayat paketi yazmış,
+        //   taze komut satırı süreci doğru paketi yazmıştır.
+        üretir: [
+          Kod( kod: KOD-TAZE-KAYNAK, dosya: "urun/cekirdek/src/taze-kaynak.ts", ne: "🍎 Çağrı anında mühür karşılaştırması — uzun ömürlü sürecin belleğe aldığı kaynağı değişiklik zamanı ile boyuta bakarak tazeler; içerik ancak mühür değiştiğinde okunur ve bozuk yazımda son doğru değer korunur" ),
+          Kod( kod: KOD-SNM-TAZE-KAYNAK, dosya: "urun/cekirdek/sinama/mcp-taze-kaynak.test.ts", ne: "🍎 Süreç bayatlığı nöbeti — mekanizmanın tazeleme ile tazelememe davranışı, bozuk yazımda geri düşme ve canlı sunucu altında değişen şemanın sonraki çağrıda görünmesi uçtan uca ölçülür" )
+        ],
         ne: "🔄 MCP sunucusu şemayı açılışta belleğe alır ve kaynak değişince kendini tazelemez; 2026-08-08 tarihinde sınıflama kaydındaki öncelik kümesi diskte değiştiği hâlde çalışan sunucu eski kümeyi bildirmeye devam etmiştir. Tehlike sessizliğindedir: sunucuya soran ajan yanlış şemayı doğru sanır. Üç seçenek hatırlatıcıda yazılıdır; en ucuzu her araç çağrısında kaynağın mührünü karşılaştırıp gerekirse tazelemektir." ) {
         görev: [
           "Sunucunun belleğe aldığı her kaynağın mührünü tut; araç çağrısında mühür değişmişse kaynağı yeniden yükle ve cevaba tazelendiğini tek satırla yaz.",
@@ -940,6 +959,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Değişmeyen kaynakta ek maliyet ölçülebilir değildir; çekirdek süiti yeşildir."
         ]
         sınır: "Dosya izleme gözcüsü kurulmaz; tazeleme çağrı anında ve mühür karşılaştırmasıyla yapılır."
+        koşu: "2026-09-10 · KAPANDI. Sınıflama kaydı artık süreç başında değil çağrı anında tazedir; mühür değişiklik zamanı ile boyuttan kurulur, çünkü içerik özeti almak dosyayı okumayı gerektirir ve kaçınılmak istenen bedel tam olarak odur. Bozuk yazımda son doğru şema korunur, çünkü yarım yazılmış bir dosyaya düşmektense bilinen doğru şemayla cevap vermek yeğdir. Maliyet ölçülmüştür: değişmeyen kaynakta okuma başına dört virgül yedi mikrosaniye, aynı kaynağın tam yüklemesi ise sıfır virgül seksen dokuz milisaniyedir, yani yaklaşık yüz doksan kat pahalıdır ve panel turu dört yüz milisaniye ölçeğinde olduğu için bedel ölçüm gürültüsünün altındadır. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz yetmiş altıda bin iki yüz yetmiş altı, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; iki mutasyonun ikisi de kırmızıya düştü. ÖNEMLİ SINIR dürüstçe beyan edilir ve bu oturumda iki kez canlı yaşanmıştır: bu mekanizma VERİ bayatlığını çözer, KOD bayatlığını çözmez. Sunucunun kendi modülleri süreç başında yüklenir, dolayısıyla motorun gövdesi değiştiğinde süreç yeniden başlatılmadıkça eski davranış sürer; graf aracı ile doğuş aracı bu oturumda tam olarak bu ikinci türden bayat cevap vermiştir. İki bayatlık aynı belirtiyi verdiği için ayrım kayda yazılmıştır, yoksa onarım yanlış yerde aranır."
       }
 
       Adım( kod: BKM-MCP-A03, ad: "Graf Aracının Özet Kipi ve Yazma Talimatının Netleşmesi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-MCP-A01 ],

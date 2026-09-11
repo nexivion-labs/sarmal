@@ -43,6 +43,7 @@ import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukl
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
 import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
 import { MCP_ARAC_ADI, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
+import { tazeKaynak } from "./taze-kaynak.ts";   // BKM-MCP-A02: çağrı anında mühür karşılaştırması
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
 import { dagKur } from "./dag.ts";
 import { grafYuz } from "./graf.ts";  // VIT-GRAF-A02: MCP yüzü aynı kanonik serileştiriciyi çağırır (YUZ-1.2)
@@ -72,10 +73,28 @@ const YASA_KOK = fileURLToPath(new URL("../../../yasa/kanon/", import.meta.url))
 // kanon nadiren değişir; gezin'in dosya-indeksi ise her çağrıda taze taranır,
 // çünkü .sar dosyaları SÜREKLİ değişir — iki karar farklı değişim-hızına göre).
 // ÇalışmaAlanı ÖRTÜSÜ ise çağrı-anında çözülür (aşağıda etkinSnf — bayat örtü yok).
-const snf = siniflamaYukle(SNF_YOL);
-// siniflama aracının detay görünümü ham kayıttan okur (Sema tipinin dışındaki
-// alanlar — enum/opsiyonel/kural/tür — da ajana aynen gitsin).
-const snfHam = JSON.parse(readFileSync(SNF_YOL, "utf8"));
+// BKM-MCP-A02: kanon artık SÜREÇ-BAŞI değil ÇAĞRI-ANI tazedir. Yukarıdaki
+// "kanon değişimi MCP yeniden başlatma ister" beyanı 2026-09-10 tarihinde
+// emekli oldu: sınıflama kaydı çalışan sunucunun altında değiştiğinde bir
+// sonraki araç çağrısı yeni şemayı döndürür. Bedel değişmeyen kaynakta tek bir
+// `statSync` çağrısıdır; içerik ancak mühür değiştiğinde okunur.
+const snfKaynagi = tazeKaynak(SNF_YOL, siniflamaYukle);
+// Ham kayıt JSON.parse çıktısıdır ve tipi bilinçli olarak gevşektir: siniflama
+// aracı Sema tipinin DIŞINDAKİ alanları (enum · opsiyonel · kural · tür) da
+// ajana aynen taşır, dolayısıyla burada dar bir tip kaydın yarısını gizlerdi.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const snfHamKaynagi = tazeKaynak<any>(SNF_YOL, (y) => JSON.parse(readFileSync(y, "utf8")));
+/** Güncel sınıflama — her okuma mührü karşılaştırır (bayat şema yasağı). */
+function guncelSnf(): Siniflama { return snfKaynagi.deger(); }
+/** Güncel HAM kayıt — siniflama aracının detay görünümü buradan okur. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function guncelSnfHam(): any { return snfHamKaynagi.deger(); }
+/** Bir araç çağrısında kanon tazelendiyse cevaba eklenecek tek satır. */
+function tazelemeNotu(): string {
+  return snfKaynagi.sonCagridaTazelendi() || snfHamKaynagi.sonCagridaTazelendi()
+    ? "\n\n🔄 Kanon kaynağı diskte değişmişti; bu cevap tazelenmiş şemadan üretildi."
+    : "";
+}
 
 // Kanon bölümleri → dosya: raf DİNAMİK okunur (elle liste = drift fabrikası —
 // yeni bölüm dosyası eklenince MCP kendiliğinden görür; kategori = dosya kökü).
@@ -93,7 +112,7 @@ const MCP_DILI = etkinCiktiDili();
 const MCP_ARAC_SEMALARI = mcpAracSemalari(MCP_DILI, {
   kuralBolumleri: Object.keys(KURAL_DOSYALARI),
   sablonTurleri: sablonTurleri(),
-  adimDurumlari: snf.semalar?.["Adım"]?.enum?.durum ?? [],
+  adimDurumlari: guncelSnf().semalar?.["Adım"]?.enum?.durum ?? [],
 });
 // ── JSON-RPC tipleri (yalın) ────────────────────────────────────────────────
 interface Istek {
@@ -113,7 +132,7 @@ interface DenetimSonucu {
   ozet: { hata: number; uyari: number };
 }
 
-export function denetleAraci(kaynak: string, etkinSnf: Siniflama = snf, dogusBaglami: "var" | "yok" = "var"): DenetimSonucu {
+export function denetleAraci(kaynak: string, etkinSnf: Siniflama = guncelSnf(), dogusBaglami: "var" | "yok" = "var"): DenetimSonucu {
   let tanilar: Tani[];
   try {
     const program = ayristir(belirtecle(kaynak));
@@ -244,6 +263,9 @@ function kurallarAraci(kategori?: string): { metin: string; isError: boolean } {
 
 // ── araç: siniflama (SNF-0 kanonu) ──────────────────────────────────────────
 function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isError: boolean } {
+  // BKM-MCP-A02: ham kayıt çağrı başında BİR kez tazelenir ve o anlık görüntü
+  // gövde boyunca paylaşılır; tek cevabın içinde iki farklı şema sürümü olamaz.
+  const snfHam = guncelSnfHam();
   const tipler: Array<{ ad: string; aile: string; ne: string; caprazRoller?: string[] }> = snfHam.widgetTipleri ?? [];
   if (tip) {
     const t = tipler.find((x) => x.ad === tip);
@@ -258,7 +280,7 @@ function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isErro
     }
     // doğuş-rehberi turu: şema NORMALİZE kanondan gider — enum'da `*` görünmez (ajan `durum: *beklemede`
     // kopyalamasın), varsayılan ayrı `varsayilan` alanı olarak zaten şemada görünür.
-    const sema = snf.semalar?.[t.ad] ?? snfHam.semalar?.[t.ad] ?? null;
+    const sema = guncelSnf().semalar?.[t.ad] ?? snfHam.semalar?.[t.ad] ?? null;
     const icerebilir = snfHam.izinliSarma?.[t.ad] ?? null;
     const konabilir = Object.entries(snfHam.izinliSarma ?? {})
       .filter(([, cocuklar]) => (cocuklar as string[]).includes(t.ad))
@@ -401,7 +423,7 @@ function kavramAraci(kelime?: string, baglam?: string): { metin: string; isError
  *  AYNI üretici — YUZ-1.2 çift-kaynak yasak); konulu: ogreti/ogrenme/ rafındaki eşleşen
  *  Beceri kartının TAM metni (tek kaynak: kartın kendisi — özet türetilmez). */
 function ogretAraci(konu?: string): { metin: string; isError: boolean } {
-  if (!konu?.trim()) return { metin: ogretKarti(snf), isError: false };
+  if (!konu?.trim()) return { metin: ogretKarti(guncelSnf()) + tazelemeNotu(), isError: false };
   // BKM-DNT-A16: arama gövdesi beceri-karti.ts'e taşındı — CLI ikizi de oradan okur
   // (YUZ-1.2). Raf adresi kurulumun kendi konumundan çözülür, çağıranın çalışma
   // dizininden DEĞİL; bu yüzden konu kartı boş bir dizinde de yanıt verir.
@@ -409,7 +431,7 @@ function ogretAraci(konu?: string): { metin: string; isError: boolean } {
 }
 
 function karneAraci(dizin: string): { metin: string; isError: boolean } {
-  const etkinSnf = siniflamaOrtuMerge(snf, siniflamaOrtuYukle(dizin));
+  const etkinSnf = siniflamaOrtuMerge(guncelSnf(), siniflamaOrtuYukle(dizin));
   const rapor = karneRaporu(etkinSnf, programHaritasi(dizin));
   return { metin: rapor, isError: rapor.startsWith("✖") };
 }
@@ -530,7 +552,7 @@ function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: b
   } catch (e) {
     return { metin: `✖ Giriş dosyası ayrıştırılamadı (${anaAdi}): ${(e as Error).message} — söz-dizimi düzelt, sonra iskelet.`, isError: true };
   }
-  const etkinSnf = siniflamaOrtuMerge(snf, siniflamaOrtuYukle(dizin));
+  const etkinSnf = siniflamaOrtuMerge(guncelSnf(), siniflamaOrtuYukle(dizin));
   const plan = iskeletPlani(program, etkinSnf);
   const giris = anaAdi.slice(anaAdi.lastIndexOf("/") + 1);
 
@@ -657,7 +679,7 @@ function prizmaAraci(kaynak: string, yuz: string): { metin: string; isError: boo
 /** durum-guncelle: İLK yazan araç — DAR SINIR (yalnız Adım.durum · yalnız kanon enum ·
  *  adimDurumYaz: kilit + satirdaDegerDegistir + re-parse guard; şüphede DOKUNMAZ). */
 function durumGuncelleAraci(dizin: string, kod: string, durum: string): { metin: string; isError: boolean } {
-  const gecerli = snf.semalar?.["Adım"]?.enum?.durum ?? [];   // normalize kanon — `*` çözülmüş (doğuş-rehberi turu)
+  const gecerli = guncelSnf().semalar?.["Adım"]?.enum?.durum ?? [];   // normalize kanon — `*` çözülmüş (doğuş-rehberi turu)
   if (!kod) return { metin: "✖ durum-guncelle: 'kod' argümanı gerekli (Adım KOD'u).", isError: true };
   if (!gecerli.includes(durum)) {
     return {
@@ -675,7 +697,7 @@ function durumGuncelleAraci(dizin: string, kod: string, durum: string): { metin:
   }
   // TUR-2 DURUM MAKİNESİ: geçiş tablosu KANONDAN geçer — yasak geçiş (bloklu→
   // tamamlandı) adimDurumYaz içinde YAZ-ANINDA reddedilir (üç yazıcı tek mesaj).
-  const s = adimDurumYaz(join(dizin, etiket), kod, durum, snf.durumGecisleri);
+  const s = adimDurumYaz(join(dizin, etiket), kod, durum, guncelSnf().durumGecisleri);
   if (!s.yazildi) {
     return { metin: `✖ durum yazılamadı (fail-safe — dosyaya dokunulmadı): ${s.sebep}`, isError: true };
   }
@@ -826,7 +848,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
   // argümanından find-up; ikisi de yoksa taban kanon (dış/kör ajan = taban davranışı).
   const ortuKoku = typeof arg.yol === "string" ? dirname(arg.yol)
     : typeof arg.dizin === "string" ? arg.dizin : undefined;
-  const etkinSnf = ortuKoku ? siniflamaOrtuMerge(snf, siniflamaOrtuYukle(ortuKoku)) : snf;
+  const etkinSnf = ortuKoku ? siniflamaOrtuMerge(guncelSnf(), siniflamaOrtuYukle(ortuKoku)) : guncelSnf();
   const projedeMi = anadizinVarMi(ortuKoku);   // IDA dersi: projede tek-dosya temizi yanlış-yeşildir
   const sonuc = denetleAraci(kaynak, etkinSnf, projedeMi ? "var" : "yok");
   // ağaç-yüzü turu: agac=true → yanıta ağaç yüzü de eklenir (CLI --agac ile AYNI
