@@ -252,15 +252,16 @@ test("proje: Kod düğümünün dosya beyanı Meyve ile aynı disk doğrulaması
       `Kod( kod: KOD-ARTI, dosya: "src/var.ts + src/ikinci.ts", ne: "artı ile birleştirilmiş beyan tek yol olarak çözülmez" )`,
       `Kod( kod: KOD-VAR, dosya: "src/var.ts", ne: "diskte çözülen meşru beyan" )`,
       `Kod( kod: KOD-BEYANSIZ, ne: "dosyasız Kod bu turda muaftır — alanı zorunlu kılmak kanon hükmü ister" )`,
-      `Kod( kod: KOD-KOR-NOKTA, dosya: "sablon/dongu.sar", ne: "YOKSAY klasörünün içeriği taramada yaşamaz; ölçülemeyen beyan suçlanmaz" )`,
+      `Kod( kod: KOD-KOR-NOKTA, dosya: "ogreti/sablon/dongu.sar", ne: "taranmayan sentetik gövdenin içeriği anlık görüntüde yaşamaz; ölçülemeyen beyan suçlanmaz" )`,
+      `Kod( kod: KOD-KULLANICI-SABLON, dosya: "sablon/kurumsal/yok.ts", ne: "KPS-IND-A01 nöbeti: kullanıcının kendi şablon kitaplığı TARANIR, dolayısıyla karşılıksız beyanı suçlanır" )`,
       "",
     ].join("\n"),
   });
   const t = omurgaTanilari(programlar, kodIndeksle(programlar), bosDisk(["src/var.ts"]));
   const kodBulgulari = t.filter((x) => x.tani.kod === "meyve-dosyası-eksik");
   const kimlikler = kodBulgulari.map((x) => x.tani.mesaj.match(/Kod "([^"]+)"/)?.[1]).sort();
-  assert.deepEqual(kimlikler, ["KOD-ARTI", "KOD-BOS", "KOD-DISARI", "KOD-YOK"],
-    "dört ihlal ateşlemeli; meşru yol, beyansız düğüm ve kör-nokta yolu susmalıdır");
+  assert.deepEqual(kimlikler, ["KOD-ARTI", "KOD-BOS", "KOD-DISARI", "KOD-KULLANICI-SABLON", "KOD-YOK"],
+    "beş ihlal ateşlemeli; meşru yol, beyansız düğüm ve öğreti kitaplığındaki kör-nokta susmalıdır");
   uretildi("meyve-dosyası-eksik", kodBulgulari);
   // Cümle düğümü kendi adıyla anar ve iki dil hanesi birlikte dolar (Kod'a "Meyve" denmez).
   const yok = kodBulgulari.find((x) => x.tani.mesaj.includes("KOD-YOK"))!.tani;
@@ -641,10 +642,11 @@ test("orkestrasyon: tanı sözleşmesi, kapsam, Proje kimliği ve yüz tutarlıl
 test("YAS-3.3 regresyonu: örnek dünyasındaki Proje ürün kimliği sayımına girmez", () => {
   const kok = mkdtempSync(join(tmpdir(), "sarmal-ork-ornek-"));
   try {
-    mkdirSync(join(kok, "ornek"), { recursive: true });
+    // KPS-IND-A01: ders dünyası öğreti kitaplığına demirlidir; fikstür oraya konur.
+    mkdirSync(join(kok, "ogreti", "ornek"), { recursive: true });
     writeFileSync(join(kok, "fikstur_anadizin.sar"),
       `Proje( kod: PRJ-URUN, rejim: esnek )\n`, "utf8");
-    writeFileSync(join(kok, "ornek", "ders.sar"),
+    writeFileSync(join(kok, "ogreti", "ornek", "ders.sar"),
       `Proje( kod: PRJ-DERS, rejim: esnek )\n`, "utf8");
     const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-07-27" });
     const kimlikTanilari = sonuc.akis.flatMap((r) => r.tanilar)
@@ -813,11 +815,16 @@ test("proje: öncelik beyanı olmayan AÇIK Adım gözlem üretir, tamamlanmış
 
 test("proje: ders dünyası öncelik gözleminin DIŞINDADIR", () => {
   const programlar = harita({
-    "ornek/ders.sar": `Adım( kod: ORN-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
+    "ogreti/ornek/ders.sar": `Adım( kod: ORN-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
     "sinama/fikstur.sar": `Adım( kod: SNM-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
   });
   assert.deepEqual(onceliksizAdimTanilari(programlar), [],
     "örnek ve sınama gövdeleri öğretim malzemesidir ve kasıtlı olarak eksik yazılabilir");
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi kökü altındaki `ornek/` kitaplığı ders
+  // rafı DEĞİLDİR; oradaki beyansız Adım gözleme girer (Founder hükmü 2026-09-10).
+  assert.equal(onceliksizAdimTanilari(harita({
+    "ornek/musteri/plan.sar": `Adım( kod: KLL-BEYANSIZ, durum: beklemede, ne: "iş" )\n`,
+  })).length, 1, "kullanıcı ağacındaki örnek kitaplığı öncelik gözleminden kaçmamalı");
 });
 
 test("proje: hedefi tamamlanmış hatırlatıcı ATEŞLEMİŞ sayılır, uykudaki sayılmaz", () => {
@@ -1023,3 +1030,73 @@ test("KPS-KAD-A01: kanonun HATA dediği yerde bilgi basan tanılar TAM OLARAK ü
     "kanonun hata dediği yerde bilgi basan küme değişti; bu kümenin her üyesi YAS-4.2'nin üç kanıtını ayrı ayrı ister");
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// KPS-IND-A01 · DERS DIŞLAMASININ KENDİ EVİNE DEMİRLENMESİ (Founder 2026-09-10)
+//
+//   Kusur 2026-09-10 tarihinde iki koşumla ölçüldü ve iki koşum arasındaki tek
+//   fark bir klasörün ADIYDI: `sablon/` adlı bir kitaplığın altında yaşayan Proje
+//   kökü graftan tamamen düşüyor, karne on yedi düğümden beşe iniyor ve denetim o
+//   ağaç için sıfır hata diyordu, çünkü hiç bakmadığı bir yere hata üretemez.
+//   Bu nöbet o iki koşumu tek sınamada donduruyor: aynı ağaç iki kez kurulur, tek
+//   fark kitaplığın adıdır ve İKİ KOŞUM AYNI SAYIYI vermek zorundadır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Tek Proje kökü taşıyan bir kitaplığı verilen adla kurar ve karne sayısını döndürür. */
+function kitaplikKarnesi(kitaplikAdi: string): { dugum: number; adim: number; kayipYapi: number; bulgu: number } {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-ind-a01-"));
+  try {
+    mkdirSync(join(kok, kitaplikAdi, "kurumsal", "plan"), { recursive: true });
+    writeFileSync(join(kok, "cati_anadizin.sar"),
+      `ÇalışmaAlanı( kod: CAL-CATI, ad: "cati", ne: "ölçüm çatısı" ) {\n` +
+      `  Kitaplık( kod: KTP-KUTU, yol: "${kitaplikAdi}/", ne: "kitaplık" ) {\n` +
+      `    Kitaplık( kod: KTP-KURUMSAL, yol: "kurumsal/", ne: "kendi kökü olan proje" )\n` +
+      `  }\n}\n`, "utf8");
+    writeFileSync(join(kok, kitaplikAdi, "kurumsal", "kurumsal_anadizin.sar"),
+      `Proje( kod: PRJ-KURUMSAL, ad: "kurumsal", rejim: esnek, ne: "kullanıcının kendi projesi" ) {\n` +
+      `  Raf( kod: RAF-KURUMSAL-PLAN, yol: "plan/", ne: "plan rafı" )\n}\n`, "utf8");
+    writeFileSync(join(kok, kitaplikAdi, "kurumsal", "plan", "plan.sar"),
+      `Blok( kod: BLK-KURUMSAL, ad: "Kurumsal Açılış", ne: "🏢 açılış işi" ) {\n` +
+      `  Adım( kod: KRM-A01, durum: beklemede, ne: "🏢 açılış sayfası", görev: "sayfa kurulur" )\n}\n`, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-10" });
+    const tanilar = sonuc.akis.flatMap((r) => r.tanilar);
+    return {
+      dugum: sonuc.karne?.dugum ?? 0,
+      adim: sonuc.karne?.adim ?? 0,
+      kayipYapi: tanilar.filter((t) => t.kod === "kayıp-yapı").length,
+      // Toplam bulgu da ölçülür: ad tabanlı üçüncü bir muafiyet listesi (ilansız
+      // gövde bekçisi gibi) kullanıcı ağacını sessizce muaf tutarsa sayı ayrışır.
+      bulgu: tanilar.length,
+    };
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+}
+
+test("KPS-IND-A01: kullanıcı kitaplığının adı karneyi değiştirmez — iki koşum aynı sayıyı verir", () => {
+  const kalip = kitaplikKarnesi("kalip");       // listede hiç geçmeyen kıyas adı
+  for (const ad of ["sablon", "arsiv", "fikstur", "ornek"]) {
+    const olculen = kitaplikKarnesi(ad);
+    assert.deepEqual(olculen, kalip,
+      `"${ad}" adlı kullanıcı kitaplığı kıyas adından farklı ölçüldü — ders dışlaması kendi evinden taşmış`);
+  }
+  assert.equal(kalip.kayipYapi, 0, "kıyas koşumu sahte kayıp-yapı üretmemeli");
+  assert.ok(kalip.adim >= 1, "kullanıcı kitaplığının Adımı karnede sayılmalı");
+});
+
+test("KPS-IND-A01: öğreti kitaplığının altındaki ders rafı karne dışında kalmayı sürdürür", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-ind-a01-ders-"));
+  try {
+    mkdirSync(join(kok, "ogreti", "ornek"), { recursive: true });
+    writeFileSync(join(kok, "ders_anadizin.sar"),
+      `Proje( kod: PRJ-DERS-KOK, ad: "ders", rejim: esnek, ne: "ders kökü" ) {\n` +
+      `  Kitaplık( kod: KTP-OGRETI, yol: "ogreti/", ne: "öğreti kitaplığı" ) {\n` +
+      `    Raf( kod: RAF-ORNEK, yol: "ornek/", ne: "örnek korpus" )\n` +
+      `  }\n}\n`, "utf8");
+    writeFileSync(join(kok, "ogreti", "ornek", "ders.sar"),
+      `Adım( kod: ADM-DERS-MUAF, durum: beklemede, ne: "ders", görev: "ders malzemesi" )\n`, "utf8");
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-10" });
+    assert.equal(sonuc.karne?.adim, 0, "OGR-5: ders Adımı ürün karnesine girmez");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});

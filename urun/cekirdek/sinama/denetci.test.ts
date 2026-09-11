@@ -348,9 +348,13 @@ test("yinelenenKodTanilari — OMURGA çakışması uyarır; ornek/ vitrini muaf
   assert.equal(omurga.length, 1);
   assert.equal(omurga[0].tani.kod, "yinelenen-kod");
   assert.match(omurga[0].tani.mesaj, /BLK-X/);
-  // ornek/ kopyaları (ayrı vitrin ağaçları) → uyarı YOK
-  const vitrin = yinelenenKodTanilari(new Map([["ornek/a.sar", a], ["ornek/b.sar", b]]));
+  // ders rafı kopyaları (ayrı vitrin ağaçları) → uyarı YOK
+  const vitrin = yinelenenKodTanilari(new Map([["ogreti/ornek/a.sar", a], ["ogreti/ornek/b.sar", b]]));
   assert.equal(vitrin.length, 0);
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi `ornek/` kitaplığı omurgadır; oradaki
+  // çakışma bildirilir, yoksa gerçek drift ders kopyası sanılır.
+  assert.equal(yinelenenKodTanilari(new Map([["ornek/musteri/a.sar", a], ["ornek/musteri/b.sar", b]])).length, 1,
+    "kullanıcı ağacındaki örnek kitaplığı yinelenen-kod muafiyetini ÇALMAMALI");
 });
 
 test("DIL-1.2 anadizinBul — *_anadizin.sar desenle bulunur; yoksa eski ana.sar'a düşer", () => {
@@ -1106,13 +1110,19 @@ test("MIM-1.2: ay hassasiyeti (YYYY-AA) geçerli tarihtir — günsüz-tarih naz
   assert.ok(!gec.some((x) => x.kod === "faz-gecikti"), "faz-gecikti emeklidir, geri dönmemeli");
 });
 
-test("MIM-1.2: ders dünyası (INDEKS_DISI) hatırlatmalardan muaf; tam tarihli Faz'ın vade nöbeti değişmedi", async () => {
+test("MIM-1.2: ders dünyası (DERS_DUNYASI) hatırlatmalardan muaf; tam tarihli Faz'ın vade nöbeti değişmedi", async () => {
   const { fazVadeTanilari } = await import("../src/denetci.ts");
   const fz = (t: string) => ayristir(belirtecle(
     `Faz( kod: FZ-B2, ad: "mvp", hedefTarih: ${t} ) {\n  Blok( kod: BLK-B2, ne: "iş" ) { Adım( kod: ADM-B2, ne: "a", durum: beklemede ) }\n}`));
-  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ornek/vitrin_dosyasi.sar").length, 0);
-  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "sablon/dogus/ilk_plan.sar").length, 0);
-  assert.equal(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "ornek/vitrin_dosyasi.sar").length, 0, "günsüz-tarih sorusu da ders dünyasında susar");
+  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0);
+  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/sablon/dogus/ilk_plan.sar").length, 0);
+  assert.equal(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0, "günsüz-tarih sorusu da ders dünyasında susar");
+  // KPS-IND-A01 NÖBETİ: muafiyet ADI değil YERİ okur. Kullanıcının kendi kökü
+  // altındaki `sablon/` bir ders rafı değildir ve hatırlatma orada SUSMAZ.
+  assert.deepEqual(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "sablon/kurumsal/is/plan/plan.sar").map((x) => x.kod), ["günsüz-tarih"],
+    "kullanıcı ağacındaki şablon kitaplığı ders muafiyetini ÇALMAMALI");
+  assert.deepEqual(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "arsiv/2025/plan.sar").map((x) => x.kod), ["günsüz-tarih"],
+    "kullanıcı ağacındaki arşiv kitaplığı ders muafiyetini ÇALMAMALI");
   assert.equal(fazVadeTanilari(fz('"2099-01-01"'), "2026-07-12").length, 0);
   // A10: yaklaşan ve geciken vade nöbetleri emekli — tam tarihli Faz da sessiz kalır.
   assert.equal(fazVadeTanilari(fz('"2026-07-15"'), "2026-07-12").length, 0);
@@ -1247,7 +1257,7 @@ import { dagKur, karneOzeti } from "../src/dag.ts";
 
 test("OGR-5: örnek kapsamındaki açık Adım gündeme girmez, ders sayacında sayılır; ürün Adımı etkilenmez", () => {
   const pm = new Map([
-    ["ornek/vitrinler/vitrin.sar", derle('Adım( kod: ADM-DERS, durum: beklemede, ne: "d", görev: "ders malzemesi — kasıtlı açık" )')],
+    ["ogreti/ornek/vitrinler/vitrin.sar", derle('Adım( kod: ADM-DERS, durum: beklemede, ne: "d", görev: "ders malzemesi — kasıtlı açık" )')],
     ["plan/is.sar", derle('Adım( kod: ADM-URUN, durum: beklemede, ne: "u", görev: "gerçek iş kalemi" )')],
   ]);
   const gundem = acikAdimTanilari(pm);
@@ -1255,17 +1265,30 @@ test("OGR-5: örnek kapsamındaki açık Adım gündeme girmez, ders sayacında 
   assert.ok(/ADM-URUN/.test(gundem[0].tani.mesaj));
   assert.equal(dersAcikAdimSayisi(pm), 1);                   // ders dünyası gizlenmez — ayrı sayaçta
   assert.equal(dersAcikAdimSayisi(new Map([["plan/is.sar", pm.get("plan/is.sar")!]])), 0);
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi `sablon/` kitaplığındaki Adım ÜRÜNDÜR —
+  // gündeme girer ve ders sayacına GİRMEZ (kusur tam burada yaşıyordu).
+  const kullanici = new Map([
+    ["sablon/kurumsal/is/plan/plan.sar", derle('Adım( kod: ADM-SABLON, durum: beklemede, ne: "k", görev: "kullanıcı şablonunun gerçek işi" )')],
+  ]);
+  assert.equal(acikAdimTanilari(kullanici).length, 1, "kullanıcı şablonunun Adımı gündemden düşmemeli");
+  assert.equal(dersAcikAdimSayisi(kullanici), 0, "kullanıcı şablonu ders sayacına yazılmamalı");
 });
 
 test("OGR-5: karne özeti ürün kapsamındadır — örnek Adımları durum sayaçlarına girmez", () => {
   const pm = new Map([
-    ["ornek/altin_yol/a.sar", derle('Adım( kod: ADM-DERS-KRN, durum: beklemede, ne: "d", görev: "ders" )')],
+    ["ogreti/ornek/altin_yol/a.sar", derle('Adım( kod: ADM-DERS-KRN, durum: beklemede, ne: "d", görev: "ders" )')],
     ["plan/is2.sar", derle('Adım( kod: ADM-URUN-KRN, durum: tamamlandı, ne: "u", görev: "iş" )')],
   ]);
   const ozet = karneOzeti(dagKur(pm));
   assert.equal(ozet.adim, 1);                                // yalnız ürün Adımı sayılır
   assert.equal(ozet.durumlar["tamamlandı"], 1);
   assert.equal(ozet.durumlar["beklemede"], undefined);       // ders beklemedesi karneyi kirletmez
+  // KPS-IND-A01 NÖBETİ: kullanıcının `sablon/` kitaplığındaki Adım karnede SAYILIR.
+  const kullaniciOzet = karneOzeti(dagKur(new Map([
+    ["sablon/kurumsal/is/plan/plan.sar", derle('Adım( kod: ADM-SABLON-KRN, durum: beklemede, ne: "k", görev: "iş" )')],
+  ])));
+  assert.equal(kullaniciOzet.adim, 1, "kullanıcı şablonunun Adımı karneden düşmemeli");
+  assert.equal(kullaniciOzet.durumlar["beklemede"], 1);
 });
 
 // ── MIM-3 (GBR-A09/A10): yetim taraması — iç içe raf muafiyeti + YOKSAY simetrisi ──
@@ -1453,7 +1476,10 @@ test("RF-T6-A02: dayanaksız beyanı — beyanlı kural borç sayılmaz, beyans�
   const acik = urun.filter((x) => x.tani.kod === "dayanaksız-kural");
   assert.equal(acik.length, 2, "beyansız + boş-beyan bilgi almalı; beyanlı almamalı");
   assert.ok(/dayanak: bağıyla bağlanmamış|bağlanmamış/.test(acik[0].tani.mesaj), "mesaj Sol'un eylem-odaklı cümlesi olmalı");
-  assert.equal(dayanakTanilari(new Map([["ornek/t.sar", p]])).filter((x) => x.tani.kod === "dayanaksız-kural").length, 0, "ders dünyası muaf (OGR-5)");
+  assert.equal(dayanakTanilari(new Map([["ogreti/ornek/t.sar", p]])).filter((x) => x.tani.kod === "dayanaksız-kural").length, 0, "ders dünyası muaf (OGR-5)");
+  // KPS-IND-A01 NÖBETİ: kullanıcı ağacındaki `ornek/` klasörü muafiyet doğurmaz.
+  assert.equal(dayanakTanilari(new Map([["ornek/musteri/t.sar", p]])).filter((x) => x.tani.kod === "dayanaksız-kural").length, 2,
+    "kullanıcı ağacındaki örnek klasörü ders muafiyetini ÇALMAMALI");
 });
 
 
@@ -1475,7 +1501,7 @@ test("Sol bulgusu: takvim-dışı tarih (13. ay · şubat-31) tür-uyarısı al�
 });
 
 // ── EKL-F6 dersi · YAS-3.4: durumsuz-adım bekçisi ──────────────────────────────
-test("durumsuz-adım: durum taşımayan Adım UYARI alır; durumlu Adım susar; INDEKS_DISI (örnek) muaf", async () => {
+test("durumsuz-adım: durum taşımayan Adım UYARI alır; durumlu Adım susar; ders rafı muaf, kullanıcı ağacı DEĞİL", async () => {
   const { durumsizAdimTanilari } = await import("../src/denetci.ts");
   const p = (dosya: string, govde: string) => new Map([[dosya, ayristir(belirtecle(govde))]]);
   // ① durumsuz gerçek Adım → UYARI (EKL-F6 senaryosu)
@@ -1487,9 +1513,13 @@ test("durumsuz-adım: durum taşımayan Adım UYARI alır; durumlu Adım susar; 
   // ② durumlu Adım → susar
   assert.equal(durumsizAdimTanilari(p("plan/x.sar",
     'Katman( kod: KAT-D2, ad: "y" ) { Adım( kod: ADM-DURUMLU, ne: "iş", durum: beklemede ) }')).length, 0);
-  // ③ örnek-dünyası (INDEKS_DISI) muaf — ders malzemesi kısalık için durum atlayabilir
-  assert.equal(durumsizAdimTanilari(p("ornek/vitrin.sar",
+  // ③ ders dünyası (DERS_DUNYASI) muaf — ders malzemesi kısalık için durum atlayabilir
+  assert.equal(durumsizAdimTanilari(p("ogreti/ornek/vitrin.sar",
     'Katman( kod: KAT-D3, ad: "y" ) { Adım( kod: ADM-ORNEK, ne: "ders" ) }')).length, 0);
+  // ④ KPS-IND-A01 NÖBETİ: kullanıcının kendi `ornek/` kitaplığı muaf DEĞİLDİR.
+  assert.equal(durumsizAdimTanilari(p("ornek/musteri/vitrin.sar",
+    'Katman( kod: KAT-D4, ad: "y" ) { Adım( kod: ADM-KULLANICI, ne: "gerçek iş" ) }')).length, 1,
+    "kullanıcı ağacındaki örnek klasörü durumsuz-adım muafiyetini ÇALMAMALI");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

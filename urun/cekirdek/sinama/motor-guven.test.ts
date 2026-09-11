@@ -483,10 +483,15 @@ test("RF-T6-A05: örnek/vitrin kullanımı CANLI değildir — bekçi yine BİLG
   const { kullanimsizTipTanilari } = await import("../src/denetci.ts");
   const snf = { widgetTipleri: [{ ad: "SadeceOrnekte", aile: "test" }], tipMuafiyetleri: {} } as unknown as Parameters<typeof kullanimsizTipTanilari>[1];
   const src = `ANA( kod: ANA-T ){ SadeceOrnekte( kod: X-1 ) }`;
-  const programlar = new Map([["ornek/vitrin.sar", ayristir(belirtecle(src))]]);
+  const programlar = new Map([["ogreti/ornek/vitrin.sar", ayristir(belirtecle(src))]]);
   const tanilar = kullanimsizTipTanilari(programlar, snf, "anadizin.sar");
-  assert.equal(tanilar.length, 1, "örnek/ altındaki kullanım canlı sayılmaz → hâlâ kullanımsız");
+  assert.equal(tanilar.length, 1, "ders rafındaki kullanım canlı sayılmaz → hâlâ kullanımsız");
   assert.ok(tanilar[0].tani.mesaj.includes("SadeceOrnekte"));
+  // KPS-IND-A01 NÖBETİ: kullanıcının kendi `ornek/` kitaplığı CANLI bahçedir ve
+  // oradaki kullanım tipi canlı sayar (Founder hükmü 2026-09-10).
+  assert.equal(kullanimsizTipTanilari(
+    new Map([["ornek/musteri/vitrin.sar", ayristir(belirtecle(src))]]), snf, "anadizin.sar").length, 0,
+    "kullanıcı ağacındaki örnek kitaplığı canlı bahçe sayılmalı");
 });
 
 // ── Yapısal-hiyerarşi (Founder MECBURİ · MIM-1 · 2026-07-14): tam zincir zorlaması

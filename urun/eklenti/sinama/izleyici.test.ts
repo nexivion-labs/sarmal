@@ -18,12 +18,16 @@ test("süzgeç: gizli dizinler ve araç/derleme çıktıları gürültüdür; me
   for (const yol of [
     ".git/index.lock", ".git/objects/pack/tmp_pack_abc", ".sarmal/trace/kosu-1.jsonl",
     "eklenti/dist/eklenti.js", "cekirdek/out/derleme.js", "node_modules/x/paket.json",
-    ".vscode/settings.json", "arsiv/eski.sar", "fikstur/kirik.sar",
+    ".vscode/settings.json",
   ]) assert.equal(gurultuMu(yol), true, yol);
   for (const yol of [
     "plan/performans_turu.sar", "yeni-klasor", "eklenti/src/eklenti.ts",
     "cikti-notu.md",            // 'out' yalnız TAM dizin adı olarak süzülür
     "ornek/tema_ornek.sar",     // disk hattı ornek'i SÜZMEZ (proje-denetim kapsar)
+    // KPS-IND-A01: disk hattı yalnız bağımlılık ve derleme çıktısını süzer;
+    // arşiv, fikstür ve şablon ADI tek başına gürültü hükmü doğurmaz, çünkü
+    // bunlar kullanıcının kendi kitaplık adları olabilir (Founder 2026-09-10).
+    "arsiv/eski.sar", "fikstur/kirik.sar", "sablon/kurumsal/plan.sar",
   ]) assert.equal(gurultuMu(yol), false, yol);
   assert.equal(gurultuMu("C:\\proje\\.git\\index.lock"), true);   // Windows ayracı
 });
@@ -41,6 +45,14 @@ test("süzgeç: tarama globu dışlama LİSTESİNDEN TÜRETİLİR — kapsam tek
   assert.equal(sarGurultuMu("__pycache__/canli.sar"), true);   // RED-2'nin somut örneği
   assert.equal(sarGurultuMu(".vscode/model.sar"), true);
   assert.equal(sarGurultuMu("plan/performans_turu.sar"), false);
+  // KPS-IND-A01: ders rafı ADIYLA değil YERİYLE süzülür (Founder 2026-09-10).
+  for (const raf of ["arsiv", "ornek", "fikstur", "sablon"]) {
+    assert.equal(sarGurultuMu(`ogreti/${raf}/dosya.sar`), true, `ogreti/${raf}`);
+    assert.equal(sarGurultuMu(`x/ogreti/${raf}/alt/dosya.sar`), true, `x/ogreti/${raf}`);
+    // NÖBET: kullanıcının kendi kökü altındaki aynı ad ÜRÜNDÜR ve süzülmez.
+    assert.equal(sarGurultuMu(`${raf}/kurumsal/plan.sar`), false, `kullanıcı ${raf}/`);
+    assert.equal(sarGurultuMu(`is/${raf}/plan.sar`), false, `kullanıcı is/${raf}/`);
+  }
 });
 
 test("hat: iz yolu tam-tur kuyruğuna GİRMEZ — meşgul panel turunda bile başlangıç ≤1sn (RED-2 IZLE-A03)", (t) => {

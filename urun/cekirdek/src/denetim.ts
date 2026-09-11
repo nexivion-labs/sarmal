@@ -32,7 +32,7 @@ import { dagKur, dagTanilari, durumTutarlilikTanilari, kopukZincirTanilari, kayi
 import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import type { EbediKilit } from "./kuralci.ts";
 import { yolTuru, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
-import { dizindenIndeks, INDEKS_DISI } from "./kimlik.ts";
+import { dizindenIndeks, DERS_DUNYASI } from "./kimlik.ts";
 import { YENI_TANI_INDEKS, taniSicili, terfiKapisiKusurlari } from "./tani-sicili.ts";
 import type { YeniTaniKaydi } from "./tani-sicili.ts";
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
@@ -665,7 +665,7 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     const projeKodlari = new Set<string>();
     for (const [etiket, p] of programlar) {
       if (muaflar.has(etiket)) continue;
-      if (INDEKS_DISI.test(etiket)) continue;   // OGR-5: ders/şablon Projesi ürün kimliği değildir
+      if (DERS_DUNYASI.test(etiket)) continue;   // OGR-5: ders/şablon Projesi ürün kimliği değildir
       const gez = (d: Dugum): void => {
         if (d.tur === "widget" && d.ad === "Proje") {
           const k = [...d.parametreler, ...d.ozellikler].find((x) => x.ad === "kod")?.deger.metin;
@@ -694,11 +694,11 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   for (const [dosya, p] of programlar) {
     const n = dayanaksizKurallar(p).length;
     if (!n) continue;
-    if (INDEKS_DISI.test(dosya)) dynOrnek += n; else dynUrun += n;
+    if (DERS_DUNYASI.test(dosya)) dynOrnek += n; else dynUrun += n;
   }
   const kuralsizK = dayanaksizKararlar(programlar).length;
   let beyanli = 0;
-  for (const [dosya, p] of programlar) if (!INDEKS_DISI.test(dosya)) beyanli += beyanliDayanaksizKurallar(p).length;
+  for (const [dosya, p] of programlar) if (!DERS_DUNYASI.test(dosya)) beyanli += beyanliDayanaksizKurallar(p).length;
 
   return {
     // Tam yeşil invaryantı: atlanan zorunlu kapı varken sonuç yeşil DÖNEMEZ —

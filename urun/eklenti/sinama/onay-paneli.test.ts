@@ -330,11 +330,20 @@ test("tek evren: kapsam süzgeci glob ile AYNI listeden türer", () => {
   }
 });
 
-test("tek evren: ÖLÇÜLEN ayrışma kapandı — sablon/ ve __pycache__ artık iki yüzde de dışlanır", () => {
-  assert.ok(sarKapsamDisi("_Sarmal/sablon/adim.sar"),
-    "sablon/ tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
+test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ artık iki yüzde de dışlanır", () => {
+  assert.ok(sarKapsamDisi("_Sarmal/ogreti/sablon/adim.sar"),
+    "öğreti kitaplığının şablon rafı tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
   assert.ok(sarKapsamDisi("ogreti/sablon/dogus/ilk_plan.sar"),
     "sablon/ alt dizini de dışlanmalı");
+  // KPS-IND-A01 NÖBETİ (Founder 2026-09-10): ders dışlaması kendi evine demirlidir.
+  // Kullanıcının kendi kökü altındaki `sablon/` kitaplığı KAPSAM İÇİDİR; kapsam
+  // dışı sayılırsa kuyruk o ağacın bütün kapılarını sessizce yutar.
+  assert.ok(!sarKapsamDisi("_Sarmal/sablon/kurumsal/is/plan/plan.sar"),
+    "kullanıcı ağacındaki şablon kitaplığı kapsam dışına düştü — kusur geri geldi");
+  assert.ok(!sarKapsamDisi("_Sarmal/arsiv/2025/plan.sar"),
+    "kullanıcı ağacındaki arşiv kitaplığı kapsam dışına düştü");
+  assert.ok(!sarKapsamDisi("_Sarmal/fikstur/musteri/plan.sar"),
+    "kullanıcı ağacındaki fikstür kitaplığı kapsam dışına düştü");
   assert.ok(sarKapsamDisi("cekirdek/__pycache__/x.sar"),
     "__pycache__ tam taramada dışlanıyor ama olay tarafında geçiyordu");
   assert.ok(sarKapsamDisi(".claude/worktrees/ajan/plan.sar"),
@@ -347,7 +356,7 @@ test("tek evren: ölçüm yalnız DİZİN parçalarına bakar — glob semantiğ
   // Glob `**/{…}/**` dizin segmentlerine bakar, dosya adına bakmaz.
   assert.ok(!sarKapsamDisi("plan/dist.sar"), "dosya adı dizin sanıldı");
   assert.ok(!sarKapsamDisi("goc_plani.sar"), "kök dosyası kapsam dışına düştü");
-  assert.ok(sarKapsamDisi("a/ornek/b/c.sar"), "ara dizin ölçülmüyor");
+  assert.ok(sarKapsamDisi("a/ogreti/ornek/b/c.sar"), "ara dizin ölçülmüyor");
 });
 
 test("tek evren: onay kuyruğunda ELLE yazılmış ikiz dışlama listesi kalmadı", () => {

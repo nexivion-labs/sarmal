@@ -322,6 +322,29 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         ]
         sınır: "Bu Adım Faz ile Proje arasındaki bağın kendisine dokunmaz; o bağ KPS-FAZ-A01 turunda kurulmuştur ve çalışmaktadır. Kanon metnine yalnız Founder hükmü geldikten sonra ve yalnız hükmün tarif ettiği kadar dokunulur."
       }
+
+      Adım( kod: KPS-IND-A01, ad: "Ders Dışlamasının Kendi Evine Demirlenmesi", durum: tamamlandı, öncelik: p0,
+        bağımlı: [], referans: [ OGR-5, MIM-1.1, YUZ-3.1 ],
+        onay: "onaylandı — 2026-09-10 · FOUNDER HÜKMÜ: ders dünyasının karne dışında tutulması bir klasör ADINDAN değil, o klasörün öğreti kitaplığı altında yaşamasından türer; dışlama deseni kendi evine demirlenir ve bağımlılık ile derleme çıktısı klasörleri her yerde dışlanmaya devam eder. GEREKÇE ŞUDUR: bugünkü desen ürünün kendi öğreti rafı için yazılmış olmasına rağmen denetlenen her ağacın her yol parçasına uygulanmakta ve Türkçe bir üründe arşiv, örnek ile şablon gibi sıradan klasör adlarını seçen kullanıcının bütün Proje kökünü sessizce yutmaktadır; sessiz görünmezlik ise denetimi yanlış bir yeşile çevirmektedir ve bu, YUZ-3.1 hükmünün yasakladığı şeyin ta kendisidir. Founder seçeneği üç yol arasından seçmiştir: beyan yolu ile kullanıcı ilanı yolu şemaya yeni bir kanonik alan ile göç yükü getirdiği hâlde aynı sonucu vermektedir, oysa demirleme yolu OGR-5 hükmünün niyetini birebir korumakta ve hiçbir ağaca göç yüklememektedir.",
+        ne: "🪝 Ders dünyasını karne dışında tutan desenin, ürünün kendi öğreti kitaplığına demirlenmesi. Kusur 2026-09-10 tarihinde iki koşumla ölçülmüştür ve iki koşum arasındaki tek fark bir klasörün adıdır: şablon adını taşıyan bir kitaplığın altında yaşayan Proje kökü graftan tamamen düşmekte, ürün karnesi yirmi sekiz düğümden yirmi ikiye inmekte ve denetim o ağaç için sıfır hata demektedir, çünkü hiç bakmadığı bir yere hata üretemez. Aynı davranış arşiv, fikstür ve derleme çıktısı adlarında da doğrulanmıştır; örnek adı farklı davranmakta ve düğüm sayısı tam kaldığı hâlde Proje kökünün graftaki geçişi seyrelmektedir, bu ayrım da bu Adımda nitelendirilir. Kusurun ağırlığı Founder'ın kurmak istediği ajans çatısının merkezine düşmesinden gelir, çünkü o çatının üç ana kitaplığından biri web sitesi şablonlarıdır ve her şablon kendi Proje köküdür." ) {
+        görev: [
+          "Dışlama desenini ikiye ayır: ders dünyası deseni yalnız öğreti kitaplığının altındaki örnek, şablon, fikstür ve arşiv raflarını kapsasın; bağımlılık ile derleme çıktısı deseni yol parçası nerede geçerse geçsin dışlamaya devam etsin. İki desenin gerekçesi ayrıdır ve bu yüzden adları da ayrı olur.",
+          "Deseni okuyan bütün çağrı yerlerini tek tek gözden geçir ve her birinin hangi desene ait olduğunu ölç; bir çağrı yeri ders dünyasını mı yoksa üretilen dosyayı mı elemek istiyor, bunu kaynaktan oku, tahmin etme.",
+          "Örnek adının neden farklı davrandığını ölç ve kayda yaz; düğüm sayısının tam kalıp graf geçişinin seyrelmesinin sebebi nitelendirilmeden bu Adım kapanmaz.",
+          "Nöbet kur: öğreti kitaplığının altındaki bir ders ağacı ürün karnesine girmez, buna karşılık kökün altında şablon, arşiv ya da fikstür adını taşıyan bir kullanıcı kitaplığı ile onun altındaki Proje kökü karnede ve grafta TAM olarak görünür.",
+          "Sarmal'ın kendi ağacında ürün karnesinin değişmediğini ölç ve sayıyı kayda yaz; ders dünyası bugün de karne dışındadır ve bu onarım onu içeri almaz."
+        ]
+        kabul: [
+          "Şablon, arşiv ya da fikstür adını taşıyan bir kitaplığın altındaki Proje kökü grafta ve karnede tam olarak görünür; iki koşumlu ölçüm tekrarlanır ve iki koşum aynı sayıyı verir.",
+          "Sarmal'ın kendi ürün karnesi bu onarımdan önceki sayıyı korur; ders dünyası karne dışında kalmaya devam eder.",
+          "Nöbet mutasyonla kanıtlanmıştır: desen eski birleşik hâline döndürüldüğünde nöbet kırmızıya döner.",
+          "Örnek adının farklı davranışı ölçülmüş ve gerekçesiyle kayda yazılmıştır.",
+          "Çekirdek ile eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım OGR-5 hükmünün METNİNE dokunmaz; hüküm ders dünyasının karne dışında kalmasını söyler ve o niyet aynen korunur. Değişen yalnız niyetin hangi yolla tanındığıdır. Şemaya yeni bir kanonik alan eklenmez ve hiçbir ağaca göç yüklenmez."
+        dokunulmaz: [ "OGR-5 kanon maddesinin kaynak metni", "Ders ve örnek ağaçlarının kendi içerikleri" ]
+        koşu: "2026-09-10 · KAPANDI. Kusur ölçüldüğünden büyük çıktı: aynı işi yapan tek bir liste değil, birbirinden habersiz beş ayrı çıplak ad listesi vardı ve ikisi aynı adı taşımadığı için örnek rafı öteki dörtten farklı davranıyordu; hepsi kendi evine demirlendi ve sınama fikstürleri için ikinci bir yere demirli desen eklendiği üretici tarafından açıkça beyan edildi. Kontrolcünün bağımsız ölçümü: şablon kitaplığının adı beş farklı değerle denendi ve beşinde de karne yirmi sekiz düğüm ile bir Adım verdi, oysa onarımdan önce üçü yirmi ikide kalıyordu; Sarmal'ın kendi ürün karnesi değişmedi. Kapılar sessiz pencerede kontrolcü tarafından koşuldu: iki tür denetimi sıfır, depo denetimi sıfır hata ve çıkış kodu sıfır, çekirdek süiti bin iki yüz doksan sekizde bin iki yüz doksan sekiz, eklenti süiti yedi yüz kırk ikide yedi yüz kırk iki; ayakta duran sekiz uyarının sekizi de bu Adımın dışındaki koni-taşması kapısına aittir ve Founder hükmü beklemektedir."
+      }
     }
 
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",

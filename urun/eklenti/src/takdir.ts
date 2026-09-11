@@ -16,6 +16,7 @@ import * as vscode from "vscode";
 import { dirname, join } from "node:path";
 import { rozetRenkleri } from "./ortak.ts";
 import { yazimKokuBul } from "./kanon-kesif.ts";   // EKL-F6-A04: hedef varlık İLANDAN bulunur
+import { TARAMA_DISLAMA_GLOB } from "./izleyici-cekirdek.ts";   // KPS-IND-A01: tarama evreni tek kaynaktan
 import { programAl } from "./onbellek.ts";           // EKL-F9-A06: paylaşımlı AST önbelleği
 import { nabizAbone, geciktir } from "./nabiz.ts";   // EKL-F9-A07/A08: tek kalp + tek geciktirici
 import { degerBicimle, satirdaDegerDegistir } from "../../cekirdek/src/deger-yaz.ts";
@@ -234,7 +235,9 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
   // ── 🌾 HASAT: tüm geribildirim → ogrenme/geribildirim.sar (STR-4 öğrenme bağı) ──
   const hasat = async (): Promise<void> => {
     const dosyalar = await vscode.workspace.findFiles(
-      "**/*.sar", "**/{arsiv,node_modules,fikstur}/**");
+      // KPS-IND-A01: dışlama ada göre değil YERE göre yapılır — kullanıcının kendi
+      // kökü altındaki `arsiv/` ya da `fikstur/` kitaplığı hasat evreninden düşmez.
+      "**/*.sar", TARAMA_DISLAMA_GLOB);
     type Kayit = { kanal: string; emoji: string; kod: string; not: string; dosya: string };
     const kayitlar: Kayit[] = [];
     for (const uri of dosyalar) {

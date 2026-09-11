@@ -13,7 +13,7 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { INDEKS_DISI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01)
+import { DERS_DUNYASI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, type ProjeKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01)
 
 /** MIM-1.2 · katı üretim omurgasının plan kademeleri — proje çevriminin öznesi.
  *  Bir Proje kökü YALNIZ bu tiplere içerme kenarı verir; kanon, karar, hatırlatıcı
@@ -674,7 +674,7 @@ export interface SecilebilirAdim {
  * koşulabilir?" sorusunun deterministik cevabı. Ölçüt:
  *   • durum ∈ { beklemede, geliştirmede }  (tamamlandı/bloklu/doğrulanmamış hariç)
  *   • bütün Adım öncülleri tamamlandı (öncül bitmeden ardıl koşamaz — ORK-3.1)
- * Ders dünyası (INDEKS_DISI) ürün gündemine girmez (OGR-5). geliştirmede olanlar
+ * Ders dünyası (DERS_DUNYASI) ürün gündemine girmez (OGR-5). geliştirmede olanlar
  * ÖNE alınır (aktif cephe — ORK-3.2: yarım işi bitir, yeni açma), ardından beklemede
  * hazırlar; her küme kendi içinde topolojik rütbede (kararlı).
  */
@@ -684,7 +684,7 @@ export function secilebilirAdimlar(dag: Dag): SecilebilirAdim[] {
   const aday: SecilebilirAdim[] = [];
   for (const [kod, d] of dag.dugumler) {
     if (d.tip !== "Adım") continue;
-    if (INDEKS_DISI.test(d.dosya)) continue;                       // OGR-5: ders dünyası gündeme girmez
+    if (DERS_DUNYASI.test(d.dosya)) continue;                       // OGR-5: ders dünyası gündeme girmez
     if (d.durum !== "beklemede" && d.durum !== "geliştirmede") continue;
     // Adım öncülleri: durumsuz/Adım-dışı kenarlar (Teknoloji bağımlılığı) elenir.
     const bekleyen = d.oncekiler.filter((o) => !onculAcik(o, dag));
@@ -862,10 +862,10 @@ export function karneOzeti(dag: Dag): KarneOzeti {
   const adimDurumlari: (string | undefined)[] = [];
   for (const [, d] of dag.dugumler) {
     if (d.tip !== "Adım") continue;
-    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (INDEKS_DISI) Adımlar
+    // OGR-5 · ÖRNEK-DÜNYASI MUAFİYETİ: ders kapsamındaki (DERS_DUNYASI) Adımlar
     // ürün karnesine girmez — karne satırı ürün ağacının gerçeğini söyler.
     // Ders dünyası gizlenmez: sayısı denetim çıktısında ayrı satırla raporlanır.
-    if (INDEKS_DISI.test(d.dosya)) continue;
+    if (DERS_DUNYASI.test(d.dosya)) continue;
     adimDurumlari.push(d.durum);
     if (d.durum) durumlar[d.durum] = (durumlar[d.durum] ?? 0) + 1;
   }

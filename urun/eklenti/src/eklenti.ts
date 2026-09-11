@@ -82,7 +82,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği
-import { gurultuMu, sarGurultuMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
+import { gurultuMu, sarGurultuMu, sarKapsamDisi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -393,11 +393,15 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
-    // arsiv/ + ornek/ + fikstur/ hariç: ürün değil, kasıtlı drift → paneli kirletmesin.
-    // RED-1 D1: dışlama globu izleyici süzgeciyle TEK KAYNAKTAN (izleyici-cekirdek)
-    // hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne olayları süzülmeden kalır;
-    // çekirdek YOKSAY kanonuyla da aynı evren (denetci.ts disk yürüyüşü onlara inmez).
-    const dosyalar = await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB);
+    // Öğreti kitaplığının ALTINDAKİ ders rafları hariç: ürün değil, kasıtlı drift
+    // → paneli kirletmesin. RED-1 D1: evren izleyici süzgeciyle TEK KAYNAKTAN
+    // (izleyici-cekirdek) hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne
+    // olayları süzülmeden kalır; çekirdek YOKSAY kanonuyla da aynı evren.
+    // KPS-IND-A01: glob yalnız ada bakabildiği için ucuz ön süzgeçtir; son hükmü
+    // `sarKapsamDisi` verir ve ders rafını YERİNE göre eler, böylece kullanıcının
+    // kendi kökü altındaki `sablon/` kitaplığı panelde TAM görünür.
+    const dosyalar = (await vscode.workspace.findFiles("**/*.sar", TARAMA_DISLAMA_GLOB))
+      .filter((u) => !sarKapsamDisi(vscode.workspace.asRelativePath(u, false)));
     // ⚡ PRF-A06 KALICI ONARIMI (2026-08-29 · Founder kararı): tur artık HİÇBİR
     // dosyayı `openTextDocument` ile AÇMAZ. Ölçüm şuydu: otuz dört buçuk
     // saniyelik turun yalnız yaklaşık yedi saniyesi saf çekirdekteydi (iki yüz
@@ -1109,7 +1113,10 @@ async function kimlikIndeksiniTara(): Promise<void> {
     "**/*.{sar,md,ts}",   // YUZ-3.2 ④: .md/.ts atıf evreni (tanım hep .sar'da)
     // 2026-07-19: gizli dizinler ('.*') dışlamaya eklendi — .claude/worktrees ajan
     // kopyaları atıf indeksine sızmasın (onay-kuyruğu saha bulgusuyla aynı sınıf).
-    "**/{arsiv,ornek,node_modules,fikstur,sablon,dist,dist-sinama,.*}/**");
+    // KPS-IND-A01: glob yalnız BAĞIMLILIK, DERLEME ÇIKTISI ve gizli dizinleri eler;
+    // ders rafı ada göre değil yere göre elenir ve o hükmü indeksDosyaTazele'deki
+    // INDEKS_DISI deseni verir (öğreti kitaplığına demirli).
+    "**/{node_modules,dist,dist-sinama,out,__pycache__,.*}/**");
   await Promise.all(dosyalar.map(indeksDosyaTazele));
 }
 

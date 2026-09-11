@@ -15,23 +15,43 @@
  * olayı asla süzülmez, süzülen bir yol asla taranmaz.
  *
  * Küme, çekirdek denetçinin disk-yürüyüş kanonuyla hizalıdır (denetci.ts
- * YOKSAY: nokta-önekli girdiler + node_modules · __pycache__ · dist · out ·
- * arsiv · fikstur · sablon içine inilmez). Nokta-önekli kural .git · .sarmal ·
- * .vscode · .DS_Store dâhil bütün gizli dizin/dosyaları kapsar.
+ * YOKSAY: nokta-önekli girdiler + node_modules · __pycache__ · dist · out
+ * içine inilmez). Nokta-önekli kural .git · .sarmal · .vscode · .DS_Store
+ * dâhil bütün gizli dizin/dosyaları kapsar.
+ *
+ * ⚖️ KPS-IND-A01 (Founder hükmü 2026-09-10): küme 2026-09-10 tarihine kadar
+ * arşiv, fikstür, şablon ve örnek ADLARINI da taşıyordu ve o adlar denetlenen
+ * her ağacın her yol parçasına uygulanıyordu; Türkçe bir üründe bunlar sıradan
+ * klasör adları olduğu için kullanıcının kendi kitaplığı sessizce görünmez
+ * kalıyordu. Ders dışlaması artık kendi evine, yani öğreti kitaplığına
+ * demirlidir ve bu listede yalnız bağımlılık ile derleme çıktısı kalır.
  */
 export const DISLANAN_ADLAR = [
-  "node_modules", "__pycache__", "dist", "out", "arsiv", "fikstur", "sablon",
+  "node_modules", "__pycache__", "dist", "out",
 ] as const;
 const DISLANAN_KUME: ReadonlySet<string> = new Set(DISLANAN_ADLAR);
 
-/** Sar evreninin dışlama listesi: disk kümesi + 'ornek' (ders malzemesi —
- *  tam tarama zaten dışlar). Glob BU listeden TÜRETİLİR (RED-2 D1 onarımı:
- *  elle yazılmış ikiz liste yok — bir ada eklenen dışlama her iki yüze birden
- *  iner, __pycache__ sınıfı ayrışma yapısal olarak imkânsızlaşır). */
-export const SAR_DISLANANLAR = [...DISLANAN_ADLAR, "ornek"] as const;
+/** Ders dünyası — öğreti kitaplığının ALTINDAKİ arşiv, örnek, fikstür ve şablon
+ *  rafları, hangi derinlikte olurlarsa olsunlar. Çekirdekteki `DERS_DUNYASI`
+ *  deseninin eklenti ikizidir; iki yüz aynı olguda aynı hükmü verir (YUZ-3.1).
+ *  Ayraç hem `/` hem `\` olabilir, çünkü ölçüm Windows yollarında da koşar. */
+export const DERS_RAFI = /(^|[\\/])ogreti[\\/](?:[^\\/]+[\\/])*(?:arsiv|ornek|fikstur|sablon)([\\/]|$)/;
 
-/** Tam .sar taramasının dışlama globu — sar-hattı süzgeciyle (sarGurultuMu)
- *  birebir aynı evren: SAR_DISLANANLAR + gizli dizinler ('.*'). */
+/** Sınama fikstürü — bir sınama rafının ALTINDAKİ fikstür klasörü sentetik
+ *  malzemedir ve tam .sar taramasına girmez. Çekirdeğin `AYRISTIRILMAZ_SENTETIK`
+ *  deseninin eklenti ikizidir; iki yüz aynı dosyayı aynı hükümle eler (YUZ-3.1). */
+export const SINAMA_FIKSTURU = /(^|[\\/])sinama[\\/](?:[^\\/]+[\\/])*fikstur([\\/]|$)/;
+
+/** Sar evreninin AD tabanlı dışlama listesi. Ders rafları buraya girmez: onlar
+ *  ada göre değil YERE göre elenir (`DERS_RAFI`). Glob BU listeden TÜRETİLİR
+ *  (RED-2 D1 onarımı: elle yazılmış ikiz liste yok — bir ada eklenen dışlama
+ *  her iki yüze birden iner, __pycache__ sınıfı ayrışma imkânsızlaşır). */
+export const SAR_DISLANANLAR = [...DISLANAN_ADLAR] as const;
+
+/** Tam .sar taramasının UCUZ ÖN SÜZGECİ — ad tabanlı dışlama + gizli dizinler.
+ *  Glob yalnız ada bakabildiği için ders rafını ifade EDEMEZ; evrenin son
+ *  hükmünü `sarKapsamDisi` verir ve tarama tarafı sonucu onunla süzer, böylece
+ *  iki yüz yine tek işlevden türer (KPS-IND-A01). */
 export const TARAMA_DISLAMA_GLOB =
   `**/{${[...SAR_DISLANANLAR, ".*"].join(",")}}/**`;
 
@@ -51,12 +71,14 @@ export function gurultuMu(yol: string): boolean {
 }
 
 /**
- * Sar-hattı gürültü süzgeci: disk kümesine ek olarak 'ornek' de süzülür —
- * tam .sar taraması (TARAMA_DISLAMA_GLOB) ornek/'i dışladığı için oradaki
- * bir kaydetme tam DAG turunu boşuna tetiklemesin (kapsam birebir hizası).
+ * Sar-hattı gürültü süzgeci: ad tabanlı disk kümesine ek olarak ÖĞRETİ
+ * KİTAPLIĞININ ALTINDAKİ ders rafları da süzülür — oradaki bir kaydetme tam DAG
+ * turunu boşuna tetiklemesin (kapsam birebir hizası). Ders rafı ADIYLA değil
+ * YERİYLE tanınır: kullanıcının kendi kökü altındaki `sablon/` bir ders rafı
+ * değildir, ürün ağacıdır ve turu tetikler (KPS-IND-A01).
  */
 export function sarGurultuMu(yol: string): boolean {
-  return gurultuMu(yol) || parcala(yol).includes("ornek");
+  return gurultuMu(yol) || DERS_RAFI.test(yol) || SINAMA_FIKSTURU.test(yol);
 }
 
 /**

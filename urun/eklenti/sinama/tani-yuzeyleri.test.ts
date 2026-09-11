@@ -858,15 +858,25 @@ test("AYNI VARLIK içindeki çakışma yine bildirilir: sınır ölçümü sessi
     "öteki varlığın dosyası çakışma listesine karışmamalı");
 });
 
-test("ders dünyası muafiyeti mutlak yolda da çalışır: ornek/ vitrini uyarı üretmez", () => {
+test("ders dünyası muafiyeti mutlak yolda da çalışır: ogreti/ornek vitrini uyarı üretmez", () => {
   const programlar = new Map<string, Program>([
     ["/depo/_Sarmal/sarmal_anadizin.sar", prog(anadizin("SARMAL", "Sarmal"))],
-    ["/depo/_Sarmal/ornek/a.sar", prog('Blok( kod: BLK-DERS, ne: "ders" )\n')],
-    ["/depo/_Sarmal/ornek/b.sar", prog('Blok( kod: BLK-DERS, ne: "ders ikizi" )\n')],
+    ["/depo/_Sarmal/ogreti/ornek/a.sar", prog('Blok( kod: BLK-DERS, ne: "ders" )\n')],
+    ["/depo/_Sarmal/ogreti/ornek/b.sar", prog('Blok( kod: BLK-DERS, ne: "ders ikizi" )\n')],
   ]);
   const yinelenen = yinelenenKodTanilari(programlar).filter((b) => b.tani.kod === "yinelenen-kod");
   assert.deepEqual(yinelenen, [],
     "ders malzemesi kendi kopyasını taşıyabilir; muafiyet mutlak yolda da tanınmalı");
+  // KPS-IND-A01 NÖBETİ (Founder hükmü 2026-09-10): muafiyet klasörün ADINDAN değil
+  // öğreti kitaplığı altında yaşamasından türer; kullanıcının kendi `ornek/`
+  // kitaplığındaki çakışma bildirilmek zorundadır, yoksa gerçek drift ders sanılır.
+  const kullanici = new Map<string, Program>([
+    ["/depo/_Sarmal/sarmal_anadizin.sar", prog(anadizin("SARMAL", "Sarmal"))],
+    ["/depo/_Sarmal/ornek/musteri/a.sar", prog('Blok( kod: BLK-KLL, ne: "kullanıcı" )\n')],
+    ["/depo/_Sarmal/ornek/musteri/b.sar", prog('Blok( kod: BLK-KLL, ne: "kullanıcı ikizi" )\n')],
+  ]);
+  assert.equal(yinelenenKodTanilari(kullanici).filter((b) => b.tani.kod === "yinelenen-kod").length, 1,
+    "kullanıcı ağacındaki örnek kitaplığı ders muafiyetini ÇALMAMALI");
 });
 
 // ── 🍎 MEYVE KAPISININ KÖK SEÇİMİ (VIT-GRAF-A12 · bağımsız denetim bulgusu) ───

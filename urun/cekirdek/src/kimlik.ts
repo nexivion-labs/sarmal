@@ -222,11 +222,52 @@ export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
 /** Sorgu süzgeci — tüketici varlık sınırını buradan çizer (MIM-1.1 deseni). */
 export type DosyaSuzgeci = (dosya: string) => boolean;
 
-/** İndeks kapsamı DIŞI dizinler — denetleHepsi ile AYNI dünya görüşü: kasıtlı
- *  drift malzemesi (arsiv/ornek/fikstur/sablon) gezinme indeksini kirletmez;
- *  dist* derlenmiş kopyadır (YUZ-3.2 ④ ile .ts kapsama girince eklendi).
- *  Saf regex; eklenti beslemesi de MCP/CLI dizin taraması da bunu kullanır. */
-export const INDEKS_DISI = /(^|\/)(arsiv|ornek|fikstur|sablon|node_modules|dist|dist-sinama)(\/|$)/;
+// ── KPS-IND-A01 · DIŞLAMANIN İKİYE AYRILMASI (Founder hükmü 2026-09-10) ──────
+//   Bu iki desen 2026-09-10 tarihine kadar tek bir listeydi ve o liste denetlenen
+//   HER ağacın HER yol parçasına uygulanıyordu. Ölçüm iki koşumla yapıldı ve iki
+//   koşum arasındaki tek fark bir klasörün adıydı: `sablon/` adlı bir kitaplığın
+//   altında yaşayan Proje kökü graftan tamamen düşüyor, karne on yedi düğümden
+//   beşe iniyor ve denetim o ağaç için sıfır hata diyordu, çünkü hiç bakmadığı
+//   bir yere hata üretemez. Sessiz görünmezlik yanlış bir yeşile dönüşüyordu ve
+//   bu, YUZ-3.1 hükmünün yasakladığı şeyin ta kendisidir.
+//
+//   ÖRNEK ADININ FARKLI DAVRANIŞI DA ÖLÇÜLDÜ ve sebebi nitelendirildi: liste
+//   tekbiçimli değildi, çünkü aynı niyeti İKİ AYRI küme taşıyordu. Diskin
+//   yürüyüşünü yöneten küme (`denetci.ts` YOKSAY) arşiv, fikstür ve şablon
+//   adlarını taşıyor fakat örnek adını TAŞIMIYORDU; bu desen ise dördünü birden
+//   taşıyordu. Sonuç şuydu: `ornek/` adlı bir klasörün dosyaları ayrıştırılıyor
+//   ve grafa giriyordu (düğüm sayısı TAM kalıyordu), buna karşılık OGR-5 kapıları
+//   bu deseni okuduğu için o düğümlerin Adımları karneye ve gündeme girmiyor,
+//   Proje kökleri kapsam kurmuyor ve graf geçişi seyreliyordu. Öteki üç adda iki
+//   küme aynı hükmü verdiğinden klasör hiç açılmıyor, ağaç tümden düşüyor ve
+//   üstüne sahte bir `kayıp-yapı` bulgusu doğuyordu.
+//
+//   Founder hükmü şudur: ders dünyasının karne dışında tutulması bir klasör
+//   ADINDAN değil, o klasörün ÖĞRETİ KİTAPLIĞI ALTINDA yaşamasından türer.
+//   Bu yüzden desen ikiye ayrılır ve iki desenin gerekçesi ayrı olduğu için
+//   adları da ayrıdır. OGR-5 hükmünün METNİNE dokunulmamıştır; değişen yalnız
+//   niyetin hangi yolla tanındığıdır.
+
+/** OGR-5 · DERS DÜNYASI — öğreti kitaplığının ALTINDAKİ ders rafları (arşiv ·
+ *  örnek · fikstür · şablon), hangi derinlikte olurlarsa olsunlar. Gerekçe
+ *  OGR-5'tir: öğretim malzemesi ürün karnesine, gündemine ve ürün kimliğine
+ *  girmez. Demirleme `ogreti/` kitaplığınadır: kullanıcının kendi kökünün
+ *  altında açtığı `sablon/`, `arsiv/` ya da `fikstur/` adlı bir kitaplık ürünün
+ *  kendi öğreti rafı DEĞİLDİR ve bu desen ona dokunmaz. */
+export const DERS_DUNYASI = new RegExp(
+  String.raw`(^|\/)ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)(\/|$)`
+);
+
+/** BAĞIMLILIK VE DERLEME ÇIKTISI — yol parçası NEREDE geçerse geçsin taranmaz.
+ *  Gerekçe ders dünyasınınkinden ayrıdır ve öğretimle ilgisi yoktur: bu gövdeler
+ *  insan eliyle yazılmaz, bir paket yöneticisinin ya da derleyicinin ürünüdür,
+ *  dolayısıyla kaynak sayılamaz ve hiçbir ağaçta drift ölçümüne girmez. */
+export const URETILMIS_GOVDE = /(^|\/)(?:node_modules|dist|dist-sinama)(\/|$)/;
+
+/** İNDEKS KAPSAMI DIŞI = ders dünyası ∪ üretilmiş gövde. Kimlik indeksinin ve
+ *  eklenti beslemesinin kapsam kararı iki gerekçeyi birlikte sorar; OGR-5
+ *  muafiyeti soran çağrı yerleri ise `DERS_DUNYASI` desenini tek başına okur. */
+export const INDEKS_DISI = /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)|node_modules|dist|dist-sinama)(\/|$)/;
 
 /** İndekslenen dosya uzantıları (YUZ-3.2 ④): .sar TAM (tanım+atıf), .md/.ts yalnız ATIF. */
 export const INDEKS_DOSYASI = /\.(sar|md|ts)$/;
@@ -578,7 +619,7 @@ export function adAlaniKapsamiKur(secenek: AdAlaniSecenegi): AdAlaniKapsami {
     const sahip = sahipProjeKapsami(kaynakDosya, kapsamlar);
     if (!sahip) return true;   // köksüz kaynak — sınır çizilmez (gezinmeSuzgeci deseni)
     return dosyalar.some((d) => {
-      if (INDEKS_DISI.test(d)) return true;                    // ders dünyası herkese açıktır
+      if (DERS_DUNYASI.test(d)) return true;                   // ders dünyası herkese açıktır (OGR-5)
       const tanimSahibi = sahipProjeKapsami(d, kapsamlar);
       return !tanimSahibi || tanimSahibi.kod === sahip.kod;     // köksüz tanım herkese görünür
     });
@@ -630,14 +671,16 @@ export function adAlanliTanimlar(kod: string, kaynakDosya: string): Tanim[] {
 /** KPN-A01: bir dosyanın bölge/varlık rozeti — ders dünyası regex'ten, varlık adı
  *  anadizin yürüyüşünden. Gezin raporu tanımları bununla etiketler. */
 export function bolgeEtiketi(dosya: string, varlikAdiBul: (yol: string) => string | undefined = varlikAdi): string {
-  const m = dosya.match(/(^|\/)(arsiv|ornek|fikstur|sablon)(\/|$)/);
+  // KPS-IND-A01: rozet de kendi evine demirlidir — kullanıcının kökü altındaki
+  // `sablon/` bir ders rafı değildir ve varlık adıyla etiketlenir (YUZ-3.1).
+  const m = dosya.match(/(^|\/)ogreti\/(?:[^/]+\/)*?(arsiv|ornek|fikstur|sablon)(\/|$)/);
   if (m) return BOLGE_ROZETLERI[m[2]] ?? m[2];
   const ad = varlikAdiBul(dosya);
   return ad ? `🧭 ${ad}` : "🧭 köksüz";
 }
 
 /** KPN-A01: gezinme sonuç süzgeci — üç yüzün (F12/⇧F12/F2) ortak sınır bilinci.
- *  ① Ürün kaynaklı gezinmede ders-dünyası (INDEKS_DISI) kopyaları sonuç listesine
+ *  ① Ürün kaynaklı gezinmede ders-dünyası (DERS_DUNYASI) kopyaları sonuç listesine
  *    girmez; kaynak dosyanın KENDİSİ her zaman görünür (belge-içi gezinme yaşar).
  *  ② Kaynak ders dünyasındaysa süzme uygulanmaz — şablon/örnek kendi evreninde
  *    serbest gezinir (vscode-test dersi: ornek/ içinde F12 ölmemeli).
@@ -647,11 +690,11 @@ export function gezinmeSuzgeci(
   kaynakYolu: string | undefined,
   varlikKoku: (yol: string) => string | undefined,
 ): DosyaSuzgeci {
-  const kaynakDersDunyasi = kaynakYolu !== undefined && INDEKS_DISI.test(kaynakYolu);
+  const kaynakDersDunyasi = kaynakYolu !== undefined && DERS_DUNYASI.test(kaynakYolu);
   const kok = kaynakYolu ? varlikKoku(kaynakYolu) : undefined;
   return (dosya) => {
     if (dosya === kaynakYolu) return true;
-    if (!kaynakDersDunyasi && INDEKS_DISI.test(dosya)) return false;
+    if (!kaynakDersDunyasi && DERS_DUNYASI.test(dosya)) return false;
     if (!kok) return true;                            // köksüz kaynak: varlık sınırı çizilmez
     const k = varlikKoku(dosya);
     return !k || k === kok;                           // köksüz dosya hep görünür (MIM-1.1 deseni)
@@ -768,7 +811,9 @@ export function dizindenIndeks(dizin: string): KimlikIndeksi {
       if (g.name.startsWith(".")) continue;   // .git/.sarmal gibi gizli dizinler
       const yol = join(d, g.name);
       if (g.isDirectory()) {
-        if (!INDEKS_DISI.test("/" + g.name + "/")) gez(yol);
+        // KPS-IND-A01: sınama TAM YOLA yapılır, klasör adına değil — ders dışlaması
+        // öğreti kitaplığına demirlendiği için ad tek başına hüküm veremez.
+        if (!INDEKS_DISI.test(yol.replaceAll("\\", "/") + "/")) gez(yol);
       } else if (INDEKS_DOSYASI.test(g.name)) {
         try { indeks.dosyaGuncelle(yol, readFileSync(yol, "utf8")); }
         catch { /* okunamayan dosya atlanır */ }
