@@ -20,6 +20,7 @@ import { agacYüz } from "../../cekirdek/src/agac.ts";
 import { SozDizimHatasi } from "../../cekirdek/src/belirtec.ts";
 import { GOMULU_SNF, snfBul } from "./ortak.ts";
 import { ONIZLEME_METINLERI } from "./yuzey-metinleri.ts";
+import { satirSvgGovdesi, type SatirSimgesi } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A07: okuma modunun işaretleri de kilitli aileden
 
 // Ağaç ve aile renklerinin TEK kaynağı sınıflama kanonudur (renkPaleti). Bu
 // dosya 2026-09-02 tarihine kadar "kanon yokken devreye girer" notuyla elle
@@ -61,7 +62,24 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/**
+ * 🎨 VIT-KIMLIK-A07 — okuma modunun ARAYÜZ İŞARETLERİ. Okuma modu bir
+ * webview'dir, yani ailenin FİZİKSEL olarak ulaştığı bir yüzeydir; buradaki
+ * işaret bu yüzden emojiyle değil kilitli vektörel aileden çizilir (YUZ-4.2).
+ * Kök yoksa (paket dışı koşum) işaret SESSİZCE düşer ve metinsel etiket tek
+ * başına kalır — ikon zaten etiketi İKAME ETMEZ, yalnız yanında durur.
+ */
+let ikonKoku: vscode.Uri | undefined;
+function aileIsareti(ad: SatirSimgesi): string {
+  if (!ikonKoku) return "";
+  try {
+    return satirSvgGovdesi(ad, (g) =>
+      readFileSync(vscode.Uri.joinPath(ikonKoku!, ...g.split("/")).fsPath, "utf8"));
+  } catch { return ""; }
+}
+
 export function onizlemeKaydi(context: vscode.ExtensionContext): void {
+  ikonKoku = context.extensionUri;
   try {
     stil = readFileSync(vscode.Uri.joinPath(context.extensionUri, "medya", "onizleme.css").fsPath, "utf8");
   } catch { stil = ""; }
@@ -148,11 +166,12 @@ function sayfaUret(doc: vscode.TextDocument): string {
       const cizim = agacYüz(metin).trimEnd().replace(/\n{2,}/g, "\n");
       if (cizim) agac = `<pre class="sarmal-agac"><code>${escapeHtml(cizim)}</code></pre>`;
     } catch { /* söz-dizim hatası: kitap render'ının hata kutusu zaten anlatır */ }
-    govde = (agac ? `<h2 class="sarmal-bolum sarmal-bolum-nasil">${ONIZLEME_METINLERI.agacBasligi}</h2>${agac}` : "") + kitap;
+    govde = (agac ? `<h2 class="sarmal-bolum sarmal-bolum-nasil">${aileIsareti("agac")}${ONIZLEME_METINLERI.agacBasligi}</h2>${agac}` : "") + kitap;
   } catch (e) {
+    const uyari = aileIsareti("uyari");
     govde = e instanceof SozDizimHatasi
-      ? `<div class="sarmal-hata">⚠️ <b>${ONIZLEME_METINLERI.sozDizimBasligi}</b> (${e.satir}:${e.sutun}) — ${escapeHtml(e.message)}<br><small>${ONIZLEME_METINLERI.duzelinceYenilenir}</small></div>`
-      : `<div class="sarmal-hata">⚠️ ${ONIZLEME_METINLERI.beklenmeyenHata}</div>`;
+      ? `<div class="sarmal-hata">${uyari}<b>${ONIZLEME_METINLERI.sozDizimBasligi}</b> (${e.satir}:${e.sutun}) — ${escapeHtml(e.message)}<br><small>${ONIZLEME_METINLERI.duzelinceYenilenir}</small></div>`
+      : `<div class="sarmal-hata">${uyari}${ONIZLEME_METINLERI.beklenmeyenHata}</div>`;
   }
 
   return `<!DOCTYPE html>
@@ -214,6 +233,9 @@ pre.sarmal-agac { white-space: pre; word-break: normal; overflow-x: auto;
 pre.sarmal-agac code { white-space: pre; }
 a { color: var(--vscode-textLink-foreground); }
 .sarmal-hata { border: 1px solid #e06c6c; border-radius: 6px; padding: .8rem 1rem; color: #e06c6c; }
+/* Gömülü aile işareti (VIT-KIMLIK-A07): rengini metinden MİRAS alır — kaynakta
+   currentColor konturludur ve bu yüzden temaya göre kendiliğinden döner. */
+.sr-simge { vertical-align: -0.14em; margin-right: .35em; }
 /* highlight.js — yabanci dil kod-citleri (dart/python/...) editor paletiyle */
 .hljs-keyword, .hljs-selector-tag, .hljs-tag { color: #C586C0; }
 .hljs-string, .hljs-regexp, .hljs-addition { color: #CE9178; }

@@ -7,7 +7,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { dogrula } from "../src/dogrulayici.ts";
@@ -104,12 +104,11 @@ Etmen( kod: ETM-X, tür: uzman, uzmanlık: önyüz, yetki: L3, bellek: paylaşı
 
 // ── dugumeDusenKurallar (TERS YÖN · #7 panel/ŞEF) ────────────────────────────
 
-const AILE = new Map<string, string>(SNF.widgetTipleri.map((t) => [t.ad, t.aile]));
 const dusenler = (kaynak: string, hedefAd: string) => {
   const prog = ayristir(belirtecle(kaynak));
   const kurallar = kurallariCikar(prog);
   const hedef = prog.bildirimler.find((b): b is Dugum => (b as Dugum).ad === hedefAd)!;
-  return dugumeDusenKurallar(hedef, kurallar, AILE);
+  return dugumeDusenKurallar(hedef, kurallar, SNF.widgetTipleri);
 };
 
 test("#7: aynı predikat — joker + widget-adı + aile + kod kurallarını düğüme düşürür", () => {
@@ -135,6 +134,88 @@ test("#7: kuralNe — ne: alanını okur, yoksa boş döner", () => {
   const [k] = dusenler(`Kural a( kod: KRL-N, katman: niyet, kapsam: tümü ) { ne: "insan yüzü" }
 Blok( kod: BLK-X ) { }`, "Blok");
   assert.equal(kuralNe(k), "insan yüzü");
+});
+
+// ── KPS-KON-A01 · koni YÜKÜ evreni ───────────────────────────────────────────
+//   Ölçüt dosya yolundan değil iki beyandan türer: kuralın joker kapsamı hiçbir
+//   tipi adıyla anmaz ve düğüm tipinin şemadaki Yasa rolü (TIP-1.16) onu bir
+//   hükmün kendisi yapar. Joker yük Yasa rolündeki düğüme düşmez; düğümü adıyla
+//   anan kural düşer. Kanon evreninde sahte taşma doğmaz, kullanıcı evreninde
+//   gerçek taşma doğar ve sayı ile liste aynı predikattan beslenir.
+
+const genelYuk = (n: number): string => Array.from({ length: n }, (_, i) =>
+  `Kural g${i}( kod: KRL-G${i}, otorite: anayasa, katman: niyet, kapsam: genel ) { ne: "genel yük ${i}" }`).join("\n");
+/** Koni taşması alan düğümlerin kimliği → mesajdaki kural sayısı. */
+const koniSayilari = (kaynak: string): Map<string, number> => new Map(dnt(kaynak)
+  .filter((t) => t.kod === "koni-taşması")
+  .map((t) => [/\(([^)]+)\) düğümüne/.exec(t.mesaj)?.[1] ?? "?", Number(/(\d+) kural düşüyor/.exec(t.mesaj)?.[1])]));
+const karar = (kod: string): string =>
+  `Karar( kod: ${kod}, durum: kilitli, ne: "madde ${kod}", karar: "hüküm", gerekçe: "gerekçe" )`;
+
+test("KPS-KON-A01: kanon evreni — 22 genel kural Yasa rolündeki düğümlere taşma YÜKLEMEZ (sayı ve liste)", () => {
+  const kaynak = `${genelYuk(22)}
+${karar("KRR-K1")}
+${karar("KRR-K2")}
+Politika( kod: PLT-K, ne: "politika" ) { }
+Anayasa( kod: ANY-K, ne: "anayasa" ) { }`;
+  assert.deepEqual([...koniSayilari(kaynak).keys()], [], "kanon maddesi kardeş maddeleri kendi konisine saymamalı");
+  for (const tip of ["Karar", "Politika", "Anayasa"]) {
+    assert.equal(dusenler(kaynak, tip).length, 0, `${tip} kartına joker yük düşmemeli (koni ile aynı hüküm)`);
+  }
+});
+
+test("KPS-KON-A01: gerçek kanon — yasa/kanon bölümlerinin hiçbirinde koni taşması doğmaz", () => {
+  const dizin = new URL("../../../yasa/kanon/", import.meta.url);
+  const bolumler = readdirSync(dizin).filter((f) => f.endsWith(".sar")).sort();
+  assert.ok(bolumler.includes("ork.sar"), "kanon dizini okunamadı");
+  // ÖNCÜL: ork.sar eşiğin üstünde kapsamlı kural taşımalı; taşımıyorsa bu nöbet
+  // hiçbir şey sınamıyordur ve sessizce yeşil kalır.
+  const ork = readFileSync(new URL("ork.sar", dizin), "utf8");
+  assert.ok(kurallariCikar(ayristir(belirtecle(ork))).filter((k) => k.kapsam !== undefined).length > 20,
+    "öncül bozuldu: ork.sar artık eşiğin üstünde kapsamlı kural taşımıyor");
+  for (const bolum of bolumler) {
+    const kaynak = readFileSync(new URL(bolum, dizin), "utf8");
+    assert.deepEqual([...koniSayilari(kaynak).keys()], [], `${bolum} sahte koni taşması üretti`);
+  }
+});
+
+test("KPS-KON-A01: kullanıcı evreni — aynı 21 genel kural iş düğümlerinde taşar, yanındaki Karar susar", () => {
+  const sayilar = koniSayilari(`${genelYuk(21)}
+${karar("KRR-P")}
+Blok( kod: BLK-IS, ne: "iş düğümü" ) {
+  Adım( kod: ADM-IS, durum: beklemede, ne: "iş" )
+}`);
+  assert.deepEqual(Object.fromEntries(sayilar), { "BLK-IS": 21, "ADM-IS": 21 });
+});
+
+test("KPS-KON-A01: kuralın beyanı — Karar'ı adıyla hedefleyen 21 kural Yasa rolündeki düğümde de taşar", () => {
+  const hedefli = Array.from({ length: 21 }, (_, i) =>
+    `Kural h${i}( kod: KRL-H${i}, otorite: anayasa, katman: niyet, kapsam: Karar ) { ne: "karar yükü ${i}" }`).join("\n");
+  assert.deepEqual(Object.fromEntries(koniSayilari(`${hedefli}\n${karar("KRR-H")}`)), { "KRR-H": 21 });
+});
+
+test("KPS-KON-A01: iki yüz tek hüküm — her düğümde koni sayısı ile düşen kural listesi birebirdir", () => {
+  const kaynak = `${genelYuk(20)}
+Kural hk0( kod: KRL-HK0, otorite: anayasa, katman: niyet, kapsam: Karar ) { ne: "karara özel" }
+Kural hk1( kod: KRL-HK1, otorite: anayasa, katman: niyet, kapsam: BLK-A ) { ne: "bloğa özel" }
+${karar("KRR-A")}
+Blok( kod: BLK-A ) { }
+Blok( kod: BLK-B ) { }
+Politika( kod: PLT-A ) { }`;
+  const prog = ayristir(belirtecle(kaynak));
+  const kurallar = kurallariCikar(prog);
+  const sayilar = koniSayilari(kaynak);
+  const liste = new Map<string, number>();
+  for (const b of prog.bildirimler as Dugum[]) {
+    if (b.tur !== "widget") continue;
+    const kod = [...b.parametreler, ...b.ozellikler].find((p) => p.ad === "kod")?.deger.metin ?? b.ad;
+    const n = dugumeDusenKurallar(b, kurallar, SNF.widgetTipleri).length;
+    liste.set(kod, n);
+    assert.equal(sayilar.has(kod), n > 20, `${kod}: liste ${n} kural diyor, koni hükmü ${sayilar.has(kod) ? "taşma" : "sessiz"}`);
+    if (sayilar.has(kod)) assert.equal(sayilar.get(kod), n, `${kod}: koni sayısı listeyle ayrıştı`);
+  }
+  assert.deepEqual(Object.fromEntries(liste), { "KRR-A": 1, "BLK-A": 21, "BLK-B": 20, "PLT-A": 0 });
+  assert.deepEqual([...sayilar.keys()], ["BLK-A"]);
 });
 
 // ── Değerlendirme tutarlılığı ────────────────────────────────────────────────

@@ -34,10 +34,10 @@ import assert from "node:assert/strict";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import type { Program } from "../src/sozdizim.ts";
-import { dagKur, adAlaniSecenekleri, dugumYokMetni } from "../src/dag.ts";
+import { dagKur, projeKarneleri, adAlaniSecenekleri, dugumYokMetni } from "../src/dag.ts";
 import { grafCikar, grafOzetYuzu, grafYuz } from "../src/graf.ts";
 import { etkiMetni } from "../src/etki.ts";
-import { KimlikIndeksi, gezinRaporu } from "../src/kimlik.ts";
+import { projeKapsamlari, KimlikIndeksi, gezinRaporu } from "../src/kimlik.ts";
 
 function progla(kaynaklar: Record<string, string>): Map<string, Program> {
   return new Map(Object.entries(kaynaklar).map(([dosya, k]) => [dosya, ayristir(belirtecle(k))]));
@@ -131,6 +131,23 @@ test("KPS-KOD-A01 · kardeş projelerin aynı adlı kodları çatı grafında AY
   assert.deepEqual(dag.ortakKod.map((o) => o.kod).sort(), [...ORTAK].sort());
   for (const o of dag.ortakKod) assert.deepEqual(o.projeler, ["PRJ-BERBER", "PRJ-KUAFOR"]);
   assert.deepEqual(dag.ayrisamayan, []);
+});
+
+test("KPS-KOD-A01 · iki kardeşin karnesi EŞİTTİR: ikinci proje çatı kökünden düğüm kaybetmez", () => {
+  const programlar = ajans();
+  const dag = dagKur(programlar);
+  const karneler = projeKarneleri(dag, projeKapsamlari(programlar));
+  const berber = karneler.find((k) => k.kod === "PRJ-BERBER")!;
+  const kuafor = karneler.find((k) => k.kod === "PRJ-KUAFOR")!;
+  // Tek başına ölçülen proje kaç düğümse çatıdan da o kadar.
+  const tek = dagKur(tekProje());
+  assert.equal(berber.dugum, tek.dugumler.size);
+  assert.equal(kuafor.dugum, tek.dugumler.size);
+  assert.equal(berber.adim, 2);
+  assert.equal(kuafor.adim, 2);
+  // Çatı grafının toplamı = iki proje + çatının kendi altı düğümü (çatı, üç Kitaplık, bir Raf, ...).
+  const catininKendi = [...dag.dugumler.values()].filter((d) => d.dosya === "ajans_anadizin.sar").length;
+  assert.equal(dag.dugumler.size, 2 * tek.dugumler.size + catininKendi);
 });
 
 // ── ② Çözümün DOĞRU HEDEFE gittiği yer ───────────────────────────────────────

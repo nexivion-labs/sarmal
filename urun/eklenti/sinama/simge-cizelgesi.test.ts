@@ -199,9 +199,9 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     cpSync(join(KOK, SIMGE_RAFI), join(gecici, "raf"), { recursive: true });
     rmSync(join(gecici, "raf", "uretilmis"), { recursive: true, force: true });
     const { yazilan } = uret({ RAF: join(gecici, "raf"), URETILMIS: join(gecici, "cikti") });
-    // 6 eksen × 3 evre × 2 tema = 36 · 43 satır × 9 anlam × 2 tema = 774 → 810
+    // 6 eksen × 3 evre × 2 tema = 36 · 44 satır × 9 anlam × 2 tema = 792 → 828
     // (A07 envanteri yirmi, otorite işaretleri üç simge ekledi: 20 → 43 satır)
-    assert.equal(yazilan.length, 810, "üretici 810 varyant dökmeli (6×3×2 eksen + 43×9×2 satır)");
+    assert.equal(yazilan.length, 828, "üretici 828 varyant dökmeli (6×3×2 eksen + 44×9×2 satır)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');
@@ -233,7 +233,11 @@ test("satır nöbeti: raf ile satır çizelgesi AYNI simgeleri kapsar — eksik 
   // A07'nin ikinci turunda koni kartının kural satırı aileye bağlanınca üç
   // otorite işaretinin (anayasa · politika · tercih) ailede karşılığı olmadığı
   // ölçüldü ve üçü çizildi; aile KIRK ÜÇE çıktı.
-  assert.equal(raf.length, 43, "satır ailesi KIRK ÜÇ simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti)");
+  // A07'nin üçüncü turunda okuma modunun 'Yapı Ağacı' başlığı aileye bağlandı;
+  // o başlık bir WEBVIEW yüzeyindedir, yani ailenin fiziksel olarak ulaştığı bir
+  // yerdedir ve işareti Founder kararına bırakılamazdı. Ailede yapı ağacını
+  // anlatan bir çizim yoktu; çizildi ve aile KIRK DÖRDE çıktı.
+  assert.equal(raf.length, 44, "satır ailesi KIRK DÖRT simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı)");
 });
 
 test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler ve renk GÖMÜLMEZ (YUZ-4.1)", () => {

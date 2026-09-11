@@ -13,7 +13,7 @@ import type { Dugum, Program, Deger } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 import { eskiTani } from "./tani-metinleri.ts";   // tanı cümlesi tek kaynakta yaşar (CDL-A02)
 import { durumTuret, adimDurumlariTopla, ADIM_YASAM_DURUMLARI } from "./durum.ts";   // kapsayıcı sayaçları tek tanımdan gelir (durum ikizi yazılmaz)
-import { DERS_DUNYASI, AD_ALANI_AYRACI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, onekKapsar, catiKapsamlari, kesinCatiKapsami, catiAltindaMi, type ProjeKapsami, type CatiKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01) · MIM-1.1: klasör→ÇalışmaAlanı çözümü TEK kaynaktan (KPS-CAT-A01)
+import { DERS_DUNYASI, AD_ALANI_AYRACI, adAlaniAyir, projeKapsamlari, kesinProjeKapsami, sahipProjeKapsami, onekKapsar, catiKapsamlari, kesinCatiKapsami, catiAltindaMi, type ProjeKapsami, type CatiKapsami } from "./kimlik.ts";   // OGR-5: karne ürün kapsamı — ders dünyası tek kaynaktan ayrılır · ORK-4: ad alanı çözümü TEK kaynaktan (KPS-ADA-A01) · MIM-1.2: klasör→Proje çözümü TEK kaynaktan (KPS-FAZ-A01) · MIM-1.1: klasör→ÇalışmaAlanı çözümü TEK kaynaktan (KPS-CAT-A01)
 
 /** MIM-1.2 · katı üretim omurgasının plan kademeleri — proje çevriminin öznesi.
  *  Bir Proje kökü YALNIZ bu tiplere içerme kenarı verir; kanon, karar, hatırlatıcı
@@ -1057,6 +1057,111 @@ export function karneOzeti(dag: Dag): KarneOzeti {
     if (d.durum) durumlar[d.durum] = (durumlar[d.durum] ?? 0) + 1;
   }
   return { dugum: dag.dugumler.size, adim: durumTuret(adimDurumlari).toplam, durumlar };
+}
+
+/**
+ * PROJE SAHİPLİĞİ — bir dosyanın hangi Proje koduna ait olduğunun TEK cevabı
+ * (KPS-AYR-A01 · YAS-3.3). Karne, graf ve bulgu gruplaması bu tek yordamdan
+ * okur; üç yüzeyin ayrı ayrı sahiplik hesaplaması, üçünün aynı dosyayı üç ayrı
+ * projeye yazabilmesi demekti ve kanon bunu açıkça yasaklar.
+ *
+ * Neden `sahipProjeKapsami` ile ölçülür, `kesinProjeKapsami` ile değil: içerme
+ * KENARI yazmak ile bulgu GRUPLAMAK ayrı iddialardır. Kenar bir cümledir ve
+ * yanlışsa panelde yalan söyler, bu yüzden belirsizlikte susar. Gruplama ise
+ * TAM olmak zorundadır: her bulgunun bir evi olmalıdır, yoksa bulgu tablodan
+ * düşer ve sessizce kaybolur. Belirsizlikte en yakın kök kazanır, çünkü hiçbir
+ * eve girmemektense en yakın eve girmek okunabilir bir sonuçtur.
+ */
+export function projeSahibi(dosya: string, kapsamlar: readonly ProjeKapsami[]): string | undefined {
+  return sahipProjeKapsami(dosya, kapsamlar)?.kod;
+}
+
+/**
+ * PROJE KÖKLERİ — çatı kökünden koşan denetimin KENDİ KÖKÜNE DEVRETTİĞİ Projeler
+ * (KPS-AYR-A01 ikinci yarı · MIM-1.1 · YAS-3.3).
+ *
+ * Kök, `projeSahibi` yordamının okuduğu Proje kapsamlarının TA KENDİSİNDEN
+ * türer; bir dosyanın hangi Projeye ait olduğu ile hangi kökten ölçüleceği
+ * aynı listeden okunur ve ikinci bir çözücü yazılmaz. İki hesap ayrı yaşasaydı
+ * bir dosya bir Projenin hanesinde sayılıp başka bir kökten ölçülebilirdi.
+ *
+ * Devredilen kök, bir ALT dizindeki giriş dosyasında (MIM-3 · `*_anadizin.sar`,
+ * eski `ana.sar`) ilan edilmiş Projedir, çünkü denetimin o kökten koşabilmesi
+ * için orada bir giriş dosyası bulunmak zorundadır. Koşulan kökün kendisinde
+ * ilan edilen Proje (boş önek) devredilmez: tek projeli bir depo kendi kökünden
+ * koşar ve liste boş döner. Giriş dosyası dışında ilan edilmiş bir Proje de
+ * devredilmez; o Projenin bulguları yine `projeSahibi` ile kendi hanesine
+ * düşer, yalnız kök çözümü kapsayan kökte kalır. İç içe kökler için yalnız EN
+ * DIŞTAKİ döner; içteki, dıştakinin kendi koşumunda aynı yordamla devredilir
+ * ve böylece çatı kökünden okunan tablo her kökün kendi tablosuyla birebir
+ * aynı kalır. Ders dünyası listeye hiç girmez, çünkü `projeKapsamlari` onu
+ * zaten kök saymaz.
+ */
+export function projeKokleri(kapsamlar: readonly ProjeKapsami[]): ProjeKapsami[] {
+  const girisMi = (k: ProjeKapsami): boolean => {
+    const ad = k.dosya.replace(/\\/g, "/").slice(k.onek.length);
+    return !ad.includes("/") && (ad.endsWith("_anadizin.sar") || ad === "ana.sar");
+  };
+  const adaylar = kapsamlar.filter((k) => k.onek !== "" && girisMi(k));
+  const kokler: ProjeKapsami[] = [];
+  for (const k of adaylar) {
+    if (adaylar.some((u) => u.onek.length < k.onek.length && onekKapsar(u.onek, k.dosya))) continue;
+    if (kokler.some((v) => v.onek === k.onek)) continue;   // aynı önekte tek koşum
+    kokler.push(k);
+  }
+  return kokler;
+}
+
+/** Tek bir Projenin karnesi — kodu, insan adı ve kendi düğüm/Adım sayıları. */
+export interface ProjeKarnesi extends KarneOzeti {
+  kod: string;
+  ad?: string;
+}
+
+/**
+ * ÇOK PROJELİ KARNE (KPS-AYR-A01). Bugüne kadar karne çalışma alanı düzeyinde
+ * TEK bir sayı basıyordu; yüz müşterili bir çatıda o sayı hiçbir müşterinin
+ * karnesi olmaz ve hangi projenin kaç açık Adımı olduğu okunamazdı.
+ *
+ * Sahiplik grafın kendisinden okunur: bir düğümün Projesi, `kapsayan` zinciri
+ * yukarı yürünerek bulunan ilk `Proje` düğümüdür. Zincir bir Projeye varmıyorsa
+ * (omurga dışı tipler — kanon, kayıt, kadro) dosya sahipliğine düşülür; iki yol
+ * da aynı kaynağı okur, dolayısıyla graf kimliği ile karne kimliği ayrışamaz.
+ * Ders dünyası `karneOzeti` ile aynı hükümle elenir — ikinci bir muafiyet
+ * tanımı doğmaz.
+ */
+export function projeKarneleri(dag: Dag, kapsamlar: readonly ProjeKapsami[]): ProjeKarnesi[] {
+  /** Düğümün Projesi: önce graf zinciri, sonra dosya sahipliği. */
+  const sahip = (d: DagDugum): string | undefined => {
+    if (d.tip === "Proje") return d.kod;
+    let a = d.kapsayan;
+    for (let i = 0; a && i < 32; i++) {
+      const ata = dag.dugumler.get(a);
+      if (!ata) break;
+      if (ata.tip === "Proje") return ata.kod;
+      a = ata.kapsayan;
+    }
+    return projeSahibi(d.dosya, kapsamlar);
+  };
+  const kutu = new Map<string, { ad?: string; dugum: number; adimDurumlari: (string | undefined)[]; durumlar: Record<string, number> }>();
+  const al = (kod: string) => {
+    let k = kutu.get(kod);
+    if (!k) { k = { dugum: 0, adimDurumlari: [], durumlar: {} }; kutu.set(kod, k); }
+    return k;
+  };
+  for (const d of dag.dugumler.values()) {
+    if (d.tip === "Proje") al(d.kod).ad = d.ad;
+    const kod = sahip(d);
+    if (!kod) continue;
+    const k = al(kod);
+    k.dugum++;
+    if (d.tip !== "Adım" || DERS_DUNYASI.test(d.dosya)) continue;
+    k.adimDurumlari.push(d.durum);
+    if (d.durum) k.durumlar[d.durum] = (k.durumlar[d.durum] ?? 0) + 1;
+  }
+  return [...kutu.entries()]
+    .map(([kod, k]) => ({ kod, ...(k.ad ? { ad: k.ad } : {}), dugum: k.dugum, adim: durumTuret(k.adimDurumlari).toplam, durumlar: k.durumlar }))
+    .sort((a, b) => a.kod.localeCompare(b.kod, "tr"));
 }
 
 // ── Denetim tanıları (döngü = hata) ───────────────────────────────────────────

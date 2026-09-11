@@ -104,6 +104,44 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     mesaj: (p) => `"${a(p, "kimlik")}" mevsiminin hedef tarihi ${a(p, "vade")} günü geçmiştir, buna karşılık sardığı ${a(p, "gövde")} gövdenin altında ${a(p, "açık")} Adım hâlâ açıktır. Mevsim beyanı ile grafın söylediği ayrışmıştır: kapanmış görünen bir dönem açık iş taşıyamaz.`,
     oneri: (p) => `Açık işi yürürlükteki mevsime devret ya da mevsimin hedef tarihini gerçeğe çek; kapanmayacak iş varsa gerekçesiyle düşür, sessiz bırakma (ORK-8 kapanış basamakları). Örnek: \`Blok( kod: BLK-…, mevsim: FAZ-<yürürlükteki> )\` yaz ve "${a(p, "kimlik")}" mevsiminin gövdesindeki \`çağır BLK-…\` satırını kaldır; bir bağ tek yerde yazılır.`,
   },
+  "mevsim-mührü-çelişkili": {
+    mesaj: (p) => `"${a(p, "kimlik")}" mevsimi metninde ${a(p, "iddia") === "mühür" ? "mühürlendiğini" : "açık işini devrettiğini"} yazmaktadır, buna karşılık sardığı ${a(p, "gövde")} gövdenin altında ${a(p, "açık")} Adım hâlâ açıktır. Mührün ölçütü metnin iddiası değil grafın sayısıdır: kapandığını söyleyen bir mevsim açık iş taşıyamaz (ORK-8 kapanış basamakları).`,
+    oneri: (p) => `Açık işi yürürlükteki mevsime devret ve bağı tek yerde yaz, ya da mevsim gerçekten kapanmadıysa mühür cümlesini kaldır; kapanmayacak iş varsa gerekçesiyle düşür, sessiz bırakma. Örnek: \`Blok( kod: BLK-…, mevsim: FAZ-<yürürlükteki> )\` yaz ve "${a(p, "kimlik")}" mevsiminin gövdesindeki \`çağır BLK-…\` satırını kaldır.`,
+  },
+  // ── Dosya mühürleri (MIM-3.4 · KPS-MHR-A01) ──────────────────────────────
+  "dosya-mührü": {
+    mesaj: (p) => a(p, "tür") === "eğitim"
+      ? `"${a(p, "yol")}" dosyası eğitim mührü (@${a(p, "etiket")}@_) taşıyor: motor dosyayı okur ve sözleşmelerine göre doğrular, fakat onu ürün karnesine ve açık iş gündemine saymaz, çünkü eğitim malzemesi ürün işi değildir.`
+      : `"${a(p, "yol")}" dosyası arşiv mührü (@${a(p, "etiket")}@_) taşıyor ve graf dışında: motor dosyayı okumaz; graf, kod dizini, karne ve açık iş gündemi onu saymaz. Mührün türü ve dosyanın adı her denetimde bu satırla listelenir.`,
+    oneri: (p) => `Mühür, dosyanın sahibinin açık beyanıdır ve bir bulguyu susturmak için kullanılamaz; dosya yeniden canlı kaynak olacaksa mührü addan kaldır. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+  },
+  "sonraya-bırakılmış-dosya": {
+    mesaj: (p) => {
+      const kaynak = a(p, "kaynak");
+      const olcum = kaynak === "git"
+        ? `Süre, mührün depoya işlendiği ${a(p, "tarih")} gününden ölçülür.`
+        : kaynak === "dosya"
+          ? `Mühür henüz depoya işlenmediği için süre, dosyanın yeniden adlandırıldığı ${a(p, "tarih")} gününden, yani dosyanın durum değişikliği tarihinden ölçülür.`
+          : "Bekleme süresi ölçülemedi, çünkü ne depo kaydı ne de dosya tarihi okunabildi.";
+      return `"${a(p, "yol")}" dosyası sonraya bırakılmış (@${a(p, "etiket")}@_) ve ${a(p, "gün")} gündür bekliyor; motor içeriğini okumaz ve dosyayı yalnız bu hatırlatmayla görünür tutar. ${olcum}`;
+    },
+    oneri: (p) => `İşe dönme zamanı geldiyse mührü kaldır ve dosyayı canlı kaynağa geri al; iş düşürüldüyse sonra mührünü arşiv mührüne çevir. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+  },
+  "geçersiz-dosya-adı": {
+    mesaj: (p) => {
+      switch (a(p, "kusur")) {
+        case "bilinmeyen-etiket":
+          return `"${a(p, "yol")}" adı "@${a(p, "etiket")}@_" biçiminde başlıyor fakat bu etiket kapalı mühür kümesinde (${a(p, "küme")}) değil; dosya mühürsüz sayılır ve canlı kaynak olarak okunur.`;
+        case "bozuk-biçim":
+          return `"${a(p, "yol")}" adı @ işaretiyle başlıyor fakat mühür biçimine uymuyor; mühür \`@ETİKET@_\` biçiminde ve büyük harfli bir etiketle yazılır (${a(p, "küme")}). Dosya mühürsüz sayılır ve canlı kaynak olarak okunur.`;
+        case "mühür-sonrası-büyük-harf":
+          return `"${a(p, "yol")}" geçerli bir mühür taşıyor fakat mührü izleyen ad büyük harf taşıyor; mührün ardından ad küçük harfle sürer.`;
+        default:
+          return `"${a(p, "yol")}" dosya adı büyük harf taşıyor fakat geçerli bir dosya mührü değil; dosya adında büyük harf yalnız mühüre ayrılmıştır.`;
+      }
+    },
+    oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -435,6 +473,44 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   "mevsim-vadesi-geçti": {
     mesaj: (p) => `Season "${a(p, "kimlik")}" passed its target date on ${a(p, "vade")}, yet ${a(p, "açık")} Steps remain open under the ${a(p, "gövde")} bodies it wraps. The season's own claim and the graph disagree: a period that looks closed cannot carry open work.`,
     oneri: (p) => `Hand the open work to the current season, or move the season's target date to match reality; work that will not close must be dropped with a stated reason, never left silent (ORK-8 closing steps). Example: write \`Blok( kod: BLK-…, mevsim: FAZ-<current> )\` and remove the \`çağır BLK-…\` line from the body of "${a(p, "kimlik")}"; a link is written in one place only.`,
+  },
+  "mevsim-mührü-çelişkili": {
+    mesaj: (p) => `Season "${a(p, "kimlik")}" states in its own text that it ${a(p, "iddia") === "mühür" ? "has been sealed" : "has handed its open work over"}, yet ${a(p, "açık")} Steps remain open under the ${a(p, "gövde")} bodies it wraps. The measure of a seal is the graph's count, not the text's claim: a season that says it is closed cannot carry open work (ORK-8 closing steps).`,
+    oneri: (p) => `Hand the open work to the current season and write the link in one place, or remove the seal sentence if the season has not really closed; work that will not close must be dropped with a stated reason, never left silent. Example: write \`Blok( kod: BLK-…, mevsim: FAZ-<current> )\` and remove the \`çağır BLK-…\` line from the body of "${a(p, "kimlik")}".`,
+  },
+  // ── File seals (MIM-3.4 · KPS-MHR-A01) ───────────────────────────────────
+  "dosya-mührü": {
+    mesaj: (p) => a(p, "tür") === "eğitim"
+      ? `The file "${a(p, "yol")}" carries the teaching seal (@${a(p, "etiket")}@_): the engine reads and validates it against its contracts, but does not count it in the product scorecard or the open-work agenda, because teaching material is not product work.`
+      : `The file "${a(p, "yol")}" carries the archive seal (@${a(p, "etiket")}@_) and is outside the graph: the engine does not read it, and the graph, the code index, the scorecard and the open-work agenda do not count it. Every check lists the seal type and the file name on this line.`,
+    oneri: (p) => `A seal is an explicit declaration by the file's owner and cannot be used to silence a finding; if the file becomes a live source again, remove the seal from its name. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+  },
+  "sonraya-bırakılmış-dosya": {
+    mesaj: (p) => {
+      const kaynak = a(p, "kaynak");
+      const olcum = kaynak === "git"
+        ? `The wait is measured from ${a(p, "tarih")}, the day the seal was committed to the repository.`
+        : kaynak === "dosya"
+          ? `Because the seal has not been committed yet, the wait is measured from ${a(p, "tarih")}, the day the file was renamed, that is, from the file's status-change date.`
+          : "The waiting time could not be measured, because neither a repository record nor a file date could be read.";
+      return `The file "${a(p, "yol")}" has been deferred (@${a(p, "etiket")}@_) and has been waiting for ${a(p, "gün")} days; the engine does not read its content and keeps the file visible only through this reminder. ${olcum}`;
+    },
+    oneri: (p) => `If it is time to resume the work, remove the seal and return the file to the live source; if the work was dropped, change the deferral seal into the archive seal. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+  },
+  "geçersiz-dosya-adı": {
+    mesaj: (p) => {
+      switch (a(p, "kusur")) {
+        case "bilinmeyen-etiket":
+          return `The name "${a(p, "yol")}" starts in the "@${a(p, "etiket")}@_" form, but this tag is not in the closed seal set (${a(p, "küme")}); the file counts as unsealed and is read as a live source.`;
+        case "bozuk-biçim":
+          return `The name "${a(p, "yol")}" starts with @ but does not follow the seal form; a seal is written as \`@ETİKET@_\` with an upper-case tag (${a(p, "küme")}). The file counts as unsealed and is read as a live source.`;
+        case "mühür-sonrası-büyük-harf":
+          return `"${a(p, "yol")}" carries a valid seal, but the name after the seal contains upper-case letters; after the seal the name continues in lower case.`;
+        default:
+          return `The file name "${a(p, "yol")}" contains upper-case letters but is not a valid file seal; upper case in a file name is reserved for seals.`;
+      }
+    },
+    oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
@@ -846,11 +922,13 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   "ebedi-ihlal": {
     mesaj: (p) => {
       if (a(p, "kusur") === "otorite") return `Kural "${a(p, "kod")}" ebedi: evet taşıyor ama otoritesi "${a(p, "otorite")}" — ebedi bayrağı YALNIZ anayasa kuralında olabilir.`;
+      if (a(p, "kusur") === "arşiv") return `EBEDİ kural "${a(p, "kod")}" arşiv mühürlü "${a(p, "yol")}" dosyasında yaşıyor — ebedî kural taşıyan bir dosya arşiv mührü alamaz, çünkü ebedî kuralı graftan çıkarmak onu silmektir.`;
       if (a(p, "kusur") === "silinmiş") return `EBEDİ kural "${a(p, "kod")}" SİLİNMİŞ — mühürde var, hiçbir .sar'da yok (silmek de değiştirmektir).`;
       return `EBEDİ kural "${a(p, "kod")}" DEĞİŞTİRİLMİŞ — mühürlenen tanımdan sapmış (bu kural kilitli, kurucu bile değiştiremez).`;
     },
     oneri: (p) => {
       if (a(p, "kusur") === "otorite") return "Ya otorite: anayasa yap (ve Anayasa gövdesine taşı) ya da ebedi bayrağını kaldır.";
+      if (a(p, "kusur") === "arşiv") return `Arşiv mührünü kaldır ya da ebedî kuralı canlı bir kaynak dosyasına taşıdıktan sonra dosyayı mühürle. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`;
       if (a(p, "kusur") === "silinmiş") return "Kuralı geri getir; bilinçli kaldırıysa KARARLAR'a yaz + 'sarmal kilitle' ile mührü yenile.";
       return "Değişikliği geri al. Gerçekten değişecekse: bu bilinçli bir anayasa işlemidir — kuralı geri al, kararı KARARLAR'a yaz, sonra 'sarmal kilitle' ile YENİDEN mühürle (loglu override — FEL-4).";
     },
@@ -1452,11 +1530,13 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   "ebedi-ihlal": {
     mesaj: (p) => {
       if (a(p, "kusur") === "otorite") return `Kural "${a(p, "kod")}" carries ebedi: evet but its authority is "${a(p, "otorite")}" — the eternal flag is allowed ONLY on a constitutional rule.`;
+      if (a(p, "kusur") === "arşiv") return `ETERNAL rule "${a(p, "kod")}" lives in the archive-sealed file "${a(p, "yol")}" — a file carrying an eternal rule cannot take the archive seal, because removing an eternal rule from the graph deletes it.`;
       if (a(p, "kusur") === "silinmiş") return `ETERNAL rule "${a(p, "kod")}" was DELETED — it exists in the seal but in no .sar file; deletion is also a change.`;
       return `ETERNAL rule "${a(p, "kod")}" was CHANGED — it diverges from the sealed definition; this rule is locked, even against its founder.`;
     },
     oneri: (p) => {
       if (a(p, "kusur") === "otorite") return "Either set otorite: anayasa and move the rule into the Anayasa body, or remove the ebedi flag.";
+      if (a(p, "kusur") === "arşiv") return `Remove the archive seal, or move the eternal rule into a live source file before sealing this file. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`;
       if (a(p, "kusur") === "silinmiş") return "Restore the rule; if removal is intentional, record it in KARARLAR and refresh the seal with 'sarmal kilitle'.";
       return "Revert the change. If it truly must change, restore the rule, record the constitutional decision in KARARLAR, and then reseal with 'sarmal kilitle' using the logged override required by FEL-4.";
     },
@@ -2344,6 +2424,10 @@ export function yapistirilabilirOrnekVar(oneri: string | undefined): boolean {
     // yapıştırılabilir bir iskelet parçasıdır ve uzunluk eşiğinden muaftır.
     // Öteki jetonlar için altı karakterlik alt sınır sürüyor.
     if (BELGE_IMLERI.some((im) => govde.includes(im))) return true;
+    // KPS-MHR-A01 (MIM-3.4): düzeltmesi bir dosyanın ADINI değiştirmek olan tanıda
+    // yapıştırılabilir iskelet tek bir taşıma komutudur; komut iki yol taşır ve
+    // olduğu gibi kabuğa yapıştırılır. Yalnız iki bağımsız değişkenli taşıma tanınır.
+    if (/^(?:git\s+mv|mv)\s+(?:--\s+)?"[^"]+"\s+"[^"]+"$/.test(govde)) return true;
     if (govde.length < 6) return false;
     // Yapısal jeton: alan ataması, çağrı imzası, kapsam ayracı,
     // çok satırlı değer ya da üretim bölgesi işareti.

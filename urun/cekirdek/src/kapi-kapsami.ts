@@ -114,6 +114,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "dogrula", modul: "dogrulayici.ts", kademe: "uyarı", yuzeyler: ["cli", "panel", "mcp", "tekil"] },
   { uretici: "fazVadeTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   { uretici: "mevsimVadeTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
+  // KPS-MVS-A01 ikinci teslim (2026-09-10): ORK-8 mühür dürüstlüğü — vade bekçisiyle aynı çözücü, aynı yüzeyler.
+  { uretici: "mevsimMuhurTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu
@@ -184,6 +186,10 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "yetimMeyveTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "docDriftTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "beyansizYapiTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
+  // KPS-MHR-A01 (2026-09-11): MIM-3.4 dosya mühürleri — arşiv, eğitim ve sonra
+  // mühürlü dosyaları listeler ve biçime uymayan adı uyarır; uyarı basabildiği için
+  // panel yüzeyi taşır ve bulguları giriş dosyasına yazar ki panel onları yayımlayabilsin.
+  { uretici: "dosyaMuhruTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "adAyraciTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli"],
     cliGerekcesi: "Yalnız bilgi düzeyinde konuşur: ad ayracı bir yazım önerisidir ve hiçbir kapıyı kapatmaz." },
   { uretici: "halefTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
@@ -252,6 +258,19 @@ const YARDIMCI_ISLEVLER: ReadonlySet<string> = new Set([
   // ise o haritanın üstüne ORK-4 kardeş kök kapısını kurar ve yine tanı üretmez;
   // kapının kendisi bir ölçüm değil, ölçenlerin ortak sorduğu sorudur.
   "adAlaniKapisi", "karneOzeti", "katiRejimliDosyalar", "kodIndeksle", "kodTanimlariIndeksle", "planlamaEvresiMi",
+  // KPS-AYR-A01: `projeSahibi` bir dosyanın Proje kodunu, `projeKarneleri` her
+  // Projenin kendi karnesini HESAPLAR; ikisi de `karneOzeti` ile aynı ailedendir
+  // ve TANI ÜRETMEZ. Ürettikleri şey bulgu değil, bulguların hangi haneye
+  // düşeceğini söyleyen sahiplik ile o hanenin sayılarıdır. Kapsam tablosuna
+  // (KAPI_KAPSAMI) yazılmaları sahte yeşil olurdu: tanı basmayan bir gövdeye
+  // yüzey ve kademe beyanı vermek, ölçülmeyen bir zorlamayı canlı göstermektir.
+  "projeSahibi", "projeKarneleri",
+  // KPS-AYR-A01 ikinci yarı: `projeKokleri` çatı kökünden koşan denetimin hangi
+  // Proje köklerini KENDİ köklerinden koşturacağını söyler. `projeSahibi` ile
+  // aynı kapsam listesini okur ve TANI ÜRETMEZ; ürettiği şey bulgu değil, her
+  // ölçümün göreli yolunu hangi kökten çözeceğidir. Tanılar devredilen kökün
+  // kendi koşumundaki üreticilerden doğar ve köken damgalarını oradan taşır.
+  "projeKokleri",
   // KPS-KOD-A01: `adAlaniSecenekleri` çıplak bir kodun kardeş projelerdeki
   // `PRJ::KOD` karşılıklarını, `dugumYokMetni` ise o seçenekleri soran "yok"
   // cümlesini KURAR; ikisi de graf, etki ve gezinme yüzlerinin ortak metin
@@ -259,6 +278,11 @@ const YARDIMCI_ISLEVLER: ReadonlySet<string> = new Set([
   // vermek ölçülmeyen bir zorlamayı canlı göstermek olurdu.
   "adAlaniSecenekleri", "dugumYokMetni",
   "programlariYukle", "yerelEvre1Yumusat", "evre1Yumusat",
+  // KPS-MHR-A01 (MIM-3.4): `arsivEbediEnvanteri` arşiv mühürlü dosyalardaki ebedî
+  // kuralları BULUR ve TANI ÜRETMEZ; bulduğunu `ebediTanilar` üreticisine verir ve
+  // engelin tanısı o üreticinin köken damgasıyla doğar. Ölçen değil, ölçene
+  // girdi hazırlayan bir yardımcıdır; yüzey beyanı ölçülmeyen bir zorlama olurdu.
+  "arsivEbediEnvanteri",
   // BKM-DNT-A13: `yolTuru` bir yolun diskteki cinsini ölçer ve TANI ÜRETMEZ;
   // denetci.ts'ten dışa açılmasının sebebi ölçümün ikinci bir yüzeyde (iskelet
   // aracı) yeniden yazılmasını önlemektir. Ölçen değil, ölçenlerin sorduğu soru.

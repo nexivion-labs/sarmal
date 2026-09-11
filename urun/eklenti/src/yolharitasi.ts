@@ -198,11 +198,11 @@ a:hover{text-decoration:underline}
 summary{cursor:pointer;margin:.4rem 0}
 details ul{margin-top:.4rem}</style>`;
 
-/** #7: widget-adı → aile (GOMULU_KAYIT'ten, siniflama'nın panel ikizi) — kapsam
- *  aile-eşleşmesi için (kural kapsam: "akış" gibi bir AİLEyi hedefleyebilir). */
-const WIDGET_AILE = new Map<string, string>(
-  ((GOMULU_KAYIT.widgetTipleri as Array<{ ad: string; aile: string }>) ?? []).map((t) => [t.ad, t.aile]),
-);
+/** #7: şemanın widget tip listesi (GOMULU_KAYIT'ten, siniflama'nın panel ikizi) —
+ *  kapsam aile-eşleşmesi (kural kapsam: "akış" gibi bir AİLEyi hedefleyebilir) ve
+ *  Yasa rolü (KPS-KON-A01) için; çekirdek koni sayımıyla aynı evreni kurar. */
+const WIDGET_TIPLERI: ReadonlyArray<{ ad: string; aile: string; caprazRoller?: string[] }> =
+  (GOMULU_KAYIT.widgetTipleri as Array<{ ad: string; aile: string; caprazRoller?: string[] }>) ?? [];
 
 /** #7: kural otoritesi → rozet + sıra (YAS-2.3 · YAS-2.4 · anayasa > politika > tercih). */
 // VIT-KIMLIK-A07: rozet artık emoji taşımaz — ailedeki simgenin ADINI ve
@@ -861,7 +861,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     if (o.tip === "Adım" && o.durum === "geliştirmede") {
       const g = koniCikar(o.dugum).görev;
       const n = ((g && !g.startsWith("<!--")) ? g : (o.ne ?? "")).replace(/\s+/g, " ").trim();
-      nedenAktif = n ? `🟡 ${n.length > 48 ? n.slice(0, 46) + "…" : n}` : YOL_METINLERI.gelistiriliyor;
+      // 🟡 kaldırıldı (VIT-KIMLIK-A07): satırın ikonu zaten "sürüyor" rengindedir
+      // ve emoji o rengin İKİNCİ, temadan bağımsız bir kopyasıydı (YUZ-4.2).
+      nedenAktif = n ? (n.length > 48 ? n.slice(0, 46) + "…" : n) : YOL_METINLERI.gelistiriliyor;
     }
     // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
     // beyanı. Satır soluk + 🧊 imli; NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
@@ -1005,13 +1007,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
     // #7 (Founder açık-ucu): "Adım bir Kural/Anayasa'ya bağlıysa bağlı kuralları göster."
     // Kapsam eşleşmesi cekirdek/kuralci TEK KAYNAK (dugumeDusenKurallar). SALIENCE
-    // BÜTÇESİ (YUZ-4 ruhu): joker (genel/tümü) kurallar TÜM düğümlere düşer — bu düğüme
+    // BÜTÇESİ (YUZ-4 ruhu): joker (genel/tümü) kurallar Yasa rolünde olmayan TÜM düğümlere
+    // düşer (KPS-KON-A01: Karar gibi bir hükmün kendisine joker yük düşmez) — bu düğüme
     // ÖZEL değildir; tam listelenirse kart boğulur (Founder'ın KONI_ESIGI=20 kaygısı).
     // Bu yüzden HEDEFLİ kurallar (ad/aile/kod eşleşen — bu Adım'ı özelleştiren) tam
     // gösterilir; genel yasa yalnız SAYIYLA anılır (otorite'ye göre sıralı — anayasa üstte).
     const otoriteSirala = (a: KuralBilgi, b: KuralBilgi): number =>
       (OTORITE_SIRA[b.otorite ?? "tercih"] ?? 1) - (OTORITE_SIRA[a.otorite ?? "tercih"] ?? 1);
-    const dusen = dugumeDusenKurallar(o.dugum, this.kurallar, WIDGET_AILE);
+    const dusen = dugumeDusenKurallar(o.dugum, this.kurallar, WIDGET_TIPLERI);
     const hedefli = dusen.filter((k) => !KAPSAM_JOKER.has(k.kapsam ?? "")).sort(otoriteSirala);
     const joker = dusen.filter((k) => KAPSAM_JOKER.has(k.kapsam ?? "")).sort(otoriteSirala);
     const kuralSatiri = (k: KuralBilgi): string => {
@@ -1162,6 +1165,13 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
       acikKart = vscode.window.createWebviewPanel(
         "sarmalKoniKart", YOL_METINLERI.kartBasligi(oge.kod), { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
         { enableCommandUris: true });   // yalnız kendi ürettiğimiz escape'li komut linkleri
+      // 🎴 VIT-KIMLIK-A07: sekmenin işareti BAŞLIK METNİNDE değil, sekmenin kendi
+      // ikon yuvasında yaşar. Bir webview sekmesi `iconPath` taşır, yani ailenin
+      // FİZİKSEL olarak ulaştığı bir yüzeydir ve YUZ-4.2 gereği işaret oradan
+      // gelir; başlıkta kalan emoji ise platforma göre başka çizilir ve rengini
+      // temadan almazdı. Metinsel etiket (KOD) yerinde kalır — ikon onu İKAME
+      // ETMEZ, yalnız yanında durur.
+      acikKart.iconPath = satirIkonu(context.extensionUri, "kart");
       acikKart.onDidDispose(() => { acikKart = undefined; acikKartKodu = ""; });
       acikKart.webview.html = saglayici.koniKartHtml(oge);
     }
@@ -1255,6 +1265,9 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
       const panel = vscode.window.createWebviewPanel(
         "sarmalKonusma", YOL_METINLERI.konusmaBasligi(kayit?.rol, kayit?.adım),
         vscode.ViewColumn.Beside, {});
+      // 🎴 VIT-KIMLIK-A07: koni kartıyla AYNI desen — sekmenin işareti başlık
+      // metninde değil, sekmenin kendi ikon yuvasındadır ve kilitli aileden gelir.
+      panel.iconPath = satirIkonu(context.extensionUri, "kosum");
       const imza = kayit?.ajanİmza as { kod?: string; ad?: string } | undefined;
       // VIT-KIMLIK-A07: konuşma kartının işaretleri de kilitli aileden gelir;
       // okuyucu eklenti kökünden beslenir ve gömülü SVG temanın rengini miras alır.

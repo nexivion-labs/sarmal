@@ -579,8 +579,8 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         dokunulmaz: [ "Kapsam nöbetinin ad kümesi eşitliği sözleşmesi", "Panel süzgecinin üretici damgasıyla süzme mekanizması" ]
       }
 
-      Adım( kod: BKM-DNT-A02, durum: beklemede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.3, YUZ-7 ],
-        üretir: [ VR-GOC-YUZEY-YONLENDIRME ],
+      Adım( kod: BKM-DNT-A02, durum: tamamlandı, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.3, YUZ-7 ],
+        üretir: [ VR-GOC-YUZEY-YONLENDIRME, KOD-YUZEY-ULASMA, KOD-SNM-YUZEY-ULASMA ],
         ne: "📋 Yönlendirme matrisi kaydının yönlendirme ile ulaşmayı ayırması. Kayıt bugün sicilin tamamını üç yüzeye dağıtır ve her kaydın tam olarak bir yüzeye ulaştığını yazar; oysa ölçüm yüz yetmiş beş kimliğin seksen dördünün hiçbir yüzeye ulaşmadığını göstermiştir. Kaydın cümlesi yönlendirme için doğru, ulaşma için yanlıştır ve aradaki farkı hiçbir yerde konuşmaz. Ayrıca kaydın makine-okur Çıkarım düğümü yüz yetmiş bir kimlik ve yirmi dört Bildirimler derken çizelgesi yüz yetmiş beş ve yirmi sekiz der; düzyazısı önceki gövdeyi yüz iki sayarken çizelge yüz bir sayar. Aynı dosyada iki toplam yaşamaktadır ve kaydın kendi uyarısında önceden ilan ettiği sessiz bayatlama gerçekleşmiştir. Bu Adım, kaydın yönlendirme ile ulaşma sütunlarını ayırır, sayılarını canlı sicilden üretir ve iki sütunun eşitsizliğini nöbete bağlar." ) {
         görev: [
           "Kayda 'ulaşır' sütunu ekle: her kimlik için yönlendirildiği yüzey ile üreticisinin ilanındaki yüzeylerin kesişimi yazılır; boş kesişim 'ulaşmaz' olarak görünür.",
@@ -592,10 +592,31 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
           "Kaydın üç sayı kaynağı (Çıkarım düğümü, düzyazı, çizelge) aynı toplamı söyler ve bir nöbet bunu ölçer."
         ]
         sınır: "KYN-YUZ-A02 Adımı bu kaydın bayat sayılarını zaten gerçeğe çekmektedir; bu Adım o düzeltmeyi yinelemez, yalnız ulaşma sütununu ve fark nöbetini ekler. Sıra bağımlılığı gerçektir: ulaşma sütunu BKM-DNT-A01 kararlarından önce doldurulursa seksen dört satır 'ulaşmaz' der ve karar verilince yeniden yazılır."
+        koşu: "2026-09-10 · KAPANDI. Kaydın üç sayı kaynağı gerçekten ayrışmıştı ve üçü de farklı şey söylüyordu: bir yer yüz yetmiş bir kimlik derken çizelge yüz yetmiş beş diyordu, düzyazı ise önceki gövdeyi iki yerde yüz iki sayıyordu, oysa gerçeği yüz birdi. Üçü de tek üretece bağlandı ve toplamın sicil boyutunu vermesi yapısal olarak zorunlu hâle geldi. Yönlendirme ile ULAŞMA ayrı çizelgeye çıkarıldı, çünkü bir tanının bir yüzeye yönlendirilmiş olması o yüzeye ulaştığı anlamına gelmiyordu. Kayıttaki kademe dağılımı da elle doğrulanmaktan çıkıp motor kaynağından ölçülür oldu ve eski dağılımın hem bayat hem yanlış taban üzerinden yazıldığı görüldü."
       }
 
       Adım( kod: BKM-DNT-A03, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
         üretir: [ KOD-DENETCI ],
+        // ── 2026-09-10 · GÖZLEM: geçici fikstür ortak kapıyı kırmızıya çeviriyor ──
+        //   Kontrolcü bu tarihte kapının kırmızı yandığını ve yazımının engellendiğini
+        //   bildirmiştir; sebep `ogreti/ornek/altin_yol/_ta04-nobet.sar` dosyasıdır.
+        //   Ölçüm dosyanın sahibini bulmuştur: gerçek kabuk süitindeki tek-ağaç nöbeti
+        //   (urun/eklenti/sinama_vscode/suite/tek-agac.test.ts, `geciciSar`) fikstürü
+        //   koşum boyunca DEPO AĞACININ İÇİNE yazar ve süit bitince siler. Dosya
+        //   yalnız o bir dakika boyunca yaşar, fakat o pencerede aynı ağaçta çalışan
+        //   herkesin denetimi yedi hata bildirir (fazsız-blok · proje-köksüz-üretim),
+        //   çünkü kanca o klasörü ayrı bir varlık kökü sayar.
+        //   ÖNEMLİ AYRIM: fikstürü depo dışına taşımak ÇÖZÜM DEĞİLDİR ve nöbeti
+        //   bozar. Nöbetin kendi yorumu sebebini yazmaktadır: tur daraltması ancak
+        //   odaktaki varlık çalışma alanı kökünün ALTINDA bir kökse yapılır,
+        //   dolayısıyla fikstür tanımı gereği ağacın içinde olmak zorundadır.
+        //   Kapının bu dosyayı ayırt edememesi asıl kusurdur: alt çizgiyle başlayan
+        //   ya da bilinen geçici desenleri taşıyan bir dosyayı üretim gövdesinden
+        //   ayıran bir kural yoktur. Çözüm adayları şunlardır ve karar Founder'ındır:
+        //   motorun ders dünyası dışlama desenine (INDEKS_DISI) geçici önek eklemek,
+        //   ya da nöbetin fikstürü çalışma alanının altında fakat denetim evreninin
+        //   dışında kalan bir rafa yazması. Kanca Founder'ın makinesinde yaşadığı için
+        //   bu turda davranışı DEĞİŞTİRİLMEMİŞTİR; gözlem kayda geçirilmiştir.
         ne: "🧹 Plan hijyeni: kenarsız geliştirme, çift ilanlı dosya ve yapışık düğüm. Üç küçük borç tek turda kapanır. Birincisi, VIT-GRAF-A20 ile VIT-POSTA-A05 Adımları geliştirmede olduğu hâlde ne üretir ne referans kenarı taşır ve motor bunu zaten iki bilgi tanısıyla söylemektedir; bitince ürettikleri dosyanın izi plandan okunamayacaktır. İkincisi, üç kaynak dosyası birden fazla Kod kimliğiyle ilanlıdır: eklenti gövdesi meyve haritasında ve göç planında, yüzey metin kataloğu vitrin planında ve göç planında, yol haritası ise üç kimlik altında yaşar; etki ve graf sorguları aynı dosyayı ayrı düğümler sayar ve hiçbir nöbet çift ilanı ölçmez, çünkü yetim-meyve kapısı ilansız kalmayı ölçer, iki kez ilan edilmeyi ölçmez. Üçüncüsü, vitrin planının meyve bloğunda iki Kod düğümü satır başı olmadan tek satıra yapışmıştır; ayrıştırıcı kabul eder, insan gözü görmez." ) {
         görev: [
           "İki geliştirmedeki Adıma üretir ve referans kenarlarını yaz; hedef dosyalar ilanlıdır, yalnız kenar eksiktir.",
@@ -910,7 +931,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
         koşu: "2026-09-10 · KAPANDI. Üç kalemin üçü de ölçülüp kapandı. İskelet aracı hem var olmayan bir yolda hem de bir dosya yolunda içinde giriş dosyası yok diyordu; ölçüm artık iddiadan ÖNCE yapılmakta ve üç durum kendi doğru cümlesini almaktadır. Ölçüm yeniden yazılmadı, denetim komutundaki yol türü ölçücüsü dışa açıldı ve iki yüz aynı kaynaktan okuyor. Dış şema bayrağının önerisi bayrağın adını hiç anmıyordu ve artık iki dilde de anıyor. Çeviri nöbeti anahtar eşliğinden iddia düzeyine yükseltildi; bu, hatırlatıcının en önemli kalemiydi, çünkü İngilizce cümleyi eski kap iddiasına döndüren mutasyon eskiden kapıdan yeşil geçiyordu. KAYITTA OLMAYAN DAHA AĞIR BİR KUSUR ölçülüp onarıldı: dış şema bayrağına bir DİZİN verildiğinde motor ham bir okuma hatasıyla çöküyor ve çalışma ortamının yığın izini kullanıcının yüzüne döküyordu; sebep kapının yalnız varlığı ölçüp cinsi ölçmemesiydi, çünkü bir dizin de var olduğu için kapıdan geçiyor ve birkaç satır sonra dosya gibi okunmaya çalışılıyordu. Kontrolcü bunu bağımsız olarak sınadı ve artık dizin verildiğinde de var olmayan yol verildiğinde de dürüst bir tanı dönüyor, yığın izi yok. Nöbetlere körlük sınavı da kondu: gerçekten girişsiz bir dizinde cümlenin iddiayı KURMASI şart, yoksa nöbet bütün cümleleri boşaltmakla da yeşil kalırdı. Bağımsız kabul denetimi kontrolcü tarafından koşuldu: iki tür denetimi sıfır hata, proje denetimi sıfır hata, çekirdek süiti bin iki yüz seksen beşte bin iki yüz seksen beş, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi; üç mutasyonun üçü de kırmızıya düştü."
       }
 
-      Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, öncelik: p1, bağımlı: [], onayBekler: founder,
+      Adım( kod: BKM-DNT-A14, ad: "Sınama Sonucunun Yüzeye İnmesi", durum: beklemede, onay: "onaylandı — 2026-09-10", öncelik: p1, bağımlı: [],
         referans: [ YUZ-3.3, HTR-SINAMA-SONUCU-YUZEYSIZ ],
         ne: "🧪 Kırmızı yanan bir nöbetin yalnız uçbirimde yaşaması kusurunun kapatılması. Founder 2026-08-31 tarihinde sorduğunda ölçülmüştür: paneller denetim turundan beslenir, süit ayrı bir dünyadır ve sonucunu hiçbir yüzeye taşıyan gövde yoktur; gerçek kabuk süiti on beş kırmızı taşımakta ve hiçbir kapıda koşmamaktadır, çünkü 2026-09-03 tarihinde kurulan sürekli tümleştirme akışı yalnız birim süitlerini koşturur. Beş karar kalemi HTR-SINAMA-SONUCU-YUZEYSIZ kaydındadır ve Founder ayrıntılı değerlendirme istemiştir." ) {
         görev: [
@@ -1260,3 +1281,9 @@ Kod( kod: KOD-SNM-MANIFEST-MENULERI, dosya: "urun/eklenti/sinama/manifest-menule
 Kod( kod: KOD-SNM-ONIZLEME-PALET, dosya: "urun/eklenti/sinama/onizleme-palet.test.ts",
   ne: "🍎 Önizleme palet nöbeti — önizleme kaynağının mantık bölgesinde kanondan bağımsız renk kalmadığını, tek yedeğin gömülü kanon olduğunu ve gömülü paletin bütün tipleri boyadığını ölçer; CSS bloğu EKL-F6-A05 kapsamındadır" )
 
+
+// 🍎 BKM-DNT-A02 yönlendirme × ulaşma ölçümü (2026-09-10)
+Kod( kod: KOD-YUZEY-ULASMA, dosya: "urun/cekirdek/src/yuzey-ulasma.ts",
+  ne: "🍎 Yönlendirme ile ulaşmayı AYRI ölçen üreteç — kapı kapsamı ilanının her girdisini `beklenenSunumYuzeyi` kararıyla bir sunum yüzeyine yönlendirir, ilanındaki panel yüzeyinden ulaşmasını ayrıca okur ve aradaki farkı sessiz (hata/uyarı basıp ulaşmayan) ile gerekçeli (bilgi kademesinde kalan) olarak ikiye ayırır; ayrıca önceki gövdenin kademe dağılımını motor kaynağındaki eskiTani çağrılarından ölçer ve yönlendirme matrisi kaydının üç sayı kaynağını tek canlı ölçüme karşı tartar" )
+Kod( kod: KOD-SNM-YUZEY-ULASMA, dosya: "urun/cekirdek/sinama/yuzey-ulasma.test.ts",
+  ne: "🍎 Yönlendirme × ulaşma nöbeti — sessiz farkın sıfırlığını, gerekçesiz ulaşmamanın kırmızıya dönmesini ve yönlendirme matrisi kaydındaki üç sayı kaynağının birbiriyle ve canlı ölçümle eşitliğini mutasyonla sınar" )

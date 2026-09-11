@@ -469,7 +469,8 @@ export type SatirIsareti =
   | { readonly aile: "eksen"; readonly tip: EksenTipi; readonly evre: KapsayiciEvre };
 
 /**
- * Hatırlatıcılar yüzeyine düşen dört kayıt türünün işaretleri.
+ * Hatırlatıcılar yüzeyine düşen kayıt türlerinin işaretleri (KYN-YUZ-A02 ·
+ * KPS-MHR-A01). 2026-09-11 tarihinde MIM-3.4 ile üçüncü tür eklenmiştir.
  *
  * ÇİZELGE 2026-09-10 TARİHİNDE DARALDI. Eskiden dört kimlik taşıyordu; üçü
  * (`açık-adım`, `geliştirmede-çapa`, `bloklu-çapa`) bir Hatırlatıcı düğümü
@@ -490,6 +491,11 @@ export type SatirIsareti =
 export const HATIRLATICI_ISARETLERI: Readonly<Record<string, SatirIsareti>> = {
   "açık-hatırlatıcı":     { aile: "satır", simge: "can", anlam: "uyari" },
   "ateşlemiş-hatırlatıcı": { aile: "satır", simge: "can", anlam: "basari" },
+  // KPS-MHR-A01 (MIM-3.4 · Founder hükmü 2026-09-11): sonraya bırakılmış dosya bir
+  // Hatırlatıcı düğümü değil, dosya adına yazılmış bir sonra mührüdür; çanı değil
+  // SAATİ taşır, çünkü satırın söylediği şey bekleme süresidir, ve bekleyen işin
+  // nötr rengiyle konuşur. Böylece iki hatırlatıcı hâlinden bakışta ayrılır.
+  "sonraya-bırakılmış-dosya": { aile: "satır", simge: "zaman", anlam: "notr" },
 };
 
 /**

@@ -201,6 +201,12 @@ export const SATIR_SIMGELERI = [
   "anayasa",          // kural otoritesi: anayasa (eski ⚖️ · koni kartı kural satırı)
   "politika",         // kural otoritesi: politika (eski 📋 · koni kartı kural satırı)
   "tercih",           // kural otoritesi: tercih (eski 🔧 · koni kartı kural satırı)
+  // ── VIT-KIMLIK-A07 · okuma modunun yapı başlığı ───────────────────────────
+  //    Okuma modu bir webview'dir, yani ailenin FİZİKSEL olarak ulaştığı bir
+  //    yüzeydir; başlığındaki işaret bu yüzden Founder kararına bırakılmaz,
+  //    aileye çevrilir. Ailede yapı ağacını anlatan bir çizim yoktu ve bu Adım
+  //    "eksik simgeleri ailenin kendi diliyle çiz" der.
+  "agac",             // okuma modunun 'Yapı Ağacı' başlığı (eski 🌳 · onizleme webview)
 ] as const;
 export type SatirSimgesi = (typeof SATIR_SIMGELERI)[number];
 

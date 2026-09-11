@@ -26,7 +26,7 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
-  mevsimVadeTanilari,
+  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari,
 } from "../src/denetci.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
@@ -621,17 +621,32 @@ test("kural: hüküm türü, sözleşme üçlüsü ve terfi kapısı", () => {
 });
 
 test("orkestrasyon: tanı sözleşmesi, kapsam, Proje kimliği ve yüz tutarlılığı", () => {
+  // KPS-AYR-A01: hüküm artık Proje kökü SAYISINI değil gruplamanın TAMLIĞINI
+  // ölçer. İki kökün yan yana durması tek başına kusur değildir; kusur, bir
+  // bulgunun hiçbir Proje evine giremeyip çatı kimliğinde kalmasıdır. Fikstür
+  // bu yüzden iki ayrı kökün DIŞINDA bir plan dosyası taşır: o dosyanın
+  // bulgusu evsiz kalır ve tanı gerçek sebebiyle doğar.
   const kok = mkdtempSync(join(tmpdir(), "sarmal-ork-"));
   try {
+    mkdirSync(join(kok, "bir"), { recursive: true });
+    mkdirSync(join(kok, "iki"), { recursive: true });
+    mkdirSync(join(kok, "disarida"), { recursive: true });
     writeFileSync(join(kok, "fikstur_anadizin.sar"),
       `-->|\n## Amaç\nFikstür.\n## Kapsam\nFikstür.\n## Sonuç\nFikstür.\n|<--\n`
       + `ÇalışmaAlanı( kod: CAL-FIK ) {\n`
-      + `  Proje( kod: PRJ-BIR )\n`
-      + `  Proje( kod: PRJ-IKI )\n`
+      + `  Kitaplık( kod: KTP-BIR, yol: "bir/", ne: "Birinci kök." )\n`
+      + `  Kitaplık( kod: KTP-IKI, yol: "iki/", ne: "İkinci kök." )\n`
+      + `  Kitaplık( kod: KTP-DIS, yol: "disarida/", ne: "Hiçbir Projenin malı olmayan gövde." )\n`
       + `}\n`, "utf8");
+    writeFileSync(join(kok, "bir", "bir_anadizin.sar"), `Proje( kod: PRJ-BIR, rejim: esnek )\n`, "utf8");
+    writeFileSync(join(kok, "iki", "iki_anadizin.sar"), `Proje( kod: PRJ-IKI, rejim: esnek )\n`, "utf8");
+    writeFileSync(join(kok, "disarida", "plan.sar"),
+      `Adım( kod: ADM-EVSIZ, durum: beklemede, ne: "Hiçbir Proje kökünün altında yaşamayan iş." )\n`, "utf8");
     const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-07-27" });
     const tumu = sonuc.akis.flatMap((r) => r.tanilar);
     uretildi("proje-tanı-kimliği-uyumsuz", tumu);
+    const kimlik = tumu.find((x) => x.kod === "proje-tanı-kimliği-uyumsuz")!;
+    assert.match(kimlik.mesaj, /disarida\/plan\.sar/, "tanı evsiz dosyayı adıyla söylemeli");
     assert.equal(sonuc.atlananKapilar?.length ?? 0, 0,
       `zorunlu denetim kapısı düştü: ${(sonuc.atlananKapilar ?? []).join(" · ")}`);
   } finally {
@@ -741,6 +756,50 @@ test("proje: vadesi geçmiş mevsim açık iş sarıyorsa ORK-8 tanısı fikstü
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+test("proje: mühürlendiğini yazan mevsim açık iş sarıyorsa ORK-8 mühür tanısı fikstürle doğar", () => {
+  // Ölçüt metnin iddiası değil grafın sayısıdır; tarih okunmaz, çözücü vade
+  // bekçisiyle ortaktır (KPS-MVS-A01 ikinci teslim · kontrolcü hükmü 2026-09-10).
+  const programlar = harita({
+    "is/plan/faz.sar": `Faz( kod: FAZ-MUHURLU, ad: "Mevsim", ne: "Bu mevsim MÜHÜRLENDİ" ) {\n  çağır BLK-M\n}\n`,
+    "is/plan/govde.sar": `Blok( kod: BLK-M, ad: "gövde" ) {\n  Katman( kod: KAT-MHR, ad: "katman" ) {\n    AltKatman( kod: ALT-MHR, ad: "modül" ) {\n      Adım( kod: ADM-MHR, durum: beklemede, ne: "bekleyen iş" )\n    }\n  }\n}\n`,
+  });
+  const t = mevsimMuhurTanilari(programlar);
+  uretildi("mevsim-mührü-çelişkili", t);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].tani.duzey, "bilgi");
+});
+
+// ══ MIM-3.4 · DOSYA MÜHÜRLERİ (KPS-MHR-A01 · Founder hükmü 2026-09-11) ═══════
+
+test("proje: arşiv, eğitim ve sonra mühürlü dosyalar listelenir, biçime uymayan ad uyarı alır", () => {
+  // Arşiv ile sonra mühürlü dosyalar disk anlık görüntüsünde AYRI listede durur
+  // ve hiçbir yükleyici onları okumaz; eğitim mühürlü dosya okunur ve olağan
+  // listede kalır. Tarih çözücüsü enjekte edilir, çünkü bekleme süresi git'e ya
+  // da dosyanın durum tarihine sorulur ve sınama takvime bağlanamaz.
+  const disk: DiskAnlikGoruntu = {
+    girdiler: [
+      { tur: "dosya", yol: "is/plan/@EGITIM@_ders.sar" },
+      { tur: "dosya", yol: "is/plan/Rapor.sar" },
+      { tur: "dosya", yol: "is/plan/@FOO@_x.sar" },
+    ],
+    muhurlular: [
+      { tur: "dosya", yol: "arsiv/@ARSIV@_eski.sar" },
+      { tur: "dosya", yol: "is/plan/@SONRA@_bekleyen.sar" },
+    ],
+  };
+  const t = dosyaMuhruTanilari(disk, "/yok", "2026-09-11", "x_anadizin.sar", () => ({ tarih: "2026-09-01", kaynak: "git" }));
+  uretildi("dosya-mührü", t);
+  uretildi("sonraya-bırakılmış-dosya", t);
+  uretildi("geçersiz-dosya-adı", t);
+  const kod = (k: string): Array<{ dosya: string; tani: Tani }> => t.filter((x) => x.tani.kod === k);
+  assert.equal(kod("dosya-mührü").length, 2, "arşiv ile eğitim mühürlü iki dosya listelenmeli");
+  assert.equal(kod("sonraya-bırakılmış-dosya").length, 1, "sonra mühürlü dosya tek satırla listelenmeli");
+  assert.match(kod("sonraya-bırakılmış-dosya")[0].tani.mesaj, /10 gündür bekliyor/);
+  assert.equal(kod("geçersiz-dosya-adı").length, 2, "büyük harfli ad ile bilinmeyen etiket ayrı ayrı uyarılmalı");
+  assert.ok(kod("geçersiz-dosya-adı").every((x) => x.tani.duzey === "uyarı"));
+  assert.ok(t.every((x) => x.dosya === "x_anadizin.sar"), "bulgular giriş dosyasına yazılmalı ki panel onları yayımlayabilsin");
+});
+
 // ══ MIM-1.7 · ALTKATMAN TEKİLLİĞİ (Founder hükmü 2026-08-28) ════════════════
 
 test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata doğar", () => {
@@ -758,7 +817,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -772,6 +831,15 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
     // ritüelinin ilk motor karşılığıdır ve beyan ile grafın ayrıştığını söyler,
     // düzeltilecek bir sapma bildirmez; bu yüzden doğrudan bilgi düzeyindedir.
     "mevsim-vadesi-geçti",
+    // On ikincisi 2026-09-10 tarihinde kontrolcü hükmüyle doğdu: ORK-8 kapanışının
+    // dördüncü basamağı olan mührün dürüstlüğü. Metnin iddiası ile grafın sayısının
+    // çeliştiğini söyler, düzeltilecek bir sapma dayatmaz; doğrudan bilgi düzeyindedir.
+    "mevsim-mührü-çelişkili",
+    // On üçüncüsü ile on dördüncüsü 2026-09-11 tarihinde Founder hükmüyle doğdu
+    // (MIM-3.4 dosya mühürleri): mühürlü dosyayı listeleyen gözlem ile sonraya
+    // bırakılmış dosyanın bekleme hatırlatması. İkisi de bir sapma bildirmez,
+    // mührün sessiz olmamasını sağlar; kanon ikisini de bilgi düzeyinde yazar.
+    "dosya-mührü", "sonraya-bırakılmış-dosya",
   ].sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");
@@ -783,7 +851,10 @@ test("GOC-TERFI-A05: 47 kabul hatada, 16 kanon-uyarı uyarıda, on bir kimlik bi
   // gelmedi, dolayısıyla A05'in kırk altılık aday kümesini değiştirmez.
   assert.equal(hatada.length, 47, "Founder kabulündeki hata kümesi 47 tanı olmalıdır");
   assert.ok(hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
-  assert.equal(uyarida.length, 16, "Founder hükmünde uyarıda kalan küme 16 tanı olmalıdır");
+  // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
+  // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
+  // sıfırdır; terfi turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
+  assert.equal(uyarida.length, 17, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 uyarısı 17 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 
@@ -883,6 +954,10 @@ test("öneri şartı ölçüttür, beyan değil: düzyazı bir örnek cümlesi n
   assert.equal(yapistirilabilirOrnekVar("Şunu düzelt. Örnek: `kaldır`"), false,
     "yapısal jeton taşımayan kısa parça yapıştırılabilir sayılmamalı");
   assert.equal(yapistirilabilirOrnekVar("Şunu düzelt. Örnek: `rejim: katı` yaz."), true);
+  // KPS-MHR-A01: ad düzeltmesinin iskeleti iki yollu tek bir taşıma komutudur.
+  assert.equal(yapistirilabilirOrnekVar('Adı düzelt. Örnek: `git mv "is/Rapor.sar" "is/rapor.sar"`.'), true);
+  assert.equal(yapistirilabilirOrnekVar("Adı düzelt. Örnek: `git mv`."), false, "yolsuz komut iskelet sayılmamalı");
+  assert.equal(yapistirilabilirOrnekVar('Adı düzelt. Örnek: `git mv "tek-yol"`.'), false, "tek yollu komut iskelet sayılmamalı");
   assert.equal(yapistirilabilirOrnekVar("`rejim: katı` yaz."), false,
     "örnek işareti olmadan geçilmemeli");
 });

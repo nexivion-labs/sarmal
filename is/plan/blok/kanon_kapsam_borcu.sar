@@ -139,10 +139,50 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       // MIM-1.7 birleştirmesi (2026-08-28): aşağıdaki Adımlar "mevsim ritüeli kapısı" kademesinden taşındı.
       //   Taşınan kademenin beyanı: ORK-8 mevsim ritüelinin motorda karşılığı yoktur; vadesi geçmiş mevsim ile mühürlü mevsimdeki açık iş sessiz kalır
 
-      Adım( kod: KPS-MVS-A01, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ ORK-8, MIM-1.2, YAS-4 ],
+      // ── KONTROLCÜ HÜKMÜ · 2026-09-10 · Founder yetki devriyle · MÜHÜR BEKÇİSİ ──
+      //   Founder ikinci görev kalemini kontrolcüye bırakmıştır. Hüküm: mühür bekçisi
+      //   YAZILIR ve ORK-8 maddesinin "mevsimin mühürlenip mühürlenmediği hiçbir tanıyla
+      //   görülmez" cümlesi tazelenir. Gerekçe kanonun kendi metnidir: aynı zorlama
+      //   satırı "ritüeli gören bir bekçi ilan edilecekse o bekçi kendi Adımının
+      //   konusudur ve doğduğunda bu maddeye bağlanır" diyerek kapıyı bilerek açık
+      //   bırakmıştır; dolayısıyla cümleyi tazelemek hükmü çiğnemek değil, hükmün kendi
+      //   talimatını yerine getirmektir. Ölçüt metnin iddiası değil grafın sayısıdır:
+      //   metninde mühürlendiği yazan bir mevsim hâlâ açık Adım sarıyorsa çelişki
+      //   bildirilir. Bekçi motor ile kanona birlikte dokunduğu için üretici işidir ve
+      //   sıraya alınmıştır; kanon cümlesi bekçiyle AYNI turda tazelenir, ayrı turda değil.
+      Adım( kod: KPS-MVS-A01, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ ORK-8, MIM-1.2, YAS-4 ],
+        // ── 2026-09-10 · MEVSİM ÖLÇÜMÜ (üretici · taze süreç) ──
+        //   Birinci görev kalemi ZATEN TESLİM EDİLMİŞTİR ve bugün de çalışmaktadır:
+        //   `mevsim-vadesi-geçti` tanısı canlıdır, bilgi düzeyindedir ve bildiriminde
+        //   mevsim kodu ile açık Adım sayısını yazar.
+        //
+        //   KABUL ÖLÇÜTÜNÜN BİR CÜMLESİ BAYATLAMIŞTIR. Ölçüt "bugünkü bahçede
+        //   Temmuz mevsimi bu tanıyı üretir" demektedir; oysa bahçe o gün bugün
+        //   değildir. Bugünkü sayım şudur: FAZ-2026-TEMMUZ bir gövde sarar ve
+        //   altında SIFIR açık Adım vardır, dolayısıyla tanı doğru davranarak
+        //   SUSAR. Bütün mevsimlerin bugünkü tablosu: TEMMUZ vade 2026-07-31,
+        //   1 gövde, 0 açık; AGUSTOS vade 2026-08-31, 4 gövde, 0 açık;
+        //   PERFORMANS vade 2026-09-30, 3 gövde, 1 açık; EYLUL vade 2026-09-30,
+        //   13 gövde, 71 açık; GOC-V1 vade 2026-08-07, 7 gövde, 0 açık.
+        //   Vadesi geçmiş hiçbir mevsimin altında açık Adım kalmamıştır; tanının
+        //   sıfır bulgu vermesi kusur değil, devrin fiilen yapılmış olmasıdır.
+        //
+        //   İKİNCİ GÖREV KALEMİ (mühür dürüstlüğü) FOUNDER KAPISINDADIR ve sebebi
+        //   kanonun kendi metnidir. ORK-8 maddesinin zorlama satırı bugün şunu
+        //   yazmaktadır: mevsimin mühürlenip mühürlenmediği hiçbir tanıyla
+        //   görülmez ve `Faz` şeması bir mühür alanı taşımadığı için mühür yalnız
+        //   insan kaydıdır. Aynı satır bir kapı da bırakmıştır: ritüeli gören bir
+        //   bekçi ilan edilecekse o bekçi bu maddenin değil kendi Adımının
+        //   konusudur ve doğduğunda bu maddeye bağlanır. Yani bekçiyi bu Adımda
+        //   doğurmak meşrudur, fakat doğduğu anda ORK-8'in "hiçbir tanıyla
+        //   görülmez" cümlesi bayatlar ve o cümle bir kanon maddesidir; kanon
+        //   metnini tazelemek hüküm niteliğinde bir değişikliktir ve Founder onayı
+        //   ister. Bu yüzden bekçi bu turda YAZILMAMIŞTIR ve karar Founder'a
+        //   bırakılmıştır. Beşinci görev kalemi de zaten Founder'a sorulacak tek
+        //   soruyu istemektedir; ikisi aynı görüşmede kapanır.
         onay:   "onaylandı — 2026-08-27 · Founder canlı pencerede ölçtü: Temmuz mevsiminin vadesi 27 gün önce geçmiştir, altında açık Adım durmaktadır ve motor tek kelime etmemektedir",
-        koşu:   "2026-08-27 · BİRİNCİ TESLİM. Mevsim vade tanısı proje kapsamında kuruldu ve motor artık susmuyor: canlı bahçede FAZ-2026-TEMMUZ mevsimi için 'hedef tarihi 2026-07-31 günü geçmiştir, sardığı iki gövdenin altında sekiz Adım hâlâ açıktır' bildirimi doğuyor. Karar proje kapsamındadır, çünkü Faz kendi dosyasında, sardığı Bloklar başka dosyalardadır; bağın üç yazımı da tanınır (iç içe gövde, çağır kenarı ve Blokun kendi mevsim alanı). Düzey bilgidir ve hiçbir kapıyı kırmızıya düşürmez; tarih dayatılmaz, yalnız beyan ile grafın ayrıştığı yer söylenir. Altı sınamalık nöbet çekirdek süitine girdi ve mutasyon kanıtı dosyanın başlığında yazılıdır. Motorun kendi öğretim nöbeti bu turda üreticiye de uygulandı: ilk yazımda önerinin yapıştırılabilir iskeleti yoktu ve öğretim-yüzü-uyumsuz tanısı bunu bildirdi, öneri iskeletle yeniden yazıldı. Sayaç nöbetleri usulünce güncellendi (yeni tanı kümesi yetmiş ikiden yetmiş üçe, bilgi kademesi ondan on bire, canlı sicil yüz seksen ikiden yüz seksen üçe) ve kanon tutarlılık türevi yeniden üretildi. KALAN: ORK-8 kapanış basamaklarının kanon kapsam siciline işlenmesi, emekli vade tanılarının sicil kaydının halefiyle tazelenmesi ve Temmuz'un açık gövdesinin devredilip devredilmeyeceğine dair Founder kararı. Kanon metnine dokunulmadı.",
-        üretir: [ KOD-DENETCI, KOD-SNM-MEVSIM-VADE ],
+        koşu:   "2026-09-10 · KAPANDI. Mühür bekçisi mevsim-mührü-çelişkili bilgi düzeyinde doğmuş, vade tanısıyla aynı çözücüyü paylaşmış ve ORK-8 maddesinin bayatlayan zorlama cümlesi aynı turda tazelenmiştir; dört mutasyon nöbeti kırmızıya çevirmiş ve bekçinin bugünkü bahçedeki ilk bulgusu, FAZ-2026-PERFORMANS mührünün PRF-A06 şemsiyesini açık bırakmasıdır. Kontrolcü kapıları bağımsız ölçmüştür: iki tsc sıfır, çekirdek bin üç yüz elli beşte bin üç yüz elli beş, eklenti yedi yüz elli beşte yedi yüz elli beş ve depo denetimi sıfır hata; beşinci görev kalemindeki Temmuz sorusunun konusu kalmamıştır, çünkü Temmuz mevsiminin altında açık Adım yoktur ve kabulün Temmuz cümlesi bu yüzden tarihe aittir.",
+        üretir: [ KOD-DENETCI, KOD-SNM-MEVSIM-VADE, KOD-SNM-MEVSIM-MUHUR ],
         ne:     "🌀 Mevsim vadesinin ve mühür dürüstlüğünün motorda karşılanması. Founder 2026-08-27 tarihinde şu açığı buldu: `FAZ-2026-TEMMUZ` mevsimi `hedefTarih: 2026-07-31` beyanıyla ilan edilmiş, metninde MÜHÜRLENDİ yazmakta ve açık iş taşıyan gövdelerin Ağustos halkasına geçtiğini söylemektedir; oysa mevsim bugün hâlâ `BLK-VITRIN` gövdesini çağırmaktadır ve o gövdenin altında sekiz açık Adım durmaktadır. Motor bunu bildirmez, çünkü vade tanıları `faz-gecikti` ile `faz-yaklaşıyor` 2026-07-27 tarihinde emekli edilmiştir ve emeklilik gerekçesi ölçüm anında canlı bahçede sıfır bulgu vermeleridir; yirmi yedi gün sonra tam da yakalayacakları durum doğmuştur. Kanon tarafında ORK-8 mevsim ritüelini dört basamaklı bir kapanışa bağlar ve gerekçesinde bizzat Temmuz mevsiminin bir yorum satırıyla kapatıldığını yazar, fakat madde bilgi düzeyindedir ve motorda hiçbir karşılığı yoktur." ) {
         görev:  [
           "Mevsim vadesini gözlem düzeyinde konuşan bir tanı kur: vadesi geçmiş bir Faz altında açık Adım kaldığında motor bunu kaç Adımla birlikte bildirir. Tanı MIM-1.2 ile çelişmez, çünkü tarihi dayatmaz; yalnız beyan ile gerçeğin ayrıştığını söyler ve motor susmaz ilkesinin zaten uyguladığı dili kullanır.",
@@ -280,6 +320,41 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         sınır:      "Bu Adım kanon metnine dokunmaz; ORK-4 hükmü olduğu gibi kalır. Kod kimliklerinin projeler arasında birleştirilmesi (MIM-1.1 ortak kimlik kökü) bu Adımın işi değildir. Çözüm yalnız çatı anadizininde ilan edilmiş kardeş kökleri tanır; ilansız klasör kardeş sayılmaz."
         dokunulmaz: [ "Kanonun kaynak metni", "Kapalı depoların plan içerikleri (yalnız atıf yazımı değişir)" ]
         koşu: "2026-09-10 · ÖĞLEDEN SONRA · KAPALI DEPO KARARI (kontrolcü, Founder yetki devriyle): Kabul ölçütünün kapalı depolarda sıfır hata isteyen maddesi bugün iki ayrı sebeple sağlanamamaktadır ve ikisi de bu Adımın kapsamı dışındadır. Orkestrasyondaki iki hata, hiçbir depoda ilan edilmemiş iki Çıkarım düğümüne bakan ölü atıflardır; uydurulmaz ve Founder hükmüyle orkestrasyon zamanına ertelenmiştir. Laboratuvardaki altı yüz otuz yedi hata ise bu sabahki indeks dışı onarımının yan etkisidir, kaydı ayrı bir hatırlatıcıdadır ve onarım geri alınmaz. Adım geliştirmede kalır; kapanışı için gereken tek şey Founder'ın Yol Haritası panelini canlı pencerede görmesidir, kapalı depo maddesi ise ölçüt olmaktan çıkarılmaz fakat gerekçeli olarak açık bırakılır. 2026-09-10 · MOTOR TARAFI BİTTİ, ADIM AÇIK KALDI. Ad alanlı çözüm motorda kuruldu ve iki gerçek kusur ölçülüp onarıldı: gezinme yüzü ad alanı hükmünü uygulamıyordu ve artık üç durumlu cevap vermektedir, yani ad alanı yüklü evrende çözülür, değilse kardeş kökten okunur, o da yoksa araç tanım yok demek yerine ölçülemez der ve ne yapılacağını söyler; ikincisi daha ağırdır, çünkü kardeş kök okuyucusu yalnız Raf düğümlerini tarıyordu ve Founder'ın Kitaplık hükmünden sonra doğan her çatı kardeşlerini Kitaplık olarak duyurduğu için okuyucu o çatılara yapısal olarak kördü. Kontrolcünün bağımsız kabul denetimi: iki tür denetimi sıfır hata, sarmal proje denetimi sıfır hata ile sıfır uyarı, çekirdek süiti bin iki yüz altmış sekizde bin iki yüz altmış sekiz, eklenti süiti altı yüz doksan yedide altı yüz doksan yedi, dört mutasyonun dördü kırmızıya düştü. Kapalı depolarda uçtan uca ölçüm yapıldı ve atıflar ad alanlı yazıma çevrildi: orkestrasyon sekiz hatadan iki hataya, laboratuvar üç hatadan bir hataya indi, yani on bir hatanın sekizi kapandı ve kapanan sekizin üçü fazsız Blok bulgusudur, çünkü ad alanlı mevsim artık gerçek bir Faz bağı sayılmaktadır. ADIM AÇIK KALIR, çünkü kabul ölçütü kapalı depolarda sıfır hata istemektedir ve kalan üç hata bu Adımın kapsamı dışındadır: ikisi kimlik indeksinin bilinçle dışında tuttuğu arşiv rafına bakmaktadır ve tasarım gereği hiçbir zaman çözülemez, biri ise hiçbir depoda ilan edilmemiş bir Fikir düğümüne bakmaktadır. Üçü de ayrı bir borçtur ve akıbeti Founder kapısındadır. Yol Haritası panelinin canlı pencerede doğrulanması ölçütü de Founder'ın gözünü beklemektedir."
+      }
+
+      Adım( kod: KPS-CEL-A01, ad: "Kanonun Dört Ayrışması", durum: beklemede, onay: "onaylandı — 2026-09-10", öncelik: p1, bağımlı: [], referans: [ MIM-1.2, MIM-3.2, MIM-1.4, TIP-1.8, HTR-KANON-SARMA-CELISKISI-VE-DUZEN-BOSLUGU ],
+
+        // ── FOUNDER HÜKÜMLERİ · 2026-09-09 (dördün ikisi bağlandı; Adım hâlâ onay bekler) ──
+        //   BİRİNCİ HÜKÜM · Kitaplık kademesi ZORUNLUDUR. Doğuş paketi de Kitaplık
+        //   üretir, MIM-3.2 düz yazısı bağlayıcı olur ve Kitaplıksız kök için tanı
+        //   doğar. Hüküm doğuş paketine BKM-DNT-A15 turunda uygulanmıştır.
+        //   İKİNCİ HÜKÜM · Çalışma alanı doğrudan Faz İÇEREMEZ. Faz ile Blok sarma
+        //   sözleşmesinin izin listesinden düşer, zaman ekseni yalnız Proje içinde
+        //   yaşar ve anadizin ile planın karışmaması hükmü mim bölümüne madde
+        //   olarak iner.
+        //   BEKLEYEN İKİSİ · Üçüncü ayrışmanın, yani kanal ile Teknoloji ilişkisinin
+        //   hükmü verilmemiştir. Dördüncü ayrışma, yani Katman bağının hedefi,
+        //   Founder'ın yönlendirmesiyle ayrı kenarlara bölünme yönünde
+        //   değerlendirilmektedir; ölçüm şemanın kendi içinde çeliştiğini
+        //   göstermiştir, çünkü tanım cümlesi Takım bağı beklerken kural cümlesi
+        //   tek Teknoloji bağı şart koşmaktadır.
+        ne: "⚖️ Kanonun kendi içindeki dört ayrışmanın tek sözcüğe indirilmesi. Bağımsız bir ölçüm turu 2026-09-09 tarihinde dört iddiayı kaynaktan sınamış ve ikisini doğrulamış, ikisini kısmen doğrulamıştır; ölçümün en önemli bulgusu iddianın kendisinde bulunmayan bir yerdedir. BİRİNCİ AYRIŞMA sarma sözleşmesindedir: sözleşme çalışma alanı düğümünün Faz içermesine izin vermekte (`oz/siniflama/kayit.json` sekiz yüz on beşinci satır), şema aracı bu izni sorana aynen göstermekte, buna karşılık anadizin şekli bekçisi aynı yerleşimi hata saymaktadır (`urun/cekirdek/src/denetci.ts` bin altı yüz altıncı satır) ve MIM-1.2 Fazın Proje içindeki zaman dilimini kurduğunu yazmaktadır. Bekçinin kanonda maddesi yoktur ve sekiz kanon dosyasının tamamında geçiş sayısı sıfırdır; üstelik tanı emeklilik borcu listesinde durmaktadır. İznin ikinci bir bedeli ölçülmüştür: izin, panelde her tuş vuruşunda koşan tek yapısal bekçi olan izinsiz sarma tanısını da susturmaktadır, çünkü doğrulayıcı izinli listede bulduğu tipi görüp dalı kapatmaktadır. İKİNCİ AYRIŞMA Kitaplık kademesindedir ve ölçüm buradaki teşhisi düzeltmiştir: sorun şemanın kademeyi zorunlu kılmaması değil, ürünün kendi iki öğretim yüzeyinin farklı mimari öğretmesidir. Rehber şablonları Kitaplık kademesini öğretmekte ve Rafları onun içine koymakta, doğuş paketi ise hiç Kitaplık üretmeyip Rafları doğrudan kökün altına yazmaktadır. Aynı ikilik MIM-3.2 maddesinin kendi içinde de vardır: düz yazı Rafı Kitaplığın içindeki sorumluluk bölümü olarak tarif ederken, aynı maddenin zorlama cümlesi ikisini birbirinin alternatifi saymaktadır. Ölçüm ayrıca Sarmal'ın kendi giriş ilanının altı Kitaplık taşıdığını, çatının giriş ilanının ise hiç taşımadığını göstermiştir. ÜÇÜNCÜ AYRIŞMA TIP-1.8 maddesindedir: hüküm işin yürütüldüğü kanalı Teknoloji saymakta ve gerekçesini MIM-1.4'ün her Katmana tam olarak bir Teknoloji bağı şart koşmasına dayandırmaktadır; hükmün metni ve konumu doğrulanmıştır, buna karşılık ona eşlik ettiği söylenen ayrı bir Kanal tipi reddi ağacın hiçbir yerinde bulunamamıştır ve o ayrıntı doğrulanmamış sayılır. Motorun ve sunucu araçlarının kendisinin hangi tiple ilan edileceği ise hiçbir yerde açıkça yazılmamaktadır. DÖRDÜNCÜ AYRIŞMA Katman bağındadır ve dört yüzeyi kapsamaktadır: MIM-1.4 Teknoloji demekte, tanı metni ile öneri cümlesi Takım yazmakta, doğuş ile blok şablonları Takım yazmakta, motor ise hem Takımı açık bir istisnayla muaf tutmakta hem de bağımlı kenarını geçiş yedeği olarak kabul etmektedir. Ortak ders tek cümledir: şema neyin izinli olduğunu, düzen neyin doğru olduğunu söyler; ikisi ayrıştığında ajan izinli olanı yazar ve sonucu ilk bakışta yanlış görünür." ) {
+        görev: [
+          "Birinci ayrışmayı Founder hükmüyle kapat: ya sarma sözleşmesinin izin listesinden Faz ile Blok düşer ya da MIM-1.2 değişir; hangisi seçilirse seçilsin anadizin ile planın karışmaması hükmü mim bölümüne madde olarak iner, çünkü bugün o hükmü taşıyan tek yer motorun kaynağıdır.",
+          "İzinsiz sarma bekçisinin susma yolunu ölç ve kayda yaz: izin listesi daraltıldığında panelde koşan bekçinin aynı yerleşimi görüp görmediği mutasyonla sınanır.",
+          "İkinci ayrışmayı kapat: rehber şablonları ile doğuş paketi tek mimariyi öğretir; Founder hükmü Kitaplık kademesinin zorunlu mu yoksa isteğe bağlı mı olduğunu bildirir ve seçilen hâl MIM-3.2 düz yazısı, maddenin zorlama cümlesi, doğuş şablonları ve rehber şablonları arasında tek sözcüğe indirilir.",
+          "Üçüncü ayrışmayı kapat: TIP-1.8 ya bugünkü hükmüyle tazelenir ya da kanal için ayrı bir yol açılır; aynı turda motorun ve sunucu araçlarının hangi tiple ilan edileceği açıkça yazılır. Doğrulanamayan ret kaydı iddiası kayıttan düşürülür ya da dayanağı gösterilir.",
+          "Dördüncü ayrışmayı kapat: Katman bağının hedef tipi dört yüzeyde tek sözcüğe indirilir; motorun geçiş yedeği olarak kabul ettiği ikinci kenar ya kanona yazılır ya da kaldırılır.",
+          "Nöbet kur: kanonun bir maddesi ile şemanın izin listesi ayrıştığında bunu bildiren bir ölçüm doğar; bugün dört ayrışmanın hiçbirini gören bir nöbet yoktur."
+        ]
+        kabul: [
+          "Dört ayrışmanın her biri için Founder hükmü kayıttadır ve hüküm gerekçesiyle birlikte yazılmıştır.",
+          "Seçilen hâl şema, kanon metni, tanı metni, öneri cümlesi ve şablonlar arasında tek sözcüğe inmiştir; ayrışma sayısı sıfırdır ve bu tarama ile ölçülmüştür.",
+          "Kanon ile şemanın ayrışmasını gören nöbet canlıdır ve bugünkü dört ayrışmadan en az biri geçici olarak geri konduğunda kırmızıya döner.",
+          "Çekirdek süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+        ]
+        sınır: "Bu Adım hiçbir kanon maddesini Founder hükmü olmadan değiştirmez; üretici kendi başına kilitli karar üretemez. Doğuş paketinin ürettiği dosyalar BKM-DNT-A15, öğretim kartlarının içeriği BKM-DNT-A16 Adımının işidir ve burada yinelenmez."
+        dokunulmaz: [ "Founder hükmü olmadan kanonun kaynak metni" ]
       }
 
       Adım( kod: KPS-FAZ-A01, ad: "Fazın Projeye Bağlanması", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ MIM-1.2, HTR-FAZ-PROJE-KENARI-GRAFTA-YOK ],
@@ -446,6 +521,143 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         dokunulmaz: [ "Doğuş paketinin ürettiği kod adları", "ORK-4 maddesinin kaynak metni" ]
         koşu: "2026-09-10 · DÖRT ÖLÇÜTTEN ÜÇÜ KAPANDI. Kardeş projelerin aynı adlı kodları çatı grafında kendi Projeleri altında PRJ::KOD anahtarıyla ayrı düğüm olarak yaşar, çıplak atıf yalnız kendi Projesinde çözülür ve gezinme, etki ile arama araçları birden çok karşılığı Projesiyle gösterir; ajans deneme çatısında iki proje on dörder düğüm ve sekiz ortak kodla ölçülmüş, altı mutasyon nöbeti kırmızıya çevirmiş ve kontrolcü kapıları bağımsız ölçmüştür (çekirdek bin üç yüz elli beş, eklenti yedi yüz elli beş, depo denetimi sıfır hata). Açık kalan iki kalem şudur: bayt bayt kopyalanan bir şablon Proje kodunu da taşıdığı için ayrışamaz ve motor bunu adıyla bildirir, kabul ölçütünün bu yönde okunması Founder kararını beklemektedir; eklentinin yol haritası ile mini graf panelleri düğümü hâlâ çıplak kodla aradığı için çatı penceresinde ortak kodlu bir düğümün kenar bilgisi boş kalır (yolharitasi-cekirdek.ts:233)."
       }
+
+      // ── 2026-09-10 · SINIRIN NE KADARININ EMEKLİ OLDUĞU (üretici ölçümü · KPS-AYR-A01) ──
+      //   Adımın üçüncü görevi "her projeyi kendi kökünden denetle" cümlesinin
+      //   emekli olmasını ister. Ölçüm gösterir ki o cümle YARISIYLA emekli
+      //   olmuştur ve kalan yarısı bu Adımın kapsamı dışındadır; ikisini
+      //   ayırmadan yazmak sınırın tamamen kalktığı yanılgısını doğururdu.
+      //
+      //   ① EMEKLİ OLAN YARI. Çatı kökünden koşulan denetim artık kimlik ayrımı
+      //      hatası vermez ve bulgular Proje koduyla ayrışır. Gerçek çatıda
+      //      ölçüldü (2026-09-10 · Nexivion Labs kökü): `proje-tanı-kimliği-
+      //      uyumsuz` bulgusu SIFIR ve tablo dokuz Proje kökünü kendi haneleriyle
+      //      basıyor. İki projeli sınav çatısında çatı kökü onarımdan önce bir
+      //      hata veriyordu, onarımdan sonra sıfır hata ve bir uyarı veriyor;
+      //      hane toplamları tür dökümünün toplamıyla mutabık (dört artı iki
+      //      artı çatının kendi iki bulgusu, sekiz).
+      //
+      //   ② EMEKLİ OLMAYAN YARI. Çatı kökünden okunan tablo, projelerin kendi
+      //      kökünden okunan tablosuyla HENÜZ birebir aynı değildir ve farkın
+      //      iki ölçülmüş sebebi vardır; ikisi de bu Adımın sınırı dışındadır.
+      //      Birincisi HTR-CATI-KOKUNDEN-DENETIM kaydının konusudur: disk
+      //      mutabakatı, meyve yolları ve ebedî kilit çatı kökünden çözülmekte,
+      //      projenin kendi kökünden çözülmemektedir. Ölçüm nettir — Sarmal
+      //      kendi kökünden sıfır hata verirken çatı kökünden dört yüz altmış
+      //      dört hata bildirmektedir ve bu farkın tamamı yol çözümündendir.
+      //      İkincisi KPS-KOD-A01 Adımının konusudur: kardeş projeler aynı kodu
+      //      taşıdığında graf onları tek düğümde yutar. Sınav çatısında iki
+      //      projenin sekiz kodu çakışmakta (KTP-IS · KTP-OGRETI · KTP-OZ ·
+      //      RAF-PLAN · RAF-DURUM · RAF-OGRENME · RAF-SINIFLAMA ·
+      //      ADM-KURULUS-01) ve ikinci projenin karnesi çatı kökünden on dört
+      //      düğüm yerine altı düğüm göstermektedir; fark tam olarak sekizdir.
+      //      Bu Adım kod ad alanına DOKUNMAZ, dolayısıyla farkı kapatamaz;
+      //      kapatacak olan Adım KPS-KOD-A01'dir.
+      //
+      //   ③ HÜKÜM ÖLÜ DALA DÖNMEDİ. `proje-tanı-kimliği-uyumsuz` kaldırılmadı,
+      //      ölçtüğü şey DEĞİŞTİ. Önceki yazım grup SAYISINI ölçüyordu ve birden
+      //      çok Proje kökü görür görmez kırmızı yanıyordu; gruplama kurulduktan
+      //      sonra aynı koşul doğru kurulmuş bir çatıyı sonsuza dek kırmızıda
+      //      tutardı. Bugün ölçülen şey gruplamanın TAMLIĞIDIR: gruplama hiç
+      //      yapılmazsa ya da bir bulgu hiçbir Proje evine giremezse tanı yeniden
+      //      doğar ve evsiz dosyayı adıyla söyler. İki hâl de nöbetle sabittir.
+      Adım( kod: KPS-AYR-A01, ad: "Her Projenin Ayrı Ölçülmesi", durum: tamamlandı, öncelik: p0,
+        bağımlı: [ KPS-CAT-A01 ], referans: [ MIM-1.1, YAS-3.3, YUZ-3.1 ],
+        üretir: [ KOD-DENETIM, KOD-KPS-FAZ-CEVRIMI, KOD-SNM-PROJE-AYRIMI, KOD-SNM-EKL-PROJE-AYRIMI, KOD-SNM-CATI-KOK-DEVRI ],
+        // ── FOUNDER HÜKMÜ · 2026-09-10 · EKLENTİ HER PROJEYİ AYRI ÇALIŞTIRIR ──
+        //   Founder amacını üç cümleyle bildirmiştir: ajans kurulacak, mimari
+        //   doğru oturacak ve eklenti her projeyi AYRI çalıştıracak. Üçüncüsü bu
+        //   Adımın konusudur ve Founder bunun baştan yapılması gereken iş olduğunu,
+        //   farkında olunmadığı için sona bırakıldığını beyan etmiştir; kuyruk bu
+        //   hükümle yeniden sıralanmıştır.
+        ne: "🧭 Çatı kökünden koşan denetimin bulguları proje kimliğine göre ayırması. Bugünkü gerçek 2026-09-10 tarihinde ölçülmüştür ve iki yarısı birbirinden ayrıdır. EKLENTİ YARISI BÜYÜK ÖLÇÜDE HAZIRDIR: Problems yüzeyinde her tanı kendi varlığının adıyla etiketlenmekte, paneller aktif varlığa kapsama ilişkisiyle odaklanmakta ve yüzey kayıtları dizin adıyla değil Proje koduyla anahtarlanmaktadır. MOTOR YARISI EKSİKTİR: çalışma alanında birden çok Proje kökü bulunduğunda denetim bulguları tek bir dizin kimliği altında toplamakta ve motor bunu proje-tanı-kimliği-uyumsuz tanısıyla dürüstçe reddetmektedir. Ölçüm iki projeli bir çatıda yapılmıştır: her proje KENDİ kökünden denetlendiğinde sıfır hata vermekte, aynı ağaç çatı kökünden denetlendiğinde bu hata doğmaktadır. Kusurun ölçekteki bedeli açıktır: yüz müşterili bir çatıda hangi bulgunun hangi müşteriye ait olduğu okunamaz ve çatı penceresi tek bir yığın gösterir. Bu Adım kapsama kenarını KURMAZ; onu KPS-CAT-A01 kurar ve bu Adım onun üstüne bulgu gruplamasını bina eder." ) {
+        görev: [
+          "Denetim akışının bulgu gruplarını dizin yolundan değil Proje kodundan türet; bir çalışma alanında birden çok Proje kökü varsa her kök kendi grubunu alır ve grupların kimliği tekil Proje kodudur.",
+          "Karne ve graf kimliğini aynı kaynaktan çöz: bugün karne çalışma alanı düzeyinde tek bir sayı basmaktadır, oysa çok projeli bir çatıda her projenin kendi karnesi okunabilmelidir.",
+          "Komut satırı yüzünü de aynı ayrıma çek: çatı kökünden koşulan denetim her projenin bulgusunu adıyla ayırarak bassın; bugün doğru kullanım her projeyi kendi kökünden denetlemektir ve bu sınır belgede yazılıdır, o cümle bu Adımla emekli olur.",
+          "Eklentinin yüzey yarısıyla motorun ayrımının BİREBİR aynı olduğunu ölç; iki yüzey aynı olguda farklı gruplama yaparsa kullanıcı çelişkili iki tablo görür ve bu YUZ-3.1 ihlalidir.",
+          "Nöbet kur: iki projeli bir çatıda bulgular iki ayrı kimlik altında toplanır, tek projeli bir depoda hiçbir şey değişmez ve proje-tanı-kimliği-uyumsuz tanısı artık doğmaz."
+        ]
+        kabul: [
+          "İki projeli bir çatının kökünden koşulan denetim sıfır hata verir ve proje-tanı-kimliği-uyumsuz tanısı doğmaz; ölçüm gerçek bir çatıda tekrarlanır ve sayı yazılır.",
+          "Her projenin bulguları kendi Proje koduyla gruplanır; çatı kökünden okunan tablo, her projenin kendi kökünden okunan tablosuyla birebir aynıdır.",
+          "Eklentinin panel ayrımı ile motorun bulgu ayrımı aynı sonucu verir; ayrım bir nöbetle sabitlenmiştir.",
+          "Tek projeli bir deponun karnesi ve bulgu sayısı bu değişiklikten önceki değeri korur.",
+          "Nöbet mutasyonla kanıtlanmıştır; çekirdek ile eklenti süitleri yeşildir."
+        ]
+        sınır: "Bu Adım kapsama kenarını kurmaz ve kod ad alanına dokunmaz; ikisi ayrı Adımlardır. Eklentinin bugün çalışan odak ve etiket mekanizmasına dokunulmaz, yalnız motorun ayrımıyla eşitliği ölçülür."
+        dokunulmaz: [ "Eklentinin aktif varlık odağı mekanizması", "MIM-1.1 maddesinin kaynak metni" ]
+        koşu: "2026-09-10 · KAPANDI. Çatı kökünden koşan denetim artık alt dizininde giriş ilanı taşıyan her Projeyi aynı denetim gövdesiyle kendi kökünden koşturmakta ve bulgularını Proje koduyla çatıya döndürmektedir; kök, Proje sahipliğini çözen kapsam listesinin kendisinden türer ve ikinci bir çözücü yazılmamıştır. Kontrolcü eşitliği gerçek çatıda ölçmüştür: Sarmal hanesi çatı kökünden sıfır hata, sekiz uyarı, bin dokuz yüz altmış dört düğüm ve dört yüz on yedi Adımla kendi kökünden okunan tabloyla aynıdır, laboratuvar ile orkestrasyon haneleri de kendi köklerinin sayısını verir; tek projeli depoda denetim ve graf çıktısı bayt bayt korunmuş, sekiz mutasyon nöbeti kırmızıya çevirmiştir. Kapılar bağımsız ölçülmüştür (iki tsc sıfır, çekirdek bin üç yüz altmış üç, eklenti yedi yüz elli beş, depo denetimi sıfır hata); bedeli, çatı kökünden koşumun yaklaşık yüzde yetmiş uzamasıdır."
+      }
+      // ── FOUNDER HÜKMÜ · 2026-09-11 · DOSYA MÜHÜRLERİ ──
+      //   Founder, işi bitmiş arşivin, eğitim şablonlarının ve sonraya
+      //   bırakılmış işin canlı kaynaktan dosya adına yazılan açık bir işaretle
+      //   ayrılmasına hükmetmiştir. Mühür dosya adının başına `@ETİKET@_`
+      //   biçiminde yazılır ve etiket büyük harfle yazılır; taban küme `@ARSIV@_`,
+      //   `@EGITIM@_` ve `@SONRA@_` mühürlerinden oluşur. Hüküm kanonda uygun
+      //   yerini alır, motor kuralı uygular, kural ajanların bağlamına girer ve
+      //   doğuş ile öğretim yüzleri onu öğretir. Biçim ölçümle seçilmiştir:
+      //   köşeli parantez kabukta desen hatası vermiş, diyez işareti kabukta
+      //   yorum sayılıp komutun anlamını sessizce değiştirmiş ve `.gitignore`
+      //   dosyasında etkisiz kalmış, `@` işareti ise zsh ile bash kabuklarında ve
+      //   git ile `.gitignore` deseninde tırnaksız çalışmıştır. Kanon metni
+      //   Founder'ın 2026-09-11 tarihinde değişiklik istemeden onayladığı MIM-3.4
+      //   taslağıdır ve aynen yazılır; OGR-5 maddesine tek bir cümle eklenir.
+      Adım( kod: KPS-MHR-A01, ad: "Dosya Mühürlerinin Kanona ve Motora İnmesi", durum: tamamlandı, öncelik: p0,
+        bağımlı: [ KPS-IND-A01 ], referans: [ MIM-3, OGR-5, OGR-3, TIP-2.5 ],
+        üretir: [ KOD-DENETIM, KOD-SNM-DOSYA-MUHRU, KOD-SNM-EKL-DOSYA-MUHRU ],
+        onay: "onaylandı — 2026-09-11 · FOUNDER HÜKMÜ: dosya mühürleri `@ETİKET@_` biçimiyle kanona ve motora iner; MIM-3.4 taslağı ile OGR-5 cümlesi değişiklik istenmeden kabul edilmiştir.",
+        ne: "📛 İşi bitmiş, eğitim amaçlı ya da sonraya bırakılmış bir `.sar` dosyasının canlı kaynaktan açık bir beyanla ayrılması. 2026-09-10 tarihli ölçüm tüm çatıdaki bin iki yüz yetmiş bir hata ve uyarının yüzde doksan altısının laboratuvarın arşiv rafından geldiğini göstermiştir; arşivi eskiden muaf tutan kural klasör adından tahmin yürüttüğü için KPS-IND-A01 turunda kaldırılmış ve arşiv korumasını kaybetmiştir. Founder bu tahminin yerine dosyanın sahibinin dosya adına yazdığı açık bir mührü koymaya hükmetmiştir; bu Adım hükmü kanona indirir, motora uygulatır ve öğretim yüzlerine taşır." ) {
+        görev: [
+          "Founder'ın onayladığı MIM-3.4 maddesini kanonun mimari bölümüne ve OGR-5 maddesine eklenecek cümleyi kontrolcü brifingindeki metinle aynen yaz; kanon sayısının dondurulduğu bütün yerleri aynı turda güncelle ve türetilmiş yüzleri üreticiyle yeniden üret.",
+          "Motora dosya mührü tanımını tek noktada kur: dosya adının başındaki mühür biçimini tanıyan tek bir çözücü yaz ve yükleme, disk mutabakatı, kod dizini, graf, karne ile açık iş gündemi bu çözücüyü okusun; arşiv ve sonra mühürlü dosyalar okunmaz, eğitim mühürlü dosyalar okunup doğrulanır fakat sayılmaz.",
+          "Mührün sessiz olmamasını sağla: her denetim mühürlü dosyaları türüyle ve adıyla listeler, sonraya bırakılmış dosyalar bekleme süresiyle hatırlatıcı yüzeyinde görünür, ebedî kural taşıyan bir dosyanın arşiv mührü alması mevcut ebedî ihlal tanısıyla durdurulur ve mühürsüz bir dosya adının büyük harf taşıması bildirilir.",
+          "Kuralı eklentiye taşı: panel sayımları motorun ayrımıyla birebir aynı olsun ve yeni mühürlenen dosya bir kanca tarafından o anda bildirilsin.",
+          "OGR-3 uyarınca hükmü aynı değişiklikte ajan bağlam paketine, karşılama kartına, öğretim aracının kartlarına ve doğuş rehberine işle; öğretim metinlerini elle yazma, kaynaktan üret.",
+          "Nöbet kur ve mutasyonla kanıtla: her mührün davranışı, büyük harf kuralı, ebedî kural engeli ve listelemenin varlığı ayrı ayrı sınansın."
+        ]
+        kabul: [
+          "MIM-3.4 maddesi ile OGR-5 cümlesi kanonda onaylanan metinle aynen yaşar ve kanon tutarlılık ile belge yüzü nöbetleri yeni sayıyla yeşildir.",
+          "İki projeli bir sınav çatısında arşiv ve sonra mühürlü dosyalar graf, karne ve tanı sayımının dışında kalır, eğitim mühürlü dosya doğrulanır fakat karneye girmez; üç durum da denetim çıktısında adıyla listelenir ve sayılar ölçümle yazılır.",
+          "Ebedî kural taşıyan bir dosyaya arşiv mührü konduğunda denetim hata verir, mühürsüz ve büyük harfli bir dosya adı uyarı üretir ve geçersiz bir etiket sessiz geçmez.",
+          "Eklentinin panel sayımları ile motorun sayımı aynı sonucu verir ve bu eşitlik bir nöbetle sabitlenmiştir.",
+          "Karşılama kartı, öğretim aracı ve doğuş rehberi dosya mührünü öğretir; Sarmal'ın kendi ağacında karne ve graf sayısı yeni madde ile ilan edilen kodlar dışında değişmez.",
+          "Nöbetler mutasyonla kanıtlanmıştır; çekirdek ile eklenti süitleri yeşildir ve depo denetimi sıfır hata verir."
+        ]
+        sınır: "Bu Adım mekanizmayı Sarmal'ın kendi deposunda kurar; laboratuvarın arşivine ve fikstürlerine mühür uygulamak başka bir depoya dokunduğu için bu Adımın işi değildir ve arşiv hatırlatıcısına bağlanmıştır. Sarmal'ın kendi öğreti kitaplığındaki ders rafları bugünkü klasör kuralıyla kalır ve hiçbir mevcut dosya yeniden adlandırılmaz. Örtü mekanizması bu kümeyi yeni bir şema gerektirmeden taşıyamıyorsa yeni şema icat edilmez, durum ölçülüp Founder'a sunulur."
+        dokunulmaz: [ "Founder'ın onayladığı MIM-3.4 metni", "KPS-IND-A01 turunda öğreti kitaplığına demirlenen ders dışlaması", "Mevcut .sar dosyalarının adları" ]
+        koşu: "2026-09-11 · KAPANDI. Dosya mühürleri MIM-3.4 maddesi ve OGR-5 cümlesiyle onaylı metinden birebir kanona indi; motor tek çözücüyle arşiv ve sonra mühürlü dosyaları graf dışına alıyor, eğitim mühürlü dosyayı doğrulayıp saymıyor ve on iki mutasyonun on ikisi nöbeti kırmızıya çevirdi. Kontrolcü kapıları bağımsız ölçtü: iki tsc sıfır, çekirdek bin üç yüz yetmiş iki, eklenti yedi yüz elli yedi ve denetim sıfır hata; örtüyle genişletme yeni şema istediği için Founder kararına bırakıldı."
+      }
+
+      // ── FOUNDER HÜKMÜ · 2026-09-11 · KONİ TAŞMASININ KANON MADDELERİNDE SAHTE BULGU ÜRETMESİ ──
+      //   Founder Sarmal'ın kendi deposunda kalan sekiz uyarının çözülmesini istemiştir.
+      //   Kontrolcü ölçümü sekizinin de `yasa/kanon/ork.sar` dosyasındaki Karar maddelerine
+      //   düşen koni taşması olduğunu göstermiştir: motor koni sayımını dosya başına yapar,
+      //   ORK bölümü yirmi üç kural taşır ve yirmi ikisinin kapsamı genel olduğu için aynı
+      //   dosyadaki sekiz Karar maddesi kardeş kuralları kendi konisine düşmüş sayar.
+      Adım( kod: KPS-KON-A01, ad: "Koni Taşmasının Kanon Maddelerinde Sahte Bulgu Üretmesinin Bitmesi", durum: tamamlandı, öncelik: p1,
+        bağımlı: [ KPS-MHR-A01 ],
+        üretir: [ KOD-KURALCI, KOD-SNM-KURALCI ],
+        onay: "onaylandı — 2026-09-11 · FOUNDER: Sarmal'ın kendi deposunda kalan sekiz uyarının çözülmesini istemiştir; kusur kanon metnine, kanonun dosyalara bölünüşüne ve eşik değerine dokunulmadan motorda kökünden kapatılır.",
+        ne: "🧮 Koni taşması tanısı bir düğüme kapsam yoluyla yirmiden fazla kural düştüğünde bağlam boğulmasını bildirir. Motor bu sayımı dosya başına yapar; kanonun ORK bölümü yirmi üç kural taşır ve yirmi ikisinin kapsamı genel olduğu için aynı dosyadaki sekiz Karar maddesi kardeş kuralları kendi konisine düşmüş sayar. Oysa kanon maddeleri bir ajanın üzerinde çalıştığı iş düğümleri değildir ve genel kapsamlı bir kanon maddesinin anlamı, kanondaki kardeş maddeye yığılmak değil, kullanıcı projesinin düğümlerine uygulanmaktır. Sekiz uyarı bu yüzden gerçek bir bağlam boğulması değil, ölçütün yanlış evrene uygulanmasıdır ve kanon büyüdükçe çoğalır." ) {
+        görev: [
+          "Kusuru ölç ve kökünü kayda indir: koni sayımının hangi düğümleri hedef, hangi kuralları yük saydığını motorun kendi işlevleriyle listele ve sekiz uyarının her birine düşen kuralları kaydet.",
+          "Ölçütü kökünden düzelt: koni yalnız bir ajanın üzerinde çalışabileceği düğüme düşen bağlam yükünü saysın; ayrımı klasör adına ya da dosya yoluna değil, düğümün ve kuralın kendi beyanına dayandır ve seçtiğin ölçütü gerekçesiyle koşuya yaz.",
+          "Gerçek taşmanın görünür kaldığını koru: kullanıcı dosyasında eşiği aşan iş düğümü uyarı almaya, eşikte kalan düğüm sessiz kalmaya devam etsin.",
+          "Koni sayımını düğüme düşen kural listesiyle hizalı tut: panelin ve şefin kullandığı liste ile uyarının sayımı aynı predikattan beslensin ve iki yüz aynı düğüme farklı hüküm vermesin.",
+          "Nöbet kur ve mutasyonla kanıtla: kanon evreninde sahte taşmanın doğmadığı ve kullanıcı evreninde gerçek taşmanın doğduğu ayrı ayrı sınansın.",
+          "Eklenti motoru paketlediği için değişiklik günlüğüne tam cümlelerle bir girdi yaz ve eklenti sürümünü bir artır."
+        ]
+        kabul: [
+          "Sarmal'ın kendi kökünden koşan denetim sıfır hata ve sıfır uyarı verir.",
+          "Eşiği aşan bir kullanıcı düğümü hâlâ koni taşması uyarısı alır ve eşikteki düğüm susar; mevcut eşik nöbetleri değiştirilmeden yeşildir.",
+          "Koni sayımı ile düğüme düşen kural listesi aynı predikattan beslenir.",
+          "Yeni nöbet mutasyonla kanıtlanmıştır; iki tür denetimi ile çekirdek ve eklenti süitleri yeşildir."
+        ]
+        sınır: "Bu Adım yalnız koni ölçütünün hangi evrene uygulandığını düzeltir; kanon metnine, kanonun dosyalara bölünüşüne ve eşik değerine dokunmaz."
+        dokunulmaz: [ "Kanon metni ve kanon madde sayısı", "Koni eşiğinin değeri", "yasa/kanon/ork.sar dosyasının bölünüşü" ]
+        koşu: "2026-09-11 · ÜRETİCİ TESLİMİ: koni yükü artık kapsam çözümünün üstüne kurulan tek bir predikatla sayılır ve joker kapsamlı (genel, tümü) bir kural, tipi şemada Yasa rolünde olan düğüme (TIP-1.16: Karar, Politika, Kural, Anayasa, Mevzuat ve kural tipleri) yük olarak düşmez, düğümü adıyla, ailesiyle ya da koduyla anan kural ise düşer. Ölçüt dosya yolundan değil, kuralın kapsam beyanı ile düğüm tipinin rol beyanından türer; koni sayımı ile panelin düğüme düşen kural listesi aynı predikatı ve aynı şema evrenini sürer, M-3 yapısal değerlendirmesi ise eski kapsam çözümünde kalır. Depo denetimi sıfır hata ve sekiz uyarıdan sıfır hata ve sıfır uyarıya indi, kullanıcı evreninde yirmi bir genel kural Blok ile Adımda taşma üretmeyi sürdürdü; beş yeni nöbet kuruldu, dört mutasyonun dördü beklenen nöbetleri kırmızıya düşürdü ve iki tür denetimi sıfır hata, çekirdek süiti bin üç yüz yetmiş yedide bin üç yüz yetmiş yedi, eklenti süiti yedi yüz elli yedide yedi yüz elli yedi verdi."
+      }
     }
 
     AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
@@ -517,12 +729,27 @@ Kod( kod: KOD-KPS-SICIL, dosya: "is/nitelik/kanon_kapsam_sicili.sar",
 Kod( kod: KOD-SNM-MEVSIM-VADE, dosya: "urun/cekirdek/sinama/mevsim-vade.test.ts",
   ne: "🍎 Mevsim vade nöbeti — altı sınama: vadesi geçmiş mevsimin açık işi bildirilir, vadesi gelmemiş mevsim susar, kapanmış mevsim rahat bırakılır, mevsim alanıyla kurulan bağ da görülür, ay hassasiyeti ay sonundan ölçülür ve ders dünyası muaftır; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MVS-A01)" )
 
+// 🍎 KPS-MVS-A01 ikinci teslim (2026-09-10): mühür dürüstlüğü nöbeti
+Kod( kod: KOD-SNM-MEVSIM-MUHUR, dosya: "urun/cekirdek/sinama/mevsim-muhur.test.ts",
+  ne: "🍎 Mühür dürüstlüğü nöbeti — sekiz sınama: mühürlendiğini yazan mevsimin açık işi bildirilir, açık iş kapanınca bildirim susar, iddiasız mevsim vade bekçisine bırakılır, devir iddiası da görülür, bağın üç yazımı da tanınır, mühür tarih istemez, olumsuz ve gelecek zamanlı yazımlar iddia sayılmaz ve ders dünyası muaftır; üç mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MVS-A01)" )
+
 // 🍎 KPS-FAZ-A01 teslimi (2026-09-10): Fazın Projeye bağlanması — çevrim, çözücü ve nöbet
 Kod( kod: KOD-KPS-FAZ-CEVRIMI, dosya: "urun/cekirdek/src/dag.ts",
   ne: "🌀 Proje çevrimi — bir plan dosyasının yaşadığı Proje kökünü o dosyanın üst kademesiz plan düğümlerine kapsayan olarak normalize eden gövde; mevsim normalizasyonunun ikizidir, klasörden Projeye çözümü kimlik modülünün tek kaynağından okur ve bağı yalnız plan kademelerine indirir" )
 
 Kod( kod: KOD-KPS-FAZ-COZUCU, dosya: "urun/cekirdek/src/kimlik.ts",
   ne: "🎯 Kesin Proje kapsamı çözücüsü — bir dosyanın Proje kökünü YALNIZ bağ tekil ve kesinse döndüren gövde; aynı derinlikte iki ayrı Proje kodu bulunursa ve dosya ders dünyasında yaşıyorsa bağ kurulmaz, çünkü grafa içerme kenarı yazmak tahminle yapılamaz" )
+
+// 🍎 KPS-AYR-A01 teslimi (2026-09-10): her Projenin ayrı ölçülmesi — bulgu gruplaması, proje karnesi ve iki nöbeti
+Kod( kod: KOD-SNM-PROJE-AYRIMI, dosya: "urun/cekirdek/sinama/proje-bulgu-ayrimi.test.ts",
+  ne: "🍎 Proje bulgu ayrımı nöbeti — yedi sınama: bulgunun evi Proje kodundan türer, her projenin bulguları kendi hanesinde toplanır ve haneler birleşmez, karne çatı düzeyinde tek sayı basmaz, gruplama tam olduğunda kimlik tanısı doğmaz, gruplama hiç yapılmazsa tanı yeniden doğar, evsiz bir bulgu tanıyı doğurur ve dosyayı adıyla söyler, tek projeli depoda hane açılmaz; beş mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-AYR-A01)" )
+
+Kod( kod: KOD-SNM-EKL-PROJE-AYRIMI, dosya: "urun/eklenti/sinama/proje-ayrimi-esitligi.test.ts",
+  ne: "🍎 Eklenti-motor ayrım eşitliği nöbeti — üç sınama: eklentinin panel ayrımı ile motorun bulgu ayrımı her dosyada birebir aynı cevabı verir, iki yüzey her projeye aynı dosya kümesini yazar ve komşu projenin dosyası hiçbir hanede karışmaz, çatının kendi ilanı iki yüzeyde de hiçbir Projeye yazılmaz; ayrı yollardan yürüyen iki gövdenin aynı hükmü söylediği burada ölçülür (KPS-AYR-A01 · YUZ-3.1)" )
+
+// 🍎 KPS-AYR-A01 ikinci teslim (2026-09-10): çatı kökünden kök devri — her Proje kökü kendi kökünden ölçülür
+Kod( kod: KOD-SNM-CATI-KOK-DEVRI, dosya: "urun/cekirdek/sinama/cati-kok-devri.test.ts",
+  ne: "🍎 Çatı kök devri nöbeti — sekiz sınama: iki projeli gerçek bir disk çatısında her hane projenin kendi kökünden okunan bulgu kümesiyle birebir aynıdır, hanenin karnesi kökün kendi karnesidir, köken damgası devredilen kökün tanılarında da taşınır, tür dökümü köklerin kendi dökümleriyle çatı payının toplamıdır, kök çatıya geri döndürülünce aynı fikstür üç yol tanısıyla kırmızıya döner, karşılaştırıcı tek bir farkı bile görür, yalnız alt dizindeki giriş dosyası kök sayılır ve tek projeli depoda kök devri yoktur; sekiz mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-AYR-A01)" )
 
 // 🍎 KPS-CAT-A01 teslimi (2026-09-10): çatının Projelerini evlat edinmesi — çatı çevrimi ve nöbeti
 Kod( kod: KOD-SNM-CATI-PROJE, dosya: "urun/cekirdek/sinama/cati-proje-kenari.test.ts",
@@ -534,3 +761,9 @@ Kod( kod: KOD-SNM-KARDES-KOD, dosya: "urun/cekirdek/sinama/kardes-kod-tekilligi.
 
 Kod( kod: KOD-SNM-FAZ-PROJE, dosya: "urun/cekirdek/sinama/faz-proje-kenari.test.ts",
   ne: "🍎 Faz-Proje kenarı nöbeti — yedi sınama: iki Projeli fikstürde her Fazın kapsayanı kendi Projesidir, zincir Adımdan Projeye kesintisiz yürür, iç içe yazım dokunulmaz kalır, kök dışındaki plan dosyası köksüz kalır, ayrışık kökte bağ kurulmaz, ders dünyası muaftır ve çevrim yalnız plan kademelerine iner; dört mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-FAZ-A01)" )
+
+// 🍎 KPS-MHR-A01 (2026-09-11): dosya mühürlerinin nöbetleri
+Kod( kod: KOD-SNM-DOSYA-MUHRU, dosya: "urun/cekirdek/sinama/dosya-muhru.test.ts",
+  ne: "📛 Dosya mühürleri nöbeti — sekiz sınama: tek çözücü ile biçim kuralı, arşiv ile sonra mühürlü dosyanın okunmaması, eğitim mühürlü dosyanın doğrulanıp karneye girmemesi, listeleme, ebedî engel, geçersiz ad, mühürlü giriş dosyası ve bekleme süresinin kaynağı; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MHR-A01)" )
+Kod( kod: KOD-SNM-EKL-DOSYA-MUHRU, dosya: "urun/eklenti/sinama/dosya-muhru-esitligi.test.ts",
+  ne: "📛 Panel ile motorun dosya mührü eşitliği nöbeti — eklentinin gerçek tur hattının yüzey sayımı ile Adım evreni, motorun tür dökümü ve karnesiyle birebir karşılaştırılır (KPS-MHR-A01)" )

@@ -37,10 +37,54 @@ const KONI_ESIGI = 20;
 export const KAPSAM_JOKER: ReadonlySet<string> = new Set(["genel", "tümü"]);
 
 /** Bir kuralın kapsamı bir düğümü KAPSIYOR mu? (joker · widget-adı · aile · kod).
- *  TEK KAYNAK predikatı: koniTasmasi · kapsamDugumleri · dugumeDusenKurallar aynı
- *  eşleşmeyi sürer (üç yerde kopya = kapsam-drift riski; kanon burada). */
+ *  Kapsam ÇÖZÜMÜNÜN tek predikatıdır: M-3 yapısal değerlendirmesi (kapsamDugumleri)
+ *  bunu sürer. Koni YÜKÜ ise bunun üstüne kurulan `yukOlarakDuser` ile sayılır
+ *  (koniTasmasi · dugumeDusenKurallar); iki predikat da eşleşmeyi burada bulur. */
 function kapsamKapsar(kapsam: string, d: Dugum, kod: string, aile: Map<string, string>): boolean {
   return KAPSAM_JOKER.has(kapsam) || kapsam === d.ad || kapsam === aile.get(d.ad) || kapsam === kod;
+}
+
+/** TIP-1.16 Yasa rolü: bir hükmün KENDİSİ olan düğüm tiplerinin şemadaki beyanı. */
+const YASA_ROLU = "yasa";
+
+/** Kapsam evreninin şemadan okunan iki bilgisi: tip → aile (kapsam aile eşleşmesi) ve
+ *  Yasa rolündeki tipler, yani ana ailesi `yasa` olan ya da `yasa` çapraz rolünü
+ *  taşıyan tipler (bugün Karar · Politika · Kural · Anayasa · Mevzuat · Yasa ·
+ *  GenelKural · ÖzelKural). Liste elle tutulmaz, her koşumda şemadan türetilir. */
+interface KapsamEvreni { aile: Map<string, string>; yasaTipleri: ReadonlySet<string>; }
+type KapsamTipi = { ad: string; aile: string; caprazRoller?: readonly string[] };
+
+const EVREN_ONBELLEGI = new WeakMap<ReadonlyArray<KapsamTipi>, KapsamEvreni>();
+
+/** Şemanın widget tip listesinden kapsam evrenini kurar (aynı liste için bir kez). */
+function kapsamEvreni(tipler: ReadonlyArray<KapsamTipi>): KapsamEvreni {
+  let evren = EVREN_ONBELLEGI.get(tipler);
+  if (!evren) {
+    evren = {
+      aile: new Map(tipler.map((t) => [t.ad, t.aile])),
+      yasaTipleri: new Set(tipler
+        .filter((t) => t.aile === YASA_ROLU || (t.caprazRoller ?? []).includes(YASA_ROLU))
+        .map((t) => t.ad)),
+    };
+    EVREN_ONBELLEGI.set(tipler, evren);
+  }
+  return evren;
+}
+
+/** KONİ YÜKÜ predikatı (KPS-KON-A01): bir kural bir düğüme bağlam YÜKÜ olarak düşer mi?
+ *  Koni taşması (kaç kural) ile dugumeDusenKurallar (hangi kurallar · panel kartı)
+ *  YALNIZ bu predikatı sürer; iki yüz aynı düğüme aynı hükmü verir.
+ *  Ölçüt dosya yolundan değil iki beyandan türer:
+ *   • Kuralın beyanı: joker kapsam (`genel` · `tümü`) hiçbir tipi adıyla anmaz; anlamı
+ *     kuralın yönettiği evrendir, yani üzerinde iş yürütülen düğümlerin tamamıdır.
+ *   • Düğümün beyanı: tipi şemada Yasa rolünde olan düğüm (TIP-1.16) bir hükmün
+ *     kendisidir; ajanın üzerinde çalıştığı bir yüzey değil, yükün kaynağıdır.
+ *  Bu yüzden joker kural Yasa rolündeki düğüme yük olarak düşmez. Kapsamı düğümü
+ *  ADIYLA, AİLESİYLE ya da KODUYLA açıkça anan kural ise düşer: hükmü bir Kararı
+ *  hedefleyen kuralın yükü gerçektir ve sayılır. */
+function yukOlarakDuser(kapsam: string, d: Dugum, kod: string, evren: KapsamEvreni): boolean {
+  if (KAPSAM_JOKER.has(kapsam)) return !evren.yasaTipleri.has(d.ad);
+  return kapsamKapsar(kapsam, d, kod, evren.aile);
 }
 
 export interface KuralBilgi {
@@ -205,18 +249,20 @@ function hijyen(k: KuralBilgi, katmanlar: ReadonlySet<string>, out: Tani[]): voi
   }
 }
 
-/** Bir düğüme kapsam yoluyla düşen kural sayısı — >20 = bağlam boğulması. */
+/** Bir düğüme kapsam yoluyla düşen kural sayısı — >20 = bağlam boğulması.
+ *  Yük `yukOlarakDuser` ile sayılır; dugumeDusenKurallar ile aynı predikat ve aynı
+ *  şema evreni (KPS-KON-A01). */
 function koniTasmasi(kurallar: KuralBilgi[], widgetlar: Dugum[], snf: Siniflama, out: Tani[]): void {
   const kapsamli = kurallar.filter((k) => k.kapsam !== undefined);
   if (kapsamli.length <= KONI_ESIGI) return; // hiçbir düğüm eşiği aşamaz
 
-  const aile = new Map<string, string>(snf.widgetTipleri.map((t) => [t.ad, t.aile]));
+  const evren = kapsamEvreni(snf.widgetTipleri);
 
   for (const d of widgetlar) {
     const kod = kodOf(d);
     let sayi = 0;
     for (const k of kapsamli) {
-      if (kapsamKapsar(k.kapsam!, d, kod, aile)) sayi++;
+      if (yukOlarakDuser(k.kapsam!, d, kod, evren)) sayi++;
     }
     if (sayi > KONI_ESIGI) {
       out.push(eskiTani("koni-taşması", "uyarı",
@@ -663,10 +709,13 @@ function kapsamDugumleri(kapsam: string, widgetlar: Dugum[], aile: Map<string, s
 
 /** TERS YÖN (VIT-GRAF · panel/ŞEF): bir düğüme kapsam yoluyla DÜŞEN kuralları
  *  döndürür — koni-taşması sayımının (kaç kural) liste karşılığıdır (hangi kurallar).
- *  Aynı `kapsamKapsar` predikatını sürer (TEK KAYNAK); kapsamsız kurallar dışlanır. */
-export function dugumeDusenKurallar(d: Dugum, kurallar: KuralBilgi[], aile: Map<string, string>): KuralBilgi[] {
+ *  Koni ile AYNI `yukOlarakDuser` predikatını ve aynı şema evrenini sürer
+ *  (KPS-KON-A01); kapsamsız kurallar dışlanır. `tipler` şemanın widget tip
+ *  listesidir: çekirdekte `snf.widgetTipleri`, panelde gömülü kaydın aynı listesi. */
+export function dugumeDusenKurallar(d: Dugum, kurallar: KuralBilgi[], tipler: ReadonlyArray<KapsamTipi>): KuralBilgi[] {
   const kod = kodOf(d);
-  return kurallar.filter((k) => k.kapsam !== undefined && kapsamKapsar(k.kapsam, d, kod, aile));
+  const evren = kapsamEvreni(tipler);
+  return kurallar.filter((k) => k.kapsam !== undefined && yukOlarakDuser(k.kapsam, d, kod, evren));
 }
 
 /** Kuralın insan-yüzü açıklaması (`ne:` alanı) — panel/hover gösterimi için (boşsa ""). */
@@ -777,8 +826,24 @@ export function ebediEnvanter(
 export function ebediTanilar(
   envanter: ReturnType<typeof ebediEnvanter>,
   kilit: EbediKilit | undefined,
+  /** MIM-3.4 · KPS-MHR-A01: arşiv mühürlü dosyalarda bulunan ebedî kurallar (kod → yer). */
+  arsiv?: ReadonlyMap<string, { yol: string; satir: number; sutun: number }>,
+  /** Arşiv bulgusunun yazılacağı giriş dosyası; verilmezse bulgu arşiv dosyasına yazılır. */
+  arsivEtiketi?: string,
 ): Array<{ dosya: string; tani: Tani }> {
   const out: Array<{ dosya: string; tani: Tani }> = [];
+
+  // MIM-3.4: ebedî kural taşıyan dosya arşiv mührü alamaz — ebedî kuralı graftan
+  // çıkarmak onu silmektir. Engel mevcut `ebedi-ihlal` tanısıyla HATA düzeyinde
+  // konuşur ve aynı kural için ayrıca bir "silinmiş" bulgusu basılmaz, çünkü tek
+  // olgu tek bildirimle söylenir.
+  for (const [kod, e] of arsiv ?? []) {
+    out.push({
+      dosya: arsivEtiketi ?? e.yol,
+      tani: eskiTani("ebedi-ihlal", "hata", { kod: kod.endsWith("#?") ? "?" : kod, kusur: "arşiv", yol: e.yol, canlı: e.yol.replace(/(^|\/)@[A-Z]+@_/, "$1") },
+        arsivEtiketi ? { satir: 0, sutun: 0 } : { satir: e.satir, sutun: e.sutun }),
+    });
+  }
 
   for (const [kod, e] of envanter) {
     const muhur = kilit?.kurallar[kod];
@@ -796,7 +861,7 @@ export function ebediTanilar(
   }
 
   for (const kod of Object.keys(kilit?.kurallar ?? {})) {
-    if (!envanter.has(kod)) {
+    if (!envanter.has(kod) && !arsiv?.has(kod)) {
       out.push({
         dosya: EBEDI_KILIT_ADI,
         tani: eskiTani("ebedi-ihlal", "hata", { kod, kusur: "silinmiş" }, { satir: 0, sutun: 0 }),

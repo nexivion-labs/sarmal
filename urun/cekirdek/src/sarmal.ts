@@ -1075,6 +1075,35 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   const dayanakNotu = dy.urun > 0
     ? `\n⚖️ Dayanak eşleme: ürün ${dy.urun} kural dayanaksız — nöbet işaretledi (Problems/denetim; dayanak: K-nn yaz ya da dayanaksız: "gerekçe" beyan et)${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`
     : `\n⚖️ Dayanak haritası TAM: ürün kuralları bağlı${dy.beyanli ? ` (bilinçli-beyanlı ${dy.beyanli} dahil)` : ""} · ders-dünyası ${dy.ornek} örnek kuralı kasıtlı olarak dayanaksızdır${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`;
+  // ── PROJE AYRIMI (KPS-AYR-A01 · YAS-3.3) ────────────────────────────────────
+  //   Çatı kökünden koşulan denetim, bulguları hangi Projenin taşıdığını ADIYLA
+  //   söyler. Bugüne kadar doğru kullanım "her projeyi kendi kökünden denetle"
+  //   idi ve bu sınır belgede yazılıydı; o cümle bu blokla emekli olur, çünkü
+  //   çatı kökünden okunan tablo artık her projenin kendi haneleriyle gelir.
+  //   Tek projeli bir depoda liste BOŞTUR ve bu blok tek bayt basmaz.
+  const projeBloku = (): string => {
+    const projeSayisi = s.projeGruplari.filter((p) => !p.catininKendisi).length;
+    if (projeSayisi < 2) return "";
+    const satirlar = s.projeGruplari.map((p) => {
+      const ad = p.catininKendisi ? "çatının kendi ilanı (hiçbir Projenin malı değil)" : p.ad ? `${p.ad} (${p.kod})` : p.kod;
+      const k = p.karne;
+      const kd2 = k?.durumlar ?? {};
+      const karne = k ? ` · ${k.dugum} düğüm · ${k.adim} Adım → 🟢 ${kd2["tamamlandı"] ?? 0} · 🟡 ${kd2["geliştirmede"] ?? 0} · 🔵 ${kd2["beklemede"] ?? 0}` : "";
+      return `   ${ad} — ✖ ${p.hata} hata · ⚠ ${p.uyari} uyarı · ℹ ${p.bilgi} bilgi · ${p.dosyaSayisi} dosya${karne}`;
+    }).join("\n");
+    // KPS-KOD-A01 · ORK-4: kardeş projelerin ortak kodları BEKLENEN durumdur ve
+    // tanı üretmez; sayı burada okunur ki "ikinci projenin sekiz düğümü nereye
+    // gitti" sorusu bir daha sorulmasın. Ayrışamayan kök ise çevrimin sustuğu
+    // yerdir: aynı Proje kodu iki kökte ilanlıysa ad alanı ayıramaz ve bunu söyler.
+    const ak = s.adAlani;
+    const ortak = ak.ortakKod.length
+      ? `\n   🔀 kardeş projelerde ortak kod: ${ak.ortakKod.length} (beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür): ${ak.ortakKod.map((o) => o.kod).join(" · ")}`
+      : "";
+    const ayrisamayan = ak.ayrisamayan.length
+      ? `\n   ⚠️ ad alanı olmadan ayrışamayan Proje kökü: ${ak.ayrisamayan.map((a) => `${a.kod} (${a.dosyalar.join(" · ")})`).join("; ")} — aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için graf bu kökleri AYIRAMADI ve ilk tanım kazandı`
+      : "";
+    return `\n\n🏛️ PROJE AYRIMI — ${projeSayisi} Proje kökü. Her hanenin kimliği dizin yolu değil tekil Proje kodudur (YAS-3.3); bir Proje taşınsa hanesi adıyla korunur ve ayrı Projelerin bulguları birleşmez:\n${satirlar}${ortak}${ayrisamayan}`;
+  };
   const karneSatiri = `📋 Karne (ürün): ${krn.dugum} düğüm · ${krn.adim} Adım → 🟢 ${kd["tamamlandı"] ?? 0} · 🟡 ${kd["geliştirmede"] ?? 0} · 🔵 ${kd["beklemede"] ?? 0} · ⛔ ${kd["bloklu"] ?? 0}${dayanakNotu}${dersNotu}`;
   // MOTOR SUSMAZ (Founder 2026-07-14): açık adım varken motor "bitti/TAM-yeşil" DEMEZ.
   const acikSayi = s.acikAdimlar.length;
@@ -1103,15 +1132,15 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   };
   if (s.toplamHata + s.toplamUyari === 0) {
     if (acikSayi === 0) {
-      console.log(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).${muafNotu}\n${karneSatiri}${turBloku()}`);
+      console.log(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).${muafNotu}\n${karneSatiri}${projeBloku()}${turBloku()}`);
       return 0;
     }
-    console.log(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.${muafNotu}\n${karneSatiri}${acikBlok()}${turBloku()}`);
+    console.log(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.${muafNotu}\n${karneSatiri}${projeBloku()}${acikBlok()}${turBloku()}`);
     return 0;
   }
   const riskli = [...s.dosyaTanilari.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
     .map(([d, n]) => `${d} (${n})`).join(" · ");
-  console.log(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──${muafNotu}\n${karneSatiri}${riskli ? `\n🔥 En çok tanı: ${riskli}` : ""}${acikBlok()}${turBloku()}`);
+  console.log(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──${muafNotu}\n${karneSatiri}${projeBloku()}${riskli ? `\n🔥 En çok tanı: ${riskli}` : ""}${acikBlok()}${turBloku()}`);
   return s.cikis;
 }
 
@@ -1370,7 +1399,7 @@ function omurgaKomutu(dizin: string): number {
     { ikon: dur(hepsiBitti, kodlanan > 0), ad: "✅ DURUM", durum: `🟢 ${durumSay.get("tamamlandı") ?? 0} · 🚧 ${durumSay.get("geliştirmede") ?? 0} · 🔵 ${durumSay.get("beklemede") ?? 0}${(durumSay.get("doğrulanmamış") ?? 0) > 0 ? ` · 🟠 ${durumSay.get("doğrulanmamış")}` : ""}`, bekci: "açık-adım (MOTOR-SUSMAZ) · durum-tutarsızlığı · gayrimeşru-geçiş · faz-vade" },
   ];
 
-  console.log(`🧭 AKIŞ OMURGASI — ${dizin} (harita: plan/akis_omurgasi.sar · her durağın bekçileri motora İŞLİ)\n`);
+  console.log(`🧭 AKIŞ OMURGASI — ${dizin} (harita: is/plan/akis_omurgasi.sar · her durağın bekçileri motora İŞLİ)\n`);
   console.log("  EVRE 1 · PLAN ──────────────────────────────────────────────");
   for (let i = 0; i < 5; i++) { const d = duraklar[i]; console.log(`  ${d.ikon} ${d.ad} — ${d.durum}\n      🛡️ ${d.bekci}`); }
   console.log("  EVRE 2 · KOD ───────────────────────────────────────────────");

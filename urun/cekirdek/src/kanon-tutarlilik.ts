@@ -12,6 +12,7 @@ import { ayristir } from "./ayristirici.ts";
 import { belirtecle } from "./belirtec.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle, type Siniflama } from "./siniflama.ts";
 import {
+  EMEKLI_TANI_HALEFI,
   EMEKLI_TANI_KODLARI,
   EMEKLILIK_BORCU_TANI_KODLARI,
   ONCEKI_TANI_KODLARI,
@@ -93,8 +94,8 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
     });
   }
   const kodlar = new Set(maddeler.map((m) => m.kod));
-  if (dosyalar.length !== 8 || maddeler.length !== 160 || kodlar.size !== 160) {
-    throw new Error(`Resmi kanon 160/160 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
+  if (dosyalar.length !== 8 || maddeler.length !== 161 || kodlar.size !== 161) {
+    throw new Error(`Resmi kanon 161/161 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
   }
   return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`) };
 }
@@ -162,15 +163,21 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // sayısı otuz yediden otuz sekize çıktı; DIL-1.6 (Plan Kademelerinin Adı),
   // MIM-3.3 (Blok Durum Kaydı), ORK-3.5 (Blok Sırası) ile YUZ-3.5 (Durum Yüzeyi)
   // Kural olarak doğdu ve kural sayısı yüz on dörtten yüz on sekize çıktı.
+  // 2026-09-11 (KPS-MHR-A01 · Founder hükmü): MIM-3.4 (Dosya Mühürleri) Kural
+  // olarak doğdu ve kural sayısı yüz yirmi ikiden yüz yirmi üçe, kanon yüz
+  // altmıştan yüz altmış bire çıktı; Karar sayısı değişmedi.
   const beklenenKarar = 38;
-  const beklenenKural = 122;
+  const beklenenKural = 123;
 
+  // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
+  // `mevsim-mührü-çelişkili` doğdu ve yeni küme yetmiş dörtten yetmiş beşe çıktı.
   // Sayı çiftleri 2026-08-24 tarihinde bilinçli olarak güncellendi: durum-boyutu
   // tanısı Founder hükmüyle emekliye ayrıldı (canlı sabit 102→101, emekli 14→15,
   // emeklilik borcu 39→38) — sabit karakter sınırı yeni kanonda norm değildir.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 74 || ONCEKI_TANI_KODLARI.length !== 101 ||
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 78 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 15 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 38 ||
-      emekliCanli.length !== 0 || borcCanli.length !== 38 || yuz33.length !== 1) {
+      emekliCanli.length !== 0 || borcCanli.length !== 38 || yuz33.length !== 1 ||
+      [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {
     throw new Error("Kanon/tanı kümesi değişmezleri beklenen canlı ölçümle uyuşmuyor.");
   }
 
@@ -187,10 +194,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
 
   const tutarlilik: Array<[string, string, string | number, boolean]> = [
     ["Resmi kaynak dosyası", "8", olcum.muhurler.length, olcum.muhurler.length === 8],
-    ["Kanon maddesi", "160 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 160],
+    ["Kanon maddesi", "161 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 161],
     ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
-    ["Dört parçalı madde", "160/160", `${160 - eksikDortParca.length}/160`, eksikDortParca.length === 0],
-    ["Kanonik örnek", "160/160", `${160 - eksikOrnek.length}/160`, eksikOrnek.length === 0],
+    ["Dört parçalı madde", "161/161", `${161 - eksikDortParca.length}/161`, eksikDortParca.length === 0],
+    ["Kanonik örnek", "161/161", `${161 - eksikOrnek.length}/161`, eksikOrnek.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
@@ -226,7 +233,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     `Resmi sonuç ${olcum.maddeler.length}/${olcum.maddeler.length} maddedir. Tek adres \`yasa/kanon/\`; bu türev hüküm metni kurmaz.`,
     "",
-    "## Kanonik örnekler — 160/160",
+    "## Kanonik örnekler — 161/161",
     "",
     "| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |",
     "|---|---|---|---|",
@@ -260,6 +267,8 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     `Emekli kararı uygulanmış ve canlı sicilden çıkmış küme ${EMEKLI_TANI_KODLARI.length} kimliktir: ${EMEKLI_TANI_KODLARI.map((kod) => `\`${kod}\``).join(" · ")}.`,
     "",
+    `Halefi ilan edilen emekli kimlikler (KPS-MVS-A01 · 2026-09-10): ${[...EMEKLI_TANI_HALEFI].map(([eski, yeni]) => `\`${eski}\` → \`${yeni}\``).join(" · ")}. Emeklinin tarihsel kaydı yerinde durur; halef, emekliliğin gerekçesi olan "ölçüm anında sıfır bulgu" varsayımının yanlış çıktığı dersi devralan canlı tanıdır ve canlı sicilde bulunması bu üreticide sınanır.`,
+    "",
     `Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli sicilde yaşamayı sürdüren açık borç ${EMEKLILIK_BORCU_TANI_KODLARI.length} kimliktir: ${EMEKLILIK_BORCU_TANI_KODLARI.map((kod) => `\`${kod}\``).join(" · ")}. Bu küme “emekli” diye yanlış sayılmaz; çelişki raporunda açık kalır.`,
     "",
     "## Çelişki raporu",
@@ -282,7 +291,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `      ne: "Resmi yasa/kanon sekizlisinin ${olcum.maddeler.length}/${olcum.maddeler.length} maddesi, ${karar} Karar ve ${kural} Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )`,
     "",
     "Veri( kod: VR-GOC-TANI-MADDE-HARITASI,",
-    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesiyle ve MIM-1.7 AltKatman tekilliğiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
+    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle ve MIM-3.4 dosya mühürlerinin üç tanısıyla ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
     "",
     "Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,",
     `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır." )`,
@@ -299,7 +308,7 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
-    madde: 160,
+    madde: 161,
     yeni: YENI_TANI_KANONU.length,
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,

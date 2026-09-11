@@ -44,6 +44,10 @@ The first Adım claims to be done, but `src/randevu.ts` does not exist on disk; 
   bu KOD hiçbir .sar'da tanımlı değil.
 ```
 
+![sarmal denetle output in a terminal: kırık-referans and meyve-dosyası-eksik errors, the summary line and the scorecard](urun/eklenti/medya/ekran/denetle.png)
+
+The block above shows only the two errors; the screenshot is the same run in full and carries the warning and info lines too.
+
 Once the file is written and the reference fixed, the engine notices something else: the `src/` folder exists on disk but was never declared in the project's entry file.
 
 ```
@@ -53,6 +57,10 @@ Once the file is written and the reference fixed, the engine notices something e
 ```
 
 Declare the folder and the scorecard is clean: twenty nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
+
+The same plan also lives in the editor: the Roadmap tree, the Mini Graph and the Problems panel read the same source, and a diagnostic lands the moment the file is saved.
+
+![Sarmal inside Visual Studio Code: the Roadmap and Mini Graph on the left, the highlighted plan file in the middle, the Problems panel at the bottom](urun/eklenti/medya/ekran/editor.png)
 
 ## The working tree
 
@@ -118,7 +126,7 @@ The core requires Node 23.6 or newer: `cd urun/cekirdek && npm link` binds the `
 
 ## Shelf map
 
-[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 160 unique articles, 38 Decisions and 122 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
+[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 161 unique articles, 38 Decisions and 123 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
 ## Learn
 
@@ -130,5 +138,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 47 errors, 16 warnings, and 11 informational diagnostics. The fixed registry routing matrix sends 143 items to Problems, 2 to Reminders, and 30 to Notifications (Observations). 174 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 47 errors, 17 warnings, and 14 informational diagnostics. The fixed registry routing matrix sends 144 items to Problems, 3 to Reminders, and 32 to Notifications (Observations). 178 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

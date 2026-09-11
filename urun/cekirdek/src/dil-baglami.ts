@@ -29,6 +29,9 @@ import {
 // EMJ-A03 (OGR-3.1 geriye-bağlantısı): emoji yazımı ajan bağlamına kanondan derlenir —
 // tablolar kayit.json emojiYazimi ile nöbetli çekirdek eşidir, kopya taşınmaz.
 import { EMOJI_TIPLER, EMOJI_PARAMETRELER, EMOJI_DURUMLAR } from "./emoji-yazim.ts";
+// KPS-MHR-A01 (OGR-3 geriye-bağlantısı · MIM-3.4): dosya mühürleri ajan bağlamına
+// karşılama kartı ve doğuş rehberiyle AYNI üreticiden gelir — ikinci metin yazılmaz.
+import { dosyaMuhruOgretisi } from "./ogret.ts";
 
 // Bu üç yol modül yüklenirken değil, ilk gerçek okumada çözülür. Sebebi
 // ölçülmüştür: eklenti esbuild ile CommonJS paketine çevrildiğinde `import.meta.url`
@@ -476,6 +479,15 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "and teach the term once — never force it.",
     "",
   ]);
+
+  // OGR-3 geriye-bağlantısı (KPS-MHR-A01): MIM-3.4 dosya mühürleri. Etiketler mühür
+  // kümesinden, tanılar sicilden okunur; bölümün gövdesi karşılama kartıyla aynıdır.
+  b.push(
+    y("## Dosya mühürleri — canlı kaynaktan açık beyanla ayrılma", "## File seals — leaving the live source by explicit declaration"),
+    "",
+    ...dosyaMuhruOgretisi(dil),
+    "",
+  );
 
   ekle([
     "## Araç haritası — MCP `sarmal` sunucusu",

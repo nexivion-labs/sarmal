@@ -95,7 +95,7 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 160 || new Set(kodlar).size !== 160) {
+  if (dosyalar.length !== 8 || kodlar.length !== 161 || new Set(kodlar).size !== 161) {
     throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
   }
   return { madde: kodlar.length, karar, kural, kodlar, muhurler };
@@ -167,21 +167,29 @@ function olgulariOlc(kok: string): BelgeOlgulari {
     arac: Object.values(MCP_ARAC_ADI).length,
     ikiDilliTani: Object.keys(TANI_METINLERI).length + Object.keys(ONCEKI_TANI_METINLERI).length,
   };
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/16/11" ||
+  // KPS-MHR-A01 (2026-09-11): MIM-3.4 dosya mühürlerinin üç tanısı doğdu —
+  // `geçersiz-dosya-adı` uyarıda (Problems), `dosya-mührü` bilgide (Gözlemler) ve
+  // `sonraya-bırakılmış-dosya` bilgide fakat bilinçli bir ileri bağlam olduğu için
+  // Hatırlatıcılar hanesinde. Dağılım 47/17/14, yönlendirme 144/3/32 ve iki dilli
+  // katalog yüz yetmiş sekiz oldu.
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/17/14" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "143/2/30" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "144/3/32" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 174) {
+      olgular.ikiDilliTani !== 178) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
   // motor karşılığı `mevsim-vadesi-geçti` doğdu (Founder hükmü); bilgi kademesi
   // ondan on bire, Bildirimler yüzeyi yirmi yediden yirmi sekize ve iki dilli
-  // katalog yüz yetmiş ikiden yüz yetmiş üçe çıktı.
+  // katalog yüz yetmiş ikiden yüz yetmiş üçe çıktı. 2026-09-10 tarihinde bir kez
+  // daha ilerledi (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
+  // `mevsim-mührü-çelişkili` doğdu; bilgi kademesi on birden on ikiye, Bildirimler
+  // yüzeyi otuzdan otuz bire ve iki dilli katalog yüz yetmiş dörtten yüz yetmiş beşe çıktı.
   // 174 vs 175 farkının kayıtlı gerekçesi: sicilToplami (matrisin "Toplam"
   // satırı) SABIT_TANI_KODLARI'nın tamamını (ONCEKI_TANI_KODLARI + YENI_
   // TANI_KANONU = 102 + 70 = 172 kimlik) sayar. ikiDilliTani ise yalnız

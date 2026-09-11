@@ -44,6 +44,10 @@ Birinci Adım tamamlandı diyor ama `src/randevu.ts` diskte yok; ikinci Adım hi
   bu KOD hiçbir .sar'da tanımlı değil.
 ```
 
+![Terminalde sarmal denetle çıktısı: kırık-referans ve meyve-dosyası-eksik hataları, özet satırı ve karne](urun/eklenti/medya/ekran/denetle.png)
+
+Yukarıdaki blok yalnız iki hatayı gösterir; ekran görüntüsü aynı koşunun tamamıdır ve uyarı ile bilgi satırlarını da taşır.
+
 Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder: `src/` klasörü diskte var ama projenin giriş dosyasında ilan edilmemiştir.
 
 ```
@@ -53,6 +57,10 @@ Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder:
 ```
 
 Klasör ilan edilince karne temizdir: yirmi düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
+
+Aynı plan editörde de yaşar: Yol Haritası ağacı, Mini Graf ve Sorunlar paneli aynı kaynağı okur, dosya kaydedildiği anda tanı düşer.
+
+![Visual Studio Code içinde Sarmal: solda Yol Haritası ve Mini Graf, ortada renklendirilmiş plan dosyası, altta Sorunlar paneli](urun/eklenti/medya/ekran/editor.png)
 
 ## Çalışma ağacı
 
@@ -116,7 +124,7 @@ Aşağıdaki bölümler kanonik kaynaklardan üretilir; yalnız bu giriş elle y
 
 ## Raf haritası
 
-[`yasa/kanon/`](yasa/kanon/) kanonun tek adresidir: sekiz bölüm dosyasında 160 tekil madde yaşar, 38 Karar ve 122 Kural. [`oz/siniflama/`](oz/siniflama/) tip sistemidir; [`ogreti/`](ogreti/) şablonları, örnekleri ve öğretim yüzlerini taşır; [`is/`](is/) Sarmal'ın kendi planı, durum kaydı ve hatırlatıcılarıdır; [`urun/cekirdek/`](urun/cekirdek/) motor, komut satırı ve MCP sunucusu, [`urun/eklenti/`](urun/eklenti/) VS Code eklentisidir. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
+[`yasa/kanon/`](yasa/kanon/) kanonun tek adresidir: sekiz bölüm dosyasında 161 tekil madde yaşar, 38 Karar ve 123 Kural. [`oz/siniflama/`](oz/siniflama/) tip sistemidir; [`ogreti/`](ogreti/) şablonları, örnekleri ve öğretim yüzlerini taşır; [`is/`](is/) Sarmal'ın kendi planı, durum kaydı ve hatırlatıcılarıdır; [`urun/cekirdek/`](urun/cekirdek/) motor, komut satırı ve MCP sunucusu, [`urun/eklenti/`](urun/eklenti/) VS Code eklentisidir. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
 
 ## Öğren
 
@@ -128,5 +136,5 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi 47 hata, 16 uyarı ve 11 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 143 Problems, 2 Hatırlatıcılar ve 30 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 174'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
+Yeni tanı kümesi 47 hata, 17 uyarı ve 14 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 144 Problems, 3 Hatırlatıcılar ve 32 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 178'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
 <!-- SARMAL:URETILEN:KOK-README-TR:SON -->

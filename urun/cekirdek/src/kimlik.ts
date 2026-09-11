@@ -248,14 +248,99 @@ export type DosyaSuzgeci = (dosya: string) => boolean;
 //   adları da ayrıdır. OGR-5 hükmünün METNİNE dokunulmamıştır; değişen yalnız
 //   niyetin hangi yolla tanındığıdır.
 
+// ── KPS-MHR-A01 · DOSYA MÜHÜRLERİ (MIM-3.4 · Founder hükmü 2026-09-11) ───────
+//   Bir `.sar` dosyasının canlı kaynak olmaktan çıkarıldığı, dosya ADININ başına
+//   yazılan bir mühürle beyan edilir: `@ETİKET@_ad.sar`. Mühür tanıması bu tek
+//   noktada yaşar; yükleme, disk mutabakatı, kod dizini, graf, karne, açık iş
+//   gündemi ve eklentinin tarama süzgeci aynı çözücüyü okur. İkinci bir desen
+//   yazılmaz, çünkü iki desen aynı dosyaya iki ayrı hüküm verir ve bu, KPS-IND-A01
+//   turunda ölçülen kusurun ta kendisidir.
+//
+//   Taban küme KAPALIDIR ve üç mühürden oluşur. Arşiv ile sonra mühürlü dosyalar
+//   OKUNMAZ; eğitim mühürlü dosya okunur ve doğrulanır fakat ders dünyası gibi
+//   karneye ve gündeme sayılmaz. Bu yüzden eğitim mührü aşağıdaki ders dünyası
+//   deseninin İÇİNE bağlanır: OGR-5 muafiyetini soran her çağrı yeri mührü de
+//   kendiliğinden görür ve ikinci bir muafiyet dalı açılmaz.
+//
+//   Örtü genişletmesi (TIP-2.5) bu turda BAĞLANMADI: örtü mekanizması yalnız
+//   `semalar → tip → enum → alan` kümelerine değer ekler, oysa mühür kümesi bir
+//   tipin alanı değildir ve her yeni etikete bir davranış da atanmak zorundadır;
+//   ikisi de yeni bir şema ister ve yeni şema Founder kararıdır (Adım sınırı).
+
+/** Mührün davranış türü — üç mühür üç ayrı davranıştır. */
+export type MuhurTuru = "arşiv" | "eğitim" | "sonra";
+
+/** TABAN KÜME (kapalı): etiket → davranış. Etiket büyük ASCII harfleriyle yazılır. */
+export const DOSYA_MUHRU_KUMESI: ReadonlyMap<string, MuhurTuru> = new Map<string, MuhurTuru>([
+  ["ARSIV", "arşiv"],
+  ["EGITIM", "eğitim"],
+  ["SONRA", "sonra"],
+]);
+
+/** Mühür biçimi — dosya adının BAŞINDA `@`, büyük ASCII etiket ve `@_`. */
+export const DOSYA_MUHRU_BICIMI = /^@([A-Z]+)@_/;
+
+/** Çözülmüş dosya mührü. */
+export interface DosyaMuhru { etiket: string; tur: MuhurTuru }
+
+/** Yolun son parçası; ayraç hem `/` hem `\` olabilir (eklenti Windows yolunda da koşar). */
+function yolunDosyaAdi(yol: string): string {
+  const kesim = Math.max(yol.lastIndexOf("/"), yol.lastIndexOf("\\"));
+  return kesim < 0 ? yol : yol.slice(kesim + 1);
+}
+
+/** TEK ÇÖZÜCÜ: yolun dosya adı kapalı kümeden geçerli bir mühür taşıyorsa onu döndürür. */
+export function dosyaMuhru(yol: string): DosyaMuhru | undefined {
+  const m = DOSYA_MUHRU_BICIMI.exec(yolunDosyaAdi(yol));
+  const tur = m ? DOSYA_MUHRU_KUMESI.get(m[1]) : undefined;
+  return m && tur ? { etiket: m[1], tur } : undefined;
+}
+
+/** Motorun İÇERİĞİNİ OKUMADIĞI mühürlü dosya: arşiv ya da sonra mührü. */
+export function okunmazMuhurlu(yol: string): boolean {
+  const tur = dosyaMuhru(yol)?.tur;
+  return tur === "arşiv" || tur === "sonra";
+}
+
+/** Dosya adının MIM-3.4 biçim kusuru. */
+export type DosyaAdiKusuru =
+  | { kusur: "büyük-harf" }
+  | { kusur: "bilinmeyen-etiket"; etiket: string }
+  | { kusur: "bozuk-biçim" }
+  | { kusur: "mühür-sonrası-büyük-harf"; etiket: string };
+
+/**
+ * Bir `.sar` dosya adının mühür biçimine uyup uymadığını ölçer. Dosya adında
+ * büyük harf yalnız mühüre ayrılmıştır: mühürsüz ad büyük harf taşıyamaz, mührü
+ * izleyen ad küçük harfle sürer, biçimi `@X@_` olan fakat etiketi kümede
+ * bulunmayan ad ile `@` ile başlayıp biçime uymayan ad sessiz geçmez.
+ */
+export function dosyaAdiKusuru(yol: string): DosyaAdiKusuru | undefined {
+  const ad = yolunDosyaAdi(yol);
+  const m = DOSYA_MUHRU_BICIMI.exec(ad);
+  if (m) {
+    if (!DOSYA_MUHRU_KUMESI.has(m[1])) return { kusur: "bilinmeyen-etiket", etiket: m[1] };
+    return /\p{Lu}/u.test(ad.slice(m[0].length)) ? { kusur: "mühür-sonrası-büyük-harf", etiket: m[1] } : undefined;
+  }
+  if (ad.startsWith("@")) return { kusur: "bozuk-biçim" };
+  return /\p{Lu}/u.test(ad) ? { kusur: "büyük-harf" } : undefined;
+}
+
+/** Eğitim mührünün etiketi — ders dünyası deseni onu kümeden okur, elle yazmaz. */
+const EGITIM_ETIKETI = [...DOSYA_MUHRU_KUMESI].find(([, tur]) => tur === "eğitim")![0];
+
 /** OGR-5 · DERS DÜNYASI — öğreti kitaplığının ALTINDAKİ ders rafları (arşiv ·
  *  örnek · fikstür · şablon), hangi derinlikte olurlarsa olsunlar. Gerekçe
  *  OGR-5'tir: öğretim malzemesi ürün karnesine, gündemine ve ürün kimliğine
  *  girmez. Demirleme `ogreti/` kitaplığınadır: kullanıcının kendi kökünün
  *  altında açtığı `sablon/`, `arsiv/` ya da `fikstur/` adlı bir kitaplık ürünün
- *  kendi öğreti rafı DEĞİLDİR ve bu desen ona dokunmaz. */
+ *  kendi öğreti rafı DEĞİLDİR ve bu desen ona dokunmaz. Adının başında eğitim
+ *  mührü (`@EGITIM@_`) taşıyan dosya da, nerede yaşarsa yaşasın, ders dünyasıdır
+ *  (MIM-3.4 · KPS-MHR-A01); etiket elle yazılmaz, mühür kümesinden okunur. */
 export const DERS_DUNYASI = new RegExp(
-  String.raw`(^|\/)ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)(\/|$)`
+  String.raw`(^|\/)ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)(\/|$)` +
+  // KPS-MHR-A01 · MIM-3.4: eğitim mührü taşıyan dosya da ders dünyasıdır (OGR-5).
+  `|(^|\/)@${EGITIM_ETIKETI}@_[^/]*$`,
 );
 
 /** BAĞIMLILIK VE DERLEME ÇIKTISI — yol parçası NEREDE geçerse geçsin taranmaz.
@@ -291,7 +376,8 @@ export function varlikAdi(dosya: string): string | undefined {
   let d = dirname(resolve(dosya));
   for (let i = 0; i < 12; i++) {
     try {
-      const giris = readdirSync(d).find((g) => g.endsWith("_anadizin.sar") || g === "ana.sar");
+      // MIM-3.4: mühürlü bir giriş dosyası canlı varlık girişi sayılmaz.
+      const giris = readdirSync(d).find((g) => (g.endsWith("_anadizin.sar") || g === "ana.sar") && !dosyaMuhru(g));
       if (giris) return giris === "ana.sar" ? basename(d) : giris.replace(/_anadizin\.sar$/, "");
     } catch { /* okunamayan dizin — yürümeye devam */ }
     const ust = dirname(d);
@@ -608,7 +694,7 @@ function anadizinProgramlari(dizin: string): Program[] {
   try { girisler = readdirSync(dizin); } catch { return []; }
   const out: Program[] = [];
   for (const g of girisler) {
-    if (!g.endsWith("_anadizin.sar") && g !== "ana.sar") continue;
+    if ((!g.endsWith("_anadizin.sar") && g !== "ana.sar") || dosyaMuhru(g)) continue;   // MIM-3.4: mühürlü giriş canlı değildir
     try { out.push(ayristir(belirtecle(readFileSync(join(dizin, g), "utf8")))); }
     catch { /* kırık anadizin çatı çözümünü düşürmez */ }
   }
@@ -919,7 +1005,9 @@ export function dizindenIndeks(dizin: string): KimlikIndeksi {
         // KPS-IND-A01: sınama TAM YOLA yapılır, klasör adına değil — ders dışlaması
         // öğreti kitaplığına demirlendiği için ad tek başına hüküm veremez.
         if (!INDEKS_DISI.test(yol.replaceAll("\\", "/") + "/")) gez(yol);
-      } else if (INDEKS_DOSYASI.test(g.name)) {
+      } else if (INDEKS_DOSYASI.test(g.name) && !dosyaMuhru(g.name)) {
+        // KPS-MHR-A01 · MIM-3.4: mühürlü dosya kod dizinine girmez — arşiv ile sonra
+        // okunmaz, eğitim ise ders rafı gibi indeks kapsamının dışındadır.
         try { indeks.dosyaGuncelle(yol, readFileSync(yol, "utf8")); }
         catch { /* okunamayan dosya atlanır */ }
       }

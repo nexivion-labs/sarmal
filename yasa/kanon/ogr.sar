@@ -181,7 +181,7 @@ Kural bellektenBeceriyeÖğrenme( kod: OGR-4,
 
 -->|
 ### OGR-5 · Ürün ve Öğretim Dünyası Ayrımı [BİLGİ]
-**Hüküm:** Örnek, ders ve alıştırma düğümleri öğretim kapsamı ve kimliği altında yaşar; ürün Meyvesi, üretim Adımı, proje teslimi, ürün karnesi veya yürütme gündemi olarak sayılamaz, buna karşılık kendi söz dizimi, tip, hedef ve kabul sözleşmelerine göre doğrulanmak zorundadır; dayanak: OGR-0; ilgili: [OGR, YAS, ORK].
+**Hüküm:** Örnek, ders ve alıştırma düğümleri öğretim kapsamı ve kimliği altında yaşar; ürün Meyvesi, üretim Adımı, proje teslimi, ürün karnesi veya yürütme gündemi olarak sayılamaz, buna karşılık kendi söz dizimi, tip, hedef ve kabul sözleşmelerine göre doğrulanmak zorundadır; bir dosya, adının başına `@EGITIM@_` dosya mührü yazılarak da öğretim kapsamına alınabilir (MIM-3.4) ve Sarmal'ın kendi öğreti kitaplığındaki ders rafları bu kapsama klasör yeriyle girer; dayanak: OGR-0; ilgili: [OGR, YAS, ORK].
 **Gerekçe:** Öğretim varlıklarını gerçek ürün işine katmak karne ile ilerleme ölçümünü yapay olarak şişirir; doğrulamadan bağışık tutmak ise öğrenciye çalışmayan veya kanona aykırı örnek sunar.
 **Örnek:** Bir Tutorial içindeki `ADM-ORNEK-01` öğretim denetiminde geçerli olmak zorundadır fakat gerçek projenin “sıradaki Adımı” veya teslim edilmiş Meyvesi olarak ürün karnesine girmez.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.

@@ -76,6 +76,14 @@ const TERFI_RET_KIMLIKLERI = new Set([
   // vadesi): beyan ile grafın ayrıştığını bildirir, düzeltilecek bir sapma değil
   // bekleyen işi görünür kılan gözlemdir; bu yüzden Bildirimler yüzeyine düşer.
   "mevsim-vadesi-geçti",
+  // On ikincisi 2026-09-10 tarihinde kontrolcü hükmüyle doğdu (ORK-8 mühür
+  // dürüstlüğü): metnin iddiası ile grafın sayısının çeliştiğini bildirir, bir
+  // sapma dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "mevsim-mührü-çelişkili",
+  // On üçüncüsü 2026-09-11 tarihinde Founder hükmüyle doğdu (MIM-3.4 dosya
+  // mührü): arşiv ya da eğitim mühürlü dosyayı türüyle ve adıyla listeler, bir
+  // sapma bildirmez; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "dosya-mührü",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
@@ -326,7 +334,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on bir kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on iki kimlik Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -337,7 +345,9 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on bir kimlik Bildirim
     // YUZ-3.4 onu uykudaki kardeşiyle AYNI hanede ister; terfi reddi onu bilgi
     // düzeyinde tutar fakat hanesini Gözlemler yapmaz. Doğa basamağı düzey
     // basamağından önce koştuğu için kimlik kendi hanesine gider.
-    const beklenen = k.kod === "ateşlemiş-hatırlatıcı"
+    // KPS-MHR-A01 (MIM-3.4): `sonraya-bırakılmış-dosya` da bilinçli bir ileri
+    // bağlam beyanından doğar ve Founder hükmüyle Hatırlatıcılar hanesine gider.
+    const beklenen = k.kod === "ateşlemiş-hatırlatıcı" || k.kod === "sonraya-bırakılmış-dosya"
       ? "hatırlatıcılar"
       : TERFI_RET_KIMLIKLERI.has(k.kod) ? "bildirimler" : "problems";
     assert.equal(yuzey, beklenen,
@@ -346,8 +356,11 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on bir kimlik Bildirim
   // Kırk yedinci hata kimliği MIM-1.7 AltKatman tekilliğidir (Founder hükmü
   // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 47);
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 16);
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 11);
+  // On yedinci uyarı kimliği MIM-3.4 `geçersiz-dosya-adı`dır (KPS-MHR-A01 · Founder hükmü 2026-09-11).
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 17);
+  // On ikinci bilgi kimliği ORK-8 mühür dürüstlüğü bekçisidir (KPS-MVS-A01 · 2026-09-10);
+  // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 14);
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -579,17 +592,24 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // kademesindedir. KYN-YUZ-A02 (2026-09-10) bu on birden BİRİNİ çıkardı:
   // `ateşlemiş-hatırlatıcı` bilgi kademesinde kalmayı sürdürür fakat bir
   // Hatırlatıcı düğümünden türediği için YUZ-3.4 gereği Hatırlatıcılar hanesine
-  // gider, dolayısıyla yeni kanonun Gözlemler kümesi o gün ONA inmişti.
+  // gider, dolayısıyla yeni kanonun Gözlemler kümesi o gün ONA inmişti. Aynı gün
+  // KPS-MVS-A01 ikinci teslimi ORK-8 mühür dürüstlüğü bekçisini bilgi düzeyinde
+  // doğurdu ve küme yeniden ON BİRE çıktı.
   const yeniBildirim = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "bildirimler",
   ).length;
   const yeniProblems = YENI_TANI_KANONU.filter(
     (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "problems",
   ).length;
-  assert.equal(yeniBildirim, 10, "A05'in sekiz RET-ADAYI ile üç yeni gözlem bilgi kademesinde kalmalıdır");
+  // 2026-09-11 (KPS-MHR-A01): MIM-3.4 `dosya-mührü` gözlemi bilgi düzeyinde doğdu
+  // ve küme ON İKİYE çıktı; aynı gün doğan `sonraya-bırakılmış-dosya` bilgi
+  // düzeyinde olmasına karşın Hatırlatıcılar hanesine gider.
+  assert.equal(yeniBildirim, 12,
+    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi ve MIM-3.4 dosya mührü Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
-  assert.equal(yeniProblems, 63, "A05'in 47 hata ve 16 uyarı kimliği Problems'a gitmelidir");
+  // 2026-09-11: MIM-3.4 `geçersiz-dosya-adı` uyarı düzeyinde doğdu ve küme altmış dörde çıktı.
+  assert.equal(yeniProblems, 64, "A05'in 47 hata ve 16 uyarı kimliği ile MIM-3.4 uyarısı Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,
@@ -2018,9 +2038,14 @@ test("KYN-YUZ-A02: üç çapa kimliği Gözlemler hanesine düşer, iki hatırla
     assert.equal(beklenenSunumYuzeyi({ duzey: "bilgi", kod, mesaj: "", satir: 1, sutun: 1 }), "hatırlatıcılar",
       `"${kod}" bir Hatırlatıcı düğümünden türer ve kendi hanesinde kalmalıdır`);
   }
+  // Küme GERİ GENİŞLETİLİRSE nöbet kırmızıya döner. KPS-MHR-A01 (Founder hükmü
+  // 2026-09-11) haneye ÜÇÜNCÜ bir kimlik ekledi: `sonraya-bırakılmış-dosya` bir
+  // Hatırlatıcı düğümünden değil dosya adına yazılmış sonra mühründen doğar,
+  // fakat o da kullanıcının bilinçli ileri bağlam beyanıdır ve MIM-3.4 yüzeyini
+  // Hatırlatıcılar olarak yazar. Başka bir kimlik haneye düşerse nöbet yine yanar.
   const haneye_dusenler = [...taniSicili()].filter((kod) =>
     beklenenSunumYuzeyi({ duzey: "bilgi", kod, mesaj: "", satir: 1, sutun: 1 }) === "hatırlatıcılar");
-  assert.deepEqual([...haneye_dusenler].sort(), ["ateşlemiş-hatırlatıcı", "açık-hatırlatıcı"].sort(),
+  assert.deepEqual([...haneye_dusenler].sort(), ["ateşlemiş-hatırlatıcı", "açık-hatırlatıcı", "sonraya-bırakılmış-dosya"].sort(),
     "Hatırlatıcılar hanesi yalnız bilinçli ileri bağlam beyanından türeyen kimlikleri taşır");
 });
 

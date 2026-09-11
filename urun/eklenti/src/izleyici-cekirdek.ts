@@ -9,6 +9,8 @@
 //   ve GERÇEK hattı sahte-zamanlayıcıyla koşturur (sentetik sınıflama değil).
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { dosyaMuhru } from "../../cekirdek/src/kimlik.ts";   // MIM-3.4: dosya mührünü tek çözücü tanır
+
 /**
  * 📐 KAPSAM TEK-KAYNAĞI (Sol RED-1 D1 onarımı): süzgeç ile tam taramanın
  * dışlama kümesi AYNI listeden türetilir — taramaya girebilen bir dosyanın
@@ -26,6 +28,17 @@
  * kalıyordu. Ders dışlaması artık kendi evine, yani öğreti kitaplığına
  * demirlidir ve bu listede yalnız bağımlılık ile derleme çıktısı kalır.
  */
+/** MIM-3.4 · DOSYA MÜHRÜ (KPS-MHR-A01 · Founder hükmü 2026-09-11): adının başında
+ *  arşiv, eğitim ya da sonra mührü taşıyan `.sar` dosyası panelin tarama evrenine
+ *  girmez. Arşiv ile sonra mühürlü dosyayı motor da okumaz; eğitim mühürlü dosya
+ *  ders rafıyla aynı yoldan yürür. Mührü ÇEKİRDEĞİN TEK ÇÖZÜCÜSÜ tanır, eklenti
+ *  ikinci bir desen yazmaz (YUZ-3.1: iki yüz aynı dosyaya aynı hükmü verir). Yalnız
+ *  `.sar` adına bakılır; aynı biçimde adlandırılmış bir KLASÖR mühür sayılmaz,
+ *  çünkü hüküm dosya adına yazılan beyanı tanır. */
+export function muhurluSarMi(yol: string): boolean {
+  return yol.endsWith(".sar") && dosyaMuhru(yol) !== undefined;
+}
+
 export const DISLANAN_ADLAR = [
   "node_modules", "__pycache__", "dist", "out",
 ] as const;
@@ -78,7 +91,7 @@ export function gurultuMu(yol: string): boolean {
  * değildir, ürün ağacıdır ve turu tetikler (KPS-IND-A01).
  */
 export function sarGurultuMu(yol: string): boolean {
-  return gurultuMu(yol) || DERS_RAFI.test(yol) || SINAMA_FIKSTURU.test(yol);
+  return gurultuMu(yol) || DERS_RAFI.test(yol) || SINAMA_FIKSTURU.test(yol) || muhurluSarMi(yol);
 }
 
 /**
@@ -100,6 +113,7 @@ export function sarGurultuMu(yol: string): boolean {
  * de bu tek işlevden ve tek listeden (SAR_DISLANANLAR) türer.
  */
 export function sarKapsamDisi(yol: string): boolean {
+  if (muhurluSarMi(yol)) return true;   // MIM-3.4: mühürlü dosya dizini ne olursa olsun kapsam dışıdır
   const kesim = Math.max(yol.lastIndexOf("/"), yol.lastIndexOf("\\"));
   return kesim > 0 ? sarGurultuMu(yol.slice(0, kesim)) : false;
 }

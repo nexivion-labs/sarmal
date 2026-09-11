@@ -22,7 +22,7 @@ import { kodIndeksle, referansTanilari, teknolojisizYuzeyTanilari } from "../src
 import { kuralDenetle } from "../src/kuralci.ts";
 import { gecisSinifla, YEDEK_GECISLER } from "../src/durum.ts";
 import { adimDurumYaz } from "../src/koniYaz.ts";
-import { SABIT_TANI_KODLARI, YENI_TANI_KODLARI, YENI_TANI_KANONU, taniSicili, katlanmisAd, taniKodCoz, terfiKapisiKusurlari } from "../src/tani-sicili.ts";
+import { SABIT_TANI_KODLARI, YENI_TANI_KODLARI, YENI_TANI_KANONU, ONCEKI_TANI_KODLARI, taniSicili, katlanmisAd, taniKodCoz, terfiKapisiKusurlari } from "../src/tani-sicili.ts";
 import { metinsizYeniTanilar, sicilsizTaniMetinleri } from "../src/tani-metinleri.ts";
 import { orkestrasyonTanilari } from "../src/denetim.ts";
 import { kurallariCikar } from "../src/kuralci.ts";
@@ -754,8 +754,25 @@ function kanonYeniTaniIddialari(): Map<string, string> {
       if (!satir.includes("**Zorlama:**")) continue;
       // "yeni tanı önerisi `kimlik` · DÜZEY" kalıbı — yalnız YENİ ilanlar sayılır;
       // aynı satırdaki korunan tanılar (`geçersiz-enum` gibi) bu kalıba girmez.
-      for (const m of satir.matchAll(/[Yy]eni tanı önerisi\s+`([^`]+)`\s*·\s*(HATA|UYARI|BİLGİ)/g)) {
-        iddialar.set(m[1], m[2] === "HATA" ? "hata" : m[2] === "UYARI" ? "uyarı" : "bilgi");
+      // KPS-MHR-A01 (2026-09-11): MIM-3.4 maddesinin Founder onaylı metni üç yeni
+      // tanıyı TEK bir "Yeni tanı önerisi" ifadesinin ardından noktalı virgülle
+      // sıralar. Liste bu yüzden ifadeden sonra noktalı virgülle devam eden
+      // "`kimlik` · DÜZEY" öğeleriyle birlikte okunur; tırnak içindeki tanı
+      // cümlesi noktalı virgül taşıyabildiği için “…” bölümleri atlanır. Liste
+      // biçime uymayan ilk öğede biter, dolayısıyla ifadeden önce yazılmış korunan
+      // tanılar yine sayılmaz. Listenin DEVAMINDAKİ bir öğe önceki gövdenin korunan
+      // bir tanısıysa (DIL-1'deki `normalizasyon-uyumsuz` gibi) yeni ilan sayılmaz,
+      // çünkü korunan tanı tanımı gereği bir öneri değildir; ilk öğe her zaman
+      // ifadenin doğrudan konusudur ve süzülmez.
+      const OGE = String.raw`\`[^\`]+\`\s*·\s*(?:HATA|UYARI|BİLGİ)(?:[^;“]|“[^”]*”)*`;
+      for (const m of satir.matchAll(new RegExp(String.raw`[Yy]eni tanı önerisi\s+(${OGE}(?:;\s*${OGE})*)`, "g"))) {
+        let ilk = true;
+        for (const o of m[1].matchAll(/`([^`]+)`\s*·\s*(HATA|UYARI|BİLGİ)/g)) {
+          const devamdakiKorunan = !ilk && (ONCEKI_TANI_KODLARI as readonly string[]).includes(o[1]);
+          ilk = false;
+          if (devamdakiKorunan) continue;
+          iddialar.set(o[1], o[2] === "HATA" ? "hata" : o[2] === "UYARI" ? "uyarı" : "bilgi");
+        }
       }
     }
   }

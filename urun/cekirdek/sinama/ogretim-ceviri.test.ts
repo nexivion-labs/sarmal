@@ -90,8 +90,10 @@ test("CDL-A06: iki dil aynı bölüm iskeletini taşır; başlık silme mutasyon
   const baglamTr = dilBaglami("2026-08-02", "tr");
   const baglamEn = dilBaglami("2026-08-02", "en");
   assert.deepEqual(markdownBaslikDuzeyleri(baglamEn), markdownBaslikDuzeyleri(baglamTr));
-  assert.equal(ikinciSeviyeBasliklar(baglamTr).length, 12, "Türkçe yüzde 12 ana bölüm olmalı");
-  assert.equal(ikinciSeviyeBasliklar(baglamEn).length, 12, "İngilizce yüzde 12 ana bölüm olmalı");
+  // KPS-MHR-A01 (2026-09-11): OGR-3 gereği dosya mühürleri ajan bağlamına kendi
+  // bölümüyle işlendi; iki yüz de on üç ana bölüm taşır.
+  assert.equal(ikinciSeviyeBasliklar(baglamTr).length, 13, "Türkçe yüzde 13 ana bölüm olmalı");
+  assert.equal(ikinciSeviyeBasliklar(baglamEn).length, 13, "İngilizce yüzde 13 ana bölüm olmalı");
 
   const kartMutasyonu = kartEn.split("\n").filter((satir) => !satir.startsWith("③ ")).join("\n");
   assert.notDeepEqual(kartIskeleti(kartMutasyonu), kartIskeleti(kartTr),
