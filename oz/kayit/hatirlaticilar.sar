@@ -722,3 +722,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Mühür bulgularının konumunu üreten gövde ya da hatırlatıcılar yüzeyinin tıklama yolu bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
   ne:               "Founder 2026-09-12 tarihinde hatırlatıcılar yüzeyinde sonraya bırakılmış dosya bulgusuna tıkladığında mühürlü dosyanın değil projenin anadizininin açıldığını göstermiştir. Ölçüm iki ayrı kusuru ayırmaktadır. Birincisi konumdur: bulgu komut satırı çıktısında hiçbir dosya konumu taşımamakta ve yüzey onu anadizine bağlamaktadır. İkincisi metindir: komut satırında doğru yazılan is/plan/blok/@SONRA@_prf_isci.sar yolu yüzeyde is@SONRA@_prf_isci.sar biçiminde, klasör parçası kaybolmuş olarak görünmektedir. Kusur yeni kurulan mühür mekanizmasının kullanıcıya dönük yüzündedir, çünkü sonra mührünün vaadi dosyanın hatırlatıcılar yüzeyinde görünür kalmasıdır; oysa kullanıcı bulguya tıklayarak dosyaya ulaşamamakta, gördüğü yol da yanlış olduğu için dosyayı elle bulamamaktadır. Metin bozulmasının kök nedeni henüz ölçülmemiştir; arşiv mührü bulgusunun Gözlemler yüzeyinde aynı iki kusuru taşıyıp taşımadığı da bir sonraki ölçümün konusudur."
 )
+
+Hatırlatıcı(
+  kod:              HTR-ISLEME-KAPISI-PLAN-DEGISIKLIGINDE-EKLENTI-SUITINI-KOSMUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-13,
+  dönüşTetikleyici: "İşleme kapısının süit seçimi bir sonraki kez elden geçirildiğinde; en geç bir sonraki mühür ya da plan taşıma işlemesinden önce",
+  ne:               "İşleme kapısı sınama süitlerini sahnelenen yola göre seçmektedir: yalnız plan dosyaları değiştiğinde eklenti süitini, yalnız eklenti dosyaları değiştiğinde de çekirdek süitini koşmamaktadır. Oysa eklenti süitinin eşdeğerlik nöbetleri deponun gerçek ağacını okumaktadır ve yalnız plan dosyası değiştiren bir işleme bu nöbetleri kırabilir. 2026-09-12 tarihli c4e1f7e işlemesi ilk mühürlü plan dosyalarını depoya koymuş, performans süitindeki eşdeğerlik nöbetinin başvuru taraması mühürlü dosyayı süzmediği için eklenti süiti kırmızıya dönmüş, fakat kapı bunu görmemiş ve kırmızı işleme birleştirme isteğine gönderilmiştir; kusur GitHub kontrollerinde yakalanmış ve 41a4748 işlemesiyle onarılmıştır. Aynı açığın ikinci yüzü de ölçülmüştür: yalnız eklenti yolları sahnelendiğinde çekirdek süiti koşmamaktadır. Onarımın yönü kararlaştırılmamıştır: kapı her işlemede iki süiti de koşabilir, plan ve kök dosyası değişikliğini eklenti süitinin tetikleyicisi sayabilir ya da ağacı okuyan nöbetler ayrı ve hızlı bir kümeye alınabilir."
+)
