@@ -1768,6 +1768,10 @@ export const YOL_METINLERI = {
   get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
   tarife: (tarih: string): string => yuzeyMetni(`\n\n${ipucuIsareti("zaman")}tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n${ipucuIsareti("zaman")}schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
   planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
+  // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla bağlanan
+  // Blok kendi projesinde durur. Satırın yanındaki not bağı söyler, ipucu sebebini.
+  caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the ${faz} Phase of ${proje}`),
+  caprazFazIpucu: (faz: string, proje: string): string => yuzeyMetni(`\n\n${ipucuIsareti("kenar")}**${proje}** projesinin **${faz}** Fazına bağlıdır. Blok kendi projesinin altında durur ve o Fazın sayacına katılmaz.`, `\n\n${ipucuIsareti("kenar")}Bound to the **${faz}** Phase of **${proje}**. The Block stays under its own project and is not counted in that Phase.`),
   blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} blocked below`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
   yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(`🚫 ${turkce}`, `🚫 Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
