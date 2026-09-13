@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
-            neredeyiz: CATI-KOK-DENETIMI-VE-DOSYA-MUHURLERI-0-9-181-KURULDU,
-            sıradaki: FOUNDER-KAPISI-EBEDI-KURAL-SONRA-ARSIV-MUHRU-LABORATUVARDA,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-12", oturum: 111,
+            neredeyiz: ACIK-IS-ENVANTERI-VE-ILK-TEMIZLIK-ELLI-DOKUZDAN-KIRKA,
+            sıradaki: YEDI-YARIM-ADIM-SONRA-YAYIN-ONCESI-BULGULAR-KURULUM-VE-DURUMLAR-PANELI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -59,7 +59,6 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
                          HTR-SINAMA-SONUCU-YUZEYSIZ-FOUNDER-DEGERLENDIRMESI,
                          BKM-FND-A05-RENK-URET-CATI-AYARI-PAKET-VARSAYILANI-GELDI-ADIM-ACIK,
                          BKM-CLI-A01-KAPANDI-2026-09-02-MEVSIM-TEMIZLIGI,
-                         PERFORMANS-MEVSIMI-MUHURLENDI-PANELKIPI-ISCI-LANSMANA-DEVIR,
                          HTR-ATIF-AILE-SUZGECI-KOR-SEKSEN-BES-AILE-FOUNDER-DENGE-KARARI,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          DOGUS-PAKETI-VSCODE-AYARI-VE-KANON-URETMIYOR-KARAR-BEKLIYOR,
@@ -72,7 +71,6 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
                          TRIYAJ-KOVA-A-BKM-DNT-A08-ADM-SIT-BAGLAM-ADM-SIT-PROMPT-KAPATILACAK,
                          TRIYAJ-KOVA-B-SEKIZ-YARIM-SAATLIK-BKM-DNT-A04-A05-A07-A10-FND-A05-VIT-POSTA-A02-SIT-MCP-SIT-PLAN,
                          CODEX-MCP-AYARI-SILINEN-ESKI-DEPO-YOLUNA-ISARET-EDIYOR,
-                         SOL-IDA-SINAVI-CANLI-KOSUYOR-PLANDA-BEKLEMEDE-GORUNUYOR,
                          YAYIN-KARARLARI-LISANS-APACHE-EKL-F6-A05-ERTELE-GOC-A08-KAPAT-UZAK-ONCE-OZEL,
                          DURUMLAR-PANELI-GELISTIRMEYE-ALINDI-YAYINI-BEKLEMEZ-UYM-DRM-A01-A02,
                          MINI-GRAF-CALISMA-ALANI-KUMELERI-GELISTIRMEYE-ALINDI-MAGAZA-SONRASI-VIT-GRAF-A21,
@@ -1876,5 +1874,55 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-11", oturum: 111,
         buna karşılık Mini Graf işinin mağaza yüklemesinden sonra yürüyeceğini
         beyan etmiştir. İki işin ayrıntıları ve plan kenarlarının bu hükme göre
         güncellenmesi, Founder'ın zamanı geldiğinde vereceği tarife bağlıdır.
+
+        FOUNDER HÜKMÜ · 2026-09-12 · PLAN DİSİPLİNİ VE İLK TEMİZLİK: Founder, mevcut
+        Adımlar bitmeden yeni plan açılmayacağına ve bu süre içinde doğan her yeni
+        işin ya da bulgunun bir hatırlatıcıya yazılacağına hükmetmiştir. Hükmün
+        gerekçesi, on bir Blokun aynı anda açık durmasının ORK-3.5 maddesinin
+        öngördüğü sıralı yürütmeyle çelişmesi ve bu yüzden hiçbir Blokun
+        bitmemesidir; çalışma bundan sonra bir kerede tek Blokta yürüyecektir.
+        Hükmün ilk uygulamasında Founder saha sınavının (BLK-SOL-IDA-TEST) artık
+        gereksiz olduğunu beyan etmiş ve Blok açık üç Adımıyla birlikte arşiv mührü
+        almıştır; hiç başlamamış panel kipi ile işçi gövdeleri ise sonraya
+        bırakılmış ve dosyaları hatırlatıcılar yüzeyinde görünür kalacak biçimde
+        sonra mührü almıştır. Bitmiş performans gövdeleri yaşayan kodun Meyve
+        kaydını taşıdığı için yerinde bırakılmıştır, çünkü kuru deneme onları
+        arşivlemenin yirmi dört ile doksan arasında uyarı doğurduğunu göstermiştir.
+        Performans mevsiminin şemsiye Adımı PRF-A06, Founder'ın editörde bugün
+        takılma görmediğini beyan etmesiyle kapanmıştır.
+
+        OTURUM 111 DEVRİ · 2026-09-12 · BİR SONRAKİ OTURUM İÇİN: Bu oturumda teslim
+        dalı main dalına birleştirilmiş, main dalı koruma altına alınmış, açık
+        işlerin envanteri çıkarılmış ve ilk temizlik yapılmıştır. Temizlik
+        temizlik/saha-ve-performans dalında durmaktadır; değişiklikler denetimden
+        sıfır hata ve sıfır uyarıyla geçmiştir, fakat henüz işlenmemiş ve
+        gönderilmemiştir, çünkü işleme ve gönderme Founder'ın sözünü beklemektedir.
+        Açık Adım sayısı elli dokuzdan kırka inmiştir; bunların yedisi geliştirmede,
+        otuz üçü beklemededir. Bir sonraki oturum önce geliştirmede duran yedi yarım
+        Adımı geliştirerek tamamlayacaktır; kanıtla kapatılamayan kalem dürüstçe
+        beklemeye alınır: KPS-ADA-A01, KPS-KOD-A01, VIT-POSTA-A02, VIT-KIMLIK-A07,
+        KYN-OGR-A02, OSS-A04 ve VIT-K78-A09. Ardından yayın öncesi zorunlu bulgular
+        ele alınacaktır: şema ile bekçinin çeliştiği KPS-CEL-A01, yalnız mağazadan
+        kurulan eklentide proje denetiminin sessizce atlanması
+        (HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE), araç açıklamalarındaki ölü örnek
+        kod, gezinme aracının deve gövdeli sembolde verdiği yanlış cevap ve
+        geribildirim hasadının yanlış rafa yazması. Dışarıdan kurulum işi
+        (HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK ve HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK)
+        yeni bir plan açılmadan EKL-F6-A03 Adımının kapsamı genişletilerek
+        yürütülecektir ve bu genişletme Founder onayı ister; mağaza yüklemesi
+        (EKL-F6-A01) bu işlerden sonra gelir. Founder yayından sonra bütün kodun
+        kapsamlı bir incelemesinin yapılmasına ve ardından aktif geliştirme sürecine
+        dönülmesine hükmetmiştir. Founder ayrıca Durumlar panelinin artık kendi
+        yerini alması gerektiğini beyan etmiştir; UYM-DRM-A01 Adımının EKL-F6-A01
+        Adımına bağımlı kenarı Founder'ın 2026-09-11 tarihli hükmüyle çelişmektedir
+        ve bu kenar düzeltilecek, panelin sırası ise oturum başında Founder ile
+        belirlenecektir. Sarmal için bitiş çizgisini Founder üç olay olarak kabul
+        etmiştir: dışarıdan kurulumun düzelmesi, mağaza yüklemesi ve borç listesinin
+        her kaleminin kararının yazılması; site sayfası ile eğitim bu çizginin hemen
+        arkasından, Ajans çalışma alanının kurulumu ise çizgi aşıldıktan sonra
+        gelir. Açık iş listesindeki yirmi beş bayat etiket ile envanterin Founder'a
+        sorduğu on üç ayrıntılı karar, ilgili Blokun sırası geldiğinde tek tek ele
+        alınacaktır; envanter raporunun tam metni laboratuvarın nitelik rafında
+        durmaktadır.
         """
 }

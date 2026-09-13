@@ -90,8 +90,6 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   çağır BLK-BAKIM       // 📦 bakım ve olgunluk — on dört açık Adım; eklenti denetim turunun on bir kalemi burada yaşar
   çağır BLK-EKLENTI     // 🛍️ EKL-F6 yayın Katmanı: mağaza yüklemesi ile GitHub dil kimliği başvurusu — v1'in kritik yolunda
   çağır BLK-SINAV3      // 🎓 SNV4-A01 tam steril sınav turu (ayrı pencere ister)
-  // Performans mevsiminden devrolan gövdeler (2026-09-02 kapanışı): hiç başlamamış on beş Adım.
-  çağır BLK-PRF-PANELKIPI  // 🧭 motor yalnız panelin kullandığı üreticileri koşturur — denetim turu bir saniye altı ölçütü
-  çağır BLK-PRF-ISCI       // 🧵 motor ana iş parçacığından çıkar — on altı milisaniye ölçütü, ölçüm kapılı
-  çağır BLK-SOL-IDA-TEST // 🧪 Sol ile IDA gerçek dünya testi — Founder'ın örnek projesi beklendiği için bilinçli olarak açık tutulur, kapı Founder'dadır
+  // Performans mevsiminden devrolan panel kipi ile işçi gövdeleri 2026-09-12 Founder hükmüyle sonraya
+  // bırakıldı (@SONRA@_ mühürlü dosyalar); saha sınavı (BLK-SOL-IDA-TEST) aynı gün arşiv mührü aldı.
 }
