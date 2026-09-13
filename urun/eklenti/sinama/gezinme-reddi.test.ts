@@ -10,8 +10,10 @@
 //        ayırır; tanımlı kodda ve ağaçta izi olmayan sözcede SUSAR.
 //     ② CÜMLE AYRIMI — üç sebep üç AYRI cümle üretir; iki sebep aynı cümleye
 //        düşerse kullanıcı hangi kuralın çalıştığını yine öğrenemez ve Adımın
-//        çözdüğü kusur ad değiştirerek yaşamaya devam eder. Cümleler ayrıca
-//        dayanaklarını anar (OGR-5 · STR-3 · MIM-1.1).
+//        çözdüğü kusur ad değiştirerek yaşamaya devam eder. Her cümle iki dilde
+//        de sonuçla başlar ("Gidilemez:" · "Cannot navigate:") ve kanon maddesi
+//        anmaz (Founder şerhi 2026-09-13): bildirim kutusu uzun cümlenin sonunu
+//        keser, sona bırakılan sonuç hiç görünmez.
 //     ③ KABLO — saf karar doğru olsa bile kabuk onu ÇAĞIRMAZSA yüzey yine
 //        sessiz kalır. Editör kabuğu bu süitte koşamadığı için kablo, kabuğun
 //        KAYNAK METNİNDEN ölçülür (tur-erisim.test.ts emsali).
@@ -28,7 +30,7 @@ import { dirname, join } from "node:path";
 import {
   gezinmeRetSebebi, type GezinmeRetGirdisi, type GezinmeRetSebebi,
 } from "../src/gezinme-cekirdek.ts";
-import { gezinmeRetCumlesi } from "../src/yuzey-metinleri.ts";
+import { gezinmeRetCumlesi, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
 const burasi = dirname(fileURLToPath(import.meta.url));
 const oku = (gorece: string): string => readFileSync(join(burasi, gorece), "utf8");
@@ -120,24 +122,57 @@ test("SIRA MEKANİZMANIN SIRASIDIR: ders rafı varlık sınırından önce sorul
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ③ ÜÇ SEBEP ÜÇ AYRI CÜMLE ÜRETİR VE DAYANAĞINI ANAR
+// ③ ÜÇ SEBEP ÜÇ AYRI CÜMLE ÜRETİR VE CÜMLE SONUÇLA BAŞLAR
 // ═══════════════════════════════════════════════════════════════════════════
 
-test("CÜMLE AYRIMI: üç sebep üç FARKLI cümle üretir ve kodu adıyla anar", () => {
-  const sebepler: GezinmeRetSebebi[] = ["ders-dünyası", "varlık-sınırı", "tanım-yok"];
-  const cumleler = sebepler.map((s) => gezinmeRetCumlesi(s, "VIT-K78-A09"));
-  assert.equal(new Set(cumleler).size, 3,
-    "iki sebep aynı cümleye düştü; kullanıcı hangi kuralın çalıştığını yine öğrenemez");
-  for (const c of cumleler) {
-    assert.ok(c.includes("VIT-K78-A09"), `cümle kodu anmıyor: ${c}`);
-    assert.ok(c.trim().length > 0 && !c.includes("\n"), `cümle tek satır değil: ${c}`);
+const SEBEPLER: GezinmeRetSebebi[] = ["ders-dünyası", "varlık-sınırı", "tanım-yok"];
+
+/** Her dil için sonucu söyleyen baş. Bildirim kutusu kesse de görünür kalan budur. */
+const BAS = { tr: "Gidilemez: ", en: "Cannot navigate: " } as const;
+
+/** Cümleleri verilen dilde üretir; süreç dili her koşulda Türkçeye döner (dil-kur.ts). */
+const dilde = (dil: keyof typeof BAS, kod: string): string[] => {
+  yuzeyDiliniAyarla(dil);
+  try {
+    return SEBEPLER.map((s) => gezinmeRetCumlesi(s, kod));
+  } finally {
+    yuzeyDiliniAyarla("tr");
+  }
+};
+
+test("CÜMLE AYRIMI: üç sebep iki dilde de üç FARKLI cümle üretir ve kodu adıyla anar", () => {
+  for (const dil of ["tr", "en"] as const) {
+    const cumleler = dilde(dil, "VIT-K78-A09");
+    assert.equal(new Set(cumleler).size, 3,
+      `${dil}: iki sebep aynı cümleye düştü; kullanıcı hangi kuralın çalıştığını yine öğrenemez`);
+    for (const c of cumleler) {
+      assert.ok(c.includes("VIT-K78-A09"), `${dil}: cümle kodu anmıyor: ${c}`);
+      assert.ok(c.trim().length > 0 && !c.includes("\n"), `${dil}: cümle tek satır değil: ${c}`);
+    }
   }
 });
 
-test("DAYANAK: iki kural cümlesi kanon maddesini anar", () => {
-  assert.match(gezinmeRetCumlesi("ders-dünyası", "KOD-X"), /OGR-5/);
-  assert.match(gezinmeRetCumlesi("varlık-sınırı", "KOD-X"), /STR-3/);
-  assert.match(gezinmeRetCumlesi("varlık-sınırı", "KOD-X"), /MIM-1\.1/);
+test("BAŞ: her ret cümlesi iki dilde de sonuçla başlar (Gidilemez: · Cannot navigate:)", () => {
+  // Bildirim kutusu uzun cümlenin sonunu keser (Founder gözlemi 2026-09-13).
+  // Sonuç sona bırakılırsa kesilen yerde kalır ve kullanıcı gidilemediğini
+  // hiç okumaz; bu yüzden sonuç cümlenin BAŞINDA durmak zorundadır.
+  for (const dil of ["tr", "en"] as const) {
+    for (const c of dilde(dil, "KOD-X")) {
+      assert.ok(c.startsWith(BAS[dil]),
+        `${dil}: ret cümlesi "${BAS[dil].trim()}" ile başlamıyor; kutu keserse sonuç görünmez: ${c}`);
+    }
+  }
+});
+
+test("SADE DİL: ret cümlesi kanon maddesi anmaz (Founder şerhi 2026-09-13)", () => {
+  // Kodun kendisi cümleden çıkarılır; geriye kalan metinde madde kodu olmamalıdır.
+  const maddeKodu = /\b[A-ZÇĞİÖŞÜ]{2,}-\d/;
+  for (const dil of ["tr", "en"] as const) {
+    for (const c of dilde(dil, "KOD-X")) {
+      assert.doesNotMatch(c.replace("'KOD-X'", ""), maddeKodu,
+        `${dil}: ret cümlesi kanon maddesi anıyor: ${c}`);
+    }
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

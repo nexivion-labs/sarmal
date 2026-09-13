@@ -1594,19 +1594,22 @@ export const GEZINME_METINLERI = {
     `Identity '${kod}' also occurs in ${adet} filename${adet === 1 ? "" : "s"}. Text references were updated; you must rename the files yourself.`,
   ),
   // 🚧 GEZİNME REDDİNİN SEBEBİ (VIT-K78-A09 · HTR-GEZINME-SESSIZ-RET). Üç kural
-  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, sebebi adıyla
-  // söyler ve dayanağı olan kanon maddesini anar ki kural öğretici olsun.
+  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, kısadır,
+  // "Gidilemez:" ile başlar ve sebebi gündelik dille söyler; iç terim ve kanon
+  // maddesi anmaz (Founder şerhi 2026-09-13). Sonuç cümlenin BAŞINDA durur,
+  // çünkü bildirim kutusu uzun cümlenin sonunu keser ve sona bırakılan sonuç
+  // hiç görünmez. Türkçe biçimler Founder onaylıdır; değişikliği Founder verir.
   retDersDunyasi: (kod: string): string => yuzeyMetni(
-    `'${kod}' tanımı öğreti rafında (arşiv · örnek · fikstür · şablon) yaşıyor; ürün dosyasından ders dünyasına gezinilmez (OGR-5).`,
-    `The definition of '${kod}' lives on a teaching shelf (archive · example · fixture · template); navigation from a product file into the teaching world is not permitted (OGR-5).`,
+    `Gidilemez: '${kod}' yalnız öğretim örneklerinde var.`,
+    `Cannot navigate: '${kod}' exists only in teaching examples.`,
   ),
   retVarlikSiniri: (kod: string): string => yuzeyMetni(
-    `'${kod}' tanımı başka bir varlığın kökünde yaşıyor; varlık sınırı gezinmeyi durdurur (STR-3 · MIM-1.1).`,
-    `The definition of '${kod}' lives under a different entity root; the entity boundary stops navigation (STR-3 · MIM-1.1).`,
+    `Gidilemez: '${kod}' başka bir projenin kodu.`,
+    `Cannot navigate: '${kod}' belongs to another project.`,
   ),
   retTanimYok: (kod: string): string => yuzeyMetni(
-    `'${kod}' ağaçta yalnız metin atfı olarak geçiyor; tanımı olmadığı için gidilecek bir düğüm yok.`,
-    `'${kod}' occurs in the tree only as a text reference; it has no definition, so there is no node to navigate to.`,
+    `Gidilemez: '${kod}' hiçbir yerde tanımlı değil.`,
+    `Cannot navigate: '${kod}' is not defined anywhere.`,
   ),
 } as const;
 
