@@ -94,7 +94,8 @@ test("tanım taraması: Karar OLMAYAN düğümde hüküm aranmaz", () => {
 // ── ③ Karar metni eki ────────────────────────────────────────────────────────
 
 test("karar metni eki: hüküm iner, başlıkla aynıysa yinelenmez, hükümsüz kayıtta boştur", () => {
-  assert.match(kararMetniEki({ ne: "başlık", hukum: "hüküm cümlesi" }), /⚖️ \*\*Karar metni:\*\* hüküm cümlesi/u);
+  // A07: balonun işareti aileden gelir ve çizici yokken düşer; ölçüt kelimedir.
+  assert.match(kararMetniEki({ ne: "başlık", hukum: "hüküm cümlesi" }), /\*\*Karar metni:\*\* hüküm cümlesi/u);
   assert.equal(kararMetniEki({ ne: "aynı", hukum: "aynı" }), "");
   assert.equal(kararMetniEki({ ne: "başlık" }), "");
 });
@@ -128,14 +129,15 @@ test("özet katmanı: Karar'ın özet: alanı yakalanır ve ipucu ekinde HÜKÜM
     `  karar: "Ham hüküm cümlesi tarihçedir" )`);
   assert.equal(t[0].ozet, "Bağlamsız okunur tek paragraf özet.");
   const ek = kararMetniEki(t[0]);
-  const ozetIdx = ek.indexOf("💡 **Özet:**");
-  const hukumIdx = ek.indexOf("⚖️ **Karar metni:**");
+  // A07: balonun işareti aileden gelir ve çizici yokken düşer; sıra kelimeyle ölçülür.
+  const ozetIdx = ek.indexOf("**Özet:**");
+  const hukumIdx = ek.indexOf("**Karar metni:**");
   assert.ok(ozetIdx !== -1 && hukumIdx !== -1 && ozetIdx < hukumIdx, "özet hükümden önce gelmeli");
 });
 
 test("özet katmanı: özetsiz karar eski davranışını korur (yalnız hüküm eki)", () => {
   const ek = kararMetniEki({ ne: "başlık", hukum: "hüküm" });
-  assert.ok(!ek.includes("Özet") && ek.includes("⚖️ **Karar metni:** hüküm"));
+  assert.ok(!ek.includes("Özet") && ek.includes("**Karar metni:** hüküm"));
 });
 
 // ── ⑤ Yorum tespiti (HTR-IPUCU-YORUM-KORUMASI) ──────────────────────────────

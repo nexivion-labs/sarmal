@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ajan: yapay zekâ etmeni — anteni olan baş, iki göz ve ağız çizgisi. -->
+  <rect x="4.6" y="7.6" width="14.8" height="11.6" rx="2.6"/>
+  <path d="M12 7.6 V5"/>
+  <circle cx="12" cy="3.8" r="1.2"/>
+  <path d="M9.2 12.2 V13.4"/>
+  <path d="M14.8 12.2 V13.4"/>
+  <path d="M9.6 16.2 H14.4"/>
+</svg>

@@ -199,9 +199,10 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     cpSync(join(KOK, SIMGE_RAFI), join(gecici, "raf"), { recursive: true });
     rmSync(join(gecici, "raf", "uretilmis"), { recursive: true, force: true });
     const { yazilan } = uret({ RAF: join(gecici, "raf"), URETILMIS: join(gecici, "cikti") });
-    // 6 eksen × 3 evre × 2 tema = 36 · 44 satır × 9 anlam × 2 tema = 792 → 828
-    // (A07 envanteri yirmi, otorite işaretleri üç simge ekledi: 20 → 43 satır)
-    assert.equal(yazilan.length, 828, "üretici 828 varyant dökmeli (6×3×2 eksen + 44×9×2 satır)");
+    // 6 eksen × 3 evre × 2 tema = 36 · 53 satır × 9 anlam × 2 tema = 954 → 990
+    // (A07 envanteri yirmi, otorite işaretleri üç, yapı ağacı bir ve ipucu
+    //  balonu dokuz simge ekledi: 20 → 53 satır)
+    assert.equal(yazilan.length, 990, "üretici 990 varyant dökmeli (6×3×2 eksen + 53×9×2 satır)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');
@@ -237,7 +238,11 @@ test("satır nöbeti: raf ile satır çizelgesi AYNI simgeleri kapsar — eksik 
   // o başlık bir WEBVIEW yüzeyindedir, yani ailenin fiziksel olarak ulaştığı bir
   // yerdedir ve işareti Founder kararına bırakılamazdı. Ailede yapı ağacını
   // anlatan bir çizim yoktu; çizildi ve aile KIRK DÖRDE çıktı.
-  assert.equal(raf.length, 44, "satır ailesi KIRK DÖRT simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı)");
+  // A07'nin dördüncü turunda ipucu balonu aileye bağlandı (kontrolcü hükmü
+  // 2026-09-10: balon Markdown çizer ve dosya adresli görsel kabul eder).
+  // Balonun işaretlerinden dokuzunun ailede karşılığı yoktu; çizildi ve aile
+  // ELLİ ÜÇE çıktı.
+  assert.equal(raf.length, 53, "satır ailesi ELLİ ÜÇ simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı + ipucu balonunun dokuzu)");
 });
 
 test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler ve renk GÖMÜLMEZ (YUZ-4.1)", () => {
@@ -597,9 +602,9 @@ const MUAF_TAVANI: ReadonlyArray<readonly [string, number, string]> = [
  *  kırmızıya döner (gerileme durur), azalırsa yeşil kalır (temizlik turu
  *  nöbete takılmaz). Ölçüm 2026-09-13; onizleme.ts ile minigraf-cekirdek.ts
  *  sıfıra inmişti ve sıfır kuşağına geçti;
- *  yol-dekor.ts'nin hiçbir yüzeyce okunmayan emoji kolonu düştü ve o da geçti. */
+ *  yol-dekor.ts'nin hiçbir yüzeyce okunmayan emoji kolonu düştü ve o da geçti;
+ *  ipucu.ts balonun işaretleri aileye geçince sıfırlandı ve o da geçti. */
 const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [
-  ["src/ipucu.ts", 8],              // ipucu balonunun tip ve konum işareti — Markdown, aile ulaşabilir
   ["src/yolharitasi.ts", 1],        // Blok satırının planlanmamış sayacı — ağaç açıklaması resim taşımaz; akıbeti Founder kararı
   ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekorunun sönük evresi
   ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekorunun sönük evresi

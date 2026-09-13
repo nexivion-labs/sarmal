@@ -207,6 +207,19 @@ export const SATIR_SIMGELERI = [
   //    aileye çevrilir. Ailede yapı ağacını anlatan bir çizim yoktu ve bu Adım
   //    "eksik simgeleri ailenin kendi diliyle çiz" der.
   "agac",             // okuma modunun 'Yapı Ağacı' başlığı (eski 🌳 · onizleme webview)
+  // ── VIT-KIMLIK-A07 · ipucu balonunun işaretleri ───────────────────────────
+  //    Kontrolcü hükmü 2026-09-10: ipucu balonu Markdown olarak çizilir ve
+  //    dosya adresli görsel kabul eder, yani ailenin ULAŞTIĞI bir yüzeydir.
+  //    Balonun işaretlerinden ailede karşılığı bulunmayan dokuzu çizildi.
+  "belge",            // belge bloğu açılışı ve kapanışı (eski 📖 · ipucu balonu)
+  "etiket",           // belge bölüm etiketi (eski 🏷️ · ipucu balonu)
+  "ajan",             // yapay zekâ etmeninin faydası (eski 🤖 · ipucu balonu)
+  "varsayilan",       // tipin kanon varsayılanları (eski ✳️ · ipucu balonu)
+  "kenar",            // kenar sözcüğünün kartı (eski 🔗 · ipucu balonu)
+  "anahtar",          // anahtar sözcüğün kartı (eski 🔑 · ipucu balonu)
+  "dil",              // i18n sözlük anahtarı (eski 🌐 · ipucu balonu)
+  "islec",            // ifade işleci (eski 🧮 · ipucu balonu)
+  "yildiz",           // Kuzey Yıldızı önerisi (eski 🌟 · ipucu balonu)
 ] as const;
 export type SatirSimgesi = (typeof SATIR_SIMGELERI)[number];
 
@@ -236,6 +249,17 @@ export function satirSvgKaynagi(ad: SatirSimgesi): string {
  *  gövdesi), RENK=ANLAM daima (anlam eki). */
 export function satirSvgVaryanti(ad: SatirSimgesi, anlam: AnlamRengi, tema: SimgeTemasi): string {
   return `${URETILMIS_RAF}/satir-${ad}-${anlam}-${tema}.svg`;
+}
+
+/** İPUCU HANESİ (VIT-KIMLIK-A07 · kontrolcü hükmü 2026-09-10): ipucu balonuna
+ *  gömülen aile işaretinin Markdown yazımı. Balon işareti `<img>` ile çizer ve
+ *  `<img>` currentColor çözmez; adres bu yüzden üretilmiş ANLAM-renkli
+ *  varyanttır ve renk değeri bu modülde yazılmaz (YUZ-4.1). Alternatif metin
+ *  BOŞTUR, çünkü işaret sunumdur ve yanındaki kelime etiketi zaten taşır
+ *  (YUZ-4.2). Ölçü VS Code'un `|width=,height=` ekiyle sabitlenir. */
+export const IPUCU_ISARET_PX = 14;
+export function ipucuIsaretiMd(adres: string): string {
+  return `![](${adres}|width=${IPUCU_ISARET_PX},height=${IPUCU_ISARET_PX})`;
 }
 
 /** .sar dosya ikonu (Founder hükmü 2026-08-04): dosyaların kimliği MARKA
