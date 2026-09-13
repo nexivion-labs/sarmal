@@ -64,7 +64,7 @@
 import "./dil-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -351,4 +351,112 @@ test("KAPANDI: ağaç satırlarının etiketi işareti İKİ KEZ söylemez", asy
   assert.ok(!EMOJI.test(oku("../src/minigraf-cekirdek.ts").split("\n")
     .filter((s) => s.includes("class=\"k\"")).join("\n")),
     "mini grafın boş hâli hâlâ emoji basıyor");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MANİFEST, REHBER VE PARÇACIK YÜZEYLERİ (VIT-KIMLIK-A07 · 2026-09-13)
+//
+//   Yukarıdaki envanter yalnız metin kataloğunu (yuzey-metinleri.ts) gezer.
+//   Kullanıcıya basılan metnin bir bölümü ise eklentinin MANİFESTİNDE yaşar:
+//   komut paletinin ve menülerin komut başlıkları, Ayarlar sayfasının
+//   açıklamaları, karşılama rehberinin adım başlıkları ve sayfaları, anlamsal
+//   simge açıklaması, ürün ikon temasının adı ve tamamlama listesine düşen
+//   parçacık açıklamaları. 2026-09-13 ölçümüne dek bu yüzeylerin hiçbiri bir
+//   nöbete bağlı değildi ve yerelleştirme dosyalarındaki 92 dizenin 21'i emoji
+//   taşıyordu. On dördü arayüz işaretiydi ve kalktı: bu yüzeyler düz metin
+//   basar, aile oraya ulaşamaz, dolayısıyla işaret düşer ve kelime kalır
+//   (YUZ-4.2: ikon metinsel etiketin yerine geçemez, düştüğünde etiket tek
+//   başına yeter). Kalan yedisi takdir yüzeyinin komutlarıdır ve hükmen meşrudur.
+//
+//   ÖLÇÜ EMOJİ SUNUMUDUR. Bu yüzeylerdeki metin, okuma modunun kanonik adında
+//   geçen `↔` gibi tipografik okları da taşır. Bu oklar Unicode'un resimsi
+//   sınıfındadır fakat varsayılan sunumları METİNDİR ve emoji olarak çizilmez.
+//   Ölçü bu yüzden yalnız emoji olarak basılan işareti sayar: kendiliğinden
+//   emoji sunumlu karakteri ya da emoji seçicisiyle (VS16) biten resimsi
+//   karakteri.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const EMOJI_SUNUMU = /\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F/u;
+
+/** Yerelleştirme dizelerinde emoji taşımasına izin verilen anahtarlar. İki dil
+ *  dosyası AYNI kümeyi taşır; küme dışında emoji belirirse süit kırmızıya döner,
+ *  kümedeki bir kalem emojisini yitirirse de kırmızıya döner (kayıt borcu). */
+const MANIFEST_ENVANTERI: Readonly<Record<string, Sinif>> = {
+  // TAKDİR YÜZEYİ: yorum dizisinin satır-içi kanal düğmeleri (package.json
+  // `comments/commentThread/context`) ile takdir ve hasat komutları. Kanal
+  // adları takdirKanallari çizelgesinin dört kanalıdır ve katalogda da
+  // `takdir` sınıfındadır; iki yüzey aynı kanalı aynı işaretle söyler.
+  "command.writeAppreciation": "takdir",
+  "command.writeFeedback": "takdir",
+  "command.harvestFeedback": "takdir",
+  "command.sendThanks": "takdir",
+  "command.sendAppreciation": "takdir",
+  "command.sendHonor": "takdir",
+  "command.sendSuggestion": "takdir",
+};
+
+/** Parçacık açıklamalarının emoji taşıyan kalemleri. Tamamlama listesinde tip
+ *  adına eklenen tip emojisidir ve katalogdaki `tipTamamlamaDetayi` emsaliyle
+ *  aynı `yazım` sınıfındadır. Dördünden üçünün emojisi (Faz, Katman, Adım)
+ *  bugün kanonun tip emoji çizelgesiyle çelişir; bu bir arayüz işareti kusuru
+ *  değil içerik kaymasıdır ve bu Adımın kapsamı dışında ayrı borç olarak
+ *  raporlanmıştır. Nöbet sayıyı sabitler; kayma onarıldığında da yeşil kalır. */
+const PARCACIK_ENVANTERI: Readonly<Record<string, Sinif>> = {
+  Blok: "yazım", Faz: "yazım", Katman: "yazım", Adım: "yazım",
+};
+
+const dizinOku = (u: string): string[] => readdirSync(fileURLToPath(new URL(u, import.meta.url)));
+
+test("MANİFEST: iki yerelleştirme dosyasının emoji taşıyan anahtar kümesi envanterle BİREBİRDİR", () => {
+  const beklenen = Object.keys(MANIFEST_ENVANTERI).sort();
+  for (const dosya of ["package.nls.json", "package.nls.tr.json"]) {
+    const nls = JSON.parse(oku(`../${dosya}`)) as Record<string, string>;
+    const anahtarlar = Object.keys(nls);
+    assert.ok(anahtarlar.length > 80,
+      `${dosya} beklenmedik biçimde küçük (${anahtarlar.length} anahtar); tarama dosyayı gezmiyor olabilir`);
+    const emojili = anahtarlar.filter((a) => EMOJI_SUNUMU.test(nls[a] ?? "")).sort();
+    const yeniler = emojili.filter((a) => !(a in MANIFEST_ENVANTERI));
+    const kayiplar = beklenen.filter((a) => !emojili.includes(a));
+    assert.deepEqual(yeniler, [] as string[],
+      `${dosya}: bu manifest dizelerine emoji GİRDİ: ${yeniler.join(", ")} — YUZ-4.2 kullanıcıya ` +
+      "görünen yüzeylerde emojiyi arayüz işareti olarak yasaklar. Komut başlığı, ayar açıklaması " +
+      "ve rehber başlığı düz metindir; aile oraya ulaşamaz, işaret düşer ve kelime kalır.");
+    assert.deepEqual(kayiplar, [] as string[],
+      `${dosya}: envanterdeki ${kayiplar.join(", ")} artık emoji taşımıyor — bu bir kusur değil ` +
+      "kayıt borcudur; kalemi MANIFEST_ENVANTERI'nden düşür ki sonraki tur neyin kaldığını okuyabilsin.");
+  }
+});
+
+test("MANİFEST: package.json'un doğrudan dizeleri ve karşılama rehberinin sayfaları emojisizdir", () => {
+  const bulgular: string[] = [];
+  const gez = (deger: unknown, yol: string): void => {
+    if (typeof deger === "string") { if (EMOJI_SUNUMU.test(deger)) bulgular.push(`package.json${yol}`); return; }
+    if (deger && typeof deger === "object") for (const [k, v] of Object.entries(deger)) gez(v, `${yol}.${k}`);
+  };
+  gez(JSON.parse(oku("../package.json")), "");
+  const rehber = dizinOku("../medya/rehber/").filter((f) => f.endsWith(".md"));
+  assert.ok(rehber.length >= 6, `karşılama rehberinin sayfaları bulunamadı (${rehber.length}); tarama boş küme üstünde koşuyor`);
+  for (const f of rehber) if (EMOJI_SUNUMU.test(oku(`../medya/rehber/${f}`))) bulgular.push(`medya/rehber/${f}`);
+  assert.deepEqual(bulgular, [] as string[],
+    "Bu manifest yüzeylerinde emoji var: " + bulgular.join(", ") +
+    " — YUZ-4.2: kullanıcıya görünen metinde işaret kilitli vektörel aileden gelir ya da düşer.");
+});
+
+test("PARÇACIK: tamamlama listesine düşen parçacık metinlerinde emoji yalnız envanterdeki kalemlerdedir", () => {
+  const dosyalar = dizinOku("../snippets/").filter((f) => f.endsWith(".code-snippets"));
+  assert.ok(dosyalar.length > 0, "parçacık dosyası bulunamadı; tarama boş küme üstünde koşuyor");
+  const bulunan: string[] = [];
+  let toplam = 0;
+  for (const f of dosyalar) {
+    const parcaciklar = JSON.parse(oku(`../snippets/${f}`)) as Record<string, { prefix?: string | string[]; description?: string }>;
+    for (const [ad, p] of Object.entries(parcaciklar)) {
+      toplam++;
+      if (EMOJI_SUNUMU.test([p.prefix ?? ""].flat().join(" "))) bulunan.push(`${ad}.prefix`);
+      if (EMOJI_SUNUMU.test(p.description ?? "")) bulunan.push(ad);
+    }
+  }
+  assert.ok(toplam > 5, `parçacık sayısı beklenmedik biçimde küçük (${toplam})`);
+  assert.deepEqual(bulunan.sort(), Object.keys(PARCACIK_ENVANTERI).sort(),
+    "Parçacık metinlerinde emoji taşıyan kalem kümesi envanterden ayrıştı — yeni bir emoji girdiyse " +
+    "YUZ-4.2 onu yasaklar; bir kalem emojisini yitirdiyse PARCACIK_ENVANTERI'nden düşür.");
 });
