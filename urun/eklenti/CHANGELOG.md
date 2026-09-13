@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.184 — 2026-09-13 (başka projenin Fazına bağlanan Blok kendi projesinde duruyor)
+
+- **Çapraz proje Bloku artık kendi projesinin altında görünüyor.** Founder çatı penceresinde laboratuvarın Bulgu Kapatma Blokunun Yol Haritası panelinde laboratuvarın altında değil, Sarmal projesinin Çatı Mevsimi Fazının altında durduğunu ve iki açık Adımının o Fazın sayacına eklendiğini gördü. Aynı desen kapalı üründeki üç Blokta da vardı. Sebep panelin çağır çevrimiydi: motorun mevsim çevrimi ad alanlı beyanı doğru biçimde gerçek bir Faz bağı sayıyor ve Faza sanal bir çağır kenarı kuruyordu, panel ise her çağır kenarını Bloku o Fazın altına taşıma emri olarak okuyordu.
+- **Bağ silinmedi, yalnız yeri değişti.** Başka bir projenin Fazına ad alanıyla bağlanan Blok artık kendi projesinin altında duruyor ve satırının yanında "Sarmal projesinin Çatı Mevsimi Fazına bağlı" notunu taşıyor; ipucu balonu Blokun o Fazın sayacına katılmadığını da söylüyor. Yabancı Fazın sayacı bu Bloku saymıyor, çünkü her projenin işi kendi ağacında sayılır. Motorun Faz bağına dokunulmadı: ad alanlı beyan gerçek bir Faz bağı sayılmaya devam ediyor ve fazsız Blok tanısı ateşlenmiyor.
+- **Aynı proje içindeki davranış değişmedi.** Niteliksiz `mevsim:` beyanı, gerçek `çağır` kenarı ve kendi projesini ad alanıyla yazan Blok eskisi gibi Fazın altına taşınıyor ve sayaçlar Faza kabarcıklanıyor. Karar vscode'suz panel çekirdeğine indi ve iki yönü ayrı ayrı ölçen nöbetlerle korunuyor; üç ayrı mutasyonun her biri yalnız kendi yönünün nöbetini kırmızıya düşürdü. Panel turu yeni bir dosya araması ya da belge açma eklemedi.
+
 ## 0.9.183 — 2026-09-13 (arayüz işaretleri Sarmal'ın kendi simge ailesinden geliyor)
 
 - **Kullanıcıya görünen yüzeylerde emoji kalmadı.** Komut adları, ayar açıklamaları, rehber sayfaları, ipucu metinleri ve ağaç açıklamaları emojisiz basılıyor ve kelimeler yerinde duruyor. YUZ-4.2 hükmü gereği emoji yalnız kaynak anlatımında ve takdir yüzeyinde meşru kalıyor.
