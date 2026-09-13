@@ -24,12 +24,14 @@ export type Durum = "beklemede" | "geliştirmede" | "tamamlandı" | "doğrulanma
 // sync → dolu kutu (tamamlandı'da ikon çizilmez, kutu yeter) → circle-slash.
 // YAS-4: doğrulanmamış = BOŞ çek (pass) turuncu — dolu yeşil çekten şekil+renkle ayrılır.
 // TreeItem ikonu hex alamaz (VS Code API kısıtı) → tema-token kullanılır.
-export const DURUM_ROZET: Record<Durum, { emoji: string; ikon: string; renk: string }> = {
-  "tamamlandı":    { emoji: "🟢", ikon: "pass-filled",          renk: "testing.iconPassed" },
-  "geliştirmede":  { emoji: "🟡", ikon: "sync~spin",            renk: "charts.yellow" },
-  "beklemede":     { emoji: "⚪", ikon: "circle-large-outline", renk: "disabledForeground" },
-  "doğrulanmamış": { emoji: "🟠", ikon: "pass",                 renk: "charts.orange" },
-  "bloklu":        { emoji: "⛔", ikon: "circle-slash",         renk: "errorForeground" },
+// A07: kolonun emoji ikizi hiçbir yüzeyce okunmuyordu ve düştü; durum işareti
+// ağaçta codicon ikonuyla, mini grafta renk rolüyle konuşur.
+export const DURUM_ROZET: Record<Durum, { ikon: string; renk: string }> = {
+  "tamamlandı":    { ikon: "pass-filled",          renk: "testing.iconPassed" },
+  "geliştirmede":  { ikon: "sync~spin",            renk: "charts.yellow" },
+  "beklemede":     { ikon: "circle-large-outline", renk: "disabledForeground" },
+  "doğrulanmamış": { ikon: "pass",                 renk: "charts.orange" },
+  "bloklu":        { ikon: "circle-slash",         renk: "errorForeground" },
 };
 
 /** Durum → satır simgesinin ANLAM rengi (VIT-KIMLIK-A05): Yol Haritası'nın

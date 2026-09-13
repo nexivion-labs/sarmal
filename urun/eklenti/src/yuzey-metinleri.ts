@@ -1491,8 +1491,8 @@ export function baglantiAcIpucu(metin: string): string {
  *  salt okunur açılır — bağımlılık değil, yalnız bakış (STR-3). */
 export function caprazBakisIpucu(kod: string): string {
   return yuzeyMetni(
-    `👁️ ${kod} öbür varlıkta yaşıyor — salt okunur bakış olarak açılır`,
-    `👁️ ${kod} lives in the other entity — opens as a read-only view`,
+    `${kod} öbür varlıkta yaşıyor — salt okunur bakış olarak açılır`,
+    `${kod} lives in the other entity — opens as a read-only view`,
   );
 }
 
@@ -1712,6 +1712,12 @@ export const YOL_METINLERI = {
   get etkiler(): string { return yuzeyMetni("etkiler", "affects"); },
   get gecisli(): string { return yuzeyMetni("🌊 geçişli", "🌊 transitive"); },
   get dogrudan(): string { return yuzeyMetni("⚡ doğrudan", "⚡ direct"); },
+  // Ağaç satırı düz metin basar ve aile oraya ulaşamaz; iki kelimenin işaretsiz
+  // hâli ağacın açıklama sütunu içindir (YUZ-4.2). Emojili eşleri yalnız koni
+  // kartının webview'inde yaşar ve orada aileye çevrilir.
+  get gecisliDuz(): string { return yuzeyMetni("geçişli", "transitive"); },
+  get dogrudanDuz(): string { return yuzeyMetni("doğrudan", "direct"); },
+  etkiSayaci: (dogrudan: number, gecisli: number): string => yuzeyMetni(`${dogrudan} doğrudan · ${gecisli} geçişli`, `${dogrudan} direct · ${gecisli} transitive`),
   kabul: (adet: number): string => yuzeyMetni(`↳ kabul · ${adet} madde`, `↳ acceptance · ${adet} item${adet === 1 ? "" : "s"}`),
   get koniDetayi(): string { return yuzeyMetni("detay: koni kartı", "details: cone card"); },
   yavasGenisletme: (sure: number, kim: string, adet: number): string => yuzeyMetni(`${sure} ms · ${kim} · ${adet} çocuk`, `${sure} ms · ${kim} · ${adet} children`),
@@ -1734,10 +1740,10 @@ export const YOL_METINLERI = {
   kumeAciklama: (sayi: number): string => yuzeyMetni(`${sayi} proje`, `${sayi} project${sayi === 1 ? "" : "s"}`),
   varlikIpucu: (tip: string, kod: string, kok: string, blok: number, bloklu: number): string => {
     const gorunenTip = kanonikWidgetAdi(tip, tip);
-    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\n⛔ altında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n⛔ ${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
+    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\naltında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
   },
   aktifAciklama: (aciklama: string): string => yuzeyMetni(`aktif · ${aciklama}`, `active · ${aciklama}`),
-  aktifIpucu: (ipucu: string): string => yuzeyMetni(`📍 AKTİF VARLIK — imleç bu projede\n${ipucu}`, `📍 ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
+  aktifIpucu: (ipucu: string): string => yuzeyMetni(`AKTİF VARLIK — imleç bu projede\n${ipucu}`, `ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
   get varligaOdaklan(): string { return yuzeyMetni("Varlığa odaklan", "Focus entity"); },
   get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
   tarife: (tarih: string): string => yuzeyMetni(`\n\n🚄 tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n🚄 schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
@@ -1767,6 +1773,7 @@ export const YOL_METINLERI = {
   konusmaBasligi: (rol: unknown, adim: unknown): string => yuzeyMetni(`Konuşma — ${String(rol ?? "?")} · ${String(adim ?? "")}`, `Conversation — ${String(rol ?? "?")} · ${String(adim ?? "")}`),
   konusmaOzeti: (zaman: string, ajan: string, giris: string, cikis: string, sira: string): string => yuzeyMetni(`🕐 ${zaman} · 👤 ajan: <b>${ajan}</b> · 🎫 token: <b>${giris}</b> → <b>${cikis}</b> · sıra #${sira}`, `🕐 ${zaman} · 👤 agent: <b>${ajan}</b> · 🎫 tokens: <b>${giris}</b> → <b>${cikis}</b> · sequence #${sira}`),
   beceriler: (beceriler: string): string => yuzeyMetni(`⚙️ beceriler: ${beceriler}`, `⚙️ skills: ${beceriler}`),
+  beceriSayisi: (adet: number): string => yuzeyMetni(`${adet} beceri`, `${adet} skill${adet === 1 ? "" : "s"}`),
   get hamPrompt(): string { return yuzeyMetni("📤 ŞEF'in ham prompt'u", "📤 Raw lead prompt"); },
   get hamYanit(): string { return yuzeyMetni("📥 Etmenin ham yanıtı", "📥 Raw agent response"); },
 } as const;

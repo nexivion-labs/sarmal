@@ -122,14 +122,11 @@ const ENVANTER: Record<string, { adet: number; sinif: Sinif }> = {
   "IPUCU_SOZCE_METINLERI.i18n": { adet: 2, sinif: "sınır" },
   "IPUCU_SOZCE_METINLERI.islec": { adet: 2, sinif: "sınır" },
   "YILDIZ_METINLERI.ipucu": { adet: 2, sinif: "sınır" },
-  "YOL_METINLERI.aktifIpucu": { adet: 1, sinif: "sınır" },
   "YOL_METINLERI.blokluAlt": { adet: 1, sinif: "sınır" },
   "YOL_METINLERI.planlanmamis": { adet: 1, sinif: "sınır" },
   "YOL_METINLERI.tarife": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.varlikIpucu": { adet: 1, sinif: "sınır" },
   anahtarIpucu: { adet: 1, sinif: "sınır" },
   bolumEtiketiIpucu: { adet: 4, sinif: "sınır" },
-  caprazBakisIpucu: { adet: 2, sinif: "sınır" },
   ipucuIslecMetni: { adet: 2, sinif: "sınır" },
   kararMetniIpucuEki: { adet: 2, sinif: "sınır" },
   kenarIpucu: { adet: 2, sinif: "sınır" },
@@ -351,6 +348,33 @@ test("KAPANDI: ağaç satırlarının etiketi işareti İKİ KEZ söylemez", asy
   assert.ok(!EMOJI.test(oku("../src/minigraf-cekirdek.ts").split("\n")
     .filter((s) => s.includes("class=\"k\"")).join("\n")),
     "mini grafın boş hâli hâlâ emoji basıyor");
+});
+
+test("KAPANDI: düz metin ipucu ve ağaç açıklaması işareti DÜŞÜRÜR, kelimeyi korur", async () => {
+  const { YOL_METINLERI, caprazBakisIpucu } = await import("../src/yuzey-metinleri.ts");
+  // Ağaç öğesinin düz ipucu, belge bağlantısının ipucu ve ağaç satırının
+  // açıklama sütunu resim taşımaz; aile oraya ulaşamaz. Bu yüzeylerde emoji
+  // tek başına bir işaretti ve kanon onu yasaklar (YUZ-4.2), dolayısıyla işaret
+  // düştü ve anlamı kelime taşır. Etki ile beceri sayaçlarında işaretin kendisi
+  // tek etiketti; yerine sayının ne olduğunu söyleyen kelime kondu.
+  for (const [ad, metin, kelime] of [
+    ["varlık ipucu", YOL_METINLERI.varlikIpucu("Proje", "PRJ-X", "/kok", 3, 2), "bloklu"],
+    ["aktif varlık ipucu", YOL_METINLERI.aktifIpucu("ipucu"), "AKTİF VARLIK"],
+    ["çapraz bakış ipucu", caprazBakisIpucu("VIT-KIMLIK-A07"), "VIT-KIMLIK-A07"],
+    ["etki sayacı", YOL_METINLERI.etkiSayaci(3, 5), "geçişli"],
+    ["beceri sayacı", YOL_METINLERI.beceriSayisi(4), "beceri"],
+    ["geçişli kenar notu", YOL_METINLERI.gecisliDuz, "geçişli"],
+    ["doğrudan kenar notu", YOL_METINLERI.dogrudanDuz, "doğrudan"],
+  ] as const) {
+    assert.ok(!EMOJI.test(metin), `${ad} hâlâ emoji taşıyor: ${metin}`);
+    assert.ok(metin.includes(kelime), `${ad} metinsel etiketini yitirmiş: "${metin}"`);
+  }
+  const kaynak = oku("../src/yolharitasi.ts");
+  assert.ok(!/ROL_SIMGE/.test(kaynak), "koşum satırının rol emojisi çizelgesi geri döndü");
+  assert.ok(/YOL_METINLERI\.gecisliDuz : YOL_METINLERI\.dogrudanDuz/.test(kaynak),
+    "ağaç satırının kenar notu emojili webview kelimesine geri döndü — ağaç düz metin basar");
+  assert.ok(/YOL_METINLERI\.etkiSayaci\(/.test(kaynak) && /YOL_METINLERI\.beceriSayisi\(/.test(kaynak),
+    "etki ya da beceri sayacı katalog kelimesinden okunmuyor — işaret emojiye geri dönmüş olabilir");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

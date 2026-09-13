@@ -596,11 +596,11 @@ const MUAF_TAVANI: ReadonlyArray<readonly [string, number, string]> = [
  *  yüzeylerde uygulamak) işidir. Tavan bir ÜST sınırdır: sayı artarsa süit
  *  kırmızıya döner (gerileme durur), azalırsa yeşil kalır (temizlik turu
  *  nöbete takılmaz). Ölçüm 2026-09-13; onizleme.ts ile minigraf-cekirdek.ts
- *  sıfıra inmişti ve sıfır kuşağına geçti. */
+ *  sıfıra inmişti ve sıfır kuşağına geçti;
+ *  yol-dekor.ts'nin hiçbir yüzeyce okunmayan emoji kolonu düştü ve o da geçti. */
 const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [
   ["src/ipucu.ts", 8],              // ipucu balonunun tip ve konum işareti — Markdown, aile ulaşabilir
-  ["src/yolharitasi.ts", 6],        // ağaç satırının etiketi ve açıklaması: rol, etki, beceri, planlanmamış
-  ["src/yol-dekor.ts", 5],          // DURUM_ROZET emoji kolonu — hiçbir yüzey okumuyor
+  ["src/yolharitasi.ts", 1],        // Blok satırının planlanmamış sayacı — ağaç açıklaması resim taşımaz; akıbeti Founder kararı
   ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekorunun sönük evresi
   ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekorunun sönük evresi
 ];
