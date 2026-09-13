@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.185 — 2026-09-13 (gidilemeyen kodun bildirimi sonucu başta söylüyor)
+
+- **Ret bildirimi artık ne olduğunu ilk sözcükte söylüyor.** Founder canlı pencerede tanımı olmayan bir koda tıkladığında bildirimin çıktığını, fakat ne dediğinin anlaşılmadığını bildirdi. İki sebep vardı: cümle iç terimlerle yazılmıştı ve bildirim kutusu cümlenin sonunu kestiği için asıl sonuç olan gidilemediği bilgisi hiç görünmüyordu.
+- **Üç cümle kısa ve sade yazıldı.** Her ret cümlesi "Gidilemez:" ile başlıyor ve sebebi gündelik dille söylüyor: tanımı olmayan kod için hiçbir yerde tanımlı olmadığı, başka projedeki kod için başka bir projenin kodu olduğu, öğretim örneğindeki kod için yalnız öğretim örneklerinde bulunduğu söyleniyor. Cümleler artık kanon maddesi anmıyor. İngilizce yüzeyde aynı cümleler "Cannot navigate:" ile başlıyor.
+- **Ret kuralları ve gezinme davranışı değişmedi.** Değişen yalnız bildirimin metnidir; tanımlı kodda gezinme eskisi gibi çalışıyor ve bildirim doğmuyor. Nöbet üç sebebin iki dilde de ayrı cümle ürettiğini, her cümlenin sonuçla başladığını ve kanon maddesi anmadığını ölçüyor; baş ölçümü iki ayrı mutasyonla, önce Türkçe sonra İngilizce cümlenin başı bozularak kırmızıya düşürüldü.
+
 ## 0.9.184 — 2026-09-13 (başka projenin Fazına bağlanan Blok kendi projesinde duruyor)
 
 - **Çapraz proje Bloku artık kendi projesinin altında görünüyor.** Founder çatı penceresinde laboratuvarın Bulgu Kapatma Blokunun Yol Haritası panelinde laboratuvarın altında değil, Sarmal projesinin Çatı Mevsimi Fazının altında durduğunu ve iki açık Adımının o Fazın sayacına eklendiğini gördü. Aynı desen kapalı üründeki üç Blokta da vardı. Sebep panelin çağır çevrimiydi: motorun mevsim çevrimi ad alanlı beyanı doğru biçimde gerçek bir Faz bağı sayıyor ve Faza sanal bir çağır kenarı kuruyordu, panel ise her çağır kenarını Bloku o Fazın altına taşıma emri olarak okuyordu.
