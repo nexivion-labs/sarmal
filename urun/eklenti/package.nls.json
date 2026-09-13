@@ -90,5 +90,15 @@
   "productIconTheme.northStar": "Sarmal · North Star",
   "theme.dark": "Sarmal Dark",
   "theme.light": "Sarmal Light",
-  "color.edge": "Sarmal edge color — the dependsOn/feeds dependency structure (source: SNF-0 sadeRenkler.kenar)"
+  "color.edge": "Sarmal edge color — the dependsOn/feeds dependency structure (source: SNF-0 sadeRenkler.kenar)",
+  "icon.approvals": "Sarmal: Approvals counter",
+  "icon.reminders": "Sarmal: Reminders counter",
+  "icon.ideas": "Sarmal: Ideas counter",
+  "icon.observations": "Sarmal: Observations counter",
+  "icon.builtInCanon": "Sarmal: built-in canon warning",
+  "icon.panelFocus": "Sarmal: panel focus",
+  "icon.rollbackNote": "Sarmal: rollback note",
+  "icon.copied": "Sarmal: copied to the clipboard",
+  "icon.gate": "Sarmal: gate awaiting approval",
+  "icon.reminder": "Sarmal: reminder"
 }

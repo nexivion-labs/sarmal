@@ -721,6 +721,78 @@
         "path": "./temalar/kuzey-yildizi.json"
       }
     ],
+    "icons": {
+      "sarmal-panel-onaylar": {
+        "description": "%icon.approvals%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E001"
+        }
+      },
+      "sarmal-panel-hatirlaticilar": {
+        "description": "%icon.reminders%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E002"
+        }
+      },
+      "sarmal-panel-fikirler": {
+        "description": "%icon.ideas%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E003"
+        }
+      },
+      "sarmal-panel-gozlemler": {
+        "description": "%icon.observations%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E004"
+        }
+      },
+      "sarmal-satir-uyari": {
+        "description": "%icon.builtInCanon%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E005"
+        }
+      },
+      "sarmal-satir-konum": {
+        "description": "%icon.panelFocus%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E006"
+        }
+      },
+      "sarmal-satir-serh": {
+        "description": "%icon.rollbackNote%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E007"
+        }
+      },
+      "sarmal-satir-kopya": {
+        "description": "%icon.copied%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E008"
+        }
+      },
+      "sarmal-satir-kapi": {
+        "description": "%icon.gate%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E009"
+        }
+      },
+      "sarmal-satir-can": {
+        "description": "%icon.reminder%",
+        "default": {
+          "fontPath": "./medya/simgeler/uretilmis/sarmal-simge.woff",
+          "fontCharacter": "\\E00A"
+        }
+      }
+    },
     "colors": [
       {
         "id": "sarmal.kenar",
@@ -940,15 +1012,15 @@
     ]
   },
   "scripts": {
-    "build": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs",
+    "build": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node arac/yazitipi-uret.mjs && node esbuild.mjs",
     "tip-denetle": "tsc --noEmit -p .",
     "dil-denetle": "eslint .",
     "watch": "node esbuild.mjs --watch",
     "package": "vsce package --no-dependencies",
-    "vscode:prepublish": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs --production",
-    "test": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node --import ./sinama/dil-kur.ts --test \"sinama/*.test.ts\"",
-    "build:sinama": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs",
-    "test:vscode": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs && node dist-sinama/calistir.js"
+    "vscode:prepublish": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node arac/yazitipi-uret.mjs && node esbuild.mjs --production",
+    "test": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node arac/yazitipi-uret.mjs && node --import ./sinama/dil-kur.ts --test \"sinama/*.test.ts\"",
+    "build:sinama": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node arac/yazitipi-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs",
+    "test:vscode": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node arac/yazitipi-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs && node dist-sinama/calistir.js"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
