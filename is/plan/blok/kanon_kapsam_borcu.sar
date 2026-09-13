@@ -296,7 +296,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       //   Taşınan kademenin beyanı: ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması
 
       Adım( kod: KPS-ADA-A01, ad: "Çapraz Proje Ad Alanı", durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
-        onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır",
+        onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır · ŞERH 2026-09-13 · FOUNDER: Başka bir projenin Fazına ad alanıyla bağlanan Blok, Yol Haritası panelinde kendi projesinin altında durur ve bağlandığı Faz yanında not olarak gösterilir. Founder canlı pencerede laboratuvarın Bulgu Kapatma Blokunun sarmal projesinin Çatı Mevsimi Fazı altında göründüğünü ve iki açık Adımının o Fazın sayacına eklendiğini görmüş, bu yerleşimi reddetmiştir. Gerekçe şudur: her projenin işi kendi ağacında sayılır; başka bir projenin açık Adımları açık aracın mevsimini bitmemiş gösterirse sayaç yanlış bir şey söyler.",
         // KOD-BELIRTEC 2026-08-29 tarihinde teslim listesine eklendi: ad alanı ayracı
         // belirteçleyicide yaşar, çünkü `::` sözcenin ortasında yutulmazsa ayrıştırıcı
         // onu iki ayrı belirteç olarak görür ve tek bir KOD değeri kuramaz.
