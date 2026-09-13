@@ -702,3 +702,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "Bir kullanıcı taban kümede olmayan bir dosya mührüne ihtiyaç duyduğunda; ya da katkılı örtünün şeması bir sonraki kez elden geçirildiğinde",
   ne:               "MIM-3.4 maddesi dosya mühürlerinin taban kümesinin kapalı olduğunu ve yalnız TIP-2.5 katkılı örtüsüyle genişletilebileceğini söylemektedir, buna karşılık motor bu genişletmeyi bugün desteklememektedir. KPS-MHR-A01 üreticisi 2026-09-11 tarihinde durumu ölçmüştür: örtü mekanizması yalnız şema, tip, enum ve alan kümelerine değer ekleyebilmektedir; mühür kümesi bir tipin alanı değildir ve her yeni etikete bir davranış, yani okunmama, doğrulanıp sayılmama ya da hatırlatılma, atanması gerekmektedir. İkisi de yeni bir şema ister ve Adımın sınırı gereği yeni şema icat edilmemiştir. Bugünkü davranış dürüsttür ve sessiz değildir: kümede olmayan bir etiket geçersiz dosya adı uyarısı alır ve dosya canlı kaynak olarak okunmaya devam eder. Yine de kanonun söylediği bir yol motorda bulunmamaktadır ve bu, ilan ile gerçek arasındaki bir açıktır. Karar Founder kapısındadır: ya örtüye mühür kümesi için bir şema eklenir ya da kanon cümlesi genişletmenin bugün kapalı olduğunu söyleyecek biçimde tazelenir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-12,
+  dönüşTetikleyici: "Dışarıdan kurulum işi ele alındığında; ya da gömülü kanonu üreten betik bir sonraki kez elden geçirildiğinde",
+  ne:               "Deponun taze bir klonunda, hiçbir değişiklik yapılmadan koşulan proje denetimi bir hata vermektedir: meyve haritası KOD-EKL-GOMULUKANON kodlu Meyvenin urun/eklenti/src/gomulu-kanon.ts dosyasında yaşadığını beyan etmekte, oysa bu dosya derleme sırasında renk üretim betiğiyle üretilmekte ve eklentinin yok sayma listesinde durduğu için depoya girmemektedir. Kusur 2026-09-12 tarihinde düz bir yerel klonda ölçülmüştür ve geliştiricinin kendi çalışma ağacında dosya önceki derlemeden kaldığı için görünmemektedir. Sonuç, Sarmal'ı GitHub'dan indiren her geliştiricinin ilk denetimde hiçbir şey yapmadan bir hata görmesidir ve bu, dışarıdan kurulumun ilk izlenimini bozmaktadır. Onarımın yönü kararlaştırılmamıştır: Meyve üretilen bir dosya olarak işaretlenebilir, denetim derleme çıktısını beklemeyecek biçimde daraltılabilir ya da kurulum anlatısına derleme adımı eklenebilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-12,
+  dönüşTetikleyici: "Mühür bulgularının konumunu üreten gövde ya da hatırlatıcılar yüzeyinin tıklama yolu bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "Founder 2026-09-12 tarihinde hatırlatıcılar yüzeyinde sonraya bırakılmış dosya bulgusuna tıkladığında mühürlü dosyanın değil projenin anadizininin açıldığını göstermiştir. Ölçüm iki ayrı kusuru ayırmaktadır. Birincisi konumdur: bulgu komut satırı çıktısında hiçbir dosya konumu taşımamakta ve yüzey onu anadizine bağlamaktadır. İkincisi metindir: komut satırında doğru yazılan is/plan/blok/@SONRA@_prf_isci.sar yolu yüzeyde is@SONRA@_prf_isci.sar biçiminde, klasör parçası kaybolmuş olarak görünmektedir. Kusur yeni kurulan mühür mekanizmasının kullanıcıya dönük yüzündedir, çünkü sonra mührünün vaadi dosyanın hatırlatıcılar yüzeyinde görünür kalmasıdır; oysa kullanıcı bulguya tıklayarak dosyaya ulaşamamakta, gördüğü yol da yanlış olduğu için dosyayı elle bulamamaktadır. Metin bozulmasının kök nedeni henüz ölçülmemiştir; arşiv mührü bulgusunun Gözlemler yüzeyinde aynı iki kusuru taşıyıp taşımadığı da bir sonraki ölçümün konusudur."
+)
