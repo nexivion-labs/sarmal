@@ -199,9 +199,10 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     cpSync(join(KOK, SIMGE_RAFI), join(gecici, "raf"), { recursive: true });
     rmSync(join(gecici, "raf", "uretilmis"), { recursive: true, force: true });
     const { yazilan } = uret({ RAF: join(gecici, "raf"), URETILMIS: join(gecici, "cikti") });
-    // 6 eksen × 3 evre × 2 tema = 36 · 44 satır × 9 anlam × 2 tema = 792 → 828
-    // (A07 envanteri yirmi, otorite işaretleri üç simge ekledi: 20 → 43 satır)
-    assert.equal(yazilan.length, 828, "üretici 828 varyant dökmeli (6×3×2 eksen + 44×9×2 satır)");
+    // 6 eksen × 3 evre × 2 tema = 36 · 53 satır × 9 anlam × 2 tema = 954 → 990
+    // (A07 envanteri yirmi, otorite işaretleri üç, yapı ağacı bir ve ipucu
+    //  balonu dokuz simge ekledi: 20 → 53 satır)
+    assert.equal(yazilan.length, 990, "üretici 990 varyant dökmeli (6×3×2 eksen + 53×9×2 satır)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');
@@ -237,7 +238,11 @@ test("satır nöbeti: raf ile satır çizelgesi AYNI simgeleri kapsar — eksik 
   // o başlık bir WEBVIEW yüzeyindedir, yani ailenin fiziksel olarak ulaştığı bir
   // yerdedir ve işareti Founder kararına bırakılamazdı. Ailede yapı ağacını
   // anlatan bir çizim yoktu; çizildi ve aile KIRK DÖRDE çıktı.
-  assert.equal(raf.length, 44, "satır ailesi KIRK DÖRT simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı)");
+  // A07'nin dördüncü turunda ipucu balonu aileye bağlandı (kontrolcü hükmü
+  // 2026-09-10: balon Markdown çizer ve dosya adresli görsel kabul eder).
+  // Balonun işaretlerinden dokuzunun ailede karşılığı yoktu; çizildi ve aile
+  // ELLİ ÜÇE çıktı.
+  assert.equal(raf.length, 53, "satır ailesi ELLİ ÜÇ simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı + ipucu balonunun dokuzu)");
 });
 
 test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler ve renk GÖMÜLMEZ (YUZ-4.1)", () => {
@@ -565,31 +570,67 @@ export function arayuzEmojiSayisi(kaynak: string): number {
   return [...kodBolgesi(kaynak).matchAll(/\p{Extended_Pictographic}/gu)].length;
 }
 
-/** SIFIR KUŞAK — bugün TEMİZ olan kullanıcı yüzeyleri. VIT-KIMLIK-A05 bu beş
- *  panel kabuğunu hazır ikondan ve emojiden kurtardı; ölçüm 2026-08-29 günü
- *  hepsinde SIFIRDIR ve sıfır kalmalıdır. Buraya bir emoji geri konursa süit
- *  kırmızıya döner — Adımın "gerilemeyi nöbetle durdur" maddesi budur. */
-const SIFIR_KUSAK = [
-  "src/hatirlaticilar.ts", "src/bildirimler.ts", "src/fikirler.ts",
-  "src/onay-paneli.ts", "src/onay-govde.ts",
-  "src/durum-cubugu.ts", "src/yuzey-cekirdek.ts", "src/satirici.ts",
-  "src/gorsel-esad.ts", "src/minigraf.ts", "src/nabiz.ts", "src/anahat.ts",
-  "src/cam.ts", "src/palet.ts", "src/dallar.ts", "src/gezinme.ts", "src/tamamlama.ts",
-] as const;
+/** Nöbetin ölçtüğü evren: eklentinin BÜTÜN kaynak dosyaları. Liste elle
+ *  seçilmez. 2026-09-13 ölçümü, elle seçilmiş sıfır kuşağının kırk kaynak
+ *  dosyayı ölçüm dışında bıraktığını ve ipucu balonunu basan ipucu.ts'nin
+ *  sekiz emojisinin hiçbir listede yer almadığını gösterdi. Yeni doğan bir
+ *  kaynak dosya kendiliğinden sıfır kuşağına girer; emoji taşıyacaksa bu
+ *  taşıma aşağıdaki listelerden birinde gerekçesiyle beyan edilir. */
+const KAYNAK_DOSYALARI: readonly string[] = readdirSync(join(KOK, "src"))
+  .filter((f) => f.endsWith(".ts")).sort().map((f) => `src/${f}`);
+
+/** KAPSAM DIŞI — ölçümü başka bir nöbetin işi olan dosyalar. Burada tavana
+ *  bağlanmazlar; gerekçe ve ölçen nöbet her satırda yazılıdır. */
+const KAPSAM_DISI: ReadonlyArray<readonly [string, string]> = [
+  ["src/gomulu-kanon.ts", "kanonun gömülü aynası: türetilmiş yüzdür, emojisi dilin kendi yazımıdır ve kanonla eşitliğini gomulu-esitlik nöbeti ölçer"],
+  ["src/yuzey-metinleri.ts", "yüzey metin kataloğu: emoji taşıyan her satırı arayuz-isareti-envanteri.test.ts sahip sahip sınıflar"],
+  ["src/emoji-yuz.ts", "dilin emoji eşad katmanı: emoji orada dilin kendi yazımıdır ve davranışını emoji-yuz.test.ts ölçer"],
+];
+
+/** MUAF TAVAN — emojisi hükmen meşru olan dosyalar ve ölçülmüş sayıları.
+ *  Muafiyet sayıyı serbest bırakmaz: muaf bir dosyaya da yeni bir arayüz
+ *  işareti sızabilir, bu yüzden tavan aşılırsa süit kırmızıya döner. */
+const MUAF_TAVANI: ReadonlyArray<readonly [string, number, string]> = [
+  ["src/takdir.ts", 5, "takdir yüzeyi: dört kanalın emojisi ve boş kalp nabzı (YUZ-4.2 ikinci muafiyet)"],
+  ["src/simge-cizelgesi.ts", 25, "ARAYUZ_ISARETI çizelgesinin ANAHTARLARI: emoji orada basılmaz, aileye çevrilir"],
+  ["src/duzeltme.ts", 1, "terfi eden becerinin dosyaya yazılan niyet cümlesi: kaynak anlatımı (YUZ-4.2 birinci muafiyet)"],
+];
 
 /** BORÇ TAVANI — bugün HÂLÂ emoji taşıyan kullanıcı yüzeyleri ve ölçülmüş
  *  sayıları. Bu kalemler Adımın DÖRDÜNCÜ görev maddesinin (geçişi bütün
- *  yüzeylerde uygulamak) işidir ve ayrı bir turda kapanır. Tavan bir ÜST
- *  sınırdır: sayı artarsa süit kırmızıya döner (gerileme durur), azalırsa
- *  yeşil kalır (temizlik turu nöbete takılmaz). Ölçüm 2026-08-29. */
+ *  yüzeylerde uygulamak) işidir. Tavan bir ÜST sınırdır: sayı artarsa süit
+ *  kırmızıya döner (gerileme durur), azalırsa yeşil kalır (temizlik turu
+ *  nöbete takılmaz). Ölçüm 2026-09-13; onizleme.ts ile minigraf-cekirdek.ts
+ *  sıfıra inmişti ve sıfır kuşağına geçti;
+ *  yol-dekor.ts'nin hiçbir yüzeyce okunmayan emoji kolonu düştü ve o da geçti;
+ *  ipucu.ts balonun işaretleri aileye geçince sıfırlandı ve o da geçti. */
 const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [
-  ["src/yolharitasi.ts", 7],        // YALNIZ ağaç etiketi/açıklaması kaldı — webview aileye geçti (A07)
-  ["src/yol-dekor.ts", 5],          // DURUM_ROZET emoji kolonu
-  ["src/onizleme.ts", 2],           // önizleme webview'inin hata kutusu
-  ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekoru
-  ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekoru
-  ["src/minigraf-cekirdek.ts", 1],  // mini graf webview'inin hata satırı
+  ["src/yolharitasi.ts", 1],        // Blok satırının planlanmamış sayacı — ağaç açıklaması resim taşımaz; akıbeti Founder kararı
+  ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekorunun sönük evresi
+  ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekorunun sönük evresi
 ];
+
+/** SIFIR KUŞAK — öteki bütün kaynak dosyalar. Türetilmiş kümedir: VIT-KIMLIK-A05
+ *  panel kabuklarını hazır ikondan ve emojiden kurtardı, A07 kalanları ölçtü.
+ *  Buraya bir emoji girerse süit kırmızıya döner — Adımın "gerilemeyi nöbetle
+ *  durdur" maddesi budur. */
+const LISTELENEN: readonly string[] = [
+  ...KAPSAM_DISI.map(([d]) => d), ...MUAF_TAVANI.map(([d]) => d), ...BORC_TAVANI.map(([d]) => d),
+];
+const SIFIR_KUSAK: readonly string[] = KAYNAK_DOSYALARI.filter((d) => !LISTELENEN.includes(d));
+
+test("arayüz nöbeti: KAPSAM TAMDIR — her kaynak dosya tek bir sınıftadır, listelerde bayat ad yoktur", () => {
+  assert.ok(KAYNAK_DOSYALARI.length > 50,
+    `arayüz nöbeti: kaynak evreni beklenmedik biçimde küçük (${KAYNAK_DOSYALARI.length}); tarama src dizinini gezmiyor olabilir`);
+  assert.ok(SIFIR_KUSAK.length > 40,
+    `arayüz nöbeti: sıfır kuşağı beklenmedik biçimde küçük (${SIFIR_KUSAK.length}); nöbet boş küme üstünde koşuyor olabilir`);
+  const bayat = LISTELENEN.filter((d) => !KAYNAK_DOSYALARI.includes(d));
+  assert.deepEqual(bayat, [] as string[],
+    "arayüz nöbeti: listede adı geçen dosya diskte yok: " + bayat.join(", ") + " — ölü satır bir sonraki turu yanıltır");
+  const cift = LISTELENEN.filter((d, i) => LISTELENEN.indexOf(d) !== i);
+  assert.deepEqual(cift, [] as string[],
+    "arayüz nöbeti: bu dosyalar iki listede birden: " + cift.join(", ") + " — her dosya tek bir sınıfa bağlanır");
+});
 
 test("arayüz nöbeti: SIFIR KUŞAK yüzeylerinde emoji SIFIRDIR (yorum bölgesi ayrılır, kaynak anlatımı kapsam dışıdır)", () => {
   for (const dosya of SIFIR_KUSAK) {
@@ -597,12 +638,12 @@ test("arayüz nöbeti: SIFIR KUŞAK yüzeylerinde emoji SIFIRDIR (yorum bölgesi
     assert.equal(n, 0,
       `arayüz nöbeti: ${dosya} kod/dizgi bölgesinde ${n} emoji taşıyor — ` +
       "kullanıcıya görünen işaret kilitli vektörel aileden gelir (Founder hükmü 2026-08-05). " +
-      "Emoji bir NİYET CÜMLESİNDEyse yorum bölgesine ait olmalıdır.");
+      "Emoji bir NİYET CÜMLESİNDEyse yorum bölgesine ait olmalıdır; hükmen meşruysa MUAF_TAVANI listesinde gerekçesiyle beyan edilir.");
   }
 });
 
-test("arayüz nöbeti: borç tavanı AŞILAMAZ — temizlik yeşil kalır, gerileme kırmızıya döner", () => {
-  for (const [dosya, tavan] of BORC_TAVANI) {
+test("arayüz nöbeti: borç ve muaf tavanı AŞILAMAZ — temizlik yeşil kalır, gerileme kırmızıya döner", () => {
+  for (const [dosya, tavan] of [...BORC_TAVANI, ...MUAF_TAVANI.map(([d, n]) => [d, n] as const)]) {
     const n = arayuzEmojiSayisi(oku(dosya));
     assert.ok(n <= tavan,
       `arayüz nöbeti: ${dosya} ölçümü ${n}, tavanı ${tavan} — yüzeye emoji GERİ KONDU. ` +

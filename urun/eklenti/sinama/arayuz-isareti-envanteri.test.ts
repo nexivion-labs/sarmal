@@ -33,19 +33,20 @@
 //                          olarak taşır; basılan yüzey aileye çevrilir.
 //   `günlük`             — çıktı kanalı ve konsol satırı; Adımın kendi üç
 //                          sınıfındaki "geliştirici gözüne bakan iç kayıt".
-//   `sınır`              — SINIR VAKASI: ipucu balonu, bildirim/durum çubuğu
-//                          ve satır-içi dekor. Founder hükmü bekler (aşağıda).
+//   `sınır`              — SINIR VAKASI: bildirim ve durum çubuğu. Hüküm ile
+//                          kanon lafzı çatışır; Founder kararı bekler (aşağıda).
 //   `borç`               — kalan açık borç; YUZ-4.2 kapsamındadır.
 //
-//   ── SINIR VAKASI: FOUNDER HÜKMÜ BEKLER ───────────────────────────────────
-//   Bir ipucu balonu ya da bir bildirim metni "arayüz işareti" midir, yoksa
-//   dilin kendi yazımı mıdır? Bu nöbet bunu KENDİ KARARLAŞTIRMAZ ve o kalemlere
-//   DOKUNMAZ. Sorunun kökü fiziktir: ARAYUZ_ISARETI çizelgesinin belgesi,
-//   ailenin ulaşamadığı yüzeyleri (bildirim ve tanı iletisi düz metindir, durum
-//   çubuğu yalnız codicon yazı tipi basar, ağaç öğesinin etiketi ve açıklaması
-//   resim taşımaz) bilerek kapsam dışında bırakmış ve "oralardaki işaretin
-//   akıbeti Founder kararıdır" diye yazmıştır. `sınır` sınıfı o beyanın
-//   sayılabilir hâlidir; hüküm geldiğinde kalemler ya `borç` olur ya muaf.
+//   ── SINIR VAKASI: HÜKÜM İLE KANON LAFZI ÇATIŞIYOR ─────────────────────────
+//   Kontrolcü hükmü 2026-09-10 (Founder yetki devriyle, is/plan/blok/vitrin_ui.sar)
+//   muafiyeti işaretin yerine değil yüzeyin FİZİKSEL yeteneğine bağladı: ipucu
+//   balonu ile satır-içi dekor görsel taşıyabilir ve BORÇTUR; bildirim ile durum
+//   çubuğu taşıyamaz ve MUAFTIR. İlk yarı 2026-09-13 turunda uygulandı: ipucu
+//   balonu işaretini aileden çizer, düz metin ipuçları kelimeye indi, satır-içi
+//   dekor `borç` sınıfındadır. İkinci yarı UYGULANMADI, çünkü YUZ-4.2'nin bugünkü
+//   lafzı "durum çubuğu" ile "bildirim"i yasak listesinde adıyla sayar ve
+//   fiziksel yetenek muafiyeti tanımaz; plan kaydı kanonu geçemez. O kalemler bu
+//   yüzden `sınır` sınıfında kalır ve bu nöbet onlara DOKUNMAZ.
 //
 //   ── BU NÖBET NE YAPAR VE NE YAPMAZ ───────────────────────────────────────
 //   Borcu kapatmaz; borcun BÜYÜMESİNİ imkânsız kılar ve kapanışını görünür
@@ -64,7 +65,7 @@
 import "./dil-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -115,28 +116,13 @@ const ENVANTER: Record<string, { adet: number; sinif: Sinif }> = {
   "IZ_METINLERI.performansTuru": { adet: 2, sinif: "günlük" },
   "IZ_METINLERI.turCoktu": { adet: 2, sinif: "günlük" },
   "IZ_METINLERI.yavasGenisletme": { adet: 2, sinif: "günlük" },
-  // ── SINIR VAKASI · İPUCU BALONU (hover markdown) ──────────────────────────
-  "IPUCU_BELGE_METINLERI.acilis": { adet: 2, sinif: "sınır" },
-  "IPUCU_BELGE_METINLERI.kapanis": { adet: 2, sinif: "sınır" },
-  "IPUCU_SOZCE_METINLERI.akisOku": { adet: 2, sinif: "sınır" },
-  "IPUCU_SOZCE_METINLERI.i18n": { adet: 2, sinif: "sınır" },
-  "IPUCU_SOZCE_METINLERI.islec": { adet: 2, sinif: "sınır" },
-  "YILDIZ_METINLERI.ipucu": { adet: 2, sinif: "sınır" },
-  "YOL_METINLERI.aktifIpucu": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.blokluAlt": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.planlanmamis": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.tarife": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.varlikIpucu": { adet: 1, sinif: "sınır" },
-  anahtarIpucu: { adet: 1, sinif: "sınır" },
-  bolumEtiketiIpucu: { adet: 4, sinif: "sınır" },
-  caprazBakisIpucu: { adet: 2, sinif: "sınır" },
-  ipucuIslecMetni: { adet: 2, sinif: "sınır" },
-  kararMetniIpucuEki: { adet: 2, sinif: "sınır" },
-  kenarIpucu: { adet: 2, sinif: "sınır" },
-  parametreIpucu: { adet: 2, sinif: "sınır" },
-  tipIpucuMetni: { adet: 5, sinif: "sınır" },
-  varsayilanlarIpucu: { adet: 2, sinif: "sınır" },
-  yetkiIpucu: { adet: 2, sinif: "sınır" },
+  // ── İPUCU BALONU: işaret aileden gelir (kontrolcü hükmü 2026-09-10) ──────
+  //    Katalog balonun işaretini emojiyle değil ailenin adıyla yazar ve çizimi
+  //    etkinleşmede kurulan çiziciye bırakır. Kalan iki kalemdeki ❌, belge
+  //    iskeletinin kod bloğunda ve bölüm açıklamasında anti-desen maddelerinin
+  //    kaynakta nasıl YAZILDIĞINI anlatır; bir işaret değil dilin yazımıdır.
+  "IPUCU_BELGE_METINLERI.acilis": { adet: 2, sinif: "yazım" },
+  ipucuIslecMetni: { adet: 2, sinif: "yazım" },
   // ── SINIR VAKASI · BİLDİRİM VE DURUM ÇUBUĞU ───────────────────────────────
   "EKLENTI_KABUK_METINLERI.eskiKopyaSaltOkunur": { adet: 2, sinif: "sınır" },
   "EKLENTI_KABUK_METINLERI.giydirKlasorGerekli": { adet: 2, sinif: "sınır" },
@@ -146,17 +132,18 @@ const ENVANTER: Record<string, { adet: number; sinif: Sinif }> = {
   "YOL_METINLERI.yasakGecis": { adet: 1, sinif: "sınır" },
   iskeletKuruldu: { adet: 2, sinif: "sınır" },
   panelOdakMesaji: { adet: 1, sinif: "sınır" },
-  // ── SINIR VAKASI · SATIR-İÇİ DEKOR (after.contentText) ────────────────────
-  "ONAY_YUZEY_METINLERI.bekliyorSus": { adet: 1, sinif: "sınır" },
-  "YILDIZ_METINLERI.terfiBekliyor": { adet: 1, sinif: "sınır" },
-  "YILDIZ_METINLERI.uyari": { adet: 1, sinif: "sınır" },
-  // ── AÇIK BORÇ: BUGÜN BOŞ ──────────────────────────────────────────────────
-  //    Son üç yüzey bu turda kapandı: kod eylemi (⌘.) başlıkları, hızlı seçim
-  //    yer tutucusu ve tamamlama ayrıntısı. Üçünde de VS Code metnin yanına
-  //    resim çizmez, dolayısıyla kapanış işareti KALDIRMAK demekti (YUZ-4.2:
-  //    ikon metinsel etiketin yerine geçemez, düştüğünde etiket tek başına
-  //    yeter). Hane bilerek BOŞ bırakıldı ve silinmedi: yeni bir borç doğduğunda
-  //    yeri hazırdır ve sınıfın kendisi kaybolmadığı için sayaç susmaz.
+  // ── AÇIK BORÇ · SATIR-İÇİ DEKOR (after.contentText) ───────────────────────
+  //    Kontrolcü hükmü 2026-09-10: dekor görsel taşıyabilir (bu eklenti editör
+  //    hanesinde contentIconPath kullanır), dolayısıyla BORÇTUR. Kapanışı iki
+  //    tasarım sorusuna bağlıdır ve ikisi de Founder'ın önceki hükümlerine
+  //    dokunur: nabzın sönük evresinin görselle nasıl çizileceği (Founder
+  //    2026-07-06 ve 2026-07-17 nabız istekleri) ve rozet renginin kanon rozet
+  //    renklerinden mi, ailenin anlam çizelgesinden mi okunacağı. Aynı dekorun
+  //    sönük evresi katalog dışında yaşar (yildiz.ts ve onay-kuyrugu.ts) ve
+  //    simge-cizelgesi.test.ts borç tavanıyla sayılır.
+  "ONAY_YUZEY_METINLERI.bekliyorSus": { adet: 1, sinif: "borç" },
+  "YILDIZ_METINLERI.terfiBekliyor": { adet: 1, sinif: "borç" },
+  "YILDIZ_METINLERI.uyari": { adet: 1, sinif: "borç" },
 };
 
 /**
@@ -197,7 +184,14 @@ function envanteriOlc(): Map<string, number> {
 
 test("ENVANTER ERİŞİMİ: tarama kataloğun tamamını gezer ve boş küme üstünde koşmaz", () => {
   const olculen = envanteriOlc();
-  assert.ok(olculen.size > 50,
+  // Erişim, borcun büyüklüğüyle değil kataloğun başına, ortasına ve sonuna
+  // varmakla ölçülür: borç kapandıkça sahip sayısı düşer ve düşmesi doğrudur
+  // (2026-09-13 turu altmış dört sahibi kırk üçe indirdi). Aşağıdaki üç sahip
+  // hükmen muaftır, dolayısıyla temizlikle kaybolmaz; biri görünmezse tarama
+  // kataloğun o bölgesine inmiyordur.
+  for (const sahip of ["IZ_METINLERI.izTuru", "TAKDIR_METINLERI.karsilama", "emojiYazimiIpucu"])
+    assert.ok(olculen.has(sahip), `tarama ${sahip} sahibine varmadı; kataloğun bir bölgesi ölçüm dışında kalıyor`);
+  assert.ok(olculen.size > 20,
     `envanter beklenmedik biçimde küçük (${olculen.size} sahip); tarama kataloğu gezmiyor olabilir`);
 });
 
@@ -351,4 +345,205 @@ test("KAPANDI: ağaç satırlarının etiketi işareti İKİ KEZ söylemez", asy
   assert.ok(!EMOJI.test(oku("../src/minigraf-cekirdek.ts").split("\n")
     .filter((s) => s.includes("class=\"k\"")).join("\n")),
     "mini grafın boş hâli hâlâ emoji basıyor");
+});
+
+test("KAPANDI: düz metin ipucu ve ağaç açıklaması işareti DÜŞÜRÜR, kelimeyi korur", async () => {
+  const { YOL_METINLERI, caprazBakisIpucu } = await import("../src/yuzey-metinleri.ts");
+  // Ağaç öğesinin düz ipucu, belge bağlantısının ipucu ve ağaç satırının
+  // açıklama sütunu resim taşımaz; aile oraya ulaşamaz. Bu yüzeylerde emoji
+  // tek başına bir işaretti ve kanon onu yasaklar (YUZ-4.2), dolayısıyla işaret
+  // düştü ve anlamı kelime taşır. Etki ile beceri sayaçlarında işaretin kendisi
+  // tek etiketti; yerine sayının ne olduğunu söyleyen kelime kondu.
+  for (const [ad, metin, kelime] of [
+    ["varlık ipucu", YOL_METINLERI.varlikIpucu("Proje", "PRJ-X", "/kok", 3, 2), "bloklu"],
+    ["aktif varlık ipucu", YOL_METINLERI.aktifIpucu("ipucu"), "AKTİF VARLIK"],
+    ["çapraz bakış ipucu", caprazBakisIpucu("VIT-KIMLIK-A07"), "VIT-KIMLIK-A07"],
+    ["etki sayacı", YOL_METINLERI.etkiSayaci(3, 5), "geçişli"],
+    ["beceri sayacı", YOL_METINLERI.beceriSayisi(4), "beceri"],
+    ["geçişli kenar notu", YOL_METINLERI.gecisliDuz, "geçişli"],
+    ["doğrudan kenar notu", YOL_METINLERI.dogrudanDuz, "doğrudan"],
+  ] as const) {
+    assert.ok(!EMOJI.test(metin), `${ad} hâlâ emoji taşıyor: ${metin}`);
+    assert.ok(metin.includes(kelime), `${ad} metinsel etiketini yitirmiş: "${metin}"`);
+  }
+  const kaynak = oku("../src/yolharitasi.ts");
+  assert.ok(!/ROL_SIMGE/.test(kaynak), "koşum satırının rol emojisi çizelgesi geri döndü");
+  assert.ok(/YOL_METINLERI\.gecisliDuz : YOL_METINLERI\.dogrudanDuz/.test(kaynak),
+    "ağaç satırının kenar notu emojili webview kelimesine geri döndü — ağaç düz metin basar");
+  assert.ok(/YOL_METINLERI\.etkiSayaci\(/.test(kaynak) && /YOL_METINLERI\.beceriSayisi\(/.test(kaynak),
+    "etki ya da beceri sayacı katalog kelimesinden okunmuyor — işaret emojiye geri dönmüş olabilir");
+});
+
+test("KAPANDI: ipucu balonu işaretini aileden alır — çizici yokken işaret düşer, kelime kalır", async () => {
+  const m = await import("../src/yuzey-metinleri.ts");
+  const { SATIR_SIMGELERI, satirSvgKaynagi, satirSvgVaryanti, ipucuIsaretiMd } = await import("../src/simge-cizelgesi.ts");
+  // Balon Markdown olarak çizilir ve dosya adresli görsel kabul eder; aile
+  // oraya ULAŞIR (kontrolcü hükmü 2026-09-10). Katalog işaretin ADINI verir,
+  // etkinleşme kapısı çiziciyi kurar. Nöbet üç şeyi ölçer: çizici yokken hiçbir
+  // balonda emoji kalmadığını, çizici kuruluyken her balonun aile işareti
+  // çağırdığını ve istenen her adın ailede gerçekten bulunduğunu.
+  const balonlar = (): ReadonlyArray<readonly [string, string]> => [
+    // Belge iskeletinin kod bloğundaki ❌ dilin yazımıdır; ölçüm kod bloğunu ayırır.
+    ["belge açılışı", m.IPUCU_BELGE_METINLERI.acilis.replace(/```[\s\S]*?```/g, "")],
+    ["belge kapanışı", m.IPUCU_BELGE_METINLERI.kapanis],
+    ["bölüm etiketi", m.bolumEtiketiIpucu("desenler", "açıklama")],
+    ["serbest bölüm etiketi", m.bolumEtiketiIpucu("serbest")],
+    ["varsayılanlar", m.varsayilanlarIpucu({ durum: "beklemede" })],
+    ["kenar", m.kenarIpucu("bağımlı", "depends on", "ileri", "ne", "")],
+    ["anahtar", m.anahtarIpucu("kod", "açıklama", "")],
+    ["parametre", m.parametreIpucu("ad", "açıklama", "")],
+    ["yetki", m.yetkiIpucu("açıklama", "- L1")],
+    ["akış oku", m.IPUCU_SOZCE_METINLERI.akisOku],
+    ["i18n", m.IPUCU_SOZCE_METINLERI.i18n("#a.b")],
+    ["işleç", m.IPUCU_SOZCE_METINLERI.islec("==", "eşitlik")],
+    ["sade tip kartı", m.tipIpucuMetni("Adım", "plan", "ne", undefined)],
+    ["zengin tip kartı", m.tipIpucuMetni("Adım", "plan", "ne", { tanim: "t", yeri: "y", gorev: "g", ajan: "a", insan: "i" })],
+    ["karar eki", m.kararMetniIpucuEki("özet", "hüküm")],
+    ["Kuzey Yıldızı", m.YILDIZ_METINLERI.ipucu("neden")],
+    ["tarife", m.YOL_METINLERI.tarife("2026-09-30")],
+    ["planlanmamış", m.YOL_METINLERI.planlanmamis("neden")],
+    ["bloklu alt", m.YOL_METINLERI.blokluAlt(2)],
+  ];
+  const istenen = new Set<string>();
+  try {
+    for (const dil of ["tr", "en"] as const) {
+      m.yuzeyDiliniAyarla(dil);
+      m.ipucuIsaretCiziciniKur(undefined);
+      for (const [ad, metin] of balonlar()) {
+        assert.ok(!EMOJI.test(metin), `${ad} balonu (${dil}) hâlâ emoji taşıyor: ${metin.slice(0, 90)}`);
+        assert.ok(metin.replace(/[\s*_`·:—-]/g, "").length > 3,
+          `${ad} balonu (${dil}) işaretle birlikte metnini de yitirmiş`);
+      }
+      m.ipucuIsaretCiziciniKur((ad, anlam) => { istenen.add(ad); return `[[${ad}:${anlam}]]`; });
+      for (const [ad, metin] of balonlar())
+        assert.ok(/\[\[[a-z-]+:[a-z]+\]\] /.test(metin),
+          `${ad} balonu (${dil}) aile işaretini çağırmıyor — işaret sessizce kaybolmuş`);
+    }
+  } finally {
+    m.ipucuIsaretCiziciniKur(undefined);
+    m.yuzeyDiliniAyarla("tr");
+  }
+  const aile = new Set<string>(SATIR_SIMGELERI);
+  for (const ad of istenen) {
+    assert.ok(aile.has(ad), `balon "${ad}" işaretini istiyor ama bu ad satır ailesinde yok`);
+    const kaynak = satirSvgKaynagi(ad as (typeof SATIR_SIMGELERI)[number]);
+    assert.ok(existsSync(fileURLToPath(new URL(`../${kaynak}`, import.meta.url))),
+      `balonun istediği "${ad}" simgesinin rafta kaynağı yok (${kaynak})`);
+  }
+  assert.equal(ipucuIsaretiMd(`file:///e/${satirSvgVaryanti("tip", "duz", "koyu")}`),
+    "![](file:///e/medya/simgeler/uretilmis/satir-tip-duz-koyu.svg|width=14,height=14)",
+    "balona gömülen işaret üretilmiş varyantı boş alternatif metinle ve sabit ölçüyle çağırmalı");
+  assert.ok(/ipucuIsaretCiziciniKur\(ipucuIsaretCizicisi\(context\.extensionUri\)\)/.test(oku("../src/eklenti.ts")),
+    "etkinleşme kapısı ipucu çiziciyi kurmuyor — balonlar işaretsiz kalır");
+  const ipucuKaynagi = oku("../src/ipucu.ts");
+  assert.ok(/activeColorTheme\.kind/.test(ipucuKaynagi) && /satirSvgVaryanti\(ad, anlam, tema\)/.test(ipucuKaynagi),
+    "ipucu çizicisi tema kanalını ya da üretilmiş varyantı okumuyor — <img> currentColor çözmez");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MANİFEST, REHBER VE PARÇACIK YÜZEYLERİ (VIT-KIMLIK-A07 · 2026-09-13)
+//
+//   Yukarıdaki envanter yalnız metin kataloğunu (yuzey-metinleri.ts) gezer.
+//   Kullanıcıya basılan metnin bir bölümü ise eklentinin MANİFESTİNDE yaşar:
+//   komut paletinin ve menülerin komut başlıkları, Ayarlar sayfasının
+//   açıklamaları, karşılama rehberinin adım başlıkları ve sayfaları, anlamsal
+//   simge açıklaması, ürün ikon temasının adı ve tamamlama listesine düşen
+//   parçacık açıklamaları. 2026-09-13 ölçümüne dek bu yüzeylerin hiçbiri bir
+//   nöbete bağlı değildi ve yerelleştirme dosyalarındaki 92 dizenin 21'i emoji
+//   taşıyordu. On dördü arayüz işaretiydi ve kalktı: bu yüzeyler düz metin
+//   basar, aile oraya ulaşamaz, dolayısıyla işaret düşer ve kelime kalır
+//   (YUZ-4.2: ikon metinsel etiketin yerine geçemez, düştüğünde etiket tek
+//   başına yeter). Kalan yedisi takdir yüzeyinin komutlarıdır ve hükmen meşrudur.
+//
+//   ÖLÇÜ EMOJİ SUNUMUDUR. Bu yüzeylerdeki metin, okuma modunun kanonik adında
+//   geçen `↔` gibi tipografik okları da taşır. Bu oklar Unicode'un resimsi
+//   sınıfındadır fakat varsayılan sunumları METİNDİR ve emoji olarak çizilmez.
+//   Ölçü bu yüzden yalnız emoji olarak basılan işareti sayar: kendiliğinden
+//   emoji sunumlu karakteri ya da emoji seçicisiyle (VS16) biten resimsi
+//   karakteri.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const EMOJI_SUNUMU = /\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F/u;
+
+/** Yerelleştirme dizelerinde emoji taşımasına izin verilen anahtarlar. İki dil
+ *  dosyası AYNI kümeyi taşır; küme dışında emoji belirirse süit kırmızıya döner,
+ *  kümedeki bir kalem emojisini yitirirse de kırmızıya döner (kayıt borcu). */
+const MANIFEST_ENVANTERI: Readonly<Record<string, Sinif>> = {
+  // TAKDİR YÜZEYİ: yorum dizisinin satır-içi kanal düğmeleri (package.json
+  // `comments/commentThread/context`) ile takdir ve hasat komutları. Kanal
+  // adları takdirKanallari çizelgesinin dört kanalıdır ve katalogda da
+  // `takdir` sınıfındadır; iki yüzey aynı kanalı aynı işaretle söyler.
+  "command.writeAppreciation": "takdir",
+  "command.writeFeedback": "takdir",
+  "command.harvestFeedback": "takdir",
+  "command.sendThanks": "takdir",
+  "command.sendAppreciation": "takdir",
+  "command.sendHonor": "takdir",
+  "command.sendSuggestion": "takdir",
+};
+
+/** Parçacık açıklamalarının emoji taşıyan kalemleri. Tamamlama listesinde tip
+ *  adına eklenen tip emojisidir ve katalogdaki `tipTamamlamaDetayi` emsaliyle
+ *  aynı `yazım` sınıfındadır. Dördünden üçünün emojisi (Faz, Katman, Adım)
+ *  bugün kanonun tip emoji çizelgesiyle çelişir; bu bir arayüz işareti kusuru
+ *  değil içerik kaymasıdır ve bu Adımın kapsamı dışında ayrı borç olarak
+ *  raporlanmıştır. Nöbet sayıyı sabitler; kayma onarıldığında da yeşil kalır. */
+const PARCACIK_ENVANTERI: Readonly<Record<string, Sinif>> = {
+  Blok: "yazım", Faz: "yazım", Katman: "yazım", Adım: "yazım",
+};
+
+const dizinOku = (u: string): string[] => readdirSync(fileURLToPath(new URL(u, import.meta.url)));
+
+test("MANİFEST: iki yerelleştirme dosyasının emoji taşıyan anahtar kümesi envanterle BİREBİRDİR", () => {
+  const beklenen = Object.keys(MANIFEST_ENVANTERI).sort();
+  for (const dosya of ["package.nls.json", "package.nls.tr.json"]) {
+    const nls = JSON.parse(oku(`../${dosya}`)) as Record<string, string>;
+    const anahtarlar = Object.keys(nls);
+    assert.ok(anahtarlar.length > 80,
+      `${dosya} beklenmedik biçimde küçük (${anahtarlar.length} anahtar); tarama dosyayı gezmiyor olabilir`);
+    const emojili = anahtarlar.filter((a) => EMOJI_SUNUMU.test(nls[a] ?? "")).sort();
+    const yeniler = emojili.filter((a) => !(a in MANIFEST_ENVANTERI));
+    const kayiplar = beklenen.filter((a) => !emojili.includes(a));
+    assert.deepEqual(yeniler, [] as string[],
+      `${dosya}: bu manifest dizelerine emoji GİRDİ: ${yeniler.join(", ")} — YUZ-4.2 kullanıcıya ` +
+      "görünen yüzeylerde emojiyi arayüz işareti olarak yasaklar. Komut başlığı, ayar açıklaması " +
+      "ve rehber başlığı düz metindir; aile oraya ulaşamaz, işaret düşer ve kelime kalır.");
+    assert.deepEqual(kayiplar, [] as string[],
+      `${dosya}: envanterdeki ${kayiplar.join(", ")} artık emoji taşımıyor — bu bir kusur değil ` +
+      "kayıt borcudur; kalemi MANIFEST_ENVANTERI'nden düşür ki sonraki tur neyin kaldığını okuyabilsin.");
+  }
+});
+
+test("MANİFEST: package.json'un doğrudan dizeleri ve karşılama rehberinin sayfaları emojisizdir", () => {
+  const bulgular: string[] = [];
+  const gez = (deger: unknown, yol: string): void => {
+    if (typeof deger === "string") { if (EMOJI_SUNUMU.test(deger)) bulgular.push(`package.json${yol}`); return; }
+    if (deger && typeof deger === "object") for (const [k, v] of Object.entries(deger)) gez(v, `${yol}.${k}`);
+  };
+  gez(JSON.parse(oku("../package.json")), "");
+  const rehber = dizinOku("../medya/rehber/").filter((f) => f.endsWith(".md"));
+  assert.ok(rehber.length >= 6, `karşılama rehberinin sayfaları bulunamadı (${rehber.length}); tarama boş küme üstünde koşuyor`);
+  for (const f of rehber) if (EMOJI_SUNUMU.test(oku(`../medya/rehber/${f}`))) bulgular.push(`medya/rehber/${f}`);
+  assert.deepEqual(bulgular, [] as string[],
+    "Bu manifest yüzeylerinde emoji var: " + bulgular.join(", ") +
+    " — YUZ-4.2: kullanıcıya görünen metinde işaret kilitli vektörel aileden gelir ya da düşer.");
+});
+
+test("PARÇACIK: tamamlama listesine düşen parçacık metinlerinde emoji yalnız envanterdeki kalemlerdedir", () => {
+  const dosyalar = dizinOku("../snippets/").filter((f) => f.endsWith(".code-snippets"));
+  assert.ok(dosyalar.length > 0, "parçacık dosyası bulunamadı; tarama boş küme üstünde koşuyor");
+  const bulunan: string[] = [];
+  let toplam = 0;
+  for (const f of dosyalar) {
+    const parcaciklar = JSON.parse(oku(`../snippets/${f}`)) as Record<string, { prefix?: string | string[]; description?: string }>;
+    for (const [ad, p] of Object.entries(parcaciklar)) {
+      toplam++;
+      if (EMOJI_SUNUMU.test([p.prefix ?? ""].flat().join(" "))) bulunan.push(`${ad}.prefix`);
+      if (EMOJI_SUNUMU.test(p.description ?? "")) bulunan.push(ad);
+    }
+  }
+  assert.ok(toplam > 5, `parçacık sayısı beklenmedik biçimde küçük (${toplam})`);
+  assert.deepEqual(bulunan.sort(), Object.keys(PARCACIK_ENVANTERI).sort(),
+    "Parçacık metinlerinde emoji taşıyan kalem kümesi envanterden ayrıştı — yeni bir emoji girdiyse " +
+    "YUZ-4.2 onu yasaklar; bir kalem emojisini yitirdiyse PARCACIK_ENVANTERI'nden düşür.");
 });

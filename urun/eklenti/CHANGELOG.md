@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.183 — 2026-09-13 (arayüz işaretleri Sarmal'ın kendi simge ailesinden geliyor)
+
+- **Kullanıcıya görünen yüzeylerde emoji kalmadı.** Komut adları, ayar açıklamaları, rehber sayfaları, ipucu metinleri ve ağaç açıklamaları emojisiz basılıyor ve kelimeler yerinde duruyor. YUZ-4.2 hükmü gereği emoji yalnız kaynak anlatımında ve takdir yüzeyinde meşru kalıyor.
+- **İpucu balonunun işaretleri simge ailesinden çiziliyor.** Balondaki işaretler artık platforma göre başka çizilen emojiler değil, ailenin ölçüleriyle çizilmiş vektörel simgeler. Aileye belge, etiket, ajan, varsayılan, kenar, anahtar, dil, işleç ve yıldız olmak üzere dokuz yeni simge eklendi.
+- **Gerilemeyi nöbet durduruyor.** Arayüz işareti nöbeti artık bütün kaynak dosyalarını, manifesti, rehber sayfalarını ve parçacıkları kapsıyor; bir yüzeye emoji geri konduğunda süit kırmızıya dönüyor.
+
 ## 0.9.182 — 2026-09-11 (koni taşması kanonun kendi maddelerinde sahte bulgu üretmiyor)
 
 - **Kanonun maddeleri artık birbirinin konisine yığılmıyor.** Koni taşması tanısı, bir düğüme kapsam yoluyla yirmiden fazla kural düştüğünde bağlam boğulmasını bildirir. Motor genel kapsamlı kuralları aynı dosyadaki bütün düğümlere düşürdüğü için kanonun ORK bölümündeki sekiz Karar maddesi aynı dosyadaki yirmi iki genel kuralı kendi yükü sayıyor ve Sarmal'ın kendi deposunda sekiz uyarı üretiyordu. Oysa bir kanon maddesi, ajanın üzerinde çalıştığı bir iş düğümü değil, bir hükmün kendisidir.

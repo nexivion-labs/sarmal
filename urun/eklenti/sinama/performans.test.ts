@@ -218,7 +218,10 @@ function sarDosyalariniTara(kok: string): string[] {
         if (girdi.name.startsWith(".") || dislanan.has(girdi.name)) continue;
         if (sarKapsamDisi(`${alt}/x.sar`)) continue;
         in_(yolBirlestir(dizin, girdi.name), alt);
-      } else if (girdi.name.endsWith(".sar")) {
+      } else if (girdi.name.endsWith(".sar") && !sarKapsamDisi(alt)) {
+        // MIM-3.4 (KPS-MHR-A01): mühürlü dosya panelin tarama evrenine girmez.
+        // Panelin gerçek taraması her DOSYA yolunu aynı işlevle süzer (eklenti.ts);
+        // ikiz yalnız dizinleri süzerse ilk mühürlü dosyada iki hat ayrışır.
         bulunan.push(yolBirlestir(dizin, girdi.name));
       }
     }

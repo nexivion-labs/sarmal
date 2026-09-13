@@ -34,8 +34,8 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `d11817e3b9f2de3a955a6bc87c9e9e749d20eccb2693e4cec05fdeca7cdc174f` |
 | `urun/cekirdek/src/dil-baglami.ts` | `482e3c45e6f1740e3135147b03c49d3d0ee017e5e4e4eeb40ca3acbb6c067651` |
-| `urun/eklenti/package.nls.tr.json` | `55baeb49c9a0dc46f9c612638a33c4268ec3ae1da98741ad89656cf18b0d3fbe` |
-| `urun/eklenti/package.nls.json` | `782d9834d9caed2e3a3306a3fad41301149d19efae7fcc5d78eefc9ecf38e067` |
+| `urun/eklenti/package.nls.tr.json` | `d939bf63a3956ef095c5e5b1cee5bab4f18418c59e90aada0d09abc34c747212` |
+| `urun/eklenti/package.nls.json` | `29aca55cccac66897d1743a9944dff4b0bf3813ce7871f3be6b036e2cfb0ba88` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d415520c858516d861a7758523b41d4981dc4486d05562947aae96e763c33c8c` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
@@ -312,6 +312,18 @@ demeti ilerledi; sınıflama kaydı, tanı sicili ve öteki kaynaklar bu turda
 dokunulmadan kaldı, çünkü iki maddenin hiçbiri yeni bir tanı ilan etmemiştir.
 Kanon tutarlılık yüzü ile belge okuma yüzleri aynı koşuda üreticileriyle
 yeniden üretildi.
+
+Tazeleme notu (2026-09-13 · manifest dizelerinde arayüz işaretleri): VIT-KIMLIK-A07
+Adımının turu eklentinin iki yerelleştirme dosyasındaki on dört komut, ayar,
+rehber ve tema dizesinden emojiyi kaldırdı ve kelimeleri yerinde bıraktı, çünkü
+YUZ-4.2 kullanıcıya görünen metinde emojiyi arayüz işareti olarak yasaklar ve bu
+yüzeyler düz metin basar. Değişen tek şey görünen metindir; hiçbir anahtar
+düşmemiş, hiçbir anahtar eklenmemiş ve takdir yüzeyinin yedi komutu hükmen muaf
+olduğu için emojisini korumuştur. Bu yüzden yalnız iki dil dosyasının mührü
+ilerledi ve nöbet kaydının o iki satırı canlı ölçüme çekildi; bu dosyaları okuyan
+bir türetilmiş yüz üreticisi bulunmadığı için hiçbir yüz yeniden üretilmedi. Tur
+bu kaydı tazelemeden işlenmişti, çünkü işleme kapısı yalnız eklenti yolları
+sahnelendiğinde çekirdek süitini koşturmaz; ayrışmayı turun kapanış ölçümü yakaladı.
 
 ## B · Üretici koşuları — hedef bölge ve ikinci koşu farkı
 

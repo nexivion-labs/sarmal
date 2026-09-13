@@ -23,6 +23,7 @@
 // Katalog gövdeyi tanımaz, gövdenin İSTEDİĞİ demetin şeklini tanır.
 import type { GovdeMetinleri } from "./onay-govde.ts";
 import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
+import type { AnlamRengi, SatirSimgesi } from "./simge-cizelgesi.ts";
 import { dilHanesi, sozlukAdi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
@@ -35,6 +36,25 @@ export function yuzeyDiliniAyarla(dil: CiktiDili): void {
 function yuzeyMetni(tr: string, en: string): string {
   if (!yuzeyDili) throw new Error("Yüzey dili etkin dil kapısından bağlanmadı.");
   return dilHanesi({ tr, en }, yuzeyDili);
+}
+
+// ── İPUCU BALONUNUN İŞARETİ (VIT-KIMLIK-A07 · YUZ-4.2) ─────────────────────
+//   İpucu balonu Markdown olarak çizilir ve dosya adresli görsel kabul eder;
+//   aile oraya ULAŞIR (kontrolcü hükmü 2026-09-10). Katalog bu yüzden balonun
+//   işaretini emojiyle değil ailenin adıyla yazar ve çizimi, etkinleşmede
+//   kurulan çiziciye bırakır. Çizici kurulmamışsa (sınama, VS Code dışı
+//   tüketici) işaret düşer ve kelime kalır; ikon etiketin yerine geçmediği
+//   için metin tek başına eksiksizdir.
+let ipucuCizici: ((ad: SatirSimgesi, anlam: AnlamRengi) => string) | undefined;
+
+/** Etkinleşme kapısı ipucu balonunun işaret çizicisini buradan bağlar. */
+export function ipucuIsaretCiziciniKur(cizici: ((ad: SatirSimgesi, anlam: AnlamRengi) => string) | undefined): void {
+  ipucuCizici = cizici;
+}
+
+/** İpucu balonuna gömülecek aile işareti ve ardındaki boşluk; çizici yoksa boş. */
+export function ipucuIsareti(ad: SatirSimgesi, anlam: AnlamRengi = "duz"): string {
+  return ipucuCizici ? `${ipucuCizici(ad, anlam)} ` : "";
 }
 
 // ── 📍 ÇALIŞMA ALANI KÖKLERİ — kaynak satırının okunur yazımı (VIT-GRAF-A18) ──
@@ -1491,8 +1511,8 @@ export function baglantiAcIpucu(metin: string): string {
  *  salt okunur açılır — bağımlılık değil, yalnız bakış (STR-3). */
 export function caprazBakisIpucu(kod: string): string {
   return yuzeyMetni(
-    `👁️ ${kod} öbür varlıkta yaşıyor — salt okunur bakış olarak açılır`,
-    `👁️ ${kod} lives in the other entity — opens as a read-only view`,
+    `${kod} öbür varlıkta yaşıyor — salt okunur bakış olarak açılır`,
+    `${kod} lives in the other entity — opens as a read-only view`,
   );
 }
 
@@ -1658,8 +1678,8 @@ export const YILDIZ_METINLERI = {
   get terfi(): string { return yuzeyMetni("Olgunlaşan bellek kaydı beceriye terfi etmeye hazır — dönüşümü başlatabilirim.", "The mature memory record is ready for promotion to a skill; I can start the conversion."); },
   get bilinmeyenTip(): string { return yuzeyMetni("Bilinmeyen tip için düzeltme önerim var — en yakın kanonlu tipe çevirebilirim.", "I have a fix for the unknown type and can change it to the nearest canonical type."); },
   ipucu: (neden: string): string => yuzeyMetni(
-    `🌟 **Kuzey Yıldızı** — bu satırda uygulanabilir bir öneri var:\n\n${neden}\n\nUygulamak için satıra gel ve **⌘.** (kod aksiyonları) menüsünü aç.`,
-    `🌟 **North Star** — this row has an applicable suggestion:\n\n${neden}\n\nMove to the row and open the **⌘.** (code actions) menu to apply it.`,
+    `${ipucuIsareti("yildiz")}**Kuzey Yıldızı** — bu satırda uygulanabilir bir öneri var:\n\n${neden}\n\nUygulamak için satıra gel ve **⌘.** (kod aksiyonları) menüsünü aç.`,
+    `${ipucuIsareti("yildiz")}**North Star** — this row has an applicable suggestion:\n\n${neden}\n\nMove to the row and open the **⌘.** (code actions) menu to apply it.`,
   ),
   get terfiBekliyor(): string { return yuzeyMetni("  🎓 terfi bekliyor", "  🎓 promotion pending"); },
   get uyari(): string { return yuzeyMetni("  ⚠️ uyarı", "  ⚠️ warning"); },
@@ -1712,6 +1732,12 @@ export const YOL_METINLERI = {
   get etkiler(): string { return yuzeyMetni("etkiler", "affects"); },
   get gecisli(): string { return yuzeyMetni("🌊 geçişli", "🌊 transitive"); },
   get dogrudan(): string { return yuzeyMetni("⚡ doğrudan", "⚡ direct"); },
+  // Ağaç satırı düz metin basar ve aile oraya ulaşamaz; iki kelimenin işaretsiz
+  // hâli ağacın açıklama sütunu içindir (YUZ-4.2). Emojili eşleri yalnız koni
+  // kartının webview'inde yaşar ve orada aileye çevrilir.
+  get gecisliDuz(): string { return yuzeyMetni("geçişli", "transitive"); },
+  get dogrudanDuz(): string { return yuzeyMetni("doğrudan", "direct"); },
+  etkiSayaci: (dogrudan: number, gecisli: number): string => yuzeyMetni(`${dogrudan} doğrudan · ${gecisli} geçişli`, `${dogrudan} direct · ${gecisli} transitive`),
   kabul: (adet: number): string => yuzeyMetni(`↳ kabul · ${adet} madde`, `↳ acceptance · ${adet} item${adet === 1 ? "" : "s"}`),
   get koniDetayi(): string { return yuzeyMetni("detay: koni kartı", "details: cone card"); },
   yavasGenisletme: (sure: number, kim: string, adet: number): string => yuzeyMetni(`${sure} ms · ${kim} · ${adet} çocuk`, `${sure} ms · ${kim} · ${adet} children`),
@@ -1734,15 +1760,15 @@ export const YOL_METINLERI = {
   kumeAciklama: (sayi: number): string => yuzeyMetni(`${sayi} proje`, `${sayi} project${sayi === 1 ? "" : "s"}`),
   varlikIpucu: (tip: string, kod: string, kok: string, blok: number, bloklu: number): string => {
     const gorunenTip = kanonikWidgetAdi(tip, tip);
-    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\n⛔ altında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n⛔ ${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
+    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\naltında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
   },
   aktifAciklama: (aciklama: string): string => yuzeyMetni(`aktif · ${aciklama}`, `active · ${aciklama}`),
-  aktifIpucu: (ipucu: string): string => yuzeyMetni(`📍 AKTİF VARLIK — imleç bu projede\n${ipucu}`, `📍 ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
+  aktifIpucu: (ipucu: string): string => yuzeyMetni(`AKTİF VARLIK — imleç bu projede\n${ipucu}`, `ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
   get varligaOdaklan(): string { return yuzeyMetni("Varlığa odaklan", "Focus entity"); },
   get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
-  tarife: (tarih: string): string => yuzeyMetni(`\n\n🚄 tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n🚄 schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
-  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n🧊 **planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n🧊 **unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
-  blokluAlt: (adet: number): string => yuzeyMetni(` · ⛔ altında ${adet} bloklu`, ` · ⛔ ${adet} blocked below`),
+  tarife: (tarih: string): string => yuzeyMetni(`\n\n${ipucuIsareti("zaman")}tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n${ipucuIsareti("zaman")}schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
+  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
+  blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} blocked below`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
   yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(`🚫 ${turkce}`, `🚫 Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
   geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`ℹ️ ${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `ℹ️ ${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
@@ -1767,6 +1793,7 @@ export const YOL_METINLERI = {
   konusmaBasligi: (rol: unknown, adim: unknown): string => yuzeyMetni(`Konuşma — ${String(rol ?? "?")} · ${String(adim ?? "")}`, `Conversation — ${String(rol ?? "?")} · ${String(adim ?? "")}`),
   konusmaOzeti: (zaman: string, ajan: string, giris: string, cikis: string, sira: string): string => yuzeyMetni(`🕐 ${zaman} · 👤 ajan: <b>${ajan}</b> · 🎫 token: <b>${giris}</b> → <b>${cikis}</b> · sıra #${sira}`, `🕐 ${zaman} · 👤 agent: <b>${ajan}</b> · 🎫 tokens: <b>${giris}</b> → <b>${cikis}</b> · sequence #${sira}`),
   beceriler: (beceriler: string): string => yuzeyMetni(`⚙️ beceriler: ${beceriler}`, `⚙️ skills: ${beceriler}`),
+  beceriSayisi: (adet: number): string => yuzeyMetni(`${adet} beceri`, `${adet} skill${adet === 1 ? "" : "s"}`),
   get hamPrompt(): string { return yuzeyMetni("📤 ŞEF'in ham prompt'u", "📤 Raw lead prompt"); },
   get hamYanit(): string { return yuzeyMetni("📥 Etmenin ham yanıtı", "📥 Raw agent response"); },
 } as const;
@@ -2088,24 +2115,24 @@ export function emojiIpucuSatiri(emoji: string): string {
 
 export const IPUCU_BELGE_METINLERI = {
   get acilis(): string { return yuzeyMetni(
-    "📖 **`-->|`** — belge bloğu açılışı *(söz dizimi kuralı)*\n\nBuradan `|<--` kapanışına dek her şey **belge metnidir**: markdown, bölüm etiketleri ve ASCII şekiller ham akar — kod olarak yorumlanmaz. Blok, altındaki widget'ın belgesi olur.\n\n**Resmî belge iskeleti** (başlık formatları):\n```\n# Başlık            ← belgenin adı (okuma modunda büyük başlık)\n> Kaynak: ...       ← alıntı satırı (kitap/sayfa atfı)\n‹ne-zaman›          ← bu bilgi ne zaman devreye girer + \"DEĞİL:\" sınırı\n‹desenler›          ← bilginin gövdesi (## alt başlıklar serbest)\n  ‹şekil ad=\"...\" kaynak=\"...\"›  ← şekil/şema (aynen korunur)\n‹anti-desenler›     ← kaçınılacak hatalar (❌ liste)\n‹neden›             ← bu bilginin varlık gerekçesi\n```\n\n**Kime ne fayda sağlar:** 👤 insan dosyayı okuma modunda kitap gibi okur · 🤖 AI ajanı bölümleri tanıyıp doğru bağlamda yüklenir · ⚙️ makine belgeyi koddan ayırır, asla karıştırmaz.\n\n⚠️ Akış oku `-->` ile karıştırma: ok'a **bitişik** `|` bloğu açar; `--> KOD` ise besleme kenarıdır.",
-    "📖 **`-->|`** — document-block opening *(syntax rule)*\n\nEverything up to `|<--` is **document text**: Markdown, section tags and ASCII figures pass through unchanged and are not interpreted as code. The block documents the widget below it.\n\n**Official document skeleton** (heading forms):\n```\n# Title             ← document title (large in reading mode)\n> Source: ...       ← quotation/citation line\n‹ne-zaman›          ← when this knowledge applies + its `DEĞİL:` boundary\n‹desenler›          ← the body (## subheadings are free-form)\n  ‹şekil ad=\"...\" kaynak=\"...\"›  ← figure/diagram, preserved exactly\n‹anti-desenler›     ← mistakes to avoid (❌ list)\n‹neden›             ← why this knowledge exists\n```\n\n**Who benefits:** 👤 people read the file like a book · 🤖 agents load the right sections in context · ⚙️ the machine never confuses documentation with code.\n\n⚠️ Do not confuse it with the flow arrow: a `|` immediately after `-->` opens a block, while `--> KOD` is a feeds edge.",
+    ipucuIsareti("belge") + "**`-->|`** — belge bloğu açılışı *(söz dizimi kuralı)*\n\nBuradan `|<--` kapanışına dek her şey **belge metnidir**: markdown, bölüm etiketleri ve ASCII şekiller ham akar — kod olarak yorumlanmaz. Blok, altındaki widget'ın belgesi olur.\n\n**Resmî belge iskeleti** (başlık formatları):\n```\n# Başlık            ← belgenin adı (okuma modunda büyük başlık)\n> Kaynak: ...       ← alıntı satırı (kitap/sayfa atfı)\n‹ne-zaman›          ← bu bilgi ne zaman devreye girer + \"DEĞİL:\" sınırı\n‹desenler›          ← bilginin gövdesi (## alt başlıklar serbest)\n  ‹şekil ad=\"...\" kaynak=\"...\"›  ← şekil/şema (aynen korunur)\n‹anti-desenler›     ← kaçınılacak hatalar (❌ liste)\n‹neden›             ← bu bilginin varlık gerekçesi\n```\n\n**Kime ne fayda sağlar:** " + ipucuIsareti("kisi") + "insan dosyayı okuma modunda kitap gibi okur · " + ipucuIsareti("ajan") + "AI ajanı bölümleri tanıyıp doğru bağlamda yüklenir · " + ipucuIsareti("beceri") + "makine belgeyi koddan ayırır, asla karıştırmaz.\n\n" + ipucuIsareti("uyari", "uyari") + "Akış oku `-->` ile karıştırma: ok'a **bitişik** `|` bloğu açar; `--> KOD` ise besleme kenarıdır.",
+    ipucuIsareti("belge") + "**`-->|`** — document-block opening *(syntax rule)*\n\nEverything up to `|<--` is **document text**: Markdown, section tags and ASCII figures pass through unchanged and are not interpreted as code. The block documents the widget below it.\n\n**Official document skeleton** (heading forms):\n```\n# Title             ← document title (large in reading mode)\n> Source: ...       ← quotation/citation line\n‹ne-zaman›          ← when this knowledge applies + its `DEĞİL:` boundary\n‹desenler›          ← the body (## subheadings are free-form)\n  ‹şekil ad=\"...\" kaynak=\"...\"›  ← figure/diagram, preserved exactly\n‹anti-desenler›     ← mistakes to avoid (❌ list)\n‹neden›             ← why this knowledge exists\n```\n\n**Who benefits:** " + ipucuIsareti("kisi") + "people read the file like a book · " + ipucuIsareti("ajan") + "agents load the right sections in context · " + ipucuIsareti("beceri") + "the machine never confuses documentation with code.\n\n" + ipucuIsareti("uyari", "uyari") + "Do not confuse it with the flow arrow: a `|` immediately after `-->` opens a block, while `--> KOD` is a feeds edge.",
   ); },
   get kapanis(): string { return yuzeyMetni(
-    "📖 **`|<--`** — belge bloğu kapanışı *(söz dizimi kuralı)*\n\nBelge burada biter, koda dönülür.\n\n**Neden tek `|` değil?** Belgelerdeki şekiller `|` işaretiyle doludur; tek `|` kapanış olsaydı blok ilk şekilde yanlışlıkla kapanırdı. **Ayna dizisi** `|<--` şekillerde geçmez.\n\n**Faydası:** şekil ve şemalar karakteri karakterine korunur — insan da makine de aynı çizimi görür.",
-    "📖 **`|<--`** — document-block closing *(syntax rule)*\n\nThe document ends here and code resumes.\n\n**Why not one `|`?** Figures often contain vertical bars; a single-bar delimiter would close at the first figure. The mirrored `|<--` sequence does not occur in figures.\n\n**Benefit:** figures and diagrams are preserved character for character, so people and machines see the same drawing.",
+    ipucuIsareti("belge") + "**`|<--`** — belge bloğu kapanışı *(söz dizimi kuralı)*\n\nBelge burada biter, koda dönülür.\n\n**Neden tek `|` değil?** Belgelerdeki şekiller `|` işaretiyle doludur; tek `|` kapanış olsaydı blok ilk şekilde yanlışlıkla kapanırdı. **Ayna dizisi** `|<--` şekillerde geçmez.\n\n**Faydası:** şekil ve şemalar karakteri karakterine korunur — insan da makine de aynı çizimi görür.",
+    ipucuIsareti("belge") + "**`|<--`** — document-block closing *(syntax rule)*\n\nThe document ends here and code resumes.\n\n**Why not one `|`?** Figures often contain vertical bars; a single-bar delimiter would close at the first figure. The mirrored `|<--` sequence does not occur in figures.\n\n**Benefit:** figures and diagrams are preserved character for character, so people and machines see the same drawing.",
   ); },
 } as const;
 
 export function bolumEtiketiIpucu(ad: string, aciklama?: string): string {
   if (aciklama) return yuzeyMetni(
-    `🏷️ **\`‹${ad}›\`** — belge bölüm etiketi *(söz dizimi kuralı)*\n\n${aciklama}\n\n**Faydası:** 👤 insan bölümü başlığından tarar · 🤖 AI ajanı bilgiyi doğru yerde kullanır.`,
-    `🏷️ **\`‹${ad}›\`** — document section tag *(syntax rule)*\n\n${aciklama}\n\n**Benefit:** 👤 people scan by section heading · 🤖 agents use the knowledge in the right place.`,
+    `${ipucuIsareti("etiket")}**\`‹${ad}›\`** — belge bölüm etiketi *(söz dizimi kuralı)*\n\n${aciklama}\n\n**Faydası:** ${ipucuIsareti("kisi")}insan bölümü başlığından tarar · ${ipucuIsareti("ajan")}AI ajanı bilgiyi doğru yerde kullanır.`,
+    `${ipucuIsareti("etiket")}**\`‹${ad}›\`** — document section tag *(syntax rule)*\n\n${aciklama}\n\n**Benefit:** ${ipucuIsareti("kisi")}people scan by section heading · ${ipucuIsareti("ajan")}agents use the knowledge in the right place.`,
   );
   const kume = ipucuBolumAdlari().map((t) => `\`‹${t}›\``).join(" · ");
   return yuzeyMetni(
-    `🏷️ **\`‹${ad}›\`** — serbest bölüm etiketi *(söz dizimi kuralı)*\n\nBelgeyi bölümlere ayırır; adı size kalmış. İnsan ile AI için ortak okuma yapısı kurar.\n\nÖnerilen çekirdek küme: ${kume}.`,
-    `🏷️ **\`‹${ad}›\`** — free-form section tag *(syntax rule)*\n\nIt divides the document into sections; you choose the name. It creates a shared reading structure for people and agents.\n\nSuggested core set: ${kume}.`,
+    `${ipucuIsareti("etiket")}**\`‹${ad}›\`** — serbest bölüm etiketi *(söz dizimi kuralı)*\n\nBelgeyi bölümlere ayırır; adı size kalmış. İnsan ile AI için ortak okuma yapısı kurar.\n\nÖnerilen çekirdek küme: ${kume}.`,
+    `${ipucuIsareti("etiket")}**\`‹${ad}›\`** — free-form section tag *(syntax rule)*\n\nIt divides the document into sections; you choose the name. It creates a shared reading structure for people and agents.\n\nSuggested core set: ${kume}.`,
   );
 }
 
@@ -2131,66 +2158,69 @@ export function emojiBolumAdi(bolum: "kademe" | "parametre" | "durum"): string {
 export function varsayilanlarIpucu(vars: Readonly<Record<string, unknown>>): string {
   const satirlar = Object.entries(vars).map(([a, d]) => `- \`${a}: ${String(d)}\``).join("\n");
   return yuzeyMetni(
-    `\n\n**✳️ Varsayılanlar** (yazılmadığında)\n${satirlar}`,
-    `\n\n**✳️ Defaults** (when omitted)\n${satirlar}`,
+    `\n\n**${ipucuIsareti("varsayilan")}Varsayılanlar** (yazılmadığında)\n${satirlar}`,
+    `\n\n**${ipucuIsareti("varsayilan")}Defaults** (when omitted)\n${satirlar}`,
   );
 }
 
 export function kenarIpucu(ad: string, gorunenAd: string, yon: string, ne: string, emojiEk: string): string {
   return yuzeyMetni(
-    `🔗 **${ad}** — kenar (${yon})\n\n${ne}${emojiEk}`,
-    `🔗 **${ad} · ${gorunenAd}** — edge (${yon})\n\n${ne}${emojiEk}`,
+    `${ipucuIsareti("kenar")}**${ad}** — kenar (${yon})\n\n${ne}${emojiEk}`,
+    `${ipucuIsareti("kenar")}**${ad} · ${gorunenAd}** — edge (${yon})\n\n${ne}${emojiEk}`,
   );
 }
 
 export function anahtarIpucu(ad: string, aciklama: string, emojiEk: string): string {
-  return `🔑 **${ad}**\n\n${aciklama}${emojiEk}`;
+  return `${ipucuIsareti("anahtar")}**${ad}**\n\n${aciklama}${emojiEk}`;
 }
 export function parametreIpucu(ad: string, aciklama: string, emojiEk: string): string {
   return yuzeyMetni(
-    `⚙️ **${ad}** — parametre\n\n${aciklama}${emojiEk}`,
-    `⚙️ **${ad}** — parameter\n\n${aciklama}${emojiEk}`,
+    `${ipucuIsareti("beceri")}**${ad}** — parametre\n\n${aciklama}${emojiEk}`,
+    `${ipucuIsareti("beceri")}**${ad}** — parameter\n\n${aciklama}${emojiEk}`,
   );
 }
 export function yetkiIpucu(aciklama: string, kademeler: string): string {
   return yuzeyMetni(
-    `⚙️ **yetki** — parametre\n\n${aciklama}\n\n**RBAC kademeleri (kanon · yetkiSozlugu):**\n${kademeler}`,
-    `⚙️ **yetki** — parameter\n\n${aciklama}\n\n**RBAC tiers (canon · yetkiSozlugu):**\n${kademeler}`,
+    `${ipucuIsareti("beceri")}**yetki** — parametre\n\n${aciklama}\n\n**RBAC kademeleri (kanon · yetkiSozlugu):**\n${kademeler}`,
+    `${ipucuIsareti("beceri")}**yetki** — parameter\n\n${aciklama}\n\n**RBAC tiers (canon · yetkiSozlugu):**\n${kademeler}`,
   );
 }
 
 export const IPUCU_SOZCE_METINLERI = {
   get akisOku(): string { return yuzeyMetni(
-    "➡️ **`-->`** — akış oku *(söz dizimi kuralı)*\n\n`--> KOD` yazmak \"bu düğüm hedefi **besler**\" demektir (`besler: KOD`un kısa yolu) — verinin/etkinin hangi yöne aktığını gösterir. Birden çok ok, birden çok beslemedir.\n\n**Kime ne fayda sağlar:** 👤 insan akış yönünü görür · 🤖 AI ajanı bağlam ağını bu oklardan örer · ⚙️ makine hedef yoksa `kırık-referans` ile uyarır.",
-    "➡️ **`-->`** — flow arrow *(syntax rule)*\n\n`--> KOD` means this node **feeds** the target (short for `besler: KOD`) and shows the direction of data or effect. Multiple arrows declare multiple feeds.\n\n**Who benefits:** 👤 people see flow direction · 🤖 agents build the context graph from these arrows · ⚙️ the machine reports `kırık-referans` when the target is missing.",
+    ipucuIsareti("baglanti-ileri") + "**`-->`** — akış oku *(söz dizimi kuralı)*\n\n`--> KOD` yazmak \"bu düğüm hedefi **besler**\" demektir (`besler: KOD`un kısa yolu) — verinin/etkinin hangi yöne aktığını gösterir. Birden çok ok, birden çok beslemedir.\n\n**Kime ne fayda sağlar:** " + ipucuIsareti("kisi") + "insan akış yönünü görür · " + ipucuIsareti("ajan") + "AI ajanı bağlam ağını bu oklardan örer · " + ipucuIsareti("beceri") + "makine hedef yoksa `kırık-referans` ile uyarır.",
+    ipucuIsareti("baglanti-ileri") + "**`-->`** — flow arrow *(syntax rule)*\n\n`--> KOD` means this node **feeds** the target (short for `besler: KOD`) and shows the direction of data or effect. Multiple arrows declare multiple feeds.\n\n**Who benefits:** " + ipucuIsareti("kisi") + "people see flow direction · " + ipucuIsareti("ajan") + "agents build the context graph from these arrows · " + ipucuIsareti("beceri") + "the machine reports `kırık-referans` when the target is missing.",
   ); },
   i18n: (anahtar: string): string => yuzeyMetni(
-    `🌐 **\`${anahtar}\`** — i18n sözlük anahtarı\n\nMetin buraya YAZILMAZ; anahtar, \`dil:\` ile ilan edilen sözlükten çözülür. Kanonik içerik Türkçe önceliklidir ve çeviri deterministiktir.`,
-    `🌐 **\`${anahtar}\`** — i18n dictionary key\n\nText is not written here. The key resolves through the dictionary declared with \`dil:\`. Canonical content remains Turkish-first and translation is deterministic.`,
+    `${ipucuIsareti("dil")}**\`${anahtar}\`** — i18n sözlük anahtarı\n\nMetin buraya YAZILMAZ; anahtar, \`dil:\` ile ilan edilen sözlükten çözülür. Kanonik içerik Türkçe önceliklidir ve çeviri deterministiktir.`,
+    `${ipucuIsareti("dil")}**\`${anahtar}\`** — i18n dictionary key\n\nText is not written here. The key resolves through the dictionary declared with \`dil:\`. Canonical content remains Turkish-first and translation is deterministic.`,
   ),
   islec: (im: string, aciklama: string): string => yuzeyMetni(
-    `🧮 **\`${im}\`** — ifade işleci\n\n${aciklama}`,
-    `🧮 **\`${im}\`** — expression operator\n\n${aciklama}`,
+    `${ipucuIsareti("islec")}**\`${im}\`** — ifade işleci\n\n${aciklama}`,
+    `${ipucuIsareti("islec")}**\`${im}\`** — expression operator\n\n${aciklama}`,
   ),
 } as const;
 
 export function tipIpucuMetni(
   ad: string, aile: string, ne: string,
   r: { tanim: string; yeri?: string; gorev?: string; ajan?: string; insan?: string } | undefined,
-  simge = "🧩", dil: CiktiDili = "tr",
+  simge?: string, dil: CiktiDili = "tr",
 ): string {
-  if (!r) return `${simge} **${ad}** — _${aileAdi(aile)}_ ${dil === "en" ? "family" : "ailesi"}\n\n${ne}`;
-  let md = `${simge} **${ad}** — _${aile}_ ailesi\n\n${r.tanim}`;
-  if (r.yeri) md += `\n\n**🌳 Ağaçtaki yeri**\n${r.yeri}`;
-  if (r.gorev) md += `\n\n**🎯 Görevi**\n${r.gorev}`;
-  if (r.ajan) md += `\n\n**🤖 Ajana faydası**\n${r.ajan}`;
-  if (r.insan) md += `\n\n**👤 İnsana faydası**\n${r.insan}`;
+  // Tipin kanon emojisi (simgeSec) verildiyse o basılır; yoksa işaret aileden
+  // gelir. Kanon emojisinin bu konumdaki akıbeti Founder sorusudur (VIT-KIMLIK-A07).
+  const bas = simge ? `${simge} ` : ipucuIsareti("tip");
+  if (!r) return `${bas}**${ad}** — _${aileAdi(aile)}_ ${dil === "en" ? "family" : "ailesi"}\n\n${ne}`;
+  let md = `${bas}**${ad}** — _${aile}_ ailesi\n\n${r.tanim}`;
+  if (r.yeri) md += `\n\n**${ipucuIsareti("agac")}Ağaçtaki yeri**\n${r.yeri}`;
+  if (r.gorev) md += `\n\n**${ipucuIsareti("gorev")}Görevi**\n${r.gorev}`;
+  if (r.ajan) md += `\n\n**${ipucuIsareti("ajan")}Ajana faydası**\n${r.ajan}`;
+  if (r.insan) md += `\n\n**${ipucuIsareti("kisi")}İnsana faydası**\n${r.insan}`;
   return md;
 }
 
 export function kararMetniIpucuEki(ozet: string | undefined, hukum: string | undefined): string {
-  return (ozet ? yuzeyMetni(`\n\n💡 **Özet:** ${ozet}`, `\n\n💡 **Summary:** ${ozet}`) : "") +
-    (hukum ? yuzeyMetni(`\n\n⚖️ **Karar metni:** ${hukum}`, `\n\n⚖️ **Decision text:** ${hukum}`) : "");
+  return (ozet ? yuzeyMetni(`\n\n${ipucuIsareti("fikir")}**Özet:** ${ozet}`, `\n\n${ipucuIsareti("fikir")}**Summary:** ${ozet}`) : "") +
+    (hukum ? yuzeyMetni(`\n\n${ipucuIsareti("anayasa")}**Karar metni:** ${hukum}`, `\n\n${ipucuIsareti("anayasa")}**Decision text:** ${hukum}`) : "");
 }
 
 export const ONIZLEME_METINLERI = {

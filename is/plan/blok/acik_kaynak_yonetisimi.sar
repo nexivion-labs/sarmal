@@ -82,7 +82,7 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
         koşu: "2026-09-10 · KAPANDI, BİR SAPMA BEYANIYLA. Denetçi kapsamı ORK-6.4 maddesi olarak kanona indi ve altı sabit madde her biri kendi ölçüm aracını adıyla anacak biçimde yazıldı. SAPMA ŞUDUR: Adım dayanak kenarının ORK-6.1 alt maddesine bağlanmasını istiyordu, motor bunu kenar-tip uyuşmazlığı hatasıyla reddetti çünkü dayanak kenarının hedefi Karar tipinde olmak zorundadır ve kanonun hiçbir maddesinde alt maddeye dayanak yazılmamıştır; yapısal alan ORK-6 oldu ve ORK-6.1 hem hükmün açılış cümlesinde hem gerekçede adıyla anılarak boşluğu kapatılan madde olarak gösterildi. Bu sapmanın tasdiki Founder'ındır."
       }
 
-      Adım( kod: OSS-A04, durum: geliştirmede, öncelik: p2, bağımlı: [],
+      Adım( kod: OSS-A04, durum: tamamlandı, öncelik: p2, bağımlı: [], onay: "onaylandı — 2026-09-12 · FOUNDER: site uzmanı açık kadrodan çıkarılmış ve orkestrasyon kadrosunun turuna devredilmiştir; Adım eklenti, yayın ve sınama uzmanlarıyla kapanır",
         referans: [ ORK-6.3, TAKIM-EKLENTI, ETM-KONTROLCU, ETM-SAR-MOTOR, ETM-SAR-OGRETIM, ETM-SAR-DENETCI ],
         ne: "👥 Kadronun dört yeni uzmanla genişlemesi. Bugün açık tarafta yalnız dört Etmen ilanlıdır ve bunlar kontrolcü, motor uzmanı, öğretim uzmanı ile denetçidir; buna karşılık Eklenti Takımı ilan edilmiş olmasına karşın eklentinin kendi uzmanı yoktur, yayın, site ve sınama işlerinin de uzmanı yoktur. Founder 2026-08-23 tarihinde dört yeni uzmanın ilan edilmesini onaylamıştır: eklenti uzmanı, yayın uzmanı, site uzmanı ve sınama uzmanı. Founder'ın onayladığı hükme göre dördü de L3 üretici yetkisiyle doğacak ve denetçi tek L5 yetkili Etmen olarak kalmayı sürdürecektir." ) {
         görev: [
@@ -91,14 +91,14 @@ Blok( kod: BLK-OSS-YONETISIM, mevsim: FAZ-2026-EYLUL, uygular: ANY-KONTROLCU,
           "Yeni dört Etmenin ORK-6.3 maddesindeki Takım-yetki-geçit hükmüne uyduğunu, yani her birinin tekil bir Takım sahipliğine bağlandığını ve yönetici üretim yapamaz kuralını ihlal etmediğini denetle."
         ]
         kabul: [
-          "ogrenme/kadro.sar dosyasında eklenti, yayın, site ve sınama uzmanlarını tanımlayan dört yeni Etmen L3 yetkisiyle ve izole bellekle yaşamaktadır.",
+          "ogrenme/kadro.sar dosyasında eklenti, yayın ve sınama uzmanlarını tanımlayan üç yeni Etmen L3 yetkisiyle ve izole bellekle yaşamaktadır; site uzmanı Founder hükmüyle (2026-09-12) orkestrasyon kadrosunun turuna devredilmiştir.",
           "`sarmal denetle-proje .` sıfır hata ve sıfır uyarı vermektedir; RBAC bekçileri hiçbir yeni Etmende tetiklenmemektedir.",
           "Denetçi Etmeni tek L5 yetkili Etmen olarak kalmaya devam etmektedir."
         ]
         üretir: [ Meyve( kod: MYV-OSS-A04, tür: Karar,
-                  ne: "Eklenti, yayın, site ve sınama uzmanlarının ilan kararı" ) ]
+                  ne: "Eklenti, yayın ve sınama uzmanlarının ilan kararı ile site uzmanının orkestrasyon kadrosuna devri" ) ]
         sınır: "Bu Adım yalnız açık taraf kadrosunu genişletir; kapalı üründeki etmen kadrosuna dokunmaz ve dört yeni uzmanın hangi Adımlara fiilen atanacağı OSS-A03'teki mekanik seçim mekanizmasının konusudur."
-        koşu: "2026-09-10 · FOUNDER HÜKMÜ: SİTE UZMANI BEKLETİLİR. Founder kalemin acelesi olmadığını ve orkestrasyon işine geçildiğinde ele alınacağını bildirmiştir; uzman bugün ilan edilmez ve bu bir eksiklik değil bilinçli bir bekleyiştir. Gerekçe ölçümle uyumludur: sitenin ayrı bir varlık olarak çatının kendi düzeyine taşınması 2026-08-26 tarihinde gerçekleşmiştir ve açık depoya, hiçbir Adımın atayamayacağı bir uzman ilan etmek sessiz bir sapma doğururdu. 2026-09-10 · ÜÇTE ÜÇ BİTTİ, DÖRDÜNCÜSÜ ÖLÇÜMLE BLOKLANDI. Eklenti, yayın ve sınama uzmanları kadroya indi; üçü de uzman türünde, üçüncü yetki kademesinde, izole bellekli ve her biri kanıt alanı dolu kendi Belleğiyle ilan edildi, RBAC ölçümü temiz döndü. SİTE UZMANI BİLİNÇLE YAZILMADI ve gerekçesi ölçülmüştür: bu Adım 2026-08-23 tarihinde yazılmış, sitenin ayrı bir varlık olarak çatının kendi düzeyine taşınması ise 2026-08-26 tarihinde gerçekleşmiştir, dolayısıyla Adımın bu kalemi bayattır ve açık depoya hiçbir Adımın atayamayacağı bir uzman ilan etmek sessiz bir sapma doğururdu. Üreticinin önerisi site uzmanının sitenin kendi kadrosunda doğmasıdır; kalemin akıbeti Founder kapısındadır."
+        koşu: "2026-09-12 · Adım Founder hükmüyle üç uzmanla kapandı: eklenti, yayın ve sınama uzmanları 2026-09-10 tarihinde kadroya inmiş ve RBAC ölçümü temiz dönmüştü. Site uzmanı açık kadrodan çıkarılmıştır, çünkü site çatının kendi düzeyinde ayrı bir varlık olarak yaşar ve açık depoda ilan edilen bir site uzmanı hiçbir Adıma atanamazdı; kalem orkestrasyon kadrosunun turuna devredilmiştir. Kabulün dört uzman diyen ilk ölçütü bu hükümle üç uzmana daraltılmış ve daraltma onay kaydına yazılmıştır."
       }
 
       Adım( kod: OSS-A05, durum: tamamlandı, öncelik: p2, bağımlı: [ GOC-A08 ],

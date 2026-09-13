@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- İşleç: ifade işleci — çerçeve içinde artı ve eşittir. -->
+  <rect x="3.6" y="3.6" width="16.8" height="16.8" rx="2.4"/>
+  <path d="M8.4 7.2 V12"/>
+  <path d="M6 9.6 H10.8"/>
+  <path d="M13.2 14.4 H18"/>
+  <path d="M13.2 17 H18"/>
+</svg>

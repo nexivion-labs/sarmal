@@ -129,14 +129,13 @@ interface IzKaydi {
   tokenÇıkış?: number;
   sıra?: number;
 }
-/** İşlenen Adım'ın altındaki orkestrasyon alt-düğümü (✎üretici · 🕵️denetçi · 🛡️güvenlik). */
+/** İşlenen Adım'ın altındaki orkestrasyon alt-düğümü (üretici · denetçi · güvenlik). */
 interface Kosum {
   tur: "koşum";                // ayraçlı union üyesi (oturum-24 PanelOge dersi)
   etiket: string;
   aciklama: string;
   kayit: IzKaydi;
 }
-const ROL_SIMGE: Record<string, string> = { "üretici": "✎", "denetçi": "🕵️", "güvenlik": "🛡️" };
 
 // ── VIT-GRAF-A03: Adım'ın graf-kenarı alt-düğümleri — panel graf müfettişine büyür ──
 /** Adım altında beliren bilgi satırı: ↳bağımlı (rozetli, tıkla→atla) · ↳etkiler · ↳kabul. */
@@ -660,8 +659,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       if (e && (e.dogrudan.length || e.gecisli.length)) {
         const gecisliKume = new Set(e.gecisli);
         sonuc.push(grupYap(YOL_METINLERI.etkiler, "baglanti-ileri", [...e.dogrudan, ...e.gecisli],
-          `⚡${e.dogrudan.length} · 🌊${e.gecisli.length}`,
-          (k) => gecisliKume.has(k) ? YOL_METINLERI.gecisli : YOL_METINLERI.dogrudan, "turuncu"));
+          YOL_METINLERI.etkiSayaci(e.dogrudan.length, e.gecisli.length),
+          (k) => gecisliKume.has(k) ? YOL_METINLERI.gecisliDuz : YOL_METINLERI.dogrudanDuz, "turuncu"));
       }
     }
     if (o.kabulSayisi > 0) {
@@ -734,12 +733,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       const kayitlar = this.izler.get(oge.kod) ?? [];
       const kosum: Kosum[] = kayitlar.map((k) => ({
         tur: "koşum",
-        etiket: `${ROL_SIMGE[k.rol ?? ""] ?? "·"} ${k.rol ?? "?"}${k.ajanİmza ? ` · ${k.ajanİmza.kod}` : ""}`,
+        // A07: rol adı kendi etiketidir; ağaç etiketi resim taşımadığı için
+        // rolün emoji işareti düştü ve kelime kaldı (YUZ-4.2).
+        etiket: `${k.rol ?? "?"}${k.ajanİmza ? ` · ${k.ajanİmza.kod}` : ""}`,
         aciklama: [
           typeof k.tokenGiriş === "number" || typeof k.tokenÇıkış === "number"
             ? `${k.tokenGiriş ?? "?"}→${k.tokenÇıkış ?? "?"}tk` : "",
           k.model ?? "",
-          k.beceriler?.length ? `⚙️${k.beceriler.length}` : "",
+          k.beceriler?.length ? YOL_METINLERI.beceriSayisi(k.beceriler.length) : "",
         ].filter(Boolean).join(" · "),
         kayit: k,
       }));

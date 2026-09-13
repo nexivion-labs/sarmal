@@ -27,10 +27,11 @@ import {
 import {
   IPUCU_BELGE_METINLERI, IPUCU_SOZCE_METINLERI,
   anahtarIpucu, bolumEtiketiIpucu, emojiBolumAdi, emojiIpucuSatiri,
-  emojiYazimiIpucu, ipucuAnahtarMetni, ipucuBolumMetni, ipucuIslecMetni,
+  emojiYazimiIpucu, ipucuAnahtarMetni, ipucuBolumMetni, ipucuIsareti, ipucuIslecMetni,
   ipucuParamMetni, kenarIpucu, parametreIpucu, tipIpucuMetni,
   varsayilanlarIpucu, yetkiIpucu,
 } from "./yuzey-metinleri.ts";
+import { ipucuIsaretiMd, satirSvgVaryanti, type AnlamRengi, type SatirSimgesi } from "./simge-cizelgesi.ts";
 
 const EMOJI_DESENI = emojiDeseni();
 
@@ -88,9 +89,9 @@ function kimlikYedekIpucu(
   const uri = vscode.Uri.file(t.dosya);
   const goreli = vscode.workspace.asRelativePath(uri);
   return baloncuk(
-    `🧩 **${kod}** — ${gorunenTip}${ozet?.ad ? ` · ${ozet.ad}` : ""}` +
+    `${ipucuIsareti("tip")}**${kod}** — ${gorunenTip}${ozet?.ad ? ` · ${ozet.ad}` : ""}` +
     (ozet?.ne ? `\n\n${ozet.ne}` : "") +
-    `\n\n📍 [${goreli}:${t.satir}](${uri.toString()}#L${t.satir})`,
+    `\n\n${ipucuIsareti("konum")}[${goreli}:${t.satir}](${uri.toString()}#L${t.satir})`,
     aralik);
 }
 
@@ -129,14 +130,28 @@ async function insanMetniKodIpucu(
     const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
     const goreli = vscode.workspace.asRelativePath(kayit.dosya);
     return baloncuk(
-      `🧩 **${kelime}** — ${gorunenTip}` +
+      `${ipucuIsareti("tip")}**${kelime}** — ${gorunenTip}` +
       (kayit.ne ? `\n\n${kayit.ne}` : "") +
       kararMetniEki(kayit) +
-      `\n\n📍 [${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
+      `\n\n${ipucuIsareti("konum")}[${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
       kodAralik);
   }
   // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım).
   return kimlikYedekIpucu(kelime, doc, kodAralik, etkinDil);
+}
+
+/**
+ * İPUCU BALONUNUN İŞARET ÇİZİCİSİ (VIT-KIMLIK-A07 · kontrolcü hükmü 2026-09-10).
+ * Katalog işaretin ADINI verir; çizici o adı ailenin üretilmiş varyantına
+ * çevirir. Tema her çağrıda okunur, çünkü balon her üzerine gelmede yeniden
+ * kurulur ve kullanıcının tema değişikliği bir sonraki balonda görünür.
+ */
+export function ipucuIsaretCizicisi(uzanti: vscode.Uri): (ad: SatirSimgesi, anlam: AnlamRengi) => string {
+  return (ad, anlam) => {
+    const tur = vscode.window.activeColorTheme.kind;
+    const tema = tur === vscode.ColorThemeKind.Light || tur === vscode.ColorThemeKind.HighContrastLight ? "acik" : "koyu";
+    return ipucuIsaretiMd(vscode.Uri.joinPath(uzanti, satirSvgVaryanti(ad, anlam, tema)).toString());
+  };
 }
 
 export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
@@ -215,7 +230,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
           const kayit = (await kodIndeksle()).get(kelime);
           if (kayit) {
             const tipBilgi = snf.widgetTipleri.find((t) => t.ad === kayit.tip);
-            const simge = tipBilgi ? (simgeSec(snf, kayit.tip, tipBilgi.aile) ?? "🧩") : "🧩";
+            const simge = tipBilgi ? simgeSec(snf, kayit.tip, tipBilgi.aile) : undefined;
             const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
             const goreli = vscode.workspace.asRelativePath(kayit.dosya);
             // ağaç-yüzü turu: Kitaplık/Raf hover'ında alt-ağaç (YUZ-1.1 — aynı agacYüz çekirdeği)
@@ -229,12 +244,12 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
             // EMJ-A05: Etmen düğümünün karne satırı — sicil yokken derece basılmaz (dürüstlük).
             const karneEk = kayit.tip === "Etmen" && karneSatiri(snf) ? `\n\n${karneSatiri(snf)}` : "";
             return baloncuk(
-              `${simge} **${kelime}** — ${gorunenTip}` +
+              `${simge ? `${simge} ` : ipucuIsareti("tip")}**${kelime}** — ${gorunenTip}` +
               (kayit.ne ? `\n\n${kayit.ne}` : "") +
               kararMetniEki(kayit) +
               karneEk +
               agacEk +
-              `\n\n📍 [${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
+              `\n\n${ipucuIsareti("konum")}[${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
               aralik);
           }
           // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım) —
@@ -247,7 +262,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
         if (tip) {
           const rehber = rehberBul(doc);
           const zengin = etkinDil === "tr" ? rehber?.[tip.ad] : undefined;
-          const simge = simgeSec(snf, tip.ad, tip.aile) ?? "🧩";
+          const simge = simgeSec(snf, tip.ad, tip.aile);
           const ne = sozlukDuzYazisi("widgetNe", tip.ad, tip.ne, etkinDil);
           const gorunenAd = sozlukAdi("widget", tip.ad, etkinDil);
           // doğuş-rehberi turu (CUE `*` ödüncü): kanon varsayılanları hover'da GÖRÜNÜR —

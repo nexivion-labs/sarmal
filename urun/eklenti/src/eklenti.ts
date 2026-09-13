@@ -36,7 +36,7 @@ import { caprazAtifKaydi } from "./atif-baglanti.ts";   // 👁️ VIT-GRAF-A14:
 import { tamamlamaSaglayici } from "./tamamlama.ts";
 import { renkSaglayici, efsane } from "./renk.ts";
 import { anahatSaglayici } from "./anahat.ts";
-import { ipucuSaglayici } from "./ipucu.ts";
+import { ipucuIsaretCizicisi, ipucuSaglayici } from "./ipucu.ts";
 import { duzeltmeSaglayici } from "./duzeltme.ts";
 import { bicimlendirmeSaglayici } from "./bicimlendir.ts";
 import { girintiKaydi } from "./girinti.ts";
@@ -90,6 +90,7 @@ import {
   IZ_METINLERI,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
+  ipucuIsaretCiziciniKur,
   panelOdakMesaji,
   panoyaYazildi,
   panoyaKopyalanacakSatirYok,
@@ -255,6 +256,8 @@ function yuzeyKokleriniTazele(): void {
 
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
+  // VIT-KIMLIK-A07: ipucu balonunun işaretleri ailenin tema varyantından çizilir.
+  ipucuIsaretCiziciniKur(ipucuIsaretCizicisi(context.extensionUri));
   // 📍 Kaynak satırı çalışma alanına göreli yazılsın diye kökler kataloga bağlanır;
   //    klasör kümesi değişince bağ tazelenir, yoksa yol eski köke göre kısalırdı.
   yuzeyKokleriniTazele();

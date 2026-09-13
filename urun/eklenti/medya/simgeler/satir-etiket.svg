@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Etiket: belge bölümünü adlandıran künye — sivri uçlu gövde ve deliği. -->
+  <path d="M3.6 12.6 V4.8 a1.2 1.2 0 0 1 1.2 -1.2 H12.6 L20.4 11.4 a1.2 1.2 0 0 1 0 1.7 L13.1 20.4 a1.2 1.2 0 0 1 -1.7 0 Z"/>
+  <circle cx="8.2" cy="8.2" r="1.6"/>
+</svg>
