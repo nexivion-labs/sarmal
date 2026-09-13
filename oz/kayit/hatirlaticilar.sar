@@ -732,3 +732,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "İşleme kapısının süit seçimi bir sonraki kez elden geçirildiğinde; en geç bir sonraki mühür ya da plan taşıma işlemesinden önce",
   ne:               "İşleme kapısı sınama süitlerini sahnelenen yola göre seçmektedir: yalnız plan dosyaları değiştiğinde eklenti süitini, yalnız eklenti dosyaları değiştiğinde de çekirdek süitini koşmamaktadır. Oysa eklenti süitinin eşdeğerlik nöbetleri deponun gerçek ağacını okumaktadır ve yalnız plan dosyası değiştiren bir işleme bu nöbetleri kırabilir. 2026-09-12 tarihli c4e1f7e işlemesi ilk mühürlü plan dosyalarını depoya koymuş, performans süitindeki eşdeğerlik nöbetinin başvuru taraması mühürlü dosyayı süzmediği için eklenti süiti kırmızıya dönmüş, fakat kapı bunu görmemiş ve kırmızı işleme birleştirme isteğine gönderilmiştir; kusur GitHub kontrollerinde yakalanmış ve 41a4748 işlemesiyle onarılmıştır. Aynı açığın ikinci yüzü de ölçülmüştür: yalnız eklenti yolları sahnelendiğinde çekirdek süiti koşmamaktadır. Onarımın yönü kararlaştırılmamıştır: kapı her işlemede iki süiti de koşabilir, plan ve kök dosyası değişikliğini eklenti süitinin tetikleyicisi sayabilir ya da ağacı okuyan nöbetler ayrı ve hızlı bir kümeye alınabilir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-13,
+  dönüşTetikleyici: "Öğretim üreteci, sef mekanizması ya da tip kanonu bir sonraki kez elden geçirildiğinde",
+  ne:               "2026-09-13 tarihli öğretim anlatısı tazelik turu, kendi yazma alanının dışında kalan dört bayat yer ölçmüştür. Birincisi, MEK-SEF düğümü bugün dokuz çalışma anı sözleşmesi sardığı hâlde mek_sef.sar dosyasının iki satırı sekiz sözleşmeden söz etmektedir. İkincisi, öğretim kartlarının üretilen künyesi üreteç komutunu kök dizinden çalışmayan bir yolla vermektedir; kökten doğru komut urun/arac/ogretim-uret.ts yolunu kullanır. Üçüncüsü, üreteç kodundaki bir yorum artık kullanılmayan RAF-OGRETIM kodunu anmaktadır; güncel raf kodu RAF-OGRETI-OGRETIM'dir. Dördüncüsü, TIP-1.14 maddesi sınıflamada bulunmayan bir Kimlik tipini saymaktadır. Tur ayrıca iki anlam ayrışması ölçmüştür ve ikisi de KPS-CEL-A01 kapsamındaki kanon ile şema ayrışmalarıyla aynı ailedendir: MIM-1.4 ile ORK-2.4 Katmanın tek bir somut Teknolojiye bağlanmasını isterken canlı ağaç Katmanları Takıma bağlamaktadır; TIP-1.1 ise Uygulamayı Proje altında kurulabilir sayarken sınıflama Projenin Uygulamayı sarmasına izin vermemektedir."
+)
