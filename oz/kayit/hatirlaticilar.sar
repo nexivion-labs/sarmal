@@ -592,7 +592,7 @@ Hatırlatıcı(
   dönüşTetikleyici: "Doğuş paketinin sunucu kaydını üreten gövde bir sonraki kez elden geçirildiğinde; ya da doğan bir ağaç ilk kez başka bir makineye taşındığında",
   öncelik:          p2,
   tarih:            2026-09-10,
-  ne:               "Doğuş paketi doğurduğu köke bir sunucu kaydı yazmakta ve o kayıtta motorun yolunu MUTLAK olarak bildirmektedir; 2026-09-10 tarihinde doğrulanmış örnekte kayıt, ölçümü yapan makinedeki açık deponun tam yolunu taşımaktadır. Bu, doğduğu makinede doğru çalışan fakat taşındığında sessizce çözülmeyen bir bağdır: ağaç bir depoya gönderilip başka bir makinede klonlandığında yol o makinede bulunmayacak, sunucu hiç açılmayacak ve ajan araçların var olmadığı sonucuna varacaktır. Doğuş aracının kendisi bu bağı GİZLEMEMEKTEDİR ve doğum anında kapıların adresinin doğuran kurulum olduğunu, kurulum taşınırsa sunucu kaydı ile kanca ve işaretçi yollarının elle güncelleneceğini açıkça yazmaktadır; dolayısıyla kusur bir sessizlik değildir. Ağırlık, uyarının YALNIZ doğum anında ve yalnız ağacı doğuran kişiye gösterilmesindedir: ağaç bir depoya gönderilip başka birinin makinesinde klonlandığında o kişi bu cümleyi hiç görmez ve karşılaştığı tek şey bağlanmayan bir sunucudur. Bağlanamayan bir sunucu ile hiç tanımlanmamış bir sunucu ajanın gözünde aynı görünür ve ajan bu durumda ham taramaya döner, yani ürünün tam olarak engellemek için var olduğu davranışa. Onarımın yönü henüz kararlaştırılmamıştır ve en az üç yol vardır: motorun kurulu paketten çözülmesi, yolun ortam değişkeniyle bildirilmesi ya da kaydın göreli yazılıp çatı kökünden çözülmesi. Seçim, motorun yayımlanmış bir paket olarak dağıtılıp dağıtılmayacağına bağlıdır ve bu karar Founder kapısındadır; bu yüzden bugün onarım yapılmamış, ölçüm kayda geçirilmiştir."
+  ne:               "Doğuş paketi doğurduğu köke bir sunucu kaydı yazmakta ve o kayıtta motorun yolunu MUTLAK olarak bildirmektedir; 2026-09-10 tarihinde doğrulanmış örnekte kayıt, ölçümü yapan makinedeki açık deponun tam yolunu taşımaktadır. Bu, doğduğu makinede doğru çalışan fakat taşındığında sessizce çözülmeyen bir bağdır: ağaç bir depoya gönderilip başka bir makinede klonlandığında yol o makinede bulunmayacak, sunucu hiç açılmayacak ve ajan araçların var olmadığı sonucuna varacaktır. Doğuş aracının kendisi bu bağı GİZLEMEMEKTEDİR ve doğum anında kapıların adresinin doğuran kurulum olduğunu, kurulum taşınırsa sunucu kaydı ile kanca ve işaretçi yollarının elle güncelleneceğini açıkça yazmaktadır; dolayısıyla kusur bir sessizlik değildir. Ağırlık, uyarının YALNIZ doğum anında ve yalnız ağacı doğuran kişiye gösterilmesindedir: ağaç bir depoya gönderilip başka birinin makinesinde klonlandığında o kişi bu cümleyi hiç görmez ve karşılaştığı tek şey bağlanmayan bir sunucudur. Bağlanamayan bir sunucu ile hiç tanımlanmamış bir sunucu ajanın gözünde aynı görünür ve ajan bu durumda ham taramaya döner, yani ürünün tam olarak engellemek için var olduğu davranışa. Onarımın yönü henüz kararlaştırılmamıştır ve en az üç yol vardır: motorun kurulu paketten çözülmesi, yolun ortam değişkeniyle bildirilmesi ya da kaydın göreli yazılıp çatı kökünden çözülmesi. Seçim, motorun yayımlanmış bir paket olarak dağıtılıp dağıtılmayacağına bağlıdır ve bu karar Founder kapısındadır; bu yüzden bugün onarım yapılmamış, ölçüm kayda geçirilmiştir. ÖLÇÜLDÜ (kontrolcü · 2026-09-16, EKL-F6-A08 turu): Dört yol depo dışındaki bir ölçüm dizininde gerçekten denenmiştir. Motorun yayımlanmış bir npm paketinden çözülmesi bugün imkânsızdır, çünkü çekirdek paketi özel işaretlidir, Node kurulu paketlerin içindeki .ts dosyasını tip ayıklamayla çalıştırmayı reddeder ve motor paketin dışındaki kanon ile şema dosyalarını okur; bu yol bir derleme hattı, kanonun pakete gömülmesi ve Founder'ın yayın onayını gerektirir. Motorun kurulu VS Code eklentisinden çözülmesi de uygun değildir, çünkü eklenti paketi sunucuyu taşımaz ve klasörünün adı sürüme bağlıdır. Kaydın motor yolunu SARMAL_KOK ortam değişkeninden okuması yayın gerektirmez; değişken tanımlıyken sunucu bağlanmış, tanımsızken Claude Code kaydı yine yüklemiş ve eksik değişkeni adıyla anan bir uyarı basmıştır; bu davranış kontrolcü tarafından yalıtılmış bir yapılandırmada yeniden ölçülmüştür. Göreli kayıt, oturum proje kökünden açıldığında bağlanmış, alt dizinden açıldığında bağlanamamıştır, çünkü göreli yol sürecin çalışma dizinine göre çözülür ve proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözülür. Dördüncü yol olarak ölçülen Claude Code eklenti paketi npm yayını istemeden bağlanmıştır, fakat araçların önekini değiştirir ve öteki istemcileri kapsamaz. Üretici kısa vadede ortam değişkeni yolunu, uzun vadede eklenti paketi yolunu önermiştir; seçim Founder kapısındadır. Aynı turda iki yan olgu da ölçülmüştür: proje kapsamındaki bozuk bir sarmal kaydı kullanıcı kapsamındaki sağlam kaydı gölgelemektedir ve motor Node 23.6 ya da üstünü istemektedir."
 )
 
 Hatırlatıcı(
@@ -840,4 +840,44 @@ Hatırlatıcı(
   tarih:            2026-09-15,
   dönüşTetikleyici: "Eklentinin tip denetimi yapılandırması ya da minigraf sınaması bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DOGUS-KANCASI-MOTORSUZ-SESSIZ-CEKILIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Doğuş paketinin denetim kapısı şablonu ya da motor yolunun çözümü bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A08 Adımının uygulamasında",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: doğuşun ağaca yazdığı denetim kapısı kancası (ogreti/sablon/dogus/denetim_kapisi.sh yirmi dördüncü satır) motor dosyasını bulamadığında hiçbir şey söylemeden çıkmaktadır. Ağaç başka bir makinede ya da taşınmış bir kurulumla açıldığında her .sar yazımından sonra koşması gereken denetim hiç koşmaz ve kullanıcı bunun hiçbir işaretini görmez; susan kanca temiz ağaç sanılır. Doğru davranış, kancanın motoru bulamadığında bunu tek satırla söylemesi ve onarım yolunu göstermesidir; bu satırın metni EKL-F6-A08 Adımında seçilecek motor yoluna göre yazılmalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GORELI-MCP-KAYDI-ALT-DIZINDE-KOPUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Deponun ya da çatının sunucu kaydı bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: sunucu kaydında göreli yazılmış bir motor yolu, Claude Code oturumu proje kökünden açıldığında bağlanmakta, bir alt dizinden açıldığında ise bağlanamamaktadır, çünkü göreli yol sürecin çalışma dizinine göre çözülür. Deponun kendi sunucu kaydı ile çatının sunucu kaydı bugün bu biçimde göreli yazılıdır; ölçülen bu iki kaydın kendisi değil aynı biçimdeki bir kayıttır, dolayısıyla etkinin bu iki kayıtta ayrıca doğrulanması gerekir. Proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözüldüğü için bu değişkenle yapılacak bir onarım işe yaramaz."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-CIKTILARI-INGILIZCE-DEGIL,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MCP araçlarının çıktı metinleri ya da dizin başvurusu bir sonraki kez elden geçirildiğinde; en geç başvurudan önce",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: araç başlıkları, açıklamaları ve parametre tarifleri İngilizce kipte İngilizce dönmektedir, fakat doğuş ve proje denetimi araçlarının çıktıları, sunucunun hazır satırı ve hata iletileri İngilizce kipte de Türkçe kalmaktadır. Dizini İngilizce inceleyecek kişi araçları çağırdığında okuyamadığı bir çıktı alır ve inceleme ölçütlerindeki eyleme dönük hata iletisi şartı bu yüzden yalnız kısmen karşılanmaktadır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-ACIKLAMALARI-YONLENDIRICI-CUMLE,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MCP araç açıklamaları ya da sunucu talimatı bir sonraki kez elden geçirildiğinde; en geç dizin başvurusundan önce",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: dizinin inceleme ölçütleri, araç açıklamasının aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ve öteki araçların çağrılmasına karışmamasını istemektedir. Beş aracın açıklaması ile sunucu talimatı ise dosya taramak yerine önce bu araçların çağrılmasını ve ham aramanın anti-desen olduğunu söyleyen cümleler taşımaktadır. Bu cümleler ürünün amacına hizmet eder, fakat dizin kuralıyla çelişebilir; hangi cümlenin kalacağı Founder kararıdır ve metin mühürlü mcp-metinleri.ts dosyasında yaşadığı için değişiklik mühür tazelemesi ister."
 )
