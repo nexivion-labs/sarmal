@@ -13,6 +13,13 @@
 //   söküldüğünde Adım evreni sınaması düştü (panel mühürlü üç dosyanın Adımını
 //   saydı); bekçinin bulguları giriş dosyası yerine mühürlü dosyanın kendisine
 //   yazıldığında yüzey sayımı sınaması düştü (panel hiçbirini yayımlayamadı).
+//
+//   Mutasyon kanıtı (EKL-F6-A10 · 2026-09-15 koşusu; her mutasyon yedekten bayt
+//   özdeş geri alındı ve sınama yeşile döndü): motor bulgudan `hedefDosya`
+//   alanını söktüğünde tıklama sınaması düştü; görünüm çekirdeği alanı yok
+//   saydığında yalnız tıklama sınaması düştü; mutlak yol deseni başlangıcına
+//   bakmayan eski hâline döndürüldüğünde tıklama ve etiket sınamalarının ikisi
+//   birden düştü, çünkü etiket yeniden `is@SONRA@_…` basmaya başladı.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
@@ -23,7 +30,7 @@ import { dirname, isAbsolute, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
-import { programlariYukle } from "../../cekirdek/src/denetci.ts";
+import { programlariYukle, anadizinBul } from "../../cekirdek/src/denetci.ts";
 import { dagKur, karneOzeti } from "../../cekirdek/src/dag.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
@@ -31,7 +38,8 @@ import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Dugum } from "../../cekirdek/src/sozdizim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { sarKapsamDisi, DISLANAN_ADLAR } from "../src/izleyici-cekirdek.ts";
-import { yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { yuzeyeAyir, kayitGorunumu, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { yolusuzlastir } from "../src/yuzey-metinleri.ts";
 
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const BUGUN = "2026-09-11";
@@ -113,4 +121,52 @@ test("KPS-MHR-A01 · panelin Adım evreni motorun karnesiyle BİREBİR aynıdır
     const karne = karneOzeti(dagKur(programlariYukle(kok).programlar));
     assert.equal(panelAdim, karne.adim, "panel ile motor farklı Adım evreni sayıyor");
   } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+// ── EKL-F6-A10 · mühür bulgusunun tıklaması ve etiketi ─────────────────────
+//
+//   Founder 2026-09-12 tarihinde Hatırlatıcılar yüzeyinde sonra mühürlü bir
+//   bulguya tıkladığında anadizinin açıldığını ve komut satırında
+//   `is/plan/blok/@SONRA@_prf_isci.sar` yazan yolun yüzeyde `is@SONRA@_prf_isci.sar`
+//   göründüğünü gösterdi. İki kusur ayrı ölçülür: tıklama hedefi ve etiketteki yol.
+//   Gözlemler yüzeyindeki arşiv ve eğitim mührü bulguları aynı görünüm işlevinden
+//   geçtiği için aynı sınamada ölçülür.
+
+test("EKL-F6-A10 · mühür bulgusuna tıklama mühürlü dosyayı açar ve etiketteki yol komut satırındaki yoldur", () => {
+  const kok = agac();
+  try {
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: BUGUN, tamListe: true });
+    const giris = anadizinBul(kok)!;
+    const kayitlar: YuzeyKaydi[] = sonuc.akis.flatMap((rapor) => rapor.tanilar
+      .filter((t) => t.kod === "dosya-mührü" || t.kod === "sonraya-bırakılmış-dosya")
+      .map((tani) => ({
+        proje: { kod: "PRJ-DENEME", ad: "deneme" },
+        dosya: isAbsolute(rapor.dosya) ? rapor.dosya : join(kok, rapor.dosya),
+        tani,
+      })));
+    // Komut satırı tanının mesajını olduğu gibi basar; yol o cümlenin tırnağındadır.
+    const yollar = kayitlar.map((k) => /"([^"]+)"/.exec(k.tani.mesaj)?.[1] ?? "");
+    assert.deepEqual([...yollar].sort(),
+      ["is/plan/@ARSIV@_eski.sar", "is/plan/@EGITIM@_ders.sar", "is/plan/@SONRA@_bekleyen.sar"]);
+    const d = yuzeyeAyir(kayitlar);
+    assert.equal(d.hatırlatıcılar.length, 1, "sonra mühürlü bulgu Hatırlatıcılar yüzeyine düşmedi");
+    assert.equal(d.bildirimler.length, 2, "arşiv ve eğitim mührü Gözlemler yüzeyine düşmedi");
+    kayitlar.forEach((k, i) => {
+      const g = kayitGorunumu(k);
+      assert.equal(k.dosya, giris, `${k.tani.kod}: kayıt giriş dosyasında kalmalı, sayım değişmemeli`);
+      assert.equal(g.dosya, join(kok, yollar[i]), `${k.tani.kod}: tıklama mühürlü dosyayı değil ${g.dosya} dosyasını açıyor`);
+      assert.equal(g.satir, 1, `${k.tani.kod}: tıklama dosyanın başına gitmeli`);
+      assert.ok(g.kodluEtiket.includes(`"${yollar[i]}"`),
+        `${k.tani.kod}: yüzeydeki yol komut satırındakinden farklı: ${g.kodluEtiket}`);
+      assert.ok(g.ipucu.includes(yollar[i]), `${k.tani.kod}: ipucu mühürlü dosyanın yolunu söylemiyor`);
+    });
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+test("EKL-F6-A10 · etiket mutlak yolu dosya adına indirir, göreli yola dokunmaz", () => {
+  assert.equal(yolusuzlastir(`"is/plan/blok/@SONRA@_prf_isci.sar" dosyası`), `"is/plan/blok/@SONRA@_prf_isci.sar" dosyası`);
+  assert.equal(yolusuzlastir("urun/eklenti/src/takdir.ts dosyası"), "urun/eklenti/src/takdir.ts dosyası");
+  assert.equal(yolusuzlastir(`"/Users/ad/proje/is/plan/a.sar" dosyası`), `"a.sar" dosyası`);
+  assert.equal(yolusuzlastir("kaynak: /Users/ad/proje/b.sar okunamadı"), "kaynak: b.sar okunamadı");
+  assert.equal(yolusuzlastir("(C:/Users/ad/c.sar)"), "(c.sar)");
 });

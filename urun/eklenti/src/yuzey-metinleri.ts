@@ -480,8 +480,15 @@ export function ozetSatiriIpucu(taniKodu: string, adet: number): string {
  * MUTLAK YOL: kök eğik çizgiyle ya da sürücü harfiyle başlayan, en az iki
  * parçalı yol. Kullanıcıya görünen metinde tam yol basmak okumayı bitirir:
  * satır zaten kesilir ve kesilen kısım her zaman anlamlı olan sondur.
+ *
+ * GÖRELİ YOLA DOKUNULMAZ (EKL-F6-A10). Desen eskiden eşleşmenin nerede
+ * başladığına bakmıyordu: `is/plan/blok/@SONRA@_x.sar` gibi göreli bir yolda
+ * ilk eğik çizgiden başlayan kuyruğu mutlak yol sanıyor, klasör parçasını
+ * silip `is@SONRA@_x.sar` basıyordu (Founder canlı bulgusu 2026-09-12). Eşleşme
+ * artık bir yol parçasının ortasında başlayamaz; satır başında ya da boşluk,
+ * tırnak, parantez veya iki nokta gibi bir ayraçtan sonra başlar.
  */
-const MUTLAK_YOL = /(?:[A-Za-z]:)?(?:\/[^\s"'`)]+){2,}/g;
+const MUTLAK_YOL = /(?<![\p{L}\p{N}._~@-])(?:[A-Za-z]:)?(?:\/[^\s"'`)]+){2,}/gu;
 
 /** KOD imzası: BÜYÜK harfli, tireli makine kimliği (göç terfi turu A99 kapanışı gibi). */
 const KOD_GOVDESI = "[A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜ0-9]*(?:-[A-ZÇĞİÖŞÜ0-9]+)+";

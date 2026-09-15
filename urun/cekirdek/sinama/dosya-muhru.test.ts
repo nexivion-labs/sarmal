@@ -17,7 +17,9 @@
 //     ③ eğitim mühürlü dosya OKUNUR ve doğrulanır, karneye girmez — ders
 //        dünyası desenindeki eğitim dalı söküldüğünde yalnız ③ düştü.
 //     ④ listeleme: her mühürlü dosya türüyle ve adıyla görünür — bekçi boş
-//        döndürüldüğünde ④ ile ⑥ düştü.
+//        döndürüldüğünde ④ ile ⑥ düştü. EKL-F6-A10 (2026-09-15): bulgu artık
+//        anlattığı dosyanın konumunu `hedefDosya` alanında taşır; bekçinin iki
+//        kaydından bu alan söküldüğünde yalnız ④ düştü.
 //     ⑤ ebedî engel: ebedî kural taşıyan dosya arşiv mührü alamaz — arşiv
 //        envanteri `ebediTanilar`a verilmediğinde yalnız ⑤ düştü.
 //     ⑥ geçersiz ad sessiz geçmez — ① ve ④ mutasyonlarıyla birlikte düştü.
@@ -149,6 +151,12 @@ test("④ listeleme: her mühürlü dosya denetim akışında türüyle ve adıy
     assert.ok(sonra[0].tani.mesaj.includes(SONRA) && /gündür bekliyor/.test(sonra[0].tani.mesaj));
     assert.ok([...muhur, ...sonra].every((t) => t.dosya === giris && t.tani.duzey === "bilgi"),
       "mühür bulgusu giriş dosyasına bilgi düzeyinde yazılmalı");
+    // EKL-F6-A10: kayıt giriş dosyasında kalır, fakat anlattığı dosyanın konumunu
+    // taşır; yol cümlenin içindeki yolla, yani komut satırının bastığı yolla aynıdır.
+    assert.deepEqual([...muhur, ...sonra].map((t) => t.tani.hedefDosya).sort(), [ARSIV, EGITIM, SONRA].sort(),
+      "mühür bulgusu anlattığı dosyanın konumunu taşımıyor");
+    assert.ok([...muhur, ...sonra].every((t) => t.tani.mesaj.includes(`"${t.tani.hedefDosya}"`)),
+      "hedef yol cümlede yazan yolla aynı değil");
     assert.equal(s.turDokumu.find((d) => d.kod === "dosya-mührü")?.toplam, 2);
     assert.equal(s.turDokumu.find((d) => d.kod === "sonraya-bırakılmış-dosya")?.toplam, 1);
   } finally { rmSync(kok, { recursive: true, force: true }); }

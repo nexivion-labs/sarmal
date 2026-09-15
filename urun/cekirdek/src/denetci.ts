@@ -22,7 +22,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readdirSync, readFileSync, existsSync, statSync, type Dirent } from "node:fs";
-import { join } from "node:path";
+import { join, posix } from "node:path";
 import { execFileSync } from "node:child_process";   // KPS-MHR-A01: sonraya bırakılmış dosyanın bekleme süresi git'e sorulur
 import type { IskeletPlan } from "./iskeletci.ts";
 import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
@@ -242,6 +242,9 @@ export function beyansizYapiTanilari(plan: IskeletPlan, kok: string, anaEtiket =
 //   evrenine girmez, dolayısıyla bulgu dosyanın kendisine yazılsaydı eklentinin
 //   paneli onu hiç yayımlayamaz ve motor ile panel iki ayrı sayı söylerdi. Giriş
 //   dosyası disk mutabakatının zaten konuştuğu yerdir (`beyansız-yapı` emsali).
+//   Kayıt giriş dosyasında kalsa da anlattığı dosyanın konumunu `hedefDosya`
+//   alanında taşır (EKL-F6-A10): yüzey kayda tıklanınca giriş dosyasını değil
+//   mühürlü dosyayı açar, sayım ise değişmez.
 //
 //   BEKLEME SÜRESİNİN KAYNAĞI ölçülerek seçilmiştir (2026-09-11). Dosyanın
 //   değişiklik tarihi kullanılamaz, çünkü yeniden adlandırma onu korur ve süre
@@ -322,16 +325,18 @@ export function dosyaMuhruTanilari(
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const yol of sarlar) {
     const muhur = dosyaMuhru(yol);
+    // EKL-F6-A10: tıklamanın hedefi giriş dosyasının klasörüne göreli yazılır.
+    const hedefDosya = posix.relative(posix.dirname(anaEtiket), yol);
     if (muhur?.tur === "sonra") {
       const t = tarihCoz(kok, yol);
       const gun = t ? Math.max(0, Math.floor((Date.parse(bugun) - Date.parse(t.tarih)) / GUN_MS)) : undefined;
-      out.push({ dosya: anaEtiket, tani: yeniTani("sonraya-bırakılmış-dosya", {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("sonraya-bırakılmış-dosya", {
         yol, etiket: muhur.etiket, gün: gun ?? "?", tarih: t?.tarih ?? "?", kaynak: t?.kaynak ?? "yok", canlı: muhursuzYol(yol),
-      }, konum) });
+      }, konum), hedefDosya } });
     } else if (muhur) {
-      out.push({ dosya: anaEtiket, tani: yeniTani("dosya-mührü", {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("dosya-mührü", {
         yol, etiket: muhur.etiket, tür: muhur.tur, canlı: muhursuzYol(yol),
-      }, konum) });
+      }, konum), hedefDosya } });
     }
     const kusur = dosyaAdiKusuru(yol);
     if (kusur) {
