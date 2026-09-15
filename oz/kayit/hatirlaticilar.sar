@@ -881,3 +881,63 @@ Hatırlatıcı(
   dönüşTetikleyici: "MCP araç açıklamaları ya da sunucu talimatı bir sonraki kez elden geçirildiğinde; en geç dizin başvurusundan önce",
   ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: dizinin inceleme ölçütleri, araç açıklamasının aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ve öteki araçların çağrılmasına karışmamasını istemektedir. Beş aracın açıklaması ile sunucu talimatı ise dosya taramak yerine önce bu araçların çağrılmasını ve ham aramanın anti-desen olduğunu söyleyen cümleler taşımaktadır. Bu cümleler ürünün amacına hizmet eder, fakat dizin kuralıyla çelişebilir; hangi cümlenin kalacağı Founder kararıdır ve metin mühürlü mcp-metinleri.ts dosyasında yaşadığı için değişiklik mühür tazelemesi ister."
 )
+
+Hatırlatıcı(
+  kod:              HTR-AGAC-COK-SATIRLI-NE-KIRIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Ağaç çizici ya da önizleme yüzü bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: yapı ağacını çizen çekirdek gövdesi (urun/cekirdek/src/agac.ts elli birinci satır) düğüm metnindeki satır sonu işaretlerinden yalnız ⏎ işaretini tek satıra indirmekte, gerçek satır sonu taşıyan çok satırlı ne metinlerini ise olduğu gibi basmaktadır. Bu yüzden plan dosyalarının ağacında böyle bir metnin ikinci satırı sütun sıfırdan başlar ve ağacın çizgisi kırılır. Kusur yalnız önizlemeyi değil, komut satırının ağaç çıktısını ve README'lerdeki otomatik ağaç bloğunu da etkiler."
+)
+
+Hatırlatıcı(
+  kod:              HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Eklentinin önizleme stili ya da paket bildirimindeki Markdown katkıları bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: eklentinin paket bildirimi (urun/eklenti/package.json beş yüz seksen dokuz ile beş yüz doksan birinci satırlar) önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Okuma kipi özel bir düzenleyiciye geçtiği için bu katkı büyük olasılıkla eski yoldan kalmış bir artıktır. Kalacaksa, önizleme renkleri paletten türeyen değişkenlere bağlandığında bu değişkenler Markdown önizlemesinde tanımsız kalacağından ayrı bir palet stil dosyası gerekecektir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PALET-ACIK-TEMA-VE-KARAR-SIMGESI-EKSIK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kanon paleti ya da geometrik simge ailesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: kanon paletinin (oz/siniflama/kayit.json içindeki renkPaleti) ağaç renkleri ile aile renkleri bölümlerinin açık tema eşi yoktur ve açık temada bu renkler editörün ön plan rengine karıştırılarak türetilmek zorundadır. Aynı turda geometrik simge ailesinde Karar tipi için bir çizim bulunmadığı ve yüzeylerin bu tip için yedek bir simgeye düştüğü de ölçülmüştür. Paletin kendisi kanonun parçası olduğundan eş renklerin eklenmesi Founder onayı ister."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SARMA-KAYDI-ILE-KAPSAMA-TANISI-CELISIYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Sarma izin kaydı, mimari bağ tanısı ya da ORK-1.1 metni bir sonraki kez elden geçirildiğinde; en geç KPS-KEN-A01 hükmünün uygulanmasında",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: tip sicilinin izinli sarma kaydı üç yerleşime izin verdiği hâlde denetçi bunları hata saymaktadır. Blok içinde doğrudan Adım yazımına kayıt izin verir, denetçi (urun/cekirdek/src/denetci.ts üç bin altı yüz doksan sekiz ile üç bin yedi yüzüncü satırlar) hata basar; AltKatman içinde AltKatman yazımına kayıt izin verir ve doğrulayıcı yalnız bilgi düzeyinde derin dal tanısı basar, denetçi ise eş kademe hatası verir; Katman içinde doğrudan Adım yazımını ORK-1.1'in lafzı kademe atlaması diye yasaklar, motor ise muaf tutar. MIM-1 örneği Faz içinde doğrudan Adım yazımını yanlış sayar, sicil ise izin verir ve kademe dizisinde Faz bulunmadığı için hiçbir tanı ateşlemez. Ayrıca sicil içerir kenarını kapsama ilişkisi olarak ilan etmekte, fakat motor bu kenarı graf kenarı olarak işlememektedir. Aynı yapının iki kaynakta farklı hüküm taşıması, yazarın hangi yerleşimin doğru olduğunu okuyamaması demektir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kimlik dizini ya da gezinme aracı bir sonraki kez elden geçirildiğinde",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: gezinme aracına ORK-1 sorulduğunda ORK-1.2 ve ORK-1.3 başlıkları da ORK-1'e gelen atıf olarak sayılmaktadır, yani kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Bu yüzden ORK-1 için bildirilen yüz altmış dört gelen atıf şişmiş görünmektedir ve etki analizine dayanan kararlar gerçekte olmayan bağlar üzerine kurulabilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MIMARI-BAG-SINAMASI-VE-ATIFI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Mimari bağ tanısının sınaması ya da graf kapsayan türetmesi bir sonraki kez elden geçirildiğinde",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: mimari bağ tanısının sınaması (urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts üç yüz on üç ile üç yüz yirmi üçüncü satırlar) eş kademe ve kademe atlama dallarını tek bir fikstürde birlikte tetiklemekte ve Katman içinde doğrudan Adım istisnasını sınamamaktadır; dallardan biri sökülünce sınamanın düşüp düşmediği ölçülmemiştir. Aynı turda urun/cekirdek/src/dag.ts kırk beşinci satırdaki yorumun içerme kenarını ORK-1.2'ye bağladığı, kanonun ve graf yüzünün ise aynı ilişkiyi ORK-1.1'e bağladığı da ölçülmüştür."
+)
