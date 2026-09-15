@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.187 — 2026-09-15 (taze klonda ilk denetim hatasız, Sarmal araçları oturumun klasöründe çalışıyor)
+
+- **Taze klonda ilk denetim artık hata vermiyor.** Sarmal'ı GitHub'dan indiren geliştirici hiçbir şey derlemeden denetim koşturduğunda, derleme sırasında üretilen ve depoya girmeyen gömülü kanon dosyası için bir hata görüyordu. Denetim artık deponun yok sayma dosyasında tam yoluyla ve joker kullanılmadan adlandırılmış bir dosyanın diskte bulunmasını beklemiyor, çünkü böyle bir dosya tanımı gereği derleme çıktısıdır. Panel aynı denetim çekirdeğini kullandığı için eklenti de bu dosya için hata göstermiyor.
+- **Muafiyet dar tutuldu.** Joker taşıyan, bir dizine yönelen ya da her derinlikte eşleşen yok sayma satırları muafiyet doğurmuyor ve olumsuzlama satırıyla geri alınan yol da muaf sayılmıyor. Yok sayılmayan ve diskte bulunmayan bir dosya beyanı eskisi gibi hata olarak raporlanıyor.
+- **Çekirdek yanı: Sarmal sunucusunun araçları oturumun açıldığı klasörde kendiliğinden çalışıyor.** Çalışma alanı kökü isteyen dokuz araçta dizin alanı artık zorunlu değil; ajan dizin vermezse araç oturumun çalışma dizininde çalışıyor. Verilen dizin bu dizinin dışındaysa araç işi yine yapıyor, fakat cevabının ilk cümlesinde bunu açıkça söylüyor. Araç adları ile parametre adları değişmedi.
+
 ## 0.9.186 — 2026-09-15 (bildirimler kelimeyle, satır sonu notları Sarmal simgesiyle konuşuyor)
 
 - **Bildirim kutusunda ve durum çubuğu iletilerinde emoji kalmadı.** Founder sade hâli seçti: eldeki Sarmal simgeleriyle çizilebilen yerde işaret simge ailesinden gelir, çizilemeyen yerde yalnız kelime kalır. VS Code bu iki yüzeyde eklentinin kendi görselini göstermediği için giydirme, eski kopya, iskelet ve yasak geçiş bildirimleri ile panel odağı ve geri alma iletileri artık yalnız kelimeyle görünüyor. Durum çubuğu sayaçlarının VS Code simgeleri değişmedi.
