@@ -762,3 +762,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Eğitim ve site işi başladığında ya da kaynak disiplini Blokunun öğretim yüzü katmanında yeni bir Adım açıldığında",
   ne:               "Founder 2026-09-15 tarihinde doğuştan Adım döngüsüne kadar bütün akışın ve mimari kurma kademelerinin ajana çizimle anlatılmasını önermiş ve işin hatırlatıcıya yazılmasına hükmetmiştir. Aynı gün yapılan ölçüm şunu göstermiştir: ogreti/ogretim altındaki on dört aile kartını ajana veren hiçbir araç yoktur, dolayısıyla çizim oraya konursa ajan onu görmez. Ajanın gerçekten okuduğu yüzeyler oturum başındaki karşılama kartı, basla rehberi ve doğuşun yazdığı CLAUDE.md dosyasıdır ve akış bu üç yüzeyde bugün yalnız düz metinle anlatılmaktadır. Kaynak disiplini Blokunun öğretim yüzü katmanındaki tek açık Adım olan KYN-OGR-A02, insan için yazılan kartların düz yazı anlatısını istediği için bu işi kapsamaz. Çizim yazıyla kurulmalıdır ki hem ajan hem insan okuyabilsin ve terminalde bozulmasın; tek kaynaktan üretilmelidir, çünkü aynı resim üç yüzeye elle kopyalanırsa ilk değişiklikte biri bayatlar. Taslak şu sırayı çizer: basla rehberi, doğuş, Founder onayı isteyen dört mimari kademe (kapsayıcı, Teknoloji ve Takım, Kitaplık ve Raf, plan ekseni), iskelet ve her Adım için şef, geliştirme, üretim, kabul kapısı ve tamamlanma döngüsü; her .sar yazımından sonra denetim koşar."
 )
+
+Hatırlatıcı(
+  kod:              HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Dışarıdan kurulum işi ele alındığında (EKL-F6-A03 kapsam genişletmesi); en geç mağaza yüklemesinden önce",
+  ne:               "Founder 2026-09-15 tarihinde yeni bir çalışma alanında açılacak oturum için ajana klasörün tam yolunu ve başka ağaca dokunmama uyarısını ayrıca yazmak zorunda kalmasının sebebini sormuştur. Ölçüm şunu göstermiştir: Sarmal sunucusunun on aracı çalışacağı klasörü dizin parametresiyle ajandan beklemekte, sunucu oturumun çalışma dizinini hiçbir yerde varsayılan olarak okumamaktadır ve sunucu kullanıcı düzeyinde kayıtlı olduğu için her klasörde açılmaktadır. Ajan oturum başında Sarmal'ın kendi deposundan söz eden metinler okuduğu için yanlış dizini verebilmekte ve başka bir ağaçta Sarmal'ın kendi ağacını görebilmektedir; Founder aynı belirtiyi daha önce ayrı bir çalışma alanında açılan oturumda görmüştür. Doğru davranış şudur: dizin verilmediğinde araç oturumun çalışma dizinini kullanır ve verilen dizin oturumun kökü dışındaysa bunu açıkça bildirir. Bu açık Sarmal'ı kuran her geliştiriciyi etkiler, dolayısıyla dışarıdan kurulum işinin bir parçasıdır."
+)
