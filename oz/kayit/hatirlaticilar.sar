@@ -941,3 +941,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Mimari bağ tanısının sınaması ya da graf kapsayan türetmesi bir sonraki kez elden geçirildiğinde",
   ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: mimari bağ tanısının sınaması (urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts üç yüz on üç ile üç yüz yirmi üçüncü satırlar) eş kademe ve kademe atlama dallarını tek bir fikstürde birlikte tetiklemekte ve Katman içinde doğrudan Adım istisnasını sınamamaktadır; dallardan biri sökülünce sınamanın düşüp düşmediği ölçülmemiştir. Aynı turda urun/cekirdek/src/dag.ts kırk beşinci satırdaki yorumun içerme kenarını ORK-1.2'ye bağladığı, kanonun ve graf yüzünün ise aynı ilişkiyi ORK-1.1'e bağladığı da ölçülmüştür."
 )
+
+Hatırlatıcı(
+  kod:              HTR-DIL5-ORNEGI-CIPLAK-ILGILI-OGRETIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "DIL-5 maddeleri ya da ilgili önek doğrulaması bir sonraki kez elden geçirildiğinde; en geç KPS-BLM-A01 Adımının kapanışında",
+  ne:               "KPS-BLM-A01 turunda 2026-09-16 tarihinde ölçülmüştür: kanon maddelerinin ilgili listeleri bölüm kök kimliklerine çevrilmiştir, fakat DIL-5 ile DIL-5.2 maddelerinin Örnek metinleri (yasa/kanon/dil.sar iki yüz on ikinci ve iki yüz otuz altıncı satırlar) hâlâ çıplak bölüm adlı listeyi doğru yazım olarak öğretmekte ve DIL-5.2 Hüküm cümlesi listenin yalnız bölüm öneklerinden oluşacağını söylemektedir. Motordaki ilgili önek doğrulaması (urun/cekirdek/src/dogrulayici.ts iki yüz seksen dokuz ile üç yüz on dokuzuncu satırlar) ve ilgili-önek-geçersiz tanısının öneri metni de yalnız çıplak öneki kabul etmektedir; bir düğüm parametresi olarak kök kimlikli bir liste yazılırsa hata üretir. Kanonun kendi yazımı ile kanonun öğrettiği yazım artık çelişmektedir; Hüküm ve Örnek metni dokunulmaz olduğundan uyum Founder hükmü ister."
+)
