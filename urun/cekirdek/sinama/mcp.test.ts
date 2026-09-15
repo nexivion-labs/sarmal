@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -188,12 +188,12 @@ test("GBR-A04/#7: iskelet giriş dosyası yoksa dürüst ana-yok hatası (üreti
 const SARMAL = fileURLToPath(new URL("../src/sarmal.ts", import.meta.url));
 
 /** MCP'ye tek tools/call gönderir; {metin, isError} çifti döndürür (hata-yolu sınamaları için). */
-function mcpAraciTam(arac: string, args: Record<string, unknown>): { metin: string; isError: boolean } {
+function mcpAraciTam(arac: string, args: Record<string, unknown>, cwd?: string): { metin: string; isError: boolean } {
   const istekler = [
     { jsonrpc: "2.0", id: 1, method: "initialize", params: {} },
     { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: arac, arguments: args } },
   ].map((x) => JSON.stringify(x)).join("\n") + "\n";
-  const ham = execFileSync(process.execPath, [MCP], { input: istekler, encoding: "utf8", timeout: 60_000 });
+  const ham = execFileSync(process.execPath, [MCP], { input: istekler, encoding: "utf8", timeout: 60_000, cwd });
   const satirlar = ham.trim().split("\n").filter(Boolean);
   const yanit = JSON.parse(satirlar[satirlar.length - 1]) as { result?: { content?: Array<{ text?: string }>; isError?: boolean } };
   return { metin: yanit.result?.content?.map((c) => c.text).join("\n") ?? "", isError: yanit.result?.isError === true };
@@ -263,7 +263,9 @@ test("MCP-A01: denetle-proje çıktısı CLI `sarmal denetle` ile BİREBİR (tek
       const h = e as { stdout?: string; stderr?: string };
       cli = [h.stdout, h.stderr].filter(Boolean).join("\n");
     }
-    const mcp = mcpAraciTam("denetle-proje", { dizin: kok });
+    // EKL-F6-A07: sunucu fikstürün kendi oturumunda başlatılır; aksi hâlde kök dışı
+    // dizin notu cevabın başına eklenir ve birebirlik ölçümü o notu da sayardı.
+    const mcp = mcpAraciTam("denetle-proje", { dizin: kok }, kok);
     assert.equal(mcp.metin.trimEnd(), cli.trimEnd(), "MCP denetle-proje çıktısı CLI'dan sapıyor — tek-kaynak bozulmuş");
   } finally {
     rmSync(kok, { recursive: true, force: true });
@@ -488,4 +490,125 @@ test("SUNUCU TALİMATI: dil kapısından geçer — İngilizce istemci İngilizc
   assert.match(String(tr.instructions), /Sarmal ile yönetilir/, "Türkçe hane gelmedi");
   assert.match(String(en.instructions), /governed by Sarmal/, "İngilizce hane gelmedi");
   assert.notEqual(tr.instructions, en.instructions, "iki dil aynı metni döndürdü — dil kapısı talimata uygulanmıyor");
+});
+
+// ── EKL-F6-A07 · dizin oturumdan türer (HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR) ────
+//
+//   Ölçülmüş kusur: sunucu kullanıcı düzeyinde kayıtlı olduğu için her klasörde
+//   açılıyor, fakat çalışma alanı kökü isteyen araçlar klasörü dizin parametresiyle
+//   ajandan bekliyordu; ajan Sarmal'ın kendi deposundan söz eden metinleri okuyup
+//   yanlış dizini verdiğinde başka bir ağaca bakıyordu. Nöbet iki davranışı gerçek
+//   stdio sunucusunda ölçer ve sunucuyu geçici bir fikstürün içinde başlatır.
+
+/** Sunucuyu verilen çalışma dizininde başlatır ve çağrıları aynı süreçte sırayla koşar. */
+function oturumdaCagir(
+  cwd: string,
+  cagrilar: ReadonlyArray<{ name: string; arguments: Record<string, unknown> }>,
+  dil = "tr",
+): Array<{ metin: string; isError: boolean }> {
+  const istekler = [
+    { jsonrpc: "2.0", id: 1, method: "initialize", params: {} },
+    ...cagrilar.map((c, i) => ({ jsonrpc: "2.0", id: i + 2, method: "tools/call", params: c })),
+  ].map((x) => JSON.stringify(x)).join("\n") + "\n";
+  const ham = execFileSync(process.execPath, [MCP], {
+    input: istekler, encoding: "utf8", timeout: 180_000, maxBuffer: 32 * 1024 * 1024, cwd,
+    env: { ...process.env, SARMAL_DIL: dil },
+  });
+  const yanitlar = ham.trim().split("\n").filter(Boolean).map((s) => JSON.parse(s) as {
+    id: number; result?: { content?: Array<{ text?: string }>; isError?: boolean }; error?: { message?: string };
+  });
+  return cagrilar.map((_, i) => {
+    const y = yanitlar.find((x) => x.id === i + 2);
+    if (!y || y.error) return { metin: `✖ protokol hatası: ${y?.error?.message ?? "yanıt yok"}`, isError: true };
+    return { metin: y.result?.content?.map((c) => c.text).join("\n") ?? "", isError: y.result?.isError === true };
+  });
+}
+
+const KOK_DISI = /dışındadır|is outside this session's working directory/u;
+
+test("EKL-F6-A07 nöbeti ①: dizin verilmeyen araçlar oturumun çalışma dizininde çalışır ve şema dizini zorunlu tutmaz", { timeout: 300_000 }, () => {
+  // Şema gerçek alt-süreçten okunur: dizin taşıyan on aracın hiçbiri onu zorunlu kılmaz.
+  const liste = JSON.parse(execFileSync(process.execPath, [MCP], {
+    input: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) + "\n", encoding: "utf8", timeout: 30_000,
+  }).trim()) as { result: { tools: Array<{ name: string; inputSchema: { properties: Record<string, unknown>; required?: string[] } }> } };
+  const dizinli = liste.result.tools.filter((t) => "dizin" in t.inputSchema.properties);
+  assert.equal(dizinli.length, 10, `dizin taşıyan araçlar: ${dizinli.map((t) => t.name).join(" · ")}`);
+  for (const t of dizinli) assert.ok(!(t.inputSchema.required ?? []).includes("dizin"), `${t.name} dizini hâlâ zorunlu tutuyor`);
+
+  const kok = fiksturKur();
+  try {
+    const gercek = realpathSync(kok);
+    // Tek-kaynak ölçütü oturumdan ÖNCE alınır: oturumdaki durum-guncelle planı değiştirir.
+    let cli: string;
+    try {
+      cli = execFileSync(process.execPath, [SARMAL, "denetle", gercek], { encoding: "utf8", timeout: 60_000 });
+    } catch (e) {
+      const h = e as { stdout?: string; stderr?: string };
+      cli = [h.stdout, h.stderr].filter(Boolean).join("\n");
+    }
+    const [gezin, graf, grafDizinli, etki, bul, sef, karne, karneDizinli, iskelet, denetleProje, durum] = oturumdaCagir(kok, [
+      { name: "gezin", arguments: { kod: "ADM-MCP6-A" } },
+      { name: "graf", arguments: {} },
+      { name: "graf", arguments: { dizin: gercek } },
+      { name: "etki", arguments: { kod: "ADM-MCP6-A" } },
+      { name: "bul", arguments: { metin: "kavuşum köprüsü" } },
+      { name: "sef", arguments: { adim: "ADM-MCP6-B" } },
+      { name: "karne", arguments: {} },
+      { name: "karne", arguments: { dizin: gercek } },
+      { name: "iskelet", arguments: {} },
+      { name: "denetle-proje", arguments: {} },
+      { name: "durum-guncelle", arguments: { kod: "ADM-MCP6-A", durum: "geliştirmede" } },
+    ]);
+    for (const [ad, s] of Object.entries({ gezin, graf, etki, bul, sef, karne, iskelet, denetleProje, durum })) {
+      assert.equal(s.isError, false, `${ad} dizinsiz çağrıda hata döndürdü:\n${s.metin}`);
+      assert.doesNotMatch(s.metin, KOK_DISI, `${ad} kendi oturumunda kök dışı notu bastı:\n${s.metin}`);
+    }
+    assert.ok(gezin.metin.includes(join(gercek, "plan.sar")), `gezin fikstürün planını göstermiyor:\n${gezin.metin}`);
+    assert.match(etki.metin, /ADM-MCP6-B/, etki.metin);
+    assert.match(bul.metin, /plan\.sar:\d+:\d+.*ADM-MCP6-A.*görev/, bul.metin);
+    assert.match(sef.metin, /ADM-MCP6-B/, sef.metin);
+    assert.ok(iskelet.metin.includes(gercek), `iskelet fikstürün kökünü anmıyor:\n${iskelet.metin}`);
+    assert.equal(graf.metin, grafDizinli.metin, "dizinsiz graf fikstürün kökünden türemedi");
+    assert.equal(karne.metin, karneDizinli.metin, "dizinsiz karne fikstürün kökünden türemedi");
+    // Tek-kaynak: dizinsiz denetle-proje, CLI'nin fikstür kökündeki çıktısıyla birebirdir.
+    assert.equal(denetleProje.metin.trimEnd(), cli.trimEnd(), "dizinsiz denetle-proje fikstürün kökünde koşmadı");
+    assert.match(readFileSync(join(kok, "plan.sar"), "utf8"), /ADM-MCP6-A[^)]*durum: geliştirmede/, "durum-guncelle fikstürün planına yazmadı");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
+test("EKL-F6-A07 nöbeti ②: oturum dışındaki dizin cevabın ilk cümlesinde bildirilir ve iş yine yapılır", { timeout: 300_000 }, () => {
+  const oturum = fiksturKur();
+  const dis = fiksturKur();
+  try {
+    const [disGezin, disDenetleProje, disDenetle, icGezin, goreli] = oturumdaCagir(oturum, [
+      { name: "gezin", arguments: { kod: "ADM-MCP6-A", dizin: dis } },
+      { name: "denetle-proje", arguments: { dizin: dis } },
+      { name: "denetle", arguments: { kaynak: 'Teknoloji( kod: NEXTJS, ne: "çerçeve" )\n', dizin: dis } },
+      // Oturum kökünün sembolik bağlı yazımı (/var ↔ /private/var) içeride sayılır.
+      { name: "gezin", arguments: { kod: "ADM-MCP6-A", dizin: oturum } },
+      // Göreli yol oturumun çalışma dizinine göre çözülür.
+      { name: "bul", arguments: { metin: "temel adım", dizin: "." } },
+    ]);
+    const ilkSatir = (m: string): string => m.split("\n")[0];
+    for (const [ad, s] of Object.entries({ disGezin, disDenetleProje, disDenetle })) {
+      assert.match(ilkSatir(s.metin), /^⚠️ Verilen dizin \(.+\) bu oturumun çalışma dizininin \(.+\) dışındadır;/u,
+        `${ad} kök dışı dizini ilk cümlede söylemedi:\n${s.metin}`);
+      assert.ok(ilkSatir(s.metin).includes(realpathSync(dis)), `${ad} notu verilen dizini anmıyor`);
+      assert.equal(s.isError, false, `${ad} kök dışı dizinde işi yapmadı:\n${s.metin}`);
+    }
+    assert.ok(disGezin.metin.includes(join(dis, "plan.sar")), "kök dışı gezin işi yine yapmalı");
+    assert.match(disDenetleProje.metin, /ÖZET/, "kök dışı denetle-proje işi yine yapmalı");
+    assert.match(disDenetle.metin, /Tek-dosya temiz/, "kök dışı denetle işi yine yapmalı");
+    assert.doesNotMatch(icGezin.metin, KOK_DISI, "oturumun kendi kökü kök dışı sayıldı");
+    assert.doesNotMatch(goreli.metin, KOK_DISI, "göreli '.' yolu kök dışı sayıldı");
+    assert.match(goreli.metin, /ADM-MCP6-A/, goreli.metin);
+    // İki dil: İngilizce oturum aynı notu İngilizce hanesiyle verir.
+    const [en] = oturumdaCagir(oturum, [{ name: "gezin", arguments: { kod: "ADM-MCP6-A", dizin: dis } }], "en");
+    assert.match(ilkSatir(en.metin), /^⚠️ The given directory \(.+\) is outside this session's working directory/u, en.metin);
+  } finally {
+    rmSync(oturum, { recursive: true, force: true });
+    rmSync(dis, { recursive: true, force: true });
+  }
 });

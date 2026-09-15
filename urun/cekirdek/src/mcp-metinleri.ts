@@ -120,6 +120,26 @@ const parametre = (
 });
 
 /**
+ * EKL-F6-A07 · HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR: çalışma-alanı kökü isteyen
+ * araçların ortak `dizin` parametresi. Sunucu kullanıcı düzeyinde kayıtlı olduğu
+ * için her klasörde açılır; dizin verilmeyen çağrı oturumun çalışma dizininde
+ * çalışır ve o dizinin dışındaki bir yol cevabın ilk cümlesinde bildirilir.
+ */
+const dizinParametresi = (tr: string, en: string): McpParametreMetni => parametre(
+  "string",
+  `${tr} (mutlak yol önerilir). Verilmezse oturumun çalışma dizini kullanılır; bu dizinin dışındaki bir yol cevabın başında bildirilir.`,
+  `${en} (an absolute path is recommended). When omitted, the session's working directory is used; a path outside it is reported at the start of the response.`,
+);
+
+/** EKL-F6-A07: kök dışı dizin notu — cevabın ilk cümlesidir ve iş yine yapılır. */
+export const MCP_KOK_DISI_NOTU: DilHaneleri<(dizin: string, oturum: string) => string> = {
+  tr: (dizin, oturum) =>
+    `⚠️ Verilen dizin (${dizin}) bu oturumun çalışma dizininin (${oturum}) dışındadır; araç istenen dizinde çalıştı, fakat sonuç oturumun kendi ağacına ait olmayabilir.`,
+  en: (dizin, oturum) =>
+    `⚠️ The given directory (${dizin}) is outside this session's working directory (${oturum}); the tool ran in the requested directory, but the result may not belong to the session's own tree.`,
+};
+
+/**
  * tools/list yüzünün tek kaynağı. Nesne sırası mevcut araç sırasını korur;
  * araç adı nesne anahtarıdır ve şema üreticisi `name` alanını buradan türetir.
  */
@@ -142,9 +162,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         adim: parametre("string", "Adım KOD'u (ör. SEF-ATF-A01)", "Adım KOD (for example, SEF-ATF-A01)"),
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
-      required: ["adim", "dizin"],
+      required: ["adim"],
     },
   },
 
@@ -216,7 +236,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        dizin: parametre("string", "çalışma alanı kökü (varsayılan: '.')", "workspace root (default: '.')"),
+        dizin: dizinParametresi("çalışma alanı kökü", "workspace root"),
       },
     },
   },
@@ -314,10 +334,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
         kok: parametre("string", "isteğe bağlı odak KOD — alt-graf filtresi (ör. BLK-VITRIN)", "optional focus KOD used as a subgraph filter (for example, BLK-VITRIN)"),
       },
-      required: ["dizin"],
     },
   },
 
@@ -348,9 +367,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         kod: parametre("string", "Aranan KOD (düğüm, karar ya da akış kimliği)", "KOD to locate (a node, decision, or flow identity)"),
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
-      required: ["kod", "dizin"],
+      required: ["kod"],
     },
   },
 
@@ -383,7 +402,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       properties: {
         kaynak: parametre("string", ".sar kaynak metni (doğrudan denetlenir)", ".sar source text to check directly"),
         yol: parametre("string", ".sar dosya yolu (kaynak verilmezse dosyadan okunur; örtü bu dizinden çözülür)", ".sar file path (read when `kaynak` is omitted; the overlay is resolved from this directory)"),
-        dizin: parametre("string", "çalışma-alanı dizini — kaynak-metin denetlenirken örtü (ortu.json) buradan çözülür (opsiyonel)", "workspace directory used to resolve the overlay (ortu.json) when checking source text (optional)"),
+        dizin: parametre("string", "çalışma-alanı dizini — kaynak-metin denetlenirken örtü (ortu.json) buradan çözülür (opsiyonel); oturumun çalışma dizini dışındaki bir yol cevabın başında bildirilir", "workspace directory used to resolve the overlay (ortu.json) when checking source text (optional); a path outside the session's working directory is reported at the start of the response"),
         agac: parametre("boolean", "true → yanıta yapı ağacı da eklenir (CLI --agac ile birebir aynı çekirdek)", "true adds the structure tree to the response (the exact same core as CLI --agac)"),
       },
     },
@@ -457,9 +476,8 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        dizin: parametre("string", "proje/çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "project or workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("proje/çalışma-alanı dizini — .sar ağacı kökü", "project or workspace directory—the .sar tree root"),
       },
-      required: ["dizin"],
     },
   },
 
@@ -490,10 +508,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        dizin: parametre("string", "proje dizini — giriş dosyasının (<varlık>_anadizin.sar) kökü (mutlak yol önerilir)", "project directory—the root containing the entry file (<entity>_anadizin.sar); an absolute path is recommended"),
+        dizin: dizinParametresi("proje dizini — giriş dosyasının (<varlık>_anadizin.sar) kökü", "project directory—the root containing the entry file (<entity>_anadizin.sar)"),
         uret: parametre("boolean", "true → eksik yapıyı DİSKE üret; verilmez/false → yalnız önizleme (güvenli varsayılan)", "true creates missing structure ON DISK; omitted or false only previews (safe default)"),
       },
-      required: ["dizin"],
     },
   },
 
@@ -516,9 +533,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         kod: parametre("string", "etkisi sorulan KOD (ör. SEF-ATF-A01, MEK-SEF)", "KOD whose impact is requested (for example, SEF-ATF-A01 or MEK-SEF)"),
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
-      required: ["kod", "dizin"],
+      required: ["kod"],
     },
   },
 
@@ -543,9 +560,9 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         metin: parametre("string", "aranan metin (büyük/küçük harf duyarsız, Türkçe-normalize)", "text to search for (case-insensitive with Turkish normalization)"),
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
-      required: ["metin", "dizin"],
+      required: ["metin"],
     },
   },
 
@@ -622,11 +639,11 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        dizin: parametre("string", "çalışma-alanı dizini — .sar ağacı kökü (mutlak yol önerilir)", "workspace directory—the .sar tree root (an absolute path is recommended)"),
+        dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
         kod: parametre("string", "durumu güncellenecek Adım KOD'u", "Adım KOD whose status will be updated"),
         durum: parametre("string", "yeni durum (kanon enum)", "new status (canonical enum)", (b) => b.adimDurumlari),
       },
-      required: ["dizin", "kod", "durum"],
+      required: ["kod", "durum"],
     },
   },
 } as const;

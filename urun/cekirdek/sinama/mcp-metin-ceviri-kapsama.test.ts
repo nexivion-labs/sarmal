@@ -78,25 +78,26 @@ test("CDL-A05 nöbeti: 18 araç/34 parametre eksiksiz çevrilir; kimlik ve şema
     prizma: ["kaynak", "yuz"],
     "durum-guncelle": ["dizin", "kod", "durum"],
   };
+  // EKL-F6-A07: `dizin` hiçbir araçta zorunlu değildir; verilmezse oturumun çalışma dizini kullanılır.
   const beklenenZorunlu: Record<string, readonly string[] | undefined> = {
-    sef: ["adim", "dizin"],
+    sef: ["adim"],
     ogret: undefined,
     kavram: undefined,
     karne: undefined,
     basla: undefined,
     dogus: ["hedef"],
-    graf: ["dizin"],
-    gezin: ["kod", "dizin"],
+    graf: undefined,
+    gezin: ["kod"],
     denetle: undefined,
     kurallar: undefined,
     siniflama: undefined,
-    "denetle-proje": ["dizin"],
-    iskelet: ["dizin"],
-    etki: ["kod", "dizin"],
-    bul: ["metin", "dizin"],
+    "denetle-proje": undefined,
+    iskelet: undefined,
+    etki: ["kod"],
+    bul: ["metin"],
     bicimle: ["kaynak"],
     prizma: ["kaynak", "yuz"],
-    "durum-guncelle": ["dizin", "kod", "durum"],
+    "durum-guncelle": ["kod", "durum"],
   };
   assert.deepEqual(tr.map((a) => a.name), beklenenAdlar);
   assert.deepEqual(en.map((a) => a.name), beklenenAdlar);
