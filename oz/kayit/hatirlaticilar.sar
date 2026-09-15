@@ -76,7 +76,8 @@
 
 Hatırlatıcı(
   kod:              HTR-SURUM-DAMGASI-TUZAGI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A11,
   çapa:             nitelik,
   dönüşTetikleyici: "Eklenti bir sonraki kez paketlendiğinde ya da yayın kapısı açıldığında",
   öncelik:          p1,
@@ -528,7 +529,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A09,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-09,
@@ -584,7 +586,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A08,
   çapa:             mimari,
   dönüşTetikleyici: "Doğuş paketinin sunucu kaydını üreten gövde bir sonraki kez elden geçirildiğinde; ya da doğan bir ağaç ilk kez başka bir makineye taşındığında",
   öncelik:          p2,
@@ -615,7 +618,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-10,
@@ -705,7 +709,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A07,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-12,
@@ -715,7 +720,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-12,
@@ -745,7 +751,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A09,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-13,
@@ -765,7 +772,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A07,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-15,
