@@ -851,7 +851,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       nedenAktif = n ? (n.length > 48 ? n.slice(0, 46) + "…" : n) : YOL_METINLERI.gelistiriliyor;
     }
     // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
-    // beyanı. Satır soluk + 🧊 imli; NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
+    // beyanı. Satır soluktur ve sayacı kelimeyle yazılır (VIT-KIMLIK-A07 · Founder sade hâli,
+    // 2026-09-13: eski buz işareti kalktı); NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
     const planNeden = o.tip === "Blok" ? (planAlani(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
     // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
@@ -863,7 +864,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // yeri değişti.
     const hedefTarihDegeri = o.tip === "Faz" ? planAlani(o.dugum, "hedefTarih")?.deger.metin : undefined;
     const tarih = tarihRozetiKisa(hedefTarihDegeri);
-    const sayac = planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`;
+    const sayac = planNeden ? YOL_METINLERI.planlanmamisSayac(o.tamam, o.toplam) : `[${o.tamam}/${o.toplam}]`;
     // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla
     // bağlanan Blok kendi projesinin altında durur; bağlandığı Faz ile o Fazın
     // projesi satırın yanında not olarak yazılır ve sebep ipucunda söylenir.

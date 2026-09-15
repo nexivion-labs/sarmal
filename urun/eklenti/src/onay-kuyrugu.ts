@@ -33,6 +33,7 @@
 
 import * as vscode from "vscode";
 import { rozetRenkleri } from "./ortak.ts";           // terfi sarısı — onay-bekleyen nabzının rengi (kanondan)
+import { satirSonuSecenekleri } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A07: satır sonu notunun aile simgesi
 import { nabizAbone, geciktir } from "./nabiz.ts";    // EKL-F9-A07/A08: tek kalp + tek geciktirici
 // SAF karar mantığı — fikstürlü testte (NTK-A08 · VIT-POSTA-A03). "Aynı anda en
 // fazla bir karar yüzeyi" sözleşmesi de saf defterde yaşar ve nöbet onu koşturur.
@@ -514,14 +515,19 @@ export function onayKuyruguKaydi(
   // (Founder isteği 2026-07-17: "onay bekleyenler de geribildirim gibi yanıp
   // sönse"). Renk kanondan: driftRozetleri.terfi — karar/dikkat sarısı (YUZ-4
   // ruhu: renk=durum). Aynı tek kalp (nabiz.ts) kullanılır; ayrı zamanlayıcı yok.
+  // VIT-KIMLIK-A07 (Founder sade hâli, 2026-09-13): notun işareti emojiden
+  // ailenin kapı simgesine geçti; kelime yerinde kalır. Parlak evre simge ile
+  // kelimedir, sönük evre aynı simgenin mat hâlidir ve nabız aynen korunur.
+  // Simge ile kelime satır sonundaki BOŞ aralığa oturur; ipucu ayrı ve süssüz
+  // bir dekorla bütün satırda kalır ve nabız atışında el değiştirmez.
   const sari = rozetRenkleri().terfi;
-  const davetDolu = vscode.window.createTextEditorDecorationType({
-    after: { contentText: ONAY_YUZEY_METINLERI.bekliyorSus, color: sari },
-  });
-  const davetBos = vscode.window.createTextEditorDecorationType({
-    after: { contentText: "  📪", color: `${sari}55` },
-  });
+  const davetDolu = vscode.window.createTextEditorDecorationType(satirSonuSecenekleri(
+    vscode, baglam.extensionUri, "onayBekliyor", "parlak", { metin: ONAY_YUZEY_METINLERI.bekliyorSus, renk: sari }));
+  const davetBos = vscode.window.createTextEditorDecorationType(satirSonuSecenekleri(
+    vscode, baglam.extensionUri, "onayBekliyor", "sonuk"));
+  const davetIpucu = vscode.window.createTextEditorDecorationType({});
   let davetAraliklar: vscode.DecorationOptions[] = [];
+  let davetIpuclari: vscode.DecorationOptions[] = [];
   let davetAtis = true;
   const davetBoya = (): void => {
     const editor = vscode.window.activeTextEditor;
@@ -532,11 +538,17 @@ export function onayKuyruguKaydi(
   const davetKalbi = nabizAbone((a) => { davetAtis = a; davetBoya(); });
   const susle = (): void => {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || !gercekDosya(editor.document)) { davetAraliklar = []; return; }
-    davetAraliklar = noktalariTopla(editor.document).map((n) => ({
+    if (!editor || !gercekDosya(editor.document)) { davetAraliklar = []; davetIpuclari = []; return; }
+    const noktalar = noktalariTopla(editor.document);
+    davetIpuclari = noktalar.map((n) => ({
       range: editor.document.lineAt(n.satir).range,
       hoverMessage: new vscode.MarkdownString(ONAY_YUZEY_METINLERI.hover(n.kod, n.olcut)),
     }));
+    davetAraliklar = noktalar.map((n) => {
+      const son = editor.document.lineAt(n.satir).range.end;
+      return { range: new vscode.Range(son, son) };
+    });
+    editor.setDecorations(davetIpucu, davetIpuclari);
     davetBoya();
   };
 
@@ -700,7 +712,7 @@ export function onayKuyruguKaydi(
     kutu, iz,
     izleyici,
     gecikmeliTazele,
-    davetKalbi, davetDolu, davetBos, degisti,
+    davetKalbi, davetDolu, davetBos, davetIpucu, degisti,
     // Ana tanı hattı görüntüsünü tazeleyince kuyruk yeniden yerleşir. Onay yüzeyi
     // kendi tam turunu KURMAZ. (PRF-TA-A03: susuş bildirimi diye bir olay yoktur.)
     anaGoruntuDegisti(() => { void tumunuTara().then(() => { susle(); degisti.fire(); }); }),

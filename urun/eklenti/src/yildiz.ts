@@ -15,6 +15,7 @@ import { uzunNiyetiKatla, tabloHizala } from "./katla.ts";
 import { rozetRenkleri } from "./ortak.ts";
 import { nabizAbone, geciktir } from "./nabiz.ts";   // EKL-F9-A07/A08: tek kalp + tek geciktirici
 import { YILDIZ_METINLERI } from "./yuzey-metinleri.ts";
+import { satirSonuSecenekleri, type SatirSonuNotu, type NabizEvresi } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A07: satır sonu notunun aile simgesi
 
 function susYap(baglam: vscode.ExtensionContext, dosya: string): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
@@ -76,12 +77,18 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
   // da yanıp sönsün"). Renkler GERÇEKTEN kanondan okunur (KRR-MUT Sütun D —
   // eski elle-kopya "kanondan" diyen yorumla yaşıyordu; artık rozetRenkleri()).
   const R = rozetRenkleri();
-  const rozet = (metin: string, renk: string): vscode.TextEditorDecorationType =>
-    vscode.window.createTextEditorDecorationType({ after: { contentText: metin, color: renk } });
-  const terfiParlak = rozet(YILDIZ_METINLERI.terfiBekliyor, R.terfi);
-  const terfiSonuk  = rozet("  🎓", `${R.terfi}55`);
-  const uyariParlak = rozet(YILDIZ_METINLERI.uyari, R.uyari);
-  const uyariSonuk  = rozet("  ⚠️", `${R.uyari}55`);
+  // VIT-KIMLIK-A07 (Founder sade hâli, 2026-09-13): rozetin işareti emojiden
+  // ailenin terfi ve uyarı simgesine geçti; kelime yerinde kalır. Parlak evre
+  // simge ile kelimedir, sönük evre aynı simgenin mat hâlidir ve nabız aynen
+  // korunur. Rozet satır sonundaki BOŞ aralığa oturur; ipucu ayrı ve süssüz bir
+  // dekorla bütün satırda kalır.
+  const rozet = (not: SatirSonuNotu, evre: NabizEvresi, etiket?: { metin: string; renk: string }): vscode.TextEditorDecorationType =>
+    vscode.window.createTextEditorDecorationType(satirSonuSecenekleri(vscode, baglam.extensionUri, not, evre, etiket));
+  const terfiParlak = rozet("terfiBekliyor", "parlak", { metin: YILDIZ_METINLERI.terfiBekliyor, renk: R.terfi });
+  const terfiSonuk  = rozet("terfiBekliyor", "sonuk");
+  const uyariParlak = rozet("uyari", "parlak", { metin: YILDIZ_METINLERI.uyari, renk: R.uyari });
+  const uyariSonuk  = rozet("uyari", "sonuk");
+  const rozetIpucu  = vscode.window.createTextEditorDecorationType({});
 
   // Yıldız satırları yalnız aralık değil, aralığa bağlı bir açıklama da taşır
   // (yildizSatirlari her satıra "bu satırda şu öneri var" cümlesini iliştirir).
@@ -90,7 +97,8 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
   let araliklar: vscode.DecorationOptions[] = [];
   let terfiler: vscode.DecorationOptions[] = [];
   let uyarilar: vscode.DecorationOptions[] = [];
-  let faz = 0;          // nefes çevrimi imleci (NEFES dizisinde döner)
+  let rozetIpuclari: vscode.DecorationOptions[] = [];
+  let faz = 0;         // nefes çevrimi imleci (NEFES dizisinde döner)
   let atis = true;      // rozetlerin iki-faz ritmi (metin süsleri — eski davranış)
 
   const boya = (): void => {
@@ -107,20 +115,21 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
 
   const hesapla = (): void => {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.languageId !== "sarmal") { araliklar = []; terfiler = []; uyarilar = []; return; }
+    if (!editor || editor.document.languageId !== "sarmal") { araliklar = []; terfiler = []; uyarilar = []; rozetIpuclari = []; return; }
     araliklar = yildizSatirlari(editor.document);
-    terfiler = []; uyarilar = [];
+    terfiler = []; uyarilar = []; rozetIpuclari = [];
     const gorulen = new Set<number>();
     for (const tani of vscode.languages.getDiagnostics(editor.document.uri)) {
       const satir = tani.range.start.line;
       if (gorulen.has(satir)) continue;
-      const secenek: vscode.DecorationOptions = {
-        range: editor.document.lineAt(satir).range,
-        hoverMessage: new vscode.MarkdownString(tani.message),
-      };
-      if (tani.code === "beceri-terfisi") { terfiler.push(secenek); gorulen.add(satir); }
-      else if (tani.severity === vscode.DiagnosticSeverity.Warning) { uyarilar.push(secenek); gorulen.add(satir); }
+      const satirAraligi = editor.document.lineAt(satir).range;
+      // Rozet satır sonundaki boş aralığa oturur; ipucu bütün satırda kalır.
+      const rozetYeri: vscode.DecorationOptions = { range: new vscode.Range(satirAraligi.end, satirAraligi.end) };
+      const ipucu: vscode.DecorationOptions = { range: satirAraligi, hoverMessage: new vscode.MarkdownString(tani.message) };
+      if (tani.code === "beceri-terfisi") { terfiler.push(rozetYeri); rozetIpuclari.push(ipucu); gorulen.add(satir); }
+      else if (tani.severity === vscode.DiagnosticSeverity.Warning) { uyarilar.push(rozetYeri); rozetIpuclari.push(ipucu); gorulen.add(satir); }
     }
+    editor.setDecorations(rozetIpucu, rozetIpuclari);
     boya();
   };
 
@@ -137,7 +146,7 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
       if (e.document === vscode.window.activeTextEditor?.document) bekletici.cagir();
     }),
     vscode.languages.onDidChangeDiagnostics(() => bekletici.cagir()),
-    parlak, orta, sonuk, terfiParlak, terfiSonuk, uyariParlak, uyariSonuk,
+    parlak, orta, sonuk, terfiParlak, terfiSonuk, uyariParlak, uyariSonuk, rozetIpucu,
   );
   hesapla();
 }

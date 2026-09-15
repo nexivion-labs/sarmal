@@ -17,7 +17,10 @@
 //      📬 dekoruydu hem takdir yüzeyinin ❤️ dekoru ve ikisi tek kalem
 //      sayıldığı için Onaylar yüzeyinin işareti takdir muafiyetinin altına
 //      saklanmıştı. Anahtar artık `KATALOG.üye` biçimindedir; iki yüzey iki
-//      satırdır ve sınıfları ayrı ayrı yazılır.
+//      satırdır ve sınıfları ayrı ayrı yazılır. Onaylar notu Founder sade
+//      hâli, 2026-09-13 ile emojisiz kaldığı için ayrım bugün gerçek kataloğun
+//      bir mutantıyla ölçülür: nota emoji geri konur ve kalemin Onaylar
+//      kataloğuna yazıldığı görülür.
 //
 //   ② "AÇIK BORÇ" SAYISI ŞİŞKİNDİ. Önceki tur kataloğun KAYNAK satırlarını
 //      saydı ve emoji taşıyan her satırı borç yazdı. Oysa koni kartı ile
@@ -27,30 +30,31 @@
 //      görür. Bu kalemler artık `çevrili` sınıfındadır; borç değildirler ve
 //      kapanışları simge-cizelgesi.test.ts webview nöbetleriyle korunur.
 //
-//   ── ALTI SINIF ───────────────────────────────────────────────────────────
+//   ── BEŞ SINIF ────────────────────────────────────────────────────────────
 //   `takdir` · `yazım`   — YUZ-4.2'nin iki muafiyeti; hükmen meşrudur.
 //   `çevrili`            — katalog satırı emojiyi yalnız çizelge ANAHTARI
 //                          olarak taşır; basılan yüzey aileye çevrilir.
 //   `günlük`             — çıktı kanalı ve konsol satırı; Adımın kendi üç
 //                          sınıfındaki "geliştirici gözüne bakan iç kayıt".
-//   `sınır`              — SINIR VAKASI: bildirim ve durum çubuğu. Hüküm ile
-//                          kanon lafzı çatışır; Founder kararı bekler (aşağıda).
-//   `borç`               — kalan açık borç; YUZ-4.2 kapsamındadır.
+//   `borç`               — açık borç; YUZ-4.2 kapsamındadır. Founder sade
+//                          hâli, 2026-09-13 ile SIFIRA indi ve öyle kalır.
 //
-//   ── SINIR VAKASI: HÜKÜM İLE KANON LAFZI ÇATIŞIYOR ─────────────────────────
-//   Kontrolcü hükmü 2026-09-10 (Founder yetki devriyle, is/plan/blok/vitrin_ui.sar)
-//   muafiyeti işaretin yerine değil yüzeyin FİZİKSEL yeteneğine bağladı: ipucu
-//   balonu ile satır-içi dekor görsel taşıyabilir ve BORÇTUR; bildirim ile durum
-//   çubuğu taşıyamaz ve MUAFTIR. İlk yarı 2026-09-13 turunda uygulandı: ipucu
-//   balonu işaretini aileden çizer, düz metin ipuçları kelimeye indi, satır-içi
-//   dekor `borç` sınıfındadır. İkinci yarı UYGULANMADI, çünkü YUZ-4.2'nin bugünkü
-//   lafzı "durum çubuğu" ile "bildirim"i yasak listesinde adıyla sayar ve
-//   fiziksel yetenek muafiyeti tanımaz; plan kaydı kanonu geçemez. O kalemler bu
-//   yüzden `sınır` sınıfında kalır ve bu nöbet onlara DOKUNMAZ.
+//   ── SINIR VAKASI KAPANDI (Founder sade hâli, 2026-09-13) ──────────────────
+//   Bildirim ile durum çubuğu 2026-09-10'dan beri `sınır` sınıfındaydı, çünkü
+//   kontrolcünün yüzeyin fiziksel yeteneğine dayanan muafiyeti YUZ-4.2'nin
+//   lafzıyla çatışıyordu. Founder'ın sade hâli kararı çatışmayı kanon lafzına
+//   dokunmadan çözdü: eldeki simgelerle çizilebilen yerde işaret aileden gelir,
+//   çizilemeyen yerde işaret düşer ve yalnız kelime kalır. Bildirim kutusu ile
+//   durum çubuğu iletisi eklentinin görselini taşımaz; oradaki emoji kalktı ve
+//   kelime kaldı. Durum çubuğu öğelerinin VS Code codicon'ları emoji değildir
+//   ve bu kararın dışındadır. Eski `borç` kalemleri olan satır sonu notları
+//   simgeyi dekorun görsel ekinden, raftaki kapı, terfi ve uyarı simgelerinin
+//   üretilmiş varyantlarıyla çizer ve kelime yanında kalır. `sınır` sınıfı bu
+//   yüzden kalktı ve `borç` sınıfında kalem kalmadı.
 //
 //   ── BU NÖBET NE YAPAR VE NE YAPMAZ ───────────────────────────────────────
-//   Borcu kapatmaz; borcun BÜYÜMESİNİ imkânsız kılar ve kapanışını görünür
-//   kılar. Circir iki yönde de çalışır — yeni bir emoji eklenirse ya da bir
+//   Borç sıfırdır; nöbet onun yeniden doğmasını imkânsız kılar ve her
+//   değişikliği görünür kılar. Circir iki yönde de çalışır — yeni bir emoji eklenirse ya da bir
 //   sahibin sayısı artarsa nöbet kırmızıya döner; sayı DÜŞERSE de kırmızıya
 //   döner, çünkü ilerleme sessizce kaydedilirse envanter bayatlar ve bir
 //   sonraki tur neyin kaldığını okuyamaz.
@@ -71,7 +75,7 @@ import { fileURLToPath } from "node:url";
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 const EMOJI = /\p{Extended_Pictographic}/u;
 
-type Sinif = "takdir" | "yazım" | "çevrili" | "günlük" | "sınır" | "borç";
+type Sinif = "takdir" | "yazım" | "çevrili" | "günlük" | "borç";
 
 /**
  * ENVANTER — sahip başına emoji taşıyan KOD satırı sayısı ve kalemin sınıfı.
@@ -123,27 +127,14 @@ const ENVANTER: Record<string, { adet: number; sinif: Sinif }> = {
   //    kaynakta nasıl YAZILDIĞINI anlatır; bir işaret değil dilin yazımıdır.
   "IPUCU_BELGE_METINLERI.acilis": { adet: 2, sinif: "yazım" },
   ipucuIslecMetni: { adet: 2, sinif: "yazım" },
-  // ── SINIR VAKASI · BİLDİRİM VE DURUM ÇUBUĞU ───────────────────────────────
-  "EKLENTI_KABUK_METINLERI.eskiKopyaSaltOkunur": { adet: 2, sinif: "sınır" },
-  "EKLENTI_KABUK_METINLERI.giydirKlasorGerekli": { adet: 2, sinif: "sınır" },
-  "EKLENTI_KABUK_METINLERI.giydirildi": { adet: 2, sinif: "sınır" },
-  "GIYDIR_METINLERI.soru": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.geriAlma": { adet: 1, sinif: "sınır" },
-  "YOL_METINLERI.yasakGecis": { adet: 1, sinif: "sınır" },
-  iskeletKuruldu: { adet: 2, sinif: "sınır" },
-  panelOdakMesaji: { adet: 1, sinif: "sınır" },
-  // ── AÇIK BORÇ · SATIR-İÇİ DEKOR (after.contentText) ───────────────────────
-  //    Kontrolcü hükmü 2026-09-10: dekor görsel taşıyabilir (bu eklenti editör
-  //    hanesinde contentIconPath kullanır), dolayısıyla BORÇTUR. Kapanışı iki
-  //    tasarım sorusuna bağlıdır ve ikisi de Founder'ın önceki hükümlerine
-  //    dokunur: nabzın sönük evresinin görselle nasıl çizileceği (Founder
-  //    2026-07-06 ve 2026-07-17 nabız istekleri) ve rozet renginin kanon rozet
-  //    renklerinden mi, ailenin anlam çizelgesinden mi okunacağı. Aynı dekorun
-  //    sönük evresi katalog dışında yaşar (yildiz.ts ve onay-kuyrugu.ts) ve
-  //    simge-cizelgesi.test.ts borç tavanıyla sayılır.
-  "ONAY_YUZEY_METINLERI.bekliyorSus": { adet: 1, sinif: "borç" },
-  "YILDIZ_METINLERI.terfiBekliyor": { adet: 1, sinif: "borç" },
-  "YILDIZ_METINLERI.uyari": { adet: 1, sinif: "borç" },
+  // ── KAPANAN KALEMLER (VIT-KIMLIK-A07 · Founder sade hâli, 2026-09-13) ─────
+  //    Eski `sınır` sınıfı: bildirim metinleri (giydirme sorusu ve sonucu,
+  //    klasör gerekli uyarısı, eski kopya uyarısı, iskelet sonucu, yasak geçiş)
+  //    ve durum çubuğu iletileri (panel odağı, geri alma) emojisiz kaldı ve
+  //    yalnız kelime taşır. Eski `borç` sınıfı: satır sonu notlarının (onay
+  //    bekliyor, terfi bekliyor, uyarı) kelimesi emojisizdir ve işaret dekorun
+  //    görsel ekinde aileden çizilir. On bir kalem listeden düştü; `borç`
+  //    sınıfında kalem kalmadı ve aşağıdaki nöbet onun sıfır kaldığını ölçer.
 };
 
 /**
@@ -157,8 +148,8 @@ const ENVANTER: Record<string, { adet: number; sinif: Sinif }> = {
  * katalog aynı üye adını taşıdığında tek anahtar iki yüzeyi birleştirir ve
  * birinin sınıfı ötekinin altına saklanır (bu dosyanın ① düzeltmesi).
  */
-function envanteriOlc(): Map<string, number> {
-  const ham = oku("../src/yuzey-metinleri.ts").split("\n");
+function envanteriOlc(kaynak: string = oku("../src/yuzey-metinleri.ts")): Map<string, number> {
+  const ham = kaynak.split("\n");
   const sayim = new Map<string, number>();
   let blokYorum = false;
   let sahip = "(dosya başı)";
@@ -200,12 +191,21 @@ test("ENVANTER ANAHTARI: sahip adı KATALOĞUYLA birlikte anılır — iki yüze
   // Ölçülmüş çakışma: `bekliyorSus` hem Onaylar hem takdir yüzeyinde yaşar ve
   // ikisinin sınıfı AYRIDIR. Anahtar kataloğu taşımazsa biri ötekinin
   // muafiyetine saklanır; nöbet bu yüzden ayrımın kendisini ölçer.
-  for (const anahtar of ["ONAY_YUZEY_METINLERI.bekliyorSus", "TAKDIR_METINLERI.bekliyorSus"]) {
-    assert.ok(olculen.has(anahtar),
-      `${anahtar} ölçümde yok — anahtar kataloğu yitirmiş, çakışan üye adları yeniden birleşir`);
-  }
+  assert.ok(olculen.has("TAKDIR_METINLERI.bekliyorSus"),
+    "TAKDIR_METINLERI.bekliyorSus ölçümde yok — anahtar kataloğu yitirmiş, çakışan üye adları yeniden birleşir");
   assert.equal(olculen.get("bekliyorSus"), undefined,
     "kataloğu olmayan çıplak 'bekliyorSus' anahtarı doğdu — iki yüzey yine tek satırda toplanıyor");
+  // Onaylar notu Founder sade hâli, 2026-09-13 ile emojisiz kaldı. Ayrımın bugün
+  // de işlediği gerçek kataloğun bir mutantıyla ölçülür: nota emoji geri konur
+  // ve ölçüm onu takdir yüzeyinin değil Onaylar kataloğunun kalemi olarak yazmalıdır.
+  const kaynak = oku("../src/yuzey-metinleri.ts");
+  const satir = 'get bekliyorSus(): string { return yuzeyMetni("Founder onayını bekliyor"';
+  assert.ok(kaynak.includes(satir), "Onaylar notunun satırı katalogda bulunamadı; mutant boşa kurulur");
+  const mutant = envanteriOlc(kaynak.replace(satir, satir.replace('("Founder', '("📬 Founder')));
+  assert.equal(mutant.get("ONAY_YUZEY_METINLERI.bekliyorSus"), 1,
+    "Onaylar notuna konan emoji Onaylar kataloğunun kalemi olarak sayılmadı — anahtar kataloğu yitirmiş");
+  assert.equal(mutant.get("TAKDIR_METINLERI.bekliyorSus"), olculen.get("TAKDIR_METINLERI.bekliyorSus"),
+    "Onaylar notunun emojisi takdir yüzeyinin kalemine eklendi — iki yüzey yine tek satırda toplanıyor");
 });
 
 test("CIRCIR: hiçbir metin sahibine YENİ emoji eklenmedi ve hiçbir sayı ARTMADI", () => {
@@ -243,18 +243,74 @@ test("CIRCIR: kapanan borç envantere İŞLENİR — ilerleme sessiz kalamaz", (
 });
 
 test("ENVANTER: her sınıf AYRI sayılır ve açık borç muafiyetin altına saklanamaz", (t) => {
-  const toplam: Record<Sinif, number> = { takdir: 0, yazım: 0, çevrili: 0, günlük: 0, sınır: 0, borç: 0 };
+  const toplam: Record<Sinif, number> = { takdir: 0, yazım: 0, çevrili: 0, günlük: 0, borç: 0 };
   for (const kayitli of Object.values(ENVANTER)) toplam[kayitli.sinif] += kayitli.adet;
   // Sayı bir iddia değil, ÖLÇÜMDÜR ve gizlenmez (YUZ-3.1: hiçbir yüzey bir
-  // tanıyı gizleyemez). VIT-KIMLIK-A07'nin üçüncü kabul ölçütü ancak `borç`
-  // SIFIRA indiğinde ve `sınır` hükme bağlandığında karşılanır.
-  t.diagnostic(`VIT-KIMLIK-A07 · açık borç: ${toplam.borç} · sınır vakası (Founder hükmü bekler): ${toplam.sınır}`);
+  // tanıyı gizleyemez). VIT-KIMLIK-A07'nin üçüncü kabul ölçütü `borç` SIFIRDA
+  // karşılanır; aşağıdaki nöbet bu sıfırı ayrıca kilitler.
+  t.diagnostic(`VIT-KIMLIK-A07 · açık borç: ${toplam.borç}`);
   t.diagnostic(`hükmen muaf: takdir ${toplam.takdir} · dilin yazımı ${toplam.yazım} · aileye çevrili ${toplam.çevrili} · günlük ${toplam.günlük}`);
   const olculenToplam = [...envanteriOlc().values()].reduce((a, b) => a + b, 0);
   const kayitliToplam = Object.values(toplam).reduce((a, b) => a + b, 0);
   assert.equal(kayitliToplam, olculenToplam,
     `envanterin sınıf toplamı (${kayitliToplam}) ölçülen satır sayısından (${olculenToplam}) ayrı — ` +
     "bir kalem sınıfsız kalmış ya da iki kez sayılmış");
+});
+
+test("ENVANTER: açık borç SIFIRDIR — borç sınıfına yeni kalem yazılamaz", () => {
+  // Founder sade hâli, 2026-09-13 son üç borç kalemini kapattı. Circir yeni bir
+  // emojiyi zaten kırmızıya düşürür; bu nöbet onu `borç` diye kaydedip susturma
+  // yolunu kapatır. Yeni bir borç ancak Founder hükmüyle ve bu nöbet bilerek
+  // güncellenerek doğabilir.
+  const borclar = Object.entries(ENVANTER).filter(([, k]) => k.sinif === "borç").map(([s, k]) => `${s} (${k.adet})`);
+  assert.deepEqual(borclar, [] as string[],
+    "Envantere açık borç yazıldı: " + borclar.join(", ") + " — YUZ-4.2 kullanıcıya görünen yüzeyde " +
+    "emojiyi yasaklar; işaret aileden gelir, aile ulaşamıyorsa işaret düşer ve kelime kalır.");
+});
+
+test("KAPANDI: bildirim, durum çubuğu iletisi, satır sonu notu ve planlanmamış sayacı kelimeyle konuşur", async () => {
+  const m = await import("../src/yuzey-metinleri.ts");
+  // Founder sade hâli, 2026-09-13: bildirim kutusu ile durum çubuğu iletisi
+  // eklentinin görselini taşımaz, dolayısıyla emoji kalkar ve kelime kalır.
+  // Satır sonu notunun simgesini dekor ekler; katalog yalnız kelimeyi taşır.
+  // Her metin iki dilde emojisiz olmalı ve kendi kelimesini korumalıdır.
+  try {
+    for (const dil of ["tr", "en"] as const) {
+      m.yuzeyDiliniAyarla(dil);
+      const tr = dil === "tr";
+      for (const [ad, metin, kelime] of [
+        ["giydirme sorusu", m.GIYDIR_METINLERI.soru, tr ? "giydirilmemiş" : "appearance applied"],
+        ["giydirildi bildirimi", m.EKLENTI_KABUK_METINLERI.giydirildi, tr ? "giydirildi" : "Workspace dressed"],
+        ["klasör gerekli bildirimi", m.EKLENTI_KABUK_METINLERI.giydirKlasorGerekli, tr ? "klasör aç" : "open a folder"],
+        ["eski kopya bildirimi", m.EKLENTI_KABUK_METINLERI.eskiKopyaSaltOkunur, tr ? "ESKİ kopya" : "HISTORICAL copy"],
+        ["iskelet bildirimi", m.iskeletKuruldu(2, 1), tr ? "Iskelet kuruldu" : "Scaffold built"],
+        ["yasak geçiş bildirimi", m.YOL_METINLERI.yasakGecis("'ADM-1' bloklu → tamamlandı YAZILAMAZ", "ADM-1", "bloklu", "tamamlandı"), tr ? "YAZILAMAZ" : "not allowed"],
+        ["panel odağı iletisi", m.panelOdakMesaji("sarmal"), tr ? "panel odağı" : "panel focus"],
+        ["geri alma iletisi", m.YOL_METINLERI.geriAlma("ADM-1", "tamamlandı", "beklemede"), tr ? "geri-alma" : "rollback"],
+        ["onay notu", m.ONAY_YUZEY_METINLERI.bekliyorSus, tr ? "Founder onayını bekliyor" : "awaiting Founder approval"],
+        ["terfi notu", m.YILDIZ_METINLERI.terfiBekliyor, tr ? "terfi bekliyor" : "promotion pending"],
+        ["uyarı notu", m.YILDIZ_METINLERI.uyari, tr ? "uyarı" : "warning"],
+      ] as const) {
+        assert.ok(!EMOJI.test(metin), `${ad} (${dil}) hâlâ emoji taşıyor: ${metin}`);
+        assert.ok(metin.includes(kelime), `${ad} (${dil}) kelimesini yitirmiş: "${metin}"`);
+      }
+      assert.equal(m.YOL_METINLERI.planlanmamisSayac(2, 5), tr ? "planlanmamış [2/5]" : "unscheduled [2/5]",
+        `planlanmamış sayacı (${dil}) kelime ve sayıdan oluşmuyor`);
+    }
+  } finally {
+    m.yuzeyDiliniAyarla("tr");
+  }
+  // İşaret sessizce kaybolmadı: satır sonu notları aile simgesiyle kurulur ve
+  // Yol Haritası sayacı katalogdaki kelimeden okunur.
+  const yildiz = oku("../src/yildiz.ts");
+  for (const not of ["terfiBekliyor", "uyari"])
+    for (const evre of ["parlak", "sonuk"])
+      assert.ok(yildiz.includes(`rozet("${not}", "${evre}"`),
+        `yildiz.ts ${not} notunun ${evre} evresini aile simgesiyle kurmuyor — nabız ya da işaret kaybolmuş`);
+  assert.ok(/satirSonuSecenekleri\(vscode, baglam\.extensionUri, not, evre, etiket\)/.test(yildiz),
+    "yildiz.ts rozetini satır sonu hanesinden (simge-cizelgesi.ts) kurmuyor");
+  assert.ok(/YOL_METINLERI\.planlanmamisSayac\(o\.tamam, o\.toplam\)/.test(oku("../src/yolharitasi.ts")),
+    "Yol Haritası planlanmamış sayacını katalogdaki kelimeden okumuyor");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -262,6 +262,69 @@ export function ipucuIsaretiMd(adres: string): string {
   return `![](${adres}|width=${IPUCU_ISARET_PX},height=${IPUCU_ISARET_PX})`;
 }
 
+// ── SATIR SONU HANESİ (VIT-KIMLIK-A07 · Founder sade hâli, 2026-09-13) ───────
+//    Editördeki satır sonu notları, yani Founder onayı bekleyen kapı, terfi
+//    bekleyen ders ve uyarı, editörün kendi çizim yüzeyindedir ve dekorasyonun
+//    görsel ekiyle aile simgesi taşıyabilir. Founder'ın sade hâli kararı yeni
+//    çizim ve yeni renk istemez: not, raftaki mevcut simgenin zaten üretilen
+//    anlam-renkli varyantıyla çizilir ve kelimesi yanında kalır.
+//
+//    MEKANİZMA: simge `before`, kelime `after` ekidir. VS Code tek bir ekte hem
+//    resim hem metin basamaz, çünkü ikisi aynı CSS `content` alanına yazılır.
+//    İki ek aynı dekorun satır sonundaki BOŞ aralığına oturur; `before` önce
+//    çizildiği için sıra her zaman simge ve ardından kelimedir. Simge `light`
+//    ve `dark` kanallarından verilir, dolayısıyla tema değişince editör doğru
+//    varyantı kendisi seçer (eksen hanesiyle aynı desen).
+//
+//    NABIZ KORUNUR (Founder 2026-07-06 ve 2026-07-17): parlak evre simge ile
+//    kelimedir ve simge notun anlam rengini taşır; sönük evre aynı simgenin
+//    ailedeki mat varyantıdır ve kelime taşımaz. Bu, eski emojinin soluk renkle
+//    çizilen sönük evresinin aile içindeki karşılığıdır.
+
+/** Üç satır sonu notunun simgesi ve parlak evredeki anlam rengi. Anlam, notun
+ *  kelimesinin taşıdığı kanon rozet renginin ailedeki karşılığıdır: onay ve
+ *  terfi sarı, uyarı turuncudur. */
+export const SATIR_SONU_NOTLARI = {
+  onayBekliyor:  { simge: "kapi",  anlam: "uyari" },     // Founder onayı bekleyen kapı (eski 📬, sönük evresi 📪)
+  terfiBekliyor: { simge: "terfi", anlam: "uyari" },     // terfi bekleyen bellek dersi (eski 🎓)
+  uyari:         { simge: "uyari", anlam: "turuncu" },   // uyarı satırı (eski ⚠️)
+} as const satisfies Record<string, { simge: SatirSimgesi; anlam: AnlamRengi }>;
+export type SatirSonuNotu = keyof typeof SATIR_SONU_NOTLARI;
+export type NabizEvresi = "parlak" | "sonuk";
+/** Sönük evrenin anlamı: ailenin mat rengi (bekliyor evresinin rengi). */
+export const SONUK_ANLAM: AnlamRengi = "notr";
+
+/** Bir satır sonu notunun üretilmiş varyantı (eklenti köküne göreli yol). */
+export function satirSonuVaryanti(not: SatirSonuNotu, evre: NabizEvresi, tema: SimgeTemasi): string {
+  const { simge, anlam } = SATIR_SONU_NOTLARI[not];
+  return satirSvgVaryanti(simge, evre === "parlak" ? anlam : SONUK_ANLAM, tema);
+}
+
+/**
+ * Satır sonu notunun dekorasyon seçenekleri. Simge `before`, kelime `after`
+ * ekidir; kelime verilmezse (sönük evre) yalnız simge çizilir. Dekor aralığı
+ * satırın sonunda BOŞ olmalıdır, yoksa `before` satırın başına düşer.
+ */
+export function satirSonuSecenekleri(
+  kabuk: typeof vscode,
+  extensionUri: vscode.Uri,
+  not: SatirSonuNotu,
+  evre: NabizEvresi,
+  etiket?: { readonly metin: string; readonly renk: string },
+): vscode.DecorationRenderOptions {
+  const ek = (tema: SimgeTemasi): vscode.ThemableDecorationAttachmentRenderOptions => ({
+    contentIconPath: kabuk.Uri.joinPath(extensionUri, satirSonuVaryanti(not, evre, tema)),
+    // Üretilmiş SVG boyutsuzdur; em ölçüsü simgeyi yazı boyuna bağlar. Sol pay
+    // eski notun iki boşluğunun, sağ pay simge ile kelime arasının yeridir.
+    width: "1em", height: "1em", margin: "0 0.35em 0 1.2em",
+  });
+  return {
+    light: { before: ek("acik") },
+    dark: { before: ek("koyu") },
+    ...(etiket ? { after: { contentText: etiket.metin, color: etiket.renk } } : {}),
+  };
+}
+
 /** .sar dosya ikonu (Founder hükmü 2026-08-04): dosyaların kimliği MARKA
  *  ikonudur — Founder'ın kendi çizimi olan gradyanlı sarmal birebir kullanılır;
  *  geometrik aile IDE içindeki eksen satırlarının dilidir, dosya ikonunun değil. */
@@ -486,8 +549,9 @@ export function govdeBellegiBosalt(): void { govdeBellek.clear(); }
  * Kapsam yalnız ULAŞILABİLİR yüzeylerdir. Ailenin fiziksel olarak ulaşamadığı
  * yüzeyler (komut paleti başlığı yalnız codicon alır, bildirim ve tanı iletisi
  * düz metindir, durum çubuğu yalnız codicon yazı tipi basar, ağaç öğesinin
- * etiketi ve açıklaması resim taşımaz) bu çizelgenin dışındadır; oralardaki
- * işaretin akıbeti Founder kararıdır ve bu Adımda hükme bağlanmamıştır.
+ * etiketi ve açıklaması resim taşımaz) bu çizelgenin dışındadır. Founder'ın
+ * sade hâli kararı (2026-09-13) oralardaki akıbeti bağladı: işaret düşer ve
+ * yalnız kelime kalır.
  */
 export const ARAYUZ_ISARETI: Readonly<Record<string, SatirSimgesi>> = {
   "🃏": "kart",             // koni kartının başlığı

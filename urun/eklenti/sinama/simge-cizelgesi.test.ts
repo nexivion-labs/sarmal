@@ -10,7 +10,9 @@
 //           var olduğunu aynı nöbete bağlar.
 //   Kapsam: raf ↔ eksen eşitliği · emoji kanon-okuması · YUZ-4.1 (kaynağa renk
 //           gömülmez) · üretilmiş varyantların varlığı · dosya ikonu ilanı ·
-//           üreticinin (arac/simge-uret.mjs) geçici kopyaya karşı gerçek koşusu.
+//           üreticinin (arac/simge-uret.mjs) geçici kopyaya karşı gerçek koşusu ·
+//           satır sonu notlarının aile simgesi ve nabız evreleri (VIT-KIMLIK-A07 ·
+//           Founder sade hâli, 2026-09-13).
 // ═══════════════════════════════════════════════════════════════════════════
 // Yüzey dili kapısını bu dosya kendi kurar: `npm test` ön-yüklemesi olmadan tek
 // başına koşturulduğunda sahte kırmızı vermesin (ön-yükleme ile aynı bağ, ESM
@@ -35,6 +37,7 @@ import {
   PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE,
   SATIR_SIMGELERI, ANLAM_RENKLERI, satirSvgKaynagi, satirSvgVaryanti,
   ADIM_EVRESI, eksenDekorKararlari, eksenDekorKaydi,
+  SATIR_SONU_NOTLARI, SONUK_ANLAM, satirSonuVaryanti, satirSonuSecenekleri, type SatirSonuNotu,
 } from "../src/simge-cizelgesi.ts";
 import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
 import { YOL_METINLERI } from "../src/yuzey-metinleri.ts";   // VIT-KIMLIK-A07: iki kartın BASTIĞI metinler kaynaktan okunur
@@ -596,19 +599,17 @@ const MUAF_TAVANI: ReadonlyArray<readonly [string, number, string]> = [
   ["src/duzeltme.ts", 1, "terfi eden becerinin dosyaya yazılan niyet cümlesi: kaynak anlatımı (YUZ-4.2 birinci muafiyet)"],
 ];
 
-/** BORÇ TAVANI — bugün HÂLÂ emoji taşıyan kullanıcı yüzeyleri ve ölçülmüş
- *  sayıları. Bu kalemler Adımın DÖRDÜNCÜ görev maddesinin (geçişi bütün
- *  yüzeylerde uygulamak) işidir. Tavan bir ÜST sınırdır: sayı artarsa süit
- *  kırmızıya döner (gerileme durur), azalırsa yeşil kalır (temizlik turu
- *  nöbete takılmaz). Ölçüm 2026-09-13; onizleme.ts ile minigraf-cekirdek.ts
- *  sıfıra inmişti ve sıfır kuşağına geçti;
- *  yol-dekor.ts'nin hiçbir yüzeyce okunmayan emoji kolonu düştü ve o da geçti;
- *  ipucu.ts balonun işaretleri aileye geçince sıfırlandı ve o da geçti. */
-const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [
-  ["src/yolharitasi.ts", 1],        // Blok satırının planlanmamış sayacı — ağaç açıklaması resim taşımaz; akıbeti Founder kararı
-  ["src/yildiz.ts", 2],             // satır-içi terfi/uyarı dekorunun sönük evresi
-  ["src/onay-kuyrugu.ts", 1],       // satır-içi "onay bekliyor" dekorunun sönük evresi
-];
+/** BORÇ TAVANI — emoji taşıyan kullanıcı yüzeyleri ve ölçülmüş sayıları. Tavan
+ *  bir ÜST sınırdır: sayı artarsa süit kırmızıya döner, azalırsa yeşil kalır.
+ *  Ölçüm 2026-09-13: onizleme.ts ile minigraf-cekirdek.ts sıfıra inip sıfır
+ *  kuşağına geçti; yol-dekor.ts'nin yüzeyce okunmayan emoji kolonu düştü;
+ *  ipucu.ts balonun işaretleri aileye geçince sıfırlandı. Founder sade hâli,
+ *  2026-09-13 son üç kalemi kapattı: Yol Haritası'nın planlanmamış sayacı
+ *  kelimeye indi (yolharitasi.ts), satır sonu notunun sönük evresi aile
+ *  simgesinin mat varyantına geçti (yildiz.ts ve onay-kuyrugu.ts). Tavan bu
+ *  yüzden SIFIRDIR, üç dosya sıfır kuşağındadır ve aşağıdaki nöbet listenin
+ *  boş kaldığını ölçer. */
+const BORC_TAVANI: ReadonlyArray<readonly [string, number]> = [];
 
 /** SIFIR KUŞAK — öteki bütün kaynak dosyalar. Türetilmiş kümedir: VIT-KIMLIK-A05
  *  panel kabuklarını hazır ikondan ve emojiden kurtardı, A07 kalanları ölçtü.
@@ -648,6 +649,54 @@ test("arayüz nöbeti: borç ve muaf tavanı AŞILAMAZ — temizlik yeşil kalı
     assert.ok(n <= tavan,
       `arayüz nöbeti: ${dosya} ölçümü ${n}, tavanı ${tavan} — yüzeye emoji GERİ KONDU. ` +
       "Tavan yalnız temizlik yönünde, ölçülerek indirilir.");
+  }
+});
+
+test("arayüz nöbeti: borç tavanı SIFIRDIR — satır sonu notu ve planlanmamış sayacı sıfır kuşağındadır", () => {
+  // Founder sade hâli, 2026-09-13 son üç borç kalemini kapattı. Tavan boş
+  // kalmalıdır: bir dosyayı buraya yeniden yazmak sıfır kuşağının nöbetinden
+  // kaçmanın tek yoludur ve bu yol ancak Founder hükmüyle açılabilir.
+  assert.deepEqual(BORC_TAVANI.map(([d, n]) => `${d} (${n})`), [] as string[],
+    "arayüz nöbeti: borç tavanına kalem yazıldı — kullanıcıya görünen yüzeyde emoji borcu yeniden açılamaz");
+  for (const dosya of ["src/yolharitasi.ts", "src/yildiz.ts", "src/onay-kuyrugu.ts"])
+    assert.ok(SIFIR_KUSAK.includes(dosya), `arayüz nöbeti: ${dosya} sıfır kuşağında değil`);
+});
+
+test("satır sonu notu: simge raftaki mevcut aileden gelir, sönük evre aynı simgenin mat varyantıdır, kelime yalnız parlak evrededir", () => {
+  // Founder sade hâli, 2026-09-13: yeni çizim ve yeni renk yok. Üç not raftaki
+  // kapı, terfi ve uyarı simgeleriyle çizilir; varyantlar üreticinin zaten
+  // döktüğü anlam-renkli dosyalardır. Nabız iki evrenin rengi ayrı kaldıkça
+  // görünür kalır.
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(SATIR_SONU_NOTLARI).map(([not, t]) => [not, t.simge])),
+    { onayBekliyor: "kapi", terfiBekliyor: "terfi", uyari: "uyari" },
+    "satır sonu notlarının simge seçimi değişti");
+  assert.equal(SONUK_ANLAM, "notr", "sönük evre ailenin mat rengini taşımıyor");
+  const kabuk = { Uri: { joinPath: (_kok: unknown, yol: string) => ({ yol }) } } as unknown as Parameters<typeof satirSonuSecenekleri>[0];
+  const kok = {} as Parameters<typeof satirSonuSecenekleri>[1];
+  const yolu = (ek: { contentIconPath?: unknown } | undefined): string =>
+    (ek?.contentIconPath as { yol?: string } | undefined)?.yol ?? "";
+  for (const not of Object.keys(SATIR_SONU_NOTLARI) as SatirSonuNotu[]) {
+    const tanim = SATIR_SONU_NOTLARI[not];
+    assert.ok((SATIR_SIMGELERI as readonly string[]).includes(tanim.simge), `${not}: "${tanim.simge}" satır ailesinde yok`);
+    assert.ok(existsSync(join(KOK, satirSvgKaynagi(tanim.simge))), `${not}: "${tanim.simge}" simgesinin rafta kaynağı yok`);
+    assert.notEqual(tanim.anlam, SONUK_ANLAM, `${not}: parlak ve sönük evre aynı renkte — nabız görünmez`);
+    for (const evre of ["parlak", "sonuk"] as const) {
+      for (const tema of ["acik", "koyu"] as const) {
+        const varyant = satirSonuVaryanti(not, evre, tema);
+        assert.equal(varyant, satirSvgVaryanti(tanim.simge, evre === "parlak" ? tanim.anlam : SONUK_ANLAM, tema),
+          `${not} ${evre} ${tema}: varyant ailenin anlam çizelgesinden türemiyor`);
+        assert.ok(existsSync(join(KOK, varyant)), `${not} ${evre} ${tema}: üretilmiş varyant diskte yok (${varyant})`);
+      }
+      const secenek = satirSonuSecenekleri(kabuk, kok, not, evre,
+        evre === "parlak" ? { metin: "kelime", renk: "#FFD60A" } : undefined);
+      assert.equal(yolu(secenek.light?.before), satirSonuVaryanti(not, evre, "acik"),
+        `${not} ${evre}: açık tema kanalı yanlış varyantı çiziyor`);
+      assert.equal(yolu(secenek.dark?.before), satirSonuVaryanti(not, evre, "koyu"),
+        `${not} ${evre}: koyu tema kanalı yanlış varyantı çiziyor`);
+      assert.equal(secenek.after?.contentText, evre === "parlak" ? "kelime" : undefined,
+        `${not} ${evre}: kelime yalnız parlak evrede basılmalı`);
+    }
   }
 });
 

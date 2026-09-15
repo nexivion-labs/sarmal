@@ -578,12 +578,14 @@ function onayMetinSatirlari(): { sahip: string; satir: number; kod: string }[] {
 }
 
 /**
- * TEK MUAF: satır sonundaki yanıp sönen onay süsü. Muafiyet adıyla yazılıdır ve
- * gerekçesi şudur — o süs, geribildirim yüzeyindeki ikiziyle (`takdir.ts`) aynı
- * desenin iki yarısıdır ve `takdir.ts` bu Adımın şeridi dışındadır; yalnız birini
- * değiştirmek iki yüzeyi ayrıştırırdı ve ikiz ayrışması bu deponun RED-2 dersidir.
+ * MUAFİYET KALMADI (VIT-KIMLIK-A07 · Founder sade hâli, 2026-09-13). Satır sonundaki
+ * yanıp sönen onay süsü bugüne dek adıyla muaftı, çünkü geribildirim yüzeyindeki
+ * ikiziyle (`takdir.ts`) aynı desenin iki yarısıydı. Founder kararı iki yüzeyi
+ * ayırdı: takdir yüzeyinin kalbi hükmen meşrudur ve yerinde kalır, Onaylar
+ * yüzeyinin notu ise işaretini ailenin kapı simgesinden alır. Nabız deseni iki
+ * yüzeyde de aynıdır; değişen yalnız Onaylar notunun çizim kaynağıdır.
  */
-const EMOJI_MUAFLARI = new Set(["bekliyorSus"]);
+const EMOJI_MUAFLARI = new Set<string>();
 
 /**
  * Arayüz işaretleri vektörel aileden gelir (Founder hükmü 2026-08-05).
@@ -602,28 +604,28 @@ test("onay yüzeyinin metin kataloğunda HİÇBİR metin emoji taşımaz — eri
 });
 
 /**
- * MUAFİYET ÖLÜ KALAMAZ. Bir muafiyet, koruduğu şey ortadan kalktıktan sonra
- * kaynakta durmaya devam ederse sessiz bir delik olur: adı bir şeyi koruduğunu
- * söyler, oysa yalnız gelecekteki bir ihlale kapı açar. Bu nöbet muafiyetin hem
- * TEK olduğunu hem de hâlâ CANLI olduğunu ölçer; süs emojiden arındığı gün bu
- * nöbet kırmızıya döner ve muafiyeti silmeye zorlar.
+ * MUAFİYET GERİ GELEMEZ. Süs Founder sade hâli, 2026-09-13 ile emojiden arındı ve
+ * muafiyet silindi. Bu nöbet listenin BOŞ kaldığını ve süsün kelimesinin
+ * emojisiz olduğunu ölçer; yeni bir muafiyet ancak bir Founder hükmüyle ve bu
+ * nöbet bilerek güncellenerek doğabilir.
  */
-test("emoji muafiyeti TEKTİR ve CANLIDIR: ölü muafiyet kaynakta duramaz", () => {
-  assert.deepEqual([...EMOJI_MUAFLARI], ["bekliyorSus"],
-    "emoji muafiyet listesi büyümüş; her yeni muafiyet hükmü biraz daha aşındırır");
-  const muaf = onayMetinSatirlari().filter((s) => EMOJI_MUAFLARI.has(s.sahip));
-  assert.ok(muaf.length > 0, "muaf sahip bölgede bulunamadı; muafiyet adı bayatlamış");
-  assert.ok(muaf.some((s) => EMOJI.test(s.kod)),
-    "muafiyet ÖLÜ: 'bekliyorSus' artık emoji taşımıyor, dolayısıyla muafiyet kaynaktan silinmelidir");
+test("emoji muafiyeti KALMADI: onay süsü emojisizdir ve muafiyet listesi boştur", () => {
+  assert.deepEqual([...EMOJI_MUAFLARI], [] as string[],
+    "emoji muafiyet listesi yeniden doldu; her muafiyet hükmü biraz daha aşındırır");
+  const sus = onayMetinSatirlari().filter((s) => s.sahip === "bekliyorSus");
+  assert.ok(sus.length > 0, "onay süsünün sahibi bölgede bulunamadı; ölçüm boş küme üstünde koşuyor");
+  assert.ok(!sus.some((s) => EMOJI.test(s.kod)),
+    "onay süsünün kelimesine emoji geri döndü; işaret ailenin kapı simgesinden gelir (VIT-KIMLIK-A07)");
 });
 
 /**
  * Kullanıcı metni katalogda yaşar; onay modüllerine gömülen bir dizge ikinci bir
  * metin evreni açar ve katalog süpürgesinin erişiminden kaçar. Bu nöbet o kaçış
- * yolunu kapatır: beş onay modülünde kalan TEK emoji dizgesi, yukarıda adıyla
- * muaf tutulan nabız süsünün sönük yarısıdır.
+ * yolunu kapatır. Nabız süsünün sönük yarısı bugüne dek tek istisnaydı; Founder
+ * sade hâli, 2026-09-13 ile o da aynı aile simgesinin mat varyantına geçti ve
+ * istisna kalmadı.
  */
-test("onay modüllerine gömülü emoji yoktur: tek istisna nabız süsünün sönük yarısıdır", () => {
+test("onay modüllerine gömülü emoji yoktur: nabız süsünün sönük yarısı da aileden çizilir", () => {
   const modul = [
     "onay-kuyrugu.ts", "onay-cekirdek.ts", "onay-tarayici.ts",
     "onay-govde.ts", "onay-paneli.ts",
@@ -640,10 +642,14 @@ test("onay modüllerine gömülü emoji yoktur: tek istisna nabız süsünün s�
       if (EMOJI.test(kod)) bulunan.push(`${ad}:${i + 1} → ${kod.trim()}`);
     });
   }
-  assert.equal(bulunan.length, 1,
-    `onay modüllerinde beklenmedik emoji dizgesi var:\n${bulunan.join("\n")}`);
-  assert.match(bulunan[0], /onay-kuyrugu\.ts.*davetBos|onay-kuyrugu\.ts.*contentText/,
-    `kalan tek emoji nabız süsünün sönük yarısı DEĞİL: ${bulunan[0]}`);
+  assert.deepEqual(bulunan, [] as string[],
+    `onay modüllerinde emoji dizgesi var:\n${bulunan.join("\n")}`);
+  // Taramanın boş küme üstünde koşmadığının ve işaretin sessizce kaybolmadığının
+  // kanıtı: nabzın iki yarısı da aile simgesiyle kuruluyor.
+  const kuyruk = oku("../src/onay-kuyrugu.ts");
+  for (const evre of ["parlak", "sonuk"])
+    assert.ok(new RegExp(`satirSonuSecenekleri\\(\\s*vscode, baglam\\.extensionUri, "onayBekliyor", "${evre}"`).test(kuyruk),
+      `nabız süsünün ${evre} yarısı aile simgesiyle kurulmuyor`);
 });
 
 /** Emekli üç komutun katalog adı da aynı hükme tabidir — iki dilde birden. */
