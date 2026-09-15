@@ -709,7 +709,7 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         EKL-F6-A07,
   çapa:             nitelik,
   öncelik:          p1,
@@ -772,7 +772,7 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         EKL-F6-A07,
   çapa:             nitelik,
   öncelik:          p1,

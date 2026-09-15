@@ -322,10 +322,11 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           sınır: "Bu Adım yayın akışını kurmaz ve sürüm numaralandırma politikası yazmaz; yalnız gövde ile kaynağın ayrışmasını ölçer. Kullanıcının makinesinde kurulu kopyanın tazeliği bu nöbetin kapsamı dışındadır ve yayın anının sorumluluğudur."
         }
 
-        Adım( kod: EKL-F6-A07, ad: "Taze Klonun ve Araç Dizininin Düzelmesi", durum: beklemede, öncelik: p1, bağımlı: [],
+        Adım( kod: EKL-F6-A07, ad: "Taze Klonun ve Araç Dizininin Düzelmesi", durum: tamamlandı, öncelik: p1, bağımlı: [],
           onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK ile HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A07, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 771/771 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · taze klonda derlemesiz denetim sıfır hata sıfır uyarı (409ccc4) · bağımsız mutasyon: kök dışı notu susturulunca MCP süiti 30/31 · işlemeler e42b158, 43c5bbd, 409ccc4 (0.9.187)", ne: "Taze klonda ilk denetim artık hatasızdır; denetim deponun adıyla yok saydığı derleme çıktısını beklemez ve muafiyet jokersiz, kökü belli yok sayma satırlarıyla sınırlıdır. Sarmal sunucusunun dizin isteyen dokuz aracı dizin verilmediğinde oturumun çalışma dizininde çalışır ve kök dışı bir dizini cevabın ilk cümlesinde iki dilde bildirir; denetle aracı taban kanon davranışını bilinçle korur. Sınıflama kaydındaki Kod kuralı metni yeni muafiyeti henüz anmamaktadır ve metnin tazelenmesi Founder kapısındadır." ),
           referans: [ HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK, HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR ],
-          üretir:   [ KOD-MCP ],
+          üretir:   [ KOD-MCP, KOD-DENETCI ],
           ne: "🧭 Sarmal'ı GitHub'dan indiren geliştiricinin ilk denetimde hiçbir şey yapmadan hata görmemesi ve Sarmal araçlarının oturumun açıldığı klasörde kendiliğinden çalışması." ) {
           görev: [
             "Taze klonda ilk denetimin verdiği hatayı kapat: KOD-EKL-GOMULUKANON Meyvesi derleme sırasında üretilen ve depoya girmeyen bir dosyayı beyan etmektedir; hatırlatıcının saydığı üç yoldan birini ölçerek seç ve seçimi gerekçesiyle yaz.",
