@@ -65,6 +65,9 @@ import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 
 import { DurumCubugu } from "./durum-cubugu.ts";
 // 🪧 EKL-F6-A04: kanon bulunamadığında taban kanona düşüldüğü SÖYLENİR.
 import { TabanKanonCubugu } from "./taban-kanon.ts";
+// ⏱️ EKL-F6-A11: kurulu paket depodaki bildirimden gerideyse durum çubuğu söyler.
+import { readFile, readdir } from "node:fs/promises";
+import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
 import {
   yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri,
   type YuzeyKaydi, type YuzeyDagilimi,
@@ -94,6 +97,7 @@ import {
   panelOdakMesaji,
   panoyaYazildi,
   panoyaKopyalanacakSatirYok,
+  SURUM_TAZELIGI_METINLERI,
   yuzeyDiliniAyarla,
   yuzeyKokleriniAyarla,
 } from "./yuzey-metinleri.ts";
@@ -254,6 +258,52 @@ function yuzeyKokleriniTazele(): void {
   yuzeyKokleriniAyarla((vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
 }
 
+/**
+ * ⏱️ EKL-F6-A11 · kurulu paket bayatlığı nöbeti. Açılışı bekletmez: keşif
+ * eşzamansızdır ve `activate` dönmeden tek bir dosya okunmaz. Keşif her kökte
+ * bir okuma, bulunamazsa bir kat aşağıda klasör başına bir okumadır; mağaza
+ * kullanıcısının çalışma alanında depo bulunmadığı için nöbet orada susar ve
+ * izleyici hiç kurulmaz. Depo bulunursa yalnız o tek paket bildirimi izlenir,
+ * çünkü Founder penceresi açıkken sürümün ilerlemesi tuzağın ta kendisidir.
+ */
+function surumTazeligiNobetiniKur(context: vscode.ExtensionContext): void {
+  const oge = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
+  oge.text = SURUM_TAZELIGI_METINLERI.cubukMetni;
+  oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+  context.subscriptions.push(oge);
+  const kuruluSurum = String(context.extension.packageJSON?.version ?? "");
+  const oku = async (yol: string): Promise<string | undefined> => {
+    try { return await readFile(yol, "utf8"); } catch { return undefined; }
+  };
+  const tazele = (depoSurumu: string | undefined): void => {
+    const a = surumAyrismasi({ kuruluSurum, depoSurumu, gelistirmeKipi: depoSurumu !== undefined });
+    if (!a) { oge.hide(); return; }
+    oge.tooltip = SURUM_TAZELIGI_METINLERI.cubukIpucu(a.satir, a.kuruluSurum, a.depoSurumu);
+    oge.show();
+  };
+  void (async () => {
+    const depo = await depoPaketiBul((vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath), {
+      oku,
+      altKlasorler: async (kok) => {
+        try {
+          return (await readdir(kok, { withFileTypes: true }))
+            .filter((g) => g.isDirectory() && !g.name.startsWith(".") && g.name !== "node_modules")
+            .map((g) => g.name);
+        } catch { return []; }
+      },
+    });
+    if (!depo) return;
+    tazele(depo.kimlik.surum);
+    const izleyici = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(dirname(depo.yol), "package.json"));
+    const yeniden = async (): Promise<void> => { tazele(paketKimligiCoz(await oku(depo.yol))?.surum); };
+    izleyici.onDidChange(yeniden);
+    izleyici.onDidCreate(yeniden);
+    izleyici.onDidDelete(yeniden);
+    context.subscriptions.push(izleyici);
+  })();
+}
+
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
   // VIT-KIMLIK-A07: ipucu balonunun işaretleri ailenin tema varyantından çizilir.
@@ -344,6 +394,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // yalnız `ortak.ts` içindeki keşfin verdiği kararı aynalar ve kanon
   // bulunduğunda kendiliğinden gizlenir.
   context.subscriptions.push(new TabanKanonCubugu());
+  // ⏱️ EKL-F6-A11: kurulu paket bayatlığı — aynı durum çubuğu emsaliyle, işi kesmeden.
+  surumTazeligiNobetiniKur(context);
 
   // 🔬 PRF-A01 ölçüm merceği: hangi izleyici kaç olay üretti, tam-proje denetimi
   // kaç ms sürdü — SRN-IDE-KASMA-SOL-KOSUSU tanısı bu kanaldan okunur. Sayaç

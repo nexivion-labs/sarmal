@@ -897,6 +897,35 @@ export const TABAN_KANON_METINLERI = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
+// KURULU PAKET BAYATLIĞI (EKL-F6-A11) — HTR-SURUM-DAMGASI-TUZAGI
+//
+//   Geliştirme çalışma alanında kurulu eklenti depodaki paket bildiriminden
+//   gerideyse durum çubuğunda bir uyarı belirir. Bildirimler yüzeyi seçilmedi,
+//   çünkü o yüzeydeki her kayıt kanonik bir tanı kimliği ister ve bu kimlik bir
+//   kanon maddesi olmadan doğamaz (BKM-DNT-A12 koşu kaydı). Açılış iletisi de
+//   seçilmedi, çünkü ürünle ilk karşılaşma bir kutu olmamalıdır (VIT-KIMLIK-A04);
+//   emsal taban kanon işaretidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const SURUM_TAZELIGI_METINLERI = {
+  /** Durum çubuğu girdisinin kendisi — ikon codicon ailesindendir. */
+  get cubukMetni(): string {
+    return `$(warning) ${yuzeyMetni("Sarmal: kurulu paket bayat", "Sarmal: installed package is stale")}`;
+  },
+  /** İpucu iki sürümü, sebebi ve çözümü tam cümlelerle söyler. */
+  cubukIpucu(satir: string, kuruluSurum: string, depoSurumu: string): string {
+    const baslik = yuzeyMetni(satir,
+      `The installed extension runs version ${kuruluSurum}, while the package manifest in the repository is at ${depoSurumu};`
+      + " because the installed package is stale, what you see in the panels may not reflect the source as it is today."
+      + " Do not treat panel output as the verdict of the source until the package is reinstalled.");
+    const cozum = yuzeyMetni(
+      "Paketi yeniden kurmak için depo kökünde node urun/eklenti/arac/kur.mjs komutunu koştur ve ardından pencereyi yenile.",
+      "To reinstall, run node urun/eklenti/arac/kur.mjs from the repository root and then reload the window.");
+    return `${baslik}\n${cozum}`;
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
 // 📬 ONAYLAR PANELİ — Founder onayı bekleyen kapıların panel metinleri
 //
 //   Kapı kayıtları motorun tanı akışından gelmez; onay tarayıcısından gelir.

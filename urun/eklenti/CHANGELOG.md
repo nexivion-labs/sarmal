@@ -2,6 +2,13 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.189 — 2026-09-15 (kurulu paket depodaki derlemeden eskiyse bu artık görünüyor)
+
+- **Kurulu paket bayatsa durum çubuğu bunu söylüyor.** Founder iki kez, 2026-08-28 ve 2026-09-11 tarihlerinde, panelde kaynağın hiç üretmediği bir uyarı gördü; sebep her seferinde kurulu eklentinin depodaki paketten eski bir motoru çalıştırmasıydı. Sarmal deposu çalışma alanında açıkken kurulu eklentinin sürümü depodaki paket bildiriminin sürümünden gerideyse durum çubuğunun sağında bir uyarı beliriyor. İpucu iki sürümü de adıyla söylüyor ve paketi yeniden kurmanın yolunu tam cümleyle veriyor. Uyarı pencere açıkken de güncel kalıyor, çünkü depodaki tek paket bildirimi izleniyor ve sürüm ilerlediği anda uyarı beliriyor.
+- **Mağaza kullanıcısı hiçbir şey görmüyor ve açılış yavaşlamıyor.** Depo yalnız çalışma alanının kökünde ve bir kat altında aranıyor; mağazadan kurulan eklentinin çalışma alanında depo bulunmadığı için nöbet susuyor ve izleyici kurulmuyor. Keşif eşzamansız koşuyor ve açılışı bekletmiyor.
+- **Kurulum betiği paketi işleme kimliğiyle damgalıyor ve kurulumu doğruluyor.** `arac/kur.mjs` geçici çalışma ağacındaki paket bildirimine paketin üretildiği işlemenin kimliğini yazıyor; ana ağaçtaki bildirim değişmiyor. Kurulumun hemen ardından VS Code'un kendi kayıt dosyasından kurulu paketi okuyor ve az önce üretilen paketle sürüm ile damga üzerinden karşılaştırıyor. Aynı numarayla yeniden paketlenen eklentinin düzenleyicide tazelenmediği 2026-08-08 tuzağı bu karşılaştırmayla kurulum anında adıyla söyleniyor ve betik sıfırdan farklı kodla çıkıyor. Sürüm numarasını her paketlemede ilerletme kuralı değişmedi.
+- **Nöbetler sahte uzantı klasörüyle ölçülüyor.** Kurulu paketin eski olduğu, aynı olduğu ve aynı numarada başka bir derlemenin kurulu kaldığı hâller bellekte kurulan bir uzantı klasörüyle sınanıyor ve gerçek kuruluma dokunulmuyor. Keşfin tek katta kaldığı okuma sayısıyla ölçülüyor.
+
 ## 0.9.188 — 2026-09-15 (mühür bulgusu tıklanınca mühürlü dosyayı açıyor, geribildirim hasadı ilan edilen rafa yazıyor)
 
 - **Sonraya bırakılmış dosya bulgusuna tıklamak artık o dosyayı açıyor.** Founder Hatırlatıcılar panelinde sonra mühürlü bir bulguya tıkladığında mühürlü dosyanın değil projenin anadizininin açıldığını gösterdi. Sebep bulgunun giriş dosyasına yazılması ve hangi dosyayı anlattığını taşımamasıydı. Bulgu artık anlattığı dosyanın konumunu taşıyor ve tıklama o dosyanın başına gidiyor. Kayıt giriş dosyasının altında durmaya devam ettiği için paneldeki ve komut satırındaki sayılar değişmedi. Gözlemler panelindeki arşiv ve eğitim mührü bulguları aynı kusuru taşıyordu ve aynı biçimde onarıldı.
