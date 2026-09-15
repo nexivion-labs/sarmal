@@ -114,6 +114,65 @@ Aşağıdaki bölümler kanonik kaynaklardan üretilir; yalnız bu giriş elle y
 
 Çekirdek Node 23.6 ya da üstünü ister: `cd urun/cekirdek && npm link` komutu `sarmal` komutunu kabuğa bağlar; sürüm şartının kaynağı `urun/cekirdek/package.json` dosyasıdır. Eklenti mağazada yayımlandığında oradan kurulur; o güne kadar `urun/eklenti` içinde `npm install && npm run build` ile derlenir ve F5 ile geliştirme penceresinde koşar ([urun/eklenti/README.md](urun/eklenti/README.md)). MCP sunucusu `node urun/cekirdek/src/mcp.ts` komutuyla stdio üzerinden başlar; Claude Code için `claude mcp add sarmal -- node <depo>/urun/cekirdek/src/mcp.ts` yeterlidir.
 
+## MCP sunucusu: kurulum ve erişim
+
+Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz; gizlilik politikası [PRIVACY.md](PRIVACY.md) dosyasındadır. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.
+
+1. Kodu alın ve çalışma zamanını doğrulayın; `node --version` komutu v23.6.0 ya da üstünü basmalıdır.
+
+```sh
+git clone https://github.com/nexivion-labs/sarmal.git
+cd sarmal
+node --version
+```
+
+2. Sunucudan araç listesini hiçbir istemci olmadan isteyin. Araç başlıkları ve açıklamaları varsayılan olarak Türkçedir; komutun önüne `SARMAL_DIL=en` yazılırsa İngilizce döner.
+
+```sh
+printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+  | node urun/cekirdek/src/mcp.ts 2>/dev/null \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{for(const t of JSON.parse(s).result.tools)console.log(t.name.padEnd(15),(t.annotations.readOnlyHint?"okur":"yazar").padEnd(10),t.title)})'
+```
+
+Beklenen çıktı her araç için bir satır olmak üzere 18 satırdır: 15 araç yalnız okur, 3 araç diske yazar.
+
+```text
+sef             okur       Adım brifingi üret
+ogret           okur       Sarmal'ı öğret
+kavram          okur       Kavram sorgula
+karne           okur       Etmen karnesini oku
+basla           okur       Doğuş rehberi ve şablon iste
+dogus           yazar      Doğuş paketini diske yaz
+graf            okur       Proje grafını oku
+gezin           okur       Tanıma ve atıflara git
+denetle         okur       Tek .sar kaynağını denetle
+kurallar        okur       Kanon kurallarını oku
+siniflama       okur       Tip kanonunu oku
+denetle-proje   okur       Projeyi baştan sona denetle
+iskelet         yazar      İlan edilen iskeleti üret
+etki            okur       Etki analizini oku
+bul             okur       Düğüm metninde ara
+bicimle         okur       Kaynağı biçimlendir
+prizma          okur       Kaynağı başka yüze yansıt
+durum-guncelle  yazar      Adım durumunu yaz
+```
+
+3. Sunucuyu bir istemciye bağlayın. Claude Code için aşağıdaki iki komutu çalışacağınız klasörde, klonunuzun mutlak yoluyla koşturun. Klonun kendi içinde bir şey eklemeye gerek yoktur, çünkü klonun `.mcp.json` dosyası sunucuyu zaten kaydeder ve `claude` ilk açılışta bir kez onay ister.
+
+```sh
+claude mcp add sarmal -- node /mutlak/yol/sarmal/urun/cekirdek/src/mcp.ts
+claude mcp list
+```
+
+Beklenen satır `sarmal: node /mutlak/yol/sarmal/urun/cekirdek/src/mcp.ts - ✔ Connected` biçimindedir.
+
+4. Örnek bir proje doğurun ve üzerinde bir araç çağırın. MCP Inspector her aracı komut satırından çağırır; iki komutu klonun içinde koşturun. İlki `dogus` aracıyla bir proje yazar ve doğan dosyaları listeler; ikincisi o projeyi `denetle-proje` aracıyla denetler ve özet satırı sıfır hatayı `0 hata` olarak bildirir.
+
+```sh
+npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name dogus --tool-arg hedef="$HOME/sarmal-demo" --tool-arg ad=Demo --tool-arg tur=proje
+npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name denetle-proje --tool-arg dizin="$HOME/sarmal-demo"
+```
+
 ## İlk beş dakika
 
 1. `sarmal doğuş <klasör> --tur proje --ad <Ad>` boş bir klasörde giriş dosyasını, ilk planı, durum kaydını ve ajan yönergesini doğurur.

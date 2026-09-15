@@ -116,6 +116,65 @@ The sections below are generated from canonical sources; only this introduction 
 
 The core requires Node 23.6 or newer: `cd urun/cekirdek && npm link` binds the `sarmal` command to your shell; the version requirement lives in `urun/cekirdek/package.json`. The extension installs from the marketplace once published; until then it is built inside `urun/eklenti` with `npm install && npm run build` and run with F5 in a development window ([urun/eklenti/README.md](urun/eklenti/README.md)). The MCP server starts over stdio with `node urun/cekirdek/src/mcp.ts`; for Claude Code, `claude mcp add sarmal -- node <repo>/urun/cekirdek/src/mcp.ts` is enough.
 
+## MCP server: setup and access
+
+This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls; the privacy policy is in [PRIVACY.md](PRIVACY.md). The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.
+
+1. Get the code and check the Node version; `node --version` must print v23.6.0 or newer.
+
+```sh
+git clone https://github.com/nexivion-labs/sarmal.git
+cd sarmal
+node --version
+```
+
+2. Ask the server for its tools without any client. `SARMAL_DIL=en` switches tool titles and descriptions to English; without it they are Turkish.
+
+```sh
+printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+  | SARMAL_DIL=en node urun/cekirdek/src/mcp.ts 2>/dev/null \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{for(const t of JSON.parse(s).result.tools)console.log(t.name.padEnd(15),(t.annotations.readOnlyHint?"read-only":"writes").padEnd(10),t.title)})'
+```
+
+The expected output has 18 lines, one per tool: 15 tools only read and 3 tools write to disk.
+
+```text
+sef             read-only  Build Adım briefing
+ogret           read-only  Teach Sarmal
+kavram          read-only  Look up a concept
+karne           read-only  Read the Etmen report card
+basla           read-only  Request the birth guide and a template
+dogus           writes     Write the birth package to disk
+graf            read-only  Read the project graph
+gezin           read-only  Go to definition and references
+denetle         read-only  Check a single .sar source
+kurallar        read-only  Read the canon rules
+siniflama       read-only  Read the type canon
+denetle-proje   read-only  Check the whole project
+iskelet         writes     Generate the declared skeleton
+etki            read-only  Read the impact analysis
+bul             read-only  Search node text
+bicimle         read-only  Format the source
+prizma          read-only  Project the source to another surface
+durum-guncelle  writes     Write an Adım's status
+```
+
+3. Connect a client. For Claude Code, run the two commands below in the folder you want to work in, with the absolute path of your clone. The server name must come before `-e`, because `-e` takes every word after it as an environment variable. Nothing needs to be added inside the clone itself, because its `.mcp.json` already registers the server with Turkish texts and `claude` asks once for approval on first start.
+
+```sh
+claude mcp add sarmal -e SARMAL_DIL=en -- node /absolute/path/to/sarmal/urun/cekirdek/src/mcp.ts
+claude mcp list
+```
+
+The expected line is `sarmal: node /absolute/path/to/sarmal/urun/cekirdek/src/mcp.ts - ✔ Connected`.
+
+4. Create a sample project and call a tool on it. MCP Inspector calls any tool from the command line; run the two commands below inside the clone. The first writes a project with the `dogus` tool and lists the files it created; the second checks that project with `denetle-proje`, and its summary line reports zero errors as `0 hata`. The text that the tools return is Turkish.
+
+```sh
+npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name dogus --tool-arg hedef="$HOME/sarmal-demo" --tool-arg ad=Demo --tool-arg tur=proje
+npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name denetle-proje --tool-arg dizin="$HOME/sarmal-demo"
+```
+
 ## First five minutes
 
 1. `sarmal doğuş <folder> --tur proje --ad <Name>` creates the entry file, the first plan, the status record and the agent instructions in an empty folder.
