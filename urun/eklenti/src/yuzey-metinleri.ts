@@ -1732,7 +1732,14 @@ export const TAKDIR_METINLERI = {
   kanalSec: (kod: string): string => yuzeyMetni(`${kod} için bir kanal seçin — notunuz bu etmenin siciline işlenir ve zamanla hafızasına aktarılır.`, `Choose a channel for ${kod}. Your note is recorded in this agent's history and carried into its memory over time.`),
   notIstemi: (emoji: string, ad: string): string => yuzeyMetni(`${emoji} ${ad} — kadroya notun`, `${emoji} ${ad} — your note to the team`),
   get hasatBos(): string { return yuzeyMetni("🌾 Hasat boş — henüz geribildirim notu yazılmamış.", "🌾 Harvest is empty; no feedback note has been written yet."); },
-  hasat: (adet: number): string => yuzeyMetni(`🌾 Hasat tamam: ${adet} geribildirim → ogrenme/geribildirim.sar (STR-4)`, `🌾 Harvest finished: ${adet} feedback records → ogrenme/geribildirim.sar (STR-4)`),
+  // EKL-F6-A10: yol sabit yazılmaz; hasadın gerçekten yazdığı köke göreli yol verilir.
+  hasat: (adet: number, yol: string): string => yuzeyMetni(`🌾 Hasat tamam: ${adet} geribildirim → ${yol} (STR-4)`, `🌾 Harvest finished: ${adet} feedback records → ${yol} (STR-4)`),
+  get rafYok(): string {
+    return yuzeyMetni(
+      "Geribildirim hasadı yazılmadı, çünkü kökün giriş dosyası bir öğrenme rafı (ogrenme/) ilan etmiyor. Rafı giriş dosyasındaki bir Kitaplığın içinde ilan et ve hasadı yeniden koştur.",
+      "The feedback harvest was not written because the entry file of the root declares no learning shelf (ogrenme/). Declare the shelf inside a library in the entry file and run the harvest again.",
+    );
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════

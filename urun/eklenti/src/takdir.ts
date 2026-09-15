@@ -7,15 +7,16 @@
 //
 //   Tamamlanan Adım'ın üstünde geribildirim lensi yaşar → tıkla → kanal seç
 //   (🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri) → not yaz → parametre olarak
-//   DİLE işlenir. Hasat komutu (sarmal.geribildirimHasadi) tüm notları
-//   ogrenme/geribildirim.sar'a Bellek(tür: kullanıcı) kayıtları olarak döşer —
-//   RAY-3 koşumunda etmenlerin izole hafızalarına dağıtılacak (STR-4).
+//   DİLE işlenir. Hasat komutu (sarmal.geribildirimHasadi) tüm notları kökün
+//   İLAN ETTİĞİ öğrenme rafındaki geribildirim.sar dosyasına (doğuş ağacında
+//   ogreti/ogrenme/geribildirim.sar) Bellek(tür: kullanıcı) kayıtları olarak
+//   döşer — RAY-3 koşumunda etmenlerin izole hafızalarına dağıtılacak (STR-4).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
 import { dirname, join } from "node:path";
-import { rozetRenkleri } from "./ortak.ts";
-import { yazimKokuBul } from "./kanon-kesif.ts";   // EKL-F6-A04: hedef varlık İLANDAN bulunur
+import { rozetRenkleri, snfBul } from "./ortak.ts";
+import { hasatHedefiBul, HASAT_DOSYASI } from "./kanon-kesif.ts";   // EKL-F6-A04 · A10: hedef İLANDAN bulunur
 import { TARAMA_DISLAMA_GLOB } from "./izleyici-cekirdek.ts";   // KPS-IND-A01: tarama evreni tek kaynaktan
 import { programAl } from "./onbellek.ts";           // EKL-F9-A06: paylaşımlı AST önbelleği
 import { nabizAbone, geciktir } from "./nabiz.ts";   // EKL-F9-A07/A08: tek kalp + tek geciktirici
@@ -232,7 +233,7 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
     await kanalYaz(editor.document, n.satir, kanal.k.param, kanal.k.emoji, metin);
   };
 
-  // ── 🌾 HASAT: tüm geribildirim → ogrenme/geribildirim.sar (STR-4 öğrenme bağı) ──
+  // ── 🌾 HASAT: tüm geribildirim → ilandaki öğrenme rafı (STR-4 öğrenme bağı) ──
   const hasat = async (): Promise<void> => {
     const dosyalar = await vscode.workspace.findFiles(
       // KPS-IND-A01: dışlama ada göre değil YERE göre yapılır — kullanıcının kendi
@@ -259,18 +260,24 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
     // EKL-F6-A04: hasadın yazılacağı varlık kökü SABİT bir klasör adından değil,
     // `*_anadizin.sar` ilanından bulunur. Eski hâli `_Sarmal` adını kaynağa
     // yazıyordu; başka adla açılan bir depoda hasat var olmayan bir yola gidiyordu.
+    // EKL-F6-A10: rafın YERİ de ilandan çözülür. Kök doğru bulunsa bile yol
+    // `<kök>/ogrenme/` diye sabit kuruluyordu; doğuş ağacında raf öğreti
+    // kitaplığının içindedir ve hasat ya sessizce dönüyor ya da kökte ilansız bir
+    // klasör doğuruyordu. Raf ilan edilmemişse yazım yapılmaz ve bu SÖYLENİR.
     const aktifYol = vscode.window.activeTextEditor?.document.uri.fsPath;
-    const varlikKoku = yazimKokuBul(
-      aktifYol ? dirname(aktifYol) : undefined, koklar, "ogrenme");
-    if (!varlikKoku) return;
-    const hedef = vscode.Uri.file(join(varlikKoku, "ogrenme", "geribildirim.sar"));
+    const hedef = hasatHedefiBul(aktifYol ? dirname(aktifYol) : undefined, koklar,
+      (kok) => snfBul({ uri: vscode.Uri.file(join(kok, HASAT_DOSYASI)) }));
+    if (!hedef) {
+      vscode.window.showWarningMessage(TAKDIR_METINLERI.rafYok);
+      return;
+    }
     const gun = new Date().toISOString().slice(0, 10);
     const gov = kayitlar.map((k, i) =>
       `Bellek( kod: GBK-${String(i + 1).padStart(3, "0")}, tür: kullanıcı,\n` +
       `        ne: "${k.emoji} [${k.kanal}] ${k.not.replace(/"/g, "'")} — hedef: ${k.kod} (${k.dosya})" )`
     ).join("\n\n");
     const icerik = `// ═══════════════════════════════════════════════════════════════════════════
-// ogrenme/geribildirim.sar — 🌾 GERİBİLDİRİM HASADI (STR-4 · ÜRETİLEN dosya)
+// ${hedef.goreli} — 🌾 GERİBİLDİRİM HASADI (STR-4 · ÜRETİLEN dosya)
 //
 //   sarmal.geribildirimHasadi komutu yazar (son hasat: ${gun}) — elle
 //   DÜZENLENMEZ, kaynak notlar Adım parametrelerinde yaşar. RAY-3 koşumu bu
@@ -279,8 +286,8 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
 
 ${gov}
 `;
-    await vscode.workspace.fs.writeFile(hedef, Buffer.from(icerik, "utf8"));
-    vscode.window.showInformationMessage(TAKDIR_METINLERI.hasat(kayitlar.length));
+    await vscode.workspace.fs.writeFile(vscode.Uri.file(hedef.dosya), Buffer.from(icerik, "utf8"));
+    vscode.window.showInformationMessage(TAKDIR_METINLERI.hasat(kayitlar.length, hedef.goreli));
   };
 
   baglam.subscriptions.push(

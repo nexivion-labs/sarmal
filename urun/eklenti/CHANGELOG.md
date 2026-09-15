@@ -2,6 +2,14 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.188 — 2026-09-15 (mühür bulgusu tıklanınca mühürlü dosyayı açıyor, geribildirim hasadı ilan edilen rafa yazıyor)
+
+- **Sonraya bırakılmış dosya bulgusuna tıklamak artık o dosyayı açıyor.** Founder Hatırlatıcılar panelinde sonra mühürlü bir bulguya tıkladığında mühürlü dosyanın değil projenin anadizininin açıldığını gösterdi. Sebep bulgunun giriş dosyasına yazılması ve hangi dosyayı anlattığını taşımamasıydı. Bulgu artık anlattığı dosyanın konumunu taşıyor ve tıklama o dosyanın başına gidiyor. Kayıt giriş dosyasının altında durmaya devam ettiği için paneldeki ve komut satırındaki sayılar değişmedi. Gözlemler panelindeki arşiv ve eğitim mührü bulguları aynı kusuru taşıyordu ve aynı biçimde onarıldı.
+- **Yüzeydeki yol komut satırındaki yolla aynı görünüyor.** Komut satırında `is/plan/blok/@SONRA@_prf_isci.sar` yazan yol panelde klasör parçası kaybolmuş olarak `is@SONRA@_prf_isci.sar` görünüyordu. Panel etiketindeki mutlak yol kısaltması eşleşmenin nerede başladığına bakmıyor ve göreli bir yolun kuyruğunu mutlak yol sanıyordu. Kısaltma artık yalnız gerçekten mutlak olan yolu dosya adına indiriyor; göreli yol olduğu gibi kalıyor.
+- **Geribildirim hasadı ağacın ilan ettiği öğrenme rafına yazıyor.** Hasat komutu öğrenme rafını kökün hemen altında arıyordu, oysa doğuş paketi öğrenme kartlarını öğreti kitaplığının içindeki rafa yazıyor. Bu ayrışma ya komutun hiçbir şey yazmadan sessizce dönmesine ya da kökte ilan edilmemiş bir klasörün doğmasına yol açıyordu. Komut artık yazacağı yolu kökün giriş dosyasındaki Kitaplık ve Raf beyanından çözüyor; doğuşla açılan bir projede dosya `ogreti/ogrenme/geribildirim.sar` yoluna iniyor. Giriş dosyası bir öğrenme rafı ilan etmiyorsa komut klasör uydurmuyor ve rafın ilan edilmesi gerektiğini bir uyarıyla söylüyor.
+- **Komutun adı ve bitiş iletisi gerçek yolu söylüyor.** Komutun Türkçe ve İngilizce adı doğuşun ürettiği `ogreti/ogrenme/geribildirim.sar` yolunu gösteriyor. Hasat bittiğinde çıkan ileti ise dosyanın gerçekten yazıldığı yolu iki dilde de adıyla söylüyor.
+- **Onarımları nöbetler koruyor.** Tıklama hedefi, etiketteki yol ve hasadın hedefi ayrı nöbetlerle ölçülüyor. Dört ayrı mutasyonun her biri kendi nöbetini kırmızıya düşürdü ve değişiklik geri alınınca nöbetler yeşile döndü.
+
 ## 0.9.187 — 2026-09-15 (taze klonda ilk denetim hatasız, Sarmal araçları oturumun klasöründe çalışıyor)
 
 - **Taze klonda ilk denetim artık hata vermiyor.** Sarmal'ı GitHub'dan indiren geliştirici hiçbir şey derlemeden denetim koşturduğunda, derleme sırasında üretilen ve depoya girmeyen gömülü kanon dosyası için bir hata görüyordu. Denetim artık deponun yok sayma dosyasında tam yoluyla ve joker kullanılmadan adlandırılmış bir dosyanın diskte bulunmasını beklemiyor, çünkü böyle bir dosya tanımı gereği derleme çıktısıdır. Panel aynı denetim çekirdeğini kullandığı için eklenti de bu dosya için hata göstermiyor.

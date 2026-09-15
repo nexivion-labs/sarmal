@@ -12,14 +12,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
 import { VARSAYILAN } from "../arac/renk-uret.mjs";
-import { ilanliVarliklar, varlikDosyasiBul, varlikKokuBul, yazimKokuBul } from "../src/kanon-kesif.ts";
+import { hasatHedefiBul, ilanliVarliklar, varlikDosyasiBul, varlikKokuBul, yazimKokuBul } from "../src/kanon-kesif.ts";
+import { dogusYaz } from "../../cekirdek/src/dogus.ts";
+import { denetimKos } from "../../cekirdek/src/denetim.ts";
+import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
 
 const yol = (u: string): string => fileURLToPath(new URL(u, import.meta.url));
 const KOK = dirname(yol("../package.json"));
@@ -102,13 +105,57 @@ test("A04: geribildirim hasadının hedefi de ilandan bulunur (takdir.ts sabit y
   const alan = gecici("sarmal-kesif-");
   varlikKur(alan, "birinci_varlik");
   const ogrenmeli = varlikKur(alan, "ikinci_varlik", { ogrenme: true });
+  // EKL-F6-A10: hedefi taşıma sorusu artık bir sorgudur; burada fikstürün kendi ölçüsü verilir.
+  const tasir = (k: string): boolean => existsSync(join(k, "ogrenme"));
 
-  assert.equal(yazimKokuBul(undefined, [alan], "ogrenme"), ogrenmeli,
-    "hedef klasörü zaten olan varlık seçilmeli — hasat var olmayan bir yola yazılamaz");
+  assert.equal(yazimKokuBul(undefined, [alan], tasir), ogrenmeli,
+    "hedefi taşıyan varlık seçilmeli — hasat var olmayan bir yola yazılamaz");
   const belgeDizin = join(alan, "birinci_varlik", "plan");
   mkdirSync(belgeDizin, { recursive: true });
-  assert.equal(yazimKokuBul(belgeDizin, [alan], "ogrenme"), join(alan, "birinci_varlik"),
+  assert.equal(yazimKokuBul(belgeDizin, [alan], tasir), join(alan, "birinci_varlik"),
     "açık belgenin kendi varlığı her zaman önce gelir — hasat başka varlığa taşmaz");
+});
+
+// ── 1b) EKL-F6-A10 · HASAT İLAN EDİLEN RAFA YAZAR ─────────────────────────
+//
+//   Ölçülmüş kusur: hasat yolu `<kök>/ogrenme/geribildirim.sar` diye sabit
+//   kuruluyordu, oysa doğuş paketi öğrenme rafını öğreti kitaplığının içinde
+//   ilan eder. Nöbet GERÇEK bir doğuş ağacında koşar: hedef ilandan çözülür,
+//   hasat komutunun yaptığı gibi o hedefe yazılır ve ağacın tam denetimi koşturulur.
+//   Mutasyon kanıtı (2026-09-15 koşusu; yedekten bayt özdeş geri alındı): hedef
+//   çözümü eski sabit yola döndürüldüğünde iki sınama da düştü; birincisi yol
+//   farkını ve kökte doğan `beyansız-yapı` tanısını, ikincisi rafsız ağaçta
+//   uydurulan hedefi yakaladı.
+
+const GERCEK_SNF = siniflamaYukle(GERCEK_KAYIT);
+
+test("EKL-F6-A10: hasat doğuş ağacının ilan ettiği öğrenme rafına yazar ve beyansız klasör doğurmaz", () => {
+  const kok = gecici("sarmal-hasat-");
+  dogusYaz(kok, "deneme", "2026-09-15", "proje");
+  const hedef = hasatHedefiBul(undefined, [kok], () => GERCEK_SNF);
+  assert.ok(hedef, "hasat hedefi bulunamadı — komut hiçbir şey yazmadan sessizce dönerdi");
+  assert.equal(hedef.goreli, "ogreti/ogrenme/geribildirim.sar",
+    "hasat ilan edilen rafa değil başka bir yola gidiyor");
+  assert.equal(hedef.dosya, join(kok, "ogreti", "ogrenme", "geribildirim.sar"));
+  assert.ok(existsSync(hedef.dosya), "doğuşun yazdığı geribildirim dosyası hedefte değil");
+  assert.equal(hasatHedefiBul(join(kok, "is", "plan"), [kok], () => GERCEK_SNF)?.dosya, hedef.dosya,
+    "açık belge ağacın içindeyken hedef değişmemeli");
+
+  // Hasat komutunun yazımı: hedefin klasörü yoksa doğar, dosya yazılır.
+  mkdirSync(dirname(hedef.dosya), { recursive: true });
+  writeFileSync(hedef.dosya, "// hasat sınaması\n", "utf8");
+  const sonuc = denetimKos(kok, { snfYol: GERCEK_KAYIT, bugun: "2026-09-15", tamListe: true });
+  const beyansiz = sonuc.akis.flatMap((r) => r.tanilar).filter((t) => t.kod === "beyansız-yapı");
+  assert.equal(beyansiz.length, 0, `hasat beyansız klasör doğurdu: ${beyansiz.map((t) => t.mesaj).join(" | ")}`);
+  assert.equal(existsSync(join(kok, "ogrenme")), false, "kökün altında ilan edilmemiş ogrenme/ klasörü doğdu");
+});
+
+test("EKL-F6-A10: öğrenme rafı ilan edilmemişse hasat hedefi yoktur ve klasör uydurulmaz", () => {
+  const alan = gecici("sarmal-hasat-rafsiz-");
+  const varlik = varlikKur(alan, "rafsiz_varlik");
+  assert.equal(hasatHedefiBul(varlik, [alan], () => GERCEK_SNF), undefined,
+    "raf ilan edilmemişken hedef uyduruldu — hasat beyansız bir klasör doğururdu");
+  assert.equal(hasatHedefiBul(undefined, [alan], () => GERCEK_SNF), undefined);
 });
 
 // ── 2) SESSİZ DÜŞÜŞ YASAK: kanon yoksa kullanıcıya SÖYLENİR ────────────────

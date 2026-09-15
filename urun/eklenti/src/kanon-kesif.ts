@@ -18,8 +18,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, isAbsolute, join } from "node:path";
+import { dirname, isAbsolute, join, relative, sep } from "node:path";
 import { anadizinBul } from "../../cekirdek/src/denetci.ts";
+import { iskeletPlani } from "../../cekirdek/src/iskeletci.ts";
+import { belirtecle } from "../../cekirdek/src/belirtec.ts";
+import { ayristir } from "../../cekirdek/src/ayristirici.ts";
+import type { Siniflama } from "../../cekirdek/src/siniflama.ts";
 
 /** Yukarı yürüyüşün kat sınırı — emsal iki çağrı yerinde de on ikidir. */
 const KAT_SINIRI = 12;
@@ -115,23 +119,96 @@ export function ilanliVarliklar(calismaAlaniKoku: string): string[] {
 /**
  * Bir çıktının hangi varlık köküne yazılacağını belirler. Sıra yine dardan
  * genişe gider: açık belgenin kendi varlığı, sonra çalışma alanında ilan
- * edilmiş varlıklardan hedef klasörü zaten olan, sonra ilan edilmiş ilk varlık,
- * en sonda çalışma alanı kökünün kendisi. Eskiden burada `_Sarmal` adı sabit
- * yazılıydı ve başka adla açılan bir depoda geribildirim hasadı, var olmayan
- * bir klasöre yazılıyordu.
+ * edilmiş varlıklardan hedefi taşıyan, sonra ilan edilmiş ilk varlık, en sonda
+ * çalışma alanı kökünün kendisi. Eskiden burada `_Sarmal` adı sabit yazılıydı ve
+ * başka adla açılan bir depoda geribildirim hasadı, var olmayan bir klasöre
+ * yazılıyordu.
+ *
+ * Hedefi taşıma sorusu bir SORGUDUR, klasör adı değil (EKL-F6-A10). Eski imza
+ * bir klasör adı alıyor ve onu kökün hemen altında arıyordu; hasat bu yüzden
+ * öğrenme rafını ilan edildiği yerde değil kökte arıyordu. Çağıran artık hedefin
+ * o kökte bulunup bulunmadığını kendi ölçüsüyle söyler.
  */
 export function yazimKokuBul(
   acikBelgeDizini: string | undefined,
   calismaAlaniKokleri: readonly string[],
-  hedefKlasor: string,
+  hedefiTasir: (varlikKoku: string) => boolean,
 ): string | undefined {
   if (acikBelgeDizini) {
     const kok = varlikKokuBul(acikBelgeDizini);
     if (kok) return kok;
   }
   const ilanlilar = calismaAlaniKokleri.flatMap((k) => ilanliVarliklar(k));
-  const yerlesik = ilanlilar.find((k) => existsSync(join(k, hedefKlasor)));
+  const yerlesik = ilanlilar.find(hedefiTasir);
   return yerlesik ?? ilanlilar[0] ?? calismaAlaniKokleri[0];
+}
+
+// ── 🌾 GERİBİLDİRİM HASADININ HEDEFİ (EKL-F6-A10) ───────────────────────────
+//   Ölçülmüş kusur: hasat komutu yazacağı dosyanın yolunu sabit bir klasör
+//   adıyla kuruyor ve öğrenme rafını kökün hemen altında arıyordu; doğuş paketi
+//   ise öğrenme kartlarını öğreti kitaplığının içindeki rafa yazar. Ya kök
+//   bulunamaz ve komut hiçbir şey yazmadan sessizce döner ya da kökün altında
+//   ilan edilmemiş bir klasör doğar. Onarım yolu ilandan çözer: rafın adresi bir
+//   sabit değil, giriş dosyasındaki Kitaplık ve Raf beyanıdır.
+
+/**
+ * Öğrenme rafının kanondaki adı. Sınıflama etmen hafızasının evini "ogrenme/
+ * rafı" diye tarif eder; raf bu adla tanınır, fakat YERİ ilandan okunur: hangi
+ * Kitaplığın içinde durduğu ve kökten ne kadar derinde olduğu beyanın işidir.
+ */
+const OGRENME_RAFI_ADI = "ogrenme";
+
+/** Hasadın yazdığı dosyanın adı — doğuş paketinin öğrenme rafına koyduğu dosya. */
+export const HASAT_DOSYASI = "geribildirim.sar";
+
+/**
+ * Bir varlık kökünün İLAN ETTİĞİ öğrenme rafının mutlak yolu. Giriş dosyası
+ * ayrıştırılır ve iskeletçinin klasör planı kurulur; plan Kitaplık yolunu rafın
+ * yoluna ekleyerek rafın kökten göreli adresini verir. İlan yoksa, ayrıştırılamıyorsa
+ * ya da öğrenme rafı ilan edilmemişse sonuç yoktur ve bu dürüstçe söylenir.
+ */
+export function ogrenmeRafiBul(varlikKoku: string, snf: Siniflama): string | undefined {
+  const giris = anadizinBul(varlikKoku);
+  if (!giris) return undefined;
+  let plan: ReturnType<typeof iskeletPlani>;
+  try { plan = iskeletPlani(ayristir(belirtecle(readFileSync(giris, "utf8"))), snf); }
+  catch { return undefined; }   // ayrıştırılamayan ilandan raf uydurulmaz
+  const raf = plan.ogeler.find((o) =>
+    o.tur === "dizin" && o.icerikRafi === true && o.yol.split("/").pop() === OGRENME_RAFI_ADI);
+  return raf ? join(varlikKoku, raf.yol) : undefined;
+}
+
+/** Hasadın yazılacağı yer: varlık kökü, dosyanın mutlak yolu ve köke göreli yolu. */
+export interface HasatHedefi {
+  readonly kok: string;
+  readonly dosya: string;
+  /** Köke göreli, eğik çizgili yol — kullanıcıya gösterilen ve dosya başlığına yazılan yol. */
+  readonly goreli: string;
+}
+
+/**
+ * Geribildirim hasadının hedefi. Kök `yazimKokuBul` sırasıyla seçilir ve hedefi
+ * taşıyan kök, öğrenme rafını ilanında taşıyan köktür. Seçilen kök rafı ilan
+ * etmiyorsa hedef YOKTUR: hasat klasör uydurmaz, çünkü ilansız klasör drifttir
+ * (`beyansız-yapı`); çağıran kullanıcıya rafın ilan edilmesi gerektiğini söyler.
+ */
+export function hasatHedefiBul(
+  acikBelgeDizini: string | undefined,
+  calismaAlaniKokleri: readonly string[],
+  snfCoz: (varlikKoku: string) => Siniflama | undefined,
+): HasatHedefi | undefined {
+  const rafVar = (k: string): boolean => {
+    const s = snfCoz(k);
+    return s !== undefined && ogrenmeRafiBul(k, s) !== undefined;
+  };
+  const kok = yazimKokuBul(acikBelgeDizini, calismaAlaniKokleri, rafVar);
+  if (!kok) return undefined;
+  const snf = snfCoz(kok);
+  if (!snf) return undefined;
+  const raf = ogrenmeRafiBul(kok, snf);
+  if (!raf) return undefined;
+  const dosya = join(raf, HASAT_DOSYASI);
+  return { kok, dosya, goreli: relative(kok, dosya).split(sep).join("/") };
 }
 
 /**
