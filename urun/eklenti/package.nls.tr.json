@@ -90,15 +90,5 @@
   "productIconTheme.northStar": "Sarmal · Kuzey Yıldızı",
   "theme.dark": "Sarmal Koyu",
   "theme.light": "Sarmal Açık",
-  "color.edge": "Sarmal kenar rengi — bağımlı/besler bağımlılık iskeleti (kaynak: SNF-0 sadeRenkler.kenar)",
-  "icon.approvals": "Sarmal: Onaylar sayacı",
-  "icon.reminders": "Sarmal: Hatırlatıcılar sayacı",
-  "icon.ideas": "Sarmal: Fikirler sayacı",
-  "icon.observations": "Sarmal: Gözlemler sayacı",
-  "icon.builtInCanon": "Sarmal: taban kanon uyarısı",
-  "icon.panelFocus": "Sarmal: panel odağı",
-  "icon.rollbackNote": "Sarmal: geri alma notu",
-  "icon.copied": "Sarmal: panoya kopyalandı",
-  "icon.gate": "Sarmal: onay bekleyen kapı",
-  "icon.reminder": "Sarmal: hatırlatıcı"
+  "color.edge": "Sarmal kenar rengi — bağımlı/besler bağımlılık iskeleti (kaynak: SNF-0 sadeRenkler.kenar)"
 }

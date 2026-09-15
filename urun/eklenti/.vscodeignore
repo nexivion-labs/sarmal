@@ -15,6 +15,3 @@ dist-sinama/**
 arac/**
 plan.sar
 medya/ekran/**
-# Durum çubuğunun simge yazı tipi (arac/yazitipi-uret.mjs · VIT-KIMLIK-A07) derleme
-# çıktısıdır ve depoda izlenmez; çalışma anında gerektiği için pakete açıkça dahil edilir.
-!medya/simgeler/uretilmis/sarmal-simge.woff
