@@ -17,7 +17,7 @@
 //   nöbetler onu gerçek fikstür ağaçlarına karşı doğrudan koşturur.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, sep } from "node:path";
 import { anadizinBul } from "../../cekirdek/src/denetci.ts";
 import { iskeletPlani } from "../../cekirdek/src/iskeletci.ts";
@@ -312,4 +312,115 @@ export function tamDenetimKanonuBul(
   if (!snfYol) return undefined;
   const paketKaydi = paketKanonKoku ? join(paketKanonKoku, KANON_KAYDI) : undefined;
   return { snfYol, kaynak: snfYol === paketKaydi ? "paket" : "proje" };
+}
+
+// ── ✍️ İŞARETÇİYİ YAZAN YOL (EKL-F6-A09) ────────────────────────────────────
+//   Ölçülmüş kusur: işaretçi mekanizmasından (BKM-DNT-A15) önce doğmuş ağaçlar
+//   işaretçi taşımıyordu ve eklentide işaretçiyi yazan hiçbir yol yoktu; taban
+//   kanon işaretinin ipucu ise terk edilmiş kopya çözümünü, yani kanon kaydını
+//   projeye kopyalamayı öneriyordu. Komutun kararı burada, `vscode` bilmeden
+//   verilir ve kabuk yalnız sonucu kullanıcıya söyler.
+//
+//   İŞARETÇİ SÜRÜME BAĞLI ADRES TAŞIMAZ. VS Code eklenti klasörünün adı
+//   `yayıncı.ad-sürüm` biçimindedir ve her güncellemede değişir; o klasörü
+//   gösteren bir işaretçi ilk güncellemede kırılır ve kırık adres, adres
+//   olmamaktan kötüdür. Böyle bir aday hiçbir koşulda seçilmez; eklentinin kendi
+//   kanonuyla zaten çalışıldığı için işaretçiye de gerek yoktur.
+
+/** VS Code eklenti klasörünün ad deseni: `yayıncı.ad-1.2.3` (ardından ek taşıyabilir). */
+const SURUMLU_EKLENTI_KLASORU = /^[\w-]+\.[\w-]+-\d+\.\d+\.\d+/;
+
+/** Yolun gerçek (bağları çözülmüş) hâli; çözülemezse yolun kendisi. */
+function gercekYol(yol: string): string {
+  try { return realpathSync(yol); } catch { return yol; }
+}
+
+/**
+ * Yol sürüme göre adı değişen bir eklenti klasörünün içinde mi? Çalışan
+ * eklentinin kendi klasörü (geliştirme kipinde adı sürüm taşımasa bile) ve adı
+ * `yayıncı.ad-sürüm` desenine uyan her klasör sürüme bağlı sayılır.
+ */
+export function surumeBagliEklentiYolu(yol: string, eklentiYolu?: string): boolean {
+  for (const aday of new Set([yol, gercekYol(yol)])) {
+    if (eklentiYolu) {
+      const goreli = relative(eklentiYolu, aday);
+      if (goreli === "" || (!goreli.startsWith("..") && !isAbsolute(goreli))) return true;
+    }
+    if (aday.split(/[\\/]+/).some((parca) => SURUMLU_EKLENTI_KLASORU.test(parca))) return true;
+  }
+  return false;
+}
+
+/** Kanon kökü: işaretçinin sunduğu iki dosyanın ikisini de diskte taşıyan dizin. */
+function kanonKokuMu(dizin: string): boolean {
+  return [...ISARETCININ_SUNDUGU].every((goreli) => existsSync(join(dizin, goreli)));
+}
+
+/** Kök kanonunu kendi başına açıldığında da bulamıyorsa (kendi kaydı, üst dizini ya da işaretçisi yoksa) işaretçiye muhtaçtır. */
+export function isaretciyeMuhtac(kok: string): boolean {
+  return varlikDosyasiBul(kok, KANON_KAYDI) === undefined;
+}
+
+/** Çalışma alanında işaretçiye muhtaç ilanlı varlıklar — komut açık bir belge olmadan çağrılırsa hedef bunlardan seçilir. */
+export function isaretciHedefAdaylari(calismaAlaniKokleri: readonly string[]): string[] {
+  const adaylar = new Set<string>();
+  for (const kok of calismaAlaniKokleri) {
+    for (const varlik of ilanliVarliklar(kok)) if (isaretciyeMuhtac(varlik)) adaylar.add(varlik);
+  }
+  return [...adaylar];
+}
+
+/** İşaretçi komutunun kararı. */
+export type IsaretciPlani =
+  | { readonly tur: "yaz"; readonly hedef: string; readonly kanonKoku: string }
+  /** Hedef kanonunu zaten buluyor. */
+  | { readonly tur: "gereksiz"; readonly hedef: string }
+  /** Kullanılabilir kanon kökü yok ya da tek aday sürüme bağlı eklenti klasörü; eklentinin kanonu zaten çalışıyor. */
+  | { readonly tur: "eklenti-kanonu"; readonly hedef: string }
+  /** Hedefte `oz/siniflama` klasörü yok; işaretçi ilansız klasör doğurmasın diye yazılmaz. */
+  | { readonly tur: "raf-yok"; readonly hedef: string; readonly kanonKoku: string };
+
+/**
+ * İşaretçi komutunun kararı. Kanon kökü adayları çalışma alanı kökleri ile
+ * onların ilanlı varlıklarıdır; sürüme bağlı eklenti klasörü aday sayılmaz.
+ * Hedefin rafı yoksa klasör uydurulmaz, çünkü ilansız klasör drifttir
+ * (`beyansız-yapı`); karar bunu söyler ve yazım yapılmaz.
+ */
+export function isaretciPlani(
+  hedef: string,
+  calismaAlaniKokleri: readonly string[],
+  eklentiYolu?: string,
+): IsaretciPlani {
+  if (!isaretciyeMuhtac(hedef)) return { tur: "gereksiz", hedef };
+  const adaylar = new Set<string>();
+  for (const kok of calismaAlaniKokleri) for (const aday of [kok, ...ilanliVarliklar(kok)]) adaylar.add(aday);
+  const kanonKoku = [...adaylar].find((aday) =>
+    aday !== hedef && kanonKokuMu(aday) && !surumeBagliEklentiYolu(aday, eklentiYolu));
+  if (!kanonKoku) return { tur: "eklenti-kanonu", hedef };
+  if (!existsSync(join(hedef, dirname(ISARETCI_DOSYASI)))) return { tur: "raf-yok", hedef, kanonKoku };
+  return { tur: "yaz", hedef, kanonKoku };
+}
+
+/** İşaretçinin kendi anlatısı — doğuş şablonundaki niyetle aynı hükmü taşır. */
+const ISARETCI_NIYETI = "Kanon işaretçisi. Bu dosya tip sistemi kaydının KOPYASI DEĞİL, ADRESİDİR: eklenti taban kanonu "
+  + "kanonKoku adresinden çözer, projenin kendi tip katkısı ise aynı rafta ortu.json dosyasında yaşar ve asla tabana "
+  + "yazılmaz. Sarmal eklentisinin Kanon İşaretçisini Yaz komutuyla yazılmıştır.";
+
+/**
+ * İşaretçiyi yazar ve yolunu döndürür. Son savunma burada da durur: sürüme
+ * bağlı ya da göreli bir adres hiçbir çağrı yolundan dosyaya inemez.
+ */
+export function isaretciYaz(hedef: string, kanonKoku: string, eklentiYolu?: string): string {
+  if (!isAbsolute(kanonKoku)) throw new Error(`Kanon işaretçisi göreli adres taşıyamaz: ${kanonKoku}`);
+  if (surumeBagliEklentiYolu(kanonKoku, eklentiYolu))
+    throw new Error(`Kanon işaretçisi sürüme bağlı bir eklenti klasörünü gösteremez: ${kanonKoku}`);
+  const yol = join(hedef, ISARETCI_DOSYASI);
+  const icerik = {
+    _niyet: ISARETCI_NIYETI,
+    kanonKoku,
+    kayit: "oz/siniflama/kayit.json",
+    rehber: "oz/siniflama/rehber.json",
+  };
+  writeFileSync(yol, JSON.stringify(icerik, null, 2) + "\n", "utf8");
+  return yol;
 }

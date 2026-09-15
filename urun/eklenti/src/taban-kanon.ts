@@ -25,6 +25,12 @@
 import * as vscode from "vscode";
 import { TABAN_KANON_METINLERI } from "./yuzey-metinleri.ts";
 
+/**
+ * EKL-F6-A09: kanon işaretçisini yazan komutun kimliği. İşarete tıklamak bu
+ * komutu çalıştırır; paket bildirimi ile kabuğun kaydı da aynı kimliği kullanır.
+ */
+export const KANON_ISARETCISI_KOMUTU = "sarmal.kanonIsaretcisiYaz";
+
 /** Taban kanon durumu: düşüldü mü, son ölçüm hangi belgede yapıldı ve tam denetim hangi köklerde koşmadı. */
 export interface TabanKanonDurumu {
   readonly düşüldü: boolean;
@@ -102,6 +108,8 @@ export class TabanKanonCubugu {
     // soldaki dört yüzey sayacının sırasını bozmaz.
     this.oge = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
     this.oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+    // İpucunun önerdiği çözüm tek tıkla çalışır: işaret, işaretçi komutunu çağırır.
+    this.oge.command = KANON_ISARETCISI_KOMUTU;
     this.abone = tabanKanonDinle(() => this.tazele());
     this.tazele();
   }

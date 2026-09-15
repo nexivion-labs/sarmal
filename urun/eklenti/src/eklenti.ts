@@ -25,7 +25,9 @@ import { iskeletPlani, iskeletYaz } from "../../cekirdek/src/iskeletci.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
-import { PAKET_KANON_DIZINI, tamDenetimKanonuBul } from "./kanon-kesif.ts";
+import {
+  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, varlikKokuBul,
+} from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
 import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";  // EKL-F11-A01/A05: kimlik indeksi (çekirdekte — MCP/CLI ile ortak)
@@ -64,7 +66,7 @@ import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
 // 🪧 EKL-F6-A04: kanon bulunamadığında taban kanona düşüldüğü SÖYLENİR.
-import { TabanKanonCubugu, tamDenetimSonucu } from "./taban-kanon.ts";
+import { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tamDenetimSonucu } from "./taban-kanon.ts";
 // ⏱️ EKL-F6-A11: kurulu paket depodaki bildirimden gerideyse durum çubuğu söyler.
 import { readFile, readdir } from "node:fs/promises";
 import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
@@ -91,6 +93,7 @@ import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinle
 import {
   EKLENTI_KABUK_METINLERI,
   IZ_METINLERI,
+  KANON_ISARETCISI_METINLERI,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
   ipucuIsaretCiziciniKur,
@@ -361,6 +364,41 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // istenir; panel kendi taramasını kurmaz.
     vscode.commands.registerCommand("sarmal.hatirlaticiKapat", async (oge: unknown) => {
       await hatirlaticilar?.kapat(oge, (t) => denetimKilidi.iste(t));
+    }),
+    // ✍️ EKL-F6-A09 · KANON İŞARETÇİSİNİ YAZ. İşaretçiden önce doğmuş ağaçlara
+    // işaretçiyi yazan yol budur. Karar saf çekirdektedir (kanon-kesif.ts): kabuk
+    // yalnız hedefi seçer, kararı uygular ve her sonucu tam cümleyle söyler.
+    // Hedef açık belgenin varlığıdır; açık belge yoksa işaretçiye muhtaç ilanlı
+    // varlıklardan biri, birden çoksa kullanıcının seçtiği olur.
+    vscode.commands.registerCommand(KANON_ISARETCISI_KOMUTU, async () => {
+      const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+      const belge = vscode.window.activeTextEditor?.document.uri;
+      let hedef = belge?.scheme === "file" ? varlikKokuBul(dirname(belge.fsPath)) : undefined;
+      if (!hedef) {
+        const adaylar = isaretciHedefAdaylari(koklar);
+        if (adaylar.length > 1) {
+          const secim = await vscode.window.showQuickPick(
+            adaylar.map((k) => ({ label: basename(k), description: k })),
+            { placeHolder: KANON_ISARETCISI_METINLERI.secimBasligi });
+          if (!secim) return;
+          hedef = secim.description;
+        } else {
+          hedef = adaylar[0];
+        }
+      }
+      if (!hedef) { void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.hedefYok); return; }
+      const plan = isaretciPlani(hedef, koklar, context.extensionPath);
+      if (plan.tur === "yaz") {
+        const yazilan = isaretciYaz(plan.hedef, plan.kanonKoku, context.extensionPath);
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.yazildi(yazilan, plan.kanonKoku));
+        denetimKilidi.iste("işaretçi");
+      } else if (plan.tur === "gereksiz") {
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.gereksiz(basename(plan.hedef)));
+      } else if (plan.tur === "eklenti-kanonu") {
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.eklentiKanonu);
+      } else {
+        void vscode.window.showWarningMessage(KANON_ISARETCISI_METINLERI.rafYok(basename(plan.hedef)));
+      }
     }),
   );
   // Sayaçlar panellerin KENDİ kümelerinden ve motorun tanı koleksiyonundan okunur.

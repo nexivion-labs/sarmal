@@ -65,6 +65,7 @@
   "command.approveWithNote": "Şerhle onayla — karar Onaylar panelinde verilir",
   "command.reject": "Reddet — karar Onaylar panelinde verilir",
   "command.copyRow": "Satırı panoya kopyala",
+  "command.writeCanonPointer": "Kanon İşaretçisini Yaz",
   "customEditor.reading": "Sarmal Okuma",
   "walkthrough.title": "Sarmal'a Başla",
   "walkthrough.description": "Türkçe bildirimsel ağaç dili — 5 adımda tanışın: dil, canlı denetim, okuma modu, öğrenim ipuçları, biçimlendirici.",

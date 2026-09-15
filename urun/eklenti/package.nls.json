@@ -65,6 +65,7 @@
   "command.approveWithNote": "Approve with note — the decision is made in the Approvals panel",
   "command.reject": "Reject — the decision is made in the Approvals panel",
   "command.copyRow": "Copy row to clipboard",
+  "command.writeCanonPointer": "Write Canon Pointer",
   "customEditor.reading": "Sarmal Reading",
   "walkthrough.title": "Get Started with Sarmal",
   "walkthrough.description": "Meet the declarative tree language in five steps: the language, live checks, reading mode, learning hints and formatting.",
