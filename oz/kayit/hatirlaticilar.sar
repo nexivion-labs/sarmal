@@ -109,13 +109,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZINME-SESSIZ-RET,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         VIT-K78-A09,
   çapa:             nitelik,
   dönüşTetikleyici: "Kimlik gezinme yüzeyine bir sonraki dokunuşta ya da öğretilebilirlik turunda",
   öncelik:          p2,
   tarih:            2026-08-08,
-  ne:               "Kimlik penceresi bazı kodlarda açılıp bazılarında açılmıyor ve kullanıcı bu farkın sebebini göremiyor. Sebep ölçüldü ve üç tanedir: birincisi varlık sınırıdır, çünkü açık araçtaki bir dosyadan kapalı üründe tanımlı bir koda gezinmek STR-3 gereği yasaktır; ikincisi ders dünyası süzgecidir, çünkü ürün dosyasından örnek ile şablon raflarındaki tanımlara gidilmez; üçüncüsü tanım yokluğudur, çünkü pencere yalnız tanımı olan kodda açılır ve kimi kodun ağaçta yalnız metin atfı vardır. Üç sebep de bilinçlidir ve savunulabilir, fakat yüzey sessizce hiçbir şey yapmadığı için davranış keyfî görünmektedir. Yapılacak iş reddin sebebini söyleyen bir yüzey kurmaktır; kullanıcı neden gidilemediğini öğrenirse kural öğretici olur, bugün ise yalnız kafa karıştırıcıdır. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı VIT-K78-A09 Adımına bağlandı; iş bir arayüz hükmüdür, küçüktür ve kendi Adımını almıştır.",
+  ne:               "Kimlik penceresi bazı kodlarda açılıp bazılarında açılmıyor ve kullanıcı bu farkın sebebini göremiyor. Sebep ölçüldü ve üç tanedir: birincisi varlık sınırıdır, çünkü açık araçtaki bir dosyadan kapalı üründe tanımlı bir koda gezinmek STR-3 gereği yasaktır; ikincisi ders dünyası süzgecidir, çünkü ürün dosyasından örnek ile şablon raflarındaki tanımlara gidilmez; üçüncüsü tanım yokluğudur, çünkü pencere yalnız tanımı olan kodda açılır ve kimi kodun ağaçta yalnız metin atfı vardır. Üç sebep de bilinçlidir ve savunulabilir, fakat yüzey sessizce hiçbir şey yapmadığı için davranış keyfî görünmektedir. Yapılacak iş reddin sebebini söyleyen bir yüzey kurmaktır; kullanıcı neden gidilemediğini öğrenirse kural öğretici olur, bugün ise yalnız kafa karıştırıcıdır. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı VIT-K78-A09 Adımına bağlandı; iş bir arayüz hükmüdür, küçüktür ve kendi Adımını almıştır. KAPANDI (kontrolcü · 2026-09-15): VIT-K78-A09 Adımı gezinme reddinin sebebini cümlenin başında gündelik dille söyleyen yüzeyi kurmuş ve tamamlanmıştır; hatırlatıcının beklediği iş bitmiştir.",
 )
 
 Hatırlatıcı(
@@ -810,4 +810,34 @@ Hatırlatıcı(
   tarih:            2026-09-15,
   dönüşTetikleyici: "Kurulum betiği ya da sürüm tazeliği gövdesi bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A11 turunda 2026-09-15 tarihinde ölçülen iki sınır kayda geçmiştir. Birincisi, kurulum betiği uzantı klasörünü ~/.vscode/extensions olarak sabit yazmaktadır; VS Code Insiders ya da özel bir uzantı klasörü kullanıldığında betik kurulumu doğrulayamadığını söyler fakat hata vermez. İkincisi, eklenti açılışındaki nöbet yalnız sürümü karşılaştırdığı için eklenti kodu değişip sürüm ilerletilmediğinde bayatlığı görmez; bu durumu yalnız bir sonraki kurulumdaki damga karşılaştırması yakalar."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Eklentinin tam proje denetimi turu ya da taban kanon işareti bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin tam proje denetimi turu denetimKos çağrısını bir try/catch bloğu içinde koşturmaktadır ve çağrı çökerse hata yutulur; atlanan kökler artık durum çubuğundaki işarete bildirildiği hâlde çöken kök bu bildirime katılmamaktadır. Bunun sonucu, A09 Adımının kapattığı kusurun dar bir kapıdan geri gelmesidir: panel boş kalır ve kullanıcı tam denetimin o kökte koşmadığını öğrenemez. Aynı turda ortak.ts içindeki snfBul işlevinin renk ve ipucu için hâlâ gömülü kanonu okuduğu da ölçülmüştür; içerik bugün paket kopyasıyla aynı olduğundan bu bir kusur değil, iki kaynağın ileride ayrışabileceği bir noktadır. Doğru davranış, çöken kökün de atlanan kök gibi işarete bildirilmesi ve kanonun tek kaynaktan okunmasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Paket içeriği nöbeti ya da eklentinin derleme betikleri bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: paket içeriği nöbeti (urun/eklenti/sinama/paket-icerigi.test.ts) yayımlanan paketin dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarını taşıdığını denetlememektedir. Kopyanın pakette bulunduğunu bugün yalnız elle koşulan vsce ls çıktısı kanıtlamaktadır; derleme betiği bir gün kopyalamayı bırakırsa mağazadan kurulan eklenti yeniden kanonsuz kalır ve hiçbir nöbet kırmızıya dönmez. Aynı turda eklentinin package-lock.json dosyasındaki sürümün 0.9.178 değerinde kaldığı ve paket sürümüyle birlikte ilerlemediği de ölçülmüştür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Eklentinin tip denetimi yapılandırması ya da minigraf sınaması bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır."
 )
