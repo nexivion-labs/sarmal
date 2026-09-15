@@ -36,7 +36,7 @@ import {
 } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A03/A05: geometrik aile TEK kaynaktan · A07: webview işaretleri de buradan
 import { satirIkonu } from "./ortak.ts";   // VIT-KIMLIK-A05: satır simgelerinin iki-tema köprüsü
 import {
-  varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi,
+  varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi, cagirCevrimi,
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur,
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
@@ -476,28 +476,13 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // kararlı taban sırası: dosya yolu + satır (topolojik eşitlikte kaynak sırası kazanır)
     yeni.sort((a, b) => a.dosya.fsPath.localeCompare(b.dosya.fsPath) || a.satir - b.satir);
 
-    // 🌀 ÇAĞIR-ÇEVRİMİ (Founder 2026-07-12: "Blok neden Faz'ın altına yerleşmiyor?"):
-    // MIM-1 ③ Provider deseni — mevsim Faz'ı Blok'ları `çağır BLK-X` ile kapsar
-    // (kopya yasak, DIL-2). Panel bu kenarı AĞACA çevirir: çağrılan KÖK Blok,
-    // çağıran Faz'ın altına biner (aynı Oge — kopya değil, taşıma); sayaçlar
-    // kabarcıklanır → mevsim ilerlemesi [tamam/toplam] gerçek olur. İlk çağıran
-    // kazanır; kök-olmayan hedefler ve çözülmeyen kodlar dokunulmaz.
-    {
-      const kokler = new Map(yeni.map((o) => [o.kod, o]));
-      const tasinan = new Set<Oge>();
-      for (const faz of yeni) {
-        if (faz.tip !== "Faz" || !faz.cagirlar?.length) continue;
-        for (const hedefKod of faz.cagirlar) {
-          const hedef = kokler.get(hedefKod);
-          if (!hedef || hedef === faz || hedef.tip !== "Blok" || tasinan.has(hedef)) continue;
-          faz.cocuklar.push(hedef);
-          tasinan.add(hedef);
-          faz.tamam += hedef.tamam; faz.toplam += hedef.toplam;
-          faz.gelistirmede += hedef.gelistirmede; faz.bloklu += hedef.bloklu;
-        }
-      }
-      for (let i = yeni.length - 1; i >= 0; i--) if (tasinan.has(yeni[i])) yeni.splice(i, 1);
-    }
+    // 🌀 ÇAĞIR-ÇEVRİMİ: Faz'ın çağırdığı kök Blok Faz'ın altına biner ve sayaçlar
+    // kabarcıklanır; başka projenin Fazına ad alanıyla bağlanan Blok ise kendi
+    // projesinde kalır ve yalnız not taşır (KPS-ADA-A01). Karar saf çekirdektedir
+    // ve nöbeti oradadır (yolharitasi-hiyerarsi.test.ts). Varlık çözücüsü bu yüzden
+    // çevrimden ÖNCE kurulur; tur ömürlüdür ve hiçbir dosyaya dokunmaz.
+    const coz = varlikCozucu(anadizinler, (anaSar) => programlar.get(anaSar));
+    cagirCevrimi(yeni, (o) => coz(o.dosya.fsPath));
 
     // 🔗 ORK-1.2: kardeşler TOPOLOJİK sıraya dizilir — Adım rütbesi DAG'dan, kapsayıcı
     // rütbesi çocuklarının EN GEÇinden TÜRETİLİR (panel aynadır, DIL-2: kenar yaprakta
@@ -546,7 +531,6 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // saf çekirdektedir; çözücü TUR ÖMÜRLÜDÜR ve girişini turun kendi ağacından
     // okur, dolayısıyla panel varlık kimliği için de hiçbir dosyaya dokunmaz.
     varlikOnbellek.clear();   // tur dışı aidiyet belleği turla birlikte tazelenir
-    const coz = varlikCozucu(anadizinler, (anaSar) => programlar.get(anaSar));
     const harita = varliklariKur(yeni, anadizinler, coz, (u) => u.fsPath);
     // 🔗 ORK-1.2: her varlığın Blok'ları + tüm alt-kardeşler topolojik sıraya dizilir
     // (BLK-DOGUS gibi çok-bağımlı bloklar kendiliğinden en alta iner).
@@ -867,7 +851,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       nedenAktif = n ? (n.length > 48 ? n.slice(0, 46) + "…" : n) : YOL_METINLERI.gelistiriliyor;
     }
     // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
-    // beyanı. Satır soluk + 🧊 imli; NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
+    // beyanı. Satır soluktur ve sayacı kelimeyle yazılır (VIT-KIMLIK-A07 · Founder sade hâli,
+    // 2026-09-13: eski buz işareti kalktı); NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
     const planNeden = o.tip === "Blok" ? (planAlani(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
     // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
@@ -879,15 +864,22 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // yeri değişti.
     const hedefTarihDegeri = o.tip === "Faz" ? planAlani(o.dugum, "hedefTarih")?.deger.metin : undefined;
     const tarih = tarihRozetiKisa(hedefTarihDegeri);
-    const sayac = planNeden ? `🧊 [${o.tamam}/${o.toplam}]` : `[${o.tamam}/${o.toplam}]`;
+    const sayac = planNeden ? YOL_METINLERI.planlanmamisSayac(o.tamam, o.toplam) : `[${o.tamam}/${o.toplam}]`;
+    // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla
+    // bağlanan Blok kendi projesinin altında durur; bağlandığı Faz ile o Fazın
+    // projesi satırın yanında not olarak yazılır ve sebep ipucunda söylenir.
+    const bag = o.bagliFaz;
+    const bagFaz = bag ? yuzeyAdi(bag.faz.ad, bag.faz.kod) : "";
+    const bagProje = bag ? yuzeyAdi(bag.proje.ad, bag.proje.kod) : "";
     eleman.description = kapsayici
-      ? [tarih, sayac].filter(Boolean).join("  ·  ")
+      ? [tarih, sayac, bag ? YOL_METINLERI.caprazFaz(bagFaz, bagProje) : ""].filter(Boolean).join("  ·  ")
       : nedenAktif;
     const md = new vscode.MarkdownString();
     md.appendMarkdown(`**${kanonikWidgetAdi(o.tip, o.tip)} · ${o.kod}**`);
     if (kapsayici) md.appendMarkdown(`  \`[${o.tamam}/${o.toplam}]\``);
     if (o.hedefTarih) md.appendMarkdown(YOL_METINLERI.tarife(o.hedefTarih));
     if (planNeden) md.appendMarkdown(YOL_METINLERI.planlanmamis(planNeden));
+    if (bag) md.appendMarkdown(YOL_METINLERI.caprazFazIpucu(bagFaz, bagProje));
     if (o.ne) md.appendMarkdown(`\n\n${kanonikWidgetDuzYazisi(o.tip, o.ne)}`);
     md.appendMarkdown(`\n\n_${o.durum}_`);
     if (o.bloklu > 0 && kapsayici) md.appendMarkdown(YOL_METINLERI.blokluAlt(o.bloklu));

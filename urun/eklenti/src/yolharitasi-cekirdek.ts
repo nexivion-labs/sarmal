@@ -16,6 +16,7 @@
 
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
+import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
 
@@ -214,6 +215,16 @@ export interface PlanOgesi<K> {
   kabulSayisi: number;
   hedefTarih?: string;
   cagirlar?: string[];         // gövdedeki `çağır KOD` hedefleri
+  bagliFaz?: CaprazFazBagi<K>; // Blok: başka projenin Fazına ad alanıyla bağlıysa o bağ (KPS-ADA-A01)
+}
+
+/**
+ * Başka bir projenin Fazına ad alanıyla bağlanan Blokun panel notu: bağlandığı
+ * Faz ile o Fazın projesi. Blok taşınmadığı için bağ yalnız burada görünür.
+ */
+export interface CaprazFazBagi<K> {
+  faz: PlanOgesi<K>;
+  proje: VarlikKimligi;
 }
 
 /**
@@ -273,6 +284,55 @@ export function ogeleriTopla<K>(bildirimler: readonly Dugum[], dosya: K): PlanOg
   };
   for (const b of bildirimler) gez(b);
   return kokler;
+}
+
+/**
+ * 🌀 ÇAĞIR-ÇEVRİMİ (Founder 2026-07-12: "Blok neden Faz'ın altına yerleşmiyor?"):
+ * MIM-1 ③ Provider deseni — mevsim Faz'ı Blok'ları `çağır BLK-X` ile kapsar
+ * (kopya yasak, DIL-2). Panel bu kenarı AĞACA çevirir: çağrılan KÖK Blok,
+ * çağıran Faz'ın altına biner (aynı öge — kopya değil, taşıma); sayaçlar
+ * kabarcıklanır → mevsim ilerlemesi [tamam/toplam] gerçek olur. İlk çağıran
+ * kazanır; kök olmayan hedefler ve çözülmeyen kodlar dokunulmaz.
+ *
+ * ÇAPRAZ PROJE BAĞI TAŞINMAZ (KPS-ADA-A01 · Founder şerhi 2026-09-13). Başka
+ * bir projenin Fazına ad alanıyla bağlanan Blok kendi projesinin altında durur,
+ * yabancı Fazın sayacına girmez ve bağı `bagliFaz` notuyla taşır. Gerekçe
+ * Founder'ındır: her projenin işi kendi ağacında sayılır; başka projenin açık
+ * Adımları bir mevsimi bitmemiş gösterirse sayaç yanlış bir şey söyler.
+ *
+ * Motorun Faz bağı DEĞİŞMEZ: mevsim çevrimi ad alanlı beyanı gerçek bir Faz bağı
+ * sayar, Faz'a sanal kenarı kurar ve fazsız-blok ateşlenmez. Burada değişen
+ * yalnız panelin yerleşimidir. Ölçüt iki koşulun birlikteliğidir: Blokun
+ * `mevsim:` beyanı ad alanlıdır VE Blok ile Faz ayrı varlıklara çözülür.
+ * Niteliksiz beyan ile gerçek `çağır` hiçbir zaman çapraz sayılmaz, çünkü ORK-4
+ * niteliksiz kodu yalnız kendi projesinde çözer; kendi projesini ad alanıyla
+ * yazan Blok da aynı varlıkta kaldığı için eskisi gibi taşınır. Varlık
+ * çözücüsü dışarıdan gelir ki panel ile nöbet aynı aidiyet kuralını kullansın.
+ */
+export function cagirCevrimi<K>(
+  ogeler: PlanOgesi<K>[],
+  varlikAl: (oge: PlanOgesi<K>) => VarlikKimligi,
+): void {
+  const kokler = new Map(ogeler.map((o) => [o.kod, o]));
+  const tasinan = new Set<PlanOgesi<K>>();
+  const caprazMi = (blok: PlanOgesi<K>, faz: PlanOgesi<K>): boolean => {
+    const mevsim = planAlani(blok.dugum, "mevsim")?.deger.metin;
+    if (!mevsim || adAlaniAyir(mevsim).adAlani === undefined) return false;
+    return varlikAl(blok).kokDizin !== varlikAl(faz).kokDizin;
+  };
+  for (const faz of ogeler) {
+    if (faz.tip !== "Faz" || !faz.cagirlar?.length) continue;
+    for (const hedefKod of faz.cagirlar) {
+      const hedef = kokler.get(hedefKod);
+      if (!hedef || hedef === faz || hedef.tip !== "Blok" || tasinan.has(hedef)) continue;
+      if (caprazMi(hedef, faz)) { hedef.bagliFaz ??= { faz, proje: varlikAl(faz) }; continue; }
+      faz.cocuklar.push(hedef);
+      tasinan.add(hedef);
+      faz.tamam += hedef.tamam; faz.toplam += hedef.toplam;
+      faz.gelistirmede += hedef.gelistirmede; faz.bloklu += hedef.bloklu;
+    }
+  }
+  for (let i = ogeler.length - 1; i >= 0; i--) if (tasinan.has(ogeler[i])) ogeler.splice(i, 1);
 }
 
 /** Bir varlığın kimliği: giriş dosyasının KÖK düğümünden okunur, icat edilmez. */

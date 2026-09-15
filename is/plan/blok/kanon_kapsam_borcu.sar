@@ -296,7 +296,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       //   Taşınan kademenin beyanı: ORK-4 hükmünün motorda karşılanması: ad alanlı kodun ayrıştırılması, kardeş kökte çözülmesi ve yüzeylerde tanınması
 
       Adım( kod: KPS-ADA-A01, ad: "Çapraz Proje Ad Alanı", durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4, MIM-1.1, STR-3 ],
-        onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır",
+        onay: "onaylandı — 2026-08-27 · Founder: taşıma kopmalarından kolay olanlar oturumda kapatılır, çapraz atıf borcu plana alınır · ŞERH 2026-09-13 · FOUNDER: Başka bir projenin Fazına ad alanıyla bağlanan Blok, Yol Haritası panelinde kendi projesinin altında durur ve bağlandığı Faz yanında not olarak gösterilir. Founder canlı pencerede laboratuvarın Bulgu Kapatma Blokunun sarmal projesinin Çatı Mevsimi Fazı altında göründüğünü ve iki açık Adımının o Fazın sayacına eklendiğini görmüş, bu yerleşimi reddetmiştir. Gerekçe şudur: her projenin işi kendi ağacında sayılır; başka bir projenin açık Adımları açık aracın mevsimini bitmemiş gösterirse sayaç yanlış bir şey söyler. · ŞERH 2026-09-13 · FOUNDER (ikinci ölçüt): Kapalı iki depoda sıfır hata isteyen ölçüt, bu Adımın getirdiği hata bulunmaması biçiminde daraltılmıştır. Ölçüm günü laboratuvarda dokuz, kapalı ürünün deposunda iki hata bulunmaktadır ve hiçbiri ad alanı çözümüyle ilgili değildir: sekizi eğitim mühürlü iki eski örnek dosyasındadır, ikisi arşiv mühürlü bir dosyadaki kayıtlara, biri ise hiçbir depoda ilan edilmemiş bir fikre yapılan atıftır. Bu hatalar o depoların kendi hatırlatıcılarına devredilmiştir. Gerekçe şudur: bir Adım kapsamı dışındaki borç kapanmadıkça açık kalırsa kendi işinin bittiği okunamaz.",
         // KOD-BELIRTEC 2026-08-29 tarihinde teslim listesine eklendi: ad alanı ayracı
         // belirteçleyicide yaşar, çünkü `::` sözcenin ortasında yutulmazsa ayrıştırıcı
         // onu iki ayrı belirteç olarak görür ve tek bir KOD değeri kuramaz.
@@ -313,7 +313,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         ]
         kabul: [
           "Çekirdek süiti yeşildir; ad alanlı çözüm ile küresel eşleşme yasağı ayrı ayrı mutasyonla kanıtlanmıştır.",
-          "Laboratuvar ve orkestrasyon depolarının denetimi sıfır hata verir ve iki deponun işleme kapısı muafiyetsiz geçer.",
+          "Laboratuvar ve orkestrasyon depolarında bu Adımın getirdiği hiçbir hata yoktur; iki depoda bu Adımın kapsamı dışında kalan hatalar o depoların kendi hatırlatıcılarına devredilmiştir (Founder şerhi 2026-09-13).",
           "Sarmal depo denetimi sıfır hata ve sıfır uyarı vermeye devam eder; eklenti süiti yeşildir.",
           "Yol Haritası panelinde kapalı deponun Bloku kendi projesinin altında, açık deponun Faz'ına bağlı olarak görünür ve bu Founder tarafından canlı pencerede doğrulanmıştır."
         ]

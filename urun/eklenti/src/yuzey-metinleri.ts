@@ -1368,7 +1368,9 @@ export function commentsEmekli(): string {
 }
 
 export const ONAY_YUZEY_METINLERI = {
-  get bekliyorSus(): string { return yuzeyMetni("  📬  Founder onayını bekliyor", "  📬  awaiting Founder approval"); },
+  // Satır sonu notunun kelimesi; simgesi ailenin kapı simgesidir ve dekorun
+  // `before` ekinde çizilir (simge-cizelgesi.ts SATIR_SONU_NOTLARI · VIT-KIMLIK-A07).
+  get bekliyorSus(): string { return yuzeyMetni("Founder onayını bekliyor", "awaiting Founder approval"); },
   hover: (kod: string, olcut: string): string => yuzeyMetni(
     `**${kod}** Founder onayını bekliyor — üstündeki lense tıklayın, bu kapı Onaylar panelinde seçili gelir; kararınızı orada Onayla, Şerhle onayla ya da Reddet satırlarından verirsiniz.\n\n**Onay isteyen ölçüt:**\n> ${olcut}`,
     `**${kod}** is awaiting Founder approval. Select the lens above to reveal this gate in the Approvals panel, then choose Approve, Approve with note, or Reject.\n\n**Criterion requiring approval:**\n> ${olcut}`,
@@ -1404,20 +1406,20 @@ export const EKLENTI_KABUK_METINLERI = {
   },
   get giydirKlasorGerekli(): string {
     return yuzeyMetni(
-      "🌀 Giydir çalışma alanı ister — önce bir klasör aç (ayarlar Workspace hedefine yazılır, kullanıcı ayarına değil).",
-      "🌀 Dressing requires a workspace — open a folder first (settings are written to the Workspace target, not user settings).",
+      "Giydir çalışma alanı ister — önce bir klasör aç (ayarlar Workspace hedefine yazılır, kullanıcı ayarına değil).",
+      "Dressing requires a workspace — open a folder first (settings are written to the Workspace target, not user settings).",
     );
   },
   get giydirildi(): string {
     return yuzeyMetni(
-      "🎨 Çalışma alanı giydirildi — Sarmal görünümü bu çalışma alanında etkin (kullanıcı ayarına dokunulmadı).",
-      "🎨 Workspace dressed — the Sarmal appearance is active in this workspace (user settings were not changed).",
+      "Çalışma alanı giydirildi — Sarmal görünümü bu çalışma alanında etkin (kullanıcı ayarına dokunulmadı).",
+      "Workspace dressed — the Sarmal appearance is active in this workspace (user settings were not changed).",
     );
   },
   get eskiKopyaSaltOkunur(): string {
     return yuzeyMetni(
-      "⚠️ Bu görünüm salt-okunur bir ESKİ kopya (git/zaman tüneli) — karar yalnız gerçek dosyada verilir. Dosyanın kendisini açıp yeniden dene.",
-      "⚠️ This is a read-only HISTORICAL copy. Decisions can only be made in the current file; open that file and try again.",
+      "Bu görünüm salt-okunur bir ESKİ kopya (git/zaman tüneli) — karar yalnız gerçek dosyada verilir. Dosyanın kendisini açıp yeniden dene.",
+      "This is a read-only HISTORICAL copy. Decisions can only be made in the current file; open that file and try again.",
     );
   },
 } as const;
@@ -1517,7 +1519,7 @@ export function caprazBakisIpucu(kod: string): string {
 }
 
 export function panelOdakMesaji(proje: string): string {
-  return yuzeyMetni(`🔭 Sarmal panel odağı: ${proje}`, `🔭 Sarmal panel focus: ${proje}`);
+  return yuzeyMetni(`Sarmal panel odağı: ${proje}`, `Sarmal panel focus: ${proje}`);
 }
 
 export function iskeletSozDizimHatasi(satir: number, sutun: number): string {
@@ -1529,8 +1531,8 @@ export function iskeletSozDizimHatasi(satir: number, sutun: number): string {
 
 export function iskeletKuruldu(olusan: number, atlanan: number): string {
   return yuzeyMetni(
-    `🌱 Iskelet kuruldu — ${olusan} olusturuldu · ${atlanan} atlandi`,
-    `🌱 Scaffold built — ${olusan} created · ${atlanan} skipped`,
+    `Iskelet kuruldu — ${olusan} olusturuldu · ${atlanan} atlandi`,
+    `Scaffold built — ${olusan} created · ${atlanan} skipped`,
   );
 }
 
@@ -1594,19 +1596,22 @@ export const GEZINME_METINLERI = {
     `Identity '${kod}' also occurs in ${adet} filename${adet === 1 ? "" : "s"}. Text references were updated; you must rename the files yourself.`,
   ),
   // 🚧 GEZİNME REDDİNİN SEBEBİ (VIT-K78-A09 · HTR-GEZINME-SESSIZ-RET). Üç kural
-  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, sebebi adıyla
-  // söyler ve dayanağı olan kanon maddesini anar ki kural öğretici olsun.
+  // da bilinçlidir; sessizlik ise değildir. Her cümle TEK SATIRDIR, kısadır,
+  // "Gidilemez:" ile başlar ve sebebi gündelik dille söyler; iç terim ve kanon
+  // maddesi anmaz (Founder şerhi 2026-09-13). Sonuç cümlenin BAŞINDA durur,
+  // çünkü bildirim kutusu uzun cümlenin sonunu keser ve sona bırakılan sonuç
+  // hiç görünmez. Türkçe biçimler Founder onaylıdır; değişikliği Founder verir.
   retDersDunyasi: (kod: string): string => yuzeyMetni(
-    `'${kod}' tanımı öğreti rafında (arşiv · örnek · fikstür · şablon) yaşıyor; ürün dosyasından ders dünyasına gezinilmez (OGR-5).`,
-    `The definition of '${kod}' lives on a teaching shelf (archive · example · fixture · template); navigation from a product file into the teaching world is not permitted (OGR-5).`,
+    `Gidilemez: '${kod}' yalnız öğretim örneklerinde var.`,
+    `Cannot navigate: '${kod}' exists only in teaching examples.`,
   ),
   retVarlikSiniri: (kod: string): string => yuzeyMetni(
-    `'${kod}' tanımı başka bir varlığın kökünde yaşıyor; varlık sınırı gezinmeyi durdurur (STR-3 · MIM-1.1).`,
-    `The definition of '${kod}' lives under a different entity root; the entity boundary stops navigation (STR-3 · MIM-1.1).`,
+    `Gidilemez: '${kod}' başka bir projenin kodu.`,
+    `Cannot navigate: '${kod}' belongs to another project.`,
   ),
   retTanimYok: (kod: string): string => yuzeyMetni(
-    `'${kod}' ağaçta yalnız metin atfı olarak geçiyor; tanımı olmadığı için gidilecek bir düğüm yok.`,
-    `'${kod}' occurs in the tree only as a text reference; it has no definition, so there is no node to navigate to.`,
+    `Gidilemez: '${kod}' hiçbir yerde tanımlı değil.`,
+    `Cannot navigate: '${kod}' is not defined anywhere.`,
   ),
 } as const;
 
@@ -1656,7 +1661,7 @@ export const HATIRLATICI_KAPATMA_METINLERI = {
 } as const;
 
 export const GIYDIR_METINLERI = {
-  get soru(): string { return yuzeyMetni("🌀 Bu çalışma alanında Sarmal görünümü giydirilmemiş — kanondaki renk/dekor ayarları uygulansın mı? (yalnız bu çalışma alanına yazılır)", "🌀 This workspace does not have the Sarmal appearance applied. Apply the canonical color and decoration settings? (Only this workspace is changed.)"); },
+  get soru(): string { return yuzeyMetni("Bu çalışma alanında Sarmal görünümü giydirilmemiş — kanondaki renk/dekor ayarları uygulansın mı? (yalnız bu çalışma alanına yazılır)", "This workspace does not have the Sarmal appearance applied. Apply the canonical color and decoration settings? (Only this workspace is changed.)"); },
   get giydir(): string { return yuzeyMetni("Giydir", "Apply appearance"); },
   get birDahaSorma(): string { return yuzeyMetni("Bu projede sorma", "Don't ask in this project"); },
 } as const;
@@ -1681,8 +1686,10 @@ export const YILDIZ_METINLERI = {
     `${ipucuIsareti("yildiz")}**Kuzey Yıldızı** — bu satırda uygulanabilir bir öneri var:\n\n${neden}\n\nUygulamak için satıra gel ve **⌘.** (kod aksiyonları) menüsünü aç.`,
     `${ipucuIsareti("yildiz")}**North Star** — this row has an applicable suggestion:\n\n${neden}\n\nMove to the row and open the **⌘.** (code actions) menu to apply it.`,
   ),
-  get terfiBekliyor(): string { return yuzeyMetni("  🎓 terfi bekliyor", "  🎓 promotion pending"); },
-  get uyari(): string { return yuzeyMetni("  ⚠️ uyarı", "  ⚠️ warning"); },
+  // Satır sonu notlarının kelimesi; simgeleri ailenin terfi ve uyarı simgesidir
+  // ve dekorun `before` ekinde çizilir (simge-cizelgesi.ts SATIR_SONU_NOTLARI · VIT-KIMLIK-A07).
+  get terfiBekliyor(): string { return yuzeyMetni("terfi bekliyor", "promotion pending"); },
+  get uyari(): string { return yuzeyMetni("uyarı", "warning"); },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1767,11 +1774,19 @@ export const YOL_METINLERI = {
   get varligaOdaklan(): string { return yuzeyMetni("Varlığa odaklan", "Focus entity"); },
   get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
   tarife: (tarih: string): string => yuzeyMetni(`\n\n${ipucuIsareti("zaman")}tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n${ipucuIsareti("zaman")}schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
+  // VIT-KIMLIK-A07 (Founder sade hâli, 2026-09-13): Blok satırının planlanmamış
+  // sayacı kelimeye iner. Ağaç açıklaması düz metindir ve resim taşımaz; eski buz
+  // işaretinin anlamını artık kelimenin kendisi taşır.
+  planlanmamisSayac: (tamam: number, toplam: number): string => yuzeyMetni(`planlanmamış [${tamam}/${toplam}]`, `unscheduled [${tamam}/${toplam}]`),
   planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
+  // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla bağlanan
+  // Blok kendi projesinde durur. Satırın yanındaki not bağı söyler, ipucu sebebini.
+  caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the ${faz} Phase of ${proje}`),
+  caprazFazIpucu: (faz: string, proje: string): string => yuzeyMetni(`\n\n${ipucuIsareti("kenar")}**${proje}** projesinin **${faz}** Fazına bağlıdır. Blok kendi projesinin altında durur ve o Fazın sayacına katılmaz.`, `\n\n${ipucuIsareti("kenar")}Bound to the **${faz}** Phase of **${proje}**. The Block stays under its own project and is not counted in that Phase.`),
   blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} blocked below`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
-  yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(`🚫 ${turkce}`, `🚫 Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
-  geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`ℹ️ ${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `ℹ️ ${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
+  yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(turkce, `Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
+  geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
   kartBasligi: (kod: string): string => kod,
   rayBloklari: (tamam: number, toplam: number, adet: number): string => yuzeyMetni(`[${tamam}/${toplam}] · ${adet} blok`, `[${tamam}/${toplam}] · ${adet} block${adet === 1 ? "" : "s"}`),
   get raySec(): string { return yuzeyMetni("Hangi rayın makinisti olalım?", "Which track should we drive?"); },

@@ -2,6 +2,25 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.186 — 2026-09-15 (bildirimler kelimeyle, satır sonu notları Sarmal simgesiyle konuşuyor)
+
+- **Bildirim kutusunda ve durum çubuğu iletilerinde emoji kalmadı.** Founder sade hâli seçti: eldeki Sarmal simgeleriyle çizilebilen yerde işaret simge ailesinden gelir, çizilemeyen yerde yalnız kelime kalır. VS Code bu iki yüzeyde eklentinin kendi görselini göstermediği için giydirme, eski kopya, iskelet ve yasak geçiş bildirimleri ile panel odağı ve geri alma iletileri artık yalnız kelimeyle görünüyor. Durum çubuğu sayaçlarının VS Code simgeleri değişmedi.
+- **Satır sonu notları simgesini Sarmal ailesinden alıyor.** Editörde Founder onayı bekleyen kapının, terfi bekleyen dersin ve uyarının satır sonundaki notu emoji yerine ailenin kapı, terfi ve uyarı simgesini taşıyor ve kelimesi yanında duruyor. Yeni simge çizilmedi; notlar raftaki mevcut simgelerin zaten üretilen renkli çizimleriyle basılıyor. Yanıp sönme korunuyor: parlak evrede renkli simge ile kelime, sönük evrede aynı simgenin mat hâli görünüyor.
+- **Yol Haritası'nda planlanmamış Blok kelimeyle söyleniyor.** Sayacın önündeki buz işareti kalktı ve sayaç Türkçe yüzeyde "planlanmamış [2/5]", İngilizce yüzeyde "unscheduled [2/5]" biçiminde yazılıyor.
+- **Gerilemeyi nöbetler durduruyor.** Arayüz işareti envanterinde açık borç ve borç tavanı sıfıra indi. Bir satır sonu notuna ve bir durum çubuğu iletisine emoji bilerek geri kondu, iki nöbet de kırmızıya düştü ve değişiklik geri alınınca yeşile döndü.
+
+## 0.9.185 — 2026-09-13 (gidilemeyen kodun bildirimi sonucu başta söylüyor)
+
+- **Ret bildirimi artık ne olduğunu ilk sözcükte söylüyor.** Founder canlı pencerede tanımı olmayan bir koda tıkladığında bildirimin çıktığını, fakat ne dediğinin anlaşılmadığını bildirdi. İki sebep vardı: cümle iç terimlerle yazılmıştı ve bildirim kutusu cümlenin sonunu kestiği için asıl sonuç olan gidilemediği bilgisi hiç görünmüyordu.
+- **Üç cümle kısa ve sade yazıldı.** Her ret cümlesi "Gidilemez:" ile başlıyor ve sebebi gündelik dille söylüyor: tanımı olmayan kod için hiçbir yerde tanımlı olmadığı, başka projedeki kod için başka bir projenin kodu olduğu, öğretim örneğindeki kod için yalnız öğretim örneklerinde bulunduğu söyleniyor. Cümleler artık kanon maddesi anmıyor. İngilizce yüzeyde aynı cümleler "Cannot navigate:" ile başlıyor.
+- **Ret kuralları ve gezinme davranışı değişmedi.** Değişen yalnız bildirimin metnidir; tanımlı kodda gezinme eskisi gibi çalışıyor ve bildirim doğmuyor. Nöbet üç sebebin iki dilde de ayrı cümle ürettiğini, her cümlenin sonuçla başladığını ve kanon maddesi anmadığını ölçüyor; baş ölçümü iki ayrı mutasyonla, önce Türkçe sonra İngilizce cümlenin başı bozularak kırmızıya düşürüldü.
+
+## 0.9.184 — 2026-09-13 (başka projenin Fazına bağlanan Blok kendi projesinde duruyor)
+
+- **Çapraz proje Bloku artık kendi projesinin altında görünüyor.** Founder çatı penceresinde laboratuvarın Bulgu Kapatma Blokunun Yol Haritası panelinde laboratuvarın altında değil, Sarmal projesinin Çatı Mevsimi Fazının altında durduğunu ve iki açık Adımının o Fazın sayacına eklendiğini gördü. Aynı desen kapalı üründeki üç Blokta da vardı. Sebep panelin çağır çevrimiydi: motorun mevsim çevrimi ad alanlı beyanı doğru biçimde gerçek bir Faz bağı sayıyor ve Faza sanal bir çağır kenarı kuruyordu, panel ise her çağır kenarını Bloku o Fazın altına taşıma emri olarak okuyordu.
+- **Bağ silinmedi, yalnız yeri değişti.** Başka bir projenin Fazına ad alanıyla bağlanan Blok artık kendi projesinin altında duruyor ve satırının yanında "Sarmal projesinin Çatı Mevsimi Fazına bağlı" notunu taşıyor; ipucu balonu Blokun o Fazın sayacına katılmadığını da söylüyor. Yabancı Fazın sayacı bu Bloku saymıyor, çünkü her projenin işi kendi ağacında sayılır. Motorun Faz bağına dokunulmadı: ad alanlı beyan gerçek bir Faz bağı sayılmaya devam ediyor ve fazsız Blok tanısı ateşlenmiyor.
+- **Aynı proje içindeki davranış değişmedi.** Niteliksiz `mevsim:` beyanı, gerçek `çağır` kenarı ve kendi projesini ad alanıyla yazan Blok eskisi gibi Fazın altına taşınıyor ve sayaçlar Faza kabarcıklanıyor. Karar vscode'suz panel çekirdeğine indi ve iki yönü ayrı ayrı ölçen nöbetlerle korunuyor; üç ayrı mutasyonun her biri yalnız kendi yönünün nöbetini kırmızıya düşürdü. Panel turu yeni bir dosya araması ya da belge açma eklemedi.
+
 ## 0.9.183 — 2026-09-13 (arayüz işaretleri Sarmal'ın kendi simge ailesinden geliyor)
 
 - **Kullanıcıya görünen yüzeylerde emoji kalmadı.** Komut adları, ayar açıklamaları, rehber sayfaları, ipucu metinleri ve ağaç açıklamaları emojisiz basılıyor ve kelimeler yerinde duruyor. YUZ-4.2 hükmü gereği emoji yalnız kaynak anlatımında ve takdir yüzeyinde meşru kalıyor.
