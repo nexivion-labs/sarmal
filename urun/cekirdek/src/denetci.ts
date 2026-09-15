@@ -52,6 +52,13 @@ export interface DiskGirdi {
 export interface DiskAnlikGoruntu {
   girdiler: DiskGirdi[];
   /**
+   * EKL-F6-A07: deponun yok sayma dosyalarının (.gitignore) jokersiz ve kökü belli
+   * satırlarla ADIYLA yok saydığı dosyalar, köke göreli. Bu dosyalar derleme
+   * çıktısıdır ve depoya girmez; taze bir klonda bulunmamaları kusur değildir.
+   * Alanı yalnız diskTara doldurur; elle kurulan anlık görüntüde yoksa boş sayılır.
+   */
+  yoksayilanDosyalar?: string[];
+  /**
    * MIM-3.4 · KPS-MHR-A01: arşiv ya da sonra mührü taşıyan `.sar` dosyaları.
    * Bu dosyalar `girdiler` listesine GİRMEZ; dolayısıyla yükleyici onları okumaz,
    * disk mutabakatı, ilan yokluğu ve yetim bekçileri onları görmez. Ayrı listede
@@ -90,9 +97,20 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
   diskTaraSayac.cagri += 1;
   const girdiler: DiskGirdi[] = [];
   const muhurlular: DiskGirdi[] = [];
+  const yoksay: string[] = [];
+  const geriAl = new Set<string>();
   const gez = (goreli: string): void => {
     const tam = goreli ? join(kok, goreli) : kok;
     for (const d of readdirSync(tam, { withFileTypes: true })) {
+      // EKL-F6-A07: yok sayma dosyası gizlidir ve girdi sayılmaz, fakat adıyla yok
+      // saydığı derleme çıktıları okunur ki taze klonda yoklukları suçlanmasın.
+      if (d.name === ".gitignore" && d.isFile()) {
+        let metin = "";
+        try { metin = readFileSync(join(tam, d.name), "utf8"); } catch { /* okunamayan dosya muafiyet doğurmaz */ }
+        const s = yoksaymaSabitYollari(metin, goreli);
+        yoksay.push(...s.yoksay);
+        for (const y of s.geriAl) geriAl.add(y);
+      }
       if (d.name.startsWith(".")) continue;   // gizli (.-önekli): tamamen dışarıda
       if (d.isSymbolicLink()) continue; // döngü riski — v1 dışı
       const yol = goreli ? goreli + "/" + d.name : d.name;
@@ -111,7 +129,34 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
     }
   };
   gez("");
-  return { girdiler, muhurlular };
+  return { girdiler, muhurlular, yoksayilanDosyalar: yoksay.filter((y) => !geriAl.has(y)) };
+}
+
+/**
+ * EKL-F6-A07 · HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK (SAF): bir yok sayma dosyasının
+ * SABİT dosya yollarını çıkarır. Sabit yol jokersiz, dizin olmayan ve kökü belli
+ * olan satırdır: başında ya da ortasında eğik çizgi taşır, dolayısıyla git onu yok
+ * sayma dosyasının bulunduğu dizine göre tek bir yola çözer. Joker taşıyan, dizine
+ * yönelen ya da eğik çizgisiz satır her derinlikte eşleşir ve tek bir yol
+ * adlandırmadığı için bilinçli olarak dışarıda kalır; muafiyet yalnız deponun ADIYLA
+ * yok saydığı dosyaya tanınır. Olumsuzlama satırının geri aldığı yol ayrı döner ve
+ * çağıran onu muafiyetten düşürür, çünkü şüphede motor suçlamayı seçer.
+ */
+export function yoksaymaSabitYollari(metin: string, dizin: string): { yoksay: string[]; geriAl: string[] } {
+  const yoksay: string[] = [];
+  const geriAl: string[] = [];
+  for (const ham of metin.split(/\r?\n/)) {
+    const satir = ham.trimEnd();
+    if (!satir || satir.startsWith("#")) continue;
+    const olumsuz = satir.startsWith("!");
+    const desen = olumsuz ? satir.slice(1) : satir;
+    if (/[*?[\]\\]/.test(desen) || desen.endsWith("/")) continue;
+    const govde = desen.replace(/^\//, "");
+    if (!desen.startsWith("/") && !govde.includes("/")) continue;
+    if (govde.split("/").some((p) => p === "" || p === "." || p === "..")) continue;
+    (olumsuz ? geriAl : yoksay).push(dizin ? `${dizin}/${govde}` : govde);
+  }
+  return { yoksay, geriAl };
 }
 
 /** Yapı-aynasının İKİNCİ yönü (MIM-3 çift-yönlü · Founder 2026-07-11 "her klasör
@@ -3409,7 +3454,11 @@ const DOSYA_ZORUNLU_MEYVE: ReadonlySet<string> = new Set(["Kod", "Ekran", "Uç",
  * motor "diskte yok" hükmü vermez ve susar (V1B-KODMEYVE-A01 saha bulgusu:
  * `sablon/dongu.sar` ile `eklenti/.gitignore` diskte yaşarken suçlanıyordu).
  */
-function dosyaBeyaniKusuru(yol: string, diskYollari: ReadonlySet<string>): string | undefined {
+function dosyaBeyaniKusuru(
+  yol: string,
+  diskYollari: ReadonlySet<string>,
+  yoksayilanlar: ReadonlySet<string> = new Set(),
+): string | undefined {
   if (!yol) return "dosya beyanı yazılmamış";
   if (yol.startsWith("/") || yol.startsWith("..")) return `beyan edilen yol proje kökünün dışına taşıyor ("${yol}")`;
   const temiz = yol.replace(/^\.\//, "");
@@ -3418,7 +3467,9 @@ function dosyaBeyaniKusuru(yol: string, diskYollari: ReadonlySet<string>): strin
   // yüzden muafiyet, tarayıcının SORDUĞU sorunun aynısını sorar (KPS-IND-A01).
   if (temiz.split("/").some((parca) => parca.startsWith(".") || YOKSAY.has(parca))
       || AYRISTIRILMAZ_SENTETIK.test(temiz)) return undefined;
-  if (!diskYollari.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
+  // EKL-F6-A07: depo bu yolu yok sayma dosyasında ADIYLA yok sayıyorsa dosya bir
+  // derleme çıktısıdır ve depoya hiç girmez; taze klonda yokluğu drift değildir.
+  if (!diskYollari.has(temiz) && !yoksayilanlar.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
   return undefined;
 }
 
@@ -3516,6 +3567,7 @@ export function omurgaTanilari(
 
   // Meyve hükümleri: üretim kökeni ve dosya beyanı.
   const diskYollari = new Set(disk.girdiler.filter((g) => g.tur === "dosya").map((g) => g.yol));
+  const yoksayilanlar = new Set(disk.yoksayilanDosyalar ?? []);   // EKL-F6-A07: adıyla yok sayılan derleme çıktısı
   for (const { dosya, d, atalar } of meyveler) {
     const kimlik = yeniKimlik(d);
     const uretenAta = atalar.some((x) => x.ad === "Adım");
@@ -3524,7 +3576,7 @@ export function omurgaTanilari(
     }
     const tur = yeniAlanMetin(d, "tür") ?? "";
     if (!DOSYA_ZORUNLU_MEYVE.has(tur)) continue;
-    const kusur = dosyaBeyaniKusuru(yeniAlanMetin(d, "dosya")?.trim() ?? "", diskYollari);
+    const kusur = dosyaBeyaniKusuru(yeniAlanMetin(d, "dosya")?.trim() ?? "", diskYollari, yoksayilanlar);
     if (kusur) {
       out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik", { kimlik, tur, kusur }, d) });
     }
@@ -3540,7 +3592,7 @@ export function omurgaTanilari(
   for (const { dosya, d } of kodDugumleri) {
     const beyan = yeniAlan(d, "dosya");
     if (!beyan) continue;
-    const kusur = dosyaBeyaniKusuru((beyan.deger.metin ?? "").trim(), diskYollari);
+    const kusur = dosyaBeyaniKusuru((beyan.deger.metin ?? "").trim(), diskYollari, yoksayilanlar);
     if (kusur) {
       out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik",
         { kimlik: yeniKimlik(d), tur: "Kod", tip: "Kod", kusur }, d) });

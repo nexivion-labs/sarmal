@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari,
-  type DiskAnlikGoruntu, altKatmanTekilligiTanilari,
+  type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
 import { YENI_TANI_KANONU, YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
@@ -270,6 +270,44 @@ test("proje: Kod düğümünün dosya beyanı Meyve ile aynı disk doğrulaması
   assert.ok(yok.dilMetinleri!.en.mesaj.startsWith('Kod "KOD-YOK"'), "İngilizce cümle düğümü Kod adıyla anmalıdır");
   assert.ok(yok.dilMetinleri!.tr.oneri!.includes("Kod( kod: KOD-YOK"), "Türkçe öneri Kod iskeleti taşımalıdır");
   assert.ok(yok.dilMetinleri!.en.oneri!.includes("Kod( kod: KOD-YOK"), "İngilizce öneri Kod iskeleti taşımalıdır");
+});
+
+test("proje: deponun adıyla yok saydığı derleme çıktısı taze klonda suçlanmaz (EKL-F6-A07)", () => {
+  // Taze klonda gömülü kanon ikizi yoktu ve ilk denetim hata veriyordu: dosya
+  // derlemede üretilir ve yok sayma dosyasında adıyla durur. Muafiyet yalnız o
+  // ADLANDIRILMIŞ yola tanınır; yok sayılmayan karşılıksız beyan suçlanmaya devam eder.
+  const programlar = harita({
+    "kod.sar": [
+      `Kod( kod: KOD-URETILEN, dosya: "urun/eklenti/src/uretilen.ts", ne: "derlemede üretilen ve depoya girmeyen dosya" )`,
+      `Kod( kod: KOD-KAYIP, dosya: "urun/eklenti/src/kayip.ts", ne: "yok sayılmayan ve diskte bulunmayan dosya" )`,
+      "",
+    ].join("\n"),
+  });
+  const disk = { ...bosDisk(), yoksayilanDosyalar: ["urun/eklenti/src/uretilen.ts"] } as DiskAnlikGoruntu;
+  const kimlikler = omurgaTanilari(programlar, kodIndeksle(programlar), disk)
+    .filter((x) => x.tani.kod === "meyve-dosyası-eksik")
+    .map((x) => x.tani.mesaj.match(/Kod "([^"]+)"/)?.[1]);
+  assert.deepEqual(kimlikler, ["KOD-KAYIP"], "adıyla yok sayılan derleme çıktısı susmalı, öteki karşılıksız beyan ateşlemeli");
+
+  // Ayrıştırıcı yalnız sabit yolları alır: joker, dizin deseni ve eğik çizgisiz ad her
+  // derinlikte eşleştiği için tek bir yol adlandırmaz; olumsuzlama ayrı döner.
+  const s = yoksaymaSabitYollari("# yorum\nsrc/uretilen.ts\n*.vsix\ndist/\nkoksuz.ts\n/kokte.ts\nsrc/*.js\n!src/geri.ts\n", "urun/eklenti");
+  assert.deepEqual(s.yoksay, ["urun/eklenti/src/uretilen.ts", "urun/eklenti/kokte.ts"]);
+  assert.deepEqual(s.geriAl, ["urun/eklenti/src/geri.ts"]);
+
+  // Üretim yolu: diskTara gizli yok sayma dosyasını girdi saymaz fakat okur; iç içe
+  // dosya kendi dizinine göre çözülür ve olumsuzlanan yol muafiyetten düşer.
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-yoksay-"));
+  try {
+    writeFileSync(join(kok, ".gitignore"), "urun/eklenti/src/uretilen.ts\nurun/eklenti/src/geri.ts\n");
+    mkdirSync(join(kok, "urun", "eklenti"), { recursive: true });
+    writeFileSync(join(kok, "urun", "eklenti", ".gitignore"), "src/ic.ts\n!src/geri.ts\n");
+    const tarama = diskTara(kok);
+    assert.deepEqual([...(tarama.yoksayilanDosyalar ?? [])].sort(), ["urun/eklenti/src/ic.ts", "urun/eklenti/src/uretilen.ts"]);
+    assert.ok(!tarama.girdiler.some((g) => g.yol.endsWith(".gitignore")), "yok sayma dosyası girdi sayılmamalı");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
 });
 
 test("proje: ilişki sınıfları, mimari bağı ve üretim kökeni", () => {
