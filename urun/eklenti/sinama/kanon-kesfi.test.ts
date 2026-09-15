@@ -12,16 +12,19 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
-import { VARSAYILAN } from "../arac/renk-uret.mjs";
-import { hasatHedefiBul, ilanliVarliklar, varlikDosyasiBul, varlikKokuBul, yazimKokuBul } from "../src/kanon-kesif.ts";
+import { VARSAYILAN, uret } from "../arac/renk-uret.mjs";
+import {
+  PAKET_KANON_DIZINI, hasatHedefiBul, ilanliVarliklar, tamDenetimKanonuBul, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
+} from "../src/kanon-kesif.ts";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
+import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
 
 const yol = (u: string): string => fileURLToPath(new URL(u, import.meta.url));
@@ -174,7 +177,7 @@ const PAKETLENMIS = (() => {
   const giris = join(dizin, "giris.ts");
   writeFileSync(giris,
     `export { snfBul, rozetRenkleri } from ${JSON.stringify(join(KOK, "src", "ortak.ts"))};\n` +
-    `export { TabanKanonCubugu, tabanKanonDurumu, tabanKanonSifirla } from ${JSON.stringify(join(KOK, "src", "taban-kanon.ts"))};\n` +
+    `export { TabanKanonCubugu, tabanKanonDurumu, tabanKanonSifirla, tamDenetimSonucu } from ${JSON.stringify(join(KOK, "src", "taban-kanon.ts"))};\n` +
     `export { yuzeyDiliniAyarla } from ${JSON.stringify(join(KOK, "src", "yuzey-metinleri.ts"))};\n`);
   const cikti = join(dizin, "kanon-kesfi.cjs");
   esbuild.buildSync({
@@ -214,8 +217,9 @@ interface KanonModulu {
   snfBul(doc: { uri: { fsPath: string } }): unknown;
   rozetRenkleri(): Record<string, string>;
   TabanKanonCubugu: new () => { dispose(): void };
-  tabanKanonDurumu(): { düşüldü: boolean; belge?: string };
+  tabanKanonDurumu(): { düşüldü: boolean; belge?: string; atlanan: readonly string[] };
   tabanKanonSifirla(): void;
+  tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean): void;
   yuzeyDiliniAyarla(dil: string): void;
 }
 
@@ -386,4 +390,167 @@ test("BKM-DNT-A15: bozuk ya da göreli adres taşıyan işaretçi YOK sayılır"
     assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), undefined,
       `${ad}: çözülemeyen işaretçi kayıt döndürdü — var olmayan adres, adres olmamaktan kötüdür`);
   }
+});
+
+// ── 6) EKL-F6-A09 · MAĞAZADAN KURULAN EKLENTİDE TAM DENETİM ─────────────────
+//   Ölçülen kusur: `eklenti.ts` tip kaydını bulamadığı kökün tam denetimini bir
+//   `continue` ile sessizce atlıyordu. Mağaza paketi diskte hiçbir kanon dosyası
+//   taşımadığı için işaretçiden önce doğmuş ağaçta panel kırık atıf, disk
+//   mutabakatı ve bağımlılık grafı tanılarını hiç göstermiyordu. Fikstür mağaza
+//   paketini taklit eder: derleme üreticisi sürüm adlı bir eklenti klasörüne
+//   GERÇEKTEN koşturulur ve keşif o klasördeki kopyaya karşı ölçülür.
+//
+//   Mutasyon kanıtı (2026-09-15 koşusu; her mutasyon `cp` yedeğinden bayt özdeş
+//   geri alındı ve sınamalar yeşile döndü): paketin kopyasına düşen dal
+//   söküldüğünde mağaza sınaması düştü; kopya zincirin başına alındığında
+//   gölgeleme sınaması düştü; kabuk atlanan kökleri işarete bildirmeyi
+//   bıraktığında kaynak sınaması, işaret atlanan kökü göstermeyi bıraktığında
+//   işaret sınaması düştü.
+
+const GERCEK_REHBER = yol("../../../oz/siniflama/rehber.json");
+
+/** Mağaza paketinin taklidi: üretici sürüm adlı bir eklenti klasörüne koşturulur; paketin kanon kökü döner. */
+function magazaPaketi(): { alan: string; eklenti: string; paketKanonKoku: string } {
+  const alan = gecici("sarmal-magaza-");
+  const eklenti = join(alan, "extensions", "nexivion-labs.sarmal-0.9.190");
+  const uretim = join(alan, "uretim");
+  mkdirSync(uretim, { recursive: true });
+  mkdirSync(eklenti, { recursive: true });
+  copyFileSync(VARSAYILAN.PAKET, join(uretim, "package.json"));
+  copyFileSync(VARSAYILAN.AYAR!, join(uretim, "settings.json"));
+  const yollar = {
+    PAKET: join(uretim, "package.json"), AYAR: join(uretim, "settings.json"), GOMULU: join(uretim, "gomulu-kanon.ts"),
+    TEMA_KOYU: join(uretim, "sarmal-koyu.json"), TEMA_ACIK: join(uretim, "sarmal-acik.json"),
+    KANON_KOPYA: join(eklenti, PAKET_KANON_DIZINI),
+  };
+  uret(yollar);   // ← derleme üreticisi GERÇEKTEN koşar; kopya elle kurulmaz
+  return { alan, eklenti, paketKanonKoku: join(eklenti, PAKET_KANON_DIZINI) };
+}
+
+/**
+ * İşaretçiden önce doğmuş ağacın taklidi: doğuş ağacının işaretçisi ağacın
+ * DIŞINA taşınır (silinmez) ve plana bir kırık bağımlılık eklenir, böylece tam
+ * denetimin koşup koşmadığı bir hata bulgusuyla okunabilir.
+ */
+function isaretcisizAgac(alan: string): string {
+  const kok = join(alan, "eski_proje");
+  mkdirSync(kok, { recursive: true });
+  dogusYaz(kok, "eski", "2026-09-15", "proje");
+  renameSync(join(kok, "oz", "siniflama", "isaretci.json"), join(alan, "ayrilan-isaretci.json"));
+  const plan = join(kok, "is", "plan", "ilk_plan.sar");
+  writeFileSync(plan, readFileSync(plan, "utf8").replace("bağımlı: []", "bağımlı: [ADM-YOK-99]"), "utf8");
+  return kok;
+}
+
+type DenetimSonucu = ReturnType<typeof denetimKos>;
+
+/** Hata düzeyli bulguların karşılaştırılabilir imzası; süzgeç verilirse yalnız o üreticilerin bulguları. */
+function hataImzalari(sonuc: DenetimSonucu, suzgec?: ReadonlySet<string>): string[] {
+  return sonuc.akis.flatMap((r) => r.tanilar
+    .filter((t) => t.duzey === "hata")
+    .filter((t) => !suzgec || suzgec.has(sonuc.koken.get(t) ?? ""))
+    .map((t) => `${r.dosya}:${t.satir}:${t.sutun} [${t.kod}] ${t.mesaj}`)).sort();
+}
+
+test("EKL-F6-A09: derleme kanon kaydını ve rehberi pakete bayt özdeş kopyalar", () => {
+  const { paketKanonKoku } = magazaPaketi();
+  assert.equal(readFileSync(join(paketKanonKoku, KAYIT_GORELI), "utf8"), readFileSync(GERCEK_KAYIT, "utf8"),
+    "paketteki tip kaydı kaynaktan ayrışmış — kopya ikinci bir elle yazılmış kaynak gibi davranıyor");
+  assert.equal(readFileSync(join(paketKanonKoku, "oz", "siniflama", "rehber.json"), "utf8"), readFileSync(GERCEK_REHBER, "utf8"),
+    "paketteki rehber kaynaktan ayrışmış");
+});
+
+test("EKL-F6-A09: kanonsuz kökte tam denetim paketin kopyasıyla koşar ve komut satırıyla aynı hata bulgularını verir", () => {
+  const { alan, paketKanonKoku } = magazaPaketi();
+  const kok = isaretcisizAgac(alan);
+
+  // ① Fikstür kusuru yeniden üretir: paketin kopyası olmadan kanon çözülemez.
+  assert.equal(tamDenetimKanonuBul(kok, [kok]), undefined,
+    "işaretçisiz ağaçta kanon çözülüyor — fikstür ölçülen kusuru yeniden üretemiyor");
+
+  // ② Paketin kopyası son çare olarak devreye girer.
+  const kanon = tamDenetimKanonuBul(kok, [kok], paketKanonKoku);
+  assert.ok(kanon, "kanonsuz kökte tam denetim yine atlanıyor — mağaza kullanıcısının paneli eksik konuşur");
+  assert.equal(kanon.kaynak, "paket");
+  assert.equal(kanon.snfYol, join(paketKanonKoku, KAYIT_GORELI));
+
+  // ③ Panelin tam denetimi komut satırının hükmüyle aynıdır. Kabuğun yaptığı gibi
+  //    `denetimKos` paketin kopyasıyla koşturulur ve panel üretici kümesiyle süzülür;
+  //    komut satırı aynı gövdeyi deponun kendi kaydıyla koşturur (sarmal.ts SNF_YOL).
+  const panel = denetimKos(kok, { snfYol: kanon.snfYol, bugun: "2026-09-15", tamListe: true });
+  const cli = denetimKos(kok, { snfYol: GERCEK_KAYIT, bugun: "2026-09-15", tamListe: true });
+  const panelHatalari = hataImzalari(panel, panelCaprazUreticiKumesi());
+  const cliHatalari = hataImzalari(cli);
+  assert.ok(cliHatalari.some((h) => h.includes("[kırık-referans]")),
+    `komut satırı fikstürün kırık bağımlılığını görmedi — ölçüm boş küme üstünde koşar: ${cliHatalari.join(" | ")}`);
+  assert.deepEqual(panelHatalari, cliHatalari,
+    "paketin kopyasıyla koşan panel, komut satırının hata bulgularından ayrışıyor");
+});
+
+test("EKL-F6-A09: gerçek kanon ya da işaretçi varken paketin kopyası devreye girmez", () => {
+  const { alan, paketKanonKoku } = magazaPaketi();
+
+  // ① Kökün kendi kaydı.
+  const kanonlu = varlikKur(alan, "kanonlu_proje", { kanon: true });
+  assert.deepEqual(tamDenetimKanonuBul(kanonlu, [kanonlu], paketKanonKoku),
+    { snfYol: join(kanonlu, KAYIT_GORELI), kaynak: "proje" },
+    "kökün kendi kaydı varken paketin kopyası öne geçti — gerçek kanon gölgelendi");
+
+  // ② İşaretçinin adresi.
+  const kurulum = varlikKur(alan, "sarmal_kurulumu", { kanon: true });
+  const dogan = varlikKur(alan, "dogan_proje");
+  mkdirSync(join(dogan, "oz", "siniflama"), { recursive: true });
+  writeFileSync(join(dogan, "oz", "siniflama", "isaretci.json"), JSON.stringify({ kanonKoku: kurulum }), "utf8");
+  assert.deepEqual(tamDenetimKanonuBul(dogan, [dogan], paketKanonKoku),
+    { snfYol: join(kurulum, KAYIT_GORELI), kaynak: "proje" },
+    "işaretçi varken paketin kopyası öne geçti — işaretçi son çare olmaktan önce gelmeli");
+
+  // ③ Çalışma alanında ilan edilmiş kardeş varlığın kaydı (tek adaylı ayrı alan:
+  //    sonuç dizin okuma sırasına bağlı kalmasın).
+  const kardesAlani = gecici("sarmal-kardes-");
+  const kardes = varlikKur(kardesAlani, "kanonlu_kardes", { kanon: true });
+  const arayan = varlikKur(kardesAlani, "kardes_arayan");
+  assert.deepEqual(tamDenetimKanonuBul(arayan, [kardesAlani], paketKanonKoku),
+    { snfYol: join(kardes, KAYIT_GORELI), kaynak: "proje" },
+    "çalışma alanındaki ilanlı varlığın kaydı varken paketin kopyası öne geçti");
+});
+
+test("EKL-F6-A09: paketin kopyası da yoksa kök atlanır ve durum çubuğu tam denetimin koşmadığını söyler", () => {
+  const alan = gecici("sarmal-atlanan-");
+  const kok = varlikKur(alan, "kanonsuz_proje");
+  const diger = varlikKur(alan, "diger_proje");
+  assert.equal(tamDenetimKanonuBul(kok, [kok], join(alan, "kopyasi-olmayan-paket")), undefined,
+    "okunamayan paket kopyası kanon diye döndü");
+
+  const { cubuk, vscode } = sahteYurutucu([alan]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
+  assert.equal(cubuk.gorunur, false, "hiçbir kök atlanmamışken işaret görünmemeli");
+
+  modul.tamDenetimSonucu([kok, diger], [kok], true);
+  assert.deepEqual(modul.tabanKanonDurumu().atlanan, [kok]);
+  assert.equal(cubuk.gorunur, true, "tam denetim koşmadı ama durum çubuğu SUSTU — boş panel temiz ağaç sanılır");
+  assert.match(String(cubuk.metin), /tam denetim koşmadı/, "işaret denetimin koşmadığını adıyla söylemeli");
+  assert.ok(String(cubuk.ipucu).includes(kok), "ipucu atlanan kökü adıyla söylemeli");
+  assert.match(String(cubuk.ipucu), /temiz olduğu anlamına gelmez/, "ipucu boş panelin hüküm olmadığını söylemeli");
+
+  // Daraltılmış tur yalnız ölçtüğü kökün hanesini tazeler; öteki kökün kaydı korunur.
+  modul.tamDenetimSonucu([diger], [], false);
+  assert.equal(cubuk.gorunur, true, "başka kökü ölçen dar tur atlanan kökün işaretini sildi");
+  modul.tamDenetimSonucu([kok], [], false);
+  assert.equal(cubuk.gorunur, false, "kök denetlendiği hâlde işaret kalkmadı");
+  isaret.dispose();
+});
+
+test("EKL-F6-A09 KAYNAK: kabuk kanonu paketin köküyle çözer ve atlanan kökleri işarete bildirir", () => {
+  const kaynak = readFileSync(join(KOK, "src", "eklenti.ts"), "utf8");
+  const bas = kaynak.indexOf("const denetleHepsi");
+  const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
+  assert.match(kaynak, /const paketKanonKoku = join\(context\.extensionPath, PAKET_KANON_DIZINI\)/,
+    "paketin kanon kökü eklentinin kurulu klasöründen türetilmiyor");
+  assert.match(govde, /tamDenetimKanonuBul\(kokYol, koklar, paketKanonKoku\)/,
+    "tam denetim turu paketin kopyasını keşfe vermiyor");
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined\)/,
+    "tam denetim turu atlanan kökleri işarete bildirmiyor — atlama yeniden sessizleşir");
+  assert.doesNotMatch(govde, /if \(!snfYol\) continue/, "sessiz atlama satırı geri gelmiş");
 });

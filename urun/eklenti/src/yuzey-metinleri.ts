@@ -894,6 +894,24 @@ export const TABAN_KANON_METINLERI = {
       : undefined;
     return [baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
   },
+  /** EKL-F6-A09: tam proje denetiminin hiç koşmadığı hâlin durum çubuğu metni. */
+  get atlandiMetni(): string {
+    return `$(warning) ${yuzeyMetni("Sarmal: tam denetim koşmadı", "Sarmal: full check did not run")}`;
+  },
+  /** Sebep, sonuç ve çözüm tam cümlelerle; kökler adıyla söylenir. */
+  atlandiIpucu(kokler: readonly string[]): string {
+    const liste = kokler.join(", ");
+    const baslik = yuzeyMetni(
+      `Şu kökte tip sistemi kaydı bulunamadığı ve eklentinin kendi kanon kopyası da okunamadığı için tam proje denetimi koşmadı: ${liste}.`,
+      `The full project check did not run for this root because no type system record was found and the extension's own canon copy could not be read either: ${liste}.`);
+    const sonuc = yuzeyMetni(
+      "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+      "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
+    const cozum = yuzeyMetni(
+      "Eklentiyi yeniden kurmak kanon kopyasını geri getirir; komut satırındaki sarmal denetle komutu ise tam hükmü her durumda verir.",
+      "Reinstalling the extension restores the canon copy, and the sarmal denetle command on the command line gives the full verdict in every case.");
+    return [baslik, sonuc, cozum].join("\n");
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════

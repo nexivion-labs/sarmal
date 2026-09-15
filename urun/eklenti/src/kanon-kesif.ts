@@ -211,17 +211,36 @@ export function hasatHedefiBul(
   return { kok, dosya, goreli: relative(kok, dosya).split(sep).join("/") };
 }
 
+// ── 📦 PAKETİN KANON KOPYASI (EKL-F6-A09) ───────────────────────────────────
+//   Ölçülmüş kusur: mağaza paketi diskte hiçbir kanon dosyası taşımıyordu, kanon
+//   pakete yalnız gömülü girmişti (`gomulu-kanon.ts`). Tam proje denetimi ise tip
+//   kaydını diskte bir YOL olarak ister; bu yüzden işaretçiden önce doğmuş ve
+//   diskinde kanon bulunmayan bir ağaçta `eklenti.ts` o kökün tam denetimini
+//   sessizce atlıyordu ve panelin boşluğu temiz ağaç sanılıyordu. Derleme artık
+//   kayıt ile rehberi pakete kopyalar (`arac/renk-uret.mjs`) ve keşif, bütün
+//   gerçek adaylar ile işaretçi tükendikten SONRA o kopyaya düşer. Sıra kasıtlıdır:
+//   kopya en son çaredir, dolayısıyla var olan hiçbir kanonu ve hiçbir işaretçiyi
+//   gölgeleyemez.
+
+/** Paketin kanon kopyasının eklenti köküne göreli yeri — derlemede `renk-uret.mjs` yazar. */
+export const PAKET_KANON_DIZINI = join("dist", "kanon");
+
+/** Tip sistemi kaydının bir kanon köküne göreli yolu. */
+export const KANON_KAYDI = join("oz", "siniflama", "kayit.json");
+
 /**
  * Bir varlığa ait göreli yolun (örneğin `oz/siniflama/kayit.json`) diskteki
  * karşılığını arar. Sıra kasıtlıdır ve dardan genişe gider: önce belgenin kendi
- * ağacında yukarı yürünür, sonra belgenin varlık kökünde bakılır, en sonda
- * çalışma alanının İLAN EDİLMİŞ varlıkları taranır. Hiçbir adımda klasör adı
- * sabit yazılmaz.
+ * ağacında yukarı yürünür, sonra belgenin varlık kökünde bakılır, sonra
+ * çalışma alanının İLAN EDİLMİŞ varlıkları taranır, ardından kanon işaretçisi
+ * okunur ve en sonda, verilmişse, paketin kendi kanon kopyasına düşülür. Hiçbir
+ * adımda klasör adı sabit yazılmaz.
  */
 export function varlikDosyasiBul(
   baslangicDizin: string,
   goreli: string,
   calismaAlaniKokleri: readonly string[] = [],
+  paketKanonKoku?: string,
 ): string | undefined {
   let dizin = baslangicDizin;
   for (let i = 0; i < KAT_SINIRI; i++) {
@@ -261,5 +280,36 @@ export function varlikDosyasiBul(
     const aday = join(kurulum, goreli);
     if (existsSync(aday)) return aday;
   }
+  // PAKETİN KENDİ KOPYASI (EKL-F6-A09): işaretçiden de SONRA gelir. Paket yalnız
+  // işaretçinin sunduğu iki dosyayı taşır; örtü bu kapıdan asla gelmez, çünkü
+  // örtü projenin kendi tip katkısıdır ve eklentinin malı değildir.
+  if (paketKanonKoku) {
+    const aday = join(paketKanonKoku, goreli);
+    if (existsSync(aday)) return aday;
+  }
   return undefined;
+}
+
+/** Tam proje denetiminin kullanacağı tip kaydı ve kaydın nereden geldiği. */
+export interface TamDenetimKanonu {
+  readonly snfYol: string;
+  /** `proje`: diskte gerçek kayıt ya da işaretçinin adresi; `paket`: eklentinin kendi kopyası. */
+  readonly kaynak: "proje" | "paket";
+}
+
+/**
+ * Bir kökün tam proje denetimi için tip kaydını çözer. Zincir `varlikDosyasiBul`
+ * ile birebir aynıdır ve paketin kopyası son halkadır; sonuç `undefined` ise
+ * hiçbir kanon bulunamamıştır ve çağıran bunu kullanıcıya SÖYLEMEK zorundadır,
+ * çünkü o kökte proje kapsamlı tanılar doğmaz.
+ */
+export function tamDenetimKanonuBul(
+  kok: string,
+  calismaAlaniKokleri: readonly string[],
+  paketKanonKoku?: string,
+): TamDenetimKanonu | undefined {
+  const snfYol = varlikDosyasiBul(kok, KANON_KAYDI, calismaAlaniKokleri, paketKanonKoku);
+  if (!snfYol) return undefined;
+  const paketKaydi = paketKanonKoku ? join(paketKanonKoku, KANON_KAYDI) : undefined;
+  return { snfYol, kaynak: snfYol === paketKaydi ? "paket" : "proje" };
 }

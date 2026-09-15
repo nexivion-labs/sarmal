@@ -25,7 +25,7 @@
 //   yalnız tema yoluyla gelir). İkisi de kullanıcının hiçbir dosyasına
 //   dokunmaz; tema seçicisinden tek tıkla açılır ve tek tıkla kapanır.
 // ═══════════════════════════════════════════════════════════════════════════
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -63,6 +63,9 @@ export const VARSAYILAN = {
   PAKET:  fileURLToPath(new URL("../package.json", import.meta.url)),
   AYAR:   ayarYolu(),
   GOMULU: fileURLToPath(new URL("../src/gomulu-kanon.ts", import.meta.url)),
+  // EKL-F6-A09: paketin kanon kopyasının kökü. Eklenti bu kökü `context.extensionPath`
+  // altında `dist/kanon` olarak bulur (kanon-kesif.ts · PAKET_KANON_DIZINI).
+  KANON_KOPYA: fileURLToPath(new URL("../dist/kanon", import.meta.url)),
   TEMA_KOYU: fileURLToPath(new URL("../temalar/sarmal-koyu.json", import.meta.url)),
   TEMA_ACIK: fileURLToPath(new URL("../temalar/sarmal-acik.json", import.meta.url)),
 };
@@ -278,7 +281,7 @@ function temaUret(palet, acik) {
 /** Kanondan tüm renk yüzeylerini üretir — yollar geçersiz kılınabilir (nöbet testi
  *  geçici kopyalara koşturur; build varsayılan yollara yazar). */
 export function uret(yollar = {}) {
-  const { KAYIT, REHBER, PAKET, AYAR, GOMULU, TEMA_KOYU, TEMA_ACIK } = { ...VARSAYILAN, ...yollar };
+  const { KAYIT, REHBER, PAKET, AYAR, GOMULU, KANON_KOPYA, TEMA_KOYU, TEMA_ACIK } = { ...VARSAYILAN, ...yollar };
 
   const palet = JSON.parse(readFileSync(KAYIT, "utf8")).renkPaleti;
   const paket = JSON.parse(readFileSync(PAKET, "utf8"));
@@ -392,7 +395,21 @@ export function uret(yollar = {}) {
     "export const GOMULU_KAYIT: Record<string, unknown> = " + readFileSync(KAYIT, "utf8").trim() + ";\n" +
     "export const GOMULU_REHBER: Record<string, unknown> = " + readFileSync(REHBER, "utf8").trim() + ";\n"
   );
-  return { PAKET, AYAR, GOMULU, TEMA_KOYU, TEMA_ACIK };
+
+  // ── PAKETİN KANON KOPYASI (EKL-F6-A09): mağaza kullanıcısı tam denetimsiz kalmasın ──
+  // Gömülü kanon renk, dekor ve ipucunu besler, fakat tam proje denetimi tip kaydını
+  // DİSKTE bir yol olarak ister (cekirdek/src/denetim.ts · `snfYol`). Mağaza paketi
+  // diskte hiçbir kanon dosyası taşımadığı için depo klonu olmayan kullanıcıda tam
+  // denetim hiç koşmuyordu. Kayıt ve rehber bu yüzden derlemede pakete KOPYALANIR:
+  // kopya gömülü kanon gibi her derlemede aynı kaynaktan yeniden üretilir, `dist/`
+  // altında durduğu için git dışındadır ve ikinci bir elle yazılmış kaynak doğmaz.
+  // Yerleşim `oz/siniflama/` rafını aynen taşır; böylece kopyanın kökü, işaretçinin
+  // sunduğu kurulum kökü gibi okunur ve keşif ikinci bir yol deseni öğrenmez.
+  const kanonRafi = join(KANON_KOPYA, "oz", "siniflama");
+  mkdirSync(kanonRafi, { recursive: true });
+  copyFileSync(KAYIT, join(kanonRafi, "kayit.json"));
+  copyFileSync(REHBER, join(kanonRafi, "rehber.json"));
+  return { PAKET, AYAR, GOMULU, KANON_KOPYA, TEMA_KOYU, TEMA_ACIK };
 }
 
 /** Nöbetin okuyabilmesi için çizelge ve kural üreticileri dışa açıktır —
@@ -402,5 +419,5 @@ export { SIMGE_KAPSAM, anlamsalKurallar, acikAnlamsalKurallar };
 // Doğrudan çalıştırma (npm run build): varsayılan yollara üret.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   uret();
-  console.log("🎨 kanondan üretildi → package.json (kapsam ilanı + tema katkısı + anlamsal renk varsayılanı) + .vscode/settings.json (depo tercihi: textMate + anlamsal) + temalar/sarmal-koyu·acik.json + gomulu-kanon.ts (U4)");
+  console.log("🎨 kanondan üretildi → package.json (kapsam ilanı + tema katkısı + anlamsal renk varsayılanı) + .vscode/settings.json (depo tercihi: textMate + anlamsal) + temalar/sarmal-koyu·acik.json + gomulu-kanon.ts (U4) + dist/kanon (paketin kanon kopyası · EKL-F6-A09)");
 }

@@ -25,29 +25,50 @@
 import * as vscode from "vscode";
 import { TABAN_KANON_METINLERI } from "./yuzey-metinleri.ts";
 
-/** Taban kanon durumu: düşüldü mü ve son ölçüm hangi belgede yapıldı. */
+/** Taban kanon durumu: düşüldü mü, son ölçüm hangi belgede yapıldı ve tam denetim hangi köklerde koşmadı. */
 export interface TabanKanonDurumu {
   readonly düşüldü: boolean;
   readonly belge?: string;
+  /**
+   * EKL-F6-A09: tam proje denetiminin hiçbir kanon bulunamadığı için KOŞMADIĞI
+   * kökler. Bu liste boş değilse panelin boşluğu ağacın temiz olduğu anlamına
+   * gelmez ve işaret bunu her şeyden önce söyler.
+   */
+  readonly atlanan: readonly string[];
 }
 
-let durum: TabanKanonDurumu = { düşüldü: false };
+let durum: TabanKanonDurumu = { düşüldü: false, atlanan: [] };
 const dinleyiciler = new Set<(d: TabanKanonDurumu) => void>();
 
 function yayınla(yeni: TabanKanonDurumu): void {
-  const değişti = yeni.düşüldü !== durum.düşüldü || yeni.belge !== durum.belge;
+  const değişti = yeni.düşüldü !== durum.düşüldü || yeni.belge !== durum.belge
+    || yeni.atlanan.join("\n") !== durum.atlanan.join("\n");
   durum = yeni;
   if (değişti) for (const d of dinleyiciler) d(durum);
 }
 
 /** Kanon kaydı bulunamadı ve gömülü taban kanonla çalışılıyor. */
 export function tabanKanonaDusuldu(belgeYolu: string): void {
-  yayınla({ düşüldü: true, belge: belgeYolu });
+  yayınla({ düşüldü: true, belge: belgeYolu, atlanan: durum.atlanan });
 }
 
 /** Kanon kaydı bulundu — işaret kalkar. */
 export function tabanKanonBulundu(): void {
-  if (durum.düşüldü) yayınla({ düşüldü: false });
+  if (durum.düşüldü) yayınla({ düşüldü: false, atlanan: durum.atlanan });
+}
+
+/**
+ * EKL-F6-A09: bir denetim turunun kök hükmü. `olculen` bu turda denetlenmesi
+ * istenen köklerdir, `atlanan` ise bunlardan kanon bulunamadığı için tam
+ * denetimi koşmayanlardır. Tam turda eski kayıt baştan kurulur; daraltılmış
+ * turda yalnız ölçülen köklerin hanesi tazelenir ve öteki köklerin kaydı korunur,
+ * çünkü onlar bu turda hiç sorulmamıştır.
+ */
+export function tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean): void {
+  const kume = new Set(tamTur ? [] : durum.atlanan);
+  for (const kok of olculen) kume.delete(kok);
+  for (const kok of atlanan) kume.add(kok);
+  yayınla({ ...durum, atlanan: [...kume].sort() });
 }
 
 /** Bugünkü durum — nöbet ve kabuk buradan okur. */
@@ -63,7 +84,7 @@ export function tabanKanonDinle(dinleyici: (d: TabanKanonDurumu) => void): { dis
 
 /** Yalnız nöbet içindir: kayıt sıfırlanır, iki sınama birbirinin izini ölçmez. */
 export function tabanKanonSifirla(): void {
-  durum = { düşüldü: false };
+  durum = { düşüldü: false, atlanan: [] };
   dinleyiciler.clear();
 }
 
@@ -80,16 +101,26 @@ export class TabanKanonCubugu {
     // Sağ tarafta ve düşük öncelikte durur: bu bir sayaç değil, bir uyarıdır;
     // soldaki dört yüzey sayacının sırasını bozmaz.
     this.oge = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
-    this.oge.text = TABAN_KANON_METINLERI.cubukMetni;
     this.oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
     this.abone = tabanKanonDinle(() => this.tazele());
     this.tazele();
   }
 
-  /** Kararı aynalar — görünür ya da görünmez. */
+  /**
+   * Kararı aynalar — görünür ya da görünmez. Tam denetimin koşmadığı hâl önce
+   * gelir, çünkü o hâlde panel eksik konuşmaktadır; kanon düşüşü ise yalnız
+   * hangi kanonla çalışıldığını söyler ve tanıların eksik olduğunu söylemez.
+   */
   tazele(): void {
     const d = tabanKanonDurumu();
+    if (d.atlanan.length > 0) {
+      this.oge.text = TABAN_KANON_METINLERI.atlandiMetni;
+      this.oge.tooltip = TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan);
+      this.oge.show();
+      return;
+    }
     if (!d.düşüldü) { this.oge.hide(); return; }
+    this.oge.text = TABAN_KANON_METINLERI.cubukMetni;
     this.oge.tooltip = TABAN_KANON_METINLERI.cubukIpucu(d.belge);
     this.oge.show();
   }
