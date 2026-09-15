@@ -1,9 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import { ayristir } from "../src/ayristirici.ts";
+import { belirtecle } from "../src/belirtec.ts";
+import { dizindenIndeks } from "../src/kimlik.ts";
 import { kanonMaddeleriniOlc, kanonTutarlilikMetni } from "../src/kanon-tutarlilik.ts";
+import type { Dugum } from "../src/sozdizim.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 import {
   EMEKLI_TANI_KODLARI,
@@ -15,14 +20,14 @@ import {
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
-  "dil.sar:7b2980c27d81771c67ac82f52b90f7080f54b169f99f7f5ddce3f1f06229cd44",
-  "mim.sar:32ed314975828c7bac39bdcca3ba7e31bfd94c2609af2b32d4fb89c835153da6",
-  "ogr.sar:8fc6dc27545d70ab2bc58bce2766ba54cfd754255933a44910ec3572344fda46",
-  "ork.sar:761d586afb55f3c39af0f2d53bc84a4dc009738352778ac04b6e26e7dd288cc1",
-  "str.sar:a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d",
-  "tip.sar:0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068",
-  "yas.sar:159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49",
-  "yuz.sar:826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c",
+  "dil.sar:837deefdf7b1f5e4879d4c3f144f84ac5334e3c586da4325eeb9cd0070008841",
+  "mim.sar:741968daaf723ad0e02f5e34daf92b959b9cb8b928aec260b21d9bd78fe2c541",
+  "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
+  "ork.sar:0d6b8eed8e8d264b79b81cecacb1f60d0d5f3636d0fab4658cacd4be8f5287ab",
+  "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
+  "tip.sar:626925d46e7a71e650236ff6deeed0963f8d17e199ea2cfba8f9be17b92c6d5b",
+  "yas.sar:23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40",
+  "yuz.sar:060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857",
 ] as const;
 
 test("resmi sekizli 161/161 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
@@ -82,4 +87,104 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   assert.match(ilk, /69 yeni tanı tabanı YUZ-3\.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1\.7 AltKatman tekilliğiyle ve MIM-3\.4 dosya mühürlerinin üç tanısıyla 78/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
+});
+
+// ── KPS-BLM-A01 · `ilgili` listelerinin kimlik nöbeti ─────────────────────────
+//   Kanon maddelerinin `ilgili` listeleri bölüm kök kimliklerini taşır (DIL-0,
+//   MIM-0, OGR-0, ORK-0, STR-0, TIP-0, YAS-0, YUZ-0). Çıplak bölüm adı bir kod
+//   değildir, çünkü kimlik deseni tire ister; bu yüzden tanıma gitme, atıf bulma
+//   ve atıf dekoru yüzeyleri onu hiç görmez. Nöbet üç şeyi ölçer: hiçbir madde
+//   listesinde çıplak bölüm adı kalmamıştır, her hedef gezinme aracının kullandığı
+//   kimlik indeksinde tek bir tanıma çözülür ve Karar düğümlerinin makine-okur
+//   ikizi belge bloğundaki Hüküm listesiyle birebirdir. Yalnız Hüküm satırı ile
+//   `karar` alanındaki liste ölçülür; Örnek ve Zorlama metinlerindeki alıntı
+//   listeler madde metninin dokunulmaz parçasıdır ve bu nöbetin konusu değildir.
+//   Kırmızı fikstür geçici bir kopyada koşar ve canlı ağaca yazmaz.
+const BOLUM_ADLARI: ReadonlySet<string> = new Set(["DIL", "MIM", "OGR", "ORK", "STR", "TIP", "YAS", "YUZ"]);
+const BOLUM_KOKU = /^(DIL|MIM|OGR|ORK|STR|TIP|YAS|YUZ)-0$/;
+const ILGILI_LISTESI = /ilgili: \[([^\]]*)\]/g;
+
+interface IlgiliListesi {
+  readonly dosya: string;
+  readonly satir: number;
+  readonly tur: "Hüküm" | "karar";
+  readonly uyeler: readonly string[];
+}
+
+const uyeleriAyir = (ic: string): string[] => ic.split(",").map((p) => p.trim()).filter(Boolean);
+
+/** Sekiz kanon dosyasında Hüküm satırı ile `karar` alanındaki `ilgili` listelerini toplar. */
+function ilgiliListeleri(kok: string): IlgiliListesi[] {
+  const dizin = join(kok, "yasa", "kanon");
+  const sonuc: IlgiliListesi[] = [];
+  for (const dosya of readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort()) {
+    readFileSync(join(dizin, dosya), "utf8").split("\n").forEach((metin, i) => {
+      const tur = metin.startsWith("**Hüküm:**") ? "Hüküm" : /^\s*karar: "/.test(metin) ? "karar" : undefined;
+      if (!tur) return;
+      for (const es of metin.matchAll(ILGILI_LISTESI)) sonuc.push({ dosya, satir: i + 1, tur, uyeler: uyeleriAyir(es[1]) });
+    });
+  }
+  return sonuc;
+}
+
+/** Çıplak bölüm adı taşıyan her üyeliği `dosya:satır üye` biçiminde döndürür. */
+function ciplakUyelikler(kok: string): string[] {
+  return ilgiliListeleri(kok).flatMap((l) =>
+    l.uyeler.filter((u) => BOLUM_ADLARI.has(u)).map((u) => `${l.dosya}:${l.satir} ${u}`));
+}
+
+function dugumleriGez(dugumler: readonly Dugum[], ziyaret: (d: Dugum) => void): void {
+  for (const d of dugumler) { ziyaret(d); dugumleriGez(d.cocuklar, ziyaret); }
+}
+
+test("kanon maddelerinin ilgili listelerinde çıplak bölüm adı kalmamıştır", () => {
+  const listeler = ilgiliListeleri(KOK);
+  // 161 madde Hüküm satırında, 38 Karar düğümü makine-okur ikizinde birer liste taşır.
+  assert.equal(listeler.filter((l) => l.tur === "Hüküm").length, 161);
+  assert.equal(listeler.filter((l) => l.tur === "karar").length, 38);
+  assert.deepEqual(ciplakUyelikler(KOK), [], "çıplak bölüm adı taşıyan ilgili üyeliği var");
+  const kokDisi = listeler.flatMap((l) => l.uyeler.filter((u) => !BOLUM_KOKU.test(u)).map((u) => `${l.dosya}:${l.satir} ${u}`));
+  assert.deepEqual(kokDisi, [], "ilgili listesinde bölüm kök kimliği olmayan üye var");
+});
+
+test("her ilgili hedefi kimlik indeksinde kendi bölüm dosyasındaki tek tanıma çözülür", () => {
+  const indeks = dizindenIndeks(KOK);
+  const hedefler = new Set(ilgiliListeleri(KOK).flatMap((l) => l.uyeler));
+  assert.equal(hedefler.size, 8, "sekiz bölüm kökünün hepsi en az bir listede geçmeli");
+  for (const hedef of hedefler) {
+    const tanimlar = indeks.tanimlar(hedef);
+    assert.equal(tanimlar.length, 1, `${hedef} kimlik indeksinde tek tanıma çözülmeli (bulunan: ${tanimlar.length})`);
+    const bolumDosyasi = `yasa/kanon/${hedef.slice(0, 3).toLowerCase()}.sar`;
+    assert.ok(tanimlar[0].dosya.replaceAll("\\", "/").endsWith(bolumDosyasi),
+      `${hedef} tanımı ${bolumDosyasi} dosyasında olmalı (bulunan: ${tanimlar[0].dosya})`);
+  }
+});
+
+test("Karar düğümlerinin karar alanındaki ilgili listesi Hüküm satırıyla birebirdir", () => {
+  const dizin = join(KOK, "yasa", "kanon");
+  let karsilastirilan = 0;
+  for (const dosya of readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort()) {
+    const program = ayristir(belirtecle(readFileSync(join(dizin, dosya), "utf8")));
+    dugumleriGez(program.bildirimler, (d) => {
+      if (!(d.tur === "widget" && d.ad === "Karar")) return;
+      const kod = d.parametreler.find((p) => p.ad === "kod")?.deger.metin ?? "?";
+      const hukum = (d.belge ?? "").split("\n").find((s) => s.startsWith("**Hüküm:**")) ?? "";
+      const karar = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "karar")?.deger.metin ?? "";
+      const belgedeki = [...hukum.matchAll(ILGILI_LISTESI)].map((es) => uyeleriAyir(es[1]));
+      const ikizdeki = [...karar.matchAll(ILGILI_LISTESI)].map((es) => uyeleriAyir(es[1]));
+      assert.equal(belgedeki.length, 1, `${kod} Hüküm satırı tek bir ilgili listesi taşımalı`);
+      assert.deepEqual(ikizdeki, belgedeki, `${kod} makine-okur ikizi belge bloğundan ayrışmış`);
+      karsilastirilan++;
+    });
+  }
+  assert.equal(karsilastirilan, 38);
+});
+
+test("kırmızı fikstür: kopyada bir listeye çıplak bölüm adı geri konunca ilgili nöbeti yakalar", () => {
+  const sb = mkdtempSync(join(tmpdir(), "sarmal-ilgili-"));
+  cpSync(join(KOK, "yasa", "kanon"), join(sb, "yasa", "kanon"), { recursive: true });
+  assert.deepEqual(ciplakUyelikler(sb), [], "temiz kopya yeşil başlamalı");
+  const dil = join(sb, "yasa", "kanon", "dil.sar");
+  writeFileSync(dil, readFileSync(dil, "utf8").replace("ilgili: [DIL-0,", "ilgili: [DIL,"), "utf8");
+  assert.deepEqual(ciplakUyelikler(sb), ["dil.sar:12 DIL"], "çıplak ad geri konduğu hâlde nöbet kırmızıya düşmedi");
 });

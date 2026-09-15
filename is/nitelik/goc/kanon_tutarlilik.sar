@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:b6183a49a514a675899fd674a7584b6b6930335b4c2de82b4d75696fdd06c577
+// KAYNAK-MUHRU kanon-demeti-sha256:aa38b7d79bc6889f2ddecd7d18c79c7ff64a1eda5172d140ce0b17c174a5ad96
 
 -->|
 # Kanon tutarlılık yüzü
@@ -11,15 +11,15 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon/dil.sar` | `7b2980c27d81771c67ac82f52b90f7080f54b169f99f7f5ddce3f1f06229cd44` |
-| `yasa/kanon/mim.sar` | `32ed314975828c7bac39bdcca3ba7e31bfd94c2609af2b32d4fb89c835153da6` |
-| `yasa/kanon/ogr.sar` | `8fc6dc27545d70ab2bc58bce2766ba54cfd754255933a44910ec3572344fda46` |
-| `yasa/kanon/ork.sar` | `761d586afb55f3c39af0f2d53bc84a4dc009738352778ac04b6e26e7dd288cc1` |
-| `yasa/kanon/str.sar` | `a8ebcdb80326bfc5d2cc57ec34f2658ee3e159e8ef2f10db7e4fb37099d1582d` |
-| `yasa/kanon/tip.sar` | `0c726015dc4d63a6757b9b4a8c8a9afba04f96477d224affd0f7cea290a6e068` |
-| `yasa/kanon/yas.sar` | `159b5bcb9c762586be345d7cecd4bcc6c7606a99cd1cca7aced28e70173a9b49` |
-| `yasa/kanon/yuz.sar` | `826bb6fa1fcac88bb64cbd4f793716b025d1b454e415e8e3d2770b3b2edc863c` |
-| kanon demeti | `b6183a49a514a675899fd674a7584b6b6930335b4c2de82b4d75696fdd06c577` |
+| `yasa/kanon/dil.sar` | `837deefdf7b1f5e4879d4c3f144f84ac5334e3c586da4325eeb9cd0070008841` |
+| `yasa/kanon/mim.sar` | `741968daaf723ad0e02f5e34daf92b959b9cb8b928aec260b21d9bd78fe2c541` |
+| `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
+| `yasa/kanon/ork.sar` | `0d6b8eed8e8d264b79b81cecacb1f60d0d5f3636d0fab4658cacd4be8f5287ab` |
+| `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
+| `yasa/kanon/tip.sar` | `626925d46e7a71e650236ff6deeed0963f8d17e199ea2cfba8f9be17b92c6d5b` |
+| `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
+| `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
+| kanon demeti | `aa38b7d79bc6889f2ddecd7d18c79c7ff64a1eda5172d140ce0b17c174a5ad96` |
 | `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |

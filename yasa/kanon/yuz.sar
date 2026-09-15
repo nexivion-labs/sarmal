@@ -9,31 +9,31 @@
 
 -->|
 ### YUZ-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
-**Hüküm:** Yüzeyler ve Prizma, tek kanonik `.sar` kaynağından insan, makine ve geliştirme ortamı için anlamca özdeş görünümler üretmenin sınırlarını, kimliklerini ve görünürlük sözleşmelerini tanımlayan tek yüz otoritesidir; hiçbir görünüm kaynak hükmü değiştiremez veya ikinci bir gerçek kuramaz; dayanak: aksiyom (dayanaksız kök); ilgili: [YUZ, DIL, TIP].
+**Hüküm:** Yüzeyler ve Prizma, tek kanonik `.sar` kaynağından insan, makine ve geliştirme ortamı için anlamca özdeş görünümler üretmenin sınırlarını, kimliklerini ve görünürlük sözleşmelerini tanımlayan tek yüz otoritesidir; hiçbir görünüm kaynak hükmü değiştiremez veya ikinci bir gerçek kuramaz; dayanak: aksiyom (dayanaksız kök); ilgili: [YUZ-0, DIL-0, TIP-0].
 **Gerekçe:** Kaynak ile sunumun otoritesi ayrılmazsa biçim kolaylığı adına yapılan yüzey değişiklikleri kanona geri sızar; tek otorite anlam drift'ini önler.
 **Örnek:** Bir `Ekran` düğümü `.sar` içinde bir kez ilan edilir; insan okuması, makine verisi ve geliştirme görünümü aynı düğümü kendi sunumuyla gösterir fakat yeni alan veya hüküm eklemez.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
 |<--
 Karar( kod: YUZ-0, durum: kilitli,
        ne: "YUZ-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]",
-       karar: "Yüzeyler ve Prizma, tek kanonik `.sar` kaynağından insan, makine ve geliştirme ortamı için anlamca özdeş görünümler üretmenin sınırlarını, kimliklerini ve görünürlük sözleşmelerini tanımlayan tek yüz otoritesidir; hiçbir görünüm kaynak hükmü değiştiremez veya ikinci bir gerçek kuramaz; dayanak: aksiyom (dayanaksız kök); ilgili: [YUZ, DIL, TIP].",
+       karar: "Yüzeyler ve Prizma, tek kanonik `.sar` kaynağından insan, makine ve geliştirme ortamı için anlamca özdeş görünümler üretmenin sınırlarını, kimliklerini ve görünürlük sözleşmelerini tanımlayan tek yüz otoritesidir; hiçbir görünüm kaynak hükmü değiştiremez veya ikinci bir gerçek kuramaz; dayanak: aksiyom (dayanaksız kök); ilgili: [YUZ-0, DIL-0, TIP-0].",
        gerekçe: "Kaynak ile sunumun otoritesi ayrılmazsa biçim kolaylığı adına yapılan yüzey değişiklikleri kanona geri sızar; tek otorite anlam drift'ini önler." )
 
 -->|
 ### YUZ-1 · Tek Kaynak ve Çok Yüz [HATA]
-**Hüküm:** Prizma her `.sar` kaynağını bir kez yorumlayıp tek nötr ağaca indirger; JSON, YAML, XML, ağaç ve okuma yüzlerinin tamamı yalnız bu ağaçtan türetilir, hiçbir yüz kaynağı yeniden yorumlayamaz, alan ekleyemez, çocuk sırasını değiştiremez veya kendi anlam varsayımını uygulayamaz; dayanak: YUZ-0; ilgili: [YUZ, DIL, TIP].
+**Hüküm:** Prizma her `.sar` kaynağını bir kez yorumlayıp tek nötr ağaca indirger; JSON, YAML, XML, ağaç ve okuma yüzlerinin tamamı yalnız bu ağaçtan türetilir, hiçbir yüz kaynağı yeniden yorumlayamaz, alan ekleyemez, çocuk sırasını değiştiremez veya kendi anlam varsayımını uygulayamaz; dayanak: YUZ-0; ilgili: [YUZ-0, DIL-0, TIP-0].
 **Gerekçe:** Her yüzün kaynağı ayrı yorumlaması, aynı düğümün biçime göre farklı tip, değer veya sıra kazanmasına neden olur; ortak ara temsil bu ayrışmayı kaynağında keser.
 **Örnek:** Doğru akış: `.sar kaynak → nötr ağaç → JSON · YAML · XML · ağaç · okuma`; yanlış akış: JSON üreticisinin kaynak metni bağımsız okuyup boş alanları kendiliğinden doldurması.
 **Zorlama:** Yeni tanı önerisi `prizma-kaynak-ayrışması` · HATA · “Türetilmiş yüz tek nötr ağaçtan gelmiyor veya kanonik anlamı değiştiren alan, değer ya da sıra üretiyor.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Karar( kod: YUZ-1, durum: kilitli,
        ne: "YUZ-1 · Tek Kaynak ve Çok Yüz [HATA]",
-       karar: "Prizma her `.sar` kaynağını bir kez yorumlayıp tek nötr ağaca indirger; JSON, YAML, XML, ağaç ve okuma yüzlerinin tamamı yalnız bu ağaçtan türetilir, hiçbir yüz kaynağı yeniden yorumlayamaz, alan ekleyemez, çocuk sırasını değiştiremez veya kendi anlam varsayımını uygulayamaz; dayanak: YUZ-0; ilgili: [YUZ, DIL, TIP].",
+       karar: "Prizma her `.sar` kaynağını bir kez yorumlayıp tek nötr ağaca indirger; JSON, YAML, XML, ağaç ve okuma yüzlerinin tamamı yalnız bu ağaçtan türetilir, hiçbir yüz kaynağı yeniden yorumlayamaz, alan ekleyemez, çocuk sırasını değiştiremez veya kendi anlam varsayımını uygulayamaz; dayanak: YUZ-0; ilgili: [YUZ-0, DIL-0, TIP-0].",
        gerekçe: "Her yüzün kaynağı ayrı yorumlaması, aynı düğümün biçime göre farklı tip, değer veya sıra kazanmasına neden olur; ortak ara temsil bu ayrışmayı kaynağında keser." )
 
 -->|
 ### YUZ-1.1 · Yapısal Yüzler [BİLGİ]
-**Hüküm:** JSON, YAML, XML ve ağaç görünümleri her düğümün tipini, varsa `kod` kimliğini, alanlarını, belge içeriğini ve çocuk sırasını kayıpsız temsil eder; biçime özgü kaçış, etiket veya dizilim kuralları değerin türünü ya da düğümün yapısal yerini değiştiremez; dayanak: YUZ-1; ilgili: [YUZ, DIL, TIP].
+**Hüküm:** JSON, YAML, XML ve ağaç görünümleri her düğümün tipini, varsa `kod` kimliğini, alanlarını, belge içeriğini ve çocuk sırasını kayıpsız temsil eder; biçime özgü kaçış, etiket veya dizilim kuralları değerin türünü ya da düğümün yapısal yerini değiştiremez; dayanak: YUZ-1; ilgili: [YUZ-0, DIL-0, TIP-0].
 **Gerekçe:** Bir yüzün belgeyi düşürmesi, sayıya benzeyen metni sayıya çevirmesi veya çocukları yeniden sıralaması, makine tüketicileri arasında sessiz veri kaybı ve tip drift'i doğurur.
 **Örnek:** `Metin( kod: MTN-BASLIK, ne: "Karşılama" )` bütün yapısal yüzlerde `Metin`, `MTN-BASLIK` ve `Karşılama` değerlerini aynı çocuk konumuyla korur; yalnız çevreleyen gösterim değişir.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -45,7 +45,7 @@ Kural yapısalYüzler( kod: YUZ-1.1,
 
 -->|
 ### YUZ-1.2 · Elle Yazılan İkiz Yasağı [HATA]
-**Hüküm:** Elle yazılan MD, JSON veya başka bir yüz dosyası `.sar` içeriğinin eş-yetkili ikizi, yedek kanonu ya da güncelleme kaynağı olarak kullanılamaz; türetilmiş yüz yalnız yeniden üretilebilir çıktı, izinli bağımsız MD ise yalnız YUZ-2 kapsamındaki insan yüzüdür; dayanak: YUZ-1; ilgili: [YUZ, DIL, STR].
+**Hüküm:** Elle yazılan MD, JSON veya başka bir yüz dosyası `.sar` içeriğinin eş-yetkili ikizi, yedek kanonu ya da güncelleme kaynağı olarak kullanılamaz; türetilmiş yüz yalnız yeniden üretilebilir çıktı, izinli bağımsız MD ise yalnız YUZ-2 kapsamındaki insan yüzüdür; dayanak: YUZ-1; ilgili: [YUZ-0, DIL-0, STR-0].
 **Gerekçe:** Aynı hükmün iki dosyada elle yaşaması, ilk tek-taraflı değişiklikte hangi kopyanın güncel olduğunu belirsizleştirir ve geri besleme yönünü tersine çevirir.
 **Örnek:** Doğru: `ekran.sar` kaynak, `ekran.json` yeniden üretilebilir yüzdür; yanlış: `ekran.md` içindeki alanları bağımsız güncelleyip onları `.sar` ile eşit otoritede saymak.
 **Zorlama:** Yeni tanı önerisi `eş-yetkili-yüz-ikizi` · HATA · “Türetilmiş veya elle yazılmış yüz kanonik `.sar` ile eş-yetkili kaynak olarak kullanılıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -57,7 +57,7 @@ Kural elleYazılanİkizYasağı( kod: YUZ-1.2,
 
 -->|
 ### YUZ-1.3 · İdempotent Yüz Üretimi [UYARI]
-**Hüküm:** Aynı kanonik kaynak ve aynı üretim seçenekleri yinelendiğinde türetilen yüz birebir kararlı sonuç verir; üretici yalnız kendisine ayrılmış bölgeyi yeniler, izinli elle-korunan bölgelerin içeriğine, sırasına ve boşluk anlamına dokunamaz; dayanak: YUZ-1; ilgili: [YUZ, DIL, STR].
+**Hüküm:** Aynı kanonik kaynak ve aynı üretim seçenekleri yinelendiğinde türetilen yüz birebir kararlı sonuç verir; üretici yalnız kendisine ayrılmış bölgeyi yeniler, izinli elle-korunan bölgelerin içeriğine, sırasına ve boşluk anlamına dokunamaz; dayanak: YUZ-1; ilgili: [YUZ-0, DIL-0, STR-0].
 **Gerekçe:** Her koşumda değişen sıra veya boşluk gereksiz fark gürültüsü üretir; işaretli bölge dışına taşan yazım ise insan anlatısını sessizce siler.
 **Örnek:** Bir README içindeki üretilen indeks bölgesi ikinci üretimde değişmiyorsa ve çevresindeki elle yazılmış giriş metni aynen kalıyorsa sonuç idempotenttir; zaman damgası yüzünden her koşumda değişen çıktı yanlıştır.
 **Zorlama:** Yeni tanı önerisi `yüz-idempotans-drifti` · UYARI · “Aynı kaynak ve seçenekler farklı yüz üretti veya üretici izinli bölgenin dışını değiştirdi.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -69,19 +69,19 @@ Kural idempotentYüzÜretimi( kod: YUZ-1.3,
 
 -->|
 ### YUZ-2 · İzinli MD Yüzleri [BİLGİ]
-**Hüküm:** MD yalnız README veya çatı indeksi, çalıştırılabilir kod ve bağlayıcı hüküm taşımayan araştırma raporu ya da kanonik `.sar` içeriğinden üretilen okuma yüzü olarak kullanılabilir; bu üç sınıfın dışında kaynak-gerçek görevi üstlenemez; dayanak: YUZ-0; ilgili: [YUZ, DIL, OGR, STR].
+**Hüküm:** MD yalnız README veya çatı indeksi, çalıştırılabilir kod ve bağlayıcı hüküm taşımayan araştırma raporu ya da kanonik `.sar` içeriğinden üretilen okuma yüzü olarak kullanılabilir; bu üç sınıfın dışında kaynak-gerçek görevi üstlenemez; dayanak: YUZ-0; ilgili: [YUZ-0, DIL-0, OGR-0, STR-0].
 **Gerekçe:** MD'nin insan için rahat anlatımı onu kolayca ikinci kanona dönüştürebilir; kapalı izin kataloğu, anlatım ihtiyacını karşılarken kaynak sınırını korur.
 **Örnek:** `README.md`, kodsuz bir inceleme raporu ve kanondan üretilmiş başvuru belgesi izinlidir; elle sürdürülen paralel tip sicili izinli değildir.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
 |<--
 Karar( kod: YUZ-2, durum: kilitli,
        ne: "YUZ-2 · İzinli MD Yüzleri [BİLGİ]",
-       karar: "MD yalnız README veya çatı indeksi, çalıştırılabilir kod ve bağlayıcı hüküm taşımayan araştırma raporu ya da kanonik `.sar` içeriğinden üretilen okuma yüzü olarak kullanılabilir; bu üç sınıfın dışında kaynak-gerçek görevi üstlenemez; dayanak: YUZ-0; ilgili: [YUZ, DIL, OGR, STR].",
+       karar: "MD yalnız README veya çatı indeksi, çalıştırılabilir kod ve bağlayıcı hüküm taşımayan araştırma raporu ya da kanonik `.sar` içeriğinden üretilen okuma yüzü olarak kullanılabilir; bu üç sınıfın dışında kaynak-gerçek görevi üstlenemez; dayanak: YUZ-0; ilgili: [YUZ-0, DIL-0, OGR-0, STR-0].",
        gerekçe: "MD'nin insan için rahat anlatımı onu kolayca ikinci kanona dönüştürebilir; kapalı izin kataloğu, anlatım ihtiyacını karşılarken kaynak sınırını korur." )
 
 -->|
 ### YUZ-2.1 · README ve İndeks [BİLGİ]
-**Hüküm:** README ve çatı indeksleri yalnız karşılama, gezinme, özet ve kanonik düğümlere yönlendirme amacı taşır; normatif cümle kuramaz, şema tanımlayamaz ve bağlı olduğu `.sar` hükmünü genişletemez; dayanak: YUZ-2; ilgili: [YUZ, OGR].
+**Hüküm:** README ve çatı indeksleri yalnız karşılama, gezinme, özet ve kanonik düğümlere yönlendirme amacı taşır; normatif cümle kuramaz, şema tanımlayamaz ve bağlı olduğu `.sar` hükmünü genişletemez; dayanak: YUZ-2; ilgili: [YUZ-0, OGR-0].
 **Gerekçe:** Giriş belgelerine hüküm konması, kullanıcıların kanona ulaşmadan eksik veya bayat bir özetle hareket etmesine ve aynı kuralın iki yerde bakım görmesine yol açar.
 **Örnek:** README “Tema hükümleri için `YUZ-4.1` maddesine bakın.” diyebilir; “bütün yüzler şu ham rengi kullanır” diye yeni bir hüküm koyamaz.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -93,7 +93,7 @@ Kural rEADMEVeİndeks( kod: YUZ-2.1,
 
 -->|
 ### YUZ-2.2 · Kodsuz Araştırma Raporu [BİLGİ]
-**Hüküm:** Uzun araştırma raporu gözlem, kaynakça, karşılaştırma ve öneri taşıyan bağımsız bir insan yüzü olarak tutulabilir; çalıştırılabilir ürün kodu, bağlayıcı yönetişim hükmü, kanonik şema veya uygulanmış kural içeremez, kabul edilen sonucu ilgili `.sar` düğümüne devretmek zorundadır; dayanak: YUZ-2; ilgili: [YUZ, OGR, STR].
+**Hüküm:** Uzun araştırma raporu gözlem, kaynakça, karşılaştırma ve öneri taşıyan bağımsız bir insan yüzü olarak tutulabilir; çalıştırılabilir ürün kodu, bağlayıcı yönetişim hükmü, kanonik şema veya uygulanmış kural içeremez, kabul edilen sonucu ilgili `.sar` düğümüne devretmek zorundadır; dayanak: YUZ-2; ilgili: [YUZ-0, OGR-0, STR-0].
 **Gerekçe:** Araştırma ile hükmün aynı belgede erimesi, tartışma aşamasındaki öneriyi yürürlükte sanmaya ve kararın kanonik izini kaybetmeye neden olur.
 **Örnek:** `kontrast_incelemesi.md` ölçümleri ve seçenekleri karşılaştırabilir; seçilen erişilebilirlik sınırı yürürlüğe girecekse ayrı kanonik maddeye veya Karara yazılır.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -105,7 +105,7 @@ Kural kodsuzAraştırmaRaporu( kod: YUZ-2.2,
 
 -->|
 ### YUZ-2.3 · Üretilen Okuma Yüzü [BİLGİ]
-**Hüküm:** Belge, karar, taksonomi ve öğretim okumaları kanonik `.sar` düğümlerinden deterministik olarak üretilir; çıktı okunabilirlik için başlık, bağlantı ve dizin ekleyebilir fakat hükmü değiştiremez, elle düzenlenerek kaynak-gerçeğe veya geri-besleme girdisine dönüştürülemez; dayanak: YUZ-2; ilgili: [YUZ, DIL, OGR].
+**Hüküm:** Belge, karar, taksonomi ve öğretim okumaları kanonik `.sar` düğümlerinden deterministik olarak üretilir; çıktı okunabilirlik için başlık, bağlantı ve dizin ekleyebilir fakat hükmü değiştiremez, elle düzenlenerek kaynak-gerçeğe veya geri-besleme girdisine dönüştürülemez; dayanak: YUZ-2; ilgili: [YUZ-0, DIL-0, OGR-0].
 **Gerekçe:** Okuma kolaylığı için üretilen metnin elle bakım görmesi, sonraki üretimde kayıp yaratır ve öğretim ile kanon arasında sürüm farkı doğurur.
 **Örnek:** `Karar( kod: KAR-TEMA-01, ... )` düğümünden karar okuma başlığı üretilebilir; başlık altındaki hüküm değişecekse çıktı değil kaynak düğüm düzenlenir.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -117,19 +117,19 @@ Kural üretilenOkumaYüzü( kod: YUZ-2.3,
 
 -->|
 ### YUZ-3 · Geliştirme Yüzleri [UYARI]
-**Hüküm:** Tanı, Problems, hover, tamamlama, ağaç, panel, graf, gezinme ve okuma yüzleri aynı kanonik kimlikleri, metinleri ve tanı nesnelerini paylaşır; LSP uyumlu sınır yalnız taşıma ve sunum yapar, yorumlama ile zorlama saf çekirdekte kalır ve editör ya da test koşumuna bağımlı olamaz; yüzey tipleri korunmakla birlikte gerçek görsel önizleme ertelenmiştir ve tamamlanana dek canlı özellik gibi sunulamaz; dayanak: YUZ-0; ilgili: [YUZ, YAS, OGR, ORK].
+**Hüküm:** Tanı, Problems, hover, tamamlama, ağaç, panel, graf, gezinme ve okuma yüzleri aynı kanonik kimlikleri, metinleri ve tanı nesnelerini paylaşır; LSP uyumlu sınır yalnız taşıma ve sunum yapar, yorumlama ile zorlama saf çekirdekte kalır ve editör ya da test koşumuna bağımlı olamaz; yüzey tipleri korunmakla birlikte gerçek görsel önizleme ertelenmiştir ve tamamlanana dek canlı özellik gibi sunulamaz; dayanak: YUZ-0; ilgili: [YUZ-0, YAS-0, OGR-0, ORK-0].
 **Gerekçe:** Yorumun istemciye veya test koşum kabuğuna taşınması aynı kaynağın farklı ortamlarda farklı sonuç vermesine yol açar; tiplerin varlığını çalışan görsel önizleme sanmak ise teslim durumu hakkında sahte güven üretir.
 **Örnek:** Aynı `EKR-GIRIS` kimliği Problems, hover, graf ve gezinmede değişmeden görünür; `Ekran` ve `Kart` tiplerinin tanımlı olması tek başına çalışır bir cihaz görseli önizlemesi bulunduğu anlamına gelmez.
 **Zorlama:** Yeni tanı önerisi `geliştirme-yüzü-drifti` · UYARI · “Geliştirme yüzü kanonik kimlik, metin veya tanıdan ayrışıyor; LSP istemcisi ya da test koşumu çekirdek anlamını değiştiriyor veya ertelenmiş görsel önizlemeyi canlı gösteriyor.” · yüzey: Problems, hover, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Karar( kod: YUZ-3, durum: kilitli,
        ne: "YUZ-3 · Geliştirme Yüzleri [UYARI]",
-       karar: "Tanı, Problems, hover, tamamlama, ağaç, panel, graf, gezinme ve okuma yüzleri aynı kanonik kimlikleri, metinleri ve tanı nesnelerini paylaşır; LSP uyumlu sınır yalnız taşıma ve sunum yapar, yorumlama ile zorlama saf çekirdekte kalır ve editör ya da test koşumuna bağımlı olamaz; yüzey tipleri korunmakla birlikte gerçek görsel önizleme ertelenmiştir ve tamamlanana dek canlı özellik gibi sunulamaz; dayanak: YUZ-0; ilgili: [YUZ, YAS, OGR, ORK].",
+       karar: "Tanı, Problems, hover, tamamlama, ağaç, panel, graf, gezinme ve okuma yüzleri aynı kanonik kimlikleri, metinleri ve tanı nesnelerini paylaşır; LSP uyumlu sınır yalnız taşıma ve sunum yapar, yorumlama ile zorlama saf çekirdekte kalır ve editör ya da test koşumuna bağımlı olamaz; yüzey tipleri korunmakla birlikte gerçek görsel önizleme ertelenmiştir ve tamamlanana dek canlı özellik gibi sunulamaz; dayanak: YUZ-0; ilgili: [YUZ-0, YAS-0, OGR-0, ORK-0].",
        gerekçe: "Yorumun istemciye veya test koşum kabuğuna taşınması aynı kaynağın farklı ortamlarda farklı sonuç vermesine yol açar; tiplerin varlığını çalışan görsel önizleme sanmak ise teslim durumu hakkında sahte güven üretir." )
 
 -->|
 ### YUZ-3.1 · Tanı ve Öğretim Görünürlüğü [UYARI]
-**Hüküm:** Her görünür ihlal Problems, hover, CLI ve ilgili satır yüzlerinden uygulanabilenlerin tümünde aynı tanı kodu, düzey, mesaj özü, kaynak konumu ve düzeltme yönlendirmesiyle sunulur; hiçbir yüz tanıyı yeniden derecelendiremez, gizleyemez veya çelişen bir öğretim metni üretemez; dayanak: YUZ-3; ilgili: [YUZ, YAS, OGR].
+**Hüküm:** Her görünür ihlal Problems, hover, CLI ve ilgili satır yüzlerinden uygulanabilenlerin tümünde aynı tanı kodu, düzey, mesaj özü, kaynak konumu ve düzeltme yönlendirmesiyle sunulur; hiçbir yüz tanıyı yeniden derecelendiremez, gizleyemez veya çelişen bir öğretim metni üretemez; dayanak: YUZ-3; ilgili: [YUZ-0, YAS-0, OGR-0].
 **Gerekçe:** Aynı ihlalin bir yüzde hata, diğerinde uyarı görünmesi kapı sonucunu belirsizleştirir; eksik ya da çelişkili öneri kullanıcıyı kanondan uzak bir düzeltmeye yöneltir.
 **Örnek:** `bilinmeyen-tip` tanısı Problems'te HATA ise hover ve satır-lensinde de aynı kodla HATA görünür ve aynı geçerli tipe yönlendirir; yalnız bir yüzde sessizce BİLGİ'ye indirilemez.
 **Zorlama:** Yeni tanı önerisi `tanı-yüzü-uyumsuz` · UYARI · “Aynı tanı yüzler arasında kod, düzey, mesaj, konum veya düzeltme yönlendirmesi bakımından uyuşmuyor.” · yüzey: Problems, hover, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -141,7 +141,7 @@ Kural tanıVeÖğretimGörünürlüğü( kod: YUZ-3.1,
 
 -->|
 ### YUZ-3.2 · Graf ve Gezinme [BİLGİ]
-**Hüküm:** Graf ve gezinme yüzleri bir düğümün mimari, yürütme, üretim kökeni ve yönetişim kenarlarını türlerini karıştırmadan gelen ve giden yönlerde gösterir; tanıma gitme ile bütün atıfları bulma aynı kanonik KOD indeksini kullanır ve metinden yeni, gizli bir kenar türetemez; dayanak: YUZ-3; ilgili: [YUZ, YAS, ORK].
+**Hüküm:** Graf ve gezinme yüzleri bir düğümün mimari, yürütme, üretim kökeni ve yönetişim kenarlarını türlerini karıştırmadan gelen ve giden yönlerde gösterir; tanıma gitme ile bütün atıfları bulma aynı kanonik KOD indeksini kullanır ve metinden yeni, gizli bir kenar türetemez; dayanak: YUZ-3; ilgili: [YUZ-0, YAS-0, ORK-0].
 **Gerekçe:** Tek yönlü veya türsüz görünüm, bir değişikliğin kimden geldiğini ve kimi etkilediğini saklar; ayrı kimlik indeksleri de tanım ile atıf sonuçlarını birbirinden koparır.
 **Örnek:** `ADM-GIRIS üretir EKR-GIRIS` bağı Adımdan Ekrana giden `üretir`, Ekrandan Adıma gelen üretim-kökeni olarak görünür; mimari sarma bağı diye yeniden etiketlenmez.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -153,7 +153,7 @@ Kural grafVeGezinme( kod: YUZ-3.2,
 
 -->|
 ### YUZ-3.3 · Tanı Sunum Yüzeyleri [UYARI]
-**Hüküm:** Geliştirme yüzeyleri her tanıyı doğasına göre üç ayrı sunum yüzeyine yönlendirir — hata ve uyarı düzeyli drift Problems yüzeyine, kullanıcının bilinçli Hatırlatıcı düğümleri Hatırlatıcılar yüzeyine, bilgi düzeyli ölçüm, durum ve vade işaretleri Bildirimler yüzeyine; bir doğa başka yüzeyi işgal edemez ve aynı kanonik tanı kimliği ile düzeyi bütün yüzeylerde korunur; dayanak: YUZ-3; ilgili: [YUZ, YAS, OGR].
+**Hüküm:** Geliştirme yüzeyleri her tanıyı doğasına göre üç ayrı sunum yüzeyine yönlendirir — hata ve uyarı düzeyli drift Problems yüzeyine, kullanıcının bilinçli Hatırlatıcı düğümleri Hatırlatıcılar yüzeyine, bilgi düzeyli ölçüm, durum ve vade işaretleri Bildirimler yüzeyine; bir doğa başka yüzeyi işgal edemez ve aynı kanonik tanı kimliği ile düzeyi bütün yüzeylerde korunur; dayanak: YUZ-3; ilgili: [YUZ-0, YAS-0, OGR-0].
 **Gerekçe:** Düzeltilecek sapma, bilinçli ileri-bağlam ve salt bilgilendirme tek panelde yığıldığında “düzelt / hatırla / bil” ayrımı silinir; kullanıcı gerçek drift'i bilgilendirme gürültüsünden ayıramaz ve Hatırlatıcıyı çözülmesi gereken ihlal sanır.
 **Örnek:** `rejim-beyanı-eksik` HATA düzeyiyle Problems'te, `Hatırlatıcı( durum: açık )` kendi kanonik kimliğiyle Hatırlatıcılar'da, bilgi düzeyli bir durum veya vade işareti Bildirimler'de görünür; her biri kodunu ve düzeyini yüzeyler arasında değiştirmeden korur.
 **Zorlama:** Yeni tanı önerisi `tanı-yüzeyi-karışması` · UYARI · “Tanı doğasına uygun olmayan sunum yüzeyinde gösterildi; drift/ileri-bağlam/bilgilendirme ayrımı bozuldu.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -165,7 +165,7 @@ Kural tanıSunumYüzeyleri( kod: YUZ-3.3,
 
 -->|
 ### YUZ-3.4 · Ateşlemiş Hatırlatıcının Görünürlüğü [BİLGİ]
-**Hüküm:** Bir Hatırlatıcı, `hatırlat` kenarıyla bağlandığı Adım tamamlandığında ATEŞLEMİŞ sayılır; ateşlemiş bir Hatırlatıcı hâlâ açık ya da kararlaştı durumundaysa gözlem düzeyinde bildirilir ve uykuda bekleyenlerden ayırt edilir; bildirim serbest metinli dönüş tetikleyicisinin yorumundan değil grafın kendi kenarından türetilir; dayanak: YUZ-3; ilgili: [YUZ, TIP, ORK].
+**Hüküm:** Bir Hatırlatıcı, `hatırlat` kenarıyla bağlandığı Adım tamamlandığında ATEŞLEMİŞ sayılır; ateşlemiş bir Hatırlatıcı hâlâ açık ya da kararlaştı durumundaysa gözlem düzeyinde bildirilir ve uykuda bekleyenlerden ayırt edilir; bildirim serbest metinli dönüş tetikleyicisinin yorumundan değil grafın kendi kenarından türetilir; dayanak: YUZ-3; ilgili: [YUZ-0, TIP-0, ORK-0].
 **Gerekçe:** Hatırlatıcı ileri bağlamdır ve uykuda beklemesi doğaldır; buna karşılık beklediği an geldiğinde uykudakilerle aynı listede kalırsa bekleyen iş görünmez olur ve panel “hatırlat” vaadini tutmaz. Ölçütün graf kenarından türetilmesi bilinçlidir: dönüş tetikleyicisi insanın yazdığı bir cümledir ve makine onu yorumlarsa kimsenin doğrulayamayacağı bir karar üretir, oysa bağlanılan Adımın durumu zaten ölçülüdür.
 **Örnek:** Doğru: bir Hatırlatıcı `durum: kararlaştı` ve `hatırlat: ADM-SIRADAKI` yazımıyla beklerken, ADM-SIRADAKI tamamlandığı anda ateşlemiş sayılır ve kapatılmayı bekler; yanlış: aynı düğümün o Adım kapandıktan sonra da uykudakilerle aynı grupta, ayırt edilmeden durması.
 **Zorlama:** Yeni tanı önerisi `ateşlemiş-hatırlatıcı` · BİLGİ · “Hatırlatıcının beklediği Adım tamamlandı; hatırlatıcı ateşlemiş durumda ve kapatılmayı bekliyor.” · yüzey: proje CLI ve Bildirimler · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -178,7 +178,7 @@ Kural ateşlemişHatırlatıcınınGörünürlüğü( kod: YUZ-3.4,
 
 -->|
 ### YUZ-3.5 · Durum Yüzeyi [BİLGİ]
-**Hüküm:** Durum kayıtlarının kendi sunum yüzeyi vardır ve bu yüzey Hatırlatıcılar, Fikirler ile Bildirimler yüzeyleriyle aynı kademede, `Durumlar` adıyla yaşar; yüzey çalışma alanındaki her projenin ana durum kaydını ve o kayda `referans` kenarıyla bağlı Blok durum kayıtlarını proje kökü altında gruplayarak gösterir, her satırdan kaynağına gidilir ve gösterilen her satır kaynaktan türetilir; yüzey kendi durumunu icat edemez, kaydı düzenleyemez ve grafın dışından beslenemez; dayanak: YUZ-3; ilgili: [YUZ, MIM, ORK].
+**Hüküm:** Durum kayıtlarının kendi sunum yüzeyi vardır ve bu yüzey Hatırlatıcılar, Fikirler ile Bildirimler yüzeyleriyle aynı kademede, `Durumlar` adıyla yaşar; yüzey çalışma alanındaki her projenin ana durum kaydını ve o kayda `referans` kenarıyla bağlı Blok durum kayıtlarını proje kökü altında gruplayarak gösterir, her satırdan kaynağına gidilir ve gösterilen her satır kaynaktan türetilir; yüzey kendi durumunu icat edemez, kaydı düzenleyemez ve grafın dışından beslenemez; dayanak: YUZ-3; ilgili: [YUZ-0, MIM-0, ORK-0].
 **Gerekçe:** Durum kaydı bugün yalnız dosya elle açılarak okunur ve bu, kaydın en çok okunan gövde olmasına rağmen hiçbir yüzeyi bulunmayan tek kayıt cinsi olması demektir; geliştirici hatırlatıcıyı, fikri ve gözlemi panelden görürken nerede kaldığının cevabını aramak için dosya ağacına inmek zorundadır. Blok başına kayıt hükmü bu eksikliği ağırlaştırır, çünkü bir dosya on dosyaya bölündüğünde elle açarak okuma yöntemi ölçeklenmez ve kayıtların çokluğu tek tek okunamayacak bir yığına döner. Yüzeyin kardeş yüzeylerle aynı kademede olması bilinçlidir: durum da hatırlatıcı ile gözlem gibi zamanla değişen, projeye bağlı ve kaynaktan türetilen bir kayıttır, dolayısıyla ayrı bir pencere değil aynı ailenin bir üyesidir. Yüzeyin kaydı düzenleyememesi ise tek kaynak hükmünün doğrudan sonucudur; düzenlenebilir bir durum paneli kaydın ikinci bir yazarını doğurur ve hangi metnin canlı olduğu okunamaz hâle gelir.
 **Örnek:** Doğru: `Durumlar` yüzeyi `PRJ-SARMAL` kökü altında ana kaydı ve ona bağlı `DRM-BLK-PRF-TEKAGAC` ile `DRM-BLK-PRF-MIKRO` kayıtlarını sıralar, her satır tıklanınca kaynak dosyanın ilgili satırına gider. Yanlış: durumu yalnız dosya ağacından okumak, kaydı panelden düzenletmek ya da ana kayda bağlı olmayan bir dosyayı yüzeyde durum diye göstermek.
 **Zorlama:** Zorlanmaz — niyet katmanı; bir yüzeyin var olup olmadığı kaynak metninden değil ürünün paketinden okunur ve bu madde yeni bir tanı ilan etmez. Hükmün besleme ayağı dolaylı olarak tutulur: yüzey yalnız `referans` kenarından beslendiği için ana kayda bağlanmamış bir dosya yüzeyde görünmez ve bağı kırık bir atıf `kırık-referans` tanısına düşer, dolayısıyla yüzeyin gösterdiği evren ile grafın gördüğü evren aynı kaynaktan gelir. Yüzeyin varlığı ile kardeş yüzeylerle aynı kademede durması insan kapısında sınanır ve eklentinin görünüm sözleşmesinde ilan edilir.
@@ -190,19 +190,19 @@ Kural durumYüzeyi( kod: YUZ-3.5,
 
 -->|
 ### YUZ-4 · Kimlik, Tema ve Erişilebilirlik [HATA]
-**Hüküm:** Her yüzey düğümü kararlı ve Proje içinde tekil `kod` kimliğini, üretim kökenini, açık görünürlük durumunu, kanonik tema rolünü ve erişilebilir kontrast koşulunu birlikte taşır; bu sözleşmelerden biri eksik veya çözülemezse yüzey tamamlanmış ürün sayılmaz; dayanak: YUZ-0; ilgili: [YUZ, TIP, YAS].
+**Hüküm:** Her yüzey düğümü kararlı ve Proje içinde tekil `kod` kimliğini, üretim kökenini, açık görünürlük durumunu, kanonik tema rolünü ve erişilebilir kontrast koşulunu birlikte taşır; bu sözleşmelerden biri eksik veya çözülemezse yüzey tamamlanmış ürün sayılmaz; dayanak: YUZ-0; ilgili: [YUZ-0, TIP-0, YAS-0].
 **Gerekçe:** Kimliksiz yüz gezilemez, kökensiz yüz üretime bağlanamaz, görünürlük ve tema eksikleri ise güvenlik ile erişilebilirliği sunum tesadüfüne bırakır.
 **Örnek:** `Ekran( kod: EKR-GIRIS, referans: ADM-GIRIS, tema: TEM-ANA, görünürlük: açık )` kimlik, köken, tema ve görünürlük bağlarını açıklar; yerel renkle ve üretici bağı olmadan bırakılan adsız ekran eksiktir.
 **Zorlama:** `yinelenen-kod` · UYARI · “Yüzey KOD'u Proje içinde tekil değil.” · yüzey: Problems ve proje CLI; `geçersiz-renk` · HATA · “Tema rengi geçerli hex değil.”; `düşük-kontrast` · UYARI · “Tema ana ve nötr renkleri arasındaki kontrast 4.5:1 altında.” · yüzey: Problems, CLI ve satır-lensi; yeni tanı önerisi `yüzey-sözleşmesi-eksik` · HATA · “Yüzey kimlik, üretim kökeni, görünürlük, tema rolü veya erişilebilirlik sözleşmesinden en az birini taşımıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Karar( kod: YUZ-4, durum: kilitli,
        ne: "YUZ-4 · Kimlik, Tema ve Erişilebilirlik [HATA]",
-       karar: "Her yüzey düğümü kararlı ve Proje içinde tekil `kod` kimliğini, üretim kökenini, açık görünürlük durumunu, kanonik tema rolünü ve erişilebilir kontrast koşulunu birlikte taşır; bu sözleşmelerden biri eksik veya çözülemezse yüzey tamamlanmış ürün sayılmaz; dayanak: YUZ-0; ilgili: [YUZ, TIP, YAS].",
+       karar: "Her yüzey düğümü kararlı ve Proje içinde tekil `kod` kimliğini, üretim kökenini, açık görünürlük durumunu, kanonik tema rolünü ve erişilebilir kontrast koşulunu birlikte taşır; bu sözleşmelerden biri eksik veya çözülemezse yüzey tamamlanmış ürün sayılmaz; dayanak: YUZ-0; ilgili: [YUZ-0, TIP-0, YAS-0].",
        gerekçe: "Kimliksiz yüz gezilemez, kökensiz yüz üretime bağlanamaz, görünürlük ve tema eksikleri ise güvenlik ile erişilebilirliği sunum tesadüfüne bırakır." )
 
 -->|
 ### YUZ-4.1 · Renk ve Rol Tek Kaynağı [HATA]
-**Hüküm:** Yüzey düğümleri ham renk değeri taşıyamaz; yalnız `birincil`, `ikincil`, `vurgu`, `hata`, `yüzey`, `arkaplan` ve `nötr` gibi kanonik tema rollerine bağlanır, bütün görüntü yüzleri gerçek değerleri aynı üretilmiş paletten alır ve yerel palet kopyası kuramaz; dayanak: YUZ-4; ilgili: [YUZ, TIP, DIL].
+**Hüküm:** Yüzey düğümleri ham renk değeri taşıyamaz; yalnız `birincil`, `ikincil`, `vurgu`, `hata`, `yüzey`, `arkaplan` ve `nötr` gibi kanonik tema rollerine bağlanır, bütün görüntü yüzleri gerçek değerleri aynı üretilmiş paletten alır ve yerel palet kopyası kuramaz; dayanak: YUZ-4; ilgili: [YUZ-0, TIP-0, DIL-0].
 **Gerekçe:** Ham değerler tema değişimini ve erişilebilirlik denetimini dağıtır; farklı yüzlerde çoğaltılan paletler aynı rolün farklı renklere dönüşmesine neden olur.
 **Örnek:** Doğru: `Tema( kod: TEM-ANA, renkler: [ birincil, yüzey, nötr ], ne: "Ana tema" )`; yanlış: bir `Kart` üzerinde `renk: "#0A84FF"` yazarak tema rolünü atlamak.
 **Zorlama:** `ham-renk` · UYARI · “Yüzey ham renk taşıyor; rol kullan, değer temada yaşasın.”; `geçersiz-renk` · HATA · “Tema rengi geçerli hex değil.”; `düşük-kontrast` · UYARI · “Tema ana ve nötr renkleri arasındaki kontrast 4.5:1 altında.” · yüzey: Problems, CLI ve satır-lensi; yeni tanı önerisi `palet-yüz-drifti` · HATA · “Görüntü yüzü kanonik paletten türemiyor veya aynı tema rolünü farklı değerle gösteriyor.” · yüzey: Problems ve proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -215,7 +215,7 @@ Kural renkVeRolTekKaynağı( kod: YUZ-4.1,
 
 -->|
 ### YUZ-4.2 · Arayüz İşaret Katmanı [BİLGİ]
-**Hüküm:** Kullanıcıya görünen her arayüz işareti kilitli vektörel simge ailesinden gelir ve bu aile tek kaynaktan okunur; düğme, satır, panel başlığı, durum çubuğu, ağaç öğesi ve bildirim gibi yüzey metinlerinde emoji arayüz işareti olarak kullanılamaz; işaret yalnız sunum katmanında yaşar, kanonik adı değiştiremez ve metinsel ya da erişilebilir etiketi ikame edemez; emojinin meşru kaldığı iki alan bu yasağın dışındadır ve ayrı ayrı sayılır, bunlardan birincisi kaynak anlatımıdır, yani Adım ile Kural gövdelerindeki niyet cümleleri ve dilin kendi emoji yazımı, ikincisi ise takdir yüzeyidir, yani etmen davranışının insan diliyle takdir edildiği yer; dayanak: YUZ-4; ilgili: [YUZ, DIL].
+**Hüküm:** Kullanıcıya görünen her arayüz işareti kilitli vektörel simge ailesinden gelir ve bu aile tek kaynaktan okunur; düğme, satır, panel başlığı, durum çubuğu, ağaç öğesi ve bildirim gibi yüzey metinlerinde emoji arayüz işareti olarak kullanılamaz; işaret yalnız sunum katmanında yaşar, kanonik adı değiştiremez ve metinsel ya da erişilebilir etiketi ikame edemez; emojinin meşru kaldığı iki alan bu yasağın dışındadır ve ayrı ayrı sayılır, bunlardan birincisi kaynak anlatımıdır, yani Adım ile Kural gövdelerindeki niyet cümleleri ve dilin kendi emoji yazımı, ikincisi ise takdir yüzeyidir, yani etmen davranışının insan diliyle takdir edildiği yer; dayanak: YUZ-4; ilgili: [YUZ-0, DIL-0].
 **Gerekçe:** Emoji platforma göre başka çizilir, rengini temadan almaz, ölçüsü denetlenemez ve yardımcı teknolojide anlamını kaybeder; bu dört sebep bir arada aynı yüzeyin iki makinede iki ayrı ürün gibi görünmesine ve işaretin taşıdığı anlamın okunamamasına yol açar. Buna karşılık kaynak metnindeki emoji bir arayüz işareti değil anlatım aracıdır ve dilin kendi yazımıdır; aynı yasağın oraya genişletilmesi anlatımı yoksullaştırır ve emoji yazımını geçersiz kılardı. Ayrım bu yüzden işaretin çizim biçimine göre değil, kime ve hangi katmanda göründüğüne göre kurulur.
 **Örnek:** Doğru: panelin karar düğmesi kilitli aileden gelen onay işaretini ve “Onayla” erişilebilir etiketini taşır, bir `Adım` gövdesindeki niyet cümlesi ise emojisini korur; yanlış: aynı düğmeyi emojiyle çizmek ya da işareti etiketsiz basıp anlamı yalnız çizime bırakmak.
 **Zorlama:** Bu madde yeni bir tanı ilan etmez ve motorun tanı sicilinde bir bekçisi yoktur; bugünkü mekanik zorlama eklenti süitindeki yüzey nöbetlerinde yaşar ve kullanıcıya basılan bir yüzey metnine emoji geri konduğunda koşu kırmızı yanar. Bu nöbetler onay, fikir ve posta yüzeyleri ile arayüz işareti çizelgesini kapsar; kaynak anlatımını ve takdir yüzeyini ise hükmen kapsam dışında tutar, çünkü oradaki emoji meşrudur. Zorlamanın erişemediği alan dürüstçe beyan edilir: kullanıcı projelerine inen bir tanı bulunmadığı için Sarmal dışında kurulan bir yüzeyde aynı sapma bugün ölçülmez ve bu, kapatılmamış bir borçtur; borcu kapatacak bekçi doğduğunda kendi Adımıyla doğar ve bu maddeye bağlanır.
@@ -227,7 +227,7 @@ Kural arayüzİşaretKatmanı( kod: YUZ-4.2,
 
 -->|
 ### YUZ-5 · Görünürlük Sözleşmesi [HATA]
-**Hüküm:** Her yüzey `görünürlük` alanını tam bir kez ve yalnız `açık` ya da `gizli` değeriyle beyan eder; `gizli` yüzey makinece çözülebilen bir `açılmaKoşulu` taşır, koşul sağlanmadan hiçbir geliştirme, okuma veya üretilmiş görüntü yüzünde açığa çıkarılamaz; dayanak: YUZ-0; ilgili: [YUZ, TIP, YAS].
+**Hüküm:** Her yüzey `görünürlük` alanını tam bir kez ve yalnız `açık` ya da `gizli` değeriyle beyan eder; `gizli` yüzey makinece çözülebilen bir `açılmaKoşulu` taşır, koşul sağlanmadan hiçbir geliştirme, okuma veya üretilmiş görüntü yüzünde açığa çıkarılamaz; dayanak: YUZ-0; ilgili: [YUZ-0, TIP-0, YAS-0].
 **Gerekçe:** Örtük görünürlük farklı yüzlerin aynı içeriği farklı kitlelere sızdırmasına yol açar; düzyazı ya da eksik açılma koşulu gizli içeriğin denetlenebilir erişim sınırını yok eder.
 **Örnek:** Doğru: `Ekran( kod: EKR-YONETIM, görünürlük: gizli, açılmaKoşulu: KAP-YETKI-01 )`; yanlış: gizli ekranı koşulsuz bırakmak veya `görünürlük: bazen` yazmak.
 **Zorlama:** `geçersiz-enum` · UYARI · “Görünürlük değeri enum dışında; `açık` veya `gizli` kullan.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; yeni tanı önerisi `görünürlük-sözleşmesi-eksik` · HATA · “Yüzey görünürlük beyanını tam bir kez taşımıyor veya gizli yüzeyin çözülebilir açılma koşulu yok.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
@@ -240,7 +240,7 @@ Kural görünürlükSözleşmesi( kod: YUZ-5,
 
 -->|
 ### YUZ-6 · Yüzey, Kimlik, Belge ve Görünürlük Kural Aileleri [BİLGİ]
-**Hüküm:** Yüzey, kimlik, belge ve görünürlük kural ailelerinin kaynak ayrımı, kararlı kod, üretim kökeni, insan yüzü, tema rolü, belge amacı, geliştirme protokolü ve erişim hükümleri yalnız bu bölümde kataloglanır; başka bölüm bunları ikinci bir yüz otoritesi olarak yineleyemez; dayanak: YUZ-0; ilgili: [YUZ, DIL, TIP, YAS, OGR].
+**Hüküm:** Yüzey, kimlik, belge ve görünürlük kural ailelerinin kaynak ayrımı, kararlı kod, üretim kökeni, insan yüzü, tema rolü, belge amacı, geliştirme protokolü ve erişim hükümleri yalnız bu bölümde kataloglanır; başka bölüm bunları ikinci bir yüz otoritesi olarak yineleyemez; dayanak: YUZ-0; ilgili: [YUZ-0, DIL-0, TIP-0, YAS-0, OGR-0].
 **Gerekçe:** Aynı yüz hükmünün dil, tip veya öğretim bölümünde yeniden kurulması sınırların zamanla farklılaşmasına ve hangi maddenin üstün olduğunun belirsizleşmesine neden olur.
 **Örnek:** TIP yüzey tiplerinin şemasını, OGR öğretim türetimini tanımlar; `.sar` ile türetilmiş yüz arasındaki otorite ve görünürlük sınırı YUZ hükümlerine geri bağlanır.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
@@ -252,7 +252,7 @@ Kural yüzeyKimlikBelgeVeGörünürlükKuralAileleri( kod: YUZ-6,
 
 -->|
 ### YUZ-7 · Yüzey Güncelliği [BİLGİ]
-**Hüküm:** Kanonik bir kaynak ilerlediğinde onu anlatan her yüzey aynı turda ilerler; bu hüküm dört yüzeyi birden bağlar ve bunlar makineyle konuşulan araç yüzeyi, insanla konuşulan belge yüzeyi, kaynak kodun yorum satırları ve kanondan türetilen bütün yüzlerdir; bayat bir yüzey yalnız eksik sayılmaz, çünkü okuyan kişi ona inanır ve yürürlükte olmayan bir anlamı yürürlükte sanır; tazeleme sonraki tura ertelenemez ve bir yüzeyin etkilenmediği ancak açıkça gösterilerek iddia edilebilir; bu madde güncel kalma borcunu bütün yüzey sınıfları için kurar ve özellikle araç yüzeyi ile kod yorumlarını başka hiçbir maddenin sahiplenmediği için üstlenir, buna karşılık aynı borcun öğretim yüzeyindeki uygulanışı, yani ajan bağlam paketinin, öğretim yüzlerinin ve Beceri kartlarının kanonik yenilikle aynı değişiklikte işlenmesi OGR-3 hükmünün konusudur ve burada yinelenmez; dayanak: YUZ-0; ilgili: [YUZ, OGR, STR, YAS].
+**Hüküm:** Kanonik bir kaynak ilerlediğinde onu anlatan her yüzey aynı turda ilerler; bu hüküm dört yüzeyi birden bağlar ve bunlar makineyle konuşulan araç yüzeyi, insanla konuşulan belge yüzeyi, kaynak kodun yorum satırları ve kanondan türetilen bütün yüzlerdir; bayat bir yüzey yalnız eksik sayılmaz, çünkü okuyan kişi ona inanır ve yürürlükte olmayan bir anlamı yürürlükte sanır; tazeleme sonraki tura ertelenemez ve bir yüzeyin etkilenmediği ancak açıkça gösterilerek iddia edilebilir; bu madde güncel kalma borcunu bütün yüzey sınıfları için kurar ve özellikle araç yüzeyi ile kod yorumlarını başka hiçbir maddenin sahiplenmediği için üstlenir, buna karşılık aynı borcun öğretim yüzeyindeki uygulanışı, yani ajan bağlam paketinin, öğretim yüzlerinin ve Beceri kartlarının kanonik yenilikle aynı değişiklikte işlenmesi OGR-3 hükmünün konusudur ve burada yinelenmez; dayanak: YUZ-0; ilgili: [YUZ-0, OGR-0, STR-0, YAS-0].
 **Gerekçe:** Kaynak ilerleyip yüzey yerinde kalınca yüzey sessizce yanıltıcı hâle gelir; okuyan kişi ya da ajan bayat cümleyi yürürlükteki hüküm sayar ve ona göre davranır, oysa aynı yanlış kaynağın kendisine yazılsaydı motor onu bulgu olarak bildirirdi. Tazelemeyi sonraki tura bırakmak bu yanılmayı çoğaltır, çünkü aradaki her okuma eski anlamı yeniden üretir; etkilenmeme iddiasının gösterilmeden kabul edilmesi ise ertelemeyi ölçülemez kılar. Bu madde yüzeylerin sayısını sınırlamak için değil, kaynak ile yüzey arasındaki gecikmeyi sıfırlamak için vardır.
 **Örnek:** Doğru: bir Adım kimliği emekliye ayrıldığında o kimliği örnek olarak gösteren araç açıklaması, onu anan belge cümlesi ve ona işaret eden kod yorumu aynı turda yaşayan halefe çevrilir; yanlış: yalnız kaynağı ilerletip araç açıklamasını eski kimlikle bırakmak ya da yüzeyin başlığını güncel diye etiketleyip tazelemenin yerine saymak.
 **Zorlama:** Zorlanmaz — niyet katmanı; bu madde yeni bir tanı ilan etmez ve YAS-4 uyarınca gözlem düzeyinde doğar. Hükmün yalnız iki dilimi bugün başka sahiplerin canlı zorlamalarıyla dolaylı olarak tutulur: STR-5 altında yaşayan `karşılıksız-metin-atfı` tanısı bir belge cümlesinin ya da kod yorumunun çözülmeyen bir kimliğe yöneldiğini `.md` yüzlerinde bilgi ve `.ts` kaynağında uyarı düzeyinde bildirir; türetilmiş yüzlerin mühür ayrışması ise tanı siciliyle değil çekirdek süitindeki türetilmiş yüz nöbetiyle tutulur ve kaynak ilerleyip yüz tazelenmezse koşu kırmızı yanar. Zorlanamayan kısım şudur ve bu madde onu gizlemez: bir cümlenin dilbilgisi doğru ve atfı çözülür olduğu hâlde anlamca bayatladığını, yani artık yürürlükte olmayan bir davranışı anlattığını motor ölçemez; anlam bayatlığı üretici ile denetçinin ayrı olduğu insan kapısında sınanır. Hükmü zorlayacak yeni bir bekçi ilan edilecekse o bekçi bu maddenin değil kendi Adımının konusudur ve doğduğunda bu maddeye bağlanır.
