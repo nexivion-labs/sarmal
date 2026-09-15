@@ -397,10 +397,11 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           sınır: "Mühür mekanizmasının anlamı ile hasat kartının biçimi değişmez."
         }
 
-        Adım( kod: EKL-F6-A11, ad: "Kurulu Paket ile Depo Derlemesinin Ayrışma Nöbeti", durum: beklemede, öncelik: p2, bağımlı: [],
+        Adım( kod: EKL-F6-A11, ad: "Kurulu Paket ile Depo Derlemesinin Ayrışma Nöbeti", durum: tamamlandı, öncelik: p2, bağımlı: [],
           onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-SURUM-DAMGASI-TUZAGI kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A11, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 786/786 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · canlı kurulum: 0.9.189 kurulum betiğiyle kuruldu ve kurulu paketle doğrulandı, kurulu bildirim ea24be2 damgasını taşıyor · bağımsız mutasyon: damga karşılaştırmasının yönü ters çevrilince sürüm tazeliği süiti 15/17 · işleme ea24be2 (0.9.189)", ne: "Kurulum betiği paketi mühürlü işlemenin kimliğiyle damgalar, kurduktan sonra kurulu paketi okuyup sürümü ve damgayı doğrular ve ayrışmada çıkış kodu 1 ile durur; aynı numarayla yeniden paketleme tuzağını yalnız bu karşılaştırma görür. Eklenti açılışta yalnız sürümü karşılaştırır ve kurulu paket depodaki bildirimden eskiyse durum çubuğunda kurulu paketin bayat olduğunu söyler; mağaza kullanıcısının çalışma alanında depo bulunmadığı için orada susar. Uzantı klasörünün sabit yazılması ile sürümü ilerletilmeden değişen kodun açılışta görülmemesi HTR-SURUM-NOBETI-SINIRLARI hatırlatıcısına yazılmıştır." ),
           referans: [ HTR-SURUM-DAMGASI-TUZAGI ],
-          üretir:   [ KOD-EKL-KUR ],
+          üretir:   [ KOD-EKL-KUR, KOD-SURUM-TAZELIGI, KOD-SNM-SURUM-TAZELIGI ],
           ne: "⏱️ Kullanıcının kurulu eklentisi depodaki derlemeden eskiyse bunun görünür olması; aynı sürüm numarasıyla yeniden paketlenen eklenti editörde tazelenmez." ) {
           görev: [
             "Kurulu eklentinin sürümünü ve derleme damgasını depodaki derlemeyle karşılaştıran bir duman nöbeti kur ve ayrışma bulunursa açıkça bildir.",

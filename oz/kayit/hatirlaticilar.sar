@@ -76,7 +76,7 @@
 
 Hatırlatıcı(
   kod:              HTR-SURUM-DAMGASI-TUZAGI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         EKL-F6-A11,
   çapa:             nitelik,
   dönüşTetikleyici: "Eklenti bir sonraki kez paketlendiğinde ya da yayın kapısı açıldığında",
@@ -800,4 +800,14 @@ Hatırlatıcı(
   tarih:            2026-09-15,
   dönüşTetikleyici: "Geribildirim hasadının yazım gövdesi bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SURUM-NOBETI-SINIRLARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Kurulum betiği ya da sürüm tazeliği gövdesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A11 turunda 2026-09-15 tarihinde ölçülen iki sınır kayda geçmiştir. Birincisi, kurulum betiği uzantı klasörünü ~/.vscode/extensions olarak sabit yazmaktadır; VS Code Insiders ya da özel bir uzantı klasörü kullanıldığında betik kurulumu doğrulayamadığını söyler fakat hata vermez. İkincisi, eklenti açılışındaki nöbet yalnız sürümü karşılaştırdığı için eklenti kodu değişip sürüm ilerletilmediğinde bayatlığı görmez; bu durumu yalnız bir sonraki kurulumdaki damga karşılaştırması yakalar."
 )
