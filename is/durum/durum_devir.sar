@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-15", oturum: 111,
-            neredeyiz: YARIM-ADIMLARIN-UCU-KAPANDI-UC-ADIM-FOUNDER-BEKLIYOR,
-            sıradaki: KYN-OGR-KART-OKUMASI-SONRA-DURUMLAR-PANELI-SONRA-YAYIN-ONCESI-BULGULAR,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-16", oturum: 111,
+            neredeyiz: EKL-VE-KPS-BLOK-TURU-BITTI-KALANI-FOUNDER-SECIM-BAKIS-VE-HUKUMLERI,
+            sıradaki: FOUNDER-DORT-SECIM-UC-CANLI-BAKIS-BES-HUKUM-SONRA-DAL-GONDERIMI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -1982,5 +1982,36 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-15", oturum: 111,
         görmemiştir; Founder Ajans'ı ayrı bir oturumda kuracaktır. Sıradaki işler
         KYN-OGR-A02 kart okuması, Durumlar paneli, yayın öncesi bulgular, dışarıdan
         kurulum ve mağaza yüklemesidir.
+
+        OTURUM 111 BLOK TURU · 2026-09-15 ve 2026-09-16: Founder eklenti olgunlaştırma
+        Blokunun (BLK-EKLENTI) bütün Adımlarının geliştirmeye alınmasına, Bloka dokunan
+        hatırlatıcıların plana dahil edilmesine ve Blok tıkandığında kanon kapsam borcu
+        Blokuna (BLK-KPS) geçilmesine hükmetmiştir; işler en çok iki ajanla, her biri
+        on dakikalık eşikli bir izleyiciyle yürütülmüştür. Beş yeni Adım hatırlatıcılardan
+        doğmuş, üçü (EKL-F6-A07, A10, A11) tamamlanmıştır. EKL-F6-A09 Adımında kanonu
+        bulunamayan kökte tam denetim artık paketin kendi kanon kopyasıyla koşmakta ve
+        kanon işaretçisini yazan yeni bir komut bulunmaktadır (0.9.190 kurulu); Adım
+        Founder'ın işaretçisiz bir ağaçta paneli görmesini beklemektedir. EKL-F6-A03
+        Adımında yayın yolunun MCPB olduğu bugünkü belgeyle doğrulanmış, iki dilli kurulum
+        yönergesi ile Gizlilik Politikası bölümü README'lere üreticiden inmiştir; MCPB
+        bildirimi, Türkçe README başlığının dili, yazan araçların yıkıcılık ipucu ve
+        açıklamalardaki yönlendirici cümleler Founder kararını beklemektedir. EKL-F6-A08
+        Adımında motor yolu için dört seçenek ölçülmüş ve üretici SARMAL_KOK ortam
+        değişkenini önermiştir; EKL-F6-A05 Adımında önizleme için iki tasarım seçeneği
+        üretilmiş ve maketler depo dışında ~/Library/Caches/sarmal-a05-maketler klasörüne
+        konmuştur; iki Adım da Founder seçimini beklemektedir. EKL-F6-A01 ile A02
+        öncülleri kapanmadığı için beklemede kalmıştır. Kanon kapsam borcu Blokunda
+        KPS-BLM-A01 Adımı kanondaki 199 ilgili listesini bölüm kök kimliklerine çevirmiş
+        (49ed511) ve Founder'ın canlı pencerede tanıma gitmeyi görmesini beklemektedir;
+        KPS-KEN-A01 Adımı mimariBağı kenarının motorda karşılığı olmadığını ölçmüş ve iki
+        seçeneği Founder'a sunmuştur; KPS-CEL-A01 ile KPS-FAZ-A02 Founder hükmü
+        beklemektedir. Tur boyunca on dört yeni hatırlatıcı açılmış ve her üretici
+        teslimi kontrolcünün bağımsız mutasyonu ile kapılarından geçmiştir. Dal
+        (blok/eklenti-olgunlastirma) gönderilmemiştir ve gönderim Founder'ın sözünü
+        beklemektedir. Açık Adım sayısı otuz sekizdir. Sıradaki işler Founder'ın dört
+        seçimi (önizleme tasarımı, motor yolu, mimariBağı seçeneği ve MCPB paketinin
+        kurulması), üç canlı pencere bakışı (EKL-F6-A09, KPS-BLM-A01 ve KPS-ADA-A01) ve
+        beş hükmüdür (KPS-CEL-A01, KPS-FAZ-A02, Türkçe README başlığının dili, yazan
+        araçların yıkıcılık ipucu ve açıklamalardaki yönlendirici cümleler).
         """
 }
