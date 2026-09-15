@@ -378,8 +378,9 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           sınır: "Kanonun kendisi ve tanıların anlamı değişmez; değişen panelin kapsamı ve dürüstlüğüdür."
         }
 
-        Adım( kod: EKL-F6-A10, ad: "Hatırlatıcı Tıklaması ve Geribildirim Hasadının Onarımı", durum: beklemede, öncelik: p1, bağımlı: [],
+        Adım( kod: EKL-F6-A10, ad: "Hatırlatıcı Tıklaması ve Geribildirim Hasadının Onarımı", durum: tamamlandı, öncelik: p1, bağımlı: [],
           onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR ile HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A10, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 775/775 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · doğuş ağacında hasat ogreti/ogrenme/geribildirim.sar dosyasına yazdı, beyansız yapı sıfır · bağımsız mutasyon: hasat hedefi sabit yola döndürülünce kanon keşfi süiti 14/15 · işlemeler 6046932, 569a6e5, b694e48 (0.9.188)", ne: "Sonra ve arşiv mührü bulguları artık mühürlü dosyanın kendisini hedef olarak taşır; hatırlatıcılar ve gözlemler yüzeyinde bulguya tıklanınca o dosya açılır ve göreli yolun klasör parçasını silen desen kusuru kapanmıştır. Geribildirim hasadı yazacağı yeri kökün ilanındaki Kitaplık ve Raf beyanından çözer, raf ilan edilmemişse hiçbir şey yazmadan uyarır ve komutun iki dildeki adı gerçek yolu söyler. Üreticinin kapsam dışında bulduğu iki kusur HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR ve HTR-HASAT-DOGUS-BASLIGINI-EZIYOR hatırlatıcılarına yazılmıştır." ),
           referans: [ HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR, HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR ],
           üretir:   [ KOD-DENETCI ],
           ne: "🧷 Sonraya bırakılmış dosya bulgusunun tıklandığında o dosyayı açması ve geribildirim hasadının ağacın gerçek öğrenme rafına yazması." ) {

@@ -618,7 +618,7 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
@@ -720,7 +720,7 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
@@ -779,4 +779,25 @@ Hatırlatıcı(
   tarih:            2026-09-15,
   dönüşTetikleyici: "Dışarıdan kurulum işi ele alındığında (EKL-F6-A03 kapsam genişletmesi); en geç mağaza yüklemesinden önce",
   ne:               "Founder 2026-09-15 tarihinde yeni bir çalışma alanında açılacak oturum için ajana klasörün tam yolunu ve başka ağaca dokunmama uyarısını ayrıca yazmak zorunda kalmasının sebebini sormuştur. Ölçüm şunu göstermiştir: Sarmal sunucusunun on aracı çalışacağı klasörü dizin parametresiyle ajandan beklemekte, sunucu oturumun çalışma dizinini hiçbir yerde varsayılan olarak okumamaktadır ve sunucu kullanıcı düzeyinde kayıtlı olduğu için her klasörde açılmaktadır. Ajan oturum başında Sarmal'ın kendi deposundan söz eden metinler okuduğu için yanlış dizini verebilmekte ve başka bir ağaçta Sarmal'ın kendi ağacını görebilmektedir; Founder aynı belirtiyi daha önce ayrı bir çalışma alanında açılan oturumda görmüştür. Doğru davranış şudur: dizin verilmediğinde araç oturumun çalışma dizinini kullanır ve verilen dizin oturumun kökü dışındaysa bunu açıkça bildirir. Bu açık Sarmal'ı kuran her geliştiriciyi etkiler, dolayısıyla dışarıdan kurulum işinin bir parçasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Tanıların konum ya da hedef alanı bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: mühür bulgularına mühürlü dosyayı taşıyan hedef alanı eklenmiş, fakat geçersiz-dosya-adı ile beyansız-yapı bulguları hâlâ giriş dosyasına sıfır konumuyla yazılmakta ve anlattıkları dosyayı ya da klasörü taşımamaktadır. Kullanıcı bu bulgulara tıkladığında ilgili yere değil anadizine gider; geçersiz-dosya-adı Sorunlar yüzeyinde aynı sınıftan bir kusurdur. Ayrıca komut satırı konumsuz bulgularda hiçbir konum basmamakta, hedef alanı yalnız tanı nesnesinde ve JSON çıktısında bulunmaktadır."
+)
+
+
+Hatırlatıcı(
+  kod:              HTR-HASAT-DOGUS-BASLIGINI-EZIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Geribildirim hasadının yazım gövdesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir."
 )
