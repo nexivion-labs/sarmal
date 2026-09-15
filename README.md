@@ -116,7 +116,7 @@ Aşağıdaki bölümler kanonik kaynaklardan üretilir; yalnız bu giriş elle y
 
 ## MCP sunucusu: kurulum ve erişim
 
-Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz; gizlilik politikası [PRIVACY.md](PRIVACY.md) dosyasındadır. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.
+Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.
 
 1. Kodu alın ve çalışma zamanını doğrulayın; `node --version` komutu v23.6.0 ya da üstünü basmalıdır.
 
@@ -172,6 +172,10 @@ Beklenen satır `sarmal: node /mutlak/yol/sarmal/urun/cekirdek/src/mcp.ts - ✔ 
 npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name dogus --tool-arg hedef="$HOME/sarmal-demo" --tool-arg ad=Demo --tool-arg tur=proje
 npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name denetle-proje --tool-arg dizin="$HOME/sarmal-demo"
 ```
+
+## Gizlilik Politikası
+
+Sarmal hiçbir veri toplamaz: motor sizin makinenizde koşar, planınız makinenizden çıkmaz ve eklenti hiçbir sunucuya bağlanmaz. Eklenti ile MCP sunucusu kişisel bilgi, dosya içeriği ya da kullanım istatistiği toplamaz; üçüncü taraflarla paylaşılan ya da saklanan hiçbir veri yoktur. Politikanın tam metni, iddianın nasıl ölçüldüğü ve iletişim adresi [PRIVACY.md](https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md) dosyasındadır.
 
 ## İlk beş dakika
 

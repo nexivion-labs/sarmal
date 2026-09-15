@@ -118,7 +118,7 @@ The core requires Node 23.6 or newer: `cd urun/cekirdek && npm link` binds the `
 
 ## MCP server: setup and access
 
-This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls; the privacy policy is in [PRIVACY.md](PRIVACY.md). The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.
+This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls. The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.
 
 1. Get the code and check the Node version; `node --version` must print v23.6.0 or newer.
 
@@ -174,6 +174,10 @@ The expected line is `sarmal: node /absolute/path/to/sarmal/urun/cekirdek/src/mc
 npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name dogus --tool-arg hedef="$HOME/sarmal-demo" --tool-arg ad=Demo --tool-arg tur=proje
 npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name denetle-proje --tool-arg dizin="$HOME/sarmal-demo"
 ```
+
+## Privacy Policy
+
+Sarmal collects no data: the engine runs on your machine, your plan never leaves it, and the extension connects to no server. Neither the extension nor the MCP server collects personal information, file contents or usage statistics, and no data is shared with third parties or retained. The full policy, how its claim was measured and the contact address are in [PRIVACY.md](https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md).
 
 ## First five minutes
 

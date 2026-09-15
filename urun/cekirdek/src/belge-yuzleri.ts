@@ -259,7 +259,7 @@ function mcpYonergesi(o: BelgeOlgulari): string {
   return [
     "## MCP sunucusu: kurulum ve erişim",
     "",
-    "Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz; gizlilik politikası [PRIVACY.md](PRIVACY.md) dosyasındadır. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.",
+    "Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.",
     "",
     "1. Kodu alın ve çalışma zamanını doğrulayın; `node --version` komutu v23.6.0 ya da üstünü basmalıdır.",
     "",
@@ -304,7 +304,7 @@ function mcpYonergesiEn(o: BelgeOlgulari): string {
   return [
     "## MCP server: setup and access",
     "",
-    "This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls; the privacy policy is in [PRIVACY.md](PRIVACY.md). The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.",
+    "This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls. The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.",
     "",
     "1. Get the code and check the Node version; `node --version` must print v23.6.0 or newer.",
     "",
@@ -343,12 +343,39 @@ function mcpYonergesiEn(o: BelgeOlgulari): string {
   ].join("\n");
 }
 
+// ── Gizlilik Politikası bölümü (EKL-F6-A03) ──────────────────────────────────
+// Dizinin gönderim belgesi, yerel bağlayıcıların giriş belgesinde "Privacy
+// Policy" başlıklı bir bölüm ister ve eksikliği anında ret sebebi sayar. Bölüm
+// yalnız PRIVACY.md dosyasının zaten söylediğini özetler ve yeni bir iddia
+// taşımaz; politikanın tek yetkili metni o dosyadır. Bağlantı, dizinin şart
+// koştuğu biçimde HTTPS adresidir. Politikaya bağlanan cümle README'de yalnız
+// bu bölümde durur; MCP yönergesindeki eski bağlantı buraya taşınmıştır.
+const GIZLILIK_POLITIKASI_ADRESI = "https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md";
+
+function gizlilikBolumu(): string {
+  return [
+    "## Gizlilik Politikası",
+    "",
+    `Sarmal hiçbir veri toplamaz: motor sizin makinenizde koşar, planınız makinenizden çıkmaz ve eklenti hiçbir sunucuya bağlanmaz. Eklenti ile MCP sunucusu kişisel bilgi, dosya içeriği ya da kullanım istatistiği toplamaz; üçüncü taraflarla paylaşılan ya da saklanan hiçbir veri yoktur. Politikanın tam metni, iddianın nasıl ölçüldüğü ve iletişim adresi [PRIVACY.md](${GIZLILIK_POLITIKASI_ADRESI}) dosyasındadır.`,
+  ].join("\n");
+}
+
+function gizlilikBolumuEn(): string {
+  return [
+    "## Privacy Policy",
+    "",
+    `Sarmal collects no data: the engine runs on your machine, your plan never leaves it, and the extension connects to no server. Neither the extension nor the MCP server collects personal information, file contents or usage statistics, and no data is shared with third parties or retained. The full policy, how its claim was measured and the contact address are in [PRIVACY.md](${GIZLILIK_POLITIKASI_ADRESI}).`,
+  ].join("\n");
+}
+
 function kokReadme(o: BelgeOlgulari): string {
   return `## Kurulum
 
 Çekirdek Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. Eklenti mağazada yayımlandığında oradan kurulur; o güne kadar \`urun/eklenti\` içinde \`npm install && npm run build\` ile derlenir ve F5 ile geliştirme penceresinde koşar ([urun/eklenti/README.md](urun/eklenti/README.md)). MCP sunucusu \`node urun/cekirdek/src/mcp.ts\` komutuyla stdio üzerinden başlar; Claude Code için \`claude mcp add sarmal -- node <depo>/urun/cekirdek/src/mcp.ts\` yeterlidir.
 
 ${mcpYonergesi(o)}
+
+${gizlilikBolumu()}
 
 ## İlk beş dakika
 
@@ -381,6 +408,8 @@ function kokReadmeEn(o: BelgeOlgulari): string {
 The core requires Node 23.6 or newer: \`cd urun/cekirdek && npm link\` binds the \`sarmal\` command to your shell; the version requirement lives in \`urun/cekirdek/package.json\`. The extension installs from the marketplace once published; until then it is built inside \`urun/eklenti\` with \`npm install && npm run build\` and run with F5 in a development window ([urun/eklenti/README.md](urun/eklenti/README.md)). The MCP server starts over stdio with \`node urun/cekirdek/src/mcp.ts\`; for Claude Code, \`claude mcp add sarmal -- node <repo>/urun/cekirdek/src/mcp.ts\` is enough.
 
 ${mcpYonergesiEn(o)}
+
+${gizlilikBolumuEn()}
 
 ## First five minutes
 
