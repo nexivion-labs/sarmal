@@ -32,7 +32,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `1879396e0f885eb6852319ea2aed00c4c25c084d5a19897b1d43233d4c373a9c` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
 | `urun/cekirdek/src/dil-baglami.ts` | `11303aa54d5f9b080968296aa21d0d515a5ceda22cc521abd1f872229c483853` |
 | `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
 | `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
@@ -537,6 +537,16 @@ gevşetme değildir, çünkü kural sayısı artmış ve hiçbir koruma kalkmam�
 kontrolcü beklentiyi mutasyonla kanıtlamış, `sef` açıklamasına geri enjekte
 ettiği kuyruk nöbeti kırmızıya düşürmüş ve dosya yedekten geri alındığında mühür
 yerine oturmuştur.
+
+Tazeleme notu (2026-09-16 · sunucu talimatının yasaklayıcı kipten çıkması ·
+EKL-F6-A03): Founder hükmüyle sunucu talimatındaki ham arama cümlesi her iki
+dilde yeniden yazıldı; planı ham arama araçlarıyla okumak artık yasaklanmamakta,
+bunun yerine ham aramanın neyi kaçırdığı ve Sarmal araçlarının aynı soruyu neden
+kimlik indeksi ile graftan daha doğru cevapladığı anlatılmaktadır. Gerekçe, bir
+yasağın okuyucuyu meşru kullanımdan da alıkoyması ve gerekçesini taşımamasıdır.
+Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü
+ilerletti ve yukarıdaki tablodaki satır canlı değerle tazelendi; araç
+açıklamaları, ek açıklamalar ve öteki bütün kaynaklar değişmedi.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,
