@@ -1041,3 +1041,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "MIM-1 hiyerarşi kuralları ya da mimari sarma tanısı bir sonraki kez elden geçirildiğinde; BLK-KPS Blokundaki Katman ile Adım sarması sorusuyla birlikte",
   ne:               "2026-09-16 tarihinde ölçülmüştür: bir Katman Blokun parantezinin dışında, doğrudan Proje kökünün altında sekiz gün yaşadığı hâlde proje denetimi sıfır hata ve sıfır uyarı vermiştir. Kanonun kademe zinciri Faz, Blok, Katman, AltKatman ve Adım biçiminde ilan edilmişken Bloksuz bir Katman bu zinciri kırmakta, fakat mimari sarma tanısı yalnız Adımın AltKatman altında durmasını ölçtüğü için Katmanın üstünü hiç sorgulamamaktadır. Sonuç, plan yüzeylerinin aynı ağacı farklı saymasıdır: komut satırı Adımı sayar, panel saymaz ve hangisinin doğru olduğu okunamaz. Bu kusur BLK-KPS Blokunda açık duran Katman ile Adım sarması sorusuyla aynı ailedendir ve aynı hükümle kapanmalıdır. Doğru davranış, kapsayan zinciri Bloka ulaşmayan bir Katman için uyarı düzeyinde bir tanının doğması ve önerisinin Katmanı Blokun içine taşımayı söylemesidir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Onay çekirdeği ya da durum akışı kartı bir sonraki kez elden geçirildiğinde; en geç BLK-EKLENTI Bloku kapanmadan",
+  ne:               "Founder 2026-09-16 tarihinde onay kuyruğunun boş olduğunu bildirmiştir; oysa aynı gün EKL-F6-A05 ile EKL-F6-A09 Adımlarına onayBekler alanı yazılmış ve tur koşmuştur. Ölçüm şunu göstermiştir: onay çekirdeği kapıyı yalnız durumu beklemede ya da geliştirmede olan Adımlarda arar (urun/eklenti/src/onay-cekirdek.ts seksen altıncı satır), iki Adım ise kanonun tanımına birebir uyarak doğrulanmamış durumundaydı. Durum akışı kartı doğrulanmamış değerini iş teslim edilmiş fakat yetkili kabul verilmemiş diye tanımlar; yani ürünün kendi sözlüğünde Founder onayını bekleyen tek durum, onay kuyruğunun süzgecinin dışındadır. Sonuç, kapının mekanik beyanla yazılmış olmasına rağmen kuyruğun sessiz kalması ve Founder'ın onay veremeden beklemesidir. Bugün için iki Adım geliştirmede durumuna geri alınmıştır ki kuyruk onları görsün; bu bir geçici çözümdür ve kanonun doğru durumunu feda eder. Doğru davranış, kuyruğun doğrulanmamış durumunu da açık saymasıdır, çünkü o durumdaki her Adım tanım gereği bir kabul beklemektedir; süzgeç genişletildiğinde doğrulanmamış bir Adımın kuyruğa düştüğü ve beklemede olanın düşmediği mutasyonla kanıtlanmalıdır."
+)
