@@ -530,3 +530,11 @@ Kod( kod: KOD-SNM-GATEWAY-SURUM, dosya: "urun/cekirdek/sinama/gateway-surum-dene
   ne: "🍎 Araç kapısındaki sürüm denetimi ailesinin sınaması — kapı fail-closed kalır, sürüm denetimi araçları izin matrisinde tanınır ve reddin sebebi izin yokluğu ile araç tanınmazlığı arasında ayrışır" )
 Kod( kod: KOD-SNM-KURTARMA-SOZLESMESI, dosya: "urun/cekirdek/sinama/kurtarma-sozlesmesi.test.ts",
   ne: "🍎 Kurtarma şekli nöbetlerinin sınaması — motorun ürettiği kurtarma kaydının SZL-KURTARMA sözleşmesine uyması, şekli bozulan kaydın reddedilmesi ve açık tarafta hiçbir kurtarma yolu ağırlığının yazılı olmaması ölçülür" )
+
+// ── MCPB (EKL-F6-A03 · 2026-09-16): masaüstü eklenti bildirimi ve nöbeti ──
+//    Gönderim portalı yalnız uzak sunucuları kabul ettiği için yerel sunucunun
+//    dizine ulaşan yolu masaüstü eklentisidir; bildirim o yolun paket beyanıdır.
+Kod( kod: KOD-MCPB-BILDIRIM, dosya: "urun/cekirdek/manifest.json",
+  ne: "🍎 Masaüstü eklenti bildirimi — paketin adını, sürümünü, lisansını, depo adresini, gizlilik politikası dizisini, çalışma ortamı şartını ve Node stdio sunucusunun giriş noktasını şemanın sürümüne bağlı olarak beyan eder" )
+Kod( kod: KOD-SNM-MCPB-BILDIRIM, dosya: "urun/cekirdek/sinama/mcpb-bildirimi.test.ts",
+  ne: "🍎 Bildirim ayrışması nöbeti — bildirimin her alanını kendi kaynağına bağlar: ad ile sürüm çekirdek paketine, lisans hem lisans metnine hem eklenti paketine, depo adresi eklenti paketine, gizlilik adresi iki tanıtım yüzüne ve giriş noktası diskteki sunucu gövdesine düşer; uydurulan adres ve kayan çağrı argümanı kırmızı verir" )

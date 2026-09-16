@@ -15,6 +15,7 @@
   "homepage": "https://github.com/nexivion-labs/sarmal",
   "documentation": "https://github.com/nexivion-labs/sarmal/blob/main/README.en.md",
   "license": "Apache-2.0",
+  "icon": "sarmal-ikon.png",
   "privacy_policies": [
     "https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md"
   ],

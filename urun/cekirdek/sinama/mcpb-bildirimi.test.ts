@@ -46,6 +46,7 @@ interface Bildirim {
   homepage?: string;
   documentation?: string;
   license?: string;
+  icon?: string;
   keywords?: string[];
   privacy_policies?: string[];
   compatibility?: { platforms?: string[]; runtimes?: { node?: string } };
@@ -75,6 +76,8 @@ interface Gercek {
   depoAdresi: string;
   eklentiAnahtarlari: string[];
   lisansMetni: string;
+  /** Eklentideki marka ikonunun ham baytları — paket kökündeki kopyanın aslı. */
+  eklentiIkonu: Buffer;
   /** [dosya adı, içerik] — gizlilik adresinin görünmesi gereken tanıtım yüzleri. */
   tanitimYuzleri: Array<[string, string]>;
 }
@@ -96,6 +99,7 @@ const GERCEK: Gercek = {
   eklentiLisansi: EKLENTI_PAKETI.license ?? "",
   depoAdresi: EKLENTI_PAKETI.repository?.url ?? "",
   eklentiAnahtarlari: EKLENTI_PAKETI.keywords ?? [],
+  eklentiIkonu: readFileSync(join(DEPO_KOKU, "urun", "eklenti", "ikonlar", "sarmal-ikon.png")),
   lisansMetni: readFileSync(join(DEPO_KOKU, "LICENSE.md"), "utf8"),
   tanitimYuzleri: [
     ["README.md", readFileSync(join(DEPO_KOKU, "README.md"), "utf8")],
@@ -143,6 +147,20 @@ function bildirimAyrismalari(b: Bildirim, g: Gercek): string[] {
     if (!deger || !deger.startsWith(g.depoAdresi)) ayrisma.push(ad);
 
   if (!esit(b.keywords, g.eklentiAnahtarlari)) ayrisma.push("keywords");
+
+  // İkon paket kökünün İÇİNDE yaşamalıdır, çünkü paketleme kökün dışına çıkan bir
+  // yolu taşıyamaz; ayrıca eklentideki aslıyla bayt bayt aynı kalmalıdır, yoksa
+  // aynı markanın iki ayrı yüzü doğar ve hangisinin güncel olduğu okunamaz.
+  const ikon = b.icon;
+  if (!ikon) {
+    ayrisma.push("icon(eksik)");
+  } else if (ikon.startsWith("/") || ikon.includes("..")) {
+    ayrisma.push("icon(paket-kökünün-dışında)");
+  } else if (!existsSync(join(CEKIRDEK, ikon))) {
+    ayrisma.push("icon(diskte-yok)");
+  } else if (!readFileSync(join(CEKIRDEK, ikon)).equals(g.eklentiIkonu)) {
+    ayrisma.push("icon(eklentideki-asliyla-ayrışık)");
+  }
 
   // Dizin kuralının üçüncü parçası: HTTPS adresten kurulu bir dizi ve o adresin
   // tanıtım yüzlerinde GERÇEKTEN yaşaması. Uydurulmuş bir adres burada düşer.
