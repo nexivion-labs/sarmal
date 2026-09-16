@@ -17,8 +17,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-16", oturum: 111,
-            neredeyiz: EKL-VE-KPS-BLOK-TURU-BITTI-KALANI-FOUNDER-SECIM-BAKIS-VE-HUKUMLERI,
-            sıradaki: FOUNDER-DORT-SECIM-UC-CANLI-BAKIS-BES-HUKUM-SONRA-DAL-GONDERIMI,
+            neredeyiz: UC-HUKUM-UYGULANDI-A08-VE-KPS-KEN-KAPANDI-KALAN-FOUNDER-BAKISI,
+            sıradaki: FOUNDER-UC-CANLI-BAKIS-SONRA-MCPB-KARARI-VE-DAL-GONDERIMI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
                          BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
@@ -2013,5 +2013,33 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-16", oturum: 111,
         kurulması), üç canlı pencere bakışı (EKL-F6-A09, KPS-BLM-A01 ve KPS-ADA-A01) ve
         beş hükmüdür (KPS-CEL-A01, KPS-FAZ-A02, Türkçe README başlığının dili, yazan
         araçların yıkıcılık ipucu ve açıklamalardaki yönlendirici cümleler).
+
+        OTURUM 111 BLOK TURU İKİNCİ YARISI · 2026-09-16: Founder üç hükmünü bildirmiş
+        ve üçü şerhli onay olarak Adımların kaydına inmiştir: önizleme yüzü Masa
+        düzeniyle uygulanacak, doğan ağacın sunucu kaydı motor yolunu SARMAL_KOK
+        ortam değişkeninden varsayılansız okuyacak ve mimariBağı kenarı kanondan
+        düşürülüp ilişki iç içe sarma ile kapsayan bağı olarak yazılacaktır. Üç
+        hüküm de aynı gün uygulanmıştır. EKL-F6-A08 Adımı kapanmıştır: doğan ağacın
+        üç kaydı da yolu değişkenden çözer, kanca motoru bulamadığında sessizce
+        çekilmek yerine denetimin koşmadığını söyler ve doğan ağacın iki dilli
+        yönergesi bağlanamayan sunucu ile tanımsız sunucuyu ayırt etmeyi öğretir;
+        kontrolcü ağacı depo dışında doğurup taşıyarak bunu bağımsız ölçmüştür.
+        KPS-KEN-A01 Adımı da kapanmıştır: kenarın kanondaki on geçişi düşürülmüş,
+        ORK-1.1 kodu ile mimari-bağı-ihlali tanı adı korunduğu için motorda ve tanı
+        sicilinde hiçbir değişiklik gerekmemiş, sabit kanon SHA listesi ile demet
+        mührü kontrolcü tarafından bağımsız hesaplanıp yazılmıştır. EKL-F6-A05
+        Adımının üretimi bitmiş ve Masa düzeni, tıklanabilir atıflar ile yazım
+        türlerinin başlık ayrımı uygulanmıştır; Adım Founder'ın canlı pencerede
+        görmesini beklediği için açık kalmıştır ve eklenti 0.9.191 olarak
+        paketlenip kurulmuştur. Founder hükmüyle arşiv mührü taşıyan saha sınavı
+        rayı açık deponun plan rafından çıkarılıp laboratuvar deposunun arşiv
+        rafına taşınmıştır. Turda dört yeni hatırlatıcı açılmış, biri kapanmıştır;
+        açılanlar sözdizimi hatasının tanı kimliği taşımaması, tanı kimliklerinin
+        hiçbir kaynakta tanımlı olmaması, kancanın boş değişken genişlemesi ve
+        önizlemenin devrettiği kalemlerdir. İki olay ders olarak kayda geçer:
+        Founder'ın açık kalmış bayat editör tamponu bir plan dosyasının üstüne
+        yazılmış ve dosya HEAD'den onarılmıştır; ayrıca makine uyku moduna
+        geçtiğinde ajanın sessizliği takılma sanılıp ajan durdurulmuş, yarım işi
+        kontrolcü devralıp bitirmiştir. Açık Adım sayısı otuz altıdır.
         """
 }
