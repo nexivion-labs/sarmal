@@ -981,3 +981,33 @@ Hatırlatıcı(
   dönüşTetikleyici: "Tanı sicili ya da kanonun Zorlama bölümleri bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: tanı kimlikleri yalnız urun/cekirdek/src/tani-sicili.ts dosyasında yaşamakta ve hiçbir .sar kaynağında düğüm olarak ilan edilmemektedir; gezinme aracı dört yüz yirmi iki dosyayı tarayıp diakritik-kayıp kimliği için tanım yok demiştir. Bu yüzden önizleme yüzü madde metnindeki tanı kimliklerini bağlantıya çevirememiş ve onları dürüstçe düz metin bırakmıştır, çünkü hedefi olmayan bir bağ süslü fakat ölü bir sözce üretir. Kanon maddelerinin Zorlama bölümü bu kimlikleri adıyla andığına göre kimliklerin bir tanım yüzeyi kazanması gerekir; o gün yüzeydeki bağlar kendiliğinden çalışır ve okuyucu tanıdan kanona geçebilir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-MEYVE-MUAFIYETI-BEYAN-YOLU-YOK,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Atomiklik borcunun temizliğine başlanmadan önce; en geç BLK-EKLENTI Bloku kapandığında",
+  ne:               "Founder 2026-09-16 tarihinde meyve muafiyeti kapısının açılmasına hükmetmiştir: bir Adım hiçbir Meyve teslim etmemesini gerekçesiyle birlikte beyan edebilecek, motor beyanlı Adımı atomiklik tanısının dışında tutacak ve beyansız Adıma tanıyı ateşlemeye devam edecektir. Ölçüm şunu göstermiştir: urun/cekirdek/src/denetci.ts dosyasının üç bin beş yüz altmış altıncı satırındaki bekçi yalnız durumun tamamlandı olmasına ve üretir kenarının boşluğuna bakmakta, hiçbir muafiyet yolu tanımamaktadır; oysa kardeş bekçi olan kullanımsız tip tanısı aynı dosyanın iki bin yüz seksen üçüncü satırında tip muafiyetleri beyanını okumakta ve beyanlı tipte susmaktadır. Otuz dört canlı bulgunun okunan on dördünde yarısı doğası gereği teslim üretmeyen Adımlardır: faz kapıları, taban ölçen plan Adımları, saha teyidi, bir açılış toplantısı, bir anahtar rotasyonu ve kapalı depoya fiziksel taşıma. EKL-F2-A04 Adımı meyvesizliğini 2026-07-18 tarihinde düzyazıyla zaten beyan etmiştir, fakat motor düzyazı okuyamadığı için tanı yine ateşlemektedir. Borcun sonucu ağırdır: YAS-4 maddesi bir tanıyı ancak bulguları sıfırlandığında terfi ettirdiği için kanonun hata dediği üç tanı, yani ORK-1.2 yürütme kenarı sözleşmesi, ORK-1.3 üretim kökeni ihlali ve ORK-2.4 kullanır kenarı ihlali, bugün bilgi düzeyinde kilitli kalmaktadır. Uygulama beş kalemdir: sınıflama kaydında Adım tipine gerekçeli muafiyet alanı açılması, motorda bekçinin beyanlı Adımı atlaması, MIM-1.6 maddesinin Zorlama bölümüne beyan yolunun yazılması, beyansız Adımın hâlâ kırmızı verdiğinin mutasyonla kanıtlanması ve planda yaklaşık on üç Adıma gerekçeli muafiyet ile yaklaşık on yedi Adıma gerçek üretir kenarı yazılması. Var olmayan bir dosyayı Meyve diye ilan etmek yasaktır, çünkü bilgi düzeyindeki borcu meyve dosyası eksik hatasına çevirir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kök yüzeyi nöbeti ya da karşılıksız metin atfı tanısı bir sonraki kez elden geçirildiğinde",
+  ne:               "2026-09-16 tarihinde iki ayrı işlemenin kanca çıktısında ölçülmüştür: kök yüzeyi nöbeti README.md ve README.en.md dosyalarının kırk üçüncü satırlarında KRR-RANDEVU-03 kimliğinin hiçbir kaynakta tanımlı olmadığını bildirmektedir, oysa o satır bir kod çitinin içindedir ve Sarmalın kırık referans tanısının çıktısını okuyucuya gösteren kasıtlı bir örnektir. Yüzey doğrudur, nöbet yanılmaktadır: örnek çitinin içindeki kimliği gerçek bir atıf saymakta ve deponun dünyaya bakan yüzünde her işlemede yinelenen kalıcı bir sahte uyarı üretmektedir. Aynı çitin içindeki MYV-RANDEVU-UC kimliği ise bulguya dönüşmemiştir, dolayısıyla nöbetin kapsamı kendi içinde de tutarsızdır. Doğru davranış, kod çitiyle çevrili bölgelerin atıf taramasının dışında tutulmasıdır; bir belge tanının nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANCA-GECEN-FIKSTUR-CIKTISINI-HATA-SAYIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "İşleme kancasının test kapısı bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde bir üretici ajanın raporunda bildirilmiş ve kontrolcü tarafından doğrulanmıştır: işleme kancasının test kapısı süit günlüğünü çarpı imi ve failing sözcüğü için taramakta, fakat urun/cekirdek/src/sarmal.ts dosyasının dokuz yüz on ikinci satırındaki hata akışı çıktısı bir fikstürün beklenen çıktısıdır ve o fikstür geçmektedir. Sonuç olarak sağlıklı bir sınamanın beklenen çıktısı kanca tarafından başarısızlık gibi toplanmakta ve günlüğü okuyan kişiye kırmızı varmış gibi görünmektedir. Bugün işi engellememektedir, çünkü kanca hükmünü çıkış kodundan vermektedir; ancak gürültü bir gün gerçek kırmızıyı gizler. Doğru davranış, kapının hükmünü metin taramasından değil koşucunun kendi özet satırlarından almasıdır."
+)
