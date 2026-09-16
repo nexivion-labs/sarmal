@@ -2360,6 +2360,29 @@ export const ONIZLEME_METINLERI = {
     );
   },
   get beklenmeyenHata(): string { return yuzeyMetni("Beklenmeyen hata.", "Unexpected error."); },
+  /** Dosya başındaki teknik bandın katlanmış künyesinin etiketi (EKL-F6-A05). */
+  get kunyeEtiketi(): string { return yuzeyMetni("Künye", "Colophon"); },
+  /** Künyenin kaynakta kapladığı satır aralığı — katlıyken de yeri okunur. */
+  kunyeYeri(ilk: number, son: number): string {
+    return yuzeyMetni(`satır ${ilk}–${son}`, `lines ${ilk}–${son}`);
+  },
+  /** Yapı ağacı satırının ipucu: hangi tip, kaynakta hangi satır. */
+  agacSatirIpucu(tip: string, satir: number): string {
+    return yuzeyMetni(`${tip} · kaynakta satır ${satir}`, `${tip} · source line ${satir}`);
+  },
+  /** Belgede zaten basılmış metnin yerine konan atfın ipucu. */
+  get yinelenenMetinIpucu(): string {
+    return yuzeyMetni(
+      "Bu metin hemen yukarıdaki belgede basıldı; ikinci kez yazılmadı.",
+      "This text was printed in the document just above; it is not repeated here.",
+    );
+  },
+  /** Belgede basılmış BAŞLIĞIN yerine konan atfın kısa etiketi. */
+  get yinelenenBaslikEtiketi(): string { return yuzeyMetni("başlık", "title"); },
+  /** Madde metnindeki bir atfın ipucu — tıklanınca tanımına gidilir. */
+  atifIpucu(kod: string): string {
+    return yuzeyMetni(`${kod} tanımına git`, `Go to the definition of ${kod}`);
+  },
 } as const;
 
 export function blokluAdimIpucu(adet: number): string {

@@ -537,6 +537,30 @@ export function satirSvgGovdesi(
   return govde;
 }
 
+/**
+ * Bir EKSEN simgesinin webview'e gömülecek ham SVG gövdesi — satır simgesinin
+ * ikizidir ve aynı önbelleği paylaşır. Okuma modunun yapı ağacı plan
+ * kademelerini (Faz · Blok · Katman · AltKatman · Adım · Meyve) kendi
+ * simgeleriyle çizsin diye vardır; ikinci bir çizim yolu doğmaz, çünkü kaynak
+ * yine `eksenSvgKaynagi` rafıdır. Önbellek anahtarı eksen adıyla önekli
+ * tutulur, böylece satır çizelgesiyle çakışmaz.
+ */
+export function eksenSvgGovdesi(
+  tip: EksenTipi,
+  oku: (goreliYol: string) => string,
+): string {
+  const anahtar = `eksen:${tip}`;
+  let govde = govdeBellek.get(anahtar);
+  if (govde === undefined) {
+    govde = oku(eksenSvgKaynagi(tip))
+      .replace(/^\s*<svg /, '<svg class="sr-simge" width="1em" height="1em" aria-hidden="true" focusable="false" ')
+      .replace(/\n\s*/g, " ")
+      .trim();
+    govdeBellek.set(anahtar, govde);
+  }
+  return govde;
+}
+
 /** Sınama kolaylığı: gömülü SVG önbelleğini boşaltır (mutasyon nöbeti kullanır). */
 export function govdeBellegiBosalt(): void { govdeBellek.clear(); }
 
