@@ -155,38 +155,43 @@ function kenarKirp(m: string): string {
   return m.replace(/^[ \t]*\n+/, "").replace(/\s+$/, "");
 }
 
-/** belgeMd seçenekleri: `boya` verilirse kod parçaları renk-sınıflı HTML olur
- *  (önizleme — editör paritesi); verilmezse `sarmal` kod çiti (CLI/GitHub). */
-export interface BelgeSecenek {
-  boya?: boolean;
-  /** widget tip adı → hex renk (aile rengi — eklenti SNF'den besler). */
-  tipRenk?: (ad: string) => string | undefined;
+/** Kaynağın bir parçası: ya belge bloğunun içi ya da kaynaktaki hâliyle kod.
+ *  `ilkSatir` 1-tabanlıdır ve parçanın kaynaktaki gerçek satırını söyler —
+ *  satır numaralı yüzeyler (okuma modunun kaynak bölmesi) bu sayıyı kullanır. */
+export interface BelgeParcasi {
+  tur: "kod" | "belge";
+  metin: string;
+  ilkSatir: number;
 }
 
 /**
- * .sar kaynağını Markdown belgesine çevirir (saf — hata fırlatabilir).
- *
- * FATİH KURALI (2026-07-03): YALNIZ `-->| ... |<--` blok içleri MD olarak
- * render edilir; geri kalan HER ŞEY (bildirimler, parametreler, yorumlar)
- * DOSYADAKİ HALİYLE kod olarak durur — düz metinle asla karışmaz; kod kendi
- * RENKLERİYLE çıkar (makine+AI+insan tek noktada — tek dosya vizyonu).
- * Sentetik başlık üretilmez; başlık belgenin kendi `#`'idir.
+ * Kaynağı belge blokları ile kod parçalarına böler (SAF). `belgeMd` bu bölmenin
+ * üstünde yaşar; ikinci bir tarayıcı yazılmaz, çünkü aynı kaynağı iki ayrı
+ * mantıkla bölen iki yüzey er geç ayrışır (YUZ-1.2). Tarama lexer'la tutarlıdır:
+ * yorum ve dizgi İÇİNDEKİ `-->|` blok açmaz.
  */
-export function belgeMd(kaynak: string, secenek?: BelgeSecenek): string {
-  // Söz dizimi doğrulaması: bozuk dosya kibar hataya dönsün (çağıran yakalar).
-  ayristir(belirtecle(kaynak));
+export function belgeParcalari(kaynak: string): BelgeParcasi[] {
+  const parcalar: BelgeParcasi[] = [];
+  // Satır numarası ofsetten okunur; her parça için baştan saymak yerine tek geçiş.
+  const satirBasi: number[] = [0];
+  for (let k = 0; k < kaynak.length; k++) if (kaynak[k] === "\n") satirBasi.push(k + 1);
+  const satirNo = (ofset: number): number => {
+    let alt = 0, ust = satirBasi.length - 1;
+    while (alt < ust) {
+      const orta = Math.ceil((alt + ust) / 2);
+      if (satirBasi[orta] <= ofset) alt = orta; else ust = orta - 1;
+    }
+    return alt + 1;
+  };
 
-  // Lexer'la tutarlı tarama: yorum (// · /* */) ve dizgi (" · \"\"\") İÇİNDEKİ
-  // -->| blok AÇMAZ — lexer bunları belge saymaz, biz de saymayız.
-  const parcalar: string[] = [];
   let bas = 0;
   let i = 0;
   const kodBas = (son: number): void => {
-    const kod = kenarKirp(kaynak.slice(bas, son));
+    const ham = kaynak.slice(bas, son);
+    const kod = kenarKirp(ham);
     if (!kod) return;
-    parcalar.push(secenek?.boya
-      ? `<pre class="sarmal-kod">${kodBoya(kod, secenek.tipRenk)}</pre>`
-      : citle(kod, "sarmal"));
+    const bosluk = ham.length - ham.replace(/^[ \t]*\n+/, "").length;
+    parcalar.push({ tur: "kod", metin: kod, ilkSatir: satirNo(bas + bosluk) });
   };
   while (i < kaynak.length) {
     const c = kaynak[i];
@@ -217,7 +222,7 @@ export function belgeMd(kaynak: string, secenek?: BelgeSecenek): string {
       const kapa = kaynak.indexOf("|<--", i + 4);
       const son = kapa === -1 ? kaynak.length : kapa;               // kapanmamışsa lexer zaten hata verdi
       const icerik = kaynak.slice(i + 4, son).replace(/^[ \t]*\n/, "").replace(/\n[ \t]*$/, "");
-      parcalar.push(belgeGovdesiMd(icerik));
+      parcalar.push({ tur: "belge", metin: icerik, ilkSatir: satirNo(i) });
       i = son + 4;
       bas = i;
       continue;
@@ -225,5 +230,72 @@ export function belgeMd(kaynak: string, secenek?: BelgeSecenek): string {
     i++;
   }
   if (bas < kaynak.length) kodBas(kaynak.length);
+  return parcalar;
+}
+
+/**
+ * Boyanmış kodu SATIRLARA böler (SAF). Açık kalan bir renk span'ı satır sonunda
+ * kapatılır ve sonraki satırın başında yeniden açılır; böylece çok satırlı yorum
+ * ile üç tırnaklı dizgi satır numaralı bölmede de kendi rengini korur ve her
+ * satır kendi başına geçerli bir HTML parçası olur.
+ */
+export function kodBoyaSatirlari(kod: string, tipRenk?: (ad: string) => string | undefined): string[] {
+  const boyali = kodBoya(kod, tipRenk);
+  const satirlar: string[] = [];
+  let acik: string | undefined;       // o an açık olan span'ın açılış etiketi
+  let tampon = "";
+  let i = 0;
+  while (i < boyali.length) {
+    const c = boyali[i];
+    if (c === "<") {                  // gerçek etiket — kaçırılmış '<' zaten &lt;
+      const kapa = boyali.indexOf(">", i);
+      const etiket = boyali.slice(i, kapa + 1);
+      acik = etiket.startsWith("</") ? undefined : etiket;
+      tampon += etiket;
+      i = kapa + 1;
+      continue;
+    }
+    if (c === "\n") {
+      satirlar.push(acik ? tampon + "</span>" : tampon);
+      tampon = acik ?? "";
+      i++;
+      continue;
+    }
+    tampon += c;
+    i++;
+  }
+  satirlar.push(acik ? tampon + "</span>" : tampon);
+  return satirlar;
+}
+
+/** belgeMd seçenekleri: `boya` verilirse kod parçaları renk-sınıflı HTML olur
+ *  (önizleme — editör paritesi); verilmezse `sarmal` kod çiti (CLI/GitHub). */
+export interface BelgeSecenek {
+  boya?: boolean;
+  /** widget tip adı → hex renk (aile rengi — eklenti SNF'den besler). */
+  tipRenk?: (ad: string) => string | undefined;
+}
+
+/**
+ * .sar kaynağını Markdown belgesine çevirir (saf — hata fırlatabilir).
+ *
+ * FATİH KURALI (2026-07-03): YALNIZ `-->| ... |<--` blok içleri MD olarak
+ * render edilir; geri kalan HER ŞEY (bildirimler, parametreler, yorumlar)
+ * DOSYADAKİ HALİYLE kod olarak durur — düz metinle asla karışmaz; kod kendi
+ * RENKLERİYLE çıkar (makine+AI+insan tek noktada — tek dosya vizyonu).
+ * Sentetik başlık üretilmez; başlık belgenin kendi `#`'idir.
+ */
+export function belgeMd(kaynak: string, secenek?: BelgeSecenek): string {
+  // Söz dizimi doğrulaması: bozuk dosya kibar hataya dönsün (çağıran yakalar).
+  ayristir(belirtecle(kaynak));
+
+  // Bölme `belgeParcalari` içinde yaşar (tek tarayıcı); burada yalnız her parça
+  // kendi yüzüne çevrilir. Çıktı bölmenin ayrılmasından ÖNCEKİYLE birebirdir.
+  const parcalar = belgeParcalari(kaynak).map((p) =>
+    p.tur === "kod"
+      ? (secenek?.boya
+        ? `<pre class="sarmal-kod">${kodBoya(p.metin, secenek.tipRenk)}</pre>`
+        : citle(p.metin, "sarmal"))
+      : belgeGovdesiMd(p.metin));
   return parcalar.length ? `${parcalar.join("\n\n")}\n` : "*Boş .sar — henüz düğüm yok.*\n";
 }
