@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.192 — 2026-09-16 (yapı ağacının satırında açıklama kodun altına indi)
+
+- **Ağaç satırında kod üstte, açıklama altta.** Okuma kipinin yapı ağacı her satırda kodu ve açıklamayı aynı satıra diziyordu; dar kenar sütununda açıklama dört satıra kırılıyor ve satır numarası uzakta kalıyordu. Founder gerçek bir plan dosyasında canlı inceleyip hükmünü verdi: kod kendi satırında durur, satır numarası kodun yanında yazılır ve açıklama kodun altında girintili bir gövde olarak akar. Tip simgesi, sarma girintisi, bağ çizgisi, satıra tıklayınca kaynağa gitme ve künye değişmedi; iki bölmenin yan yana duruşu Masa düzeninin parçasıdır ve korundu.
+- **Düzeni nöbet koruyor.** İki yeni ölçüm üretilen sayfada kod ile açıklamanın aynı satır kutusunda dizilmediğini ve stilin ikisini alt alta dizdiğini denetliyor. Üç ayrı mutasyon — eski tek satırlı dizilişin geri konması, açıklamanın kod hanesinin içine taşınması ve stildeki sütun yönünün satıra çevrilmesi — nöbeti kırmızıya düşürdü ve geri alınınca yeşile döndü.
+- **Paket kilidi sürümle hizalandı.** Eklentinin paket kilidi on üç sürüm boyunca eski numarada kalmıştı; sürüm artırımı bu kez kilidi de birlikte ilerletti.
+
 ## 0.9.191 — 2026-09-16 (doğan ağaç başka makinede de kuruluyor, okuma kipi Masa düzenine geçti)
 
 - **Doğan ağacın kurulumu artık taşınabilir.** Doğuş paketinin yazdığı sunucu kaydı, denetim kancası ve kanon işaretçisi motorun yolunu bugüne kadar doğduğu makinenin mutlak adresiyle yazıyordu. Böyle bir ağaç bir depoya gönderilip başka bir makinede klonlandığında o adres orada bulunmuyor, sunucu hiç açılmıyor ve ajan hiçbir Sarmal aracı göremiyordu. Üç kayıt da yolu artık `${SARMAL_KOK}` ortam değişkeninden çözüyor ve hiçbiri varsayılan bir adres taşımıyor; varsayılan bilinçle konmamıştır, çünkü varsayılan bir değer arızayı susturur ve kullanıcıyı yanlış bir kuruluma sessizce bağlar.
