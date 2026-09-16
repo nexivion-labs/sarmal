@@ -11,6 +11,9 @@
 //     ③ belgede basılan her alan metni yüzeyde TAM BİR KEZ görünür,
 //     ④ Hüküm · Gerekçe · Örnek · Zorlama kendi başlıklarıyla çıkar, gövdeleri
 //        başlığın altında durur ve çözülen atıflar bağlantı olarak üretilir.
+//     ⑤ ağaç gerçek bir ağaçtır ve satır kaynağın doğru satırını açar,
+//     ⑥ ağaç satırında kod kendi satırındadır, satır numarası kodun yanındadır
+//        ve açıklama kodun ALTINDA girintili bir gövde olarak durur.
 //   Ayrıca Founder'ın makette gördüğü üç kusur da burada kilitlenir: künye
 //   ağacın ÜSTÜNÜ kaplamaz, ağaç satırının adı kırpılmaz ve satırın tamamına
 //   bağlanan ipucu balonu yoktur.
@@ -259,4 +262,65 @@ test("A05 kusur ③: satırın tamamına bağlanan ipucu balonu YOKTUR", () => {
   }
   assert.match(SAYFA, /<span class="as-simge"[^>]*title="/,
     "tip adı hiçbir yerde okunamıyor — balon simgeden de düşmüş");
+});
+
+// ── ⑥ AĞAÇ SATIRI: kod üstte, açıklama ALTINDA ────────────────────────────
+//   Founder şerhi 2026-09-16 (üçüncü tur): gerçek bir plan dosyasında her ağaç
+//   satırı kodu ve `ne` açıklamasını AYNI satıra diziyordu; dar kenar sütununda
+//   açıklama dört satıra kırılıyor ve satır numarası kodun uzağına düşüyordu.
+//   Ölçüm üretilmiş sayfanın kendisi üstünde koşar ve iki şeyi birden arar:
+//   kodun satır kutusu ile açıklamanın AYRI ögeler olduğunu ve stilin o iki
+//   ögeyi alt alta dizdiğini.
+
+/** Üretilmiş sayfadaki ağaç satırlarının gövdeleri (kök satırı dâhil). */
+function agacSatirGovdeleri(sayfa: string): string[] {
+  return [...sayfa.matchAll(/<(a|div) class="as[ "][^>]*>([\s\S]*?)<\/\1>/g)].map((es) => es[2]);
+}
+
+/** Bir HTML parçasının sonunda AÇIK kalan `span` sayısı (yuvalanma derinliği). */
+function acikSpanlar(parca: string): number {
+  return (parca.match(/<span\b/g) ?? []).length - (parca.match(/<\/span>/g) ?? []).length;
+}
+
+test("A05 ⑥: ağaç satırında kod ile açıklama AYNI satır kutusunda dizilmez", () => {
+  const govdeler = agacSatirGovdeleri(SAYFA);
+  assert.ok(govdeler.length >= 2, "yapı ağacında satır bulunamadı — ölçüm boş küme üstünde koşuyor");
+  const aciklamali = govdeler.filter((g) => g.includes('<span class="as-ad">'));
+  assert.ok(aciklamali.length >= 1,
+    "hiçbir ağaç satırı açıklama taşımıyor — ölçüm boş küme üstünde koşuyor");
+
+  for (const govde of govdeler) {
+    assert.equal(govde.indexOf('<span class="as-bas">'), 0,
+      "ağaç satırı kod hanesiyle (as-bas) başlamıyor — kod kendi satır kutusunda durmuyor");
+    const kod = govde.indexOf('<span class="as-kod"');
+    assert.ok(kod > 0, "ağaç satırında kod hanesi yok");
+    assert.equal(acikSpanlar(govde.slice(0, kod)), 1,
+      "kod, kendi satır kutusunun (as-bas) İÇİNDE değil — kod satırı dağılmış");
+
+    const ad = govde.indexOf('<span class="as-ad">');
+    if (ad === -1) continue;
+    assert.ok(kod < ad, "açıklama kodun ÜSTÜNDE duruyor — okuyucu önce açıklamayı görüyor");
+    assert.equal(acikSpanlar(govde.slice(0, ad)), 0,
+      "açıklama kodun satır KUTUSUNUN içinde diziliyor — kod ile açıklama aynı satırda akıyor");
+    const satirNo = govde.indexOf('<span class="as-satir">');
+    assert.ok(satirNo > 0 && satirNo < ad,
+      "satır numarası kodun yanında değil — açıklamanın ötesine düşmüş");
+    assert.equal(acikSpanlar(govde.slice(0, satirNo)), 1,
+      "satır numarası kodun satır kutusunun dışında — kodun yanında yazılmıyor");
+  }
+});
+
+test("A05 ⑥: stil kod hanesi ile açıklamayı ALT ALTA dizer", () => {
+  const asKural = /\n\.as \{[^}]*\}/.exec(STIL)?.[0] ?? "";
+  assert.ok(asKural, ".as kuralı stilde yok");
+  assert.match(asKural, /flex-direction:\s*column/,
+    "ağaç satırı hâlâ tek katlı bir satır kutusu — açıklama kodun altına inmiyor");
+  const basKural = /\n\.as-bas \{[^}]*\}/.exec(STIL)?.[0] ?? "";
+  assert.ok(basKural, ".as-bas kuralı stilde yok — kodun satır kutusu tanımsız");
+  assert.match(basKural, /display:\s*flex/,
+    "kod hanesi kendi satır kutusunu kurmuyor — kod ile satır numarası yan yana durmaz");
+  const adKural = /\n\.as-ad \{[^}]*\}/.exec(STIL)?.[0] ?? "";
+  assert.ok(adKural, ".as-ad kuralı stilde yok");
+  assert.match(adKural, /padding-left:/,
+    "açıklama girintili bir gövde değil — kodun altında hizasız akıyor");
 });

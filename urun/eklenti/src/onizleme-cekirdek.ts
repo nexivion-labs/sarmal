@@ -203,9 +203,14 @@ function agacSatiri(d: Dugum, girdi: MasaGirdisi): string {
   const kodHane = kod
     ? `<span class="as-kod" style="--kodrenk:${kodRenkDegiskeni(kod, girdi.palet)}">${kacir(kod)}</span>`
     : "";
+  // Founder şerhi 2026-09-16 (üçüncü tur): kod ile açıklama AYNI satır kutusunda
+  // dizilmez. Kod ile satır numarası `as-bas` hanesinde yan yana durur, açıklama
+  // ise onun ALTINDA girintili bir gövde olarak akar; dar sütunda kırılsa bile
+  // kodun altında kalır, çünkü kırılan gövde artık kodun kardeşi değil, ardılıdır.
+  const basHane = `<span class="as-bas">${simgeHane}${kodHane}`
+    + `<span class="as-satir">${d.satir}</span></span>`;
   const adHane = ad ? `<span class="as-ad">${kacir(ad)}</span>` : "";
-  return `<a class="as" href="${kacir(girdi.satirBaglantisi(d.satir))}">${simgeHane}${kodHane}${adHane}`
-    + `<span class="as-satir">${d.satir}</span></a>`;
+  return `<a class="as" href="${kacir(girdi.satirBaglantisi(d.satir))}">${basHane}${adHane}</a>`;
 }
 
 /** Bildirim ağacını iç içe listeye çevirir (sarma ilişkisi girintiden okunur). */
@@ -217,8 +222,11 @@ function agacDali(dugumler: readonly Dugum[], girdi: MasaGirdisi): string {
 
 export function yapiAgaci(bildirimler: readonly Dugum[], girdi: MasaGirdisi): string {
   const kokSimge = girdi.simge("dosya");
-  const kok = `<div class="as as-kok">${kokSimge ? `<span class="as-simge">${kokSimge}</span>` : ""}`
-    + `<span class="as-kod">${kacir(girdi.dosyaAdi)}</span></div>`;
+  // Kök de baş hanesini taşır: satır kutusu artık `as-bas` olduğu için simge ile
+  // dosya adı ancak o hanenin içinde yan yana durur.
+  const kok = `<div class="as as-kok"><span class="as-bas">`
+    + `${kokSimge ? `<span class="as-simge">${kokSimge}</span>` : ""}`
+    + `<span class="as-kod">${kacir(girdi.dosyaAdi)}</span></span></div>`;
   return `<div class="agac">${kok}${agacDali(bildirimler, girdi)}</div>`;
 }
 
