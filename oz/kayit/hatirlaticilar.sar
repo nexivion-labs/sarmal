@@ -1021,3 +1021,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "Masaüstü eklenti paketi ilk kez yayımlanmadan önce; en geç EKL-F6-A01 Adımının kapanışında",
   ne:               "Founder 2026-09-16 tarihinde çekirdek paketinin sürümünü sunucunun telde ilan ettiği 0.16.0 numarasına çekmeye hükmetmiş ve sürüm notu ihtiyacının hatırlatıcıya bağlanmasını istemiştir. Ölçüm şunu göstermiştir: depoda tek sürüm notu dosyası vardır ve o dosya eklentinin tarihçesidir (urun/eklenti/CHANGELOG.md, doksan yedi sürüm başlığı); çekirdek paketinin hiçbir sürüm notu yoktur ve sunucunun sürüm gerekçesi yalnız kaynak kodun içindeki yorumda yaşamaktadır (urun/cekirdek/src/mcp.ts altmış dokuzuncu satır). Masaüstü eklenti paketi eklentiden ayrı bir üründür ve ayrı mağazada yaşar; yayımlandığı gün kendi sürüm notunu ister, çünkü kurulanın hangi değişiklikle geldiğini eklentinin notundan okumak mümkün değildir. Doğru davranış, çekirdek paketine kendi sürüm notu dosyasının açılması ve sunucu sürümü her ilerlediğinde o notun aynı işlemede yazılmasıdır; not yokken paket yayımlanmaz."
 )
+
+Hatırlatıcı(
+  kod:              HTR-PANEL-BLOKSUZ-KATMANI-SESSIZCE-DUSURUYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Yol haritası ağacının kurulumu ya da panel sayacı bir sonraki kez elden geçirildiğinde; en geç BLK-KPS Blokunun hiyerarşi Adımında",
+  ne:               "Founder 2026-09-16 tarihinde yol haritası panelinin sayacı ile komut satırı karnesinin her seferinde uyuşmadığını bildirmiştir: panel üç yüz altmış yedi bölü dört yüz iki, karne üç yüz altmış sekiz bölü dört yüz üç. Ölçüm farkın tek bir Adım olduğunu göstermiştir: EKL-F12-A01 Adımının Katmanı 2026-09-08 gecesi Blokun kapanış parantezinin dışına doğmuş, komut satırı her Adım düğümünü saydığı için onu saymış, panel ise Adımı Blok üzerinden Faza astığı için Bloksuz Katmanın Adımını hiç asmamış, saymamış ve göstermemiştir. Sayaç yol haritası çekirdeğinde çocuklardan türetilmektedir (urun/eklenti/src/yolharitasi-cekirdek.ts iki yüz yetmişinci ve üç yüz otuz birinci satırlar) ve ağaca girmeyen düğüm hiçbir yerde görünmez; gezinme aracı da Adımı atıfsız yetim olarak bildirmiştir, çünkü panelde görülmeyen Adıma kimse bağlanmamıştır. Kusur sekiz gün fark edilmeden yaşamıştır. Doğru davranış, ağaca asılamayan her Adımın panelde kapsayansız bir düğüm altında görünür kılınması ya da tur görüntüsünün bunu bir bulgu olarak yayınlamasıdır; sessiz düşürme, yeşil panelin yeşil ağaç anlamına gelmesi ilkesini bozar ve HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-BLOK-DISI-KATMAN-TANISIZ,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MIM-1 hiyerarşi kuralları ya da mimari sarma tanısı bir sonraki kez elden geçirildiğinde; BLK-KPS Blokundaki Katman ile Adım sarması sorusuyla birlikte",
+  ne:               "2026-09-16 tarihinde ölçülmüştür: bir Katman Blokun parantezinin dışında, doğrudan Proje kökünün altında sekiz gün yaşadığı hâlde proje denetimi sıfır hata ve sıfır uyarı vermiştir. Kanonun kademe zinciri Faz, Blok, Katman, AltKatman ve Adım biçiminde ilan edilmişken Bloksuz bir Katman bu zinciri kırmakta, fakat mimari sarma tanısı yalnız Adımın AltKatman altında durmasını ölçtüğü için Katmanın üstünü hiç sorgulamamaktadır. Sonuç, plan yüzeylerinin aynı ağacı farklı saymasıdır: komut satırı Adımı sayar, panel saymaz ve hangisinin doğru olduğu okunamaz. Bu kusur BLK-KPS Blokunda açık duran Katman ile Adım sarması sorusuyla aynı ailedendir ve aynı hükümle kapanmalıdır. Doğru davranış, kapsayan zinciri Bloka ulaşmayan bir Katman için uyarı düzeyinde bir tanının doğması ve önerisinin Katmanı Blokun içine taşımayı söylemesidir."
+)
