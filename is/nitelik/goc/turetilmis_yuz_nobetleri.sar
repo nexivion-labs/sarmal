@@ -32,7 +32,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `75682e19eded1609d2acfb61c6574d0cc53fe96e08c1bc18b8c1ca11cb02ec80` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `1879396e0f885eb6852319ea2aed00c4c25c084d5a19897b1d43233d4c373a9c` |
 | `urun/cekirdek/src/dil-baglami.ts` | `11303aa54d5f9b080968296aa21d0d515a5ceda22cc521abd1f872229c483853` |
 | `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
 | `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
@@ -518,6 +518,25 @@ değişmedi. Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticil
 yeniden koşturuldu: kanon tutarlılık yüzü tazelendi, on altı belge yüzünün altısı
 değişti, onu aynı kaldı ve ikinci koşu sıfır fark verdi. Yukarıdaki on altı yüz
 tablosu bu turda tazelenmedi, çünkü makine nöbetine bağlı değildir.
+
+Tazeleme notu (2026-09-16 · MCP araç açıklamalarından davranış buyruklarının
+düşmesi · EKL-F6-A03): Founder hükmüyle on sekiz aracın Türkçe ve İngilizce
+açıklamalarından davranış buyruğu taşıyan kırk sekiz birim kaldırıldı ve
+taşıdıkları bilgi bildirme kipine çevrilerek korundu. Gerekçe, dizinin inceleme
+ölçütünün bir açıklamanın aracın ne yaptığını anlatmasını, modele nasıl
+davranacağını söylememesini istemesi ve modelin başka araçları çağırmasına
+müdahale eden açıklamaları ret sebebi saymasıdır. Bu dönüşüm yalnız
+`urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü ilerletti ve yukarıdaki
+tablodaki satır canlı değerle tazelendi; sınıflama kaydı, örtü, tanı sicili, dil
+bağlamı ve iki dil dosyası değişmedi. Sunucu talimatına bilinçle dokunulmadı,
+çünkü dizin ölçütü yalnız araç açıklamalarını bağlar ve talimatın kaderi ayrı bir
+Founder hükmünü beklemektedir. Aynı turda çeviri kapsama nöbetinin beklentisi
+ters çevrildi: kuyruğun varlığını şart koşan iki satırın yerine, kuyruğun geri
+dönmediğini ve iki dil hanesinin de dolu olduğunu ölçen dört satır kondu. Bu bir
+gevşetme değildir, çünkü kural sayısı artmış ve hiçbir koruma kalkmamıştır;
+kontrolcü beklentiyi mutasyonla kanıtlamış, `sef` açıklamasına geri enjekte
+ettiği kuyruk nöbeti kırmızıya düşürmüş ve dosya yedekten geri alındığında mühür
+yerine oturmuştur.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,

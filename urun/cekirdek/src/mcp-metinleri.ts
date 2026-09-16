@@ -149,14 +149,14 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "Bir Adım KOD'u için ŞEF'in koni + beceri + kısıt-dolu prompt'unu üretir " +
-        "(bağlam montajı). Ajan bu istemi okuyup Adım'ı disiplinle yapar — " +
-        "Görev'le atanan Etmen'in becerileri de enjekte edilir. `dizin` bir çalışma-alanı (.sar ağacı kökü)." +
-        " NE ZAMAN: bir Adım'ı işlemeye başlamadan önce — görevi koni+beceri disipliniyle almak için.",
+        "(bağlam montajı). Üretilen istem Adım'ın görevini, kabul ölçütünü, sınırlarını ve " +
+        "referans hükümlerini taşır; Görev'le atanan Etmen'in becerileri de enjekte edilir. " +
+        "`dizin` bir çalışma-alanı (.sar ağacı kökü).",
       () =>
         "Builds ŞEF's cone-, skill-, and constraint-filled prompt for an Adım KOD " +
-        "(context assembly). The agent reads this prompt and carries out the Adım with discipline; " +
-        "the skills of the Etmen assigned through the Görev are also injected. `dizin` is a workspace (the .sar tree root)." +
-        " WHEN: before starting work on an Adım—to receive the task with cone and skill guidance.",
+        "(context assembly). The prompt carries the Adım's task, acceptance criteria, boundaries " +
+        "and referenced rulings; the skills of the Etmen assigned through the Görev are also injected. " +
+        "`dizin` is a workspace (the .sar tree root).",
     ),
     inputSchema: {
       type: "object",
@@ -174,13 +174,11 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "Sarmal öğretim kapısı: konusuz çağrı KANONDAN üretilen karşılama kartını döndürür " +
         "(kopyalanabilir minimal proje + tam omurga + koni alanları + zorunlu kenarlar — CLI `sarmal ogret` ile AYNI kaynaktan üretilir); " +
-        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI'). " +
-        "NE ZAMAN: Sarmal'la ilk temasında; bir tanı 'bkz: BCR-…' işaretçisi gösterdiğinde; bir kuralın nasıl uygulanacağını sormak istediğinde.",
+        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI').",
       () =>
         "Sarmal's learning gateway: a call without `konu` returns the welcome card generated FROM THE CANON " +
         "(a copyable minimal project, the complete backbone, cone fields, and required edges—from the SAME source as CLI `sarmal ogret`); " +
-        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI'). " +
-        "WHEN: on your first contact with Sarmal; when a diagnostic shows a 'bkz: BCR-…' marker; or when you want to learn how to apply a rule.",
+        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI').",
     ),
     inputSchema: {
       type: "object",
@@ -195,20 +193,16 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "Tasarım/yazılım kavramı sorgusu — niyet diyaloğunun kapısı (BCR-NIYET-DIYALOGU). " +
-        "NE ZAMAN: kullanıcı bir öğeyi adını bilmeden tarif ettiğinde ya da koniye kavram yazmadan önce. " +
-        "`kelime` ver → kanon yolu + Flutter/React/SwiftUI + arkayüz eşlemesi + TR↔EN terim döner; " +
-        "`baglam` ver (ör. 'Ekran', 'Adım.görev') → o bağlamın aday kavram aileleri (soru + üyeler, tam eşlemeli) döner. " +
+        "`kelime` verilirse kanon yolu + Flutter/React/SwiftUI + arkayüz eşlemesi + TR↔EN terim döner; " +
+        "`baglam` verilirse (ör. 'Ekran', 'Adım.görev') o bağlamın aday kavram aileleri (soru + üyeler, tam eşlemeli) döner. " +
         "Veri DİSKTEN okunur, böylece kanon her zaman günceldir (ogreti/bilgi/tasarim_sozlugu). " +
-        "SINIR: araç ÖNERİ sunar, seçim yapmaz — seçeneği kullanıcıya Türkçe adı ve tanımıyla sun, " +
-        "seçilen kavramı koniye KANON YOLUYLA yaz, terimi bir kez öğret ve dayatma.",
+        "SINIR: araç ÖNERİ sunar, seçim yapmaz.",
       () =>
         "Looks up a design or software concept—the gateway to the intent dialogue (BCR-NIYET-DIYALOGU). " +
-        "WHEN: when the user describes an element without knowing its name, or before writing a concept into the cone. " +
-        "Provide `kelime` to receive the canon path, Flutter/React/SwiftUI and backend mappings, and the TR↔EN term; " +
-        "provide `baglam` (for example, 'Ekran' or 'Adım.görev') to receive candidate concept families for that context (question plus fully mapped members). " +
+        "When `kelime` is provided, it returns the canon path, Flutter/React/SwiftUI and backend mappings, and the TR↔EN term; " +
+        "when `baglam` is provided (for example, 'Ekran' or 'Adım.görev'), it returns candidate concept families for that context (question plus fully mapped members). " +
         "Data is read FROM DISK so the canon stays current (ogreti/bilgi/tasarim_sozlugu). " +
-        "BOUNDARY: the tool offers OPTIONS; it does not choose. Present each option with its Turkish name and definition, " +
-        "write the selected concept into the cone BY ITS CANON PATH, teach the term once, and do not impose it.",
+        "BOUNDARY: the tool offers OPTIONS; it does not choose.",
     ),
     inputSchema: {
       type: "object",
@@ -224,14 +218,12 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "Etmen karne raporu — Founder-onaylı ⭐ beş-derece skalası ve kadrodaki Etmen dökümü. " +
-        "NE ZAMAN: kadroyu ya da bir etmenin başarım yüzünü görmek istediğinde. " +
-        "DÜRÜSTLÜK: sicil verisi henüz toplanmadığından hiçbir etmene derece BASILMAZ — 'henüz sicil yok' denir; " +
-        "uydurma puan üretme, bu raporu olduğu gibi aktar. Ağırlık ve formül örtü tarafının gizli politikasıdır, bu araçta yaşamaz.",
+        "Sicil verisi henüz toplanmadığından hiçbir etmene derece BASILMAZ; rapor 'henüz sicil yok' der. " +
+        "Ağırlık ve formül örtü tarafının gizli politikasıdır, bu araçta yaşamaz.",
       () =>
         "Etmen report card—the Founder-approved five-grade ⭐ scale and a roster of Etmen records. " +
-        "WHEN: when you need to inspect the roster or an Etmen's performance surface. " +
-        "INTEGRITY: because registry data has not been collected yet, no Etmen receives a grade; the report says 'henüz sicil yok' (no registry yet). " +
-        "Do not invent a score; relay the report as returned. Weighting and formulas are private overlay policy and do not live in this tool.",
+        "Because registry data has not been collected yet, no Etmen receives a grade; the report says 'henüz sicil yok' (no registry yet). " +
+        "Weighting and formulas are private overlay policy and do not live in this tool.",
     ),
     inputSchema: {
       type: "object",
@@ -245,19 +237,15 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     ekAciklama: okur("Doğuş rehberi ve şablon iste", "Request the birth guide and a template"),
     description: aciklama(
       (b) =>
-        "DOĞUŞ REHBERİ: bir Sarmal projesini ya da düğümünü DOĞRU SIRADA yazsın diye " +
-        "yönlendirir — anadizin ve Teknoloji, sonra Faz, Blok ve Katman ekseni, sonra Adım KONİSİ, sonra KAVUŞUM " +
-        "omurgası. Tür verilirse KONİ-DOLU şablon döner; yalın iskelet TUZAKTIR. " +
-        "Ajan yazmadan ÖNCE çağırır. Türler: " + b.sablonTurleri.join(" · ") + ". " +
-        "Bu araç REHBER ve şablon verir; dosyayı AJAN yazar — burası yönetişim katmanıdır, derleyici değil." +
-        " NE ZAMAN: yeni proje ya da düğüm yazımına başlarken doğru sıra ve şablon gerektiğinde.",
+        "DOĞUŞ REHBERİ: bir Sarmal projesinin ya da düğümünün yazım SIRASINI bildirir — " +
+        "anadizin ve Teknoloji, sonra Faz, Blok ve Katman ekseni, sonra Adım KONİSİ, sonra KAVUŞUM " +
+        "omurgası. Tür verilirse KONİ-DOLU şablon döner. Türler: " + b.sablonTurleri.join(" · ") + ". " +
+        "Bu araç REHBER ve şablon verir; dosyayı AJAN yazar — burası yönetişim katmanıdır, derleyici değil.",
       (b) =>
-        "BIRTH GUIDE: guides the agent to write a Sarmal project or node IN THE RIGHT ORDER—" +
+        "BIRTH GUIDE: reports the ORDER in which a Sarmal project or node is written—" +
         "anadizin and Teknoloji first; then the Faz, Blok, and Katman axis; then the Adım CONE; then the KAVUŞUM backbone. " +
-        "When a type is supplied, it returns a CONE-FILLED template; a bare skeleton is a trap. " +
-        "Call it BEFORE writing. Types: " + b.sablonTurleri.join(" · ") + ". " +
-        "This tool provides GUIDANCE and a template; the AGENT writes the file. It is a guidance surface, not a compiler." +
-        " WHEN: when starting a new project or node and you need the correct sequence and template.",
+        "When a type is supplied, it returns a CONE-FILLED template. Types: " + b.sablonTurleri.join(" · ") + ". " +
+        "This tool provides GUIDANCE and a template; the AGENT writes the file. It is a guidance surface, not a compiler.",
     ),
     inputSchema: {
       type: "object",
@@ -284,8 +272,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
         "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
         "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
-        "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir." +
-        " NE ZAMAN: boş dizinde çalışır bir Sarmal projesi doğurman istendiğinde.",
+        "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
         "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
@@ -298,8 +285,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
         "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
-        "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools." +
-        " WHEN: when you need a working Sarmal project created in an empty directory.",
+        "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools.",
     ),
     inputSchema: {
       type: "object",
@@ -319,17 +305,15 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "Projenin kanonik grafını döndürür — derleyicinin DAG çıktısı determinist JSON: " +
         "düğümler (kod·tip·durum·kapsayan içerme-kenarı·öncekiler/sonrakiler bağımlılık-kenarları) " +
-        "+ kopuk uçlar + karne özeti. Ajan 'bu değişiklik neyi etkiler / plan nerede?' sorusunu " +
-        "dosya taramadan grafa sorar. `kok` verilirse alt-graf (kapsananlar+atalar+ileri kapanış). " +
-        "YALNIZ okuma — yazım koniYaz kapısından geçer." +
-        " NE ZAMAN: projenin bütününü (bağımlılık · ilerleme · kopuk uç) programatik okuman gerektiğinde.",
+        "+ kopuk uçlar + karne özeti. Çıktı 'bu değişiklik neyi etkiler' ve 'plan nerede' " +
+        "sorularının verisini taşır. `kok` verilirse alt-graf (kapsananlar+atalar+ileri kapanış). " +
+        "YALNIZ okuma — yazım koniYaz kapısından geçer.",
       () =>
         "Returns the project's canonical graph as deterministic JSON from the compiler DAG: " +
         "nodes (kod, type, status, containing edge, and predecessor/successor dependency edges), dangling ends, and a report-card summary. " +
-        "Ask the graph 'what does this change affect?' or 'where is the plan?' instead of scanning files. " +
+        "The output carries the data behind 'what does this change affect?' and 'where is the plan?'. " +
         "When `kok` is provided, returns a subgraph of contained nodes, ancestors, and the forward closure. " +
-        "READ ONLY—writes pass through the koniYaz gateway." +
-        " WHEN: when you need to read the whole project programmatically (dependencies, progress, or dangling ends).",
+        "READ ONLY—writes pass through the koniYaz gateway.",
     ),
     inputSchema: {
       type: "object",
@@ -344,24 +328,19 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     ekAciklama: okur("Tanıma ve atıflara git", "Go to definition and references"),
     description: aciklama(
       () =>
-        "⚡ ALIŞKANLIK: bir .sar ya da plan içinde tanımadığın bir KOD gördüğünde dosya " +
-        "taramak YERİNE önce bunu çağır — insanın ⌘+tık/F12 refleksinin ajan hâli. " +
         "Bir KOD'un TANIMINI ve TÜM ATIFLARINI dosya:satır:sütun konumlarıyla döndürür — " +
         "geliştiricinin F12 (tanıma-git) + ⇧F12 (referans-bul) kısayollarının ajan ikizi. " +
-        "Ajan 'bu Adım nerede tanımlı, kimler bağımlı?' sorusunu dosya taramadan (grep'siz) " +
-        "kimlik indeksine sorar: bağımlı:/uygular:/çağır yapısal atıfları + string/yorum içi " +
+        "Sonuç kimlik indeksinden gelir ve 'bu Adım nerede tanımlı, kimler bağımlı?' sorusunu " +
+        "karşılar: bağımlı:/uygular:/çağır yapısal atıfları + string/yorum içi " +
         "metin atıfları dahil; atıf evreni .sar, .md ve .ts dosyalarını kapsar (KARARLAR/CHANGELOG/" +
         "kod-yorumu dokunuşları da görünür). Kırık atıf (tanımı yok) ve yinelenen tanım dürüstçe " +
-        "raporlanır. Etki analizi için graf aracını tamamlar: graf KENARLARI verir, gezin KONUMLARI." +
-        " NE ZAMAN: tanımadığın bir KOD gördüğün an — grep/dosya taraması yerine ilk refleks.",
+        "raporlanır. Etki analizi için graf aracını tamamlar: graf KENARLARI verir, gezin KONUMLARI.",
       () =>
-        "⚡ HABIT: when you encounter an unfamiliar KOD in a .sar file or plan, call this FIRST instead of scanning files—the agent counterpart of ⌘+click/F12. " +
         "Returns a KOD's DEFINITION and ALL REFERENCES with file:line:column locations, mirroring a developer's F12 (go to definition) and ⇧F12 (find references). " +
-        "Ask the identity index 'where is this Adım defined, and what depends on it?' without grep or file scanning. " +
-        "Results include structural references through bağımlı:/uygular:/çağır and textual references in strings or comments; " +
+        "Results come from the identity index and answer 'where is this Adım defined, and what depends on it?'; " +
+        "they include structural references through bağımlı:/uygular:/çağır and textual references in strings or comments; " +
         "the reference universe covers .sar, .md, and .ts files, including KARARLAR, CHANGELOG, and code-comment touchpoints. " +
-        "Broken references and duplicate definitions are reported plainly. It complements graf for impact analysis: graf gives EDGES; gezin gives LOCATIONS." +
-        " WHEN: the moment you see an unfamiliar KOD—make this your first step instead of grep or file scanning.",
+        "Broken references and duplicate definitions are reported plainly. It complements graf for impact analysis: graf gives EDGES; gezin gives LOCATIONS.",
     ),
     inputSchema: {
       type: "object",
@@ -378,24 +357,20 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     description: aciklama(
       () =>
         "Bir .sar kaynağını Sarmal motoruyla denetler; Türkçe, konumlu drift " +
-        "tanılarını (SNF-0 şema + sarma uyumu) döndürür. Ajan " +
-        "'yazdığım .sar doğru mu?' diye sorar, tanıları geri alır. " +
+        "tanılarını (SNF-0 şema + sarma uyumu) döndürür. " +
         "ÇalışmaAlanı örtüsü (ortu.json enum genişletmesi) `yol` verilirse dosyanın " +
         "dizininden, yoksa `dizin` argümanından find-up ile çözülür (A11/E2). " +
         "⚠️ SINIR (A7): bu araç TEK DOSYA/KAYNAK denetler — dosyalar-arası kapılar " +
         "(kırık-referans · kayıp-yapı/disk-mutabakat · DAG/döngü · kural-motoru) " +
-        "BURADA KOŞMAZ. Tek-dosya yeşili PROJE yeşili DEĞİLDİR; bütünü ilan etmeden " +
-        "önce MUTLAKA `denetle-proje { dizin }` MCP aracını koş (ya da CLI `sarmal " +
-        "denetle <dizin>`) — TAM-yeşil demek sıfır hata ve sıfır uyarı demektir." +
-        " NE ZAMAN: bir .sar yazdıktan/değiştirdikten hemen sonra — kaydetmeden önce doğruluk turu.",
+        "BURADA KOŞMAZ; onlar `denetle-proje` aracında ya da CLI `sarmal denetle <dizin>` " +
+        "komutunda koşar. Tek-dosya yeşili PROJE yeşili DEĞİLDİR; TAM-yeşil demek " +
+        "sıfır hata ve sıfır uyarı demektir.",
       () =>
         "Checks one .sar source with the Sarmal engine and returns Turkish, location-aware drift diagnostics for SNF-0 schema and containment conformance. " +
-        "Use it to ask 'is the .sar I wrote valid?' and receive the diagnostics. " +
         "The ÇalışmaAlanı overlay (ortu.json enum extension) is resolved by find-up from the file directory when `yol` is provided, or from the `dizin` argument otherwise (A11/E2). " +
-        "⚠️ BOUNDARY (A7): this tool checks ONE FILE OR SOURCE. Cross-file gates—broken references, missing structure/disk agreement, DAG/cycles, and the rule engine—DO NOT RUN HERE. " +
-        "A green single-file result IS NOT a green project. Before declaring the whole project clean, ALWAYS run the `denetle-proje { dizin }` MCP tool " +
-        "(or CLI `sarmal denetle <dizin>`). FULL GREEN means zero errors and zero warnings." +
-        " WHEN: immediately after writing or changing a .sar file, as a correctness pass before saving.",
+        "⚠️ BOUNDARY (A7): this tool checks ONE FILE OR SOURCE. Cross-file gates—broken references, missing structure/disk agreement, DAG/cycles, and the rule engine—DO NOT RUN HERE; " +
+        "they run in the `denetle-proje` tool or CLI `sarmal denetle <dizin>`. " +
+        "A green single-file result IS NOT a green project. FULL GREEN means zero errors and zero warnings.",
     ),
     inputSchema: {
       type: "object",
@@ -412,17 +387,15 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     ekAciklama: okur("Kanon kurallarını oku", "Read the canon rules"),
     description: aciklama(
       (b) =>
-        "Sarmal kanon kurallarını (yasa/kanon) döndürür — ajan yazmadan ÖNCE " +
-        "anayasayı okur. Kategorisiz çağrı: bölüm listesi + kural↔kapı haritası. " +
+        "Sarmal kanon kurallarını (yasa/kanon) döndürür — projenin anayasası. " +
+        "Kategorisiz çağrı: bölüm listesi + kural↔kapı haritası. " +
         "Bölümler: " + b.kuralBolumleri.join(" · ") + ". " +
-        "Kurallar .sar kaynağıyla gelir (dil kendini kendi diliyle anlatır)." +
-        " NE ZAMAN: yazmaya başlamadan önce ve bir kural tanısının dayanağını anlamak istediğinde.",
+        "Kurallar .sar kaynağıyla gelir (dil kendini kendi diliyle anlatır).",
       (b) =>
-        "Returns Sarmal's canonical rules from yasa/kanon so the agent can read the constitution BEFORE writing. " +
+        "Returns Sarmal's canonical rules from yasa/kanon—the project's constitution. " +
         "A call without `kategori` returns the section list and the rule-to-gate map. " +
         "Sections: " + b.kuralBolumleri.join(" · ") + ". " +
-        "Rules are returned as their Turkish .sar source; the canonical source is not translated." +
-        " WHEN: before you start writing, and when you need to understand the basis of a rule diagnostic.",
+        "Rules are returned as their Turkish .sar source; the canonical source is not translated.",
     ),
     inputSchema: {
       type: "object",
@@ -436,15 +409,13 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     ekAciklama: okur("Tip kanonunu oku", "Read the type canon"),
     description: aciklama(
       () =>
-        "SNF-0 tip kanonunu döndürür — ajan hangi tip/kenar/sarma geçerli bilsin. " +
+        "SNF-0 tip kanonunu döndürür — hangi tip, kenar ve sarma ilişkisinin geçerli olduğunu bildirir. " +
         "Tipsiz çağrı: genel bakış (aileler · tipler · kenarlar · yüzey kuralı). " +
-        "Tip verilirse: o tipin ailesi, şeması (zorunlu/enum/tür), sarma ilişkileri." +
-        " NE ZAMAN: hangi tip/kenar/sarma geçerli emin değilken — uydurma tip yazmadan önce.",
+        "Tip verilirse: o tipin ailesi, şeması (zorunlu/enum/tür), sarma ilişkileri.",
       () =>
-        "Returns the SNF-0 type canon so the agent can see which types, edges, and containment relationships are valid. " +
+        "Returns the SNF-0 type canon: which types, edges, and containment relationships are valid. " +
         "A call without `tip` returns an overview of families, types, edges, and the surface rule. " +
-        "When `tip` is provided, it returns that type's family, schema (required fields, enums, and field types), and containment relationships." +
-        " WHEN: when you are unsure which type, edge, or containment is valid—before writing an invented type.",
+        "When `tip` is provided, it returns that type's family, schema (required fields, enums, and field types), and containment relationships.",
     ),
     inputSchema: {
       type: "object",
@@ -463,15 +434,13 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "PROJE TAM-denetimi: CLI `sarmal denetle <dizin>` alt-süreç olarak koşulur, çıktı " +
         "AYNEN döner (tek-kaynak — MCP ayrı denetim mantığı taşımaz). MCP `denetle` aracının " +
         "TEK-DOSYA sınırını (A7) aşar: kırık-referans · disk-mutabakat · DAG/döngü · " +
-        "kural motoru dahil TÜM bekçiler koşar. ⚡ ALIŞKANLIK: 'bütün proje yeşil mi?' " +
-        "sorusunda tek dosya denetlemekle yetinme — TAM hüküm BU araçtan ya da CLI'den alınır." +
-        " NE ZAMAN: proje BÜTÜNÜNÜN drift hükmü gerektiğinde — tek-dosya denetle yetmediğinde.",
+        "kural motoru dahil TÜM bekçiler koşar; proje BÜTÜNÜNÜN drift hükmü bu yüzeyden " +
+        "ya da CLI'den gelir.",
       () =>
         "FULL PROJECT check: runs CLI `sarmal denetle <dizin>` as a child process and returns its output EXACTLY " +
         "(one source; MCP carries no separate checking logic). It goes beyond the MCP `denetle` tool's ONE-FILE boundary (A7): " +
-        "all guards run, including broken references, disk agreement, DAG/cycles, and the rule engine. " +
-        "⚡ HABIT: when asking 'is the whole project green?', do not stop at one file; obtain the FULL verdict from this tool or the CLI." +
-        " WHEN: when you need the drift verdict for the WHOLE project and single-file denetle is not enough.",
+        "all guards run, including broken references, disk agreement, DAG/cycles, and the rule engine; " +
+        "the drift verdict for the WHOLE project comes from this surface or the CLI.",
     ),
     inputSchema: {
       type: "object",
@@ -493,17 +462,13 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "dosyasında (<varlık>_anadizin.sar) İLAN EDİLEN ama diskte OLMAYAN klasör/dosyaları " +
         "materyalize eder — `kayıp-yapı` tanısının doğrudan çözümü. Çekirdek CLI `--iskelet` " +
         "ile TEK kaynak (iskeletYaz · kopya mantık yok). GÜVENLİ VARSAYILAN: `uret` verilmezse " +
-        "ÖNİZLEME (ne üretileceğini yazar, diske DOKUNMAZ). Gerçek üretim için `uret: true`. " +
-        "Mevcut dosya/klasörleri EZMEZ (yalnız eksikleri ekler). ⚡ Akış: iskelet{dizin} önizle → " +
-        "iskelet{dizin,uret:true} üret → denetle-proje{dizin} ile kayıp-yapı temizliğini doğrula." +
-        " NE ZAMAN: denetle kayıp-yapı bildirdiğinde — ilan edilen yapıyı diske üretmek için.",
+        "ÖNİZLEME döner (ne üretileceğini yazar, diske DOKUNMAZ); `uret: true` gerçek üretimi yapar. " +
+        "Mevcut dosya/klasörleri EZMEZ (yalnız eksikleri ekler).",
       () =>
         "GENERATE SKELETON (closes the declare→scaffold→fill loop in MCP, GBR-A04/#7): materializes directories and files " +
         "DECLARED in the entry file (<entity>_anadizin.sar) but MISSING on disk—the direct remedy for a `kayıp-yapı` diagnostic. " +
-        "It shares ONE source with core CLI `--iskelet` (iskeletYaz, no copied logic). SAFE DEFAULT: when `uret` is omitted, it PREVIEWS what would be created and DOES NOT touch disk. " +
-        "Use `uret: true` for actual generation. Existing files and directories are NEVER overwritten; only missing items are added. " +
-        "⚡ Flow: preview with iskelet{dizin} → generate with iskelet{dizin,uret:true} → verify `kayıp-yapı` is clear with denetle-proje{dizin}." +
-        " WHEN: when denetle reports `kayıp-yapı` and you need to materialize the declared structure on disk.",
+        "It shares ONE source with core CLI `--iskelet` (iskeletYaz, no copied logic). SAFE DEFAULT: when `uret` is omitted, it PREVIEWS what would be created and DOES NOT touch disk; " +
+        "`uret: true` performs the actual generation. Existing files and directories are NEVER overwritten; only missing items are added.",
     ),
     inputSchema: {
       type: "object",
@@ -520,14 +485,10 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "💥 Etki analizi: 'bu düğüme dokunursam NE etkilenir?' — verilen KOD'u bekleyen " +
         "doğrudan + geçişli tüm ardıllar, topolojik sırada, durum rozetleriyle (CLI etki " +
-        "yüzüyle aynı çekirdek). graf KENARLARI, gezin KONUMLARI, etki SONUÇLARI verir. " +
-        "⚡ ALIŞKANLIK: bir Adımı ya da kuralı değiştirmeden ÖNCE çağır; kör dokunuş sapmaya yol açar." +
-        " NE ZAMAN: bir düğüme dokunmadan ÖNCE — 'kim etkilenir' sorusunun cevabı için.",
+        "yüzüyle aynı çekirdek). graf KENARLARI, gezin KONUMLARI, etki SONUÇLARI verir.",
       () =>
         "💥 Impact analysis: answers 'what will be affected if I touch this node?' by returning every direct and transitive successor waiting on the given KOD, " +
-        "in topological order with status badges, using the same core as the CLI impact surface. graf gives EDGES, gezin gives LOCATIONS, and etki gives CONSEQUENCES. " +
-        "⚡ HABIT: call it BEFORE changing an Adım or rule so the affected surface is visible." +
-        " WHEN: BEFORE touching a node—to answer 'who will be affected?'.",
+        "in topological order with status badges, using the same core as the CLI impact surface. graf gives EDGES, gezin gives LOCATIONS, and etki gives CONSEQUENCES.",
     ),
     inputSchema: {
       type: "object",
@@ -545,16 +506,12 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "🔎 Metin arama (⌘T'nin ajan hâli): düğümlerin KOD'unda, adında (ne/ad) ve niyetinde " +
         "(görev + /// belge) geçen metni arar; dosya:satır:sütun konumlarıyla döndürür. " +
-        "KOD'u TAM biliyorsan gezin daha keskindir (tanım+atıflar); bul, KOD'u BİLMEDİĞİN " +
-        "('şu konuyu hangi düğüm anlatıyordu?') durumların aracıdır. " +
-        "⚡ ALIŞKANLIK: dosyaları elle taramak yerine önce bul'a sor." +
-        " NE ZAMAN: KOD'unu bilmediğin bir kavramı metinle ararken (KOD biliniyorsa gezin).",
+        "gezin KOD'u TAM bilinen durumda tanım ve atıfları verir; bul ise KOD'un BİLİNMEDİĞİ " +
+        "('şu konuyu hangi düğüm anlatıyordu?') durumların aracıdır.",
       () =>
         "🔎 Text search (the agent counterpart of ⌘T): searches text in node KODs, names (ne/ad), and intent (görev plus /// document blocks), " +
-        "then returns file:line:column locations. If you know the exact KOD, gezin is more precise because it returns the definition and references; " +
-        "bul is for cases where you DO NOT KNOW the KOD, such as 'which node described this topic?'. " +
-        "⚡ HABIT: ask bul before scanning files manually." +
-        " WHEN: when searching by text for a concept whose KOD you do not know; use gezin when the KOD is known.",
+        "then returns file:line:column locations. gezin is the precise surface when the exact KOD is known, because it returns the definition and references; " +
+        "bul covers the cases where the KOD is NOT known, such as 'which node described this topic?'.",
     ),
     inputSchema: {
       type: "object",
@@ -574,13 +531,11 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "🪞 BÇ-standart biçimlendirme: .sar kaynağını Sarmal biçim kuralına (2 boşluk/kat · " +
         "sağ-boşluk kırp · boş-satır teke) getirir ve METNİ DÖNDÜRÜR — dosya YAZMAZ, yazmak " +
         "ajanın ve editörün işidir. Eklentideki ⇧⌥F ile AYNI çekirdeği kullanır (bicimle.ts) ve tekrar koşturmak sonucu değiştirmez. " +
-        "Yorum, dizgi ve belge bloğu içine DOKUNMAZ. ⚡ ALIŞKANLIK: girintiyi elle düzeltme, bicimle'ye ver." +
-        " NE ZAMAN: bir .sar'ı kaydetmeden önce biçimi standarda çekmek için.",
+        "Yorum, dizgi ve belge bloğu içine DOKUNMAZ.",
       () =>
         "🪞 BÇ-standard formatting: brings .sar source to Sarmal's format—two spaces per level, trailing whitespace removed, and repeated blank lines collapsed—and RETURNS THE TEXT. " +
         "It DOES NOT write the file; writing remains the agent's or editor's job. It uses the SAME bicimle.ts core as ⇧⌥F in the extension and is idempotent. " +
-        "It DOES NOT alter content inside comments, strings, or document blocks. ⚡ HABIT: give indentation work to bicimle instead of fixing it by hand." +
-        " WHEN: before saving a .sar file, to bring its format to the standard.",
+        "It DOES NOT alter content inside comments, strings, or document blocks.",
     ),
     inputSchema: {
       type: "object",
@@ -597,14 +552,11 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "🔺 Prizma yüzleri: tek .sar kaynağını istenen yüze yansıtır — json · yaml · xml " +
         "(yapısal ikizler) · md (belge yüzü). CLI prizma ile AYNI çekirdeği kullanır; kaynak " +
-        "TEK, yüzler türetilir — elle ikiz tutma yasak. Ajan yapısal işleme için json'u, " +
-        "insan-okur özet için md'yi ister." +
-        " NE ZAMAN: .sar içeriğini başka formatta (json · yaml · xml · md) tüketmen gerektiğinde.",
+        "TEK kalır ve yüzler ondan türetilir. json yapısal işleme, md insan-okur özet içindir.",
       () =>
         "🔺 Prizma surfaces: projects one .sar source into the requested surface—json, yaml, or xml structural twins, or the md document surface. " +
-        "It uses the SAME core as CLI prizma. The source stays SINGLE and the surfaces are derived; do not maintain manual twins. " +
-        "Use json for structural processing and md for a human-readable summary." +
-        " WHEN: when you need to consume .sar content in another format (json, yaml, xml, or md).",
+        "It uses the SAME core as CLI prizma; the source stays SINGLE and the surfaces are derived from it. " +
+        "json serves structural processing and md a human-readable summary.",
     ),
     inputSchema: {
       type: "object",
@@ -626,15 +578,11 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "`durum:` alanını, YALNIZ geçerli enum değerine günceller — başka alan/tip yazamaz. " +
         "Yazım tek mekanizmadan geçer (satirdaDegerDegistir + yazma-kilidi + re-parse guard, " +
         "SENK-A05 TEK-YAZAR): geçersiz değerde ya da en küçük şüphede dosyaya DOKUNULMAZ, " +
-        "dürüst hata döner. ⚡ ALIŞKANLIK: bir Adım'a başlarken geliştirmede, " +
-        "kabul kanıtlanınca tamamlandı yaz; böylece plan CANLI kalır." +
-        " NE ZAMAN: bir Adım'ın durumunu değiştirirken — elle dosya düzenleme YERİNE tek yazım kapısı.",
+        "dürüst hata döner.",
       () =>
         "✍️ FIRST WRITING TOOL (Founder approval 2026-07-12, NARROW BOUNDARY): updates ONLY an Adım's `durum:` field and ONLY to a valid enum value; it cannot write another field or type. " +
         "Writing passes through one mechanism—satirdaDegerDegistir, write lock, and re-parse guard under the SENK-A05 SINGLE-WRITER rule. " +
-        "For an invalid value or the smallest uncertainty, the file is NOT touched and a clear error is returned. " +
-        "⚡ HABIT: write geliştirmede when starting an Adım and tamamlandı when acceptance is proven so the plan stays LIVE." +
-        " WHEN: when changing an Adım's status—use the single write gateway instead of editing the file by hand.",
+        "For an invalid value or the smallest uncertainty, the file is NOT touched and a clear error is returned.",
     ),
     inputSchema: {
       type: "object",

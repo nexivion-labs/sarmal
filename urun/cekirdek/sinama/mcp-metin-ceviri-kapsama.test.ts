@@ -101,9 +101,17 @@ test("CDL-A05 nöbeti: 18 araç/34 parametre eksiksiz çevrilir; kimlik ve şema
   };
   assert.deepEqual(tr.map((a) => a.name), beklenenAdlar);
   assert.deepEqual(en.map((a) => a.name), beklenenAdlar);
+  // EKL-F6-A03 · Founder hükmü 2026-09-16: bir araç açıklaması aracın NE YAPTIĞINI
+  // anlatır, modele NASIL DAVRANACAĞINI söylemez; MCP dizin ölçütü de bunu ister.
+  // Eski kullanım-kapısı kuyruğu (NE ZAMAN · WHEN) ile alışkanlık buyruğu bu yüzden
+  // katalogdan çıkarıldı. Nöbet iki hanenin de DOLU olduğunu ölçmeyi sürdürür ve
+  // buna ek olarak buyrukların GERİ DÖNMEDİĞİNİ ölçer — kural gevşemedi, yön değişti.
+  const yonlendirmeKalibi = /NE ZAMAN:|WHEN:|ALIŞKANLIK|HABIT:/u;
   for (let i = 0; i < tr.length; i++) {
-    assert.match(tr[i].description, /NE ZAMAN:/u, `${tr[i].name} Türkçe kullanım kapısını taşımıyor`);
-    assert.match(en[i].description, /WHEN:/u, `${en[i].name} İngilizce kullanım kapısını taşımıyor`);
+    assert.ok(tr[i].description.trim(), `${tr[i].name} Türkçe açıklaması boş`);
+    assert.ok(en[i].description.trim(), `${en[i].name} İngilizce açıklaması boş`);
+    assert.doesNotMatch(tr[i].description, yonlendirmeKalibi, `${tr[i].name} Türkçe açıklaması davranış buyruğu taşıyor`);
+    assert.doesNotMatch(en[i].description, yonlendirmeKalibi, `${en[i].name} İngilizce açıklaması davranış buyruğu taşıyor`);
     assert.deepEqual(Object.keys(tr[i].inputSchema.properties), beklenenParametreler[tr[i].name]);
     assert.deepEqual(Object.keys(en[i].inputSchema.properties), beklenenParametreler[en[i].name]);
     assert.deepEqual(tr[i].inputSchema.required, beklenenZorunlu[tr[i].name]);
