@@ -951,3 +951,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "DIL-5 maddeleri ya da ilgili önek doğrulaması bir sonraki kez elden geçirildiğinde; en geç KPS-BLM-A01 Adımının kapanışında",
   ne:               "KPS-BLM-A01 turunda 2026-09-16 tarihinde ölçülmüştür: kanon maddelerinin ilgili listeleri bölüm kök kimliklerine çevrilmiştir, fakat DIL-5 ile DIL-5.2 maddelerinin Örnek metinleri (yasa/kanon/dil.sar iki yüz on ikinci ve iki yüz otuz altıncı satırlar) hâlâ çıplak bölüm adlı listeyi doğru yazım olarak öğretmekte ve DIL-5.2 Hüküm cümlesi listenin yalnız bölüm öneklerinden oluşacağını söylemektedir. Motordaki ilgili önek doğrulaması (urun/cekirdek/src/dogrulayici.ts iki yüz seksen dokuz ile üç yüz on dokuzuncu satırlar) ve ilgili-önek-geçersiz tanısının öneri metni de yalnız çıplak öneki kabul etmektedir; bir düğüm parametresi olarak kök kimlikli bir liste yazılırsa hata üretir. Kanonun kendi yazımı ile kanonun öğrettiği yazım artık çelişmektedir; Hüküm ve Örnek metni dokunulmaz olduğundan uyum Founder hükmü ister."
 )
+
+Hatırlatıcı(
+  kod:              HTR-KANCA-BOS-DEGISKENI-YOL-GIBI-GOSTERIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Doğuşun denetim kapısı şablonu bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde kontrolcünün uçtan uca ölçümünde görülmüştür: SARMAL_KOK değişkeni tanımsızken doğan ağacın denetim kancası doğru cümleyi basmakta ve onarımı göstermekte, fakat motor yolunu /urun/cekirdek/src/sarmal.ts biçiminde yazmaktadır, çünkü boş bir değişken genişlemesi geriye yalnız kök işaretini bırakır. Cümlenin kendisi doğrudur, ancak yol okuyucuya kökte gerçekten böyle bir dosya aranmış gibi görünür ve arızanın sebebini gizler. Kancanın değişkenin tanımsız olduğunu ayrıca söylemesi ve yolu ancak değişken tanımlıyken yazması daha dürüsttür."
+)
