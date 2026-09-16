@@ -168,6 +168,8 @@ Kod( kod: KOD-YOLHARITA, dosya: "urun/eklenti/src/yolharitasi.ts",
   ne: "🍎 Yol Haritası paneli + koni kartı + canlı-harita imleç takibi (VIT-GRAF ailesi)" )
 
 // ── Sınama nöbetleri (cekirdek/sinama — yetim-meyve kapsamı BKM-SNV2 nöbetleriyle açıldı; tarihsel envanter) ──
+Kod( kod: KOD-SNM-MIMARI-SARMA, dosya: "urun/cekirdek/sinama/mimari-sarma-kanonu.test.ts",
+  ne: "🍎 Mimari sarma nöbeti — düşürülen kenar adının kanonda kalmadığını, ORK-1.1 kodunun yerinde durduğunu ve mimari-bağı-ihlali tanı adının kanon, sicil ve iki dilin metinlerinde korunduğunu ölçer (KPS-KEN-A01 turunun ürünü)" )
 Kod( kod: KOD-SNM-YENI-KANON, dosya: "urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts",
   ne: "🍎 sınama nöbeti — yeni kanonun altmış dokuz tanısının fikstür kanıtı; her kimlik gerçekten üretiliyor mu" )
 
