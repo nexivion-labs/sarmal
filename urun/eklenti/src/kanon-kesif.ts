@@ -56,6 +56,41 @@ const ISARETCININ_SUNDUGU = new Set([
 /** İşaretçinin diskteki şekli — yalnız doğuran kurulumun kökünü bildirir. */
 interface KanonIsaretcisi { kanonKoku?: unknown }
 
+// ── 🔤 TAŞINABİLİR ADRES (EKL-F6-A08 · Founder hükmü 2026-09-16) ─────────────
+//   Doğuş paketi işaretçiye kanon kökünü artık MUTLAK değil `${SARMAL_KOK}`
+//   biçiminde yazar, çünkü mutlak adres ağaç başka bir makinede klonlandığında
+//   sessizce çözülmez. Okuyucu bu yüzden adresi değerlendirmeden önce ortam
+//   değişkenlerini genişletir; genişletme yalnız OKUMA yolundadır ve yazım
+//   yolundaki sürüme-bağlı-yol yasağı ile mutlaklık şartı olduğu gibi durur.
+//
+//   EKSİK DEĞİŞKEN = ADRES YOK. Tanımsız bir değişken yarım genişletilmiş bir yol
+//   bırakır ve yarım yol, var olmayan bir dosyayı gösteren kayıttan farksızdır:
+//   sonraki her aramayı yanıltır. Varsayılan da konmaz, çünkü varsayılan bir
+//   değer kullanıcıyı yanlış bir kuruluma sessizce bağlar. Adres ya tam çözülür
+//   ya da işaretçi yok sayılır.
+
+/** `${AD}` ve `$AD` biçimlerini tanır; başka hiçbir kabuk sözdizimi genişletilmez. */
+const ORTAM_DEGISKENI_DESENI = /\$\{[A-Za-z_][A-Za-z0-9_]*\}|\$[A-Za-z_][A-Za-z0-9_]*/gu;
+
+/**
+ * Yoldaki ortam değişkenlerini genişletir. Değişkenlerden biri tanımsız ya da
+ * boşsa adres ÇÖZÜLEMEZ sayılır ve `undefined` döner; değişken taşımayan bir yol
+ * olduğu gibi geri gelir.
+ */
+export function ortamDegiskenleriniCoz(
+  yol: string,
+  ortam: Readonly<Record<string, string | undefined>> = process.env,
+): string | undefined {
+  let eksik = false;
+  const cozulmus = yol.replace(ORTAM_DEGISKENI_DESENI, (tam: string) => {
+    const ad = tam.startsWith("${") ? tam.slice(2, -1) : tam.slice(1);
+    const deger = ortam[ad];
+    if (deger === undefined || deger === "") { eksik = true; return ""; }
+    return deger;
+  });
+  return eksik ? undefined : cozulmus;
+}
+
 /**
  * Bir dizinden yukarı yürüyüp kanon işaretçisini arar ve bildirdiği kurulum
  * kökünü döndürür. Bozuk ya da göreli adres taşıyan işaretçi YOK sayılır:
@@ -69,8 +104,8 @@ function isaretciKokuBul(baslangicDizin: string): string | undefined {
     if (existsSync(aday)) {
       try {
         const veri = JSON.parse(readFileSync(aday, "utf8")) as KanonIsaretcisi;
-        const kok = veri.kanonKoku;
-        if (typeof kok === "string" && kok.length > 0 && isAbsolute(kok)) return kok;
+        const kok = typeof veri.kanonKoku === "string" ? ortamDegiskenleriniCoz(veri.kanonKoku) : undefined;
+        if (kok !== undefined && kok.length > 0 && isAbsolute(kok)) return kok;
       } catch { /* okunamayan işaretçi yok sayılır — yukarı yürüyüş sürer */ }
     }
     const ust = dirname(dizin);

@@ -20,8 +20,8 @@ import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
 import { VARSAYILAN, uret } from "../arac/renk-uret.mjs";
 import {
-  PAKET_KANON_DIZINI, hasatHedefiBul, ilanliVarliklar, isaretciPlani, isaretciYaz, surumeBagliEklentiYolu,
-  tamDenetimKanonuBul, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
+  PAKET_KANON_DIZINI, hasatHedefiBul, ilanliVarliklar, isaretciPlani, isaretciYaz, ortamDegiskenleriniCoz,
+  surumeBagliEklentiYolu, tamDenetimKanonuBul, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
 } from "../src/kanon-kesif.ts";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
@@ -399,6 +399,57 @@ test("BKM-DNT-A15: bozuk ya da göreli adres taşıyan işaretçi YOK sayılır"
     assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), undefined,
       `${ad}: çözülemeyen işaretçi kayıt döndürdü — var olmayan adres, adres olmamaktan kötüdür`);
   }
+});
+
+// ── 5ʹ) EKL-F6-A08 · TAŞINABİLİR İŞARETÇİ ADRESİ ────────────────────────────
+//   Founder hükmü 2026-09-16: doğan kökün kayıtları motorun yolunu SARMAL_KOK
+//   ortam değişkeninden okur ve varsayılan taşımaz. İşaretçi de aynı değişkenle
+//   yazıldığı için okuyucunun onu ÇÖZEBİLMESİ ölçülür: çözemezse doğan ağaç
+//   kendi kanonunu bulamaz ve panel o kökte kör kalır. Okuma yolu genişler,
+//   YAZIM yolu değişmez — sürüme bağlı yol yasağı ile mutlaklık şartı durur.
+
+test("EKL-F6-A08: ortamDegiskenleriniCoz — tanımlı değişken genişler, eksik değişken adresi ÇÖZÜLEMEZ yapar", () => {
+  const ortam = { SARMAL_KOK: "/kurulum", BOS: "" };
+  assert.equal(ortamDegiskenleriniCoz("${SARMAL_KOK}/oz", ortam), "/kurulum/oz");
+  assert.equal(ortamDegiskenleriniCoz("$SARMAL_KOK/oz", ortam), "/kurulum/oz");
+  assert.equal(ortamDegiskenleriniCoz("/mutlak/yol", ortam), "/mutlak/yol", "değişken taşımayan yol olduğu gibi dönmeli");
+  assert.equal(ortamDegiskenleriniCoz("${YOK_BOYLE}/oz", ortam), undefined, "tanımsız değişken yarım yol bırakmamalı");
+  assert.equal(ortamDegiskenleriniCoz("${BOS}/oz", ortam), undefined, "boş değişken de çözülmemiş sayılır");
+});
+
+test("EKL-F6-A08: doğuşun yazdığı değişkenli işaretçi çözülür; değişken tanımsızken işaretçi YOK sayılır", () => {
+  const alan = gecici("sarmal-isaretci-degisken-");
+  const kurulum = varlikKur(alan, "sarmal_kurulumu", { kanon: true });
+  const dogan = varlikKur(alan, "dogan_proje");
+  const isaretciDizin = join(dogan, "oz", "siniflama");
+  mkdirSync(isaretciDizin, { recursive: true });
+  writeFileSync(join(isaretciDizin, "isaretci.json"),
+    JSON.stringify({ kanonKoku: "${SARMAL_KOK}", kayit: KAYIT_GORELI }), "utf8");
+
+  const onceki = process.env.SARMAL_KOK;
+  try {
+    // ① Değişken TANIMLI: adres genişler ve taban kayıt doğuran kurulumdan çözülür.
+    process.env.SARMAL_KOK = kurulum;
+    assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), join(kurulum, KAYIT_GORELI),
+      "değişkenli işaretçi çözülmedi — doğan ağaç kendi kanonunu bulamaz ve panel kör kalır");
+    // ② Değişken TANIMSIZ: yarım genişletilmiş yol adres sayılmaz.
+    delete process.env.SARMAL_KOK;
+    assert.equal(varlikDosyasiBul(dogan, KAYIT_GORELI, [dogan]), undefined,
+      "tanımsız değişkenle yarım genişletilmiş adres kayıt döndürdü — var olmayan adres, adres olmamaktan kötüdür");
+  } finally {
+    if (onceki === undefined) delete process.env.SARMAL_KOK;
+    else process.env.SARMAL_KOK = onceki;
+  }
+});
+
+test("EKL-F6-A08: işaretçinin YAZIM yolu değişmedi — göreli ve sürüme bağlı adres hâlâ reddedilir", () => {
+  const alan = gecici("sarmal-isaretci-yazim-");
+  const hedef = varlikKur(alan, "hedef_proje");
+  mkdirSync(join(hedef, "oz", "siniflama"), { recursive: true });
+  assert.throws(() => isaretciYaz(hedef, "../sarmal"), /göreli adres taşıyamaz/u,
+    "yazım yolu göreli adresi geçirdi — okuma tarafındaki genişletme yazım şartını gevşetmemeli");
+  assert.throws(() => isaretciYaz(hedef, join(alan, "extensions", "nexivion-labs.sarmal-0.9.190")), /sürüme bağlı/u,
+    "yazım yolu sürüme bağlı klasörü geçirdi — ilk güncellemede kırılan adres yazılır");
 });
 
 // ── 6) EKL-F6-A09 · MAĞAZADAN KURULAN EKLENTİDE TAM DENETİM ─────────────────
