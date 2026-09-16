@@ -78,6 +78,8 @@ interface Gercek {
   lisansMetni: string;
   /** Eklentideki marka ikonunun ham baytları — paket kökündeki kopyanın aslı. */
   eklentiIkonu: Buffer;
+  /** Sunucunun telde ilan ettiği sürüm — paket sürümüyle aynı olmalıdır (Founder hükmü 2026-09-16). */
+  sunucuTeliSurumu: string;
   /** [dosya adı, içerik] — gizlilik adresinin görünmesi gereken tanıtım yüzleri. */
   tanitimYuzleri: Array<[string, string]>;
 }
@@ -100,6 +102,7 @@ const GERCEK: Gercek = {
   depoAdresi: EKLENTI_PAKETI.repository?.url ?? "",
   eklentiAnahtarlari: EKLENTI_PAKETI.keywords ?? [],
   eklentiIkonu: readFileSync(join(DEPO_KOKU, "urun", "eklenti", "ikonlar", "sarmal-ikon.png")),
+  sunucuTeliSurumu: sunucuTeliSurumu(readFileSync(join(CEKIRDEK, "src", "mcp.ts"), "utf8")),
   lisansMetni: readFileSync(join(DEPO_KOKU, "LICENSE.md"), "utf8"),
   tanitimYuzleri: [
     ["README.md", readFileSync(join(DEPO_KOKU, "README.md"), "utf8")],
@@ -111,6 +114,12 @@ const GERCEK: Gercek = {
 function lisansKimligi(metin: string): string {
   if (metin.includes("Apache License") && metin.includes("Version 2.0")) return "Apache-2.0";
   return "bilinmeyen";
+}
+
+/** mcp.ts gövdesindeki SUNUCU ilanından tel sürümü okunur — sayı elle yazılmaz. */
+function sunucuTeliSurumu(metin: string): string {
+  const eslesme = /const SUNUCU = \{ name: "sarmal", version: "([^"]+)" \}/.exec(metin);
+  return eslesme?.[1] ?? "bulunamadı";
 }
 
 const esit = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
@@ -130,6 +139,10 @@ function bildirimAyrismalari(b: Bildirim, g: Gercek): string[] {
   if (b.manifest_version !== BEKLENEN_SPEC) ayrisma.push("manifest_version");
   if (b.name !== g.cekirdekAdi) ayrisma.push("name");
   if (b.version !== g.cekirdekSurumu) ayrisma.push("version");
+  // Paket ile sunucu aynı sürümü söylemelidir: dizin incelemesi iki farklı sayı
+  // görünce hangisine güveneceğini bilemez ve kurulanın hangi değişiklikle
+  // geldiği okunamaz hâle gelir (Founder hükmü 2026-09-16).
+  if (g.cekirdekSurumu !== g.sunucuTeliSurumu) ayrisma.push("version(sunucu-teliyle-ayrışık)");
   if (!b.description?.trim()) ayrisma.push("description");
   if (!b.author?.name?.trim()) ayrisma.push("author.name");
 

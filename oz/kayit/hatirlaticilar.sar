@@ -1011,3 +1011,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "İşleme kancasının test kapısı bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde bir üretici ajanın raporunda bildirilmiş ve kontrolcü tarafından doğrulanmıştır: işleme kancasının test kapısı süit günlüğünü çarpı imi ve failing sözcüğü için taramakta, fakat urun/cekirdek/src/sarmal.ts dosyasının dokuz yüz on ikinci satırındaki hata akışı çıktısı bir fikstürün beklenen çıktısıdır ve o fikstür geçmektedir. Sonuç olarak sağlıklı bir sınamanın beklenen çıktısı kanca tarafından başarısızlık gibi toplanmakta ve günlüğü okuyan kişiye kırmızı varmış gibi görünmektedir. Bugün işi engellememektedir, çünkü kanca hükmünü çıkış kodundan vermektedir; ancak gürültü bir gün gerçek kırmızıyı gizler. Doğru davranış, kapının hükmünü metin taramasından değil koşucunun kendi özet satırlarından almasıdır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-MCPB-PAKETININ-SURUM-NOTU-YOK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Masaüstü eklenti paketi ilk kez yayımlanmadan önce; en geç EKL-F6-A01 Adımının kapanışında",
+  ne:               "Founder 2026-09-16 tarihinde çekirdek paketinin sürümünü sunucunun telde ilan ettiği 0.16.0 numarasına çekmeye hükmetmiş ve sürüm notu ihtiyacının hatırlatıcıya bağlanmasını istemiştir. Ölçüm şunu göstermiştir: depoda tek sürüm notu dosyası vardır ve o dosya eklentinin tarihçesidir (urun/eklenti/CHANGELOG.md, doksan yedi sürüm başlığı); çekirdek paketinin hiçbir sürüm notu yoktur ve sunucunun sürüm gerekçesi yalnız kaynak kodun içindeki yorumda yaşamaktadır (urun/cekirdek/src/mcp.ts altmış dokuzuncu satır). Masaüstü eklenti paketi eklentiden ayrı bir üründür ve ayrı mağazada yaşar; yayımlandığı gün kendi sürüm notunu ister, çünkü kurulanın hangi değişiklikle geldiğini eklentinin notundan okumak mümkün değildir. Doğru davranış, çekirdek paketine kendi sürüm notu dosyasının açılması ve sunucu sürümü her ilerlediğinde o notun aynı işlemede yazılmasıdır; not yokken paket yayımlanmaz."
+)

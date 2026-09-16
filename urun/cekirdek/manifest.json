@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "@sarmal/cekirdek",
   "display_name": "Sarmal",
-  "version": "0.1.0",
+  "version": "0.16.0",
   "description": "Sarmal's MCP server: eighteen tools that read a project's plan, canon, type system and drift audit straight from its .sar source, so an agent asks the graph instead of grepping files.",
   "author": {
     "name": "Nexivion Labs",
