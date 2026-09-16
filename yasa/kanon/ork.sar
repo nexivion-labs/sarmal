@@ -11,7 +11,7 @@
 ### ORK-0 · Tanım · Amaç · Kapsam · Hedefler [BİLGİ]
 **Hüküm:** Orkestrasyon ve Bağımlılık; mimari görünürlük, Adım yürütme sırası, üretim kökeni, Auth, ajan iş bölümü ve yetki akışlarını birbirinden ayrılmış, tipli ve tek anlamlı ilişki sınıflarıyla tanımlayan kanonik işletim otoritesidir; bu anlamlar örtük kaynak sırası, düzyazı veya ikinci bir ilişki siciliyle kurulamaz; dayanak: aksiyom (dayanaksız kök); ilgili: [ORK-0, MIM-0, TIP-0, YAS-0].
 **Gerekçe:** Kapsam, sıra, teslim kökeni, kimlik ve yetki aynı bağ türüne yüklendiğinde grafın neyi gösterdiği ve hangi değişikliğin yürütmeyi etkilediği belirsizleşir. Ayrık ilişki sınıfları aynı düğüm çiftinin farklı yüzlerde başka anlam kazanmasını önler.
-**Örnek:** Kanonik ayrım: `mimariBağı = görünürlük`, `bağımlı|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır.
+**Örnek:** Kanonik ayrım: `iç içe sarma → kapsayan = görünürlük`, `bağımlı|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.
 |<--
 Karar( kod: ORK-0, durum: kilitli,
@@ -21,25 +21,25 @@ Karar( kod: ORK-0, durum: kilitli,
 
 -->|
 ### ORK-1 · Üç Tipli İlişki Modeli [HATA]
-**Hüküm:** Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: `mimariBağı` yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez veya aynı bağlantı birden çok sınıfta yinelenemez; dayanak: ORK-0; ilgili: [ORK-0, MIM-0, TIP-0].
+**Hüküm:** Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: iç içe sarma ile ondan türeyen `kapsayan` bağı yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez, aynı bağlantı birden çok sınıfta yinelenemez ve kapsama ilişkisi için ayrıca yazılan ikinci bir kenar ilan edilemez; dayanak: ORK-0; ilgili: [ORK-0, MIM-0, TIP-0].
 **Gerekçe:** Mimari yakınlığı yürütme önceliği, teslim bağını da bağımlılık saymak sahte öncüller, yanlış döngüler ve kayıp üretim izi doğurur. Üçlü ayrım graf hesabını ve görsel okumayı tek anlamda tutar.
-**Örnek:** `ALT-KOD mimariBağı ADM-DERLE`, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez.
+**Örnek:** `AltKatman( kod: ALT-KOD ) { Adım( kod: ADM-DERLE ) }` sarması, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez.
 **Zorlama:** Yeni tanı önerisi `ilişki-sınıfı-ihlali` · HATA · “Kenar mimari görünürlük, Adım sırası veya üretim kökeni sınıflarından yanlış olanında kullanılmış; ilanlı sınıfa taşı.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Karar( kod: ORK-1, durum: kilitli,
        ne: "ORK-1 · Üç Tipli İlişki Modeli [HATA]",
-       karar: "Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: `mimariBağı` yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez veya aynı bağlantı birden çok sınıfta yinelenemez; dayanak: ORK-0; ilgili: [ORK-0, MIM-0, TIP-0].",
+       karar: "Her üretim grafı üç ana ilişki anlamını kesin olarak ayırır: iç içe sarma ile ondan türeyen `kapsayan` bağı yalnız kapsama ve görünürlüğü, `bağımlı` ile `besler` yalnız Adımlar arasındaki yürütme sırasını, `üretir` ise yalnız Adım→Meyve üretim kökenini temsil eder; bir kenar başka sınıfın anlamını üstlenemez, aynı bağlantı birden çok sınıfta yinelenemez ve kapsama ilişkisi için ayrıca yazılan ikinci bir kenar ilan edilemez; dayanak: ORK-0; ilgili: [ORK-0, MIM-0, TIP-0].",
        gerekçe: "Mimari yakınlığı yürütme önceliği, teslim bağını da bağımlılık saymak sahte öncüller, yanlış döngüler ve kayıp üretim izi doğurur. Üçlü ayrım graf hesabını ve görsel okumayı tek anlamda tutar." )
 
 -->|
-### ORK-1.1 · mimariBağı [HATA]
-**Hüküm:** `mimariBağı` yalnız `Blok→Katman`, `Katman→AltKatman` ve `AltKatman→Adım` ardışık çiftlerinde, üst kademenin alt kademeyi mimari kapsamda görünür kılması için kullanılır; topolojik yürütme sırasına katılamaz, kademe atlayamaz ve `Blok→Blok`, `Katman→Katman` veya başka eş-kademe bağı kuramaz; dayanak: ORK-1; ilgili: [ORK-0, MIM-0].
-**Gerekçe:** Mimari kapsamın sıra grafına girmesi bir kapsayıcının bütün yapraklarını istemeden kilitler; eş-kademe ve atlamalı bağlar ise kanonik sarma zincirinin dışına ikinci bir mimari hiyerarşi kurar.
-**Örnek:** Doğru: `BLK-KIMLIK mimariBağı KAT-SERVIS` ve `KAT-SERVIS mimariBağı ALT-SINAMA`; yanlış: `BLK-KIMLIK mimariBağı BLK-ODEME` veya bu bağı “önce çalışır” diye yorumlamak.
-**Zorlama:** Yeni tanı önerisi `mimari-bağı-ihlali` · HATA · “`mimariBağı` yalnız ardışık Blok→Katman→AltKatman→Adım görünürlük zincirinde kullanılabilir ve yürütme sırası kuramaz.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+### ORK-1.1 · Mimari Sarma [HATA]
+**Hüküm:** Mimari kapsam yalnız iç içe sarmayla kurulur ve grafa `kapsayan` bağı olarak bu sarmadan türer; sarma `Blok→Katman`, `Katman→AltKatman` ve `AltKatman→Adım` ardışık çiftlerinde üst kademenin alt kademeyi mimari kapsamda görünür kılar, topolojik yürütme sırasına katılamaz, kademe atlayamaz ve `Blok→Blok`, `Katman→Katman` veya başka eş-kademe bağı kuramaz; kapsamı bildiren ayrı bir yazılı kenar yoktur ve ilan edilemez; dayanak: ORK-1; ilgili: [ORK-0, MIM-0].
+**Gerekçe:** Mimari kapsamın sıra grafına girmesi bir kapsayıcının bütün yapraklarını istemeden kilitler; eş-kademe ve atlamalı bağlar ise kanonik sarma zincirinin dışına ikinci bir mimari hiyerarşi kurar. Kapsamın ayrı bir yazılı kenarla bildirilmemesinin sebebi ayrıdır ve 2026-09-16 tarihli Founder hükmüyle bağlanmıştır: ilişki bugün iç içe sarma, izinli sarma sicili ve grafın `kapsayan` türetmesiyle motorda eksiksiz taşınmaktadır, dolayısıyla aynı bağı ikinci kez bildiren bir kenar ya bu maddenin kendi yinelenme yasağını çiğner ya da kapsam için ikinci bir yazım yolu açarak aynı yapının iki ayrı biçimde yazılmasına izin verir.
+**Örnek:** Doğru: `Blok( kod: BLK-KIMLIK ) { Katman( kod: KAT-SERVIS ) { AltKatman( kod: ALT-SINAMA ) } }` sarması; yanlış: `BLK-ODEME` Blokunu `BLK-KIMLIK` Blokunun gövdesine almak veya bu sarmayı “önce çalışır” diye yorumlamak.
+**Zorlama:** Yeni tanı önerisi `mimari-bağı-ihlali` · HATA · “Mimari kapsam yalnız ardışık Blok→Katman→AltKatman→Adım sarmasıyla kurulabilir ve yürütme sırası kuramaz.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
-Kural mimariBağı( kod: ORK-1.1,
-       ne: "ORK-1.1 · mimariBağı [HATA]",
+Kural mimariSarma( kod: ORK-1.1,
+       ne: "ORK-1.1 · Mimari Sarma [HATA]",
        otorite: anayasa, katman: niyet, kapsam: genel,
        dayanak: ORK-1 )
 

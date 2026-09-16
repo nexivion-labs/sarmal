@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:aa38b7d79bc6889f2ddecd7d18c79c7ff64a1eda5172d140ce0b17c174a5ad96
+// KAYNAK-MUHRU kanon-demeti-sha256:baa43d18414969c9592494dea6aa9327717c5a5dff7c0854f921ea786fe96b1e
 
 -->|
 # Kanon tutarlılık yüzü
@@ -14,12 +14,12 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/dil.sar` | `837deefdf7b1f5e4879d4c3f144f84ac5334e3c586da4325eeb9cd0070008841` |
 | `yasa/kanon/mim.sar` | `741968daaf723ad0e02f5e34daf92b959b9cb8b928aec260b21d9bd78fe2c541` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
-| `yasa/kanon/ork.sar` | `0d6b8eed8e8d264b79b81cecacb1f60d0d5f3636d0fab4658cacd4be8f5287ab` |
+| `yasa/kanon/ork.sar` | `473e2069a39d2394465adf444abbaa2e48b6a4c13c7a93508a52e7dca4fbf3fc` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `626925d46e7a71e650236ff6deeed0963f8d17e199ea2cfba8f9be17b92c6d5b` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `aa38b7d79bc6889f2ddecd7d18c79c7ff64a1eda5172d140ce0b17c174a5ad96` |
+| kanon demeti | `baa43d18414969c9592494dea6aa9327717c5a5dff7c0854f921ea786fe96b1e` |
 | `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
 | `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -96,9 +96,9 @@ Resmi sonuç 161/161 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `OGR-3.2` | Kural | `ogr.sar` | Yanlış bir alan açıklaması `AGENTS.md` içinde elle düzeltilmez; alanın kanonik tarifi değiştirilir ve bağlam paketi yeniden üretilir. |
 | `OGR-4` | Kural | `ogr.sar` | `Bellek( kod: BLK-DERS-01, tür: ders, neden: "Kenar hedefi çözülmedi", terfi: bekliyor )` önce kanıt toplar; doğrulama geçince hedefi çözülen `Beceri( kod: BCR-KENAR-01, referans: ORK-1 )` üretilir. |
 | `OGR-5` | Kural | `ogr.sar` | Bir Tutorial içindeki `ADM-ORNEK-01` öğretim denetiminde geçerli olmak zorundadır fakat gerçek projenin “sıradaki Adımı” veya teslim edilmiş Meyvesi olarak ürün karnesine girmez. |
-| `ORK-0` | Karar | `ork.sar` | Kanonik ayrım: `mimariBağı = görünürlük`, `bağımlı\|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır. |
-| `ORK-1` | Karar | `ork.sar` | `ALT-KOD mimariBağı ADM-DERLE`, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez. |
-| `ORK-1.1` | Kural | `ork.sar` | Doğru: `BLK-KIMLIK mimariBağı KAT-SERVIS` ve `KAT-SERVIS mimariBağı ALT-SINAMA`; yanlış: `BLK-KIMLIK mimariBağı BLK-ODEME` veya bu bağı “önce çalışır” diye yorumlamak. |
+| `ORK-0` | Karar | `ork.sar` | Kanonik ayrım: `iç içe sarma → kapsayan = görünürlük`, `bağımlı\|besler = Adım sırası`, `üretir = Adım→Meyve kökeni`, yardımcı kenarlar ise yalnız kendi ilanlı bağlamını taşır. |
+| `ORK-1` | Karar | `ork.sar` | `AltKatman( kod: ALT-KOD ) { Adım( kod: ADM-DERLE ) }` sarması, `ADM-DERLE besler ADM-SINA` ve `ADM-SINA üretir MEY-RAPOR` üç ayrı ilişki sınıfıdır; ilk ve üçüncü bağ topolojik sıraya girmez. |
+| `ORK-1.1` | Kural | `ork.sar` | Doğru: `Blok( kod: BLK-KIMLIK ) { Katman( kod: KAT-SERVIS ) { AltKatman( kod: ALT-SINAMA ) } }` sarması; yanlış: `BLK-ODEME` Blokunu `BLK-KIMLIK` Blokunun gövdesine almak veya bu sarmayı “önce çalışır” diye yorumlamak. |
 | `ORK-1.2` | Kural | `ork.sar` | `Adım( kod: ADM-DERLE, besler: [ ADM-SINA ] )` ile `Adım( kod: ADM-SINA, bağımlı: [ ADM-DERLE ] )` aynı “DERLE önce, SINA sonra” çiftini anlatır; ikisi iki ayrı iş bağı sayılmaz. |
 | `ORK-1.3` | Kural | `ork.sar` | Doğru: `Adım( kod: ADM-SINA, üretir: [ MEY-RAPOR ] )` ve `Meyve( kod: MEY-RAPOR, tür: Sözleşme )`; yanlış: `Meyve`den Adıma `üretir` yöneltmek veya bu kenarı ADM-SINA'nın sırası saymak. |
 | `ORK-2` | Karar | `ork.sar` | `dayanak` hüküm kökenini, `tema` görünüm bağını, `koşar` işletilecek hedefi gösterir; bunların hiçbiri tek başına iki Adım arasında “önce→sonra” sırası üretmez. |
