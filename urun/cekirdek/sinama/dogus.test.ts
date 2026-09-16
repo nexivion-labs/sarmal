@@ -202,7 +202,14 @@ import { dirname } from "node:path";
 import {
   KURESEL_YOK_SAYMA_DESENLERI, yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri, yokSaymaRaporu,
 } from "../src/yonerge-ikizi.ts";
-import { SARMAL_KURULUM_KOKU, SARMAL_MCP_YOLU, SARMAL_MOTOR_YOLU } from "../src/dogus.ts";
+import {
+  MCP_GORELI_YOLU, MOTOR_GORELI_YOLU, SARMAL_KOK_DEGISKENI, SARMAL_KOK_ONEKI,
+  SARMAL_KURULUM_KOKU, SARMAL_MCP_YOLU, SARMAL_MOTOR_YOLU,
+  TASINABILIR_MCP_YOLU, TASINABILIR_MOTOR_YOLU,
+} from "../src/dogus.ts";
+
+/** Doğan kayıtlarda yasak olan iki desen: doğuran kurulumun MUTLAK yolu ve değişkene konmuş VARSAYILAN. */
+const VARSAYILAN_DESENI = new RegExp(`\\$\\{${SARMAL_KOK_DEGISKENI}:`, "u");
 
 /** Giriş ilanı deseni parçalardan kurulur: kaynak metni okuyan kancalar bu
  *  dosyayı bir yazım hedefi sanmasın (ölçüm aracı ölçtüğü kapıyı tetiklemez). */
@@ -300,13 +307,22 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
     // ① yok sayma istisnası
     assert.deepEqual(yokSaymaIstisnasiEksikleri(readFileSync(join(dizin, ".gitignore"), "utf8")), []);
 
-    // ② yürütücü ayarı — sunucunun adresi diskte GERÇEKTEN vardır
-    const ayar = JSON.parse(readFileSync(join(dizin, ".mcp.json"), "utf8")) as
+    // ② yürütücü ayarı — sunucunun adresi TAŞINABİLİRDİR (EKL-F6-A08): yol bir
+    //    ortam değişkeninden okunur, mutlak yazılmaz ve varsayılan taşımaz;
+    //    değişken genişletildiğinde gösterdiği dosya diskte GERÇEKTEN vardır.
+    const ayarMetni = readFileSync(join(dizin, ".mcp.json"), "utf8");
+    const ayar = JSON.parse(ayarMetni) as
       { mcpServers: Record<string, { command: string; args: string[] }> };
     const sunucu = ayar.mcpServers.sarmal;
     assert.equal(sunucu.command, "node");
-    assert.equal(sunucu.args[0], SARMAL_MCP_YOLU);
-    assert.ok(existsSync(sunucu.args[0]), "yürütücü ayarı var olmayan bir sunucuyu gösteriyor");
+    assert.equal(sunucu.args[0], TASINABILIR_MCP_YOLU);
+    assert.ok(sunucu.args[0].startsWith(`${SARMAL_KOK_ONEKI}/`),
+      "sunucu kaydı motorun yolunu ortam değişkeninden okumuyor — taşınan ağaçta sessizce çözülmez");
+    assert.ok(!ayarMetni.includes(SARMAL_KURULUM_KOKU),
+      "sunucu kaydı doğuran kurulumun MUTLAK yolunu taşıyor — kayıt taşınabilir değil");
+    assert.ok(!VARSAYILAN_DESENI.test(ayarMetni), "sunucu kaydına varsayılan değer konmuş (Founder hükmü varsayılan yasaklar)");
+    assert.ok(existsSync(join(SARMAL_KURULUM_KOKU, MCP_GORELI_YOLU)),
+      "taşınabilir adres genişletildiğinde var olmayan bir sunucuyu gösteriyor");
 
     // ③ yönerge ikizi — iki kanat BAYT ÖZDEŞ
     const claude = readFileSync(join(dizin, "CLAUDE.md"), "utf8");
@@ -322,14 +338,17 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
       assert.ok(existsSync(join(dizin, ".claude", "kanca", k)), `${k} doğmadı`);
     }
     const kapi = readFileSync(join(dizin, ".claude", "kanca", "denetim-kapisi.sh"), "utf8");
-    assert.ok(kapi.includes(SARMAL_MOTOR_YOLU), "denetim kapısı motorun adresini taşımıyor");
-    assert.ok(existsSync(SARMAL_MOTOR_YOLU), "motorun adresi diskte yok");
+    assert.ok(kapi.includes(`MOTOR="${TASINABILIR_MOTOR_YOLU}"`), "denetim kapısı motoru ortam değişkeninden çözmüyor");
+    assert.ok(!kapi.includes(SARMAL_KURULUM_KOKU), "denetim kapısı doğuran kurulumun MUTLAK yolunu taşıyor");
+    assert.ok(existsSync(join(SARMAL_KURULUM_KOKU, MOTOR_GORELI_YOLU)), "motorun adresi diskte yok");
 
-    // ⑤ kanon işaretçisi — KOPYA DEĞİL ADRES; taban kayıt o adreste gerçekten var
-    const isaretci = JSON.parse(readFileSync(join(dizin, "oz", "siniflama", "isaretci.json"), "utf8")) as
-      { kanonKoku: string; kayit: string };
-    assert.equal(isaretci.kanonKoku, SARMAL_KURULUM_KOKU);
-    assert.ok(existsSync(join(isaretci.kanonKoku, isaretci.kayit)), "işaretçi var olmayan bir kanonu gösteriyor");
+    // ⑤ kanon işaretçisi — KOPYA DEĞİL ADRES ve adres TAŞINABİLİR; taban kayıt
+    //    değişken genişletildiğinde o adreste gerçekten vardır.
+    const isaretciMetni = readFileSync(join(dizin, "oz", "siniflama", "isaretci.json"), "utf8");
+    const isaretci = JSON.parse(isaretciMetni) as { kanonKoku: string; kayit: string };
+    assert.equal(isaretci.kanonKoku, SARMAL_KOK_ONEKI);
+    assert.ok(!isaretciMetni.includes(SARMAL_KURULUM_KOKU), "işaretçi doğuran kurulumun MUTLAK yolunu taşıyor");
+    assert.ok(existsSync(join(SARMAL_KURULUM_KOKU, isaretci.kayit)), "işaretçi var olmayan bir kanonu gösteriyor");
     assert.ok(!existsSync(join(dizin, "oz", "siniflama", "kayit.json")),
       "kanon doğan köke KOPYALANMIŞ — işaretçi adres olmalı, kopya değil (kanon sahibine özel kapılar yanlış ağaçta uyanır)");
   } finally {
@@ -403,4 +422,74 @@ test("BKM-DNT-A15 · kurulum adresleri diskte gerçektir (uydurma yol yazılmaz)
   assert.ok(existsSync(SARMAL_MCP_YOLU), "sunucu giriş dosyası çözülemedi");
   assert.ok(existsSync(SARMAL_MOTOR_YOLU), "motor giriş dosyası çözülemedi");
   assert.equal(dirname(SARMAL_MCP_YOLU), dirname(SARMAL_MOTOR_YOLU));
+  // EKL-F6-A08: taşınabilir adres, ölçülmüş mutlak adresin değişkenli ikizidir.
+  // İkisi ayrışırsa kayıt doğru görünür fakat genişletildiğinde başka bir yere
+  // bakar; bu yüzden eşitlik ölçülür, göz kararı bırakılmaz.
+  assert.equal(TASINABILIR_MCP_YOLU, `${SARMAL_KOK_ONEKI}/${MCP_GORELI_YOLU}`);
+  assert.equal(TASINABILIR_MOTOR_YOLU, `${SARMAL_KOK_ONEKI}/${MOTOR_GORELI_YOLU}`);
+  assert.equal(join(SARMAL_KURULUM_KOKU, MCP_GORELI_YOLU), SARMAL_MCP_YOLU);
+  assert.equal(join(SARMAL_KURULUM_KOKU, MOTOR_GORELI_YOLU), SARMAL_MOTOR_YOLU);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EKL-F6-A08 · MOTORUN TAŞINABİLİR KURULUMU (Founder hükmü 2026-09-16)
+//
+//   Ölçülmüş kusur: doğan kökün kayıtları motorun yolunu MUTLAK yazıyordu ve
+//   ağaç bir depoya gönderilip başka bir makinede klonlandığında o yol orada
+//   bulunmuyordu; sunucu hiç açılmıyor, kanca da sessizce çekiliyordu. Ajanın
+//   gözünde bağlanamayan sunucu ile hiç tanımlanmamış sunucu aynı görünüyor ve
+//   ajan ham taramaya dönüyordu. Aşağıdaki iki nöbet onarımın iki yarısını
+//   ölçer: kayıtların taşınabilirliği ve kapının sessizliğinin sonu.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("EKL-F6-A08 · doğan kökün üç kaydı da taşınabilirdir: mutlak yol yazılmaz, varsayılan konmaz", () => {
+  const dizin = geciciDizin();
+  try {
+    dogusYaz(dizin, "tasinabilir", "2026-09-16");
+    for (const goreli of [".mcp.json", ".claude/kanca/denetim-kapisi.sh", "oz/siniflama/isaretci.json"]) {
+      const metin = readFileSync(join(dizin, ...goreli.split("/")), "utf8");
+      assert.ok(metin.includes(SARMAL_KOK_ONEKI), `${goreli} motorun yolunu ${SARMAL_KOK_DEGISKENI} değişkeninden okumuyor`);
+      assert.ok(!metin.includes(SARMAL_KURULUM_KOKU), `${goreli} doğuran kurulumun MUTLAK yolunu taşıyor — ağaç taşınırsa bu bağ kopar`);
+      assert.ok(!VARSAYILAN_DESENI.test(metin), `${goreli} değişkene varsayılan koymuş — varsayılan arızayı susturur`);
+    }
+    // Doğum raporu yeni gerçeği söyler: elle güncelleme değil, tek değişken.
+    const rapor = dogusRaporu(dogusYaz(geciciDizin(), "raporlu", "2026-09-16"), dizin);
+    assert.match(rapor, /TAŞINABİLİR yazıldı/u, "rapor hâlâ elle güncelleme öğütlüyor");
+    assert.ok(rapor.includes(`export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`),
+      "rapor kullanıcıya bu makinedeki değişken değerini söylemiyor");
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});
+
+/** Kancayı gerçek bir kanca girdisiyle koşturur; ortamı çağıran seçer. */
+function kapiyiKostur(kancaYolu: string, girdi: unknown, ortam: Record<string, string | undefined>): string {
+  const s = spawnSync("sh", [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8", env: ortam });
+  return `${s.stdout}${s.stderr}`;
+}
+
+test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişkeni adıyla anar ve onarımı gösterir", () => {
+  const dizin = geciciDizin();
+  try {
+    dogusYaz(dizin, "sessizligin-sonu", "2026-09-16");
+    const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.sh");
+    const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "ilk_plan.sar") } };
+
+    // ① Değişken TANIMSIZ: motor çözülemez ve kapı bunu TEK SATIRLA söyler.
+    const degiskensiz: Record<string, string | undefined> = { ...process.env, CLAUDE_PROJECT_DIR: dizin };
+    delete degiskensiz[SARMAL_KOK_DEGISKENI];
+    const sessizlik = kapiyiKostur(kanca, girdi, degiskensiz);
+    assert.match(sessizlik, /DENETİM KOŞMADI/u, "kapı motoru bulamadığında sessizce çekildi — sessizlik denetimden ayırt edilemez");
+    assert.ok(sessizlik.includes(SARMAL_KOK_DEGISKENI),
+      "onarım cümlesi eksik değişkeni ADIYLA anmıyor — kullanıcı ne yapacağını göremez");
+    assert.match(sessizlik, /export/u, "kapı durumu söylüyor fakat onarımı göstermiyor");
+
+    // ② Değişken TANIMLI: kapı gerçekten denetimi koşar ve sonucu bildirir.
+    const degiskenli = { ...degiskensiz, [SARMAL_KOK_DEGISKENI]: SARMAL_KURULUM_KOKU };
+    const kostu = kapiyiKostur(kanca, girdi, degiskenli);
+    assert.match(kostu, /🚪✅ sarmal-kapı/u, `değişken tanımlıyken kapı denetimi koşturmadı — çıktı:\n${kostu}`);
+    assert.doesNotMatch(kostu, /DENETİM KOŞMADI/u, "değişken tanımlıyken kapı motoru bulamadığını iddia etti");
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
 });

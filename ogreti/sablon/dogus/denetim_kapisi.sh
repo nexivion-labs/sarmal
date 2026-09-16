@@ -11,17 +11,20 @@
 #
 #   KÖK. Denetim bu kökün kendisinde koşar; kökü kancanın yaşadığı yer bildirir,
 #   dolayısıyla ajanın o anki çalışma dizini yanlış bir ağacı denetlemeye yol
-#   açmaz. Motorun adresi, bu projeyi doğuran Sarmal kurulumundan çözülmüştür.
+#   açmaz. Motorun adresi TAŞINABİLİRDİR: {{KOKDEGISKENI}} ortam değişkeninden
+#   çözülür ve varsayılan taşımaz, çünkü varsayılan bir değer arızayı susturur ve
+#   kullanıcıyı yanlış bir kuruluma sessizce bağlar.
 #
-#   ARIZA-GÜVENLİ: `jq`, `node` ya da motor yoksa kapı sessizce çekilir; bir
-#   aracın önünde kendi arızasıyla durmaz.
+#   ARIZA-GÜVENLİ: `jq` ya da `node` yoksa kapı sessizce çekilir; bunlar
+#   kullanıcının kendi takımıdır ve kapı bir aracın önünde kendi arızasıyla
+#   durmaz. MOTOR bunlardan AYRILIR: motorun bulunamaması ürünün kendi bağıdır ve
+#   sessiz geçilmez — kapı tek satırla durumu söyler ve onarımı gösterir.
 # ═══════════════════════════════════════════════════════════════════════════
 MOTOR="{{MOTOR}}"
 KOK="${CLAUDE_PROJECT_DIR:-$PWD}"
 
 command -v jq >/dev/null 2>&1 || exit 0
 command -v node >/dev/null 2>&1 || exit 0
-[ -f "$MOTOR" ] || exit 0
 
 G=$(cat)
 TOOL=$(printf '%s' "$G" | jq -r '.tool_name // ""')
@@ -44,6 +47,19 @@ case "$TOOL" in
     [ -n "$DEGISEN" ] || exit 0 ;;
   *) exit 0 ;;
 esac
+
+# MOTOR BULUNAMAZSA KAPI SUSMAZ (EKL-F6-A08 · Founder hükmü 2026-09-16). Kapı bir
+# zamanlar burada sessizce çekiliyordu: kaynak yazımı denetimsiz geçiyor, fakat
+# çıktı denetimin koştuğu hâlden ayırt edilemiyordu. Ölçülen ağırlık şudur ki
+# bağlanamayan bir bağ ile hiç kurulmamış bir bağ aynı görünür ve kullanıcı ham
+# taramaya döner. Sessizlik bu yüzden tek satırlık bir beyana çevrilmiştir ve
+# beyan onarımı eksik değişkenin ADIYLA gösterir. Kapı yine BLOKLAMAZ (çıkış 0):
+# ortada bir kaynak hatası yoktur, yalnız denetim koşamamıştır.
+if [ ! -f "$MOTOR" ]; then
+  printf '%s' "🚪⚠️ sarmal-kapı · $KOK · DENETİM KOŞMADI: motor bulunamadı ($MOTOR) — onarım: {{KOKDEGISKENI}} ortam değişkenini Sarmal kurulumunun köküne ayarla (kabuk açılış dosyana: export {{KOKDEGISKENI}}=<Sarmal kurulumunun kökü>) ve oturumu yeniden aç." \
+    | jq -Rs '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:.}}'
+  exit 0
+fi
 
 # YENİ MÜHÜR GÖRÜNÜR BİR OLAYDIR (MIM-3.4). Son iki dakikada adına arşiv, eğitim
 # ya da sonra mührü yazılmış bir `.sar` dosyası varsa kapı onu adıyla bildirir;
