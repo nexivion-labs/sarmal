@@ -961,3 +961,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "Doğuşun denetim kapısı şablonu bir sonraki kez elden geçirildiğinde",
   ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde kontrolcünün uçtan uca ölçümünde görülmüştür: SARMAL_KOK değişkeni tanımsızken doğan ağacın denetim kancası doğru cümleyi basmakta ve onarımı göstermekte, fakat motor yolunu /urun/cekirdek/src/sarmal.ts biçiminde yazmaktadır, çünkü boş bir değişken genişlemesi geriye yalnız kök işaretini bırakır. Cümlenin kendisi doğrudur, ancak yol okuyucuya kökte gerçekten böyle bir dosya aranmış gibi görünür ve arızanın sebebini gizler. Kancanın değişkenin tanımsız olduğunu ayrıca söylemesi ve yolu ancak değişken tanımlıyken yazması daha dürüsttür."
 )
+
+Hatırlatıcı(
+  kod:              HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Tanı sicili ya da eklentinin tanı yayını bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "Founder 2026-09-16 tarihinde canlı pencerede Yol Haritası panelinin üstünde bir dosyanın ayrıştırılamadığını ve sözdiziminin kırık olduğunu bildiren satırı görmüş, aynı anda Sorunlar panelinin çalışma alanında sorun algılanmadı dediğini bildirmiştir. Ölçüm şunu göstermiştir: motor kırık bir kaynağı tek dosya kipinde okuduğunda dosyayı, satırı ve sütunu anan ham bir sözdizimi hatası basar, fakat bu hatanın tanı sicilinde bir kimliği yoktur ve eklenti onu Problems yüzeyine hiç yayınlamaz; kırık dosya yalnız Yol Haritası panelindeki kırık dosyalar düğümüne (urun/eklenti/src/yolharitasi.ts altı yüz seksen dokuzuncu satır) ve onay kuyruğunun işlenemedi cümlesine düşer. Sonuç şudur ki bir yüzey dosyanın okunamadığını söylerken öteki yüzey aynı anda sorun yok demektedir ve kullanıcı hangisine güveneceğini bilemez; yeşil panel yeşil ağaç demek olmalıdır. Doğru davranış, sözdizimi hatasının kanonda ve sicilde bir kimlik kazanması ve hata düzeyinde Problems yüzeyine de basılmasıdır. Kayıt HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TANI-KIMLIKLERI-KAYNAKTA-TANIMSIZ,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Tanı sicili ya da kanonun Zorlama bölümleri bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: tanı kimlikleri yalnız urun/cekirdek/src/tani-sicili.ts dosyasında yaşamakta ve hiçbir .sar kaynağında düğüm olarak ilan edilmemektedir; gezinme aracı dört yüz yirmi iki dosyayı tarayıp diakritik-kayıp kimliği için tanım yok demiştir. Bu yüzden önizleme yüzü madde metnindeki tanı kimliklerini bağlantıya çevirememiş ve onları dürüstçe düz metin bırakmıştır, çünkü hedefi olmayan bir bağ süslü fakat ölü bir sözce üretir. Kanon maddelerinin Zorlama bölümü bu kimlikleri adıyla andığına göre kimliklerin bir tanım yüzeyi kazanması gerekir; o gün yüzeydeki bağlar kendiliğinden çalışır ve okuyucu tanıdan kanona geçebilir."
+)

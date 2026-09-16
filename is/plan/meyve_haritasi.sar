@@ -144,6 +144,8 @@ Kod( kod: KOD-EKL-PALET, dosya: "urun/eklenti/src/palet.ts",
   ne: "🍎 İfade paleti (TAS-C01) — tasarım sözlüğü + temaRolleri'nden tamamlama önerileri (saf çıkarım; rijit enum değil)" )
 Kod( kod: KOD-EKL-ONIZLEME, dosya: "urun/eklenti/src/onizleme.ts",
   ne: "🍎 Okuma modu (Prizma insan-yüzü) — kod ↔ kitap custom editor" )
+Kod( kod: KOD-EKL-ONIZLEME-CEKIRDEK, dosya: "urun/eklenti/src/onizleme-cekirdek.ts",
+  ne: "🍎 Okuma modunun kabuksuz gövdesi — Masa düzeni, paletin kanondan dökümü, yapı ağacı ve atıf bağları; editör kabuğu tanımadığı için nöbet yüzeyi doğrudan üretip ölçebilir" )
 Kod( kod: KOD-EKL-ORTAK, dosya: "urun/eklenti/src/ortak.ts",
   ne: "🍎 Paylaşılan yardımcılar — snfBul/rozet renkleri (kanon köprüsü)" )
 Kod( kod: KOD-EKL-RENK, dosya: "urun/eklenti/src/renk.ts",
@@ -395,6 +397,8 @@ Kod( kod: KOD-SNM-MADDELE, dosya: "urun/eklenti/sinama/maddele.test.ts",
   ne: "🍎 Madde çevirme sınaması — noktaliVirgulMaddele davranış nöbeti (zarafet turunun ürünü)" )
 Kod( kod: KOD-SNM-ONAY, dosya: "urun/eklenti/sinama/onay-kuyrugu.test.ts",
   ne: "🍎 Onay kapısı sınaması — kapı tanımanın fikstürlü kanıtı + karar yazım noktasının gidiş-dönüş nöbeti (onay kaydı eklenince kapı kapanır; sessiz kayıp yasak — netlik turunun ürünü)" )
+Kod( kod: KOD-SNM-ONIZLEME-MASA, dosya: "urun/eklenti/sinama/onizleme-masa.test.ts",
+  ne: "🍎 Masa düzeni nöbeti — yüzeyde elle yazılmış renk sıfırdır, her palet değişkeni tanımlıdır, her madde metni bir kez görünür ve yazım türleri kendi başlığıyla çıkıp atıflar bağlantı olur (EKL-F6-A05 turunun ürünü)" )
 Kod( kod: KOD-ICINDEKILER, dosya: "urun/cekirdek/src/icindekiler.ts",
   ne: "🍎 MD içindekiler çekirdeği — `### ` başlıklarından çapa/slug üretimi; eski KARARLAR defteri üreticisinden 2026-07-31 gövde arşivlemesinde devralındı, `sarmal icindekiler` komutu buradan beslenir" )
 
