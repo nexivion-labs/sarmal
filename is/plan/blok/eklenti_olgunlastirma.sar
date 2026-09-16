@@ -836,7 +836,6 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           }
         }
       }
-    }
 
     // ── FAZ 12 · VİTRİN GÖRSELLERİ: iki README'nin ilk ekran görüntüleri (Founder 2026-09-08) ──
     Katman( kod: EKL-F12, kullanır: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
@@ -859,6 +858,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
         }
         koşu: "2026-09-10 · KAPANDI. İki kare diskte duruyor ve dört ölçütün dördü de ölçüldü: Türkçe kök belgesi iki, İngilizce kök belgesi iki ve mağaza belgesi bir atıf taşıyor; İngilizce belgeye ayrıca Türkçe belgede olup onda eksik olan editör cümlesi de çevrilerek eklendi, çünkü ikinci kare o cümleye bağlıdır. Atıf verilen iki dosya diskte çözülüyor, depo denetimi sıfır hata veriyor ve ekran rafı beyansız yapı tanısı üretmiyor. Mağaza belgesi göreli yol değil doğrudan depo adresi taşıdığı için paketleme sırasında çevrilecek bir yol yoktur ve paketleme dışlaması o rafı bilinçle dışarıda bırakır; bu ölçüt kendiliğinden sağlanmıştır."
       }
+    }
     }
 
     // ── Bu plandaki Adımların meyveleri ──────────────────────────────────────────
