@@ -94,8 +94,8 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
     });
   }
   const kodlar = new Set(maddeler.map((m) => m.kod));
-  if (dosyalar.length !== 8 || maddeler.length !== 161 || kodlar.size !== 161) {
-    throw new Error(`Resmi kanon 161/161 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
+  if (dosyalar.length !== 8 || maddeler.length !== 162 || kodlar.size !== 162) {
+    throw new Error(`Resmi kanon 162/162 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
   }
   return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`) };
 }
@@ -167,7 +167,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // olarak doğdu ve kural sayısı yüz yirmi ikiden yüz yirmi üçe, kanon yüz
   // altmıştan yüz altmış bire çıktı; Karar sayısı değişmedi.
   const beklenenKarar = 38;
-  const beklenenKural = 123;
+  // 2026-09-19 (KPS-CEL-A01 · birinci ayrışma · Founder hükmü 2026-09-09):
+  // MIM-3.5 anadizin ile plan ayrılığı maddesi doğdu ve Kural kümesi yüz yirmi
+  // üçten yüz yirmi dörde, kanon yüz altmış birden yüz altmış ikiye çıktı.
+  const beklenenKural = 124;
 
   // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
   // `mevsim-mührü-çelişkili` doğdu ve yeni küme yetmiş dörtten yetmiş beşe çıktı.
@@ -196,10 +199,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
 
   const tutarlilik: Array<[string, string, string | number, boolean]> = [
     ["Resmi kaynak dosyası", "8", olcum.muhurler.length, olcum.muhurler.length === 8],
-    ["Kanon maddesi", "161 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 161],
+    ["Kanon maddesi", "162 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 162],
     ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
-    ["Dört parçalı madde", "161/161", `${161 - eksikDortParca.length}/161`, eksikDortParca.length === 0],
-    ["Kanonik örnek", "161/161", `${161 - eksikOrnek.length}/161`, eksikOrnek.length === 0],
+    ["Dört parçalı madde", "162/162", `${162 - eksikDortParca.length}/162`, eksikDortParca.length === 0],
+    ["Kanonik örnek", "162/162", `${162 - eksikOrnek.length}/162`, eksikOrnek.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
@@ -235,7 +238,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     `Resmi sonuç ${olcum.maddeler.length}/${olcum.maddeler.length} maddedir. Tek adres \`yasa/kanon/\`; bu türev hüküm metni kurmaz.`,
     "",
-    "## Kanonik örnekler — 161/161",
+    "## Kanonik örnekler — 162/162",
     "",
     "| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |",
     "|---|---|---|---|",
@@ -310,7 +313,7 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
-    madde: 161,
+    madde: 162,
     yeni: YENI_TANI_KANONU.length,
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,

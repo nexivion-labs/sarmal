@@ -95,7 +95,7 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 161 || new Set(kodlar).size !== 161) {
+  if (dosyalar.length !== 8 || kodlar.length !== 162 || new Set(kodlar).size !== 162) {
     throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
   }
   return { madde: kodlar.length, karar, kural, kodlar, muhurler };

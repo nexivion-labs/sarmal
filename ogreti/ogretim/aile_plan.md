@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: içerir (containment) — omurga. Ailede 7 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 2cc7ec5e
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 4eff4fa5
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -42,7 +42,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | Adım | Meyve | AltKatman · Blok · Faz · Katman |
 | AltKatman | AltKatman · Adım | AltKatman · Katman |
 | Blok | Katman · Adım · Gereksinim · Kapı | Faz · Proje · Raf · Uygulama |
-| Faz | Blok · Kapı · Katman · Adım | ÇalışmaAlanı · Proje · Uygulama |
+| Faz | Blok · Kapı · Katman · Adım | Proje · Uygulama |
 | Gereksinim | — | Blok |
 | Kapı | — | Blok · Faz |
 | Katman | AltKatman · Adım | Blok · Faz |

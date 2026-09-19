@@ -221,6 +221,19 @@ Kural dosyaMühürleri( kod: MIM-3.4,
        tanı: [ dosya-mührü, ebedi-ihlal, geçersiz-dosya-adı, sonraya-bırakılmış-dosya ] )
 
 -->|
+### MIM-3.5 · Anadizin ve Plan Ayrılığı [HATA]
+**Hüküm:** Giriş ilanı mimariyi çizer ve zaman eksenini taşıyamaz; bir kök dosyanın, yani ÇalışmaAlanı, Proje ya da Uygulama düğümünün içinde doğrudan ya da dolaylı olarak Faz veya Blok yazılamaz ve plan ayrı bir dosyada büyür. Zaman ekseni yalnız Proje içinde yaşar, dolayısıyla ÇalışmaAlanı düğümü bir Fazı hiçbir yazımla saramaz ve sarma sözleşmesi bu izni taşımaz; dayanak: MIM-3; ilgili: [MIM-0, TIP-0, YAS-0, DIL-0].
+**Gerekçe:** Giriş ilanı bir ağacın ilk okunan dosyasıdır ve orada okunan şey mimaridir; plan aynı dosyaya karışırsa ilan zamanla bir iş listesine döner, mimari okunamaz hâle gelir ve iki ayrı soru tek dosyada yarışır. Ayrılığın ikinci gerekçesi ölçülmüştür: sarma sözleşmesi ÇalışmaAlanı düğümünün Faz içermesine izin verdiği sürece şema aracı bu yerleşimi izinli gösterir, anadizin şekli bekçisi ise aynı yerleşimi hata sayar ve iki kaynak aynı ağaç için iki ayrı şey söyler. Ajan böyle bir ayrışmada izinli olanı yazar ve sonuç ilk bakışta yanlış görünür; üstelik izin, panelde her tuş vuruşunda koşan tek yapısal bekçi olan izinsiz sarma tanısını da susturur, çünkü doğrulayıcı izinli listede bulduğu tipi görüp dalı kapatır. Hükmün üçüncü gerekçesi MIM-1.2 ile tutarlılıktır: Faz, Proje içindeki zaman dilimini kurar ve bir çalışma alanının kendi zaman ekseni yoktur, çünkü çalışma alanı bir iş değil bir evdir.
+**Örnek:** Doğru: `cati_anadizin.sar` yalnız Kitaplık, Raf ve Proje ilan eder, iş ise `is/plan/faz/faz.sar` dosyasında `Faz( kod: FAZ-EYLUL ) { Blok( … ) }` biçiminde yaşar. Yanlış: aynı giriş ilanının içine `Faz( kod: FAZ-EYLUL )` yazmak ya da bir Proje kökünün gövdesine doğrudan Blok koymak.
+**Zorlama:** `anadizin-plan-karışması` · HATA · “Giriş ilanı zaman ekseni taşıyor; Faz ve Blok ayrı bir plan dosyasında yaşar.” · yüzey: proje CLI ve Problems · format: `{duzey, kod, mesaj, satir, sutun, oneri}`. Sarma sözleşmesi bu hükmün ikizidir ve ÇalışmaAlanı için Faz iznini taşımaz; izin geri konduğunda `izinsiz-sarma` tanısı aynı yerleşimi görür ve iki bekçi birlikte konuşur.
+|<--
+Kural anadizinVePlanAyrılığı( kod: MIM-3.5,
+       ne: "MIM-3.5 · Anadizin ve Plan Ayrılığı [HATA]",
+       otorite: anayasa, katman: niyet, kapsam: genel,
+       dayanak: MIM-3,
+       tanı: [ anadizin-plan-karışması ] )
+
+-->|
 ### MIM-4 · Doğuş Omurgası ve Yapı Kural Aileleri [BİLGİ]
 **Hüküm:** Doğuş omurgası ile yapı-önce kural ailelerinin Proje kökü, teknoloji ilanı, plan zinciri, kavuşum, üretim yeri ve disk aynasına ilişkin bütün hükümleri bu bölümde kataloglanır; başka bölümler bu hükümleri ayrı bir mimari kaynak olarak yineleyemez; dayanak: MIM-0; ilgili: [MIM-0, TIP-0, YAS-0, ORK-0].
 **Gerekçe:** Aynı yapı hükmünün birden çok kural ailesinde sahiplenilmesi, hangi tanının yetkili olduğunu belirsizleştirir ve terfi sırasında çift zorlama yaratır.

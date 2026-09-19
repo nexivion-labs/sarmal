@@ -189,7 +189,7 @@ Sarmal collects no data: the engine runs on your machine, your plan never leaves
 
 ## Shelf map
 
-[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 161 unique articles, 38 Decisions and 123 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
+[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 162 unique articles, 38 Decisions and 124 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
 ## Learn
 

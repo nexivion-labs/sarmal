@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: kural düzlemi (değişmez). Ailede 6 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 2cc7ec5e
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 4eff4fa5
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->

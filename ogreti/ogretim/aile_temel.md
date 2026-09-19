@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: üretken kök / iskelet (kasa→proje→uygulama). Ailede 3 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 2cc7ec5e
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 4eff4fa5
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -35,7 +35,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 
 | Tip | İçerebilir | İçine konabilir |
 |---|---|---|
-| ÇalışmaAlanı | Kitaplık · Raf · Uygulama · Proje · Mekanizma · Faz · KimlikKökü | — |
+| ÇalışmaAlanı | Kitaplık · Raf · Uygulama · Proje · Mekanizma · KimlikKökü | — |
 | Proje | Kitaplık · Raf · Blok · Teknoloji · Takım · Orkestrasyon · Döngü · Ekran · Servis · Tablo · KimlikPolitikası · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli · Tema · Canlandırma · Durum · Mekanizma · Faz · KimlikKökü | ÇalışmaAlanı · Kitaplık · Raf |
 | Uygulama | Kitaplık · Raf · Blok · Teknoloji · Takım · Orkestrasyon · Döngü · Ekran · Servis · Tablo · KimlikPolitikası · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli · Tema · Canlandırma · Durum · Mekanizma · Faz | ÇalışmaAlanı · Kitaplık · Raf |
 <!-- /SARMAL:AILE_ISKELETI -->

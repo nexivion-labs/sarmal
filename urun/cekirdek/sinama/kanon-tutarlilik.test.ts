@@ -21,7 +21,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
-  "mim.sar:a7c6d2c6bd421ba345ad3d80cb719e516140d18261e859d14d4e27a5970eb1ad",
+  "mim.sar:838a23a7b1ebc20c6db6a4d46fbc79694eaf64d1f12a2a12b1bd12ba789d3607",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:473e2069a39d2394465adf444abbaa2e48b6a4c13c7a93508a52e7dca4fbf3fc",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
@@ -30,14 +30,17 @@ const KANON_SHA = [
   "yuz.sar:060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857",
 ] as const;
 
-test("resmi sekizli 161/161 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
+test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
   const olcum = kanonMaddeleriniOlc(KOK);
   // KPS-MHR-A01 (2026-09-11): MIM-3.4 Dosya Mühürleri Kural olarak doğdu (160 → 161).
-  assert.equal(olcum.maddeler.length, 161);
-  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 161);
+  // KPS-CEL-A01 (2026-09-19 · Founder hükmü 2026-09-09): MIM-3.5 Anadizin ve Plan
+  // Ayrılığı Kural olarak doğdu ve sarma sözleşmesi ÇalışmaAlanı için Faz iznini
+  // bıraktı (161 → 162).
+  assert.equal(olcum.maddeler.length, 162);
+  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 162);
   assert.deepEqual(
     { karar: olcum.maddeler.filter((m) => m.rol === "Karar").length, kural: olcum.maddeler.filter((m) => m.rol === "Kural").length },
-    { karar: 38, kural: 123 },
+    { karar: 38, kural: 124 },
   );
   assert.equal(olcum.maddeler.filter((m) => m.ornek === "—").length, 0);
   assert.equal(olcum.maddeler.filter((m) => !m.dortParcaTam).length, 0);
@@ -87,7 +90,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const ikinci = kanonTutarlilikMetni(KOK);
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
-  assert.match(ilk, /Resmi sonuç 161\/161 maddedir/);
+  assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
   assert.match(ilk, /69 yeni tanı tabanı YUZ-3\.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1\.7 AltKatman tekilliğiyle, MIM-3\.4 dosya mühürlerinin üç tanısıyla ve MIM-1\.2 projesiz Faz gözlemiyle 79/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
@@ -143,8 +146,8 @@ function dugumleriGez(dugumler: readonly Dugum[], ziyaret: (d: Dugum) => void): 
 
 test("kanon maddelerinin ilgili listelerinde çıplak bölüm adı kalmamıştır", () => {
   const listeler = ilgiliListeleri(KOK);
-  // 161 madde Hüküm satırında, 38 Karar düğümü makine-okur ikizinde birer liste taşır.
-  assert.equal(listeler.filter((l) => l.tur === "Hüküm").length, 161);
+  // 162 madde Hüküm satırında, 38 Karar düğümü makine-okur ikizinde birer liste taşır.
+  assert.equal(listeler.filter((l) => l.tur === "Hüküm").length, 162);
   assert.equal(listeler.filter((l) => l.tur === "karar").length, 38);
   assert.deepEqual(ciplakUyelikler(KOK), [], "çıplak bölüm adı taşıyan ilgili üyeliği var");
   const kokDisi = listeler.flatMap((l) => l.uyeler.filter((u) => !BOLUM_KOKU.test(u)).map((u) => `${l.dosya}:${l.satir} ${u}`));

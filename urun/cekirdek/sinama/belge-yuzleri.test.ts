@@ -101,9 +101,9 @@ test("iki kök tanıtım yüzü üretilen bölgede Gizlilik Politikası bölüm�
   }
 });
 
-test("belge üreticisinin resmi kanon ölçümü 161/161'dir", () => {
+test("belge üreticisinin resmi kanon ölçümü 162/162'dir", () => {
   const olcum = kanonOlc(KOK);
   assert.deepEqual({ madde: olcum.madde, karar: olcum.karar, kural: olcum.kural, tekil: new Set(olcum.kodlar).size },
-    { madde: 161, karar: 38, kural: 123, tekil: 161 });
+    { madde: 162, karar: 38, kural: 124, tekil: 162 });
   assert.equal(olcum.muhurler.length, 8);
 });

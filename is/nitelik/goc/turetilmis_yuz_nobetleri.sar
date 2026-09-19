@@ -28,8 +28,8 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `0f72c8eec5fcdeb07996674ebcd26062aec00f4c743408911aa77445c5f3b16d` |
-| `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
+| `yasa/kanon demeti (A03 formülü)` | `a5ec3bb1a1743afe46b25fc98495cf407ff2c9fd8b4519ba63dbc11d9a020727` |
+| `oz/siniflama/kayit.json` | `c090997981128234ad631bbfa1836bc69a740b8f5e38417efcbe66378ca75722` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `9124cb8854e5b9c836e34bdf8bd7e3a1569d91918b3f58aae190891f4cd2e4e7` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
@@ -40,6 +40,13 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-19 · anadizin ile plan ayrılığı): Founder'ın 2026-09-09
+tarihli hükmü kanona MIM-3.5 maddesi olarak indi ve sarma sözleşmesi ÇalışmaAlanı
+için Faz iznini bıraktı; kanon demeti ile sınıflama kaydının mühürleri bu yüzden
+birlikte ilerledi. Kanon yüz altmış bir maddeden yüz altmış ikiye, Kural kümesi
+yüz yirmi üçten yüz yirmi dörde çıktı; kanon tutarlılık yüzü, belge yüzleri ve
+öğretim kartları aynı koşuda resmî üreticileriyle yeniden üretildi.
 
 Tazeleme notu (2026-09-19 · projesiz Faz gözlemi): MIM-1.2 maddesine Founder
 hükmüyle eklenen zorlama satırı kanon demetini, sicile inen `projesiz-faz`

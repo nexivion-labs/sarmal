@@ -187,7 +187,7 @@ Sarmal hiçbir veri toplamaz: motor sizin makinenizde koşar, planınız makinen
 
 ## Raf haritası
 
-[`yasa/kanon/`](yasa/kanon/) kanonun tek adresidir: sekiz bölüm dosyasında 161 tekil madde yaşar, 38 Karar ve 123 Kural. [`oz/siniflama/`](oz/siniflama/) tip sistemidir; [`ogreti/`](ogreti/) şablonları, örnekleri ve öğretim yüzlerini taşır; [`is/`](is/) Sarmal'ın kendi planı, durum kaydı ve hatırlatıcılarıdır; [`urun/cekirdek/`](urun/cekirdek/) motor, komut satırı ve MCP sunucusu, [`urun/eklenti/`](urun/eklenti/) VS Code eklentisidir. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
+[`yasa/kanon/`](yasa/kanon/) kanonun tek adresidir: sekiz bölüm dosyasında 162 tekil madde yaşar, 38 Karar ve 124 Kural. [`oz/siniflama/`](oz/siniflama/) tip sistemidir; [`ogreti/`](ogreti/) şablonları, örnekleri ve öğretim yüzlerini taşır; [`is/`](is/) Sarmal'ın kendi planı, durum kaydı ve hatırlatıcılarıdır; [`urun/cekirdek/`](urun/cekirdek/) motor, komut satırı ve MCP sunucusu, [`urun/eklenti/`](urun/eklenti/) VS Code eklentisidir. Kalıcı belgeler hüküm kopyası değil, bu kaynaklardan üretilen okuma yüzleridir.
 
 ## Öğren
 
