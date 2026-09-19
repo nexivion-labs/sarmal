@@ -199,5 +199,5 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi 47 hata, 17 uyarı ve 15 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 144 Problems, 3 Hatırlatıcılar ve 33 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 179'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
+Yeni tanı kümesi 47 hata, 18 uyarı ve 15 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 145 Problems, 3 Hatırlatıcılar ve 33 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 180'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
 <!-- SARMAL:URETILEN:KOK-README-TR:SON -->

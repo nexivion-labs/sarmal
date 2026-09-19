@@ -1866,6 +1866,38 @@ export function rafsizAnadizinTanilari(
 }
 
 /**
+ * Kitaplıksız-kök bekçisi (KPS-CEL-A01 · ikinci ayrışma · MIM-3.2 · Founder
+ * hükmü 2026-09-09 · SAF).
+ *
+ * Founder Kitaplık kademesini ZORUNLU kılmıştır: dallanan her klasör bir
+ * Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar. Ölçülmüş kusur şuydu: ürünün
+ * iki öğretim yüzeyi farklı mimari öğretiyordu, çünkü rehber şablonları Kitaplık
+ * kademesini öğretirken doğuş paketi Rafları doğrudan kökün altına yazıyordu;
+ * aynı ikilik MIM-3.2 maddesinin kendi içinde de vardı, çünkü düz yazı Rafı
+ * Kitaplığın içindeki sorumluluk bölümü sayarken zorlama cümlesi ikisini
+ * birbirinin alternatifi gibi sunuyordu. Doğuş paketi BKM-DNT-A15 turunda
+ * düzeltildi; bu bekçi hükmün kalan yarısını, yani ölçümü kurar.
+ *
+ * Ölçüt DALLANMAYA bakar, sayıya değil: kökün altında hiç Kitaplık yokken
+ * doğrudan Raf duruyorsa kademe atlanmıştır. Kitaplıksız fakat Rafsız bir kök bu
+ * bekçinin işi DEĞİLDİR, çünkü o hâli `rafsız-anadizin` zaten söyler ve aynı
+ * olgunun iki kez bildirilmesi YUZ-3.3 tanı yüzeyi karışmasıdır. Düzey uyarıdır
+ * ve maddenin kendi kademesiyle aynıdır; ders dünyası OGR-5 uyarınca muaftır,
+ * çünkü öğretim malzemesi bilinçle eksik ağaç gösterebilir.
+ */
+export function kitapliksizKokTanilari(ana: Program, snf: Siniflama, dosya?: string): Tani[] {
+  if (dosya !== undefined && DERS_DUNYASI.test(dosya)) return [];
+  const temelAile = new Set(snf.widgetTipleri.filter((t) => t.aile === "temel").map((t) => t.ad));
+  const kok = ana.bildirimler.find((b) => b.tur === "widget" && temelAile.has(b.ad));
+  if (!kok) return [];
+  const cocukAdlari = kok.cocuklar.filter((c) => c.tur === "widget").map((c) => c.ad);
+  if (cocukAdlari.includes("Kitaplık")) return [];   // kademe yerinde
+  const ilkRaf = kok.cocuklar.find((c) => c.tur === "widget" && c.ad === "Raf");
+  if (!ilkRaf) return [];   // hiç raf yok — bu hâl rafsız-anadizin bekçisinindir
+  return [yeniTani("kitaplıksız-kök", { kök: kok.ad }, { satir: ilkRaf.satir, sutun: ilkRaf.sutun })];
+}
+
+/**
  * Anadizin-şekli bekçisi (E1-A01 · IDA dogfood 2026-07-13 · Founder · EVRE-1 MIM-1.3):
  * bir anadizin KÖKÜ (Proje/Uygulama/ÇalışmaAlanı) DOĞRUDAN plan düğümü (Faz/Blok)
  * içeriyorsa HATA — anadizin MİMARİ çizer (Kitaplık/Raf/yol), plan (Faz→Blok→

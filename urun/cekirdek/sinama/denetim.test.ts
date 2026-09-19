@@ -37,10 +37,11 @@ test("denetimKos: giriş dosyası yoksa erken sonuç — çıkış 4, akışta a
 test("denetimKos: temiz mini proje — tam koşum, veri alanları dolu, açık Adım motor-susmaz listesinde", () => {
   const kok = gecici();
   try {
+    // MIM-3.2 (KPS-CEL-A01): Raf, Kitaplığın İÇİNDE yaşar; fikstür kademeyi taşır.
     writeFileSync(join(kok, "t_anadizin.sar"),
-      'Proje( kod: PRJ-DNT, ad: "dnt", ne: "çekirdek fikstürü", rejim: esnek ) {\n  Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )\n}\n');
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "is.sar"), `Faz( kod: FZ-T, ad: "mevsim", ne: "dönem" ) {
+      'Proje( kod: PRJ-DNT, ad: "dnt", ne: "çekirdek fikstürü", rejim: esnek ) {\n  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı" ) {\n    Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )\n  }\n}\n');
+    mkdirSync(join(kok, "is", "plan"), { recursive: true });
+    writeFileSync(join(kok, "is", "plan", "is.sar"), `Faz( kod: FZ-T, ad: "mevsim", ne: "dönem" ) {
   Blok( kod: BLK-T, ad: "gövde", ne: "iş" ) {
     Katman( kod: KAT-T, ad: "dal", ne: "teknoloji" ) {
       Adım( kod: ADM-T1, durum: beklemede, ne: "bekleyen iş" )
@@ -78,11 +79,15 @@ Kanonik yazımda denetim sıfır uyarı verir; bağsız yazımda bekçi konuşur
 |<--
 Proje( kod: PRJ-KTEK, ad: "ktek", ne: "MIM-1.4 üretim yolu fikstürü", rejim: esnek ) {
   Teknoloji( kod: TEK-KTEK, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )
+  // MIM-3.2 (KPS-CEL-A01 · Founder hükmü 2026-09-09): Kitaplık kademesi zorunludur
+  // ve Raflar Kitaplıkların İÇİNDE yaşar; fikstür bu yüzden kademeyi taşır.
+  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı" ) {
+    Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )
+  }
 }
 `);
-      mkdirSync(join(kok, "plan"));
-      writeFileSync(join(kok, "plan", "is.sar"), `Faz( kod: FZ-KTEK, ad: "mevsim", ne: "dönem" ) {
+      mkdirSync(join(kok, "is", "plan"), { recursive: true });
+      writeFileSync(join(kok, "is", "plan", "is.sar"), `Faz( kod: FZ-KTEK, ad: "mevsim", ne: "dönem" ) {
   -->|
   ## Amaç
   Kanonik Katman yazımının bekçiyi susturduğunu tek gövdede göstermek.

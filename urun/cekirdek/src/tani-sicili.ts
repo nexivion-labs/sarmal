@@ -196,6 +196,10 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   // uymayan ad ise kanonun yazdığı uyarı düzeyinde doğar; Sarmal'ın kendi
   // ağacında sayacı sıfırdır, çünkü üç depodaki hiçbir `.sar` adı büyük harf
   // taşımamaktadır. Kapsam projedir: karar diskin anlık görüntüsünden verilir.
+  // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): Kitaplık kademesi
+  // zorunludur ve kademe atlandığında MIM-3.2 kendi kademesiyle, yani uyarı
+  // düzeyinde konuşur.
+  { kod: "kitaplıksız-kök", madde: "MIM-3.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "dosya-mührü", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "sonraya-bırakılmış-dosya", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "geçersiz-dosya-adı", madde: "MIM-3.4", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },

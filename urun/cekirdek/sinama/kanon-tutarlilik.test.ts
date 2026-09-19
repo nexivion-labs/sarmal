@@ -21,7 +21,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
-  "mim.sar:838a23a7b1ebc20c6db6a4d46fbc79694eaf64d1f12a2a12b1bd12ba789d3607",
+  "mim.sar:83b48271aad15c9ee5701d7802270c792d36d8074e7691f8b3356bd5df3741ce",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:473e2069a39d2394465adf444abbaa2e48b6a4c13c7a93508a52e7dca4fbf3fc",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
@@ -47,10 +47,13 @@ test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("70 taban + beş gözlem + MIM-3.4 dosya mühürlerinin üç tanısı 47/17/15 olarak 79'dur", () => {
-  assert.equal(YENI_TANI_KANONU.length, 79);
+test("70 taban + beş gözlem + MIM-3.4 ile MIM-3.2 tanıları 47/18/15 olarak 80'dir", () => {
+  assert.equal(YENI_TANI_KANONU.length, 80);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 47);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 17);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 18);
+  // MIM-3.2 Kitaplık kademesi (KPS-CEL-A01 · Founder hükmü 2026-09-09): kademe
+  // atlandığında madde kendi kademesiyle, yani uyarı düzeyinde konuşur.
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.2" && t.kod === "kitaplıksız-kök" && t.kademe === "uyarı").length, 1);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 15);
   // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): hükmün
   // Faz ile Proje arasındaki yarısı bir gözlemle tutulur ve bilgi düzeyinde konuşur.
@@ -78,7 +81,8 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
   // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür bekçisiyle canlı sicil yüz seksen dörtten yüz seksen beşe çıktı.
   // 2026-09-11 (KPS-MHR-A01): MIM-3.4 dosya mühürlerinin üç tanısıyla yüz seksen sekize çıktı.
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 projesiz Faz gözlemiyle yüz seksen dokuza çıktı.
-  assert.equal(canli.size, 189);
+  // 2026-09-19 (KPS-CEL-A01): MIM-3.2 Kitaplıksız kök gözlemiyle yüz doksana çıktı.
+  assert.equal(canli.size, 190);
   assert.equal(EMEKLI_TANI_KODLARI.length, 15);
   assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
   assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 38);
@@ -91,7 +95,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
   assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
-  assert.match(ilk, /69 yeni tanı tabanı YUZ-3\.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1\.7 AltKatman tekilliğiyle, MIM-3\.4 dosya mühürlerinin üç tanısıyla ve MIM-1\.2 projesiz Faz gözlemiyle 79/);
+  assert.match(ilk, /MIM-1\.2 projesiz Faz gözlemiyle[^.]*80 canlı yeni kimliğe ulaşır/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
 });

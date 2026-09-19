@@ -184,16 +184,16 @@ Kural izinliSarmaVeKademeBütünlüğü( kod: MIM-3.1,
 
 -->|
 ### MIM-3.2 · Raf ve Kitaplık Yapısı [UYARI]
-**Hüküm:** Kitaplık ana fiziksel alanı, Raf ise onun içindeki sorumluluk bölümünü ilan eder; anadizin en az bir klasör yapısını bu düğümlerle gösterir ve üretken düğümlerin kanonik yerini içerik anlatısından ayrı tutar; dayanak: MIM-3; ilgili: [MIM-0, TIP-0, YUZ-0].
-**Gerekçe:** Fiziksel yapı içerik düğümlerinden sezilmeye bırakılırsa iskelet üretimi ile disk denetimi farklı yollar hesaplar ve anadizin plan içeriğiyle şişer.
-**Örnek:** `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder; Ekran içeriği ayrı kaynakta yaşar.
-**Zorlama:** `rafsız-anadizin` · UYARI · “Proje kökü hiçbir klasör yapısı ilan etmiyor; Kitaplık veya Raf ekle.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+**Hüküm:** Kitaplık ana fiziksel alanı, Raf ise onun İÇİNDEKİ sorumluluk bölümünü ilan eder ve Kitaplık kademesi zorunludur: dallanan her klasör bir Kitaplıktır, Raflar Kitaplıkların içinde yaşar ve bir kökün altına çıplak Raf yazılmaz. Anadizin en az bir klasör yapısını bu düğümlerle gösterir ve üretken düğümlerin kanonik yerini içerik anlatısından ayrı tutar; dayanak: MIM-3; ilgili: [MIM-0, TIP-0, YUZ-0].
+**Gerekçe:** Fiziksel yapı içerik düğümlerinden sezilmeye bırakılırsa iskelet üretimi ile disk denetimi farklı yollar hesaplar ve anadizin plan içeriğiyle şişer. Kitaplık kademesinin zorunlu olmasının ayrı bir gerekçesi vardır ve Founder 2026-09-09 tarihinde bunu hükme bağlamıştır: kök, ağaç büyüdükçe okunamaz bir raf listesine döner, çünkü düzine sayıda çıplak Raf arasında hangi alanın nerede başladığı seçilemez. Aynı gün ölçülen ikilik de bu hükümle kapanır, çünkü ürünün iki öğretim yüzeyi farklı mimari öğretiyordu: rehber şablonları Kitaplık kademesini öğretirken doğuş paketi Rafları doğrudan kökün altına yazıyordu ve maddenin kendi zorlama cümlesi ikisini birbirinin alternatifi sayıyordu.
+**Örnek:** Doğru: `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder ve Ekran içeriği ayrı kaynakta yaşar; yanlış: kökün altına doğrudan `Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" )` yazmak.
+**Zorlama:** `rafsız-anadizin` · UYARI · “Proje kökü hiçbir klasör yapısı ilan etmiyor; bir Kitaplık aç ve raflarını onun içine koy.” · yüzey: proje CLI; yeni tanı önerisi `kitaplıksız-kök` · UYARI · “Kökün altında hiç Kitaplık yok ve Raf doğrudan köke yazılmış; rafları bir Kitaplığın içine al.” · yüzey: proje CLI ve Problems · format: `{duzey, kod, mesaj, satir, sutun, oneri}`. İki tanı aynı olguyu iki kez bildirmez: hiç yapı ilanı yoksa birincisi, yapı ilanı varken kademe atlanmışsa ikincisi konuşur. Ders dünyası OGR-5 uyarınca muaftır.
 |<--
 Kural rafVeKitaplıkYapısı( kod: MIM-3.2,
        ne: "MIM-3.2 · Raf ve Kitaplık Yapısı [UYARI]",
        otorite: anayasa, katman: niyet, kapsam: genel,
        dayanak: MIM-3,
-       tanı: [ rafsız-anadizin ] )
+       tanı: [ kitaplıksız-kök, rafsız-anadizin ] )
 
 -->|
 ### MIM-3.3 · Blok Durum Kaydı [UYARI]

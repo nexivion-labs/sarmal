@@ -143,6 +143,10 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
   // ── Projesiz Faz (MIM-1.2 · KPS-FAZ-A02) ─────────────────────────────────
+  "kitaplıksız-kök": {
+    mesaj: (p) => `'${a(p, "kök")}' kökünün altında hiç Kitaplık yok ve Raf doğrudan kökün altına yazılmış — dallanan her klasör bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar (MIM-3.2).`,
+    oneri: () => 'Rafları bir Kitaplığın içine al; kök, ağaç büyüdükçe okunamaz bir raf listesine dönmesin diye kademeyi bekler. Örnek: `Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }`',
+  },
   "projesiz-faz": {
     mesaj: (p) => `"${a(p, "kimlik")}" Fazı hiçbir Proje köküne çözülemiyor: ${a(p, "sebep") === "ayrışık" ? "dosyasını aynı derinlikte birden çok Proje kodu kapsıyor ve bağ tekil olmadığı için kurulmadı" : "dosyası hiçbir Proje kökünün altında yaşamıyor ve Faz iç içe bir Proje gövdesinde de yazılmamış"}. Zaman diliminin kimin olduğu graftan okunamaz (MIM-1.2).`,
     oneri: (p) => `Plan dosyasını ait olduğu Proje kökünün altına taşı ya da Fazı Proje gövdesinin içine yaz; ayrışık kökte iki giriş ilanından birini kaldır. Örnek: \`<proje-kökü>/is/plan/faz/faz.sar\` içinde \`Faz( kod: ${a(p, "kimlik")}, … )\` ve kökte tek bir \`<ad>_anadizin.sar\` girişi.`,
@@ -518,6 +522,10 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
   // ── Project-less Phase (MIM-1.2 · KPS-FAZ-A02) ───────────────────────────
+  "kitaplıksız-kök": {
+    mesaj: (p) => `Root '${a(p, "kök")}' declares no Kitaplık and places a Raf directly beneath itself — every branching folder is a Kitaplık and Raf nodes live INSIDE one (MIM-3.2).`,
+    oneri: () => 'Move the shelves inside a library; the tier keeps the root from decaying into an unreadable list of shelves as the tree grows. Örnek: `Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }`',
+  },
   "projesiz-faz": {
     mesaj: (p) => `Phase "${a(p, "kimlik")}" cannot be resolved to any Project root: ${a(p, "sebep") === "ayrışık" ? "more than one Project code covers its file at the same depth, so the link was not made because it is not unique" : "its file does not live under any Project root and the Phase is not written inside a Project body either"}. Whose time slice it is cannot be read from the graph (MIM-1.2).`,
     oneri: (p) => `Move the plan file under the Project root it belongs to, or write the Phase inside the Project body; in an ambiguous root remove one of the two entry declarations. Example: \`<project-root>/is/plan/faz/faz.sar\` containing \`Faz( kod: ${a(p, "kimlik")}, … )\` with a single \`<name>_anadizin.sar\` entry at the root.`,

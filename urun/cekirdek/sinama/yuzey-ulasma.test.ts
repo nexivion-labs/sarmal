@@ -181,7 +181,7 @@ test("MUTASYON: çizelgenin bir hanesi kaydırılınca kayıt nöbeti KIRMIZI ya
 
   // ① Çizelgenin Problems hanesi tek başına kayarsa yüzey toplamı sicil boyutunu
   //    vermez; kaydın eski uyarısının "iki sayı ters yönde kayabilir" açığı budur.
-  const tekKayma = saglam.replace("| Problems | 144 |", "| Problems | 143 |");
+  const tekKayma = saglam.replace("| Problems | 145 |", "| Problems | 144 |");
   assert.notEqual(tekKayma, saglam, "mutasyon deseni kayda uymadı — nöbet yanlış satırı ölçüyor olabilir");
   const sapma1 = matrisKayitSapmalari(tekKayma, ozet);
   assert.ok(sapma1.some((s) => s.includes("sicil boyutunu vermiyor")), sapma1.join(" · "));
@@ -189,13 +189,13 @@ test("MUTASYON: çizelgenin bir hanesi kaydırılınca kayıt nöbeti KIRMIZI ya
   // ② İki hane ters yönde birlikte kayarsa toplam korunur; nöbet bunu Çıkarım
   //    düğümüyle ayrışma üstünden yakalar — tek bir kaynağa yazmak yetmez.
   const ciftKayma = saglam
-    .replace("| Problems | 144 |", "| Problems | 143 |")
+    .replace("| Problems | 145 |", "| Problems | 144 |")
     .replace("| Bildirimler | 33 |", "| Bildirimler | 34 |");
   const sapma2 = matrisKayitSapmalari(ciftKayma, ozet);
   assert.ok(sapma2.some((s) => s.startsWith("problems hanesi kaynaklar arasında ayrışıyor")), sapma2.join(" · "));
 
   // ③ Canlı sicilden türeyen hane kaydırılınca ölçümle ayrışma bildirilir.
-  const toplamKayma = saglam.replace("| **Toplam** | **180** |", "| **Toplam** | **179** |");
+  const toplamKayma = saglam.replace("| **Toplam** | **181** |", "| **Toplam** | **180** |");
   const sapma3 = matrisKayitSapmalari(toplamKayma, ozet);
   assert.ok(sapma3.some((s) => s.includes("canlı ölçümle uyuşmuyor")), sapma3.join(" · "));
 
@@ -209,9 +209,9 @@ test("MUTASYON: Çıkarım düğümünün sayısı kaydın çizelgesinden ayrıl
   // Kaydın 2026-09-10 öncesi hâli tam da buydu: Çıkarım düğümü 171 kimlik ve
   // 143/4/24 dağılımı yazarken çizelge 175 kimlik ve 143/2/30 yazıyordu.
   const bayat = saglam
-    .replace("sicilin 180 kimliğinin tamamını tek yüzeye YÖNLENDİRİR",
+    .replace("sicilin 181 kimliğinin tamamını tek yüzeye YÖNLENDİRİR",
       "sicilin 171 kimliğinin tamamını tek yüzeye YÖNLENDİRİR")
-    .replace("dağılım 144 Problems, 3 Hatırlatıcılar ve 33 Bildirimler",
+    .replace("dağılım 145 Problems, 3 Hatırlatıcılar ve 33 Bildirimler",
       "dağılım 143 Problems, 4 Hatırlatıcılar ve 24 Bildirimler");
   assert.notEqual(bayat, saglam, "mutasyon deseni Çıkarım düğümüne uymadı");
   const sapmalar = matrisKayitSapmalari(bayat, ozet);

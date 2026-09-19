@@ -118,6 +118,7 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "mevsimMuhurTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   // KPS-FAZ-A02 (Founder hükmü 2026-09-19): MIM-1.2 projesiz Faz gözlemi — grafı okur, proje kapsamında koşar.
   { uretici: "projesizFazTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
+  { uretici: "kitapliksizKokTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },   // MIM-3.2 · Kitaplık kademesi (KPS-CEL-A01)
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu

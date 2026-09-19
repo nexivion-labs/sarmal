@@ -26,7 +26,7 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
-  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari,
+  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -821,6 +821,21 @@ test("proje: hiçbir Proje köküne çözülemeyen Faz MIM-1.2 projesiz Faz göz
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+test("proje: kökün altına çıplak Raf yazılınca MIM-3.2 Kitaplık kademesi gözlemi doğar", () => {
+  // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): dallanan her klasör
+  // bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar; kademe atlandığında
+  // madde kendi kademesiyle, yani uyarı düzeyinde konuşur. Hiç yapı ilanı
+  // taşımayan kök bu bekçinin değil `rafsız-anadizin` bekçisinin işidir.
+  const ana = ayr(
+    `Proje( kod: PRJ-A, ad: "A Projesi", rejim: katı, ne: "Kademe atlanmış kök." ) {\n` +
+    `  Raf( kod: RAF-PLAN, yol: "is/plan/", ne: "Plan rafı." )\n}`,
+  );
+  const t = kitapliksizKokTanilari(ana, SNF, "a_anadizin.sar");
+  uretildi("kitaplıksız-kök", t.map((tani) => ({ dosya: "a_anadizin.sar", tani })));
+  assert.equal(t.length, 1);
+  assert.equal(t[0].duzey, "uyarı");
+});
+
 // ══ MIM-3.4 · DOSYA MÜHÜRLERİ (KPS-MHR-A01 · Founder hükmü 2026-09-11) ═══════
 
 test("proje: arşiv, eğitim ve sonra mühürlü dosyalar listelenir, biçime uymayan ad uyarı alır", () => {
@@ -869,7 +884,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on beş kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -911,7 +926,11 @@ test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on beş kimlik b
   // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
   // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
   // sıfırdır; terfi turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
-  assert.equal(uyarida.length, 17, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 uyarısı 17 tanı olmalıdır");
+  // On sekizinci uyarı kimliği 2026-09-19 tarihinde Founder hükmüyle doğdu:
+  // MIM-3.2 `kitaplıksız-kök`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın kendi
+  // ağacında sıfırdır, çünkü depo Kitaplık kademesini zaten taşır; terfi
+  // turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
+  assert.equal(uyarida.length, 18, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 ve MIM-3.2 uyarıları 18 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 

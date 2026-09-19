@@ -28,18 +28,26 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `a5ec3bb1a1743afe46b25fc98495cf407ff2c9fd8b4519ba63dbc11d9a020727` |
+| `yasa/kanon demeti (A03 formülü)` | `70c5a6689667edaa2c7bcfbbc7a26cb9b74afafdb2d541885a15844e00a772b5` |
 | `oz/siniflama/kayit.json` | `c090997981128234ad631bbfa1836bc69a740b8f5e38417efcbe66378ca75722` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `9124cb8854e5b9c836e34bdf8bd7e3a1569d91918b3f58aae190891f4cd2e4e7` |
+| `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
 | `urun/cekirdek/src/dil-baglami.ts` | `11303aa54d5f9b080968296aa21d0d515a5ceda22cc521abd1f872229c483853` |
 | `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
 | `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `e0b20e453d28530d8926233ff5b46776e3c41a989776532210321222bd02ec5a` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `cbc45b572ba62fc12e376fe98fb280a6dff7e20ce727fd555751623cdffb9e23` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-19 · Kitaplık kademesinin zorunluluğu): Founder'ın
+2026-09-09 tarihli ikinci hükmü MIM-3.2 maddesinin düz yazısı ile zorlama
+cümlesini tek sözcüğe indirdi ve kademe atlandığında konuşan `kitaplıksız-kök`
+gözlemi doğdu; kanon demeti, tanı sicili ve yönlendirme matrisinin mühürleri bu
+yüzden birlikte ilerledi. Yeni tanı kümesi yetmiş dokuzdan seksene, Problems
+hanesi yüz kırk dörtten yüz kırk beşe çıktı ve türetilmiş yüzler ile öğretim
+kartları aynı koşuda resmî üreticileriyle yeniden üretildi.
 
 Tazeleme notu (2026-09-19 · anadizin ile plan ayrılığı): Founder'ın 2026-09-09
 tarihli hükmü kanona MIM-3.5 maddesi olarak indi ve sarma sözleşmesi ÇalışmaAlanı

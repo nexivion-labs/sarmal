@@ -179,7 +179,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // Sayı çiftleri 2026-08-24 tarihinde bilinçli olarak güncellendi: durum-boyutu
   // tanısı Founder hükmüyle emekliye ayrıldı (canlı sabit 102→101, emekli 14→15,
   // emeklilik borcu 39→38) — sabit karakter sınırı yeni kanonda norm değildir.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 79 || ONCEKI_TANI_KODLARI.length !== 101 ||
+  // 2026-09-19 (KPS-CEL-A01 · ikinci ayrışma · Founder hükmü 2026-09-09): MIM-3.2
+  // Kitaplık kademesini zorunlu kıldı ve `kitaplıksız-kök` gözlemi doğdu; yeni küme
+  // yetmiş dokuzdan seksene çıktı.
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 80 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 15 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 38 ||
       emekliCanli.length !== 0 || borcCanli.length !== 38 || yuz33.length !== 1 ||
       [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {
