@@ -1284,6 +1284,11 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         case "meyve": return `'üretir: ${a(p, "hedef")}' meyvesi hiçbir yerde ilan edilmemiş.`;
         case "ileri-bağlama": return `'hatırlat: ${a(p, "hedef")}' hedefi henüz doğmamış (ileri-bağlama).`;
         case "çağır": return `'çağır ${a(p, "hedef")}' çözülmüyor — bu KOD hiçbir .sar'da tanımlı değil.`;
+        // ORK-4 üç durumlu okunuş (KPS-ADA-A01): ad alanı ölçülebiliyorsa hedef
+        // gerçekten kırıktır; ölçülemiyorsa atıf kırık değil MUAFTIR ve muafiyet
+        // burada adıyla söylenir — sessiz yeşil geçiş yoktur.
+        case "ad-alanı-kırık": return `'${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' hedefi GERÇEKTEN kırık — ad alanı '${a(p, "adAlani")}' çözüldü, fakat yerel KOD o Projenin kapsamında ilan edilmemiş.`;
+        case "ad-alanı-ölçülemez": return `'${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' hedefi bu kökten ÖLÇÜLEMEZ — ad alanı '${a(p, "adAlani")}' ne yüklü evrende bir Proje kodu ne de çatı ilanında duyurulmuş bir kardeş kök; atıf kırık sayılmadı, MUAF bırakıldı.`;
         default: return `'${a(p, "kenar")}: ${a(p, "hedef")}' hedefi çözülmüyor — bu KOD hiçbir .sar'da tanımlı değil.`;
       }
     },
@@ -1291,6 +1296,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
       switch (a(p, "kusur")) {
         case "meyve": return `İstersen '${a(p, "hedef")}' için bir Ürün 🍎 widget'ı ilan et (izlenebilirlik).`;
         case "ileri-bağlama": return "Hedef Adım doğunca kendiliğinden bağlanır; istersen şimdi ilan et.";
+        case "ad-alanı-kırık": return `Kardeş kökte '${a(p, "hedef")}' yazımını doğrula: KOD'u düzelt ya da hedefi o Projede ilan et; arşiv ve sonra mühürlü dosyalardaki tanımlar okunmaz (MIM-3.4).`;
+        case "ad-alanı-ölçülemez": return `Muafiyet sessiz kalmasın diye bildirildi: denetimi çatı kökünden koştur ya da '${a(p, "adAlani")}' kökünü çatı ilanına Kitaplık olarak ekle; o zaman hedef gerçekten doğrulanır.`;
         default: return `'${a(p, "hedef")}' tanımını içeren .sar'ı projeye ekle — ya da KOD'u düzelt.`;
       }
     },
@@ -1881,6 +1888,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         case "meyve": return `The fruit '${"üretir"}: ${a(p, "hedef")}' is not declared anywhere.`;
         case "ileri-bağlama": return `Target 'hatırlat: ${a(p, "hedef")}' has not yet been born; this is a forward binding.`;
         case "çağır": return `'çağır ${a(p, "hedef")}' does not resolve — this CODE is not defined in any .sar file.`;
+        case "ad-alanı-kırık": return `Target '${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' is GENUINELY broken — the namespace '${a(p, "adAlani")}' resolved, but the local CODE is not declared within that Proje.`;
+        case "ad-alanı-ölçülemez": return `Target '${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' CANNOT BE MEASURED from this root — the namespace '${a(p, "adAlani")}' is neither a loaded Proje code nor a sibling root declared by the workspace; the reference was not counted as broken, it was left EXEMPT.`;
         default: return `Target '${a(p, "kenar")}: ${a(p, "hedef")}' does not resolve — this CODE is not defined in any .sar file.`;
       }
     },
@@ -1888,6 +1897,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
       switch (a(p, "kusur")) {
         case "meyve": return `You may declare an Ürün 🍎 widget for '${a(p, "hedef")}' to make it traceable.`;
         case "ileri-bağlama": return "It will connect automatically when the target Adım is born; you may declare it now instead.";
+        case "ad-alanı-kırık": return `Verify '${a(p, "hedef")}' in the sibling root: correct the CODE or declare the target in that Proje; definitions in archive- or later-sealed files are not read (MIM-3.4).`;
+        case "ad-alanı-ölçülemez": return `The exemption is reported so it does not stay silent: run the audit from the workspace root, or declare the '${a(p, "adAlani")}' root as a Kitaplık in the workspace declaration; the target is then genuinely verified.`;
         default: return `Add the .sar containing the definition of '${a(p, "hedef")}' to the project, or correct the CODE.`;
       }
     },

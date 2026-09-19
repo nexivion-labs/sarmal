@@ -36,6 +36,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { dogusYaz } from "../src/dogus.ts";
+
+// Bu dosya geçici depolarda gerçek git koşturur. Süit bir işleme kancasının içinden
+// koştuğunda git kendi deposunun adresini ortama yazar (GIT_DIR, GIT_WORK_TREE,
+// GIT_INDEX_FILE) ve bağlı bir çalışma ağacında bu adres dışarı sızar; o zaman
+// geçici depoya `-C` ile yöneltilen her git komutu ortamdaki depoya gider ve
+// sınama sahte kırmızı düşer (ölçüm 2026-09-19 · bağlı ağaçta üç sınama). Ortam
+// süreç başında temizlenir; her sınama dosyası kendi sürecinde koştuğu için bu
+// temizlik başka dosyalara dokunmaz.
+for (const k of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_PREFIX"]) delete process.env[k];
 import { denetimKos } from "../src/denetim.ts";
 import { diskTara, programlariYukle, anadizinBul, muhurTarihiCoz } from "../src/denetci.ts";
 import { dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DERS_DUNYASI, dizindenIndeks, DOSYA_MUHRU_KUMESI } from "../src/kimlik.ts";

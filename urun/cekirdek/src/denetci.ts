@@ -1145,6 +1145,13 @@ export interface ReferansKapsami {
   dosya: string;
   /** Hedef bu kaynaktan çözülüyor mu? */
   cozulur: (hedef: string) => boolean;
+  /**
+   * Ad alanı bu kökten ölçülebiliyor mu (yüklü Proje ya da çatının duyurduğu
+   * kardeş kök)? Verilmezse her ad alanı bilinir sayılır ve çözülmeyen hedef
+   * kırık okunur. KPS-ADA-A01 altıncı görev: ölçülemeyen ad alanı kırık DEĞİL,
+   * muaf sayılır ve muafiyet uyarı olarak adıyla bildirilir; sessiz geçiş yoktur.
+   */
+  adAlaniBilinir?: (adAlani: string) => boolean;
 }
 
 export function referansTanilari(
@@ -1159,6 +1166,21 @@ export function referansTanilari(
   // kendi küçük evrenlerinde yazılır ve proje sınırı onlara inmez (OGR-5).
   const cozulur = (hedef: string): boolean =>
     kapsam && !DERS_DUNYASI.test(kapsam.dosya) ? kapsam.cozulur(hedef) : indeks.has(hedef);
+
+  // ORK-4 · ad alanlı hedefin ÜÇ DURUMLU okunuşu (KPS-ADA-A01 · altıncı görev).
+  // Gezinme yüzü 2026-09-10'dan beri üç cevap verir: çözüldü · gerçekten kırık ·
+  // ölçülemez. Denetim ise ikisini tek "bu KOD hiçbir .sar'da tanımlı değil"
+  // cümlesine indiriyordu ve çatısı görünmeyen bir kökten koşulduğunda doğru
+  // yazılmış bir çapraz atfı kırık ilan ediyordu. Kural şudur: ad alanı
+  // ölçülebiliyorsa (yüklü Proje ya da duyurulmuş kardeş kök) hedef GERÇEKTEN
+  // doğrulanır ve bulunmazsa hatadır; ölçülemiyorsa atıf kırık sayılmaz, fakat
+  // muafiyetin kendisi uyarı olarak adıyla bildirilir — sessiz yeşil kalmaz.
+  const adAlaniKusuru = (hedef: string): "ad-alanı-ölçülemez" | "ad-alanı-kırık" | undefined => {
+    const { adAlani } = adAlaniAyir(hedef);
+    if (adAlani === undefined) return undefined;
+    if (kapsam?.adAlaniBilinir && !DERS_DUNYASI.test(kapsam.dosya) && !kapsam.adAlaniBilinir(adAlani)) return "ad-alanı-ölçülemez";
+    return "ad-alanı-kırık";
+  };
 
   const hedefDenetle = (kenar: string, d: Deger): void => {
     if (d.tur === "liste") { for (const o of d.ogeler ?? []) hedefDenetle(kenar, o); return; }
@@ -1189,8 +1211,15 @@ export function referansTanilari(
     // hedefi henüz doğmamış olabilir (F-8 doğası) → hata değil UYARI.
     const meyve = kenar === "üretir";
     const ileriBaglama = kenar === "hatırlat";
+    const adAlani = adAlaniKusuru(d.metin);
+    if (adAlani === "ad-alanı-ölçülemez") {
+      tanilar.push(eskiTani("kırık-referans", "uyarı",
+        { kenar, hedef: d.metin, kusur: adAlani, adAlani: adAlaniAyir(d.metin).adAlani },
+        { satir: d.satir, sutun: d.sutun }));
+      return;
+    }
     tanilar.push(eskiTani("kırık-referans", meyve || ileriBaglama ? "uyarı" : "hata",
-      { kenar, hedef: d.metin, kusur: meyve ? "meyve" : ileriBaglama ? "ileri-bağlama" : "kenar" },
+      { kenar, hedef: d.metin, kusur: meyve ? "meyve" : ileriBaglama ? "ileri-bağlama" : adAlani ?? "kenar", ...(adAlani ? { adAlani: adAlaniAyir(d.metin).adAlani } : {}) },
       { satir: d.satir, sutun: d.sutun }));
   };
 
@@ -1199,8 +1228,13 @@ export function referansTanilari(
       // `çağır` hedefi de ad alanlı yazılabilir (ORK-4): bir Faz kardeş projedeki
       // Bloku `çağır PRJ-X::BLK-Y` ile halkasına alır ve kapsam kapısı onu çözer.
       if (!cozulur(node.ad)) {
-        tanilar.push(eskiTani("kırık-referans", "hata",
-          { hedef: node.ad, kusur: "çağır" }, { satir: node.satir, sutun: node.sutun }));
+        const adAlani = adAlaniKusuru(node.ad);
+        const baglam = { hedef: node.ad, kusur: adAlani ?? "çağır", ...(adAlani ? { adAlani: adAlaniAyir(node.ad).adAlani } : {}) };
+        const konum = { satir: node.satir, sutun: node.sutun };
+        // Kademe iki ayrı sözcük olarak yazılır: kapı kapsamı nöbeti üreticinin
+        // kademesini gövdesindeki sözcüklerden türetir ve üçlü koşulu okuyamaz.
+        if (adAlani === "ad-alanı-ölçülemez") tanilar.push(eskiTani("kırık-referans", "uyarı", baglam, konum));
+        else tanilar.push(eskiTani("kırık-referans", "hata", baglam, konum));
       }
       return;
     }

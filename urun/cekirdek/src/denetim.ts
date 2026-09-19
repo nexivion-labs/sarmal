@@ -337,7 +337,11 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // TAM kapsam (BKM-BUG-A02 · bug-avı M2): referans denetimi TÜM .sar'lara.
   for (const [etiket, p] of programlar) {
     if (muaflar.has(etiket)) continue;
-    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, { dosya: etiket, cozulur: (h) => adAlaniKapsami.cozulur(h, etiket) }));
+    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, {
+      dosya: etiket,
+      cozulur: (h) => adAlaniKapsami.cozulur(h, etiket),
+      adAlaniBilinir: (a) => adAlaniKapsami.adAlaniBilinir(a),   // ORK-4 üç durumlu okunuş (KPS-ADA-A01)
+    }));
     say(refTanilari, etiket);
     bas(etiket, refTanilari);
   }
