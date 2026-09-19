@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `70c5a6689667edaa2c7bcfbbc7a26cb9b74afafdb2d541885a15844e00a772b5` |
+| `yasa/kanon demeti (A03 formülü)` | `2a6f22925dd5234634a69c557ea872c9d8ca4995eac2a17841e33dfcfd97bcb9` |
 | `oz/siniflama/kayit.json` | `c090997981128234ad631bbfa1836bc69a740b8f5e38417efcbe66378ca75722` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
@@ -40,6 +40,12 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-19 · Teknoloji kapsamının kabulü): Founder işin
+yürütüldüğü kanalın Teknoloji sayılmasını açıkça kabul etmiş, TIP-1.8 hükmü
+korunmuş ve gerekçesi bu kabulle tazelenmiştir; dayanağı bulunamayan ret kaydı
+kayıttan düşürülmüş, ajanın çağırdığı gövdelerin tipi ise yeni bir tip icat
+edilmeden yazılmıştır. Yalnız kanon demeti ile tip dosyasının mührü ilerledi.
 
 Tazeleme notu (2026-09-19 · Kitaplık kademesinin zorunluluğu): Founder'ın
 2026-09-09 tarihli ikinci hükmü MIM-3.2 maddesinin düz yazısı ile zorlama

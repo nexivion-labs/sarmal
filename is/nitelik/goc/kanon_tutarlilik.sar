@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:70c5a6689667edaa2c7bcfbbc7a26cb9b74afafdb2d541885a15844e00a772b5
+// KAYNAK-MUHRU kanon-demeti-sha256:2a6f22925dd5234634a69c557ea872c9d8ca4995eac2a17841e33dfcfd97bcb9
 
 -->|
 # Kanon tutarlılık yüzü
@@ -16,10 +16,10 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
 | `yasa/kanon/ork.sar` | `473e2069a39d2394465adf444abbaa2e48b6a4c13c7a93508a52e7dca4fbf3fc` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
-| `yasa/kanon/tip.sar` | `626925d46e7a71e650236ff6deeed0963f8d17e199ea2cfba8f9be17b92c6d5b` |
+| `yasa/kanon/tip.sar` | `0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `70c5a6689667edaa2c7bcfbbc7a26cb9b74afafdb2d541885a15844e00a772b5` |
+| kanon demeti | `2a6f22925dd5234634a69c557ea872c9d8ca4995eac2a17841e33dfcfd97bcb9` |
 | `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
 | `oz/siniflama/kayit.json` | `c090997981128234ad631bbfa1836bc69a740b8f5e38417efcbe66378ca75722` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -148,7 +148,7 @@ Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `TIP-1.5` | Kural | `tip.sar` | `Etmen( kod: ETM-01 )`, bir `Yetenek` ile kabiliyetini, bir `Beceri` ile öğretilmiş davranışını ve bir `Tetikleyici` ile etkinleşme koşulunu ayrı ayrı bağlar. |
 | `TIP-1.6` | Kural | `tip.sar` | `Form { MetinAlanı OnayKutusu Düğme }` girdi ve eylem yapısını kurar; `Metin` ya da `İkon` düzen kapsayıcısı gibi çocuk taşımaz. |
 | `TIP-1.7` | Kural | `tip.sar` | Ortak değişmez `Anayasa`, makinece sınanabilir koşul `Kural`, dış düzenleme yükümlülüğü `Mevzuat` olarak tutulur. |
-| `TIP-1.8` | Kural | `tip.sar` | `Katman` bir `Teknoloji` kullanır; sorumlusu `Takım`, çalışma sınırı `Ortam`, izin verilen etkileşimler ise kendi erişim tipleriyle ilan edilir. Yazılım dalında `Teknoloji( kod: TEK-NEXT, ne: "Next.js önyüz yığını" )`, pazarlama dalında `Teknoloji( kod: TEK-GBP, ne: "Google İşletme Profili — yerel arama kanalı" )` aynı sözleşmeyi taşır. |
+| `TIP-1.8` | Kural | `tip.sar` | `Katman` bir `Teknoloji` kullanır; sorumlusu `Takım`, çalışma sınırı `Ortam`, izin verilen etkileşimler ise kendi erişim tipleriyle ilan edilir. Yazılım dalında `Teknoloji( kod: TEK-NEXT, ne: "Next.js önyüz yığını" )`, pazarlama dalında `Teknoloji( kod: TEK-GBP, ne: "yerel arama kanalı" )` aynı sözleşmeyi taşır. Ajanın çağırdığı gövdeler ise kendi tipleriyle yazılır: `Araç( kod: ARC-CLI, ne: "komut satırı gövdesi" )` ve `MCP( kod: MCP-SUNUCU, ne: "model bağlamı sunucusu" )`. |
 | `TIP-1.9` | Kural | `tip.sar` | Uygulama kaynağı `Kod`, arabirim bağı `Sözleşme`, şema dönüşümü `Göç`, dağıtım temeli `Altyapı` olarak ayrılır. |
 | `TIP-1.10` | Kural | `tip.sar` | Yapılacak iş `Görev`, çalıştırılmış örnek `Koşum`, gözlenen akış `İz`, giderilecek sapma `Sorun` olarak kaydedilir. |
 | `TIP-1.11` | Kural | `tip.sar` | Tekrarlanabilir kontrol `Sınama`, sayısal sonuç `Metrik`, yorumlu hüküm `Değerlendirme`, olay dizisi `Log` olarak tutulur. |
