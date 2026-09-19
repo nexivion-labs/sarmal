@@ -207,14 +207,14 @@ Kural ikonVeEmojiKanonu( kod: DIL-4,
 
 -->|
 ### DIL-5 · Numara Grafı [HATA]
-**Hüküm:** Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri açık bölüm düğümlerine yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL-0, YAS-0, STR-0].
+**Hüküm:** Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri bölümlerin kök madde kimliklerine (`DIL-0` gibi) yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL-0, YAS-0, STR-0].
 **Gerekçe:** Birden çok kod evreni aynı hükmün farklı kimliklerle anılmasına yol açar; çözülemeyen dayanak ve örtük üyelikler ise kanonu sıralı listeye indirerek çapraz izlenebilirliği kaybettirir.
-**Örnek:** `DIL-3.1` kodu `dayanak: DIL-3` ile üst hükmüne, `ilgili: [DIL, TIP, ORK]` ile çok-üyeli bağlarına katılır.
+**Örnek:** `DIL-3.1` kodu `dayanak: DIL-3` ile üst hükmüne, `ilgili: [DIL-0, TIP-0, ORK-0]` ile çok-üyeli bağlarına katılır.
 **Zorlama:** Yeni tanı önerisi `numara-grafı-uyumsuz` · HATA · “Madde kodu yineleniyor, dayanağı çözülemiyor veya kanon dışında paralel kod evreni kullanıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Karar( kod: DIL-5, durum: kilitli,
        ne: "DIL-5 · Numara Grafı [HATA]",
-       karar: "Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri açık bölüm düğümlerine yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL-0, YAS-0, STR-0].",
+       karar: "Kanon yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin hiyerarşik madde kodlarından oluşan tek bir numara grafı kullanır; her madde kodu tekildir, dayanak bağı geçerli bir üst hükme ve `ilgili` üyelikleri bölümlerin kök madde kimliklerine (`DIL-0` gibi) yönelir, paralel bir numaralandırma evreni kurulamaz; dayanak: DIL-0; ilgili: [DIL-0, YAS-0, STR-0].",
        gerekçe: "Birden çok kod evreni aynı hükmün farklı kimliklerle anılmasına yol açar; çözülemeyen dayanak ve örtük üyelikler ise kanonu sıralı listeye indirerek çapraz izlenebilirliği kaybettirir." )
 
 -->|
@@ -231,9 +231,9 @@ Kural hiyerarşikMaddeKodları( kod: DIL-5.1,
 
 -->|
 ### DIL-5.2 · Sekiz Önekli Çok-Üyelik [HATA]
-**Hüküm:** Her `ilgili` listesi yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK öneklerinden oluşur; üyelikler açık, tekil ve kanonik yazılır, tanımsız, yinelenen veya örtük hiçbir bölüm etiketi kullanılamaz; dayanak: DIL-5; ilgili: [DIL-0, MIM-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0].
+**Hüküm:** Her `ilgili` listesi yalnız MIM, DIL, TIP, YAS, YUZ, STR, OGR ve ORK bölümlerinin kök madde kimliklerinden (`MIM-0`, `DIL-0`, `TIP-0`, `YAS-0`, `YUZ-0`, `STR-0`, `OGR-0`, `ORK-0`) oluşur; üyelikler açık, tekil ve kanonik yazılır, çıplak bölüm öneki bir kimlik değildir ve tanımsız, yinelenen veya örtük hiçbir bölüm etiketi kullanılamaz; dayanak: DIL-5; ilgili: [DIL-0, MIM-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0].
 **Gerekçe:** Tanımsız önek dokuzuncu bir bölüm varmış gibi sahte kimlik üretir; yinelenen veya örtük üyelik ise çok-üyelik grafının deterministik kurulmasını engeller.
-**Örnek:** Doğru: `ilgili: [DIL, TIP, YUZ]`; yanlış: `ilgili: [DIL, YAP]` veya `ilgili: [DIL, DIL]`.
+**Örnek:** Doğru: `ilgili: [DIL-0, TIP-0, YUZ-0]`; yanlış: `ilgili: [DIL, TIP, YUZ]` (çıplak önek), `ilgili: [DIL-0, YAP-0]` (tanımsız bölüm) veya `ilgili: [DIL-0, DIL-0]` (yinelenen üyelik).
 **Zorlama:** Yeni tanı önerisi `ilgili-önek-geçersiz` · HATA · “`ilgili` listesi sekiz kanonik önek dışında, yinelenen veya tanımsız üyelik taşıyor.” · yüzey: Problems, proje CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Kural sekizÖnekliÇokÜyelik( kod: DIL-5.2,

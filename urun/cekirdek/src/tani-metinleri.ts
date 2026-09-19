@@ -173,7 +173,7 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
   },
   "ilgili-önek-geçersiz": {
     mesaj: (p) => `\`ilgili\` listesi "${a(p, "uye")}" üyesini taşıyor: ${a(p, "kusur")}. Üyelikler açık, tekil ve kanonik yazılır.`,
-    oneri: () => `Listeyi yalnız sekiz kanonik bölüm önekinden kur ve yinelemeyi temizle. Örnek: \`ilgili: [ MIM, DIL, TIP, YAS, YUZ, STR, OGR, ORK ]\` kümesinden gerekli olanları seç.`,
+    oneri: () => `Listeyi yalnız sekiz bölümün kök madde kimliğinden kur ve yinelemeyi temizle; çıplak bölüm öneki kimlik değildir. Örnek: \`ilgili: [ MIM-0, DIL-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0 ]\` kümesinden gerekli olanları seç.`,
   },
 
   // ── Mimari omurga ─────────────────────────────────────────────────────────
@@ -543,7 +543,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "ilgili-önek-geçersiz": {
     mesaj: (p) => `The \`ilgili\` list contains member "${a(p, "uye")}": ${a(p, "kusur")}. Memberships are written explicitly, uniquely and canonically.`,
-    oneri: () => `Build the list only from the eight canonical section prefixes and remove duplicates. Example: select the required entries from \`ilgili: [ MIM, DIL, TIP, YAS, YUZ, STR, OGR, ORK ]\`.`,
+    oneri: () => `Build the list only from the root item identifiers of the eight sections and remove duplicates; a bare section prefix is not an identifier. Example: select the required entries from \`ilgili: [ MIM-0, DIL-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0 ]\`.`,
   },
   "proje-köksüz-üretim": {
     mesaj: (p) => `"${a(p, "ad")}" (${a(p, "kimlik")}) is a productive node, but it does not live under any Proje root. Identity, ownership and diagnostic grouping derive from the Proje node; rootless production cannot derive any of the three.`,
