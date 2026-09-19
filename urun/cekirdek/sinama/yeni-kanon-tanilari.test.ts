@@ -26,9 +26,10 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
-  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari,
+  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
+import { dagKur } from "../src/dag.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
 import { YENI_TANI_KANONU, YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
 import { TANI_METINLERI, yapistirilabilirOrnekVar } from "../src/tani-metinleri.ts";
@@ -807,6 +808,19 @@ test("proje: mühürlendiğini yazan mevsim açık iş sarıyorsa ORK-8 mühür 
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+test("proje: hiçbir Proje köküne çözülemeyen Faz MIM-1.2 projesiz Faz gözlemini fikstürle doğurur", () => {
+  // KPS-FAZ-A02 (Founder hükmü 2026-09-19): bağ klasörden kurulur ve kurulamadığı
+  // hâl susmaz. Plan dosyası hiçbir Proje kökünün altında yaşamamaktadır.
+  const programlar = harita({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "A Projesi" ) { Teknoloji( kod: TEK-A, ad: "A tekniği" ) }`,
+    "disarida/faz.sar": `Faz( kod: FAZ-DIS, ad: "Dış Mevsim" ) {\n  Blok( kod: BLK-DIS, ne: "dış gövde" ) {\n    Katman( kod: KAT-DIS, ad: "katman" ) {\n      AltKatman( kod: ALT-DIS, ad: "modül" ) {\n        Adım( kod: ADM-DIS, durum: beklemede, ne: "bekleyen iş" )\n      }\n    }\n  }\n}\n`,
+  });
+  const t = projesizFazTanilari(dagKur(programlar), programlar);
+  uretildi("projesiz-faz", t);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].tani.duzey, "bilgi");
+});
+
 // ══ MIM-3.4 · DOSYA MÜHÜRLERİ (KPS-MHR-A01 · Founder hükmü 2026-09-11) ═══════
 
 test("proje: arşiv, eğitim ve sonra mühürlü dosyalar listelenir, biçime uymayan ad uyarı alır", () => {
@@ -855,7 +869,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on beş kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -878,6 +892,11 @@ test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik 
     // bırakılmış dosyanın bekleme hatırlatması. İkisi de bir sapma bildirmez,
     // mührün sessiz olmamasını sağlar; kanon ikisini de bilgi düzeyinde yazar.
     "dosya-mührü", "sonraya-bırakılmış-dosya",
+    // On beşincisi 2026-09-19 tarihinde Founder hükmüyle doğdu (KPS-FAZ-A02 ·
+    // MIM-1.2): hiçbir Proje köküne çözülemeyen Fazın gözlemi. Yerleşim ya da
+    // tarih dayatmaz, yalnız bağın kurulamadığını görünür kılar; kanon onu
+    // bilgi düzeyinde yazar ve ders dünyası muaftır.
+    "projesiz-faz",
   ].sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");

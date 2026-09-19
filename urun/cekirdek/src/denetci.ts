@@ -32,12 +32,12 @@ import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katm
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
-import { ZEMIN_TIPLERI } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın)
+import { ZEMIN_TIPLERI, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -3274,6 +3274,47 @@ export function mevsimMuhurTanilari(
     out.push({ dosya: m.dosya, tani: yeniTani("mevsim-mührü-çelişkili",
       { kimlik: m.kod, iddia, açık: String(m.acik), gövde: String(m.govdeler.size) },
       { satir: m.beyan?.satir ?? m.faz.satir, sutun: m.beyan?.sutun ?? m.faz.sutun }) });
+  }
+  return out;
+}
+
+/**
+ * Projesiz Faz gözlemi (PROJE kapsamı · SAF · grafı okur · KPS-FAZ-A02 · MIM-1.2).
+ *
+ * NEDEN VAR (Founder hükmü 2026-09-19): KPS-FAZ-A01 Faz ile Proje arasındaki bağı
+ * plan dosyasının yaşadığı Proje kökünden kurdu, fakat bağın KURULAMADIĞI hâl
+ * susuyordu: kök dışında yaşayan ya da aynı derinlikte iki ayrı Proje kodunun
+ * kapsadığı bir dosyanın Fazı köksüz kalıyor ve bunu hiçbir yüzey söylemiyordu.
+ * Ölçüt grafın kendisidir: Fazın `kapsayan` zinciri bir Proje düğümüne
+ * ulaşmıyorsa zaman diliminin kimin olduğu graftan okunamaz. Klasör→Proje çözümü
+ * burada YENİDEN HESAPLANMAZ; graf çevrimi kimlik.ts'in tek kaynağını okumuştur
+ * ve bu bekçi yalnız o çevrimin sonucunu okur. Sebep (köksüz mü, ayrışık mı)
+ * yalnız mesaj için aynı tek kaynaktan sorulur.
+ *
+ * NE DAYATMAZ: yerleşim ya da tarih dayatmaz, iç içe yazımı değiştirmez ve
+ * hiçbir kapıyı kırmızıya düşürmez; düzey bilgidir. Ders dünyası OGR-5 uyarınca
+ * muaftır: öğretim malzemesi bilinçle kök taşımadan yazılır ve ürün hükmü oraya
+ * inmez (bugünkü ağaçta on yedi köksüz plan düğümünün on yedisi de oradadır).
+ */
+export function projesizFazTanilari(
+  dag: Pick<Dag, "dugumler">,
+  programlar: ReadonlyMap<string, Program>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  let kapsamlar: readonly ProjeKapsami[] | undefined;
+  for (const d of dag.dugumler.values()) {
+    if (d.tip !== "Faz") continue;
+    if (DERS_DUNYASI.test(d.dosya)) continue;   // ders dünyası muaftır (OGR-5 kapsam kanonu)
+    let projeli = false;
+    for (let a = d.kapsayan; a !== undefined; a = dag.dugumler.get(a)?.kapsayan) {
+      if (dag.dugumler.get(a)?.tip === "Proje") { projeli = true; break; }
+    }
+    if (projeli) continue;
+    kapsamlar ??= projeKapsamlari(programlar);
+    const sebep = sahipProjeKapsami(d.dosya, kapsamlar) ? "ayrışık" : "köksüz";
+    out.push({ dosya: d.dosya, tani: yeniTani("projesiz-faz",
+      { kimlik: d.yerelKod ?? d.kod, sebep },
+      { satir: d.satir, sutun: d.sutun }) });
   }
   return out;
 }

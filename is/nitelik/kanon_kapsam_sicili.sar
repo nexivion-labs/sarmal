@@ -111,8 +111,13 @@ Kapsama( kod: KSC-MIM-1, referans: [ MIM-1 ],
   ne: "KISMİ (masa incelemesi) — Kademe atlama ve çocuk kapsayıcı sarma yasağı izinsiz-sarma, yürütme sırasının kapsayıcı kademeye yazılması yasağı kapsayıcı-kenar tanısıyla önceki evrende ölçülmektedir; sicilin madde bağı kurulmamıştır ve Auth kademesinin ortak ya da Projeye özgü kimlikle karşılanması dilimi bu maddede tanısızdır." )
 Kapsama( kod: KSC-MIM-1.1, referans: [ MIM-1.1 ],
   ne: "KISMİ (masa incelemesi) — Üretken düğümün Proje köksüz kalması sicildeki proje-köksüz-üretim tanısıyla hedef düzeyinde ölçülmektedir; ortak kimlikte KimlikKökü ilanının zorunluluğu, Founder Projesi için ortak kimlik şartı ve kimliklerin birleşmezliği dilimleri tanı tarifinde yoktur." )
+// KPS-FAZ-A02 eki (2026-09-19 · Founder hükmü): hükmün "Faz, Proje içindeki zaman
+//   dilimini kurar" yarısı sicilin ilk tesliminde ihlal sınıfı sayılmamıştı, çünkü o
+//   gün motor Faz ile Proje arasındaki bağı hiç kurmuyordu. KPS-FAZ-A01 bağı klasörden
+//   kurdu, bu Adım kurulamayan hâli `projesiz-faz` gözlemiyle görünür kıldı; kayıt
+//   davranış ölçümüyle tazelendi (fikstür ve canlı bahçe aynı gün koşuldu).
 Kapsama( kod: KSC-MIM-1.2, referans: [ MIM-1.2 ],
-  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı Faz dışında ya da yalnız düzyazıyla zamana atanmış Blok'tur ve bu sınıf önceki evrendeki fazsız-blok tanısıyla birebir ölçülür; mevsim kenarı yükleme çevriminde Faz tarafına normalize edildiği için iki yazım da aynı denetimden geçer." )
+  ne: "TAM (davranış ölçümü · 2026-09-19) — Hükmün iki dilimi vardır ve ikisi de ölçülür. Birinci dilim Faz dışında ya da yalnız düzyazıyla zamana atanmış Blok'tur ve önceki evrendeki fazsız-blok tanısıyla hata düzeyinde birebir ölçülür; mevsim kenarı yükleme çevriminde Faz tarafına normalize edildiği için iki yazım da aynı denetimden geçer. İkinci dilim Fazın bir Projenin zaman dilimi olmasıdır: bağ iç içe yazımdan ya da plan dosyasının yaşadığı Proje kökünden grafa iner ve hiçbir Proje köküne çözülemeyen Faz, sicilde maddesine bağlı projesiz-faz gözlemiyle bilgi düzeyinde bildirilir; kanon bu dilimi gözlem olarak yazdığı için düzey hedefin altında değildir. Canlı bahçedeki ölçüm şudur: ürün ağacında köksüz Faz sıfırdır, ders dünyasındaki yedi köksüz Faz OGR-5 muafiyetiyle sessizdir." )
 Kapsama( kod: KSC-MIM-1.3, referans: [ MIM-1.3 ],
   ne: "TAM (masa incelemesi) — Tek teknolojili silo Blok yasağı silo-blok, katmanlar arası kavuşum bağının görünürlüğü kavuşumsuz-dilim tanısıyla ölçülür; iki tanı da önceki evrende canlıdır ve hükmün iki dilimini birlikte kapatır." )
 Kapsama( kod: KSC-MIM-1.4, referans: [ MIM-1.4 ],

@@ -335,10 +335,27 @@ export function cagirCevrimi<K>(
   for (let i = ogeler.length - 1; i >= 0; i--) if (tasinan.has(ogeler[i])) ogeler.splice(i, 1);
 }
 
+/**
+ * Hiçbir girişe çözülemeyen dosyanın varlık tipi (KPS-FAZ-A02 · MIM-1.2 · Founder
+ * hükmü 2026-09-19). Panel eskiden kök dışında yaşayan bir plan dosyası için
+ * klasör adından sahte bir `Proje` uyduruyordu; motor ise aynı düğümü dürüstçe
+ * köksüz bırakıyordu ve iki yüzey aynı olguda iki ayrı gerçek söylüyordu. Bu
+ * tip motorun köksüz hükmünün panel ikizidir: kod boştur, çünkü uydurulacak
+ * bir kimlik yoktur; ad klasörün adıdır, çünkü dosyanın nerede yaşadığı bir
+ * olgudur, kimin olduğu değil.
+ */
+export const KOKSUZ_VARLIK_TIPI = "Köksüz";
+
+/** Girişsiz dosyanın köksüz kimliği — tek kapı, iki çözücü (tur içi ve disk yedeği) aynı cevabı verir. */
+export function koksuzVarlik(dosyaYolu: string): VarlikKimligi {
+  const kok = dirname(dosyaYolu);
+  return { tur: "varlık", tip: KOKSUZ_VARLIK_TIPI, kod: "", ad: basename(kok), kokDizin: kok, anaSar: "" };
+}
+
 /** Bir varlığın kimliği: giriş dosyasının KÖK düğümünden okunur, icat edilmez. */
 export interface VarlikKimligi {
   tur: "varlık";
-  tip: string;                 // ÇalışmaAlanı | Proje | Uygulama
+  tip: string;                 // ÇalışmaAlanı | Proje | Uygulama | Köksüz (girişsiz dosya — KOKSUZ_VARLIK_TIPI)
   kod: string;
   ad: string;
   kokDizin: string;            // varlık girişinin dizini
@@ -442,8 +459,8 @@ export function varlikCozucu(
       if (ust === dizin) break;
       dizin = ust;
     }
-    const kok = dirname(dosyaYolu);
-    return { tur: "varlık", tip: "Proje", kod: basename(kok), ad: basename(kok), kokDizin: kok, anaSar: "" };
+    // KPS-FAZ-A02: girişsiz dosya sahte Proje almaz; motorun köksüz hükmü gösterilir.
+    return koksuzVarlik(dosyaYolu);
   };
 }
 

@@ -37,7 +37,7 @@ import {
 import { satirIkonu } from "./ortak.ts";   // VIT-KIMLIK-A05: satır simgelerinin iki-tema köprüsü
 import {
   varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi, cagirCevrimi,
-  anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur,
+  anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
@@ -266,8 +266,8 @@ function diskYuruyusu(dosyaYolu: string): VarlikKimligi {
     if (ust === dizin) break;
     dizin = ust;
   }
-  const kok = dirname(dosyaYolu);
-  return { tur: "varlık", tip: "Proje", kod: basename(kok), ad: basename(kok), kokDizin: kok, anaSar: "" };
+  // KPS-FAZ-A02: girişsiz dosya sahte Proje almaz; motorun köksüz hükmü gösterilir (tek kapı: çekirdek).
+  return koksuzVarlik(dosyaYolu);
 }
 
 /**

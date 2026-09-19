@@ -142,6 +142,11 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     },
     oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
+  // ── Projesiz Faz (MIM-1.2 · KPS-FAZ-A02) ─────────────────────────────────
+  "projesiz-faz": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazı hiçbir Proje köküne çözülemiyor: ${a(p, "sebep") === "ayrışık" ? "dosyasını aynı derinlikte birden çok Proje kodu kapsıyor ve bağ tekil olmadığı için kurulmadı" : "dosyası hiçbir Proje kökünün altında yaşamıyor ve Faz iç içe bir Proje gövdesinde de yazılmamış"}. Zaman diliminin kimin olduğu graftan okunamaz (MIM-1.2).`,
+    oneri: (p) => `Plan dosyasını ait olduğu Proje kökünün altına taşı ya da Fazı Proje gövdesinin içine yaz; ayrışık kökte iki giriş ilanından birini kaldır. Örnek: \`<proje-kökü>/is/plan/faz/faz.sar\` içinde \`Faz( kod: ${a(p, "kimlik")}, … )\` ve kökte tek bir \`<ad>_anadizin.sar\` girişi.`,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -511,6 +516,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
       }
     },
     oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+  },
+  // ── Project-less Phase (MIM-1.2 · KPS-FAZ-A02) ───────────────────────────
+  "projesiz-faz": {
+    mesaj: (p) => `Phase "${a(p, "kimlik")}" cannot be resolved to any Project root: ${a(p, "sebep") === "ayrışık" ? "more than one Project code covers its file at the same depth, so the link was not made because it is not unique" : "its file does not live under any Project root and the Phase is not written inside a Project body either"}. Whose time slice it is cannot be read from the graph (MIM-1.2).`,
+    oneri: (p) => `Move the plan file under the Project root it belongs to, or write the Phase inside the Project body; in an ambiguous root remove one of the two entry declarations. Example: \`<project-root>/is/plan/faz/faz.sar\` containing \`Faz( kod: ${a(p, "kimlik")}, … )\` with a single \`<name>_anadizin.sar\` entry at the root.`,
   },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {

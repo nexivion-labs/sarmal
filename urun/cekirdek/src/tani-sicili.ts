@@ -199,6 +199,13 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "dosya-mührü", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "sonraya-bırakılmış-dosya", madde: "MIM-3.4", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "geçersiz-dosya-adı", madde: "MIM-3.4", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  // KPS-FAZ-A02 (Founder hükmü 2026-09-19): MIM-1.2 hükmünün öteki yarısı. KPS-FAZ-A01
+  // Faz ile Proje arasındaki bağı klasörden kurdu, fakat bağın KURULAMADIĞI hâl
+  // susuyordu; bu gözlem o susmayı görünür kılar. Hiçbir Proje köküne çözülemeyen
+  // Faz bir yerleşim ya da tarih dayatmaz, yalnız zaman diliminin kimin olduğunun
+  // graftan okunamadığını söyler; bu yüzden bilgi düzeyindedir. Kapsam projedir:
+  // aidiyet klasör bağından türer ve tek dosyadan okunamaz. Ders dünyası muaftır.
+  { kod: "projesiz-faz", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */
