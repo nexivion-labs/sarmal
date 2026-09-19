@@ -17,7 +17,7 @@ import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🛰️ iz hattı hâlâ kendi olay hattıyla ve kendi kilidiyle koşar (PRF-TA-A03 sınırı)
-import { dagKur, topolojikSira, fazTarihAnahtari, type Dag } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25)
+import { dagKur, topolojikSira, fazTarihAnahtari, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25) · ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
 import { koniCikar, koniAlani } from "../../cekirdek/src/koni.ts";     // VIT-GRAF-A04: kart koniyi TEK kaynaktan çıkarır; koniAlani → rapor/yama (STR-4 · NTK-A07)
 import { kurallariCikar, dugumeDusenKurallar, kuralNe, KAPSAM_JOKER, type KuralBilgi } from "../../cekirdek/src/kuralci.ts";   // #7: Adım'a düşen kurallar (kapsam TEK KAYNAK)
@@ -38,6 +38,7 @@ import { satirIkonu } from "./ortak.ts";   // VIT-KIMLIK-A05: satır simgelerini
 import {
   varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi, cagirCevrimi,
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
+  dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
@@ -609,13 +610,34 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   /** VIT-GRAF-A03 + A06: Adım'ın graf-kenarı bilgisi — kenarlar '↳ bağımlı [N]' / '↳ etkiler [N]'
    *  KATLANABİLİR grubuna toplanır (düz satırlar Adım altını şişiriyordu — Founder 2026-07-11);
    *  taşan liste grubun içinde de sessiz kırpılmaz: '… +N daha' satırı kalanı sayıyla söyler. */
+  /**
+   * ORK-4 · ORTAK KODUN PANELDEKİ KARŞILIĞI (KPS-KOD-A01 · panel yarısı).
+   *
+   * Çatı penceresinde kardeş Projeler aynı kodu ilan ettiğinde graf o kodu
+   * `PRJ::KOD` anahtarına alır; panel ise düğümü ÇIPLAK koduyla arıyordu ve
+   * arama boş dönüyordu. Görünen bedeli şuydu: ortak kodlu bir düğümün bağımlı
+   * listesi, etkisi ve müfettiş açıcısı çatı penceresinde sessizce boş kalıyor,
+   * aynı düğüm tek projeli pencerede dolu görünüyordu; iki yüzey aynı düğüm
+   * için iki ayrı şey söylüyordu.
+   *
+   * Çözüm motorun kendi çözücüsünden gider ve ikinci bir eşleme yazılmaz:
+   * seçenekleri `adAlaniSecenekleri` verir. Seçim DOSYADAN yapılır, çünkü panel
+   * Ögesi hangi dosyadan doğduğunu bilir ve o dosya hangi Projenin kökünde
+   * yaşıyorsa kastedilen düğüm odur. Eşleşme kurulamazsa araç sessizce bir
+   * seçeneği SEÇMEZ ve bugünkü davranışta kalır (tanımsız döner); sessizce
+   * birini seçmek, kapanan kusurun başka bir kılıkta tekrarı olurdu.
+   */
+  private dagDugumu(kod: string, dosya?: vscode.Uri): DagDugum | undefined {
+    return dagDugumunuCoz(this.dag, kod, dosya?.fsPath);   // gövde vscode'suz çekirdekte yaşar ve nöbeti oradan koşar
+  }
+
   private bilgiUret(o: Oge): (Bilgi | BilgiGrup)[] {
     // 🐢 PRF-A05: yenile-ömürlü önbellek — kalabalık Faz kapatılıp açıldığında
     // kenar grupları hazırdan gelir (Adım-başına kapanış taraması tekrarlanmaz).
     const hazir = o.kod ? this.bilgiOnbellek.get(o.kod) : undefined;
     if (hazir) return hazir;
     const sonuc: (Bilgi | BilgiGrup)[] = [];
-    const d = this.dag?.dugumler.get(o.kod);
+    const d = this.dagDugumu(o.kod, o.dosya);   // ORK-4: ortak kod çatıda `PRJ::KOD` anahtarındadır (KPS-KOD-A01)
     const grupYap = (onek: string, simge: SatirSimgesi, kodlar: string[], ozet: string, not?: (k: string) => string, anlam?: AnlamRengi): BilgiGrup => {
       const cocuklar: Bilgi[] = kodlar.slice(0, KENAR_USTU).map((k) => {
         const hedefD = this.dag?.dugumler.get(k);
@@ -657,7 +679,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   /** Adım'ın genişleyebilir olup olmadığı — kenar/kabul/koşum bilgisi varsa müfettiş açılır. */
   bilgili(o: Oge): boolean {
-    const d = this.dag?.dugumler.get(o.kod);
+    const d = this.dagDugumu(o.kod, o.dosya);   // ORK-4: müfettiş açıcısı ortak kodda da dolu kalır (KPS-KOD-A01)
     return Boolean(o.kabulSayisi > 0 || d?.oncekiler.length || d?.sonrakiler.length ||
       (this.izler.get(o.kod)?.length ?? 0) > 0);
   }
@@ -980,7 +1002,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
    *  webview'de (Founder kart fikri · 2026-07-10). YALNIZ okuma; yazım koniYaz kapısında. */
   koniKartHtml(o: Oge): string {
     const koni = koniCikar(o.dugum);                      // TEK kaynak: cekirdek/koni.ts
-    const d = this.dag?.dugumler.get(o.kod);
+    const d = this.dagDugumu(o.kod, o.dosya);   // ORK-4: koni kartının kenar yüzü ortak kodda da dolu kalır (KPS-KOD-A01)
     const e = this.etkiAl(o.kod);   // 🐢 PRF-A05: kart da önbellekten okur
     const atlaLink = (kod: string): string => {
       const h = this.dag?.dugumler.get(kod);

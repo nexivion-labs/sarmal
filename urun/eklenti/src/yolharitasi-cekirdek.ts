@@ -17,6 +17,7 @@
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
 import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
+import { adAlaniSecenekleri, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
 
@@ -515,4 +516,39 @@ export function varliklariKur<K>(
   }
   for (const anaSar of anadizinler.values()) kokAl(coz(anaSar));
   return harita;
+}
+
+// ── ORK-4 · ORTAK KODUN PANELDEKİ KARŞILIĞI (KPS-KOD-A01 · panel yarısı) ──────
+//   Çatı penceresinde kardeş Projeler aynı kodu ilan ettiğinde graf o kodu
+//   `PRJ::KOD` anahtarına alır; panel ise düğümü ÇIPLAK koduyla arıyordu ve arama
+//   boş dönüyordu. Görünen bedeli şuydu: ortak kodlu bir düğümün bağımlı listesi,
+//   etki kapanışı ve müfettiş açıcısı çatı penceresinde sessizce boş kalıyor, aynı
+//   düğüm tek projeli pencerede dolu görünüyordu; iki yüzey aynı düğüm için iki
+//   ayrı şey söylüyordu ve hangisinin doğru olduğu okunamıyordu (YUZ-3.1).
+
+/**
+ * Bir panel Ögesinin graftaki düğümü — ortak kod ayrıştırılmışsa da bulunur.
+ *
+ * Seçenekleri motorun kendi çözücüsü verir ve burada ikinci bir eşleme kurulmaz.
+ * Seçim DOSYADAN yapılır, çünkü panel Ögesi hangi dosyadan doğduğunu bilir ve o
+ * dosya hangi Projenin kökünde yaşıyorsa kastedilen düğüm odur. Eşleşme
+ * kurulamazsa fonksiyon sessizce bir seçeneği SEÇMEZ ve tanımsız döner; sessizce
+ * birini seçmek, kapanan kusurun başka bir kılıkta tekrarı olurdu (ORK-4 tesadüfî
+ * eşleşme yasağı). Tek projeli bir depoda ilk arama daima tutar ve bu gövde hiç
+ * çalışmaz.
+ */
+export function dagDugumunuCoz(dag: Dag | undefined, kod: string, dosyaYolu?: string): DagDugum | undefined {
+  if (!dag) return undefined;
+  const dogrudan = dag.dugumler.get(kod);
+  if (dogrudan) return dogrudan;
+  const adaylar = adAlaniSecenekleri(dag, kod)
+    .map((anahtar) => dag.dugumler.get(anahtar))
+    .filter((d): d is DagDugum => d !== undefined);
+  if (adaylar.length === 1) return adaylar[0];
+  if (dosyaYolu === undefined) return undefined;
+  const yol = dosyaYolu.replace(/\\/g, "/");
+  return adaylar.find((d) => {
+    const hedef = d.dosya.replace(/\\/g, "/");
+    return yol === hedef || yol.endsWith(`/${hedef}`);
+  });
 }
