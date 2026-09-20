@@ -280,7 +280,18 @@ export function ogeleriTopla<K>(bildirimler: readonly Dugum[], dosya: K): PlanOg
   const gez = (d: Dugum): void => {
     // Kök Blok VEYA Faz olabilir: Faz zaman eksenidir ve Blok'u sarar; alt
     // kademeler `yap` içinde PLAN_TIPLERI süzgecinden geçer.
-    if (d.ad === "Blok" || d.ad === "Faz") { kokler.push(yap(d)); return; }
+    //
+    // KAPSAYANSIZ PLAN DÜĞÜMÜ DE KÖKTÜR (KPS-CEL-A01 · ölçülmüş kusur 2026-09-16).
+    // Bu yürüyüş bir Blokun ya da Fazın İÇİNE hiç inmez; dolayısıyla burada
+    // karşılaşılan her Katman, AltKatman ya da Adım tanımı gereği bir Blokun ve
+    // bir Fazın DIŞINDA doğmuştur. Eski gövde onları kök saymıyor ve çocuklarına
+    // inip yine Blok arıyordu: bulamayınca altındaki Adımlar hiçbir yere
+    // asılmıyor, sayılmıyor ve gösterilmiyordu. Ölçülen bedel şudur: bir Katman
+    // Blokunun kapanış parantezinin dışına doğmuş, komut satırı Adımını saymış,
+    // panel saymamış ve fark sekiz gün fark edilmemiştir. Sessiz düşürme, yeşil
+    // panelin yeşil ağaç anlamına gelmesi ilkesini bozar; yerleşimin DOĞRU olup
+    // olmadığı panelin değil motorun hükmüdür, panelin işi var olanı göstermektir.
+    if (PLAN_TIPLERI.has(d.ad)) { kokler.push(yap(d)); return; }
     for (const c of d.cocuklar) gez(c);
   };
   for (const b of bildirimler) gez(b);
