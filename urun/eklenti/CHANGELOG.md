@@ -2,6 +2,17 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.193 — 2026-09-20 (panel hiçbir Adımı düşürmüyor, Katman zemini iki kenarla yazılıyor)
+
+- **Yol haritası Blok dışında doğmuş plan düğümünü artık gösteriyor.** Panel kökleri yalnız Blok ile Fazdan seçiyordu; Blokunun kapanış parantezi dışına doğmuş bir Katmanın Adımı bu yüzden ne görünüyor ne sayılıyordu ve panelin sayacı komut satırı karnesinden bir eksik kalıyordu. Artık bir Blokun ve bir Fazın dışında karşılaşılan her plan düğümü kendi başına köktür. Yerleşimin doğru olup olmadığına motor hükmeder; panelin işi var olanı göstermektir.
+- **Aynı kodu taşıyan kardeş projelerde panel doğru düğümü seçiyor.** Bir çatının altındaki iki proje aynı kodu taşıdığında panel grafta ilk bulduğu düğümü alıyor ve bir projenin Adımını ötekinin durumuyla gösterebiliyordu. Panel artık düğümü satırın kendi dosyasından çözüyor; dosya eşleşmesi yoksa tahmin etmiyor ve düğümü çözülmemiş sayıyor.
+- **Hiçbir Projeye bağlanamayan Faz bildiriliyor ve panel onu karneyle aynı sayıyor.** Motor, bir Projeye çözülemeyen Fazı bilgi düzeyinde bildiriyor; ders dünyası bu gözlemden muaftır. Kökü bulunmayan varlıklarda panelin toplamı ile komut satırının toplamı eşitlendi.
+- **Ad alanlı atıf muaf tutulmuyor, doğrulanıyor.** Başka bir projenin kodunu ad alanıyla anan atıf bugüne kadar hiç ölçülmüyordu. Motor artık üç durumu ayırıyor: kardeş kök çözülebiliyor ve kod orada yaşıyorsa atıf geçerlidir, kök çözülüyor fakat kod yoksa atıf kırıktır, kök hiç çözülemiyorsa motor ölçemediğini açıkça söylüyor.
+- **Kanon maddesinin `ilgili` listesinden tanıma gidiliyor.** Listenin tek doğru yazımı bölümün kök kimliğidir; editörde kimliğin üstüne gelindiğinde bölümün tanımına gidilebiliyor ve çıplak bölüm adı tanıyla bildiriliyor.
+- **Katman zemini iki ayrı kenarla yazılıyor.** `kullanır` kenarı yalnız Teknolojiye, yeni `takım` kenarı yalnız Takıma yöneliyor; iki kenardan en az biri Katmanın zeminini beyan ediyor. Yanlış tipe yönelen kenar hedefin tipiyle birlikte bildiriliyor ve graf iki kenarı da zemin kaydına indiriyor. Eski yazımı taşıyan bir ağaçta Takıma yönelen `kullanır` satırları `takım` olarak yeniden yazılmalıdır.
+- **Kitaplık kademesi zorunlu oldu ve anadizin ile plan ayrılığı kanona indi.** Kökün altına çıplak Raf yazıldığında motor kademe atlamasını uyarı düzeyinde bildiriyor ve öneri yapıştırılabilir bir iskelet taşıyor. Giriş ilanına Faz yazımı sarma sözleşmesinden düştü; zaman ekseni yalnız Proje içinde yaşıyor.
+- **Davranışı nöbetler koruyor.** Her değişiklik kendi sınama dosyasıyla geldi ve her nöbet mutasyonla kanıtlandı: koruma bozulduğunda ilgili sınamalar kırmızıya düştü ve kaynak birebir geri konduğunda süit yeşile döndü.
+
 ## 0.9.192 — 2026-09-16 (yapı ağacının satırında açıklama kodun altına indi)
 
 - **Ağaç satırında kod üstte, açıklama altta.** Okuma kipinin yapı ağacı her satırda kodu ve açıklamayı aynı satıra diziyordu; dar kenar sütununda açıklama dört satıra kırılıyor ve satır numarası uzakta kalıyordu. Founder gerçek bir plan dosyasında canlı inceleyip hükmünü verdi: kod kendi satırında durur, satır numarası kodun yanında yazılır ve açıklama kodun altında girintili bir gövde olarak akar. Tip simgesi, sarma girintisi, bağ çizgisi, satıra tıklayınca kaynağa gitme ve künye değişmedi; iki bölmenin yan yana duruşu Masa düzeninin parçasıdır ve korundu.
