@@ -123,7 +123,7 @@ Gereksinim( kod: GRK-KAPANIS-ORKESTRA, kim: "Founder",
 Blok( kod: BLK-KPN, ad: "kapanış kampanyası", uygular: ORK-7,
   ne: "🪵 Kampanyanın dört yeni kalemi: kimlik indeksi varlık sınırı · eklenti kurulumu · kapanış kaydı · orkestrasyon açılışı — diğer ~36 kalem kendi raylarında, sıra belge bloğunda" ) {
 
-  Katman( kod: KAT-KPN-KIMLIK, kullanır: TAKIM-CEKIRDEK, ad: "kimlik indeksi varlık sınırı",
+  Katman( kod: KAT-KPN-KIMLIK, takım: TAKIM-CEKIRDEK, ad: "kimlik indeksi varlık sınırı",
     ne: "🌿 Gezinme ve atıf çözümü varlık/şablon sınırına tam saygılı olur — standart kodların yinelenen tanımları kullanıcıyı yanlış kapıya götürmez" ) {
 
     AltKatman( kod: ALT-KPN-KIMLIK-VARLIK-SINIRI, departman: kodlama, ad: "varlık/şablon sınır uygulaması",
@@ -148,7 +148,7 @@ Blok( kod: BLK-KPN, ad: "kapanış kampanyası", uygular: ORK-7,
     }
   }
 
-  Katman( kod: KAT-KPN-YAYIN, kullanır: TAKIM-EKLENTI, ad: "eklenti kurulum turu",
+  Katman( kod: KAT-KPN-YAYIN, takım: TAKIM-EKLENTI, ad: "eklenti kurulum turu",
     ne: "🌿 Oturum 56 kaynak değişiklikleri (saf çekirdek ayrımları) paketlenip Founder makinesine kurulur" ) {
 
     // NOT: Bu Adımın ürünü repo dosyası değil KURULU PAKETtir (0.9.79 vsix) — üretir:

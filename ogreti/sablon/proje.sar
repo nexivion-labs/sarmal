@@ -57,12 +57,12 @@ Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu 
 //
 //    Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", hedefTarih: "2027-06-30" ) {
 //      Blok( kod: BLK-Ornek, ad: "<Blokun Adı>", ne: "<bir özelliği baştan sona kesen dikey dilim>" ) {
-//        Katman( kod: KAT-Onyuz, ad: "Ön Yüz", kullanır: TAKIM-ONYUZ ) {
+//        Katman( kod: KAT-Onyuz, ad: "Ön Yüz", takım: TAKIM-ONYUZ ) {
 //          AltKatman( kod: ALT-Onyuz, ad: "<Departman Modülü>", departman: kodlama ) {
 //            Adım( kod: ADM-01, ad: "<kısa-ad>", görev: "<DETAYLI niyet>", kabul: [ "<ölçüt>" ], durum: beklemede )
 //          }
 //        }
-//        Katman( kod: KAT-Arkayuz, ad: "Arka Yüz", kullanır: TAKIM-ARKAYUZ ) {
+//        Katman( kod: KAT-Arkayuz, ad: "Arka Yüz", takım: TAKIM-ARKAYUZ ) {
 //          AltKatman( kod: ALT-Arkayuz, ad: "<Departman Modülü>", departman: kodlama ) {
 //            Adım( kod: ADM-02, ad: "<kısa-ad>", görev: "<niyet>", durum: beklemede )
 //          }

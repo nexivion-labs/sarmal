@@ -52,7 +52,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
   ne: "🧭 Oturum doksan üçte bulunan kanon kapsam borcunun dört cephesi — kapsam sicili, tanı kademesi hizalaması, mimariBağı kenar kanunu ve terfi kapısı ölçümü — tek rayda plan Adımına iner" ) {
 
   // ══ KATMAN · KANON KAPSAM BORCU: kanonun tanı sözleşmesinin motordaki karşılığı ══
-  Katman( kod: KPS-KAPSAM, kullanır: TAKIM-CEKIRDEK, ad: "kanon kapsam borcu",
+  Katman( kod: KPS-KAPSAM, takım: TAKIM-CEKIRDEK, ad: "kanon kapsam borcu",
     ne: "⚖️ Kanonun tanı sözleşmesi ailesinin, yani YAS-3 ve YAS-4 hükümlerinin, motorda gerçekten karşılığı olup olmadığını dört cepheden ölçülebilir hâle getirir" ) {
 
     AltKatman( kod: KPS-KAPSAM-K1, departman: inceleme, ad: "kapsam sicili",
@@ -327,7 +327,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         koşu: Koşum( kod: KSM-KPS-ADA-A01, tarih: 2026-09-19, mühür: COMPLETED, karar: kabul, kanıt: "yedi görev tek tek ölçüldü: ayraç belirteçleyicide (kapalı üründe 47, laboratuvarda 67 ad alanlı atıf sözdizimi hatasız), kardeş kök çözümü çatı ilanından (Kitaplık ve Raf), ad alanlı mevsim gerçek Faz bağı (kapalı üründe fazsız-blok sıfır), eklentinin üç yüzeyi adAlanliTanimlar çekirdeğinden okuyor, iki kapalı depoda çapraz atıflar ad alanlı ve on dosya beyanı Kod düğümü olarak açık depoya bağlı (laboratuvar beş, orkestrasyon beş) · altıncı görev bu turda kapandı: denetim ad alanlı hedefi üç durumlu okur; kasıtlı yanlış iki atıfla kapalı üründe ölçüldü, bilinen ad alanında yok kod hata, bilinmeyen ad alanı uyarı ve muafiyet adıyla bildirildi, dosya bayt bayt geri kondu · yeni nöbet 6/6, üç mutasyon 3/6, 4/6 ve 1/6 kırmızı · çekirdek süiti 1403/1403 (taban 1397), tür denetimi ve eslint temiz · orkestrasyon 2 hata 1 uyarı (ikisi de Founder devriyle o deponun hatırlatıcısında, PRJ-LABORATUVAR arşiv mühürlü atıflar), laboratuvar 9 hata 22 uyarı (Founder şerhi 2026-09-13 ile aynı sayı); bu Adımın getirdiği hata iki depoda da sıfır · açık depo 0 hata, uyarılar Eklenti Blokunun iki bloklu Adımı", ne: "Çapraz proje ad alanı motorda tamamdır ve son açık kalem olan atıf doğrulaması bu turda kapanmıştır: ad alanı çözülebiliyorsa hedef gerçekten doğrulanır, çözülemiyorsa muafiyet uyarı olarak adıyla bildirilir ve denetim ile gezinme yüzü aynı üç cevabı verir. Kapalı ürünün işaretçi dosyasındaki bayat cümle düzeltilmiş ve o depoda işleme yapılmamıştır; Founder'ın canlı göz ve sıfır uyarı şerhleri onay alanında yaşar." )
       }
 
-      Adım( kod: KPS-CEL-A01, ad: "Kanonun Dört Ayrışması", durum: geliştirmede, onay: "onaylandı — 2026-09-10", üretir: [ KOD-DENETCI, KOD-SNM-KITAPLIKSIZ-KOK ], öncelik: p1, bağımlı: [], referans: [ MIM-1.2, MIM-3.2, MIM-1.4, TIP-1.8, HTR-KANON-SARMA-CELISKISI-VE-DUZEN-BOSLUGU ],
+      Adım( kod: KPS-CEL-A01, ad: "Kanonun Dört Ayrışması", durum: geliştirmede, onay: "onaylandı — 2026-09-10", üretir: [ KOD-DENETCI, KOD-KPS-FAZ-CEVRIMI, KOD-SNM-KITAPLIKSIZ-KOK, KOD-SNM-KANON-SEMA-AYRISMASI ], öncelik: p1, bağımlı: [], referans: [ MIM-1.2, MIM-3.2, MIM-1.4, TIP-1.8, HTR-KANON-SARMA-CELISKISI-VE-DUZEN-BOSLUGU ],
 
         // ── FOUNDER HÜKÜMLERİ · 2026-09-09 (dördün ikisi bağlandı; Adım hâlâ onay bekler) ──
         //   BİRİNCİ HÜKÜM · Kitaplık kademesi ZORUNLUDUR. Doğuş paketi de Kitaplık
@@ -802,3 +802,7 @@ Kod( kod: KOD-SNM-EKL-ORTAK-KOD, dosya: "urun/eklenti/sinama/ortak-kod-paneli.te
 // 🍎 KPS-CEL-A01 ikinci ayrışma teslimi (2026-09-19): Kitaplık kademesinin nöbeti
 Kod( kod: KOD-SNM-KITAPLIKSIZ-KOK, dosya: "urun/cekirdek/sinama/kitapliksiz-kok.test.ts",
   ne: "📚 Kitaplık kademesi nöbeti — beş sınama: kökün altına çıplak Raf yazılınca kademe atlaması uyarı düzeyinde bildirilir, Raf Kitaplığın içindeyse bekçi susar, hiç yapı ilanı olmayan kök bu bekçinin işi değildir ve rafsız anadizin bekçisine bırakılır, ders dünyası OGR-5 uyarınca muaftır ve kademesi yerinde bir çatı sessiz kalır; iki mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-CEL-A01 · MIM-3.2)" )
+
+// 🍎 KPS-CEL-A01 kapanış teslimi (2026-09-19): kanon ile şemanın ayrışmasını gören nöbet
+Kod( kod: KOD-SNM-KANON-SEMA-AYRISMASI, dosya: "urun/cekirdek/sinama/kanon-sema-ayrismasi.test.ts",
+  ne: "⚖️ Kanon ile şemanın ayrışması nöbeti — on iki sınama: sarma sözleşmesi ÇalışmaAlanı için Faz iznini taşımaz ve giriş ilanına yazılan Faz bildirilir, kanon ile sicil Kitaplık kademesi için aynı kimliği söyler, TIP-1.8 kanalı Teknoloji sayar ve ajanın gövdelerinin tipini yeni tip icat etmeden yazar, şema takım kenarını ilan eder, takım kenarı zemini tek hedefle de ortak sahiplikle de beyan eder, yürütme sırası kenarı zemin sayılmaz, kullanır bir Takıma ve takım bir Teknolojiye yönelemez, zemin kenarı grafta yaşar, hiçbir öğretim yüzü eski yazımı öğretmez ve canlı ağacın ürün planlarında zeminsiz ya da yanlış kenarlı Katman sıfırdır; beş mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-CEL-A01)" )

@@ -88,7 +88,7 @@ Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niy
     ) {
 
       // FACET 1: önyüz (dal 🌿) — iki Katman (çokluk)
-      Katman( kod: KAT-K-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+      Katman( kod: KAT-K-ONYUZ, takım: TAKIM-TAMYIGIN, ad: "onyuz" ) {
         AltKatman( kod: KAT-K-EKRANLAR, departman: kodlama, ad: "ekranlar" ) {
           Adım(
             kod:      ADM-GIRIS-UI,
@@ -116,7 +116,7 @@ Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niy
       }
 
       // FACET 2: arkayüz (dal 🌿) — iki Katman
-      Katman( kod: KAT-K-ARKAYUZ, kullanır: TAKIM-TAMYIGIN, ad: "arkayuz" ) {
+      Katman( kod: KAT-K-ARKAYUZ, takım: TAKIM-TAMYIGIN, ad: "arkayuz" ) {
         Adım(
           kod:      ADM-KIMLIK-SVC,
           ad:       "kimlik-servisi",
@@ -135,7 +135,7 @@ Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niy
       }
 
       // FACET 3: güvenlik (dal 🌿)
-      Katman( kod: KAT-K-GUVENLIK, kullanır: TAKIM-TAMYIGIN, ad: "guvenlik" ) {
+      Katman( kod: KAT-K-GUVENLIK, takım: TAKIM-TAMYIGIN, ad: "guvenlik" ) {
         Adım(
           kod:      ADM-JETON,
           ad:       "jeton-dogrula",
@@ -156,7 +156,7 @@ Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niy
       ✅ Kabul: pano tek ekranda yüklenir ve tüm kartlar canlı veriyle dolar.
     |<--
     Blok( kod: BLK-PANO, ad: "pano", ne: "Özet gösterge paneli" ) {
-      Katman( kod: KAT-P-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+      Katman( kod: KAT-P-ONYUZ, takım: TAKIM-TAMYIGIN, ad: "onyuz" ) {
         Adım(
           kod:     ADM-PANO-UI,
           ad:      "pano-ekrani",
@@ -300,7 +300,7 @@ Kural yalnızca_flutter( kod: KRL-YALNIZ-FLUTTER, otorite: politika, katman: niy
       ✅ Kabul: mobil giriş, ortak sözleşme üzerinden web servisiyle birebir çalışır.
     |<--
     Blok( kod: BLK-MOBIL-KIMLIK, ad: "mobil-kimlik", ne: "Mobilde giriş — web servisini paylaşır" ) {
-      Katman( kod: KAT-M-ONYUZ, kullanır: TAKIM-TAMYIGIN, ad: "onyuz" ) {
+      Katman( kod: KAT-M-ONYUZ, takım: TAKIM-TAMYIGIN, ad: "onyuz" ) {
         Adım(
           kod:      ADM-MOBIL-GIRIS,
           ad:       "mobil-giris-ekrani",

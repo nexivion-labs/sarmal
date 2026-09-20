@@ -251,7 +251,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "    ✅ Kabul: geçerli kimlikle giriş çalışır, geçersiz kimlik açık hata alır.",
     "  |<--",
     "  Blok( kod: BLK-GIRIS, ad: \"giris\", ne: \"🪵 Giriş dikey dilimi\" ) {",
-    "    Katman( kod: KAT-ONYUZ, ad: \"onyuz\", kullanır: TAKIM-ONYUZ,",
+    "    Katman( kod: KAT-ONYUZ, ad: \"onyuz\", takım: TAKIM-ONYUZ,",
     "      ne: \"🌿 Önyüz teknolojisi\" ) {",
     "      // Katman → AltKatman → Adım: Adımlar departman modüllerinde toplanır.",
     "      AltKatman( kod: ALT-ONYUZ-KOD, ad: \"kodlama\", departman: kodlama,",

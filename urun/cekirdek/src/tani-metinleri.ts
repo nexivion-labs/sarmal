@@ -274,8 +274,8 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Kenarı Adımdan Meyveye kur. Örnek: \`Adım( kod: ${a(p, "kimlik")} ) { üretir: [ Meyve( kod: MYV-KAYNAK, tür: Kod, dosya: "src/<dosya>" ) ] }\` yaz; sıra gerekiyorsa ayrıca \`bağımlı:\` kenarı ekle.`,
   },
   "kullanır-kenarı-ihlali": {
-    mesaj: (p) => `"${a(p, "kimlik")}" düğümündeki \`kullanır\` kenarı izinli çift dışında: ${a(p, "kusur")}. Bu kenar yalnız Projeyi ortak kimlik köküne ya da Katmanı somut bir Teknolojiye bağlar.`,
-    oneri: () => `Kenarı izinli çifte indir. Örnek: \`Katman( kod: KAT-ONYUZ, kullanır: TEK-FLUTTER )\` ya da \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\` yaz; başka bir bağ için kendi kenar adını kullan.`,
+    mesaj: (p) => `"${a(p, "kimlik")}" düğümündeki \`${p.kenar ? a(p, "kenar") : "kullanır"}\` kenarı izinli çift dışında: ${a(p, "kusur")}. Zemin iki tip-saf kenarla yazılır: \`kullanır\` Projeyi ortak kimlik köküne ya da Katmanı tek bir somut Teknolojiye, \`takım\` ise Katmanı onu yürüten bir ya da birden çok Takıma bağlar; iki kenar birbirinin yerine geçmez.`,
+    oneri: () => `Kenarı izinli çifte indir. Örnek: \`Katman( kod: KAT-ONYUZ, takım: TAKIM-ONYUZ, kullanır: TEK-FLUTTER )\` ya da \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\` yaz; başka bir bağ için kendi kenar adını kullan.`,
   },
   "deterministik-sıra-ihlali": {
     mesaj: (p) => `"${a(p, "kimlik")}" düğümü yürütme sırasını Adım grafının dışından türetiyor: ${a(p, "kusur")}. Sıra yalnız Adımlar arasındaki yürütme kenarlarından, kararlı topolojik sıralamayla çıkar.`,
@@ -647,8 +647,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Connect the edge from Adım to Meyve. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { üretir: [ Meyve( kod: MYV-KAYNAK, tür: Kod, dosya: "src/<dosya>" ) ] }\`; if order is needed, add a separate \`bağımlı:\` edge.`,
   },
   "kullanır-kenarı-ihlali": {
-    mesaj: (p) => `The \`kullanır\` edge on node "${a(p, "kimlik")}" falls outside the permitted pair: ${a(p, "kusur")}. This edge only connects a Proje to the shared identity root or a Katman to one concrete Teknoloji.`,
-    oneri: () => `Reduce the edge to a permitted pair. Example: write \`Katman( kod: KAT-ONYUZ, kullanır: TEK-FLUTTER )\` or \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\`; use the appropriate edge name for any other binding.`,
+    mesaj: (p) => `The \`${p.kenar ? a(p, "kenar") : "kullanır"}\` edge on node "${a(p, "kimlik")}" falls outside the permitted pair: ${a(p, "kusur")}. The ground is written with two type-pure edges: \`kullanır\` connects a Proje to the shared identity root or a Katman to one concrete Teknoloji, while \`takım\` connects a Katman to the one or more Takım nodes that run it; neither edge may stand in for the other.`,
+    oneri: () => `Reduce the edge to a permitted pair. Example: write \`Katman( kod: KAT-ONYUZ, takım: TAKIM-ONYUZ, kullanır: TEK-FLUTTER )\` or \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\`; use the appropriate edge name for any other binding.`,
   },
   "deterministik-sıra-ihlali": {
     mesaj: (p) => `Node "${a(p, "kimlik")}" derives execution order from outside the Adım graph: ${a(p, "kusur")}. Order is derived only from execution edges between Adımlar, using a stable topological sort.`,
@@ -1431,8 +1431,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: (p) => `Ya meyveyi üret (${a(p, "beyan")}), ya Adım durumunu geriye çek, ya da meyve ilanının dosya: yolunu düzelt — plan gerçeği yansıtsın.`,
   },
   "katmansız-teknoloji": {
-    mesaj: (p) => `Katman "${a(p, "kod")}" teknoloji bağı taşımıyor — Katman teknoloji dilimidir; kullanır: kenarında tek bir Takım/Teknoloji hedefi beklenir.`,
-    oneri: () => 'İki meşru yol: kullanır: TAKIM-X yaz (Takım kendi Teknolojilerine bağlıdır ve MIM-1.4 gereği kenar tek hedef taşır) ya da katman bilinçli olarak teknolojisizse teknolojiBağımsız: "gerekçe" beyanı yaz — boş gerekçe beyan sayılmaz.',
+    mesaj: (p) => `Katman "${a(p, "kod")}" zemin bağı taşımıyor — Katman teknoloji dilimidir ve zeminini iki tip-saf kenardan en az biriyle beyan eder: takım: kenarı onu yürüten Takıma, kullanır: kenarı tek bir somut Teknolojiye yönelir.`,
+    oneri: () => 'Üç meşru yol: takım: TAKIM-X yaz (Takım kendi Teknolojilerine bağlıdır; iki ekip ortaksa takım: [ TAKIM-X, TAKIM-Y ]), kullanır: TEK-X ile tek bir somut Teknolojiye bağlan ya da katman bilinçli olarak teknolojisizse teknolojiBağımsız: "gerekçe" beyanı yaz — boş gerekçe beyan sayılmaz. Takım bağı kullanır: ile, Teknoloji bağı takım: ile yazılmaz.',
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" kilitli ve 'uygulama: gerekli' beyanlı AMA onu uygulayan hiçbir bağ yok — karar verilmiş, plana inmemiş; kilitli karar plana inmelidir.`,
@@ -2033,8 +2033,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: (p) => `Either produce the fruit (${a(p, "beyan")}), move the Adım status backward, or correct the fruit declaration's dosya: path so the plan reflects reality.`,
   },
   "katmansız-teknoloji": {
-    mesaj: (p) => `Katman "${a(p, "kod")}" has no technology binding — a Katman is a technology slice and expects a single Takım/Teknoloji target on its kullanır: edge.`,
-    oneri: () => 'There are two valid paths: write kullanır: TAKIM-X (the Takım depends on its Teknolojiler, and per MIM-1.4 the edge carries exactly one target), or, if the layer is intentionally technology-independent, write teknolojiBağımsız: "gerekçe"; an empty rationale is not a declaration.',
+    mesaj: (p) => `Katman "${a(p, "kod")}" has no ground binding — a Katman is a technology slice and declares its ground with at least one of two type-pure edges: takım: points at the Takım that runs it, kullanır: points at one concrete Teknoloji.`,
+    oneri: () => 'There are three valid paths: write takım: TAKIM-X (the Takım depends on its Teknolojiler; when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]), bind to one concrete Teknoloji with kullanır: TEK-X, or, if the layer is intentionally technology-independent, write teknolojiBağımsız: "gerekçe"; an empty rationale is not a declaration. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:.',
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" is locked and declares 'uygulama: gerekli', BUT no binding implements it — the decision was made but never reached the plan; a locked decision must flow into the plan.`,

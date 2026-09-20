@@ -73,7 +73,7 @@ Yetenek( kod: YTN-NIYET-DIYALOGU, ne: "belirsiz kullanıcı ifadesini sözlük k
        takımlardan biri mi (örneğin arkayüz takımı), yoksa bu katman
        bilinçli olarak teknoloji-bağımsız mı? Bağımsızsa gerekçesini
        yazayım (teknoloji-bağımsız beyanı), motor bekçisi sussun."
-     Kullanıcının seçimi ya `kullanır: TAKIM-X` kenarı ya da gerekçeli
+     Kullanıcının seçimi ya `takım: TAKIM-X` kenarı ya da gerekçeli
      dürüst-beyan olarak koniye iner — sessiz varsayılan yoktur.
   2. **Plansız karar:** `uygulama: gerekli` beyanlı kilitli bir Karar'ı
      uygulayan hiçbir Adım yoksa (motor tanısı: uygulanmamış-karar, STR-2.1),

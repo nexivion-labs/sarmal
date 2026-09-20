@@ -23,7 +23,7 @@ Blok( kod: BLK-Ornek, ad: "<Blokun Adı>", ne: "<blok amacı>", uygular: ORK-7 )
   // birbirine DOĞRUDAN değil SÖZLEŞME üzerinden kavuşur — önyüz modülünün Adımı
   // ve arkayüz modülünün Adımı aynı SZL-X'e bağımlı: verir; kavuşumsuz-dilim /
   // sözleşmesiz-uç bekçileri bu buluşmayı denetler.
-  Katman( kod: KAT-Ornek, ad: "<Katmanın Adı>", kullanır: TAKIM-Ornek ) {   // MIM-1.4: tek Takım/Teknoloji hedefi — ör. TAKIM-ONYUZ
+  Katman( kod: KAT-Ornek, ad: "<Katmanın Adı>", takım: TAKIM-Ornek ) {   // MIM-1.4: zemin iki tip-saf kenarla yazılır — takım: Takıma (ör. TAKIM-ONYUZ), kullanır: tek bir somut Teknolojiye
     AltKatman( kod: AKT-Ornek, departman: kodlama, ad: "<Konu Modülü>" ) {   // ör. "kimlik" · "sepet" — AltKatman bir konu departmanıdır
       Adım( kod: ADM-01, ad: "<kısa-ad>",
             görev: "<NE yapılacak — çalgıcının tahmin etmesine gerek kalmayacak DETAY>",

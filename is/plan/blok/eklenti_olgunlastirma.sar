@@ -37,7 +37,7 @@
 Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02 onarımı: ANY-EKLENTI hiç doğmadı — kırık uygular kenarı gerçek anayasaya bağlandı
 
   // ── FAZ 1 · ÖZ-İFADE: dil kendini kendi diliyle anlatır ────────────────────
-  Katman( kod: EKL-F1, kullanır: TAKIM-EKLENTI, ad: "oz-ifade",
+  Katman( kod: EKL-F1, takım: TAKIM-EKLENTI, ad: "oz-ifade",
     ne: "🪞 Bir dil kendini kendi diliyle ifade etmelidir — kural ve söz dizimi belgeleri .sar diline çevrilir" ) {
     AltKatman(
       kod: ALT-EKL-F1-CEVIRI, departman: kodlama,
@@ -72,7 +72,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 2 · ANLATI STANDARDI: olgu parametrede, muhakeme belgede ───────────
-  Katman( kod: EKL-F2, kullanır: TAKIM-EKLENTI, ad: "anlati-standardi",
+  Katman( kod: EKL-F2, takım: TAKIM-EKLENTI, ad: "anlati-standardi",
     ne: "🎓 Anlatı katmanı akademik şemaya bağlanır: Amaç · Kapsam (1 giriş + ≥3 gelişme + 1 sonuç) · Sonuç" ) {
     AltKatman(
       kod: ALT-EKL-F2-SEMA, departman: kodlama,
@@ -103,7 +103,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 3 · RENK KANONU: renk niyetin görsel türevidir ─────────────────────
-  Katman( kod: EKL-F3, kullanır: TAKIM-EKLENTI, ad: "renk-kanonu",
+  Katman( kod: EKL-F3, takım: TAKIM-EKLENTI, ad: "renk-kanonu",
     ne: "🎨 52 renklik sistem tek kaynağa (SNF-0 renkKanonu) taşınır; editör Dart canlılığına ulaşır" ) {
     AltKatman(
       kod: ALT-EKL-F3-RENK, departman: kodlama,
@@ -124,7 +124,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 4 · BİÇİMLENDİRME: tüm biçimlendirmeler yeniden gözden geçirilir ───
-  Katman( kod: EKL-F4, kullanır: TAKIM-EKLENTI, ad: "bicimlendirme",
+  Katman( kod: EKL-F4, takım: TAKIM-EKLENTI, ad: "bicimlendirme",
     ne: "✨ Biçimlendirici insan yükünü sıfırlar: uzun niyet katlanır, emoji korunur, hizalama nizamidir" ) {
     AltKatman(
       kod: ALT-EKL-F4-BICIM, departman: kodlama,
@@ -170,7 +170,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 5 · ZEKÂ: editör dili öğretir ──────────────────────────────────────
-  Katman( kod: EKL-F5, kullanır: TAKIM-EKLENTI, ad: "zeka",
+  Katman( kod: EKL-F5, takım: TAKIM-EKLENTI, ad: "zeka",
     ne: "🧠 Tamamlama ve hover, etmen şemasını öğrenir; sarı terfi tek tıkla çözülür" ) {
     AltKatman(
       kod: ALT-EKL-F5-ZEKA, departman: kodlama,
@@ -202,7 +202,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 6 · YAYIN: dünyaya çıkış ───────────────────────────────────────────
-  Katman( kod: EKL-F6, kullanır: TAKIM-EKLENTI, ad: "yayin",
+  Katman( kod: EKL-F6, takım: TAKIM-EKLENTI, ad: "yayin",
     ne: "🌍 Sarmal dili dünyada tanınır: marketplace + GitHub dil kimliği — ⏸️ BEKLEMEDE (Founder 2026-07-06: yayın için erken; netleşmesi gereken konular önce çözülür)" ) {
     // Yayın ön-koşulu: ŞEF disiplini dogfood-vitrininden SONRA — öncül halka turu kapandı ve arşivdedir; kalan kapı çok-dillilik adımlarıdır
     AltKatman(
@@ -427,7 +427,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     }
 
     // ── FAZ 7 · YOL HARİTASI: tren-ray paneli — plan yaşayan yapılacaklar listesi ─
-    Katman( kod: EKL-F7, kullanır: TAKIM-EKLENTI, ad: "yol-haritasi",
+    Katman( kod: EKL-F7, takım: TAKIM-EKLENTI, ad: "yol-haritasi",
       ne: "🚂 Plan ağacı, Problems'ı kirletmeden kendi panelinde yaşar: kutucuklu, çift yönlü, ilerleme sayaçlı" ) {
       AltKatman(
         kod: ALT-EKL-F7-PANEL, departman: kodlama,
@@ -490,7 +490,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     }
 
     // ── FAZ 8 · FORMAT KANONLARI: her şey fonksiyon gibi (Founder 2026-07-06 mola-öncesi) ─
-    Katman( kod: EKL-F8, kullanır: TAKIM-EKLENTI, ad: "format-kanonlari",
+    Katman( kod: EKL-F8, takım: TAKIM-EKLENTI, ad: "format-kanonlari",
       ne: "🧬 Durum·hafıza·kimlik·yönetmelik tek kalıba oturur — imza(şema) + gövde(anlatı) + çağrı(kod), tıpkı bir fonksiyon gibi" ) {
       AltKatman(
         kod: ALT-EKL-F8-KANON, departman: kodlama,
@@ -537,7 +537,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     // ── FAZ 9 · OLGUNLAŞMA: kadro denetimi bulgularını gider (3 uzman + DeepSeek · Founder onayı 2026-07-06) ─
     Katman(
       kod:      EKL-F9,
-      kullanır: TAKIM-EKLENTI,
+      takım: TAKIM-EKLENTI,
       ad:       "olgunlasma",
       ne:       "🔧 Kadro denetiminin (3 uzman) bulguları giderilir: şema tek-kaynak, paylaşımlı önbellek, hijyen — sistem kendi felsefesini kendine uygular (anlatı-ayrımı dogfood)",
     ) {
@@ -657,7 +657,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     // ── FAZ 10 · GERIBILDIRIM & CANLILIK: editor nefes alir, kadro geribildirim ogrenir ─
     // (Founder sozlu istekleriyle 2026-07-06 kuruldu; context dolmadan plana islendi
     //  ki kayit kaybolmasin. Hepsi CANLI — bu faz "nerede kaldik"in eklenti yuzudur.)
-    Katman( kod: EKL-F10, kullanır: TAKIM-EKLENTI, ad: "geribildirim-canlilik",
+    Katman( kod: EKL-F10, takım: TAKIM-EKLENTI, ad: "geribildirim-canlilik",
       ne: "❤️ Editor canlidir ve kadroya geribildirim tasir: Kuzey Yildizi + dort kanal + ogrenme hasadi" ) {
 
       AltKatman( kod: EKL-F10-K1, departman: kodlama, ad: "geribildirim-kanallari" ) {
@@ -765,7 +765,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       // (Kaynak: nitelik/ide_asinalik.md — BKM-ARC-A02 envanteri, 22 kalem.
       //  Founder seçimi 2026-07-11: adaylar ①②③④ raya indi; ⑤ inlay-resmîleştirme
       //  bilinçli dışarıda — dallar/yıldız dekorasyonları işi görüyor, düşük öncelik.)
-      Katman( kod: EKL-F11, kullanır: TAKIM-EKLENTI, ad: "ide-asinalik",
+      Katman( kod: EKL-F11, takım: TAKIM-EKLENTI, ad: "ide-asinalik",
         ne: "🧭 IDE-aşinalık boşlukları kapanır: kimlik-gezinme ailesi (tanıma-git · referans-bul · F2 · Ctrl+T) + imza-yardımı + tıklanır yollar + kaydette-biçimle — envanterin tek sistematik boşluğu 'koddan koda zıplama' kas hafızasıydı, bu Faz onu kapatır" ) {
 
         AltKatman(
@@ -840,7 +840,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       }
 
     // ── FAZ 12 · VİTRİN GÖRSELLERİ: iki README'nin ilk ekran görüntüleri (Founder 2026-09-08) ──
-    Katman( kod: EKL-F12, kullanır: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
+    Katman( kod: EKL-F12, takım: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
       ne: "🖼️ Kök README ile mağaza README'sinin görselsiz olduğu 2026-09-08 gecesi ölçülmüştür: iki yüzde toplam bir rozet, sıfır ekran görüntüsü, sıfır görsel dil. Bu Katman gerçek koşudan çekilmiş kareleri iki yüze yerleştirir; kare üretilmez, çekilir." ) {
       AltKatman( kod: ALT-EKL-F12-VITRIN, departman: planlama, ad: "Mağaza ve Depo Vitrini",
         ne: "🖼️ Depo vitrini kök README, mağaza vitrini eklenti README'sidir; ikisi aynı kareleri aynı raftan okur ve mağaza göreli yolu paketleme sırasında depo adresine çevirir" ) {

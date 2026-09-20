@@ -39,7 +39,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
   ne: "Birikmiş bakım/olgunluk kalemleri + Founder-eylemli operasyonel işler — tek ray, sıfır kör nokta" ) {
 
   // ══ KATMAN · MOTOR BAKIMI: çekirdek olgunluk kalemleri ═════════════════════════
-  Katman( kod: BKM-OLG, kullanır: TAKIM-CEKIRDEK, ad: "motor bakımı",
+  Katman( kod: BKM-OLG, takım: TAKIM-CEKIRDEK, ad: "motor bakımı",
     ne: "🔧 Motor olgunluk kalemleri — taksonomi · örtü keşfi · drift kapıları · durum formatı" ) {
 
     AltKatman( kod: BKM-OLG-K1, departman: kodlama, ad: "taksonomi örtüsü" ) {
@@ -302,7 +302,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
   // ══ KATMAN · SINAV-2 BULGULARI: "yeşil ama kör" delikleri kapanır ═══════════════
   // (Kaynak: nitelik/sinav2_eksik_defteri.sar — Founder hükmü 2026-07-11:
   //  "sınıf geçilemedi, daha çok çalışmamız gerekiyor". Sınav-3 bu katman bitmeden açılmaz.)
-  Katman( kod: BKM-SNV2, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "ikinci sınav bulguları",
+  Katman( kod: BKM-SNV2, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "ikinci sınav bulguları",
     ne: "🧪 Sınav-2'nin sınıfta bırakan bulguları: MIM-3 ve contract-first motor kapıları + görünüm paritesi + rehber/kanon-yüzü onarımları" ) {
 
     AltKatman( kod: ALT-BKM-SNV2-BULGULAR, departman: inceleme, ad: "sınav-2 bulguları",
@@ -346,7 +346,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
   //  "tüm kurallar ve kanunlar ÇALIŞIR olacak". BKM-SNV2 ile BİRLEŞİK koşulur:
   //  aynı kök-desen — denetim yeşilken sessiz delik. Sıra önerisi: A01/A02
   //  [kural-motoru+kapı] önce, çünkü SNV2-A01/A02 fikstürleri aynı test turunda.)
-  Katman( kod: BKM-BUG, kullanır: TAKIM-CEKIRDEK, ad: "bug avı bulguları",
+  Katman( kod: BKM-BUG, takım: TAKIM-CEKIRDEK, ad: "bug avı bulguları",
     ne: "🐛 Kapsamlı bug-avı bulguları: kapsam-çözümü · kırık-referans genişlemesi · parametre/özellik ve skaler/liste körlükleri · muafiyet dayanıklılığı · küçük onarımlar" ) {
 
     AltKatman( kod: BKM-BUG-K1, departman: sınama, ad: "kural motoru kapıları",
@@ -494,7 +494,7 @@ Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
   // yerelleştirme anahtarının tamamı iki dilde karşılıklı, eklentide düzeyi yeniden
   // yazan ya da kimlikle süzen tek bir yol yok, otuz beş kullanıcı bildiriminin otuz
   // beşi katalogdan, kapsama ve yüzey ayırma işlevleri mutasyona dayanıklı.
-  Katman( kod: BKM-DNT, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "eklenti denetim turu",
+  Katman( kod: BKM-DNT, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "eklenti denetim turu",
     ne: "🔍 Eklentinin dört eksende ölçülen bulguları: kanon ile ilanın ayrışması, vaat edilip görünmeyen yüzeyler, davranışı korunmayan kaynak yarısı ve kendi kanıtını yok eden nöbet" ) {
 
     AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "kapsam kararları",

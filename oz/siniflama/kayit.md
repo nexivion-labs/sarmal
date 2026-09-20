@@ -11,7 +11,7 @@ Bu giriş elle korunur. Makine envanteri yalnız `oz/siniflama/kayit.json` kayna
 
 ## 📇 Makine Envanteri (kayit.json'dan üretilir — tek gerçek)
 
-**14 aile · 101 widget tipi · 19 kenar tipi**
+**14 aile · 101 widget tipi · 20 kenar tipi**
 
 | Aile | Tip sayısı | Tipler |
 |---|---|---|
@@ -30,7 +30,7 @@ Bu giriş elle korunur. Makine envanteri yalnız `oz/siniflama/kayit.json` kayna
 | **yasa** | 6 | Yasa · GenelKural · ÖzelKural · Kural · Anayasa · Mevzuat |
 | **yuzey** | 21 | Ekran · Sütun · Satır · Yığın · Kapsayıcı · Kart · Liste · Metin · Düğme · Görsel · İkon · Sayfa · Bileşen · Tema · ÜstÇubuk · Gövde · Form · MetinAlanı · OnayKutusu · AçılırListe · AnlıkBildirim |
 
-**Kenar tipleri (19):** bağımlı · referans · hatırlat · üretir · yönetir · içerir · besler · uygular · dayanak · mevsim · anayasa · tetikler · tema · çağırır · gider · gönderir · sözleşme · koşar · kullanır
+**Kenar tipleri (20):** bağımlı · referans · hatırlat · üretir · yönetir · içerir · besler · uygular · dayanak · mevsim · anayasa · tetikler · tema · çağırır · gider · gönderir · sözleşme · koşar · kullanır · takım
 
 ## Çapraz rol indeksi (TIP-1.16 · kayit.json caprazRoller alanından üretilir)
 
@@ -99,7 +99,7 @@ Bu tablo kayıtlı bütün widget tiplerini gösterir. `—`, o tip için ilgili
 | Kapsayıcı | ["kod"] | — | — | — | ["ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)","erişilebilirlik","veriAnahtarı","olaylar"] | — | — | — | — | — | — |
 | Karar | ["kod","karar","gerekçe","durum","ne"] | — | — | — | ["halef","özet","uygulama","ertelemeGerekçesi","sıra"] | {"durum":["kilitli","bekliyor","revize","tarihçe"],"uygulama":["gerekli","kendinden-tam","ertelendi"]} | {"halef":"kod","özet":"metin","ertelemeGerekçesi":"metin","sıra":"sayı"} | — | — | — | "Bir Karar kararın kendisini, gerekçesini ve durumunu taşır; GEREKÇESİZ KARAR GEÇERSİZDİR. YÜRÜRLÜK MODELİ şöyledir: karar metinleri tarihçedir ve dokunulmaz; eskiyen karar `durum: revize` ile birlikte `halef:` damgası alır, halefi yazılmamış revize uyarı üretir; tek seferlik bitmiş işler `durum: tarihçe` alır. Belge yüzü yürürlük ve tarihçe olarak iki bölüm hâlinde basılır. ÖZET KATMANI: opsiyonel `özet:` alanı, bağlamı bilmeyen birinin okuyabileceği tek paragraftır; defter yüzü ile ipucu penceresi önce özeti gösterir, ham karar metni ise bayt bayt korunarak tarihçede kalır. UYGULAMA DURUMU: opsiyonel `uygulama:` alanı gerekli, kendinden-tam ya da ertelendi değerlerinden biriyle dürüstçe beyan edilir; uygulaması gerekli, kilitli ve hiçbir plana bağlanmamış karar uygulanmamış-karar uyarısı alır, çünkü bağ `dayanak`, `uygular` ve `referans` kenarlarından ters yönde aranır. Erteleme gerekçesi `ertelemeGerekçesi` alanında yaşar." |
 | Kart | ["kod"] | — | — | — | ["ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)","erişilebilirlik","veriAnahtarı","olaylar"] | — | — | — | — | — | — |
-| Katman | ["kod","ad"] | — | — | — | ["teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"] | — | {"teknolojiBağımsız":"metin"} | — | — | — | "Teknoloji tekilliği (MIM-1.4): her Katman tam olarak bir somut Teknolojiye `kullanır` bağıyla bağlanır; teknolojisiz ya da birden çok teknolojiye bağlı Katman kurulamaz, böyle gereksinim ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez" |
+| Katman | ["kod","ad"] | — | — | — | ["teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"] | — | {"teknolojiBağımsız":"metin"} | — | — | — | "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz; zeminsiz Katman yalnız `teknolojiBağımsız` beyanıyla kurulur ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez" |
 | KimlikKökü | ["kod"] | — | — | — | — | — | — | — | — | — | "Kimlik alanı sınırı (MIM-1.1 · ORK-5): tam olarak bir KimlikPolitikası kapsar ve sıfırdan çok KimlikSağlayıcısı sarar; ortak Auth kullanan Projeler bu kökü `kullanır` kenarıyla gösterir ve Proje kimlikleri birleşmez. Köksüz sağlayıcı ve kök dışı politika ihlaldir; motor zorlaması `auth-omurgası-ihlali` tanısıyla motor turunun borcundadır" |
 | KimlikPolitikası | ["kod","ne"] | — | — | — | ["dosya (üretim-yeri: kodun düşeceği dosya yolu — yazılmazsa ağaçtan türetilir; konvansiyon vardır, beyan onu geçersiz kılar)"] | — | — | — | — | — | — |
 | KimlikSağlayıcısı | ["kod","tür"] | — | — | — | — | {"tür":["google","github","linkedin","apple","microsoft","sso"]} | — | — | — | — | "Taban sağlayıcı kataloğu kapalıdır (ORK-5.1): google · github · linkedin · apple · microsoft · sso eksiksiz korunur; yeni sağlayıcı yalnız ÇalışmaAlanı örtüsünün katkılı enum genişletmesiyle eklenir, taban seçenek silinemez veya yeniden adlandırılamaz. Sağlayıcı yalnız bir KimlikKökü altında yaşar" |

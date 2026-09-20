@@ -2670,15 +2670,16 @@ export function altKatmanTekilligiTanilari(
 
 // ═══ MIM-1.4 · katmansız-teknoloji bekçisi (Katman=TEKNOLOJİ ekseni) ══════════
 //
-//   MIM-1.4 aksiyomu: Katman teknoloji dilimidir — bir Takım/Teknoloji bağı taşımalı.
-//   ASIL YOL (V1B-KANON-A01 · Founder yön hükmü 2026-08-11): bağ `kullanır:`
-//   kenarıyla kurulur; kanonun MIM-1.4 hükmü ile ORK-2.4 kenar sözleşmesi bu
-//   kenarı anar ve kullanır zaten ORK-2.4 gereği TEK hedef taşır. GEÇİŞ YEDEĞİ:
-//   `bağımlı:` hedeflerinden en az biri Takım ya da Teknoloji düğümüne çözülüyorsa
-//   bekçi yine susar — mevcut kaynaklar kırılmaz, yeni tanı kimliği doğmaz.
-//   İki yazım aynı düğümde birlikteyse çelişki yoktur: ikisi de aynı olguyu
-//   (teknoloji zemini) beyan eder ve bekçi susar; kenarın biçim kusurları
-//   (liste hedef, yanlış tip) ORK-2.4 bekçisinin işidir, burada yinelenmez.
+//   MIM-1.4 aksiyomu: Katman teknoloji dilimidir — bir zemin bağı taşımalı.
+//   İKİ TİP-SAF KENAR (KPS-CEL-A01 · Founder hükmü 2026-09-19): zemin `kullanır:`
+//   ile tek bir somut Teknolojiye, `takım:` ile Katmanı yürüten bir ya da birden
+//   çok Takıma bağlanarak beyan edilir; ikisinden en az biri yeter. 2026-08-11
+//   tarihli yön hükmünün GEÇİŞ YEDEĞİ, yani `bağımlı:` hedefinin zemin sayılması,
+//   KALDIRILMIŞTIR: o kenar yürütme sırasıdır ve zemini söyleyemez; canlı ağacın
+//   onu kullanan üç Katmanı `takım:` kenarına göç etmiştir.
+//   İki kenar aynı düğümde birlikteyse çelişki yoktur: biri neyle yapıldığını,
+//   öteki kimin yürüttüğünü söyler ve bekçi susar; kenarın biçim kusurları
+//   (yanlış tip, çoklu Teknoloji) ORK-2.4 bekçisinin işidir, burada yinelenmez.
 //   Düzey: UYARI (ADM-STD-KTEK-TERFI · STR-4 kademe — v1'de bilgiydi, göç kapandı).
 //   Dürüst-beyan kaçışı: teknolojisiz Katman MEŞRUYSA (süreç katmanı gibi)
 //   `teknolojiBağımsız: "gerekçe"` beyanıyla bekçi susar — boş gerekçe sayılmaz
@@ -2740,9 +2741,16 @@ export function katmansizTeknolojiTanilari(
           if (d.tur === "liste") (d.ogeler ?? []).forEach(topla);
           else if (d.tur === "kod" && d.metin) hedefler.push(d.metin);
         };
-        // Asıl yol `kullanır`, geçiş yedeği `bağımlı` — iki kenarın hedefleri
-        // aynı havuzda toplanır; herhangi biri Takım/Teknolojiye çözülürse bağ var.
-        for (const alanAdi of ["kullanır", "bağımlı"] as const) {
+        // Zemin iki tip-saf kenarla beyan edilir (KPS-CEL-A01 · Founder hükmü
+        // 2026-09-19): `kullanır` Teknolojiye, `takım` Takıma yönelir ve iki kenarın
+        // hedefleri aynı havuzda toplanır; herhangi biri zemine çözülürse bağ vardır.
+        // `bağımlı` geçiş yedeği KALDIRILDI: o kenar yürütme sırasıdır ve bir Katmanın
+        // zeminini söyleyemez; üç canlı Katman iki Takıma birden bağlı olduğu için onu
+        // kullanıyordu ve `takım` kenarı liste kabul ettiği için o ihtiyaç da karşılanır.
+        // Kenarın DOĞRU tipe yönelip yönelmediği bu nöbetin değil ORK-2.4 bekçisinin
+        // işidir: yanlış kenarla da olsa zeminini beyan etmiş bir Katmana "zemini yok"
+        // demek yanlış olurdu ve aynı kusur iki kez konuşurdu.
+        for (const alanAdi of ["kullanır", "takım"] as const) {
           topla([...node.parametreler, ...node.ozellikler].find((p) => p.ad === alanAdi)?.deger);
         }
         const teknolojiBagi = hedefler.some((h) => teknolojiHedefi(h, dosya));
@@ -3860,16 +3868,48 @@ export function iliskiSinifiTanilari(
     if (kullanirlar.length) {
       if (d.ad !== "Proje" && d.ad !== "Katman" && d.ad !== "AltKatman") {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kusur: `kenarın kaynağı "${d.ad}" tipinde` }, d) });
+          { kimlik, kenar: "kullanır", kusur: `kenarın kaynağı "${d.ad}" tipinde` }, d) });
       } else if (kullanirlar.length > 1) {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kusur: `kenar ${kullanirlar.length} hedefe yöneliyor, oysa tekil olmak zorundadır` }, d) });
+          { kimlik, kenar: "kullanır", kusur: `kenar ${kullanirlar.length} hedefe yöneliyor, oysa tekil olmak zorundadır` }, d) });
       } else {
         const hedefTip = tipOf.get(kullanirlar[0].metin ?? "");
         const beklenen = d.ad === "Proje" ? "KimlikKökü" : "Teknoloji";
-        if (hedefTip && hedefTip !== beklenen && !(d.ad !== "Proje" && hedefTip === "Takım")) {
+        // KPS-CEL-A01 (Founder hükmü 2026-09-19): Katmanın Takıma `kullanır` ile
+        // bağlanmasına göz yuman istisna KALDIRILDI. Takım bağı artık kendi kenarıyla,
+        // yani `takım:` ile yazılır; iki kenar birbirinin yerine geçemez.
+        if (hedefTip && hedefTip !== beklenen) {
+          const yonlendirme = hedefTip === "Takım" ? " — Takım bağı `takım:` kenarıyla yazılır" : "";
           out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-            { kimlik, kusur: `hedef "${hedefTip}" tipinde, oysa "${beklenen}" bekleniyordu` }, kullanirlar[0]) });
+            { kimlik, kenar: "kullanır", kusur: `hedef "${hedefTip}" tipinde, oysa "${beklenen}" bekleniyordu${yonlendirme}` }, kullanirlar[0]) });
+        }
+      }
+    }
+
+    // Takım kenarı (KPS-CEL-A01 · ORK-2.4): yalnız Katman ile AltKatmandan doğar,
+    // yalnız Takıma yönelir ve bir ya da birden çok hedef taşıyabilir, çünkü bir
+    // işin sahipliği iki ekibin ortağı olabilir. Kenar yürütme sırası kurmaz.
+    const takimlar = yeniListe(d, "takım");
+    if (takimlar.length) {
+      if (d.ad !== "Katman" && d.ad !== "AltKatman") {
+        out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+          { kimlik, kenar: "takım", kusur: `kenarın kaynağı "${d.ad}" tipinde, oysa sahiplik bağı yalnız Katmandan doğar` }, d) });
+      } else {
+        const gorulenTakim = new Set<string>();
+        for (const o of takimlar) {
+          const h = o.metin ?? "";
+          if (gorulenTakim.has(h)) {
+            out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+              { kimlik, kenar: "takım", kusur: `"${h}" hedefi aynı kenarda ikinci kez yazılmış` }, o) });
+            continue;
+          }
+          gorulenTakim.add(h);
+          const hedefTip = tipOf.get(h);
+          if (hedefTip && hedefTip !== "Takım") {
+            const yonlendirme = hedefTip === "Teknoloji" ? " — Teknoloji bağı `kullanır:` kenarıyla yazılır" : "";
+            out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+              { kimlik, kenar: "takım", kusur: `hedef "${hedefTip}" tipinde, oysa "Takım" bekleniyordu${yonlendirme}` }, o) });
+          }
         }
       }
     }

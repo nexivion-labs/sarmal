@@ -23,7 +23,7 @@
 Blok( kod: BLK-PRF-TEKAGAC, ad: "tek ağaç", uygular: ORK-7,
   ne: "🗺️ Yol haritası panelinin denetim turunun tek ağacına bağlanması; ayrı tarama, ayrı graf ve sahte kırık damgası kalkar" ) {
 
-  Katman( kod: KAT-TA-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti tek ağaç katmanı",
+  Katman( kod: KAT-TA-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti tek ağaç katmanı",
     ne: "🌿 Tur görüntüsünün üretildiği ve panelin ona bağlandığı eklenti katmanı (eklenti.ts · yolharitasi.ts · tur-belgesi.ts)" ) {
 
     AltKatman( kod: ALT-TA-PLAN, ad: "tek ağaç planlaması", departman: planlama,

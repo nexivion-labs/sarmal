@@ -35,7 +35,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
   ne: "YUZ-3 vitrin yüzleri + YUZ-3.1 Founder UI hükümleri — dışa görünen yüz ve editör hissiyatı" ) {
 
   // ══ KATMAN · YUZ-3 VİTRİN: dış gözden geçirmenin vitrin kalemleri ═══════════════
-  Katman( kod: VIT-K77, kullanır: TAKIM-EKLENTI, ad: "vitrin yüzleri",
+  Katman( kod: VIT-K77, takım: TAKIM-EKLENTI, ad: "vitrin yüzleri",
     ne: "🪟 YUZ-3 vitrin kalemleri — durum rozetleri · build karnesi · etki-analizi yüzü · hizalama standardı" ) {
     // Katı rejim yerleşimi (proje-kod turu 2026-07-31): dört tamamlanmış Adım
     // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
@@ -88,7 +88,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
   }
 
   // ══ KATMAN · YUZ-3.1 UI HÜKÜMLERİ: Founder'ın üç editör hissiyat hükmü ════════════
-  Katman( kod: VIT-K78, kullanır: TAKIM-EKLENTI, ad: "arayüz hükümleri",
+  Katman( kod: VIT-K78, takım: TAKIM-EKLENTI, ad: "arayüz hükümleri",
     ne: "🖋️ YUZ-3.1 Founder hükümleri — hata lensi NABIZ · Hatırlatıcı ÜNLEM + yaşam döngüsü · Blok tamamlanma tiki gövde-tonu" ) {
     // Katı rejim yerleşimi (proje-kod turu 2026-07-31): yedi tamamlanmış Adım
     // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
@@ -213,7 +213,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
   //    Dış mühendis gözlemi ORK-3 mimarimizi bağımsız doğruladı: "graph dosyalardan
   //    çizilmez, derleyicinin çıktısıdır". Motorda bu ZATEN böyle (dagKur→Dag);
   //    eksik olan grafın DIŞA AÇIK yüzü (JSON+MCP) ve panel müfettişi.
-  Katman( kod: VIT-GRAF, bağımlı: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "graf yüzü",
+  Katman( kod: VIT-GRAF, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "graf yüzü",
     ne: "🕸️ Kanonik graf yüzü + panel müfettişi — derleyicinin DAG çıktısı dışa açılır (JSON + MCP), Yol Haritası kenar/etki/koni-kartıyla müfettişe büyür (Founder kararı 2026-07-10 · VIT-K78-A04 evrimi)" ) {
 
     AltKatman( kod: VIT-GRAF-K1, departman: kodlama, ad: "kanonik yüz",
@@ -531,7 +531,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
   //    Founder 2026-07-28 hükmü: onay bekleyen iş, Hatırlatıcılar ve Gözlemler gibi
   //    bir PANELDE yaşar. Bugün bir komuttur ve arama kutusundan çağrılır; yani
   //    Founder'ın kararını bekleyen iş, Founder'ın göremediği bir yerde durmaktadır.
-  Katman( kod: VIT-POSTA, kullanır: TAKIM-EKLENTI, ad: "posta kutusu yüzü",
+  Katman( kod: VIT-POSTA, takım: TAKIM-EKLENTI, ad: "posta kutusu yüzü",
     ne: "📬 Founder onayı bekleyen kapıların kalıcı paneli — onay kuyruğu komut olmaktan çıkıp dördüncü tanı yüzeyi olur" ) {
 
     AltKatman( kod: VIT-POSTA-K1, ad: "panel", departman: kodlama,
@@ -702,7 +702,7 @@ Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
   //    gözden geçirilecek ve dört eksenin her biri kendi simgesini taşıyacaktır.
   //    Ölçülmüş gerekçe: makinenin bir düğümü tanıması Türkçe kelimeye değil KARARLI
   //    bir kimliğe dayanmalıdır; ancak o zaman görünen etiket dile göre değişebilir.
-  Katman( kod: VIT-KIMLIK, kullanır: TAKIM-EKLENTI, ad: "görsel kimlik",
+  Katman( kod: VIT-KIMLIK, takım: TAKIM-EKLENTI, ad: "görsel kimlik",
     ne: "🎨 Sarmal'a özgü simge ailesi — dört eksen ve meyve kendi simgelerini kazanır, beş panel bakışta ayrılır" ) {
 
     AltKatman( kod: VIT-KIMLIK-K1, ad: "simge ailesi", departman: inceleme,

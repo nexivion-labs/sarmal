@@ -728,7 +728,7 @@ test("A10 emeklilik: vadesi gelmiş/uzak Hatırlatıcı artık vade tanısı ÜR
 });
 
 // ── MIM-1.4: katmansız-teknoloji bekçisi (ADM-STD-KTEK-TERFI: uyarı + dürüst-beyan) ──
-test("MIM-1.4: Takım bağı olmayan Katman UYARI alır; kullanır (asıl) ya da bağımlı (yedek) bağ ile teknolojiBağımsız beyanı susturur; boş beyan sayılmaz", async () => {
+test("MIM-1.4: zemin bağı olmayan Katman UYARI alır; kullanır ya da takım kenarı ile teknolojiBağımsız beyanı susturur, yürütme sırası kenarı susturmaz; boş beyan sayılmaz", async () => {
   const { katmansizTeknolojiTanilari } = await import("../src/denetci.ts");
   const p = (ek: string) => new Map([["k.sar", ayristir(belirtecle(`
 Teknoloji( kod: TEK-K91, ne: "çerçeve" )
@@ -744,11 +744,12 @@ Blok( kod: BLK-KT, ne: "iş" ) {
   assert.ok(bagsiz[0].tani.kod === "katmansız-teknoloji" && bagsiz[0].tani.duzey === "uyarı");
   // ② ASIL YOL (V1B-KANON-A01): kanonun MIM-1.4/ORK-2.4 yazımı `kullanır:` tek hedef → susar
   assert.equal(katmansizTeknolojiTanilari(p(", kullanır: TEK-K91")).length, 0, "kullanır: TEK bağlı Katman susmalı (kanonik yazım)");
-  assert.equal(katmansizTeknolojiTanilari(p(", kullanır: TAKIM-K91")).length, 0, "kullanır: TAKIM bağlı Katman susmalı");
-  // ③ GEÇİŞ YEDEĞİ: Takım/Teknoloji hedefli `bağımlı:` yazımı okunmaya devam eder → susar
-  assert.equal(katmansizTeknolojiTanilari(p(", bağımlı: [ TAKIM-K91 ]")).length, 0, "Takım bağlı Katman susmalı (geçiş yedeği)");
-  // ④ ÇİFT YAZIM: iki kenar birlikte aynı olguyu beyan eder, çelişki değildir → susar
-  assert.equal(katmansizTeknolojiTanilari(p(", kullanır: TEK-K91, bağımlı: [ TAKIM-K91 ]")).length, 0, "çift yazım susmalı — ikisi de teknoloji zemini beyan eder");
+  assert.equal(katmansizTeknolojiTanilari(p(", takım: TAKIM-K91")).length, 0, "takım: TAKIM bağlı Katman susmalı");
+  // ③ GEÇİŞ YEDEĞİ KALKTI (KPS-CEL-A01 · Founder hükmü 2026-09-19): `bağımlı:` yürütme
+  //    sırasıdır ve bir Katmanın zeminini söyleyemez; Takıma yönelse bile bağ sayılmaz.
+  assert.equal(katmansizTeknolojiTanilari(p(", bağımlı: [ TAKIM-K91 ]")).length, 1, "yürütme sırası kenarı zemin beyanı sayılmaz");
+  // ④ İKİ TİP-SAF KENAR BİRLİKTE: biri neyle yapıldığını, öteki kimin yürüttüğünü söyler → susar
+  assert.equal(katmansizTeknolojiTanilari(p(", kullanır: TEK-K91, takım: TAKIM-K91")).length, 0, "iki zemin kenarı birlikte çelişki değildir");
   // ⑤ gerekçeli teknolojiBağımsız beyanı → susar (dürüst-beyan kaçışı)
   assert.equal(katmansizTeknolojiTanilari(p(', teknolojiBağımsız: "süreç katmanı — teknoloji dilimi değil"')).length, 0, "gerekçeli beyan susturmalı");
   // ⑥ BOŞ beyan → beyan sayılmaz, uyarı sürer

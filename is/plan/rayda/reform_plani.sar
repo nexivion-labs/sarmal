@@ -47,7 +47,7 @@
 Blok( kod: BLK-REFORM, ad: "büyük reform — teftiş bulguları altı turda kapanır", uygular: ORK-7,
   ne: "Genel teftiş + karar-kural karnesi bulguları → 6 kilitli-kararlı tur: renk kanunu · motor güveni · MIM-1 · metin hizası · RAY-3 envanteri · dogfood" ) {
 
-  Katman( kod: KAT-RF-PANEL, kullanır: TAKIM-EKLENTI, ad: "birinci tur — renk kanunu",
+  Katman( kod: KAT-RF-PANEL, takım: TAKIM-EKLENTI, ad: "birinci tur — renk kanunu",
     ne: "YUZ-4.1 uygulaması: renk=durum decoration + durumTuret tekleşmesi + blokaj ! rozeti + akıllı checkbox + sessiz-kayıp karşı-tanısı" ) {
     AltKatman(
       kod: ALT-RF-PANEL-RENK-KANUNU, departman: kodlama,
@@ -70,7 +70,7 @@ Blok( kod: BLK-REFORM, ad: "büyük reform — teftiş bulguları altı turda ka
     }
   }
 
-  Katman( kod: KAT-RF-MOTOR, kullanır: TAKIM-CEKIRDEK, ad: "ikinci tur — motor güveni",
+  Katman( kod: KAT-RF-MOTOR, takım: TAKIM-CEKIRDEK, ad: "ikinci tur — motor güveni",
     ne: "Teftişin kırmızıları (öz-bağımlılık · kenar sicili · durum makinesi · muaf asimetrisi · test:vscode · test delikleri) + karne MOTOR kalemleri (Founder sıra-hükmü 2026-07-12 gece: tanı-kenarı · GenelKural vatandaşlığı · tip-doğum kapısı TUR-2 ile birlikte — RF-T6-A03/A04/A05 kodları donmuş kimlik, katman değişti)" ) {
     AltKatman(
       kod: ALT-RF-MOTOR-TEFTIS-KIRMIZILARI, departman: kodlama,
@@ -135,7 +135,7 @@ Blok( kod: BLK-REFORM, ad: "büyük reform — teftiş bulguları altı turda ka
     }
   }
 
-  Katman( kod: KAT-RF-K97, kullanır: TAKIM-CEKIRDEK, ad: "üçüncü tur — katman kuralı",
+  Katman( kod: KAT-RF-K97, takım: TAKIM-CEKIRDEK, ad: "üçüncü tur — katman kuralı",
     ne: "MIM-1 doğuşu (kademeli): çıplak-adımlı-katman bilgi bekçisi + ideali öğreten şablon/rehber/vitrin — GÖÇ YOK" ) {
     AltKatman(
       kod: ALT-RF-K97-KADEMELI-DOGUS, departman: kodlama,
