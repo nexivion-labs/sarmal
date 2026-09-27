@@ -494,6 +494,39 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         koşu: "2026-09-10 · KAPANDI. Kapsama kenarı yükleme çevriminde tek noktada kuruldu ve gerçek çatıda ölçüldü: dört bin dört yüz üç düğümde kapsama kenarı iki bin yedi yüz seksenden iki bin yedi yüz seksen üçe çıktı, üç Proje kökü de çalışma alanı düğümünün altındadır ve köksüzlük ders dünyası, laboratuvar arşivi ve omurga dışı tipler olarak üçe ayrılıp kayda yazıldı; plan kademesinde köksüz kalan sıfırdır. Tek projeli depoda graf çıktısı bayt bayt aynıdır, karne dört yüz on yedi Adımda değişmemiştir, altı mutasyon nöbeti kırmızıya çevirmiştir ve kontrolcü dört kapıyı bağımsız ölçmüştür: iki tsc sıfır, çekirdek bin üç yüz otuz beşte bin üç yüz otuz beş, eklenti yedi yüz elli beşte yedi yüz elli beş, depo denetimi sıfır hata."
       }
 
+      // ── FOUNDER HÜKMÜ · 2026-09-28 · ÇALIŞMA ALANI PROJELERİNİ GÖSTERİR ──
+      //   Founder çatı ilanını açtığında çalışma alanının kendisine bağlı
+      //   projeleri gösterebilmesini istemiş ve bu iş için açık depodaki işleme
+      //   yasağını yalnız bu Adımla sınırlı olarak kaldırmıştır; uzak depoya
+      //   gönderim yine yalnız Founder sözüyle yapılır. Ölçüm 2026-09-28
+      //   tarihinde çatı kökünden yapılmıştır: KPS-CAT-A01'in kurduğu kapsama
+      //   kenarı bugün görünmemektedir, çünkü gezin aracı çatının
+      //   ilan ettiği üç Proje kökünün hiçbiri için bir üst zincir
+      //   göstermemekte ve çalışma alanının çocukları yalnız beş Kitaplık ile
+      //   kimlik kökünden oluşmaktadır. Çatı ilanındaki proje klasörleri
+      //   2026-09-27 tarihinde Raf'tan Kitaplık'a çevrilmiştir; Raf'a geri
+      //   çevirmek bağı geri getirmemiştir, dolayısıyla gerilemenin sebebi bu
+      //   çeviri değildir ve ölçülmesi gerekir.
+      Adım( kod: KPS-CAT-A02, ad: "Çalışma Alanının Projelerini Göstermesi", durum: geliştirmede, öncelik: p0,
+        bağımlı: [ KPS-CAT-A01 ], referans: [ MIM-1.1, MIM-1.2, YUZ-3.1 ],
+        ne: "🏛️ Çalışma alanının kendisine bağlı projeleri göstermesi. KPS-CAT-A01 ile kurulmuş olan Proje ile ÇalışmaAlanı arasındaki kapsama kenarının bugün gerçek çatıda görünmemesinin sebebi ölçülür ve onarılır; ardından çalışma alanının projeleri, çalışma alanı düğümünün bağlam kartında, grafta ve eklentinin yüzlerinde çocukları olarak gösterilir. Ayrıca çatı kökünden koşulan denetimin ders dünyası fikstürlerinden ürettiği sahte hatalar giderilir, çünkü bu hatalar çatıya yeni bir proje eklenmesini kapıda durdurmaktadır." ) {
+        görev: [
+          "Gerilemeyi ölç: gerçek Nexivion Labs çatısında ve iki projeli bir sınav çatısında Proje kökünün kapsayanını ölç; KPS-CAT-A01'in nöbeti (KOD-SNM-CATI-PROJE) bugün neden yeşil kaldığını ya da neden gerilemeyi yakalamadığını bul ve kök nedeni yaz.",
+          "Kapsama kenarını çatının Kitaplık olarak ilan ettiği proje klasörleri için yeniden kur; Raf ilanı geriye dönük uyum olarak çalışmaya devam etsin. Bağın kurulamadığı hâl yine susmasın ve adıyla bildirilsin.",
+          "Çalışma alanı düğümünün bağlam kartında ve graf yüzünde projeleri çocukları olarak göster; eklentide çatı ilanı açıldığında çalışma alanının projeleri anahatta ve yol haritası panelinde görünsün. Hangi yüzün projeyi gösterebildiğini ve hangisinin gösteremediğini gerekçesiyle kayda yaz.",
+          "Çatı kökünden koşulan denetimin ders dünyası fikstürlerinden (bilerek kırık yazılmış eğitim örnekleri) hata üretmesini gider: fikstürler projenin kendi kökünden koşulan denetimde nasıl ele alınıyorsa çatı kökünde de öyle ele alınsın. Gerçek bir kırık atıf ise hata olarak kalsın.",
+          "Nöbeti mutasyonla kanıtla: kapsama çevrimi söküldüğünde nöbet kırmızıya dönsün; Kitaplık ilanıyla da Raf ilanıyla da sınansın."
+        ]
+        kabul: [
+          "Gerçek çatıda, çatı kökünden çözülen grafta çatının ilan ettiği bütün Proje köklerinin kapsayanı çalışma alanı düğümüdür ve çalışma alanının bağlam kartı onları çocukları olarak gösterir; ölçüm sayıyla yazılır.",
+          "Gerilemenin kök nedeni yazılıdır ve onu kaçıran nöbet artık yakalamaktadır; mutasyonla kanıtlanmıştır.",
+          "Çatı kökünden koşulan denetim ders dünyası fikstürlerinden hata üretmez; gerçek kırık atıflar hata olarak kalır. Bugünkü dokuz hatanın her birinin hangi sınıfa düştüğü yazılıdır.",
+          "Tek projeli bir deponun grafı ve ürün karnesi değişmez.",
+          "Çekirdek ile eklenti süitleri yeşildir; depo denetimi sıfır hata verir."
+        ]
+        sınır: "Bu Adım kanon metnine dokunmaz, doğuş paketinin kod adlarını değiştirmez ve kardeş projelerin kod tekilliğine (KPS-KOD-A01) dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+      }
+
       Adım( kod: KPS-KOD-A01, ad: "Kardeş Projelerde Kod Tekilliği", durum: tamamlandı, öncelik: p0,
         bağımlı: [ KPS-CAT-A01, KPS-ADA-A01 ], referans: [ ORK-4, MIM-1.1 ],
         onay: "onaylandı — 2026-09-10 · ŞERH 2026-09-19 · FOUNDER (şablon kopyası): Birinci kabul ölçütündeki hiçbir kodu değiştirilmeden cümlesi, Proje kodu dışında hiçbir kod değiştirilmeden biçiminde okunur; bayt bayt kopyalanan bir şablonun Proje kodunu da taşıması ve motorun aynı Proje kodunu iki kökte gördüğünde bunu adıyla bildirmesi DOĞRU davranıştır ve şema değişmez. Gerekçe şudur: kopyalamada tek dokunuş Proje kodudur ve bu dokunuş işletim sistemi hedefini bozmaz, çünkü ajanın öğrendiği Kitaplık, Raf ve Adım kodları müşteriden müşteriye aynı kalır; ad alanının kendisi çoğalırsa ayrışma zaten mümkün değildir ve motorun susmak yerine ayrıştıramadığını söylemesi dürüstlüğün gereğidir. · ŞERH 2026-09-19 · KONTROLCÜ (sıfır uyarı ölçütü · Founder hükmü değildir, Founder onayını bekler): açık deponun denetimindeki iki uyarı Eklenti Blokunun bloklu mühürlü iki Adımından gelmektedir ve bu Adımın işi değildir; beşinci kabul ölçütü, bu Adımın getirdiği uyarı yoktur biçiminde okunur.",
