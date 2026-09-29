@@ -16,6 +16,7 @@
 //     M1 sağlayıcı yeniden `kimlikIndeksi.atiflar` okur        → ① kırmızı
 //     M2 ad alanlı atıfta süzgeç varlık sınırını da uygular    → ② kırmızı
 //     M3 ad alanlı atıfta bütün süzgeç kalkar                   → ② ve ③ kırmızı
+//     M4 sahip kümesi yeniden süzgeçsiz hesaplanır              → ④ kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
@@ -63,4 +64,23 @@ test("③ öğreti örneğindeki ad alanlı yazım ürün kaynağından yapılan
   assert.equal(butunAtiflar(cati(), "ADM-HEDEF", s).some((a) => a.dosya.includes("/ogreti/")), false);
   // Süzgeçsiz sorgu (MCP `gezin`) ders dosyasını da görür; ayrım yalnız süzgeçten gelir.
   assert.equal(butunAtiflar(cati(), "ADM-HEDEF").some((a) => a.dosya.includes("/ogreti/")), true);
+});
+
+test("④ aynı kuruluş Adımını taşıyan kardeşlerde ⇧F12 yalnız kaynak projenin ad alanlı atfını döndürür", () => {
+  // Doğuş paketi her projeye aynı kuruluş Adımını verir; B iki kardeşe de ad alanıyla bağlanır.
+  const kurulus = ["ADM", "KURULUS", "01"].join("-");
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("/ws/a/a_anadizin.sar", proje("A"));
+  i.dosyaGuncelle("/ws/a/is/plan/faz/1_dogus.sar", adim(kurulus));
+  i.dosyaGuncelle("/ws/c/c_anadizin.sar", proje("C"));
+  i.dosyaGuncelle("/ws/c/is/plan/faz/1_dogus.sar", adim(kurulus));
+  i.dosyaGuncelle("/ws/b/b_anadizin.sar", proje("B"));
+  i.dosyaGuncelle("/ws/b/is/plan/plan.sar", adim("ADM-B-1", `, bağımlı: [ PRJ-A::${kurulus}, PRJ-C::${kurulus} ]`));
+  const kok = (yol: string): string | undefined => /^\/ws\/([abc])\//.exec(yol)?.[0].slice(0, -1);
+  const a = butunAtiflar(i, kurulus, gezinmeSuzgeci("/ws/a/is/plan/faz/1_dogus.sar", kok)).map((x) => x.kod);
+  assert.deepEqual(a, [`PRJ-A::${kurulus}`]);
+  const c = butunAtiflar(i, kurulus, gezinmeSuzgeci("/ws/c/is/plan/faz/1_dogus.sar", kok)).map((x) => x.kod);
+  assert.deepEqual(c, [`PRJ-C::${kurulus}`]);
+  // Süzgeçsiz sorgu (MCP `gezin`) iki sahibi de birleştirir; kartlar Proje başına ayrı basılır.
+  assert.deepEqual(butunAtiflar(i, kurulus).map((x) => x.kod).sort(), [`PRJ-A::${kurulus}`, `PRJ-C::${kurulus}`]);
 });

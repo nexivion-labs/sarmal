@@ -1208,10 +1208,18 @@ function adAlanliGorunur(dosya: string, suzgec?: DosyaSuzgeci): boolean {
  * Süzgeç ad alanlı atıflarda VARLIK SINIRINI uygulamaz: ad alanlı yazım zaten
  * "başka projeden bakıyorum" beyanıdır ve onu kendi projesiyle sınırlamak atfı
  * tam da gösterilmesi gereken yerde gizlerdi. Ders dünyası ise yine süzülür.
+ *
+ * SAHİP KÜMESİ İSE SÜZGEÇTEN GEÇER (KPS-SIR-A02 · inceleme bulgusu). Süzgeç
+ * verildiğinde sorgu bir kaynak dosyadan yapılmıştır ve kastedilen tanım o
+ * kaynağın Projesindeki tanımdır. Doğuş paketi her projeye aynı kuruluş Adımını
+ * verdiği için aynı çıplak kod birden çok kardeşte ilanlıdır; sahipler süzgeçsiz
+ * hesaplansaydı A projesinden yapılan sorgu `PRJ-C::KOD` atfını da A'nın
+ * tanımına bağlardı. Süzgeçsiz sorgu (MCP `gezin`) bütün sahipleri birleştirir
+ * ve her Projenin kartını ayrı basar.
  */
 function adAlanliGelenAtiflar(indeks: KimlikIndeksi, kod: string, suzgec?: DosyaSuzgeci): Atif[] {
   if (adAlaniAyir(kod).adAlani !== undefined) return [];
-  const tanimlar = indeks.tanimlar(kod).filter((t) => !DERS_DUNYASI.test(t.dosya));
+  const tanimlar = indeks.tanimlar(kod, suzgec).filter((t) => !DERS_DUNYASI.test(t.dosya));
   if (!tanimlar.length) return [];
   const sahipler = new Set(tanimProjeleri(indeks, tanimlar).filter((p): p is string => p !== undefined));
   return [...sahipler].flatMap((p) => indeks.atiflar(`${p}${AD_ALANI_AYRACI}${kod}`, (d) => adAlanliGorunur(d, suzgec)));
