@@ -569,7 +569,8 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Atıf indeksinde çıplak kod sorgusuna o tanıma çözülen ad alanlı atıfları ekle (kimlik, atıflar); bağlam kartı ve bütün atıfları bulma kısayolu aynı indeksi kullansın (YUZ-3.2).",
           "Ağaç çizgisi sütununu yapı derinliğinden hesapla (dallar); girintisi bozuk dosyada Katman, AltKatman ve Adım kardeş gibi çizilmesin.",
           "girinti-yapı-uyumsuz tanısını (BİLGİ) yaz: biçimlendiricinin çıktısı kaynaktan farklıysa ateşlesin.",
-          "Her değişikliği mutasyonla kanıtla."
+          "Her değişikliği mutasyonla kanıtla.",
+          "KPS-SIR-A03 incelemesinin bıraktığı iki kalıntıyı kapat: fazsız-blok hatasını üreten hiyerarşi tanılarındaki geniş sinama/vitrin muafiyetini yalnız motor fikstürüne daralt ve Blok yapısı tanılarındaki doğuş iskeleti tespitini saf iskelet sınırına getir; ikisinin kardeş projelerdeki etkisini sayıyla yaz."
         ]
         kabul: [
           "Başka bir projeden ad alanlı yazımla verilen atıf, tanımın bağlam kartında ve bütün atıfları bulma sonucunda görünür; iki projeli sınav çatısında ölçülmüştür.",
@@ -588,7 +589,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       //   Blokun mevsim alanı) kurulmasına izin verdiğini göstermiştir; doğuş şablonu da
       //   üç yolu ve planlanmamış kaçışını öğretmektedir. Sarmal'ın kendi planı bu düzene
       //   uymamaktadır.
-      Adım( kod: KPS-SIR-A03, ad: "Faz Dosyası Düzeninin Kanona İnmesi", durum: geliştirmede, öncelik: p0,
+      Adım( kod: KPS-SIR-A03, ad: "Faz Dosyası Düzeninin Kanona İnmesi", durum: tamamlandı, öncelik: p0,
         bağımlı: [ KPS-SIR-A01 ], referans: [ MIM-1.2, MIM-3 ],
         ne: "📂 Faz dosyası düzeninin kanona inmesi. Her Fazın sıra önekli kendi dosyasında yaşaması, Faz ilanının dosyanın tepesinde durması ve Blokların yalnız Faz gövdesine sarılarak Faza bağlanması kanon maddesine, doğuş şablonuna, öğretim metinlerine ve tanılara iner; mevsim alanı ile Fazın çağır listesi Blok bağı olarak emekliye ayrılır." ) {
         görev: [
@@ -605,6 +606,10 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Çekirdek ile eklenti süitleri yeşildir; açık deponun denetimi hata vermez."
         ]
         sınır: "Kardeş projelerin plan dosyalarına dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+        koşu:  Koşum( kod: KSM-KPS-SIR-A03, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+          kanıt: "işlemeler c12fa5b, 00aa737, e4ce33b, e9e3b09 (yeniden tabanlanmış uç 0789fd2) · KOD-SNM-FAZ-DOSYASI · bağımsız inceleme iki tur (GEÇTİ, düzeltmelerden sonra yeniden GEÇTİ)",
+          ne:    "MIM-1.2 Founder'ın 2026-09-29 hükmüyle genişlemiştir: Blok Faza yalnız Faz gövdesine sarılarak bağlanır, her Faz faz klasöründe sıra önekli kendi dosyasında ve dosyanın tepesinde yaşar; eski hüküm cümlesi korunmuş, kurallar aracı yeni metni döndürmektedir. Doğuş paketi planı is/plan/faz/1_dogus.sar adresinde doğurmakta, proje ve çalışma alanı türlerinde deneme doğuşlarının ilk denetimi yeni gözlemlerden bulgu vermemektedir. Dört yeni gözlem BİLGİ düzeyinde doğmuş, on iki mutasyonun her biri nöbeti kırmızıya çevirmiştir. İlk inceleme blok şablonunun emekli bağ yolunu öğrettiğini ve muafiyetin gerçek plan klasörlerini kapsadığını bulmuş, düzeltmelerden sonra ikinci inceleme GEÇTİ hükmü vermiştir. Çekirdek süiti 1477 sınamanın tamamını, eklenti süiti 837 sınamadan 831'ini geçmiş, altısı önceden olduğu gibi atlanmıştır. Açık deponun kendi planında beklenen 21 bilgi bulgusu doğmuştur ve KPS-SIR-A04 bunları kapatacaktır; kardeş projelerden yalnız laboratuvarda beş bilgi bulgusu doğmuştur." )
+        üretir: [ KOD-DENETCI, KOD-DOGUS, KOD-SABLON, KOD-SNM-FAZ-DOSYASI ]
       }
 
       Adım( kod: KPS-SIR-A04, ad: "Sarmal Planının Faz Dosyalarına Yerleşmesi", durum: beklemede, öncelik: p1,
@@ -923,6 +928,9 @@ Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogr
   ne: "🧭 Ad alanı doğrulama nöbeti — altı sınama: kardeş kökte var olan ad alanlı hedef tanı almaz, bilinen ad alanında olmayan hedef gerçekten kırıktır ve hatadır, bilinmeyen ad alanı ölçülemezdir ve muafiyeti uyarı olarak adıyla bildirilir, çağır hedefi de üç durumlu okunur, ad alanı bilgisi verilmeyen eski yüz muafiyet uyduramaz ve yüklü evrendeki Proje de bilinen ad alanıdır; üç mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-ADA-A01)" )
 // 🍎 KPS-FAZ-A02 teslimi (2026-09-19): projesiz Faz bekçisi ve panel-motor eşitliği
 // 🍎 KPS-SIR-A01 teslimi (2026-09-29): Faz sırası ve Blok yapısı tanıları
+// 🍎 KPS-SIR-A03 teslimi (2026-09-29): Faz dosyası düzeni
+Kod( kod: KOD-SNM-FAZ-DOSYASI, dosya: "urun/cekirdek/sinama/faz-dosyasi.test.ts",
+  ne: "📂 Faz dosyası düzeni nöbeti — MIM-1.2'nin dört gözlemini (çok-fazlı-dosya, faz-dışı-blok, faz-ilanı-tepede-değil, yersiz-faz-dosyası), yalnız motor fikstürüne daraltılmış muafiyeti, kırık mevsimde çift sayımın olmadığını, doğuş paketinin is/plan/faz/1_dogus.sar adresini, saf doğuş iskeleti sınırını ve tek-çocuk önerisinin Fazı atlatmadığını sınar (KPS-SIR-A03)" )
 Kod( kod: KOD-SNM-FAZ-SIRASI, dosya: "urun/cekirdek/sinama/faz-sirasi.test.ts",
   ne: "🧭 Faz sırası ve Blok yapısı nöbeti — ayrı dosyalardaki Fazların Projede zincirlenmesini, dosya önekinin doğal sayı sırasını, planlanmamış kaçışının kapandığını ve yedi tanıyı (ters Faz bağımlılığı, erken Faz işi, yabancı Faz bağı, Katmansız Blok, tek Adımlı Blok, Adımsız kapsayıcı, seçilemez Adım yürütümü) sınar; mutasyon kanıtları KPS-SIR-A01 Koşumundadır" )
 Kod( kod: KOD-SNM-EKL-FAZ-SIRASI-PANELI, dosya: "urun/eklenti/sinama/faz-sirasi-paneli.test.ts",
