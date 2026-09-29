@@ -1105,3 +1105,14 @@ Hatırlatıcı(
   dönüşTetikleyici: "Gezin aracı ya da editörün yeniden adlandırma sağlayıcısı bir sonraki kez elden geçirildiğinde; kardeş projeler arasında ilk yeniden adlandırma yapılmadan önce",
   ne:               "KPS-SIR-A02 çıplak koda yapılan atıf sorgusunun o tanıma çözülen ad alanlı atıfları bulmasını sağlamıştır, fakat iki yüz kabul kapsamı dışında kalmıştır. Birincisi, gezin aracı bir proje kökünden çağrıldığında kardeş köklerde yazılmış ad alanlı atıfları görmemektedir; ölçüm yalnız yüklü evren, yani çatı ya da çalışma alanı kökünden yapıldığında eksiksizdir ve kardeş kökleri her çağrıda taramak ek indeks maliyeti getirmektedir. İkincisi, editördeki yeniden adlandırma ad alanlı yazımları kapsamamaktadır; bir kardeş projede yazılmış atıf yeniden adlandırmadan sonra kırılır ve yalnız kırık-referans hatasıyla görünür olur. Ders tek cümledir: bir atıfın bulunabilmesi ile birlikte yeniden adlandırılabilmesi ayrı yüzlerdir ve biri kapandığında öteki kendiliğinden kapanmaz."
 )
+
+Hatırlatıcı(
+  kod:              HTR-README-DENETIM-GORUNTUSU,
+  durum:            açık,
+  hatırlat:         KPS-SIR-A04,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-29,
+  dönüşTetikleyici: "Eklentinin bir sonraki mağaza sürümü paketlenmeden önce; en geç README'ye yeni bir görsel eklenmeden önce",
+  ne:               "KPS-SIR-A04 README örneğini Faz dosyası düzenine geçirmiş ve çıktısını gerçek koşuyla yeniden almıştır, fakat denetim ekran görüntüsü eski düzeni gösterdiği için README'den geri çekilmiştir. Eklentinin editor.png görüntüsü ve mağaza sayfasındaki denetle.png aynı eski koşudan kalmadır. Görüntüler yeni örnekten gerçek ekran görüntüsüyle yeniden alınmalı ve denetim görüntüsü README'ye geri konmalıdır; README ekran görüntüsünün aynı koşunun tamamı olduğunu ancak bu yenilemeden sonra yeniden söyleyebilir."
+)

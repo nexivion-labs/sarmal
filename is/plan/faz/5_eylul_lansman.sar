@@ -4042,7 +4042,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           üretir: [ KOD-DENETCI, KOD-DOGUS, KOD-SABLON, KOD-SNM-FAZ-DOSYASI ]
         }
 
-        Adım( kod: KPS-SIR-A04, ad: "Sarmal Planının Faz Dosyalarına Yerleşmesi", durum: geliştirmede, öncelik: p1,
+        Adım( kod: KPS-SIR-A04, ad: "Sarmal Planının Faz Dosyalarına Yerleşmesi", durum: tamamlandı, öncelik: p1,
           bağımlı: [ KPS-SIR-A03 ], referans: [ MIM-1.2, DIL-1.6 ],
           ne: "🗂️ Sarmal planının Faz dosyalarına yerleşmesi. Beş Faz is/plan/faz altında sıra önekli beş dosyaya ayrılır ve bugün mevsim ya da çağır ile bağlı on sekiz Blok kendi Fazının gövdesine taşınır; Adım ve Blok kodları, Koşum ve Meyve kayıtları değişmez." ) {
           görev: [
@@ -4060,6 +4060,30 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
             "Açık deponun denetimi hata ve uyarı vermez."
           ]
           sınır: "Başlamadan önce ana ağaçta işlenmemiş durumda bekleyen iki dosyanın akıbeti Founder tarafından belirlenir; bu Adım o dosyalar üzerine yazmaz. Adım kodları ve kabul metinleri değişmez. İşlemeler yerel dalda kalır; gönderim yalnız Founder sözüyle yapılır."
+          koşu:  Koşum( kod: KSM-KPS-SIR-A04, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+            kanıt: "işlemeler c372638, 216e6c5, d7b84e7, fa8753a, 99f133e, 0156ea1, eb46e7f, d1e7014, c357cec · bağımsız inceleme GEÇTİ (kodlu 1084 düğümün ayrıştırılmış değerleri tabanla birebir aynı) · çekirdek 1491/1491, eklenti 846 sınamadan 840 geçti, 6 atlandı",
+            ne:    "Beş Faz is/plan/faz altında sıra önekli beş dosyaya ayrılmış, faz.sar silinmiş ve blok ile rayda rafları kalkmıştır; on sekiz Blok kendi Fazının gövdesine taşınmış, her dosyanın git geçmişi bir ata üzerinden izlenebilmektedir. Kodlu 1084 düğümün bütün değerleri, belge blokları ve çocuk listeleri tabanla aynıdır; koşu, onay, Meyve ve Kod sayıları birebir tutmaktadır. ŞERH (kontrolcü): kabulün 'Adım sayısı taşımadan önceki ölçümle aynıdır' cümlesi harfiyle tutmamaktadır, çünkü görevin üçüncü kalemi gereği sonraya bırakılmış iki gövde Eylül Fazına alınmış ve motorun okumadığı 15 beklemede Adım görünür olmuştur; graftaki Adım sayısı 413'ten 428'e, Blok sayısı 25'ten 27'ye çıkmış, dosyalardaki Adım ilanı 428 olarak aynı kalmış, hiçbir Adımın durumu değişmemiştir. Performans Fazının hedef tarihi kayıttaki mühür gününe, 2026-09-02'ye düzeltilmiştir. Faz dosyası düzeninin dört gözlemi ve girinti gözlemi açık depoda sıfır bulgu vermektedir; açık deponun denetimi hata ve uyarı vermez. README örneği Faz gövdesine geçmiş ve çıktısı gerçek koşuyla yeniden alınmıştır; eski düzeni gösteren denetim görüntüsü geri çekilmiş, yenilenmesi HTR-README-DENETIM-GORUNTUSU hatırlatıcısına bağlanmıştır. İnceleme biçimlendiricinin çok satırlı dizgi içeriğini değiştirdiğini bulmuştur; bu kusur KPS-SIR-A05 Adımına bağlanmıştır. Dört gözlemin düzey yükselişi laboratuvar planı düzenlendikten sonra Founder kapısına sunulacaktır." )
+          üretir: [
+            Meyve( kod: MYV-KPS-SIR-A04, tür: Karar,
+              ne: "Sarmal planının Faz dosyası düzenine yerleşmesi kararı ve dosya haritası: Temmuz, V1 omurga göçü, Ağustos, Performans ve Eylül lansman Fazları is/plan/faz altında sıra önekli beş dosyadadır (tür Karar dosya beyanından muaftır — MIM-2.2)." )
+          ]
+        }
+
+        Adım( kod: KPS-SIR-A05, ad: "Biçimlendiricinin Çok Satırlı Dizgiyi Koruması", durum: beklemede, öncelik: p0,
+          bağımlı: [ KPS-SIR-A04 ], referans: [ DIL-2.2 ],
+          ne: "🧱 Biçimlendiricinin çok satırlı dizgiyi koruması. Biçimlendiricinin satır tabanlı sözcükleyicisi çok satırlı düz dizgiyi izlemediği için dizginin iç satırlarını yeniden girintilemekte ve kapanış parantezini kaydırmaktadır; ayrıştırılmış değer sessizce değişmektedir. Bu, çok satırlı değerlerin içerik satırlarının değiştirilemeyeceğini söyleyen DIL-2.2 hükmünü doğrudan çiğner." ) {
+          görev: [
+            "Biçimlendiricinin ve girinti gözleminin sözcükleyicisini çok satırlı düz dizgiyi izleyecek biçimde onar; dizgi içeriği hiçbir girinti kuralına girmesin.",
+            "Değer koruma nöbetini yaz: açık depodaki ve sınav fikstürlerindeki bütün .sar dosyalarında biçimlendirmeden önceki ve sonraki ayrıştırılmış değerler birebir aynı olsun; bir kez biçimlendirilen dosya ikinci geçişte değişmesin.",
+            "Kusurun bugüne kadar hangi dosyalarda değer değiştirdiğini git geçmişinden ölç ve kayda yaz; değişmiş değer varsa geri getirilmesini öner.",
+            "Her onarımı mutasyonla kanıtla."
+          ]
+          kabul: [
+            "Çok satırlı düz dizgi taşıyan bir dosya biçimlendirildiğinde ayrıştırılmış değerler birebir aynıdır ve biçimlendirme ikinci geçişte sabittir; nöbet açık depodaki bütün .sar dosyalarında ölçer.",
+            "Girinti gözlemi çok satırlı dizgi içeriğinde sahte bulgu üretmez.",
+            "Çekirdek ile eklenti süitleri yeşildir; açık deponun denetimi hata vermez."
+          ]
+          sınır: "Kanon maddelerinin hüküm metnine dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
         }
 
         Adım( kod: KPS-KOD-A01, ad: "Kardeş Projelerde Kod Tekilliği", durum: tamamlandı, öncelik: p0,
