@@ -562,7 +562,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-DENETCI, KOD-YOLHARITA-CEKIRDEK, KOD-SNM-FAZ-SIRASI, KOD-SNM-EKL-FAZ-SIRASI-PANELI ]
       }
 
-      Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: beklemede, öncelik: p1,
+      Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: geliştirmede, öncelik: p1,
         bağımlı: [ KPS-SIR-A01 ], referans: [ YUZ-3.2, MIM-1.2 ],
         ne: "🔗 Ad alanlı atıfların ve girintinin doğru gösterilmesi. Çıplak koda yapılan atıf sorgusu o tanıma çözülen `PRJ::KOD` yazımlarını da bulur; ağaç çizgileri sütunu girintiden değil yapının derinliğinden hesaplar ve girintisi yapısıyla uyuşmayan dosya bilgi notuyla bildirilir." ) {
         görev: [
