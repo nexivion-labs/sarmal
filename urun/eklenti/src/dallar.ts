@@ -28,7 +28,7 @@ import * as vscode from "vscode";
 import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import { kanonikWidgetAdi } from "./yuzey-metinleri.ts";
-import { GENISLIK, dalIzgarasi } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
+import { dalIzgarasi, satirDizesi } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
 
 // Tek taban tür — glif/renk/konum her aralıkta ayrıca (renderOptions) verilir.
 const glifTuru = vscode.window.createTextEditorDecorationType({});
@@ -106,11 +106,6 @@ function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
 //   Satır başına TEK inline dize: kutu-karakterleri doğru sütunlara koy, araları
 //   NBSP; `width:"0"` ile metni İTMEDEN before olarak bas. Inline karakterler
 //   satır yüksekliğini DOĞAL doldurur → satır aralarında boşluk YOK (kopmaz).
-const V = "│";      // │ dikey
-const H = "─";      // ─ yatay (dal ucu)
-const ORTA = "├";   // ├ ara-kardeş (dikey sürer)
-const SON = "╰";    // ╰ son-kardeş köşesi (yuvarlak — Flutter ile birebir)
-const NBSP = " ";
 const CIZGI_RENGI = "rgba(206,166,102,0.9)";        // koyu tema: sıcak altın (Flutter gibi temiz)
 const CIZGI_RENGI_ACIK = "rgba(138,96,38,0.9)";     // açık tema: koyu bronz — beyaz zeminde kaybolmaz (RF-T1-A02)
 
@@ -126,29 +121,12 @@ export function dallariHesapla(doc: vscode.TextDocument): {
 
   const glifler: vscode.DecorationOptions[] = [];
   for (const [satır, sr] of g) {
-    const sütunlar = [...sr.keys()];
-    if (!sütunlar.length) continue;
-    const enSon = Math.max(...sütunlar) + GENISLIK;         // dal ucu için +GENISLIK pay
-    const chars: string[] = new Array(enSon).fill(NBSP);
-    for (const [sütun, glif] of sr) {
-      if (glif === "│") {
-        if (chars[sütun] === NBSP) chars[sütun] = V;
-        else if (chars[sütun] === SON) chars[sütun] = ORTA;   // dikey + köşe = ├
-      } else {                                                // dal (├ / └)
-        chars[sütun] = glif === "└" ? SON : ORTA;
-        for (let c = sütun + 1; c < sütun + GENISLIK; c++)     // ─ metne kadar uzat
-          if (chars[c] === NBSP) chars[c] = H;
-      }
-    }
-    // Metnin bulunduğu bölgeyi temizle (kılavuz yalnız girintide görünür).
+    // KPS-SIR-A02: dize saf çekirdekte kurulur; az girintili düğümün dalı metnin
+    // önündeki son sütuna sıkıştırılır (sınırı dallar-cekirdek.ts belgesindedir).
     const info = doc.lineAt(satır);
-    const ilkYazı = info.firstNonWhitespaceCharacterIndex;
-    const satırSonu = info.range.end.character;
-    for (let c = ilkYazı; c < Math.min(chars.length, satırSonu); c++) chars[c] = NBSP;
-    // Çapa: ilk kılavuz sütunu (kısa satırda 0). before oraya, width:0 (metni itmez).
-    const ilkKılavuz = Math.min(...sütunlar);
-    const çapa = satırSonu < ilkKılavuz ? 0 : ilkKılavuz;
-    const dize = chars.slice(çapa).join("");
+    const sonuc = satirDizesi(sr, info.firstNonWhitespaceCharacterIndex, info.range.end.character);
+    if (!sonuc) continue;
+    const { capa: çapa, dize } = sonuc;
     glifler.push({
       range: new vscode.Range(satır, çapa, satır, çapa),
       renderOptions: {

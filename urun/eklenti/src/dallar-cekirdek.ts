@@ -66,3 +66,58 @@ export function dalIzgarasi(program: Program): Izgara {
   döşe(g, program.bildirimler.map((b) => ({ satır: satırNo(b), derinlik: 0, dugum: b })));
   return g;
 }
+
+// ── Satır dizesi: ızgaradan editöre çizilen metin (KPS-SIR-A02 · inceleme bulgusu) ──
+//   Flutter tekniği: satır başına TEK inline dize; kutu karakterleri doğru
+//   sütunlara, araları NBSP. Dize metni itmeden `before` olarak basılır, bu yüzden
+//   metnin kapladığı sütunlara glif çizilemez ve o bölge temizlenir.
+//
+//   AZ GİRİNTİLİ DÜĞÜM. Yapı sütunu metnin başlangıcına çarptığında (girintisi
+//   bozuk dosyada Katman, AltKatman ve Adım gibi) dal glifi eskiden metnin altında
+//   kalıp siliniyor ve düğüm dalsız görünüyordu. Dal glifi artık metnin hemen
+//   önündeki son kullanılabilir sütuna sıkıştırılır; sıkıştırılan dal uzatma çizgisi
+//   taşımaz. BİLİNÇLİ SINIR: metin sıfırıncı sütundan başlıyorsa önünde hiç yer
+//   yoktur ve dal çizilmez; dikey │ çizgileri de metnin altında kalan sütunlarda
+//   çizilmez. Bu hâllerde bozuk girintiyi `girinti-yapı-uyumsuz` notu söyler.
+
+export const V = "│";      // │ dikey
+export const H = "─";      // ─ yatay (dal ucu)
+export const ORTA = "├";   // ├ ara-kardeş (dikey sürer)
+export const SON = "╰";    // ╰ son-kardeş köşesi (yuvarlak — Flutter ile birebir)
+export const NBSP = "\u00a0";
+
+/** Izgaranın bir satırını editöre basılacak dizeye çevirir (saf). `ilkYazi` satırın
+ *  ilk boşluk-dışı karakterinin sütunu, `satirSonu` satırın uzunluğudur. Çizilecek
+ *  glif yoksa tanımsız döner. */
+export function satirDizesi(sr: ReadonlyMap<number, string>, ilkYazi: number, satirSonu: number):
+  { capa: number; dize: string } | undefined {
+  const sutunlar = [...sr.keys()];
+  if (!sutunlar.length) return undefined;
+  const metinVar = ilkYazi < satirSonu;
+  const chars: string[] = new Array(Math.max(...sutunlar) + GENISLIK).fill(NBSP);
+  for (const [sutun, glif] of sr) {
+    if (glif === "│") {
+      if (chars[sutun] === NBSP) chars[sutun] = V;
+      else if (chars[sutun] === SON) chars[sutun] = ORTA;   // dikey + köşe = ├
+    }
+  }
+  for (const [sutun, glif] of sr) {
+    if (glif === "│") continue;
+    const dal = glif === "└" ? SON : ORTA;
+    if (metinVar && sutun >= ilkYazi) {
+      if (ilkYazi === 0) continue;                           // önünde yer yok: bilinçli sınır
+      chars[ilkYazi - 1] = dal;                              // metnin önündeki son sütuna sıkıştır
+      continue;
+    }
+    chars[sutun] = chars[sutun] === V && dal === SON ? ORTA : dal;
+    for (let c = sutun + 1; c < sutun + GENISLIK; c++)       // ─ metne kadar uzat
+      if (chars[c] === NBSP) chars[c] = H;
+  }
+  // Metnin bulunduğu bölgeyi temizle (kılavuz yalnız girintide görünür).
+  for (let c = ilkYazi; c < Math.min(chars.length, satirSonu); c++) chars[c] = NBSP;
+  const dolu = chars.findIndex((c) => c !== NBSP);
+  if (dolu < 0) return undefined;
+  // Çapa: ilk kılavuz sütunu (kısa satırda 0). before oraya basılır, metni itmez.
+  const capa = satirSonu < dolu ? 0 : dolu;
+  return { capa, dize: chars.slice(capa).join("") };
+}

@@ -14,14 +14,18 @@
 //   MUTASYON KANITI (2026-09-29 · `cp` yedeğiyle geri alındı, `cmp` ile doğrulandı):
 //     M1 bağlaç sütunu yeniden girintiden hesaplanır → ① kırmızı
 //     M2 raf haritası çiftleri ebeveynle aynı derinliğe konur → ③ kırmızı
+//     M3 çarpan dal sıkıştırılmaz, metin temizliğinde silinir → ④ kırmızı
+//     M4 dal ucu uzatma çizgisi çizilmez                     → ⑤ kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { girintiYapiFarklari } from "../../cekirdek/src/bicimle.ts";
-import { dalIzgarasi, GENISLIK, type Izgara } from "../src/dallar-cekirdek.ts";
+import { dalIzgarasi, satirDizesi, GENISLIK, ORTA, SON, NBSP, type Izgara } from "../src/dallar-cekirdek.ts";
 
 /** Izgaranın dal glifleri (├/└) satır → sütun olarak; dikey │ çizgileri ayrı ölçülmez. */
 function dallar(g: Izgara): Record<number, number[]> {
@@ -92,4 +96,40 @@ test("③ raf haritasının çiftleri Kitaplığın gövde çocuklarıyla aynı 
   ].join("\n");
   const d = dallar(dalIzgarasi(ayristir(belirtecle(kaynak))));
   assert.deepEqual(d, { 1: [0], 3: [GENISLIK], 4: [GENISLIK], 6: [GENISLIK] });
+});
+
+/** Editör yolunun ikizi: dallar.ts her satır için ilk yazı sütununu ve satır sonunu
+ *  belgeden okuyup satirDizesi'ne verir; burada aynı iki sayı kaynak metinden okunur. */
+function cizim(kaynak: string): Map<number, string> {
+  const satirlar = kaynak.split("\n");
+  const out = new Map<number, string>();
+  for (const [satir, sr] of dalIzgarasi(ayristir(belirtecle(kaynak)))) {
+    const metin = satirlar[satir] ?? "";
+    const ilk = metin.trim() === "" ? metin.length : metin.length - metin.trimStart().length;
+    const s = satirDizesi(sr, ilk, metin.length);
+    if (s) out.set(satir, NBSP.repeat(s.capa) + s.dize);
+  }
+  return out;
+}
+
+test("④ editör çizimi: az girintili Katman, AltKatman ve Adım dalsız kalmaz; dal metnin önündeki son sütuna sıkışır", () => {
+  // Editör yolu bu çekirdeği belgenin kendi iki sayısıyla çağırır; ikinci bir döngü yazılmaz.
+  const kaynak = readFileSync(fileURLToPath(new URL("../src/dallar.ts", import.meta.url)), "utf8");
+  assert.match(kaynak, /satirDizesi\(sr, info\.firstNonWhitespaceCharacterIndex, info\.range\.end\.character\)/u);
+  assert.doesNotMatch(kaynak, /chars\[c\] = NBSP/u);
+  const c = cizim(BOZUK);
+  for (const satir of [2, 3, 4, 5]) {
+    const dize = c.get(satir) ?? "";
+    const metin = BOZUK.split("\n")[satir];
+    const ilk = metin.length - metin.trimStart().length;
+    assert.ok([ORTA, SON].includes(dize[ilk - 1]), `satır ${satir + 1} dalsız kaldı: ${JSON.stringify(dize)}`);
+    assert.ok(dize.slice(ilk).split("").every((ch) => ch === NBSP), `satır ${satir + 1} metnin üstüne glif basıyor`);
+  }
+});
+
+test("⑤ editör çizimi: metin sıfırıncı sütundan başlarsa dal bilinçli olarak çizilmez; doğru girintide dal ucu uzar", () => {
+  const sifir = "Faz( kod: FAZ-S, ad: \"f\" ) {\nBlok( kod: BLK-S, ne: \"g\" ) {\n}\n}";
+  assert.equal(cizim(sifir).get(1), undefined);
+  const dogru = "Faz( kod: FAZ-D, ad: \"f\" ) {\n  Blok( kod: BLK-D, ne: \"g\" ) {\n  }\n}";
+  assert.equal(cizim(dogru).get(1), `${SON}─`);
 });
