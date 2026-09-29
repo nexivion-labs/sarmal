@@ -26,6 +26,9 @@
 //     M10 muafiyet eski geniş `(sinama|vitrin)` desenine döner   → ⑨ kırmızı
 //     M11 faz-dışı-blok kırık mevsimde de ateşler                 → ⑩ kırmızı
 //     M12 iskelet muafiyeti yeniden "kuruluş Adımı var mı"ya döner → ⑪ kırmızı
+//   KPS-SIR-A02 kalıntıları (2026-09-29 · her biri nöbeti 14/15 ile kırmızıya düşürdü):
+//     M13 hiyerarsiTanilari muafiyeti geniş `(sinama|vitrin)` desenine döner → ⑫ kırmızı
+//     M14 blokYapisiTanilari iskeleti "kuruluş Adımı var mı"ya döner         → ⑬ kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -242,4 +245,29 @@ test("⑪ kuruluş Blokuna ikinci bir Adım yazılınca iskelet muafiyeti düşe
   const iskelet = (ek: string): string => fazDosyasi("FAZ-I", `  Blok( kod: BLK-I ) {\n    Katman( kod: KAT-I ) {\n      AltKatman( kod: ALT-I ) {\n        Adım( kod: ${DOGUS_ISKELETI_ADIMI}, durum: beklemede )\n${ek}      }\n    }\n  }\n`);
   assert.equal(tekCocukTanilari(progla({ "p/is/plan/faz/1_dogus.sar": iskelet("") })).length, 0);
   assert.equal(tekCocukTanilari(progla({ "p/is/plan/faz/1_dogus.sar": iskelet("        Adım( kod: ADM-EK, durum: beklemede )\n") })).length, 1);
+});
+
+// ── ⑫ fazsız-blok muafiyeti de yalnız motorun kendi fikstürlerini kapsar (KPS-SIR-A02) ──
+
+test("⑫ bir projenin sinama/ ya da vitrin/ klasöründeki Fazsız Blok fazsız-blok hatası verir; yalnız urun/*/sinama/ muaftır", () => {
+  const programlar = progla({
+    "p/p_anadizin.sar": KOKDOSYA,
+    "p/is/plan/sinama/plan.sar": govde("BLK-S"),
+    "p/vitrin/plan.sar": govde("BLK-V"),
+    "urun/cekirdek/sinama/fikstur/plan.sar": govde("BLK-F"),
+  });
+  const fazsiz = hiyerarsiTanilari(programlar).filter((x) => x.tani.kod === "fazsız-blok").map((x) => x.dosya).sort();
+  assert.deepEqual(fazsiz, ["p/is/plan/sinama/plan.sar", "p/vitrin/plan.sar"]);
+});
+
+// ── ⑬ Blok yapısı tanıları da iskeleti saf sınırla tanır (KPS-SIR-A02) ──────
+
+test("⑬ kuruluş Adımının yanında ikinci Adım taşıyan Blok iskelet sayılmaz ve katmansız-blok konuşur", () => {
+  const blok = (ek: string): string => fazDosyasi("FAZ-I", `  Blok( kod: BLK-I ) {\n    AltKatman( kod: ALT-I ) {\n      Adım( kod: ${DOGUS_ISKELETI_ADIMI}, durum: beklemede )\n${ek}    }\n  }\n`);
+  const katmansiz = (kaynak: string): number => {
+    const p = progla({ "p/p_anadizin.sar": KOKDOSYA, "p/is/plan/faz/1_dogus.sar": kaynak });
+    return blokYapisiTanilari(p, dagKur(p)).filter((x) => x.tani.kod === "katmansız-blok").length;
+  };
+  assert.equal(katmansiz(blok("")), 0, "saf iskelet muaftır");
+  assert.equal(katmansiz(blok("      Adım( kod: ADM-EK, durum: beklemede )\n")), 1, "büyüyen kuruluş Bloku konuşur");
 });

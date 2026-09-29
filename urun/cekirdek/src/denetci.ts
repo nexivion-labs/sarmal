@@ -2374,7 +2374,10 @@ export function hiyerarsiTanilari(
     // Öğretim/scaffold/test dosyaları — yapı zorlanmaz (canlı plan değil). Ders
     // rafları YERİNE göre tanınır (KPS-IND-A01): kullanıcının kendi kökü altındaki
     // `ornek/` ya da `sablon/` kitaplığı canlı plandır ve yapısı zorlanır.
-    if (DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya)) continue;
+    // KPS-SIR-A02: muafiyet yalnız motorun kendi fikstürlerindedir (MOTOR_FIKSTURU);
+    // bir projenin kendi `sinama/` ya da `vitrin/` klasöründeki plan canlıdır ve
+    // fazsız-blok ile öteki hiyerarşi tanıları onda da konuşur.
+    if (DERS_DUNYASI.test(dosya) || MOTOR_FIKSTURU.test(dosya)) continue;
     for (const b of p.bildirimler) gez(b, false, dosya);
   }
   return out;
@@ -3506,7 +3509,7 @@ export const MOTOR_FIKSTURU = /(^|\/)urun\/[^/]+\/sinama\//;
 //     • adımsız-kapsayıcı (MIM-1.6 · BİLGİ): Faz, Blok, Katman ya da AltKatman
 //       hiçbir Adım taşımıyor. Yalnız en üstteki boş kapsayıcı bildirilir.
 //     • tek-adımlı-blok (MIM-1.3 · BİLGİ): Blok tek bir Adım taşıyor.
-//   Ders dünyası, sınama ve vitrin fikstürleri ile doğuş iskeleti muaftır.
+//   Ders dünyası, motorun kendi sınama fikstürleri ve saf doğuş iskeleti muaftır.
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** Blok yapısı tanıları (saf). Faz boşluğu grafın Adım → Faz haritasından okunur,
@@ -3538,7 +3541,9 @@ export function blokYapisiTanilari(
       if (n.tur !== "widget" || !KAPSAYICI.has(n.ad)) { for (const c of n.cocuklar) gez(c, ustBos); return; }
       const kod = alan(n, "kod") ?? n.ad;
       const icerik = adimlar(n);
-      const iskelet = icerik.some((a) => alan(a, "kod") === DOGUS_ISKELETI_ADIMI);
+      // KPS-SIR-A02: iskelet muafiyeti tek-çocuk-kapsayıcı ile aynı saf sınırı okur;
+      // kuruluş Blokuna ikinci bir Adım yazılınca yapı gözlemleri yeniden konuşur.
+      const iskelet = dogusIskeletiMi(n);
       let bosBildirildi = ustBos;
       if (n.ad === "Blok" && !iskelet) {
         const katmanVar = n.cocuklar.some((c) => c.tur === "widget" && c.ad === "Katman");
