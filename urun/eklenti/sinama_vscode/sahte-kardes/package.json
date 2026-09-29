@@ -1,0 +1,12 @@
+{
+  "name": "sahte-kardes",
+  "displayName": "Sahte Kardeş (sınama fikstürü)",
+  "description": "Bölüm yuvasının entegrasyon sınaması için iki bölüm kaydeden sahte kardeş eklenti. Paketlenmez ve yayımlanmaz.",
+  "version": "0.0.1",
+  "publisher": "sinama",
+  "private": true,
+  "engines": { "vscode": "^1.85.0" },
+  "main": "./kardes.js",
+  "activationEvents": ["onStartupFinished"],
+  "extensionDependencies": ["nexivion-labs.sarmal"]
+}
