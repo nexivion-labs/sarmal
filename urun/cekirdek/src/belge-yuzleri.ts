@@ -204,15 +204,18 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // KPS-SIR-A03 (2026-09-29 · Founder hükmü): Faz dosyası düzeninin dört gözlemi bilgi
   // düzeyinde doğdu; dağılım 48/22/20, yönlendirme 150/3/37 ve iki dilli katalog yüz
   // seksen dokuz oldu.
+  // KPS-SIR-A02 (2026-09-29): `girinti-yapı-uyumsuz` gözlemi kanon iddiası olmadan
+  // sabit kümede bilgi düzeyinde doğdu; kanon dağılımı 48/22/20 olarak kaldı,
+  // yönlendirme 150/3/38 ve iki dilli katalog yüz doksan oldu.
   if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/20" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/37" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/38" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 189) {
+      olgular.ikiDilliTani !== 190) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk

@@ -188,7 +188,9 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // geçti (canlı sabit 101→100, emekli 15→16, emeklilik borcu 38→37).
   // 2026-09-29 (KPS-SIR-A03 · Founder hükmü): Faz dosyası düzeninin dört gözlemi
   // doğdu ve yeni küme seksen altıdan doksana çıktı.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 90 || ONCEKI_TANI_KODLARI.length !== 100 ||
+  // 2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi kanon iddiası olmadan
+  // sabit kümeye girdi ve canlı sabit küme yüzden yüz bire çıktı.
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 90 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 16 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 37 ||
       emekliCanli.length !== 0 || borcCanli.length !== 37 || yuz33.length !== 1 ||
       [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {

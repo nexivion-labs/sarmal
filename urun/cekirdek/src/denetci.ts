@@ -35,6 +35,7 @@ import { kebaba, degerMetni } from "./yolcoz.ts";
 import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
+import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
 import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
@@ -2843,6 +2844,12 @@ export function uygulanmamisKararTanilari(
 //      metin dış araçlarla (grep · diff · editör araması) uyuşmaz. Ham kaynak
 //      PARAMETREYLE gelir: belirteç sonrası her şey NFC olduğundan program
 //      üstünden tespit imkânsızdır.
+//   ③ girinti-yapı-uyumsuz (KPS-SIR-A02): yapısal satırların girintisi yapının
+//      derinliğiyle uyuşmuyor. Ölçüt biçimlendiricinin kendi derinlik kuralıdır
+//      (bicimle.girintiYapiFarklari); yalnız satır başında parantez ya da köşe
+//      açık değilken yazılan satırlar sayılır, hizalama tercihleri sayılmaz.
+//      Motor yapıyı girintiden değil ayrıştırmadan okur; girinti yalnız okuru
+//      yanıltır, bu yüzden gözlem bilgi düzeyindedir ve dosya başına bir kez konuşur.
 //   Sınır (DIL-1.1): TDK sözlük denetimi DEĞİL — yalnız alan-adı sözlüğü + NFC.
 const sapkaDusur = (s: string): string => s
   .replace(/ğ/g, "g").replace(/Ğ/g, "G").replace(/ü/g, "u").replace(/Ü/g, "U")
@@ -2885,6 +2892,13 @@ export function dilTanilari(
         if (satirlar[i] !== satirlar[i].normalize("NFC")) { satir = i + 1; break; }
       }
       out.push({ dosya, tani: eskiTani("normalizasyon-uyumsuz", "bilgi", {}, { satir, sutun: 1 }) });
+    }
+    for (const [dosya, kaynak] of hamKaynaklar) {
+      const farklar = girintiYapiFarklari(kaynak);
+      if (!farklar.length) continue;
+      const ilk = farklar[0];
+      out.push({ dosya, tani: eskiTani("girinti-yapı-uyumsuz", "bilgi",
+        { sayi: farklar.length, beklenen: ilk.beklenen, bulunan: ilk.bulunan }, { satir: ilk.satir, sutun: 1 }) });
     }
   }
   return out;

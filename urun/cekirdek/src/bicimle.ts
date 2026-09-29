@@ -143,6 +143,54 @@ export function bicimle(kaynak: string, eol: string): string {
   return ikiNoktaHizala(sigdirilmis).join(eol);
 }
 
+// ── yapısal girinti farkı (KPS-SIR-A02 · girinti-yapı-uyumsuz) ─────────────────
+//    Biçimlendiricinin birinci geçişiyle AYNI durum makinesini koşar ve yalnız
+//    YAPISAL satırların girintisini karşılaştırır: satır başında hiçbir `(` ya da
+//    `[` açık değilse satırın kademesi yalnız süslü gövdelerden gelir ve
+//    biçimlendirici onu `GIRINTI × derinlik` yazar. Parantez ya da köşe içindeki
+//    devam satırları (hizalı `kabul: [` listeleri, parametre sütunları), belge
+//    blokları, çok satırlı değerler, yorumlar ve boş satırlar SAYILMAZ; oralarda
+//    biçimlendiricinin görüşü hizalama tercihidir, yapı bilgisi değildir.
+
+/** Yapısal girintisi biçim kuralından sapan bir satır (satır bir tabanlı). */
+export interface GirintiFarki { satir: number; beklenen: number; bulunan: number }
+
+/** Kaynağın yapısal satırlarında biçimlendiricinin yazacağı girinti ile kaynağın
+ *  girintisi arasındaki farklar (saf). Sekme karakteri de sapmadır: BÇ iki boşluktur. */
+export function girintiYapiFarklari(kaynak: string): GirintiFarki[] {
+  const farklar: GirintiFarki[] = [];
+  const yigin: string[] = [];   // açık süs/paren/köşe sırası
+  let blokYorum = false;
+  let ucluDizgi = false;
+  let belgeBlok = false;
+  const satirlar = kaynak.split(/\r?\n/);
+  for (let i = 0; i < satirlar.length; i++) {
+    const ham = satirlar[i];
+    if (belgeBlok) { if (ham.includes("|<--")) belgeBlok = false; continue; }
+    const belgeAc = ham.indexOf("-->|");
+    if (belgeAc !== -1 && ham.indexOf("|<--", belgeAc + 4) === -1) { belgeBlok = true; continue; }
+    const bastaUclu = ucluDizgi;
+    const bastaYorum = blokYorum;
+    const { iskelet, sonBlok, sonUclu } = iskeleCikar(ham, blokYorum, ucluDizgi);
+    ucluDizgi = sonUclu;
+    blokYorum = sonBlok;
+    const kirpik = ham.trim();
+    const yapisal = !bastaUclu && !bastaYorum && kirpik !== "" &&
+      !kirpik.startsWith("//") && !kirpik.startsWith("/*") &&
+      yigin.every((k) => k === "{");
+    if (yapisal) {
+      const beklenen = GIRINTI.length * Math.max(0, yigin.length - basKapaticiSay(iskelet));
+      const girinti = ham.slice(0, ham.length - ham.trimStart().length);
+      if (girinti !== " ".repeat(beklenen)) farklar.push({ satir: i + 1, beklenen, bulunan: girinti.length });
+    }
+    for (const c of iskelet) {
+      if (c === "(" || c === "[" || c === "{") yigin.push(c);
+      else if ((c === ")" || c === "]" || c === "}") && yigin.length) yigin.pop();
+    }
+  }
+  return farklar;
+}
+
 // ── iki-nokta hizalama (YUZ-3 · VIT-K77-A04) ──────────────────────────────────
 //    `anahtar: değer` satırları AYNI girintide ardışıksa, değerler en uzun
 //    anahtara göre tek sütunda başlar (kanon okunabilirlik standardı). Yalnız

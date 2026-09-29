@@ -275,7 +275,12 @@ export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "dayanaksız-kural",
   "mühürsüz-ebedi", "normalizasyon-uyumsuz", "planlanmamış-çelişki", "politika-dayanaksız", "rafsız-anadizin", "çift-mevsim-kaydı",
   "rbac-apex-tekil", "rbac-l5-paylaşık", "rbac-l6-kalıcı", "rbac-yönetici-üretir", "çıplak-adımlı-katman",
-  "günsüz-tarih",
+  // KPS-SIR-A02 (2026-09-29): `girinti-yapı-uyumsuz` bu kümeye doğrudan madde
+  // iddiası olmadan girer. Adımın sınırı kanon metnine dokunmayı yasaklar ve yeni
+  // kanon kümesi her kimlikten bir **Zorlama:** iddiası ister (A08 üçlü senkron);
+  // gözlem bu yüzden kanon bağı olmayan sabit kimliklerin arasında bilgi düzeyinde
+  // doğar. Bir kanon maddesine bağlanması ayrı bir Founder kararıdır.
+  "günsüz-tarih", "girinti-yapı-uyumsuz",
   "sahipsiz-belge", "silo-blok", "söz-dizim", "tarif-eksik",
   "tek-çocuk-kapsayıcı", "teknolojisiz-yüzey", "uygulanmamış-karar", "yanlış-alan",
   "yer-uyuşmazlığı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",

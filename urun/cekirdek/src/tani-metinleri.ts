@@ -1526,6 +1526,10 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     mesaj: () => "Dosya diskte NFD (ayrışık) Türkçe karakter içeriyor — motor girişte NFC'ye çevirir ama ham metin dış araçlarla (grep · diff · editör araması) uyuşmaz.",
     oneri: () => "Dosyayı NFC olarak yeniden kaydet — macOS kopyala-yapıştır ve bazı editörler NFD sızdırabilir.",
   },
+  "girinti-yapı-uyumsuz": {
+    mesaj: (p) => `Dosyanın ${a(p, "sayi")} yapısal satırının girintisi yapının derinliğiyle uyuşmuyor; ilki bu satırdır: yapı ${a(p, "beklenen")} boşluk bekliyor, satır ${a(p, "bulunan")} boşlukla yazılmış. Motor yapıyı girintiden değil ayrıştırmadan okur; bozuk girinti yalnız okuru yanlış bir hiyerarşiye götürür.`,
+    oneri: () => "Dosyayı biçimlendir (eklentide ⇧⌥F ya da MCP bicimle aracı): biçimlendirici yapısal girintiyi her kat için iki boşlukla yeniden yazar, metne ve hizalamaya dokunmaz.",
+  },
   "beceri-drift": {
     mesaj: (p) => `Beceri "${a(p, "kod")}" anlattığı hedefe bağlanamıyor: '${a(p, "hedef")}' ${b(p, "kodHedefi") ? "hiçbir düğüme çözülmüyor" : "tanı sicilinde yok"} — öğreten kart, öğrettiği kuraldan kopmuş (bayat içerik riski).`,
     oneri: () => "Hedef yeniden adlandırıldıysa beyanı güncelle; kural/tanı kaldırıldıysa beceri kartını gözden geçir (öğretisi hâlâ geçerli mi?) — kopuk beyan silinmez, düzeltilir.",
@@ -2123,6 +2127,10 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   "normalizasyon-uyumsuz": {
     mesaj: () => "The file contains decomposed NFD Turkish characters on disk — the engine converts them to NFC on input, but raw text does not match in external tools such as grep, diff and editor search.",
     oneri: () => "Save the file again as NFC; macOS copy-paste and some editors can introduce NFD.",
+  },
+  "girinti-yapı-uyumsuz": {
+    mesaj: (p) => `The indentation of ${a(p, "sayi")} structural lines in this file does not match the depth of the structure; this is the first: the structure expects ${a(p, "beklenen")} spaces, the line is written with ${a(p, "bulunan")}. The engine reads structure from parsing, not from indentation; broken indentation only leads the reader to a wrong hierarchy.`,
+    oneri: () => "Format the file (⇧⌥F in the extension or the MCP bicimle tool): the formatter rewrites structural indentation with two spaces per level and does not touch text or alignment.",
   },
   "beceri-drift": {
     mesaj: (p) => `Beceri "${a(p, "kod")}" cannot bind to the target it teaches: '${a(p, "hedef")}' ${b(p, "kodHedefi") ? "does not resolve to any node" : "is absent from the diagnostic registry"} — the teaching card has detached from its rule and may be stale.`,
