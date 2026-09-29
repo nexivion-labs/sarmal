@@ -3470,12 +3470,26 @@ export function fazSirasiTanilari(
  *  taşıdığını ölçer. */
 export const DOGUS_ISKELETI_ADIMI = ["ADM", "KURULUS", "01"].join("-");   // düz yazılırsa metin atfı nöbeti onu çözülmeyen atıf sayar: şablon ders dünyasındadır ve indekse girmez
 
-/** Düğümün altında doğuş iskeletinin kuruluş Adımı var mı (saf · KPS-SIR-A03). */
+/** Düğüm SAF doğuş iskeleti mi (saf · KPS-SIR-A03): altındaki tek Adım kuruluş
+ *  Adımıdır. Kuruluş Blokuna başka bir Adım yazıldığında iskelet olmaktan çıkar ve
+ *  yapı gözlemleri yeniden konuşur. */
 function dogusIskeletiMi(n: Dugum): boolean {
-  if (n.tur === "widget" && n.ad === "Adım"
-      && [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "kod")?.deger.metin === DOGUS_ISKELETI_ADIMI) return true;
-  return n.cocuklar.some(dogusIskeletiMi);
+  const kodlar: Array<string | undefined> = [];
+  const gez = (m: Dugum): void => {
+    if (m.tur === "widget" && m.ad === "Adım") kodlar.push([...m.parametreler, ...m.ozellikler].find((x) => x.ad === "kod")?.deger.metin);
+    for (const c of m.cocuklar) gez(c);
+  };
+  gez(n);
+  return kodlar.length === 1 && kodlar[0] === DOGUS_ISKELETI_ADIMI;
 }
+
+/** Motorun kendi sınama fikstürleri (KPS-SIR-A03 · daraltılmış muafiyet). Yalnız
+ *  ürün paketlerinin `sinama/` klasörü muaftır; bir projenin kendi `sinama/` ya da
+ *  `vitrin/` klasöründeki plan dosyası canlı plandır ve yapı gözlemleri onda konuşur.
+ *  Ölçüm (2026-09-29): açık depoda bu desene uyan tek `.sar` dosyası
+ *  `urun/cekirdek/sinama/fikstur/ornek_proje.sar` dosyasıdır; vitrin örnekleri
+ *  `ogreti/ornek/vitrinler/` altında ders dünyasındadır. */
+export const MOTOR_FIKSTURU = /(^|\/)urun\/[^/]+\/sinama\//;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MIM-1.2 · MIM-1.3 · MIM-1.6 · BLOK YAPISI (KPS-SIR-A01 · Founder hükmü 2026-09-29)
@@ -3519,7 +3533,7 @@ export function blokYapisiTanilari(
   const KAPSAYICI = new Set(["Faz", "Blok", "Katman", "AltKatman"]);
 
   for (const [dosya, p] of programlar) {
-    if (DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya) || muaflar?.has(dosya)) continue;
+    if (DERS_DUNYASI.test(dosya) || MOTOR_FIKSTURU.test(dosya) || muaflar?.has(dosya)) continue;
     const gez = (n: Dugum, ustBos: boolean): void => {
       if (n.tur !== "widget" || !KAPSAYICI.has(n.ad)) { for (const c of n.cocuklar) gez(c, ustBos); return; }
       const kod = alan(n, "kod") ?? n.ad;
@@ -3599,17 +3613,22 @@ export function fazDosyasiTanilari(
     [...n.parametreler, ...n.ozellikler].find((x) => x.ad === ad)?.deger.metin;
   const kodu = (n: Dugum): string => alan(n, "kod") ?? n.ad;
   const muaf = (dosya: string): boolean =>
-    DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya) ||
+    DERS_DUNYASI.test(dosya) || MOTOR_FIKSTURU.test(dosya) ||
     GIRIS_DOSYASI.test(dosya) || (muaflar?.has(dosya) ?? false);
   const kapsamlar = projeKapsamlari(programlar);
 
   // Fazların GERÇEK `çağır` satırları (sanal kenar mevsim çevriminden gelir ve
   // Blokun kendi `mevsim:` alanıyla ayrıca anılır; iki kez sayılmaz).
   const cagiran = new Map<string, string>();
+  // Mevsim çevriminin kurabildiği bağlar: hedef Fazı çözülemeyen (kırık) `mevsim:`
+  // bağ kurmaz ve `fazsız-blok` hatasıyla zaten konuşur; burada ikinci kez sayılmaz.
+  const sanalBagli = new Set<string>();
   const fazTara = (n: Dugum): void => {
     if (n.tur === "widget" && n.ad === "Faz") {
       for (const c of n.cocuklar) {
-        if (c.tur === "çağır" && !c.parametreler.some((x) => x.ad === "sanal") && !cagiran.has(c.ad)) cagiran.set(c.ad, kodu(n));
+        if (c.tur !== "çağır") continue;
+        if (c.parametreler.some((x) => x.ad === "sanal")) sanalBagli.add(c.ad);
+        else if (!cagiran.has(c.ad)) cagiran.set(c.ad, kodu(n));
       }
     }
     for (const c of n.cocuklar) fazTara(c);
@@ -3629,7 +3648,7 @@ export function fazDosyasiTanilari(
         const kendiProjesi = kesinProjeKapsami(dosya, kapsamlar)?.kod;
         const yabanci = hedefProje !== undefined && hedefProje !== kendiProjesi;   // yabancı-faz-bağı konuşur
         const cagiranFaz = cagiran.get(kodu(n));
-        if (mevsim && !yabanci) {
+        if (mevsim && !yabanci && (sanalBagli.has(kodu(n)) || cagiranFaz)) {
           out.push({ dosya, tani: yeniTani("faz-dışı-blok",
             { kimlik: kodu(n), bag: "mevsim", faz: mevsim }, n) });
         } else if (!mevsim && cagiranFaz) {

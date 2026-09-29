@@ -22,6 +22,10 @@
 //     M7 doğuş paketi eski `is/plan/ilk_plan.sar` adresine döner→ nöbet kırmızı
 //     M8 tek-çocuk-kapsayıcı önerisi eski "kökte yaşat" metnine döner → nöbet kırmızı
 //     M9 tek-çocuk-kapsayıcı doğuş iskeleti muafiyeti sökülür    → iki sınama kırmızı
+//   İnceleme düzeltmeleri (2026-09-29 · ikinci işleme):
+//     M10 muafiyet eski geniş `(sinama|vitrin)` desenine döner   → ⑨ kırmızı
+//     M11 faz-dışı-blok kırık mevsimde de ateşler                 → ⑩ kırmızı
+//     M12 iskelet muafiyeti yeniden "kuruluş Adımı var mı"ya döner → ⑪ kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -32,7 +36,8 @@ import { fileURLToPath } from "node:url";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import type { Program } from "../src/sozdizim.ts";
-import { fazDosyasiTanilari, mevsimNormalize, tekCocukTanilari, DOGUS_ISKELETI_ADIMI } from "../src/denetci.ts";
+import { fazDosyasiTanilari, mevsimNormalize, tekCocukTanilari, blokYapisiTanilari, hiyerarsiTanilari, DOGUS_ISKELETI_ADIMI } from "../src/denetci.ts";
+import { dagKur } from "../src/dag.ts";
 import { denetimKos } from "../src/denetim.ts";
 import { dogusYaz } from "../src/dogus.ts";
 import { YENI_TANI_INDEKS } from "../src/tani-sicili.ts";
@@ -195,4 +200,46 @@ test("⑧ MIM-1.2 Faz dosyası düzenini hüküm, gerekçe ve örnekle taşır",
   assert.match(parca("Gerekçe"), /Founder bu düzeni 2026-09-29 tarihinde/u);
   assert.match(parca("Örnek"), /Doğru: `is\/plan\/faz\/1_dogus\.sar`[^;]*; yanlış:[^\n]*mevsim: FAZ-01[^\n]*çağır BLK-01/u);
   for (const kod of DORT) assert.match(parca("Zorlama"), new RegExp("`" + kod + "` · BİLGİ", "u"));
+});
+
+// ── ⑨ muafiyet yalnız motorun kendi fikstürlerini kapsar ────────────────────
+
+test("⑨ bir projenin sinama/ ya da vitrin/ klasöründeki plan dosyası canlı plandır; yalnız urun/*/sinama/ muaftır", () => {
+  const bozuk = (ek: string): string => fazDosyasi(`FAZ-${ek}1`, govde(`BLK-${ek}1`)) + fazDosyasi(`FAZ-${ek}2`, govde(`BLK-${ek}2`));
+  const tekAdimli = (ek: string): string =>
+    fazDosyasi(`FAZ-${ek}T`, `  Blok( kod: BLK-${ek}T ) {\n    Katman( kod: KAT-${ek}T ) {\n      AltKatman( kod: ALT-${ek}T ) {\n        Adım( kod: ADM-${ek}T, durum: beklemede )\n      }\n    }\n  }\n`);
+  const programlar = progla({
+    "p/p_anadizin.sar": KOKDOSYA,
+    "p/is/plan/sinama/plan.sar": bozuk("S"),
+    "p/vitrin/plan.sar": bozuk("V"),
+    "urun/cekirdek/sinama/fikstur/plan.sar": bozuk("F"),
+    "p/is/plan/sinama/1_tek.sar": tekAdimli("S"),
+    "p/vitrin/1_tek.sar": tekAdimli("V"),
+    "urun/eklenti/sinama/1_tek.sar": tekAdimli("F"),
+  });
+  const cok = fazDosyasiTanilari(programlar).filter((x) => x.tani.kod === "çok-fazlı-dosya").map((x) => x.dosya).sort();
+  assert.deepEqual(cok, ["p/is/plan/sinama/plan.sar", "p/vitrin/plan.sar"]);
+  const tek = blokYapisiTanilari(programlar, dagKur(programlar)).filter((x) => x.tani.kod === "tek-adımlı-blok").map((x) => x.dosya).sort();
+  assert.deepEqual(tek, ["p/is/plan/sinama/1_tek.sar", "p/vitrin/1_tek.sar"]);
+});
+
+// ── ⑩ kırık mevsim faz-dışı-blok değil fazsız-blok olarak konuşur ───────────
+
+test("⑩ hedef Fazı çözülmeyen mevsim alanı faz-dışı-blok doğurmaz; fazsız-blok hatası konuşur", () => {
+  const programlar = progla({
+    "p/p_anadizin.sar": KOKDOSYA,
+    "p/is/plan/faz/1_bir.sar": fazDosyasi("FAZ-BIR", govde("BLK-GOVDE")),
+    "p/is/plan/blok/kirik.sar": govde("BLK-KIRIK", ", mevsim: FAZ-YOK"),
+    "p/is/plan/blok/saglam.sar": govde("BLK-SAGLAM", ", mevsim: FAZ-BIR"),
+  });
+  assert.deepEqual(fazDosyasiTanilari(programlar).filter((x) => x.tani.kod === "faz-dışı-blok").map((x) => x.dosya), ["p/is/plan/blok/saglam.sar"]);
+  assert.deepEqual(hiyerarsiTanilari(programlar).filter((x) => x.tani.kod === "fazsız-blok").map((x) => x.dosya), ["p/is/plan/blok/kirik.sar"]);
+});
+
+// ── ⑪ muafiyet yalnız saf doğuş iskeletindedir ──────────────────────────────
+
+test("⑪ kuruluş Blokuna ikinci bir Adım yazılınca iskelet muafiyeti düşer ve tek-çocuk gözlemi konuşur", () => {
+  const iskelet = (ek: string): string => fazDosyasi("FAZ-I", `  Blok( kod: BLK-I ) {\n    Katman( kod: KAT-I ) {\n      AltKatman( kod: ALT-I ) {\n        Adım( kod: ${DOGUS_ISKELETI_ADIMI}, durum: beklemede )\n${ek}      }\n    }\n  }\n`);
+  assert.equal(tekCocukTanilari(progla({ "p/is/plan/faz/1_dogus.sar": iskelet("") })).length, 0);
+  assert.equal(tekCocukTanilari(progla({ "p/is/plan/faz/1_dogus.sar": iskelet("        Adım( kod: ADM-EK, durum: beklemede )\n") })).length, 1);
 });
