@@ -250,6 +250,28 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "Ret kuralları değişmez; yalnız sebep görünür kılınır."
         }
+
+        // FOUNDER HÜKMÜ (2026-09-28, 2026-09-29'da yinelendi): Sarmal'ın VS Code'daki eklenti
+        //   simgesi tektir; Ray, Tren ve Makinist bu simgenin içinde yatay bir sıra hâlinde üç
+        //   bölümdür. Açık eklenti yuvayı sağlar; kardeş eklentiler kendi bölümlerini bu yuvaya
+        //   kaydeder. Açık eklenti tek başına kurulduğunda yalnız kendi bölümü görünür.
+        Adım( kod: VIT-K78-A10, ad: "Tek Sarmal Simgesi ve Bölüm Yuvası", durum: beklemede, öncelik: p1,
+          bağımlı: [], referans: [ YUZ-3.1 ],
+          ne: "🧩 Tek Sarmal simgesi ve bölüm yuvası. VS Code etkinlik çubuğunda yalnız bir Sarmal simgesi bulunur; simgeye tıklanınca en üstte yatay bir bölüm sırası açılır ve Ray bölümü açık eklentinin kendi yüzüdür. Açık eklenti, kardeş eklentilerin kendi bölümlerini yuvaya kaydedebileceği kararlı bir arayüz sunar; kaydeden eklenti yoksa bölüm sırası yalnız Ray'i gösterir." ) {
+          görev: [
+            "Etkinlik çubuğundaki Sarmal görünüm kabını tek simgeye indir; Ray'in bugünkü panellerini bu kabın içinde Ray bölümü olarak topla.",
+            "Kabın en üstüne yatay bölüm sırasını yaz: bölümler simge ve adla dizilir, seçili bölüm vurgulanır, klavyeyle gezilebilir; renkler tema değişkenlerinden gelir.",
+            "Kardeş eklentiler için bölüm kaydı arayüzünü yaz: eklentinin dışa verdiği API ile bir bölümün kimliği, adı, simgesi ve webview sağlayıcısı kaydedilir; arayüz sürümlüdür, kayıt eklenti kapanınca düşer ve kardeş eklenti yoksa hiçbir hata doğmaz.",
+            "Kaydı sahte bir kardeş eklentiyle sına: iki bölüm kaydedilir, sıra görünür, bölüm açılır, eklenti kapanınca bölüm kalkar.",
+            "Açık depoya kardeş eklentinin adı ya da iç ayrıntısı yazılmaz; arayüz genel adlarla belgelenir."
+          ]
+          kabul: [
+            "Etkinlik çubuğunda tek bir Sarmal simgesi vardır ve Ray bölümü bugünkü panellerin hepsini gerilemeden taşır; eklenti süiti yeşildir.",
+            "Sahte bir kardeş eklenti bölüm kaydettiğinde bölüm sırada görünür ve açılır; kardeş eklenti yoksa sıra yalnız Ray'i gösterir ve hata doğmaz.",
+            "Açık, koyu ve yüksek karşıtlık temalarında ve dar genişlikte ekran görüntüleri okunurdur."
+          ]
+          sınır: "Bu Adım kardeş eklentinin kendi bölümünü yazmaz; yalnız yuvayı ve kayıt arayüzünü sağlar. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+        }
       }
     }
 
