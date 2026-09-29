@@ -17,7 +17,7 @@
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
 import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
-import { adAlaniSecenekleri, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
+import { adAlaniSecenekleri, fazKarsilastir, fazTarihAnahtari, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
 
@@ -217,6 +217,29 @@ export interface PlanOgesi<K> {
   hedefTarih?: string;
   cagirlar?: string[];         // gövdedeki `çağır KOD` hedefleri
   bagliFaz?: CaprazFazBagi<K>; // Blok: başka projenin Fazına ad alanıyla bağlıysa o bağ (KPS-ADA-A01)
+}
+
+/**
+ * 🕰️ KARDEŞ SIRASI (MIM-1.2 · KPS-SIR-A01). Yol haritası bir kapsayıcının
+ * çocuklarını bu karşılaştırıcıyla dizer. İki Faz karşılaştırıldığında karar
+ * motorun kendi Faz karşılaştırıcısından gelir: tarih, eşitlikte dosya yolunun
+ * doğal sayı sırası (`1_`, `2_`, … `10_`), aynı dosyada satır. Eski panel Fazları
+ * önce topolojik rütbeyle, sonra düz sözlük sırasıyla diziyordu; Adımsız bir Faz
+ * rütbesiz kaldığı için en üste fırlıyor, `10_` öneki de `2_` önekinin önüne
+ * geçiyordu. Faz olmayan öğeler eski kuralı korur: zaman anahtarı, topolojik
+ * rütbe, dosya yolu, satır. Panel ikinci bir çeviri yazmaz (DIL-2).
+ */
+export function kardesKarsilastir<T extends { tip: string; hedefTarih?: string; satir: number }>(
+  a: T, b: T, rutbe: (o: T) => number, yol: (o: T) => string,
+): number {
+  if (a.tip === "Faz" && b.tip === "Faz") {
+    return fazKarsilastir({ hedefTarih: a.hedefTarih, satir: a.satir, dosya: yol(a) },
+      { hedefTarih: b.hedefTarih, satir: b.satir, dosya: yol(b) });
+  }
+  const za = fazTarihAnahtari(a.tip === "Faz" ? a.hedefTarih : undefined);
+  const zb = fazTarihAnahtari(b.tip === "Faz" ? b.hedefTarih : undefined);
+  if (za !== zb) return za < zb ? -1 : 1;
+  return (rutbe(a) - rutbe(b)) || yol(a).localeCompare(yol(b)) || a.satir - b.satir;
 }
 
 /**

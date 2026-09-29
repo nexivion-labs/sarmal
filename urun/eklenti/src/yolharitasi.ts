@@ -17,7 +17,7 @@ import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🛰️ iz hattı hâlâ kendi olay hattıyla ve kendi kilidiyle koşar (PRF-TA-A03 sınırı)
-import { dagKur, topolojikSira, fazTarihAnahtari, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25) · ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
+import { dagKur, topolojikSira, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25) · ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
 import { koniCikar, koniAlani } from "../../cekirdek/src/koni.ts";     // VIT-GRAF-A04: kart koniyi TEK kaynaktan çıkarır; koniAlani → rapor/yama (STR-4 · NTK-A07)
 import { kurallariCikar, dugumeDusenKurallar, kuralNe, KAPSAM_JOKER, type KuralBilgi } from "../../cekirdek/src/kuralci.ts";   // #7: Adım'a düşen kurallar (kapsam TEK KAYNAK)
@@ -39,6 +39,7 @@ import {
   varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi, cagirCevrimi,
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
+  kardesKarsilastir,   // MIM-1.2: kardeş sırası motorun Faz karşılaştırıcısından (KPS-SIR-A01)
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
@@ -516,15 +517,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // fazTarihAnahtari işlevinden gelir (DIL-2: panel kendi çevirisini yazmaz); Faz
     // olmayan öğeler ile tarihsiz Fazlar tarihli mevsimlerin ARKASINDA topolojik
     // sırayı olduğu gibi korur (aynı listede karışık tipler için de toplam sıra tutarlıdır).
-    const zamanAnahtari = (o: Oge): string => fazTarihAnahtari(o.tip === "Faz" ? o.hedefTarih : undefined);
+    // KPS-SIR-A01: iki Faz arasındaki karar motorun Faz karşılaştırıcısından gelir
+    // (tarih, eşitlikte dosya önekinin doğal sayı sırası); karşılaştırıcı saf
+    // çekirdektedir ve sınaması vscode'suz koşar.
     const topolojikSirala = (liste: Oge[]): void => {
-      liste.sort((a, b) => {
-        const za = zamanAnahtari(a), zb = zamanAnahtari(b);
-        if (za !== zb) return za < zb ? -1 : 1;
-        return (rutbe(a) - rutbe(b)) ||
-          a.dosya.fsPath.localeCompare(b.dosya.fsPath) ||
-          a.satir - b.satir;
-      });
+      liste.sort((a, b) => kardesKarsilastir(a, b, rutbe, (o) => o.dosya.fsPath));
       for (const o of liste) topolojikSirala(o.cocuklar);
     };
 
