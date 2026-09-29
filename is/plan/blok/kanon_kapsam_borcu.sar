@@ -616,7 +616,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         üretir: [ KOD-DENETCI, KOD-DOGUS, KOD-SABLON, KOD-SNM-FAZ-DOSYASI ]
       }
 
-      Adım( kod: KPS-SIR-A04, ad: "Sarmal Planının Faz Dosyalarına Yerleşmesi", durum: beklemede, öncelik: p1,
+      Adım( kod: KPS-SIR-A04, ad: "Sarmal Planının Faz Dosyalarına Yerleşmesi", durum: geliştirmede, öncelik: p1,
         bağımlı: [ KPS-SIR-A03 ], referans: [ MIM-1.2, DIL-1.6 ],
         ne: "🗂️ Sarmal planının Faz dosyalarına yerleşmesi. Beş Faz is/plan/faz altında sıra önekli beş dosyaya ayrılır ve bugün mevsim ya da çağır ile bağlı on sekiz Blok kendi Fazının gövdesine taşınır; Adım ve Blok kodları, Koşum ve Meyve kayıtları değişmez." ) {
         görev: [
