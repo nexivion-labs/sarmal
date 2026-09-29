@@ -75,15 +75,15 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   ayrışır. Kabul: denetle-temiz + eklenti sınamaları yeşil + gerçek-VSCode gözle teyit.
   |<--
 
-  Blok( kod: BLK-VITRIN, ad: "vitrin arayüzü", uygular: ORK-7,
+  Blok( kod: BLK-VITRIN, ad: "Vitrin Arayüzü", uygular: ORK-7,
     ne: "YUZ-3 vitrin yüzleri + YUZ-3.1 Founder UI hükümleri — dışa görünen yüz ve editör hissiyatı" ) {
 
     // ══ KATMAN · YUZ-3 VİTRİN: dış gözden geçirmenin vitrin kalemleri ═══════════════
-    Katman( kod: VIT-K77, takım: TAKIM-EKLENTI, ad: "vitrin yüzleri",
+    Katman( kod: VIT-K77, takım: TAKIM-EKLENTI, ad: "Vitrin Yüzleri",
       ne: "🪟 YUZ-3 vitrin kalemleri — durum rozetleri · build karnesi · etki-analizi yüzü · hizalama standardı" ) {
       // Katı rejim yerleşimi (proje-kod turu 2026-07-31): dört tamamlanmış Adım
       // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
-      AltKatman( kod: VIT-K77-AK1, departman: kodlama, ad: "vitrin kodlaması",
+      AltKatman( kod: VIT-K77-AK1, departman: kodlama, ad: "Vitrin Kodlaması",
         ne: "vitrin kalemlerinin eklenti kod işleri" ) {
 
         Adım( kod: VIT-K77-A01, durum: tamamlandı, üretir: [ KOD-YOLHARITA ], bağımlı: [],
@@ -132,11 +132,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ══ KATMAN · YUZ-3.1 UI HÜKÜMLERİ: Founder'ın üç editör hissiyat hükmü ════════════
-    Katman( kod: VIT-K78, takım: TAKIM-EKLENTI, ad: "arayüz hükümleri",
+    Katman( kod: VIT-K78, takım: TAKIM-EKLENTI, ad: "Arayüz Hükümleri",
       ne: "🖋️ YUZ-3.1 Founder hükümleri — hata lensi NABIZ · Hatırlatıcı ÜNLEM + yaşam döngüsü · Blok tamamlanma tiki gövde-tonu" ) {
       // Katı rejim yerleşimi (proje-kod turu 2026-07-31): yedi tamamlanmış Adım
       // departman taşıyan AltKatman'a alındı; iş ve kapanış kayıtları AYNEN korunur.
-      AltKatman( kod: VIT-K78-AK1, departman: kodlama, ad: "arayüz kodlaması",
+      AltKatman( kod: VIT-K78-AK1, departman: kodlama, ad: "Arayüz Kodlaması",
         ne: "Founder hissiyat hükümlerinin eklenti kod işleri" ) {
 
         Adım( kod: VIT-K78-A01, durum: tamamlandı, üretir: [ KOD-EKL-SATIRICI ],
@@ -257,10 +257,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     //    Dış mühendis gözlemi ORK-3 mimarimizi bağımsız doğruladı: "graph dosyalardan
     //    çizilmez, derleyicinin çıktısıdır". Motorda bu ZATEN böyle (dagKur→Dag);
     //    eksik olan grafın DIŞA AÇIK yüzü (JSON+MCP) ve panel müfettişi.
-    Katman( kod: VIT-GRAF, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "graf yüzü",
+    Katman( kod: VIT-GRAF, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "Graf Yüzü",
       ne: "🕸️ Kanonik graf yüzü + panel müfettişi — derleyicinin DAG çıktısı dışa açılır (JSON + MCP), Yol Haritası kenar/etki/koni-kartıyla müfettişe büyür (Founder kararı 2026-07-10 · VIT-K78-A04 evrimi)" ) {
 
-      AltKatman( kod: VIT-GRAF-K1, departman: kodlama, ad: "kanonik yüz",
+      AltKatman( kod: VIT-GRAF-K1, departman: kodlama, ad: "Kanonik Yüz",
         ne: "graf motor çıktısı olarak dışa açılır — AI ve araçlar dosya yerine grafı okur" ) {
         Adım( kod: VIT-GRAF-A01, durum: tamamlandı, bağımlı: [], üretir: KOD-GRAF-YUZ,
           ne:    "🕸️ `sarmal graf <dizin>` — Dag'ın kanonik JSON yüzü: düğümler + kenarlar + kopuk + karne özeti; --kok ile alt-graf" ) {
@@ -286,7 +286,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
         }
       }
 
-      AltKatman( kod: VIT-GRAF-K2, departman: inceleme, ad: "panel müfettişi",
+      AltKatman( kod: VIT-GRAF-K2, departman: inceleme, ad: "Panel Müfettişi",
         ne: "Yol Haritası paneli graf müfettişine büyür — kenarlar, etki, koni kartı" ) {
         Adım( kod: VIT-GRAF-A03, durum: tamamlandı, üretir: [ KOD-YOLHARITA ],
           ne:    "🧭 Yol Haritası büyütme — Adım düğümü genişleyince kenarları konuşur: ↳bağımlı (rozetli, tıkla→atla) · ↳etkiler (ileri kapanış) · ↳kabul özeti — Founder gözle teyit etti (2026-07-11 ekran: HALKA-ORK-A01 genişletildi, ↳etkiler rozetli + ↳kabul özeti geldi; kenar tıklaması ÇAPRAZ-DOSYA atladı — etkiler·EKL-F6-A01 → eklenti/plan.sar:129 hedef Adım'a)" ) {
@@ -575,10 +575,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     //    Founder 2026-07-28 hükmü: onay bekleyen iş, Hatırlatıcılar ve Gözlemler gibi
     //    bir PANELDE yaşar. Bugün bir komuttur ve arama kutusundan çağrılır; yani
     //    Founder'ın kararını bekleyen iş, Founder'ın göremediği bir yerde durmaktadır.
-    Katman( kod: VIT-POSTA, takım: TAKIM-EKLENTI, ad: "posta kutusu yüzü",
+    Katman( kod: VIT-POSTA, takım: TAKIM-EKLENTI, ad: "Onay Kutusu Yüzü",
       ne: "📬 Founder onayı bekleyen kapıların kalıcı paneli — onay kuyruğu komut olmaktan çıkıp dördüncü tanı yüzeyi olur" ) {
 
-      AltKatman( kod: VIT-POSTA-K1, ad: "panel", departman: kodlama,
+      AltKatman( kod: VIT-POSTA-K1, ad: "Panel", departman: kodlama,
         ne: "onay kuyruğunun görünür yüzü ve onu besleyen tek tarayıcı" ) {
 
         Adım( kod: VIT-POSTA-A01, durum: tamamlandı, onay: "onaylandı — 2026-07-30", bağımlı: [ VIT-GRAF-A11 ],
@@ -746,10 +746,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     //    gözden geçirilecek ve dört eksenin her biri kendi simgesini taşıyacaktır.
     //    Ölçülmüş gerekçe: makinenin bir düğümü tanıması Türkçe kelimeye değil KARARLI
     //    bir kimliğe dayanmalıdır; ancak o zaman görünen etiket dile göre değişebilir.
-    Katman( kod: VIT-KIMLIK, takım: TAKIM-EKLENTI, ad: "görsel kimlik",
+    Katman( kod: VIT-KIMLIK, takım: TAKIM-EKLENTI, ad: "Görsel Kimlik",
       ne: "🎨 Sarmal'a özgü simge ailesi — dört eksen ve meyve kendi simgelerini kazanır, beş panel bakışta ayrılır" ) {
 
-      AltKatman( kod: VIT-KIMLIK-K1, ad: "simge ailesi", departman: inceleme,
+      AltKatman( kod: VIT-KIMLIK-K1, ad: "Simge Ailesi", departman: inceleme,
         ne: "konsept üretimi, Founder seçimi ve seçilenin üretime taşınması" ) {
 
         Adım( kod: VIT-KIMLIK-A01, durum: tamamlandı,
@@ -977,14 +977,14 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   (lig tekrarı · canlı tool-round) kilidini otomatik kaybeder.
   |<--
 
-  Blok( kod: BLK-BAKIM, ad: "bakım ve olgunluk", uygular: ORK-7,
+  Blok( kod: BLK-BAKIM, ad: "Bakım ve Olgunluk", uygular: ORK-7,
     ne: "Birikmiş bakım/olgunluk kalemleri + Founder-eylemli operasyonel işler — tek ray, sıfır kör nokta" ) {
 
     // ══ KATMAN · MOTOR BAKIMI: çekirdek olgunluk kalemleri ═════════════════════════
-    Katman( kod: BKM-OLG, takım: TAKIM-CEKIRDEK, ad: "motor bakımı",
+    Katman( kod: BKM-OLG, takım: TAKIM-CEKIRDEK, ad: "Motor Bakımı",
       ne: "🔧 Motor olgunluk kalemleri — taksonomi · örtü keşfi · drift kapıları · durum formatı" ) {
 
-      AltKatman( kod: BKM-OLG-K1, departman: kodlama, ad: "taksonomi örtüsü" ) {
+      AltKatman( kod: BKM-OLG-K1, departman: kodlama, ad: "Taksonomi Örtüsü" ) {
         Adım( kod: BKM-OLG-A01, durum: tamamlandı, üretir: [ KOD-SINIFLAMA ], bağımlı: [],
           ne:    "🏷️ Taksonomi oto-üretim — sınıflama kayıt dokümanı (kayit.md) elle değil, kayit.json'dan ÜRETİLİR; şema↔doküman drifti imkânsızlaşır (açık-iş: TAKSONOMI-OTOURETIM)" ) {
           görev: "renk-uret/gomulu-kanon build deseninin doküman ikizi: oz/siniflama/kayit.json'dan kayit.md'nin taksonomi bölümlerini (aile·tip·enum tabloları) üreten SAF üretici + CLI/build kancası. Elle yazılmış açıklama blokları korunur (idempotent işaretli bölge — README oto-blok/ADM-AGAC-R1 deseni); üretilen bölge dışına dokunulmaz"
@@ -1244,10 +1244,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     // ══ KATMAN · SINAV-2 BULGULARI: "yeşil ama kör" delikleri kapanır ═══════════════
     // (Kaynak: nitelik/sinav2_eksik_defteri.sar — Founder hükmü 2026-07-11:
     //  "sınıf geçilemedi, daha çok çalışmamız gerekiyor". Sınav-3 bu katman bitmeden açılmaz.)
-    Katman( kod: BKM-SNV2, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "ikinci sınav bulguları",
+    Katman( kod: BKM-SNV2, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "İkinci Sınav Bulguları",
       ne: "🧪 Sınav-2'nin sınıfta bırakan bulguları: MIM-3 ve contract-first motor kapıları + görünüm paritesi + rehber/kanon-yüzü onarımları" ) {
 
-      AltKatman( kod: ALT-BKM-SNV2-BULGULAR, departman: inceleme, ad: "sınav-2 bulguları",
+      AltKatman( kod: ALT-BKM-SNV2-BULGULAR, departman: inceleme, ad: "Sınav 2 Bulguları",
         ne: "🍃 Sınav-2'nin yakaladığı yeşil-ama-kör delikler — motor kapıları, görünüm paritesi ve rehber onarımları" ) {
 
         Adım( kod: BKM-SNV2-A01, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [],
@@ -1288,10 +1288,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     //  "tüm kurallar ve kanunlar ÇALIŞIR olacak". BKM-SNV2 ile BİRLEŞİK koşulur:
     //  aynı kök-desen — denetim yeşilken sessiz delik. Sıra önerisi: A01/A02
     //  [kural-motoru+kapı] önce, çünkü SNV2-A01/A02 fikstürleri aynı test turunda.)
-    Katman( kod: BKM-BUG, takım: TAKIM-CEKIRDEK, ad: "bug avı bulguları",
+    Katman( kod: BKM-BUG, takım: TAKIM-CEKIRDEK, ad: "Bug Avı Bulguları",
       ne: "🐛 Kapsamlı bug-avı bulguları: kapsam-çözümü · kırık-referans genişlemesi · parametre/özellik ve skaler/liste körlükleri · muafiyet dayanıklılığı · küçük onarımlar" ) {
 
-      AltKatman( kod: BKM-BUG-K1, departman: sınama, ad: "kural motoru kapıları",
+      AltKatman( kod: BKM-BUG-K1, departman: sınama, ad: "Kural Motoru Kapıları",
         ne: "yasa↔motor aynı dili konuşsun: kapsam kelimesi, referans kapsamı, koşul dürüstlüğü" ) {
         Adım( kod: BKM-BUG-A01, durum: tamamlandı, üretir: [ KOD-KURALCI ], teşekkür: "teşekkürler 🤩", bağımlı: [],
           ne:    "🎯 kapsam-çözümü bekçisi (M1) — yasadaki 53 kuralın `kapsam: genel` beyanı motorda BOŞ KÜMEYE düşüyordu (joker yalnız `tümü` idi); çözülmeyen kapsam artık susmuyor + kanonik joker Founder kararıyla tekleşti — KAPANIŞ 2026-07-11 (YAS-2.3): joker `genel` (yasa dili kazandı, `tümü` eş anlamlı — kuralci.KAPSAM_JOKER tek kaynak); denetci.kapsamTanilari dosyalar-arası bilinmeyen-kapsam + boş-kapsam uyarıları; canlı vaka onyuz→yuzey düzeltildi (buyuk_bahce); kayit.json kanon notu güncel; 5 yeni sınama, 404/404 yeşil, iki varlıkta denetle TAM-yeşil" ) {
@@ -1436,10 +1436,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     // yerelleştirme anahtarının tamamı iki dilde karşılıklı, eklentide düzeyi yeniden
     // yazan ya da kimlikle süzen tek bir yol yok, otuz beş kullanıcı bildiriminin otuz
     // beşi katalogdan, kapsama ve yüzey ayırma işlevleri mutasyona dayanıklı.
-    Katman( kod: BKM-DNT, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "eklenti denetim turu",
+    Katman( kod: BKM-DNT, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "Eklenti Denetim Turu",
       ne: "🔍 Eklentinin dört eksende ölçülen bulguları: kanon ile ilanın ayrışması, vaat edilip görünmeyen yüzeyler, davranışı korunmayan kaynak yarısı ve kendi kanıtını yok eden nöbet" ) {
 
-      AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "kapsam kararları",
+      AltKatman( kod: BKM-DNT-K1, departman: planlama, ad: "Kapsam Kararları",
         ne: "⚖️ Motorun değil Founder'ın verebileceği kararlar: hangi tanının hangi yüzeyde görüneceği ve kaydın gerçeği nasıl söyleyeceği" ) {
 
         Adım( kod: BKM-DNT-A01, ad: "Tanının Panele Ulaşması", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YUZ-3.3, YUZ-3.1, HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE, HTR-README-ORNEK-TANILARI-PANELDE-YOK ],
@@ -1575,7 +1575,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
         }
       }
 
-      AltKatman( kod: BKM-DNT-K2, departman: kodlama, ad: "yüzey onarımları",
+      AltKatman( kod: BKM-DNT-K2, departman: kodlama, ad: "Yüzey Onarımları",
         ne: "🔧 Kanonun açıkça istediği ya da manifestin vadettiği hâlde görünmeyen dört yüzey parçası" ) {
 
         Adım( kod: BKM-DNT-A04, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ ORK-3.4, YUZ-3.3 ],
@@ -1733,7 +1733,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
         }
       }
 
-      AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "nöbet onarımları",
+      AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "Nöbet Onarımları",
         ne: "🧪 Süit dürüstlüğü ölçümünün bulguları: kendi kanıtını yok eden nöbet, davranışı korunmayan kaynak yarısı ve boş kümeye karşı korumasız iddialar" ) {
 
         Adım( kod: BKM-DNT-A08, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, YUZ-7 ],
@@ -1895,11 +1895,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     // ══ KATMAN · FOUNDER: kod-dışı operasyonel kalemler (insan eylemi/kararı) ═══════
     // Teknoloji bağı istisnası: kod-DIŞI ray (Founder eylem/karar kalemleri) — teknoloji bağı
     // bilinçli YOK; katmansız-teknoloji bilgisi burada DÜRÜST kalıntıdır.
-    Katman( kod: BKM-FND, ad: "Founder kalemleri",
+    Katman( kod: BKM-FND, ad: "Founder Kalemleri",
       teknolojiBağımsız: "Founder eylem/karar rayı — kod işi değil, teknoloji dilimi taşımaz (teknolojiBağımsız istisnası; ADM-STD-KTEK-TERFI dürüst-beyanı)",
       ne:                "🧑‍💼 Founder eylemi/kararı bekleyen kalemler — kod işi değil; rayda görünür bekler, unutulamaz" ) {
 
-      AltKatman( kod: ALT-BKM-FND-KALEMLER, departman: planlama, ad: "Founder ve destek kalemleri",
+      AltKatman( kod: ALT-BKM-FND-KALEMLER, departman: planlama, ad: "Founder ve Destek Kalemleri",
         ne: "🍃 Founder eylem/karar bekleyen kalemler ile onlara eşlik eden motor/araç destek işleri" ) {
 
         Adım( kod: BKM-FND-A01, durum: tamamlandı, bağımlı: [],
@@ -2214,14 +2214,14 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
   kendiliğinden katlar. Kabul ölçütü: her fazın kapı adımı motor-temiz kapanır.
   |<--
 
-  Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02 onarımı: ANY-EKLENTI hiç doğmadı — kırık uygular kenarı gerçek anayasaya bağlandı
+  Blok( kod: BLK-EKLENTI, ad: "Eklenti Olgunlaştırma", uygular: ORK-7 ) {   // A02 onarımı: ANY-EKLENTI hiç doğmadı — kırık uygular kenarı gerçek anayasaya bağlandı
 
     // ── FAZ 1 · ÖZ-İFADE: dil kendini kendi diliyle anlatır ────────────────────
-    Katman( kod: EKL-F1, takım: TAKIM-EKLENTI, ad: "oz-ifade",
+    Katman( kod: EKL-F1, takım: TAKIM-EKLENTI, ad: "Öz İfade",
       ne: "🪞 Bir dil kendini kendi diliyle ifade etmelidir — kural ve söz dizimi belgeleri .sar diline çevrilir" ) {
       AltKatman(
         kod: ALT-EKL-F1-CEVIRI, departman: kodlama,
-        ad:  "belge cevirisi",
+        ad:  "Belge Çevirisi",
         ne:  "🔤 Kural ve söz dizimi belgeleri .md'den .sar diline çevrilir; çift-kayıt kalmaz",
       ) {
         Adım(
@@ -2252,11 +2252,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 2 · ANLATI STANDARDI: olgu parametrede, muhakeme belgede ───────────
-    Katman( kod: EKL-F2, takım: TAKIM-EKLENTI, ad: "anlati-standardi",
+    Katman( kod: EKL-F2, takım: TAKIM-EKLENTI, ad: "Anlatı Standardı",
       ne: "🎓 Anlatı katmanı akademik şemaya bağlanır: Amaç · Kapsam (1 giriş + ≥3 gelişme + 1 sonuç) · Sonuç" ) {
       AltKatman(
         kod: ALT-EKL-F2-SEMA, departman: kodlama,
-        ad:  "anlati semasi",
+        ad:  "Anlatı Şeması",
         ne:  "🎓 Belge bloğu Amaç·Kapsam·Sonuç şemasına bağlanır; motor bölüm eksikliğini denetler",
       ) {
         Adım( kod: EKL-F2-A01, üretir: [ KOD-YASA-GK ], durum: tamamlandı, kabul: "F2 kapısı motor-temiz kapandı: plan.sar + 5 örnek Blok yeni anlatı şemasından geçti (anlatı-ayrımı kuralı anayasada — bugünkü DIL-2)", ne: """
@@ -2283,11 +2283,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 3 · RENK KANONU: renk niyetin görsel türevidir ─────────────────────
-    Katman( kod: EKL-F3, takım: TAKIM-EKLENTI, ad: "renk-kanonu",
+    Katman( kod: EKL-F3, takım: TAKIM-EKLENTI, ad: "Renk Kanonu",
       ne: "🎨 52 renklik sistem tek kaynağa (SNF-0 renkKanonu) taşınır; editör Dart canlılığına ulaşır" ) {
       AltKatman(
         kod: ALT-EKL-F3-RENK, departman: kodlama,
-        ad:  "renk kanonu",
+        ad:  "Renk Kanonu Uygulaması",
         ne:  "🎨 Renk sistemi SNF-0 tek kaynağına taşınır; editör yüzeyi kanondan derlenir",
       ) {
         Adım( kod: EKL-F3-A01, durum: tamamlandı, üretir: [ KOD-SNF-KANON ], kabul: "F3 kanıtı: renkler SNF-0 kanonundan derlenir, palette_drift tanısı canlı (0.4.x ekranda doğrulandı)",
@@ -2304,11 +2304,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 4 · BİÇİMLENDİRME: tüm biçimlendirmeler yeniden gözden geçirilir ───
-    Katman( kod: EKL-F4, takım: TAKIM-EKLENTI, ad: "bicimlendirme",
+    Katman( kod: EKL-F4, takım: TAKIM-EKLENTI, ad: "Biçimlendirme",
       ne: "✨ Biçimlendirici insan yükünü sıfırlar: uzun niyet katlanır, emoji korunur, hizalama nizamidir" ) {
       AltKatman(
         kod: ALT-EKL-F4-BICIM, departman: kodlama,
-        ad:  "bicimlendirme gozden gecirme",
+        ad:  "Biçimlendirmenin Gözden Geçirilmesi",
         ne:  "✨ Biçimlendirici uzun niyeti katlar, emojiyi korur, hizalamayı nizamileştirir",
       ) {
         Adım(
@@ -2350,11 +2350,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 5 · ZEKÂ: editör dili öğretir ──────────────────────────────────────
-    Katman( kod: EKL-F5, takım: TAKIM-EKLENTI, ad: "zeka",
+    Katman( kod: EKL-F5, takım: TAKIM-EKLENTI, ad: "Zekâ",
       ne: "🧠 Tamamlama ve hover, etmen şemasını öğrenir; sarı terfi tek tıkla çözülür" ) {
       AltKatman(
         kod: ALT-EKL-F5-ZEKA, departman: kodlama,
-        ad:  "editor zekasi",
+        ad:  "Editör Zekâsı",
         ne:  "🧠 Tamamlama ve hover etmen şemasını öğrenir; sarı terfi tek tıkla çözülür",
       ) {
         Adım(
@@ -2382,12 +2382,12 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 6 · YAYIN: dünyaya çıkış ───────────────────────────────────────────
-    Katman( kod: EKL-F6, takım: TAKIM-EKLENTI, ad: "yayin",
+    Katman( kod: EKL-F6, takım: TAKIM-EKLENTI, ad: "Yayın",
       ne: "🌍 Sarmal dili dünyada tanınır: marketplace + GitHub dil kimliği — ⏸️ BEKLEMEDE (Founder 2026-07-06: yayın için erken; netleşmesi gereken konular önce çözülür)" ) {
       // Yayın ön-koşulu: ŞEF disiplini dogfood-vitrininden SONRA — öncül halka turu kapandı ve arşivdedir; kalan kapı çok-dillilik adımlarıdır
       AltKatman(
         kod: ALT-EKL-F6-YAYIN, departman: planlama,
-        ad:  "dunyaya cikis",
+        ad:  "Dünyaya Çıkış",
         ne:  "🌍 Marketplace yayını ve GitHub dil kimliği başvurusu — bilinçli beklemede",
       ) {
         Adım(
@@ -2443,7 +2443,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
 
       AltKatman(
         kod: ALT-EKL-F6-ILK-IZLENIM, departman: kodlama,
-        ad:  "ilk izlenim",
+        ad:  "İlk İzlenim",
         ne:  "👁️ Aracı ilk kez kuran kişinin gördüğü yüz: renk ve biçim varsayılanları eklentinin kendi içinde yaşar, kanon ilandan bulunur ve önizleme yüzü kanon paletiyle yeniden kurulur",
       ) {
         Adım( kod: EKL-F6-A04, durum: tamamlandı, öncelik: p1, bağımlı: [],
@@ -2608,11 +2608,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 7 · YOL HARİTASI: tren-ray paneli — plan yaşayan yapılacaklar listesi ─
-    Katman( kod: EKL-F7, takım: TAKIM-EKLENTI, ad: "yol-haritasi",
+    Katman( kod: EKL-F7, takım: TAKIM-EKLENTI, ad: "Yol Haritası",
       ne: "🚂 Plan ağacı, Problems'ı kirletmeden kendi panelinde yaşar: kutucuklu, çift yönlü, ilerleme sayaçlı" ) {
       AltKatman(
         kod: ALT-EKL-F7-PANEL, departman: kodlama,
-        ad:  "yol haritasi paneli",
+        ad:  "Yol Haritası Paneli",
         ne:  "🚂 Tren-ray paneli: kutucuklu, çift yönlü, ilerleme sayaçlı plan ağacı",
       ) {
         Adım( kod: EKL-F7-A09, durum: tamamlandı, öncelik: p1, bağımlı: [],
@@ -2671,11 +2671,11 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── FAZ 8 · FORMAT KANONLARI: her şey fonksiyon gibi (Founder 2026-07-06 mola-öncesi) ─
-    Katman( kod: EKL-F8, takım: TAKIM-EKLENTI, ad: "format-kanonlari",
+    Katman( kod: EKL-F8, takım: TAKIM-EKLENTI, ad: "Format Kanonları",
       ne: "🧬 Durum·hafıza·kimlik·yönetmelik tek kalıba oturur — imza(şema) + gövde(anlatı) + çağrı(kod), tıpkı bir fonksiyon gibi" ) {
       AltKatman(
         kod: ALT-EKL-F8-KANON, departman: kodlama,
-        ad:  "format kanonlari",
+        ad:  "Format Kanonlarının Uygulaması",
         ne:  "🧬 Durum·hafıza·kimlik·yönetmelik tek kalıba oturur — imza + gövde + çağrı",
       ) {
         Adım( kod: EKL-F8-A01, durum: tamamlandı, üretir: [ KOD-SNF-KANON ], kabul: "F8 kanıtı: format kanonları 92/92 tip-şemalı testle yeşil (durum kaydı oturum 23)", ne: """
@@ -2719,12 +2719,12 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     Katman(
       kod:      EKL-F9,
       takım: TAKIM-EKLENTI,
-      ad:       "olgunlasma",
+      ad:       "Olgunlaşma",
       ne:       "🔧 Kadro denetiminin (3 uzman) bulguları giderilir: şema tek-kaynak, paylaşımlı önbellek, hijyen — sistem kendi felsefesini kendine uygular (anlatı-ayrımı dogfood)",
     ) {
 
       // Katman 1 — şema tek-kaynak (en yüksek değer: 4 bulguyu birden çözer)
-      AltKatman( kod: EKL-F9-K1, departman: kodlama, ad: "sema-tek-kaynak" ) {
+      AltKatman( kod: EKL-F9-K1, departman: kodlama, ad: "Şemanın Tek Kaynağı" ) {
         Adım( kod: EKL-F9-A01,
           durum: tamamlandı, üretir: [ KOD-SNF-KANON ],
           kabul: "F9 kanıtı: kayit.json tek şema evi, motor+eklenti aynı kanondan okur, nöbetçi testler birebirliği korur (0 drift)",
@@ -2791,7 +2791,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
       // Katman 2 — paylaşımlı önbellek (RAY-3 öncesi doğru zemin)
 
       // Katman 3 — hijyen (hızlı, mekanik)
-      AltKatman( kod: EKL-F9-K3, departman: sınama, ad: "hijyen" ) {
+      AltKatman( kod: EKL-F9-K3, departman: sınama, ad: "Hijyen" ) {
         Adım(
           kod:    EKL-F9-A08,
           durum:  tamamlandı,
@@ -2838,10 +2838,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     // ── FAZ 10 · GERIBILDIRIM & CANLILIK: editor nefes alir, kadro geribildirim ogrenir ─
     // (Founder sozlu istekleriyle 2026-07-06 kuruldu; context dolmadan plana islendi
     //  ki kayit kaybolmasin. Hepsi CANLI — bu faz "nerede kaldik"in eklenti yuzudur.)
-    Katman( kod: EKL-F10, takım: TAKIM-EKLENTI, ad: "geribildirim-canlilik",
+    Katman( kod: EKL-F10, takım: TAKIM-EKLENTI, ad: "Geri Bildirim ve Canlılık",
       ne: "❤️ Editor canlidir ve kadroya geribildirim tasir: Kuzey Yildizi + dort kanal + ogrenme hasadi" ) {
 
-      AltKatman( kod: EKL-F10-K1, departman: kodlama, ad: "geribildirim-kanallari" ) {
+      AltKatman( kod: EKL-F10-K1, departman: kodlama, ad: "Geri Bildirim Kanalları" ) {
         Adım(
           kod:    EKL-F10-A01,
           durum:  tamamlandı,
@@ -2926,7 +2926,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
       }
 
 
-      AltKatman( kod: EKL-F10-K3, departman: sınama, ad: "kararlilik" ) {
+      AltKatman( kod: EKL-F10-K3, departman: sınama, ad: "Kararlılık" ) {
         Adım( kod: EKL-F10-A10, üretir: [ KOD-EKL-GITIGNORE ],
           durum: tamamlandı,
           kabul: "F10 kanıtı: eski vsix'ler temizlendi, *.vsix gitignore'da — diskte yalnız güncel paket",
@@ -2947,12 +2947,12 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     // (Kaynak: nitelik/ide_asinalik.md — BKM-ARC-A02 envanteri, 22 kalem.
     //  Founder seçimi 2026-07-11: adaylar ①②③④ raya indi; ⑤ inlay-resmîleştirme
     //  bilinçli dışarıda — dallar/yıldız dekorasyonları işi görüyor, düşük öncelik.)
-    Katman( kod: EKL-F11, takım: TAKIM-EKLENTI, ad: "ide-asinalik",
+    Katman( kod: EKL-F11, takım: TAKIM-EKLENTI, ad: "IDE Aşinalığı",
       ne: "🧭 IDE-aşinalık boşlukları kapanır: kimlik-gezinme ailesi (tanıma-git · referans-bul · F2 · Ctrl+T) + imza-yardımı + tıklanır yollar + kaydette-biçimle — envanterin tek sistematik boşluğu 'koddan koda zıplama' kas hafızasıydı, bu Faz onu kapatır" ) {
 
       AltKatman(
         kod: ALT-EKL-F11-GEZINME, departman: kodlama,
-        ad:  "kod gezinme ailesi",
+        ad:  "Kod Gezinme Ailesi",
         ne:  "🧭 Kimlik indeksi üstünde tanıma-git · referans-bul · F2 · Ctrl+T · imza-yardımı · tıklanır yollar kurulur",
       ) {
         Adım( kod: EKL-F11-A01, durum: tamamlandı, bağımlı: [], üretir: KOD-KIMLIK,
@@ -3076,16 +3076,16 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
 
   Blok(
     kod: BLK-SINAV3,
-    ad:  "üçüncü sınav",
+    ad:  "Üçüncü Sınav",
     ne:  "🧪 Üçüncü gerçek-dünya sınavı: yabancı ajan sıfırdan proje planlar; ajan kullanım merceğiyle ölçülür",
   ) {
 
-    Katman( kod: SNV3-HAZIRLIK, kullanır: TEK-SARMAL, ad: "düzenek",
+    Katman( kod: SNV3-HAZIRLIK, kullanır: TEK-SARMAL, ad: "Düzenek",
       ne: "Sınav düzeneği: hedef dosyası + temiz çalışma alanı; hedef ajan koşusundan ÖNCE commit'le mühürlenir (dürüstlük)" ) {
 
       AltKatman(
         kod: ALT-SNV3-HAZIRLIK-AKIS, departman: planlama,
-        ad:  "sınav akışı",
+        ad:  "Sınav Akışı",
         ne:  "🍃 Hedef yazımından yabancı ajan koşusuna ve Founder hükmüne kadar sınav-3'ün uçtan uca akışını taşır",
       ) {
         Adım( kod: SNV3-A01, durum: tamamlandı, bağımlı: [],
@@ -3115,12 +3115,12 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     }
 
     // ── SINAV-4 · TEKRAR (SNV3 KALDI → 5 eksik kapanır) ─────────────────────────
-    Katman( kod: SNV4-TEKRAR, kullanır: TEK-SARMAL, ad: "dördüncü sınav — tekrar",
+    Katman( kod: SNV4-TEKRAR, kullanır: TEK-SARMAL, ad: "Dördüncü Sınav — Tekrar",
       ne: "Sınav-3 KALDI hükmünün 5 eksiğini kapatan tekrar turu: steril + güncel-araç + 18/18 + Founder bizzat inceler" ) {
 
       AltKatman(
         kod: ALT-SNV4-TEKRAR-KOSU, departman: sınama,
-        ad:  "tekrar koşusu",
+        ad:  "Tekrar Koşusu",
         ne:  "🍃 Sınav-4 tekrar turunun tam-steril ve güncel-araçlı koşusunu taşır",
       ) {
         Adım( kod: SNV4-A01, öncelik: p2,
@@ -3183,13 +3183,13 @@ bugün uzmansız kalan dört alanda genişler; katkı sözleşmesi Founder ile
 mutabık kalınarak yeni depo yerleşimiyle hizalanır.
   |<--
 
-  Blok( kod: BLK-OSS-YONETISIM, uygular: ANY-KONTROLCU,
+  Blok( kod: BLK-OSS-YONETISIM, ad: "Açık Kaynak Yönetişimi", uygular: ANY-KONTROLCU,
     ne: "🏛️ Açık kaynak yönetişimi — oturum ritüeli, denetçi kapsamı, mekanik rol seçimi, kadro genişlemesi ve katkı sözleşmesi" ) {
 
-    Katman( kod: KAT-OSS-YONETISIM, kullanır: TEK-SARMAL, ad: "acik-kaynak-yonetisimi",
+    Katman( kod: KAT-OSS-YONETISIM, kullanır: TEK-SARMAL, ad: "Açık Kaynak Yönetişimi",
       ne: "🧭 Yönetişim hükümlerinin kayda inmesi: kanon maddeleri, mekanizma tasarımı, kadro ilanı ve katkı sözleşmesi" ) {
 
-      AltKatman( kod: ALT-OSS-PLANLAMA, departman: planlama, ad: "planlama departmanının yönetişim kalemleri",
+      AltKatman( kod: ALT-OSS-PLANLAMA, departman: planlama, ad: "Planlama Departmanının Yönetişim Kalemleri",
         ne: "📋 Açık kaynak yönetişiminin planlama departmanına düşen kalemlerinin toplanması: oturum ritüelinin kanona inmesi, denetçi kapsamının altı sabit maddeye bağlanması, açık taraf kadrosunun yeni uzmanlarla genişlemesi, katkı sözleşmesinin Founder ile belirlenmesi ve 2026-09-25 tarihinden bu yana ŞEF mekanizmasının deneme sürüşü ile postmortem disiplinlerinin yazılması" ) {
 
         Adım( kod: OSS-A01, durum: tamamlandı, onay: "onaylandı — 2026-08-29", öncelik: p1, bağımlı: [],
@@ -3288,7 +3288,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: ALT-OSS-KODLAMA, departman: kodlama, ad: "kodlama departmanının yönetişim kalemi",
+      AltKatman( kod: ALT-OSS-KODLAMA, departman: kodlama, ad: "Kodlama Departmanının Yönetişim Kalemi",
         ne: "⚙️ Açık kaynak yönetişiminin kodlama departmanına düşen tek kaleminin toplanması: rol seçiminin kontrolcü hafızasından değil grafın kendisinden mekanik olarak türemesi" ) {
 
         Adım( kod: OSS-A03, durum: beklemede, öncelik: p2, bağımlı: [],
@@ -3474,14 +3474,14 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
   kapısı ölçümü gerçek üretim yolundan çağrılır hâle gelmiştir.
   |<--
 
-  Blok( kod: BLK-KPS, ad: "kanon kapsam borcu",
+  Blok( kod: BLK-KPS, ad: "Kanon Kapsam Borcu",
     ne: "🧭 Oturum doksan üçte bulunan kanon kapsam borcunun dört cephesi — kapsam sicili, tanı kademesi hizalaması, mimariBağı kenar kanunu ve terfi kapısı ölçümü — tek rayda plan Adımına iner" ) {
 
     // ══ KATMAN · KANON KAPSAM BORCU: kanonun tanı sözleşmesinin motordaki karşılığı ══
-    Katman( kod: KPS-KAPSAM, takım: TAKIM-CEKIRDEK, ad: "kanon kapsam borcu",
+    Katman( kod: KPS-KAPSAM, takım: TAKIM-CEKIRDEK, ad: "Kanon Kapsam Borcu",
       ne: "⚖️ Kanonun tanı sözleşmesi ailesinin, yani YAS-3 ve YAS-4 hükümlerinin, motorda gerçekten karşılığı olup olmadığını dört cepheden ölçülebilir hâle getirir" ) {
 
-      AltKatman( kod: KPS-KAPSAM-K1, departman: inceleme, ad: "kapsam sicili",
+      AltKatman( kod: KPS-KAPSAM-K1, departman: inceleme, ad: "Kapsam Sicili",
         ne: "🔍 Kanonun doksan bir zorlama iddialı maddesinin tanı kapsamının madde madde .sar gövdesine dökülmesi" ) {
 
         Adım( kod: KPS-SIC-A01, durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ YAS-3, YAS-3.4 ],
@@ -3499,7 +3499,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: KPS-KAPSAM-K2, departman: kodlama, ad: "tanı kademesi hizalaması",
+      AltKatman( kod: KPS-KAPSAM-K2, departman: kodlama, ad: "Tanı Kademesi Hizalaması",
         ne: "🔢 Sekiz tanının kanonun öngördüğü düzeyin altında üretilmesinin, bunlardan üçünün kanonun HATA dediği yerde yalnız BİLGİ basmasının kanonla hizalanması" ) {
 
         Adım( kod: KPS-KAD-A01, durum: tamamlandı, öncelik: p2, bağımlı: [ KPS-SIC-A01 ], referans: [ YAS-3.1, YAS-4, YAS-4.2 ],
@@ -4238,7 +4238,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "terfi kapısı ölçümü",
+      AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "Terfi Kapısı Ölçümü",
         ne: "🚪 Terfi kapısı ölçümünün yalnız bir sınamadan çağrılmasının ve hiçbir üreticinin onu çağırmamasının gerçek üretim yoluna bağlanması" ) {
 
         // ── 2026-09-10 · TERFİ KAPISININ ÜRETİM YOLUNA BAĞLANMASI (üretici ölçümü) ──
@@ -4508,14 +4508,14 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
   bu yüz elle değil kanondan üretilir, çünkü elle yazılan ikiz zaten yasaktır.
   |<--
 
-  Blok( kod: BLK-KYN, ad: "kaynak disiplini",
+  Blok( kod: BLK-KYN, ad: "Kaynak Disiplini",
     ne: "🧭 Kaynak tekliği, motor körlükleri ve öğretilebilirlik — 2026-08-07 envanter turunun altı cephesi tek rayda" ) {
 
     // ══ KATMAN · KAYNAK TEKLİĞİ: markdown'da yaşayan kaynak metinler ═══════════
-    Katman( kod: KYN-KAYNAK, takım: TAKIM-CEKIRDEK, ad: "kaynak tekliği",
+    Katman( kod: KYN-KAYNAK, takım: TAKIM-CEKIRDEK, ad: "Kaynak Tekliği",
       ne: "📜 YUZ-1.2 gereği kural, karar ve plan içeriği yalnız .sar'da yaşar; plan rafındaki markdown kaynaklar asıl gövdesine taşınır" ) {
 
-      AltKatman( kod: KYN-KAYNAK-K1, departman: kodlama, ad: "plan rafı dönüşümü",
+      AltKatman( kod: KYN-KAYNAK-K1, departman: kodlama, ad: "Plan Rafı Dönüşümü",
         ne: "Açık araç plan rafında kaynak hükmünde üç markdown dosyası ölçüldü; üçü de .sar gövdesine iner" ) {
 
         Adım( kod: KYN-KYN-A01, durum: tamamlandı, üretir: [ KOD-RAY3-GOVDE ], bağımlı: [], referans: [ YUZ-1.2, DIL-1 ],
@@ -4560,7 +4560,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: KYN-KAYNAK-K2, departman: inceleme, ad: "ikinci dalga sınıflandırması",
+      AltKatman( kod: KYN-KAYNAK-K2, departman: inceleme, ad: "İkinci Dalga Sınıflandırması",
         ne: "Plan rafı dışında kalan markdown gövdesinin hangi kısmının kaynak hükmünde olduğu Founder ile birlikte kararlaştırılır" ) {
 
         Adım( kod: KYN-KYN-A04, durum: beklemede, öncelik: p1, onay: "onaylandı — 2026-08-08", bağımlı: [ KYN-KYN-A01, KYN-KYN-A02, KYN-KYN-A03 ],
@@ -4622,7 +4622,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
       }
 
 
-      AltKatman( kod: KYN-KAYNAK-K3, departman: planlama, ad: "üslup hükmü",
+      AltKatman( kod: KYN-KAYNAK-K3, departman: planlama, ad: "Üslup Hükmü",
         ne: "Yazım disiplini bugün yalnız yönerge dosyalarında yaşıyor; normatif metin ise kanonda yaşamak zorundadır" ) {
 
         Adım( kod: KYN-USL-A01, durum: tamamlandı, üretir: [ KOD-KANON-DIL ], bağımlı: [], referans: [ OGR-2.1, DIL-1 ],
@@ -4642,10 +4642,10 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
     }
 
     // ══ KATMAN · MOTOR KÖRLÜKLERİ: motorun göremediği iki yer ═══════════════════
-    Katman( kod: KYN-MOTOR, takım: TAKIM-CEKIRDEK, ad: "motor körlükleri",
+    Katman( kod: KYN-MOTOR, takım: TAKIM-CEKIRDEK, ad: "Motor Körlükleri",
       ne: "🔦 Motor bugün iki yeri göremiyor: ilansız doğan dosyayı ve ayrışan yönerge ikizini. Göremediğini yakalamak motorun asıl işidir" ) {
 
-      AltKatman( kod: KYN-MOTOR-K1, departman: kodlama, ad: "ilan kapısı",
+      AltKatman( kod: KYN-MOTOR-K1, departman: kodlama, ad: "İlan Kapısı",
         ne: "Yapı-Önce hükmü klasör düzeyinde zorlanıyor fakat dosya düzeyinde zorlanmıyor; bu boşluk deneyle kanıtlandı" ) {
 
         Adım( kod: KYN-MTR-A01, durum: tamamlandı, üretir: [ KOD-DENETCI ], bağımlı: [], referans: [ MIM-3, YAS-3.4 ],
@@ -4702,7 +4702,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: KYN-MOTOR-K2, departman: inceleme, ad: "bağlanma haritası",
+      AltKatman( kod: KYN-MOTOR-K2, departman: inceleme, ad: "Bağlanma Haritası",
         ne: "Rafların birbirine gerçekten bağlı olup olmadığı doğru araçla ölçülür ve harita çıkarılır" ) {
 
         Adım( kod: KYN-MTR-A03, durum: tamamlandı, öncelik: p1, bağımlı: [ KYN-MTR-A01 ], üretir: [ KOD-RAF-HARITASI ], referans: [ STR-3, YAS-3.4 ],
@@ -4722,13 +4722,13 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
     }
 
     // ══ KATMAN · PANEL YÜZEYİ: kanonun söylediği ama panelin göstermediği tip ═══
-    Katman( kod: KYN-YUZEY, takım: TAKIM-EKLENTI, ad: "panel yüzeyi",
+    Katman( kod: KYN-YUZEY, takım: TAKIM-EKLENTI, ad: "Panel Yüzeyi",
       ne: "🪟 Fikir tipi kanonda Hatırlatıcı'nın kardeşi diye tanımlı fakat hiçbir panelde görünmüyor; yazılan fikir kaybolmuş gibi duruyor" ) {
 
       // MIM-1.7 gereği bir Katmanın kodlama kademesi TEKTİR; bu kademe panelin
       // bütün hanelerini kapsar ve adı 2026-08-28 tarihinde o gerçeğe çekildi
       // (önceki adı "fikir yüzeyi" idi ve yalnız ilk Adımın konusunu anıyordu).
-      AltKatman( kod: KYN-YUZEY-K1, departman: kodlama, ad: "panel haneleri" ) {
+      AltKatman( kod: KYN-YUZEY-K1, departman: kodlama, ad: "Panel Haneleri" ) {
 
         // Hayalet kapı onarımı (2026-08-21): Adım 2026-08-18 Founder hükmüyle kapanmıştı,
         // buna karşılık onayBekler alanı üzerinde unutulduğu için Onaylar kuyruğunda
@@ -4804,10 +4804,10 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
     }
 
     // ══ KATMAN · ÖĞRETİM YÜZÜ: on dört ailenin anlatılabilirliği ════════════════
-    Katman( kod: KYN-OGRETIM, takım: TAKIM-CEKIRDEK, ad: "öğretim yüzü",
+    Katman( kod: KYN-OGRETIM, takım: TAKIM-CEKIRDEK, ad: "Öğretim Yüzü",
       ne: "🎓 On dört sınıf ailesi ve yüz iki tip var; hiçbirinin öğretim yüzü yok. İçerik üretimi bu yüz olmadan başlayamaz" ) {
 
-      AltKatman( kod: KYN-OGRETIM-K1, departman: kodlama, ad: "öğretim üreteci",
+      AltKatman( kod: KYN-OGRETIM-K1, departman: kodlama, ad: "Öğretim Üreteci",
         ne: "Öğretim yüzü elle yazılmaz çünkü elle yazılan ikiz yasaktır; kanondan üretilir" ) {
 
         Adım( kod: KYN-OGR-A01, durum: tamamlandı, üretir: [ KOD-OGRETIM-URET, KOD-SNM-OGRETIM-URET ], bağımlı: [], referans: [ YUZ-1.2, OGR-2.1 ],
@@ -4837,10 +4837,10 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
     }
 
     // ══ KATMAN · PLAN DİSİPLİNİ: yazılı ama yaşamayan alan ══════════════════════
-    Katman( kod: KYN-PLAN, takım: TAKIM-CEKIRDEK, ad: "plan disiplini",
+    Katman( kod: KYN-PLAN, takım: TAKIM-CEKIRDEK, ad: "Plan Disiplini",
       ne: "🔢 Öncelik alanı şemada tanımlıdır fakat hiçbir Adım onu taşımaz; ölü doğmuş bir alan planın sıralamasını taşıyamaz" ) {
 
-      AltKatman( kod: KYN-PLAN-K4, departman: planlama, ad: "hükümlerin kanona inmesi",
+      AltKatman( kod: KYN-PLAN-K4, departman: planlama, ad: "Hükümlerin Kanona İnmesi",
         ne: "Bir hüküm her işi bağlıyorsa kanonda yaşamak zorundadır; Adımın onay kaydında kalan hüküm o Adımı okumayan herkes için görünmezdir ve makine onu kanona vuramaz" ) {
 
         Adım( kod: KYN-MEV-A01, durum: tamamlandı, öncelik: p1, bağımlı: [], üretir: [ KOD-KANON-ORK ], referans: [ ORK-3, ORK-2.2, YAS-4.1 ],
@@ -4916,7 +4916,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
       }
 
-      AltKatman( kod: KYN-PLAN-K3, departman: inceleme, ad: "tur kaydı incelemesi",
+      AltKatman( kod: KYN-PLAN-K3, departman: inceleme, ad: "Tur Kaydı İncelemesi",
         ne: "Gece turunun kalıcı kaydı yazıldı fakat Founder incelemesi olmadan mühürlenmedi" ) {
 
         Adım( kod: KYN-TUR-A01, durum: tamamlandı, bağımlı: [], üretir: [ KOD-TUR-KAYDI-0808 ], referans: [ YUZ-1.2 ],
@@ -4990,13 +4990,13 @@ yaslanır, sonraki boş kodu araç önerir. İki varlığın denetimi sıfır ha
 sıfır uyarıda kalır.
   |<--
 
-  Blok( kod: BLK-RFM,
+  Blok( kod: BLK-RFM, ad: "Öncelik Modeli ve Kod Standardı Reformu",
         ne: "⚖️ öncelik modelinin iki eksene ayrılması ve kod atamalarının standarda bağlanması" ) {
 
-    Katman( kod: KAT-RFM-KANON, ad: "kanon-katmani", ne: "kanon maddeleri ve sözlük — .sar kaynağı",
+    Katman( kod: KAT-RFM-KANON, ad: "Kanon Katmanı", ne: "kanon maddeleri ve sözlük — .sar kaynağı",
             kullanır: TEK-SARMAL ) {
 
-      AltKatman( kod: ALT-RFM-YASA, ad: "yasa", departman: planlama,
+      AltKatman( kod: ALT-RFM-YASA, ad: "Yasa", departman: planlama,
                  ne: "kanon madde metinlerinin yazımı ve Founder tasdiki" ) {
 
         Adım( kod: RFM-KANON-A01, durum: tamamlandı, onay: "onaylandı — 2026-09-05", öncelik: p1,
@@ -5044,10 +5044,10 @@ sıfır uyarıda kalır.
       }
     }
 
-    Katman( kod: KAT-RFM-MOTOR, ad: "motor-katmani", ne: "şema, göç, tanı ve araç — TypeScript kaynağı",
+    Katman( kod: KAT-RFM-MOTOR, ad: "Motor Katmanı", ne: "şema, göç, tanı ve araç — TypeScript kaynağı",
             kullanır: TEK-TYPESCRIPT ) {
 
-      AltKatman( kod: ALT-RFM-KODLAMA, ad: "kodlama", departman: kodlama,
+      AltKatman( kod: ALT-RFM-KODLAMA, ad: "Kodlama", departman: kodlama,
                  ne: "şema değişikliği, mekanik göç ve motor desteği" ) {
 
         Adım( kod: RFM-MOTOR-A01, durum: beklemede, öncelik: p1,
@@ -5157,13 +5157,13 @@ tarihiyle özel kalır; hiçbir kapı, panel ya da sınama taşıma yüzünden
 sessizce körleşmez.
   |<--
 
-  Blok( kod: BLK-YAPI-GOCU, uygular: ANY-KONTROLCU,
+  Blok( kod: BLK-YAPI-GOCU, ad: "Yapı Göçü", uygular: ANY-KONTROLCU,
     ne: "🏡 Depo ayrılığı ve çatı kuruluşu — ölç, karar ver, onar, taşı sırasıyla yürüyen göç gövdesi" ) {
 
-    Katman( kod: KAT-GOC-KAYNAK, kullanır: TEK-SARMAL, ad: "goc-kaynak",
+    Katman( kod: KAT-GOC-KAYNAK, kullanır: TEK-SARMAL, ad: "Göç Kaynağı",
       ne: "🧭 Göçün karar ve kaynak işleri: hükümlerin kayda inmesi, borçların onarımı ve aktarımın koşulması" ) {
 
-      AltKatman( kod: ALT-GOC-KARAR, departman: planlama, ad: "karar ve ilan",
+      AltKatman( kod: ALT-GOC-KARAR, departman: planlama, ad: "Karar ve İlan",
         ne: "⚖️ Founder kapısından geçmesi gereken göç hükümleri ve yapı ilanları" ) {
 
         Adım( kod: GOC-A01, durum: tamamlandı, öncelik: p1, bağımlı: [], onayBekler: founder,
@@ -5200,7 +5200,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-GOC-ONARIM, departman: kodlama, ad: "onarim ve kuratorlu aktarim",
+      AltKatman( kod: ALT-GOC-ONARIM, departman: kodlama, ad: "Onarım ve Küratörlü Aktarım",
         ne: "🔧🚚 Departman ekseninde tek kodlama gövdesi: tespit turunun çıkardığı ve taşımadan önce ödenmesi gereken teknik borçların onarımı, açık deponun iç yerleşim göçü ve öğretme yüzü tamamlaması, ardından bunların hepsi kapandıktan sonra yürüyen kademeli küratörlü aktarımın kendisi. Onarım ile aktarım gerçekten ayrı iş evreleridir, fakat bu ayrım departman ekseninde değil Adımların kendi bağımlılık kenarlarında yaşar (GOC-A08'in bağımlı listesi bütün onarım ve yerleşim Adımlarını kapsar)." ) {
 
         Adım( kod: GOC-A03, durum: tamamlandı, öncelik: p1, bağımlı: [],
@@ -5334,13 +5334,13 @@ sessizce körleşmez.
   ✅ Kabul: panel kipi akışı tam kipin süzülmüş akışıyla birebirdir; komut satırı sözleşmesi değişmemiştir; Founder'ın canlı penceresinde denetim turu doksan beşinci yüzdelikte bin milisaniyenin altındadır.
   |<--
 
-  Blok( kod: BLK-PRF-PANELKIPI, ad: "panel kipi", uygular: ORK-7,
+  Blok( kod: BLK-PRF-PANELKIPI, ad: "Panel Kipi", uygular: ORK-7,
     ne: "🧭 Denetim motorunun panel kipi ve program enjeksiyonu; motor yalnız panelin kullandığı işi yapar" ) {
 
-    Katman( kod: KAT-PK-CEKIRDEK, takım: TAKIM-CEKIRDEK, ad: "çekirdek panel kipi katmanı",
+    Katman( kod: KAT-PK-CEKIRDEK, takım: TAKIM-CEKIRDEK, ad: "Çekirdek Panel Kipi Katmanı",
       ne: "🌿 Denetim orkestrasyonu ve kapı kapsamı ilanının dokunulduğu çekirdek katmanı" ) {
 
-      AltKatman( kod: ALT-PK-PLAN, ad: "panel kipi planlaması", departman: planlama,
+      AltKatman( kod: ALT-PK-PLAN, ad: "Panel Kipi Planlaması", departman: planlama,
         ne: "🗺️ Yüzey parametresinin ve üretici atlama listesinin tasarlandığı planlama dalı." ) {
 
         Adım( kod: PRF-PK-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A05, PRF-MK-A06 ],
@@ -5360,7 +5360,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-KOD, ad: "panel kipi kodlaması", departman: kodlama,
+      AltKatman( kod: ALT-PK-KOD, ad: "Panel Kipi Kodlaması", departman: kodlama,
         ne: "🔧 Panel kipinin ve program enjeksiyonunun çekirdeğe eklendiği üretim dalı." ) {
 
         Adım( kod: PRF-PK-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A01 ],
@@ -5394,7 +5394,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-SINAMA, ad: "panel kipi eşitlik nöbeti", departman: sınama,
+      AltKatman( kod: ALT-PK-SINAMA, ad: "Panel Kipi Eşitlik Nöbeti", departman: sınama,
         ne: "🧪 Panel kipinin tam kiple eşitliğinin mutasyonla kanıtlandığı kalite dalı." ) {
 
         Adım( kod: PRF-PK-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A03 ],
@@ -5412,7 +5412,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-INCELEME, ad: "panel kipi denetimi ve disk ölçütü", departman: inceleme,
+      AltKatman( kod: ALT-PK-INCELEME, ad: "Panel Kipi Denetimi ve Disk Ölçütü", departman: inceleme,
         ne: "🔍 Founder'ın ikinci ölçütünün ölçüldüğü inceleme dalı." ) {
 
         Adım( kod: PRF-PK-A05, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A04, PRF-PK-A06, PRF-PK-B03 ],
@@ -5432,7 +5432,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-GUVENLIK, ad: "panel kipinde güvenlik üreticileri", departman: güvenlik,
+      AltKatman( kod: ALT-PK-GUVENLIK, ad: "Panel Kipinde Güvenlik Üreticileri", departman: güvenlik,
         ne: "🛡️ Atlanan üreticilerin arasında güvenlik nöbetinin olmadığının ya da atlanmasının gerekçelendirildiğinin ölçüldüğü güvenlik dalı." ) {
 
         Adım( kod: PRF-PK-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A02 ],
@@ -5451,10 +5451,10 @@ sessizce körleşmez.
       }
     }
 
-    Katman( kod: KAT-PK-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti bağ katmanı",
+    Katman( kod: KAT-PK-EKLENTI, takım: TAKIM-EKLENTI, ad: "Eklenti Bağ Katmanı",
       ne: "🌿 Turun panel kipine bağlandığı eklenti katmanı; üç departmanla yürür, planlama ve güvenlik çekirdek katmanında birlikte ölçülür" ) {
 
-      AltKatman( kod: ALT-PK-EKLENTI-KOD, ad: "turun panel kipini kullanması", departman: kodlama,
+      AltKatman( kod: ALT-PK-EKLENTI-KOD, ad: "Turun Panel Kipini Kullanması", departman: kodlama,
         ne: "🔧 Eklentinin turunu panel kipine ve program enjeksiyonuna bağlayan küçük üretim dalı; bu bağın planlaması ve güvenliği çekirdek katmanının aynı adlı dallarında birlikte ölçülür." ) {
 
         Adım( kod: PRF-PK-B01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A03 ],
@@ -5473,7 +5473,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-EKLENTI-SINAMA, ad: "panel kipi bağının nöbeti", departman: sınama,
+      AltKatman( kod: ALT-PK-EKLENTI-SINAMA, ad: "Panel Kipi Bağının Nöbeti", departman: sınama,
         ne: "🧪 Bağın kaynak metni nöbetiyle kilitlendiği kalite dalı." ) {
 
         Adım( kod: PRF-PK-B02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-B01 ],
@@ -5491,7 +5491,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-PK-EKLENTI-INCELEME, ad: "bağın denetimi", departman: inceleme,
+      AltKatman( kod: ALT-PK-EKLENTI-INCELEME, ad: "Bağın Denetimi", departman: inceleme,
         ne: "🔍 Bağın bağımsız denetçiden geçtiği inceleme dalı." ) {
 
         Adım( kod: PRF-PK-B03, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-B02 ],
@@ -5533,13 +5533,13 @@ sessizce körleşmez.
   ✅ Kabul: tur sırasında ana iş parçacığının en uzun bölünmez bloğu on altı milisaniyeyi aşmaz; kaydetten panele gecikme doksan beşinci yüzdelikte beş yüz milisaniyenin altındadır; Founder yazarken takılma olmadığını gözle teyit etmiştir.
   |<--
 
-  Blok( kod: BLK-PRF-ISCI, ad: "işçi", uygular: ORK-7,
+  Blok( kod: BLK-PRF-ISCI, ad: "İşçi", uygular: ORK-7,
     ne: "🧵 Denetim motorunun ölçüm kapılı olarak işçi iş parçacığına taşınması; Founder'ın kasma yok ölçütünün kapısı" ) {
 
-    Katman( kod: KAT-IS-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti işçi katmanı",
+    Katman( kod: KAT-IS-EKLENTI, takım: TAKIM-EKLENTI, ad: "Eklenti İşçi Katmanı",
       ne: "🌿 Derleme zinciri, tur ve işçi protokolünün yaşadığı eklenti katmanı" ) {
 
-      AltKatman( kod: ALT-IS-PLAN, ad: "işçi ölçümü ve kararı", departman: planlama,
+      AltKatman( kod: ALT-IS-PLAN, ad: "İşçi Ölçümü ve Kararı", departman: planlama,
         ne: "🗺️ Paketlenmiş işçinin ölçüldüğü ve üretim kararının ölçüme bağlandığı planlama dalı." ) {
 
         Adım( kod: PRF-IS-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-PK-A05 ],
@@ -5560,7 +5560,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-IS-KOD, ad: "motorun işçiye taşınması", departman: kodlama,
+      AltKatman( kod: ALT-IS-KOD, ad: "Motorun İşçiye Taşınması", departman: kodlama,
         ne: "🔧 Ölçüm geçerse motorun ve kalan bloğun işçiye taşındığı üretim dalı." ) {
 
         Adım( kod: PRF-IS-A02, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A01 ],
@@ -5594,7 +5594,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-IS-SINAMA, ad: "işçi nöbetleri", departman: sınama,
+      AltKatman( kod: ALT-IS-SINAMA, ad: "İşçi Nöbetleri", departman: sınama,
         ne: "🧪 İşçi sözleşmesinin ve çökme davranışının kilitlendiği kalite dalı." ) {
 
         Adım( kod: PRF-IS-A04, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A03 ],
@@ -5613,7 +5613,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-IS-INCELEME, ad: "işçi denetimi ve Founder ölçütleri", departman: inceleme,
+      AltKatman( kod: ALT-IS-INCELEME, ad: "İşçi Denetimi ve Founder Ölçütleri", departman: inceleme,
         ne: "🔍 Founder'ın üçüncü ve dördüncü ölçütünün canlı pencerede ölçüldüğü inceleme dalı." ) {
 
         Adım( kod: PRF-IS-A05, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p0, bağımlı: [ PRF-IS-A04, PRF-IS-A06 ],
@@ -5633,7 +5633,7 @@ sessizce körleşmez.
         }
       }
 
-      AltKatman( kod: ALT-IS-GUVENLIK, ad: "işçi sandbox sınırı", departman: güvenlik,
+      AltKatman( kod: ALT-IS-GUVENLIK, ad: "İşçi Sandbox Sınırı", departman: güvenlik,
         ne: "🛡️ İşçinin yalnız çalışma alanını okuduğunun, yazmadığının ve ağa çıkmadığının kilitlendiği güvenlik dalı." ) {
 
         Adım( kod: PRF-IS-A06, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-IS-A02 ],

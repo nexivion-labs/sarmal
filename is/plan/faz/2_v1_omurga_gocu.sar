@@ -19,9 +19,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   arşivlenir ve spec aşaması bağımsız kabul raporuyla kapanır.
   |<--
 
-  Blok( kod: BLK-GOC-SPEC ) {
-    Katman( kod: KAT-GOC-SPEC-KANON, ad: "kanon metni", kullanır: TEK-SARMAL ) {
-      AltKatman( kod: ALT-GOC-SPEC-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-SPEC, ad: "Kanon Metni Göçü" ) {
+    Katman( kod: KAT-GOC-SPEC-KANON, ad: "Kanon Metni", kullanır: TEK-SARMAL ) {
+      AltKatman( kod: ALT-GOC-SPEC-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-SPEC-A00, durum: tamamlandı ) {
           ne:    "Founder GİT kapısını açmak ve planı canlı konuma taşımak."
           görev: [
@@ -194,8 +194,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-SPEC-SINAMA, ad: "sınama koşumu", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-SPEC-INCELEME, departman: inceleme, ad: "inceleme" ) {
+    Katman( kod: KAT-GOC-SPEC-SINAMA, ad: "Sınama Koşumu", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-SPEC-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-SPEC-A90, durum: tamamlandı ) {
           ne:    "Spec teslimini bağımsız sınamak."
           görev: [
@@ -260,9 +260,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   kanon ve sınama nöbetleri bu kayıtla birebir kalır.
   |<--
 
-  Blok( kod: BLK-GOC-KANON ) {
-    Katman( kod: KAT-GOC-KANON-SINIFLAMA, ad: "sınıflama verisi", kullanır: TEK-SARMAL ) {
-      AltKatman( kod: ALT-GOC-KANON-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-KANON, ad: "Sınıflama Verisi Göçü" ) {
+    Katman( kod: KAT-GOC-KANON-SINIFLAMA, ad: "Sınıflama Verisi", kullanır: TEK-SARMAL ) {
+      AltKatman( kod: ALT-GOC-KANON-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-KANON-A01, durum: tamamlandı ) {
           ne:    "Canlı şema kararlarını kesinleştirmek."
           görev: [
@@ -361,8 +361,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-KANON-URETIM, ad: "kanon üretimi", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-KANON-KOD, departman: kodlama, ad: "kodlama" ) {
+    Katman( kod: KAT-GOC-KANON-URETIM, ad: "Kanon Üretimi", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-KANON-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-KANON-A05, durum: tamamlandı ) {
           ne:    "Gömülü kanonu yeniden üretmek."
           görev: [
@@ -414,7 +414,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-KANON-INCELEME, departman: inceleme, ad: "inceleme" ) {
+      AltKatman( kod: ALT-GOC-KANON-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-KANON-A90, durum: tamamlandı ) {
           ne:    "Kanon verisini bağımsız sınamak."
           görev: [
@@ -479,9 +479,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   eşzamanlıdır; kabul süitleri eksik veya çift kimliği yakalar.
   |<--
 
-  Blok( kod: BLK-GOC-MOTOR ) {
-    Katman( kod: KAT-GOC-MOTOR-CEKIRDEK, ad: "TypeScript çekirdek", kullanır: TEK-TYPESCRIPT ) {
-      AltKatman( kod: ALT-GOC-MOTOR-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-MOTOR, ad: "Motor Tanılarının Göçü" ) {
+    Katman( kod: KAT-GOC-MOTOR-CEKIRDEK, ad: "TypeScript Çekirdek", kullanır: TEK-TYPESCRIPT ) {
+      AltKatman( kod: ALT-GOC-MOTOR-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-MOTOR-A01, durum: tamamlandı ) {
           ne:    "Altmış dokuz tanıyı sahiplerine ayırmak."
           görev: [
@@ -555,7 +555,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-MOTOR-KOD, departman: kodlama, ad: "kodlama" ) {
+      AltKatman( kod: ALT-GOC-MOTOR-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-MOTOR-A04, durum: tamamlandı ) {
           ne:    "Kabul edilen boşluk tanılarını uygulamak."
           görev: [
@@ -680,8 +680,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-MOTOR-SINAMA, ad: "sınama koşumu", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-MOTOR-SINAMA, departman: sınama, ad: "sınama" ) {
+    Katman( kod: KAT-GOC-MOTOR-SINAMA, ad: "Sınama Koşumu", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-MOTOR-SINAMA, departman: sınama, ad: "Sınama" ) {
         Adım( kod: GOC-MOTOR-A08, durum: tamamlandı ) {
           ne:    "Üçlü tanı nöbetini kurmak."
           görev: [
@@ -731,7 +731,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-MOTOR-INCELEME, departman: inceleme, ad: "inceleme" ) {
+      AltKatman( kod: ALT-GOC-MOTOR-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-MOTOR-A90, durum: tamamlandı ) {
           ne:    "Motor teslimini bağımsız sınamak."
           görev: [
@@ -794,9 +794,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   bilgi işaretleri Bildirimler'de görünür; bir doğa başka yüzeyi işgal etmez.
   |<--
 
-  Blok( kod: BLK-GOC-YUZEY ) {
-    Katman( kod: KAT-GOC-YUZEY-EKLENTI, ad: "eklenti yüzeyi", kullanır: TEK-VSCODE-API ) {
-      AltKatman( kod: ALT-GOC-YUZEY-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-YUZEY, ad: "Tanı Yüzeylerinin Ayrışması" ) {
+    Katman( kod: KAT-GOC-YUZEY-EKLENTI, ad: "Eklenti Yüzeyi", kullanır: TEK-VSCODE-API ) {
+      AltKatman( kod: ALT-GOC-YUZEY-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-YUZEY-A01, durum: tamamlandı ) {
           ne:    "Tanı yönlendirme matrisini çıkarmak."
           görev: [
@@ -822,7 +822,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-YUZEY-KOD, departman: kodlama, ad: "kodlama" ) {
+      AltKatman( kod: ALT-GOC-YUZEY-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-YUZEY-A02, durum: tamamlandı ) {
           ne:    "Hatırlatıcılar sağlayıcısını kurmak."
           görev: [
@@ -925,8 +925,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-YUZEY-SINAMA, ad: "eklenti sınaması", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-YUZEY-SINAMA, departman: sınama, ad: "sınama" ) {
+    Katman( kod: KAT-GOC-YUZEY-SINAMA, ad: "Eklenti Sınaması", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-YUZEY-SINAMA, departman: sınama, ad: "Sınama" ) {
         Adım( kod: GOC-YUZEY-A06, durum: tamamlandı ) {
           ne:    "Yüzey ayrımını nöbete almak."
           görev: [
@@ -952,7 +952,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-YUZEY-INCELEME, departman: inceleme, ad: "inceleme" ) {
+      AltKatman( kod: ALT-GOC-YUZEY-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-YUZEY-A90, durum: tamamlandı ) {
           ne:    "Yüzey teslimini bağımsız sınamak."
           görev: [
@@ -1016,9 +1016,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   teknolojiye, Bloklar gerçek kavuşuma ve Adımlar görünür departmanlara bağlıdır.
   |<--
 
-  Blok( kod: BLK-GOC-PROJEKOD ) {
-    Katman( kod: KAT-GOC-PROJEKOD-SARMAL, ad: "Sarmal proje kaynakları", kullanır: TEK-SARMAL ) {
-      AltKatman( kod: ALT-GOC-PROJEKOD-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-PROJEKOD, ad: "Proje ve Plan Kaynaklarının Göçü" ) {
+    Katman( kod: KAT-GOC-PROJEKOD-SARMAL, ad: "Sarmal Proje Kaynakları", kullanır: TEK-SARMAL ) {
+      AltKatman( kod: ALT-GOC-PROJEKOD-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-PROJEKOD-A01, durum: tamamlandı ) {
           ne:    "Canlı proje ağaçlarını envanterlemek."
           görev: [
@@ -1044,7 +1044,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-PROJEKOD-KOD, departman: kodlama, ad: "kodlama" ) {
+      AltKatman( kod: ALT-GOC-PROJEKOD-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-PROJEKOD-A02, durum: tamamlandı ) {
           ne:    "Proje rejimlerini açıkça beyan etmek."
           görev: [
@@ -1246,8 +1246,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-PROJEKOD-SINAMA, ad: "proje denetimi", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-PROJEKOD-SINAMA, departman: sınama, ad: "sınama" ) {
+    Katman( kod: KAT-GOC-PROJEKOD-SINAMA, ad: "Proje Denetimi", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-PROJEKOD-SINAMA, departman: sınama, ad: "Sınama" ) {
         Adım( kod: GOC-PROJEKOD-A06, durum: tamamlandı ) {
           ne:    "Göç edilen Projeyi bütünüyle denetlemek."
           görev: [
@@ -1273,7 +1273,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-PROJEKOD-INCELEME, departman: inceleme, ad: "inceleme" ) {
+      AltKatman( kod: ALT-GOC-PROJEKOD-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-PROJEKOD-A90, durum: tamamlandı ) {
           ne:    "Proje-kod teslimini bağımsız sınamak."
           görev: [
@@ -1336,9 +1336,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   doğrulama ve açık kabul kanıtıyla mühürlenir.
   |<--
 
-  Blok( kod: BLK-GOC-TERFI ) {
-    Katman( kod: KAT-GOC-TERFI-CEKIRDEK, ad: "TypeScript çekirdek", kullanır: TEK-TYPESCRIPT ) {
-      AltKatman( kod: ALT-GOC-TERFI-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-TERFI, ad: "Tanı Düzeylerinin Terfisi" ) {
+    Katman( kod: KAT-GOC-TERFI-CEKIRDEK, ad: "TypeScript Çekirdek", kullanır: TEK-TYPESCRIPT ) {
+      AltKatman( kod: ALT-GOC-TERFI-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-TERFI-A00, durum: tamamlandı ) {
           ne:    "Terfi öncesi zemini temizlemek. Founder 2026-07-28 tarihinde gözlem panelini canlı inceledi ve gürültünün kaynağını sordu; ölçüm iki tekil sebebin üç yüz yirmi kaydın yaklaşık dörtte üçünü ürettiğini gösterdi. Bu Adım terfiden ÖNCE koşulmalıdır, çünkü terfi bu gözlemleri hataya çevirir ve bugün mekanik olan düzeltme o gün kapıyı bloklayan bir yığına dönüşür."
           koşu:  "2026-08-02 · KAPANIŞ. Üretici temiz bağlamlı Codex koşumuydu; kontrolcü bütün ölçümleri bağımsız yeniden koştu ve birebir tuttu. Görev metnindeki sayılar bayattı (OZK-01 özerk kararı yedi alanı önceden ilan etmişti); üretici canlı tabanı 568 bilgi olarak ölçtü ve işi güncel sayılara göre yaptı. SONUÇ: toplam bilgi 568'den 449'a indi (-119). Tür bazında: şema-dışı-alan 65→31, kural-sözleşmesi-eksik 11→0 (kabul sayacı SIFIR), görünürlük-sözleşmesi-eksik 74→0, karşılıksız-metin-atfı 11'de kaldı ve Founder'a devredildi. Diğer 26 türün sayısı değişmedi; hiçbir tanı yükseltilmedi, emekli edilmedi, susturulmadı ve muafiyet listesine eklenmedi. Kanonun sekiz bölüm dosyasının başlangıç ve kapanış sha256 özetleri birebir aynıdır — hüküm metnine dokunulmama şartı kanıtlıdır; düzeltmeler şema kaydından ve kaynak dosyalardan yürüdü. YORUM İSTEYEN ON YEDİ ALAN Founder masasına tablo hâlinde devredildi (dil · uc · kural · alanlar · neden · amaç · oncelik · profil · dolgu · adSimge · konum · ayrim · raflar · kararlılık · çapa · kullanir ve açık metin atıfları); tablo terfi_zemin_kaydi.sar dosyasındadır ve Founder'ın 27 Temmuz hükmü gereği bilgi-düzeyi değerlendirmesi son faza aittir, v1'i bloklamaz. Tür dökümü nöbeti yedi hükümle kuruldu ve mutasyonla kanıtlandı: basılan toplam kasten bir azaltıldığında veri katmanı yeşil kalırken çıktı nöbetlerinin ikisi kırmızıya döndü, geri alınınca yedide yedi geçti. KONTROLCÜ ÖLÇÜMLERİ (araç adlarıyla): _Sarmal denetimi filtresiz ✖0 ⚠0 ve 449 bilgi/27 tür (sarmal denetle) · kapalı varlık ✖0 ⚠0 · çekirdek tür denetimi 0 (npx tsc --noEmit) · eklenti tür denetimi 0 · çekirdek süiti 947/947 · eklenti süiti 373/373 · nöbet 7/7."
@@ -1417,7 +1417,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-TERFI-KOD, departman: kodlama, ad: "kodlama" ) {
+      AltKatman( kod: ALT-GOC-TERFI-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-TERFI-A03, durum: tamamlandı ) {
           ne:    "Tanıları uyarıya yükseltmek."
           koşu:  "2026-08-03 · KAPANIŞ. Birleşik sayacı sıfır olan ALTMIŞ İKİ tanı yalnız bir kademe bilgi'den uyarı'ya yükseltildi; sekiz borçlu tanı bilgi düzeyinde sahipli kaldı ve hiçbir tanı hataya atlamadı. Düzey; sicil, kanon iddiası okuması, üretici ve bütün sunum yüzeylerinde aynı değişiklik kümesinde güncellendi; yönlendirme matrisi 143 Problems / 4 Hatırlatıcılar / 24 Bildirimler dağılımına çekildi. Terfi öncesi ve sonrası aynı ihlalde yalnız düzeyin değiştiği, kod ile mesaj özünün sabit kaldığı sınandı. KONTROLCÜ BAĞIMSIZ ÖLÇÜMLERİ (araç adlarıyla): sicil dağılımı 70 yeni tanı = 62 uyarı + 8 bilgi + 0 hata (tsx ile YENI_TANI_KANONU sayımı) · _Sarmal denetimi ✖0 ⚠0 ve 167 bilgi/20 tür · kapalı varlık ✖0 ⚠0 ve 829 bilgi/13 tür — yani altmış iki uyarı tanısı canlıda SIFIR bulgu veriyor, temizlik gerçektir · iki tür denetimi sıfır · çekirdek süiti 950/950 · eklenti süiti 374/374 · sekiz kanon dosyasının SHA'sı değişmedi."
@@ -1518,8 +1518,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     }
 
-    Katman( kod: KAT-GOC-TERFI-SINAMA, ad: "terfi sınaması", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-TERFI-INCELEME, departman: inceleme, ad: "inceleme" ) {
+    Katman( kod: KAT-GOC-TERFI-SINAMA, ad: "Terfi Sınaması", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-TERFI-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-TERFI-A90, durum: tamamlandı ) {
           ne:    "Terfi teslimini bağımsız sınamak."
           koşu:  "2026-08-03 · KAPANIŞ. Bağımsız denetçi (üreticiyle teması olmayan ayrı Codex oturumu) yedi iddiayı kendi komutlarıyla yeniden ölçtü ve İKİ AŞAMALI hüküm verdi. İLK HÜKÜM RED'Dİ ve ayrılığın değerini bir kez daha kanıtladı: yedi iddianın yedisi tuttuğu, dört mutasyon nöbeti sağlam çıktığı hâlde denetçi kimsenin sınamadığı katmanı yokladı ve paketlenmiş girişin (dist/eklenti.js) CJS içinde boş kalan import.meta.url yüzünden Invalid URL fırlatıp YÜKLENEMEDİĞİNİ buldu; süitler kaynağı sınıyordu, paketi sınayan nöbet yoktu. Üç RED maddesi dar bir düzeltme turuyla kapatıldı: çeviri modülünün üst düzey disk yolu kurulumu ilk gerçek okumaya tembelleştirildi, barınaksız paket duman nöbeti doğdu ve mutasyonla kanıtlandı, söz-dizim tanısının İngilizce hanesi ile kilit sürümü düzeltildi. YENİDEN-HÜKÜM KABUL'DÜR: paket girişi doğrudan yüklendi ve duman nöbeti URL mutasyonunda ERR_INVALID_URL ile kırmızıya döndü, geri almada sha256 birebir; söz-dizim İngilizce süiti 13/13; paket ile kilidin üç sürüm alanı 0.9.137 eşit; iki tsc sıfır, çekirdek 955/955, eklenti 377/377, iki varlık ✖0 ⚠0. Tarihsel 568→449 ve 1114→700 geçişlerinin 404+10 ayrıştırması eski ağaç görüntüleri bulunmadığından bağımsız yeniden ölçülemedi ve dürüstçe kayda geçti. VS Code gerçek süiti ortam düzeyinde SIGABRT veriyor (önbellekteki dört VS Code kopyasının imzası geçersiz); denetçi bunu RED gerekçesi yapmadı ve ortam borcu olarak ayırdı. Rapor iki hükmüyle birlikte nitelik/goc/terfi_turu_denetim_raporu.sar dosyasındadır."
@@ -1584,9 +1584,9 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
   türev kalmaz ve geçici eşleme yalnız mühürlü arşivde yaşar.
   |<--
 
-  Blok( kod: BLK-GOC-BELGE ) {
-    Katman( kod: KAT-GOC-BELGE-KAYNAK, ad: "Sarmal belge kaynakları", kullanır: TEK-SARMAL ) {
-      AltKatman( kod: ALT-GOC-BELGE-PLAN, departman: planlama, ad: "planlama" ) {
+  Blok( kod: BLK-GOC-BELGE, ad: "Belgelerin Yeniden Üretimi" ) {
+    Katman( kod: KAT-GOC-BELGE-KAYNAK, ad: "Sarmal Belge Kaynakları", kullanır: TEK-SARMAL ) {
+      AltKatman( kod: ALT-GOC-BELGE-PLAN, departman: planlama, ad: "Planlama" ) {
         Adım( kod: GOC-BELGE-A01, durum: tamamlandı ) {
           koşu:  "2026-08-03 · KAPANIŞ. Belge etki envanteri çıkarıldı: etkilenen bütün yüzler amaç, kaynak, üretici ve sahiple sınıflandı; bayat yüzler dosya ve satırla işaretlendi (eski kod 47, eski omurga 11, emekli panel adı 8, on dokuz araç iddiası 1, kalıcı göç eşlemesi 7). Envanter dışında etkilenen yüz kalmadı."
           ne:    "Belge etki envanterini çıkarmak."
@@ -1612,7 +1612,7 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
         }
       }
 
-      AltKatman( kod: ALT-GOC-BELGE-KOD, departman: kodlama, ad: "kodlama" ) {
+      AltKatman( kod: ALT-GOC-BELGE-KOD, departman: kodlama, ad: "Kodlama" ) {
         Adım( kod: GOC-BELGE-A02, durum: tamamlandı ) {
           koşu:  "2026-08-03 · KAPANIŞ. On altı okuma ve öğretim yüzü yeni kanonik kaynaktan yeniden üretildi ve DIATAXIS mühürüyle işaretlendi. İDEMPOTENS KANITLI: üretici aynı girdiyle iki kez koşuldu, sha256 mühür dosyalarının farkı boştur (0 değişti · 16 aynı · 144 madde · 18 araç). Bayatlık tablosu sıfırlandı: eski kod 47'den, eski omurga 11'den, emekli panel adı 8'den, on dokuz araç iddiası 1'den ve kalıcı göç eşlemesi 7'den sıfıra indi; tarihsel plan ve göç kanıtları bilinçli sınır gereği dokunulmadan kaldı. KONTROLCÜ BAĞIMSIZ ÖLÇÜMLERİ: kök yüzlerde emekli panel adı ve eski kod araması sıfır, DIATAXIS mührü yerinde, iki tür denetimi sıfır, çekirdek 964/964, eklenti 377/377, iki varlık denetimi filtresiz sıfır hata ve sıfır uyarı."
           ne:    "Okuma ve öğretim yüzlerini üretmek."
@@ -1711,8 +1711,8 @@ Faz( kod: FAZ-GOC-V1, ad: "V1 Omurga Göçü", hedefTarih: "2026-08-07" ) {
       }
     } 
 
-    Katman( kod: KAT-GOC-BELGE-SINAMA, ad: "belge sınaması", kullanır: TEK-NODE ) {
-      AltKatman( kod: ALT-GOC-BELGE-INCELEME, departman: inceleme, ad: "inceleme" ) {
+    Katman( kod: KAT-GOC-BELGE-SINAMA, ad: "Belge Sınaması", kullanır: TEK-NODE ) {
+      AltKatman( kod: ALT-GOC-BELGE-INCELEME, departman: inceleme, ad: "İnceleme" ) {
         Adım( kod: GOC-BELGE-A90, durum: tamamlandı ) {
           koşu:  "2026-08-03 · KAPANIŞ. Bağımsız denetçi ayrı ve temiz bağlamlı bir Claude alt-ajanıydı; üreticiyle teması yoktu ve bütün sayıları kendi komutlarıyla yeniden ölçtü. İlk hüküm ŞARTLI KABUL'dü: yedi iddianın ölçülebilir gövdesi eksiksiz tuttu (on altı yüz idempotent ve DIATAXIS mühürlü, sekiz nöbet, yetmiş iki bağlantı kırıksız, kanon SHA demeti birebir, süitler ve iki varlık denetimi yeşil) ve denetçinin dört gerçek mutasyonunun dördü ilgili nöbet tarafından adıyla yakalandı; şartı doğuran tek açık, ölü iz kanıtının sınıflamadığı beş canlı izdi. Şart aynı gün kapatıldı: snippet açıklamaları DIL-1.4 ile TIP-1 haleflerine, önizleme stili yorumu DIL-2 halefine çevrildi, öğrenme kaydının tarihli listesi tarihçe olarak korunup yaşayan ders yönergesi halef-önce anlatıma alındı ve tarama genişletilmiş dosya-türü kapsamıyla yeniden koşulup kanıt dosyasına G bölümü olarak işlendi. Aynı kapıda kontrolcü bulgusu da kapatıldı: karşılama kartının kopyala-başla örneği rejim beyanı taşımadığı için kartın kendini kanıtlama vaadini bozuyordu; örnek düzeltildi ve kart nöbeti CLI denetiminin tam boru hattını koşan kalıcı sınamayla güçlendirildi (mutasyon kanıtlı). Denetçi beş kalemi kendi komutlarıyla yeniden ölçtü, kendi rejim mutasyonunu koşup dosya kopyasıyla geri aldı ve tarihli ikinci bölümle YENİDEN-HÜKÜM KABUL verdi; iki bölümlü rapor nitelik/goc/belge_kabul_raporu.sar dosyasındadır. Ek olarak VS Code gerçek süiti bu koşumda indirme aşamasında ağa takıldı ve ortam maddesi olarak ayrıldı. Kapanış ölçümleri: iki tür denetimi sıfır, çekirdek 973/973, eklenti 381/381, iki varlık denetimi filtresiz sıfır hata ve sıfır uyarı."
           ne:    "Belge teslimini bağımsız sınamak."

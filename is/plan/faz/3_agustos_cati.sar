@@ -84,14 +84,14 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
   yeni-kullanıcı README örneği denetle'den temiz · her tur Terra kabul raporlu.
   |<--
 
-  Blok( kod: BLK-REFORM, ad: "büyük reform — teftiş bulguları altı turda kapanır", uygular: ORK-7,
+  Blok( kod: BLK-REFORM, ad: "Büyük Reform — Teftiş Bulguları Altı Turda Kapanır", uygular: ORK-7,
     ne: "Genel teftiş + karar-kural karnesi bulguları → 6 kilitli-kararlı tur: renk kanunu · motor güveni · MIM-1 · metin hizası · RAY-3 envanteri · dogfood" ) {
 
-    Katman( kod: KAT-RF-PANEL, takım: TAKIM-EKLENTI, ad: "birinci tur — renk kanunu",
+    Katman( kod: KAT-RF-PANEL, takım: TAKIM-EKLENTI, ad: "Birinci Tur — Renk Kanunu",
       ne: "YUZ-4.1 uygulaması: renk=durum decoration + durumTuret tekleşmesi + blokaj ! rozeti + akıllı checkbox + sessiz-kayıp karşı-tanısı" ) {
       AltKatman(
         kod: ALT-RF-PANEL-RENK-KANUNU, departman: kodlama,
-        ad:  "renk kanunu uygulaması",
+        ad:  "Renk Kanunu Uygulaması",
         ne:  "🎨 YUZ-4.1 renk=durum hükmünün panelde uygulanması ve Light-tema görünürlük onarımı",
       ) {
         Adım( kod: RF-T1-A01, durum: tamamlandı, bağımlı: [],
@@ -110,11 +110,11 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-RF-MOTOR, takım: TAKIM-CEKIRDEK, ad: "ikinci tur — motor güveni",
+    Katman( kod: KAT-RF-MOTOR, takım: TAKIM-CEKIRDEK, ad: "İkinci Tur — Motor Güveni",
       ne: "Teftişin kırmızıları (öz-bağımlılık · kenar sicili · durum makinesi · muaf asimetrisi · test:vscode · test delikleri) + karne MOTOR kalemleri (Founder sıra-hükmü 2026-07-12 gece: tanı-kenarı · GenelKural vatandaşlığı · tip-doğum kapısı TUR-2 ile birlikte — RF-T6-A03/A04/A05 kodları donmuş kimlik, katman değişti)" ) {
       AltKatman(
         kod: ALT-RF-MOTOR-TEFTIS-KIRMIZILARI, departman: kodlama,
-        ad:  "teftişin kırmızıları",
+        ad:  "Teftişin Kırmızıları",
         ne:  "🛡️ Genel teftişin bulduğu motor kırmızıları — öz-bağımlılık, kenar sicili, durum makinesi, muaf asimetrisi, test:vscode ve test delikleri onarımı",
       ) {
         Adım( kod: RF-T2-A01, durum: tamamlandı,
@@ -175,11 +175,11 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-RF-K97, takım: TAKIM-CEKIRDEK, ad: "üçüncü tur — katman kuralı",
+    Katman( kod: KAT-RF-K97, takım: TAKIM-CEKIRDEK, ad: "Üçüncü Tur — Katman Kuralı",
       ne: "MIM-1 doğuşu (kademeli): çıplak-adımlı-katman bilgi bekçisi + ideali öğreten şablon/rehber/vitrin — GÖÇ YOK" ) {
       AltKatman(
         kod: ALT-RF-K97-KADEMELI-DOGUS, departman: kodlama,
-        ad:  "MIM-1 kademeli doğuşu",
+        ad:  "MIM-1 Kademeli Doğuşu",
         ne:  "🌿 Çıplak-adımlı-katman bilgi bekçisinin doğuşu ve ideali öğreten şablon/rehber/vitrin güncellemesi",
       ) {
         Adım( kod: RF-T3-A01, onay: "⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): reform kuyruğu --- ▶️ KUYRUK AÇILDI (Founder 2026-07-21: 'BLK-SOL-IDA-TEST hariç tüm blokları bitirelim' — sıra geldi)", durum: tamamlandı, kullanır: BCR-GOC-HAKEM, üretir: [ KOD-CIPLAK-KATMAN ],   // göç-hakem becerisi: kural önce motora, göç tanı rotasıyla
@@ -193,11 +193,11 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-RF-METIN, kullanır: TEK-SARMAL, ad: "dördüncü tur — metin hizası",
+    Katman( kod: KAT-RF-METIN, kullanır: TEK-SARMAL, ad: "Dördüncü Tur — Metin Hizası",
       ne: "Bayat-varsayım süpürmesi: canlı yasa + rehber + felsefe + README/CHANGELOG + takipsiz kararlar" ) {
       AltKatman(
         kod: ALT-RF-METIN-BAYAT-SUPURME, departman: kodlama,
-        ad:  "metin hizası süpürmesi",
+        ad:  "Metin Hizası Süpürmesi",
         ne:  "🧹 Canlı yasa, rehber, felsefe ve README/CHANGELOG yüzeylerindeki bayat varsayımların temizlenmesi",
       ) {
         Adım( kod: RF-T4-A01, durum: tamamlandı,
@@ -216,11 +216,11 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-RF-RAY3, kullanır: TEK-SARMAL, ad: "beşinci tur — RAY-3 envanteri",
+    Katman( kod: KAT-RF-RAY3, kullanır: TEK-SARMAL, ad: "Beşinci Tur — RAY-3 Envanteri",
       ne: "Dağınık RAY-3 kuyruğu tek konsolide plana — uygulama değil envanter+öncelik" ) {
       AltKatman(
         kod: ALT-RF-RAY3-KONSOLIDE-ENVANTER, departman: planlama,
-        ad:  "RAY-3 konsolide envanteri",
+        ad:  "RAY-3 Konsolide Envanteri",
         ne:  "🚂 Dağınık RAY-3 kalemlerinin tek listede toplanması ve önceliklendirilmesi",
       ) {
         Adım( kod: RF-T5-A01, onay: "⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): KPN-A04 GÜNDEMİNE katıldı (Founder hükmü 2026-07-19): RAY-3 konsolide envanteri açılış oturumunun İLK maddesi olarak orada çıkarılır ve önceliklendirilir --- BAŞLADI 2026-07-20 (oturum 67 · Founder 'inşallah' işareti): ZKA-A01 açılış gündeminin ilk maddesi olarak envanter turu açıldı", durum: tamamlandı, referans: [ GRK-KAPANIS-ORKESTRA ], üretir: [ ],
@@ -236,11 +236,11 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-RF-DOGFOOD, kullanır: TEK-SARMAL, ad: "altıncı tur — saha",
+    Katman( kod: KAT-RF-DOGFOOD, kullanır: TEK-SARMAL, ad: "Altıncı Tur — Saha",
       ne: "SAHA TURU (Founder sıra-hükmü: motor kalemleri RF-T6-A03/A04/A05 TUR-2'ye taşındı; içerik/bağlama oturumları TUR-2'nin HEMEN ardından koşulur — TUR-3..5 bunu bekler): kanun yazan bahçe kendi kanununun vatandaşı olur (98 tipin 75'i canlıda sıfırdı — dogfood listesi dirilir)" ) {
       AltKatman(
         kod: ALT-RF-DOGFOOD-SAHA-TURU, departman: sınama,
-        ad:  "saha turu dogfood'u",
+        ad:  "Saha Turu Dogfood'u",
         ne:  "🌱 Bahçenin kendi kanununun vatandaşı olması — dogfood tip dirilişi, karar-kural dayanak nöbeti ve Founder canlı saha altyapısı onarımları",
       ) {
         Adım( kod: RF-T6-A01, durum: tamamlandı, üretir: [ KOD-DOGFOOD-SICIL ], referans: [ DIL-1.1, TIP-1 ],
@@ -306,13 +306,13 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
   kaydı işlenmiş, orkestrasyon açılış planı kapalı tarafta onaylı yaşamaktadır.
   |<--
 
-  Blok( kod: BLK-KPN, ad: "kapanış kampanyası", uygular: ORK-7,
+  Blok( kod: BLK-KPN, ad: "Kapanış Kampanyası", uygular: ORK-7,
     ne: "🪵 Kampanyanın dört yeni kalemi: kimlik indeksi varlık sınırı · eklenti kurulumu · kapanış kaydı · orkestrasyon açılışı — diğer ~36 kalem kendi raylarında, sıra belge bloğunda" ) {
 
-    Katman( kod: KAT-KPN-KIMLIK, takım: TAKIM-CEKIRDEK, ad: "kimlik indeksi varlık sınırı",
+    Katman( kod: KAT-KPN-KIMLIK, takım: TAKIM-CEKIRDEK, ad: "Kimlik İndeksi Varlık Sınırı",
       ne: "🌿 Gezinme ve atıf çözümü varlık/şablon sınırına tam saygılı olur — standart kodların yinelenen tanımları kullanıcıyı yanlış kapıya götürmez" ) {
 
-      AltKatman( kod: ALT-KPN-KIMLIK-VARLIK-SINIRI, departman: kodlama, ad: "varlık/şablon sınır uygulaması",
+      AltKatman( kod: ALT-KPN-KIMLIK-VARLIK-SINIRI, departman: kodlama, ad: "Varlık ve Şablon Sınırının Uygulaması",
         ne: "🍃 Kimlik indeksinin yinelenen standart kod tanımlarını varlık ve şablon köküne göre ayırt etmesini sağlayan uygulama adımı" ) {
 
         Adım( kod: KPN-A01, durum: tamamlandı, onay: "onaylandı — 2026-07-18; başlama işareti Founder'dan alındı (2026-07-19 · oturum 65 'devam inşallah'); çözüm seçeneği Founder onaylı (aynı gün: 'Sınır + etiket birlikte')", üretir: [ KOD-KPN-KIMLIK ], bağımlı: [ TAKIM-CEKIRDEK ], referans: [ STR-3, YAS-3.3, DIL-1.2 ],
@@ -334,12 +334,12 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-KPN-YAYIN, takım: TAKIM-EKLENTI, ad: "eklenti kurulum turu",
+    Katman( kod: KAT-KPN-YAYIN, takım: TAKIM-EKLENTI, ad: "Eklenti Kurulum Turu",
       ne: "🌿 Oturum 56 kaynak değişiklikleri (saf çekirdek ayrımları) paketlenip Founder makinesine kurulur" ) {
 
       // NOT: Bu Adımın ürünü repo dosyası değil KURULU PAKETtir (0.9.79 vsix) — üretir:
       // kenarı bilinçli boş; kanıt koşu: kaydındaki kurulum doğrulamasıdır.
-      AltKatman( kod: ALT-KPN-YAYIN-PAKETLEME, departman: kodlama, ad: "eklenti paketleme ve kurulum",
+      AltKatman( kod: ALT-KPN-YAYIN-PAKETLEME, departman: kodlama, ad: "Eklenti Paketleme ve Kurulum",
         ne: "🍃 Oturum 56 kaynak değişikliklerinin 0.9.79 paketiyle Founder makinesine kurulup gözle doğrulanması" ) {
 
         Adım( kod: KPN-A02, durum: tamamlandı, bağımlı: [ TAKIM-EKLENTI ], referans: [ DIL-1.1 ],
@@ -355,10 +355,10 @@ Faz( kod: FAZ-2026-AGUSTOS, ad: "Çatı Mevsimi", hedefTarih: "2026-08-31",
       }
     }
 
-    Katman( kod: KAT-KPN-KAPANIS, kullanır: TEK-SARMAL, ad: "kampanya kapanışı ve orkestra açılışı",
+    Katman( kod: KAT-KPN-KAPANIS, kullanır: TEK-SARMAL, ad: "Kampanya Kapanışı ve Orkestra Açılışı",
       ne: "🌿 Kampanyanın mühürlenmesi ve orkestrasyon cephesinin STR-3 sınırına saygılı açılışı" ) {
 
-      AltKatman( kod: ALT-KPN-KAPANIS-MUHURLEME, departman: inceleme, ad: "kapanış ölçümü ve orkestra açılışı",
+      AltKatman( kod: ALT-KPN-KAPANIS-MUHURLEME, departman: inceleme, ad: "Kapanış Ölçümü ve Orkestra Açılışı",
         ne: "🍃 Motorun ürün gündemine hizalanması (OGR-5), kampanya kapanış kaydının işlenmesi ve orkestrasyon cephesinin Founder onaylı açılışı" ) {
 
         Adım( kod: KPN-A05, durum: tamamlandı, bağımlı: [ TAKIM-CEKIRDEK ], referans: [ OGR-5, YUZ-1.2, YAS-3.4 ], üretir: [ TAN-ACIK-ADIM, KOD-KARNE-URUN-KAPSAMI, KOD-CLI-DENETLE-K107, KOD-SNM-K107 ],
@@ -465,13 +465,13 @@ Dil tercihi İngilizce olan bir kullanıcı Sarmal'ı uçtan uca Türkçe görme
 `.sar` dosyaları Türkçe kalır ve motor tek gerçekle çalışmaya devam eder.
   |<--
 
-  Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
+  Blok( kod: BLK-COKDILLILIK, ad: "İngilizce Yüzey",
     ne: "🌍 yayın kapısını geçiren İngilizce okuma yüzeyi — kaynak Türkçe kalır, görünen her şey çevrilir" ) {
 
-    Katman( kod: CDL-SOZLUK, takım: TAKIM-CEKIRDEK, ad: "sözlük ve tanı metinleri",
+    Katman( kod: CDL-SOZLUK, takım: TAKIM-CEKIRDEK, ad: "Sözlük ve Tanı Metinleri",
       ne: "📖 Çeviri altyapısının doldurulması ve motor metinlerinin toplanması" ) {
 
-      AltKatman( kod: CDL-SOZLUK-K1, ad: "sözlük", departman: kodlama,
+      AltKatman( kod: CDL-SOZLUK-K1, ad: "Sözlük", departman: kodlama,
         ne: "kanonik evrenin İngilizce karşılıkları" ) {
 
         Adım( kod: CDL-A01, durum: tamamlandı, bağımlı: [],
@@ -539,10 +539,10 @@ Dil tercihi İngilizce olan bir kullanıcı Sarmal'ı uçtan uca Türkçe görme
 
     }
 
-    Katman( kod: CDL-YUZEY, takım: TAKIM-EKLENTI, ad: "eklenti ve araç yüzeyi",
+    Katman( kod: CDL-YUZEY, takım: TAKIM-EKLENTI, ad: "Eklenti ve Araç Yüzeyi",
       ne: "🖥️ Kullanıcının doğrudan gördüğü yüzeylerin yerelleştirilmesi" ) {
 
-      AltKatman( kod: CDL-YUZEY-K1, ad: "eklenti", departman: kodlama,
+      AltKatman( kod: CDL-YUZEY-K1, ad: "Eklenti", departman: kodlama,
         ne: "manifesto ve kaynak metinleri" ) {
 
         Adım( 
@@ -611,7 +611,7 @@ Dil tercihi İngilizce olan bir kullanıcı Sarmal'ı uçtan uca Türkçe görme
         }
       }
 
-      AltKatman( kod: CDL-YUZEY-K2, ad: "öğretim ve belge", departman: inceleme,
+      AltKatman( kod: CDL-YUZEY-K2, ad: "Öğretim ve Belge", departman: inceleme,
         ne: "öğrenme yüzeyi ve deponun giriş kapısı" ) {
 
         Adım( kod: CDL-A06, durum: tamamlandı, bağımlı: [ CDL-A01, CDL-A03 ],
@@ -680,13 +680,13 @@ Yayın günü depo kökü bir yabancı geliştiricinin beklediği belgelerle kar
 iki metin birbiriyle çelişmez. Lisans hükmü verilene kadar Blok kapanmaz.
   |<--
 
-  Blok( kod: BLK-YAYIN-YUZEYI,
+  Blok( kod: BLK-YAYIN-YUZEYI, ad: "Yayın Yüzeyi",
         ne: "📜 Deponun kamuya dönük yüzü — lisans, katkı, davranış ve güvenlik belgeleri" ) {
 
-    Katman( kod: YYZ-BELGE, ad: "yayin-belgeleri", ne: "yayın belgeleri katmanı",
+    Katman( kod: YYZ-BELGE, ad: "Yayın Belgeleri", ne: "yayın belgeleri katmanı",
             kullanır: TEK-SARMAL ) {
 
-      AltKatman( kod: YYZ-BELGE-PLN, ad: "planlama", departman: planlama,
+      AltKatman( kod: YYZ-BELGE-PLN, ad: "Planlama", departman: planlama,
                  ne: "yayın belgelerinin hazırlanma modülü" ) {
 
         Adım( kod: YYZ-A01, durum: tamamlandı, bağımlı: [],

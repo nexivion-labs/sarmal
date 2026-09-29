@@ -79,13 +79,13 @@ Faz( kod: FAZ-2026-TEMMUZ, ad: "Olgunlaşma Mevsimi", hedefTarih: "2026-07-31",
   nasıl düzeltilir); tam süit ve iki denetim yeşildir.
   |<--
 
-  Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle", uygular: ORK-7,
+  Blok( kod: BLK-MDR, ad: "Graf Motorunun Dil Reformu — Tanılar İnsan Diliyle", uygular: ORK-7,
     ne: "🪵 Tanı metni envanteri → reform ölçütü ve şablonu → dosya dosya uygulama → test hizası" ) {
 
-    Katman( kod: KAT-MDR-ENVANTER, takım: TAKIM-CEKIRDEK, ad: "envanter ve ölçüt",
+    Katman( kod: KAT-MDR-ENVANTER, takım: TAKIM-CEKIRDEK, ad: "Envanter ve Ölçüt",
       ne: "🌿 Önce ölçmek: hangi metin zaten iyi, hangisi reform istiyor" ) {
 
-      AltKatman( kod: ALT-MDR-OLCUT, departman: planlama, ad: "ölçüt ve envanter",
+      AltKatman( kod: ALT-MDR-OLCUT, departman: planlama, ad: "Ölçüt ve Envanter",
         ne: "🍃 Reform ölçütünün tanımlandığı ve tanı metni envanterinin çıkarıldığı konu modülü" ) {
 
         Adım( kod: MDR-A01, durum: tamamlandı, bağımlı: [], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-MDR-ENVANTER ],
@@ -103,10 +103,10 @@ Faz( kod: FAZ-2026-TEMMUZ, ad: "Olgunlaşma Mevsimi", hedefTarih: "2026-07-31",
       }
     }
 
-    Katman( kod: KAT-MDR-UYGULAMA, takım: TAKIM-CEKIRDEK, ad: "reform uygulaması",
+    Katman( kod: KAT-MDR-UYGULAMA, takım: TAKIM-CEKIRDEK, ad: "Reform Uygulaması",
       ne: "🌿 Onaylı şablonun metinlere uygulanması — dosya dosya, testleriyle birlikte" ) {
 
-      AltKatman( kod: ALT-MDR-METIN, departman: kodlama, ad: "metin reformu",
+      AltKatman( kod: ALT-MDR-METIN, departman: kodlama, ad: "Metin Reformu",
         ne: "🍃 Sözdizim, doğrulama, denetçi ve kural motoru metinlerinin onaylı şablona çekildiği konu modülü" ) {
 
         Adım( kod: MDR-A02, durum: tamamlandı, bağımlı: [ MDR-A01 ], referans: [ DIL-1.1, OGR-2.1 ], üretir: [ KOD-MDR-ENVANTER ],
@@ -134,7 +134,7 @@ Faz( kod: FAZ-2026-TEMMUZ, ad: "Olgunlaşma Mevsimi", hedefTarih: "2026-07-31",
         }
       }
 
-      AltKatman( kod: ALT-MDR-TEST, departman: sınama, ad: "test hizası",
+      AltKatman( kod: ALT-MDR-TEST, departman: sınama, ad: "Test Hizası",
         ne: "🍃 Tanı metni bağının metinden koda taşındığı konu modülü — söz düzeltmeleri test kırmaz" ) {
 
         Adım( kod: MDR-A04, üretir: [ KOD-TANI-SICILI ], durum: tamamlandı, bağımlı: [ MDR-A02, MDR-A03 ], referans: [ DIL-1.1, OGR-2.1 ],
