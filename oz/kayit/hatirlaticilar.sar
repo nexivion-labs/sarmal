@@ -1124,3 +1124,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Onaylar paneli bir sonraki kez elden geçirildiğinde; en geç bir dış sistemin onay isteklerini bu panelde göstermesi istendiğinde",
   ne:               "Founder 2026-09-29 tarihinde bütün onayların tek kutuda, yani Onaylar panelinde toplanmasına hükmetmiştir. Kardeş bir projenin motoru onay isteklerini panelin okuduğu biçimde bir Adım kaydı olarak yazabilmektedir, fakat panel bugün yalnız plan kararlarını tanır: onayla eylemi dosyaya onay alanı yazar, dış sistemin işi onaylanmaz ve kayıt kutudan düşer; kullanıcı onay verdiğini sanabilir. Ayrıca tek Adımlık bu kayıt bir projenin ağacına düştüğünde denetim onu köksüz plan düğümü sayar ve hata verir. Açık araçta üç şey gerekmektedir: denetimin plan düğümü saymadığı ve hiyerarşi kuralı uygulamadığı yalnız bildirim olan bir kayıt biçimi; böyle bir kayıtta onay eyleminin dosyaya yazmayıp kararı kayıtta adı geçen dış komuta devretmesi ya da yalnız bilgi göstermesi; ve bu kayıtların dizininin çalışma alanı düzeyinde ilan edilebilmesi. Ders tek cümledir: bir onay yüzü, onayın gerçekte nereye gittiğini göstermiyorsa güven değil yanılgı üretir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-EKLENTI-ENTEGRASYON-ON-ALTI-DUSUS,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-29,
+  dönüşTetikleyici: "Eklentinin bir sonraki mağaza sürümü paketlenmeden önce; en geç Onaylar paneli elden geçirilirken",
+  ne:               "VIT-K78-A10'un bağımsız incelemesi, eklentinin gerçek VS Code içinde koşan entegrasyon süitinde on altı sınamanın bu işten önce de düştüğünü ölçmüştür: taban işlemede yirmi yedi sınama geçmiş, on altısı düşmüş ve düşen kümeler yeni uçla birebir aynıdır. Düşüşler dört sınıfa ayrılır. Beşi dil ya da yerel ayar kaynaklıdır: imza etiketi ve mercek metni İngilizce gelmekte, yüzey dili üç yerde etkin dil kapısından bağlanmamaktadır. Dördü fikstür ya da kanon kaymasıdır: döngü fikstürü artık döngüsel bağımlılık yerine izinsiz sarma vermekte, örnek kardeşinde kanon kaydı bulunamamakta ve iki kök iki satır yerine bir satır vermektedir. Dördü olası gerçek bir ürün kusurudur: Onaylar panelinin karar komutu dizgi olmayan bir argümanla çağrıldığında gerekçe ölçümü patlamaktadır (onay-govde.ts, gerekceyiOlc); komutun gerçek bir çağrı yolu da böyle bir argüman geçiriyorsa kullanıcı onay veremez. Üçü ölçüm ayrışmasıdır: onay tarama turu sayacı ve panel ile tarama arasındaki kod kümesi farkı. Birim süiti yeşil olduğu için bu düşüşler işleme kapısında görünmemektedir. Ders tek cümledir: yalnız birim süitini koşan kapı, gerçek editör yüzündeki gerilemeyi haftalarca gizleyebilir."
+)
