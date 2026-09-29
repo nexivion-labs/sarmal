@@ -16,7 +16,7 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 113,
             neredeyiz: DAL-GONDERILDI-BIRLESTIRME-ISTEGI-DORT-CI-YESIL-FOUNDER-BIRLESTIRMESI-BEKLIYOR,
             sıradaki: ISTEK-DORT-BIRLESIR-SONRA-WINDOWS-UYUM-KATKILARI-VE-INGILIZCE-YUZ-ILKE-KARARI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
@@ -1881,7 +1881,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
         beyan etmiştir. İki işin ayrıntıları ve plan kenarlarının bu hükme göre
         güncellenmesi, Founder'ın zamanı geldiğinde vereceği tarife bağlıdır.
 
-        FOUNDER HÜKMÜ · 2026-09-12 · PLAN DİSİPLİNİ VE İLK TEMİZLİK: Founder, mevcut
+        FOUNDER HÜKMÜ · 2026-09-12 · PLAN DİSİPLİNİ VE İLK TEMİZLİK (kapsamı
+        2026-09-24 hükmüyle dengelenmiştir): Founder, mevcut
         Adımlar bitmeden yeni plan açılmayacağına ve bu süre içinde doğan her yeni
         işin ya da bulgunun bir hatırlatıcıya yazılacağına hükmetmiştir. Hükmün
         gerekçesi, on bir Blokun aynı anda açık durmasının ORK-3.5 maddesinin
@@ -1896,6 +1897,85 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
         arşivlemenin yirmi dört ile doksan arasında uyarı doğurduğunu göstermiştir.
         Performans mevsiminin şemsiye Adımı PRF-A06, Founder'ın editörde bugün
         takılma görmediğini beyan etmesiyle kapanmıştır.
+
+        FOUNDER HÜKMÜ · 2026-09-24 · PLAN DİSİPLİNİNİN DENGESİ: Founder,
+        2026-09-12 tarihli plan disiplini hükmünün kapsamını yeniden
+        belirlemiştir. Hüküm şudur: yeni bir plan doğabilir ve iskeletiyle
+        birlikte yol haritasına işlenerek bütünüyle görünür olur, ancak her
+        projede aynı anda yalnız bir Blok geliştirmede bulunur; öteki Bloklar
+        bağımlılık sırası gelene kadar beklemede durur ve açık Blok bitmeden
+        yenisine geçilmez. Hüküm proje başına uygulanır; bir projedeki açık iş
+        başka bir projede yeni bir planın doğmasını engellemez. Çalışma
+        sırasında doğan yeni iş, fikir ya da bulgu plana değil hatırlatıcıya
+        yazılır ve sırası geldiğinde plana girer. Kullanıcıyı sessizce yanıltan
+        acil bir kusur bu sırayı kesebilecek tek istisnadır. Gerekçe şudur:
+        2026-09-12 hükmü on bir Blokun aynı anda açık durup hiçbirinin
+        bitmemesine karşı verilmiştir ve amacında doğrudur, fakat bütün çalışma
+        alanını kilitleyecek biçimde yazıldığı için Sarmal'daki açık Adımlar
+        orkestrasyon projesinde yeni bir planın doğmasını da durdurmaktadır;
+        Founder bu hükmün Sarmal için verildiğini ve bir denge kurulması
+        gerektiğini beyan etmiştir. Hükmün amacı, yani işlerin yarım
+        kalmaması, aynı anda tek Blok ilkesiyle korunmakta, kaldırılan tek şey
+        bir projenin ötekini kilitlemesidir. Hükmün ilk uygulaması orkestrasyon
+        projesinin yeni iskeletidir: iskelet doğacak, yedi Faz yol haritasında
+        görünecek ve yalnız ilk Fazın ilk Bloku geliştirmeye alınacaktır. Bu
+        hüküm, 2026-09-12 hükmünün mevcut Adımlar bitmeden yeni plan
+        açılmayacağını söyleyen cümlesinin yerini alır; o hükmün geri kalanı,
+        yani ilk uygulamasına ait kayıtlar, tarih olarak yerinde durur.
+
+        FOUNDER HÜKMÜ · 2026-09-24 · TESLİM BİRİMİ: Founder, orkestrasyon
+        planının hakem incelemesinden sonra dalın ve birleştirme isteğinin
+        birimini Adıma indirmeye hükmetmiştir: her küçük iş kendi kısa ömürlü
+        dalında yürür, kendi birleştirme isteğiyle incelenir ve iş bitince
+        birleştirilir. Gerekçe şudur: ORK-9'un bugünkü metni dalı Faz birimine
+        bağlamakta ve bir mevsim boyunca açık kalan uzun ömürlü dallar
+        doğurmaktadır; endüstri araştırması, özellikle DORA bulguları ve
+        Google'ın küçük değişiklik ilkesi, ise kısa ömürlü dalları ve küçük
+        değişiklikleri önermektedir, çünkü hata küçükken yakalanır ve inceleme
+        yükü düşer. Hüküm bir kanon değişikliği gerektirir: ORK-9'un metni bu
+        hükme göre yeniden yazılacak ve çatı işaretçisindeki H12 metninin her
+        Blokun işini kendi dalına bağlayan ifadesi, ORK-9 ile çelişmemesi için
+        aynı işte hizalanacaktır. Kanon metni güncellenene kadar ORK-9
+        yürürlükte kalır.
+
+        FOUNDER HÜKMÜ · 2026-09-25 · BİRLEŞTİRME ONAYI VE GEÇİŞ DÖNEMİ: Founder,
+        2026-09-24 tarihli teslim birimi hükmünü iki yönden tamamlamıştır.
+        Birincisi, hedef düzende birleştirme isteklerini insan değil ajan
+        onaylar: üretici ajan isteği açar, otomatik kontroller (sınama, tip
+        denetimi, güvenlik taraması) koşar, üreticiden farklı model ve ayrı
+        bağlamda çalışan inceleyici ajan kararını zorunlu bir durum kontrolü
+        olarak yazar ve bütün kontroller yeşilse istek kendiliğinden
+        birleşir. Otomatik kontrollerden biri kırmızıysa inceleyici ajan
+        isteği birleştiremez. Kanon ve kural değişiklikleri, güvenlik
+        ayarları (sürekli tümleştirme dosyaları, dal koruma kuralları, gizli
+        anahtarlar, kimlik doğrulama kodu) ve yeni dış bağımlılıklar bu
+        akışın dışındadır ve Founder'ın sözünü bekler. Dal korumasında
+        yöneticiye de uygulama seçeneği açılır, böylece hiçbir hesap kapıyı
+        atlayamaz; Founder her gün birleşen, reddedilen ve bekleyen istekleri
+        tek bir özetle görür ve istemediği bir birleştirmeyi geri alabilir.
+        Gerekçe şudur: her isteği Founder'ın onaylaması teslim hattını tek bir
+        kişiye bağlar ve işi yavaşlatır; ayrıca 2026-09-25 ölçümü, Sarmal
+        deposundaki ilk üç isteğin hiçbir onay almadan yönetici hesabıyla
+        birleştirildiğini göstermiştir, çünkü dal korumasında yöneticiye de
+        uygulama seçeneği kapalıdır ve "en az bir onay" kuralı fiilen
+        işlememiştir. İkincisi, geçiş dönemi tanımlanmıştır: orkestrasyon
+        deposunda, kullanıcı bulunmadığı ve ürün yayımlanmadığı sürece,
+        geliştirme birleştirme isteği açılmadan doğrudan ana dalda yürür. Bu
+        dönemde üç koşul geçerlidir: üretici ile inceleyici yine ayrıdır ve
+        her iş işlenmeden önce inceleyici ajandan geçer; ORK-9'un işlemenin
+        Adım biriminde olduğu kuralı aynen uygulanır, dolayısıyla her Adım
+        kendi işlemesiyle kaydedilir; yerel kapılar her işlemede koşar ve
+        atlanmaz. Geçiş dönemi şu üç olaydan biri gerçekleştiğinde biter ve o
+        gün birleştirme isteğiyle yürüyen hedef düzene geçilir: ilk Fazdaki
+        teslim hattının uçtan uca çalışır hâle gelmesi, ilk dış kullanıcının
+        ya da müşterinin gelmesi veya ilk sürümün yayımlanması. Gerekçe şudur:
+        kullanıcısı olmayan ve yayımlanmamış özel bir depoda bozulan bir şey
+        kimseye zarar vermez ve iskeletin ilk Fazı teslim hattının kendisini
+        kurduğu için o hattın kurulurken kullanılması mümkün değildir; buna
+        karşılık üretici ile inceleyicinin ayrılığı ve Adım birimindeki geri
+        alınabilirlik bu dönemde de korunur. Bu hüküm yalnız orkestrasyon
+        deposunu bağlar; herkese açık Sarmal deposunda korumalı ana dal ve
+        yalnız Founder'ın sözüyle yapılan gönderim düzeni aynen sürer.
 
         OTURUM 111 DEVRİ · 2026-09-12 · BİR SONRAKİ OTURUM İÇİN: Bu oturumda teslim
         dalı main dalına birleştirilmiş, main dalı koruma altına alınmış, açık
