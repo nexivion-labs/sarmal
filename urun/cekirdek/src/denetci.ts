@@ -38,7 +38,7 @@ import { ayristir } from "./ayristirici.ts";
 import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, AYRISTIRILMAZ_SENTETIK, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -75,18 +75,8 @@ export interface DiskAnlikGoruntu {
  *  yazılmadığı için kaynak sayılmaz (KPS-IND-A01 · Founder hükmü 2026-09-10). */
 const YOKSAY = new Set([".git", "node_modules", "__pycache__", ".DS_Store", "dist", "out"]);
 
-/** AYRIŞTIRILMAYAN SENTETİK GÖVDE — yer tutucu taşıyan şablon, kapatılmış arşiv ve
- *  sınama fikstürü. İki demirli evi vardır ve ikisi de klasörün ADINDAN değil
- *  YERİNDEN tanınır: öğreti kitaplığının altındaki ders rafları (OGR-5) ile bir
- *  sınama rafının altındaki fikstür klasörü (sentetik sınama malzemesi —
- *  `METIN_ATIF_DOSYASI` süzgecinin `*.test.ts` gerekçesinin aynısı). Kullanıcının
- *  kendi kökünün altında açtığı aynı adlı bir kitaplık ÜRÜNDÜR ve taranır;
- *  kusurun kendisi buydu (KPS-IND-A01 · Founder hükmü 2026-09-10).
- *  Örnek rafı bilerek dışarıdadır: OGR-5 öğretim malzemesinin karneye girmemesini
- *  ister fakat DOĞRULANMASINI zorunlu kılar, dolayısıyla örnek korpusu
- *  ayrıştırılmaya devam eder ve tanılarını almaya devam eder. */
-const AYRISTIRILMAZ_SENTETIK =
-  /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|fikstur|sablon)|sinama\/(?:[^/]+\/)*fikstur)(\/|$)/;
+// AYRIŞTIRILMAYAN SENTETİK GÖVDE deseni kimlik.ts'e taşındı (KPS-CAT-A02): çatı
+// bağının kart yüzü aynı evreni görmek zorundadır ve kimlik.ts denetci.ts'i ithal edemez.
 
 /** Kökten gerçek ağacı okur (etkili). Gizli (.-önekli) girdiler ve YOKSAY atlanır. */
 /** Nöbet için (PRF-MK-A03): bir turda diskin kaç kez tarandığı ölçülür. */

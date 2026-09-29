@@ -354,6 +354,19 @@ export const URETILMIS_GOVDE = /(^|\/)(?:node_modules|dist|dist-sinama)(\/|$)/;
  *  muafiyeti soran çağrı yerleri ise `DERS_DUNYASI` desenini tek başına okur. */
 export const INDEKS_DISI = /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)|node_modules|dist|dist-sinama)(\/|$)/;
 
+/** AYRIŞTIRILMAYAN SENTETİK GÖVDE — yer tutucu taşıyan şablon, kapatılmış arşiv ve
+ *  sınama fikstürü. İki demirli evi vardır ve ikisi de klasörün ADINDAN değil
+ *  YERİNDEN tanınır: öğreti kitaplığının altındaki ders rafları (OGR-5) ile bir
+ *  sınama rafının altındaki fikstür klasörü (sentetik sınama malzemesi —
+ *  `METIN_ATIF_DOSYASI` süzgecinin `*.test.ts` gerekçesinin aynısı). Kullanıcının
+ *  kendi kökünün altında açtığı aynı adlı bir kitaplık ÜRÜNDÜR ve taranır;
+ *  kusurun kendisi buydu (KPS-IND-A01 · Founder hükmü 2026-09-10).
+ *  Örnek rafı bilerek dışarıdadır: OGR-5 öğretim malzemesinin karneye girmemesini
+ *  ister fakat DOĞRULANMASINI zorunlu kılar, dolayısıyla örnek korpusu
+ *  ayrıştırılmaya devam eder ve tanılarını almaya devam eder. */
+export const AYRISTIRILMAZ_SENTETIK =
+  /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|fikstur|sablon)|sinama\/(?:[^/]+\/)*fikstur)(\/|$)/;
+
 /** İndekslenen dosya uzantıları (YUZ-3.2 ④): .sar TAM (tanım+atıf), .md/.ts yalnız ATIF. */
 export const INDEKS_DOSYASI = /\.(sar|md|ts)$/;
 
@@ -654,6 +667,154 @@ export function kesinCatiKapsami(
 export function catiAltindaMi(dosya: string, kapsamlar: readonly CatiKapsami[]): boolean {
   if (INDEKS_DISI.test(dosya)) return false;
   return kapsamlar.some((k) => onekKapsar(k.onek, dosya));
+}
+
+// ── KPS-CAT-A02 · ÇATI BAĞININ GRAF DIŞI YÜZLERİ ────────────────────────────
+//   Ölçüm (2026-09-28, gerçek çatı): KPS-CAT-A01'in kurduğu kapsama kenarı
+//   grafta YERİNDEDİR — çatı kökünden çözülen grafta üç Proje kökünün üçünün de
+//   kapsayanı çalışma alanı düğümüdür. Görünmeyen yer bağlam kartıdır: kart
+//   (`dugumBaglami`) yalnız tanımın KENDİ DOSYASININ sözdizim ağacını okur ve
+//   çatı bağı dosyalar arası bir kenardır; dolayısıyla kart bu bağı hiçbir
+//   zaman gösteremezdi, çatı ilanının Raf ya da Kitaplık yazılması bunu
+//   değiştirmez. Aşağıdaki iki yordam grafın çatı çevrimini (dag.ts ①b) kart ve
+//   anahat yüzlerine taşır. İkinci bir klasör→çatı kuralı YAZILMAZ: bağ
+//   `catiKapsamlari` + `kesinCatiKapsami` ikilisinden okunur, yani grafa kenar
+//   yazan tek kaynaktan; iki yüz aynı olguya iki ayrı cevap veremez (YUZ-3.1).
+
+/** Çatı ilanının bağladığı tek bir Proje kökü. */
+export interface CatiProjeBagi {
+  /** ÇalışmaAlanı kodu. */
+  cati: string;
+  /** ÇalışmaAlanının insan adı (varsa). */
+  catiAd?: string;
+  /** Bağlanan Proje kodu. */
+  proje: string;
+  /** Projenin insan adı (varsa). */
+  projeAd?: string;
+  /** Proje tanımının dosyası. */
+  dosya: string;
+  /** Bağı kuran Kitaplık/Raf ilanının öneki. */
+  onek: string;
+}
+
+/** Bir programın ÜST KADEMESİZ Proje kökleri — graf çevriminin öznesiyle aynı küme:
+ *  başka bir düğümün içine yazılmış Proje zaten sözdizimsel bir kapsayana sahiptir
+ *  ve çevrim ona dokunmaz. */
+export function ustKademesizProjeler(program: Program): Array<{ kod: string; ad?: string }> {
+  const out: Array<{ kod: string; ad?: string }> = [];
+  for (const b of program.bildirimler) {
+    if (b.tur !== "widget" || b.ad !== "Proje") continue;
+    const kod = dugumKodu(b);
+    if (kod) out.push({ kod, ad: widgetAlani(b, "ad") });
+  }
+  return out;
+}
+
+function widgetAlani(n: Dugum, ad: string): string | undefined {
+  return [...n.parametreler, ...n.ozellikler].find((x) => x.ad === ad && x.deger.tur === "metin")?.deger.metin;
+}
+
+/**
+ * Çatı ilanlarının bağladığı Proje kökleri (KPS-CAT-A02 · MIM-1.1). Girdi çatı
+ * ilanlarını taşıyan programlar ile üst kademesiz Proje tanımlarıdır; çıktı,
+ * grafın çatı çevriminin aynı girdiyle kuracağı kenarların listesidir. Bağ
+ * tekil ve kesin değilse (aynı derinlikte iki ayrı çatı kodu) listeye girmez,
+ * tıpkı grafta kenar yazılmadığı gibi.
+ */
+export function catiProjeBaglari(
+  catiProgramlari: ReadonlyMap<string, Program>,
+  projeler: ReadonlyArray<{ kod: string; ad?: string; dosya: string }>,
+): CatiProjeBagi[] {
+  const kapsamlar = catiKapsamlari(catiProgramlari);
+  if (!kapsamlar.length) return [];
+  const catiAdlari = new Map<string, string | undefined>();
+  for (const program of catiProgramlari.values()) {
+    for (const b of program.bildirimler) {
+      widgetGez(b, "ÇalışmaAlanı", (ca) => {
+        const kod = dugumKodu(ca);
+        if (kod && !catiAdlari.has(kod)) catiAdlari.set(kod, widgetAlani(ca, "ad"));
+      });
+    }
+  }
+  const out: CatiProjeBagi[] = [];
+  for (const p of projeler) {
+    const k = kesinCatiKapsami(p.dosya, kapsamlar);
+    if (!k) continue;
+    out.push({ cati: k.kod, catiAd: catiAdlari.get(k.kod), proje: p.kod, projeAd: p.ad, dosya: p.dosya, onek: k.onek });
+  }
+  return out.sort((a, b) => a.proje.localeCompare(b.proje, "tr"));
+}
+
+/**
+ * Kimlik indeksinden çatı bağları — gezin kartının girdisi. Çatı ilanları ile
+ * Proje tanımları indeksin kendi tanım listesinden seçilir ve yalnız o
+ * dosyalar ayrıştırılır; graf kurulmaz. Ders dünyası indekse zaten girmez.
+ */
+export function indekstenCatiBaglari(
+  indeks: KimlikIndeksi,
+  dosyaOku: (dosya: string) => string | undefined,
+): CatiProjeBagi[] {
+  // Evren grafın evreniyle aynıdır: yükleyicinin ayrıştırmadığı sentetik gövde
+  // (sınama fikstürü · şablon · arşiv) indekste bulunsa bile bağ doğurmaz.
+  const tumu = indeks.tumTanimlar().filter((t) => !AYRISTIRILMAZ_SENTETIK.test(t.dosya.replace(/\\/g, "/")));
+  const catiDosyalari = [...new Set(tumu.filter((t) => t.tip === "ÇalışmaAlanı").map((t) => t.dosya))];
+  if (!catiDosyalari.length) return [];
+  const ayristirilmis = new Map<string, Program | undefined>();
+  const programAl = (dosya: string): Program | undefined => {
+    if (ayristirilmis.has(dosya)) return ayristirilmis.get(dosya);
+    let p: Program | undefined;
+    const metin = dosyaOku(dosya);
+    if (metin !== undefined) { try { p = ayristir(belirtecle(metin)); } catch { p = undefined; } }
+    ayristirilmis.set(dosya, p);
+    return p;
+  };
+  const catiProgramlari = new Map<string, Program>();
+  for (const d of catiDosyalari) { const p = programAl(d); if (p) catiProgramlari.set(d, p); }
+  const projeler: Array<{ kod: string; ad?: string; dosya: string }> = [];
+  for (const d of new Set(tumu.filter((t) => t.tip === "Proje").map((t) => t.dosya))) {
+    const p = programAl(d);
+    if (p) for (const pr of ustKademesizProjeler(p)) projeler.push({ ...pr, dosya: d });
+  }
+  return catiProjeBaglari(catiProgramlari, projeler);
+}
+
+/**
+ * Çatı ilanı DOSYASININ kendi Kitaplık/Raf satırlarına bağlanan Proje kökleri —
+ * eklenti anahattının girdisi (KPS-CAT-A02). Anahat yalnız açık belgeyi görür;
+ * bu yordam ilanın doğrudan çocuğu olan her Kitaplık/Rafın klasöründeki giriş
+ * dosyasını okur ve oradaki üst kademesiz Proje kökünü, grafın kullandığı aynı
+ * `kesinCatiKapsami` hükmünden geçirerek döndürür. Sonuç ilan satırının koduna
+ * göre gruplanır. Diske erişilemezse boş döner; anahat bu yüzden düşmez.
+ */
+export function catiIlaniProjeleri(catiDosyasi: string, program: Program): Map<string, CatiProjeBagi[]> {
+  const sonuc = new Map<string, CatiProjeBagi[]>();
+  const catiProgramlari = new Map([[catiDosyasi.replace(/\\/g, "/"), program]]);
+  const catiDizini = dirname(catiDosyasi);
+  for (const b of program.bildirimler) {
+    widgetGez(b, "ÇalışmaAlanı", (ca) => {
+      for (const c of ca.cocuklar) {
+        if (c.tur !== "widget" || (c.ad !== "Kitaplık" && c.ad !== "Raf")) continue;
+        const rafKod = dugumKodu(c);
+        const yol = widgetAlani(c, "yol");
+        if (!rafKod || !yol) continue;
+        const rafDizini = resolve(catiDizini, yol);
+        let girisler: string[];
+        try { girisler = readdirSync(rafDizini); } catch { continue; }
+        const projeler: Array<{ kod: string; ad?: string; dosya: string }> = [];
+        for (const g of girisler) {
+          if ((!g.endsWith("_anadizin.sar") && g !== "ana.sar") || dosyaMuhru(g)) continue;
+          const dosya = join(rafDizini, g);
+          try {
+            const p = ayristir(belirtecle(readFileSync(dosya, "utf8")));
+            for (const pr of ustKademesizProjeler(p)) projeler.push({ ...pr, dosya: dosya.replace(/\\/g, "/") });
+          } catch { /* kırık giriş anahattı düşürmez */ }
+        }
+        const baglar = catiProjeBaglari(catiProgramlari, projeler);
+        if (baglar.length) sonuc.set(rafKod, baglar);
+      }
+    });
+  }
+  return sonuc;
 }
 
 /** Çatı ilanında raf olarak duyurulmuş bir kardeş proje kökü. */
@@ -1240,6 +1401,29 @@ export function butunAtiflar(indeks: KimlikIndeksi, kod: string, suzgec?: DosyaS
   ];
 }
 
+/**
+ * Bağlam kartına çatı bağını işler (KPS-CAT-A02). Üst kademesiz bir Proje
+ * kökünün kartı üst zincirinde kendisini kapsayan çalışma alanını, kardeşleri
+ * arasında aynı çatının öteki Projelerini gösterir; çalışma alanının kartı ise
+ * bağladığı Projeleri çocukları arasında sayar. Bağlar yalnız istendiğinde ve
+ * kart başına bir kez çözülür; Proje ya da ÇalışmaAlanı olmayan bir kodun
+ * kartı hiçbir disk okuması doğurmaz.
+ */
+function catiBaginiKartaEkle(b: Baglam, tanim: Tanim, baglariAl: () => CatiProjeBagi[]): void {
+  const projeDugumu = (x: CatiProjeBagi): BaglamDugumu => ({ tip: "Proje", kod: x.proje, ad: x.projeAd });
+  if (tanim.tip === "Proje" && b.zincir.length === 0) {
+    const bag = baglariAl().find((x) => x.dosya === tanim.dosya && x.proje === b.dugum.kod);
+    if (!bag) return;
+    b.zincir = [{ tip: "ÇalışmaAlanı", kod: bag.cati, ad: bag.catiAd }];
+    b.kardesler = baglariAl().filter((x) => x.cati === bag.cati && x !== bag).map(projeDugumu);
+    return;
+  }
+  if (tanim.tip === "ÇalışmaAlanı" && b.dugum.kod) {
+    const cocuk = baglariAl().filter((x) => x.cati === b.dugum.kod);
+    b.cocuklar = [...b.cocuklar, ...cocuk.map(projeDugumu)];
+  }
+}
+
 export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
   const hamTanimlar = indeks.tanimlar(kod);
   // ORK-4: ham kimlikle bulunamayan ad alanlı kod, kanon hükmüyle yeniden çözülür.
@@ -1284,10 +1468,14 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
     const kartTanimlari = cokProjeli
       ? tanimlar.filter((t, i) => projeler[i] !== undefined && tanimlar.findIndex((u, j) => projeler[j] === projeler[i]) === i)
       : [tanimlar[0]];
+    let catiBaglari: CatiProjeBagi[] | undefined;
     for (const tanim of kartTanimlari) {
       const metin = dosyaOku(tanim.dosya);
       const b = metin ? dugumBaglami(metin, adAlaniAyir(kod).yerel) : undefined;
       if (!b) continue;
+      // KPS-CAT-A02 · MIM-1.1: çatı bağı dosyalar arası bir kenardır ve sözdizim
+      // ağacında görünmez; kart onu grafın çatı çevrimiyle aynı kaynaktan okur.
+      catiBaginiKartaEkle(b, tanim, () => (catiBaglari ??= indekstenCatiBaglari(indeks, dosyaOku)));
       const adres = (x: BaglamDugumu): string =>
         `${x.tip}${x.kod ? ` ${x.kod}` : ""}${x.ad ? ` (${x.ad})` : ""}`;
       const kart: string[] = [];
