@@ -132,14 +132,15 @@ test("BKM-DNT-A16: anlatı iki dilde de aynı bölüm iskeletini taşır", () =>
 });
 
 // ── ③ Kitaplık hükmü ve plan adresi: bayat öğretim yüzeyi kalmadı ───────────
-test("BKM-DNT-A16: kartın örneği Kitaplık kademesini öğretir ve plan adresi is/plan/ilk_plan.sar'dır", () => {
+test("BKM-DNT-A16: kartın örneği Kitaplık kademesini öğretir ve plan adresi faz klasöründe sıra önekli dosyadır", () => {
   assert.match(MINIMAL_ANADIZIN, /Kitaplık\( kod: KTP-IS, yol: "is\/"/u, "örnek Kitaplık kademesini taşımalı");
   // Kökün DOĞRUDAN çocuğu olan Raf (tam iki boşluk girinti) yasaktır; Kitaplık
   // içindeki Raf (dört boşluk) hükmün ta kendisidir ve beklenir.
   assert.doesNotMatch(MINIMAL_ANADIZIN, /^ {2}Raf\(/mu, "kökün altına çıplak Raf yazılamaz");
   assert.match(MINIMAL_ANADIZIN, /^ {4}Raf\( kod: RAF-PLAN/mu, "Raf Kitaplığın İÇİNDE yaşamalı");
   const kart = ogretKarti(SNF, "tr");
-  assert.ok(kart.includes("─── is/plan/ilk_plan.sar ───"), "kart doğan ağacın gerçek plan adresini göstermeli");
+  // KPS-SIR-A03 (MIM-1.2 · Founder hükmü 2026-09-29): her Faz faz klasöründe sıra önekli kendi dosyasında yaşar.
+  assert.ok(kart.includes("─── is/plan/faz/1_ilk_surum.sar ───"), "kart Faz dosyası düzenindeki plan adresini göstermeli");
 });
 
 /** Bayat adres tek yüzeyde kalırsa ajan var olmayan bir yol öğrenir; bütün üretim metni birlikte
@@ -148,7 +149,9 @@ test("BKM-DNT-A16: kartın örneği Kitaplık kademesini öğretir ve plan adres
  *  sözlüğü ise `ogreti/bilgi/tasarim_sozlugu` adresindedir. Üçünün de çıplak yazımı, yani
  *  kitaplık öneki düşmüş hâli, var olmayan bir yol öğretir ve bu yüzden üçü de nöbettedir. */
 const BAYAT_ADRESLER: ReadonlyArray<{ bayat: string; dogru: string; desen: RegExp }> = [
-  { bayat: "plan/ilk_plan.sar", dogru: "is/plan/ilk_plan.sar", desen: /(?<!is\/)(?<![\w/])plan\/ilk_plan\.sar/u },
+  // KPS-SIR-A03 (MIM-1.2 · Founder hükmü 2026-09-29): doğuş planı artık faz klasöründe sıra önekli
+  // dosyada doğar; `ilk_plan.sar` adı hangi önekle yazılırsa yazılsın bayattır.
+  { bayat: "ilk_plan.sar", dogru: "is/plan/faz/1_dogus.sar", desen: /(?<![\w])ilk_plan\.sar/u },
   { bayat: "ogrenme/", dogru: "ogreti/ogrenme/", desen: /(?<!ogreti\/)ogrenme\//u },
   { bayat: "bilgi/tasarim_sozlugu", dogru: "ogreti/bilgi/tasarim_sozlugu", desen: /(?<!ogreti\/)bilgi\/tasarim_sozlugu/u },
 ];
@@ -175,9 +178,10 @@ test("BKM-DNT-A16: bayat-adres deseni çıplak yazımı yakalar, kitaplık önek
     assert.ok(k !== undefined, `${bayat} nöbet listesinde olmalı`);
     return k.desen;
   };
-  const plan = desenBul("plan/ilk_plan.sar");
+  const plan = desenBul("ilk_plan.sar");
   assert.ok(plan.test("kart `plan/ilk_plan.sar` adresini gösterir"), "çıplak plan adresi yakalanmalı");
-  assert.ok(!plan.test("kart `is/plan/ilk_plan.sar` adresini gösterir"), "doğru plan adresi elenmeli");
+  assert.ok(plan.test("kart `is/plan/ilk_plan.sar` adresini gösterir"), "eski doğuş adresi de yakalanmalı");
+  assert.ok(!plan.test("kart `is/plan/faz/1_dogus.sar` adresini gösterir"), "Faz dosyası düzenindeki adres elenmeli");
   const raf = desenBul("ogrenme/");
   assert.ok(raf.test("Beceri kartları `ogrenme/` rafında yaşar"), "çıplak raf adresi yakalanmalı");
   assert.ok(raf.test("Skill cards live on the `ogrenme/` shelf"), "İngilizce hane de yakalanmalı");

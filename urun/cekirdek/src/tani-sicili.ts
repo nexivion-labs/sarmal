@@ -234,6 +234,16 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "katmansız-blok", madde: "MIM-1.3", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "tek-adımlı-blok", madde: "MIM-1.3", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "adımsız-kapsayıcı", madde: "MIM-1.6", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A03 (Founder hükmü 2026-09-29): her Faz plan rafının faz klasöründe sıra
+  // önekli kendi dosyasında yaşar, Faz ilanı dosyanın tepesinde durur ve Blok Faza
+  // yalnız Faz gövdesine sarılarak bağlanır. Düzenin dört olgusu MIM-1.2 maddesine
+  // bağlanır ve kanonun yazdığı bilgi düzeyinde doğar; mevcut planlar taşınana dek
+  // hiçbir kapıyı kırmızıya düşürmez. Kapsam projedir: Faz ile Blok arasındaki bağ
+  // tek dosyadan okunamaz. Ders dünyası, fikstürler ve giriş ilanı muaftır.
+  { kod: "çok-fazlı-dosya", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "faz-dışı-blok", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "faz-ilanı-tepede-değil", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "yersiz-faz-dosyası", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */

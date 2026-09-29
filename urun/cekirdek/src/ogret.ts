@@ -32,7 +32,7 @@ export const MINIMAL_ANADIZIN = `-->|
 ## Amaç
 Sarmal ile ilk proje — bu dosya mimariyi çizer, plan ayrı dosyada büyür.
 ## Kapsam
-Bir teknoloji ilanı ve işin kitaplığı; ilk iş is/plan/ilk_plan.sar dosyasındadır.
+Bir teknoloji ilanı ve işin kitaplığı; ilk iş is/plan/faz/1_ilk_surum.sar dosyasındadır.
 ## Sonuç
 denetle ⛔0 — kart örneği kendini kanıtlar.
 |<--
@@ -51,7 +51,7 @@ export const MINIMAL_PLAN = `Faz( kod: FAZ-MVP, ad: "İlk Sürüm Mevsimi", ne: 
   //    Her Blok kendi belge bloğunu taşır (Amaç · Kapsam · Sonuç zorunludur).
   -->|
   ## Amaç
-  İlk işi taşıyan çekirdek gövde — Blok, işin fazlar boyu büyüyen tek evidir.
+  İlk işi taşıyan çekirdek gövde — Blok, Fazın gövdesinde büyüyen işin evidir.
   ## Kapsam
   Bir teknoloji katmanı, bir departman modülü ve iki iş adımı.
   ## Sonuç
@@ -319,7 +319,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   b.push("─── ilk_proje_anadizin.sar ───");
   b.push(MINIMAL_ANADIZIN);
   b.push("");
-  b.push("─── is/plan/ilk_plan.sar ───");
+  b.push("─── is/plan/faz/1_ilk_surum.sar ───");
   b.push(MINIMAL_PLAN);
   b.push("");
   b.push(y(
@@ -385,12 +385,12 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     "   and approaching work; without it the Phase still opens and the engine only reminds you.",
   ));
   b.push(y(
-    "   Blok mevsime `mevsim: FAZ-…` ya da Faz'ın `çağır` listesiyle de bağlanabilir",
-    "   A Block may bind to its season with `mevsim: FAZ-…` or the Phase's `çağır` list",
+    "   Her Faz is/plan/faz/ altında sıra önekli kendi dosyasında yaşar ve Bloklar Faz",
+    "   Every Phase lives in its own prefix-numbered file under is/plan/faz/ and Blocks are",
   ));
   b.push(y(
-    "   (bir bağ tek yerde yazılır); Fazsız Blok hatadır, bekleyen iş de bir Faza bağlanır.",
-    "   (write one binding in one place); a phase-less Block is an error, and waiting work is bound to a Phase too.",
+    "   gövdesine sarılır (MIM-1.2); Fazsız Blok hatadır, bekleyen iş de bir Faza bağlanır.",
+    "   wrapped in the Phase body (MIM-1.2); a phase-less Block is an error, and waiting work is bound to a Phase too.",
   ));
   b.push("");
   b.push(y(

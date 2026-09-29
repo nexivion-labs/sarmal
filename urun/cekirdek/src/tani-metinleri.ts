@@ -176,6 +176,23 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" yalnız tek bir Adım taşıyor ("${a(p, "adim")}"). Blok birden çok Katmanı kavuşturan bir iş gövdesidir; tek Adımlık iş çoğu zaman var olan bir Blokun içinde bir Adım olarak yaşar (MIM-1.3).`,
     oneri: (p) => `Adımı ilgili bir Blokun uygun Katmanına taşı ya da Blokun kavuşturduğu öteki Katmanların Adımlarını yaz. Örnek: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
   },
+  // ── Faz dosyası düzeni (MIM-1.2 · KPS-SIR-A03 · Founder hükmü 2026-09-29) ──
+  "çok-fazlı-dosya": {
+    mesaj: (p) => `Bu dosya ${a(p, "sayi")} Faz taşıyor; "${a(p, "kimlik")}" Fazı "${a(p, "ilk")}" Fazıyla aynı dosyada ilan edilmiş. Her Faz plan rafının faz klasöründe sıra önekli kendi dosyasında yaşar ve sonraki Faz yeni bir dosyada doğar (MIM-1.2).`,
+    oneri: (p) => `"${a(p, "kimlik")}" Fazını gövdesindeki Bloklarla birlikte kendi dosyasına taşı; dosyanın adı Faz sırasını önekle taşır. Örnek: \`is/plan/faz/2_surum.sar\` dosyasının tepesinde \`Faz( kod: ${a(p, "kimlik")} ) { Blok( … ) { … } }\`.`,
+  },
+  "faz-dışı-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" Faz gövdesinin dışında duruyor ve "${a(p, "faz")}" Fazına ${a(p, "bag") === "çağır" ? "Fazın `çağır` listesiyle" : "kendi `mevsim:` alanıyla"} bağlanmış. Blok Faza yalnız Faz gövdesine sarılarak bağlanır; dosyayı açan kişi Blokun hangi zaman diliminde yaşadığını ancak böyle görür (MIM-1.2).`,
+    oneri: (p) => `Bloku gövdesiyle birlikte "${a(p, "faz")}" Fazının dosyasına taşı ve Faz gövdesinin içine yaz; ${a(p, "bag") === "çağır" ? "`çağır` satırını" : "`mevsim:` alanını"} kaldır. Örnek: \`Faz( kod: ${a(p, "faz")} ) { Blok( kod: ${a(p, "kimlik")} ) { … } }\`.`,
+  },
+  "faz-ilanı-tepede-değil": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Faz ilanı dosyanın tepesinde durmuyor: ${b(p, "gomulu") ? `Faz başka bir düğümün (${a(p, "onceki")}) gövdesine yazılmış` : `kendisinden önce ${a(p, "onceki")} ilan edilmiş`}. Faz dosyası Faz ilanıyla başlar; Bloklar onun gövdesinde büyür (MIM-1.2).`,
+    oneri: (p) => `Faz ilanını dosyanın ilk bildirimi yap ve öteki ilanları ya Faz gövdesine ya da kendi raflarındaki dosyalara taşı. Örnek: dosya \`Faz( kod: ${a(p, "kimlik")} ) { Blok( … ) { … } }\` ile başlar.`,
+  },
+  "yersiz-faz-dosyası": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazı "${a(p, "dosyaAdi")}" dosyasında yaşıyor; ${b(p, "klasor") ? "dosya faz klasöründe fakat adı sıra önekli değil" : "dosya plan rafının faz klasöründe değil"}. Her Faz \`faz/\` klasöründe sıra önekli (\`0_\`, \`1_\`, …) kendi dosyasında yaşar; Fazların sırası dosya adından okunur (MIM-1.2).`,
+    oneri: (p) => `${b(p, "klasor") ? "Dosyanın adına Faz sırasını önek olarak yaz" : "Dosyayı plan rafının faz klasörüne taşı ve adına Faz sırasını önek olarak yaz"}. Örnek: \`is/plan/faz/1_${a(p, "dosyaAdi").replace(/^\d+_/, "")}\` dosyasının tepesinde \`Faz( kod: ${a(p, "kimlik")} ) { … }\`.`,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -579,6 +596,23 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   "tek-adımlı-blok": {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" carries only one Adım ("${a(p, "adim")}"). A Blok is a work body that joins several Katmanlar; single-Adım work usually lives as an Adım inside an existing Blok (MIM-1.3).`,
     oneri: (p) => `Move the Adım into a fitting Katman of a related Blok, or write the Adımlar of the other Katmanlar the Blok joins. Example: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
+  },
+  // ── Phase file layout (MIM-1.2 · KPS-SIR-A03 · Founder ruling 2026-09-29) ──
+  "çok-fazlı-dosya": {
+    mesaj: (p) => `This file carries ${a(p, "sayi")} Phases; Phase "${a(p, "kimlik")}" is declared in the same file as Phase "${a(p, "ilk")}". Every Phase lives in its own prefix-numbered file in the plan shelf's phase folder, and the next Phase is born in a new file (MIM-1.2).`,
+    oneri: (p) => `Move Phase "${a(p, "kimlik")}" together with the Bloklar in its body into its own file; the file name carries the Phase order as a prefix. Example: \`is/plan/faz/2_surum.sar\` starting with \`Faz( kod: ${a(p, "kimlik")} ) { Blok( … ) { … } }\`.`,
+  },
+  "faz-dışı-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" stands outside a Phase body and is bound to Phase "${a(p, "faz")}" ${a(p, "bag") === "çağır" ? "through the Phase's `çağır` list" : "through its own `mevsim:` field"}. A Blok is bound to a Phase only by being wrapped in the Phase body; only then can a reader opening the file see which time slice the Blok lives in (MIM-1.2).`,
+    oneri: (p) => `Move the Blok with its body into the file of Phase "${a(p, "faz")}" and write it inside the Phase body; remove the ${a(p, "bag") === "çağır" ? "`çağır` line" : "`mevsim:` field"}. Example: \`Faz( kod: ${a(p, "faz")} ) { Blok( kod: ${a(p, "kimlik")} ) { … } }\`.`,
+  },
+  "faz-ilanı-tepede-değil": {
+    mesaj: (p) => `The declaration of Phase "${a(p, "kimlik")}" is not at the top of its file: ${b(p, "gomulu") ? `the Phase is written inside the body of another node (${a(p, "onceki")})` : `${a(p, "onceki")} is declared before it`}. A Phase file begins with the Phase declaration, and the Bloklar grow in its body (MIM-1.2).`,
+    oneri: (p) => `Make the Phase declaration the first statement of the file and move the other declarations either into the Phase body or into files on their own shelves. Example: the file begins with \`Faz( kod: ${a(p, "kimlik")} ) { Blok( … ) { … } }\`.`,
+  },
+  "yersiz-faz-dosyası": {
+    mesaj: (p) => `Phase "${a(p, "kimlik")}" lives in file "${a(p, "dosyaAdi")}"; ${b(p, "klasor") ? "the file is in the phase folder but its name carries no order prefix" : "the file is not in the plan shelf's phase folder"}. Every Phase lives in its own prefix-numbered file (\`0_\`, \`1_\`, …) in the \`faz/\` folder, so the Phase order can be read from the file name (MIM-1.2).`,
+    oneri: (p) => `${b(p, "klasor") ? "Write the Phase order as a prefix in the file name" : "Move the file into the plan shelf's phase folder and write the Phase order as a prefix in its name"}. Example: \`is/plan/faz/1_${a(p, "dosyaAdi").replace(/^\d+_/, "")}\` starting with \`Faz( kod: ${a(p, "kimlik")} ) { … }\`.`,
   },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
@@ -1412,11 +1446,11 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "tek-çocuk-kapsayıcı": {
     mesaj: (p) => a(p, "kusur") === "tek-katman"
-      ? "Bu Faz tek Katman taşıyor — Katman'ın içeriğini doğrudan Faz'ın altına alabilirsin; ara kademe isteğe bağlıdır."
-      : "Bu Faz (zaman dilimi) tek Blok taşıyor — proje tek-bloksa Faz'ı atlayıp Blok'u üste alabilirsin; ara kademe isteğe bağlıdır.",
+      ? "Bu Faz tek bir Katman taşıyor ve Katman bir Blok gövdesine sarılmamış. Katman bir iş gövdesinin teknoloji dilimidir; Faz ile Katman arasındaki Blok kademesi atlanamaz (MIM-1)."
+      : "Bu Faz (zaman dilimi) tek bir Blok taşıyor. Bu bir kusur değildir ve Faz atlanamaz, çünkü hiçbir Blok Fazsız yaşamaz (MIM-1.2); gözlem yalnız Fazın kapsamını gözden geçirmen için yazılır.",
     oneri: (p) => a(p, "kusur") === "tek-katman"
-      ? "Katman'ın Adımlarını Faz'a taşı, boşalan Katman'ı kaldır — yapı yalınlaşır (zorunlu değil)."
-      : "Tek fazlı/tek bloklu küçük işte Faz yazma — Blok doğrudan kökte yaşayabilir.",
+      ? "Katmanı bir Blokun gövdesine sar. Örnek: `Faz( kod: FAZ-… ) { Blok( kod: BLK-… ) { Katman( kod: KAT-… ) { … } } }`."
+      : "Faz gerçekten tek bir iş gövdesi taşıyorsa olduğu gibi bırak; dönemin öteki işleri varsa onları aynı Fazın gövdesine yeni Bloklar olarak yaz. Fazı kaldırıp Bloku köke alma: Fazsız Blok `fazsız-blok` hatası verir.",
   },
   "rafsız-anadizin": {
     mesaj: (p) => `'${a(p, "kök")}' kökü hiçbir klasör yapısı İLAN ETMİYOR (raflar/Kitaplık/Raf yok) — yapı önce ilan edilir; ilansız yapıda üretilen her dosyanın yeri TAHMİN olur.`,
@@ -2010,11 +2044,11 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "tek-çocuk-kapsayıcı": {
     mesaj: (p) => a(p, "kusur") === "tek-katman"
-      ? "This Faz contains one Katman — you can move the Katman's contents directly under the Faz; the intermediate level is optional."
-      : "This Faz, a time slice, contains one Blok — in a single-block project you can omit the Faz and move the Blok upward; the intermediate level is optional.",
+      ? "This Faz carries a single Katman that is not wrapped in a Blok body. A Katman is the technology slice of a work body; the Blok level between Faz and Katman cannot be skipped (MIM-1)."
+      : "This Faz, a time slice, carries a single Blok. This is not a defect and the Faz cannot be skipped, because no Blok lives without a Faz (MIM-1.2); the observation only invites you to review the Faz scope.",
     oneri: (p) => a(p, "kusur") === "tek-katman"
-      ? "Move the Katman's Adımlar into the Faz and remove the empty Katman to simplify the structure; this is not mandatory."
-      : "For a small single-phase, single-block effort, omit the Faz; the Blok can live directly at the root.",
+      ? "Wrap the Katman in a Blok body. Example: `Faz( kod: FAZ-… ) { Blok( kod: BLK-… ) { Katman( kod: KAT-… ) { … } } }`."
+      : "If the Faz really carries a single work body, leave it as it is; if the period has other work, write it as new Bloklar inside the same Faz body. Do not remove the Faz and lift the Blok to the root: a Blok without a Faz raises the `fazsız-blok` error.",
   },
   "rafsız-anadizin": {
     mesaj: (p) => `Root '${a(p, "kök")}' DECLARES NO directory structure; it has no raflar, Kitaplık or Raf. Structure is declared first, otherwise the location of every generated file becomes a GUESS.`,

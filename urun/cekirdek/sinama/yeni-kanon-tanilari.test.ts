@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
-  fazSirasiTanilari, blokYapisiTanilari,
+  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -880,6 +880,25 @@ test("proje: Katmansız Blok, tek Adımlı Blok ve Adımsız kapsayıcı MIM-1.3
   assert.equal(t.find((x) => x.tani.kod === "adımsız-kapsayıcı")!.tani.duzey, "bilgi");
 });
 
+// ══ MIM-1.2 · FAZ DOSYASI DÜZENİ (KPS-SIR-A03 · Founder hükmü 2026-09-29) ═══
+
+test("proje: Faz dosyası düzeninin dört ihlali MIM-1.2 bilgi gözlemlerini doğurur", () => {
+  const blok = (kod: string, ek = ""): string =>
+    `Blok( kod: ${kod}${ek}, ne: "g" ) {\n  Katman( kod: KAT-${kod}, ad: "k" ) {\n    AltKatman( kod: ALT-${kod}, ad: "m" ) {\n      Adım( kod: ADM-${kod}, durum: beklemede, ne: "iş" )\n    }\n  }\n}\n`;
+  const programlar = new Map(Object.entries({
+    "p/p_anadizin.sar": SIR_KOK,
+    "p/is/plan/faz.sar": `Hatırlatıcı( kod: HTR-ONCE, ne: "önce" )\nFaz( kod: FAZ-BIR, ad: "b" ) {\n  çağır BLK-CAGRILI\n}\nFaz( kod: FAZ-IKI, ad: "i" )\n`,
+    "p/is/plan/blok/cagrili.sar": blok("BLK-CAGRILI"),
+    "p/is/plan/blok/mevsimli.sar": blok("BLK-MEVSIMLI", ", mevsim: FAZ-BIR"),
+  }).map(([ad, k]) => [ad, ayr(k)]));
+  mevsimNormalize(programlar);
+  const t = fazDosyasiTanilari(programlar);
+  for (const kod of ["çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası"]) {
+    uretildi(kod, t);
+    assert.ok(t.filter((x) => x.tani.kod === kod).every((x) => x.tani.duzey === "bilgi"), `${kod} bilgi düzeyinde doğmalı`);
+  }
+});
+
 test("proje: kökün altına çıplak Raf yazılınca MIM-3.2 Kitaplık kademesi gözlemi doğar", () => {
   // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): dallanan her klasör
   // bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar; kademe atlandığında
@@ -943,7 +962,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, on altı kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, yirmi kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -975,6 +994,10 @@ test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, on altı kimlik 
     // düzeyinde doğdu (MIM-1.3 tek Adımlı Blok, MIM-1.6 Adımsız kapsayıcı); buna
     // karşılık `seçilemez-adım-yürütümü` aynı turda kanonun yazdığı uyarıya çıktı.
     "tek-adımlı-blok", "adımsız-kapsayıcı",
+    // KPS-SIR-A03 (Founder hükmü 2026-09-29): MIM-1.2 Faz dosyası düzeninin dört
+    // gözlemi kanonun yazdığı bilgi düzeyinde doğdu; var olan planlar taşınana dek
+    // hiçbir kapıyı kırmızıya düşürmezler ve düzey yükselişi ayrı bir Founder kapısıdır.
+    "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası",
   ].filter((k) => k !== "seçilemez-adım-yürütümü").sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");

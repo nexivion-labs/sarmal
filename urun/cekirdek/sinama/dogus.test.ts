@@ -34,7 +34,7 @@ const PROJE_MANIFESTI: readonly string[] = [
   "is/durum/durum_devir.sar",
   "ogreti/ogrenme/dersler.sar",
   "ogreti/ogrenme/geribildirim.sar",
-  "is/plan/ilk_plan.sar",
+  "is/plan/faz/1_dogus.sar",
   "AGENTS.md",
   "CLAUDE.md",
   ".gitignore",
@@ -154,7 +154,7 @@ test("GOC-A10: dogusYaz(calisma-alani) + GERÇEK denetim — kökten başlayan y
     assert.equal(sonuc.yazilan.length, 9 + PROJE_MANIFESTI.length, "çatı kendi kapılarını taşır, ilk proje de kendi kapılarını");
     assert.ok(readFileSync(join(dizin, "deneme_cati_anadizin.sar"), "utf8").includes("ÇalışmaAlanı("));
     assert.match(dogusRaporu(sonuc, dizin), /çalışma alanı "deneme-cati"/u);
-    assert.match(dogusRaporu(sonuc, dizin), /ilk_proje\/is\/plan\/ilk_plan\.sar/u, "rapor ilk projenin planına yönlendirir");
+    assert.match(dogusRaporu(sonuc, dizin), /ilk_proje\/is\/plan\/faz\/1_dogus\.sar/u, "rapor ilk projenin planına yönlendirir");
     const s = spawnSync(process.execPath, [join(KOK, "src", "sarmal.ts"), "denetle", dizin], { encoding: "utf8" });
     assert.equal(s.status, 0, `denetle sıfırla çıkmalı — çıktı:\n${s.stdout}\n${s.stderr}`);
     assert.match(s.stdout, /0 hata/, "doğan çalışma alanı hatasız denetlenmeli");
@@ -243,7 +243,7 @@ test("BKM-DNT-A15 · yok sayma istisnası: küresel kural *.sar taşısa bile do
     dogusYaz(kok, "fikstur", "2026-09-09");
     const olculenler = [
       "fikstur" + ILAN_SONEKI,
-      "is/plan/ilk_plan.sar",
+      "is/plan/faz/1_dogus.sar",
       "is/durum/durum_devir.sar",
       "ogreti/ogrenme/dersler.sar",
       "ogreti/ogrenme/geribildirim.sar",
@@ -473,7 +473,7 @@ test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişke
   try {
     dogusYaz(dizin, "sessizligin-sonu", "2026-09-16");
     const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.sh");
-    const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "ilk_plan.sar") } };
+    const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "faz", "1_dogus.sar") } };
 
     // ① Değişken TANIMSIZ: motor çözülemez ve kapı bunu TEK SATIRLA söyler.
     const degiskensiz: Record<string, string | undefined> = { ...process.env, CLAUDE_PROJECT_DIR: dizin };

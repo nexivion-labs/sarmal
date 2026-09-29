@@ -497,7 +497,7 @@ function isaretcisizAgac(alan: string): string {
   mkdirSync(kok, { recursive: true });
   dogusYaz(kok, "eski", "2026-09-15", "proje");
   renameSync(join(kok, "oz", "siniflama", "isaretci.json"), join(alan, "ayrilan-isaretci.json"));
-  const plan = join(kok, "is", "plan", "ilk_plan.sar");
+  const plan = join(kok, "is", "plan", "faz", "1_dogus.sar");
   writeFileSync(plan, readFileSync(plan, "utf8").replace("bağımlı: []", "bağımlı: [ADM-YOK-99]"), "utf8");
   return kok;
 }

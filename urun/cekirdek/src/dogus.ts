@@ -251,7 +251,7 @@ function projePaketi(ad: string, tarih: string): DogusDosya[] {
     { yol: "is/durum/durum_devir.sar",       icerik: sablonDoldur("durum_devir.sar", d) },
     { yol: "ogreti/ogrenme/dersler.sar",     icerik: sablonDoldur("dersler.sar", d) },
     { yol: "ogreti/ogrenme/geribildirim.sar", icerik: sablonDoldur("geribildirim.sar", d) },
-    { yol: "is/plan/ilk_plan.sar",           icerik: sablonDoldur("ilk_plan.sar", d) },
+    { yol: "is/plan/faz/1_dogus.sar",        icerik: sablonDoldur("1_dogus.sar", d) },   // MIM-1.2 Faz dosyası düzeni (KPS-SIR-A03)
     { yol: "AGENTS.md",                      icerik: yonerge },
     { yol: "CLAUDE.md",                      icerik: yonerge },
     ...kokKapilari(ad, tarih),
@@ -335,7 +335,7 @@ export function dogusRaporu(s: DogusSonuc, hedef: string): string {
     satirlar.push("", "🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):");
     for (const y of s.atlanan) satirlar.push(`   = ${y}`);
   }
-  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/ilk_plan.sar` : "is/plan/ilk_plan.sar";
+  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/faz/1_dogus.sar` : "is/plan/faz/1_dogus.sar";
   satirlar.push(
     "",
     s.yazilan.length || s.genisletilen.length

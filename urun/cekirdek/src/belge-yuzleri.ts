@@ -182,15 +182,18 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // tanısı doğdu (bir hata, üç uyarı, iki bilgi), `seçilemez-adım-yürütümü` bilgiden
   // uyarıya çıktı ve `planlanmamış-gövde` emekli oldu; dağılım 48/22/16, yönlendirme
   // 150/3/33 ve iki dilli katalog yüz seksen beş oldu.
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/16" ||
+  // KPS-SIR-A03 (2026-09-29 · Founder hükmü): Faz dosyası düzeninin dört gözlemi bilgi
+  // düzeyinde doğdu; dağılım 48/22/20, yönlendirme 150/3/37 ve iki dilli katalog yüz
+  // seksen dokuz oldu.
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/20" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/33" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/37" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 185) {
+      olgular.ikiDilliTani !== 189) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
@@ -459,7 +462,7 @@ Sarmal kaynak kodun yerine geçen bir programlama dili değildir ve kod üretmez
 
 ## Dört eksen
 
-Bir plan dört eksende yazılır ve katı üretim omurgası \`ÇalışmaAlanı → Proje → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Faz zamandır ve bir mevsimi ya da halkayı adlandırır. Blok iştir; bir Blok tek bir kimlik taşır ve mevsimler arasında sürebilir. Katman teknolojidir ve bir Takıma ya da Teknolojiye bağlanır; AltKatman o teknolojinin içindeki konu modülüdür. Adım akıştır ve en küçük yürütme birimidir: görevini, kabul ölçütünü, sınırını, dayandığı kararı ve ürettiği Meyveyi beyan eder; bağımlılığı yalnız \`bağımlı\` kenarıyla ve yalnız Adımdan Adıma yazılır. Meyve teslimdir ve dosya-zorunlu türlerde diskte çözülen bir yol taşır. Bu zincir dışında kalan her şey (kararlar, kurallar, sözleşmeler, etmenler, hatırlatıcılar, durum kayıtları) aynı grafta düğümdür ve Adımlar onlara kenarla bağlanır. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
+Bir plan dört eksende yazılır ve katı üretim omurgası \`ÇalışmaAlanı → Proje → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Faz zamandır ve bir mevsimi ya da halkayı adlandırır. Blok iştir; bir Blok tek bir kimlik taşır ve yaşadığı Fazın gövdesine sarılır, çünkü her Faz faz klasöründe sıra önekli kendi dosyasında yaşar. Katman teknolojidir ve bir Takıma ya da Teknolojiye bağlanır; AltKatman o teknolojinin içindeki konu modülüdür. Adım akıştır ve en küçük yürütme birimidir: görevini, kabul ölçütünü, sınırını, dayandığı kararı ve ürettiği Meyveyi beyan eder; bağımlılığı yalnız \`bağımlı\` kenarıyla ve yalnız Adımdan Adıma yazılır. Meyve teslimdir ve dosya-zorunlu türlerde diskte çözülen bir yol taşır. Bu zincir dışında kalan her şey (kararlar, kurallar, sözleşmeler, etmenler, hatırlatıcılar, durum kayıtları) aynı grafta düğümdür ve Adımlar onlara kenarla bağlanır. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
 
 ## Kapı
 
@@ -553,7 +556,7 @@ function rehberDil(): string {
 ## Çalışan ilk zincir
 
 1. \`ilk_proje_anadizin.sar\` dosyasını oluşturun ve \`sarmal ogret\` kartındaki anadizin örneğini kopyalayın.
-2. \`is/plan/ilk_plan.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın.
+2. \`is/plan/faz/1_ilk_surum.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın; her Faz faz klasöründe sıra önekli kendi dosyasında yaşar.
 3. Kökten \`sarmal denetle .\` komutunu çalıştırın.
 4. Tanı varsa öneriyi kaynağa uygulayın ve aynı komutu yeniden çalıştırın.
 

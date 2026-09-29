@@ -94,6 +94,10 @@ const TERFI_RET_KIMLIKLERI = new Set([
   // (KPS-SIR-A01): MIM-1.3 tek Adımlı Blok ve MIM-1.6 Adımsız kapsayıcı. İkisi de
   // yapı gözlemidir, bir sapma dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
   "tek-adımlı-blok", "adımsız-kapsayıcı",
+  // On yedincisinden yirmincisine kadarki dört kimlik 2026-09-29 tarihinde Founder
+  // hükmüyle doğdu (KPS-SIR-A03 · MIM-1.2 Faz dosyası düzeni). Var olan planlar yeni
+  // düzene taşınana dek bilgi düzeyindedirler ve Bildirimler yüzeyine düşerler.
+  "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
@@ -375,7 +379,8 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, ret ve gözlem kimlikl
   // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
   // On beşincisi MIM-1.2 projesiz Faz gözlemidir (KPS-FAZ-A02 · Founder hükmü 2026-09-19).
   // KPS-SIR-A01 (2026-09-29): iki yapı gözlemi doğdu, seçilemez Adım yürütümü ayrıldı; on altı oldu.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 16);
+  // KPS-SIR-A03 (2026-09-29): Faz dosyası düzeninin dört gözlemi doğdu; yirmi oldu.
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 20);
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -621,7 +626,8 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // düzeyinde olmasına karşın Hatırlatıcılar hanesine gider.
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 `projesiz-faz` gözlemi bilgi düzeyinde doğdu ve küme ON ÜÇE çıktı.
   // 2026-09-29 (KPS-SIR-A01): iki yapı gözlemi geldi, seçilemez Adım yürütümü Problems'a gitti; küme ON DÖRDE çıktı.
-  assert.equal(yeniBildirim, 14,
+  // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemi geldi; küme ON SEKİZE çıktı.
+  assert.equal(yeniBildirim, 18,
     "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi, MIM-3.4 dosya mührü ve MIM-1.2 projesiz Faz gözlemi Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.

@@ -70,9 +70,9 @@ Everything in Sarmal is a tree and its root is the project's entry file. A proje
 randevu/
 ├── randevu_anadizin.sar        entry: Proje → Kitaplık → Raf, plus Technology and Team
 ├── is/                         the library of work
-│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → file
-│   │   ├── ilk_plan.sar
-│   │   └── randevu.sar
+│   ├── plan/faz/               every Faz in its own prefix-numbered file: Faz → Blok → Katman → AltKatman → Adım
+│   │   ├── 1_dogus.sar
+│   │   └── 2_randevu.sar
 │   └── durum/durum_devir.sar   where we left off: the end-of-session handover record
 ├── ogreti/ogrenme/             lessons and feedback; memory graduates into skills here
 ├── oz/siniflama/isaretci.json  type-canon pointer; the extension resolves its canon from this shelf
@@ -83,11 +83,11 @@ randevu/
 └── src/                        code; every folder opened on disk must be declared in the entry file
 ```
 
-In the drawing `randevu.sar` and `src/` belong to the work itself; the remaining thirteen files
+In the drawing `2_randevu.sar` and `src/` belong to the work itself; the remaining thirteen files
 are all written by the `dogus` tool and none of them is created by hand. Choose the
 workspace kind and the same kit is born twice: once for the roof, once for the first project under it.
 
-The logic is four sentences. First, structure is declared before it exists: the entry file declares every branching folder as a Kitaplık and every leaf folder inside it as a Raf, and an undeclared folder is drift to the engine. The Kitaplık level cannot be skipped; bare shelves under the root turn the entry file into an unreadable list as the tree grows. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity that may span seasons, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
+The logic is four sentences. First, structure is declared before it exists: the entry file declares every branching folder as a Kitaplık and every leaf folder inside it as a Raf, and an undeclared folder is drift to the engine. The Kitaplık level cannot be skipped; bare shelves under the root turn the entry file into an unreadable list as the tree grows. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity wrapped in the body of the Faz it lives in, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
 
 ## What changes for agents
 
@@ -201,5 +201,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 48 errors, 22 warnings, and 16 informational diagnostics. The fixed registry routing matrix sends 150 items to Problems, 3 to Reminders, and 33 to Notifications (Observations). 185 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 48 errors, 22 warnings, and 20 informational diagnostics. The fixed registry routing matrix sends 150 items to Problems, 3 to Reminders, and 37 to Notifications (Observations). 189 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

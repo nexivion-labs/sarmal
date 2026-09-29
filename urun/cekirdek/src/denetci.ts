@@ -1802,7 +1802,10 @@ export function tekCocukTanilari(programlar: ReadonlyMap<string, Program>): Arra
         // Katman'ı kaldır") yeni idealle (Katman→AltKatman→Adım — Katman TEKNOLOJİ
         // beyanının evidir, MIM-1.4) ÇELİŞİYORDU; çıplak yazımı artık çıplak-adımlı-katman
         // bekçisi ölçer. Faz maddeleri (zaman kademesi) aynen sürer.
-        if (node.ad === "Faz" && cocukWidgetlar.length === 1 && cocukWidgetlar[0].ad === "Blok") {
+        // KPS-SIR-A03 (Founder hükmü 2026-09-29): doğuş iskeleti bilinçle tek Blokla
+        // doğar ve yapı gözlemlerinden muaftır; öneri artık Fazı atlamayı öğretmez.
+        if (node.ad === "Faz" && cocukWidgetlar.length === 1 && cocukWidgetlar[0].ad === "Blok"
+            && !dogusIskeletiMi(cocukWidgetlar[0])) {
           out.push({ dosya, tani: eskiTani("tek-çocuk-kapsayıcı", "bilgi",
             { kusur: "tek-blok" }, { satir: node.satir, sutun: node.sutun }) });
         }
@@ -3460,12 +3463,19 @@ export function fazSirasiTanilari(
   return out;
 }
 
-/** Doğuş paketinin kuruluş Adımı (ogreti/sablon/dogus/ilk_plan.sar). Onu taşıyan
+/** Doğuş paketinin kuruluş Adımı (ogreti/sablon/dogus/1_dogus.sar). Onu taşıyan
  *  Blok doğuş iskeletidir ve yapı gözlemlerinden muaftır: iskelet bilinçle tek
  *  Adımla doğar ve ilk gerçek iş Bloku yazılınca kendiliğinden anlamını yitirir.
  *  Kod şablonda sabittir (Proje koduyla doldurulmaz); nöbet şablonun bu kodu hâlâ
  *  taşıdığını ölçer. */
 export const DOGUS_ISKELETI_ADIMI = ["ADM", "KURULUS", "01"].join("-");   // düz yazılırsa metin atfı nöbeti onu çözülmeyen atıf sayar: şablon ders dünyasındadır ve indekse girmez
+
+/** Düğümün altında doğuş iskeletinin kuruluş Adımı var mı (saf · KPS-SIR-A03). */
+function dogusIskeletiMi(n: Dugum): boolean {
+  if (n.tur === "widget" && n.ad === "Adım"
+      && [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "kod")?.deger.metin === DOGUS_ISKELETI_ADIMI) return true;
+  return n.cocuklar.some(dogusIskeletiMi);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MIM-1.2 · MIM-1.3 · MIM-1.6 · BLOK YAPISI (KPS-SIR-A01 · Founder hükmü 2026-09-29)
@@ -3549,6 +3559,116 @@ export function blokYapisiTanilari(
     for (const b of p.bildirimler) gez(b, false);
   }
   return out;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MIM-1.2 · FAZ DOSYASI DÜZENİ (KPS-SIR-A03 · Founder hükmü 2026-09-29)
+//
+//   Founder hükmü şudur: her Faz plan rafının faz klasöründe sıra önekli kendi
+//   dosyasında yaşar, Faz ilanı dosyanın tepesinde durur ve Bloklar Faz gövdesinin
+//   içine sarılır; Blokun `mevsim:` alanı ile Fazın `çağır` listesi Blok bağı
+//   olarak emeklidir. Düzen önce bir kardeş projenin kendi anayasasında kurulmuş,
+//   ölçüm Sarmal kanonunun bağı üç yolla kurulmasına izin verdiğini göstermiştir.
+//   Bu üretici düzenin dört olgusunu bildirir:
+//     • çok-fazlı-dosya: dosya birden çok Faz taşıyor; ikinci Faz ilanında bir kez.
+//     • faz-dışı-blok: Blok bir Faz gövdesinin içinde değil, Faza `mevsim:` alanıyla
+//       ya da Fazın gerçek `çağır` satırıyla bağlanmış. Hiç bağı olmayan Blok
+//       `fazsız-blok` hatasıyla, başka bir Projenin Fazına bağlanan Blok
+//       `yabancı-faz-bağı` tanısıyla zaten konuşur ve burada ikinci kez sayılmaz.
+//     • faz-ilanı-tepede-değil: dosyanın ilk Faz ilanı bir üst düzey bildirim
+//       değil ya da kendisinden önce başka bir bildirim yazılmış.
+//     • yersiz-faz-dosyası: Faz taşıyan dosyanın klasörü `faz/` değil ya da adı
+//       sıra önekli (`0_`, `1_`, …) değil; dosya başına bir kez.
+//   Dördü de şimdilik BİLGİ düzeyindedir: mevcut planlar yeni düzene taşınana dek
+//   hiçbir kapıyı kırmızıya düşürmez; düzeyin hataya yükselmesi ayrı bir Founder
+//   kapısıdır. Ders dünyası (OGR-5), sınama ve vitrin fikstürleri ile giriş ilanı
+//   muaftır; giriş ilanındaki Faz `anadizin-plan-karışması` hatasıyla konuşur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Faz dosyasının kanonik yeri: `…/faz/<sayı>_<ad>.sar` (MIM-1.2 · KPS-SIR-A03). */
+export const FAZ_DOSYASI_YERI = /(?:^|\/)faz\/\d+_[^/]+\.sar$/;
+
+/** Faz dosyası düzeni tanıları (saf). Bağ çözümü `mevsimNormalize` sonrasının
+ *  sanal `çağır` imzasını okur: gerçek `çağır` satırı ile `mevsim:` alanı ayrı anılır. */
+export function fazDosyasiTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  muaflar?: ReadonlySet<string>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  const alan = (n: Dugum, ad: string): string | undefined =>
+    [...n.parametreler, ...n.ozellikler].find((x) => x.ad === ad)?.deger.metin;
+  const kodu = (n: Dugum): string => alan(n, "kod") ?? n.ad;
+  const muaf = (dosya: string): boolean =>
+    DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya) ||
+    GIRIS_DOSYASI.test(dosya) || (muaflar?.has(dosya) ?? false);
+  const kapsamlar = projeKapsamlari(programlar);
+
+  // Fazların GERÇEK `çağır` satırları (sanal kenar mevsim çevriminden gelir ve
+  // Blokun kendi `mevsim:` alanıyla ayrıca anılır; iki kez sayılmaz).
+  const cagiran = new Map<string, string>();
+  const fazTara = (n: Dugum): void => {
+    if (n.tur === "widget" && n.ad === "Faz") {
+      for (const c of n.cocuklar) {
+        if (c.tur === "çağır" && !c.parametreler.some((x) => x.ad === "sanal") && !cagiran.has(c.ad)) cagiran.set(c.ad, kodu(n));
+      }
+    }
+    for (const c of n.cocuklar) fazTara(c);
+  };
+  for (const p of programlar.values()) for (const b of p.bildirimler) fazTara(b);
+
+  for (const [dosya, p] of programlar) {
+    if (muaf(dosya)) continue;
+    const fazlar: Array<{ d: Dugum; ust: boolean }> = [];
+    const gez = (n: Dugum, fazAltinda: boolean, ust: boolean): void => {
+      if (n.tur !== "widget") { for (const c of n.cocuklar) gez(c, fazAltinda, false); return; }
+      if (n.ad === "Faz") fazlar.push({ d: n, ust });
+      if (n.ad === "Blok" && !fazAltinda) {
+        // faz-dışı-blok: bağ Faz gövdesinin dışından kurulmuş.
+        const mevsim = alan(n, "mevsim");
+        const hedefProje = mevsim ? adAlaniAyir(mevsim).adAlani : undefined;
+        const kendiProjesi = kesinProjeKapsami(dosya, kapsamlar)?.kod;
+        const yabanci = hedefProje !== undefined && hedefProje !== kendiProjesi;   // yabancı-faz-bağı konuşur
+        const cagiranFaz = cagiran.get(kodu(n));
+        if (mevsim && !yabanci) {
+          out.push({ dosya, tani: yeniTani("faz-dışı-blok",
+            { kimlik: kodu(n), bag: "mevsim", faz: mevsim }, n) });
+        } else if (!mevsim && cagiranFaz) {
+          out.push({ dosya, tani: yeniTani("faz-dışı-blok",
+            { kimlik: kodu(n), bag: "çağır", faz: cagiranFaz }, n) });
+        }
+      }
+      for (const c of n.cocuklar) gez(c, fazAltinda || n.ad === "Faz", false);
+    };
+    for (const b of p.bildirimler) gez(b, false, true);
+    if (!fazlar.length) continue;
+    const ilk = fazlar[0].d;
+
+    // çok-fazlı-dosya — ikinci Faz ilanında, dosya başına bir kez.
+    if (fazlar.length > 1) {
+      out.push({ dosya, tani: yeniTani("çok-fazlı-dosya",
+        { kimlik: kodu(fazlar[1].d), ilk: kodu(ilk), sayi: String(fazlar.length) }, fazlar[1].d) });
+    }
+    // faz-ilanı-tepede-değil — ilk Faz üst düzeyde ve ilk bildirim olmalı.
+    const ilkBildirim = p.bildirimler[0];
+    if (!fazlar[0].ust || ilkBildirim !== ilk) {
+      const onceki = fazlar[0].ust ? ilkBildirim : p.bildirimler.find((b) => icerir(b, ilk));
+      out.push({ dosya, tani: yeniTani("faz-ilanı-tepede-değil",
+        { kimlik: kodu(ilk), onceki: onceki ? `${onceki.ad}${alan(onceki, "kod") ? ` ${alan(onceki, "kod")}` : ""}` : "",
+          gomulu: fazlar[0].ust ? "" : "1" }, ilk) });
+    }
+    // yersiz-faz-dosyası — klasör ve sıra öneki.
+    if (!FAZ_DOSYASI_YERI.test(yolNormal(dosya))) {
+      const klasorde = /(?:^|\/)faz\/[^/]+$/.test(yolNormal(dosya));
+      out.push({ dosya, tani: yeniTani("yersiz-faz-dosyası",
+        { kimlik: kodu(ilk), dosyaAdi: posix.basename(yolNormal(dosya)), klasor: klasorde ? "1" : "" }, ilk) });
+    }
+  }
+  return out;
+}
+
+/** Düğüm ağacında `hedef` düğümü var mı (saf). */
+function icerir(n: Dugum, hedef: Dugum): boolean {
+  return n === hedef || n.cocuklar.some((c) => icerir(c, hedef));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

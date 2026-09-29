@@ -333,7 +333,7 @@ test("tek evren: kapsam süzgeci glob ile AYNI listeden türer", () => {
 test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ artık iki yüzde de dışlanır", () => {
   assert.ok(sarKapsamDisi("_Sarmal/ogreti/sablon/adim.sar"),
     "öğreti kitaplığının şablon rafı tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
-  assert.ok(sarKapsamDisi("ogreti/sablon/dogus/ilk_plan.sar"),
+  assert.ok(sarKapsamDisi("ogreti/sablon/dogus/1_dogus.sar"),
     "sablon/ alt dizini de dışlanmalı");
   // KPS-IND-A01 NÖBETİ (Founder 2026-09-10): ders dışlaması kendi evine demirlidir.
   // Kullanıcının kendi kökü altındaki `sablon/` kitaplığı KAPSAM İÇİDİR; kapsam

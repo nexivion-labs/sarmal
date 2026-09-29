@@ -315,14 +315,14 @@ test("tek Adımlı Blok BİLGİ verir; doğuş iskeleti ve ders dünyası muaft�
     `Faz( kod: FAZ-${kod}, ad: "f" ) {\n  Blok( kod: BLK-${kod}, ne: "g" ) {\n    Katman( kod: KAT-${kod}, ad: "k" ) {\n      AltKatman( kod: ALT-${kod}, ad: "m" ) {\n${adim(adimKodu, "beklemede")}\n      }\n    }\n  }\n}\n`;
   const t = blokYapisi({
     "p/is/plan/tek.sar": tekBlok("TEK", "ADM-TEK"),
-    "p/is/plan/ilk_plan.sar": tekBlok("DOGUS", DOGUS_ISKELETI_ADIMI),
+    "p/is/plan/faz/1_dogus.sar": tekBlok("DOGUS", DOGUS_ISKELETI_ADIMI),
     "ogreti/ornek/tek.sar": tekBlok("DERS", "ADM-DERS"),
   }).filter((x) => x.tani.kod === "tek-adımlı-blok");
   assert.deepEqual(t.map((x) => x.dosya), ["p/is/plan/tek.sar"]);
 });
 
 test("doğuş şablonu iskelet Adımının kodunu hâlâ taşır (muafiyetin dayanağı bayatlamaz)", () => {
-  const sablon = readFileSync(fileURLToPath(new URL("../../../ogreti/sablon/dogus/ilk_plan.sar", import.meta.url)), "utf8");
+  const sablon = readFileSync(fileURLToPath(new URL("../../../ogreti/sablon/dogus/1_dogus.sar", import.meta.url)), "utf8");
   assert.ok(sablon.includes(`kod: ${DOGUS_ISKELETI_ADIMI},`), "doğuş şablonunun kuruluş Adımı kodu değişmiş; muafiyet sabitini de güncelle");
 });
 

@@ -21,7 +21,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
-  "mim.sar:d69eaca04614c23729b9d8b31d718a1a877d2ce530f291d6e4f24176f51b49df",
+  "mim.sar:9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
@@ -47,8 +47,8 @@ test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("70 taban + beş gözlem + MIM-3.4, MIM-3.2 ve KPS-SIR-A01 tanıları 48/22/16 olarak 86'dır", () => {
-  assert.equal(YENI_TANI_KANONU.length, 86);
+test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01 ve KPS-SIR-A03 tanıları 48/22/20 olarak 90'dır", () => {
+  assert.equal(YENI_TANI_KANONU.length, 90);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 48);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 22);
   // Faz sırası ve Blok yapısı (KPS-SIR-A01 · Founder hükmü 2026-09-29): altı tanı
@@ -58,11 +58,14 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2 ve KPS-SIR-A01 tanıları 48/22
     "ORK-3.2:seçilemez-adım-yürütümü:uyarı",
     "MIM-1.2:ters-faz-bağımlılığı:hata", "MIM-1.2:erken-faz-işi:uyarı", "MIM-1.2:yabancı-faz-bağı:uyarı",
     "MIM-1.3:katmansız-blok:uyarı", "MIM-1.3:tek-adımlı-blok:bilgi", "MIM-1.6:adımsız-kapsayıcı:bilgi",
+    // Faz dosyası düzeni (KPS-SIR-A03 · Founder hükmü 2026-09-29): dört gözlem kanonun
+    // yazdığı bilgi düzeyinde doğdu; düzeyin yükselmesi ayrı bir Founder kapısıdır.
+    "MIM-1.2:çok-fazlı-dosya:bilgi", "MIM-1.2:faz-dışı-blok:bilgi", "MIM-1.2:faz-ilanı-tepede-değil:bilgi", "MIM-1.2:yersiz-faz-dosyası:bilgi",
   ]);
   // MIM-3.2 Kitaplık kademesi (KPS-CEL-A01 · Founder hükmü 2026-09-09): kademe
   // atlandığında madde kendi kademesiyle, yani uyarı düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.2" && t.kod === "kitaplıksız-kök" && t.kademe === "uyarı").length, 1);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 16);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 20);
   // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): hükmün
   // Faz ile Proje arasındaki yarısı bir gözlemle tutulur ve bilgi düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.2" && t.kod === "projesiz-faz" && t.kademe === "bilgi").length, 1);
@@ -92,7 +95,8 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 projesiz Faz gözlemiyle yüz seksen dokuza çıktı.
   // 2026-09-19 (KPS-CEL-A01): MIM-3.2 Kitaplıksız kök gözlemiyle yüz doksana çıktı.
   // 2026-09-29 (KPS-SIR-A01): altı yeni tanı doğdu ve `planlanmamış-gövde` emekli oldu; yüz doksan beşe çıktı.
-  assert.equal(canli.size, 195);
+  // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemiyle yüz doksan dokuza çıktı.
+  assert.equal(canli.size, 199);
   assert.equal(EMEKLI_TANI_KODLARI.length, 16);
   assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
   assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 37);
@@ -105,7 +109,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
   assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
-  assert.match(ilk, /Faz sırası ile Blok yapısının altı tanısıyla 86 canlı yeni kimliğe ulaşır/);
+  assert.match(ilk, /Faz dosyası düzeninin dört gözlemiyle 90 canlı yeni kimliğe ulaşır/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
 });

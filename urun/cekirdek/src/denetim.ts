@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -526,6 +526,14 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // MIM-1.2 · MIM-1.3 · MIM-1.6 Blok yapısı (KPS-SIR-A01): yabancı Faz bağı, Katmansız
   // Blok, Adımsız kapsayıcı ve tek Adımlı Blok; Faz boşluğu grafın Faz haritasından okunur.
   for (const { dosya, tani } of koklendirKayit("blokYapisiTanilari", blokYapisiTanilari(programlar, dag, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 Faz dosyası düzeni (KPS-SIR-A03 · Founder hükmü 2026-09-29): birden çok
+  // Fazlı dosya, Faz gövdesi dışında bağlanan Blok, tepede durmayan Faz ilanı ve faz
+  // klasörü dışındaki ya da sıra öneksiz Faz dosyası; dördü de bilgi düzeyindedir.
+  for (const { dosya, tani } of koklendirKayit("fazDosyasiTanilari", fazDosyasiTanilari(programlar, muaflar))) {
     say([tani], dosya);
     bas(dosya, [tani]);
   }

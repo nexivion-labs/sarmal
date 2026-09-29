@@ -70,9 +70,9 @@ Sarmal'da her şey bir ağaçtır ve ağacın kökü projenin giriş dosyasıdı
 randevu/
 ├── randevu_anadizin.sar        giriş: Proje → Kitaplık → Raf, Teknoloji ve Takım burada ilan edilir
 ├── is/                         işin kitaplığı
-│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya
-│   │   ├── ilk_plan.sar
-│   │   └── randevu.sar
+│   ├── plan/faz/               her Faz sıra önekli kendi dosyasında: Faz → Blok → Katman → AltKatman → Adım
+│   │   ├── 1_dogus.sar
+│   │   └── 2_randevu.sar
 │   └── durum/durum_devir.sar   nerede kaldık: oturum sonu devir kaydı
 ├── ogreti/ogrenme/             dersler ve geribildirim; Bellek buradan Beceriye yükselir
 ├── oz/siniflama/isaretci.json  tip kanonu işaretçisi; eklenti kanon kaydını bu raftan çözer
@@ -83,11 +83,11 @@ randevu/
 └── src/                        kod; diskte açılan her klasör giriş dosyasında ilan edilmek zorundadır
 ```
 
-Çizimdeki `randevu.sar` ile `src/` klasörü işin kendisine aittir; geri kalan on üç dosyanın
+Çizimdeki `2_randevu.sar` ile `src/` klasörü işin kendisine aittir; geri kalan on üç dosyanın
 tamamını `dogus` aracı yazar ve hiçbiri elle kurulmaz. Çalışma alanı türü seçilirse
 aynı paket iki kere doğar: bir kere çatı için, bir kere de çatının altındaki ilk proje için.
 
-Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası dallanan her klasörü Kitaplık, bir Kitaplığın içindeki her yaprak klasörü Raf olarak yazar ve ilansız klasör motor için drifttir. Kitaplık kademesi atlanamaz; kökün altına çıplak Raf dizilirse ağaç büyüdükçe giriş dosyası okunamaz bir liste hâline gelir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve mevsimler arasında sürebilir, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
+Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası dallanan her klasörü Kitaplık, bir Kitaplığın içindeki her yaprak klasörü Raf olarak yazar ve ilansız klasör motor için drifttir. Kitaplık kademesi atlanamaz; kökün altına çıplak Raf dizilirse ağaç büyüdükçe giriş dosyası okunamaz bir liste hâline gelir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve yaşadığı Fazın gövdesine sarılır, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
 
 ## Ajanlar için ne değişiyor
 
@@ -199,5 +199,5 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi 48 hata, 22 uyarı ve 16 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 150 Problems, 3 Hatırlatıcılar ve 33 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 185'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
+Yeni tanı kümesi 48 hata, 22 uyarı ve 20 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 150 Problems, 3 Hatırlatıcılar ve 37 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 189'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
 <!-- SARMAL:URETILEN:KOK-README-TR:SON -->

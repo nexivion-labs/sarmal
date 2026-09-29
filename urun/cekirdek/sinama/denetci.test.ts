@@ -1116,7 +1116,7 @@ test("MIM-1.2: ders dünyası (DERS_DUNYASI) hatırlatmalardan muaf; tam tarihli
   const fz = (t: string) => ayristir(belirtecle(
     `Faz( kod: FZ-B2, ad: "mvp", hedefTarih: ${t} ) {\n  Blok( kod: BLK-B2, ne: "iş" ) { Adım( kod: ADM-B2, ne: "a", durum: beklemede ) }\n}`));
   assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0);
-  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/sablon/dogus/ilk_plan.sar").length, 0);
+  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/sablon/dogus/1_dogus.sar").length, 0);
   assert.equal(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0, "günsüz-tarih sorusu da ders dünyasında susar");
   // KPS-IND-A01 NÖBETİ: muafiyet ADI değil YERİ okur. Kullanıcının kendi kökü
   // altındaki `sablon/` bir ders rafı değildir ve hatırlatma orada SUSMAZ.

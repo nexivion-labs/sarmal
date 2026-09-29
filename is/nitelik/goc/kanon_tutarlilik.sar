@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:daf73f2fc627af4932dfe76718954b2d63c32e6307f55caf699bdc7a6e81e0f4
+// KAYNAK-MUHRU kanon-demeti-sha256:b1ff43de418d1f4861e7897e7575dc2f303ff3e8f60ed6cd26fb273153a22d84
 
 -->|
 # Kanon tutarlılık yüzü
@@ -12,15 +12,15 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon/dil.sar` | `b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693` |
-| `yasa/kanon/mim.sar` | `d69eaca04614c23729b9d8b31d718a1a877d2ce530f291d6e4f24176f51b49df` |
+| `yasa/kanon/mim.sar` | `9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
 | `yasa/kanon/ork.sar` | `60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `daf73f2fc627af4932dfe76718954b2d63c32e6307f55caf699bdc7a6e81e0f4` |
-| `urun/cekirdek/src/tani-sicili.ts` | `f4d253f794ccbe8de9ff79567ea60a2327064a1cafb7b33becbeca0bd6d2a5cb` |
+| kanon demeti | `b1ff43de418d1f4861e7897e7575dc2f303ff3e8f60ed6cd26fb273153a22d84` |
+| `urun/cekirdek/src/tani-sicili.ts` | `aaef5cbf69f0e22f1efeb9eb4245ccc13f7b46c18bb5aee486665cd5896b6567` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 
@@ -66,7 +66,7 @@ Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 | `MIM-0` | Karar | `mim.sar` | Kanonik okuma: `ÇalışmaAlanı → KimlikKökü → Proje → Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya`. |
 | `MIM-1` | Karar | `mim.sar` | Doğru: `Faz { Blok { Katman { AltKatman { Adım } } } }`; yanlış: `Faz { Adım }` veya Blok üzerinde yürütme bağı kurmak. |
 | `MIM-1.1` | Kural | `mim.sar` | `ÇalışmaAlanı( kod: CAL-01 ) { KimlikKökü( kod: KMK-01 ) Proje( kod: PRJ-A ) Proje( kod: PRJ-B ) }`; PRJ-A ile PRJ-B ayrı kimliklerdir. |
-| `MIM-1.2` | Kural | `mim.sar` | Doğru: `Faz( kod: FAZ-01 ) { Blok( kod: BLK-01 ) }`; yanlış: Proje altında Fazsız `Blok( kod: BLK-01 )`. |
+| `MIM-1.2` | Kural | `mim.sar` | Doğru: `is/plan/faz/1_dogus.sar` dosyası `Faz( kod: FAZ-01 ) { Blok( kod: BLK-01 ) { … } }` ilanıyla başlar ve sonraki Faz `is/plan/faz/2_surum.sar` dosyasında doğar; yanlış: Proje altında Fazsız `Blok( kod: BLK-01 )`, başka bir dosyada `Blok( kod: BLK-01, mevsim: FAZ-01 )` yazımı ya da Fazın gövdesindeki `çağır BLK-01` satırı ile kurulan bağ, aynı dosyada iki Faz ilanı ve faz klasörünün dışında ya da sıra öneksiz adla yaşayan `is/plan/faz.sar` dosyası. |
 | `MIM-1.3` | Kural | `mim.sar` | `Blok( kod: BLK-KIMLIK ) { Katman( kod: KAT-ARAYUZ, kullanır: TEK-ARAYUZ ) Katman( kod: KAT-SERVIS, kullanır: TEK-SERVIS ) Katman( kod: KAT-GUVENLIK, kullanır: TEK-GUVENLIK ) }`. |
 | `MIM-1.4` | Kural | `mim.sar` | Doğru: `Katman( kod: KAT-ARAYUZ, takım: TAKIM-ONYUZ, kullanır: TEK-ARAYUZ )` ve ortak sahiplikte `Katman( kod: KAT-GRAF, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ] )`; yanlış: `Katman( kod: KAT-KARISIK, kullanır: [ TEK-ARAYUZ, TEK-SERVIS ] )`, Takımı `kullanır: TAKIM-ONYUZ` ile bağlamak ya da zemini `bağımlı: [ TAKIM-ONYUZ ]` ile beyan etmek. |
 | `MIM-1.5` | Kural | `mim.sar` | `AltKatman( kod: ALT-SINAMA, departman: sınama )`; yerel `uyumluluk` departmanı kullanılacaksa değer önce ÇalışmaAlanı örtüsüne katkılı olarak eklenir. |
@@ -208,7 +208,7 @@ Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 
 ## Tanı ↔ madde haritası — yeni küme
 
-Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydı buna eklenen yetmişinci kimliktir. Güncel küme 86 tanıdır ve düzey dağılımı 48 hata + 22 uyarı + 16 bilgidir.
+Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydı buna eklenen yetmişinci kimliktir. Güncel küme 90 tanıdır ve düzey dağılımı 48 hata + 22 uyarı + 20 bilgidir.
 
 | Tanı | Kanon maddesi | Canlı düzey | Kapsam | Üretici |
 |---|---|---|---|---|
@@ -298,6 +298,10 @@ Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesini
 | `katmansız-blok` | `MIM-1.3` | uyarı | proje | `denetci.ts` |
 | `tek-adımlı-blok` | `MIM-1.3` | bilgi | proje | `denetci.ts` |
 | `adımsız-kapsayıcı` | `MIM-1.6` | bilgi | proje | `denetci.ts` |
+| `çok-fazlı-dosya` | `MIM-1.2` | bilgi | proje | `denetci.ts` |
+| `faz-dışı-blok` | `MIM-1.2` | bilgi | proje | `denetci.ts` |
+| `faz-ilanı-tepede-değil` | `MIM-1.2` | bilgi | proje | `denetci.ts` |
+| `yersiz-faz-dosyası` | `MIM-1.2` | bilgi | proje | `denetci.ts` |
 
 ## Canlı korunan sabit küme
 
@@ -434,7 +438,7 @@ Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli
 
 | Bulgu | Ölçüm | Hüküm |
 |---|---:|---|
-| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = 86 | ÇÖZÜLDÜ · güncel sayı 86 |
+| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = 90 | ÇÖZÜLDÜ · güncel sayı 90 |
 | Yeni tanının resmi maddesi eksik | 0 | YOK |
 | Kanonik örnek eksiği | 0 | YOK |
 | Dört parçalı madde eksiği | 0 | YOK |
@@ -450,7 +454,7 @@ Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
       ne: "Resmi yasa/kanon sekizlisinin 162/162 maddesi, 38 Karar ve 124 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
 
 Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
-      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle ve Faz sırası ile Blok yapısının altı tanısıyla 86 canlı yeni kimliğe ulaşır; önceki 100 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
+      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla ve Faz dosyası düzeninin dört gözlemiyle 90 canlı yeni kimliğe ulaşır; önceki 100 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
       ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır." )
