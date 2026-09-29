@@ -59,16 +59,16 @@ Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
 
   Kitaplık( kod: KTP-IS, yol: "is/",
     ne: "🗂️ İş kitaplığı — canlı planlar, durum kaydı ve nitelik kayıtları burada yaşar" ) {
-    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı planın kökü: zaman ve gövde kendi raflarında yaşar, ilan dosyaları burada durur" )
+    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı planın kökü: Fazlar Bloklarıyla birlikte faz rafında yaşar, ilan dosyaları burada durur" )
     // Founder hükmü 2026-08-28: zaman ekseni ile iş gövdesi ayrı raflara çekildi.
     // Gerekçe şudur: bir plan klasöründe hem mevsimler hem gövdeler yan yana
     // durduğunda "hangi dosya takvimi, hangisi işi taşıyor" sorusu ancak dosya
     // açılarak cevaplanır. Kök, ikisine de ait olmayan ilan dosyalarını taşır:
     // meyve haritası, takım ve teknoloji ilanları, işakışları ve özerk kararlar.
-    Raf( kod: RAF-IS-PLAN-FAZ, yol: "plan/faz/", ne: "zaman ekseni: mevsim ilanları — Faz düğümlerinin yaşadığı raf" )
-    Raf( kod: RAF-IS-PLAN-BLOK, yol: "plan/blok/", ne: "iş gövdesi: Blok düğümleri ve altındaki Katman, AltKatman ile Adım zinciri" )
-    // KPS-SIR-A04 (2026-09-29): tamamen bitmiş planların rafı olan `plan/rayda/` kalktı. MIM-1.2
-    // gereği her Blok yürürlükte olduğu Fazın gövdesinde yaşar; bitmiş gövdeler de büyüdükleri
+    Raf( kod: RAF-IS-PLAN-FAZ, yol: "plan/faz/", ne: "zaman ekseni ve iş gövdesi: her Faz sıra önekli kendi dosyasında Bloklarını gövdesine sararak yaşar (MIM-1.2)" )
+    // KPS-SIR-A04 (2026-09-29): iş gövdesinin rafı olan `plan/blok/` ile tamamen bitmiş planların
+    // rafı olan `plan/rayda/` kalktı. MIM-1.2 gereği her Blok yürürlükte olduğu Fazın gövdesinde,
+    // o Fazın `plan/faz/` altındaki sıra önekli dosyasında yaşar; bitmiş gövdeler de büyüdükleri
     // Fazın dosyasında durur ve tarih yine repoda kalır.
     // Eski anadizinde ilanlı iki rafın karşılığı (GOC-A08 yedinci küme, 2026-08-25): mekanizma
     // ilanları ile göç kanıtları alt raf olarak sürer; ilansız gövde sıfır ölçütü korunur.
