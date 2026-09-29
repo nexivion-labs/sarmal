@@ -19,6 +19,7 @@
 //     M3 dil denetçisi gözlemi basmaz                                    → ③ kırmızı
 //     M4 ders dünyası muafiyeti kalkar                                   → ⑤ kırmızı
 //     M5 DIL-2.2 zorlama satırındaki ilan silinir → ④ ile A08 üçlü senkron ① kırmızı
+//     M6 belge açılışı yeniden ham satırda aranır                        → ⑥ kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
@@ -123,4 +124,18 @@ test("⑤ ders dünyası (örnek, şablon, fikstür, arşiv ve eğitim mühürl�
   const t = dilTanilari(new Map(tum.map((d) => [d, program])), new Map(tum.map((d) => [d, BOZUK])))
     .filter((x) => x.tani.kod === "girinti-yapı-uyumsuz").map((x) => x.dosya).sort();
   assert.deepEqual(t, [...canli].sort());
+});
+
+test("⑥ dizgi ya da yorum içindeki belge imi açılış sayılmaz; gözlem dosyanın geri kalanında susmaz", () => {
+  const kaynak = [
+    "Faz( kod: FAZ-D, ad: \"f\" ) {",
+    "  Blok( kod: BLK-D, ne: \"ok -->| bu bir dizgidir\" ) {",
+    "  // yorumdaki -->| de açılış değildir",
+    "  Katman( kod: KAT-D, ad: \"k\" ) {",
+    "  }",
+    "  }",
+    "}",
+  ].join("\n");
+  ayristir(belirtecle(kaynak));
+  assert.deepEqual(girintiYapiFarklari(kaynak).map((f) => f.satir), [4, 5]);
 });

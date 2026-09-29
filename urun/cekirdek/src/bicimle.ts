@@ -167,11 +167,14 @@ export function girintiYapiFarklari(kaynak: string): GirintiFarki[] {
   for (let i = 0; i < satirlar.length; i++) {
     const ham = satirlar[i];
     if (belgeBlok) { if (ham.includes("|<--")) belgeBlok = false; continue; }
-    const belgeAc = ham.indexOf("-->|");
-    if (belgeAc !== -1 && ham.indexOf("|<--", belgeAc + 4) === -1) { belgeBlok = true; continue; }
     const bastaUclu = ucluDizgi;
     const bastaYorum = blokYorum;
     const { iskelet, sonBlok, sonUclu } = iskeleCikar(ham, blokYorum, ucluDizgi);
+    // Belge bloğu açılışı İSKELETTE aranır (KPS-SIR-A02 · inceleme bulgusu): dizgi
+    // ya da yorum içindeki `-->|` bir açılış değildir; ham satırda aranırsa gözlem
+    // dosyanın geri kalanında susar.
+    const belgeAc = iskelet.indexOf("-->|");
+    if (belgeAc !== -1 && iskelet.indexOf("|<--", belgeAc + 4) === -1) { belgeBlok = true; continue; }
     ucluDizgi = sonUclu;
     blokYorum = sonBlok;
     const kirpik = ham.trim();
