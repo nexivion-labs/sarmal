@@ -527,6 +527,54 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         sınır: "Bu Adım kanon metnine dokunmaz, doğuş paketinin kod adlarını değiştirmez ve kardeş projelerin kod tekilliğine (KPS-KOD-A01) dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
       }
 
+      // FOUNDER HÜKMÜ (2026-09-29): Hiçbir Blok Fazsız bir yapıda yaşayamaz; Faz sırası
+      //   katıdır, önceki Faz kapanmadan sonraki Fazda iş başlamaz ve bağımlılıkları
+      //   bitmemiş bir Adım geliştirmeye alınamaz. Hüküm, kardeş bir projenin planında
+      //   Fazsız, boş ve sırası bozuk Blokların motor sıfır hata verirken birikmesi
+      //   üzerine verilmiştir. Ölçüm dört kök göstermiştir: `planlanmamış` beyanının
+      //   fazsız-blok hatasını kanonda dayanağı olmadan bilgi notuna indirmesi, kardeş
+      //   Faz grubunun anahtarına dosya adının girmesi yüzünden ayrı dosyalardaki
+      //   Fazlar arasında sıra kenarının hiç kurulmaması, Faz sırası ihlali ile geriye
+      //   dönük Faz bağımlılığı için tanının hiç yazılmamış olması ve seçilemez Adım
+      //   tanısının yalnız ham bağımlı listesini okuması.
+      Adım( kod: KPS-SIR-A01, ad: "Faz Sırasının ve Blok Yapısının Motorda Zorlanması", durum: geliştirmede, öncelik: p0,
+        bağımlı: [], referans: [ MIM-1.2, MIM-1.3, MIM-1.6, ORK-3.2, ORK-3.5 ],
+        ne: "🧭 Faz sırasının ve Blok yapısının motorda zorlanması. Ayrı dosyalarda yaşayan Fazlar arasında sıra kenarı kurulur; Fazsız Blok, başka projenin Fazına bağlanan açık Blok, Katmansız Blok, kendinden sonraki Faza bağımlı Adım, önceki Faz açıkken sonraki Fazda yürüyen iş ve öncülleri bitmemiş geliştirmedeki Adım adıyla ve kanondaki düzeyiyle bildirilir." ) {
+        görev: [
+          "Kardeş Faz grubunun anahtarından dosya adını çıkar (dag.ts, grup anahtarı): aynı Projenin bütün Fazları tek grupta zincirlensin. Eşit tarihli ya da tarihsiz Fazlar dosyalar arasında satırla değil, dosya yolunun doğal sayı sırasıyla (0_, 1_, …, 10_) dizilsin; panel de aynı sırayı çizsin.",
+          "`planlanmamış` beyanının fazsız-blok hatasını bilgi notuna indiren kaçışı kapat; MIM-1.2 Fazsız Bloku geçersiz sayar ve kaçışın kanonda dayanağı yoktur. Öğretim metinlerindeki (ogret, dil bağlamı) kaçış anlatımını da kaldır.",
+          "Yeni tanıları yaz ve sicile kanon maddeleriyle bağla: ters-faz-bağımlılığı (HATA, Adımın öncülü sonraki bir Fazda), erken-faz-işi (UYARI, önceki Faz açıkken sonraki Fazda geliştirmede iş), yabancı-faz-bağı (açık iş taşıyan Blokta UYARI, tamamlanmış Blokta BİLGİ), katmansız-blok (UYARI, MIM-1.3), adımsız-kapsayıcı ile tek-adımlı-blok (BİLGİ; ders dünyası ve doğuş iskeleti muaf).",
+          "seçilemez-adım-yürütümü tanısı ham bağımlı listesi yerine Faz sırasıyla genişletilmiş öncül listesini okusun ve kanondaki düzeyi olan UYARI ile üretilsin.",
+          "Sıra onarımı ile yeni tanılar aynı turda girsin; yalnız sıra onarımının girmesi döngüsel bağımlılık ve durum tutarsızlığı hatası yağdırır. Her tanı mutasyonla kanıtlansın.",
+          "Etkiyi ölç: açık deponun kendi denetiminde ve çatıdaki her kardeş projenin kendi kökünden koşulan denetiminde yeni tanıların kaç bulgu ürettiğini say ve kayda yaz; kardeş projelerin plan dosyalarına dokunma."
+        ]
+        kabul: [
+          "Ayrı dosyalardaki Fazlar grafta sıra kenarıyla zincirlidir ve panel onları dosya önekinin doğal sayı sırasıyla çizer; iki dosyalı bir sınav çatısında ölçülmüştür.",
+          "Fazsız Blok `planlanmamış` beyanıyla da hata verir.",
+          "Altı yeni ya da yükseltilmiş tanının her biri sınav fikstüründe ateşler, mutasyonla söküldüğünde nöbet kırmızıya döner ve sicilde kanon maddesine bağlıdır.",
+          "Açık deponun denetimi bu Adımın getirdiği hata olmadan geçer; kardeş projelerde doğan bulgular sayıyla yazılıdır.",
+          "Çekirdek ile eklenti süitleri yeşildir."
+        ]
+        sınır: "Bu Adım kanon maddelerinin hükmünü değiştirmez; yalnız var olan hükümlerin zorlamasını yazar. Kardeş projelerin plan dosyalarına dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+      }
+
+      Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: beklemede, öncelik: p1,
+        bağımlı: [ KPS-SIR-A01 ], referans: [ YUZ-3.2, MIM-1.2 ],
+        ne: "🔗 Ad alanlı atıfların ve girintinin doğru gösterilmesi. Çıplak koda yapılan atıf sorgusu o tanıma çözülen `PRJ::KOD` yazımlarını da bulur; ağaç çizgileri sütunu girintiden değil yapının derinliğinden hesaplar ve girintisi yapısıyla uyuşmayan dosya bilgi notuyla bildirilir." ) {
+        görev: [
+          "Atıf indeksinde çıplak kod sorgusuna o tanıma çözülen ad alanlı atıfları ekle (kimlik, atıflar); bağlam kartı ve bütün atıfları bulma kısayolu aynı indeksi kullansın (YUZ-3.2).",
+          "Ağaç çizgisi sütununu yapı derinliğinden hesapla (dallar); girintisi bozuk dosyada Katman, AltKatman ve Adım kardeş gibi çizilmesin.",
+          "girinti-yapı-uyumsuz tanısını (BİLGİ) yaz: biçimlendiricinin çıktısı kaynaktan farklıysa ateşlesin.",
+          "Her değişikliği mutasyonla kanıtla."
+        ]
+        kabul: [
+          "Başka bir projeden ad alanlı yazımla verilen atıf, tanımın bağlam kartında ve bütün atıfları bulma sonucunda görünür; iki projeli sınav çatısında ölçülmüştür.",
+          "Girintisi bozuk bir sınav dosyasında ağaç çizgileri yapıyı doğru gösterir ve girinti-yapı-uyumsuz notu ateşler.",
+          "Tek projeli bir deponun grafı ve ürün karnesi değişmez; çekirdek ile eklenti süitleri yeşildir."
+        ]
+        sınır: "Kanon metnine dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+      }
+
       Adım( kod: KPS-KOD-A01, ad: "Kardeş Projelerde Kod Tekilliği", durum: tamamlandı, öncelik: p0,
         bağımlı: [ KPS-CAT-A01, KPS-ADA-A01 ], referans: [ ORK-4, MIM-1.1 ],
         onay: "onaylandı — 2026-09-10 · ŞERH 2026-09-19 · FOUNDER (şablon kopyası): Birinci kabul ölçütündeki hiçbir kodu değiştirilmeden cümlesi, Proje kodu dışında hiçbir kod değiştirilmeden biçiminde okunur; bayt bayt kopyalanan bir şablonun Proje kodunu da taşıması ve motorun aynı Proje kodunu iki kökte gördüğünde bunu adıyla bildirmesi DOĞRU davranıştır ve şema değişmez. Gerekçe şudur: kopyalamada tek dokunuş Proje kodudur ve bu dokunuş işletim sistemi hedefini bozmaz, çünkü ajanın öğrendiği Kitaplık, Raf ve Adım kodları müşteriden müşteriye aynı kalır; ad alanının kendisi çoğalırsa ayrışma zaten mümkün değildir ve motorun susmak yerine ayrıştıramadığını söylemesi dürüstlüğün gereğidir. · ŞERH 2026-09-19 · KONTROLCÜ (sıfır uyarı ölçütü · Founder hükmü değildir, Founder onayını bekler): açık deponun denetimindeki iki uyarı Eklenti Blokunun bloklu mühürlü iki Adımından gelmektedir ve bu Adımın işi değildir; beşinci kabul ölçütü, bu Adımın getirdiği uyarı yoktur biçiminde okunur.",
