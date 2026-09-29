@@ -188,9 +188,9 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // geçti (canlı sabit 101→100, emekli 15→16, emeklilik borcu 38→37).
   // 2026-09-29 (KPS-SIR-A03 · Founder hükmü): Faz dosyası düzeninin dört gözlemi
   // doğdu ve yeni küme seksen altıdan doksana çıktı.
-  // 2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi kanon iddiası olmadan
-  // sabit kümeye girdi ve canlı sabit küme yüzden yüz bire çıktı.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 90 || ONCEKI_TANI_KODLARI.length !== 101 ||
+  // 2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi DIL-2.2 zorlama satırına
+  // bilgi düzeyinde ilan edildi ve yeni küme doksandan doksan bire çıktı.
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 100 ||
       EMEKLI_TANI_KODLARI.length !== 16 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 37 ||
       emekliCanli.length !== 0 || borcCanli.length !== 37 || yuz33.length !== 1 ||
       [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {
@@ -307,7 +307,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `      ne: "Resmi yasa/kanon sekizlisinin ${olcum.maddeler.length}/${olcum.maddeler.length} maddesi, ${karar} Karar ve ${kural} Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )`,
     "",
     "Veri( kod: VR-GOC-TANI-MADDE-HARITASI,",
-    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla ve Faz dosyası düzeninin dört gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
+    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
     "",
     "Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,",
     `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır." )`,

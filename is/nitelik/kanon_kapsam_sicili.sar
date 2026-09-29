@@ -94,7 +94,7 @@ Kapsama( kod: KSC-DIL-2, referans: [ DIL-2 ],
 Kapsama( kod: KSC-DIL-2.1, referans: [ DIL-2.1 ],
   ne: "KISMİ (masa incelemesi) — Zorlama satırının andığı sahipsiz-belge ve belge-yanlış-düğüm tanıları önceki evrende canlıdır ve hükmün düğümsüz belge ile yanlış düğüme bağlanma dilimlerini ölçer; sicilin madde bağı bu hükme işlenmemiştir ve birden çok düğümü sahiplenme dilimi tanı tariflerinde açıkça anılmamaktadır." )
 Kapsama( kod: KSC-DIL-2.2, referans: [ DIL-2.2 ],
-  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı biçimlendirmenin çok satırlı içerikleri değiştirmesidir ve bu sınıf sicilde maddesine bağlı, kanonun öngördüğü uyarı düzeyinde üretilen çok-satırlı-değer-drift tanısıyla birebir ölçülmektedir." )
+  ne: "TAM (masa incelemesi) — Hükmün tek ihlal sınıfı biçimlendirmenin çok satırlı içerikleri değiştirmesidir ve bu sınıf sicilde maddesine bağlı, kanonun öngördüğü uyarı düzeyinde üretilen çok-satırlı-değer-drift tanısıyla birebir ölçülmektedir. Maddenin izin verdiği tek düzenleme olan yapısal girintinin kanonik kuraldan sapması ise 2026-09-29 tarihinden beri girinti-yapı-uyumsuz gözlemiyle bilgi düzeyinde görünür kılınmaktadır (KPS-SIR-A02)." )
 Kapsama( kod: KSC-DIL-3, referans: [ DIL-3 ],
   ne: "KISMİ (masa incelemesi) — Bildirim başlığının sözleşmesi söz-dizim, kural katman ve koşul uyumu katman-uyumsuz, zorlanabilir koşulsuz yapısal kural zorlanamayan-kural tanılarıyla önceki evrende ölçülmektedir; sicilin madde bağı kurulmamıştır ve tip bildiriminin aile ile tarif taşıma şartı ayrı bir tanıyla adlandırılmamıştır." )
 Kapsama( kod: KSC-DIL-3.1, referans: [ DIL-3.1 ],

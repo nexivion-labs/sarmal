@@ -20,7 +20,7 @@ import {
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
-  "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
+  "dil.sar:f8b47c8e9f62d44105324da5c60a1ff45176f332c96e2cc31abebff558ffe930",
   "mim.sar:9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
@@ -47,8 +47,8 @@ test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01 ve KPS-SIR-A03 tanıları 48/22/20 olarak 90'dır", () => {
-  assert.equal(YENI_TANI_KANONU.length, 90);
+test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KPS-SIR-A02 tanıları 48/22/21 olarak 91'dir", () => {
+  assert.equal(YENI_TANI_KANONU.length, 91);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 48);
   assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 22);
   // Faz sırası ve Blok yapısı (KPS-SIR-A01 · Founder hükmü 2026-09-29): altı tanı
@@ -65,7 +65,9 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01 ve KPS-SIR-A03 tan
   // MIM-3.2 Kitaplık kademesi (KPS-CEL-A01 · Founder hükmü 2026-09-09): kademe
   // atlandığında madde kendi kademesiyle, yani uyarı düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.2" && t.kod === "kitaplıksız-kök" && t.kademe === "uyarı").length, 1);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 20);
+  // DIL-2.2 girinti gözlemi (KPS-SIR-A02): maddenin zorlama satırına bilgi düzeyinde ilan edildi.
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "DIL-2.2" && t.kod === "girinti-yapı-uyumsuz" && t.kademe === "bilgi").length, 1);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 21);
   // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): hükmün
   // Faz ile Proje arasındaki yarısı bir gözlemle tutulur ve bilgi düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.2" && t.kod === "projesiz-faz" && t.kademe === "bilgi").length, 1);
@@ -81,8 +83,7 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01 ve KPS-SIR-A03 tan
   // boşluğuydu ve madde o boşluğu kapattı, bekçi de onu hata düzeyinde zorlar.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.7" && t.kod === "altkatman-tekilliği-ihlali").length, 1);
   // KPS-SIR-A01: `planlanmamış-gövde` emekli oldu (101 → 100).
-  // KPS-SIR-A02: kanon iddiasız `girinti-yapı-uyumsuz` gözlemi doğdu (100 → 101).
-  assert.equal(ONCEKI_TANI_KODLARI.length, 101);
+  assert.equal(ONCEKI_TANI_KODLARI.length, 100);
 });
 
 test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır", () => {
@@ -97,7 +98,7 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
   // 2026-09-19 (KPS-CEL-A01): MIM-3.2 Kitaplıksız kök gözlemiyle yüz doksana çıktı.
   // 2026-09-29 (KPS-SIR-A01): altı yeni tanı doğdu ve `planlanmamış-gövde` emekli oldu; yüz doksan beşe çıktı.
   // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemiyle yüz doksan dokuza çıktı.
-  // 2026-09-29 (KPS-SIR-A02): kanon iddiasız `girinti-yapı-uyumsuz` gözlemiyle iki yüze çıktı.
+  // 2026-09-29 (KPS-SIR-A02): DIL-2.2 `girinti-yapı-uyumsuz` gözlemiyle iki yüze çıktı.
   assert.equal(canli.size, 200);
   assert.equal(EMEKLI_TANI_KODLARI.length, 16);
   assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
@@ -111,7 +112,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
   assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
-  assert.match(ilk, /Faz dosyası düzeninin dört gözlemiyle 90 canlı yeni kimliğe ulaşır/);
+  assert.match(ilk, /Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
 });

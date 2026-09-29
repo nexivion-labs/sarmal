@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
-  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize,
+  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -899,6 +899,15 @@ test("proje: Faz dosyası düzeninin dört ihlali MIM-1.2 bilgi gözlemlerini do
   }
 });
 
+// ══ DIL-2.2 · GİRİNTİ İLE YAPININ UYUMU (KPS-SIR-A02) ══════════════════════
+
+test("proje: yapısal girintisi bozuk dosya DIL-2.2 girinti gözlemini bilgi düzeyinde doğurur", () => {
+  const kaynak = `Faz( kod: FAZ-G, ad: "f" ) {\n  Blok( kod: BLK-G, ne: "g" ) {\n  Katman( kod: KAT-G, ad: "k" ) {\n  }\n  }\n}\n`;
+  const t = dilTanilari(new Map([["p/is/plan/g.sar", ayr(kaynak)]]), new Map([["p/is/plan/g.sar", kaynak]]));
+  uretildi("girinti-yapı-uyumsuz", t);
+  assert.ok(t.filter((x) => x.tani.kod === "girinti-yapı-uyumsuz").every((x) => x.tani.duzey === "bilgi"));
+});
+
 test("proje: kökün altına çıplak Raf yazılınca MIM-3.2 Kitaplık kademesi gözlemi doğar", () => {
   // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): dallanan her klasör
   // bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar; kademe atlandığında
@@ -998,6 +1007,9 @@ test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, yirmi kimlik bil
     // gözlemi kanonun yazdığı bilgi düzeyinde doğdu; var olan planlar taşınana dek
     // hiçbir kapıyı kırmızıya düşürmezler ve düzey yükselişi ayrı bir Founder kapısıdır.
     "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası",
+    // KPS-SIR-A02 (2026-09-29): DIL-2.2 girinti gözlemi kanonun yazdığı bilgi düzeyinde
+    // doğdu; motor yapıyı girintiden okumadığı için hiçbir kapıyı kırmızıya düşürmez.
+    "girinti-yapı-uyumsuz",
   ].filter((k) => k !== "seçilemez-adım-yürütümü").sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");

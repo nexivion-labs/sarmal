@@ -176,6 +176,11 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" yalnız tek bir Adım taşıyor ("${a(p, "adim")}"). Blok birden çok Katmanı kavuşturan bir iş gövdesidir; tek Adımlık iş çoğu zaman var olan bir Blokun içinde bir Adım olarak yaşar (MIM-1.3).`,
     oneri: (p) => `Adımı ilgili bir Blokun uygun Katmanına taşı ya da Blokun kavuşturduğu öteki Katmanların Adımlarını yaz. Örnek: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
   },
+  // ── Girinti ile yapının uyumu (DIL-2.2 · KPS-SIR-A02) ──
+  "girinti-yapı-uyumsuz": {
+    mesaj: (p) => `Dosyanın ${a(p, "sayi")} yapısal satırının girintisi yapının derinliğiyle uyuşmuyor; ilki bu satırdır: yapı ${a(p, "beklenen")} boşluk bekliyor, satır ${a(p, "bulunan")} boşlukla yazılmış. Motor yapıyı girintiden değil ayrıştırmadan okur; bozuk girinti yalnız okuru yanlış bir hiyerarşiye götürür.`,
+    oneri: (p) => `Dosyayı biçimlendir (eklentide ⇧⌥F ya da MCP bicimle aracı): biçimlendirici yapısal girintiyi her kat için iki boşlukla yeniden yazar, metne ve hizalamaya dokunmaz. Örnek: satır ${a(p, "beklenen")} boşlukla başlar, \`Blok( kod: BLK-… ) {\` gövdesindeki \`Katman( kod: KAT-… ) {\` bir kat içeride yazılır.`,
+  },
   // ── Faz dosyası düzeni (MIM-1.2 · KPS-SIR-A03 · Founder hükmü 2026-09-29) ──
   "çok-fazlı-dosya": {
     mesaj: (p) => `Bu dosya ${a(p, "sayi")} Faz taşıyor; "${a(p, "kimlik")}" Fazı "${a(p, "ilk")}" Fazıyla aynı dosyada ilan edilmiş. Her Faz plan rafının faz klasöründe sıra önekli kendi dosyasında yaşar ve sonraki Faz yeni bir dosyada doğar (MIM-1.2).`,
@@ -596,6 +601,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   "tek-adımlı-blok": {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" carries only one Adım ("${a(p, "adim")}"). A Blok is a work body that joins several Katmanlar; single-Adım work usually lives as an Adım inside an existing Blok (MIM-1.3).`,
     oneri: (p) => `Move the Adım into a fitting Katman of a related Blok, or write the Adımlar of the other Katmanlar the Blok joins. Example: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
+  },
+  // ── Indentation and structure (DIL-2.2 · KPS-SIR-A02) ──
+  "girinti-yapı-uyumsuz": {
+    mesaj: (p) => `The indentation of ${a(p, "sayi")} structural lines in this file does not match the depth of the structure; this is the first: the structure expects ${a(p, "beklenen")} spaces, the line is written with ${a(p, "bulunan")}. The engine reads structure from parsing, not from indentation; broken indentation only leads the reader to a wrong hierarchy.`,
+    oneri: (p) => `Format the file (⇧⌥F in the extension or the MCP bicimle tool): the formatter rewrites structural indentation with two spaces per level and does not touch text or alignment. Example: the line starts with ${a(p, "beklenen")} spaces, and \`Katman( kod: KAT-… ) {\` inside a \`Blok( kod: BLK-… ) {\` body is written one level deeper.`,
   },
   // ── Phase file layout (MIM-1.2 · KPS-SIR-A03 · Founder ruling 2026-09-29) ──
   "çok-fazlı-dosya": {
@@ -1526,10 +1536,6 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     mesaj: () => "Dosya diskte NFD (ayrışık) Türkçe karakter içeriyor — motor girişte NFC'ye çevirir ama ham metin dış araçlarla (grep · diff · editör araması) uyuşmaz.",
     oneri: () => "Dosyayı NFC olarak yeniden kaydet — macOS kopyala-yapıştır ve bazı editörler NFD sızdırabilir.",
   },
-  "girinti-yapı-uyumsuz": {
-    mesaj: (p) => `Dosyanın ${a(p, "sayi")} yapısal satırının girintisi yapının derinliğiyle uyuşmuyor; ilki bu satırdır: yapı ${a(p, "beklenen")} boşluk bekliyor, satır ${a(p, "bulunan")} boşlukla yazılmış. Motor yapıyı girintiden değil ayrıştırmadan okur; bozuk girinti yalnız okuru yanlış bir hiyerarşiye götürür.`,
-    oneri: () => "Dosyayı biçimlendir (eklentide ⇧⌥F ya da MCP bicimle aracı): biçimlendirici yapısal girintiyi her kat için iki boşlukla yeniden yazar, metne ve hizalamaya dokunmaz.",
-  },
   "beceri-drift": {
     mesaj: (p) => `Beceri "${a(p, "kod")}" anlattığı hedefe bağlanamıyor: '${a(p, "hedef")}' ${b(p, "kodHedefi") ? "hiçbir düğüme çözülmüyor" : "tanı sicilinde yok"} — öğreten kart, öğrettiği kuraldan kopmuş (bayat içerik riski).`,
     oneri: () => "Hedef yeniden adlandırıldıysa beyanı güncelle; kural/tanı kaldırıldıysa beceri kartını gözden geçir (öğretisi hâlâ geçerli mi?) — kopuk beyan silinmez, düzeltilir.",
@@ -2127,10 +2133,6 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   "normalizasyon-uyumsuz": {
     mesaj: () => "The file contains decomposed NFD Turkish characters on disk — the engine converts them to NFC on input, but raw text does not match in external tools such as grep, diff and editor search.",
     oneri: () => "Save the file again as NFC; macOS copy-paste and some editors can introduce NFD.",
-  },
-  "girinti-yapı-uyumsuz": {
-    mesaj: (p) => `The indentation of ${a(p, "sayi")} structural lines in this file does not match the depth of the structure; this is the first: the structure expects ${a(p, "beklenen")} spaces, the line is written with ${a(p, "bulunan")}. The engine reads structure from parsing, not from indentation; broken indentation only leads the reader to a wrong hierarchy.`,
-    oneri: () => "Format the file (⇧⌥F in the extension or the MCP bicimle tool): the formatter rewrites structural indentation with two spaces per level and does not touch text or alignment.",
   },
   "beceri-drift": {
     mesaj: (p) => `Beceri "${a(p, "kod")}" cannot bind to the target it teaches: '${a(p, "hedef")}' ${b(p, "kodHedefi") ? "does not resolve to any node" : "is absent from the diagnostic registry"} — the teaching card has detached from its rule and may be stale.`,

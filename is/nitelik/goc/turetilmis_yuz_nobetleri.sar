@@ -28,25 +28,26 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `b1ff43de418d1f4861e7897e7575dc2f303ff3e8f60ed6cd26fb273153a22d84` |
+| `yasa/kanon demeti (A03 formülü)` | `b8d33623ff8ae76467114439fb403403731521a491063efd62f1deb240a56861` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `fb7f02a5619aba973ebc2c72f2732fd587f030f8b36e15b6e1ce0e22edca15b1` |
+| `urun/cekirdek/src/tani-sicili.ts` | `74c3b3880633d11f89bb2c6707846b3df3712523607cb15066165e1bfac6bf2c` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `64329c3512c06e9ef52185e3d6bdcdd1aaaab50c49251001ce507d74640395dd` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
 | `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
 | `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `cf320af585f4d3df1d14fca99191b0adee1df8f3ed790ff04f51a3587e3430c7` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `29d34702c442d3e2cd9bd251ddb42abdb614b886bac2deca93d2c7c8bda8a97b` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
 
 Tazeleme notu (2026-09-29 · girinti ile yapının uyumu): `girinti-yapı-uyumsuz`
-gözlemi kanon iddiası olmadan sabit kümede bilgi düzeyinde doğdu ve tanı sicilinin
-mührünü ilerletti; Bildirimler hanesi otuz yediden otuz sekize çıktığı için
-yönlendirme matrisinin mührü de ilerledi. İki mühür birlikte tazelendi ve kanon
-tutarlılık yüzü ile belge yüzleri aynı koşuda resmî üreticileriyle yeniden
-üretildi; kanon demeti ile öteki altı kaynağın mührü değişmedi.
+gözlemi DIL-2.2 maddesinin zorlama satırına bilgi düzeyinde ilan edildi ve kanon
+demeti ilerledi; maddenin hüküm, gerekçe ve örnek metinlerine dokunulmadı. Gözlemin
+sicil kaydı tanı sicilinin mührünü, Bildirimler hanesinin otuz yediden otuz sekize
+çıkması da yönlendirme matrisinin mührünü ilerletti. Üç mühür birlikte tazelendi ve
+kanon tutarlılık yüzü ile belge yüzleri aynı koşuda resmî üreticileriyle yeniden
+üretildi; öteki altı kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-09-29 · Faz dosyası düzeni): Founder hükmüyle MIM-1.2 maddesinin
 hükmü, gerekçesi ve örneği Faz dosyası düzenini taşıyacak biçimde genişledi ve zorlama

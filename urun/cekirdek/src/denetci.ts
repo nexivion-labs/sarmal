@@ -2850,6 +2850,7 @@ export function uygulanmamisKararTanilari(
 //      açık değilken yazılan satırlar sayılır, hizalama tercihleri sayılmaz.
 //      Motor yapıyı girintiden değil ayrıştırmadan okur; girinti yalnız okuru
 //      yanıltır, bu yüzden gözlem bilgi düzeyindedir ve dosya başına bir kez konuşur.
+//      Kanon bağı DIL-2.2'dir (sicil); ders dünyası muaftır.
 //   Sınır (DIL-1.1): TDK sözlük denetimi DEĞİL — yalnız alan-adı sözlüğü + NFC.
 const sapkaDusur = (s: string): string => s
   .replace(/ğ/g, "g").replace(/Ğ/g, "G").replace(/ü/g, "u").replace(/Ü/g, "U")
@@ -2894,10 +2895,12 @@ export function dilTanilari(
       out.push({ dosya, tani: eskiTani("normalizasyon-uyumsuz", "bilgi", {}, { satir, sutun: 1 }) });
     }
     for (const [dosya, kaynak] of hamKaynaklar) {
+      // Ders dünyası muaftır (OGR-5): öteki yapı gözlemleriyle aynı sınır.
+      if (DERS_DUNYASI.test(dosya)) continue;
       const farklar = girintiYapiFarklari(kaynak);
       if (!farklar.length) continue;
       const ilk = farklar[0];
-      out.push({ dosya, tani: eskiTani("girinti-yapı-uyumsuz", "bilgi",
+      out.push({ dosya, tani: yeniTani("girinti-yapı-uyumsuz",
         { sayi: farklar.length, beklenen: ilk.beklenen, bulunan: ilk.bulunan }, { satir: ilk.satir, sutun: 1 }) });
     }
   }

@@ -161,7 +161,7 @@ Kural belgeSahipliği( kod: DIL-2.1,
 **Hüküm:** Çok satırlı değerlerin içerik satırları, satır ve blok yorumlarının metni ve kullanıcının anlam taşıyan sütun hizalaması biçimlendirme sırasında değiştirilemez; yalnız yapısal girinti, izinli çevre boşlukları ve baştaki ya da sondaki boş satırlar kanonik kurala göre düzenlenebilir; dayanak: DIL-2; ilgili: [DIL-0, YUZ-0].
 **Gerekçe:** Biçimlendirme görünüm işlemi olmasına rağmen içerik satırına dokunursa metin, örnek ve şekil anlamını sessizce değiştirir; yinelenen biçimlendirmede yeni fark oluşması güveni yok eder.
 **Örnek:** Doğru: biçimlendirme öncesi ve sonrası çok satırlı değerin sözcükleri ile göreli sütunları aynıdır; yanlış: satırları birleştirmek, yorumu yeniden yazmak veya hizalı sütunu kaydırmak.
-**Zorlama:** Yeni tanı önerisi `çok-satırlı-değer-drift` · UYARI · “Biçimlendirme çok satırlı değer, yorum veya kullanıcı hizalamasının içeriğini değiştirdi; kaynak içeriğini aynen koru.” · yüzey: Problems, CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
+**Zorlama:** Yeni tanı önerisi `çok-satırlı-değer-drift` · UYARI · “Biçimlendirme çok satırlı değer, yorum veya kullanıcı hizalamasının içeriğini değiştirdi; kaynak içeriğini aynen koru.” · yüzey: Problems, CLI ve satır-lensi; `girinti-yapı-uyumsuz` · BİLGİ · “Yapısal satırların girintisi yapının derinliğiyle uyuşmuyor; dosyayı biçimlendir.” · yüzey: proje CLI · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Kural çokSatırlıDeğerBütünlüğü( kod: DIL-2.2,
        ne: "DIL-2.2 · Çok Satırlı Değer Bütünlüğü [UYARI]",

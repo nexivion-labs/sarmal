@@ -10,22 +10,27 @@
 //   ② hizalı `kabul: [` listeleri, parametre devamları, belge blokları, çok
 //      satırlı değerler ve yorumlar sahte bulgu üretmez;
 //   ③ dil denetçisi dosya başına tek bir bilgi notu basar, konumu ilk farktır;
-//   ④ gözlem kanon iddiası olmayan sabit kümededir ve iki dilli katalogdadır.
+//   ④ gözlem DIL-2.2 maddesine bilgi düzeyinde bağlıdır ve iki dilli katalogdadır;
+//   ⑤ ders dünyası muaftır, kullanıcının kendi `ornek/` klasörü canlıdır.
 //
 //   MUTASYON KANITI (2026-09-29 · `cp` yedeğiyle geri alındı, `cmp` ile doğrulandı):
 //     M1 yapısal satır koşulundan "yalnız süslü gövde açık" şartı kalkar → ② ve ③ kırmızı
 //     M2 belge bloğu atlanmaz                                            → ② ve ③ kırmızı
 //     M3 dil denetçisi gözlemi basmaz                                    → ③ kırmızı
+//     M4 ders dünyası muafiyeti kalkar                                   → ⑤ kırmızı
+//     M5 DIL-2.2 zorlama satırındaki ilan silinir → ④ ile A08 üçlü senkron ① kırmızı
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { bicimle, girintiYapiFarklari } from "../src/bicimle.ts";
 import { dilTanilari } from "../src/denetci.ts";
-import { ONCEKI_TANI_KODLARI, YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
-import { ONCEKI_TANI_METINLERI, ONCEKI_TANI_METINLERI_EN } from "../src/tani-metinleri.ts";
+import { ONCEKI_TANI_KODLARI, YENI_TANI_INDEKS } from "../src/tani-sicili.ts";
+import { TANI_METINLERI, TANI_METINLERI_EN } from "../src/tani-metinleri.ts";
 
 /** Katman, AltKatman ve Adım aynı sütunda yazılmış — yapı üç kademe, girinti tek. */
 const BOZUK = [
@@ -95,10 +100,27 @@ test("③ dil denetçisi dosya başına tek bir bilgi notu basar ve ilk farkı g
   assert.match(t[0].tani.mesaj, /6 yapısal satırının girintisi yapının derinliğiyle uyuşmuyor; ilki bu satırdır: yapı 4 boşluk bekliyor, satır 2 boşlukla yazılmış/u);
 });
 
-test("④ gözlem kanon iddiası olmayan sabit kümededir ve iki dilli katalogda yaşar", () => {
-  assert.ok(ONCEKI_TANI_KODLARI.includes("girinti-yapı-uyumsuz"));
-  assert.ok(!YENI_TANI_KODLARI.includes("girinti-yapı-uyumsuz"));
+test("④ gözlem DIL-2.2 maddesine bilgi düzeyinde bağlıdır ve iki dilli katalogda yaşar", () => {
+  assert.ok(!ONCEKI_TANI_KODLARI.includes("girinti-yapı-uyumsuz"));
+  const kayit = YENI_TANI_INDEKS.get("girinti-yapı-uyumsuz");
+  assert.deepEqual(kayit && [kayit.madde, kayit.kanonDüzey, kayit.kademe, kayit.uretici], ["DIL-2.2", "bilgi", "bilgi", "denetci.ts"]);
+  const kanon = readFileSync(fileURLToPath(new URL("../../../yasa/kanon/dil.sar", import.meta.url)), "utf8");
+  const zorlama = kanon.slice(kanon.indexOf("### DIL-2.2 ·")).split("\n").find((l) => l.startsWith("**Zorlama:**")) ?? "";
+  assert.match(zorlama, /`girinti-yapı-uyumsuz` · BİLGİ/u);
   const p = { sayi: 2, beklenen: 4, bulunan: 2 };
-  assert.match(ONCEKI_TANI_METINLERI["girinti-yapı-uyumsuz"].mesaj(p), /yapı 4 boşluk bekliyor/u);
-  assert.match(ONCEKI_TANI_METINLERI_EN["girinti-yapı-uyumsuz"].mesaj(p), /the structure expects 4 spaces/u);
+  assert.match(TANI_METINLERI["girinti-yapı-uyumsuz"].mesaj(p), /yapı 4 boşluk bekliyor/u);
+  assert.match(TANI_METINLERI_EN["girinti-yapı-uyumsuz"].mesaj(p), /the structure expects 4 spaces/u);
+});
+
+test("⑤ ders dünyası (örnek, şablon, fikstür, arşiv ve eğitim mühürlü dosya) girinti gözleminden muaftır", () => {
+  const dersler = [
+    "p/ogreti/ornek/bozuk.sar", "p/ogreti/sablon/bozuk.sar", "p/ogreti/fikstur/bozuk.sar",
+    "p/ogreti/arsiv/bozuk.sar", "p/is/plan/@EGITIM@_bozuk.sar",
+  ];
+  const canli = ["p/is/plan/bozuk.sar", "p/ornek/bozuk.sar"];   // kullanıcının kendi `ornek/` klasörü canlıdır
+  const program = ayristir(belirtecle(BOZUK));
+  const tum = [...dersler, ...canli];
+  const t = dilTanilari(new Map(tum.map((d) => [d, program])), new Map(tum.map((d) => [d, BOZUK])))
+    .filter((x) => x.tani.kod === "girinti-yapı-uyumsuz").map((x) => x.dosya).sort();
+  assert.deepEqual(t, [...canli].sort());
 });

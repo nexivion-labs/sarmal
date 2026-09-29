@@ -244,6 +244,16 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "faz-dışı-blok", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "faz-ilanı-tepede-değil", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "yersiz-faz-dosyası", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A02 (2026-09-29): yapısal satırların girintisi yapının derinliğiyle
+  // uyuşmadığında biçimlendiricinin kendi derinlik kuralı konuşur. DIL-2.2 yalnız
+  // yapısal girintinin kanonik kurala göre düzenlenebileceğini yazar; gözlem o
+  // kuraldan sapmayı bildirir ve maddenin zorlama satırına bilgi düzeyinde ilan
+  // edilmiştir (Adımın sınırı yalnız zorlama satırına ilanı izin verir; hüküm,
+  // gerekçe ve örnek metinlerine dokunulmamıştır). Motor yapıyı girintiden değil
+  // ayrıştırmadan okur, bu yüzden gözlem hiçbir kapıyı kırmızıya düşürmez. Kapsam
+  // projedir, çünkü ham kaynak proje denetiminin yükleyicisinden gelir; ders dünyası
+  // muaftır.
+  { kod: "girinti-yapı-uyumsuz", madde: "DIL-2.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */
@@ -275,12 +285,7 @@ export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "dayanaksız-kural",
   "mühürsüz-ebedi", "normalizasyon-uyumsuz", "planlanmamış-çelişki", "politika-dayanaksız", "rafsız-anadizin", "çift-mevsim-kaydı",
   "rbac-apex-tekil", "rbac-l5-paylaşık", "rbac-l6-kalıcı", "rbac-yönetici-üretir", "çıplak-adımlı-katman",
-  // KPS-SIR-A02 (2026-09-29): `girinti-yapı-uyumsuz` bu kümeye doğrudan madde
-  // iddiası olmadan girer. Adımın sınırı kanon metnine dokunmayı yasaklar ve yeni
-  // kanon kümesi her kimlikten bir **Zorlama:** iddiası ister (A08 üçlü senkron);
-  // gözlem bu yüzden kanon bağı olmayan sabit kimliklerin arasında bilgi düzeyinde
-  // doğar. Bir kanon maddesine bağlanması ayrı bir Founder kararıdır.
-  "günsüz-tarih", "girinti-yapı-uyumsuz",
+  "günsüz-tarih",
   "sahipsiz-belge", "silo-blok", "söz-dizim", "tarif-eksik",
   "tek-çocuk-kapsayıcı", "teknolojisiz-yüzey", "uygulanmamış-karar", "yanlış-alan",
   "yer-uyuşmazlığı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",
