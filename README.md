@@ -46,9 +46,7 @@ Birinci Adım tamamlandı diyor ama `src/randevu.ts` diskte yok; ikinci Adım hi
   bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
-![Terminalde sarmal denetle çıktısı: kırık-referans ve meyve-dosyası-eksik hataları, özet satırı ve karne](urun/eklenti/medya/ekran/denetle.png)
-
-Yukarıdaki blok yalnız iki hatayı gösterir; ekran görüntüsü aynı koşunun tamamıdır ve uyarı ile bilgi satırlarını da taşır.
+Yukarıdaki blok yalnız iki hatayı gösterir; tam koşu uyarı ve bilgi satırlarını da taşır.
 
 Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder: `src/` klasörü diskte var ama projenin giriş dosyasında ilan edilmemiştir.
 

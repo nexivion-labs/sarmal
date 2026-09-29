@@ -46,9 +46,7 @@ The first Adım claims to be done, but `src/randevu.ts` does not exist on disk; 
   bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
-![sarmal denetle output in a terminal: kırık-referans and meyve-dosyası-eksik errors, the summary line and the scorecard](urun/eklenti/medya/ekran/denetle.png)
-
-The block above shows only the two errors; the screenshot is the same run in full and carries the warning and info lines too.
+The block above shows only the two errors; the full run carries the warning and info lines too.
 
 Once the file is written and the reference fixed, the engine notices something else: the `src/` folder exists on disk but was never declared in the project's entry file.
 
