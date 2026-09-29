@@ -577,7 +577,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Girintisi bozuk bir sınav dosyasında ağaç çizgileri yapıyı doğru gösterir ve girinti-yapı-uyumsuz notu ateşler.",
           "Tek projeli bir deponun grafı ve ürün karnesi değişmez; çekirdek ile eklenti süitleri yeşildir."
         ]
-        sınır: "Kanon metnine dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+        sınır: "Kanon maddelerinin hüküm, gerekçe ve örnek metinlerine dokunmaz; yeni gözlemin sicil bağı için yalnız ilgili maddenin Zorlama satırına ilan ekler (KPS-SIR-A01 emsali). İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
       }
 
       // FOUNDER HÜKMÜ (2026-09-29): Kardeş bir projede 2026-09-27 tarihinde kurulan Faz
