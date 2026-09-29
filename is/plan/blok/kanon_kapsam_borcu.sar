@@ -615,7 +615,9 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Fazların sırasını dosya önekiyle ve gerçek kapanış tarihleriyle tutarlı kıl; hedef tarihi aynı olan Fazların gerçek sırasını kayıttan ölç.",
           "Sonraya bırakılmış iki dosyanın Bloklarını ya yeni bir Faza bağla ya da hatırlatıcıya indir; Fazsız Blok kalmasın.",
           "Girintisi yapısıyla uyuşmayan satırları biçimlendir; adı olmayan Bloklara ad ver ve küçük harfle başlayan adları DIL-1.6 biçimine getir.",
-          "Dosya yoluyla atıf veren metinleri (anadizin, işaretçi dosyalar, öğretim ve nitelik kayıtları, hatırlatıcılar) yeni yollara güncelle."
+          "Dosya yoluyla atıf veren metinleri (anadizin, işaretçi dosyalar, öğretim ve nitelik kayıtları, hatırlatıcılar) yeni yollara güncelle.",
+          "README ile İngilizce ikizindeki gerçek örneği yeni düzene geçir: örnek Blok mevsim alanıyla değil Faz gövdesine sarılarak yazılsın, dosya yolu faz klasörünü göstersin, denetim çıktısı ve ekran görüntüsü yeni örnekten gerçek koşuyla yeniden alınsın.",
+          "Bu Adım kapandıktan sonra Faz dosyası düzeninin dört gözlemini (çok-fazlı-dosya, faz-dışı-blok, faz-ilanı-tepede-değil, yersiz-faz-dosyası) Founder kapısından geçirerek BİLGİ düzeyinden yükseltmeyi öner; yükseliş ayrı bir işlemedir."
         ]
         kabul: [
           "Açık deponun planında her Faz kendi dosyasındadır ve hiçbir Blok mevsim ya da çağır ile bağlı değildir; KPS-SIR-A03'ün tanıları bu depoda sıfır bulgu verir.",
