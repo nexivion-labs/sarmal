@@ -588,7 +588,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       //   Blokun mevsim alanı) kurulmasına izin verdiğini göstermiştir; doğuş şablonu da
       //   üç yolu ve planlanmamış kaçışını öğretmektedir. Sarmal'ın kendi planı bu düzene
       //   uymamaktadır.
-      Adım( kod: KPS-SIR-A03, ad: "Faz Dosyası Düzeninin Kanona İnmesi", durum: beklemede, öncelik: p0,
+      Adım( kod: KPS-SIR-A03, ad: "Faz Dosyası Düzeninin Kanona İnmesi", durum: geliştirmede, öncelik: p0,
         bağımlı: [ KPS-SIR-A01 ], referans: [ MIM-1.2, MIM-3 ],
         ne: "📂 Faz dosyası düzeninin kanona inmesi. Her Fazın sıra önekli kendi dosyasında yaşaması, Faz ilanının dosyanın tepesinde durması ve Blokların yalnız Faz gövdesine sarılarak Faza bağlanması kanon maddesine, doğuş şablonuna, öğretim metinlerine ve tanılara iner; mevsim alanı ile Fazın çağır listesi Blok bağı olarak emekliye ayrılır." ) {
         görev: [
