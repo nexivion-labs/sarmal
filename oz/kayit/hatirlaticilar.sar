@@ -1094,3 +1094,14 @@ Hatırlatıcı(
   dönüşTetikleyici: "EKL-F6-A01 mağaza yayını yeniden ele alınmadan önce",
   ne:               "Founder 2026-09-17 tarihinde ürün açıklamasında ve arama görünürlüğü çalışmasında yapay zekâya dair hiçbir vurgu bulunmadığını ve insanların ürünü bu hâliyle bulamayacağını bildirmiştir. Ölçüm gözlemi doğrulamıştır. Arama sonucunda görünen kısa açıklama iki dilde de yapay zekâyı, ajanı ve MCP sunucusunu anmamaktadır. Anahtar sözcük listesi sekiz sözcüktür ve yapay zekâya dair tek sözcük ai sözcüğüdür, oysa mağaza otuz sözcüğe izin vermektedir; mcp, agent, claude, copilot, cursor, llm ve benzerleri yoktur. Eklenti mağazanın AI kategorisinde değildir. Mağaza sayfasının gövdesi olan benioku dosyası yalnız Türkçedir ve yapay zekâ ajanlarını son paragrafın son cümlesinde bir kez anmaktadır; mağaza tek benioku gösterdiği için İngilizce arayan kişi sayfayı okuyamamaktadır. Founder görünen adı Sarmal: Plan & Guardrails for AI Agents olarak hükme bağlamıştır ve karar EKL-F6-A01 Adımının onay kaydındadır. Kalan kararlar Founder'ındır: benioku dosyasının mağazadaki dili, Türkçe arayüzdeki görünen adın karşılığı, kısa açıklamanın yeni metni ve anahtar sözcük listesi; kontrolcü bunlar için sohbette taslak sunmuştur ve metinler Founder onayı olmadan ürüne yazılmaz. Yayın yolu için ayrı bir ölçüm de kayda değerdir: Azure DevOps genel erişim anahtarları 2026-12-01 tarihinde emekli edilecektir; mağaza yönetim sayfasından paketin elle yüklenmesi anahtar gerektirmez ve ilk yayın için en sade yoldur."
 )
+
+Hatırlatıcı(
+  kod:              HTR-AD-ALANLI-ATIF-KALAN-IKI-YUZ,
+  durum:            açık,
+  hatırlat:         KPS-SIR-A02,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-29,
+  dönüşTetikleyici: "Gezin aracı ya da editörün yeniden adlandırma sağlayıcısı bir sonraki kez elden geçirildiğinde; kardeş projeler arasında ilk yeniden adlandırma yapılmadan önce",
+  ne:               "KPS-SIR-A02 çıplak koda yapılan atıf sorgusunun o tanıma çözülen ad alanlı atıfları bulmasını sağlamıştır, fakat iki yüz kabul kapsamı dışında kalmıştır. Birincisi, gezin aracı bir proje kökünden çağrıldığında kardeş köklerde yazılmış ad alanlı atıfları görmemektedir; ölçüm yalnız yüklü evren, yani çatı ya da çalışma alanı kökünden yapıldığında eksiksizdir ve kardeş kökleri her çağrıda taramak ek indeks maliyeti getirmektedir. İkincisi, editördeki yeniden adlandırma ad alanlı yazımları kapsamamaktadır; bir kardeş projede yazılmış atıf yeniden adlandırmadan sonra kırılır ve yalnız kırık-referans hatasıyla görünür olur. Ders tek cümledir: bir atıfın bulunabilmesi ile birlikte yeniden adlandırılabilmesi ayrı yüzlerdir ve biri kapandığında öteki kendiliğinden kapanmaz."
+)

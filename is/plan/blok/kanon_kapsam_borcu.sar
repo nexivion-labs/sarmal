@@ -562,7 +562,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
         üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-DENETCI, KOD-YOLHARITA-CEKIRDEK, KOD-SNM-FAZ-SIRASI, KOD-SNM-EKL-FAZ-SIRASI-PANELI ]
       }
 
-      Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: geliştirmede, öncelik: p1,
+      Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: tamamlandı, öncelik: p1,
         bağımlı: [ KPS-SIR-A01 ], referans: [ YUZ-3.2, MIM-1.2 ],
         ne: "🔗 Ad alanlı atıfların ve girintinin doğru gösterilmesi. Çıplak koda yapılan atıf sorgusu o tanıma çözülen `PRJ::KOD` yazımlarını da bulur; ağaç çizgileri sütunu girintiden değil yapının derinliğinden hesaplar ve girintisi yapısıyla uyuşmayan dosya bilgi notuyla bildirilir." ) {
         görev: [
@@ -578,6 +578,10 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Tek projeli bir deponun grafı ve ürün karnesi değişmez; çekirdek ile eklenti süitleri yeşildir."
         ]
         sınır: "Kanon maddelerinin hüküm, gerekçe ve örnek metinlerine dokunmaz; yeni gözlemin sicil bağı için yalnız ilgili maddenin Zorlama satırına ilan ekler (KPS-SIR-A01 emsali). İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+        koşu:  Koşum( kod: KSM-KPS-SIR-A02, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+          kanıt: "işlemeler 72f9016, c0e0ba8, c670f65, dec6bd6, 4492163, 8e5d9f0, ff4a685, 3437f4c · beş nöbet dosyası · bağımsız inceleme iki tur (GEÇTİ, düzeltmelerden sonra yeniden GEÇTİ)",
+          ne:    "Çıplak koda yapılan atıf sorgusu o tanıma çözülen ad alanlı atıfları da bulmaktadır; gerçek çatıda bir kodun atıf sayısı ikiden altıya çıkmış, editörün bütün atıfları bulma yüzü yalnız kaynak dosyanın Projesine ait atıfları döndürmektedir. Ağaç çizgileri sütunu yapı derinliğinden almakta, az girintili düğümün dalı metnin önüne sıkışmaktadır. girinti-yapı-uyumsuz gözlemi DIL-2.2 Zorlama satırına bağlanmış, dört projedeki 441 dosyanın biçimlendirilmiş çıktısında sıfır sahte bulgu vermiş ve açık depoda üç gerçek sapma bulmuştur. İki muafiyet kalıntısı motor fikstürüne ve saf doğuş iskeletine daralmış, kardeş projelerde yeni hata doğmamıştır. Çekirdek süiti 1491 sınamanın tamamını, eklenti süiti 846 sınamadan 840'ını geçmiş, altısı önceden olduğu gibi atlanmıştır. Proje kökünden koşan gezin aracının kardeş kökleri görmemesi ve F2 yeniden adlandırmanın ad alanlı yazımları kapsamaması kabul kapsamı dışında kalmış ve hatırlatıcıya bağlanmıştır." )
+        üretir: [ KOD-KIMLIK, KOD-GEZINME, KOD-EKL-DALLAR, KOD-EKL-BICIMLE, KOD-DENETCI, KOD-EKL-DALLAR-CEKIRDEK, KOD-SNM-AD-ALANLI-ATIF, KOD-SNM-EKL-AD-ALANLI-ATIF, KOD-SNM-GIRINTI-YAPI, KOD-SNM-EKL-DALLAR ]
       }
 
       // FOUNDER HÜKMÜ (2026-09-29): Kardeş bir projede 2026-09-27 tarihinde kurulan Faz
@@ -928,6 +932,17 @@ Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogr
   ne: "🧭 Ad alanı doğrulama nöbeti — altı sınama: kardeş kökte var olan ad alanlı hedef tanı almaz, bilinen ad alanında olmayan hedef gerçekten kırıktır ve hatadır, bilinmeyen ad alanı ölçülemezdir ve muafiyeti uyarı olarak adıyla bildirilir, çağır hedefi de üç durumlu okunur, ad alanı bilgisi verilmeyen eski yüz muafiyet uyduramaz ve yüklü evrendeki Proje de bilinen ad alanıdır; üç mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-ADA-A01)" )
 // 🍎 KPS-FAZ-A02 teslimi (2026-09-19): projesiz Faz bekçisi ve panel-motor eşitliği
 // 🍎 KPS-SIR-A01 teslimi (2026-09-29): Faz sırası ve Blok yapısı tanıları
+// 🍎 KPS-SIR-A02 teslimi (2026-09-29): ad alanlı atıflar, girinti gözlemi ve yapı derinliğinden ağaç çizgileri
+Kod( kod: KOD-EKL-DALLAR-CEKIRDEK, dosya: "urun/eklenti/src/dallar-cekirdek.ts",
+  ne: "🌿 Ağaç çizgisi çekirdeği — dal sütununu girintiden değil yapı derinliğinden hesaplar; az girintili düğümün dalını metnin önüne sıkıştırır, metin sıfırıncı sütundaysa bilinçli olarak çizmez (KPS-SIR-A02)" )
+Kod( kod: KOD-SNM-AD-ALANLI-ATIF, dosya: "urun/cekirdek/sinama/ad-alanli-atif.test.ts",
+  ne: "🔗 Ad alanlı atıf nöbeti — çıplak kod sorgusunun o tanıma çözülen PRJ::KOD atıflarını bulduğunu, yalnız sahip Projenin ad alanını saydığını ve bağlam kartının ad alanlı atıf satırını sınar (KPS-SIR-A02)" )
+Kod( kod: KOD-SNM-EKL-AD-ALANLI-ATIF, dosya: "urun/eklenti/sinama/ad-alanli-atif-yuzu.test.ts",
+  ne: "🔗 Editörün bütün atıfları bulma yüzü nöbeti — aynı kodu taşıyan iki Projede kaynak dosyanın Projesine ait ad alanlı atıfların döndüğünü sınar (KPS-SIR-A02 · YUZ-3.2)" )
+Kod( kod: KOD-SNM-GIRINTI-YAPI, dosya: "urun/cekirdek/sinama/girinti-yapi.test.ts",
+  ne: "📐 Girinti gözlemi nöbeti — yalnız yapısal satır kademesinin biçimlendirici kuralından sapmasını bildirir; hizalı listeler, belge blokları, dizgi ve yorumlar sahte bulgu üretmez; ders dünyası muaftır (KPS-SIR-A02 · DIL-2.2)" )
+Kod( kod: KOD-SNM-EKL-DALLAR, dosya: "urun/eklenti/sinama/dallar-cekirdek.test.ts",
+  ne: "🌿 Ağaç çizgisi nöbeti — girintisi bozuk dosyada çizginin yapıyı gösterdiğini, editör çiziminde dalın metnin önüne sıkıştığını ve doğru girintide gerilemenin olmadığını sınar (KPS-SIR-A02)" )
 // 🍎 KPS-SIR-A03 teslimi (2026-09-29): Faz dosyası düzeni
 Kod( kod: KOD-SNM-FAZ-DOSYASI, dosya: "urun/cekirdek/sinama/faz-dosyasi.test.ts",
   ne: "📂 Faz dosyası düzeni nöbeti — MIM-1.2'nin dört gözlemini (çok-fazlı-dosya, faz-dışı-blok, faz-ilanı-tepede-değil, yersiz-faz-dosyası), yalnız motor fikstürüne daraltılmış muafiyeti, kırık mevsimde çift sayımın olmadığını, doğuş paketinin is/plan/faz/1_dogus.sar adresini, saf doğuş iskeleti sınırını ve tek-çocuk önerisinin Fazı atlatmadığını sınar (KPS-SIR-A03)" )
