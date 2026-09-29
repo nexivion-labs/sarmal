@@ -27,6 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
+  fazSirasiTanilari, blokYapisiTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -361,7 +362,12 @@ test("proje: kullanır kenarı, çapraz Proje ad-alanı ve seçilebilir Adım", 
   const t = iliskiSinifiTanilari(programlar, kodIndeksle(programlar));
   uretildi("kullanır-kenarı-ihlali", t);
   uretildi("çapraz-proje-ad-alanı", t);
-  uretildi("seçilemez-adım-yürütümü", t);
+  // KPS-SIR-A01: seçilebilirlik grafın genişletilmiş öncül listesini okur ve
+  // ilişki sınıfı üreticisinden Faz sırası üreticisine taşınmıştır.
+  assert.equal(t.filter((x) => x.tani.kod === "seçilemez-adım-yürütümü").length, 0, "tanı eski üreticide ikinci kez basılmamalı");
+  const s = fazSirasiTanilari(dagKur(programlar));
+  uretildi("seçilemez-adım-yürütümü", s);
+  assert.equal(s.find((x) => x.tani.kod === "seçilemez-adım-yürütümü")!.tani.duzey, "uyarı");
 });
 
 test("proje: Döngü sonlanması ve Kapı kabul kanıtı", () => {
@@ -821,6 +827,59 @@ test("proje: hiçbir Proje köküne çözülemeyen Faz MIM-1.2 projesiz Faz göz
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+// ══ MIM-1.2 · MIM-1.3 · MIM-1.6 · FAZ SIRASI VE BLOK YAPISI (KPS-SIR-A01) ═══
+
+/** Tek Projeli, Fazları ayrı dosyalarda yaşayan küçük plan (Faz → Blok → Katman → AltKatman → Adım). */
+const sirFazi = (ek: string, tarih: string, adimlar: string): string =>
+  `Faz( kod: FAZ-${ek}, ad: "${ek}", hedefTarih: "${tarih}" ) {\n  Blok( kod: BLK-${ek}, ne: "gövde" ) {\n    Katman( kod: KAT-${ek}, ad: "k" ) {\n      AltKatman( kod: ALT-${ek}, ad: "m" ) {\n${adimlar}\n      }\n    }\n  }\n}\n`;
+const SIR_KOK = `Proje( kod: PRJ-SIR, ad: "Sıra" ) { Teknoloji( kod: TEK-SIR, ad: "t" ) }`;
+
+test("proje: öncülü sonraki Fazda duran Adım MIM-1.2 ters Faz bağımlılığı hatasını doğurur", () => {
+  const programlar = harita({
+    "p/p_anadizin.sar": SIR_KOK,
+    "p/is/plan/faz/1_ilk.sar": sirFazi("ILK", "2026-10", `        Adım( kod: ADM-ILK, durum: beklemede, bağımlı: [ ADM-SON ], ne: "iş" )`),
+    "p/is/plan/faz/2_son.sar": sirFazi("SON", "2026-11", `        Adım( kod: ADM-SON, durum: beklemede, ne: "iş" )`),
+  });
+  const t = fazSirasiTanilari(dagKur(programlar));
+  uretildi("ters-faz-bağımlılığı", t);
+  assert.equal(t.filter((x) => x.tani.kod === "ters-faz-bağımlılığı")[0].tani.duzey, "hata");
+});
+
+test("proje: önceki Faz açıkken sonraki Fazda başlamış iş MIM-1.2 erken Faz işi uyarısını doğurur", () => {
+  const programlar = harita({
+    "p/p_anadizin.sar": SIR_KOK,
+    "p/is/plan/faz/1_ilk.sar": sirFazi("ILK", "2026-10", `        Adım( kod: ADM-ILK, durum: beklemede, ne: "iş" )`),
+    "p/is/plan/faz/2_son.sar": sirFazi("SON", "2026-11", `        Adım( kod: ADM-SON, durum: geliştirmede, ne: "iş" )`),
+  });
+  const t = fazSirasiTanilari(dagKur(programlar));
+  uretildi("erken-faz-işi", t);
+  assert.equal(t.filter((x) => x.tani.kod === "erken-faz-işi")[0].tani.duzey, "uyarı");
+});
+
+test("proje: kardeş projenin Fazına bağlanan Blok MIM-1.2 yabancı Faz bağı gözlemini doğurur", () => {
+  const programlar = harita({
+    "p/p_anadizin.sar": SIR_KOK,
+    "p/is/plan/blok.sar": `Blok( kod: BLK-YAB, mevsim: PRJ-KARDES::FAZ-K, ne: "gövde" ) {\n  Katman( kod: KAT-YAB, ad: "k" ) {\n    AltKatman( kod: ALT-YAB, ad: "m" ) {\n      Adım( kod: ADM-YAB, durum: beklemede, ne: "iş" )\n      Adım( kod: ADM-YAB2, durum: beklemede, ne: "iş" )\n    }\n  }\n}\n`,
+  });
+  const t = blokYapisiTanilari(programlar, dagKur(programlar));
+  uretildi("yabancı-faz-bağı", t);
+  assert.equal(t.filter((x) => x.tani.kod === "yabancı-faz-bağı")[0].tani.duzey, "uyarı");
+});
+
+test("proje: Katmansız Blok, tek Adımlı Blok ve Adımsız kapsayıcı MIM-1.3 ile MIM-1.6 gözlemlerini doğurur", () => {
+  const programlar = harita({
+    "p/p_anadizin.sar": SIR_KOK,
+    "p/is/plan/faz.sar": `Faz( kod: FAZ-Y, ad: "y" ) {\n  Blok( kod: BLK-BOS, ne: "boş" )\n  Blok( kod: BLK-TEK, ne: "tek" ) {\n    Katman( kod: KAT-TEK, ad: "k" ) {\n      AltKatman( kod: ALT-TEK, ad: "m" ) {\n        Adım( kod: ADM-TEK, durum: beklemede, ne: "iş" )\n      }\n    }\n    Katman( kod: KAT-ISSIZ, ad: "k2" ) {\n      AltKatman( kod: ALT-ISSIZ, ad: "m2" )\n    }\n  }\n}\n`,
+  });
+  const t = blokYapisiTanilari(programlar, dagKur(programlar));
+  uretildi("katmansız-blok", t);
+  uretildi("tek-adımlı-blok", t);
+  uretildi("adımsız-kapsayıcı", t);
+  assert.equal(t.find((x) => x.tani.kod === "katmansız-blok")!.tani.duzey, "uyarı");
+  assert.equal(t.find((x) => x.tani.kod === "tek-adımlı-blok")!.tani.duzey, "bilgi");
+  assert.equal(t.find((x) => x.tani.kod === "adımsız-kapsayıcı")!.tani.duzey, "bilgi");
+});
+
 test("proje: kökün altına çıplak Raf yazılınca MIM-3.2 Kitaplık kademesi gözlemi doğar", () => {
   // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): dallanan her klasör
   // bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar; kademe atlandığında
@@ -884,7 +943,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, on altı kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -912,7 +971,11 @@ test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik b
     // tarih dayatmaz, yalnız bağın kurulamadığını görünür kılar; kanon onu
     // bilgi düzeyinde yazar ve ders dünyası muaftır.
     "projesiz-faz",
-  ].sort();
+    // KPS-SIR-A01 (Founder hükmü 2026-09-29): iki yapı gözlemi doğrudan bilgi
+    // düzeyinde doğdu (MIM-1.3 tek Adımlı Blok, MIM-1.6 Adımsız kapsayıcı); buna
+    // karşılık `seçilemez-adım-yürütümü` aynı turda kanonun yazdığı uyarıya çıktı.
+    "tek-adımlı-blok", "adımsız-kapsayıcı",
+  ].filter((k) => k !== "seçilemez-adım-yürütümü").sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");
   const hatada = YENI_TANI_KANONU.filter((k) => k.kademe === "hata");
@@ -921,7 +984,9 @@ test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik b
   // MIM-1.7 AltKatman tekilliği. Kök sebep bir hüküm boşluğuydu ve madde o
   // boşluğu kapattığı için tanı doğrudan hata düzeyinde doğdu; terfi turundan
   // gelmedi, dolayısıyla A05'in kırk altılık aday kümesini değiştirmez.
-  assert.equal(hatada.length, 47, "Founder kabulündeki hata kümesi 47 tanı olmalıdır");
+  // Kırk sekizinci hata kimliği 2026-09-29 tarihinde Founder hükmüyle doğdu:
+  // MIM-1.2 `ters-faz-bağımlılığı` (KPS-SIR-A01); terfi turundan gelmedi.
+  assert.equal(hatada.length, 48, "Founder kabulündeki hata kümesi 47 tanı ile MIM-1.2 ters Faz bağımlılığı, 48 tanı olmalıdır");
   assert.ok(hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
   // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
   // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
@@ -930,7 +995,10 @@ test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik b
   // MIM-3.2 `kitaplıksız-kök`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın kendi
   // ağacında sıfırdır, çünkü depo Kitaplık kademesini zaten taşır; terfi
   // turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
-  assert.equal(uyarida.length, 18, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 ve MIM-3.2 uyarıları 18 tanı olmalıdır");
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): üç yeni uyarı doğdu (MIM-1.2 erken Faz
+  // işi ile yabancı Faz bağı, MIM-1.3 Katmansız Blok) ve ORK-3.2 seçilemez Adım
+  // yürütümü bilgi kademesinden uyarıya çıktı; kümenin yeni büyüklüğü yirmi ikidir.
+  assert.equal(uyarida.length, 22, "on altı tanı, MIM-3.4 ve MIM-3.2 uyarıları ile KPS-SIR-A01'in dört uyarısı 22 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 
@@ -1157,13 +1225,13 @@ test("D-6: ham kaynağı `dogrula()`'ya geçiren DÖRT çağrı yerinin dördü 
 //   temizlik kapısına bağlar, dolayısıyla kümenin sessizce büyümesi ya da bir
 //   tanının kapı geçilmeden yükseltilmesi kanon ihlalidir.
 
-test("KPS-KAD-A01: kanon düzeyiyle bugünkü kademesi ayrışan tanı kümesi TAM OLARAK sekizdir", () => {
+test("KPS-KAD-A01: kanon düzeyiyle bugünkü kademesi ayrışan tanı kümesi TAM OLARAK yedidir", () => {
   const ayrisan = YENI_TANI_KANONU.filter((k) => k.kademe !== k.kanonDüzey);
   assert.deepEqual(ayrisan.map((k) => k.kod).sort(), [
     "adım-atomikliği", "beceri-kartı-eksik", "kullanır-kenarı-ihlali",
-    "seçilemez-adım-yürütümü", "terfi-kanıtı-eksik", "yürütme-kenarı-sözleşmesi",
+    "terfi-kanıtı-eksik", "yürütme-kenarı-sözleşmesi",
     "üretim-kökeni-ihlali", "şema-dışı-alan",
-  ].sort(), "terfi borcu kümesi değişti — KPS-KAD-A01 kaydı da aynı turda tazelenmelidir");
+  ].sort(), "terfi borcu kümesi değişti — KPS-KAD-A01 kaydı da aynı turda tazelenmelidir (KPS-SIR-A01: seçilemez Adım yürütümü uyarıya çıktı)");
 });
 
 test("KPS-KAD-A01: ayrışan her tanı BUGÜN bilgi kademesindedir — basamak atlanmamıştır", () => {

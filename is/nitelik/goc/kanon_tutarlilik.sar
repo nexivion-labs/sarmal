@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:f34368ff95d0c3992e9c3ba1a6327fc9dd08b72f44d9830c631d89040b2efb62
+// KAYNAK-MUHRU kanon-demeti-sha256:ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb
 
 -->|
 # Kanon tutarlılık yüzü
@@ -12,15 +12,15 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon/dil.sar` | `b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693` |
-| `yasa/kanon/mim.sar` | `b29ababebde8d03d69cda8c2634a8cd4546a230b8d35aeff95564a19514af190` |
+| `yasa/kanon/mim.sar` | `9d119d7ed6f524dd2298c72e35549181aaae2f38eb6f9486c5d1efc78b426964` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
 | `yasa/kanon/ork.sar` | `60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `f34368ff95d0c3992e9c3ba1a6327fc9dd08b72f44d9830c631d89040b2efb62` |
-| `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
+| kanon demeti | `ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb` |
+| `urun/cekirdek/src/tani-sicili.ts` | `f4d253f794ccbe8de9ff79567ea60a2327064a1cafb7b33becbeca0bd6d2a5cb` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 
@@ -208,7 +208,7 @@ Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 
 ## Tanı ↔ madde haritası — yeni küme
 
-Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydı buna eklenen yetmişinci kimliktir. Güncel küme 80 tanıdır ve düzey dağılımı 47 hata + 18 uyarı + 15 bilgidir.
+Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydı buna eklenen yetmişinci kimliktir. Güncel küme 86 tanıdır ve düzey dağılımı 48 hata + 22 uyarı + 16 bilgidir.
 
 | Tanı | Kanon maddesi | Canlı düzey | Kapsam | Üretici |
 |---|---|---|---|---|
@@ -241,7 +241,7 @@ Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesini
 | `üretim-kökeni-ihlali` | `ORK-1.3` | bilgi | proje | `denetci.ts` |
 | `kullanır-kenarı-ihlali` | `ORK-2.4` | bilgi | proje | `denetci.ts` |
 | `deterministik-sıra-ihlali` | `ORK-3` | hata | proje | `denetci.ts` |
-| `seçilemez-adım-yürütümü` | `ORK-3.2` | bilgi | proje | `denetci.ts` |
+| `seçilemez-adım-yürütümü` | `ORK-3.2` | uyarı | proje | `denetci.ts` |
 | `döngü-sonlanması-eksik` | `ORK-3.3` | hata | proje | `denetci.ts` |
 | `kapı-kabul-kanıtı-eksik` | `ORK-3.3` | hata | proje | `denetci.ts` |
 | `çapraz-proje-ad-alanı` | `ORK-4` | hata | proje | `denetci.ts` |
@@ -292,10 +292,16 @@ Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesini
 | `sonraya-bırakılmış-dosya` | `MIM-3.4` | bilgi | proje | `denetci.ts` |
 | `geçersiz-dosya-adı` | `MIM-3.4` | uyarı | proje | `denetci.ts` |
 | `projesiz-faz` | `MIM-1.2` | bilgi | proje | `denetci.ts` |
+| `ters-faz-bağımlılığı` | `MIM-1.2` | hata | proje | `denetci.ts` |
+| `erken-faz-işi` | `MIM-1.2` | uyarı | proje | `denetci.ts` |
+| `yabancı-faz-bağı` | `MIM-1.2` | uyarı | proje | `denetci.ts` |
+| `katmansız-blok` | `MIM-1.3` | uyarı | proje | `denetci.ts` |
+| `tek-adımlı-blok` | `MIM-1.3` | bilgi | proje | `denetci.ts` |
+| `adımsız-kapsayıcı` | `MIM-1.6` | bilgi | proje | `denetci.ts` |
 
 ## Canlı korunan sabit küme
 
-Yeni kümeden önceki 101 sabit kimlik canlı sicilde korunur. Kanonun yapısal `tanı:` alanında açıkça geçen maddeler ikinci sütunda gösterilir; “doğrudan madde iddiası yok” ifadesi yeni bir eşleme icat edilmediğini bildirir.
+Yeni kümeden önceki 100 sabit kimlik canlı sicilde korunur. Kanonun yapısal `tanı:` alanında açıkça geçen maddeler ikinci sütunda gösterilir; “doğrudan madde iddiası yok” ifadesi yeni bir eşleme icat edilmediğini bildirir.
 
 | Korunan kimlik | Yapısal kanon iddiası | Durum |
 |---|---|---|
@@ -379,7 +385,6 @@ Yeni kümeden önceki 101 sabit kimlik canlı sicilde korunur. Kanonun yapısal 
 | `öneksiz-blok` | doğrudan madde iddiası yok | canlı-sabit |
 | `öz-bağımlılık` | `ORK-1.2` · `ORK-3.1` | canlı-sabit |
 | `planlanmamış-çelişki` | doğrudan madde iddiası yok | canlı-sabit |
-| `planlanmamış-gövde` | doğrudan madde iddiası yok | canlı-sabit |
 | `politika-dayanaksız` | `YAS-2.1` | canlı-sabit |
 | `rafsız-anadizin` | `MIM-3.2` | canlı-sabit |
 | `rbac-apex-tekil` | `ORK-6.3` | canlı-sabit |
@@ -419,23 +424,23 @@ Sabit 171 kimliğe ek olarak 9 kimlik canlı `zorunluKenarlar` verisinden türet
 
 ## Güncel emekli kümesi ve emeklilik borcu
 
-Emekli kararı uygulanmış ve canlı sicilden çıkmış küme 15 kimliktir: `anadizin-yüzey-şişmesi` · `ayakizi-bulunamadı` · `dayanak-halef` · `dayanak-hedef-tür` · `defter-referansı` · `durum-boyutu` · `eski-giriş-adı` · `faz-gecikti` · `faz-tarihsiz` · `faz-yaklasiyor` · `hatırlatıcı-vade` · `kırıntı-adım` · `tek-cocuk-kapsayici` · `uzak-vade` · `öneksiz-anadizin`.
+Emekli kararı uygulanmış ve canlı sicilden çıkmış küme 16 kimliktir: `anadizin-yüzey-şişmesi` · `ayakizi-bulunamadı` · `dayanak-halef` · `dayanak-hedef-tür` · `defter-referansı` · `durum-boyutu` · `eski-giriş-adı` · `faz-gecikti` · `faz-tarihsiz` · `faz-yaklasiyor` · `hatırlatıcı-vade` · `kırıntı-adım` · `planlanmamış-gövde` · `tek-cocuk-kapsayici` · `uzak-vade` · `öneksiz-anadizin`.
 
 Halefi ilan edilen emekli kimlikler (KPS-MVS-A01 · 2026-09-10): `faz-gecikti` → `mevsim-vadesi-geçti`. Emeklinin tarihsel kaydı yerinde durur; halef, emekliliğin gerekçesi olan "ölçüm anında sıfır bulgu" varsayımının yanlış çıktığı dersi devralan canlı tanıdır ve canlı sicilde bulunması bu üreticide sınanır.
 
-Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli sicilde yaşamayı sürdüren açık borç 38 kimliktir: `ad-ayracı` · `aile-geçersiz` · `anadizin-plan-karışması` · `ağırlık-toplamı` · `bağımlılık-beyansız` · `bağımlılık-mekanik` · `derin-dal` · `doğrulanmamış-çapa` · `doğuş-eksik` · `doğuş-sırası` · `durumsuz-adım` · `düzyazı-koşul` · `eşik-sırası` · `geçersiz-durum` · `gizli-bağımlılık` · `günsüz-tarih` · `harf-farkı` · `kararlaşmış-hatırlatıcı` · `katmansız-adım` · `kavuşumsuz-paralellik` · `kayıp-kenar` · `koni-taşması` · `kopuk-zincir` · `kullanımsız-tip` · `kural-ihlali` · `meyvesiz-geliştirme` · `mühürsüz-ebedi` · `niyet-drift` · `olgunluk-onayı` · `planlanmamış-gövde` · `planlanmamış-çelişki` · `tarif-eksik` · `teknolojisiz-yüzey` · `zorlanamayan-koşul` · `referanssız-geliştirme` · `çift-mevsim-kaydı` · `çıplak-adımlı-katman` · `öneksiz-blok`. Bu küme “emekli” diye yanlış sayılmaz; çelişki raporunda açık kalır.
+Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli sicilde yaşamayı sürdüren açık borç 37 kimliktir: `ad-ayracı` · `aile-geçersiz` · `anadizin-plan-karışması` · `ağırlık-toplamı` · `bağımlılık-beyansız` · `bağımlılık-mekanik` · `derin-dal` · `doğrulanmamış-çapa` · `doğuş-eksik` · `doğuş-sırası` · `durumsuz-adım` · `düzyazı-koşul` · `eşik-sırası` · `geçersiz-durum` · `gizli-bağımlılık` · `günsüz-tarih` · `harf-farkı` · `kararlaşmış-hatırlatıcı` · `katmansız-adım` · `kavuşumsuz-paralellik` · `kayıp-kenar` · `koni-taşması` · `kopuk-zincir` · `kullanımsız-tip` · `kural-ihlali` · `meyvesiz-geliştirme` · `mühürsüz-ebedi` · `niyet-drift` · `olgunluk-onayı` · `planlanmamış-çelişki` · `tarif-eksik` · `teknolojisiz-yüzey` · `zorlanamayan-koşul` · `referanssız-geliştirme` · `çift-mevsim-kaydı` · `çıplak-adımlı-katman` · `öneksiz-blok`. Bu küme “emekli” diye yanlış sayılmaz; çelişki raporunda açık kalır.
 
 ## Çelişki raporu
 
 | Bulgu | Ölçüm | Hüküm |
 |---|---:|---|
-| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = 80 | ÇÖZÜLDÜ · güncel sayı 80 |
+| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = 86 | ÇÖZÜLDÜ · güncel sayı 86 |
 | Yeni tanının resmi maddesi eksik | 0 | YOK |
 | Kanonik örnek eksiği | 0 | YOK |
 | Dört parçalı madde eksiği | 0 | YOK |
 | Çözülemeyen kanon dayanağı | 0 | YOK |
 | Uygulanmış emekli kümesinin canlı sicille kesişimi | 0 | YOK |
-| Emeklilik kararı uygulanmamış canlı kimlik | 38 | AÇIK · Founder sahipliği gerekir |
+| Emeklilik kararı uygulanmamış canlı kimlik | 37 | AÇIK · Founder sahipliği gerekir |
 | Eski `geneldurum/` türevi | 0 | YOK · arşiv işlemi gerekmiyor |
 
 Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühürleri yukarıdaki sekiz SHA-256 değeriyle yeniden üretilebilir.
@@ -445,7 +450,7 @@ Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
       ne: "Resmi yasa/kanon sekizlisinin 162/162 maddesi, 38 Karar ve 124 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
 
 Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
-      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla ve MIM-1.2 projesiz Faz gözlemiyle 80 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 15 uygulanmış emekli kimlik ve 38 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
+      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle ve Faz sırası ile Blok yapısının altı tanısıyla 86 canlı yeni kimliğe ulaşır; önceki 100 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
-      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 38 uygulanmamış emeklilik kararıdır." )
+      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır." )

@@ -151,6 +151,31 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     mesaj: (p) => `"${a(p, "kimlik")}" Fazı hiçbir Proje köküne çözülemiyor: ${a(p, "sebep") === "ayrışık" ? "dosyasını aynı derinlikte birden çok Proje kodu kapsıyor ve bağ tekil olmadığı için kurulmadı" : "dosyası hiçbir Proje kökünün altında yaşamıyor ve Faz iç içe bir Proje gövdesinde de yazılmamış"}. Zaman diliminin kimin olduğu graftan okunamaz (MIM-1.2).`,
     oneri: (p) => `Plan dosyasını ait olduğu Proje kökünün altına taşı ya da Fazı Proje gövdesinin içine yaz; ayrışık kökte iki giriş ilanından birini kaldır. Örnek: \`<proje-kökü>/is/plan/faz/faz.sar\` içinde \`Faz( kod: ${a(p, "kimlik")}, … )\` ve kökte tek bir \`<ad>_anadizin.sar\` girişi.`,
   },
+  // ── Faz sırası ve Blok yapısı (MIM-1.2 · MIM-1.3 · MIM-1.6 · KPS-SIR-A01) ──
+  "ters-faz-bağımlılığı": {
+    mesaj: (p) => `"${a(p, "kimlik")}" düğümündeki \`${a(p, "kenar")}\` kenarı ("${a(p, "hedef")}") Faz sırasıyla çelişiyor: öncül "${a(p, "oncul")}" sonraki "${a(p, "onculFazi")}" Fazında, ardıl ise daha önceki "${a(p, "ardilFazi")}" Fazında duruyor. Bir iş kendinden sonraki bir zaman dilimindeki işi bekleyemez; kenar sıra hesabına alınmadı (MIM-1.2).${b(p, "tarihsel") ? " İki uç da tamamlanmış olduğu için çelişki tarihseldir: Blok gövdesi biten Adımlarıyla birlikte sonraki bir Faza devredilmiş görünür." : ""}`,
+    oneri: (p) => `Ya ardılı öncülün Fazına ya da ondan sonraki bir Faza taşı, ya da öncülü daha önceki bir Faza al; bağımlılık gerçek değilse kenarı kaldır. Örnek: ardıl Blokunu \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` gövdesine taşı ve \`bağımlı: [ ${a(p, "oncul")} ]\` kenarını koru.`,
+  },
+  "erken-faz-işi": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazında geliştirmede iş var (${a(p, "gelistirmede")}), oysa önceki "${a(p, "onceki")}" Fazı hâlâ ${a(p, "acik")} açık Adım taşıyor. Faz sırası katıdır: önceki Faz kapanmadan sonraki Fazda iş başlamaz (MIM-1.2).`,
+    oneri: (p) => `Önce önceki Fazın açık işini kapat ya da işi başlamış Adımı geri al; iş gerçekten önce gelmeliyse Blokunu önceki Faza taşı. Örnek: sonraki Fazdaki Adımı \`durum: beklemede\` konumuna çek ya da Blokunu \`Faz( kod: ${a(p, "onceki")} ) { … }\` gövdesine al.`,
+  },
+  "yabancı-faz-bağı": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" zamanını başka bir Projenin Fazına bağlıyor (\`mevsim: ${a(p, "mevsim")}\` · "${a(p, "proje")}")${a(p, "kendi") ? `, oysa kendi Projesi "${a(p, "kendi")}"` : ""}. Blok kendi Projesinin zaman diliminde yer alır; ${a(p, "acik") === "0" ? "işi tamamlanmış olduğu için bağ tarihsel bir kayıt olarak görünür kalır" : `altında ${a(p, "acik")} açık Adım var ve kardeş projenin Faz sırası bu işi yönetemez`} (MIM-1.2).`,
+    oneri: (p) => `Bloku kendi Projesindeki bir Faza bağla; iş gerçekten kardeş projeye aitse Bloku o projenin planına taşı. Örnek: \`Blok( kod: ${a(p, "kimlik")}, mevsim: FAZ-KENDI )\` ya da kendi Fazının \`çağır ${a(p, "kimlik")}\` satırı.`,
+  },
+  "katmansız-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" hiçbir Katman taşımıyor. Blok bir iş sonucunu farklı teknolojilere bağlı Katmanları aynı dikey gövdede kavuşturarak üretir; Katmansız Blok bir gövde değil boş bir kaptır (MIM-1.3).`,
+    oneri: (p) => `Bloka işin teknoloji dilimlerini Katman olarak ekle ya da Blok henüz tasarlanmadıysa planı Katmanları yazılınca aç. Örnek: \`Blok( kod: ${a(p, "kimlik")} ) { Katman( kod: KAT-ORNEK, kullanır: TEK-ORNEK ) { AltKatman( kod: ALT-ORNEK, departman: kodlama ) { Adım( kod: ADM-ORNEK, durum: beklemede ) } } }\``,
+  },
+  "adımsız-kapsayıcı": {
+    mesaj: (p) => `${a(p, "tip")} "${a(p, "kimlik")}" hiçbir Adım taşımıyor. Adım en küçük yürütme birimidir; Adımı olmayan kapsayıcı yol haritasında ilerleme gösteremez ve iş olarak ölçülemez (MIM-1.6).`,
+    oneri: (p) => `Kapsayıcıya işini anlatan en az bir Adım yaz ya da henüz iş taşımıyorsa kapsayıcıyı plandan kaldır. Örnek: \`${a(p, "tip")}( kod: ${a(p, "kimlik")} ) { … Adım( kod: ADM-ORNEK, durum: beklemede, ne: "işin kendisi" ) }\``,
+  },
+  "tek-adımlı-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" yalnız tek bir Adım taşıyor ("${a(p, "adim")}"). Blok birden çok Katmanı kavuşturan bir iş gövdesidir; tek Adımlık iş çoğu zaman var olan bir Blokun içinde bir Adım olarak yaşar (MIM-1.3).`,
+    oneri: (p) => `Adımı ilgili bir Blokun uygun Katmanına taşı ya da Blokun kavuşturduğu öteki Katmanların Adımlarını yaz. Örnek: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -529,6 +554,31 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   "projesiz-faz": {
     mesaj: (p) => `Phase "${a(p, "kimlik")}" cannot be resolved to any Project root: ${a(p, "sebep") === "ayrışık" ? "more than one Project code covers its file at the same depth, so the link was not made because it is not unique" : "its file does not live under any Project root and the Phase is not written inside a Project body either"}. Whose time slice it is cannot be read from the graph (MIM-1.2).`,
     oneri: (p) => `Move the plan file under the Project root it belongs to, or write the Phase inside the Project body; in an ambiguous root remove one of the two entry declarations. Example: \`<project-root>/is/plan/faz/faz.sar\` containing \`Faz( kod: ${a(p, "kimlik")}, … )\` with a single \`<name>_anadizin.sar\` entry at the root.`,
+  },
+  // ── Phase order and Blok structure (MIM-1.2 · MIM-1.3 · MIM-1.6 · KPS-SIR-A01) ──
+  "ters-faz-bağımlılığı": {
+    mesaj: (p) => `The \`${a(p, "kenar")}\` edge ("${a(p, "hedef")}") on node "${a(p, "kimlik")}" contradicts the Phase order: the predecessor "${a(p, "oncul")}" sits in the later Phase "${a(p, "onculFazi")}", while the successor sits in the earlier Phase "${a(p, "ardilFazi")}". Work cannot wait for work in a later time slice; the edge was left out of the order calculation (MIM-1.2).${b(p, "tarihsel") ? " Both ends are complete, so the conflict is historical: the Blok body appears to have been handed over to a later Phase together with its finished Adımlar." : ""}`,
+    oneri: (p) => `Move the successor into the predecessor's Phase or a later one, or move the predecessor into an earlier Phase; if the dependency is not real, remove the edge. Example: move the successor's Blok into the \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` body and keep the \`bağımlı: [ ${a(p, "oncul")} ]\` edge.`,
+  },
+  "erken-faz-işi": {
+    mesaj: (p) => `Phase "${a(p, "kimlik")}" has work in progress (${a(p, "gelistirmede")}), while the earlier Phase "${a(p, "onceki")}" still carries ${a(p, "acik")} open Adım(s). The Phase order is strict: work does not start in a later Phase before the earlier Phase is closed (MIM-1.2).`,
+    oneri: (p) => `First close the open work of the earlier Phase or roll back the started Adım; if the work really belongs earlier, move its Blok into the earlier Phase. Example: set the Adım in the later Phase to \`durum: beklemede\` or move its Blok into the \`Faz( kod: ${a(p, "onceki")} ) { … }\` body.`,
+  },
+  "yabancı-faz-bağı": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" binds its time to another Project's Phase (\`mevsim: ${a(p, "mevsim")}\` · "${a(p, "proje")}")${a(p, "kendi") ? `, while its own Project is "${a(p, "kendi")}"` : ""}. A Blok lives in its own Project's time slice; ${a(p, "acik") === "0" ? "its work is complete, so the binding remains visible as a historical record" : `it carries ${a(p, "acik")} open Adım(s) and the sibling project's Phase order cannot govern that work`} (MIM-1.2).`,
+    oneri: (p) => `Bind the Blok to a Phase in its own Project; if the work truly belongs to the sibling project, move the Blok into that project's plan. Example: \`Blok( kod: ${a(p, "kimlik")}, mevsim: FAZ-KENDI )\` or a \`çağır ${a(p, "kimlik")}\` line in its own Phase.`,
+  },
+  "katmansız-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" carries no Katman. A Blok produces a work outcome by joining Katmanlar bound to different technologies in one vertical body; a Blok without Katmanlar is an empty container, not a body (MIM-1.3).`,
+    oneri: (p) => `Add the work's technology slices to the Blok as Katmanlar, or open the plan once its Katmanlar are written. Example: \`Blok( kod: ${a(p, "kimlik")} ) { Katman( kod: KAT-ORNEK, kullanır: TEK-ORNEK ) { AltKatman( kod: ALT-ORNEK, departman: kodlama ) { Adım( kod: ADM-ORNEK, durum: beklemede ) } } }\``,
+  },
+  "adımsız-kapsayıcı": {
+    mesaj: (p) => `${a(p, "tip")} "${a(p, "kimlik")}" carries no Adım. The Adım is the smallest execution unit; a container without Adımlar cannot show progress on the roadmap and cannot be measured as work (MIM-1.6).`,
+    oneri: (p) => `Write at least one Adım that describes the container's work, or remove the container from the plan while it carries no work. Example: \`${a(p, "tip")}( kod: ${a(p, "kimlik")} ) { … Adım( kod: ADM-ORNEK, durum: beklemede, ne: "the work itself" ) }\``,
+  },
+  "tek-adımlı-blok": {
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" carries only one Adım ("${a(p, "adim")}"). A Blok is a work body that joins several Katmanlar; single-Adım work usually lives as an Adım inside an existing Blok (MIM-1.3).`,
+    oneri: (p) => `Move the Adım into a fitting Katman of a related Blok, or write the Adımlar of the other Katmanlar the Blok joins. Example: \`Blok( kod: BLK-ILGILI ) { Katman( kod: KAT-ILGILI ) { AltKatman( kod: ALT-ILGILI ) { Adım( kod: ${a(p, "adim")}, durum: beklemede ) } } }\``,
   },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
@@ -1402,13 +1452,9 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     mesaj: (p) => `Tip "${a(p, "ad")}" (${a(p, "aile")}) kanonda tanımlı ama CANLI bahçede hiç kullanılmıyor ve muafiyeti beyan edilmemiş — "format yazıp uygulamama" adayı.`,
     oneri: () => "Ya kendi bahçende ≥1 gerçek düğümle kullan, ya kayit.json 'tipMuafiyetleri'ne gerekçesiyle ekle (dış-proje / OS-vadeli / A04-bekleyen). Sessiz doğum yasaktır: tanımlanan tip ya canlı kullanılır ya da muafiyeti gerekçesiyle beyan edilir.",
   },
-  "planlanmamış-gövde": {
-    mesaj: (p) => `🧊 Blok "${a(p, "kod")}" bir mevsime bağlı değil ve bunu dürüstçe beyan ediyor — planlanmamış: "${a(p, "neden")}".`,
-    oneri: () => "Önceliklendirme yapılınca planlanmamış: alanını kaldır ve Blok'u yürürlükteki Faz'a bağla (Blok'a mevsim: FAZ-… yaz ya da Faz'ın çağır listesine ekle).",
-  },
   "fazsız-blok": {
-    mesaj: (p) => `Blok "${a(p, "kod")}" bir Faz altında DEĞİL — Blok, Faz ile aynı hiyerarşide olamaz (Faz zaman dilimidir; Blok o dilimin içinde büyür).${b(p, "boşBeyan") ? " (planlanmamış: beyanı BOŞ — neden metni zorunludur, boş beyan sayılmaz)" : ""}`,
-    oneri: (p) => `Üç meşru yol var: ① Blok'u yürürlükteki Faz'a bağla — Blok'a 'mevsim: FAZ-…' yaz YA DA Faz'ın dosyasına 'çağır ${a(p, "kod", "BLK-…")}' satırı ekle (bir bağ tek yerde yazılır); ② kendi Faz'ını aç ve Blok'u içine yaz — tarih verirsen (hedefTarih: "YYYY-AA-GG" ya da "YYYY-AA") vade takibi çalışır, veremiyorsan motor yalnız hatırlatır; ③ önceliklendirme bekliyorsa dürüstçe beyan et: planlanmamış: "neden metni".`,
+    mesaj: (p) => `Blok "${a(p, "kod")}" bir Faz altında DEĞİL — Blok, Faz ile aynı hiyerarşide olamaz (Faz zaman dilimidir; Blok o dilimin içinde büyür).${p.neden ? ` \`planlanmamış\` beyanı ("${a(p, "neden")}") bir zaman bağı değildir ve hatayı kaldırmaz (MIM-1.2).` : ""}`,
+    oneri: (p) => `İki meşru yol var: ① Blok'u yürürlükteki Faz'a bağla — Blok'a 'mevsim: FAZ-…' yaz YA DA Faz'ın dosyasına 'çağır ${a(p, "kod", "BLK-…")}' satırı ekle (bir bağ tek yerde yazılır); ② kendi Faz'ını aç ve Blok'u içine yaz — tarih verirsen (hedefTarih: "YYYY-AA-GG" ya da "YYYY-AA") vade takibi çalışır, veremiyorsan motor yalnız hatırlatır. Önceliklendirme bekleyen iş de bir Faza bağlanır; sıra Fazın tarihiyle ve Blok bağımlılığıyla ifade edilir.`,
   },
   "çift-mevsim-kaydı": {
     mesaj: (p) => `Blok "${a(p, "kod")}" mevsim bağını İKİ yerde yazıyor: hem ${b(p, "fazAltında") ? "bir Faz gövdesinin içinde" : "Faz'ın çağır listesinde"} hem kendi mevsim: alanında — bir bağ tek yerde yazılır.`,
@@ -2004,13 +2050,9 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     mesaj: (p) => `Tip "${a(p, "ad")}" (${a(p, "aile")}) is defined in the canon but never used in the LIVE garden, and no exemption is declared — it may be a format that was written but never applied.`,
     oneri: () => "Either use it with at least one real node in your garden or add it to kayit.json 'tipMuafiyetleri' with a rationale (dış-proje / OS-vadeli / A04-bekleyen). Silent birth is forbidden: a defined type is used live or carries a reasoned exemption.",
   },
-  "planlanmamış-gövde": {
-    mesaj: (p) => `🧊 Blok "${a(p, "kod")}" is not bound to a season and declares that honestly — planlanmamış: "${a(p, "neden")}".`,
-    oneri: () => "After prioritization, remove the planlanmamış: field and bind the Blok to the current Faz by writing mevsim: FAZ-… on the Blok or adding it to the Faz's çağır list.",
-  },
   "fazsız-blok": {
-    mesaj: (p) => `Blok "${a(p, "kod")}" is NOT under a Faz — a Blok cannot share the same hierarchy level as a Faz, because the Faz is a time slice within which the Blok grows.${b(p, "boşBeyan") ? " (The planlanmamış: declaration is EMPTY — its reason text is required, so an empty declaration does not count.)" : ""}`,
-    oneri: (p) => `There are three valid paths: ① bind the Blok to the current Faz by writing 'mevsim: FAZ-…' on the Blok OR adding 'çağır ${a(p, "kod", "BLK-…")}' to the Faz file, with one binding written in one place; ② open its own Faz and place the Blok inside — if you provide hedefTarih: "YYYY-AA-GG" or "YYYY-AA", deadline tracking runs, and otherwise the engine only reminds you; ③ if prioritization is pending, declare it honestly as planlanmamış: "neden metni".`,
+    mesaj: (p) => `Blok "${a(p, "kod")}" is NOT under a Faz — a Blok cannot share the same hierarchy level as a Faz, because the Faz is a time slice within which the Blok grows.${p.neden ? ` The \`planlanmamış\` declaration ("${a(p, "neden")}") is not a time binding and does not lift the error (MIM-1.2).` : ""}`,
+    oneri: (p) => `There are two valid paths: ① bind the Blok to the current Faz by writing 'mevsim: FAZ-…' on the Blok OR adding 'çağır ${a(p, "kod", "BLK-…")}' to the Faz file, with one binding written in one place; ② open its own Faz and place the Blok inside — if you provide hedefTarih: "YYYY-AA-GG" or "YYYY-AA", deadline tracking runs, and otherwise the engine only reminds you. Work awaiting prioritization is bound to a Faz as well; its order is expressed through the Faz date and Blok dependencies.`,
   },
   "çift-mevsim-kaydı": {
     mesaj: (p) => `Blok "${a(p, "kod")}" writes its mevsim binding in TWO places: both ${b(p, "fazAltında") ? "inside a Faz body" : "in the Faz's çağır list"} and in its own mevsim: field. One binding is written in one place.`,
@@ -2428,6 +2470,19 @@ export function yeniTani(
     ...tamMesajEki(metin.tamMesaj, metin.mesaj),
     dilMetinleri: haneler,
   };
+}
+
+/**
+ * KPS-SIR-A01 · Yeni kanon tanısını sicilin TARİHSEL KAYIT düzeyine indirir. Kanon
+ * bazı tanıların, ihlal edilen iş tamamen bittiğinde tarihsel bir kayıt olarak
+ * daha alçak düzeyde konuştuğunu yazar; düzey üreticide seçilmez, sicilin
+ * `tarihselKademe` alanından okunur. Alanı olmayan tanı için çağrı fırlatır, çünkü
+ * sicilin izin vermediği bir düzey sessizce basılmamalıdır.
+ */
+export function tarihselTani(t: Tani): Tani {
+  const duzey = YENI_TANI_INDEKS.get(t.kod)?.tarihselKademe;
+  if (!duzey) throw new Error(`Tanının tarihsel kayıt düzeyi sicilde yok: ${t.kod}`);
+  return { ...t, duzey };
 }
 
 /**

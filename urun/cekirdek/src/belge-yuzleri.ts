@@ -178,15 +178,19 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // KPS-CEL-A01 (2026-09-19 · Founder hükmü 2026-09-09): MIM-3.2 Kitaplık
   // kademesini zorunlu kıldı ve `kitaplıksız-kök` uyarısı doğdu; dağılım 47/18/15,
   // Problems hanesi yüz kırk beş ve iki dilli katalog yüz seksen oldu.
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/18/15" ||
+  // KPS-SIR-A01 (2026-09-29 · Founder hükmü): Faz sırası ile Blok yapısının altı
+  // tanısı doğdu (bir hata, üç uyarı, iki bilgi), `seçilemez-adım-yürütümü` bilgiden
+  // uyarıya çıktı ve `planlanmamış-gövde` emekli oldu; dağılım 48/22/16, yönlendirme
+  // 150/3/33 ve iki dilli katalog yüz seksen beş oldu.
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/16" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "145/3/33" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/33" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 180) {
+      olgular.ikiDilliTani !== 185) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk

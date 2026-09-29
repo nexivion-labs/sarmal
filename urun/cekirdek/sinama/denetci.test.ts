@@ -1168,18 +1168,20 @@ test("ZMN-A05: çift-mevsim-kaydı — bağ hem Faz çağır listesinde hem mevs
   assert.equal(hiyerarsiTanilari(tek).filter((x) => x.tani.kod === "çift-mevsim-kaydı").length, 0, "tek kayıt (mevsim:) uyarı almamalı");
 });
 
-test("ZMN-A05: planlanmamış beyanı — dolu neden fazsız-blok HATASINI bilgiye çevirir (planlanmamış-gövde); boş neden beyan sayılmaz", async () => {
+test("KPS-SIR-A01: planlanmamış beyanı kaçış DEĞİLDİR — dolu nedenle de fazsız-blok HATASI basılır (MIM-1.2)", async () => {
+  // Founder hükmü 2026-09-29: hiçbir Blok Fazsız bir yapıda yaşayamaz. Eski üçüncü
+  // hâl (beyanın hatayı planlanmamış-gövde bilgi notuna indirmesi) kanonda
+  // dayanaksızdı ve kaldırıldı; beyan yalnız hatanın metnine gerekçe olarak iner.
   const { hiyerarsiTanilari } = await import("../src/denetci.ts");
-  const dolu = hiyerarsiTanilari(progMap('Blok( kod: BLK-P, planlanmamış: "pazara çıkış kararı Founder\'da", ne: "raf işi" ) { Katman( kod: KTM-P, ad: "k" ) { Adım( kod: ADM-P, ne: "a", durum: beklemede ) } }'));
-  assert.equal(dolu.filter((x) => x.tani.kod === "fazsız-blok").length, 0, "dolu beyan hata almamalı (hâl ③)");
-  const bilgi = dolu.filter((x) => x.tani.kod === "planlanmamış-gövde");
-  assert.equal(bilgi.length, 1, "planlanmamış-gövde bilgi satırı basılmalı");
-  assert.equal(bilgi[0].tani.duzey, "bilgi");
-  // boş neden → hata sürer, mesaj zorunlu-nedeni anlatır
+  const dolu = hiyerarsiTanilari(progMap('Blok( kod: BLK-P, planlanmamış: "pazara çıkış kararı bekleniyor", ne: "raf işi" ) { Katman( kod: KTM-P, ad: "k" ) { Adım( kod: ADM-P, ne: "a", durum: beklemede ) } }'));
+  const hata = dolu.filter((x) => x.tani.kod === "fazsız-blok");
+  assert.equal(hata.length, 1, "dolu beyan fazsız-blok hatasını susturmamalı");
+  assert.equal(hata[0].tani.duzey, "hata");
+  assert.ok(hata[0].tani.mesaj.includes("pazara çıkış kararı bekleniyor"), "mesaj beyanın gerekçesini göstermeli");
+  assert.equal(dolu.filter((x) => x.tani.kod === "planlanmamış-gövde").length, 0, "emekli bilgi notu basılmamalı");
+  // boş neden → hata sürer
   const bos = hiyerarsiTanilari(progMap('Blok( kod: BLK-B, planlanmamış: "", ne: "iş" ) { Katman( kod: KTM-B, ad: "k" ) { Adım( kod: ADM-B, ne: "a", durum: beklemede ) } }'));
-  const hata = bos.filter((x) => x.tani.kod === "fazsız-blok");
-  assert.equal(hata.length, 1, "boş beyan fazsız-blok'u susturmamalı");
-  assert.ok(/BOŞ/.test(hata[0].tani.mesaj), "mesaj boş-beyan sebebini açmalı");
+  assert.equal(bos.filter((x) => x.tani.kod === "fazsız-blok").length, 1, "boş beyan fazsız-blok'u susturmamalı");
 });
 
 test("ZMN-A05: planlanmamış-çelişki — planlanmamış gövde altında geliştirmede Adım → UYARI (sahte-kaçış nöbeti)", async () => {
@@ -1191,13 +1193,13 @@ test("ZMN-A05: planlanmamış-çelişki — planlanmamış gövde altında geli�
   assert.ok(celiski[0].tani.mesaj.includes("ADM-K"), "mesaj başlayan Adım'ı adıyla göstermeli");
 });
 
-test("ZMN-A05: fazsız-blok önerisi üç meşru yolu sayar (mevsim: · gerçek-tarihli Faz · planlanmamış beyan)", async () => {
+test("ZMN-A05 · KPS-SIR-A01: fazsız-blok önerisi iki meşru yolu sayar (mevsim: · kendi Fazı) ve planlanmamış beyanını yol saymaz", async () => {
   const { hiyerarsiTanilari } = await import("../src/denetci.ts");
   const t = hiyerarsiTanilari(progMap('Blok( kod: BLK-Y, ne: "iş" ) { Katman( kod: KTM-Y, ad: "k" ) { Adım( kod: ADM-Y, ne: "a", durum: beklemede ) } }'));
   const hata = t.filter((x) => x.tani.kod === "fazsız-blok");
   assert.equal(hata.length, 1);
   assert.ok(/mevsim:/.test(hata[0].tani.oneri ?? ""), "öneri mevsim: yolunu göstermeli");
-  assert.ok(/planlanmamış/.test(hata[0].tani.oneri ?? ""), "öneri planlanmamış yolunu göstermeli");
+  assert.ok(!/planlanmamış/.test(hata[0].tani.oneri ?? ""), "öneri planlanmamış beyanını meşru yol olarak göstermemeli");
 });
 
 test("GBR-A03: 'belirsiz' hedefTarih ŞEMA tür-uyarısı ALMAZ (tür-denetimi tolere eder)", async () => {

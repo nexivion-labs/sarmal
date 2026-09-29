@@ -21,7 +21,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
-  "mim.sar:b29ababebde8d03d69cda8c2634a8cd4546a230b8d35aeff95564a19514af190",
+  "mim.sar:9d119d7ed6f524dd2298c72e35549181aaae2f38eb6f9486c5d1efc78b426964",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
@@ -47,14 +47,22 @@ test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("70 taban + beş gözlem + MIM-3.4 ile MIM-3.2 tanıları 47/18/15 olarak 80'dir", () => {
-  assert.equal(YENI_TANI_KANONU.length, 80);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 47);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 18);
+test("70 taban + beş gözlem + MIM-3.4, MIM-3.2 ve KPS-SIR-A01 tanıları 48/22/16 olarak 86'dır", () => {
+  assert.equal(YENI_TANI_KANONU.length, 86);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 48);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 22);
+  // Faz sırası ve Blok yapısı (KPS-SIR-A01 · Founder hükmü 2026-09-29): altı tanı
+  // doğdu, `seçilemez-adım-yürütümü` bilgiden kanonun yazdığı uyarıya çıktı.
+  assert.deepEqual(YENI_TANI_KANONU.filter((t) => ["MIM-1.2", "MIM-1.3", "MIM-1.6", "ORK-3.2"].includes(t.madde) && t.kod !== "projesiz-faz" && t.kod !== "adım-atomikliği")
+    .map((t) => `${t.madde}:${t.kod}:${t.kademe}`), [
+    "ORK-3.2:seçilemez-adım-yürütümü:uyarı",
+    "MIM-1.2:ters-faz-bağımlılığı:hata", "MIM-1.2:erken-faz-işi:uyarı", "MIM-1.2:yabancı-faz-bağı:uyarı",
+    "MIM-1.3:katmansız-blok:uyarı", "MIM-1.3:tek-adımlı-blok:bilgi", "MIM-1.6:adımsız-kapsayıcı:bilgi",
+  ]);
   // MIM-3.2 Kitaplık kademesi (KPS-CEL-A01 · Founder hükmü 2026-09-09): kademe
   // atlandığında madde kendi kademesiyle, yani uyarı düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.2" && t.kod === "kitaplıksız-kök" && t.kademe === "uyarı").length, 1);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 15);
+  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 16);
   // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): hükmün
   // Faz ile Proje arasındaki yarısı bir gözlemle tutulur ve bilgi düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.2" && t.kod === "projesiz-faz" && t.kademe === "bilgi").length, 1);
@@ -69,7 +77,8 @@ test("70 taban + beş gözlem + MIM-3.4 ile MIM-3.2 tanıları 47/18/15 olarak 8
   // MIM-1.7 AltKatman tekilliği — Founder hükmü 2026-08-28; kök sebep bir hüküm
   // boşluğuydu ve madde o boşluğu kapattı, bekçi de onu hata düzeyinde zorlar.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.7" && t.kod === "altkatman-tekilliği-ihlali").length, 1);
-  assert.equal(ONCEKI_TANI_KODLARI.length, 101);
+  // KPS-SIR-A01: `planlanmamış-gövde` emekli oldu (101 → 100).
+  assert.equal(ONCEKI_TANI_KODLARI.length, 100);
 });
 
 test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır", () => {
@@ -82,11 +91,12 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
   // 2026-09-11 (KPS-MHR-A01): MIM-3.4 dosya mühürlerinin üç tanısıyla yüz seksen sekize çıktı.
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 projesiz Faz gözlemiyle yüz seksen dokuza çıktı.
   // 2026-09-19 (KPS-CEL-A01): MIM-3.2 Kitaplıksız kök gözlemiyle yüz doksana çıktı.
-  assert.equal(canli.size, 190);
-  assert.equal(EMEKLI_TANI_KODLARI.length, 15);
+  // 2026-09-29 (KPS-SIR-A01): altı yeni tanı doğdu ve `planlanmamış-gövde` emekli oldu; yüz doksan beşe çıktı.
+  assert.equal(canli.size, 195);
+  assert.equal(EMEKLI_TANI_KODLARI.length, 16);
   assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
-  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 38);
-  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 38);
+  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 37);
+  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 37);
 });
 
 test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz", () => {
@@ -95,7 +105,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
   assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
-  assert.match(ilk, /MIM-1\.2 projesiz Faz gözlemiyle[^.]*80 canlı yeni kimliğe ulaşır/);
+  assert.match(ilk, /Faz sırası ile Blok yapısının altı tanısıyla 86 canlı yeni kimliğe ulaşır/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
 });

@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -511,6 +511,21 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // Aynı grafı okur, ikinci bir klasör→Proje çözümü kurmaz; ders dünyası muaftır.
   for (const { dosya, tani } of koklendirKayit("projesizFazTanilari", projesizFazTanilari(dag, evren))) {
     if (muaflar.has(dosya)) continue;
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 · ORK-3.2 Faz sırası (KPS-SIR-A01 · Founder hükmü 2026-09-29): graf aynı
+  // Projenin Fazlarını tek zincirde dizer; ters Faz bağımlılığı, erken Faz işi ve
+  // öncülü bitmemiş geliştirmedeki Adım bu zincirin kendi verisinden okunur.
+  for (const { dosya, tani } of koklendirKayit("fazSirasiTanilari", fazSirasiTanilari(dag, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 · MIM-1.3 · MIM-1.6 Blok yapısı (KPS-SIR-A01): yabancı Faz bağı, Katmansız
+  // Blok, Adımsız kapsayıcı ve tek Adımlı Blok; Faz boşluğu grafın Faz haritasından okunur.
+  for (const { dosya, tani } of koklendirKayit("blokYapisiTanilari", blokYapisiTanilari(programlar, dag, muaflar))) {
     say([tani], dosya);
     bas(dosya, [tani]);
   }
@@ -1190,7 +1205,8 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
     }
     for (const [kod, kume] of duzeyler) {
       const kayit = YENI_TANI_INDEKS.get(kod);
-      if (kayit && [...kume].some((duzey) => duzey !== kayit.kademe)) {
+      // KPS-SIR-A01: sicilin ilan ettiği tarihsel kayıt düzeyi sapma sayılmaz.
+      if (kayit && [...kume].some((duzey) => duzey !== kayit.kademe && duzey !== kayit.tarihselKademe)) {
         // Terfi kapısı ÜRETİM yolundan koşar: yükseltme yönündeki sapmanın
         // gerekçesini kanonun kendi dört kapısı yazar (KPS-TRF-A01).
         const terfiHukmu = kacakTerfiHukmu(kayit, kume, canliSayaclar.get(kod) ?? 0);
@@ -1199,7 +1215,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
           { satir: 1, sutun: 1 }) });
         continue;
       }
-      if (kume.size < 2 || BAGLAMA_GORE_DUZEY.has(kod)) continue;
+      if (kume.size < 2 || BAGLAMA_GORE_DUZEY.has(kod) || kayit?.tarihselKademe) continue;
       out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
         { kod, kusur: `aynı koşumda ${[...kume].join(" ve ")} düzeylerinde birden gösterilmiş` },
         { satir: 1, sutun: 1 }) });

@@ -28,18 +28,26 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `f34368ff95d0c3992e9c3ba1a6327fc9dd08b72f44d9830c631d89040b2efb62` |
+| `yasa/kanon demeti (A03 formülü)` | `ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
+| `urun/cekirdek/src/tani-sicili.ts` | `f4d253f794ccbe8de9ff79567ea60a2327064a1cafb7b33becbeca0bd6d2a5cb` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
-| `urun/cekirdek/src/dil-baglami.ts` | `28440b986a3c58983001848b24658c2444e30e0c7ed8f6b116ea8a8e9375874d` |
+| `urun/cekirdek/src/dil-baglami.ts` | `c3f982fe67aad32f9cd10ce41de5f1356dbe3c18e14b7e1302a1e0742ce17e1e` |
 | `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
 | `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `cbc45b572ba62fc12e376fe98fb280a6dff7e20ce727fd555751623cdffb9e23` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `3bfa85ea7499539baae9ba72c9354550c1c292b0f182f74f570502ff4a60e756` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-29 · Faz sırası ve Blok yapısı): Founder hükmüyle MIM-1.2,
+MIM-1.3 ve MIM-1.6 maddelerinin zorlama satırlarına altı yeni tanı ilanı eklendi
+ve kanon demeti ilerledi. Tanılar tanı sicilinin mührünü, `planlanmamış` kaçışının
+öğretimden kaldırılması ajan dil bağlamının mührünü, yönlendirme dağılımının yeni
+hâli de yönlendirme matrisinin mührünü ilerletti. Dört mühür birlikte tazelendi ve
+kanon tutarlılık yüzü ile belge yüzleri aynı koşuda resmî üreticileriyle yeniden
+üretildi; öteki dört kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-09-19 · Katman zemininin iki kenara bölünmesi): Founder
 hükmüyle MIM-1.4 ile ORK-2.4 maddeleri zemini iki tip-saf kenarla yazar oldu,

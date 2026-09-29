@@ -389,8 +389,8 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     "   A Block may bind to its season with `mevsim: FAZ-…` or the Phase's `çağır` list",
   ));
   b.push(y(
-    "   (bir bağ tek yerde yazılır); önceliklendirmeyi bekleyen iş: `planlanmamış: \"neden\"`.",
-    "   (write one binding in one place); work awaiting prioritization uses `planlanmamış: \"neden\"`.",
+    "   (bir bağ tek yerde yazılır); Fazsız Blok hatadır, bekleyen iş de bir Faza bağlanır.",
+    "   (write one binding in one place); a phase-less Block is an error, and waiting work is bound to a Phase too.",
   ));
   b.push("");
   b.push(y(

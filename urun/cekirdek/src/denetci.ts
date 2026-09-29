@@ -29,15 +29,15 @@ import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
 import type { Siniflama } from "./siniflama.ts";
 import { TAKSONOMI_BAS, TAKSONOMI_SON, taksonomiMd } from "./siniflama.ts";   // başvuru yüzü kanondan üretilir
 import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katmanı turu: beceri-drift nöbeti tanı evreni · katlanmış ad: orthografi nöbeti
-import { ORTAK_TANI_METINLERI, eskiTani, yeniTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
+import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, tarihselTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
-import { ZEMIN_TIPLERI, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
+import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -2270,11 +2270,11 @@ export function kullanimsizTipTanilari(
 /**
  * Yapısal-hiyerarşi bekçisi (Founder MECBURİ kuralları 2026-07-14 · MIM-1 zorlaması):
  * projede TAM ZİNCİR — Faz → Blok → Katman → Adım. İki HATA:
- *   • fazsız-blok: her Blok bir zaman halkasına çözülmeli. ÜÇ meşru hâl tanınır
- *     (MIM-1.2 ③ · zaman-ekseni turu): ① FİZİKSEL çocuk (Blok bir Faz gövdesinde) ② KAPSAMA
- *     (Faz onu `çağır` ya da mevsim çevriminden gelen sanal `çağır` ile kapsıyor)
- *     ③ BEYAN (Blok `planlanmamış: "neden"` taşıyor — hata yerine 🧊
- *     planlanmamış-gövde BİLGİ satırı basılır; boş neden beyan sayılmaz).
+ *   • fazsız-blok: her Blok bir zaman halkasına çözülmeli. İKİ meşru hâl tanınır
+ *     (MIM-1.2): ① FİZİKSEL çocuk (Blok bir Faz gövdesinde) ② KAPSAMA (Faz onu
+ *     `çağır` ya da mevsim çevriminden gelen sanal `çağır` ile kapsıyor). Eski üçüncü
+ *     hâl olan `planlanmamış: "neden"` beyanı KPS-SIR-A01 turunda (Founder hükmü
+ *     2026-09-29) kaçış olmaktan çıktı: kanonda dayanağı yoktu ve hata yine basılır.
  *   • katmansız-adım: Blok'un DOĞRUDAN çocuğu Adım olamaz — arada bir kademe
  *     (Katman/AltKatman) olmalı. (AltKatman→Adım MEŞRU; kademe zaten var.)
  * İki dürüstlük nöbeti (zaman-ekseni turu): çift-mevsim-kaydı (bağ hem Faz tarafında hem
@@ -2332,16 +2332,15 @@ export function hiyerarsiTanilari(
       // her nöbet tek olgu ölçer ve aynı kusur iki kez konuşmaz.
       const caprazMevsim = mevsimP !== undefined
         && adAlaniAyir(degerMetni(mevsimP.deger)).adAlani !== undefined;
+      // KPS-SIR-A01 (Founder hükmü 2026-09-29): `planlanmamış` beyanı artık kaçış
+      // DEĞİLDİR. MIM-1.2 Fazsız Bloku geçersiz sayar ve beyanın hatayı bilgi notuna
+      // indirmesinin kanonda dayanağı yoktu; kardeş bir projede sekiz Fazsız Blok bu
+      // kaçışla motor sıfır hata verirken birikmişti. Beyan artık yalnız hatanın
+      // metnine gerekçe olarak iner.
       if (!fazAltinda && !fazinCagirdigi.has(kod) && !caprazMevsim) {
-        if (planP && planNeden) {
-          // Hâl ③ — BEYAN: tarih taklidi yok, dürüst erteleme. Görünür kalır ama yol kesmez.
-          out.push({ dosya, tani: eskiTani("planlanmamış-gövde", "bilgi",
-            { kod: kod || n.ad, neden: planNeden }, { satir: n.satir, sutun: n.sutun }) });
-        } else {
-          out.push({ dosya, tani: eskiTani("fazsız-blok", "hata",
-            { kod: kod || n.ad, boşBeyan: Boolean(planP && !planNeden) },
-            { satir: n.satir, sutun: n.sutun }) });
-        }
+        out.push({ dosya, tani: eskiTani("fazsız-blok", "hata",
+          { kod: kod || n.ad, neden: planNeden },
+          { satir: n.satir, sutun: n.sutun }) });
       }
       // Nöbet: çift-mevsim-kaydı — bağ hem Faz tarafında (fiziksel/gerçek çağır) hem mevsim: alanında
       if (mevsimP && (fazAltinda || fazinGercekCagirdigi.has(kod))) {
@@ -3360,6 +3359,195 @@ export function projesizFazTanilari(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// MIM-1.2 · ORK-3.2 · FAZ SIRASI (KPS-SIR-A01 · Founder hükmü 2026-09-29)
+//
+//   Founder hükmü şudur: Faz sırası katıdır, önceki Faz kapanmadan sonraki Fazda
+//   iş başlamaz ve bağımlılıkları bitmemiş bir Adım geliştirmeye alınamaz. Graf
+//   aynı Projenin Fazlarını tek zincirde dizer (dag.ts ②a); bu üretici o zincirin
+//   üç ihlalini adıyla ve kanondaki düzeyiyle bildirir. Üçü de grafın kendi
+//   verisini okur ve ikinci bir kapsama ya da sıra çözümü kurmaz:
+//     • ters-faz-bağımlılığı (HATA): açık bir yürütme kenarının öncülü, ardılının
+//       Fazından SONRAKİ bir kardeş Fazda. Graf bu kenarı sıra hesabına almaz, yoksa
+//       iki Fazın bütün yaprakları tek bir döngüde kilitlenirdi. İki ucu da
+//       tamamlanmış çift tarihseldir (Blok gövdesi biten Adımlarıyla birlikte sonraki
+//       bir Faza devredilmiştir, Provider deseni) ve BİLGİ düzeyinde görünür kalır.
+//     • erken-faz-işi (UYARI): önceki bir kardeş Faz açık işi taşırken sonraki
+//       Fazda geliştirmede Adım var. Bulgu Faz başına bir kez, sonraki Fazın
+//       konumunda basılır.
+//     • seçilemez-adım-yürütümü (UYARI · ORK-3.2): geliştirmedeki Adımın grafta
+//       tamamlanmamış bir Adım öncülü var. Öncül listesi ham `bağımlı:` alanı değil
+//       grafın genişletilmiş listesidir: kapsayıcı hedefi yapraklarına açılmış, ad
+//       alanı çözülmüş ve Faz sırasının öncülleri eklenmiştir. Bulgu Adım başına
+//       bir kez basılır ve açık öncüllerin sayısını söyler.
+//   Ders dünyası (OGR-5) ile bilerek hatalı fikstürler muaftır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Faz sırası ve seçilebilirlik tanıları — grafın Faz zincirinden türer (saf). */
+export function fazSirasiTanilari(
+  dag: Pick<Dag, "dugumler" | "tersFaz" | "fazSirasi" | "adimFazi" | "fazKenari">,
+  muaflar?: ReadonlySet<string>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  const muaf = (dosya: string): boolean => ogretimDunyasi(dosya) || (muaflar?.has(dosya) ?? false);
+  const gorunen = (kod: string): string => dag.dugumler.get(kod)?.yerelKod ?? kod;
+
+  // ① ters-faz-bağımlılığı — graf kenarı sıra hesabına almamış ve adıyla kaydetmiştir.
+  for (const t of dag.tersFaz ?? []) {
+    if (muaf(t.dosya)) continue;
+    const tani = yeniTani("ters-faz-bağımlılığı",
+      { kimlik: gorunen(t.kaynak), kenar: t.kenar, hedef: t.hedef, tarihsel: t.tarihsel,
+        oncul: gorunen(t.oncul), onculFazi: gorunen(t.onculFazi), ardilFazi: gorunen(t.ardilFazi) },
+      { satir: t.satir, sutun: t.sutun });
+    // İki ucu da tamamlanmış çift tarihsel kayıttır (Blok gövdesi sonraki Faza
+    // devredilmiştir); yürütme sırasını etkilemez ve bilgi düzeyinde görünür kalır.
+    out.push({ dosya: t.dosya, tani: t.tarihsel ? tarihselTani(tani) : tani });
+  }
+
+  // ② erken-faz-işi — her kardeş grubunda Faz başına bir kez.
+  const fazAdimlari = new Map<string, { acik: number; gelistirmede: string[] }>();
+  for (const [adim, faz] of dag.adimFazi ?? []) {
+    const d = dag.dugumler.get(adim);
+    if (!d || muaf(d.dosya)) continue;
+    const k = fazAdimlari.get(faz) ?? fazAdimlari.set(faz, { acik: 0, gelistirmede: [] }).get(faz)!;
+    if (d.durum !== "tamamlandı") k.acik++;
+    if (d.durum === "geliştirmede") k.gelistirmede.push(gorunen(adim));
+  }
+  const gruplar = new Map<string, string[]>();
+  for (const [faz, { grup, sira }] of dag.fazSirasi ?? []) {
+    const g = gruplar.get(grup) ?? gruplar.set(grup, []).get(grup)!;
+    g[sira] = faz;
+  }
+  for (const grup of gruplar.values()) {
+    for (let i = 1; i < grup.length; i++) {
+      const faz = grup[i];
+      const fd = faz ? dag.dugumler.get(faz) : undefined;
+      const bu = fazAdimlari.get(faz);
+      if (!fd || muaf(fd.dosya) || !bu?.gelistirmede.length) continue;
+      let onceki: string | undefined;
+      for (let j = i - 1; j >= 0; j--) if (grup[j] && (fazAdimlari.get(grup[j])?.acik ?? 0) > 0) { onceki = grup[j]; break; }
+      if (!onceki) continue;
+      out.push({ dosya: fd.dosya, tani: yeniTani("erken-faz-işi",
+        { kimlik: gorunen(faz), onceki: gorunen(onceki), acik: String(fazAdimlari.get(onceki)!.acik),
+          gelistirmede: bu.gelistirmede.slice(0, 3).join(", ") + (bu.gelistirmede.length > 3 ? ` ve ${bu.gelistirmede.length - 3} Adım daha` : "") },
+        { satir: fd.satir, sutun: fd.sutun }) });
+    }
+  }
+
+  // ③ seçilemez-adım-yürütümü — grafın genişletilmiş öncül listesi okunur.
+  for (const d of dag.dugumler.values()) {
+    if (d.tip !== "Adım" || d.durum !== "geliştirmede" || muaf(d.dosya)) continue;
+    const acik: string[] = [];
+    let fazdan = 0;
+    for (const o of d.oncekiler) {
+      const od = dag.dugumler.get(o);
+      if (!od || od.tip !== "Adım") continue;
+      const durum = od.durum ?? "beklemede";
+      if (durum === "tamamlandı") continue;
+      acik.push(`"${gorunen(o)}" (${durum})`);
+      if (dag.fazKenari?.has(fazKenarAnahtari(o, d.kod))) fazdan++;
+    }
+    if (!acik.length) continue;
+    const liste = acik.slice(0, 3).join(", ") + (acik.length > 3 ? ` ve ${acik.length - 3} öncül daha` : "");
+    const kusur = `${acik.length} öncülü tamamlanmamış: ${liste}` +
+      (fazdan ? ` — bunların ${fazdan} tanesi önceki Fazdan Faz sırasıyla gelir` : "");
+    out.push({ dosya: d.dosya, tani: yeniTani("seçilemez-adım-yürütümü",
+      { kimlik: gorunen(d.kod), kusur }, { satir: d.satir, sutun: d.sutun }) });
+  }
+  return out;
+}
+
+/** Doğuş paketinin kuruluş Adımı (ogreti/sablon/dogus/ilk_plan.sar). Onu taşıyan
+ *  Blok doğuş iskeletidir ve yapı gözlemlerinden muaftır: iskelet bilinçle tek
+ *  Adımla doğar ve ilk gerçek iş Bloku yazılınca kendiliğinden anlamını yitirir.
+ *  Kod şablonda sabittir (Proje koduyla doldurulmaz); nöbet şablonun bu kodu hâlâ
+ *  taşıdığını ölçer. */
+export const DOGUS_ISKELETI_ADIMI = ["ADM", "KURULUS", "01"].join("-");   // düz yazılırsa metin atfı nöbeti onu çözülmeyen atıf sayar: şablon ders dünyasındadır ve indekse girmez
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MIM-1.2 · MIM-1.3 · MIM-1.6 · BLOK YAPISI (KPS-SIR-A01 · Founder hükmü 2026-09-29)
+//
+//   Kardeş bir projenin planında Fazsız, boş ve sırası bozuk Bloklar motor sıfır
+//   hata verirken birikmişti. Bu üretici yapının dört olgusunu bildirir:
+//     • yabancı-faz-bağı (MIM-1.2): Blokun `mevsim:` alanı başka bir Projenin
+//       Fazını ad alanıyla gösteriyor. Blok o zaman Fazsız sayılmaz (bağ vardır),
+//       fakat Faz kendi Projesinin zaman dilimi değildir. Açık iş taşıyan Blokta
+//       UYARI, işi tamamlanmış Blokta tarihsel kayıt olarak BİLGİ düzeyindedir.
+//     • katmansız-blok (MIM-1.3 · UYARI): Blok hiçbir Katman taşımıyor. Doğrudan
+//       Adım taşıyan Blok `katmansız-adım` tanısıyla zaten konuşur ve burada
+//       ikinci kez sayılmaz.
+//     • adımsız-kapsayıcı (MIM-1.6 · BİLGİ): Faz, Blok, Katman ya da AltKatman
+//       hiçbir Adım taşımıyor. Yalnız en üstteki boş kapsayıcı bildirilir.
+//     • tek-adımlı-blok (MIM-1.3 · BİLGİ): Blok tek bir Adım taşıyor.
+//   Ders dünyası, sınama ve vitrin fikstürleri ile doğuş iskeleti muaftır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Blok yapısı tanıları (saf). Faz boşluğu grafın Adım → Faz haritasından okunur,
+ *  çünkü Faz Bloklarını `çağır` ile de kapsayabilir. */
+export function blokYapisiTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  dag: Pick<Dag, "dugumler" | "adimFazi">,
+  muaflar?: ReadonlySet<string>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  const alan = (n: Dugum, ad: string): string | undefined =>
+    [...n.parametreler, ...n.ozellikler].find((x) => x.ad === ad)?.deger.metin;
+  const adimlar = (n: Dugum): Dugum[] => {
+    const r: Dugum[] = [];
+    const g = (m: Dugum): void => {
+      if (m.tur === "widget" && m.ad === "Adım") r.push(m);
+      for (const c of m.cocuklar) g(c);
+    };
+    g(n);
+    return r;
+  };
+  const fazliAdim = new Set(dag.adimFazi?.values() ?? []);
+  const kapsamlar = projeKapsamlari(programlar);
+  const KAPSAYICI = new Set(["Faz", "Blok", "Katman", "AltKatman"]);
+
+  for (const [dosya, p] of programlar) {
+    if (DERS_DUNYASI.test(dosya) || /(^|\/)(sinama|vitrin)(\/|$)/.test(dosya) || muaflar?.has(dosya)) continue;
+    const gez = (n: Dugum, ustBos: boolean): void => {
+      if (n.tur !== "widget" || !KAPSAYICI.has(n.ad)) { for (const c of n.cocuklar) gez(c, ustBos); return; }
+      const kod = alan(n, "kod") ?? n.ad;
+      const icerik = adimlar(n);
+      const iskelet = icerik.some((a) => alan(a, "kod") === DOGUS_ISKELETI_ADIMI);
+      let bosBildirildi = ustBos;
+      if (n.ad === "Blok" && !iskelet) {
+        const katmanVar = n.cocuklar.some((c) => c.tur === "widget" && c.ad === "Katman");
+        const dogrudanAdim = n.cocuklar.some((c) => c.tur === "widget" && c.ad === "Adım");
+        if (!katmanVar && !dogrudanAdim) {
+          out.push({ dosya, tani: yeniTani("katmansız-blok", { kimlik: kod }, n) });
+          bosBildirildi = true;   // boş Blok katmansız olarak bir kez konuşur
+        }
+        if (icerik.length === 1) {
+          out.push({ dosya, tani: yeniTani("tek-adımlı-blok",
+            { kimlik: kod, adim: alan(icerik[0], "kod") ?? "Adım" }, n) });
+        }
+        // yabancı-faz-bağı: ad alanlı mevsim başka bir Projenin Fazını gösteriyor.
+        const mevsim = alan(n, "mevsim");
+        const hedefProje = mevsim ? adAlaniAyir(mevsim).adAlani : undefined;
+        const kendiProjesi = kesinProjeKapsami(dosya, kapsamlar)?.kod;
+        if (hedefProje !== undefined && hedefProje !== kendiProjesi) {
+          const acik = icerik.filter((a) => alan(a, "durum") !== "tamamlandı").length;
+          const t = yeniTani("yabancı-faz-bağı",
+            { kimlik: kod, mevsim: mevsim!, proje: hedefProje, kendi: kendiProjesi ?? "", acik: String(acik) }, n);
+          // Kanon: açık iş taşıyan Blokta UYARI, işi bitmiş Blokta tarihsel kayıt (BİLGİ).
+          out.push({ dosya, tani: acik ? t : tarihselTani(t) });
+        }
+      }
+      const bos = n.ad === "Faz" ? !fazliAdim.has(kod) && icerik.length === 0 : icerik.length === 0;
+      if (bos && !bosBildirildi && !iskelet) {
+        out.push({ dosya, tani: yeniTani("adımsız-kapsayıcı", { kimlik: kod, tip: n.ad }, n) });
+        bosBildirildi = true;
+      }
+      for (const c of n.cocuklar) gez(c, bosBildirildi);
+    };
+    for (const b of p.bildirimler) gez(b, false);
+  }
+  return out;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // YENİ KANON · PROJE KAPSAMI (motor turu ikinci halkası · elli beş tanı)
 //
 //   Bu bölümdeki üreticiler kararlarını tek bir dosyadan veremez: rejim, Proje
@@ -3938,20 +4126,9 @@ export function iliskiSinifiTanilari(
       }
     }
 
-    // Seçilebilir Adım: öncülü kapanmadan iş yürütülemez.
-    if (d.ad === "Adım" && yeniAlanMetin(d, "durum") === "geliştirmede") {
-      for (const o of yeniListe(d, "bağımlı")) {
-        const h = o.metin;
-        if (!h) continue;
-        const oncul = dugumler.find((y) => y.d.ad === "Adım" && yeniAlanMetin(y.d, "kod") === h);
-        if (!oncul) continue;
-        const durum = yeniAlanMetin(oncul.d, "durum") ?? "beklemede";
-        if (durum !== "tamamlandı") {
-          out.push({ dosya, tani: yeniTani("seçilemez-adım-yürütümü",
-            { kimlik, kusur: `öncülü "${h}" hâlâ "${durum}" durumunda` }, o) });
-        }
-      }
-    }
+    // Seçilebilir Adım (ORK-3.2) buradan taşındı (KPS-SIR-A01): ham `bağımlı:` listesi
+    // kapsayıcı hedefi yapraklarına açmıyor ve Faz sırasını hiç görmüyordu; tanı artık
+    // grafın genişletilmiş öncül listesini okuyan `fazSirasiTanilari` üreticisindedir.
 
     // Döngü işletimi: çözülebilir hedef ve sonlanma güvencesi.
     if (d.ad === "Döngü") {

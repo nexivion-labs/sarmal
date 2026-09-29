@@ -12,7 +12,8 @@
 // yine açılır, motor yalnız hatırlatır (iş akışı kesilmez; yetişmeyen tarih ertelenir).
 // Sonraki plan dosyaları yeni Blok'u zamana üç yolla bağlar (bir bağ tek yerde · DIL-2):
 // Faz gövdesine iç içe yazım · Faz'ın çağır listesi · Blok( ..., mevsim: FAZ-… ) alanı;
-// önceliklendirme bekleyen iş için dürüst beyan: planlanmamış: "neden metni".
+// Fazsız Blok için kaçış yoktur; önceliklendirme bekleyen iş de bir Faza bağlanır ve
+// aynı Projenin Fazları tarih ile dosya önekinin doğal sayı sırasıyla tek zincirdir.
 Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
   ne: "🌀 Kuruluş dönemi — mimari kararlar verilir, proje gerçek planına kavuşur" ) {
 
