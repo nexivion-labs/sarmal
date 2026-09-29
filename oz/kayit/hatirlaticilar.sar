@@ -1098,7 +1098,6 @@ Hatırlatıcı(
 Hatırlatıcı(
   kod:              HTR-AD-ALANLI-ATIF-KALAN-IKI-YUZ,
   durum:            açık,
-  hatırlat:         KPS-SIR-A02,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-29,
@@ -1109,7 +1108,6 @@ Hatırlatıcı(
 Hatırlatıcı(
   kod:              HTR-README-DENETIM-GORUNTUSU,
   durum:            açık,
-  hatırlat:         KPS-SIR-A04,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-29,
