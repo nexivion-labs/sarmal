@@ -4069,7 +4069,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           ]
         }
 
-        Adım( kod: KPS-SIR-A05, ad: "Biçimlendiricinin Çok Satırlı Dizgiyi Koruması", durum: beklemede, öncelik: p0,
+        Adım( kod: KPS-SIR-A05, ad: "Biçimlendiricinin Çok Satırlı Dizgiyi Koruması", durum: geliştirmede, öncelik: p0,
           bağımlı: [ KPS-SIR-A04 ], referans: [ DIL-2.2 ],
           ne: "🧱 Biçimlendiricinin çok satırlı dizgiyi koruması. Biçimlendiricinin satır tabanlı sözcükleyicisi çok satırlı düz dizgiyi izlemediği için dizginin iç satırlarını yeniden girintilemekte ve kapanış parantezini kaydırmaktadır; ayrıştırılmış değer sessizce değişmektedir. Bu, çok satırlı değerlerin içerik satırlarının değiştirilemeyeceğini söyleyen DIL-2.2 hükmünü doğrudan çiğner." ) {
           görev: [
