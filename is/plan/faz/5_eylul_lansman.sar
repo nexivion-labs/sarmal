@@ -255,7 +255,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
         //   simgesi tektir; Ray, Tren ve Makinist bu simgenin içinde yatay bir sıra hâlinde üç
         //   bölümdür. Açık eklenti yuvayı sağlar; kardeş eklentiler kendi bölümlerini bu yuvaya
         //   kaydeder. Açık eklenti tek başına kurulduğunda yalnız kendi bölümü görünür.
-        Adım( kod: VIT-K78-A10, ad: "Tek Sarmal Simgesi ve Bölüm Yuvası", durum: geliştirmede, öncelik: p1,
+        Adım( kod: VIT-K78-A10, ad: "Tek Sarmal Simgesi ve Bölüm Yuvası", durum: tamamlandı, öncelik: p1,
           bağımlı: [], referans: [ YUZ-3.1 ],
           ne: "🧩 Tek Sarmal simgesi ve bölüm yuvası. VS Code etkinlik çubuğunda yalnız bir Sarmal simgesi bulunur; simgeye tıklanınca en üstte yatay bir bölüm sırası açılır ve Ray bölümü açık eklentinin kendi yüzüdür. Açık eklenti, kardeş eklentilerin kendi bölümlerini yuvaya kaydedebileceği kararlı bir arayüz sunar; kaydeden eklenti yoksa bölüm sırası yalnız Ray'i gösterir." ) {
           görev: [
@@ -271,6 +271,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
             "Açık, koyu ve yüksek karşıtlık temalarında ve dar genişlikte ekran görüntüleri okunurdur."
           ]
           sınır: "Bu Adım kardeş eklentinin kendi bölümünü yazmaz; yalnız yuvayı ve kayıt arayüzünü sağlar. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+          koşu:  Koşum( kod: KSM-VIT-K78-A10, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+            kanıt: "işlemeler 11dbcc4, db893bb, f38e42a, a48c7ba · bağımsız inceleme üç tur (GEÇTİ; sıkılaştırmalar GEÇTİ) · eklenti birim 871/871, bölüm nöbeti 25/25, gerçek VS Code bölüm nöbeti 9/9",
+            ne:    "Etkinlik çubuğunda tek Sarmal simgesi vardır; kabın en üstündeki bölüm sırası Ray'i ve kaydedilen kardeş bölümleri yatay dizer, Ray'in altı paneli yalnız bir görünürlük koşulu kazanarak aynen kalmıştır. Kardeş eklentiler sürümlü bir arayüzle dört yuvadan birine kendi webview sağlayıcısını kaydeder; sahte kardeşle gerçek VS Code'da bölümler görünmüş, açılmış ve bırakılınca sıra yalnız Ray'e dönmüştür. İnceleme taklit riskini bulmuş ve sıkılaştırma yapılmıştır: Ray ve Sarmal adları benzer yazımlarla da ayrılmıştır, kardeş kendini programla seçemez, ipucu kaydeden eklentinin adını taşır, simge yalnız sahibin kendi klasöründen ve gerçek yoldan yüklenir, sahip ham çağrı karelerinden okunur. Bilinen sınır kodda yazılıdır: herhangi bir eklenti bağlam anahtarlarını yazabilir ve başka eklentinin kabına görünüm ekleyebilir; sahip ölçümü güvenlik sınırı değildir. Açık, koyu ve yüksek karşıtlık temalarında gerçek VS Code ekran görüntüleri okunurdur; geniş dört tema görüntüsü tarayıcı yaklaşığıdır. Entegrasyon süitinde önceden var olan on altı düşüş bu işten bağımsızdır ve HTR-EKLENTI-ENTEGRASYON-ON-ALTI-DUSUS hatırlatıcısındadır. Kardeş bölüm seçildiğinde bölüm sırasının kenar çubuğunun yarısını kaplaması VS Code'un alan paylaşımından gelir ve kullanıcı ayırıcıyla küçültebilir." )
+          üretir: [ KOD-EKL-BOLUM-CEKIRDEK, KOD-EKL-BOLUM-YUVASI, KOD-SNM-BOLUM-YUVASI, KOD-SNM-BOLUM-YUVASI-VSCODE ]
         }
       }
     }
@@ -5924,6 +5928,15 @@ Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogr
   ne: "🧭 Ad alanı doğrulama nöbeti — altı sınama: kardeş kökte var olan ad alanlı hedef tanı almaz, bilinen ad alanında olmayan hedef gerçekten kırıktır ve hatadır, bilinmeyen ad alanı ölçülemezdir ve muafiyeti uyarı olarak adıyla bildirilir, çağır hedefi de üç durumlu okunur, ad alanı bilgisi verilmeyen eski yüz muafiyet uyduramaz ve yüklü evrendeki Proje de bilinen ad alanıdır; üç mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-ADA-A01)" )
 // 🍎 KPS-FAZ-A02 teslimi (2026-09-19): projesiz Faz bekçisi ve panel-motor eşitliği
 // 🍎 KPS-SIR-A01 teslimi (2026-09-29): Faz sırası ve Blok yapısı tanıları
+// 🍎 VIT-K78-A10 teslimi (2026-09-29): tek Sarmal simgesi ve bölüm yuvası
+Kod( kod: KOD-EKL-BOLUM-CEKIRDEK, dosya: "urun/eklenti/src/bolum-cekirdek.ts",
+  ne: "🧩 Bölüm defteri çekirdeği — kayıt doğrulaması, ayrılmış adlar, sahip ölçümü, simge kararı ve seçim durumu; vscode'suz saf çekirdek (VIT-K78-A10)" )
+Kod( kod: KOD-EKL-BOLUM-YUVASI, dosya: "urun/eklenti/src/bolum-yuvasi.ts",
+  ne: "🧩 Bölüm yuvası — bölüm sırası webview'i, dört genel yuva görünüşü, kardeş eklentiler için sürümlü kayıt arayüzü ve bilinen sınırlar (VIT-K78-A10)" )
+Kod( kod: KOD-SNM-BOLUM-YUVASI, dosya: "urun/eklenti/sinama/bolum-yuvasi.test.ts",
+  ne: "🧩 Bölüm yuvası birim nöbeti — kayıt, taklit ve simge redleri, sahip ölçümü, seçimin Ray'e dönmesi, kaçış ve içerik güvenliği (VIT-K78-A10)" )
+Kod( kod: KOD-SNM-BOLUM-YUVASI-VSCODE, dosya: "urun/eklenti/sinama_vscode/suite/bolum-yuvasi.test.ts",
+  ne: "🧩 Bölüm yuvası gerçek VS Code nöbeti — sahte kardeş eklentinin bölüm kaydı, sağlayıcı devri, bırakma ve Ray panellerinin görünürlüğü (VIT-K78-A10)" )
 // 🍎 KPS-SIR-A05 teslimi (2026-09-29): biçimlendiricinin değer koruması
 Kod( kod: KOD-SNM-BICIMLE-DEGER-KORUMA, dosya: "urun/cekirdek/sinama/bicimle-deger-koruma.test.ts",
   ne: "🧱 Biçimlendirici değer koruma nöbeti — çok satırlı düz dizgi içeriğinin bayt bayt korunduğunu, hizalama ve sığdırmanın içeriğe girmediğini, dizgideki belge iminin blok açmadığını ve açık depodaki bütün .sar dosyalarında biçimlendirme öncesi ve sonrası değerlerin aynı, ikinci geçişin sabit olduğunu sınar (KPS-SIR-A05 · DIL-2.2)" )
