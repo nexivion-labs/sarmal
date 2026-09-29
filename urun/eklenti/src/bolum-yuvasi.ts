@@ -41,6 +41,17 @@
 //     kabul edilir; webview'in yerel kaynak kökü simgenin kendi klasörüdür.
 //   · Sağlayıcısı çözümde hata veren ya da sahibi artık etkin olmayan bölüm
 //     sıradan düşer ve seçim Ray'e döner.
+//   · `bolumKaydet` kardeşin KENDİ kodundan doğrudan çağrılmalıdır, ör.
+//     `.then((y) => y.bolumKaydet({...}))`. `.then(yuva.bolumKaydet)` gibi
+//     yığında kardeşe ait kare bırakmayan çağrı sahipsiz sayılır ve reddedilir.
+//
+//   ⚠️ BİLİNEN SINIRLAR. Bütün eklentiler aynı uzantı sürecinde ve tam yetkiyle
+//   koşar. Herhangi bir eklenti `setContext` ile bu dosyanın bağlam anahtarlarını
+//   yazabilir ve başka bir eklentinin görünüm kabına kendi görünümünü ekleyebilir;
+//   bunlar VS Code'un izin verdiği şeylerdir ve bu yuva onları engelleyemez.
+//   Çağrı yığınından yapılan sahip ölçümü DÜRÜST SAHİPLİK içindir: bir eklentinin
+//   yanlışlıkla başka birinin adıyla ya da simgesiyle görünmesini önler, fakat
+//   kötü niyetli bir eklentiye karşı bir güvenlik sınırı DEĞİLDİR.
 //
 //   Sağlayıcı, yuvanın `WebviewView` nesnesini VS Code'un kendi çağrısıyla
 //   alır; görünüşün başlığı bölümün adıdır. Simge dosyasının klasörü bölüm
@@ -130,6 +141,11 @@ export interface BolumYuvasiYuzu {
 
 function gercekYol(yol: string): string {
   try { return realpathSync.native(yol); } catch { return yol; }
+}
+
+/** Gerçek yol; çözülemezse undefined (simge için "yok" demektir ve reddedilir). */
+function cozulenYol(yol: string): string | undefined {
+  try { return realpathSync.native(yol); } catch { return undefined; }
 }
 
 function gorunenAd(e: vscode.Extension<unknown>): string {
@@ -260,12 +276,9 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
   }
 
   private sahipOku(): EklentiKoku | undefined {
-    const eski = Error.stackTraceLimit;
-    Error.stackTraceLimit = 64;
-    const yigin = new Error().stack ?? "";
-    Error.stackTraceLimit = eski;
+    const dosyalar = yiginDosyalari();
     const eklentiler = vscode.extensions.all.map((e) => ({ kimlik: e.id, ad: gorunenAd(e), kok: gercekYol(e.extensionPath) }));
-    return sahibiBul(yiginDosyalari(yigin).map(gercekYol), eklentiler, this.kendiKok);
+    return sahibiBul(dosyalar.map(gercekYol), eklentiler, this.kendiKok);
   }
 
   private async baglamiYaz(): Promise<void> {
@@ -309,9 +322,10 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
     const kokler: vscode.Uri[] = [];
     const gercek: vscode.Uri[] = [];
     for (const u of [simge.acik, simge.koyu]) {
-      const yol = u.scheme === "file" ? gercekYol(u.fsPath) : u.path;
-      const karar = simgeKarari(u.scheme, yol, sahip.kok);
-      if (karar.tur === "ret") throw new Error(BOLUM_SIRASI_METINLERI.kayitReddi("simge-kok", kimlik));
+      const ham = u.scheme === "file" ? u.fsPath : u.path;
+      const yol = u.scheme === "file" ? cozulenYol(ham) : undefined;
+      const karar = simgeKarari(u.scheme, ham, yol, sahip.kok);
+      if (karar.tur === "ret" || yol === undefined) throw new Error(BOLUM_SIRASI_METINLERI.kayitReddi("simge-kok", kimlik));
       kokler.push(vscode.Uri.file(karar.kok));
       gercek.push(vscode.Uri.file(yol));
     }

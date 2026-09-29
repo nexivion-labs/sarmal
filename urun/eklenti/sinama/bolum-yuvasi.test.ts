@@ -242,18 +242,23 @@ test("taklit: Ray ve Sarmal adları harf, boşluk ve Türkçe İ/ı biçimlerind
   assert.equal(d.kayitSayisi, 0);
 });
 
-test("sahip: çağrı yığınındaki kareler dosya yoluyla okunur", () => {
-  const yigin = [
-    "Error",
-    "    at BolumYuvasiKabugu.sahipOku (/ext/sarmal/dist/eklenti.js:10:5)",
-    "    at Object.bolumKaydet (/ext/sarmal/dist/eklenti.js:20:7)",
-    "    at kur (/ext/kardes-1.0.0/kardes.js:30:9)",
-    "    at file:///ext/esm%20kardes/giris.mjs:4:2",
-    "    at node:internal/process/task_queues:95:5",
-  ].join("\n");
-  assert.deepEqual(yiginDosyalari(yigin), [
-    "/ext/sarmal/dist/eklenti.js", "/ext/sarmal/dist/eklenti.js", "/ext/kardes-1.0.0/kardes.js", "/ext/esm kardes/giris.mjs",
-  ]);
+test("sahip: kareler ham CallSite nesnelerinden okunur; kaynak eşleme kancası sahipliği bozmaz", () => {
+  const buDosya = fileURLToPath(import.meta.url);
+  const kok = join(KOK, "sinama");
+  const eklentiler = [{ kimlik: "sinama.bu", ad: "Bu", kok }];
+  const eskiKanca = Error.prepareStackTrace;
+  // source-map-support benzeri kanca: yığın METNİNİ tümüyle başka yollara yazar.
+  const kanca = (): string => "Error\n    at eslenmis (/baska/yer/ozgun.ts:1:1)";
+  Error.prepareStackTrace = kanca;
+  try {
+    const dosyalar = yiginDosyalari();
+    assert.ok(dosyalar.includes(buDosya), `ham kareler bu dosyayı içermeli: ${dosyalar.slice(0, 3).join(" · ")}`);
+    assert.ok(!dosyalar.includes("/baska/yer/ozgun.ts"), "kancanın yazdığı metin okunmuş");
+    assert.equal(sahibiBul(dosyalar, eklentiler, join(KOK, "src"))?.kimlik, "sinama.bu", "kanca kuruluyken sahip okunamadı");
+    assert.equal(Error.prepareStackTrace, kanca, "kanca eski hâline geri konmadı");
+  } finally {
+    Error.prepareStackTrace = eskiKanca;
+  }
 });
 
 test("sahip: açık eklentinin kareleri atlanır, ilk yabancı karenin en dar kökü sahiptir", () => {
@@ -275,15 +280,27 @@ test("sahip: açık eklentinin kareleri atlanır, ilk yabancı karenin en dar k�
   assert.equal(altindaMi("/x", "/"), false, "dosya sistemi kökü hiçbir yolu kapsamaz");
 });
 
-test("simge kökü: yalnız file şeması, sahibin kökü altı ve simgenin kendi klasörü", () => {
+test("simge kökü: yalnız file şeması, çözülebilen ve .. taşımayan yol, sahibin kökü altı ve simgenin kendi klasörü", () => {
   const kok = "/ext/kardes";
-  assert.deepEqual(simgeKarari("file", "/ext/kardes/medya/simge.svg", kok), { tur: "tamam", kok: "/ext/kardes/medya" });
-  assert.deepEqual(simgeKarari("file", "/ext/kardes/simge.svg", kok), { tur: "tamam", kok: "/ext/kardes" });
-  assert.deepEqual(simgeKarari("https", "/ext/kardes/simge.svg", kok), { tur: "ret", sebep: "sema" });
-  assert.deepEqual(simgeKarari("file", "/etc/hosts", kok), { tur: "ret", sebep: "kok-disi" });
-  assert.deepEqual(simgeKarari("file", "/ext/kardes", kok), { tur: "ret", sebep: "kok-disi" });
-  assert.deepEqual(simgeKarari("file", "/simge.svg", "/"), { tur: "ret", sebep: "kok-disi" }, "geniş kök reddedilmeli");
-  assert.deepEqual(simgeKarari("file", "/ext/kardesler/simge.svg", kok), { tur: "ret", sebep: "kok-disi" });
+  const k = (ham: string, ...gercek: [string | undefined] | []) =>
+    simgeKarari("file", ham, gercek.length ? gercek[0] : ham, kok);
+  assert.deepEqual(k("/ext/kardes/medya/simge.svg"), { tur: "tamam", kok: "/ext/kardes/medya" });
+  assert.deepEqual(k("/ext/kardes/simge.svg"), { tur: "tamam", kok: "/ext/kardes" });
+  assert.deepEqual(simgeKarari("https", "/ext/kardes/simge.svg", "/ext/kardes/simge.svg", kok), { tur: "ret", sebep: "sema" });
+  assert.deepEqual(k("/ext/kardes/../kardes/simge.svg", "/ext/kardes/simge.svg"), { tur: "ret", sebep: "yol" }, ".. taşıyan yol kabul edildi");
+  assert.deepEqual(k("/ext/kardes/yok.svg", undefined), { tur: "ret", sebep: "yol" }, "çözülemeyen yol kabul edildi");
+  assert.deepEqual(k("/ext/kardes/bag.svg", "/etc/hosts"), { tur: "ret", sebep: "kok-disi" }, "gerçek yolu kök dışına çıkan bağ kabul edildi");
+  assert.deepEqual(k("/etc/hosts"), { tur: "ret", sebep: "kok-disi" });
+  assert.deepEqual(k("/ext/kardes"), { tur: "ret", sebep: "kok-disi" });
+  assert.deepEqual(simgeKarari("file", "/simge.svg", "/simge.svg", "/"), { tur: "ret", sebep: "kok-disi" }, "geniş kök reddedilmeli");
+  assert.deepEqual(k("/ext/kardesler/simge.svg"), { tur: "ret", sebep: "kok-disi" });
+});
+
+test("taklit: tam genişlik, sıfır genişlik, yön işareti, yumuşak tire ve birleşik işaret biçimleri de ayrılmıştır", () => {
+  for (const ad of ["Ｓａｒｍａｌ", "ＲＡＹ", "Sar\u200Bmal", "R\u200Day", "\u200ERay\u200F", "\u202ESarmal\u202C", "Sar\u00ADmal",
+    "\u2066Ray\u2069", "Râŷ", "Sarmál", "\uFEFFRay"])
+    assert.equal(ayrilmisAdMi(ad), true, `${JSON.stringify(ad)} ayrılmış sayılmadı`);
+  assert.equal(ayrilmisAdMi("Rayli"), false);
 });
 
 test("uç hâl: sahibi etkin olmayan bölümler düşürülecekler listesindedir", () => {

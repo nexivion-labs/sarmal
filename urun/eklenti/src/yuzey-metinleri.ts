@@ -2467,8 +2467,11 @@ export const BOLUM_SIRASI_METINLERI = {
       "kimlik-yinelenen": ["bu kimlikle kayıtlı bir bölüm zaten var", "a section with this id is already registered"],
       "ad-bos": ["bölümün adı boş olamaz", "the section title cannot be empty"],
       "ad-ayrilmis": ["Ray ve Sarmal adları açık eklentiye ayrılmıştır", "the titles Ray and Sarmal are reserved for the open extension"],
-      "sahip-yok": ["kaydı yapan eklenti okunamadı", "the registering extension could not be identified"],
-      "simge-kok": ["simge kaydeden eklentinin kendi klasöründe bir dosya olmalıdır", "the icon must be a file inside the registering extension's own folder"],
+      "sahip-yok": [
+        "kaydı yapan eklenti okunamadı; bolumKaydet'i kendi kodunuzdan doğrudan çağırın, ör. .then((y) => y.bolumKaydet({ … })), .then(yuva.bolumKaydet) gibi bir aktarımla değil",
+        "the registering extension could not be identified; call bolumKaydet directly from your own code, e.g. .then((y) => y.bolumKaydet({ … })), not through a reference such as .then(yuva.bolumKaydet)",
+      ],
+      "simge-kok": ["simge kaydeden eklentinin kendi klasöründe var olan bir dosya olmalıdır ve yolu .. taşıyamaz", "the icon must be an existing file inside the registering extension's own folder and its path cannot contain .."],
       "yuva-yok": ["bütün bölüm yuvaları dolu", "all section slots are taken"],
       "simge-yok": ["bölümün simgesi bir dosya adresi olmalıdır", "the section icon must be a file URI"],
       "saglayici-yok": ["bölümün bir webview sağlayıcısı olmalıdır", "the section must provide a webview view provider"],

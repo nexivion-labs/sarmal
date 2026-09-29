@@ -73,7 +73,16 @@ export const AYRILMIS_ADLAR = ["ray", "sarmal"] as const;
 
 /** Adı karşılaştırma biçimine indirger: kırpılır, iki yerel ayarda küçültülür, ı/i birleşir. */
 export function adNormalize(ad: string): string {
-  return ad.trim().toLocaleLowerCase("tr").toLocaleLowerCase("en").replace(/ı/g, "i").replace(/i̇/g, "i").normalize("NFC");
+  // NFKD tek başına iki işi görür: tam genişlik ve uyumluluk biçimlerini düz
+  // harfe indirir (NFKC'nin kapsadığı hâller) ve birleşik işaretleri ayırır.
+  // NFKC ayrıca uygulanmaz; mutasyon onun bu zincirde etkisiz kaldığını ölçtü.
+  return ad
+    .normalize("NFKD")                       // tam genişlik, uyumluluk ve ayrıştırma
+    .replace(/\p{Cf}/gu, "")                // sıfır genişlik, yumuşak tire, yön işaretleri
+    .replace(/\p{M}/gu, "")                 // birleşik işaretler (â, İ'nin noktası gibi)
+    .toLocaleLowerCase("tr").toLocaleLowerCase("en")
+    .replace(/ı/g, "i")
+    .trim();
 }
 
 export function ayrilmisAdMi(ad: string): boolean {
@@ -88,17 +97,32 @@ export function ayrilmisAdMi(ad: string): boolean {
 //   eklentinin kökü altındaysa kaydı yapan eklentidir. Kök bulunamazsa kayıt
 //   reddedilir: sahibi okunamayan bir bölüm sıraya giremez.
 
-/** Yığın metninden dosya yollarını sırasıyla çıkarır (file:// önekli ESM kareleri dahil). */
-export function yiginDosyalari(yigin: string): string[] {
-  const out: string[] = [];
-  for (const satir of yigin.split("\n")) {
-    // Yol, karenin "(" ya da "at " sonrasında başlamalıdır; "node:internal/…" gibi
-    // iç modül kareleri dosya yolu sayılmaz.
-    const m = /(?:\(|\bat )(?:file:\/\/)?((?:\/|[A-Za-z]:[\\/])[^():]*?):\d+:\d+\)?\s*$/.exec(satir.trim());
-    if (!m) continue;
-    try { out.push(decodeURIComponent(m[1])); } catch { out.push(m[1]); }
+/**
+ * Çağrı yığınının dosya yollarını HAM CallSite nesnelerinden okur. Yığın metni
+ * okunmaz: kaynak eşleme kancaları (ör. source-map-support) `prepareStackTrace`
+ * ile metni özgün kaynak yollarına yeniden yazar ve metinden ölçülen sahip
+ * yanlış çıkardı. Kanca geçici olarak CallSite dizisini döndüren işlevle
+ * değiştirilir ve `finally` içinde eski hâline konur.
+ */
+export function yiginDosyalari(sinir = 64): string[] {
+  const eskiKanca = Error.prepareStackTrace;
+  const eskiSinir = Error.stackTraceLimit;
+  try {
+    Error.stackTraceLimit = sinir;
+    Error.prepareStackTrace = (_e, cs) => cs;
+    const kareler = new Error().stack as unknown as NodeJS.CallSite[] | undefined;
+    const out: string[] = [];
+    for (const k of Array.isArray(kareler) ? kareler : []) {
+      let ad = k.getFileName?.() ?? undefined;
+      if (!ad) continue;
+      if (ad.startsWith("file://")) { try { ad = decodeURIComponent(new URL(ad).pathname); } catch { continue; } }
+      if (ad.startsWith("/") || /^[A-Za-z]:[\\/]/.test(ad)) out.push(ad);
+    }
+    return out;
+  } finally {
+    Error.prepareStackTrace = eskiKanca;
+    Error.stackTraceLimit = eskiSinir;
   }
-  return out;
 }
 
 /** Yol `kok` altında mı (kökün kendisi dahil)? Ayırıcı sınırı gözetilir: /a/b, /a/bc'yi kapsamaz. */
@@ -126,15 +150,18 @@ export function sahibiBul(dosyalar: readonly string[], eklentiler: readonly Ekle
   return undefined;
 }
 
-export type SimgeKarari = { tur: "tamam"; kok: string } | { tur: "ret"; sebep: "sema" | "kok-disi" | "genis-kok" };
+export type SimgeKarari = { tur: "tamam"; kok: string } | { tur: "ret"; sebep: "sema" | "yol" | "kok-disi" | "genis-kok" };
 
 /**
  * Simge yalnız `file:` şemasında ve sahibin kendi eklenti kökü altında kabul edilir.
  * Webview'e eklenen yerel kaynak kökü simgenin KENDİ klasörüdür; sahibin kökünün
  * dışına ya da dosya sisteminin köküne açılan bir klasör reddedilir.
  */
-export function simgeKarari(sema: string, yol: string, sahipKok: string): SimgeKarari {
+export function simgeKarari(sema: string, hamYol: string, gercekYol: string | undefined, sahipKok: string): SimgeKarari {
   if (sema !== "file") return { tur: "ret", sebep: "sema" };
+  // ".." taşıyan ya da gerçek yola çözülemeyen (yok, erişilemez) simge reddedilir.
+  if (/(^|[\\/])\.\.([\\/]|$)/.test(hamYol) || gercekYol === undefined) return { tur: "ret", sebep: "yol" };
+  const yol = gercekYol;
   if (!altindaMi(yol, sahipKok) || yol === sahipKok.replace(/[\\/]+$/, "")) return { tur: "ret", sebep: "kok-disi" };
   const klasor = yol.replace(/[\\/][^\\/]*$/, "");
   if (klasor === "" || /^[A-Za-z]:$/.test(klasor) || !altindaMi(klasor, sahipKok)) return { tur: "ret", sebep: "genis-kok" };

@@ -131,7 +131,19 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
     assert.match(kardes.dene("disari-a", "Dışarı", sarmalSimge), /disari-a/, "başka eklentinin simgesi kabul edildi");
     assert.match(kardes.dene("disari-b", "Dışarı", "file:///etc/hosts"), /disari-b/, "kök dışı simge kabul edildi");
     assert.match(kardes.dene("disari-c", "Dışarı", "https://ornek.invalid/simge.svg"), /disari-c/, "file dışı şema kabul edildi");
+    assert.match(kardes.dene("taklit-c", "Ｓａｒ\u200Bｍａｌ", kardesSimge), /taklit-c/, "biçim karakterli Sarmal adı kabul edildi");
+    assert.match(kardes.dene("noktali", "Noktalı", `file://${kardesKok}/../sahte-kardes/simge-bir.svg`), /noktali/, ".. taşıyan simge kabul edildi");
+    assert.match(kardes.dene("yok-simge", "Yok", `file://${kardesKok}/yok.svg`), /yok-simge/, "var olmayan simge kabul edildi");
     assert.strictEqual(kardes.dene("gecerli", "Geçerli", kardesSimge), "kabul", "geçerli kayıt reddedildi");
+    // Kaynak eşleme kancası (source-map-support benzeri) yığın metnini yeniden yazsa da
+    // sahip ham karelerden okunur ve geçerli kayıt kabul edilir.
+    const eskiKanca = Error.prepareStackTrace;
+    Error.prepareStackTrace = () => "Error\n    at eslenmis (/baska/yer/ozgun.ts:1:1)";
+    try {
+      assert.strictEqual(kardes.dene("eslemeli", "Eşlemeli", kardesSimge), "kabul", "kaynak eşleme kancası kuruluyken kayıt reddedildi");
+    } finally {
+      Error.prepareStackTrace = eskiKanca;
+    }
     assert.deepStrictEqual(o().sira, ["ray", "birinci", "ikinci"]);
   });
 
