@@ -3372,8 +3372,9 @@ export function projesizFazTanilari(
 //       tamamlanmış çift tarihseldir (Blok gövdesi biten Adımlarıyla birlikte sonraki
 //       bir Faza devredilmiştir, Provider deseni) ve BİLGİ düzeyinde görünür kalır.
 //     • erken-faz-işi (UYARI): önceki bir kardeş Faz açık işi taşırken sonraki
-//       Fazda geliştirmede Adım var. Bulgu Faz başına bir kez, sonraki Fazın
-//       konumunda basılır.
+//       Fazda geliştirmede ya da tamamlanmış Adım var. Bulgu Faz başına bir kez,
+//       sonraki Fazın konumunda basılır ve Adımları durumlarıyla sayar. Durum
+//       tutarlılığı Faz sırasından gelen öncülü okumaz; bu hâlin tek sözcüsü budur.
 //     • seçilemez-adım-yürütümü (UYARI · ORK-3.2): geliştirmedeki Adımın grafta
 //       tamamlanmamış bir Adım öncülü var. Öncül listesi ham `bağımlı:` alanı değil
 //       grafın genişletilmiş listesidir: kapsayıcı hedefi yapraklarına açılmış, ad
@@ -3404,13 +3405,16 @@ export function fazSirasiTanilari(
   }
 
   // ② erken-faz-işi — her kardeş grubunda Faz başına bir kez.
-  const fazAdimlari = new Map<string, { acik: number; gelistirmede: string[] }>();
+  // Başlamış iş: geliştirmede ya da tamamlanmış Adım. Önceki Faz açıkken sonraki
+  // Fazda BİTMİŞ iş de erken iştir; durum tutarlılığı Faz sırasından gelen öncülü
+  // okumadığı için bu hâl yalnız burada konuşur (düzeltme turu · bağımsız inceleme).
+  const fazAdimlari = new Map<string, { acik: number; baslamis: string[] }>();
   for (const [adim, faz] of dag.adimFazi ?? []) {
     const d = dag.dugumler.get(adim);
     if (!d || muaf(d.dosya)) continue;
-    const k = fazAdimlari.get(faz) ?? fazAdimlari.set(faz, { acik: 0, gelistirmede: [] }).get(faz)!;
+    const k = fazAdimlari.get(faz) ?? fazAdimlari.set(faz, { acik: 0, baslamis: [] }).get(faz)!;
     if (d.durum !== "tamamlandı") k.acik++;
-    if (d.durum === "geliştirmede") k.gelistirmede.push(gorunen(adim));
+    if (d.durum === "geliştirmede" || d.durum === "tamamlandı") k.baslamis.push(`${gorunen(adim)} (${d.durum})`);
   }
   const gruplar = new Map<string, string[]>();
   for (const [faz, { grup, sira }] of dag.fazSirasi ?? []) {
@@ -3422,13 +3426,13 @@ export function fazSirasiTanilari(
       const faz = grup[i];
       const fd = faz ? dag.dugumler.get(faz) : undefined;
       const bu = fazAdimlari.get(faz);
-      if (!fd || muaf(fd.dosya) || !bu?.gelistirmede.length) continue;
+      if (!fd || muaf(fd.dosya) || !bu?.baslamis.length) continue;
       let onceki: string | undefined;
       for (let j = i - 1; j >= 0; j--) if (grup[j] && (fazAdimlari.get(grup[j])?.acik ?? 0) > 0) { onceki = grup[j]; break; }
       if (!onceki) continue;
       out.push({ dosya: fd.dosya, tani: yeniTani("erken-faz-işi",
         { kimlik: gorunen(faz), onceki: gorunen(onceki), acik: String(fazAdimlari.get(onceki)!.acik),
-          gelistirmede: bu.gelistirmede.slice(0, 3).join(", ") + (bu.gelistirmede.length > 3 ? ` ve ${bu.gelistirmede.length - 3} Adım daha` : "") },
+          isler: bu.baslamis.slice(0, 8).join(", ") + (bu.baslamis.length > 8 ? ` ve ${bu.baslamis.length - 8} Adım daha` : "") },
         { satir: fd.satir, sutun: fd.sutun }) });
     }
   }

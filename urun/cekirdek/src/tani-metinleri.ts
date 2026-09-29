@@ -157,8 +157,8 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Ya ardılı öncülün Fazına ya da ondan sonraki bir Faza taşı, ya da öncülü daha önceki bir Faza al; bağımlılık gerçek değilse kenarı kaldır. Örnek: ardıl Blokunu \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` gövdesine taşı ve \`bağımlı: [ ${a(p, "oncul")} ]\` kenarını koru.`,
   },
   "erken-faz-işi": {
-    mesaj: (p) => `"${a(p, "kimlik")}" Fazında geliştirmede iş var (${a(p, "gelistirmede")}), oysa önceki "${a(p, "onceki")}" Fazı hâlâ ${a(p, "acik")} açık Adım taşıyor. Faz sırası katıdır: önceki Faz kapanmadan sonraki Fazda iş başlamaz (MIM-1.2).`,
-    oneri: (p) => `Önce önceki Fazın açık işini kapat ya da işi başlamış Adımı geri al; iş gerçekten önce gelmeliyse Blokunu önceki Faza taşı. Örnek: sonraki Fazdaki Adımı \`durum: beklemede\` konumuna çek ya da Blokunu \`Faz( kod: ${a(p, "onceki")} ) { … }\` gövdesine al.`,
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazında başlamış ya da bitmiş iş var (${a(p, "isler")}), oysa önceki "${a(p, "onceki")}" Fazı hâlâ ${a(p, "acik")} açık Adım taşıyor. Faz sırası katıdır: önceki Faz kapanmadan sonraki Fazda iş başlamaz (MIM-1.2).`,
+    oneri: (p) => `Önce önceki Fazın açık işini kapat ya da işi başlamış Adımı geri al; iş zaten bitmişse sıranın yanlış olduğu yer planıdır; iş gerçekten önce gelmeliyse Blokunu önceki Faza taşı. Örnek: sonraki Fazdaki Adımı \`durum: beklemede\` konumuna çek ya da Blokunu \`Faz( kod: ${a(p, "onceki")} ) { … }\` gövdesine al.`,
   },
   "yabancı-faz-bağı": {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" zamanını başka bir Projenin Fazına bağlıyor (\`mevsim: ${a(p, "mevsim")}\` · "${a(p, "proje")}")${a(p, "kendi") ? `, oysa kendi Projesi "${a(p, "kendi")}"` : ""}. Blok kendi Projesinin zaman diliminde yer alır; ${a(p, "acik") === "0" ? "işi tamamlanmış olduğu için bağ tarihsel bir kayıt olarak görünür kalır" : `altında ${a(p, "acik")} açık Adım var ve kardeş projenin Faz sırası bu işi yönetemez`} (MIM-1.2).`,
@@ -561,8 +561,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Move the successor into the predecessor's Phase or a later one, or move the predecessor into an earlier Phase; if the dependency is not real, remove the edge. Example: move the successor's Blok into the \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` body and keep the \`bağımlı: [ ${a(p, "oncul")} ]\` edge.`,
   },
   "erken-faz-işi": {
-    mesaj: (p) => `Phase "${a(p, "kimlik")}" has work in progress (${a(p, "gelistirmede")}), while the earlier Phase "${a(p, "onceki")}" still carries ${a(p, "acik")} open Adım(s). The Phase order is strict: work does not start in a later Phase before the earlier Phase is closed (MIM-1.2).`,
-    oneri: (p) => `First close the open work of the earlier Phase or roll back the started Adım; if the work really belongs earlier, move its Blok into the earlier Phase. Example: set the Adım in the later Phase to \`durum: beklemede\` or move its Blok into the \`Faz( kod: ${a(p, "onceki")} ) { … }\` body.`,
+    mesaj: (p) => `Phase "${a(p, "kimlik")}" has started or finished work (${a(p, "isler")}), while the earlier Phase "${a(p, "onceki")}" still carries ${a(p, "acik")} open Adım(s). The Phase order is strict: work does not start in a later Phase before the earlier Phase is closed (MIM-1.2).`,
+    oneri: (p) => `First close the open work of the earlier Phase or roll back the started Adım; if the work is already finished, the plan's order is what is wrong; if the work really belongs earlier, move its Blok into the earlier Phase. Example: set the Adım in the later Phase to \`durum: beklemede\` or move its Blok into the \`Faz( kod: ${a(p, "onceki")} ) { … }\` body.`,
   },
   "yabancı-faz-bağı": {
     mesaj: (p) => `Blok "${a(p, "kimlik")}" binds its time to another Project's Phase (\`mevsim: ${a(p, "mevsim")}\` · "${a(p, "proje")}")${a(p, "kendi") ? `, while its own Project is "${a(p, "kendi")}"` : ""}. A Blok lives in its own Project's time slice; ${a(p, "acik") === "0" ? "its work is complete, so the binding remains visible as a historical record" : `it carries ${a(p, "acik")} open Adım(s) and the sibling project's Phase order cannot govern that work`} (MIM-1.2).`,

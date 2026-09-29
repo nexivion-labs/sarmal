@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb
+// KAYNAK-MUHRU kanon-demeti-sha256:daf73f2fc627af4932dfe76718954b2d63c32e6307f55caf699bdc7a6e81e0f4
 
 -->|
 # Kanon tutarlılık yüzü
@@ -12,14 +12,14 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon/dil.sar` | `b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693` |
-| `yasa/kanon/mim.sar` | `9d119d7ed6f524dd2298c72e35549181aaae2f38eb6f9486c5d1efc78b426964` |
+| `yasa/kanon/mim.sar` | `d69eaca04614c23729b9d8b31d718a1a877d2ce530f291d6e4f24176f51b49df` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
 | `yasa/kanon/ork.sar` | `60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb` |
+| kanon demeti | `daf73f2fc627af4932dfe76718954b2d63c32e6307f55caf699bdc7a6e81e0f4` |
 | `urun/cekirdek/src/tani-sicili.ts` | `f4d253f794ccbe8de9ff79567ea60a2327064a1cafb7b33becbeca0bd6d2a5cb` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |

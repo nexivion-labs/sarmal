@@ -21,7 +21,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:b6fe0f82005439fcce5e328d7073d1d5c2d1e57202b28ff28da76802853e0693",
-  "mim.sar:9d119d7ed6f524dd2298c72e35549181aaae2f38eb6f9486c5d1efc78b426964",
+  "mim.sar:d69eaca04614c23729b9d8b31d718a1a877d2ce530f291d6e4f24176f51b49df",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",

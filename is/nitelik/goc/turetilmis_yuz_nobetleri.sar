@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `ede015842c81aad9b751cd3ea160c1be1c5d3dcb97ad5145315bb38a6d1667eb` |
+| `yasa/kanon demeti (A03 formülü)` | `daf73f2fc627af4932dfe76718954b2d63c32e6307f55caf699bdc7a6e81e0f4` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `f4d253f794ccbe8de9ff79567ea60a2327064a1cafb7b33becbeca0bd6d2a5cb` |
@@ -40,6 +40,10 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-29 · erken Faz işinin kapsamı): bağımsız inceleme
+sonrası MIM-1.2 zorlama satırındaki `erken-faz-işi` cümlesi başlamış ya da bitmiş
+işi anlatacak biçimde düzeltildi; yalnız kanon demeti ilerledi.
 
 Tazeleme notu (2026-09-29 · Faz sırası ve Blok yapısı): Founder hükmüyle MIM-1.2,
 MIM-1.3 ve MIM-1.6 maddelerinin zorlama satırlarına altı yeni tanı ilanı eklendi

@@ -164,12 +164,37 @@ test("③ önceki Faz açıkken sonraki Fazda başlamış iş Faz başına bir U
     "p/is/plan/faz/2_orta.sar": faz("ORTA", undefined, adim("ADM-O1", "tamamlandı")),
     "p/is/plan/faz/3_son.sar": faz("SON", undefined, [adim("ADM-S1", "geliştirmede"), adim("ADM-S2", "geliştirmede")].join("\n")),
   }));
+  // Orta Faz da açık ilk Fazın ardında bitmiş iş taşır; her Faz bir kez konuşur.
   const t = fazSirasiTanilari(dag).filter((x) => x.tani.kod === "erken-faz-işi");
-  assert.equal(t.length, 1, "bulgu Adım başına değil Faz başına bir kez basılmalı");
+  assert.deepEqual(t.map((x) => x.dosya), ["p/is/plan/faz/2_orta.sar", "p/is/plan/faz/3_son.sar"],
+    "bulgu Adım başına değil Faz başına bir kez basılmalı");
+  const son = t[1];
+  assert.equal(son.tani.duzey, "uyarı");
+  assert.match(son.tani.mesaj, /FAZ-ILK/, "en yakın açık önceki Faz adıyla anılmalı");
+  assert.match(son.tani.mesaj, /ADM-S1 \(geliştirmede\), ADM-S2 \(geliştirmede\)/);
+  assert.match(t[0].tani.mesaj, /ADM-O1 \(tamamlandı\)/);
+});
+
+test("③ önceki Faz açıkken sonraki Fazda TAMAMLANMIŞ iş sessiz kalmaz: erken-faz-işi UYARI verir", () => {
+  // Bağımsız inceleme bulgusu (2026-09-29): Faz kenarı durum tutarlılığından
+  // çıkarılınca bu hâl tamamen susuyordu; tabanda durum-tutarsızlığı HATA idi.
+  // Artık tek sözcüsü erken-faz-işi'dir ve Adımları durumlarıyla anar.
+  const dag = dagKur(progla({
+    "p/p_anadizin.sar": KOK,
+    "p/is/plan/faz.sar": faz("ILK", undefined, adim("ADM-I1", "beklemede")) +
+      faz("SON", undefined, [adim("ADM-S1", "tamamlandı"), adim("ADM-S2", "tamamlandı"), adim("ADM-S3", "geliştirmede")].join("\n")),
+  }));
+  assert.deepEqual(durumTutarlilikTanilari(dag), [], "Faz sırasından gelen öncül durum tutarsızlığı olarak konuşmaz");
+  const t = fazSirasiTanilari(dag).filter((x) => x.tani.kod === "erken-faz-işi");
+  assert.equal(t.length, 1);
   assert.equal(t[0].tani.duzey, "uyarı");
-  assert.equal(t[0].dosya, "p/is/plan/faz/3_son.sar");
-  assert.match(t[0].tani.mesaj, /FAZ-ILK/, "en yakın açık önceki Faz adıyla anılmalı");
-  assert.match(t[0].tani.mesaj, /ADM-S1, ADM-S2/);
+  assert.match(t[0].tani.mesaj, /ADM-S1 \(tamamlandı\), ADM-S2 \(tamamlandı\), ADM-S3 \(geliştirmede\)/);
+  // Yalnız tamamlanmış işle de konuşur.
+  const yalnizBitmis = dagKur(progla({
+    "p/p_anadizin.sar": KOK,
+    "p/is/plan/faz.sar": faz("ILK", undefined, adim("ADM-I1", "beklemede")) + faz("SON", undefined, adim("ADM-S1", "tamamlandı")),
+  }));
+  assert.equal(fazSirasiTanilari(yalnizBitmis).filter((x) => x.tani.kod === "erken-faz-işi").length, 1);
 });
 
 test("③ önceki Fazların hepsi kapalıyken sonraki Fazdaki iş erken sayılmaz", () => {

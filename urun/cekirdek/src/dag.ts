@@ -149,7 +149,7 @@ export interface Dag {
     tarihsel: boolean; dosya: string; satir: number; sutun: number }>;
   /** MIM-1.2 · YALNIZ Faz sırasından doğan kenar çiftleri (`önce\u0000sonra`). Aynı çift
    *  açık bir kenarla da yazılmışsa burada durmaz. Durum tutarlılığı bu çiftleri
-   *  okumaz: önceki Faz açıkken sonraki Fazdaki iş kendi adıyla (`erken-faz-işi`) ve
+   *  okumaz: önceki Faz açıkken sonraki Fazda başlamış ya da BİTMİŞ iş kendi adıyla (`erken-faz-işi`) ve
    *  kanondaki düzeyiyle bildirilir, genel bir durum çelişkisi olarak değil. */
   fazKenari?: ReadonlySet<string>;
   /** MIM-1.2 · Faz → (kardeş grubu, grup içindeki sıra). Grup, Fazın Projesidir;

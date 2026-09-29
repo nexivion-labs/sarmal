@@ -168,8 +168,10 @@ Kapsama( kod: KSC-ORK-2.4, referans: [ ORK-2.4 ],
   ne: "KISMİ (masa incelemesi) — Kullanır kenarının izinli kaynak ve hedef çiftleri sicildeki kullanır-kenarı-ihlali tanısıyla, teknolojisiz Katman önceki evrendeki katmansız-teknoloji tanısıyla ölçülür; fakat kullanır-kenarı-ihlali kanonun hata dediği yerde bilgi kademesinde üretilmektedir ve kademe hizalaması KPS-KAD-A01 Adımının işidir." )
 Kapsama( kod: KSC-ORK-3, referans: [ ORK-3 ],
   ne: "TAM (masa incelemesi) — Sıranın yalnız normalleştirilmiş Adım çiftlerinden kararlı topolojiyle türetilmesi, eşdeğer adayların kanonik KOD sırasıyla çözülmesi ve kaynak sırasının öncelik sayılmaması sicilde maddesine bağlı ve hedef düzeyinde üretilen deterministik-sıra-ihlali tanısıyla, kapsayıcıya yazılan sıra ise önceki evrendeki kapsayıcı-kenar tanısıyla ölçülür." )
+// KPS-SIR-A01 eki (2026-09-29): Faz sırası grafa kenar olarak indiğinde öncülü
+//   bitmeden tamamlanma sınıfı iki kaynağa ayrıldı; kayıt davranış ölçümüyle tazelendi.
 Kapsama( kod: KSC-ORK-3.1, referans: [ ORK-3.1 ],
-  ne: "TAM (masa incelemesi) — Hükmün üç ihlal sınıfının üçü de önceki evrende adlandırılmış tanılarla ölçülür: bağımlılık döngüsü döngüsel-bağımlılık, kendinden önce gelme öz-bağımlılık ve öncülü bitmeden tamamlanma durum-tutarsızlığı; üçü de hata düzeyinde ürettiği için sıralama ve terfi zinciri kapıda durur." )
+  ne: "TAM (davranış ölçümü · 2026-09-29) — Hükmün üç ihlal sınıfının üçü de adlandırılmış tanılarla ölçülür: bağımlılık döngüsü döngüsel-bağımlılık, kendinden önce gelme öz-bağımlılık ve öncülü bitmeden tamamlanma. Üçüncü sınıf öncülün kaynağına göre iki tanıyla konuşur: açık bir yürütme kenarından gelen öncül için durum-tutarsızlığı hata düzeyinde sürer, yalnız Faz sırasından gelen öncül için ise önceki Faz açıkken sonraki Fazda tamamlanmış iş erken-faz-işi tanısıyla uyarı düzeyinde ve Faz başına bir kez bildirilir. Döngüsel bağımlılık ile öz-bağımlılık hata düzeyindedir; Faz sırasıyla çelişen açık kenar sıra hesabına girmez ve ters-faz-bağımlılığı olarak bildirilir." )
 // KPS-SIR-A01 eki (2026-09-29 · Founder hükmü): tanı ham bağımlı listesi yerine
 //   grafın genişletilmiş öncül listesini okur ve kanonun yazdığı uyarı düzeyine çıktı;
 //   kayıt davranış ölçümüyle tazelendi (fikstür ve açık deponun kendi ağacı).
