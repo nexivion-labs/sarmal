@@ -3930,7 +3930,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         //   2026-09-27 tarihinde Raf'tan Kitaplık'a çevrilmiştir; Raf'a geri
         //   çevirmek bağı geri getirmemiştir, dolayısıyla gerilemenin sebebi bu
         //   çeviri değildir ve ölçülmesi gerekir.
-        Adım( kod: KPS-CAT-A02, ad: "Çalışma Alanının Projelerini Göstermesi", durum: geliştirmede, öncelik: p0,
+        Adım( kod: KPS-CAT-A02, ad: "Çalışma Alanının Projelerini Göstermesi", durum: tamamlandı, öncelik: p0,
           bağımlı: [ KPS-CAT-A01 ], referans: [ MIM-1.1, MIM-1.2, YUZ-3.1 ],
           ne: "🏛️ Çalışma alanının kendisine bağlı projeleri göstermesi. KPS-CAT-A01 ile kurulmuş olan Proje ile ÇalışmaAlanı arasındaki kapsama kenarının bugün gerçek çatıda görünmemesinin sebebi ölçülür ve onarılır; ardından çalışma alanının projeleri, çalışma alanı düğümünün bağlam kartında, grafta ve eklentinin yüzlerinde çocukları olarak gösterilir. Ayrıca çatı kökünden koşulan denetimin ders dünyası fikstürlerinden ürettiği sahte hatalar giderilir, çünkü bu hatalar çatıya yeni bir proje eklenmesini kapıda durdurmaktadır." ) {
           görev: [
@@ -3948,6 +3948,11 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
             "Çekirdek ile eklenti süitleri yeşildir; depo denetimi sıfır hata verir."
           ]
           sınır: "Bu Adım kanon metnine dokunmaz, doğuş paketinin kod adlarını değiştirmez ve kardeş projelerin kod tekilliğine (KPS-KOD-A01) dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+          onay:  "şerhle onaylandı — 2026-09-29 · FOUNDER: laboratuvardaki sekiz eğitim fikstürü hatası hata olarak kalır ve muaf tutulmaz. Bu hüküm üçüncü kabul ölçütünün 'çatı kökünden koşulan denetim ders dünyası fikstürlerinden hata üretmez' cümlesini daraltır: ölçüt, görevin işlemsel tanımıyla, yani fikstürlerin çatı kökünde projenin kendi kökündeki gibi ele alınmasıyla karşılanmış sayılır. Gerekçe şudur: sekiz hata fikstürlerin kendi kökünde de doğmaktadır, çatıya özgü değildir ve Founder onları görünür tutmayı seçmiştir.",
+          koşu:  Koşum( kod: KSM-KPS-CAT-A02, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+            kanıt: "işleme 4a60b35 · KOD-SNM-CATI-PROJE 20 sınama · bağımsız inceleme GEÇTİ (şerh şartıyla) · çekirdek 1656/1656, eklenti 846/846",
+            ne:    "Kök neden grafta değil bağlam kartındadır: kart yalnız tanımın kendi dosyasının ağacını okuduğu için dosyalar arası çatı bağını göremiyordu ve nöbet yalnız grafı ölçtüğü için yeşil kalıyordu. Kart, graf özet yüzü ve eklenti anahattı artık bağı grafın kaynağından okumaktadır; gerçek çatıda dört Proje kökünün dördünün kapsayanı çalışma alanıdır, çalışma alanının kartı altı Kitaplık ve dört Proje olmak üzere on çocuk gösterir ve her Projenin kartı üst zincirde çalışma alanını, kardeşlerde öteki üç Projeyi gösterir. Nöbet artık kartı, özeti ve anahattı Kitaplık ve Raf ilanlarıyla ölçmektedir. Tek projeli depolarda graf ve karne bayt bayt aynıdır. Çatı kökünden denetim on iki hata vermekte ve laboratuvarın kendi kökünün sonucuyla birebir aynıdır: sekiz eğitim fikstürü hatası Founder hükmüyle kalır, bir gerçek kırık atıf (FKR-TEK-CATI-ACIK-KAYNAK) ve Faz sırası tanısının yakaladığı üç ters Faz bağımlılığı laboratuvar planının içerik bulgusudur. Yüzlerin hükmü şudur: bağlam kartı, graf özeti ve anahat gösterir; yol haritası paneli projeleri zaten göstermektedir ancak ilandan değil klasördeki giriş dosyalarından türetir ve yalnız ilan ile disk uyuşmadığında ayrışır; hover kartı yalnız açık belgeyi okuduğu için gösteremez." )
+          üretir: [ KOD-KIMLIK, KOD-GRAF-YUZ, KOD-EKL-ANAHAT, KOD-SNM-CATI-PROJE ]
         }
 
         // FOUNDER HÜKMÜ (2026-09-29): Hiçbir Blok Fazsız bir yapıda yaşayamaz; Faz sırası
