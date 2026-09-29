@@ -136,6 +136,25 @@ interface BelgeOlgulari {
   readonly ikiDilliTani: number;
 }
 
+/**
+ * Sayıyı üçüncü tekil iyelik ekiyle yazar ("189'u", "185'i", "186'sı"). Ek, sayının
+ * OKUNUŞUNDAKİ son sözcüğe göre seçilir: ünlüyle biten sözcükte kaynaştırma `s`
+ * gelir ve ünlü, son hecenin ünlüsüne uyar. Sabit "'i" yazmak "189'i" gibi dil
+ * bilgisine aykırı yüzler üretiyordu (KPS-SIR-A03 · inceleme bulgusu). Saf.
+ */
+export function sayiIyelik(n: number): string {
+  // Okunuştaki son sözcük: sıfır olmayan en düşük basamak ve onun sözcüğü.
+  const BIRLER = ["", "'i", "'si", "'ü", "'ü", "'i", "'sı", "'si", "'i", "'u"];          // bir iki üç dört beş altı yedi sekiz dokuz
+  const ONLAR = ["", "'u", "'si", "'u", "'ı", "'si", "'ı", "'i", "'i", "'ı"];             // on yirmi otuz kırk elli altmış yetmiş seksen doksan
+  const m = Math.abs(Math.trunc(n));
+  if (m === 0) return "0'ı";
+  if (m % 10) return `${n}${BIRLER[m % 10]}`;
+  if (m % 100) return `${n}${ONLAR[(m / 10) % 10]}`;
+  if (m % 1000) return `${n}'ü`;                                                          // yüz
+  if (m % 1_000_000) return `${n}'i`;                                                     // bin
+  return `${n}'u`;                                                                        // milyon
+}
+
 function olgulariOlc(kok: string): BelgeOlgulari {
   const say = (kademe: "hata" | "uyarı" | "bilgi"): number =>
     YENI_TANI_KANONU.filter((kayit) => kayit.kademe === kademe).length;
@@ -412,7 +431,7 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${o.ikiDilliTani}'i, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.`;
+Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${sayiIyelik(o.ikiDilliTani)}, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.`;
 }
 
 function kokReadmeEn(o: BelgeOlgulari): string {
@@ -546,7 +565,7 @@ function eklentiReadme(o: BelgeOlgulari): string {
 4. Bir \`.sar\` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
-Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin ${o.ikiDilliTani}'i ve ${o.arac} MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgidir; sabit yönlendirme matrisi ${o.problems}/${o.hatirlaticilar}/${o.bildirimler} olarak ölçülür.
+Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin ${sayiIyelik(o.ikiDilliTani)} ve ${o.arac} MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgidir; sabit yönlendirme matrisi ${o.problems}/${o.hatirlaticilar}/${o.bildirimler} olarak ölçülür.
 
 Sarmal Apache-2.0 lisanslıdır. Lisans bildirimi [LICENSE.md](LICENSE.md) dosyasındadır.`;
 }
