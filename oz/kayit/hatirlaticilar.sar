@@ -1116,3 +1116,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Eklentinin bir sonraki mağaza sürümü paketlenmeden önce; en geç README'ye yeni bir görsel eklenmeden önce",
   ne:               "KPS-SIR-A04 README örneğini Faz dosyası düzenine geçirmiş ve çıktısını gerçek koşuyla yeniden almıştır, fakat denetim ekran görüntüsü eski düzeni gösterdiği için README'den geri çekilmiştir. Eklentinin editor.png görüntüsü ve mağaza sayfasındaki denetle.png aynı eski koşudan kalmadır. Görüntüler yeni örnekten gerçek ekran görüntüsüyle yeniden alınmalı ve denetim görüntüsü README'ye geri konmalıdır; README ekran görüntüsünün aynı koşunun tamamı olduğunu ancak bu yenilemeden sonra yeniden söyleyebilir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-ONAYLAR-DIS-ONAY-KAYDI,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-29,
+  dönüşTetikleyici: "Onaylar paneli bir sonraki kez elden geçirildiğinde; en geç bir dış sistemin onay isteklerini bu panelde göstermesi istendiğinde",
+  ne:               "Founder 2026-09-29 tarihinde bütün onayların tek kutuda, yani Onaylar panelinde toplanmasına hükmetmiştir. Kardeş bir projenin motoru onay isteklerini panelin okuduğu biçimde bir Adım kaydı olarak yazabilmektedir, fakat panel bugün yalnız plan kararlarını tanır: onayla eylemi dosyaya onay alanı yazar, dış sistemin işi onaylanmaz ve kayıt kutudan düşer; kullanıcı onay verdiğini sanabilir. Ayrıca tek Adımlık bu kayıt bir projenin ağacına düştüğünde denetim onu köksüz plan düğümü sayar ve hata verir. Açık araçta üç şey gerekmektedir: denetimin plan düğümü saymadığı ve hiyerarşi kuralı uygulamadığı yalnız bildirim olan bir kayıt biçimi; böyle bir kayıtta onay eyleminin dosyaya yazmayıp kararı kayıtta adı geçen dış komuta devretmesi ya da yalnız bilgi göstermesi; ve bu kayıtların dizininin çalışma alanı düzeyinde ilan edilebilmesi. Ders tek cümledir: bir onay yüzü, onayın gerçekte nereye gittiğini göstermiyorsa güven değil yanılgı üretir."
+)
