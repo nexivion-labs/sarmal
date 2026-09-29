@@ -537,7 +537,7 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
       //   Fazlar arasında sıra kenarının hiç kurulmaması, Faz sırası ihlali ile geriye
       //   dönük Faz bağımlılığı için tanının hiç yazılmamış olması ve seçilemez Adım
       //   tanısının yalnız ham bağımlı listesini okuması.
-      Adım( kod: KPS-SIR-A01, ad: "Faz Sırasının ve Blok Yapısının Motorda Zorlanması", durum: geliştirmede, öncelik: p0,
+      Adım( kod: KPS-SIR-A01, ad: "Faz Sırasının ve Blok Yapısının Motorda Zorlanması", durum: tamamlandı, öncelik: p0,
         bağımlı: [], referans: [ MIM-1.2, MIM-1.3, MIM-1.6, ORK-3.2, ORK-3.5 ],
         ne: "🧭 Faz sırasının ve Blok yapısının motorda zorlanması. Ayrı dosyalarda yaşayan Fazlar arasında sıra kenarı kurulur; Fazsız Blok, başka projenin Fazına bağlanan açık Blok, Katmansız Blok, kendinden sonraki Faza bağımlı Adım, önceki Faz açıkken sonraki Fazda yürüyen iş ve öncülleri bitmemiş geliştirmedeki Adım adıyla ve kanondaki düzeyiyle bildirilir." ) {
         görev: [
@@ -556,6 +556,10 @@ Blok( kod: BLK-KPS, ad: "kanon kapsam borcu", mevsim: FAZ-2026-EYLUL,
           "Çekirdek ile eklenti süitleri yeşildir."
         ]
         sınır: "Bu Adım kanon maddelerinin hükmünü değiştirmez; yalnız var olan hükümlerin zorlamasını yazar. Kardeş projelerin plan dosyalarına dokunmaz. İşlemeler yerel dalda kalır; uzak depoya gönderim yalnız Founder sözüyle yapılır. Açık depoya kapalı ürünün iç adları ya da müşteri adları yazılmaz."
+        koşu:  Koşum( kod: KSM-KPS-SIR-A01, tarih: 2026-09-29, mühür: VERIFIED, karar: kabul,
+          kanıt: "işlemeler a4fcafd, 60672f3, 0e4ec9f, 49492e7, 1116953 · KOD-SNM-FAZ-SIRASI · KOD-SNM-EKL-FAZ-SIRASI-PANELI · bağımsız inceleme iki tur (birincisi KALDI, ikincisi GEÇTİ)",
+          ne:    "Kardeş Faz grubu Projede kurulmakta ve eşit ya da tarihsiz Fazlar dosya önekinin doğal sayı sırasıyla dizilmektedir; on bir dosyalı sınav çatısında sıra sıfırdan ona doğru çıkmıştır. Planlanmamış kaçışı kapanmış, yedi tanı doğmuş ya da yükselmiştir ve on yedi mutasyonun her biri nöbeti kırmızıya çevirmiştir. İlk bağımsız inceleme, önceki Faz açıkken sonraki Fazda tamamlanmış işin sessizleştiğini yakalamış ve Adım KALDI hükmü almıştır; düzeltme turunda erken Faz işi tanısı tamamlanmış işi de saymaya başlamış ve ikinci inceleme GEÇTİ hükmü vermiştir. Çekirdek süiti 1461 sınamanın tamamını, eklenti süiti 837 sınamadan 831'ini geçmiş, altısı önceden olduğu gibi atlanmıştır; açık deponun denetimi hata vermemektedir. Kardeş projelerde yeni tanılar şu bulguları doğurmuştur: kapalı kardeş projede düzenleme öncesinde on bir hata ve on iki uyarı, düzenleme sonrasında sıfır hata ve üç gerçek uyarı; laboratuvarda üç ters Faz bağımlılığı hatası ve bir yabancı Faz bağı uyarısı; hesapta hiçbir bulgu." )
+        üretir: [ KOD-KPS-FAZ-CEVRIMI, KOD-DENETCI, KOD-YOLHARITA-CEKIRDEK, KOD-SNM-FAZ-SIRASI, KOD-SNM-EKL-FAZ-SIRASI-PANELI ]
       }
 
       Adım( kod: KPS-SIR-A02, ad: "Ad Alanlı Atıfların ve Girintinin Doğru Gösterilmesi", durum: beklemede, öncelik: p1,
@@ -916,6 +920,11 @@ Kod( kod: KOD-SNM-EKL-DOSYA-MUHRU, dosya: "urun/eklenti/sinama/dosya-muhru-esitl
 Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogrulama.test.ts",
   ne: "🧭 Ad alanı doğrulama nöbeti — altı sınama: kardeş kökte var olan ad alanlı hedef tanı almaz, bilinen ad alanında olmayan hedef gerçekten kırıktır ve hatadır, bilinmeyen ad alanı ölçülemezdir ve muafiyeti uyarı olarak adıyla bildirilir, çağır hedefi de üç durumlu okunur, ad alanı bilgisi verilmeyen eski yüz muafiyet uyduramaz ve yüklü evrendeki Proje de bilinen ad alanıdır; üç mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-ADA-A01)" )
 // 🍎 KPS-FAZ-A02 teslimi (2026-09-19): projesiz Faz bekçisi ve panel-motor eşitliği
+// 🍎 KPS-SIR-A01 teslimi (2026-09-29): Faz sırası ve Blok yapısı tanıları
+Kod( kod: KOD-SNM-FAZ-SIRASI, dosya: "urun/cekirdek/sinama/faz-sirasi.test.ts",
+  ne: "🧭 Faz sırası ve Blok yapısı nöbeti — ayrı dosyalardaki Fazların Projede zincirlenmesini, dosya önekinin doğal sayı sırasını, planlanmamış kaçışının kapandığını ve yedi tanıyı (ters Faz bağımlılığı, erken Faz işi, yabancı Faz bağı, Katmansız Blok, tek Adımlı Blok, Adımsız kapsayıcı, seçilemez Adım yürütümü) sınar; mutasyon kanıtları KPS-SIR-A01 Koşumundadır" )
+Kod( kod: KOD-SNM-EKL-FAZ-SIRASI-PANELI, dosya: "urun/eklenti/sinama/faz-sirasi-paneli.test.ts",
+  ne: "🧭 Panelin Faz sırası nöbeti — yol haritası kardeşleri motorun Faz karşılaştırıcısıyla ve geçişli tek anahtarla dizer, karışık tipli listede döngü doğmaz ve planlanmamış ipucu Fazsız Blokun hata verdiğini söyler (KPS-SIR-A01 · YUZ-3.1)" )
 Kod( kod: KOD-SNM-PROJESIZ-FAZ, dosya: "urun/cekirdek/sinama/projesiz-faz.test.ts",
   ne: "🛡️ Projesiz Faz nöbeti — yedi sınama: kök dışında yaşayan plan dosyasının Fazı bekçiyi bilgi düzeyinde ateşler, kök altındaki Faz ateşlemez, iki Projeli çalışma alanında yalnız köksüz Faz bildirilir, Proje gövdesinin içinde yazılmış Faz Projelidir, ders dünyası beyanlı muafiyetiyle sessizdir, ayrışık kökte sebep adıyla yazılır ve sicil kaydı maddesine bağlıdır; dört mutasyon kanıtı ile bir dürüst beyan dosyanın başlığında yazılıdır (KPS-FAZ-A02)" )
 Kod( kod: KOD-SNM-EKL-KOKSUZ-VARLIK, dosya: "urun/eklenti/sinama/koksuz-varlik-esitligi.test.ts",
