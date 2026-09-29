@@ -17,7 +17,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
+import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, butunAtiflar, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
 import { GEZINME_METINLERI, gezinmeRetCumlesi, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 import { gezinmeRetSebebi } from "./gezinme-cekirdek.ts";   // VIT-K78-A09: sessiz ret biter
 
@@ -104,8 +104,11 @@ export function gezinmeKaydi(
         if (!kod) return undefined;
         tazele(doc);
         const s = suzgec(doc);
-        const yerler = kimlikIndeksi.atiflar(kod, s)
-          .map((a) => yer(a.dosya, a.satir, a.sutun, kod.length));
+        // KPS-SIR-A02 · YUZ-3.2: bütün atıflar MCP `gezin` ile aynı çekirdekten gelir;
+        // çıplak koda başka projeden `PRJ::KOD` diye verilen atıf da listededir ve
+        // vurgu her atfın kendi yazımının uzunluğunu taşır.
+        const yerler = butunAtiflar(kimlikIndeksi, kod, s)
+          .map((a) => yer(a.dosya, a.satir, a.sutun, a.kod.length));
         if (baglam.includeDeclaration) {
           // ORK-4: ad alanlı kodun tanımı kardeş köktedir; yerel indeks susunca
           // ⇧F12 de tanıma gitme ile AYNI çekirdekten okur (YUZ-1.2).

@@ -1177,12 +1177,59 @@ function tanimProjeleri(indeks: KimlikIndeksi, tanimlar: readonly Tanim[]): (str
 }
 
 /** Ad alanlı kodun, ad alanı yüklü evrende bir Proje ise o kapsamdaki çıplak atıfları (yoksa boş). */
-function adAlanliKapsamAtiflari(indeks: KimlikIndeksi, kod: string): Atif[] {
+function adAlanliKapsamAtiflari(indeks: KimlikIndeksi, kod: string, suzgec?: DosyaSuzgeci): Atif[] {
   const { adAlani, yerel } = adAlaniAyir(kod);
   if (adAlani === undefined) return [];
   const onekler = indeks.tanimlar(adAlani).filter((t) => t.tip === "Proje").map((t) => kapsamOneki(t.dosya));
   if (!onekler.length) return [];
-  return indeks.atiflar(yerel, (dosya) => onekler.some((o) => onekKapsar(o, dosya)));
+  return indeks.atiflar(yerel, (dosya) => onekler.some((o) => onekKapsar(o, dosya)) && adAlanliGorunur(dosya, suzgec));
+}
+
+/** Ad alanlı bağın süzgeci: varlık sınırı uygulanmaz, ders dünyası yine süzülür
+ *  (gerekçe `adAlanliGelenAtiflar` belgesinde). */
+function adAlanliGorunur(dosya: string, suzgec?: DosyaSuzgeci): boolean {
+  return !suzgec || suzgec(dosya) || !DERS_DUNYASI.test(dosya);
+}
+
+/**
+ * ÇIPLAK KODA GELEN AD ALANLI ATIFLAR (KPS-SIR-A02 · YUZ-3.2 · ORK-4).
+ *
+ * Başka bir projeden `PRJ-A::KOD-X` diye yazılan atıf, `PRJ-A` Projesinin
+ * kapsamında ilanlı `KOD-X` tanımına çözülür; aynı düğümdür. Ölçüm
+ * (2026-09-29): indeks atıfları birebir metin eşitliğiyle arıyordu, dolayısıyla
+ * `KOD-X` sorgusu bu yazımı hiç görmüyor ve tanım kimse kullanmıyormuş gibi
+ * görünüyordu; ters yön (ad alanlı sorgu → çıplak yazım) ise zaten kapsanıyordu.
+ *
+ * Bağ yalnız tanımın SAHİBİ olan Proje üzerinden kurulur: tanımın dosyasını
+ * kapsayan Projenin kodu `P` ise `P::KOD-X` yazımları eklenir, başka hiçbir ad
+ * alanı eklenmez. Ders dünyası tanımı sahip saymaz. Yüklü evrende Proje ilanı
+ * yoksa liste boştur ve davranış değişmez.
+ *
+ * Süzgeç ad alanlı atıflarda VARLIK SINIRINI uygulamaz: ad alanlı yazım zaten
+ * "başka projeden bakıyorum" beyanıdır ve onu kendi projesiyle sınırlamak atfı
+ * tam da gösterilmesi gereken yerde gizlerdi. Ders dünyası ise yine süzülür.
+ */
+function adAlanliGelenAtiflar(indeks: KimlikIndeksi, kod: string, suzgec?: DosyaSuzgeci): Atif[] {
+  if (adAlaniAyir(kod).adAlani !== undefined) return [];
+  const tanimlar = indeks.tanimlar(kod).filter((t) => !DERS_DUNYASI.test(t.dosya));
+  if (!tanimlar.length) return [];
+  const sahipler = new Set(tanimProjeleri(indeks, tanimlar).filter((p): p is string => p !== undefined));
+  return [...sahipler].flatMap((p) => indeks.atiflar(`${p}${AD_ALANI_AYRACI}${kod}`, (d) => adAlanliGorunur(d, suzgec)));
+}
+
+/**
+ * Bir kodun BÜTÜN atıfları — tanıma gitme, bütün atıfları bulma ve bağlam kartı
+ * aynı kümeyi okur (YUZ-3.2: tek kanonik indeks). Kümenin üç kaynağı vardır:
+ * birebir yazım, ad alanlı sorguda o Projenin kapsamındaki çıplak yazım ve çıplak
+ * sorguda tanımın sahibi Projeye ad alanıyla verilen atıf. Her atıf kendi yazımını
+ * `kod` alanında taşır; yüzeyler vurgu uzunluğunu oradan okur.
+ */
+export function butunAtiflar(indeks: KimlikIndeksi, kod: string, suzgec?: DosyaSuzgeci): Atif[] {
+  return [
+    ...indeks.atiflar(kod, suzgec),
+    ...adAlanliKapsamAtiflari(indeks, kod, suzgec),
+    ...adAlanliGelenAtiflar(indeks, kod, suzgec),
+  ];
 }
 
 export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
@@ -1192,7 +1239,9 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   const tanimlar = hamTanimlar.length ? hamTanimlar : adAlanli.tanimlar;
   // KPS-KOD-A01: ad alanlı sorguda (`PRJ-A::KOD`) atıflar o Projenin kapsamındaki
   // ÇIPLAK yazımı da kapsar — proje içinden `KOD` diye anılan şey aynı düğümdür.
-  const atiflar = [...indeks.atiflar(kod), ...adAlanliKapsamAtiflari(indeks, kod)];
+  // KPS-SIR-A02: ters yön de kapsanır — çıplak sorgu, tanımın sahibi Projeye başka
+  // bir projeden `PRJ::KOD` diye verilen atfı da bulur (butunAtiflar · YUZ-3.2).
+  const atiflar = butunAtiflar(indeks, kod);
   const giden = indeks.giden(kod);   // hatırlatıcı-rayı turu: beyanlı çıkış kenarları (ileri-bağlama)
   if (!tanimlar.length && !atiflar.length) {
     return `✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`;
@@ -1239,6 +1288,15 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
       if (b.cocuklar.length) kart.push(`  çocuklar (${b.cocuklar.length}): ${b.cocuklar.map(adres).join(" · ")}`);
       for (const [a, v] of b.alanlar) kart.push(`  ${a}: ${v}`);
       const proje = cokProjeli ? projeler[tanimlar.indexOf(tanim)] : undefined;
+      // KPS-SIR-A02: tanıma başka projeden ad alanıyla verilen atıflar kartta da
+      // görünür; kart ile ATIFLAR bölümü aynı kümeyi okur (YUZ-3.2).
+      const sahip = projeler[tanimlar.indexOf(tanim)];
+      const nitelikli = sahip === undefined ? [] : atiflar.filter((a) => a.kod === `${sahip}${AD_ALANI_AYRACI}${adAlaniAyir(kod).yerel}`);
+      // Kart bir özettir: ilk beş kaynak adresiyle yazılır, tam liste ATIFLAR bölümündedir.
+      if (nitelikli.length) {
+        const ilk = nitelikli.slice(0, 5).map((a) => `${a.kod} ← ${a.dosya}:${a.satir}`).join(" · ");
+        kart.push(`  ad alanlı atıflar (${nitelikli.length}): ${ilk}${nitelikli.length > 5 ? ` · … ve ${nitelikli.length - 5} atıf daha (ATIFLAR bölümünde)` : ""}`);
+      }
       if (kart.length) bolumler.push(`BAĞLAM KARTI${proje ? ` · ${proje}` : ""}:\n${kart.join("\n")}`);
     }
   }
