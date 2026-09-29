@@ -1889,7 +1889,9 @@ export const YOL_METINLERI = {
   // sayacı kelimeye iner. Ağaç açıklaması düz metindir ve resim taşımaz; eski buz
   // işaretinin anlamını artık kelimenin kendisi taşır.
   planlanmamisSayac: (tamam: number, toplam: number): string => yuzeyMetni(`planlanmamış [${tamam}/${toplam}]`, `unscheduled [${tamam}/${toplam}]`),
-  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): beyan bir zaman bağı değildir; Fazsız Blok
+  // motorda `fazsız-blok` hatasıdır ve ipucu bunu açıkça söyler (MIM-1.2).
+  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Bu beyan bir zaman bağı değildir: Fazsız Blok \`fazsız-blok\` hatası verir (MIM-1.2). Bloku bir Faza bağla._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_This declaration is not a time binding: a phase-less Block is a \`fazsız-blok\` error (MIM-1.2). Bind the Block to a Phase._`),
   // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla bağlanan
   // Blok kendi projesinde durur. Satırın yanındaki not bağı söyler, ipucu sebebini.
   caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the ${faz} Phase of ${proje}`),

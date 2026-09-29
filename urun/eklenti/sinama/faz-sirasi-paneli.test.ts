@@ -12,6 +12,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { kardesKarsilastir } from "../src/yolharitasi-cekirdek.ts";
+import { YOL_METINLERI } from "../src/yuzey-metinleri.ts";
 import { dagKur } from "../../cekirdek/src/dag.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
@@ -58,4 +59,32 @@ test("iki dosyalı sınav çatısında panelin sırası motorun Faz zinciriyle b
   assert.deepEqual(motor, ["FAZ-ILK", "FAZ-SON"]);
   assert.deepEqual(panel, motor, "panel ile motor aynı Faz sırasını söylemeli");
   assert.deepEqual(dag.dugumler.get("ADM-SON")!.oncekiler, ["ADM-ILK"], "ayrı dosyalardaki Fazlar sıra kenarıyla zincirli olmalı");
+});
+
+test("karışık tipli listede sıra geçişlidir: tarihsiz Fazlar ile Kapı döngü kurmaz", () => {
+  // Bağımsız inceleme bulgusu (2026-09-29): ilk sürümde A<B (doğal dosya), B<X
+  // (rütbe), X<A (rütbe) oluyordu; sıralama girdi sırasına göre farklı sonuç verirdi.
+  const A: Ogecik = { tip: "Faz", kod: "FAZ-A", satir: 1, yol: "/k/p/is/plan/faz/1_a.sar", rutbe: 50 };
+  const B: Ogecik = { tip: "Faz", kod: "FAZ-B", satir: 1, yol: "/k/p/is/plan/faz/2_b.sar", rutbe: 5 };
+  const X: Ogecik = { tip: "Kapı", kod: "KPI-X", satir: 1, yol: "/k/p/is/plan/faz/0_x.sar", rutbe: 20 };
+  const Y: Ogecik = { tip: "Blok", kod: "BLK-Y", satir: 3, yol: "/k/p/is/plan/blok/y.sar", rutbe: 10 };
+  const k = (a: Ogecik, b: Ogecik): number => kardesKarsilastir(a, b, (o) => o.rutbe, (o) => o.yol);
+  const hepsi = [A, B, X, Y];
+  // Geçişlilik ve ters simetri bütün üçlülerde ölçülür.
+  for (const a of hepsi) for (const b of hepsi) {
+    assert.equal(Math.sign(k(a, b)) + Math.sign(k(b, a)), 0, `${a.kod}/${b.kod} ters simetrik değil`);
+    for (const c of hepsi) {
+      if (k(a, b) < 0 && k(b, c) < 0) assert.ok(k(a, c) < 0, `${a.kod}<${b.kod}<${c.kod} geçişli değil`);
+    }
+  }
+  // Girdi sırası sonucu değiştirmez.
+  const beklenen = ["FAZ-A", "FAZ-B", "BLK-Y", "KPI-X"];
+  for (const liste of [[A, B, X, Y], [X, Y, B, A], [Y, A, X, B], [B, X, A, Y]]) assert.deepEqual(sirala(liste), beklenen);
+});
+
+test("planlanmamış ipucu beyanı meşru erteleme gibi anlatmaz, Fazsız Blok hatasını söyler", () => {
+  // KPS-SIR-A01: motor `planlanmamış` beyanını kaçış saymaz; panel de aynı şeyi söyler.
+  const ipucu = YOL_METINLERI.planlanmamis("önceliklendirme bekliyor");
+  assert.match(ipucu, /fazsız-blok/);
+  assert.doesNotMatch(ipucu, /Önceliklendirildiğinde bir zaman dilimine bağlanır|bound to a time slice when prioritized/);
 });

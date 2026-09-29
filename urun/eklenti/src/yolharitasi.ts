@@ -513,13 +513,12 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       return r;
     };
     // 🕰️ MIM-1.2 (Founder 2026-08-25): kardeş Fazlar TARİH sırasına dizilir — Founder
-    // panelde mevsimlerin ad ve dosya sırasıyla karıştığını gördü. Anahtar motorun
-    // fazTarihAnahtari işlevinden gelir (DIL-2: panel kendi çevirisini yazmaz); Faz
-    // olmayan öğeler ile tarihsiz Fazlar tarihli mevsimlerin ARKASINDA topolojik
-    // sırayı olduğu gibi korur (aynı listede karışık tipler için de toplam sıra tutarlıdır).
-    // KPS-SIR-A01: iki Faz arasındaki karar motorun Faz karşılaştırıcısından gelir
-    // (tarih, eşitlikte dosya önekinin doğal sayı sırası); karşılaştırıcı saf
-    // çekirdektedir ve sınaması vscode'suz koşar.
+    // panelde mevsimlerin ad ve dosya sırasıyla karıştığını gördü. KPS-SIR-A01: iki Faz
+    // arasındaki karar motorun Faz karşılaştırıcısından gelir (tarih, eşitlikte dosya
+    // önekinin doğal sayı sırası); Faz öğeleri ötekilerin önünde durur ve Faz olmayan
+    // öğeler topolojik sırayı korur. Anahtar sözlük sıralı olduğu için karışık tipli
+    // listede de toplam sıra geçişlidir; karşılaştırıcı saf çekirdektedir ve
+    // sınaması vscode'suz koşar.
     const topolojikSirala = (liste: Oge[]): void => {
       liste.sort((a, b) => kardesKarsilastir(a, b, rutbe, (o) => o.dosya.fsPath));
       for (const o of liste) topolojikSirala(o.cocuklar);
@@ -869,9 +868,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // ve emoji o rengin İKİNCİ, temadan bağımsız bir kopyasıydı (YUZ-4.2).
       nedenAktif = n ? (n.length > 48 ? n.slice(0, 46) + "…" : n) : YOL_METINLERI.gelistiriliyor;
     }
-    // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
-    // beyanı. Satır soluktur ve sayacı kelimeyle yazılır (VIT-KIMLIK-A07 · Founder sade hâli,
-    // 2026-09-13: eski buz işareti kalktı); NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
+    // 🧊 MIM-1.2 · `planlanmamış` beyanı (KPS-SIR-A01 · Founder hükmü 2026-09-29): beyan artık
+    // meşru bir erteleme DEĞİLDİR. Fazsız Blok motorda `fazsız-blok` hatası verir ve panel bu
+    // hatayı Problems yüzeyinde gösterir; satır beyanı kelimeyle işaretler (VIT-KIMLIK-A07 ·
+    // sayaç), ipucu ise beyanın bir zaman bağı olmadığını ve Blokun bir Faza bağlanması
+    // gerektiğini söyler.
     const planNeden = o.tip === "Blok" ? (planAlani(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
     // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
