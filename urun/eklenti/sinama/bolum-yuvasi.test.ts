@@ -22,7 +22,8 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   BAGLAM, BOLUM_SIRASI_GORUNUSU, BolumDefteri, RAY_BOLUMU, RAY_GORUNUSLERI, YUVA_GORUNUSLERI,
-  guvenliSvg, siraHtml, yuvaBaglamDegeri, type SiraCizimOgesi,
+  altindaMi, ayrilmisAdMi, guvenliSvg, sahibiBul, sahipsizBolumler, simgeKarari, siraHtml,
+  yiginDosyalari, yuvaBaglamDegeri, type SiraCizimOgesi,
 } from "../src/bolum-cekirdek.ts";
 import { KAPSAYICI_SIMGE, RAY_BOLUM_SIMGESI, panelSvgKaynagi } from "../src/simge-cizelgesi.ts";
 import { BOLUM_SIRASI_METINLERI, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
@@ -226,4 +227,88 @@ test("dört yuva çekirdekteki sırayla ilan edilir ve yalnız kendi yuvası se�
     assert.equal(v.type, "webview");
     assert.equal(v.when, `${BAGLAM.seciliYuva} == ${yuvaBaglamDegeri(i)}`);
   });
+});
+
+// ── ④ GÜVENLİK SIKILAŞTIRMASI (VIT-K78-A10 bağımsız inceleme) ─────────────────
+
+test("taklit: Ray ve Sarmal adları harf, boşluk ve Türkçe İ/ı biçimlerinden bağımsız ayrılmıştır", () => {
+  for (const ad of ["Ray", "ray", " RAY ", "rAy", "Sarmal", "SARMAL", "  sarmal\t", "SarmaL"])
+    assert.equal(ayrilmisAdMi(ad), true, `${JSON.stringify(ad)} ayrılmış sayılmadı`);
+  for (const ad of ["Rayli", "Ray 2", "Sarmallar", "Tren", "Birinci", "İkinci"])
+    assert.equal(ayrilmisAdMi(ad), false, `${JSON.stringify(ad)} haksız yere ayrıldı`);
+  const d = new BolumDefteri();
+  assert.deepEqual(d.kaydet("taklit", " SARMAL ", undefined), { tur: "ret", sebep: "ad-ayrilmis" });
+  assert.deepEqual(d.kaydet("taklit", "RAY", undefined), { tur: "ret", sebep: "ad-ayrilmis" });
+  assert.equal(d.kayitSayisi, 0);
+});
+
+test("sahip: çağrı yığınındaki kareler dosya yoluyla okunur", () => {
+  const yigin = [
+    "Error",
+    "    at BolumYuvasiKabugu.sahipOku (/ext/sarmal/dist/eklenti.js:10:5)",
+    "    at Object.bolumKaydet (/ext/sarmal/dist/eklenti.js:20:7)",
+    "    at kur (/ext/kardes-1.0.0/kardes.js:30:9)",
+    "    at file:///ext/esm%20kardes/giris.mjs:4:2",
+    "    at node:internal/process/task_queues:95:5",
+  ].join("\n");
+  assert.deepEqual(yiginDosyalari(yigin), [
+    "/ext/sarmal/dist/eklenti.js", "/ext/sarmal/dist/eklenti.js", "/ext/kardes-1.0.0/kardes.js", "/ext/esm kardes/giris.mjs",
+  ]);
+});
+
+test("sahip: açık eklentinin kareleri atlanır, ilk yabancı karenin en dar kökü sahiptir", () => {
+  const kendi = "/ext/sarmal";
+  const eklentiler = [
+    { kimlik: "nexivion-labs.sarmal", ad: "Sarmal", kok: kendi },
+    { kimlik: "a.kardes", ad: "Kardeş", kok: "/ext/kardes" },
+    { kimlik: "a.ic", ad: "İç", kok: "/ext/sarmal/sinama/ic" },
+  ];
+  assert.equal(sahibiBul(["/ext/sarmal/dist/e.js", "/ext/kardes/k.js"], eklentiler, kendi)?.kimlik, "a.kardes");
+  assert.equal(sahibiBul(["/ext/sarmal/dist/e.js", "/ext/sarmal/sinama/ic/k.js"], eklentiler, kendi)?.kimlik, "a.ic",
+    "açık eklentinin içine kurulmuş eklenti kendi sahibidir");
+  assert.equal(sahibiBul(["/ext/sarmal/dist/e.js", "/ext/kardesler/k.js"], eklentiler, kendi), undefined,
+    "/ext/kardes kökü /ext/kardesler yolunu kapsamamalı");
+  assert.equal(sahibiBul(["/ext/sarmal/dist/e.js", "/app/editor.js", "/ext/kardes/k.js"], eklentiler, kendi), undefined,
+    "ilk yabancı kare sahipsizse sonraki karelere bakılmaz");
+  assert.equal(sahibiBul(["/ext/sarmal/dist/e.js"], eklentiler, kendi), undefined);
+  assert.equal(altindaMi("/a/bc", "/a/b"), false);
+  assert.equal(altindaMi("/x", "/"), false, "dosya sistemi kökü hiçbir yolu kapsamaz");
+});
+
+test("simge kökü: yalnız file şeması, sahibin kökü altı ve simgenin kendi klasörü", () => {
+  const kok = "/ext/kardes";
+  assert.deepEqual(simgeKarari("file", "/ext/kardes/medya/simge.svg", kok), { tur: "tamam", kok: "/ext/kardes/medya" });
+  assert.deepEqual(simgeKarari("file", "/ext/kardes/simge.svg", kok), { tur: "tamam", kok: "/ext/kardes" });
+  assert.deepEqual(simgeKarari("https", "/ext/kardes/simge.svg", kok), { tur: "ret", sebep: "sema" });
+  assert.deepEqual(simgeKarari("file", "/etc/hosts", kok), { tur: "ret", sebep: "kok-disi" });
+  assert.deepEqual(simgeKarari("file", "/ext/kardes", kok), { tur: "ret", sebep: "kok-disi" });
+  assert.deepEqual(simgeKarari("file", "/simge.svg", "/"), { tur: "ret", sebep: "kok-disi" }, "geniş kök reddedilmeli");
+  assert.deepEqual(simgeKarari("file", "/ext/kardesler/simge.svg", kok), { tur: "ret", sebep: "kok-disi" });
+});
+
+test("uç hâl: sahibi etkin olmayan bölümler düşürülecekler listesindedir", () => {
+  const kayitlar = [{ kimlik: "a", sahip: "x.bir" }, { kimlik: "b", sahip: "x.iki" }];
+  assert.deepEqual(sahipsizBolumler(kayitlar, new Set(["x.bir", "x.iki"])), []);
+  assert.deepEqual(sahipsizBolumler(kayitlar, new Set(["x.bir"])), ["b"]);
+});
+
+test("arayüz: programla seçim yoktur; nöbet kapısı yalnız sınama kipinde verilir", () => {
+  const yuva = oku("src/bolum-yuvasi.ts");
+  const al = yuva.slice(yuva.indexOf("  al(surum: number)"), yuva.indexOf("  sinamaKapisi(): BolumSinamaKapisi {"));
+  assert.ok(al.includes("bolumKaydet:") && !al.includes("bolumSec") && !al.includes("kabuk.sec("),
+    "kardeşe verilen yüz programla seçim taşıyor");
+  const eklenti = oku("src/eklenti.ts");
+  const donus = eklenti.slice(eklenti.lastIndexOf("  return {\n    yuzeyKayitlari"), eklenti.indexOf("export function deactivate"));
+  assert.ok(!/\bbolumOlcumleri:|\byolHaritasiGorunurMu:\s*\(\)/.test(donus.replace(/bolumSinamaKapisi: \{[^}]*\}/, "")),
+    "ölçüm kapıları herkese açık yüzde duruyor");
+  assert.ok(/context\.extensionMode === vscode\.ExtensionMode\.Test && bolumYuvasi\s*\n?\s*\? \{ bolumSinamaKapisi:/.test(donus),
+    "nöbet kapısı sınama kipine bağlı değil");
+});
+
+test("uç hâl: etkinleşme bağlamı Ray'e sıfırlar, kapanış Ray panellerini gizli bırakmaz", () => {
+  const yuva = oku("src/bolum-yuvasi.ts");
+  const kurucu = yuva.slice(yuva.indexOf("  constructor(context: vscode.ExtensionContext) {"), yuva.indexOf("  sahipsizleriDusur("));
+  assert.ok(/void this\.baglamiYaz\(\);\s*\n\s*\}$/.test(kurucu.trimEnd()), "etkinleşme bağlamı yazmıyor");
+  assert.ok(kurucu.includes('executeCommand("setContext", BAGLAM.rayGizli, false)'), "kapanış rayGizli'yi sıfırlamıyor");
+  assert.ok(kurucu.includes("vscode.extensions.onDidChange(() => this.sahipsizleriDusur())"), "sahibi kaybolan bölüm düşmüyor");
 });

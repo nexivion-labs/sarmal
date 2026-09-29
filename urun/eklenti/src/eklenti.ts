@@ -62,7 +62,7 @@ import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts"; 
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
-import { bolumYuvasiKaydi, type BolumOlcumleri, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
+import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
@@ -262,10 +262,13 @@ export interface SarmalEklentiYuzu {
    * sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
    */
   bolumYuvasiAl(surum: number): BolumYuvasiV1 | undefined;
-  /** 🧩 Bölüm sırasının salt okur ölçümü (nöbet içindir). */
-  bolumOlcumleri(): BolumOlcumleri | undefined;
-  /** 🚂 Yol Haritası ağacı şu an görünür mü — Ray bölümünün gerçek görünürlüğü. */
-  yolHaritasiGorunurMu(): boolean;
+  /**
+   * 🧪 Bölüm yuvası nöbet kapısı — YALNIZ sınama kipinde (`ExtensionMode.Test`)
+   * vardır; kurulu eklentinin herkese açık yüzünde tanımsızdır. Bölüm sırasının
+   * ölçümünü, Yol Haritasının gerçek görünürlüğünü ve kullanıcı seçiminin
+   * eşdeğerini verir; kardeş eklentiler bu kapıya ulaşamaz.
+   */
+  bolumSinamaKapisi?: BolumSinamaKapisi & { yolHaritasiGorunurMu(): boolean };
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -907,8 +910,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     onbellekAnahtarlari: () => onbellekAnahtarlari(),
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
     bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
-    bolumOlcumleri: () => bolumYuvasi?.olcumler(),
-    yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false,
+    ...(context.extensionMode === vscode.ExtensionMode.Test && bolumYuvasi
+      ? { bolumSinamaKapisi: { ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false } }
+      : {}),
   };
 }
 

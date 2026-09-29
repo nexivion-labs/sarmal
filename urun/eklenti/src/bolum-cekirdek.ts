@@ -62,11 +62,96 @@ export function yuvaBaglamDegeri(yuva: number): string {
 /** Kimlik ASCII'dir (H15): küçük harfle başlar, küçük harf, rakam ve tire taşır. */
 export const BOLUM_KIMLIK_DESENI = /^[a-z][a-z0-9-]{1,39}$/;
 
+// ── 🛡️ TAKLİT KORUMASI (VIT-K78-A10 güvenlik sıkılaştırması) ───────────────
+//   Kardeş bölümü sırada açık eklentinin kendi yüzüyle karıştırılabilecek bir
+//   adla duramaz: "Ray" ve "Sarmal" adları ayrılmıştır. Karşılaştırma büyük-küçük
+//   harfe ve baştaki ya da sondaki boşluğa duyarsızdır; Türkçe İ, ı ve I aynı
+//   harfe indirgenir, böylece "SARMAL", " ray " ya da "RAY" biçimleri de reddedilir.
+
+/** Kardeş bölümlerinin alamayacağı adlar (normalize edilmiş biçimde). */
+export const AYRILMIS_ADLAR = ["ray", "sarmal"] as const;
+
+/** Adı karşılaştırma biçimine indirger: kırpılır, iki yerel ayarda küçültülür, ı/i birleşir. */
+export function adNormalize(ad: string): string {
+  return ad.trim().toLocaleLowerCase("tr").toLocaleLowerCase("en").replace(/ı/g, "i").replace(/i̇/g, "i").normalize("NFC");
+}
+
+export function ayrilmisAdMi(ad: string): boolean {
+  const n = adNormalize(ad);
+  return (AYRILMIS_ADLAR as readonly string[]).some((a) => adNormalize(a) === n);
+}
+
+// ── 🧭 KAYDEDEN EKLENTİNİN KİMLİĞİ ───────────────────────────────────────────
+//   VS Code bir API çağrısını kimin yaptığını söylemez. Uzantı süreci bütün
+//   eklentileri tek Node sürecinde koşturduğu için çağrı yığını çağıranın dosya
+//   yolunu taşır; açık eklentinin kendi kökü dışındaki İLK kare, kurulu bir
+//   eklentinin kökü altındaysa kaydı yapan eklentidir. Kök bulunamazsa kayıt
+//   reddedilir: sahibi okunamayan bir bölüm sıraya giremez.
+
+/** Yığın metninden dosya yollarını sırasıyla çıkarır (file:// önekli ESM kareleri dahil). */
+export function yiginDosyalari(yigin: string): string[] {
+  const out: string[] = [];
+  for (const satir of yigin.split("\n")) {
+    // Yol, karenin "(" ya da "at " sonrasında başlamalıdır; "node:internal/…" gibi
+    // iç modül kareleri dosya yolu sayılmaz.
+    const m = /(?:\(|\bat )(?:file:\/\/)?((?:\/|[A-Za-z]:[\\/])[^():]*?):\d+:\d+\)?\s*$/.exec(satir.trim());
+    if (!m) continue;
+    try { out.push(decodeURIComponent(m[1])); } catch { out.push(m[1]); }
+  }
+  return out;
+}
+
+/** Yol `kok` altında mı (kökün kendisi dahil)? Ayırıcı sınırı gözetilir: /a/b, /a/bc'yi kapsamaz. */
+export function altindaMi(yol: string, kok: string): boolean {
+  const k = kok.replace(/[\\/]+$/, "");
+  if (k === "") return false;
+  return yol === k || yol.startsWith(k + "/") || yol.startsWith(k + "\\");
+}
+
+export interface EklentiKoku { kimlik: string; ad: string; kok: string }
+
+/**
+ * Kaydı yapan eklenti. Her kare, kökü o kareyi kapsayan EN UZUN köklü eklentiye
+ * aittir (iç içe kurulmuş eklentilerde en dar sahip). Açık eklentinin kendi
+ * kareleri atlanır; ondan sonraki ilk kare belirleyicidir. O karenin hiçbir
+ * eklentiye ait olmaması (ör. editörün kendi kodu) sahibin okunamadığı demektir.
+ */
+export function sahibiBul(dosyalar: readonly string[], eklentiler: readonly EklentiKoku[], kendiKok: string): EklentiKoku | undefined {
+  for (const d of dosyalar) {
+    const aday = eklentiler.filter((e) => altindaMi(d, e.kok)).sort((a, b) => b.kok.length - a.kok.length)[0];
+    const kendi = altindaMi(d, kendiKok) && (!aday || aday.kok.length <= kendiKok.replace(/[\\/]+$/, "").length);
+    if (kendi) continue;
+    return aday;
+  }
+  return undefined;
+}
+
+export type SimgeKarari = { tur: "tamam"; kok: string } | { tur: "ret"; sebep: "sema" | "kok-disi" | "genis-kok" };
+
+/**
+ * Simge yalnız `file:` şemasında ve sahibin kendi eklenti kökü altında kabul edilir.
+ * Webview'e eklenen yerel kaynak kökü simgenin KENDİ klasörüdür; sahibin kökünün
+ * dışına ya da dosya sisteminin köküne açılan bir klasör reddedilir.
+ */
+export function simgeKarari(sema: string, yol: string, sahipKok: string): SimgeKarari {
+  if (sema !== "file") return { tur: "ret", sebep: "sema" };
+  if (!altindaMi(yol, sahipKok) || yol === sahipKok.replace(/[\\/]+$/, "")) return { tur: "ret", sebep: "kok-disi" };
+  const klasor = yol.replace(/[\\/][^\\/]*$/, "");
+  if (klasor === "" || /^[A-Za-z]:$/.test(klasor) || !altindaMi(klasor, sahipKok)) return { tur: "ret", sebep: "genis-kok" };
+  return { tur: "tamam", kok: klasor };
+}
+
+/** Sahibi artık kurulu ve etkin olmayan bölümlerin kimlikleri. */
+export function sahipsizBolumler(kayitlar: readonly { kimlik: string; sahip: string }[], canli: ReadonlySet<string>): string[] {
+  return kayitlar.filter((k) => !canli.has(k.sahip)).map((k) => k.kimlik);
+}
+
 export type KayitReddi =
   | "kimlik-bicimi"
   | "kimlik-ayrilmis"
   | "kimlik-yinelenen"
   | "ad-bos"
+  | "ad-ayrilmis"
   | "yuva-yok";
 
 export type KayitSonucu =
@@ -110,6 +195,7 @@ export class BolumDefteri<T = undefined> {
     if (kimlik === RAY_BOLUMU) return { tur: "ret", sebep: "kimlik-ayrilmis" };
     if (this.kayitlar.some((k) => k.kimlik === kimlik)) return { tur: "ret", sebep: "kimlik-yinelenen" };
     if (typeof ad !== "string" || ad.trim() === "") return { tur: "ret", sebep: "ad-bos" };
+    if (ayrilmisAdMi(ad)) return { tur: "ret", sebep: "ad-ayrilmis" };
     const yuva = this.bosYuva();
     if (yuva === undefined) return { tur: "ret", sebep: "yuva-yok" };
     this.kullanilmis.add(yuva);
