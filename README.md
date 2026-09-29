@@ -15,21 +15,23 @@ Sarmal bu hafızayı tek bir kaynağa indirir. Plan dört eksende yazılır: zam
 
 ## Nasıl çalışıyor: gerçek bir örnek
 
-Doğuş paketiyle doğan küçük bir projede şu Blok yazılmış olsun (`is/plan/randevu.sar`):
+Doğuş paketiyle doğan küçük bir projede ikinci Faz kendi dosyasında açılmış ve işin Bloku o Fazın gövdesine yazılmış olsun (`is/plan/faz/2_randevu.sar`):
 
 ```sar
-Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
-  ne: "Randevu oluşturma ucunun yazımı" ) {
-  Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
-    AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
-      Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
-        görev: "POST /randevu ucunu yaz",
-        kabul: [ "uç 201 döner" ],
-        üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
-      Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
-        bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
-        görev: "Ucun sınamasını yaz",
-        kabul: [ "sınama yeşil" ] )
+Faz( kod: FAZ-RANDEVU-UC, ad: "Randevu Ucu Mevsimi" ) {
+  Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu",
+    ne: "Randevu oluşturma ucunun yazımı" ) {
+    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
+      AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
+        Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
+          görev: "POST /randevu ucunu yaz",
+          kabul: [ "uç 201 döner" ],
+          üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
+        Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
+          bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
+          görev: "Ucun sınamasını yaz",
+          kabul: [ "sınama yeşil" ] )
+      }
     }
   }
 }
@@ -38,10 +40,10 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 Birinci Adım tamamlandı diyor ama `src/randevu.ts` diskte yok; ikinci Adım hiç yazılmamış bir karara atıf veriyor. `sarmal denetle .` bunu şöyle bildirir (çıktı gerçektir, satırlar kırılmıştır):
 
 ```
-✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
-  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/faz/2_randevu.sar:11:52 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
+✖ is/plan/faz/2_randevu.sar:9:21 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
 ![Terminalde sarmal denetle çıktısı: kırık-referans ve meyve-dosyası-eksik hataları, özet satırı ve karne](urun/eklenti/medya/ekran/denetle.png)
@@ -56,7 +58,7 @@ Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder:
    ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Klasör ilan edilince karne temizdir: yirmi düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
+Klasör ilan edilince karne temizdir: yirmi bir düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
 
 Aynı plan editörde de yaşar: Yol Haritası ağacı, Mini Graf ve Sorunlar paneli aynı kaynağı okur, dosya kaydedildiği anda tanı düşer.
 

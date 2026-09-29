@@ -15,21 +15,23 @@ Sarmal pulls that memory into a single source. A plan is written on four axes: t
 
 ## How it works: a real example
 
-Suppose a small project born from the starter kit contains this Blok (`is/plan/randevu.sar`):
+Suppose a small project born from the starter kit has opened its second Faz in a file of its own and written the work's Blok inside that Faz's body (`is/plan/faz/2_randevu.sar`):
 
 ```sar
-Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
-  ne: "Randevu oluşturma ucunun yazımı" ) {
-  Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
-    AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
-      Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
-        görev: "POST /randevu ucunu yaz",
-        kabul: [ "uç 201 döner" ],
-        üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
-      Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
-        bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
-        görev: "Ucun sınamasını yaz",
-        kabul: [ "sınama yeşil" ] )
+Faz( kod: FAZ-RANDEVU-UC, ad: "Randevu Ucu Mevsimi" ) {
+  Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu",
+    ne: "Randevu oluşturma ucunun yazımı" ) {
+    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
+      AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
+        Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
+          görev: "POST /randevu ucunu yaz",
+          kabul: [ "uç 201 döner" ],
+          üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
+        Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
+          bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
+          görev: "Ucun sınamasını yaz",
+          kabul: [ "sınama yeşil" ] )
+      }
     }
   }
 }
@@ -38,10 +40,10 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 The first Adım claims to be done, but `src/randevu.ts` does not exist on disk; the second Adım references a decision nobody wrote. `sarmal denetle .` reports it like this (real output, lines wrapped; messages are in Turkish today):
 
 ```
-✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
-  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/faz/2_randevu.sar:11:52 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
+✖ is/plan/faz/2_randevu.sar:9:21 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
 ![sarmal denetle output in a terminal: kırık-referans and meyve-dosyası-eksik errors, the summary line and the scorecard](urun/eklenti/medya/ekran/denetle.png)
@@ -56,7 +58,7 @@ Once the file is written and the reference fixed, the engine notices something e
    ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Declare the folder and the scorecard is clean: twenty nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
+Declare the folder and the scorecard is clean: twenty-one nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
 
 The same plan also lives in the editor: the Roadmap tree, the Mini Graph and the Problems panel read the same source, and a diagnostic lands the moment the file is saved.
 
