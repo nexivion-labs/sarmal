@@ -2439,3 +2439,38 @@ export const ONAY_GOVDE_METINLERI: GovdeMetinleri = {
   get kopyaEtiketi(): string { return onayKopyaEtiketi(); },
   kopyaIpucu: onayKopyaIpucu,
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧩 BÖLÜM SIRASI (VIT-K78-A10) — kabın en üstündeki yatay sıra
+//
+//   Ray adı markadır ve iki dilde aynı kalır. Kardeş bölümlerinin adını ve
+//   ipucunu kaydı yapan eklenti verir; açık eklenti onları çevirmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const BOLUM_SIRASI_METINLERI = {
+  get htmlDili(): string { return yuzeyDili === "tr" ? "tr" : "en"; },
+  get rayAdi(): string { return "Ray"; },
+  get rayIpucu(): string {
+    return yuzeyMetni(
+      "Ray: yol haritası, hatırlatıcılar, fikirler, gözlemler, onaylar ve mini graf",
+      "Ray: roadmap, reminders, ideas, observations, approvals and mini graph",
+    );
+  },
+  get listeEtiketi(): string { return yuzeyMetni("Sarmal bölümleri", "Sarmal sections"); },
+  kayitReddi(sebep: string, kimlik: string): string {
+    const neden: Record<string, [string, string]> = {
+      "kimlik-bicimi": [
+        "kimlik küçük harfle başlamalı ve yalnız küçük harf, rakam ve tire taşımalıdır",
+        "the id must start with a lowercase letter and contain only lowercase letters, digits and hyphens",
+      ],
+      "kimlik-ayrilmis": ["bu kimlik açık eklentinin kendi bölümüne ayrılmıştır", "this id is reserved for the open extension's own section"],
+      "kimlik-yinelenen": ["bu kimlikle kayıtlı bir bölüm zaten var", "a section with this id is already registered"],
+      "ad-bos": ["bölümün adı boş olamaz", "the section title cannot be empty"],
+      "yuva-yok": ["bütün bölüm yuvaları dolu", "all section slots are taken"],
+      "simge-yok": ["bölümün simgesi bir dosya adresi olmalıdır", "the section icon must be a file URI"],
+      "saglayici-yok": ["bölümün bir webview sağlayıcısı olmalıdır", "the section must provide a webview view provider"],
+    };
+    const [tr, en] = neden[sebep] ?? [sebep, sebep];
+    return yuzeyMetni(`Bölüm kaydedilemedi (${kimlik}): ${tr}.`, `Section could not be registered (${kimlik}): ${en}.`);
+  },
+} as const;

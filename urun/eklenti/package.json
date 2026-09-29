@@ -672,42 +672,55 @@
         {
           "id": "sarmal-yol",
           "title": "%view.container%",
-          "icon": "medya/simgeler/panel-yolharitasi.svg"
+          "icon": "medya/simgeler/panel-sarmal.svg"
         }
       ]
     },
     "views": {
       "sarmal-yol": [
         {
+          "id": "sarmalBolumSirasi",
+          "type": "webview",
+          "name": "%view.sections%",
+          "icon": "medya/simgeler/panel-sarmal.svg",
+          "contextualTitle": "%view.sections%",
+          "initialSize": 1
+        },
+        {
           "id": "sarmalYolHaritasi",
           "name": "%view.roadmap%",
           "icon": "medya/simgeler/panel-yolharitasi.svg",
-          "contextualTitle": "%view.roadmap%"
+          "contextualTitle": "%view.roadmap%",
+          "when": "!sarmal.bolum.rayGizli"
         },
         {
           "id": "sarmalHatirlaticilar",
           "name": "%view.reminders%",
           "icon": "medya/simgeler/panel-hatirlaticilar.svg",
-          "contextualTitle": "%view.reminders%"
+          "contextualTitle": "%view.reminders%",
+          "when": "!sarmal.bolum.rayGizli"
         },
         {
           "id": "sarmalFikirler",
           "name": "%view.ideas%",
           "icon": "medya/simgeler/panel-fikirler.svg",
-          "contextualTitle": "%view.ideas%"
+          "contextualTitle": "%view.ideas%",
+          "when": "!sarmal.bolum.rayGizli"
         },
         {
           "id": "sarmalBildirimler",
           "name": "%view.observations%",
           "icon": "medya/simgeler/panel-gozlemler.svg",
-          "contextualTitle": "%view.observations%"
+          "contextualTitle": "%view.observations%",
+          "when": "!sarmal.bolum.rayGizli"
         },
         {
           "id": "sarmalOnaylar",
           "type": "webview",
           "name": "%view.approvals%",
           "icon": "medya/simgeler/panel-onaylar.svg",
-          "contextualTitle": "%view.approvals%"
+          "contextualTitle": "%view.approvals%",
+          "when": "!sarmal.bolum.rayGizli"
         },
         {
           "id": "sarmalMiniGraf",
@@ -715,7 +728,39 @@
           "name": "%view.miniGraph%",
           "icon": "medya/simgeler/panel-minigraf.svg",
           "contextualTitle": "%view.miniGraph%",
-          "when": "config.sarmal.miniGraf"
+          "when": "config.sarmal.miniGraf && !sarmal.bolum.rayGizli"
+        },
+        {
+          "id": "sarmalBolumYuvasi1",
+          "type": "webview",
+          "name": "%view.sectionSlot1%",
+          "icon": "medya/simgeler/panel-yuva-1.svg",
+          "contextualTitle": "%view.sectionSlot1%",
+          "when": "sarmal.bolum.seciliYuva == yuva1"
+        },
+        {
+          "id": "sarmalBolumYuvasi2",
+          "type": "webview",
+          "name": "%view.sectionSlot2%",
+          "icon": "medya/simgeler/panel-yuva-2.svg",
+          "contextualTitle": "%view.sectionSlot2%",
+          "when": "sarmal.bolum.seciliYuva == yuva2"
+        },
+        {
+          "id": "sarmalBolumYuvasi3",
+          "type": "webview",
+          "name": "%view.sectionSlot3%",
+          "icon": "medya/simgeler/panel-yuva-3.svg",
+          "contextualTitle": "%view.sectionSlot3%",
+          "when": "sarmal.bolum.seciliYuva == yuva3"
+        },
+        {
+          "id": "sarmalBolumYuvasi4",
+          "type": "webview",
+          "name": "%view.sectionSlot4%",
+          "icon": "medya/simgeler/panel-yuva-4.svg",
+          "contextualTitle": "%view.sectionSlot4%",
+          "when": "sarmal.bolum.seciliYuva == yuva4"
         }
       ]
     },

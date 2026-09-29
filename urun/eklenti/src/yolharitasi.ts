@@ -1120,6 +1120,8 @@ export interface YolHaritasiYuzu {
   diliTazele(): void;
   /** Panelin ŞU AN gösterdiği plan kodları — salt okur. */
   kodlar(): string[];
+  /** 🧩 VIT-K78-A10: ağaç şu an görünür mü (Ray bölümü seçiliyken doğru) — salt okur. */
+  gorunurMu(): boolean;
 }
 
 /** Paneli kur: ağaç + kutucuk olayları + tur görüntüsü aboneliği + koni-kartı menüsü.
@@ -1336,6 +1338,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
   // kez kuran ve soğuk açılışta birbiriyle yarışan ikinci hattın ta kendisiydi.
   return {
     kodlar: () => saglayici.panelKodlari(),
+    gorunurMu: () => gorunum.visible,
     diliTazele(): void {
       saglayici.diliTazele();
       miniGraf.tazele();

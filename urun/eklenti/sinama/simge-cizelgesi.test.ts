@@ -152,8 +152,10 @@ test("panel nöbeti: raf ile panel çizelgesi AYNI görünüşleri kapsar — ek
   // içinden çıkıp kendi görünüşüne taşındı ve kendi panel simgesini aldı. Sayı
   // bilerek güncellenmiştir; nöbetin değeri sayının kendisinde değil,
   // güncellemenin sessiz olamamasındadır.
-  assert.equal(raf.length, 6,
-    "panel ailesi ALTI görünüştür (Yol Haritası·Hatırlatıcılar·Fikirler·Gözlemler·Mini Graf·Onaylar)");
+  // VIT-K78-A10 bölüm sırasını (Sarmal sarmalı) ve dört bölüm yuvasını ekledi;
+  // sayı aynı gerekçeyle bilerek güncellenmiştir.
+  assert.equal(raf.length, 11,
+    "panel ailesi ON BİR görünüştür (Bölümler · Ray'in altı paneli · dört bölüm yuvası)");
 });
 
 test("panel nöbeti: panel simgelerinin içeriği birbirinden FARKLIDIR — aynı simge iki panele gidemez", () => {

@@ -111,21 +111,31 @@ export function eksenSvgVaryanti(tip: EksenTipi, evre: KapsayiciEvre, tema: Simg
 //    taşır ve v1 sonrası temizlenecektir — görünen adlar Gözlemler ve
 //    Onaylar'dır, simge dosya adları da görünen adı izler.
 
-/** Beş panel görünüşünün kimliği — package.json `views["sarmal-yol"]` kapsamı. */
+/** Kenar çubuğu görünüşlerinin kimliği — package.json `views["sarmal-yol"]` kapsamı.
+ *  🧩 VIT-K78-A10: bölüm sırası ile dört bölüm yuvası da bu haneye girer; yuvalar
+ *  kardeş eklentilerin kaydettiği bölümleri taşır ve her biri kendi simgesiyle
+ *  ayrılır (bolum-cekirdek.ts `YUVA_GORUNUSLERI`). */
 export const PANEL_GORUNUSLERI = [
+  "sarmalBolumSirasi",
   "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
   "sarmalOnaylar", "sarmalMiniGraf",
+  "sarmalBolumYuvasi1", "sarmalBolumYuvasi2", "sarmalBolumYuvasi3", "sarmalBolumYuvasi4",
 ] as const;
 export type PanelGorunusu = (typeof PANEL_GORUNUSLERI)[number];
 
 /** Görünüş kimliği → raf dosya adı gövdesi (ASCII; görünen adı izler). */
 const PANEL_SVG_AD: Record<PanelGorunusu, string> = {
+  sarmalBolumSirasi: "sarmal",
   sarmalYolHaritasi: "yolharitasi",
   sarmalHatirlaticilar: "hatirlaticilar",
   sarmalFikirler: "fikirler",
   sarmalBildirimler: "gozlemler",
   sarmalOnaylar: "onaylar",
   sarmalMiniGraf: "minigraf",
+  sarmalBolumYuvasi1: "yuva-1",
+  sarmalBolumYuvasi2: "yuva-2",
+  sarmalBolumYuvasi3: "yuva-3",
+  sarmalBolumYuvasi4: "yuva-4",
 };
 
 /** Bir panel görünüşünün currentColor KAYNAK SVG'si (eklenti-köküne göreli yol). */
@@ -133,10 +143,16 @@ export function panelSvgKaynagi(gorunus: PanelGorunusu): string {
   return `${SIMGE_RAFI}/panel-${PANEL_SVG_AD[gorunus]}.svg`;
 }
 
-/** Etkinlik çubuğu kapsayıcısının simgesi: kapsayıcı ayrı bir kimlik taşımaz,
- *  raydaki ilk panelin (Yol Haritası) simgesini paylaşır — eski `ikonlar/ray.svg`
- *  düzeninin devamıdır, yalnız kaynağı artık bu çizelgedir. */
-export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalYolHaritasi");
+/** Etkinlik çubuğu kapsayıcısının simgesi: kapsayıcı ayrı bir kimlik taşımaz ve
+ *  kabın en üstündeki bölüm sırasının simgesini, yani Sarmal sarmalını paylaşır.
+ *  🧩 VIT-K78-A10 (Founder hükmü 2026-09-28): etkinlik çubuğunda tek bir Sarmal
+ *  simgesi durur; Ray, kabın içindeki bölümlerden biridir ve raylı Yol Haritası
+ *  simgesi artık kabın değil Ray bölümünün işaretidir. */
+export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalBolumSirasi");
+
+/** Bölüm sırasında Ray bölümünün işareti: Ray'in ilk paneli olan Yol Haritasının
+ *  iki raylı simgesidir; ayrı bir çizim doğmaz. */
+export const RAY_BOLUM_SIMGESI = panelSvgKaynagi("sarmalYolHaritasi");
 
 // ── SATIR HANESİ (VIT-KIMLIK-A05 · Founder hükmü 2026-08-04: IDE'nin içi ─────
 //    baştan aşağı geometrik çizim dilinden konuşur — satır içi çan/katman/

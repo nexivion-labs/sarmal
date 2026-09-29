@@ -62,6 +62,7 @@ import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts"; 
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
+import { bolumYuvasiKaydi, type BolumOlcumleri, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
@@ -160,6 +161,7 @@ let fikirler: Fikirler | undefined;
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
 let onayPaneli: OnayPaneli | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
+let bolumYuvasi: BolumYuvasiYuzu | undefined;
 
 /**
  * Eklentinin dış yüzü. VS Code `activate` işlevinin döndürdüğü nesneyi
@@ -254,6 +256,16 @@ export interface SarmalEklentiYuzu {
   onbellekAnahtarlari(): string[];
   /** 🚂 Yol Haritası panelinin ŞU AN gösterdiği plan kodları — salt okur. */
   yolHaritasiKodlari(): string[];
+  /**
+   * 🧩 VIT-K78-A10 · KARDEŞ EKLENTİ ARAYÜZÜ. Kardeş eklentiler kendi bölümlerini
+   * kabın en üstündeki bölüm sırasına buradan kaydeder (bolum-yuvasi.ts başlığı
+   * sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
+   */
+  bolumYuvasiAl(surum: number): BolumYuvasiV1 | undefined;
+  /** 🧩 Bölüm sırasının salt okur ölçümü (nöbet içindir). */
+  bolumOlcumleri(): BolumOlcumleri | undefined;
+  /** 🚂 Yol Haritası ağacı şu an görünür mü — Ray bölümünün gerçek görünürlüğü. */
+  yolHaritasiGorunurMu(): boolean;
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -319,6 +331,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
 
   // Kenar çubuğunun yüzeyleri eklenti etkinleşmesinde TAM BİR KEZ kaydedilir;
   // görünümleri context.subscriptions üstünden kapanışta serbest bırakılır.
+  // 🧩 VIT-K78-A10: bölüm sırası kabın en üstündedir ve ilk kaydedilen yüzeydir;
+  // seçim Ray'le başlar, dolayısıyla Ray panelleri hiç gizlenmeden açılır.
+  bolumYuvasi = bolumYuvasiKaydi(context);
   hatirlaticilar = hatirlaticilarKaydi(context);
   fikirler = fikirlerKaydi(context);
   bildirimler = bildirimlerKaydi(context);
@@ -786,6 +801,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         bildirimler?.diliTazele();
         onayPaneli?.diliTazele();
         yolHaritasiYuzeyi?.diliTazele();
+        bolumYuvasi?.diliTazele();
         denetimKilidi.iste("dil");
       }
     }),
@@ -890,6 +906,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     },
     onbellekAnahtarlari: () => onbellekAnahtarlari(),
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
+    bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
+    bolumOlcumleri: () => bolumYuvasi?.olcumler(),
+    yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false,
   };
 }
 
@@ -901,6 +920,7 @@ export function deactivate(): void {
   fikirler = undefined;       // 💡 VIT-GRAF-A16: kapanmış görünüşe Fikir basılmasın
   bildirimler = undefined;
   onayPaneli = undefined;       // kapanmış görünüme kapı yazılmasın
+  bolumYuvasi = undefined;      // 🧩 kapanmış sıraya çizim istenmesin
   odakDinleyicileri.length = 0;  // kapanmış görünüme odak haberi gitmesin
   yuzeyDefteri.temizle(false);   // tutamaklar bırakıldı; kapanışta çizim istenmez
   fikirDefteri.temizle(false);   // 💡 KYN-YUZ-A01: Fikir hanesi de sessizce boşalır

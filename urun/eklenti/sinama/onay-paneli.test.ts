@@ -482,7 +482,10 @@ test("görünüş kimliği: paket bildirimi ile sağlayıcı sabiti birebir ayn�
   // Hatırlatıcılar panelinin içinden çıkıp kendi görünüşüne taşındı. Sayı
   // BİLEREK güncellenmiştir; nöbetin değeri sayının kendisinde değil,
   // güncellemenin sessiz olamamasındadır.
-  assert.equal(kimlikler.length, 6, "kenar çubuğunda altı görünüş bekleniyordu");
+  // VIT-K78-A10 ile kabın en üstüne bölüm sırası ve sonuna dört bölüm yuvası
+  // eklendi (Founder hükmü 2026-09-28: tek Sarmal simgesi); sayı yine bilerek
+  // güncellenmiştir: altı Ray paneli, bir sıra ve dört yuva on bir eder.
+  assert.equal(kimlikler.length, 11, "kenar çubuğunda on bir görünüş bekleniyordu");
 });
 
 test("başlık yerelleştirme kataloğundan gelir ve kapsayıcının adını TEKRAR ETMEZ", () => {

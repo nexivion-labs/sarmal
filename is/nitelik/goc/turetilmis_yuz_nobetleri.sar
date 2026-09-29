@@ -34,12 +34,17 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `74c3b3880633d11f89bb2c6707846b3df3712523607cb15066165e1bfac6bf2c` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `64329c3512c06e9ef52185e3d6bdcdd1aaaab50c49251001ce507d74640395dd` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
-| `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
-| `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
+| `urun/eklenti/package.nls.tr.json` | `a7967bb6d144a7fdb256685ee9e3ecf66fcf6744ae8326f165e43fd489472ce9` |
+| `urun/eklenti/package.nls.json` | `321e2b59b28fd6d58d596cf0a4b79d2582d9c91cd93bfd7a5d9a437d9f6ad857` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `29d34702c442d3e2cd9bd251ddb42abdb614b886bac2deca93d2c7c8bda8a97b` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-29 · tek Sarmal simgesi ve bölüm yuvası): VIT-K78-A10
+eklentinin iki yerelleştirme kataloğuna bölüm sırasının ve dört bölüm yuvasının
+görünüş adlarını, yani beş yeni anahtarı ekledi ve iki katalog mührü ilerledi.
+Var olan hiçbir anahtarın metni değişmedi; öteki yedi kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-09-29 · girinti ile yapının uyumu): `girinti-yapı-uyumsuz`
 gözlemi DIL-2.2 maddesinin zorlama satırına bilgi düzeyinde ilan edildi ve kanon
