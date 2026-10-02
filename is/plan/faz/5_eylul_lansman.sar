@@ -1259,12 +1259,40 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "Yalnızca komut dağıtıcısının yardım ve bilinmeyen-komut dallarının eklenmesi ile sekiz yalnızca-MCP komutunun CLI davranışının kararlaştırılması bu Adımın kapsamındadır; sef'in argüman sırasının kendisinin değiştirilmesi, yeni CLI alt komutlarının MCP dışı işlevle üretilmesi ve genel argüman ayrıştırma altyapısının yeniden yazılması bu Adımın dışındadır."
         }
+
+
+
+
+
+
+        // Founder 2026-10-02 (oturum 113): "katman teknoloji çağırır, alt katmanlar departman çağırır".
+        // Kontrolcü site projesinin planında, teknolojiler ilan edildikten sonra altı Katmanı
+        // teknolojiBağımsız kaçışıyla Takımsız bıraktı; motor sessiz kaldı. İkinci görüş: Codex
+        // (.danisma/cikti/005-katman-zemin-kacisi) ve Gemini aynı gün danışıldı.
+        Adım( kod: BKM-OLG-A11, ad: "Teknoloji Kaçışının Doğuş Anına Sınırlanması", durum: beklemede, öncelik: p1, bağımlı: [], referans: [ MIM-1.4 ],
+          ne:    "🌿 Katman teknoloji dalıdır ve bir Takıma ya da Teknolojiye bağlanır; iş türü AltKatmanın departmanında yazılır. teknolojiBağımsız kaçışı yalnız projede hiç Teknoloji ve Takım yokken, yani doğuş anında meşrudur. Bugün dil bu kaçışı her yerde eşit bir yol gibi öğretiyor ve denetçi sessiz kalıyor; bu Adım motoru, öğretim yüzlerini ve şablonları aynı turda düzeltir ki başka projelerde aynı yanlış genelleme tekrar etmesin" ) {
+          görev: "Denetçiye yeni bir uyarı düzeyinde tanı ekle: Katmanın ait olduğu Projenin kapsamında en az bir Teknoloji ya da Takım ilanı varken teknolojiBağımsız taşıyan her Katman ve aynı anda hem gerçek zemin bağı hem kaçış taşıyan her Katman uyarılır; proje kapsamı yalnız o Projeye ait ilanları sayar, kardeş projenin ilanı tanıyı tetiklemez ve çağır ile köke gelen ilanlar meşru kapsam sayılır. Tanının Türkçe ve İngilizce metnini yaz ve katmansız-teknoloji tanısının önerisini yeniden yaz: önce takım:, sonra kullanır:, kaçış yalnız teknolojisiz projede ve iş türü AltKatman departmanında. Aynı ayrımı öğretim yüzlerine taşı: doğuş paketi (dogus.ts ve ogreti/sablon/dogus/) kaçışın geçici olduğunu yazsın ve Kuruluş Adımının kabulüne 'teknoloji ilan edildikten sonra hiçbir Katmanda kaçış kalmadı' ölçütü eklensin; ogreti/sablon/blok.sar, ogreti/ogrenme/teknoloji_becerisi.sar, README.md ile README.en.md (satır 24 civarındaki örnek), oz/siniflama/kayit.json ile ondan üretilen kayit.md, oz/ceviri/dil-sozlugu.json ve mcp.ts içindeki başla rehberi aynı ayrımı söylesin. Kanondaki MIM-1.4 maddesinin yeni metnini yalnız taslak olarak hazırla ve Koşumda Founder onayına sun; kanon metnini ve sürümünü değiştirme. Uyarının bu depoda ateşlediği Katmanları (BKM-FND ve BKM-KBK beklenir) say ve listele; onları sahte bir Takıma bağlayarak susturma"
+          kabul: [
+            "teknoloji ilanlı bir projede teknolojiBağımsız taşıyan Katman yeni uyarıyı alıyor; hiç Teknoloji ve Takım ilan etmemiş projede almıyor; kardeş projenin ilanı tanıyı tetiklemiyor (üç durum da testli)",
+            "katmansız-teknoloji önerisi iki dilde takım: yolunu önce söylüyor ve kaçışı yalnız teknolojisiz projeye sınırlıyor; yeni tanının iki dilli metni dil sözlüğünde eşit",
+            "yeni doğan bir projenin Kuruluş Adımı kabulünde kaçış temizliği ölçütü var ve doğuş paketiyle üretilen boş proje denetimden temiz geçiyor",
+            "README iki dilde, blok şablonu, teknoloji becerisi, sınıflama kaydı ve başla rehberi kaçışı doğuş dışındaki bir Katman için örneklemiyor",
+            "MIM-1.4 için taslak madde Koşumda yazılı, kanon metni ve sürümü değişmemiş; bu depoda uyarının ateşlediği Katmanlar sayılarıyla Koşumda listeli",
+            "depo denetimi yeni hata üretmiyor ve çekirdek testleri yeşil"
+          ]
+          sınır: "Tanı uyarı düzeyindedir; hata düzeyine terfi BKM-OLG-A12 Adımının işidir. Başka projelerin (orkestrasyon, hesap) dosyalarına dokunulmaz; insan işi Katmanlar için yeni bir tür tasarlanmaz, çünkü o bir kanon kararıdır ve Founder'ındır"
+        }
+        Adım( kod: BKM-OLG-A12, ad: "Kaçış Uyarısının Hataya Terfisi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-OLG-A11 ], referans: [ MIM-1.4 ],
+          ne:    "⛔ Uyarı tek başına borcu görünür kılar ama kapıyı kapatmaz; ajanlar akışı durdurmayan uyarıyı geçebilir. Var olan kaçışlar temizlendikten ve insan işi Katmanların nasıl modelleneceği kararlaştırıldıktan sonra tanı hata düzeyine terfi eder" ) {
+          görev: "Çatıdaki her projede yeni uyarının ateşlediği Katmanları denetle-proje ile say; insan ve onay işlerinin (Founder kalemleri, çapraz araç zinciri gibi) kaçış yerine birinci sınıf bir türle mi yoksa var olan bir Takımla mı taşınacağına ilişkin seçenekleri Founder'a sun; karar kanona indikten ve sayı sıfıra düştükten sonra tanıyı hata düzeyine terfi ettir"
+          kabul: [
+            "Founder kararı Adımın onay şerhinde yazılı",
+            "çatıdaki bütün projelerde uyarı sayısı sıfır",
+            "tanı hata düzeyinde ve terfi testli"
+          ]
+          sınır: "Founder kararı olmadan terfi yapılmaz ve insan işi için tür tasarlanmaz"
+        }
       }
-
-
-
-
-
     }
 
     // ══ KATMAN · SINAV-2 BULGULARI: "yeşil ama kör" delikleri kapanır ═══════════════
