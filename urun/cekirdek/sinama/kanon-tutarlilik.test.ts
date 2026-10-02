@@ -83,7 +83,8 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KP
   // boşluğuydu ve madde o boşluğu kapattı, bekçi de onu hata düzeyinde zorlar.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.7" && t.kod === "altkatman-tekilliği-ihlali").length, 1);
   // KPS-SIR-A01: `planlanmamış-gövde` emekli oldu (101 → 100).
-  assert.equal(ONCEKI_TANI_KODLARI.length, 100);
+  // BKM-OLG-A11 (2026-10-02): `yersiz-teknoloji-kaçışı` sabit kümede doğdu (100 → 101).
+  assert.equal(ONCEKI_TANI_KODLARI.length, 101);
 });
 
 test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır", () => {
@@ -99,7 +100,8 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
   // 2026-09-29 (KPS-SIR-A01): altı yeni tanı doğdu ve `planlanmamış-gövde` emekli oldu; yüz doksan beşe çıktı.
   // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemiyle yüz doksan dokuza çıktı.
   // 2026-09-29 (KPS-SIR-A02): DIL-2.2 `girinti-yapı-uyumsuz` gözlemiyle iki yüze çıktı.
-  assert.equal(canli.size, 200);
+  // 2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` ile iki yüz bire çıktı.
+  assert.equal(canli.size, 201);
   assert.equal(EMEKLI_TANI_KODLARI.length, 16);
   assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
   assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 37);

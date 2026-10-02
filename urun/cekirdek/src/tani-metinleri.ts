@@ -1522,7 +1522,15 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
   },
   "katmansız-teknoloji": {
     mesaj: (p) => `Katman "${a(p, "kod")}" zemin bağı taşımıyor — Katman teknoloji dilimidir ve zeminini iki tip-saf kenardan en az biriyle beyan eder: takım: kenarı onu yürüten Takıma, kullanır: kenarı tek bir somut Teknolojiye yönelir.`,
-    oneri: () => 'Üç meşru yol: takım: TAKIM-X yaz (Takım kendi Teknolojilerine bağlıdır; iki ekip ortaksa takım: [ TAKIM-X, TAKIM-Y ]), kullanır: TEK-X ile tek bir somut Teknolojiye bağlan ya da katman bilinçli olarak teknolojisizse teknolojiBağımsız: "gerekçe" beyanı yaz — boş gerekçe beyan sayılmaz. Takım bağı kullanır: ile, Teknoloji bağı takım: ile yazılmaz.',
+    oneri: () => 'Önce takım: TAKIM-X yaz: Katmanı yürüten Takım kendi Teknolojilerine bağlıdır ve iki ekip ortaksa takım: [ TAKIM-X, TAKIM-Y ] yazılır. Takım yoksa kullanır: TEK-X ile tek bir somut Teknolojiye bağlan. Takım bağı kullanır: ile, Teknoloji bağı takım: ile yazılmaz. teknolojiBağımsız: "gerekçe" kaçışı yalnız projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken, yani doğuş anında meşrudur ve zemin ilan edilince kaldırılır. İşin türü (karar, süreç, inceleme) Katmanın zemininde değil AltKatmanın departman: alanında yazılır.',
+  },
+  "yersiz-teknoloji-kaçışı": {
+    mesaj: (p) => a(p, "hal") === "bağlı"
+      ? `Katman "${a(p, "kod")}" zemin bağı taşıdığı hâlde teknolojiBağımsız kaçışını da taşıyor — kaçış gereksizdir ve okuyana Katmanın zeminsiz olduğunu söyleyerek yanıltır.`
+      : `Katman "${a(p, "kod")}" teknolojiBağımsız kaçışı taşıyor, oysa projesi en az bir Teknoloji ya da Takım ilan etmiştir — kaçış yalnız doğuş anında, proje henüz hiçbir zemin ilan etmemişken meşrudur.`,
+    oneri: (p) => a(p, "hal") === "bağlı"
+      ? `teknolojiBağımsız satırını "${a(p, "kod")}" Katmanından kaldır; zemin bağı zaten takım: ya da kullanır: kenarıyla beyan edilmiştir.`
+      : `"${a(p, "kod")}" Katmanını önce takım: TAKIM-X ile onu yürüten Takıma, Takım yoksa kullanır: TEK-X ile tek bir Teknolojiye bağla ve teknolojiBağımsız satırını kaldır. İşin türü (karar, süreç, inceleme) AltKatmanın departman: alanında yazılır. Katmanı susturmak için gerçekte onu yürütmeyen bir Takım uydurma; gerçek sahip belli değilse uyarı açık iş olarak kalsın.`,
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" kilitli ve 'uygulama: gerekli' beyanlı AMA onu uygulayan hiçbir bağ yok — karar verilmiş, plana inmemiş; kilitli karar plana inmelidir.`,
@@ -2120,7 +2128,15 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "katmansız-teknoloji": {
     mesaj: (p) => `Katman "${a(p, "kod")}" has no ground binding — a Katman is a technology slice and declares its ground with at least one of two type-pure edges: takım: points at the Takım that runs it, kullanır: points at one concrete Teknoloji.`,
-    oneri: () => 'There are three valid paths: write takım: TAKIM-X (the Takım depends on its Teknolojiler; when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]), bind to one concrete Teknoloji with kullanır: TEK-X, or, if the layer is intentionally technology-independent, write teknolojiBağımsız: "gerekçe"; an empty rationale is not a declaration. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:.',
+    oneri: () => 'First write takım: TAKIM-X: the Takım that runs the layer depends on its own Teknolojiler, and when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]. If there is no Takım, bind to one concrete Teknoloji with kullanır: TEK-X. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:. The teknolojiBağımsız: "gerekçe" escape is valid only while the project has not yet declared any Teknoloji or Takım, that is at the moment of birth, and it is removed once a ground is declared. The kind of work (decision, process, review) is written in the departman: field of the AltKatman, not in the ground of the Katman.',
+  },
+  "yersiz-teknoloji-kaçışı": {
+    mesaj: (p) => a(p, "hal") === "bağlı"
+      ? `Katman "${a(p, "kod")}" carries a ground binding and still carries the teknolojiBağımsız escape — the escape is redundant and misleads the reader into thinking the layer has no ground.`
+      : `Katman "${a(p, "kod")}" carries the teknolojiBağımsız escape, but its project has declared at least one Teknoloji or Takım — the escape is valid only at the moment of birth, while the project has not yet declared any ground.`,
+    oneri: (p) => a(p, "hal") === "bağlı"
+      ? `Remove the teknolojiBağımsız line from the "${a(p, "kod")}" layer; its ground is already declared with a takım: or kullanır: edge.`
+      : `Bind the "${a(p, "kod")}" layer first with takım: TAKIM-X to the Takım that runs it, or, if there is no Takım, with kullanır: TEK-X to one Teknoloji, and remove the teknolojiBağımsız line. The kind of work (decision, process, review) is written in the departman: field of the AltKatman. Do not invent a Takım that does not actually run the layer just to silence it; if the real owner is not known, let the warning stay as open work.`,
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" is locked and declares 'uygulama: gerekli', BUT no binding implements it — the decision was made but never reached the plan; a locked decision must flow into the plan.`,

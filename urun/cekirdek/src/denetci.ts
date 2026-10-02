@@ -2701,6 +2701,29 @@ export function altKatmanTekilligiTanilari(
 export function katmansizTeknolojiTanilari(
   programlar: ReadonlyMap<string, Program>,
 ): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const k of katmanZeminOlcumu(programlar)) {
+    if (k.teknolojiBagi || k.beyan) continue;
+    out.push({ dosya: k.dosya, tani: eskiTani("katmansız-teknoloji", "uyarı",
+      { kod: k.kod }, { satir: k.dugum.satir, sutun: k.dugum.sutun }) });
+  }
+  return out;
+}
+
+/** Bir Katmanın zemin ölçümü: bağ var mı, kaçış beyanı ne diyor. İki MIM-1.4
+ *  nöbeti (katmansız-teknoloji ve yersiz-teknoloji-kaçışı) AYNI ölçümü okur;
+ *  bağın ne sayıldığı tek yerde yazılır ki iki nöbet aynı Katman için farklı
+ *  zemin görmesin. */
+interface KatmanZemini {
+  dosya: string;
+  dugum: Dugum;
+  kod: string;
+  teknolojiBagi: boolean;
+  /** Gerekçeli `teknolojiBağımsız` beyanı (kırpılmış); boş beyan tanımsızdır. */
+  beyan?: string;
+}
+
+function katmanZeminOlcumu(programlar: ReadonlyMap<string, Program>): KatmanZemini[] {
   const indeks = kodIndeksle(programlar);
   const kapsamlar = projeKapsamlari(programlar);
   const tumTanimlar = kodTanimlariIndeksle(programlar);
@@ -2727,7 +2750,7 @@ export function katmansizTeknolojiTanilari(
     });
   };
 
-  const out: Array<{ dosya: string; tani: Tani }> = [];
+  const out: KatmanZemini[] = [];
   for (const [dosya, program] of programlar) {
     const gez = (node: Dugum): void => {
       if (node.tur === "widget" && node.ad === "Katman") {
@@ -2749,18 +2772,100 @@ export function katmansizTeknolojiTanilari(
         for (const alanAdi of ["kullanır", "takım"] as const) {
           topla([...node.parametreler, ...node.ozellikler].find((p) => p.ad === alanAdi)?.deger);
         }
-        const teknolojiBagi = hedefler.some((h) => teknolojiHedefi(h, dosya));
         const beyan = [...node.parametreler, ...node.ozellikler]
           .find((p) => p.ad === "teknolojiBağımsız")?.deger?.metin?.trim();
-        if (!teknolojiBagi && !beyan) {
-          const kodP = node.parametreler.find((p) => p.ad === "kod")?.deger.metin ?? node.ad;
-          out.push({ dosya, tani: eskiTani("katmansız-teknoloji", "uyarı",
-            { kod: kodP }, { satir: node.satir, sutun: node.sutun }) });
-        }
+        out.push({
+          dosya, dugum: node,
+          kod: node.parametreler.find((p) => p.ad === "kod")?.deger.metin ?? node.ad,
+          teknolojiBagi: hedefler.some((h) => teknolojiHedefi(h, dosya)),
+          ...(beyan ? { beyan } : {}),
+        });
       }
       for (const c of node.cocuklar) gez(c);
     };
     for (const b of program.bildirimler) gez(b);
+  }
+  return out;
+}
+
+// ═══ MIM-1.4 · yersiz-teknoloji-kaçışı bekçisi (BKM-OLG-A11) ═════════════════
+//
+//   `teknolojiBağımsız` kaçışı yalnız doğuş anında meşrudur: projede henüz hiçbir
+//   Teknoloji ve Takım doğmamışken Kuruluş Katmanı bağlanacağı zemini bilemez.
+//   Zemin ilan edildiği anda kaçış geçiciliğini yitirir ve her Katman `takım:`
+//   ya da `kullanır:` kenarıyla bağlanır; işin türü (insan kararı, süreç, kabuk)
+//   AltKatmanın departmanında yazılır, Katmanın zemininde değil. Kusur ölçülmüştür:
+//   bir kardeş projenin planı teknolojileri ilan ettikten sonra altı Katmanı
+//   kaçışla Takımsız bıraktı ve motor sessiz kaldı, çünkü katmansız-teknoloji
+//   nöbeti gerekçeli beyanı mutlak muafiyet sayıyordu.
+//
+//   İKİ HÂL UYARILIR. ① Katmanın ait olduğu Projenin kapsamında en az bir
+//   Teknoloji ya da Takım ilanı varken kaçış taşıyan Katman. ② Gerçek bir zemin
+//   bağı taşıdığı hâlde kaçışı da taşıyan Katman; orada kaçış gereksizdir ve
+//   okuyana Katmanın zeminsiz olduğunu söyleyerek yanıltır.
+//
+//   PROJE KAPSAMI ORK-4 sınırıyla AYNI hükümle çizilir. Bir ilan, dosyasını
+//   kapsayan en yakın Proje Katmanınkiyle aynıysa sayılır; kardeş projenin ilanı
+//   tesadüfî komşuluktur ve tanıyı tetiklemez. Projenin kendi dosyalarındaki
+//   `çağır` köprüsüyle köke gelen ve bir Teknolojiye ya da Takıma çözülen ilan,
+//   tanımı nerede yaşarsa yaşasın meşru kapsamdır. Ders dünyasındaki bir Katmanın
+//   kapsamı kendi dosyasıdır (OGR-5: öğretim malzemesi ürün hükmüne girmez ve
+//   örnek kendi evreninde yaşar); köksüz Katman köksüz ilanları görür.
+//
+//   Düzey UYARI'dır ve var olan projeleri kırmaz: kaçış görünür bir göç kuyruğuna
+//   döner. Hata düzeyine terfi ayrı bir Adımın ve Founder kararının işidir.
+export function yersizTeknolojiKacisiTanilari(
+  programlar: ReadonlyMap<string, Program>,
+): Array<{ dosya: string; tani: Tani }> {
+  const olcum = katmanZeminOlcumu(programlar).filter((k) => k.beyan);
+  if (!olcum.length) return [];
+  const kapsamlar = projeKapsamlari(programlar);
+  const tumTanimlar = kodTanimlariIndeksle(programlar);
+  const TEKNOLOJI_TIPLERI = new Set(["Takım", "Teknoloji"]);
+
+  /** Bir dosyanın zemin kapsamı anahtarı: ders dünyası kendi dosyası, köklü dosya
+   *  sahibi Proje, köksüz dosya ortak köksüz evren. */
+  const kapsamAnahtari = (dosya: string): string => {
+    if (DERS_DUNYASI.test(dosya)) return `ders:${dosya}`;
+    const sahip = sahipProjeKapsami(dosya, kapsamlar);
+    return sahip ? `proje:${sahip.kod}@${sahip.onek}` : "köksüz";
+  };
+
+  // Kapsam başına zemin ilanı: önce doğrudan Teknoloji/Takım tanımları, sonra
+  // kapsamın kendi dosyalarındaki `çağır` köprüleri.
+  const zeminliKapsamlar = new Set<string>();
+  for (const tanimlar of tumTanimlar.values()) {
+    for (const t of tanimlar) {
+      if (TEKNOLOJI_TIPLERI.has(t.tip)) zeminliKapsamlar.add(kapsamAnahtari(t.dosya));
+    }
+  }
+  for (const [dosya, program] of programlar) {
+    const anahtar = kapsamAnahtari(dosya);
+    if (zeminliKapsamlar.has(anahtar)) continue;
+    const gez = (node: Dugum): void => {
+      if (node.tur === "çağır" && cagrilanZeminMi(node.ad)) zeminliKapsamlar.add(anahtar);
+      for (const c of node.cocuklar) gez(c);
+    };
+    for (const b of program.bildirimler) gez(b);
+  }
+
+  /** `çağır` hedefi bir Teknolojiye ya da Takıma çözülüyor mu? Ad alanlı hedef
+   *  yalnız o Projenin kapsamında aranır; çözülmeyen köprü zemin sayılmaz. */
+  function cagrilanZeminMi(hedef: string): boolean {
+    const { adAlani, yerel } = adAlaniAyir(hedef);
+    const tanimlar = tumTanimlar.get(yerel) ?? [];
+    if (adAlani === undefined) return tanimlar.some((t) => TEKNOLOJI_TIPLERI.has(t.tip));
+    const hedefKapsamlar = kapsamlar.filter((k) => k.kod === adAlani);
+    return tanimlar.some((t) => TEKNOLOJI_TIPLERI.has(t.tip)
+      && hedefKapsamlar.some((k) => onekKapsar(k.onek, t.dosya)));
+  }
+
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const k of olcum) {
+    const hal = k.teknolojiBagi ? "bağlı" : zeminliKapsamlar.has(kapsamAnahtari(k.dosya)) ? "ilanlı" : undefined;
+    if (!hal) continue;
+    out.push({ dosya: k.dosya, tani: eskiTani("yersiz-teknoloji-kaçışı", "uyarı",
+      { kod: k.kod, hal }, { satir: k.dugum.satir, sutun: k.dugum.sutun }) });
   }
   return out;
 }

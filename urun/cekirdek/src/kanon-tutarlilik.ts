@@ -190,7 +190,10 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // doğdu ve yeni küme seksen altıdan doksana çıktı.
   // 2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi DIL-2.2 zorlama satırına
   // bilgi düzeyinde ilan edildi ve yeni küme doksandan doksan bire çıktı.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 100 ||
+  // 2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
+  // doğdu; kanon metni Founder onayı beklediği için kimlik sabit kümeye girdi ve canlı
+  // sabit yüzden yüz bire çıktı.
+  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 16 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 37 ||
       emekliCanli.length !== 0 || borcCanli.length !== 37 || yuz33.length !== 1 ||
       [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {

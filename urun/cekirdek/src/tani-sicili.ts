@@ -263,7 +263,12 @@ export const YENI_TANI_INDEKS: ReadonlyMap<string, YeniTaniKaydi> =
 /** Yeni kanonun ilan ettiği tanı kimlikleri. */
 export const YENI_TANI_KODLARI: readonly string[] = YENI_TANI_KANONU.map((k) => k.kod);
 
-/** Yeni omurgadan önce yazılmış, kaynakta sabit duran tanı kodları (Türkçe sıra). */
+/** Yeni omurgadan önce yazılmış, kaynakta sabit duran tanı kodları (Türkçe sıra).
+ *
+ *  BKM-OLG-A11 (2026-10-02): `yersiz-teknoloji-kaçışı` bu kümeye girer, çünkü yeni
+ *  kümeye girmek kanonun `**Zorlama:**` satırında bir iddia ister ve MIM-1.4 metni
+ *  bu Adımda değiştirilmez; madde metni Founder onayına taslak olarak sunulmuştur.
+ *  Kanon taslağı onaylanıp zorlama satırına indiğinde kimlik yeni kümeye taşınır. */
 export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "ad-ayracı", "ad-biçimi", "aile-geçersiz", "anadizin-plan-karışması", "açık-adım", "açık-hatırlatıcı",
   "ağırlık-toplamı", "bağımlılık-mekanik", "beceri-drift", "beceri-terfisi", "beyansız-yapı",
@@ -288,7 +293,7 @@ export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "günsüz-tarih",
   "sahipsiz-belge", "silo-blok", "söz-dizim", "tarif-eksik",
   "tek-çocuk-kapsayıcı", "teknolojisiz-yüzey", "uygulanmamış-karar", "yanlış-alan",
-  "yer-uyuşmazlığı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",
+  "yer-uyuşmazlığı", "yersiz-teknoloji-kaçışı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",
   "zorlanamayan-koşul", "zorlanamayan-kural", "öneksiz-blok", "öz-bağımlılık",
 ];
 

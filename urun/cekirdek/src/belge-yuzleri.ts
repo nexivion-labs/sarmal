@@ -207,15 +207,18 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // KPS-SIR-A02 (2026-09-29): `girinti-yapı-uyumsuz` gözlemi DIL-2.2 zorlama satırına
   // bilgi düzeyinde ilan edildi; dağılım 48/22/21, yönlendirme 150/3/38 ve iki dilli
   // katalog yüz doksan oldu.
+  // BKM-OLG-A11 (2026-10-02): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
+  // önceki gövdenin sabit kümesinde doğdu; yeni küme dağılımı değişmedi, yönlendirme
+  // 151/3/38 ve iki dilli katalog yüz doksan bir oldu.
   if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/21" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "150/3/38" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "151/3/38" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 190) {
+      olgular.ikiDilliTani !== 191) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk

@@ -152,6 +152,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
 
   // ── Bugün PANELDE de koşan (eski eklenti crossTanilar — cross-file ama ucuz+saf) ailesi. ──
   { uretici: "katmansizTeknolojiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
+  // BKM-OLG-A11 (2026-10-02): kaçışın doğuş anına sınırlanması; ikizinin ölçümünü okur ve aynı yüzeylerde koşar.
+  { uretici: "yersizTeknolojiKacisiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "yinelenenKodTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "dagTanilari", modul: "dag.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
   { uretici: "gizliBagimlilikTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },

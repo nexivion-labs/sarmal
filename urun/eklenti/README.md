@@ -25,7 +25,7 @@ Sarmal tamamen yereldir. Eklentinin çalışma zamanı bağımlılığı sıfır
 4. Bir `.sar` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
-Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 190'ı ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 48 hata, 22 uyarı ve 21 bilgidir; sabit yönlendirme matrisi 150/3/38 olarak ölçülür.
+Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin 191'i ve 18 MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı 48 hata, 22 uyarı ve 21 bilgidir; sabit yönlendirme matrisi 151/3/38 olarak ölçülür.
 
 Sarmal Apache-2.0 lisanslıdır. Lisans bildirimi [LICENSE.md](LICENSE.md) dosyasındadır.
 <!-- SARMAL:URETILEN:EKLENTI-README:SON -->

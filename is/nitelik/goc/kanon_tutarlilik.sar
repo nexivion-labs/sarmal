@@ -20,7 +20,7 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
 | `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
 | kanon demeti | `b8d33623ff8ae76467114439fb403403731521a491063efd62f1deb240a56861` |
-| `urun/cekirdek/src/tani-sicili.ts` | `74c3b3880633d11f89bb2c6707846b3df3712523607cb15066165e1bfac6bf2c` |
+| `urun/cekirdek/src/tani-sicili.ts` | `50f75b27616f0de5075a15ae06ea3bb660dfaf94201216a42fe870463db3924d` |
 | `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 
@@ -306,7 +306,7 @@ Plan konisindeki 69 yeni tanı tabanı canlı sicilde korunur; YUZ-3.3 maddesini
 
 ## Canlı korunan sabit küme
 
-Yeni kümeden önceki 100 sabit kimlik canlı sicilde korunur. Kanonun yapısal `tanı:` alanında açıkça geçen maddeler ikinci sütunda gösterilir; “doğrudan madde iddiası yok” ifadesi yeni bir eşleme icat edilmediğini bildirir.
+Yeni kümeden önceki 101 sabit kimlik canlı sicilde korunur. Kanonun yapısal `tanı:` alanında açıkça geçen maddeler ikinci sütunda gösterilir; “doğrudan madde iddiası yok” ifadesi yeni bir eşleme icat edilmediğini bildirir.
 
 | Korunan kimlik | Yapısal kanon iddiası | Durum |
 |---|---|---|
@@ -405,6 +405,7 @@ Yeni kümeden önceki 100 sabit kimlik canlı sicilde korunur. Kanonun yapısal 
 | `uygulanmamış-karar` | `YAS-2.1` | canlı-sabit |
 | `yanlış-alan` | `DIL-1.4` | canlı-sabit |
 | `yer-uyuşmazlığı` | doğrudan madde iddiası yok | canlı-sabit |
+| `yersiz-teknoloji-kaçışı` | doğrudan madde iddiası yok | canlı-sabit |
 | `yetim-meyve` | `STR-4` | canlı-sabit |
 | `yinelenen-kod` | doğrudan madde iddiası yok | canlı-sabit |
 | `yinelenen-parametre` | `DIL-1.2` | canlı-sabit |
@@ -455,7 +456,7 @@ Veri( kod: VR-GOC-KANON-TUTARLILIK-MUHRU,
       ne: "Resmi yasa/kanon sekizlisinin 162/162 maddesi, 38 Karar ve 124 Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )
 
 Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
-      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır; önceki 100 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
+      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
       ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır." )

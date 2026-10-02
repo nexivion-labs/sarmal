@@ -758,6 +758,108 @@ Blok( kod: BLK-KT, ne: "iş" ) {
   assert.equal(katmansizTeknolojiTanilari(p(", kullanır: ADM-KT")).length, 1, "teknoloji-dışı kullanır hedefi bağ sayılmaz");
 });
 
+// ── MIM-1.4 · BKM-OLG-A11: yersiz-teknoloji-kaçışı (kaçış yalnız doğuş anında meşrudur) ──
+const kacisKatmani = (ek = "") => `Faz( kod: FAZ-YK, ad: "Mevsim", ne: "d" ) { Blok( kod: BLK-YK, ad: "İş", ne: "i" ) {
+  Katman( kod: KAT-YK, ad: "Mimari", ne: "k", teknolojiBağımsız: "teknoloji henüz seçilmedi"${ek} ) {
+    Adım( kod: ADM-YK, ne: "a", durum: beklemede, bağımlı: [] ) } } }`;
+const yersizKacis = async (dosyalar: Record<string, string>): Promise<string[]> => {
+  const { yersizTeknolojiKacisiTanilari } = await import("../src/denetci.ts");
+  const programlar = new Map(Object.entries(dosyalar).map(([d, k]) => [d, ayristir(belirtecle(k))]));
+  return yersizTeknolojiKacisiTanilari(programlar).map((t) => `${t.tani.kod}:${t.tani.duzey}:${String(t.tani.mesaj).match(/"([^"]+)"/)?.[1]}`);
+};
+
+test("MIM-1.4 (BKM-OLG-A11): Teknoloji ilanlı projede teknolojiBağımsız taşıyan Katman yersiz-teknoloji-kaçışı UYARISI alır", async () => {
+  const t = await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) }`,
+    "a/plan.sar": kacisKatmani(),
+  });
+  assert.deepEqual(t, ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  // Takım ilanı da zemin ilanıdır.
+  assert.equal((await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Takım( kod: TAKIM-A, ne: "ekip" ) }`,
+    "a/plan.sar": kacisKatmani(),
+  })).length, 1, "Takım ilanı da kaçışı yersiz kılar");
+});
+
+test("MIM-1.4 (BKM-OLG-A11): hiç Teknoloji ve Takım ilan etmemiş projede kaçış meşrudur ve tanı susar (doğuş anı)", async () => {
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): kardeş projenin Teknoloji ilanı tanıyı tetiklemez", async () => {
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+    "b/b_anadizin.sar": `Proje( kod: PRJ-B, ad: "b", rejim: esnek, ne: "y" ) { Teknoloji( kod: TEK-B, ne: "t" ) Takım( kod: TAKIM-B, ne: "ekip", bağımlı: [ TEK-B ] ) }`,
+  }), [], "kardeş projenin ilanı Katmanın projesine sayılmamalı");
+});
+
+test("MIM-1.4 (BKM-OLG-A11): çağır köprüsüyle köke gelen ilan meşru kapsamdır; çözülmeyen köprü zemin sayılmaz", async () => {
+  const ortak = `Teknoloji( kod: TEK-ORTAK, ne: "paylaşılan zemin" )`;
+  // Ortak ilan köksüz bir dosyada yaşar; proje onu anadizininden çağırır.
+  assert.deepEqual(await yersizKacis({
+    "ortak.sar": ortak,
+    "a/a_anadizin.sar": `çağır TEK-ORTAK\nProje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  // Köprüsüz aynı köksüz ilan projeye ait değildir.
+  assert.deepEqual(await yersizKacis({
+    "ortak.sar": ortak,
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+  // Bir Teknolojiye çözülmeyen köprü (ör. Blok çağrısı) zemin ilanı değildir.
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `çağır BLK-YK\nProje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): gerçek zemin bağıyla birlikte taşınan kaçış gereksizdir ve uyarı alır; bağlı ve kaçışsız Katman susar", async () => {
+  const proje = `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) Takım( kod: TAKIM-A, ne: "ekip", bağımlı: [ TEK-A ] ) }`;
+  const t = await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacisKatmani(", takım: TAKIM-A") });
+  assert.deepEqual(t, ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  const { yersizTeknolojiKacisiTanilari } = await import("../src/denetci.ts");
+  const bagli = yersizTeknolojiKacisiTanilari(new Map([
+    ["a/a_anadizin.sar", ayristir(belirtecle(proje))],
+    ["a/plan.sar", ayristir(belirtecle(kacisKatmani(", takım: TAKIM-A")))],
+  ]));
+  assert.match(String(bagli[0].tani.mesaj), /zemin bağı taşıdığı hâlde/);
+  const kacissiz = kacisKatmani().replace(/, teknolojiBağımsız: "[^"]*"/, ", takım: TAKIM-A");
+  assert.deepEqual(await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacissiz }), []);
+  // Boş gerekçe kaçış sayılmaz; o hâli katmansız-teknoloji söyler, aynı kusur iki kez konuşmaz.
+  assert.deepEqual(await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacisKatmani().replace("teknoloji henüz seçilmedi", "  ") }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): ders dünyasındaki Katmanın kapsamı kendi dosyasıdır; ürünün ilanı öğretim örneğini uyarmaz", async () => {
+  const urun = `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) }`;
+  assert.deepEqual(await yersizKacis({ "a_anadizin.sar": urun, "ogreti/ornek/dogus.sar": kacisKatmani() }), []);
+  assert.deepEqual(await yersizKacis({
+    "a_anadizin.sar": urun,
+    "ogreti/ornek/dogus.sar": `Teknoloji( kod: TEK-ORN, ne: "örnek" )\n${kacisKatmani()}`,
+  }), ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): yeni tanının iki dilli metni eşit kurulur ve katmansız-teknoloji önerisi önce takım: yolunu söyler", async () => {
+  const { ONCEKI_TANI_METINLERI, ONCEKI_TANI_METINLERI_EN } = await import("../src/tani-metinleri.ts");
+  for (const hal of ["bağlı", "ilanlı"]) {
+    const tr = ONCEKI_TANI_METINLERI["yersiz-teknoloji-kaçışı"];
+    const en = ONCEKI_TANI_METINLERI_EN["yersiz-teknoloji-kaçışı"];
+    assert.ok(tr.mesaj({ kod: "KAT-X", hal }).includes("KAT-X") && en.mesaj({ kod: "KAT-X", hal }).includes("KAT-X"));
+    assert.ok(tr.oneri?.({ kod: "KAT-X", hal }) && en.oneri?.({ kod: "KAT-X", hal }));
+  }
+  const trOneri = String(ONCEKI_TANI_METINLERI["katmansız-teknoloji"].oneri?.({}));
+  const enOneri = String(ONCEKI_TANI_METINLERI_EN["katmansız-teknoloji"].oneri?.({}));
+  assert.ok(trOneri.indexOf("takım:") < trOneri.indexOf("kullanır:") && trOneri.indexOf("kullanır:") < trOneri.indexOf("teknolojiBağımsız"));
+  assert.ok(enOneri.indexOf("takım:") < enOneri.indexOf("kullanır:") && enOneri.indexOf("kullanır:") < enOneri.indexOf("teknolojiBağımsız"));
+  assert.match(trOneri, /doğuş anında/);
+  assert.match(enOneri, /moment of birth/);
+  assert.match(trOneri, /departman:/);
+  assert.match(enOneri, /departman:/);
+});
+
 // ── YAS-2.1: uygulanmamış-karar bekçisi (karar yönlendirme kapısı) ─────────────
 test("YAS-2.1: gerekli+kilitli+bağsız karar UYARI alır; kendinden-tam / bekliyor / beyansız / referans-bağlı karar susar", async () => {
   const { uygulanmamisKararTanilari } = await import("../src/denetci.ts");
