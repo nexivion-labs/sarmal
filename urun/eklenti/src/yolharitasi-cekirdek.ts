@@ -93,7 +93,7 @@ export function enDerinVarlik<T extends { kokDizin: string }>(varliklar: readonl
 //   dokunur ve kenar yapısına hiç dokunmaz; böyle bir turda önceki sıra hâlâ
 //   birebir doğrudur ve yeniden hesaplanması saf israftır. İmza kenar yapısının
 //   kanonik özetidir ve iki milisaniyenin altında kurulur; imza değişmediyse
-//   hesap hiç koşmaz, değiştiyse eskisi gibi tam hesap koşar. Böylece hiçbir
+//   hesaplama hiç koşmaz, değiştiyse eskisi gibi tam hesaplama koşar. Böylece hiçbir
 //   turda bayat sıra gösterilmez ve kenar değiştiren turda gerileme olmaz.
 //
 //   Motorun kendisine (cekirdek/dag.ts) DOKUNULMAMIŞTIR: bu Adımın sınırı
@@ -137,7 +137,7 @@ export function grafImzasi(dugumler: ReadonlyMap<string, KenarliDugum>): string 
  * Topolojik sıra belleği: aynı kenar yapısı için hesabı bir kez koşar.
  *
  * Bellek YALNIZ imzaya bakar ve başka hiçbir şeye bakmaz; bu yüzden bayat sıra
- * döndürmesi imkânsızdır — yapı değiştiği anda imza da değişir ve hesap koşar.
+ * döndürmesi imkânsızdır — yapı değiştiği anda imza da değişir ve hesaplama koşar.
  * `yenidenHesaplandi` alanı nöbetin ölçtüğü kanıttır: hesabın koşup koşmadığı
  * süre ölçümüne değil bu bayrağa bakılarak sınanır, çünkü süre ölçümü makinenin
  * anlık yüküne göre dalgalanır ve nöbeti kırılgan yapardı.
