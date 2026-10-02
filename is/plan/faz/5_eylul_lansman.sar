@@ -1282,7 +1282,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "Tanı uyarı düzeyindedir; hata düzeyine terfi BKM-OLG-A12 Adımının işidir. Başka projelerin (orkestrasyon, hesap) dosyalarına dokunulmaz; insan işi Katmanlar için yeni bir tür tasarlanmaz, çünkü o bir kanon kararıdır ve Founder'ındır"
         }
-        Adım( kod: BKM-OLG-A12, ad: "Kaçış Uyarısının Hataya Terfisi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-OLG-A11 ], referans: [ MIM-1.4 ],
+        Adım( kod: BKM-OLG-A12, ad: "Kaçış Uyarısının Hataya Terfisi", durum: beklemede, öncelik: p2, bağımlı: [ BKM-OLG-A11 ], referans: [ MIM-1.4 ], onayBekler: founder,
           ne:    "⛔ Uyarı tek başına borcu görünür kılar ama kapıyı kapatmaz; ajanlar akışı durdurmayan uyarıyı geçebilir. Var olan kaçışlar temizlendikten ve insan işi Katmanların nasıl modelleneceği kararlaştırıldıktan sonra tanı hata düzeyine terfi eder" ) {
           görev: "Çatıdaki her projede yeni uyarının ateşlediği Katmanları denetle-proje ile say; insan ve onay işlerinin (Founder kalemleri, çapraz araç zinciri gibi) kaçış yerine birinci sınıf bir türle mi yoksa var olan bir Takımla mı taşınacağına ilişkin seçenekleri Founder'a sun; karar kanona indikten ve sayı sıfıra düştükten sonra tanıyı hata düzeyine terfi ettir"
           kabul: [
