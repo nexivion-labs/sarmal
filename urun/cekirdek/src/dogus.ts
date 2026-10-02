@@ -341,6 +341,13 @@ export function dogusRaporu(s: DogusSonuc, hedef: string): string {
     s.yazilan.length || s.genisletilen.length
       ? `🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`
       : "📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.");
+  // BKM-OLG-A11 (MIM-1.4): Kuruluş Katmanının teknoloji kaçışı yalnız doğuş anı içindir;
+  // rapor bunu açıkça söyler ki ajan kaçışı kalıcı bir üçüncü yol gibi kopyalamasın.
+  if (s.yazilan.some((y) => y.endsWith("is/plan/faz/1_dogus.sar"))) {
+    satirlar.push(
+      "⏳ Kuruluş Katmanındaki teknolojiBağımsız satırı GEÇİCİDİR: yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur.",
+      "   İlk Teknoloji ya da Takım ilan edilince motor onu yersiz-teknoloji-kaçışı uyarısıyla bildirir; kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır. Yeni Katmanlara kaçış kopyalanmaz; işin türü AltKatmanın departman: alanında yazılır.");
+  }
   if (s.yazilan.length) {
     satirlar.push(
       `🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,

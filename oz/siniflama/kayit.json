@@ -1796,12 +1796,12 @@
         "ad"
       ],
       "opsiyonel": [
-        "teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"
+        "teknolojiBağımsız (geçici doğuş kaçışı: yalnız projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken Kuruluş Katmanı gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; zemin ilan edildiğinde satır silinir ve Katman takım ya da kullanır kenarıyla bağlanır, aksi hâlde yersiz teknoloji kaçışı uyarısı doğar; boş gerekçe beyan sayılmaz)"
       ],
       "tür": {
         "teknolojiBağımsız": "metin"
       },
-      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz; zeminsiz Katman yalnız `teknolojiBağımsız` beyanıyla kurulur ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
+      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz ve önce `takım` yolu denenir. Zeminsiz Katman yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken geçici `teknolojiBağımsız` beyanıyla kurulur; zemin ilan edildiğinde beyan kaldırılır ve Katman bağlanır. İşin türü zeminde değil AltKatmanın `departman` alanında yazılır ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
     },
     "Adım": {
       "zorunlu": [

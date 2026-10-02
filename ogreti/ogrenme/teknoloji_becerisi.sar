@@ -46,14 +46,24 @@ Yetenek( kod: YTN-TEKNOLOJI, ne: "teknolojiyi giriş ilanında bir kez ilan etme
   seçenekler sunar ve seçimi ona bırakır. Karar mimari diyalogda verilir ve
   ancak verildikten sonra ilana iner.
 
-  ## Teknoloji-bağımsız Katman dürüst bir beyandır
-  Bir Katman gerçekten teknoloji SEÇEN karar işiyse — teknoloji KULLANAN yapım
-  işi değilse — bunu susarak değil beyan ederek söyler:
-  `Katman( kod: KAT-MIMARI, teknolojiBağımsız: "gerekçe" )`. Beyan gerekçe
-  taşımak zorundadır; gerekçesiz bir beyan bekçiyi susturmanın kestirme yolu
-  hâline gelir ve o kestirme, planın sessizce yalan söylemesiyle biter.
-  `katmansız-teknoloji` tanısı bu boşluğu görünür kılar; tanıyı beyanla
-  kapatmak meşrudur, sahte bir yığın adıyla kapatmak değildir.
+  ## Teknoloji kaçışı yalnız doğuş anına aittir
+  `teknolojiBağımsız: "gerekçe"` beyanı kalıcı bir üçüncü yol değildir. Yalnız
+  projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken, yani doğuş anında
+  meşrudur: o anda Kuruluş Katmanı teknoloji SEÇEN karar işidir ve bağlanacağı
+  zemin henüz doğmamıştır. Zemin ilan edildiği anda kaçış geçiciliğini yitirir;
+  Kuruluş Adımı kapanmadan önce her Katman `takım:` ya da `kullanır:` kenarıyla
+  bağlanır ve kaçış satırı silinir. Zemin ilanlı bir projede kaçış taşıyan
+  Katmanı `yersiz-teknoloji-kaçışı` uyarısı bildirir; zemin bağıyla birlikte
+  taşınan kaçış da aynı uyarıyı alır, çünkü okuyana Katmanın zeminsiz olduğunu
+  söyleyerek yanıltır.
+
+  İşin TÜRÜ Katmanın zemininde değil AltKatmanın `departman:` alanında yazılır:
+  bir karar ya da inceleme işi `departman: planlama` ya da `departman: inceleme`
+  taşıyan bir AltKatmandır ve yine onu yürüten Takımın Katmanında yaşar. Uyarıyı
+  susturmak için gerçekte o işi yürütmeyen bir Takım uydurmak sahte sahipliktir
+  ve kaçıştan daha kötüdür; gerçek sahip belli değilse uyarı açık iş olarak
+  kalır. `katmansız-teknoloji` tanısını da sahte bir yığın adıyla kapatmak
+  meşru değildir.
 
   ## Teknoloji klasör doğurur
   Teknoloji seçimi mimariye iner: seçilen yığın kendi Kitaplıklarını doğurur
@@ -64,28 +74,30 @@ Yetenek( kod: YTN-TEKNOLOJI, ne: "teknolojiyi giriş ilanında bir kez ilan etme
   taraf klasör uydurmaz.
 
   ## Sonuç
-  ✅ Kabul: bu beceriyi kullanan ajanın yazdığı planda her Katman ya tek bir
-  Takım/Teknoloji hedefine `kullanır:` kenarıyla bağlıdır ya da gerekçeli bir
-  teknoloji-bağımsız beyanı taşır; teknoloji kullanıcıya sorularak seçilmiştir
-  ve giriş ilanında bir kez ilan edilmiştir.
+  ✅ Kabul: bu beceriyi kullanan ajanın yazdığı planda her Katman onu yürüten
+  Takıma `takım:` kenarıyla ya da tek bir somut Teknolojiye `kullanır:`
+  kenarıyla bağlıdır; teknoloji kaçışı yalnız hiçbir zemin ilan edilmemiş
+  doğuş anındaki Kuruluş Katmanında görülür; teknoloji kullanıcıya sorularak
+  seçilmiş ve giriş ilanında bir kez ilan edilmiştir.
 |<--
 
 Beceri( kod: BCR-TEKNOLOJI,
         sağlar: YTN-TEKNOLOJI,
         yığın: evrensel,
-        ne: "Teknolojiyi giriş ilanında bir kez ilan ettirir, Takım üzerinden plan Katmanına tek hedefli bir kullanır kenarıyla bağlatır ve teknoloji seçimini ajanın tahminine değil kullanıcının kararına bırakır",
-        neZaman: "Yeni bir ağacın giriş ilanı yazılırken; bir plan Katmanı açılırken ya da bir Katman teknoloji bağı taşımadığı için katmansız-teknoloji tanısı doğduğunda; bir Bloka ikinci bir teknoloji girdiğinde",
-        anlatır: [ "katmansız-teknoloji", "çok-teknolojili-katman" ],
+        ne: "Teknolojiyi giriş ilanında bir kez ilan ettirir, plan Katmanını önce takım kenarıyla onu yürüten Takıma, Takım yoksa kullanır kenarıyla tek bir Teknolojiye bağlatır ve teknoloji seçimini ajanın tahminine değil kullanıcının kararına bırakır",
+        neZaman: "Yeni bir ağacın giriş ilanı yazılırken; bir plan Katmanı açılırken ya da bir Katman teknoloji bağı taşımadığı için katmansız-teknoloji tanısı doğduğunda; zemin ilanlı projede bir Katman teknoloji kaçışı taşıdığı için yersiz-teknoloji-kaçışı tanısı doğduğunda; bir Bloka ikinci bir teknoloji girdiğinde",
+        anlatır: [ "katmansız-teknoloji", "yersiz-teknoloji-kaçışı", "çok-teknolojili-katman" ],
         kurallar: [
-          "Sırayı tersine çevirme: önce Teknoloji ilan edilir, sonra Takım o yığına bağlanır, en son plan Katmanı Takıma kullanır kenarıyla bağlanır — teknolojiye bağlanmamış bir Katmandan iş dalı doğmaz (ORK-2.4)",
+          "Sırayı tersine çevirme: önce Teknoloji ilan edilir, sonra Takım o yığına bağlanır, en son plan Katmanı Takıma takım kenarıyla bağlanır; Takım yoksa Katman tek bir Teknolojiye kullanır kenarıyla bağlanır — teknolojiye bağlanmamış bir Katmandan iş dalı doğmaz (ORK-2.4)",
           "Bir Katmana tek hedef ver: Katman birden çok Teknoloji kullanamaz, çünkü çok teknolojili Katman derleme, sınama ve sorumluluk sınırlarını karıştırır; iki teknoloji gerekiyorsa iki Katman kur (MIM-1.4)",
           "Teknolojiyi kendin seçme: doğuş paketi hiçbir yığını varsaymaz ve bu bilinçlidir — seçenekleri tek cümlelik tanımlarıyla sun, kararı kullanıcıya bırak ve ancak karar verildikten sonra ilana yaz",
-          "Teknoloji gerçekten yoksa susma, BEYAN et: teknolojiBağımsız alanına gerekçesini yaz; gerekçesiz beyan bekçiyi susturmanın kestirmesidir ve plan o kestirmeyle sessizce yalan söylemeye başlar",
+          "Kaçışı doğuş anında bırak: teknolojiBağımsız beyanı yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur; zemin ilan edilince Kuruluş Adımı kapanmadan her Katman takım ya da kullanır kenarıyla bağlanır ve kaçış silinir",
+          "İşin türünü zemine değil departmana yaz: karar, süreç ya da inceleme işi AltKatmanın departman alanında söylenir; Katman yine onu yürüten Takıma bağlanır ve uyarıyı susturmak için gerçekte işi yürütmeyen bir Takım uydurulmaz",
           "Sahte yığın adıyla tanı kapatma: var olmayan bir Teknoloji koduna verilen bağ kırık referanstır (DIL-1.4) ve motor onu aynı turda bildirir",
           "Teknoloji seçimini mimariye indir: seçilen yığın kendi Kitaplıklarını doğurur ve bu Kitaplıklar giriş ilanında aynı kademede ilan edilir; raflar Kitaplıkların İÇİNDE yaşar, kökün altına çıplak Raf yazılmaz (MIM-3.2)",
           "Üretilebilir artefaktın üretim yerini kendisine söylet: Ekran, Uç, Tablo, Servis ve Kimlik düğümleri kodunun düşeceği yeri dosya: beyanıyla bildirir; üreten taraf klasör uydurmaz"
         ],
-        kabul: "Planda her Katman ya tek bir Takım/Teknoloji hedefine kullanır kenarıyla bağlıdır ya da gerekçeli bir teknoloji-bağımsız beyanı taşır; teknoloji giriş ilanında bir kez ilan edilmiştir ve seçimi kullanıcı vermiştir",
+        kabul: "Planda her Katman onu yürüten Takıma takım kenarıyla ya da tek bir Teknolojiye kullanır kenarıyla bağlıdır; teknoloji kaçışı yalnız hiçbir zemin ilan edilmemiş doğuş anında görülür; teknoloji giriş ilanında bir kez ilan edilmiştir ve seçimi kullanıcı vermiştir",
         örnek: "Kullanıcı: 'arka yüzü de ekleyelim' → Ajan sorar: 'arka yüz hangi yığınla yürüsün — ① TypeScript üstünde Node, ② Python üstünde FastAPI, ③ başka bir şey mi?' Seçim gelince giriş ilanına Teknoloji( kod: TEK-TS, ne: \"TypeScript çalışma dili\" ) ve Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] ) düğümlerini yazar, plan tarafında Katman( kod: KAT-ARKAYUZ, takım: TAKIM-ARKAYUZ ) kenarını kurar ve yazımdan sonra denetimi koşturur",
-        antiDesen: "Katmanı teknolojiye hiç bağlamadan plan yazmak ya da bağı iki hedefli yazmak; teknolojiyi kullanıcıya sormadan ajanın kendi alışkanlığından seçmesi; teknolojiBağımsız beyanını gerekçesiz kullanarak bekçiyi susturmak. Üçü de kapıyı yeşil bırakır ve planı yalan söyler hâle getirir — motor yanlış etiketi yakalayamaz",
+        antiDesen: "Katmanı teknolojiye hiç bağlamadan plan yazmak ya da bağı iki hedefli yazmak; teknolojiyi kullanıcıya sormadan ajanın kendi alışkanlığından seçmesi; teknolojiBağımsız beyanını doğuş anı geçtikten sonra kalıcı bir yol gibi kullanarak bekçiyi susturmak. Üçü de kapıyı yeşil bırakır ve planı yalan söyler hâle getirir — motor yanlış etiketi yakalayamaz",
         uygular: MIM-1.4 )

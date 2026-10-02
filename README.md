@@ -21,7 +21,7 @@ Doğuş paketiyle doğan küçük bir projede ikinci Faz kendi dosyasında açı
 Faz( kod: FAZ-RANDEVU-UC, ad: "Randevu Ucu Mevsimi" ) {
   Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu",
     ne: "Randevu oluşturma ucunun yazımı" ) {
-    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
+    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", takım: TAKIM-ARKAYUZ ) {
       AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
         Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
           görev: "POST /randevu ucunu yaz",

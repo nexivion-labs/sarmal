@@ -80,6 +80,30 @@ test("dogusYaz + GERÇEK denetim: boş dizinde doğan proje sıfır hata verir",
   }
 });
 
+test("BKM-OLG-A11 · doğuş kaçışı geçicidir: Kuruluş kabulü kaçış temizliğini ister, boş proje uyarısız doğar, ilk ilan uyarıyı açar", () => {
+  const dizin = geciciDizin();
+  try {
+    const sonuc = dogusYaz(dizin, "kacis-deneme", "2026-10-02");
+    const plan = readFileSync(join(dizin, "is/plan/faz/1_dogus.sar"), "utf8");
+    assert.match(plan, /"teknoloji ilan edildikten sonra hiçbir Katmanda teknolojiBağımsız kaçışı kalmadı;/u,
+      "Kuruluş Adımının kabulü kaçış temizliği ölçütünü taşımalı");
+    assert.match(plan, /takım: kenarıyla kurulan Takım'a bağla/u, "görev Takımı takım: kenarıyla bağlatmalı");
+    assert.match(dogusRaporu(sonuc, dizin), /teknolojiBağımsız satırı GEÇİCİDİR/u, "doğuş raporu kaçışın geçici olduğunu söylemeli");
+    const denetle = (): string => spawnSync(process.execPath, [join(KOK, "src", "sarmal.ts"), "denetle", dizin],
+      { encoding: "utf8" }).stdout;
+    const ilk = denetle();
+    assert.match(ilk, /0 hata/);
+    assert.doesNotMatch(ilk, /yersiz-teknoloji-kaçışı/u, "hiç zemin ilan etmemiş projede kaçış meşrudur");
+    // İlk Teknoloji ilanı kaçışı yersiz kılar: Kuruluş kabulünün ölçütü motorda görünür.
+    const anadizin = join(dizin, sonuc.yazilan.find((y) => y.endsWith("_anadizin.sar"))!);
+    const kaynak = readFileSync(anadizin, "utf8");
+    writeFileSync(anadizin, kaynak.replace("  // ① TEKNOLOJİ", '  Teknoloji( kod: TEK-DENEME, ne: "deneme yığını" )\n  // ① TEKNOLOJİ'), "utf8");
+    assert.match(denetle(), /yersiz-teknoloji-kaçışı/u, "zemin ilanından sonra kaçış uyarı almalı");
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});
+
 test("dolu-dizin sözleşmesi: var olan dosya ezilmez, atlanır ve raporlanır", () => {
   const dizin = geciciDizin();
   try {

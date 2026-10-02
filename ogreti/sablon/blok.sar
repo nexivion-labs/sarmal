@@ -20,9 +20,13 @@ Faz( kod: FAZ-Ornek, ad: "<Fazın Adı>", ne: "<bu dönemin amacı>" ) {
   |<--
   Blok( kod: BLK-Ornek, ad: "<Blokun Adı>", ne: "<blok amacı>", uygular: ORK-7 ) {
 
-    // Katman = TEKNOLOJİ dilimi (MIM-1.4): Takım bağı Katman'da beyan edilir —
-    // katmansız-teknoloji bekçisi burada Takım/Teknoloji bağı arar (uyarı düzeyi;
-    // bilinçli teknolojisizse teknolojiBağımsız: "gerekçe" beyanı susturur).
+    // Katman = TEKNOLOJİ dilimi (MIM-1.4): zemin Katman'da beyan edilir — önce
+    // takım: ile onu yürüten Takıma, Takım yoksa kullanır: ile tek bir Teknolojiye.
+    // katmansız-teknoloji bekçisi burada bu bağı arar (uyarı düzeyi). İşin TÜRÜ
+    // (karar, süreç, inceleme) Katmanın zemininde değil AltKatmanın departman:
+    // alanında yazılır. teknolojiBağımsız kaçışı bu şablonda YOKTUR: yalnız doğuş
+    // anında, projede hiç Teknoloji ve Takım yokken meşrudur; zemin ilanlı projede
+    // yersiz-teknoloji-kaçışı uyarısını alır.
     // İDEAL DİZİLİŞ (MIM-1.5): Katman → AltKatman (konu modülü) → Adım — Adım'ı
     // doğrudan Katman'a yazmak ÇIPLAK yazımdır (bilgi bekçisi ölçer, cezasız).
     // KAVUŞUM (asıl dert — ORK-2.3 sözleşme-önce): farklı Katmanların modülleri

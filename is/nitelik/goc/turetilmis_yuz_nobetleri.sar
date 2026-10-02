@@ -29,7 +29,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon demeti (A03 formülü)` | `b8d33623ff8ae76467114439fb403403731521a491063efd62f1deb240a56861` |
-| `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
+| `oz/siniflama/kayit.json` | `15483bcfbff09477f333984e2e2d7cb120bc7f4376b80da76ac4abda3045f93d` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `50f75b27616f0de5075a15ae06ea3bb660dfaf94201216a42fe870463db3924d` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `64329c3512c06e9ef52185e3d6bdcdd1aaaab50c49251001ce507d74640395dd` |

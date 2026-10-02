@@ -281,3 +281,20 @@ test("BKM-MCP-A03: sunucu talimatı yazma kapısının ÜÇ parçasını da taş
     assert.match(en, desen, `İngilizce yüz '${ad}' parçasını taşımalı`);
   }
 });
+
+// ── BKM-OLG-A11 · öğretim yüzleri teknoloji kaçışını doğuş dışındaki bir Katman için örneklemez ──
+test("BKM-OLG-A11: README iki dilde, blok şablonu, teknoloji becerisi, sınıflama kaydı ve başla rehberi kaçışı yalnız doğuş anına bağlar", () => {
+  const kok = fileURLToPath(new URL("../../../", import.meta.url));
+  const oku = (yol: string): string => readFileSync(join(kok, yol), "utf8");
+  // Örnek Katman satırı kaçış taşımaz: kaçış yalnız doğuş şablonunun Kuruluş Katmanında yaşar.
+  const kacisliKatman = /Katman\([^)\n]*teknolojiBağımsız:/u;
+  for (const yol of ["README.md", "README.en.md", "ogreti/sablon/blok.sar", "ogreti/ogrenme/teknoloji_becerisi.sar"]) {
+    assert.doesNotMatch(oku(yol), kacisliKatman, `${yol} kaçışı bir Katman örneğinde gösteriyor`);
+  }
+  assert.match(oku("ogreti/sablon/blok.sar"), /yalnız doğuş\s*\/\/\s*anında/u);
+  assert.match(oku("ogreti/ogrenme/teknoloji_becerisi.sar"), /Teknoloji kaçışı yalnız doğuş anına aittir/u);
+  assert.match(oku("ogreti/ogrenme/teknoloji_becerisi.sar"), /anlatır: \[ "katmansız-teknoloji", "yersiz-teknoloji-kaçışı"/u);
+  assert.match(oku("oz/siniflama/kayit.json"), /yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken geçici `teknolojiBağımsız` beyanıyla kurulur/u);
+  assert.match(oku("oz/ceviri/dil-sozlugu.json"), /only at the moment of birth, while the project has not yet declared any Technology or TechStack/u);
+  assert.match(oku("urun/cekirdek/src/mcp.ts"), /`teknolojiBağımsız` kaçışı yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken Kuruluş Katmanında meşrudur ve geçicidir/u);
+});
