@@ -1476,6 +1476,28 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "beş kalem KÜÇÜK kalır (A09 demet ilkesi); eklenti kapısına yeni bekçi EKLEME kararları tabloda gerekçeli beyanla ertelenebilir — sessiz eksik kalmaz"
         }
+        Adım( kod: BKM-BUG-A12, ad: "Adlı Kuralın Dayanak Bağı", durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+          ne: "🔗 uygulanmamış-karar bekçisi (YAS-2.1) adlı biçimde yazılmış Kural düğümlerinin dayanak bağını saymıyor; kararları kurala inmiş bir projede bile kilitli ve uygulama: gerekli beyanlı her karar için sahte uyarı düşüyor" ) {
+          görev: """
+          2026-10-03 (oturum 113) gözlemi: kararlar dosyası ile anayasa dosyası ayrı yaşayan bir projede
+          on bir kilitli karar `uygulanmamış-karar` uyarısı aldı. Oysa anayasadaki on altı Kural düğümü
+          `dayanak:` alanıyla bu kararların hepsini gösteriyor. Bekçinin kendi yorumu (denetci.ts YAS-2.1,
+          kural ②) Karar dışındaki her düğümün dayanak, uygular ve referans alanını ters bağ saymayı
+          vaat ediyor; fakat Kural düğümleri `Kural adı( … )` biçiminde adlı yazıldığı için gezinti onları
+          büyük ihtimalle görmüyor. Önce başarısız bir fikstür testi yaz: adlı biçimde ve adsız biçimde
+          yazılmış birer Kural düğümü aynı kilitli karara dayanak versin; ikisi de kararı inmiş saydırmalı.
+          Sonra sebebi doğrula ve bekçinin gezintisini adlı bildirimleri kapsayacak biçimde onar. Bu kusur
+          haftalarca bilinen motor kusuru denip plana indirilmemişti; kapanışta aynı desenin başka
+          bekçilerde (ters bağ toplayan öteki gezintiler) yinelenip yinelenmediği de taranır
+          """
+          kabul: [
+            "adlı ve adsız biçimde yazılmış Kural düğümlerinin dayanak bağı kararı inmiş saydırıyor (fikstürlü test önce kırmızı, sonra yeşil)",
+            "bağı hiçbir düğümde bulunmayan kilitli ve uygulama: gerekli beyanlı karar uyarı almaya devam ediyor (regresyon testi)",
+            "aynı adlı-bildirim körlüğünün öteki ters bağ toplayıcılarında olup olmadığı taranmış ve sonucu kapanış özetinde yazılı",
+            "kendi deposunda ve kapsanan projelerde denetim uyarı sayısı bu kusurdan doğan uyarılar kadar düşmüş; test süitleri yeşil"
+          ]
+          sınır: "Bekçinin hükmü değişmez: yalnız kilitli ve uygulama: gerekli beyanlı karar konuşur; tanının düzeyi ve metni değiştirilmez, yalnız ters bağ toplama onarılır"
+        }
       }
 
 
