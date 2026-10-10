@@ -27,6 +27,10 @@
 //        söküldüğünde yalnız ⑦ düştü.
 //     ⑧ bekleme süresinin kaynağı: git varsa işlemenin günü, yoksa durum tarihi
 //        — git dalı söküldüğünde yalnız ⑧ düştü.
+//     ⑨ MGZ-A06 (2026-10-10 koşusu): konumsuz bulgular anlattığı yeri hedef
+//        taşır ve komut satırı hedefi basar — geçersiz ad bulgusundan ya da
+//        beyansız klasör bulgusundan `hedefDosya` söküldüğünde ve komut
+//        satırının hedef dalı boşaltıldığında üçünde de ⑨ düştü.
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -34,7 +38,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "nod
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { dogusYaz } from "../src/dogus.ts";
 
 // Bu dosya geçici depolarda gerçek git koşturur. Süit bir işleme kancasının içinden
@@ -233,5 +237,51 @@ test("⑧ bekleme süresinin kaynağı: git varsa mührün işlendiği gün, yok
     git("commit", "-qm", "mühür");
     assert.deepEqual(muhurTarihiCoz(kok, SONRA), { tarih: "2026-08-15", kaynak: "git" });
     assert.ok(readFileSync(join(kok, SONRA), "utf8").length > 0);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+// ⑨ MGZ-A06 (HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR): geçersiz-dosya-adı ile beyansız-yapı
+//    bulguları da giriş dosyasına sıfır konumla yazılır ve sayımları orada kalır, fakat
+//    anlattıkları dosyayı ya da klasörü mühür bulguları gibi `hedefDosya` alanında taşır;
+//    klasör hedefi eğik çizgiyle biter. Komut satırı konumsuz bulguda konum yerine hedefi
+//    basar, böylece hedef yalnız tanı nesnesinde ve JSON çıktısında kalmaz.
+const CLI = fileURLToPath(new URL("../src/sarmal.ts", import.meta.url));
+
+test("⑨ konumsuz bulgular anlattığı dosyayı ya da klasörü hedef taşır ve komut satırı hedefi basar (MGZ-A06)", () => {
+  const kok = mühürlüAgac();
+  try {
+    yaz(kok, "is/plan/Rapor.sar", "// büyük harfli mühürsüz ad\n");
+    yaz(kok, "is/plan/@FOO@_x.sar", "// kümede olmayan etiket\n");
+    mkdirSync(join(kok, "sablon"));
+    const s = kos(kok);
+    const tanilar = tumTanilar(s);
+    const giris = anadizinBul(kok)!.slice(kok.length + 1);
+
+    const gecersiz = tanilar.filter((t) => t.tani.kod === "geçersiz-dosya-adı");
+    assert.deepEqual(gecersiz.map((t) => t.tani.hedefDosya).sort(), ["is/plan/@FOO@_x.sar", "is/plan/Rapor.sar"],
+      "geçersiz ad bulgusu anlattığı dosyayı hedef olarak taşımıyor");
+    assert.ok(gecersiz.every((t) => t.dosya === giris && t.tani.satir === 0 && t.tani.duzey === "uyarı"),
+      "kayıt giriş dosyasında sıfır konumla ve uyarı düzeyinde kalmalı");
+    assert.ok(gecersiz.every((t) => t.tani.mesaj.includes(`"${t.tani.hedefDosya}"`)), "hedef yol cümlede yazan yolla aynı değil");
+
+    const beyansiz = tanilar.filter((t) => t.tani.kod === "beyansız-yapı");
+    assert.deepEqual(beyansiz.map((t) => t.tani.hedefDosya), ["sablon/"], "beyansız klasör bulgusu klasörü hedef olarak taşımıyor");
+    assert.ok(beyansiz.every((t) => t.dosya === giris && t.tani.satir === 0 && t.tani.duzey === "hata"),
+      "kayıt giriş dosyasında sıfır konumla ve hata düzeyinde kalmalı");
+    assert.ok(beyansiz[0].tani.mesaj.startsWith("'sablon/' diskte var ama"), beyansiz[0].tani.mesaj);
+
+    // Komut satırı: konumsuz bulgu hedefini konum sütununa basar; konumlu bulgu dosya:satır:sütun basmaya devam eder.
+    const cikti = spawnSync(process.execPath, [CLI, "denetle", kok, "--tam-liste"], { encoding: "utf8", timeout: 120000 }).stdout;
+    const satirlar = cikti.split("\n");
+    const satirBul = (kod: string, hedef: string): string =>
+      satirlar.find((l) => l.includes(`[${kod}]`) && l.includes(hedef)) ?? `(${kod} satırı yok)`;
+    assert.ok(satirBul("geçersiz-dosya-adı", "Rapor.sar").startsWith("⚠ is/plan/Rapor.sar [geçersiz-dosya-adı] "),
+      satirBul("geçersiz-dosya-adı", "Rapor.sar"));
+    assert.ok(satirBul("geçersiz-dosya-adı", "@FOO@_x.sar").startsWith("⚠ is/plan/@FOO@_x.sar [geçersiz-dosya-adı] "),
+      satirBul("geçersiz-dosya-adı", "@FOO@_x.sar"));
+    assert.ok(satirBul("beyansız-yapı", "sablon/").startsWith("✖ sablon/ [beyansız-yapı] "), satirBul("beyansız-yapı", "sablon/"));
+    assert.ok(satirBul("dosya-mührü", ARSIV).startsWith(`ℹ ${ARSIV} [dosya-mührü] `), satirBul("dosya-mührü", ARSIV));
+    assert.ok(satirlar.some((l) => /^✖ is\/plan\/@EGITIM@_ders_plan\.sar:\d+:\d+ \[kırık-referans\] /.test(l)),
+      "konumlu bulgu dosya:satır:sütun biçimini korumalı");
   } finally { rmSync(kok, { recursive: true, force: true }); }
 });

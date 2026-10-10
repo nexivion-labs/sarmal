@@ -68,6 +68,11 @@ export interface Tani {
    * tıkladığında mühürlü dosyanın değil anadizinin açıldığını göstermiştir, çünkü
    * bu alan yoktu ve yüzey kaydı yazıldığı dosyaya bağlıyordu. Alan isteğe
    * bağlıdır: taşımayan tanı eskisi gibi kendi konumuna gider.
+   *
+   * MGZ-A06 alanı giriş dosyasına sıfır konumla yazılan iki bulguya daha verdi:
+   * geçersiz-dosya-adı adı kusurlu dosyayı, beyansız-yapı ise ilansız klasörü
+   * anlatır. Klasör hedefi eğik çizgiyle biter ve yüzeyler hedefin cinsini bu
+   * işaretten okur. Komut satırı konumsuz bulguda konum yerine bu hedefi basar.
    */
   hedefDosya?: string;
 }

@@ -591,6 +591,17 @@ export function kaydaGitBasligi(): string {
   return yuzeyMetni("Kaydın geldiği satıra git", "Go to the record's source line");
 }
 
+/**
+ * Problems satırına eklenen ilgili konumun metni (MGZ-A06). Satırın kendisi kaydın
+ * yazıldığı giriş dosyasını açar; bu konum ise bulgunun anlattığı dosyayı ya da
+ * klasörü açar ve hangisini açtığını göreli yoluyla söyler.
+ */
+export function hedefBaglantiMetni(yol: string, klasor: boolean): string {
+  return klasor
+    ? yuzeyMetni(`Bulgunun anlattığı klasör: ${yol}`, `Folder this finding describes: ${yol}`)
+    : yuzeyMetni(`Bulgunun anlattığı dosya: ${yol}`, `File this finding describes: ${yol}`);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // 💡 FİKİR SATIRI — Fikirler panelinin metinleri (KYN-YUZ-A01 · VIT-GRAF-A16)
 //

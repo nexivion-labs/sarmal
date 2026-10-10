@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
@@ -1453,12 +1453,16 @@ function kilitleKomutu(dizin: string): number {
   return 0;
 }
 
-/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir). */
+/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir).
+ *  MGZ-A06: konumsuz tanı anlattığı dosyayı ya da klasörü `hedefDosya` alanında
+ *  taşıyorsa konum sütununa o hedef, denetlenen köke göreli olarak basılır; kayıt
+ *  yine giriş dosyasının bulgusudur, okuyucu ise bulgunun anlattığı yeri görür. */
 function raporla(kaynak: string, tanilar: Tani[]): void {
   if (tanilar.length === 0) return;
   const im = (d: string): string => (d === "hata" ? "✖" : d === "uyarı" ? "⚠" : "ℹ");
   for (const t of tanilar) {
-    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}` : "";
+    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}`
+      : t.hedefDosya ? ` ${posix.join(posix.dirname(kaynak), t.hedefDosya)}` : "";
     console.log(`${im(t.duzey)}${konum} [${t.kod}] ${t.mesaj}`);
     if (t.oneri) console.log(`   ↳ ${t.oneri}`);
   }

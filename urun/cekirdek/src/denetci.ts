@@ -169,9 +169,14 @@ export function beyansizYapiDenetle(plan: IskeletPlan, diskUstKlasorler: readonl
   for (const ad of diskUstKlasorler) {
     if (ad.startsWith(".") || YAPI_VENDOR.has(ad)) continue;   // gizli + gerçek build/vendor drift değil
     if (ilanli.has(ad.toLowerCase())) continue;
+    // MGZ-A06: kayıt giriş dosyasında kalır; anlattığı klasör, giriş dosyasının
+    // klasörüne göreli ve eğik çizgiyle biten bir hedef olarak taşınır.
     out.push({
       dosya: anaEtiket,
-      tani: eskiTani("beyansız-yapı", "hata", { ad, giriş: anaEtiket }, { satir: 0, sutun: 0 }),
+      tani: {
+        ...eskiTani("beyansız-yapı", "hata", { ad, giriş: anaEtiket }, { satir: 0, sutun: 0 }),
+        hedefDosya: `${posix.relative(posix.dirname(anaEtiket), ad)}/`,
+      },
     });
   }
   return out;
@@ -331,9 +336,10 @@ export function dosyaMuhruTanilari(
     }
     const kusur = dosyaAdiKusuru(yol);
     if (kusur) {
-      out.push({ dosya: anaEtiket, tani: yeniTani("geçersiz-dosya-adı", {
+      // MGZ-A06: geçersiz ad bulgusu da anlattığı dosyayı mühür bulgusuyla aynı hedefle taşır.
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("geçersiz-dosya-adı", {
         yol, kusur: kusur.kusur, etiket: "etiket" in kusur ? kusur.etiket : undefined, küme: kume, öneri: onerilenDosyaAdi(yol),
-      }, konum) });
+      }, konum), hedefDosya } });
     }
   }
   return out;

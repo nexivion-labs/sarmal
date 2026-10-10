@@ -72,7 +72,7 @@ import { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tamDenetimSonucu } from "./t
 import { readFile, readdir } from "node:fs/promises";
 import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
 import {
-  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri,
+  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri, taniHedefi,
   type YuzeyKaydi, type YuzeyDagilimi,
 } from "./yuzey-cekirdek.ts";
 // 🔭 Kapsama ilişkisinin TEK evi: yol haritasındaki varlık kümeleri ile panel
@@ -95,6 +95,7 @@ import {
   EKLENTI_KABUK_METINLERI,
   IZ_METINLERI,
   KANON_ISARETCISI_METINLERI,
+  hedefBaglantiMetni,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
   ipucuIsaretCiziciniKur,
@@ -1268,10 +1269,20 @@ async function kimlikIndeksiniTara(): Promise<void> {
  *  çevirir — TEK yer (proje taraması ve tek-dosya çapraz-önbellek aynı eşlemeyi
  *  kullanır, düzey/renk tutarsızlığı yapısal olarak imkânsız · SRN-PANEL-DALGA). */
 function taniYapTani(doc: BelgeYuzu, t: Tani): vscode.Diagnostic {
-  return taniYap(doc, t.satir, t.sutun, t.oneri ? `${t.mesaj}\n↳ ${t.oneri}` : t.mesaj,
+  const tani = taniYap(doc, t.satir, t.sutun, t.oneri ? `${t.mesaj}\n↳ ${t.oneri}` : t.mesaj,
     t.duzey === "hata" ? vscode.DiagnosticSeverity.Error
       : t.duzey === "uyarı" ? vscode.DiagnosticSeverity.Warning
         : vscode.DiagnosticSeverity.Information, t.kod);
+  // MGZ-A06: giriş dosyasına yazılıp başka bir dosyayı ya da klasörü anlatan bulgu,
+  // anlattığı yeri ilgili konum olarak taşır. Satır kaydın dosyasında kalır ve orada
+  // sayılır; ilgili konuma tıklamak hedefi açar. Hedef panel tıklamasıyla aynı işlevden gelir.
+  const hedef = taniHedefi(doc.uri.fsPath, t);
+  if (hedef && t.hedefDosya) {
+    tani.relatedInformation = [new vscode.DiagnosticRelatedInformation(
+      new vscode.Location(vscode.Uri.file(hedef.dosya), new vscode.Position(hedef.satir - 1, hedef.sutun - 1)),
+      hedefBaglantiMetni(t.hedefDosya, hedef.klasor))];
+  }
+  return tani;
 }
 
 /** (satır,sütun) 1-tabanlı konumdan, oradaki sözceyi kapsayan bir tanı üretir. */
