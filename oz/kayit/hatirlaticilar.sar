@@ -1374,3 +1374,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Kanon keşfine, örtü zincirine ya da sınama altyapısının geçici klasör düzenine bir sonraki kez dokunulduğunda",
   ne:               "HST-MTR-A14'ün üreticisi 2026-10-10 tarihinde süitlerin geçici klasörün yerine bağımlı olduğunu ölçmüştür: geçici klasör bir Sarmal ağacının içine yönlendirilince çekirdekte bir, eklentide on beş sınama kırmızıya döner. Sebep, kanon keşfi, örtü zinciri ve performans sınamalarının fikstürden yukarı yürüyerek kanon, örtü ve kök araması ve geçici klasör depo içindeyse deponun kendi anadizinini, tip kaydını ve örtü dosyasını bulmasıdır; aynı kod depo dışındaki bir geçici klasörde yeşildir. Sınamalar bugün geçici klasörün herhangi bir Sarmal ağacının dışında olduğunu sessizce varsaymaktadır. Fikstürler yukarı yürüyüşü kendi köklerinde durduran bir sınır taşımalı ya da süit bu varsayımı açılışta ölçüp açık bir iletiyle durmalıdır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-KOD-SEKLI-DONGU-KIRILGANLIGI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Denetçi, kök yüzeyi, yetki ya da şef modüllerinin içe aktarma düzenine bir sonraki kez dokunulduğunda ya da kimlik modülü bu döngüye girdiğinde",
+  ne:               "HST-MTR-A10'un bağımsız incelemesi 2026-10-10 tarihinde metin atfı süzgecinin denetçi, kök yüzeyi, yetki ve şef modüllerini kapsayan döngüsel bir içe aktarmanın içinde kurulduğunu ölçmüştür. Döngü bugün komut satırında, MCP sunucusunda ve eklenti paketinde güvenlidir, çünkü modül yüklenirken döngü ortağının sabitine dokunan bir kod yoktur. Ancak eklentinin paketleyicisi üst düzey sabitleri değişkene çevirir; yükleme sırası bir gün bozulursa paket hata vermez, süzgeç sessizce tanımsız bir kuyrukla kurulur ve bütün adayları eler. Bunu ölçen bir sınama yoktur. Süzgeç sabiti kimlik modülüne taşınırsa döngüden tamamen çıkar; ya da paketin yükleme anında süzgecin değerini ölçen bir duman sınaması yazılır."
+)

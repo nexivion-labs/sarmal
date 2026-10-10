@@ -5889,7 +5889,7 @@ sessizce körleşmez.
             ne:    "Ölü iz toplayıcısının emekli envanteri ve kaynak kenar taraması artık adlı Kuralları da geziyor; emekli bir karara adlı Kuralla bağlanan dayanak ölü iz uyarısı üretiyor. Tanının düzeyi ve metni değişmedi. Adımdan önce de var olan iki açık HTR-OLU-IZ-OZ-BILDIRIM hatırlatıcısına yazıldı." )
         }
 
-        Adım( kod: HST-MTR-A10, ad: "Denetim Kapılarında Noktalı Madde Atfı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-KOK-YUZEYI ], bağımlı: [ HST-MTR-A06 ],
+        Adım( kod: HST-MTR-A10, ad: "Denetim Kapılarında Noktalı Madde Atfı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-DENETCI, KOD-KOK-YUZEYI, KOD-SNM-METIN-ATIF, KOD-SNM-KOK-YUZEYI ], bağımlı: [ HST-MTR-A06 ],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "🧷 Kırık bir alt madde atfı denetimde sessiz kalmasın" ) {
           görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) metin atfı kapısının (urun/cekirdek/src/denetci.ts) ve kök yüzeyi kapısının (urun/cekirdek/src/kok-yuzeyi.ts) aynı biçim süzgeciyle noktalı her adayı elediğini ölçmüştür: DIL-1.99 gibi kırık bir alt madde atfı onarımdan önce de sonra da sessizdir ve üst maddesi de tanımsız bir yazım (ör. DIL-9.1) A06'dan beri iki kapıda da uyarı üretmemektedir. Süzgece madde kuyruğu eklenir; önce iki yazımı taşıyan bir fikstürle kırmızı sınama yazılır."
@@ -5899,6 +5899,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Bulguların düzeyi ve metni değişmez; kuyruk kuralı çekirdekteki kimlik tanımından türer"
+          koşu:  Koşum( kod: KSM-HST-MTR-A10, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 7dc1e28 (üretim 2332964) · çekirdek 1703/1703, eklenti 934/934 · birleşik ağaçta çekirdek 1711/1711, eklenti 941/941, iki pakette tür denetimi ve dil denetimi temiz, depo denetimi 0 hata · bağımsız inceleme: yeni sınamalar onarımsız tabanda üç kırmızı, onarımla 39/39; altı mutasyonun altısı yakalandı; şekil süzgeci tek tanımda ve kuyruğu kimlik tanımından alıyor; denetçi ile kök yüzeyi arasındaki döngüsel içe aktarma komut satırında, MCP sunucusunda ve geliştirme ile üretim paketlerinde yükleme anında doğru kuruluyor; kardeş projelerin dördünde çıktı bayt bayt aynı, kapalı ürün projesinde bilgi düzeyinde üç gerçek bulgu doğdu",
+            ne:    "Metin atfı ve kök yüzeyi kapıları artık DIL-1.99 gibi kırık bir alt madde yazımını ve üst maddesi tanımsız bir noktalı yazımı bildiriyor; iki kapı aynı süzgeci tek tanımdan alıyor. Kapalı ürün projesinde doğan üç bulgu gerçektir: o proje Sarmal kanonunun ORK-6.1 ve ORK-6.3 maddelerini ad alanı yazmadan anmaktadır ve aynı yerler HST-MTR-A06'dan önce ORK-6 adıyla raporlanıyordu. Paketleyicinin sabiti değişkene çevirmesinin doğurduğu yükleme sırası kırılganlığı HTR-KOD-SEKLI-DONGU-KIRILGANLIGI kaydına yazıldı." )
         }
 
         Adım( kod: HST-MTR-A11, ad: "Tanı Metni Hijyeninin Kör Bölgeleri", durum: tamamlandı, öncelik: p2, üretir: [ KOD-SNM-HIJYEN, KOD-EKL-TAKDIR ], bağımlı: [],
