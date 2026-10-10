@@ -1865,7 +1865,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           sınır: "Yalnız bu üç iddia; süitin geri kalanı ölçülmüş ve klasik boş nöbet desenlerinden temiz çıkmıştır."
         }
 
-        Adım( kod: BKM-DNT-A11, durum: geliştirmede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.1, YUZ-3.3 ],
+        Adım( kod: BKM-DNT-A11, durum: tamamlandı, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.1, YUZ-3.3 ],
           üretir: [ KOD-SNM-KAPI-KAPSAMI ],
           ne: "⚖️ Kanon ile ilanın uyumunu ölçen genel nöbet. Kapsam nöbeti bugün yalnız iki ad kümesinin eşitliğini ölçer: ilandaki üretici adları ile denetim hattının gerçekten çağırdığı üretici adları. Girdisinde ne tanı kimliği ne kanon maddesi ne yüzey adı vardır ve yüzey listesine hiç dokunmaz; bir girdinin yüzey listesi tümüyle silinmedikçe nöbet hiçbir yüzey değişikliğini görmez. Kanon ekseninde bugün var olan tek koruma, ateşlemiş hatırlatıcı için 2026-08-28 tarihinde yazılan iki iddiadır; genel bir kanon-ilan uyum nöbeti yoktur ve bugünkü sınıftan bir ayrışma onun altında sessizce yaşayabilir, nitekim on beş üreticide yaşamaktadır. Nöbet kurulabilir, çünkü kanonun zorlama satırındaki yüzey beyanı ile sicilin madde ve üretici eşlemesi makine-okurdur." ) {
           görev: [
@@ -1875,6 +1875,9 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           kabul: [ "Nöbet kanon ile ilan arasındaki her yüzey ayrışmasını kimlik, madde ve üretici adıyla bildirir; bir üreticinin panel yüzeyi ilandan düşürüldüğünde ve kanon o yüzeyi istiyorsa süit kırmızıya döner, bu mutasyonla kanıtlanmıştır." ]
           sınır: "Nöbet karar vermez; ayrışmayı bildirir. Hangi tarafın değişeceği BKM-DNT-A01'in hükmüdür."
+          koşu:  Koşum( kod: KSM-BKM-DNT-A11, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 4b6b94e · çekirdek 1672/1672, tür denetimi temiz · depo denetimi 0 hata · bağımsız inceleme: bilgi kademeli projesizFazTanilari panelden düşürülünce 26 kapı kapsamı sınamasından yalnız bu nöbet kırmızıya döndü, A01 kademe nöbetleri yeşil kaldı; bilinen istisna silinince ve gerçekte ayrışmayan bir istisna eklenince iki yönde kırmızı ölçüldü; ad temelli çözüm 101 sahte ayrışma, modül ve içe aktarma çözümü 1 ayrışma verdi. Dışarıda kalan sayımlar: Zorlanmaz madde 62, yüzey beyansız çift 9, zorlama satırında anılmayan sicil kimliği 41, ilan modülü dışında basılan kimlik 15. BUGÜNKÜ AYRIŞMA: terfi-kanıtı-eksik · YAS-4.2 · terfiKanitiTanilari; kanon Problems ister, üretici terfi borcu yüzünden bilgi kademesinde ve yalnız komut satırında basar. Bilinen istisna olarak yazıldı ve HTR-TERFI-KANITI-YUZEY-AYRISMASI ile Founder kararına bağlandı. Bilinen kör nokta: Zorlanmaz ile başlayıp tanı ilan eden satırlar atlanır; bugün o açığı BKM-DNT-A02'nin ulaşma nöbeti kapatır.",
+            ne:    "Kanonun Zorlama satırlarındaki yüzey beyanını ilanın panel yüzeyiyle karşılaştıran nöbet kuruldu; ayrışma kimlik, madde, üretici ve yüzeyle bildirilir ve bilinen istisna listesi iki yönde ölçülür. Tek gerçek ayrışma Founder kararına bağlandı." )
         }
 
         Adım( kod: BKM-DNT-A12, ad: "Paketleme Hijyeni", durum: tamamlandı, öncelik: p1, bağımlı: [],

@@ -1163,3 +1163,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Açık deponun kurulum ve dağıtım yolu bir sonraki kez elden geçirildiğinde; en geç Sarmal'ın Claude Code kullanıcılarına tanıtımı yapılmadan önce",
   ne:               "Founder 2026-10-05 tarihinde Sarmal'ın bir Claude Code eklentisi olarak paketlenmesi fikrini hatırlatıcı olarak açmıştır. Ölçüm, bir eklentinin gerektirdiği parçaların bugün var olduğunu fakat dağınık ve geliştiricinin makinesine bağlı durduğunu göstermiştir. MCP sunucusu yalnız deponun kendi .mcp.json dosyasıyla açılmakta, başka bir projede Sarmal kullanan kişi onu elle kurmak zorunda kalmaktadır. Doğuş kilidi, sar yazım kapısı ve karşılama kartı kancaları kullanıcının küresel kanca dizininde yaşamakta ve motorun yolunu mutlak olarak taşımaktadır; bu yüzden yalnız tek bir makinede çalışmaktadır. Doğuş sırası ve kaynaktan okuma kuralı ise elle kopyalanan talimat dosyalarındadır. Eklenti biçimi bu üç parçayı tek klasörde toplar, sabit yolları eklentinin kendi kök değişkeniyle taşınabilir kılar ve açık deponun aynı zamanda bir eklenti pazarı olarak ilan edilmesine izin verir; böylece kurulum iki komuta iner. İş iki katman olarak düşünülmüştür. Birinci katman standart eklentidir: MCP sunucusu, kancalar, doğuş sırasını öğreten bir beceri ve birkaç kısa komut. İkinci katman, birinci katman oturduktan sonra ele alınacak bir moddur: terminalin içinde Blok durumlarını canlı gösteren bir panel ve istem alanının üstünde etkin Adımı ile denetim hükmünü gösteren bir şerit. İş açık depoya girdiği ve mimari nitelik taşıdığı için önce plan iskeleti Founder'a gösterilir, içerik onaydan sonra yazılır; klasör ve dosya adları ASCII kuralına uyar."
 )
+
+Hatırlatıcı(
+  kod:              HTR-TERFI-KANITI-YUZEY-AYRISMASI,
+  durum:            açık,
+  çapa:             yasa,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Founder kanon kararları gözden geçirildiğinde; en geç terfi borcu kapatılırken",
+  ne:               "BKM-DNT-A11 nöbeti 2026-10-10 tarihinde kanon ile ilan arasındaki tek gerçek yüzey ayrışmasını ölçmüştür: YAS-4.2 maddesi terfi-kanıtı-eksik tanısını Problems, proje komut satırı ve satır merceği yüzeyine yollar ve kanon düzeyini uyarı yazar; üretici terfiKanitiTanilari ise terfi borcu yüzünden tanıyı bilgi kademesinde basar ve ilan onu yalnız komut satırında tutar. Ayrışma nöbette gerekçeli bilinen istisna olarak durur. İlana panel eklemek tanıyı Bildirimler yüzeyine taşır, Problems'a taşımaz, dolayısıyla ayrışmayı kapatmaz. Kapanışın iki yolu vardır ve ikisi de Founder kararıdır: ya terfi tamamlanır ve tanı uyarı düzeyine çıkar, ya da kanon cümlesi bugünkü davranışa göre yeniden yazılır."
+)
