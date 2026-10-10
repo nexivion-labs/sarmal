@@ -742,10 +742,18 @@ test("tek yazıcı korunur: onay: metnini üreten tek yer çekirdektir", () => {
 // ── ⑦ KALEM 11 — KOMŞU İKİ PANELE DOKUNULMADI ──────────────────────────────
 //   "Değişmedi" cümlesi ancak ölçülürse doğrudur. Üç ölçü kullanılır: iki dosya
 //   onay yüzeyinden hiçbir şey içeri almaz, kimlikleri sabittir ve yinelenen
-//   çizimi önleyen parmak izi güvencesi yerindedir. Dördüncü ölçü BAYT
-//   ÖZETİDİR: bu tur o iki dosyaya dokunmadığını sayıyla söyler. Özet, komşu
-//   panellerde meşru bir iş yapıldığında BİLEREK güncellenir; kazayla değişmeyi
-//   yakalamak tam olarak onun görevidir.
+//   çizimi önleyen parmak izi güvencesi yerindedir.
+//
+//   BAYT ÖZETİ NÖBETİ EMEKLİYE AYRILDI (BKM-DNT-A09). Bu yerde iki komşu panelin
+//   sha256 özetini sabit bir değerle karşılaştıran bir nöbet yaşıyordu. Nöbet bir
+//   davranış nöbeti değil bir değişiklik dedektörüydü ve on dört kez bilerek
+//   güncellendi; ölçülmüş bedeli şuydu: hatırlatıcı sayacı iki katına
+//   çıkarıldığında tek koruma bu özetti ve özet güncellenince süit yeşil kaldı.
+//   İki panelin davranışı artık kabuk sahtesiyle modül olarak yüklenip
+//   `kabuk-davranis.test.ts` dosyasında ölçülür: sayaç ile rozetin ağaçtaki
+//   kayıt satırlarıyla eşitliği, aynı içerikte yinelenen çizimin olmaması, boş
+//   durum cümlesi ve görünüş kimliği. Özetin güncelleme tarihçesi git
+//   geçmişinde durur.
 
 test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
   for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts"]) {
@@ -768,158 +776,6 @@ test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
   for (const kimlik of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER]) {
     assert.ok(gorunusler.includes(kimlik),
       `komşu panelin görünüş kimliği paket bildiriminden düşmüş: ${kimlik}`);
-  }
-});
-
-test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
-  const { createHash } = await import("node:crypto");
-  const ozet = (dosya: string): string =>
-    createHash("sha256").update(oku(dosya), "utf8").digest("hex").slice(0, 16);
-  // ÖZETLER BİLEREK GÜNCELLENDİ — VIT-GRAF-A13 (2026-07-29).
-  //
-  // Bu nöbet VIT-POSTA-A03 turunda "komşu panellere dokunulmadı" sözleşmesini
-  // korumak için kuruldu ve İŞİNİ YAPTI: bir sonraki tur iki panele de dokununca
-  // anında kırmızıya döndü. Değişiklik meşrudur ve kapsamı bellidir — her iki
-  // panele yalnız `kayitSayisi` okuyucusu eklendi, çünkü durum çubuğu sayıları
-  // panellerin KENDİ kümelerinden türetir ve ikinci bir sayaç tutmaz.
-  //
-  // Özet güncellemek nöbeti zayıflatmaz, çünkü güncelleme SESSİZ OLAMAZ: sayı
-  // değişince süit kırmızıya döner ve değiştiren kişi buraya gelip neyi neden
-  // değiştirdiğini yazmak zorunda kalır. Nöbetin değeri sayının kendisinde değil,
-  // bu zorunlulukta yaşar.
-  // ÖZET İKİNCİ KEZ BİLEREK GÜNCELLENDİ — kanon göçü (2026-07-29 akşamı).
-  //
-  // Nöbet aynı gün İKİNCİ KEZ işini yaptı ve yine haklıydı. Bu kez değişen şey
-  // davranış değil ATIF: `bildirimler.ts` yorumunda eski renk kararının defter kodu
-  // yazılıydı ve halefi `YUZ-4` ile değiştirildi. Founder kusuru IDE'de gözüyle buldu, çünkü
-  // günün göç turu yalnız mekanik kenarları (`referans:` · `dayanak:`) taşımış,
-  // YORUM ve DÜZYAZI içindeki atıflara hiç dokunmamıştı. Ölçüm: eklenti kaynağında
-  // yüz elli iki, çekirdekte on atıf; yüz kırk üçünün halefi vardı ve taşındı.
-  // Panellerin davranışı, kimliği ve sayaç türetimi DEĞİŞMEDİ — yalnız bir yorum
-  // satırı güncel kanona işaret eder oldu.
-  // ÖZET ÜÇÜNCÜ KEZ BİLEREK GÜNCELLENDİ — CDL-A04 dil katmanı göçü (2026-08-02).
-  //
-  // İki paneldeki kullanıcıya görünen metinler iki dilli yüzey sözlüğüne
-  // taşındı. Onay yüzeyi davranışı, panel kimlikleri, yenileme
-  // ritmi ve sayaç türetimi DEĞİŞMEDİ; yalnız metinlerin geldiği dil katmanı
-  // değişti. Nöbet bu meşru bayt değişikliğini görünür kılmaya devam eder.
-  // ÖZET DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — GOC-TERFI-A06 (2026-08-03).
-  //
-  // Bildirim özetinin rozeti artık ayrı bir yüzey hedefinden değil, grubun ilk
-  // tanısındaki sicil düzeyinden türetilir. Panel kimliği, yenileme ritmi ve
-  // sayaç türetimi değişmedi; yalnız yüzeyde yeniden derecelendirme yolu kapandı.
-  // ÖZET BEŞİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-KIMLIK-A05 (2026-08-04).
-  //
-  // Founder hükmü: IDE'nin içi baştan aşağı geometrik çizim dilinden konuşur.
-  // İki panelin proje ve kayıt satırlarındaki hazır codicon kimlikleri
-  // (bookmark · bell · inbox · layers · circle-small-filled) satır çizelgesinin
-  // (simge-cizelgesi.ts) geometrik simgelerine çevrildi; renk anlamları üretici
-  // varyantlarıyla aynen korunur. Panel davranışı, kayıt içeriği, yenileme
-  // ritmi ve sayaç türetimi DEĞİŞMEDİ — yalnız görsel katman değişti.
-  // Yedinci meşru güncelleme (2026-08-04 · Founder canlı bulgusu): düz gri
-  // basılan satır ikonları metinden ayrışmıyordu; çan uyarı sarısına, iki
-  // proje satırı bilgi mavisine bağlandı — yalnız varyant seçimi değişti.
-  // ÖZET SEKİZİNCİ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A01 (2026-08-08).
-  //
-  // Ölçülmüş kusur şuydu: sınıflama Fikir tipini Hatırlatıcı'nın söz-verilmemiş
-  // kardeşi ilan ettiği hâlde yazılan bir Fikir hiçbir panele ulaşmıyordu, çünkü
-  // motor Fikir için hiçbir tanı üretmez ve bu panel yalnız tanı akışından
-  // beslenirdi. Onarım Hatırlatıcılar panelinin İÇİNE bir Fikir bölümü açtı;
-  // kayıtlar ayrışmış ağaçtan okunur ve bölüm satırı ile Fikir satırları
-  // geometrik ailenin işaretlerini taşır. Hatırlatıcı hanesinin davranışı,
-  // kaynağı, panel kimliği, yenileme ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ;
-  // yalnız aynı panele ikinci bir hane eklendi. `bildirimler.ts` bu turda hiç
-  // açılmadı ve özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET DOKUZUNCU KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A13 (2026-08-08).
-  //
-  // İki panel de bu turda GEZİLEBİLİR ve KOPYALANABİLİR kılındı; değişiklik
-  // ikisine de dokunur ve kapsamı bellidir. Ağaca Proje ile kayıt arasına DOSYA
-  // kademesi girdi ve dosya satırı teknoloji simgesini `teknoloji-simgesi.ts`
-  // tek kaynağından okur; kayıt satırı kendi kodunu söyler ve Hatırlatıcılar
-  // hanesinde işaret kayıt türüne göre ayrışır; her satır sağ tık menüsünden
-  // panoya inebilir. Onay yüzeyine hiçbir bağ kurulmadı: iki panel hâlâ
-  // `onay-cekirdek` · `onay-tarayici` · `onay-kuyrugu` · `onay-paneli`
-  // adlarının hiçbirini içermez ve bunu yukarıdaki nöbet ayrıca ölçer. Panel
-  // kimlikleri, yenileme ritmi ve sayaç türetimi DEĞİŞMEDİ.
-  // ÖZET ONUNCU KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A15 (2026-08-08).
-  //
-  // Founder hükmü tür özetinin en üstteki proje satırına yazılmasıdır. Hükmün
-  // doğuşu ölçülmüştür: VIT-GRAF-A13 ağacı üç kademeye indirirken tanı kimliğine
-  // göre yığan eski kademeyi dosya kademesiyle değiştirmek zorunda kaldı ve
-  // kullanıcı hangi tür sorunun baskın olduğunu ancak bütün dosyaları açıp
-  // sayarak öğrenir hâle geldi. Founder kaybolan görünümü geri istedi fakat
-  // dördüncü kademeyi reddetti, dolayısıyla geri gelen şey bir kademe değil bir
-  // özet satırıdır. İki panelde de değişen tek şey Proje satırının etiketi,
-  // gri açıklaması ve ipucudur; dağılım panellerin KENDİ kayıt kümesinden
-  // `turDagilimi` ile türetilir ve ikinci bir tarama ya da ikinci bir sayaç
-  // kurulmaz. Ağacın kademe sayısı, kayıt içeriği, panel kimlikleri, yenileme
-  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ; onay yüzeyine hiçbir bağ
-  // kurulmadı ve bunu yukarıdaki nöbet ayrıca ölçer.
-  // ÖZET ON BİRİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A15 düzeltme turu (2026-08-09).
-  //
-  // Bağımsız denetim, `hatirlaticilar.ts` içindeki Fikir hanesi yorumunun
-  // YÜRÜRLÜKTEKİ HÜKMÜN TERSİNİ söylediğini ölçtü: yorum, Fikir satırının kodlu
-  // etiket hükmünün dışında bırakıldığını yazıyordu, oysa aynı turda o sınır
-  // kaldırılmış ve iki hane ortak biçime bağlanmıştı. Kaydı okuyan kişi kilitli
-  // hükmün tersine yönlendiriliyordu. Bu turda değişen tek şey o yorumun
-  // metnidir; davranış, veri kaynağı, panel kimliği, yenileme ritmi ve sayaç
-  // türetimi DEĞİŞMEDİ. `bildirimler.ts` bu düzeltme turunda hiç açılmadı ve
-  // özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET ON İKİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A16 (2026-08-09).
-  //
-  // Founder 2026-08-08 tarihinde Fikirlerin kendi panelini hak ettiğine hükmetti
-  // ve hükmün doğruluğu 2026-08-09 tarihinde canlı görünümde ölçüldü: canlı rafa
-  // yazılan iki gerçek Fikir panelde bulunamadı, çünkü ikisi de yirmi dokuz
-  // hatırlatıcı kaydının altında kalmıştı. Bu turda `hatirlaticilar.ts`
-  // dosyasından Fikir hanesinin tamamı söküldü; `fikirBölümü` ile `fikir` kök
-  // türleri, `fikirleriYerlestir` kapısı, `fikirSayisi` okuyucusu, iki Fikir
-  // simgesi, saf çekirdeğe kurulan bağ ve pano dalındaki Fikir kolu kalktı.
-  // Boşluk ölçüsü de yalnız hatırlatıcıları sayar hâle döndü. Hatırlatıcı
-  // hanesinin davranışı, veri kaynağı, panel kimliği, yenileme ritmi ve
-  // `kayitSayisi` türetimi DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu
-  // yukarıdaki nöbet ayrıca ölçer. `bildirimler.ts` bu turda hiç açılmadı ve
-  // özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET ON ÜÇÜNCÜ KEZ BİLEREK GÜNCELLENDİ — VIT-POSTA-A06 (2026-08-27).
-  //
-  // Founder hükmü dört panelin de kendi sayı rozetini taşımasıdır. Hükmün doğuşu
-  // ölçülmüştür: rozet bugüne dek yalnız Onaylar panelinde vardı ve komşu üç
-  // panel sayısını yalnız durum çubuğunda söylüyordu, dolayısıyla kullanıcı bir
-  // panelin dolu mu boş mu olduğunu ancak onu açarak öğreniyordu. Bu turda iki
-  // panelde de değişen tek şey boş durum güncelleyicisine eklenen tek satırlık
-  // rozet atamasıdır. Rozetin KARARI saf çekirdekte tek bir yerde yaşar
-  // (yuzey-cekirdek.panelRozeti) ve sayı yine panelin KENDİ listesinden, durum
-  // çubuğunun okuduğu aynı `kayitSayisi` kaynağından türer; ikinci bir sayaç
-  // kurulmadı ve bu yüzden rozet ile durum çubuğu çelişemez. Ağacın kademe
-  // sayısı, kayıt içeriği, panel kimlikleri, yenileme ritmi ve sayaç türetimi
-  // DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu yukarıdaki nöbet
-  // ayrıca ölçer.
-  // ÖZET ON DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A03 (2026-09-10).
-  //
-  // Hatırlatıcı mekanizmasının üçüncü halkası, yani KAPATMA, bugüne kadar yalnız
-  // elle dosya düzenlemesiyle mümkündü; Founder bunu boş gürültü olarak adlandırdı
-  // ve haklıydı, çünkü hatırlatan fakat kapattırmayan bir bildirim kullanıcının
-  // dikkat bütçesinden yer alır ve karşılığında eylem sunmaz. Bu turda
-  // `hatirlaticilar.ts` iki şey kazandı: satırın bağlam değeri artık ATEŞLEMİŞ ile
-  // uykuda bekleyen kaydı ayırır (karar saf çekirdekte, `hatirlaticiKapatilabilir`)
-  // ve kullanıcının başlattığı bir kapatma kapısı eklendi. Kapı, Adım durumunu
-  // yazan tek yazar kapısının hatırlatıcı ikizidir: yalnız `durum` alanına dokunur,
-  // konumu ayrıştırıcıdan alır, yazımdan önce kaynakla bayt düzeyinde doğrular ve
-  // en küçük şüphede dosyaya dokunmadan dürüst hata döner. Kayıt SİLİNMEZ (SNF-0).
-  //
-  // ONAY YÜZEYİNE HİÇBİR BAĞ KURULMADI ve iki panel hâlâ `onay-cekirdek` ·
-  // `onay-tarayici` · `onay-kuyrugu` · `onay-paneli` adlarının hiçbirini içermez;
-  // bunu yukarıdaki nöbet ayrıca ölçer. Panel kimliği, veri kaynağı, yenileme
-  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ: kapatma sonrası tazeleme panelin
-  // kendi taramasından değil gövdenin TEK denetim kilidinden istenir.
-  // `bildirimler.ts` bu turda hiç açılmadı ve özeti bilerek olduğu gibi bırakıldı.
-  const BEKLENEN: Record<string, string> = {
-    "../src/hatirlaticilar.ts": "4bf07ba296fe58cc",
-    "../src/bildirimler.ts": "adeaa39549882d72",
-  };
-  for (const [dosya, beklenen] of Object.entries(BEKLENEN)) {
-    assert.equal(ozet(dosya), beklenen,
-      `${dosya} değişmiş. Bu değişiklik onay yüzeyi turunun kapsamı dışıdır; ` +
-      "meşruysa buradaki özet BİLEREK güncellenmelidir.");
   }
 });
 
