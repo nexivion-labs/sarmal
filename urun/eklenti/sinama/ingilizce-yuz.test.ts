@@ -33,6 +33,10 @@
 //     tamamlama ve imza sağlayıcıları iki dilde açılır. Alan önerisinin etiketi
 //     dosyaya yazılacak Türkçe addır; ayrıntı satırı ve imza yardımı İngilizce
 //     dilde İngilizce tarif taşır; Türkçe dilde ikisi de kanondaki dizgedir.
+//   ⑥ DOSYAYA YAZILAN ÖNERİ. Satır başındaki tip önerisi ile parantez içindeki
+//     alan ve kenar önerisi dosyaya yazılan addır: etiket ve eklenen metin iki
+//     dilde birebir aynıdır, kanondaki Türkçe adı taşır ve hiçbir İngilizce ad
+//     karşılığı dosyaya girmez.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test, after } from "node:test";
@@ -433,5 +437,84 @@ test("MGZ-A09 ⑤ Türkçe tamamlama ve imza yardımı kanondaki dizgeyi aynen g
     const sema = SEMA.semalar![tip]!;
     const alanlar = [...sema.zorunlu, ...(sema.opsiyonel ?? [])];
     assert.equal(imza, `${tip}( ${alanlar.map((a) => (sema.zorunlu.includes(a) ? a : `[${a}]`)).join(", ")} )`, `${tip} imza yardımı Türkçe yüzde değişti`);
+  }
+});
+
+// ── ⑥ DOSYAYA YAZILAN ÖNERİ ─────────────────────────────────────────────────
+//   Kontrolcü incelemesi (2026-10-11): satır başındaki tip önerisini hiçbir nöbet
+//   tutmuyordu. İnceleyici öneriyi `Step` ve `dependsOn` yapan bir değişiklik yaptı
+//   ve eklenti süiti yeşil kaldı. Öneri dosyaya yazılan addır; Adımın sınırı, yani
+//   dosyanın ve dilin anahtar sözcüklerinin değişmemesi doğrudan buna bağlıdır.
+
+const KANON_ADLARI = new Set<string>([
+  ...SEMA.widgetTipleri.map((t) => t.ad), ...SEMA.kenarTipleri.map((k) => k.ad),
+  ...Object.values(SEMA.semalar ?? {}).flatMap((s) => [...s.zorunlu, ...(s.birindenBiri ?? []).flat(), ...(s.opsiyonel ?? [])].map(alanAdi)),
+  "kod", "ad", "ne", "aile", "içerir", "renk", "her", "görünür", "boşsa", "rota", "yetki", "yol", "metod", "çağır", "Tip", "Kural",
+]);
+/** Sözlüğün tip, kenar ve alan adlarının dosyada bulunmayan İngilizce karşılıkları. */
+const INGILIZCE_AD_KARSILIKLARI = new Set<string>(["widget", "kenar", "parametre"].flatMap((b) =>
+  Object.entries(SOZLUK[b] as Record<string, { en?: string }>).map(([, h]) => h.en ?? "").filter((en) => en && !KANON_ADLARI.has(en))));
+
+interface YazilanOneri { readonly etiket: string; readonly yazilan: string }
+
+/** Bir satırın sonunda gerçek tamamlama sağlayıcısının önerdiği etiket ve eklenen metin. */
+async function yazilanOneriler(dil: "tr" | "en", metin: string): Promise<YazilanOneri[]> {
+  const yol = join(geciciAlan("sarmal-ingilizce-yazilan-"), "ornek.sar");
+  writeFileSync(yol, metin, "utf8");
+  const belge = belgeKoy(yol, metin);
+  const satirlar = metin.split("\n");
+  const konum = new Position(satirlar.length - 1, satirlar[satirlar.length - 1]!.length);
+  yuzeyDiliniAyarla(dil);
+  try {
+    const ogeler = (await tamamlamaSaglayici(() => dil).provideCompletionItems(belge as never, konum as never, undefined as never, undefined as never)) as
+      Array<{ label: string; insertText?: string | { value: string } }> | undefined ?? [];
+    return ogeler.map((o) => ({
+      etiket: o.label,
+      yazilan: typeof o.insertText === "string" ? o.insertText : (o.insertText?.value ?? o.label),
+    }));
+  } finally {
+    yuzeyDiliniAyarla("tr");
+  }
+}
+
+/** Önerinin dosyaya giren adları: etiketin ve eklenen metnin tanımlayıcıları (yer tutucu `KOD` hariç). */
+const yazilanAdlar = (o: YazilanOneri): string[] =>
+  [o.etiket, ...(o.yazilan.replace(/\$\{\d+:[^}]*\}/gu, " ").match(/[\p{L}_][\p{L}\p{N}_]*/gu) ?? [])];
+
+const SATIRLAR: ReadonlyArray<readonly [string, string]> = [
+  ["boş satır başı", ""],
+  ["gövde içinde satır başı", "Faz( kod: FAZ-ORNEK ) {\n  "],
+  ["Adım parantezi", "Adım( "],
+  ["Katman parantezi", "Katman( kod: KAT-ORNEK, "],
+];
+
+test("MGZ-A09 ⑥ satır başındaki tip önerisi ve parantezdeki alan ile kenar önerisi dosyaya iki dilde aynı Türkçe adı yazar", async () => {
+  const kusurlu: string[] = [];
+  for (const [ad, metin] of SATIRLAR) {
+    const tr = await yazilanOneriler("tr", metin);
+    const en = await yazilanOneriler("en", metin);
+    assert.ok(tr.length > 10, `${ad}: yalnız ${tr.length} öneri geldi — nöbet kör`);
+    const dizi = (l: YazilanOneri[]): string[] => l.map((o) => `${o.etiket} → ${o.yazilan}`).sort();
+    assert.deepEqual(dizi(en), dizi(tr), `${ad}: İngilizce dilde dosyaya yazılan öneri Türkçe dildekinden ayrışıyor`);
+    for (const o of en) {
+      const yabanci = yazilanAdlar(o).filter((x) => INGILIZCE_AD_KARSILIKLARI.has(x));
+      if (yabanci.length) kusurlu.push(`${ad}: "${o.etiket}" önerisi dosyaya ${yabanci.join(", ")} yazıyor (${o.yazilan})`);
+    }
+  }
+  assert.deepEqual(kusurlu, [], "öneri dosyaya kanonda bulunmayan bir İngilizce ad yazıyor");
+
+  // Satır başında kanonun her tipi kendi Türkçe adıyla önerilir ve o adı yazar.
+  const tipler = await yazilanOneriler("en", "");
+  for (const t of SEMA.widgetTipleri) {
+    const o = tipler.find((x) => x.etiket === t.ad);
+    assert.ok(o, `${t.ad} tipi satır başında önerilmiyor`);
+    assert.ok(o.yazilan.startsWith(`${t.ad}(`), `${t.ad} önerisi dosyaya başka bir ad yazıyor: ${o.yazilan}`);
+  }
+  // Parantezde kanonun her kenarı kendi Türkçe adıyla önerilir ve `ad: ` yazar.
+  const kenarlar = await yazilanOneriler("en", "Adım( ");
+  for (const k of SEMA.kenarTipleri) {
+    const o = kenarlar.find((x) => x.etiket === k.ad);
+    assert.ok(o, `${k.ad} kenarı Adım parantezinde önerilmiyor`);
+    assert.equal(o.yazilan, `${k.ad}: `, `${k.ad} önerisi dosyaya başka bir ad yazıyor`);
   }
 });

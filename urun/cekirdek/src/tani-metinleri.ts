@@ -2218,9 +2218,9 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     },
     oneri: (p) => {
       if (a(p, "kusur") === "otorite") return "Either set otorite: anayasa and move the rule into the Anayasa body, or remove the ebedi flag.";
-      if (a(p, "kusur") === "arşiv") return `Remove the archive seal, or move the eternal rule into a live source file before sealing this file. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`;
-      if (a(p, "kusur") === "silinmiş") return "Restore the rule; if removal is intentional, record it in KARARLAR and refresh the seal with 'sarmal kilitle'.";
-      return "Revert the change. If it truly must change, restore the rule, record the constitutional decision in KARARLAR, and then reseal with 'sarmal kilitle' using the logged override required by FEL-4.";
+      if (a(p, "kusur") === "arşiv") return `Remove the archive seal, or move the eternal rule into a live source file before sealing this file. Example: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`;
+      if (a(p, "kusur") === "silinmiş") return "Restore the rule; if removal is intentional, record the decision as a Karar and refresh the seal with 'sarmal kilitle'.";
+      return "Revert the change. If it truly must change, restore the rule, record the constitutional decision as a Karar, and then reseal with 'sarmal kilitle' using the logged override required by FEL-4.";
     },
   },
   "koni-taşması": {
@@ -2383,7 +2383,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   // ── Fields, reminders, structure and references (35–67) ─────────────────
   "tarif-eksik": {
     mesaj: (p) => `Type "${a(p, "ad")}" has no description — its 'ne:' field is empty, so the AI writing the code cannot understand this concept.`,
-    oneri: () => 'Add this to the body: ne: "bu kavram nedir, tek cümle".',
+    oneri: () => 'Add this to the body: ne: "<what this concept is, in one sentence>".',
   },
   "ad-biçimi": {
     mesaj: (p) => a(p, "kusur") === "parametre"
