@@ -5818,7 +5818,7 @@ sessizce körleşmez.
       AltKatman( kod: HST-MOTOR-K1, departman: sınama, ad: "Kanon ve Tanı Nöbetleri",
         ne: "kanonun makine taşıyıcısı, madde sayısı, tanı kimlikleri ve yürütücü izi" ) {
 
-        Adım( kod: HST-MTR-A01, ad: "Taşıyıcı ile Belge Metninin Eşitliği", durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-MTR-A01, ad: "Taşıyıcı ile Belge Metninin Eşitliği", durum: geliştirmede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
           referans: [ HTR-TASIYICI-MUTABAKAT-KORLUGU ],
           ne: "🧷 Kanon maddesinin makine taşıyıcısı belge metninden ayrıştığında kapı kırmızıya dönsün" ) {
           görev: "Tutarlılık motorunun dört parça denetimi bugün Gerekçe başlığının varlığına bakmakta, taşıyıcı alanın belge metnine eşitliğine bakmamaktadır. Önce taşıyıcı ile belge metni ayrışmış bir fikstürle kırmızı test yazılır, sonra eşitlik denetimi kurulur ve bütün kanon üzerinde koşturulur. Bekçinin yeri kaydın sorduğu soruya göre seçilir ve gerekçesi Koşuma yazılır."
@@ -5830,7 +5830,7 @@ sessizce körleşmez.
           sınır: "Kanon metni bu Adımda düzeltilmez; ayrışma bulunursa bulgu olarak raporlanır"
         }
 
-        Adım( kod: HST-MTR-A02, ad: "Kanon Sayısının Tek Kaynağı", durum: beklemede, öncelik: p2, üretir: [ KOD-SNF-KANON ], bağımlı: [],
+        Adım( kod: HST-MTR-A02, ad: "Kanon Sayısının Tek Kaynağı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-SNF-KANON ], bağımlı: [],
           referans: [ HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR ],
           ne: "🔢 Kanona madde eklendiğinde elle tazelenen sayılar tek bir kaynaktan okunsun, insan kapısı korunsun" ) {
           görev: "Madde sayısının dondurulduğu kaynak ve nöbet noktaları ölçülür. Sayı tek bir kayıtta tutulur ve öteki noktalar oradan okur; kanonun sessizce büyümemesi için bilinçli bir artırma adımı insan kapısı olarak kalır. Türetilmiş yüz üreticisinin sayı ayrıştığında hata fırlatma davranışı da kaydın anlattığı biçimde incelenir."
@@ -5920,7 +5920,7 @@ sessizce körleşmez.
           sınır: "Kitaplık düzenini sınayan fikstürler silinmez"
         }
 
-        Adım( kod: HST-MTR-A08, ad: "Öğretim Yüzündeki Dört Bayat Yer", durum: beklemede, öncelik: p2, üretir: [ KOD-DERSLER ], bağımlı: [],
+        Adım( kod: HST-MTR-A08, ad: "Öğretim Yüzündeki Dört Bayat Yer", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DERSLER ], bağımlı: [],
           referans: [ HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI ],
           ne: "🧹 Öğretim tazelik turunun alan dışında bıraktığı dört bayat yer düzeltilsin" ) {
           görev: "Kaydın ölçtüğü dört yer yeniden doğrulanır ve bugün hâlâ bayat olanlar düzeltilir: MEK-SEF'in sözleşme sayısı, üreteç komutunun kökten çalışan yolu, emekli raf kodunu anan yorum ve TIP-1.14'ün saydığı tip. Kayıttaki iki anlam ayrışması bu Adımın kapsamında değildir."
