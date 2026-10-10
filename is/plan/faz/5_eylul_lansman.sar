@@ -945,7 +945,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
 
         Adım( kod: VIT-KIMLIK-A08, durum: geliştirmede, onay: "onaylandı — 2026-09-05", öncelik: p1, bağımlı: [ VIT-KIMLIK-A07, PRF-A06 ],
           referans: [ YUZ-4.2, YUZ-4.1, YUZ-1.2, OZK-12 ],
-          üretir:   [ KOD-SIMGE-CIZELGE ],
+          üretir:   [ KOD-SIMGE-CIZELGE, KOD-SNM-PARAMETRE-DEKOR ],
           ne:       "🎨 SİMGELERİN KAYNAK DOSYADA PARAMETRELERİN YANINDA GÖRÜNMESİ. Founder 2026-08-30 tarihinde kırk simgelik aileyi (tabaka yüzü) gösterdi ve şu isteği verdi: bu simgeler editörde, dosyanın içinde, ilgili oldukları parametrelerin yanında görünsün. Aile zaten parametre adlarıyla çizilmiştir: görev, sınır, referans, kabul, kural, kart, doğrudan, geçişli, zaman, kişi, jeton, giden, gelen, terfi, kilit, planlanmamış, tip, konum, beceri ve kardeşleri. VIT-KIMLIK-A06 tip bildirim satırlarına geometrik simge basmıştır; bu Adım aynı deseni parametre satırlarına uzatır." ) {
           görev:    [
             "Parametre adından simgeye eşleme tek kaynak çizelgeden okunur; çizelge dışı ad simge almaz ve eşleme kodda yazılmaz.",
@@ -4692,7 +4692,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           dokunulmaz: [ "arsiv/ rafı", "Türetilmiş dosyaların üretici zinciri" ]
         }
 
-        Adım( kod: KYN-KYN-A05, ad: "Prizmanın Markdown Yüzünün Gerçek Dönüşüm Yapması", durum: geliştirmede, öncelik: p2, bağımlı: [],
+        Adım( kod: KYN-KYN-A05, ad: "Prizmanın Markdown Yüzünün Gerçek Dönüşüm Yapması", durum: tamamlandı, öncelik: p2, bağımlı: [],
           referans: [ YUZ-1.2, HTR-MARKDOWN-YUZU-ZAYIF ], üretir: [ KOD-PRIZMA-MD, KOD-SNM-PRIZMA-MD ],
           ne: "📝 Prizmanın Markdown yüzü kaynağı bir kod bloğuna sarmakla yetinmekte, gerçek bir dönüşüm yapmamaktadır; oysa benimsemenin yükü bu yüzün üstündedir ve depoya gelen geliştirici renksiz düz metin görüp ayrılmaktadır. Kaynağı Markdown yapmak dilin tek değerini, yani makinenin yanlış dosyayı reddedebilmesini yok eder; doğru kaldıraç türetilmiş yüzü okunur kılmaktır." ) {
           görev: [
@@ -4705,6 +4705,9 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
             "İki koşu aynı çıktıyı verir; çekirdek süiti yeşildir."
           ]
           sınır: "Kaynak biçimi değişmez; Markdown yalnız türetilmiş yüzdür ve elle düzenlenmez (YUZ-1.2)."
+          koşu:  Koşum( kod: KSM-KYN-KYN-A05, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 0105f3e · çekirdek 1676/1676, tür denetimi temiz, eklenti 865 geçti 6 atlandı · depo denetimi 0 hata · bağımsız inceleme: Eylül planının yüzü 576 başlık, 565 iç bağlantı, 2615 tablo satırı ve sıfır sarmal kod çiti taşır, Faz, Blok ve Adım bölümlerinde alan kaybı yoktur; iki ayrı koşu bayt bayt aynıdır; çıktıya zaman damgası eklenince ve eski sarma davranışı geri getirilince nöbetler kırmızıya döner. SINIR: önizleme yüzü (belgeMd) 2026-07-03 Founder kuralı gereği kaynağı kod olarak göstermeyi sürdürür; okunur dönüşüm yansıt --md komutu ile MCP prizma md yüzüne bağlanmıştır. GÖREVİN ÜÇÜNCÜ MADDESİ (deponun tanıtım yüzünde gösterim) Founder'ın gözüne bırakılmıştır: kanon maddesi örneğinde Hüküm, Gerekçe, Örnek ve Zorlama satırları boş satırla ayrılmadığı için GitHub'da tek paragrafa birleşir ve canlı plan yüzü 937 KB'tır; vitrine konmadan önce ikisi ayrıca ele alınır.",
+            ne:    "Prizmanın Markdown yüzü kaynağı kod bloğuna sarmak yerine başlık, tablo, madde listesi ve bağlantıdan oluşan okunur bir dönüşüm üretir ve idempotent nöbetle korunur. Yüz komut satırında ve MCP yüzünde hazırdır; README'de gösterimi Founder kararını bekler." )
         }
 
         Adım( kod: KYN-HASAT-A01, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p1, bağımlı: [], referans: [ STR-4 ],
@@ -6080,3 +6083,7 @@ Kod( kod: KOD-PRIZMA-MD, dosya: "urun/cekirdek/src/prizma-md.ts",
   ne: "🔺 Prizmanın Markdown yüzü — nötr ağaçtan okunur Markdown üretir: düğüm başlık olur, kısa alanlar tabloya, cümleler paragraf ve madde listesine iner, aynı dosyadaki kimlikler bağlantı olur ve belge blokları düz Markdown olarak akar (KYN-KYN-A05)" )
 Kod( kod: KOD-SNM-PRIZMA-MD, dosya: "urun/cekirdek/sinama/prizma-md.test.ts",
   ne: "🔺 Markdown yüzü nöbetleri — plan fikstürünün dönüşümü, altın çıktı, iki ayrı süreçte bayt bayt eşitlik ve canlı plan ile kanon üzerinde ham kaynak yokluğu (KYN-KYN-A05)" )
+
+// 🍎 VIT-KIMLIK-A08 teslimi (2026-10-10): parametre satırlarına aile simgesi
+Kod( kod: KOD-SNM-PARAMETRE-DEKOR, dosya: "urun/eklenti/sinama/parametre-dekor.test.ts",
+  ne: "🎨 Parametre dekoru nöbetleri — tek kaynak çizelge, satır başı ve görünür aralık şartı, dizgi ve yorum dışlaması, açık ve koyu tema varyantı, dosyaya tek bayt yazmama ve 16 ms bütçesi (VIT-KIMLIK-A08)" )
