@@ -579,6 +579,8 @@ if (yol === "belge-yuzleri-uret") {
   if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
   // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
   if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
+  // HST-MTR-A12: yüzey sayılarının okunduğu matris kaydı canlı sicilden ayrışınca üretim durmaz; sapma adıyla söylenir.
+  if (sonuc.yonlendirmeBulgusu) console.log(`⚠️ ${sonuc.yonlendirmeBulgusu}`);
   process.exit(0);
 }
 

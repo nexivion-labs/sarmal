@@ -163,7 +163,9 @@ export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayi
 //   bu küme yüzden yüz bire çıktı. Yeni kümenin dağılımı değişmedi.
 //   2026-10-10 (HST-MTR-A12): sayılar dağınık dondurmalardan bu tek kayda taşındı;
 //   değerler değişmedi. Canlı sicilin büyüklüğü (iki yüz bir) ayrıca dondurulmaz, üç
-//   canlı kümenin toplamıdır.
+//   canlı kümenin toplamıdır. Aynı gün belge yüzü üreticisinin yönlendirme dağılımını
+//   ikinci kez donduran koşulu da kaldırıldı ve artırma adımı insanın izleyeceği bütün
+//   basamaklarıyla yazıldı.
 
 /** Tanı kümelerinin dondurulmuş sayımı. Yeni kümenin büyüklüğü üç düzeyin toplamıdır. */
 export interface TaniKumesiSayimi {
@@ -208,13 +210,29 @@ export const yeniKumeSayisi = (s: TaniKumesiSayimi): number => s.yeni.hata + s.y
 /** Canlı sicilin büyüklüğü ayrıca dondurulmaz; önceki, yeni ve sınıflamadan türeyen kümelerin toplamıdır. */
 export const canliSicilSayisi = (s: TaniKumesiSayimi): number => s.onceki + yeniKumeSayisi(s) + s.siniflamaTurevli;
 
-/** Sicil kayıttan ayrıştığında atılacak bilinçli adımın adı ve tarifi. */
+/** Yönlendirme matrisi kaydının depo köküne göre yeri; belge yüzleri yüzey sayılarını bu kayıttan okur. */
+export const TANI_YONLENDIRME_MATRISI_KAYDI = "is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar";
+
+/**
+ * Sicil kayıttan ayrıştığında atılacak bilinçli adımın tarifi. Basamaklar insanın izleyeceği
+ * sırayla ve eksiksiz sayılır; kırmızı fikstür (sinama/kanon-tutarlilik.test.ts) sicile tanı
+ * eklenmiş bir kopyada bu basamakları izler ve iki üreticinin bulgusuz geçtiğini ölçer. Son
+ * cümle, doğan tanının sayıdan bağımsız tutarlılık nöbetlerini adlandırır.
+ */
 export const TANI_KUMESI_ARTIRMA_ADIMI =
-  `${KANON_SAYIMI_KAYDI} dosyasındaki TANI_KUMESI_SAYIMI kaydını ölçülen sayıya bilinçle çek ve `
-  + "geçmiş satırına tarihi, Adım kodunu ve doğan, emekliye ayrılan ya da düzeyi değişen tanıyı yaz; "
-  + "aynı adımda tanı sicilinin mührünü (is/nitelik/goc/turetilmis_yuz_nobetleri.sar nöbet kaydı) ve "
-  + "yönlendirme matrisi kaydını (is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar) tazele, türetilmiş "
-  + "yüzleri resmî üreticileriyle yeniden üret";
+  `(1) ${KANON_SAYIMI_KAYDI} dosyasındaki TANI_KUMESI_SAYIMI kaydını ölçülen sayıya bilinçle çek ve geçmiş `
+  + "satırına tarihi, Adım kodunu ve doğan, emekliye ayrılan ya da düzeyi değişen tanıyı yaz; "
+  + "(2) doğan tanının Türkçe ve İngilizce metnini urun/cekirdek/src/tani-metinleri.ts kataloglarına ekle (Türkçe "
+  + "öneri, `Örnek:` sözcüğünden sonra ters tırnak içinde yapıştırılabilir bir iskelet taşır) ve emekliye ayrılan "
+  + "tanının metnini kataloglardan çıkar; "
+  + `(3) ${TANI_YONLENDIRME_MATRISI_KAYDI} kaydının çizelgesini, düzyazısını ve Çıkarım düğümünü canlı ölçüme göre tazele; `
+  + "(4) is/nitelik/goc/turetilmis_yuz_nobetleri.sar nöbet kaydında urun/cekirdek/src/tani-sicili.ts mührünü ve "
+  + `${TANI_YONLENDIRME_MATRISI_KAYDI} mührünü tazele; `
+  + "(5) türetilmiş yüzleri `kanon-tutarlilik-uret` ve `belge-yuzleri-uret` komutlarıyla yeniden üret. "
+  + "Doğan bir tanı bu sayı ve kayıt basamaklarından ayrı olarak tutarlılık nöbetlerini de bekler: üreticisi onu "
+  + "kapı kapsamında ilan edilmiş bir modülde gerçekten basmalı, kanon maddesinin Zorlama satırı onu adıyla anmalı "
+  + "(kanon değişikliği insan onayı ister), bilgi düzeyindeyse terfi kararı ya da gözlem sınıflaması yazılmalı ve "
+  + "tanı fikstürle kanıtlanmalıdır";
 
 /** Kümelerin bulguda geçen adı ve sayı metni; ayrışma iki sayımın bu metinleri farklıysa vardır. */
 const TANI_KUMELERI: ReadonlyArray<{ readonly ad: string; readonly metin: (s: TaniKumesiSayimi) => string }> = [

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
@@ -404,9 +404,16 @@ function sayimFiksturuMaddesi(canliKodlar: ReadonlySet<string>): string {
   ].join("\n");
 }
 
-/** İki ölçüm üreticisinin okuduğu her girdiyi ve on altı kalıcı yüzü geçici köke kopyalar. */
+/** Bu dosyanın açtığı sayım kopyaları; dosyanın son sınaması hepsinin silindiğini ölçer. */
+const SAYIM_KOPYALARI: string[] = [];
+
+/**
+ * İki ölçüm üreticisinin okuduğu her girdiyi ve on altı kalıcı yüzü geçici köke kopyalar.
+ * Kopyayı açan sınama onu `finally` bloğunda siler.
+ */
 function sayimKopyasi(): string {
   const sb = mkdtempSync(join(tmpdir(), "sarmal-sayim-"));
+  SAYIM_KOPYALARI.push(sb);
   for (const dizin of ["yasa/kanon", "ogreti/ornek", "ogreti/sablon", "oz/siniflama"]) {
     cpSync(join(KOK, dizin), join(sb, dizin), { recursive: true });
   }
@@ -423,6 +430,11 @@ function sayimKopyasi(): string {
 
 test("HST-MTR-A02 kırmızı fikstür: kopyaya madde eklenince üreticiler hata fırlatmaz, kanonu sayar ve bulguyu bildirir", () => {
   const sb = sayimKopyasi();
+  try { a02KopyadaSina(sb); } finally { rmSync(sb, { recursive: true, force: true }); }
+});
+
+/** A02 fikstürünün gövdesi; kopyanın silinmesi çağıranın `finally` bloğundadır. */
+function a02KopyadaSina(sb: string): void {
   const canliMaddeler = kanonMaddeleriniOlc(KOK).maddeler;
   const canli = canliMaddeler.length;
   const madde = sayimFiksturuMaddesi(new Set(canliMaddeler.map((m) => m.kod)));
@@ -444,7 +456,7 @@ test("HST-MTR-A02 kırmızı fikstür: kopyaya madde eklenince üreticiler hata 
   assert.ok(readFileSync(join(sb, "README.md"), "utf8").includes(`${canli + 1} tekil madde`),
     "kalıcı yüzler sayı kaydı beklenmeden tazelenebilmeli");
   assert.equal(kanonOlc(sb).sayim.tekil, canli + 1);
-});
+}
 
 // ── HST-MTR-A12 · tanı kümesi sayımının tek kaydı ve tek nöbeti ───────────────
 //   Tanı sicilinin kümeleri de bilinçle dondurulmuş bir insan kapısıdır; sayılar
@@ -454,7 +466,10 @@ test("HST-MTR-A02 kırmızı fikstür: kopyaya madde eklenince üreticiler hata 
 //   Kırmızı fikstür sicilin kendisine bir tanı ekler: çekirdeğin kaynak ağacı ve
 //   üreticilerin okuduğu girdiler geçici köke kopyalanır, kopyadaki sicile bir kayıt
 //   yazılır ve kopyanın modülleri yüklenir; böylece üreticiler canlı sicili değil
-//   tanı eklenmiş sicili okur ve canlı ağaca hiçbir şey yazılmaz.
+//   tanı eklenmiş sicili okur ve canlı ağaca hiçbir şey yazılmaz. Fikstür bundan
+//   sonra artırma adımını kopyada uçtan uca izler (kayıt, matris, iki dilli metin ve
+//   iki üretici), metin basamağı atlandığında katalog tamlık nöbetinin bilinçli olarak
+//   devreye girdiğini ölçer ve kopyayı her koşunun sonunda siler.
 
 test("tanı kümesi sayım nöbeti: canlı sicil tek sayım kaydıyla eşittir", () => {
   const snf = siniflamaOrtuMerge(siniflamaYukle(join(KOK, "oz/siniflama/kayit.json")), siniflamaOrtuYukle(KOK));
@@ -495,79 +510,268 @@ test("HST-MTR-A12 sayım bulgusu kayda eşit ölçümde susar, ayrışan kümeyi
   assert.ok(taniKumesiSayimiBulgusu({ ...temiz, yuz33: 0 })?.includes("YUZ-3.3"));
 });
 
+/** Tanının yüzeyini kaydeden matris; belge yüzleri yüzey sayılarını bu kayıttan okur. */
+const MATRIS_KAYDI = "is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar";
+
 /**
  * Fikstür tanısı: yeni bir biçim tanısının benzeri, DIL-5.1 maddesine bağlı bir gözlem.
  * Kodu canlı sicilde bulunmayan ilk adaydan seçilir; böylece fikstür sicilin bugünkü
  * içeriğinden ve sicilin kayda eşit olup olmamasından bağımsız kalır.
  */
-function fiksturTanisi(canli: ReadonlySet<string>): string {
+function fiksturKodu(canli: ReadonlySet<string>): string {
   let kod = "sayım-fikstürü-biçimi";
   for (let sira = 2; canli.has(kod); sira++) kod = `sayım-fikstürü-biçimi-${sira}`;
-  return `  { kod: "${kod}", madde: "DIL-5.1", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },\n`;
+  return kod;
 }
 
 type KanonModulu = typeof import("../src/kanon-tutarlilik.ts");
 type BelgeModulu = typeof import("../src/belge-yuzleri.ts");
+type UlasmaModulu = typeof import("../src/yuzey-ulasma.ts");
+type MetinModulu = typeof import("../src/tani-metinleri.ts");
+
+/** Sicile tanı eklenmiş kopya ve kopyanın kaynak ağacından yüklenen modüller. */
+interface TaniKopyasi {
+  readonly sb: string;
+  readonly kod: string;
+  readonly kanon: KanonModulu;
+  readonly belge: BelgeModulu;
+  readonly ulasma: UlasmaModulu;
+  readonly metinler: MetinModulu;
+  /** Ekleme öncesindeki canlı sicilin ölçümü. */
+  readonly once: OlculenTaniKumesi;
+}
 
 /**
- * Sicile tanı eklenmiş kopya; dönen modüller kopyanın kaynak ağacından yüklenir ve
- * kopyadaki sicili okur. `once`, ekleme öncesindeki canlı sicilin ölçümüdür.
+ * Kopyanın modülleri kopyanın sicilini okur ve bir kez yüklenir: sonraki basamakların
+ * kaynağa yazdıkları bu modüllere değil, her koşuda baştan yüklenen komut satırına yansır.
+ * Kopya diske yazıldıktan sonra yükleme düşerse kopya burada silinir.
  */
-async function taniEklenmisKopya(): Promise<{ sb: string; kanon: KanonModulu; belge: BelgeModulu; once: OlculenTaniKumesi }> {
+async function taniEklenmisKopya(): Promise<TaniKopyasi> {
   const canliOlcum = taniKumesiniOlc(siniflamaOrtuMerge(siniflamaYukle(join(KOK, "oz/siniflama/kayit.json")), siniflamaOrtuYukle(KOK)));
+  const kod = fiksturKodu(canliOlcum.canli);
   const sb = sayimKopyasi();
-  cpSync(join(KOK, "urun/cekirdek/src"), join(sb, "urun/cekirdek/src"), { recursive: true });
-  for (const dizin of ["oz/ceviri", "ogreti/bilgi"]) cpSync(join(KOK, dizin), join(sb, dizin), { recursive: true });
-  cpSync(join(KOK, "urun/cekirdek/package.json"), join(sb, "urun/cekirdek/package.json"));
-  const sicilYolu = join(sb, "urun/cekirdek/src/tani-sicili.ts");
-  const sicil = readFileSync(sicilYolu, "utf8");
-  const acilis = "export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [\n";
-  assert.equal(sicil.split(acilis).length - 1, 1, "fikstür yeni kümenin açılışını tek bir kez bulmalı");
-  writeFileSync(sicilYolu, sicil.replace(acilis, () => acilis + fiksturTanisi(canliOlcum.canli)), "utf8");
-  const kaynak = pathToFileURL(join(sb, "urun/cekirdek/src/")).href;
-  const kanon: KanonModulu = await import(`${kaynak}kanon-tutarlilik.ts`);
-  const belge: BelgeModulu = await import(`${kaynak}belge-yuzleri.ts`);
-  return { sb, kanon, belge, once: canliOlcum.sayim };
+  try {
+    cpSync(join(KOK, "urun/cekirdek/src"), join(sb, "urun/cekirdek/src"), { recursive: true });
+    for (const dizin of ["oz/ceviri", "ogreti/bilgi"]) cpSync(join(KOK, dizin), join(sb, dizin), { recursive: true });
+    cpSync(join(KOK, "urun/cekirdek/package.json"), join(sb, "urun/cekirdek/package.json"));
+    const sicilYolu = join(sb, "urun/cekirdek/src/tani-sicili.ts");
+    const sicil = readFileSync(sicilYolu, "utf8");
+    const acilis = "export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [\n";
+    assert.equal(sicil.split(acilis).length - 1, 1, "fikstür yeni kümenin açılışını tek bir kez bulmalı");
+    const satir = `  { kod: "${kod}", madde: "DIL-5.1", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },\n`;
+    writeFileSync(sicilYolu, sicil.replace(acilis, () => acilis + satir), "utf8");
+    const kaynak = pathToFileURL(join(sb, "urun/cekirdek/src/")).href;
+    const kanon: KanonModulu = await import(`${kaynak}kanon-tutarlilik.ts`);
+    const belge: BelgeModulu = await import(`${kaynak}belge-yuzleri.ts`);
+    const ulasma: UlasmaModulu = await import(`${kaynak}yuzey-ulasma.ts`);
+    const metinler: MetinModulu = await import(`${kaynak}tani-metinleri.ts`);
+    return { sb, kod, kanon, belge, ulasma, metinler, once: canliOlcum.sayim };
+  } catch (hata) {
+    rmSync(sb, { recursive: true, force: true });
+    throw hata;
+  }
+}
+
+/** Kopyanın komut satırını koşturur; her koşu kopyanın kaynağını baştan yükler. */
+const kopyaKomutu = (sb: string, komut: string) =>
+  spawnSync(process.execPath, [join(sb, "urun/cekirdek/src/sarmal.ts"), komut, sb], { encoding: "utf8" });
+
+/** Artırma adımının (1). basamağı: kopyadaki TANI_KUMESI_SAYIMI kaydını ölçülen sayıya çeker. */
+function sayimKaydiniCek(sb: string, s: TaniKumesiSayimi): void {
+  const yol = join(sb, KANON_SAYIMI_KAYDI);
+  const kaynak = readFileSync(yol, "utf8");
+  const desen = /export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = \{[\s\S]*?\n\};\n/g;
+  assert.equal(kaynak.match(desen)?.length, 1, "kopyada sayım kaydı tek bir kez bulunmalı");
+  writeFileSync(yol, kaynak.replace(desen, () => [
+    "export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = {",
+    `  yeni: { hata: ${s.yeni.hata}, uyari: ${s.yeni.uyari}, bilgi: ${s.yeni.bilgi} },`,
+    `  onceki: ${s.onceki},`,
+    `  siniflamaTurevli: ${s.siniflamaTurevli},`,
+    `  emekli: ${s.emekli},`,
+    `  emeklilikBorcu: ${s.emeklilikBorcu},`,
+    "};",
+    "",
+  ].join("\n")), "utf8");
+}
+
+/** (2). basamak: metni olmayan her yeni tanının Türkçe ve İngilizce metnini kopyanın kataloglarına ekler. */
+function metinleriEkle(sb: string, kodlar: readonly string[]): void {
+  const yol = join(sb, "urun/cekirdek/src/tani-metinleri.ts");
+  let kaynak = readFileSync(yol, "utf8");
+  const kataloglar: ReadonlyArray<readonly [string, string, string]> = [
+    ["export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {\n",
+      "Sayım fikstürünün geçici gözlemi.", "Fikstür kopyası sınamanın sonunda silinir. Örnek: `kademe: bilgi`"],
+    ["export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {\n",
+      "Temporary observation of the count fixture.", "The fixture copy is removed when the test ends."],
+  ];
+  for (const [acilis, mesaj, oneri] of kataloglar) {
+    assert.equal(kaynak.split(acilis).length - 1, 1, `kopyada katalog açılışı tek bir kez bulunmalı: ${acilis.trim()}`);
+    const girdiler = kodlar.map((kod) => `  "${kod}": { mesaj: () => "${mesaj}", oneri: () => "${oneri}" },\n`).join("");
+    kaynak = kaynak.replace(acilis, () => acilis + girdiler);
+  }
+  writeFileSync(yol, kaynak, "utf8");
+}
+
+/**
+ * (3). basamak: matris kaydının sicilden türeyen hanelerini kopyanın canlı ölçümüne çeker.
+ * Desenler kaydın kendi sayı desenleridir (yuzey-ulasma.ts · SAYI_DESENLERI). Bilgi
+ * düzeyinde doğan tanı Bildirimler hanesine düşer; Problems hanesi değişmez ve yüzey
+ * hanelerinin toplamı sicil boyutunu verdiği için Bildirimler hanesi kalan sayıdır.
+ * İlan granülündeki haneler sicille değişmez, çünkü ilan üretici granülünde yazılır.
+ */
+function matrisKaydiniTazele(sb: string, ozet: ReturnType<UlasmaModulu["yuzeyUlasmaOzeti"]>): { metin: string; bildirimler: number } {
+  const yol = join(sb, MATRIS_KAYDI);
+  let metin = readFileSync(yol, "utf8");
+  const problems = Number(/^\| Problems \| (\d+) \|/m.exec(metin)?.[1]);
+  assert.ok(Number.isInteger(problems), "matris kaydında Problems hanesi bulunamadı");
+  const bildirimler = ozet.sicilToplami - problems - ozet.hatirlaticiKimlik;
+  const hedefler: ReadonlyArray<readonly [RegExp, number]> = [
+    [/^\| \*\*Toplam\*\* \| \*\*(\d+)\*\* \|/m, ozet.sicilToplami],
+    [/sicilinde bugün \*\*(\d+)\*\* kimlik vardır/, ozet.sicilToplami],
+    [/sicilin (\d+) kimliğinin tamamını tek yüzeye YÖNLENDİRİR/, ozet.sicilToplami],
+    [/ettiği \*\*(\d+)\*\* kimlik ile ondan önce/, ozet.yeniKimlik],
+    [/ondan önce yazılmış \*\*(\d+)\*\* kimlik/, ozet.oncekiKimlik],
+    [/^\| Hatırlatıcılar \| (\d+) \|/m, ozet.hatirlaticiKimlik],
+    [/Problems, (\d+) Hatırlatıcılar/, ozet.hatirlaticiKimlik],
+    [/^\| Bildirimler \| (\d+) \|/m, bildirimler],
+    [/Hatırlatıcılar ve (\d+) Bildirimler/, bildirimler],
+  ];
+  for (const [desen, deger] of hedefler) {
+    assert.ok(desen.test(metin), `matris kaydında ${desen} bulunamadı`);
+    metin = metin.replace(desen, (eslesen: string, sayi: string) => eslesen.replace(sayi, String(deger)));
+  }
+  writeFileSync(yol, metin, "utf8");
+  return { metin, bildirimler };
 }
 
 /** Ölçüm tablosundaki yeni küme hücresi. */
 const yeniDagilimi = (s: TaniKumesiSayimi): string =>
   `${yeniKumeSayisi(s)} (${s.yeni.hata} hata + ${s.yeni.uyari} uyarı + ${s.yeni.bilgi} bilgi)`;
 
-test("HST-MTR-A12 kırmızı fikstür: sicile tanı eklenince üreticiler durmaz ve ayrışan kümeyi adıyla basar", async () => {
-  const { sb, kanon, belge, once } = await taniEklenmisKopya();
-  // Beklenen ölçüm canlı sicilin bir bilgi tanısı fazlasıdır; beklenen kayıt kopyanın
-  // kaydıdır. İkisi canlı sicilden türediği için fikstür sicil kayda eşit olmasa da çalışır.
-  const kayit = kanon.TANI_KUMESI_SAYIMI;
-  const sonra: TaniKumesiSayimi = { ...once, yeni: { ...once.yeni, bilgi: once.yeni.bilgi + 1 } };
-  assert.notEqual(yeniDagilimi(sonra), yeniDagilimi(kayit), "fikstür kayıttan ayrışan bir sicil kurmalı");
+/** İki üreticinin basabileceği bulguların ayırt edici başları. */
+const TANI_KUMESI_BULGUSU = "Tanı kümesi sayımı kayıttan ayrıştı";
+const YONLENDIRME_BULGUSU = "Yönlendirme matrisi kaydı canlı sicilden ayrıştı";
 
-  // Ölçülen kusurun kendisi komut satırındadır: üretici çıkış 1 veriyor ve hangi
-  // değişmezin tutmadığını söylemiyordu. Kopyanın komutu kopyanın sicilini okur.
-  const komut = spawnSync(process.execPath, [join(sb, "urun/cekirdek/src/sarmal.ts"), "kanon-tutarlilik-uret", sb], { encoding: "utf8" });
-  assert.equal(komut.status, 0, `üretici komutu sicile eklenen bir tanı yüzünden durmamalı:\n${komut.stderr}`);
-  assert.ok(komut.stdout.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`), `komut ayrışan kümeyi adıyla basmalı:\n${komut.stdout}`);
+test("HST-MTR-A12 kırmızı fikstür: sicile tanı eklenir, artırma adımı izlenir ve iki üretici de yeşil kalır", async (t) => {
+  const { sb, kod, kanon, belge, ulasma, metinler, once } = await taniEklenmisKopya();
+  try {
+    // Beklenen ölçüm canlı sicilin bir bilgi tanısı fazlasıdır; beklenen kayıt kopyanın
+    // kaydıdır. İkisi canlı sicilden türediği için fikstür sicil kayda eşit olmasa da çalışır.
+    const kayit = kanon.TANI_KUMESI_SAYIMI;
+    const sonra: TaniKumesiSayimi = { ...once, yeni: { ...once.yeni, bilgi: once.yeni.bilgi + 1 } };
+    const snf = siniflamaOrtuMerge(siniflamaYukle(join(sb, "oz/siniflama/kayit.json")), siniflamaOrtuYukle(sb));
+    const olculen = kanon.taniKumesiniOlc(snf).sayim;
+    assert.equal(yeniDagilimi(olculen), yeniDagilimi(sonra), "kopyanın sicili canlı sicilin bir bilgi tanısı fazlasını taşımalı");
+    assert.notEqual(yeniDagilimi(sonra), yeniDagilimi(kayit), "fikstür kayıttan ayrışan bir sicil kurmalı");
 
-  let metin = "";
-  assert.doesNotThrow(() => { metin = kanon.kanonTutarlilikMetni(sb); },
-    "kanon tutarlılık üreticisi sicile eklenen bir tanı yüzünden durmamalı");
-  assert.ok(metin.includes(`| Yeni tanı kümesi | ${yeniDagilimi(kayit)} | ${yeniDagilimi(sonra)} | SAPMA |`),
-    "kanon tutarlılık yüzü ayrışan kümeyi ölçüm tablosunda SAPMA olarak göstermeli");
-  assert.ok(metin.includes(`| Tanı kümesi sayımı kaydından ayrışma | ${once.canli + 1} / ${canliSicilSayisi(kayit)} | AÇIK`),
-    "kanon tutarlılık yüzü ayrışmayı çelişki raporunda açık bulgu olarak yazmalı");
+    await t.test("adımdan önce: iki üretici de durmaz, ayrışan kümeyi ve bayat matris kaydını adıyla basar", () => {
+      const komut = kopyaKomutu(sb, "kanon-tutarlilik-uret");
+      assert.equal(komut.status, 0, `kanon tutarlılık komutu sicile eklenen bir tanı yüzünden durmamalı:\n${komut.stderr}`);
+      assert.ok(komut.stdout.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`), `komut ayrışan kümeyi adıyla basmalı:\n${komut.stdout}`);
 
-  const sonuc = kanon.kanonTutarlilikUret(sb);
-  const bulgu = sonuc.taniKumesiBulgusu ?? "";
-  assert.ok(bulgu.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`) && bulgu.includes(`kayıt ise ${yeniKumeSayisi(kayit)} kimlik`),
-    `bulgu ayrışan kümeyi adıyla ve iki sayısıyla söylemeli: ${bulgu}`);
-  assert.ok(bulgu.includes("artırma adımı") && bulgu.includes("TANI_KUMESI_SAYIMI") && bulgu.includes(KANON_SAYIMI_KAYDI),
-    `bulgu artırma adımını kaydın adı ve yeriyle söylemeli: ${bulgu}`);
-  if (once.onceki === kayit.onceki) assert.ok(!bulgu.includes("önceki sabit küme"), `bulgu yalnız ayrışan kümeyi söylemeli: ${bulgu}`);
-  assert.equal(sonuc.yeni, yeniKumeSayisi(sonra), "üretici kümeyi sicilden saymalı");
+      let metin = "";
+      assert.doesNotThrow(() => { metin = kanon.kanonTutarlilikMetni(sb); },
+        "kanon tutarlılık üreticisi sicile eklenen bir tanı yüzünden durmamalı");
+      assert.ok(metin.includes(`| Yeni tanı kümesi | ${yeniDagilimi(kayit)} | ${yeniDagilimi(sonra)} | SAPMA |`),
+        "kanon tutarlılık yüzü ayrışan kümeyi ölçüm tablosunda SAPMA olarak göstermeli");
+      assert.ok(metin.includes(`| Tanı kümesi sayımı kaydından ayrışma | ${once.canli + 1} / ${canliSicilSayisi(kayit)} | AÇIK`),
+        "kanon tutarlılık yüzü ayrışmayı çelişki raporunda açık bulgu olarak yazmalı");
 
-  let belgeSonucu: ReturnType<BelgeModulu["belgeYuzleriniUret"]> | undefined;
-  assert.doesNotThrow(() => { belgeSonucu = belge.belgeYuzleriniUret(sb); },
-    "belge yüzü üreticisi sicile eklenen bir tanı yüzünden durmamalı");
-  assert.ok(belgeSonucu?.taniKumesiBulgusu?.includes("TANI_KUMESI_SAYIMI"),
-    "belge yüzü üreticisi ayrışmayı anlaşılır bir bulguyla bildirmeli");
+      const sonuc = kanon.kanonTutarlilikUret(sb);
+      const bulgu = sonuc.taniKumesiBulgusu ?? "";
+      assert.ok(bulgu.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`) && bulgu.includes(`kayıt ise ${yeniKumeSayisi(kayit)} kimlik`),
+        `bulgu ayrışan kümeyi adıyla ve iki sayısıyla söylemeli: ${bulgu}`);
+      assert.ok(bulgu.includes("artırma adımı") && bulgu.includes("TANI_KUMESI_SAYIMI") && bulgu.includes(KANON_SAYIMI_KAYDI),
+        `bulgu artırma adımını kaydın adı ve yeriyle söylemeli: ${bulgu}`);
+      if (once.onceki === kayit.onceki) assert.ok(!bulgu.includes("önceki sabit küme"), `bulgu yalnız ayrışan kümeyi söylemeli: ${bulgu}`);
+      assert.equal(sonuc.yeni, yeniKumeSayisi(sonra), "üretici kümeyi sicilden saymalı");
+
+      // Matris kaydı da sicilin gerisinde kalmıştır. Belge yüzleri yüzey sayılarını o
+      // kayıttan okur; üretici durmaz, bayat kaydı adıyla ve artırma adımıyla söyler.
+      let belgeSonucu: ReturnType<BelgeModulu["belgeYuzleriniUret"]> | undefined;
+      assert.doesNotThrow(() => { belgeSonucu = belge.belgeYuzleriniUret(sb); },
+        "belge yüzü üreticisi sicile eklenen bir tanı yüzünden durmamalı");
+      assert.ok(belgeSonucu?.taniKumesiBulgusu?.includes(TANI_KUMESI_BULGUSU),
+        "belge yüzü üreticisi ayrışan kümeyi anlaşılır bir bulguyla bildirmeli");
+      const yonlendirme = belgeSonucu?.yonlendirmeBulgusu ?? "";
+      assert.ok(yonlendirme.startsWith(YONLENDIRME_BULGUSU) && yonlendirme.includes(MATRIS_KAYDI)
+        && yonlendirme.includes("toplam hanesi canlı ölçümle uyuşmuyor"), `belge yüzü üreticisi bayat matris kaydını adıyla söylemeli: ${yonlendirme}`);
+      assert.ok(yonlendirme.includes(kanon.TANI_KUMESI_ARTIRMA_ADIMI), `bulgu artırma adımını söylemeli: ${yonlendirme}`);
+
+      const belgeKomutu = kopyaKomutu(sb, "belge-yuzleri-uret");
+      assert.equal(belgeKomutu.status, 0, `belge yüzü komutu sicile eklenen bir tanı yüzünden durmamalı:\n${belgeKomutu.stderr}`);
+      assert.ok(belgeKomutu.stdout.includes(`⚠️ ${TANI_KUMESI_BULGUSU}`) && belgeKomutu.stdout.includes(`⚠️ ${YONLENDIRME_BULGUSU}`),
+        `belge yüzü komutu iki bulguyu da basmalı:\n${belgeKomutu.stdout}`);
+    });
+
+    await t.test("adım izlenir; metin basamağı atlanırsa iki dilli katalog tamlık nöbeti bilinçli olarak devreye girer", () => {
+      // (1) Sayım kaydı ölçülen sayıya çekilir.
+      sayimKaydiniCek(sb, olculen);
+      // (3) Matris kaydı tazelenir; kaydın nöbeti tazelemeden önce kırmızı, sonra yeşildir.
+      const bayat = ulasma.matrisKayitSapmalari(readFileSync(join(sb, MATRIS_KAYDI), "utf8"), ulasma.yuzeyUlasmaOzeti());
+      assert.ok(bayat.some((s) => s.startsWith("toplam hanesi canlı ölçümle uyuşmuyor")), `matris nöbeti tazelemeden önce kırmızı olmalı: ${bayat.join(" | ")}`);
+      const { metin } = matrisKaydiniTazele(sb, ulasma.yuzeyUlasmaOzeti());
+      assert.deepEqual(ulasma.matrisKayitSapmalari(metin, ulasma.yuzeyUlasmaOzeti()), [], "tazelenen matris kaydı kopyanın sicilinde nöbetten geçmeli");
+
+      const kanonKomutu = kopyaKomutu(sb, "kanon-tutarlilik-uret");
+      assert.equal(kanonKomutu.status, 0, `kanon tutarlılık komutu geçmeli:\n${kanonKomutu.stderr}`);
+      assert.ok(!kanonKomutu.stdout.includes(TANI_KUMESI_BULGUSU), `kayıt çekilince tanı kümesi bulgusu susmalı:\n${kanonKomutu.stdout}`);
+
+      // (2) atlandı: doğan tanının iki dilli metni yok. Bu bir sayı dondurması değil gerçek
+      // bir tamlık nöbetidir ve gevşetilmez; üretici durur ve eksik basamağı adıyla söyler.
+      const belgeKomutu = kopyaKomutu(sb, "belge-yuzleri-uret");
+      assert.notEqual(belgeKomutu.status, 0, `metni yazılmamış tanı belge üretiminden geçmemeli:\n${belgeKomutu.stdout}`);
+      assert.ok(belgeKomutu.stderr.includes("iki dilli tanı kataloğu") && belgeKomutu.stderr.includes("tani-metinleri.ts"),
+        `durmanın nedeni iki dilli katalog tamlık nöbeti olmalı ve eksik basamağı söylemeli:\n${belgeKomutu.stderr}`);
+    });
+
+    await t.test("metinler de eklenince iki üretici bulgusuz geçer ve yüzler yeni sayıları taşır", () => {
+      // (2) Metni olmayan yeni tanılar kopyanın sicilinden ölçülür; fikstür tanısı aralarındadır.
+      const metinsiz = metinler.metinsizYeniTanilar();
+      assert.ok(metinsiz.includes(kod), `fikstür tanısı metinsiz yeni tanılar arasında olmalı: ${metinsiz.join(", ")}`);
+      metinleriEkle(sb, metinsiz);
+      // (4) mühür basamağı kopyada sınanmaz: mühür nöbeti canlı ağaçta koşar (turetilmis-yuz-nobetleri.test.ts)
+      // ve adımın mühürlü her kaynağı adıyla saydığını aşağıdaki son alt sınama ölçer.
+      // (5) İki üretici yeniden koşar.
+      const belgeKomutu = kopyaKomutu(sb, "belge-yuzleri-uret");
+      assert.equal(belgeKomutu.status, 0, `adım tamamlanınca belge yüzü komutu geçmeli:\n${belgeKomutu.stderr}`);
+      assert.ok(!belgeKomutu.stdout.includes(TANI_KUMESI_BULGUSU) && !belgeKomutu.stdout.includes(YONLENDIRME_BULGUSU),
+        `adım tamamlanınca belge yüzü komutu bulgusuz geçmeli:\n${belgeKomutu.stdout}`);
+      const kanonKomutu = kopyaKomutu(sb, "kanon-tutarlilik-uret");
+      assert.equal(kanonKomutu.status, 0, `adım tamamlanınca kanon tutarlılık komutu geçmeli:\n${kanonKomutu.stderr}`);
+      assert.ok(!kanonKomutu.stdout.includes(TANI_KUMESI_BULGUSU), `adım tamamlanınca tanı kümesi bulgusu susmalı:\n${kanonKomutu.stdout}`);
+
+      const matris = readFileSync(join(sb, MATRIS_KAYDI), "utf8");
+      const bildirimler = Number(/^\| Bildirimler \| (\d+) \|/m.exec(matris)?.[1]);
+      const readme = readFileSync(join(sb, "README.md"), "utf8");
+      assert.ok(readme.includes(`ve ${olculen.yeni.bilgi} bilgi düzeyindedir`) && readme.includes(`ve ${bildirimler} Bildirimler (Gözlemler)`),
+        "tazelenen yüz yeni kümenin ve matrisin yeni sayılarını taşımalı");
+      const ikinci = kopyaKomutu(sb, "belge-yuzleri-uret");
+      assert.ok(ikinci.status === 0 && ikinci.stdout.includes("📚 belge yüzleri: 0 değişti"),
+        `ikinci koşu sıfır fark vermeli:\n${ikinci.stdout}\n${ikinci.stderr}`);
+    });
+
+    await t.test("artırma adımı izlenen her basamağı ve adımın değiştirdiği mühürlü her kaynağı adıyla sayar", () => {
+      const adim = kanon.TANI_KUMESI_ARTIRMA_ADIMI;
+      for (const parca of ["TANI_KUMESI_SAYIMI", "tani-metinleri.ts", "`Örnek:`", MATRIS_KAYDI, "turetilmis_yuz_nobetleri.sar", "kanon-tutarlilik-uret", "belge-yuzleri-uret"]) {
+        assert.ok(adim.includes(parca), `artırma adımı "${parca}" basamağını saymalı: ${adim}`);
+      }
+      // Fikstürün yukarıda değiştirdiği dört kaynaktan nöbet kaydında mühürlü olanların her biri
+      // mühür basamağında adıyla geçmelidir; yoksa adımı izleyen kişi mühür nöbetini kırmızı bırakır.
+      const nobetKaydi = readFileSync(join(KOK, "is/nitelik/goc/turetilmis_yuz_nobetleri.sar"), "utf8");
+      const muhurlu = new Set([...nobetKaydi.matchAll(/^\| `([^`]+)` \| `[0-9a-f]{64}` \|$/gm)].map((es) => es[1]));
+      const degisen = ["urun/cekirdek/src/tani-sicili.ts", "urun/cekirdek/src/tani-metinleri.ts", KANON_SAYIMI_KAYDI, MATRIS_KAYDI];
+      const anilmayan = degisen.filter((yol) => muhurlu.has(yol) && !adim.includes(`${yol} mührünü`));
+      assert.deepEqual(anilmayan, [], `artırma adımının mühür basamağı bu kaynakları anmalı: ${anilmayan.join(", ")}`);
+      assert.ok(degisen.some((yol) => muhurlu.has(yol)), "nöbet kaydı adımın değiştirdiği en az bir kaynağı mühürlemeli");
+    });
+  } finally {
+    rmSync(sb, { recursive: true, force: true });
+  }
+});
+
+test("HST-MTR-A12 sayım kopyaları: dosyanın açtığı her geçici kopya sınamadan sonra silinmiştir", () => {
+  assert.ok(SAYIM_KOPYALARI.length > 0, "bu sınama dosyanın sayım fikstürlerinden sonra koşmalıdır");
+  const kalan = SAYIM_KOPYALARI.filter((yol) => existsSync(yol));
+  assert.deepEqual(kalan, [], `silinmeden kalan sayım kopyaları: ${kalan.join(", ")}`);
 });
