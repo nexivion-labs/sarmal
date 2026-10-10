@@ -189,7 +189,7 @@ Kural davranışTipleri( kod: TIP-1.13,
 
 -->|
 ### TIP-1.14 · Arkayüz Tipleri [BİLGİ]
-**Hüküm:** `Servis`, `Uç`, `Tablo`, `Kimlik`, `Kuyruk`, `ArkaGörev`, `Zamanlayıcı`, `Olay`, `Önbellek` ve `Gizli`, arkayüz ailesinin iş mantığı, erişim noktası, veri yapısı, kimlik, ileti kuyruğu, artalan işi, zamanlama, olay, geçici saklama ve gizlilik tipleri olarak korunur; her arkayüz sorumluluğu kendi sınırında ilan edilir; dayanak: TIP-1; ilgili: [TIP-0, YUZ-0, ORK-0].
+**Hüküm:** `Servis`, `Uç`, `Tablo`, `KimlikPolitikası`, `KimlikKökü`, `KimlikSağlayıcısı`, `Kuyruk`, `ArkaGörev`, `Zamanlayıcı`, `Olay`, `Önbellek` ve `Gizli`, arkayüz ailesinin iş mantığı, erişim noktası, veri yapısı, kimlik doğrulama politikası, kimlik alanı sınırı, dış kimlik sağlayıcısı, ileti kuyruğu, artalan işi, zamanlama, olay, geçici saklama ve gizlilik tipleri olarak korunur; her arkayüz sorumluluğu kendi sınırında ilan edilir; dayanak: TIP-1; ilgili: [TIP-0, YUZ-0, ORK-0].
 **Gerekçe:** Veri, zamanlama, ileti ve gizli değerlerin genel bir servis düğümüne yığılması güvenlik sınırını, işletim sahibini ve yüzeyle kavuşum noktasını gizler.
 **Örnek:** İstek girişi `Uç`, iş mantığı `Servis`, kalıcı yapı `Tablo`, ertelenmiş ileti `Kuyruk`, süreli tetik `Zamanlayıcı` olarak ayrılır.
 **Zorlama:** Zorlanmaz — tanım/katalog/muafiyet.

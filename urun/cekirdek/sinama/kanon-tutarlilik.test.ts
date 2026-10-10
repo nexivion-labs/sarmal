@@ -36,13 +36,13 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:3ed77f36fc53f5d048365b7134685d96e2b71eb847adccc39e144f139539de92",
-  "mim.sar:9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415",
+  "mim.sar:5749d49cbd2ecd6dd96e228072a8348190b3e81293a7f7c3785023b50583c95a",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
-  "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
+  "ork.sar:1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
-  "tip.sar:0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41",
+  "tip.sar:4b859c077eacf72582b571927be54f0ef5b34bec05b7559a576f548ccb59a236",
   "yas.sar:23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40",
-  "yuz.sar:060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857",
+  "yuz.sar:439364007d1ade1ae1a5f11f3b8d36db9582f884913b11b1f6efe68a808ffe02",
 ] as const;
 
 test("resmi sekizlinin bütün maddeleri örneği ve dört parçayı sabit SHA'larla taşır", () => {
@@ -233,11 +233,13 @@ test("kırmızı fikstür: kopyada bir listeye çıplak bölüm adı geri konunc
 //
 //   Bilinen ayrışma (HST-MTR-A01 ölçümü · 2026-10-10): ORK-9 Teslim Halkası
 //   maddesinin `karar` ve `gerekçe` taşıyıcıları belge metninin kısaltılmış bir
-//   hâlidir. Kanon metni bu Adımda düzeltilmez ve düzeltmesi Founder kapısıdır;
-//   bu yüzden ayrışma adıyla listelenir. Liste yalnız küçülür: madde düzeltildiğinde
-//   nöbet kırmızıya döner ve kaydın buradan düşürülmesini ister, yeni bir ayrışma
-//   ise listeye eklenmeden önce kapıyı kırmızıda tutar.
-const BILINEN_TASIYICI_AYRISMALARI: readonly string[] = ["ORK-9 karar↔Hüküm", "ORK-9 gerekçe↔Gerekçe"];
+//   hâliydi ve kanon metninin düzeltilmesi Founder kapısı olduğu için ayrışma
+//   listede adıyla duruyordu. HST-MTR-A13 iki taşıyıcıyı Founder onayıyla belge
+//   metnine birebir eşitlemiştir ve liste boşalmıştır; 2026-10-11 ölçümünde iki yüz
+//   otuz sekiz taşıyıcı alanın hepsi belge metnine eşittir. Liste yalnız küçülür:
+//   madde düzeltildiğinde nöbet kırmızıya döner ve kaydın buradan düşürülmesini
+//   ister, yeni bir ayrışma ise listeye eklenmeden önce kapıyı kırmızıda tutar.
+const BILINEN_TASIYICI_AYRISMALARI: readonly string[] = [];
 
 /** Ölçümün ayrışan taşıyıcılarını `KOD alan↔bölüm` biçiminde döndürür. */
 function tasiyiciAyrismalari(maddeler: ReturnType<typeof kanonMaddeleriniOlc>["maddeler"]): string[] {

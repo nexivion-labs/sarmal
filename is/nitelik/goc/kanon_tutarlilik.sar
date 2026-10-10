@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:74f63999932eb1c3cd014b4c6de35931b69d9336731c59c1cea5fe3fbe83a318
+// KAYNAK-MUHRU kanon-demeti-sha256:035af65d78604d899d8dcad51674f1ebd321395a9182d611fb173b335ba19fa9
 
 -->|
 # Kanon tutarlılık yüzü
@@ -12,14 +12,14 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon/dil.sar` | `3ed77f36fc53f5d048365b7134685d96e2b71eb847adccc39e144f139539de92` |
-| `yasa/kanon/mim.sar` | `9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415` |
+| `yasa/kanon/mim.sar` | `5749d49cbd2ecd6dd96e228072a8348190b3e81293a7f7c3785023b50583c95a` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
-| `yasa/kanon/ork.sar` | `60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3` |
+| `yasa/kanon/ork.sar` | `1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
-| `yasa/kanon/tip.sar` | `0e5fa04456c462c749b98cc08058b9880597737b434e411aa32e12cb97b43a41` |
+| `yasa/kanon/tip.sar` | `4b859c077eacf72582b571927be54f0ef5b34bec05b7559a576f548ccb59a236` |
 | `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
-| `yasa/kanon/yuz.sar` | `060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857` |
-| kanon demeti | `74f63999932eb1c3cd014b4c6de35931b69d9336731c59c1cea5fe3fbe83a318` |
+| `yasa/kanon/yuz.sar` | `439364007d1ade1ae1a5f11f3b8d36db9582f884913b11b1f6efe68a808ffe02` |
+| kanon demeti | `035af65d78604d899d8dcad51674f1ebd321395a9182d611fb173b335ba19fa9` |
 | `urun/cekirdek/src/tani-sicili.ts` | `49b8f6827cddd6d3f90523bbc225462c9e223f140e29d065f7680d0e36fbdb73` |
 | `oz/siniflama/kayit.json` | `bebc9e6839866ee9a3ce3030b8cc3ea4764158b56aa5c2c65258f227a56023f7` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -33,7 +33,7 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Rol dağılımı | 38 Karar + 124 Kural | 38 Karar + 124 Kural | GEÇTİ |
 | Dört parçalı madde | 162/162 | 162/162 | GEÇTİ |
 | Kanonik örnek | 162/162 | 162/162 | GEÇTİ |
-| Taşıyıcı ile belge metni eşitliği | 162/162 | 161/162 | SAPMA |
+| Taşıyıcı ile belge metni eşitliği | 162/162 | 162/162 | GEÇTİ |
 | Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
 | Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
 | Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
@@ -49,12 +49,7 @@ Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni 
 
 Kanon dosyalarının başlığı, Karar düğümündeki `karar` ve `gerekçe` alanlarını belge bloğundaki Hüküm ile Gerekçe metninin makine-okur taşıyıcısı olarak ilan eder; her maddenin `ne` alanı da belge başlığını taşır. Bu ölçüm 238 taşıyıcı alanı belge metniyle eşitlik üzerinden karşılaştırır; boşluk ve satır kırılımı fark sayılmaz, harf, noktalama ve sözcük farkı sayılır.
 
-Belge metninden ayrışan 2 taşıyıcı alan 1 maddededir. Ayrışma burada adıyla kayda geçer; kanon metninin düzeltilmesi Founder kapısıdır ve bu türev kanona yazmaz. Karakter sayıları boşluğu daraltılmış metinlerindir ve ilk fark iki metnin ayrıştığı karakter sırasıdır.
-
-| Madde | Taşıyıcı alan | Belge bölümü | Taşıyıcı karakter | Belge karakter | İlk fark |
-|---|---|---|---:|---:|---:|
-| `ORK-9` | `karar` | Hüküm | 763 | 915 | 533 |
-| `ORK-9` | `gerekçe` | Gerekçe | 1119 | 1566 | 143 |
+Belge metninden ayrışan taşıyıcı alan yoktur.
 
 ## Kanonik örnekler — 162/162
 
@@ -465,7 +460,7 @@ Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli
 | Yeni tanının resmi maddesi eksik | 0 | YOK |
 | Kanonik örnek eksiği | 0 | YOK |
 | Dört parçalı madde eksiği | 0 | YOK |
-| Taşıyıcısı belge metninden ayrışan madde | 1 | AÇIK · `ORK-9` · kanon metni Founder kapısıdır |
+| Taşıyıcısı belge metninden ayrışan madde | 0 | YOK |
 | Çözülemeyen kanon dayanağı | 0 | YOK |
 | Uygulanmış emekli kümesinin canlı sicille kesişimi | 0 | YOK |
 | Emeklilik kararı uygulanmamış canlı kimlik | 37 | AÇIK · Founder sahipliği gerekir |
@@ -481,4 +476,4 @@ Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
       ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle, DIL-2.2 girinti gözlemiyle ve DIL-1.8 düğüm kodu standardının iki uyarısıyla 93 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
-      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, taşıyıcı ayrışması 1, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır ve taşıyıcısı belge metninden ayrışan 1 madde ayrıca açıktır (ORK-9)." )
+      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, taşıyıcı ayrışması 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır." )

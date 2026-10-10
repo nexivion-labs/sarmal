@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `74f63999932eb1c3cd014b4c6de35931b69d9336731c59c1cea5fe3fbe83a318` |
+| `yasa/kanon demeti (A03 formülü)` | `035af65d78604d899d8dcad51674f1ebd321395a9182d611fb173b335ba19fa9` |
 | `oz/siniflama/kayit.json` | `bebc9e6839866ee9a3ce3030b8cc3ea4764158b56aa5c2c65258f227a56023f7` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `49b8f6827cddd6d3f90523bbc225462c9e223f140e29d065f7680d0e36fbdb73` |
@@ -40,6 +40,26 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-11 · kanon metninin ölçülen düzeltmeleri · HST-MTR-A13):
+Founder'ın 2026-10-10 tarihli onayıyla kanon metninde ölçülen üç kusur düzeltildi
+ve hiçbir maddenin hükmüne dokunulmadı. ORK-9 maddesinin `karar` ve `gerekçe`
+taşıyıcıları belge bloğundaki Hüküm ile Gerekçe metnine birebir eşitlendi. TIP-1.14
+maddesinin Hüküm metni sınıflamada hiç bulunmayan yalın Kimlik tipi yerine
+sınıflamanın on iki arkayüz tipini sayar oldu ve rol listesindeki kimlik sözcüğü
+kimlik doğrulama politikası, kimlik alanı sınırı ve dış kimlik sağlayıcısı olarak
+açıldı. Mimari ile yüzeyler dosyalarının başlığında on yedi ve yirmi olarak duran
+madde sayıları ölçülen on dokuz ve yirmi bir değerine çekildi. Düzeltmeler yalnız
+`mim.sar`, `ork.sar`, `tip.sar` ve `yuz.sar` dosyalarının baytlarını değiştirdiği
+için kaynak mühürlerinden yalnız kanon demeti ilerledi ve aynı dört dosyanın
+`urun/cekirdek/sinama/kanon-tutarlilik.test.ts` içindeki SHA-256 satırları
+tazelendi; öteki sekiz kaynağın mührü değişmedi. Kanon yüz altmış iki maddede,
+otuz sekiz Karar ile yüz yirmi dört Kural dağılımında kaldı. Ardından
+`kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticileri yeniden koşturuldu:
+kanon tutarlılık yüzü tazelendi ve iki yüz otuz sekiz taşıyıcı alanın hepsini
+belge metnine eşit ölçtü, on altı belge yüzünün hiçbiri değişmedi ve ikinci koşu
+sıfır fark verdi. Öğretim kartı ile sınıflama Reference üreticileri de koşturuldu
+ve fark vermedi, çünkü ikisi de yalnız sınıflama kaydını okur.
 
 Tazeleme notu (2026-10-11 · İngilizce yüzün ikinci turu): MGZ-A09 kontrolcü
 incelemesinin ardından eklentinin İngilizce yerelleştirme kataloğunda iki komut
