@@ -590,3 +590,47 @@ test("KPS-IND-A01: kimlik indeksi ile Proje kapsamı kullanıcı kitaplığını
   assert.deepEqual(kapsamlar.map((k) => k.kod), ["PRJ-KULLANICI"],
     "kullanıcının Proje kökü kapsam kurmalı, ders rafındaki örnek Proje kurmamalı");
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HST-MTR-A06 · ÖNEK EŞLEŞMESİNİN SINIRI (HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR)
+//
+//   Ölçülen kusur (2026-09-16): gezinme aracına ORK-1 sorulduğunda ORK-1.2 ve
+//   ORK-1.3 yazımları da ORK-1'e gelen atıf sayılıyordu. Metin katmanı noktayı
+//   kimlik sınırı sayıyor ve noktalı madde kodunu öneki üzerinden kesiyordu;
+//   oysa belirteç (Karar D) ile eklentinin sözce deseni `ORK-1.2` yazımını TEK
+//   kimlik sayar. Nöbet üç şeyi birlikte ölçer: üst madde alt maddenin atfını
+//   saymaz, alt madde kendi metin atfını alır ve cümle sonundaki nokta ile
+//   Türkçe ek gerçek atfı düşürmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("HST-MTR-A06: ORK-1 sorgusu ORK-1.2 ile ORK-1.3 yazımlarını saymaz, gerçek atıflarını sayar", () => {
+  const KANON = [
+    'Karar( kod: ORK-1, durum: kilitli, ne: "ORK-1 · üst madde" )',
+    'Kural mimariSarma( kod: ORK-1.1, ne: "ORK-1.1 · alt madde", dayanak: ORK-1 )',
+    'Kural bagimliVeBesler( kod: ORK-1.2, ne: "ORK-1.2 · alt madde", dayanak: ORK-1 )',
+  ].join("\n");
+  const NOT = "ORK-1.2 ile ORK-1.3'ün ayrı maddeler olduğunu, ORK-1.2.4 yazımının derin madde olduğunu söyler; üst hüküm ORK-1.";
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("kanon.sar", KANON);
+  i.dosyaGuncelle("NOTLAR.md", NOT);
+  assert.equal(i.tanimlar("ORK-1.2").length, 1, "fikstür ayrıştırılamadı — AST katmanı koşmadan nöbet bir şey ölçmez");
+
+  const dayanak = (satir: number): string => {
+    const s = KANON.split("\n")[satir - 1];
+    return `kanon.sar:${satir}:${s.indexOf("dayanak: ORK-1") + "dayanak: ".length + 1}`;
+  };
+  assert.deepEqual(
+    i.atiflar("ORK-1").map((a) => `${a.dosya}:${a.satir}:${a.sutun}`),
+    [dayanak(2), dayanak(3), `NOTLAR.md:1:${NOT.lastIndexOf("ORK-1") + 1}`],
+    "ORK-1'e yalnız iki dayanak kenarı ile cümle sonundaki yalın yazım gelir; alt madde yazımları sayılmaz",
+  );
+
+  // Alt madde kendi kimliğiyle sayılır: atıfın türü değişmez, yalnız sınırı düzelir.
+  const konumlar = (kod: string): string[] => i.atiflar(kod).map((a) => `${a.dosya}:${a.satir}:${a.sutun}`);
+  assert.deepEqual(konumlar("ORK-1.2"), [`NOTLAR.md:1:${NOT.indexOf("ORK-1.2 ile") + 1}`]);
+  assert.deepEqual(konumlar("ORK-1.3"), [`NOTLAR.md:1:${NOT.indexOf("ORK-1.3'ün") + 1}`]);
+  assert.deepEqual(konumlar("ORK-1.2.4"), [`NOTLAR.md:1:${NOT.indexOf("ORK-1.2.4") + 1}`]);
+
+  // MCP ve CLI yüzü aynı çekirdeği okur: rapor şişmiş sayıyı basmaz.
+  assert.match(gezinRaporu(i, "ORK-1"), /ATIFLAR — gelen \(3\)/);
+});

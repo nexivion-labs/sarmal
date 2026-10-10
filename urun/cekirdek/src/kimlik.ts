@@ -75,7 +75,15 @@ const KOD_GOVDESI = `${KOD_PARCASI}(?:-${KOD_PARCASI})+`;
 // ORK-4 (KPS-ADA-A01): ad alanlı kod TEK sözcedir. `::` ayracı olmasaydı metin
 // katmanı `PRJ-A::KOD-X` yazımını iki ayrı koda bölerdi ve gezinme yüzeyleri
 // ad alanının yarısına atlardı; ayraç bu yüzden desenin içinde yaşar.
-const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?`, "g");
+// HST-MTR-A06 · KİMLİK SINIRI: noktalı madde kodu (ör. ORK-1.2) da TEK
+// kimliktir. Belirteç (Karar D) noktayı yalnız ardından rakam geldiğinde ve en
+// çok iki derinlik yutar; eklentinin sözce deseni (gezinme.ts KOD_SOZCUK) aynı
+// kuyruğu taşır. Kuyruk burada eksik olduğu sürece metin katmanı `ORK-1.2`
+// yazımını önekinden kesiyor ve üst maddeye sahte atıf yazıyordu (2026-10-10
+// ölçümü: ORK-1'e bildirilen 204 gelen atfın 153'ü alt madde yazımıydı). Cümle
+// sonundaki noktayı rakam izlemediği için kuyruğa girmez, yalın atıf düşmez.
+const MADDE_KUYRUGU = String.raw`(?:\.[0-9]+){0,2}`;
+const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?${MADDE_KUYRUGU}`, "g");
 const SINIR_DISI = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_-]/; // bitişikse eşleşme kod değildir
 const HARF_VAR = /[A-ZÇĞİÖŞÜ]/;
 
