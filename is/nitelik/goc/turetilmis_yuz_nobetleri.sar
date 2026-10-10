@@ -28,18 +28,27 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `b8d33623ff8ae76467114439fb403403731521a491063efd62f1deb240a56861` |
-| `oz/siniflama/kayit.json` | `15483bcfbff09477f333984e2e2d7cb120bc7f4376b80da76ac4abda3045f93d` |
+| `yasa/kanon demeti (A03 formülü)` | `74f63999932eb1c3cd014b4c6de35931b69d9336731c59c1cea5fe3fbe83a318` |
+| `oz/siniflama/kayit.json` | `bebc9e6839866ee9a3ce3030b8cc3ea4764158b56aa5c2c65258f227a56023f7` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `50f75b27616f0de5075a15ae06ea3bb660dfaf94201216a42fe870463db3924d` |
+| `urun/cekirdek/src/tani-sicili.ts` | `4748c6691347bc3647f15148b525745bbad28b9a2978ac30b31346a8c099b4a7` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `a74b21da434b6e9f972820c960fb66ea8e7863eff2e5f416b4c768d746058a7d` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
 | `urun/eklenti/package.nls.tr.json` | `f40044f8d3fe12a5f6c3379896e1e2cee2eedce8141b79977bfbfef83dbe92af` |
 | `urun/eklenti/package.nls.json` | `28c495d7c62ada63404ba9255579c8d54c871d325c7a3ac4c82eb817d5992d99` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `9a23744b50aa7f336f51a52872fafc96cd62e0f270ce950c8ff31df762f9f089` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `92d8ed759003ca7041b872d57d03f5015b61d88a9a4b1de5c3cf7f3646166ec7` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-10 · düğüm kodu standardı): RFM-MOTOR-A02 DIL-1.8 maddesinin
+zorlama satırına `ilansız-önek` ile `kod-biçimi-uyumsuz` uyarılarını Founder onayıyla
+ilan etti ve kanon demeti ilerledi; maddenin hüküm, gerekçe ve örnek metinlerine
+dokunulmadı. Proje şemasına önek sicilinin iki alanı (`önekler`, `biçimMuafları`)
+eklendiği için sınıflama kaydının, iki uyarının sicil kaydı için tanı sicilinin,
+Problems hanesine iki kimlik eklendiği için de yönlendirme matrisinin mührü ilerledi.
+Dört mühür birlikte tazelendi ve kanon tutarlılık yüzü ile belge yüzleri aynı koşuda
+resmî üreticileriyle yeniden üretildi; öteki beş kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-10-10 · kısıtlı modun beyanı): MGZ-A02 eklentinin iki
 yerelleştirme kataloğuna güvenilmeyen çalışma alanı beyanının açıklamasını, yani

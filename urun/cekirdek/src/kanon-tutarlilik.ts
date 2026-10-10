@@ -166,6 +166,9 @@ export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayi
 //   canlı kümenin toplamıdır. Aynı gün belge yüzü üreticisinin yönlendirme dağılımını
 //   ikinci kez donduran koşulu da kaldırıldı ve artırma adımı insanın izleyeceği bütün
 //   basamaklarıyla yazıldı.
+//   2026-10-10 (RFM-MOTOR-A02 · Founder onayı): DIL-1.8 düğüm kodu standardının iki tanısı,
+//   `ilansız-önek` ile `kod-biçimi-uyumsuz`, kanonun yazdığı uyarı düzeyinde doğdu; yeni küme
+//   doksan birden doksan üçe çıktı ve dağılım 48/24/21 oldu. Öteki kümeler değişmedi.
 
 /** Tanı kümelerinin dondurulmuş sayımı. Yeni kümenin büyüklüğü üç düzeyin toplamıdır. */
 export interface TaniKumesiSayimi {
@@ -197,7 +200,7 @@ export interface OlculenTaniKumesi extends TaniKumesiSayimi {
 
 /** TEK KAYIT. Sicil meşru biçimde büyüdüğünde, küçüldüğünde ya da bir tanının düzeyi değiştiğinde yalnız burası değişir. */
 export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = {
-  yeni: { hata: 48, uyari: 22, bilgi: 21 },
+  yeni: { hata: 48, uyari: 24, bilgi: 21 },
   onceki: 101,
   siniflamaTurevli: 9,
   emekli: 16,
@@ -668,7 +671,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `      ne: "Resmi yasa/kanon sekizlisinin ${olcum.maddeler.length}/${olcum.maddeler.length} maddesi, ${karar} Karar ve ${kural} Kural rolüyle ölçüldü; sekiz kaynak SHA-256 değeri ve demet mührü bu türevde kayıtlıdır." )`,
     "",
     "Veri( kod: VR-GOC-TANI-MADDE-HARITASI,",
-    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
+    `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle, DIL-2.2 girinti gözlemiyle ve DIL-1.8 düğüm kodu standardının iki uyarısıyla ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
     "",
     "Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,",
     `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, taşıyıcı ayrışması ${tasiyiciAyrisan.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır${tasiyiciAyrisan.length === 0 ? "" : ` ve taşıyıcısı belge metninden ayrışan ${tasiyiciAyrisan.length} madde ayrıca açıktır (${tasiyiciAyrisan.map((m) => m.kod).join(", ")})`}." )`,

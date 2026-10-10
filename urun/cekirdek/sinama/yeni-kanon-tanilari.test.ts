@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
-  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari,
+  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari, kodStandardiTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -1091,6 +1091,9 @@ test("GOC-TERFI-A05: kabul edilen tanılar hatada, kanon-uyarı tanıları uyar�
   // KPS-SIR-A01 (Founder hükmü 2026-09-29): üç yeni uyarı doğdu (MIM-1.2 erken Faz
   // işi ile yabancı Faz bağı, MIM-1.3 Katmansız Blok) ve ORK-3.2 seçilemez Adım
   // yürütümü bilgi kademesinden uyarıya çıktı; kümenin o günkü büyüklüğü yirmi ikiydi.
+  // RFM-MOTOR-A02 (Founder onayı 2026-10-10): DIL-1.8 düğüm kodu standardının uyarıları
+  // terfi turundan gelmeden, kanonun yazdığı uyarı düzeyinde doğdu; kümenin bugünkü
+  // büyüklüğü TANI_KUMESI_SAYIMI kaydındadır.
   assert.ok(uyarida.length > 0 && uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 
@@ -1159,6 +1162,17 @@ test("proje: ateşlemiş hatırlatıcı ölçütü GRAFTAN türetilir, serbest m
   });
   assert.deepEqual(atesleyenHatirlaticiTanilari(programlar), [],
     "serbest metin yorumlanmış — hedef Adım sürüyorken hatırlatıcı ateşlemiş sayılamaz");
+});
+
+test("proje: önek sicili beyan eden projede ilansız önek ve biçim dışı kod DIL-1.8 uyarılarını doğurur (RFM-MOTOR-A02)", () => {
+  const programlar = harita({
+    "p/p_anadizin.sar": `Proje( kod: PRJ-P, rejim: esnek, önekler: [ PRJ, ADM ], ne: "p" )\n`,
+    "p/is/plan.sar": `Adım( kod: XYZ-A01, durum: beklemede, ne: "ilansız önek" )\nAdım( kod: ADM-kucuk-A01, durum: beklemede, ne: "biçim dışı" )\n`,
+  });
+  const t = kodStandardiTanilari(programlar);
+  uretildi("ilansız-önek", t);
+  uretildi("kod-biçimi-uyumsuz", t);
+  assert.ok(t.every((x) => x.tani.duzey === "uyarı"), "DIL-1.8 tanıları uyarıyı aşamaz");
 });
 
 test("kapanış: YETMİŞ BİR kimliğin tamamı fikstürle kanıtlanmış olmalı", () => {

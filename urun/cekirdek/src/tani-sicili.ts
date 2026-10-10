@@ -108,6 +108,12 @@ export function terfiKapisiKusurlari(g: TerfiKapisiGirdisi): string[] {
 export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "kanonik-kaynak-biçimi", madde: "DIL-1", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "orthografi-kaybı", madde: "DIL-1.1", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  // RFM-MOTOR-A02 (2026-10-10): DIL-1.8 düğüm kodu standardının iki tanısı. Kanon
+  // ikisini de uyarı düzeyinde yazar ve hiçbir koşulda hataya çıkarılmalarını
+  // yasaklar. Kapsam projedir: önek sicili anadizinde, ölçülen kodlar varlığın
+  // bütün dosyalarındadır. Sicil beyan etmeyen varlıkta ikisi de susar.
+  { kod: "ilansız-önek", madde: "DIL-1.8", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "kod-biçimi-uyumsuz", madde: "DIL-1.8", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "belge-şekil-drift", madde: "DIL-2", kanonDüzey: "hata", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "hata" },
   { kod: "çok-satırlı-değer-drift", madde: "DIL-2.2", kanonDüzey: "uyarı", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "uyarı" },
   { kod: "kenar-tip-uyuşmazlığı", madde: "DIL-3.1", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },

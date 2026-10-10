@@ -142,6 +142,27 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     },
     oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
+  // ── Düğüm kodu standardı (DIL-1.8 · RFM-MOTOR-A02) ──────────────────────
+  "ilansız-önek": {
+    mesaj: (p) => `"${a(p, "kimlik")}" kodu (${a(p, "tip")}) projenin önek sicilinde ilanı olmayan "${a(p, "önek")}" önekiyle doğmuş. Her önek tek bir yerde, anadizindeki Proje düğümünün \`önekler\` listesinde ilan edilir ve ilansız bir önekle yeni kod doğmaz (DIL-1.8).`,
+    oneri: (p) => `Önek yeni bir iş konusunu adlandırıyorsa onu anadizindeki sicile ekle; konu zaten ilanlı bir önekle anılıyorsa kodu o önekle yaz. Örnek: \`Proje( kod: PRJ-ORNEK, önekler: [ PRJ, ${a(p, "önek")} ] )\`.`,
+  },
+  "kod-biçimi-uyumsuz": {
+    mesaj: (p) => {
+      const kod = a(p, "kimlik");
+      switch (a(p, "kusur")) {
+        case "tek-parça":
+          return `"${kod}" kodu (${a(p, "tip")}) tek parçadan oluşuyor; bir düğüm kodu tireyle ayrılan en az iki parça taşır ve ilk parçası önektir (DIL-1.8).`;
+        case "önek":
+          return `"${kod}" kodunun (${a(p, "tip")}) öneki iki ile dört harf arasında değil ya da harf dışı bir karakter taşıyor; önek, işin konusunu bildiren kısa bir harf dizisidir (DIL-1.8).`;
+        case "adım-sırası":
+          return `"${kod}" Adım kodunun son parçası tek bir seri harfi ile iki basamaklı bir sıra sayısından oluşmuyor; sıra kapsayıcısı içinde birden başlar (DIL-1.8).`;
+        default:
+          return `"${kod}" kodu (${a(p, "tip")}) yalnız büyük ASCII harfleri, rakamlar ve tek tirelerden kurulmamış ya da harfle başlamıyor; küçük harf, alt çizgi, nokta, boşluk ve Türkçe diakritik kodda yaşayamaz, çünkü kodun anlamını \`ne\` ile \`ad\` alanları taşır (DIL-1.8).`;
+      }
+    },
+    oneri: (p) => `Yeni kodu standarda uygun yaz; kod standarttan önce doğmuşsa yeniden adlandırma, anadizindeki \`biçimMuafları\` listesine adıyla ekle. Örnek: \`Adım( kod: RFM-KANON-A01 )\` ya da \`biçimMuafları: [ ${a(p, "kimlik")} ]\`.`,
+  },
   // ── Projesiz Faz (MIM-1.2 · KPS-FAZ-A02) ─────────────────────────────────
   "kitaplıksız-kök": {
     mesaj: (p) => `'${a(p, "kök")}' kökünün altında hiç Kitaplık yok ve Raf doğrudan kökün altına yazılmış — dallanan her klasör bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar (MIM-3.2).`,
@@ -567,6 +588,27 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
       }
     },
     oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+  },
+  // ── Node code standard (DIL-1.8 · RFM-MOTOR-A02) ─────────────────────────
+  "ilansız-önek": {
+    mesaj: (p) => `Code "${a(p, "kimlik")}" (${a(p, "tip")}) was born with the prefix "${a(p, "önek")}", which is not declared in the project's prefix registry. Every prefix is declared in a single place, the \`önekler\` list of the Project node in the root declaration, and no new code is born with an undeclared prefix (DIL-1.8).`,
+    oneri: (p) => `If the prefix names a new subject of work, add it to the registry in the root declaration; if the subject already has a declared prefix, write the code with that prefix. Example: \`Proje( kod: PRJ-ORNEK, önekler: [ PRJ, ${a(p, "önek")} ] )\`.`,
+  },
+  "kod-biçimi-uyumsuz": {
+    mesaj: (p) => {
+      const kod = a(p, "kimlik");
+      switch (a(p, "kusur")) {
+        case "tek-parça":
+          return `Code "${kod}" (${a(p, "tip")}) consists of a single part; a node code carries at least two parts separated by hyphens, and its first part is the prefix (DIL-1.8).`;
+        case "önek":
+          return `The prefix of code "${kod}" (${a(p, "tip")}) is not two to four letters long or contains a non-letter character; a prefix is a short run of letters that names the subject of the work (DIL-1.8).`;
+        case "adım-sırası":
+          return `The last part of the Adım code "${kod}" is not a single series letter followed by a two-digit sequence number; the sequence starts at one within its container (DIL-1.8).`;
+        default:
+          return `Code "${kod}" (${a(p, "tip")}) is not built only from upper-case ASCII letters, digits and single hyphens, or does not start with a letter; lower case, underscores, dots, spaces and Turkish diacritics cannot live in a code, because the code's meaning is carried by the \`ne\` and \`ad\` fields (DIL-1.8).`;
+      }
+    },
+    oneri: (p) => `Write a new code according to the standard; if the code was born before the standard, do not rename it, add it by name to the \`biçimMuafları\` list in the root declaration. Example: \`Adım( kod: RFM-KANON-A01 )\` or \`biçimMuafları: [ ${a(p, "kimlik")} ]\`.`,
   },
   // ── Project-less Phase (MIM-1.2 · KPS-FAZ-A02) ───────────────────────────
   "kitaplıksız-kök": {

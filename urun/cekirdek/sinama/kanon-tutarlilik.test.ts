@@ -35,7 +35,7 @@ import {
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
-  "dil.sar:f8b47c8e9f62d44105324da5c60a1ff45176f332c96e2cc31abebff558ffe930",
+  "dil.sar:3ed77f36fc53f5d048365b7134685d96e2b71eb847adccc39e144f139539de92",
   "mim.sar:9e79f78e81c6937ece37b3414cee406bc119ab51e46dcd647f0ed9dd2b132415",
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:60629957058a2b7e640d57c80c825c3492111ef3dc403f7809483562e184e6d3",
@@ -54,10 +54,14 @@ test("resmi sekizlinin bütün maddeleri örneği ve dört parçayı sabit SHA'l
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("yeni küme MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KPS-SIR-A02 tanılarını kanonun yazdığı düzeyde taşır", () => {
+test("yeni küme MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03, KPS-SIR-A02 ve RFM-MOTOR-A02 tanılarını kanonun yazdığı düzeyde taşır", () => {
   // Kümelerin sayısı ve düzey dağılımı bu sınamada dondurulmaz: tek kaydı
   // TANI_KUMESI_SAYIMI, kayda karşı tek nöbeti bu dosyadaki "tanı kümesi sayım
   // nöbeti" sınamasıdır (HST-MTR-A12). Burada yalnız kimliklerin yeri ve düzeyi ölçülür.
+  // DIL-1.8 düğüm kodu standardı (RFM-MOTOR-A02 · Founder onayı 2026-10-10): kanon
+  // tanılarını uyarı düzeyinde yazar ve hiçbir koşulda hataya çıkarılmalarını yasaklar.
+  assert.deepEqual(YENI_TANI_KANONU.filter((t) => t.madde === "DIL-1.8").map((t) => `${t.kod}:${t.kanonDüzey}:${t.kademe}`),
+    ["ilansız-önek:uyarı:uyarı", "kod-biçimi-uyumsuz:uyarı:uyarı"]);
   // Faz sırası ve Blok yapısı (KPS-SIR-A01 · Founder hükmü 2026-09-29): altı tanı
   // doğdu, `seçilemez-adım-yürütümü` bilgiden kanonun yazdığı uyarıya çıktı.
   assert.deepEqual(YENI_TANI_KANONU.filter((t) => ["MIM-1.2", "MIM-1.3", "MIM-1.6", "ORK-3.2"].includes(t.madde) && t.kod !== "projesiz-faz" && t.kod !== "adım-atomikliği")
@@ -110,7 +114,7 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   assert.equal(ikinci, ilk);
   const madde = kanonMaddeleriniOlc(KOK).maddeler.length;
   assert.ok(ilk.includes(`Resmi sonuç ${madde}/${madde} maddedir`), "türev ölçülen madde sayısını söylemeli");
-  assert.ok(ilk.includes(`Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır`),
+  assert.ok(ilk.includes(`Faz dosyası düzeninin dört gözlemiyle, DIL-2.2 girinti gözlemiyle ve DIL-1.8 düğüm kodu standardının iki uyarısıyla ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır`),
     "türev yeni kümenin canlı sayısını söylemeli");
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);

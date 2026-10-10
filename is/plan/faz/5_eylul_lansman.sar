@@ -5214,6 +5214,7 @@ sıfır uyarıda kalır.
 
         Adım( kod: RFM-MOTOR-A02, durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, ajanın DIL-1.8 Zorlama paragrafına yazdığı iki hükmü onaylamıştır: önek sicili beyan etmeyen projede standart yürürlükte sayılmaz ve iki tanı susar; ileriye dönüklük bir tarih sınırıyla değil, standarttan önce doğmuş uyumsuz kodların adıyla yazıldığı bir muafiyet listesiyle sağlanır. Gerekçe, motorun bir kodun doğum tarihini bilememesi ve sicil şartının Sarmal kullanan başka projeleri habersiz uyarıyla doldurmamasıdır. Metin olduğu gibi kanona iner ve dal, tanı kümesinin tek kaydı birleştikten sonra yeniden tabanlanarak birleşir.", öncelik: p1,
           bağımlı: [ RFM-KANON-A02 ],
+          üretir: [ KOD-RFM-MOTOR-KODSTANDARDI, KOD-SNM-KOD-STANDARDI ],
           referans: [ DIL-5.1 ],
           ne: "🛡️ Önek sicilinin kurulması ve biçim tanısının doğması. Sicil her öneki tek yerde ilan eder; tanı ilansız önekli ya da biçim dışı YENİ kodu UYARI düzeyinde bildirir ve ileriye dönüklük sınırı mekanik kurulur." ) {
           görev: [
@@ -6654,6 +6655,12 @@ Kod( kod: KOD-RFM-KANON-ORK, dosya: "yasa/kanon/ork.sar",
 
 Kod( kod: KOD-RFM-KANON-DIL, dosya: "yasa/kanon/dil.sar",
   ne: "🍎 Kanonun dil bölümü — DIL-1.8 Düğüm Kodu Standardı maddesinin evi; biçim kuralı, projenin anadizininde yaşayan önek sicili ve ileriye dönüklük sınırı tek maddede hükme bağlanır (RFM-KANON-A02 ürünü)" )
+
+Kod( kod: KOD-RFM-MOTOR-KODSTANDARDI, dosya: "urun/cekirdek/src/kod-standardi.ts",
+  ne: "🍎 Düğüm kodu standardının saf ölçümü — anadizindeki önek sicilini okur, biçim hükmünü ve önek ilanını tek kodda ölçer; ilansız-önek ile kod-biçimi-uyumsuz uyarılarının ve sonraki boş kodu önerecek aracın ortak kaynağıdır (RFM-MOTOR-A02 ürünü)" )
+
+Kod( kod: KOD-SNM-KOD-STANDARDI, dosya: "urun/cekirdek/sinama/kod-standardi.test.ts",
+  ne: "🏷️ Düğüm kodu standardı nöbeti — biçim hükmünün dört kusurunu, sicilin okunuşunu, ilansız önek ile biçim dışı kodun uyarı düzeyinde doğduğunu, sicilsiz projenin hiç tanı üretmediğini, sicilin yalnız kendi varlığını bağladığını ve deponun mevcut kodlarının tanısız kaldığını sınar (RFM-MOTOR-A02 · DIL-1.8)" )
 
 // ── BLK-PRF-PANELKIPI gövdesinin Faz dışı ilanları · eski dosyası is/plan/blok/@SONRA@_prf_panelkipi.sar (KPS-SIR-A04) ──
 Kod( kod: KOD-PRF-DENETIM-PANELKIPI, dosya: "urun/cekirdek/src/denetim.ts",

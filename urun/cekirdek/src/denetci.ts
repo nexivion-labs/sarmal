@@ -35,6 +35,7 @@ import { kebaba, degerMetni } from "./yolcoz.ts";
 import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
+import { onekSiciliOku, kodStandardiHukmu, type OnekSicili } from "./kod-standardi.ts";   // RFM-MOTOR-A02: düğüm kodu standardının saf ölçümü (DIL-1.8)
 import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
@@ -1913,6 +1914,54 @@ export function kitapliksizKokTanilari(ana: Program, snf: Siniflama, dosya?: str
   const ilkRaf = kok.cocuklar.find((c) => c.tur === "widget" && c.ad === "Raf");
   if (!ilkRaf) return [];   // hiç raf yok — bu hâl rafsız-anadizin bekçisinindir
   return [yeniTani("kitaplıksız-kök", { kök: kok.ad }, { satir: ilkRaf.satir, sutun: ilkRaf.sutun })];
+}
+
+/**
+ * Düğüm kodu standardı bekçisi (DIL-1.8 · RFM-MOTOR-A02). Anadizindeki Proje
+ * düğümü `önekler` alanıyla bir önek sicili beyan ettiyse, o varlığın bütün
+ * düğüm kodları sicile ve biçim hükmüne karşı ölçülür: biçim dışı kod
+ * `kod-biçimi-uyumsuz`, ilansız önekle doğan kod `ilansız-önek` uyarısı alır.
+ * Sicil beyan etmeyen varlıkta standart yürürlükte değildir ve tanı doğmaz;
+ * ileriye dönüklük sicilin toptan ilanı ile muafiyet listesiyle kurulur. Ölçüm
+ * `kod-standardi.ts` içindedir; burada yalnız gezinti ve tanı kurulumu yaşar.
+ * Ders dünyası OGR-5 uyarınca, bilerek hatalı dosyalar ise muafiyetleri gereği
+ * ölçülmez. Düzey hiçbir koşulda uyarıyı aşmaz.
+ */
+export function kodStandardiTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  muaflar: ReadonlySet<string> = new Set(),
+): Array<{ dosya: string; tani: Tani }> {
+  const sinir = varlikSinirlari(programlar.keys());
+  const siciller = new Map<string, OnekSicili>();
+  for (const [etiket, p] of programlar) {
+    if (!GIRIS_DOSYASI.test(yolNormal(etiket))) continue;
+    const proje = p.bildirimler.find((b) => b.tur === "widget" && b.ad === "Proje");
+    const sicil = proje && onekSiciliOku(proje);
+    if (sicil) siciller.set(sinir.get(etiket) ?? "", sicil);
+  }
+  if (!siciller.size) return [];
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const [etiket, p] of programlar) {
+    if (muaflar.has(etiket) || DERS_DUNYASI.test(yolNormal(etiket))) continue;
+    const sicil = siciller.get(sinir.get(etiket) ?? "");
+    if (!sicil) continue;
+    const gez = (n: Dugum): void => {
+      const kp = [...n.parametreler, ...n.ozellikler].find((x) => x.ad === "kod");
+      const kod = n.tur === "widget" ? kp?.deger.metin : undefined;
+      if (kod) {
+        const hukum = kodStandardiHukmu(kod, n.ad, sicil);
+        const konum = { satir: kp!.satir, sutun: kp!.sutun };
+        if (hukum?.tur === "biçim")
+          out.push({ dosya: etiket, tani: yeniTani("kod-biçimi-uyumsuz", { kimlik: kod, tip: n.ad, kusur: hukum.kusur }, konum) });
+        else if (hukum?.tur === "ilansız-önek")
+          out.push({ dosya: etiket, tani: yeniTani("ilansız-önek", { kimlik: kod, tip: n.ad, önek: hukum.onek }, konum) });
+      }
+      for (const c of n.cocuklar) gez(c);
+      icin(n, (d) => { if (d.tur === "widget" && d.dugum) gez(d.dugum); });
+    };
+    for (const b of p.bildirimler) gez(b);
+  }
+  return out;
 }
 
 /**

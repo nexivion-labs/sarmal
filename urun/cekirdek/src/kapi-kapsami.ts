@@ -124,6 +124,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   // KPS-SIR-A03 (Founder hükmü 2026-09-29): MIM-1.2 Faz dosyası düzeni — programları okur, proje kapsamında koşar.
   { uretici: "fazDosyasiTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   { uretici: "kitapliksizKokTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },   // MIM-3.2 · Kitaplık kademesi (KPS-CEL-A01)
+  // RFM-MOTOR-A02: DIL-1.8 düğüm kodu standardı — anadizin önek sicilini okur, proje kapsamında koşar.
+  { uretici: "kodStandardiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu

@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, katmansizTeknolojiTanilari, yersizTeknolojiKacisiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, kodStandardiTanilari, katmansizTeknolojiTanilari, yersizTeknolojiKacisiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -543,6 +543,13 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // Fazlı dosya, Faz gövdesi dışında bağlanan Blok, tepede durmayan Faz ilanı ve faz
   // klasörü dışındaki ya da sıra öneksiz Faz dosyası; dördü de bilgi düzeyindedir.
   for (const { dosya, tani } of koklendirKayit("fazDosyasiTanilari", fazDosyasiTanilari(programlar, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // DIL-1.8 düğüm kodu standardı (RFM-MOTOR-A02): anadizin önek sicili beyan ettiyse
+  // ilansız önekle ya da biçim dışı doğan kod uyarı alır; sicilsiz varlık ölçülmez.
+  for (const { dosya, tani } of koklendirKayit("kodStandardiTanilari", kodStandardiTanilari(programlar, muaflar))) {
     say([tani], dosya);
     bas(dosya, [tani]);
   }
