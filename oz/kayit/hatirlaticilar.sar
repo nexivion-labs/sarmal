@@ -1234,3 +1234,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "MCP metinleri bir sonraki kez mühür tazelemesiyle elden geçirildiğinde",
   ne:               "HST-MTR-A05 gezinme aracını KOD biçimi dışındaki adlar için kapsamını açıkça söyler hâle getirmiştir, fakat aracın açıklaması (urun/cekirdek/src/mcp-metinleri.ts, Türkçe ve İngilizce) hâlâ atıf evreninin .sar, .md ve .ts dosyalarını kapsadığını söylemekte ve metin katmanının yalnız KOD biçimindeki adları tanıdığını anmamaktadır. HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR kaydının kapsam beyanını daraltma isteği bu yüzden yarım kalmıştır. Dosya mühürlü olduğu için değişiklik mühür tazelemesiyle birlikte yapılır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-AGAC-KUMESI-UYELIK-NOBETI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "İşleme kapısına bir sonraki kez dokunulduğunda; en geç yeni bir ağaç okuyan çekirdek sınaması eklendiğinde",
+  ne:               "HST-YUZ-A01 işleme kapısına, çekirdek kodu değişmediğinde de koşan hızlı bir ağaç kümesi eklemiştir. Bağımsız inceleme 2026-10-10 tarihinde kümenin üyeliğinin elle tutulduğunu ve bunu ölçen bir nöbet bulunmadığını ölçmüştür: tetikleyici dışı bir yol okuyan 49 çekirdek sınama dosyasının 20'si kümededir; ogreti, oz/ceviri, anadizin ve kök belge dosyalarını okuyan 29 dosya kümenin dışındadır ve sözlükten tek satır silen bir işleme yeni kapıdan geçip sözlük kapsama nöbetini kırmızıya düşürmüştür. Çekirdek paketinin bildirim dosyasının değişmesi de hiçbir süiti tetiklememektedir. Üç yol vardır: bu yolları tam süitin tetikleyicisine eklemek, hızlı olanları kümeye almak ya da üyeliği ölçen bir nöbet yazmak."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KATKI-VE-GUVENLIK-REHBERI-BAYAT,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Katkı rehberi ya da güvenlik belgesi bir sonraki kez elden geçirildiğinde",
+  ne:               "HST-YUZ-A01'in bağımsız incelemesi 2026-10-10 tarihinde iki kök belgede bayat ayrıntı ölçmüştür. Katkı rehberi çekirdek süitinin sınama sayısını iki yerde 1298 olarak yazmaktadır, gerçek sayı 1684'tür; sayı her turda bayatlayacağı için yerine komutun yazılması önerilir. Güvenlik belgesi işleme kancasının günlüklerini sabit dosya adlarıyla anmaktadır, oysa gerçek adlar süreç kimliği sonekiyle doğar, kök ve dil günlükleri hiç anılmamaktadır ve her işleme geçici dizinde silinmeyen yaklaşık 177 KB günlük bırakmaktadır."
+)

@@ -5891,6 +5891,18 @@ sessizce körleşmez.
           ]
           sınır: "Bulguların düzeyi ve metni değişmez; kuyruk kuralı çekirdekteki kimlik tanımından türer"
         }
+
+        Adım( kod: HST-MTR-A11, ad: "Tanı Metni Hijyeninin Kör Bölgeleri", durum: beklemede, öncelik: p2, üretir: [ KOD-SNM-HIJYEN ], bağımlı: [],
+          referans: [ HST-YUZ-A01 ],
+          ne: "🫥 Tanı metni hijyeni taraması glob dizgesini yorum sanıp dosyanın yarısını görmeden geçmesin" ) {
+          görev: "HST-YUZ-A01'in üreticisi ve bağımsız incelemesi (2026-10-10) tanı metni hijyeni nöbetinin yorum ayıklayıcısının blok yorum desenini dizge ve satır yorumu bağlamını tanımadan uyguladığını ölçmüştür: `**/*.sar` gibi bir glob dizgesi ya da `sablon/*.sar` geçen bir satır yorumu sahte bir blok yorum açar ve taramayı dosyanın büyük bir bölümünde kör bırakır. Taranan 125 dosyada 39 sahte blok vardır; eklenti girişinin yaklaşık 343 satırı ve komut satırı giriş dosyasının 638 ile 1019. satırları arası taranmamaktadır. Aynı körlük bugün gerçek bir ihlali gizlemektedir: takdir üreticisinin yazdığı dosya başlığında iç bir kod geçmektedir. Ayıklayıcı dizge ve yorum bağlamını tanıyacak biçimde onarılır; önce kör bölgeye konmuş bir iç kodla kırmızı sınama yazılır, gizlenen ihlal düzeltilir."
+          kabul: [
+            "kör bölgeye konan iç kod sınamayı kırmızıya çevirir (önce kırmızı, onarımla yeşil)",
+            "sahte blok yorum sayısı önce ve sonra raporlanır; gizlenen ihlal düzeltilmiştir",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Hijyen kuralının kendisi değişmez; yalnız taramanın gördüğü alan onarılır"
+        }
       }
 
       AltKatman( kod: HST-MOTOR-K2, departman: kodlama, ad: "Gezinti ve Fikstür",
