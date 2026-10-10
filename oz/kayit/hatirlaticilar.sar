@@ -1292,7 +1292,7 @@ Hatırlatıcı(
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Sınama altyapısına bir sonraki kez dokunulduğunda; en geç geçici dizin bir gigabaytı aşarken",
-  ne:               "Kontrolcü 2026-10-10 tarihinde çekirdek ve eklenti süitlerinin açtıkları geçici klasörleri silmediğini ölçmüştür: geliştirici makinesinin geçici dizininde 2 Ekim'den beri birikmiş 8663 sınama klasörü ve toplam 1,9 GB veri vardır; en kalabalık önekler koniyaz (800), sarmal-kesif (735), sarmal-ogretim (636), sarmal-turev (537) ve sarmal-magaza (441) klasörleridir. Her süit koşusu yüzlerce klasör bırakmaktadır. Sınamalar açtıkları klasörü başarısız durumda da silmeli ve bunu ölçen bir nöbet kurulmalıdır; sızıntı kapandıktan sonra birikmiş klasörler temizlenebilir."
+  ne:               "Kontrolcü 2026-10-10 tarihinde çekirdek ve eklenti süitlerinin açtıkları geçici klasörleri silmediğini ölçmüştür: geliştirici makinesinin geçici dizininde 2 Ekim'den beri birikmiş 8663 sınama klasörü ve toplam 1,9 GB veri vardır; en kalabalık önekler koniyaz (800), sarmal-kesif (735), sarmal-ogretim (636), sarmal-turev (537) ve sarmal-magaza (441) klasörleridir. Her süit koşusu yüzlerce klasör bırakmaktadır. Sınamalar açtıkları klasörü başarısız durumda da silmeli ve bunu ölçen bir nöbet kurulmalıdır; sızıntı kapandıktan sonra birikmiş klasörler temizlenebilir. HST-MTR-A14'ün bağımsız incelemesi aynı gün doğuş sınamalarındaki iki eski örneği adıyla ölçmüştür: dogus.test.ts dosyasının 341. satırındaki sınama her koşuda boş bir klasör, 498. satırındaki sınama ise doğmuş tam bir proje bırakmaktadır."
 )
 
 Hatırlatıcı(
@@ -1343,4 +1343,34 @@ Hatırlatıcı(
   tarih:            2026-10-10,
   dönüşTetikleyici: "MCP sunucusuna bir sonraki araç eklendiğinde",
   ne:               "HST-MTR-A12'nin bağımsız incelemesi 2026-10-10 tarihinde türetilmiş yüz üreticisinin MCP araç sayısını kaynakta on sekiz olarak dondurduğunu ve bir araç eklenince araç sayısının beklenenden farklı olduğunu söyleyerek çıkış 1 verdiğini ölçmüştür. Bu, HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR kaydının ölçtüğü kilidin araç sayısındaki eşidir: bir araç eklemek belgelerin yeniden üretimini durdurur. Kanon ve tanı kümesi sayılarına uygulanan desen burada da uygulanmalıdır; sayı tek kayıtta durmalı, sapma üreticiyi durdurmak yerine adlı bir bulgu olarak basılmalı ve bilinçli artırma için yalnız tek bir kırmızı nöbet kalmalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-YOKSAYMA-GENISLETME-UC-DURUMLARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Doğuşun yok sayma genişletmesine ya da yönerge ikizinin istisna ölçümüne bir sonraki kez dokunulduğunda",
+  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde yok sayma genişletmesinin dört uç durumda git ile ayrıştığını ölçmüştür. Birincisi baştaki boşluktur: motor satırı kırparak okur, oysa git baştaki boşluğu kırpmaz; bu yüzden başı boşluklu bir iz satırı karar sayılır ama izleri gizlemez ve aynı kusur istisna ölçümünde de vardır, başı boşluklu bir istisna git'te istisna kurmadığı hâlde tam sayılır. İkincisi kök bağlı yazımlardır: eğik çizgiyle başlayan ya da yıldızla biten yazımlar eşdeğer sayılır, fakat alt dizinlerdeki iz klasörünü kapsamaz ve köprülerden biri çalışma dizinine yazar. Üçüncüsü kodlamadır: genişletme dosyayı UTF-8 olarak çözüp yeniden yazdığı için Latin-1 baytlar bozulur; istisnaları tam olan böyle bir dosya eskiden hiç yazılmıyordu. Dördüncüsü sınamaların kanca ortamı arındırmasıdır: git'in kendi yerel ortam listesi on beş değişken sayar ve git -c ile işlenince gelen yapılandırma değişkeni arındırılmaz. Dördünün de bugünkü riski düşüktür ve doğru davranış satırları git'in kurallarıyla ölçmek, dosyaya bayt düzeyinde eklemek ve listeyi git'in kendisinden almaktır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-IZ-KLASORU-ADI-BES-YAZICIDA,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "İz klasörüne yazan yeni bir yazıcı eklendiğinde ya da klasörün adı değiştiğinde",
+  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde motorun iz klasörünün adının beş yazıcıda ayrı ayrı yazıldığını ölçmüştür: makro döngü, döngü, komut satırı girişi ve iki köprü dosyası. Doğuşun yok sayma şablonuyla bu adlar arasındaki bağı yalnız iki yazıcı için bir nöbet korumaktadır; kontrol noktası ya da makro döngü klasörünün adı değişirse nöbet yeşil kalır ve doğan projeler yeni klasörü yine izlenmeyen dosya olarak görür. Ad tek bir sabitte toplanmalı ve beş yazıcı ile doğuş şablonu onu oradan almalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SINAMA-FIKSTURU-YUKARI-YURUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Kanon keşfine, örtü zincirine ya da sınama altyapısının geçici klasör düzenine bir sonraki kez dokunulduğunda",
+  ne:               "HST-MTR-A14'ün üreticisi 2026-10-10 tarihinde süitlerin geçici klasörün yerine bağımlı olduğunu ölçmüştür: geçici klasör bir Sarmal ağacının içine yönlendirilince çekirdekte bir, eklentide on beş sınama kırmızıya döner. Sebep, kanon keşfi, örtü zinciri ve performans sınamalarının fikstürden yukarı yürüyerek kanon, örtü ve kök araması ve geçici klasör depo içindeyse deponun kendi anadizinini, tip kaydını ve örtü dosyasını bulmasıdır; aynı kod depo dışındaki bir geçici klasörde yeşildir. Sınamalar bugün geçici klasörün herhangi bir Sarmal ağacının dışında olduğunu sessizce varsaymaktadır. Fikstürler yukarı yürüyüşü kendi köklerinde durduran bir sınır taşımalı ya da süit bu varsayımı açılışta ölçüp açık bir iletiyle durmalıdır."
 )
