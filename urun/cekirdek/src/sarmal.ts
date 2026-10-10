@@ -564,6 +564,8 @@ if (yol === "belge-yuzleri-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = belgeYuzleriniUret(dizin);
   console.log(`📚 belge yüzleri: ${sonuc.degisen.length} değişti · ${sonuc.degismeyen.length} aynı · ${sonuc.kanonMaddesi} madde · ${sonuc.aracSayisi} araç.`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
   process.exit(0);
 }
 
@@ -576,6 +578,8 @@ if (yol === "kanon-tutarlilik-uret") {
   console.log(`⚖️ kanon tutarlılık: ${sonuc.degisti ? "tazelendi" : "aynı"} · ${sonuc.madde} madde · ${sonuc.yeni} yeni · ${sonuc.onceki} önceki · ${sonuc.emekli} emekli · ${sonuc.emeklilikBorcu} açık emeklilik borcu.`);
   // HST-MTR-A01: taşıyıcısı belge metninden ayrışan madde, yüzü tazeleyen kişiye adıyla söylenir.
   if (sonuc.tasiyiciAyrisan.length > 0) console.log(`⚠️ taşıyıcısı belge metninden ayrışan madde: ${sonuc.tasiyiciAyrisan.join(" · ")} (ayrıntı: is/nitelik/goc/kanon_tutarlilik.sar).`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
   process.exit(0);
 }
 

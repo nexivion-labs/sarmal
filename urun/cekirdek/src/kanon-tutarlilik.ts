@@ -21,6 +21,94 @@ import {
 } from "./tani-sicili.ts";
 import type { Deger, Dugum } from "./sozdizim.ts";
 
+// ── Kanon sayımının tek kaydı (HST-MTR-A02) ─────────────────────────────────
+//
+// Kanonun dosya, Karar ve Kural sayısı bilinçle dondurulmuştur ve bu bir insan
+// kapısıdır: kanon sessizce büyümez, sessizce de küçülmez. Sayı yalnız aşağıdaki
+// KANON_SAYIMI kaydında yaşar. Ölçüm üreticileri (bu dosyadaki kanon tutarlılık
+// yüzü ile belge-yuzleri.ts içindeki kalıcı belge yüzleri) kanonu diskten sayar ve
+// kayıttan ayrışmayı hata fırlatmadan bulgu olarak bildirir; kanonu kayda karşı
+// ölçen nöbet tektir ve çekirdek süitindedir (sinama/kanon-tutarlilik.test.ts,
+// "kanon sayımı nöbeti"). Kanona madde eklendiğinde sayı nöbetlerinden yalnız o
+// kırmızıya döner ve aşağıdaki artırma adımını adıyla söyler.
+//
+// Değer elle yazılmış bir dondurma olmak zorundadır, çünkü nöbetin görevi kanonun
+// sayısı meşru biçimde değiştiğinde bunu bilinçli bir insan onayına bağlamaktır;
+// sayı canlı ölçümün kendisinden türetilseydi nöbet hiçbir zaman tetiklenemez ve
+// kapı işlevini yitirirdi. Sayı eskiden motorda, üreticide ve dört ayrı nöbette
+// elle yazılıydı; bir keresinde nöbet yüz on üçe taşınırken tablo satırı yüz on
+// ikide unutulmuş ve tip denetimi bu sapmayı "113 ile 112'nin kesişimi yok"
+// hatasıyla yakalamıştı. Dağınıklığın bedeli 2026-09-10 tarihinde ölçülmüştür: bir
+// madde eklemek yedi ile dokuz nöbeti birden kırmızıya çeviriyor ve türetilmiş
+// yüzlerin yeniden üretimini kilitliyordu (HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR).
+//
+// Geçmiş (kanon meşru biçimde büyüdükçe):
+//   2026-08-30: Founder dört ortak çalışma kuralını hükme bağladı ve kanon meşru
+//   biçimde büyüdü. ORK-9 (Blok Teslim Halkası) bir Karar olarak doğdu ve Karar
+//   sayısı otuz yediden otuz sekize çıktı; DIL-1.6 (Plan Kademelerinin Adı),
+//   MIM-3.3 (Blok Durum Kaydı), ORK-3.5 (Blok Sırası) ile YUZ-3.5 (Durum Yüzeyi)
+//   Kural olarak doğdu ve kural sayısı yüz on dörtten yüz on sekize çıktı.
+//   2026-09-11 (KPS-MHR-A01 · Founder hükmü): MIM-3.4 (Dosya Mühürleri) Kural
+//   olarak doğdu ve kural sayısı yüz yirmi ikiden yüz yirmi üçe, kanon yüz
+//   altmıştan yüz altmış bire çıktı; Karar sayısı değişmedi.
+//   2026-09-19 (KPS-CEL-A01 · birinci ayrışma · Founder hükmü 2026-09-09):
+//   MIM-3.5 anadizin ile plan ayrılığı maddesi doğdu ve Kural kümesi yüz yirmi
+//   üçten yüz yirmi dörde, kanon yüz altmış birden yüz altmış ikiye çıktı.
+//   2026-10-10 (HST-MTR-A02): sayı motordaki, üreticideki ve sınamalardaki
+//   dağınık dondurmalardan bu tek kayda taşındı; değer değişmedi.
+
+/** Kanonun dondurulmuş sayımı: `yasa/kanon/` altındaki bölüm dosyası, Karar ve Kural sayısı. */
+export interface KanonSayimi {
+  readonly dosya: number;
+  readonly karar: number;
+  readonly kural: number;
+}
+
+/** Diskten ölçülen sayım; `tekil`, yinelenmeyen madde kodlarının sayısıdır. */
+export interface OlculenKanonSayimi extends KanonSayimi {
+  readonly tekil: number;
+}
+
+/** TEK KAYIT. Kanon meşru biçimde büyüdüğünde ya da küçüldüğünde yalnız burası değişir. */
+export const KANON_SAYIMI: KanonSayimi = { dosya: 8, karar: 38, kural: 124 };
+
+/** Kaydın depo köküne göre yeri; bulgu ve belge metinleri bu adresi verir. */
+export const KANON_SAYIMI_KAYDI = "urun/cekirdek/src/kanon-tutarlilik.ts";
+
+/** Madde sayısı ayrıca dondurulmaz; Karar ile Kuralın toplamıdır. */
+export const kanonMaddeSayisi = (sayim: KanonSayimi): number => sayim.karar + sayim.kural;
+
+/** Sayı ayrıştığında atılacak bilinçli adımın adı ve tarifi. */
+export const KANON_ARTIRMA_ADIMI =
+  `${KANON_SAYIMI_KAYDI} dosyasındaki KANON_SAYIMI kaydını ölçülen sayıya bilinçle çek ve `
+  + "geçmiş satırına tarihi, Adım kodunu ve doğan ya da kalkan maddeyi yaz; aynı adımda kanon "
+  + "mühürlerini (urun/cekirdek/sinama/kanon-tutarlilik.test.ts içindeki KANON_SHA ile "
+  + "is/nitelik/goc/turetilmis_yuz_nobetleri.sar nöbet kaydı) tazele ve türetilmiş yüzleri "
+  + "resmî üreticileriyle yeniden üret";
+
+const sayimMetni = (s: KanonSayimi): string =>
+  `${s.dosya} dosyada ${kanonMaddeSayisi(s)} madde (${s.karar} Karar ve ${s.kural} Kural)`;
+
+/**
+ * Ölçülen kanonu kayıtla karşılaştırır. Eşitse `undefined` döner; ayrışmışsa
+ * insanın okuyacağı bir bulgu döndürür ve bulgu artırma adımını adıyla söyler.
+ * Yinelenen madde kodu sayıdan ayrı bir kusurdur ve ayrıca bildirilir.
+ */
+export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayimi = KANON_SAYIMI): string | undefined {
+  const bulgular: string[] = [];
+  if (olculen.dosya !== kayit.dosya || olculen.karar !== kayit.karar || olculen.kural !== kayit.kural) {
+    bulgular.push(
+      `Kanon sayımı kayıttan ayrıştı: yasa/kanon ${sayimMetni(olculen)} taşıyor, kanon sayımı kaydı ise ${sayimMetni(kayit)} diyor. `
+      + `Kanon sessizce büyümez ve sessizce küçülmez; artırma adımı: ${KANON_ARTIRMA_ADIMI}.`,
+    );
+  }
+  const madde = kanonMaddeSayisi(olculen);
+  if (olculen.tekil !== madde) {
+    bulgular.push(`Kanonda yinelenen madde kodu var: ${madde} maddenin yalnız ${olculen.tekil} tanesinin kodu tekildir; yinelenen kod düzeltilmeden sayım kaydı değiştirilmez.`);
+  }
+  return bulgular.length > 0 ? bulgular.join(" ") : undefined;
+}
+
 /**
  * Bir taşıyıcı alanın belge bloğundaki karşılığıyla eşitlik ölçümü (HST-MTR-A01).
  *
@@ -66,6 +154,8 @@ export interface KanonTutarlilikSonucu {
   readonly emeklilikBorcu: number;
   /** Taşıyıcısı belge metninden ayrışan maddelerin kodları (HST-MTR-A01). */
   readonly tasiyiciAyrisan: readonly string[];
+  /** Ölçülen kanon sayım kaydından ayrışmışsa bulgu; eşitse yok (HST-MTR-A02). */
+  readonly kanonSayimiBulgusu: string | undefined;
 }
 
 const sha256 = (metin: string): string => createHash("sha256").update(metin).digest("hex");
@@ -133,7 +223,12 @@ function tasiyicilariOlc(dugum: Dugum, rol: KanonMaddesiOlcumu["rol"], belge: st
   return olcumler;
 }
 
-export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly KanonMaddesiOlcumu[]; muhurler: readonly string[]; demet: string } {
+export function kanonMaddeleriniOlc(kokYolu: string): {
+  maddeler: readonly KanonMaddesiOlcumu[];
+  muhurler: readonly string[];
+  demet: string;
+  sayim: OlculenKanonSayimi;
+} {
   const kok = resolve(kokYolu);
   const dizin = join(kok, "yasa", "kanon");
   const dosyalar = readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort();
@@ -161,11 +256,15 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
       });
     });
   }
-  const kodlar = new Set(maddeler.map((m) => m.kod));
-  if (dosyalar.length !== 8 || maddeler.length !== 162 || kodlar.size !== 162) {
-    throw new Error(`Resmi kanon 162/162 değil: ${dosyalar.length} dosya, ${maddeler.length}/${kodlar.size} madde.`);
-  }
-  return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`) };
+  // HST-MTR-A02: ölçüm sayıyı dondurmaz ve ayrışmada hata fırlatmaz; sayım kayda
+  // karşı yalnız kanon sayımı nöbetinde ölçülür (KANON_SAYIMI, bu dosyanın başı).
+  const sayim: OlculenKanonSayimi = {
+    dosya: dosyalar.length,
+    karar: maddeler.filter((m) => m.rol === "Karar").length,
+    kural: maddeler.filter((m) => m.rol === "Kural").length,
+    tekil: new Set(maddeler.map((m) => m.kod)).size,
+  };
+  return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`), sayim };
 }
 
 function dinamikTaniKodlari(snf: Siniflama, sabit: ReadonlySet<string>): string[] {
@@ -219,33 +318,15 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   const borcCanli = EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => canli.has(kod));
   const yuz33 = YENI_TANI_KANONU.filter((t) => t.madde === "YUZ-3.3" && t.kod === "tanı-yüzeyi-karışması");
 
-  // Kanonun Karar/Kural rol dağılımı için beklenen sayılar TEK bu iki değişkende
-  // yaşar; hem aşağıdaki canlı-ölçüm nöbeti hem de tutarlılık tablosundaki "Rol
-  // dağılımı" satırı bunları okur. Değer elle yazılmış bir dondurma (pin) olmak
-  // zorundadır çünkü nöbetin görevi kanonun rol dağılımı meşru biçimde değiştiğinde
-  // (örn. Kural maddesi sayısı yüz on ikiden yüz on üçe çıktığında) bunu bilinçli bir
-  // insan onayına bağlamaktır; sayı canlı ölçümün kendisinden türetilseydi (ör.
-  // doğrudan `karar`/`kural` değişkenleriyle eşitlenseydi) nöbet hiçbir zaman
-  // tetiklenemezdi ve kapı işlevini yitirirdi. Daha önce bu iki sayı burada ve
-  // tutarlılık tablosunda ayrı ayrı elle yazılmıştı; nöbet yüz on üçe taşınırken
-  // tablo satırı yüz on ikide unutulmuş ve tip denetimi bu sapmayı "113 ile 112'nin
-  // kesişimi yok" hatasıyla yakalamıştı. Tek değişkene indirgemek bu sınıftan bir
-  // sapmanın yapısal olarak tekrar etmesini engeller: kanon meşru biçimde
-  // büyüdüğünde güncellenecek tek bir sayı çifti kalır.
-  // 2026-08-30: Founder dört ortak çalışma kuralını hükme bağladı ve kanon meşru
-  // biçimde büyüdü. ORK-9 (Blok Teslim Halkası) bir Karar olarak doğdu ve Karar
-  // sayısı otuz yediden otuz sekize çıktı; DIL-1.6 (Plan Kademelerinin Adı),
-  // MIM-3.3 (Blok Durum Kaydı), ORK-3.5 (Blok Sırası) ile YUZ-3.5 (Durum Yüzeyi)
-  // Kural olarak doğdu ve kural sayısı yüz on dörtten yüz on sekize çıktı.
-  // 2026-09-11 (KPS-MHR-A01 · Founder hükmü): MIM-3.4 (Dosya Mühürleri) Kural
-  // olarak doğdu ve kural sayısı yüz yirmi ikiden yüz yirmi üçe, kanon yüz
-  // altmıştan yüz altmış bire çıktı; Karar sayısı değişmedi.
-  const beklenenKarar = 38;
-  // 2026-09-19 (KPS-CEL-A01 · birinci ayrışma · Founder hükmü 2026-09-09):
-  // MIM-3.5 anadizin ile plan ayrılığı maddesi doğdu ve Kural kümesi yüz yirmi
-  // üçten yüz yirmi dörde, kanon yüz altmış birden yüz altmış ikiye çıktı.
-  const beklenenKural = 124;
+  // Kanonun dosya, Karar ve Kural sayısı TEK kayıtta yaşar (KANON_SAYIMI ·
+  // HST-MTR-A02); bu üretici kaydı okur ve ölçülen kanonla ayrışmayı hata
+  // fırlatmadan ölçüm tablosuna ve çelişki raporuna bulgu olarak yazar. Kaydı
+  // canlı kanona karşı ölçen tek nöbet sinama/kanon-tutarlilik.test.ts içindedir.
+  const kayitMadde = kanonMaddeSayisi(KANON_SAYIMI);
+  const sayimBulgusu = kanonSayimiBulgusu(olcum.sayim);
+  const olculenMadde = olcum.maddeler.length;
 
+  // Aşağıdaki değişmezler tanı kümelerinin sayılarıdır ve kanon madde sayısından ayrıdır.
   // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
   // `mevsim-mührü-çelişkili` doğdu ve yeni küme yetmiş dörtten yetmiş beşe çıktı.
   // 2026-09-19 (KPS-FAZ-A02 · Founder hükmü): MIM-1.2 projesiz Faz gözlemi
@@ -267,11 +348,11 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   // 2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
   // doğdu; kanon metni Founder onayı beklediği için kimlik sabit kümeye girdi ve canlı
   // sabit yüzden yüz bire çıktı.
-  if (karar !== beklenenKarar || kural !== beklenenKural || YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 101 ||
+  if (YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 101 ||
       EMEKLI_TANI_KODLARI.length !== 16 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 37 ||
       emekliCanli.length !== 0 || borcCanli.length !== 37 || yuz33.length !== 1 ||
       [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {
-    throw new Error("Kanon/tanı kümesi değişmezleri beklenen canlı ölçümle uyuşmuyor.");
+    throw new Error("Tanı kümesi değişmezleri beklenen canlı ölçümle uyuşmuyor.");
   }
 
   const muhurSatirlari = olcum.muhurler.map((muhur) => {
@@ -286,11 +367,12 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   const dinamikSatirlari = dinamik.map((kod) => `| \`${kod}\` | \`oz/siniflama/kayit.json.zorunluKenarlar\` | canlı-dinamik |`);
 
   const tutarlilik: Array<[string, string, string | number, boolean]> = [
-    ["Resmi kaynak dosyası", "8", olcum.muhurler.length, olcum.muhurler.length === 8],
-    ["Kanon maddesi", "162 tekil", new Set(olcum.maddeler.map((m) => m.kod)).size, new Set(olcum.maddeler.map((m) => m.kod)).size === 162],
-    ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
-    ["Dört parçalı madde", "162/162", `${162 - eksikDortParca.length}/162`, eksikDortParca.length === 0],
-    ["Kanonik örnek", "162/162", `${162 - eksikOrnek.length}/162`, eksikOrnek.length === 0],
+    ["Resmi kaynak dosyası", `${KANON_SAYIMI.dosya}`, olcum.muhurler.length, olcum.muhurler.length === KANON_SAYIMI.dosya],
+    ["Kanon maddesi", `${kayitMadde} tekil`, olcum.sayim.tekil, olcum.sayim.tekil === kayitMadde && olculenMadde === kayitMadde],
+    ["Rol dağılımı", `${KANON_SAYIMI.karar} Karar + ${KANON_SAYIMI.kural} Kural`, `${karar} Karar + ${kural} Kural`,
+      karar === KANON_SAYIMI.karar && kural === KANON_SAYIMI.kural],
+    ["Dört parçalı madde", `${olculenMadde}/${olculenMadde}`, `${olculenMadde - eksikDortParca.length}/${olculenMadde}`, eksikDortParca.length === 0],
+    ["Kanonik örnek", `${olculenMadde}/${olculenMadde}`, `${olculenMadde - eksikOrnek.length}/${olculenMadde}`, eksikOrnek.length === 0],
     ["Taşıyıcı ile belge metni eşitliği", `${olcum.maddeler.length}/${olcum.maddeler.length}`,
       `${olcum.maddeler.length - tasiyiciAyrisan.length}/${olcum.maddeler.length}`, tasiyiciAyrisan.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
@@ -340,7 +422,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
       ...tasiyiciSatirlari,
     ]),
     "",
-    "## Kanonik örnekler — 162/162",
+    `## Kanonik örnekler — ${olculenMadde}/${olculenMadde}`,
     "",
     "| Madde | Rol | Resmi dosya | Kanondan ölçülen Örnek bölümü |",
     "|---|---|---|---|",
@@ -382,6 +464,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     "| Bulgu | Ölçüm | Hüküm |",
     "|---|---:|---|",
+    `| Kanon sayımı kaydından ayrışma | ${olculenMadde} / ${kayitMadde} | ${sayimBulgusu ? `AÇIK · artırma adımı \`${KANON_SAYIMI_KAYDI}\` kaydındadır` : "YOK"} |`,
     `| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = ${YENI_TANI_KANONU.length} | ÇÖZÜLDÜ · güncel sayı ${YENI_TANI_KANONU.length} |`,
     `| Yeni tanının resmi maddesi eksik | ${eslesmeyenYeni.length} | ${eslesmeyenYeni.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Kanonik örnek eksiği | ${eksikOrnek.length} | ${eksikOrnek.length === 0 ? "YOK" : "AÇIK"} |`,
@@ -392,6 +475,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `| Emeklilik kararı uygulanmamış canlı kimlik | ${borcCanli.length} | AÇIK · Founder sahipliği gerekir |`,
     `| Eski \`geneldurum/\` türevi | ${existsSync(join(kok, "geneldurum")) ? "dizin var" : "0"} | ${existsSync(join(kok, "geneldurum")) ? "AÇIK · nihai arşive taşı" : "YOK · arşiv işlemi gerekmiyor"} |`,
     "",
+    ...(sayimBulgusu ? [sayimBulgusu, ""] : []),
     "Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühürleri yukarıdaki sekiz SHA-256 değeriyle yeniden üretilebilir.",
     "|<--",
     "",
@@ -413,14 +497,16 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   const yeni = kanonTutarlilikMetni(kok);
   const mevcut = existsSync(hedef) ? readFileSync(hedef, "utf8") : undefined;
   if (yeni !== mevcut) writeFileSync(hedef, yeni, "utf8");
+  const olcum = kanonMaddeleriniOlc(kok);
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
-    madde: 162,
+    madde: olcum.maddeler.length,
     yeni: YENI_TANI_KANONU.length,
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,
     emeklilikBorcu: EMEKLILIK_BORCU_TANI_KODLARI.length,
-    tasiyiciAyrisan: kanonMaddeleriniOlc(kok).maddeler.filter((m) => m.tasiyicilar.some((t) => !t.esit)).map((m) => m.kod),
+    tasiyiciAyrisan: olcum.maddeler.filter((m) => m.tasiyicilar.some((t) => !t.esit)).map((m) => m.kod),
+    kanonSayimiBulgusu: kanonSayimiBulgusu(olcum.sayim),
   };
 }

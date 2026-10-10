@@ -12,6 +12,7 @@ import { dirname, join, resolve } from "node:path";
 import { ayristir } from "./ayristirici.ts";
 import { belirtecle } from "./belirtec.ts";
 import { dilHanesi, sarmalKavramSozlugu } from "./cevir.ts";
+import { kanonSayimiBulgusu, type OlculenKanonSayimi } from "./kanon-tutarlilik.ts";
 import { MCP_ARAC_ADI, MCP_ARAC_METINLERI } from "./mcp-metinleri.ts";
 import {
   siniflamaOrtuMerge,
@@ -38,6 +39,8 @@ export interface BelgeYuzuSonucu {
   readonly degismeyen: readonly string[];
   readonly kanonMaddesi: number;
   readonly aracSayisi: number;
+  /** Ölçülen kanon sayım kaydından ayrışmışsa bulgu; eşitse yok (HST-MTR-A02). */
+  readonly kanonSayimiBulgusu: string | undefined;
 }
 
 export const ELLE_BAS = "<!-- SARMAL:ELLE-KORUNAN:BAS -->";
@@ -74,7 +77,14 @@ function dugumleriGez(dugumler: readonly Dugum[], ziyaret: (dugum: Dugum) => voi
   }
 }
 
-export function kanonOlc(kok: string): { madde: number; karar: number; kural: number; kodlar: readonly string[]; muhurler: readonly string[] } {
+export function kanonOlc(kok: string): {
+  madde: number;
+  karar: number;
+  kural: number;
+  kodlar: readonly string[];
+  muhurler: readonly string[];
+  sayim: OlculenKanonSayimi;
+} {
   const dizin = join(kok, "yasa", "kanon");
   const dosyalar = readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort();
   const kodlar: string[] = [];
@@ -95,10 +105,10 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 162 || new Set(kodlar).size !== 162) {
-    throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
-  }
-  return { madde: kodlar.length, karar, kural, kodlar, muhurler };
+  // HST-MTR-A02: sayı burada dondurulmaz ve ayrışmada hata fırlatılmaz; kalıcı yüzler
+  // kanonu diskten sayar, kayıttan ayrışma `belgeYuzleriniUret` sonucunda bulgu olur.
+  const sayim: OlculenKanonSayimi = { dosya: dosyalar.length, karar, kural, tekil: new Set(kodlar).size };
+  return { madde: kodlar.length, karar, kural, kodlar, muhurler, sayim };
 }
 
 export function belgeBolgesiUygula(mevcut: string | undefined, hedef: BelgeYuzuHedefi, baslik: string, giris: string, govde: string): string {
@@ -746,5 +756,5 @@ export function belgeYuzleriniUret(kokYolu: string): BelgeYuzuSonucu {
       writeFileSync(tamYol, yeni, "utf8");
     }
   }
-  return { degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac };
+  return { degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac, kanonSayimiBulgusu: kanonSayimiBulgusu(o.kanon.sayim) };
 }

@@ -3,11 +3,19 @@ import assert from "node:assert/strict";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { ayristir } from "../src/ayristirici.ts";
 import { belirtecle } from "../src/belirtec.ts";
+import { BELGE_YUZU_HEDEFLERI, belgeYuzleriniUret, kanonOlc } from "../src/belge-yuzleri.ts";
 import { dizindenIndeks } from "../src/kimlik.ts";
-import { kanonMaddeleriniOlc, kanonTutarlilikMetni } from "../src/kanon-tutarlilik.ts";
+import {
+  KANON_SAYIMI,
+  KANON_SAYIMI_KAYDI,
+  kanonMaddeleriniOlc,
+  kanonMaddeSayisi,
+  kanonSayimiBulgusu,
+  kanonTutarlilikMetni,
+} from "../src/kanon-tutarlilik.ts";
 import type { Dugum } from "../src/sozdizim.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 import {
@@ -30,18 +38,10 @@ const KANON_SHA = [
   "yuz.sar:060152cedb29d57100253abe26ae3e3f0e01d1492dcf26ab6286934e4cdf8857",
 ] as const;
 
-test("resmi sekizli 162/162 maddeyi, örneği ve dört parçayı sabit SHA'larla taşır", () => {
+test("resmi sekizlinin bütün maddeleri örneği ve dört parçayı sabit SHA'larla taşır", () => {
   const olcum = kanonMaddeleriniOlc(KOK);
-  // KPS-MHR-A01 (2026-09-11): MIM-3.4 Dosya Mühürleri Kural olarak doğdu (160 → 161).
-  // KPS-CEL-A01 (2026-09-19 · Founder hükmü 2026-09-09): MIM-3.5 Anadizin ve Plan
-  // Ayrılığı Kural olarak doğdu ve sarma sözleşmesi ÇalışmaAlanı için Faz iznini
-  // bıraktı (161 → 162).
-  assert.equal(olcum.maddeler.length, 162);
-  assert.equal(new Set(olcum.maddeler.map((m) => m.kod)).size, 162);
-  assert.deepEqual(
-    { karar: olcum.maddeler.filter((m) => m.rol === "Karar").length, kural: olcum.maddeler.filter((m) => m.rol === "Kural").length },
-    { karar: 38, kural: 124 },
-  );
+  // Madde sayısı bu sınamada dondurulmaz: sayının tek kaydı KANON_SAYIMI, kayda karşı
+  // tek nöbeti bu dosyadaki "kanon sayımı nöbeti" sınamasıdır (HST-MTR-A02).
   assert.equal(olcum.maddeler.filter((m) => m.ornek === "—").length, 0);
   assert.equal(olcum.maddeler.filter((m) => !m.dortParcaTam).length, 0);
   assert.deepEqual(olcum.muhurler, KANON_SHA);
@@ -113,7 +113,8 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   const ikinci = kanonTutarlilikMetni(KOK);
   const uretici = readFileSync(join(KOK, "urun/cekirdek/src/kanon-tutarlilik.ts"), "utf8");
   assert.equal(ikinci, ilk);
-  assert.match(ilk, /Resmi sonuç 162\/162 maddedir/);
+  const madde = kanonMaddeleriniOlc(KOK).maddeler.length;
+  assert.ok(ilk.includes(`Resmi sonuç ${madde}/${madde} maddedir`), "türev ölçülen madde sayısını söylemeli");
   assert.match(ilk, /Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır/);
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
@@ -169,9 +170,10 @@ function dugumleriGez(dugumler: readonly Dugum[], ziyaret: (d: Dugum) => void): 
 
 test("kanon maddelerinin ilgili listelerinde çıplak bölüm adı kalmamıştır", () => {
   const listeler = ilgiliListeleri(KOK);
-  // 162 madde Hüküm satırında, 38 Karar düğümü makine-okur ikizinde birer liste taşır.
-  assert.equal(listeler.filter((l) => l.tur === "Hüküm").length, 162);
-  assert.equal(listeler.filter((l) => l.tur === "karar").length, 38);
+  // Her madde Hüküm satırında, her Karar düğümü makine-okur ikizinde birer liste taşır.
+  const maddeler = kanonMaddeleriniOlc(KOK).maddeler;
+  assert.equal(listeler.filter((l) => l.tur === "Hüküm").length, maddeler.length);
+  assert.equal(listeler.filter((l) => l.tur === "karar").length, maddeler.filter((m) => m.rol === "Karar").length);
   assert.deepEqual(ciplakUyelikler(KOK), [], "çıplak bölüm adı taşıyan ilgili üyeliği var");
   const kokDisi = listeler.flatMap((l) => l.uyeler.filter((u) => !BOLUM_KOKU.test(u)).map((u) => `${l.dosya}:${l.satir} ${u}`));
   assert.deepEqual(kokDisi, [], "ilgili listesinde bölüm kök kimliği olmayan üye var");
@@ -207,7 +209,7 @@ test("Karar düğümlerinin karar alanındaki ilgili listesi Hüküm satırıyla
       karsilastirilan++;
     });
   }
-  assert.equal(karsilastirilan, 38);
+  assert.equal(karsilastirilan, kanonMaddeleriniOlc(KOK).maddeler.filter((m) => m.rol === "Karar").length);
 });
 
 test("kırmızı fikstür: kopyada bir listeye çıplak bölüm adı geri konunca ilgili nöbeti yakalar", () => {
@@ -350,4 +352,100 @@ test("HST-MTR-A01 canlı kanon: taşıyıcısı belge metninden ayrışan alanla
   const kapanan = BILINEN_TASIYICI_AYRISMALARI.filter((a) => !olculen.includes(a));
   assert.deepEqual(yeni, [], `taşıyıcı alan belge metninden ayrıştı: ${yeni.join(" · ")} — taşıyıcı, belge bloğundaki metnin aynısı olmalıdır (kanon dosyası başlığı · HTR-TASIYICI-MUTABAKAT-KORLUGU)`);
   assert.deepEqual(kapanan, [], `bilinen ayrışma kapandı: ${kapanan.join(" · ")} — kaydı BILINEN_TASIYICI_AYRISMALARI listesinden düşür`);
+});
+
+// ── HST-MTR-A02 · kanon sayımının tek kaydı ve tek nöbeti ─────────────────────
+//   Kanonun dosya, Karar ve Kural sayısı bilinçle dondurulmuş bir insan kapısıdır
+//   (HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR). Sayı yalnız src/kanon-tutarlilik.ts
+//   içindeki KANON_SAYIMI kaydında yaşar. Aşağıdaki ilk sınama o kapının TEK sayı
+//   nöbetidir: canlı kanonu kayıtla karşılaştırır ve ayrışmada artırma adımını
+//   adıyla söyler. Ölçüm üreticileri sayı ayrıştığında hata fırlatmaz; kanonu
+//   diskten sayar ve ayrışmayı bulgu olarak bildirir, böylece kanona madde eklemek
+//   türetilmiş yüzlerin tazelenmesini kilitlemez. Öteki sınamalar sayıyı kendi
+//   başına dondurmaz, canlı ölçümden okur. Fikstürler geçici kopyada koşar.
+
+test("kanon sayımı nöbeti: canlı kanon tek sayım kaydıyla eşittir", () => {
+  const bulgu = kanonSayimiBulgusu(kanonMaddeleriniOlc(KOK).sayim);
+  if (bulgu !== undefined) assert.fail(bulgu);
+});
+
+test("HST-MTR-A02 sayım bulgusu kayda eşit ölçümde susar, ayrışan ölçümde artırma adımını adıyla söyler", () => {
+  const madde = kanonMaddeSayisi(KANON_SAYIMI);
+  assert.equal(kanonSayimiBulgusu({ ...KANON_SAYIMI, tekil: madde }), undefined);
+
+  const buyumus = kanonSayimiBulgusu({ ...KANON_SAYIMI, kural: KANON_SAYIMI.kural + 1, tekil: madde + 1 });
+  assert.ok(buyumus, "bir Kural eklenmiş ölçüm bulgu vermeli");
+  assert.ok(buyumus.includes(`${madde + 1} madde`) && buyumus.includes(`${madde} madde`), `bulgu iki sayıyı da söylemeli: ${buyumus}`);
+  assert.ok(buyumus.includes("artırma adımı") && buyumus.includes("KANON_SAYIMI") && buyumus.includes(KANON_SAYIMI_KAYDI),
+    `bulgu artırma adımını kaydın adı ve yeriyle söylemeli: ${buyumus}`);
+
+  const kucukmus = kanonSayimiBulgusu({ ...KANON_SAYIMI, karar: KANON_SAYIMI.karar - 1, tekil: madde - 1 });
+  assert.ok(kucukmus?.includes("KANON_SAYIMI"), "bir Karar çıkarılmış ölçüm de bulgu vermeli");
+
+  const yinelenen = kanonSayimiBulgusu({ ...KANON_SAYIMI, tekil: madde - 1 });
+  assert.ok(yinelenen?.includes("yinelenen"), "sayı tutup kod yinelendiğinde bulgu yinelenen kodu söylemeli");
+});
+
+/** Fikstür maddesi; kod, canlı kanonda bulunmayan ilk `MIM-9x` kodundan seçilir ki fikstür kanonun içeriğinden bağımsız kalsın. */
+function sayimFiksturuMaddesi(canliKodlar: ReadonlySet<string>): string {
+  let sira = 90;
+  while (canliKodlar.has(`MIM-${sira}`)) sira++;
+  const kod = `MIM-${sira}`;
+  return [
+    "",
+    "-->|",
+    `### ${kod} · Sayım Fikstürü Maddesi [BİLGİ]`,
+    "**Hüküm:** Bu madde yalnız sayım fikstüründe geçici kopyaya eklenir; dayanak: MIM-0; ilgili: [MIM-0].",
+    "**Gerekçe:** Kanona bir madde eklendiğinde ölçüm üreticilerinin davranışını sınamak için kurulur.",
+    `**Örnek:** \`${kod}\` yalnız geçici kopyada yaşar.`,
+    "**Zorlama:** Zorlanmaz — sayım fikstürü.",
+    "|<--",
+    `Kural sayimFiksturuMaddesi( kod: ${kod},`,
+    `       ne: "${kod} · Sayım Fikstürü Maddesi [BİLGİ]",`,
+    "       otorite: anayasa, katman: niyet, kapsam: genel,",
+    "       dayanak: MIM-0 )",
+    "",
+  ].join("\n");
+}
+
+/** İki ölçüm üreticisinin okuduğu her girdiyi ve on altı kalıcı yüzü geçici köke kopyalar. */
+function sayimKopyasi(): string {
+  const sb = mkdtempSync(join(tmpdir(), "sarmal-sayim-"));
+  for (const dizin of ["yasa/kanon", "ogreti/ornek", "ogreti/sablon", "oz/siniflama"]) {
+    cpSync(join(KOK, dizin), join(sb, dizin), { recursive: true });
+  }
+  for (const dosya of [
+    "is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar",
+    "urun/cekirdek/src/tani-sicili.ts",
+    ...BELGE_YUZU_HEDEFLERI.map((h) => h.yol),
+  ]) {
+    mkdirSync(dirname(join(sb, dosya)), { recursive: true });
+    writeFileSync(join(sb, dosya), readFileSync(join(KOK, dosya)));
+  }
+  return sb;
+}
+
+test("HST-MTR-A02 kırmızı fikstür: kopyaya madde eklenince üreticiler hata fırlatmaz, kanonu sayar ve bulguyu bildirir", () => {
+  const sb = sayimKopyasi();
+  const canliMaddeler = kanonMaddeleriniOlc(KOK).maddeler;
+  const canli = canliMaddeler.length;
+  const madde = sayimFiksturuMaddesi(new Set(canliMaddeler.map((m) => m.kod)));
+  writeFileSync(join(sb, "yasa/kanon/mim.sar"), readFileSync(join(sb, "yasa/kanon/mim.sar"), "utf8") + madde, "utf8");
+
+  const olcum = kanonMaddeleriniOlc(sb);
+  assert.equal(olcum.maddeler.length, canli + 1, "ölçüm eklenen maddeyi saymalı");
+  assert.ok(kanonSayimiBulgusu(olcum.sayim)?.includes("artırma adımı"), "tek sayı nöbetinin karşılaştırması kopyada kırmızıya dönmeli");
+
+  const tutarlilik = kanonTutarlilikMetni(sb);
+  assert.ok(tutarlilik.includes(`| Kanon maddesi | ${kanonMaddeSayisi(KANON_SAYIMI)} tekil | ${canli + 1} | SAPMA |`),
+    "kanon tutarlılık yüzü ayrışmayı ölçüm tablosunda SAPMA olarak göstermeli");
+  assert.ok(tutarlilik.includes(`| Kanon sayımı kaydından ayrışma | ${canli + 1} / ${kanonMaddeSayisi(KANON_SAYIMI)} | AÇIK`),
+    "kanon tutarlılık yüzü ayrışmayı çelişki raporunda açık bulgu olarak yazmalı");
+
+  const belge = belgeYuzleriniUret(sb);
+  assert.equal(belge.kanonMaddesi, canli + 1, "belge yüzleri kanonu diskten saymalı");
+  assert.ok(belge.kanonSayimiBulgusu?.includes("artırma adımı"), "belge yüzü üreticisi ayrışmayı anlaşılır bir bulguyla bildirmeli");
+  assert.ok(readFileSync(join(sb, "README.md"), "utf8").includes(`${canli + 1} tekil madde`),
+    "kalıcı yüzler sayı kaydı beklenmeden tazelenebilmeli");
+  assert.equal(kanonOlc(sb).sayim.tekil, canli + 1);
 });

@@ -13,6 +13,7 @@ import {
   type BelgeYuzuHedefi,
   sayiIyelik,
 } from "../src/belge-yuzleri.ts";
+import { kanonMaddeleriniOlc } from "../src/kanon-tutarlilik.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
@@ -102,11 +103,16 @@ test("iki kök tanıtım yüzü üretilen bölgede Gizlilik Politikası bölüm�
   }
 });
 
-test("belge üreticisinin resmi kanon ölçümü 162/162'dir", () => {
+test("belge üreticisinin kanon ölçümü resmi kanon ölçümüyle birebirdir", () => {
+  // Sayı burada dondurulmaz: tek kaydı src/kanon-tutarlilik.ts içindeki KANON_SAYIMI, kayda
+  // karşı tek nöbeti sinama/kanon-tutarlilik.test.ts içindedir (HST-MTR-A02). Bu sınama iki ölçümün aynı
+  // kanonu aynı biçimde saydığını bekler.
   const olcum = kanonOlc(KOK);
-  assert.deepEqual({ madde: olcum.madde, karar: olcum.karar, kural: olcum.kural, tekil: new Set(olcum.kodlar).size },
-    { madde: 162, karar: 38, kural: 124, tekil: 162 });
-  assert.equal(olcum.muhurler.length, 8);
+  const resmi = kanonMaddeleriniOlc(KOK);
+  assert.deepEqual(olcum.sayim, resmi.sayim);
+  assert.equal(olcum.madde, resmi.maddeler.length);
+  assert.deepEqual(olcum.kodlar, resmi.maddeler.map((m) => m.kod));
+  assert.deepEqual(olcum.muhurler, resmi.muhurler);
 });
 
 // KPS-SIR-A03 inceleme bulgusu: belge yüzleri sayıya sabit "'i" ekliyordu ve
