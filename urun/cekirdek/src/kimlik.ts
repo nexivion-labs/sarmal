@@ -28,7 +28,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname, resolve, basename } from "node:path";
 import { belirtecle } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
-import type { Deger, Dugum, Program } from "./sozdizim.ts";
+import type { Deger, Dugum, DugumTuru, Program } from "./sozdizim.ts";
 
 /** Bir kod'un TANIMI: kod: parametresinin (ya da Tip/Kural adının) konumu. */
 export interface Tanim {
@@ -1253,6 +1253,12 @@ export interface BaglamDugumu { tip: string; kod?: string; ad?: string }
 /** Bir kodun yapısal çevresi: üst zincir · kardeşler · çocuklar · koni özeti. */
 export interface Baglam {
   dugum: BaglamDugumu;
+  /**
+   * Düğümün sözdizimi türü (HST-YUZ-A06). Adlı bir tanımda (`Kural ad(` ·
+   * `Tip Ad(`) `dugum.tip` tanımın ADINI taşır; düğümün tipini gösteren bir
+   * yüzey bu alana bakar.
+   */
+  tur: DugumTuru;
   zincir: BaglamDugumu[];
   kardesler: BaglamDugumu[];
   cocuklar: BaglamDugumu[];
@@ -1311,6 +1317,7 @@ export function dugumBaglami(metin: string, kod: string): Baglam | undefined {
       const ebeveyn = zincir[zincir.length - 1];
       sonuc = {
         dugum: baglamOzeti(n),
+        tur: n.tur,
         zincir: zincir.map(baglamOzeti),
         kardesler: (ebeveyn?.cocuklar ?? []).filter((c) => c !== n).map(baglamOzeti),
         cocuklar: n.cocuklar.map(baglamOzeti),
