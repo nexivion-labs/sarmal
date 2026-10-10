@@ -943,7 +943,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           sınır: "Bu Adım kaynak dosyalarındaki niyet cümlelerine DOKUNMAZ: Adım ve Kural gövdelerindeki emojiler Founder hükmüyle yerinde kalır, çünkü orada emoji bir arayüz işareti değil anlatım aracıdır. Etmen davranışının takdir edildiği yüzey de kapsam dışıdır. Renk paleti, tip anlamları ve panel kimlikleri değişmez; değişen yalnız işaretin ÇİZİM KAYNAĞIDIR."
         }
 
-        Adım( kod: VIT-KIMLIK-A08, durum: beklemede, onay: "onaylandı — 2026-09-05", öncelik: p1, bağımlı: [ VIT-KIMLIK-A07, PRF-A06 ],
+        Adım( kod: VIT-KIMLIK-A08, durum: geliştirmede, onay: "onaylandı — 2026-09-05", öncelik: p1, bağımlı: [ VIT-KIMLIK-A07, PRF-A06 ],
           referans: [ YUZ-4.2, YUZ-4.1, YUZ-1.2, OZK-12 ],
           üretir:   [ KOD-SIMGE-CIZELGE ],
           ne:       "🎨 SİMGELERİN KAYNAK DOSYADA PARAMETRELERİN YANINDA GÖRÜNMESİ. Founder 2026-08-30 tarihinde kırk simgelik aileyi (tabaka yüzü) gösterdi ve şu isteği verdi: bu simgeler editörde, dosyanın içinde, ilgili oldukları parametrelerin yanında görünsün. Aile zaten parametre adlarıyla çizilmiştir: görev, sınır, referans, kabul, kural, kart, doğrudan, geçişli, zaman, kişi, jeton, giden, gelen, terfi, kilit, planlanmamış, tip, konum, beceri ve kardeşleri. VIT-KIMLIK-A06 tip bildirim satırlarına geometrik simge basmıştır; bu Adım aynı deseni parametre satırlarına uzatır." ) {
@@ -1833,7 +1833,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           sınır: "Nöbetin ölçtüğü şey (gövdenin sicilden eski olmaması) değişmez; yalnız ölçümün yan etkisi kaldırılır."
         }
 
-        Adım( kod: BKM-DNT-A09, durum: beklemede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, ORK-6.1 ],
+        Adım( kod: BKM-DNT-A09, durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, ORK-6.1 ],
           üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA ],
           ne: "🛡️ Eklentinin editöre bakan yarısının davranış nöbeti kazanması. Elli altı kaynak dosyasının otuz dördü hiçbir sınama tarafından modül olarak yüklenmez ve ayrım keskindir: yüklenmeyen her dosya editör kabuğunu ithal eder ve süitte bir kabuk sahtesi yoktur; bu yarı yaklaşık yedi bin dört yüz satırdır ve en büyük üç yüzey dosyasını (yol haritası, onay kuyruğu, onaylar paneli) kapsar. Bedeli ölçülmüştür ve kuramsal değildir: onaylar panelinde boş gerekçeli kararı durduran dal kaldırıldığında süit yeşil kalmıştır, kapıya gitme satır çözümü sıfıra indirildiğinde yeşil kalmıştır, rozet koşulu tersine çevrildiğinde yeşil kalmıştır; hatırlatıcı sayacı iki katına çıkarıldığında ise tek koruma olan bayt özeti güncellenince süit yine yeşil kalmıştır. Bayt özeti bir davranış nöbeti değil değişiklik dedektörüdür ve deponun kendi yorumu özetin on iki kez 'bilerek güncellendiğini' yazar; tören hâline gelmiş bir dedektör hiçbir şeyi korumaz. Sınama kütlesinin beşte biri (bin beş yüz elli beş iddianın üç yüz elli dördü) kaynak metnini düzenli ifadeyle okur ve bu sınır dürüstçe yazılmıştır, fakat gerçek davranış hataları o sınırdan geçmektedir. Gerçek editör süiti bu boşluğu kapatabilecek tek yerdir ve bugün otuz dört dosyanın yalnız ikisine uğrar." ) {
           görev: [
