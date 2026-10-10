@@ -16,7 +16,7 @@ import assert from "node:assert/strict";
 import { KimlikIndeksi, dosyayiTara, gezinRaporu, dugumBaglami } from "../src/kimlik.ts";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
-import { calismaAlaniKur, fazYolu, planYolu } from "./dogus-agaci.ts";
+import { calismaAlaniKur, dogusAgaciKur, fazYolu, planYolu } from "./dogus-agaci.ts";
 
 // Fikstür yolları doğuşun yazdığı ağaçtan türetilir (HST-MTR-A07): plan dosyaları
 // işin kitaplığındaki plan rafında, Fazlar Faz klasöründe sıra önekli yaşar.
@@ -432,6 +432,50 @@ test("ORK-4: adAlanliTanimlar çatı rafından kardeş kökteki tanıma gider", 
     kardesOnbelleginiTemizle();
   } finally {
     cati.sil();
+  }
+});
+
+/** GERİYE DÖNÜK UYUM. Kitaplık hükmünden (2026-09-09) önce kurulan çatılar kardeş
+ *  projeleri `Raf` satırıyla duyururdu. Doğuş bugün bu satırı yazmaz, fakat böyle
+ *  çatılar diskte yaşamaya devam eder ve `calismaAlaniRaflari` onları Raf koluyla
+ *  okur. HST-MTR-A07 ORK-4 fikstürlerini doğuşun çatısına taşıdığında bu kolu
+ *  sınayan fikstür kalmamıştı; bağımsız inceleme okuyucuyu yalnız Kitaplık
+ *  okuyacak biçimde bozduğunda süit yeşil kalmıştı. Bu sınama eski çatıyı kuran
+ *  TEK fikstürdür ve çatı ilanı bilerek elle yazılmıştır. Altındaki projeler
+ *  bugünkü doğuşla doğar; böylece fikstürdeki tek eski öğe çatının Raf ilanıdır.
+ *
+ *  MUTASYON KANITI. Okuyucu yalnız Kitaplık tarayacak biçimde bozulduğunda bu
+ *  sınama kırmızıya düşer: eski çatı tanınmaz, kardeş kök bulunamaz ve ad alanlı
+ *  tanım boş döner. */
+test("ORK-4 · geriye dönük uyum: Raf ilanıyla kurulmuş eski çatıda ad alanlı tanım kardeş projede çözülür", async () => {
+  const { adAlanliTanimlar, catiKardesleri, kardesOnbelleginiTemizle } = await import("../src/kimlik.ts");
+  const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+
+  const cati = mkdtempSync(join(tmpdir(), "sarmal-eski-cati-"));
+  try {
+    writeFileSync(join(cati, "cati_anadizin.sar"),
+      'ÇalışmaAlanı( kod: CAL-ESKI, ad: "eski çatı", ne: "Kitaplık hükmünden önce kurulmuş çatı" ) {\n'
+      + '  Raf( kod: RAF-ACIK, yol: "acik/", ne: "açık proje" )\n'
+      + '  Raf( kod: RAF-KAPALI, yol: "kapali/", ne: "kapalı proje" )\n}\n', "utf8");
+    const acik = dogusAgaciKur({ ad: "acik", kok: join(cati, "acik") });
+    const kapali = dogusAgaciKur({ ad: "kapali", kok: join(cati, "kapali") });
+    const acikFaz = fazYolu(2, "mevsim");
+    acik.yaz(acikFaz, 'Faz( kod: FAZ-AGUSTOS, ad: "Çatı Mevsimi" )');
+    const kapaliPlan = kapali.yaz(planYolu("zeka.sar"), "Blok( kod: BLK-ZEKA, mevsim: PRJ-ACIK::FAZ-AGUSTOS )");
+
+    kardesOnbelleginiTemizle();
+    const bulunan = adAlanliTanimlar("PRJ-ACIK::FAZ-AGUSTOS", kapaliPlan);
+    assert.equal(bulunan.length, 1,
+      "Raf ilanıyla kurulmuş çatıda ad alanlı tanım kardeş projede çözülmeli; okuyucu Raf kolunu kaybederse eski çatılar kör kalır");
+    assert.equal(bulunan[0].kod, "FAZ-AGUSTOS");
+    assert.ok(bulunan[0].dosya.endsWith(join("acik", acikFaz)), bulunan[0].dosya);
+    assert.deepEqual(catiKardesleri(join(kapali.kok, kapali.planRafi)).map((k) => k.kod).sort(),
+      ["PRJ-ACIK", "PRJ-KAPALI"], "eski çatının Raf ile duyurduğu iki kök de tanınır");
+  } finally {
+    rmSync(cati, { recursive: true, force: true });
+    kardesOnbelleginiTemizle();
   }
 });
 
