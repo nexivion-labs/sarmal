@@ -5866,7 +5866,7 @@ sessizce körleşmez.
           sınır: "Ham istem ya da yanıt dış yürütücüden toplanmaz; yalnız çağrının kendisi izlenir"
         }
 
-        Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
+        Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
           ne: "🪦 Emekli bir karara adlı Kuralla bağlanan dayanak da ölü iz uyarısı üretsin" ) {
           görev: "BKM-BUG-A12'nin bağımsız incelemesi (2026-10-10) aynı adlı bildirim körlüğünü stratejiTanilari içindeki ölü iz toplayıcısında ölçmüştür: emekli envanteri ve kaynak kenar taraması yalnız widget türünü gezdiği için `Kural ad( dayanak: [EMEKLI] )` biçimindeki bağ uyarı üretmez, aynı bağın GenelKural biçimi ise üretir. Önce iki biçimi birlikte taşıyan bir fikstürle kırmızı test yazılır, sonra toplayıcı BKM-BUG-A12'deki desenle onarılır."
           kabul: [
@@ -5881,7 +5881,7 @@ sessizce körleşmez.
       AltKatman( kod: HST-MOTOR-K2, departman: kodlama, ad: "Gezinti ve Fikstür",
         ne: "gezinme aracının cevap doğruluğu, fikstür yolları ve öğretim tazeliği" ) {
 
-        Adım( kod: HST-MTR-A05, ad: "Gezinmede Bulunamadı ile Geçmiyor Ayrımı", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-MTR-A05, ad: "Gezinmede Bulunamadı ile Geçmiyor Ayrımı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
           referans: [ HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR ],
           ne: "🔎 Gezinme aracı KOD biçimi dışındaki bir sembole hiçbir yerde geçmiyor demesin" ) {
           görev: "Araç bugün deve gövdeli bir işlev adına hiçbir yerde geçmiyor cevabı vermektedir. Ölçüm hangi yolun doğru olduğunu belirler: ya bu semboller gerçekten aranır ya da araç kapsam dışı girdide bunu açıkça söyler. Seçilen yolun gerekçesi Koşuma yazılır."
@@ -5893,7 +5893,7 @@ sessizce körleşmez.
           sınır: "Araç genel amaçlı bir kod arama motoruna dönüştürülmez"
         }
 
-        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "✂️ ORK-1 sorgusu ORK-1.2 başlığını ORK-1'e gelen atıf saymasın" ) {
           görev: "Kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Eşleşme kimlik sınırında kesilir; önce ORK-1 ile ORK-1.2 birlikte geçen bir fikstürle kırmızı test yazılır."
@@ -5949,7 +5949,7 @@ sessizce körleşmez.
           sınır: "Kapı atlatılabilir hâle getirilmez"
         }
 
-        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
           referans: [ HTR-AGAC-COK-SATIRLI-NE-KIRIYOR ],
           ne: "🌲 Gerçek satır sonu taşıyan ne metni yapı ağacının çizgisini kırmasın" ) {
           görev: "Yapı ağacı gövdesi (urun/cekirdek/src/agac.ts) yalnız ⏎ işaretini tek satıra indirmektedir. Gerçek satır sonları da aynı biçimde tek satıra indirilir; önce çok satırlı bir ne metniyle kırmızı test yazılır."
@@ -5973,7 +5973,7 @@ sessizce körleşmez.
           sınır: "Palet değişkenleri bu Adımda yeniden düzenlenmez"
         }
 
-        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
           referans: [ HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR ],
           ne: "🧱 README'deki örnek çıktının içindeki kimlik her işlemede sahte uyarı üretmesin" ) {
           görev: "Kök yüzeyi nöbeti README'deki kod çitinin içindeki örnek kimliği gerçek bir atıf saymaktadır. Kod çitiyle çevrili bölgeler atıf taramasının dışında tutulur; önce bir fikstürle kırmızı test yazılır."
@@ -6075,7 +6075,7 @@ sessizce körleşmez.
           sınır: "Paketleme betiğinin davranışı değiştirilmez"
         }
 
-        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
           referans: [ HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR ],
           ne: "🎯 geçersiz-dosya-adı ve beyansız-yapı bulguları anlattıkları dosyayı taşısın" ) {
           görev: "İki bulgu türü hâlâ giriş dosyasına sıfır konumla yazılmaktadır. Mühür bulgularına eklenen hedef alanı bu iki türe de verilir, eklenti tıklamayı hedefe yönlendirir ve komut satırı konumsuz bulgularda hedefi basar."
