@@ -5879,12 +5879,24 @@ sessizce körleşmez.
             kanıt: "işleme 899a4d5 (üretim 9550b38) · çekirdek 1678/1678, eklenti 892 geçti 6 atlandı 0 başarısız, iki pakette tür denetimi temiz · depo denetimi 0 hata · bağımsız inceleme: denetci.ts onarımsız hâlde yeni sınama kırmızı, onarımla yeşil; üç mutasyonun üçü yakalandı; GenelKural uyarısının metni değişmedi; altı projede ölü iz sayısı 0'dan 0'a",
             ne:    "Ölü iz toplayıcısının emekli envanteri ve kaynak kenar taraması artık adlı Kuralları da geziyor; emekli bir karara adlı Kuralla bağlanan dayanak ölü iz uyarısı üretiyor. Tanının düzeyi ve metni değişmedi. Adımdan önce de var olan iki açık HTR-OLU-IZ-OZ-BILDIRIM hatırlatıcısına yazıldı." )
         }
+
+        Adım( kod: HST-MTR-A10, ad: "Denetim Kapılarında Noktalı Madde Atfı", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-KOK-YUZEYI ], bağımlı: [ HST-MTR-A06 ],
+          referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
+          ne: "🧷 Kırık bir alt madde atfı denetimde sessiz kalmasın" ) {
+          görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) metin atfı kapısının (urun/cekirdek/src/denetci.ts) ve kök yüzeyi kapısının (urun/cekirdek/src/kok-yuzeyi.ts) aynı biçim süzgeciyle noktalı her adayı elediğini ölçmüştür: DIL-1.99 gibi kırık bir alt madde atfı onarımdan önce de sonra da sessizdir ve üst maddesi de tanımsız bir yazım (ör. DIL-9.1) A06'dan beri iki kapıda da uyarı üretmemektedir. Süzgece madde kuyruğu eklenir; önce iki yazımı taşıyan bir fikstürle kırmızı sınama yazılır."
+          kabul: [
+            "DIL-1.99 ve DIL-9.1 biçimindeki kırık yazımlar iki kapıda da bulgu üretir (sınama önce kırmızı, sonra yeşil)",
+            "tanımlı alt madde atıfları bulgu üretmez; kapsanan projelerdeki bulgu sayıları önce ve sonra raporlanır",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Bulguların düzeyi ve metni değişmez; kuyruk kuralı çekirdekteki kimlik tanımından türer"
+        }
       }
 
       AltKatman( kod: HST-MOTOR-K2, departman: kodlama, ad: "Gezinti ve Fikstür",
         ne: "gezinme aracının cevap doğruluğu, fikstür yolları ve öğretim tazeliği" ) {
 
-        Adım( kod: HST-MTR-A05, ad: "Gezinmede Bulunamadı ile Geçmiyor Ayrımı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-MTR-A05, ad: "Gezinmede Bulunamadı ile Geçmiyor Ayrımı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
           referans: [ HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR ],
           ne: "🔎 Gezinme aracı KOD biçimi dışındaki bir sembole hiçbir yerde geçmiyor demesin" ) {
           görev: "Araç bugün deve gövdeli bir işlev adına hiçbir yerde geçmiyor cevabı vermektedir. Ölçüm hangi yolun doğru olduğunu belirler: ya bu semboller gerçekten aranır ya da araç kapsam dışı girdide bunu açıkça söyler. Seçilen yolun gerekçesi Koşuma yazılır."
@@ -5894,9 +5906,12 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Araç genel amaçlı bir kod arama motoruna dönüştürülmez"
+          koşu:  Koşum( kod: KSM-HST-MTR-A05, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 8925d9b (üretim cec34de) · birleşik ağaçta çekirdek 1684/1684, eklenti 898/898, iki pakette tür denetimi temiz · depo denetimi 0 hata · bağımsız inceleme: 4622 KOD biçimli sorgunun komut satırı ve MCP ile 9244 çağrısı onarımdan önceki gövdeyle bayt bayt aynı; beş gerçek kodda çıkış kodu ve MCP hata işareti değişmedi; biçim dışı 293 sorgunun hiçbiri yokluk ya da kırık atıf hükmü kurmuyor; iki yeni sınama onarım geri alınınca kırmızı",
+            ne:    "Gezinme aracı KOD biçimi dışındaki bir ada artık hiçbir yerde geçmiyor demiyor; bu adların .md, .ts ve .sar metinlerinde ölçülmediğini açıkça söylüyor. İkinci yol seçildi, çünkü aynı 440 dosyada 4488 ayrı deve gövdeli ad ve 34.332 geçiş bulunmaktadır, bunların yüzde doksan beşi TypeScript kaynağındadır ve gerçekten aramak ayrı bir TypeScript ayrıştırıcısı ister, yani sınırın yasakladığı genel kod arama motoruna dönüşür. Araç açıklamasındaki kapsam cümlesinin daraltılması HTR-GEZIN-ACIKLAMASI-KAPSAM-CUMLESI kaydına yazıldı." )
         }
 
-        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "✂️ ORK-1 sorgusu ORK-1.2 başlığını ORK-1'e gelen atıf saymasın" ) {
           görev: "Kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Eşleşme kimlik sınırında kesilir; önce ORK-1 ile ORK-1.2 birlikte geçen bir fikstürle kırmızı test yazılır."
@@ -5906,6 +5921,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Yalnız eşleşme sınırı onarılır; atıf türleri değişmez"
+          koşu:  Koşum( kod: KSM-HST-MTR-A06, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 2f39fcc (üretim f5f33e6) · bu işlemede çekirdek 1676/1676, birleşik ağaçta 1684/1684 · depo denetimi 0 hata · bağımsız inceleme: taban derleminde ORK-1 atfı 204'ten 51'e indi ve düşen 153 konumun tamamı ORK-1.1, ORK-1.2 ya da ORK-1.3 yazımı; ORK-1.1 3'ten 42'ye, ORK-1.2 3'ten 85'e, ORK-1.3 2'den 31'e çıktı; etki aracı grafı okuduğu için çıktısı bayt bayt aynı kaldı; mikro onarım nöbetinin referans görüntüsündeki tek ögenin değişmesi meşru bulundu, çünkü eski öge kusurun kendisiydi; beş mutasyondan üçü yakalandı",
+            ne:    "Kimlik eşleşmesi artık noktalı madde kodunun sınırında kesiliyor; ORK-1 sorgusu ORK-1.2 yazımını ORK-1 atfı saymıyor ve alt maddeler kendi atıflarını alıyor. ŞERH: denetimin iki kapısı noktalı adayları süzdüğü için üst maddesi de tanımsız bir yazım (ör. DIL-9.1) artık uyarı üretmiyor; bugünkü depoda etkisi sıfırdır ve onarımı HST-MTR-A10 Adımındadır. Eklentinin bağlantı dekoru ile ipucundaki aynı kusur HST-YUZ-A05 Adımına, etiket biçimli yazımlardaki yüzey ayrışması HTR-ETIKET-YAZIMI-YUZEY-AYRISMASI kaydına bağlandı." )
         }
 
         Adım( kod: HST-MTR-A07, ad: "Fikstür Yollarının Gerçek Ağaca Benzemesi", durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
@@ -5952,7 +5970,7 @@ sessizce körleşmez.
           sınır: "Kapı atlatılabilir hâle getirilmez"
         }
 
-        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: tamamlandı, öncelik: p2, üretir: [ KOD-AGAC-YUZ ], bağımlı: [],
           referans: [ HTR-AGAC-COK-SATIRLI-NE-KIRIYOR ],
           ne: "🌲 Gerçek satır sonu taşıyan ne metni yapı ağacının çizgisini kırmasın" ) {
           görev: "Yapı ağacı gövdesi (urun/cekirdek/src/agac.ts) yalnız ⏎ işaretini tek satıra indirmektedir. Gerçek satır sonları da aynı biçimde tek satıra indirilir; önce çok satırlı bir ne metniyle kırmızı test yazılır."
@@ -5962,6 +5980,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Ağacın biçimi başka bir yerde değişmez"
+          koşu:  Koşum( kod: KSM-HST-YUZ-A02, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 6c33dd4 (üretim 38d94a4) · bu işlemede çekirdek 1681/1681, birleşik ağaçta 1684/1684 · depo denetimi 0 hata · bağımsız inceleme: 152 .sar dosyasının 296 çiziminin 294'ü bayt bayt aynı; değişen tek dosya Eylül planı (699 satırdan 675'e) ve değişen tam sekiz düğüm çok satırlı ne taşıyanlardır; kırık devam satırı 48'den 0'a indi; üç mutasyon yakalandı · depoda otomatik ağaç bloğu taşıyan README yoktur",
+            ne:    "Yapı ağacı gerçek satır sonu ve satır başı karakterlerini de tek boşluğa indiriyor; çok satırlı ne metni taşıyan düğümler ağaçta tek satırda görünüyor. Komut satırı ve README bloğu aynı gövdeden yararlanıyor ve ağacın başka hiçbir biçimi değişmedi." )
         }
 
         Adım( kod: HST-YUZ-A03, ad: "Önizleme Stilinin Markdown Katkısı", durum: geliştirmede, öncelik: p3, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
@@ -5989,6 +6010,18 @@ sessizce körleşmez.
           koşu:  Koşum( kod: KSM-HST-YUZ-A04, tarih: 2026-10-10, mühür: COMPLETED,
             kanıt: "işleme 3171344 (üretim da04ef8) · çekirdek 1678/1678, eklenti 892 geçti 6 atlandı 0 başarısız · depo denetimi 0 hata · bağımsız inceleme: kimlik.ts ve kok-yuzeyi.ts onarımsız hâlde iki sınama kırmızı, onarımla 17/17; dört mutasyonun dördü yakalandı; kopyada README'ye eklenen çit dışı kırık kimlik bildirildi, etiketsiz ve tildeli çitlere eklenenler sustu; kök yüzeyi taraması README için iki uyarıdan sıfıra indi",
             ne:    "Kök yüzeyi nöbeti kod çitlerinin içini artık ölçmüyor; README'deki örnek çıktı işleme kancasında sahte uyarı üretmiyor ve çit dışındaki kırık kimlik yakalanmaya devam ediyor. README metnine dokunulmadı. Varlık içi metin atıf kapısı bilinçle eski kipte bırakıldı; iki kapının çit kuralının birleşmesi HTR-METIN-ATIF-CIT-KURALI hatırlatıcısına yazıldı." )
+        }
+
+        Adım( kod: HST-YUZ-A05, ad: "Eklentide Alt Madde Bağlantısı", durum: beklemede, öncelik: p2, üretir: [ KOD-ATIF-CEKIRDEK, KOD-EKL-IPUCU ], bağımlı: [ HST-MTR-A06 ],
+          referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
+          ne: "🔗 Eklentinin bağlantı dekoru ve ipucu ORK-1.2 yazımını ORK-1 sanmasın" ) {
+          görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) eklentinin bağlantı dekoru (urun/eklenti/src/atif-cekirdek.ts) ile ipucunun (urun/eklenti/src/ipucu.ts) kod desenlerinin noktalı madde kuyruğunu taşımadığını ölçmüştür: altı çizilen ve ipucunda açılan kart üst maddeye ait olmakta, F12 ise doğru alt maddeye gitmektedir. Altmış dört dosyadaki 2450 noktalı yazımın 2435'inde kullanıcı yanlış kartı görür. Desenler çekirdeğin ve gezinme deseninin kuyruk kuralına hizalanır; önce noktalı bir fikstürle kırmızı sınama yazılır."
+          kabul: [
+            "ORK-1.2 yazımının bağlantısı ve ipucu ORK-1.2 kartını açar (sınama önce kırmızı, sonra yeşil)",
+            "noktasız kodların bağlantı ve ipucu davranışı değişmez",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Eklentide ikinci bir kuyruk kuralı icat edilmez; kural çekirdekteki tanımdan türer"
         }
       }
     }

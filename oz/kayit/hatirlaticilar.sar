@@ -193,13 +193,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MARKDOWN-YUZU-ZAYIF,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         KYN-KYN-A05,
   çapa:             nitelik,
   dönüşTetikleyici: "Yayın ve benimseme turunda ya da prizma yüzeyine bir sonraki dokunuşta",
   öncelik:          p1,
   tarih:            2026-08-08,
-  ne:               "Prizmanın Markdown yüzü gerçek bir dönüşüm yapmamakta, kaynağı bir kod bloğuna sarmakla yetinmektedir; oysa benimsemenin bütün yükü bu yüzün üstündedir. Kusurun önemi şu soruyla ortaya çıktı: Founder kaynağın `.sar` yerine doğrudan Markdown olmasının daha çok tutulup tutulmayacağını sordu ve sorunun arkasındaki içgüdü doğrudur, çünkü depoya gelen bir geliştirici bugün renksiz düz metin görmekte ve okumadan ayrılmaktadır. Buna karşılık kaynağı Markdown yapmak dilin tek değerini, yani makinenin yanlış dosyayı reddedebilmesini ortadan kaldırır. Doğru kaldıraç kaynağı değiştirmek değil, üretilen Markdown yüzünü gerçekten okunur kılmaktır: başlıklar, tablolar, kod blokları ve bağlantılar kaynaktan türetilmeli, belge blokları düz Markdown olarak akmalı ve düğüm alanları insana okunur bir yapıya çevrilmelidir. Karara bağlanacak soru bu yüzün kapsamı ile hangi düğüm tiplerinin nasıl görüneceğidir. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı KYN-KYN-A05 Adımına bağlandı ve öncelik ikinci kademeye indirildi, çünkü lansmanın yüzü eklenti ile tanıtım dosyasıdır ve prizma yüzü benimsemenin ikinci dalgasında değer üretir.",
+  ne:               "Prizmanın Markdown yüzü gerçek bir dönüşüm yapmamakta, kaynağı bir kod bloğuna sarmakla yetinmektedir; oysa benimsemenin bütün yükü bu yüzün üstündedir. Kusurun önemi şu soruyla ortaya çıktı: Founder kaynağın `.sar` yerine doğrudan Markdown olmasının daha çok tutulup tutulmayacağını sordu ve sorunun arkasındaki içgüdü doğrudur, çünkü depoya gelen bir geliştirici bugün renksiz düz metin görmekte ve okumadan ayrılmaktadır. Buna karşılık kaynağı Markdown yapmak dilin tek değerini, yani makinenin yanlış dosyayı reddedebilmesini ortadan kaldırır. Doğru kaldıraç kaynağı değiştirmek değil, üretilen Markdown yüzünü gerçekten okunur kılmaktır: başlıklar, tablolar, kod blokları ve bağlantılar kaynaktan türetilmeli, belge blokları düz Markdown olarak akmalı ve düğüm alanları insana okunur bir yapıya çevrilmelidir. Karara bağlanacak soru bu yüzün kapsamı ile hangi düğüm tiplerinin nasıl görüneceğidir. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı KYN-KYN-A05 Adımına bağlandı ve öncelik ikinci kademeye indirildi, çünkü lansmanın yüzü eklenti ile tanıtım dosyasıdır ve prizma yüzü benimsemenin ikinci dalgasında değer üretir. KAPANIŞ (kontrolcü · 2026-10-10): KYN-KYN-A05 bağımsız ölçümden sonra kapanmıştır; prizmanın Markdown yüzü artık başlık, tablo ve bağlantı üretir ve idempotent nöbetle korunur. Okunur yüzün README'de gösterilip gösterilmeyeceği Founder kararına bırakılmış ayrı bir sorudur ve bu kaydın konusu değildir.",
 )
 
 Hatırlatıcı(
@@ -479,13 +479,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ATIF-AILE-SUZGECI-KOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         BKM-DNT-A11,
   çapa:             nitelik,
   dönüşTetikleyici: "Motor kaynağına ya da tip kanonuna yeni bir köken kodu yazıldığında; bir bekçinin dayanağı sorulduğunda ve gezin aracı TANIM yok cevabı verdiğinde",
   öncelik:          p2,
   tarih:            2026-09-02,
-  ne:               "Metin atıf bekçisinin aile süzgeci ölçülebilir bir kör nokta taşımaktadır ve bu 2026-09-02 tarihinde tasarım sistemi bekçisinin dayanağı aranırken ortaya çıkmıştır. Bekçi bir adayı tanıya çevirmeden önce iki süzgeçten geçirmektedir; birincisi kodun ailesinin, yani ilk tireye kadarki ön ekinin, kaynak dosyalarda tanımlı aileler kümesinde bulunmasıdır. Bu süzgeç bilinçli bir gürültü denetimidir ve rastgele büyük harfli dizelerin kod sanılmasını önlemektedir, fakat bir yan etkisi vardır: bir ailenin hiçbir üyesi kaynakta tanımlı değilse o ailenin bütün kırık atıfları görünmez olmaktadır. Ölçüm şudur: depoda yüz otuz aile kaynakta tanımlıdır, yüz kırk iki aileye atıf verilmektedir ve seksen beş aile hiç tanımlı olmadığı için tamamen sessizdir. En öğretici örnek önyüz disiplininin kendisidir; temasız ekran bekçisinin kökeni olarak ilan edilen iki kod, yani TAS-A01 ile TAS-B01, hiçbir kaynak dosyada tanımlı değildir ve yirmi bir yerden atıf almaktadır, buna karşılık denetim bu depoda sıfır hata ve sıfır uyarı vermektedir. Aynı durum otuz beş atıf alan TUR-2, beş atıf alan E1-A04 ve dört atıf alan SZL-AUTH kodları için de geçerlidir. Kusurun asıl adı körlük değil tutarsızlıktır: ailesi tanımlı bir bayat atıf bilgi düzeyinde bir satır üretmekte, ailesi tanımsız bir bayat atıf ise hiçbir iz bırakmamaktadır, oysa ikisi de aynı doğaya sahiptir. Bu tutarsızlık sonucunda motorun kendi kaynağındaki köken beyanları denetlenmemektedir ve bir bekçinin hangi hükme dayandığı sorusu graftan cevaplanamamaktadır. Kararlaştırılacak olan şudur ve seçim bir denge kararıdır. Süzgeci kaldırmak seksen beş ailenin bütün atıflarını açar ve bunların büyük çoğunluğu kapanmış planların Adım kodlarına yapılmış bayat atıflardır, dolayısıyla yüzlerce bilgi satırı doğar ve bu gürültü gerçek bulguları gömer. Süzgeci korumak bugünkü körlüğü sürdürür. Üçüncü bir yol, köken beyanlarını ayrı bir kapıda denetlemektir: motor kaynağındaki köken alanları ile tip kanonundaki köken listeleri, bayat plan atıflarından ayrı bir küme oluşturmaktadır ve bu kümenin her üyesinin kanonda çözülmesi beklenebilir, çünkü bir bekçinin dayanağı tarihsel bir not değil yürürlükteki bir hükümdür. Kontrolcünün ölçüme dayalı görüşü üçüncü yoldur. Karar verilmeden önce ölçülmesi gereken şudur: köken beyanlarında geçen tanımsız kodların kaçı gerçekten kanona inmemiş bir hüküm, kaçı ise adı değişmiş bir maddedir. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı mevcut BKM-DNT-A11 Adımına bağlandı, çünkü köken beyanlarının kanonda çözülmesi kanon ile ilanın uyumunu ölçen genel nöbetin doğal parçasıdır ve ayrı Adım açmak aynı nöbeti ikiye bölerdi; üçüncü yol seçilmiştir."
+  ne:               "Metin atıf bekçisinin aile süzgeci ölçülebilir bir kör nokta taşımaktadır ve bu 2026-09-02 tarihinde tasarım sistemi bekçisinin dayanağı aranırken ortaya çıkmıştır. Bekçi bir adayı tanıya çevirmeden önce iki süzgeçten geçirmektedir; birincisi kodun ailesinin, yani ilk tireye kadarki ön ekinin, kaynak dosyalarda tanımlı aileler kümesinde bulunmasıdır. Bu süzgeç bilinçli bir gürültü denetimidir ve rastgele büyük harfli dizelerin kod sanılmasını önlemektedir, fakat bir yan etkisi vardır: bir ailenin hiçbir üyesi kaynakta tanımlı değilse o ailenin bütün kırık atıfları görünmez olmaktadır. Ölçüm şudur: depoda yüz otuz aile kaynakta tanımlıdır, yüz kırk iki aileye atıf verilmektedir ve seksen beş aile hiç tanımlı olmadığı için tamamen sessizdir. En öğretici örnek önyüz disiplininin kendisidir; temasız ekran bekçisinin kökeni olarak ilan edilen iki kod, yani TAS-A01 ile TAS-B01, hiçbir kaynak dosyada tanımlı değildir ve yirmi bir yerden atıf almaktadır, buna karşılık denetim bu depoda sıfır hata ve sıfır uyarı vermektedir. Aynı durum otuz beş atıf alan TUR-2, beş atıf alan E1-A04 ve dört atıf alan SZL-AUTH kodları için de geçerlidir. Kusurun asıl adı körlük değil tutarsızlıktır: ailesi tanımlı bir bayat atıf bilgi düzeyinde bir satır üretmekte, ailesi tanımsız bir bayat atıf ise hiçbir iz bırakmamaktadır, oysa ikisi de aynı doğaya sahiptir. Bu tutarsızlık sonucunda motorun kendi kaynağındaki köken beyanları denetlenmemektedir ve bir bekçinin hangi hükme dayandığı sorusu graftan cevaplanamamaktadır. Kararlaştırılacak olan şudur ve seçim bir denge kararıdır. Süzgeci kaldırmak seksen beş ailenin bütün atıflarını açar ve bunların büyük çoğunluğu kapanmış planların Adım kodlarına yapılmış bayat atıflardır, dolayısıyla yüzlerce bilgi satırı doğar ve bu gürültü gerçek bulguları gömer. Süzgeci korumak bugünkü körlüğü sürdürür. Üçüncü bir yol, köken beyanlarını ayrı bir kapıda denetlemektir: motor kaynağındaki köken alanları ile tip kanonundaki köken listeleri, bayat plan atıflarından ayrı bir küme oluşturmaktadır ve bu kümenin her üyesinin kanonda çözülmesi beklenebilir, çünkü bir bekçinin dayanağı tarihsel bir not değil yürürlükteki bir hükümdür. Kontrolcünün ölçüme dayalı görüşü üçüncü yoldur. Karar verilmeden önce ölçülmesi gereken şudur: köken beyanlarında geçen tanımsız kodların kaçı gerçekten kanona inmemiş bir hüküm, kaçı ise adı değişmiş bir maddedir. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı mevcut BKM-DNT-A11 Adımına bağlandı, çünkü köken beyanlarının kanonda çözülmesi kanon ile ilanın uyumunu ölçen genel nöbetin doğal parçasıdır ve ayrı Adım açmak aynı nöbeti ikiye bölerdi; üçüncü yol seçilmiştir. KAPANIŞ (kontrolcü · 2026-10-10): seçilen üçüncü yol BKM-DNT-A11 ile uygulanmış ve Adım bağımsız ölçümden sonra kapanmıştır; köken beyanlarındaki kodlar artık kanonda çözülmesi beklenen ayrı bir küme olarak denetlenmektedir."
 )
 
 Hatırlatıcı(
@@ -599,13 +599,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-MTR-A05,
   çapa:             nitelik,
   dönüşTetikleyici: "Gezinme aracının kapsam beyanı ya da arama gövdesi bir sonraki kez elden geçirildiğinde; ya da bir ajan bir TypeScript sembolünü araçla arayıp bulamadığını bildirdiğinde",
   öncelik:          p2,
   tarih:            2026-09-10,
-  ne:               "Gezinme aracının kendi tanımı kapsamına TypeScript dosyalarını da aldığını bildirmektedir, buna karşılık 2026-09-10 tarihinde yapılan ölçüm aracın yalnız KOD biçimli tanıtıcıları, yani büyük harfli ve tireli Sarmal kodlarını adresleyebildiğini göstermiştir. Ölçümde gerçekte iki dosyada yaşayan bir deve gövdeli işlev adı dört yüz dokuz dosyanın hiçbirinde geçmiyor cevabını almıştır. Kusur cevabın yanlışlığından ağırdır, çünkü araç bulunamadı demek yerine hiçbir yerde geçmiyor demektedir ve bu ikisi ajan için aynı şey değildir: birincisi aramayı sürdürmeye, ikincisi sembolün var olmadığına hükmetmeye yol açar. Aynı ders daha önce üç durumlu cevap hükmüyle gezinme yüzünün kardeş kök dalında kayda geçmiştir ve burada tekrar etmektedir; ölçülemeyen ile bulunmayan ayrı cümlelerdir. Onarımın iki yolu vardır ve seçimi ölçüm belirler: ya araç deve gövdeli sembolleri de gerçekten arar, ya da kapsam beyanı daraltılıp araç kendi sınırını dürüstçe bildirir. İkinci yol ucuzdur ve yalan söylemeyi bitirir, birincisi ajana daha çok yarar sağlar; bugün hiçbiri uygulanmamış, ölçüm kayda geçirilmiştir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A05 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "Gezinme aracının kendi tanımı kapsamına TypeScript dosyalarını da aldığını bildirmektedir, buna karşılık 2026-09-10 tarihinde yapılan ölçüm aracın yalnız KOD biçimli tanıtıcıları, yani büyük harfli ve tireli Sarmal kodlarını adresleyebildiğini göstermiştir. Ölçümde gerçekte iki dosyada yaşayan bir deve gövdeli işlev adı dört yüz dokuz dosyanın hiçbirinde geçmiyor cevabını almıştır. Kusur cevabın yanlışlığından ağırdır, çünkü araç bulunamadı demek yerine hiçbir yerde geçmiyor demektedir ve bu ikisi ajan için aynı şey değildir: birincisi aramayı sürdürmeye, ikincisi sembolün var olmadığına hükmetmeye yol açar. Aynı ders daha önce üç durumlu cevap hükmüyle gezinme yüzünün kardeş kök dalında kayda geçmiştir ve burada tekrar etmektedir; ölçülemeyen ile bulunmayan ayrı cümlelerdir. Onarımın iki yolu vardır ve seçimi ölçüm belirler: ya araç deve gövdeli sembolleri de gerçekten arar, ya da kapsam beyanı daraltılıp araç kendi sınırını dürüstçe bildirir. İkinci yol ucuzdur ve yalan söylemeyi bitirir, birincisi ajana daha çok yarar sağlar; bugün hiçbiri uygulanmamış, ölçüm kayda geçirilmiştir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A05 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-MTR-A05 kapanmıştır; gezinme aracı KOD biçimi dışındaki adlar için yokluk hükmü kurmaz ve kapsamını açıkça söyler. Araç açıklamasındaki kapsam cümlesinin daraltılması HTR-GEZIN-ACIKLAMASI-KAPSAM-CUMLESI kaydına devredilmiştir."
 )
 
 Hatırlatıcı(
@@ -895,13 +895,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AGAC-COK-SATIRLI-NE-KIRIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-YUZ-A02,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Ağaç çizici ya da önizleme yüzü bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
-  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: yapı ağacını çizen çekirdek gövdesi (urun/cekirdek/src/agac.ts elli birinci satır) düğüm metnindeki satır sonu işaretlerinden yalnız ⏎ işaretini tek satıra indirmekte, gerçek satır sonu taşıyan çok satırlı ne metinlerini ise olduğu gibi basmaktadır. Bu yüzden plan dosyalarının ağacında böyle bir metnin ikinci satırı sütun sıfırdan başlar ve ağacın çizgisi kırılır. Kusur yalnız önizlemeyi değil, komut satırının ağaç çıktısını ve README'lerdeki otomatik ağaç bloğunu da etkiler. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A02 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: yapı ağacını çizen çekirdek gövdesi (urun/cekirdek/src/agac.ts elli birinci satır) düğüm metnindeki satır sonu işaretlerinden yalnız ⏎ işaretini tek satıra indirmekte, gerçek satır sonu taşıyan çok satırlı ne metinlerini ise olduğu gibi basmaktadır. Bu yüzden plan dosyalarının ağacında böyle bir metnin ikinci satırı sütun sıfırdan başlar ve ağacın çizgisi kırılır. Kusur yalnız önizlemeyi değil, komut satırının ağaç çıktısını ve README'lerdeki otomatik ağaç bloğunu da etkiler. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A02 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-YUZ-A02 kapanmıştır; yapı ağacı gerçek satır sonlarını da tek satıra indirir ve Eylül planının çiziminde kırık satır kalmamıştır."
 )
 
 Hatırlatıcı(
@@ -937,13 +937,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-MTR-A06,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Kimlik dizini ya da gezinme aracı bir sonraki kez elden geçirildiğinde",
-  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: gezinme aracına ORK-1 sorulduğunda ORK-1.2 ve ORK-1.3 başlıkları da ORK-1'e gelen atıf olarak sayılmaktadır, yani kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Bu yüzden ORK-1 için bildirilen yüz altmış dört gelen atıf şişmiş görünmektedir ve etki analizine dayanan kararlar gerçekte olmayan bağlar üzerine kurulabilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A06 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: gezinme aracına ORK-1 sorulduğunda ORK-1.2 ve ORK-1.3 başlıkları da ORK-1'e gelen atıf olarak sayılmaktadır, yani kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Bu yüzden ORK-1 için bildirilen yüz altmış dört gelen atıf şişmiş görünmektedir ve etki analizine dayanan kararlar gerçekte olmayan bağlar üzerine kurulabilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A06 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-MTR-A06 kapanmıştır; kimlik eşleşmesi noktalı madde kodunun sınırında kesilir. İncelemede aynı ailenin iki kalıntısı ölçülmüş ve ayrı Adımlara bağlanmıştır: eklentinin bağlantı dekoru ile ipucu HST-YUZ-A05'e, denetim kapılarının noktalı kırık atfı görmemesi HST-MTR-A10'a."
 )
 
 Hatırlatıcı(
@@ -1011,13 +1011,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-YUZ-A04,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Kök yüzeyi nöbeti ya da karşılıksız metin atfı tanısı bir sonraki kez elden geçirildiğinde",
-  ne:               "2026-09-16 tarihinde iki ayrı işlemenin kanca çıktısında ölçülmüştür: kök yüzeyi nöbeti README.md ve README.en.md dosyalarının kırk üçüncü satırlarında KRR-RANDEVU-03 kimliğinin hiçbir kaynakta tanımlı olmadığını bildirmektedir, oysa o satır bir kod çitinin içindedir ve Sarmalın kırık referans tanısının çıktısını okuyucuya gösteren kasıtlı bir örnektir. Yüzey doğrudur, nöbet yanılmaktadır: örnek çitinin içindeki kimliği gerçek bir atıf saymakta ve deponun dünyaya bakan yüzünde her işlemede yinelenen kalıcı bir sahte uyarı üretmektedir. Aynı çitin içindeki MYV-RANDEVU-UC kimliği ise bulguya dönüşmemiştir, dolayısıyla nöbetin kapsamı kendi içinde de tutarsızdır. Doğru davranış, kod çitiyle çevrili bölgelerin atıf taramasının dışında tutulmasıdır; bir belge tanının nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A04 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "2026-09-16 tarihinde iki ayrı işlemenin kanca çıktısında ölçülmüştür: kök yüzeyi nöbeti README.md ve README.en.md dosyalarının kırk üçüncü satırlarında KRR-RANDEVU-03 kimliğinin hiçbir kaynakta tanımlı olmadığını bildirmektedir, oysa o satır bir kod çitinin içindedir ve Sarmalın kırık referans tanısının çıktısını okuyucuya gösteren kasıtlı bir örnektir. Yüzey doğrudur, nöbet yanılmaktadır: örnek çitinin içindeki kimliği gerçek bir atıf saymakta ve deponun dünyaya bakan yüzünde her işlemede yinelenen kalıcı bir sahte uyarı üretmektedir. Aynı çitin içindeki MYV-RANDEVU-UC kimliği ise bulguya dönüşmemiştir, dolayısıyla nöbetin kapsamı kendi içinde de tutarsızdır. Doğru davranış, kod çitiyle çevrili bölgelerin atıf taramasının dışında tutulmasıdır; bir belge tanının nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A04 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-YUZ-A04 kapanmıştır; kök yüzeyi nöbeti kod çitlerinin içini ölçmez ve README'deki örnek kimlik işleme kancasında sahte uyarı üretmez. Varlık içi metin atıf kapısının aynı kurala geçip geçmeyeceği HTR-METIN-ATIF-CIT-KURALI kaydındadır."
 )
 
 Hatırlatıcı(
@@ -1213,4 +1213,24 @@ Hatırlatıcı(
   tarih:            2026-10-10,
   dönüşTetikleyici: "Metin atıf kapısına bir sonraki kez dokunulduğunda",
   ne:               "HST-YUZ-A04 kök yüzeyi nöbetini her türden kod çitinin içini ölçmeyen kipe geçirmiş, varlık içi metin atıf kapısını ise bilinçle eski kipte bırakmıştır; bu sınır bir sınamayla korunmaktadır. Sonuç olarak README'deki örnek kimlik işleme kancasında artık uyarı üretmemekte, fakat proje denetiminde karşılıksız metin atfı olarak iki bilgi kaydı vermeye devam etmektedir. Varlık kapısı da aynı kipe geçirilirse ölçülen etki şudur: Sarmal'da bilgi kaydı dörtten ikiye, laboratuvarda yetmiş birden altmış yediye iner, öteki projeler değişmez. Karar, etiketsiz çitlerin içindeki gerçek atıfların ölçülmeye değer olup olmadığına bağlıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-ETIKET-YAZIMI-YUZEY-AYRISMASI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Kimlik belirteci ya da eklentinin kod desenleri bir sonraki kez elden geçirildiğinde",
+  ne:               "HST-MTR-A06'nın bağımsız incelemesi 2026-10-10 tarihinde madde kodundan sonra tireyle süren etiket biçimli yazımlarda (ör. MIM-1.1 ile başlayan uzun bir durum etiketi) dört yüzeyin dört farklı şey gördüğünü ölçmüştür: belirteç bütün etiketi tek ad sayar, metin katmanı hiçbir aday görmez, F12 madde kodunu, eklentinin bağlantı dekoru ve ipucu ise üst maddeyi görür. Depoda bu yüzden iki gerçek metin atfı kaybolmuş, dokuz uydurma aday temizlenmiştir. Doğru sınırın etiketi mi yoksa içindeki madde kodunu mu tanıyacağı bir tasarım kararıdır ve dört yüzey aynı kuralı paylaşmalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GEZIN-ACIKLAMASI-KAPSAM-CUMLESI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "MCP metinleri bir sonraki kez mühür tazelemesiyle elden geçirildiğinde",
+  ne:               "HST-MTR-A05 gezinme aracını KOD biçimi dışındaki adlar için kapsamını açıkça söyler hâle getirmiştir, fakat aracın açıklaması (urun/cekirdek/src/mcp-metinleri.ts, Türkçe ve İngilizce) hâlâ atıf evreninin .sar, .md ve .ts dosyalarını kapsadığını söylemekte ve metin katmanının yalnız KOD biçimindeki adları tanıdığını anmamaktadır. HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR kaydının kapsam beyanını daraltma isteği bu yüzden yarım kalmıştır. Dosya mühürlü olduğu için değişiklik mühür tazelemesiyle birlikte yapılır."
 )
