@@ -13,6 +13,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { dosyayiTara } from "../src/kimlik.ts";
 import { esikIziOnDenetimi, stratejiTanilari, kodIndeksle } from "../src/denetci.ts";
 import { ilkKarakterBicimi, ilkKarakterMemoBoyutu } from "../src/dogrulayici.ts";
@@ -123,7 +124,7 @@ import { denetimKos } from "../src/denetim.ts";
 import { diskTaraSayaci, diskTaraSayaciniSifirla, programlariYukle } from "../src/denetci.ts";
 import { belirtecle, belirtecMemosuyla, belirtecMemoBoyutu, belirtecSayaci, belirtecSayaciniSifirla } from "../src/belirtec.ts";
 
-const SNF_YOLU = new URL("../../../oz/siniflama/kayit.json", import.meta.url).pathname;
+const SNF_YOLU = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 
 /** Küçük ama gerçek bir çalışma alanı: anadizin, iki plan dosyası, bir belge. */
 function mikroProjeKur(): string {
