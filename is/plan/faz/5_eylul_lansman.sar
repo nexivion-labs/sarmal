@@ -5866,7 +5866,7 @@ sessizce körleşmez.
           sınır: "Ham istem ya da yanıt dış yürütücüden toplanmaz; yalnız çağrının kendisi izlenir"
         }
 
-        Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
+        Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: tamamlandı, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
           ne: "🪦 Emekli bir karara adlı Kuralla bağlanan dayanak da ölü iz uyarısı üretsin" ) {
           görev: "BKM-BUG-A12'nin bağımsız incelemesi (2026-10-10) aynı adlı bildirim körlüğünü stratejiTanilari içindeki ölü iz toplayıcısında ölçmüştür: emekli envanteri ve kaynak kenar taraması yalnız widget türünü gezdiği için `Kural ad( dayanak: [EMEKLI] )` biçimindeki bağ uyarı üretmez, aynı bağın GenelKural biçimi ise üretir. Önce iki biçimi birlikte taşıyan bir fikstürle kırmızı test yazılır, sonra toplayıcı BKM-BUG-A12'deki desenle onarılır."
           kabul: [
@@ -5875,6 +5875,9 @@ sessizce körleşmez.
             "kapsanan projelerde yeni ateşleyen ölü iz uyarıları sayılarak raporlanır; denetim 0 hata, süitler yeşil"
           ]
           sınır: "Ölü iz tanısının düzeyi ve metni değişmez; yalnız toplama onarılır"
+          koşu:  Koşum( kod: KSM-HST-MTR-A09, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 899a4d5 (üretim 9550b38) · çekirdek 1678/1678, eklenti 892 geçti 6 atlandı 0 başarısız, iki pakette tür denetimi temiz · depo denetimi 0 hata · bağımsız inceleme: denetci.ts onarımsız hâlde yeni sınama kırmızı, onarımla yeşil; üç mutasyonun üçü yakalandı; GenelKural uyarısının metni değişmedi; altı projede ölü iz sayısı 0'dan 0'a",
+            ne:    "Ölü iz toplayıcısının emekli envanteri ve kaynak kenar taraması artık adlı Kuralları da geziyor; emekli bir karara adlı Kuralla bağlanan dayanak ölü iz uyarısı üretiyor. Tanının düzeyi ve metni değişmedi. Adımdan önce de var olan iki açık HTR-OLU-IZ-OZ-BILDIRIM hatırlatıcısına yazıldı." )
         }
       }
 
@@ -5973,7 +5976,7 @@ sessizce körleşmez.
           sınır: "Palet değişkenleri bu Adımda yeniden düzenlenmez"
         }
 
-        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KOK-YUZEYI, KOD-KIMLIK ], bağımlı: [],
           referans: [ HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR ],
           ne: "🧱 README'deki örnek çıktının içindeki kimlik her işlemede sahte uyarı üretmesin" ) {
           görev: "Kök yüzeyi nöbeti README'deki kod çitinin içindeki örnek kimliği gerçek bir atıf saymaktadır. Kod çitiyle çevrili bölgeler atıf taramasının dışında tutulur; önce bir fikstürle kırmızı test yazılır."
@@ -5983,6 +5986,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "README metni değiştirilmez"
+          koşu:  Koşum( kod: KSM-HST-YUZ-A04, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 3171344 (üretim da04ef8) · çekirdek 1678/1678, eklenti 892 geçti 6 atlandı 0 başarısız · depo denetimi 0 hata · bağımsız inceleme: kimlik.ts ve kok-yuzeyi.ts onarımsız hâlde iki sınama kırmızı, onarımla 17/17; dört mutasyonun dördü yakalandı; kopyada README'ye eklenen çit dışı kırık kimlik bildirildi, etiketsiz ve tildeli çitlere eklenenler sustu; kök yüzeyi taraması README için iki uyarıdan sıfıra indi",
+            ne:    "Kök yüzeyi nöbeti kod çitlerinin içini artık ölçmüyor; README'deki örnek çıktı işleme kancasında sahte uyarı üretmiyor ve çit dışındaki kırık kimlik yakalanmaya devam ediyor. README metnine dokunulmadı. Varlık içi metin atıf kapısı bilinçle eski kipte bırakıldı; iki kapının çit kuralının birleşmesi HTR-METIN-ATIF-CIT-KURALI hatırlatıcısına yazıldı." )
         }
       }
     }
@@ -6075,7 +6081,7 @@ sessizce körleşmez.
           sınır: "Paketleme betiğinin davranışı değiştirilmez"
         }
 
-        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-CLI, KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR ],
           ne: "🎯 geçersiz-dosya-adı ve beyansız-yapı bulguları anlattıkları dosyayı taşısın" ) {
           görev: "İki bulgu türü hâlâ giriş dosyasına sıfır konumla yazılmaktadır. Mühür bulgularına eklenen hedef alanı bu iki türe de verilir, eklenti tıklamayı hedefe yönlendirir ve komut satırı konumsuz bulgularda hedefi basar."
@@ -6085,10 +6091,13 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Bulguların düzeyi ve metni değişmez"
+          koşu:  Koşum( kod: KSM-MGZ-A06, tarih: 2026-10-10, mühür: COMPLETED, karar: eskalasyon,
+            kanıt: "işleme 6580631 (üretim 926aab3) · çekirdek 1678/1678, eklenti 892 geçti 6 atlandı 0 başarısız · depo denetimi 0 hata · bağımsız inceleme: aynı fikstürde iki motorun düzey, konum, mesaj ve önerisi birebir aynı, tek fark hedef alanı; denetci.ts ile sarmal.ts onarımsız hâlde çekirdek ve eklenti sınamaları kırmızı; altı mutasyondan beşi yakalandı, eklentideki ilgili konum bağının kapatılması yakalanmadı · laboratuvar ve orkestrasyondaki 74 dosya mührü satırı yalnız hedef yolu kazandı, bulgu sayıları değişmedi",
+            ne:    "Geçersiz dosya adı ve beyansız yapı bulguları anlattıkları dosyayı ya da klasörü hedef olarak taşıyor ve komut satırı hedefi basıyor. VS Code bir tanının ana satırını kendi belgesine bağladığı için hedefe Problems'taki alt satırdan gidilir; tıklamanın gerçek editörde hedefi açtığı henüz görülmedi ve Adım Founder'ın canlı bakışına kadar açık kalır. Eklenti bağının sınaması HTR-KONUMSUZ-BULGU-BAG-SINAMASI kaydına, bayatlayan README örneği MGZ-A07'ye bağlandı." )
         }
 
         Adım( kod: MGZ-A07, ad: "README ve Mağaza Ekran Görüntüleri", durum: beklemede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [ MGZ-A01, MGZ-A02, MGZ-A03 ],
-          referans: [ HTR-README-DENETIM-GORUNTUSU ],
+          referans: [ HTR-README-DENETIM-GORUNTUSU, HTR-README-ORNEK-SATIRI-BAYATLADI ],
           ne: "📸 Denetim, editör ve mağaza görüntüleri yeni örnekten gerçek ekran görüntüsüyle yeniden alınsın" ) {
           görev: "README örneği Faz dosyası düzenine geçmiştir, fakat denetim görüntüsü eski düzeni gösterdiği için geri çekilmiştir. Görüntüler yeni örnekten gerçek koşuyla yeniden alınır ve denetim görüntüsü README'ye geri konur. Görüntüler öteki mağaza Adımlarından sonra alınır ki son hâli göstersin."
           kabul: [

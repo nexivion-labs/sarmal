@@ -1173,3 +1173,44 @@ Hatırlatıcı(
   dönüşTetikleyici: "Founder kanon kararları gözden geçirildiğinde; en geç terfi borcu kapatılırken",
   ne:               "BKM-DNT-A11 nöbeti 2026-10-10 tarihinde kanon ile ilan arasındaki tek gerçek yüzey ayrışmasını ölçmüştür: YAS-4.2 maddesi terfi-kanıtı-eksik tanısını Problems, proje komut satırı ve satır merceği yüzeyine yollar ve kanon düzeyini uyarı yazar; üretici terfiKanitiTanilari ise terfi borcu yüzünden tanıyı bilgi kademesinde basar ve ilan onu yalnız komut satırında tutar. Ayrışma nöbette gerekçeli bilinen istisna olarak durur. İlana panel eklemek tanıyı Bildirimler yüzeyine taşır, Problems'a taşımaz, dolayısıyla ayrışmayı kapatmaz. Kapanışın iki yolu vardır ve ikisi de Founder kararıdır: ya terfi tamamlanır ve tanı uyarı düzeyine çıkar, ya da kanon cümlesi bugünkü davranışa göre yeniden yazılır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-OLU-IZ-OZ-BILDIRIM,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Ölü iz toplayıcısına bir sonraki kez dokunulduğunda; en geç bir projede emekli beyanı ilk kez kullanıldığında",
+  ne:               "HST-MTR-A09'un bağımsız incelemesi 2026-10-10 tarihinde ölü iz toplayıcısında Adımdan önce de var olan iki açığı ölçmüştür. Birincisi, emekli: evet beyanı taşıyan bir GenelKural ya da Karar kendi kod alanı için ölü iz üretmektedir, çünkü kaynak taraması yalnız durum: emekli yazan düğümü atlamaktadır; Adımın onarımı biçim eşitliğiyle bu kusuru adlı Kurala da taşımıştır. İkincisi, çağır kenarının hedefi parametrede değil düğümün ad alanında durduğu için emekli bir koda yapılan çağrı hiç sayılmamaktadır. Bugün hiçbir projede bu beyanlar kullanılmadığı ve iki değer sınıflama kaydında da bulunmadığı için canlı etkisi sıfırdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KONUMSUZ-BULGU-BAG-SINAMASI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "VS Code bütünleşme süiti bir sonraki kez elden geçirildiğinde; en geç MGZ-A01 kapanırken",
+  ne:               "MGZ-A06'nın bağımsız incelemesi 2026-10-10 tarihinde eklentinin konumsuz bulguya hedef dosyayı bağlayan ilgili konum satırının hiçbir sınamayla korunmadığını ölçmüştür: bağ kapatıldığında eklenti süiti yeşil kalmıştır. Bu bağ yalnız gerçek editörde gözlenebildiği için korumanın yeri VS Code bütünleşme süitidir; Problems'taki bulgunun alt satırının hedef dosyayı ya da klasörü gösterdiğini iddia eden bir sınama yazılmalıdır. Ana satırın giriş dosyasını açması VS Code'un kendi davranışıdır ve bu kaydın konusu değildir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-README-ORNEK-SATIRI-BAYATLADI,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A07,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "README görüntüleri ve örnek çıktısı gerçek koşudan yeniden alınırken",
+  ne:               "MGZ-A06 komut satırının konumsuz bulgularda hedefi basmasını sağladığı için README.md ile README.en.md dosyalarının elli dördüncü satırındaki örnek çıktı bayatlamıştır: gerçek çıktı artık bulgu türünden önce hedef klasörü yazmaktadır. Kök yüzeyi nöbeti kod çitinin içini HST-YUZ-A04'ten beri ölçmediği için bu ayrışmayı hiçbir kapı görmez. Örnek çıktı README'nin öteki görüntüleriyle birlikte aynı gerçek koşudan yeniden alınmalıdır. KARAR (kontrolcü · 2026-10-10): hatırlatıcı MGZ-A07 Adımına bağlandı."
+)
+
+Hatırlatıcı(
+  kod:              HTR-METIN-ATIF-CIT-KURALI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Metin atıf kapısına bir sonraki kez dokunulduğunda",
+  ne:               "HST-YUZ-A04 kök yüzeyi nöbetini her türden kod çitinin içini ölçmeyen kipe geçirmiş, varlık içi metin atıf kapısını ise bilinçle eski kipte bırakmıştır; bu sınır bir sınamayla korunmaktadır. Sonuç olarak README'deki örnek kimlik işleme kancasında artık uyarı üretmemekte, fakat proje denetiminde karşılıksız metin atfı olarak iki bilgi kaydı vermeye devam etmektedir. Varlık kapısı da aynı kipe geçirilirse ölçülen etki şudur: Sarmal'da bilgi kaydı dörtten ikiye, laboratuvarda yetmiş birden altmış yediye iner, öteki projeler değişmez. Karar, etiketsiz çitlerin içindeki gerçek atıfların ölçülmeye değer olup olmadığına bağlıdır."
+)
