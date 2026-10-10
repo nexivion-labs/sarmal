@@ -823,13 +823,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         MGZ-A04,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Eklentinin tam proje denetimi turu ya da taban kanon işareti bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
-  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin tam proje denetimi turu denetimKos çağrısını bir try/catch bloğu içinde koşturmaktadır ve çağrı çökerse hata yutulur; atlanan kökler artık durum çubuğundaki işarete bildirildiği hâlde çöken kök bu bildirime katılmamaktadır. Bunun sonucu, A09 Adımının kapattığı kusurun dar bir kapıdan geri gelmesidir: panel boş kalır ve kullanıcı tam denetimin o kökte koşmadığını öğrenemez. Aynı turda ortak.ts içindeki snfBul işlevinin renk ve ipucu için hâlâ gömülü kanonu okuduğu da ölçülmüştür; içerik bugün paket kopyasıyla aynı olduğundan bu bir kusur değil, iki kaynağın ileride ayrışabileceği bir noktadır. Doğru davranış, çöken kökün de atlanan kök gibi işarete bildirilmesi ve kanonun tek kaynaktan okunmasıdır. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A04 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin tam proje denetimi turu denetimKos çağrısını bir try/catch bloğu içinde koşturmaktadır ve çağrı çökerse hata yutulur; atlanan kökler artık durum çubuğundaki işarete bildirildiği hâlde çöken kök bu bildirime katılmamaktadır. Bunun sonucu, A09 Adımının kapattığı kusurun dar bir kapıdan geri gelmesidir: panel boş kalır ve kullanıcı tam denetimin o kökte koşmadığını öğrenemez. Aynı turda ortak.ts içindeki snfBul işlevinin renk ve ipucu için hâlâ gömülü kanonu okuduğu da ölçülmüştür; içerik bugün paket kopyasıyla aynı olduğundan bu bir kusur değil, iki kaynağın ileride ayrışabileceği bir noktadır. Doğru davranış, çöken kökün de atlanan kök gibi işarete bildirilmesi ve kanonun tek kaynaktan okunmasıdır. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A04 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): MGZ-A04 kapanmıştır; çöken kökün tam denetimi yutulmaz ve durum çubuğu işareti ile Performans kanalı onu söyler. Kırık dosyanın turu erken çıkışla susturması ayrı bir kusurdur ve HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR kaydındadır."
 )
 
 Hatırlatıcı(
@@ -979,13 +979,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         MGZ-A03,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Tanı sicili ya da eklentinin tanı yayını bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
-  ne:               "Founder 2026-09-16 tarihinde canlı pencerede Yol Haritası panelinin üstünde bir dosyanın ayrıştırılamadığını ve sözdiziminin kırık olduğunu bildiren satırı görmüş, aynı anda Sorunlar panelinin çalışma alanında sorun algılanmadı dediğini bildirmiştir. Ölçüm şunu göstermiştir: motor kırık bir kaynağı tek dosya kipinde okuduğunda dosyayı, satırı ve sütunu anan ham bir sözdizimi hatası basar, fakat bu hatanın tanı sicilinde bir kimliği yoktur ve eklenti onu Problems yüzeyine hiç yayınlamaz; kırık dosya yalnız Yol Haritası panelindeki kırık dosyalar düğümüne (urun/eklenti/src/yolharitasi.ts altı yüz seksen dokuzuncu satır) ve onay kuyruğunun işlenemedi cümlesine düşer. Sonuç şudur ki bir yüzey dosyanın okunamadığını söylerken öteki yüzey aynı anda sorun yok demektedir ve kullanıcı hangisine güveneceğini bilemez; yeşil panel yeşil ağaç demek olmalıdır. Doğru davranış, sözdizimi hatasının kanonda ve sicilde bir kimlik kazanması ve hata düzeyinde Problems yüzeyine de basılmasıdır. Kayıt HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A03 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "Founder 2026-09-16 tarihinde canlı pencerede Yol Haritası panelinin üstünde bir dosyanın ayrıştırılamadığını ve sözdiziminin kırık olduğunu bildiren satırı görmüş, aynı anda Sorunlar panelinin çalışma alanında sorun algılanmadı dediğini bildirmiştir. Ölçüm şunu göstermiştir: motor kırık bir kaynağı tek dosya kipinde okuduğunda dosyayı, satırı ve sütunu anan ham bir sözdizimi hatası basar, fakat bu hatanın tanı sicilinde bir kimliği yoktur ve eklenti onu Problems yüzeyine hiç yayınlamaz; kırık dosya yalnız Yol Haritası panelindeki kırık dosyalar düğümüne (urun/eklenti/src/yolharitasi.ts altı yüz seksen dokuzuncu satır) ve onay kuyruğunun işlenemedi cümlesine düşer. Sonuç şudur ki bir yüzey dosyanın okunamadığını söylerken öteki yüzey aynı anda sorun yok demektedir ve kullanıcı hangisine güveneceğini bilemez; yeşil panel yeşil ağaç demek olmalıdır. Doğru davranış, sözdizimi hatasının kanonda ve sicilde bir kimlik kazanması ve hata düzeyinde Problems yüzeyine de basılmasıdır. Kayıt HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A03 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): MGZ-A03 kapanmıştır; söz-dizim hatası odak dışındaki projede de Sorunlar yüzeyinde kimliği, satırı ve sütunuyla görünür ve komut satırı aynı kimliği basar. Dönüştürücü komutlarının eski biçimi HTR-DONUSTURUCU-SOZDIZIM-BICIMI kaydındadır."
 )
 
 Hatırlatıcı(

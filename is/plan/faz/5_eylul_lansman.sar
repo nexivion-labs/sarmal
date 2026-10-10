@@ -6147,7 +6147,7 @@ sessizce körleşmez.
           sınır: "Sınamalar yalnız yeşile dönsün diye zayıflatılmaz"
         }
 
-        Adım( kod: MGZ-A02, ad: "Kısıtlı Modda Eklentinin Sesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A02, ad: "Kısıtlı Modda Eklentinin Sesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI, KOD-EKL-MANIFEST, KOD-YUZEY-METINLERI, KOD-SNM-KISITLI-MOD ], bağımlı: [],
           referans: [ HTR-KISITLI-MODDA-EKLENTI-SESSIZ ],
           ne: "🔒 Güvenilmeyen klasörde eklenti neden sustuğunu söylesin, dil tanımı ve renklendirme yine çalışsın" ) {
           görev: "İlk iş eklenti bildiriminin güvenilmeyen çalışma alanı beyanını taşıyıp taşımadığını ölçmektir. Dil tanımı ve renklendirme güvenilmeyen modda da çalışacak biçimde beyan edilir; denetim gibi güven isteyen yetenekler kapalı kalır ve eklenti bunu kullanıcıya tek bir anlaşılır cümleyle söyler."
@@ -6157,9 +6157,12 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Güvenilmeyen modda kod çalıştıran bir yetenek açılmaz"
+          koşu:  Koşum( kod: KSM-MGZ-A02, tarih: 2026-10-10, mühür: COMPLETED, karar: eskalasyon,
+            kanıt: "işlemeler 9932c81 ve f3f5663 (üretim 4ad2586, 4b94798) · eklenti 919/919, birleşik ağaçta 933/933 · depo denetimi 0 hata · bağımsız inceleme: paket bildiriminin kısıtlı mod beyanı VS Code şemasına ve yerleşik eklentilerin biçimine uyuyor; gerçek Sarmal ağacında kısıtlı modda paketten sıfır dosya sistemi ve sıfır süreç çağrısı geldi, güven verildikten sonra yaklaşık 2.700 çağrı geliyor; güvenilir klasörde etkinleşme kaydı birebir aynı (29 komut, 6 durum öğesi); iki katalog mührünün tazelenmesi meşru ve emsallidir; sekiz mutasyonun sekizi yakalandı; vsce paket listesi 1094 dosyayla değişmedi",
+            ne:    "Eklenti güvenilmeyen klasörde artık bütünüyle kapanmıyor: dil, dilbilgisi renkleri ve parçacıklar çalışıyor, durum çubuğundaki kısıtlı mod işareti tek cümleyle neyin kapalı olduğunu söylüyor ve güven ekranını açıyor; güven verilince pencere yeniden yüklenmeden tam yol koşuyor. Kısıtlı modda kod çalıştıran hiçbir yetenek açılmadı. Görünümlerin güvene bağlanmasıyla Sarmal simgesi kısıtlı modda şeritten kalkıyor; bu arayüz kararı ve renklenmenin gözle doğrulanması Founder'a bırakıldı, Adım o güne kadar açık kalır." )
         }
 
-        Adım( kod: MGZ-A03, ad: "Sözdizimi Hatasının Sorunlar Yüzeyi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A03, ad: "Sözdizimi Hatasının Sorunlar Yüzeyi", durum: tamamlandı, öncelik: p1, üretir: [ KOD-EKL-EKLENTI, KD-GOC-YUZEY-CEKIRDEK, KOD-DENETCI, KOD-DENETIM, KOD-CLI, KOD-TANI-METINLERI, KOD-SNM-SOZDIZIM-YUZEYI, KOD-SNM-ETKINLESME-KABUGU ], bağımlı: [],
           referans: [ HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK ],
           ne: "⛔ Ayrıştırılamayan dosya Sorunlar panelinde de görünsün; iki yüz aynı anda çelişmesin" ) {
           görev: "Motorun ham sözdizimi hatası bir tanı kimliği kazanır ve eklenti onu dosya, satır ve sütunuyla Sorunlar yüzeyine yayınlar. Yol Haritası panelindeki kırık dosyalar düğümü aynı kalır."
@@ -6169,9 +6172,12 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Ayrıştırıcının hata kurtarma davranışı bu Adımda değişmez"
+          koşu:  Koşum( kod: KSM-MGZ-A03, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işlemeler 914787f ve bf4b03c (üretim 2425102, bd9ef14) · çekirdek 1686/1686, eklenti 912/912, birleşik ağaçta çekirdek 1699/1699 ve eklenti 933/933 · depo denetimi 0 hata · bağımsız inceleme: odak başka projedeyken kırık dosyanın söz-dizim tanısı Sorunlar'da doğru satır ve sütunda görünüyor ve odak değişince düşmüyor; süzgeç kaldırılınca öteki tanılar sızıyor, yani nöbet boş değil; komut satırı tek dosya, denetle ve kilitle kiplerinde aynı kimliği aynı konumla basıyor; çıkış kodu önce de sonra da 2; kimliğin değeri değiştirilince çekirdekte 3, eklentide 5 sınama birlikte kırmızıya dönüyor; altı mutasyonun altısı yakalandı",
+            ne:    "Kırık bir .sar dosyasının söz-dizim hatası, odak başka bir projede olsa da Sorunlar yüzeyinde kendi kimliği, satırı ve sütunuyla görünüyor; o projenin öteki tanıları gizli kalıyor. Komut satırı denetim kiplerinde aynı kimliği basıyor ve kimliğin tek kaynağı çekirdektedir. Ölçüm hatırlatıcının iki iddiasının bugünkü ağaçta tam doğru olmadığını gösterdi: kimlik sicilde zaten vardı, eksik olan komut satırının onu basmaması ve odak süzgeciydi." )
         }
 
-        Adım( kod: MGZ-A04, ad: "Tam Denetim Çöküşünün Bildirimi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A04, ad: "Tam Denetim Çöküşünün Bildirimi", durum: tamamlandı, öncelik: p1, üretir: [ KOD-EKL-EKLENTI, KOD-KANON-KESIF, KOD-TABAN-KANON, KOD-YUZEY-METINLERI ], bağımlı: [],
           referans: [ HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR ],
           ne: "📣 Tam denetim bir kökte çökerse bu da atlanan kök gibi işarete bildirilsin" ) {
           görev: "denetimKos çağrısı çökünce hata yutulmaktadır. Çöken kök atlanan kökler bildirimine katılır ve kullanıcı o kökte tam denetimin koşmadığını görür. Aynı turda ortak.ts içindeki snfBul'un gömülü kanonu okuması tek kaynağa bağlanır ya da gerekçesiyle bırakılır."
@@ -6181,6 +6187,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Çöküşün kendisi bu Adımda onarılmaz; görünür kılınır"
+          koşu:  Koşum( kod: KSM-MGZ-A04, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işlemeler cd555e2 ve cc61458 (üretim 957423c, e54b2e9) · eklenti 920/920, 0 atlama, birleşik ağaçta çekirdek 1699/1699 · depo denetimi 0 hata · bağımsız inceleme: eklentinin gerçek girişini koşturan yoklamada ortu.json'a çatışma işaretleri konunca tam denetim koşmadı işareti çıkıyor, ipucu kökü ve JSON hatasını anıyor, Performans kanalına satır düşüyor ve tıklama komut çalıştırmıyor; aynı yoklama tabanda kırmızı; kanonsuz ve çöken kök birlikte iki ayrı cümleyle söyleniyor; beş mutasyonun beşi yakalandı; yeni sınamalar geçici klasör bırakmıyor",
+            ne:    "Kök başına tam denetim çöktüğünde hata artık yutulmuyor; durum çubuğu işareti çöken kökü kanonsuz kökten ayrı söylüyor ve satır Performans kanalına düşüyor, sonraki kökler koşmaya devam ediyor. snfBul bilinçle değiştirilmedi: gömülü kanon ile paketin kanon kopyası aynı üretici çağrısında aynı kaynaktan doğar, ikisi de bayt özdeşlik nöbetleriyle kaynağa bağlıdır ve beş editör yüzeyi gömülü kanonu kullandığı için yalnız snfBul'u diske taşımak tek kaynağı iki kopyaya bölerdi. Kırık bir dosyanın turu erken çıkışla durdurması bu Adımın dışındadır ve HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR kaydındadır." )
         }
 
         Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: tamamlandı, öncelik: p2, üretir: [ KOD-SNM-PAKET-ICERIGI, KOD-SNM-SURUM-TAZELIGI ], bağımlı: [],
@@ -6564,3 +6573,11 @@ Kod( kod: KOD-KOPRU-NVIDIA, dosya: "urun/cekirdek/src/kopru/nvidia.ts",
   ne: "🔌 Etmen köprüsü — ŞEF ile Etmen sınırının canlı dolgusu; motor döngüsüne dışarıdan enjekte edilir ve yerel curl ile senkron çağrı yapar (STR-3 demo politikası, STR-3.1 sıfır bağımlılık)" )
 Kod( kod: KOD-KOPRU-LIG, dosya: "urun/cekirdek/src/kopru/lig.ts",
   ne: "🎻 Plan görüşü ligi — bir planı birden çok modele sunup yapılandırılmış görüşleri saf bir sentezle uzlaştırır; Etmen köprüsünün senkron çekirdeğini paylaşır (STR-3.2 soyu)" )
+
+// 🍎 Mağaza Öncesi teslimi (2026-10-10): kısıtlı mod, söz-dizim yüzeyi ve etkinleşme düzeneği
+Kod( kod: KOD-SNM-ETKINLESME-KABUGU, dosya: "urun/eklenti/sinama/etkinlesme-kabugu.ts",
+  ne: "🧪 Etkinleşme düzeneği — eklentinin gerçek etkinleşme işlevini kayda yazan sahte bir editörde koşturur; açtığı geçici klasörleri sonunda siler (MGZ-A03, MGZ-A02)" )
+Kod( kod: KOD-SNM-SOZDIZIM-YUZEYI, dosya: "urun/eklenti/sinama/sozdizim-yuzeyi.test.ts",
+  ne: "🧪 Söz-dizim yüzeyi nöbeti — odak dışındaki projede kırık dosyanın hatası Sorunlar'a kimliği, satırı ve sütunuyla düşer, öteki tanılar gizli kalır (MGZ-A03)" )
+Kod( kod: KOD-SNM-KISITLI-MOD, dosya: "urun/eklenti/sinama/kisitli-mod.test.ts",
+  ne: "🧪 Kısıtlı mod nöbeti — bildirimin kısıtlı mod beyanı, güvenilmeyen klasörde diske ve sürece dokunmayan etkinleşme, işaret ve güvenden sonra yeniden yüklemesiz açılış (MGZ-A02)" )
