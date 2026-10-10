@@ -1892,6 +1892,12 @@ export const YOL_METINLERI = {
   bilgiIpucu: (etiket: string, aciklama: string, hedef: boolean): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\ntıklayın: düğüme atla" : ""}`, `${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\nselect to jump to the node" : ""}`),
   get dugumeAtla(): string { return yuzeyMetni("Düğüme atla", "Jump to node"); },
   kosumIpucu: (etiket: string, zaman: string): string => yuzeyMetni(`${etiket}\n${zaman}\ntıklayın: tam konuşma (ham prompt + ham yanıt)`, `${etiket}\n${zaman}\nselect for the full conversation (raw prompt + raw response)`),
+  // HST-MTR-A04: dış yürütücünün teması (MCP sef ve durum-guncelle) koşum satırı olur.
+  // Satır yalnız çağrının kendisidir; ham istem ve yanıt toplanmadığı için konuşma vaat edilmez.
+  yurutucuTemasi: (arac: string): string => yuzeyMetni(`yürütücü · ${arac}`, `executor · ${arac}`),
+  yurutucuAciklamasi: (yurutucu: string | undefined, durum: string | undefined): string =>
+    [yurutucu ?? "", durum ? `→ ${MINI_GRAF_METINLERI.durum(durum)}` : ""].filter(Boolean).join(" · "),
+  yurutucuIpucu: (etiket: string, zaman: string): string => yuzeyMetni(`${etiket}\n${zaman}\nyürütücü teması: yalnız çağrının kendisi kaydedilir; ham istem ve yanıt toplanmaz`, `${etiket}\n${zaman}\nexecutor contact: only the call itself is recorded; the raw prompt and response are not collected`),
   get konusmaDetayi(): string { return yuzeyMetni("Konuşma Detayı", "Conversation Details"); },
   get bosRay(): string { return yuzeyMetni("ray döşendi — vagon bekleniyor", "track laid — awaiting a car"); },
   // 🪆 EKL-F7-A09: kapsayıcı varlık satırı kaç projeyi sardığını söyler (küme kimliği).

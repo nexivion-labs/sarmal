@@ -29,6 +29,7 @@ import { anadizinBul } from "../../cekirdek/src/denetci.ts";   // DIL-1.2: varl�
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";   // 🪆 varlık kimliği AĞAÇTAN okunur; ikinci bir okuma kuralı yazılmaz
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi (Adım sayaçlarının türetmesi PRF-TA-A03 ile çekirdeğe indi)
+import { YURUTUCU_ROLU } from "../../cekirdek/src/kopru/iz.ts";   // HST-MTR-A04: yürütücü satırı yazanla aynı sabitten tanınır
 import { miniGrafKaydi, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
 import {
   EKSEN_TIPLERI, eksenSvgVaryanti, aileyeCevir, satirSvgGovdesi,
@@ -130,6 +131,10 @@ interface IzKaydi {
   tokenGiriş?: number;
   tokenÇıkış?: number;
   sıra?: number;
+  // HST-MTR-A04: dış yürütücünün teması (çekirdek YurutucuIziSatiri ikizi) — rolü YURUTUCU_ROLU.
+  arac?: string;
+  durum?: string;
+  yurutucu?: string;
 }
 /** İşlenen Adım'ın altındaki orkestrasyon alt-düğümü (üretici · denetçi · güvenlik). */
 interface Kosum {
@@ -137,6 +142,15 @@ interface Kosum {
   etiket: string;
   aciklama: string;
   kayit: IzKaydi;
+}
+/** HST-MTR-A04: dış yürütücünün teması — satır aracı, yürütücüyü ve yazılan durumu söyler. */
+function yurutucuSatiri(k: IzKaydi): Kosum {
+  return {
+    tur: "koşum",
+    etiket: YOL_METINLERI.yurutucuTemasi(k.arac ?? "?"),
+    aciklama: YOL_METINLERI.yurutucuAciklamasi(k.yurutucu, k.durum),
+    kayit: k,
+  };
 }
 
 // ── VIT-GRAF-A03: Adım'ın graf-kenarı alt-düğümleri — panel graf müfettişine büyür ──
@@ -733,7 +747,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // trace sırasında) + graf-kenarı bilgi satırları (bağımlı · etkiler · kabul).
     if (oge.tur === "oge" && oge.tip === "Adım") {
       const kayitlar = this.izler.get(oge.kod) ?? [];
-      const kosum: Kosum[] = kayitlar.map((k) => ({
+      const kosum: Kosum[] = kayitlar.map((k) => k.rol === YURUTUCU_ROLU ? yurutucuSatiri(k) : ({
         tur: "koşum",
         // A07: rol adı kendi etiketidir; ağaç etiketi resim taşımadığı için
         // rolün emoji işareti düştü ve kelime kaldı (YUZ-4.2).
@@ -787,8 +801,13 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // IZLE-A03 satırı — tıklama IZLE-A04 konuşma detayını açar (webview).
       const eleman = new vscode.TreeItem(p.etiket, vscode.TreeItemCollapsibleState.None);
       eleman.description = p.aciklama;
-      eleman.tooltip = YOL_METINLERI.kosumIpucu(p.etiket, p.kayit.zaman ?? "");
       eleman.iconPath = satirIkonu(this.eklentiKoku, "kosum", "turuncu");
+      // HST-MTR-A04: yürütücü satırı ham istem ve yanıt taşımaz; boş bir konuşma kartı açılmaz.
+      if (p.kayit.rol === YURUTUCU_ROLU) {
+        eleman.tooltip = YOL_METINLERI.yurutucuIpucu(p.etiket, p.kayit.zaman ?? "");
+        return eleman;
+      }
+      eleman.tooltip = YOL_METINLERI.kosumIpucu(p.etiket, p.kayit.zaman ?? "");
       eleman.command = { command: "sarmal.konusmaDetay", title: YOL_METINLERI.konusmaDetayi, arguments: [p.kayit] };
       return eleman;
     }

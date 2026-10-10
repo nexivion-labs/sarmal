@@ -6,8 +6,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, realpathSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync, realpathSync } from "node:fs";
+import { hostname, tmpdir, userInfo } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -615,4 +615,133 @@ test("EKL-F6-A07 nöbeti ②: oturum dışındaki dizin cevabın ilk cümlesinde
     rmSync(oturum, { recursive: true, force: true });
     rmSync(dis, { recursive: true, force: true });
   }
+});
+
+// ═══ HST-MTR-A04 · YÜRÜTÜCÜ İZİ: dış yürütücünün teması koşum izine düşer ═══
+//   İz motorun kendi döngüsünde yazılıyordu; işi Claude Code gibi bir yürütücü
+//   yaptığında panelin dinlediği klasöre hiçbir satır düşmüyordu. Açık iz, sef
+//   ve durum ilerlemesi temaslarını yalnız çağrının kendisi olarak yazar: ham
+//   istem ve yanıt, dosya yolu ve kullanıcı bilgisi kayda girmez.
+
+/** Sunucuyu tek süreçte koşturur; initialize istemci kimliğini, ortam iz anahtarını taşır. */
+function yurutucuOturumu(
+  cwd: string,
+  cagrilar: ReadonlyArray<{ name: string; arguments: Record<string, unknown> }>,
+  ortam: Record<string, string>,
+  istemci: unknown = { name: "sinama-yurutucu", version: "1.0.0" },
+): Array<{ metin: string; isError: boolean }> {
+  const istekler = [
+    { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: istemci } },
+    ...cagrilar.map((c, i) => ({ jsonrpc: "2.0", id: i + 2, method: "tools/call", params: c })),
+  ].map((x) => JSON.stringify(x)).join("\n") + "\n";
+  const env: Record<string, string | undefined> = { ...process.env, SARMAL_DIL: "tr" };
+  delete env.SARMAL_YURUTUCU_IZI;
+  const ham = execFileSync(process.execPath, [MCP], {
+    input: istekler, encoding: "utf8", timeout: 120_000, maxBuffer: 32 * 1024 * 1024, cwd, env: { ...env, ...ortam },
+  });
+  const yanitlar = ham.trim().split("\n").filter(Boolean).map((s) => JSON.parse(s) as {
+    id: number; result?: { content?: Array<{ text?: string }>; isError?: boolean };
+  });
+  return cagrilar.map((_, i) => {
+    const y = yanitlar.find((x) => x.id === i + 2);
+    return { metin: y?.result?.content?.map((c) => c.text).join("\n") ?? "", isError: y?.result?.isError === true };
+  });
+}
+
+/** Fikstürün koşum izi klasöründeki dosyalar ve satırları. */
+function yurutucuIzleri(kok: string): { dosyalar: string[]; satirlar: Array<Record<string, unknown>>; ham: string } {
+  const klasor = join(kok, ".sarmal", "trace");
+  if (!existsSync(klasor)) return { dosyalar: [], satirlar: [], ham: "" };
+  const dosyalar = readdirSync(klasor).sort();
+  const ham = dosyalar.map((d) => readFileSync(join(klasor, d), "utf8")).join("");
+  return { dosyalar, satirlar: ham.split("\n").filter(Boolean).map((s) => JSON.parse(s) as Record<string, unknown>), ham };
+}
+
+const IZ_TEMASLARI = (kok: string): Array<{ name: string; arguments: Record<string, unknown> }> => [
+  { name: "sef", arguments: { dizin: kok, adim: "ADM-MCP6-B" } },
+  { name: "durum-guncelle", arguments: { dizin: kok, kod: "ADM-MCP6-A", durum: "geliştirmede" } },
+];
+
+test("HST-MTR-A04 ①: iz açıkken MCP sef ve durum ilerlemesi koşum izi klasörüne birer satır düşer", { timeout: 180_000 }, () => {
+  const kok = fiksturKur();
+  try {
+    const [sef, durum] = yurutucuOturumu(kok, IZ_TEMASLARI(kok), { SARMAL_YURUTUCU_IZI: "1" });
+    assert.equal(sef.isError, false, sef.metin);
+    assert.equal(durum.isError, false, durum.metin);
+    const iz = yurutucuIzleri(kok);
+    assert.equal(iz.dosyalar.length, 1, `koşum izi klasöründe tek oturum dosyası beklenirdi: ${iz.dosyalar.join(" · ")}`);
+    assert.match(iz.dosyalar[0], /^yurutucu-.+\.jsonl$/, "panelin dinlediği *.jsonl biçiminde değil");
+    assert.equal(iz.satirlar.length, 2, iz.ham);
+    const [s1, s2] = iz.satirlar;
+    assert.deepEqual(Object.keys(s1).sort(), ["adım", "arac", "rol", "yurutucu", "zaman"], iz.ham);
+    assert.deepEqual({ ...s1, zaman: undefined },
+      { zaman: undefined, adım: "ADM-MCP6-B", rol: "yurutucu", arac: "sef", yurutucu: "sinama-yurutucu" });
+    assert.deepEqual({ ...s2, zaman: undefined },
+      { zaman: undefined, adım: "ADM-MCP6-A", rol: "yurutucu", arac: "durum-guncelle", durum: "geliştirmede", yurutucu: "sinama-yurutucu" });
+    assert.ok(!Number.isNaN(Date.parse(String(s1.zaman))), `zaman ISO biçiminde değil: ${String(s1.zaman)}`);
+    // Yalnız çağrının kendisi: ham istem, ham yanıt ve sef çıktısı kayda girmez.
+    assert.doesNotMatch(iz.ham, /hamPrompt|hamYan|görev|kavuşum/u, "kayıt çağrının kendisinden fazlasını taşıyor");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
+test("HST-MTR-A04 ②: iz kişisel veri taşımaz — yol, kullanıcı ve makine adı yok; güvenilmez istemci adı düşer", { timeout: 180_000 }, () => {
+  const kok = fiksturKur();
+  try {
+    yurutucuOturumu(kok, IZ_TEMASLARI(kok), { SARMAL_YURUTUCU_IZI: "1" }, { name: "/Users/ad.soyad/istemci", version: "1" });
+    const iz = yurutucuIzleri(kok);
+    assert.equal(iz.satirlar.length, 2, iz.ham);
+    for (const s of iz.satirlar) assert.equal("yurutucu" in s, false, `güvenilmez istemci adı kayda girdi: ${JSON.stringify(s)}`);
+    // Çok kısa bir kullanıcı ya da makine adı sıradan metinde de geçer; ölçüm dört karakterden başlar.
+    for (const parca of [kok, realpathSync(kok), tmpdir(), userInfo().username, hostname()].filter((p) => p.length >= 4)) {
+      assert.ok(!iz.ham.includes(parca), `koşum izi kişisel ya da makineye özgü bir değer taşıyor: ${parca}`);
+    }
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
+test("HST-MTR-A04 ③: iz varsayılan olarak kapalıdır, açıkça kapatılabilir ve başarısız çağrı iz bırakmaz", { timeout: 300_000 }, () => {
+  const kapaliOrtamlar: Array<Record<string, string>> = [{}, { SARMAL_YURUTUCU_IZI: "0" }, { SARMAL_YURUTUCU_IZI: "kapali" }];
+  for (const ortam of kapaliOrtamlar) {
+    const kok = fiksturKur();
+    try {
+      const sonuclar = yurutucuOturumu(kok, IZ_TEMASLARI(kok), ortam);
+      for (const s of sonuclar) assert.equal(s.isError, false, s.metin);
+      assert.equal(existsSync(join(kok, ".sarmal")), false, `iz kapalıyken yazıldı (${JSON.stringify(ortam)})`);
+    } finally {
+      rmSync(kok, { recursive: true, force: true });
+    }
+  }
+  const kok = fiksturKur();
+  try {
+    const sonuclar = yurutucuOturumu(kok, [
+      { name: "sef", arguments: { dizin: kok, adim: "ADM-YOK" } },
+      { name: "durum-guncelle", arguments: { dizin: kok, kod: "ADM-MCP6-A", durum: "bitti" } },
+    ], { SARMAL_YURUTUCU_IZI: "1" });
+    for (const s of sonuclar) assert.equal(s.isError, true, s.metin);
+    assert.equal(existsSync(join(kok, ".sarmal")), false, "başarısız temas koşum izine satır yazdı");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
+test("HST-MTR-A04 ④: iz açıkken sef salt okunur ilan edilmez; kapalıyken beyan değişmez", () => {
+  const sefBeyani = (ortam: Record<string, string>): Record<string, unknown> | undefined => {
+    const env: Record<string, string | undefined> = { ...process.env };
+    delete env.SARMAL_YURUTUCU_IZI;
+    const ham = execFileSync(process.execPath, [MCP], {
+      input: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) + "\n",
+      encoding: "utf8", timeout: 30_000, env: { ...env, ...ortam },
+    });
+    const araclar = (JSON.parse(ham.trim()) as { result: { tools: Array<{ name: string; annotations?: Record<string, unknown> }> } }).result.tools;
+    return araclar.find((a) => a.name === "sef")?.annotations;
+  };
+  const kapali = sefBeyani({});
+  assert.equal(kapali?.readOnlyHint, true, "iz kapalıyken sef salt okunur kalmalı");
+  assert.equal(kapali?.destructiveHint, undefined);
+  const acik = sefBeyani({ SARMAL_YURUTUCU_IZI: "1" });
+  assert.equal(acik?.readOnlyHint, false, "iz açıkken sef koşum izine yazar; salt okunur beyanı yalan olur");
+  assert.equal(acik?.destructiveHint, false, "iz satırı yalnız eklenir; yıkıcı değildir");
 });
