@@ -5818,7 +5818,7 @@ sessizce körleşmez.
       AltKatman( kod: HST-MOTOR-K1, departman: sınama, ad: "Kanon ve Tanı Nöbetleri",
         ne: "kanonun makine taşıyıcısı, madde sayısı, tanı kimlikleri ve yürütücü izi" ) {
 
-        Adım( kod: HST-MTR-A01, ad: "Taşıyıcı ile Belge Metninin Eşitliği", durum: geliştirmede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-MTR-A01, ad: "Taşıyıcı ile Belge Metninin Eşitliği", durum: tamamlandı, öncelik: p1, üretir: [ KOD-KANON-TUTARLILIK, KOD-SNM-KANON-TUTARLILIK ], bağımlı: [],
           referans: [ HTR-TASIYICI-MUTABAKAT-KORLUGU ],
           ne: "🧷 Kanon maddesinin makine taşıyıcısı belge metninden ayrıştığında kapı kırmızıya dönsün" ) {
           görev: "Tutarlılık motorunun dört parça denetimi bugün Gerekçe başlığının varlığına bakmakta, taşıyıcı alanın belge metnine eşitliğine bakmamaktadır. Önce taşıyıcı ile belge metni ayrışmış bir fikstürle kırmızı test yazılır, sonra eşitlik denetimi kurulur ve bütün kanon üzerinde koşturulur. Bekçinin yeri kaydın sorduğu soruya göre seçilir ve gerekçesi Koşuma yazılır."
@@ -5828,9 +5828,12 @@ sessizce körleşmez.
             "denetim 0 hata, çekirdek süiti yeşil"
           ]
           sınır: "Kanon metni bu Adımda düzeltilmez; ayrışma bulunursa bulgu olarak raporlanır"
+          koşu:  Koşum( kod: KSM-HST-MTR-A01, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 0ab8dd2 (üretim 4253717) · çekirdek 1681/1681, eklenti 898/898, birleşik ağaçta çekirdek 1693/1693 · depo denetimi 0 hata · bağımsız inceleme: 162 maddenin 238 taşıyıcı alanı ayrı bir betikle ölçüldü ve tek ayrışmanın ORK-9 olduğu doğrulandı (karar 763 karşı 915, gerekçe 1119 karşı 1566 karakter); git geçmişi dört metnin de 0bd898b'de doğduğunu gösterdi; kaynak tabana döndürülünce üç yeni sınama kırmızı; listede olmayan yeni ayrışma ve düzeltildiği hâlde listede kalan kayıt kırmızı veriyor; dört üretici mutasyonunun dördü, iki inceleyici mutasyonunun ikisi yakalandı",
+            ne:    "Tutarlılık üreticisi kanondaki her maddenin taşıyıcı alanını belge metniyle boşluk dışında harfi harfine karşılaştırıyor ve ayrışanı adıyla basıyor; çekirdek süitindeki nöbet bilinen ayrışma listesi dışındaki her ayrışmada kırmızıya döner. Bekçi denetçiye değil tutarlılık üreticisine kuruldu, çünkü taşıyıcı ilanı yalnız bu deponun kanon başlığında yaşar, denetçi her kullanıcı projesini denetler ve bir denetçi tanısı kanonda Zorlama satırı olmayan yeni bir tanı kimliği isterdi. ŞERH: tek ayrışma ORK-9'dur ve düzeltmesi Founder kapısındaki HST-MTR-A13'e devredildi; inceleyicinin yaşattığı uzunluk ve harf büyüklüğü mutasyonları HTR-KANON-NOBETI-MUTASYON-BOSLUKLARI kaydındadır." )
         }
 
-        Adım( kod: HST-MTR-A02, ad: "Kanon Sayısının Tek Kaynağı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-SNF-KANON ], bağımlı: [],
+        Adım( kod: HST-MTR-A02, ad: "Kanon Sayısının Tek Kaynağı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KANON-TUTARLILIK, KOD-BELGE-YUZLERI ], bağımlı: [],
           referans: [ HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR ],
           ne: "🔢 Kanona madde eklendiğinde elle tazelenen sayılar tek bir kaynaktan okunsun, insan kapısı korunsun" ) {
           görev: "Madde sayısının dondurulduğu kaynak ve nöbet noktaları ölçülür. Sayı tek bir kayıtta tutulur ve öteki noktalar oradan okur; kanonun sessizce büyümemesi için bilinçli bir artırma adımı insan kapısı olarak kalır. Türetilmiş yüz üreticisinin sayı ayrıştığında hata fırlatma davranışı da kaydın anlattığı biçimde incelenir."
@@ -5840,6 +5843,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kanonun büyümesini serbest bırakan bir değişiklik yapılmaz; insan kapısı kalır"
+          koşu:  Koşum( kod: KSM-HST-MTR-A02, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 33828a0 (üretim 633196f) · çekirdek 1684/1684, eklenti 898/898, birleşik ağaçta çekirdek 1693/1693 · depo denetimi 0 hata · bağımsız inceleme: kopyaya bir Kural eklenince kırmızıya dönen sınama sayısı onarımdan önce 13, onarımdan sonra yüzler tazelenmeden 7, tazelendikten sonra 4 oldu ve bunlardan sayıya özgü olan yalnız kanon sayımı nöbetidir, kalan üçü her bayt değişikliğinde ateşleyen mühürlerdir; 162, 124 ve 38 sayıları kaynak ve sınama dosyalarında yalnız tek kayıtta geçiyor; dört üretici mutasyonunun dördü yakalandı",
+            ne:    "Kanon madde sayısı tek bir kayıtta duruyor ve öteki noktalar ya bu kayıttan ya canlı ölçümden okuyor; iki türetilmiş yüz üreticisi sayı ayrıştığında artık durmuyor, sapmayı yüze ve çelişki raporuna yazıyor. Kanona madde eklemek hâlâ bilinçli bir artırma adımı ister: kanon sayımı nöbeti kırmızıya döner ve artırılacak kaydın adını ve yerini söyler. Aynı desenin tanı kümesi sayılarına taşınması HST-MTR-A12'ye, inceleyicinin yaşattığı üç mutasyon HTR-KANON-NOBETI-MUTASYON-BOSLUKLARI kaydına bağlandı." )
         }
 
         Adım( kod: HST-MTR-A03, ad: "Tanı Kimliklerinin Tanım Yüzeyi", durum: beklemede, öncelik: p2, üretir: [ KOD-SNF-KANON ], bağımlı: [ RFM-MOTOR-A02 ],
@@ -5903,6 +5909,30 @@ sessizce körleşmez.
           ]
           sınır: "Hijyen kuralının kendisi değişmez; yalnız taramanın gördüğü alan onarılır"
         }
+
+        Adım( kod: HST-MTR-A12, ad: "Tanı Kümesi Sayılarının Tek Kaydı", durum: beklemede, öncelik: p2, üretir: [ KOD-KANON-TUTARLILIK ], bağımlı: [ HST-MTR-A02 ],
+          referans: [ HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR ],
+          ne: "🧮 Sicile bir tanı eklemek tutarlılık üreticisini hata fırlatarak durdurmasın" ) {
+          görev: "HST-MTR-A02'nin bağımsız incelemesi (2026-10-10) kanon tutarlılık metninin tanı kümesi sayılarında hâlâ hata fırlattığını ölçmüştür: sicile tek bir tanı eklenince üretici çıkış 1 verir ve hangi değişmezin tutmadığını söylemez; A01 ile A02'nin üç yeni fikstürü de aynı hatayla düşer. RFM-MOTOR-A02 yeni bir biçim tanısı getirdiği için buna ilk çarpacak iş odur. Sayılar KANON_SAYIMI desenine taşınır: tek kayıt, sapmada bulgu ve bilinçli artırma için tek bir kırmızı nöbet; önce sicile tanı eklenmiş bir fikstürle kırmızı sınama yazılır."
+          kabul: [
+            "sicile tanı eklenince üretici durmaz, sapmayı adıyla basar ve yalnız sayım nöbeti kırmızıya döner (önce kırmızı, sonra yeşil)",
+            "tanı kümesi sayıları kaynak ve sınama dosyalarında tek kayıtta geçer",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Tanı sicilinin büyümesi serbest bırakılmaz; insan kapısı kalır"
+        }
+
+        Adım( kod: HST-MTR-A13, ad: "Kanon Metninin Ölçülen Düzeltmeleri", durum: beklemede, onayBekler: founder, öncelik: p2, üretir: [ KOD-KANON-TUTARLILIK ], bağımlı: [ HST-MTR-A01, HST-MTR-A08 ],
+          referans: [ HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI, HTR-TASIYICI-MUTABAKAT-KORLUGU ],
+          ne: "📜 Ölçümle bulunan kanon kusurları Founder onayıyla düzeltilsin" ) {
+          görev: "Hasat turunun nöbetleri (2026-10-10) kanon metninde üç kusur ölçmüştür ve üçü de Founder kapısındadır. Birincisi ORK-9'dur: karar ve gerekçe taşıyıcıları belge metninden kısa doğmuştur ve belge metnine birebir eşitlenmelidir. İkincisi TIP-1.14'tür: madde sınıflamada hiç var olmamış yalın bir Kimlik tipini sayar; doğru liste sınıflamanın on iki arkayüz tipidir ve rol listesindeki kimlik sözcüğü kimlik doğrulama politikası, kimlik alanı sınırı ve dış kimlik sağlayıcısı olarak açılır. Üçüncüsü iki kanon dosyasının başlığındaki bayat madde sayılarıdır (MİM 17 değil 19, YÜZ 20 değil 21). Founder kararı gelince düzeltmeler tek işlemede yapılır, kanon mühürleri ile nöbet kaydı tazelenir ve türetilmiş yüzler yeniden üretilir."
+          kabul: [
+            "Founder kararı Adımın onay kaydında yazılıdır",
+            "taşıyıcı nöbetindeki bilinen ayrışma listesi boşalır ve 238 alanın hepsi eşit ölçülür",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Yalnız ölçülen üç kusur düzeltilir; maddelerin hükmü değişmez"
+        }
       }
 
       AltKatman( kod: HST-MOTOR-K2, departman: kodlama, ad: "Gezinti ve Fikstür",
@@ -5950,7 +5980,7 @@ sessizce körleşmez.
           sınır: "Kitaplık düzenini sınayan fikstürler silinmez"
         }
 
-        Adım( kod: HST-MTR-A08, ad: "Öğretim Yüzündeki Dört Bayat Yer", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DERSLER ], bağımlı: [],
+        Adım( kod: HST-MTR-A08, ad: "Öğretim Yüzündeki Dört Bayat Yer", durum: tamamlandı, öncelik: p2, üretir: [ KOD-MEK-SEF, KOD-OGRETIM-URET ], bağımlı: [],
           referans: [ HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI ],
           ne: "🧹 Öğretim tazelik turunun alan dışında bıraktığı dört bayat yer düzeltilsin" ) {
           görev: "Kaydın ölçtüğü dört yer yeniden doğrulanır ve bugün hâlâ bayat olanlar düzeltilir: MEK-SEF'in sözleşme sayısı, üreteç komutunun kökten çalışan yolu, emekli raf kodunu anan yorum ve TIP-1.14'ün saydığı tip. Kayıttaki iki anlam ayrışması bu Adımın kapsamında değildir."
@@ -5960,6 +5990,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Anlam ayrışmaları Founder hükmü ister; bu Adım onlara dokunmaz"
+          koşu:  Koşum( kod: KSM-HST-MTR-A08, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 53d6e80 (üretim 8628d52) · çekirdek 1687/1687, eklenti 898/898, birleşik ağaçta çekirdek 1693/1693 ve eklenti 902/902 · depo denetimi 0 hata · bağımsız inceleme: gezin MEK-SEF'in dokuz Sözleşme sardığını gösterdi ve ne alanı ile kabul cümlesi dokuz diyor; yeni künye komutu depo kökünde çalışıyor, eskisi modül bulunamadı hatası veriyor; RAF-OGRETI-OGRETIM tanımlı; on dört kart yeni üreteçle bayt bayt aynı yeniden üretildi ve yalnız komut satırları değişti; kaynak tabana döndürülünce üç yeni sınama üç yeri adıyla göstererek kırmızı; dört mutasyondan üçü yakalandı",
+            ne:    "Dört bayat yerden kanon dışındaki üçü düzeltildi ve nöbete bağlandı: MEK-SEF'in sözleşme sayısı, öğretim üretecinin künyesindeki komut ve emekli raf kodunu anan yorum. Dördüncüsü kanondadır: TIP-1.14 sınıflamada hiç var olmamış bir Kimlik tipini sayar; düzeltme önerisi sınıflamanın on iki arkayüz tipiyle birebir doğrulandı ve Founder kapısındaki HST-MTR-A13'e devredildi. Yeni raf nöbetinin dosyası hızlı ağaç kümesinde değildir; bu not HTR-AGAC-KUMESI-UYELIK-NOBETI kaydına eklendi." )
         }
       }
     }

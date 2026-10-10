@@ -120,13 +120,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TASIYICI-MUTABAKAT-KORLUGU,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-MTR-A01,
   çapa:             nitelik,
   dönüşTetikleyici: "Kanona bir sonraki madde eklendiğinde ya da tutarlılık motoruna dokunulduğunda",
   öncelik:          p1,
   tarih:            2026-08-09,
-  ne:               "Kanon maddesinin makine taşıyıcısı belge metninden ayrışabilmekte ve yeşil kapıdan geçebilmektedir. Kusur 2026-08-09 tarihinde gerçekleşti ve bağımsız denetim yakaladı: ORK-8 maddesinin belge bloğundaki Gerekçe altı yüz doksan beş karakterken taşıyıcı alanı beş yüz seksen iki karakterdi ve bir cümle sessizce düşmüştü. Denetçi otuz yedi Karar düğümünün tamamını tarayıp ayrışmanın tekil olduğunu ölçtü ve kusur kapandı, fakat KUSURUN GEÇMESİNE İZİN VEREN AÇIK DURUYOR. Sebebi ölçülmüştür: tutarlılık motorundaki dört parça denetimi yalnız Gerekçe başlığının VARLIĞINA bakar, taşıyıcı alanın belge metnine EŞİTLİĞİNE bakmaz; dolayısıyla aynı sapma yarın yeniden doğarsa kapı yine yeşil yanar. Kanon dosyalarının başlığı taşıyıcı alanların aynı metnin makine okur ikizi olduğunu ilan ettiği için bu bir ilan ile gerçek arasındaki açıktır. Karara bağlanacak soru bekçinin nereye kurulacağıdır; tutarlılık üreticisinin kendi ölçüm tablosuna bir satır eklemek en ucuz yol görünmektedir, çünkü o tablo zaten dört parça ile kanonik örneği ölçmektedir. KARAR (Founder · 2026-08-18): hatırlatıcı RFM-KANON-A01 Adımına bağlandı, çünkü tetikleyicinin beklediği bir sonraki kanon maddesi o Adımla doğacaktır; bekçinin nereye kurulacağı sorusu madde yazım turunda birlikte ele alınır. YENİDEN AÇILDI (kontrolcü · 2026-09-11, Founder yetki devriyle): kaydın bağlandığı RFM-KANON-A01 Adımı kapanmıştır, fakat bekçiyi yazmamıştır; 2026-09-11 tarihli ölçümde kanon tutarlılık gövdesi dört parçanın yalnız varlığını ölçmekte, taşıyıcı alanın belge metnine eşitliğini ölçmemektedir. Kaydın kaygısı olduğu gibi durduğu için kayıt kapanmaz ve açık hâle alınır; bekçinin yeri bir sonraki Karar düğümü yazımında ele alınır. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A01 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur.",
+  ne:               "Kanon maddesinin makine taşıyıcısı belge metninden ayrışabilmekte ve yeşil kapıdan geçebilmektedir. Kusur 2026-08-09 tarihinde gerçekleşti ve bağımsız denetim yakaladı: ORK-8 maddesinin belge bloğundaki Gerekçe altı yüz doksan beş karakterken taşıyıcı alanı beş yüz seksen iki karakterdi ve bir cümle sessizce düşmüştü. Denetçi otuz yedi Karar düğümünün tamamını tarayıp ayrışmanın tekil olduğunu ölçtü ve kusur kapandı, fakat KUSURUN GEÇMESİNE İZİN VEREN AÇIK DURUYOR. Sebebi ölçülmüştür: tutarlılık motorundaki dört parça denetimi yalnız Gerekçe başlığının VARLIĞINA bakar, taşıyıcı alanın belge metnine EŞİTLİĞİNE bakmaz; dolayısıyla aynı sapma yarın yeniden doğarsa kapı yine yeşil yanar. Kanon dosyalarının başlığı taşıyıcı alanların aynı metnin makine okur ikizi olduğunu ilan ettiği için bu bir ilan ile gerçek arasındaki açıktır. Karara bağlanacak soru bekçinin nereye kurulacağıdır; tutarlılık üreticisinin kendi ölçüm tablosuna bir satır eklemek en ucuz yol görünmektedir, çünkü o tablo zaten dört parça ile kanonik örneği ölçmektedir. KARAR (Founder · 2026-08-18): hatırlatıcı RFM-KANON-A01 Adımına bağlandı, çünkü tetikleyicinin beklediği bir sonraki kanon maddesi o Adımla doğacaktır; bekçinin nereye kurulacağı sorusu madde yazım turunda birlikte ele alınır. YENİDEN AÇILDI (kontrolcü · 2026-09-11, Founder yetki devriyle): kaydın bağlandığı RFM-KANON-A01 Adımı kapanmıştır, fakat bekçiyi yazmamıştır; 2026-09-11 tarihli ölçümde kanon tutarlılık gövdesi dört parçanın yalnız varlığını ölçmekte, taşıyıcı alanın belge metnine eşitliğini ölçmemektedir. Kaydın kaygısı olduğu gibi durduğu için kayıt kapanmaz ve açık hâle alınır; bekçinin yeri bir sonraki Karar düğümü yazımında ele alınır. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A01 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-MTR-A01 kapanmıştır; tutarlılık üreticisi her maddenin taşıyıcı alanını belge metniyle karşılaştırır ve bilinen ayrışma listesi dışındaki her ayrışma çekirdek süitini kırmızıya çevirir. Ölçülen tek ayrışma olan ORK-9'un düzeltmesi Founder kapısındaki HST-MTR-A13'tedir.",
 )
 
 Hatırlatıcı(
@@ -652,13 +652,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-MTR-A02,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-10,
   dönüşTetikleyici: "Kanona üçüncü kez madde eklendiğinde; ya da türetilmiş yüz üreticisinin sayı sözleşmesi bir sonraki kez elden geçirildiğinde",
-  ne:               "Kanonun madde sayısı motorun kaynağında ve nöbetlerinde bilinçle dondurulmuştur ve bu bir insan kapısıdır; niyet doğrudur, çünkü kanonun sessizce büyümesi istenmez. Bugün ölçülen şey niyetin değil BEDELİN kendisidir: 2026-09-10 tarihinde kanona iki ayrı turda madde eklenmiş ve her seferinde depo kırmızıya dönmüştür. Birinci turda iki madde eklendi ve dokuz nöbet kırmızı yandı; sayılar elle tazelendi. İkinci turda bir madde eklendi ve yedi nöbet kırmızı yandı; sayılar yine elle tazelenmeyi beklemektedir. Her tazeleme ayrı bir ajan turu yemekte ve iki tur arasında depo kırmızı kalmaktadır, bu da aynı anda çalışan öteki üreticilerin kendi kapılarını okuyamaz hâle gelmesine yol açmaktadır; bugün üç ajan paralel koşarken ikisi bu kırmızıyı kendi işi sanmamak için ayrıca uyarılmak zorunda kalmıştır. ASIL BULGU DAHA AĞIRDIR: türetilmiş yüz üreticisi sayı ayrıştığında hata fırlatmakta ve on altı kalıcı yüzün yeniden üretimi tümden durmaktadır, yani kanona bir madde eklemek belgelerin tazelenmesini de kilitlemektedir. Kilit tek yönlüdür ve sırayı zorlar: önce sayı, sonra belge. Onarımın yönü ölçülmemiştir ve en az üç yol vardır: sayı tek bir kaynaktan türetilip nöbetlere oradan verilebilir, dondurma bir eşik yerine bir imza hâline getirilebilir, ya da üreticinin sayı ayrışmasında hata fırlatmak yerine dürüst bir uyarı basıp işini sürdürmesi sağlanabilir. Üçü de insan kapısını korur ve yalnız bedeli düşürür; seçim ölçümden sonra verilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A02 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "Kanonun madde sayısı motorun kaynağında ve nöbetlerinde bilinçle dondurulmuştur ve bu bir insan kapısıdır; niyet doğrudur, çünkü kanonun sessizce büyümesi istenmez. Bugün ölçülen şey niyetin değil BEDELİN kendisidir: 2026-09-10 tarihinde kanona iki ayrı turda madde eklenmiş ve her seferinde depo kırmızıya dönmüştür. Birinci turda iki madde eklendi ve dokuz nöbet kırmızı yandı; sayılar elle tazelendi. İkinci turda bir madde eklendi ve yedi nöbet kırmızı yandı; sayılar yine elle tazelenmeyi beklemektedir. Her tazeleme ayrı bir ajan turu yemekte ve iki tur arasında depo kırmızı kalmaktadır, bu da aynı anda çalışan öteki üreticilerin kendi kapılarını okuyamaz hâle gelmesine yol açmaktadır; bugün üç ajan paralel koşarken ikisi bu kırmızıyı kendi işi sanmamak için ayrıca uyarılmak zorunda kalmıştır. ASIL BULGU DAHA AĞIRDIR: türetilmiş yüz üreticisi sayı ayrıştığında hata fırlatmakta ve on altı kalıcı yüzün yeniden üretimi tümden durmaktadır, yani kanona bir madde eklemek belgelerin tazelenmesini de kilitlemektedir. Kilit tek yönlüdür ve sırayı zorlar: önce sayı, sonra belge. Onarımın yönü ölçülmemiştir ve en az üç yol vardır: sayı tek bir kaynaktan türetilip nöbetlere oradan verilebilir, dondurma bir eşik yerine bir imza hâline getirilebilir, ya da üreticinin sayı ayrışmasında hata fırlatmak yerine dürüst bir uyarı basıp işini sürdürmesi sağlanabilir. Üçü de insan kapısını korur ve yalnız bedeli düşürür; seçim ölçümden sonra verilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A02 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-MTR-A02 kapanmıştır; madde sayısı tek kayıtta durur, üreticiler sapmada durmak yerine bulgu verir ve bilinçli artırma adımı insan kapısı olarak kalır. Aynı desenin tanı kümesi sayılarına taşınması HST-MTR-A12'dedir."
 )
 
 Hatırlatıcı(
@@ -749,12 +749,12 @@ Hatırlatıcı(
 Hatırlatıcı(
   kod:              HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI,
   durum:            kararlaştı,
-  hatırlat:         HST-MTR-A08,
+  hatırlat:         HST-MTR-A13,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-13,
   dönüşTetikleyici: "Öğretim üreteci, sef mekanizması ya da tip kanonu bir sonraki kez elden geçirildiğinde",
-  ne:               "2026-09-13 tarihli öğretim anlatısı tazelik turu, kendi yazma alanının dışında kalan dört bayat yer ölçmüştür. Birincisi, MEK-SEF düğümü bugün dokuz çalışma anı sözleşmesi sardığı hâlde mek_sef.sar dosyasının iki satırı sekiz sözleşmeden söz etmektedir. İkincisi, öğretim kartlarının üretilen künyesi üreteç komutunu kök dizinden çalışmayan bir yolla vermektedir; kökten doğru komut urun/arac/ogretim-uret.ts yolunu kullanır. Üçüncüsü, üreteç kodundaki bir yorum artık kullanılmayan RAF-OGRETIM kodunu anmaktadır; güncel raf kodu RAF-OGRETI-OGRETIM'dir. Dördüncüsü, TIP-1.14 maddesi sınıflamada bulunmayan bir Kimlik tipini saymaktadır. Tur ayrıca iki anlam ayrışması ölçmüştür ve ikisi de KPS-CEL-A01 kapsamındaki kanon ile şema ayrışmalarıyla aynı ailedendir: MIM-1.4 ile ORK-2.4 Katmanın tek bir somut Teknolojiye bağlanmasını isterken canlı ağaç Katmanları Takıma bağlamaktadır; TIP-1.1 ise Uygulamayı Proje altında kurulabilir sayarken sınıflama Projenin Uygulamayı sarmasına izin vermemektedir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A08 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "2026-09-13 tarihli öğretim anlatısı tazelik turu, kendi yazma alanının dışında kalan dört bayat yer ölçmüştür. Birincisi, MEK-SEF düğümü bugün dokuz çalışma anı sözleşmesi sardığı hâlde mek_sef.sar dosyasının iki satırı sekiz sözleşmeden söz etmektedir. İkincisi, öğretim kartlarının üretilen künyesi üreteç komutunu kök dizinden çalışmayan bir yolla vermektedir; kökten doğru komut urun/arac/ogretim-uret.ts yolunu kullanır. Üçüncüsü, üreteç kodundaki bir yorum artık kullanılmayan RAF-OGRETIM kodunu anmaktadır; güncel raf kodu RAF-OGRETI-OGRETIM'dir. Dördüncüsü, TIP-1.14 maddesi sınıflamada bulunmayan bir Kimlik tipini saymaktadır. Tur ayrıca iki anlam ayrışması ölçmüştür ve ikisi de KPS-CEL-A01 kapsamındaki kanon ile şema ayrışmalarıyla aynı ailedendir: MIM-1.4 ile ORK-2.4 Katmanın tek bir somut Teknolojiye bağlanmasını isterken canlı ağaç Katmanları Takıma bağlamaktadır; TIP-1.1 ise Uygulamayı Proje altında kurulabilir sayarken sınıflama Projenin Uygulamayı sarmasına izin vermemektedir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-MTR-A08 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. DEVİR (kontrolcü · 2026-10-10): HST-MTR-A08 kanon dışındaki üç yeri düzeltip kapanmıştır. TIP-1.14'teki dördüncü yer kanon metnidir ve Founder kapısındaki HST-MTR-A13'e devredilmiştir; kayıt o Adım kapanana kadar açık kalır."
 )
 
 Hatırlatıcı(
@@ -1242,7 +1242,7 @@ Hatırlatıcı(
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "İşleme kapısına bir sonraki kez dokunulduğunda; en geç yeni bir ağaç okuyan çekirdek sınaması eklendiğinde",
-  ne:               "HST-YUZ-A01 işleme kapısına, çekirdek kodu değişmediğinde de koşan hızlı bir ağaç kümesi eklemiştir. Bağımsız inceleme 2026-10-10 tarihinde kümenin üyeliğinin elle tutulduğunu ve bunu ölçen bir nöbet bulunmadığını ölçmüştür: tetikleyici dışı bir yol okuyan 49 çekirdek sınama dosyasının 20'si kümededir; ogreti, oz/ceviri, anadizin ve kök belge dosyalarını okuyan 29 dosya kümenin dışındadır ve sözlükten tek satır silen bir işleme yeni kapıdan geçip sözlük kapsama nöbetini kırmızıya düşürmüştür. Çekirdek paketinin bildirim dosyasının değişmesi de hiçbir süiti tetiklememektedir. Üç yol vardır: bu yolları tam süitin tetikleyicisine eklemek, hızlı olanları kümeye almak ya da üyeliği ölçen bir nöbet yazmak."
+  ne:               "HST-YUZ-A01 işleme kapısına, çekirdek kodu değişmediğinde de koşan hızlı bir ağaç kümesi eklemiştir. Bağımsız inceleme 2026-10-10 tarihinde kümenin üyeliğinin elle tutulduğunu ve bunu ölçen bir nöbet bulunmadığını ölçmüştür: tetikleyici dışı bir yol okuyan 49 çekirdek sınama dosyasının 20'si kümededir; ogreti, oz/ceviri, anadizin ve kök belge dosyalarını okuyan 29 dosya kümenin dışındadır ve sözlükten tek satır silen bir işleme yeni kapıdan geçip sözlük kapsama nöbetini kırmızıya düşürmüştür. Çekirdek paketinin bildirim dosyasının değişmesi de hiçbir süiti tetiklememektedir. Üç yol vardır: bu yolları tam süitin tetikleyicisine eklemek, hızlı olanları kümeye almak ya da üyeliği ölçen bir nöbet yazmak. EK (2026-10-10): HST-MTR-A08'in yeni raf nöbeti kimlik indeksini, yani plan ağacını okuduğu hâlde sınama dosyası (ogretim-ureteci.test.ts) hızlı kümede değildir; yalnız plan dosyası değiştiren bir işlemede bu nöbeti yalnız sürekli tümleştirme görür."
 )
 
 Hatırlatıcı(
@@ -1253,4 +1253,24 @@ Hatırlatıcı(
   tarih:            2026-10-10,
   dönüşTetikleyici: "Katkı rehberi ya da güvenlik belgesi bir sonraki kez elden geçirildiğinde",
   ne:               "HST-YUZ-A01'in bağımsız incelemesi 2026-10-10 tarihinde iki kök belgede bayat ayrıntı ölçmüştür. Katkı rehberi çekirdek süitinin sınama sayısını iki yerde 1298 olarak yazmaktadır, gerçek sayı 1684'tür; sayı her turda bayatlayacağı için yerine komutun yazılması önerilir. Güvenlik belgesi işleme kancasının günlüklerini sabit dosya adlarıyla anmaktadır, oysa gerçek adlar süreç kimliği sonekiyle doğar, kök ve dil günlükleri hiç anılmamaktadır ve her işleme geçici dizinde silinmeyen yaklaşık 177 KB günlük bırakmaktadır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANON-MUHUR-CIFT-KAYIT,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Kanon metnine bir sonraki Founder onaylı düzeltme yapılırken",
+  ne:               "HST-MTR-A01 ile A02'nin bağımsız incelemesi 2026-10-10 tarihinde kanon mühürlerinin iki yerde elle tutulduğunu ölçmüştür: KANON_SHA sabiti ile nöbet kaydındaki kanon demeti aynı sekiz dosyanın iki ayrı mührüdür ve her kanon düzeltmesi iki elle düzenleme ister. Ayrıca kaynak ayrışması nöbetinin kırmızı fikstürü önkoşul olarak canlı demetin kayıtla eşit olmasını aradığı için her kanon bayt değişikliğinde canlı mühür nöbetiyle birlikte düşer ve aynı sebebi ikinci kez sayar. Mührün tek kaynağı olmalı ve fikstür kendi mutasyon öncesi demetini taban almalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANON-NOBETI-MUTASYON-BOSLUKLARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Kanon tutarlılık nöbetine ya da öğretim nöbetlerine bir sonraki kez dokunulduğunda",
+  ne:               "Hasat turunun kanon grubundaki bağımsız inceleme 2026-10-10 tarihinde bazı mutasyonların yaşadığını ölçmüştür. Taşıyıcı eşitliği yalnız uzunlukla ya da harf büyüklüğüne duyarsız karşılaştırılsa süit yeşil kalmaktadır; eşit uzunlukta sözcük değişimi taşıyan bir fikstür eksiktir. Bilinen ayrışma listesi içeriğe değil madde ve alan anahtarına baktığı için listedeki ORK-9 alanına eklenen yeni bir sapmayı yalnız genel bayt mühürleri yakalar; ORK-9 düzeltilince liste boşalır ve bu kendiliğinden kalkar. Kanon sayımı kaydı canlı diskten türetilse nöbet yeşil kalır, yani kaydın elle yazılmış olması yalnız yorumla korunur; dosya sayısı ile Karar ve Kural arasındaki rol değişimi bulgu sınamasında yoktur. Öğretim nöbeti de ne alanına rakamla yazılmış bir sayıyı okuyamamaktadır."
 )
