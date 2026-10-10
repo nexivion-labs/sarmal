@@ -2892,28 +2892,32 @@ export function uygulanmamisKararTanilari(
   const adaylar: Array<{ dosya: string; kod: string; node: Dugum }> = [];
   const bagliKodlar = new Set<string>();
   for (const [dosya, program] of programlar) {
+    // BKM-BUG-A12: ters bağ YALNIZ `widget` türünde aranmaz. `Kural ad( … )` biçiminde
+    // adlı yazılan Kural ayrıştırıcıda `kuralTanım` türüne düşer; eski koşul onu
+    // gezmediği için kurala inmiş kararlar sahte uyarı alıyordu. Karar tipi (halef
+    // zinciri) dışındaki HER düğüm türü sayılır; parametre değerine gömülü widget'lar da
+    // dayanak haritasıyla (dayanaksizKararlar) aynı biçimde gezilir.
     const gez = (node: Dugum): void => {
-      if (node.tur === "widget") {
-        const al = (ad: string): string | undefined =>
-          [...node.parametreler, ...node.ozellikler].find((p) => p.ad === ad)?.deger.metin;
-        if (node.ad === "Karar") {
-          const kod = al("kod");
-          if (kod && al("durum") === "kilitli" && al("uygulama") === "gerekli") {
-            adaylar.push({ dosya, kod, node });
-          }
-        } else {
-          for (const p of [...node.parametreler, ...node.ozellikler]) {
-            if (!KARAR_TERS_BAG_ALANLARI.has(p.ad)) continue;
-            const topla = (d: typeof p.deger | undefined): void => {
-              if (!d) return;
-              if (d.tur === "liste") (d.ogeler ?? []).forEach(topla);
-              else if (d.metin) bagliKodlar.add(d.metin);
-            };
-            topla(p.deger);
-          }
+      const al = (ad: string): string | undefined =>
+        [...node.parametreler, ...node.ozellikler].find((p) => p.ad === ad)?.deger.metin;
+      if (node.tur === "widget" && node.ad === "Karar") {
+        const kod = al("kod");
+        if (kod && al("durum") === "kilitli" && al("uygulama") === "gerekli") {
+          adaylar.push({ dosya, kod, node });
+        }
+      } else {
+        for (const p of [...node.parametreler, ...node.ozellikler]) {
+          if (!KARAR_TERS_BAG_ALANLARI.has(p.ad)) continue;
+          const topla = (d: typeof p.deger | undefined): void => {
+            if (!d) return;
+            if (d.tur === "liste") (d.ogeler ?? []).forEach(topla);
+            else if (d.metin) bagliKodlar.add(d.metin);
+          };
+          topla(p.deger);
         }
       }
       for (const c of node.cocuklar) gez(c);
+      icin(node, (v) => { if (v.tur === "widget" && v.dugum) gez(v.dugum); });
     };
     for (const b of program.bildirimler) gez(b);
   }

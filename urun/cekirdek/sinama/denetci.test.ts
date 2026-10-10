@@ -887,6 +887,35 @@ Blok( kod: BLK-KYK, ne: "iş" ) {
   assert.equal(yap("kilitli", 'uygulama: gerekli, ', ", referans: [ K-T1 ]").length, 0);
 });
 
+// BKM-BUG-A12: `Kural ad( … )` biçiminde ADLI yazılan Kural ayrıştırıcıda `kuralTanım`
+// türüne düşer; ters bağ toplayıcısı yalnız `widget` türünü gezdiği için adlı Kuralın
+// dayanak bağı sayılmıyor ve kararı kurala inmiş projede sahte uyarı düşüyordu.
+// Adsız biçim, bildirim adı taşımayan widget kuraldır (`GenelKural( kod: …, ad: "…" )`).
+test("YAS-2.1 (BKM-BUG-A12): adlı ve adsız Kuralın dayanak bağı kararı inmiş saydırır; bağsız karar uyarı almaya devam eder", async () => {
+  const { uygulanmamisKararTanilari } = await import("../src/denetci.ts");
+  const kararlar = `
+Karar( kod: KRR-ADLI, sıra: 1, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-ADSIZ, sıra: 2, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-ORTAK, sıra: 3, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-BAGSIZ, sıra: 4, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )`;
+  const anayasa = `
+Anayasa( kod: ANY-ORNEK, ad: "Örnek Anayasa", ne: "fikstür" ) {
+  Kural adliKural( kod: KRL-ADLI, otorite: anayasa, katman: niyet, kapsam: genel,
+    dayanak: [ KRR-ADLI, KRR-ORTAK ], ne: "adlı biçimde yazılmış kural" )
+  GenelKural( kod: KRL-ADSIZ, ad: "adsizKural", otorite: anayasa, katman: niyet, kapsam: genel,
+    dayanak: [ KRR-ADSIZ, KRR-ORTAK ], ne: "widget biçiminde (bildirim adı olmadan) yazılmış kural" )
+}`;
+  const programlar = new Map([
+    ["yasa/kararlar.sar", ayristir(belirtecle(kararlar))],
+    ["yasa/anayasa.sar", ayristir(belirtecle(anayasa))],
+  ]);
+  const uyarilar = uygulanmamisKararTanilari(programlar).map((t) => t.tani.parametreler?.kod ?? t.tani.mesaj);
+  // Adlı (KRR-ADLI) ve adsız (KRR-ADSIZ) Kuralın dayanağı ve ikisinin ortak dayanağı inmiş sayılır.
+  // Regresyon: hiçbir düğümün bağlamadığı KRR-BAGSIZ uyarı almaya devam eder.
+  assert.equal(uyarilar.length, 1, `beklenen yalnız KRR-BAGSIZ, gelen: ${JSON.stringify(uyarilar)}`);
+  assert.match(String(uyarilar[0]), /KRR-BAGSIZ/);
+});
+
 // ── DIL-1.1: dil denetçisi (diakritik-kayıp + normalizasyon-uyumsuz) ───────────
 test("DIL-1.1: şapkasız alan adı (gorev/bagimli) bilgi tanısı üretir; doğru yazım susar; NFD ham kaynak normalizasyon-uyumsuz verir, NFC susar", async () => {
   const { dilTanilari } = await import("../src/denetci.ts");
