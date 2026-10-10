@@ -5212,10 +5212,14 @@ export function stratejiTanilari(
   }
 
   // Ölü iz: emekli edilmiş düğüm hâlâ canlı kenarın hedefi.
+  // HST-MTR-A09: emekli envanteri ve kaynak kenar taraması YALNIZ `widget` türünde
+  // yapılmaz. `Kural ad( … )` biçiminde adlı yazılan Kural ayrıştırıcıda `kuralTanım`
+  // türüne düşer; eski koşul onu gezmediği için adlı Kuralın emekli karara verdiği
+  // dayanak uyarı üretmiyor, aynı bağın GenelKural biçimi ise üretiyordu. Desen
+  // BKM-BUG-A12'deki ters bağ toplayıcısınınkiyle aynıdır: her düğüm türü gezilir.
   {
     const emekliler = new Map<string, string>();
     for (const { dosya, d } of dugumler) {
-      if (d.tur !== "widget") continue;
       if (yeniAlanMetin(d, "durum") === "emekli" || yeniAlanMetin(d, "emekli") === "evet") {
         const k = yeniAlanMetin(d, "kod");
         if (k) emekliler.set(k, dosya);
@@ -5223,7 +5227,6 @@ export function stratejiTanilari(
     }
     if (emekliler.size) {
       for (const { dosya, d } of dugumler) {
-        if (d.tur !== "widget") continue;
         if (yeniAlanMetin(d, "durum") === "emekli") continue;
         for (const p of [...d.parametreler, ...d.ozellikler]) {
           const ogeler = p.deger.tur === "liste" ? (p.deger.ogeler ?? []) : [p.deger];

@@ -527,6 +527,61 @@ test("proje: strateji, göç sırası, sınır, bağımlılık ve ölü iz hük�
   }
 });
 
+// HST-MTR-A09: `Kural ad( … )` biçiminde ADLI yazılan Kural ayrıştırıcıda `kuralTanım`
+// türüne düşer. Ölü iz toplayıcısının emekli envanteri ve kaynak kenar taraması yalnız
+// `widget` türünü gezdiği için adlı Kuralın emekli karara verdiği dayanak uyarı
+// üretmiyordu; aynı bağın widget biçimli GenelKural karşılığı ise üretiyordu. Körlük,
+// BKM-BUG-A12'nin uygulanmamış-karar bekçisinde onardığı adlı bildirim körlüğünün ikizidir.
+test("proje: emekli karara adlı Kuralla bağlanan dayanak ölü iz üretir; GenelKural biçimindeki bağın uyarısı değişmez (HST-MTR-A09)", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-oluiz-"));
+  try {
+    const programlar = harita({
+      "yasa/kararlar.sar": `Karar( kod: KRR-EMEKLI, durum: emekli, ne: "eski", karar: "k", gerekçe: "g" )\n`
+        + `Karar( kod: KRR-CANLI, durum: kilitli, ne: "canlı", karar: "k", gerekçe: "g" )\n`,
+      "yasa/anayasa.sar": `Anayasa( kod: ANY-ORNEK, ad: "Örnek Anayasa", ne: "fikstür" ) {\n`
+        + `  Kural adliKural( kod: KRL-ADLI, otorite: anayasa, katman: niyet, kapsam: genel, dayanak: [ KRR-EMEKLI ], ne: "adlı biçimde yazılmış kural" )\n`
+        + `  GenelKural( kod: KRL-ADSIZ, ad: "adsizKural", otorite: anayasa, katman: niyet, kapsam: genel, dayanak: [ KRR-EMEKLI ], ne: "widget biçiminde yazılmış kural" )\n`
+        + `  Kural canliKural( kod: KRL-CANLI, otorite: anayasa, katman: niyet, kapsam: genel, dayanak: [ KRR-CANLI ], ne: "canlı karara bağlı kural" )\n`
+        + `  Kural eskiKural( kod: KRL-EMEKLI, durum: emekli, otorite: anayasa, katman: niyet, kapsam: genel, dayanak: [ KRR-EMEKLI ], ne: "emekli adlı kural" )\n`
+        + `}\n`,
+      "plan.sar": `Adım( kod: ADM-CANLI, ne: "iş", referans: [ KRL-EMEKLI ] )\n`,
+    });
+    const oluIz = stratejiTanilari(programlar, new Map(), kodIndeksle(programlar), kok, undefined, bosDisk())
+      .filter((x) => x.tani.kod === "ölü-iz");
+    const yer = (kaynak: string, kenar: string, iz: string) =>
+      oluIz.find((x) => x.tani.mesaj.includes(`"${iz}"`) && x.tani.mesaj.includes(`(${kaynak} düğümünün "${kenar}" kenarı)`));
+
+    // Kırmızıdan yeşile: adlı Kuralın emekli karara verdiği dayanak uyarı üretir ve
+    // bulgu adlı Kuralın kendi dosyasını ve dayanak değerinin konumunu gösterir.
+    const adli = yer("KRL-ADLI", "dayanak", "KRR-EMEKLI");
+    assert.ok(adli, `adlı Kuralın emekli dayanağı ölü iz üretmeli — gelen: ${JSON.stringify(oluIz.map((x) => x.tani.mesaj))}`);
+    assert.equal(adli.dosya, "yasa/anayasa.sar");
+    assert.equal(adli.tani.satir, 2);
+    // Emekli envanterinin öteki yüzü: emekli beyanlı adlı Kural da envantere girer ve
+    // ona canlı kenarla bağlanan Adım aynı uyarıyı alır.
+    assert.ok(yer("ADM-CANLI", "referans", "KRL-EMEKLI"),
+      "emekli beyanlı adlı Kurala verilen canlı referans da ölü iz üretmeli");
+
+    // Regresyon: widget biçimli GenelKural'ın aynı bağı önceki düzey, metin ve konumla uyarı üretir.
+    const adsiz = yer("KRL-ADSIZ", "dayanak", "KRR-EMEKLI");
+    assert.ok(adsiz, "GenelKural biçimindeki bağın uyarısı kaybolmamalı");
+    assert.equal(adsiz.dosya, "yasa/anayasa.sar");
+    assert.equal(adsiz.tani.satir, 3);
+    assert.equal(adsiz.tani.mesaj,
+      `"KRR-EMEKLI" artık kanonik anlam taşımıyor fakat etkin kapsamda duruyor (KRL-ADSIZ düğümünün "dayanak" kenarı). `
+      + `Ölü izin korunması, yürürlükten kalkmış seçeneği canlıymış gibi gösterir.`);
+
+    // Canlı karara bağlı Kural ile kendisi emekli olan Kuralın kenarı konuşmaz; toplam tam üçtür.
+    assert.equal(yer("KRL-CANLI", "dayanak", "KRR-CANLI"), undefined);
+    assert.equal(yer("KRL-EMEKLI", "dayanak", "KRR-EMEKLI"), undefined,
+      "kendisi emekli olan düğümün kenarı canlı kenar sayılmaz");
+    assert.equal(oluIz.length, 3, `beklenen üç ölü iz, gelen: ${JSON.stringify(oluIz.map((x) => x.tani.mesaj))}`);
+    assert.ok(oluIz.every((x) => x.tani.duzey === "uyarı"), "ölü iz tanısının düzeyi değişmez");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
 // (a) İÇERİK biçimli sızıntı: kapalı üründeki eşik envanterinden türeyen ikinci
 //     dalga sabitleri açık taraftaki bir belgeye düz metin olarak düşerse nöbet
 //     kırmızıya döner. Bu fikstür kapalı varlığın adını HİÇ anmaz; yol biçimli
