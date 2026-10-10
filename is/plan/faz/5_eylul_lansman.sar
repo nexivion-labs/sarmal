@@ -1865,7 +1865,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           sınır: "Yalnız bu üç iddia; süitin geri kalanı ölçülmüş ve klasik boş nöbet desenlerinden temiz çıkmıştır."
         }
 
-        Adım( kod: BKM-DNT-A11, durum: beklemede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.1, YUZ-3.3 ],
+        Adım( kod: BKM-DNT-A11, durum: geliştirmede, öncelik: p2, bağımlı: [ BKM-DNT-A01 ], referans: [ YUZ-3.1, YUZ-3.3 ],
           üretir: [ KOD-SNM-KAPI-KAPSAMI ],
           ne: "⚖️ Kanon ile ilanın uyumunu ölçen genel nöbet. Kapsam nöbeti bugün yalnız iki ad kümesinin eşitliğini ölçer: ilandaki üretici adları ile denetim hattının gerçekten çağırdığı üretici adları. Girdisinde ne tanı kimliği ne kanon maddesi ne yüzey adı vardır ve yüzey listesine hiç dokunmaz; bir girdinin yüzey listesi tümüyle silinmedikçe nöbet hiçbir yüzey değişikliğini görmez. Kanon ekseninde bugün var olan tek koruma, ateşlemiş hatırlatıcı için 2026-08-28 tarihinde yazılan iki iddiadır; genel bir kanon-ilan uyum nöbeti yoktur ve bugünkü sınıftan bir ayrışma onun altında sessizce yaşayabilir, nitekim on beş üreticide yaşamaktadır. Nöbet kurulabilir, çünkü kanonun zorlama satırındaki yüzey beyanı ile sicilin madde ve üretici eşlemesi makine-okurdur." ) {
           görev: [
