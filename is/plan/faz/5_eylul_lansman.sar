@@ -5937,7 +5937,7 @@ sessizce körleşmez.
       AltKatman( kod: HST-YUZ-K1, departman: sınama, ad: "Kapı ve Önizleme",
         ne: "kapının seçtiği süitler ve okuma yüzünün küçük kusurları" ) {
 
-        Adım( kod: HST-YUZ-A01, ad: "İşleme Kapısının Süit Seçimi", durum: beklemede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A01, ad: "İşleme Kapısının Süit Seçimi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-ISLEME-KAPISI-PLAN-DEGISIKLIGINDE-EKLENTI-SUITINI-KOSMUYOR ],
           ne: "🚪 Yalnız plan dosyası değiştiren işleme, gerçek ağacı okuyan eklenti nöbetlerini de koştursun" ) {
           görev: "İşleme kapısı süitleri sahnelenen yola göre seçmektedir ve yalnız plan dosyası değiştiğinde eklenti süitini koşmamaktadır. Gerçek ağacı okuyan nöbetler belirlenir ve plan değişikliğinde en azından onlar koşturulur; yalnız eklenti yolları sahnelendiğinde çekirdek süitinin koşmaması da aynı biçimde ele alınır. İşleme süresine etkisi ölçülür."
@@ -5961,7 +5961,7 @@ sessizce körleşmez.
           sınır: "Ağacın biçimi başka bir yerde değişmez"
         }
 
-        Adım( kod: HST-YUZ-A03, ad: "Önizleme Stilinin Markdown Katkısı", durum: beklemede, öncelik: p3, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A03, ad: "Önizleme Stilinin Markdown Katkısı", durum: geliştirmede, öncelik: p3, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR ],
           ne: "🎨 Eski yoldan kalan önizleme stil katkısı ya kaldırılsın ya da gerekçesiyle kalsın" ) {
           görev: "Paket bildirimi önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Katkının bugün bir işe yarayıp yaramadığı ölçülür; yaramıyorsa kaldırılır, yarıyorsa kalma gerekçesi yazılır."
@@ -6063,7 +6063,7 @@ sessizce körleşmez.
           sınır: "Çöküşün kendisi bu Adımda onarılmaz; görünür kılınır"
         }
 
-        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: beklemede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: geliştirmede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR ],
           ne: "📦 Yayımlanan paket kanon kopyasını taşımazsa nöbet kırmızıya dönsün" ) {
           görev: "Paket içeriği nöbeti dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarının pakette bulunduğunu denetler hâle getirilir. package-lock.json sürümünün paket sürümüyle ilerlemesi de ölçülür ve düzeltilir."
