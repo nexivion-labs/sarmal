@@ -808,7 +808,7 @@ Hatırlatıcı(
   öncelik:          p2,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Geribildirim hasadının yazım gövdesi bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir."
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir. HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde aynı dosyanın doğuş şablonundaki başlığın da karşılığı olmayan bir vaat taşıdığını ölçmüştür: ogreti/sablon/dogus/geribildirim.sar başlığı kayıtların koşumda etmenlerin izole hafızalarına dağıtıldığını söyler, oysa böyle bir mekanizma yoktur ve şef yalnız hedef Adımın ve bağımlı Adımların kanal parametrelerini isteme koyar. Aynı iddia takdir üreticisinin baş yorumunda da geçer ve başlık her yeni projeye iner; hasat gövdesi elden geçirilirken başlık metni de gerçek davranışa göre düzeltilmelidir."
 )
 
 Hatırlatıcı(
@@ -1323,4 +1323,24 @@ Hatırlatıcı(
   tarih:            2026-10-10,
   dönüşTetikleyici: "Komut satırının dönüştürücü komutlarına bir sonraki kez dokunulduğunda",
   ne:               "MGZ-A03 denetim kiplerinde söz-dizim hatasını yol, satır, sütun ve kimlikle basar hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde belge, yansıt ve ağaç dönüştürücülerinin hatayı hâlâ eski biçimde, yol ve kimlik taşımadan bastığını ölçmüştür. Çıkış kodu doğrudur; yalnız biçim denetim yüzeyiyle ayrışmaktadır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-HIJYEN-AYIKLAYICI-ESDEGERLIK-NOBETI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Hijyen ayıklayıcısına bir sonraki kez dokunulduğunda ya da taranan bir dosya sezginin kör kaldığı biçimlerden birini taşıdığında",
+  ne:               "HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde tanı metni hijyeninin yeni ayıklayıcısının taranan 125 dosyanın hepsinde TypeScript ayrıştırıcısıyla özdeş karar verdiğini, fakat düzenli ifadeyi bölme işaretinden ayıran sezginin üç nadir biçimde kör kaldığını ölçmüştür: bir koşulun kapanan ayracından hemen sonra gelen düzenli ifade, boş olmama işaretinden sonra gelen bölme ve artırma işlecinden sonra gelen bölme. Bugün hiçbir dosya bu biçimleri taşımamaktadır ve kusur gizli bir ihlal üretmemektedir. Ayıklayıcının çıktısını taranan dosyalarda TypeScript tarayıcısının gördüğüyle karşılaştıran kalıcı bir eşdeğerlik nöbeti kurulmalıdır; böylece sezgi bir gün yanılırsa bu sessiz bir kör bölge olarak değil kırmızı bir sınama olarak görünür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-ARAC-SAYISI-DONDURMASI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "MCP sunucusuna bir sonraki araç eklendiğinde",
+  ne:               "HST-MTR-A12'nin bağımsız incelemesi 2026-10-10 tarihinde türetilmiş yüz üreticisinin MCP araç sayısını kaynakta on sekiz olarak dondurduğunu ve bir araç eklenince araç sayısının beklenenden farklı olduğunu söyleyerek çıkış 1 verdiğini ölçmüştür. Bu, HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR kaydının ölçtüğü kilidin araç sayısındaki eşidir: bir araç eklemek belgelerin yeniden üretimini durdurur. Kanon ve tanı kümesi sayılarına uygulanan desen burada da uygulanmalıdır; sayı tek kayıtta durmalı, sapma üreticiyi durdurmak yerine adlı bir bulgu olarak basılmalı ve bilinçli artırma için yalnız tek bir kırmızı nöbet kalmalıdır."
 )

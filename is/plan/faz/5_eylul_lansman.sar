@@ -5901,7 +5901,7 @@ sessizce körleşmez.
           sınır: "Bulguların düzeyi ve metni değişmez; kuyruk kuralı çekirdekteki kimlik tanımından türer"
         }
 
-        Adım( kod: HST-MTR-A11, ad: "Tanı Metni Hijyeninin Kör Bölgeleri", durum: geliştirmede, öncelik: p2, üretir: [ KOD-SNM-HIJYEN ], bağımlı: [],
+        Adım( kod: HST-MTR-A11, ad: "Tanı Metni Hijyeninin Kör Bölgeleri", durum: tamamlandı, öncelik: p2, üretir: [ KOD-SNM-HIJYEN, KOD-EKL-TAKDIR ], bağımlı: [],
           referans: [ HST-YUZ-A01 ],
           ne: "🫥 Tanı metni hijyeni taraması glob dizgesini yorum sanıp dosyanın yarısını görmeden geçmesin" ) {
           görev: "HST-YUZ-A01'in üreticisi ve bağımsız incelemesi (2026-10-10) tanı metni hijyeni nöbetinin yorum ayıklayıcısının blok yorum desenini dizge ve satır yorumu bağlamını tanımadan uyguladığını ölçmüştür: `**/*.sar` gibi bir glob dizgesi ya da `sablon/*.sar` geçen bir satır yorumu sahte bir blok yorum açar ve taramayı dosyanın büyük bir bölümünde kör bırakır. Taranan 125 dosyada 39 sahte blok vardır; eklenti girişinin yaklaşık 343 satırı ve komut satırı giriş dosyasının 638 ile 1019. satırları arası taranmamaktadır. Aynı körlük bugün gerçek bir ihlali gizlemektedir: takdir üreticisinin yazdığı dosya başlığında iç bir kod geçmektedir. Ayıklayıcı dizge ve yorum bağlamını tanıyacak biçimde onarılır; önce kör bölgeye konmuş bir iç kodla kırmızı sınama yazılır, gizlenen ihlal düzeltilir."
@@ -5911,6 +5911,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Hijyen kuralının kendisi değişmez; yalnız taramanın gördüğü alan onarılır"
+          koşu:  Koşum( kod: KSM-HST-MTR-A11, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 55bd877 (üretim 508af28) · çekirdek 1695/1695, eklenti 902/902, atlanan 0 · birleşik ağaçta çekirdek 1704/1704, eklenti 934/934, iki pakette tür denetimi temiz, depo denetimi 0 hata · bağımsız inceleme: tabanda 16 dosyada 39 sahte blok yorum ve 19 dosyada 783 taranmayan kod satırı, onarımdan sonra sahte blok 0; ayıklayıcının yorum örtüsü, dizge listesi ve düzenli ifade kararları 125 dosyada TypeScript ayrıştırıcısıyla birebir aynı (11500 yorum, 15652 dizge, 495 düzenli ifade, fark 0); iki yeni kör bölge sınaması eski ayıklayıcıyla kırmızı, yeni gövdeyle yeşil; yedi gerçek mutasyonun yedisi yakalandı; hijyen kuralının yasak listesi ve muafiyetleri tabanla aynı",
+            ne:    "Tanı metni hijyeni taraması kaynağı artık tek geçişte okuyor ve kodu, yorumu, dizgeyi ve şablonu birbirinden ayırıyor; glob dizgelerinin açtığı sahte blok yorumlar kalktı ve 783 satırlık kör bölge taranır oldu. Körlüğün gizlediği tek ihlal takdir üreticisinin yazdığı hasat dosyası başlığındaki iç koddu; kodu taşıyan ve karşılığı olmayan gelecek vaadi cümlesi başlıktan çıkarıldı. Sezginin hâlâ kör kaldığı üç nadir biçim için kalıcı eşdeğerlik nöbeti HTR-HIJYEN-AYIKLAYICI-ESDEGERLIK-NOBETI kaydına yazıldı." )
         }
 
         Adım( kod: HST-MTR-A12, ad: "Tanı Kümesi Sayılarının Tek Kaydı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-KANON-TUTARLILIK ], bağımlı: [ HST-MTR-A02 ],
