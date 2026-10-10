@@ -1476,7 +1476,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "beş kalem KÜÇÜK kalır (A09 demet ilkesi); eklenti kapısına yeni bekçi EKLEME kararları tabloda gerekçeli beyanla ertelenebilir — sessiz eksik kalmaz"
         }
-        Adım( kod: BKM-BUG-A12, ad: "Adlı Kuralın Dayanak Bağı", durum: beklemede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: BKM-BUG-A12, ad: "Adlı Kuralın Dayanak Bağı", durum: geliştirmede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
           ne: "🔗 uygulanmamış-karar bekçisi (YAS-2.1) adlı biçimde yazılmış Kural düğümlerinin dayanak bağını saymıyor; kararları kurala inmiş bir projede bile kilitli ve uygulama: gerekli beyanlı her karar için sahte uyarı düşüyor" ) {
           görev: """
           2026-10-03 (oturum 113) gözlemi: kararlar dosyası ile anayasa dosyası ayrı yaşayan bir projede
@@ -5178,7 +5178,7 @@ sıfır uyarıda kalır.
           sınır: "Göç yalnız alan adı ve değer çevirisidir; hiçbir Adımın metnine, durumuna ya da tarihine dokunulmaz. Eski değerler için geçiş yedeği bırakılmaz — şema tek kaynaktır ve iki kademe kümesinin birlikte yaşaması ORK-3.4 hükmünün kendisiyle çelişir."
         }
 
-        Adım( kod: RFM-MOTOR-A02, durum: beklemede, öncelik: p1,
+        Adım( kod: RFM-MOTOR-A02, durum: geliştirmede, öncelik: p1,
           bağımlı: [ RFM-KANON-A02 ],
           referans: [ DIL-5.1 ],
           ne: "🛡️ Önek sicilinin kurulması ve biçim tanısının doğması. Sicil her öneki tek yerde ilan eder; tanı ilansız önekli ya da biçim dışı YENİ kodu UYARI düzeyinde bildirir ve ileriye dönüklük sınırı mekanik kurulur." ) {
