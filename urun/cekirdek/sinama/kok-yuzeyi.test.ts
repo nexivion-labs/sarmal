@@ -88,6 +88,26 @@ test("rakam taşımayan büyük-harf sözce kod sayılmaz (yanlış pozitif kalk
   assert.deepEqual(bulgular, [], "rakamsız kuyruk düz yazıdır, kimlik değildir");
 });
 
+// HST-MTR-A10: kimlik indeksi HST-MTR-A06'dan beri noktalı madde kodunu tek aday olarak
+// verir, fakat şekil süzgeci kuyruğu tanımadığı için noktalı her aday eleniyordu. Kırık
+// bir alt madde atfı da, üst maddesi de tanımsız bir yazım da bu yüzden sessizdi.
+test("kırık alt madde atfı ve üst maddesi tanımsız noktalı yazım bildirilir, tanımlı alt madde sessizdir (HST-MTR-A10)", () => {
+  const satir = "Kırık iki atıf: DIL-1.99 ve DIL-9.1.";
+  const bulgular = kokYuzeyiAtiflari(
+    [yuzey("README.md")],
+    icerikler({ "README.md": `Yazım hükmü DIL-1.5 maddesindedir; dayanağı DIL-1.\n${satir}\n` }),
+    new Set(["DIL-1", "DIL-1.5"]),
+  );
+  assert.deepEqual(
+    bulgular.map((b) => [b.tani.kod, b.tani.duzey, b.tani.mesaj.match(/'(DIL-[0-9.]+)'/)?.[1], b.tani.satir, b.tani.sutun]),
+    [
+      ["kök-yüzeyi-karşılıksız-atıf", "uyarı", "DIL-1.99", 2, satir.indexOf("DIL-1.99") + 1],
+      ["kök-yüzeyi-karşılıksız-atıf", "uyarı", "DIL-9.1", 2, satir.indexOf("DIL-9.1") + 1],
+    ],
+    "iki noktalı kırık yazım kendi adresiyle bildirilmeli; tanımlı alt madde ve cümle sonu noktası bulgu üretmemeli",
+  );
+});
+
 // ── ③ AİLE SÜZGECİ YOKTUR: nöbet kendi doğuş gerekçesini görebilmelidir ─────
 
 test("ailesi tamamen emekli olmuş kimlik de bildirilir (aile süzgeci bilinçli olarak yoktur)", () => {

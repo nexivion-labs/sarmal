@@ -107,7 +107,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { KimlikIndeksi } from "./kimlik.ts";
-import { programlariYukle, kodIndeksle, diskTara } from "./denetci.ts";
+import { programlariYukle, kodIndeksle, diskTara, KOD_SEKLI } from "./denetci.ts";   // HST-MTR-A10: kimlik şekli süzgeci varlık kapısıyla TEK kaynaktır
 import { kokYuzeyiTanisi } from "./tani-metinleri.ts";   // kullanıcıya söylenen her cümle tek katalogda yaşar; üretici yalnız olguyu verir
 import type { Tani } from "./tani.ts";
 
@@ -192,8 +192,10 @@ export const KOK_ATIF_EVRENI = ".";   // açık depoda kök ile evren aynı ağa
  */
 export const GIZLI_KOK_ADI = "_KapaliUrun";   // kapalı ürünün gerçek klasör adı açık depoda ilan edilmez; sınır nöbeti bu yer tutucuyla çalışır ve gerçek ad çatı düzeyinde bağlanır (GOC-A08 · 2026-08-25)
 
-/** Kimlik şekli: en az bir parçası rakam taşıyan bir kuyrukla biter (ikinci süzgeç). */
-const KOD_SEKLI = /-[A-ZÇĞİÖŞÜ_]*\d[A-Z0-9ÇĞİÖŞÜ_]*$/u;
+// İkinci süzgeç (kimlik şekli) varlık içi metin atıf kapısıyla aynıdır ve yalnız
+// orada tanımlanır (denetci.ts · KOD_SEKLI). HST-MTR-A10 ölçümü iki kopyanın aynı
+// kusuru taşıdığını göstermiştir: ikisi de noktalı madde kuyruğunu tanımıyor ve
+// kırık bir alt madde atfını sessizce eliyordu.
 
 // Çit boşaltması TEK kaynakta yaşar (kimlik.ts) — kök yüzeyi kapısı ile .md/.ts
 // metin-atıf kapısı aynı kuralı paylaşır; re-export dışarıdaki çağrıyı korur.

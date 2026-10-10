@@ -38,7 +38,7 @@ import { ayristir } from "./ayristirici.ts";
 import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, AYRISTIRILMAZ_SENTETIK, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, AYRISTIRILMAZ_SENTETIK, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, MADDE_KUYRUGU, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01) · HST-MTR-A10: şekil süzgecinin madde kuyruğu kimlik tanımından
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -1290,8 +1290,24 @@ export function referansTanilari(
 const METIN_ATIF_DOSYASI = (dosya: string): boolean =>
   (dosya.endsWith(".md") || dosya.endsWith(".ts")) && !dosya.endsWith(".test.ts");
 
-/** Kimlik şekli: en az bir parçası rakam taşıyan bir kuyrukla biter (daralma ②). */
-const KOD_SEKLI = /-[A-ZÇĞİÖŞÜ_]*\d[A-Z0-9ÇĞİÖŞÜ_]*$/u;
+/**
+ * Kimlik şekli: en az bir parçası rakam taşıyan bir kuyrukla biter (daralma ②).
+ *
+ * HST-MTR-A10 · NOKTALI MADDE: rakamlı parçanın ardından madde kuyruğu gelebilir.
+ * HST-MTR-A06 kimlik indeksine kuyruğu ekleyince alt madde yazımı tek aday olarak
+ * gelmeye başladı; süzgeç kuyruğu tanımadığı için noktalı her adayı eledi. Kırık
+ * bir alt madde atfı da, üst maddesi de tanımsız noktalı bir yazım da bu yüzden iki
+ * kapıda sessiz kaldı; iki örnek yazım sınama fikstüründe yaşar (metin-atif.test.ts ·
+ * kok-yuzeyi.test.ts), çünkü bu yorum da metin atfı kapısının evrenindedir. Kuyruk
+ * kimlik indeksinin tek tanımından (MADDE_KUYRUGU) türer; burada ikinci bir kural
+ * yazılmaz. Kuyruksuz adayda desen eskisiyle birebir aynıdır.
+ *
+ * TEK KAYNAK: kök yüzeyi kapısı bu süzgeci aynen alır (kok-yuzeyi.ts) ve kendi
+ * kopyasını tutmaz; iki kopya yaşadığı sürece aynı kusur iki ayrı yerde onarılmak
+ * zorundaydı. Kök yüzeyi değeri yalnız çağrı anında okur, dolayısıyla iki modül
+ * arasındaki döngüsel içe aktarım bu sabite dokunmaz.
+ */
+export const KOD_SEKLI = new RegExp(String.raw`-[A-ZÇĞİÖŞÜ_]*\d[A-Z0-9ÇĞİÖŞÜ_]*${MADDE_KUYRUGU}$`, "u");
 
 /** Bir kodun ailesi — ilk tire'ye kadarki ön-ek ("doğuş-rehberi turu" → "ADM"). */
 function kodAilesi(kod: string): string {
