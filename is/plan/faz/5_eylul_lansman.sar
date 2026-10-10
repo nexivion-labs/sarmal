@@ -5854,7 +5854,7 @@ sessizce körleşmez.
           sınır: "Tanılar .sar düğümü olarak yeniden yazılmaz; sicil tek kaynak kalır"
         }
 
-        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: beklemede, öncelik: p1, üretir: [ KOD-YOLHARITA ], bağımlı: [],
+        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-YOLHARITA ], bağımlı: [],
           referans: [ HTR-YURUTUCU-IZI-KOSUM-YUZUNE-DUSMUYOR ],
           ne: "👣 İşi dış bir yürütücü yaptığında da Adımın altında koşum izi görünsün" ) {
           görev: "Yol haritası paneli koşum izi klasörünü dinlemektedir, fakat iz yalnız motorun kendi döngüsü bir model çağırdığında yazılmaktadır. MCP sunucusunun sef ve durum-guncelle çağrıları gibi yürütücü temas noktalarında hafif bir iz kaydı yazılır; böylece Claude Code gibi bir yürütücünün işi de panelde Adımın altında görünür."
@@ -6012,7 +6012,7 @@ sessizce körleşmez.
             ne:    "Kök yüzeyi nöbeti kod çitlerinin içini artık ölçmüyor; README'deki örnek çıktı işleme kancasında sahte uyarı üretmiyor ve çit dışındaki kırık kimlik yakalanmaya devam ediyor. README metnine dokunulmadı. Varlık içi metin atıf kapısı bilinçle eski kipte bırakıldı; iki kapının çit kuralının birleşmesi HTR-METIN-ATIF-CIT-KURALI hatırlatıcısına yazıldı." )
         }
 
-        Adım( kod: HST-YUZ-A05, ad: "Eklentide Alt Madde Bağlantısı", durum: beklemede, öncelik: p2, üretir: [ KOD-ATIF-CEKIRDEK, KOD-EKL-IPUCU ], bağımlı: [ HST-MTR-A06 ],
+        Adım( kod: HST-YUZ-A05, ad: "Eklentide Alt Madde Bağlantısı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-ATIF-CEKIRDEK, KOD-EKL-IPUCU ], bağımlı: [ HST-MTR-A06 ],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "🔗 Eklentinin bağlantı dekoru ve ipucu ORK-1.2 yazımını ORK-1 sanmasın" ) {
           görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) eklentinin bağlantı dekoru (urun/eklenti/src/atif-cekirdek.ts) ile ipucunun (urun/eklenti/src/ipucu.ts) kod desenlerinin noktalı madde kuyruğunu taşımadığını ölçmüştür: altı çizilen ve ipucunda açılan kart üst maddeye ait olmakta, F12 ise doğru alt maddeye gitmektedir. Altmış dört dosyadaki 2450 noktalı yazımın 2435'inde kullanıcı yanlış kartı görür. Desenler çekirdeğin ve gezinme deseninin kuyruk kuralına hizalanır; önce noktalı bir fikstürle kırmızı sınama yazılır."
