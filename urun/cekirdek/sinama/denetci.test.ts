@@ -909,7 +909,7 @@ Anayasa( kod: ANY-ORNEK, ad: "Örnek Anayasa", ne: "fikstür" ) {
     ["yasa/kararlar.sar", ayristir(belirtecle(kararlar))],
     ["yasa/anayasa.sar", ayristir(belirtecle(anayasa))],
   ]);
-  const uyarilar = uygulanmamisKararTanilari(programlar).map((t) => t.tani.parametreler?.kod ?? t.tani.mesaj);
+  const uyarilar = uygulanmamisKararTanilari(programlar).map((t) => t.tani.mesaj);
   // Adlı (KRR-ADLI) ve adsız (KRR-ADSIZ) Kuralın dayanağı ve ikisinin ortak dayanağı inmiş sayılır.
   // Regresyon: hiçbir düğümün bağlamadığı KRR-BAGSIZ uyarı almaya devam eder.
   assert.equal(uyarilar.length, 1, `beklenen yalnız KRR-BAGSIZ, gelen: ${JSON.stringify(uyarilar)}`);
