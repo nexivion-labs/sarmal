@@ -850,7 +850,7 @@ Hatırlatıcı(
   öncelik:          p3,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Eklentinin tip denetimi yapılandırması ya da minigraf sınaması bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır."
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır. EK (2026-10-10): mağaza öncesi turun bağımsız incelemesi sınama klasörünün tür denetiminde önceden var olan üç hatayı yeniden ölçmüştür (bolum-yuvasi.test.ts içinde iki, minigraf.test.ts içinde bir); hiçbir kapı bu denetimi koşmadığı için hatalar görünmeden yaşamaktadır."
 )
 
 Hatırlatıcı(
@@ -1293,4 +1293,34 @@ Hatırlatıcı(
   tarih:            2026-10-10,
   dönüşTetikleyici: "Sınama altyapısına bir sonraki kez dokunulduğunda; en geç geçici dizin bir gigabaytı aşarken",
   ne:               "Kontrolcü 2026-10-10 tarihinde çekirdek ve eklenti süitlerinin açtıkları geçici klasörleri silmediğini ölçmüştür: geliştirici makinesinin geçici dizininde 2 Ekim'den beri birikmiş 8663 sınama klasörü ve toplam 1,9 GB veri vardır; en kalabalık önekler koniyaz (800), sarmal-kesif (735), sarmal-ogretim (636), sarmal-turev (537) ve sarmal-magaza (441) klasörleridir. Her süit koşusu yüzlerce klasör bırakmaktadır. Sınamalar açtıkları klasörü başarısız durumda da silmeli ve bunu ölçen bir nöbet kurulmalıdır; sızıntı kapandıktan sonra birikmiş klasörler temizlenebilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Eklentinin tam denetim turuna bir sonraki kez dokunulduğunda; en geç mağaza yüklemesinden önce",
+  ne:               "MGZ-A04'ün bağımsız incelemesi 2026-10-10 tarihinde tek bir kırık .sar dosyasının o kökün tam denetimini erken çıkışla durdurduğunu ölçmüştür: Sarmal ağacına kırık bir dosya konunca çapraz uyarılar kaybolmuş ve Gözlemler sayacı 91'den 42'ye inmiş, fakat tam denetimin koşmadığını söyleyen işaret ve Performans kanalı sessiz kalmıştır. Sorunlar yüzeyinde yalnız söz-dizim tanısı görünür. MGZ-A04 istisnayla çöken kökü kapsar; erken çıkışla yarıda kalan tur da aynı işaretle söylenmelidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KISITLI-MOD-KALAN-SINIRLAR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Kısıtlı mod desteği bir sonraki kez elden geçirildiğinde",
+  ne:               "MGZ-A02 eklentinin kısıtlı modda sessizce kapanmasını onarmış, bağımsız inceleme 2026-10-10 tarihinde üç kalan sınırı ölçmüştür. Birincisi anlamsal renk katmanı kapalıdır, çünkü kanon için diski tarar; bu bilinçli bir sınırdır ve belgelenmelidir. İkincisi okuma kipinin özel düzenleyicisi kısıtlı modda sağlayıcısızdır ve Birlikte Aç ile seçilirse VS Code sağlayıcı bulunamadı der. Üçüncüsü güvenden önce etkinleşen bir kardeş eklenti dış yüzü tanımsız alır ve güvenden sonra yeniden sorma yolu yoktur; sözleşme başlığı güvenden söz etmez."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DONUSTURUCU-SOZDIZIM-BICIMI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Komut satırının dönüştürücü komutlarına bir sonraki kez dokunulduğunda",
+  ne:               "MGZ-A03 denetim kiplerinde söz-dizim hatasını yol, satır, sütun ve kimlikle basar hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde belge, yansıt ve ağaç dönüştürücülerinin hatayı hâlâ eski biçimde, yol ve kimlik taşımadan bastığını ölçmüştür. Çıkış kodu doğrudur; yalnız biçim denetim yüzeyiyle ayrışmaktadır."
 )
