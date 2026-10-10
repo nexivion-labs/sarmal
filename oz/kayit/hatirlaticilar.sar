@@ -885,12 +885,12 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-ACIKLAMALARI-YONLENDIRICI-CUMLE,
-  durum:            açık,
+  durum:            tamamlandı,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "MCP araç açıklamaları ya da sunucu talimatı bir sonraki kez elden geçirildiğinde; en geç dizin başvurusundan önce",
-  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: dizinin inceleme ölçütleri, araç açıklamasının aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ve öteki araçların çağrılmasına karışmamasını istemektedir. Beş aracın açıklaması ile sunucu talimatı ise dosya taramak yerine önce bu araçların çağrılmasını ve ham aramanın anti-desen olduğunu söyleyen cümleler taşımaktadır. Bu cümleler ürünün amacına hizmet eder, fakat dizin kuralıyla çelişebilir; hangi cümlenin kalacağı Founder kararıdır ve metin mühürlü mcp-metinleri.ts dosyasında yaşadığı için değişiklik mühür tazelemesi ister."
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: dizinin inceleme ölçütleri, araç açıklamasının aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ve öteki araçların çağrılmasına karışmamasını istemektedir. Beş aracın açıklaması ile sunucu talimatı ise dosya taramak yerine önce bu araçların çağrılmasını ve ham aramanın anti-desen olduğunu söyleyen cümleler taşımaktadır. Bu cümleler ürünün amacına hizmet eder, fakat dizin kuralıyla çelişebilir; hangi cümlenin kalacağı Founder kararıdır ve metin mühürlü mcp-metinleri.ts dosyasında yaşadığı için değişiklik mühür tazelemesi ister. KAPANIŞ (kontrolcü · 2026-10-10): Founder 2026-09-16 tarihinde EKL-F6-A03 şerhinde araç açıklamalarındaki yönlendirici cümlelerin tamamen kaldırılmasına hükmetmiştir ve ölçüm bu hükmün uygulandığını göstermektedir: araç açıklamalarında öteki araçların çağrılmasını isteyen ya da ham aramayı anti-desen sayan cümle kalmamıştır. Aynı yönlendirme yalnız sunucu talimatında yaşamaktadır; dizin ölçütü araç açıklamalarını bağlar, sunucu talimatı ise protokolün sunucunun kendi kullanım talimatına ayırdığı alandır ve Founder'ın hükmü onu kapsamamıştır."
 )
 
 Hatırlatıcı(
