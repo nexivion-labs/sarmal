@@ -56,7 +56,9 @@ const OZEL_ADLAR = ["Sarmal", "Founder", "ŞEF"];
  */
 const DOSYA_DEGERLERI = ["herkese", "girişli", "girişsiz", "uyarı", "borç",
   // Veri sözleşmesinin kompakt alan dilindeki tür adları (dogrulayici.ts · turUymaz).
-  "sayı", "ondalık", "tarih", "mantıksal", "eposta-biçimi"];
+  "sayı", "ondalık", "tarih", "mantıksal", "eposta-biçimi",
+  // Tema rollerinin dosyaya yazılan adları (renkler ve tipografi; `başlık1`…`başlık4`).
+  "birincil", "ikincil", "vurgu", "yüzey", "arkaplan", "nötr", "başlık", "gövde", "etiket"];
 
 /**
  * Düzyazının ortasında büyük harfle yazıldığında bile sıradan bir İngilizce

@@ -24,7 +24,7 @@
 import type { GovdeMetinleri } from "./onay-govde.ts";
 import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
 import type { AnlamRengi, SatirSimgesi } from "./simge-cizelgesi.ts";
-import { dilHanesi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
+import { dilHanesi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
 
@@ -2102,9 +2102,19 @@ export function ifadePaletiBelgesi(kavram: string, kategori: string): string {
   );
 }
 
+/**
+ * Şema alan dizgesinin okuma yüzü (MGZ-A09 · kontrolcü incelemesi 2026-10-10): Türkçe
+ * yüz kanondaki dizgenin kendisidir; İngilizce yüz sözlüğün `semaAlani` hanesidir ve
+ * alanın adını ve enum değerlerini aynen taşır. Hanesi olmayan dizge (yalnız enum
+ * değerlerinden oluşan `düzey (hata|uyarı|bilgi)` gibi) olduğu gibi gösterilir.
+ */
+export function semaAlaniEtiketi(ham: string): string {
+  return yuzeyMetni(ham, sozlukDuzYazisi("semaAlani", ham, ham, "en", "kaynak"));
+}
+
 export function semaAlaniDetayi(rozet: string, tip: string, ham: string): string {
   const gorunenTip = kanonikWidgetAdi(tip, tip);
-  return yuzeyMetni(`${rozet} ${gorunenTip} şeması — ${ham}`, `${rozet} ${gorunenTip} schema — ${ham}`);
+  return yuzeyMetni(`${rozet} ${gorunenTip} şeması — ${ham}`, `${rozet} ${gorunenTip} schema — ${semaAlaniEtiketi(ham)}`);
 }
 
 export function kenarTamamlamaDetayi(ne: string): string {

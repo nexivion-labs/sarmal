@@ -50,6 +50,12 @@ export interface DilSozlugu {
   karneBilesen: Record<string, Record<string, string>>;
   /** Kanonun `yetkiSozlugu` kademe tarifleri (L1–L6); kademe kodu çevrilmez. */
   yetkiNe: Record<string, Record<string, string>>;
+  /**
+   * Şema alan dizgelerinin tarifi (MGZ-A09): anahtar kanondaki dizgenin kendisidir
+   * ("etkiler (kenar: …)"), İngilizce hane alanın adını ve enum değerlerini aynen
+   * taşır. Tamamlama ve imza yardımı İngilizce dilde bu haneyi gösterir.
+   */
+  semaAlani?: Record<string, Record<string, string>>;
 }
 let _dil: DilSozlugu | undefined;
 function dilSozlugu(): DilSozlugu {
@@ -79,7 +85,8 @@ export type DuzYaziBolumu =
   | "agacOrgani"
   | "karneDerece"
   | "karneBilesen"
-  | "yetkiNe";
+  | "yetkiNe"
+  | "semaAlani";
 
 /**
  * Düzyazıdaki ad jetonlarının okunuş kipi (MGZ-A09 · Founder hükmü 2026-10-10).

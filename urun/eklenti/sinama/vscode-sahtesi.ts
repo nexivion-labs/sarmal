@@ -164,6 +164,44 @@ export class Hover {
   }
 }
 
+// Tamamlama ve imza yardımı (MGZ-A09): İngilizce yüz nöbeti sağlayıcıları doğrudan
+// çağırır; sınıflar yalnız sağlayıcının yazdığı alanları taşır.
+export const CompletionItemKind = {
+  Text: 0, Method: 1, Function: 2, Field: 4, Variable: 5, Class: 6, Property: 9, Value: 11,
+  Keyword: 13, Reference: 17, EnumMember: 19,
+} as const;
+export class SnippetString {
+  readonly value: string;
+  constructor(value = "") { this.value = value; }
+}
+export class CompletionItem {
+  label: string;
+  kind?: number;
+  detail?: string;
+  documentation?: string | MarkdownString;
+  insertText?: string | SnippetString;
+  sortText?: string;
+  filterText?: string;
+  preselect?: boolean;
+  constructor(label: string, kind?: number) { this.label = label; this.kind = kind; }
+}
+export class ParameterInformation {
+  readonly label: string;
+  readonly documentation?: string | MarkdownString;
+  constructor(label: string, documentation?: string | MarkdownString) { this.label = label; this.documentation = documentation; }
+}
+export class SignatureInformation {
+  readonly label: string;
+  readonly documentation?: string | MarkdownString;
+  parameters: ParameterInformation[] = [];
+  constructor(label: string, documentation?: string | MarkdownString) { this.label = label; this.documentation = documentation; }
+}
+export class SignatureHelp {
+  signatures: SignatureInformation[] = [];
+  activeSignature = 0;
+  activeParameter = 0;
+}
+
 // Sayım tipleri düz nesnedir: Node tip söküm kipi `enum` sözdizimini kabul etmez.
 export const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 } as const;
 export const TreeItemCheckboxState = { Unchecked: 0, Checked: 1 } as const;

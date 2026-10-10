@@ -29,6 +29,10 @@
 //     bildiriminin İngilizce dizeleri ve sözlüğün İngilizce düzyazısı aynı
 //     ölçerden geçer (cekirdek/src/ingilizce-yuz.ts); adı veren yardımcılar
 //     İngilizce dilde dosyadaki adı döndürür.
+//   ⑤ TAMAMLAMA VE İMZA YARDIMI. Kanondaki her şema tipinin parantezinde gerçek
+//     tamamlama ve imza sağlayıcıları iki dilde açılır. Alan önerisinin etiketi
+//     dosyaya yazılacak Türkçe addır; ayrıntı satırı ve imza yardımı İngilizce
+//     dilde İngilizce tarif taşır; Türkçe dilde ikisi de kanondaki dizgedir.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test, after } from "node:test";
@@ -40,6 +44,7 @@ import { fileURLToPath } from "node:url";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
 import { ingilizceYuzKusurlari } from "../../cekirdek/src/ingilizce-yuz.ts";
 import { sozlukDuzYazisi } from "../../cekirdek/src/cevir.ts";
+import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
 import { etkinlestir, geciciAlan, kabukTemizle, type EtkinEklenti, type KabukKaydi } from "./etkinlesme-kabugu.ts";
 import { belgeKoy } from "./kabuk-kur.ts";
 import { Position, Uri, workspace } from "./vscode-sahtesi.ts";
@@ -47,6 +52,8 @@ import { yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
 // Kabuğu içeri alan modüller kanca kurulduktan SONRA yüklenir (kabuk-kur.ts).
 const { ipucuSaglayici } = await import("../src/ipucu.ts");
+const { tamamlamaSaglayici } = await import("../src/tamamlama.ts");
+const { imzaSaglayici } = await import("../src/imza.ts");
 const yuzey = await import("../src/yuzey-metinleri.ts");
 
 const BUGUN = "2026-10-10";
@@ -344,5 +351,87 @@ test("MGZ-A09 ④ adı veren yardımcılar İngilizce dilde dosyadaki adı dönd
       assert.ok(yuzey.YOL_METINLERI.alan(alan).endsWith(alan), `koni kartı ${alan} alanını başka adla anıyor: ${yuzey.YOL_METINLERI.alan(alan)}`);
   } finally {
     yuzeyDiliniAyarla("tr");
+  }
+});
+
+// ── ⑤ TAMAMLAMA VE İMZA YARDIMI ─────────────────────────────────────────────
+//   Kontrolcü incelemesi (2026-10-10): İngilizce yüzde 27 alanın şema tarifi Türkçe
+//   kalıyordu, çünkü ayrıntı satırı kanondaki dizgeyi olduğu gibi basıyordu. Tarif
+//   artık sözlüğün `semaAlani` bölümünden gelir; ad ve enum değerleri aynen kalır.
+
+const SEMA = siniflamaYukle(join(DEPO_KOKU, "oz", "siniflama", "kayit.json"));
+const alanAdi = (ham: string): string => ham.split(" ")[0]!.split("(")[0]!;
+interface SemaOneri { readonly tip: string; readonly ham: string; readonly rozet: string; readonly etiket?: string; readonly ayrinti?: string }
+/** Ayrıntının alan tarifi; emoji eşdeğeri olan alanın sonundaki `· 🌍 …` eki ayrılır. */
+const tarifKismi = (ayrinti: string | undefined): string | undefined => ayrinti?.replace(/ · 🌍 \S+$/u, "");
+
+/** Her şema tipinin `Tip( ` satırında gerçek tamamlama ve imza sağlayıcılarının verdiği. */
+async function semaYuzu(dil: "tr" | "en"): Promise<{ oneriler: SemaOneri[]; imzalar: Map<string, string[]> }> {
+  const yol = join(geciciAlan("sarmal-ingilizce-tamamlama-"), "ornek.sar");
+  yuzeyDiliniAyarla(dil);
+  try {
+    const tamamlama = tamamlamaSaglayici(() => dil);
+    const imza = imzaSaglayici();
+    const oneriler: SemaOneri[] = [];
+    const imzalar = new Map<string, string[]>();
+    for (const [tip, sema] of Object.entries(SEMA.semalar ?? {})) {
+      const satir = `${tip}( `;
+      writeFileSync(yol, satir, "utf8");
+      const belge = belgeKoy(yol, satir);
+      const konum = new Position(0, satir.length);
+      const ogeler = (await tamamlama.provideCompletionItems(belge as never, konum as never, undefined as never, undefined as never)) as
+        Array<{ label: string; detail?: string }> | undefined ?? [];
+      const hamlar: Array<[string, string]> = [
+        ...(sema.zorunlu ?? []).map((h): [string, string] => [h, "★"]),
+        ...(sema.birindenBiri ?? []).flat().map((h): [string, string] => [h, "◇"]),
+        ...(sema.opsiyonel ?? []).map((h): [string, string] => [h, "·"]),
+      ];
+      const gorulen = new Set<string>();
+      for (const [ham, rozet] of hamlar) {
+        if (gorulen.has(alanAdi(ham))) continue;
+        gorulen.add(alanAdi(ham));
+        const oge = ogeler.find((o) => o.label === alanAdi(ham) && (o.detail ?? "").startsWith(`${rozet} ${tip} `));
+        oneriler.push({ tip, ham, rozet, etiket: oge?.label, ayrinti: oge?.detail });
+      }
+      const yardim = (await imza.provideSignatureHelp(belge as never, konum as never, undefined as never, undefined as never)) as
+        { signatures: Array<{ label: string; parameters: Array<{ label: string }> }> } | undefined;
+      const imzaBilgisi = yardim?.signatures[0];
+      if (imzaBilgisi) imzalar.set(tip, [imzaBilgisi.label, ...imzaBilgisi.parameters.map((x) => x.label)]);
+    }
+    return { oneriler, imzalar };
+  } finally {
+    yuzeyDiliniAyarla("tr");
+  }
+}
+
+test("MGZ-A09 ⑤ İngilizce tamamlama Türkçe alan adını önerir ve tarifi İngilizce verir", async () => {
+  const { oneriler, imzalar } = await semaYuzu("en");
+  assert.ok(oneriler.length > 300, `yalnız ${oneriler.length} şema alanı ölçüldü — nöbet kör`);
+  const kusurlu: string[] = [];
+  for (const o of oneriler) {
+    if (o.etiket !== alanAdi(o.ham)) { kusurlu.push(`${o.tip}.${alanAdi(o.ham)}: öneri yok ya da etiket dosyadaki ad değil (${o.etiket})`); continue; }
+    if (!tarifKismi(o.ayrinti)?.startsWith(`${o.rozet} ${o.tip} schema — ${alanAdi(o.ham)}`)) kusurlu.push(`${o.tip}.${o.etiket}: ayrıntı İngilizce çerçeve taşımıyor: ${o.ayrinti}`);
+    const k = ingilizceYuzKusurlari(o.ayrinti ?? "", [o.tip, o.etiket]);
+    if (k.length) kusurlu.push(`${o.tip}.${o.etiket} [${k.map((x) => `${x.tur}=${x.sozce}`).join(", ")}] ${o.ayrinti}`);
+  }
+  assert.deepEqual(kusurlu, [], "İngilizce tamamlamada Türkçe tarif ya da dosyada bulunmayan bir ad var");
+  assert.ok(imzalar.size > 50, `yalnız ${imzalar.size} tipte imza yardımı açıldı`);
+  for (const [tip, [imza, ...parametreler]] of imzalar) {
+    const k = ingilizceYuzKusurlari(imza ?? "", [tip]);
+    assert.deepEqual(k.map((x) => `${x.tur}=${x.sozce}`), [], `${tip} imza yardımı İngilizce tarif taşımıyor: ${imza}`);
+    for (const p of parametreler) assert.ok((imza ?? "").includes(p), `${tip} imza parametresi imza etiketinde yok: ${p}`);
+  }
+});
+
+test("MGZ-A09 ⑤ Türkçe tamamlama ve imza yardımı kanondaki dizgeyi aynen gösterir", async () => {
+  const { oneriler, imzalar } = await semaYuzu("tr");
+  for (const o of oneriler) {
+    assert.equal(o.etiket, alanAdi(o.ham), `${o.tip}.${alanAdi(o.ham)} önerisi Türkçe yüzde kayboldu`);
+    assert.equal(tarifKismi(o.ayrinti), `${o.rozet} ${o.tip} şeması — ${o.ham}`, `${o.tip}.${o.etiket} ayrıntısı Türkçe yüzde değişti`);
+  }
+  for (const [tip, [imza]] of imzalar) {
+    const sema = SEMA.semalar![tip]!;
+    const alanlar = [...sema.zorunlu, ...(sema.opsiyonel ?? [])];
+    assert.equal(imza, `${tip}( ${alanlar.map((a) => (sema.zorunlu.includes(a) ? a : `[${a}]`)).join(", ")} )`, `${tip} imza yardımı Türkçe yüzde değişti`);
   }
 });
