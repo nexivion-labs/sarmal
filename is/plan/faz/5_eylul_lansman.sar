@@ -1628,7 +1628,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
           koşu: "2026-09-10 · KAPANDI. Kaydın üç sayı kaynağı gerçekten ayrışmıştı ve üçü de farklı şey söylüyordu: bir yer yüz yetmiş bir kimlik derken çizelge yüz yetmiş beş diyordu, düzyazı ise önceki gövdeyi iki yerde yüz iki sayıyordu, oysa gerçeği yüz birdi. Üçü de tek üretece bağlandı ve toplamın sicil boyutunu vermesi yapısal olarak zorunlu hâle geldi. Yönlendirme ile ULAŞMA ayrı çizelgeye çıkarıldı, çünkü bir tanının bir yüzeye yönlendirilmiş olması o yüzeye ulaştığı anlamına gelmiyordu. Kayıttaki kademe dağılımı da elle doğrulanmaktan çıkıp motor kaynağından ölçülür oldu ve eski dağılımın hem bayat hem yanlış taban üzerinden yazıldığı görüldü."
         }
 
-        Adım( kod: BKM-DNT-A03, durum: beklemede, öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
+        Adım( kod: BKM-DNT-A03, durum: geliştirmede, öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
           üretir: [ KOD-DENETCI ],
           // ── 2026-09-10 · GÖZLEM: geçici fikstür ortak kapıyı kırmızıya çeviriyor ──
           //   Kontrolcü bu tarihte kapının kırmızı yandığını ve yazımının engellendiğini
@@ -5889,7 +5889,7 @@ sessizce körleşmez.
             ne:    "Ölü iz toplayıcısının emekli envanteri ve kaynak kenar taraması artık adlı Kuralları da geziyor; emekli bir karara adlı Kuralla bağlanan dayanak ölü iz uyarısı üretiyor. Tanının düzeyi ve metni değişmedi. Adımdan önce de var olan iki açık HTR-OLU-IZ-OZ-BILDIRIM hatırlatıcısına yazıldı." )
         }
 
-        Adım( kod: HST-MTR-A10, ad: "Denetim Kapılarında Noktalı Madde Atfı", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-KOK-YUZEYI ], bağımlı: [ HST-MTR-A06 ],
+        Adım( kod: HST-MTR-A10, ad: "Denetim Kapılarında Noktalı Madde Atfı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-KOK-YUZEYI ], bağımlı: [ HST-MTR-A06 ],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "🧷 Kırık bir alt madde atfı denetimde sessiz kalmasın" ) {
           görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) metin atfı kapısının (urun/cekirdek/src/denetci.ts) ve kök yüzeyi kapısının (urun/cekirdek/src/kok-yuzeyi.ts) aynı biçim süzgeciyle noktalı her adayı elediğini ölçmüştür: DIL-1.99 gibi kırık bir alt madde atfı onarımdan önce de sonra da sessizdir ve üst maddesi de tanımsız bir yazım (ör. DIL-9.1) A06'dan beri iki kapıda da uyarı üretmemektedir. Süzgece madde kuyruğu eklenir; önce iki yazımı taşıyan bir fikstürle kırmızı sınama yazılır."
