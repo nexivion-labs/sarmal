@@ -6084,7 +6084,7 @@ sessizce körleşmez.
           sınır: "Sınamalar yalnız yeşile dönsün diye zayıflatılmaz"
         }
 
-        Adım( kod: MGZ-A02, ad: "Kısıtlı Modda Eklentinin Sesi", durum: beklemede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A02, ad: "Kısıtlı Modda Eklentinin Sesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-KISITLI-MODDA-EKLENTI-SESSIZ ],
           ne: "🔒 Güvenilmeyen klasörde eklenti neden sustuğunu söylesin, dil tanımı ve renklendirme yine çalışsın" ) {
           görev: "İlk iş eklenti bildiriminin güvenilmeyen çalışma alanı beyanını taşıyıp taşımadığını ölçmektir. Dil tanımı ve renklendirme güvenilmeyen modda da çalışacak biçimde beyan edilir; denetim gibi güven isteyen yetenekler kapalı kalır ve eklenti bunu kullanıcıya tek bir anlaşılır cümleyle söyler."
@@ -6096,7 +6096,7 @@ sessizce körleşmez.
           sınır: "Güvenilmeyen modda kod çalıştıran bir yetenek açılmaz"
         }
 
-        Adım( kod: MGZ-A03, ad: "Sözdizimi Hatasının Sorunlar Yüzeyi", durum: beklemede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A03, ad: "Sözdizimi Hatasının Sorunlar Yüzeyi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK ],
           ne: "⛔ Ayrıştırılamayan dosya Sorunlar panelinde de görünsün; iki yüz aynı anda çelişmesin" ) {
           görev: "Motorun ham sözdizimi hatası bir tanı kimliği kazanır ve eklenti onu dosya, satır ve sütunuyla Sorunlar yüzeyine yayınlar. Yol Haritası panelindeki kırık dosyalar düğümü aynı kalır."
@@ -6108,7 +6108,7 @@ sessizce körleşmez.
           sınır: "Ayrıştırıcının hata kurtarma davranışı bu Adımda değişmez"
         }
 
-        Adım( kod: MGZ-A04, ad: "Tam Denetim Çöküşünün Bildirimi", durum: beklemede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A04, ad: "Tam Denetim Çöküşünün Bildirimi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR ],
           ne: "📣 Tam denetim bir kökte çökerse bu da atlanan kök gibi işarete bildirilsin" ) {
           görev: "denetimKos çağrısı çökünce hata yutulmaktadır. Çöken kök atlanan kökler bildirimine katılır ve kullanıcı o kökte tam denetimin koşmadığını görür. Aynı turda ortak.ts içindeki snfBul'un gömülü kanonu okuması tek kaynağa bağlanır ya da gerekçesiyle bırakılır."
