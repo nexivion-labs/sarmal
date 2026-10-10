@@ -116,6 +116,7 @@ function geriYaziciSeç(dizin: string, sozlesmeDizin?: string): SonYaz | undefin
 import { ebediEnvanter, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import { belgeMd } from "./belgele.ts";
 import { yansıt, type Yüz } from "./prizma.ts";
+import { prizmaMd } from "./prizma-md.ts";
 import { agacYüz, agacBlokUygula } from "./agac.ts";
 import { etkiMetni } from "./etki.ts";
 import { grafYuz } from "./graf.ts";
@@ -576,18 +577,21 @@ if (yol === "kanon-tutarlilik-uret") {
   process.exit(0);
 }
 
-// ── `yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]` (FEL-5 Prizma) ──
-//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan
-//    (MD 👤insan = `belge` komutu). Dört yüz de TEK parse'tan → drift imkânsız.
+// ── `yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]` (FEL-5 Prizma) ──
+//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan ·
+//    MD 👤insan (prizma-md.ts — okunur dönüşüm, KYN-KYN-A05). Dört yüz de TEK
+//    parse'tan → drift imkânsız. `belge` komutu önizleme yüzüdür (kaynak kodu
+//    kendi hâliyle gösterir) ve ayrı kalır.
 if (yol === "yansıt" || yol === "yansit") {
   const dosya = args[1];
   if (!dosya || dosya.startsWith("--")) {
-    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]");
+    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]");
     process.exit(1);
   }
-  const yüz: Yüz | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml" : args.includes("--xml") ? "xml" : undefined;
+  const yüz: Yüz | "md" | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml"
+    : args.includes("--xml") ? "xml" : args.includes("--md") ? "md" : undefined;
   if (!yüz) {
-    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan)");
+    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan) · --md (insan)");
     process.exit(1);
   }
   const yazIdx = args.indexOf("--yaz");
@@ -597,7 +601,8 @@ if (yol === "yansıt" || yol === "yansit") {
     process.exit(1);
   }
   try {
-    const çıktı = yansıt(readFileSync(dosya, "utf8"), yüz);
+    const kaynak = readFileSync(dosya, "utf8");
+    const çıktı = yüz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yüz);
     if (hedef) { writeFileSync(hedef, çıktı, "utf8"); console.log(`✅ ${yüz.toUpperCase()} yüzü yazıldı → ${hedef}`); }
     else process.stdout.write(çıktı);
     process.exit(0);
@@ -1193,7 +1198,7 @@ function yardimMetni(): string {
     grup("🌳 TEKİL DOSYA YÜZLERİ (Prizma — kaynak asla değişmez)", [
       "<dosya.sar> [--iskelet <hedef>]             Dosyayı ayrıştırır, ağacını ve drift tanılarını basar; --iskelet ile klasör/dosya iskeleti üretir.",
       "belge <dosya.sar> [--yaz <hedef.md>]        İnsan-okur Markdown yüzünü üretir.",
-      "yansıt <dosya.sar> --json|--yaml|--xml      Makine/config/ajan yüzünü üretir (JSON · YAML · XML).",
+      "yansıt <dosya.sar> --json|--yaml|--xml|--md Makine/config/ajan/insan yüzünü üretir (JSON · YAML · XML · okunur MD).",
       "agac <dosya.sar> [--kod] [--kok K] [...]    Klasör-ağacı çizimini basar (├──/└──).",
       "tema-md <dosya> [--dışa]                    DESIGN.md standardı ile Sarmal Tema kaynağı arasında dönüştürür.",
     ]),

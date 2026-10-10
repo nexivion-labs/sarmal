@@ -4693,7 +4693,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         }
 
         Adım( kod: KYN-KYN-A05, ad: "Prizmanın Markdown Yüzünün Gerçek Dönüşüm Yapması", durum: geliştirmede, öncelik: p2, bağımlı: [],
-          referans: [ YUZ-1.2, HTR-MARKDOWN-YUZU-ZAYIF ],
+          referans: [ YUZ-1.2, HTR-MARKDOWN-YUZU-ZAYIF ], üretir: [ KOD-PRIZMA-MD, KOD-SNM-PRIZMA-MD ],
           ne: "📝 Prizmanın Markdown yüzü kaynağı bir kod bloğuna sarmakla yetinmekte, gerçek bir dönüşüm yapmamaktadır; oysa benimsemenin yükü bu yüzün üstündedir ve depoya gelen geliştirici renksiz düz metin görüp ayrılmaktadır. Kaynağı Markdown yapmak dilin tek değerini, yani makinenin yanlış dosyayı reddedebilmesini yok eder; doğru kaldıraç türetilmiş yüzü okunur kılmaktır." ) {
           görev: [
             "Markdown yüzünün kapsamını kararlaştır: hangi düğüm tipleri başlık, tablo, kod bloğu ve bağlantı olarak nasıl görünür; belge blokları düz Markdown olarak akar.",
@@ -6074,3 +6074,9 @@ Kod( kod: KOD-SNM-YERSIZ-KACIS, dosya: "urun/cekirdek/sinama/denetci.test.ts",
   ne: "🌿 Yersiz teknoloji kaçışı sınamaları — teknoloji ilanlı projede uyarı, ilansız projede sessizlik, kardeş projenin ilanı, çağır köprüsü, zemin bağıyla birlikte kaçış, ders dünyası ve iki dilli metin (BKM-OLG-A11)" )
 Kod( kod: KOD-DOGUS-KURULUS-KACISI, dosya: "ogreti/sablon/dogus/1_dogus.sar",
   ne: "🌿 Doğuş Fazı şablonu — Kuruluş Katmanının kaçışını geçici diye yazar ve Kuruluş Adımının kabulüne kaçış temizliği ölçütünü koyar (BKM-OLG-A11)" )
+
+// 🍎 KYN-KYN-A05 teslimi (2026-10-10): prizmanın Markdown yüzünün gerçek dönüşüm yapması
+Kod( kod: KOD-PRIZMA-MD, dosya: "urun/cekirdek/src/prizma-md.ts",
+  ne: "🔺 Prizmanın Markdown yüzü — nötr ağaçtan okunur Markdown üretir: düğüm başlık olur, kısa alanlar tabloya, cümleler paragraf ve madde listesine iner, aynı dosyadaki kimlikler bağlantı olur ve belge blokları düz Markdown olarak akar (KYN-KYN-A05)" )
+Kod( kod: KOD-SNM-PRIZMA-MD, dosya: "urun/cekirdek/sinama/prizma-md.test.ts",
+  ne: "🔺 Markdown yüzü nöbetleri — plan fikstürünün dönüşümü, altın çıktı, iki ayrı süreçte bayt bayt eşitlik ve canlı plan ile kanon üzerinde ham kaynak yokluğu (KYN-KYN-A05)" )

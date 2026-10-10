@@ -57,7 +57,7 @@ import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI, p
 import { etkiMetni } from "./etki.ts";        // BKM-MCP-A01: etki aracı = CLI etki yüzüyle aynı çekirdek (YUZ-1.2)
 import { bicimle } from "./bicimle.ts";       // BKM-MCP-A01: biçim motoru çekirdekte — eklenti de buradan içe alır
 import { yansıt, type Yüz } from "./prizma.ts";
-import { belgeMd } from "./belgele.ts";       // prizma md yüzü (Prizma: tek kaynak → dört yüz)
+import { prizmaMd } from "./prizma-md.ts";    // prizma md yüzü — okunur dönüşüm (KYN-KYN-A05 · YUZ-1)
 import { adimDurumYaz } from "./koniYaz.ts";  // durum-guncelle: TEK yazım mekanizması (SENK-A05 kilit + guard)
 import { adimEtiketiBul } from "./dongu.ts";  // Adım → dosya etiketi (YUZ-1.2: çözüm tek yerde)
 import { dogusYaz, dogusRaporu, dogusTuruCoz, dogusSorusu } from "./dogus.ts";  // dogus: doğuş paketi yazıcısı (DPK-A02 · GOC-A10 tür sorusu)
@@ -701,14 +701,14 @@ function bicimleAraci(kaynak: string): { metin: string; isError: boolean } {
   return { metin: bicimle(kaynak, "\n"), isError: false };
 }
 
-/** prizma: json/yaml/xml yansıt + md belge yüzü — CLI ile aynı çekirdek (YUZ-1.2). */
+/** prizma: json/yaml/xml yansıt + md okuma yüzü (prizmaMd) — CLI `yansıt` ile aynı çekirdek (YUZ-1.2). */
 function prizmaAraci(kaynak: string, yuz: string): { metin: string; isError: boolean } {
   const YUZLER = ["json", "yaml", "xml", "md"];
   if (!YUZLER.includes(yuz)) {
     return { metin: `✖ prizma: bilinmeyen yüz "${yuz}". Geçerli: ${YUZLER.join(" · ")}`, isError: true };
   }
   try {
-    const metin = yuz === "md" ? belgeMd(kaynak) : yansıt(kaynak, yuz as Yüz);
+    const metin = yuz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yuz as Yüz);
     return { metin, isError: false };
   } catch (e) {
     if (e instanceof SozDizimHatasi) {

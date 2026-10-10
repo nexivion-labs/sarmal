@@ -322,6 +322,10 @@ test("MCP-A01: prizma dört yüzü döndürür (json ayrıştırılabilir · md 
     assert.equal(s.isError, false, `${yuz} yüzü hata verdi: ${s.metin}`);
     assert.ok(s.metin.length > 0, `${yuz} yüzü boş döndü`);
   }
+  // md yüzü okunur dönüşümdür (KYN-KYN-A05): başlık taşır, ham kaynağı kod çitine sarmaz.
+  const md = mcpAraciTam("prizma", { kaynak, yuz: "md" }).metin;
+  assert.match(md, /^#+ Adım · ADM-P · prizma denemesi$/m, md);
+  assert.doesNotMatch(md, /```sarmal/, md);
   const bozuk = mcpAraciTam("prizma", { kaynak: "Adım( kod: ", yuz: "json" });
   assert.equal(bozuk.isError, true, bozuk.metin);
   const yanlisYuz = mcpAraciTam("prizma", { kaynak, yuz: "toml" });
