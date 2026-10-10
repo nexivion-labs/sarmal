@@ -932,20 +932,36 @@ export const TABAN_KANON_METINLERI = {
   /**
    * MGZ-A04: tam denetimi bir hatayla yarıda kalan köklerin ipucu. Sebep
    * kanonsuzluk değil çöküş olduğu için kanon onarımı önerilmez; kök ve hatanın
-   * iletisi adıyla söylenir, hatanın tamamını gösteren yol gösterilir.
+   * iletisi adıyla söylenir, hatanın tamamını gösteren yol gösterilir. Birden
+   * çok kök çöktüğünde cümleler çoğul kurulur. `sonucuAtla` kanonsuz kökün
+   * ipucuyla birlikte basılırken verilir: sonuç cümlesi orada zaten yazılıdır
+   * ve birleşik ipucunda ikinci kez geçmez.
    */
-  coktuIpucu(coken: readonly { readonly kok: string; readonly hata: string }[]): string {
+  coktuIpucu(coken: readonly { readonly kok: string; readonly hata: string }[], sonucuAtla = false): string {
     const liste = coken.map((c) => `${c.kok} (${c.hata})`).join("; ");
-    const baslik = yuzeyMetni(
-      `Şu kökte tam proje denetimi bir hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
-      `The full project check did not run for this root because it stopped with an error: ${liste}.`);
-    const sonuc = yuzeyMetni(
-      "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
-      "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
-    const cozum = yuzeyMetni(
-      "Hata Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu aynı kökte hatanın tamamını gösterir; hata giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
-      "The error was also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for the same root, and once the error is fixed the next check run removes this indicator by itself.");
-    return [baslik, sonuc, cozum].join("\n");
+    const cogul = coken.length > 1;
+    const baslik = cogul
+      ? yuzeyMetni(
+        `Şu köklerde tam proje denetimi birer hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
+        `The full project check did not run for these roots because each one stopped with an error: ${liste}.`)
+      : yuzeyMetni(
+        `Şu kökte tam proje denetimi bir hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
+        `The full project check did not run for this root because it stopped with an error: ${liste}.`);
+    const sonuc = cogul
+      ? yuzeyMetni(
+        "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu köklerde üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+        "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for these roots, so an empty panel does not mean the tree is clean.")
+      : yuzeyMetni(
+        "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+        "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
+    const cozum = cogul
+      ? yuzeyMetni(
+        "Hatalar Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu her kökte hatanın tamamını gösterir; hatalar giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+        "The errors were also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for each of these roots, and once the errors are fixed the next check run removes this indicator by itself.")
+      : yuzeyMetni(
+        "Hata Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu aynı kökte hatanın tamamını gösterir; hata giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+        "The error was also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for the same root, and once the error is fixed the next check run removes this indicator by itself.");
+    return [baslik, ...(sonucuAtla ? [] : [sonuc]), cozum].join("\n");
   },
 } as const;
 

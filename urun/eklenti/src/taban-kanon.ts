@@ -151,7 +151,8 @@ export class TabanKanonCubugu {
       this.oge.text = TABAN_KANON_METINLERI.atlandiMetni;
       this.oge.tooltip = [
         ...(d.atlanan.length > 0 ? [TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan)] : []),
-        ...(d.coken.length > 0 ? [TABAN_KANON_METINLERI.coktuIpucu(d.coken)] : []),
+        // Sonuç cümlesi kanonsuz kökün ipucunda yazılıysa çöküş ipucu onu yinelemez.
+        ...(d.coken.length > 0 ? [TABAN_KANON_METINLERI.coktuIpucu(d.coken, d.atlanan.length > 0)] : []),
       ].join("\n\n");
       this.oge.command = d.atlanan.length > 0 ? KANON_ISARETCISI_KOMUTU : undefined;
       this.oge.show();

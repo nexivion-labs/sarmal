@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -227,7 +227,7 @@ interface KanonModulu {
   TABAN_KANON_METINLERI: {
     cubukIpucu(belge?: string): string;
     atlandiIpucu(kokler: readonly string[]): string;
-    coktuIpucu(coken: readonly { kok: string; hata: string }[]): string;
+    coktuIpucu(coken: readonly { kok: string; hata: string }[], sonucuAtla?: boolean): string;
   };
   KANON_ISARETCISI_METINLERI: { eklentiKanonu: string };
   yuzeyDiliniAyarla(dil: string): void;
@@ -779,8 +779,9 @@ function ortusuCatismali(kok: string): void {
     "<<<<<<< HEAD\n{ \"semalar\": {} }\n=======\n{}\n>>>>>>> yan-dal\n", "utf8");
 }
 
-test("MGZ-A04: çöken kök durum çubuğu işaretinde görünür ve sebebi kanonsuzluk değil çöküş olarak söylenir", () => {
+test("MGZ-A04: çöken kök durum çubuğu işaretinde görünür ve sebebi kanonsuzluk değil çöküş olarak söylenir", (t) => {
   const alan = gecici("sarmal-coken-isaret-");
+  t.after(() => rmSync(alan, { recursive: true, force: true }));   // başarısızlıkta da silinir
   const coken = varlikKur(alan, "coken_proje");
   const saglam = varlikKur(alan, "saglam_proje");
 
@@ -841,8 +842,38 @@ test("MGZ-A04: çöküş ipucu iki dilde aynı bilgiyi taşır ve emoji taşıma
   modul.yuzeyDiliniAyarla("tr");
 });
 
-test("MGZ-A04: zorla çökertilen kökün tam denetimi yutulmaz; tur onu çöken kök olarak bildirir ve öteki kökler koşmaya devam eder", () => {
+test("MGZ-A04: birleşik ipucunda sonuç cümlesi bir kez geçer ve birden çok çöken kök çoğul söylenir", () => {
+  const bir = [{ kok: "/alan/a", hata: "ENOENT" }];
+  const iki = [...bir, { kok: "/alan/b", hata: "Unexpected token" }];
+  for (const [dil, sonuc, tekil, cogul] of [
+    ["tr", /Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları/gu, /Şu kökte/u, /Şu köklerde/u],
+    ["en", /Broken reference, disk reconciliation and dependency graph diagnostics/gu, /for this root/u, /for these roots/u],
+  ] as const) {
+    const { cubuk, vscode } = sahteYurutucu([]);
+    const modul = kanonModulu(vscode);
+    modul.yuzeyDiliniAyarla(dil);
+    const isaret = new modul.TabanKanonCubugu();
+    // Kanonsuz kök ile çöken kök birlikte: iki sebep, tek sonuç cümlesi.
+    modul.tamDenetimSonucu(["/alan/k", "/alan/a"], ["/alan/k"], true, bir);
+    const birlesik = String(cubuk.ipucu);
+    assert.equal(birlesik.match(sonuc)?.length ?? 0, 1, `${dil}: birleşik ipucunda sonuç cümlesi bir kez geçmeli:\n${birlesik}`);
+    assert.ok(birlesik.includes("/alan/k") && birlesik.includes("/alan/a"), `${dil}: birleşik ipucu iki kökü de anmalı`);
+    // Tek çöken kök tekil, birden çoğu çoğul söylenir; ikisi de sonucu kendisi taşır.
+    const tek = modul.TABAN_KANON_METINLERI.coktuIpucu(bir);
+    assert.match(tek, tekil, `${dil}: tek çöken kök tekil söylenmeli`);
+    assert.doesNotMatch(tek, cogul, `${dil}: tek çöken kök çoğul söyleniyor`);
+    assert.equal(tek.match(sonuc)?.length ?? 0, 1, `${dil}: tek başına çöküş ipucu sonuç cümlesini taşımalı`);
+    const cok = modul.TABAN_KANON_METINLERI.coktuIpucu(iki);
+    assert.match(cok, cogul, `${dil}: birden çok çöken kök çoğul söylenmeli:\n${cok}`);
+    assert.doesNotMatch(cok, tekil, `${dil}: birden çok çöken kök tekil söyleniyor:\n${cok}`);
+    assert.equal(cok.match(sonuc)?.length ?? 0, 1, `${dil}: çoğul çöküş ipucu sonuç cümlesini bir kez taşımalı`);
+    isaret.dispose();
+  }
+});
+
+test("MGZ-A04: zorla çökertilen kökün tam denetimi yutulmaz; tur onu çöken kök olarak bildirir ve öteki kökler koşmaya devam eder", (t) => {
   const alan = gecici("sarmal-coken-tur-");
+  t.after(() => rmSync(alan, { recursive: true, force: true }));   // başarısızlıkta da silinir
   const bozuk = varlikKur(alan, "bozuk_proje", { kanon: true });
   const saglam = varlikKur(alan, "saglam_proje", { kanon: true });
   const kanonsuz = join(alan, "kanonsuz_disari");
