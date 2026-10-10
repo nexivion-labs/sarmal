@@ -1833,8 +1833,8 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           sınır: "Nöbetin ölçtüğü şey (gövdenin sicilden eski olmaması) değişmez; yalnız ölçümün yan etkisi kaldırılır."
         }
 
-        Adım( kod: BKM-DNT-A09, durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, ORK-6.1 ],
-          üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA ],
+        Adım( kod: BKM-DNT-A09, durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ YAS-4.1, ORK-6.1 ],
+          üretir: [ KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-POSTA, KOD-SNM-KABUK-DAVRANIS, KOD-SNM-KABUK-KUR, KOD-SNM-VSCODE-SAHTESI, KOD-SNM-DAVRANIS-NOBETI-VSCODE ],
           ne: "🛡️ Eklentinin editöre bakan yarısının davranış nöbeti kazanması. Elli altı kaynak dosyasının otuz dördü hiçbir sınama tarafından modül olarak yüklenmez ve ayrım keskindir: yüklenmeyen her dosya editör kabuğunu ithal eder ve süitte bir kabuk sahtesi yoktur; bu yarı yaklaşık yedi bin dört yüz satırdır ve en büyük üç yüzey dosyasını (yol haritası, onay kuyruğu, onaylar paneli) kapsar. Bedeli ölçülmüştür ve kuramsal değildir: onaylar panelinde boş gerekçeli kararı durduran dal kaldırıldığında süit yeşil kalmıştır, kapıya gitme satır çözümü sıfıra indirildiğinde yeşil kalmıştır, rozet koşulu tersine çevrildiğinde yeşil kalmıştır; hatırlatıcı sayacı iki katına çıkarıldığında ise tek koruma olan bayt özeti güncellenince süit yine yeşil kalmıştır. Bayt özeti bir davranış nöbeti değil değişiklik dedektörüdür ve deponun kendi yorumu özetin on iki kez 'bilerek güncellendiğini' yazar; tören hâline gelmiş bir dedektör hiçbir şeyi korumaz. Sınama kütlesinin beşte biri (bin beş yüz elli beş iddianın üç yüz elli dördü) kaynak metnini düzenli ifadeyle okur ve bu sınır dürüstçe yazılmıştır, fakat gerçek davranış hataları o sınırdan geçmektedir. Gerçek editör süiti bu boşluğu kapatabilecek tek yerdir ve bugün otuz dört dosyanın yalnız ikisine uğrar." ) {
           görev: [
             "Onaylar paneli, onay kuyruğu ve hatırlatıcılar için editör kabuğundan bağımsız bir davranış katmanı ayır ya da kabuk sahtesi kur; boş gerekçe dalı, kapıya gitme satırı, rozet koşulu ve hatırlatıcı sayacı ilk dört fikstürdür ve dördü de mutasyonla kanıtlanır.",
@@ -1848,6 +1848,9 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "Kaynak metnini okuyan iddialar kaldırılmaz; onlar bilinçli bir sınırdır ve davranış nöbeti gelene kadar yerinde kalır. Yol haritası dosyasının bin iki yüz satırı bu Adımın kapsamında değildir; o dosya kendi turunu ister."
           dokunulmaz: [ "Süit betiğinin sıfır bağımlılık sözleşmesi (STR-3.1)", "Kaynak metnini okuyan iddiaların dürüstlük notu" ]
+          koşu:  Koşum( kod: KSM-BKM-DNT-A09, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işlemeler 98ce3f0, ea23947 ve 8f1378f · eklenti birim süiti 887 sınama, 0 düşen; çekirdek 1676/1676; iki pakette tür denetimi temiz · depo denetimi 0 hata · CI sürümü Node 24.21 ile birim süiti yeşil, deneysel API uyarısı yalnız standart hataya basılır · bağımsız inceleme dört mutasyonu tabanda ve dalda uyguladı: boş gerekçe dalı, kapıya git satırının sıfıra inmesi, rozet koşulunun terslenmesi ve hatırlatıcı sayacının iki katı tabanda birim süitinden sağ çıkıyordu, dalda her biri en az bir davranış sınamasını kırmızıya çevirir; sayaç mutasyonu bayt özeti kaldırıldıktan sonra davranış nöbetince tek başına yakalanır. BAYT ÖZETİ emekliye ayrıldı; yerine sayaç, rozet, boş durum cümlesi, yinelenen çizim güvencesi ve görünüş kimliği iki panel için ölçülür. Ağaç satırlarının etiketi ve simgesi, tür özeti, Fikir hanesi ve kopyalama menüsü artık hiçbir nöbetle korunmuyor; bu bilinçli bir açıktır. YÜKLENMEYEN DOSYA: bugünkü ağaçta 64 kaynak dosyanın 35'i hiçbir sınamada modül olarak yüklenmiyordu (plan metnindeki elli altıda otuz dört sayısı bayattır), dalda 23'e indi; düşen on iki dosya bicimlendir, bildirimler, hatirlaticilar, minigraf, nabiz, onay-kuyrugu, onay-paneli, onay-tarayici, ortak, taban-kanon, teknoloji-simgesi ve yolharitasi'dır; bunların dördü davranışla ölçülür, sekizi dolaylı yüklenir. GERÇEK EDİTÖR SÜİTİ: on altı kronik kırmızı bu işten önce de aynı adlarla vardı (karar komutu imzası değişmiş eski sınamalar); yeni üç senaryo yeşildir. Diskten gelen kapının panele inmemesi ürün kusuru değil, tek-agac süitinin odağı alt varlığa daraltıp bırakmasından doğan süitler arası sızıntıdır; sağlam çözüm o süitin sonunda odağı sıfırlamaktır.",
+            ne:    "Eklentinin onay paneli, onay kuyruğu, Hatırlatıcılar ve Bildirimler yüzü bir kabuk sahtesiyle modül olarak yüklenip davranışla ölçülür hâle geldi; dört mutasyon artık kırmızı verir, bayt özeti töreni bitti ve gerçek editör süitine üç yüzey senaryosu eklendi." )
         }
 
         Adım( kod: BKM-DNT-A10, durum: tamamlandı, öncelik: p3, bağımlı: [], referans: [ YAS-4.1 ],
@@ -6087,3 +6090,13 @@ Kod( kod: KOD-SNM-PRIZMA-MD, dosya: "urun/cekirdek/sinama/prizma-md.test.ts",
 // 🍎 VIT-KIMLIK-A08 teslimi (2026-10-10): parametre satırlarına aile simgesi
 Kod( kod: KOD-SNM-PARAMETRE-DEKOR, dosya: "urun/eklenti/sinama/parametre-dekor.test.ts",
   ne: "🎨 Parametre dekoru nöbetleri — tek kaynak çizelge, satır başı ve görünür aralık şartı, dizgi ve yorum dışlaması, açık ve koyu tema varyantı, dosyaya tek bayt yazmama ve 16 ms bütçesi (VIT-KIMLIK-A08)" )
+
+// 🍎 BKM-DNT-A09 teslimi (2026-10-10): editöre bakan yarının davranış nöbeti
+Kod( kod: KOD-SNM-KABUK-DAVRANIS, dosya: "urun/eklenti/sinama/kabuk-davranis.test.ts",
+  ne: "🛡️ Kabuk davranış nöbeti — Onaylar paneli, onay kuyruğu, Hatırlatıcılar ve Bildirimler modül olarak yüklenir; boş gerekçe, kapıya git, rozet ve sayaç davranışı ölçülür (BKM-DNT-A09)" )
+Kod( kod: KOD-SNM-KABUK-KUR, dosya: "urun/eklenti/sinama/kabuk-kur.ts",
+  ne: "🛡️ Kabuk kurucusu — modül kancası vscode adını sahteye çözer ve eklenti kaynağını tip sökümüyle yükler; dış bağımlılık taşımaz (BKM-DNT-A09)" )
+Kod( kod: KOD-SNM-VSCODE-SAHTESI, dosya: "urun/eklenti/sinama/vscode-sahtesi.ts",
+  ne: "🛡️ Editör kabuğunun en küçük sahtesi — komut, bildirim, pano, düzenleme, rozet ve görünüş çağrılarını kayda yazar (BKM-DNT-A09)" )
+Kod( kod: KOD-SNM-DAVRANIS-NOBETI-VSCODE, dosya: "urun/eklenti/sinama_vscode/suite/davranis-nobeti.test.ts",
+  ne: "🛡️ Gerçek editörde üç yüzey senaryosu — Yol Haritası, onay kuyruğu ve Onaylar paneli (BKM-DNT-A09)" )
