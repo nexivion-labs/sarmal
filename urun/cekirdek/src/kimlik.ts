@@ -87,6 +87,17 @@ const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?${MADDE_KUYRUG
 const SINIR_DISI = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_-]/; // bitişikse eşleşme kod değildir
 const HARF_VAR = /[A-ZÇĞİÖŞÜ]/;
 
+// HST-MTR-A05 · KOD BİÇİMİ SORUSU: metin katmanının tanıdığı biçim yukarıdaki
+// desende yaşar ve bu yüklem ikinci bir desen yazmadan onu bütün sorguya uygular.
+// Sorgu bu biçimde değilse metin katmanı onu hiçbir dosyada taramamıştır; ad
+// yalnız .sar yapısal katmanında aranır ve cevap ölçmediği katmanı adıyla söyler.
+const KOD_BICIMI = new RegExp(`^(?:${KOD_DESENI.source})$`);
+
+/** Sorgu, metin katmanının tanıdığı KOD biçiminde mi (büyük harfli, tireli; ad alanı ve madde kuyruğu dâhil)? */
+export function kodBicimliMi(sorgu: string): boolean {
+  return KOD_BICIMI.test(sorgu) && HARF_VAR.test(sorgu);
+}
+
 /** Tek dosyayı tara. SAF.
  *  sarMi=true → AST katmanı (tanım + yapısal atıf) + metin katmanı;
  *  sarMi=false → YALNIZ metin katmanı (YUZ-3.2 ④: .md/.ts atıf evreni —
@@ -1472,12 +1483,29 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   // bir projeden `PRJ::KOD` diye verilen atfı da bulur (butunAtiflar · YUZ-3.2).
   const atiflar = butunAtiflar(indeks, kod);
   const giden = indeks.giden(kod);   // hatırlatıcı-rayı turu: beyanlı çıkış kenarları (ileri-bağlama)
+  // HST-MTR-A05 · BULUNAMADI İLE GEÇMİYOR AYRIMI: KOD biçimi dışındaki ad yalnız
+  // .sar yapısal katmanında aranır, metin katmanı onu hiçbir dosyada taramaz.
+  // Ölçüm (2026-09-10): yedi dosyada geçen deve gövdeli bir işlev adı "hiçbir
+  // yerde geçmiyor" cevabı alıyordu ve ajan bu cümleden sembolün var olmadığına
+  // hükmediyordu. Ölçülmeyen katman için yokluk cümlesi kurulmaz; ORK-4 üç
+  // durumlu cevabının dersi burada da geçerlidir. KOD biçimli sorgunun bütün
+  // cümleleri aynen kalır.
+  const kodBicimli = kodBicimliMi(kod);
+  const YAPISAL_KATMAN = "gezin böyle bir adı yalnız .sar dosyalarının yapısal katmanında, yani Tip ve Kural adlarında, kod değerlerinde ve çağır satırlarında arar";
   if (!tanimlar.length && !atiflar.length) {
+    if (!kodBicimli) {
+      return `✖ '${kod}' bulunamadı (${indeks.dosyaSayisi()} dosya tarandı), fakat bu, adın hiçbir yerde geçmediği anlamına gelmez. ` +
+        `Ad KOD biçiminde değildir ve ${YAPISAL_KATMAN}; .md ile .ts dosyalarında ve .sar içindeki metin ile yorumlarda geçip geçmediği ÖLÇÜLMEDİ. ` +
+        "Bir kod sembolü arıyorsan dil sunucusunu ya da metin aramasını kullan.";
+    }
     return `✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`;
   }
   const satir = (x: { dosya: string; satir: number; sutun: number }): string =>
     `  ${x.dosya}:${x.satir}:${x.sutun}`;
   const bolumler: string[] = [`── 🗂️ ${kod} (${indeks.dosyaSayisi()} dosya tarandı) ──`];
+  if (!kodBicimli) {
+    bolumler.push(`KAPSAM: '${kod}' KOD biçiminde değil ve ${YAPISAL_KATMAN}; .md ile .ts dosyalarındaki ve .sar içindeki metin ile yorumlardaki geçişler taranmadı. Aşağıdaki yokluk cümleleri yalnız bu katman için geçerlidir.`);
+  }
   // KPN-A01: her tanım bölge/varlık rozetiyle etiketlenir — RAF-PLAN gibi standart
   // kodlarda hangi kapının gerçek olduğu (varlık · şablon · örnek) tek bakışta okunur.
   bolumler.push(tanimlar.length
@@ -1486,7 +1514,9 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
     // olabilir. Araç hangisi olduğunu söyler (ORK-4 · KPS-ADA-A01).
     : adAlanli.cozulemedi
       ? `TANIM: çözülemedi — ${adAlanli.cozulemedi}.`
-      : "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).");
+      : kodBicimli
+        ? "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir)."
+        : "TANIM: .sar yapısal katmanında yok; ad KOD biçiminde olmadığı için öteki dosyalardaki tanımı ÖLÇÜLMEDİ.");
   // KPS-KOD-A01 · ORK-4: aynı kod birden çok KARDEŞ Projede ilanlıysa araç
   // sessizce ilkini seçmez — her Projenin tanımı kendi kartıyla gösterilir ve
   // hangisinin kastedildiği `PRJ::KOD` yazımıyla SORULUR. Ders dünyası kopyaları
@@ -1540,7 +1570,10 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
     ? `ATIFLAR — gelen (${atiflar.length}):\n${atiflar.map(satir).join("\n")}`
     : giden.length
       ? "ATIFLAR — gelen: yok — ama bu bir İLERİ-BAĞLAMA düğümü (aşağıdaki GİDEN kenarlarına bak); ölü kod DEĞİL."
-      : "ATIFLAR — gelen: yok — tanımlı ama kimse kullanmıyor (yetim olabilir).");
+      : kodBicimli
+        ? "ATIFLAR — gelen: yok — tanımlı ama kimse kullanmıyor (yetim olabilir)."
+        // HST-MTR-A05: metin geçişleri taranmadan yetim hükmü kurulmaz.
+        : "ATIFLAR — gelen: .sar yapısal katmanında yok; metin geçişleri taranmadığı için yetim olup olmadığı ÖLÇÜLMEDİ.");
   // GİDEN (bu düğümün beyan ettiği çıkış kenarları) — forward-binding görünür olur.
   if (giden.length) {
     bolumler.push(`GİDEN — çıkış kenarları (${giden.length}):\n${giden.map((g) => `  → ${g.hedef} [${g.kenar}]  (${g.dosya}:${g.satir}:${g.sutun})`).join("\n")}`);

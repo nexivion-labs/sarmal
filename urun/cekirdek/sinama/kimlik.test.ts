@@ -634,3 +634,60 @@ test("HST-MTR-A06: ORK-1 sorgusu ORK-1.2 ile ORK-1.3 yazımlarını saymaz, ger�
   // MCP ve CLI yüzü aynı çekirdeği okur: rapor şişmiş sayıyı basmaz.
   assert.match(gezinRaporu(i, "ORK-1"), /ATIFLAR — gelen \(3\)/);
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HST-MTR-A05 · BULUNAMADI İLE GEÇMİYOR AYRIMI (HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR)
+//
+//   Ölçülen kusur (2026-09-10 · yeniden 2026-10-10): gezinme aracı deve gövdeli
+//   bir işlev adına, ad yedi dosyada geçtiği hâlde "hiçbir yerde geçmiyor"
+//   diyordu. Metin katmanı .md ve .ts dosyalarında ve .sar metinlerinde yalnız
+//   KOD biçimini tarar; biçim dışındaki ad yalnız .sar yapısal katmanında
+//   aranır. Ölçülmeyen katman için yokluk hükmü kurulmaz: bulunamadı ile
+//   geçmiyor ayrı cümlelerdir. KOD biçimli sorguların cevabı ise birebir aynı
+//   kalır; regresyon nöbeti onları onarımdan ÖNCEKİ çıktıyla karşılaştırır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const ROZET = (): string => "🧭 sınama";
+
+test("HST-MTR-A05: deve gövdeli sembole 'hiçbir yerde geçmiyor' denmez, kapsam dışı olduğu açıkça söylenir", () => {
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("gezin.ts", "export function gezinRaporu(): string {\n  return \"\";\n}\n");
+  i.dosyaGuncelle("NOTLAR.md", "gezinRaporu işlevi bu notta anılır.\n");
+  i.dosyaGuncelle("plan.sar", 'Adım( kod: ADM-GZN-A01, durum: beklemede, ne: "gezinRaporu işlevini kurar" )\n');
+  const rapor = gezinRaporu(i, "gezinRaporu", undefined, ROZET);
+  assert.doesNotMatch(rapor, /hiçbir yerde geçmiyor/, "ölçülmeyen katman için yokluk hükmü kurulmamalı");
+  assert.match(rapor, /KOD biçiminde değil/, "cevap sınırın sebebini adıyla söylemeli");
+  assert.match(rapor, /ÖLÇÜLMEDİ/, "cevap ölçülmeyen katmanı açıkça söylemeli");
+  assert.match(rapor, /\(3 dosya tarandı\)/, "taranan dosya sayısı cevapta kalmalı");
+  assert.ok(rapor.startsWith("✖"), "sonuç yoktur: ✖ öneki korunur, CLI çıkış kodu ile MCP hata işareti değişmez");
+});
+
+test("HST-MTR-A05: .sar içinde bulunan deve gövdeli ad konumlarını verir, taranmayan katmanı açıkça söyler", () => {
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("kanon.sar", 'Kural mimariSarma( kod: ORK-1.1, ne: "alt madde" )\n');
+  i.dosyaGuncelle("sinama.ts", "// mimariSarma kural düğümünün adıdır\n");
+  const rapor = gezinRaporu(i, "mimariSarma", undefined, ROZET);
+  assert.match(rapor, /TANIM \(1\):\n {2}kanon\.sar:1:7 {2}\[kuralTanım\]/, "tanımın doğru konumu verilmeli");
+  assert.match(rapor, /KAPSAM: 'mimariSarma' KOD biçiminde değil/, "taranmayan katman açıkça söylenmeli");
+  assert.doesNotMatch(rapor, /kimse kullanmıyor/, "metin geçişleri taranmadan yetim hükmü kurulmamalı");
+});
+
+test("HST-MTR-A05 regresyon: KOD biçimli aramaların cevabı onarımdan önceki çıktıyla birebir aynıdır", () => {
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("plan.sar", [
+    'Karar( kod: KRR-GZN-YETIM, durum: kilitli, karar: "k", gerekçe: "g", ne: "kimse anmaz" )',
+    'Adım( kod: ADM-GZN-A01, durum: beklemede, bağımlı: [], ne: "gezinRaporu işlevini kurar" )',
+    'Adım( kod: ADM-GZN-A02, durum: beklemede, bağımlı: [ ADM-GZN-A01 ], ne: "ADM-GZN-A01 sonrası; KIRIK-GZN-A09 anılır" )',
+  ].join("\n") + "\n");
+  i.dosyaGuncelle("NOTLAR.md", "ADM-GZN-A01 ile gezinRaporu birlikte anılır.\n");
+  // Beklenen metinler onarımdan ÖNCEKİ gövdenin aynı fikstürdeki çıktısıdır (2026-10-10).
+  const ONCEKI: Record<string, string> = {
+    "ADM-GZN-A01": "── 🗂️ ADM-GZN-A01 (2 dosya tarandı) ──\n\nTANIM (1):\n  plan.sar:2:12  [Adım] · 🧭 sınama\n\nATIFLAR — gelen (3):\n  plan.sar:3:54\n  plan.sar:3:74\n  NOTLAR.md:1:1",
+    "KIRIK-GZN-A09": "── 🗂️ KIRIK-GZN-A09 (2 dosya tarandı) ──\n\nTANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).\n\nATIFLAR — gelen (1):\n  plan.sar:3:95",
+    "KRR-GZN-YETIM": "── 🗂️ KRR-GZN-YETIM (2 dosya tarandı) ──\n\nTANIM (1):\n  plan.sar:1:13  [Karar] · 🧭 sınama\n\nATIFLAR — gelen: yok — tanımlı ama kimse kullanmıyor (yetim olabilir).",
+    "YOK-GZN-KOD": "✖ 'YOK-GZN-KOD' hiçbir yerde geçmiyor (2 dosya tarandı) — kod doğru yazıldı mı?",
+  };
+  for (const [kod, beklenen] of Object.entries(ONCEKI)) {
+    assert.equal(gezinRaporu(i, kod, undefined, ROZET), beklenen, `${kod} cevabı değişti`);
+  }
+});
