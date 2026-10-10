@@ -2213,8 +2213,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
     //   ölçüm yüzde yetmiş verdi. Üstte olduğu yerler test disiplini, sıfır çalışma
     //   bağımlılığı ve işleme kapısıdır; altta olduğu üç kalem araç zinciridir ve
     //   Founder "bunlar kabul edilebilir değil" hükmünü verdi. Üçü burada yaşar.
-    Katman( kod: BKM-KBK, ad: "Kabuk Olgunluğu",
-      teknolojiBağımsız: "Sürekli tümleştirme, dil denetimi ve dosya bölme işleri iki paketi birden kapsar ve tek bir yığına bağlanmaz; araç zinciri deponun kabuğudur, gövdesi değil.",
+    // 2026-10-10: Founder'ın 2026-10-02 hükmü (her Katman takım ile bağlanır; teknoloji
+    // bağımsızlığı yalnız doğuş anında meşrudur) gereği kaçış kaldırıldı. İşler iki paketi birden
+    // kapsadığı için Katman iki Takıma bağlandı (BKM-SNV2 emsali).
+    Katman( kod: BKM-KBK, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "Kabuk Olgunluğu",
       ne: "🧰 Deponun dışarıdan ilk görülen kabuğu: sürekli tümleştirme rozeti, dil denetimi ve dosya boyutu. İçerik endüstrinin üstünde, kabuk altındaydı." ) {
 
       AltKatman( kod: ALT-BKM-KBK-ZINCIR, ad: "Araç Zinciri", departman: kodlama,
