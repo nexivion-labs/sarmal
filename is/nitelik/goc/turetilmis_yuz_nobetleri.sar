@@ -32,7 +32,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `15483bcfbff09477f333984e2e2d7cb120bc7f4376b80da76ac4abda3045f93d` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `50f75b27616f0de5075a15ae06ea3bb660dfaf94201216a42fe870463db3924d` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `64329c3512c06e9ef52185e3d6bdcdd1aaaab50c49251001ce507d74640395dd` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `a74b21da434b6e9f972820c960fb66ea8e7863eff2e5f416b4c768d746058a7d` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
 | `urun/eklenti/package.nls.tr.json` | `f40044f8d3fe12a5f6c3379896e1e2cee2eedce8141b79977bfbfef83dbe92af` |
 | `urun/eklenti/package.nls.json` | `28c495d7c62ada63404ba9255579c8d54c871d325c7a3ac4c82eb817d5992d99` |
@@ -623,6 +623,18 @@ yasağın okuyucuyu meşru kullanımdan da alıkoyması ve gerekçesini taşıma
 Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü
 ilerletti ve yukarıdaki tablodaki satır canlı değerle tazelendi; araç
 açıklamaları, ek açıklamalar ve öteki bütün kaynaklar değişmedi.
+
+Tazeleme notu (2026-10-10 · doğuş aracının genişletme cümlesi · HST-MTR-A14):
+Doğuş paketi var olan bir yok sayma dosyasını genişletirken artık küresel
+kuralın istisnasıyla birlikte motorun iz klasörü satırını da sona ekler. Doğuş
+aracının Türkçe ve İngilizce açıklaması yalnız istisnanın eklendiğini
+söylüyordu; iki cümle aynı düzenlemede, eklenen iki satırı birlikte anacak
+biçimde yeniden yazıldı. Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts`
+dosyasının mührünü ilerletti ve yukarıdaki tablodaki satır canlı değerle
+tazelendi; araç adları, parametreler, şema ve öteki bütün kaynaklar değişmedi.
+Belge yüzleri üreticisi aynı koşuda yeniden koşturuldu ve on altı yüzün hiçbiri
+değişmedi, çünkü üretilen bölgeler araç açıklamalarını değil, yalnız araç
+adlarını, okur ya da yazar beyanını ve başlıklarını okur.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,

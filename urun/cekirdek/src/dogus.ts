@@ -248,9 +248,13 @@ const YOKSAYMA_ISTISNA_BASLIGI =
  * koşunun ara hâlini. Hiçbiri kaynak değildir ve ilki gizli olabilecek bir metin
  * taşıdığı için depoya girmemelidir. Satırın başında eğik çizgi yoktur, çünkü
  * motor izi kendisine verilen dizine yazar ve çalışma alanında bu dizin çatı da
- * olabilir ilk proje de; satır klasörü her derinlikte kapsar. Klasörün adı
- * yazıcıların her birinde ayrıca yazılıdır ve bağ bir nöbetle korunur: nöbet
- * izi gerçek yazıcılardan üretir ve doğan kökün git durumunda ölçer.
+ * olabilir ilk proje de; satır klasörü her derinlikte kapsar. Klasörün adı beş
+ * yazıcıda ayrı ayrı yazılıdır ve `dogus.test.ts` nöbetleri bunlardan yalnız
+ * ikisini gerçek yollarından koşturup doğan kökün git durumunda ölçer: yürütücü
+ * izini yazan `kopru/iz.ts` ile döngü izinin yolunu `--iz` bayrağında kuran
+ * `sarmal.ts`. Makro döngünün izi (`makro-dongu.ts`), kontrol noktası
+ * (`dongu.ts`) ve lig kaydı (`kopru/lig.ts`) nöbetin dışındadır; bu üçünden
+ * birinin klasörü değişirse bu satır onu sessizce kapsamaz olur.
  */
 const IZ_KLASORU_SATIRI = ".sarmal/";
 

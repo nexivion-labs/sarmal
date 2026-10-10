@@ -546,9 +546,11 @@ test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişke
 //   doğan projede izler izlenmeyen dosya olarak görünüyor ve ilk `git add .`
 //   onları depoya sokuyordu. Nöbetler izleri elle değil motorun GERÇEK
 //   yollarından üretir: doğuş ve yürütücü izi MCP alt sürecinden, döngü izi
-//   komut satırından gelir. Böylece yazıcıların klasörü değişirse nöbet konusuz
-//   kalmaz, kırmızıya döner. Küresel yok sayma kuralı bilinçle boş bırakılır,
-//   çünkü ölçülen şey doğan kökün kendi dosyasıdır.
+//   komut satırından gelir. Böylece bu iki yazıcının klasörü değişirse nöbet
+//   konusuz kalmaz, kırmızıya döner; makro döngü izi, kontrol noktası ve lig
+//   kaydının yazıcıları nöbetin dışındadır (dogus.ts, IZ_KLASORU_SATIRI). Küresel
+//   yok sayma kuralı bilinçle boş bırakılır, çünkü ölçülen şey doğan kökün kendi
+//   dosyasıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readdirSync } from "node:fs";

@@ -271,7 +271,8 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "calisma-alani ise hedef ÇalışmaAlanı kökü olur ve ilk proje onun altında kendi köküyle doğar (MIM-1.1); " +
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
         "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
-        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
+        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik satırlar sona eklenir: küresel " +
+        "yok sayma kuralının istisnası ile motorun iz klasörü (`.sarmal/`). " +
         "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
@@ -284,7 +285,8 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "with tur = calisma-alani the target becomes the ÇalışmaAlanı root and the first project is born beneath it with its own root (MIM-1.1); " +
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
-        "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
+        "The single exception is the ignore file, and even there no line is deleted—only missing lines are appended: " +
+        "the exception to the global ignore rule and the engine's trace folder (`.sarmal/`). " +
         "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools.",
     ),
     inputSchema: {
