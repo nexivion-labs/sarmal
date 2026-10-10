@@ -191,6 +191,18 @@ test("⑤: kapanmamış çit dosyanın kalanını yutmaz sayılır — açık ç
     "kapanmamış çit bilinçli olarak sonuna dek sürer — örnek blok yarıda kesilmez");
 });
 
+// HST-YUZ-A04 SINIRI: kök yüzeyi nöbeti her kod çitini örnek sayar; varlık içi kapı ise
+// aynı ayrıştırıcının `sar` kapsamını kullanır ve etiketsiz çiti ölçmeye devam eder.
+// Fark bilinçlidir ve bu sınama onu görünür tutar; iki kapı birleştirilecekse karar ayrıca verilir.
+test("⑤: varlık içi kapı etiketsiz çitin içini ölçmeye devam eder (HST-YUZ-A04 sınırı)", () => {
+  const { indeks, kodIndeks } = kurulum({
+    "rapor.md": "Çıktı:\n\n```\n✖ plan.sar:3:9 [kırık-referans] 'referans: ADM-DGS-97' hedefi çözülmüyor\n```\n",
+  });
+  const t = metinAtifTanilari(indeks, kodIndeks);
+  assert.equal(t.length, 1, "etiketsiz çit varlık içinde ölçülmeye devam etmeli");
+  assert.ok(t[0].tani.mesaj.includes("ADM-DGS-97"));
+});
+
 test("⑤: .sar belge bloğundaki kod çiti DOKUNULMADI — gezin atıf listesi eksilmez", () => {
   const indeks = new KimlikIndeksi();
   indeks.dosyaGuncelle("plan/x.sar", 'Adım( kod: ADM-DGS-13, durum: beklemede, ne: "x" )\n-->|\n```\nADM-DGS-99\n```\n|<--\n');

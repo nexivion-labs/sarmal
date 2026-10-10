@@ -124,19 +124,45 @@ test("`sar` etiketli çit bloğunun içi ölçülmez, dışı ölçülür", () =
   assert.equal(bulgular[0].tani.satir, 5, "çit boşaltması satır adresini kaydırmamalı");
 });
 
-test("`sar` dışındaki çit blokları ölçülmeye devam eder", () => {
-  // Kökteki gerçek tanıtım dosyasının raf ağacı etiketsiz bir çit bloğundadır ve
-  // orası öğretim malzemesi değil, deponun kendisi hakkında olgusal bir iddiadır.
-  const metin = ["```", "plan/   # PLN-1 kaydı", "```", ""].join("\n");
+// HST-YUZ-A04 (HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR): bu sınama eskiden etiketsiz
+// çitin ölçülmeye devam ettiğini savunuyordu, çünkü kök tanıtım dosyasının raf ağacı
+// etiketsiz bir çitte duruyordu. Hüküm 2026-10-10'da tersine döndü: kök yüzeyi tanının
+// nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir ve README'deki örnek
+// çıktı her işlemede sahte uyarı üretiyordu. Kapsam kaybı ölçülmüştür: bugünkü on iki
+// yüzeyin çitlerinde çözülen tek bir kimlik yoktur, kimlik şekilli tek aday sahte uyarının
+// kendisidir. Etiketsiz, başka dille etiketli, tildeli ve iç içe çitlerin hepsi örnektir.
+test("kod çitiyle çevrili her blok ölçülmez, çit dışındaki kırık kimlik ölçülmeye devam eder (HST-YUZ-A04)", () => {
+  const metin = [
+    "Giriş cümlesi.",
+    "```",
+    "✖ is/plan/faz/2_ornek.sar:11:52 [kırık-referans] 'referans: KRR-ORNEK-03' hedefi çözülmüyor",
+    "```",
+    "~~~text",
+    "plan/   # PLN-1 kaydı",
+    "~~~",
+    "````md",
+    "```",
+    "ESKI-4 iç çitteki örnek",
+    "```",
+    "````",
+    "Kapanış cümlesinde EMEKLI-9 anılıyor.",
+    "",
+  ].join("\n");
   const bulgular = kokYuzeyiAtiflari([yuzey("README.md")], icerikler({ "README.md": metin }), new Set<string>());
-  assert.equal(bulgular.length, 1, "etiketsiz çit bloğu örnek kaynak sayılamaz");
-  assert.equal(bulgular[0].tani.satir, 2);
+  assert.deepEqual(bulgular.map((b) => b.tani.satir), [13],
+    `yalnız çit dışındaki kimlik bildirilmeli — gelen: ${JSON.stringify(bulgular.map((b) => b.tani.mesaj))}`);
+  assert.match(bulgular[0].tani.mesaj, /EMEKLI-9/);
 });
 
 test("çit boşaltması satır sayısını korur ve kapanmamış bloğu sonuna kadar boşaltır", () => {
   const metin = "bir\n```sar\niki\nüç\n```\ndört\n";
   assert.equal(ornekCitleriniBosalt(metin).split("\n").length, metin.split("\n").length);
   assert.equal(ornekCitleriniBosalt("bir\n```SAR\nADM-A01\n").split("\n")[2], "");
+  // HST-YUZ-A04: her çiti kapsayan kip de satır sayısını korur ve kapanmamış çiti sonuna dek boşaltır.
+  assert.equal(ornekCitleriniBosalt(metin, "tum").split("\n").length, metin.split("\n").length);
+  assert.deepEqual(ornekCitleriniBosalt("bir\n~~~\nADM-A01\n", "tum").split("\n"), ["bir", "", "", ""]);
+  assert.equal(ornekCitleriniBosalt("```ADM-A01``` satır içi kod\n", "tum"), "```ADM-A01``` satır içi kod\n",
+    "aynı satırda kapanan satır içi kod çit sayılmamalı");
 });
 
 // ── ⑤ İLAN İLE DİSK MUTABAKATI ──────────────────────────────────────────────
