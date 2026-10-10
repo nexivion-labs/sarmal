@@ -737,13 +737,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ISLEME-KAPISI-PLAN-DEGISIKLIGINDE-EKLENTI-SUITINI-KOSMUYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-YUZ-A01,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-13,
   dönüşTetikleyici: "İşleme kapısının süit seçimi bir sonraki kez elden geçirildiğinde; en geç bir sonraki mühür ya da plan taşıma işlemesinden önce",
-  ne:               "İşleme kapısı sınama süitlerini sahnelenen yola göre seçmektedir: yalnız plan dosyaları değiştiğinde eklenti süitini, yalnız eklenti dosyaları değiştiğinde de çekirdek süitini koşmamaktadır. Oysa eklenti süitinin eşdeğerlik nöbetleri deponun gerçek ağacını okumaktadır ve yalnız plan dosyası değiştiren bir işleme bu nöbetleri kırabilir. 2026-09-12 tarihli c4e1f7e işlemesi ilk mühürlü plan dosyalarını depoya koymuş, performans süitindeki eşdeğerlik nöbetinin başvuru taraması mühürlü dosyayı süzmediği için eklenti süiti kırmızıya dönmüş, fakat kapı bunu görmemiş ve kırmızı işleme birleştirme isteğine gönderilmiştir; kusur GitHub kontrollerinde yakalanmış ve 41a4748 işlemesiyle onarılmıştır. Aynı açığın ikinci yüzü de ölçülmüştür: yalnız eklenti yolları sahnelendiğinde çekirdek süiti koşmamaktadır. Onarımın yönü kararlaştırılmamıştır: kapı her işlemede iki süiti de koşabilir, plan ve kök dosyası değişikliğini eklenti süitinin tetikleyicisi sayabilir ya da ağacı okuyan nöbetler ayrı ve hızlı bir kümeye alınabilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A01 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "İşleme kapısı sınama süitlerini sahnelenen yola göre seçmektedir: yalnız plan dosyaları değiştiğinde eklenti süitini, yalnız eklenti dosyaları değiştiğinde de çekirdek süitini koşmamaktadır. Oysa eklenti süitinin eşdeğerlik nöbetleri deponun gerçek ağacını okumaktadır ve yalnız plan dosyası değiştiren bir işleme bu nöbetleri kırabilir. 2026-09-12 tarihli c4e1f7e işlemesi ilk mühürlü plan dosyalarını depoya koymuş, performans süitindeki eşdeğerlik nöbetinin başvuru taraması mühürlü dosyayı süzmediği için eklenti süiti kırmızıya dönmüş, fakat kapı bunu görmemiş ve kırmızı işleme birleştirme isteğine gönderilmiştir; kusur GitHub kontrollerinde yakalanmış ve 41a4748 işlemesiyle onarılmıştır. Aynı açığın ikinci yüzü de ölçülmüştür: yalnız eklenti yolları sahnelendiğinde çekirdek süiti koşmamaktadır. Onarımın yönü kararlaştırılmamıştır: kapı her işlemede iki süiti de koşabilir, plan ve kök dosyası değişikliğini eklenti süitinin tetikleyicisi sayabilir ya da ağacı okuyan nöbetler ayrı ve hızlı bir kümeye alınabilir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A01 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-YUZ-A01 kapanmıştır; eklenti süiti her işlemede, ağacı okuyan çekirdek nöbetlerinin hızlı kümesi çekirdek kodu değişmediğinde de koşar. Kümenin dışında kalan nöbetler HTR-AGAC-KUMESI-UYELIK-NOBETI kaydındadır. Kayıttaki işleme tarihi git'te 2026-09-13'tür."
 )
 
 Hatırlatıcı(
@@ -834,13 +834,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         MGZ-A05,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Paket içeriği nöbeti ya da eklentinin derleme betikleri bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
-  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: paket içeriği nöbeti (urun/eklenti/sinama/paket-icerigi.test.ts) yayımlanan paketin dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarını taşıdığını denetlememektedir. Kopyanın pakette bulunduğunu bugün yalnız elle koşulan vsce ls çıktısı kanıtlamaktadır; derleme betiği bir gün kopyalamayı bırakırsa mağazadan kurulan eklenti yeniden kanonsuz kalır ve hiçbir nöbet kırmızıya dönmez. Aynı turda eklentinin package-lock.json dosyasındaki sürümün 0.9.178 değerinde kaldığı ve paket sürümüyle birlikte ilerlemediği de ölçülmüştür. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A05 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: paket içeriği nöbeti (urun/eklenti/sinama/paket-icerigi.test.ts) yayımlanan paketin dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarını taşıdığını denetlememektedir. Kopyanın pakette bulunduğunu bugün yalnız elle koşulan vsce ls çıktısı kanıtlamaktadır; derleme betiği bir gün kopyalamayı bırakırsa mağazadan kurulan eklenti yeniden kanonsuz kalır ve hiçbir nöbet kırmızıya dönmez. Aynı turda eklentinin package-lock.json dosyasındaki sürümün 0.9.178 değerinde kaldığı ve paket sürümüyle birlikte ilerlemediği de ölçülmüştür. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı MGZ-A05 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): MGZ-A05 kapanmıştır; paket içeriği nöbeti kanon kopyasını zorunlu kalem olarak ölçer ve kilit sürümü ayrı bir nöbetle korunur. Kilit sürümü bu kayıttan bir gün sonra zaten hizalanmıştı."
 )
 
 Hatırlatıcı(
@@ -906,13 +906,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         HST-YUZ-A03,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Eklentinin önizleme stili ya da paket bildirimindeki Markdown katkıları bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
-  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: eklentinin paket bildirimi (urun/eklenti/package.json beş yüz seksen dokuz ile beş yüz doksan birinci satırlar) önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Okuma kipi özel bir düzenleyiciye geçtiği için bu katkı büyük olasılıkla eski yoldan kalmış bir artıktır. Kalacaksa, önizleme renkleri paletten türeyen değişkenlere bağlandığında bu değişkenler Markdown önizlemesinde tanımsız kalacağından ayrı bir palet stil dosyası gerekecektir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A03 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur."
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: eklentinin paket bildirimi (urun/eklenti/package.json beş yüz seksen dokuz ile beş yüz doksan birinci satırlar) önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Okuma kipi özel bir düzenleyiciye geçtiği için bu katkı büyük olasılıkla eski yoldan kalmış bir artıktır. Kalacaksa, önizleme renkleri paletten türeyen değişkenlere bağlandığında bu değişkenler Markdown önizlemesinde tanımsız kalacağından ayrı bir palet stil dosyası gerekecektir. KARAR (kontrolcü, Founder onayıyla · 2026-10-10): hatırlatıcı HST-YUZ-A03 Adımına bağlandı; evi Eylül Fazındaki Hatırlatıcı Hasadı ya da Mağaza Öncesi Blokudur. KAPANIŞ (kontrolcü · 2026-10-10): HST-YUZ-A03 kapanmıştır; katkının okuma kipinde işlevsiz olduğu ve kullanıcının Markdown önizlemelerinde kod vurgusunu sildiği ölçülmüş, katkı kaldırılmıştır."
 )
 
 Hatırlatıcı(

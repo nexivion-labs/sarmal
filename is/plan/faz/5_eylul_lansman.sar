@@ -5970,7 +5970,7 @@ sessizce körleşmez.
       AltKatman( kod: HST-YUZ-K1, departman: sınama, ad: "Kapı ve Önizleme",
         ne: "kapının seçtiği süitler ve okuma yüzünün küçük kusurları" ) {
 
-        Adım( kod: HST-YUZ-A01, ad: "İşleme Kapısının Süit Seçimi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A01, ad: "İşleme Kapısının Süit Seçimi", durum: tamamlandı, öncelik: p1, üretir: [ KOD-KANCA-PRECOMMIT ], bağımlı: [],
           referans: [ HTR-ISLEME-KAPISI-PLAN-DEGISIKLIGINDE-EKLENTI-SUITINI-KOSMUYOR ],
           ne: "🚪 Yalnız plan dosyası değiştiren işleme, gerçek ağacı okuyan eklenti nöbetlerini de koştursun" ) {
           görev: "İşleme kapısı süitleri sahnelenen yola göre seçmektedir ve yalnız plan dosyası değiştiğinde eklenti süitini koşmamaktadır. Gerçek ağacı okuyan nöbetler belirlenir ve plan değişikliğinde en azından onlar koşturulur; yalnız eklenti yolları sahnelendiğinde çekirdek süitinin koşmaması da aynı biçimde ele alınır. İşleme süresine etkisi ölçülür."
@@ -5980,6 +5980,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kapı atlatılabilir hâle getirilmez"
+          koşu:  Koşum( kod: KSM-HST-YUZ-A01, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işlemeler 83fe8c9 ve 9a2f68c (üretim 9caabbc, 996d1c2) · çekirdek 1675/1675, eklenti 901/901, birleşik ağaçta çekirdek 1684/1684 ve eklenti 902/902 · bağımsız inceleme: yalnız plan dosyasındaki kırıcı bir değişikliği ve yalnız eklenti kaynağındaki iç kodlu bir dizgeyi eski kanca geçirdi, yeni kanca blokladı; iki mutant kancayla eklenti dalının ve çekirdek kümesinin ikisinin de gerekli olduğu kanıtlandı; kapı süresi yalnız plan işlemesinde 3,9–4,1 saniyeden 17,6–22,3 saniyeye, eklenti ve karışık işlemelerde yaklaşık 18 saniyeden 24 saniyeye çıktı",
+            ne:    "İşleme kapısı eklenti süitini (yaklaşık 8 saniye) her işlemede, çekirdek kodu değişmediğinde de ağacı okuyan çekirdek nöbetlerinin hızlı kümesini (yaklaşık 5 saniye) koşturuyor; kodu değişen süit eskisi gibi koşulsuz koşuyor ve atlama yalnız küme için görünür iletiyle oluyor. Üç yol süre ölçümüyle tartıldı: her işlemede iki tam süit yalnız plan işlemesini 200 saniyenin üstüne çıkarırdı, tetikleyici listesi ise deponun hemen her rafını saymak zorunda kalırdı. ŞERH: küme ağacı okuyan bütün çekirdek nöbetlerini kapsamaz; dışarıda kalan 29 dosya ve üyeliği ölçecek nöbet HTR-AGAC-KUMESI-UYELIK-NOBETI kaydındadır ve katkı rehberi kümenin gerçek kapsamını söyleyecek biçimde daraltıldı." )
         }
 
         Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: tamamlandı, öncelik: p2, üretir: [ KOD-AGAC-YUZ ], bağımlı: [],
@@ -5997,7 +6000,7 @@ sessizce körleşmez.
             ne:    "Yapı ağacı gerçek satır sonu ve satır başı karakterlerini de tek boşluğa indiriyor; çok satırlı ne metni taşıyan düğümler ağaçta tek satırda görünüyor. Komut satırı ve README bloğu aynı gövdeden yararlanıyor ve ağacın başka hiçbir biçimi değişmedi." )
         }
 
-        Adım( kod: HST-YUZ-A03, ad: "Önizleme Stilinin Markdown Katkısı", durum: geliştirmede, öncelik: p3, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A03, ad: "Önizleme Stilinin Markdown Katkısı", durum: tamamlandı, öncelik: p3, üretir: [ KOD-EKL-MANIFEST, KOD-SNM-ONIZLEME-MASA ], bağımlı: [],
           referans: [ HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR ],
           ne: "🎨 Eski yoldan kalan önizleme stil katkısı ya kaldırılsın ya da gerekçesiyle kalsın" ) {
           görev: "Paket bildirimi önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Katkının bugün bir işe yarayıp yaramadığı ölçülür; yaramıyorsa kaldırılır, yarıyorsa kalma gerekçesi yazılır."
@@ -6007,6 +6010,9 @@ sessizce körleşmez.
             "denetim 0 hata, eklenti süiti yeşil"
           ]
           sınır: "Palet değişkenleri bu Adımda yeniden düzenlenmez"
+          koşu:  Koşum( kod: KSM-HST-YUZ-A03, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 7a6dda9 (üretim 7cfe1d3) · eklenti 898/898, 0 atlama · depo denetimi 0 hata · bağımsız inceleme: dist/eklenti.js geliştirme ve üretim derlemeleri, onizleme.css, onizleme.ts ve onizleme-cekirdek.ts önce ve sonra bayt özdeş, paket listesi (1095 kalem) özdeş; katkı geri konunca ve kabuğun stil yolu bozulunca nöbet kırmızı; zarar iddiası VS Code'un kendi stil dosyalarıyla ölçüldü: koyu temada 23 renkli vurgu sınıfının 23'ü, açık temada 2'si rengini yitiriyordu",
+            ne:    "Okuma kipi stili kendi diskinden okuyup gömdüğü için Markdown önizlemesi katkısının okuma kipinde hiçbir işlevi yoktu; katkı kaldırıldı. Ölçüm katkının zararsız bir artık olmadığını da gösterdi: kapsamsız vurgu kuralları tanımsız palet değişkenlerine bağlı olduğu için kullanıcının bütün Markdown önizlemelerinde kod vurgusunu siliyordu. Okuma kipinin görünümü bayt düzeyinde değişmedi." )
         }
 
         Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KOK-YUZEYI, KOD-KIMLIK ], bağımlı: [],
@@ -6114,7 +6120,7 @@ sessizce körleşmez.
           sınır: "Çöküşün kendisi bu Adımda onarılmaz; görünür kılınır"
         }
 
-        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: geliştirmede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: tamamlandı, öncelik: p2, üretir: [ KOD-SNM-PAKET-ICERIGI, KOD-SNM-SURUM-TAZELIGI ], bağımlı: [],
           referans: [ HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR ],
           ne: "📦 Yayımlanan paket kanon kopyasını taşımazsa nöbet kırmızıya dönsün" ) {
           görev: "Paket içeriği nöbeti dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarının pakette bulunduğunu denetler hâle getirilir. package-lock.json sürümünün paket sürümüyle ilerlemesi de ölçülür ve düzeltilir."
@@ -6124,6 +6130,9 @@ sessizce körleşmez.
             "denetim 0 hata, eklenti süiti yeşil"
           ]
           sınır: "Paketleme betiğinin davranışı değiştirilmez"
+          koşu:  Koşum( kod: KSM-MGZ-A05, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 2d94e56 (üretim 41afaa4) · eklenti 901/901, 0 atlama · depo denetimi 0 hata · bağımsız inceleme: paketleme betikleri ve .vscodeignore değişmedi; kopyalama adımı sökülüp dist temizlenince, .vscodeignore kanon kopyasını dışlayınca ve kilidin kök ya da paket sürümü bozulunca nöbet kırmızı; kilit sürümü 0.9.193 ile paket sürümüne eşit",
+            ne:    "Paket içeriği nöbeti dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarını zorunlu kalem olarak ölçüyor ve yolu paketin kendi sabitinden türetiyor; kilit sürümü için ayrı bir canlı nöbet kuruldu. Kilit 2172976'dan beri paketle eşitti, fakat geçmişte kaydığı ölçüldüğü için nöbet kalıcı kılındı. Eski bir derlemeden kalan kanon klasörünün kirli bir geliştirici ağacında sökümü gizleyebileceği sınama başlığına yazıldı." )
         }
 
         Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI, KOD-CLI, KOD-EKL-EKLENTI ], bağımlı: [],

@@ -280,7 +280,7 @@ Kod( kod: KOD-YASA-DIZIN,
 Kod( kod: KOD-DERSLER, dosya: "ogreti/ogrenme/dersler.sar",
   ne: "🍎 Ders defteri — Sarmal'ın kendi hafızası: Bellek(tür:ders) kayıtları + terfi zinciri (EKL-F8-A02 kalıbı ve EKL-F9-A13 kadro-denetimi derslerinin meyvesi)" )
 Kod( kod: KOD-KANCA-PRECOMMIT, dosya: "kanca/pre-commit",
-  ne: "🍎 Commit kapısı betiği — denetle drift-gate + staged .ts değişiminde test kapısı; arıza-güvenli (EKL-F9-A11 meyvesi; sicil kaydı: KNC-COMMIT-KAPISI)" )
+  ne: "🍎 İşleme kapısı betiği — denetim sapma kapısı, kodu değişen paketin süiti, her işlemede eklenti süiti ve çekirdek kodu değişmediğinde ağacı okuyan hızlı çekirdek kümesi; arıza-güvenli (EKL-F9-A11 meyvesi, HST-YUZ-A01 genişletmesi; sicil kaydı: KNC-COMMIT-KAPISI)" )
 Kod( kod: KOD-EKL-IKONLAR,
   ne: "🍎 Kuzey Yıldızı ikon ailesi — eklenti/ikonlar/{kuzey-parlak·kuzey-orta·kuzey-sonuk}.svg + gömülü codicon ürün-ikonu (EKL-F10-A09 meyvesi)" )
 Kod( kod: KOD-YASA-ISAKISI,
