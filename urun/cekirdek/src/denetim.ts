@@ -35,9 +35,9 @@ import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EB
 import type { EbediKilit } from "./kuralci.ts";
 import { yolTuru, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
 import { dizindenIndeks, DERS_DUNYASI, projeKapsamlari, onekKapsar } from "./kimlik.ts";
-import { YENI_TANI_INDEKS, taniSicili, terfiKapisiKusurlari } from "./tani-sicili.ts";
+import { YENI_TANI_INDEKS, taniSicili, terfiKapisiBulgulari, terfiKapisiKusurlari } from "./tani-sicili.ts";
 import type { YeniTaniKaydi } from "./tani-sicili.ts";
-import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
+import { ORTAK_TANI_METINLERI, ORTAK_TANI_METINLERI_EN, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
 import type { Tani, Duzey } from "./tani.ts";
 // göç motor turu A09 kapanışı (2026-07-27): halka 2 orkestrasyon tanılarını bu dosyaya taşırken
 // `Dugum` tipini içe aktarmayı atlamıştı; Node tipleri sıyırarak koştuğu için
@@ -1034,6 +1034,21 @@ function gozlemOzetle(kayitlar: Array<{ dosya: string; tani: Tani }>, ozetle = t
         satir: kayit.tani.satir, sutun: kayit.tani.sutun,
         oneri: kayit.tani.oneri,
         ozetlenen: toplam - GOZLEM_TEKIL_SINIRI,
+        // MGZ-A09: özet satırı da iki dilin hanesini taşır; yoksa İngilizce yüzde
+        // Türkçe özet kalırdı. Hane yalnız katlanan tanı haneliyse kurulur, çünkü
+        // hanesiz bir tanının önerisini dil hanesine taşımak onu düşürürdü.
+        ...(kayit.tani.dilMetinleri ? {
+          dilMetinleri: {
+            tr: {
+              mesaj: ORTAK_TANI_METINLERI.projeBulguOzeti({ toplam, sınır: GOZLEM_TEKIL_SINIRI }),
+              ...(kayit.tani.dilMetinleri.tr.oneri === undefined ? {} : { oneri: kayit.tani.dilMetinleri.tr.oneri }),
+            },
+            en: {
+              mesaj: ORTAK_TANI_METINLERI_EN.projeBulguOzeti({ toplam, sınır: GOZLEM_TEKIL_SINIRI }),
+              ...(kayit.tani.dilMetinleri.en.oneri === undefined ? {} : { oneri: kayit.tani.dilMetinleri.en.oneri }),
+            },
+          },
+        } : {}),
       },
     });
   }
@@ -1133,19 +1148,24 @@ export function beklenenSunumYuzeyi(tani: Partial<Tani> & Pick<Tani, "kod" | "du
  */
 function kacakTerfiHukmu(
   kayit: YeniTaniKaydi, yuzeyDuzeyleri: ReadonlySet<string>, canliSayac: number,
-): string {
+): { terfiGerekce: string; terfiBulgulari: string[] } | undefined {
   const yukselenler = [...yuzeyDuzeyleri].filter((d): d is Duzey =>
     d in DUZEY_AGIRLIGI && DUZEY_AGIRLIGI[d as Duzey] < DUZEY_AGIRLIGI[kayit.kademe]);
-  if (!yukselenler.length) return "";
-  const kusurlar = yukselenler.flatMap((sonraki) => terfiKapisiKusurlari({
+  if (!yukselenler.length) return undefined;
+  const girdiler = yukselenler.map((sonraki) => ({
     kod: kayit.kod, onceki: kayit.kademe, sonraki,
     sayaclar: [canliSayac],
     ucluKanit: { uygulama: kayit.uretici, doğrulama: "", kanon: kayit.madde },
     acikKabul: "",
   }));
-  if (!kusurlar.length) return "";
-  const gerekce = kusurlar.map((k) => k.replace(`${kayit.kod}: `, "")).join(" · ");
-  return `; bu yükseltme bir terfidir ve terfi kapısından geçmemiştir (${gerekce})`;
+  const kusurlar = girdiler.flatMap((g) => terfiKapisiKusurlari(g));
+  if (!kusurlar.length) return undefined;
+  // MGZ-A09: Türkçe gerekçe kapının kendi cümlesidir; İngilizce gerekçe aynı ölçümün
+  // dilden bağımsız kodlarından tanı kataloğunda kurulur.
+  return {
+    terfiGerekce: kusurlar.map((k) => k.replace(`${kayit.kod}: `, "")).join(" · "),
+    terfiBulgulari: girdiler.flatMap((g) => terfiKapisiBulgulari(g)),
+  };
 }
 
 /**
@@ -1161,15 +1181,16 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   // Tanı sözleşmesi: her tanı beş alanını taşır ve kodu sicilde bulunur.
   for (const { dosya, tani } of g.uretilen) {
     const eksik: string[] = [];
-    if (!tani.duzey) eksik.push("düzey");
-    if (!tani.kod) eksik.push("tekil kod");
-    if (!tani.mesaj?.trim()) eksik.push("eyleme dönük mesaj");
-    if (typeof tani.satir !== "number" || typeof tani.sutun !== "number") eksik.push("kaynak konumu");
-    if (!tani.oneri?.trim()) eksik.push("düzeltme önerisi");
-    if (tani.kod && !g.sicil.has(tani.kod)) eksik.push("kanonik sicil kaydı");
+    if (!tani.duzey) eksik.push("duzey");
+    if (!tani.kod) eksik.push("kod");
+    if (!tani.mesaj?.trim()) eksik.push("mesaj");
+    if (typeof tani.satir !== "number" || typeof tani.sutun !== "number") eksik.push("konum");
+    if (!tani.oneri?.trim()) eksik.push("oneri");
+    if (tani.kod && !g.sicil.has(tani.kod)) eksik.push("sicil");
     if (!eksik.length) continue;
+    // MGZ-A09: kimliksiz tanının yer tutucusu iki dilde katalogda yaşar.
     out.push({ dosya, tani: yeniTani("tanı-sözleşmesi-uyumsuz",
-      { kod: tani.kod || "adsız tanı", kusur: `${eksik.join(" · ")} yok` },
+      { kod: tani.kod, kusur: "tani-alanlari-eksik", eksik },
       { satir: tani.satir, sutun: tani.sutun }) });
   }
 
@@ -1178,7 +1199,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
     const kayit = YENI_TANI_INDEKS.get(tani.kod);
     if (!kayit || kayit.kapsam === "proje") continue;
     out.push({ dosya, tani: yeniTani("tanı-kapsamı-karışması",
-      { kod: tani.kod, kusur: `"${kayit.kapsam}" kapsamındaki tanı Proje kapısında üretilmiş` },
+      { kod: tani.kod, kusur: "kapsam-proje-kapisinda", kapsam: kayit.kapsam },
       { satir: tani.satir, sutun: tani.sutun }) });
   }
 
@@ -1201,7 +1222,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   if (g.projeKodlari.size > 1) {
     if (!g.bulguGruplari) {
       out.push({ dosya: g.anaEtiket, tani: yeniTani("proje-tanı-kimliği-uyumsuz",
-        { kusur: `çalışma alanında ${g.projeKodlari.size} Proje kökü var (${[...g.projeKodlari].join(" · ")}) ama bulgular tek bir dizin kimliği altında toplanıyor` },
+        { kusur: "cok-kok-tek-dizin", sayi: g.projeKodlari.size, projeler: [...g.projeKodlari] },
         { satir: 1, sutun: 1 }) });
     } else {
       const evsiz = new Set<string>();
@@ -1211,7 +1232,8 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
       }
       if (evsiz.size) {
         out.push({ dosya: g.anaEtiket, tani: yeniTani("proje-tanı-kimliği-uyumsuz",
-          { kusur: `çalışma alanında ${g.projeKodlari.size} Proje kökü var (${[...g.projeKodlari].join(" · ")}) ama ${evsiz.size} dosyanın bulgusu hiçbir Proje koduna bağlanamadı (${[...evsiz].sort().slice(0, 3).join(" · ")}${evsiz.size > 3 ? " · …" : ""})` },
+          { kusur: "evsiz-bulgular", sayi: g.projeKodlari.size, projeler: [...g.projeKodlari],
+            evsizSayi: evsiz.size, evsiz: [...evsiz].sort().slice(0, 3) },
           { satir: 1, sutun: 1 }) });
       }
     }
@@ -1235,13 +1257,13 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
         // gerekçesini kanonun kendi dört kapısı yazar (KPS-TRF-A01).
         const terfiHukmu = kacakTerfiHukmu(kayit, kume, canliSayaclar.get(kod) ?? 0);
         out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
-          { kod, kusur: `sicil bugünkü kademeyi "${kayit.kademe}" ilan ediyor, yüzey "${[...kume].join(" ve ")}" gösteriyor${terfiHukmu}` },
+          { kod, kusur: "yuz-kademe-sapmasi", kademe: kayit.kademe, duzeyler: [...kume], ...terfiHukmu },
           { satir: 1, sutun: 1 }) });
         continue;
       }
       if (kume.size < 2 || BAGLAMA_GORE_DUZEY.has(kod) || kayit?.tarihselKademe) continue;
       out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
-        { kod, kusur: `aynı koşumda ${[...kume].join(" ve ")} düzeylerinde birden gösterilmiş` },
+        { kod, kusur: "coklu-duzey", duzeyler: [...kume] },
         { satir: 1, sutun: 1 }) });
     }
   }
@@ -1257,7 +1279,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
       // yaşar — katalog ile nöbet aynı yordamı okur).
       if (yapistirilabilirOrnekVar(tani.oneri)) continue;
       out.push({ dosya, tani: yeniTani("öğretim-yüzü-uyumsuz",
-        { kod: tani.kod, kusur: "tanının önerisi ne yapılacağını gösteren yapıştırılabilir bir iskelet taşımıyor; düzeltmeyi tarif ediyor ama göstermiyor" },
+        { kod: tani.kod, kusur: "iskeletsiz-oneri" },
         { satir: tani.satir, sutun: tani.sutun }) });
     }
   }
@@ -1283,7 +1305,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   // Tam yeşil: atlanan zorunlu kapı varken sonuç yeşil sayılamaz.
   if (g.atlananKapilar.length) {
     out.push({ dosya: g.anaEtiket, tani: yeniTani("sahte-tam-yeşil",
-      { kusur: `zorunlu denetim kapılarından ${g.atlananKapilar.length} tanesi çalıştırılamadı (${g.atlananKapilar.join(" · ")})` },
+      { kusur: "atlanan-kapilar", sayi: g.atlananKapilar.length, kapilar: g.atlananKapilar },
       { satir: 1, sutun: 1 }) });
   }
   return out;

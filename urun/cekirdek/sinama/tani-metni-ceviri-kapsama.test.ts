@@ -14,10 +14,15 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   IKIZ_NOBET_METINLERI,
   IKIZ_NOBET_METINLERI_EN,
+  KUSUR_YAN_CUMLELERI,
   KOK_YUZEYI_METINLERI,
   KOK_YUZEYI_METINLERI_EN,
   ONCEKI_TANI_METINLERI,
@@ -36,6 +41,7 @@ import {
 } from "../src/tani-metinleri.ts";
 import { belirtecle, SozDizimHatasi } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
+import { ingilizceYuzKusurlari } from "../src/ingilizce-yuz.ts";
 
 type Katalog = Readonly<Record<string, OncekiTaniMetni>>;
 
@@ -308,6 +314,213 @@ test("anlatım bütünlüğü nöbeti kör değildir: matris her katalog girdisi
     }
   }
   assert.deepEqual(eksik, [], "matris bu girdilerden hiç cümle üretemedi; matris genişletilmelidir");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🌐 İNGİLİZCE YÜZÜN TEK İLKESİ (MGZ-A09 · Founder hükmü 2026-10-10)
+//
+//   Dosya her dilde Türkçe görünür; İngilizce tanı İngilizce konuşur ve
+//   dosyadaki gerçek Türkçe adları (tip, kenar, alan, değer) aynen anar. Nöbet
+//   aynı bağlam matrisinin ürettiği her İngilizce cümleyi çekirdeğin İngilizce
+//   yüz ölçerinden geçirir: cümlede kalan Türkçe düzyazı da, dosyada bulunmayan
+//   bir ad karşılığı (`dependsOn:`, "a Step") da kusurdur. Matrisin kendi
+//   değerleri kullanıcı içeriği yerine geçer ve ölçümden önce düşer.
+//
+//   Kusur yan cümleleri ayrıca ölçülür. Üretici yan cümleyi artık kendisi kurmaz;
+//   `kusur` alanına çizelgedeki bir kimliği yazar ve iki dilin cümlesi tanı
+//   kataloğunda kurulur. Nöbet üç şeyi birlikte tutar: her yan cümlenin İngilizcesi
+//   ölçerden temiz geçer, yan cümle okuyan her katalog girdisi çerçeve olarak
+//   temizdir ve kaynakta yan cümle okuyan tanıya düzyazı geçiren hiçbir üretici yoktur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Bağlam matrisindeki bütün metin değerleri — tanının yansıttığı kullanıcı içeriği. */
+const MATRIS_ICERIGI: readonly string[] = [...new Set(BAGLAMLAR.flatMap((b) => Object.values(b)
+  .flatMap((v) => (Array.isArray(v) ? v : [v])).filter((v): v is string => typeof v === "string")))];
+
+/** Kurucu yan cümle çizelgesinden okuyor mu (`yc`)? Okuyorsa `kusur` alanı bir yan cümle kimliğidir. */
+const ycKullanir = (kurucu: (p: TaniBaglami) => unknown): boolean => kurucu.toString().includes("yc(p");
+
+/**
+ * İngilizce katalogların matris üzerindeki bütün cümleleri. Yan cümle okuyan
+ * kurucuya matrisin dal kimlikleri (`kusur: "biçim"` gibi) verilmez: o kimlikler
+ * başka tanıların dalını seçer ve yan cümle okuyan kurucu onları olduğu gibi
+ * basardı; gerçek üreticiler o kurucuya yalnız çizelgedeki kimliği verir (aşağıdaki
+ * kaynak nöbeti bunu ölçer).
+ */
+function ingilizceCumleler(): Array<{ yer: string; metin: string }> {
+  const cumleler: Array<{ yer: string; metin: string }> = [];
+  for (const [ad, katalog] of ANLATIM_KATALOGLARI) {
+    if (!ad.endsWith("(en)")) continue;
+    for (const kod of Object.keys(katalog)) {
+      for (const alan of ["mesaj", "oneri"] as const) {
+        const kurucu = katalog[kod][alan];
+        if (typeof kurucu !== "function") continue;
+        const satirlar = ycKullanir(kurucu)
+          ? BAGLAMLAR.filter((b) => b.kusur === undefined || String(b.kusur) in KUSUR_YAN_CUMLELERI)
+          : BAGLAMLAR;
+        for (const baglam of satirlar) {
+          const metin = kurucu(baglam);
+          if (metin) cumleler.push({ yer: `${ad} · ${kod}.${alan}`, metin });
+        }
+      }
+    }
+  }
+  for (const [ad, katalog] of ORTAK_KATALOGLAR) {
+    if (!ad.endsWith("(en)")) continue;
+    for (const kod of Object.keys(katalog)) {
+      for (const baglam of BAGLAMLAR) {
+        const metin = katalog[kod](baglam);
+        if (metin) cumleler.push({ yer: `${ad} · ${kod}`, metin });
+      }
+    }
+  }
+  return cumleler;
+}
+
+test("MGZ-A09: İngilizce tanı cümlesi İngilizce konuşur ve dosyadaki Türkçe adları aynen anar", () => {
+  const kusurlu = new Map<string, string>();
+  for (const { yer, metin } of ingilizceCumleler()) {
+    const kusur = ingilizceYuzKusurlari(metin, MATRIS_ICERIGI);
+    const anahtar = yer.split(" · ").slice(0, 2).join(" · ");
+    if (kusur.length && !kusurlu.has(anahtar)) {
+      kusurlu.set(anahtar, `[${kusur.map((k) => `${k.tur}=${k.sozce}`).join(", ")}] ${metin.replace(/\s+/gu, " ").slice(0, 160)}`);
+    }
+  }
+  assert.deepEqual([...kusurlu].map(([yer, bulgu]) => `${yer} ${bulgu}`), [],
+    "İngilizce tanıda Türkçe düzyazı ya da dosyada bulunmayan bir ad karşılığı var");
+});
+
+/** Yan cümlelerin örnek olgusu; dizgi değerleri dosyanın içeriği yerine geçer. */
+const YAN_CUMLE_ORNEGI: TaniBaglami = {
+  sayi: 2, hedef: "ADM-HEDEF", hedefTip: "Teknoloji", kaynakTip: "Blok", kademe: "Katman", ust: "Blok", alt: "Adım",
+  beklenen: "KimlikKökü", yonlendir: "takim", yol: "src/a.ts", etmen: "ETM-A", bolum: "MIM", anaMadde: "MIM-1",
+  atlanan: "MIM-2", dayanak: "XYZ-1", kaynakYol: "kaynak.sar", acikAsama: "kapsam", asama: "uygulama", iz: "guven-esikleri",
+  adlar: ["left-pad"], tip: "Adım", aile: "plan", alanlar: ["zorunlu"], bolge: "TAKSONOMI", acilis: 2, kapanis: 1,
+  taniKodu: "tanı-örneği", deger: "orta", oncul: ['"ADM-1" (beklemede)', '"ADM-2" (bloklu)'], fazdan: 1, uye: "MIM",
+  ay: "13", yil: "2026", sonGun: "30", gun: "31", kapsam: "tek-dosya", projeler: ["PRJ-A", "PRJ-B"], evsizSayi: 4,
+  evsiz: ["a.sar", "b.sar", "c.sar"], duzeyler: ["hata", "uyarı"], terfiGerekce: "örnek gerekçe",
+  terfiBulgulari: ["atlama:bilgi:hata", "sayac", "kanit:uygulama,doğrulama", "kabul"], kapilar: ["rejim"],
+  duzey: "hata", cozulmeyen: ["ADM-X"], sonlanmaYok: true, otoriteGecersiz: "üst", katmanYok: true, kapsamYok: true,
+};
+/** Listesi yan cümleye göre değişen eksik kimlikleri. */
+const YAN_CUMLE_EKSIKLERI: Readonly<Record<string, readonly string[]>> = {
+  "beceri-eksikleri": ["hedef", "tetik", "ornek", "kabul"],
+  "kapanis-eksikleri": ["kapsam", "dogrulama", "borc", "etki"],
+  "omurga-eksikleri": ["tip", "sema", "sarma"],
+  "terfi-kanitlari-eksik": ["uygulama", "dogrulama", "kabul"],
+  "tani-alanlari-eksik": ["duzey", "kod", "mesaj", "konum", "oneri", "sicil"],
+};
+
+test("MGZ-A09: her kusur yan cümlesi iki dilde kurulur ve İngilizcesi dosyadaki adları anar", () => {
+  const ornekIcerigi = Object.values(YAN_CUMLE_ORNEGI).flatMap((v) => (Array.isArray(v) ? v : [v]))
+    .filter((v): v is string => typeof v === "string");
+  const kusurlu: string[] = [];
+  for (const [kimlik, cumle] of Object.entries(KUSUR_YAN_CUMLELERI)) {
+    assert.match(kimlik, /^[a-z0-9-]+$/u, `${kimlik}: yan cümle kimliği ASCII yazılır (H15)`);
+    for (const ek of [{}, { eksik: YAN_CUMLE_EKSIKLERI[kimlik] ?? [] }, { sayi: 1, evsizSayi: 1, hedefYok: true, yonlendir: "kullanir" }]) {
+      const p = { ...YAN_CUMLE_ORNEGI, ...ek, kusur: kimlik };
+      const tr = cumle.tr(p);
+      const en = cumle.en(p);
+      assert.ok(tr.trim() && en.trim(), `${kimlik}: yan cümle boş kaldı`);
+      assert.notEqual(en, tr, `${kimlik}: İngilizce yan cümle Türkçenin kopyası`);
+      const k = ingilizceYuzKusurlari(en, ornekIcerigi);
+      if (k.length) kusurlu.push(`${kimlik} [${k.map((x) => `${x.tur}=${x.sozce}`).join(", ")}] ${en}`);
+    }
+  }
+  assert.deepEqual([...new Set(kusurlu)], [], "İngilizce yan cümlede Türkçe düzyazı ya da dosyada bulunmayan bir ad karşılığı var");
+});
+
+// Kaynak nöbeti: yan cümle okuyan bir tanıya hiçbir üretici düzyazı geçiremez.
+// Ölçüt üreticinin kaynağıdır, çünkü bir üretici yolu her koşumda ateşlenmez ve
+// çalışma anı ölçümü ateşlenmeyen yolu hiç görmezdi.
+test("MGZ-A09: yan cümle okuyan tanının üreticisi `kusur` alanına yalnız çizelgedeki bir kimliği yazar", () => {
+  const ts = createRequire(import.meta.url)("typescript") as typeof import("typescript");
+  const SRC = fileURLToPath(new URL("../src/", import.meta.url));
+  const okunan = (ad: string): import("typescript").SourceFile =>
+    ts.createSourceFile(ad, readFileSync(join(SRC, ad), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+  // Yan cümle okuyan tanılar: İngilizce kataloğu `yc(p` çağıran girdiler.
+  const ycTanilari = new Set<string>();
+  for (const katalog of [TANI_METINLERI_EN, ONCEKI_TANI_METINLERI_EN] as Katalog[]) {
+    for (const [kod, girdi] of Object.entries(katalog)) {
+      if ([girdi.mesaj, girdi.oneri].some((f) => typeof f === "function" && ycKullanir(f))) ycTanilari.add(kod);
+    }
+  }
+  assert.ok(ycTanilari.size > 40, `yalnız ${ycTanilari.size} yan cümle tanısı bulundu — nöbet kör`);
+
+  const kimlikMi = (d: import("typescript").Node): boolean => ts.isStringLiteral(d) && d.text in KUSUR_YAN_CUMLELERI;
+  const ifadeGecerli = (d: import("typescript").Node): boolean =>
+    kimlikMi(d) || (ts.isConditionalExpression(d) && ifadeGecerli(d.whenTrue) && ifadeGecerli(d.whenFalse))
+    || (ts.isParenthesizedExpression(d) && ifadeGecerli(d.expression));
+  const ihlaller: string[] = [];
+  let olculen = 0;
+  for (const ad of readdirSync(SRC).filter((x) => x.endsWith(".ts") && x !== "tani-metinleri.ts")) {
+    const sf = okunan(ad);
+    const islevler = new Map<string, import("typescript").FunctionDeclaration>();
+    const topla = (n: import("typescript").Node): void => {
+      if (ts.isFunctionDeclaration(n) && n.name) islevler.set(n.name.text, n);
+      ts.forEachChild(n, topla);
+    };
+    topla(sf);
+    /** Bir adın, kullanıldığı yeri saran en yakın blokta ilan edildiği değer. */
+    const bildirimBul = (yer: import("typescript").Node, isim: string): import("typescript").Expression | undefined => {
+      for (let n: import("typescript").Node | undefined = yer; n; n = n.parent) {
+        if (!ts.isBlock(n) && !ts.isSourceFile(n)) continue;
+        for (const st of n.statements) {
+          if (!ts.isVariableStatement(st)) continue;
+          for (const v of st.declarationList.declarations) {
+            if (ts.isIdentifier(v.name) && v.name.text === isim && v.initializer) return v.initializer;
+          }
+        }
+      }
+      return undefined;
+    };
+    /** Yayılan bağlamın kaynağı: kusurunu çizelge kimliğiyle kuran bir yardımcı mı? */
+    const yayilanGecerli = (d: import("typescript").Expression): boolean => {
+      const kaynak = ts.isIdentifier(d) ? bildirimBul(d, d.text) : d;
+      if (!kaynak) return false;
+      if (ts.isObjectLiteralExpression(kaynak)) return true;   // kusursuz olgu nesnesi
+      if (!ts.isCallExpression(kaynak) || !ts.isIdentifier(kaynak.expression)) return false;
+      const islev = islevler.get(kaynak.expression.text);
+      if (!islev) return false;
+      const kusurlar: import("typescript").Node[] = [];
+      const ara = (n: import("typescript").Node): void => {
+        if (ts.isPropertyAssignment(n) && n.name.getText() === "kusur") kusurlar.push(n.initializer);
+        ts.forEachChild(n, ara);
+      };
+      ara(islev);
+      return kusurlar.length > 0 && kusurlar.every(ifadeGecerli);
+    };
+    const gez = (n: import("typescript").Node): void => {
+      if (ts.isCallExpression(n) && ts.isIdentifier(n.expression) && ["yeniTani", "eskiTani"].includes(n.expression.text)) {
+        const ilk = n.arguments[0];
+        if (ilk && ts.isStringLiteral(ilk) && ycTanilari.has(ilk.text)) {
+          olculen++;
+          const yer = `${ad}:${sf.getLineAndCharacterOfPosition(n.getStart()).line + 1} ${ilk.text}`;
+          const baglam = n.arguments[n.expression.text === "eskiTani" ? 2 : 1];
+          if (!baglam || !ts.isObjectLiteralExpression(baglam)) {
+            ihlaller.push(`${yer}: bağlam bir nesne değişmezi değil`);
+          } else {
+            let karar: boolean | undefined;
+            for (const o of baglam.properties) {
+              if (ts.isPropertyAssignment(o) && o.name.getText() === "kusur") karar = ifadeGecerli(o.initializer);
+              else if (ts.isShorthandPropertyAssignment(o) && o.name.text === "kusur") {
+                const ilkDeger = bildirimBul(o, "kusur");
+                karar = ilkDeger !== undefined && ifadeGecerli(ilkDeger);
+              } else if (ts.isSpreadAssignment(o) && karar === undefined && !yayilanGecerli(o.expression)) {
+                karar = false;
+              }
+            }
+            if (karar === false) ihlaller.push(`${yer}: kusur alanı çizelgedeki bir kimlik değil`);
+          }
+        }
+      }
+      ts.forEachChild(n, gez);
+    };
+    gez(sf);
+  }
+  assert.ok(olculen > 80, `yalnız ${olculen} üretici çağrısı ölçüldü — nöbet kör`);
+  assert.deepEqual(ihlaller, [], "yan cümle okuyan tanıya düzyazı ya da çizelgede olmayan bir kimlik geçiliyor");
 });
 
 test("anlatım bütünlüğü nöbetinin iki istisnası dar tutulur", () => {

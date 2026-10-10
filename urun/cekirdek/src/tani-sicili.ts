@@ -92,17 +92,30 @@ const SIRADAKI_TERFI_DUZEYI: Readonly<Record<Duzey, Duzey | undefined>> = {
   bilgi: "uyarı", "uyarı": "hata", hata: undefined,
 };
 
+/**
+ * Terfi kapısının bulguları dilden bağımsız kodlarla (MGZ-A09): `atlama:<önceki>:<sonraki>`,
+ * `sayac`, `kanit:<eksik ayaklar>` ve `kabul`. Ölçüm burada tek kez yapılır; Türkçe
+ * cümleyi `terfiKapisiKusurlari`, İngilizce cümleyi tanı kataloğu kurar.
+ */
+export function terfiKapisiBulgulari(g: TerfiKapisiGirdisi): string[] {
+  const bulgular: string[] = [];
+  if (SIRADAKI_TERFI_DUZEYI[g.onceki] !== g.sonraki) bulgular.push(`atlama:${g.onceki}:${g.sonraki}`);
+  if (!g.sayaclar.length || g.sayaclar.some((s) => !Number.isFinite(s) || s !== 0)) bulgular.push("sayac");
+  const eksik = Object.entries(g.ucluKanit).filter(([, bag]) => !bag.trim()).map(([ad]) => ad);
+  if (eksik.length) bulgular.push(`kanit:${eksik.join(",")}`);
+  if (!g.acikKabul.trim()) bulgular.push("kabul");
+  return bulgular;
+}
+
 /** Boş dizi, sıra+sayaç+üçlü kanıt+açık kabul kapılarının geçtiğini bildirir. */
 export function terfiKapisiKusurlari(g: TerfiKapisiGirdisi): string[] {
-  const kusurlar: string[] = [];
-  if (SIRADAKI_TERFI_DUZEYI[g.onceki] !== g.sonraki)
-    kusurlar.push(`${g.kod}: düzey atlama var (${g.onceki}→${g.sonraki}); yalnız bilgi→uyarı→hata sırası geçerlidir`);
-  if (!g.sayaclar.length || g.sayaclar.some((s) => !Number.isFinite(s) || s !== 0))
-    kusurlar.push(`${g.kod}: bütün canlı sayaçlar ayrı ayrı sıfır değildir`);
-  const eksik = Object.entries(g.ucluKanit).filter(([, bag]) => !bag.trim()).map(([ad]) => ad);
-  if (eksik.length) kusurlar.push(`${g.kod}: üçlü kanıt eksiktir (${eksik.join(" · ")})`);
-  if (!g.acikKabul.trim()) kusurlar.push(`${g.kod}: yetkili açık kabul yoktur`);
-  return kusurlar;
+  return terfiKapisiBulgulari(g).map((bulgu) => {
+    const [tur, ...parca] = bulgu.split(":");
+    if (tur === "atlama") return `${g.kod}: düzey atlama var (${parca[0]}→${parca[1]}); yalnız bilgi→uyarı→hata sırası geçerlidir`;
+    if (tur === "sayac") return `${g.kod}: bütün canlı sayaçlar ayrı ayrı sıfır değildir`;
+    if (tur === "kanit") return `${g.kod}: üçlü kanıt eksiktir (${(parca[0] ?? "").split(",").join(" · ")})`;
+    return `${g.kod}: yetkili açık kabul yoktur`;
+  });
 }
 
 export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [

@@ -121,7 +121,11 @@ const kacir = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
  */
 function duzyaziyaIndir(metin: string, izinli: readonly string[]): string {
   let govde = metin;
-  for (const parca of izinli) if (parca) govde = govde.replace(new RegExp(kacir(parca), "gu"), " ");
+  // İzinli metin yalnız sözcük sınırında düşer: tek harflik bir izinli değer
+  // ("A") başka bir sözcüğün içinden ("Araç") harf koparmamalıdır.
+  for (const parca of izinli) {
+    if (parca) govde = govde.replace(new RegExp(`(?<![\\p{L}\\p{N}_])${kacir(parca)}(?![\\p{L}\\p{N}_])`, "gu"), " ");
+  }
   return govde
     .replace(/```[\s\S]*?```/gu, " ")
     .replace(/`[^`\n]*`/gu, " ")

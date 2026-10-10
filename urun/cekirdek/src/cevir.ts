@@ -164,7 +164,9 @@ export function sozlukDegeri(
 /**
  * `zorunluKenarlar` tanılarının İngilizce yüzünü veri ve sözlükten kurar.
  * Dokuz kimliğe ayrı cümle çizelgesi kurulmaz: tipin hazır İngilizce düzyazısı
- * ile kuralın zorunlu alan/kenar grubu birlikte okunur.
+ * ile kuralın zorunlu alan/kenar grubu birlikte okunur. Tanı dosyadaki adları
+ * anar (MGZ-A09 · Founder hükmü 2026-10-10): tip, kenar ve alan adı çevrilmez,
+ * tipin düzyazısı da ad jetonlarını dosyadaki adla çözer.
  */
 export function zorunluKenarIngilizcesi(
   tip: string,
@@ -172,15 +174,11 @@ export function zorunluKenarIngilizcesi(
   grup: readonly string[],
   turkceTipAciklamasi: string,
 ): { mesaj: string; oneri: string } {
-  const tipAdi = sozlukAdi("widget", tip, "en");
-  const secenekler = grup.map((ad) => {
-    const kenar = sozlukAdi("kenar", ad, "en");
-    return kenar === ad ? sozlukAdi("parametre", ad, "en") : kenar;
-  });
-  const aciklama = sozlukDuzYazisi("widgetNe", tip, turkceTipAciklamasi, "en");
+  const aciklama = sozlukDuzYazisi("widgetNe", tip, turkceTipAciklamasi, "en", "kaynak");
+  const cumle = aciklama ? `${aciklama.charAt(0).toUpperCase()}${aciklama.slice(1)}` : aciklama;
   return {
-    mesaj: `${tipAdi} "${kimlik}" is missing every member of its required ${secenekler.join(" · ")} group. ${aciklama}`,
-    oneri: `Add at least one of these declared fields or edges: ${secenekler.map((ad) => `\`${ad}:\``).join(" · ")}.`,
+    mesaj: `${tip} "${kimlik}" is missing every member of its required ${grup.join(" · ")} group. ${cumle}`,
+    oneri: `Add at least one of these declared fields or edges: ${grup.map((ad) => `\`${ad}:\``).join(" · ")}.`,
   };
 }
 

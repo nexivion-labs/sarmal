@@ -29,7 +29,7 @@ import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
 import type { Siniflama } from "./siniflama.ts";
 import { TAKSONOMI_BAS, TAKSONOMI_SON, taksonomiMd } from "./siniflama.ts";   // başvuru yüzü kanondan üretilir
 import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katmanı turu: beceri-drift nöbeti tanı evreni · katlanmış ad: orthografi nöbeti
-import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, tarihselTani, sozDizimTanisi } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar · MGZ-A03: yükleyicinin sözdizimi hatası kimliğini buradan alır
+import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, tarihselTani, sozDizimTanisi, type TaniBaglami } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar · MGZ-A03: yükleyicinin sözdizimi hatası kimliğini buradan alır
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
 import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
@@ -3646,11 +3646,9 @@ export function fazSirasiTanilari(
       if (dag.fazKenari?.has(fazKenarAnahtari(o, d.kod))) fazdan++;
     }
     if (!acik.length) continue;
-    const liste = acik.slice(0, 3).join(", ") + (acik.length > 3 ? ` ve ${acik.length - 3} öncül daha` : "");
-    const kusur = `${acik.length} öncülü tamamlanmamış: ${liste}` +
-      (fazdan ? ` — bunların ${fazdan} tanesi önceki Fazdan Faz sırasıyla gelir` : "");
     out.push({ dosya: d.dosya, tani: yeniTani("seçilemez-adım-yürütümü",
-      { kimlik: gorunen(d.kod), kusur }, { satir: d.satir, sutun: d.sutun }) });
+      { kimlik: gorunen(d.kod), kusur: "acik-oncul", sayi: acik.length, oncul: acik.slice(0, 3), fazdan },
+      { satir: d.satir, sutun: d.sutun }) });
   }
   return out;
 }
@@ -4045,10 +4043,10 @@ export function rejimTanilari(
       out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik", { kimlik: k.kimlik }, k.d) });
     } else if (k.beyanlar.length > 1) {
       out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik",
-        { kimlik: k.kimlik, kusur: ` ve beyanı ${k.beyanlar.length} kez yazmış` }, k.beyanlar[1]) });
+        { kimlik: k.kimlik, kusur: "rejim-cok-beyan", sayi: k.beyanlar.length }, k.beyanlar[1]) });
     } else if (!izinli.has(k.beyanlar[0].deger.metin ?? "")) {
       out.push({ dosya: k.dosya, tani: yeniTani("rejim-beyanı-eksik",
-        { kimlik: k.kimlik, kusur: `; beyan "${k.beyanlar[0].deger.metin ?? ""}" değerini taşıyor` }, k.beyanlar[0]) });
+        { kimlik: k.kimlik, kusur: "rejim-gecersiz-deger", deger: k.beyanlar[0].deger.metin ?? "" }, k.beyanlar[0]) });
     }
   }
   if (!kokler.length) return out;
@@ -4075,7 +4073,7 @@ export function rejimTanilari(
   for (const k of kokler) {
     if (k.rejim !== "katı" || k.departmansiz === 0) continue;
     out.push({ dosya: k.dosya, tani: yeniTani("rejim-geçiş-uyumsuzluğu",
-      { kimlik: k.kimlik, rejim: "katı", kusur: `${k.departmansiz} departman kademesi hangi sorumluluğu taşıdığını beyan etmiyor` }, k.d) });
+      { kimlik: k.kimlik, rejim: "katı", kusur: "departmansiz-kademe", sayi: k.departmansiz }, k.d) });
   }
   return out;
 }
@@ -4092,8 +4090,8 @@ const DOSYA_ZORUNLU_MEYVE: ReadonlySet<string> = new Set(["Kod", "Ekran", "Uç",
 /**
  * MIM-2.1 yol hükmü — Meyve ile Kod düğümünün ORTAK disk doğrulaması: beyan
  * edilen yol boş olamaz, proje kökünün dışına taşamaz ve anlık görüntüde
- * çözülmek zorundadır. Dönüş, tanının `kusur` cümlesidir; kusursuz yol
- * undefined döndürür. Anlık görüntünün KÖR NOKTASI ayrıca tanınır: diskTara
+ * çözülmek zorundadır. Dönüş, tanının kusur bağlamıdır: yan cümlenin kimliği
+ * ve yol (MGZ-A09 · cümle iki dilde katalogda yaşar); kusursuz yol undefined döndürür. Anlık görüntünün KÖR NOKTASI ayrıca tanınır: diskTara
  * nokta-önekli girdileri ve YOKSAY klasörlerinin içeriğini taramadığından
  * oradaki bir yolun varlığı buradan ölçülemez — ölçülemeyen beyan hakkında
  * motor "diskte yok" hükmü vermez ve susar (V1B-KODMEYVE-A01 saha bulgusu:
@@ -4103,9 +4101,9 @@ function dosyaBeyaniKusuru(
   yol: string,
   diskYollari: ReadonlySet<string>,
   yoksayilanlar: ReadonlySet<string> = new Set(),
-): string | undefined {
-  if (!yol) return "dosya beyanı yazılmamış";
-  if (yol.startsWith("/") || yol.startsWith("..")) return `beyan edilen yol proje kökünün dışına taşıyor ("${yol}")`;
+): TaniBaglami | undefined {
+  if (!yol) return { kusur: "dosya-beyani-yok" };
+  if (yol.startsWith("/") || yol.startsWith("..")) return { kusur: "yol-kok-disinda", yol };
   const temiz = yol.replace(/^\.\//, "");
   // Beyanın diskte çözülmesi ancak taranmış bir yer için sorulabilir: taranmayan
   // gövdenin dosyaları anlık görüntüde hiç yoktur ve yokluk kusur değildir. Bu
@@ -4114,7 +4112,7 @@ function dosyaBeyaniKusuru(
       || AYRISTIRILMAZ_SENTETIK.test(temiz)) return undefined;
   // EKL-F6-A07: depo bu yolu yok sayma dosyasında ADIYLA yok sayıyorsa dosya bir
   // derleme çıktısıdır ve depoya hiç girmez; taze klonda yokluğu drift değildir.
-  if (!diskYollari.has(temiz) && !yoksayilanlar.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
+  if (!diskYollari.has(temiz) && !yoksayilanlar.has(temiz)) return { kusur: "yol-diskte-yok", yol };
   return undefined;
 }
 
@@ -4201,11 +4199,11 @@ export function omurgaTanilari(
       const kapilar = d.cocuklar.filter((c) => c.tur === "widget" && c.ad === "Kapı");
       if (kapilar.length > 1) {
         out.push({ dosya, tani: yeniTani("adım-atomikliği",
-          { kimlik: yeniKimlik(d), kusur: `${kapilar.length} ayrı kabul kapısı taşıyor` }, kapilar[1]) });
+          { kimlik: yeniKimlik(d), kusur: "coklu-kabul-kapisi", sayi: kapilar.length }, kapilar[1]) });
       }
       if (yeniAlanMetin(d, "durum") === "tamamlandı" && yeniListe(d, "üretir").length === 0) {
         out.push({ dosya, tani: yeniTani("adım-atomikliği",
-          { kimlik: yeniKimlik(d), kusur: "tamamlandı ilan edilmiş ama hiçbir Meyve teslim etmemiş" }, d) });
+          { kimlik: yeniKimlik(d), kusur: "meyvesiz-kapanis" }, d) });
       }
     }
   }
@@ -4223,7 +4221,7 @@ export function omurgaTanilari(
     if (!DOSYA_ZORUNLU_MEYVE.has(tur)) continue;
     const kusur = dosyaBeyaniKusuru(yeniAlanMetin(d, "dosya")?.trim() ?? "", diskYollari, yoksayilanlar);
     if (kusur) {
-      out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik", { kimlik, tur, kusur }, d) });
+      out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik", { kimlik, tur, ...kusur }, d) });
     }
   }
 
@@ -4240,7 +4238,7 @@ export function omurgaTanilari(
     const kusur = dosyaBeyaniKusuru((beyan.deger.metin ?? "").trim(), diskYollari, yoksayilanlar);
     if (kusur) {
       out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik",
-        { kimlik: yeniKimlik(d), tur: "Kod", tip: "Kod", kusur }, d) });
+        { kimlik: yeniKimlik(d), tur: "Kod", tip: "Kod", ...kusur }, d) });
     }
   }
   return out;
@@ -4317,13 +4315,13 @@ export function iliskiSinifiTanilari(
     for (const o of yeniListe(d, "üretir")) {
       if (o.metin && yurutmeHedefleri.has(o.metin)) {
         out.push({ dosya, tani: yeniTani("ilişki-sınıfı-ihlali",
-          { kimlik, kenar: "üretir", kusur: `"${o.metin}" hedefi hem üretim kökeni hem yürütme sırası kenarında yazılmış` }, o) });
+          { kimlik, kenar: "üretir", kusur: "hedef-uretim-ve-sira", hedef: o.metin }, o) });
       }
     }
     for (const o of yeniListe(d, "içerir")) {
       if (o.metin && yurutmeHedefleri.has(o.metin)) {
         out.push({ dosya, tani: yeniTani("ilişki-sınıfı-ihlali",
-          { kimlik, kenar: "içerir", kusur: `"${o.metin}" hedefi hem kapsama hem yürütme sırası kenarında yazılmış` }, o) });
+          { kimlik, kenar: "içerir", kusur: "hedef-kapsama-ve-sira", hedef: o.metin }, o) });
       }
     }
 
@@ -4334,10 +4332,10 @@ export function iliskiSinifiTanilari(
       const altSira = KADEME_SIRASI.indexOf(d.ad);
       if (altSira === ustSira) {
         out.push({ dosya, tani: yeniTani("mimari-bağı-ihlali",
-          { kimlik, kusur: `"${enYakinKademe.ad}" kademesi kendi eşini sarıyor` }, d) });
+          { kimlik, kusur: "kademe-esini-sarar", kademe: enYakinKademe.ad }, d) });
       } else if (altSira > ustSira + 1 && !(enYakinKademe.ad === "Katman" && d.ad === "Adım")) {
         out.push({ dosya, tani: yeniTani("mimari-bağı-ihlali",
-          { kimlik, kusur: `"${enYakinKademe.ad}" kademesinden "${d.ad}" kademesine geçilirken ara kademe atlanmış` }, d) });
+          { kimlik, kusur: "ara-kademe-atlandi", ust: enYakinKademe.ad, alt: d.ad }, d) });
       }
     }
 
@@ -4355,7 +4353,7 @@ export function iliskiSinifiTanilari(
       });
       if (yurutmeHedefi && d.ad !== "Adım" && KAPSAYICI_KADEMELER.has(d.ad)) {
         out.push({ dosya, tani: yeniTani("yürütme-kenarı-sözleşmesi",
-          { kimlik, kenar, kusur: `kenarın kaynağı "${d.ad}" kademesi, oysa yürütme sırası yalnız Adımlar arasında kurulur` }, d) });
+          { kimlik, kenar, kusur: "kaynak-kademe-sira", kaynakTip: d.ad }, d) });
       }
       const gorulen = new Set<string>();
       for (const o of hedefler) {
@@ -4363,14 +4361,14 @@ export function iliskiSinifiTanilari(
         if (!h) continue;
         if (gorulen.has(h)) {
           out.push({ dosya, tani: yeniTani("yürütme-kenarı-sözleşmesi",
-            { kimlik, kenar, kusur: `"${h}" hedefi aynı kenarda ikinci kez yazılmış` }, o) });
+            { kimlik, kenar, kusur: "hedef-yineleniyor", hedef: h }, o) });
           continue;
         }
         gorulen.add(h);
         const hedefTip = tipOf.get(h);
         if (d.ad === "Adım" && hedefTip && hedefTip !== "Adım") {
           out.push({ dosya, tani: yeniTani("yürütme-kenarı-sözleşmesi",
-            { kimlik, kenar, kusur: `"${h}" hedefi "${hedefTip}" tipinde, oysa yürütme kenarı yalnız Adıma yönelir` }, o) });
+            { kimlik, kenar, kusur: "hedef-adim-degil", hedef: h, hedefTip }, o) });
         }
       }
     }
@@ -4379,13 +4377,13 @@ export function iliskiSinifiTanilari(
     const uretimHedefleri = yeniListe(d, "üretir");
     if (uretimHedefleri.length && d.ad !== "Adım") {
       out.push({ dosya, tani: yeniTani("üretim-kökeni-ihlali",
-        { kimlik, kusur: `kenarın kaynağı "${d.ad}" tipinde, oysa üretim kökeni yalnız Adımdan doğar` }, d) });
+        { kimlik, kusur: "uretim-kaynagi-adim-degil", kaynakTip: d.ad }, d) });
     }
     for (const o of uretimHedefleri) {
       const hedefTip = o.metin ? tipOf.get(o.metin) : undefined;
       if (!hedefTip || URUN_TIPLERI.has(hedefTip)) continue;
       out.push({ dosya, tani: yeniTani("üretim-kökeni-ihlali",
-        { kimlik, kusur: `hedefi "${hedefTip}" tipinde; teslim olmayan bir düğüme yönelen bu kenar yürütme sırası kurar` }, o) });
+        { kimlik, kusur: "uretim-hedefi-teslim-degil", hedefTip }, o) });
     }
 
     // Kullanır kenarı: yalnız Proje→kimlik kökü ve Katman→Teknoloji çiftleri.
@@ -4393,10 +4391,10 @@ export function iliskiSinifiTanilari(
     if (kullanirlar.length) {
       if (d.ad !== "Proje" && d.ad !== "Katman" && d.ad !== "AltKatman") {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kenar: "kullanır", kusur: `kenarın kaynağı "${d.ad}" tipinde` }, d) });
+          { kimlik, kenar: "kullanır", kusur: "kenar-kaynagi-tipi", kaynakTip: d.ad }, d) });
       } else if (kullanirlar.length > 1) {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kenar: "kullanır", kusur: `kenar ${kullanirlar.length} hedefe yöneliyor, oysa tekil olmak zorundadır` }, d) });
+          { kimlik, kenar: "kullanır", kusur: "kenar-cok-hedef", sayi: kullanirlar.length }, d) });
       } else {
         const hedefTip = tipOf.get(kullanirlar[0].metin ?? "");
         const beklenen = d.ad === "Proje" ? "KimlikKökü" : "Teknoloji";
@@ -4404,9 +4402,9 @@ export function iliskiSinifiTanilari(
         // bağlanmasına göz yuman istisna KALDIRILDI. Takım bağı artık kendi kenarıyla,
         // yani `takım:` ile yazılır; iki kenar birbirinin yerine geçemez.
         if (hedefTip && hedefTip !== beklenen) {
-          const yonlendirme = hedefTip === "Takım" ? " — Takım bağı `takım:` kenarıyla yazılır" : "";
           out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-            { kimlik, kenar: "kullanır", kusur: `hedef "${hedefTip}" tipinde, oysa "${beklenen}" bekleniyordu${yonlendirme}` }, kullanirlar[0]) });
+            { kimlik, kenar: "kullanır", kusur: "hedef-tipi-beklenmedik", hedefTip, beklenen,
+              ...(hedefTip === "Takım" ? { yonlendir: "takim" } : {}) }, kullanirlar[0]) });
         }
       }
     }
@@ -4418,22 +4416,22 @@ export function iliskiSinifiTanilari(
     if (takimlar.length) {
       if (d.ad !== "Katman" && d.ad !== "AltKatman") {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kenar: "takım", kusur: `kenarın kaynağı "${d.ad}" tipinde, oysa sahiplik bağı yalnız Katmandan doğar` }, d) });
+          { kimlik, kenar: "takım", kusur: "takim-kaynagi-katman-degil", kaynakTip: d.ad }, d) });
       } else {
         const gorulenTakim = new Set<string>();
         for (const o of takimlar) {
           const h = o.metin ?? "";
           if (gorulenTakim.has(h)) {
             out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-              { kimlik, kenar: "takım", kusur: `"${h}" hedefi aynı kenarda ikinci kez yazılmış` }, o) });
+              { kimlik, kenar: "takım", kusur: "hedef-yineleniyor", hedef: h }, o) });
             continue;
           }
           gorulenTakim.add(h);
           const hedefTip = tipOf.get(h);
           if (hedefTip && hedefTip !== "Takım") {
-            const yonlendirme = hedefTip === "Teknoloji" ? " — Teknoloji bağı `kullanır:` kenarıyla yazılır" : "";
             out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-              { kimlik, kenar: "takım", kusur: `hedef "${hedefTip}" tipinde, oysa "Takım" bekleniyordu${yonlendirme}` }, o) });
+              { kimlik, kenar: "takım", kusur: "hedef-tipi-beklenmedik", hedefTip, beklenen: "Takım",
+                ...(hedefTip === "Teknoloji" ? { yonlendir: "kullanir" } : {}) }, o) });
           }
         }
       }
@@ -4442,7 +4440,7 @@ export function iliskiSinifiTanilari(
     // Deterministik sıra: kapsayıcı kademe iş önceliği yazamaz.
     if (KAPSAYICI_KADEMELER.has(d.ad) && yeniAlan(d, "sıra")) {
       out.push({ dosya, tani: yeniTani("deterministik-sıra-ihlali",
-        { kimlik, kusur: `"${d.ad}" kademesi kendi üstünde bir sıra alanı taşıyor` }, d) });
+        { kimlik, kusur: "kademe-sira-alani", kademe: d.ad }, d) });
     }
 
     // Çapraz Proje ad-alanı: başka Projedeki hedef açık nitelik ister.
@@ -4469,16 +4467,15 @@ export function iliskiSinifiTanilari(
 
     // Döngü işletimi: çözülebilir hedef ve sonlanma güvencesi.
     if (d.ad === "Döngü") {
-      const kusurlar: string[] = [];
       const kosar = yeniListe(d, "koşar").map((v) => v.metin).filter(Boolean) as string[];
-      if (!kosar.length) kusurlar.push("işletim hedefi yazılmamış");
-      else for (const h of kosar) if (!indeks.has(h)) kusurlar.push(`işletim hedefi "${h}" hiçbir kaynakta tanımlı değil`);
+      const hedefYok = !kosar.length;
+      const cozulmeyen = kosar.filter((h) => !indeks.has(h));
       const durunca = yeniAlanMetin(d, "durunca")?.trim();
       const limit = yeniAlanMetin(d, "turLimiti")?.trim();
-      if (!durunca && !limit) kusurlar.push("sonlanma koşulu yazılmamış");
-      if (kusurlar.length) {
+      const sonlanmaYok = !durunca && !limit;
+      if (hedefYok || cozulmeyen.length || sonlanmaYok) {
         out.push({ dosya, tani: yeniTani("döngü-sonlanması-eksik",
-          { kimlik, kusur: kusurlar.join("; ") }, d) });
+          { kimlik, kusur: "dongu-eksikleri", hedefYok, cozulmeyen, sonlanmaYok }, d) });
       }
     }
 
@@ -4488,10 +4485,10 @@ export function iliskiSinifiTanilari(
       const kanit = yeniAlanMetin(d, "kanıt")?.trim() ?? yeniAlanMetin(d, "doğrulama")?.trim();
       if (!kabul) {
         out.push({ dosya, tani: yeniTani("kapı-kabul-kanıtı-eksik",
-          { kimlik, kusur: "kabul ölçütü yazılmamış" }, d) });
+          { kimlik, kusur: "kabul-yok" }, d) });
       } else if (yeniAlanMetin(d, "durum") === "geçildi" && !kanit) {
         out.push({ dosya, tani: yeniTani("kapı-kabul-kanıtı-eksik",
-          { kimlik, kusur: "kapı geçildi işaretli ama doğrulanmış kanıt bağı yok" }, d) });
+          { kimlik, kusur: "kapi-kanitsiz" }, d) });
       }
     }
   }
@@ -4517,11 +4514,11 @@ export function authTanilari(
   for (const { dosya, d, atalar } of dugumler) {
     if (d.ad === "KimlikSağlayıcısı" && !atalar.some((x) => x.ad === "KimlikKökü")) {
       out.push({ dosya, tani: yeniTani("auth-omurgası-ihlali",
-        { kimlik: yeniKimlik(d), kusur: "kimlik sağlayıcısı hiçbir kimlik kökünün altında yaşamıyor" }, d) });
+        { kimlik: yeniKimlik(d), kusur: "saglayici-koksuz" }, d) });
     }
     if (d.ad === "KimlikPolitikası" && !atalar.some((x) => x.ad === "KimlikKökü")) {
       out.push({ dosya, tani: yeniTani("auth-omurgası-ihlali",
-        { kimlik: yeniKimlik(d), kusur: "kimlik politikası kök dışında ilan edilmiş" }, d) });
+        { kimlik: yeniKimlik(d), kusur: "politika-kok-disinda" }, d) });
     }
     if (d.ad !== "Proje") continue;
 
@@ -4529,16 +4526,16 @@ export function authTanilari(
     const kimlikBaglari = bagli.filter((h) => kokKodlari.has(h));
     if (kimlikBaglari.length > 1) {
       out.push({ dosya, tani: yeniTani("auth-omurgası-ihlali",
-        { kimlik: yeniKimlik(d), kusur: `Proje ${kimlikBaglari.length} ayrı kimlik köküne bağlanmış` }, d) });
+        { kimlik: yeniKimlik(d), kusur: "proje-cok-kimlik-koku", sayi: kimlikBaglari.length }, d) });
     }
     // Kurucu Projesi ortak kökü zorunlu gösterir.
     if (yeniAlanMetin(d, "kurucu") === "evet" || yeniAlanMetin(d, "rol") === "kurucu") {
       if (!kimlikBaglari.length) {
         out.push({ dosya, tani: yeniTani("founder-ortak-auth-eksik",
-          { kimlik: yeniKimlik(d), kusur: "ortak kimlik köküne giden bağ hiç yazılmamış" }, d) });
+          { kimlik: yeniKimlik(d), kusur: "ortak-kok-bagi-yok" }, d) });
       } else if (kokler.length > 1) {
         out.push({ dosya, tani: yeniTani("founder-ortak-auth-eksik",
-          { kimlik: yeniKimlik(d), kusur: `çalışma alanında ${kokler.length} kimlik kökü var, oysa ortak kök tekil olmalıdır` }, d) });
+          { kimlik: yeniKimlik(d), kusur: "cok-ortak-kok", sayi: kokler.length }, d) });
       }
     }
   }
@@ -4577,7 +4574,7 @@ export function sefAkisiTanilari(
       const denetci = yeniAlanMetin(d, "denetçi");
       if (uretici && denetci && uretici === denetci) {
         out.push({ dosya, tani: yeniTani("üretici-denetçi-çakışması",
-          { kimlik, kusur: `aynı etmen ("${uretici}") hem üretici hem denetçi olarak yazılmış` }, d) });
+          { kimlik, kusur: "ayni-etmen-iki-rol", etmen: uretici }, d) });
       }
       // Durum değişikliği kanıt ister: doğrulanmamış teslim tamamlandı sayılamaz.
       const kosu = yeniAlan(d, "koşu")?.deger;
@@ -4586,7 +4583,7 @@ export function sefAkisiTanilari(
         const kanit = yeniAlanMetin(kosu.dugum, "kanıt") ?? yeniAlanMetin(kosu.dugum, "doğrulama");
         if (karar === "VERIFIED" && !kanit) {
           out.push({ dosya, tani: yeniTani("şef-akışı-ihlali",
-            { kimlik, kusur: "koşum doğrulandı mührü taşıyor ama bağımsız kanıt bağı yazılmamış" }, kosu.dugum) });
+            { kimlik, kusur: "kosum-kanitsiz" }, kosu.dugum) });
         }
       }
     }
@@ -4595,7 +4592,7 @@ export function sefAkisiTanilari(
       const adimlar = yeniListe(d, "adım").map((v) => v.metin).filter(Boolean);
       if (adimlar.length > 1) {
         out.push({ dosya, tani: yeniTani("oturum-adım-sınırı",
-          { kimlik, kusur: `koşum kaydı ${adimlar.length} ayrı işi birlikte gösteriyor` }, d) });
+          { kimlik, kusur: "kosum-cok-is", sayi: adimlar.length }, d) });
       }
     }
   }
@@ -4681,7 +4678,7 @@ export function dilKanonTanilari(
   }
   for (const { kod, y } of yinelenen) {
     out.push({ dosya: y.dosya, tani: yeniTani("numara-grafı-uyumsuz",
-      { kod, kusur: "aynı madde kodu ikinci kez ilan edilmiş" }, y.d) });
+      { kod, kusur: "madde-kodu-yineleniyor" }, y.d) });
   }
   if (maddeler.size) {
     const bolumler = new Map<string, Set<string>>();
@@ -4697,14 +4694,14 @@ export function dilKanonTanilari(
       const kardesler = bolumler.get(bolum)!;
       if (!kardesler.has("0")) {
         out.push({ dosya: y.dosya, tani: yeniTani("madde-kodu-uyumsuz",
-          { kod, kusur: `"${bolum}" bölümü sıfırıncı maddesini ilan etmemiş`, onerilen: `${bolum}-0` }, y.d) });
+          { kod, kusur: "sifirinci-madde-yok", bolum, onerilen: `${bolum}-0` }, y.d) });
         kardesler.add("0");   // bölüm başına tek kez konuşulur
       }
       if (parcalar.length > 1) {
         const ebeveyn = parcalar.slice(0, -1).join(".");
         if (!kardesler.has(ebeveyn)) {
           out.push({ dosya: y.dosya, tani: yeniTani("madde-kodu-uyumsuz",
-            { kod, kusur: `noktalı alt numaranın ana maddesi ("${bolum}-${ebeveyn}") ilan edilmemiş`, onerilen: `${bolum}-${ebeveyn}` }, y.d) });
+            { kod, kusur: "ana-madde-yok", anaMadde: `${bolum}-${ebeveyn}`, onerilen: `${bolum}-${ebeveyn}` }, y.d) });
         }
       }
       const son = Number(parcalar[parcalar.length - 1]);
@@ -4716,7 +4713,7 @@ export function dilKanonTanilari(
         const oncekiParcalar = [...parcalar.slice(0, -1), String(son - 1)].join(".");
         if (!kardesler.has(oncekiParcalar)) {
           out.push({ dosya: y.dosya, tani: yeniTani("madde-kodu-uyumsuz",
-            { kod, kusur: `ardışıklık kopmuş; "${bolum}-${oncekiParcalar}" atlanmış`, onerilen: `${bolum}-${oncekiParcalar}` }, y.d) });
+            { kod, kusur: "ardisiklik-koptu", atlanan: `${bolum}-${oncekiParcalar}`, onerilen: `${bolum}-${oncekiParcalar}` }, y.d) });
         }
       }
     }
@@ -4730,7 +4727,7 @@ export function dilKanonTanilari(
       const h = o.metin;
       if (!h || MADDE_KODU.test(h)) continue;
       out.push({ dosya: y.dosya, tani: yeniTani("numara-grafı-uyumsuz",
-        { kod, kusur: `dayanağı "${h}" kanonun sekiz bölüm önekinin dışında bir kod evrenine yöneliyor` }, o) });
+        { kod, kusur: "dayanak-onek-disi", dayanak: h }, o) });
     }
   }
   return out;
@@ -4872,7 +4869,7 @@ export function ogretimTanilari(
     // Kaynak drifti: normatif öğretim metni kaynağını göstermiyor.
     if (!kunye && !bolgeler.length && NORMATIF.test(metin) && /(^|\/)(ogrenme|ogretim|beceri)\//.test(g.yol)) {
       out.push({ dosya: g.yol, tani: yeniTani("öğretim-kaynak-drifti",
-        { dosya: g.yol, kusur: "metin bağlayıcı cümle taşıyor ama hangi kanonik kaynaktan türediğini söylemiyor" },
+        { dosya: g.yol, kusur: "kaynaksiz-baglayici" },
         { satir: 1, sutun: 1 }) });
     }
 
@@ -4882,17 +4879,17 @@ export function ogretimTanilari(
       const kaynak = dosyaOku(dizin, kaynakYol);
       if (kaynak === undefined) {
         out.push({ dosya: g.yol, tani: yeniTani("öğretim-bayat",
-          { dosya: g.yol, kusur: `künyedeki kaynak ("${kaynakYol}") çözülmüyor` }, { satir: 1, sutun: 1 }) });
+          { dosya: g.yol, kusur: "kunye-kaynagi-cozulmuyor", kaynakYol }, { satir: 1, sutun: 1 }) });
       } else if (kunye[2] && kunye[2] !== icerikOzeti(kaynak)) {
         out.push({ dosya: g.yol, tani: yeniTani("öğretim-bayat",
-          { dosya: g.yol, kusur: "künyedeki mühür kaynağın bugünkü içeriğiyle uyuşmuyor" }, { satir: 1, sutun: 1 }) });
+          { dosya: g.yol, kusur: "kunye-muhru-uyusmuyor" }, { satir: 1, sutun: 1 }) });
       }
       // Elle düzenleme: üretilmiş metin izinli bölgenin dışında hüküm taşıyor.
       if (bolgeler.length) {
         const disKisim = metin.replace(/<!--\s*SARMAL:[A-ZÇĞİÖŞÜ_]+\s*-->[\s\S]*?<!--\s*\/SARMAL:[A-ZÇĞİÖŞÜ_]+\s*-->/g, "");
         if (NORMATIF.test(disKisim)) {
           out.push({ dosya: g.yol, tani: yeniTani("üretilmiş-öğretim-değiştirilmiş",
-            { dosya: g.yol, kusur: "üretim bölgesinin dışında bağlayıcı cümle yazılmış" }, { satir: 1, sutun: 1 }) });
+            { dosya: g.yol, kusur: "bolge-disi-baglayici" }, { satir: 1, sutun: 1 }) });
         }
       }
     }
@@ -4909,7 +4906,7 @@ export function ogretimTanilari(
         const beklenen = uretilen.slice(uretilenBas + TAKSONOMI_BAS.length, uretilenSon).trim();
         if (mevcut !== beklenen) {
           out.push({ dosya: g.yol, tani: yeniTani("başvuru-sicil-drifti",
-            { dosya: g.yol, kusur: "başvuru bölgesi kanonik sicilden üretilen içerikle birebir değil" },
+            { dosya: g.yol, kusur: "basvuru-bolgesi-farkli" },
             { satir: 1, sutun: 1 }) });
         }
       }
@@ -4923,17 +4920,17 @@ export function ogretimTanilari(
 
     if (d.ad === "Beceri") {
       const eksik: string[] = [];
-      if (!yeniListe(d, "uygular").length) eksik.push("hedef bağı");
-      if (!yeniAlanMetin(d, "neZaman")?.trim()) eksik.push("tetikleyici tarifi");
-      if (!yeniAlanMetin(d, "örnek")?.trim()) eksik.push("uygulama örneği");
-      if (!yeniAlanMetin(d, "kabul")?.trim() && !yeniListe(d, "doğrulama").length) eksik.push("kabul kanıtı");
+      if (!yeniListe(d, "uygular").length) eksik.push("hedef");
+      if (!yeniAlanMetin(d, "neZaman")?.trim()) eksik.push("tetik");
+      if (!yeniAlanMetin(d, "örnek")?.trim()) eksik.push("ornek");
+      if (!yeniAlanMetin(d, "kabul")?.trim() && !yeniListe(d, "doğrulama").length) eksik.push("kabul");
       if (eksik.length) {
         out.push({ dosya, tani: yeniTani("beceri-kartı-eksik",
-          { kimlik, kusur: `${eksik.join(" · ")} yazılmamış` }, d) });
+          { kimlik, kusur: "beceri-eksikleri", eksik }, d) });
       }
       if (yeniAlanMetin(d, "terfi") === "tamamlandı" && !yeniListe(d, "doğrulama").length && !yeniAlanMetin(d, "kabul")) {
         out.push({ dosya, tani: yeniTani("kanıtsız-beceri-terfisi",
-          { kimlik, kusur: "terfi tamamlandı görünüyor ama yinelenebilir doğrulama bağı yok" }, d) });
+          { kimlik, kusur: "terfi-dogrulamasiz" }, d) });
       }
     }
 
@@ -4941,7 +4938,7 @@ export function ogretimTanilari(
       const kanit = yeniListe(d, "doğrulama").length || yeniAlanMetin(d, "kanıt")?.trim();
       if (!kanit) {
         out.push({ dosya, tani: yeniTani("kanıtsız-beceri-terfisi",
-          { kimlik, kusur: "öğrenim terfi ettirilmiş ama yinelenebilir doğrulama kanıtı bağlanmamış" }, d) });
+          { kimlik, kusur: "ogrenim-kanitsiz" }, d) });
       }
     }
 
@@ -4955,7 +4952,7 @@ export function ogretimTanilari(
         });
       if (kanonikMeyve && !yeniListe(d, "etkiler").length && !yeniAlanMetin(d, "etkisiz")?.trim()) {
         out.push({ dosya, tani: yeniTani("öğretim-etki-eksik",
-          { kimlik, kusur: "kanonik kaynağı değiştirmiş ama öğretim etkisi ne işlenmiş ne de etkisizliği beyan edilmiş" }, d) });
+          { kimlik, kusur: "ogretim-etkisi-islenmedi" }, d) });
       }
     }
   }
@@ -4971,11 +4968,12 @@ const YURUTUCU_IZI = /\b(gpt-[0-9]|claude-[0-9]|gemini-[0-9]|llama-[0-9]|mistral
 /** Göç aşamalarının bağlayıcı sırası. */
 const GOC_ASAMALARI: readonly string[] = ["spec", "kanon", "motor", "yüzey", "proje-kod", "terfi", "belge"];
 /** Aşama kapanış kaydının taşımak zorunda olduğu dört parça. */
-const KAPI_PARCALARI: ReadonlyArray<{ ad: string; re: RegExp }> = [
-  { ad: "kapsam envanteri", re: /kapsam|envanter/i },
-  { ad: "doğrulama sonucu", re: /doğrula|kapı|hata|uyarı|sınama/i },
-  { ad: "sahipli borç kaydı", re: /borç|açık iş|kalan/i },
-  { ad: "devredilen etki kümesi", re: /etki|devir|devredil/i },
+// MGZ-A09: parçanın kullanıcıya görünen adı iki dilde tanı kataloğunda yaşar.
+const KAPI_PARCALARI: ReadonlyArray<{ kimlik: string; re: RegExp }> = [
+  { kimlik: "kapsam", re: /kapsam|envanter/i },
+  { kimlik: "dogrulama", re: /doğrula|kapı|hata|uyarı|sınama/i },
+  { kimlik: "borc", re: /borç|açık iş|kalan/i },
+  { kimlik: "etki", re: /etki|devir|devredil/i },
 ];
 
 /**
@@ -5004,18 +5002,19 @@ const KAPI_PARCALARI: ReadonlyArray<{ ad: string; re: RegExp }> = [
  * kalmasını şart koşar. Bekçiliğin açık tarafta durması bu yüzden zorunludur;
  * bekçi kapalıya taşınsaydı açık depo kendi sınırını koruyamaz hâle gelirdi.
  */
-const GIZLI_ESIK_IZLERI: ReadonlyArray<{ bolum: string; ne: string; re: RegExp }> = [
-  { bolum: "§D", ne: "karar motoru güven eşikleri",
+// MGZ-A09: izin kullanıcıya görünen adı iki dilde tanı kataloğunda yaşar; burada kimliği durur.
+const GIZLI_ESIK_IZLERI: ReadonlyArray<{ bolum: string; iz: string; re: RegExp }> = [
+  { bolum: "§D", iz: "guven-esikleri",
     re: /(?:conf|güven)[\p{L}]*\s*<\s*0[.,]\d[^\n]{0,60}<\s*0[.,]\d/iu },
-  { bolum: "§Q", ne: "strateji seçici kümesi",
+  { bolum: "§Q", iz: "strateji-kumesi",
     re: /single\s*\/\s*sequential\s*\/\s*parallel\s*\/\s*debate/iu },
-  { bolum: "§J", ne: "tetikleyici koreografisi",
+  { bolum: "§J", iz: "tetik-koreografisi",
     re: /risk\s*→\s*debate\s*→\s*human[-\s]?escalate/iu },
-  { bolum: "§J", ne: "risk özellik sayısı",
+  { bolum: "§J", iz: "risk-ozellik-sayisi",
     re: /\b\d+[-\s]?özellikli\s+risk\b/iu },
-  { bolum: "§O", ne: "yeniden deneme ve eskalasyon limitleri",
+  { bolum: "§O", iz: "deneme-limitleri",
     re: /max-?\s*\d+\b[^\n]{0,50}\b\d+-?\s*hata\s*→\s*eskale/iu },
-  { bolum: "§G", ne: "kanca tavanı ve zaman aşımı",
+  { bolum: "§G", iz: "kanca-tavani",
     re: /≤\s*\d+\s*kanca[^\n]{0,14}≤\s*\d+\s*ms/iu },
 ];
 
@@ -5098,13 +5097,13 @@ export function stratejiTanilari(
     if (parcalar === "0") continue;                       // kök madde dayanaksız yaşar
     if (!kayit.dayanak.length) {
       out.push({ dosya: kayit.dosya, tani: yeniTani("kanon-kodu-uyumsuz",
-        { kod, kusur: "dayanak bağı hiç yazılmamış", onerilen: MADDE_KODU.exec(kod)![1] + "-0" }, kayit.d) });
+        { kod, kusur: "dayanak-yok", onerilen: MADDE_KODU.exec(kod)![1] + "-0" }, kayit.d) });
       continue;
     }
     for (const h of kayit.dayanak) {
       if (!madde.has(h) && !indeks.has(h)) {
         out.push({ dosya: kayit.dosya, tani: yeniTani("kanon-kodu-uyumsuz",
-          { kod, kusur: `dayanağı "${h}" hiçbir kaynakta çözülmüyor` }, kayit.d) });
+          { kod, kusur: "dayanak-cozulmuyor", dayanak: h }, kayit.d) });
       }
     }
     // Döngü ve köke ulaşma.
@@ -5120,10 +5119,10 @@ export function stratejiTanilari(
     }
     if (dongu) {
       out.push({ dosya: kayit.dosya, tani: yeniTani("kanon-kodu-uyumsuz",
-        { kod, kusur: "dayanak zinciri kendine dönüyor" }, kayit.d) });
+        { kod, kusur: "dayanak-dongusu" }, kayit.d) });
     } else if (!kok && kayit.dayanak.some((h) => madde.has(h))) {
       out.push({ dosya: kayit.dosya, tani: yeniTani("kanon-kodu-uyumsuz",
-        { kod, kusur: "dayanak zinciri kendi bölümünün dayanaksız köküne ulaşmıyor" }, kayit.d) });
+        { kod, kusur: "dayanak-koke-ulasmiyor" }, kayit.d) });
     }
   }
 
@@ -5144,7 +5143,7 @@ export function stratejiTanilari(
         const acik = onceki.filter((o) => o.durum !== "tamamlandı");
         if (!acik.length) continue;
         out.push({ dosya: k.dosya, tani: yeniTani("göç-sırası-ihlali",
-          { kimlik: yeniKimlik(k.d), kusur: `"${GOC_ASAMALARI[i]}" aşaması hâlâ açıkken "${asama}" aşaması başlatılmış` }, k.d) });
+          { kimlik: yeniKimlik(k.d), kusur: "asama-sirasi", acikAsama: GOC_ASAMALARI[i], asama }, k.d) });
         break;
       }
     }
@@ -5155,10 +5154,10 @@ export function stratejiTanilari(
     if (!asama || !GOC_ASAMALARI.includes(asama)) continue;
     if (yeniAlanMetin(d, "durum") !== "tamamlandı") continue;
     const kayit = yeniAlanMetin(d, "koşu") ?? "";
-    const eksik = KAPI_PARCALARI.filter((p) => !p.re.test(kayit)).map((p) => p.ad);
+    const eksik = KAPI_PARCALARI.filter((p) => !p.re.test(kayit)).map((p) => p.kimlik);
     if (eksik.length) {
       out.push({ dosya, tani: yeniTani("göç-kapısı-eksik",
-        { kimlik: yeniKimlik(d), kusur: `kapanış kaydında ${eksik.join(" · ")} yok` }, d) });
+        { kimlik: yeniKimlik(d), kusur: "kapanis-eksikleri", eksik }, d) });
     }
   }
 
@@ -5196,7 +5195,7 @@ export function stratejiTanilari(
       const kodErisimi = gizliKodAtama.test(satir) || gizliKodCagri.test(satir);
       if (!yolAlani && !kodErisimi) continue;
       out.push({ dosya, tani: yeniTani("açık-gizli-sınır-ihlali",
-        { dosya, kusur: "açık taraftaki kaynak gizli ürün ağacına doğrudan yol veriyor" },
+        { dosya, kusur: "gizli-yol" },
         { satir: i + 1, sutun: 1 }) });
     }
   }
@@ -5235,7 +5234,7 @@ export function stratejiTanilari(
         for (const iz of GIZLI_ESIK_IZLERI) {
           if (!iz.re.test(satir)) continue;
           out.push({ dosya, tani: yeniTani("açık-gizli-sınır-ihlali",
-            { dosya, kusur: `kapalı üründeki eşik envanterinin ${iz.bolum} bölümünden türeyen ${iz.ne} açık tarafta düz metin duruyor` },
+            { dosya, kusur: "esik-izi", bolum: iz.bolum, iz: iz.iz },
             { satir: i + 1, sutun: 1 }) });
         }
       }
@@ -5251,7 +5250,7 @@ export function stratejiTanilari(
         const adlar = Object.keys(j.dependencies ?? {});
         if (adlar.length) {
           out.push({ dosya: "urun/cekirdek/package.json", tani: yeniTani("çekirdek-bağımlılık-drifti",
-            { dosya: "urun/cekirdek/package.json", kusur: `çalışma-zamanı bağımlılığı ilan edilmiş (${adlar.join(" · ")})` },
+            { dosya: "urun/cekirdek/package.json", kusur: "calisma-zamani-bagimliligi", adlar },
             { satir: 1, sutun: 1 }) });
         }
       } catch { /* okunamayan paket bildirimi ölçüme girmez */ }
@@ -5280,7 +5279,7 @@ export function stratejiTanilari(
     const kayit = yeniAlanMetin(d, "koşu") ?? "";
     if (!/etki/i.test(kayit) || !/(hata|uyarı|kapı)/i.test(kayit)) {
       out.push({ dosya, tani: yeniTani("etki-yayın-kapısı-eksik",
-        { kimlik: yeniKimlik(d), kusur: "yayın beyanı var ama geçişli etki kümesi ve kapı sonucu kayda geçmemiş" }, d) });
+        { kimlik: yeniKimlik(d), kusur: "yayin-kaydi-eksik" }, d) });
     }
   }
 
@@ -5346,25 +5345,25 @@ export function tipEvreniTanilari(
   for (const t of anilan) {
     if (tipler.has(t)) continue;
     out.push({ dosya: anaEtiket, tani: yeniTani("tip-evreni-eksik",
-      { tip: t, kusur: `"${t}" tipi sarma ya da kenar kaydında anılıyor ama tip evreninde tanımlı değil` }, konum) });
+      { tip: t, kusur: "tip-tanimsiz" }, konum) });
   }
   for (const t of snf.widgetTipleri) {
     if (snf.aileler && !(t.aile in snf.aileler)) {
       out.push({ dosya: anaEtiket, tani: yeniTani("tip-evreni-eksik",
-        { tip: t.ad, kusur: `"${t.ad}" tipinin ailesi ("${t.aile}") aile kataloğunda yok` }, konum) });
+        { tip: t.ad, kusur: "aile-katalogda-yok", aile: t.aile }, konum) });
     }
   }
 
   // Omurga tipleri: aile, şema ve sarma kaydı birlikte bulunur.
   for (const t of OMURGA_TIPLERI) {
     const eksik: string[] = [];
-    if (!tipler.has(t)) eksik.push("tip kaydı");
-    if (!snf.semalar?.[t]) eksik.push("şema kaydı");
+    if (!tipler.has(t)) eksik.push("tip");
+    if (!snf.semalar?.[t]) eksik.push("sema");
     const sarilir = Object.values(snf.izinliSarma).some((c) => c.includes(t)) || Boolean(snf.izinliSarma[t]);
-    if (!sarilir) eksik.push("izinli sarma kaydı");
+    if (!sarilir) eksik.push("sarma");
     if (eksik.length) {
       out.push({ dosya: anaEtiket, tani: yeniTani("omurga-tipi-eksik",
-        { tip: t, kusur: `${eksik.join(" · ")} bulunmuyor` }, konum) });
+        { tip: t, kusur: "omurga-eksikleri", eksik }, konum) });
     }
   }
 
@@ -5372,7 +5371,7 @@ export function tipEvreniTanilari(
   for (const t of snf.widgetTipleri) {
     if (snf.semalar?.[t.ad]) continue;
     out.push({ dosya: anaEtiket, tani: yeniTani("şema-tanımı-eksik",
-      { tip: t.ad, kusur: "tipin şema kaydı hiç yazılmamış" }, konum) });
+      { tip: t.ad, kusur: "sema-kaydi-yok" }, konum) });
   }
 
   // Katkılı örtü: örtü taban şemayı yeniden tanımlayamaz.
@@ -5381,7 +5380,7 @@ export function tipEvreniTanilari(
     const izinsiz = alanlar.filter((x) => x !== "enum");
     if (izinsiz.length) {
       out.push({ dosya: "oz/siniflama/ortu.json", tani: yeniTani("örtü-ihlali",
-        { kusur: `"${tip}" şemasında örtü izinli enum birleşimi dışında alan yazıyor (${izinsiz.join(" · ")})` }, konum) });
+        { kusur: "ortu-izinsiz-alan", tip, alanlar: izinsiz }, konum) });
     }
   }
   return out;
@@ -5406,12 +5405,12 @@ export function terfiKanitiTanilari(
     const duzey = yeniAlanMetin(d, "düzey");
     if (duzey !== "hata" && duzey !== "uyarı") continue;
     const eksik: string[] = [];
-    if (!yeniListe(d, "uygulama").length && !yeniListe(d, "tanı").length) eksik.push("çalışan uygulama bağı");
-    if (!yeniListe(d, "doğrulama").length) eksik.push("tekrar üretilebilir doğrulama bağı");
-    if (!yeniListe(d, "kabul").length && !yeniAlanMetin(d, "kabul")?.trim()) eksik.push("yetkili açık kabul kaydı");
+    if (!yeniListe(d, "uygulama").length && !yeniListe(d, "tanı").length) eksik.push("uygulama");
+    if (!yeniListe(d, "doğrulama").length) eksik.push("dogrulama");
+    if (!yeniListe(d, "kabul").length && !yeniAlanMetin(d, "kabul")?.trim()) eksik.push("kabul");
     if (!eksik.length) continue;
     out.push({ dosya, tani: yeniTani("terfi-kanıtı-eksik",
-      { kimlik: yeniKimlik(d), kusur: `${eksik.join(" · ")} bağlanmamış` }, d) });
+      { kimlik: yeniKimlik(d), kusur: "terfi-kanitlari-eksik", eksik }, d) });
   }
   return out;
 }
@@ -5452,7 +5451,7 @@ export function yuzTanilari(
       const metin = dosyaOku(dizin, g.yol);
       if (metin !== undefined && !/üretilmiştir/i.test(metin.slice(0, 400))) {
         out.push({ dosya: g.yol, tani: yeniTani("prizma-kaynak-ayrışması",
-          { dosya: g.yol, kusur: "kaynağıyla aynı adı taşıyan yapısal yüz üretim künyesi göstermiyor" }, konum) });
+          { dosya: g.yol, kusur: "kunyesiz-yapisal-yuz" }, konum) });
       }
     }
 
@@ -5463,7 +5462,7 @@ export function yuzTanilari(
     // Eş-yetkili ikiz: kaynağın yanında duran elle yazılmış normatif metin.
     if (sarKokleri.has(kok) && !/üretilmiştir/i.test(metin.slice(0, 400)) && NORMATIF.test(metin)) {
       out.push({ dosya: g.yol, tani: yeniTani("eş-yetkili-yüz-ikizi",
-        { dosya: g.yol, kusur: "kanonik kaynakla aynı adı taşıyor, bağlayıcı cümle kuruyor ve üretim künyesi yok" }, konum) });
+        { dosya: g.yol, kusur: "es-yetkili-ikiz" }, konum) });
     }
 
     // İdempotans: aynı üretim bölgesi iki kez açılamaz, açık bölge kapanmalıdır.
@@ -5474,10 +5473,10 @@ export function yuzTanilari(
       const son = sonlar.filter((x) => x === ad).length;
       if (bas !== son) {
         out.push({ dosya: g.yol, tani: yeniTani("yüz-idempotans-drifti",
-          { dosya: g.yol, kusur: `"${ad}" üretim bölgesi ${bas} kez açılmış, ${son} kez kapanmış` }, konum) });
+          { dosya: g.yol, kusur: "bolge-dengesiz", bolge: ad, acilis: bas, kapanis: son }, konum) });
       } else if (bas > 1) {
         out.push({ dosya: g.yol, tani: yeniTani("yüz-idempotans-drifti",
-          { dosya: g.yol, kusur: `"${ad}" üretim bölgesi aynı dosyada ${bas} kez tanımlanmış; üretici hangisini yenileyeceğini seçemez` }, konum) });
+          { dosya: g.yol, kusur: "bolge-yineleniyor", bolge: ad, sayi: bas }, konum) });
       }
     }
   }
@@ -5500,7 +5499,7 @@ export function yuzTanilari(
           for (const m of kaynak.matchAll(/kod: "([a-zçğıöşü][a-zçğıöşü0-9-]*)"/g)) {
             if (sicil.has(m[1])) continue;
             out.push({ dosya: `urun/eklenti/src/${altGoreli}`, tani: yeniTani("geliştirme-yüzü-drifti",
-              { kusur: `sunum katmanı sicilde bulunmayan "${m[1]}" tanı kimliğini kendisi üretiyor` }, konum) });
+              { kusur: "sicilsiz-tani-kimligi", taniKodu: m[1] }, konum) });
           }
         }
       };
@@ -5520,7 +5519,7 @@ export function yuzTanilari(
 
     if (duzen.includes(d.ad) && !yeniAlanMetin(d, "kod")) {
       out.push({ dosya, tani: yeniTani("yüzey-sözleşmesi-eksik",
-        { kimlik: d.ad, kusur: "yüzeyin kararlı kimliği yazılmamış; taşındığında geçmişi kopar" }, d) });
+        { kimlik: d.ad, kusur: "kararli-kimlik-yok" }, d) });
     }
     if (paletRolleri.size) {
       for (const alan of ["stil", "renk", "rol", "ölçek"]) {
@@ -5528,7 +5527,7 @@ export function yuzTanilari(
         if (!v || paletRolleri.has(v)) continue;
         if (/^#|^rgb|^var\(/.test(v)) continue;   // ham değer ayrı bekçinin işidir
         out.push({ dosya, tani: yeniTani("palet-yüz-drifti",
-          { rol: v, kusur: "bu rol kanonik palette tanımlı değil" }, d) });
+          { rol: v, kusur: "rol-palette-yok" }, d) });
       }
     }
   }
