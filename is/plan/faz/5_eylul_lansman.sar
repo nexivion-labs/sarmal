@@ -6093,7 +6093,7 @@ sessizce körleşmez.
             ne:    "Eklentinin bağlantı dekoru, ipucu ve F12'si noktalı madde kodunu çekirdekteki tek kuyruk kuralıyla tanıyor; ORK-1.2 yazımı artık ORK-1.2 kartını açıyor ve noktasız kodların davranışı değişmedi. Önceki inceleme ile bu ölçümdeki sayı farkı yöntem farkıdır ve inceleyici iki sayıyı birbirine bağlamıştır. Adım, Founder gerçek editörde bağlantıyı ve ipucunu görene kadar açık kalır; kart başlığındaki adlı Kural kusuru HST-YUZ-A06'dadır." )
         }
 
-        Adım( kod: HST-YUZ-A06, ad: "İpucu Kartında Adlı Kuralın Tipi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-IPUCU-CEKIRDEK ], bağımlı: [ HST-YUZ-A05 ],
+        Adım( kod: HST-YUZ-A06, ad: "İpucu Kartında Adlı Kuralın Tipi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-IPUCU-CEKIRDEK ], bağımlı: [],
           referans: [ HST-YUZ-A05 ],
           ne: "🏷️ Adlı bir Kuralın ipucu kartı başlığında Kuralın adını değil tipini göstersin" ) {
           görev: "HST-YUZ-A05'in bağımsız incelemesi (2026-10-10) ipucu kartının başlığında adlı bir Kural için tip yerine Kuralın adının durduğunu ölçmüştür: satır taraması da sözdizimi ağacı yedeği de `Kural ad( … )` biçiminde adı tip sayar ve kart \"DIL-1.5 — türkçeOrthografi\" biçiminde açılır. Depoda 169 adlı Kural tanımı vardır; 60 noktasız Kuralda kusur önceden de vardı, 109 noktalı Kural A05 ile görünür olmuştur. Başlık tipi doğru gösterecek biçimde onarılır; önce adlı bir Kuralla kırmızı sınama yazılır."
