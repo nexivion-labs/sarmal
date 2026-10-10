@@ -4692,7 +4692,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           dokunulmaz: [ "arsiv/ rafı", "Türetilmiş dosyaların üretici zinciri" ]
         }
 
-        Adım( kod: KYN-KYN-A05, ad: "Prizmanın Markdown Yüzünün Gerçek Dönüşüm Yapması", durum: beklemede, öncelik: p2, bağımlı: [],
+        Adım( kod: KYN-KYN-A05, ad: "Prizmanın Markdown Yüzünün Gerçek Dönüşüm Yapması", durum: geliştirmede, öncelik: p2, bağımlı: [],
           referans: [ YUZ-1.2, HTR-MARKDOWN-YUZU-ZAYIF ],
           ne: "📝 Prizmanın Markdown yüzü kaynağı bir kod bloğuna sarmakla yetinmekte, gerçek bir dönüşüm yapmamaktadır; oysa benimsemenin yükü bu yüzün üstündedir ve depoya gelen geliştirici renksiz düz metin görüp ayrılmaktadır. Kaynağı Markdown yapmak dilin tek değerini, yani makinenin yanlış dosyayı reddedebilmesini yok eder; doğru kaldıraç türetilmiş yüzü okunur kılmaktır." ) {
           görev: [
