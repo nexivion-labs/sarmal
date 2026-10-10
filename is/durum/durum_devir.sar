@@ -17,15 +17,20 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-10", oturum: 113,
-            neredeyiz: ORKESTRASYON-TURU-EKIM-HASAT-MEVSIMI-ACILDI-BKM-BUG-A12-KAPANDI,
-            sıradaki: DALGA-IKI-RFM-MOTOR-A02-BKM-DNT-A11-SONRA-HASAT-ADIMLARI-VE-GONDERIM,
+            neredeyiz: ORKESTRASYON-TURU-BES-ADIM-KAPANDI-DAL-GONDERILIYOR-BIRLESTIRME-ISTEGI-ACILIYOR,
+            sıradaki: FOUNDER-KARARLARI-EYLUL-FAZININ-KAPANISI-RFM-MOTOR-A02-KANON-METNI-SONRA-EKIM-HASADI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ EKL-F6-A09-FOUNDER-CANLI-GOZU-BEKLIYOR,
+            açıkİşler: [ EYLUL-FAZI-KAPANMADAN-EKIM-ADIMLARI-BASLAYAMAZ-FOUNDER-KARARI,
+                         RFM-MOTOR-A02-KOD-HAZIR-DIL-1.8-ZORLAMA-METNI-FOUNDER-ONAYI-isci-rfm-motor-a02-DALINDA,
+                         VIT-KIMLIK-A08-KOD-BIRLESTI-FOUNDER-CANLI-GOZU-BEKLIYOR,
+                         KYN-KYN-A05-README-GOSTERIMI-FOUNDER-GOZU,
+                         HTR-TERFI-KANITI-YUZEY-AYRISMASI-FOUNDER,
+                         EKL-F6-A09-FOUNDER-CANLI-GOZU-BEKLIYOR,
                          KYN-OGR-A02-FOUNDER-OKUMASI-VE-IKI-ANLAM-HUKMU-BEKLIYOR,
                          EKL-F6-A01-MAGAZA-YUKLEMESI-VE-INGILIZCE-YUZ-ILKESI-FOUNDER,
                          FAZ-2026-EKIM-HASAT-MEVSIMI-YIRMI-ADIM-ACIK,
                          ON-YEDI-FOUNDER-KARARLI-HATIRLATICI-KUYRUKTA,
-                         BKM-DNT-KALAN-ADIMLAR-A03-A09-A11-A14,
+                         BKM-DNT-KALAN-ADIMLAR-A03-A14,
                          BKM-DNT-A14-BES-KARAR-FOUNDER-GERCEK-KABUK-SUITI-VE-SINAMA-SONUCU-YUZEYSIZ,
                          RFM-ONCELIK-IKI-EKSEN-REFORMU,
                          HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
@@ -58,7 +63,13 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-10", oturum: 113,
         bağımsız ölçümle kapanmış, kapsanan kapalı projedeki on bir sahte uyarı sıfıra inmiş ve aynı
         körlüğün ölü iz toplayıcısındaki ikinci örneği HST-MTR-A09 Adımına bağlanmıştır. Bu kaydın
         açık işler listesi kapanmış işlerden temizlenmiştir ve yalnız gerçekten açık kalemleri taşır.
-        Gönderim kararı: dal uzak depoya gönderilir ve birleştirme isteği açılır,
+        Turun sonunda BKM-BUG-A12, BKM-DNT-A11, BKM-DNT-A09 ve KYN-KYN-A05 bağımsız incelemeden
+        geçip kapanmış, VIT-KIMLIK-A08'in kodu birleşmiş ve kapanışı Founder'ın canlı gözüne
+        bırakılmıştır. RFM-MOTOR-A02'nin kodu kabul edilmiş fakat DIL-1.8 Zorlama paragrafını
+        tasdikli metinde olmayan iki hükümle yeniden yazdığı için kendi dalında Founder onayını
+        bekler. Ekim Faz'ının Adımları başlatılamamıştır, çünkü Faz sırası katıdır (MIM-1.2) ve
+        Eylül Faz'ı 49 açık Adım taşır; bu düğüm Founder kararına sunulmuştur. Çekirdek 1676/1676,
+        eklenti 897/897. Gönderim kararı: dal uzak depoya gönderilir ve birleştirme isteği açılır,
         ana dala birleştirmeyi Founder yapar.
 
         🧭 ARA DEVİR · OTURUM 113 (2026-10-01) · MARKETPLACE YAYINCISI DOĞDU.
