@@ -44,6 +44,36 @@ test("ölçer: dosyada bulunmayan ad karşılığını yakalar", () => {
   assert.deepEqual(kusur("the dependsOn and feeds fields"), ["ingilizce-ad=dependsOn"]);
 });
 
+// Kontrolcü incelemesi (2026-10-10) ölçerin beş kör noktasını adlandırdı; her biri
+// burada bir kırmızı ve bir yeşil örnekle tutulur.
+test("ölçer: istisna listesinden çıkan tip karşılıkları düzyazının ortasında yakalanır", () => {
+  assert.deepEqual(kusur("The settings are written to the Workspace target."), ["ingilizce-ad=Workspace"]);
+  assert.deepEqual(kusur("Every Task ends with a gate, and an Endpoint carries a Contract."),
+    ["ingilizce-ad=Task", "ingilizce-ad=Endpoint", "ingilizce-ad=Contract"]);
+  assert.deepEqual(kusur("Open a workspace and finish the task under its contract."), [], "küçük harfli sıradan sözcük ad değildir");
+});
+
+test("ölçer: tırnaklı bir adı anan tip karşılığı cümle başında da yakalanır", () => {
+  assert.deepEqual(kusur('Rule "KRL-1" was violated.'), ["ingilizce-ad=Rule"]);
+  assert.deepEqual(kusur('Kural "KRL-1" was violated.'), []);
+});
+
+test("ölçer: adın Türkçe çoğulu ve büyük harfli biçimi yakalanır", () => {
+  assert.deepEqual(kusur("A Blok joins Katmanlar bound to different technologies."), ["turkce-duzyazi=Katmanlar"]);
+  assert.deepEqual(kusur("🔵 OPEN ADIM in beklemede."), ["turkce-duzyazi=ADIM"]);
+  assert.deepEqual(kusur("A Blok joins Katman nodes; an Open Adım stays on the agenda."), []);
+});
+
+test("ölçer: düzyazıdaki örnek girişi ve örnek kodun Türkçe içeriği yakalanır", () => {
+  assert.deepEqual(kusur("Convert it (örnek: karne.hata == 0)."), ["turkce-duzyazi=örnek"]);
+  assert.deepEqual(kusur('Example: `{ mesaj: "<ne bulundu ve neden sorun>" }`.'), ["turkce-duzyazi=ve"]);
+  assert.deepEqual(kusur('Example: `emekli: "hangi hükümle kalktı"`.'), ["turkce-duzyazi=hangi", "turkce-duzyazi=hükümle", "turkce-duzyazi=kalktı"]);
+  assert.deepEqual(kusur('Example: `{ mesaj: "<what was found>" }` and `<!-- üretilmiştir: <source>.sar -->`.'), [],
+    "İngilizce yer tutucu ve motorun okuduğu HTML yorum imi temizdir");
+  assert.deepEqual(kusur('A compact map: `eposta: "metin · zorunlu · eposta-biçimi"`; write `örnek:` as a field.'), [],
+    "sözleşme dilinin tür adı ve kod aralığındaki alan adı dosyadaki addır");
+});
+
 test("ölçer: izinli metin ölçümden önce düşer", () => {
   assert.deepEqual(kusur("**ORN** — Adım\n\nBu cümle Türkçe kalır", ["Bu cümle Türkçe kalır"]), []);
   assert.deepEqual(kusur("**ORN** — Adım\n\nBu cümle Türkçe kalır"),

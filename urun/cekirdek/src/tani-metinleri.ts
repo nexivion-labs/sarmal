@@ -90,6 +90,22 @@ const b = (p: TaniBaglami, ad: string): boolean => {
   return v === true || v === "1" || v === 1;
 };
 
+/**
+ * Üreticinin hiç geçmediği alanın adı (MGZ-A09): yolu bilinmeyen dosya ya da adı
+ * bilinmeyen alan için cümle kendi yer tutucusunu basar. Geçilen boş değer ise
+ * eski üretici davranışıyla aynı biçimde `a` yedeğine düşer.
+ */
+const varsayilanli = (p: TaniBaglami, ad: string, yerTutucu: string): string => (p[ad] == null ? yerTutucu : a(p, ad));
+
+/** `erken-faz-işi` listesi: üretici ilk sekiz işi ve toplam sayıyı geçer, kuyruk burada kurulur. */
+const isListesi = (p: TaniBaglami, dil: "tr" | "en"): string => {
+  const isler = d(p, "isler");
+  if (!isler.length) return a(p, "isler");
+  const fazla = s(p, "islerSayi") - isler.length;
+  if (fazla <= 0) return isler.join(", ");
+  return isler.join(", ") + (dil === "tr" ? ` ve ${fazla} Adım daha` : ` and ${fazla} more ${ekEn(fazla, "Adım", "Adım nodes")}`);
+};
+
 // ── KUSUR YAN CÜMLELERİ (MGZ-A09 · Founder hükmü 2026-10-10) ─────────────────
 //   Bir kısım tanı olgunun ayrıntısını bir yan cümleyle anlatır ("kapsam beyanı
 //   yok"). Bu yan cümleyi eskiden üretici Türkçe olarak kurup `kusur` alanına
@@ -679,7 +695,7 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Ya ardılı öncülün Fazına ya da ondan sonraki bir Faza taşı, ya da öncülü daha önceki bir Faza al; bağımlılık gerçek değilse kenarı kaldır. Örnek: ardıl Blokunu \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` gövdesine taşı ve \`bağımlı: [ ${a(p, "oncul")} ]\` kenarını koru.`,
   },
   "erken-faz-işi": {
-    mesaj: (p) => `"${a(p, "kimlik")}" Fazında başlamış ya da bitmiş iş var (${a(p, "isler")}), oysa önceki "${a(p, "onceki")}" Fazı hâlâ ${a(p, "acik")} açık Adım taşıyor. Faz sırası katıdır: önceki Faz kapanmadan sonraki Fazda iş başlamaz (MIM-1.2).`,
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazında başlamış ya da bitmiş iş var (${isListesi(p, "tr")}), oysa önceki "${a(p, "onceki")}" Fazı hâlâ ${a(p, "acik")} açık Adım taşıyor. Faz sırası katıdır: önceki Faz kapanmadan sonraki Fazda iş başlamaz (MIM-1.2).`,
     oneri: (p) => `Önce önceki Fazın açık işini kapat ya da işi başlamış Adımı geri al; iş zaten bitmişse sıranın yanlış olduğu yer planıdır; iş gerçekten önce gelmeliyse Blokunu önceki Faza taşı. Örnek: sonraki Fazdaki Adımı \`durum: beklemede\` konumuna çek ya da Blokunu \`Faz( kod: ${a(p, "onceki")} ) { … }\` gövdesine al.`,
   },
   "yabancı-faz-bağı": {
@@ -730,12 +746,12 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Adı tam orthografiyle yaz. Örnek: \`${a(p, "ad")}:\` yerine \`${a(p, "kanonik")}:\` yaz; arama ve yapılandırma girdisi şapkasız yazımı zaten kabul eder, kaynak kanonik yazımı taşır.`,
   },
   "belge-şekil-drift": {
-    mesaj: (p) => `"${a(p, "dosya")}" dosyasındaki belge bloğunun satır düzeni, aynı kaynaktan türetilen biçimli yüzde değişiyor (ilk fark ${a(p, "fark")}. satırda). Belge bloğunun metni, satır sırası ve şekil karakterleri kayıpsız korunmak zorundadır.`,
+    mesaj: (p) => `"${varsayilanli(p, "dosya", "bu dosya")}" dosyasındaki belge bloğunun satır düzeni, aynı kaynaktan türetilen biçimli yüzde değişiyor (ilk fark ${a(p, "fark")}. satırda). Belge bloğunun metni, satır sırası ve şekil karakterleri kayıpsız korunmak zorundadır.`,
     oneri: () => `Belge bloğunu kanonik açılış ve ayna kapanış imleri arasında, satır sırasını ve girintisini bozmadan yaz. Örnek: \`-->|\\n# Başlık\\n| sütun | değer |\\n|<--\` iskeletini kullan; çizelge satırlarının başındaki boşlukları silme ve blok içine yapısal girinti ekleme.`,
   },
   "çok-satırlı-değer-drift": {
-    mesaj: (p) => `"${a(p, "alan")}" alanının çok satırlı değeri biçimlendirmede içerik kaybediyor (ilk fark ${a(p, "fark")}. satırda). Biçimlendirme yalnız yapısal girintiyi düzenler, kullanıcının anlam taşıyan hizasını değiştiremez.`,
-    oneri: (p) => `Çok satırlı değeri üç tırnaklı biçimde yaz ve içerik satırlarını olduğu gibi bırak. Örnek: \`${a(p, "alan")}: """\` satırından sonra metni yaz, hizalamayı koru ve \`"""\` ile kapat.`,
+    mesaj: (p) => `"${varsayilanli(p, "alan", "çok satırlı değer")}" alanının çok satırlı değeri biçimlendirmede içerik kaybediyor (ilk fark ${a(p, "fark")}. satırda). Biçimlendirme yalnız yapısal girintiyi düzenler, kullanıcının anlam taşıyan hizasını değiştiremez.`,
+    oneri: (p) => `Çok satırlı değeri üç tırnaklı biçimde yaz ve içerik satırlarını olduğu gibi bırak. Örnek: \`${varsayilanli(p, "alan", "çok satırlı değer")}: """\` satırından sonra metni yaz, hizalamayı koru ve \`"""\` ile kapat.`,
   },
   "kenar-tip-uyuşmazlığı": {
     mesaj: (p) => `"${a(p, "kaynak")}" düğümündeki \`${a(p, "kenar")}\` kenarı "${a(p, "hedef")}" hedefine yöneliyor, oysa bu kenarın hedefi "${a(p, "beklenen")}" tipinde olmalıydı. Kenarın kaynak ve hedef tipi kanonik sözleşmeyle uyuşmuyor.`,
@@ -921,7 +937,7 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Etki kümesini ve kapı sonucunu kayda geçir. Örnek: \`Adım( kod: ${a(p, "kimlik")} ) { koşu: "geçişli etki kümesi çıkarıldı ve doğrulandı; kapı sıfır hata ve sıfır uyarı verdi." }\` yaz.`,
   },
   "ölü-iz": {
-    mesaj: (p) => `"${a(p, "iz")}" artık kanonik anlam taşımıyor fakat etkin kapsamda duruyor (${a(p, "yer")}). Ölü izin korunması, yürürlükten kalkmış seçeneği canlıymış gibi gösterir.`,
+    mesaj: (p) => `"${a(p, "iz")}" artık kanonik anlam taşımıyor fakat etkin kapsamda duruyor (${p.dugum == null ? a(p, "yer") : `${a(p, "dugum")} düğümünün "${a(p, "kenar")}" kenarı`}). Ölü izin korunması, yürürlükten kalkmış seçeneği canlıymış gibi gösterir.`,
     oneri: () => `İzi sahipli biçimde emekliye ayır. Örnek: kaydı kaldır ya da \`emekli: "hangi hükümle ve ne zaman kalktı"\` alanıyla gerekçesini beyan et.`,
   },
 
@@ -969,7 +985,7 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Üçlüyü tamamla. Örnek: \`Kural <ad>( kod: ${a(p, "kimlik")}, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: <ifade> )\` biçiminde yaz.`,
   },
   "tanı-sözleşmesi-uyumsuz": {
-    mesaj: (p) => `"${a(p, "kod")}" tanısı sözleşmesini tamamlamıyor: ${yc(p, "tr")}. Her tanı düzey, tekil kod, eyleme dönük mesaj, kaynak konumu ve uygulanabilir düzeltme önerisi taşır ve kodu kanonik sicilde bulunur.`,
+    mesaj: (p) => `"${a(p, "kod", "adsız tanı")}" tanısı sözleşmesini tamamlamıyor: ${yc(p, "tr")}. Her tanı düzey, tekil kod, eyleme dönük mesaj, kaynak konumu ve uygulanabilir düzeltme önerisi taşır ve kodu kanonik sicilde bulunur.`,
     oneri: () => `Eksik alanı doldur ve kodu sicile kaydet. Örnek: tanıyı \`{ duzey: "hata", kod: "<kimlik>", mesaj: "<ne bulundu ve neden sorun>", satir: <satır>, sutun: <sütun>, oneri: "<nasıl düzeltilir>" }\` biçiminde tamamla.`,
   },
   "tanı-kapsamı-karışması": {
@@ -1126,7 +1142,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Move the successor into the predecessor's Faz or a later one, or move the predecessor into an earlier Faz; if the dependency is not real, remove the edge. Example: move the successor's Blok into the \`Faz( kod: ${a(p, "onculFazi")} ) { … }\` body and keep the \`bağımlı: [ ${a(p, "oncul")} ]\` edge.`,
   },
   "erken-faz-işi": {
-    mesaj: (p) => `Faz "${a(p, "kimlik")}" has started or finished work (${a(p, "isler")}), while the earlier Faz "${a(p, "onceki")}" still carries ${a(p, "acik")} open Adım(s). The Faz order is strict: work does not start in a later Faz before the earlier Faz is closed (MIM-1.2).`,
+    mesaj: (p) => `Faz "${a(p, "kimlik")}" has started or finished work (${isListesi(p, "en")}), while the earlier Faz "${a(p, "onceki")}" still carries ${a(p, "acik")} open ${ekEn(s(p, "acik"), "Adım", "Adım nodes")}. The Faz order is strict: work does not start in a later Faz before the earlier Faz is closed (MIM-1.2).`,
     oneri: (p) => `First close the open work of the earlier Faz or roll back the started Adım; if the work is already finished, the plan's order is what is wrong; if the work really belongs earlier, move its Blok into the earlier Faz. Example: set the Adım in the later Faz to \`durum: beklemede\` or move its Blok into the \`Faz( kod: ${a(p, "onceki")} ) { … }\` body.`,
   },
   "yabancı-faz-bağı": {
@@ -1134,8 +1150,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Bind the Blok to a Faz in its own Proje; if the work truly belongs to the sibling project, move the Blok into that project's plan. Example: \`Blok( kod: ${a(p, "kimlik")}, mevsim: FAZ-KENDI )\` or a \`çağır ${a(p, "kimlik")}\` line in its own Faz.`,
   },
   "katmansız-blok": {
-    mesaj: (p) => `Blok "${a(p, "kimlik")}" carries no Katman. A Blok produces a work outcome by joining Katmanlar bound to different technologies in one vertical body; a Blok without Katmanlar is an empty container, not a body (MIM-1.3).`,
-    oneri: (p) => `Add the work's technology slices to the Blok as Katmanlar, or open the plan once its Katmanlar are written. Example: \`Blok( kod: ${a(p, "kimlik")} ) { Katman( kod: KAT-ORNEK, kullanır: TEK-ORNEK ) { AltKatman( kod: ALT-ORNEK, departman: kodlama ) { Adım( kod: ADM-ORNEK, durum: beklemede ) } } }\``,
+    mesaj: (p) => `Blok "${a(p, "kimlik")}" carries no Katman. A Blok produces a work outcome by joining Katman nodes bound to different technologies in one vertical body; a Blok without Katman nodes is an empty container, not a body (MIM-1.3).`,
+    oneri: (p) => `Add the work's technology slices to the Blok as Katman nodes, or open the plan once its Katman nodes are written. Example: \`Blok( kod: ${a(p, "kimlik")} ) { Katman( kod: KAT-ORNEK, kullanır: TEK-ORNEK ) { AltKatman( kod: ALT-ORNEK, departman: kodlama ) { Adım( kod: ADM-ORNEK, durum: beklemede ) } } }\``,
   },
   "adımsız-kapsayıcı": {
     mesaj: (p) => `${a(p, "tip")} "${a(p, "kimlik")}" carries no Adım. The Adım is the smallest execution unit; a container without Adım nodes cannot show progress on the roadmap and cannot be measured as work (MIM-1.6).`,
@@ -1170,19 +1186,19 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" carries canonical ruling text as though it were the source of truth, but the source of truth lives only in .sar form. A derived text surface cannot have authority equal to its source.`,
-    oneri: () => `Move the ruling to the canonical source and mark the text file as a generated surface. Example: write the ruling in \`yasa/kanon/<bölüm>.sar\` as \`Karar( kod: <KOD>, durum: kilitli, karar: "…" )\`, then put \`<!-- üretilmiştir: <kaynak>.sar -->\` at the start of the text file.`,
+    oneri: () => `Move the ruling to the canonical source and mark the text file as a generated surface. Example: write the ruling in \`yasa/kanon/<section>.sar\` as \`Karar( kod: <CODE>, durum: kilitli, karar: "…" )\`, then put \`<!-- üretilmiştir: <source>.sar -->\` at the start of the text file.`,
   },
   "orthografi-kaybı": {
     mesaj: (p) => `The name "${a(p, "ad")}" omits part of its Turkish orthography; its canonical spelling should be "${a(p, "kanonik")}". A name without its circumflex silently diverges from the canonical identity.`,
     oneri: (p) => `Write the name with its full orthography. Example: replace \`${a(p, "ad")}:\` with \`${a(p, "kanonik")}:\`; search and configuration input already accept the spelling without the circumflex, while the source retains the canonical spelling.`,
   },
   "belge-şekil-drift": {
-    mesaj: (p) => `The line layout of the document block in "${a(p, "dosya")}" changes in the formatted surface derived from the same source (the first difference is on line ${a(p, "fark")}). The block's text, line order and shape characters must be preserved without loss.`,
-    oneri: () => `Write the document block between the canonical opening and mirrored closing markers without changing line order or indentation. Example: use the \`-->|\\n# Başlık\\n| sütun | değer |\\n|<--\` skeleton; do not remove leading spaces from table rows or add structural indentation inside the block.`,
+    mesaj: (p) => `The line layout of the document block in ${p.dosya == null ? "this file" : `"${a(p, "dosya")}"`} changes in the formatted surface derived from the same source (the first difference is on line ${a(p, "fark")}). The block's text, line order and shape characters must be preserved without loss.`,
+    oneri: () => `Write the document block between the canonical opening and mirrored closing markers without changing line order or indentation. Example: use the \`-->|\\n# Title\\n| column | value |\\n|<--\` skeleton; do not remove leading spaces from table rows or add structural indentation inside the block.`,
   },
   "çok-satırlı-değer-drift": {
-    mesaj: (p) => `The multiline value of "${a(p, "alan")}" loses content during formatting (the first difference is on line ${a(p, "fark")}). Formatting may adjust structural indentation, but it cannot change the user's meaningful alignment.`,
-    oneri: (p) => `Write the multiline value in triple-quoted form and leave its content lines unchanged. Example: write the text after the \`${a(p, "alan")}: """\` line, preserve its alignment and close it with \`"""\`.`,
+    mesaj: (p) => `${p.alan == null ? "A multiline value" : `The multiline value of "${a(p, "alan")}"`} loses content during formatting (the first difference is on line ${a(p, "fark")}). Formatting may adjust structural indentation, but it cannot change the user's meaningful alignment.`,
+    oneri: (p) => `Write the multiline value in triple-quoted form and leave its content lines unchanged. Example: write the text after the \`${varsayilanli(p, "alan", "<field>")}: """\` line, preserve its alignment and close it with \`"""\`.`,
   },
   "kenar-tip-uyuşmazlığı": {
     mesaj: (p) => `The \`${a(p, "kenar")}\` edge on node "${a(p, "kaynak")}" points to "${a(p, "hedef")}", but this edge should target a node of type "${a(p, "beklenen")}". The edge's source and target types do not match the canonical contract.`,
@@ -1194,7 +1210,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "madde-kodu-uyumsuz": {
     mesaj: (p) => `Item code "${a(p, "kod")}" violates the hierarchical code contract: ${yc(p, "en")}. Each section starts with a zeroth item written with its own prefix, main items advance consecutively without gaps, and specializations append a dotted subnumber to an existing main-item code.`,
-    oneri: (p) => `Write a consecutive code with a parent. Example: use \`Kural <ad>( kod: ${a(p, "onerilen")}, ne: "<madde başlığı>", dayanak: <ana madde kodu> )\`; declare the main item before adding a subnumber.`,
+    oneri: (p) => `Write a consecutive code with a parent. Example: use \`Kural <name>( kod: ${a(p, "onerilen")}, ne: "<item title>", dayanak: <main item code> )\`; declare the main item before adding a subnumber.`,
   },
   "ilgili-önek-geçersiz": {
     mesaj: (p) => `The \`ilgili\` list contains member "${a(p, "uye")}": ${yc(p, "en")}. Memberships are written explicitly, uniquely and canonically.`,
@@ -1206,11 +1222,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "çok-teknolojili-katman": {
     mesaj: (p) => `Katman "${a(p, "kimlik")}" binds to multiple Teknoloji nodes (${a(p, "hedefler")}). A Katman is the architectural boundary of exactly one technology branch.`,
-    oneri: (p) => `Create a separate Katman for each technology. Example: split it into \`Katman( kod: ${a(p, "kimlik")}-ONYUZ, ad: "önyüz", kullanır: <birinci teknoloji> )\` and \`Katman( kod: ${a(p, "kimlik")}-ARKAYUZ, ad: "arkayüz", kullanır: <ikinci teknoloji> )\`.`,
+    oneri: (p) => `Create a separate Katman for each technology. Example: split it into \`Katman( kod: ${a(p, "kimlik")}-ONYUZ, ad: "Front End", kullanır: <first technology> )\` and \`Katman( kod: ${a(p, "kimlik")}-ARKAYUZ, ad: "Back End", kullanır: <second technology> )\`.`,
   },
   "adım-atomikliği": {
     mesaj: (p) => `Adım "${a(p, "kimlik")}" does not satisfy the atomicity contract: ${yc(p, "en")}. Each Adım is the smallest execution unit that runs in one session, concludes at one acceptance gate and delivers at least one Meyve.`,
-    oneri: () => `Split the work or declare the missing delivery. Example: write \`Adım( kod: <KOD>, durum: beklemede ) { ne: "tek cümlelik iş" kabul: [ "tek kabul ölçütü" ] üretir: [ Meyve( kod: MYV-<KOD>, tür: Kod, dosya: "src/<dosya>" ) ] }\`.`,
+    oneri: () => `Split the work or declare the missing delivery. Example: write \`Adım( kod: <CODE>, durum: beklemede ) { ne: "<one-sentence job>" kabul: [ "<single acceptance criterion>" ] üretir: [ Meyve( kod: MYV-<CODE>, tür: Kod, dosya: "src/<file>" ) ] }\`.`,
   },
   "üretimsiz-meyve": {
     mesaj: (p) => `Meyve "${a(p, "kimlik")}" is not connected to any Adım through an \`üretir\` edge, so its production site cannot be traced. Every Meyve connects to exactly one producing Adım.`,
@@ -1224,8 +1240,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
       ? `Kod "${a(p, "kimlik")}" is a concrete source-file delivery, but ${yc(p, "en")}. The declared dosya path must be a concrete, singular path that resolves inside the project root.`
       : `Meyve "${a(p, "kimlik")}" (tür: ${a(p, "tur")}) is a delivery that requires a file, but ${yc(p, "en")}. These types must declare a concrete path that resolves inside the project root.`,
     oneri: (p) => a(p, "tip", "Meyve") === "Kod"
-      ? `Write a path that resolves inside the project root. Example: \`Kod( kod: ${a(p, "kimlik")}, dosya: "src/<klasör>/<dosya>" )\` — the path must not leave the project and must resolve on disk.`
-      : `Write a path that resolves inside the project root. Example: \`Meyve( kod: ${a(p, "kimlik")}, tür: ${a(p, "tur")}, dosya: "src/<klasör>/<dosya>" )\` — the path must not leave the project and must resolve on disk.`,
+      ? `Write a path that resolves inside the project root. Example: \`Kod( kod: ${a(p, "kimlik")}, dosya: "src/<folder>/<file>" )\` — the path must not leave the project and must resolve on disk.`
+      : `Write a path that resolves inside the project root. Example: \`Meyve( kod: ${a(p, "kimlik")}, tür: ${a(p, "tur")}, dosya: "src/<folder>/<file>" )\` — the path must not leave the project and must resolve on disk.`,
   },
   "öğretim-kaynak-drifti": {
     mesaj: (p) => `The teaching text in "${a(p, "dosya")}" is not derived from the canonical source: ${yc(p, "en")}. Normative teaching content cannot be written by hand; it is generated from a canonical node or registry.`,
@@ -1233,19 +1249,19 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "öğretim-yüzü-uyumsuz": {
     mesaj: (p) => `The teaching surfaces for diagnostic "${a(p, "kod")}" contradict one another: ${yc(p, "en")}. The explanation before a violation and the message and recommendation at the time of violation must teach the same concept, rationale and correction direction.`,
-    oneri: (p) => `Feed the diagnostic message and recommendation from one text source, and show the correction with a paste-ready skeleton. Example: write the catalogue entry as \`"${a(p, "kod")}": { mesaj: (p) => "<ne bulundu ve neden sorun>", oneri: () => "<nasıl düzeltilir> Örnek: <yapıştırılabilir iskelet>" }\`.`,
+    oneri: (p) => `Feed the diagnostic message and recommendation from one text source, and show the correction with a paste-ready skeleton. Example: write the catalogue entry as \`"${a(p, "kod")}": { mesaj: (p) => "<what was found and why it is a problem>", oneri: () => "<how to fix it> Example: <paste-ready skeleton>" }\`.`,
   },
   "beceri-kartı-eksik": {
     mesaj: (p) => `Beceri "${a(p, "kimlik")}" does not complete its teaching contract: ${yc(p, "en")}. Every Beceri card carries its target, trigger, application steps and acceptance evidence together.`,
-    oneri: (p) => `Add the missing binding. Example: write \`Beceri( kod: ${a(p, "kimlik")}, uygular: <hedef kodu>, neZaman: "hangi durumda tetiklenir", örnek: "nasıl uygulanır", kabul: "hangi kanıtla doğrulanır" )\`.`,
+    oneri: (p) => `Add the missing binding. Example: write \`Beceri( kod: ${a(p, "kimlik")}, uygular: <target code>, neZaman: "<when it triggers>", örnek: "<how it is applied>", kabul: "<which evidence verifies it>" )\`.`,
   },
   "başvuru-sicil-drifti": {
     mesaj: (p) => `The reference surface "${a(p, "dosya")}" diverges from the canonical registry: ${yc(p, "en")}. Reference rows are generated completely and deterministically from their respective registries.`,
-    oneri: () => `Hand the manually maintained twin table over to generation. Example: place the table between \`<!-- SARMAL:BAŞVURU -->\` and \`<!-- /SARMAL:BAŞVURU -->\`, then let the generator write its contents.`,
+    oneri: () => `Hand the manually maintained twin table over to generation. Example: place the table between \`<!-- SARMAL:REFERENCE -->\` and \`<!-- /SARMAL:REFERENCE -->\`, then let the generator write its contents.`,
   },
   "öğretim-etki-eksik": {
     mesaj: (p) => `Canonical change "${a(p, "kimlik")}" has not processed its teaching impact: ${yc(p, "en")}. Every change binds to the agent context, teaching surfaces and targeted Beceri cards in the same change set.`,
-    oneri: (p) => `Create the impact binding in the same change. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { etkiler: [ <öğretim yüzü kodu>, <beceri kodu> ] }\`; if a surface is unaffected, declare why with \`etkisiz: "neden"\`.`,
+    oneri: (p) => `Create the impact binding in the same change. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { etkiler: [ <teaching surface code>, <Beceri code> ] }\`; if a surface is unaffected, declare why with \`etkisiz: "<reason>"\`.`,
   },
   "önceliksiz-adım": {
     mesaj: (p) => `${a(p, "sayı")} open Adım nodes under ${a(p, "kapsayıcı")} carry no priority declaration: ${a(p, "örnek")}. Without it, an open Adım's place in the ordering cannot be read.`,
@@ -1261,7 +1277,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "üretilmiş-öğretim-değiştirilmiş": {
     mesaj: (p) => `Generated teaching text "${a(p, "dosya")}" was changed by hand outside its permitted generation region: ${yc(p, "en")}. Persistent content changes are made in the canonical source.`,
-    oneri: () => `Move the change to the source and regenerate the output. Example: add the handwritten sentence to the source node as \`ne: "<cümle>"\`, enclose the generated region between \`<!-- SARMAL:BÖLGE -->\` and \`<!-- /SARMAL:BÖLGE -->\`, then rerun the generator.`,
+    oneri: () => `Move the change to the source and regenerate the output. Example: add the handwritten sentence to the source node as \`ne: "<sentence>"\`, enclose the generated region between \`<!-- SARMAL:REGION -->\` and \`<!-- /SARMAL:REGION -->\`, then rerun the generator.`,
   },
   "kanıtsız-beceri-terfisi": {
     mesaj: (p) => `Learning record "${a(p, "kimlik")}" was promoted without evidence: ${yc(p, "en")}. A lesson is promoted to Beceri only after it provides repeatable evidence on the target behavior.`,
@@ -1297,11 +1313,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "döngü-sonlanması-eksik": {
     mesaj: (p) => `Döngü "${a(p, "kimlik")}" lacks a termination guarantee: ${yc(p, "en")}. Every Döngü declares at least one resolvable execution target and at least one termination condition.`,
-    oneri: (p) => `Write the target and termination together. Example: complete it as \`Döngü( kod: ${a(p, "kimlik")}, tetik: koşul, koşar: <hedef kodu>, durunca: "kapı temiz", turLimiti: 5 )\`.`,
+    oneri: (p) => `Write the target and termination together. Example: complete it as \`Döngü( kod: ${a(p, "kimlik")}, tetik: koşul, koşar: <target code>, durunca: "karne.hata == 0", turLimiti: 5 )\`.`,
   },
   "kapı-kabul-kanıtı-eksik": {
     mesaj: (p) => `Kapı "${a(p, "kimlik")}" appears to have passed without acceptance evidence: ${yc(p, "en")}. A gate passes only with resolvable, verified evidence that satisfies every declared acceptance criterion.`,
-    oneri: (p) => `Write the acceptance criterion and its evidence together. Example: write \`Kapı( kod: ${a(p, "kimlik")}, kabul: [ "sıfır hata ve sıfır uyarı" ], kanıt: <sınama kodu> )\`.`,
+    oneri: (p) => `Write the acceptance criterion and its evidence together. Example: write \`Kapı( kod: ${a(p, "kimlik")}, kabul: [ "<the audit reports 0 hata and 0 uyarı>" ], kanıt: <test code> )\`.`,
   },
   "çapraz-proje-ad-alanı": {
     mesaj: (p) => `The \`${a(p, "kenar")}\` edge on node "${a(p, "kimlik")}" points without qualification to target "${a(p, "hedef")}" in another Proje. An unqualified identity resolves only within its own Proje; an accidental global match is not a valid binding.`,
@@ -1321,7 +1337,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "üretici-denetçi-çakışması": {
     mesaj: (p) => `The producer and auditor roles for delivery "${a(p, "kimlik")}" are not separated: ${yc(p, "en")}. The session that produces a delivery cannot issue the acceptance ruling on its own work.`,
-    oneri: () => `Assign the audit to a separate session. Example: write \`Adım( kod: <KOD>, üretici: <üretici etmen kodu>, denetçi: <başka etmen kodu> )\`; the two fields cannot carry the same identity.`,
+    oneri: () => `Assign the audit to a separate session. Example: write \`Adım( kod: <CODE>, üretici: <producer agent code>, denetçi: <another agent code> )\`; the two fields cannot carry the same identity.`,
   },
   // ── Strategy, type system, governance and surfaces (36–70) ───────────────
   "oturum-adım-sınırı": {
@@ -1334,7 +1350,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "kanon-kodu-uyumsuz": {
     mesaj: (p) => `The basis edge of item "${a(p, "kod")}" does not join the single code graph: ${yc(p, "en")}. Every basis other than the zeroth item must resolve and join an acyclic chain that reaches its own section root.`,
-    oneri: (p) => `Connect the basis to a resolvable parent item. Example: write \`Kural <ad>( kod: ${a(p, "kod")}, dayanak: ${a(p, "onerilen", "<üst madde kodu>")} )\`.`,
+    oneri: (p) => `Connect the basis to a resolvable parent item. Example: write \`Kural <name>( kod: ${a(p, "kod")}, dayanak: ${a(p, "onerilen", "<parent item code>")} )\`.`,
   },
   "göç-sırası-ihlali": {
     mesaj: (p) => `Migration stage "${a(p, "kimlik")}" started before its required predecessor closed with a clean gate: ${yc(p, "en")}. Migration stages follow their full order; they cannot be skipped or reversed.`,
@@ -1342,11 +1358,11 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "göç-kapısı-eksik": {
     mesaj: (p) => `Migration stage "${a(p, "kimlik")}" is being closed with an incomplete closure record: ${yc(p, "en")}. A stage cannot close until its scope inventory, verification result, owned debt record and transferred impact set are written together.`,
-    oneri: (p) => `Write all four parts of the closure record. Example: complete it as \`Adım( kod: ${a(p, "kimlik")} ) { koşu: "kapsam envanteri tamdır; doğrulama sıfır hata ve sıfır uyarı verdi; kalan borç sahibiyle kayıtlıdır; devredilen etki kümesi açıktır." }\`.`,
+    oneri: (p) => `Write all four parts of the closure record; the engine recognizes them by the words kapsam, hata, borç and etki in the koşu text. Example: complete it as \`Adım( kod: ${a(p, "kimlik")} ) { koşu: "kapsam: the scope inventory is complete; the gate reported 0 hata and 0 uyarı; borç: the remaining work is recorded with its owner; etki: the transferred impact set is listed." }\`.`,
   },
   "açık-gizli-sınır-ihlali": {
     mesaj: (p) => `Open-core file "${a(p, "dosya")}" establishes a required dependency on the closed product side: ${yc(p, "en")}. The open language and engine must remain independently usable and testable without the closed orchestration product.`,
-    oneri: () => `Move the dependency to a declared contract boundary. Example: instead of a direct path, declare \`Sözleşme( kod: SZL-SINIR, ne: "<hangi yetenek>", alanlar: { … } )\` on the open side; let the closed product implement that contract on its side while the open core never reads the closed tree.`,
+    oneri: () => `Move the dependency to a declared contract boundary. Example: instead of a direct path, declare \`Sözleşme( kod: SZL-SINIR, ne: "<which capability>", alanlar: { … } )\` on the open side; let the closed product implement that contract on its side while the open core never reads the closed tree.`,
   },
   "çekirdek-bağımlılık-drifti": {
     mesaj: (p) => `File "${a(p, "dosya")}" diverges from dependency simplicity: ${yc(p, "en")}. The open core carries only declared, replaceable dependencies required for its essential function.`,
@@ -1354,23 +1370,23 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "yürütücü-bağımlılığı": {
     mesaj: (p) => `Ruling "${a(p, "kimlik")}" binds to a particular external executor: "${a(p, "iz")}". The canonical ruling, teaching and orchestration contract must be understandable independently of an executor identity.`,
-    oneri: () => `Write the contract independently of a specific capability provider. Example: replace the executor name with a condition such as \`gereken yetenek: "uzun bağlamda yapısal çıkarım"\`; bind acceptance criteria to the output, not the tool.`,
+    oneri: () => `Write the contract independently of a specific capability provider. Example: replace the executor name with a condition such as \`required capability: "structured inference over a long context"\`; bind acceptance criteria to the output, not the tool.`,
   },
   "etki-yayın-kapısı-eksik": {
     mesaj: (p) => `Change "${a(p, "kimlik")}" is taking effect before its publication gate closes: ${yc(p, "en")}. No canonical change may take effect until its transitive impact set is verified and the gate is fully green.`,
-    oneri: (p) => `Record the impact set and gate result. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { koşu: "geçişli etki kümesi çıkarıldı ve doğrulandı; kapı sıfır hata ve sıfır uyarı verdi." }\`.`,
+    oneri: (p) => `Record the impact set and gate result; the engine recognizes them by the words etki and hata or uyarı in the koşu text. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { koşu: "etki: the transitive impact set was derived and verified; the gate reported 0 hata and 0 uyarı." }\`.`,
   },
   "ölü-iz": {
-    mesaj: (p) => `Trace "${a(p, "iz")}" no longer carries canonical meaning but remains in active scope (${a(p, "yer")}). Keeping a dead trace makes a retired option appear active.`,
-    oneri: () => `Retire the trace with clear ownership. Example: remove the record or state its rationale with \`emekli: "hangi hükümle ve ne zaman kalktı"\`.`,
+    mesaj: (p) => `Trace "${a(p, "iz")}" no longer carries canonical meaning but remains in active scope (${p.dugum == null ? a(p, "yer") : `the "${a(p, "kenar")}" edge of node ${a(p, "dugum")}`}). Keeping a dead trace makes a retired option appear active.`,
+    oneri: () => `Retire the trace with clear ownership. Example: remove the record or state its rationale with \`emekli: "<which ruling retired it and when>"\`.`,
   },
   "tip-evreni-eksik": {
     mesaj: (p) => `The canonical type universe has a missing record: ${yc(p, "en")}. No node type may be left outside the new backbone, renamed or silently retired.`,
-    oneri: (p) => `Restore the missing record to the type canon. Example: add \`{ "ad": "${a(p, "tip")}", "aile": "<aile>", "ne": "<tek cümlelik tarif>" }\` to the taxonomy registry.`,
+    oneri: (p) => `Restore the missing record to the type canon. Example: add \`{ "ad": "${a(p, "tip")}", "aile": "<family>", "ne": "<one-sentence description>" }\` to the taxonomy registry.`,
   },
   "omurga-tipi-eksik": {
     mesaj: (p) => `New backbone type "${a(p, "tip")}" is missing from the canonical registry: ${yc(p, "en")}. General product or service types cannot substitute for these roles.`,
-    oneri: (p) => `Declare the type together with its family, schema and containment record. Example: add \`{ "ad": "${a(p, "tip")}", "aile": "<aile>", "ne": "<tek cümlelik tarif>" }\`, the schema \`"semalar": { "${a(p, "tip")}": { "zorunlu": [ "kod" ] } }\` and the row \`"izinliSarma": { "<ebeveyn>": [ "${a(p, "tip")}" ] }\` to the taxonomy registry.`,
+    oneri: (p) => `Declare the type together with its family, schema and containment record. Example: add \`{ "ad": "${a(p, "tip")}", "aile": "<family>", "ne": "<one-sentence description>" }\`, the schema \`"semalar": { "${a(p, "tip")}": { "zorunlu": [ "kod" ] } }\` and the row \`"izinliSarma": { "<parent>": [ "${a(p, "tip")}" ] }\` to the taxonomy registry.`,
   },
   "şema-tanımı-eksik": {
     mesaj: (p) => `The structural contract for type "${a(p, "tip")}" is not declared in machine-readable form: ${yc(p, "en")}. Node validation is derived only from the canonical schema.`,
@@ -1382,7 +1398,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "örtü-ihlali": {
     mesaj: (p) => `The workspace overlay changes the base canon: ${yc(p, "en")}. An overlay may only add values to permitted sets through union; it is invalid wherever it fails to preserve base values.`,
-    oneri: () => `Reduce the overlay to an additive union. Example: add only new values in the overlay file as \`{ "semalar": { "<tip>": { "enum": { "<alan>": [ "<yeni değer>" ] } } } }\`; do not repeat or delete base values, and do not redefine the schema body.`,
+    oneri: () => `Reduce the overlay to an additive union. Example: add only new values in the overlay file as \`{ "semalar": { "<type>": { "enum": { "<field>": [ "<new value>" ] } } } }\`; do not repeat or delete base values, and do not redefine the schema body.`,
   },
   "rejim-beyanı-eksik": {
     mesaj: (p) => `Proje "${a(p, "kimlik")}" does not declare its enforcement regime (\`rejim\`)${yc(p, "en", "")}. The regime is written exactly once, with only the value \`katı\` or \`esnek\`; no engine, surface or run may invent a silent default.`,
@@ -1405,8 +1421,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Complete the trio. Example: write \`Kural <ad>( kod: ${a(p, "kimlik")}, otorite: anayasa, katman: yapısal, kapsam: Adım, koşul: <ifade> )\`.`,
   },
   "tanı-sözleşmesi-uyumsuz": {
-    mesaj: (p) => `Diagnostic "${a(p, "kod")}" does not complete its contract: ${yc(p, "en")}. Every diagnostic carries a level, unique code, actionable message, source location and applicable correction recommendation, and its code exists in the canonical registry.`,
-    oneri: () => `Fill the missing field and register the code. Example: complete the diagnostic as \`{ duzey: "hata", kod: "<kimlik>", mesaj: "<ne bulundu ve neden sorun>", satir: <satır>, sutun: <sütun>, oneri: "<nasıl düzeltilir>" }\`.`,
+    mesaj: (p) => `${a(p, "kod", "") ? `Diagnostic "${a(p, "kod")}"` : "An unnamed diagnostic"} does not complete its contract: ${yc(p, "en")}. Every diagnostic carries a level, unique code, actionable message, source location and applicable correction recommendation, and its code exists in the canonical registry.`,
+    oneri: () => `Fill the missing field and register the code. Example: complete the diagnostic as \`{ duzey: "hata", kod: "<identifier>", mesaj: "<what was found and why it is a problem>", satir: <line>, sutun: <column>, oneri: "<how to fix it>" }\`.`,
   },
   "tanı-kapsamı-karışması": {
     mesaj: (p) => `Diagnostic "${a(p, "kod")}" ran at the wrong gate: ${yc(p, "en")}. The single-file and Proje gates cannot imitate each other's scope, and single-file cleanliness cannot be presented as Proje cleanliness.`,
@@ -1414,7 +1430,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "proje-tanı-kimliği-uyumsuz": {
     mesaj: (p) => `The diagnostic set's identity is not derived from the Proje code: ${yc(p, "en")}. Finding groups, graph identity and report-card identity originate from the unique Proje code, not from a physical directory path.`,
-    oneri: () => `Bind identity to the Proje code. Example: place every productive tree in the workspace under \`Proje( kod: PRJ-<AD> )\`; findings from separate Projeler in the same directory must not merge.`,
+    oneri: () => `Bind identity to the Proje code. Example: place every productive tree in the workspace under \`Proje( kod: PRJ-<NAME> )\`; findings from separate Proje roots in the same directory must not merge.`,
   },
   "tanı-terfi-kapısı-ihlali": {
     mesaj: (p) => `The diagnostic level of ruling "${a(p, "kimlik")}" was promoted without its gate: ${yc(p, "en")}. A new ruling is first observed at information level, rises as its findings are cleared, and cannot skip a level.`,
@@ -1422,7 +1438,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "sahte-tam-yeşil": {
     mesaj: (p) => `The fully-green claim is invalid: ${yc(p, "en")}. A gate is fully green only when both error and warning counts in its scope are zero; a skipped audit or single-file cleanliness alone cannot count as fully green.`,
-    oneri: () => `Resolve the remaining findings or correct the claim. Example: write the closure record as \`koşu: "kapı sıfır hata ve sıfır uyarı verdi; atlanan denetim yoktur; <n> bilgi kaydı görünür kalmaktadır."\`; information records do not change the outcome, but a skipped gate does.`,
+    oneri: () => `Resolve the remaining findings or correct the claim. Example: write the closure record as \`koşu: "the gate reported 0 hata and 0 uyarı; no audit was skipped; <n> bilgi records remain visible."\`; information records do not change the outcome, but a skipped gate does.`,
   },
   "terfi-kanıtı-eksik": {
     mesaj: (p) => `The level of ruling "${a(p, "kimlik")}" was promoted with incomplete evidence: ${yc(p, "en")}. Promotion requires a working implementation binding, repeatable verification and an explicit authorized acceptance record together.`,
@@ -1430,7 +1446,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "prizma-kaynak-ayrışması": {
     mesaj: (p) => `Derived surface "${a(p, "dosya")}" diverges from the single neutral tree: ${yc(p, "en")}. No surface may reinterpret the source, add fields or change child order.`,
-    oneri: (p) => `Generate the surface from the shared tree and write its provenance. Example: put \`<!-- üretilmiştir: ${a(p, "dosya", "<kaynak>.sar")} · yüz: json -->\` at the start of the output and remove the surface-specific transformation; if a field is needed, write it on the source node as \`<alan>: <değer>\`.`,
+    oneri: (p) => `Generate the surface from the shared tree and write its provenance. Example: put \`<!-- üretilmiştir: ${a(p, "dosya", "<source>.sar")} · yüz: json -->\` at the start of the output and remove the surface-specific transformation; if a field is needed, write it on the source node as \`<field>: <value>\`.`,
   },
   "eş-yetkili-yüz-ikizi": {
     mesaj: (p) => `Handwritten surface file "${a(p, "dosya")}" is being used as a twin with authority equal to the canonical source (${yc(p, "en")}). A derived surface is only reproducible output.`,
@@ -1438,7 +1454,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "yüz-idempotans-drifti": {
     mesaj: (p) => `Surface "${a(p, "dosya")}" produces a different result from the same source and options: ${yc(p, "en")}. A generator may update only the region assigned to it.`,
-    oneri: () => `Mark the generated region and do not touch anything outside it. Example: enclose the generated area between \`<!-- SARMAL:BÖLGE -->\` and \`<!-- /SARMAL:BÖLGE -->\`; keep hand-maintained sections outside those markers.`,
+    oneri: () => `Mark the generated region and do not touch anything outside it. Example: enclose the generated area between \`<!-- SARMAL:REGION -->\` and \`<!-- /SARMAL:REGION -->\`; keep hand-maintained sections outside those markers.`,
   },
   "geliştirme-yüzü-drifti": {
     mesaj: (p) => `A development surface diverges from canonical meaning: ${yc(p, "en")}. Development surfaces share the same identities, texts and diagnostic objects; the presentation layer cannot interpret or enforce them.`,
@@ -1454,7 +1470,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "yüzey-sözleşmesi-eksik": {
     mesaj: (p) => `Surface "${a(p, "kimlik")}" does not carry a complete product contract: ${yc(p, "en")}. Every surface carries its stable identity, production provenance, visibility status, theme role and accessibility condition together.`,
-    oneri: (p) => `Complete the missing contract. Example: write \`Ekran( kod: ${a(p, "kimlik")}, görünürlük: açık, tema: TEM-ANA, referans: <üreten Adım kodu>, erişilebilirlik: "ekran okuyucu etiketi" )\`.`,
+    oneri: (p) => `Complete the missing contract. Example: write \`Ekran( kod: ${a(p, "kimlik")}, görünürlük: açık, tema: TEM-ANA, referans: <producing Adım code>, erişilebilirlik: "<screen reader label>" )\`.`,
   },
   "palet-yüz-drifti": {
     mesaj: (p) => `Theme role "${a(p, "rol")}" is not derived from the canonical palette: ${yc(p, "en")}. Every visual surface obtains concrete values from the same generated palette and cannot create a local palette copy.`,
@@ -1462,7 +1478,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "görünürlük-sözleşmesi-eksik": {
     mesaj: (p) => `Surface "${a(p, "kimlik")}" does not carry its visibility contract: ${yc(p, "en")}. Every surface declares visibility exactly once, and a hidden surface carries a machine-resolvable opening condition.`,
-    oneri: (p) => `Complete the declaration. Example: write \`${a(p, "ad", "Ekran")}( kod: ${a(p, "kimlik")}, görünürlük: açık )\`; to keep it hidden, also write the condition as \`görünürlük: gizli, açılmaKoşulu: <çözülebilir koşul>\`.`,
+    oneri: (p) => `Complete the declaration. Example: write \`${a(p, "ad", "Ekran")}( kod: ${a(p, "kimlik")}, görünürlük: açık )\`; to keep it hidden, also write the condition as \`görünürlük: gizli, açılmaKoşulu: <resolvable condition>\`.`,
   },
 };
 
@@ -2191,7 +2207,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "düzyazı-koşul": {
     mesaj: (p) => `Kural "${a(p, "kod")}" declares a machine-enforced layer (${a(p, "katman")}), but its condition is a free-form sentence — the engine cannot evaluate free-form prose, so the condition is not automatically ENFORCED.`,
-    oneri: () => `If another engine audit already enforces this rule, the sentence may remain as a legitimate explanation of that audit. Otherwise, either convert the condition to the engine's expression language (örnek: karne.hata == 0) or set the layer to niyet, which means the rule is overseen by a human or agent rather than the machine.`,
+    oneri: () => `If another engine audit already enforces this rule, the sentence may remain as a legitimate explanation of that audit. Otherwise, either convert the condition to the engine's expression language (for example karne.hata == 0) or set the layer to niyet, which means the rule is overseen by a human or agent rather than the machine.`,
   },
   "ebedi-ihlal": {
     mesaj: (p) => {
@@ -2271,7 +2287,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
               return `The directory '${a(p, "dizin")}' has no entry file — every project begins with one. The expected name is \`<project>_anadizin.sar\`; the legacy \`ana.sar\` is also recognized.`;
           }
         default:
-          return `The node "${a(p, "ad")}" (${a(p, "kimlik")}) violates a rule: ${a(p, "ihlal", `Rule "${a(p, "kod")}" was violated`)} [rule: ${a(p, "kod")}]`;
+          return `The node "${a(p, "ad")}" (${a(p, "kimlik")}) violates a rule: ${a(p, "ihlal", `Kural "${a(p, "kod")}" was violated`)} [Kural: ${a(p, "kod")}]`;
       }
     },
     oneri: (p) => {
@@ -2300,7 +2316,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
               return "Write the entry file first (e.g. `myproject_anadizin.sar`); hierarchy, shelves and technologies are declared there under Structure First.";
           }
         default:
-          return `Rule condition: ${a(p, "koşul")} — it does not hold on this node.`;
+          return `The koşul of the Kural does not hold on this node: ${a(p, "koşul")}.`;
       }
     },
   },
@@ -2418,8 +2434,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: () => "There are three valid paths. First, add the work to an existing Adım. Second, open a new Adım between existing work. Third, if the target is already complete, update the code IMMEDIATELY so that Sarmal realigns the chain. When the work finishes in the chain, write durum: tamamlandı.",
   },
   "politika-dayanaksız": {
-    mesaj: (p) => `⚓ Politika (${a(p, "kimlik")}) rests on no decision — which KARAR created this policy?`,
-    oneri: () => 'Add dayanak: "K-nn" to connect it to the KARARLAR record and keep the decision trail traceable.',
+    mesaj: (p) => `⚓ Politika (${a(p, "kimlik")}) rests on no decision — which Karar created this policy?`,
+    oneri: () => 'Add dayanak: "K-nn" to connect it to the Karar record and keep the decision trail traceable.',
   },
   "beceri-terfisi": {
     mesaj: (p) => `🟡 Bellek lesson awaiting promotion (${a(p, "kimlik")}): ${a(p, "ne", "")}`,
@@ -2490,12 +2506,12 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         : `'${a(p, "yer")}/' is a library, and a library holds shelves; yet ${a(p, "sayı")} undeclared source file(s) live directly inside it (${ornek}${artan}). The library's declaration does not cover these bodies, because a library is declared to hold shelves only.`;
     },
     oneri: (p) => b(p, "kök")
-      ? `Declare a shelf in ${a(p, "giriş")} to hold these bodies and move the files there; a bare Raf is never written directly under the root, because a shelf lives INSIDE a Kitaplık. Example: \`Kitaplık( kod: KTP-…, yol: "…/", ne: "bu kitaplığın neyi topladığı" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. If a body does not belong to this tree, move it outside; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`
-      : `Declare a shelf INSIDE the library to hold these bodies and move the files there; a shelf path is RELATIVE to its library, so do not repeat the library name in it. Example: \`Kitaplık( kod: KTP-…, yol: "${a(p, "yer")}/" ) { Raf( kod: RAF-…, yol: "…/", ne: "bu rafın neyi topladığı" ) }\`. If a body belongs elsewhere, move it out of the library; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`,
+      ? `Declare a shelf in ${a(p, "giriş")} to hold these bodies and move the files there; a bare Raf is never written directly under the root, because a shelf lives INSIDE a Kitaplık. Example: \`Kitaplık( kod: KTP-…, yol: "…/", ne: "<what this library collects>" ) { Raf( kod: RAF-…, yol: "…/", ne: "<what this shelf collects>" ) }\`. If a body does not belong to this tree, move it outside; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`
+      : `Declare a shelf INSIDE the library to hold these bodies and move the files there; a shelf path is RELATIVE to its library, so do not repeat the library name in it. Example: \`Kitaplık( kod: KTP-…, yol: "${a(p, "yer")}/" ) { Raf( kod: RAF-…, yol: "…/", ne: "<what this shelf collects>" ) }\`. If a body belongs elsewhere, move it out of the library; the engine will not write the declaration for you, because deciding which shelf a body belongs to is a statement of intent.`,
   },
   "teknolojisiz-yüzey": {
     mesaj: (p) => `${a(p, "yüzey")} is declared, but the project has selected no technology — a screen or endpoint cannot be born before technology is selected.`,
-    oneri: () => 'First create a Takım at the root (e.g. `Takım( kod: TAKIM-ONYUZ, ne: "önyüz yığını", bağımlı: [ FLUTTER ] )`); the template is `sarmal başla proje`.',
+    oneri: () => 'First create a Takım at the root (e.g. `Takım( kod: TAKIM-ONYUZ, ne: "front-end stack", bağımlı: [ FLUTTER ] )`); the template is `sarmal başla proje`.',
   },
   "yer-uyuşmazlığı": {
     mesaj: (p) => `'${a(p, "kod")}' is not in its canonical location: it should be '${a(p, "beklenen")}', but on disk it is '${a(p, "gerçek")}'.`,
@@ -2523,7 +2539,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "doğuş-sırası": {
     mesaj: (p) => `The project contains plan node '${a(p, "plan")}', but no file declares a TECHNOLOGY backbone: there is neither a Teknoloji or Takım declaration nor a çağır bridge reaching one. A bare Proje root in the anadizin does not count as a backbone, because a project whose technology is undeclared cannot say which stack its plan will run on. The founding order is technology first, plan second.`,
-    oneri: () => "First declare `<project>_anadizin.sar` together with a Teknoloji or Takım (template: `sarmal başla`), then bind the plan's Adım nodes to the Takım. In a project with an anadizin, audit the whole with `sarmal denetle <kök>`, not the fragment alone.",
+    oneri: () => "First declare `<project>_anadizin.sar` together with a Teknoloji or Takım (template: `sarmal başla`), then bind the plan's Adım nodes to the Takım. In a project with an anadizin, audit the whole with `sarmal denetle <root>`, not the fragment alone.",
   },
   "olgunluk-onayı": {
     mesaj: (p) => `🔒 The plan appears mature (${a(p, "adımSayısı")} cone-complete Adım nodes and coding has NOT started) — this is the transition from planning to coding. Obtain HUMAN MATURITY APPROVAL (“the plan is ready, we can start coding”) before coding. The engine reminds you; it does not block you.`,
@@ -2538,8 +2554,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
       ? `'${a(p, "kenar")}' is an EDGE and requires a CODE, but text was found: "${a(p, "metin", "")}". What is the CODE of the node you depend on?`
       : `'${a(p, "kenar")}' is an EDGE and requires a CODE, but text was found: "${a(p, "metin", "")}". A quoted target does not resolve, so no binding is formed.`,
     oneri: (p) => a(p, "kusur") === "kapsayıcı-alan"
-      ? `Write ${a(p, "kenar")}: [KOD] so the engine can follow it in the DAG; move narrative to sınır/görev. Paste-fix: if the target is not yet declared, first declare its node (e.g. \`Kod( kod: KOD-X, dosya: "yol/dosya.ts", ne: "🍎 …" )\`), then write ${a(p, "kenar")}: [ KOD-X ]. Details: sarmal ogret uretir-kenari.`
-      : `Remove the quotation marks (${a(p, "kenar")}: ${a(p, "onerilenHedef")}) so the target is a real node CODE; move narrative to sınır/görev. Paste-fix for a file path: first declare Kod( kod: KOD-X, dosya: "yol/dosya.ts", ne: "🍎 …" ), then write ${a(p, "kenar")}: [ KOD-X ]. Details: sarmal ogret uretir-kenari.`,
+      ? `Write ${a(p, "kenar")}: [CODE] so the engine can follow it in the DAG; move narrative to sınır/görev. Paste-fix: if the target is not yet declared, first declare its node (e.g. \`Kod( kod: KOD-X, dosya: "path/to/file.ts", ne: "🍎 …" )\`), then write ${a(p, "kenar")}: [ KOD-X ]. Details: sarmal ogret uretir-kenari.`
+      : `Remove the quotation marks (${a(p, "kenar")}: ${a(p, "onerilenHedef")}) so the target is a real node CODE; move narrative to sınır/görev. Paste-fix for a file path: first declare Kod( kod: KOD-X, dosya: "path/to/file.ts", ne: "🍎 …" ), then write ${a(p, "kenar")}: [ KOD-X ]. Details: sarmal ogret uretir-kenari.`,
   },
   "kırık-referans": {
     mesaj: (p) => {
@@ -2585,7 +2601,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "durunca-sözlüğü": {
     mesaj: (p) => `The durunca condition of "Döngü" (${a(p, "kimlik")}) is not in the runner's recognized dictionary: "${a(p, "koşul")}" — the runner cannot evaluate it.`,
-    oneri: () => "Recognized patterns are: karne.hata == 0 · karne.uyari <= N · durum(KOD) == tamamlandı.",
+    oneri: () => "Recognized patterns are: karne.hata == 0 · karne.uyari <= N · durum(CODE) == tamamlandı.",
   },
   "kapsayıcı-kenar": {
     mesaj: (p) => `'${a(p, "ad")}' is a CONTAINER — edge ${a(p, "kenar")} is declared only on an Adım; container order is calculated from its children.`,
@@ -2601,7 +2617,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "bağımlılık-mekanik": {
     mesaj: () => "A dependency does not express intent; it is mechanical. What is the code of the node you depend on?",
-    oneri: () => "Write bağımlı: [KOD]. If there is no CODE, this is not a dependency; move the narrative to sınır/görev.",
+    oneri: () => "Write bağımlı: [CODE]. If there is no code, this is not a dependency; move the narrative to sınır or görev.",
   },
   "tek-çocuk-kapsayıcı": {
     mesaj: (p) => a(p, "kusur") === "tek-katman"
@@ -2609,11 +2625,11 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
       : "This Faz, a time slice, carries a single Blok. This is not a defect and the Faz cannot be skipped, because no Blok lives without a Faz (MIM-1.2); the observation only invites you to review the Faz scope.",
     oneri: (p) => a(p, "kusur") === "tek-katman"
       ? "Wrap the Katman in a Blok body. Example: `Faz( kod: FAZ-… ) { Blok( kod: BLK-… ) { Katman( kod: KAT-… ) { … } } }`."
-      : "If the Faz really carries a single work body, leave it as it is; if the period has other work, write it as new Bloklar inside the same Faz body. Do not remove the Faz and lift the Blok to the root: a Blok without a Faz raises the `fazsız-blok` error.",
+      : "If the Faz really carries a single work body, leave it as it is; if the period has other work, write it as new Blok nodes inside the same Faz body. Do not remove the Faz and lift the Blok to the root: a Blok without a Faz raises the `fazsız-blok` error.",
   },
   "rafsız-anadizin": {
-    mesaj: (p) => `Root '${a(p, "kök")}' DECLARES NO directory structure; it has no raflar, Kitaplık or Raf. Structure is declared first, otherwise the location of every generated file becomes a GUESS.`,
-    oneri: () => 'Add a shelf declaration to the root (`raflar: { belge: "açıklama" }` or Kitaplık and Raf nodes); the template is `sarmal başla proje`. Declare the target structure now even during an early plan-only stage.',
+    mesaj: (p) => `Root '${a(p, "kök")}' DECLARES NO directory structure; it has no \`raflar:\` map and no Kitaplık or Raf node. Structure is declared first, otherwise the location of every generated file becomes a GUESS.`,
+    oneri: () => 'Add a shelf declaration to the root (`raflar: { docs: "<description>" }` or Kitaplık and Raf nodes); the template is `sarmal başla proje`. Declare the target structure now even during an early plan-only stage.',
   },
   "anadizin-plan-karışması": {
     mesaj: (p) => `Anadizin root '${a(p, "kök")}' directly contains plan node '${a(p, "bulunan")}'. An anadizin draws ARCHITECTURE and carries the Kitaplık, Raf and yol declarations, while the plan, which descends from Faz through Blok and Katman down to Adım, lives in a SEPARATE .sar file on the plan shelf inside the \`is/\` Kitaplık, that is under \`is/plan/\`. The founding rule draws architecture first and grows the plan separately.`,
@@ -2671,7 +2687,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   },
   "katmansız-teknoloji": {
     mesaj: (p) => `Katman "${a(p, "kod")}" has no ground binding — a Katman is a technology slice and declares its ground with at least one of two type-pure edges: takım: points at the Takım that runs it, kullanır: points at one concrete Teknoloji.`,
-    oneri: () => 'First write takım: TAKIM-X: the Takım that runs the layer depends on its own Teknolojiler, and when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]. If there is no Takım, bind to one concrete Teknoloji with kullanır: TEK-X. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:. The teknolojiBağımsız: "gerekçe" escape is valid only while the project has not yet declared any Teknoloji or Takım, that is at the moment of birth, and it is removed once a ground is declared. The kind of work (decision, process, review) is written in the departman: field of the AltKatman, not in the ground of the Katman.',
+    oneri: () => 'First write takım: TAKIM-X: the Takım that runs the layer depends on its own Teknoloji nodes, and when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]. If there is no Takım, bind to one concrete Teknoloji with kullanır: TEK-X. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:. The teknolojiBağımsız: "<rationale>" escape is valid only while the project has not yet declared any Teknoloji or Takım, that is at the moment of birth, and it is removed once a ground is declared. The kind of work (decision, process, review) is written in the departman: field of the AltKatman, not in the ground of the Katman.',
   },
   "yersiz-teknoloji-kaçışı": {
     mesaj: (p) => a(p, "hal") === "bağlı"
@@ -2704,7 +2720,7 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
   "açık-adım": {
     mesaj: (p) => b(p, "özet")
       ? `🔵 ${a(p, "sayı")} Adım nodes are in \`beklemede\` — normal during planning; the engine does not fall silent, and the count drops as they complete. Example: ${a(p, "örnek")}${a(p, "artan", "")}`
-      : `${a(p, "emoji")} OPEN ADIM ('${a(p, "durum")}') "${a(p, "kod")}"${a(p, "neden", "") ? ` — why it remains on track: ${a(p, "neden")}` : ""}. The engine does not forget it: it remains on the agenda until tamamlandı.`,
+      : `${a(p, "emoji")} Open Adım ('${a(p, "durum")}') "${a(p, "kod")}"${a(p, "neden", "") ? ` — why it remains on track: ${a(p, "neden")}` : ""}. The engine does not forget it: it remains on the agenda until tamamlandı.`,
     oneri: (p) => {
       if (b(p, "özet")) return "Start the next item with durum: geliştirmede or remove work that is no longer needed; writing beklemede and forgetting it makes the plan untrue. The active front is shown in the detailed list, and all items appear in denetle-proje/panel.";
       return a(p, "durum") === "geliştirmede"

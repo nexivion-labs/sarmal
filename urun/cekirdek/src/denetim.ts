@@ -1188,9 +1188,10 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
     if (!tani.oneri?.trim()) eksik.push("oneri");
     if (tani.kod && !g.sicil.has(tani.kod)) eksik.push("sicil");
     if (!eksik.length) continue;
-    // MGZ-A09: kimliksiz tanının yer tutucusu iki dilde katalogda yaşar.
+    // MGZ-A09: kimliksiz tanının yer tutucusu iki dilde katalogda yaşar ("adsız
+    // tanı" · "An unnamed diagnostic"); boş kimlik de kimliksiz sayılır.
     out.push({ dosya, tani: yeniTani("tanı-sözleşmesi-uyumsuz",
-      { kod: tani.kod, kusur: "tani-alanlari-eksik", eksik },
+      { kod: tani.kod || undefined, kusur: "tani-alanlari-eksik", eksik },
       { satir: tani.satir, sutun: tani.sutun }) });
   }
 

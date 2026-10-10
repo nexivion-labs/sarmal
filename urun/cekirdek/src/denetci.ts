@@ -3626,8 +3626,9 @@ export function fazSirasiTanilari(
       for (let j = i - 1; j >= 0; j--) if (grup[j] && (fazAdimlari.get(grup[j])?.acik ?? 0) > 0) { onceki = grup[j]; break; }
       if (!onceki) continue;
       out.push({ dosya: fd.dosya, tani: yeniTani("erken-faz-işi",
+        // MGZ-A09: listenin kuyruğu ("ve N Adım daha") iki dilde tanı kataloğunda kurulur.
         { kimlik: gorunen(faz), onceki: gorunen(onceki), acik: String(fazAdimlari.get(onceki)!.acik),
-          isler: bu.baslamis.slice(0, 8).join(", ") + (bu.baslamis.length > 8 ? ` ve ${bu.baslamis.length - 8} Adım daha` : "") },
+          isler: bu.baslamis.slice(0, 8), islerSayi: bu.baslamis.length },
         { satir: fd.satir, sutun: fd.sutun }) });
     }
   }
@@ -5304,8 +5305,9 @@ export function stratejiTanilari(
           const ogeler = p.deger.tur === "liste" ? (p.deger.ogeler ?? []) : [p.deger];
           for (const o of ogeler) {
             if (!o.metin || !emekliler.has(o.metin)) continue;
+            // MGZ-A09: izin yeri olgu olarak geçer; cümle iki dilde tanı kataloğunda kurulur.
             out.push({ dosya, tani: yeniTani("ölü-iz",
-              { iz: o.metin, yer: `${yeniKimlik(d)} düğümünün "${p.ad}" kenarı` }, o) });
+              { iz: o.metin, dugum: yeniKimlik(d), kenar: p.ad }, o) });
           }
         }
       }

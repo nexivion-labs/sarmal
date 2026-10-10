@@ -490,25 +490,29 @@ export function sekilDriftTanilari(kaynak: string, yuz: string, dosyaYolu?: stri
   const out: Tani[] = [];
   const kaynakBelge = belgeBolgeleri(kaynak);
   const yuzBelge = belgeBolgeleri(yuz);
+  // MGZ-A09: yolu bilinmeyen dosyanın iki dildeki adı ("bu dosya" · "this file")
+  // tanı kataloğunda yaşar; üretici yalnız bildiği yolu geçer.
   if (kaynakBelge.length !== yuzBelge.length) {
     out.push(yeniTani("belge-şekil-drift",
-      { dosya: dosyaYolu ?? "bu dosya", fark: 1 },
+      { dosya: dosyaYolu, fark: 1 },
       { satir: kaynakBelge[0]?.satir ?? 1, sutun: 1 }));
   } else {
     for (let i = 0; i < kaynakBelge.length; i++) {
       const fark = ilkFark(girintisiz(kaynakBelge[i].icerik), girintisiz(yuzBelge[i].icerik));
       if (!fark) continue;
       out.push(yeniTani("belge-şekil-drift",
-        { dosya: dosyaYolu ?? "bu dosya", fark },
+        { dosya: dosyaYolu, fark },
         { satir: kaynakBelge[i].satir + fark, sutun: 1 }));
     }
   }
 
+  // MGZ-A09: bölgenin alan adı burada bilinmez; adsız değerin iki dildeki adı
+  // tanı kataloğunda yaşar ve üretici bağlama düzyazı geçirmez.
   const kaynakDeger = cokSatirliBolgeler(kaynak);
   const yuzDeger = cokSatirliBolgeler(yuz);
   if (kaynakDeger.length !== yuzDeger.length) {
     out.push(yeniTani("çok-satırlı-değer-drift",
-      { alan: "çok satırlı değer", fark: 1 },
+      { fark: 1 },
       { satir: kaynakDeger[0]?.satir ?? 1, sutun: 1 }));
     return out;
   }
@@ -516,7 +520,7 @@ export function sekilDriftTanilari(kaynak: string, yuz: string, dosyaYolu?: stri
     const fark = ilkFark(girintisiz(kaynakDeger[i].icerik), girintisiz(yuzDeger[i].icerik));
     if (!fark) continue;
     out.push(yeniTani("çok-satırlı-değer-drift",
-      { alan: "çok satırlı değer", fark },
+      { fark },
       { satir: kaynakDeger[i].satir + fark, sutun: 1 }));
   }
   return out;

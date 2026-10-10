@@ -1589,7 +1589,7 @@ export const EKLENTI_KABUK_METINLERI = {
   get giydirKlasorGerekli(): string {
     return yuzeyMetni(
       "Giydir çalışma alanı ister — önce bir klasör aç (ayarlar Workspace hedefine yazılır, kullanıcı ayarına değil).",
-      "Dressing requires a workspace — open a folder first (settings are written to the Workspace target, not user settings).",
+      "Dressing requires a workspace — open a folder first (the settings are written at workspace level, not in user settings).",
     );
   },
   get giydirildi(): string {
@@ -1989,7 +1989,7 @@ export const YOL_METINLERI = {
   // Blok kendi projesinde durur. Satırın yanındaki not bağı söyler, ipucu sebebini.
   caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the Faz ${faz} of ${proje}`),
   caprazFazIpucu: (faz: string, proje: string): string => yuzeyMetni(`\n\n${ipucuIsareti("kenar")}**${proje}** projesinin **${faz}** Fazına bağlıdır. Blok kendi projesinin altında durur ve o Fazın sayacına katılmaz.`, `\n\n${ipucuIsareti("kenar")}Bound to the Faz **${faz}** of **${proje}**. The Blok stays under its own Proje and is not counted in that Faz.`),
-  blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} bloklu below`),
+  blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} ${adet === 1 ? "node below is" : "nodes below are"} bloklu`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
   yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(turkce, `Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
   geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
@@ -2246,13 +2246,13 @@ const IPUCU_PARAM_EN: Readonly<Record<string, string>> = {
   neden: "rule rationale — required on a security or privacy Beceri",
   kullanır: "consumer-declared edge: `kullanır: BCR-…`; the cone brings the Beceri automatically",
   alanlar: "data-contract schema: compact map — `eposta: \"metin · zorunlu · eposta-biçimi\"`",
-  hatalar: "endpoint contract error map: `401: \"#hata.kimlik-geçersiz\"`",
+  hatalar: "endpoint contract error map: `401: \"#error.invalid-credentials\"`",
   sürüm: "contract version; increment on a breaking change (live checking is pending)",
   nasılUygula: "required on a lesson Bellek (`tür: ders`): step-by-step application instructions",
   aşama: "memory promotion path: `pratik → bellek → karar → yasa-taslağı → yasa`",
   alan: "the Politika's dimension: `öğrenme · maliyet · güvenlik · hız · içerik`",
   yargıAlanı: "legal jurisdiction: `TR · AB · ABD · küresel`",
-  yaptırım: "regulatory consequence: penalty/SLA summary (`\"72 saat VERBİS bildirimi\"`)",
+  yaptırım: "regulatory consequence: penalty/SLA summary (`\"72-hour regulator notification\"`)",
   zorunluKılar: "Mevzuat edge: the Adım, Kapı or Politika it binds; a Mevzuat bound to nothing is orphaned",
   hatırlat: "Hatırlatıcı edge: enters the cone when its target activates; closing the target while open raises `kaçırılmış-hatırlatıcı`",
   çapa: "the Hatırlatıcı's class: `mimari ≫ adım > yasa/nitelik > gelecek` — backlog priority",

@@ -26,8 +26,8 @@
 //
 //   SAF'lık notu (VIT-KIMLIK-A06 sonrası): çalışma zamanında vscode importu
 //   yine YOKTUR — dosyanın sonundaki EDİTÖR HANESİ vscode'u yalnız tip olarak
-//   alır ve kabuğu parametreyle taşır (gorsel-esad deseni); node:test bu
-//   modülü doğrudan koşmaya devam eder.
+//   alır ve kabuğu parametreyle taşır (kabuğun dışarıdan verildiği saf modül
+//   deseni); node:test bu modülü doğrudan koşmaya devam eder.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type * as vscode from "vscode";
@@ -416,7 +416,7 @@ const EKSEN_KUMESI: ReadonlySet<string> = new Set<string>(EKSEN_TIPLERI);
  * önbellek undefined verir ve o kare dekorsuzdur — editör akışı kesilmez.
  * Belirteçleyici emoji eşadını kanonik ada çevirir (🍃 → Adım); o satır ZATEN
  * bir simge taşıdığı için ham kaynak dilimi tip adıyla birebir değilse karar
- * verilmez (gorsel-esad ham-dilim nöbetiyle aynı güvence). `tipler` kapısı
+ * verilmez (ham kaynak dilimi tip adıyla birebir olmalıdır). `tipler` kapısı
  * yalnız nöbetin mutasyon kanıtı içindir; üretimde daima çizelge kümesidir.
  */
 export function eksenDekorKararlari(

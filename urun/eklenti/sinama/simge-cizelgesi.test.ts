@@ -357,7 +357,7 @@ test("A06 kapsam: altı eksen tipinin bildirim satırları karar alır ve kapsam
       "A06 nöbeti: dekor alan tip kümesi çizelgenin (EKSEN_TIPLERI) kapsamından ayrıştı");
   };
   bekci();
-  // Mutasyon kanıtı (gorsel-esad kapisizMutant emsali): çizelge kümesinden
+  // Mutasyon kanıtı (kapısız mutant deseni): çizelge kümesinden
   // Meyve düşürülmüş bir mutant kapsam nöbetinden KAÇAMAZ.
   const mutant = new Set<string>(EKSEN_TIPLERI.filter((t) => t !== "Meyve"));
   assert.throws(() => bekci(mutant), /EKSEN_TIPLERI/u,
