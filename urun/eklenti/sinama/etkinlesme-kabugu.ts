@@ -33,7 +33,7 @@
 
 import esbuild from "esbuild";
 import { createRequire } from "node:module";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -45,11 +45,16 @@ const KOPRU_ANAHTARI = "__SARMAL_ETKIN_KABUK_VSCODE__";
 // ── Paket ───────────────────────────────────────────────────────────────────
 
 let paketYolu: string | undefined;
+let paketDizini: string | undefined;
+
+/** Düzeneğin açtığı geçici klasörler; `kabukTemizle` hepsini siler. */
+const acilanAlanlar = new Set<string>();
 
 /** Eklenti girişini bir kez paketler; yolu döndürür. */
 function paketle(): string {
   if (paketYolu) return paketYolu;
   const dizin = mkdtempSync(join(tmpdir(), "sarmal-etkin-kabuk-"));
+  paketDizini = dizin;
   const kopru = join(dizin, "vscode-kopru.cjs");
   writeFileSync(kopru, `module.exports = globalThis.${KOPRU_ANAHTARI};\n`);
   const cikti = join(dizin, "eklenti.cjs");
@@ -612,9 +617,25 @@ export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
   };
 }
 
-/** Sınamaların fikstür kökü için gerçek (bağları çözülmüş) geçici dizin. */
+/** Sınamaların fikstür kökü için gerçek (bağları çözülmüş) geçici dizin; `kabukTemizle` onu siler. */
 export function geciciAlan(onek: string): string {
-  return realpathSync(mkdtempSync(join(tmpdir(), onek)));
+  const alan = realpathSync(mkdtempSync(join(tmpdir(), onek)));
+  acilanAlanlar.add(alan);
+  return alan;
+}
+
+/**
+ * Düzeneğin açtığı her şeyi siler: `geciciAlan` klasörleri ve paketlenmiş giriş.
+ * Sınama dosyası bunu `after` kancasında çağırır; kanca sınamalar başarısız
+ * olsa da koştuğu için geçici dizinde hiçbir klasör kalmaz. Sonraki bir
+ * etkinleşme gerekirse giriş yeniden paketlenir.
+ */
+export function kabukTemizle(): void {
+  for (const alan of acilanAlanlar) rmSync(alan, { recursive: true, force: true });
+  acilanAlanlar.clear();
+  if (paketDizini) rmSync(paketDizini, { recursive: true, force: true });
+  paketDizini = undefined;
+  paketYolu = undefined;
 }
 
 /** Paketlenmiş girişin varlığı — sınama kendi ön koşulunu ölçebilsin. */

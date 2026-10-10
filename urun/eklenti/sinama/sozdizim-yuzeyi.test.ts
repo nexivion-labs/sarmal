@@ -28,7 +28,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
-import { etkinlestir, geciciAlan, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
+import { etkinlestir, geciciAlan, kabukTemizle, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
 
 const SARMAL = fileURLToPath(new URL("../../cekirdek/src/sarmal.ts", import.meta.url));
 const KIRIK_KAYNAK = 'Faz( kod: FB1, ad: "sağlam" )\nFaz( kod: FB2 ad: "kırık" )\n';
@@ -57,7 +57,9 @@ function alanKur(kirikProje: "proje_a" | "proje_b"): Alan {
 }
 
 const acik: EtkinEklenti[] = [];
-after(() => { for (const e of acik.splice(0)) e.kapat(); });
+// Paylaşılan senaryo dosya boyunca yaşar; etkinleşmeler kapanır ve açılan her
+// geçici klasör ile paketlenmiş giriş, sınamalar başarısız olsa da silinir.
+after(() => { for (const e of acik.splice(0)) e.kapat(); kabukTemizle(); });
 
 /** Eklentiyi odak proje_a'da olacak biçimde etkinleştirir ve ilk turu bekler. */
 async function etkin(a: Alan): Promise<EtkinEklenti> {
