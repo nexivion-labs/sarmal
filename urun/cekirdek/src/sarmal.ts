@@ -574,6 +574,8 @@ if (yol === "kanon-tutarlilik-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = kanonTutarlilikUret(dizin);
   console.log(`⚖️ kanon tutarlılık: ${sonuc.degisti ? "tazelendi" : "aynı"} · ${sonuc.madde} madde · ${sonuc.yeni} yeni · ${sonuc.onceki} önceki · ${sonuc.emekli} emekli · ${sonuc.emeklilikBorcu} açık emeklilik borcu.`);
+  // HST-MTR-A01: taşıyıcısı belge metninden ayrışan madde, yüzü tazeleyen kişiye adıyla söylenir.
+  if (sonuc.tasiyiciAyrisan.length > 0) console.log(`⚠️ taşıyıcısı belge metninden ayrışan madde: ${sonuc.tasiyiciAyrisan.join(" · ")} (ayrıntı: is/nitelik/goc/kanon_tutarlilik.sar).`);
   process.exit(0);
 }
 

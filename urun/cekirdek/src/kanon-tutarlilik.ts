@@ -21,6 +21,30 @@ import {
 } from "./tani-sicili.ts";
 import type { Deger, Dugum } from "./sozdizim.ts";
 
+/**
+ * Bir taşıyıcı alanın belge bloğundaki karşılığıyla eşitlik ölçümü (HST-MTR-A01).
+ *
+ * Kanon dosyalarının başlığı, Karar düğümündeki `karar` ve `gerekçe` alanlarının
+ * belge bloğundaki Hüküm ile Gerekçe metninin makine-okur taşıyıcısı olduğunu ilan
+ * eder; her maddenin `ne` alanı da belge başlığını taşır. Dört parça denetimi yalnız
+ * bölüm başlıklarının varlığına baktığı için taşıyıcıdan sessizce düşen bir cümle
+ * kapıdan geçebiliyordu (HTR-TASIYICI-MUTABAKAT-KORLUGU). Ölçüm eşitliğe bakar:
+ * boşluk ve satır kırılımı fark sayılmaz, harf, noktalama ve sözcük farkı sayılır.
+ */
+export interface TasiyiciOlcumu {
+  /** Düğümdeki makine-okur alan. */
+  readonly alan: "ne" | "karar" | "gerekçe";
+  /** Belge bloğunda aynı metni taşıyan bölüm. */
+  readonly bolum: "Başlık" | "Hüküm" | "Gerekçe";
+  readonly esit: boolean;
+  /** Boşluğu daraltılmış taşıyıcı metnin karakter sayısı. */
+  readonly tasiyiciUzunluk: number;
+  /** Boşluğu daraltılmış belge metninin karakter sayısı. */
+  readonly belgeUzunluk: number;
+  /** Boşluğu daraltılmış iki metnin ilk ayrıştığı karakter sırası; metinler eşitse -1. */
+  readonly ilkFark: number;
+}
+
 export interface KanonMaddesiOlcumu {
   readonly dosya: string;
   readonly kod: string;
@@ -29,6 +53,7 @@ export interface KanonMaddesiOlcumu {
   readonly tanilar: readonly string[];
   readonly dayanaklar: readonly string[];
   readonly dortParcaTam: boolean;
+  readonly tasiyicilar: readonly TasiyiciOlcumu[];
 }
 
 export interface KanonTutarlilikSonucu {
@@ -39,6 +64,8 @@ export interface KanonTutarlilikSonucu {
   readonly onceki: number;
   readonly emekli: number;
   readonly emeklilikBorcu: number;
+  /** Taşıyıcısı belge metninden ayrışan maddelerin kodları (HST-MTR-A01). */
+  readonly tasiyiciAyrisan: readonly string[];
 }
 
 const sha256 = (metin: string): string => createHash("sha256").update(metin).digest("hex");
@@ -66,6 +93,46 @@ function ornekBolumu(belge: string): string {
   return belge.match(/\*\*Örnek:\*\*\s*([\s\S]*?)(?=\n\*\*Zorlama:\*\*)/)?.[1]?.trim() ?? "—";
 }
 
+const BELGE_BOLUMLERI = ["Hüküm", "Gerekçe", "Örnek", "Zorlama"] as const;
+
+/** Belge bloğundaki bir bölümün metni: bölüm başlığından bir sonraki bölüm başlığına kadar. */
+function belgeBolumu(belge: string, ad: "Hüküm" | "Gerekçe"): string {
+  const satirlar = belge.split("\n");
+  const bas = satirlar.findIndex((s) => s.startsWith(`**${ad}:**`));
+  if (bas < 0) return "";
+  const son = satirlar.findIndex((s, i) => i > bas && BELGE_BOLUMLERI.some((b) => s.startsWith(`**${b}:**`)));
+  return satirlar.slice(bas, son < 0 ? undefined : son).join("\n").slice(`**${ad}:**`.length).trim();
+}
+
+/** Belge bloğunun `### ` ile başlayan madde başlığı. */
+function belgeBasligi(belge: string): string {
+  return belge.split("\n").find((s) => s.startsWith("### "))?.slice(4).trim() ?? "";
+}
+
+const bosluguDaralt = (metin: string): string => metin.replace(/\s+/g, " ").trim();
+
+function tasiyiciOlc(alan: TasiyiciOlcumu["alan"], bolum: TasiyiciOlcumu["bolum"], tasiyici: string, belge: string): TasiyiciOlcumu {
+  const t = bosluguDaralt(tasiyici);
+  const b = bosluguDaralt(belge);
+  let ilkFark = -1;
+  if (t !== b) {
+    ilkFark = 0;
+    while (ilkFark < t.length && ilkFark < b.length && t[ilkFark] === b[ilkFark]) ilkFark++;
+  }
+  return { alan, bolum, esit: t === b, tasiyiciUzunluk: t.length, belgeUzunluk: b.length, ilkFark };
+}
+
+/** Bir maddenin bütün taşıyıcılarını ölçer: her maddede `ne` ↔ başlık, Kararda ek olarak `karar` ↔ Hüküm ve `gerekçe` ↔ Gerekçe. */
+function tasiyicilariOlc(dugum: Dugum, rol: KanonMaddesiOlcumu["rol"], belge: string): TasiyiciOlcumu[] {
+  const metin = (ad: string): string => alanKodlari(dugum, ad)[0] ?? "";
+  const olcumler = [tasiyiciOlc("ne", "Başlık", metin("ne"), belgeBasligi(belge))];
+  if (rol === "Karar") {
+    olcumler.push(tasiyiciOlc("karar", "Hüküm", metin("karar"), belgeBolumu(belge, "Hüküm")));
+    olcumler.push(tasiyiciOlc("gerekçe", "Gerekçe", metin("gerekçe"), belgeBolumu(belge, "Gerekçe")));
+  }
+  return olcumler;
+}
+
 export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly KanonMaddesiOlcumu[]; muhurler: readonly string[]; demet: string } {
   const kok = resolve(kokYolu);
   const dizin = join(kok, "yasa", "kanon");
@@ -90,6 +157,7 @@ export function kanonMaddeleriniOlc(kokYolu: string): { maddeler: readonly Kanon
         tanilar: alanKodlari(dugum, "tanı"),
         dayanaklar: alanKodlari(dugum, "dayanak").filter((deger) => deger !== "aksiyom"),
         dortParcaTam: ["Hüküm", "Gerekçe", "Örnek", "Zorlama"].every((bolum) => belge.includes(`**${bolum}:**`)),
+        tasiyicilar: tasiyicilariOlc(dugum, rol, belge),
       });
     });
   }
@@ -139,6 +207,12 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   const kural = olcum.maddeler.filter((m) => m.rol === "Kural").length;
   const eksikOrnek = olcum.maddeler.filter((m) => m.ornek === "—");
   const eksikDortParca = olcum.maddeler.filter((m) => !m.dortParcaTam);
+  // HST-MTR-A01: taşıyıcı eşitliği madde sayısına göre raporlanır; payda ölçülen
+  // madde sayısıdır, çünkü maddelerin sayısını "Kanon maddesi" satırı ayrıca bekler.
+  const tasiyiciAyrisan = olcum.maddeler.filter((m) => m.tasiyicilar.some((t) => !t.esit));
+  const tasiyiciAlani = olcum.maddeler.reduce((toplam, m) => toplam + m.tasiyicilar.length, 0);
+  const tasiyiciSatirlari = olcum.maddeler.flatMap((m) => m.tasiyicilar.filter((t) => !t.esit).map((t) =>
+    `| \`${m.kod}\` | \`${t.alan}\` | ${t.bolum} | ${t.tasiyiciUzunluk} | ${t.belgeUzunluk} | ${t.ilkFark} |`));
   const kirikDayanak = olcum.maddeler.flatMap((m) => m.dayanaklar.filter((d) => !maddeKodlari.has(d)).map((d) => `${m.kod}→${d}`));
   const eslesmeyenYeni = YENI_TANI_KANONU.filter((t) => !maddeKodlari.has(t.madde));
   const emekliCanli = EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod));
@@ -217,6 +291,8 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     ["Rol dağılımı", `${beklenenKarar} Karar + ${beklenenKural} Kural`, `${karar} Karar + ${kural} Kural`, karar === beklenenKarar && kural === beklenenKural],
     ["Dört parçalı madde", "162/162", `${162 - eksikDortParca.length}/162`, eksikDortParca.length === 0],
     ["Kanonik örnek", "162/162", `${162 - eksikOrnek.length}/162`, eksikOrnek.length === 0],
+    ["Taşıyıcı ile belge metni eşitliği", `${olcum.maddeler.length}/${olcum.maddeler.length}`,
+      `${olcum.maddeler.length - tasiyiciAyrisan.length}/${olcum.maddeler.length}`, tasiyiciAyrisan.length === 0],
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
@@ -251,6 +327,18 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     ...tutarlilikSatirlari,
     "",
     `Resmi sonuç ${olcum.maddeler.length}/${olcum.maddeler.length} maddedir. Tek adres \`yasa/kanon/\`; bu türev hüküm metni kurmaz.`,
+    "",
+    "## Taşıyıcı ile belge metni",
+    "",
+    `Kanon dosyalarının başlığı, Karar düğümündeki \`karar\` ve \`gerekçe\` alanlarını belge bloğundaki Hüküm ile Gerekçe metninin makine-okur taşıyıcısı olarak ilan eder; her maddenin \`ne\` alanı da belge başlığını taşır. Bu ölçüm ${tasiyiciAlani} taşıyıcı alanı belge metniyle eşitlik üzerinden karşılaştırır; boşluk ve satır kırılımı fark sayılmaz, harf, noktalama ve sözcük farkı sayılır.`,
+    "",
+    ...(tasiyiciSatirlari.length === 0 ? ["Belge metninden ayrışan taşıyıcı alan yoktur."] : [
+      `Belge metninden ayrışan ${tasiyiciSatirlari.length} taşıyıcı alan ${tasiyiciAyrisan.length} maddededir. Ayrışma burada adıyla kayda geçer; kanon metninin düzeltilmesi Founder kapısıdır ve bu türev kanona yazmaz. Karakter sayıları boşluğu daraltılmış metinlerindir ve ilk fark iki metnin ayrıştığı karakter sırasıdır.`,
+      "",
+      "| Madde | Taşıyıcı alan | Belge bölümü | Taşıyıcı karakter | Belge karakter | İlk fark |",
+      "|---|---|---|---:|---:|---:|",
+      ...tasiyiciSatirlari,
+    ]),
     "",
     "## Kanonik örnekler — 162/162",
     "",
@@ -298,6 +386,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `| Yeni tanının resmi maddesi eksik | ${eslesmeyenYeni.length} | ${eslesmeyenYeni.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Kanonik örnek eksiği | ${eksikOrnek.length} | ${eksikOrnek.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Dört parçalı madde eksiği | ${eksikDortParca.length} | ${eksikDortParca.length === 0 ? "YOK" : "AÇIK"} |`,
+    `| Taşıyıcısı belge metninden ayrışan madde | ${tasiyiciAyrisan.length} | ${tasiyiciAyrisan.length === 0 ? "YOK" : `AÇIK · ${tasiyiciAyrisan.map((m) => `\`${m.kod}\``).join(" · ")} · kanon metni Founder kapısıdır`} |`,
     `| Çözülemeyen kanon dayanağı | ${kirikDayanak.length} | ${kirikDayanak.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Uygulanmış emekli kümesinin canlı sicille kesişimi | ${emekliCanli.length} | ${emekliCanli.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Emeklilik kararı uygulanmamış canlı kimlik | ${borcCanli.length} | AÇIK · Founder sahipliği gerekir |`,
@@ -313,7 +402,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `      ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır; önceki ${ONCEKI_TANI_KODLARI.length} sabit kimlik, ${dinamik.length} sınıflama-türevli kimlik, ${EMEKLI_TANI_KODLARI.length} uygulanmış emekli kimlik ve ${EMEKLILIK_BORCU_TANI_KODLARI.length} açık emeklilik borcu ayrı kümeler olarak ölçülür." )`,
     "",
     "Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,",
-    `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır." )`,
+    `      ne: "Kanonik örnek eksiği ${eksikOrnek.length}, dört-parça eksiği ${eksikDortParca.length}, taşıyıcı ayrışması ${tasiyiciAyrisan.length}, çözülemeyen dayanak ${kirikDayanak.length}, yeni tanı madde eksiği ${eslesmeyenYeni.length} ve canlı-emekli kesişimi ${emekliCanli.length}; açık tek sınıfsal çelişki ${borcCanli.length} uygulanmamış emeklilik kararıdır${tasiyiciAyrisan.length === 0 ? "" : ` ve taşıyıcısı belge metninden ayrışan ${tasiyiciAyrisan.length} madde ayrıca açıktır (${tasiyiciAyrisan.map((m) => m.kod).join(", ")})`}." )`,
     "",
   ].join("\n");
 }
@@ -332,5 +421,6 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
     onceki: ONCEKI_TANI_KODLARI.length,
     emekli: EMEKLI_TANI_KODLARI.length,
     emeklilikBorcu: EMEKLILIK_BORCU_TANI_KODLARI.length,
+    tasiyiciAyrisan: kanonMaddeleriniOlc(kok).maddeler.filter((m) => m.tasiyicilar.some((t) => !t.esit)).map((m) => m.kod),
   };
 }

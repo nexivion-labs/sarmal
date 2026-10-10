@@ -33,11 +33,23 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Rol dağılımı | 38 Karar + 124 Kural | 38 Karar + 124 Kural | GEÇTİ |
 | Dört parçalı madde | 162/162 | 162/162 | GEÇTİ |
 | Kanonik örnek | 162/162 | 162/162 | GEÇTİ |
+| Taşıyıcı ile belge metni eşitliği | 162/162 | 161/162 | SAPMA |
 | Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
 | Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
 | Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
 
 Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
+
+## Taşıyıcı ile belge metni
+
+Kanon dosyalarının başlığı, Karar düğümündeki `karar` ve `gerekçe` alanlarını belge bloğundaki Hüküm ile Gerekçe metninin makine-okur taşıyıcısı olarak ilan eder; her maddenin `ne` alanı da belge başlığını taşır. Bu ölçüm 238 taşıyıcı alanı belge metniyle eşitlik üzerinden karşılaştırır; boşluk ve satır kırılımı fark sayılmaz, harf, noktalama ve sözcük farkı sayılır.
+
+Belge metninden ayrışan 2 taşıyıcı alan 1 maddededir. Ayrışma burada adıyla kayda geçer; kanon metninin düzeltilmesi Founder kapısıdır ve bu türev kanona yazmaz. Karakter sayıları boşluğu daraltılmış metinlerindir ve ilk fark iki metnin ayrıştığı karakter sırasıdır.
+
+| Madde | Taşıyıcı alan | Belge bölümü | Taşıyıcı karakter | Belge karakter | İlk fark |
+|---|---|---|---:|---:|---:|
+| `ORK-9` | `karar` | Hüküm | 763 | 915 | 533 |
+| `ORK-9` | `gerekçe` | Gerekçe | 1119 | 1566 | 143 |
 
 ## Kanonik örnekler — 162/162
 
@@ -444,6 +456,7 @@ Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli
 | Yeni tanının resmi maddesi eksik | 0 | YOK |
 | Kanonik örnek eksiği | 0 | YOK |
 | Dört parçalı madde eksiği | 0 | YOK |
+| Taşıyıcısı belge metninden ayrışan madde | 1 | AÇIK · `ORK-9` · kanon metni Founder kapısıdır |
 | Çözülemeyen kanon dayanağı | 0 | YOK |
 | Uygulanmış emekli kümesinin canlı sicille kesişimi | 0 | YOK |
 | Emeklilik kararı uygulanmamış canlı kimlik | 37 | AÇIK · Founder sahipliği gerekir |
@@ -459,4 +472,4 @@ Veri( kod: VR-GOC-TANI-MADDE-HARITASI,
       ne: "Planın 69 yeni tanı tabanı YUZ-3.3 tanısıyla, iki gözlemle, ORK-8 mevsim vadesi ile mühür dürüstlüğüyle, MIM-1.7 AltKatman tekilliğiyle, MIM-3.4 dosya mühürlerinin üç tanısıyla, MIM-1.2 projesiz Faz gözlemiyle, MIM-3.2 Kitaplık kademesiyle, Faz sırası ile Blok yapısının altı tanısıyla, Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır; önceki 101 sabit kimlik, 9 sınıflama-türevli kimlik, 16 uygulanmış emekli kimlik ve 37 açık emeklilik borcu ayrı kümeler olarak ölçülür." )
 
 Veri( kod: VR-GOC-KANON-TUTARLILIK-SONUCU,
-      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır." )
+      ne: "Kanonik örnek eksiği 0, dört-parça eksiği 0, taşıyıcı ayrışması 1, çözülemeyen dayanak 0, yeni tanı madde eksiği 0 ve canlı-emekli kesişimi 0; açık tek sınıfsal çelişki 37 uygulanmamış emeklilik kararıdır ve taşıyıcısı belge metninden ayrışan 1 madde ayrıca açıktır (ORK-9)." )

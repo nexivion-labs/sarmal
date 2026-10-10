@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cpSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
@@ -217,4 +217,137 @@ test("kırmızı fikstür: kopyada bir listeye çıplak bölüm adı geri konunc
   const dil = join(sb, "yasa", "kanon", "dil.sar");
   writeFileSync(dil, readFileSync(dil, "utf8").replace("ilgili: [DIL-0,", "ilgili: [DIL,"), "utf8");
   assert.deepEqual(ciplakUyelikler(sb), ["dil.sar:12 DIL"], "çıplak ad geri konduğu hâlde nöbet kırmızıya düşmedi");
+});
+
+// ── HST-MTR-A01 · taşıyıcı alan ile belge metninin eşitliği ───────────────────
+//   Kanon dosyalarının başlığı, Karar düğümündeki `karar` ve `gerekçe` alanlarının
+//   belge bloğundaki Hüküm ile Gerekçe metninin makine-okur taşıyıcısı olduğunu
+//   ilan eder; her maddenin `ne` alanı da belge başlığını taşır. Dört parça
+//   denetimi yalnız bölüm başlıklarının VARLIĞINA baktığı için 2026-08-09 tarihinde
+//   ORK-8 maddesinin gerekçe taşıyıcısından bir cümle sessizce düşmüş ve kapı yeşil
+//   yanmıştı (HTR-TASIYICI-MUTABAKAT-KORLUGU). Nöbet taşıyıcıyı belge metnine
+//   EŞİTLİK üzerinden ölçer: boşluk ve satır kırılımı fark sayılmaz, harf, noktalama
+//   ve sözcük farkı sayılır. Fikstürler geçici bir kopyada koşar ve canlı ağaca yazmaz.
+//
+//   Bilinen ayrışma (HST-MTR-A01 ölçümü · 2026-10-10): ORK-9 Teslim Halkası
+//   maddesinin `karar` ve `gerekçe` taşıyıcıları belge metninin kısaltılmış bir
+//   hâlidir. Kanon metni bu Adımda düzeltilmez ve düzeltmesi Founder kapısıdır;
+//   bu yüzden ayrışma adıyla listelenir. Liste yalnız küçülür: madde düzeltildiğinde
+//   nöbet kırmızıya döner ve kaydın buradan düşürülmesini ister, yeni bir ayrışma
+//   ise listeye eklenmeden önce kapıyı kırmızıda tutar.
+const BILINEN_TASIYICI_AYRISMALARI: readonly string[] = ["ORK-9 karar↔Hüküm", "ORK-9 gerekçe↔Gerekçe"];
+
+/** Ölçümün ayrışan taşıyıcılarını `KOD alan↔bölüm` biçiminde döndürür. */
+function tasiyiciAyrismalari(maddeler: ReturnType<typeof kanonMaddeleriniOlc>["maddeler"]): string[] {
+  return maddeler.flatMap((m) => m.tasiyicilar.filter((t) => !t.esit).map((t) => `${m.kod} ${t.alan}↔${t.bolum}`));
+}
+
+/** Üreticinin okuduğu kaynakları (kanon sekizlisi, sınıflama, tanı sicili) geçici bir köke kopyalar. */
+function uretimKaynaklariniKopyala(): string {
+  const sb = mkdtempSync(join(tmpdir(), "sarmal-tasiyici-"));
+  cpSync(join(KOK, "yasa", "kanon"), join(sb, "yasa", "kanon"), { recursive: true });
+  mkdirSync(join(sb, "oz", "siniflama"), { recursive: true });
+  for (const ad of ["kayit.json", "ortu.json"]) cpSync(join(KOK, "oz", "siniflama", ad), join(sb, "oz", "siniflama", ad));
+  mkdirSync(join(sb, "urun", "cekirdek", "src"), { recursive: true });
+  cpSync(join(KOK, "urun", "cekirdek", "src", "tani-sicili.ts"), join(sb, "urun", "cekirdek", "src", "tani-sicili.ts"));
+  return sb;
+}
+
+const SAR_BOLUMLERI = ["Hüküm", "Gerekçe", "Örnek", "Zorlama"] as const;
+
+/** Sınamanın kendi okuması: belge bloğundaki bir bölümün metni (bir sonraki bölüm başlığına kadar). */
+function belgedenBolum(belge: string, ad: "Hüküm" | "Gerekçe"): string {
+  const satirlar = belge.split("\n");
+  const bas = satirlar.findIndex((s) => s.startsWith(`**${ad}:**`));
+  if (bas < 0) return "";
+  const son = satirlar.findIndex((s, i) => i > bas && SAR_BOLUMLERI.some((b) => s.startsWith(`**${b}:**`)));
+  return satirlar.slice(bas, son < 0 ? undefined : son).join("\n").slice(`**${ad}:**`.length).trim();
+}
+
+const sarMetni = (s: string): string => s.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+
+/** Kopyadaki bir Karar düğümünün taşıyıcı alanını yeni metinle değiştirir; yazımın tam bir kez tuttuğunu doğrular. */
+function tasiyiciyiYaz(sb: string, dosya: string, eski: string, alan: "karar" | "gerekçe", yeni: string): void {
+  const yol = join(sb, "yasa", "kanon", dosya);
+  const kaynak = readFileSync(yol, "utf8");
+  const aranan = `${alan}: "${sarMetni(eski)}"`;
+  assert.equal(kaynak.split(aranan).length - 1, 1, `${dosya} içinde ${alan} taşıyıcısı tek bir kez bulunmalı`);
+  writeFileSync(yol, kaynak.replace(aranan, () => `${alan}: "${sarMetni(yeni)}"`), "utf8");
+}
+
+/** Kopyadaki bütün Karar taşıyıcılarını belge metnine eşitler; canlı kanonun bugünkü hâlinden bağımsız bir eşit fikstür kurar. */
+function tasiyicilariEsitle(sb: string): void {
+  const dizin = join(sb, "yasa", "kanon");
+  for (const dosya of readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort()) {
+    const program = ayristir(belirtecle(readFileSync(join(dizin, dosya), "utf8")));
+    const yazimlar: Array<[string, "karar" | "gerekçe", string]> = [];
+    dugumleriGez(program.bildirimler, (d) => {
+      if (!(d.tur === "widget" && d.ad === "Karar")) return;
+      for (const [alan, bolum] of [["karar", "Hüküm"], ["gerekçe", "Gerekçe"]] as const) {
+        const tasiyici = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === alan)?.deger.metin ?? "";
+        const belge = belgedenBolum(d.belge ?? "", bolum);
+        if (tasiyici !== belge) yazimlar.push([tasiyici, alan, belge]);
+      }
+    });
+    for (const [eski, alan, yeni] of yazimlar) tasiyiciyiYaz(sb, dosya, eski, alan, yeni);
+  }
+}
+
+/** Ölçüm tablosundaki taşıyıcı satırı; payda ölçülen madde sayısıdır, sabit bir sayı değil. */
+const tasiyiciSatiri = (toplam: number, esit: number, sonuc: "GEÇTİ" | "SAPMA"): string =>
+  `| Taşıyıcı ile belge metni eşitliği | ${toplam}/${toplam} | ${esit}/${toplam} | ${sonuc} |`;
+
+test("HST-MTR-A01 eşit fikstür: taşıyıcıları belge metnine eşitlenmiş kopyada nöbet yeşildir", () => {
+  const sb = uretimKaynaklariniKopyala();
+  tasiyicilariEsitle(sb);
+  const olcum = kanonMaddeleriniOlc(sb);
+  // Her madde `ne` ile başlığını, her Karar ek olarak `karar` ile Hükmünü ve `gerekçe` ile Gerekçesini taşır.
+  for (const m of olcum.maddeler) {
+    assert.deepEqual(m.tasiyicilar.map((t) => `${t.alan}↔${t.bolum}`),
+      m.rol === "Karar" ? ["ne↔Başlık", "karar↔Hüküm", "gerekçe↔Gerekçe"] : ["ne↔Başlık"], `${m.kod} taşıyıcı kümesi`);
+  }
+  assert.deepEqual(tasiyiciAyrismalari(olcum.maddeler), [], "eşitlenmiş kopyada ayrışma kalmamalı");
+  const toplam = olcum.maddeler.length;
+  assert.ok(kanonTutarlilikMetni(sb).includes(tasiyiciSatiri(toplam, toplam, "GEÇTİ")), "ölçüm tablosu eşit kopyada GEÇTİ demeli");
+});
+
+test("HST-MTR-A01 kırmızı fikstür: gerekçe taşıyıcısından bir cümle düşünce nöbet maddeyi adıyla yakalar", () => {
+  const sb = uretimKaynaklariniKopyala();
+  tasiyicilariEsitle(sb);
+  // 2026-08-09 kusurunun yeniden üretimi: ORK-8 gerekçe taşıyıcısının son cümlesi sessizce düşer.
+  const ork8 = kanonMaddeleriniOlc(sb).maddeler.find((m) => m.kod === "ORK-8");
+  assert.ok(ork8, "fikstür ORK-8 maddesini taşımalı");
+  const program = ayristir(belirtecle(readFileSync(join(sb, "yasa", "kanon", "ork.sar"), "utf8")));
+  let tam = "";
+  dugumleriGez(program.bildirimler, (d) => {
+    if (d.tur === "widget" && d.ad === "Karar" && d.parametreler.find((p) => p.ad === "kod")?.deger.metin === "ORK-8") {
+      tam = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "gerekçe")?.deger.metin ?? "";
+    }
+  });
+  const kesik = tam.slice(0, tam.lastIndexOf(". ", tam.length - 2) + 1);
+  assert.ok(kesik.length > 0 && kesik.length < tam.length, "fikstür son cümleyi düşürebilmeli");
+  tasiyiciyiYaz(sb, "ork.sar", tam, "gerekçe", kesik);
+
+  const olcum = kanonMaddeleriniOlc(sb);
+  assert.deepEqual(tasiyiciAyrismalari(olcum.maddeler), ["ORK-8 gerekçe↔Gerekçe"],
+    "düşen cümle taşıyıcıyı belge metninden ayırdığı hâlde nöbet kırmızıya dönmedi");
+  const ayrisma = olcum.maddeler.find((m) => m.kod === "ORK-8")?.tasiyicilar.find((t) => !t.esit);
+  assert.ok(ayrisma && ayrisma.tasiyiciUzunluk < ayrisma.belgeUzunluk && ayrisma.ilkFark === kesik.length,
+    "bulgu iki metnin uzunluğunu ve ilk farkın yerini söylemeli");
+  const metin = kanonTutarlilikMetni(sb);
+  const toplam = olcum.maddeler.length;
+  assert.ok(metin.includes(tasiyiciSatiri(toplam, toplam - 1, "SAPMA")), "ölçüm tablosu ayrışmış kopyada SAPMA demeli");
+  assert.match(metin, /\| `ORK-8` \| `gerekçe` \| Gerekçe \| \d+ \| \d+ \| \d+ \|/, "ayrışan madde türevde adıyla listelenmeli");
+});
+
+test("HST-MTR-A01 canlı kanon: taşıyıcısı belge metninden ayrışan alanlar yalnız bilinen bulgudur", () => {
+  const olcum = kanonMaddeleriniOlc(KOK);
+  const karar = olcum.maddeler.filter((m) => m.rol === "Karar").length;
+  assert.equal(olcum.maddeler.flatMap((m) => m.tasiyicilar).length, olcum.maddeler.length + 2 * karar,
+    "nöbet bütün maddelerin başlığını ve bütün Kararların iki taşıyıcısını ölçmeli");
+  const olculen = tasiyiciAyrismalari(olcum.maddeler);
+  const yeni = olculen.filter((a) => !BILINEN_TASIYICI_AYRISMALARI.includes(a));
+  const kapanan = BILINEN_TASIYICI_AYRISMALARI.filter((a) => !olculen.includes(a));
+  assert.deepEqual(yeni, [], `taşıyıcı alan belge metninden ayrıştı: ${yeni.join(" · ")} — taşıyıcı, belge bloğundaki metnin aynısı olmalıdır (kanon dosyası başlığı · HTR-TASIYICI-MUTABAKAT-KORLUGU)`);
+  assert.deepEqual(kapanan, [], `bilinen ayrışma kapandı: ${kapanan.join(" · ")} — kaydı BILINEN_TASIYICI_AYRISMALARI listesinden düşür`);
 });
