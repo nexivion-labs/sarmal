@@ -21,8 +21,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -31,6 +30,7 @@ import {
   type KapiGirdisi,
 } from "../src/kapi-kapsami.ts";
 import { denetimKos } from "../src/denetim.ts";
+import { dogusAgaciKur, planYolu, type DogusAgaci } from "./dogus-agaci.ts";
 
 const DENETIM_YOLU = fileURLToPath(new URL("../src/denetim.ts", import.meta.url));
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
@@ -131,19 +131,17 @@ test("panelCaprazUreticiKumesi: per-dosya yol cross süzgeçte YOK, cross ailesi
 // Fikstür: tırnaklı bir referans hedefi taşıyan tek Adımlık en küçük çalışma
 // alanı. Tırnaklı hedef, referans üreticisinin kenar-metin tanısını doğurur —
 // bağımsız denetimin sızıntıyı kanıtladığı senaryonun birebir kendisidir.
-const FIKSTUR_ANA = `-->|
-## Amaç
-Köken süzgeci nöbetinin fikstür ağacıdır; tırnaklı referans hedefi kenar-metin tanısını doğurur.
-## Kapsam
-Bir plan rafı ve tek Adımlık bir plan dosyası bulunur.
-## Sonuç
-Sınama, yalnız komut satırına ayrılmış üreticinin tanısının panel süzgecinden geçmediğini ölçer.
-|<--
-Proje( kod: PRJ-FX, ad: "fx", rejim: katı, ne: "köken süzgeci nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FX, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FX-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+//
+// GERÇEK AĞAÇ (HST-MTR-A07): üç fikstürün ağacı doğuş paketiyle doğar. Giriş
+// ilanı doğuşundur ve yalnız fikstürün teknolojisini ilan eder; plan, doğuşun
+// yazdığı ilk Faz dosyasının yerine yazılır. Eski fikstürler kökün altına çıplak
+// bir plan rafı ilan ediyordu ve o düzeni doğuş artık hiç üretmez.
+function fiksturAgaci(ad: string, teknoloji: string, plan: string, ek?: { yol: string; metin: string }): DogusAgaci {
+  const agac = dogusAgaciKur({ ad, onek: `sarmal-${ad}-`, ilkFaz: plan });
+  agac.ilanEkle(`  Teknoloji( kod: ${teknoloji}, ne: "fikstür teknolojisi" )`);
+  if (ek) agac.yaz(ek.yol, ek.metin);
+  return agac;
 }
-`;
 
 const FIKSTUR_PLAN = `Faz( kod: FAZ-FX, ad: "fx mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
   -->|
@@ -171,20 +169,8 @@ const FIKSTUR_PLAN = `Faz( kod: FAZ-FX, ad: "fx mevsimi", ne: "fikstür dönemi"
 // ilanın doğru yazıldığını ölçer; bu fikstür ilanın gerçek akışta karşılığı olduğunu
 // ölçer. Ayrım önemlidir, çünkü ilan doğru yazılıp tanı yine de köken damgası
 // taşımazsa süzgeç körleşir ve tanı panelden sessizce düşer.
-const FIKSTUR_ATESLEME_ANA = `-->|
-## Amaç
-Ateşlemiş hatırlatıcı nöbetinin fikstür ağacıdır; hedefi tamamlanmış bir hatırlatıcı taşır.
-## Kapsam
-Bir plan rafı, tamamlanmış tek Adım ve ona bağlanmış bir hatırlatıcı bulunur.
-## Sonuç
-Sınama, ateşleme tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
-|<--
-Proje( kod: PRJ-FXH, ad: "fxh", rejim: katı, ne: "ateşleme nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FXH, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FXH-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
-}
-
-Hatırlatıcı(
+// Hatırlatıcı, doğuş ağacının plan rafında kendi dosyasında yaşar.
+const FIKSTUR_ATESLEME_HATIRLATICI = `Hatırlatıcı(
   kod:              HTR-FXH,
   durum:            kararlaştı,
   çapa:             nitelik,
@@ -216,12 +202,10 @@ const FIKSTUR_ATESLEME_PLAN = `Faz( kod: FAZ-FXH, ad: "fxh mevsimi", ne: "fikst�
 `;
 
 test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden GEÇER", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-atesleme-"));
+  const agac = fiksturAgaci("fxh", "TEK-FXH", FIKSTUR_ATESLEME_PLAN,
+    { yol: planYolu("hatirlaticilar.sar"), metin: FIKSTUR_ATESLEME_HATIRLATICI });
   try {
-    writeFileSync(join(kok, "fxh_anadizin.sar"), FIKSTUR_ATESLEME_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fxh_plan.sar"), FIKSTUR_ATESLEME_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-28", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-08-28", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let atesleme = 0;
     let panelegecen = 0;
@@ -240,7 +224,7 @@ test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden
     assert.equal(panelegecen, atesleme,
       "ateşleme tanısı panel süzgecinden geçmedi — hatırlatma ANI yalnız komut satırında kalır ve hatırlatıcının vaadi boşa düşer (YUZ-3.4)");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -248,20 +232,6 @@ test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden
 // Ateşleme fikstürüyle aynı gövdeyi kullanır; tek fark Adımın açık (beklemede)
 // olması ve `öncelik` alanını taşımamasıdır. Nöbet, ORK-3.4 tanısının köken
 // damgasını ve panel süzgecinden geçişini ölçer.
-const FIKSTUR_ONCELIKSIZ_ANA = `-->|
-## Amaç
-Önceliksiz Adım nöbetinin fikstür ağacıdır; öncelik beyanı olmayan tek açık Adım taşır.
-## Kapsam
-Bir plan rafı ve beyansız tek açık Adım bulunur.
-## Sonuç
-Sınama, önceliksiz Adım tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
-|<--
-Proje( kod: PRJ-FXO, ad: "fxo", rejim: katı, ne: "önceliksiz Adım nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FXO, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FXO-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
-}
-`;
-
 const FIKSTUR_ONCELIKSIZ_PLAN = `Faz( kod: FAZ-FXO, ad: "fxo mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
   -->|
   ## Amaç
@@ -284,12 +254,9 @@ const FIKSTUR_ONCELIKSIZ_PLAN = `Faz( kod: FAZ-FXO, ad: "fxo mevsimi", ne: "fiks
 `;
 
 test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-onceliksiz-"));
+  const agac = fiksturAgaci("fxo", "TEK-FXO", FIKSTUR_ONCELIKSIZ_PLAN);
   try {
-    writeFileSync(join(kok, "fxo_anadizin.sar"), FIKSTUR_ONCELIKSIZ_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fxo_plan.sar"), FIKSTUR_ONCELIKSIZ_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-02", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-09-02", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let onceliksiz = 0;
     let panelegecen = 0;
@@ -308,7 +275,7 @@ test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER",
     assert.equal(panelegecen, onceliksiz,
       "önceliksiz Adım tanısı panel süzgecinden geçmedi — beyansız açık Adım yalnız komut satırında kalır (ORK-3.4)");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -316,12 +283,9 @@ test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER",
  *  sızmaması ölçülüyordu; Founder hükmünden sonra ölçülen şey onun panele ULAŞMASIDIR.
  *  Köken damgası nöbeti olduğu gibi korunur: damgasız tanı süzgecin körü olur. */
 test("köken süzgeci (fikstürlü): uyarı düzeyli kenar-metin tanısı panele ULAŞIR ve akıştaki her tanı köken damgası taşır", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-koken-"));
+  const agac = fiksturAgaci("fx", "TEK-FX", FIKSTUR_PLAN);
   try {
-    writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fx_plan.sar"), FIKSTUR_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-23", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-08-23", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let kenarMetin = 0;
     let paneleUlasan = 0;
@@ -344,7 +308,7 @@ test("köken süzgeci (fikstürlü): uyarı düzeyli kenar-metin tanısı panele
     assert.deepEqual(kokensizler, [],
       "akıştaki her tanı köken damgası taşımalı; damgasız tanı süzgecin körü olur ve panelden sessizce düşer");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -440,14 +404,11 @@ test("BKM-DNT-A01 · görgül: gerçek koşumlarda gözlenen kademe ilandaki bey
   topla(fileURLToPath(new URL("../../..", import.meta.url)));
   // ② Bu yüzden BOZUK bir fikstür de koşulur: kırık atıf ile tırnaklı hedef,
   //    hata ve uyarı düzeyli üreticileri ateşler ve beyanı gerçekten sınar.
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-gorgul-"));
+  const agac = fiksturAgaci("fx", "TEK-FX", FIKSTUR_PLAN);
   try {
-    writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fx_plan.sar"), FIKSTUR_PLAN, "utf8");
-    topla(kok);
+    topla(agac.kok);
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
   assert.ok(gozlenen.size >= 8, `ölçümün zemini: koşumlar en az sekiz üreticiyi ateşlemeli (gözlenen ${gozlenen.size})`);
   const hataUyari = [...gozlenen.values()].filter((d) => d !== "bilgi").length;

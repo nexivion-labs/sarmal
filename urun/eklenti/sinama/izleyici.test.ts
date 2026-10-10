@@ -11,6 +11,10 @@
 import { test, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { gurultuMu, sarGurultuMu, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "../src/izleyici-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+// Meşru plan yolları doğuşun plan rafından türetilir (HST-MTR-A07).
+const PLAN_TURU = planYolu("performans_turu.sar");
 
 // ── ① Süzgeç sınıflaması (iddia dardır: yol sınıflaması, tetik sayımı değil) ──
 
@@ -21,7 +25,7 @@ test("süzgeç: gizli dizinler ve araç/derleme çıktıları gürültüdür; me
     ".vscode/settings.json",
   ]) assert.equal(gurultuMu(yol), true, yol);
   for (const yol of [
-    "plan/performans_turu.sar", "yeni-klasor", "eklenti/src/eklenti.ts",
+    PLAN_TURU, "yeni-klasor", "eklenti/src/eklenti.ts",
     "cikti-notu.md",            // 'out' yalnız TAM dizin adı olarak süzülür
     "ornek/tema_ornek.sar",     // disk hattı ornek'i SÜZMEZ (proje-denetim kapsar)
     // KPS-IND-A01: disk hattı yalnız bağımlılık ve derleme çıktısını süzer;
@@ -44,7 +48,7 @@ test("süzgeç: tarama globu dışlama LİSTESİNDEN TÜRETİLİR — kapsam tek
   }
   assert.equal(sarGurultuMu("__pycache__/canli.sar"), true);   // RED-2'nin somut örneği
   assert.equal(sarGurultuMu(".vscode/model.sar"), true);
-  assert.equal(sarGurultuMu("plan/performans_turu.sar"), false);
+  assert.equal(sarGurultuMu(PLAN_TURU), false);
   // KPS-IND-A01: ders rafı ADIYLA değil YERİYLE süzülür (Founder 2026-09-10).
   for (const raf of ["arsiv", "ornek", "fikstur", "sablon"]) {
     assert.equal(sarGurultuMu(`ogreti/${raf}/dosya.sar`), true, `ogreti/${raf}`);
@@ -115,7 +119,7 @@ test("hat: MEŞRU dosya dalgası onarımlı yapılandırmada kaybolmaz — tek t
   let tetik = 0, ertelenen = 0;
   const hat = new OlayHatti({ gurultu: gurultuMu, gecikmeMs: 1500,
     iste: () => { tetik += 1; }, ertelendi: () => { ertelenen += 1; } });
-  dalgaKostur(t, hat, ["plan/a.sar", "yasa/b.sar"]);
+  dalgaKostur(t, hat, [planYolu("a.sar"), "yasa/b.sar"]);
   assert.equal(tetik, 1);        // istek kaybolmadı, sel tek tura indi
   assert.equal(ertelenen, 9);
 });

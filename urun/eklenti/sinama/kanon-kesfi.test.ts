@@ -24,6 +24,7 @@ import {
   surumeBagliEklentiYolu, tamDenetimKanonuBul, tamDenetimKokTuru, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
 } from "../src/kanon-kesif.ts";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
+import { DUZEN, fazYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
@@ -56,7 +57,7 @@ function gecici(onek: string): string {
 test("A04: varlık kökü klasör adından DEĞİL, *_anadizin.sar ilanından bulunur", () => {
   const alan = gecici("sarmal-kesif-");
   const varlik = varlikKur(alan, "kurumsal_urun", { kanon: true });
-  const belgeDizin = join(varlik, "plan", "derin", "daha-derin");
+  const belgeDizin = join(varlik, DUZEN.planRafi, "derin", "daha-derin");
   mkdirSync(belgeDizin, { recursive: true });
 
   assert.equal(varlikKokuBul(belgeDizin), varlik,
@@ -114,7 +115,7 @@ test("A04: geribildirim hasadının hedefi de ilandan bulunur (takdir.ts sabit y
 
   assert.equal(yazimKokuBul(undefined, [alan], tasir), ogrenmeli,
     "hedefi taşıyan varlık seçilmeli — hasat var olmayan bir yola yazılamaz");
-  const belgeDizin = join(alan, "birinci_varlik", "plan");
+  const belgeDizin = join(alan, "birinci_varlik", DUZEN.planRafi);
   mkdirSync(belgeDizin, { recursive: true });
   assert.equal(yazimKokuBul(belgeDizin, [alan], tasir), join(alan, "birinci_varlik"),
     "açık belgenin kendi varlığı her zaman önce gelir — hasat başka varlığa taşmaz");
@@ -294,7 +295,7 @@ test("A04 DAVRANIŞ: ÖRTÜLÜ projede taban bulunamazsa düşüş SÖYLENİR (s
 test("A04 DAVRANIŞ: kanon ilandan bulununca işaret kalkar ve gömülü kanona düşülmez", () => {
   const alan = gecici("sarmal-kanonlu-");
   const varlik = varlikKur(alan, "kurumsal_urun", { kanon: true });
-  const belge = join(varlik, "plan", "is.sar");
+  const belge = join(varlik, fazYolu(1, "is"));
   mkdirSync(dirname(belge), { recursive: true });
   writeFileSync(belge, "Faz( kod: F1, ad: \"deneme\" )\n", "utf8");
 

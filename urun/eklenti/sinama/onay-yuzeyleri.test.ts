@@ -30,7 +30,7 @@ import "./dil-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
@@ -55,6 +55,10 @@ import {
 // aktarılmış bir metin listesi tutmaya gerek kalmadı.
 import { etkinKararAdi, onayPaneliniAcBasligi } from "../src/yuzey-metinleri.ts";
 import { sarKapsamDisi } from "../src/izleyici-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+/** Fikstür dosyaları doğuşun plan rafında yaşar; yol paketin kendisinden türer (HST-MTR-A07). */
+const D = (ad: string): string => `/depo/${planYolu(ad)}`;
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 const yol = (u: string): string => fileURLToPath(new URL(u, import.meta.url));
@@ -125,8 +129,8 @@ function sayanKabuk(dosyalar: ReadonlyMap<string, string>, yollar?: readonly str
 
 test("ana görüntü verildiğinde kabuğa HİÇ dokunulmaz: sıfır arama, sıfır okuma, sıfır ayrıştırma", async () => {
   const goruntu: ProgramGoruntusu = new Map([
-    ["/depo/plan/goc_plani.sar", bildirimler(IKI_KAPILI)],
-    ["/depo/plan/vitrin_ui.sar", bildirimler(TEK_KAPILI)],
+    [D("goc_plani.sar"), bildirimler(IKI_KAPILI)],
+    [D("vitrin_ui.sar"), bildirimler(TEK_KAPILI)],
   ]);
   const { kabuk, sayac } = sayanKabuk(new Map());
 
@@ -141,12 +145,12 @@ test("ana görüntü verildiğinde kabuğa HİÇ dokunulmaz: sıfır arama, sıf
 
 test("ana hat susunca YEDEK yol koşar ve her dosya EN ÇOK BİR KEZ okunur", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
-    ["/depo/plan/vitrin_ui.sar", TEK_KAPILI],
+    [D("goc_plani.sar"), IKI_KAPILI],
+    [D("vitrin_ui.sar"), TEK_KAPILI],
   ]);
   // Aynı yol listede iki kez geçse bile ikinci okuma YAPILMAMALIDIR.
   const { kabuk, sayac, okunanlar } = sayanKabuk(
-    dosyalar, ["/depo/plan/goc_plani.sar", "/depo/plan/vitrin_ui.sar", "/depo/plan/goc_plani.sar"]);
+    dosyalar, [D("goc_plani.sar"), D("vitrin_ui.sar"), D("goc_plani.sar")]);
 
   const bulgular = await kapilariTopla(undefined, kabuk);
 
@@ -158,8 +162,8 @@ test("ana hat susunca YEDEK yol koşar ve her dosya EN ÇOK BİR KEZ okunur", as
 
 test("iki yol AYNI kapıları döndürür: görüntü yolu ile yedek yol ayrışamaz", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
-    ["/depo/plan/vitrin_ui.sar", TEK_KAPILI],
+    [D("goc_plani.sar"), IKI_KAPILI],
+    [D("vitrin_ui.sar"), TEK_KAPILI],
   ]);
   const goruntu: ProgramGoruntusu = new Map(
     [...dosyalar].map(([y, metin]) => [y, bildirimler(metin)]));
@@ -181,11 +185,11 @@ test("iki yol AYNI kapıları döndürür: görüntü yolu ile yedek yol ayrış
 
 test("yedek yol kırık ve okunamaz dosyada çökmez, öteki kapıları düşürmez", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/kirik.sar", "Bloo( kod: X"],          // sözdizimi kırık
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
+    [D("kirik.sar"), "Bloo( kod: X"],          // sözdizimi kırık
+    [D("goc_plani.sar"), IKI_KAPILI],
   ]);
   const { kabuk } = sayanKabuk(
-    dosyalar, ["/depo/plan/kirik.sar", "/depo/plan/yok.sar", "/depo/plan/goc_plani.sar"]);
+    dosyalar, [D("kirik.sar"), D("yok.sar"), D("goc_plani.sar")]);
 
   const bulgular = await kapilariTopla(undefined, kabuk);
 
@@ -194,9 +198,19 @@ test("yedek yol kırık ve okunamaz dosyada çökmez, öteki kapıları düşür
 });
 
 test("GERÇEK depo üstünde iki yol birebir aynı kapı kümesini verir", async (t) => {
-  // Fikstür değil, çalışma ağacının kendisi: `_Sarmal/plan/` altındaki gerçek
-  // dosyalar. Sayı burada SABİTLENMEZ — Founder bir kapıyı onayladığında düşer ve
-  // sabitlenmiş bir sayı o gün yanlış alarm verirdi.
+  // Fikstür değil, çalışma ağacının kendisi: deponun plan rafındaki gerçek
+  // dosyalar, Faz klasörü dâhil bütün alt klasörleriyle. Sayı burada SABİTLENMEZ —
+  // Founder bir kapıyı onayladığında düşer ve sabitlenmiş bir sayı o gün yanlış
+  // alarm verirdi.
+  //
+  // 🔻 HST-MTR-A07 BULGUSU (2026-10-10): tarama eskiden yalnız rafın üst düzeyini
+  // okuyor ve kapsam süzgecine çıplak bir `plan/<ad>` yolu veriyordu. Faz dosyaları
+  // 2026-09-29'da rafın Faz klasörüne taşındığından beri Adımların ve onay
+  // kapılarının yaşadığı dosyalar bu nöbete hiç girmiyordu; nöbet "bekleyen kapı
+  // yok" teşhisiyle boş küme üstünde yeşil kalırken depoda Faz dosyasındaki
+  // HST-MTR-A13 Adımının bekleyen kapısı vardı (ölçüm 7dc1e28 işlemesinde yapıldı).
+  // Tarama artık özyinelemelidir ve süzgece dosyanın deponun köküne göreli gerçek
+  // yolunu verir.
   //
   // 🔻 BOŞ KÜME ARTIK ÇÖKERTMEZ, ÇÜNKÜ BOŞ KÜME MEŞRU BİR DEPO DURUMUDUR.
   // Bu nöbet eskiden kümenin boş olmamasını da şart koşuyordu ve gerekçesi
@@ -213,12 +227,14 @@ test("GERÇEK depo üstünde iki yol birebir aynı kapı kümesini verir", async
   // bildirilir — susturulmaz ama kapıyı da kilitlemez. Eşitliğin dolu küme
   // üstünde gerçekten koştuğunu bu dosyadaki fikstür nöbetleri kanıtlar
   // (IKI_KAPILI kümesi iki kapı üretir ve iki yolu da oradan geçirir).
+  const depoKoku = yol("../../..");
   const planDizini = yol("../../../is/plan");
   const dosyalar = new Map<string, string>();
-  for (const ad of readdirSync(planDizini)) {
+  for (const ad of readdirSync(planDizini, { recursive: true }) as string[]) {
     if (!ad.endsWith(".sar")) continue;
-    if (sarKapsamDisi(`plan/${ad}`)) continue;
-    dosyalar.set(join(planDizini, ad), readFileSync(join(planDizini, ad), "utf8"));
+    const tam = join(planDizini, ad);
+    if (sarKapsamDisi(relative(depoKoku, tam).split(sep).join("/"))) continue;
+    dosyalar.set(tam, readFileSync(tam, "utf8"));
   }
   assert.ok(dosyalar.size >= 3, `plan dizininde ölçülecek dosya yok: ${dosyalar.size}`);
 
@@ -974,7 +990,7 @@ const KAPILI_KAYNAK = zincir(
   `Adım( kod: PRB-A02, onayBekler: founder, durum: beklemede, ne: "🧪 ikinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
 
 const ISTEK = {
-  dosya: "/depo/plan/prob.sar", kod: "PRB-A01", satir: 3,
+  dosya: D("prob.sar"), kod: "PRB-A01", satir: 3,
   damga: "onaylandı", not: "", gun: "2026-07-29",
 };
 
@@ -1090,9 +1106,9 @@ test("EKLEME NOKTASI: tırnaklı değerde hesap kaynağa uymaz ve KÖR yazım do
 });
 
 test("EKLEME NOKTASI: yazım hattı doğrulanamayan noktaya YAZMAZ ve dürüst hata verir", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/tirnak.sar", TIRNAKLI_KAYNAK);
+  const { durum, kabuk } = sahteBelge(D("tirnak.sar"), TIRNAKLI_KAYNAK);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/tirnak.sar", kod: "TRN-A01" });
+    { ...ISTEK, dosya: D("tirnak.sar"), kod: "TRN-A01" });
   assert.equal(sonuc.tur, "eklemeNoktasıDoğrulanamadı",
     `tırnaklı durumda yazım "${sonuc.tur}" ile bitti; ya dosya bozuldu ya hata yanlış konuştu`);
   assert.equal(durum.eklemeSayisi, 0, "doğrulanamayan noktaya yine de yazıldı");
@@ -1922,9 +1938,9 @@ test("BEKLER SİLME: mekanik kayıt verilmediğinde silinecek aralık üretilmez
 });
 
 test("YAZIM: karar yazılınca `onayBekler` alanı KALKAR ve dosya ayrıştırılabilir kalır", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
 
   assert.equal(sonuc.tur, "başarı", `karar "${sonuc.tur}" ile bitti`);
   const kayit = onayKaydiMetni(ISTEK.damga, ISTEK.gun, ISTEK.not);
@@ -1942,9 +1958,9 @@ test("YAZIM: karar yazılınca `onayBekler` alanı KALKAR ve dosya ayrıştırı
 });
 
 test("YAZIM: TIRNAKLI beyanda da alan kalkar ve belge bozulmaz", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/tirnakli-beyan.sar", BEKLEYEN_TIRNAKLI);
+  const { durum, kabuk } = sahteBelge(D("tirnakli-beyan.sar"), BEKLEYEN_TIRNAKLI);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/tirnakli-beyan.sar", kod: "MEK-A04" });
+    { ...ISTEK, dosya: D("tirnakli-beyan.sar"), kod: "MEK-A04" });
   assert.equal(sonuc.tur, "başarı", `tırnaklı beyanda karar "${sonuc.tur}" ile bitti`);
   assert.doesNotThrow(() => bildirimler(durum.disk), "tırnaklı beyan belgeyi bozdu");
   assert.equal(adimBeklerDegeri(bildirimler(durum.disk), "MEK-A04"), undefined);
@@ -1954,9 +1970,9 @@ test("YAZIM: silme ekleme noktasına DEĞSE bile tek düzenleme doğru belge ür
   // `durum`un hemen ardından gelen son alanda silme, kendinden önceki virgülü
   // alır ve o virgül tam da eklemenin yapılacağı noktadadır. İki düzenleme aynı
   // konumda başlarsa sıraları belirsizdir; nöbet üretilen belgeyi ölçer.
-  const { durum, kabuk } = sahteBelge("/depo/plan/bitisik.sar", BEKLEYEN_BITISIK);
+  const { durum, kabuk } = sahteBelge(D("bitisik.sar"), BEKLEYEN_BITISIK);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/bitisik.sar", kod: "MEK-A05" });
+    { ...ISTEK, dosya: D("bitisik.sar"), kod: "MEK-A05" });
   assert.equal(sonuc.tur, "başarı", `bitişik düzenlemede karar "${sonuc.tur}" ile bitti`);
   assert.doesNotThrow(() => bildirimler(durum.disk), "bitişik düzenleme belgeyi bozdu");
   const agac = bildirimler(durum.disk);
@@ -1969,7 +1985,7 @@ test("YAZIM: silme ekleme noktasına DEĞSE bile tek düzenleme doğru belge ür
 });
 
 test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   // Kaynak satırı ayrıştırıcının bildirdiği konumdan iki karakter kaydırılmış
   // gibi okutulur: kanıt zinciri kopar ve yazım hattı durmak zorundadır.
   const kaydiran: YazimKabugu = {
@@ -1980,7 +1996,7 @@ test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", asyn
     },
   };
   const sonuc = await kararIsle(new UcusDefteri(), kaydiran,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
     `kanıtsız silme "${sonuc.tur}" ile bitti; ya dosya bozuldu ya hata yanlış konuştu`);
   assert.equal(durum.eklemeSayisi, 0, "kanıtlanamayan silmeye rağmen yazıldı");
@@ -1991,13 +2007,13 @@ test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", asyn
 test("YAZIM: alan yazımdan SONRA hâlâ duruyorsa BAŞARI bildirilmez", async () => {
   // Kabuk kararı yazar fakat bekleme ilanını bırakır — onarım sökülürse üretimin
   // kendisi tam olarak böyle davranır. Kanıt zinciri bunu yakalamak zorundadır.
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   const yarim: YazimKabugu = {
     ...kabuk,
     ekle: (kapi, ek) => kabuk.ekle(kapi, ek),      // silme aralığı bilerek DÜŞÜRÜLÜR
   };
   const sonuc = await kararIsle(new UcusDefteri(), yarim,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
     "karar yazılıp bekleme ilanı kalmışken başarı bildirildi; hüküm ölçülmüyor");
   assert.equal(adimBeklerDegeri(bildirimler(durum.bellek), "MEK-A01"), "founder",
@@ -2005,9 +2021,9 @@ test("YAZIM: alan yazımdan SONRA hâlâ duruyorsa BAŞARI bildirilmez", async (
 });
 
 test("GERİ ALMA: kaydetme başarısızsa ekleme DE silme DE geri alınır", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA, { kaydetBasarili: false });
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA, { kaydetBasarili: false });
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "kaydedilemedi");
   assert.equal(sonuc.tur === "kaydedilemedi" && sonuc.geriAlindi, true);
   assert.equal(durum.bellek, BEKLEYEN_ORTA,

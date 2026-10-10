@@ -19,6 +19,7 @@ import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { mevsimNormalize } from "../../cekirdek/src/denetci.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 
 const CATI = { kod: "CALISMA-ALANI", kokDizin: "/depo/Nexivion-Labs" };
 const SARMAL_YENI = { kod: "PRJ-SARMAL", kokDizin: "/depo/Nexivion-Labs/sarmal" };
@@ -64,7 +65,7 @@ test("kapsayan çalışma alanı istasyon, kapsanan proje sefer simgesi taşır"
 test("aktif varlık çözümü iç içe köklerde en derin kümeyi seçer", () => {
   assert.equal(enDerinVarlik(HEPSI, "/depo/Nexivion-Labs/sarmal/yasa/kanon/dil.sar"), SARMAL_YENI);
   assert.equal(enDerinVarlik(HEPSI, "/depo/Nexivion-Labs/nexivion_labs_anadizin.sar"), CATI);
-  assert.equal(enDerinVarlik(HEPSI, "/depo/_Sarmal/plan/yapi_gocu.sar"), SARMAL_ESKI);
+  assert.equal(enDerinVarlik(HEPSI, `/depo/_Sarmal/${planYolu("yapi_gocu.sar")}`), SARMAL_ESKI);
   assert.equal(enDerinVarlik(HEPSI, "/depo/tanimsiz/dosya.sar"), undefined);
 });
 
@@ -133,7 +134,7 @@ const CAPRAZ_KAYNAKLAR: Record<string, string> = {
     "Blok( kod: BLK-CAGRILAN ) { Adım( kod: ADM-S3, durum: beklemede ) }",
   ].join("\n"),
   "/cati/laboratuvar/laboratuvar_anadizin.sar": 'Proje( kod: PRJ-LABORATUVAR, ad: "Laboratuvar", rejim: katı )',
-  "/cati/laboratuvar/plan/bulgu.sar": [
+  [`/cati/laboratuvar/${planYolu("bulgu.sar")}`]: [
     'Blok( kod: BLK-LAB-BULGU, ad: "Bulgu Kapatma", mevsim: PRJ-SARMAL::FAZ-2026-AGUSTOS ) {',
     "  Adım( kod: ADM-L1, durum: beklemede )",
     "  Adım( kod: ADM-L2, durum: geliştirmede )",

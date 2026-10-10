@@ -27,6 +27,7 @@ import { orkestrasyonTanilari } from "../src/denetim.ts";
 import { tarihselTani } from "../src/tani-metinleri.ts";
 import { YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
 import type { Tani } from "../src/tani.ts";
+import { fazYolu } from "./dogus-agaci.ts";
 
 function progla(kaynaklar: Record<string, string>): Map<string, Program> {
   const p = new Map(Object.entries(kaynaklar).map(([dosya, k]) => [dosya, ayristir(belirtecle(k))]));
@@ -85,8 +86,9 @@ test("① tarih önekten önce gelir: tarihli Faz tarihsizlerin önündedir", ()
 });
 
 test("① doğal yol karşılaştırıcısı sayı parçalarını sayı olarak okur ve toplamdır", () => {
-  assert.ok(dogalYolKarsilastir("plan/faz/2_a.sar", "plan/faz/10_a.sar") < 0);
-  assert.ok(dogalYolKarsilastir("plan/faz/10_a.sar", "plan/faz/2_a.sar") > 0);
+  // Yollar doğuşun Faz klasöründen türetilir (HST-MTR-A07).
+  assert.ok(dogalYolKarsilastir(fazYolu(2, "a"), fazYolu(10, "a")) < 0);
+  assert.ok(dogalYolKarsilastir(fazYolu(10, "a"), fazYolu(2, "a")) > 0);
   assert.equal(dogalYolKarsilastir("a.sar", "a.sar"), 0);
   assert.ok(fazKarsilastir({ satir: 90, dosya: "f/1_a.sar" }, { satir: 1, dosya: "f/2_b.sar" }) < 0, "ayrı dosyada satır değil dosya karar verir");
   assert.ok(fazKarsilastir({ satir: 9, dosya: "f/a.sar" }, { satir: 1, dosya: "f/a.sar" }) > 0, "aynı dosyada satır karar verir");

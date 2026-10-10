@@ -32,6 +32,7 @@ import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { onayKapilariTopla, onayKimligi, type OnayKapisi, type KapiKaydi } from "../src/onay-cekirdek.ts";
 import type { YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 import { kacisla, notKimligi } from "../src/onay-govde.ts";
 import {
   gerekceZorunlu, gerekceArtik, YUZEY_BOS_DURUM, onayBaglamKapiYok,
@@ -257,9 +258,9 @@ function kayit(kod: string, dosya: string, satir = 12): YuzeyKaydi {
   } as YuzeyKaydi;
 }
 const UC_KAYIT = [
-  kayit("açık-hatırlatıcı", "/p/plan/a.sar", 4),
-  kayit("açık-hatırlatıcı", "/p/plan/a.sar", 9),
-  kayit("açık-hatırlatıcı", "/p/plan/b.sar", 2),
+  kayit("açık-hatırlatıcı", `/p/${planYolu("a.sar")}`, 4),
+  kayit("açık-hatırlatıcı", `/p/${planYolu("a.sar")}`, 9),
+  kayit("açık-hatırlatıcı", `/p/${planYolu("b.sar")}`, 2),
 ];
 
 /** Ağaçtaki yaprak (kayıt) satırlarının sayısı — sağlayıcının kendi gezintisiyle. */

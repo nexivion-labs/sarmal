@@ -51,6 +51,11 @@ import {
   notKimligi, kararKimligi, kopyaKimligi, odakNiyeti, KARAR_SECENEKLERI,
 } from "../src/onay-govde.ts";
 import { sarKapsamDisi, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB } from "../src/izleyici-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+/** Fikstürün plan dosyaları doğuşun plan rafında yaşar; yol paketin kendisinden türer (HST-MTR-A07). */
+const PLAN_GOC = planYolu("goc_plani.sar");
+const PLAN_VITRIN = planYolu("vitrin_ui.sar");
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 /** Sınama dosyasına göreli bir yolun diskteki mutlak karşılığı. */
@@ -151,7 +156,7 @@ function konum(html: string, isaret: string, ne: string): number {
 }
 
 /** Tek kapılı fikstür — yerleşim ölçümleri bunun üstünde koşar. */
-const TEK_DOSYA = "/depo/_Sarmal/plan/goc_plani.sar";
+const TEK_DOSYA = `/depo/_Sarmal/${PLAN_GOC}`;
 function tekKapiliFikstur(ne = "🧪 Karar bekleyen tek iş"): KapiKaydi[] {
   const bulunan = kapilar(zincir(
     `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "${ne}", kabul: [ ${ONAYLI_OLCUT} ] )`));
@@ -167,8 +172,8 @@ function ikiDosyaliFikstur(): KapiKaydi[] {
   const vitrin = kapilar(zincir(
     `Adım( kod: B9, onayBekler: founder, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   return [
-    ...plan.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/goc_plani.sar", kapi })),
-    ...vitrin.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/vitrin_ui.sar", kapi })),
+    ...plan.map((kapi) => ({ dosya: `/depo/_Sarmal/${PLAN_GOC}`, kapi })),
+    ...vitrin.map((kapi) => ({ dosya: `/depo/_Sarmal/${PLAN_VITRIN}`, kapi })),
   ];
 }
 
@@ -193,7 +198,7 @@ test("ağaç: kapılar dosyaya göre gruplanır, iki dosya birbirine karışmaz"
 });
 
 test("ağaç: dosya adı yoldan türetilir; iki ayraç da tanınır", () => {
-  assert.equal(dosyaAdiniAl("/depo/_Sarmal/plan/goc_plani.sar"), "goc_plani.sar");
+  assert.equal(dosyaAdiniAl(`/depo/_Sarmal/${PLAN_GOC}`), "goc_plani.sar");
   assert.equal(dosyaAdiniAl("C:\\depo\\plan\\goc_plani.sar"), "goc_plani.sar");
   assert.equal(dosyaAdiniAl("goc_plani.sar"), "goc_plani.sar");
 });
@@ -223,7 +228,7 @@ test("defter: tek dosya tazelenince ÖTEKİ dosyanın kapıları yerinde kalır"
   const defter = new OnayDefteri();
   defter.tazele(ikiDosyaliFikstur());
   // Kullanıcı goc_plani.sar'daki iki kapıyı da karara bağladı: dosya boşalır.
-  assert.equal(defter.yaz("/depo/_Sarmal/plan/goc_plani.sar", []), true);
+  assert.equal(defter.yaz(`/depo/_Sarmal/${PLAN_GOC}`, []), true);
   assert.equal(defter.kapiSayisi, 1, "bir tuş vuruşunda öteki dosyanın kapısı da düştü");
   assert.equal(defter.dosyaSayisi, 1);
   assert.deepEqual(defter.kumeler().map((k) => k.dosyaAdi), ["vitrin_ui.sar"]);
@@ -232,7 +237,7 @@ test("defter: tek dosya tazelenince ÖTEKİ dosyanın kapıları yerinde kalır"
 test("defter: silinen dosyanın kapıları düşer, olmayan dosyanın silinmesi çizim istemez", () => {
   const defter = new OnayDefteri();
   defter.tazele(ikiDosyaliFikstur());
-  assert.equal(defter.sil("/depo/_Sarmal/plan/vitrin_ui.sar"), true);
+  assert.equal(defter.sil(`/depo/_Sarmal/${PLAN_VITRIN}`), true);
   assert.equal(defter.kapiSayisi, 2);
   assert.equal(defter.sil("/depo/yok.sar"), false, "olmayan dosya çizim istememeli");
   assert.equal(defter.bosalt(), true);
@@ -257,7 +262,7 @@ test("kayıt açıklaması dosya:satır söyler ve satır 1-tabanlı okunur", ()
 });
 
 test("kayıt ipucu karar için gereken her şeyi taşır: kimlik, amaç, ÖLÇÜT ve tam yol", () => {
-  const tamYol = "/Users/biri/Belgeler/proje/_Sarmal/plan/goc_plani.sar";
+  const tamYol = `/Users/biri/Belgeler/proje/_Sarmal/${PLAN_GOC}`;
   const [kapi] = kapilar(zincir(
     `Adım( kod: A7, onayBekler: founder, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   const ipucu = onayKapiIpucu({
@@ -271,7 +276,7 @@ test("kayıt ipucu karar için gereken her şeyi taşır: kimlik, amaç, ÖLÇÜ
 });
 
 test("dosya satırı: adet açıklamada, MUTLAK YOL yalnız ipucunda", () => {
-  const tamYol = "/Users/biri/proje/_Sarmal/plan/goc_plani.sar";
+  const tamYol = `/Users/biri/proje/_Sarmal/${PLAN_GOC}`;
   assert.equal(onayDosyaAciklamasi(1), "1 kapı");
   assert.equal(onayDosyaAciklamasi(4), "4 kapı");
   const ipucu = onayDosyaIpucu(tamYol, 4);
@@ -348,13 +353,13 @@ test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ art
     "__pycache__ tam taramada dışlanıyor ama olay tarafında geçiyordu");
   assert.ok(sarKapsamDisi(".claude/worktrees/ajan/plan.sar"),
     "gizli dizin dışlanmıyor; SRN-ONAY-WORKTREE-SIZINTISI geri açıldı");
-  assert.ok(!sarKapsamDisi("_Sarmal/plan/goc_plani.sar"),
+  assert.ok(!sarKapsamDisi(`_Sarmal/${PLAN_GOC}`),
     "gerçek plan dosyası kapsam dışına düştü; kuyruk körleşir");
 });
 
 test("tek evren: ölçüm yalnız DİZİN parçalarına bakar — glob semantiği birebir", () => {
   // Glob `**/{…}/**` dizin segmentlerine bakar, dosya adına bakmaz.
-  assert.ok(!sarKapsamDisi("plan/dist.sar"), "dosya adı dizin sanıldı");
+  assert.ok(!sarKapsamDisi(planYolu("dist.sar")), "dosya adı dizin sanıldı");
   assert.ok(!sarKapsamDisi("goc_plani.sar"), "kök dosyası kapsam dışına düştü");
   assert.ok(sarKapsamDisi("a/ogreti/ornek/b/c.sar"), "ara dizin ölçülmüyor");
 });
@@ -622,7 +627,7 @@ test("HİÇBİR KAYNAK DOSYASI HAM NUL TAŞIMAZ — dosya grep'e görünür kal�
 //   Founder açtığı kapıyı elinin altında kaybediyordu.
 
 test("kimlik: kapı kimliği ETİKETTEN değil KAYNAKTAN doğar — etiket değişse de sabit kalır", () => {
-  const yol = "/depo/_Sarmal/plan/goc_plani.sar";
+  const yol = `/depo/_Sarmal/${PLAN_GOC}`;
   const once = onayKimligi({ tur: "kapı", dosya: yol, kod: "VIT-POSTA-A01" });
   // Adımın `ne` metni düzenlendi: etiket değişti, kapı aynı kapı.
   const sonra = onayKimligi({ tur: "kapı", dosya: yol, kod: "VIT-POSTA-A01" });
@@ -1058,8 +1063,8 @@ test("tazeleme: belge BAŞTAN yazılmaz; odak ve imleç konumu korunur", () => {
 
 test("taslak: her KAPININ kutusu ayrıdır; başka kapıyı açmak metni silmez", () => {
   const durum = new PanelDurumu();
-  const bir = notKimligi("/depo/_Sarmal/plan/goc_plani.sar", "A1");
-  const iki = notKimligi("/depo/_Sarmal/plan/vitrin_ui.sar", "B9");
+  const bir = notKimligi(`/depo/_Sarmal/${PLAN_GOC}`, "A1");
+  const iki = notKimligi(`/depo/_Sarmal/${PLAN_VITRIN}`, "B9");
   durum.taslakYaz(bir, "birinci kapının gerekçesi");
   durum.taslakYaz(iki, "ikinci kapının gerekçesi");
   assert.equal(durum.taslak(bir), "birinci kapının gerekçesi",
@@ -1234,7 +1239,7 @@ test("bayat görüntü: açık belge kapıyı hâlâ görüyorsa kapı DÜŞMEZ"
 
 test("bayat görüntü: AÇIK OLMAYAN dosyaların kapıları görüntüden aynen geçer", () => {
   const kayitlar = ikiDosyaliFikstur();
-  const acikYol = "/depo/_Sarmal/plan/goc_plani.sar";
+  const acikYol = `/depo/_Sarmal/${PLAN_GOC}`;
   // Yalnız bir dosya açık ve o dosyanın kapıları karara bağlanmış.
   const sonuc = acikBelgeleriUstuneYaz(kayitlar, [acikBelge(acikYol, [])]);
   assert.deepEqual(sonuc.map((k) => k.kapi.kod), ["B9"],

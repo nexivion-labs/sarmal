@@ -10,9 +10,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { denetimKos } from "../src/denetim.ts";
+import { DUZEN } from "./dogus-agaci.ts";
 import { belirtecle, SozDizimHatasi } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 
@@ -196,8 +197,10 @@ test("giriş tanısı: kapsam giriş desenini AŞAR — giriş deseninde olmayan
 test("giriş tanısı: gerçekten giriş dosyası eksik DİZİN klasik tanıyı almaya devam eder (regresyon)", () => {
   const kok = gecici();
   try {
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "is.sar"), 'Faz( kod: FZ-GRS, ad: "mevsim", ne: "girişsiz dizin fikstürü" )\n');
+    // Doğuşun yazdığı Faz dosyası yerinde, giriş ilanı kaybolmuş bir ağaç (HST-MTR-A07).
+    const faz = join(kok, DUZEN.ilkFaz);
+    mkdirSync(dirname(faz), { recursive: true });
+    writeFileSync(faz, 'Faz( kod: FZ-GRS, ad: "mevsim", ne: "girişsiz dizin fikstürü" )\n');
     const t = erkenTani(kok);
     assert.equal(t.kod, "kural-ihlali");
     assert.match(t.mesaj, /giriş dosyası yok/u, `girişsiz dizinde hüküm korunmalı: ${t.mesaj}`);
