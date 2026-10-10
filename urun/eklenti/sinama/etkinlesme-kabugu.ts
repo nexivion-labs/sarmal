@@ -290,8 +290,13 @@ class SahteEditor {
   get visibleRanges(): Range[] { return [new Range(0, 0, Math.max(this.document.lineCount - 1, 0), 0)]; }
   readonly options = { tabSize: 2, insertSpaces: true };
   readonly viewColumn = 1;
-  constructor(document: SahteBelge) { this.document = document; }
-  setDecorations(): void { /* çizim ölçülmez */ }
+  private readonly dekorKaydet: (tur: { key?: string }, dekorlar: readonly unknown[]) => void;
+  constructor(document: SahteBelge, dekorKaydet: (tur: { key?: string }, dekorlar: readonly unknown[]) => void = () => undefined) {
+    this.document = document;
+    this.dekorKaydet = dekorKaydet;
+  }
+  /** Çizim doğrulanmaz, yalnız kaydedilir: tür başına son basılan dekorlar saklanır (MGZ-A09). */
+  setDecorations(tur: { key?: string }, dekorlar: readonly unknown[]): void { this.dekorKaydet(tur, dekorlar); }
   revealRange(): void { /* görünüm ölçülmez */ }
   async edit(): Promise<boolean> { return true; }
 }
@@ -324,6 +329,14 @@ export interface KabukKaydi {
   readonly komutCagrilari: { komut: string; argumanlar: unknown[] }[];
   /** `workspace.findFiles` çağrı sayısı — güven isteyen disk taraması ölçülür. */
   dosyaAramasi: number;
+  /**
+   * Kurulan dekor türleri: tür anahtarı → kurulum seçenekleri. İngilizce yüz
+   * nöbeti (MGZ-A09) dosyanın üzerine neyin boyandığını buradan okur; bir türün
+   * kaynak metni saydamlaştırıp saydamlaştırmadığı da bu seçeneklerde görünür.
+   */
+  readonly dekorTurleri: Map<string, unknown>;
+  /** Etkin editöre basılan son dekorlar: tür anahtarı → aralık ve çizim seçenekleri. */
+  readonly dekorlar: Map<string, readonly unknown[]>;
 }
 
 export interface EtkinlesmeSecenegi {
@@ -389,13 +402,15 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
   const kayit: KabukKaydi = {
     tanilar: new Map(), durumOgeleri: [], bilgiler: [], uyarilar: [], hatalar: [], durumMesajlari: [],
     kanallar: new Map(), komutlar: new Map(), komutCagrilari: [], dosyaAramasi: 0,
+    dekorTurleri: new Map(), dekorlar: new Map(),
   };
   const durum = { guvenilir: secenek.guvenilir ?? true };
   const guven = new EventEmitter<void>();
   const ayarlar = { ...ayarVarsayilanlari(), ...Object.fromEntries(Object.entries(secenek.ayarlar ?? {}).map(([k, v]) => [`sarmal.${k}`, v])) };
   const klasorler = secenek.klasorler.map((k, index) => ({ uri: Uri.file(k), name: k.split(sep).at(-1) ?? k, index }));
   const etkinEditor = secenek.etkinDosya
-    ? new SahteEditor(new SahteBelge(secenek.etkinDosya, readFileSync(secenek.etkinDosya, "utf8")))
+    ? new SahteEditor(new SahteBelge(secenek.etkinDosya, readFileSync(secenek.etkinDosya, "utf8")),
+      (tur, dekorlar) => { kayit.dekorlar.set(tur.key ?? "", [...dekorlar]); })
     : undefined;
   const bosOlay = (): ((d: Dinleyici<unknown>) => { dispose(): void }) => new EventEmitter<unknown>().event;
   const kapsayanKlasor = (yol: string): (typeof klasorler)[number] | undefined =>
@@ -443,7 +458,11 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
       onDidChangeVisibility: bosOlay(), onDidChangeSelection: bosOlay(), onDidChangeCheckboxState: bosOlay(),
       onDidExpandElement: bosOlay(), onDidCollapseElement: bosOlay(),
     }),
-    createTextEditorDecorationType: () => ({ key: "sahte", dispose: () => undefined }),
+    createTextEditorDecorationType: (secenekler: unknown) => {
+      const key = `sahte-dekor-${kayit.dekorTurleri.size + 1}`;
+      kayit.dekorTurleri.set(key, secenekler);
+      return { key, dispose: () => undefined };
+    },
     onDidChangeActiveTextEditor: bosOlay(),
     onDidChangeTextEditorSelection: bosOlay(),
     onDidChangeVisibleTextEditors: bosOlay(),

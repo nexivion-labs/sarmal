@@ -907,10 +907,12 @@ Kod( kod: KOD-SNM-MCP-CEVIRI, dosya: "urun/cekirdek/sinama/mcp-metin-ceviri-kaps
   ne: "🍎 MCP metin kapsama nöbeti — bir araç açıklamasının ya da parametre tarifinin İngilizce hanesi eksilirse süit kırmızıya döner; iki mutasyonla kanıtlanmıştır" )
 Kod( kod: KOD-EKL-DIL, dosya: "urun/eklenti/src/dil.ts",
   ne: "🍎 Eklentinin dil kaynağı tek kapısı — vscode.env.language yalnız burada okunur, sarmal.dil ayarı (otomatik/tr/en) kaçış kapısıdır ve etkin dil motor çağrılarına buradan geçirilir" )
-Kod( kod: KOD-EKL-GORSEL-ESAD, dosya: "urun/eklenti/src/gorsel-esad.ts",
-  ne: "🍎 Kaynak içi görsel eşad katmanı — dil İngilizceyken açık .sar editöründe tip adlarını sözlükten İngilizce gösteren dekorasyon; dosya diskte Türkçe kalır, yalnız görüntü çevrilir" )
-Kod( kod: KOD-SNM-GORSEL-ESAD, dosya: "urun/eklenti/sinama/gorsel-esad.test.ts",
-  ne: "🍎 Görsel eşad nöbeti — dil en iken tip adlarının İngilizce etikete bağlandığını, tr iken dekorasyonun hiç kurulmadığını ve diskteki metnin her iki durumda bayt-bayt değişmediğini dört hükümle ölçer; sözlük kapısı mutasyonuyla kanıtlıdır" )
+// SÖKÜM (MGZ-A09 · 2026-10-10): görsel eşad katmanı Founder hükmüyle kalktı; iki teslimin
+// dosyası depodan çıktığı için dosya beyanları düşürüldü ve tarihçe CDL-A08 koşu kaydında kalır.
+Kod( kod: KOD-EKL-GORSEL-ESAD,
+  ne: "🍎 Kaynak içi görsel eşad katmanı — dil İngilizceyken açık .sar editöründe tip adlarını sözlükten İngilizce gösteren dekorasyondu. Founder 2026-10-10 tarihinde dosyanın üzerine boyanan İngilizce bindirmenin kalkmasına hükmetmiş ve katman MGZ-A09 Adımında sökülmüştür; dosya artık her dilde olduğu gibi Türkçe görünür" )
+Kod( kod: KOD-SNM-GORSEL-ESAD,
+  ne: "🍎 Görsel eşad nöbeti — dil en iken tip adlarının İngilizce etikete bağlandığını ölçerdi. Ölçtüğü katman MGZ-A09 Adımında söküldüğü için nöbet emekli olmuştur; yerini bindirmenin hiçbir dilde kurulmadığını ölçen KOD-SNM-INGILIZCE-YUZ almıştır" )
 Kod( kod: KOD-EKL-NLS, dosya: "urun/eklenti/package.nls.json",
   ne: "🍎 Manifest yerelleştirme katalogları — package.nls.json İngilizce ve package.nls.tr.json Türkçe, seksen beş anahtar iki kümede birebir eşittir; manifest kullanıcı-görünür dizeleri yalnız buradan okur" )
 Kod( kod: KOD-SNM-DIL-KUR, dosya: "urun/eklenti/sinama/dil-kur.ts",

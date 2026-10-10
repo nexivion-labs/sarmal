@@ -44,7 +44,6 @@ import { bicimlendirmeSaglayici } from "./bicimlendir.ts";
 import { girintiKaydi } from "./girinti.ts";
 import { camKaydi } from "./cam.ts";   // 🪟 cam efekti (Founder 2026-07-18)
 import { atifDekorKaydi } from "./atif-dekor.ts";   // NTK-A01: çözülen atıflar link görünümü alır
-import { gorselEsadKaydi } from "./gorsel-esad.ts"; // CDL-A08: İngilizce kaynak-içi görsel tip eşadları
 import { eksenDekorKaydi, parametreDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06/A08: eksen ve parametre satırlarına aile simgesi
 import { onayKuyruguKaydi, onayYuzeyiOlcumleri } from "./onay-kuyrugu.ts"; // NTK-A08: Founder karar gelen-kutusu
 // 📬 VIT-POSTA-A03: ana tanı turunun anlık görüntüsü onay tarayıcısına AKTARILIR;
@@ -940,7 +939,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   girintiKaydi(context);
   camKaydi(context);        // 🪟 tip/anahtar kelimelere buzlu-cam kapsül
   atifDekorKaydi(context);
-  gorselEsadKaydi(context, vscode, etkinDil, dilAyariDegistiMi);
+  // 🌐 MGZ-A09 (Founder hükmü 2026-10-10): dosyanın üzerine İngilizce tip adı
+  // boyayan katman (CDL-A08) söküldü. Kaynak her dilde olduğu gibi Türkçe görünür;
+  // İngilizce yalnız arayüzde, tanıda ve ipucu balonunda konuşur ve dosyadaki
+  // gerçek adları anar. Editöre basılan hiçbir dekor dile göre değişmez.
   // 🎨 VIT-KIMLIK-A06 (Founder hükmü 2026-08-04): geometrik simge ailesi kaynak
   // dosyanın İÇİNDE de konuşur — altı eksen tipinin bildirim satırı tip adının
   // solunda simgesini taşır; yollar simge-cizelgesi.ts'den, dosyaya bayt yazılmaz.
@@ -954,7 +956,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   onayKuyruguKaydi(context, onayPaneli, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
 
   // Ağaç kılavuz çizgileri (kesintisiz dikey + ├└ dallar + kapanış etiketi)
-  dallarKaydi(context, dilAyariDegistiMi);
+  dallarKaydi(context);
 
   // Önizleme (MD önizlemesi gibi — ⇧⌘V / başlık çubuğu ikonu)
   onizlemeKaydi(context);

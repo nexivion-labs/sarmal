@@ -12,6 +12,12 @@
 //     • kapanış `}`'ine hayalet etiket: ‹ Blok BLK-X (kaynak kirlenmez)
 //   Kutu-glifler mutlak-konumla girintinin ÜZERİNE biner → metin kaymaz.
 //
+//   KAPANIŞ ETİKETİ DİLDEN BAĞIMSIZDIR (MGZ-A09 · Founder hükmü 2026-10-10).
+//   Etiket dosyadaki bir tipi adlandırır ve o tipin dosyadaki adını, yani
+//   açılış satırında yazan Türkçe sözcüğü taşır. İngilizce pencerede `‹ Block`
+//   basmak dosyada bulunmayan bir adı öğretirdi; bu yüzden etiket her dilde
+//   aynıdır ve dil değişikliği kılavuzları yeniden çizdirmez.
+//
 //   KESİNTİ SINIRLARI (VIT-K78-A04 · dürüst belgeleme 2026-07-11):
 //   dalIzgarasi() (dallar-cekirdek.ts) kardeşler arasına ARALIKSIZ │ koyar — yorum/belge satırları dahil;
 //   muafiyet-kaynaklı dal-çizgisi kesintisi YOKTUR. Kalan iki kesinti VS Code
@@ -27,7 +33,6 @@
 import * as vscode from "vscode";
 import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
-import { kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 import { dalIzgarasi, satirDizesi } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
 
 // Tek taban tür — glif/renk/konum her aralıkta ayrıca (renderOptions) verilir.
@@ -88,7 +93,7 @@ function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
           etiketler.push({
             range: new vscode.Range(s, m.length, s, m.length),
             renderOptions: { after: {
-              contentText: `  ‹ ${kanonikWidgetAdi(b.ad, b.ad)}${b.kod ? " " + b.kod : ""}`,
+              contentText: `  ‹ ${b.ad}${b.kod ? " " + b.kod : ""}`,
               color: "rgba(150,150,150,0.5)", fontStyle: "italic",
             } },
           });
@@ -159,11 +164,9 @@ export function dallariCiz(editor: vscode.TextEditor | undefined): void {
   editor.setDecorations(etiketTuru, etiketler);
 }
 
-/** Etkinleştirme: editör/belge/ayar değişimlerine bağlanır. */
-export function dallarKaydi(
-  context: vscode.ExtensionContext,
-  dilAyariDegistiMi: (olay: vscode.ConfigurationChangeEvent) => boolean,
-): void {
+/** Etkinleştirme: editör/belge/ayar değişimlerine bağlanır. Çizim dilden
+ *  bağımsız olduğu için yalnız kılavuz ayarı yeniden çizdirir (MGZ-A09). */
+export function dallarKaydi(context: vscode.ExtensionContext): void {
   dallariCiz(vscode.window.activeTextEditor);
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(dallariCiz),
@@ -172,7 +175,7 @@ export function dallarKaydi(
       if (aktif && e.document === aktif.document) dallariCiz(aktif);
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("sarmal.agacCizgileri") || dilAyariDegistiMi(e))
+      if (e.affectsConfiguration("sarmal.agacCizgileri"))
         dallariCiz(vscode.window.activeTextEditor);
     }),
     { dispose: () => { glifTuru.dispose(); etiketTuru.dispose(); } },
