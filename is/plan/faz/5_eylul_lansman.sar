@@ -5214,7 +5214,7 @@ sıfır uyarıda kalır.
 
         Adım( kod: RFM-MOTOR-A02, durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, ajanın DIL-1.8 Zorlama paragrafına yazdığı iki hükmü onaylamıştır: önek sicili beyan etmeyen projede standart yürürlükte sayılmaz ve iki tanı susar; ileriye dönüklük bir tarih sınırıyla değil, standarttan önce doğmuş uyumsuz kodların adıyla yazıldığı bir muafiyet listesiyle sağlanır. Gerekçe, motorun bir kodun doğum tarihini bilememesi ve sicil şartının Sarmal kullanan başka projeleri habersiz uyarıyla doldurmamasıdır. Metin olduğu gibi kanona iner ve dal, tanı kümesinin tek kaydı birleştikten sonra yeniden tabanlanarak birleşir.", öncelik: p1,
           bağımlı: [ RFM-KANON-A02 ],
-          üretir: [ KOD-RFM-MOTOR-KODSTANDARDI, KOD-SNM-KOD-STANDARDI ],
+          üretir: [ KOD-RFM-MOTOR-KODSTANDARDI, KOD-SNM-KOD-STANDARDI, KOD-TANI-SICILI, KOD-DENETCI, KOD-TANI-METINLERI, KOD-KAPI-KAPSAMI, KOD-SNF-KANON ],
           referans: [ DIL-5.1 ],
           ne: "🛡️ Önek sicilinin kurulması ve biçim tanısının doğması. Sicil her öneki tek yerde ilan eder; tanı ilansız önekli ya da biçim dışı YENİ kodu UYARI düzeyinde bildirir ve ileriye dönüklük sınırı mekanik kurulur." ) {
           görev: [
@@ -5228,6 +5228,9 @@ sıfır uyarıda kalır.
             "İki dillilik nöbeti yeşildir; tanı metni iki dilde yaşar."
           ]
           sınır: "Tanı hiçbir koşulda HATA düzeyine çıkarılmaz; standart ileriye dönüktür ve mevcut kaynağı kırmızıya boyamak Founder hükmünün tersidir."
+          koşu:  Koşum( kod: KSM-RFM-MOTOR-A02, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 6c27259 (üretim 71702d6, yeniden tabanlanmış hâl; önceki gövde 58660df) · dal ucunda çekirdek 1727/1727, eklenti 941/941 · birleşik ağaçta çekirdek 1738/1738, eklenti 941/941, iki pakette tür ve dil denetimi temiz, depo denetimi 0 hata ve 0 uyarı · ilk bağımsız inceleme kodu kabul etti ve Zorlama metnindeki iki hüküm Founder onayıyla kanona indi · yeniden tabanlama incelemesi: kod mantığı ve kanon farkı önceki gövdeyle birebir aynı; sekiz çakışma bloğun yanına çözüldü ve tek sayı değişikliği tanı kümesinin tek kaydında yeni küme uyarı sayısının 22'den 24'e çıkmasıdır; 42 ilansız önek ve 1 biçim uyumsuzluğu HST ile MGZ öneklerinin sicile ilanı ve TAKIM-FOUNDER'ın adıyla muafiyetiyle sıfırlandı, muafiyet yalnız o kodu kapsıyor; altı mutasyonun altısı yakalandı; beş kardeş projede çıktı bayt bayt aynı",
+            ne:    "Önek sicili doğdu ve DIL-1.8 düğüm kodu standardı yürürlüğe girdi: sicil beyan eden projede ilansız önek ve biçim dışı kod uyarı alır, standarttan önce doğmuş kodlar adıyla tutulan muafiyet listesiyle korunur ve sicil beyan etmeyen projeler etkilenmez. İki yeni uyarı tanısı Problems hanesine yönlenir ve bunu ayrı bir bölüşüm sınaması ölçer. Bütün sicil için tutarlı ters kaymayı yakalayan genel bir bölüşüm nöbeti hâlâ yoktur ve HTR-TANI-ARTIRMA-ADIMININ-KALAN-ACIKLARI kaydında açık kalır." )
         }
 
         Adım( kod: RFM-MOTOR-A03, durum: beklemede, öncelik: p2,
@@ -6660,7 +6663,7 @@ Kod( kod: KOD-RFM-MOTOR-KODSTANDARDI, dosya: "urun/cekirdek/src/kod-standardi.ts
   ne: "🍎 Düğüm kodu standardının saf ölçümü — anadizindeki önek sicilini okur, biçim hükmünü ve önek ilanını tek kodda ölçer; ilansız-önek ile kod-biçimi-uyumsuz uyarılarının ve sonraki boş kodu önerecek aracın ortak kaynağıdır (RFM-MOTOR-A02 ürünü)" )
 
 Kod( kod: KOD-SNM-KOD-STANDARDI, dosya: "urun/cekirdek/sinama/kod-standardi.test.ts",
-  ne: "🏷️ Düğüm kodu standardı nöbeti — biçim hükmünün dört kusurunu, sicilin okunuşunu, ilansız önek ile biçim dışı kodun uyarı düzeyinde doğduğunu, sicilsiz projenin hiç tanı üretmediğini, sicilin yalnız kendi varlığını bağladığını ve deponun mevcut kodlarının tanısız kaldığını sınar (RFM-MOTOR-A02 · DIL-1.8)" )
+  ne: "🏷️ Düğüm kodu standardı nöbeti — biçim hükmünün dört kusurunu, sicilin okunuşunu, ilansız önek ile biçim dışı kodun uyarı düzeyinde doğduğunu, sicilsiz projenin hiç tanı üretmediğini, sicilin yalnız kendi varlığını bağladığını ve deponun mevcut kodlarının tanısız kaldığını sınar (RFM-MOTOR-A02 · DIL-1.8); iki yeni tanının yalnız Problems hanesine yönlendiğini ve matrisin onları yalnız orada andığını ölçen bölüşüm sınaması da bu dosyadadır" )
 
 // ── BLK-PRF-PANELKIPI gövdesinin Faz dışı ilanları · eski dosyası is/plan/blok/@SONRA@_prf_panelkipi.sar (KPS-SIR-A04) ──
 Kod( kod: KOD-PRF-DENETIM-PANELKIPI, dosya: "urun/cekirdek/src/denetim.ts",
