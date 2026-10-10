@@ -139,7 +139,7 @@ sessizce atlar.
 | # | Kapı | Ne yapar |
 |---|---|---|
 | ① | **Sapma denetimi** | `sarmal denetle .` koşar. Hata varsa işleme **bloklanır**; uyarı geçer. Sapma tarihe girmez. |
-| ② | **Süit kapısı** | Yalnız `urun/cekirdek/{src,sinama}` ya da `urun/eklenti/{src,sinama}` altında `.ts` değişikliği hazırlandıysa ateşlenir ve ilgili `npm test` koşar. **Kırmızı süit işlemeyi bloklar.** Plan ve durum işlemeleri bu kapıda yavaşlamaz. |
+| ② | **Süit kapısı** | Çekirdeğin kodu (`urun/cekirdek/{src,sinama}` altındaki `.ts`), kanon (`yasa/kanon`) ya da tip kaydı (`oz/siniflama`) değiştiyse çekirdeğin tam süiti koşar; değişmediyse yalnız deponun ağacını okuyan çekirdek nöbetleri (`npm run test:agac`) koşar. Eklenti süiti her işlemede koşar, çünkü nöbetlerinin bir bölümü plan ve kanon dosyalarını okur ve hepsi çekirdeğin kodunu içe alır. **Kırmızı süit işlemeyi bloklar.** Yalnız ağaç nöbetleri için koşan bir süit, paketlerin bağımlılıkları kurulu değilse atlanır ve kanca bunu söyler. |
 | ③ | **Proje-özel kurallar** | `kanca/proje-kurallari.sh` varsa koşar. Bugün bu dosya **yoktur**; kapı bilerek ince tutulmuştur ve ileride doldurulacaktır. |
 
 Aynı klasörde ikinci bir kanca daha yaşar: **`kanca/commit-msg`**. Bu kanca işleme mesajının
@@ -436,7 +436,7 @@ instead of locking you out.
 | # | Gate | What it does |
 |---|---|---|
 | ① | **Drift audit** | Runs `sarmal denetle .`. Any error **blocks** the commit; warnings pass. Drift never enters the history. |
-| ② | **Test suite gate** | Fires only when the staged changes include `.ts` files under `urun/cekirdek/{src,sinama}` or `urun/eklenti/{src,sinama}`, and runs the matching `npm test`. **A red suite blocks the commit.** Plan and status commits are not slowed down by this gate. |
+| ② | **Test suite gate** | When the staged changes touch the core's code (`.ts` files under `urun/cekirdek/{src,sinama}`), the canon (`yasa/kanon`) or the type registry (`oz/siniflama`), the full core suite runs; otherwise only the core tests that read the repository tree run (`npm run test:agac`). The extension suite runs on every commit, because some of its tests read plan and canon files and all of them import the core's code. **A red suite blocks the commit.** A suite that runs only for its tree-reading tests is skipped when the packages' dependencies are not installed, and the hook says so. |
 | ③ | **Project-specific rules** | Runs `kanca/proje-kurallari.sh` if it exists. That file **does not exist today**; the gate is deliberately kept thin and will be filled in later. |
 
 A second hook lives in the same directory: **`kanca/commit-msg`**. It measures the commit
