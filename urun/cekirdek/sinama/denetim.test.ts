@@ -13,6 +13,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { denetimKos } from "../src/denetim.ts";
+import { belirtecle, SozDizimHatasi } from "../src/belirtec.ts";
+import { ayristir } from "../src/ayristirici.ts";
 
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const gecici = (): string => mkdtempSync(join(tmpdir(), "sarmal-dnt-"));
@@ -210,5 +212,38 @@ test("giriş tanısı: diskte hiç bulunmayan yol, var olmayan bir kabın içini
     const t = erkenTani(join(kok, "hic-yok"));
     assert.doesNotMatch(t.mesaj, YANILTICI, `var olmayan yol için kap iddiası basıldı: ${t.mesaj}`);
     assert.match(t.mesaj, /diskte bulunamadı/u, t.mesaj);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+// ── MGZ-A03 · Ham sözdizimi hatası tanı kimliği kazanır ─────────────────────
+//   Erken çıkışın sözleşmesi aynen korunur (çıkış 2, boş akış, ilk hata kapıyı
+//   kapatır); değişen tek şey hatanın artık `söz-dizim` kimlikli, iki dilli bir
+//   tanı taşımasıdır. Komut satırı ve eklenti kimliği bu tanıdan okur.
+
+test("MGZ-A03: ayrıştırılamayan dosya denetimi eskisi gibi durdurur ve hatası söz-dizim kimlikli tanı taşır", () => {
+  const kok = gecici();
+  try {
+    writeFileSync(join(kok, "deneme_anadizin.sar"), 'ÇalışmaAlanı( kod: DNM, ad: "deneme" )\n');
+    const kaynak = 'Faz( kod: F1, ad: "sağlam" )\nFaz( kod: F2 ad: "kırık" )\n';
+    writeFileSync(join(kok, "kirik.sar"), kaynak);
+    let beklenen: SozDizimHatasi | undefined;
+    try { ayristir(belirtecle(kaynak)); } catch (e) { if (e instanceof SozDizimHatasi) beklenen = e; }
+    assert.ok(beklenen, "fikstür ayrıştırılabiliyor — kusur yeniden üretilemez");
+
+    const s = denetimKos(kok, { snfYol: SNF_YOL });
+    assert.equal(s.cikis, 2, "erken çıkışın çıkış kodu değişti");
+    assert.equal(s.akis.length, 0, "erken çıkışın akış sözleşmesi değişti");
+    assert.equal(s.tamKosum, false);
+    assert.ok(s.sozdizimHata, "sözdizimi hatası sonuçta yok");
+    assert.equal(s.sozdizimHata.etiket, "kirik.sar");
+    const t = s.sozdizimHata.tani;
+    assert.ok(t, "sözdizimi hatası tanı kimliği taşımıyor — ham hata olarak kaldı");
+    assert.equal(t.kod, "söz-dizim");
+    assert.equal(t.duzey, "hata");
+    assert.equal(t.satir, beklenen.satir);
+    assert.equal(t.sutun, beklenen.sutun);
+    assert.equal(t.mesaj, beklenen.message);
+    assert.equal(t.dilMetinleri?.tr?.mesaj, beklenen.message, "Türkçe yüz ayrıştırıcının cümlesi değil");
+    assert.equal(t.dilMetinleri?.en?.mesaj, beklenen.ingilizceMesaj, "İngilizce yüz ayrıştırıcının cümlesi değil");
   } finally { rmSync(kok, { recursive: true, force: true }); }
 });

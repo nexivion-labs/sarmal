@@ -50,6 +50,8 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { belirtecle, SozDizimHatasi } from "../src/belirtec.ts";
+import { ayristir } from "../src/ayristirici.ts";
 // Sadece OKUMA (dosya bu Adımın çitinde değiştirilemez varlıklardan biridir):
 // büyüme-tamlığı testi MCP_ARAC_ADI'nı tek kaynaktan alır, kendi kopyasını
 // elle yazmaz — aksi hâlde bu test dosyası da ikinci bir bayat liste olurdu.
@@ -301,4 +303,48 @@ test('bilinen bir alt komut ("denetle") eksik zorunlu argümanla çağrıldığ�
   assert.equal(kod, 1);
   yigitIziYok(cikti, "sarmal denetle (argümansız)");
   assert.match(cikti, /denetle için proje dizini gerekli/);
+});
+
+// ── ⑧ MGZ-A03 · Sözdizimi hatası kimliğiyle basılır ─────────────────────────
+//   Ölçülmüş kusur (HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK): kanonun DİL
+//   bölümü `söz-dizim` kimliğini HATA düzeyinde ilan eder ve biçimini
+//   `{duzey, kod, mesaj, satir, sutun, oneri}` diye yazar; tanı sicilinde de
+//   kimlik vardır. Komut satırı ise kırık dosyayı tek dosya kipinde ve proje
+//   kipinde `✖ dosya:satır:sütun — ileti` biçiminde, kimliksiz basıyordu ve
+//   Sorunlar panelindeki satırla aynı kaydı anlattığı okunamıyordu. Hata kurtarma
+//   davranışı ve çıkış kodu değişmez: ilk sözdizimi hatası denetimi durdurur.
+
+test("MGZ-A03: tek dosya ve proje kipi ayrıştırılamayan dosyayı [söz-dizim] kimliği, satırı ve sütunuyla basar", () => {
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-cli-kapisi-sozdizim-"));
+  try {
+    writeFileSync(join(kok, "deneme_anadizin.sar"), 'ÇalışmaAlanı( kod: DNM, ad: "deneme" )\n', "utf8");
+    const kirik = join(kok, "kirik.sar");
+    const kaynak = 'Faz( kod: F1, ad: "sağlam" )\nFaz( kod: F2 ad: "kırık" )\n';
+    writeFileSync(kirik, kaynak, "utf8");
+    // Beklenen konum ayrıştırıcının kendi hükmüdür; sayı elle yazılmaz.
+    let beklenen: SozDizimHatasi | undefined;
+    try { ayristir(belirtecle(kaynak)); } catch (e) { if (e instanceof SozDizimHatasi) beklenen = e; }
+    assert.ok(beklenen, "fikstür ayrıştırılabiliyor — kusur yeniden üretilemez");
+
+    const tek = calistir([kirik]);
+    yigitIziYok(tek.cikti, `sarmal ${kirik}`);
+    assert.equal(tek.kod, 2, `tek dosya kipinin çıkış kodu değişti:\n${tek.cikti}`);
+    assert.ok(tek.cikti.includes(`✖ ${kirik}:${beklenen.satir}:${beklenen.sutun} [söz-dizim] ${beklenen.message}`),
+      `tek dosya kipi sözdizimi hatasını kimliğiyle basmıyor:\n${tek.cikti}`);
+
+    const proje = calistir(["denetle", kok]);
+    yigitIziYok(proje.cikti, `sarmal denetle ${kok}`);
+    assert.equal(proje.kod, 2, `proje kipinin çıkış kodu değişti:\n${proje.cikti}`);
+    assert.ok(proje.cikti.includes(`✖ kirik.sar:${beklenen.satir}:${beklenen.sutun} [söz-dizim] ${beklenen.message}`),
+      `proje kipi sözdizimi hatasını kimliğiyle basmıyor:\n${proje.cikti}`);
+    // Mühürleme de aynı yükleyiciyi okur ve aynı hatada durur; satırı da aynıdır.
+    const kilit = calistir(["kilitle", kok]);
+    yigitIziYok(kilit.cikti, `sarmal kilitle ${kok}`);
+    assert.equal(kilit.kod, 2, `kilitle komutunun çıkış kodu değişti:\n${kilit.cikti}`);
+    assert.ok(kilit.cikti.includes(`✖ kirik.sar:${beklenen.satir}:${beklenen.sutun} [söz-dizim] ${beklenen.message}`),
+      `kilitle komutu sözdizimi hatasını kimliğiyle basmıyor:\n${kilit.cikti}`);
+    assert.doesNotMatch(`${tek.cikti}\n${proje.cikti}\n${kilit.cikti}`, /^✖ \S+:\d+:\d+ — /mu, "kimliksiz eski biçim hâlâ basılıyor");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
 });

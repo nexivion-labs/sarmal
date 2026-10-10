@@ -128,6 +128,17 @@ import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MT
 import type { EbediKilit } from "./kuralci.ts";
 import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
+import { sozDizimTanisi } from "./tani-metinleri.ts";
+
+/**
+ * MGZ-A03 · Sözdizimi hatasının satırı. Ayrıştırılamayan dosya öteki tanılarla
+ * aynı biçimde, kimliğiyle basılır (`✖ dosya:satır:sütun [söz-dizim] ileti`);
+ * böylece komut satırı Sorunlar panelindeki kaydın aynısını anlatır. Satır
+ * standart hata akışına gider ve çıkış kodu değişmez (davranış korunur).
+ */
+function sozDizimSatiri(dosya: string, tani: Tani): string {
+  return `✖ ${dosya}:${tani.satir}:${tani.sutun} [${tani.kod}] ${tani.mesaj}`;
+}
 
 // ── Çıkış kapısı: makine yüzü boruya EKSİKSİZ teslim edilir ─────────────────
 //   ÖLÇÜLMÜŞ KUSUR (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR · 2026-08-31). POSIX'te
@@ -986,7 +997,7 @@ try {
   }
 } catch (e) {
   if (e instanceof SozDizimHatasi) {
-    console.error(`✖ ${yol}:${e.satir}:${e.sutun} — ${e.message}`);
+    console.error(sozDizimSatiri(yol, sozDizimTanisi(e)));
     process.exit(2);
   }
   throw e;
@@ -1039,7 +1050,7 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   const s = denetimKos(dizin, { anaYolu, bugun, snfYol: SNF_YOL, tamListe });
   if (s.sozdizimHata) {
     const h = s.sozdizimHata;
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));
     return s.cikis;
   }
   // göç motor turu A02 kapanışı (Karar A · ikinci parça): `--tanı <kod>` süzgeci hem kanonik
@@ -1439,7 +1450,7 @@ function kilitleKomutu(dizin: string): number {
   const { programlar, muaflar, hatalar } = programlariYukle(dizin);
   if (hatalar.length) {
     const h = hatalar[0];
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));   // MGZ-A03: denetimle aynı biçim ve kimlik
     return 2;
   }
   if (muaflar.size) console.log(`ℹ ${muaflar.size} dosya bilerek-hatalı — parse edilenler envantere girer, bozuk olanlar mühürlemeyi kesmez.`);

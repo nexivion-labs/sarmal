@@ -1777,7 +1777,9 @@ test("ODAK DEĞİŞİNCE BÜTÜN YÜZEYLER AYNI TURDA YENİDEN BASILIR", () => {
   // AYNI turda basılır. Biri atlanırsa kullanıcı çelişkili iki tablo görür:
   // bir panel yeni varlığı gösterirken öteki eskisini göstermeye devam eder.
   for (const [ad, desen] of Object.entries({
-    Problems: /koleksiyon\.(set|delete)/,
+    // MGZ-A03: Problems basımı yayınla aynı kapıdan (`problemseBas`) geçer; kapının
+    // davranışı sozdizim-yuzeyi.test.ts içinde gerçek odak değişimiyle ölçülür.
+    Problems: /koleksiyon\.(set|delete)|problemseBas\(/,
     "yüzey defteri": /yuzeyDefteri\.yayımla\(\)/,
     "fikir defteri": /fikirDefteri\.yayımla\(\)/,
     "odak dinleyicileri": /odakDinleyicileri/,

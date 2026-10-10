@@ -20,6 +20,7 @@ import { dirname, join } from "node:path";
 import { beklenenSunumYuzeyi, type SunumYuzeyi } from "../../cekirdek/src/denetim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
+import { SOZ_DIZIM_KODU } from "../../cekirdek/src/tani-metinleri.ts";   // MGZ-A03: kimliğin tek kaynağı
 import {
   kayitEtiketi, kayitAciklamasi, kayitIpucu, panoKaydiMetni, panoKumeMetni,
 } from "./yuzey-metinleri.ts";
@@ -165,6 +166,19 @@ export function yuzeyeAyir(kayitlar: readonly YuzeyKaydi[]): YuzeyDagilimi {
     }
   }
   return { problems, hatırlatıcılar: tekSatiraIndir(hatırlatıcılar), bildirimler };
+}
+
+/**
+ * ⛔ MGZ-A03 · SORUNLAR PANELİNE GİDEN LİSTE. Odaktaki dosyanın bütün tanıları
+ * gider. Odak dışındaki dosyadan yalnız `söz-dizim` tanısı geçer: ayrıştırılamayan
+ * dosya bir projenin sapması değil, aracın hiç okuyamadığı bir dosyadır ve Yol
+ * Haritasının kırık dosyalar düğümü onu bütün pencere için zaten duyurur. Ölçülen
+ * kusur buydu: odak başka projedeyken Yol Haritası dosyanın kırık olduğunu
+ * söylerken Sorunlar paneli aynı anda sorun algılanmadı diyordu. Odak süzgeci
+ * yerinde kalır; öteki tanıların hiçbiri odağı aşmaz.
+ */
+export function problemsYayini<T extends { readonly code?: unknown }>(tanilar: readonly T[], odakta: boolean): T[] {
+  return odakta ? [...tanilar] : tanilar.filter((t) => t.code === SOZ_DIZIM_KODU);
 }
 
 /**

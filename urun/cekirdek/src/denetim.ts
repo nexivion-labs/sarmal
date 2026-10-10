@@ -93,8 +93,10 @@ export interface DenetimSonucu {
   cikis: number;
   /** Rapor akışı — kabuk aynı sırayla basar. */
   akis: DenetimRapor[];
-  /** Sözdizim hatası erken çıkışı (console.error yolu — akışa girmez). */
-  sozdizimHata?: { etiket: string; satir: number; sutun: number; mesaj: string };
+  /** Sözdizim hatası erken çıkışı (console.error yolu — akışa girmez).
+   *  MGZ-A03: hata `söz-dizim` kimlikli tanısını da taşır; kabuk kimliği ve
+   *  konumu bu tanıdan basar, böylece komut satırı Sorunlar paneliyle aynı kaydı anlatır. */
+  sozdizimHata?: { etiket: string; satir: number; sutun: number; mesaj: string; tani: Tani };
   /** Tam koşum tamamlandı mı (erken çıkışlarda false — özet bölgesi kurulmaz). */
   tamKosum: boolean;
   anaEtiket?: string;
@@ -219,7 +221,7 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     const h = hatalar[0];
     const s = bos(2);
     s.muaflar = muaflar;
-    s.sozdizimHata = { etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj };
+    s.sozdizimHata = { etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj, tani: h.tani };
     return s;
   }
 

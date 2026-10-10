@@ -29,7 +29,7 @@ import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
 import type { Siniflama } from "./siniflama.ts";
 import { TAKSONOMI_BAS, TAKSONOMI_SON, taksonomiMd } from "./siniflama.ts";   // başvuru yüzü kanondan üretilir
 import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katmanı turu: beceri-drift nöbeti tanı evreni · katlanmış ad: orthografi nöbeti
-import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, tarihselTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
+import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, tarihselTani, sozDizimTanisi } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar · MGZ-A03: yükleyicinin sözdizimi hatası kimliğini buradan alır
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
 import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
@@ -1400,8 +1400,10 @@ export interface ProgramYuk {
   programlar: Map<string, Program>;
   /** bilerek-hatalı pragmalı dosyalar (parse edildi ama tanıları atlanmalı). */
   muaflar: Set<string>;
-  /** muaf-OLMAYAN sözdizim hataları (atma yok — çağıran karar verir: dur / atla). */
-  hatalar: Array<{ etiket: string; satir: number; sutun: number; mesaj: string }>;
+  /** muaf-OLMAYAN sözdizim hataları (atma yok — çağıran karar verir: dur / atla).
+   *  MGZ-A03: her hata `söz-dizim` kimlikli, iki dilli tanısını da taşır; ham
+   *  alanlar eski çağıranlar için yerinde kalır. */
+  hatalar: Array<{ etiket: string; satir: number; sutun: number; mesaj: string; tani: Tani }>;
   /** ⚡ PRF-MK-A03: yüklenirken zaten okunan ham metinler (etiket → kaynak). Tüketici
    *  diski bir daha okumaz. Dış anadizin istisnası KORUNUR: "ana.sar" etiketi yalnız
    *  dizinin kendi ana.sar dosyası diskte varsa ve onun içeriğiyle haritaya girer;
@@ -1440,7 +1442,7 @@ export function programlariYukle(dizin: string, anaYolu?: string, disk?: DiskAnl
       programlar.set(etiket, ayristir(belirtecle(kaynak)));
     } catch (e) {
       if (e instanceof SozDizimHatasi) {
-        if (!muaflar.has(etiket)) hatalar.push({ etiket, satir: e.satir, sutun: e.sutun, mesaj: e.message });
+        if (!muaflar.has(etiket)) hatalar.push({ etiket, satir: e.satir, sutun: e.sutun, mesaj: e.message, tani: sozDizimTanisi(e) });
         continue;   // muaf: bilerek-hatalı söz-dizimi de olabilir — sessiz geç
       }
       throw e;

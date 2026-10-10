@@ -2426,11 +2426,21 @@ export function taniDilineCevir(tani: Tani, dil: CiktiDili): Tani {
   return { ...kalan, mesaj: metin.mesaj, oneri: metin.oneri, ...tamMesajEki(metin.tamMesaj, metin.mesaj) };
 }
 
+/**
+ * Ayrıştırılamayan kaynağın tanı kimliği (kanonun DİL bölümü · sicilin önceki
+ * kodları). MGZ-A03: komut satırı ve eklenti kimliği bu sabitten okur; kimlik
+ * iki yerde ayrı ayrı yazılırsa iki yüz aynı kaydı farklı adla anlatabilir.
+ * Kimlik bir kayıt alanı olarak yazılır, çünkü tanı sicilinin kaynak taraması
+ * (motor-guven.test.ts) sicildeki her kimliğin üreticisini `kod: "…"` biçiminden tanır.
+ */
+const SOZ_DIZIM_KIMLIGI = { kod: "söz-dizim" } as const;
+export const SOZ_DIZIM_KODU: string = SOZ_DIZIM_KIMLIGI.kod;
+
 /** Ayrıştırıcının dinamik söz-dizim cümlesini iki paralel tanı hanesine bağlar. */
 export function sozDizimTanisi(hata: SozDizimHatasi): Tani {
   return {
     duzey: "hata",
-    kod: "söz-dizim",
+    kod: SOZ_DIZIM_KODU,
     mesaj: hata.message,
     satir: hata.satir,
     sutun: hata.sutun,

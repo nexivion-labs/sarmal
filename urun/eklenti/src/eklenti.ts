@@ -72,7 +72,7 @@ import { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tamDenetimSonucu } from "./t
 import { readFile, readdir } from "node:fs/promises";
 import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
 import {
-  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri, taniHedefi,
+  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri, taniHedefi, problemsYayini,
   type YuzeyKaydi, type YuzeyDagilimi,
 } from "./yuzey-cekirdek.ts";
 // 🔭 Kapsama ilişkisinin TEK evi: yol haritasındaki varlık kümeleri ile panel
@@ -1151,10 +1151,22 @@ function panelDeGorunur(fsPath: string): boolean {
   return !kok || kapsamIcinde(kok, aktifVarlik);
 }
 
+/**
+ * ⛔ MGZ-A03 · Sorunlar paneline basma kapısı. Odaktaki dosyanın bütün tanıları
+ * basılır; odak dışındaki dosyadan yalnız `söz-dizim` geçer (yuzey-cekirdek
+ * `problemsYayini`). Yayın ile odak değişimindeki yeniden yayın aynı kapıdan
+ * geçer; iki ayrı kural yazılsaydı odak değiştiğinde kırık dosya yeniden düşerdi.
+ */
+function problemseBas(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
+  const odakta = panelDeGorunur(uri.fsPath);
+  const gidecek = problemsYayini(tanilar, odakta);
+  if (odakta || gidecek.length) koleksiyon.set(uri, gidecek);
+  else koleksiyon.delete(uri);
+}
+
 function taniYayinla(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
   taniDefteri.set(uri.fsPath, { uri, tanilar });
-  if (panelDeGorunur(uri.fsPath)) koleksiyon.set(uri, tanilar);
-  else koleksiyon.delete(uri);
+  problemseBas(uri, tanilar);
   durumCubugu?.tazele();
 }
 
@@ -1214,10 +1226,7 @@ const meyveKapisi = {
 // dolayısıyla öteki varlığın hatırlatıcıları ve bildirimleri Problems onları
 // gizlediği hâlde panelde durmaya devam ediyordu.
 function hepsiniYenidenYayinla(): void {
-  for (const { uri, tanilar } of taniDefteri.values()) {
-    if (panelDeGorunur(uri.fsPath)) koleksiyon.set(uri, tanilar);
-    else koleksiyon.delete(uri);
-  }
+  for (const { uri, tanilar } of taniDefteri.values()) problemseBas(uri, tanilar);
   yuzeyDefteri.yayımla();
   fikirDefteri.yayımla();   // 💡 KYN-YUZ-A01: Fikir hanesi de odakla birlikte yeniden basılır
   for (const dinleyici of odakDinleyicileri) dinleyici();
