@@ -586,9 +586,6 @@
         "when": "editorLangId == sarmal && editorTextFocus"
       }
     ],
-    "markdown.previewStyles": [
-      "./medya/onizleme.css"
-    ],
     "customEditors": [
       {
         "viewType": "sarmal.okuma",
