@@ -1391,3 +1391,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Denetçi, kök yüzeyi, yetki ya da şef modüllerinin içe aktarma düzenine bir sonraki kez dokunulduğunda ya da kimlik modülü bu döngüye girdiğinde",
   ne:               "HST-MTR-A10'un bağımsız incelemesi 2026-10-10 tarihinde metin atfı süzgecinin denetçi, kök yüzeyi, yetki ve şef modüllerini kapsayan döngüsel bir içe aktarmanın içinde kurulduğunu ölçmüştür. Döngü bugün komut satırında, MCP sunucusunda ve eklenti paketinde güvenlidir, çünkü modül yüklenirken döngü ortağının sabitine dokunan bir kod yoktur. Ancak eklentinin paketleyicisi üst düzey sabitleri değişkene çevirir; yükleme sırası bir gün bozulursa paket hata vermez, süzgeç sessizce tanımsız bir kuyrukla kurulur ve bütün adayları eler. Bunu ölçen bir sınama yoktur. Süzgeç sabiti kimlik modülüne taşınırsa döngüden tamamen çıkar; ya da paketin yükleme anında süzgecin değerini ölçen bir duman sınaması yazılır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-TANI-ARTIRMA-ADIMININ-KALAN-ACIKLARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-10,
+  dönüşTetikleyici: "Tanı sicilinin bir sonraki büyümesinden önce; en geç önek sicilinin iki uyarı tanısı birleşirken",
+  ne:               "HST-MTR-A12'nin ikinci bağımsız incelemesi 2026-10-10 tarihinde tanı kümesinin tek kaydında engelleyici olmayan üç açık ölçmüştür. Birincisi ve en önemlisi, yeni bir tanının Problems ile Bildirimler hanelerinden hangisine yönlendirildiğini canlı ölçen bir nöbet yoktur; kaldırılan literal bu bölüşümün elle yazılmış ikinci kopyasıydı ve bugün dağılımın doğruluğunu yalnız insan gözü tutmaktadır. Yeni küme tam canlı ölçülebildiği için Problems hanesi için 147 ile 153, Bildirimler hanesi için 36 ile 42 arasında canlı bir sınır bugün kurulabilir; yönlendirme ölçümünün ters yönde kaydırılamayacağını söyleyen yorum da tutarlı ters kaymayı yakalamadığı için yanlıştır. İkincisi, artırma adımının mühür basamağı yalnız sicil dosyasını ve matris mührünü anar; sınıflamadan türeyen bir tanıda tip kaydının mührü de değişir. Üçüncüsü, tutarlılık üreticisindeki anlatı cümlesinin kaynak listesi elle yazılıdır ve yeni bir tanıda eksik kalır. Birincisi önek sicilinin iki uyarı tanısından önce kurulursa en çok o iş yararlanır."
+)
