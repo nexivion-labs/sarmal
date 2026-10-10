@@ -35,11 +35,20 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/mcp-metinleri.ts` | `a74b21da434b6e9f972820c960fb66ea8e7863eff2e5f416b4c768d746058a7d` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
 | `urun/eklenti/package.nls.tr.json` | `f40044f8d3fe12a5f6c3379896e1e2cee2eedce8141b79977bfbfef83dbe92af` |
-| `urun/eklenti/package.nls.json` | `28c495d7c62ada63404ba9255579c8d54c871d325c7a3ac4c82eb817d5992d99` |
+| `urun/eklenti/package.nls.json` | `ac0dd3fbb69634d1e92202e9b9a29523635c6c136b484e6ab3002c9a36b6b65f` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `92d8ed759003ca7041b872d57d03f5015b61d88a9a4b1de5c3cf7f3646166ec7` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-10 · İngilizce yüzün tek ilkesi): MGZ-A09 eklentinin
+İngilizce yerelleştirme kataloğunda on üç anahtarın metnini değiştirdi. Anlam
+belirteci türlerinin, iki ayarın, kenar renginin ve bir komutun açıklaması artık
+dosyadaki Türkçe tip, kenar ve alan adlarını anar, çünkü Founder 2026-10-10
+tarihinde dosyanın her dilde Türkçe göründüğüne ve arayüzün İngilizce konuşup
+dosyadaki adı andığına hükmetmiştir. Yeni anahtar eklenmedi ve Türkçe katalog
+değişmedi; öteki sekiz kaynağın mührü değişmedi ve türetilmiş yüzlerin hiçbiri
+bu kataloğun metnini okumadığı için yeniden üretim fark vermedi.
 
 Tazeleme notu (2026-10-10 · düğüm kodu standardı): RFM-MOTOR-A02 DIL-1.8 maddesinin
 zorlama satırına `ilansız-önek` ile `kod-biçimi-uyumsuz` uyarılarını Founder onayıyla

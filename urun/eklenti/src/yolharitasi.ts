@@ -45,7 +45,7 @@ import {
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
-  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
+  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi,
 } from "./yuzey-metinleri.ts";
 
 // ── YUZ-4 RENK KANUNU (Founder kilidi 2026-07-12): renk = YALNIZ DURUM kanalı.
@@ -919,7 +919,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     if (o.hedefTarih) md.appendMarkdown(YOL_METINLERI.tarife(o.hedefTarih));
     if (planNeden) md.appendMarkdown(YOL_METINLERI.planlanmamis(planNeden));
     if (bag) md.appendMarkdown(YOL_METINLERI.caprazFazIpucu(bagFaz, bagProje));
-    if (o.ne) md.appendMarkdown(`\n\n${kanonikWidgetDuzYazisi(o.tip, o.ne)}`);
+    // MGZ-A09: düğümün `ne` metni dosyanın içeriğidir ve her dilde olduğu gibi
+    // basılır; İngilizce yüz onu tipin sözlük tarifiyle değiştiremez.
+    if (o.ne) md.appendMarkdown(`\n\n${o.ne}`);
     md.appendMarkdown(`\n\n_${o.durum}_`);
     if (o.bloklu > 0 && kapsayici) md.appendMarkdown(YOL_METINLERI.blokluAlt(o.bloklu));
     eleman.tooltip = md;
@@ -1074,7 +1076,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 <h1>${this.ikon("kart")}${this.durumIkonu(o.durum)}${kacir(o.kod)}</h1>
 <p class="k">${kacir(kanonikWidgetAdi(o.tip, o.tip))} · ${kacir(o.durum)} ·
 <a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([o.dosya.fsPath, o.satir]))}">${this.aile(YOL_METINLERI.dosyadaAc)}</a></p>
-<p>${kacir(kanonikWidgetDuzYazisi(o.tip, o.ne))}</p>
+<p>${kacir(o.ne)}</p>
 ${alan(YOL_METINLERI.alan("görev"), koni.görev)}
 ${alan(YOL_METINLERI.alan("kabul"), koni.kabul)}
 ${alan(YOL_METINLERI.alan("sınır"), koni.sınır)}

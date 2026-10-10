@@ -15,7 +15,6 @@ import { ifadePaletiCikar } from "./palet.ts";
 // (yazım yüzü korunur); Türkçe yüzde emoji eşdeğeri bilgi olarak görünür.
 import { emojiKarsiligi, emojiYuzuMu } from "./emoji-yuz.ts";
 import {
-  sozlukAdi,
   sozlukDuzYazisi,
   type CiktiDili,
 } from "../../cekirdek/src/cevir.ts";
@@ -142,12 +141,14 @@ function tipOnerileri(
   const items: vscode.CompletionItem[] = [];
 
   for (const t of snf.widgetTipleri) {
-    const gorunenAd = sozlukAdi("widget", t.ad, dil);
-    const it = new vscode.CompletionItem(gorunenAd, vscode.CompletionItemKind.Class);
+    // MGZ-A09: öneri etiketi dosyaya yazılacak adın kendisidir. İngilizce yüzde
+    // `Step` göstermek kullanıcının yazdığı `Ad…` ile eşleşmezdi ve seçildiğinde
+    // başka bir ad yazardı; açıklama ise etkin dilde konuşur.
+    const it = new vscode.CompletionItem(t.ad, vscode.CompletionItemKind.Class);
     const simge = simgeSec(snf, t.ad, t.aile);
-    const ne = sozlukDuzYazisi("widgetNe", t.ad, t.ne, dil);
+    const ne = sozlukDuzYazisi("widgetNe", t.ad, t.ne, dil, "kaynak");
     it.detail = tipTamamlamaDetayi(simge ?? "", t.aile, ne);
-    it.documentation = new vscode.MarkdownString(tipTamamlamaBelgesi(simge ?? "", gorunenAd, t.aile, ne));
+    it.documentation = new vscode.MarkdownString(tipTamamlamaBelgesi(simge ?? "", t.ad, t.aile, ne));
     it.insertText = new vscode.SnippetString(`${t.ad}( kod: \${1:KOD} )`);
     emojiEsdegerIsle(it, t.ad, emojiYuz, `${emojiKarsiligi(t.ad)}( ${emojiKarsiligi("kod")}: \${1:KOD} )`);
     if (izinliSet.has(t.ad)) { it.sortText = "0_" + t.ad; it.preselect = true; }
@@ -287,7 +288,7 @@ function paramOnerileri(
   }
   for (const k of snf.kenarTipleri) {
     const it = new vscode.CompletionItem(k.ad, vscode.CompletionItemKind.Property);
-    const ne = sozlukDuzYazisi("kenarNe", k.ad, k.ne, dil);
+    const ne = sozlukDuzYazisi("kenarNe", k.ad, k.ne, dil, "kaynak");
     it.detail = kenarTamamlamaDetayi(ne);
     it.documentation = new vscode.MarkdownString(kenarTamamlamaBelgesi(k.ad, ne));
     it.insertText = new vscode.SnippetString(`${k.ad}: `);
