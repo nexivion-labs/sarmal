@@ -26,7 +26,7 @@ import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
 import {
-  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, varlikKokuBul,
+  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, tamDenetimKokTuru, varlikKokuBul,
 } from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
@@ -615,12 +615,14 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // Keşif artık paketin kendi kanon kopyasına en son çare olarak düşer, dolayısıyla
     // mağazadan kurulan eklenti de tam denetimi koşar. Kopya da okunamazsa kök
     // atlanır, fakat bu artık SÖYLENİR: atlanan kökler durum çubuğundaki işarete gider.
-    const atlananKokler: string[] = [];
-    for (const kokYol of denetlenenKokler) {
-      try {
-        const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
-        const kanon = tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku);
-        if (!kanon) { atlananKokler.push(kokYol); continue; }
+    // 📣 MGZ-A04: kök turu saf gövdededir (kanon-kesif.ts `tamDenetimKokTuru`).
+    // Bir kökün tam denetimi çökerse canlı tanı akışı yine bozulmaz, fakat çöküş
+    // artık yutulmaz: çöken kök atlanan kök gibi işarete gider ve iletisi kanala düşer.
+    const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+    const { atlanan: atlananKokler, coken: cokenKokler } = tamDenetimKokTuru(
+      denetlenenKokler,
+      (kokYol) => tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku),
+      (kokYol, kanon) => {
         const sonuc = denetimKos(kokYol, { snfYol: kanon.snfYol, bugun, tamListe: true });
         for (const rapor of sonuc.akis) {
           const izinli = rapor.tanilar.filter((t) => {
@@ -636,9 +638,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
           liste.push(...izinli);
           donguHar.set(absDosya, liste);
         }
-      } catch { /* tam orkestrasyon çökerse canlı tanı akışı ASLA bozulmaz (blast-radius sıfır) */ }
-    }
-    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined);
+      });
+    for (const c of cokenKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiCoktu(c.kok, c.hata));
+    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler);
     // Her dosyanın tanıları = tek-dosya (tanilaCekirdek) + o dosyaya düşen DAG
     // döngü tanıları; hepsi doğasına göre üç kanonik yüzeye dağıtılır.
     //

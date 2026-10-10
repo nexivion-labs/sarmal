@@ -929,6 +929,24 @@ export const TABAN_KANON_METINLERI = {
       "Reinstalling the extension restores the canon copy, and if the workspace holds a Sarmal canon root, Sarmal: Write Canon Pointer also brings the check back. The sarmal denetle command on the command line gives the full verdict in every case.");
     return [baslik, sonuc, cozum].join("\n");
   },
+  /**
+   * MGZ-A04: tam denetimi bir hatayla yarıda kalan köklerin ipucu. Sebep
+   * kanonsuzluk değil çöküş olduğu için kanon onarımı önerilmez; kök ve hatanın
+   * iletisi adıyla söylenir, hatanın tamamını gösteren yol gösterilir.
+   */
+  coktuIpucu(coken: readonly { readonly kok: string; readonly hata: string }[]): string {
+    const liste = coken.map((c) => `${c.kok} (${c.hata})`).join("; ");
+    const baslik = yuzeyMetni(
+      `Şu kökte tam proje denetimi bir hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
+      `The full project check did not run for this root because it stopped with an error: ${liste}.`);
+    const sonuc = yuzeyMetni(
+      "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+      "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
+    const cozum = yuzeyMetni(
+      "Hata Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu aynı kökte hatanın tamamını gösterir; hata giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+      "The error was also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for the same root, and once the error is fixed the next check run removes this indicator by itself.");
+    return [baslik, sonuc, cozum].join("\n");
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1543,6 +1561,8 @@ export const EKLENTI_KABUK_METINLERI = {
 
 export const IZ_METINLERI = {
   denetimCoktu: (hata: string): string => yuzeyMetni(`⛔ denetim turu çöktü: ${hata}`, `⛔ validation run failed: ${hata}`),
+  // MGZ-A04: turun kendisi değil, tek bir kökün tam denetimi çöktüğünde kanala düşen satır.
+  kokDenetimiCoktu: (kok: string, hata: string): string => yuzeyMetni(`tam denetim şu kökte çöktü: ${kok} (${hata})`, `full check failed for this root: ${kok} (${hata})`),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
   performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string }): string => yuzeyMetni(
     `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
