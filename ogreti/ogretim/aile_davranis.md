@@ -5,7 +5,7 @@ Bu aile kanonik sınıflama kaydında şöyle tanımlanır: UI-mantık köprüs�
 
 Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: e270ae8a
 
-Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
+Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
 
 <!-- SARMAL:ANLATI -->

@@ -25,10 +25,11 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   ANLATI_BAS, ANLATI_SON, ISKELET_BAS, ISKELET_SON, KUNYE_BAS, KUNYE_SON,
-  OGRETIM_RAFI, aileTipleri, aileler, icerikMuhru, ogretimKartlariniUret,
+  OGRETIM_RAFI, aileTipleri, aileler, icerikMuhru, kunyeBloku, ogretimKartlariniUret,
 } from "../../arac/ogretim-uret.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 import { diskTara, ogretimTanilari } from "../src/denetci.ts";
+import { dizindenIndeks } from "../src/kimlik.ts";
 import type { Program } from "../src/sozdizim.ts";
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
@@ -158,4 +159,32 @@ test("nöbet: canlı kartlar motorun öğretim tanılarından temiz geçer (kün
   const bayat = ogretimTanilari(bos, SNF, diskTara(sb), sb)
     .filter((b) => b.dosya.startsWith(`${OGRETIM_RAFI}/`) && b.tani.kod === "öğretim-bayat");
   assert.ok(bayat.length > 0, "kaynak ilerledi ama bayat öğretim nöbeti kırmızı yakalamadı");
+});
+
+// ── HST-MTR-A08 · öğretim yüzündeki bayat yerler ─────────────────────────────
+//   2026-09-13 tarihli öğretim tazelik turu üretecin iki bayat yerini ölçmüştü
+//   (HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI): kartların künyesi tazeleme
+//   komutunu depo kökünden çalışmayan bir yolla veriyordu ve üreteç kodundaki bir
+//   yorum emekli bir raf kodunu anıyordu. İki nöbet de iddiayı diskten ve kimlik
+//   indeksinden ölçer; metni ezberlemez.
+
+test("HST-MTR-A08: künyedeki tazeleme komutu depo kökünden çalışır ve canlı kartlar onu taşır", () => {
+  const yol = kunyeBloku(SNF, aileler(SNF)[0], "0").match(/`node ([^`\s]+)`/)?.[1];
+  assert.ok(yol, "künye tazeleme komutunu taşımalı");
+  assert.ok(existsSync(join(KOK, yol)), `künyedeki komut depo kökünden çalışmıyor: node ${yol}`);
+  const kartlar = kartlariOku(KOK);
+  assert.ok(kartlar.size > 0, "öğretim rafında kart bulunmalı");
+  for (const [ad, metin] of kartlar) {
+    assert.ok(metin.includes(`\`node ${yol}\``), `${ad} künyesi üretecin bugünkü komutunu taşımıyor — kartları üreteçle yeniden üret`);
+  }
+});
+
+test("HST-MTR-A08: üretecin kaynağında anılan raf kodları kimlik indeksinde tanımlıdır", () => {
+  const kaynak = readFileSync(join(KOK, "urun/arac/ogretim-uret.ts"), "utf8");
+  const kodlar = [...new Set([...kaynak.matchAll(/\bRAF-[A-ZÇĞİÖŞÜ0-9-]*[A-ZÇĞİÖŞÜ0-9]/g)].map((m) => m[0]))];
+  assert.ok(kodlar.length > 0, "üreteç kartların yaşadığı rafın kodunu anmalı");
+  const indeks = dizindenIndeks(KOK);
+  for (const kod of kodlar) {
+    assert.equal(indeks.tanimlar(kod).length, 1, `${kod} kimlik indeksinde tanımlı değil — üreteç emekli bir raf kodunu anıyor`);
+  }
 });
