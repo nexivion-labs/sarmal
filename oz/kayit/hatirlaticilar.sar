@@ -120,7 +120,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TASIYICI-MUTABAKAT-KORLUGU,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A01,
   çapa:             nitelik,
   dönüşTetikleyici: "Kanona bir sonraki madde eklendiğinde ya da tutarlılık motoruna dokunulduğunda",
   öncelik:          p1,
@@ -598,7 +599,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A05,
   çapa:             nitelik,
   dönüşTetikleyici: "Gezinme aracının kapsam beyanı ya da arama gövdesi bir sonraki kez elden geçirildiğinde; ya da bir ajan bir TypeScript sembolünü araçla arayıp bulamadığını bildirdiğinde",
   öncelik:          p2,
@@ -650,7 +652,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A02,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-10,
@@ -660,7 +663,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-FIKSTUR-YOLLARI-GERCEK-AGACA-BENZEMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A07,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-10,
@@ -680,7 +684,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-YURUTUCU-IZI-KOSUM-YUZUNE-DUSMUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A04,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-10,
@@ -732,7 +737,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ISLEME-KAPISI-PLAN-DEGISIKLIGINDE-EKLENTI-SUITINI-KOSMUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-YUZ-A01,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-13,
@@ -742,7 +748,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A08,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-13,
@@ -784,7 +791,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A06,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
@@ -815,7 +823,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A04,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-15,
@@ -825,7 +834,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A05,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
@@ -885,7 +895,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AGAC-COK-SATIRLI-NE-KIRIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-YUZ-A02,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
@@ -895,7 +906,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-YUZ-A03,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
@@ -925,7 +937,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A06,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
@@ -966,7 +979,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A03,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-16,
@@ -976,7 +990,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TANI-KIMLIKLERI-KAYNAKTA-TANIMSIZ,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-MTR-A03,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-16,
@@ -996,7 +1011,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-YUZ-A04,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
@@ -1077,7 +1093,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KISITLI-MODDA-EKLENTI-SESSIZ,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A02,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-17,
@@ -1107,7 +1124,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-README-DENETIM-GORUNTUSU,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A07,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-29,
@@ -1127,7 +1145,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-EKLENTI-ENTEGRASYON-ON-ALTI-DUSUS,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A01,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-29,
