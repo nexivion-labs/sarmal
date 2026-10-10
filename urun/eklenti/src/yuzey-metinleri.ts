@@ -1554,6 +1554,13 @@ export const IZ_METINLERI = {
     `🗺️ ${saat} panel turu: ${sure} ms · ${dosya} dosya · tetik=${tetik}`,
     `🗺️ ${saat} panel run: ${sure} ms · ${dosya} files · trigger=${tetik}`,
   ),
+  // VIT-KIMLIK-A08: parametre simge dekorasyonunun bir boyaması. Süre iki
+  // ondalıkla yazılır, çünkü görünür aralık boyaması milisaniyenin altında
+  // kalır ve tam sayıya yuvarlamak ölçümü sıfıra indirirdi.
+  dekorTuru: (p: { saat: string; sure: number; simge: number; satir: number; tetik: string }): string => yuzeyMetni(
+    `${p.saat} parametre dekoru: ${p.sure.toFixed(2)} ms · ${p.simge} simge · ${p.satir} satır · tetik=${p.tetik}`,
+    `${p.saat} parameter decoration: ${p.sure.toFixed(2)} ms · ${p.simge} icons · ${p.satir} lines · trigger=${p.tetik}`,
+  ),
   yavasGenisletme: (saat: string, detay: string): string => yuzeyMetni(
     `🐢 ${saat} yavaş genişletme: ${detay}`,
     `🐢 ${saat} slow expansion: ${detay}`,

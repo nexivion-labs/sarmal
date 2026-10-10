@@ -45,7 +45,7 @@ import { girintiKaydi } from "./girinti.ts";
 import { camKaydi } from "./cam.ts";   // 🪟 cam efekti (Founder 2026-07-18)
 import { atifDekorKaydi } from "./atif-dekor.ts";   // NTK-A01: çözülen atıflar link görünümü alır
 import { gorselEsadKaydi } from "./gorsel-esad.ts"; // CDL-A08: İngilizce kaynak-içi görsel tip eşadları
-import { eksenDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06: eksen tip satırlarına geometrik simge
+import { eksenDekorKaydi, parametreDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06/A08: eksen ve parametre satırlarına aile simgesi
 import { onayKuyruguKaydi, onayYuzeyiOlcumleri } from "./onay-kuyrugu.ts"; // NTK-A08: Founder karar gelen-kutusu
 // 📬 VIT-POSTA-A03: ana tanı turunun anlık görüntüsü onay tarayıcısına AKTARILIR;
 // kapıyı ana hat değil tarayıcı tanır. eklenti.ts kapı bilmez, yalnız ağacı taşır.
@@ -867,6 +867,12 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // dosyanın İÇİNDE de konuşur — altı eksen tipinin bildirim satırı tip adının
   // solunda simgesini taşır; yollar simge-cizelgesi.ts'den, dosyaya bayt yazılmaz.
   eksenDekorKaydi(context, vscode);
+  // 🎨 VIT-KIMLIK-A08 (Founder isteği 2026-08-30): parametre satırları (görev,
+  // sınır, referans, kabul ve kardeşleri) satır başında aile simgesini taşır;
+  // eşleme simge-cizelgesi.ts'de yaşar, her boyamanın süresi performans kanalına düşer.
+  parametreDekorKaydi(context, vscode, (o) => perfKanal.appendLine(IZ_METINLERI.dekorTuru({
+    saat: new Date().toTimeString().slice(0, 8), sure: o.sureMs, simge: o.simge, satir: o.satir, tetik: o.tetik,
+  })));
   onayKuyruguKaydi(context, onayPaneli, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
 
   // Ağaç kılavuz çizgileri (kesintisiz dikey + ├└ dallar + kapanış etiketi)
