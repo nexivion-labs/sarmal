@@ -18,17 +18,16 @@
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-10", oturum: 113,
             neredeyiz: ORKESTRASYON-TURU-BES-ADIM-KAPANDI-DAL-GONDERILIYOR-BIRLESTIRME-ISTEGI-ACILIYOR,
-            sıradaki: FOUNDER-KARARLARI-EYLUL-FAZININ-KAPANISI-RFM-MOTOR-A02-KANON-METNI-SONRA-EKIM-HASADI,
+            sıradaki: HATIRLATICI-HASADI-VE-MAGAZA-ONCESI-ADIMLARI-EYLUL-FAZINDA-DALGA-DALGA,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ EYLUL-FAZI-KAPANMADAN-EKIM-ADIMLARI-BASLAYAMAZ-FOUNDER-KARARI,
-                         RFM-MOTOR-A02-KOD-HAZIR-DIL-1.8-ZORLAMA-METNI-FOUNDER-ONAYI-isci-rfm-motor-a02-DALINDA,
+            açıkİşler: [                          RFM-MOTOR-A02-KOD-HAZIR-DIL-1.8-ZORLAMA-METNI-FOUNDER-ONAYI-isci-rfm-motor-a02-DALINDA,
                          VIT-KIMLIK-A08-KOD-BIRLESTI-FOUNDER-CANLI-GOZU-BEKLIYOR,
                          KYN-KYN-A05-README-GOSTERIMI-FOUNDER-GOZU,
                          HTR-TERFI-KANITI-YUZEY-AYRISMASI-FOUNDER,
                          EKL-F6-A09-FOUNDER-CANLI-GOZU-BEKLIYOR,
                          KYN-OGR-A02-FOUNDER-OKUMASI-VE-IKI-ANLAM-HUKMU-BEKLIYOR,
                          EKL-F6-A01-MAGAZA-YUKLEMESI-VE-INGILIZCE-YUZ-ILKESI-FOUNDER,
-                         FAZ-2026-EKIM-HASAT-MEVSIMI-YIRMI-ADIM-ACIK,
+                         EYLUL-VADESI-2026-10-31-HASAT-VE-MAGAZA-ONCESI-YIRMI-ADIM-ACIK,
                          ON-YEDI-FOUNDER-KARARLI-HATIRLATICI-KUYRUKTA,
                          BKM-DNT-KALAN-ADIMLAR-A03-A14,
                          BKM-DNT-A14-BES-KARAR-FOUNDER-GERCEK-KABUK-SUITI-VE-SINAMA-SONUCU-YUZEYSIZ,
@@ -58,8 +57,9 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-10", oturum: 113,
         Founder dört günlük aradan sonra bütün hatırlatıcıların okunmasını, sırası gelenlerin plana
         indirilmesini ve yarım işlerin paralel ajanlarla tamamlanmasını istemiştir. Envanter 65 açık
         hatırlatıcı, 2 geliştirmedeki ve 48 beklemedeki Adım ile vadesi geçmiş Eylül mevsimini
-        göstermiştir. Founder Ekim Faz iskeletini onaylamış, FAZ-2026-EKIM "Hasat Mevsimi" açılmış ve
-        sırası gelmiş, Founder kararı istemeyen on dokuz hatırlatıcı Adım olarak inmiştir. BKM-BUG-A12
+        göstermiştir. Sırası gelmiş, Founder kararı istemeyen on dokuz hatırlatıcı Adım olarak inmiştir;
+        Adımlar önce ayrı bir Ekim Fazında doğmuş, Faz sırası katı olduğu için başlayamayacakları
+        ölçülünce Founder Eylül Fazının vadesini 2026-10-31'e uzatmış ve iki Blok bu Faza taşınmıştır. BKM-BUG-A12
         bağımsız ölçümle kapanmış, kapsanan kapalı projedeki on bir sahte uyarı sıfıra inmiş ve aynı
         körlüğün ölü iz toplayıcısındaki ikinci örneği HST-MTR-A09 Adımına bağlanmıştır. Bu kaydın
         açık işler listesi kapanmış işlerden temizlenmiştir ve yalnız gerçekten açık kalemleri taşır.
@@ -67,8 +67,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-10", oturum: 113,
         geçip kapanmış, VIT-KIMLIK-A08'in kodu birleşmiş ve kapanışı Founder'ın canlı gözüne
         bırakılmıştır. RFM-MOTOR-A02'nin kodu kabul edilmiş fakat DIL-1.8 Zorlama paragrafını
         tasdikli metinde olmayan iki hükümle yeniden yazdığı için kendi dalında Founder onayını
-        bekler. Ekim Faz'ının Adımları başlatılamamıştır, çünkü Faz sırası katıdır (MIM-1.2) ve
-        Eylül Faz'ı 49 açık Adım taşır; bu düğüm Founder kararına sunulmuştur. Çekirdek 1676/1676,
+        bekler. Çekirdek 1676/1676,
         eklenti 897/897. Gönderim kararı: dal uzak depoya gönderilir ve birleştirme isteği açılır,
         ana dala birleştirmeyi Founder yapar.
 
