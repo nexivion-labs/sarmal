@@ -95,6 +95,7 @@ import {
   EKLENTI_KABUK_METINLERI,
   IZ_METINLERI,
   KANON_ISARETCISI_METINLERI,
+  KISITLI_MOD_METINLERI,
   hedefBaglantiMetni,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
@@ -323,8 +324,82 @@ function surumTazeligiNobetiniKur(context: vscode.ExtensionContext): void {
   })();
 }
 
+// ── 🔒 KISITLI MOD (MGZ-A02 · HTR-KISITLI-MODDA-EKLENTI-SESSIZ) ──────────────
+//   Ölçülmüş kusur: bildirim güvenilmeyen çalışma alanı beyanını taşımıyordu ve
+//   VS Code eklentiyi Kısıtlı Modda bütünüyle kapatıyordu; .sar dosyası düz metin
+//   görünüyor ve eklenti neden sustuğunu hiçbir yerde söylemiyordu. Bildirim
+//   artık sınırlı destek ilan eder: dil tanımı, dilbilgisi renklendirmesi ve
+//   parçacıklar bildirimseldir ve kod gerektirmeden çalışır.
+//
+//   KOD ÇALIŞTIRAN HİÇBİR YETENEK AÇILMAZ (Adımın sınırı). Tam denetim diski
+//   tarar ve mühürlü dosya bulunca `git` koşturur; paneller o turdan beslenir.
+//   Bu yüzden kısıtlı modda etkinleşme gövdesi HİÇ koşmaz: yalnız tek bir durum
+//   çubuğu işareti kurulur, katkı komutları aynı cümleyi söyleyen zararsız yer
+//   tutuculara bağlanır ve güven beklenir. Görünümler bildirimde
+//   `isWorkspaceTrusted` koşuluna bağlıdır; sağlayıcısız panel hiç açılmaz.
+//
+//   GÜVEN VERİLİNCE pencere yeniden yüklenmez: yer tutucular bırakılır ve aynı
+//   `activate` güvenilir yoldan yeniden koşar. Dış yüz (kardeş eklenti arayüzü
+//   ve ölçüm kapıları) o andan sonra tam etkinleşmeye bağlanır.
+
+/** VS Code'un çalışma alanı güveni ekranını açan yerleşik komut. */
+const GUVEN_KOMUTU = "workbench.trust.manage";
+
+/**
+ * Tam etkinleşme gelene dek bekleyen dış yüz. Güven verilmeden her üye
+ * `undefined` döndüren bir işlevdir (kardeş eklenti arayüzü dahil); güvenden
+ * sonra üyeler tam etkinleşmenin yüzüne bağlanır. `then` daima tanımsızdır,
+ * yoksa `activate()` sözünü bekleyen kardeş eklenti dış yüzü bir söz sanıp asılırdı.
+ */
+function ertelenmisYuz(tam: () => SarmalEklentiYuzu | undefined): SarmalEklentiYuzu {
+  return new Proxy({} as SarmalEklentiYuzu, {
+    get(_hedef, ad) {
+      if (ad === "then" || typeof ad === "symbol") return undefined;
+      const yuz = tam();
+      if (!yuz) return () => undefined;
+      const deger: unknown = Reflect.get(yuz as object, ad);
+      return typeof deger === "function" ? (deger as (...a: unknown[]) => unknown).bind(yuz) : deger;
+    },
+  });
+}
+
+/** Güvenilmeyen klasörde etkinleşme: tek işaret, zararsız komutlar ve güven beklenişi. */
+function kisitliModdaBekle(context: vscode.ExtensionContext, tamEtkinles: () => SarmalEklentiYuzu): SarmalEklentiYuzu {
+  let tamYuz: SarmalEklentiYuzu | undefined;
+  const isaret = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 101);
+  isaret.text = KISITLI_MOD_METINLERI.cubukMetni;
+  isaret.tooltip = KISITLI_MOD_METINLERI.ipucu;
+  isaret.command = GUVEN_KOMUTU;
+  isaret.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+  isaret.show();
+  // Katkı komutları paletten ve düğmelerden çağrılabilir; kayıtsız kalsalar
+  // VS Code "komut bulunamadı" der. Yer tutucu hiçbir şey çalıştırmaz, yalnız
+  // aynı cümleyi söyler ve istenirse güven ekranını açar.
+  const katkilar = (context.extension.packageJSON?.contributes?.commands ?? []) as { command: string }[];
+  const yerTutucular = katkilar.map((k) => vscode.commands.registerCommand(k.command, async () => {
+    const secim = await vscode.window.showInformationMessage(KISITLI_MOD_METINLERI.ipucu, KISITLI_MOD_METINLERI.guvenDugmesi);
+    if (secim) await vscode.commands.executeCommand(GUVEN_KOMUTU);
+  }));
+  let kapandi = false;
+  const kapat = (): void => {
+    if (kapandi) return;
+    kapandi = true;
+    bekleyis.dispose();
+    isaret.dispose();
+    for (const y of yerTutucular) y.dispose();
+  };
+  const bekleyis = vscode.workspace.onDidGrantWorkspaceTrust(() => {
+    kapat();
+    tamYuz = tamEtkinles();
+  });
+  context.subscriptions.push({ dispose: kapat });
+  return ertelenmisYuz(() => tamYuz);
+}
+
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
+  // 🔒 MGZ-A02: güvenilmeyen klasörde gövde koşmaz; güven verilince bu işlev yeniden çağrılır.
+  if (!vscode.workspace.isTrusted) return kisitliModdaBekle(context, () => activate(context));
   // VIT-KIMLIK-A07: ipucu balonunun işaretleri ailenin tema varyantından çizilir.
   ipucuIsaretCiziciniKur(ipucuIsaretCizicisi(context.extensionUri));
   // 📍 Kaynak satırı çalışma alanına göreli yazılsın diye kökler kataloga bağlanır;

@@ -950,6 +950,34 @@ export const TABAN_KANON_METINLERI = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
+// KISITLI MOD (MGZ-A02) — HTR-KISITLI-MODDA-EKLENTI-SESSIZ
+//
+//   Güvenilmeyen klasörde Sarmal yalnız dili tanır ve renklendirir; kapalı
+//   kalanı ve güvenmenin yolunu TEK cümle söyler. Aynı cümle hem durum
+//   çubuğu işaretinin ipucunda hem kısıtlı modda çağrılan bir komutun
+//   iletisinde basılır; iki bağlamda da anlamlı kalsın diye cümle bir tıklama
+//   yerini değil, güvenin verildiği iki yeri (Kısıtlı Mod şeridi ve Sarmal
+//   işareti) anar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const KISITLI_MOD_METINLERI = {
+  /** Durum çubuğu girdisi — kalkan simgesi VS Code'un kendi kısıtlı mod simgesidir. */
+  get cubukMetni(): string {
+    return `$(shield) ${yuzeyMetni("Sarmal: kısıtlı mod", "Sarmal: Restricted Mode")}`;
+  },
+  /** Kapalı kalanı ve güvenmenin yolunu söyleyen tek cümle. */
+  get ipucu(): string {
+    return yuzeyMetni(
+      "Bu klasöre güvenilmediği için Sarmal yalnız .sar dosyalarını tanıyıp renklendiriyor; denetim ve Sarmal panelleri, Kısıtlı Mod şeridinden ya da Sarmal işaretinden klasöre güvendiğiniz anda pencere yeniden yüklenmeden açılır.",
+      "Because this folder is not trusted, Sarmal only recognizes and colors .sar files; validation and the Sarmal panels turn on without reloading the window as soon as you trust the folder from the Restricted Mode banner or the Sarmal indicator.");
+  },
+  /** Kısıtlı modda çağrılan komutun iletisindeki düğme — VS Code'un güven ekranını açar. */
+  get guvenDugmesi(): string {
+    return yuzeyMetni("Klasöre Güven", "Trust Folder");
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
 // KANON İŞARETÇİSİ KOMUTU (EKL-F6-A09) — HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR
 //
 //   Komutun her sonucu kullanıcıya tam cümleyle söylenir: yazıldıysa hangi

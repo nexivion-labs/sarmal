@@ -515,7 +515,9 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
   const commands = adAlani({
     registerCommand: (komut: string, f: (...a: unknown[]) => unknown) => {
       kayit.komutlar.set(komut, f);
-      return new Disposable(() => { kayit.komutlar.delete(komut); });
+      // VS Code'daki gibi: kayıt yalnız kendi işleyicisini bırakır; aynı kimliğe
+      // sonradan yapılmış bir kayıt, eskisinin ikinci kez bırakılmasıyla silinmez.
+      return new Disposable(() => { if (kayit.komutlar.get(komut) === f) kayit.komutlar.delete(komut); });
     },
     executeCommand: async (komut: string, ...argumanlar: unknown[]) => {
       kayit.komutCagrilari.push({ komut, argumanlar });

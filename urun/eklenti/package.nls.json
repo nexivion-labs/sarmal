@@ -2,6 +2,7 @@
   "sarmal.displayName": "Sarmal (.sar)",
   "sarmal.description": "Sarmal is a declarative intent language with Turkish roots; the extension checks the drift between your plan and your disk as you type.",
   "sarmal.category": "Sarmal",
+  "untrustedWorkspaces.description": "In Restricted Mode Sarmal only recognizes and colors .sar files; validation and the Sarmal panels, which scan the disk and can start processes, turn on once you trust the folder.",
   "semantic.workspace": "Workspace (garden)",
   "semantic.app": "App (tree)",
   "semantic.project": "Project (root)",

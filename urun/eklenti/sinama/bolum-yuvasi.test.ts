@@ -203,7 +203,9 @@ test("bölüm sırası kabın ilk görünüşüdür, webview'dir ve küçük ba�
   const g = PAKET.contributes.views["sarmal-yol"];
   assert.equal(g[0].id, BOLUM_SIRASI_GORUNUSU);
   assert.equal(g[0].type, "webview");
-  assert.equal(g[0].when, undefined, "sıra hiçbir koşula bağlı değildir; kardeş yokken de Ray'i gösterir");
+  // MGZ-A02: sıra yalnız çalışma alanı güvenine bağlıdır; kısıtlı modda sağlayıcısız
+  // açılıp sonsuza dek yükleniyor görünmesin diye gizlenir. Kardeşe bağlı değildir.
+  assert.equal(g[0].when, "isWorkspaceTrusted", "sıra güvenden başka hiçbir koşula bağlı değildir; kardeş yokken de Ray'i gösterir");
   assert.equal(g[0].initialSize, 1);
 });
 
@@ -215,8 +217,8 @@ test("Ray'in altı paneli yalnız Ray seçiliyken görünür; koşul olumsuzdur,
     assert.ok(v!.when?.split("&&").map((p) => p.trim()).includes(`!${BAGLAM.rayGizli}`),
       `${kimlik} Ray koşulunu taşımıyor: ${v!.when}`);
   }
-  assert.equal(g.find((x) => x.id === "sarmalMiniGraf")!.when, `config.sarmal.miniGraf && !${BAGLAM.rayGizli}`,
-    "Mini Graf ayar koşulunu kaybetmiş");
+  assert.equal(g.find((x) => x.id === "sarmalMiniGraf")!.when, `isWorkspaceTrusted && config.sarmal.miniGraf && !${BAGLAM.rayGizli}`,
+    "Mini Graf ayar koşulunu kaybetmiş (MGZ-A02: güven koşulu başta durur)");
 });
 
 test("dört yuva çekirdekteki sırayla ilan edilir ve yalnız kendi yuvası seçiliyken görünür", () => {
@@ -225,7 +227,7 @@ test("dört yuva çekirdekteki sırayla ilan edilir ve yalnız kendi yuvası se�
   assert.deepEqual(yuvalar.map((x) => x.id), [...YUVA_GORUNUSLERI]);
   yuvalar.forEach((v, i) => {
     assert.equal(v.type, "webview");
-    assert.equal(v.when, `${BAGLAM.seciliYuva} == ${yuvaBaglamDegeri(i)}`);
+    assert.equal(v.when, `isWorkspaceTrusted && ${BAGLAM.seciliYuva} == ${yuvaBaglamDegeri(i)}`);   // MGZ-A02: güven koşulu başta durur
   });
 });
 

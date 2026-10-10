@@ -34,12 +34,18 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `50f75b27616f0de5075a15ae06ea3bb660dfaf94201216a42fe870463db3924d` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `64329c3512c06e9ef52185e3d6bdcdd1aaaab50c49251001ce507d74640395dd` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
-| `urun/eklenti/package.nls.tr.json` | `a7967bb6d144a7fdb256685ee9e3ecf66fcf6744ae8326f165e43fd489472ce9` |
-| `urun/eklenti/package.nls.json` | `321e2b59b28fd6d58d596cf0a4b79d2582d9c91cd93bfd7a5d9a437d9f6ad857` |
+| `urun/eklenti/package.nls.tr.json` | `f40044f8d3fe12a5f6c3379896e1e2cee2eedce8141b79977bfbfef83dbe92af` |
+| `urun/eklenti/package.nls.json` | `28c495d7c62ada63404ba9255579c8d54c871d325c7a3ac4c82eb817d5992d99` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `9a23744b50aa7f336f51a52872fafc96cd62e0f270ce950c8ff31df762f9f089` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-10 · kısıtlı modun beyanı): MGZ-A02 eklentinin iki
+yerelleştirme kataloğuna güvenilmeyen çalışma alanı beyanının açıklamasını, yani
+bir yeni anahtarı ekledi ve iki katalog mührü ilerledi. Var olan hiçbir anahtarın
+metni değişmedi; öteki yedi kaynağın mührü değişmedi ve türetilmiş yüzlerin hiçbiri
+bu iki kataloğun yeni anahtarını okumadığı için yeniden üretim fark vermedi.
 
 Tazeleme notu (2026-09-29 · tek Sarmal simgesi ve bölüm yuvası): VIT-K78-A10
 eklentinin iki yerelleştirme kataloğuna bölüm sırasının ve dört bölüm yuvasının
