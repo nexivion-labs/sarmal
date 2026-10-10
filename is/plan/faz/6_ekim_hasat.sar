@@ -118,7 +118,7 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Araç genel amaçlı bir kod arama motoruna dönüştürülmez"
         }
 
-        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-MTR-A06, ad: "Gezinmede Önek Eşleşmesinin Sınırı", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "✂️ ORK-1 sorgusu ORK-1.2 başlığını ORK-1'e gelen atıf saymasın" ) {
           görev: "Kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Eşleşme kimlik sınırında kesilir; önce ORK-1 ile ORK-1.2 birlikte geçen bir fikstürle kırmızı test yazılır."
@@ -174,7 +174,7 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Kapı atlatılabilir hâle getirilmez"
         }
 
-        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A02, ad: "Çok Satırlı Ne Metninde Ağaç Çizgisi", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGRULAYICI ], bağımlı: [],
           referans: [ HTR-AGAC-COK-SATIRLI-NE-KIRIYOR ],
           ne: "🌲 Gerçek satır sonu taşıyan ne metni yapı ağacının çizgisini kırmasın" ) {
           görev: "Yapı ağacı gövdesi (urun/cekirdek/src/agac.ts) yalnız ⏎ işaretini tek satıra indirmektedir. Gerçek satır sonları da aynı biçimde tek satıra indirilir; önce çok satırlı bir ne metniyle kırmızı test yazılır."
@@ -198,7 +198,7 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Palet değişkenleri bu Adımda yeniden düzenlenmez"
         }
 
-        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-YUZ-A04, ad: "Kök Yüzeyi Nöbetinde Kod Çiti", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
           referans: [ HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR ],
           ne: "🧱 README'deki örnek çıktının içindeki kimlik her işlemede sahte uyarı üretmesin" ) {
           görev: "Kök yüzeyi nöbeti README'deki kod çitinin içindeki örnek kimliği gerçek bir atıf saymaktadır. Kod çitiyle çevrili bölgeler atıf taramasının dışında tutulur; önce bir fikstürle kırmızı test yazılır."
@@ -288,7 +288,7 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Çöküşün kendisi bu Adımda onarılmaz; görünür kılınır"
         }
 
-        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: geliştirmede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A05, ad: "Paket Nöbetinin Kanon Kopyası", durum: beklemede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR ],
           ne: "📦 Yayımlanan paket kanon kopyasını taşımazsa nöbet kırmızıya dönsün" ) {
           görev: "Paket içeriği nöbeti dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarının pakette bulunduğunu denetler hâle getirilir. package-lock.json sürümünün paket sürümüyle ilerlemesi de ölçülür ve düzeltilir."
@@ -300,7 +300,7 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Paketleme betiğinin davranışı değiştirilmez"
         }
 
-        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: MGZ-A06, ad: "Konumsuz Bulguların Hedefi", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [],
           referans: [ HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR ],
           ne: "🎯 geçersiz-dosya-adı ve beyansız-yapı bulguları anlattıkları dosyayı taşısın" ) {
           görev: "İki bulgu türü hâlâ giriş dosyasına sıfır konumla yazılmaktadır. Mühür bulgularına eklenen hedef alanı bu iki türe de verilir, eklenti tıklamayı hedefe yönlendirir ve komut satırı konumsuz bulgularda hedefi basar."
