@@ -90,6 +90,17 @@ Faz( kod: FAZ-2026-EKIM, ad: "Hasat Mevsimi", hedefTarih: "2026-10-31",
           ]
           sınır: "Ham istem ya da yanıt dış yürütücüden toplanmaz; yalnız çağrının kendisi izlenir"
         }
+
+        Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: beklemede, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
+          ne: "🪦 Emekli bir karara adlı Kuralla bağlanan dayanak da ölü iz uyarısı üretsin" ) {
+          görev: "BKM-BUG-A12'nin bağımsız incelemesi (2026-10-10) aynı adlı bildirim körlüğünü stratejiTanilari içindeki ölü iz toplayıcısında ölçmüştür: emekli envanteri ve kaynak kenar taraması yalnız widget türünü gezdiği için `Kural ad( dayanak: [EMEKLI] )` biçimindeki bağ uyarı üretmez, aynı bağın GenelKural biçimi ise üretir. Önce iki biçimi birlikte taşıyan bir fikstürle kırmızı test yazılır, sonra toplayıcı BKM-BUG-A12'deki desenle onarılır."
+          kabul: [
+            "emekli karara adlı Kuralla bağlanan dayanak ölü iz uyarısı üretir (test önce kırmızı, sonra yeşil)",
+            "GenelKural biçimindeki bağın uyarısı değişmez (regresyon testi)",
+            "kapsanan projelerde yeni ateşleyen ölü iz uyarıları sayılarak raporlanır; denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Ölü iz tanısının düzeyi ve metni değişmez; yalnız toplama onarılır"
+        }
       }
 
       AltKatman( kod: HST-MOTOR-K2, departman: kodlama, ad: "Gezinti ve Fikstür",

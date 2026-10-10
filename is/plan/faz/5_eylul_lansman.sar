@@ -1476,7 +1476,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
           ]
           sınır: "beş kalem KÜÇÜK kalır (A09 demet ilkesi); eklenti kapısına yeni bekçi EKLEME kararları tabloda gerekçeli beyanla ertelenebilir — sessiz eksik kalmaz"
         }
-        Adım( kod: BKM-BUG-A12, ad: "Adlı Kuralın Dayanak Bağı", durum: geliştirmede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: BKM-BUG-A12, ad: "Adlı Kuralın Dayanak Bağı", durum: tamamlandı, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
           ne: "🔗 uygulanmamış-karar bekçisi (YAS-2.1) adlı biçimde yazılmış Kural düğümlerinin dayanak bağını saymıyor; kararları kurala inmiş bir projede bile kilitli ve uygulama: gerekli beyanlı her karar için sahte uyarı düşüyor" ) {
           görev: """
           2026-10-03 (oturum 113) gözlemi: kararlar dosyası ile anayasa dosyası ayrı yaşayan bir projede
@@ -1497,6 +1497,9 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-09-30",
             "kendi deposunda ve kapsanan projelerde denetim uyarı sayısı bu kusurdan doğan uyarılar kadar düşmüş; test süitleri yeşil"
           ]
           sınır: "Bekçinin hükmü değişmez: yalnız kilitli ve uygulama: gerekli beyanlı karar konuşur; tanının düzeyi ve metni değiştirilmez, yalnız ters bağ toplama onarılır"
+          koşu:  Koşum( kod: KSM-BKM-BUG-A12, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işleme 268b7fd · çekirdek 1666/1666, eklenti 865 geçti 6 atlandı 0 başarısız · depo denetimi 0 hata · bağımsız inceleme: onarımsız motorda yeni test kırmızı (2 uyarı, beklenen 1), onarımlı motorda yeşil; kapsanan projenin kopyasına eklenen bağsız gerekli karar hâlâ uyarı aldı · kapsanan kapalı projede uygulanmamış-karar uyarısı 11'den 0'a indi ve on bir gerekli kararın her biri en az bir adlı Kuralın dayanağıyla bağlı ölçüldü; öteki kapsanan projelerde sayılar değişmedi. KÖK NEDEN: `Kural ad( … )` biçimi ayrıştırıcıda kuralTanım türüne düşer, toplayıcı ise yalnız widget türünü geziyordu. ADSIZ BİÇİM: dil `Kural( … )` biçimini kabul etmez; adsız karşılık widget biçimli GenelKural'dır ve zaten sayılıyordu. TARAMA SONUCU: dayanaksizKararlar, dayanak haritası nöbeti, dag.ts dayanak kenarı, kimlik.ts giden kenar toplayıcısı, dogrulayici ve kanon-tutarlilik kuralTanım türünü zaten kapsar; referansTanilari adlı Kuralı yorumla gerekçelendirerek dışlar. Aynı körlük stratejiTanilari içindeki ölü-iz toplayıcısında bulunmuştur (emekli karara adlı Kuralla bağlanan dayanak uyarı üretmez); bu kaçan uyarı HST-MTR-A09 Adımına indirilmiştir.",
+            ne:    "uygulanmamış-karar bekçisinin ters bağ toplayıcısı Karar dışındaki her düğüm türünü ve parametre değerine gömülü widget'ları gezer hâle geldi; adlı Kuralın dayanağı artık kararı inmiş saydırır, bekçinin hükmü, düzeyi ve metni değişmedi. Aynı körlük ölü-iz toplayıcısında ayrı bir Adıma bağlandı." )
         }
       }
 
