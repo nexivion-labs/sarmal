@@ -12,7 +12,7 @@ import { dirname, join, resolve } from "node:path";
 import { ayristir } from "./ayristirici.ts";
 import { belirtecle } from "./belirtec.ts";
 import { dilHanesi, sarmalKavramSozlugu } from "./cevir.ts";
-import { kanonSayimiBulgusu, type OlculenKanonSayimi } from "./kanon-tutarlilik.ts";
+import { kanonSayimiBulgusu, taniKumesiniOlc, taniKumesiSayimiBulgusu, type OlculenKanonSayimi } from "./kanon-tutarlilik.ts";
 import { MCP_ARAC_ADI, MCP_ARAC_METINLERI } from "./mcp-metinleri.ts";
 import {
   siniflamaOrtuMerge,
@@ -41,6 +41,8 @@ export interface BelgeYuzuSonucu {
   readonly aracSayisi: number;
   /** Ölçülen kanon sayım kaydından ayrışmışsa bulgu; eşitse yok (HST-MTR-A02). */
   readonly kanonSayimiBulgusu: string | undefined;
+  /** Tanı kümeleri sayım kaydından ya da küme değişmezlerinden ayrışmışsa bulgu; tutuyorsa yok (HST-MTR-A12). */
+  readonly taniKumesiBulgusu: string | undefined;
 }
 
 export const ELLE_BAS = "<!-- SARMAL:ELLE-KORUNAN:BAS -->";
@@ -220,16 +222,24 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // BKM-OLG-A11 (2026-10-02): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
   // önceki gövdenin sabit kümesinde doğdu; yeni küme dağılımı değişmedi, yönlendirme
   // 151/3/38 ve iki dilli katalog yüz doksan bir oldu.
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "48/22/21" ||
-      // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
-      // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
-      // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
-      // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
-      // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "151/3/38" ||
-      olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 191) {
-    throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
+  // HST-MTR-A12 (2026-10-10): yeni kümenin düzey dağılımı bir tanı kümesi sayısıdır
+  // ve tek kaydı kanon-tutarlilik.ts içindeki TANI_KUMESI_SAYIMI'dır. Bu üretici onu
+  // artık dondurmaz: dağılım canlı sicilden okunur ve kayıttan ayrışması bulgu olarak
+  // bildirilir. İki dilli katalog da dondurulmaz, çünkü aşağıdaki değişmez onu sicil
+  // toplamına bağlar. Burada yalnız yönlendirme ve araç sayıları dondurulur ve tutmayan
+  // ölçü adıyla söylenir.
+  // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
+  // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
+  // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
+  // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
+  // değişmedi, yalnız iki hane arasında yer değiştirdi.
+  const yonlendirme = `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}`;
+  const sapan = [
+    ...(yonlendirme !== "151/3/38" ? [`yönlendirme ${yonlendirme} (beklenen 151/3/38)`] : []),
+    ...(olgular.arac !== 18 ? [`MCP araç sayısı ${olgular.arac} (beklenen 18)`] : []),
+  ];
+  if (sapan.length > 0) {
+    throw new Error(`Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor: ${sapan.join("; ")}.`);
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
   // motor karşılığı `mevsim-vadesi-geçti` doğdu (Founder hükmü); bilgi kademesi
@@ -756,5 +766,9 @@ export function belgeYuzleriniUret(kokYolu: string): BelgeYuzuSonucu {
       writeFileSync(tamYol, yeni, "utf8");
     }
   }
-  return { degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac, kanonSayimiBulgusu: kanonSayimiBulgusu(o.kanon.sayim) };
+  return {
+    degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac,
+    kanonSayimiBulgusu: kanonSayimiBulgusu(o.kanon.sayim),
+    taniKumesiBulgusu: taniKumesiSayimiBulgusu(taniKumesiniOlc(o.snf).sayim),
+  };
 }

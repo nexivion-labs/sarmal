@@ -18,6 +18,7 @@ import {
   ONCEKI_TANI_KODLARI,
   YENI_TANI_KANONU,
   YENI_TANI_KODLARI,
+  type YeniTaniKaydi,
 } from "./tani-sicili.ts";
 import type { Deger, Dugum } from "./sozdizim.ts";
 
@@ -109,6 +110,183 @@ export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayi
   return bulgular.length > 0 ? bulgular.join(" ") : undefined;
 }
 
+// ── Tanı kümesi sayımının tek kaydı (HST-MTR-A12) ───────────────────────────
+//
+// Tanı sicilinin kümeleri de kanon gibi bilinçle dondurulmuştur ve bu da bir insan
+// kapısıdır: sicil sessizce büyümez, sessizce de küçülmez. Kümelerin sayısı yalnız
+// aşağıdaki TANI_KUMESI_SAYIMI kaydında yaşar. Ölçüm üreticileri (bu dosyadaki kanon
+// tutarlılık yüzü ile belge-yuzleri.ts içindeki kalıcı belge yüzleri) kümeleri canlı
+// sicilden sayar ve kayıttan ayrışmayı hata fırlatmadan, ayrışan kümeyi adıyla
+// söyleyen bir bulgu olarak bildirir. Sicili kayda karşı ölçen nöbet tektir ve
+// çekirdek süitindedir (sinama/kanon-tutarlilik.test.ts, "tanı kümesi sayım nöbeti").
+// Sicile bir tanı eklendiğinde sayı nöbetlerinden yalnız o kırmızıya döner ve
+// aşağıdaki artırma adımını adıyla söyler.
+//
+// Sayılar eskiden bu üreticide hata fırlatan bir koşulda, belge yüzü üreticisinde
+// ikinci bir koşulda ve iki paketin sınamalarında elle yazılıydı. Sicile tek bir
+// tanı eklemek üreticiyi "değişmezler uyuşmuyor" iletisiyle durduruyor, hangi
+// değişmezin tutmadığını söylemiyor ve aynı üreticiyi kullanan fikstürleri de aynı
+// hatayla düşürüyordu (ölçüm 2026-10-10).
+//
+// Geçmiş (sicil meşru biçimde değiştikçe; dağılım hata/uyarı/bilgi sırasıyladır):
+//   2026-08-24: durum-boyutu tanısı Founder hükmüyle emekliye ayrıldı; önceki sabit
+//   küme yüz ikiden yüz bire indi, emekli küme on dörtten on beşe çıktı, emeklilik
+//   borcu otuz dokuzdan otuz sekize indi. Sabit karakter sınırı yeni kanonda norm değildir.
+//   2026-08-27 (Founder ölçümü): ORK-8 mevsim ritüelinin ilk motor karşılığı
+//   `mevsim-vadesi-geçti` bilgi düzeyinde doğdu.
+//   2026-08-28 (Founder hükmü): MIM-1.7 AltKatman tekilliği `altkatman-tekilliği-ihlali`
+//   terfi turundan gelmeden, doğrudan hata düzeyinde doğdu ve kırk yedinci hata oldu.
+//   2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
+//   `mevsim-mührü-çelişkili` bilgi düzeyinde doğdu ve yeni küme yetmiş dörtten yetmiş
+//   beşe çıktı.
+//   2026-09-11 (KPS-MHR-A01 · Founder hükmü): MIM-3.4 dosya mühürlerinin üç tanısı doğdu;
+//   `geçersiz-dosya-adı` uyarıda, iki gözlem bilgide durur ve dağılım 47/17/14 oldu.
+//   2026-09-19 (KPS-FAZ-A02 · Founder hükmü): MIM-1.2 projesiz Faz gözlemi
+//   `projesiz-faz` bilgi düzeyinde doğdu; yeni küme yetmiş sekizden yetmiş dokuza
+//   çıktı ve dağılım 47/17/15 oldu.
+//   2026-09-19 (KPS-CEL-A01 · Founder hükmü 2026-09-09): MIM-3.2 Kitaplık kademesini
+//   zorunlu kıldı ve `kitaplıksız-kök` uyarısı doğdu; yeni küme yetmiş dokuzdan seksene
+//   çıktı ve dağılım 47/18/15 oldu.
+//   2026-09-29 (KPS-SIR-A01 · Founder hükmü): Faz sırası ile Blok yapısının altı tanısı
+//   doğdu (MIM-1.2 `ters-faz-bağımlılığı` hatası, üç uyarı ve iki yapı gözlemi) ve
+//   `seçilemez-adım-yürütümü` bilgiden uyarıya geçti; yeni küme seksenden seksen altıya
+//   çıktı ve dağılım 48/22/16 oldu. `planlanmamış` kaçışı kapandığı için
+//   `planlanmamış-gövde` emeklilik borcundan uygulanmış emekliye geçti (önceki sabit
+//   küme 101→100, emekli 15→16, emeklilik borcu 38→37).
+//   2026-09-29 (KPS-SIR-A03 · Founder hükmü): Faz dosyası düzeninin dört gözlemi bilgi
+//   düzeyinde doğdu; yeni küme seksen altıdan doksana çıktı ve dağılım 48/22/20 oldu.
+//   2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi DIL-2.2 zorlama satırına
+//   bilgi düzeyinde ilan edildi; yeni küme doksandan doksan bire çıktı ve dağılım
+//   48/22/21 oldu.
+//   2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
+//   doğdu; kanon metni Founder onayı beklediği için kimlik önceki sabit kümeye girdi ve
+//   bu küme yüzden yüz bire çıktı. Yeni kümenin dağılımı değişmedi.
+//   2026-10-10 (HST-MTR-A12): sayılar dağınık dondurmalardan bu tek kayda taşındı;
+//   değerler değişmedi. Canlı sicilin büyüklüğü (iki yüz bir) ayrıca dondurulmaz, üç
+//   canlı kümenin toplamıdır.
+
+/** Tanı kümelerinin dondurulmuş sayımı. Yeni kümenin büyüklüğü üç düzeyin toplamıdır. */
+export interface TaniKumesiSayimi {
+  /** Yeni kanon kümesinin, tanıların bugün üretildiği düzeye göre dağılımı. */
+  readonly yeni: { readonly hata: number; readonly uyari: number; readonly bilgi: number };
+  /** Yeni kümeden önce yazılmış ve canlı sicilde korunan sabit küme. */
+  readonly onceki: number;
+  /** Sınıflamanın `zorunluKenarlar` verisinden türeyen ve sabit kümelerde olmayan canlı kimlikler. */
+  readonly siniflamaTurevli: number;
+  /** Emekli kararı uygulanmış ve canlı sicilden çıkmış küme. */
+  readonly emekli: number;
+  /** Emekli kararı bulunduğu hâlde canlı sicilde yaşamayı sürdüren uyumluluk borcu. */
+  readonly emeklilikBorcu: number;
+}
+
+/** Canlı sicilden ölçülen sayım ile küme değişmezlerini bozan kimlikler; değişmez listeleri boş olmalıdır. */
+export interface OlculenTaniKumesi extends TaniKumesiSayimi {
+  /** Canlı sicilin büyüklüğü; kümeler ayrık ve tekilse üç canlı kümenin toplamına eşittir. */
+  readonly canli: number;
+  /** Canlı sicilde yeniden görünen uygulanmış emekli kimlikler. */
+  readonly emekliCanli: readonly string[];
+  /** Canlı sicilde bulunmayan emeklilik borcu kimlikleri. */
+  readonly borcCanliDegil: readonly string[];
+  /** Halefi kırık emekli kimlikler, `eski → halef` biçiminde. */
+  readonly kirikHalef: readonly string[];
+  /** YUZ-3.3 maddesinin `tanı-yüzeyi-karışması` kaydının yeni kümede kaç kez geçtiği; tam bir olmalıdır. */
+  readonly yuz33: number;
+}
+
+/** TEK KAYIT. Sicil meşru biçimde büyüdüğünde, küçüldüğünde ya da bir tanının düzeyi değiştiğinde yalnız burası değişir. */
+export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = {
+  yeni: { hata: 48, uyari: 22, bilgi: 21 },
+  onceki: 101,
+  siniflamaTurevli: 9,
+  emekli: 16,
+  emeklilikBorcu: 37,
+};
+
+/** Yeni kümenin büyüklüğü ayrıca dondurulmaz; üç düzeyin toplamıdır. */
+export const yeniKumeSayisi = (s: TaniKumesiSayimi): number => s.yeni.hata + s.yeni.uyari + s.yeni.bilgi;
+
+/** Canlı sicilin büyüklüğü ayrıca dondurulmaz; önceki, yeni ve sınıflamadan türeyen kümelerin toplamıdır. */
+export const canliSicilSayisi = (s: TaniKumesiSayimi): number => s.onceki + yeniKumeSayisi(s) + s.siniflamaTurevli;
+
+/** Sicil kayıttan ayrıştığında atılacak bilinçli adımın adı ve tarifi. */
+export const TANI_KUMESI_ARTIRMA_ADIMI =
+  `${KANON_SAYIMI_KAYDI} dosyasındaki TANI_KUMESI_SAYIMI kaydını ölçülen sayıya bilinçle çek ve `
+  + "geçmiş satırına tarihi, Adım kodunu ve doğan, emekliye ayrılan ya da düzeyi değişen tanıyı yaz; "
+  + "aynı adımda tanı sicilinin mührünü (is/nitelik/goc/turetilmis_yuz_nobetleri.sar nöbet kaydı) ve "
+  + "yönlendirme matrisi kaydını (is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar) tazele, türetilmiş "
+  + "yüzleri resmî üreticileriyle yeniden üret";
+
+/** Kümelerin bulguda geçen adı ve sayı metni; ayrışma iki sayımın bu metinleri farklıysa vardır. */
+const TANI_KUMELERI: ReadonlyArray<{ readonly ad: string; readonly metin: (s: TaniKumesiSayimi) => string }> = [
+  { ad: "yeni küme", metin: (s) => `${yeniKumeSayisi(s)} kimlik (${s.yeni.hata} hata, ${s.yeni.uyari} uyarı ve ${s.yeni.bilgi} bilgi)` },
+  { ad: "önceki sabit küme", metin: (s) => `${s.onceki} kimlik` },
+  { ad: "sınıflamadan türeyen küme", metin: (s) => `${s.siniflamaTurevli} kimlik` },
+  { ad: "uygulanmış emekli küme", metin: (s) => `${s.emekli} kimlik` },
+  { ad: "emeklilik borcu", metin: (s) => `${s.emeklilikBorcu} kimlik` },
+];
+
+const kodListesi = (kodlar: readonly string[]): string => kodlar.map((kod) => `\`${kod}\``).join(", ");
+
+/**
+ * Ölçülen tanı kümelerini kayıtla ve küme değişmezleriyle karşılaştırır. Her şey
+ * tutuyorsa `undefined` döner; tutmayan her ölçü insanın okuyacağı bir cümleyle,
+ * adıyla bildirilir ve sayı ayrışması artırma adımını söyler.
+ */
+export function taniKumesiSayimiBulgusu(olculen: OlculenTaniKumesi, kayit: TaniKumesiSayimi = TANI_KUMESI_SAYIMI): string | undefined {
+  const bulgular: string[] = [];
+  const ayrisan = TANI_KUMELERI.filter((kume) => kume.metin(olculen) !== kume.metin(kayit));
+  if (ayrisan.length > 0) {
+    bulgular.push(
+      `Tanı kümesi sayımı kayıttan ayrıştı: ${ayrisan.map((kume) => `${kume.ad} ${kume.metin(olculen)} taşıyor, kayıt ise ${kume.metin(kayit)} diyor`).join("; ")}. `
+      + `Tanı sicili sessizce büyümez ve sessizce küçülmez; artırma adımı: ${TANI_KUMESI_ARTIRMA_ADIMI}.`,
+    );
+  }
+  const toplam = canliSicilSayisi(olculen);
+  if (olculen.canli !== toplam) {
+    bulgular.push(`Tanı kümeleri ayrık değil: canlı sicil ${olculen.canli} kimlik taşıyor, üç canlı kümenin toplamı ise ${toplam}; bir kimlik iki kümede birden duruyor ya da bir kümede yineleniyor.`);
+  }
+  if (olculen.emekliCanli.length > 0) {
+    bulgular.push(`Uygulanmış emekli kimlik canlı sicilde duruyor: ${kodListesi(olculen.emekliCanli)}; emekliye ayrılan kimlik canlı sicile geri dönmez.`);
+  }
+  if (olculen.borcCanliDegil.length > 0) {
+    bulgular.push(`Emeklilik borcundaki kimlik canlı sicilde bulunmuyor: ${kodListesi(olculen.borcCanliDegil)}; borcu kapanan kimlik uygulanmış emekli kümesine taşınır.`);
+  }
+  if (olculen.kirikHalef.length > 0) {
+    bulgular.push(`Emekli kimliğin halefi kırık: ${kodListesi(olculen.kirikHalef)}; eski kimlik emekli kümesinde, halefi canlı sicilde durmalıdır.`);
+  }
+  if (olculen.yuz33 !== 1) {
+    bulgular.push(`YUZ-3.3 maddesinin \`tanı-yüzeyi-karışması\` kaydı yeni kümede ${olculen.yuz33} kez geçiyor; tam bir kez geçmelidir.`);
+  }
+  return bulgular.length > 0 ? bulgular.join(" ") : undefined;
+}
+
+/** Tanı kümelerini canlı sicilden ölçer; sınıflama, sicilin veri güdümlü kimliklerini verir. */
+export function taniKumesiniOlc(snf: Pick<Siniflama, "zorunluKenarlar">): {
+  sayim: OlculenTaniKumesi;
+  dinamik: readonly string[];
+  canli: ReadonlySet<string>;
+} {
+  const sabit = new Set([...ONCEKI_TANI_KODLARI, ...YENI_TANI_KODLARI]);
+  const dinamik = dinamikTaniKodlari(snf, sabit);
+  const canli = new Set([...sabit, ...dinamik]);
+  const duzeyde = (duzey: YeniTaniKaydi["kademe"]): number => YENI_TANI_KANONU.filter((t) => t.kademe === duzey).length;
+  const sayim: OlculenTaniKumesi = {
+    yeni: { hata: duzeyde("hata"), uyari: duzeyde("uyarı"), bilgi: duzeyde("bilgi") },
+    onceki: ONCEKI_TANI_KODLARI.length,
+    siniflamaTurevli: dinamik.length,
+    emekli: EMEKLI_TANI_KODLARI.length,
+    emeklilikBorcu: EMEKLILIK_BORCU_TANI_KODLARI.length,
+    canli: canli.size,
+    emekliCanli: EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)),
+    borcCanliDegil: EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => !canli.has(kod)),
+    kirikHalef: [...EMEKLI_TANI_HALEFI]
+      .filter(([eski, halef]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(halef))
+      .map(([eski, halef]) => `${eski} → ${halef}`),
+    yuz33: YENI_TANI_KANONU.filter((t) => t.madde === "YUZ-3.3" && t.kod === "tanı-yüzeyi-karışması").length,
+  };
+  return { sayim, dinamik, canli };
+}
+
 /**
  * Bir taşıyıcı alanın belge bloğundaki karşılığıyla eşitlik ölçümü (HST-MTR-A01).
  *
@@ -156,6 +334,8 @@ export interface KanonTutarlilikSonucu {
   readonly tasiyiciAyrisan: readonly string[];
   /** Ölçülen kanon sayım kaydından ayrışmışsa bulgu; eşitse yok (HST-MTR-A02). */
   readonly kanonSayimiBulgusu: string | undefined;
+  /** Tanı kümeleri sayım kaydından ya da küme değişmezlerinden ayrışmışsa bulgu; tutuyorsa yok (HST-MTR-A12). */
+  readonly taniKumesiBulgusu: string | undefined;
 }
 
 const sha256 = (metin: string): string => createHash("sha256").update(metin).digest("hex");
@@ -267,7 +447,7 @@ export function kanonMaddeleriniOlc(kokYolu: string): {
   return { maddeler, muhurler, demet: sha256(`${muhurler.join("\n")}\n`), sayim };
 }
 
-function dinamikTaniKodlari(snf: Siniflama, sabit: ReadonlySet<string>): string[] {
+function dinamikTaniKodlari(snf: Pick<Siniflama, "zorunluKenarlar">, sabit: ReadonlySet<string>): string[] {
   const sonuc = new Set<string>();
   for (const kurallar of Object.values(snf.zorunluKenarlar ?? {})) {
     for (const kural of kurallar) if (kural.tanı && !sabit.has(kural.tanı)) sonuc.add(kural.tanı);
@@ -297,9 +477,8 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   const ortuKaynak = existsSync(ortuYolu) ? readFileSync(ortuYolu, "utf8") : undefined;
   const sicilKaynak = readFileSync(sicilYolu, "utf8");
   const snf = siniflamaOrtuMerge(siniflamaYukle(snfYolu), siniflamaOrtuYukle(kok));
-  const sabit = new Set([...ONCEKI_TANI_KODLARI, ...YENI_TANI_KODLARI]);
-  const dinamik = dinamikTaniKodlari(snf, sabit);
-  const canli = new Set([...sabit, ...dinamik]);
+  const tani = taniKumesiniOlc(snf);
+  const { dinamik, canli } = tani;
   const maddeKodlari = new Set(olcum.maddeler.map((m) => m.kod));
   const taniIndeks = maddeTaniIndeksi(olcum.maddeler);
   const karar = olcum.maddeler.filter((m) => m.rol === "Karar").length;
@@ -314,9 +493,8 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `| \`${m.kod}\` | \`${t.alan}\` | ${t.bolum} | ${t.tasiyiciUzunluk} | ${t.belgeUzunluk} | ${t.ilkFark} |`));
   const kirikDayanak = olcum.maddeler.flatMap((m) => m.dayanaklar.filter((d) => !maddeKodlari.has(d)).map((d) => `${m.kod}→${d}`));
   const eslesmeyenYeni = YENI_TANI_KANONU.filter((t) => !maddeKodlari.has(t.madde));
-  const emekliCanli = EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod));
+  const emekliCanli = tani.sayim.emekliCanli;
   const borcCanli = EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => canli.has(kod));
-  const yuz33 = YENI_TANI_KANONU.filter((t) => t.madde === "YUZ-3.3" && t.kod === "tanı-yüzeyi-karışması");
 
   // Kanonun dosya, Karar ve Kural sayısı TEK kayıtta yaşar (KANON_SAYIMI ·
   // HST-MTR-A02); bu üretici kaydı okur ve ölçülen kanonla ayrışmayı hata
@@ -326,34 +504,16 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
   const sayimBulgusu = kanonSayimiBulgusu(olcum.sayim);
   const olculenMadde = olcum.maddeler.length;
 
-  // Aşağıdaki değişmezler tanı kümelerinin sayılarıdır ve kanon madde sayısından ayrıdır.
-  // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
-  // `mevsim-mührü-çelişkili` doğdu ve yeni küme yetmiş dörtten yetmiş beşe çıktı.
-  // 2026-09-19 (KPS-FAZ-A02 · Founder hükmü): MIM-1.2 projesiz Faz gözlemi
-  // `projesiz-faz` doğdu ve yeni küme yetmiş sekizden yetmiş dokuza çıktı.
-  // Sayı çiftleri 2026-08-24 tarihinde bilinçli olarak güncellendi: durum-boyutu
-  // tanısı Founder hükmüyle emekliye ayrıldı (canlı sabit 102→101, emekli 14→15,
-  // emeklilik borcu 39→38) — sabit karakter sınırı yeni kanonda norm değildir.
-  // 2026-09-19 (KPS-CEL-A01 · ikinci ayrışma · Founder hükmü 2026-09-09): MIM-3.2
-  // Kitaplık kademesini zorunlu kıldı ve `kitaplıksız-kök` gözlemi doğdu; yeni küme
-  // yetmiş dokuzdan seksene çıktı.
-  // 2026-09-29 (KPS-SIR-A01 · Founder hükmü): Faz sırası ile Blok yapısının altı
-  // tanısı doğdu ve yeni küme seksenden seksen altıya çıktı; `planlanmamış` kaçışı
-  // kapandığı için `planlanmamış-gövde` emeklilik borcundan uygulanmış emekliye
-  // geçti (canlı sabit 101→100, emekli 15→16, emeklilik borcu 38→37).
-  // 2026-09-29 (KPS-SIR-A03 · Founder hükmü): Faz dosyası düzeninin dört gözlemi
-  // doğdu ve yeni küme seksen altıdan doksana çıktı.
-  // 2026-09-29 (KPS-SIR-A02): `girinti-yapı-uyumsuz` gözlemi DIL-2.2 zorlama satırına
-  // bilgi düzeyinde ilan edildi ve yeni küme doksandan doksan bire çıktı.
-  // 2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` uyarısıyla
-  // doğdu; kanon metni Founder onayı beklediği için kimlik sabit kümeye girdi ve canlı
-  // sabit yüzden yüz bire çıktı.
-  if (YENI_TANI_KANONU.length !== 91 || ONCEKI_TANI_KODLARI.length !== 101 ||
-      EMEKLI_TANI_KODLARI.length !== 16 || EMEKLILIK_BORCU_TANI_KODLARI.length !== 37 ||
-      emekliCanli.length !== 0 || borcCanli.length !== 37 || yuz33.length !== 1 ||
-      [...EMEKLI_TANI_HALEFI].some(([eski, yeni]) => !EMEKLI_TANI_KODLARI.includes(eski) || !canli.has(yeni))) {
-    throw new Error("Tanı kümesi değişmezleri beklenen canlı ölçümle uyuşmuyor.");
-  }
+  // Tanı kümelerinin sayısı da TEK kayıtta yaşar (TANI_KUMESI_SAYIMI · HST-MTR-A12)
+  // ve kanon madde sayısından ayrıdır. Üretici kümeleri canlı sicilden sayar; sicil
+  // kayıttan ya da küme değişmezlerinden ayrıştığında hata fırlatmaz, ayrışan ölçüyü
+  // ölçüm tablosuna, çelişki raporuna ve bulgu metnine adıyla yazar.
+  const taniKayit = TANI_KUMESI_SAYIMI;
+  const taniBulgusu = taniKumesiSayimiBulgusu(tani.sayim);
+  const taniSayimSatiri = (ad: string, kume: (s: TaniKumesiSayimi) => number): [string, string, number, boolean] =>
+    [ad, `${kume(taniKayit)}`, kume(tani.sayim), kume(tani.sayim) === kume(taniKayit)];
+  const yeniDagilim = (s: TaniKumesiSayimi): string =>
+    `${yeniKumeSayisi(s)} (${s.yeni.hata} hata + ${s.yeni.uyari} uyarı + ${s.yeni.bilgi} bilgi)`;
 
   const muhurSatirlari = olcum.muhurler.map((muhur) => {
     const [dosya, sha] = muhur.split(":");
@@ -378,6 +538,11 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     ["Çözülemeyen dayanak", "0", kirikDayanak.length, kirikDayanak.length === 0],
     ["Yeni tanı→madde eşleşme eksiği", "0", eslesmeyenYeni.length, eslesmeyenYeni.length === 0],
     ["Canlı-emekli kesişimi", "0", emekliCanli.length, emekliCanli.length === 0],
+    ["Yeni tanı kümesi", yeniDagilim(taniKayit), yeniDagilim(tani.sayim), yeniDagilim(tani.sayim) === yeniDagilim(taniKayit)],
+    taniSayimSatiri("Önceki sabit tanı kümesi", (s) => s.onceki),
+    taniSayimSatiri("Sınıflamadan türeyen tanı kümesi", (s) => s.siniflamaTurevli),
+    taniSayimSatiri("Uygulanmış emekli tanı kümesi", (s) => s.emekli),
+    taniSayimSatiri("Emeklilik borcu", (s) => s.emeklilikBorcu),
   ];
   const tutarlilikSatirlari = tutarlilik.map(([olcu, beklenen, gercek, gecti]) =>
     `| ${olcu} | ${beklenen} | ${gercek} | ${gecti ? "GEÇTİ" : "SAPMA"} |`);
@@ -446,7 +611,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "",
     "## Sınıflamadan türeyen canlı kimlikler",
     "",
-    `Sabit 171 kimliğe ek olarak ${dinamik.length} kimlik canlı \`zorunluKenarlar\` verisinden türetilir. Bunlar sabit yönlendirme sayısına veya yeni-küme düzey dağılımına eklenmez.`,
+    `Sabit ${canli.size - dinamik.length} kimliğe ek olarak ${dinamik.length} kimlik canlı \`zorunluKenarlar\` verisinden türetilir. Bunlar sabit yönlendirme sayısına veya yeni-küme düzey dağılımına eklenmez.`,
     "",
     "| Kimlik | Kaynak | Durum |",
     "|---|---|---|",
@@ -465,7 +630,8 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     "| Bulgu | Ölçüm | Hüküm |",
     "|---|---:|---|",
     `| Kanon sayımı kaydından ayrışma | ${olculenMadde} / ${kayitMadde} | ${sayimBulgusu ? `AÇIK · artırma adımı \`${KANON_SAYIMI_KAYDI}\` kaydındadır` : "YOK"} |`,
-    `| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = ${YENI_TANI_KANONU.length} | ÇÖZÜLDÜ · güncel sayı ${YENI_TANI_KANONU.length} |`,
+    `| Tanı kümesi sayımı kaydından ayrışma | ${tani.sayim.canli} / ${canliSicilSayisi(taniKayit)} | ${taniBulgusu ? `AÇIK · artırma adımı \`${KANON_SAYIMI_KAYDI}\` kaydındadır` : "YOK"} |`,
+    `| Planın 69 yeni tanı damgası ile canlı sicil | 69 taban + ${YENI_TANI_KANONU.length - 69} sonradan doğan kimlik = ${YENI_TANI_KANONU.length} | ÇÖZÜLDÜ · güncel sayı ${YENI_TANI_KANONU.length} |`,
     `| Yeni tanının resmi maddesi eksik | ${eslesmeyenYeni.length} | ${eslesmeyenYeni.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Kanonik örnek eksiği | ${eksikOrnek.length} | ${eksikOrnek.length === 0 ? "YOK" : "AÇIK"} |`,
     `| Dört parçalı madde eksiği | ${eksikDortParca.length} | ${eksikDortParca.length === 0 ? "YOK" : "AÇIK"} |`,
@@ -476,6 +642,7 @@ export function kanonTutarlilikMetni(kokYolu: string): string {
     `| Eski \`geneldurum/\` türevi | ${existsSync(join(kok, "geneldurum")) ? "dizin var" : "0"} | ${existsSync(join(kok, "geneldurum")) ? "AÇIK · nihai arşive taşı" : "YOK · arşiv işlemi gerekmiyor"} |`,
     "",
     ...(sayimBulgusu ? [sayimBulgusu, ""] : []),
+    ...(taniBulgusu ? [taniBulgusu, ""] : []),
     "Kanon dosyalarının hiçbir baytı bu üretimde değiştirilmez. Kaynak mühürleri yukarıdaki sekiz SHA-256 değeriyle yeniden üretilebilir.",
     "|<--",
     "",
@@ -498,6 +665,7 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
   const mevcut = existsSync(hedef) ? readFileSync(hedef, "utf8") : undefined;
   if (yeni !== mevcut) writeFileSync(hedef, yeni, "utf8");
   const olcum = kanonMaddeleriniOlc(kok);
+  const snf = siniflamaOrtuMerge(siniflamaYukle(join(kok, "oz", "siniflama", "kayit.json")), siniflamaOrtuYukle(kok));
   return {
     degisti: yeni !== mevcut,
     dosya: hedef,
@@ -508,5 +676,6 @@ export function kanonTutarlilikUret(kokYolu: string): KanonTutarlilikSonucu {
     emeklilikBorcu: EMEKLILIK_BORCU_TANI_KODLARI.length,
     tasiyiciAyrisan: olcum.maddeler.filter((m) => m.tasiyicilar.some((t) => !t.esit)).map((m) => m.kod),
     kanonSayimiBulgusu: kanonSayimiBulgusu(olcum.sayim),
+    taniKumesiBulgusu: taniKumesiSayimiBulgusu(taniKumesiniOlc(snf).sayim),
   };
 }

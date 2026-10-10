@@ -577,6 +577,8 @@ if (yol === "belge-yuzleri-uret") {
   console.log(`📚 belge yüzleri: ${sonuc.degisen.length} değişti · ${sonuc.degismeyen.length} aynı · ${sonuc.kanonMaddesi} madde · ${sonuc.aracSayisi} araç.`);
   // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
   if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
   process.exit(0);
 }
 
@@ -591,6 +593,8 @@ if (yol === "kanon-tutarlilik-uret") {
   if (sonuc.tasiyiciAyrisan.length > 0) console.log(`⚠️ taşıyıcısı belge metninden ayrışan madde: ${sonuc.tasiyiciAyrisan.join(" · ")} (ayrıntı: is/nitelik/goc/kanon_tutarlilik.sar).`);
   // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
   if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
   process.exit(0);
 }
 

@@ -37,6 +37,11 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Çözülemeyen dayanak | 0 | 0 | GEÇTİ |
 | Yeni tanı→madde eşleşme eksiği | 0 | 0 | GEÇTİ |
 | Canlı-emekli kesişimi | 0 | 0 | GEÇTİ |
+| Yeni tanı kümesi | 91 (48 hata + 22 uyarı + 21 bilgi) | 91 (48 hata + 22 uyarı + 21 bilgi) | GEÇTİ |
+| Önceki sabit tanı kümesi | 101 | 101 | GEÇTİ |
+| Sınıflamadan türeyen tanı kümesi | 9 | 9 | GEÇTİ |
+| Uygulanmış emekli tanı kümesi | 16 | 16 | GEÇTİ |
+| Emeklilik borcu | 37 | 37 | GEÇTİ |
 
 Resmi sonuç 162/162 maddedir. Tek adres `yasa/kanon/`; bu türev hüküm metni kurmaz.
 
@@ -426,7 +431,7 @@ Yeni kümeden önceki 101 sabit kimlik canlı sicilde korunur. Kanonun yapısal 
 
 ## Sınıflamadan türeyen canlı kimlikler
 
-Sabit 171 kimliğe ek olarak 9 kimlik canlı `zorunluKenarlar` verisinden türetilir. Bunlar sabit yönlendirme sayısına veya yeni-küme düzey dağılımına eklenmez.
+Sabit 192 kimliğe ek olarak 9 kimlik canlı `zorunluKenarlar` verisinden türetilir. Bunlar sabit yönlendirme sayısına veya yeni-küme düzey dağılımına eklenmez.
 
 | Kimlik | Kaynak | Durum |
 |---|---|---|
@@ -453,7 +458,8 @@ Emekli kararı bulunduğu hâlde uyumluluk için sabit veya sınıflama-türevli
 | Bulgu | Ölçüm | Hüküm |
 |---|---:|---|
 | Kanon sayımı kaydından ayrışma | 162 / 162 | YOK |
-| Planın 69 yeni tanı damgası ile canlı sicil | 69 + YUZ-3.3'ten 1 + iki gözlem + ORK-8'den 1 = 91 | ÇÖZÜLDÜ · güncel sayı 91 |
+| Tanı kümesi sayımı kaydından ayrışma | 201 / 201 | YOK |
+| Planın 69 yeni tanı damgası ile canlı sicil | 69 taban + 22 sonradan doğan kimlik = 91 | ÇÖZÜLDÜ · güncel sayı 91 |
 | Yeni tanının resmi maddesi eksik | 0 | YOK |
 | Kanonik örnek eksiği | 0 | YOK |
 | Dört parçalı madde eksiği | 0 | YOK |

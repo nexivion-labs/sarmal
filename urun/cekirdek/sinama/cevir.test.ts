@@ -68,7 +68,10 @@ test("katalog dışı dokuz zorunluKenar tanısının İngilizce yüzü sözlük
       assert.match(metin.oneri, /\bAdd at least one\b/u);
     }
   }
-  assert.equal(kimlikler.size, 9, "zorunluKenarlar kümesi dokuz ayrı tanı kimliğidir");
+  // Kümenin büyüklüğü burada dondurulmaz (HST-MTR-A12): sınıflamadan türeyen tanı
+  // kümesinin tek kaydı çekirdekteki TANI_KUMESI_SAYIMI'dır. Bu nöbet yalnız
+  // ölçtüğü kümenin boş kalmadığını doğrular.
+  assert.ok(kimlikler.size > 0, "zorunluKenarlar kümesi boş kaldı; çeviri nöbeti hiçbir kimliği ölçmüyor demektir");
 });
 
 // ── ④ SARMAL'IN KENDİ KAVRAMLARI (V1B-KAVRAM-A01) ───────────────────────────

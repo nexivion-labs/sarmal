@@ -352,7 +352,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, ret ve gözlem kimlikleri Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: hata ve uyarı Problems'a, ret ve gözlem kimlikleri Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -371,21 +371,9 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, ret ve gözlem kimlikl
     assert.equal(yuzey, beklenen,
       `"${k.kod}" bugünkü kademesiyle (${k.kademe}) ${yuzey} yüzeyine düşüyor; A05 kararı ${beklenen} bekliyor`);
   }
-  // Kırk yedinci hata kimliği MIM-1.7 AltKatman tekilliğidir (Founder hükmü
-  // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
-  // KPS-SIR-A01 (2026-09-29): MIM-1.2 `ters-faz-bağımlılığı` hatasıyla kırk sekize çıktı.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 48);
-  // On yedinci uyarı kimliği MIM-3.4 `geçersiz-dosya-adı`dır (KPS-MHR-A01 · Founder hükmü 2026-09-11).
-  // KPS-CEL-A01 (2026-09-19): MIM-3.2 `kitaplıksız-kök` uyarısıyla on yediden on sekize çıktı.
-  // KPS-SIR-A01 (2026-09-29): üç yeni uyarı ile uyarıya çıkan seçilemez Adım yürütümüyle yirmi ikiye çıktı.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 22);
-  // On ikinci bilgi kimliği ORK-8 mühür dürüstlüğü bekçisidir (KPS-MVS-A01 · 2026-09-10);
-  // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
-  // On beşincisi MIM-1.2 projesiz Faz gözlemidir (KPS-FAZ-A02 · Founder hükmü 2026-09-19).
-  // KPS-SIR-A01 (2026-09-29): iki yapı gözlemi doğdu, seçilemez Adım yürütümü ayrıldı; on altı oldu.
-  // KPS-SIR-A03 (2026-09-29): Faz dosyası düzeninin dört gözlemi doğdu; yirmi oldu.
-  // KPS-SIR-A02 (2026-09-29): DIL-2.2 girinti gözlemi doğdu; yirmi bir oldu.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 21);
+  // Yeni kümenin düzey dağılımı burada dondurulmaz (HST-MTR-A12): tek kaydı çekirdekteki
+  // TANI_KUMESI_SAYIMI, kayda karşı tek nöbeti çekirdek süitindeki tanı kümesi sayım
+  // nöbetidir. Dağılımın kimlik kimlik geçmişi o kaydın geçmiş satırlarındadır.
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -633,13 +621,22 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // 2026-09-29 (KPS-SIR-A01): iki yapı gözlemi geldi, seçilemez Adım yürütümü Problems'a gitti; küme ON DÖRDE çıktı.
   // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemi geldi; küme ON SEKİZE çıktı.
   // 2026-09-29 (KPS-SIR-A02): DIL-2.2 girinti gözlemi geldi; küme ON DOKUZA çıktı.
-  assert.equal(yeniBildirim, 19,
-    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi, MIM-3.4 dosya mührü ve MIM-1.2 projesiz Faz gözlemi Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
   // 2026-09-11: MIM-3.4 `geçersiz-dosya-adı` uyarı düzeyinde doğdu ve küme altmış dörde çıktı.
   // 2026-09-29 (KPS-SIR-A01): bir hata, üç uyarı ve uyarıya çıkan seçilemez Adım yürütümüyle yetmişe çıktı.
-  assert.equal(yeniProblems, 70, "A05'in 47 hata ve 16 uyarı kimliği, MIM-3.4 ve MIM-3.2 uyarıları ile KPS-SIR-A01'in beş kimliği Problems'a gitmelidir");
+  // HST-MTR-A12 (2026-10-10): iki hanenin büyüklüğü artık burada dondurulmaz; yeni
+  // kümenin düzey dağılımının tek kaydı çekirdekteki TANI_KUMESI_SAYIMI'dır. Burada
+  // paylaşımın kuralı ölçülür: her hata ve uyarı kimliği Problems'a, ileri bağlam
+  // taşımayan her bilgi kimliği Gözlemler'e gider.
+  const yeniDuzeyde = (duzey: Duzey): number => YENI_TANI_KANONU.filter((k) => k.kademe === duzey).length;
+  const yeniHatirlatici = YENI_TANI_KANONU.filter(
+    (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "hatırlatıcılar",
+  ).length;
+  assert.equal(yeniBildirim + yeniHatirlatici, yeniDuzeyde("bilgi"),
+    "yeni kümenin bilgi kimlikleri Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  assert.equal(yeniProblems, yeniDuzeyde("hata") + yeniDuzeyde("uyarı"),
+    "yeni kümenin bütün hata ve uyarı kimlikleri Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,

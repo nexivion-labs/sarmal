@@ -1026,7 +1026,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, yirmi kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: kabul edilen tanılar hatada, kanon-uyarı tanıları uyarıda, borç ve gözlem kimlikleri bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -1076,8 +1076,11 @@ test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, yirmi kimlik bil
   // gelmedi, dolayısıyla A05'in kırk altılık aday kümesini değiştirmez.
   // Kırk sekizinci hata kimliği 2026-09-29 tarihinde Founder hükmüyle doğdu:
   // MIM-1.2 `ters-faz-bağımlılığı` (KPS-SIR-A01); terfi turundan gelmedi.
-  assert.equal(hatada.length, 48, "Founder kabulündeki hata kümesi 47 tanı ile MIM-1.2 ters Faz bağımlılığı, 48 tanı olmalıdır");
-  assert.ok(hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
+  // HST-MTR-A12: hata ve uyarı kümelerinin büyüklüğü burada dondurulmaz; tek kaydı
+  // TANI_KUMESI_SAYIMI (src/kanon-tutarlilik.ts), kayda karşı tek nöbeti kanon
+  // tutarlılık sınamasındaki tanı kümesi sayım nöbetidir. Burada düzeyin kanonla
+  // uyumu ölçülür.
+  assert.ok(hatada.length > 0 && hatada.every((k) => k.kanonDüzey === "hata"), "kanon hedefi hata olmayan tanı hataya çıkarılmış");
   // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
   // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
   // sıfırdır; terfi turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
@@ -1087,9 +1090,8 @@ test("GOC-TERFI-A05: 48 kabul hatada, 22 kanon-uyarı uyarıda, yirmi kimlik bil
   // turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
   // KPS-SIR-A01 (Founder hükmü 2026-09-29): üç yeni uyarı doğdu (MIM-1.2 erken Faz
   // işi ile yabancı Faz bağı, MIM-1.3 Katmansız Blok) ve ORK-3.2 seçilemez Adım
-  // yürütümü bilgi kademesinden uyarıya çıktı; kümenin yeni büyüklüğü yirmi ikidir.
-  assert.equal(uyarida.length, 22, "on altı tanı, MIM-3.4 ve MIM-3.2 uyarıları ile KPS-SIR-A01'in dört uyarısı 22 tanı olmalıdır");
-  assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
+  // yürütümü bilgi kademesinden uyarıya çıktı; kümenin o günkü büyüklüğü yirmi ikiydi.
+  assert.ok(uyarida.length > 0 && uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 
 // ══ ORK-3.4 · ÖNCELİK BEYANI ve YUZ-3.4 · ATEŞLEMİŞ HATIRLATICI (2026-08-22) ══

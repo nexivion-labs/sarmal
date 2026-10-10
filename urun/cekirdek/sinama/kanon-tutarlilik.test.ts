@@ -1,27 +1,34 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { ayristir } from "../src/ayristirici.ts";
 import { belirtecle } from "../src/belirtec.ts";
 import { BELGE_YUZU_HEDEFLERI, belgeYuzleriniUret, kanonOlc } from "../src/belge-yuzleri.ts";
 import { dizindenIndeks } from "../src/kimlik.ts";
 import {
+  canliSicilSayisi,
   KANON_SAYIMI,
   KANON_SAYIMI_KAYDI,
   kanonMaddeleriniOlc,
   kanonMaddeSayisi,
   kanonSayimiBulgusu,
   kanonTutarlilikMetni,
+  TANI_KUMESI_SAYIMI,
+  taniKumesiniOlc,
+  taniKumesiSayimiBulgusu,
+  yeniKumeSayisi,
+  type OlculenTaniKumesi,
+  type TaniKumesiSayimi,
 } from "../src/kanon-tutarlilik.ts";
 import type { Dugum } from "../src/sozdizim.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 import {
   EMEKLI_TANI_KODLARI,
   EMEKLILIK_BORCU_TANI_KODLARI,
-  ONCEKI_TANI_KODLARI,
   taniSicili,
   YENI_TANI_KANONU,
 } from "../src/tani-sicili.ts";
@@ -47,10 +54,10 @@ test("resmi sekizlinin bütün maddeleri örneği ve dört parçayı sabit SHA'l
   assert.deepEqual(olcum.muhurler, KANON_SHA);
 });
 
-test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KPS-SIR-A02 tanıları 48/22/21 olarak 91'dir", () => {
-  assert.equal(YENI_TANI_KANONU.length, 91);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "hata").length, 48);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "uyarı").length, 22);
+test("yeni küme MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KPS-SIR-A02 tanılarını kanonun yazdığı düzeyde taşır", () => {
+  // Kümelerin sayısı ve düzey dağılımı bu sınamada dondurulmaz: tek kaydı
+  // TANI_KUMESI_SAYIMI, kayda karşı tek nöbeti bu dosyadaki "tanı kümesi sayım
+  // nöbeti" sınamasıdır (HST-MTR-A12). Burada yalnız kimliklerin yeri ve düzeyi ölçülür.
   // Faz sırası ve Blok yapısı (KPS-SIR-A01 · Founder hükmü 2026-09-29): altı tanı
   // doğdu, `seçilemez-adım-yürütümü` bilgiden kanonun yazdığı uyarıya çıktı.
   assert.deepEqual(YENI_TANI_KANONU.filter((t) => ["MIM-1.2", "MIM-1.3", "MIM-1.6", "ORK-3.2"].includes(t.madde) && t.kod !== "projesiz-faz" && t.kod !== "adım-atomikliği")
@@ -67,7 +74,6 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KP
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.2" && t.kod === "kitaplıksız-kök" && t.kademe === "uyarı").length, 1);
   // DIL-2.2 girinti gözlemi (KPS-SIR-A02): maddenin zorlama satırına bilgi düzeyinde ilan edildi.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "DIL-2.2" && t.kod === "girinti-yapı-uyumsuz" && t.kademe === "bilgi").length, 1);
-  assert.equal(YENI_TANI_KANONU.filter((t) => t.kademe === "bilgi").length, 21);
   // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): hükmün
   // Faz ile Proje arasındaki yarısı bir gözlemle tutulur ve bilgi düzeyinde konuşur.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.2" && t.kod === "projesiz-faz" && t.kademe === "bilgi").length, 1);
@@ -82,9 +88,6 @@ test("70 taban + beş gözlem + MIM-3.4, MIM-3.2, KPS-SIR-A01, KPS-SIR-A03 ve KP
   // MIM-1.7 AltKatman tekilliği — Founder hükmü 2026-08-28; kök sebep bir hüküm
   // boşluğuydu ve madde o boşluğu kapattı, bekçi de onu hata düzeyinde zorlar.
   assert.equal(YENI_TANI_KANONU.filter((t) => t.madde === "MIM-1.7" && t.kod === "altkatman-tekilliği-ihlali").length, 1);
-  // KPS-SIR-A01: `planlanmamış-gövde` emekli oldu (101 → 100).
-  // BKM-OLG-A11 (2026-10-02): `yersiz-teknoloji-kaçışı` sabit kümede doğdu (100 → 101).
-  assert.equal(ONCEKI_TANI_KODLARI.length, 101);
 });
 
 test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır", () => {
@@ -93,19 +96,11 @@ test("uygulanmış emekli ve canlı emeklilik borcu tam sicile karşı ayrıdır
     siniflamaOrtuYukle(KOK),
   );
   const canli = taniSicili(snf);
-  // 2026-09-10 (KPS-MVS-A01 ikinci teslim): ORK-8 mühür bekçisiyle canlı sicil yüz seksen dörtten yüz seksen beşe çıktı.
-  // 2026-09-11 (KPS-MHR-A01): MIM-3.4 dosya mühürlerinin üç tanısıyla yüz seksen sekize çıktı.
-  // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 projesiz Faz gözlemiyle yüz seksen dokuza çıktı.
-  // 2026-09-19 (KPS-CEL-A01): MIM-3.2 Kitaplıksız kök gözlemiyle yüz doksana çıktı.
-  // 2026-09-29 (KPS-SIR-A01): altı yeni tanı doğdu ve `planlanmamış-gövde` emekli oldu; yüz doksan beşe çıktı.
-  // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemiyle yüz doksan dokuza çıktı.
-  // 2026-09-29 (KPS-SIR-A02): DIL-2.2 `girinti-yapı-uyumsuz` gözlemiyle iki yüze çıktı.
-  // 2026-10-02 (BKM-OLG-A11): MIM-1.4 kaçış sınırı `yersiz-teknoloji-kaçışı` ile iki yüz bire çıktı.
-  assert.equal(canli.size, 201);
-  assert.equal(EMEKLI_TANI_KODLARI.length, 16);
-  assert.equal(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 0);
-  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.length, 37);
-  assert.equal(EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => canli.has(kod)).length, 37);
+  // Sicilin ve kümelerin büyüklüğü burada dondurulmaz (TANI_KUMESI_SAYIMI · HST-MTR-A12);
+  // bu sınama yalnız iki kümenin canlı sicile göre yerini ölçer. Canlı sicilin
+  // 2026-09-10 ile 2026-10-02 arasındaki büyümesi kaydın geçmiş satırlarındadır.
+  assert.deepEqual(EMEKLI_TANI_KODLARI.filter((kod) => canli.has(kod)), [], "uygulanmış emekli kimlik canlı sicilde durmamalı");
+  assert.deepEqual(EMEKLILIK_BORCU_TANI_KODLARI.filter((kod) => !canli.has(kod)), [], "emeklilik borcundaki her kimlik canlı sicilde durmalı");
 });
 
 test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz", () => {
@@ -115,7 +110,8 @@ test("A03 türevi idempotenttir ve geneldurum'u hüküm kaynağı olarak okumaz"
   assert.equal(ikinci, ilk);
   const madde = kanonMaddeleriniOlc(KOK).maddeler.length;
   assert.ok(ilk.includes(`Resmi sonuç ${madde}/${madde} maddedir`), "türev ölçülen madde sayısını söylemeli");
-  assert.match(ilk, /Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle 91 canlı yeni kimliğe ulaşır/);
+  assert.ok(ilk.includes(`Faz dosyası düzeninin dört gözlemiyle ve DIL-2.2 girinti gözlemiyle ${YENI_TANI_KANONU.length} canlı yeni kimliğe ulaşır`),
+    "türev yeni kümenin canlı sayısını söylemeli");
   assert.doesNotMatch(ilk, /144 madde|144\/144/);
   assert.doesNotMatch(uretici, /readFileSync\([^\n]*geneldurum|readdirSync\([^\n]*geneldurum/);
 });
@@ -448,4 +444,130 @@ test("HST-MTR-A02 kırmızı fikstür: kopyaya madde eklenince üreticiler hata 
   assert.ok(readFileSync(join(sb, "README.md"), "utf8").includes(`${canli + 1} tekil madde`),
     "kalıcı yüzler sayı kaydı beklenmeden tazelenebilmeli");
   assert.equal(kanonOlc(sb).sayim.tekil, canli + 1);
+});
+
+// ── HST-MTR-A12 · tanı kümesi sayımının tek kaydı ve tek nöbeti ───────────────
+//   Tanı sicilinin kümeleri de bilinçle dondurulmuş bir insan kapısıdır; sayılar
+//   yalnız src/kanon-tutarlilik.ts içindeki TANI_KUMESI_SAYIMI kaydında yaşar.
+//   Üreticiler sicil kayıttan ayrıştığında hata fırlatmaz; ayrışan kümeyi adıyla
+//   söyleyen bir bulgu yazar ve sicili kayda karşı ölçen tek nöbet aşağıdadır.
+//   Kırmızı fikstür sicilin kendisine bir tanı ekler: çekirdeğin kaynak ağacı ve
+//   üreticilerin okuduğu girdiler geçici köke kopyalanır, kopyadaki sicile bir kayıt
+//   yazılır ve kopyanın modülleri yüklenir; böylece üreticiler canlı sicili değil
+//   tanı eklenmiş sicili okur ve canlı ağaca hiçbir şey yazılmaz.
+
+test("tanı kümesi sayım nöbeti: canlı sicil tek sayım kaydıyla eşittir", () => {
+  const snf = siniflamaOrtuMerge(siniflamaYukle(join(KOK, "oz/siniflama/kayit.json")), siniflamaOrtuYukle(KOK));
+  const bulgu = taniKumesiSayimiBulgusu(taniKumesiniOlc(snf).sayim);
+  if (bulgu !== undefined) assert.fail(bulgu);
+});
+
+test("HST-MTR-A12 sayım bulgusu kayda eşit ölçümde susar, ayrışan kümeyi ve bozulan değişmezi adıyla söyler", () => {
+  const kayit = TANI_KUMESI_SAYIMI;
+  const temiz: OlculenTaniKumesi = {
+    ...kayit, canli: canliSicilSayisi(kayit), emekliCanli: [], borcCanliDegil: [], kirikHalef: [], yuz33: 1,
+  };
+  assert.equal(taniKumesiSayimiBulgusu(temiz), undefined);
+
+  const buyumus = taniKumesiSayimiBulgusu({ ...temiz, yeni: { ...kayit.yeni, hata: kayit.yeni.hata + 1 }, canli: temiz.canli + 1 });
+  assert.ok(buyumus, "bir hata tanısı eklenmiş ölçüm bulgu vermeli");
+  assert.ok(buyumus.includes(`yeni küme ${yeniKumeSayisi(kayit) + 1} kimlik (${kayit.yeni.hata + 1} hata`)
+    && buyumus.includes(`kayıt ise ${yeniKumeSayisi(kayit)} kimlik (${kayit.yeni.hata} hata`), `bulgu iki sayımı da söylemeli: ${buyumus}`);
+  assert.ok(buyumus.includes("artırma adımı") && buyumus.includes("TANI_KUMESI_SAYIMI") && buyumus.includes(KANON_SAYIMI_KAYDI),
+    `bulgu artırma adımını kaydın adı ve yeriyle söylemeli: ${buyumus}`);
+  assert.ok(!buyumus.includes("önceki sabit küme") && !buyumus.includes("ayrık değil"), `bulgu yalnız ayrışan kümeyi söylemeli: ${buyumus}`);
+
+  // Bir tanının düzeyi değişince küme büyümez, fakat dağılım kayıttan ayrışır.
+  const terfi = taniKumesiSayimiBulgusu({ ...temiz, yeni: { ...kayit.yeni, hata: kayit.yeni.hata + 1, uyari: kayit.yeni.uyari - 1 } });
+  assert.ok(terfi?.includes("yeni küme"), "düzey değişimi de bilinçli bir artırma adımı istemeli");
+
+  // Emekliye ayrılan bir sabit kimlik iki kümeyi birden değiştirir; ikisi de adıyla söylenir.
+  const emekliye = taniKumesiSayimiBulgusu({ ...temiz, onceki: kayit.onceki - 1, emekli: kayit.emekli + 1, canli: temiz.canli - 1 });
+  assert.ok(emekliye?.includes("önceki sabit küme") && emekliye.includes("uygulanmış emekli küme") && !emekliye.includes("yeni küme"),
+    `emekliye ayırma iki kümeyi adıyla söylemeli: ${emekliye}`);
+
+  // Küme değişmezleri sayıdan ayrı bulgulardır ve bozulan kimliği adıyla söyler.
+  const ayrikDegil = taniKumesiSayimiBulgusu({ ...temiz, canli: temiz.canli - 1 });
+  assert.ok(ayrikDegil?.includes("ayrık değil") && !ayrikDegil.includes("artırma adımı"), `kesişen kümeler bulgu vermeli: ${ayrikDegil}`);
+  assert.ok(taniKumesiSayimiBulgusu({ ...temiz, emekliCanli: ["durum-boyutu"] })?.includes("`durum-boyutu`"));
+  assert.ok(taniKumesiSayimiBulgusu({ ...temiz, borcCanliDegil: ["derin-dal"] })?.includes("`derin-dal`"));
+  assert.ok(taniKumesiSayimiBulgusu({ ...temiz, kirikHalef: ["faz-gecikti → mevsim-vadesi-geçti"] })?.includes("halefi kırık"));
+  assert.ok(taniKumesiSayimiBulgusu({ ...temiz, yuz33: 0 })?.includes("YUZ-3.3"));
+});
+
+/**
+ * Fikstür tanısı: yeni bir biçim tanısının benzeri, DIL-5.1 maddesine bağlı bir gözlem.
+ * Kodu canlı sicilde bulunmayan ilk adaydan seçilir; böylece fikstür sicilin bugünkü
+ * içeriğinden ve sicilin kayda eşit olup olmamasından bağımsız kalır.
+ */
+function fiksturTanisi(canli: ReadonlySet<string>): string {
+  let kod = "sayım-fikstürü-biçimi";
+  for (let sira = 2; canli.has(kod); sira++) kod = `sayım-fikstürü-biçimi-${sira}`;
+  return `  { kod: "${kod}", madde: "DIL-5.1", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },\n`;
+}
+
+type KanonModulu = typeof import("../src/kanon-tutarlilik.ts");
+type BelgeModulu = typeof import("../src/belge-yuzleri.ts");
+
+/**
+ * Sicile tanı eklenmiş kopya; dönen modüller kopyanın kaynak ağacından yüklenir ve
+ * kopyadaki sicili okur. `once`, ekleme öncesindeki canlı sicilin ölçümüdür.
+ */
+async function taniEklenmisKopya(): Promise<{ sb: string; kanon: KanonModulu; belge: BelgeModulu; once: OlculenTaniKumesi }> {
+  const canliOlcum = taniKumesiniOlc(siniflamaOrtuMerge(siniflamaYukle(join(KOK, "oz/siniflama/kayit.json")), siniflamaOrtuYukle(KOK)));
+  const sb = sayimKopyasi();
+  cpSync(join(KOK, "urun/cekirdek/src"), join(sb, "urun/cekirdek/src"), { recursive: true });
+  for (const dizin of ["oz/ceviri", "ogreti/bilgi"]) cpSync(join(KOK, dizin), join(sb, dizin), { recursive: true });
+  cpSync(join(KOK, "urun/cekirdek/package.json"), join(sb, "urun/cekirdek/package.json"));
+  const sicilYolu = join(sb, "urun/cekirdek/src/tani-sicili.ts");
+  const sicil = readFileSync(sicilYolu, "utf8");
+  const acilis = "export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [\n";
+  assert.equal(sicil.split(acilis).length - 1, 1, "fikstür yeni kümenin açılışını tek bir kez bulmalı");
+  writeFileSync(sicilYolu, sicil.replace(acilis, () => acilis + fiksturTanisi(canliOlcum.canli)), "utf8");
+  const kaynak = pathToFileURL(join(sb, "urun/cekirdek/src/")).href;
+  const kanon: KanonModulu = await import(`${kaynak}kanon-tutarlilik.ts`);
+  const belge: BelgeModulu = await import(`${kaynak}belge-yuzleri.ts`);
+  return { sb, kanon, belge, once: canliOlcum.sayim };
+}
+
+/** Ölçüm tablosundaki yeni küme hücresi. */
+const yeniDagilimi = (s: TaniKumesiSayimi): string =>
+  `${yeniKumeSayisi(s)} (${s.yeni.hata} hata + ${s.yeni.uyari} uyarı + ${s.yeni.bilgi} bilgi)`;
+
+test("HST-MTR-A12 kırmızı fikstür: sicile tanı eklenince üreticiler durmaz ve ayrışan kümeyi adıyla basar", async () => {
+  const { sb, kanon, belge, once } = await taniEklenmisKopya();
+  // Beklenen ölçüm canlı sicilin bir bilgi tanısı fazlasıdır; beklenen kayıt kopyanın
+  // kaydıdır. İkisi canlı sicilden türediği için fikstür sicil kayda eşit olmasa da çalışır.
+  const kayit = kanon.TANI_KUMESI_SAYIMI;
+  const sonra: TaniKumesiSayimi = { ...once, yeni: { ...once.yeni, bilgi: once.yeni.bilgi + 1 } };
+  assert.notEqual(yeniDagilimi(sonra), yeniDagilimi(kayit), "fikstür kayıttan ayrışan bir sicil kurmalı");
+
+  // Ölçülen kusurun kendisi komut satırındadır: üretici çıkış 1 veriyor ve hangi
+  // değişmezin tutmadığını söylemiyordu. Kopyanın komutu kopyanın sicilini okur.
+  const komut = spawnSync(process.execPath, [join(sb, "urun/cekirdek/src/sarmal.ts"), "kanon-tutarlilik-uret", sb], { encoding: "utf8" });
+  assert.equal(komut.status, 0, `üretici komutu sicile eklenen bir tanı yüzünden durmamalı:\n${komut.stderr}`);
+  assert.ok(komut.stdout.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`), `komut ayrışan kümeyi adıyla basmalı:\n${komut.stdout}`);
+
+  let metin = "";
+  assert.doesNotThrow(() => { metin = kanon.kanonTutarlilikMetni(sb); },
+    "kanon tutarlılık üreticisi sicile eklenen bir tanı yüzünden durmamalı");
+  assert.ok(metin.includes(`| Yeni tanı kümesi | ${yeniDagilimi(kayit)} | ${yeniDagilimi(sonra)} | SAPMA |`),
+    "kanon tutarlılık yüzü ayrışan kümeyi ölçüm tablosunda SAPMA olarak göstermeli");
+  assert.ok(metin.includes(`| Tanı kümesi sayımı kaydından ayrışma | ${once.canli + 1} / ${canliSicilSayisi(kayit)} | AÇIK`),
+    "kanon tutarlılık yüzü ayrışmayı çelişki raporunda açık bulgu olarak yazmalı");
+
+  const sonuc = kanon.kanonTutarlilikUret(sb);
+  const bulgu = sonuc.taniKumesiBulgusu ?? "";
+  assert.ok(bulgu.includes(`yeni küme ${yeniKumeSayisi(sonra)} kimlik`) && bulgu.includes(`kayıt ise ${yeniKumeSayisi(kayit)} kimlik`),
+    `bulgu ayrışan kümeyi adıyla ve iki sayısıyla söylemeli: ${bulgu}`);
+  assert.ok(bulgu.includes("artırma adımı") && bulgu.includes("TANI_KUMESI_SAYIMI") && bulgu.includes(KANON_SAYIMI_KAYDI),
+    `bulgu artırma adımını kaydın adı ve yeriyle söylemeli: ${bulgu}`);
+  if (once.onceki === kayit.onceki) assert.ok(!bulgu.includes("önceki sabit küme"), `bulgu yalnız ayrışan kümeyi söylemeli: ${bulgu}`);
+  assert.equal(sonuc.yeni, yeniKumeSayisi(sonra), "üretici kümeyi sicilden saymalı");
+
+  let belgeSonucu: ReturnType<BelgeModulu["belgeYuzleriniUret"]> | undefined;
+  assert.doesNotThrow(() => { belgeSonucu = belge.belgeYuzleriniUret(sb); },
+    "belge yüzü üreticisi sicile eklenen bir tanı yüzünden durmamalı");
+  assert.ok(belgeSonucu?.taniKumesiBulgusu?.includes("TANI_KUMESI_SAYIMI"),
+    "belge yüzü üreticisi ayrışmayı anlaşılır bir bulguyla bildirmeli");
 });
