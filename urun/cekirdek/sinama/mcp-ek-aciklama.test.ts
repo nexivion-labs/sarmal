@@ -152,6 +152,13 @@ test("EKL-F6-A03 nöbeti ①: 18 aracın tamamı ek açıklama taşır (15 okur 
 test("EKL-F6-A03 nöbeti ②: ek açıklama tools/list telinde iki yerde de yayımlanır", () => {
   const araclar = sunucuAraclari();
   assert.equal(araclar.length, BEKLENEN_ARAC_SAYISI);
+  // Sayı tek başına yetmez: tel bir aracı iki kez yayımlayıp başkasını düşürse
+  // sayı yine tutar. Teldeki araç kümesi katalogdaki kümeyle birebir olmalıdır.
+  assert.deepEqual(
+    araclar.map((a) => a.name).sort(),
+    Object.keys(MCP_ARAC_METINLERI).sort(),
+    "tools/list telindeki araç kümesi katalogdaki kümeyle ayrışmış",
+  );
   for (const arac of araclar) {
     assert.ok(arac.title?.trim(), `${arac.name} görünen ad taşımıyor (Tool.title)`);
     assert.ok(arac.annotations, `${arac.name} annotations taşımıyor`);
@@ -229,6 +236,14 @@ test("EKL-F6-A03 nöbeti ③: okur/yazar beyanı gerçek disk davranışıyla ö
       { arac: MCP_ARAC_ADI.durumGuncelle, alan: alanKur("durum-guncelle"), args: { dizin: "", kod: "ADM-KURULUS-01", durum: "geliştirmede" } },
     ];
     assert.equal(turlar.length, BEKLENEN_ARAC_SAYISI, "ölçüm turu 18 aracın tamamını kapsamıyor");
+    // Sayı tek başına yetmez: bir tur iki kez yazılıp başka bir araç atlanırsa
+    // sayı yine on sekiz tutar ve atlanan aracın beyanı hiç ölçülmez. Ölçüm turu
+    // katalogdaki her aracı tam bir kez koşturmalıdır.
+    assert.deepEqual(
+      turlar.map((t) => t.arac).sort(),
+      Object.keys(MCP_ARAC_METINLERI).sort(),
+      "ölçüm turu katalogdaki araçların her birini tam bir kez kapsamıyor",
+    );
 
     let olculenOkur = 0;
     let olculenYazar = 0;

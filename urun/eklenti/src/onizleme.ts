@@ -8,19 +8,31 @@
 //   AYNI SEKMEYİ yerinde kod↔okuma çevirir; diğer sekmelere DOKUNULMAZ,
 //   her belge kendi sekmesinde bağımsız moda sahip.
 //
-//   Render: .sar → belgeMd({boya}) → markdown-it → webview (script'siz CSP).
+//   MASA DÜZENİ (EKL-F6-A05 · Founder hükmü 2026-09-16): yüzeyin GÖVDESİ artık
+//   bu dosyada değil, vscode tanımayan saf çekirdektedir (onizleme-cekirdek.ts).
+//   Burada yalnız kabuk yaşar: belgeyi okur, kanon paletini çözer, simgeleri
+//   gömer, atıf hedeflerini kimlik indeksinden sorar ve komut bağını kurar.
+//   Ayrımın sebebi ölçümdür — nöbet yüzeyi ancak kabuksuz üretebildiğinde sayar.
+//
+//   Render: .sar → onizleme-cekirdek.masaSayfasi → webview (script'siz CSP;
+//   yalnız kendi ürettiğimiz kaçışlı komut bağları için komut kapısı açıktır).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
 import { readFileSync } from "node:fs";
-import MarkdownIt from "markdown-it";
-import hljs from "highlight.js";
-import { belgeMd } from "../../cekirdek/src/belgele.ts";
-import { agacYüz } from "../../cekirdek/src/agac.ts";
 import { SozDizimHatasi } from "../../cekirdek/src/belirtec.ts";
+import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";
 import { GOMULU_SNF, snfBul } from "./ortak.ts";
 import { ONIZLEME_METINLERI } from "./yuzey-metinleri.ts";
-import { satirSvgGovdesi, type SatirSimgesi } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A07: okuma modunun işaretleri de kilitli aileden
+// VIT-KIMLIK-A07: okuma modunun işaretleri de kilitli aileden; yapı ağacının
+// plan kademeleri eksen rafından, öteki satırlar satır rafından çizilir.
+import {
+  satirSvgGovdesi, eksenSvgGovdesi, EKSEN_TIPLERI,
+  type SatirSimgesi, type EksenTipi,
+} from "./simge-cizelgesi.ts";
+import {
+  masaSayfasi, hataSayfasi, type AtifHedefi, type MasaGirdisi, type RenkPaleti,
+} from "./onizleme-cekirdek.ts";
 
 // Ağaç ve aile renklerinin TEK kaynağı sınıflama kanonudur (renkPaleti). Bu
 // dosya 2026-09-02 tarihine kadar "kanon yokken devreye girer" notuyla elle
@@ -30,37 +42,7 @@ import { satirSvgGovdesi, type SatirSimgesi } from "./simge-cizelgesi.ts";   // 
 // kanon paleti taşır. Sapmış ve ölü bir kopya YUZ-1.2'nin yasakladığı elle
 // ikizdir; kaldırıldı ve tek yedek gömülü kanon bırakıldı (BKM-DNT-A07).
 
-// markdown-it: yerli önizlemenin motoru — html açık (kodBoya span'ları için).
-// Yabancı dil kod-çitleri kendi renkleriyle (highlight.js).
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  breaks: false,
-  highlight: (kod, dil) => {
-    if (dil && hljs.getLanguage(dil)) {
-      try { return hljs.highlight(kod, { language: dil, ignoreIllegals: true }).value; } catch { /* düş */ }
-    }
-    return "";
-  },
-});
-
-// DIL-2 bölüm başlıkları kitapta ROZET olur (## Amaç → h2.sarmal-bolum-amac).
-const BOLUMLER: Record<string, string> = {
-  "Amaç": "amac", "Kapsam": "kapsam", "Neden": "neden", "Sonuç": "sonuc", "Nasıl": "nasil",
-};
-md.renderer.rules.heading_open = (tokens, idx, opts, _env, self) => {
-  const icerik = tokens[idx + 1]?.content ?? "";
-  const es = /^\s*(?:[\p{Extended_Pictographic}\uFE0F\u200D]+\s*)?(Amaç|Kapsam|Neden|Sonuç|Nasıl)\b/u.exec(icerik);
-  if (es) tokens[idx].attrJoin("class", "sarmal-bolum sarmal-bolum-" + BOLUMLER[es[1]]);
-  return self.renderToken(tokens, idx, opts);
-};
-
 let stil = "";
-
-/** Ağaç çizimini HTML'e gömmeden önce kaçış (CSP script'siz; salt metin). */
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
 
 /**
  * 🎨 VIT-KIMLIK-A07 — okuma modunun ARAYÜZ İŞARETLERİ. Okuma modu bir
@@ -70,12 +52,30 @@ function escapeHtml(s: string): string {
  * başına kalır — ikon zaten etiketi İKAME ETMEZ, yalnız yanında durur.
  */
 let ikonKoku: vscode.Uri | undefined;
+function ikonOku(goreliYol: string): string {
+  return readFileSync(vscode.Uri.joinPath(ikonKoku!, ...goreliYol.split("/")).fsPath, "utf8");
+}
 function aileIsareti(ad: SatirSimgesi): string {
   if (!ikonKoku) return "";
-  try {
-    return satirSvgGovdesi(ad, (g) =>
-      readFileSync(vscode.Uri.joinPath(ikonKoku!, ...g.split("/")).fsPath, "utf8"));
-  } catch { return ""; }
+  try { return satirSvgGovdesi(ad, ikonOku); } catch { return ""; }
+}
+function eksenIsareti(tip: EksenTipi): string {
+  if (!ikonKoku) return "";
+  try { return eksenSvgGovdesi(tip, ikonOku); } catch { return ""; }
+}
+
+/** Bir düğüm tipinin yapı ağacındaki işareti — plan kademesi kendi eksen
+ *  simgesini, kural tanımı cetveli, geri kalanı tip yapbozunu taşır. */
+function dugumSimgesi(tip: string): string {
+  if ((EKSEN_TIPLERI as readonly string[]).includes(tip)) return eksenIsareti(tip as EksenTipi);
+  if (tip === "kuralTanım") return aileIsareti("kural");
+  if (tip === "dosya") return aileIsareti("dosya");
+  return aileIsareti("tip");
+}
+
+/** Kaynağın bir satırını EDİTÖRDE açan komut bağı (Yol Haritası ile aynı kapı). */
+function satirKomutu(dosya: string, satir: number): string {
+  return `command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([dosya, satir]))}`;
 }
 
 export function onizlemeKaydi(context: vscode.ExtensionContext): void {
@@ -103,7 +103,9 @@ class OkumaSaglayici implements vscode.CustomReadonlyEditorProvider {
   }
 
   async resolveCustomEditor(dokuman: vscode.CustomDocument, panel: vscode.WebviewPanel): Promise<void> {
-    panel.webview.options = { enableScripts: false };
+    // Betik YOK; yalnız kendi ürettiğimiz kaçışlı komut bağları açıktır
+    // (minigraf.ts ile aynı kapı) — ağaç satırı ve çapraz dosya atfı bundan geçer.
+    panel.webview.options = { enableScripts: false, enableCommandUris: true };
     const doc = await vscode.workspace.openTextDocument(dokuman.uri);
 
     const yenile = (): void => { panel.webview.html = sayfaUret(doc); };
@@ -138,112 +140,71 @@ class OkumaSaglayici implements vscode.CustomReadonlyEditorProvider {
   }
 }
 
-function sayfaUret(doc: vscode.TextDocument): string {
-  let govde: string;
-  try {
-    // Kaydedilmemiş değişiklik varsa editör metni gerçektir; yoksa DİSK gerçektir,
-    // çünkü dışarıdan değişen dosyada TextDocument tazelenmemiş olabilir (2026-08-10).
-    let metin: string;
-    if (doc.isDirty) { metin = doc.getText(); }
-    else { try { metin = readFileSync(doc.uri.fsPath, "utf8"); } catch { metin = doc.getText(); } }
-    // Çözücü yalnız bozuk bir kayıt dosyasında tanımsız döner; o hâlde de yedek
-    // elle yazılmış bir harita değil, paketle gelen gömülü kanondur.
-    const snf = snfBul(doc) ?? GOMULU_SNF;
-    const aile = new Map<string, string>((snf.widgetTipleri ?? []).map((t) => [t.ad, t.aile]));
-    const palet = snf.renkPaleti ?? GOMULU_SNF.renkPaleti;
-    const agacR = palet?.agacRenkleri ?? {};   // tek-kaynak: SNF (EKL-F4-A04)
-    const aileR = palet?.aileler ?? {};
-    const kitap = md.render(belgeMd(metin, {
-      boya: true,
-      tipRenk: (ad) => agacR[ad] ?? aileR[aile.get(ad) ?? ""],
-    }));
-    // 🌳 Ağaç yüzü (YUZ-1.1): yapı ├──/└── çizimi olarak panelin başında, canlı.
-    let agac = "";
-    try {
-      // Boş satırlar sıkıştırılır: düz (iç içe olmayan) dosyalarda üreteç her
-      // düğümden sonra boş satır basıyor ve blok seyrek bir listeye dönüyordu
-      // (Founder gözlemi 2026-08-10 · ölçüm: ork.sar 54 satırın 27'si boştu).
-      const cizim = agacYüz(metin).trimEnd().replace(/\n{2,}/g, "\n");
-      if (cizim) agac = `<pre class="sarmal-agac"><code>${escapeHtml(cizim)}</code></pre>`;
-    } catch { /* söz-dizim hatası: kitap render'ının hata kutusu zaten anlatır */ }
-    govde = (agac ? `<h2 class="sarmal-bolum sarmal-bolum-nasil">${aileIsareti("agac")}${ONIZLEME_METINLERI.agacBasligi}</h2>${agac}` : "") + kitap;
-  } catch (e) {
-    const uyari = aileIsareti("uyari");
-    govde = e instanceof SozDizimHatasi
-      ? `<div class="sarmal-hata">${uyari}<b>${ONIZLEME_METINLERI.sozDizimBasligi}</b> (${e.satir}:${e.sutun}) — ${escapeHtml(e.message)}<br><small>${ONIZLEME_METINLERI.duzelinceYenilenir}</small></div>`
-      : `<div class="sarmal-hata">${uyari}${ONIZLEME_METINLERI.beklenmeyenHata}</div>`;
-  }
-
-  return `<!DOCTYPE html>
-<html lang="${ONIZLEME_METINLERI.htmlDili}"><head><meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>${TEMEL_STIL}\n${stil}</style></head>
-<body><main class="govde">${govde}</main></body></html>`;
+/**
+ * Bir KOD'un tanımına giden bağ. Hedef AYNI dosyadaysa kaynak bölmesindeki o
+ * satırın çapasına gidilir ve okuyucu belgeden ayrılmadan atıflar arasında
+ * gezinir; BAŞKA dosyadaysa o dosyanın o satırı editörde açılır. Tanımı
+ * bulunmayan sözce undefined döner ve yüzeyde BAĞLANTI OLMAZ — kırık atıf
+ * bağlantı gibi görünmez (baglanti-cekirdek.ts ile aynı dürüstlük kuralı).
+ */
+function atifCozucu(yol: string): (kod: string) => AtifHedefi | undefined {
+  return (kod) => {
+    // Evren dekorla AYNI süzgeçten okunur (atif-baglanti.ts deseni): süs ile
+    // tıklama iki ayrı evrenden beslenirse süslü-ama-ölü sözce doğar.
+    const tanimlar = kimlikIndeksi.tanimlar(kod, (d) => d === yol || !INDEKS_DISI.test(d));
+    if (!tanimlar.length) return undefined;
+    const ipucu = ONIZLEME_METINLERI.atifIpucu(kod);
+    const burada = tanimlar.find((t) => t.dosya === yol);
+    return burada
+      ? { href: `#s-${burada.satir}`, ipucu }
+      : { href: satirKomutu(tanimlar[0].dosya, tanimlar[0].satir), ipucu };
+  };
 }
 
-// Yerli MD önizlemesinin tipografisi — tema değişkenli + layout ritmi.
-const TEMEL_STIL = `
-body { font-family: var(--vscode-markdown-font-family, -apple-system, sans-serif);
-  font-size: var(--vscode-markdown-font-size, 14px); line-height: 1.6;
-  color: var(--vscode-editor-foreground); background: var(--vscode-editor-background);
-  margin: 0; }
-.govde { max-width: min(1180px, 96vw); margin: 0 auto; padding: 1rem 1.4rem 3.5rem; }
-@media (min-width: 1400px) { .govde { max-width: 1280px; } }
-h1 { font-size: 1.9em; font-weight: 650; margin: 1.4em 0 .5em; padding-bottom: .35em;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
-.govde > h1:first-child { margin-top: .4em; }
-h2 { font-size: 1.45em; font-weight: 600; margin: 1.5em 0 .5em; padding-bottom: .3em;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
-h3 { font-size: 1.18em; font-weight: 600; margin: 1.3em 0 .4em; }
-p, ul, ol, blockquote { margin: .65em 0; }
-table { margin: .9em 0; }
-pre { margin: .7em 0 1.2em; }
-blockquote { border-left: 4px solid color-mix(in srgb, currentColor 25%, transparent);
-  padding: 0 1em; opacity: .9; }
-code { font-family: var(--vscode-editor-font-family, monospace); font-size: .9em;
-  background: color-mix(in srgb, currentColor 10%, transparent);
-  padding: .1em .35em; border-radius: 4px; }
-pre { font-family: var(--vscode-editor-font-family, monospace); font-size: .9em;
-  background: var(--vscode-textCodeBlock-background, rgba(127,127,127,.08));
-  padding: .8em 1em; border-radius: 6px; line-height: 1.45;
-  white-space: pre-wrap; word-break: break-word; overflow-x: auto; }
-/* Taşma sigortası: hiçbir öğe sayfayı yana kaydıramaz */
-.govde { overflow-wrap: anywhere; }
-pre code { background: none; padding: 0; font-size: 1em; }
-table { border-collapse: collapse; }
-th, td { border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
-  padding: .35em .8em; }
-th { background: color-mix(in srgb, #C0925C 22%, transparent); font-weight: 650; }
-tbody tr:nth-child(even) { background: color-mix(in srgb, currentColor 5%, transparent); }
-table { display: block; max-width: 100%; overflow-x: auto; border-radius: 6px; }
-/* DIL-2 bölüm rozetleri — kitapta Amaç/Kapsam/Sonuç bir bakışta seçilir */
-.sarmal-bolum { border: none !important; padding: .28em .7em !important; border-radius: 7px;
-  font-size: 1.08em !important; display: inline-block; margin: 1.15em 0 .35em !important; }
-.sarmal-bolum-amac   { background: color-mix(in srgb, #4EC9B0 16%, transparent); border-left: 4px solid #4EC9B0 !important; }
-.sarmal-bolum-kapsam { background: color-mix(in srgb, #569CD6 14%, transparent); border-left: 4px solid #569CD6 !important; }
-.sarmal-bolum-neden  { background: color-mix(in srgb, #C586C0 14%, transparent); border-left: 4px solid #C586C0 !important; }
-.sarmal-bolum-sonuc  { background: color-mix(in srgb, #8CC152 15%, transparent); border-left: 4px solid #8CC152 !important; }
-.sarmal-bolum-nasil  { background: color-mix(in srgb, #DCDCAA 14%, transparent); border-left: 4px solid #DCDCAA !important; }
-hr { border: none; border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
-/* 🌳 Ağaç yüzü (YUZ-1.1) — ├──/└── çizgileri hizalı kalsın: kaydırma, sarma YOK */
-pre.sarmal-agac { white-space: pre; word-break: normal; overflow-x: auto;
-  border-left: 4px solid #8CC152;
-  background: color-mix(in srgb, #8CC152 8%, var(--vscode-textCodeBlock-background, rgba(127,127,127,.08))); }
-pre.sarmal-agac code { white-space: pre; }
-a { color: var(--vscode-textLink-foreground); }
-.sarmal-hata { border: 1px solid #e06c6c; border-radius: 6px; padding: .8rem 1rem; color: #e06c6c; }
-/* Gömülü aile işareti (VIT-KIMLIK-A07): rengini metinden MİRAS alır — kaynakta
-   currentColor konturludur ve bu yüzden temaya göre kendiliğinden döner. */
-.sr-simge { vertical-align: -0.14em; margin-right: .35em; }
-/* highlight.js — yabanci dil kod-citleri (dart/python/...) editor paletiyle */
-.hljs-keyword, .hljs-selector-tag, .hljs-tag { color: #C586C0; }
-.hljs-string, .hljs-regexp, .hljs-addition { color: #CE9178; }
-.hljs-number, .hljs-literal { color: #B5CEA8; }
-.hljs-comment, .hljs-quote { color: #6A9955; font-style: italic; }
-.hljs-title, .hljs-name, .hljs-section { color: #DCDCAA; }
-.hljs-type, .hljs-class .hljs-title, .hljs-built_in { color: #4EC9B0; }
-.hljs-variable, .hljs-attr, .hljs-attribute, .hljs-template-variable { color: #9CDCFE; }
-.hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta { color: #569CD6; }
-.hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: 700; }
-`;
+function sayfaUret(doc: vscode.TextDocument): string {
+  // Kaydedilmemiş değişiklik varsa editör metni gerçektir; yoksa DİSK gerçektir,
+  // çünkü dışarıdan değişen dosyada TextDocument tazelenmemiş olabilir (2026-08-10).
+  let metin: string;
+  if (doc.isDirty) { metin = doc.getText(); }
+  else { try { metin = readFileSync(doc.uri.fsPath, "utf8"); } catch { metin = doc.getText(); } }
+
+  // Çözücü yalnız bozuk bir kayıt dosyasında tanımsız döner; o hâlde de yedek
+  // elle yazılmış bir harita değil, paketle gelen gömülü kanondur.
+  const snf = snfBul(doc) ?? GOMULU_SNF;
+  const aileHaritasi = new Map<string, string>((snf.widgetTipleri ?? []).map((t) => [t.ad, t.aile]));
+  const palet = ((snf as { renkPaleti?: RenkPaleti }).renkPaleti
+    ?? (GOMULU_SNF as { renkPaleti?: RenkPaleti }).renkPaleti ?? {}) as RenkPaleti;
+
+  const yol = doc.uri.scheme === "file" ? doc.uri.fsPath : "";
+  // Kirli tampon tazeliği (gezinme.ts deseni): atıf sorulmadan önce bu belge
+  // indekse yazılır ki kaydedilmemiş metindeki tanım da çözülsün.
+  if (yol) kimlikIndeksi.dosyaGuncelle(yol, metin);
+
+  const girdi: MasaGirdisi = {
+    kaynak: metin,
+    dosyaAdi: vscode.workspace.asRelativePath(doc.uri),
+    palet,
+    aile: (tipAd) => aileHaritasi.get(tipAd),
+    simge: dugumSimgesi,
+    agacSimgesi: aileIsareti("agac"),
+    atifCoz: yol ? atifCozucu(yol) : () => undefined,
+    satirBaglantisi: (satir) => (yol ? satirKomutu(yol, satir) : `#s-${satir}`),
+    metinler: ONIZLEME_METINLERI,
+    stil,
+  };
+
+  try {
+    return masaSayfasi(girdi, ONIZLEME_METINLERI.htmlDili);
+  } catch (e) {
+    const uyari = aileIsareti("uyari");
+    const govde = e instanceof SozDizimHatasi
+      ? `<div class="sarmal-hata">${uyari}<b>${ONIZLEME_METINLERI.sozDizimBasligi}</b> (${e.satir}:${e.sutun}) — ${kacir(e.message)}<br><small>${ONIZLEME_METINLERI.duzelinceYenilenir}</small></div>`
+      : `<div class="sarmal-hata">${uyari}${ONIZLEME_METINLERI.beklenmeyenHata}</div>`;
+    return hataSayfasi(govde, { palet, stil }, ONIZLEME_METINLERI.htmlDili);
+  }
+}
+
+/** Hata kutusuna giren çözücü iletisi için kaçış (CSP script'siz; salt metin). */
+function kacir(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

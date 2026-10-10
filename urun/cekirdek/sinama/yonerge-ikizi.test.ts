@@ -32,6 +32,12 @@ import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
+
+// Geçici depolarda gerçek git koşan sınama: işleme kancasının içinden koşulduğunda
+// git'in ortama yazdığı depo adresi (GIT_DIR ve kardeşleri) bağlı çalışma ağacında
+// dışarı sızar ve `-C` ile yöneltilen komutlar yanlış depoya gider (ölçüm
+// 2026-09-19). Ortam süreç başında temizlenir; dosya kendi sürecinde koşar.
+for (const k of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_PREFIX"]) delete process.env[k];
 import {
   YONERGE_IKIZLERI,
   AYRISMA_GOSTERIM_SINIRI,

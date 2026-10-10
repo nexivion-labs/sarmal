@@ -17,7 +17,9 @@
 //     ③ eğitim mühürlü dosya OKUNUR ve doğrulanır, karneye girmez — ders
 //        dünyası desenindeki eğitim dalı söküldüğünde yalnız ③ düştü.
 //     ④ listeleme: her mühürlü dosya türüyle ve adıyla görünür — bekçi boş
-//        döndürüldüğünde ④ ile ⑥ düştü.
+//        döndürüldüğünde ④ ile ⑥ düştü. EKL-F6-A10 (2026-09-15): bulgu artık
+//        anlattığı dosyanın konumunu `hedefDosya` alanında taşır; bekçinin iki
+//        kaydından bu alan söküldüğünde yalnız ④ düştü.
 //     ⑤ ebedî engel: ebedî kural taşıyan dosya arşiv mührü alamaz — arşiv
 //        envanteri `ebediTanilar`a verilmediğinde yalnız ⑤ düştü.
 //     ⑥ geçersiz ad sessiz geçmez — ① ve ④ mutasyonlarıyla birlikte düştü.
@@ -34,6 +36,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { dogusYaz } from "../src/dogus.ts";
+
+// Bu dosya geçici depolarda gerçek git koşturur. Süit bir işleme kancasının içinden
+// koştuğunda git kendi deposunun adresini ortama yazar (GIT_DIR, GIT_WORK_TREE,
+// GIT_INDEX_FILE) ve bağlı bir çalışma ağacında bu adres dışarı sızar; o zaman
+// geçici depoya `-C` ile yöneltilen her git komutu ortamdaki depoya gider ve
+// sınama sahte kırmızı düşer (ölçüm 2026-09-19 · bağlı ağaçta üç sınama). Ortam
+// süreç başında temizlenir; her sınama dosyası kendi sürecinde koştuğu için bu
+// temizlik başka dosyalara dokunmaz.
+for (const k of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_PREFIX"]) delete process.env[k];
 import { denetimKos } from "../src/denetim.ts";
 import { diskTara, programlariYukle, anadizinBul, muhurTarihiCoz } from "../src/denetci.ts";
 import { dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DERS_DUNYASI, dizindenIndeks, DOSYA_MUHRU_KUMESI } from "../src/kimlik.ts";
@@ -149,6 +160,12 @@ test("④ listeleme: her mühürlü dosya denetim akışında türüyle ve adıy
     assert.ok(sonra[0].tani.mesaj.includes(SONRA) && /gündür bekliyor/.test(sonra[0].tani.mesaj));
     assert.ok([...muhur, ...sonra].every((t) => t.dosya === giris && t.tani.duzey === "bilgi"),
       "mühür bulgusu giriş dosyasına bilgi düzeyinde yazılmalı");
+    // EKL-F6-A10: kayıt giriş dosyasında kalır, fakat anlattığı dosyanın konumunu
+    // taşır; yol cümlenin içindeki yolla, yani komut satırının bastığı yolla aynıdır.
+    assert.deepEqual([...muhur, ...sonra].map((t) => t.tani.hedefDosya).sort(), [ARSIV, EGITIM, SONRA].sort(),
+      "mühür bulgusu anlattığı dosyanın konumunu taşımıyor");
+    assert.ok([...muhur, ...sonra].every((t) => t.tani.mesaj.includes(`"${t.tani.hedefDosya}"`)),
+      "hedef yol cümlede yazan yolla aynı değil");
     assert.equal(s.turDokumu.find((d) => d.kod === "dosya-mührü")?.toplam, 2);
     assert.equal(s.turDokumu.find((d) => d.kod === "sonraya-bırakılmış-dosya")?.toplam, 1);
   } finally { rmSync(kok, { recursive: true, force: true }); }

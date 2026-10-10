@@ -21,6 +21,10 @@
 //     durum-guncelle { dizin, kod, durum } → İLK YAZAN ARAÇ (dar sınır: yalnız Adım.durum,
 //                                   yalnız geçerli enum, satirdaDegerDegistir + kilit + guard).
 //
+//   EKL-F6-A07: `dizin` isteyen araçlarda alan zorunlu değildir; verilmezse
+//     oturumun çalışma dizini (process.cwd()) kullanılır. Verilen dizin o dizinin
+//     dışındaysa iş yine yapılır ve cevabın ilk cümlesi bunu söyler (dizinSec).
+//
 //   KRİTİK: stdout YALNIZ JSON-RPC taşır. Kayıt/uyarı için stderr kullan
 //   (console.log stdout'u kirletir → protokol bozulur).
 //
@@ -28,9 +32,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { createInterface } from "node:readline";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { dirname, resolve, join } from "node:path";
+import { dirname, resolve, join, relative, isAbsolute, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
@@ -42,7 +46,7 @@ import { beceriKartiBul } from "./beceri-karti.ts";   // BKM-DNT-A16: konu kart�
 import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
 import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
-import { MCP_ARAC_ADI, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
+import { MCP_ARAC_ADI, MCP_KOK_DISI_NOTU, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
 import { tazeKaynak } from "./taze-kaynak.ts";   // BKM-MCP-A02: çağrı anında mühür karşılaştırması
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
 import { dagKur, dugumYokMetni } from "./dag.ts";
@@ -62,7 +66,7 @@ import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 
 // ── sabitler ─────────────────────────────────────────────────────────────────
-const SUNUCU = { name: "sarmal", version: "0.15.0" };  // 0.15.0: initialize yanıtı sunucu talimatı taşıyor (instructions — ajan araçları ÖNCE kullansın, Founder 2026-09-02). 0.14.0: GOC-A10 dogus aracı tür sorusu (tur · proje alanları, tur yoksa yazmadan sorar). 0.13.0: MIM-1.2 nazik rejim (tarih güçlü tavsiye — doğuş rehberi ④ + ogret kartı; sahte-faz kalktı). 0.12.0: zaman-ekseni turu zaman bağı öğretimi (mevsim:/planlanmamış: — ogret kartı + doğuş rehberi ④ tam-zincir düzeltmesi: bayat 'rütbe-atlama serbest' kalktı). 0.11.0: davranış-katmanı turu ogret beceri-dağıtımı + 17 araca NE ZAMAN cümlesi (18 araç). 0.10.0: EMJ-A05 karne aracı (17 araç) — onaylı ⭐ skalası + kadro dökümü. 0.9.0: KVR-A09 kavram (16). 0.8.0: DPK-A02 dogus (15). 0.7.0: GBR-A04/#7 iskelet (14). 0.6.0: BKM-MCP-A01 (6)
+const SUNUCU = { name: "sarmal", version: "0.16.0" };  // 0.16.0: EKL-F6-A07 dizin oturumdan türer (dizin isteyen araçlarda alan zorunlu değil; verilmezse oturumun çalışma dizini kullanılır, kök dışı dizin cevabın ilk cümlesinde bildirilir). 0.15.0: initialize yanıtı sunucu talimatı taşıyor (instructions — ajan araçları ÖNCE kullansın, Founder 2026-09-02). 0.14.0: GOC-A10 dogus aracı tür sorusu (tur · proje alanları, tur yoksa yazmadan sorar). 0.13.0: MIM-1.2 nazik rejim (tarih güçlü tavsiye — doğuş rehberi ④ + ogret kartı; sahte-faz kalktı). 0.12.0: zaman-ekseni turu zaman bağı öğretimi (mevsim:/planlanmamış: — ogret kartı + doğuş rehberi ④ tam-zincir düzeltmesi: bayat 'rütbe-atlama serbest' kalktı). 0.11.0: davranış-katmanı turu ogret beceri-dağıtımı + 17 araca NE ZAMAN cümlesi (18 araç). 0.10.0: EMJ-A05 karne aracı (17 araç) — onaylı ⭐ skalası + kadro dökümü. 0.9.0: KVR-A09 kavram (16). 0.8.0: DPK-A02 dogus (15). 0.7.0: GBR-A04/#7 iskelet (14). 0.6.0: BKM-MCP-A01 (6)
 const PROTOKOL = "2024-11-05"; // istemci başka sürüm isterse onunkini yansıtırız
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const YASA_KOK = fileURLToPath(new URL("../../../yasa/kanon/", import.meta.url));
@@ -751,6 +755,31 @@ function hata(id: number | string | null, code: number, mesaj: string): Cevap {
   return { jsonrpc: "2.0", id, error: { code, message: mesaj } };
 }
 
+// ── EKL-F6-A07 · dizin oturumdan türer (HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR) ──
+//   Sunucu kullanıcı düzeyinde kayıtlı olduğu için her klasörde açılır ve istemci
+//   onu oturumun çalışma dizininde başlatır. Ajan dizin vermezse araç bu dizinde
+//   çalışır; verdiği dizin bu dizinin dışındaysa iş yine yapılır, fakat cevabın ilk
+//   cümlesi bunu söyler, çünkü ajan Sarmal'ın kendi deposundan söz eden metinleri
+//   okuyup başka bir ağaca bakıyor olabilir. Karşılaştırma sembolik bağları
+//   çözülmüş gerçek yollarla yapılır (macOS'ta /var ile /private/var aynı yerdir).
+
+/** Yolun sembolik bağları çözülmüş mutlak hâli; yol diskte yoksa yalnız mutlak hâli. */
+function gercekYol(yol: string): string {
+  const mutlak = resolve(yol);
+  try { return realpathSync(mutlak); } catch { return mutlak; }
+}
+
+/** Çağrının çalışacağı dizin ve cevabın başına eklenecek kök dışı notu (yoksa boş). */
+function dizinSec(ham: unknown): { dizin: string; not: string } {
+  const oturum = process.cwd();
+  if (typeof ham !== "string" || !ham.trim()) return { dizin: oturum, not: "" };
+  const verilen = gercekYol(ham);
+  const kok = gercekYol(oturum);
+  const goreli = relative(kok, verilen);
+  const disarida = goreli === ".." || goreli.startsWith(".." + sep) || isAbsolute(goreli);
+  return { dizin: ham, not: disarida ? dilHanesi(MCP_KOK_DISI_NOTU, MCP_DILI)(verilen, kok) + "\n\n" : "" };
+}
+
 /** tools/call parametreleri: araç adı ve serbest argüman haritası. Alanlar tek tek daraltılır. */
 type AracCagriParametreleri = { name?: string; arguments?: Record<string, unknown> };
 
@@ -760,8 +789,9 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
   const arg0 = p.arguments ?? {};
 
   if (ad === MCP_ARAC_ADI.sef) {
-    const s = sefAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.adim === "string" ? arg0.adim : "");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = sefAraci(d.dizin, typeof arg0.adim === "string" ? arg0.adim : "");
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.ogret) {
     const s = ogretAraci(typeof arg0.konu === "string" ? arg0.konu : undefined);
@@ -778,8 +808,9 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.karne) {
-    const s = karneAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = karneAraci(d.dizin);
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.dogus) {
     if (typeof arg0.hedef !== "string" || !arg0.hedef.trim()) {
@@ -802,34 +833,38 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     }
   }
   if (ad === MCP_ARAC_ADI.graf) {
-    const s = grafAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.kok === "string" ? arg0.kok : undefined);
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = grafAraci(d.dizin, typeof arg0.kok === "string" ? arg0.kok : undefined);
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.gezin) {
-    const s = gezinAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.kod === "string" ? arg0.kod : "");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = gezinAraci(d.dizin, typeof arg0.kod === "string" ? arg0.kod : "");
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.kurallar) {
     const s = kurallarAraci(typeof arg0.kategori === "string" ? arg0.kategori : undefined);
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.denetleProje) {
-    if (typeof arg0.dizin !== "string" || !arg0.dizin) return hata(id, -32602, "denetle-proje: 'dizin' argümanı gerekli.");
-    const s = denetleProjeAraci(arg0.dizin);
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = denetleProjeAraci(d.dizin);
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.iskelet) {
-    if (typeof arg0.dizin !== "string" || !arg0.dizin) return hata(id, -32602, "iskelet: 'dizin' argümanı gerekli.");
-    const s = iskeletAraci(arg0.dizin, arg0.uret === true);
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = iskeletAraci(d.dizin, arg0.uret === true);
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.etki) {
-    const s = etkiAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.kod === "string" ? arg0.kod : "");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = etkiAraci(d.dizin, typeof arg0.kod === "string" ? arg0.kod : "");
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.bul) {
-    const s = bulAraci(typeof arg0.dizin === "string" ? arg0.dizin : ".", typeof arg0.metin === "string" ? arg0.metin : "");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    const d = dizinSec(arg0.dizin);
+    const s = bulAraci(d.dizin, typeof arg0.metin === "string" ? arg0.metin : "");
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.bicimle) {
     const s = bicimleAraci(typeof arg0.kaynak === "string" ? arg0.kaynak : "");
@@ -841,11 +876,12 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.durumGuncelle) {
+    const d = dizinSec(arg0.dizin);
     const s = durumGuncelleAraci(
-      typeof arg0.dizin === "string" ? arg0.dizin : ".",
+      d.dizin,
       typeof arg0.kod === "string" ? arg0.kod : "",
       typeof arg0.durum === "string" ? arg0.durum : "");
-    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
+    return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.siniflama) {
     const s = siniflamaAraci(typeof arg0.tip === "string" ? arg0.tip : undefined);
@@ -858,6 +894,9 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
   if (ad !== MCP_ARAC_ADI.denetle) return hata(id, -32602, `Bilinmeyen araç: ${ad}`);
 
   const arg = p.arguments ?? {};
+  // EKL-F6-A07: denetle dizinsiz çağrıda taban kanonla kalır (A11/E2); açıkça
+  // verilen dizin oturumun dışındaysa cevabın ilk cümlesi bunu söyler.
+  const dizinNotu = typeof arg.dizin === "string" && arg.dizin.trim() ? dizinSec(arg.dizin).not : "";
   let kaynak: string;
   if (typeof arg.kaynak === "string") {
     kaynak = arg.kaynak;
@@ -901,7 +940,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     id,
     result: {
       content: [
-        { type: "text", text: taniMetni(sonuc, projedeMi) },
+        { type: "text", text: dizinNotu + taniMetni(sonuc, projedeMi) },
         ...(agacMetni ? [{ type: "text", text: "🌳 Yapı ağacı:\n```\n" + agacMetni.trimEnd() + "\n```" }] : []),
       ],
       structuredContent: agacMetni ? { ...sonuc, agac: agacMetni } : sonuc,

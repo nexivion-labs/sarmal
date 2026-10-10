@@ -76,7 +76,8 @@
 
 Hatırlatıcı(
   kod:              HTR-SURUM-DAMGASI-TUZAGI,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A11,
   çapa:             nitelik,
   dönüşTetikleyici: "Eklenti bir sonraki kez paketlendiğinde ya da yayın kapısı açıldığında",
   öncelik:          p1,
@@ -108,13 +109,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GEZINME-SESSIZ-RET,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         VIT-K78-A09,
   çapa:             nitelik,
   dönüşTetikleyici: "Kimlik gezinme yüzeyine bir sonraki dokunuşta ya da öğretilebilirlik turunda",
   öncelik:          p2,
   tarih:            2026-08-08,
-  ne:               "Kimlik penceresi bazı kodlarda açılıp bazılarında açılmıyor ve kullanıcı bu farkın sebebini göremiyor. Sebep ölçüldü ve üç tanedir: birincisi varlık sınırıdır, çünkü açık araçtaki bir dosyadan kapalı üründe tanımlı bir koda gezinmek STR-3 gereği yasaktır; ikincisi ders dünyası süzgecidir, çünkü ürün dosyasından örnek ile şablon raflarındaki tanımlara gidilmez; üçüncüsü tanım yokluğudur, çünkü pencere yalnız tanımı olan kodda açılır ve kimi kodun ağaçta yalnız metin atfı vardır. Üç sebep de bilinçlidir ve savunulabilir, fakat yüzey sessizce hiçbir şey yapmadığı için davranış keyfî görünmektedir. Yapılacak iş reddin sebebini söyleyen bir yüzey kurmaktır; kullanıcı neden gidilemediğini öğrenirse kural öğretici olur, bugün ise yalnız kafa karıştırıcıdır. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı VIT-K78-A09 Adımına bağlandı; iş bir arayüz hükmüdür, küçüktür ve kendi Adımını almıştır.",
+  ne:               "Kimlik penceresi bazı kodlarda açılıp bazılarında açılmıyor ve kullanıcı bu farkın sebebini göremiyor. Sebep ölçüldü ve üç tanedir: birincisi varlık sınırıdır, çünkü açık araçtaki bir dosyadan kapalı üründe tanımlı bir koda gezinmek STR-3 gereği yasaktır; ikincisi ders dünyası süzgecidir, çünkü ürün dosyasından örnek ile şablon raflarındaki tanımlara gidilmez; üçüncüsü tanım yokluğudur, çünkü pencere yalnız tanımı olan kodda açılır ve kimi kodun ağaçta yalnız metin atfı vardır. Üç sebep de bilinçlidir ve savunulabilir, fakat yüzey sessizce hiçbir şey yapmadığı için davranış keyfî görünmektedir. Yapılacak iş reddin sebebini söyleyen bir yüzey kurmaktır; kullanıcı neden gidilemediğini öğrenirse kural öğretici olur, bugün ise yalnız kafa karıştırıcıdır. KARAR (kontrolcü, Founder yetki devriyle · 2026-09-05): hatırlatıcı VIT-K78-A09 Adımına bağlandı; iş bir arayüz hükmüdür, küçüktür ve kendi Adımını almıştır. KAPANDI (kontrolcü · 2026-09-15): VIT-K78-A09 Adımı gezinme reddinin sebebini cümlenin başında gündelik dille söyleyen yüzeyi kurmuş ve tamamlanmıştır; hatırlatıcının beklediği iş bitmiştir.",
 )
 
 Hatırlatıcı(
@@ -528,7 +529,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A09,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-09,
@@ -538,12 +540,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANON-SARMA-CELISKISI-VE-DUZEN-BOSLUGU,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         KPS-CEL-A01,
   çapa:             yasa,
   dönüşTetikleyici: "Kanonun mim ya da tip bölümü bir sonraki kez elden geçirildiğinde; ÇalışmaAlanı, Proje, Raf, Kitaplık ya da Teknoloji şeması değiştirilmeden önce; en geç doğuş paketinin çatı şablonu yeniden yazılırken",
   öncelik:          p1,
   tarih:            2026-09-09,
-  ne:               "2026-09-09 tarihli iki bağımsız denetim, kanonun kendisinde dört tutarsızlık ölçmüştür ve dördü de bir ajanın kanona uyarak yanlış ağaç kurmasına lisans vermektedir; onarımları Founder kapısından geçer, motor kusuru değildir. Birincisi, sarma sözleşmesi ÇalışmaAlanı düğümünün Faz içerebileceğini söylemektedir (oz/siniflama/kayit.json sekiz yüz dokuz ile sekiz yüz on dokuzuncu satırlar; izin 2026-07-12 tarihinde girmiştir) ve siniflama aracı bu izni sorana aynen göstermektedir, oysa anadizin şekli bekçisi aynı yerleşimi hata saymakta (denetci.ts bin altı yüz altıncı satır) ve MIM-1.2 Fazın Proje içindeki zaman dilimini kurduğunu yazmaktadır; bekçinin kanon maddesi yoktur, yalnız motorda ve şablon bekçi listesinde yaşamaktadır. Aynı izin panelde her tuş vuruşunda koşan tek yapısal bekçi olan izinsiz-sarma tanısını da susturmaktadır. İkisi birden doğru olamaz: ya izin listesinden Faz ve Blok düşer ya da MIM-1.2 değişir; anadizin-plan-karışması hükmü mim bölümüne madde olarak inmelidir. İkincisi, Kitaplık kademesi kanonda zorunlu değildir: sözleşme ÇalışmaAlanı altında doğrudan Raf ve Raf altında Proje sarmasına izin vermekte, doğuş şablonu ile başla rehberinin örnekleri ve Nexivion Labs çatısının kendi ilanı Kitaplık taşımadan kökte Raf açmaktadır; yalnız MIM-3.2 düz yazısı Rafı Kitaplığın içindeki sorumluluk bölümü olarak tarif etmektedir. Founder o gün Kitaplık kademesini bekliyordu ve ajan kökte Raf düzenini çatının kendi dosyasından aynalamıştı; kademe zorunluysa MIM-3.2 metni ile bir tanı ve şablonlar hizalanmalı, zorunlu değilse beklenti gelenek olarak kayda inmelidir. Üçüncüsü, TIP-1.8 hükmü işin yürütüldüğü kanalı Teknoloji saymakta ve örnek olarak Google İşletme Profili vermektedir (yasa/kanon/tip.sar yüz on sekiz ile yüz yirmi dördüncü satırlar; hüküm 2026-07-28 tarihinde reddedilen ayrı Kanal tipi alternatifiyle birlikte verilmiştir); ajan o gün üç kanalı Teknoloji olarak ilan etmiş ve Founder bunu saçma bulmuştur. Hüküm ile Founder'ın bugünkü sezgisi ayrışmıştır ve bunu kullanım anında gösteren hiçbir yüzey yoktur; ya hüküm tazelenir ya Kanal tipi açılır. Motor ve MCP araçlarının kendisinin Teknoloji değil Araç ya da MCP olduğu ise şemanın komut satırı aracı istisnasından çıkarsanabilmekte fakat açıkça yazılmamaktadır. Dördüncüsü, MIM-1.4 Katman için Teknoloji bağı isterken tanı önerisi Takım kodu yazmakta, doğuş şablonu Katmanın Takıma bağlandığını söylemekte ve motor ikisini de kabul etmektedir; üç metin tek sözcüğe inmelidir. Ortak ders şudur: şema neyin izinli olduğunu, düzen neyin doğru olduğunu söyler; ikisi ayrıştığında ajan izinli olanı yazar ve Founder onu ilk bakışta yanlış görür."
+  ne:               "2026-09-09 tarihli iki bağımsız denetim, kanonun kendisinde dört tutarsızlık ölçmüştür ve dördü de bir ajanın kanona uyarak yanlış ağaç kurmasına lisans vermektedir; onarımları Founder kapısından geçer, motor kusuru değildir. Birincisi, sarma sözleşmesi ÇalışmaAlanı düğümünün Faz içerebileceğini söylemektedir (oz/siniflama/kayit.json sekiz yüz dokuz ile sekiz yüz on dokuzuncu satırlar; izin 2026-07-12 tarihinde girmiştir) ve siniflama aracı bu izni sorana aynen göstermektedir, oysa anadizin şekli bekçisi aynı yerleşimi hata saymakta (denetci.ts bin altı yüz altıncı satır) ve MIM-1.2 Fazın Proje içindeki zaman dilimini kurduğunu yazmaktadır; bekçinin kanon maddesi yoktur, yalnız motorda ve şablon bekçi listesinde yaşamaktadır. Aynı izin panelde her tuş vuruşunda koşan tek yapısal bekçi olan izinsiz-sarma tanısını da susturmaktadır. İkisi birden doğru olamaz: ya izin listesinden Faz ve Blok düşer ya da MIM-1.2 değişir; anadizin-plan-karışması hükmü mim bölümüne madde olarak inmelidir. İkincisi, Kitaplık kademesi kanonda zorunlu değildir: sözleşme ÇalışmaAlanı altında doğrudan Raf ve Raf altında Proje sarmasına izin vermekte, doğuş şablonu ile başla rehberinin örnekleri ve Nexivion Labs çatısının kendi ilanı Kitaplık taşımadan kökte Raf açmaktadır; yalnız MIM-3.2 düz yazısı Rafı Kitaplığın içindeki sorumluluk bölümü olarak tarif etmektedir. Founder o gün Kitaplık kademesini bekliyordu ve ajan kökte Raf düzenini çatının kendi dosyasından aynalamıştı; kademe zorunluysa MIM-3.2 metni ile bir tanı ve şablonlar hizalanmalı, zorunlu değilse beklenti gelenek olarak kayda inmelidir. Üçüncüsü, TIP-1.8 hükmü işin yürütüldüğü kanalı Teknoloji saymakta ve örnek olarak Google İşletme Profili vermektedir (yasa/kanon/tip.sar yüz on sekiz ile yüz yirmi dördüncü satırlar; hüküm 2026-07-28 tarihinde reddedilen ayrı Kanal tipi alternatifiyle birlikte verilmiştir); ajan o gün üç kanalı Teknoloji olarak ilan etmiş ve Founder bunu saçma bulmuştur. Hüküm ile Founder'ın bugünkü sezgisi ayrışmıştır ve bunu kullanım anında gösteren hiçbir yüzey yoktur; ya hüküm tazelenir ya Kanal tipi açılır. Motor ve MCP araçlarının kendisinin Teknoloji değil Araç ya da MCP olduğu ise şemanın komut satırı aracı istisnasından çıkarsanabilmekte fakat açıkça yazılmamaktadır. Dördüncüsü, MIM-1.4 Katman için Teknoloji bağı isterken tanı önerisi Takım kodu yazmakta, doğuş şablonu Katmanın Takıma bağlandığını söylemekte ve motor ikisini de kabul etmektedir; üç metin tek sözcüğe inmelidir. Ortak ders şudur: şema neyin izinli olduğunu, düzen neyin doğru olduğunu söyler; ikisi ayrıştığında ajan izinli olanı yazar ve Founder onu ilk bakışta yanlış görür. KAPANIŞ (kontrolcü · 2026-09-19): dört tutarsızlığın dördü KPS-CEL-A01 Adımında Founder hükümleriyle kapanmıştır. Birincisi için sarma sözleşmesi ÇalışmaAlanı altındaki Faz iznini bırakmış ve anadizin ile plan ayrılığı MIM-3.5 maddesi olarak kanona inmiştir. İkincisi için MIM-3.2 Kitaplık kademesini zorunlu kılmış ve kademe atlandığında konuşan bir gözlem doğmuştur. Üçüncüsü için Founder işin yürütüldüğü kanalın Teknoloji sayılmasını açıkça kabul etmiş, TIP-1.8 korunmuş, dayanağı bulunamayan ret kaydı kayıttan düşmüş ve ajanın çağırdığı gövdelerin tipi yeni bir tip icat edilmeden yazılmıştır. Dördüncüsü için Katman zemini iki tip-saf kenara bölünmüş, canlı ağacın kırk sekiz Katmanı göç etmiş ve dört yüzey tek sözcüğe inmiştir. Kanon ile şemanın ayrışmasını gören on iki sınamalı nöbet beş mutasyonla kanıtlanmıştır."
 )
 
 Hatırlatıcı(
@@ -584,12 +587,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A08,
   çapa:             mimari,
   dönüşTetikleyici: "Doğuş paketinin sunucu kaydını üreten gövde bir sonraki kez elden geçirildiğinde; ya da doğan bir ağaç ilk kez başka bir makineye taşındığında",
   öncelik:          p2,
   tarih:            2026-09-10,
-  ne:               "Doğuş paketi doğurduğu köke bir sunucu kaydı yazmakta ve o kayıtta motorun yolunu MUTLAK olarak bildirmektedir; 2026-09-10 tarihinde doğrulanmış örnekte kayıt, ölçümü yapan makinedeki açık deponun tam yolunu taşımaktadır. Bu, doğduğu makinede doğru çalışan fakat taşındığında sessizce çözülmeyen bir bağdır: ağaç bir depoya gönderilip başka bir makinede klonlandığında yol o makinede bulunmayacak, sunucu hiç açılmayacak ve ajan araçların var olmadığı sonucuna varacaktır. Doğuş aracının kendisi bu bağı GİZLEMEMEKTEDİR ve doğum anında kapıların adresinin doğuran kurulum olduğunu, kurulum taşınırsa sunucu kaydı ile kanca ve işaretçi yollarının elle güncelleneceğini açıkça yazmaktadır; dolayısıyla kusur bir sessizlik değildir. Ağırlık, uyarının YALNIZ doğum anında ve yalnız ağacı doğuran kişiye gösterilmesindedir: ağaç bir depoya gönderilip başka birinin makinesinde klonlandığında o kişi bu cümleyi hiç görmez ve karşılaştığı tek şey bağlanmayan bir sunucudur. Bağlanamayan bir sunucu ile hiç tanımlanmamış bir sunucu ajanın gözünde aynı görünür ve ajan bu durumda ham taramaya döner, yani ürünün tam olarak engellemek için var olduğu davranışa. Onarımın yönü henüz kararlaştırılmamıştır ve en az üç yol vardır: motorun kurulu paketten çözülmesi, yolun ortam değişkeniyle bildirilmesi ya da kaydın göreli yazılıp çatı kökünden çözülmesi. Seçim, motorun yayımlanmış bir paket olarak dağıtılıp dağıtılmayacağına bağlıdır ve bu karar Founder kapısındadır; bu yüzden bugün onarım yapılmamış, ölçüm kayda geçirilmiştir."
+  ne:               "Doğuş paketi doğurduğu köke bir sunucu kaydı yazmakta ve o kayıtta motorun yolunu MUTLAK olarak bildirmektedir; 2026-09-10 tarihinde doğrulanmış örnekte kayıt, ölçümü yapan makinedeki açık deponun tam yolunu taşımaktadır. Bu, doğduğu makinede doğru çalışan fakat taşındığında sessizce çözülmeyen bir bağdır: ağaç bir depoya gönderilip başka bir makinede klonlandığında yol o makinede bulunmayacak, sunucu hiç açılmayacak ve ajan araçların var olmadığı sonucuna varacaktır. Doğuş aracının kendisi bu bağı GİZLEMEMEKTEDİR ve doğum anında kapıların adresinin doğuran kurulum olduğunu, kurulum taşınırsa sunucu kaydı ile kanca ve işaretçi yollarının elle güncelleneceğini açıkça yazmaktadır; dolayısıyla kusur bir sessizlik değildir. Ağırlık, uyarının YALNIZ doğum anında ve yalnız ağacı doğuran kişiye gösterilmesindedir: ağaç bir depoya gönderilip başka birinin makinesinde klonlandığında o kişi bu cümleyi hiç görmez ve karşılaştığı tek şey bağlanmayan bir sunucudur. Bağlanamayan bir sunucu ile hiç tanımlanmamış bir sunucu ajanın gözünde aynı görünür ve ajan bu durumda ham taramaya döner, yani ürünün tam olarak engellemek için var olduğu davranışa. Onarımın yönü henüz kararlaştırılmamıştır ve en az üç yol vardır: motorun kurulu paketten çözülmesi, yolun ortam değişkeniyle bildirilmesi ya da kaydın göreli yazılıp çatı kökünden çözülmesi. Seçim, motorun yayımlanmış bir paket olarak dağıtılıp dağıtılmayacağına bağlıdır ve bu karar Founder kapısındadır; bu yüzden bugün onarım yapılmamış, ölçüm kayda geçirilmiştir. ÖLÇÜLDÜ (kontrolcü · 2026-09-16, EKL-F6-A08 turu): Dört yol depo dışındaki bir ölçüm dizininde gerçekten denenmiştir. Motorun yayımlanmış bir npm paketinden çözülmesi bugün imkânsızdır, çünkü çekirdek paketi özel işaretlidir, Node kurulu paketlerin içindeki .ts dosyasını tip ayıklamayla çalıştırmayı reddeder ve motor paketin dışındaki kanon ile şema dosyalarını okur; bu yol bir derleme hattı, kanonun pakete gömülmesi ve Founder'ın yayın onayını gerektirir. Motorun kurulu VS Code eklentisinden çözülmesi de uygun değildir, çünkü eklenti paketi sunucuyu taşımaz ve klasörünün adı sürüme bağlıdır. Kaydın motor yolunu SARMAL_KOK ortam değişkeninden okuması yayın gerektirmez; değişken tanımlıyken sunucu bağlanmış, tanımsızken Claude Code kaydı yine yüklemiş ve eksik değişkeni adıyla anan bir uyarı basmıştır; bu davranış kontrolcü tarafından yalıtılmış bir yapılandırmada yeniden ölçülmüştür. Göreli kayıt, oturum proje kökünden açıldığında bağlanmış, alt dizinden açıldığında bağlanamamıştır, çünkü göreli yol sürecin çalışma dizinine göre çözülür ve proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözülür. Dördüncü yol olarak ölçülen Claude Code eklenti paketi npm yayını istemeden bağlanmıştır, fakat araçların önekini değiştirir ve öteki istemcileri kapsamaz. Üretici kısa vadede ortam değişkeni yolunu, uzun vadede eklenti paketi yolunu önermiştir; seçim Founder kapısındadır. Aynı turda iki yan olgu da ölçülmüştür: proje kapsamındaki bozuk bir sarmal kaydı kullanıcı kapsamındaki sağlam kaydı gölgelemektedir ve motor Node 23.6 ya da üstünü istemektedir. KAPANDI (kontrolcü · 2026-09-16): Founder ortam değişkeni yolunu seçmiş, EKL-F6-A08 Adımı bu yolu uygulayıp kapanmıştır; doğan ağacın sunucu kaydı, denetim kancası ve kanon işaretçisi motorun yolunu artık SARMAL_KOK değişkeninden okur ve varsayılan taşımaz. Kancanın boş değişken genişlemesinde yolu kök gibi göstermesi HTR-KANCA-BOS-DEGISKENI-YOL-GIBI-GOSTERIYOR kaydına devredilmiştir."
 )
 
 Hatırlatıcı(
@@ -615,7 +619,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-10,
@@ -705,7 +710,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A07,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-12,
@@ -715,7 +721,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A10,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-12,
@@ -745,10 +752,345 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         EKL-F6-A09,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-09-13,
   dönüşTetikleyici: "Taban kanon işaretinin metni ya da kanon keşfi gövdesi bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
   ne:               "Founder 2026-09-13 tarihinde bir müşteri projesinin penceresinde durum çubuğunda taban kanon işaretini görmüştür. Ölçüm, kanon işaretçisi mekanizmasından (BKM-DNT-A15) önce doğan bu ağacın oz/siniflama/isaretci.json dosyasını taşımadığını göstermiştir. Eklenti bu yüzden tip kaydını bulamamakta ve gömülü taban kanona düşmektedir; eklenti.ts içindeki tam proje denetimi turu da bu kökü atlamaktadır, dolayısıyla kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları o pencerede hiç doğmamaktadır. İşaretin ipucu ise kullanıcıya varlık kökünde oz/siniflama/kayit.json dosyasının bulunmasını önermektedir. Bu, BKM-DNT-A15 ile terk edilmiş kopya çözümüdür: kanon kaydını projeye kopyalamak ilk kanon güncellemesinde bayatlar, doğru çözüm ise kanonun adresini veren işaretçi dosyasıdır. Onarım iki parçalıdır: ipucu metni işaretçiyi önermeli ve işaretçiden önce doğmuş ağaçlara işaretçiyi yazan bir yol sunulmalıdır. Kusur HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir ve dışarıdan kurulum işi sonuçlandığında işaretçinin göstereceği adres de ona göre değişecektir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-AJAN-AKIS-CIZIMI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Eğitim ve site işi başladığında ya da kaynak disiplini Blokunun öğretim yüzü katmanında yeni bir Adım açıldığında",
+  ne:               "Founder 2026-09-15 tarihinde doğuştan Adım döngüsüne kadar bütün akışın ve mimari kurma kademelerinin ajana çizimle anlatılmasını önermiş ve işin hatırlatıcıya yazılmasına hükmetmiştir. Aynı gün yapılan ölçüm şunu göstermiştir: ogreti/ogretim altındaki on dört aile kartını ajana veren hiçbir araç yoktur, dolayısıyla çizim oraya konursa ajan onu görmez. Ajanın gerçekten okuduğu yüzeyler oturum başındaki karşılama kartı, basla rehberi ve doğuşun yazdığı CLAUDE.md dosyasıdır ve akış bu üç yüzeyde bugün yalnız düz metinle anlatılmaktadır. Kaynak disiplini Blokunun öğretim yüzü katmanındaki tek açık Adım olan KYN-OGR-A02, insan için yazılan kartların düz yazı anlatısını istediği için bu işi kapsamaz. Çizim yazıyla kurulmalıdır ki hem ajan hem insan okuyabilsin ve terminalde bozulmasın; tek kaynaktan üretilmelidir, çünkü aynı resim üç yüzeye elle kopyalanırsa ilk değişiklikte biri bayatlar. Taslak şu sırayı çizer: basla rehberi, doğuş, Founder onayı isteyen dört mimari kademe (kapsayıcı, Teknoloji ve Takım, Kitaplık ve Raf, plan ekseni), iskelet ve her Adım için şef, geliştirme, üretim, kabul kapısı ve tamamlanma döngüsü; her .sar yazımından sonra denetim koşar."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR,
+  durum:            tamamlandı,
+  hatırlat:         EKL-F6-A07,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Dışarıdan kurulum işi ele alındığında (EKL-F6-A03 kapsam genişletmesi); en geç mağaza yüklemesinden önce",
+  ne:               "Founder 2026-09-15 tarihinde yeni bir çalışma alanında açılacak oturum için ajana klasörün tam yolunu ve başka ağaca dokunmama uyarısını ayrıca yazmak zorunda kalmasının sebebini sormuştur. Ölçüm şunu göstermiştir: Sarmal sunucusunun on aracı çalışacağı klasörü dizin parametresiyle ajandan beklemekte, sunucu oturumun çalışma dizinini hiçbir yerde varsayılan olarak okumamaktadır ve sunucu kullanıcı düzeyinde kayıtlı olduğu için her klasörde açılmaktadır. Ajan oturum başında Sarmal'ın kendi deposundan söz eden metinler okuduğu için yanlış dizini verebilmekte ve başka bir ağaçta Sarmal'ın kendi ağacını görebilmektedir; Founder aynı belirtiyi daha önce ayrı bir çalışma alanında açılan oturumda görmüştür. Doğru davranış şudur: dizin verilmediğinde araç oturumun çalışma dizinini kullanır ve verilen dizin oturumun kökü dışındaysa bunu açıkça bildirir. Bu açık Sarmal'ı kuran her geliştiriciyi etkiler, dolayısıyla dışarıdan kurulum işinin bir parçasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Tanıların konum ya da hedef alanı bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: mühür bulgularına mühürlü dosyayı taşıyan hedef alanı eklenmiş, fakat geçersiz-dosya-adı ile beyansız-yapı bulguları hâlâ giriş dosyasına sıfır konumuyla yazılmakta ve anlattıkları dosyayı ya da klasörü taşımamaktadır. Kullanıcı bu bulgulara tıkladığında ilgili yere değil anadizine gider; geçersiz-dosya-adı Sorunlar yüzeyinde aynı sınıftan bir kusurdur. Ayrıca komut satırı konumsuz bulgularda hiçbir konum basmamakta, hedef alanı yalnız tanı nesnesinde ve JSON çıktısında bulunmaktadır."
+)
+
+
+Hatırlatıcı(
+  kod:              HTR-HASAT-DOGUS-BASLIGINI-EZIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Geribildirim hasadının yazım gövdesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SURUM-NOBETI-SINIRLARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Kurulum betiği ya da sürüm tazeliği gövdesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A11 turunda 2026-09-15 tarihinde ölçülen iki sınır kayda geçmiştir. Birincisi, kurulum betiği uzantı klasörünü ~/.vscode/extensions olarak sabit yazmaktadır; VS Code Insiders ya da özel bir uzantı klasörü kullanıldığında betik kurulumu doğrulayamadığını söyler fakat hata vermez. İkincisi, eklenti açılışındaki nöbet yalnız sürümü karşılaştırdığı için eklenti kodu değişip sürüm ilerletilmediğinde bayatlığı görmez; bu durumu yalnız bir sonraki kurulumdaki damga karşılaştırması yakalar."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Eklentinin tam proje denetimi turu ya da taban kanon işareti bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin tam proje denetimi turu denetimKos çağrısını bir try/catch bloğu içinde koşturmaktadır ve çağrı çökerse hata yutulur; atlanan kökler artık durum çubuğundaki işarete bildirildiği hâlde çöken kök bu bildirime katılmamaktadır. Bunun sonucu, A09 Adımının kapattığı kusurun dar bir kapıdan geri gelmesidir: panel boş kalır ve kullanıcı tam denetimin o kökte koşmadığını öğrenemez. Aynı turda ortak.ts içindeki snfBul işlevinin renk ve ipucu için hâlâ gömülü kanonu okuduğu da ölçülmüştür; içerik bugün paket kopyasıyla aynı olduğundan bu bir kusur değil, iki kaynağın ileride ayrışabileceği bir noktadır. Doğru davranış, çöken kökün de atlanan kök gibi işarete bildirilmesi ve kanonun tek kaynaktan okunmasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Paket içeriği nöbeti ya da eklentinin derleme betikleri bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: paket içeriği nöbeti (urun/eklenti/sinama/paket-icerigi.test.ts) yayımlanan paketin dist/kanon/oz/siniflama altındaki kayit.json ile rehber.json kopyalarını taşıdığını denetlememektedir. Kopyanın pakette bulunduğunu bugün yalnız elle koşulan vsce ls çıktısı kanıtlamaktadır; derleme betiği bir gün kopyalamayı bırakırsa mağazadan kurulan eklenti yeniden kanonsuz kalır ve hiçbir nöbet kırmızıya dönmez. Aynı turda eklentinin package-lock.json dosyasındaki sürümün 0.9.178 değerinde kaldığı ve paket sürümüyle birlikte ilerlemediği de ölçülmüştür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-15,
+  dönüşTetikleyici: "Eklentinin tip denetimi yapılandırması ya da minigraf sınaması bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DOGUS-KANCASI-MOTORSUZ-SESSIZ-CEKILIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Doğuş paketinin denetim kapısı şablonu ya da motor yolunun çözümü bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A08 Adımının uygulamasında",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: doğuşun ağaca yazdığı denetim kapısı kancası (ogreti/sablon/dogus/denetim_kapisi.sh yirmi dördüncü satır) motor dosyasını bulamadığında hiçbir şey söylemeden çıkmaktadır. Ağaç başka bir makinede ya da taşınmış bir kurulumla açıldığında her .sar yazımından sonra koşması gereken denetim hiç koşmaz ve kullanıcı bunun hiçbir işaretini görmez; susan kanca temiz ağaç sanılır. Doğru davranış, kancanın motoru bulamadığında bunu tek satırla söylemesi ve onarım yolunu göstermesidir; bu satırın metni EKL-F6-A08 Adımında seçilecek motor yoluna göre yazılmalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GORELI-MCP-KAYDI-ALT-DIZINDE-KOPUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Deponun ya da çatının sunucu kaydı bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: sunucu kaydında göreli yazılmış bir motor yolu, Claude Code oturumu proje kökünden açıldığında bağlanmakta, bir alt dizinden açıldığında ise bağlanamamaktadır, çünkü göreli yol sürecin çalışma dizinine göre çözülür. Deponun kendi sunucu kaydı ile çatının sunucu kaydı bugün bu biçimde göreli yazılıdır; ölçülen bu iki kaydın kendisi değil aynı biçimdeki bir kayıttır, dolayısıyla etkinin bu iki kayıtta ayrıca doğrulanması gerekir. Proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözüldüğü için bu değişkenle yapılacak bir onarım işe yaramaz."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-CIKTILARI-INGILIZCE-DEGIL,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MCP araçlarının çıktı metinleri ya da dizin başvurusu bir sonraki kez elden geçirildiğinde; en geç başvurudan önce",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: araç başlıkları, açıklamaları ve parametre tarifleri İngilizce kipte İngilizce dönmektedir, fakat doğuş ve proje denetimi araçlarının çıktıları, sunucunun hazır satırı ve hata iletileri İngilizce kipte de Türkçe kalmaktadır. Dizini İngilizce inceleyecek kişi araçları çağırdığında okuyamadığı bir çıktı alır ve inceleme ölçütlerindeki eyleme dönük hata iletisi şartı bu yüzden yalnız kısmen karşılanmaktadır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCP-ACIKLAMALARI-YONLENDIRICI-CUMLE,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MCP araç açıklamaları ya da sunucu talimatı bir sonraki kez elden geçirildiğinde; en geç dizin başvurusundan önce",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde ölçülmüştür: dizinin inceleme ölçütleri, araç açıklamasının aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ve öteki araçların çağrılmasına karışmamasını istemektedir. Beş aracın açıklaması ile sunucu talimatı ise dosya taramak yerine önce bu araçların çağrılmasını ve ham aramanın anti-desen olduğunu söyleyen cümleler taşımaktadır. Bu cümleler ürünün amacına hizmet eder, fakat dizin kuralıyla çelişebilir; hangi cümlenin kalacağı Founder kararıdır ve metin mühürlü mcp-metinleri.ts dosyasında yaşadığı için değişiklik mühür tazelemesi ister."
+)
+
+Hatırlatıcı(
+  kod:              HTR-AGAC-COK-SATIRLI-NE-KIRIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Ağaç çizici ya da önizleme yüzü bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: yapı ağacını çizen çekirdek gövdesi (urun/cekirdek/src/agac.ts elli birinci satır) düğüm metnindeki satır sonu işaretlerinden yalnız ⏎ işaretini tek satıra indirmekte, gerçek satır sonu taşıyan çok satırlı ne metinlerini ise olduğu gibi basmaktadır. Bu yüzden plan dosyalarının ağacında böyle bir metnin ikinci satırı sütun sıfırdan başlar ve ağacın çizgisi kırılır. Kusur yalnız önizlemeyi değil, komut satırının ağaç çıktısını ve README'lerdeki otomatik ağaç bloğunu da etkiler."
+)
+
+Hatırlatıcı(
+  kod:              HTR-ONIZLEME-STILI-MARKDOWN-ONIZLEMESINE-SIZIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Eklentinin önizleme stili ya da paket bildirimindeki Markdown katkıları bir sonraki kez elden geçirildiğinde; en geç EKL-F6-A05 Adımının uygulamasında",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: eklentinin paket bildirimi (urun/eklenti/package.json beş yüz seksen dokuz ile beş yüz doksan birinci satırlar) önizleme stil dosyasını hâlâ VS Code'un yerleşik Markdown önizlemesine eklemektedir. Okuma kipi özel bir düzenleyiciye geçtiği için bu katkı büyük olasılıkla eski yoldan kalmış bir artıktır. Kalacaksa, önizleme renkleri paletten türeyen değişkenlere bağlandığında bu değişkenler Markdown önizlemesinde tanımsız kalacağından ayrı bir palet stil dosyası gerekecektir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PALET-ACIK-TEMA-VE-KARAR-SIMGESI-EKSIK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kanon paleti ya da geometrik simge ailesi bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: kanon paletinin (oz/siniflama/kayit.json içindeki renkPaleti) ağaç renkleri ile aile renkleri bölümlerinin açık tema eşi yoktur ve açık temada bu renkler editörün ön plan rengine karıştırılarak türetilmek zorundadır. Aynı turda geometrik simge ailesinde Karar tipi için bir çizim bulunmadığı ve yüzeylerin bu tip için yedek bir simgeye düştüğü de ölçülmüştür. Paletin kendisi kanonun parçası olduğundan eş renklerin eklenmesi Founder onayı ister."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SARMA-KAYDI-ILE-KAPSAMA-TANISI-CELISIYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Sarma izin kaydı, mimari bağ tanısı ya da ORK-1.1 metni bir sonraki kez elden geçirildiğinde; en geç KPS-KEN-A01 hükmünün uygulanmasında",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: tip sicilinin izinli sarma kaydı üç yerleşime izin verdiği hâlde denetçi bunları hata saymaktadır. Blok içinde doğrudan Adım yazımına kayıt izin verir, denetçi (urun/cekirdek/src/denetci.ts üç bin altı yüz doksan sekiz ile üç bin yedi yüzüncü satırlar) hata basar; AltKatman içinde AltKatman yazımına kayıt izin verir ve doğrulayıcı yalnız bilgi düzeyinde derin dal tanısı basar, denetçi ise eş kademe hatası verir; Katman içinde doğrudan Adım yazımını ORK-1.1'in lafzı kademe atlaması diye yasaklar, motor ise muaf tutar. MIM-1 örneği Faz içinde doğrudan Adım yazımını yanlış sayar, sicil ise izin verir ve kademe dizisinde Faz bulunmadığı için hiçbir tanı ateşlemez. Ayrıca sicil içerir kenarını kapsama ilişkisi olarak ilan etmekte, fakat motor bu kenarı graf kenarı olarak işlememektedir. Aynı yapının iki kaynakta farklı hüküm taşıması, yazarın hangi yerleşimin doğru olduğunu okuyamaması demektir. ÖLÇÜM (kontrolcü · 2026-09-19 · KPS-CEL-A01 turu): sicilin izinli sarma kaydını denetçiye hizalamak için dört izin, yani Faz içinde Adım ile Katman, Blok içinde Adım ve AltKatman içinde AltKatman, deneme olarak düşürülmüş ve deneme GERİ ALINMIŞTIR. Canlı ağaç sıfır yeni hata vermiştir, fakat çekirdek süitinin beş sınaması bu izinleri bilinçli bir tasarım olarak korumaktadır: rütbe atlama sınamaları Blokun ve Fazın doğrudan Adım sarabildiğini ve ara kademenin isteğe bağlı olduğunu yazar, kanonun kendi MIM-1.5 maddesi ise AltKatman içinde AltKatmanı derin dal olarak izinli sayar. Dolayısıyla sicilin izni bir kusur değil esnek rejimin ilkesidir ve bu kaydın tarif ettiği ayrışma sicili daraltarak kapatılamaz. Asıl soru şudur ve Founder kararıdır: esnek rejimin rütbe atlama serbestliği ile ORK-1.1 maddesinin kademe atlama yasağı nasıl bağdaşır; yasak yalnız katı rejimi mi bağlar, yoksa rütbe atlama mı daralır. Katman içinde doğrudan Adım yazımı bu sorunun dışındadır ve bir ayrışma değildir, çünkü esnek rejimde meşrudur, katı rejimde ise YAS-1.1 onu hata sayar ve sicil rejimi bilemez."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kimlik dizini ya da gezinme aracı bir sonraki kez elden geçirildiğinde",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: gezinme aracına ORK-1 sorulduğunda ORK-1.2 ve ORK-1.3 başlıkları da ORK-1'e gelen atıf olarak sayılmaktadır, yani kimlik eşleşmesi aranan kodun devamını taşıyan daha uzun kodları da yakalamaktadır. Bu yüzden ORK-1 için bildirilen yüz altmış dört gelen atıf şişmiş görünmektedir ve etki analizine dayanan kararlar gerçekte olmayan bağlar üzerine kurulabilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MIMARI-BAG-SINAMASI-VE-ATIFI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Mimari bağ tanısının sınaması ya da graf kapsayan türetmesi bir sonraki kez elden geçirildiğinde",
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: mimari bağ tanısının sınaması (urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts üç yüz on üç ile üç yüz yirmi üçüncü satırlar) eş kademe ve kademe atlama dallarını tek bir fikstürde birlikte tetiklemekte ve Katman içinde doğrudan Adım istisnasını sınamamaktadır; dallardan biri sökülünce sınamanın düşüp düşmediği ölçülmemiştir. Aynı turda urun/cekirdek/src/dag.ts kırk beşinci satırdaki yorumun içerme kenarını ORK-1.2'ye bağladığı, kanonun ve graf yüzünün ise aynı ilişkiyi ORK-1.1'e bağladığı da ölçülmüştür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DIL5-ORNEGI-CIPLAK-ILGILI-OGRETIYOR,
+  durum:            tamamlandı,
+  hatırlat:         KPS-BLM-A01,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "DIL-5 maddeleri ya da ilgili önek doğrulaması bir sonraki kez elden geçirildiğinde; en geç KPS-BLM-A01 Adımının kapanışında",
+  ne:               "KPS-BLM-A01 turunda 2026-09-16 tarihinde ölçülmüştür: kanon maddelerinin ilgili listeleri bölüm kök kimliklerine çevrilmiştir, fakat DIL-5 ile DIL-5.2 maddelerinin Örnek metinleri (yasa/kanon/dil.sar iki yüz on ikinci ve iki yüz otuz altıncı satırlar) hâlâ çıplak bölüm adlı listeyi doğru yazım olarak öğretmekte ve DIL-5.2 Hüküm cümlesi listenin yalnız bölüm öneklerinden oluşacağını söylemektedir. Motordaki ilgili önek doğrulaması (urun/cekirdek/src/dogrulayici.ts iki yüz seksen dokuz ile üç yüz on dokuzuncu satırlar) ve ilgili-önek-geçersiz tanısının öneri metni de yalnız çıplak öneki kabul etmektedir; bir düğüm parametresi olarak kök kimlikli bir liste yazılırsa hata üretir. Kanonun kendi yazımı ile kanonun öğrettiği yazım artık çelişmektedir; Hüküm ve Örnek metni dokunulmaz olduğundan uyum Founder hükmü ister. KAPANIŞ (üretici · 2026-09-19): Founder aynı gün kanon ile motorun bölüm kök kimliğine geçmesine hükmetmiş ve Adımın dokunulmaz sınırını yalnız DIL-5 ile DIL-5.2 maddelerinin Hüküm ve Örnek cümleleri için, yalnız bu çevrim kadar kaldırmıştır. İki maddenin Hüküm ve Örnek cümleleri kök kimlikli yazıma tazelenmiş, DIL-5 karar ikizi Hüküm cümlesiyle aynı turda değişmiş, motorun ilgili önek doğrulaması sekiz bölüm kök kimliğini tek doğru yazım olarak kabul eder olmuş, çıplak önek aynı tanıyla ve aynı hata düzeyinde fakat yazılması gereken kök kimliğini söyleyen kendi kusur cümlesiyle bildirilir olmuş ve ilgili-önek-geçersiz tanısının öneri metni iki dilde kök kimlikli örneğe çevrilmiştir. Ölçüm şudur: üç deponun canlı ağacında ve ders dünyasında düğüm parametresi olarak ilgili taşıyan hiçbir düğüm yoktur, dolayısıyla motor değişikliği hiçbir canlı dosyayı kırmızıya çevirmemiş ve mekanik çevrim gerekmemiştir; çıplak önekli liste yalnız iki maddenin Örnek cümlelerinde, onların türetilmiş yüzünde ve tanı öneri metninde yaşıyordu ve üçü de aynı turda tazelenmiştir. Nöbet altı sınamalı bir çekirdek süiti ile üç sınamalı bir eklenti süitidir ve dört mutasyonla kanıtlanmıştır; kayıt KPS-BLM-A01 Adımına bağlanarak kapatılmıştır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANCA-BOS-DEGISKENI-YOL-GIBI-GOSTERIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Doğuşun denetim kapısı şablonu bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde kontrolcünün uçtan uca ölçümünde görülmüştür: SARMAL_KOK değişkeni tanımsızken doğan ağacın denetim kancası doğru cümleyi basmakta ve onarımı göstermekte, fakat motor yolunu /urun/cekirdek/src/sarmal.ts biçiminde yazmaktadır, çünkü boş bir değişken genişlemesi geriye yalnız kök işaretini bırakır. Cümlenin kendisi doğrudur, ancak yol okuyucuya kökte gerçekten böyle bir dosya aranmış gibi görünür ve arızanın sebebini gizler. Kancanın değişkenin tanımsız olduğunu ayrıca söylemesi ve yolu ancak değişken tanımlıyken yazması daha dürüsttür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SOZDIZIMI-HATASI-TANI-DEGIL-PANELDE-YOK,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Tanı sicili ya da eklentinin tanı yayını bir sonraki kez elden geçirildiğinde; en geç mağaza yüklemesinden önce",
+  ne:               "Founder 2026-09-16 tarihinde canlı pencerede Yol Haritası panelinin üstünde bir dosyanın ayrıştırılamadığını ve sözdiziminin kırık olduğunu bildiren satırı görmüş, aynı anda Sorunlar panelinin çalışma alanında sorun algılanmadı dediğini bildirmiştir. Ölçüm şunu göstermiştir: motor kırık bir kaynağı tek dosya kipinde okuduğunda dosyayı, satırı ve sütunu anan ham bir sözdizimi hatası basar, fakat bu hatanın tanı sicilinde bir kimliği yoktur ve eklenti onu Problems yüzeyine hiç yayınlamaz; kırık dosya yalnız Yol Haritası panelindeki kırık dosyalar düğümüne (urun/eklenti/src/yolharitasi.ts altı yüz seksen dokuzuncu satır) ve onay kuyruğunun işlenemedi cümlesine düşer. Sonuç şudur ki bir yüzey dosyanın okunamadığını söylerken öteki yüzey aynı anda sorun yok demektedir ve kullanıcı hangisine güveneceğini bilemez; yeşil panel yeşil ağaç demek olmalıdır. Doğru davranış, sözdizimi hatasının kanonda ve sicilde bir kimlik kazanması ve hata düzeyinde Problems yüzeyine de basılmasıdır. Kayıt HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TANI-KIMLIKLERI-KAYNAKTA-TANIMSIZ,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Tanı sicili ya da kanonun Zorlama bölümleri bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: tanı kimlikleri yalnız urun/cekirdek/src/tani-sicili.ts dosyasında yaşamakta ve hiçbir .sar kaynağında düğüm olarak ilan edilmemektedir; gezinme aracı dört yüz yirmi iki dosyayı tarayıp diakritik-kayıp kimliği için tanım yok demiştir. Bu yüzden önizleme yüzü madde metnindeki tanı kimliklerini bağlantıya çevirememiş ve onları dürüstçe düz metin bırakmıştır, çünkü hedefi olmayan bir bağ süslü fakat ölü bir sözce üretir. Kanon maddelerinin Zorlama bölümü bu kimlikleri adıyla andığına göre kimliklerin bir tanım yüzeyi kazanması gerekir; o gün yüzeydeki bağlar kendiliğinden çalışır ve okuyucu tanıdan kanona geçebilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MEYVE-MUAFIYETI-BEYAN-YOLU-YOK,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Atomiklik borcunun temizliğine başlanmadan önce; en geç BLK-EKLENTI Bloku kapandığında",
+  ne:               "Founder 2026-09-16 tarihinde meyve muafiyeti kapısının açılmasına hükmetmiştir: bir Adım hiçbir Meyve teslim etmemesini gerekçesiyle birlikte beyan edebilecek, motor beyanlı Adımı atomiklik tanısının dışında tutacak ve beyansız Adıma tanıyı ateşlemeye devam edecektir. Ölçüm şunu göstermiştir: urun/cekirdek/src/denetci.ts dosyasının üç bin beş yüz altmış altıncı satırındaki bekçi yalnız durumun tamamlandı olmasına ve üretir kenarının boşluğuna bakmakta, hiçbir muafiyet yolu tanımamaktadır; oysa kardeş bekçi olan kullanımsız tip tanısı aynı dosyanın iki bin yüz seksen üçüncü satırında tip muafiyetleri beyanını okumakta ve beyanlı tipte susmaktadır. Otuz dört canlı bulgunun okunan on dördünde yarısı doğası gereği teslim üretmeyen Adımlardır: faz kapıları, taban ölçen plan Adımları, saha teyidi, bir açılış toplantısı, bir anahtar rotasyonu ve kapalı depoya fiziksel taşıma. EKL-F2-A04 Adımı meyvesizliğini 2026-07-18 tarihinde düzyazıyla zaten beyan etmiştir, fakat motor düzyazı okuyamadığı için tanı yine ateşlemektedir. Borcun sonucu ağırdır: YAS-4 maddesi bir tanıyı ancak bulguları sıfırlandığında terfi ettirdiği için kanonun hata dediği üç tanı, yani ORK-1.2 yürütme kenarı sözleşmesi, ORK-1.3 üretim kökeni ihlali ve ORK-2.4 kullanır kenarı ihlali, bugün bilgi düzeyinde kilitli kalmaktadır. Uygulama beş kalemdir: sınıflama kaydında Adım tipine gerekçeli muafiyet alanı açılması, motorda bekçinin beyanlı Adımı atlaması, MIM-1.6 maddesinin Zorlama bölümüne beyan yolunun yazılması, beyansız Adımın hâlâ kırmızı verdiğinin mutasyonla kanıtlanması ve planda yaklaşık on üç Adıma gerekçeli muafiyet ile yaklaşık on yedi Adıma gerçek üretir kenarı yazılması. Var olmayan bir dosyayı Meyve diye ilan etmek yasaktır, çünkü bilgi düzeyindeki borcu meyve dosyası eksik hatasına çevirir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Kök yüzeyi nöbeti ya da karşılıksız metin atfı tanısı bir sonraki kez elden geçirildiğinde",
+  ne:               "2026-09-16 tarihinde iki ayrı işlemenin kanca çıktısında ölçülmüştür: kök yüzeyi nöbeti README.md ve README.en.md dosyalarının kırk üçüncü satırlarında KRR-RANDEVU-03 kimliğinin hiçbir kaynakta tanımlı olmadığını bildirmektedir, oysa o satır bir kod çitinin içindedir ve Sarmalın kırık referans tanısının çıktısını okuyucuya gösteren kasıtlı bir örnektir. Yüzey doğrudur, nöbet yanılmaktadır: örnek çitinin içindeki kimliği gerçek bir atıf saymakta ve deponun dünyaya bakan yüzünde her işlemede yinelenen kalıcı bir sahte uyarı üretmektedir. Aynı çitin içindeki MYV-RANDEVU-UC kimliği ise bulguya dönüşmemiştir, dolayısıyla nöbetin kapsamı kendi içinde de tutarsızdır. Doğru davranış, kod çitiyle çevrili bölgelerin atıf taramasının dışında tutulmasıdır; bir belge tanının nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANCA-GECEN-FIKSTUR-CIKTISINI-HATA-SAYIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "İşleme kancasının test kapısı bir sonraki kez elden geçirildiğinde",
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde bir üretici ajanın raporunda bildirilmiş ve kontrolcü tarafından doğrulanmıştır: işleme kancasının test kapısı süit günlüğünü çarpı imi ve failing sözcüğü için taramakta, fakat urun/cekirdek/src/sarmal.ts dosyasının dokuz yüz on ikinci satırındaki hata akışı çıktısı bir fikstürün beklenen çıktısıdır ve o fikstür geçmektedir. Sonuç olarak sağlıklı bir sınamanın beklenen çıktısı kanca tarafından başarısızlık gibi toplanmakta ve günlüğü okuyan kişiye kırmızı varmış gibi görünmektedir. Bugün işi engellememektedir, çünkü kanca hükmünü çıkış kodundan vermektedir; ancak gürültü bir gün gerçek kırmızıyı gizler. Doğru davranış, kapının hükmünü metin taramasından değil koşucunun kendi özet satırlarından almasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MCPB-PAKETININ-SURUM-NOTU-YOK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Masaüstü eklenti paketi ilk kez yayımlanmadan önce; en geç EKL-F6-A01 Adımının kapanışında",
+  ne:               "Founder 2026-09-16 tarihinde çekirdek paketinin sürümünü sunucunun telde ilan ettiği 0.16.0 numarasına çekmeye hükmetmiş ve sürüm notu ihtiyacının hatırlatıcıya bağlanmasını istemiştir. Ölçüm şunu göstermiştir: depoda tek sürüm notu dosyası vardır ve o dosya eklentinin tarihçesidir (urun/eklenti/CHANGELOG.md, doksan yedi sürüm başlığı); çekirdek paketinin hiçbir sürüm notu yoktur ve sunucunun sürüm gerekçesi yalnız kaynak kodun içindeki yorumda yaşamaktadır (urun/cekirdek/src/mcp.ts altmış dokuzuncu satır). Masaüstü eklenti paketi eklentiden ayrı bir üründür ve ayrı mağazada yaşar; yayımlandığı gün kendi sürüm notunu ister, çünkü kurulanın hangi değişiklikle geldiğini eklentinin notundan okumak mümkün değildir. Doğru davranış, çekirdek paketine kendi sürüm notu dosyasının açılması ve sunucu sürümü her ilerlediğinde o notun aynı işlemede yazılmasıdır; not yokken paket yayımlanmaz."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PANEL-BLOKSUZ-KATMANI-SESSIZCE-DUSURUYOR,
+  durum:            tamamlandı,
+  hatırlat:         KPS-CEL-A01,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Yol haritası ağacının kurulumu ya da panel sayacı bir sonraki kez elden geçirildiğinde; en geç BLK-KPS Blokunun hiyerarşi Adımında",
+  ne:               "Founder 2026-09-16 tarihinde yol haritası panelinin sayacı ile komut satırı karnesinin her seferinde uyuşmadığını bildirmiştir: panel üç yüz altmış yedi bölü dört yüz iki, karne üç yüz altmış sekiz bölü dört yüz üç. Ölçüm farkın tek bir Adım olduğunu göstermiştir: EKL-F12-A01 Adımının Katmanı 2026-09-08 gecesi Blokun kapanış parantezinin dışına doğmuş, komut satırı her Adım düğümünü saydığı için onu saymış, panel ise Adımı Blok üzerinden Faza astığı için Bloksuz Katmanın Adımını hiç asmamış, saymamış ve göstermemiştir. Sayaç yol haritası çekirdeğinde çocuklardan türetilmektedir (urun/eklenti/src/yolharitasi-cekirdek.ts iki yüz yetmişinci ve üç yüz otuz birinci satırlar) ve ağaca girmeyen düğüm hiçbir yerde görünmez; gezinme aracı da Adımı atıfsız yetim olarak bildirmiştir, çünkü panelde görülmeyen Adıma kimse bağlanmamıştır. Kusur sekiz gün fark edilmeden yaşamıştır. Doğru davranış, ağaca asılamayan her Adımın panelde kapsayansız bir düğüm altında görünür kılınması ya da tur görüntüsünün bunu bir bulgu olarak yayınlamasıdır; sessiz düşürme, yeşil panelin yeşil ağaç anlamına gelmesi ilkesini bozar ve HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile aynı ailedendir. KAPANIŞ (kontrolcü · 2026-09-19): kusurun kökü yol haritası çekirdeğinin kök seçimindeydi; yürüyüş yalnız Blok ile Fazı kök alıyor, onların dışında doğmuş bir Katmanın çocuklarına inip yine Blok arıyor ve bulamayınca altındaki Adımları hiçbir yere asmıyordu. Artık bir Blokun ve bir Fazın dışında karşılaşılan her plan düğümü kendi başına köktür; onarım bir tanı doğurmaz, çünkü yerleşimin doğru olup olmadığı panelin değil motorun hükmüdür ve panelin işi var olanı göstermektir. Beş sınamalı nöbet mutasyonla kanıtlanmıştır ve eski gövde geri konduğunda üç sınama kırmızıya düşmüştür. Canlı depoda panelin toplamı ile kaynaktaki Adım sayısı dört yüz üçte eşittir ve Blok dışında doğmuş plan kökü sıfırdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-BLOK-DISI-KATMAN-TANISIZ,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "MIM-1 hiyerarşi kuralları ya da mimari sarma tanısı bir sonraki kez elden geçirildiğinde; BLK-KPS Blokundaki Katman ile Adım sarması sorusuyla birlikte",
+  ne:               "2026-09-16 tarihinde ölçülmüştür: bir Katman Blokun parantezinin dışında, doğrudan Proje kökünün altında sekiz gün yaşadığı hâlde proje denetimi sıfır hata ve sıfır uyarı vermiştir. Kanonun kademe zinciri Faz, Blok, Katman, AltKatman ve Adım biçiminde ilan edilmişken Bloksuz bir Katman bu zinciri kırmakta, fakat mimari sarma tanısı yalnız Adımın AltKatman altında durmasını ölçtüğü için Katmanın üstünü hiç sorgulamamaktadır. Sonuç, plan yüzeylerinin aynı ağacı farklı saymasıdır: komut satırı Adımı sayar, panel saymaz ve hangisinin doğru olduğu okunamaz. Bu kusur BLK-KPS Blokunda açık duran Katman ile Adım sarması sorusuyla aynı ailedendir ve aynı hükümle kapanmalıdır. Doğru davranış, kapsayan zinciri Bloka ulaşmayan bir Katman için uyarı düzeyinde bir tanının doğması ve önerisinin Katmanı Blokun içine taşımayı söylemesidir. ÖLÇÜM (kontrolcü · 2026-09-19 · KPS-CEL-A01 turu): bu kaydın panel yarısı kapanmıştır, çünkü yol haritası artık bir Blokun dışında doğmuş Katmanı ve Adımlarını kök olarak gösterir ve sessiz düşürme bitmiştir. Tanı yarısı ise bilinçle açık bırakılmıştır: sicil Faz içinde doğrudan Katman yazımına izin vermekte ve rütbe atlama sınamaları bunu bilinçli bir tasarım olarak korumaktadır, dolayısıyla Bloksuz Katman esnek rejimde meşru bir yerleşimdir ve onu uyarı sayan bir tanı ancak katı rejimle sınırlanırsa tutarlı olur. Bu, HTR-SARMA-KAYDI-ILE-KAPSAMA-TANISI-CELISIYOR kaydındaki Founder sorusuyla aynı sorudur ve aynı hükümle kapanmalıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-16,
+  dönüşTetikleyici: "Onay çekirdeği ya da durum akışı kartı bir sonraki kez elden geçirildiğinde; en geç BLK-EKLENTI Bloku kapanmadan",
+  ne:               "Founder 2026-09-16 tarihinde onay kuyruğunun boş olduğunu bildirmiştir; oysa aynı gün EKL-F6-A05 ile EKL-F6-A09 Adımlarına onayBekler alanı yazılmış ve tur koşmuştur. Ölçüm şunu göstermiştir: onay çekirdeği kapıyı yalnız durumu beklemede ya da geliştirmede olan Adımlarda arar (urun/eklenti/src/onay-cekirdek.ts seksen altıncı satır), iki Adım ise kanonun tanımına birebir uyarak doğrulanmamış durumundaydı. Durum akışı kartı doğrulanmamış değerini iş teslim edilmiş fakat yetkili kabul verilmemiş diye tanımlar; yani ürünün kendi sözlüğünde Founder onayını bekleyen tek durum, onay kuyruğunun süzgecinin dışındadır. Sonuç, kapının mekanik beyanla yazılmış olmasına rağmen kuyruğun sessiz kalması ve Founder'ın onay veremeden beklemesidir. Bugün için iki Adım geliştirmede durumuna geri alınmıştır ki kuyruk onları görsün; bu bir geçici çözümdür ve kanonun doğru durumunu feda eder. Doğru davranış, kuyruğun doğrulanmamış durumunu da açık saymasıdır, çünkü o durumdaki her Adım tanım gereği bir kabul beklemektedir; süzgeç genişletildiğinde doğrulanmamış bir Adımın kuyruğa düştüğü ve beklemede olanın düşmediği mutasyonla kanıtlanmalıdır. DÜZELTME (aynı gün, ikinci ölçüm): iki Adım geliştirmede durumuna alındıktan sonra da kuyruk boş kalmıştır ve asıl sebep başkadır. Onay çekirdeği seksen yedinci satırda onay alanının varlığını kararın verildiğinin kanıtı sayar; oysa planın geleneği her Adıma doğduğunda onaylandı damgasını tarihiyle bu alana yazmak ve Founder şerhlerini de oraya işlemektir. Sonuç, doğmuş hemen her Adımın kuyruğun gözünde çoktan karara bağlanmış olması ve onayBekler alanı yazılsa bile kuyruğa hiç girmemesidir; kuyruk bu planda fiilen ölüdür. Onay alanı iki ayrı olguyu taşımaktadır: başlama onayının tarihçesi ve kapanış kararı; tarayıcı ikisini ayıramaz. Doğru davranış, onayBekler alanı duruyorsa Adımın karar beklediğine hükmetmektir, onay alanının tarihçesine bakılmaksızın; Founder'ın 2026-08-29 tarihli hükmü zaten kararın işareti olarak onayBekler alanının kalkmasını seçmiştir ve tarayıcının o işareti okuması yeter. Aynı gün üçüncü ölçüm çatışmanın öteki yüzünü göstermiştir: eklenti süitindeki çift beyan nöbeti, Founder'ın 2026-08-29 hükmü gereği onay ile onayBekler alanlarının aynı düğümde durmasını yasaklar ve iki Adıma yazılan onayBekler alanı o nöbeti kırmızıya düşürmüştür; alan iki Adımdan geri alınmıştır. Dolayısıyla planın doğuş onayı geleneği sürdükçe onayBekler alanı onaylanmış hiçbir Adımda kullanılamaz ve panel geçidi bu çatışma çözülene kadar kapalıdır; kapı hükmü verildiğinde Founder kararı sohbette verecek ve kontrolcü onay alanına tarihli şerh olarak yazacaktır. Kalıcı çözüm iki olguyu iki ayrı alana ayırmaktır: doğuş onayının tarihçesi bir alanda, kapanış kararı ötekinde."
+)
+
+Hatırlatıcı(
+  kod:              HTR-GERIBILDIRIM-ARTI-DUGMESI-YALNIZ-BAZI-ADIMLARDA,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p2,
+  tarih:            2026-09-17,
+  dönüşTetikleyici: "Geribildirim kanalı ya da yorum aralığı sağlayıcısı bir sonraki kez elden geçirildiğinde; Founder derinlemesine inceleme istemiştir",
+  ne:               "Founder 2026-09-17 tarihinde canlı pencerede ölçmüştür: eklenti_olgunlastirma.sar dosyasında EKL-F3-A04 ile EKL-F3-A05 Adımlarının (yüz on dokuz ve yüz yirmi birinci satırlar) sol kenar boşluğunda artı düğmesi ve satırın altında geribildirim ipucu (teşekkür, takdir, onur, öneri) görünmekte, aynı dosyadaki ve öteki planlardaki hiçbir Adımda bu düğme görünmemektedir. Bu düğme VS Code yorum arayüzünün yorum ekle sunumudur ve yalnız eklentinin yorumlanabilir aralık olarak beyan ettiği satırlarda çıkar; şema notu geribildirim kanallarının yalnız tamamlanmış Adımlara ve yalnız Founder tarafından yazılabileceğini söyler, oysa tamamlanmış yüzlerce Adımın yalnız ikisinde düğme vardır. Sebep henüz ölçülmemiştir ve tahmin edilmemelidir; ölçülecek adaylar şunlardır: aralık sağlayıcısının yalnız belirli bir düğüm şekline (tek satırlı ilan, belirli bir parametre dizilişi ya da daha önce geribildirim almış Adımlar) bağlı olması, sağlayıcının yalnız imlecin dokunduğu aralığı kaydetmesi ve ipucunun yalnız fare üzerindeyken çizilmesi. Doğru davranış, kuralın söylediği kümenin tamamında, yani tamamlanmış her Adımda, düğmenin aynı biçimde görünmesi ve bunun bir nöbetle ölçülmesidir; Founder kusurun derinlemesine incelenmesini istemiştir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-INGILIZCE-YUZ-YARI-CEVRILMIS,
+  durum:            açık,
+  çapa:             mimari,
+  öncelik:          p1,
+  tarih:            2026-09-17,
+  dönüşTetikleyici: "EKL-F6-A01 mağaza yayını yeniden ele alınmadan önce; Founder İngilizce kullanıcının ne göreceğine dair tek ilkeyi hükme bağladığında",
+  ne:               "Founder 2026-09-17 akşamı kurulu 0.9.192 paketini görüntü dili İngilizce olan ayrı bir VS Code profilinde, doğuş paketinin ürettiği bir deneme ağacında açmış ve görüntünün kabul edilemez olduğuna, bu hâliyle yayımlanamayacağına hükmetmiştir. Ölçülen gözlemler şunlardır. Birincisi, eklenti kademe ve tip adlarının üstüne İngilizce karşılıklarını bindirmektedir (Phase, Block, Layer, Sublayer, Step, Project, Library, Shelf ve kapanış etiketleri), fakat aynı satırdaki alan adları ile değerler (kod, ad, ne, görev, kabul, sınır, yol, rejim, durum: beklemede, bağımlı, öncelik) Türkçe kalmaktadır; satırın başı bir dilde, gerisi öteki dildedir. İkincisi, bindirme imlecin bulunduğu satırda kalkmakta ve sözcük Türkçe aslına dönmektedir; kullanıcı hangisinin dosyadaki gerçek yazı, hangisinin boya olduğunu ayırt edememektedir. Üçüncüsü, kademe simgesi bindirilen İngilizce sözcüğün harflerinin üstüne çizilmekte ve sözcük okunamaz hâle gelmektedir. Dördüncüsü, ipucu balonları dosyada bulunmayan alan adlarını öğretmektedir: balon dependsOn, task, accept, boundary ve path adlarını anmakta, dosyada ise bağımlı, görev, kabul, sınır ve yol yazmaktadır; aynı balonun varsayılanlar bölümü ise değeri Türkçe basmaktadır. Beşincisi, tanı cümleleri İngilizcedir fakat içlerinde Türkçe tip adları, Türkçe şablon yönergesi ve Türkçe tanı kimlikleri taşımaktadır. Altıncısı, Yol Haritasının başlıkları İngilizce, düğüm adları Türkçedir, çünkü doğuş paketi İngilizce kullanan birine de Türkçe adlı ve Türkçe yönerge yorumlu bir ağaç doğurmaktadır ve doğuş aracının dil parametresi yoktur. Yedincisi, Mini Graf tümüyle Türkçedir. Kusurun kökü tek tek çeviri eksikleri değil, İngilizce kullanıcının ne göreceğine dair tek bir ilkenin bulunmamasıdır; bir yüzey çevrilmiş, yanındaki çevrilmemiştir. Founder önünde üç dürüst yol durmaktadır: bindirmenin tümüyle kaldırılması ve kaynağın her dilde Türkçe görünmesi, buna karşılık arayüzün, tanıların ve balonların İngilizce olup dosyadaki gerçek adları anması; bindirmenin bütün alan adlarını ve değerleri kapsayacak biçimde tamamlanması; ya da motorun İngilizce yazımı gerçekten kabul ettiği iki lehçeli bir dil, ki bu bir kanon kararıdır. Motorun bugün İngilizce anahtar sözcüğü kabul edip etmediği ölçülmemiştir ve ilke kararından önce ölçülmelidir. Ders şudur: iki dillilik haftalarca hane sayısıyla raporlanmış (doksan üç bildirim hanesi, yüz yetmiş sekiz tanı), sayıların hepsi doğru çıkmış, fakat yüzey o dilde bir kez bile açılıp gözle ölçülmemiştir; sayı doğruyken görüntü bozuk olabilir ve bir yüzey, o dilde açılıp bakılmadan tamam sayılamaz."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KISITLI-MODDA-EKLENTI-SESSIZ,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-17,
+  dönüşTetikleyici: "EKL-F6-A01 mağaza yayını yeniden ele alınmadan önce",
+  ne:               "Founder 2026-09-17 tarihinde daha önce hiç açılmamış bir Sarmal ağacını VS Code ile açmış ve pencere Kısıtlı Modda doğmuştur. Bu modda ölçülen görüntü şudur: sar dosyası düz metin olarak tanınmış, renklendirme gelmemiş, sol şeritte Sarmal simgesi ve durum çubuğunda hiçbir Sarmal işareti belirmemiş, sorun sayacı sıfır göstermiş ve VS Code güvenilmeyen klasörde temel ASCII dışındaki her harfi sarı kutuyla işaretlediği için Türkçe metnin tamamı kutularla dolmuştur; Founder görüntüyü bozuk dosya sanmıştır. Klasöre güvenildiği anda eklenti uyanmış ve görüntü düzelmiştir. Mağazadan kurup bir depoyu yeni klonlayan her kullanıcının ilk göreceği ekran budur ve eklenti neden sustuğunu hiçbir yerde söylememektedir. Eklenti bildiriminin güvenilmeyen çalışma alanı beyanını taşıyıp taşımadığı henüz ölçülmemiştir ve ilk iş olarak ölçülmelidir. Beklenen davranış, dil tanımının ve renklendirmenin güvenilmeyen klasörde de çalışması, disk tarayan ve süreç koşturan yüzeylerin ise güvene bağlı kalması ve bunun kullanıcıya söylenmesidir; temel ASCII dışı harf işaretinin Sarmal dili için varsayılan olarak kapatılması da aynı işin parçasıdır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MAGAZA-VITRININDE-YAPAY-ZEKA-VURGUSU-YOK,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-09-17,
+  dönüşTetikleyici: "EKL-F6-A01 mağaza yayını yeniden ele alınmadan önce",
+  ne:               "Founder 2026-09-17 tarihinde ürün açıklamasında ve arama görünürlüğü çalışmasında yapay zekâya dair hiçbir vurgu bulunmadığını ve insanların ürünü bu hâliyle bulamayacağını bildirmiştir. Ölçüm gözlemi doğrulamıştır. Arama sonucunda görünen kısa açıklama iki dilde de yapay zekâyı, ajanı ve MCP sunucusunu anmamaktadır. Anahtar sözcük listesi sekiz sözcüktür ve yapay zekâya dair tek sözcük ai sözcüğüdür, oysa mağaza otuz sözcüğe izin vermektedir; mcp, agent, claude, copilot, cursor, llm ve benzerleri yoktur. Eklenti mağazanın AI kategorisinde değildir. Mağaza sayfasının gövdesi olan benioku dosyası yalnız Türkçedir ve yapay zekâ ajanlarını son paragrafın son cümlesinde bir kez anmaktadır; mağaza tek benioku gösterdiği için İngilizce arayan kişi sayfayı okuyamamaktadır. Founder görünen adı Sarmal: Plan & Guardrails for AI Agents olarak hükme bağlamıştır ve karar EKL-F6-A01 Adımının onay kaydındadır. Kalan kararlar Founder'ındır: benioku dosyasının mağazadaki dili, Türkçe arayüzdeki görünen adın karşılığı, kısa açıklamanın yeni metni ve anahtar sözcük listesi; kontrolcü bunlar için sohbette taslak sunmuştur ve metinler Founder onayı olmadan ürüne yazılmaz. Yayın yolu için ayrı bir ölçüm de kayda değerdir: Azure DevOps genel erişim anahtarları 2026-12-01 tarihinde emekli edilecektir; mağaza yönetim sayfasından paketin elle yüklenmesi anahtar gerektirmez ve ilk yayın için en sade yoldur."
 )

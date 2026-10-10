@@ -65,9 +65,11 @@ export interface DagDugum {
   üretiyor?: string[];
   üretenler?: string[];
   /** VIT-GRAF-A12 · ZEMİN: kapsayıcının (Faz·Blok·Katman·AltKatman) Takım ya da
-   *  Teknoloji hedefli zemin kenarı. Asıl yazım `kullanır:` kenarıdır (MIM-1.4 ·
-   *  V1B-KANON-A01); Takım/Teknoloji hedefli `bağımlı` yazımı geçiş yedeği olarak
-   *  aynı kayda iner. Bu kenar yürütme sırası KURMAZ, zemin kurar ("bu katman şu
+   *  Teknoloji hedefli zemin kenarı. Zemin iki tip-saf kenarla yazılır (MIM-1.4 ·
+   *  KPS-CEL-A01 · Founder hükmü 2026-09-19): `kullanır:` Teknolojiye, `takım:`
+   *  Takıma yönelir ve ikisi de bu kayda iner; Takım/Teknoloji hedefli eski
+   *  `bağımlı` yazımı da, kanon onu artık zemin beyanı saymasa bile, çizim
+   *  kaybolmasın diye aynı kayda inmeyi sürdürür. Bu kenar yürütme sırası KURMAZ, zemin kurar ("bu katman şu
    *  takımın ve şu teknolojinin üstünde durur"). genislet() bağımlı kenarını
    *  yaprak Adımlara açtığı için kapsayıcının kendisinde hiçbir iz kalmıyordu
    *  (ölçüm: 149 Katman düğümünün SIFIRI oncekiler/sonrakiler taşıyor); graf yüzü
@@ -565,10 +567,16 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
       // V1B-KANON-A01: `kullanır` MIM-1.4/ORK-2.4 zemin kenarıdır — yürütme sırası
       // KURMAZ (kenarEkle'ye girmez, ORK-1.2 tek yetkili), yalnız kapsayıcının
       // zemin kaydına iner ki graf yüzü Katman→Teknoloji bağını çizmeyi sürdürsün.
-      const kul = param(node, "kullanır");
-      if (kul) {
+      // KPS-CEL-A01 (Founder hükmü 2026-09-19): zemin iki tip-saf kenarla yazılır —
+      // `kullanır` Teknolojiye, `takım` Takıma yönelir. İkisi de aynı zemin kaydına
+      // iner ve ikisi de yürütme sırası kurmaz. `takım` burada okunmasaydı göç edilen
+      // kırk sekiz Katmanın zemin bağı graf yüzünden SESSİZCE düşerdi: denetim bunu
+      // göremez, çünkü kayıp bir tanı değil çizilmeyen bir kenardır.
+      for (const zeminKenari of ["kullanır", "takım"] as const) {
+        const zeminP = param(node, zeminKenari);
+        if (!zeminP) continue;
         const kaynakD = dugumler.get(kod);
-        for (const t of kenarHedefleri(kul)) {
+        for (const t of kenarHedefleri(zeminP)) {
           const hedefD = hedefDugumu(t);
           if (kaynakD && hedefD && KAPSAYICI_TIPLERI.has(kaynakD.tip) && ZEMIN_TIPLERI.has(hedefD.tip)) {
             if (!(kaynakD.zemin ??= []).includes(hedefD.kod)) kaynakD.zemin.push(hedefD.kod);

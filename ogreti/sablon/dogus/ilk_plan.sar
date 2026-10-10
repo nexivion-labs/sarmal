@@ -34,9 +34,9 @@ Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
     ne: "🪵 Projenin temel atma işi: mimari diyalog, teknoloji ilanı ve ilk gerçek planın yazımı" ) {
 
     // NOT: Katman'ın Takım bağı ADM-KURULUS-01 kapanınca beyan edilir —
-    // Katman( ..., kullanır: TAKIM-X ) biçiminde (MIM-1.4 teknoloji ekseni · tek hedef).
+    // Katman( ..., takım: TAKIM-X ) biçiminde (MIM-1.4 zemin bağı · Takım takım: ile, Teknoloji kullanır: ile yazılır).
     Katman( kod: KAT-{{KOD}}-MIMARI, ad: "Mimari",
-      teknolojiBağımsız: "Bu Katman teknoloji SEÇEN karar işidir, teknoloji KULLANAN yapım işi değildir; bağlanacağı Takım henüz doğmamıştır ve ADM-KURULUS-01 kapanınca kullanır: kenarıyla bağlanır.",
+      teknolojiBağımsız: "Bu Katman teknoloji SEÇEN karar işidir, teknoloji KULLANAN yapım işi değildir; bağlanacağı Takım henüz doğmamıştır ve ADM-KURULUS-01 kapanınca takım: kenarıyla bağlanır.",
       ne: "🌿 Teknoloji henüz seçilmedi — ADM-KURULUS-01 kapanınca bu Katman seçilen Takım'a bağlanır" ) {
 
       // YAS-1.1 (katı rejim): Katman ile Adım arasındaki yol en az bir departman

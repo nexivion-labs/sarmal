@@ -55,4 +55,19 @@ export interface Tani {
    * eskisi gibi çalışır ve yüzey kısa cümleye düşer.
    */
   tamMesaj?: string;
+  /**
+   * BULGUNUN ANLATTIĞI DOSYA (EKL-F6-A10). Kaydın yazıldığı dosyadan başka bir
+   * dosyayı konu alan bulgunun hedefidir ve kaydın yazıldığı dosyanın klasörüne
+   * göreli, eğik çizgili bir yol olarak taşınır.
+   *
+   * Bazı bulgular okunmayan bir dosyayı anlatır ve bu yüzden o dosyaya değil giriş
+   * dosyasına yazılır: mühürlü dosya hiçbir yüzeyin tarama evrenine girmez, bulgu
+   * oraya yazılsaydı panel onu hiç yayımlayamazdı. Kayıt giriş dosyasında kalır ve
+   * sayım değişmez; bu alan yalnız kullanıcının kayda tıkladığında hangi dosyaya
+   * gideceğini söyler. Founder 2026-09-12 tarihinde sonra mühürlü bir bulguya
+   * tıkladığında mühürlü dosyanın değil anadizinin açıldığını göstermiştir, çünkü
+   * bu alan yoktu ve yüzey kaydı yazıldığı dosyaya bağlıyordu. Alan isteğe
+   * bağlıdır: taşımayan tanı eskisi gibi kendi konumuna gider.
+   */
+  hedefDosya?: string;
 }

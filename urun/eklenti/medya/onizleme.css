@@ -1,57 +1,141 @@
-/* Sarmal — yerli markdown önizlemesine enjekte edilen stil (DIL-2 insan yüzü).
-   Yalnız sarmal-üretimi MD'ye etki eder: .sarmal-tag ve .sarmal-sekil sınıfları
-   belgele.ts tarafından basılır; sıradan MD ögelerine DOKUNULMAZ. */
+/* Sarmal — okuma modunun (Masa düzeni) stili · EKL-F6-A05.
+   HİÇBİR RENK DEĞERİ BURADA YAZILMAZ (YUZ-4.1 · Founder hükmü 2026-07-06).
+   İki renk kaynağı vardır ve ikisi de dışarıdadır: kanon paletinden ÜRETİLEN
+   `--sr-*` değişkenleri (onizleme-cekirdek.paletDegiskenleri) ve editörün kendi
+   tema belirteçleri (`--vscode-*`). Paletin açık eşi olmayan renkler editörün ön
+   plan rengiyle karıştırılır (color-mix), böylece açık temada da okunur kalır.
+   Nöbet: sinama/onizleme-masa.test.ts — bu dosyada bir renk değeri belirirse
+   süit kırmızıya döner. */
 
-/* XML bölüm tag'i → amber rozet (editördeki tag rengiyle aynı: #E5C07B) */
-.sarmal-tag {
-  color: #E5C07B;
-  font-family: var(--vscode-editor-font-family, "SF Mono", monospace);
-  font-size: 0.95em;
-  letter-spacing: 0.05em;
-  display: inline-block;
-  border-left: 4px solid #E5C07B;
-  background: rgba(229, 192, 123, 0.09);
-  border-radius: 4px;
-  padding: 0.18em 0.7em;
-  margin: 1.6em 0 0.5em;    /* bölümler arası nefes — layout ritmi */
-}
+/* ── Masa düzeni: solda kalıcı yapı, sağda belge + satır numaralı kaynak ──── */
+.masa { display: grid; grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr); min-height: 100vh; }
+.kenar { position: sticky; top: 0; height: 100vh; overflow: auto; box-sizing: border-box;
+  display: flex; flex-direction: column; padding: .7rem .5rem 1rem;
+  border-right: 1px solid var(--vscode-panel-border); background: var(--vscode-sideBar-background); }
+.icerik { padding: 1.2rem 1.8rem 4rem; max-width: 62rem; min-width: 0; overflow-wrap: anywhere; }
+.belge { max-width: 50rem; }
+.belge > :first-child { margin-top: .9rem; }
 
-/* Şekil başlığı → amber, kaynağı soluk */
-.sarmal-sekil {
-  color: #E5C07B;
-  margin: 1.4em 0 0.3em;    /* şekil öncesi nefes */
-}
-.sarmal-sekil em {
-  color: var(--vscode-descriptionForeground, #999);
-  font-size: 0.85em;
-}
+.bolum-baslik { display: flex; align-items: center; gap: .35rem; font-size: .8em; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--vscode-descriptionForeground);
+  margin: 0 0 .35rem; border: none; }
 
-/* Şekil/kod çitleri: hafif çerçeve — şekil kutusu hissi */
-.sarmal-sekil + pre {
-  border: 1px solid rgba(229, 192, 123, 0.25);
-  border-radius: 6px;
-}
+/* ── Yapı ağacı: girinti + bağ çizgisi + tip simgesi + ad + satır ────────────
+   Ad KIRPILMAZ (Founder kusuru ②): satır sarar ve tam ad daima okunur; bu yüzden
+   adı göstermek için bir ipucu balonuna da gerek kalmaz (Founder kusuru ③ —
+   balon artık yalnız küçük simge hedefindedir, satırın üstünü örtmez).
+   Founder şerhi 2026-09-16 (üçüncü tur): satır iki kata iner. Üst katta (`as-bas`)
+   simge, kod ve satır numarası yan yana durur; alt katta açıklama girintili bir
+   gövde olarak akar. Gerekçe, dar kenar sütununda kodun ve açıklamanın tek satıra
+   dizilmesi hâlinde açıklamanın dört satıra kırılması ve satır numarasının kodun
+   uzağına düşmesidir. */
+.agac { font-size: .9em; line-height: 1.6; }
+.kenar .agac { font-size: .86em; }
+.agac ul { list-style: none; margin: 0; padding: 0 0 0 .6rem; }
+.agac li { position: relative; padding-left: 1rem; }
+.agac li::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  border-left: 1px solid var(--vscode-tree-indentGuidesStroke); }
+.agac li:last-child::before { bottom: auto; height: .85em; }
+.agac li::after { content: ""; position: absolute; left: 0; top: .85em; width: .75rem;
+  border-top: 1px solid var(--vscode-tree-indentGuidesStroke); }
+.as { display: flex; flex-direction: column; padding: .12rem .35rem; border-radius: 4px;
+  color: inherit; text-decoration: none; min-width: 0; }
+a.as:hover { background: var(--vscode-list-hoverBackground); }
+a.as:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
+.as-bas { display: flex; align-items: baseline; gap: .4rem; min-width: 0; }
+.as-simge { display: inline-flex; flex: none; align-self: center;
+  color: color-mix(in oklab, var(--renk, currentColor) 82%, var(--vscode-editor-foreground)); }
+.as-simge .sr-simge { margin: 0; width: 1.1em; height: 1.1em; }
+.as-kod { flex: none; font-family: var(--vscode-editor-font-family, monospace); font-size: .92em;
+  color: var(--kodrenk, var(--vscode-editor-foreground)); }
+.as-kok .as-kod { font-weight: 600; }
+/* Açıklama kodun ALT katındadır; girinti simge hanesi kadardır ki gövde kodun
+   başladığı yerden aksın ve kırıldığında da kodun altında kalsın. */
+.as-ad { min-width: 0; overflow-wrap: anywhere; padding-left: 1.5em; }
+.as-satir { margin-left: auto; padding-left: .8rem; flex: none;
+  font-family: var(--vscode-editor-font-family, monospace); font-size: .85em;
+  color: var(--vscode-editorLineNumber-foreground); font-variant-numeric: tabular-nums; }
 
-/* ── .sar kod bloğu — GERÇEK kod görünümü (editör paletiyle birebir) ──────── */
-pre.sarmal-kod {
-  font-family: var(--vscode-editor-font-family, "SF Mono", monospace);
-  font-size: 0.9em;
-  line-height: 1.45;
-  background: var(--vscode-textCodeBlock-background, rgba(127, 127, 127, 0.08));
-  border: 1px solid rgba(127, 168, 168, 0.18);
-  border-radius: 6px;
-  padding: 0.8em 1em;
-  /* Founder kararı 2026-07-06 03:05 — "yazılar alt alta yazılsa sorun çözülür":
-     kod blokları DAİMA sarar; yatay kaydırma yok. Girinti korunur (pre-wrap). */
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+/* ── Künye: dosya başındaki teknik bant, KATLI ──────────────────────────────
+   Founder kusuru ①: bant kenar bölmenin EN ALTINDA yaşar ve açıldığında kendi
+   penceresinde kaydırılır; sayfanın en iyi yerini (ağacın üstünü) hiçbir
+   hâlde kaplamaz. */
+.kunye { margin-top: auto; flex: none; border: 1px solid var(--vscode-widget-border);
+  border-radius: 6px; background: var(--vscode-editorWidget-background); }
+.kunye > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: .45rem;
+  padding: .35rem .7rem; color: var(--vscode-descriptionForeground); font-size: .86em; }
+.kunye > summary::-webkit-details-marker { display: none; }
+.kunye > summary::before { content: "\25B8"; font-size: .85em; flex: none; }
+.kunye[open] > summary::before { content: "\25BE"; }
+.kunye > summary .kunye-baslik { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.kunye > summary .kunye-yer { margin-left: auto; flex: none; font-variant-numeric: tabular-nums; }
+.kunye pre { margin: 0; max-height: 40vh; overflow: auto; background: transparent;
+  color: var(--vscode-descriptionForeground); white-space: pre; font-size: .82em;
+  border-top: 1px solid var(--vscode-widget-border); border-radius: 0 0 6px 6px; }
+
+/* ── Kaynak bölmesi: satır numaralı GERÇEK kod (2026-07-03 hükmü) ─────────── */
+.kaynak { font-family: var(--vscode-editor-font-family, monospace); font-size: .86em; line-height: 1.55;
+  background: var(--vscode-textCodeBlock-background); border-radius: 6px; padding: .45rem 0; margin: .5rem 0 1.4rem; }
+.ks { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); scroll-margin-top: 1rem; }
+.ks-no { text-align: right; padding-right: .9rem; color: var(--vscode-editorLineNumber-foreground);
+  user-select: none; font-variant-numeric: tabular-nums; text-decoration: none; }
+a.ks-no:hover { text-decoration: underline; }
+.ks-kod { white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 1rem; }
+.ks:target { background: color-mix(in srgb, var(--vscode-focusBorder) 22%, transparent); }
+
+/* ── Madde metni: yazım türleri kendi başlığıyla, gövdesi başlığın altında ──
+   Founder şerhi 2026-09-16: Hüküm · Gerekçe · Örnek · Zorlama tek paragrafta
+   akmaz; her biri kendi başlığını alır ve açıklaması girintili gövdede durur. */
+.sarmal-yazim { font-size: .82em; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--sr-sade-belgebaslik); margin: 1em 0 .2em; }
+.sarmal-yazim-govde { margin: 0 0 .35em; padding-left: .9rem;
+  border-left: 2px solid color-mix(in srgb, var(--sr-sade-belgebaslik) 35%, transparent); }
+.sarmal-yazim-govde > :first-child { margin-top: 0; }
+.sarmal-yazim-govde > :last-child { margin-bottom: 0; }
+
+/* Çözülen atıf — tıklanır. Çözülemeyen atıf bu sınıfı ALMAZ ve düz metin kalır. */
+.sr-atif { color: var(--vscode-textLink-foreground); text-decoration: none; border-bottom: 1px dotted currentColor; }
+.sr-atif:hover { text-decoration: none; border-bottom-style: solid; }
+
+/* ── DIL-2 belge ögeleri — editörün kendi rolleriyle tek renk (gökkuşağı yok) */
+.sarmal-bolum { font-size: 1.05em; color: var(--sr-sade-belgebaslik);
+  border-left: 3px solid currentColor; padding-left: .6em; }
+.sarmal-tag { color: var(--sr-sade-belgeetiket); font-family: var(--vscode-editor-font-family, monospace); font-size: .95em; }
+.sarmal-sekil { color: var(--sr-sade-belgeetiket); }
+.sarmal-sekil em { color: var(--vscode-descriptionForeground); font-size: .85em; }
+.sarmal-hata { border: 1px solid var(--sr-rozet-hata); color: var(--sr-rozet-hata);
+  border-radius: 6px; padding: .8rem 1rem; margin: 1rem; }
+.sr-simge { vertical-align: -0.14em; margin-right: .35em; }
+
+/* ── .sar belirteçleri — editörün anlamsal ve TextMate rolleriyle AYNI palet ─ */
+.sk-yorum  { color: var(--sr-onek-snf-drm-ray); font-style: italic; }
+.sk-dizgi  { color: var(--sr-sade-dizgi); }
+.sk-sayi   { color: var(--sr-sade-sayi); }
+.sk-ok     { color: var(--sr-sade-kenar); font-weight: 700; }
+.sk-kod    { color: var(--kodrenk, var(--sr-sade-kod)); }
+.sk-tip    { color: color-mix(in oklab, var(--renk, var(--sr-sade-kuralad)) 82%, var(--vscode-editor-foreground)); font-weight: 700; }
+.sk-param  { color: var(--sr-sade-parametre); }
+.sk-anahtar{ color: var(--sr-sade-anahtar); }
+/* Belgede basılmış metnin yerine konan atıf — kod akışında yer tutar, metni yinelemez. */
+.sk-elid { font-style: italic; color: var(--vscode-descriptionForeground);
+  border: 1px dashed var(--vscode-widget-border); border-radius: 4px; padding: 0 .35em; }
+
+/* ── Yabancı dil kod çitleri — renk-uret.mjs temaRolleri ile aynı eşleme ──── */
+.hljs-keyword, .hljs-selector-tag, .hljs-tag { color: var(--sr-sade-anahtar); }
+.hljs-string, .hljs-regexp, .hljs-addition { color: var(--sr-onek-ekr-tem-krt); }
+.hljs-number, .hljs-literal { color: var(--sr-sade-sayi); }
+.hljs-comment, .hljs-quote { color: var(--sr-onek-snf-drm-ray); font-style: italic; }
+.hljs-title, .hljs-name, .hljs-section { color: var(--sr-sade-kuralad); }
+.hljs-type, .hljs-class .hljs-title, .hljs-built_in { color: var(--sr-onek-bcr-ytn); }
+.hljs-variable, .hljs-attr, .hljs-attribute, .hljs-template-variable { color: var(--sr-sade-parametre); }
+.hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta { color: var(--sr-onek-htr); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
+
+/* ── Dar pencere: masa tek sütuna iner, yapı üstte kalır ─────────────────── */
+@media (max-width: 760px) {
+  .masa { grid-template-columns: 1fr; }
+  .kenar { position: static; height: auto; max-height: 45vh; border-right: none;
+    border-bottom: 1px solid var(--vscode-panel-border); }
+  .icerik { padding: 1rem 1rem 3rem; }
 }
-.sk-yorum  { color: #6a9955; font-style: italic; }  /* yorum + /// belge */
-.sk-dizgi  { color: #ce9178; }                       /* "metin" */
-.sk-sayi   { color: #b5cea8; }                       /* 42 · 3.14 */
-.sk-ok     { color: #2ecc71; font-weight: 700; }     /* --> akış oku (zümrüt) */
-.sk-kod    { color: #7fa8a8; }                       /* CKR-SPIN-TEMEL (KOD) */
-.sk-tip    { color: #4ec9b0; font-weight: 700; }     /* tip adı (aile rengi inline gelir) */
-.sk-param  { color: #9e9e9e; }                       /* parametre adları */
-.sk-anahtar{ color: #c586c0; }                       /* çağır · Tip · Kural · ve/veya/değil */

@@ -68,8 +68,8 @@ basamağının tanıdığı kimlik kümesidir.
 
 ## C · Kapsam ve sayısal özet
 
-Kanonik tanı sicilinde bugün **179** kimlik vardır: yeni omurga kanonunun ilan
-ettiği **78** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
+Kanonik tanı sicilinde bugün **181** kimlik vardır: yeni omurga kanonunun ilan
+ettiği **80** kimlik ile ondan önce yazılmış **101** kimlik. Kanonun
 veri-güdümlü tanıları (`zorunluKenarlar` alanlarından gelenler) çalışma anında
 birleştirilir ve aynı iki basamaklı kuraldan geçer; bugünkü çalışma alanında
 sayıları sıfırdır.
@@ -78,10 +78,10 @@ Yönlendirmenin yüzeylere bugünkü dağılımı şudur:
 
 | Yüzey | Kimlik sayısı | Nereden gelir |
 |---|---|---|
-| Problems | 144 | önceki kimliklerin hata ve uyarı düzeyli olanları, A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı ile MIM-1.7 AltKatman tekilliği (Founder hükmü 2026-08-28); 2026-09-11 tarihinde MIM-3.4 ile kanonun yazdığı uyarı düzeyinde doğan `geçersiz-dosya-adı` |
+| Problems | 145 | önceki kimliklerin hata ve uyarı düzeyli olanları, A05'te 46 hataya çıkan ve 16 uyarıda kalan yeni tanı ile MIM-1.7 AltKatman tekilliği (Founder hükmü 2026-08-28); 2026-09-11 tarihinde MIM-3.4 ile kanonun yazdığı uyarı düzeyinde doğan `geçersiz-dosya-adı`; 2026-09-19 tarihinde MIM-3.2 Kitaplık kademesini zorunlu kılan Founder hükmüyle uyarı düzeyinde doğan `kitaplıksız-kök` |
 | Hatırlatıcılar | 3 | Hatırlatıcı düğümünden türeyen iki kimlik (`açık-hatırlatıcı` ile `ateşlemiş-hatırlatıcı`) ve 2026-09-11 tarihinde MIM-3.4 ile doğan, dosya adına yazılmış bilinçli ileri bağlam beyanından türeyen `sonraya-bırakılmış-dosya` |
-| Bildirimler | 32 | bilgi düzeyli ölçüm ve durum işaretleri; 2026-09-10 daraltmasıyla `açık-adım`, `bloklu-çapa` ve `geliştirmede-çapa` çapaları da buraya taşındı ve `ateşlemiş-hatırlatıcı` buradan Hatırlatıcılar hanesine gitti; aynı gün ORK-8 mühür dürüstlüğü bekçisi `mevsim-mührü-çelişkili` bilgi düzeyinde doğdu ve buraya düştü; 2026-09-11 tarihinde MIM-3.4 dosya mührü gözlemi `dosya-mührü` bilgi düzeyinde doğdu ve buraya düştü |
-| **Toplam** | **179** | sicilin tamamı — atanmamış kimlik yoktur |
+| Bildirimler | 33 | bilgi düzeyli ölçüm ve durum işaretleri; 2026-09-10 daraltmasıyla `açık-adım`, `bloklu-çapa` ve `geliştirmede-çapa` çapaları da buraya taşındı ve `ateşlemiş-hatırlatıcı` buradan Hatırlatıcılar hanesine gitti; aynı gün ORK-8 mühür dürüstlüğü bekçisi `mevsim-mührü-çelişkili` bilgi düzeyinde doğdu ve buraya düştü; 2026-09-11 tarihinde MIM-3.4 dosya mührü gözlemi `dosya-mührü` bilgi düzeyinde doğdu ve buraya düştü; 2026-09-19 tarihinde MIM-1.2 projesiz Faz gözlemi `projesiz-faz` Founder hükmüyle bilgi düzeyinde doğdu ve buraya düştü |
+| **Toplam** | **181** | sicilin tamamı — atanmamış kimlik yoktur |
 
 ## C.1 · Ulaşma — yönlendirmeden ayrı ölçülen ikinci sütun
 
@@ -100,9 +100,9 @@ uydurulabilir. Çizelge bu yüzden ilanın kendi granülünde okunur ve iki say�
 
 | Yönlendirildiği yüzey | Yönlendirilen üretici | Ulaşan üretici | Ulaşmayan |
 |---|---|---|---|
-| Problems | 48 | 47 | 1 |
-| Bildirimler | 16 | 7 | 9 |
-| **İlan toplamı** | **64** | **54** | **10** |
+| Problems | 49 | 48 | 1 |
+| Bildirimler | 17 | 8 | 9 |
+| **İlan toplamı** | **66** | **56** | **10** |
 
 Hatırlatıcılar hanesi bu çizelgede görünmez ve görünmemesi doğrudur: üretici
 granülünde yönlendirme yalnız KADEMEDEN türer, oysa Hatırlatıcılar hanesinin
@@ -285,5 +285,5 @@ kapıya bağlanması, bağımsız bir ikinci kaynak (bu kaydın kendisi) okunaca
 anlamlıdır ve sahipli borç olarak kaydedilmiştir.
 |<--
 Çıkarım( kod: YZY-MATRIS-01,
-         kaynak: "cekirdek/src/yuzey-ulasma.ts yuzeyUlasmaOzeti ve oncekiKademeOlcumu üreteçlerinin doğrudan koşturulması + cekirdek/src/denetim.ts beklenenSunumYuzeyi kararı + cekirdek/src/tani-sicili.ts sicilinin 179 kimliği + cekirdek/src/kapi-kapsami.ts ilanının 64 girdisi + eklenti/src/yuzey-cekirdek.ts dağıtım işlevi (bu üretimde ölçüldü)",
-         ne: "🧭 Tanı yönlendirme matrisi sicilin 179 kimliğinin tamamını tek yüzeye YÖNLENDİRİR. GOC-TERFI-A05, KYN-YUZ-A02, KPS-MVS-A01 ikinci teslimi ve KPS-MHR-A01 sonrasında dağılım 144 Problems, 3 Hatırlatıcılar ve 32 Bildirimler'dir. Founder'ın kabul ettiği 46 tanı uyarıdan hataya çıkmış, kanon hedefi uyarı olan 16 tanı uyarıda kalmış ve bu 62 kimlik aynı kanonik tanı nesnesiyle Problems'a taşınmıştır; sekiz RET-ADAYI bilgide ve Bildirimler'de kalmıştır. Yönlendirme kararı `beklenenSunumYuzeyi` işlevinde tek kaynak olarak yaşar; eklenti kimliği, düzeyi, mesajı, kaynak konumunu ve öneriyi değiştirmeden taşır. ULAŞMA ise ayrı bir olgudur ve ilan granülünde ölçülür: 64 ilan girdisinin 54'ü panele ulaşır, 10'u ulaşmaz ve ulaşmayanların dokuzu bilgi kademesinde konuşur, onuncusu ise panel ikizi beyan eder; dolayısıyla hata ya da uyarı basıp panele ulaşamayan ve hiçbir ikizle korunmayan girdi sayısı sıfırdır. A05/A06 yüzey nöbeti 46/16/8 ayrımını doğrudan ölçer; BKM-DNT-A02 nöbeti toplam 179 kimliği, 78/101 gövde ayrımını, üç ileri-bağlam kimliğini, yönlendirme ile ulaşma arasındaki farkı ve bu kaydın üç sayı kaynağının eşitliğini ölçer." )
+         kaynak: "cekirdek/src/yuzey-ulasma.ts yuzeyUlasmaOzeti ve oncekiKademeOlcumu üreteçlerinin doğrudan koşturulması + cekirdek/src/denetim.ts beklenenSunumYuzeyi kararı + cekirdek/src/tani-sicili.ts sicilinin 181 kimliği + cekirdek/src/kapi-kapsami.ts ilanının 66 girdisi + eklenti/src/yuzey-cekirdek.ts dağıtım işlevi (bu üretimde ölçüldü)",
+         ne: "🧭 Tanı yönlendirme matrisi sicilin 181 kimliğinin tamamını tek yüzeye YÖNLENDİRİR. GOC-TERFI-A05, KYN-YUZ-A02, KPS-MVS-A01 ikinci teslimi, KPS-MHR-A01, KPS-FAZ-A02 ve KPS-CEL-A01 sonrasında dağılım 145 Problems, 3 Hatırlatıcılar ve 33 Bildirimler'dir. Founder'ın kabul ettiği 46 tanı uyarıdan hataya çıkmış, kanon hedefi uyarı olan 16 tanı uyarıda kalmış ve bu 62 kimlik aynı kanonik tanı nesnesiyle Problems'a taşınmıştır; sekiz RET-ADAYI bilgide ve Bildirimler'de kalmıştır. Yönlendirme kararı `beklenenSunumYuzeyi` işlevinde tek kaynak olarak yaşar; eklenti kimliği, düzeyi, mesajı, kaynak konumunu ve öneriyi değiştirmeden taşır. ULAŞMA ise ayrı bir olgudur ve ilan granülünde ölçülür: 66 ilan girdisinin 56'sı panele ulaşır, 10'u ulaşmaz ve ulaşmayanların dokuzu bilgi kademesinde konuşur, onuncusu ise panel ikizi beyan eder; dolayısıyla hata ya da uyarı basıp panele ulaşamayan ve hiçbir ikizle korunmayan girdi sayısı sıfırdır. A05/A06 yüzey nöbeti 46/16/8 ayrımını doğrudan ölçer; BKM-DNT-A02 nöbeti toplam 181 kimliği, 80/101 gövde ayrımını, üç ileri-bağlam kimliğini, yönlendirme ile ulaşma arasındaki farkı ve bu kaydın üç sayı kaynağının eşitliğini ölçer." )

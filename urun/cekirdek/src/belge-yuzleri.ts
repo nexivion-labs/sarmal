@@ -11,8 +11,8 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { ayristir } from "./ayristirici.ts";
 import { belirtecle } from "./belirtec.ts";
-import { sarmalKavramSozlugu } from "./cevir.ts";
-import { MCP_ARAC_ADI } from "./mcp-metinleri.ts";
+import { dilHanesi, sarmalKavramSozlugu } from "./cevir.ts";
+import { MCP_ARAC_ADI, MCP_ARAC_METINLERI } from "./mcp-metinleri.ts";
 import {
   siniflamaOrtuMerge,
   siniflamaOrtuYukle,
@@ -95,7 +95,7 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 161 || new Set(kodlar).size !== 161) {
+  if (dosyalar.length !== 8 || kodlar.length !== 162 || new Set(kodlar).size !== 162) {
     throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
   }
   return { madde: kodlar.length, karar, kural, kodlar, muhurler };
@@ -172,15 +172,21 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   // `sonraya-bırakılmış-dosya` bilgide fakat bilinçli bir ileri bağlam olduğu için
   // Hatırlatıcılar hanesinde. Dağılım 47/17/14, yönlendirme 144/3/32 ve iki dilli
   // katalog yüz yetmiş sekiz oldu.
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/17/14" ||
+  // KPS-FAZ-A02 (2026-09-19 · Founder hükmü): MIM-1.2 projesiz Faz gözlemi
+  // `projesiz-faz` bilgi düzeyinde doğdu ve Bildirimler hanesine düştü. Dağılım
+  // 47/17/15, yönlendirme 144/3/33 ve iki dilli katalog yüz yetmiş dokuz oldu.
+  // KPS-CEL-A01 (2026-09-19 · Founder hükmü 2026-09-09): MIM-3.2 Kitaplık
+  // kademesini zorunlu kıldı ve `kitaplıksız-kök` uyarısı doğdu; dağılım 47/18/15,
+  // Problems hanesi yüz kırk beş ve iki dilli katalog yüz seksen oldu.
+  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/18/15" ||
       // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
       // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
       // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
       // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
       // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "144/3/32" ||
+      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "145/3/33" ||
       olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 178) {
+      olgular.ikiDilliTani !== 180) {
     throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
   }
   // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
@@ -213,10 +219,169 @@ function olgulariOlc(kok: string): BelgeOlgulari {
   return olgular;
 }
 
+// ── MCP kurulum ve erişim yönergesi (EKL-F6-A03) ─────────────────────────────
+// Dizin başvurusu, gözden geçiren kişinin sunucuyu sıfırdan kurup her araca
+// ulaşabileceği bir yönerge ister. Yönergedeki "beklenen çıktı" bloğu elle
+// yazılmaz: sunucunun tools/list telini kuran aynı katalogdan türer. Araç
+// eklenir, adı ya da okur/yazar beyanı değişirse README kendiliğinden tazelenir
+// ve türetilmiş yüz nöbeti elle bırakılmış bayat bir satırı ilk koşuda yakalar.
+// Komutların her biri yazılmadan önce geçici bir dizinde koşturulmuştur.
+interface McpYonergeDili {
+  readonly dil: "tr" | "en";
+  readonly okur: string;
+  readonly yazar: string;
+  /** Liste komutunun önüne eklenen ortam değişkeni (Türkçe yüzde boş). */
+  readonly ortam: string;
+}
+
+/** Liste komutunun basacağı satırlar: komuttaki biçimle birebir aynı dizilir. */
+function mcpAracDokumu(y: McpYonergeDili): { satirlar: string; okur: number; yazar: number } {
+  const kayitlar = Object.entries(MCP_ARAC_METINLERI);
+  const satirlar = kayitlar
+    .map(([ad, metin]) => [
+      ad.padEnd(15),
+      (metin.ekAciklama.readOnlyHint ? y.okur : y.yazar).padEnd(10),
+      dilHanesi(metin.ekAciklama.title, y.dil),
+    ].join(" "))
+    .join("\n");
+  const okur = kayitlar.filter(([, metin]) => metin.ekAciklama.readOnlyHint).length;
+  return { satirlar, okur, yazar: kayitlar.length - okur };
+}
+
+function mcpListeKomutu(y: McpYonergeDili): string {
+  return String.raw`printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+  | ${y.ortam}node urun/cekirdek/src/mcp.ts 2>/dev/null \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{for(const t of JSON.parse(s).result.tools)console.log(t.name.padEnd(15),(t.annotations.readOnlyHint?"${y.okur}":"${y.yazar}").padEnd(10),t.title)})'`;
+}
+
+const MCP_INSPECTOR_KOMUTLARI = [
+  `npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name dogus --tool-arg hedef="$HOME/sarmal-demo" --tool-arg ad=Demo --tool-arg tur=proje`,
+  `npx -y @modelcontextprotocol/inspector --cli node urun/cekirdek/src/mcp.ts --method tools/call --tool-name denetle-proje --tool-arg dizin="$HOME/sarmal-demo"`,
+].join("\n");
+
+function mcpYonergesi(o: BelgeOlgulari): string {
+  const y: McpYonergeDili = { dil: "tr", okur: "okur", yazar: "yazar", ortam: "" };
+  const d = mcpAracDokumu(y);
+  return [
+    "## MCP sunucusu: kurulum ve erişim",
+    "",
+    "Bu bölüm, sunucuyu inceleyen kişinin onu sıfırdan kurmasını ve her araca ulaşmasını sağlar. Sunucu yerelde stdio üzerinden koşar, hesap, anahtar ya da oturum açma istemez ve hiçbir ağ çağrısı yapmaz. Gereksinimler yalnız Node.js 23.6 ya da üstü ile Git'tir: Node sunucunun TypeScript kaynağını doğrudan koşturur ve sunucu yalnız Node'un yerleşik modüllerini içe aldığı için `npm install` adımı yoktur.",
+    "",
+    "1. Kodu alın ve çalışma zamanını doğrulayın; `node --version` komutu v23.6.0 ya da üstünü basmalıdır.",
+    "",
+    "```sh",
+    "git clone https://github.com/nexivion-labs/sarmal.git",
+    "cd sarmal",
+    "node --version",
+    "```",
+    "",
+    "2. Sunucudan araç listesini hiçbir istemci olmadan isteyin. Araç başlıkları ve açıklamaları varsayılan olarak Türkçedir; komutun önüne `SARMAL_DIL=en` yazılırsa İngilizce döner.",
+    "",
+    "```sh",
+    mcpListeKomutu(y),
+    "```",
+    "",
+    `Beklenen çıktı her araç için bir satır olmak üzere ${o.arac} satırdır: ${d.okur} araç yalnız okur, ${d.yazar} araç diske yazar.`,
+    "",
+    "```text",
+    d.satirlar,
+    "```",
+    "",
+    "3. Sunucuyu bir istemciye bağlayın. Claude Code için aşağıdaki iki komutu çalışacağınız klasörde, klonunuzun mutlak yoluyla koşturun. Klonun kendi içinde bir şey eklemeye gerek yoktur, çünkü klonun `.mcp.json` dosyası sunucuyu zaten kaydeder ve `claude` ilk açılışta bir kez onay ister.",
+    "",
+    "```sh",
+    "claude mcp add sarmal -- node /mutlak/yol/sarmal/urun/cekirdek/src/mcp.ts",
+    "claude mcp list",
+    "```",
+    "",
+    "Beklenen satır `sarmal: node /mutlak/yol/sarmal/urun/cekirdek/src/mcp.ts - ✔ Connected` biçimindedir.",
+    "",
+    "4. Örnek bir proje doğurun ve üzerinde bir araç çağırın. MCP Inspector her aracı komut satırından çağırır; iki komutu klonun içinde koşturun. İlki `dogus` aracıyla bir proje yazar ve doğan dosyaları listeler; ikincisi o projeyi `denetle-proje` aracıyla denetler ve özet satırı sıfır hatayı `0 hata` olarak bildirir.",
+    "",
+    "```sh",
+    MCP_INSPECTOR_KOMUTLARI,
+    "```",
+  ].join("\n");
+}
+
+function mcpYonergesiEn(o: BelgeOlgulari): string {
+  const y: McpYonergeDili = { dil: "en", okur: "read-only", yazar: "writes", ortam: "SARMAL_DIL=en " };
+  const d = mcpAracDokumu(y);
+  return [
+    "## MCP server: setup and access",
+    "",
+    "This section lets a reviewer set the server up from nothing and reach every tool. The server runs locally over stdio, asks for no account, key or sign-in, and makes no network calls. The only requirements are Node.js 23.6 or newer and Git: Node runs the server's TypeScript source directly, and because the server imports only Node's built-in modules there is no `npm install` step.",
+    "",
+    "1. Get the code and check the Node version; `node --version` must print v23.6.0 or newer.",
+    "",
+    "```sh",
+    "git clone https://github.com/nexivion-labs/sarmal.git",
+    "cd sarmal",
+    "node --version",
+    "```",
+    "",
+    "2. Ask the server for its tools without any client. `SARMAL_DIL=en` switches tool titles and descriptions to English; without it they are Turkish.",
+    "",
+    "```sh",
+    mcpListeKomutu(y),
+    "```",
+    "",
+    `The expected output has ${o.arac} lines, one per tool: ${d.okur} tools only read and ${d.yazar} tools write to disk.`,
+    "",
+    "```text",
+    d.satirlar,
+    "```",
+    "",
+    "3. Connect a client. For Claude Code, run the two commands below in the folder you want to work in, with the absolute path of your clone. The server name must come before `-e`, because `-e` takes every word after it as an environment variable. Nothing needs to be added inside the clone itself, because its `.mcp.json` already registers the server with Turkish texts and `claude` asks once for approval on first start.",
+    "",
+    "```sh",
+    "claude mcp add sarmal -e SARMAL_DIL=en -- node /absolute/path/to/sarmal/urun/cekirdek/src/mcp.ts",
+    "claude mcp list",
+    "```",
+    "",
+    "The expected line is `sarmal: node /absolute/path/to/sarmal/urun/cekirdek/src/mcp.ts - ✔ Connected`.",
+    "",
+    "4. Create a sample project and call a tool on it. MCP Inspector calls any tool from the command line; run the two commands below inside the clone. The first writes a project with the `dogus` tool and lists the files it created; the second checks that project with `denetle-proje`, and its summary line reports zero errors as `0 hata`. The text that the tools return is Turkish.",
+    "",
+    "```sh",
+    MCP_INSPECTOR_KOMUTLARI,
+    "```",
+  ].join("\n");
+}
+
+// ── Gizlilik Politikası bölümü (EKL-F6-A03) ──────────────────────────────────
+// Dizinin gönderim belgesi, yerel bağlayıcıların giriş belgesinde "Privacy
+// Policy" başlıklı bir bölüm ister ve eksikliği anında ret sebebi sayar. Bölüm
+// yalnız PRIVACY.md dosyasının zaten söylediğini özetler ve yeni bir iddia
+// taşımaz; politikanın tek yetkili metni o dosyadır. Bağlantı, dizinin şart
+// koştuğu biçimde HTTPS adresidir. Politikaya bağlanan cümle README'de yalnız
+// bu bölümde durur; MCP yönergesindeki eski bağlantı buraya taşınmıştır.
+const GIZLILIK_POLITIKASI_ADRESI = "https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md";
+
+function gizlilikBolumu(): string {
+  return [
+    "## Gizlilik Politikası",
+    "",
+    `Sarmal hiçbir veri toplamaz: motor sizin makinenizde koşar, planınız makinenizden çıkmaz ve eklenti hiçbir sunucuya bağlanmaz. Eklenti ile MCP sunucusu kişisel bilgi, dosya içeriği ya da kullanım istatistiği toplamaz; üçüncü taraflarla paylaşılan ya da saklanan hiçbir veri yoktur. Politikanın tam metni, iddianın nasıl ölçüldüğü ve iletişim adresi [PRIVACY.md](${GIZLILIK_POLITIKASI_ADRESI}) dosyasındadır.`,
+  ].join("\n");
+}
+
+function gizlilikBolumuEn(): string {
+  return [
+    "## Privacy Policy",
+    "",
+    `Sarmal collects no data: the engine runs on your machine, your plan never leaves it, and the extension connects to no server. Neither the extension nor the MCP server collects personal information, file contents or usage statistics, and no data is shared with third parties or retained. The full policy, how its claim was measured and the contact address are in [PRIVACY.md](${GIZLILIK_POLITIKASI_ADRESI}).`,
+  ].join("\n");
+}
+
 function kokReadme(o: BelgeOlgulari): string {
   return `## Kurulum
 
 Çekirdek Node 23.6 ya da üstünü ister: \`cd urun/cekirdek && npm link\` komutu \`sarmal\` komutunu kabuğa bağlar; sürüm şartının kaynağı \`urun/cekirdek/package.json\` dosyasıdır. Eklenti mağazada yayımlandığında oradan kurulur; o güne kadar \`urun/eklenti\` içinde \`npm install && npm run build\` ile derlenir ve F5 ile geliştirme penceresinde koşar ([urun/eklenti/README.md](urun/eklenti/README.md)). MCP sunucusu \`node urun/cekirdek/src/mcp.ts\` komutuyla stdio üzerinden başlar; Claude Code için \`claude mcp add sarmal -- node <depo>/urun/cekirdek/src/mcp.ts\` yeterlidir.
+
+${mcpYonergesi(o)}
+
+${gizlilikBolumu()}
 
 ## İlk beş dakika
 
@@ -247,6 +412,10 @@ function kokReadmeEn(o: BelgeOlgulari): string {
   return `## Installation
 
 The core requires Node 23.6 or newer: \`cd urun/cekirdek && npm link\` binds the \`sarmal\` command to your shell; the version requirement lives in \`urun/cekirdek/package.json\`. The extension installs from the marketplace once published; until then it is built inside \`urun/eklenti\` with \`npm install && npm run build\` and run with F5 in a development window ([urun/eklenti/README.md](urun/eklenti/README.md)). The MCP server starts over stdio with \`node urun/cekirdek/src/mcp.ts\`; for Claude Code, \`claude mcp add sarmal -- node <repo>/urun/cekirdek/src/mcp.ts\` is enough.
+
+${mcpYonergesiEn(o)}
+
+${gizlilikBolumuEn()}
 
 ## First five minutes
 

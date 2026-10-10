@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -326,6 +326,7 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     ["kuralTanilari", kuralTanilari(plan, disk)],
     ["rafsizAnadizinTanilari", rafsizAnadizinTanilari(ana, plan, snf)],
     ["anadizinSekliTanilari", anadizinSekliTanilari(ana, snf)],
+    ["kitapliksizKokTanilari", kitapliksizKokTanilari(ana, snf, anaEtiket)],   // MIM-3.2 · Kitaplık kademesi (KPS-CEL-A01)
   ];
   for (const [uretici, ham] of yapisalParcalar) {
     const islenmis = planlamaPenceresi ? ham.map(evre1Yumusat) : yerelEvre1Yumusat(ham, plan);
@@ -337,7 +338,11 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // TAM kapsam (BKM-BUG-A02 · bug-avı M2): referans denetimi TÜM .sar'lara.
   for (const [etiket, p] of programlar) {
     if (muaflar.has(etiket)) continue;
-    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, { dosya: etiket, cozulur: (h) => adAlaniKapsami.cozulur(h, etiket) }));
+    const refTanilari = koklendir("referansTanilari", referansTanilari(p, indeks, snf, {
+      dosya: etiket,
+      cozulur: (h) => adAlaniKapsami.cozulur(h, etiket),
+      adAlaniBilinir: (a) => adAlaniKapsami.adAlaniBilinir(a),   // ORK-4 üç durumlu okunuş (KPS-ADA-A01)
+    }));
     say(refTanilari, etiket);
     bas(etiket, refTanilari);
   }
@@ -497,6 +502,15 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // aynı hedef bir yüzeyde çözülür ötekinde kopuk görünürdü.
   const dag = dagKur(evren, { adAlaniCozulur: (h, d) => adAlaniKapsami.cozulur(h, d) });
   for (const { dosya, tani } of koklendirKayit("dagTanilari", dagTanilari(dag))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 projesiz Faz gözlemi (KPS-FAZ-A02 · Founder hükmü 2026-09-19): grafın
+  // kapsayan zinciri bir Proje düğümüne ulaşmayan Faz köksüzdür ve bu susmaz.
+  // Aynı grafı okur, ikinci bir klasör→Proje çözümü kurmaz; ders dünyası muaftır.
+  for (const { dosya, tani } of koklendirKayit("projesizFazTanilari", projesizFazTanilari(dag, evren))) {
+    if (muaflar.has(dosya)) continue;
     say([tani], dosya);
     bas(dosya, [tani]);
   }

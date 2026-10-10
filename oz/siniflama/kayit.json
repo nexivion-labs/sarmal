@@ -802,7 +802,17 @@
     {
       "ad": "kullanır",
       "yon": "A->B",
-      "ne": "teknoloji ve kimlik bağı: Katman tam olarak bir somut Teknolojiyi (MIM-1.4), Proje ortak ya da kendi KimlikKökünü (ORK-5) kullanır; bağ hedefi kimlikleri birleştirmez"
+      "ne": "teknoloji ve kimlik bağı: Katman en çok bir somut Teknolojiyi (MIM-1.4), Proje ortak ya da kendi KimlikKökünü (ORK-5) kullanır; bağ hedefi kimlikleri birleştirmez ve bu kenar bir Takıma yönelemez"
+    },
+    {
+      "ad": "takım",
+      "yon": "A->B",
+      "ne": "sahiplik bağı: Katman kendisini yürüten bir ya da birden çok Takıma bu kenarla bağlanır (MIM-1.4 · ORK-2.4); hedef yalnız Takım tipinde olabilir, kenar yürütme sırası kurmaz ve bir Teknolojiye yönelemez",
+      "koken": [
+        "MIM-1.4",
+        "ORK-2.4",
+        "TIP-1.8"
+      ]
     }
   ],
   "izinliSarma": {
@@ -812,7 +822,6 @@
       "Uygulama",
       "Proje",
       "Mekanizma",
-      "Faz",
       "KimlikKökü"
     ],
     "Uygulama": [
@@ -1792,7 +1801,7 @@
       "tür": {
         "teknolojiBağımsız": "metin"
       },
-      "kural": "Teknoloji tekilliği (MIM-1.4): her Katman tam olarak bir somut Teknolojiye `kullanır` bağıyla bağlanır; teknolojisiz ya da birden çok teknolojiye bağlı Katman kurulamaz, böyle gereksinim ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
+      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz; zeminsiz Katman yalnız `teknolojiBağımsız` beyanıyla kurulur ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
     },
     "Adım": {
       "zorunlu": [

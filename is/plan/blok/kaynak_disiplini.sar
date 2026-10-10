@@ -47,7 +47,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
   ne: "🧭 Kaynak tekliği, motor körlükleri ve öğretilebilirlik — 2026-08-07 envanter turunun altı cephesi tek rayda" ) {
 
   // ══ KATMAN · KAYNAK TEKLİĞİ: markdown'da yaşayan kaynak metinler ═══════════
-  Katman( kod: KYN-KAYNAK, kullanır: TAKIM-CEKIRDEK, ad: "kaynak tekliği",
+  Katman( kod: KYN-KAYNAK, takım: TAKIM-CEKIRDEK, ad: "kaynak tekliği",
     ne: "📜 YUZ-1.2 gereği kural, karar ve plan içeriği yalnız .sar'da yaşar; plan rafındaki markdown kaynaklar asıl gövdesine taşınır" ) {
 
     AltKatman( kod: KYN-KAYNAK-K1, departman: kodlama, ad: "plan rafı dönüşümü",
@@ -177,7 +177,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
   }
 
   // ══ KATMAN · MOTOR KÖRLÜKLERİ: motorun göremediği iki yer ═══════════════════
-  Katman( kod: KYN-MOTOR, kullanır: TAKIM-CEKIRDEK, ad: "motor körlükleri",
+  Katman( kod: KYN-MOTOR, takım: TAKIM-CEKIRDEK, ad: "motor körlükleri",
     ne: "🔦 Motor bugün iki yeri göremiyor: ilansız doğan dosyayı ve ayrışan yönerge ikizini. Göremediğini yakalamak motorun asıl işidir" ) {
 
     AltKatman( kod: KYN-MOTOR-K1, departman: kodlama, ad: "ilan kapısı",
@@ -257,7 +257,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
   }
 
   // ══ KATMAN · PANEL YÜZEYİ: kanonun söylediği ama panelin göstermediği tip ═══
-  Katman( kod: KYN-YUZEY, kullanır: TAKIM-EKLENTI, ad: "panel yüzeyi",
+  Katman( kod: KYN-YUZEY, takım: TAKIM-EKLENTI, ad: "panel yüzeyi",
     ne: "🪟 Fikir tipi kanonda Hatırlatıcı'nın kardeşi diye tanımlı fakat hiçbir panelde görünmüyor; yazılan fikir kaybolmuş gibi duruyor" ) {
 
     // MIM-1.7 gereği bir Katmanın kodlama kademesi TEKTİR; bu kademe panelin
@@ -339,7 +339,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
   }
 
   // ══ KATMAN · ÖĞRETİM YÜZÜ: on dört ailenin anlatılabilirliği ════════════════
-  Katman( kod: KYN-OGRETIM, kullanır: TAKIM-CEKIRDEK, ad: "öğretim yüzü",
+  Katman( kod: KYN-OGRETIM, takım: TAKIM-CEKIRDEK, ad: "öğretim yüzü",
     ne: "🎓 On dört sınıf ailesi ve yüz iki tip var; hiçbirinin öğretim yüzü yok. İçerik üretimi bu yüz olmadan başlayamaz" ) {
 
     AltKatman( kod: KYN-OGRETIM-K1, departman: kodlama, ad: "öğretim üreteci",
@@ -372,7 +372,7 @@ Blok( kod: BLK-KYN, ad: "kaynak disiplini", mevsim: FAZ-2026-EYLUL,
   }
 
   // ══ KATMAN · PLAN DİSİPLİNİ: yazılı ama yaşamayan alan ══════════════════════
-  Katman( kod: KYN-PLAN, kullanır: TAKIM-CEKIRDEK, ad: "plan disiplini",
+  Katman( kod: KYN-PLAN, takım: TAKIM-CEKIRDEK, ad: "plan disiplini",
     ne: "🔢 Öncelik alanı şemada tanımlıdır fakat hiçbir Adım onu taşımaz; ölü doğmuş bir alan planın sıralamasını taşıyamaz" ) {
 
     AltKatman( kod: KYN-PLAN-K4, departman: planlama, ad: "hükümlerin kanona inmesi",

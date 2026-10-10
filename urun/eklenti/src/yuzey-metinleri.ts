@@ -480,8 +480,15 @@ export function ozetSatiriIpucu(taniKodu: string, adet: number): string {
  * MUTLAK YOL: kök eğik çizgiyle ya da sürücü harfiyle başlayan, en az iki
  * parçalı yol. Kullanıcıya görünen metinde tam yol basmak okumayı bitirir:
  * satır zaten kesilir ve kesilen kısım her zaman anlamlı olan sondur.
+ *
+ * GÖRELİ YOLA DOKUNULMAZ (EKL-F6-A10). Desen eskiden eşleşmenin nerede
+ * başladığına bakmıyordu: `is/plan/blok/@SONRA@_x.sar` gibi göreli bir yolda
+ * ilk eğik çizgiden başlayan kuyruğu mutlak yol sanıyor, klasör parçasını
+ * silip `is@SONRA@_x.sar` basıyordu (Founder canlı bulgusu 2026-09-12). Eşleşme
+ * artık bir yol parçasının ortasında başlayamaz; satır başında ya da boşluk,
+ * tırnak, parantez veya iki nokta gibi bir ayraçtan sonra başlar.
  */
-const MUTLAK_YOL = /(?:[A-Za-z]:)?(?:\/[^\s"'`)]+){2,}/g;
+const MUTLAK_YOL = /(?<![\p{L}\p{N}._~@-])(?:[A-Za-z]:)?(?:\/[^\s"'`)]+){2,}/gu;
 
 /** KOD imzası: BÜYÜK harfli, tireli makine kimliği (göç terfi turu A99 kapanışı gibi). */
 const KOD_GOVDESI = "[A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜ0-9]*(?:-[A-ZÇĞİÖŞÜ0-9]+)+";
@@ -872,20 +879,117 @@ export const DURUM_CUBUGU_METINLERI = {
 export const TABAN_KANON_METINLERI = {
   /** Durum çubuğu girdisinin kendisi — ikon codicon ailesindendir. */
   get cubukMetni(): string {
-    return `$(warning) ${yuzeyMetni("Sarmal: taban kanon", "Sarmal: built-in canon")}`;
+    return `$(warning) ${yuzeyMetni("Sarmal: eklentinin kanonu", "Sarmal: extension canon")}`;
   },
-  /** İpucu sebebi ve çözümü tam cümlelerle söyler. */
+  /**
+   * İpucu sebebi ve çözümü tam cümlelerle söyler. EKL-F6-A09: çözüm artık kanon
+   * işaretçisidir; kanon kaydını projeye kopyalama önerisi, ilk kanon
+   * güncellemesinde bayatlayan ve BKM-DNT-A15 ile terk edilmiş çözüm olduğu için kalktı.
+   */
   cubukIpucu(belgeYolu?: string): string {
     const baslik = yuzeyMetni(
-      "Bu çalışma alanında bir tip sistemi kaydı bulunamadı; Sarmal gömülü taban kanonla çalışıyor.",
-      "No type system record was found in this workspace, so Sarmal is running on its built-in canon.");
+      "Bu projede tip sistemi kaydı da kanon işaretçisi de bulunamadı; Sarmal eklentinin kendi kanon kopyasıyla çalışıyor ve tam proje denetimi de bu kopyayla koşuyor.",
+      "Neither a type system record nor a canon pointer was found for this project, so Sarmal is running on the extension's own canon copy, and the full project check runs on that copy as well.");
     const cozum = yuzeyMetni(
-      "Projenizin kendi tipleri görünsün istiyorsanız varlık kökünüzde bir *_anadizin.sar ilanı ile oz/siniflama/kayit.json dosyasının bulunması yeterlidir.",
-      "To see your own project types, declare an entity root with a *_anadizin.sar file that carries oz/siniflama/kayit.json.");
+      "Projenin kendi kanonunu göstermek için komut paletinden Sarmal: Kanon İşaretçisini Yaz komutunu çalıştırın; komut, çalışma alanında bulduğu Sarmal kanon kökünün adresini projenin oz/siniflama/isaretci.json dosyasına yazar. Bu işarete tıklamak da aynı komutu çalıştırır.",
+      "To show the project's own canon, run Sarmal: Write Canon Pointer from the command palette; the command writes the address of the Sarmal canon root it finds in the workspace into the project's oz/siniflama/isaretci.json file. Clicking this indicator runs the same command.");
     const belge = belgeYolu
       ? yuzeyMetni(`Son ölçüm şu belge için yapıldı: ${belgeYolu}`, `The latest measurement was taken for this document: ${belgeYolu}`)
       : undefined;
     return [baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
+  },
+  /** EKL-F6-A09: tam proje denetiminin hiç koşmadığı hâlin durum çubuğu metni. */
+  get atlandiMetni(): string {
+    return `$(warning) ${yuzeyMetni("Sarmal: tam denetim koşmadı", "Sarmal: full check did not run")}`;
+  },
+  /** Sebep, sonuç ve çözüm tam cümlelerle; kökler adıyla söylenir. */
+  atlandiIpucu(kokler: readonly string[]): string {
+    const liste = kokler.join(", ");
+    const baslik = yuzeyMetni(
+      `Şu kökte tip sistemi kaydı bulunamadığı ve eklentinin kendi kanon kopyası da okunamadığı için tam proje denetimi koşmadı: ${liste}.`,
+      `The full project check did not run for this root because no type system record was found and the extension's own canon copy could not be read either: ${liste}.`);
+    const sonuc = yuzeyMetni(
+      "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+      "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
+    const cozum = yuzeyMetni(
+      "Eklentiyi yeniden kurmak kanon kopyasını geri getirir; çalışma alanında bir Sarmal kanon kökü varsa Sarmal: Kanon İşaretçisini Yaz komutu da denetimi geri açar. Komut satırındaki sarmal denetle komutu ise tam hükmü her durumda verir.",
+      "Reinstalling the extension restores the canon copy, and if the workspace holds a Sarmal canon root, Sarmal: Write Canon Pointer also brings the check back. The sarmal denetle command on the command line gives the full verdict in every case.");
+    return [baslik, sonuc, cozum].join("\n");
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KANON İŞARETÇİSİ KOMUTU (EKL-F6-A09) — HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR
+//
+//   Komutun her sonucu kullanıcıya tam cümleyle söylenir: yazıldıysa hangi
+//   dosyanın hangi kanonu gösterdiği, yazılmadıysa neden yazılmadığı. Sürüme
+//   bağlı eklenti klasörü işaretçiye yazılmadığı için o hâlde eklentinin kendi
+//   kanonuyla zaten çalışıldığı ve işaretçiye gerek olmadığı söylenir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const KANON_ISARETCISI_METINLERI = {
+  /** Birden çok aday proje varken seçim kutusunun başlığı. */
+  get secimBasligi(): string {
+    return yuzeyMetni("Kanon işaretçisinin yazılacağı projeyi seçin", "Choose the project that should receive the canon pointer");
+  },
+  /** İşaretçiye muhtaç hiçbir proje yok. */
+  get hedefYok(): string {
+    return yuzeyMetni(
+      "Kanon işaretçisine ihtiyaç duyan bir Sarmal projesi bulunamadı; açık projelerin her biri kanonunu zaten buluyor ya da çalışma alanında *_anadizin.sar ilanı taşıyan bir proje yok.",
+      "No Sarmal project needs a canon pointer: every open project already finds its canon, or the workspace holds no project with a *_anadizin.sar declaration.");
+  },
+  /** İşaretçi yazıldı. */
+  yazildi(isaretciYolu: string, kanonKoku: string): string {
+    return yuzeyMetni(
+      `Kanon işaretçisi yazıldı: ${isaretciYolu} dosyası artık ${kanonKoku} kökündeki kanonu gösteriyor ve tam denetim bu kanonla yeniden koşuyor.`,
+      `Canon pointer written: ${isaretciYolu} now points to the canon at ${kanonKoku}, and the full check runs again against that canon.`);
+  },
+  /** Hedef kanonunu zaten buluyor. */
+  gereksiz(proje: string): string {
+    return yuzeyMetni(
+      `${proje} projesi kanonunu zaten buluyor; kendi tip sistemi kaydı ya da geçerli bir kanon işaretçisi olduğu için yeni bir işaretçiye gerek yok.`,
+      `${proje} already finds its canon through its own type system record or a valid canon pointer, so no new pointer is needed.`);
+  },
+  /** Kullanılabilir kanon kökü yok; eklentinin kendi kanonu zaten çalışıyor. */
+  get eklentiKanonu(): string {
+    return yuzeyMetni(
+      "Çalışma alanında işaretçinin gösterebileceği bir Sarmal kanon kökü bulunamadı; eklenti kendi kanon kopyasıyla zaten çalışıyor ve işaretçiye gerek yok. Sürüme göre adı değişen eklenti klasörü işaretçiye asla yazılmaz, çünkü eklenti güncellendiğinde o adres kırılır.",
+      "No Sarmal canon root that a pointer could point to was found in the workspace; the extension already runs on its own canon copy, so no pointer is needed. The extension folder, whose name changes with every version, is never written into a pointer because that address breaks when the extension updates.");
+  },
+  /** Hedefte raf yok; ilansız klasör doğmasın diye yazılmadı. */
+  rafYok(proje: string): string {
+    return yuzeyMetni(
+      `${proje} projesinde oz/siniflama klasörü yok; işaretçi ilan edilmemiş bir klasör doğurmasın diye yazılmadı. Giriş dosyası bu klasörü ilan ediyorsa önce İskeleti Kur komutuyla klasörü oluşturun, ilan etmiyorsa önce ilanı yazın.`,
+      `${proje} has no oz/siniflama folder, so the pointer was not written to avoid creating an undeclared folder. If the entry file declares this folder, create it first with the Build Scaffold command; otherwise add the declaration first.`);
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KURULU PAKET BAYATLIĞI (EKL-F6-A11) — HTR-SURUM-DAMGASI-TUZAGI
+//
+//   Geliştirme çalışma alanında kurulu eklenti depodaki paket bildiriminden
+//   gerideyse durum çubuğunda bir uyarı belirir. Bildirimler yüzeyi seçilmedi,
+//   çünkü o yüzeydeki her kayıt kanonik bir tanı kimliği ister ve bu kimlik bir
+//   kanon maddesi olmadan doğamaz (BKM-DNT-A12 koşu kaydı). Açılış iletisi de
+//   seçilmedi, çünkü ürünle ilk karşılaşma bir kutu olmamalıdır (VIT-KIMLIK-A04);
+//   emsal taban kanon işaretidir.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const SURUM_TAZELIGI_METINLERI = {
+  /** Durum çubuğu girdisinin kendisi — ikon codicon ailesindendir. */
+  get cubukMetni(): string {
+    return `$(warning) ${yuzeyMetni("Sarmal: kurulu paket bayat", "Sarmal: installed package is stale")}`;
+  },
+  /** İpucu iki sürümü, sebebi ve çözümü tam cümlelerle söyler. */
+  cubukIpucu(satir: string, kuruluSurum: string, depoSurumu: string): string {
+    const baslik = yuzeyMetni(satir,
+      `The installed extension runs version ${kuruluSurum}, while the package manifest in the repository is at ${depoSurumu};`
+      + " because the installed package is stale, what you see in the panels may not reflect the source as it is today."
+      + " Do not treat panel output as the verdict of the source until the package is reinstalled.");
+    const cozum = yuzeyMetni(
+      "Paketi yeniden kurmak için depo kökünde node urun/eklenti/arac/kur.mjs komutunu koştur ve ardından pencereyi yenile.",
+      "To reinstall, run node urun/eklenti/arac/kur.mjs from the repository root and then reload the window.");
+    return `${baslik}\n${cozum}`;
   },
 } as const;
 
@@ -1725,7 +1829,14 @@ export const TAKDIR_METINLERI = {
   kanalSec: (kod: string): string => yuzeyMetni(`${kod} için bir kanal seçin — notunuz bu etmenin siciline işlenir ve zamanla hafızasına aktarılır.`, `Choose a channel for ${kod}. Your note is recorded in this agent's history and carried into its memory over time.`),
   notIstemi: (emoji: string, ad: string): string => yuzeyMetni(`${emoji} ${ad} — kadroya notun`, `${emoji} ${ad} — your note to the team`),
   get hasatBos(): string { return yuzeyMetni("🌾 Hasat boş — henüz geribildirim notu yazılmamış.", "🌾 Harvest is empty; no feedback note has been written yet."); },
-  hasat: (adet: number): string => yuzeyMetni(`🌾 Hasat tamam: ${adet} geribildirim → ogrenme/geribildirim.sar (STR-4)`, `🌾 Harvest finished: ${adet} feedback records → ogrenme/geribildirim.sar (STR-4)`),
+  // EKL-F6-A10: yol sabit yazılmaz; hasadın gerçekten yazdığı köke göreli yol verilir.
+  hasat: (adet: number, yol: string): string => yuzeyMetni(`🌾 Hasat tamam: ${adet} geribildirim → ${yol} (STR-4)`, `🌾 Harvest finished: ${adet} feedback records → ${yol} (STR-4)`),
+  get rafYok(): string {
+    return yuzeyMetni(
+      "Geribildirim hasadı yazılmadı, çünkü kökün giriş dosyası bir öğrenme rafı (ogrenme/) ilan etmiyor. Rafı giriş dosyasındaki bir Kitaplığın içinde ilan et ve hasadı yeniden koştur.",
+      "The feedback harvest was not written because the entry file of the root declares no learning shelf (ogrenme/). Declare the shelf inside a library in the entry file and run the harvest again.",
+    );
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2249,6 +2360,29 @@ export const ONIZLEME_METINLERI = {
     );
   },
   get beklenmeyenHata(): string { return yuzeyMetni("Beklenmeyen hata.", "Unexpected error."); },
+  /** Dosya başındaki teknik bandın katlanmış künyesinin etiketi (EKL-F6-A05). */
+  get kunyeEtiketi(): string { return yuzeyMetni("Künye", "Colophon"); },
+  /** Künyenin kaynakta kapladığı satır aralığı — katlıyken de yeri okunur. */
+  kunyeYeri(ilk: number, son: number): string {
+    return yuzeyMetni(`satır ${ilk}–${son}`, `lines ${ilk}–${son}`);
+  },
+  /** Yapı ağacı satırının ipucu: hangi tip, kaynakta hangi satır. */
+  agacSatirIpucu(tip: string, satir: number): string {
+    return yuzeyMetni(`${tip} · kaynakta satır ${satir}`, `${tip} · source line ${satir}`);
+  },
+  /** Belgede zaten basılmış metnin yerine konan atfın ipucu. */
+  get yinelenenMetinIpucu(): string {
+    return yuzeyMetni(
+      "Bu metin hemen yukarıdaki belgede basıldı; ikinci kez yazılmadı.",
+      "This text was printed in the document just above; it is not repeated here.",
+    );
+  },
+  /** Belgede basılmış BAŞLIĞIN yerine konan atfın kısa etiketi. */
+  get yinelenenBaslikEtiketi(): string { return yuzeyMetni("başlık", "title"); },
+  /** Madde metnindeki bir atfın ipucu — tıklanınca tanımına gidilir. */
+  atifIpucu(kod: string): string {
+    return yuzeyMetni(`${kod} tanımına git`, `Go to the definition of ${kod}`);
+  },
 } as const;
 
 export function blokluAdimIpucu(adet: number): string {

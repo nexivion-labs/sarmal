@@ -16,6 +16,7 @@
 //   editör kabuğu istemez ve GERÇEK dağıtım işlevini koşturur.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { dirname, join } from "node:path";
 import { beklenenSunumYuzeyi, type SunumYuzeyi } from "../../cekirdek/src/denetim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
@@ -536,29 +537,48 @@ export interface KayitGorunumu {
   readonly tur: BildirimTuru;
 }
 
+/**
+ * Kayda tıklanınca gidilecek konum (EKL-F6-A10).
+ *
+ * Kayıt çoğunlukla yazıldığı dosyayı anlatır ve hedef kaydın kendi konumudur.
+ * Mühür bulguları ise okunmayan bir dosyayı anlatır ve giriş dosyasına yazılır;
+ * motor anlattıkları dosyayı `hedefDosya` alanında, giriş dosyasının klasörüne
+ * göreli olarak verir. Tıklama o dosyanın başına gider. Kayıt yine giriş
+ * dosyasının altında gruplanır ve sayılır, çünkü gruplama `YuzeyKaydi.dosya`
+ * alanından kurulur ve bu işlev ona dokunmaz.
+ */
+export function kayitHedefi(kayit: YuzeyKaydi): { dosya: string; satir: number; sutun: number } {
+  const hedef = kayit.tani.hedefDosya;
+  if (!hedef) return { dosya: kayit.dosya, satir: kayit.tani.satir, sutun: kayit.tani.sutun };
+  return { dosya: join(dirname(kayit.dosya), hedef), satir: 1, sutun: 1 };
+}
+
 /** Kaydı panel satırına çevirir — metin katalogdan, olgu tanıdan gelir. */
 export function kayitGorunumu(kayit: YuzeyKaydi): KayitGorunumu {
   const t = kayit.tani;
-  const dosyaAdi = kayit.dosya.slice(kayit.dosya.lastIndexOf("/") + 1);
   const etiket = kayitEtiketi(t.mesaj);
   const kod = satirKodu(t);
+  // Hedef mesajdan SONRA çözülür: tanı taşımayan yabancı bir kayıt (Fikir) buraya
+  // sızarsa ilk erişim yine `mesaj` olur ve ⑭b nöbetinin ölçtüğü kapı gerekçesi korunur.
+  const hedef = kayitHedefi(kayit);
+  const dosyaAdi = hedef.dosya.slice(hedef.dosya.lastIndexOf("/") + 1);
   return {
     tur: bildirimTuru(t),
     etiket,
     satirKodu: kod,
     kodluEtiket: kodluEtiket(kod, etiket),
-    aciklama: kayitAciklamasi(dosyaAdi, t.satir),
+    aciklama: kayitAciklamasi(dosyaAdi, hedef.satir),
     // VIT-GRAF-A18: pencere kaydın kırpılmamış gövdesini gösterir. Kırpma satır
     // etiketinin işidir ve `etiket` alanında kalır; tanının taşıdığı kırpılmamış
     // ikiz varsa ipucu onu okur, yoksa davranış eskisi gibi kısa cümleye düşer.
     ipucu: kayitIpucu({
       kod: t.kod, duzey: t.duzey, mesaj: t.mesaj,
-      dosya: kayit.dosya, satir: t.satir, sutun: t.sutun, oneri: t.oneri,
+      dosya: hedef.dosya, satir: hedef.satir, sutun: hedef.sutun, oneri: t.oneri,
       tamMesaj: t.tamMesaj,
     }),
-    dosya: kayit.dosya,
-    satir: t.satir,
-    sutun: t.sutun,
+    dosya: hedef.dosya,
+    satir: hedef.satir,
+    sutun: hedef.sutun,
     kod: t.kod,
     duzey: t.duzey,
   };

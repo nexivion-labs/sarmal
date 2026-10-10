@@ -28,18 +28,54 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `b6183a49a514a675899fd674a7584b6b6930335b4c2de82b4d75696fdd06c577` |
-| `oz/siniflama/kayit.json` | `98c6487bfbe5d408f676e2dc0eb6237cc8cadade94c303ebd29fa2c77e87790f` |
+| `yasa/kanon demeti (A03 formülü)` | `f34368ff95d0c3992e9c3ba1a6327fc9dd08b72f44d9830c631d89040b2efb62` |
+| `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `fd9ec0a3eabc567bfa2629bbe761cc9f34a5e26fdf6737d99c3108fef9d31497` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `d11817e3b9f2de3a955a6bc87c9e9e749d20eccb2693e4cec05fdeca7cdc174f` |
-| `urun/cekirdek/src/dil-baglami.ts` | `482e3c45e6f1740e3135147b03c49d3d0ee017e5e4e4eeb40ca3acbb6c067651` |
-| `urun/eklenti/package.nls.tr.json` | `d939bf63a3956ef095c5e5b1cee5bab4f18418c59e90aada0d09abc34c747212` |
-| `urun/eklenti/package.nls.json` | `29aca55cccac66897d1743a9944dff4b0bf3813ce7871f3be6b036e2cfb0ba88` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d415520c858516d861a7758523b41d4981dc4486d05562947aae96e763c33c8c` |
+| `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
+| `urun/cekirdek/src/dil-baglami.ts` | `28440b986a3c58983001848b24658c2444e30e0c7ed8f6b116ea8a8e9375874d` |
+| `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
+| `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `cbc45b572ba62fc12e376fe98fb280a6dff7e20ce727fd555751623cdffb9e23` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-09-19 · Katman zemininin iki kenara bölünmesi): Founder
+hükmüyle MIM-1.4 ile ORK-2.4 maddeleri zemini iki tip-saf kenarla yazar oldu,
+sarma sözleşmesi `takım` kenar tipini ilan etti ve ajan bağlam paketinin örnek
+Katmanı yeni yazıma çekildi; kanon demeti, sınıflama kaydı ve dil bağlamı
+mühürleri bu yüzden birlikte ilerledi. Tanı sicili değişmedi, çünkü yeni bir
+kimlik doğmadı: ORK-2.4 tanısı iki kenarın sözleşmesini tek adla tutar.
+
+Tazeleme notu (2026-09-19 · Teknoloji kapsamının kabulü): Founder işin
+yürütüldüğü kanalın Teknoloji sayılmasını açıkça kabul etmiş, TIP-1.8 hükmü
+korunmuş ve gerekçesi bu kabulle tazelenmiştir; dayanağı bulunamayan ret kaydı
+kayıttan düşürülmüş, ajanın çağırdığı gövdelerin tipi ise yeni bir tip icat
+edilmeden yazılmıştır. Yalnız kanon demeti ile tip dosyasının mührü ilerledi.
+
+Tazeleme notu (2026-09-19 · Kitaplık kademesinin zorunluluğu): Founder'ın
+2026-09-09 tarihli ikinci hükmü MIM-3.2 maddesinin düz yazısı ile zorlama
+cümlesini tek sözcüğe indirdi ve kademe atlandığında konuşan `kitaplıksız-kök`
+gözlemi doğdu; kanon demeti, tanı sicili ve yönlendirme matrisinin mühürleri bu
+yüzden birlikte ilerledi. Yeni tanı kümesi yetmiş dokuzdan seksene, Problems
+hanesi yüz kırk dörtten yüz kırk beşe çıktı ve türetilmiş yüzler ile öğretim
+kartları aynı koşuda resmî üreticileriyle yeniden üretildi.
+
+Tazeleme notu (2026-09-19 · anadizin ile plan ayrılığı): Founder'ın 2026-09-09
+tarihli hükmü kanona MIM-3.5 maddesi olarak indi ve sarma sözleşmesi ÇalışmaAlanı
+için Faz iznini bıraktı; kanon demeti ile sınıflama kaydının mühürleri bu yüzden
+birlikte ilerledi. Kanon yüz altmış bir maddeden yüz altmış ikiye, Kural kümesi
+yüz yirmi üçten yüz yirmi dörde çıktı; kanon tutarlılık yüzü, belge yüzleri ve
+öğretim kartları aynı koşuda resmî üreticileriyle yeniden üretildi.
+
+Tazeleme notu (2026-09-19 · projesiz Faz gözlemi): MIM-1.2 maddesine Founder
+hükmüyle eklenen zorlama satırı kanon demetini, sicile inen `projesiz-faz`
+gözlemi tanı sicilinin mührünü ve gözlemin yüzey eşlemesi de yönlendirme
+matrisinin mührünü ilerletti. Üç mühür birlikte tazelendi ve kanon tutarlılık
+yüzü aynı koşuda resmî üreticisiyle yeniden üretildi; ikinci koşu sıfır fark
+verdi. Öteki beş kaynağın mührü değişmedi, çünkü gözlem onların gövdesine
+dokunmaz.
 
 Tazeleme notu (2026-08-03 · göç kapanışı): göç planı arşive inince kaynak kodun
 yorumlarındaki tur kimliği atıfları anlatıya çevrildi. Bu dönüşüm sicil
@@ -518,6 +554,35 @@ değişmedi. Ardından `kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticil
 yeniden koşturuldu: kanon tutarlılık yüzü tazelendi, on altı belge yüzünün altısı
 değişti, onu aynı kaldı ve ikinci koşu sıfır fark verdi. Yukarıdaki on altı yüz
 tablosu bu turda tazelenmedi, çünkü makine nöbetine bağlı değildir.
+
+Tazeleme notu (2026-09-16 · MCP araç açıklamalarından davranış buyruklarının
+düşmesi · EKL-F6-A03): Founder hükmüyle on sekiz aracın Türkçe ve İngilizce
+açıklamalarından davranış buyruğu taşıyan kırk sekiz birim kaldırıldı ve
+taşıdıkları bilgi bildirme kipine çevrilerek korundu. Gerekçe, dizinin inceleme
+ölçütünün bir açıklamanın aracın ne yaptığını anlatmasını, modele nasıl
+davranacağını söylememesini istemesi ve modelin başka araçları çağırmasına
+müdahale eden açıklamaları ret sebebi saymasıdır. Bu dönüşüm yalnız
+`urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü ilerletti ve yukarıdaki
+tablodaki satır canlı değerle tazelendi; sınıflama kaydı, örtü, tanı sicili, dil
+bağlamı ve iki dil dosyası değişmedi. Sunucu talimatına bilinçle dokunulmadı,
+çünkü dizin ölçütü yalnız araç açıklamalarını bağlar ve talimatın kaderi ayrı bir
+Founder hükmünü beklemektedir. Aynı turda çeviri kapsama nöbetinin beklentisi
+ters çevrildi: kuyruğun varlığını şart koşan iki satırın yerine, kuyruğun geri
+dönmediğini ve iki dil hanesinin de dolu olduğunu ölçen dört satır kondu. Bu bir
+gevşetme değildir, çünkü kural sayısı artmış ve hiçbir koruma kalkmamıştır;
+kontrolcü beklentiyi mutasyonla kanıtlamış, `sef` açıklamasına geri enjekte
+ettiği kuyruk nöbeti kırmızıya düşürmüş ve dosya yedekten geri alındığında mühür
+yerine oturmuştur.
+
+Tazeleme notu (2026-09-16 · sunucu talimatının yasaklayıcı kipten çıkması ·
+EKL-F6-A03): Founder hükmüyle sunucu talimatındaki ham arama cümlesi her iki
+dilde yeniden yazıldı; planı ham arama araçlarıyla okumak artık yasaklanmamakta,
+bunun yerine ham aramanın neyi kaçırdığı ve Sarmal araçlarının aynı soruyu neden
+kimlik indeksi ile graftan daha doğru cevapladığı anlatılmaktadır. Gerekçe, bir
+yasağın okuyucuyu meşru kullanımdan da alıkoyması ve gerekçesini taşımamasıdır.
+Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü
+ilerletti ve yukarıdaki tablodaki satır canlı değerle tazelendi; araç
+açıklamaları, ek açıklamalar ve öteki bütün kaynaklar değişmedi.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,

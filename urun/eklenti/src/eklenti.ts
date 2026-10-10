@@ -25,7 +25,9 @@ import { iskeletPlani, iskeletYaz } from "../../cekirdek/src/iskeletci.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
-import { varlikDosyasiBul } from "./kanon-kesif.ts";
+import {
+  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, varlikKokuBul,
+} from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
 import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";  // EKL-F11-A01/A05: kimlik indeksi (çekirdekte — MCP/CLI ile ortak)
@@ -64,7 +66,10 @@ import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
 // 🪧 EKL-F6-A04: kanon bulunamadığında taban kanona düşüldüğü SÖYLENİR.
-import { TabanKanonCubugu } from "./taban-kanon.ts";
+import { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tamDenetimSonucu } from "./taban-kanon.ts";
+// ⏱️ EKL-F6-A11: kurulu paket depodaki bildirimden gerideyse durum çubuğu söyler.
+import { readFile, readdir } from "node:fs/promises";
+import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
 import {
   yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri,
   type YuzeyKaydi, type YuzeyDagilimi,
@@ -88,12 +93,14 @@ import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinle
 import {
   EKLENTI_KABUK_METINLERI,
   IZ_METINLERI,
+  KANON_ISARETCISI_METINLERI,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
   ipucuIsaretCiziciniKur,
   panelOdakMesaji,
   panoyaYazildi,
   panoyaKopyalanacakSatirYok,
+  SURUM_TAZELIGI_METINLERI,
   yuzeyDiliniAyarla,
   yuzeyKokleriniAyarla,
 } from "./yuzey-metinleri.ts";
@@ -254,6 +261,52 @@ function yuzeyKokleriniTazele(): void {
   yuzeyKokleriniAyarla((vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
 }
 
+/**
+ * ⏱️ EKL-F6-A11 · kurulu paket bayatlığı nöbeti. Açılışı bekletmez: keşif
+ * eşzamansızdır ve `activate` dönmeden tek bir dosya okunmaz. Keşif her kökte
+ * bir okuma, bulunamazsa bir kat aşağıda klasör başına bir okumadır; mağaza
+ * kullanıcısının çalışma alanında depo bulunmadığı için nöbet orada susar ve
+ * izleyici hiç kurulmaz. Depo bulunursa yalnız o tek paket bildirimi izlenir,
+ * çünkü Founder penceresi açıkken sürümün ilerlemesi tuzağın ta kendisidir.
+ */
+function surumTazeligiNobetiniKur(context: vscode.ExtensionContext): void {
+  const oge = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
+  oge.text = SURUM_TAZELIGI_METINLERI.cubukMetni;
+  oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+  context.subscriptions.push(oge);
+  const kuruluSurum = String(context.extension.packageJSON?.version ?? "");
+  const oku = async (yol: string): Promise<string | undefined> => {
+    try { return await readFile(yol, "utf8"); } catch { return undefined; }
+  };
+  const tazele = (depoSurumu: string | undefined): void => {
+    const a = surumAyrismasi({ kuruluSurum, depoSurumu, gelistirmeKipi: depoSurumu !== undefined });
+    if (!a) { oge.hide(); return; }
+    oge.tooltip = SURUM_TAZELIGI_METINLERI.cubukIpucu(a.satir, a.kuruluSurum, a.depoSurumu);
+    oge.show();
+  };
+  void (async () => {
+    const depo = await depoPaketiBul((vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath), {
+      oku,
+      altKlasorler: async (kok) => {
+        try {
+          return (await readdir(kok, { withFileTypes: true }))
+            .filter((g) => g.isDirectory() && !g.name.startsWith(".") && g.name !== "node_modules")
+            .map((g) => g.name);
+        } catch { return []; }
+      },
+    });
+    if (!depo) return;
+    tazele(depo.kimlik.surum);
+    const izleyici = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(dirname(depo.yol), "package.json"));
+    const yeniden = async (): Promise<void> => { tazele(paketKimligiCoz(await oku(depo.yol))?.surum); };
+    izleyici.onDidChange(yeniden);
+    izleyici.onDidCreate(yeniden);
+    izleyici.onDidDelete(yeniden);
+    context.subscriptions.push(izleyici);
+  })();
+}
+
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
   // VIT-KIMLIK-A07: ipucu balonunun işaretleri ailenin tema varyantından çizilir.
@@ -312,6 +365,41 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     vscode.commands.registerCommand("sarmal.hatirlaticiKapat", async (oge: unknown) => {
       await hatirlaticilar?.kapat(oge, (t) => denetimKilidi.iste(t));
     }),
+    // ✍️ EKL-F6-A09 · KANON İŞARETÇİSİNİ YAZ. İşaretçiden önce doğmuş ağaçlara
+    // işaretçiyi yazan yol budur. Karar saf çekirdektedir (kanon-kesif.ts): kabuk
+    // yalnız hedefi seçer, kararı uygular ve her sonucu tam cümleyle söyler.
+    // Hedef açık belgenin varlığıdır; açık belge yoksa işaretçiye muhtaç ilanlı
+    // varlıklardan biri, birden çoksa kullanıcının seçtiği olur.
+    vscode.commands.registerCommand(KANON_ISARETCISI_KOMUTU, async () => {
+      const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+      const belge = vscode.window.activeTextEditor?.document.uri;
+      let hedef = belge?.scheme === "file" ? varlikKokuBul(dirname(belge.fsPath)) : undefined;
+      if (!hedef) {
+        const adaylar = isaretciHedefAdaylari(koklar);
+        if (adaylar.length > 1) {
+          const secim = await vscode.window.showQuickPick(
+            adaylar.map((k) => ({ label: basename(k), description: k })),
+            { placeHolder: KANON_ISARETCISI_METINLERI.secimBasligi });
+          if (!secim) return;
+          hedef = secim.description;
+        } else {
+          hedef = adaylar[0];
+        }
+      }
+      if (!hedef) { void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.hedefYok); return; }
+      const plan = isaretciPlani(hedef, koklar, context.extensionPath);
+      if (plan.tur === "yaz") {
+        const yazilan = isaretciYaz(plan.hedef, plan.kanonKoku, context.extensionPath);
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.yazildi(yazilan, plan.kanonKoku));
+        denetimKilidi.iste("işaretçi");
+      } else if (plan.tur === "gereksiz") {
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.gereksiz(basename(plan.hedef)));
+      } else if (plan.tur === "eklenti-kanonu") {
+        void vscode.window.showInformationMessage(KANON_ISARETCISI_METINLERI.eklentiKanonu);
+      } else {
+        void vscode.window.showWarningMessage(KANON_ISARETCISI_METINLERI.rafYok(basename(plan.hedef)));
+      }
+    }),
   );
   // Sayaçlar panellerin KENDİ kümelerinden ve motorun tanı koleksiyonundan okunur.
   durumCubugu = new DurumCubugu({
@@ -344,6 +432,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // yalnız `ortak.ts` içindeki keşfin verdiği kararı aynalar ve kanon
   // bulunduğunda kendiliğinden gizlenir.
   context.subscriptions.push(new TabanKanonCubugu());
+  // ⏱️ EKL-F6-A11: kurulu paket bayatlığı — aynı durum çubuğu emsaliyle, işi kesmeden.
+  surumTazeligiNobetiniKur(context);
 
   // 🔬 PRF-A01 ölçüm merceği: hangi izleyici kaç olay üretti, tam-proje denetimi
   // kaç ms sürdü — SRN-IDE-KASMA-SOL-KOSUSU tanısı bu kanaldan okunur. Sayaç
@@ -354,6 +444,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
 
   const denetimAcik = (): boolean =>
     vscode.workspace.getConfiguration("sarmal").get<boolean>("denetim", true);
+
+  // 📦 EKL-F6-A09: paketin kanon kopyası. Derleme kayıt ile rehberi buraya
+  // kopyalar; tam denetim hiçbir gerçek kanon ve işaretçi bulamadığında buna düşer.
+  const paketKanonKoku = join(context.extensionPath, PAKET_KANON_DIZINI);
 
   // 🩹 ÇAPRAZ-TANI ÖNBELLEĞİ (SRN-PANEL-DALGA · Founder 2026-07-20 '57 mi 63 mü'):
   //   Panel sayısı dalgalanıyordu çünkü tek-dosya yolu (denetle · yazarken) yalnız
@@ -401,6 +495,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     if (taniKapali) {
       koleksiyon.clear(); taniDefteri.clear(); yuzeyDefteri.temizle();
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
+      tamDenetimSonucu([], [], true);   // 📦 EKL-F6-A09: kapalı denetimde "koşmadı" işareti bayat kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
     // Öğreti kitaplığının ALTINDAKİ ders rafları hariç: ürün değil, kasıtlı drift
@@ -495,12 +590,19 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     const denetlenenKokler = darKok !== undefined
       ? [darKok]
       : (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+    // 📦 EKL-F6-A09 · SESSİZ ATLAMANIN SONU. Tip kaydı bulunamayan kök eskiden
+    // bir `continue` ile atlanıyordu ve o kökte kırık atıf, disk mutabakatı ve
+    // bağımlılık grafı tanıları hiç doğmuyordu; boş panel temiz ağaç sanılıyordu.
+    // Keşif artık paketin kendi kanon kopyasına en son çare olarak düşer, dolayısıyla
+    // mağazadan kurulan eklenti de tam denetimi koşar. Kopya da okunamazsa kök
+    // atlanır, fakat bu artık SÖYLENİR: atlanan kökler durum çubuğundaki işarete gider.
+    const atlananKokler: string[] = [];
     for (const kokYol of denetlenenKokler) {
       try {
         const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
-        const snfYol = varlikDosyasiBul(kokYol, join("oz", "siniflama", "kayit.json"), koklar);
-        if (!snfYol) continue;   // taban kanon bu kökte bulunamadı → tam-orkestrasyon anlamsız (gömülü kanona düşülür, canlı tanı akışı bozulmaz)
-        const sonuc = denetimKos(kokYol, { snfYol, bugun, tamListe: true });
+        const kanon = tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku);
+        if (!kanon) { atlananKokler.push(kokYol); continue; }
+        const sonuc = denetimKos(kokYol, { snfYol: kanon.snfYol, bugun, tamListe: true });
         for (const rapor of sonuc.akis) {
           const izinli = rapor.tanilar.filter((t) => {
             const uretici = sonuc.koken.get(t);
@@ -517,6 +619,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         }
       } catch { /* tam orkestrasyon çökerse canlı tanı akışı ASLA bozulmaz (blast-radius sıfır) */ }
     }
+    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined);
     // Her dosyanın tanıları = tek-dosya (tanilaCekirdek) + o dosyaya düşen DAG
     // döngü tanıları; hepsi doğasına göre üç kanonik yüzeye dağıtılır.
     //

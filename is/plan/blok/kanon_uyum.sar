@@ -118,7 +118,7 @@ Blok( kod: BLK-UYUM, ad: "Kanon Uyum Bloku", mevsim: FAZ-2026-EYLUL,
     }
   }
 
-  Katman( kod: KAT-UYM-YUZEY, ad: "Eklenti Yüzeyi", kullanır: TAKIM-EKLENTI,
+  Katman( kod: KAT-UYM-YUZEY, ad: "Eklenti Yüzeyi", takım: TAKIM-EKLENTI,
           ne: "hükümlerin editörde görünen karşılıkları" ) {
 
     AltKatman( kod: ALT-UYM-PANEL, ad: "Panel ve Mercek", departman: kodlama,

@@ -26,9 +26,10 @@ import {
   sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari,
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
-  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari,
-  type DiskAnlikGoruntu, altKatmanTekilligiTanilari,
+  mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
+  type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
+import { dagKur } from "../src/dag.ts";
 import { denetimKos, orkestrasyonTanilari } from "../src/denetim.ts";
 import { YENI_TANI_KANONU, YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
 import { TANI_METINLERI, yapistirilabilirOrnekVar } from "../src/tani-metinleri.ts";
@@ -270,6 +271,44 @@ test("proje: Kod düğümünün dosya beyanı Meyve ile aynı disk doğrulaması
   assert.ok(yok.dilMetinleri!.en.mesaj.startsWith('Kod "KOD-YOK"'), "İngilizce cümle düğümü Kod adıyla anmalıdır");
   assert.ok(yok.dilMetinleri!.tr.oneri!.includes("Kod( kod: KOD-YOK"), "Türkçe öneri Kod iskeleti taşımalıdır");
   assert.ok(yok.dilMetinleri!.en.oneri!.includes("Kod( kod: KOD-YOK"), "İngilizce öneri Kod iskeleti taşımalıdır");
+});
+
+test("proje: deponun adıyla yok saydığı derleme çıktısı taze klonda suçlanmaz (EKL-F6-A07)", () => {
+  // Taze klonda gömülü kanon ikizi yoktu ve ilk denetim hata veriyordu: dosya
+  // derlemede üretilir ve yok sayma dosyasında adıyla durur. Muafiyet yalnız o
+  // ADLANDIRILMIŞ yola tanınır; yok sayılmayan karşılıksız beyan suçlanmaya devam eder.
+  const programlar = harita({
+    "kod.sar": [
+      `Kod( kod: KOD-URETILEN, dosya: "urun/eklenti/src/uretilen.ts", ne: "derlemede üretilen ve depoya girmeyen dosya" )`,
+      `Kod( kod: KOD-KAYIP, dosya: "urun/eklenti/src/kayip.ts", ne: "yok sayılmayan ve diskte bulunmayan dosya" )`,
+      "",
+    ].join("\n"),
+  });
+  const disk = { ...bosDisk(), yoksayilanDosyalar: ["urun/eklenti/src/uretilen.ts"] } as DiskAnlikGoruntu;
+  const kimlikler = omurgaTanilari(programlar, kodIndeksle(programlar), disk)
+    .filter((x) => x.tani.kod === "meyve-dosyası-eksik")
+    .map((x) => x.tani.mesaj.match(/Kod "([^"]+)"/)?.[1]);
+  assert.deepEqual(kimlikler, ["KOD-KAYIP"], "adıyla yok sayılan derleme çıktısı susmalı, öteki karşılıksız beyan ateşlemeli");
+
+  // Ayrıştırıcı yalnız sabit yolları alır: joker, dizin deseni ve eğik çizgisiz ad her
+  // derinlikte eşleştiği için tek bir yol adlandırmaz; olumsuzlama ayrı döner.
+  const s = yoksaymaSabitYollari("# yorum\nsrc/uretilen.ts\n*.vsix\ndist/\nkoksuz.ts\n/kokte.ts\nsrc/*.js\n!src/geri.ts\n", "urun/eklenti");
+  assert.deepEqual(s.yoksay, ["urun/eklenti/src/uretilen.ts", "urun/eklenti/kokte.ts"]);
+  assert.deepEqual(s.geriAl, ["urun/eklenti/src/geri.ts"]);
+
+  // Üretim yolu: diskTara gizli yok sayma dosyasını girdi saymaz fakat okur; iç içe
+  // dosya kendi dizinine göre çözülür ve olumsuzlanan yol muafiyetten düşer.
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-yoksay-"));
+  try {
+    writeFileSync(join(kok, ".gitignore"), "urun/eklenti/src/uretilen.ts\nurun/eklenti/src/geri.ts\n");
+    mkdirSync(join(kok, "urun", "eklenti"), { recursive: true });
+    writeFileSync(join(kok, "urun", "eklenti", ".gitignore"), "src/ic.ts\n!src/geri.ts\n");
+    const tarama = diskTara(kok);
+    assert.deepEqual([...(tarama.yoksayilanDosyalar ?? [])].sort(), ["urun/eklenti/src/ic.ts", "urun/eklenti/src/uretilen.ts"]);
+    assert.ok(!tarama.girdiler.some((g) => g.yol.endsWith(".gitignore")), "yok sayma dosyası girdi sayılmamalı");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
 });
 
 test("proje: ilişki sınıfları, mimari bağı ve üretim kökeni", () => {
@@ -769,6 +808,34 @@ test("proje: mühürlendiğini yazan mevsim açık iş sarıyorsa ORK-8 mühür 
   assert.equal(t[0].tani.duzey, "bilgi");
 });
 
+test("proje: hiçbir Proje köküne çözülemeyen Faz MIM-1.2 projesiz Faz gözlemini fikstürle doğurur", () => {
+  // KPS-FAZ-A02 (Founder hükmü 2026-09-19): bağ klasörden kurulur ve kurulamadığı
+  // hâl susmaz. Plan dosyası hiçbir Proje kökünün altında yaşamamaktadır.
+  const programlar = harita({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "A Projesi" ) { Teknoloji( kod: TEK-A, ad: "A tekniği" ) }`,
+    "disarida/faz.sar": `Faz( kod: FAZ-DIS, ad: "Dış Mevsim" ) {\n  Blok( kod: BLK-DIS, ne: "dış gövde" ) {\n    Katman( kod: KAT-DIS, ad: "katman" ) {\n      AltKatman( kod: ALT-DIS, ad: "modül" ) {\n        Adım( kod: ADM-DIS, durum: beklemede, ne: "bekleyen iş" )\n      }\n    }\n  }\n}\n`,
+  });
+  const t = projesizFazTanilari(dagKur(programlar), programlar);
+  uretildi("projesiz-faz", t);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].tani.duzey, "bilgi");
+});
+
+test("proje: kökün altına çıplak Raf yazılınca MIM-3.2 Kitaplık kademesi gözlemi doğar", () => {
+  // KPS-CEL-A01 · ikinci ayrışma (Founder hükmü 2026-09-09): dallanan her klasör
+  // bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar; kademe atlandığında
+  // madde kendi kademesiyle, yani uyarı düzeyinde konuşur. Hiç yapı ilanı
+  // taşımayan kök bu bekçinin değil `rafsız-anadizin` bekçisinin işidir.
+  const ana = ayr(
+    `Proje( kod: PRJ-A, ad: "A Projesi", rejim: katı, ne: "Kademe atlanmış kök." ) {\n` +
+    `  Raf( kod: RAF-PLAN, yol: "is/plan/", ne: "Plan rafı." )\n}`,
+  );
+  const t = kitapliksizKokTanilari(ana, SNF, "a_anadizin.sar");
+  uretildi("kitaplıksız-kök", t.map((tani) => ({ dosya: "a_anadizin.sar", tani })));
+  assert.equal(t.length, 1);
+  assert.equal(t[0].duzey, "uyarı");
+});
+
 // ══ MIM-3.4 · DOSYA MÜHÜRLERİ (KPS-MHR-A01 · Founder hükmü 2026-09-11) ═══════
 
 test("proje: arşiv, eğitim ve sonra mühürlü dosyalar listelenir, biçime uymayan ad uyarı alır", () => {
@@ -817,7 +884,7 @@ test("proje: bir Katman altında aynı departman ikinci kez açılırsa hata do�
 
 // ══ KAPANIŞ NÖBETİ ══════════════════════════════════════════════════════════
 
-test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik bilgide kalır", () => {
+test("GOC-TERFI-A05: 47 kabul hatada, 18 kanon-uyarı uyarıda, on beş kimlik bilgide kalır", () => {
   // Sekizi GOC-TERFI-A05 turunun terfi REDDİ olan borçtur ve terfi ederse
   // burada yakalanır. İkisi 2026-08-22 tarihinde Founder onayıyla DOĞRUDAN
   // bilgi düzeyinde doğan gözlemlerdir: beyanın yokluğunu ve bekleyen işi
@@ -840,6 +907,11 @@ test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik 
     // bırakılmış dosyanın bekleme hatırlatması. İkisi de bir sapma bildirmez,
     // mührün sessiz olmamasını sağlar; kanon ikisini de bilgi düzeyinde yazar.
     "dosya-mührü", "sonraya-bırakılmış-dosya",
+    // On beşincisi 2026-09-19 tarihinde Founder hükmüyle doğdu (KPS-FAZ-A02 ·
+    // MIM-1.2): hiçbir Proje köküne çözülemeyen Fazın gözlemi. Yerleşim ya da
+    // tarih dayatmaz, yalnız bağın kurulamadığını görünür kılar; kanon onu
+    // bilgi düzeyinde yazar ve ders dünyası muaftır.
+    "projesiz-faz",
   ].sort();
   const bilgide = YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").map((k) => k.kod).sort();
   const uyarida = YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı");
@@ -854,7 +926,11 @@ test("GOC-TERFI-A05: 47 kabul hatada, 17 kanon-uyarı uyarıda, on dört kimlik 
   // On yedinci uyarı kimliği 2026-09-11 tarihinde Founder hükmüyle doğdu: MIM-3.4
   // `geçersiz-dosya-adı`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın ağacında
   // sıfırdır; terfi turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
-  assert.equal(uyarida.length, 17, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 uyarısı 17 tanı olmalıdır");
+  // On sekizinci uyarı kimliği 2026-09-19 tarihinde Founder hükmüyle doğdu:
+  // MIM-3.2 `kitaplıksız-kök`. Kanon düzeyi uyarıdır ve sayacı Sarmal'ın kendi
+  // ağacında sıfırdır, çünkü depo Kitaplık kademesini zaten taşır; terfi
+  // turundan gelmedi, dolayısıyla A05'in on altılık kararını değiştirmez.
+  assert.equal(uyarida.length, 18, "Founder hükmünde uyarıda kalan on altı tanı ile MIM-3.4 ve MIM-3.2 uyarıları 18 tanı olmalıdır");
   assert.ok(uyarida.every((k) => k.kanonDüzey === "uyarı"), "kanon hedefi uyarı olmayan tanı uyarıda bırakılmış");
 });
 

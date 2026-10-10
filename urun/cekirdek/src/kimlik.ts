@@ -749,6 +749,13 @@ export interface AdAlaniKapsami {
   cozulur(hedef: string, kaynakDosya: string): boolean;
   /** Ad alanının kardeş kökü — yüzeyler tanıma gitmek için buradan okur. */
   kardesKok(adAlani: string): string | undefined;
+  /**
+   * Ad alanı bu kökten ÖLÇÜLEBİLİYOR mu? Yüklü evrende bir Proje kapsamıysa ya
+   * da çatının duyurduğu bir kardeş kökse evet. Hayır demek hedefin kırık olduğu
+   * anlamına gelmez: hedef ölçülemez ve denetim bunu susarak değil adıyla söyler
+   * (KPS-ADA-A01 · altıncı görev — muafiyet dürüstçe bildirilir).
+   */
+  adAlaniBilinir(adAlani: string): boolean;
 }
 
 /** `adAlaniKapsamiKur` seçenekleri; disk bağımlılıkları sınama için enjekte edilir. */
@@ -816,7 +823,10 @@ export function adAlaniKapsamiKur(secenek: AdAlaniSecenegi): AdAlaniKapsami {
     });
   };
 
-  return { cozulur, kardesKok };
+  const adAlaniBilinir = (adAlani: string): boolean =>
+    kapsamlar.some((k) => k.kod === adAlani) || kardesKok(adAlani) !== undefined;
+
+  return { cozulur, kardesKok, adAlaniBilinir };
 }
 
 // ── Ad alanlı gezinme: kardeş kökteki tanıma gitmek (KPS-ADA-A01 · dördüncü madde) ──

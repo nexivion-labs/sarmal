@@ -144,6 +144,8 @@ Kod( kod: KOD-EKL-PALET, dosya: "urun/eklenti/src/palet.ts",
   ne: "🍎 İfade paleti (TAS-C01) — tasarım sözlüğü + temaRolleri'nden tamamlama önerileri (saf çıkarım; rijit enum değil)" )
 Kod( kod: KOD-EKL-ONIZLEME, dosya: "urun/eklenti/src/onizleme.ts",
   ne: "🍎 Okuma modu (Prizma insan-yüzü) — kod ↔ kitap custom editor" )
+Kod( kod: KOD-EKL-ONIZLEME-CEKIRDEK, dosya: "urun/eklenti/src/onizleme-cekirdek.ts",
+  ne: "🍎 Okuma modunun kabuksuz gövdesi — Masa düzeni, paletin kanondan dökümü, yapı ağacı ve atıf bağları; editör kabuğu tanımadığı için nöbet yüzeyi doğrudan üretip ölçebilir" )
 Kod( kod: KOD-EKL-ORTAK, dosya: "urun/eklenti/src/ortak.ts",
   ne: "🍎 Paylaşılan yardımcılar — snfBul/rozet renkleri (kanon köprüsü)" )
 Kod( kod: KOD-EKL-RENK, dosya: "urun/eklenti/src/renk.ts",
@@ -166,6 +168,8 @@ Kod( kod: KOD-YOLHARITA, dosya: "urun/eklenti/src/yolharitasi.ts",
   ne: "🍎 Yol Haritası paneli + koni kartı + canlı-harita imleç takibi (VIT-GRAF ailesi)" )
 
 // ── Sınama nöbetleri (cekirdek/sinama — yetim-meyve kapsamı BKM-SNV2 nöbetleriyle açıldı; tarihsel envanter) ──
+Kod( kod: KOD-SNM-MIMARI-SARMA, dosya: "urun/cekirdek/sinama/mimari-sarma-kanonu.test.ts",
+  ne: "🍎 Mimari sarma nöbeti — düşürülen kenar adının kanonda kalmadığını, ORK-1.1 kodunun yerinde durduğunu ve mimari-bağı-ihlali tanı adının kanon, sicil ve iki dilin metinlerinde korunduğunu ölçer (KPS-KEN-A01 turunun ürünü)" )
 Kod( kod: KOD-SNM-YENI-KANON, dosya: "urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts",
   ne: "🍎 sınama nöbeti — yeni kanonun altmış dokuz tanısının fikstür kanıtı; her kimlik gerçekten üretiliyor mu" )
 
@@ -395,6 +399,8 @@ Kod( kod: KOD-SNM-MADDELE, dosya: "urun/eklenti/sinama/maddele.test.ts",
   ne: "🍎 Madde çevirme sınaması — noktaliVirgulMaddele davranış nöbeti (zarafet turunun ürünü)" )
 Kod( kod: KOD-SNM-ONAY, dosya: "urun/eklenti/sinama/onay-kuyrugu.test.ts",
   ne: "🍎 Onay kapısı sınaması — kapı tanımanın fikstürlü kanıtı + karar yazım noktasının gidiş-dönüş nöbeti (onay kaydı eklenince kapı kapanır; sessiz kayıp yasak — netlik turunun ürünü)" )
+Kod( kod: KOD-SNM-ONIZLEME-MASA, dosya: "urun/eklenti/sinama/onizleme-masa.test.ts",
+  ne: "🍎 Masa düzeni nöbeti — yüzeyde elle yazılmış renk sıfırdır, her palet değişkeni tanımlıdır, her madde metni bir kez görünür ve yazım türleri kendi başlığıyla çıkıp atıflar bağlantı olur (EKL-F6-A05 turunun ürünü)" )
 Kod( kod: KOD-ICINDEKILER, dosya: "urun/cekirdek/src/icindekiler.ts",
   ne: "🍎 MD içindekiler çekirdeği — `### ` başlıklarından çapa/slug üretimi; eski KARARLAR defteri üreticisinden 2026-07-31 gövde arşivlemesinde devralındı, `sarmal icindekiler` komutu buradan beslenir" )
 
@@ -524,3 +530,11 @@ Kod( kod: KOD-SNM-GATEWAY-SURUM, dosya: "urun/cekirdek/sinama/gateway-surum-dene
   ne: "🍎 Araç kapısındaki sürüm denetimi ailesinin sınaması — kapı fail-closed kalır, sürüm denetimi araçları izin matrisinde tanınır ve reddin sebebi izin yokluğu ile araç tanınmazlığı arasında ayrışır" )
 Kod( kod: KOD-SNM-KURTARMA-SOZLESMESI, dosya: "urun/cekirdek/sinama/kurtarma-sozlesmesi.test.ts",
   ne: "🍎 Kurtarma şekli nöbetlerinin sınaması — motorun ürettiği kurtarma kaydının SZL-KURTARMA sözleşmesine uyması, şekli bozulan kaydın reddedilmesi ve açık tarafta hiçbir kurtarma yolu ağırlığının yazılı olmaması ölçülür" )
+
+// ── MCPB (EKL-F6-A03 · 2026-09-16): masaüstü eklenti bildirimi ve nöbeti ──
+//    Gönderim portalı yalnız uzak sunucuları kabul ettiği için yerel sunucunun
+//    dizine ulaşan yolu masaüstü eklentisidir; bildirim o yolun paket beyanıdır.
+Kod( kod: KOD-MCPB-BILDIRIM, dosya: "urun/cekirdek/manifest.json",
+  ne: "🍎 Masaüstü eklenti bildirimi — paketin adını, sürümünü, lisansını, depo adresini, gizlilik politikası dizisini, çalışma ortamı şartını ve Node stdio sunucusunun giriş noktasını şemanın sürümüne bağlı olarak beyan eder" )
+Kod( kod: KOD-SNM-MCPB-BILDIRIM, dosya: "urun/cekirdek/sinama/mcpb-bildirimi.test.ts",
+  ne: "🍎 Bildirim ayrışması nöbeti — bildirimin her alanını kendi kaynağına bağlar: ad ile sürüm çekirdek paketine, lisans hem lisans metnine hem eklenti paketine, depo adresi eklenti paketine, gizlilik adresi iki tanıtım yüzüne ve giriş noktası diskteki sunucu gövdesine düşer; uydurulan adres ve kayan çağrı argümanı kırmızı verir" )

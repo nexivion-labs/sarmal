@@ -69,7 +69,7 @@
 Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
   ne: "🪵 Üç kalem: denetim/olay ölçüm merceği · izleyici gürültü süzgeci + koşarken-atla kilidi + geciktirme büyütme · Sol-yükü altında saha teyidi" ) {
 
-  Katman( kod: KAT-PRF-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti izleyici ve denetim döngüsü",
+  Katman( kod: KAT-PRF-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti izleyici ve denetim döngüsü",
     ne: "🌿 Dosya izleyicilerinin ve denetleHepsi döngüsünün yaşadığı eklenti giriş katmanı (eklenti.ts) + yeni performans günlüğü modülü" ) {
 
     AltKatman( kod: ALT-PRF-EKLENTI-IZLEME, departman: sınama, ad: "izleyici ve denetim performansı",
@@ -281,7 +281,7 @@ Blok( kod: BLK-PRF, ad: "performans turu", uygular: ORK-7,
     }
   }
 
-  Katman( kod: KAT-PRF-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek kapı katmanı",
+  Katman( kod: KAT-PRF-CEKIRDEK, takım: TAKIM-CEKIRDEK, ad: "çekirdek kapı katmanı",
     ne: "🌿 Topolojik sıra onarımının kapıdan geçirildiği çekirdek katmanı (dag.ts · dag.test.ts); 2026-08-30 mevsim kuruluşuyla doğdu" ) {
 
     AltKatman( kod: ALT-PRF-CEKIRDEK-PLAN, ad: "topolojik sıra planlaması", departman: planlama,

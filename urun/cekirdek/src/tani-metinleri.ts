@@ -142,6 +142,15 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     },
     oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
+  // ── Projesiz Faz (MIM-1.2 · KPS-FAZ-A02) ─────────────────────────────────
+  "kitaplıksız-kök": {
+    mesaj: (p) => `'${a(p, "kök")}' kökünün altında hiç Kitaplık yok ve Raf doğrudan kökün altına yazılmış — dallanan her klasör bir Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar (MIM-3.2).`,
+    oneri: () => 'Rafları bir Kitaplığın içine al; kök, ağaç büyüdükçe okunamaz bir raf listesine dönmesin diye kademeyi bekler. Örnek: `Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }`',
+  },
+  "projesiz-faz": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Fazı hiçbir Proje köküne çözülemiyor: ${a(p, "sebep") === "ayrışık" ? "dosyasını aynı derinlikte birden çok Proje kodu kapsıyor ve bağ tekil olmadığı için kurulmadı" : "dosyası hiçbir Proje kökünün altında yaşamıyor ve Faz iç içe bir Proje gövdesinde de yazılmamış"}. Zaman diliminin kimin olduğu graftan okunamaz (MIM-1.2).`,
+    oneri: (p) => `Plan dosyasını ait olduğu Proje kökünün altına taşı ya da Fazı Proje gövdesinin içine yaz; ayrışık kökte iki giriş ilanından birini kaldır. Örnek: \`<proje-kökü>/is/plan/faz/faz.sar\` içinde \`Faz( kod: ${a(p, "kimlik")}, … )\` ve kökte tek bir \`<ad>_anadizin.sar\` girişi.`,
+  },
   // ── Dil ve söz dizimi ─────────────────────────────────────────────────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor, oysa kaynak-gerçek yalnız .sar biçiminde yaşar. Türetilmiş bir metin yüzü kaynakla eş yetkili sayılamaz.`,
@@ -173,7 +182,7 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
   },
   "ilgili-önek-geçersiz": {
     mesaj: (p) => `\`ilgili\` listesi "${a(p, "uye")}" üyesini taşıyor: ${a(p, "kusur")}. Üyelikler açık, tekil ve kanonik yazılır.`,
-    oneri: () => `Listeyi yalnız sekiz kanonik bölüm önekinden kur ve yinelemeyi temizle. Örnek: \`ilgili: [ MIM, DIL, TIP, YAS, YUZ, STR, OGR, ORK ]\` kümesinden gerekli olanları seç.`,
+    oneri: () => `Listeyi yalnız sekiz bölümün kök madde kimliğinden kur ve yinelemeyi temizle; çıplak bölüm öneki kimlik değildir. Örnek: \`ilgili: [ MIM-0, DIL-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0 ]\` kümesinden gerekli olanları seç.`,
   },
 
   // ── Mimari omurga ─────────────────────────────────────────────────────────
@@ -265,8 +274,8 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Kenarı Adımdan Meyveye kur. Örnek: \`Adım( kod: ${a(p, "kimlik")} ) { üretir: [ Meyve( kod: MYV-KAYNAK, tür: Kod, dosya: "src/<dosya>" ) ] }\` yaz; sıra gerekiyorsa ayrıca \`bağımlı:\` kenarı ekle.`,
   },
   "kullanır-kenarı-ihlali": {
-    mesaj: (p) => `"${a(p, "kimlik")}" düğümündeki \`kullanır\` kenarı izinli çift dışında: ${a(p, "kusur")}. Bu kenar yalnız Projeyi ortak kimlik köküne ya da Katmanı somut bir Teknolojiye bağlar.`,
-    oneri: () => `Kenarı izinli çifte indir. Örnek: \`Katman( kod: KAT-ONYUZ, kullanır: TEK-FLUTTER )\` ya da \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\` yaz; başka bir bağ için kendi kenar adını kullan.`,
+    mesaj: (p) => `"${a(p, "kimlik")}" düğümündeki \`${p.kenar ? a(p, "kenar") : "kullanır"}\` kenarı izinli çift dışında: ${a(p, "kusur")}. Zemin iki tip-saf kenarla yazılır: \`kullanır\` Projeyi ortak kimlik köküne ya da Katmanı tek bir somut Teknolojiye, \`takım\` ise Katmanı onu yürüten bir ya da birden çok Takıma bağlar; iki kenar birbirinin yerine geçmez.`,
+    oneri: () => `Kenarı izinli çifte indir. Örnek: \`Katman( kod: KAT-ONYUZ, takım: TAKIM-ONYUZ, kullanır: TEK-FLUTTER )\` ya da \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\` yaz; başka bir bağ için kendi kenar adını kullan.`,
   },
   "deterministik-sıra-ihlali": {
     mesaj: (p) => `"${a(p, "kimlik")}" düğümü yürütme sırasını Adım grafının dışından türetiyor: ${a(p, "kusur")}. Sıra yalnız Adımlar arasındaki yürütme kenarlarından, kararlı topolojik sıralamayla çıkar.`,
@@ -512,6 +521,15 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     },
     oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
+  // ── Project-less Phase (MIM-1.2 · KPS-FAZ-A02) ───────────────────────────
+  "kitaplıksız-kök": {
+    mesaj: (p) => `Root '${a(p, "kök")}' declares no Kitaplık and places a Raf directly beneath itself — every branching folder is a Kitaplık and Raf nodes live INSIDE one (MIM-3.2).`,
+    oneri: () => 'Move the shelves inside a library; the tier keeps the root from decaying into an unreadable list of shelves as the tree grows. Örnek: `Kitaplık( kod: KTP-IS, yol: "is/" ) { Raf( kod: RAF-PLAN, yol: "plan/" ) }`',
+  },
+  "projesiz-faz": {
+    mesaj: (p) => `Phase "${a(p, "kimlik")}" cannot be resolved to any Project root: ${a(p, "sebep") === "ayrışık" ? "more than one Project code covers its file at the same depth, so the link was not made because it is not unique" : "its file does not live under any Project root and the Phase is not written inside a Project body either"}. Whose time slice it is cannot be read from the graph (MIM-1.2).`,
+    oneri: (p) => `Move the plan file under the Project root it belongs to, or write the Phase inside the Project body; in an ambiguous root remove one of the two entry declarations. Example: \`<project-root>/is/plan/faz/faz.sar\` containing \`Faz( kod: ${a(p, "kimlik")}, … )\` with a single \`<name>_anadizin.sar\` entry at the root.`,
+  },
   // ── Language, architecture, teaching and orchestration (1–35) ───────────
   "kanonik-kaynak-biçimi": {
     mesaj: (p) => `"${a(p, "dosya")}" carries canonical ruling text as though it were the source of truth, but the source of truth lives only in .sar form. A derived text surface cannot have authority equal to its source.`,
@@ -543,7 +561,7 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   "ilgili-önek-geçersiz": {
     mesaj: (p) => `The \`ilgili\` list contains member "${a(p, "uye")}": ${a(p, "kusur")}. Memberships are written explicitly, uniquely and canonically.`,
-    oneri: () => `Build the list only from the eight canonical section prefixes and remove duplicates. Example: select the required entries from \`ilgili: [ MIM, DIL, TIP, YAS, YUZ, STR, OGR, ORK ]\`.`,
+    oneri: () => `Build the list only from the root item identifiers of the eight sections and remove duplicates; a bare section prefix is not an identifier. Example: select the required entries from \`ilgili: [ MIM-0, DIL-0, TIP-0, YAS-0, YUZ-0, STR-0, OGR-0, ORK-0 ]\`.`,
   },
   "proje-köksüz-üretim": {
     mesaj: (p) => `"${a(p, "ad")}" (${a(p, "kimlik")}) is a productive node, but it does not live under any Proje root. Identity, ownership and diagnostic grouping derive from the Proje node; rootless production cannot derive any of the three.`,
@@ -629,8 +647,8 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
     oneri: (p) => `Connect the edge from Adım to Meyve. Example: write \`Adım( kod: ${a(p, "kimlik")} ) { üretir: [ Meyve( kod: MYV-KAYNAK, tür: Kod, dosya: "src/<dosya>" ) ] }\`; if order is needed, add a separate \`bağımlı:\` edge.`,
   },
   "kullanır-kenarı-ihlali": {
-    mesaj: (p) => `The \`kullanır\` edge on node "${a(p, "kimlik")}" falls outside the permitted pair: ${a(p, "kusur")}. This edge only connects a Proje to the shared identity root or a Katman to one concrete Teknoloji.`,
-    oneri: () => `Reduce the edge to a permitted pair. Example: write \`Katman( kod: KAT-ONYUZ, kullanır: TEK-FLUTTER )\` or \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\`; use the appropriate edge name for any other binding.`,
+    mesaj: (p) => `The \`${p.kenar ? a(p, "kenar") : "kullanır"}\` edge on node "${a(p, "kimlik")}" falls outside the permitted pair: ${a(p, "kusur")}. The ground is written with two type-pure edges: \`kullanır\` connects a Proje to the shared identity root or a Katman to one concrete Teknoloji, while \`takım\` connects a Katman to the one or more Takım nodes that run it; neither edge may stand in for the other.`,
+    oneri: () => `Reduce the edge to a permitted pair. Example: write \`Katman( kod: KAT-ONYUZ, takım: TAKIM-ONYUZ, kullanır: TEK-FLUTTER )\` or \`Proje( kod: PRJ-ANA, kullanır: KMK-ORTAK )\`; use the appropriate edge name for any other binding.`,
   },
   "deterministik-sıra-ihlali": {
     mesaj: (p) => `Node "${a(p, "kimlik")}" derives execution order from outside the Adım graph: ${a(p, "kusur")}. Order is derived only from execution edges between Adımlar, using a stable topological sort.`,
@@ -1284,6 +1302,11 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
         case "meyve": return `'üretir: ${a(p, "hedef")}' meyvesi hiçbir yerde ilan edilmemiş.`;
         case "ileri-bağlama": return `'hatırlat: ${a(p, "hedef")}' hedefi henüz doğmamış (ileri-bağlama).`;
         case "çağır": return `'çağır ${a(p, "hedef")}' çözülmüyor — bu KOD hiçbir .sar'da tanımlı değil.`;
+        // ORK-4 üç durumlu okunuş (KPS-ADA-A01): ad alanı ölçülebiliyorsa hedef
+        // gerçekten kırıktır; ölçülemiyorsa atıf kırık değil MUAFTIR ve muafiyet
+        // burada adıyla söylenir — sessiz yeşil geçiş yoktur.
+        case "ad-alanı-kırık": return `'${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' hedefi GERÇEKTEN kırık — ad alanı '${a(p, "adAlani")}' çözüldü, fakat yerel KOD o Projenin kapsamında ilan edilmemiş.`;
+        case "ad-alanı-ölçülemez": return `'${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' hedefi bu kökten ÖLÇÜLEMEZ — ad alanı '${a(p, "adAlani")}' ne yüklü evrende bir Proje kodu ne de çatı ilanında duyurulmuş bir kardeş kök; atıf kırık sayılmadı, MUAF bırakıldı.`;
         default: return `'${a(p, "kenar")}: ${a(p, "hedef")}' hedefi çözülmüyor — bu KOD hiçbir .sar'da tanımlı değil.`;
       }
     },
@@ -1291,6 +1314,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
       switch (a(p, "kusur")) {
         case "meyve": return `İstersen '${a(p, "hedef")}' için bir Ürün 🍎 widget'ı ilan et (izlenebilirlik).`;
         case "ileri-bağlama": return "Hedef Adım doğunca kendiliğinden bağlanır; istersen şimdi ilan et.";
+        case "ad-alanı-kırık": return `Kardeş kökte '${a(p, "hedef")}' yazımını doğrula: KOD'u düzelt ya da hedefi o Projede ilan et; arşiv ve sonra mühürlü dosyalardaki tanımlar okunmaz (MIM-3.4).`;
+        case "ad-alanı-ölçülemez": return `Muafiyet sessiz kalmasın diye bildirildi: denetimi çatı kökünden koştur ya da '${a(p, "adAlani")}' kökünü çatı ilanına Kitaplık olarak ekle; o zaman hedef gerçekten doğrulanır.`;
         default: return `'${a(p, "hedef")}' tanımını içeren .sar'ı projeye ekle — ya da KOD'u düzelt.`;
       }
     },
@@ -1406,8 +1431,8 @@ export const ONCEKI_TANI_METINLERI: Readonly<Record<string, OncekiTaniMetni>> = 
     oneri: (p) => `Ya meyveyi üret (${a(p, "beyan")}), ya Adım durumunu geriye çek, ya da meyve ilanının dosya: yolunu düzelt — plan gerçeği yansıtsın.`,
   },
   "katmansız-teknoloji": {
-    mesaj: (p) => `Katman "${a(p, "kod")}" teknoloji bağı taşımıyor — Katman teknoloji dilimidir; kullanır: kenarında tek bir Takım/Teknoloji hedefi beklenir.`,
-    oneri: () => 'İki meşru yol: kullanır: TAKIM-X yaz (Takım kendi Teknolojilerine bağlıdır ve MIM-1.4 gereği kenar tek hedef taşır) ya da katman bilinçli olarak teknolojisizse teknolojiBağımsız: "gerekçe" beyanı yaz — boş gerekçe beyan sayılmaz.',
+    mesaj: (p) => `Katman "${a(p, "kod")}" zemin bağı taşımıyor — Katman teknoloji dilimidir ve zeminini iki tip-saf kenardan en az biriyle beyan eder: takım: kenarı onu yürüten Takıma, kullanır: kenarı tek bir somut Teknolojiye yönelir.`,
+    oneri: () => 'Üç meşru yol: takım: TAKIM-X yaz (Takım kendi Teknolojilerine bağlıdır; iki ekip ortaksa takım: [ TAKIM-X, TAKIM-Y ]), kullanır: TEK-X ile tek bir somut Teknolojiye bağlan ya da katman bilinçli olarak teknolojisizse teknolojiBağımsız: "gerekçe" beyanı yaz — boş gerekçe beyan sayılmaz. Takım bağı kullanır: ile, Teknoloji bağı takım: ile yazılmaz.',
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" kilitli ve 'uygulama: gerekli' beyanlı AMA onu uygulayan hiçbir bağ yok — karar verilmiş, plana inmemiş; kilitli karar plana inmelidir.`,
@@ -1881,6 +1906,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
         case "meyve": return `The fruit '${"üretir"}: ${a(p, "hedef")}' is not declared anywhere.`;
         case "ileri-bağlama": return `Target 'hatırlat: ${a(p, "hedef")}' has not yet been born; this is a forward binding.`;
         case "çağır": return `'çağır ${a(p, "hedef")}' does not resolve — this CODE is not defined in any .sar file.`;
+        case "ad-alanı-kırık": return `Target '${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' is GENUINELY broken — the namespace '${a(p, "adAlani")}' resolved, but the local CODE is not declared within that Proje.`;
+        case "ad-alanı-ölçülemez": return `Target '${p.kenar ? `${a(p, "kenar")}: ` : "çağır "}${a(p, "hedef")}' CANNOT BE MEASURED from this root — the namespace '${a(p, "adAlani")}' is neither a loaded Proje code nor a sibling root declared by the workspace; the reference was not counted as broken, it was left EXEMPT.`;
         default: return `Target '${a(p, "kenar")}: ${a(p, "hedef")}' does not resolve — this CODE is not defined in any .sar file.`;
       }
     },
@@ -1888,6 +1915,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
       switch (a(p, "kusur")) {
         case "meyve": return `You may declare an Ürün 🍎 widget for '${a(p, "hedef")}' to make it traceable.`;
         case "ileri-bağlama": return "It will connect automatically when the target Adım is born; you may declare it now instead.";
+        case "ad-alanı-kırık": return `Verify '${a(p, "hedef")}' in the sibling root: correct the CODE or declare the target in that Proje; definitions in archive- or later-sealed files are not read (MIM-3.4).`;
+        case "ad-alanı-ölçülemez": return `The exemption is reported so it does not stay silent: run the audit from the workspace root, or declare the '${a(p, "adAlani")}' root as a Kitaplık in the workspace declaration; the target is then genuinely verified.`;
         default: return `Add the .sar containing the definition of '${a(p, "hedef")}' to the project, or correct the CODE.`;
       }
     },
@@ -2004,8 +2033,8 @@ export const ONCEKI_TANI_METINLERI_EN: Readonly<Record<string, OncekiTaniMetni>>
     oneri: (p) => `Either produce the fruit (${a(p, "beyan")}), move the Adım status backward, or correct the fruit declaration's dosya: path so the plan reflects reality.`,
   },
   "katmansız-teknoloji": {
-    mesaj: (p) => `Katman "${a(p, "kod")}" has no technology binding — a Katman is a technology slice and expects a single Takım/Teknoloji target on its kullanır: edge.`,
-    oneri: () => 'There are two valid paths: write kullanır: TAKIM-X (the Takım depends on its Teknolojiler, and per MIM-1.4 the edge carries exactly one target), or, if the layer is intentionally technology-independent, write teknolojiBağımsız: "gerekçe"; an empty rationale is not a declaration.',
+    mesaj: (p) => `Katman "${a(p, "kod")}" has no ground binding — a Katman is a technology slice and declares its ground with at least one of two type-pure edges: takım: points at the Takım that runs it, kullanır: points at one concrete Teknoloji.`,
+    oneri: () => 'There are three valid paths: write takım: TAKIM-X (the Takım depends on its Teknolojiler; when two teams share the work write takım: [ TAKIM-X, TAKIM-Y ]), bind to one concrete Teknoloji with kullanır: TEK-X, or, if the layer is intentionally technology-independent, write teknolojiBağımsız: "gerekçe"; an empty rationale is not a declaration. A Takım is never bound with kullanır: and a Teknoloji is never bound with takım:.',
   },
   "uygulanmamış-karar": {
     mesaj: (p) => `⚖️ Karar "${a(p, "kod")}" is locked and declares 'uygulama: gerekli', BUT no binding implements it — the decision was made but never reached the plan; a locked decision must flow into the plan.`,

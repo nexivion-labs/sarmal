@@ -17,6 +17,7 @@
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
 import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
+import { adAlaniSecenekleri, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
 
@@ -279,7 +280,18 @@ export function ogeleriTopla<K>(bildirimler: readonly Dugum[], dosya: K): PlanOg
   const gez = (d: Dugum): void => {
     // Kök Blok VEYA Faz olabilir: Faz zaman eksenidir ve Blok'u sarar; alt
     // kademeler `yap` içinde PLAN_TIPLERI süzgecinden geçer.
-    if (d.ad === "Blok" || d.ad === "Faz") { kokler.push(yap(d)); return; }
+    //
+    // KAPSAYANSIZ PLAN DÜĞÜMÜ DE KÖKTÜR (KPS-CEL-A01 · ölçülmüş kusur 2026-09-16).
+    // Bu yürüyüş bir Blokun ya da Fazın İÇİNE hiç inmez; dolayısıyla burada
+    // karşılaşılan her Katman, AltKatman ya da Adım tanımı gereği bir Blokun ve
+    // bir Fazın DIŞINDA doğmuştur. Eski gövde onları kök saymıyor ve çocuklarına
+    // inip yine Blok arıyordu: bulamayınca altındaki Adımlar hiçbir yere
+    // asılmıyor, sayılmıyor ve gösterilmiyordu. Ölçülen bedel şudur: bir Katman
+    // Blokunun kapanış parantezinin dışına doğmuş, komut satırı Adımını saymış,
+    // panel saymamış ve fark sekiz gün fark edilmemiştir. Sessiz düşürme, yeşil
+    // panelin yeşil ağaç anlamına gelmesi ilkesini bozar; yerleşimin DOĞRU olup
+    // olmadığı panelin değil motorun hükmüdür, panelin işi var olanı göstermektir.
+    if (PLAN_TIPLERI.has(d.ad)) { kokler.push(yap(d)); return; }
     for (const c of d.cocuklar) gez(c);
   };
   for (const b of bildirimler) gez(b);
@@ -335,10 +347,27 @@ export function cagirCevrimi<K>(
   for (let i = ogeler.length - 1; i >= 0; i--) if (tasinan.has(ogeler[i])) ogeler.splice(i, 1);
 }
 
+/**
+ * Hiçbir girişe çözülemeyen dosyanın varlık tipi (KPS-FAZ-A02 · MIM-1.2 · Founder
+ * hükmü 2026-09-19). Panel eskiden kök dışında yaşayan bir plan dosyası için
+ * klasör adından sahte bir `Proje` uyduruyordu; motor ise aynı düğümü dürüstçe
+ * köksüz bırakıyordu ve iki yüzey aynı olguda iki ayrı gerçek söylüyordu. Bu
+ * tip motorun köksüz hükmünün panel ikizidir: kod boştur, çünkü uydurulacak
+ * bir kimlik yoktur; ad klasörün adıdır, çünkü dosyanın nerede yaşadığı bir
+ * olgudur, kimin olduğu değil.
+ */
+export const KOKSUZ_VARLIK_TIPI = "Köksüz";
+
+/** Girişsiz dosyanın köksüz kimliği — tek kapı, iki çözücü (tur içi ve disk yedeği) aynı cevabı verir. */
+export function koksuzVarlik(dosyaYolu: string): VarlikKimligi {
+  const kok = dirname(dosyaYolu);
+  return { tur: "varlık", tip: KOKSUZ_VARLIK_TIPI, kod: "", ad: basename(kok), kokDizin: kok, anaSar: "" };
+}
+
 /** Bir varlığın kimliği: giriş dosyasının KÖK düğümünden okunur, icat edilmez. */
 export interface VarlikKimligi {
   tur: "varlık";
-  tip: string;                 // ÇalışmaAlanı | Proje | Uygulama
+  tip: string;                 // ÇalışmaAlanı | Proje | Uygulama | Köksüz (girişsiz dosya — KOKSUZ_VARLIK_TIPI)
   kod: string;
   ad: string;
   kokDizin: string;            // varlık girişinin dizini
@@ -442,8 +471,8 @@ export function varlikCozucu(
       if (ust === dizin) break;
       dizin = ust;
     }
-    const kok = dirname(dosyaYolu);
-    return { tur: "varlık", tip: "Proje", kod: basename(kok), ad: basename(kok), kokDizin: kok, anaSar: "" };
+    // KPS-FAZ-A02: girişsiz dosya sahte Proje almaz; motorun köksüz hükmü gösterilir.
+    return koksuzVarlik(dosyaYolu);
   };
 }
 
@@ -498,4 +527,39 @@ export function varliklariKur<K>(
   }
   for (const anaSar of anadizinler.values()) kokAl(coz(anaSar));
   return harita;
+}
+
+// ── ORK-4 · ORTAK KODUN PANELDEKİ KARŞILIĞI (KPS-KOD-A01 · panel yarısı) ──────
+//   Çatı penceresinde kardeş Projeler aynı kodu ilan ettiğinde graf o kodu
+//   `PRJ::KOD` anahtarına alır; panel ise düğümü ÇIPLAK koduyla arıyordu ve arama
+//   boş dönüyordu. Görünen bedeli şuydu: ortak kodlu bir düğümün bağımlı listesi,
+//   etki kapanışı ve müfettiş açıcısı çatı penceresinde sessizce boş kalıyor, aynı
+//   düğüm tek projeli pencerede dolu görünüyordu; iki yüzey aynı düğüm için iki
+//   ayrı şey söylüyordu ve hangisinin doğru olduğu okunamıyordu (YUZ-3.1).
+
+/**
+ * Bir panel Ögesinin graftaki düğümü — ortak kod ayrıştırılmışsa da bulunur.
+ *
+ * Seçenekleri motorun kendi çözücüsü verir ve burada ikinci bir eşleme kurulmaz.
+ * Seçim DOSYADAN yapılır, çünkü panel Ögesi hangi dosyadan doğduğunu bilir ve o
+ * dosya hangi Projenin kökünde yaşıyorsa kastedilen düğüm odur. Eşleşme
+ * kurulamazsa fonksiyon sessizce bir seçeneği SEÇMEZ ve tanımsız döner; sessizce
+ * birini seçmek, kapanan kusurun başka bir kılıkta tekrarı olurdu (ORK-4 tesadüfî
+ * eşleşme yasağı). Tek projeli bir depoda ilk arama daima tutar ve bu gövde hiç
+ * çalışmaz.
+ */
+export function dagDugumunuCoz(dag: Dag | undefined, kod: string, dosyaYolu?: string): DagDugum | undefined {
+  if (!dag) return undefined;
+  const dogrudan = dag.dugumler.get(kod);
+  if (dogrudan) return dogrudan;
+  const adaylar = adAlaniSecenekleri(dag, kod)
+    .map((anahtar) => dag.dugumler.get(anahtar))
+    .filter((d): d is DagDugum => d !== undefined);
+  if (adaylar.length === 1) return adaylar[0];
+  if (dosyaYolu === undefined) return undefined;
+  const yol = dosyaYolu.replace(/\\/g, "/");
+  return adaylar.find((d) => {
+    const hedef = d.dosya.replace(/\\/g, "/");
+    return yol === hedef || yol.endsWith(`/${hedef}`);
+  });
 }

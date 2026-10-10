@@ -33,10 +33,12 @@ Yetenek( kod: YTN-TEKNOLOJI, ne: "teknolojiyi giriş ilanında bir kez ilan etme
      `Teknoloji( kod: TEK-TS, ne: "TypeScript çalışma dili" )`.
   2. **Takım** o yığına bağlanan sorumluluk birimidir:
      `Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] )`.
-  3. **Katman** plan tarafındaki teknoloji dilimidir ve bağını `kullanır:`
-     kenarıyla kurar: `Katman( kod: KAT-ARKAYUZ, kullanır: TAKIM-ARKAYUZ )`.
-  Hedef TEKTİR. Bir Katman birden çok Teknoloji kullanamaz; iki teknoloji
-  gerekiyorsa iki Katman kurulur (MIM-1.4).
+  3. **Katman** plan tarafındaki teknoloji dilimidir ve zeminini iki tip-saf
+     kenarla kurar: `takım:` onu yürüten Takıma, `kullanır:` tek bir somut
+     Teknolojiye yönelir: `Katman( kod: KAT-ARKAYUZ, takım: TAKIM-ARKAYUZ )`.
+  İki kenar birbirinin yerine yazılmaz. Bir Katman birden çok Teknoloji
+  kullanamaz; iki teknoloji gerekiyorsa iki Katman kurulur (MIM-1.4). Sahiplik
+  ise ortak olabilir: `takım: [ TAKIM-ARKAYUZ, TAKIM-ONYUZ ]`.
 
   ## Teknoloji bilinmiyorsa: tahmin etme, sor
   Doğuş paketi hiçbir yığını varsaymaz ve bu bilinçlidir. Teknoloji henüz
@@ -84,6 +86,6 @@ Beceri( kod: BCR-TEKNOLOJI,
           "Üretilebilir artefaktın üretim yerini kendisine söylet: Ekran, Uç, Tablo, Servis ve Kimlik düğümleri kodunun düşeceği yeri dosya: beyanıyla bildirir; üreten taraf klasör uydurmaz"
         ],
         kabul: "Planda her Katman ya tek bir Takım/Teknoloji hedefine kullanır kenarıyla bağlıdır ya da gerekçeli bir teknoloji-bağımsız beyanı taşır; teknoloji giriş ilanında bir kez ilan edilmiştir ve seçimi kullanıcı vermiştir",
-        örnek: "Kullanıcı: 'arka yüzü de ekleyelim' → Ajan sorar: 'arka yüz hangi yığınla yürüsün — ① TypeScript üstünde Node, ② Python üstünde FastAPI, ③ başka bir şey mi?' Seçim gelince giriş ilanına Teknoloji( kod: TEK-TS, ne: \"TypeScript çalışma dili\" ) ve Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] ) düğümlerini yazar, plan tarafında Katman( kod: KAT-ARKAYUZ, kullanır: TAKIM-ARKAYUZ ) kenarını kurar ve yazımdan sonra denetimi koşturur",
+        örnek: "Kullanıcı: 'arka yüzü de ekleyelim' → Ajan sorar: 'arka yüz hangi yığınla yürüsün — ① TypeScript üstünde Node, ② Python üstünde FastAPI, ③ başka bir şey mi?' Seçim gelince giriş ilanına Teknoloji( kod: TEK-TS, ne: \"TypeScript çalışma dili\" ) ve Takım( kod: TAKIM-ARKAYUZ, bağımlı: [ TEK-TS ] ) düğümlerini yazar, plan tarafında Katman( kod: KAT-ARKAYUZ, takım: TAKIM-ARKAYUZ ) kenarını kurar ve yazımdan sonra denetimi koşturur",
         antiDesen: "Katmanı teknolojiye hiç bağlamadan plan yazmak ya da bağı iki hedefli yazmak; teknolojiyi kullanıcıya sormadan ajanın kendi alışkanlığından seçmesi; teknolojiBağımsız beyanını gerekçesiz kullanarak bekçiyi susturmak. Üçü de kapıyı yeşil bırakır ve planı yalan söyler hâle getirir — motor yanlış etiketi yakalayamaz",
         uygular: MIM-1.4 )

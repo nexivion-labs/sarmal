@@ -24,7 +24,7 @@
 Blok( kod: BLK-PRF-PANELKIPI, ad: "panel kipi", uygular: ORK-7,
   ne: "🧭 Denetim motorunun panel kipi ve program enjeksiyonu; motor yalnız panelin kullandığı işi yapar" ) {
 
-  Katman( kod: KAT-PK-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek panel kipi katmanı",
+  Katman( kod: KAT-PK-CEKIRDEK, takım: TAKIM-CEKIRDEK, ad: "çekirdek panel kipi katmanı",
     ne: "🌿 Denetim orkestrasyonu ve kapı kapsamı ilanının dokunulduğu çekirdek katmanı" ) {
 
     AltKatman( kod: ALT-PK-PLAN, ad: "panel kipi planlaması", departman: planlama,
@@ -138,7 +138,7 @@ Blok( kod: BLK-PRF-PANELKIPI, ad: "panel kipi", uygular: ORK-7,
     }
   }
 
-  Katman( kod: KAT-PK-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti bağ katmanı",
+  Katman( kod: KAT-PK-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti bağ katmanı",
     ne: "🌿 Turun panel kipine bağlandığı eklenti katmanı; üç departmanla yürür, planlama ve güvenlik çekirdek katmanında birlikte ölçülür" ) {
 
     AltKatman( kod: ALT-PK-EKLENTI-KOD, ad: "turun panel kipini kullanması", departman: kodlama,

@@ -55,12 +55,39 @@ const DOGUS_SABLON_KOK = fileURLToPath(new URL("../../../ogreti/sablon/dogus/", 
  * kancası motoru, kanon işaretçisi ise tip sistemi kaydını o adresten çözer.
  * Adres tahmin edilmez, ÖLÇÜLÜR: bu modülün kendi dosya yolundan yukarı çıkılır,
  * dolayısıyla kurulum nereye kurulmuş olursa olsun doğan kök doğru yeri gösterir.
+ *
+ * Bu ölçüm bugün yalnız DOĞUM ANININ RAPORUNU besler: doğan kökün kayıtlarına
+ * artık mutlak yol değil, aşağıdaki taşınabilir adres yazılır (EKL-F6-A08).
  */
 export const SARMAL_KURULUM_KOKU = resolve(fileURLToPath(new URL("../../../", import.meta.url)));
-/** Sunucunun giriş dosyası — doğan kökün yürütücü ayarı bunu çağırır. */
+/** Sunucunun giriş dosyası — doğuran kurulumdaki ölçülmüş yeri. */
 export const SARMAL_MCP_YOLU = join(SARMAL_KURULUM_KOKU, "urun", "cekirdek", "src", "mcp.ts");
-/** Komut satırı motoru — doğan kökün kapı kancası bunu koşturur. */
+/** Komut satırı motoru — doğuran kurulumdaki ölçülmüş yeri. */
 export const SARMAL_MOTOR_YOLU = join(SARMAL_KURULUM_KOKU, "urun", "cekirdek", "src", "sarmal.ts");
+
+/**
+ * TAŞINABİLİR ADRES (EKL-F6-A08 · Founder hükmü 2026-09-16). Doğan kökün sunucu
+ * kaydı motorun yolunu bir ORTAM DEĞİŞKENİNDEN okur ve kayda VARSAYILAN DEĞER
+ * KONMAZ. Gerekçe ölçülmüştür: mutlak yol yazan bir kayıt, doğduğu makinede
+ * çalışır fakat ağaç bir depoya gönderilip başka bir makinede klonlandığında o
+ * yol orada bulunmaz, sunucu hiç açılmaz ve ajan araçların var olmadığı sonucuna
+ * varır. Değişkenli adres hiçbir paket yayını gerektirmez; değişken tanımsız
+ * olduğunda istemci kaydı yine yükler ve eksik değişkeni ADIYLA bildirir,
+ * dolayısıyla kullanıcı ne yapacağını görür. Varsayılan bilinçle konmaz, çünkü
+ * bir varsayılan hatayı sessizleştirir ve kullanıcı yanlış bir kuruluma bağlanır.
+ * Aynı değişken kapı kancasının motor yoluna ve kanon işaretçisine de hizmet eder.
+ */
+export const SARMAL_KOK_DEGISKENI = "SARMAL_KOK";
+/** Kayıtlara yazılan önek — kabuk ile istemcinin ikisi de bu biçimi genişletir. */
+export const SARMAL_KOK_ONEKI = `\${${SARMAL_KOK_DEGISKENI}}`;
+/** Sunucunun giriş dosyasının kurulum köküne göreli yolu (POSIX — kayıtlar eğik çizgi yazar). */
+export const MCP_GORELI_YOLU = "urun/cekirdek/src/mcp.ts";
+/** Komut satırı motorunun kurulum köküne göreli yolu. */
+export const MOTOR_GORELI_YOLU = "urun/cekirdek/src/sarmal.ts";
+/** Doğan kökün yürütücü ayarına yazılan taşınabilir sunucu adresi. */
+export const TASINABILIR_MCP_YOLU = `${SARMAL_KOK_ONEKI}/${MCP_GORELI_YOLU}`;
+/** Doğan kökün kapı kancasına yazılan taşınabilir motor adresi. */
+export const TASINABILIR_MOTOR_YOLU = `${SARMAL_KOK_ONEKI}/${MOTOR_GORELI_YOLU}`;
 
 /** Doğuş türü: hedef dizin doğrudan Proje kökü mü, yoksa ÇalışmaAlanı kökü mü olur. */
 export type DogusTuru = "proje" | "calisma-alani";
@@ -161,8 +188,8 @@ function sablonDoldur(dosya: string, degerler: Readonly<Record<string, string>>)
  *
  *   ① yok sayma dosyası — küresel kural `*.sar` desenini yok sayıyorsa projenin
  *      bütün hafızası depoya hiç girmez; istisna bu dosyada yaşar.
- *   ② yürütücü ayarı — doğan kök Sarmal sunucusunu doğuran kurulumdan çözer ve
- *      ajan ilk turdan itibaren ürünün araçlarını kullanır.
+ *   ② yürütücü ayarı — doğan kök Sarmal sunucusunu SARMAL_KOK ortam değişkeninden
+ *      çözer ve ajan ilk turdan itibaren ürünün araçlarını kullanır.
  *   ③ kapı kancaları — ön kapı yeni bir giriş ilanının elle yazılmasını
  *      reddeder, arka kapı her kaynak yazımından sonra denetimi koşturur.
  *   ④ kanon işaretçisi — tip sistemi kaydının ADRESİ; kopya değildir.
@@ -174,9 +201,10 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
     AD: ad,
     KOD: dogusKodu(ad),
     TARIH: tarih,
-    MOTOR: SARMAL_MOTOR_YOLU,
-    MOTORMCP: SARMAL_MCP_YOLU,
-    KANONKOK: SARMAL_KURULUM_KOKU,
+    MOTOR: TASINABILIR_MOTOR_YOLU,
+    MOTORMCP: TASINABILIR_MCP_YOLU,
+    KANONKOK: SARMAL_KOK_ONEKI,
+    KOKDEGISKENI: SARMAL_KOK_DEGISKENI,
   };
   const yoksayma = sablonDoldur("yoksayma.txt", d);
   return [
@@ -316,7 +344,9 @@ export function dogusRaporu(s: DogusSonuc, hedef: string): string {
   if (s.yazilan.length) {
     satirlar.push(
       `🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
-      `   Kapıların adresi doğuran kurulumdur: ${SARMAL_KURULUM_KOKU} — kurulum taşınırsa .mcp.json, .claude/kanca/ ve oz/siniflama/isaretci.json içindeki yollar elle güncellenir.`);
+      `   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.sh ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
+      `   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
+      `   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`);
   }
   return satirlar.join("\n");
 }

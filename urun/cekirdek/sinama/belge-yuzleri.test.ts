@@ -7,6 +7,8 @@ import {
   BELGE_YUZU_HEDEFLERI,
   belgeBolgesiUygula,
   kanonOlc,
+  URETIM_BAS,
+  URETIM_SON,
   type BelgeAmaci,
   type BelgeYuzuHedefi,
 } from "../src/belge-yuzleri.ts";
@@ -71,9 +73,37 @@ test("işaretli üretim bölgesi elle korunan girişi korur ve idempotenttir", (
   assert.equal(ucuncu, ikinci);
 });
 
-test("belge üreticisinin resmi kanon ölçümü 161/161'dir", () => {
+// EKL-F6-A03: dizinin gönderim belgesi, yerel bağlayıcının giriş belgesinde
+// "Privacy Policy" başlıklı bir bölüm ister ve eksikliğini anında ret sebebi
+// sayar. Nöbet, iki kök tanıtım yüzünün de bu bölümü ÜRETİLEN bölgede taşıdığını,
+// bölümün politikanın HTTPS adresine bağlandığını ve politikaya bağlanan
+// cümlenin yüzeyde yalnız bir kez durduğunu ölçer. Adres bilerek üreticiden
+// içe alınmaz; üreticideki adres bozulursa nöbet onu bağımsız olarak yakalar.
+test("iki kök tanıtım yüzü üretilen bölgede Gizlilik Politikası bölümünü ve HTTPS adresini taşır", () => {
+  const adres = "https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md";
+  const basliklar: Record<string, string> = { "KOK-README-TR": "Gizlilik Politikası", "KOK-README-EN": "Privacy Policy" };
+  const hedefler = BELGE_YUZU_HEDEFLERI.filter((h) => h.kimlik in basliklar);
+  assert.equal(hedefler.length, 2);
+  for (const hedef of hedefler) {
+    const icerik = readFileSync(join(KOK, hedef.yol), "utf8");
+    const bas = icerik.indexOf(URETIM_BAS(hedef.kimlik));
+    const son = icerik.indexOf(URETIM_SON(hedef.kimlik));
+    assert.ok(bas >= 0 && son > bas, `${hedef.yol} üretilen bölgeyi taşımalı`);
+    const satirlar = icerik.slice(bas, son).split("\n");
+    const baslik = `## ${basliklar[hedef.kimlik]}`;
+    const i = satirlar.indexOf(baslik);
+    assert.ok(i >= 0, `${hedef.yol} üretilen bölgede "${baslik}" başlığını taşımalı`);
+    assert.equal(icerik.split("\n").filter((s) => s === baslik).length, 1, `${hedef.yol} "${baslik}" başlığını bir kez taşımalı`);
+    const sonraki = satirlar.findIndex((s, j) => j > i && s.startsWith("## "));
+    const govde = satirlar.slice(i + 1, sonraki < 0 ? undefined : sonraki).join("\n");
+    assert.ok(govde.includes(`](${adres})`), `${hedef.yol} Gizlilik Politikası bölümü ${adres} adresine bağlanmalı`);
+    assert.equal(icerik.match(/\]\([^)]*PRIVACY\.md\)/g)?.length, 1, `${hedef.yol} politikaya yalnız bir kez bağlanmalı`);
+  }
+});
+
+test("belge üreticisinin resmi kanon ölçümü 162/162'dir", () => {
   const olcum = kanonOlc(KOK);
   assert.deepEqual({ madde: olcum.madde, karar: olcum.karar, kural: olcum.kural, tekil: new Set(olcum.kodlar).size },
-    { madde: 161, karar: 38, kural: 123, tekil: 161 });
+    { madde: 162, karar: 38, kural: 124, tekil: 162 });
   assert.equal(olcum.muhurler.length, 8);
 });

@@ -23,7 +23,7 @@
 Blok( kod: BLK-PRF-MIKRO, ad: "mikro-onarımlar", uygular: ORK-7,
   ne: "🔬 Çekirdek motorun altı ölçülmüş sıcak noktasının davranış koruyucu onarımı" ) {
 
-  Katman( kod: KAT-MK-CEKIRDEK, kullanır: TAKIM-CEKIRDEK, ad: "çekirdek mikro-onarım katmanı",
+  Katman( kod: KAT-MK-CEKIRDEK, takım: TAKIM-CEKIRDEK, ad: "çekirdek mikro-onarım katmanı",
     ne: "🌿 Kimlik indeksi, belirteçleyici, denetim orkestrasyonu ve doğrulayıcının dokunulduğu çekirdek katmanı" ) {
 
     AltKatman( kod: ALT-MK-PLAN, ad: "mikro-onarım planlaması", departman: planlama,

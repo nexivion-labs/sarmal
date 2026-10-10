@@ -286,13 +286,20 @@ function gozlemOzetle(tanilar: Tani[], ozetle = true): Tani[] {
   return out;
 }
 
-/** Sekiz kanonik bölüm öneki — `ilgili` üyeliklerinin kapalı kümesi. */
+/** Sekiz kanonik bölüm öneki — kök kimliklerin gövdesi ve çıplak yazımın tanınma kümesi. */
 const BOLUM_ONEKLERI: ReadonlySet<string> = new Set(["MIM", "DIL", "TIP", "YAS", "YUZ", "STR", "OGR", "ORK"]);
 
+/** Sekiz bölümün kök madde kimliği — `ilgili` üyeliklerinin kapalı kümesi (DIL-5.2). */
+const BOLUM_KOKLERI: ReadonlySet<string> = new Set([...BOLUM_ONEKLERI].map((onek) => `${onek}-0`));
+
 /**
- * Çok-üyelik bekçisi: `ilgili` listesi yalnız sekiz kanonik bölüm önekinden
- * kurulur; tanımsız ve yinelenen üyelik reddedilir. Karşılaştırma tamamen
- * yereldir — önek kümesi kapalı olduğu için proje indeksi gerekmez.
+ * Çok-üyelik bekçisi: `ilgili` listesi yalnız sekiz bölümün kök madde
+ * kimliğinden (`MIM-0` … `ORK-0`) kurulur; tanımsız ve yinelenen üyelik
+ * reddedilir. Çıplak bölüm öneki (`MIM`) 2026-09-19 Founder hükmüyle doğru
+ * yazım olmaktan çıkmıştır (KPS-BLM-A01): kimlik desenine uymadığı için hiçbir
+ * yüzeyde tanıma gidemez ve aynı tanıyla, aynı düzeyde, fakat kendi kusur
+ * cümlesiyle bildirilir. Karşılaştırma tamamen yereldir — kök kümesi kapalı
+ * olduğu için proje indeksi gerekmez.
  */
 function ilgiliOnekDenetle(d: Dugum, b: Baglam): void {
   const p = [...d.parametreler, ...d.ozellikler].find((x) => x.ad === "ilgili");
@@ -302,9 +309,12 @@ function ilgiliOnekDenetle(d: Dugum, b: Baglam): void {
   for (const o of ogeler) {
     const uye = o.metin?.trim();
     if (!uye) continue;
-    if (!BOLUM_ONEKLERI.has(uye)) {
+    if (!BOLUM_KOKLERI.has(uye)) {
+      const kusur = BOLUM_ONEKLERI.has(uye)
+        ? `çıplak bölüm öneki bir kimlik değildir, bölüm kök kimliği \`${uye}-0\` yazılmalı`
+        : "bu üyelik sekiz bölüm kök kimliğinin dışında";
       b.out.push(yeniTani("ilgili-önek-geçersiz",
-        { uye, kusur: "bu üyelik sekiz kanonik bölüm önekinin dışında" },
+        { uye, kusur },
         { satir: o.satir ?? p.satir, sutun: o.sutun ?? p.sutun }));
       continue;
     }

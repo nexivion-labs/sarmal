@@ -2,7 +2,7 @@
   "name": "sarmal",
   "displayName": "%sarmal.displayName%",
   "description": "%sarmal.description%",
-  "version": "0.9.186",
+  "version": "0.9.193",
   "publisher": "nexivion-labs",
   "license": "Apache-2.0",
   "icon": "ikonlar/sarmal-ikon.png",
@@ -437,6 +437,11 @@
           "light": "medya/simgeler/uretilmis/satir-onay-basari-acik.svg",
           "dark": "medya/simgeler/uretilmis/satir-onay-basari-koyu.svg"
         }
+      },
+      {
+        "command": "sarmal.kanonIsaretcisiYaz",
+        "title": "%command.writeCanonPointer%",
+        "category": "%sarmal.category%"
       }
     ],
     "menus": {

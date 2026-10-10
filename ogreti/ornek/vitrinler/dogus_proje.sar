@@ -57,7 +57,7 @@ Faz( kod: VTR-FAZ-MVP, ad: "mvp", ne: "ilk büyüme dönemi — sipariş dikey d
   Blok( kod: VTR-BLK-SIPARIS, ne: "sipariş verme dikey dilimi", uygular: VTR-ANY-SIPARIS ) {
 
     Katman( kod: VTR-KAT-ONYUZ, ad: "önyüz", ne: "kullanıcının gördüğü yüz — sipariş ekranı",
-            kullanır: VTR-TAKIM-ONYUZ ) {
+            takım: VTR-TAKIM-ONYUZ ) {
       // MIM-1.5 ideali: Adım doğrudan Katman'da (çıplak) durmaz — konu modülü sarar.
       AltKatman( kod: VTR-AKT-SIPARIS-YUZU, departman: kodlama, ad: "sipariş yüzü" ) {
       Adım( kod: VTR-ADM-SIPARIS-EKRANI, ad: "sipariş-ekranı",
@@ -72,7 +72,7 @@ Faz( kod: VTR-FAZ-MVP, ad: "mvp", ne: "ilk büyüme dönemi — sipariş dikey d
     }
 
     Katman( kod: VTR-KAT-ARKAYUZ, ad: "arkayüz", ne: "sunucu yüzü — sipariş ucu ve kaydı",
-            kullanır: VTR-TAKIM-ARKAYUZ ) {
+            takım: VTR-TAKIM-ARKAYUZ ) {
       AltKatman( kod: VTR-AKT-SIPARIS-UCU, departman: kodlama, ad: "sipariş servisi" ) {
       Adım( kod: VTR-ADM-SIPARIS-UCU, ad: "sipariş-ucu",
             görev: "VTR-SZL-SIPARIS sözleşmesini uygulayan sipariş ucunu ve sipariş tablosunu kur; fiyat/stok doğrulaması burada yapılır (VTR-KRL-FIYAT), çakışan sipariş 409 ile reddedilir",

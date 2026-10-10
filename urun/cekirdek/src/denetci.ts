@@ -22,7 +22,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readdirSync, readFileSync, existsSync, statSync, type Dirent } from "node:fs";
-import { join } from "node:path";
+import { join, posix } from "node:path";
 import { execFileSync } from "node:child_process";   // KPS-MHR-A01: sonraya bırakılmış dosyanın bekleme süresi git'e sorulur
 import type { IskeletPlan } from "./iskeletci.ts";
 import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
@@ -32,12 +32,12 @@ import { taniSicili, katlanmisAd } from "./tani-sicili.ts";   // davranış-katm
 import { ORTAK_TANI_METINLERI, eskiTani, yeniTani } from "./tani-metinleri.ts";   // yeni kanonun tanı metinleri katalogda yaşar
 import type { Tani, Duzey } from "./tani.ts";
 import { kebaba, degerMetni } from "./yolcoz.ts";
-import { ZEMIN_TIPLERI } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın)
+import { ZEMIN_TIPLERI, type Dag } from "./dag.ts";   // zemin bağının hedef tipleri tek kaynakta yaşar (motor tanısı ile graf çizimi ayrışmasın) · KPS-FAZ-A02: projesiz Faz bekçisi grafın kapsayan zincirini okur
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
+import { DERS_DUNYASI, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, onekKapsar, adAlaniKapsamiKur, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01)
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -51,6 +51,13 @@ export interface DiskGirdi {
 
 export interface DiskAnlikGoruntu {
   girdiler: DiskGirdi[];
+  /**
+   * EKL-F6-A07: deponun yok sayma dosyalarının (.gitignore) jokersiz ve kökü belli
+   * satırlarla ADIYLA yok saydığı dosyalar, köke göreli. Bu dosyalar derleme
+   * çıktısıdır ve depoya girmez; taze bir klonda bulunmamaları kusur değildir.
+   * Alanı yalnız diskTara doldurur; elle kurulan anlık görüntüde yoksa boş sayılır.
+   */
+  yoksayilanDosyalar?: string[];
   /**
    * MIM-3.4 · KPS-MHR-A01: arşiv ya da sonra mührü taşıyan `.sar` dosyaları.
    * Bu dosyalar `girdiler` listesine GİRMEZ; dolayısıyla yükleyici onları okumaz,
@@ -90,9 +97,20 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
   diskTaraSayac.cagri += 1;
   const girdiler: DiskGirdi[] = [];
   const muhurlular: DiskGirdi[] = [];
+  const yoksay: string[] = [];
+  const geriAl = new Set<string>();
   const gez = (goreli: string): void => {
     const tam = goreli ? join(kok, goreli) : kok;
     for (const d of readdirSync(tam, { withFileTypes: true })) {
+      // EKL-F6-A07: yok sayma dosyası gizlidir ve girdi sayılmaz, fakat adıyla yok
+      // saydığı derleme çıktıları okunur ki taze klonda yoklukları suçlanmasın.
+      if (d.name === ".gitignore" && d.isFile()) {
+        let metin = "";
+        try { metin = readFileSync(join(tam, d.name), "utf8"); } catch { /* okunamayan dosya muafiyet doğurmaz */ }
+        const s = yoksaymaSabitYollari(metin, goreli);
+        yoksay.push(...s.yoksay);
+        for (const y of s.geriAl) geriAl.add(y);
+      }
       if (d.name.startsWith(".")) continue;   // gizli (.-önekli): tamamen dışarıda
       if (d.isSymbolicLink()) continue; // döngü riski — v1 dışı
       const yol = goreli ? goreli + "/" + d.name : d.name;
@@ -111,7 +129,34 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
     }
   };
   gez("");
-  return { girdiler, muhurlular };
+  return { girdiler, muhurlular, yoksayilanDosyalar: yoksay.filter((y) => !geriAl.has(y)) };
+}
+
+/**
+ * EKL-F6-A07 · HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK (SAF): bir yok sayma dosyasının
+ * SABİT dosya yollarını çıkarır. Sabit yol jokersiz, dizin olmayan ve kökü belli
+ * olan satırdır: başında ya da ortasında eğik çizgi taşır, dolayısıyla git onu yok
+ * sayma dosyasının bulunduğu dizine göre tek bir yola çözer. Joker taşıyan, dizine
+ * yönelen ya da eğik çizgisiz satır her derinlikte eşleşir ve tek bir yol
+ * adlandırmadığı için bilinçli olarak dışarıda kalır; muafiyet yalnız deponun ADIYLA
+ * yok saydığı dosyaya tanınır. Olumsuzlama satırının geri aldığı yol ayrı döner ve
+ * çağıran onu muafiyetten düşürür, çünkü şüphede motor suçlamayı seçer.
+ */
+export function yoksaymaSabitYollari(metin: string, dizin: string): { yoksay: string[]; geriAl: string[] } {
+  const yoksay: string[] = [];
+  const geriAl: string[] = [];
+  for (const ham of metin.split(/\r?\n/)) {
+    const satir = ham.trimEnd();
+    if (!satir || satir.startsWith("#")) continue;
+    const olumsuz = satir.startsWith("!");
+    const desen = olumsuz ? satir.slice(1) : satir;
+    if (/[*?[\]\\]/.test(desen) || desen.endsWith("/")) continue;
+    const govde = desen.replace(/^\//, "");
+    if (!desen.startsWith("/") && !govde.includes("/")) continue;
+    if (govde.split("/").some((p) => p === "" || p === "." || p === "..")) continue;
+    (olumsuz ? geriAl : yoksay).push(dizin ? `${dizin}/${govde}` : govde);
+  }
+  return { yoksay, geriAl };
 }
 
 /** Yapı-aynasının İKİNCİ yönü (MIM-3 çift-yönlü · Founder 2026-07-11 "her klasör
@@ -197,6 +242,9 @@ export function beyansizYapiTanilari(plan: IskeletPlan, kok: string, anaEtiket =
 //   evrenine girmez, dolayısıyla bulgu dosyanın kendisine yazılsaydı eklentinin
 //   paneli onu hiç yayımlayamaz ve motor ile panel iki ayrı sayı söylerdi. Giriş
 //   dosyası disk mutabakatının zaten konuştuğu yerdir (`beyansız-yapı` emsali).
+//   Kayıt giriş dosyasında kalsa da anlattığı dosyanın konumunu `hedefDosya`
+//   alanında taşır (EKL-F6-A10): yüzey kayda tıklanınca giriş dosyasını değil
+//   mühürlü dosyayı açar, sayım ise değişmez.
 //
 //   BEKLEME SÜRESİNİN KAYNAĞI ölçülerek seçilmiştir (2026-09-11). Dosyanın
 //   değişiklik tarihi kullanılamaz, çünkü yeniden adlandırma onu korur ve süre
@@ -277,16 +325,18 @@ export function dosyaMuhruTanilari(
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const yol of sarlar) {
     const muhur = dosyaMuhru(yol);
+    // EKL-F6-A10: tıklamanın hedefi giriş dosyasının klasörüne göreli yazılır.
+    const hedefDosya = posix.relative(posix.dirname(anaEtiket), yol);
     if (muhur?.tur === "sonra") {
       const t = tarihCoz(kok, yol);
       const gun = t ? Math.max(0, Math.floor((Date.parse(bugun) - Date.parse(t.tarih)) / GUN_MS)) : undefined;
-      out.push({ dosya: anaEtiket, tani: yeniTani("sonraya-bırakılmış-dosya", {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("sonraya-bırakılmış-dosya", {
         yol, etiket: muhur.etiket, gün: gun ?? "?", tarih: t?.tarih ?? "?", kaynak: t?.kaynak ?? "yok", canlı: muhursuzYol(yol),
-      }, konum) });
+      }, konum), hedefDosya } });
     } else if (muhur) {
-      out.push({ dosya: anaEtiket, tani: yeniTani("dosya-mührü", {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("dosya-mührü", {
         yol, etiket: muhur.etiket, tür: muhur.tur, canlı: muhursuzYol(yol),
-      }, konum) });
+      }, konum), hedefDosya } });
     }
     const kusur = dosyaAdiKusuru(yol);
     if (kusur) {
@@ -1095,6 +1145,13 @@ export interface ReferansKapsami {
   dosya: string;
   /** Hedef bu kaynaktan çözülüyor mu? */
   cozulur: (hedef: string) => boolean;
+  /**
+   * Ad alanı bu kökten ölçülebiliyor mu (yüklü Proje ya da çatının duyurduğu
+   * kardeş kök)? Verilmezse her ad alanı bilinir sayılır ve çözülmeyen hedef
+   * kırık okunur. KPS-ADA-A01 altıncı görev: ölçülemeyen ad alanı kırık DEĞİL,
+   * muaf sayılır ve muafiyet uyarı olarak adıyla bildirilir; sessiz geçiş yoktur.
+   */
+  adAlaniBilinir?: (adAlani: string) => boolean;
 }
 
 export function referansTanilari(
@@ -1109,6 +1166,21 @@ export function referansTanilari(
   // kendi küçük evrenlerinde yazılır ve proje sınırı onlara inmez (OGR-5).
   const cozulur = (hedef: string): boolean =>
     kapsam && !DERS_DUNYASI.test(kapsam.dosya) ? kapsam.cozulur(hedef) : indeks.has(hedef);
+
+  // ORK-4 · ad alanlı hedefin ÜÇ DURUMLU okunuşu (KPS-ADA-A01 · altıncı görev).
+  // Gezinme yüzü 2026-09-10'dan beri üç cevap verir: çözüldü · gerçekten kırık ·
+  // ölçülemez. Denetim ise ikisini tek "bu KOD hiçbir .sar'da tanımlı değil"
+  // cümlesine indiriyordu ve çatısı görünmeyen bir kökten koşulduğunda doğru
+  // yazılmış bir çapraz atfı kırık ilan ediyordu. Kural şudur: ad alanı
+  // ölçülebiliyorsa (yüklü Proje ya da duyurulmuş kardeş kök) hedef GERÇEKTEN
+  // doğrulanır ve bulunmazsa hatadır; ölçülemiyorsa atıf kırık sayılmaz, fakat
+  // muafiyetin kendisi uyarı olarak adıyla bildirilir — sessiz yeşil kalmaz.
+  const adAlaniKusuru = (hedef: string): "ad-alanı-ölçülemez" | "ad-alanı-kırık" | undefined => {
+    const { adAlani } = adAlaniAyir(hedef);
+    if (adAlani === undefined) return undefined;
+    if (kapsam?.adAlaniBilinir && !DERS_DUNYASI.test(kapsam.dosya) && !kapsam.adAlaniBilinir(adAlani)) return "ad-alanı-ölçülemez";
+    return "ad-alanı-kırık";
+  };
 
   const hedefDenetle = (kenar: string, d: Deger): void => {
     if (d.tur === "liste") { for (const o of d.ogeler ?? []) hedefDenetle(kenar, o); return; }
@@ -1139,8 +1211,15 @@ export function referansTanilari(
     // hedefi henüz doğmamış olabilir (F-8 doğası) → hata değil UYARI.
     const meyve = kenar === "üretir";
     const ileriBaglama = kenar === "hatırlat";
+    const adAlani = adAlaniKusuru(d.metin);
+    if (adAlani === "ad-alanı-ölçülemez") {
+      tanilar.push(eskiTani("kırık-referans", "uyarı",
+        { kenar, hedef: d.metin, kusur: adAlani, adAlani: adAlaniAyir(d.metin).adAlani },
+        { satir: d.satir, sutun: d.sutun }));
+      return;
+    }
     tanilar.push(eskiTani("kırık-referans", meyve || ileriBaglama ? "uyarı" : "hata",
-      { kenar, hedef: d.metin, kusur: meyve ? "meyve" : ileriBaglama ? "ileri-bağlama" : "kenar" },
+      { kenar, hedef: d.metin, kusur: meyve ? "meyve" : ileriBaglama ? "ileri-bağlama" : adAlani ?? "kenar", ...(adAlani ? { adAlani: adAlaniAyir(d.metin).adAlani } : {}) },
       { satir: d.satir, sutun: d.sutun }));
   };
 
@@ -1149,8 +1228,13 @@ export function referansTanilari(
       // `çağır` hedefi de ad alanlı yazılabilir (ORK-4): bir Faz kardeş projedeki
       // Bloku `çağır PRJ-X::BLK-Y` ile halkasına alır ve kapsam kapısı onu çözer.
       if (!cozulur(node.ad)) {
-        tanilar.push(eskiTani("kırık-referans", "hata",
-          { hedef: node.ad, kusur: "çağır" }, { satir: node.satir, sutun: node.sutun }));
+        const adAlani = adAlaniKusuru(node.ad);
+        const baglam = { hedef: node.ad, kusur: adAlani ?? "çağır", ...(adAlani ? { adAlani: adAlaniAyir(node.ad).adAlani } : {}) };
+        const konum = { satir: node.satir, sutun: node.sutun };
+        // Kademe iki ayrı sözcük olarak yazılır: kapı kapsamı nöbeti üreticinin
+        // kademesini gövdesindeki sözcüklerden türetir ve üçlü koşulu okuyamaz.
+        if (adAlani === "ad-alanı-ölçülemez") tanilar.push(eskiTani("kırık-referans", "uyarı", baglam, konum));
+        else tanilar.push(eskiTani("kırık-referans", "hata", baglam, konum));
       }
       return;
     }
@@ -1779,6 +1863,38 @@ export function rafsizAnadizinTanilari(
   if (!kok) return [];   // temel kök yok — ana-yok/diğer bekçilerin işi
   if (plan.ogeler.some((o) => o.tur === "dizin")) return [];   // en az bir raf/dizin ilanı var
   return [eskiTani("rafsız-anadizin", "uyarı", { kök: kok.ad }, { satir: kok.satir, sutun: kok.sutun })];
+}
+
+/**
+ * Kitaplıksız-kök bekçisi (KPS-CEL-A01 · ikinci ayrışma · MIM-3.2 · Founder
+ * hükmü 2026-09-09 · SAF).
+ *
+ * Founder Kitaplık kademesini ZORUNLU kılmıştır: dallanan her klasör bir
+ * Kitaplıktır ve Raflar Kitaplıkların İÇİNDE yaşar. Ölçülmüş kusur şuydu: ürünün
+ * iki öğretim yüzeyi farklı mimari öğretiyordu, çünkü rehber şablonları Kitaplık
+ * kademesini öğretirken doğuş paketi Rafları doğrudan kökün altına yazıyordu;
+ * aynı ikilik MIM-3.2 maddesinin kendi içinde de vardı, çünkü düz yazı Rafı
+ * Kitaplığın içindeki sorumluluk bölümü sayarken zorlama cümlesi ikisini
+ * birbirinin alternatifi gibi sunuyordu. Doğuş paketi BKM-DNT-A15 turunda
+ * düzeltildi; bu bekçi hükmün kalan yarısını, yani ölçümü kurar.
+ *
+ * Ölçüt DALLANMAYA bakar, sayıya değil: kökün altında hiç Kitaplık yokken
+ * doğrudan Raf duruyorsa kademe atlanmıştır. Kitaplıksız fakat Rafsız bir kök bu
+ * bekçinin işi DEĞİLDİR, çünkü o hâli `rafsız-anadizin` zaten söyler ve aynı
+ * olgunun iki kez bildirilmesi YUZ-3.3 tanı yüzeyi karışmasıdır. Düzey uyarıdır
+ * ve maddenin kendi kademesiyle aynıdır; ders dünyası OGR-5 uyarınca muaftır,
+ * çünkü öğretim malzemesi bilinçle eksik ağaç gösterebilir.
+ */
+export function kitapliksizKokTanilari(ana: Program, snf: Siniflama, dosya?: string): Tani[] {
+  if (dosya !== undefined && DERS_DUNYASI.test(dosya)) return [];
+  const temelAile = new Set(snf.widgetTipleri.filter((t) => t.aile === "temel").map((t) => t.ad));
+  const kok = ana.bildirimler.find((b) => b.tur === "widget" && temelAile.has(b.ad));
+  if (!kok) return [];
+  const cocukAdlari = kok.cocuklar.filter((c) => c.tur === "widget").map((c) => c.ad);
+  if (cocukAdlari.includes("Kitaplık")) return [];   // kademe yerinde
+  const ilkRaf = kok.cocuklar.find((c) => c.tur === "widget" && c.ad === "Raf");
+  if (!ilkRaf) return [];   // hiç raf yok — bu hâl rafsız-anadizin bekçisinindir
+  return [yeniTani("kitaplıksız-kök", { kök: kok.ad }, { satir: ilkRaf.satir, sutun: ilkRaf.sutun })];
 }
 
 /**
@@ -2554,15 +2670,16 @@ export function altKatmanTekilligiTanilari(
 
 // ═══ MIM-1.4 · katmansız-teknoloji bekçisi (Katman=TEKNOLOJİ ekseni) ══════════
 //
-//   MIM-1.4 aksiyomu: Katman teknoloji dilimidir — bir Takım/Teknoloji bağı taşımalı.
-//   ASIL YOL (V1B-KANON-A01 · Founder yön hükmü 2026-08-11): bağ `kullanır:`
-//   kenarıyla kurulur; kanonun MIM-1.4 hükmü ile ORK-2.4 kenar sözleşmesi bu
-//   kenarı anar ve kullanır zaten ORK-2.4 gereği TEK hedef taşır. GEÇİŞ YEDEĞİ:
-//   `bağımlı:` hedeflerinden en az biri Takım ya da Teknoloji düğümüne çözülüyorsa
-//   bekçi yine susar — mevcut kaynaklar kırılmaz, yeni tanı kimliği doğmaz.
-//   İki yazım aynı düğümde birlikteyse çelişki yoktur: ikisi de aynı olguyu
-//   (teknoloji zemini) beyan eder ve bekçi susar; kenarın biçim kusurları
-//   (liste hedef, yanlış tip) ORK-2.4 bekçisinin işidir, burada yinelenmez.
+//   MIM-1.4 aksiyomu: Katman teknoloji dilimidir — bir zemin bağı taşımalı.
+//   İKİ TİP-SAF KENAR (KPS-CEL-A01 · Founder hükmü 2026-09-19): zemin `kullanır:`
+//   ile tek bir somut Teknolojiye, `takım:` ile Katmanı yürüten bir ya da birden
+//   çok Takıma bağlanarak beyan edilir; ikisinden en az biri yeter. 2026-08-11
+//   tarihli yön hükmünün GEÇİŞ YEDEĞİ, yani `bağımlı:` hedefinin zemin sayılması,
+//   KALDIRILMIŞTIR: o kenar yürütme sırasıdır ve zemini söyleyemez; canlı ağacın
+//   onu kullanan üç Katmanı `takım:` kenarına göç etmiştir.
+//   İki kenar aynı düğümde birlikteyse çelişki yoktur: biri neyle yapıldığını,
+//   öteki kimin yürüttüğünü söyler ve bekçi susar; kenarın biçim kusurları
+//   (yanlış tip, çoklu Teknoloji) ORK-2.4 bekçisinin işidir, burada yinelenmez.
 //   Düzey: UYARI (ADM-STD-KTEK-TERFI · STR-4 kademe — v1'de bilgiydi, göç kapandı).
 //   Dürüst-beyan kaçışı: teknolojisiz Katman MEŞRUYSA (süreç katmanı gibi)
 //   `teknolojiBağımsız: "gerekçe"` beyanıyla bekçi susar — boş gerekçe sayılmaz
@@ -2624,9 +2741,16 @@ export function katmansizTeknolojiTanilari(
           if (d.tur === "liste") (d.ogeler ?? []).forEach(topla);
           else if (d.tur === "kod" && d.metin) hedefler.push(d.metin);
         };
-        // Asıl yol `kullanır`, geçiş yedeği `bağımlı` — iki kenarın hedefleri
-        // aynı havuzda toplanır; herhangi biri Takım/Teknolojiye çözülürse bağ var.
-        for (const alanAdi of ["kullanır", "bağımlı"] as const) {
+        // Zemin iki tip-saf kenarla beyan edilir (KPS-CEL-A01 · Founder hükmü
+        // 2026-09-19): `kullanır` Teknolojiye, `takım` Takıma yönelir ve iki kenarın
+        // hedefleri aynı havuzda toplanır; herhangi biri zemine çözülürse bağ vardır.
+        // `bağımlı` geçiş yedeği KALDIRILDI: o kenar yürütme sırasıdır ve bir Katmanın
+        // zeminini söyleyemez; üç canlı Katman iki Takıma birden bağlı olduğu için onu
+        // kullanıyordu ve `takım` kenarı liste kabul ettiği için o ihtiyaç da karşılanır.
+        // Kenarın DOĞRU tipe yönelip yönelmediği bu nöbetin değil ORK-2.4 bekçisinin
+        // işidir: yanlış kenarla da olsa zeminini beyan etmiş bir Katmana "zemini yok"
+        // demek yanlış olurdu ve aynı kusur iki kez konuşurdu.
+        for (const alanAdi of ["kullanır", "takım"] as const) {
           topla([...node.parametreler, ...node.ozellikler].find((p) => p.ad === alanAdi)?.deger);
         }
         const teknolojiBagi = hedefler.some((h) => teknolojiHedefi(h, dosya));
@@ -3194,6 +3318,47 @@ export function mevsimMuhurTanilari(
   return out;
 }
 
+/**
+ * Projesiz Faz gözlemi (PROJE kapsamı · SAF · grafı okur · KPS-FAZ-A02 · MIM-1.2).
+ *
+ * NEDEN VAR (Founder hükmü 2026-09-19): KPS-FAZ-A01 Faz ile Proje arasındaki bağı
+ * plan dosyasının yaşadığı Proje kökünden kurdu, fakat bağın KURULAMADIĞI hâl
+ * susuyordu: kök dışında yaşayan ya da aynı derinlikte iki ayrı Proje kodunun
+ * kapsadığı bir dosyanın Fazı köksüz kalıyor ve bunu hiçbir yüzey söylemiyordu.
+ * Ölçüt grafın kendisidir: Fazın `kapsayan` zinciri bir Proje düğümüne
+ * ulaşmıyorsa zaman diliminin kimin olduğu graftan okunamaz. Klasör→Proje çözümü
+ * burada YENİDEN HESAPLANMAZ; graf çevrimi kimlik.ts'in tek kaynağını okumuştur
+ * ve bu bekçi yalnız o çevrimin sonucunu okur. Sebep (köksüz mü, ayrışık mı)
+ * yalnız mesaj için aynı tek kaynaktan sorulur.
+ *
+ * NE DAYATMAZ: yerleşim ya da tarih dayatmaz, iç içe yazımı değiştirmez ve
+ * hiçbir kapıyı kırmızıya düşürmez; düzey bilgidir. Ders dünyası OGR-5 uyarınca
+ * muaftır: öğretim malzemesi bilinçle kök taşımadan yazılır ve ürün hükmü oraya
+ * inmez (bugünkü ağaçta on yedi köksüz plan düğümünün on yedisi de oradadır).
+ */
+export function projesizFazTanilari(
+  dag: Pick<Dag, "dugumler">,
+  programlar: ReadonlyMap<string, Program>,
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  let kapsamlar: readonly ProjeKapsami[] | undefined;
+  for (const d of dag.dugumler.values()) {
+    if (d.tip !== "Faz") continue;
+    if (DERS_DUNYASI.test(d.dosya)) continue;   // ders dünyası muaftır (OGR-5 kapsam kanonu)
+    let projeli = false;
+    for (let a = d.kapsayan; a !== undefined; a = dag.dugumler.get(a)?.kapsayan) {
+      if (dag.dugumler.get(a)?.tip === "Proje") { projeli = true; break; }
+    }
+    if (projeli) continue;
+    kapsamlar ??= projeKapsamlari(programlar);
+    const sebep = sahipProjeKapsami(d.dosya, kapsamlar) ? "ayrışık" : "köksüz";
+    out.push({ dosya: d.dosya, tani: yeniTani("projesiz-faz",
+      { kimlik: d.yerelKod ?? d.kod, sebep },
+      { satir: d.satir, sutun: d.sutun }) });
+  }
+  return out;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // YENİ KANON · PROJE KAPSAMI (motor turu ikinci halkası · elli beş tanı)
 //
@@ -3409,7 +3574,11 @@ const DOSYA_ZORUNLU_MEYVE: ReadonlySet<string> = new Set(["Kod", "Ekran", "Uç",
  * motor "diskte yok" hükmü vermez ve susar (V1B-KODMEYVE-A01 saha bulgusu:
  * `sablon/dongu.sar` ile `eklenti/.gitignore` diskte yaşarken suçlanıyordu).
  */
-function dosyaBeyaniKusuru(yol: string, diskYollari: ReadonlySet<string>): string | undefined {
+function dosyaBeyaniKusuru(
+  yol: string,
+  diskYollari: ReadonlySet<string>,
+  yoksayilanlar: ReadonlySet<string> = new Set(),
+): string | undefined {
   if (!yol) return "dosya beyanı yazılmamış";
   if (yol.startsWith("/") || yol.startsWith("..")) return `beyan edilen yol proje kökünün dışına taşıyor ("${yol}")`;
   const temiz = yol.replace(/^\.\//, "");
@@ -3418,7 +3587,9 @@ function dosyaBeyaniKusuru(yol: string, diskYollari: ReadonlySet<string>): strin
   // yüzden muafiyet, tarayıcının SORDUĞU sorunun aynısını sorar (KPS-IND-A01).
   if (temiz.split("/").some((parca) => parca.startsWith(".") || YOKSAY.has(parca))
       || AYRISTIRILMAZ_SENTETIK.test(temiz)) return undefined;
-  if (!diskYollari.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
+  // EKL-F6-A07: depo bu yolu yok sayma dosyasında ADIYLA yok sayıyorsa dosya bir
+  // derleme çıktısıdır ve depoya hiç girmez; taze klonda yokluğu drift değildir.
+  if (!diskYollari.has(temiz) && !yoksayilanlar.has(temiz)) return `beyan edilen yol diskte çözülmüyor ("${yol}")`;
   return undefined;
 }
 
@@ -3516,6 +3687,7 @@ export function omurgaTanilari(
 
   // Meyve hükümleri: üretim kökeni ve dosya beyanı.
   const diskYollari = new Set(disk.girdiler.filter((g) => g.tur === "dosya").map((g) => g.yol));
+  const yoksayilanlar = new Set(disk.yoksayilanDosyalar ?? []);   // EKL-F6-A07: adıyla yok sayılan derleme çıktısı
   for (const { dosya, d, atalar } of meyveler) {
     const kimlik = yeniKimlik(d);
     const uretenAta = atalar.some((x) => x.ad === "Adım");
@@ -3524,7 +3696,7 @@ export function omurgaTanilari(
     }
     const tur = yeniAlanMetin(d, "tür") ?? "";
     if (!DOSYA_ZORUNLU_MEYVE.has(tur)) continue;
-    const kusur = dosyaBeyaniKusuru(yeniAlanMetin(d, "dosya")?.trim() ?? "", diskYollari);
+    const kusur = dosyaBeyaniKusuru(yeniAlanMetin(d, "dosya")?.trim() ?? "", diskYollari, yoksayilanlar);
     if (kusur) {
       out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik", { kimlik, tur, kusur }, d) });
     }
@@ -3540,7 +3712,7 @@ export function omurgaTanilari(
   for (const { dosya, d } of kodDugumleri) {
     const beyan = yeniAlan(d, "dosya");
     if (!beyan) continue;
-    const kusur = dosyaBeyaniKusuru((beyan.deger.metin ?? "").trim(), diskYollari);
+    const kusur = dosyaBeyaniKusuru((beyan.deger.metin ?? "").trim(), diskYollari, yoksayilanlar);
     if (kusur) {
       out.push({ dosya, tani: yeniTani("meyve-dosyası-eksik",
         { kimlik: yeniKimlik(d), tur: "Kod", tip: "Kod", kusur }, d) });
@@ -3696,16 +3868,48 @@ export function iliskiSinifiTanilari(
     if (kullanirlar.length) {
       if (d.ad !== "Proje" && d.ad !== "Katman" && d.ad !== "AltKatman") {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kusur: `kenarın kaynağı "${d.ad}" tipinde` }, d) });
+          { kimlik, kenar: "kullanır", kusur: `kenarın kaynağı "${d.ad}" tipinde` }, d) });
       } else if (kullanirlar.length > 1) {
         out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-          { kimlik, kusur: `kenar ${kullanirlar.length} hedefe yöneliyor, oysa tekil olmak zorundadır` }, d) });
+          { kimlik, kenar: "kullanır", kusur: `kenar ${kullanirlar.length} hedefe yöneliyor, oysa tekil olmak zorundadır` }, d) });
       } else {
         const hedefTip = tipOf.get(kullanirlar[0].metin ?? "");
         const beklenen = d.ad === "Proje" ? "KimlikKökü" : "Teknoloji";
-        if (hedefTip && hedefTip !== beklenen && !(d.ad !== "Proje" && hedefTip === "Takım")) {
+        // KPS-CEL-A01 (Founder hükmü 2026-09-19): Katmanın Takıma `kullanır` ile
+        // bağlanmasına göz yuman istisna KALDIRILDI. Takım bağı artık kendi kenarıyla,
+        // yani `takım:` ile yazılır; iki kenar birbirinin yerine geçemez.
+        if (hedefTip && hedefTip !== beklenen) {
+          const yonlendirme = hedefTip === "Takım" ? " — Takım bağı `takım:` kenarıyla yazılır" : "";
           out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
-            { kimlik, kusur: `hedef "${hedefTip}" tipinde, oysa "${beklenen}" bekleniyordu` }, kullanirlar[0]) });
+            { kimlik, kenar: "kullanır", kusur: `hedef "${hedefTip}" tipinde, oysa "${beklenen}" bekleniyordu${yonlendirme}` }, kullanirlar[0]) });
+        }
+      }
+    }
+
+    // Takım kenarı (KPS-CEL-A01 · ORK-2.4): yalnız Katman ile AltKatmandan doğar,
+    // yalnız Takıma yönelir ve bir ya da birden çok hedef taşıyabilir, çünkü bir
+    // işin sahipliği iki ekibin ortağı olabilir. Kenar yürütme sırası kurmaz.
+    const takimlar = yeniListe(d, "takım");
+    if (takimlar.length) {
+      if (d.ad !== "Katman" && d.ad !== "AltKatman") {
+        out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+          { kimlik, kenar: "takım", kusur: `kenarın kaynağı "${d.ad}" tipinde, oysa sahiplik bağı yalnız Katmandan doğar` }, d) });
+      } else {
+        const gorulenTakim = new Set<string>();
+        for (const o of takimlar) {
+          const h = o.metin ?? "";
+          if (gorulenTakim.has(h)) {
+            out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+              { kimlik, kenar: "takım", kusur: `"${h}" hedefi aynı kenarda ikinci kez yazılmış` }, o) });
+            continue;
+          }
+          gorulenTakim.add(h);
+          const hedefTip = tipOf.get(h);
+          if (hedefTip && hedefTip !== "Takım") {
+            const yonlendirme = hedefTip === "Teknoloji" ? " — Teknoloji bağı `kullanır:` kenarıyla yazılır" : "";
+            out.push({ dosya, tani: yeniTani("kullanır-kenarı-ihlali",
+              { kimlik, kenar: "takım", kusur: `hedef "${hedefTip}" tipinde, oysa "Takım" bekleniyordu${yonlendirme}` }, o) });
+          }
         }
       }
     }

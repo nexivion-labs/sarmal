@@ -24,7 +24,7 @@
 Blok( kod: BLK-PRF-ISCI, ad: "işçi", uygular: ORK-7,
   ne: "🧵 Denetim motorunun ölçüm kapılı olarak işçi iş parçacığına taşınması; Founder'ın kasma yok ölçütünün kapısı" ) {
 
-  Katman( kod: KAT-IS-EKLENTI, kullanır: TAKIM-EKLENTI, ad: "eklenti işçi katmanı",
+  Katman( kod: KAT-IS-EKLENTI, takım: TAKIM-EKLENTI, ad: "eklenti işçi katmanı",
     ne: "🌿 Derleme zinciri, tur ve işçi protokolünün yaşadığı eklenti katmanı" ) {
 
     AltKatman( kod: ALT-IS-PLAN, ad: "işçi ölçümü ve kararı", departman: planlama,

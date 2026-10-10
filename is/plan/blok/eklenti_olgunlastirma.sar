@@ -37,7 +37,7 @@
 Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02 onarımı: ANY-EKLENTI hiç doğmadı — kırık uygular kenarı gerçek anayasaya bağlandı
 
   // ── FAZ 1 · ÖZ-İFADE: dil kendini kendi diliyle anlatır ────────────────────
-  Katman( kod: EKL-F1, kullanır: TAKIM-EKLENTI, ad: "oz-ifade",
+  Katman( kod: EKL-F1, takım: TAKIM-EKLENTI, ad: "oz-ifade",
     ne: "🪞 Bir dil kendini kendi diliyle ifade etmelidir — kural ve söz dizimi belgeleri .sar diline çevrilir" ) {
     AltKatman(
       kod: ALT-EKL-F1-CEVIRI, departman: kodlama,
@@ -72,7 +72,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 2 · ANLATI STANDARDI: olgu parametrede, muhakeme belgede ───────────
-  Katman( kod: EKL-F2, kullanır: TAKIM-EKLENTI, ad: "anlati-standardi",
+  Katman( kod: EKL-F2, takım: TAKIM-EKLENTI, ad: "anlati-standardi",
     ne: "🎓 Anlatı katmanı akademik şemaya bağlanır: Amaç · Kapsam (1 giriş + ≥3 gelişme + 1 sonuç) · Sonuç" ) {
     AltKatman(
       kod: ALT-EKL-F2-SEMA, departman: kodlama,
@@ -103,7 +103,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 3 · RENK KANONU: renk niyetin görsel türevidir ─────────────────────
-  Katman( kod: EKL-F3, kullanır: TAKIM-EKLENTI, ad: "renk-kanonu",
+  Katman( kod: EKL-F3, takım: TAKIM-EKLENTI, ad: "renk-kanonu",
     ne: "🎨 52 renklik sistem tek kaynağa (SNF-0 renkKanonu) taşınır; editör Dart canlılığına ulaşır" ) {
     AltKatman(
       kod: ALT-EKL-F3-RENK, departman: kodlama,
@@ -124,7 +124,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 4 · BİÇİMLENDİRME: tüm biçimlendirmeler yeniden gözden geçirilir ───
-  Katman( kod: EKL-F4, kullanır: TAKIM-EKLENTI, ad: "bicimlendirme",
+  Katman( kod: EKL-F4, takım: TAKIM-EKLENTI, ad: "bicimlendirme",
     ne: "✨ Biçimlendirici insan yükünü sıfırlar: uzun niyet katlanır, emoji korunur, hizalama nizamidir" ) {
     AltKatman(
       kod: ALT-EKL-F4-BICIM, departman: kodlama,
@@ -170,7 +170,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 5 · ZEKÂ: editör dili öğretir ──────────────────────────────────────
-  Katman( kod: EKL-F5, kullanır: TAKIM-EKLENTI, ad: "zeka",
+  Katman( kod: EKL-F5, takım: TAKIM-EKLENTI, ad: "zeka",
     ne: "🧠 Tamamlama ve hover, etmen şemasını öğrenir; sarı terfi tek tıkla çözülür" ) {
     AltKatman(
       kod: ALT-EKL-F5-ZEKA, departman: kodlama,
@@ -202,7 +202,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
   }
 
   // ── FAZ 6 · YAYIN: dünyaya çıkış ───────────────────────────────────────────
-  Katman( kod: EKL-F6, kullanır: TAKIM-EKLENTI, ad: "yayin",
+  Katman( kod: EKL-F6, takım: TAKIM-EKLENTI, ad: "yayin",
     ne: "🌍 Sarmal dili dünyada tanınır: marketplace + GitHub dil kimliği — ⏸️ BEKLEMEDE (Founder 2026-07-06: yayın için erken; netleşmesi gereken konular önce çözülür)" ) {
     // Yayın ön-koşulu: ŞEF disiplini dogfood-vitrininden SONRA — öncül halka turu kapandı ve arşivdedir; kalan kapı çok-dillilik adımlarıdır
     AltKatman(
@@ -212,11 +212,11 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     ) {
       Adım(
         kod:     EKL-F6-A01,
-        durum:   beklemede, öncelik: p1, onay: "onaylandı — 2026-08-08",
+        durum:   beklemede, öncelik: p1, onay: "onaylandı — 2026-08-08. KARAR 2026-09-17 · FOUNDER: mağazada görünen ad Sarmal: Plan & Guardrails for AI Agents olacaktır; yalın Sarmal AI adı, ürünün içinde model bulunduğu beklentisini doğuracağı ve ürünün tamamen yerel olma iddiasıyla çelişeceği için seçilmemiştir. Marka adı, eklenti kimliği ve depo adı değişmez; değişen yalnız mağazadaki görünen addır. KARAR 2026-09-17 · FOUNDER: yayın, İngilizce yüz kabul edilebilir hâle gelene kadar durdurulmuştur; Founder İngilizce pencerede yarı çevrilmiş ve bozuk görüntüyü canlı ölçmüş ve bu hâliyle yayımlanamayacağına hükmetmiştir. Kayıt HTR-INGILIZCE-YUZ-YARI-CEVRILMIS hatırlatıcısındadır. ŞERH 2026-09-20 · FOUNDER: Adımın durumu bloklu yerine beklemede olarak yazılır. Gerekçe şudur: Adım başarısız bir koşu yüzünden değil, yayının Founder hükmüyle durdurulması yüzünden ilerlememektedir ve yeniden koşulmayı beklemektedir; bloklu mührü deponun kendi denetiminde iki uyarı üretmekte, sıfır uyarı isteyen sürekli tümleştirme kapısını kırmızıda tutmakta ve böylece ana dala giren her birleştirme isteğini, dışarıdan gelecek ilk katkılar dahil, engellemektedir. 2026-09-03 tarihli koşu kaydı tarihçe olarak korunur.",
         koşu:    Koşum( kod: KSM-EKL-F6-A01, tarih: 2026-09-03, mühür: BLOCKED, karar: eskalasyon,
           kanıt: "urun/eklenti/package.json (publisher nexivion-labs · 0.9.178 · Apache-2.0 · depo adresi) · vsce ls 898 dosya, 1,25 MB · paket içeriği nöbeti · vitrin metinleri 2026-08-24 · sürüm notu ve ekran görüntüsü planı masaüstünde",
           ne: "Hazırlık tamamdır: manifest yayın alanlarını taşır, paket içeriği nöbetle korunur, vitrin anlatısı ile mağaza açıklaması iki dilde yerindedir ve 0.9.178 paketi kurulu ve gözle doğrulanmıştır. Mekanik kapı 2026-09-03 tarihinde açıldı, çünkü sekiz bağımlının yedisi tamamlandı ve önizleme yeniden tasarımını Founder 2026-09-02 tarihinde yayın sonrasına alarak kenardan çıkardı. Kalan tek iş yayının kendisidir ve Founder'ın yayıncı hesabına ve 9 Eylül takvimine bağlıdır." ),
-        bağımlı: [ CDL-A04, CDL-A05, CDL-A06, CDL-A07, EKL-F6-A04, EKL-F7-A09, GOC-A08 ],
+        bağımlı: [ CDL-A04, CDL-A05, CDL-A06, CDL-A07, EKL-F6-A04, EKL-F7-A09, GOC-A08, EKL-F6-A07, EKL-F6-A08, EKL-F6-A09, EKL-F6-A10, EKL-F6-A11 ],
         ne:      "🛍️ VS Code Marketplace yayını: vitrin metni, ekran görüntüleri, sürüm notları (akademik üslup)",
       ) {
         görev: [
@@ -232,12 +232,12 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
         ]
         sınır: "Bu Adım yalnız mağaza yayınıdır. Uzak deponun açılması YTK-A22 Adımının, MCP dizin başvurusu EKL-F6-A03 Adımının ve linguist başvurusu EKL-F6-A02 Adımının işidir; önizleme yeniden tasarımı (EKL-F6-A05) Founder hükmüyle yayın sonrasına alınmıştır ve bu kapının parçası değildir."
       }
-      Adım( kod: EKL-F6-A02, durum: beklemede, öncelik: p3, onay: "onaylandı — 2026-08-08", bağımlı: [ EKL-F6-A01 ], koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Gerekçe bugün de doğrudur: dil tanıma barı ancak yayın ve benimseme sonrası dolar. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): yayın için erken — EKL-F6-A01 ile aynı kapıya bağlıdır ve o adımdan sonra gelir; dil kimliği başvurusu yayınla birlikte; GitHub linguist barı (yüzlerce repo kullanımı) da henüz karşılanmıyor — DEVİR 2026-07-21: durum eklendi — DEVİR 2026-07-29: 'aynı kapı' düzyazısı bağımlı: kenarına indi", ne: "🐙 GitHub linguist başvurusu: .sar uzantısı dil olarak tanımlanır
+      Adım( kod: EKL-F6-A02, durum: beklemede, öncelik: p3, onay: "onaylandı — 2026-08-08 · ŞERH 2026-09-20 · FOUNDER: Adımın durumu bloklu yerine beklemede olarak yazılır. Gerekçe şudur: başvuru yayına bağlıdır, yayın Founder hükmüyle durdurulmuştur ve Adım başarısız bir koşu yüzünden değil sırasını beklediği için ilerlememektedir; koşu kaydının kendisi de bilinçli bekleyişi yazmaktadır.", bağımlı: [ EKL-F6-A01 ], koşu: "2026-08-04 · V1 İNCELEMESİ (kontrolcü): Gerekçe bugün de doğrudur: dil tanıma barı ancak yayın ve benimseme sonrası dolar. Kontrolcü önerisi: v1 sonrasına beklemede kalsın. Onay tarihçesi: ⏸️ bilinçli-beklemede (KPN-A03 kampanya kapanışı · Founder onayı 2026-07-19): yayın için erken — EKL-F6-A01 ile aynı kapıya bağlıdır ve o adımdan sonra gelir; dil kimliği başvurusu yayınla birlikte; GitHub linguist barı (yüzlerce repo kullanımı) da henüz karşılanmıyor — DEVİR 2026-07-21: durum eklendi — DEVİR 2026-07-29: 'aynı kapı' düzyazısı bağımlı: kenarına indi", ne: "🐙 GitHub linguist başvurusu: .sar uzantısı dil olarak tanımlanır
         (ad + renk + örnek korpus)" )
 
-        Adım( kod: EKL-F6-A03, durum: beklemede, öncelik: p2, onay: "onaylandı — 2026-08-08", koşu: "2026-08-22 · GİZLİLİK POLİTİKASI MADDESİ DE KAPANDI, ADIM YİNE KAPANMADI (kontrolcü): Görev listesinin üçüncü maddesi tamamlandı ve deponun kök yüzeylerine PRIVACY.md yazıldı; yüzey önce kök yüzeyi listesine ilan edildi, sonra dosya doğdu, dolayısıyla Yapı-Önce hükmü korundu ve nöbet dosyayı ilan edilmiş yüzey olarak tanıyor. POLİTİKANIN İDDİASI BEYAN DEĞİL ÖLÇÜMDÜR ve ölçüm yayımlanan paket üzerinde yapıldı: paketlenmiş eklenti gövdesinde hiçbir ağ istemcisi yoktur, gövde tek bir süreç çağırma kaydı taşımaz ve içindeki tek adresler gömülü sözdizimi tablolarında metin olarak duran belge bağlantılarıdır; eklentinin çalışma zamanı bağımlılığı listesi de boştur. Politika okuyucuya bu ölçümü kendisinin nasıl tekrarlayabileceğini de söyler. TEK NÜANS GİZLENMEDİ VE AYRI BİR BAŞLIKLA YAZILDI: deponun kaynağında bir dış model sağlayıcısına giden köprü dosyası vardır; ölçüm o köprünün paketin dosya listesinde bulunmadığını ve paketlenmiş gövdenin köprüye ait tek satır taşımadığını gösterdi, dolayısıyla hiçbir ağ çağrısı yok cümlesi doğrudur fakat nüansı okuyucudan saklanmaz. Metin iki dilde yazıldı, çünkü dizin başvurusu İngilizce yüz ister ve Türkçe yüz deponun kanonik dilidir. ADIM YİNE KAPANMIYOR ve sebebi üç açık maddedir: araç açıklamalarının İngilizceye çevrilmesi CDL-A05 Adımının kapsamındadır ve iki yerde iki çeviri yapılmaz, kimlik ile oturum açma katmanının dizin kuralına uyumu eklenti bittikten sonra ölçülecektir ve kararı Founder verir, inceleme ölçütleri listesi ile uçtan uca kurulum yönergesi ise başvuru anında hazırlanır. Önceki kayıt: 2026-08-22 · EK AÇIKLAMA MADDESİ KAPANDI, ADIM KAPANMADI (üretici): Görev listesinin ikinci maddesi tamamlanmıştır. On sekiz MCP aracının tamamı artık insan tarafından okunabilir bir görünen ad ile bir davranış ipucu taşımaktadır ve ek açıklamasız araç sayısı bugün sıfırdır; bu ölçüm önceki turda sıfır kapsama gösteriyordu. Beyan alanlarının adları uydurulmamış, protokolün kendi şemasından doğrulanmıştır: görünen ad `Tool.title` ile `Tool.annotations.title` hanelerinde, davranış ipuçları ise `Tool.annotations` içindeki `readOnlyHint` ve `destructiveHint` alanlarında yayımlanır; ikisi birden yazılır, çünkü protokolün görünen ad öncelik sırası `title` ardından `annotations.title` biçimindedir ve eski istemciler yalnız ikincisini okur. Okur ile yazar ayrımı aracın adına değil gövdesine bakılarak verilmiştir. ON BEŞ ARAÇ OKUR ilan edilmiştir ve bunlar sef, ogret, kavram, karne, basla, graf, gezin, denetle, kurallar, siniflama, denetle-proje, etki, bul, bicimle ve prizma araçlarıdır. ÜÇ ARAÇ YAZAR ilan edilmiştir ve bunlar dogus, iskelet ile durum-guncelle araçlarıdır. Yazan üç aracın yıkıcılık ipucu da ölçülerek verilmiştir: doğuş paketi ile iskelet var olan dosyayı ezmeden yalnız eksiği eklediği için yıkıcı değildir, durum-guncelle ise var olan durum değerinin üstüne yazdığı ve eski değeri düşürdüğü için yıkıcıdır. Bir sınır kararı kayda geçirilmiştir: iskelet önizleme kipinde diske dokunmadığı hâlde yazar ilan edilmiştir, çünkü ipucu aracın en geniş davranışını beyan etmelidir ve `uret: true` verildiğinde araç gerçekten üretir. NÖBET cekirdek/sinama/mcp-ek-aciklama.test.ts dosyasında yaşamaktadır ve üç hükümden oluşur. Nöbet beyanı şekil olarak denetlemekle yetinmez; on sekiz aracın her birini doğuş paketiyle kurulmuş geçici bir çalışma alanında gerçekten koşturur, dosya ağacının içerik parmak izini çağrıdan önce ve sonra ölçer ve beyan ile ölçüm ayrışırsa süiti kırmızıya çevirir. Nöbet iki yönde mutasyonla kanıtlanmıştır. Birinci mutasyonda durum-guncelle bilerek okur ilan edilmiş ve süit 'durum-guncelle okunur ilan edilmiş fakat çalışma alanını DEĞİŞTİRDİ' hükmüyle kırmızıya dönmüştür. İkinci mutasyonda graf bilerek yazar ilan edilmiş ve süit 'graf yazar ilan edilmiş fakat hiçbir şey yazmadı' hükmüyle düşmüştür; böylece savunmacı fazla beyan da yasaklanmış olur. İki mutasyon da geri alınmıştır ve katalog doğru hâline dönmüştür. Ayrıca kataloğun kendi tutarlılığı saf bir işlevle ölçülür ve dört ayrı mutasyonla sınanır; yıkıcılık ipucunun okur ilan edilmiş bir araca iliştirilmesi de yasaklanmıştır, çünkü protokol bu alanın yalnız yazan araçta anlamlı olduğunu söyler. ÖLÇÜMLER: çekirdek süiti yetmiş iki dosyada 1044/1044 yeşildir ve düşen hüküm yoktur, tip denetimi temizdir, sunucu duman testinde on sekiz aracın listesini eksiksiz döndürmektedir ve _Sarmal varlığının denetimi sıfır hata ile kapanmıştır. SIFIR BAĞIMLILIK KORUNMUŞTUR; hiçbir çalışma zamanı bağımlılığı eklenmemiş, araç adları ile parametre adları protokol kimliği olarak sabit bırakılmış ve araçların davranışı değiştirilmemiştir. ADIM KAPANMAMIŞTIR ve durumu bilinçli olarak beklemede bırakılmıştır, çünkü üç madde açık kalmıştır: gizlilik politikası yazılmamıştır ve Founder kapısı ister, İngilizce araç metinleri maddesi kendi Adımının kapsamındadır ve burada ikinci bir çeviri yapılmamıştır, kimlik ile oturum açma katmanının dizin kuralına uyum ölçümü ise henüz yapılmamıştır. Başvuru gönderilmemiştir. — ÖNCEKİ KAYIT: 2026-08-04 · V1 İNCELEMESİ (kontrolcü): Metin iki noktada bayattır: araç metinlerinin tümüyle Türkçe olduğu iddiası İngilizce haneler eklendiği için geçersizdir ve gizlilik cümlesi tek dış uç istisnası olan görsel üretim köprüsünü anmamaktadır. Kontrolcü önerisi: metin tazelenip yayınla eşzamanlı ele alınsın. Onay tarihçesi: onaylandı — 2026-07-30", bağımlı: [ EKL-F6-A01 ],
+        Adım( kod: EKL-F6-A03, durum: tamamlandı, öncelik: p2, onay: "onaylandı — 2026-08-08 · ŞERH 2026-09-15: Mağaza Adımına bağımlılık kaldırılmıştır. Founder 2026-09-12 tarihinde kurulum işinin mağaza yüklemesinden önce geleceğine, 2026-09-15 tarihinde de Blokun bütün Adımlarının geliştirmeye alınmasına hükmetmiştir; EKL-F6-A01 Adımının sınırı da dizin başvurusu hazırlığını ayrı bir iş olarak tanımlar. · ŞERH 2026-09-16 · FOUNDER (üç karar): Birincisi, masaüstü eklenti paketi kurulacaktır. Gerekçe şudur: gönderim portalı yalnız uzak sunucuları kabul ettiği için yerel sunucunun dizine ulaşan tek yolu budur ve gizlilik politikasının üçüncü parçası olan privacy_policies dizisi ancak bu bildirimde yaşayabilir. İkincisi, Türkçe tanıtım yüzündeki gizlilik başlığı Türkçe kalacak, İngilizce başlık yalnız İngilizce yüzde duracaktır. Gerekçe şudur: deponun dili Türkçedir ve dizin denetiminin İngilizce dizeyi arama ihtimali, Türkçe yüzde yabancı bir başlık taşımaya değmez; risk bilinerek kabul edilmiştir. Üçüncüsü, araç açıklamalarındaki yönlendirici cümleler tamamen kaldırılacaktır. Gerekçe şudur: dizin ölçütü bir açıklamanın aracın ne yaptığını anlatmasını, modele nasıl davranacağını söylememesini ister; öğretinin yeri açıklama değil, ürünün kendi belgeleridir. Dördüncüsü, yazan araçların yıkıcılık ipucu bugünkü hâliyle korunacaktır. Founder bu kararı kontrolcüye bırakmış, kontrolcü de iki aracın gövdesini ölçmüştür: iskelet üreticisi var olan her ögeyi atlandı sayar ve gerekçesini kullanıcının emeğini ezmemek olarak yazar, doğuş paketi ise var olan dosyaları dokunulmayanlar başlığı altında bırakır ve onların mevcut kayıt sahibine ait olduğunu bildirir. Gerekçe şudur: protokolde yıkıcılık varsayılanı doğru kabul edildiği için ipucu ancak beyan yanlış olduğunda bildirilir ve ölçüm iki aracın da hiçbir şeyi ezmediğini göstermektedir; buna karşılık durum yazan araç var olan alanı yeniden yazdığı için yıkıcı ilan edilmiş durumdadır ve bu ayrım beyanın ölçüme dayandığını kanıtlar. · ŞERH 2026-09-16 · FOUNDER (sürüm): Çekirdek paketinin sürümü sunucunun telde ilan ettiği 0.16.0 numarasına çekilecek ve masaüstü eklenti bildirimi onu duyuracaktır. Gerekçe şudur: sürüm notları bugün yalnız eklentinin tarihçesinde yaşamakta ve eklenti ayrı bir üründür; çekirdek paketinin 0.1.0 numarası hiç dokunulmamış bir yer tutucudur, oysa 0.16.0 gerçek değişikliklerle ilerlemiş ve telde ilan edilmiştir. Paket ile telin aynı şeyi söylemesi bir nöbetle korunur ve paketin kendi sürüm notu ihtiyacı hatırlatıcıya bağlanmıştır. · ŞERH 2026-09-16 · FOUNDER (sunucu talimatı): Sunucu talimatı kaldırılmayacak, fakat yasaklayıcı kipten çıkarılacaktır; planı ham arama araçlarıyla okumak doğrudan yasaklanmaz, bunun yerine Sarmal araçlarının aynı soruyu neden daha doğru saydığı anlatılır. Gerekçe şudur: bir yasak okuyucuyu meşru kullanımdan da alıkoyar ve gerekçesini taşımaz, oysa aracın üstünlüğünü anlatan bir cümle hem yönlendirmeyi hem öğretiyi taşır. Bu hüküm aynı gün verilen yönlendirici cümleler kararını yalnız sunucu talimatı bakımından daraltır; dizin ölçütü araç açıklamalarını bağlar, talimat alanını bağlamaz ve iki hüküm birlikte yaşar.", koşu: Koşum( kod: KSM-EKL-F6-A03, tarih: 2026-09-16, mühür: VERIFIED, karar: kabul, kanıt: "on sekiz araç title ve okur ya da yazar ipucu taşır, ek açıklama nöbeti ③ her aracı canlı stdio sunucusunda tools/call ile koşturup disk izini ölçer · araç açıklamalarından kırk sekiz davranış buyruğu düştü, kontrolcü mutasyonu: sef açıklamasına kuyruk geri enjekte edilince nöbet kırmızı · gizlilik politikası üç parça (README bölümü iki dilde, bildirimde privacy_policies dizisi, HTTPS adres) ve PRIVACY.md dizinin beş başlığını iki dilde kapsar · manifest.json spec 0.3, her alanı kaynağına bağlı; kontrolcü mutasyonları: license bozulunca iki bağ birden düştü, ikon bozulunca ve alan düşürülünce ayrı ayrı düştü · sürüm Founder hükmüyle 0.16.0, paket ile sunucu teli nöbetle bağlı · package.json dependencies alanı yok, sıfır bağımlılık korundu · yayın yolu MCPB ve ayrı form, portal değil, kuruluş şartı yok · hiçbir başvuru gönderilmedi · çekirdek süiti 1397/1397, tip ve iki eslint temiz, denetim sıfır hata sıfır uyarı · işlemeler 98be914, 75216d0, ce91c1f, 41182aa", ne: "Adımın yedi kabul ölçütünün yedisi de bağımsız ölçümle karşılanmıştır: araç beyanları nöbetle korunmakta, gizlilik politikası üç parçasıyla yayımlanmış ve beş başlığı kapsamakta, masaüstü eklenti bildirimi kaynağına bağlı olarak yazılmış ve sürümü Founder hükmüyle sunucunun teline hizalanmıştır. Sıfır bağımlılık ilkesi korunmuş ve hiçbir başvuru gönderilmemiştir; gönderme Founder'ın ayrı hükmüdür." ), bağımlı: [],
           referans: [ STR-3.1, YUZ-1.2 ],
-          üretir:   [ KOD-MCP, KOD-SNM-MCP-EK-ACIKLAMA ],
+          üretir:   [ KOD-MCP, KOD-SNM-MCP-EK-ACIKLAMA, KOD-MCPB-BILDIRIM, KOD-SNM-MCPB-BILDIRIM ],
           ne:       "🤖 Sarmal MCP sunucusunu Anthropic dizinine YAYINA HAZIRLAMAK. Founder 2026-07-28 tarihinde sordu: MCP'yi resmî olarak Claude dizininde yayınlayabilir miyiz? Cevap evet, fakat sanılan kapıdan değil ve üç somut hazırlık borcu var; üçü de bu Adımda ölçülerek kapanır." ) {
           görev:    [
             "YOLU DOĞRU SEÇ. Anthropic'in başvuru portalı YALNIZ UZAK sunucuları kabul ediyor; belgenin kendi cümlesi budur. Bizim sunucumuz yereldir — `cekirdek/src/mcp.ts` elle yazılmış stdio JSON-RPC'dir ve sıfır bağımlılık taşır. Dolayısıyla yolumuz MASAÜSTÜ EKLENTİSİDİR (MCP Bundle · MCPB) ya da eklenti paketidir; portal değildir. Portal ayrıca Team ya da Enterprise kuruluşu şart koşuyor, çünkü başvuru yönetim ayarlarının içindedir.",
@@ -285,20 +285,28 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           sınır: "Bu Adım tema üretmez ve kullanıcının seçtiği renk temasını ezmez; yalnız Sarmal diline ait dizgi ve biçim varsayılanlarını taşır. Panel içeriğinin kendisi bu Adımın kapsamı dışındadır."
         }
 
-        Adım( kod: EKL-F6-A05, durum: beklemede, öncelik: p1, bağımlı: [],
-          onay: "yayın sonrasına ertelendi — 2026-09-02 · Founder önizleme yüzünün yeniden tasarımını mağaza yayınının ardına aldı ve Adım EKL-F6-A01 kapısından çıkarıldı; gerekçe, yeniden tasarımın Founder'ın iki seçenek arasında canlı seçimini gerektirmesi ve yayını bekletmeye değmemesidir. Önizleme bugünkü hâliyle çalışmaktadır ve yalnız düzen, renk ile yineleme kusurları taşımaktadır.",
+        Adım( kod: EKL-F6-A05, durum: tamamlandı, öncelik: p1, bağımlı: [],
+          üretir: [ KOD-EKL-ONIZLEME-CEKIRDEK, KOD-SNM-ONIZLEME-MASA ],
+          onay: "yayın sonrasına ertelendi — 2026-09-02 · Founder önizleme yüzünün yeniden tasarımını mağaza yayınının ardına aldı ve Adım EKL-F6-A01 kapısından çıkarıldı; gerekçe, yeniden tasarımın Founder'ın iki seçenek arasında canlı seçimini gerektirmesi ve yayını bekletmeye değmemesidir. Önizleme bugünkü hâliyle çalışmaktadır ve yalnız düzen, renk ile yineleme kusurları taşımaktadır. · ŞERH 2026-09-16 · FOUNDER: Önizleme yüzü iki seçenekten B seçeneğiyle, yani Masa düzeniyle uygulanacaktır. Sol bölmede katlanmış künye ile gerçek yapı ağacı durur, sağ bölmede belge biçimli metin ile satır numaralı gerçek kod akar ve belgeyi yineleyen dizgilerin yerine atıf konur. Gerekçe şudur: bu düzen belge dışındaki her şeyin kaynaktaki hâliyle kod olarak durmasını isteyen 2026-07-03 tarihli hükmü korur ve çekirdeğin belge üreticisine seçenek eklemekle yetindiği için daha küçük bir iştir. · ŞERH 2026-09-16 · FOUNDER (ikinci tur): Founder maketi canlı olarak incelemiş ve iki eksiği bildirmiştir. Birincisi, madde metnindeki atıflar tıklanabilir olmalı ve okuyucu atıflar arasında gezinebilmelidir. İkincisi, madde metninin yazım türleri iç içe girmiştir; Hüküm, Gerekçe, Örnek ve Zorlama kendi başlıklarıyla ayrılmalı ve her başlığın açıklaması başlığın altında durmalıdır. Bu iki madde, sınırdaki yeni bölüm eklenmez cümlesinin istisnası değildir, çünkü eklenen şey yeni bir bölüm değil, var olan metnin düzeni ile atıf bağıdır. · ŞERH 2026-09-16 · FOUNDER (üçüncü tur): Founder yeni yüzü gerçek bir plan dosyasında canlı incelemiş ve yapı ağacının satırlarında bir kusur bildirmiştir: kod ile açıklama aynı satıra dizilmekte, açıklama dar sütunda dört satıra kırılmakta ve satır numarası uzakta kalmaktadır. Hüküm şudur: her ağaç satırında kod kendi satırında durur, satır numarası kodun yanında yazılır ve açıklama kodun altında girintili bir gövde olarak akar. Gerekçe, madde metni için verilen başlık üstte açıklama altta hükmünün ağaç satırına da uygulanmasıdır; iki bölmenin yan yana duruşu Masa düzeninin parçasıdır ve değişmez. Bu ekleme de sınırdaki yeni bölüm eklenmez cümlesinin istisnası değildir. · ONAY 2026-09-17 · FOUNDER: Founder 0.9.192 paketini kurup pencereyi yenilemiş, yeni önizleme yüzünü gerçek bir plan dosyasında canlı incelemiş ve Adımı kabul etmiştir. Karar onay panelinden değil sohbetten verilmiştir, çünkü panelin kuyruğu doğuş onayı taşıyan Adımı kararı verilmiş saymaktadır; bu kusur HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR kaydında yaşamaktadır ve kabulün geçerliliğini etkilemez.",
+          koşu: Koşum( kod: KSM-EKL-F6-A05, tarih: 2026-09-17, mühür: VERIFIED, karar: kabul, kanıt: "elle yazılmış 42 renk değeri sıfıra indi (onizleme.ts 25, onizleme.css 17) ve renk artık kanonun renkPaleti alanından dökülüyor; açık eşi olmayan renkler editörün ön plan rengiyle karıştırılıyor · yapı ağacı gerçek iç içe listedir, tip simgesi ile satır numarası taşır ve satıra tıklanınca kaynağın o satırı açılır · madde metnindeki atıflar bağlantıdır: hedef aynı dosyadaysa satır çapasına, başka dosyadaysa o dosyanın satırına gider, çözülemeyen atıf düz metin kalır · Hüküm, Gerekçe, Örnek ve Zorlama kendi başlığıyla çıkar ve gövdeleri girintili hanede durur · yüzey, editör kabuğu tanımayan onizleme-cekirdek.ts gövdesine taşındı ve on altı ölçümlü nöbet onu korur; üretici dört mutasyonu kırmızıya düşürdü · kontrolcü mutasyonu: ada kırpma kuralı geri konunca nöbet 16 testte 1 düşüş verdi · çekirdek süiti 1388/1388, eklenti süiti 814/814 (taban 798), derleme, tip denetimi ve iki paketin eslint'i temiz, depo denetimi sıfır hata sıfır uyarı · işlemeler 59b99e6, 1fb2058, 6695bd4, 5b46c39 · üçüncü tur: ağaç satırında kod üstte, satır numarası yanında, açıklama altta girintili; iki yeni ölçüm, üreticinin iki ve kontrolcünün bir mutasyonu (stil sütun yönü satıra çevrilince) kırmızı; eklenti süiti 816/816; 0.9.192 HEAD'den paketlenip kuruldu ve damgayla doğrulandı; işlemeler 1cad1b7, 2172976 · Founder 2026-09-17 tarihinde canlı pencerede gördü ve kabul etti", ne: "Önizleme yüzü Founder'ın seçtiği Masa düzeniyle yeniden kuruldu: solda gerçek yapı ağacı ile en altta katlı künye durur, sağda belge biçimli metin ve satır numaralı kaynak akar, belgeyi yineleyen dizgilerin yerinde atıf görünür. Madde metnindeki atıflar tıklanabilir, yazım türleri kendi başlıklarıyla ayrılmış ve Founder'ın makette bildirdiği üç kusur, yani açık duran künye, kesilen ağaç adı ve satırı örten ipucu balonu kapanmıştır; her biri ayrı bir nöbetle korunur. Founder üçüncü turda ağaç satırının düzenini de hükme bağlamış, uygulanmış hâlini 2026-09-17 tarihinde canlı pencerede görmüş ve kabul etmiştir; tanı kimliklerinin hiçbir kaynakta tanımı olmadığı için bağlanamaması HTR-TANI-KIMLIKLERI-KAYNAKTA-TANIMSIZ kaydına yazılmıştır." ),
           ne:    "🖼️ Önizleme yüzünün yeniden tasarlanması. Founder 2026-08-21 tarihinde önizleme kipini canlı pencerede inceledi ve üç kusuru adıyla bildirdi. Birincisi renk düzenidir: yüzey birbiriyle ilgisiz yeşil ve turuncu bloklar basmakta, bu renkler kanonun tip paletinden türememektedir. İkincisi yapı ağacı bölümüdür: bölüm bir ağaç vaat etmesine karşılık düz bir kod listesi göstermekte ve hiyerarşiyi hiç anlatmamaktadır. Üçüncüsü yinelemedir: aynı madde metni önce belge bölgesinden biçimli olarak basılmakta, hemen ardından düğümün kendi alanından ikinci kez ham olarak tekrarlanmaktadır; ayrıca dosya başındaki teknik yorum bandı içerik gibi gösterilmektedir." ) {
           görev: [
             "Renk düzenini kanon paletine bağla. Önizlemede kullanılan her renk tip ailesinden ya da tema belirtecinden türemelidir; elle seçilmiş dolgu renkleri kaldırılır.",
             "Yapı ağacını gerçek bir ağaç olarak çiz. Düğümlerin sarma ilişkisi girinti ve bağ çizgisiyle görünmeli, her satır tipini simgesiyle söylemeli ve tıklandığında kaynaktaki satırına gitmelidir.",
             "Yinelemeyi kaldır. Bir madde metni yüzeyde bir kez görünür; belge bölgesi biçimli metni verir ve düğüm alanı aynı metni ikinci kez basmaz.",
             "Dosya başındaki teknik yorum bandını içerikten ayır. Bant ya hiç gösterilmez ya da katlanmış bir künye olarak durur.",
-            "Tasarımı uygulamadan önce Founder'a iki seçenek olarak sun ve seçimi kayda geçir."
+            "Tasarımı uygulamadan önce Founder'a iki seçenek olarak sun ve seçimi kayda geçir.",
+            "Madde metnindeki atıfları tıklanabilir yap. Dayanak, ilgili listesi ve tanı kimliği gibi kod taşıyan her parça kendi tanımına gider; hedef aynı dosyadaysa o satır, başka dosyadaysa o dosyanın satırı açılır ve çözülemeyen bir atıf bağlantı gibi görünmez.",
+            "Madde metninin yazım türlerini ayır. Hüküm, Gerekçe, Örnek ve Zorlama tek paragrafta akmaz; her biri kendi başlığıyla görünür ve açıklaması başlığın altında girintili bir gövde olarak durur.",
+            "Yapı ağacının satırında kodu ve açıklamayı ayır. Kod kendi satırında durur ve satır numarası onun yanında yazılır; açıklama kodun altında girintili bir gövde olarak akar ve dar sütunda kırılsa bile kodun altında kalır."
           ]
           kabul: [
             "Önizlemede elle yazılmış hiçbir renk kalmamıştır ve bu bir nöbetle korunmaktadır.",
             "Yapı ağacı hiyerarşiyi gösterir ve satıra tıklandığında kaynağın doğru satırı açılır.",
             "Aynı madde metni yüzeyde bir kereden fazla görünmez.",
+            "Madde metnindeki her atıf tıklanabilirdir, tıklandığında hedefin tanımı açılır ve çözülemeyen bir atıf bağlantı olarak gösterilmez; bu bir nöbetle korunur ve mutasyonla kanıtlanmıştır.",
+            "Hüküm, Gerekçe, Örnek ve Zorlama kendi başlıklarıyla ayrılmıştır ve her açıklama kendi başlığının altında durur; hiçbir madde metni bu dördünü tek paragrafta akıtmaz.",
+            "Yapı ağacının her satırında kod kendi satırındadır, satır numarası kodun yanındadır ve açıklama kodun altında girintili gövde olarak durur; kod ile açıklamanın aynı satırda dizildiği hiçbir ağaç satırı yoktur ve bu bir nöbetle korunup mutasyonla kanıtlanmıştır.",
             "Founder önizleme yüzünü canlı pencerede gözle doğrular ve hükmünü verir."
           ]
           sınır: "Bu Adım önizlemenin içeriğini genişletmez ve yeni bölüm eklemez; var olan bölümlerin düzenini, rengini ve yinelemesini onarır. Panel şeridi ile yol haritası yüzeyi bu Adımın dışındadır."
@@ -321,11 +329,105 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           ]
           sınır: "Bu Adım yayın akışını kurmaz ve sürüm numaralandırma politikası yazmaz; yalnız gövde ile kaynağın ayrışmasını ölçer. Kullanıcının makinesinde kurulu kopyanın tazeliği bu nöbetin kapsamı dışındadır ve yayın anının sorumluluğudur."
         }
+
+        Adım( kod: EKL-F6-A07, ad: "Taze Klonun ve Araç Dizininin Düzelmesi", durum: tamamlandı, öncelik: p1, bağımlı: [],
+          onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK ile HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A07, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 771/771 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · taze klonda derlemesiz denetim sıfır hata sıfır uyarı (409ccc4) · bağımsız mutasyon: kök dışı notu susturulunca MCP süiti 30/31 · işlemeler e42b158, 43c5bbd, 409ccc4 (0.9.187)", ne: "Taze klonda ilk denetim artık hatasızdır; denetim deponun adıyla yok saydığı derleme çıktısını beklemez ve muafiyet jokersiz, kökü belli yok sayma satırlarıyla sınırlıdır. Sarmal sunucusunun dizin isteyen dokuz aracı dizin verilmediğinde oturumun çalışma dizininde çalışır ve kök dışı bir dizini cevabın ilk cümlesinde iki dilde bildirir; denetle aracı taban kanon davranışını bilinçle korur. Sınıflama kaydındaki Kod kuralı metni yeni muafiyeti henüz anmamaktadır ve metnin tazelenmesi Founder kapısındadır." ),
+          referans: [ HTR-TAZE-KLONDA-GOMULU-KANON-EKSIK, HTR-MCP-DIZINI-OTURUMDAN-TUREMIYOR ],
+          üretir:   [ KOD-MCP, KOD-DENETCI ],
+          ne: "🧭 Sarmal'ı GitHub'dan indiren geliştiricinin ilk denetimde hiçbir şey yapmadan hata görmemesi ve Sarmal araçlarının oturumun açıldığı klasörde kendiliğinden çalışması." ) {
+          görev: [
+            "Taze klonda ilk denetimin verdiği hatayı kapat: KOD-EKL-GOMULUKANON Meyvesi derleme sırasında üretilen ve depoya girmeyen bir dosyayı beyan etmektedir; hatırlatıcının saydığı üç yoldan birini ölçerek seç ve seçimi gerekçesiyle yaz.",
+            "Sarmal sunucusunun dizin isteyen araçlarında dizin verilmediğinde oturumun çalışma dizinini kullan; verilen dizin oturumun kökü dışındaysa araç bunu cevabında açıkça söyler.",
+            "İki davranışı nöbetle koru ve nöbetleri mutasyonla kanıtla."
+          ]
+          kabul: [
+            "Deponun taze bir klonunda, derleme yapılmadan koşulan proje denetimi sıfır hata verir ve bu ölçüm taze klonda yapılmıştır.",
+            "Dizin verilmeden çağrılan her araç oturumun çalışma dizininde çalışır ve kök dışı bir dizin cevapta açıkça bildirilir; nöbet mutasyonla kanıtlanmıştır.",
+            "Çekirdek ve eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+          ]
+          sınır: "Motorun başka makinelere taşınabilir kurulumu bu Adımın işi değildir (EKL-F6-A08). Araç adları ile parametre adları protokol kimliğidir ve değişmez."
+        }
+
+        Adım( kod: EKL-F6-A08, ad: "Motorun Taşınabilir Kurulumu", durum: tamamlandı, öncelik: p1, bağımlı: [],
+          onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK kaydından doğmuştur · ŞERH 2026-09-16 · FOUNDER: Doğan ağacın sunucu kaydı motorun yolunu bir ortam değişkeninden okuyacaktır; kayıt ${SARMAL_KOK} önekiyle yazılır ve varsayılan değer konmaz. Gerekçe şudur: bu yol hiçbir paket yayını gerektirmez, ölçümde sunucu bağlanmıştır ve değişken tanımsız olduğunda istemci eksik değişkeni adıyla bildirdiği için kullanıcı ne yapacağını görür; aynı değişken kanca ile işaretçi yollarına da hizmet eder.",
+          koşu: Koşum( kod: KSM-EKL-F6-A08, tarih: 2026-09-16, mühür: VERIFIED, karar: kabul, kanıt: "dört yol ölçülerek karşılaştırıldı ve karşılaştırma HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK kaydına işlendi; Founder ortam değişkeni yolunu seçti ve hüküm şerhli onaya indi · kontrolcü depo dışında bir ağaç doğurup başka bir yola taşıdı: üç kayıt da ${SARMAL_KOK} yazıyor, varsayılan sayısı sıfır, kanca değişken tanımsızken DENETİM KOŞMADI satırını basıyor ve tanımlıyken denetim koşup sıfır hata veriyor · üretici ölçümü: taşınan ağaçta Connected, değişkensiz Failed ve Missing environment variables uyarısı · kontrolcü mutasyonu: öneke varsayılan konunca doğuş nöbeti 17 testte 2 düşüş verdi; üretici mutasyonları mutlak yol, sessiz kanca ve genişletmesiz işaretçi dallarında kırmızıya döndü · çekirdek süiti 1388/1388, eklenti süiti 798/798, derleme, tip denetimi ve iki paketin eslint'i temiz, depo denetimi sıfır hata sıfır uyarı · işlemeler 9d80a60, 261aa0b, dfdf308", ne: "Doğan ağacın sunucu kaydı, denetim kancası ve kanon işaretçisi motorun yolunu artık ${SARMAL_KOK} ortam değişkeninden okur ve varsayılan taşımaz; ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez, yalnız o makinede değişken tanımlanır. Kanca motoru bulamadığında sessizce çekilmek yerine denetimin koşmadığını tek satırla söyler ve onarımı değişkenin adıyla gösterir; eklentinin işaretçi okuyucusu değişkenli adresi çözer, tanımsız değişkeni çözülemez sayar ve yazım yolundaki mutlaklık şartı ile sürüme bağlı yol yasağı korunur. Doğan ağacın iki dildeki yönergesi bağlanamayan sunucu ile hiç tanımlanmamış sunucuyu ayırt etmeyi öğretir; kancanın boş değişken genişlemesinde yolu kök gibi göstermesi HTR-KANCA-BOS-DEGISKENI-YOL-GIBI-GOSTERIYOR kaydına yazılmıştır." ),
+          referans: [ HTR-DOGAN-AGACIN-MOTOR-YOLU-MUTLAK ],
+          üretir:   [ KOD-DOGUS ],
+          ne: "📦 Doğan bir ağacın başka bir makinede klonlandığında da Sarmal sunucusuna bağlanabilmesi; doğuş bugün motorun yolunu mutlak olarak yazmaktadır." ) {
+          görev: [
+            "Hatırlatıcının saydığı üç yolu, yani motorun kurulu paketten çözülmesini, yolun ortam değişkeniyle bildirilmesini ve kaydın göreli yazılıp çatı kökünden çözülmesini ölçerek karşılaştır; her yolun kullanıcıya maliyetini ve bir paket yayını gerektirip gerektirmediğini yaz.",
+            "Seçenekleri Founder'a sun; motorun yayımlanmış bir paket olarak dağıtılıp dağıtılmayacağı Founder kararıdır.",
+            "Seçilen yolu uygula ve doğan ağacın yönerge dosyası, bağlanamayan sunucuyu tanımsız sunucudan ayırt etmenin yolunu söylesin."
+          ]
+          kabul: [
+            "Seçenek karşılaştırması kayda geçmiş ve Founder yolu seçmiştir; hüküm şerhli onay olarak yazılmıştır.",
+            "Doğan bir ağaç, doğduğu makineden farklı bir yolda açıldığında seçilen yolla sunucuya bağlanır ve bu ölçülmüştür.",
+            "Çekirdek ve eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+          ]
+          sınır: "Paketin halka açık bir kayıt deposuna yayımlanması Founder'ın ayrı onayını ister ve bu Adım onu kendi başına yapmaz."
+        }
+
+        Adım( kod: EKL-F6-A09, ad: "Mağazadan Kurulan Eklentide Tam Denetim", durum: geliştirmede, öncelik: p1, bağımlı: [],
+          onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE ile HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A09, tarih: 2026-09-15, mühür: COMPLETED, karar: eskalasyon, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 795/795 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · vsce ls paketin dist/kanon/oz/siniflama altındaki kayit.json ve rehber.json kopyalarını listeliyor · işaretçisiz fikstürde paket kopyasıyla koşan denetim gerçek kayıtla aynı kırık-referans hatasını verdi · bağımsız mutasyon: paket kopyası zincirin başına alınınca kanon keşfi süiti 23/24 · panel dışı üreticiler: dogusEksikTanilari uyarı düzeyinde ve yalnız MCP yüzeyinde; olgunlukOnayiTanilari, acikAdimTanilari, acikAdimGosterimi, acikHatirlaticiGosterimi, tekCocukTanilari, adAyraciTanilari, dilTanilari, kullanimsizTipTanilari ve terfiKanitiTanilari bilgi düzeyinde ve yalnız komut satırında · işlemeler b8f562d, d57488c (0.9.190)", ne: "Eklentinin tip kaydını bulamadığı kökte tam proje denetimi artık paketin kendi kanon kopyasıyla koşar; kopya da okunamazsa kök sessizce atlanmaz ve durum çubuğu tam denetimin koşmadığını açıkça söyler. Taban kanon işaretinin ipucu kanon işaretçisini önerir ve yeni Sarmal: Kanon İşaretçisini Yaz komutu sürüme bağlı eklenti klasörünü asla yazmadan işaretçiyi kurar; panelde koşmayan on üreticinin hiçbiri hata düzeyinde değildir ve her birinin gerekçesi kapı kapsamı ilanının cliGerekcesi alanında yazılıdır. Adım, Founder işaretçisiz bir ağaçta paneli canlı pencerede görene kadar açık kalır; kapsam dışı üç bulgu HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR, HTR-PAKET-NOBETI-KANON-KOPYASINI-OLCMUYOR ve HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI hatırlatıcılarına yazılmıştır." ),
+          referans: [ HTR-PANEL-KOR-NOKTASI-COK-KOKLU-PENCERE, HTR-TABAN-KANON-IPUCU-ESKI-COZUM-ONERIYOR ],
+          üretir:   [ KOD-EKL-EKLENTI, KOD-TABAN-KANON, KOD-KANON-KESIF ],
+          ne: "🔎 Eklentinin tip kaydını bulamadığı pencerede de projenin tam denetimini koşması ve kullanıcıya doğru olguyu söylemesi; bugün panel sorun yok derken komut satırı aynı ağaçta hata vermektedir." ) {
+          görev: [
+            "Tip kaydı bulunamadığında tam proje denetimini sessizce atlayan yolu kapat: denetim gömülü kanonla da koşabilsin ya da atlandığı kullanıcıya açıkça söylensin.",
+            "Taban kanon işaretinin metni kanon işaretçisini önersin; işaretçiden önce doğmuş ağaçlara işaretçiyi yazan bir yol sun.",
+            "Panelde hiç koşmayan hata düzeyli üreticileri ölç ve her birinin panele alınıp alınmayacağını gerekçesiyle yaz."
+          ]
+          kabul: [
+            "İşaretçisi olmayan bir ağaç açıldığında panel ya komut satırıyla aynı hata bulgularını gösterir ya da tam denetimin koşmadığını açıkça söyler; bu bir nöbetle korunur ve mutasyonla kanıtlanmıştır.",
+            "Taban kanon işaretinin ipucu işaretçiyi önerir ve işaretçiyi yazan yol çalışır.",
+            "Panele alınmayan hata üreticilerinin listesi gerekçesiyle kayda geçmiştir.",
+            "Eklenti süiti yeşildir, depo denetimi sıfır hata ve sıfır uyarı verir ve Founder işaretçisiz bir ağaçta paneli canlı pencerede görmüştür."
+          ]
+          sınır: "Kanonun kendisi ve tanıların anlamı değişmez; değişen panelin kapsamı ve dürüstlüğüdür."
+        }
+
+        Adım( kod: EKL-F6-A10, ad: "Hatırlatıcı Tıklaması ve Geribildirim Hasadının Onarımı", durum: tamamlandı, öncelik: p1, bağımlı: [],
+          onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR ile HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A10, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 775/775 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · doğuş ağacında hasat ogreti/ogrenme/geribildirim.sar dosyasına yazdı, beyansız yapı sıfır · bağımsız mutasyon: hasat hedefi sabit yola döndürülünce kanon keşfi süiti 14/15 · işlemeler 6046932, 569a6e5, b694e48 (0.9.188)", ne: "Sonra ve arşiv mührü bulguları artık mühürlü dosyanın kendisini hedef olarak taşır; hatırlatıcılar ve gözlemler yüzeyinde bulguya tıklanınca o dosya açılır ve göreli yolun klasör parçasını silen desen kusuru kapanmıştır. Geribildirim hasadı yazacağı yeri kökün ilanındaki Kitaplık ve Raf beyanından çözer, raf ilan edilmemişse hiçbir şey yazmadan uyarır ve komutun iki dildeki adı gerçek yolu söyler. Üreticinin kapsam dışında bulduğu iki kusur HTR-KONUMSUZ-BULGULAR-HEDEF-TASIMIYOR ve HTR-HASAT-DOGUS-BASLIGINI-EZIYOR hatırlatıcılarına yazılmıştır." ),
+          referans: [ HTR-SONRA-MUHRU-BULGUSU-ANADIZINE-GIDIYOR, HTR-GERIBILDIRIM-HASADI-YANLIS-RAFA-YAZIYOR ],
+          üretir:   [ KOD-DENETCI ],
+          ne: "🧷 Sonraya bırakılmış dosya bulgusunun tıklandığında o dosyayı açması ve geribildirim hasadının ağacın gerçek öğrenme rafına yazması." ) {
+          görev: [
+            "Sonra mührü bulgusu mühürlü dosyanın konumunu taşısın ve yüzey dosyanın yolunu bozmadan göstersin; arşiv mührü bulgusunun Gözlemler yüzeyinde aynı kusuru taşıyıp taşımadığını ölç.",
+            "Geribildirim hasadının yazacağı yolu sabit bir addan değil kökün ilanından çöz ve komutun iki dildeki etiketlerini aynı turda düzelt.",
+            "İki onarımı nöbetle koru ve nöbetleri mutasyonla kanıtla."
+          ]
+          kabul: [
+            "Hatırlatıcılar yüzeyinde sonra mühürlü bir bulguya tıklanınca mühürlü dosya açılır ve yüzeydeki yol komut satırındaki yolla birebir aynıdır.",
+            "Geribildirim hasadı doğuşun ürettiği ağaçta öğrenme rafına yazar, beyansız klasör doğurmaz ve etiketler gerçek yolu söyler.",
+            "Çekirdek ve eklenti süitleri yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+          ]
+          sınır: "Mühür mekanizmasının anlamı ile hasat kartının biçimi değişmez."
+        }
+
+        Adım( kod: EKL-F6-A11, ad: "Kurulu Paket ile Depo Derlemesinin Ayrışma Nöbeti", durum: tamamlandı, öncelik: p2, bağımlı: [],
+          onay: "onaylandı — 2026-09-15 · Founder BLK-EKLENTI Blokunun bütün Adımlarının geliştirmeye alınmasına ve Bloka dokunan hatırlatıcıların plana dahil edilmesine hükmetmiştir; bu Adım HTR-SURUM-DAMGASI-TUZAGI kaydından doğmuştur",
+          koşu: Koşum( kod: KSM-EKL-F6-A11, tarih: 2026-09-15, mühür: VERIFIED, karar: kabul, kanıt: "çekirdek süiti 1380/1380 · eklenti süiti 786/786 · iki paketin tip denetimi ve eslint temiz · depo denetimi sıfır hata sıfır uyarı · canlı kurulum: 0.9.189 kurulum betiğiyle kuruldu ve kurulu paketle doğrulandı, kurulu bildirim ea24be2 damgasını taşıyor · bağımsız mutasyon: damga karşılaştırmasının yönü ters çevrilince sürüm tazeliği süiti 15/17 · işleme ea24be2 (0.9.189)", ne: "Kurulum betiği paketi mühürlü işlemenin kimliğiyle damgalar, kurduktan sonra kurulu paketi okuyup sürümü ve damgayı doğrular ve ayrışmada çıkış kodu 1 ile durur; aynı numarayla yeniden paketleme tuzağını yalnız bu karşılaştırma görür. Eklenti açılışta yalnız sürümü karşılaştırır ve kurulu paket depodaki bildirimden eskiyse durum çubuğunda kurulu paketin bayat olduğunu söyler; mağaza kullanıcısının çalışma alanında depo bulunmadığı için orada susar. Uzantı klasörünün sabit yazılması ile sürümü ilerletilmeden değişen kodun açılışta görülmemesi HTR-SURUM-NOBETI-SINIRLARI hatırlatıcısına yazılmıştır." ),
+          referans: [ HTR-SURUM-DAMGASI-TUZAGI ],
+          üretir:   [ KOD-EKL-KUR, KOD-SURUM-TAZELIGI, KOD-SNM-SURUM-TAZELIGI ],
+          ne: "⏱️ Kullanıcının kurulu eklentisi depodaki derlemeden eskiyse bunun görünür olması; aynı sürüm numarasıyla yeniden paketlenen eklenti editörde tazelenmez." ) {
+          görev: [
+            "Kurulu eklentinin sürümünü ve derleme damgasını depodaki derlemeyle karşılaştıran bir duman nöbeti kur ve ayrışma bulunursa açıkça bildir.",
+            "Nöbetin nerede koşacağını, yani paketleme betiğinde mi, eklenti açılışında mı yoksa ikisinde de mi koşacağını ölçerek seç ve gerekçesini yaz."
+          ]
+          kabul: [
+            "Kurulu paket depo derlemesinden eskiyken nöbet ayrışmayı bildirir, aynı olduğunda susar ve bu mutasyonla kanıtlanmıştır.",
+            "Eklenti süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir."
+          ]
+          sınır: "Sürüm numaralandırma politikası değişmez; her paketlemede sürümün ilerletilmesi tedbiri yürürlükte kalır."
+        }
       }
     }
 
     // ── FAZ 7 · YOL HARİTASI: tren-ray paneli — plan yaşayan yapılacaklar listesi ─
-    Katman( kod: EKL-F7, kullanır: TAKIM-EKLENTI, ad: "yol-haritasi",
+    Katman( kod: EKL-F7, takım: TAKIM-EKLENTI, ad: "yol-haritasi",
       ne: "🚂 Plan ağacı, Problems'ı kirletmeden kendi panelinde yaşar: kutucuklu, çift yönlü, ilerleme sayaçlı" ) {
       AltKatman(
         kod: ALT-EKL-F7-PANEL, departman: kodlama,
@@ -388,7 +490,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     }
 
     // ── FAZ 8 · FORMAT KANONLARI: her şey fonksiyon gibi (Founder 2026-07-06 mola-öncesi) ─
-    Katman( kod: EKL-F8, kullanır: TAKIM-EKLENTI, ad: "format-kanonlari",
+    Katman( kod: EKL-F8, takım: TAKIM-EKLENTI, ad: "format-kanonlari",
       ne: "🧬 Durum·hafıza·kimlik·yönetmelik tek kalıba oturur — imza(şema) + gövde(anlatı) + çağrı(kod), tıpkı bir fonksiyon gibi" ) {
       AltKatman(
         kod: ALT-EKL-F8-KANON, departman: kodlama,
@@ -435,7 +537,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     // ── FAZ 9 · OLGUNLAŞMA: kadro denetimi bulgularını gider (3 uzman + DeepSeek · Founder onayı 2026-07-06) ─
     Katman(
       kod:      EKL-F9,
-      kullanır: TAKIM-EKLENTI,
+      takım: TAKIM-EKLENTI,
       ad:       "olgunlasma",
       ne:       "🔧 Kadro denetiminin (3 uzman) bulguları giderilir: şema tek-kaynak, paylaşımlı önbellek, hijyen — sistem kendi felsefesini kendine uygular (anlatı-ayrımı dogfood)",
     ) {
@@ -555,7 +657,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
     // ── FAZ 10 · GERIBILDIRIM & CANLILIK: editor nefes alir, kadro geribildirim ogrenir ─
     // (Founder sozlu istekleriyle 2026-07-06 kuruldu; context dolmadan plana islendi
     //  ki kayit kaybolmasin. Hepsi CANLI — bu faz "nerede kaldik"in eklenti yuzudur.)
-    Katman( kod: EKL-F10, kullanır: TAKIM-EKLENTI, ad: "geribildirim-canlilik",
+    Katman( kod: EKL-F10, takım: TAKIM-EKLENTI, ad: "geribildirim-canlilik",
       ne: "❤️ Editor canlidir ve kadroya geribildirim tasir: Kuzey Yildizi + dort kanal + ogrenme hasadi" ) {
 
       AltKatman( kod: EKL-F10-K1, departman: kodlama, ad: "geribildirim-kanallari" ) {
@@ -663,7 +765,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
       // (Kaynak: nitelik/ide_asinalik.md — BKM-ARC-A02 envanteri, 22 kalem.
       //  Founder seçimi 2026-07-11: adaylar ①②③④ raya indi; ⑤ inlay-resmîleştirme
       //  bilinçli dışarıda — dallar/yıldız dekorasyonları işi görüyor, düşük öncelik.)
-      Katman( kod: EKL-F11, kullanır: TAKIM-EKLENTI, ad: "ide-asinalik",
+      Katman( kod: EKL-F11, takım: TAKIM-EKLENTI, ad: "ide-asinalik",
         ne: "🧭 IDE-aşinalık boşlukları kapanır: kimlik-gezinme ailesi (tanıma-git · referans-bul · F2 · Ctrl+T) + imza-yardımı + tıklanır yollar + kaydette-biçimle — envanterin tek sistematik boşluğu 'koddan koda zıplama' kas hafızasıydı, bu Faz onu kapatır" ) {
 
         AltKatman(
@@ -736,10 +838,9 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
           }
         }
       }
-    }
 
     // ── FAZ 12 · VİTRİN GÖRSELLERİ: iki README'nin ilk ekran görüntüleri (Founder 2026-09-08) ──
-    Katman( kod: EKL-F12, kullanır: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
+    Katman( kod: EKL-F12, takım: TAKIM-EKLENTI, ad: "Vitrin Görselleri",
       ne: "🖼️ Kök README ile mağaza README'sinin görselsiz olduğu 2026-09-08 gecesi ölçülmüştür: iki yüzde toplam bir rozet, sıfır ekran görüntüsü, sıfır görsel dil. Bu Katman gerçek koşudan çekilmiş kareleri iki yüze yerleştirir; kare üretilmez, çekilir." ) {
       AltKatman( kod: ALT-EKL-F12-VITRIN, departman: planlama, ad: "Mağaza ve Depo Vitrini",
         ne: "🖼️ Depo vitrini kök README, mağaza vitrini eklenti README'sidir; ikisi aynı kareleri aynı raftan okur ve mağaza göreli yolu paketleme sırasında depo adresine çevirir" ) {
@@ -759,6 +860,7 @@ Blok( kod: BLK-EKLENTI, ad: "eklenti-olgunlastirma", uygular: ORK-7 ) {   // A02
         }
         koşu: "2026-09-10 · KAPANDI. İki kare diskte duruyor ve dört ölçütün dördü de ölçüldü: Türkçe kök belgesi iki, İngilizce kök belgesi iki ve mağaza belgesi bir atıf taşıyor; İngilizce belgeye ayrıca Türkçe belgede olup onda eksik olan editör cümlesi de çevrilerek eklendi, çünkü ikinci kare o cümleye bağlıdır. Atıf verilen iki dosya diskte çözülüyor, depo denetimi sıfır hata veriyor ve ekran rafı beyansız yapı tanısı üretmiyor. Mağaza belgesi göreli yol değil doğrudan depo adresi taşıdığı için paketleme sırasında çevrilecek bir yol yoktur ve paketleme dışlaması o rafı bilinçle dışarıda bırakır; bu ölçüt kendiliğinden sağlanmıştır."
       }
+    }
     }
 
     // ── Bu plandaki Adımların meyveleri ──────────────────────────────────────────

@@ -36,7 +36,7 @@
 Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle", uygular: ORK-7,
   ne: "🪵 Tanı metni envanteri → reform ölçütü ve şablonu → dosya dosya uygulama → test hizası" ) {
 
-  Katman( kod: KAT-MDR-ENVANTER, kullanır: TAKIM-CEKIRDEK, ad: "envanter ve ölçüt",
+  Katman( kod: KAT-MDR-ENVANTER, takım: TAKIM-CEKIRDEK, ad: "envanter ve ölçüt",
     ne: "🌿 Önce ölçmek: hangi metin zaten iyi, hangisi reform istiyor" ) {
 
     AltKatman( kod: ALT-MDR-OLCUT, departman: planlama, ad: "ölçüt ve envanter",
@@ -57,7 +57,7 @@ Blok( kod: BLK-MDR, ad: "Graf motorunun dil reformu — tanılar insan diliyle",
     }
   }
 
-  Katman( kod: KAT-MDR-UYGULAMA, kullanır: TAKIM-CEKIRDEK, ad: "reform uygulaması",
+  Katman( kod: KAT-MDR-UYGULAMA, takım: TAKIM-CEKIRDEK, ad: "reform uygulaması",
     ne: "🌿 Onaylı şablonun metinlere uygulanması — dosya dosya, testleriyle birlikte" ) {
 
     AltKatman( kod: ALT-MDR-METIN, departman: kodlama, ad: "metin reformu",

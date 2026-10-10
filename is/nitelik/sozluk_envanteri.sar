@@ -35,7 +35,7 @@
   öğrenen geliştiricinin ve ajanın iç-jargon haritasıdır. Kavram rehberi
   bu dosyayı "Sarmal terimleri" katmanı olarak ayrı tutmalıdır.
 
-  ## Varlık ② — bilgi/flutter_sozluk/ (4 dosya · 488 satır · Markdown)
+  ## Varlık ② — ogreti/bilgi/sozluk/flutter/ (4 dosya · 488 satır · Markdown · eski adı bilgi/flutter_sozluk, raf düzenine 2026-08-24 Founder onayıyla taşındı)
   **Kapsam:** Flutter/Dart terimlerinin Türkçe karşılıkları üç konu
   dosyasında: genel.md (295 satır — mimari · düzen · etkileşim · tema ·
   durum yönetimi · navigasyon · veri · ağ · test · platform · i18n),
@@ -132,6 +132,6 @@
 
 Çıkarım( kod: CKR-SOZLUK-ENVANTER, kaynak: "KVR-A01 envanteri (keşif oturum 56 · rapor oturum 57): dört sözlük varlığı kaynak dosyalardan programatik sayımla haritalandı",
          referans: [ DIL-1.1, OGR-2.1 ],
-         ne: "📚 Envanter hükmü: makine tarafının tek sağlıklı omurgası bilgi/tasarim_sozlugu/kayit.json'dur (~257 kavram, D7 adları işli); KAVRAMLAR.md Sarmal-jargon katmanı, flutter_sozluk tarihsel köken, tasarim-terimleri.md insan-yüz zenginleştiricisidir. Çift-kaynak sapması ölçülmüştür: stack-eslemesi.json aynı sözlüğün eski ikizidir — D7 adlandırması işlenmemiş (buton/kutu), mantik ve matematik bölümleri yoktur; ortak kavram-kimliği ihtiyacı varsayım değil ölçülmüş gerçektir. Boşluk listesi altı kalemdir (mega menü · bağlam menüsü · menü çubuğu · basamaklı alt-menü · kırıntı yolu · sayfalama) ve ortak nitelikleri web/masaüstü kökenli desenler olmalarıdır — sözlük Flutter kataloğundan doğduğu için mobil yanlıdır",
+         ne: "📚 Envanter hükmü: makine tarafının tek sağlıklı omurgası bilgi/tasarim_sozlugu/kayit.json'dur (~257 kavram, D7 adları işli); KAVRAMLAR.md Sarmal-jargon katmanı, ogreti/bilgi/sozluk/flutter (eski adıyla flutter_sozluk) tarihsel köken, tasarim-terimleri.md insan-yüz zenginleştiricisidir. Çift-kaynak sapması ölçülmüştür: stack-eslemesi.json aynı sözlüğün eski ikizidir — D7 adlandırması işlenmemiş (buton/kutu), mantik ve matematik bölümleri yoktur; ortak kavram-kimliği ihtiyacı varsayım değil ölçülmüş gerçektir. Boşluk listesi altı kalemdir (mega menü · bağlam menüsü · menü çubuğu · basamaklı alt-menü · kırıntı yolu · sayfalama) ve ortak nitelikleri web/masaüstü kökenli desenler olmalarıdır — sözlük Flutter kataloğundan doğduğu için mobil yanlıdır",
          kanıt: "bölüm ve kavram adetleri JSON'dan programatik sayıldı · sapma örnekleri kavram-kavram karşılaştırmayla ölçüldü (kapsayıcı↔kutu, düğme↔buton, animasyonlu-kapsayıcı↔animasyonlu-kutu, ios-düğme↔ios-buton) · güncellik git geçmişinden dosya-dosya bakıldı · menü ve gezinme aileleri tam listeyle belge gövdesindedir",
          sınır: "yalnız envanter ve değerlendirme — hiçbir sözlüğe kavram eklenmemiş, hiçbir içerik değiştirilmemiştir; çift-kaynak hükmü (kayit.json tek kanon, stack-eslemesi emeklilik ya da üretilen-yansıma) ve boşluk kalemlerinin eklenmesi Founder onayı bekler" )

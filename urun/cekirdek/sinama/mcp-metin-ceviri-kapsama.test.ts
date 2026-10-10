@@ -78,31 +78,40 @@ test("CDL-A05 nöbeti: 18 araç/34 parametre eksiksiz çevrilir; kimlik ve şema
     prizma: ["kaynak", "yuz"],
     "durum-guncelle": ["dizin", "kod", "durum"],
   };
+  // EKL-F6-A07: `dizin` hiçbir araçta zorunlu değildir; verilmezse oturumun çalışma dizini kullanılır.
   const beklenenZorunlu: Record<string, readonly string[] | undefined> = {
-    sef: ["adim", "dizin"],
+    sef: ["adim"],
     ogret: undefined,
     kavram: undefined,
     karne: undefined,
     basla: undefined,
     dogus: ["hedef"],
-    graf: ["dizin"],
-    gezin: ["kod", "dizin"],
+    graf: undefined,
+    gezin: ["kod"],
     denetle: undefined,
     kurallar: undefined,
     siniflama: undefined,
-    "denetle-proje": ["dizin"],
-    iskelet: ["dizin"],
-    etki: ["kod", "dizin"],
-    bul: ["metin", "dizin"],
+    "denetle-proje": undefined,
+    iskelet: undefined,
+    etki: ["kod"],
+    bul: ["metin"],
     bicimle: ["kaynak"],
     prizma: ["kaynak", "yuz"],
-    "durum-guncelle": ["dizin", "kod", "durum"],
+    "durum-guncelle": ["kod", "durum"],
   };
   assert.deepEqual(tr.map((a) => a.name), beklenenAdlar);
   assert.deepEqual(en.map((a) => a.name), beklenenAdlar);
+  // EKL-F6-A03 · Founder hükmü 2026-09-16: bir araç açıklaması aracın NE YAPTIĞINI
+  // anlatır, modele NASIL DAVRANACAĞINI söylemez; MCP dizin ölçütü de bunu ister.
+  // Eski kullanım-kapısı kuyruğu (NE ZAMAN · WHEN) ile alışkanlık buyruğu bu yüzden
+  // katalogdan çıkarıldı. Nöbet iki hanenin de DOLU olduğunu ölçmeyi sürdürür ve
+  // buna ek olarak buyrukların GERİ DÖNMEDİĞİNİ ölçer — kural gevşemedi, yön değişti.
+  const yonlendirmeKalibi = /NE ZAMAN:|WHEN:|ALIŞKANLIK|HABIT:/u;
   for (let i = 0; i < tr.length; i++) {
-    assert.match(tr[i].description, /NE ZAMAN:/u, `${tr[i].name} Türkçe kullanım kapısını taşımıyor`);
-    assert.match(en[i].description, /WHEN:/u, `${en[i].name} İngilizce kullanım kapısını taşımıyor`);
+    assert.ok(tr[i].description.trim(), `${tr[i].name} Türkçe açıklaması boş`);
+    assert.ok(en[i].description.trim(), `${en[i].name} İngilizce açıklaması boş`);
+    assert.doesNotMatch(tr[i].description, yonlendirmeKalibi, `${tr[i].name} Türkçe açıklaması davranış buyruğu taşıyor`);
+    assert.doesNotMatch(en[i].description, yonlendirmeKalibi, `${en[i].name} İngilizce açıklaması davranış buyruğu taşıyor`);
     assert.deepEqual(Object.keys(tr[i].inputSchema.properties), beklenenParametreler[tr[i].name]);
     assert.deepEqual(Object.keys(en[i].inputSchema.properties), beklenenParametreler[en[i].name]);
     assert.deepEqual(tr[i].inputSchema.required, beklenenZorunlu[tr[i].name]);

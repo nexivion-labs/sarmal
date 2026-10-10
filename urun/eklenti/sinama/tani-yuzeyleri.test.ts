@@ -84,6 +84,10 @@ const TERFI_RET_KIMLIKLERI = new Set([
   // mührü): arşiv ya da eğitim mühürlü dosyayı türüyle ve adıyla listeler, bir
   // sapma bildirmez; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
   "dosya-mührü",
+  // On dördüncüsü 2026-09-19 tarihinde Founder hükmüyle doğdu (KPS-FAZ-A02 · MIM-1.2
+  // projesiz Faz): hiçbir Proje köküne çözülemeyen Fazı bildirir, yerleşim ya da
+  // tarih dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "projesiz-faz",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
@@ -334,7 +338,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on iki kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on üç kimlik Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -357,10 +361,12 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on iki kimlik Bildirim
   // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
   assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 47);
   // On yedinci uyarı kimliği MIM-3.4 `geçersiz-dosya-adı`dır (KPS-MHR-A01 · Founder hükmü 2026-09-11).
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 17);
+  // KPS-CEL-A01 (2026-09-19): MIM-3.2 `kitaplıksız-kök` uyarısıyla on yediden on sekize çıktı.
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 18);
   // On ikinci bilgi kimliği ORK-8 mühür dürüstlüğü bekçisidir (KPS-MVS-A01 · 2026-09-10);
   // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 14);
+  // On beşincisi MIM-1.2 projesiz Faz gözlemidir (KPS-FAZ-A02 · Founder hükmü 2026-09-19).
+  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 15);
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -604,12 +610,13 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // 2026-09-11 (KPS-MHR-A01): MIM-3.4 `dosya-mührü` gözlemi bilgi düzeyinde doğdu
   // ve küme ON İKİYE çıktı; aynı gün doğan `sonraya-bırakılmış-dosya` bilgi
   // düzeyinde olmasına karşın Hatırlatıcılar hanesine gider.
-  assert.equal(yeniBildirim, 12,
-    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi ve MIM-3.4 dosya mührü Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 `projesiz-faz` gözlemi bilgi düzeyinde doğdu ve küme ON ÜÇE çıktı.
+  assert.equal(yeniBildirim, 13,
+    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi, MIM-3.4 dosya mührü ve MIM-1.2 projesiz Faz gözlemi Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
   // 2026-09-11: MIM-3.4 `geçersiz-dosya-adı` uyarı düzeyinde doğdu ve küme altmış dörde çıktı.
-  assert.equal(yeniProblems, 64, "A05'in 47 hata ve 16 uyarı kimliği ile MIM-3.4 uyarısı Problems'a gitmelidir");
+  assert.equal(yeniProblems, 65, "A05'in 47 hata ve 16 uyarı kimliği ile MIM-3.4 ve MIM-3.2 uyarıları Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,

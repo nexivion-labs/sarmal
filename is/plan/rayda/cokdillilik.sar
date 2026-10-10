@@ -60,7 +60,7 @@ Dil tercihi İngilizce olan bir kullanıcı Sarmal'ı uçtan uca Türkçe görme
 Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
   ne: "🌍 yayın kapısını geçiren İngilizce okuma yüzeyi — kaynak Türkçe kalır, görünen her şey çevrilir" ) {
 
-  Katman( kod: CDL-SOZLUK, kullanır: TAKIM-CEKIRDEK, ad: "sözlük ve tanı metinleri",
+  Katman( kod: CDL-SOZLUK, takım: TAKIM-CEKIRDEK, ad: "sözlük ve tanı metinleri",
     ne: "📖 Çeviri altyapısının doldurulması ve motor metinlerinin toplanması" ) {
 
     AltKatman( kod: CDL-SOZLUK-K1, ad: "sözlük", departman: kodlama,
@@ -131,7 +131,7 @@ Blok( kod: BLK-COKDILLILIK, ad: "İngilizce yüzey",
 
   }
 
-  Katman( kod: CDL-YUZEY, kullanır: TAKIM-EKLENTI, ad: "eklenti ve araç yüzeyi",
+  Katman( kod: CDL-YUZEY, takım: TAKIM-EKLENTI, ad: "eklenti ve araç yüzeyi",
     ne: "🖥️ Kullanıcının doğrudan gördüğü yüzeylerin yerelleştirilmesi" ) {
 
     AltKatman( kod: CDL-YUZEY-K1, ad: "eklenti", departman: kodlama,
