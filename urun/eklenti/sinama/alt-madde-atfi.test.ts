@@ -17,9 +17,9 @@
 import "./dil-kur.ts";
 import { belgeKoy } from "./kabuk-kur.ts";
 import { Position, Uri, workspace, type SahteBelge } from "./vscode-sahtesi.ts";
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { kimlikIndeksi, dosyayiTara } from "../../cekirdek/src/kimlik.ts";
@@ -56,6 +56,8 @@ const PLAN = [
 ].join("\n");
 
 const KOK = mkdtempSync(join(tmpdir(), "sarmal-alt-madde-"));
+// Geçici kök dosyanın bütün sınamaları bitince silinir; `after` bir sınama düşse de koşar.
+after(() => rmSync(KOK, { recursive: true, force: true }));
 const KANON_YOLU = join(KOK, "kanon.sar");
 const PLAN_YOLU = join(KOK, "plan.sar");
 writeFileSync(KANON_YOLU, KANON);
