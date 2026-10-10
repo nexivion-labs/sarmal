@@ -5998,7 +5998,7 @@ sessizce körleşmez.
             ne:    "Dört bayat yerden kanon dışındaki üçü düzeltildi ve nöbete bağlandı: MEK-SEF'in sözleşme sayısı, öğretim üretecinin künyesindeki komut ve emekli raf kodunu anan yorum. Dördüncüsü kanondadır: TIP-1.14 sınıflamada hiç var olmamış bir Kimlik tipini sayar; düzeltme önerisi sınıflamanın on iki arkayüz tipiyle birebir doğrulandı ve Founder kapısındaki HST-MTR-A13'e devredildi. Yeni raf nöbetinin dosyası hızlı ağaç kümesinde değildir; bu not HTR-AGAC-KUMESI-UYELIK-NOBETI kaydına eklendi." )
         }
 
-        Adım( kod: HST-MTR-A14, ad: "Doğuş Şablonunda İz Klasörü", durum: beklemede, öncelik: p2, üretir: [ KOD-DOGUS ], bağımlı: [],
+        Adım( kod: HST-MTR-A14, ad: "Doğuş Şablonunda İz Klasörü", durum: geliştirmede, öncelik: p2, üretir: [ KOD-DOGUS ], bağımlı: [],
           referans: [ HST-MTR-A04 ],
           ne: "🙈 Doğan bir proje motorun iz klasörünü sürüm denetiminde izlenmeyen dosya olarak göstermesin" ) {
           görev: "HST-MTR-A04'ün bağımsız incelemesi (2026-10-10) doğuş şablonunun yok sayma listesinin `.sarmal/` klasörünü kapsamadığını ölçmüştür: doğan bir projede motorun iz dosyaları temiz bir makinede izlenmeyen dosya olarak görünür. Motorun ham istem taşıyan kendi izi de aynı klasöre yazdığı için bu bir gizlilik kusurudur ve yürütücü izi varsayılan açılacaksa önkoşuldur. Şablona ve genişletme kuralına klasör eklenir; önce doğan bir fikstürde kırmızı sınama yazılır."
@@ -6093,7 +6093,7 @@ sessizce körleşmez.
             ne:    "Eklentinin bağlantı dekoru, ipucu ve F12'si noktalı madde kodunu çekirdekteki tek kuyruk kuralıyla tanıyor; ORK-1.2 yazımı artık ORK-1.2 kartını açıyor ve noktasız kodların davranışı değişmedi. Önceki inceleme ile bu ölçümdeki sayı farkı yöntem farkıdır ve inceleyici iki sayıyı birbirine bağlamıştır. Adım, Founder gerçek editörde bağlantıyı ve ipucunu görene kadar açık kalır; kart başlığındaki adlı Kural kusuru HST-YUZ-A06'dadır." )
         }
 
-        Adım( kod: HST-YUZ-A06, ad: "İpucu Kartında Adlı Kuralın Tipi", durum: beklemede, öncelik: p2, üretir: [ KOD-IPUCU-CEKIRDEK ], bağımlı: [ HST-YUZ-A05 ],
+        Adım( kod: HST-YUZ-A06, ad: "İpucu Kartında Adlı Kuralın Tipi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-IPUCU-CEKIRDEK ], bağımlı: [ HST-YUZ-A05 ],
           referans: [ HST-YUZ-A05 ],
           ne: "🏷️ Adlı bir Kuralın ipucu kartı başlığında Kuralın adını değil tipini göstersin" ) {
           görev: "HST-YUZ-A05'in bağımsız incelemesi (2026-10-10) ipucu kartının başlığında adlı bir Kural için tip yerine Kuralın adının durduğunu ölçmüştür: satır taraması da sözdizimi ağacı yedeği de `Kural ad( … )` biçiminde adı tip sayar ve kart \"DIL-1.5 — türkçeOrthografi\" biçiminde açılır. Depoda 169 adlı Kural tanımı vardır; 60 noktasız Kuralda kusur önceden de vardı, 109 noktalı Kural A05 ile görünür olmuştur. Başlık tipi doğru gösterecek biçimde onarılır; önce adlı bir Kuralla kırmızı sınama yazılır."
