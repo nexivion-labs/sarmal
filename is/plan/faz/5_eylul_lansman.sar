@@ -5860,7 +5860,7 @@ sessizce körleşmez.
           sınır: "Tanılar .sar düğümü olarak yeniden yazılmaz; sicil tek kaynak kalır"
         }
 
-        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-YOLHARITA ], bağımlı: [],
+        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-YOLHARITA, KOD-MCP, KOD-KOPRU-IZ, KOD-YUZEY-METINLERI, KOD-SNM-YURUTUCU-IZI ], bağımlı: [],
           referans: [ HTR-YURUTUCU-IZI-KOSUM-YUZUNE-DUSMUYOR ],
           ne: "👣 İşi dış bir yürütücü yaptığında da Adımın altında koşum izi görünsün" ) {
           görev: "Yol haritası paneli koşum izi klasörünü dinlemektedir, fakat iz yalnız motorun kendi döngüsü bir model çağırdığında yazılmaktadır. MCP sunucusunun sef ve durum-guncelle çağrıları gibi yürütücü temas noktalarında hafif bir iz kaydı yazılır; böylece Claude Code gibi bir yürütücünün işi de panelde Adımın altında görünür."
@@ -5870,6 +5870,9 @@ sessizce körleşmez.
             "iz yazımı kapatılabilir ve kişisel veri taşımaz; denetim 0 hata, süitler yeşil"
           ]
           sınır: "Ham istem ya da yanıt dış yürütücüden toplanmaz; yalnız çağrının kendisi izlenir"
+          koşu:  Koşum( kod: KSM-HST-MTR-A04, tarih: 2026-10-10, mühür: COMPLETED, karar: eskalasyon,
+            kanıt: "işlemeler d1e5503 ve 78063a9 (üretim 1bc6ba7, 7088cac) · çekirdek 1688/1688, eklenti 912/912, birleşik ağaçta çekirdek 1697/1697 ve eklenti 916/916 · depo denetimi 0 hata · bağımsız inceleme: iz satırı yalnız zaman, Adım, rol, araç, durum ve yürütücü adını taşıyor; başarısız temas iz bırakmıyor; on bir mutasyonun on biri yakalandı; iz açıkken araç listesi 15 okur ve 3 yazardan 14 okur ve 4 yazara geçiyor, yani sef'in salt okunur beyanı bozuluyor; iz varsayılan açılınca EKL-F6-A03'ün iki nöbeti kırmızıya dönüyor; kabuk ortamından sızan değişkenin aynı nöbeti kırması 78063a9 ile kapandı",
+            ne:    "sef ve durum-guncelle çağrıları iz açıkken koşum izine bir satır düşürüyor ve Yol Haritası paneli bu satırı Adımın altında yürütücü satırı olarak gösteriyor; ham istem ve yanıt toplanmıyor, satır tıklanınca boş kart açılmıyor. İz varsayılan olarak kapalıdır ve MCP ayarındaki bir değişkenle açılır, çünkü sef'te izi varsayılan açmak aracın salt okunur beyanını bozar; varsayılan Founder kararına bırakıldı ve Adım Founder'ın canlı bakışına kadar açık kalır. Kaydın önerdiği ham istem kancası sınır gereği uygulanmadı; iz klasörünün doğuş şablonunda yok sayılması HST-MTR-A14'te, rotasyon ve belge eksiği HTR-YURUTUCU-IZI-ROTASYON-VE-BELGE kaydındadır." )
         }
 
         Adım( kod: HST-MTR-A09, ad: "Ölü İz Toplayıcısında Adlı Kural", durum: tamamlandı, öncelik: p2, üretir: [ KOD-DENETCI ], bağımlı: [ BKM-BUG-A12 ],
@@ -6075,7 +6078,7 @@ sessizce körleşmez.
             ne:    "Kök yüzeyi nöbeti kod çitlerinin içini artık ölçmüyor; README'deki örnek çıktı işleme kancasında sahte uyarı üretmiyor ve çit dışındaki kırık kimlik yakalanmaya devam ediyor. README metnine dokunulmadı. Varlık içi metin atıf kapısı bilinçle eski kipte bırakıldı; iki kapının çit kuralının birleşmesi HTR-METIN-ATIF-CIT-KURALI hatırlatıcısına yazıldı." )
         }
 
-        Adım( kod: HST-YUZ-A05, ad: "Eklentide Alt Madde Bağlantısı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-ATIF-CEKIRDEK, KOD-EKL-IPUCU ], bağımlı: [ HST-MTR-A06 ],
+        Adım( kod: HST-YUZ-A05, ad: "Eklentide Alt Madde Bağlantısı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-ATIF-CEKIRDEK, KOD-EKL-IPUCU, KOD-IPUCU-CEKIRDEK, KOD-GEZINME, KOD-KIMLIK, KOD-SNM-ALT-MADDE-ATFI ], bağımlı: [ HST-MTR-A06 ],
           referans: [ HTR-GEZIN-ONEK-ESLESMESI-ATIF-SISIRIYOR ],
           ne: "🔗 Eklentinin bağlantı dekoru ve ipucu ORK-1.2 yazımını ORK-1 sanmasın" ) {
           görev: "HST-MTR-A06'nın bağımsız incelemesi (2026-10-10) eklentinin bağlantı dekoru (urun/eklenti/src/atif-cekirdek.ts) ile ipucunun (urun/eklenti/src/ipucu.ts) kod desenlerinin noktalı madde kuyruğunu taşımadığını ölçmüştür: altı çizilen ve ipucunda açılan kart üst maddeye ait olmakta, F12 ise doğru alt maddeye gitmektedir. Altmış dört dosyadaki 2450 noktalı yazımın 2435'inde kullanıcı yanlış kartı görür. Desenler çekirdeğin ve gezinme deseninin kuyruk kuralına hizalanır; önce noktalı bir fikstürle kırmızı sınama yazılır."
@@ -6085,6 +6088,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Eklentide ikinci bir kuyruk kuralı icat edilmez; kural çekirdekteki tanımdan türer"
+          koşu:  Koşum( kod: KSM-HST-YUZ-A05, tarih: 2026-10-10, mühür: COMPLETED, karar: eskalasyon,
+            kanıt: "işlemeler 41cd3d0 ve 7f36d7a (üretim c870720, 5b562bd) · çekirdek 1688/1688, eklenti 912/912, birleşik ağaçta çekirdek 1697/1697 ve eklenti 916/916 · depo denetimi 0 hata · bağımsız inceleme: kuyruk kuralı yalnız çekirdekte yaşıyor ve dekor, ipucu, tanım taraması ile F12 onu okuyor; 64 dosyadaki 2638 noktalı yazımın 2454'ü kendi kartına bağlanıyor, 170'i kendi tanım satırı, 14'ünün tanımı yok ve yanlış karta giden yok; ipucu sahte kabukla 2638 konumda koşturuldu ve üst madde kartı hiç açılmadı; noktasız 6091 bağlantı aralığı ve 20032 ipucu konumu önce ve sonra birebir aynı; sekiz mutasyonun sekizi yakalandı; sahte kabuğun sözcük aralığı davranışı VS Code kaynağıyla satır satır karşılaştırıldı",
+            ne:    "Eklentinin bağlantı dekoru, ipucu ve F12'si noktalı madde kodunu çekirdekteki tek kuyruk kuralıyla tanıyor; ORK-1.2 yazımı artık ORK-1.2 kartını açıyor ve noktasız kodların davranışı değişmedi. Önceki inceleme ile bu ölçümdeki sayı farkı yöntem farkıdır ve inceleyici iki sayıyı birbirine bağlamıştır. Adım, Founder gerçek editörde bağlantıyı ve ipucunu görene kadar açık kalır; kart başlığındaki adlı Kural kusuru HST-YUZ-A06'dadır." )
         }
 
         Adım( kod: HST-YUZ-A06, ad: "İpucu Kartında Adlı Kuralın Tipi", durum: beklemede, öncelik: p2, üretir: [ KOD-IPUCU-CEKIRDEK ], bağımlı: [ HST-YUZ-A05 ],
@@ -6546,3 +6552,15 @@ Kod( kod: KOD-SNM-VSCODE-SAHTESI, dosya: "urun/eklenti/sinama/vscode-sahtesi.ts"
   ne: "🛡️ Editör kabuğunun en küçük sahtesi — komut, bildirim, pano, düzenleme, rozet ve görünüş çağrılarını kayda yazar (BKM-DNT-A09)" )
 Kod( kod: KOD-SNM-DAVRANIS-NOBETI-VSCODE, dosya: "urun/eklenti/sinama_vscode/suite/davranis-nobeti.test.ts",
   ne: "🛡️ Gerçek editörde üç yüzey senaryosu — Yol Haritası, onay kuyruğu ve Onaylar paneli (BKM-DNT-A09)" )
+
+// 🍎 Hatırlatıcı Hasadı teslimi (2026-10-10): bağlantı ve yürütücü izi
+Kod( kod: KOD-SNM-ALT-MADDE-ATFI, dosya: "urun/eklenti/sinama/alt-madde-atfi.test.ts",
+  ne: "🔗 Alt madde atfı nöbeti — noktalı madde kodunun bağlantı dekoru, ipucu ve F12 yolunda kendi kartına gittiğini, noktasız kodların davranışının değişmediğini ve kuyruk kuralının yalnız çekirdekte yaşadığını ölçer (HST-YUZ-A05)" )
+Kod( kod: KOD-SNM-YURUTUCU-IZI, dosya: "urun/eklenti/sinama/yurutucu-izi.test.ts",
+  ne: "🧭 Yürütücü izi nöbeti — gerçek MCP alt sürecinin yazdığı izi Yol Haritası sağlayıcısına verir; satırın ham istem vaat etmediğini ve motorun kendi satırlarının değişmediğini ölçer (HST-MTR-A04)" )
+Kod( kod: KOD-KOPRU-IZ, dosya: "urun/cekirdek/src/kopru/iz.ts",
+  ne: "🧭 Koşum izi yazıcısı — motor döngüsünün ve isteğe bağlı yürütücü temasının satırlarını çalışma alanının iz klasörüne yazar; yürütücü satırı ham istem ve yanıt taşımaz (HST-MTR-A04)" )
+Kod( kod: KOD-KOPRU-NVIDIA, dosya: "urun/cekirdek/src/kopru/nvidia.ts",
+  ne: "🔌 Etmen köprüsü — ŞEF ile Etmen sınırının canlı dolgusu; motor döngüsüne dışarıdan enjekte edilir ve yerel curl ile senkron çağrı yapar (STR-3 demo politikası, STR-3.1 sıfır bağımlılık)" )
+Kod( kod: KOD-KOPRU-LIG, dosya: "urun/cekirdek/src/kopru/lig.ts",
+  ne: "🎻 Plan görüşü ligi — bir planı birden çok modele sunup yapılandırılmış görüşleri saf bir sentezle uzlaştırır; Etmen köprüsünün senkron çekirdeğini paylaşır (STR-3.2 soyu)" )
