@@ -27,7 +27,7 @@ import assert from "node:assert/strict";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { etkinlestir, geciciAlan, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
+import { etkinlestir, geciciAlan, kabukTemizle, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
 
 const yol = (g: string): string => fileURLToPath(new URL(g, import.meta.url));
 const PAKET = JSON.parse(readFileSync(yol("../package.json"), "utf8")) as {
@@ -90,7 +90,9 @@ test("MGZ-A02: Sarmal panelleri güvene bağlıdır; kısıtlı modda sağlayıc
 // ── ② DAVRANIŞ: gerçek giriş sahte editörde ─────────────────────────────────
 
 const acik: EtkinEklenti[] = [];
-after(() => { for (const e of acik.splice(0)) e.kapat(); });
+// Etkinleşmeler kapanır; açılan her geçici klasör ve paketlenmiş giriş,
+// sınamalar başarısız olsa da silinir.
+after(() => { for (const e of acik.splice(0)) e.kapat(); kabukTemizle(); });
 
 /** Tek projeli ağaç: sağlam bir dosya ve sözdizimi kırık bir dosya. */
 function agacKur(): { alan: string; plan: string; kirik: string } {
