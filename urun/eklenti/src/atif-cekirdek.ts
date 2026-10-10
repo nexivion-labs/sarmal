@@ -10,10 +10,17 @@
 //   satır ayrımı yapmaz. Fikstürlü sınama: sinama/atif-ipucu.test.ts.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { MADDE_KUYRUGU } from "../../cekirdek/src/kimlik.ts";
+
+const KOD_GOVDESI = String.raw`[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+`;
+
 /** KOD sözcesi: tireli BÜYÜK-harf kimlik (gezinme/ipucu ile aynı aile).
  *  ORK-4 ad alanı (`PRJ-A::KOD-X`) TEK sözcedir (KPS-ADA-A01): ayraç desenin
- *  dışında kalsaydı dekor sözcenin iki yarısını iki ayrı atıf sanırdı. */
-export const KOD_DESENI = /[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+(?:::[\p{Lu}][\p{Lu}\p{N}]*(?:-[\p{Lu}\p{N}]+)+)?/gu;
+ *  dışında kalsaydı dekor sözcenin iki yarısını iki ayrı atıf sanırdı.
+ *  HST-YUZ-A05: noktalı madde kodu (`ORK-1.2`) da TEK sözcedir. Kuyruk kuralı
+ *  çekirdeğin kimlik deseninden gelir ve burada yeniden yazılmaz; kuyruksuz
+ *  desen `ORK-1.2` yazımını üst maddeye bağlıyor, F12 ise alt maddeye gidiyordu. */
+export const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?${MADDE_KUYRUGU}`, "gu");
 
 export interface AtifAraligi {
   satir: number;       // 0-tabanlı

@@ -77,12 +77,15 @@ const KOD_GOVDESI = `${KOD_PARCASI}(?:-${KOD_PARCASI})+`;
 // ad alanının yarısına atlardı; ayraç bu yüzden desenin içinde yaşar.
 // HST-MTR-A06 · KİMLİK SINIRI: noktalı madde kodu (ör. ORK-1.2) da TEK
 // kimliktir. Belirteç (Karar D) noktayı yalnız ardından rakam geldiğinde ve en
-// çok iki derinlik yutar; eklentinin sözce deseni (gezinme.ts KOD_SOZCUK) aynı
-// kuyruğu taşır. Kuyruk burada eksik olduğu sürece metin katmanı `ORK-1.2`
-// yazımını önekinden kesiyor ve üst maddeye sahte atıf yazıyordu (2026-10-10
-// ölçümü: ORK-1'e bildirilen 204 gelen atfın 153'ü alt madde yazımıydı). Cümle
-// sonundaki noktayı rakam izlemediği için kuyruğa girmez, yalın atıf düşmez.
-const MADDE_KUYRUGU = String.raw`(?:\.[0-9]+){0,2}`;
+// çok iki derinlik yutar. Kuyruk burada eksik olduğu sürece metin katmanı
+// `ORK-1.2` yazımını önekinden kesiyor ve üst maddeye sahte atıf yazıyordu
+// (2026-10-10 ölçümü: ORK-1'e bildirilen 204 gelen atfın 153'ü alt madde
+// yazımıydı). Cümle sonundaki noktayı rakam izlemediği için kuyruğa girmez,
+// yalın atıf düşmez.
+// HST-YUZ-A05 · TEK KAYNAK: eklentinin kod sözceleri (gezinme, bağlantı dekoru,
+// ipucu) kuyruğu buradan alır ve kendi kopyasını yazmaz. Kopya yaşadığı sürece
+// F12 alt maddeye giderken dekor ile ipucu üst maddenin kartını açıyordu.
+export const MADDE_KUYRUGU = String.raw`(?:\.[0-9]+){0,2}`;
 const KOD_DESENI = new RegExp(`${KOD_GOVDESI}(?:::${KOD_GOVDESI})?${MADDE_KUYRUGU}`, "g");
 const SINIR_DISI = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_-]/; // bitişikse eşleşme kod değildir
 const HARF_VAR = /[A-ZÇĞİÖŞÜ]/;

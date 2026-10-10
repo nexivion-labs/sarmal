@@ -155,6 +155,14 @@ export class MarkdownString {
   appendText(m: string): this { this.value += m; return this; }
   appendCodeblock(m: string): this { this.value += m; return this; }
 }
+export class Hover {
+  readonly contents: MarkdownString[];
+  readonly range?: Range;
+  constructor(icerik: MarkdownString | MarkdownString[], aralik?: Range) {
+    this.contents = Array.isArray(icerik) ? icerik : [icerik];
+    this.range = aralik;
+  }
+}
 
 // Sayım tipleri düz nesnedir: Node tip söküm kipi `enum` sözdizimini kabul etmez.
 export const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 } as const;
@@ -226,12 +234,84 @@ export class SahteBelge {
   constructor(fsPath: string, metin: string) { this.uri = Uri.file(fsPath); this.metin = metin; }
   get fileName(): string { return this.uri.fsPath; }
   get lineCount(): number { return this.metin.split("\n").length; }
-  getText(): string { return this.metin; }
+  /** Aralık verilirse yalnız onun metni döner (VS Code `getText(range)` anlamı). */
+  getText(aralik?: Range): string {
+    if (!aralik) return this.metin;
+    const satirlar = this.metin.split("\n");
+    if (aralik.start.line === aralik.end.line)
+      return (satirlar[aralik.start.line] ?? "").slice(aralik.start.character, aralik.end.character);
+    return [
+      (satirlar[aralik.start.line] ?? "").slice(aralik.start.character),
+      ...satirlar.slice(aralik.start.line + 1, aralik.end.line),
+      (satirlar[aralik.end.line] ?? "").slice(0, aralik.end.character),
+    ].join("\n");
+  }
   lineAt(n: number | Position): { text: string; lineNumber: number } {
     const satir = typeof n === "number" ? n : n.line;
     return { text: this.metin.split("\n")[satir] ?? "", lineNumber: satir };
   }
+  /**
+   * VS Code `TextDocument.getWordRangeAtPosition` anlamının kopyası (HST-YUZ-A05).
+   * İpucu ve gezinme sözceyi bu çağrıyla seçtiği için sahte, editörün sözcük
+   * yardımcısının (wordHelper.getWordAtText) davranışını taşır: boş dizgiyle
+   * eşleşen desen reddedilir, desen küresel bayrakla yeniden kurulur ve imleci
+   * kuşatan eşleşme imlecin önündeki on beşer karakterlik pencerelerle geriye
+   * doğru aranır. Eşleşmenin bittiği sütun da imleci kuşatmış sayılır.
+   * Varsayılan dil sözcük deseni sahtede yoktur; desensiz çağrı açıkça düşer.
+   */
+  getWordRangeAtPosition(konum: Position, desen?: RegExp): Range | undefined {
+    if (!desen) throw new Error("sahte kabuk dilin varsayılan sözcük desenini bilmez");
+    if (bosDizgiyleEslesir(desen)) throw new Error(`[getWordRangeAtPosition]: boş eşleşen desen: ${desen.source}`);
+    const kuresel = desen.global ? desen
+      : new RegExp(desen.source, `g${desen.ignoreCase ? "i" : ""}${desen.multiline ? "m" : ""}${desen.unicode ? "u" : ""}`);
+    kuresel.lastIndex = 0;
+    const sozcuk = sozcukBul(konum.character + 1, kuresel, this.lineAt(konum.line).text, 0);
+    return sozcuk ? new Range(konum.line, sozcuk.bas - 1, konum.line, sozcuk.son - 1) : undefined;
+  }
   async save(): Promise<boolean> { this.isDirty = false; return true; }
+}
+
+/** VS Code `regExpLeadsToEndlessLoop` kopyası. */
+function bosDizgiyleEslesir(desen: RegExp): boolean {
+  if (["^", "^$", "$", "^\\s*$"].includes(desen.source)) return false;
+  const es = desen.exec("");
+  return !!(es && desen.lastIndex === 0);
+}
+
+/** VS Code `getWordAtText` kopyası (en çok 1000 karakter, 15 karakterlik pencere; süre bütçesi yok). */
+function sozcukBul(sutun: number, desen: RegExp, metin: string, ofset: number): { bas: number; son: number } | undefined {
+  if (metin.length > 1000) {
+    let bas = sutun - 500;
+    if (bas < 0) bas = 0;
+    else ofset += bas;
+    return sozcukBul(sutun, desen, metin.substring(bas, sutun + 500), ofset);
+  }
+  const konum = sutun - 1 - ofset;
+  let oncekiBaslangic = -1;
+  let es: RegExpExecArray | null = null;
+  for (let i = 1; ; i++) {
+    const baslangic = konum - 15 * i;
+    desen.lastIndex = Math.max(0, baslangic);
+    const bu = kusatanEslesme(desen, metin, konum, oncekiBaslangic);
+    if (!bu && es) break;
+    es = bu;
+    if (baslangic <= 0) break;
+    oncekiBaslangic = baslangic;
+  }
+  if (!es) return undefined;
+  desen.lastIndex = 0;
+  return { bas: ofset + 1 + es.index, son: ofset + 1 + es.index + es[0].length };
+}
+
+/** VS Code `_findRegexMatchEnclosingPosition` kopyası. */
+function kusatanEslesme(desen: RegExp, metin: string, konum: number, dur: number): RegExpExecArray | null {
+  let es: RegExpExecArray | null;
+  while ((es = desen.exec(metin))) {
+    const i = es.index || 0;
+    if (i <= konum && desen.lastIndex >= konum) return es;
+    if (dur > 0 && i > dur) return null;
+  }
+  return null;
 }
 
 /** Bir belgeyi bellek içi kabuğa koyar; `openTextDocument` onu bulur. */

@@ -9,7 +9,10 @@ import * as vscode from "vscode";
 import { agacYüz } from "../../cekirdek/src/agac.ts";   // ağaç-yüzü turu
 import { snfBul, rehberBul, simgeSec } from "./ortak.ts";
 // SAF veri mantığı — fikstürlü testte (NTK-A01): tanım taraması + hüküm eki + blok tespiti
-import { kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzetiCikar } from "./ipucu-cekirdek.ts";
+import {
+  kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzetiCikar,
+  IPUCU_KOD_SOZCESI, ipucuKodBicimliMi,   // HST-YUZ-A05: madde kuyruğu çekirdekten
+} from "./ipucu-cekirdek.ts";
 // VIT-GRAF-A14: satır-regex'in kaçırdığı (çok satırlı yazılmış) tanımlar için AST yedeği —
 // kimlik indeksi dekorla AYNI evrendir; süslü sözcenin ipucusuz kalması yapısal olarak kapanır.
 import { kimlikIndeksi, INDEKS_DISI, dosyaOkuGuvenli } from "../../cekirdek/src/kimlik.ts";
@@ -122,7 +125,7 @@ function yorumIcinde(doc: vscode.TextDocument, pos: vscode.Position): boolean {
 async function insanMetniKodIpucu(
   doc: vscode.TextDocument, pos: vscode.Position, etkinDil: CiktiDili,
 ): Promise<vscode.Hover | undefined> {
-  const kodAralik = doc.getWordRangeAtPosition(pos, /[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+/u);
+  const kodAralik = doc.getWordRangeAtPosition(pos, IPUCU_KOD_SOZCESI);
   if (!kodAralik) return undefined;
   const kelime = doc.getText(kodAralik);
   const kayit = (await kodIndeksle()).get(kelime);
@@ -221,12 +224,20 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
         }
       }
 
-      const aralik = doc.getWordRangeAtPosition(pos, /[\p{L}_][\p{L}\p{N}_]*(-[\p{L}\p{N}_]+)*/u);
+      // HST-YUZ-A05 · NOKTALI MADDE ATFI: genel sözcük deseni noktada durur ve
+      // `ORK-1.2` yazımından yalnız `ORK-1` kelimesini seçerek üst maddenin kartını
+      // açardı. Kod sözcesi bu yüzden önce madde kuyruğuyla birlikte aranır ve
+      // yalnız kuyruk taşıdığında kelime olur; kuyruksuz her sözceyi genel desen
+      // eskisi gibi seçer, dolayısıyla noktasız kodun ipucusu değişmez.
+      const kodSozcesi = doc.getWordRangeAtPosition(pos, IPUCU_KOD_SOZCESI);
+      const aralik = kodSozcesi && doc.getText(kodSozcesi).includes(".")
+        ? kodSozcesi
+        : doc.getWordRangeAtPosition(pos, /[\p{L}_][\p{L}\p{N}_]*(-[\p{L}\p{N}_]+)*/u);
       if (aralik) {
         const kelime = doc.getText(aralik);
 
         // F5-A02: KOD atfı → hedef düğümün koni önizlemesi (kim, ne, nerede)
-        if (/^[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+$/u.test(kelime)) {
+        if (ipucuKodBicimliMi(kelime)) {
           const kayit = (await kodIndeksle()).get(kelime);
           if (kayit) {
             const tipBilgi = snf.widgetTipleri.find((t) => t.ad === kayit.tip);

@@ -17,7 +17,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, butunAtiflar, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
+import { kimlikIndeksi, gezinmeSuzgeci, adAlanliTanimlar, butunAtiflar, MADDE_KUYRUGU, type DosyaSuzgeci } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanlı kod kardeş kökte çözülür (KPS-ADA-A01)
 import { GEZINME_METINLERI, gezinmeRetCumlesi, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
 import { gezinmeRetSebebi } from "./gezinme-cekirdek.ts";   // VIT-K78-A09: sessiz ret biter
 
@@ -25,8 +25,11 @@ import { gezinmeRetSebebi } from "./gezinme-cekirdek.ts";   // VIT-K78-A09: sess
  *  VS Code'un varsayılan sözcük deseni tirede böler — buradaki desen bölmez.
  *  ORK-4 ad alanı ayracı (`::`) da sözcenin İÇİNDEDİR (KPS-ADA-A01): ayraç
  *  dışarıda kalsaydı imleç `PRJ-A::KOD-X` üstündeyken yalnız yarısı seçilir ve
- *  F12 ad alanının kendisini arardı. */
-const KOD_SOZCUK = /[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*(?:::[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*)?(?:\.[0-9]+){0,2}/;
+ *  F12 ad alanının kendisini arardı. Noktalı madde kuyruğu (`ORK-1.2`)
+ *  çekirdeğin kimlik deseninden gelir; bağlantı dekoru ile ipucu da aynı
+ *  kaynaktan okur (HST-YUZ-A05), üç yüz aynı sözceyi seçer. */
+export const KOD_SOZCUK = new RegExp(
+  String.raw`[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*(?:::[0-9A-Za-zÇĞİÖŞÜçğıöşü_][0-9A-Za-zÇĞİÖŞÜçğıöşü_-]*)?${MADDE_KUYRUGU}`);
 
 export function gezinmeKaydi(
   context: vscode.ExtensionContext,

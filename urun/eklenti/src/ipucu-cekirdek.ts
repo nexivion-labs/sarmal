@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { kararMetniIpucuEki } from "./yuzey-metinleri.ts";
+import { MADDE_KUYRUGU } from "../../cekirdek/src/kimlik.ts";
 // ipucu-cekirdek.ts — 💡 İpucu SAF çekirdeği (NTK-A01 kapanış kalemi)
 //
 //   Hover penceresinin veri mantığı vscode'suz tek yerde yaşar:
@@ -19,12 +20,35 @@ import { kararMetniIpucuEki } from "./yuzey-metinleri.ts";
 
 export interface KodTanimi { kod: string; satir: number; tip: string; ne: string; hukum?: string; ozet?: string }
 
+// ── HST-YUZ-A05 · Noktalı madde kodu ipucuda da TEK sözcedir ─────────────────
+//   İpucu KOD atfını üç yerde tanır: insan metninde (belge bloğu, yorum) sözce bu
+//   desenle seçilir, kod bölgesinde genel sözcük deseninin bulduğu kelime bu
+//   biçimle sınanır ve kart, aşağıdaki tanım taramasının kaydından okunur. Üçü de
+//   madde kuyruğunu çekirdeğin kimlik deseninden alır (kimlik.ts MADDE_KUYRUGU).
+//   Kuyruksuz hâlde `ORK-1.2` üzerine gelen okuyucu üst maddenin kartını görüyor,
+//   `kod: ORK-1.2` satırı da ORK-1 adıyla kaydediliyordu. Ad alanı (`::`) bu
+//   desenlere bilinçle eklenmemiştir; ipucunun ad alanı davranışı bu Adımın dışındadır.
+const IPUCU_KOD_GOVDESI = String.raw`[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+`;
+
+/** İpucunun KOD sözcesi (getWordRangeAtPosition deseni): tireli BÜYÜK-harf kimlik + madde kuyruğu. */
+export const IPUCU_KOD_SOZCESI = new RegExp(`${IPUCU_KOD_GOVDESI}${MADDE_KUYRUGU}`, "u");
+
+const IPUCU_KOD_BICIMI = new RegExp(`^(?:${IPUCU_KOD_SOZCESI.source})$`, "u");
+
+/** Kelimenin tamamı ipucunun tanıdığı KOD biçiminde mi (madde kuyruğu dâhil)? */
+export function ipucuKodBicimliMi(kelime: string): boolean {
+  return IPUCU_KOD_BICIMI.test(kelime);
+}
+
+const KOD_TANIMI = new RegExp(
+  String.raw`([\p{L}][\p{L}\p{N}_]*)\(\s*(?:[^)]*?\s)?kod:\s*([\p{Lu}][\p{Lu}\p{N}-]*${MADDE_KUYRUGU})`, "u");
+
 /** Bir .sar metnindeki `kod: X` bildirimlerini satır satır tarar (ilk kazanan — dedup çağırandadır). */
 export function kodTanimlariTara(metin: string): KodTanimi[] {
   const tanimlar: KodTanimi[] = [];
   const satirlar = metin.split("\n");
   for (let i = 0; i < satirlar.length; i++) {
-    const es = /([\p{L}][\p{L}\p{N}_]*)\(\s*(?:[^)]*?\s)?kod:\s*([\p{Lu}][\p{Lu}\p{N}-]*)/u.exec(satirlar[i]);
+    const es = KOD_TANIMI.exec(satirlar[i]);
     if (!es) continue;
     let ne = /\bne:\s*"([^"]*)"/u.exec(satirlar[i])?.[1] ?? "";
     for (let j = i + 1; !ne && j < Math.min(i + 8, satirlar.length); j++)
