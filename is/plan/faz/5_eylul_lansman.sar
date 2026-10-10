@@ -6017,7 +6017,7 @@ sessizce körleşmez.
             ne:    "Kimlik eşleşmesi artık noktalı madde kodunun sınırında kesiliyor; ORK-1 sorgusu ORK-1.2 yazımını ORK-1 atfı saymıyor ve alt maddeler kendi atıflarını alıyor. ŞERH: denetimin iki kapısı noktalı adayları süzdüğü için üst maddesi de tanımsız bir yazım (ör. DIL-9.1) artık uyarı üretmiyor; bugünkü depoda etkisi sıfırdır ve onarımı HST-MTR-A10 Adımındadır. Eklentinin bağlantı dekoru ile ipucundaki aynı kusur HST-YUZ-A05 Adımına, etiket biçimli yazımlardaki yüzey ayrışması HTR-ETIKET-YAZIMI-YUZEY-AYRISMASI kaydına bağlandı." )
         }
 
-        Adım( kod: HST-MTR-A07, ad: "Fikstür Yollarının Gerçek Ağaca Benzemesi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-DENETCI ], bağımlı: [],
+        Adım( kod: HST-MTR-A07, ad: "Fikstür Yollarının Gerçek Ağaca Benzemesi", durum: tamamlandı, öncelik: p1, üretir: [ KOD-SNM-DOGUS-AGACI, KOD-SNM-DOGUS-AGACI-YARDIMCISI ], bağımlı: [],
           referans: [ HTR-FIKSTUR-YOLLARI-GERCEK-AGACA-BENZEMIYOR ],
           ne: "🌳 Sınama fikstürlerinin en az yarısı doğuş paketinin ürettiği gerçek ağacı sınasın" ) {
           görev: "Çekirdek ve eklenti sınamalarındaki plan yolları sayılır. Doğuşun gerçekten ürettiği düzeni sınayan fikstürler eklenir ya da var olanlar o düzene taşınır; kullanıcının planını doğrudan Kitaplık olarak ilan ettiği düzeni sınayan fikstürler de korunur. Taşıma sırasında bir sınama davranış değiştirirse bu bulgu olarak raporlanır."
@@ -6027,6 +6027,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kitaplık düzenini sınayan fikstürler silinmez"
+          koşu:  Koşum( kod: KSM-HST-MTR-A07, tarih: 2026-10-10, mühür: COMPLETED,
+            kanıt: "işlemeler bf50df7, 59bcd48 ve c6a4909 (üretim 840266a, 0c32bde, e740168) · çekirdek 1728/1728, eklenti 941/941, atlanan 0, iki pakette tür ve dil denetimi temiz · bağımsız inceleme: dağılım bağımsız bir sayaçla bir yol farkla yeniden üretildi, çıplak plan yolu 220'den 75'e indi ve doğuş düzeninin payı yüzde 55'ten 83'e çıktı; taban ile dal arasında değişen 24 beklenen değer deyiminin hiçbiri yeni davranışa çekilmedi; doğuş paketi başka bir adrese taşınınca türetilmiş yolları okuyan her sınama yeşil kaldı ve iki kaynağın ayrışması modülü adıyla düşürdü; dört uçtan uca sınamanın doğuş ağacında koştuğu dört mutasyonla kanıtlandı · inceleme şerhi: Raf ilanlı eski çatıların geriye dönük uyumu sınamasız kalmıştı; eklenen sınama, okuyucu yalnız Kitaplık okuyacak biçimde bozulunca tek başına kırmızıya döndü (kontrolcü ölçümü: 43 geçti, 1 düştü; geri alınınca 44/44)",
+            ne:    "Fikstür yolları artık doğuş paketinin kendisinden türetiliyor; paketin adresi değişirse türetilmiş yolları okuyan sınamalar kendiliğinden doğru adrese gider, iki kaynak ayrışırsa modül adıyla düşer. Dört uçtan uca sınama doğuşun ürettiği ağacı ilk turda büyütür, tohumlanan kusurları doğru adreste bekler, doğrudan Kitaplık düzenini ve çatıyı sınar. Kalan elle yazılmış yollar, dosya sınırı yüzünden bekleyen dosyalar ve iki küçük kapsam notu HTR-FIKSTUR-YOLLARI-IKINCI-TUR kaydına yazıldı." )
         }
 
         Adım( kod: HST-MTR-A08, ad: "Öğretim Yüzündeki Dört Bayat Yer", durum: tamamlandı, öncelik: p2, üretir: [ KOD-MEK-SEF, KOD-OGRETIM-URET ], bağımlı: [],
@@ -6712,3 +6715,7 @@ Kod( kod: KOD-SNM-KISITLI-MOD, dosya: "urun/eklenti/sinama/kisitli-mod.test.ts",
   ne: "🧪 Kısıtlı mod nöbeti — bildirimin kısıtlı mod beyanı, güvenilmeyen klasörde diske ve sürece dokunmayan etkinleşme, işaret ve güvenden sonra yeniden yüklemesiz açılış (MGZ-A02)" )
 Kod( kod: KOD-SNM-ADLI-KURAL-IPUCU, dosya: "urun/eklenti/sinama/adli-kural-ipucu.test.ts",
   ne: "🧪 Adlı Kural ipucu nöbeti — adı olan bir Kuralın kartı başlıkta tipini gösterir, adsız kartların başlığı değişmez; satır taraması ve sözdizimi ağacı yedeği ayrı ayrı sınanır (HST-YUZ-A06)" )
+Kod( kod: KOD-SNM-DOGUS-AGACI-YARDIMCISI, dosya: "urun/cekirdek/sinama/dogus-agaci.ts",
+  ne: "🧪 Doğuş ağacı yardımcısı — fikstür yollarını doğuş paketinin manifestinden ve doğan giriş ilanının çözülen iskeletinden türetir; iki kaynak ayrışırsa yüklenirken adıyla düşer (HST-MTR-A07)" )
+Kod( kod: KOD-SNM-DOGUS-AGACI, dosya: "urun/cekirdek/sinama/dogus-agaci.test.ts",
+  ne: "🧪 Doğuş ağacı nöbeti — tek kaynak sınamaları ile doğuşun ağacında koşan dört uçtan uca sınama: ilk tur büyütme, tohumlanan kusurlar, doğrudan Kitaplık düzeni ve çatı (HST-MTR-A07)" )
