@@ -914,7 +914,7 @@ Kod( kod: KOD-EKL-GORSEL-ESAD,
 Kod( kod: KOD-SNM-GORSEL-ESAD,
   ne: "🍎 Görsel eşad nöbeti — dil en iken tip adlarının İngilizce etikete bağlandığını ölçerdi. Ölçtüğü katman MGZ-A09 Adımında söküldüğü için nöbet emekli olmuştur; yerini bindirmenin hiçbir dilde kurulmadığını ölçen KOD-SNM-INGILIZCE-YUZ almıştır" )
 Kod( kod: KOD-EKL-NLS, dosya: "urun/eklenti/package.nls.json",
-  ne: "🍎 Manifest yerelleştirme katalogları — package.nls.json İngilizce ve package.nls.tr.json Türkçe, seksen beş anahtar iki kümede birebir eşittir; manifest kullanıcı-görünür dizeleri yalnız buradan okur" )
+  ne: "🍎 Manifest yerelleştirme katalogları — package.nls.json İngilizce ve package.nls.tr.json Türkçe, iki kümenin anahtarları birebir eşittir; manifest kullanıcı-görünür dizeleri yalnız buradan okur" )
 Kod( kod: KOD-SNM-DIL-KUR, dosya: "urun/eklenti/sinama/dil-kur.ts",
   ne: "🍎 Dil sınama kurulumu — süit koşumunda etkin dili belirleyip yüzey sınamalarının iki dilde de koşabilmesini sağlayan yardımcı" )
 Meyve( kod: BLG-CDL-README, tür: dış-çıktı,
