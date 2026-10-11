@@ -34,7 +34,7 @@ import {
   GORUNUS_FIKIRLER, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
   DURUM_CUBUGU_GIRDILERI,
 } from "../src/yuzey-cekirdek.ts";
-import { PANEL_GORUNUSLERI, panelSvgKaynagi } from "../src/simge-cizelgesi.ts";
+import { KISITLI_KARSILAMA_GORUNUSU, PANEL_GORUNUSLERI, panelSvgKaynagi } from "../src/simge-cizelgesi.ts";
 import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, DURUM_CUBUGU_METINLERI } from "../src/yuzey-metinleri.ts";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -92,7 +92,9 @@ test("fikir paneli: kendi panel simgesini taşır ve hiçbir kardeşininkini kul
   const fikirler = GORUNUSLER.find((g) => g.id === GORUNUS_FIKIRLER)!;
   assert.equal(fikirler.icon, panelSvgKaynagi("sarmalFikirler"),
     "paket bildirimi çizelgenin söylediği simgeden sapmış");
-  const simgeler = GORUNUSLER.map((g) => g.icon);
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = GORUNUSLER.filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
   assert.equal(new Set(simgeler).size, simgeler.length,
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
   // İçerik de karşılaştırılır: iki AYRI dosya aynı çizimi taşırsa kusur ad

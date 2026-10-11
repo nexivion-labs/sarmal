@@ -337,9 +337,18 @@ function surumTazeligiNobetiniKur(context: vscode.ExtensionContext): void {
 //   tutuculara bağlanır ve güven beklenir. Görünümler bildirimde
 //   `isWorkspaceTrusted` koşuluna bağlıdır; sağlayıcısız panel hiç açılmaz.
 //
+//   🛡️ KARŞILAMA GÖRÜNÜMÜ (MGZ-A08 · Founder hükmü 2026-10-10): görünümlerin
+//   güvene bağlanması kısıtlı modda kabı boşaltıyordu ve VS Code boş kalan kabı
+//   sol şeritteki Sarmal simgesiyle birlikte gizliyordu. Kapta artık yalnız
+//   kısıtlı modda görünen bir karşılama görünümü durur. Sağlayıcısı yoktur:
+//   metni ve Klasöre Güven düğmesi bildirimden (`viewsWelcome`) gelir ve bu
+//   gövde ona hiçbir şey kaydetmez, dolayısıyla kısıtlı modda yine kod çalışmaz.
+//
 //   GÜVEN VERİLİNCE pencere yeniden yüklenmez: yer tutucular bırakılır ve aynı
 //   `activate` güvenilir yoldan yeniden koşar. Dış yüz (kardeş eklenti arayüzü
-//   ve ölçüm kapıları) o andan sonra tam etkinleşmeye bağlanır.
+//   ve ölçüm kapıları) o andan sonra tam etkinleşmeye bağlanır. Karşılama
+//   görünümünün koşulu aynı anda düşer ve olağan görünümler bu yeniden
+//   etkinleşmenin kurduğu sağlayıcılarla açılır.
 
 /** VS Code'un çalışma alanı güveni ekranını açan yerleşik komut. */
 const GUVEN_KOMUTU = "workbench.trust.manage";

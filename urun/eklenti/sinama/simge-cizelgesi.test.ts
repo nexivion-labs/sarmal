@@ -34,7 +34,7 @@ import {
   ARAYUZ_ISARETI, aileyeCevir, satirSvgGovdesi, govdeBellegiBosalt,
   EKSEN_TIPLERI, eksenSvgKaynagi, eksenSvgVaryanti, tipSimgesi,
   DOSYA_IKON_KAYNAGI, DOSYA_IKONU, SIMGE_RAFI,
-  PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE,
+  PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE, KISITLI_KARSILAMA_GORUNUSU, KISITLI_KARSILAMA_SIMGESI,
   SATIR_SIMGELERI, ANLAM_RENKLERI, satirSvgKaynagi, satirSvgVaryanti,
   ADIM_EVRESI, eksenDekorKararlari, eksenDekorKaydi,
   SATIR_SONU_NOTLARI, SONUK_ANLAM, satirSonuVaryanti, satirSonuSecenekleri, type SatirSonuNotu,
@@ -186,15 +186,21 @@ test("panel nöbeti: panel kaynakları geometrik ailenin çizim dilini izler ve 
 test("panel nöbeti: package.json görünüş ilanları çizelgeyle BİREBİRDİR (kapsayıcı dahil)", () => {
   const paket = JSON.parse(oku("package.json"));
   const gorunusler = paket.contributes.views["sarmal-yol"] as Array<{ id: string; icon: string }>;
-  assert.deepEqual(gorunusler.map((g) => g.id).sort(), [...PANEL_GORUNUSLERI].sort(),
+  // MGZ-A08: kısıtlı modun karşılama görünüşü panel ailesine girmez; çizelgede
+  // ayrı ilanlıdır ve kabın Sarmal sarmalını taşır.
+  assert.deepEqual(gorunusler.map((g) => g.id).sort(), [...PANEL_GORUNUSLERI, KISITLI_KARSILAMA_GORUNUSU].sort(),
     "panel nöbeti: package.json görünüş kimlikleri çizelgenin kapsamından ayrıştı");
-  for (const g of gorunusler)
-    assert.equal(g.icon, panelSvgKaynagi(g.id as (typeof PANEL_GORUNUSLERI)[number]),
-      `panel nöbeti: ${g.id} ilanı ${g.icon} taşıyor, çizelge ${panelSvgKaynagi(g.id as (typeof PANEL_GORUNUSLERI)[number])} diyor — ilan çizelgeden sapmış`);
+  for (const g of gorunusler) {
+    const cizelge = g.id === KISITLI_KARSILAMA_GORUNUSU
+      ? KISITLI_KARSILAMA_SIMGESI : panelSvgKaynagi(g.id as (typeof PANEL_GORUNUSLERI)[number]);
+    assert.equal(g.icon, cizelge, `panel nöbeti: ${g.id} ilanı ${g.icon} taşıyor, çizelge ${cizelge} diyor — ilan çizelgeden sapmış`);
+  }
   const kapsayici = paket.contributes.viewsContainers.activitybar
     .find((k: { id: string }) => k.id === "sarmal-yol");
   assert.equal(kapsayici?.icon, KAPSAYICI_SIMGE,
     "panel nöbeti: etkinlik çubuğu kapsayıcısının simgesi çizelgeden (KAPSAYICI_SIMGE) sapmış");
+  assert.equal(KISITLI_KARSILAMA_SIMGESI, KAPSAYICI_SIMGE,
+    "panel nöbeti: kısıtlı modda kapta tek başına duran karşılama görünüşü kabın Sarmal sarmalını taşımalı");
 });
 
 test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanmış kaynağı yüksek sesle reddeder", async () => {

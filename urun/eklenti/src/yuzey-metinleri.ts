@@ -976,7 +976,9 @@ export const TABAN_KANON_METINLERI = {
 //   çubuğu işaretinin ipucunda hem kısıtlı modda çağrılan bir komutun
 //   iletisinde basılır; iki bağlamda da anlamlı kalsın diye cümle bir tıklama
 //   yerini değil, güvenin verildiği iki yeri (Kısıtlı Mod şeridi ve Sarmal
-//   işareti) anar.
+//   işareti) anar. Sol şeritteki Sarmal simgesinin açtığı karşılama görünümü
+//   (MGZ-A08) aynı durumu birkaç paragrafla anlatır ve Klasöre Güven düğmesini
+//   taşır.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const KISITLI_MOD_METINLERI = {
@@ -993,6 +995,28 @@ export const KISITLI_MOD_METINLERI = {
   /** Kısıtlı modda çağrılan komutun iletisindeki düğme — VS Code'un güven ekranını açar. */
   get guvenDugmesi(): string {
     return yuzeyMetni("Klasöre Güven", "Trust Folder");
+  },
+  /**
+   * MGZ-A08 · Kısıtlı modda sol şeritteki Sarmal simgesinin açtığı karşılama
+   * görünümünün içeriği. VS Code bu içeriği sağlayıcısı olmayan görünümde
+   * bildirimden okur (`viewsWelcome`), dolayısıyla iki yerelleştirme dosyası bu
+   * değeri birebir aynalar ve kisitli-mod nöbeti eşitliği iki dilde ölçer. Her
+   * satır ayrı bir paragraftır; kendi satırında duran komut bağlantısını VS Code
+   * düğme olarak çizer ve düğme, durum çubuğu işaretiyle aynı güven ekranını açar.
+   */
+  karsilama(guvenKomutu: string): string {
+    return [
+      yuzeyMetni(
+        "Bu klasöre güvenilmediği için Sarmal yalnız .sar dosyalarını tanıyıp renklendiriyor.",
+        "Because this folder is not trusted, Sarmal only recognizes and colors .sar files."),
+      yuzeyMetni(
+        "Denetim diski taradığı ve süreç başlatabildiği için kapalıdır; bu yüzden Sorunlar panelinde Sarmal tanısı görünmez ve Sarmal panelleri açılmaz.",
+        "Validation is off because it scans the disk and can start processes, so no Sarmal diagnostics appear in the Problems panel and the Sarmal panels do not open."),
+      yuzeyMetni(
+        "Klasöre güvendiğiniz anda denetim ve paneller pencere yeniden yüklenmeden açılır.",
+        "As soon as you trust the folder, validation and the panels turn on without reloading the window."),
+      `[${this.guvenDugmesi}](command:${guvenKomutu})`,
+    ].join("\n");
   },
 } as const;
 

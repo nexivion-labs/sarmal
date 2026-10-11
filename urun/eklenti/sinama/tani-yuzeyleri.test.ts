@@ -55,7 +55,7 @@ import { fikirleriTopla, fikirGorunumu, fikirPanoMetni, type FikirKaydi } from "
 // birim süitinde yüklenemez; onun tek-kaynak sözleşmesi aşağıda panellerin KENDİ
 // kaynağı üstünden ölçülür (Onaylar panelinin nöbetiyle aynı yöntem).
 import { BILDIRIM_ROZET, bildirimTuru } from "../src/yol-dekor.ts";
-import { ANLAM_RENKLERI, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
+import { ANLAM_RENKLERI, KISITLI_KARSILAMA_GORUNUSU, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
@@ -749,7 +749,9 @@ test("üç panel bakışta ayrılır: hiçbiri diğerinin görünüş simgesini 
   const gorunusler = (JSON.parse(oku("../package.json")) as {
     contributes: { views: Record<string, Array<{ id: string; icon?: string }>> };
   }).contributes.views["sarmal-yol"];
-  const simgeler = gorunusler.map((g) => g.icon);
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = gorunusler.filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
   assert.equal(new Set(simgeler).size, simgeler.length,
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });

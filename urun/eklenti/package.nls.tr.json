@@ -94,6 +94,8 @@
   "view.sectionSlot2": "Bölüm 2",
   "view.sectionSlot3": "Bölüm 3",
   "view.sectionSlot4": "Bölüm 4",
+  "view.restricted": "Kısıtlı Mod",
+  "viewsWelcome.restricted": "Bu klasöre güvenilmediği için Sarmal yalnız .sar dosyalarını tanıyıp renklendiriyor.\nDenetim diski taradığı ve süreç başlatabildiği için kapalıdır; bu yüzden Sorunlar panelinde Sarmal tanısı görünmez ve Sarmal panelleri açılmaz.\nKlasöre güvendiğiniz anda denetim ve paneller pencere yeniden yüklenmeden açılır.\n[Klasöre Güven](command:workbench.trust.manage)",
   "productIconTheme.northStar": "Sarmal · Kuzey Yıldızı",
   "theme.dark": "Sarmal Koyu",
   "theme.light": "Sarmal Açık",

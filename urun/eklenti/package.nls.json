@@ -94,6 +94,8 @@
   "view.sectionSlot2": "Section 2",
   "view.sectionSlot3": "Section 3",
   "view.sectionSlot4": "Section 4",
+  "view.restricted": "Restricted Mode",
+  "viewsWelcome.restricted": "Because this folder is not trusted, Sarmal only recognizes and colors .sar files.\nValidation is off because it scans the disk and can start processes, so no Sarmal diagnostics appear in the Problems panel and the Sarmal panels do not open.\nAs soon as you trust the folder, validation and the panels turn on without reloading the window.\n[Trust Folder](command:workbench.trust.manage)",
   "productIconTheme.northStar": "Sarmal · North Star",
   "theme.dark": "Sarmal Dark",
   "theme.light": "Sarmal Light",

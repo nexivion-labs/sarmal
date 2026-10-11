@@ -16,14 +16,15 @@
 //   dolayısıyla modül düzeyindeki durum iki sınama arasında taşınmaz.
 //
 //   SAHTE BİR ŞEYİ DOĞRULAMAZ, YALNIZ KAYDEDER (vscode-sahtesi.ts emsali). Tanı
-//   koleksiyonu, durum çubuğu öğeleri, iletiler, çıktı kanalları ve komut
-//   kayıtları burada saklanır; ölçüm sınamanın işidir. Turun dokunduğu yüzey
-//   gerçek davranışla kurulur: çalışma alanı klasörleri, dosya araması ve dosya
-//   okuma diskteki gerçek fikstüre gider. Etkinleşmenin yalnız kayıt anında
-//   dokunduğu geniş API yüzeyi (sağlayıcı kayıtları, dekor tipleri, yardımcı
-//   sınıflar) zararsız bir yedeğe düşer: yedek her çağrıyı kabul eder ve kendisini
-//   döndürür. Yedeğe düşen bir üyenin davranışı ölçülmez; ölçülen her davranış
-//   aşağıda açıkça kurulmuştur.
+//   koleksiyonu, durum çubuğu öğeleri, iletiler, çıktı kanalları, komut
+//   kayıtları ve görünüm sağlayıcısı kayıtları burada saklanır; ölçüm sınamanın
+//   işidir. Turun dokunduğu yüzey gerçek davranışla kurulur: çalışma alanı
+//   klasörleri, dosya araması ve dosya okuma diskteki gerçek fikstüre gider.
+//   Etkinleşmenin yalnız kayıt anında dokunduğu geniş API yüzeyi (dil
+//   sağlayıcısı kayıtları, dekor tipleri, yardımcı sınıflar) zararsız bir
+//   yedeğe düşer: yedek her çağrıyı kabul eder ve kendisini döndürür. Yedeğe
+//   düşen bir üyenin davranışı ölçülmez; ölçülen her davranış aşağıda açıkça
+//   kurulmuştur.
 //
 //   Sıfır bağımlılık sözleşmesi (STR-3.1) korunur: yalnız Node modülleri ve
 //   deponun zaten kullandığı esbuild kullanılır. Bu modül `vscode-sahtesi.ts`
@@ -337,6 +338,12 @@ export interface KabukKaydi {
   readonly dekorTurleri: Map<string, unknown>;
   /** Etkin editöre basılan son dekorlar: tür anahtarı → aralık ve çizim seçenekleri. */
   readonly dekorlar: Map<string, readonly unknown[]>;
+  /**
+   * Sağlayıcısı kurulan görünümlerin kimlikleri, kurulma sırasıyla: ağaç
+   * görünümü, ağaç veri sağlayıcısı ve webview görünümü kayıtları. Kısıtlı modun
+   * karşılama görünümü (MGZ-A08) sağlayıcı istemediği için burada hiç görünmez.
+   */
+  readonly gorunumKayitlari: string[];
 }
 
 export interface EtkinlesmeSecenegi {
@@ -402,7 +409,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
   const kayit: KabukKaydi = {
     tanilar: new Map(), durumOgeleri: [], bilgiler: [], uyarilar: [], hatalar: [], durumMesajlari: [],
     kanallar: new Map(), komutlar: new Map(), komutCagrilari: [], dosyaAramasi: 0,
-    dekorTurleri: new Map(), dekorlar: new Map(),
+    dekorTurleri: new Map(), dekorlar: new Map(), gorunumKayitlari: [],
   };
   const durum = { guvenilir: secenek.guvenilir ?? true };
   const guven = new EventEmitter<void>();
@@ -452,12 +459,17 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
         dispose: () => { oge.gorunur = false; oge.atildi = true; },
       });
     },
-    createTreeView: () => adAlani({
-      visible: true, badge: undefined as unknown, message: undefined as unknown, title: undefined as unknown, description: undefined as unknown,
-      reveal: async () => undefined, dispose: () => undefined,
-      onDidChangeVisibility: bosOlay(), onDidChangeSelection: bosOlay(), onDidChangeCheckboxState: bosOlay(),
-      onDidExpandElement: bosOlay(), onDidCollapseElement: bosOlay(),
-    }),
+    createTreeView: (kimlik: string) => {
+      kayit.gorunumKayitlari.push(kimlik);
+      return adAlani({
+        visible: true, badge: undefined as unknown, message: undefined as unknown, title: undefined as unknown, description: undefined as unknown,
+        reveal: async () => undefined, dispose: () => undefined,
+        onDidChangeVisibility: bosOlay(), onDidChangeSelection: bosOlay(), onDidChangeCheckboxState: bosOlay(),
+        onDidExpandElement: bosOlay(), onDidCollapseElement: bosOlay(),
+      });
+    },
+    registerTreeDataProvider: (kimlik: string) => { kayit.gorunumKayitlari.push(kimlik); return new Disposable(); },
+    registerWebviewViewProvider: (kimlik: string) => { kayit.gorunumKayitlari.push(kimlik); return new Disposable(); },
     createTextEditorDecorationType: (secenekler: unknown) => {
       const key = `sahte-dekor-${kayit.dekorTurleri.size + 1}`;
       kayit.dekorTurleri.set(key, secenekler);

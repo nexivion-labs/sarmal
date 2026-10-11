@@ -34,7 +34,7 @@ import {
   type OnayKapisi, type KapiKaydi, type OnayDugumu,
 } from "../src/onay-cekirdek.ts";
 import { GORUNUS_ONAYLAR, panelRozeti} from "../src/yuzey-cekirdek.ts";
-import { panelSvgKaynagi, satirSvgKaynagi } from "../src/simge-cizelgesi.ts";
+import { KISITLI_KARSILAMA_GORUNUSU, panelSvgKaynagi, satirSvgKaynagi } from "../src/simge-cizelgesi.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
   onayDosyaAciklamasi, onayDosyaIpucu, onayKapiEtiketi, onayKapiAciklamasi,
@@ -490,7 +490,10 @@ test("görünüş kimliği: paket bildirimi ile sağlayıcı sabiti birebir ayn�
   // VIT-K78-A10 ile kabın en üstüne bölüm sırası ve sonuna dört bölüm yuvası
   // eklendi (Founder hükmü 2026-09-28: tek Sarmal simgesi); sayı yine bilerek
   // güncellenmiştir: altı Ray paneli, bir sıra ve dört yuva on bir eder.
-  assert.equal(kimlikler.length, 11, "kenar çubuğunda on bir görünüş bekleniyordu");
+  // MGZ-A08 yalnız güvenilmeyen klasörde görünen karşılama görünüşünü ekledi
+  // (Founder hükmü 2026-10-10: kısıtlı modda Sarmal simgesi kalır); sayı aynı
+  // gerekçeyle bilerek on ikiye çıkarılmıştır.
+  assert.equal(kimlikler.length, 12, "kenar çubuğunda on iki görünüş bekleniyordu");
 });
 
 test("başlık yerelleştirme kataloğundan gelir ve kapsayıcının adını TEKRAR ETMEZ", () => {
@@ -505,7 +508,9 @@ test("başlık yerelleştirme kataloğundan gelir ve kapsayıcının adını TEK
 });
 
 test("görünüş simgeleri tekildir: paneller aynı SVG'yi paylaşmaz", () => {
-  const simgeler = PAKET.contributes.views["sarmal-yol"].map((g) => g.icon);
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = PAKET.contributes.views["sarmal-yol"].filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
   // Simge yolu TEK kaynaktan (simge-cizelgesi) gelir — VIT halka 1, Founder
   // 2026-08-04 geometrik panel ailesi. Eski simge dosyası `ikonlar/` altında emekliydi ve 2026-09-05 tarihinde silindi.
   assert.ok(simgeler.includes(panelSvgKaynagi("sarmalOnaylar")),

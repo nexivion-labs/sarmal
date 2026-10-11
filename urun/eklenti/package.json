@@ -766,9 +766,22 @@
           "icon": "medya/simgeler/panel-yuva-4.svg",
           "contextualTitle": "%view.sectionSlot4%",
           "when": "isWorkspaceTrusted && sarmal.bolum.seciliYuva == yuva4"
+        },
+        {
+          "id": "sarmalKisitliKarsilama",
+          "name": "%view.restricted%",
+          "icon": "medya/simgeler/panel-sarmal.svg",
+          "contextualTitle": "%view.restricted%",
+          "when": "!isWorkspaceTrusted"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "sarmalKisitliKarsilama",
+        "contents": "%viewsWelcome.restricted%"
+      }
+    ],
     "productIconThemes": [
       {
         "id": "sarmal-kuzey-yildizi",

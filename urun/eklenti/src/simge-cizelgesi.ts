@@ -114,7 +114,9 @@ export function eksenSvgVaryanti(tip: EksenTipi, evre: KapsayiciEvre, tema: Simg
 /** Kenar çubuğu görünüşlerinin kimliği — package.json `views["sarmal-yol"]` kapsamı.
  *  🧩 VIT-K78-A10: bölüm sırası ile dört bölüm yuvası da bu haneye girer; yuvalar
  *  kardeş eklentilerin kaydettiği bölümleri taşır ve her biri kendi simgesiyle
- *  ayrılır (bolum-cekirdek.ts `YUVA_GORUNUSLERI`). */
+ *  ayrılır (bolum-cekirdek.ts `YUVA_GORUNUSLERI`). Kısıtlı modun karşılama
+ *  görünüşü panel değildir ve aşağıda `KISITLI_KARSILAMA_GORUNUSU` olarak ayrı
+ *  ilan edilir (MGZ-A08). */
 export const PANEL_GORUNUSLERI = [
   "sarmalBolumSirasi",
   "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
@@ -149,6 +151,15 @@ export function panelSvgKaynagi(gorunus: PanelGorunusu): string {
  *  simgesi durur; Ray, kabın içindeki bölümlerden biridir ve raylı Yol Haritası
  *  simgesi artık kabın değil Ray bölümünün işaretidir. */
 export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalBolumSirasi");
+
+/** 🛡️ MGZ-A08 · Kısıtlı modun karşılama görünüşü. Panel ailesine girmez: veri
+ *  taşımaz, sağlayıcı istemez ve yalnız klasöre güvenilmediğinde görünür. O an
+ *  kapta tek başına durduğu için kabın Sarmal sarmalını taşır (Founder hükmü
+ *  2026-10-10: kısıtlı modda Sarmal simgesi kalır). Güvenilir klasörde hiç
+ *  görünmediğinden bölüm sırasıyla aynı simgeyi paylaşması, iki panelin yan yana
+ *  karışması kusurunu (Founder 2026-07-28) geri getiremez. */
+export const KISITLI_KARSILAMA_GORUNUSU = "sarmalKisitliKarsilama";
+export const KISITLI_KARSILAMA_SIMGESI = KAPSAYICI_SIMGE;
 
 /** Bölüm sırasında Ray bölümünün işareti: Ray'in ilk paneli olan Yol Haritasının
  *  iki raylı simgesidir; ayrı bir çizim doğmaz. */
