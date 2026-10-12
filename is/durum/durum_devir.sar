@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-11", oturum: 113,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-12", oturum: 113,
             neredeyiz: TUR-KAPANDI-YIRMI-DORT-ADIM-KAPANDI-DOKUZ-ADIM-FOUNDER-GOZUNU-BEKLIYOR,
-            sıradaki: HST-MTR-A18-ARDINDAN-HST-MTR-A15-A16-A17-VE-MOD-PAKETININ-BAGIMSIZ-OLCUMU,
+            sıradaki: V1-MAGAZA-YUKLEMESI-ONCE-DOKUZ-ADIMLIK-GOZ-TURU-SONRA-MGZ-A10-VE-1.0.0-YUKLEMESI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ DOKUZ-ADIM-FOUNDER-CANLI-GOZUNU-BEKLIYOR-VIT-KIMLIK-A08-EKL-F6-A09-HST-MTR-A04-HST-YUZ-A05-HST-YUZ-A06-MGZ-A02-MGZ-A06-MGZ-A08-MGZ-A09,
                          PR-5-TABANI-MAINE-CEVRILMELI-IZIN-DENETIMI-DURDURDU-FOUNDER,
@@ -65,9 +65,15 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-11", oturum: 113,
         HTR-URUN-AILESI-KATALOG-EKSIGI adıyla Founder kapısında açılmıştır. Founder'ın isteğiyle depo dışında,
         ~/.claude/mods/sarmal klasöründe dört bekçi ile dört yüzden oluşan bir Claude Code mod paketi
         yazılmıştır; bağımsız inceleme iki yanlış ret bulmuş, onarım 84 sınamanın tamamından geçmiştir ve
-        onarımın bağımsız ölçümü ile kurulum sonraki oturuma kalmıştır. Sıradaki iş HST-MTR-A18'dir; ardından
-        HST-MTR-A15, A16 ve A17, BKM-DNT-A03'ün tek kod modeline göre yeniden işlenmesi, MGZ-A10 ve tur sonu
-        temizlik Adımı gelir. Kapılar: çekirdek 1755/1755, eklenti 953/953, denetim 0 hata ve 0 uyarı.
+        onarımın bağımsız ölçümü ile kurulum sonraki oturuma kalmıştır. Kapılar: çekirdek 1755/1755, eklenti
+        953/953, denetim 0 hata ve 0 uyarı.
+        ODAK HÜKMÜ (Founder · 2026-10-12): Sıradaki oturumun tek odağı v1'in mağaza yüklemesidir. Önce göz
+        bekleyen dokuz Adım gerçek editörde Founder ile birlikte tek turda bakılır, ardından MGZ-A10 ile mağaza
+        vitrini ve İngilizce benioku yazılır, son olarak eklenti 1.0.0 numarasıyla Founder onayıyla yüklenir.
+        HST-MTR-A15 ile A19 arasındaki motor ve kanon borçları, BKM-DNT-A03, A14 ve A17, tur sonu temizlik
+        Adımı, site planının kabul incelemesi ve mod paketi v1 yüklenene kadar bekler. Gerekçe, açık depo
+        doğmuş olduğu için v1'i kapatacak tek olayın mağaza yüklemesi olması ve yüklemenin son koşulu olan
+        İngilizce yüzün tamamlanmış bulunmasıdır.
 
         🧭 ARA DEVİR · OTURUM 113 (2026-10-10) · ORKESTRASYON TURU VE EKİM HASAT MEVSİMİ.
         Founder dört günlük aradan sonra bütün hatırlatıcıların okunmasını, sırası gelenlerin plana
