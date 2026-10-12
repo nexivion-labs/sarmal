@@ -280,8 +280,7 @@ export function takdirKaydi(baglam: vscode.ExtensionContext): void {
 // ${hedef.goreli} — 🌾 GERİBİLDİRİM HASADI (STR-4 · ÜRETİLEN dosya)
 //
 //   sarmal.geribildirimHasadi komutu yazar (son hasat: ${gun}) — elle
-//   DÜZENLENMEZ, kaynak notlar Adım parametrelerinde yaşar. RAY-3 koşumu bu
-//   kayıtları, adımı üstlenen etmenlerin İZOLE hafızalarına dağıtacak.
+//   DÜZENLENMEZ, kaynak notlar Adım parametrelerinde yaşar.
 // ═══════════════════════════════════════════════════════════════════════════
 
 ${gov}

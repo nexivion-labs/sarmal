@@ -53,7 +53,7 @@ export const ANLATI_SON = "<!-- /SARMAL:ANLATI -->";
 export const ISKELET_BAS = "<!-- SARMAL:AILE_ISKELETI -->";
 export const ISKELET_SON = "<!-- /SARMAL:AILE_ISKELETI -->";
 
-/** Kartların yaşadığı raf (anadizinde RAF-OGRETIM olarak ilan edilmiştir). */
+/** Kartların yaşadığı raf (anadizinde RAF-OGRETI-OGRETIM olarak ilan edilmiştir). */
 export const OGRETIM_RAFI = "ogreti/ogretim";
 
 /** Künyenin gösterdiği kanonik kaynak — kartın olgusal bölgesi buradan doğar. */
@@ -125,7 +125,7 @@ export function kunyeBloku(snf: Siniflama, aile: string, muhur: string): string 
     "",
     `Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: ${KAYNAK_YOLU} · mühür: ${muhur}`,
     "",
-    "Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.",
+    "Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.",
     KUNYE_SON,
   ].join("\n");
 }
@@ -249,7 +249,7 @@ export function ogretimKartlariniUret(kokYolu: string): OgretimKosusu {
   return { degisen, degismeyen, aileSayisi: liste.length };
 }
 
-// ── CLI kabuğu: `node arac/ogretim-uret.ts [kök]` ───────────────────────────
+// ── CLI kabuğu: depo kökünde `node urun/arac/ogretim-uret.ts [kök]` ─────────
 //    Kök verilmezse bu betiğin üst dizini (açık aracın kökü) varsayılır.
 if (import.meta.url === `file://${process.argv[1]}`) {
   const kok = process.argv[2] ?? resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");

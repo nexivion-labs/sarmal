@@ -40,9 +40,13 @@ async function main(): Promise<void> {
     throw new Error(`ogreti/ornek/ korpusu bulunamadı: ${ornekKorpus} — depo tam checkout mu? (git ls-files ogreti/ornek | wc -l → 43 beklenir)`);
   }
 
+  // 🧩 VIT-K78-A10: bölüm yuvası nöbeti için sahte bir kardeş eklenti de geliştirme
+  // kipinde yüklenir. Fikstür paketlenmez (.vscodeignore sinama_vscode/** dışlar).
+  const kardesKok = path.resolve(eklentiKok, "sinama_vscode", "sahte-kardes");
+
   await runTests({
     vscodeExecutablePath: yurutucuYolu(await downloadAndUnzipVSCode()),
-    extensionDevelopmentPath: eklentiKok,
+    extensionDevelopmentPath: [eklentiKok, kardesKok],
     extensionTestsPath: testYolu,
     // ornek/ açılır (test .sar'ları elde); --disable-extensions yalnız DİĞERlerini kapatır.
     // KISA user-data-dir ŞART (macOS): derin proje yolu Unix soketini 103 char

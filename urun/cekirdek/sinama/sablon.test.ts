@@ -100,3 +100,27 @@ test("GBR-A05: giriş-içi tip (etmen) KAYDET rehberi taşımaz — yalnız anad
   const cikti = execFileSync(process.execPath, [SARMAL, "başla", "etmen"], { encoding: "utf8", timeout: 30_000 });
   assert.doesNotMatch(cikti, /KAYDET/, "anadizin-olmayan tip KAYDET rehberi taşımamalı (yanlış yönlendirme)");
 });
+
+// ── KPS-SIR-A03 (MIM-1.2 · Founder hükmü 2026-09-29): Blok şablonu Faz gövdesindedir ──
+//   Şablon eskiden "zaman gerekiyorsa Faz Blok'u üstten sarar; sonraki fazlarda aynı
+//   Blok çağır ile sürer" diye öğretiyordu; oysa Faz zorunludur ve çağır ile mevsim
+//   Blok bağı kurmaz. Nöbet: şablon doğan bir projenin faz klasörüne sıra önekli adla
+//   kopyalanınca Fazsız Blok ve Faz dosyası düzeni gözlemlerinden hiçbiri doğmaz.
+test("KPS-SIR-A03: başla('blok') şablonu Faz gövdesinde gelir; faz klasörüne kopyalanınca fazsız-blok ve Faz dosyası gözlemi doğmaz", async () => {
+  const { dogusYaz } = await import("../src/dogus.ts");
+  const { denetimKos } = await import("../src/denetim.ts");
+  const s = sablonMetni("blok");
+  assert.ok(s, "blok şablonu kütüphanede yok");
+  assert.doesNotMatch(`${s!.baslik}\n${s!.sablon}`, /üstten sarar|ÜSTTEN sarar|Provider deseni|`çağır` ile sürer/u, "şablon emekli bağ yolunu öğretiyor");
+  assert.match(s!.sablon, /^Faz\( kod: FAZ-Ornek/mu, "şablon Faz iskeletiyle başlamalı");
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-blok-sablonu-"));
+  try {
+    dogusYaz(kok, "blokdeneme", "2026-09-29", "proje");
+    writeFileSync(join(kok, "is", "plan", "faz", "2_ornek.sar"), s!.sablon);
+    const sonuc = denetimKos(kok, { snfYol: fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)), bugun: "2026-09-29", tamListe: true });
+    const yasak = ["fazsız-blok", "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası"];
+    assert.deepEqual(sonuc.turDokumu.filter((x) => yasak.includes(x.kod)).map((x) => x.kod), []);
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});

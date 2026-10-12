@@ -29,7 +29,7 @@ const SABLONLAR: Record<string, SablonKimlik> = {
     baslik: "🏡 ÇALIŞMAALANI (BAHÇE) DOĞUŞU — çok uygulamalı, tek kimlik tabanlı kurulum. Her Uygulama kendi Teknoloji'sini taşır; ortak tabana ve kimliğe çağır ile bağlanır.",
     bekci: "ana-yok · rafsız-anadizin · anadizin-plan-karışması. Uzun-vadeli şekil (bahçe) kapsayıcıyı belirler — bugünkü tek app onun İÇİNE Uygulama olarak girer." },
   "blok": { dosya: "blok.sar",
-    baslik: "🪵 BLOK DOĞUŞU — plan gövdesi: Blok(iş) → Katman(teknoloji, Takım bağlı) → Adım; zaman gerekiyorsa Faz üstten sarar.",
+    baslik: "🪵 BLOK DOĞUŞU — plan gövdesi: Faz(zaman) → Blok(iş) → Katman(teknoloji, Takım bağlı; teknoloji kaçışı yalnız doğuş anında) → Adım; Blok yalnız Faz gövdesinde yaşar, Faz zorunludur ve her Faz is/plan/faz/ altında sıra önekli kendi dosyasındadır (MIM-1.2); mevsim alanı ve çağır listesi Blok bağı kurmaz.",
     bekci: "konisiz-adım — durum:geliştirmede Adım koni taşımalı (görev·kabul·bağımlı)." },
   "adım": { dosya: "adim.sar",
     baslik: "🎯 ADIM DOĞUŞU — KONİ-dolu (yalın Adım = kör drift; çalgıcı tahmin eder).",

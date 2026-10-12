@@ -3,13 +3,21 @@
 //
 //   Bir widget tipi / kenar / anahtar / parametre üstüne gelince Türkçe
 //   açıklama baloncuğu (SNF-0'dan). Öğrenmeyi hızlandırır, tahmini bitirir.
+//
+//   İNGİLİZCE BALON DOSYADAKİ ADI ANAR (MGZ-A09 · Founder hükmü 2026-10-10).
+//   Balonun cümlesi etkin dilde konuşur; tip, kenar ve alan adları ise her dilde
+//   dosyada yazıldıkları gibi basılır. Eski İngilizce balon `Step` ve
+//   `dependsOn` gibi dosyada bulunmayan adlar öğretiyordu.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
 import { agacYüz } from "../../cekirdek/src/agac.ts";   // ağaç-yüzü turu
 import { snfBul, rehberBul, simgeSec } from "./ortak.ts";
 // SAF veri mantığı — fikstürlü testte (NTK-A01): tanım taraması + hüküm eki + blok tespiti
-import { kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzetiCikar } from "./ipucu-cekirdek.ts";
+import {
+  kodTanimlariTara, kararMetniEki, blokIcindeMi, yorumIcindeMi, tanimOzetiCikar,
+  IPUCU_KOD_SOZCESI, ipucuKodBicimliMi,   // HST-YUZ-A05: madde kuyruğu çekirdekten
+} from "./ipucu-cekirdek.ts";
 // VIT-GRAF-A14: satır-regex'in kaçırdığı (çok satırlı yazılmış) tanımlar için AST yedeği —
 // kimlik indeksi dekorla AYNI evrendir; süslü sözcenin ipucusuz kalması yapısal olarak kapanır.
 import { kimlikIndeksi, INDEKS_DISI, dosyaOkuGuvenli } from "../../cekirdek/src/kimlik.ts";
@@ -20,7 +28,6 @@ import { emojiDeseni, emojiSozceCoz, emojiKarsiligi, yazimDisiMi } from "./emoji
 // EMJ-A05: Etmen hover'ına karne satırı — sicil yokken dürüst tek cümle (çekirdek DIL-2 tek ses).
 import { karneSatiri } from "../../cekirdek/src/karne.ts";
 import {
-  sozlukAdi,
   sozlukDuzYazisi,
   type CiktiDili,
 } from "../../cekirdek/src/cevir.ts";
@@ -77,7 +84,7 @@ async function kodIndeksle(): Promise<Map<string, KodKaydi>> {
 //   evreni olan kimlik indeksinden tanımı bulur ve YALNIZ hedef dosyayı okur —
 //   yeni tarama açılmaz (VIT-GRAF-A14 performans hükmü: mevcut indeks kullanılır).
 function kimlikYedekIpucu(
-  kod: string, doc: vscode.TextDocument, aralik: vscode.Range, etkinDil: CiktiDili,
+  kod: string, doc: vscode.TextDocument, aralik: vscode.Range,
 ): vscode.Hover | undefined {
   // Dekorla AYNI süzgeç (KPN-A01): ders-dünyası kopyaları evrene girmez, belgenin kendisi girer.
   const tanimlar = kimlikIndeksi.tanimlar(kod, (d) => d === doc.uri.fsPath || !INDEKS_DISI.test(d));
@@ -85,7 +92,8 @@ function kimlikYedekIpucu(
   const t = tanimlar[0];
   const metin = dosyaOkuGuvenli(t.dosya);
   const ozet = metin ? tanimOzetiCikar(metin, kod) : undefined;
-  const gorunenTip = sozlukAdi("widget", ozet?.tip ?? t.tip, etkinDil);
+  // MGZ-A09: balon düğümün tipini dosyadaki adıyla anar; dil yalnız cümleyi seçer.
+  const gorunenTip = ozet?.tip ?? t.tip;
   const uri = vscode.Uri.file(t.dosya);
   const goreli = vscode.workspace.asRelativePath(uri);
   return baloncuk(
@@ -120,24 +128,23 @@ function yorumIcinde(doc: vscode.TextDocument, pos: vscode.Position): boolean {
  * yazılırsa biri düzeltilirken öteki sessizce bayatlar.
  */
 async function insanMetniKodIpucu(
-  doc: vscode.TextDocument, pos: vscode.Position, etkinDil: CiktiDili,
+  doc: vscode.TextDocument, pos: vscode.Position,
 ): Promise<vscode.Hover | undefined> {
-  const kodAralik = doc.getWordRangeAtPosition(pos, /[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+/u);
+  const kodAralik = doc.getWordRangeAtPosition(pos, IPUCU_KOD_SOZCESI);
   if (!kodAralik) return undefined;
   const kelime = doc.getText(kodAralik);
   const kayit = (await kodIndeksle()).get(kelime);
   if (kayit) {
-    const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
     const goreli = vscode.workspace.asRelativePath(kayit.dosya);
     return baloncuk(
-      `${ipucuIsareti("tip")}**${kelime}** — ${gorunenTip}` +
+      `${ipucuIsareti("tip")}**${kelime}** — ${kayit.tip}` +
       (kayit.ne ? `\n\n${kayit.ne}` : "") +
       kararMetniEki(kayit) +
       `\n\n${ipucuIsareti("konum")}[${goreli}:${kayit.satir + 1}](${kayit.dosya.toString()}#L${kayit.satir + 1})`,
       kodAralik);
   }
   // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım).
-  return kimlikYedekIpucu(kelime, doc, kodAralik, etkinDil);
+  return kimlikYedekIpucu(kelime, doc, kodAralik);
 }
 
 /**
@@ -175,7 +182,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
       //    NTK-A01 (Founder isteği): KOD atıfları İSTİSNADIR — belge bloğundaki DIL-1.1 gibi
       //    bir atfa gelen kullanıcı, hedefi dosya açmadan ipucu penceresinde görür.
       if (blokIcinde(doc, pos)) {
-        const kodIpucu = await insanMetniKodIpucu(doc, pos, etkinDil);
+        const kodIpucu = await insanMetniKodIpucu(doc, pos);
         if (kodIpucu) return kodIpucu;
         const tag = doc.getWordRangeAtPosition(pos, /<\/?[\p{L}\p{N}_-]+(\s[^>]*)?>/u);
         if (tag) {
@@ -194,7 +201,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
       //    çünkü belge bloğunda aynı istisna Founder isteğiyle tanınmıştır ve atıf
       //    görünümü yorum satırını zaten kapsar; iki yüzey aynı kuralı söylemelidir.
       if (yorumIcinde(doc, pos)) {
-        return await insanMetniKodIpucu(doc, pos, etkinDil);
+        return await insanMetniKodIpucu(doc, pos);
       }
 
       // ── EMJ-A03: kanon emojisi — YAZIMDAKİ emojiye emoji↔ad baloncuğu.
@@ -210,7 +217,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
             const aciklama =
               cozum.bolum === "kademe" ? (() => {
                 const tip = snf.widgetTipleri.find((t) => t.ad === cozum.ad);
-                return tip ? sozlukDuzYazisi("widgetNe", tip.ad, tip.ne, etkinDil) : undefined;
+                return tip ? sozlukDuzYazisi("widgetNe", tip.ad, tip.ne, etkinDil, "kaynak") : undefined;
               })()
               : cozum.bolum === "parametre" ? ipucuParamMetni(cozum.ad)
               : undefined;
@@ -221,17 +228,24 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
         }
       }
 
-      const aralik = doc.getWordRangeAtPosition(pos, /[\p{L}_][\p{L}\p{N}_]*(-[\p{L}\p{N}_]+)*/u);
+      // HST-YUZ-A05 · NOKTALI MADDE ATFI: genel sözcük deseni noktada durur ve
+      // `ORK-1.2` yazımından yalnız `ORK-1` kelimesini seçerek üst maddenin kartını
+      // açardı. Kod sözcesi bu yüzden önce madde kuyruğuyla birlikte aranır ve
+      // yalnız kuyruk taşıdığında kelime olur; kuyruksuz her sözceyi genel desen
+      // eskisi gibi seçer, dolayısıyla noktasız kodun ipucusu değişmez.
+      const kodSozcesi = doc.getWordRangeAtPosition(pos, IPUCU_KOD_SOZCESI);
+      const aralik = kodSozcesi && doc.getText(kodSozcesi).includes(".")
+        ? kodSozcesi
+        : doc.getWordRangeAtPosition(pos, /[\p{L}_][\p{L}\p{N}_]*(-[\p{L}\p{N}_]+)*/u);
       if (aralik) {
         const kelime = doc.getText(aralik);
 
         // F5-A02: KOD atfı → hedef düğümün koni önizlemesi (kim, ne, nerede)
-        if (/^[\p{Lu}][\p{Lu}\p{N}]*(-[\p{Lu}\p{N}]+)+$/u.test(kelime)) {
+        if (ipucuKodBicimliMi(kelime)) {
           const kayit = (await kodIndeksle()).get(kelime);
           if (kayit) {
             const tipBilgi = snf.widgetTipleri.find((t) => t.ad === kayit.tip);
             const simge = tipBilgi ? simgeSec(snf, kayit.tip, tipBilgi.aile) : undefined;
-            const gorunenTip = sozlukAdi("widget", kayit.tip, etkinDil);
             const goreli = vscode.workspace.asRelativePath(kayit.dosya);
             // ağaç-yüzü turu: Kitaplık/Raf hover'ında alt-ağaç (YUZ-1.1 — aynı agacYüz çekirdeği)
             let agacEk = "";
@@ -244,7 +258,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
             // EMJ-A05: Etmen düğümünün karne satırı — sicil yokken derece basılmaz (dürüstlük).
             const karneEk = kayit.tip === "Etmen" && karneSatiri(snf) ? `\n\n${karneSatiri(snf)}` : "";
             return baloncuk(
-              `${simge ? `${simge} ` : ipucuIsareti("tip")}**${kelime}** — ${gorunenTip}` +
+              `${simge ? `${simge} ` : ipucuIsareti("tip")}**${kelime}** — ${kayit.tip}` +
               (kayit.ne ? `\n\n${kayit.ne}` : "") +
               kararMetniEki(kayit) +
               karneEk +
@@ -254,7 +268,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
           }
           // VIT-GRAF-A14: satır-regex kaçırdıysa AST yedeği konuşur (çok satırlı tanım) —
           // dekorun süslediği hiçbir sözce ipucusuz kalmaz, tanımsız sözceye ipucu uydurulmaz.
-          const yedek = kimlikYedekIpucu(kelime, doc, aralik, etkinDil);
+          const yedek = kimlikYedekIpucu(kelime, doc, aralik);
           if (yedek) return yedek;
         }
 
@@ -263,15 +277,14 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
           const rehber = rehberBul(doc);
           const zengin = etkinDil === "tr" ? rehber?.[tip.ad] : undefined;
           const simge = simgeSec(snf, tip.ad, tip.aile);
-          const ne = sozlukDuzYazisi("widgetNe", tip.ad, tip.ne, etkinDil);
-          const gorunenAd = sozlukAdi("widget", tip.ad, etkinDil);
+          const ne = sozlukDuzYazisi("widgetNe", tip.ad, tip.ne, etkinDil, "kaynak");
           // doğuş-rehberi turu (CUE `*` ödüncü): kanon varsayılanları hover'da GÖRÜNÜR —
           // yazılmayan alan hangi değere düşüyor, geliştirici tipin üstünde okur.
           const vars = snf.semalar?.[tip.ad]?.varsayilan;
           const varsEk = vars && Object.keys(vars).length ? varsayilanlarIpucu(vars) : "";
           return baloncuk(
             tipIpucuMetni(
-              gorunenAd,
+              tip.ad,
               tip.aile,
               ne,
               zengin,
@@ -284,10 +297,9 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
 
         const kenar = snf.kenarTipleri.find((k) => k.ad === kelime);
         if (kenar) {
-          const ne = sozlukDuzYazisi("kenarNe", kenar.ad, kenar.ne, etkinDil);
-          const gorunenAd = sozlukAdi("kenar", kenar.ad, etkinDil);
+          const ne = sozlukDuzYazisi("kenarNe", kenar.ad, kenar.ne, etkinDil, "kaynak");
           return baloncuk(kenarIpucu(
-            kenar.ad, gorunenAd, kenar.yon, ne, emojiSatiri(kenar.ad),
+            kenar.ad, kenar.yon, ne, emojiSatiri(kenar.ad),
           ), aralik);
         }
 
@@ -298,7 +310,7 @@ export function ipucuSaglayici(dil: () => CiktiDili): vscode.HoverProvider {
         // aynı sözlüğe bağlandı (tutarsızlık kapandı).
         if (kelime === "yetki" && snf.yetkiSozlugu) {
           const kademeler = Object.entries(snf.yetkiSozlugu)
-            .map(([k, v]) => `- \`${k}\` — ${v}`).join("\n");
+            .map(([k, v]) => `- \`${k}\` — ${sozlukDuzYazisi("yetkiNe", k, v, etkinDil, "kaynak")}`).join("\n");
           return baloncuk(yetkiIpucu(ipucuParamMetni("yetki") ?? "", kademeler), aralik);
         }
         const parametreMetni = ipucuParamMetni(kelime);

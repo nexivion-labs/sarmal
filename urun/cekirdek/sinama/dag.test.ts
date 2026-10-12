@@ -9,6 +9,7 @@ import { ayristir } from "../src/ayristirici.ts";
 import type { Program } from "../src/sozdizim.ts";
 import { dagKur, topolojikSira, dagTanilari, blokRayi, secilebilirAdimlar, siradakiAdim } from "../src/dag.ts";
 import type { Dag, DagDugum, SiraSonuc } from "../src/dag.ts";   // PRF-KP-B03: rastgele batarya `Dag` nesnesini doğrudan kurar
+import { planYolu } from "./dogus-agaci.ts";
 
 function progla(kaynak: string): Map<string, Program> {
   return new Map([["t.sar", ayristir(belirtecle(kaynak))]]);
@@ -850,10 +851,11 @@ for (const [i, sekil] of OZEL_SEKILLER.entries()) {
  *  yazımın açık yazımla çakışması, aynı çiftin `besler` ile `bağımlı` yoluyla
  *  iki uçtan yazılması, öz-bağımlılık, çözülmeyen uç, dosyalar arası kenar ve
  *  Kapı'lı Faz zinciri (MIM-1.2). Her biri `kenarEkle` içindeki içerme denetimi
- *  ile ters yön yazımını ayrı bir yoldan zorlar. */
+ *  ile ters yön yazımını ayrı bir yoldan zorlar. Dosyalar doğuşun yazdığı plan
+ *  rafında yaşar; yol `dogus-agaci.ts` modülünden okunur (HST-MTR-A07). */
 function degismezlikFiksturu(): Map<string, Program> {
   const kaynaklar: Record<string, string> = {
-    "plan/a.sar": `
+    [planYolu("a.sar")]: `
 Blok( kod: BLK-A, ne: "a bloğu" ) {
   Katman( kod: KAT-A1, ad: "birinci" ) {
     AltKatman( kod: ALT-A1, ad: "alt" ) {
@@ -871,7 +873,7 @@ Blok( kod: BLK-A, ne: "a bloğu" ) {
     Adım( kod: A9, besler: [ A8, BLK-B ], ne: "dokuz" )
   }
 }`,
-    "plan/b.sar": `
+    [planYolu("b.sar")]: `
 Blok( kod: BLK-B, ne: "b bloğu", bağımlı: BLK-A ) {
   Katman( kod: KAT-B1, ad: "b bir" ) {
     Adım( kod: B1, bağımlı: A9, ne: "bir" )
@@ -879,7 +881,7 @@ Blok( kod: BLK-B, ne: "b bloğu", bağımlı: BLK-A ) {
     Adım( kod: B3, bağımlı: B2, ne: "üç" )
   }
 }`,
-    "plan/c.sar": `
+    [planYolu("c.sar")]: `
 Proje( kod: PRJ-C, ad: "zaman" ) {
   Faz( kod: FZ-C1, ad: "birinci mevsim", hedefTarih: "2026-01" ) {
     Blok( kod: BLK-C1, ne: "c bir" ) {

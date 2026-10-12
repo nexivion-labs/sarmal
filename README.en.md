@@ -15,21 +15,23 @@ Sarmal pulls that memory into a single source. A plan is written on four axes: t
 
 ## How it works: a real example
 
-Suppose a small project born from the starter kit contains this Blok (`is/plan/randevu.sar`):
+Suppose a small project born from the starter kit has opened its second Faz in a file of its own and written the work's Blok inside that Faz's body (`is/plan/faz/2_randevu.sar`):
 
 ```sar
-Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
-  ne: "Randevu oluşturma ucunun yazımı" ) {
-  Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
-    AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
-      Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
-        görev: "POST /randevu ucunu yaz",
-        kabul: [ "uç 201 döner" ],
-        üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
-      Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
-        bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
-        görev: "Ucun sınamasını yaz",
-        kabul: [ "sınama yeşil" ] )
+Faz( kod: FAZ-RANDEVU-UC, ad: "Randevu Ucu Mevsimi" ) {
+  Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu",
+    ne: "Randevu oluşturma ucunun yazımı" ) {
+    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", takım: TAKIM-ARKAYUZ ) {
+      AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
+        Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
+          görev: "POST /randevu ucunu yaz",
+          kabul: [ "uç 201 döner" ],
+          üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
+        Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
+          bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
+          görev: "Ucun sınamasını yaz",
+          kabul: [ "sınama yeşil" ] )
+      }
     }
   }
 }
@@ -38,15 +40,13 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 The first Adım claims to be done, but `src/randevu.ts` does not exist on disk; the second Adım references a decision nobody wrote. `sarmal denetle .` reports it like this (real output, lines wrapped; messages are in Turkish today):
 
 ```
-✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
-  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/faz/2_randevu.sar:11:52 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
+✖ is/plan/faz/2_randevu.sar:9:21 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
-![sarmal denetle output in a terminal: kırık-referans and meyve-dosyası-eksik errors, the summary line and the scorecard](urun/eklenti/medya/ekran/denetle.png)
-
-The block above shows only the two errors; the screenshot is the same run in full and carries the warning and info lines too.
+The block above shows only the two errors; the full run carries the warning and info lines too.
 
 Once the file is written and the reference fixed, the engine notices something else: the `src/` folder exists on disk but was never declared in the project's entry file.
 
@@ -56,7 +56,7 @@ Once the file is written and the reference fixed, the engine notices something e
    ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Declare the folder and the scorecard is clean: twenty nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
+Declare the folder and the scorecard is clean: twenty-one nodes, three Adım, zero errors. The plan cannot lie and neither can the disk; when they diverge, no human has to notice.
 
 The same plan also lives in the editor: the Roadmap tree, the Mini Graph and the Problems panel read the same source, and a diagnostic lands the moment the file is saved.
 
@@ -70,9 +70,9 @@ Everything in Sarmal is a tree and its root is the project's entry file. A proje
 randevu/
 ├── randevu_anadizin.sar        entry: Proje → Kitaplık → Raf, plus Technology and Team
 ├── is/                         the library of work
-│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → file
-│   │   ├── ilk_plan.sar
-│   │   └── randevu.sar
+│   ├── plan/faz/               every Faz in its own prefix-numbered file: Faz → Blok → Katman → AltKatman → Adım
+│   │   ├── 1_dogus.sar
+│   │   └── 2_randevu.sar
 │   └── durum/durum_devir.sar   where we left off: the end-of-session handover record
 ├── ogreti/ogrenme/             lessons and feedback; memory graduates into skills here
 ├── oz/siniflama/isaretci.json  type-canon pointer; the extension resolves its canon from this shelf
@@ -83,11 +83,11 @@ randevu/
 └── src/                        code; every folder opened on disk must be declared in the entry file
 ```
 
-In the drawing `randevu.sar` and `src/` belong to the work itself; the remaining thirteen files
+In the drawing `2_randevu.sar` and `src/` belong to the work itself; the remaining thirteen files
 are all written by the `dogus` tool and none of them is created by hand. Choose the
 workspace kind and the same kit is born twice: once for the roof, once for the first project under it.
 
-The logic is four sentences. First, structure is declared before it exists: the entry file declares every branching folder as a Kitaplık and every leaf folder inside it as a Raf, and an undeclared folder is drift to the engine. The Kitaplık level cannot be skipped; bare shelves under the root turn the entry file into an unreadable list as the tree grows. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity that may span seasons, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
+The logic is four sentences. First, structure is declared before it exists: the entry file declares every branching folder as a Kitaplık and every leaf folder inside it as a Raf, and an undeclared folder is drift to the engine. The Kitaplık level cannot be skipped; bare shelves under the root turn the entry file into an unreadable list as the tree grows. Second, the plan descends from time to work, from work to technology, from technology to flow: a Faz is a season, a Blok is a body of work with a single identity wrapped in the body of the Faz it lives in, a Katman binds to a Team or Technology, an AltKatman is a topic inside it, an Adım is the smallest unit of execution and the Meyve it produces resolves to a file on disk. Third, every node has a unique code and nodes connect only through edges: `bağımlı` carries order, `üretir` delivery, `referans` rationale, `uygular` rules; a bond is written in exactly one place. Fourth, a workspace may contain several projects and each derives its identity from its own root; this repository lives exactly that way: the plan under `is/` is Sarmal's own tree.
 
 ## What changes for agents
 
@@ -201,5 +201,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 47 errors, 18 warnings, and 15 informational diagnostics. The fixed registry routing matrix sends 145 items to Problems, 3 to Reminders, and 33 to Notifications (Observations). 180 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 48 errors, 24 warnings, and 21 informational diagnostics. The fixed registry routing matrix sends 153 items to Problems, 3 to Reminders, and 38 to Notifications (Observations). 193 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

@@ -294,7 +294,8 @@ test("KAPANDI: bildirim, durum çubuğu iletisi, satır sonu notu ve planlanmam�
         assert.ok(!EMOJI.test(metin), `${ad} (${dil}) hâlâ emoji taşıyor: ${metin}`);
         assert.ok(metin.includes(kelime), `${ad} (${dil}) kelimesini yitirmiş: "${metin}"`);
       }
-      assert.equal(m.YOL_METINLERI.planlanmamisSayac(2, 5), tr ? "planlanmamış [2/5]" : "unscheduled [2/5]",
+      // MGZ-A09: sayaç dosyadaki `planlanmamış:` alanını adlandırır; iki dilde de alanın adıdır.
+      assert.equal(m.YOL_METINLERI.planlanmamisSayac(2, 5), "planlanmamış [2/5]",
         `planlanmamış sayacı (${dil}) kelime ve sayıdan oluşmuyor`);
     }
   } finally {
@@ -445,7 +446,7 @@ test("KAPANDI: ipucu balonu işaretini aileden alır — çizici yokken işaret 
     ["bölüm etiketi", m.bolumEtiketiIpucu("desenler", "açıklama")],
     ["serbest bölüm etiketi", m.bolumEtiketiIpucu("serbest")],
     ["varsayılanlar", m.varsayilanlarIpucu({ durum: "beklemede" })],
-    ["kenar", m.kenarIpucu("bağımlı", "depends on", "ileri", "ne", "")],
+    ["kenar", m.kenarIpucu("bağımlı", "ileri", "ne", "")],
     ["anahtar", m.anahtarIpucu("kod", "açıklama", "")],
     ["parametre", m.parametreIpucu("ad", "açıklama", "")],
     ["yetki", m.yetkiIpucu("açıklama", "- L1")],

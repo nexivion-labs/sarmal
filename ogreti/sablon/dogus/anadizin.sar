@@ -6,7 +6,7 @@
 //   GÖMÜLMEZ — plan/ rafında ayrı .sar dosyalarında yaşar (MIM-1). Zaman ekseni,
 //   yani Faz kademesi, bu dosyada hiç bulunmaz; onun yeri planın kendi dosyasıdır.
 //
-//   🧭 İLK İŞİN: is/plan/ilk_plan.sar dosyasındaki ADM-KURULUS-01 Adımını koş —
+//   🧭 İLK İŞİN: is/plan/faz/1_dogus.sar dosyasındaki ADM-KURULUS-01 Adımını koş —
 //   mimari diyalog orada tarif edilir. Yardım: MCP `başla` (rehber + şablonlar),
 //   `kurallar` (yürürlük), `siniflama` (tip kanonu), `denetle` (drift aynası).
 // ═══════════════════════════════════════════════════════════════════════════
@@ -48,7 +48,7 @@ Proje( kod: PRJ-{{KOD}}, ad: "{{AD}}", rejim: katı,
   //    aynı kademede eklersin.
   Kitaplık( kod: KTP-IS, yol: "is/",
     ne: "İşin kitaplığı — planın ve durumun rafları burada yaşar; işin bugünkü hâli buradan okunur" ) {
-    Raf( kod: RAF-PLAN,  yol: "plan/",  ne: "Plan ağacı — Faz→Blok→Katman→AltKatman→Adım ayrı .sar dosyalarında (MIM-1)" )
+    Raf( kod: RAF-PLAN,  yol: "plan/",  ne: "Plan ağacı — her Faz faz/ klasöründe sıra önekli kendi dosyasında yaşar, Bloklar Faz gövdesinde büyür (MIM-1.2)" )
     Raf( kod: RAF-DURUM, yol: "durum/", ne: "Durum devri — oturum sonu 'nerede kaldık' kaydı (kaynak-gerçek repo'da)" )
   }
   Kitaplık( kod: KTP-OGRETI, yol: "ogreti/",

@@ -1750,6 +1750,14 @@
           "gizli"
         ]
       },
+      "opsiyonel": [
+        "önekler",
+        "biçimMuafları"
+      ],
+      "tür": {
+        "önekler": "liste",
+        "biçimMuafları": "liste"
+      },
       "beyanZorunlu": {
         "rejim": {
           "dayanak": "YAS-1",
@@ -1759,7 +1767,7 @@
         }
       },
       "kural": "Rejim sözleşmesi (YAS-1 ailesi): katı rejimde her Katman→Adım sarma yolu en az bir AltKatman'dan geçer ve Katman'ın doğrudan Adım taşıması yasaktır (YAS-1.1 · zorlama tanısı katı-rejim-altkatman-eksik motor borcunda); yalnız esnek beyanlı küçük veya deneysel Projelerde Katman doğrudan Adım taşıyabilir ve bu izin AltKatman'ı yasaklamaz (YAS-1.2); rejim yalnız açık kullanıcı değişikliğiyle geçer, yapı otomatik sarılmaz, taşınmaz veya silinmez ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır (YAS-1.3)",
-      "not": "Görünürlük beyanı (Founder hükmü 2026-08-26): bir Proje yayımlanacaksa `açık`, kapalı kalacaksa `gizli` beyan eder; sözlük STR-3'ün açık-gizli sınırıyla aynıdır. Beyan zorunlu değildir ve yokluğunda proje AÇIK sayılır; sessiz varsayım burada nöbeti gevşetmez, sıkılaştırır. Açık-gizli sınır nöbeti bu beyanı okur, çünkü sınırın hangi yakasında olduğunu klasör adından çıkarmak iki yönden de yanlıştır: kapalı ürünün gerçek adı açık depoya yazılırsa ifşa olur, yazılmazsa nöbet kapalı tarafı kendi evinde haksız yere suçlar."
+      "not": "Görünürlük beyanı (Founder hükmü 2026-08-26): bir Proje yayımlanacaksa `açık`, kapalı kalacaksa `gizli` beyan eder; sözlük STR-3'ün açık-gizli sınırıyla aynıdır. Beyan zorunlu değildir ve yokluğunda proje AÇIK sayılır; sessiz varsayım burada nöbeti gevşetmez, sıkılaştırır. Açık-gizli sınır nöbeti bu beyanı okur, çünkü sınırın hangi yakasında olduğunu klasör adından çıkarmak iki yönden de yanlıştır: kapalı ürünün gerçek adı açık depoya yazılırsa ifşa olur, yazılmazsa nöbet kapalı tarafı kendi evinde haksız yere suçlar. Önek sicili (DIL-1.8): `önekler` listesi projenin düğüm kodu öneklerini tek yerde ilan eder; sicil beyan edildiği andan itibaren ilansız önekle doğan kod ve biçim dışı kod uyarı düzeyinde bildirilir, sicil beyan edilmemiş projede ise standart yürürlükte sayılmaz ve tanı doğmaz. `biçimMuafları` listesi standarttan önce doğmuş ve dokunulmaz kalan kodları adıyla, tire taşımayan bir öğe yazıldığında ise o önekin bütün kodlarını biçim tanısından muaf tutar."
     },
     "Orkestrasyon": {
       "zorunlu": [
@@ -1796,12 +1804,12 @@
         "ad"
       ],
       "opsiyonel": [
-        "teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"
+        "teknolojiBağımsız (geçici doğuş kaçışı: yalnız projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken Kuruluş Katmanı gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; zemin ilan edildiğinde satır silinir ve Katman takım ya da kullanır kenarıyla bağlanır, aksi hâlde yersiz teknoloji kaçışı uyarısı doğar; boş gerekçe beyan sayılmaz)"
       ],
       "tür": {
         "teknolojiBağımsız": "metin"
       },
-      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz; zeminsiz Katman yalnız `teknolojiBağımsız` beyanıyla kurulur ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
+      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz ve önce `takım` yolu denenir. Zeminsiz Katman yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken geçici `teknolojiBağımsız` beyanıyla kurulur; zemin ilan edildiğinde beyan kaldırılır ve Katman bağlanır. İşin türü zeminde değil AltKatmanın `departman` alanında yazılır ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
     },
     "Adım": {
       "zorunlu": [

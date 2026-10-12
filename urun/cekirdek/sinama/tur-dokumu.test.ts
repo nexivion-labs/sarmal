@@ -24,12 +24,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { denetimKos } from "../src/denetim.ts";
+import { dogusAgaciKur, fazMetni, fazYolu } from "./dogus-agaci.ts";
 
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const KOK = fileURLToPath(new URL("..", import.meta.url));
@@ -44,28 +44,25 @@ const TEKIL_SINIRI = 3;
  * bir dosyaya da yayılır; yayılım sayısı ancak böyle sınanabilir.
  */
 function fiksturKur(ikinciDosya = false): string {
-  const dizin = mkdtempSync(join(tmpdir(), "sarmal-dokum-"));
-  writeFileSync(join(dizin, "d_anadizin.sar"),
-    `Proje( kod: PRJ-DKM, ad: "dokum", ne: "tür dökümü fikstürü" ) {\n`
-    + `  Raf( kod: RAF-PLAN, yol: "plan/", ne: "planlar" )\n}\n`, "utf8");
-  mkdirSync(join(dizin, "plan"));
+  // GERÇEK AĞAÇ (HST-MTR-A07): fikstür doğuş paketiyle doğar; beş bulgulu Faz
+  // doğuşun ilk Faz dosyasının yerine, ikinci dosya ise sıradaki Faz dosyası
+  // olarak yazılır. Yollar `dogus-agaci.ts` modülünden okunur.
   const adim = (kod: string, ne: string, alan: string) =>
-    `    Adım( kod: ${kod}, durum: beklemede, ne: "${ne}", bağımlı: [], ${alan}: "x" )\n`;
-  writeFileSync(join(dizin, "plan", "is.sar"),
-    `Blok( kod: BLK-DKM, ne: "iş" ) {\n  Katman( kod: KAT-DKM, ne: "k" ) {\n`
-    + adim("ADM-A", "bir", "uydurmaBir")
-    + adim("ADM-B", "iki", "uydurmaIki")
-    + adim("ADM-C", "üç", "uydurmaUc")
-    + adim("ADM-D", "dört", "uydurmaDort")
-    + adim("ADM-E", "beş", "uydurmaBes")
-    + `  }\n}\n`, "utf8");
+    `        Adım( kod: ${kod}, durum: beklemede, ne: "${ne}", bağımlı: [], ${alan}: "x" )`;
+  const agac = dogusAgaciKur({
+    onek: "sarmal-dokum-",
+    ilkFaz: fazMetni({ ek: "DKM", adimlar: [
+      adim("ADM-A", "bir", "uydurmaBir"),
+      adim("ADM-B", "iki", "uydurmaIki"),
+      adim("ADM-C", "üç", "uydurmaUc"),
+      adim("ADM-D", "dört", "uydurmaDort"),
+      adim("ADM-E", "beş", "uydurmaBes"),
+    ].join("\n") }),
+  });
   if (ikinciDosya) {
-    writeFileSync(join(dizin, "plan", "ikinci.sar"),
-      `Blok( kod: BLK-IKI, ne: "iş" ) {\n  Katman( kod: KAT-IKI, ne: "k" ) {\n`
-      + adim("ADM-F", "altı", "uydurmaAlti")
-      + `  }\n}\n`, "utf8");
+    agac.yaz(fazYolu(2, "ikinci"), fazMetni({ ek: "IKI", adimlar: adim("ADM-F", "altı", "uydurmaAlti") }));
   }
-  return dizin;
+  return agac.kok;
 }
 
 const dokumSatiri = (dizin: string, kod: string, tamListe = false) => {

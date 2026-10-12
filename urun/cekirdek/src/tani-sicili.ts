@@ -61,6 +61,14 @@ export interface YeniTaniKaydi {
   uretici: "dogrulayici.ts" | "denetci.ts" | "kuralci.ts" | "denetim.ts";
   /** Tanının bugün üretildiği düzey (terfi kademesi). */
   kademe: Duzey;
+  /**
+   * KPS-SIR-A01 · TARİHSEL KAYIT DÜZEYİ. Kanon bazı tanıların, ihlal edilen iş
+   * tamamen bittiğinde tarihsel bir kayıt olarak daha alçak bir düzeyde konuştuğunu
+   * yazar (MIM-1.2: yabancı Faz bağı ile ters Faz bağımlılığı). Alan yalnız bu
+   * tanılarda dolar ve yüz tutarlılığı nöbeti bu tek alçak düzeyi sapma saymaz;
+   * başka hiçbir düzey ve hiçbir yükseltme bu alanla meşrulaşmaz.
+   */
+  tarihselKademe?: "bilgi";
 }
 
 /** göç terfi turu A06 kapanışı'nın uygulama · doğrulama · kanon iddiası üçlüsü. */
@@ -84,22 +92,41 @@ const SIRADAKI_TERFI_DUZEYI: Readonly<Record<Duzey, Duzey | undefined>> = {
   bilgi: "uyarı", "uyarı": "hata", hata: undefined,
 };
 
+/**
+ * Terfi kapısının bulguları dilden bağımsız kodlarla (MGZ-A09): `atlama:<önceki>:<sonraki>`,
+ * `sayac`, `kanit:<eksik ayaklar>` ve `kabul`. Ölçüm burada tek kez yapılır; Türkçe
+ * cümleyi `terfiKapisiKusurlari`, İngilizce cümleyi tanı kataloğu kurar.
+ */
+export function terfiKapisiBulgulari(g: TerfiKapisiGirdisi): string[] {
+  const bulgular: string[] = [];
+  if (SIRADAKI_TERFI_DUZEYI[g.onceki] !== g.sonraki) bulgular.push(`atlama:${g.onceki}:${g.sonraki}`);
+  if (!g.sayaclar.length || g.sayaclar.some((s) => !Number.isFinite(s) || s !== 0)) bulgular.push("sayac");
+  const eksik = Object.entries(g.ucluKanit).filter(([, bag]) => !bag.trim()).map(([ad]) => ad);
+  if (eksik.length) bulgular.push(`kanit:${eksik.join(",")}`);
+  if (!g.acikKabul.trim()) bulgular.push("kabul");
+  return bulgular;
+}
+
 /** Boş dizi, sıra+sayaç+üçlü kanıt+açık kabul kapılarının geçtiğini bildirir. */
 export function terfiKapisiKusurlari(g: TerfiKapisiGirdisi): string[] {
-  const kusurlar: string[] = [];
-  if (SIRADAKI_TERFI_DUZEYI[g.onceki] !== g.sonraki)
-    kusurlar.push(`${g.kod}: düzey atlama var (${g.onceki}→${g.sonraki}); yalnız bilgi→uyarı→hata sırası geçerlidir`);
-  if (!g.sayaclar.length || g.sayaclar.some((s) => !Number.isFinite(s) || s !== 0))
-    kusurlar.push(`${g.kod}: bütün canlı sayaçlar ayrı ayrı sıfır değildir`);
-  const eksik = Object.entries(g.ucluKanit).filter(([, bag]) => !bag.trim()).map(([ad]) => ad);
-  if (eksik.length) kusurlar.push(`${g.kod}: üçlü kanıt eksiktir (${eksik.join(" · ")})`);
-  if (!g.acikKabul.trim()) kusurlar.push(`${g.kod}: yetkili açık kabul yoktur`);
-  return kusurlar;
+  return terfiKapisiBulgulari(g).map((bulgu) => {
+    const [tur, ...parca] = bulgu.split(":");
+    if (tur === "atlama") return `${g.kod}: düzey atlama var (${parca[0]}→${parca[1]}); yalnız bilgi→uyarı→hata sırası geçerlidir`;
+    if (tur === "sayac") return `${g.kod}: bütün canlı sayaçlar ayrı ayrı sıfır değildir`;
+    if (tur === "kanit") return `${g.kod}: üçlü kanıt eksiktir (${(parca[0] ?? "").split(",").join(" · ")})`;
+    return `${g.kod}: yetkili açık kabul yoktur`;
+  });
 }
 
 export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "kanonik-kaynak-biçimi", madde: "DIL-1", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "orthografi-kaybı", madde: "DIL-1.1", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  // RFM-MOTOR-A02 (2026-10-10): DIL-1.8 düğüm kodu standardının iki tanısı. Kanon
+  // ikisini de uyarı düzeyinde yazar ve hiçbir koşulda hataya çıkarılmalarını
+  // yasaklar. Kapsam projedir: önek sicili anadizinde, ölçülen kodlar varlığın
+  // bütün dosyalarındadır. Sicil beyan etmeyen varlıkta ikisi de susar.
+  { kod: "ilansız-önek", madde: "DIL-1.8", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "kod-biçimi-uyumsuz", madde: "DIL-1.8", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "belge-şekil-drift", madde: "DIL-2", kanonDüzey: "hata", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "hata" },
   { kod: "çok-satırlı-değer-drift", madde: "DIL-2.2", kanonDüzey: "uyarı", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "uyarı" },
   { kod: "kenar-tip-uyuşmazlığı", madde: "DIL-3.1", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
@@ -127,7 +154,10 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "üretim-kökeni-ihlali", madde: "ORK-1.3", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "kullanır-kenarı-ihlali", madde: "ORK-2.4", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
   { kod: "deterministik-sıra-ihlali", madde: "ORK-3", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
-  { kod: "seçilemez-adım-yürütümü", madde: "ORK-3.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): tanı grafın genişletilmiş öncül listesini
+  // okur ve kanonun yazdığı uyarı düzeyine tek kademe çıkar; açık deponun kendi
+  // ağacında sayacı sıfırdır.
+  { kod: "seçilemez-adım-yürütümü", madde: "ORK-3.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "döngü-sonlanması-eksik", madde: "ORK-3.3", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "kapı-kabul-kanıtı-eksik", madde: "ORK-3.3", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "çapraz-proje-ad-alanı", madde: "ORK-4", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
@@ -210,6 +240,39 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   // graftan okunamadığını söyler; bu yüzden bilgi düzeyindedir. Kapsam projedir:
   // aidiyet klasör bağından türer ve tek dosyadan okunamaz. Ders dünyası muaftır.
   { kod: "projesiz-faz", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): Faz sırası katıdır, önceki Faz kapanmadan
+  // sonraki Fazda iş başlamaz ve hiçbir Blok Fazsız ya da boş bir yapıda yaşayamaz.
+  // Graf aynı Projenin Fazlarını tek zincirde dizer; zincirin iki ihlali ve Blokun
+  // başka bir Projenin Fazına bağlanması MIM-1.2 maddesine, Katmansız ve tek Adımlı
+  // Blok MIM-1.3 maddesine, Adımsız kapsayıcı MIM-1.6 maddesine bağlanır. Kapsam
+  // projedir: Faz zinciri ve Blok aidiyeti tek dosyadan okunamaz. Yabancı Faz bağı
+  // işi bitmiş Blokta tarihsel kayıt olarak bilgi düzeyinde konuşur.
+  { kod: "ters-faz-bağımlılığı", madde: "MIM-1.2", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata", tarihselKademe: "bilgi" },
+  { kod: "erken-faz-işi", madde: "MIM-1.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "yabancı-faz-bağı", madde: "MIM-1.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı", tarihselKademe: "bilgi" },
+  { kod: "katmansız-blok", madde: "MIM-1.3", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "tek-adımlı-blok", madde: "MIM-1.3", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "adımsız-kapsayıcı", madde: "MIM-1.6", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A03 (Founder hükmü 2026-09-29): her Faz plan rafının faz klasöründe sıra
+  // önekli kendi dosyasında yaşar, Faz ilanı dosyanın tepesinde durur ve Blok Faza
+  // yalnız Faz gövdesine sarılarak bağlanır. Düzenin dört olgusu MIM-1.2 maddesine
+  // bağlanır ve kanonun yazdığı bilgi düzeyinde doğar; mevcut planlar taşınana dek
+  // hiçbir kapıyı kırmızıya düşürmez. Kapsam projedir: Faz ile Blok arasındaki bağ
+  // tek dosyadan okunamaz. Ders dünyası, fikstürler ve giriş ilanı muaftır.
+  { kod: "çok-fazlı-dosya", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "faz-dışı-blok", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "faz-ilanı-tepede-değil", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  { kod: "yersiz-faz-dosyası", madde: "MIM-1.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
+  // KPS-SIR-A02 (2026-09-29): yapısal satırların girintisi yapının derinliğiyle
+  // uyuşmadığında biçimlendiricinin kendi derinlik kuralı konuşur. DIL-2.2 yalnız
+  // yapısal girintinin kanonik kurala göre düzenlenebileceğini yazar; gözlem o
+  // kuraldan sapmayı bildirir ve maddenin zorlama satırına bilgi düzeyinde ilan
+  // edilmiştir (Adımın sınırı yalnız zorlama satırına ilanı izin verir; hüküm,
+  // gerekçe ve örnek metinlerine dokunulmamıştır). Motor yapıyı girintiden değil
+  // ayrıştırmadan okur, bu yüzden gözlem hiçbir kapıyı kırmızıya düşürmez. Kapsam
+  // projedir, çünkü ham kaynak proje denetiminin yükleyicisinden gelir; ders dünyası
+  // muaftır.
+  { kod: "girinti-yapı-uyumsuz", madde: "DIL-2.2", kanonDüzey: "bilgi", kapsam: "proje", uretici: "denetci.ts", kademe: "bilgi" },
 ];
 
 /** Yeni tanı kimliğinden sicil kaydına erişim (üreticiler düzeyi buradan okur). */
@@ -219,7 +282,12 @@ export const YENI_TANI_INDEKS: ReadonlyMap<string, YeniTaniKaydi> =
 /** Yeni kanonun ilan ettiği tanı kimlikleri. */
 export const YENI_TANI_KODLARI: readonly string[] = YENI_TANI_KANONU.map((k) => k.kod);
 
-/** Yeni omurgadan önce yazılmış, kaynakta sabit duran tanı kodları (Türkçe sıra). */
+/** Yeni omurgadan önce yazılmış, kaynakta sabit duran tanı kodları (Türkçe sıra).
+ *
+ *  BKM-OLG-A11 (2026-10-02): `yersiz-teknoloji-kaçışı` bu kümeye girer, çünkü yeni
+ *  kümeye girmek kanonun `**Zorlama:**` satırında bir iddia ister ve MIM-1.4 metni
+ *  bu Adımda değiştirilmez; madde metni Founder onayına taslak olarak sunulmuştur.
+ *  Kanon taslağı onaylanıp zorlama satırına indiğinde kimlik yeni kümeye taşınır. */
 export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "ad-ayracı", "ad-biçimi", "aile-geçersiz", "anadizin-plan-karışması", "açık-adım", "açık-hatırlatıcı",
   "ağırlık-toplamı", "bağımlılık-mekanik", "beceri-drift", "beceri-terfisi", "beyansız-yapı",
@@ -239,12 +307,12 @@ export const ONCEKI_TANI_KODLARI: readonly string[] = [
   "olgunluk-onayı",
   "kural-çatışması", "kırık-koşar", "kırık-referans", "mühür-kırık",
   "dayanaksız-kural",
-  "mühürsüz-ebedi", "normalizasyon-uyumsuz", "planlanmamış-gövde", "planlanmamış-çelişki", "politika-dayanaksız", "rafsız-anadizin", "çift-mevsim-kaydı",
+  "mühürsüz-ebedi", "normalizasyon-uyumsuz", "planlanmamış-çelişki", "politika-dayanaksız", "rafsız-anadizin", "çift-mevsim-kaydı",
   "rbac-apex-tekil", "rbac-l5-paylaşık", "rbac-l6-kalıcı", "rbac-yönetici-üretir", "çıplak-adımlı-katman",
   "günsüz-tarih",
   "sahipsiz-belge", "silo-blok", "söz-dizim", "tarif-eksik",
   "tek-çocuk-kapsayıcı", "teknolojisiz-yüzey", "uygulanmamış-karar", "yanlış-alan",
-  "yer-uyuşmazlığı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",
+  "yer-uyuşmazlığı", "yersiz-teknoloji-kaçışı", "yetim-meyve", "yinelenen-kod", "yinelenen-parametre",
   "zorlanamayan-koşul", "zorlanamayan-kural", "öneksiz-blok", "öz-bağımlılık",
 ];
 
@@ -252,7 +320,7 @@ export const ONCEKI_TANI_KODLARI: readonly string[] = [
 export const EMEKLI_TANI_KODLARI: readonly string[] = [
   "anadizin-yüzey-şişmesi", "ayakizi-bulunamadı", "dayanak-halef",
   "dayanak-hedef-tür", "defter-referansı", "durum-boyutu", "eski-giriş-adı", "faz-gecikti", "faz-tarihsiz",
-  "faz-yaklasiyor", "hatırlatıcı-vade", "kırıntı-adım", "tek-cocuk-kapsayici", "uzak-vade", "öneksiz-anadizin",
+  "faz-yaklasiyor", "hatırlatıcı-vade", "kırıntı-adım", "planlanmamış-gövde", "tek-cocuk-kapsayici", "uzak-vade", "öneksiz-anadizin",
 ];
 
 /**
@@ -279,7 +347,7 @@ export const EMEKLILIK_BORCU_TANI_KODLARI: readonly string[] = [
   "durumsuz-adım", "düzyazı-koşul", "eşik-sırası", "geçersiz-durum", "gizli-bağımlılık",
   "günsüz-tarih", "harf-farkı", "kararlaşmış-hatırlatıcı", "katmansız-adım",
   "kavuşumsuz-paralellik", "kayıp-kenar", "koni-taşması", "kopuk-zincir", "kullanımsız-tip",
-  "kural-ihlali", "meyvesiz-geliştirme", "mühürsüz-ebedi", "niyet-drift", "olgunluk-onayı", "planlanmamış-gövde",
+  "kural-ihlali", "meyvesiz-geliştirme", "mühürsüz-ebedi", "niyet-drift", "olgunluk-onayı",
   "planlanmamış-çelişki", "tarif-eksik", "teknolojisiz-yüzey", "zorlanamayan-koşul",
   "referanssız-geliştirme", "çift-mevsim-kaydı", "çıplak-adımlı-katman", "öneksiz-blok",
 ];

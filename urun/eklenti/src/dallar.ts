@@ -12,8 +12,14 @@
 //     • kapanış `}`'ine hayalet etiket: ‹ Blok BLK-X (kaynak kirlenmez)
 //   Kutu-glifler mutlak-konumla girintinin ÜZERİNE biner → metin kaymaz.
 //
+//   KAPANIŞ ETİKETİ DİLDEN BAĞIMSIZDIR (MGZ-A09 · Founder hükmü 2026-10-10).
+//   Etiket dosyadaki bir tipi adlandırır ve o tipin dosyadaki adını, yani
+//   açılış satırında yazan Türkçe sözcüğü taşır. İngilizce pencerede `‹ Block`
+//   basmak dosyada bulunmayan bir adı öğretirdi; bu yüzden etiket her dilde
+//   aynıdır ve dil değişikliği kılavuzları yeniden çizdirmez.
+//
 //   KESİNTİ SINIRLARI (VIT-K78-A04 · dürüst belgeleme 2026-07-11):
-//   döşe() kardeşler arasına ARALIKSIZ │ koyar — yorum/belge satırları dahil;
+//   dalIzgarasi() (dallar-cekirdek.ts) kardeşler arasına ARALIKSIZ │ koyar — yorum/belge satırları dahil;
 //   muafiyet-kaynaklı dal-çizgisi kesintisi YOKTUR. Kalan iki kesinti VS Code
 //   API sınırıdır ve dekorasyonla ÇÖZÜLEMEZ (dekorasyon belge satırına bağlanır,
 //   görsel satıra değil): ① CodeLens sanal-satırı çizgiyi görsel olarak böler;
@@ -26,10 +32,8 @@
 
 import * as vscode from "vscode";
 import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
-import type { Program, Dugum } from "../../cekirdek/src/sozdizim.ts";
-import { kanonikWidgetAdi } from "./yuzey-metinleri.ts";
-
-const GENISLIK = 2;          // seviye başına sütun (.sar girintisi = 2 boşluk)
+import type { Program } from "../../cekirdek/src/sozdizim.ts";
+import { dalIzgarasi, satirDizesi } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
 
 // Tek taban tür — glif/renk/konum her aralıkta ayrıca (renderOptions) verilir.
 const glifTuru = vscode.window.createTextEditorDecorationType({});
@@ -51,49 +55,9 @@ export function belgeSatirlari(doc: vscode.TextDocument): Set<number> {
   return küme;
 }
 
-// ── glif ızgarası: grid[satır][seviye] = "│" | "├" | "└" ─────────────────────
-type Izgara = Map<number, Map<number, string>>;
-
-function koy(g: Izgara, satır: number, seviye: number, glif: string, ezme = false): void {
-  let sr = g.get(satır);
-  if (!sr) { sr = new Map(); g.set(satır, sr); }
-  if (ezme || !sr.has(seviye)) sr.set(seviye, glif);
-}
-
-/** Bir düğümün başlangıç satırı (0-tabanlı). */
-function satırNo(d: Dugum): number { return Math.max(0, d.satir - 1); }
-
-interface Kardeş { satır: number; sütun: number; dugum?: Dugum; }
-
-/** Düğümün çocukları: YAPISAL çocuklar + `raflar:{}` harita kısayolu (dosya-analojisi).
- *  Referans temizliği: attribute'lar (kod/durum/ne/görev…) ağaca GİRMEZ — yalnız
- *  yapısal düğümler + raflar (klasör→dosya gibi). Çok-satırlı değer içi kirlenmez. */
-function çocuklar(d: Dugum): Kardeş[] {
-  const liste: Kardeş[] =
-    d.cocuklar.map((c) => ({ satır: satırNo(c), sütun: Math.max(0, c.sutun - 1), dugum: c }));
-  const haritaEkle = (ciftler?: { satir: number; sutun: number }[]): void => {
-    for (const c of ciftler ?? []) liste.push({ satır: Math.max(0, c.satir - 1), sütun: Math.max(0, c.sutun - 1) });
-  };
-  for (const p of [...d.parametreler, ...d.ozellikler]) {
-    if (p.deger.tur === "harita" && p.ad === "raflar") haritaEkle(p.deger.ciftler);
-  }
-  return liste.sort((a, b) => a.satır - b.satır);
-}
-
-/** Sibling grubunu ızgaraya döşe: ├/└ dallar + aralarında sürekli │.
- *  Bağlaç sütunu = düğüm sütunu − GENISLIK (metnin tam SOLUNDAKİ 2 sütun).
- *  Sütun 0'daki kökler (bağlaç sütunu < 0) işaretlenmez, yalnız içine inilir. */
-function döşe(g: Izgara, kardeşler: Kardeş[]): void {
-  kardeşler.forEach((n, i) => {
-    const son = i === kardeşler.length - 1;
-    const bs = n.sütun - GENISLIK;            // bağlaç sütunu
-    if (bs >= 0) {
-      koy(g, n.satır, bs, son ? "└" : "├", true);              // dal (│ üstüne ezer)
-      if (!son) for (let ℓ = n.satır + 1; ℓ < kardeşler[i + 1].satır; ℓ++) koy(g, ℓ, bs, "│");
-    }
-    if (n.dugum) döşe(g, çocuklar(n.dugum));
-  });
-}
+// ── glif ızgarası: SAF çekirdekte (dallar-cekirdek.ts · KPS-SIR-A02) ──────────
+//   Bağlaç sütunu girintiden değil ayrıştırıcının verdiği yapı derinliğinden
+//   hesaplanır; girintisi bozuk dosyada da ağaç yapıyı doğru gösterir.
 
 /** Kapanış `}` etiketleri için hafif sözcüksel tarama (dal ızgarasından bağımsız). */
 function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
@@ -129,7 +93,7 @@ function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
           etiketler.push({
             range: new vscode.Range(s, m.length, s, m.length),
             renderOptions: { after: {
-              contentText: `  ‹ ${kanonikWidgetAdi(b.ad, b.ad)}${b.kod ? " " + b.kod : ""}`,
+              contentText: `  ‹ ${b.ad}${b.kod ? " " + b.kod : ""}`,
               color: "rgba(150,150,150,0.5)", fontStyle: "italic",
             } },
           });
@@ -147,11 +111,6 @@ function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
 //   Satır başına TEK inline dize: kutu-karakterleri doğru sütunlara koy, araları
 //   NBSP; `width:"0"` ile metni İTMEDEN before olarak bas. Inline karakterler
 //   satır yüksekliğini DOĞAL doldurur → satır aralarında boşluk YOK (kopmaz).
-const V = "│";      // │ dikey
-const H = "─";      // ─ yatay (dal ucu)
-const ORTA = "├";   // ├ ara-kardeş (dikey sürer)
-const SON = "╰";    // ╰ son-kardeş köşesi (yuvarlak — Flutter ile birebir)
-const NBSP = " ";
 const CIZGI_RENGI = "rgba(206,166,102,0.9)";        // koyu tema: sıcak altın (Flutter gibi temiz)
 const CIZGI_RENGI_ACIK = "rgba(138,96,38,0.9)";     // açık tema: koyu bronz — beyaz zeminde kaybolmaz (RF-T1-A02)
 
@@ -163,34 +122,16 @@ export function dallariHesapla(doc: vscode.TextDocument): {
   const program: Program | undefined = programAl(doc);   // EKL-F9-A06: tek parse
   if (!program) return { glifler: [], etiketler: [] };    // söz-dizim hatası: önceki çizim kalsın
 
-  const g: Izgara = new Map();
-  döşe(g, program.bildirimler.map((b) => ({ satır: satırNo(b), sütun: Math.max(0, b.sutun - 1), dugum: b })));
+  const g = dalIzgarasi(program);
 
   const glifler: vscode.DecorationOptions[] = [];
   for (const [satır, sr] of g) {
-    const sütunlar = [...sr.keys()];
-    if (!sütunlar.length) continue;
-    const enSon = Math.max(...sütunlar) + GENISLIK;         // dal ucu için +GENISLIK pay
-    const chars: string[] = new Array(enSon).fill(NBSP);
-    for (const [sütun, glif] of sr) {
-      if (glif === "│") {
-        if (chars[sütun] === NBSP) chars[sütun] = V;
-        else if (chars[sütun] === SON) chars[sütun] = ORTA;   // dikey + köşe = ├
-      } else {                                                // dal (├ / └)
-        chars[sütun] = glif === "└" ? SON : ORTA;
-        for (let c = sütun + 1; c < sütun + GENISLIK; c++)     // ─ metne kadar uzat
-          if (chars[c] === NBSP) chars[c] = H;
-      }
-    }
-    // Metnin bulunduğu bölgeyi temizle (kılavuz yalnız girintide görünür).
+    // KPS-SIR-A02: dize saf çekirdekte kurulur; az girintili düğümün dalı metnin
+    // önündeki son sütuna sıkıştırılır (sınırı dallar-cekirdek.ts belgesindedir).
     const info = doc.lineAt(satır);
-    const ilkYazı = info.firstNonWhitespaceCharacterIndex;
-    const satırSonu = info.range.end.character;
-    for (let c = ilkYazı; c < Math.min(chars.length, satırSonu); c++) chars[c] = NBSP;
-    // Çapa: ilk kılavuz sütunu (kısa satırda 0). before oraya, width:0 (metni itmez).
-    const ilkKılavuz = Math.min(...sütunlar);
-    const çapa = satırSonu < ilkKılavuz ? 0 : ilkKılavuz;
-    const dize = chars.slice(çapa).join("");
+    const sonuc = satirDizesi(sr, info.firstNonWhitespaceCharacterIndex, info.range.end.character);
+    if (!sonuc) continue;
+    const { capa: çapa, dize } = sonuc;
     glifler.push({
       range: new vscode.Range(satır, çapa, satır, çapa),
       renderOptions: {
@@ -223,11 +164,9 @@ export function dallariCiz(editor: vscode.TextEditor | undefined): void {
   editor.setDecorations(etiketTuru, etiketler);
 }
 
-/** Etkinleştirme: editör/belge/ayar değişimlerine bağlanır. */
-export function dallarKaydi(
-  context: vscode.ExtensionContext,
-  dilAyariDegistiMi: (olay: vscode.ConfigurationChangeEvent) => boolean,
-): void {
+/** Etkinleştirme: editör/belge/ayar değişimlerine bağlanır. Çizim dilden
+ *  bağımsız olduğu için yalnız kılavuz ayarı yeniden çizdirir (MGZ-A09). */
+export function dallarKaydi(context: vscode.ExtensionContext): void {
   dallariCiz(vscode.window.activeTextEditor);
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(dallariCiz),
@@ -236,7 +175,7 @@ export function dallarKaydi(
       if (aktif && e.document === aktif.document) dallariCiz(aktif);
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("sarmal.agacCizgileri") || dilAyariDegistiMi(e))
+      if (e.affectsConfiguration("sarmal.agacCizgileri"))
         dallariCiz(vscode.window.activeTextEditor);
     }),
     { dispose: () => { glifTuru.dispose(); etiketTuru.dispose(); } },

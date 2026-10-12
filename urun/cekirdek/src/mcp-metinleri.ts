@@ -263,7 +263,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "DOĞUŞ PAKETİ (DPK-A02 · flutter-create paritesi): hedef dizinde ÇALIŞIR proje doğurur — " +
         "giriş ilanı (Kitaplık kademeli) + is/durum/durum_devir + ogreti/ogrenme/dersler+geribildirim + " +
-        "is/plan/ilk_plan (katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
+        "is/plan/faz/1_dogus (Faz dosyası düzeninde, katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
         "küresel yok sayma kuralına karşı `!*.sar` istisnası, Sarmal sunucusunu çözen yürütücü ayarı, " +
         "bayt özdeş yönerge ikizi (CLAUDE.md ≡ AGENTS.md), doğuş kilidi ile denetim kancası ve kanon " +
         "işaretçisi; hepsi doğan kökün KENDİ dosyalarında yaşar, küresel ayara dokunulmaz. " +
@@ -271,12 +271,13 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "calisma-alani ise hedef ÇalışmaAlanı kökü olur ve ilk proje onun altında kendi köküyle doğar (MIM-1.1); " +
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
         "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
-        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
+        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik satırlar sona eklenir: küresel " +
+        "yok sayma kuralının istisnası ile motorun iz klasörü (`.sarmal/`). " +
         "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
         "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
-        "and is/plan/ilk_plan (a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
+        "and is/plan/faz/1_dogus (in the Phase file layout, a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
         "a `!*.sar` exception against the global ignore rule, an executor setting that resolves the Sarmal server, " +
         "a byte-identical instruction twin (CLAUDE.md ≡ AGENTS.md), a birth lock plus an audit hook, and a canon pointer; " +
         "all of them live in the new root's OWN files and the global settings are left untouched. " +
@@ -284,7 +285,8 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "with tur = calisma-alani the target becomes the ÇalışmaAlanı root and the first project is born beneath it with its own root (MIM-1.1); " +
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
-        "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
+        "The single exception is the ignore file, and even there no line is deleted—only missing lines are appended: " +
+        "the exception to the global ignore rule and the engine's trace folder (`.sarmal/`). " +
         "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools.",
     ),
     inputSchema: {

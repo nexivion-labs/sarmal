@@ -19,12 +19,16 @@ import {
   projeGrafiCikar, projeGrafiSvg, miniGrafHtml, bosHtml, temaDegiskeni, tipSimgesi,
 } from "../src/minigraf-cekirdek.ts";
 import { GOMULU_KAYIT } from "../src/gomulu-kanon.ts";
+import { fazYolu, planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+// Fikstür düğümlerinin dosyaları doğuşun ağacındaki yerlerdir; yollar paketin
+// kendisinden türer (HST-MTR-A07).
 
 function dagYap(dugumler: Array<Partial<DagDugum> & { kod: string }>): Dag {
   const m = new Map<string, DagDugum>();
   for (const d of dugumler) {
     m.set(d.kod, {
-      tip: "Adım", dosya: "/p/plan/a.sar", satir: 1, sutun: 1,
+      tip: "Adım", dosya: `/p/${planYolu("a.sar")}`, satir: 1, sutun: 1,
       oncekiler: [], sonrakiler: [], ...d,
     } as DagDugum);
   }
@@ -135,15 +139,15 @@ test("boş hâl kaçışlı ve tema-token çevirisi kararlı", () => {
 /** İki bağımsız varlığın düğümlerini taşıyan gerçek biçimli graf. */
 function ikiVarlikliDag(): Dag {
   return dagYap([
-    { kod: "S-FAZ", tip: "Faz", ad: "sarmal temel", dosya: "/depo/_Sarmal/plan/omurga.sar" },
-    { kod: "S-BLK", tip: "Blok", kapsayan: "S-FAZ", ad: "motor", dosya: "/depo/_Sarmal/plan/omurga.sar" },
+    { kod: "S-FAZ", tip: "Faz", ad: "sarmal temel", dosya: `/depo/_Sarmal/${fazYolu(1, "omurga")}` },
+    { kod: "S-BLK", tip: "Blok", kapsayan: "S-FAZ", ad: "motor", dosya: `/depo/_Sarmal/${fazYolu(1, "omurga")}` },
     { kod: "S-A1", tip: "Adım", kapsayan: "S-BLK", ad: "sarmal adımı", durum: "beklemede",
-      dosya: "/depo/_Sarmal/plan/omurga.sar", sonrakiler: ["S-A2"] },
+      dosya: `/depo/_Sarmal/${fazYolu(1, "omurga")}`, sonrakiler: ["S-A2"] },
     { kod: "S-A2", tip: "Adım", kapsayan: "S-BLK", ad: "sarmal ikinci", durum: "beklemede",
-      dosya: "/depo/_Sarmal/plan/omurga.sar", oncekiler: ["S-A1"] },
-    { kod: "N-FAZ", tip: "Faz", ad: "os temel", dosya: "/depo/_KapaliUrun/plan/kadro.sar" },
+      dosya: `/depo/_Sarmal/${fazYolu(1, "omurga")}`, oncekiler: ["S-A1"] },
+    { kod: "N-FAZ", tip: "Faz", ad: "os temel", dosya: `/depo/_KapaliUrun/${fazYolu(1, "kadro")}` },
     { kod: "N-A1", tip: "Adım", kapsayan: "N-FAZ", ad: "os adımı", durum: "beklemede",
-      dosya: "/depo/_KapaliUrun/plan/kadro.sar" },
+      dosya: `/depo/_KapaliUrun/${fazYolu(1, "kadro")}` },
   ]);
 }
 
@@ -168,9 +172,9 @@ test("odak süzgeci: odak öteki varlığa geçince graf o varlığı gösterir"
 
 test("odak süzgeci: kapsam dışı düğümün bağımlılık kenarı da düşer, kapsam içi kenar kalır", () => {
   const dag = dagYap([
-    { kod: "IC-1", dosya: "/depo/_Sarmal/plan/a.sar", sonrakiler: ["IC-2", "DIS-1"] },
-    { kod: "IC-2", dosya: "/depo/_Sarmal/plan/a.sar", oncekiler: ["IC-1"] },
-    { kod: "DIS-1", dosya: "/depo/_KapaliUrun/plan/b.sar", oncekiler: ["IC-1"] },
+    { kod: "IC-1", dosya: `/depo/_Sarmal/${planYolu("a.sar")}`, sonrakiler: ["IC-2", "DIS-1"] },
+    { kod: "IC-2", dosya: `/depo/_Sarmal/${planYolu("a.sar")}`, oncekiler: ["IC-1"] },
+    { kod: "DIS-1", dosya: `/depo/_KapaliUrun/${planYolu("b.sar")}`, oncekiler: ["IC-1"] },
   ]);
   const graf = projeGrafiCikar(dag, "", varliktaMi("/depo/_Sarmal"));
   assert.deepEqual(graf.baglar, [{ once: "IC-1", sonra: "IC-2", tur: "adım" }]);
@@ -722,12 +726,12 @@ test("N14 · üretim kenarı HOVER MALİYETİ doğurmaz: `:has()` seçici sayıs
  *  yayin_yuzeyi.sar gibi. */
 function mevsimliDagKur(): Dag {
   const programlar = new Map<string, Program>([
-    ["/depo/_Sarmal/plan/faz.sar", ayristir(belirtecle(
+    [`/depo/_Sarmal/${fazYolu(1, "faz")}`, ayristir(belirtecle(
       'Faz( kod: FAZ-TEMMUZ, ad: "temmuz mevsimi" ) {\n  çağır BLK-CAGRILI\n}\n' +
       'Faz( kod: FAZ-AGUSTOS, ad: "ağustos mevsimi" ) {\n}\n'))],
-    ["/depo/_Sarmal/plan/cagrili.sar", ayristir(belirtecle(
+    [`/depo/_Sarmal/${planYolu("cagrili.sar")}`, ayristir(belirtecle(
       'Blok( kod: BLK-CAGRILI, ne: "çağır listesiyle bağlı gövde" ) { Katman( kod: KAT-C, ad: "c katmanı" ) { Adım( kod: ADM-C, ne: "biten iş", durum: tamamlandı ) } }'))],
-    ["/depo/_Sarmal/plan/mevsimli.sar", ayristir(belirtecle(
+    [`/depo/_Sarmal/${planYolu("mevsimli.sar")}`, ayristir(belirtecle(
       'Blok( kod: BLK-MEVSIMLI, mevsim: FAZ-AGUSTOS, ne: "mevsim alanıyla bağlı gövde" ) { Katman( kod: KAT-M, ad: "m katmanı" ) { Adım( kod: ADM-M, ne: "bekleyen iş", durum: beklemede ) } }'))],
   ]);
   mevsimNormalize(programlar);

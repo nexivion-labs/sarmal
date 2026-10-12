@@ -13,7 +13,7 @@
 //   dosyasında yaşar. Gerekçe şudur: çatı birden çok bağımsız projeyi sarar ve
 //   çatıya yazılan bir mevsim, hangi projenin takvimi olduğunu söyleyemez.
 //
-//   🧭 İLK İŞİN: {{PROJE}}/is/plan/ilk_plan.sar içindeki kuruluş Adımını koş —
+//   🧭 İLK İŞİN: {{PROJE}}/is/plan/faz/1_dogus.sar içindeki kuruluş Adımını koş —
 //   ilk proje kendi kökünde doğmuştur ve mimari diyalog orada tarif edilir.
 // ═══════════════════════════════════════════════════════════════════════════
 

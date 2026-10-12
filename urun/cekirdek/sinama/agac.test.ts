@@ -112,3 +112,68 @@ test("E2 · agacUret düğüm sırası = kaynak sırası (outline aynı AST'den 
   assert.ok(cikti.indexOf("zeta/") < cikti.indexOf("alfa/"),
     "sıra alfabetik DEĞİL kaynak sırası olmalı:\n" + cikti);
 });
+
+// ── HST-YUZ-A02 · ÇOK SATIRLI NE METNİ AĞAÇ ÇİZGİSİNİ KIRMAZ (HTR-AGAC-COK-SATIRLI-NE-KIRIYOR) ──
+//   Ölçülen kusur (2026-09-16 · yeniden 2026-10-10): yorum yalnız ⏎ işaretini tek
+//   satıra indiriyordu; gerçek satır sonu taşıyan ne metninin ikinci satırı sütun
+//   sıfırdan başlıyor ve ağaç çizgisini kırıyordu. Depoda bir plan dosyasında yirmi
+//   dört satır böyle kırılıyordu. Nöbet üç yüzü birlikte ölçer: çekirdek gövdesi,
+//   README otomatik bloğu ve komut satırının ağaç çıktısı aynı gövdeden geçer.
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync as dosyaYaz, readFileSync as dosyaOku, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join as birlestir } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const COK_SATIRLI = `Proje( kod: PRJ-CS, ad: "k", ne: "kök" ) {
+    Raf( kod: RAF-A, yol: "a/", ne: """
+      birinci satır
+        girintili ikinci satır
+      """ )
+    Raf( kod: RAF-B, yol: "b/", ne: "üst\\nalt" )
+    Raf( kod: RAF-D, yol: "d/", ne: "eski${"\r"}satır sonu" )
+    Raf( kod: RAF-C, yol: "c/", ne: "tek satır ⏎ işaretli devam" )
+  }`;
+
+/** Kök satırından sonraki her satır bir dal önekiyle başlamalıdır; başlamayan satır çizgiyi kırar. */
+function kirikSatirlar(cizim: string): string[] {
+  return cizim.trimEnd().split("\n").slice(1).filter((s) => !/^(?:[│ ]{4})*(?:├── |└── )/.test(s));
+}
+
+test("HST-YUZ-A02: gerçek satır sonu taşıyan ne metni ağaçta tek satırda görünür", () => {
+  const cizim = agacYüz(COK_SATIRLI, { kokAd: "k/" });
+  assert.deepEqual(kirikSatirlar(cizim), [], "ağaç çizgisi kırıldı:\n" + cizim);
+  const s = cizim.trimEnd().split("\n");
+  assert.equal(s.length, 5, "her düğüm tek satır olmalı:\n" + cizim);
+  assert.match(s[1], /^├── a\/ +# birinci satır girintili ikinci satır$/);
+  assert.match(s[2], /^├── b\/ +# üst alt$/);
+  assert.match(s[3], /^├── d\/ +# eski satır sonu$/, "tek başına CR de satır sonudur");
+  // ⏎ işaretinin bugünkü davranışı korunur (regresyon).
+  assert.match(s[4], /^└── c\/ +# tek satır işaretli devam$/);
+});
+
+test("HST-YUZ-A02: README otomatik bloğu ve komut satırının ağaç çıktısı aynı düzeltmeden yararlanır", () => {
+  // README bloğu: agacBlokUygula çekirdeğin çizdiği ağacı aynen gömer.
+  const blok = agacBlokUygula("", agacYüz(COK_SATIRLI, { kokAd: "k/" }));
+  const icerik = blok.slice(blok.indexOf("```\n") + 4, blok.lastIndexOf("\n```"));
+  assert.deepEqual(kirikSatirlar(icerik), [], "README bloğunda ağaç çizgisi kırıldı:\n" + icerik);
+
+  // Komut satırı: `sarmal agac` ile `--readme` gerçek süreçte koşar.
+  const SARMAL = fileURLToPath(new URL("../src/sarmal.ts", import.meta.url));
+  const kok = mkdtempSync(birlestir(tmpdir(), "sarmal-agac-cs-"));
+  try {
+    const plan = birlestir(kok, "plan.sar");
+    const readme = birlestir(kok, "README.md");
+    dosyaYaz(plan, COK_SATIRLI + "\n", "utf8");
+    const cli = execFileSync(process.execPath, [SARMAL, "agac", plan], { encoding: "utf8" });
+    assert.deepEqual(kirikSatirlar(cli), [], "komut satırı ağacında çizgi kırıldı:\n" + cli);
+    assert.equal(cli.trimEnd().split("\n").length, 5, "komut satırı ağacı düğüm başına tek satır basmalı:\n" + cli);
+    assert.ok(!cli.includes("\r"), "komut satırı ağacında satır başına dönüş kalmamalı");
+    execFileSync(process.execPath, [SARMAL, "agac", plan, "--readme", readme], { encoding: "utf8" });
+    const md = dosyaOku(readme, "utf8");
+    const mdBlok = md.slice(md.indexOf("```\n") + 4, md.lastIndexOf("\n```"));
+    assert.deepEqual(kirikSatirlar(mdBlok), [], "üretilen README bloğunda çizgi kırıldı:\n" + mdBlok);
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});

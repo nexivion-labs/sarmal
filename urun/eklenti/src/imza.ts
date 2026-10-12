@@ -13,7 +13,7 @@
 import * as vscode from "vscode";
 import { snfBul } from "./ortak.ts";
 import type { Sema } from "../../cekirdek/src/siniflama.ts";
-import { imzaAlanBelgesi, imzaBelgesi, kanonikWidgetAdi } from "./yuzey-metinleri.ts";
+import { imzaAlanBelgesi, imzaBelgesi, kanonikWidgetAdi, semaAlaniEtiketi } from "./yuzey-metinleri.ts";
 
 const AD = "[A-Za-z0-9ÇĞİÖŞÜçğıöşü_]+";
 
@@ -62,7 +62,8 @@ export function imzaSaglayici(): vscode.SignatureHelpProvider {
       const alanlar = [...sema.zorunlu, ...(sema.opsiyonel ?? [])];
       if (!alanlar.length) return undefined;
 
-      const etiket = (a: string): string => (sema.zorunlu.includes(a) ? a : `[${a}]`);
+      // MGZ-A09: alan dizgesinin tarifi etkin dilde gösterilir; ad ve enum değerleri aynen kalır.
+      const etiket = (a: string): string => (sema.zorunlu.includes(a) ? semaAlaniEtiketi(a) : `[${semaAlaniEtiketi(a)}]`);
       const belge = (a: string): string =>
         imzaAlanBelgesi(sema.zorunlu.includes(a), sema.tür?.[a], sema.enum?.[a]);
 

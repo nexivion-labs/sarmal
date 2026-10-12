@@ -24,6 +24,10 @@ build/
 .env
 .env.local
 
+# Motorun koşu izleri (üretilir — kaynak değil). Döngünün kendi izi ham istemi
+# ve ham yanıtı kısaltmadan taşır; bu yüzden klasör depoya hiç girmez.
+.sarmal/
+
 # ── KÜRESEL YOK SAYMA KURALININ İSTİSNASI (silme) ────────────────────────────
 # Aşağıdaki üç satır projenin hafızasını korur. `.sar` dosyaları bu projede
 # KAYNAK KODUDUR; yürütücü yönergesi ikizi (CLAUDE.md ≡ AGENTS.md) ise ajanın

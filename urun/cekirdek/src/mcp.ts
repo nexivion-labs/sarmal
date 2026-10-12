@@ -25,6 +25,10 @@
 //     oturumun çalışma dizini (process.cwd()) kullanılır. Verilen dizin o dizinin
 //     dışındaysa iş yine yapılır ve cevabın ilk cümlesi bunu söyler (dizinSec).
 //
+//   HST-MTR-A04: `SARMAL_YURUTUCU_IZI=1` ile açılan yürütücü izi, başarılı sef ve
+//     durum-guncelle temaslarını `<dizin>/.sarmal/trace/` altına birer satır olarak
+//     yazar; satır yalnız çağrının kendisidir. Varsayılan kapalıdır.
+//
 //   KRİTİK: stdout YALNIZ JSON-RPC taşır. Kayıt/uyarı için stderr kullan
 //   (console.log stdout'u kirletir → protokol bozulur).
 //
@@ -57,11 +61,14 @@ import { dizindenIndeks, gezinRaporu, dosyaOkuGuvenli, GERIBILDIRIM_KANALLARI, p
 import { etkiMetni } from "./etki.ts";        // BKM-MCP-A01: etki aracı = CLI etki yüzüyle aynı çekirdek (YUZ-1.2)
 import { bicimle } from "./bicimle.ts";       // BKM-MCP-A01: biçim motoru çekirdekte — eklenti de buradan içe alır
 import { yansıt, type Yüz } from "./prizma.ts";
-import { belgeMd } from "./belgele.ts";       // prizma md yüzü (Prizma: tek kaynak → dört yüz)
+import { prizmaMd } from "./prizma-md.ts";    // prizma md yüzü — okunur dönüşüm (KYN-KYN-A05 · YUZ-1)
 import { adimDurumYaz } from "./koniYaz.ts";  // durum-guncelle: TEK yazım mekanizması (SENK-A05 kilit + guard)
 import { adimEtiketiBul } from "./dongu.ts";  // Adım → dosya etiketi (YUZ-1.2: çözüm tek yerde)
 import { dogusYaz, dogusRaporu, dogusTuruCoz, dogusSorusu } from "./dogus.ts";  // dogus: doğuş paketi yazıcısı (DPK-A02 · GOC-A10 tür sorusu)
 import { sozDizimTanisi, taniDilineCevir } from "./tani-metinleri.ts";
+import {
+  YURUTUCU_ROLU, yurutucuAdi, yurutucuIziAcik, yurutucuIziDosyaAdi, yurutucuIziYaz,
+} from "./kopru/iz.ts";   // HST-MTR-A04: yürütücü teması koşum izine düşer (açılabilir · yalnız çağrının kendisi)
 import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
 
@@ -113,11 +120,34 @@ for (const dosya of readdirSync(YASA_KOK)) {
 // tools/list okuma yüzü tek katalogdan ve tek dil kapısından kurulur.
 // Şema tipleri/enumlar/required alanları kanonik kaynaklarından aynı biçimde akar.
 const MCP_DILI = etkinCiktiDili();
+
+// ── HST-MTR-A04 · YÜRÜTÜCÜ İZİ ───────────────────────────────────────────────
+//   İz açıksa sef ve durum-guncelle temasları koşum izi klasörüne birer satır
+//   ekler; böylece Claude Code gibi bir yürütücünün işi panelde Adımın altında
+//   görünür. Açık hâlde sef çalışma alanına yazdığı için salt okunur ilan
+//   edilmez, ek yazımı yıkıcı değildir (beyan davranışla aynı kalır · EKL-F6-A03).
+//   Kapalı hâlde, yani varsayılanda, hiçbir şey yazılmaz ve beyan değişmez.
+const YURUTUCU_IZI = yurutucuIziAcik();
+const YURUTUCU_IZI_DOSYASI = yurutucuIziDosyaAdi();
+/** initialize'da istemcinin kendini tanıttığı yazılım adı (sade değilse kayda girmez). */
+let yurutucu: string | undefined;
+
+/** Başarılı bir temasın satırı — yalnız çağrının kendisi; ham istem ve yanıt yazılmaz. */
+function yurutucuTemasi(dizin: string, adim: string, arac: "sef" | "durum-guncelle", durum?: string): void {
+  if (!YURUTUCU_IZI) return;
+  yurutucuIziYaz(dizin, YURUTUCU_IZI_DOSYASI, {
+    zaman: new Date().toISOString(), adım: adim, rol: YURUTUCU_ROLU, arac,
+    ...(durum ? { durum } : {}), ...(yurutucu ? { yurutucu } : {}),
+  });
+}
+
 const MCP_ARAC_SEMALARI = mcpAracSemalari(MCP_DILI, {
   kuralBolumleri: Object.keys(KURAL_DOSYALARI),
   sablonTurleri: sablonTurleri(),
   adimDurumlari: guncelSnf().semalar?.["Adım"]?.enum?.durum ?? [],
-});
+}).map((a) => YURUTUCU_IZI && a.name === MCP_ARAC_ADI.sef
+  ? { ...a, annotations: { ...a.annotations, readOnlyHint: false, destructiveHint: false } }
+  : a);
 // ── JSON-RPC tipleri (yalın) ────────────────────────────────────────────────
 interface Istek {
   jsonrpc?: string;
@@ -343,7 +373,7 @@ const DOGUS_OMURGASI = [
   "🌱 ① <varlık>_anadizin.sar (KÖK; eski adı ana.sar) — Proje ya da ÇalışmaAlanı, kullanılan Teknoloji ve Takım ORADA ilan edilir; teknolojisi ilan edilmemiş yüzey DOĞMAZ",
   "⚖️ ② Yasa/Anayasa — planı sınırlayan üst hüküm katmanıdır; plan onun altında yazılır",
   "🔩 ③ Mekanizma — kesişen altyapı (yönetişim · RBAC · telemetri · denetim izi) BİR KEZ ilan edilir; plan Adımları ona REFERANS verir, içine kopyalamaz. Yasa'nın küçük kardeşi, Plan'ın abisidir — DAĞITMAK YASAKTIR. Modüller arası sıra bağımlı-DAG, aktivasyon faz etiketiyle",
-  "📋 ④ Plan — Faz(ZAMAN 🌀) → Blok(İŞ 🪵) → Katman(TEKNOLOJİ 🌿, Takım bağlı) → Adım(AKIŞ 🍃) (dört eksen · TAM-ZİNCİR zorunlu: her Blok bir zaman halkasına, her Adım bir Katman'a bağlanır; ters sarma yasaktır). Zaman bağı nazik rejimdedir: tarih GÜÇLÜ TAVSİYEDİR — hedefTarih verirsen (\"YYYY-AA-GG\" ya da ay hassasiyetiyle \"YYYY-AA\") vade nöbeti rötarı takip eder; vermezsen Faz yine açılır, motor yalnız hatırlatır (iş akışı kesilmez; erteleme meşru). Blok zamana üç yolla bağlanır (bir bağ tek yerde yazılır): Faz gövdesine iç içe yazım · Faz'ın `çağır BLK-X` listesi · Blok'un `mevsim: FAZ-X` alanı; önceliklendirme bekleyen iş dürüst beyanla durur: `planlanmamış: \"neden\"`. Blok kimliği TEKİL — sonraki fazlarda aynı gövde sürer (Provider deseni); Adım mekanizmalara `bağımlı:` verir. İhtiyaçları Gereksinim olarak İLAN et ve Adımlar ona bağlansın; böylece hangi Adımın hangi ihtiyacı karşıladığı İZLENEBİLİR kalır",
+  "📋 ④ Plan — Faz(ZAMAN 🌀) → Blok(İŞ 🪵) → Katman(TEKNOLOJİ 🌿, Takım bağlı) → Adım(AKIŞ 🍃) (dört eksen · TAM-ZİNCİR zorunlu: her Blok bir zaman halkasına, her Adım bir Katman'a bağlanır; ters sarma yasaktır). Katman zeminini önce `takım:` ile onu yürüten Takıma, Takım yoksa `kullanır:` ile tek bir Teknolojiye bağlar; işin türü (karar, süreç, inceleme) zeminde değil AltKatmanın `departman:` alanında yazılır. `teknolojiBağımsız` kaçışı yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken Kuruluş Katmanında meşrudur ve geçicidir: zemin ilan edilince kuruluş Adımı kapanmadan silinir, aksi hâlde `yersiz-teknoloji-kaçışı` uyarısı doğar. Zaman bağı nazik rejimdedir: tarih GÜÇLÜ TAVSİYEDİR — hedefTarih verirsen (\"YYYY-AA-GG\" ya da ay hassasiyetiyle \"YYYY-AA\") vade nöbeti rötarı takip eder; vermezsen Faz yine açılır, motor yalnız hatırlatır (iş akışı kesilmez; erteleme meşru). Faz dosyası düzeni (MIM-1.2): her Faz is/plan/faz/ altında sıra önekli kendi dosyasında (1_dogus.sar, 2_surum.sar, …) yaşar, Faz ilanı dosyanın tepesinde durur ve Blok Faza YALNIZ Faz gövdesine sarılarak bağlanır; `mevsim:` alanı ve Faz'ın `çağır` listesi Blok bağı olarak emeklidir; Fazsız Blok için kaçış yoktur, önceliklendirme bekleyen iş de bir Faza bağlanır; aynı Projenin Fazları tarih ve dosya önekinin doğal sayı sırasıyla tek zincirdir, önceki Faz kapanmadan sonraki Fazda iş başlamaz. Blok kimliği TEKİL ve Blok yaşadığı Fazın gövdesindedir; Adım mekanizmalara `bağımlı:` verir. İhtiyaçları Gereksinim olarak İLAN et ve Adımlar ona bağlansın; böylece hangi Adımın hangi ihtiyacı karşıladığı İZLENEBİLİR kalır",
   "🎯 ⑤ Her Adım KONİ taşır — görev·kabul·üretir·bağımlı·referans·sınır (bekçi: konisiz-adım)",
   "🌉 ⑥ KAVUŞUM · SÖZLEŞME ÖNCE (contract-first) — farklı Takım'a bağlı Adımlar ORTAK Sözleşme köprüsüyle kavuşur, köprüsüz paralel koşulamaz (bekçi: kavuşumsuz-paralellik — F2); Adım üretir Ekran · Ekran çağırır Uç · Uç bağlanır Sözleşme (bekçi: öksüz-düğme·kavuşumsuz-ekran)",
   "🍎 ⑦ ÜRETİM-YERİ — üretilebilir artefakt (Ekran·Uç·Tablo·Servis·Kimlik) `dosya:` ile KODUNUN düşeceği yeri beyan eder; yoksa ağaçtan türetilir — üreten taraf klasör uydurmaz",
@@ -701,14 +731,14 @@ function bicimleAraci(kaynak: string): { metin: string; isError: boolean } {
   return { metin: bicimle(kaynak, "\n"), isError: false };
 }
 
-/** prizma: json/yaml/xml yansıt + md belge yüzü — CLI ile aynı çekirdek (YUZ-1.2). */
+/** prizma: json/yaml/xml yansıt + md okuma yüzü (prizmaMd) — CLI `yansıt` ile aynı çekirdek (YUZ-1.2). */
 function prizmaAraci(kaynak: string, yuz: string): { metin: string; isError: boolean } {
   const YUZLER = ["json", "yaml", "xml", "md"];
   if (!YUZLER.includes(yuz)) {
     return { metin: `✖ prizma: bilinmeyen yüz "${yuz}". Geçerli: ${YUZLER.join(" · ")}`, isError: true };
   }
   try {
-    const metin = yuz === "md" ? belgeMd(kaynak) : yansıt(kaynak, yuz as Yüz);
+    const metin = yuz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yuz as Yüz);
     return { metin, isError: false };
   } catch (e) {
     if (e instanceof SozDizimHatasi) {
@@ -790,7 +820,9 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
 
   if (ad === MCP_ARAC_ADI.sef) {
     const d = dizinSec(arg0.dizin);
-    const s = sefAraci(d.dizin, typeof arg0.adim === "string" ? arg0.adim : "");
+    const adim = typeof arg0.adim === "string" ? arg0.adim : "";
+    const s = sefAraci(d.dizin, adim);
+    if (!s.isError) yurutucuTemasi(d.dizin, adim, "sef");   // HST-MTR-A04
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.ogret) {
@@ -877,10 +909,10 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
   }
   if (ad === MCP_ARAC_ADI.durumGuncelle) {
     const d = dizinSec(arg0.dizin);
-    const s = durumGuncelleAraci(
-      d.dizin,
-      typeof arg0.kod === "string" ? arg0.kod : "",
-      typeof arg0.durum === "string" ? arg0.durum : "");
+    const kod = typeof arg0.kod === "string" ? arg0.kod : "";
+    const durum = typeof arg0.durum === "string" ? arg0.durum : "";
+    const s = durumGuncelleAraci(d.dizin, kod, durum);
+    if (!s.isError) yurutucuTemasi(d.dizin, kod, "durum-guncelle", durum);   // HST-MTR-A04
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: d.not + s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.siniflama) {
@@ -958,6 +990,8 @@ function isle(istek: Istek): Cevap | null {
 
   switch (method) {
     case "initialize":
+      // HST-MTR-A04: yürütücü izinin `yurutucu` alanı istemcinin kendini tanıttığı addır.
+      yurutucu = yurutucuAdi((params as { clientInfo?: { name?: unknown } } | undefined)?.clientInfo?.name);
       return {
         jsonrpc: "2.0",
         id,

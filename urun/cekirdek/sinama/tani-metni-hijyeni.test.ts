@@ -37,7 +37,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
@@ -96,38 +97,144 @@ const YASAK: ReadonlyArray<{ ad: string; re: RegExp }> = [
   { ad: "yol-haritası notu", re: /(?:^|[^A-Za-z])v\d\b|sonraki (?:tur|mevsim)/i },
 ];
 
-/** Yorumları (satır + blok) kaldırır — kod-içi geliştirici notu kullanıcı görmez, muaf. */
-function yorumsuz(src: string): string {
-  const bloksuz = src.replace(/\/\*[\s\S]*?\*\//g, " ");
-  return bloksuz
-    .split("\n")
-    .map((satir) => {
-      // satır içindeki ilk, string DIŞINDA olan // 'den sonrasını at
-      let tirnak: string | null = null;
-      for (let i = 0; i < satir.length - 1; i++) {
-        const c = satir[i];
-        if (tirnak) {
-          if (c === "\\") { i++; continue; }
-          if (c === tirnak) tirnak = null;
-        } else if (c === "`" || c === '"' || c === "'") {
-          tirnak = c;
-        } else if (c === "/" && satir[i + 1] === "/") {
-          return satir.slice(0, i);
-        }
-      }
-      return satir;
-    })
-    .join("\n");
+// ── TARAMANIN GÖRDÜĞÜ YÜZ: bağlam tanıyan tek geçiş ─────────────────────────────
+//   Yorumdaki geliştirici notunu kullanıcı görmez, muaftır; taranan şey kaynaktaki
+//   dizge ve şablon değerleridir. Bu ikisini ayırmak bağlam ister.
+//
+//   HST-MTR-A11 ONARIMI (2026-10-10): Ayıklayıcı önceden blok yorum desenini ve dizge
+//   desenini kaynağa bağlam tanımadan uyguluyordu ve tarama üç yoldan kör kalıyordu.
+//   ① "**/*.sar" gibi bir glob dizgesi ya da sablon/*.sar geçen bir satır yorumu sahte
+//     bir blok yorum açıyor ve sonraki ilk blok kapanışına kadar her şeyi siliyordu.
+//     Taranan 125 dosyanın 16'sında 39 sahte blok vardı; komut satırı girişinin 644 ile
+//     1025. satırları ve eklenti girişinin beş sahte bloğu (343 satır) hiç taranmıyordu.
+//   ② Satır yorumu kesicisi her satıra yeniden başlıyordu ve çok satırlı bir şablonun
+//     // ile başlayan satırını yorum sanıyordu. Takdir üreticisinin yazdığı dosya
+//     başlığındaki iç kod bu yüzden görünmüyordu. ① ile ② birlikte 19 dosyada 783 kod
+//     satırı taramanın dışında kalıyordu.
+//   ③ Dizge deseni tırnak taşıyan bir düzenli ifadeden sonra kayıyor, iç içe şablonu da
+//     ilk ters tırnakta kesiyordu. Yorumlar doğru örtülse bile 1428 gerçek dizge hiç
+//     görünmüyor, 960 dizge yalnız parça parça görünüyordu; denetim çekirdeğinde 3174.
+//     satırdaki tek bir düzenli ifadeden dosyanın sonuna kadar 598 dizge taranmıyordu.
+//   Bugünkü gövde kaynağı tek geçişte okur ve beş bağlamı ayırır: kod, satır yorumu, blok
+//   yorum, tırnaklı dizge ve şablon. Şablonun ${…} ifadeleri iç içe izlenir; / işareti
+//   önündeki jetona bakılarak düzenli ifade ya da bölme diye ayrılır. Ölçüm (2026-10-10):
+//   125 dosyanın hepsinde yorum örtüsü ve dizge listesi TypeScript ayrıştırıcısının
+//   gördüğüyle karakteri karakterine aynıdır. Yasak listesi ve muafiyetler değişmemiştir;
+//   değişen yalnız taramanın gördüğü alandır.
+
+/** Bir dizge ya da şablon değeri: kaynaktaki başlangıcı ve tırnaklarıyla birlikte metni. */
+interface Dizge { bas: number; metin: string }
+/** Yorumları boşlukla örtülmüş kod (satır sonları korunur) ve üst düzey dizge değerleri. */
+interface TaramaYuzu { kod: string; dizgeler: Dizge[] }
+
+/** Bu işaretlerden ve sözcüklerden sonra gelen `/` düzenli ifade açar; öteki her jetondan sonra bölmedir. */
+const IFADE_ONCESI_ISARET = new Set("(,=:[!&|?{};+-*%<>~^");
+const IFADE_ONCESI_SOZCUK = new Set([
+  "return", "typeof", "instanceof", "in", "of", "new", "delete", "void", "throw", "case", "do", "else", "yield", "await",
+]);
+const SOZCUK_RE = /[\p{L}\p{N}_$]+/uy;
+
+function satirSonu(src: string, i: number): number {
+  const k = src.indexOf("\n", i);
+  return k < 0 ? src.length : k;
 }
 
-const STRING_RE = /`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g;
-/** Tanı ALANI değerleri (mesaj/oneri/placeHolder) — motorun ilk temizlenen yüzeyi. */
-const ALAN_RE = /(?:mesaj|oneri|placeHolder)\s*:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g;
+/** Tırnaklı dizgenin bittiği konum; kapanmadan gelen satır sonu dizgeyi keser. */
+function dizgeSonu(src: string, i: number): number {
+  for (let j = i + 1; j < src.length; j++) {
+    if (src[j] === "\\") { j++; continue; }
+    if (src[j] === src[i]) return j + 1;
+    if (src[j] === "\n") return j;
+  }
+  return src.length;
+}
 
+/** Düzenli ifadenin bayraklarıyla bittiği konum; satır sonuna dek kapanmazsa -1 (bölme işaretidir). */
+function duzenliIfadeSonu(src: string, i: number): number {
+  let sinif = false;
+  for (let j = i + 1; j < src.length; j++) {
+    const c = src[j];
+    if (c === "\\") { j++; continue; }
+    if (c === "\n") return -1;
+    if (sinif) { if (c === "]") sinif = false; continue; }
+    if (c === "[") { sinif = true; continue; }
+    if (c === "/") { SOZCUK_RE.lastIndex = j + 1; return SOZCUK_RE.test(src) ? SOZCUK_RE.lastIndex : j + 1; }
+  }
+  return -1;
+}
+
+/** Kaynağı tek geçişte okur; yorumları örter, üst düzey dizge ve şablon değerlerini toplar. */
+function taramaYuzu(src: string): TaramaYuzu {
+  const yorumlar: Array<[number, number]> = [];
+  const araliklar: Array<[number, number]> = [];
+  const ifadeler: number[] = [];   // açık ${…} ifadelerinin iç süslü ayraç derinliği
+  let sablonBas = -1;               // açık üst düzey şablonun başı
+  let sablonda = false;
+  let onceki = "";                  // son anlamlı jeton
+  let i = src.startsWith("#!") ? satirSonu(src, 0) : 0;
+  if (i > 0) yorumlar.push([0, i]);
+  while (i < src.length) {
+    const c = src[i];
+    if (sablonda) {
+      if (c === "\\") i += 2;
+      else if (c === "`") {
+        i++; sablonda = false; onceki = "`";
+        if (!ifadeler.length) araliklar.push([sablonBas, i]);
+      } else if (c === "$" && src[i + 1] === "{") { i += 2; ifadeler.push(0); sablonda = false; onceki = "{"; }
+      else i++;
+      continue;
+    }
+    if (/\s/.test(c)) { i++; continue; }
+    if (c === "/" && src[i + 1] === "/") { const son = satirSonu(src, i); yorumlar.push([i, son]); i = son; continue; }
+    if (c === "/" && src[i + 1] === "*") {
+      const kapanis = src.indexOf("*/", i + 2);
+      const son = kapanis < 0 ? src.length : kapanis + 2;
+      yorumlar.push([i, son]); i = son; continue;
+    }
+    if (c === '"' || c === "'") {
+      const son = dizgeSonu(src, i);
+      if (!ifadeler.length) araliklar.push([i, son]);
+      i = son; onceki = c; continue;
+    }
+    if (c === "`") { if (!ifadeler.length) sablonBas = i; sablonda = true; i++; continue; }
+    if (c === "/" && (onceki === "" || IFADE_ONCESI_ISARET.has(onceki) || IFADE_ONCESI_SOZCUK.has(onceki))) {
+      const son = duzenliIfadeSonu(src, i);
+      if (son > 0) { i = son; onceki = "değer"; continue; }
+    }
+    if (ifadeler.length && c === "{") ifadeler[ifadeler.length - 1]++;
+    if (ifadeler.length && c === "}") {
+      if (ifadeler[ifadeler.length - 1] === 0) { ifadeler.pop(); sablonda = true; i++; continue; }
+      ifadeler[ifadeler.length - 1]--;
+    }
+    SOZCUK_RE.lastIndex = i;
+    if (SOZCUK_RE.test(src)) { onceki = src.slice(i, SOZCUK_RE.lastIndex); i = SOZCUK_RE.lastIndex; continue; }
+    onceki = c; i++;
+  }
+  // Şablon ifadesinin içindeki yorum da muaftır; dizge metni bu yüzden örtülmüş koddan kesilir.
+  let kod = "";
+  let son = 0;
+  for (const [b, e] of yorumlar) { kod += src.slice(son, b) + src.slice(b, e).replace(/[^\n]/g, " "); son = e; }
+  kod += src.slice(son);
+  return { kod, dizgeler: araliklar.map(([b, e]) => ({ bas: b, metin: kod.slice(b, e) })) };
+}
+
+/** Tanı ALANI değerleri (mesaj/oneri/placeHolder) — motorun ilk temizlenen yüzeyi: önünde alan adı duran dizge. */
+const ALAN_ONEKI = /(?:mesaj|oneri|placeHolder)\s*:\s*$/;
+
+/** Bulgu satırı eşleşen jetonu da basar: uzun bir şablonun ilk yüz karakteri onu göstermeyebilir. */
 function jetonIhlali(s: string, dosya: string): string[] {
   const bulunan: string[] = [];
-  for (const y of YASAK) if (y.re.test(s)) bulunan.push(`${dosya}: ${y.ad} → ${s.slice(0, 100)}`);
+  for (const y of YASAK) {
+    const m = y.re.exec(s);
+    if (m) bulunan.push(`${dosya}: ${y.ad} «${m[0].trim()}» → ${s.slice(0, 100)}`);
+  }
   return bulunan;
+}
+
+/** Kaynaktaki bir dizgenin ihlalleri; satır numarası yalnız bulgu varken sayılır. */
+function dizgeIhlali(dosya: string, yuz: TaramaYuzu, d: Dizge): string[] {
+  if (!YASAK.some((y) => y.re.test(d.metin))) return [];
+  return jetonIhlali(d.metin, `${dosya}:${yuz.kod.slice(0, d.bas).split("\n").length}`);
 }
 
 /**
@@ -232,8 +339,8 @@ function kanonMdIhlalleri(dizin: string): string[] {
   return ihlaller;
 }
 
-function dosyalariGez(dizin: string, taban = ""): Array<{ dosya: string; src: string }> {
-  const toplanan: Array<{ dosya: string; src: string }> = [];
+function dosyalariGez(dizin: string, taban = ""): Array<{ dosya: string; yuz: TaramaYuzu }> {
+  const toplanan: Array<{ dosya: string; yuz: TaramaYuzu }> = [];
   let girdiler;
   try { girdiler = readdirSync(dizin, { withFileTypes: true }); } catch { return []; }
   for (const girdi of girdiler) {
@@ -241,7 +348,7 @@ function dosyalariGez(dizin: string, taban = ""): Array<{ dosya: string; src: st
     const ad = taban ? `${taban}/${girdi.name}` : girdi.name;
     if (girdi.isDirectory()) { toplanan.push(...dosyalariGez(yol, ad)); continue; }
     if (!girdi.name.endsWith(".ts") || girdi.name.endsWith(".test.ts") || girdi.name === URETILEN_IKIZ) continue;
-    toplanan.push({ dosya: ad, src: yorumsuz(readFileSync(yol, "utf8")) });
+    toplanan.push({ dosya: ad, yuz: taramaYuzu(readFileSync(yol, "utf8")) });
   }
   return toplanan;
 }
@@ -249,18 +356,19 @@ function dosyalariGez(dizin: string, taban = ""): Array<{ dosya: string; src: st
 /** ZORLANAN kapsam: tanı alanı (mesaj/oneri/placeHolder) değerleri. */
 function alanIhlalleri(dizin: string): string[] {
   const ihlaller: string[] = [];
-  for (const { dosya, src } of dosyalariGez(dizin))
-    for (const m of src.matchAll(ALAN_RE)) ihlaller.push(...jetonIhlali(m[1], dosya));
+  for (const { dosya, yuz } of dosyalariGez(dizin))
+    for (const d of yuz.dizgeler)
+      if (ALAN_ONEKI.test(yuz.kod.slice(Math.max(0, d.bas - 120), d.bas))) ihlaller.push(...dizgeIhlali(dosya, yuz, d));
   return ihlaller;
 }
 
 /** ÖLÇÜLEN kapsam: tüm cümle-benzeri (boşluklu) string değerleri — akademik-göç borcu. */
 function corpusIhlalleri(dizin: string): string[] {
   const ihlaller: string[] = [];
-  for (const { dosya, src } of dosyalariGez(dizin))
-    for (const m of src.matchAll(STRING_RE)) {
-      if (!/\s/.test(m[0])) continue; // çıplak kod literali (mantık kodu) muaf
-      ihlaller.push(...jetonIhlali(m[0], dosya));
+  for (const { dosya, yuz } of dosyalariGez(dizin))
+    for (const d of yuz.dizgeler) {
+      if (!/\s/.test(d.metin)) continue; // çıplak kod literali (mantık kodu) muaf
+      ihlaller.push(...dizgeIhlali(dosya, yuz, d));
     }
   return ihlaller;
 }
@@ -284,4 +392,73 @@ test("tanı-metni hijyeni · TÜM CORPUS: kullanıcı-yüzü metinler jargondan 
     ...kanonMdIhlalleri(KANON_DIZINI),
   ];
   assert.equal(ihlaller.length, 0, `Kullanıcı-yüzü metne iç jargon sızmış (${ihlaller.length} nokta):\n${ihlaller.join("\n")}`);
+});
+
+// ── KÖR BÖLGE FİKSTÜRÜ (HST-MTR-A11) ─────────────────────────────────────────
+//    Her dosya, taramanın bağlam tanımadan kör kaldığı bir yere tek bir iç kod koyar.
+//    Dosyalar ayrıdır, çünkü bir kaymanın etkisi dosyanın sonuna kadar sürer ve bir
+//    bölgenin kayması ötekinin kodunu kazara görünür kılabilir. Düzenli ifade dosyasında
+//    hedef dizge ifadeyle aynı satırdadır, çünkü satır sonu kapanmamış bir dizgeyi keser
+//    ve düzenli ifadeyi tanımayan bir ayıklayıcının kayması yalnız o satırda iz bırakır.
+//    Son dosya ters yönü ölçer: gerçek yorumdaki kod, şablon ifadesinin içindeki yorum
+//    dâhil, muaf kalır; `//`, `/*` ve `*/` taşıyan dizge ise baştan sona taranır.
+//    Yorumlardaki kesme işareti bilinçlidir: yorumu tanımayan bir ayıklayıcı onu dizge
+//    açılışı sanar ve muaf kalması gereken kodu bulguya çevirir.
+const KOR_BOLGE_FIKSTURU: Record<string, string> = {
+  "glob-dizgesi.ts": [
+    'const desen = "**/*.sar";',
+    'export const metin = "Bu metin \\" işaretini ve RAY-1 izini taşır";',
+    'export const tani = { mesaj: "K-11 kodlu bir tanı" };',
+    "/* gerçek blok yorum */",
+  ].join("\n"),
+  "yorumdaki-glob.ts": [
+    "// sablon/*.sar dosyaları burada okunur",
+    'export const metin = "Bu metin RAY-2 izini taşır";',
+    "/** belge yorumu */",
+  ].join("\n"),
+  "sablondaki-yorum.ts": [
+    "export const baslik = `// üretilen dosyanın başlığı",
+    "//   RAY-3 koşumu bu kayıtları okur",
+    "`;",
+  ].join("\n"),
+  "duzenli-ifade.ts": 'export const cek = (s: string) => s.match(/"([^"]+)"/)?.[1] ?? "Bu metin RAY-4 izini taşır";',
+  "duzenli-ifade-sozcuk.ts": 'export function tirnakli(s: string) { return /"/.test(s) ? "Bu metin RAY-12 izini taşır" : ""; }',
+  "ic-ice-sablon.ts": 'export const ozet = (n: number) => `Toplam ${n > 1 ? `${n} kayıt, RAY-5 izi` : "tek kayıt"} bulundu`;',
+  "yorum-muafiyeti.ts": [
+    "// Sarmal'ın satır notu: RAY-6 kullanıcıya görünmez",
+    "/* Sarmal'ın blok notu: RAY-7 kullanıcıya görünmez */",
+    "/** Sarmal'ın belge notu: RAY-8 kullanıcıya görünmez */",
+    "export const say = (n: number) => `Toplam ${/* Sarmal'ın notu: RAY-11 */ n} kayıt`;",
+    'export const adres = "https://ornek.test/*.sar ve RAY-9 izi, blok kapanışı */"; // Sarmal\'ın son notu: RAY-10',
+  ].join("\n"),
+};
+
+/** Fikstür dizininde taramayı koşturur; her bulguyu `dosya kod` çiftine indirir. */
+function korBolgeBulgulari(tara: (dizin: string) => string[]): string[] {
+  const dizin = mkdtempSync(join(tmpdir(), "sarmal-hijyen-"));
+  try {
+    for (const [ad, icerik] of Object.entries(KOR_BOLGE_FIKSTURU)) writeFileSync(join(dizin, ad), icerik);
+    return tara(dizin)
+      .map((b) => `${b.match(/^[^:]+/)?.[0]} ${b.split("→")[1]?.match(/\b(?:RAY|K)-\d+/)?.[0]}`)
+      .sort();
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+}
+
+test("tanı-metni hijyeni · KÖR BÖLGE: glob, şablon, düzenli ifade ve iç içe şablondaki iç kod görünür", () => {
+  assert.deepEqual(korBolgeBulgulari(corpusIhlalleri), [
+    "duzenli-ifade-sozcuk.ts RAY-12",
+    "duzenli-ifade.ts RAY-4",
+    "glob-dizgesi.ts K-11",
+    "glob-dizgesi.ts RAY-1",
+    "ic-ice-sablon.ts RAY-5",
+    "sablondaki-yorum.ts RAY-3",
+    "yorum-muafiyeti.ts RAY-9",
+    "yorumdaki-glob.ts RAY-2",
+  ]);
+});
+
+test("tanı-metni hijyeni · KÖR BÖLGE: sahte blok yorumun ardındaki tanı alanı görünür", () => {
+  assert.deepEqual(korBolgeBulgulari(alanIhlalleri), ["glob-dizgesi.ts K-11"]);
 });

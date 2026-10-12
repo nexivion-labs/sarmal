@@ -185,7 +185,7 @@ test("④ öğretim yüzleri tek sözcüğe inmiştir: hiçbir yüzey Takımı `
   // Ajan bağlam paketi, doğuş ile blok şablonları ve beceri kartları.
   for (const yol of [
     "urun/cekirdek/src/dil-baglami.ts", "ogreti/sablon/blok.sar", "ogreti/sablon/proje.sar",
-    "ogreti/sablon/dogus/ilk_plan.sar", "ogreti/ogrenme/teknoloji_becerisi.sar",
+    "ogreti/sablon/dogus/1_dogus.sar", "ogreti/ogrenme/teknoloji_becerisi.sar",
     "ogreti/ogrenme/niyet_diyalogu_becerisi.sar",
   ]) {
     assert.doesNotMatch(readFileSync(join(KOK, yol), "utf8"), eskiYazim, `${yol} eski yazımı öğretiyor`);

@@ -40,6 +40,7 @@ import { type BelgeKabugu, diskBelgesi, erisimSiniri, turBelgeleriniTopla } from
 import { SAR_DISLANANLAR } from "../src/izleyici-cekirdek.ts";
 import { kapsamIcinde } from "../src/yolharitasi-cekirdek.ts";
 import { GIZLI_KOK_ADI } from "../../cekirdek/src/kok-yuzeyi.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 
 /** Sahte kimlik — gerçek `Uri` yerine yalnız yol taşır; modül vscode çağırmaz. */
 const uriYap = (fsPath: string): vscode.Uri => ({ fsPath } as unknown as vscode.Uri);
@@ -64,11 +65,13 @@ function kabukYap(disk: Record<string, string> = {}): { kabuk: BelgeKabugu; okun
 }
 
 const KÖK = "/ws/depo";
+/** Kökün içindeki olağan plan dosyası: doğuşun plan rafından türetilir (HST-MTR-A07). */
+const PLAN_A = planYolu("a.sar");
 
 // ── ① KÖK SINIRI: KÖK DIŞI YOL OKUNMAZ ────────────────────────────────────────
 
 test("SINIR: /etc/passwd ve <kök>/../disari.sar enjekte edilince ikisi de oku üyesine ULAŞMAZ", async () => {
-  const içeride = `${KÖK}/plan/a.sar`;
+  const içeride = `${KÖK}/${PLAN_A}`;
   const dışarısı = `${KÖK}/../disari.sar`;
   const yollar = [içeride, "/etc/passwd", dışarısı, `${KÖK}-arsiv/b.sar`, "/ws/depo2/c.sar", "/ws/d.sar"];
   // Diskte hepsi vardır; okunmamaları süzgecin işidir, diskin yokluğunun değil.
@@ -102,10 +105,10 @@ test("SINIR: çok köklü çalışma alanında her kökün altı geçer, geçen 
 });
 
 test("SINIR: iç içe köklerde yol, kapsayan HERHANGİ bir köke göre meşruysa geçer", () => {
-  // `/ws/dist/depo/plan/a.sar` dış köke göre `dist/` altındadır ve düşerdi; iç köke
-  // göre `plan/a.sar` olduğu için meşrudur. `/ws/dist/baska.sar` ise hiçbir köke göre
+  // İç kökteki plan dosyası dış köke göre `dist/` altındadır ve düşerdi; iç köke göre
+  // olağan bir plan yolu olduğu için meşrudur. `/ws/dist/baska.sar` ise hiçbir köke göre
   // meşru değildir: dış köke göre `dist/` altında, iç kökün ise dışındadır.
-  const geçmeli = "/ws/dist/depo/plan/a.sar";
+  const geçmeli = `/ws/dist/depo/${PLAN_A}`;
   const düşmeli = "/ws/dist/baska.sar";
   for (const kökler of [["/ws", "/ws/dist/depo"], ["/ws/dist/depo", "/ws"]]) {
     assert.deepEqual(erisimSiniri([geçmeli, düşmeli], kökler), [geçmeli],
@@ -125,7 +128,7 @@ test("DIŞLAMA: gizli ve dışlanan dizinlerin yolları oku üyesine ulaşmaz", 
   }
   const dersRaflari = ["ogreti/arsiv", "ogreti/ornek", "ogreti/fikstur", "ogreti/sablon"];
   const gizliler = [".git", ".vscode", ".claude"];
-  const içeride = `${KÖK}/is/plan/h.sar`;
+  const içeride = `${KÖK}/${planYolu("h.sar")}`;
   const dışlananlar = [
     ...beklenen.map((ad) => `${KÖK}/${ad}/x.sar`),
     ...dersRaflari.map((yol) => `${KÖK}/${yol}/x.sar`),
@@ -147,12 +150,12 @@ test("DIŞLAMA: ölçüm kök-görelidir; kökün kendi üst dizinleri gizli ya 
   // Sol RED-2 dersi: mutlak yolda üst dizin adları elenmeye katılırsa `.claude/worktrees`
   // altındaki bir depo bütünüyle kapsam dışı sayılır ve panel sessizce boşalır.
   const kök = "/ws/.claude/worktrees/dist/depo";
-  assert.deepEqual(erisimSiniri([`${kök}/plan/a.sar`, `${kök}/.git/x.sar`, `${kök}/dist/y.sar`], [kök]),
-    [`${kök}/plan/a.sar`],
+  assert.deepEqual(erisimSiniri([`${kök}/${PLAN_A}`, `${kök}/.git/x.sar`, `${kök}/dist/y.sar`], [kök]),
+    [`${kök}/${PLAN_A}`],
     "dışlama mutlak yola uygulanmış; kökün üst dizinleri dosyayı kapsam dışı bıraktı ya da kök-göreli dışlama çalışmadı");
   // Dosya ADI dışlanmaz; yalnız dizin parçaları ölçülür (glob sözleşmesi).
-  assert.deepEqual(erisimSiniri([`${KÖK}/plan/dist.sar`, `${KÖK}/plan/.gizli.sar`], [KÖK]),
-    [`${KÖK}/plan/dist.sar`, `${KÖK}/plan/.gizli.sar`]);
+  const ad = (dosya: string): string => `${KÖK}/${planYolu(dosya)}`;
+  assert.deepEqual(erisimSiniri([ad("dist.sar"), ad(".gizli.sar")], [KÖK]), [ad("dist.sar"), ad(".gizli.sar")]);
 });
 
 // ── KAYNAK METNİ: KABUK SÜZGECİ UYGULAR ───────────────────────────────────────

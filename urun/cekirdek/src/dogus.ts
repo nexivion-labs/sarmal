@@ -34,7 +34,8 @@
 //   doldurur — doğan her dosya kendi doldurma öğretisini içinde taşır (YAS-3.4).
 //   Dolu-dizin sözleşmesi (YUZ-1.3 ruhu): var olan dosya ASLA ezilmez, atlanır
 //   ve rapor ne yapılmadığını açıkça söyler. Tek istisna yok sayma dosyasıdır ve
-//   orada da silme yoktur: yalnız eksik istisna satırı sona eklenir.
+//   orada da silme yoktur: yalnız eksik satır, yani küresel kuralın istisnası ya
+//   da motorun iz klasörü, sona eklenir.
 //
 //   İki katman AYRIK (iskeletci.ts deseni):
 //     dogusManifesti()  → saf; diske dokunmaz (test edilebilir)
@@ -106,9 +107,9 @@ export interface DogusDosya {
    * kendi `.gitignore` dosyası varken paketin sessizce atlaması, küresel kuralın
    * `*.sar` desenini yok saydığı bir makinede projenin bütün hafızasını depodan
    * uzak tutar. Bu yüzden o dosya için ATLAMAK yerine GENİŞLETMEK yazılmıştır:
-   * işlev var olan metni alır, yalnız EKSİK istisna satırlarını sona ekler ve
-   * hiçbir mevcut satırı silmez; eklenecek bir şey yoksa `undefined` döner ve
-   * dosyaya hiç dokunulmaz.
+   * işlev var olan metni alır, yalnız EKSİK satırları (istisnalar ve motorun iz
+   * klasörü) sona ekler ve hiçbir mevcut satırı silmez; eklenecek bir şey yoksa
+   * `undefined` döner ve dosyaya hiç dokunulmaz.
    */
   genislet?: (mevcut: string) => string | undefined;
 }
@@ -187,7 +188,8 @@ function sablonDoldur(dosya: string, degerler: Readonly<Record<string, string>>)
  * ayarlara dokunulmaz (Adım sınırı).
  *
  *   ① yok sayma dosyası — küresel kural `*.sar` desenini yok sayıyorsa projenin
- *      bütün hafızası depoya hiç girmez; istisna bu dosyada yaşar.
+ *      bütün hafızası depoya hiç girmez; istisna bu dosyada yaşar. Motorun iz
+ *      klasörü de burada yok sayılır, çünkü döngünün izi ham istem taşır.
  *   ② yürütücü ayarı — doğan kök Sarmal sunucusunu SARMAL_KOK ortam değişkeninden
  *      çözer ve ajan ilk turdan itibaren ürünün araçlarını kullanır.
  *   ③ kapı kancaları — ön kapı yeni bir giriş ilanının elle yazılmasını
@@ -212,10 +214,15 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
       yol: ".gitignore",
       icerik: yoksayma,
       genislet: (mevcut) => {
-        const eksikler = yokSaymaIstisnasiEksikleri(mevcut);
-        if (eksikler.length === 0) return undefined;
+        // Eksikler iki blokta eklenir ve istisna bloğu en sonda kalır: şablonda
+        // olduğu gibi küresel kuralın istisnası dosyanın son sözüdür.
+        const izKlasoru = izKlasoruSatiriEksigi(mevcut);
+        const istisnalar = yokSaymaIstisnasiEksikleri(mevcut);
+        if (izKlasoru.length === 0 && istisnalar.length === 0) return undefined;
         const ayrac = mevcut.endsWith("\n") || mevcut.length === 0 ? "" : "\n";
-        return `${mevcut}${ayrac}\n${YOKSAYMA_ISTISNA_BASLIGI}\n${eksikler.join("\n")}\n`;
+        const blok = (baslik: string, satirlar: readonly string[]): string =>
+          satirlar.length === 0 ? "" : `\n${baslik}\n${satirlar.join("\n")}\n`;
+        return `${mevcut}${ayrac}${blok(IZ_KLASORU_BASLIGI, izKlasoru)}${blok(YOKSAYMA_ISTISNA_BASLIGI, istisnalar)}`;
       },
     },
     { yol: ".mcp.json",                        icerik: sablonDoldur("yurutucu_ayari.json", d) },
@@ -234,6 +241,54 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
 const YOKSAYMA_ISTISNA_BASLIGI =
   "# ── Sarmal doğuş paketi: küresel yok sayma kuralının istisnası (silme) ──";
 
+/**
+ * MOTORUN İZ KLASÖRÜ (HST-MTR-A14). Motor koşu artıklarını kökün `.sarmal/`
+ * klasörüne yazar: döngünün kendi izi ham istemi ve ham yanıtı kısaltmadan
+ * taşır, yürütücü izi dış bir yürütücünün temaslarını, kontrol noktası ise
+ * koşunun ara hâlini. Hiçbiri kaynak değildir ve ilki gizli olabilecek bir metin
+ * taşıdığı için depoya girmemelidir. Satırın başında eğik çizgi yoktur, çünkü
+ * motor izi kendisine verilen dizine yazar ve çalışma alanında bu dizin çatı da
+ * olabilir ilk proje de; satır klasörü her derinlikte kapsar. Klasörün adı beş
+ * yazıcıda ayrı ayrı yazılıdır ve `dogus.test.ts` nöbetleri bunlardan yalnız
+ * ikisini gerçek yollarından koşturup doğan kökün git durumunda ölçer: yürütücü
+ * izini yazan `kopru/iz.ts` ile döngü izinin yolunu `--iz` bayrağında kuran
+ * `sarmal.ts`. Makro döngünün izi (`makro-dongu.ts`), kontrol noktası
+ * (`dongu.ts`) ve lig kaydı (`kopru/lig.ts`) nöbetin dışındadır; bu üçünden
+ * birinin klasörü değişirse bu satır onu sessizce kapsamaz olur.
+ */
+const IZ_KLASORU_SATIRI = ".sarmal/";
+
+/**
+ * Var olan bir yok sayma dosyasına eklenen iz klasörü satırının başlığı. Satır
+ * kullanıcının dosyasına sonradan girdiği için gerekçesini yanında taşır;
+ * gerekçesiz bir satır ilk temizlikte silinir ve ham istem yeniden açığa çıkar.
+ */
+const IZ_KLASORU_BASLIGI =
+  "# ── Sarmal doğuş paketi: motorun koşu izleri (ham istem taşır, depoya girmez) ──";
+
+/**
+ * Var olan bir yok sayma dosyasında iz klasörü satırı EKSİK mi (SAF)? Dosya
+ * klasör hakkında bir karar zaten taşıyorsa satır eksik sayılmaz. `.sarmal`,
+ * `/.sarmal/` ya da `.sarmal/**` gibi eşdeğer bir yazım klasörü zaten yok sayar
+ * ve ikinci bir satır gereksizdir. Klasörü ya da içinden bir yolu geri alan bir
+ * olumsuzlama (`!.sarmal/`) ise kullanıcının izleme kararıdır; git'te son
+ * eşleşen desen kazandığı için sona eklenecek bir satır o kararı sessizce geri
+ * çevirirdi. Yorum satırı karar kurmaz, çünkü `#` ile başlayan bir satır bu
+ * biçimlerin hiçbirine uymaz; yalnız bir alt klasörü yok saymak da
+ * (`.sarmal/trace/`) klasörün tamamını kapsamaz.
+ */
+function izKlasoruSatiriEksigi(icerik: string): string[] {
+  const klasor = IZ_KLASORU_SATIRI.slice(0, -1);
+  const kararVar = icerik.split("\n").some((ham) => {
+    const satir = ham.trim();
+    const olumsuz = satir.startsWith("!");
+    const yol = (olumsuz ? satir.slice(1) : satir).replace(/^\//u, "").replace(/^\*\*\//u, "");
+    if (olumsuz) return yol === klasor || yol.startsWith(`${klasor}/`);
+    return yol.replace(/\/(\*\*?)?$/u, "") === klasor;
+  });
+  return kararVar ? [] : [IZ_KLASORU_SATIRI];
+}
+
 /** Tek projenin paketi (saf). Manifest DPK-A01 Founder onaylıdır. */
 function projePaketi(ad: string, tarih: string): DogusDosya[] {
   const kod = dogusKodu(ad);
@@ -251,7 +306,7 @@ function projePaketi(ad: string, tarih: string): DogusDosya[] {
     { yol: "is/durum/durum_devir.sar",       icerik: sablonDoldur("durum_devir.sar", d) },
     { yol: "ogreti/ogrenme/dersler.sar",     icerik: sablonDoldur("dersler.sar", d) },
     { yol: "ogreti/ogrenme/geribildirim.sar", icerik: sablonDoldur("geribildirim.sar", d) },
-    { yol: "is/plan/ilk_plan.sar",           icerik: sablonDoldur("ilk_plan.sar", d) },
+    { yol: "is/plan/faz/1_dogus.sar",        icerik: sablonDoldur("1_dogus.sar", d) },   // MIM-1.2 Faz dosyası düzeni (KPS-SIR-A03)
     { yol: "AGENTS.md",                      icerik: yonerge },
     { yol: "CLAUDE.md",                      icerik: yonerge },
     ...kokKapilari(ad, tarih),
@@ -328,19 +383,26 @@ export function dogusRaporu(s: DogusSonuc, hedef: string): string {
     for (const y of s.yazilan) satirlar.push(`   + ${y}`);
   }
   if (s.genisletilen.length) {
-    satirlar.push("", "🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik istisna eklendi):");
+    satirlar.push("", "🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik satır eklendi):");
     for (const y of s.genisletilen) satirlar.push(`   ~ ${y}`);
   }
   if (s.atlanan.length) {
     satirlar.push("", "🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):");
     for (const y of s.atlanan) satirlar.push(`   = ${y}`);
   }
-  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/ilk_plan.sar` : "is/plan/ilk_plan.sar";
+  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/faz/1_dogus.sar` : "is/plan/faz/1_dogus.sar";
   satirlar.push(
     "",
     s.yazilan.length || s.genisletilen.length
       ? `🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`
       : "📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.");
+  // BKM-OLG-A11 (MIM-1.4): Kuruluş Katmanının teknoloji kaçışı yalnız doğuş anı içindir;
+  // rapor bunu açıkça söyler ki ajan kaçışı kalıcı bir üçüncü yol gibi kopyalamasın.
+  if (s.yazilan.some((y) => y.endsWith("is/plan/faz/1_dogus.sar"))) {
+    satirlar.push(
+      "⏳ Kuruluş Katmanındaki teknolojiBağımsız satırı GEÇİCİDİR: yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur.",
+      "   İlk Teknoloji ya da Takım ilan edilince motor onu yersiz-teknoloji-kaçışı uyarısıyla bildirir; kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır. Yeni Katmanlara kaçış kopyalanmaz; işin türü AltKatmanın departman: alanında yazılır.");
+  }
   if (s.yazilan.length) {
     satirlar.push(
       `🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,

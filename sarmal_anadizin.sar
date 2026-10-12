@@ -29,8 +29,25 @@
   sıfırda tutar.
 |<--
 
+// RFM-MOTOR-A02 (2026-10-10 · Founder onayı): DIL-1.8 önek sicili. Mevcut envanterin
+// doksan bir öneki toptan ilan edildi; HST ile MGZ önekleri standardın ölçümünden sonra
+// doğan iş konularıdır ve yeniden tabanlamada listeye girdi. Yeni bir önek ancak bu
+// listeye yazılarak doğar. Biçim muafiyeti standarttan önce doğmuş ve dokunulmaz kalan
+// kodları taşır: KSC önekinin bütün kodları kanon madde kodunu içinde taşıdığı için önek
+// düzeyinde, öteki on dört kod ise adıyla muaftır; TAKIM-FOUNDER standart yürürlüğe
+// girmeden önce doğduğu için aynı gerekçeyle listededir.
 Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
-  ne: "🧭 Sarmal açık deposu — dil, motor ve eklentinin Nexivion Labs çatısındaki açık kaynak evi" ) {
+  ne: "🧭 Sarmal açık deposu — dil, motor ve eklentinin Nexivion Labs çatısındaki açık kaynak evi",
+  önekler: [ ALT, ANY, ARC, AY, BCR, BKM, BLG, BLK, CDL, CKR, DGR, DIL, DNG, DRM, EKL,
+             ENV, ETM, FAZ, FEL, GC, GIT, GOC, GRK, GRV, GVN, HST, HTR, IZ, KAT, KAY,
+             KBL, KD, KMT, KNC, KOD, KPN, KPS, KRN, KRR, KSC, KSM, KTP, KYN, LOG, MCP,
+             MDL, MDR, MEK, MGZ, MIM, MTR, MYV, OGR, OMR, ONR, ORK, ORT, OSS, OZK, PRF,
+             PRJ, RAF, RF, RFM, SBL, SEMA, SN, SNF, SNM, SNV2, SNV3, SNV4, SRN, STR, SZK,
+             SZL, TAKIM, TAN, TEK, TIP, TSR, TTK, UYM, VIT, VR, VRI, YAS, YTN, YUZ, YYZ,
+             YZY ],
+  biçimMuafları: [ KSC, SZL-ARAÇ-TALEP, SZL-ARAÇ-SONUÇ, SZL-MÜZAKERE, SNV2-HUKUM,
+                   SNV3-HAZIRLIK, SNV3-A01, SNV3-A02, SNV3-A03, SNV3-A04, SNV4-TEKRAR,
+                   SNV4-A01, TAKIM-CEKIRDEK, TAKIM-EKLENTI, TAKIM-FOUNDER ] ) {
 
   Teknoloji( kod: TEK-SARMAL-TS, ne: "TypeScript çalışma dili — motor ve eklenti bu dille yazılır, çalışma zamanı bağımlılığı sıfırdır" )
 
@@ -59,15 +76,17 @@ Proje( kod: PRJ-SARMAL, ad: "Sarmal", rejim: katı, görünürlük: açık,
 
   Kitaplık( kod: KTP-IS, yol: "is/",
     ne: "🗂️ İş kitaplığı — canlı planlar, durum kaydı ve nitelik kayıtları burada yaşar" ) {
-    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı planın kökü: zaman ve gövde kendi raflarında yaşar, ilan dosyaları burada durur" )
+    Raf( kod: RAF-IS-PLAN, yol: "plan/", ne: "canlı planın kökü: Fazlar Bloklarıyla birlikte faz rafında yaşar, ilan dosyaları burada durur" )
     // Founder hükmü 2026-08-28: zaman ekseni ile iş gövdesi ayrı raflara çekildi.
     // Gerekçe şudur: bir plan klasöründe hem mevsimler hem gövdeler yan yana
     // durduğunda "hangi dosya takvimi, hangisi işi taşıyor" sorusu ancak dosya
     // açılarak cevaplanır. Kök, ikisine de ait olmayan ilan dosyalarını taşır:
     // meyve haritası, takım ve teknoloji ilanları, işakışları ve özerk kararlar.
-    Raf( kod: RAF-IS-PLAN-FAZ, yol: "plan/faz/", ne: "zaman ekseni: mevsim ilanları — Faz düğümlerinin yaşadığı raf" )
-    Raf( kod: RAF-IS-PLAN-BLOK, yol: "plan/blok/", ne: "iş gövdesi: Blok düğümleri ve altındaki Katman, AltKatman ile Adım zinciri" )
-    Raf( kod: RAF-IS-PLAN-RAYDA, yol: "plan/rayda/", ne: "tamamen bitmiş planların rayı: tarih repoda kalır, plan görünür durur" )
+    Raf( kod: RAF-IS-PLAN-FAZ, yol: "plan/faz/", ne: "zaman ekseni ve iş gövdesi: her Faz sıra önekli kendi dosyasında Bloklarını gövdesine sararak yaşar (MIM-1.2)" )
+    // KPS-SIR-A04 (2026-09-29): iş gövdesinin rafı olan `plan/blok/` ile tamamen bitmiş planların
+    // rafı olan `plan/rayda/` kalktı. MIM-1.2 gereği her Blok yürürlükte olduğu Fazın gövdesinde,
+    // o Fazın `plan/faz/` altındaki sıra önekli dosyasında yaşar; bitmiş gövdeler de büyüdükleri
+    // Fazın dosyasında durur ve tarih yine repoda kalır.
     // Eski anadizinde ilanlı iki rafın karşılığı (GOC-A08 yedinci küme, 2026-08-25): mekanizma
     // ilanları ile göç kanıtları alt raf olarak sürer; ilansız gövde sıfır ölçütü korunur.
     Raf( kod: RAF-IS-PLAN-MEKANIZMA, yol: "plan/mekanizma/", ne: "kesişen altyapı ilanları: ŞEF mekanizması" )

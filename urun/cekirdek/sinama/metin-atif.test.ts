@@ -191,10 +191,78 @@ test("⑤: kapanmamış çit dosyanın kalanını yutmaz sayılır — açık ç
     "kapanmamış çit bilinçli olarak sonuna dek sürer — örnek blok yarıda kesilmez");
 });
 
+// HST-YUZ-A04 SINIRI: kök yüzeyi nöbeti her kod çitini örnek sayar; varlık içi kapı ise
+// aynı ayrıştırıcının `sar` kapsamını kullanır ve etiketsiz çiti ölçmeye devam eder.
+// Fark bilinçlidir ve bu sınama onu görünür tutar; iki kapı birleştirilecekse karar ayrıca verilir.
+test("⑤: varlık içi kapı etiketsiz çitin içini ölçmeye devam eder (HST-YUZ-A04 sınırı)", () => {
+  const { indeks, kodIndeks } = kurulum({
+    "rapor.md": "Çıktı:\n\n```\n✖ plan.sar:3:9 [kırık-referans] 'referans: ADM-DGS-97' hedefi çözülmüyor\n```\n",
+  });
+  const t = metinAtifTanilari(indeks, kodIndeks);
+  assert.equal(t.length, 1, "etiketsiz çit varlık içinde ölçülmeye devam etmeli");
+  assert.ok(t[0].tani.mesaj.includes("ADM-DGS-97"));
+});
+
 test("⑤: .sar belge bloğundaki kod çiti DOKUNULMADI — gezin atıf listesi eksilmez", () => {
   const indeks = new KimlikIndeksi();
   indeks.dosyaGuncelle("plan/x.sar", 'Adım( kod: ADM-DGS-13, durum: beklemede, ne: "x" )\n-->|\n```\nADM-DGS-99\n```\n|<--\n');
   const kodlar = indeks.tumAdaylar().map((a) => a.kod);
   assert.ok(kodlar.includes("ADM-DGS-99"),
     "kapsam .md/.ts ile sınırlı; .sar aday evreni bu turdan etkilenmez");
+});
+
+// ── ⑥ NOKTALI MADDE ATFI (HST-MTR-A10 · 2026-10-10) ────────────────────────
+//
+//   HST-MTR-A06 kimlik indeksine madde kuyruğunu ekledi; `DIL-1.99` yazımı artık
+//   önekinden kesilmeden tek aday olarak gelir. Kapının şekil süzgeci ise kuyruğu
+//   tanımıyordu ve noktalı her adayı eliyordu: kırık bir alt madde atfı (DIL-1.99)
+//   da, üst maddesi de tanımsız bir yazım (DIL-9.1) da sessiz kalıyordu. Fikstür
+//   kanonun gerçek ilan biçimini izler: alt madde adlı bir Kural olarak doğar.
+
+const KANON_SAR = `
+Karar( kod: DIL-1, ne: "üst madde" )
+Kural anlatimButunlugu( kod: DIL-1.5, ne: "tanımlı alt madde", dayanak: DIL-1 )
+`;
+
+const kanonKurulumu = (dosyalar: Record<string, string>) => {
+  const kodIndeks = kodIndeksle(new Map([["kanon.sar", derle(KANON_SAR)]]));
+  const indeks = new KimlikIndeksi();
+  indeks.dosyaGuncelle("kanon.sar", KANON_SAR);
+  for (const [dosya, metin] of Object.entries(dosyalar)) indeks.dosyaGuncelle(dosya, metin);
+  return { indeks, kodIndeks };
+};
+
+/** Tanının andığı kodu okur; çıpa tanı kimliğidir, mesaj yalnız ikincil kontroldür. */
+const anilanKod = (tani: { kod: string; mesaj: string }): string | undefined =>
+  tani.kod === "karşılıksız-metin-atfı" ? tani.mesaj.match(/^'([^']+)'/)?.[1] : undefined;
+
+test("⑥: kırık alt madde atfı (DIL-1.99) ve üst maddesi tanımsız yazım (DIL-9.1) tanı alır", () => {
+  const satir = "Bu tur DIL-1.99 ve DIL-9.1 maddelerine dayandı.";
+  const { indeks, kodIndeks } = kanonKurulumu({ "nitelik/rapor.md": satir, "src/x.ts": `// ${satir}` });
+  const t = metinAtifTanilari(indeks, kodIndeks);
+  assert.deepEqual(
+    t.map((x) => [x.dosya, anilanKod(x.tani), x.tani.duzey, x.tani.sutun]),
+    [
+      ["nitelik/rapor.md", "DIL-1.99", "bilgi", satir.indexOf("DIL-1.99") + 1],
+      ["nitelik/rapor.md", "DIL-9.1", "bilgi", satir.indexOf("DIL-9.1") + 1],
+      ["src/x.ts", "DIL-1.99", "uyarı", satir.indexOf("DIL-1.99") + 4],
+      ["src/x.ts", "DIL-9.1", "uyarı", satir.indexOf("DIL-9.1") + 4],
+    ],
+    "iki noktalı kırık yazım iki dosyada da tanı almalı; düzey .md'de bilgi, .ts'de uyarı kalmalı",
+  );
+});
+
+test("⑥: iki derinlikli kırık madde yazımı da tanı alır — kuyruk kimlik indeksinin derinliğini izler", () => {
+  // Süzgeç kuyruğu kendisi yazsaydı (ör. tek derinlik) indeksin verdiği bu aday yine elenirdi.
+  const { indeks, kodIndeks } = kanonKurulumu({ "nitelik/rapor.md": "Alt alt madde DIL-1.5.9 hiç doğmadı." });
+  assert.deepEqual(metinAtifTanilari(indeks, kodIndeks).map((x) => anilanKod(x.tani)), ["DIL-1.5.9"]);
+});
+
+test("⑥: tanımlı alt madde ve cümle sonundaki tanımlı madde tanı üretmez", () => {
+  const { indeks, kodIndeks } = kanonKurulumu({
+    "KARARLAR.md": "Yazım hükmü DIL-1.5 maddesindedir; dayanağı DIL-1.",
+    "src/y.ts": "// Anlatım bütünlüğü (DIL-1.5) ve üst madde DIL-1.",
+  });
+  assert.deepEqual(metinAtifTanilari(indeks, kodIndeks), [],
+    "çözülen noktalı atıf sağlamdır; cümle sonu noktası kuyruğa girmez");
 });

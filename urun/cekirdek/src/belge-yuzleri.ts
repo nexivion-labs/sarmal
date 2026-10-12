@@ -12,6 +12,14 @@ import { dirname, join, resolve } from "node:path";
 import { ayristir } from "./ayristirici.ts";
 import { belirtecle } from "./belirtec.ts";
 import { dilHanesi, sarmalKavramSozlugu } from "./cevir.ts";
+import {
+  kanonSayimiBulgusu,
+  TANI_KUMESI_ARTIRMA_ADIMI,
+  TANI_YONLENDIRME_MATRISI_KAYDI,
+  taniKumesiniOlc,
+  taniKumesiSayimiBulgusu,
+  type OlculenKanonSayimi,
+} from "./kanon-tutarlilik.ts";
 import { MCP_ARAC_ADI, MCP_ARAC_METINLERI } from "./mcp-metinleri.ts";
 import {
   siniflamaOrtuMerge,
@@ -23,6 +31,7 @@ import {
 } from "./siniflama.ts";
 import { ONCEKI_TANI_METINLERI, TANI_METINLERI } from "./tani-metinleri.ts";
 import { YENI_TANI_KANONU } from "./tani-sicili.ts";
+import { matrisKayitSapmalari, yuzeyUlasmaOzeti } from "./yuzey-ulasma.ts";
 import type { Dugum } from "./sozdizim.ts";
 
 export type BelgeAmaci = "README" | "indeks" | "Reference" | "Tutorial" | "How-To" | "Explanation";
@@ -38,6 +47,12 @@ export interface BelgeYuzuSonucu {
   readonly degismeyen: readonly string[];
   readonly kanonMaddesi: number;
   readonly aracSayisi: number;
+  /** Ölçülen kanon sayım kaydından ayrışmışsa bulgu; eşitse yok (HST-MTR-A02). */
+  readonly kanonSayimiBulgusu: string | undefined;
+  /** Tanı kümeleri sayım kaydından ya da küme değişmezlerinden ayrışmışsa bulgu; tutuyorsa yok (HST-MTR-A12). */
+  readonly taniKumesiBulgusu: string | undefined;
+  /** Yüzey sayılarının okunduğu yönlendirme matrisi kaydı canlı sicilden ayrışmışsa bulgu; taze ise yok (HST-MTR-A12). */
+  readonly yonlendirmeBulgusu: string | undefined;
 }
 
 export const ELLE_BAS = "<!-- SARMAL:ELLE-KORUNAN:BAS -->";
@@ -74,7 +89,14 @@ function dugumleriGez(dugumler: readonly Dugum[], ziyaret: (dugum: Dugum) => voi
   }
 }
 
-export function kanonOlc(kok: string): { madde: number; karar: number; kural: number; kodlar: readonly string[]; muhurler: readonly string[] } {
+export function kanonOlc(kok: string): {
+  madde: number;
+  karar: number;
+  kural: number;
+  kodlar: readonly string[];
+  muhurler: readonly string[];
+  sayim: OlculenKanonSayimi;
+} {
   const dizin = join(kok, "yasa", "kanon");
   const dosyalar = readdirSync(dizin).filter((ad) => ad.endsWith(".sar")).sort();
   const kodlar: string[] = [];
@@ -95,10 +117,10 @@ export function kanonOlc(kok: string): { madde: number; karar: number; kural: nu
       else karar++;
     });
   }
-  if (dosyalar.length !== 8 || kodlar.length !== 162 || new Set(kodlar).size !== 162) {
-    throw new Error(`Kanon ölçümü beklenmedik: ${dosyalar.length} dosya, ${kodlar.length}/${new Set(kodlar).size} madde.`);
-  }
-  return { madde: kodlar.length, karar, kural, kodlar, muhurler };
+  // HST-MTR-A02: sayı burada dondurulmaz ve ayrışmada hata fırlatılmaz; kalıcı yüzler
+  // kanonu diskten sayar, kayıttan ayrışma `belgeYuzleriniUret` sonucunda bulgu olur.
+  const sayim: OlculenKanonSayimi = { dosya: dosyalar.length, karar, kural, tekil: new Set(kodlar).size };
+  return { madde: kodlar.length, karar, kural, kodlar, muhurler, sayim };
 }
 
 export function belgeBolgesiUygula(mevcut: string | undefined, hedef: BelgeYuzuHedefi, baslik: string, giris: string, govde: string): string {
@@ -134,19 +156,51 @@ interface BelgeOlgulari {
    * "Tanı metinlerinin N'i ... iki dilli" cümlesinin canlı kaynağı.
    */
   readonly ikiDilliTani: number;
+  /** Yönlendirme matrisi kaydının canlı sicile karşı sapmaları (BKM-DNT-A02 nöbetinin ölçümü); boşsa kayıt tazedir. */
+  readonly matrisSapmalari: readonly string[];
+}
+
+/**
+ * Yönlendirme matrisi kaydının sapmalarını insanın okuyacağı bir bulguya çevirir; kayıt
+ * tazeyse `undefined` döner. Belge yüzleri yüzey sayılarını bu kayıttan okuduğu için bayat
+ * bir kayıt eski sayıyı basar; üretici durmaz, sapmayı adıyla ve artırma adımıyla söyler.
+ */
+function yonlendirmeBulgusu(sapmalar: readonly string[]): string | undefined {
+  if (sapmalar.length === 0) return undefined;
+  return `Yönlendirme matrisi kaydı canlı sicilden ayrıştı (${TANI_YONLENDIRME_MATRISI_KAYDI}): ${sapmalar.join("; ")}. `
+    + `Belge yüzleri yüzey sayılarını bu kayıttan okur ve kayıt tazelenene dek eski sayıyı basar; artırma adımı: ${TANI_KUMESI_ARTIRMA_ADIMI}.`;
+}
+
+/**
+ * Sayıyı üçüncü tekil iyelik ekiyle yazar ("189'u", "185'i", "186'sı"). Ek, sayının
+ * OKUNUŞUNDAKİ son sözcüğe göre seçilir: ünlüyle biten sözcükte kaynaştırma `s`
+ * gelir ve ünlü, son hecenin ünlüsüne uyar. Sabit "'i" yazmak "189'i" gibi dil
+ * bilgisine aykırı yüzler üretiyordu (KPS-SIR-A03 · inceleme bulgusu). Saf.
+ */
+export function sayiIyelik(n: number): string {
+  // Okunuştaki son sözcük: sıfır olmayan en düşük basamak ve onun sözcüğü.
+  const BIRLER = ["", "'i", "'si", "'ü", "'ü", "'i", "'sı", "'si", "'i", "'u"];          // bir iki üç dört beş altı yedi sekiz dokuz
+  const ONLAR = ["", "'u", "'si", "'u", "'ı", "'si", "'ı", "'i", "'i", "'ı"];             // on yirmi otuz kırk elli altmış yetmiş seksen doksan
+  const m = Math.abs(Math.trunc(n));
+  if (m === 0) return "0'ı";
+  if (m % 10) return `${n}${BIRLER[m % 10]}`;
+  if (m % 100) return `${n}${ONLAR[(m / 10) % 10]}`;
+  if (m % 1000) return `${n}'ü`;                                                          // yüz
+  if (m % 1_000_000) return `${n}'i`;                                                     // bin
+  return `${n}'u`;                                                                        // milyon
 }
 
 function olgulariOlc(kok: string): BelgeOlgulari {
   const say = (kademe: "hata" | "uyarı" | "bilgi"): number =>
     YENI_TANI_KANONU.filter((kayit) => kayit.kademe === kademe).length;
-  const matris = readFileSync(join(kok, "is", "nitelik", "goc", "tani_yuzeyi_yonlendirme_matrisi.sar"), "utf8");
+  const matris = readFileSync(join(kok, TANI_YONLENDIRME_MATRISI_KAYDI), "utf8");
   const rota = (ad: string): number => {
     const eslesme = matris.split("\n").find((satir) => satir.startsWith(`| ${ad} |`))?.match(/^\| [^|]+ \| (\d+) \|/);
     if (!eslesme) throw new Error(`${ad} yönlendirme sayısı matriste bulunamadı.`);
     return Number(eslesme[1]);
   };
-  // Matrisin "Toplam" satırı kalın (**171**) biçimlidir; `rota()`nın çıplak
-  // sayı deseni burada eşleşmez, ayrı bir desenle okunur.
+  // Matrisin "Toplam" satırı kalın yazılır (`| **Toplam** | **N** |`); `rota()`nın
+  // çıplak sayı deseni burada eşleşmez, ayrı bir desenle okunur.
   const sicilToplamiSatiri = matris.split("\n").find((satir) => satir.startsWith("| **Toplam** |"));
   const sicilToplamiEslesme = sicilToplamiSatiri?.match(/^\| \*\*Toplam\*\* \| \*\*(\d+)\*\* \|/);
   if (!sicilToplamiEslesme) throw new Error("Yönlendirme matrisinde Toplam satırı bulunamadı.");
@@ -166,54 +220,38 @@ function olgulariOlc(kok: string): BelgeOlgulari {
     bildirimler: rota("Bildirimler"),
     arac: Object.values(MCP_ARAC_ADI).length,
     ikiDilliTani: Object.keys(TANI_METINLERI).length + Object.keys(ONCEKI_TANI_METINLERI).length,
+    matrisSapmalari: matrisKayitSapmalari(matris, yuzeyUlasmaOzeti()),
   };
-  // KPS-MHR-A01 (2026-09-11): MIM-3.4 dosya mühürlerinin üç tanısı doğdu —
-  // `geçersiz-dosya-adı` uyarıda (Problems), `dosya-mührü` bilgide (Gözlemler) ve
-  // `sonraya-bırakılmış-dosya` bilgide fakat bilinçli bir ileri bağlam olduğu için
-  // Hatırlatıcılar hanesinde. Dağılım 47/17/14, yönlendirme 144/3/32 ve iki dilli
-  // katalog yüz yetmiş sekiz oldu.
-  // KPS-FAZ-A02 (2026-09-19 · Founder hükmü): MIM-1.2 projesiz Faz gözlemi
-  // `projesiz-faz` bilgi düzeyinde doğdu ve Bildirimler hanesine düştü. Dağılım
-  // 47/17/15, yönlendirme 144/3/33 ve iki dilli katalog yüz yetmiş dokuz oldu.
-  // KPS-CEL-A01 (2026-09-19 · Founder hükmü 2026-09-09): MIM-3.2 Kitaplık
-  // kademesini zorunlu kıldı ve `kitaplıksız-kök` uyarısı doğdu; dağılım 47/18/15,
-  // Problems hanesi yüz kırk beş ve iki dilli katalog yüz seksen oldu.
-  if (`${olgular.hata}/${olgular.uyari}/${olgular.bilgi}` !== "47/18/15" ||
-      // KYN-YUZ-A02 (2026-09-10): Hatırlatıcılar hanesi dörtten İKİYE indi ve
-      // Gözlemler yirmi sekizden OTUZA çıktı. Üç çapa kimliği bir Hatırlatıcı
-      // düğümü olmadığı için Gözlemler hanesine taşındı, `ateşlemiş-hatırlatıcı`
-      // ise YUZ-3.4 gereği ters yönde Hatırlatıcılar hanesine geçti; toplam
-      // değişmedi, yalnız iki hane arasında yer değiştirdi.
-      `${olgular.problems}/${olgular.hatirlaticilar}/${olgular.bildirimler}` !== "145/3/33" ||
-      olgular.arac !== 18 ||
-      olgular.ikiDilliTani !== 180) {
-    throw new Error("Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor.");
+  // YÖNLENDİRME SAYILARI BURADA DONDURULMAZ (HST-MTR-A12). Belge yüzlerinin bastığı
+  // Problems, Hatırlatıcılar ve Bildirimler haneleri yönlendirme matrisi kaydından okunur
+  // ve tek kayıtları odur; kaydın canlı sicille tutarlılığını BKM-DNT-A02 nöbeti ölçer
+  // (yuzey-ulasma.ts · matrisKayitSapmalari). Üretici aynı ölçümü yukarıda koşar: kayıt
+  // sicilden ayrışmışsa durmaz, sapmayı `belgeYuzleriniUret` sonucunda adıyla ve artırma
+  // adımıyla bildirir. Yeni kümenin düzey dağılımı da burada dondurulmaz; tek kaydı
+  // kanon-tutarlilik.ts içindeki TANI_KUMESI_SAYIMI'dır ve dağılımın tarihçesi o kaydın
+  // geçmiş satırlarında, bu üreticideki eski dondurmaların tarihçesi git geçmişindedir.
+  const sapan = [
+    ...(olgular.arac !== 18 ? [`MCP araç sayısı ${olgular.arac} (beklenen 18)`] : []),
+  ];
+  if (sapan.length > 0) {
+    throw new Error(`Bağlayıcı belge ölçümleri beklenen canlı dağılımla uyuşmuyor: ${sapan.join("; ")}.`);
   }
-  // Sayılar 2026-08-27 tarihinde bir kez ilerledi: ORK-8 mevsim ritüelinin ilk
-  // motor karşılığı `mevsim-vadesi-geçti` doğdu (Founder hükmü); bilgi kademesi
-  // ondan on bire, Bildirimler yüzeyi yirmi yediden yirmi sekize ve iki dilli
-  // katalog yüz yetmiş ikiden yüz yetmiş üçe çıktı. 2026-09-10 tarihinde bir kez
-  // daha ilerledi (KPS-MVS-A01 ikinci teslim): ORK-8 mühür dürüstlüğü bekçisi
-  // `mevsim-mührü-çelişkili` doğdu; bilgi kademesi on birden on ikiye, Bildirimler
-  // yüzeyi otuzdan otuz bire ve iki dilli katalog yüz yetmiş dörtten yüz yetmiş beşe çıktı.
-  // 174 vs 175 farkının kayıtlı gerekçesi: sicilToplami (matrisin "Toplam"
-  // satırı) SABIT_TANI_KODLARI'nın tamamını (ONCEKI_TANI_KODLARI + YENI_
-  // TANI_KANONU = 102 + 70 = 172 kimlik) sayar. ikiDilliTani ise yalnız
-  // TANI_METINLERI + ONCEKI_TANI_METINLERI statik kataloglarında gerçek
-  // Türkçe/İngilizce metni HAZIR duran kimlikleri sayar (70 + 101 = 171).
-  // Aradaki tek fark "söz-dizim" kimliğidir: o da iki dillidir ama metni
-  // statik katalogdan değil, ayrıştırıcının o anki SozDizimHatasi nesnesinden
-  // (bkz. tani-metinleri.ts sozDizimTanisi: hata.message / hata.ingilizceMesaj)
-  // her seferinde yeniden üretilir — sabit bir katalog girdisi olamaz çünkü
-  // cümlesi hatanın konumuna ve içeriğine göre değişir. Bu yüzden "171" (yüz
-  // metinlerindeki ifade) ile matrisin "172"si (sicil toplamı) ÇELİŞMEZ; ikisi
-  // farklı kümeleri ölçer. Aşağıdaki eşitlik bu varsayımı canlı sınar: kırılırsa
-  // ya statik katalog ya matris ya da "yalnız bir dinamik kimlik var" varsayımı
-  // bozulmuş demektir ve biri yanlış ölçülüyordur.
+  // İKİ DİLLİ KATALOG TAMLIK NÖBETİ. Matrisin Toplam satırı sabit sicilin tamamını
+  // (ONCEKI_TANI_KODLARI ile YENI_TANI_KANONU) sayar; ikiDilliTani ise yalnız TANI_METINLERI
+  // ile ONCEKI_TANI_METINLERI statik kataloglarında Türkçe ve İngilizce metni hazır duran
+  // kimlikleri sayar. Aradaki fark tam bir kimliktir: "söz-dizim" de iki dillidir, fakat
+  // metni statik katalogdan değil ayrıştırıcının o anki SozDizimHatasi nesnesinden üretilir
+  // (tani-metinleri.ts · sozDizimTanisi), çünkü cümlesi hatanın konumuna ve içeriğine göre
+  // değişir. Bu bir sayı dondurması değil gerçek bir tamlık nöbetidir ve gevşetilmez: fark
+  // birden büyükse sicilde iki dilli metni yazılmamış bir tanı vardır, küçükse matris kaydı
+  // kataloğun gerisinde kalmıştır. Belge yüzleri iki dilli tanı sayısını bastığı için üretici
+  // iki durumda da durur ve eksik basamağı artırma adımıyla söyler.
   if (sicilToplami - olgular.ikiDilliTani !== 1) {
     throw new Error(
-      `Sicil toplamı (${sicilToplami}) ile statik iki dilli tanı kataloğu (${olgular.ikiDilliTani}) arasındaki fark artık 1 değil; ` +
-      `"yalnız söz-dizim kimliği katalog dışı" varsayımı bozulmuş olabilir — kaynağı yeniden ölç.`,
+      `Sicil toplamı (${sicilToplami}) ile statik iki dilli tanı kataloğu (${olgular.ikiDilliTani}) arasındaki fark 1 değil; `
+      + `yalnız söz-dizim kimliği katalog dışında kalabilir. Doğan tanının Türkçe ve İngilizce metni urun/cekirdek/src/tani-metinleri.ts `
+      + `kataloglarına eklenmemiş ya da ${TANI_YONLENDIRME_MATRISI_KAYDI} kaydı kataloğun gerisinde kalmış olabilir; `
+      + `artırma adımı: ${TANI_KUMESI_ARTIRMA_ADIMI}.`,
     );
   }
   return olgular;
@@ -405,7 +443,7 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${o.ikiDilliTani}'i, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.`;
+Yeni tanı kümesi ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi ${o.problems} Problems, ${o.hatirlaticilar} Hatırlatıcılar ve ${o.bildirimler} Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin ${sayiIyelik(o.ikiDilliTani)}, ${o.arac} MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.`;
 }
 
 function kokReadmeEn(o: BelgeOlgulari): string {
@@ -455,7 +493,7 @@ Sarmal kaynak kodun yerine geçen bir programlama dili değildir ve kod üretmez
 
 ## Dört eksen
 
-Bir plan dört eksende yazılır ve katı üretim omurgası \`ÇalışmaAlanı → Proje → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Faz zamandır ve bir mevsimi ya da halkayı adlandırır. Blok iştir; bir Blok tek bir kimlik taşır ve mevsimler arasında sürebilir. Katman teknolojidir ve bir Takıma ya da Teknolojiye bağlanır; AltKatman o teknolojinin içindeki konu modülüdür. Adım akıştır ve en küçük yürütme birimidir: görevini, kabul ölçütünü, sınırını, dayandığı kararı ve ürettiği Meyveyi beyan eder; bağımlılığı yalnız \`bağımlı\` kenarıyla ve yalnız Adımdan Adıma yazılır. Meyve teslimdir ve dosya-zorunlu türlerde diskte çözülen bir yol taşır. Bu zincir dışında kalan her şey (kararlar, kurallar, sözleşmeler, etmenler, hatırlatıcılar, durum kayıtları) aynı grafta düğümdür ve Adımlar onlara kenarla bağlanır. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
+Bir plan dört eksende yazılır ve katı üretim omurgası \`ÇalışmaAlanı → Proje → Faz → Blok → Katman → AltKatman → Adım → üretir → Meyve → dosya\` zinciridir. Faz zamandır ve bir mevsimi ya da halkayı adlandırır. Blok iştir; bir Blok tek bir kimlik taşır ve yaşadığı Fazın gövdesine sarılır, çünkü her Faz faz klasöründe sıra önekli kendi dosyasında yaşar. Katman teknolojidir ve bir Takıma ya da Teknolojiye bağlanır; AltKatman o teknolojinin içindeki konu modülüdür. Adım akıştır ve en küçük yürütme birimidir: görevini, kabul ölçütünü, sınırını, dayandığı kararı ve ürettiği Meyveyi beyan eder; bağımlılığı yalnız \`bağımlı\` kenarıyla ve yalnız Adımdan Adıma yazılır. Meyve teslimdir ve dosya-zorunlu türlerde diskte çözülen bir yol taşır. Bu zincir dışında kalan her şey (kararlar, kurallar, sözleşmeler, etmenler, hatırlatıcılar, durum kayıtları) aynı grafta düğümdür ve Adımlar onlara kenarla bağlanır. Esnek rejim bilinçli bir istisnadır; gerekçesi açık yazılır.
 
 ## Kapı
 
@@ -539,7 +577,7 @@ function eklentiReadme(o: BelgeOlgulari): string {
 4. Bir \`.sar\` dosyası açın; sorunları Problems, gözlemleri Bildirimler (Gözlemler), ileri bağlamı Hatırlatıcılar yüzünde izleyin.
 5. Onay gerektiren bir eylemi **ONAYLAR** panelinden değerlendirin.
 
-Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin ${o.ikiDilliTani}'i ve ${o.arac} MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgidir; sabit yönlendirme matrisi ${o.problems}/${o.hatirlaticilar}/${o.bildirimler} olarak ölçülür.
+Eklenti manifesti ve karşılama yüzü Türkçe/İngilizce haneler taşır. Tanı metinlerinin ${sayiIyelik(o.ikiDilliTani)} ve ${o.arac} MCP aracının açıklamaları da iki dillidir. Yeni tanı dağılımı ${o.hata} hata, ${o.uyari} uyarı ve ${o.bilgi} bilgidir; sabit yönlendirme matrisi ${o.problems}/${o.hatirlaticilar}/${o.bildirimler} olarak ölçülür.
 
 Sarmal Apache-2.0 lisanslıdır. Lisans bildirimi [LICENSE.md](LICENSE.md) dosyasındadır.`;
 }
@@ -549,7 +587,7 @@ function rehberDil(): string {
 ## Çalışan ilk zincir
 
 1. \`ilk_proje_anadizin.sar\` dosyasını oluşturun ve \`sarmal ogret\` kartındaki anadizin örneğini kopyalayın.
-2. \`is/plan/ilk_plan.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın.
+2. \`is/plan/faz/1_ilk_surum.sar\` dosyasını oluşturup aynı karttaki katı zinciri kopyalayın; her Faz faz klasöründe sıra önekli kendi dosyasında yaşar.
 3. Kökten \`sarmal denetle .\` komutunu çalıştırın.
 4. Tanı varsa öneriyi kaynağa uygulayın ve aynı komutu yeniden çalıştırın.
 
@@ -714,5 +752,10 @@ export function belgeYuzleriniUret(kokYolu: string): BelgeYuzuSonucu {
       writeFileSync(tamYol, yeni, "utf8");
     }
   }
-  return { degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac };
+  return {
+    degisen, degismeyen, kanonMaddesi: o.kanon.madde, aracSayisi: o.arac,
+    kanonSayimiBulgusu: kanonSayimiBulgusu(o.kanon.sayim),
+    taniKumesiBulgusu: taniKumesiSayimiBulgusu(taniKumesiniOlc(o.snf).sayim),
+    yonlendirmeBulgusu: yonlendirmeBulgusu(o.matrisSapmalari),
+  };
 }

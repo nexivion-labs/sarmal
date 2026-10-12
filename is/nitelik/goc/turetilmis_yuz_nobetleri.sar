@@ -28,18 +28,118 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `f34368ff95d0c3992e9c3ba1a6327fc9dd08b72f44d9830c631d89040b2efb62` |
-| `oz/siniflama/kayit.json` | `ece1749577e8ace6c05043ef9ff47f07bcdd865bdc83fef7e54bc4974fe84563` |
+| `yasa/kanon demeti (A03 formülü)` | `035af65d78604d899d8dcad51674f1ebd321395a9182d611fb173b335ba19fa9` |
+| `oz/siniflama/kayit.json` | `bebc9e6839866ee9a3ce3030b8cc3ea4764158b56aa5c2c65258f227a56023f7` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
-| `urun/cekirdek/src/tani-sicili.ts` | `6fca37fef16d9a7fb059aed1bf62392450b1653c73dc662174e0ef8690d37dc4` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `96039fe133443b4203842ac4ada78afaa88cef66784a6c4df53a7d53a735b696` |
-| `urun/cekirdek/src/dil-baglami.ts` | `28440b986a3c58983001848b24658c2444e30e0c7ed8f6b116ea8a8e9375874d` |
-| `urun/eklenti/package.nls.tr.json` | `45ffaca97e7a8ca349c044daeffecfda77f3d4698bb1aedfcdbd6a6fb1f35a60` |
-| `urun/eklenti/package.nls.json` | `430a06e1873beb49740312ea1df2907e656d3cc374ca9b9da7e28ecdff89e11d` |
-| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `cbc45b572ba62fc12e376fe98fb280a6dff7e20ce727fd555751623cdffb9e23` |
+| `urun/cekirdek/src/tani-sicili.ts` | `49b8f6827cddd6d3f90523bbc225462c9e223f140e29d065f7680d0e36fbdb73` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `a74b21da434b6e9f972820c960fb66ea8e7863eff2e5f416b4c768d746058a7d` |
+| `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
+| `urun/eklenti/package.nls.tr.json` | `d53560d47587c73b7cd6848ea83049952805e49a43c79918123de6fd14a49873` |
+| `urun/eklenti/package.nls.json` | `980dcb5695a0e16fe47bd3e50ed2f42d98b4f76af1ab4784ad426932be5d40b3` |
+| `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `92d8ed759003ca7041b872d57d03f5015b61d88a9a4b1de5c3cf7f3646166ec7` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-11 · kısıtlı modun karşılama görünümü): MGZ-A08 eklentinin
+iki yerelleştirme kataloğuna kısıtlı modda açılan karşılama görünümünün adını ve
+içeriğini, yani iki yeni anahtarı ekledi ve iki katalog mührü ilerledi. Var olan
+hiçbir anahtarın metni değişmedi; öteki yedi kaynağın mührü değişmedi ve
+türetilmiş yüzlerin hiçbiri bu iki kataloğun yeni anahtarlarını okumadığı için
+on altı yüzün yeniden üretimi fark vermedi.
+
+Tazeleme notu (2026-10-11 · kanon metninin ölçülen düzeltmeleri · HST-MTR-A13):
+Founder'ın 2026-10-10 tarihli onayıyla kanon metninde ölçülen üç kusur düzeltildi
+ve hiçbir maddenin hükmüne dokunulmadı. ORK-9 maddesinin `karar` ve `gerekçe`
+taşıyıcıları belge bloğundaki Hüküm ile Gerekçe metnine birebir eşitlendi. TIP-1.14
+maddesinin Hüküm metni sınıflamada hiç bulunmayan yalın Kimlik tipi yerine
+sınıflamanın on iki arkayüz tipini sayar oldu ve rol listesindeki kimlik sözcüğü
+kimlik doğrulama politikası, kimlik alanı sınırı ve dış kimlik sağlayıcısı olarak
+açıldı. Mimari ile yüzeyler dosyalarının başlığında on yedi ve yirmi olarak duran
+madde sayıları ölçülen on dokuz ve yirmi bir değerine çekildi. Düzeltmeler yalnız
+`mim.sar`, `ork.sar`, `tip.sar` ve `yuz.sar` dosyalarının baytlarını değiştirdiği
+için kaynak mühürlerinden yalnız kanon demeti ilerledi ve aynı dört dosyanın
+`urun/cekirdek/sinama/kanon-tutarlilik.test.ts` içindeki SHA-256 satırları
+tazelendi; öteki sekiz kaynağın mührü değişmedi. Kanon yüz altmış iki maddede,
+otuz sekiz Karar ile yüz yirmi dört Kural dağılımında kaldı. Ardından
+`kanon-tutarlilik-uret` ve `belge-yuzleri-uret` üreticileri yeniden koşturuldu:
+kanon tutarlılık yüzü tazelendi ve iki yüz otuz sekiz taşıyıcı alanın hepsini
+belge metnine eşit ölçtü, on altı belge yüzünün hiçbiri değişmedi ve ikinci koşu
+sıfır fark verdi. Öğretim kartı ile sınıflama Reference üreticileri de koşturuldu
+ve fark vermedi, çünkü ikisi de yalnız sınıflama kaydını okur.
+
+Tazeleme notu (2026-10-11 · İngilizce yüzün ikinci turu): MGZ-A09 kontrolcü
+incelemesinin ardından eklentinin İngilizce yerelleştirme kataloğunda iki komut
+başlığını değiştirdi. Hatırlatıcıyı kapatan komut artık İngilizce bir cümleyle
+dosyadaki tipin adını anar; çalışma alanını giydiren komut ise VS Code çalışma
+alanını küçük harfle anar, çünkü büyük harfli biçim dosyadaki ÇalışmaAlanı tipinin
+İngilizce adı gibi okunuyordu. Yeni anahtar eklenmedi ve Türkçe katalog değişmedi;
+öteki sekiz kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-10-10 · İngilizce tanının dosyadaki adı anması): MGZ-A09 tanı
+sicilinde terfi kapısının ölçümünü dilden bağımsız bulgu kodlarına ayırdı. Türkçe
+gerekçe bu kodlardan önceki cümleyle birebir aynı kurulur, İngilizce gerekçeyi ise
+tanı kataloğu kurar. Sicilin kayıtları, kimlikleri ve düzeyleri değişmedi; yalnız
+dosyanın mührü ilerledi. Kanon tutarlılık yüzü bu mührü taşıdığı için yeniden
+üretildi ve yüzde yalnız mühür satırı değişti; öteki sekiz kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-10-10 · İngilizce yüzün tek ilkesi): MGZ-A09 eklentinin
+İngilizce yerelleştirme kataloğunda on üç anahtarın metnini değiştirdi. Anlam
+belirteci türlerinin, iki ayarın, kenar renginin ve bir komutun açıklaması artık
+dosyadaki Türkçe tip, kenar ve alan adlarını anar, çünkü Founder 2026-10-10
+tarihinde dosyanın her dilde Türkçe göründüğüne ve arayüzün İngilizce konuşup
+dosyadaki adı andığına hükmetmiştir. Yeni anahtar eklenmedi ve Türkçe katalog
+değişmedi; öteki sekiz kaynağın mührü değişmedi ve türetilmiş yüzlerin hiçbiri
+bu kataloğun metnini okumadığı için yeniden üretim fark vermedi.
+
+Tazeleme notu (2026-10-10 · düğüm kodu standardı): RFM-MOTOR-A02 DIL-1.8 maddesinin
+zorlama satırına `ilansız-önek` ile `kod-biçimi-uyumsuz` uyarılarını Founder onayıyla
+ilan etti ve kanon demeti ilerledi; maddenin hüküm, gerekçe ve örnek metinlerine
+dokunulmadı. Proje şemasına önek sicilinin iki alanı (`önekler`, `biçimMuafları`)
+eklendiği için sınıflama kaydının, iki uyarının sicil kaydı için tanı sicilinin,
+Problems hanesine iki kimlik eklendiği için de yönlendirme matrisinin mührü ilerledi.
+Dört mühür birlikte tazelendi ve kanon tutarlılık yüzü ile belge yüzleri aynı koşuda
+resmî üreticileriyle yeniden üretildi; öteki beş kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-10-10 · kısıtlı modun beyanı): MGZ-A02 eklentinin iki
+yerelleştirme kataloğuna güvenilmeyen çalışma alanı beyanının açıklamasını, yani
+bir yeni anahtarı ekledi ve iki katalog mührü ilerledi. Var olan hiçbir anahtarın
+metni değişmedi; öteki yedi kaynağın mührü değişmedi ve türetilmiş yüzlerin hiçbiri
+bu iki kataloğun yeni anahtarını okumadığı için yeniden üretim fark vermedi.
+
+Tazeleme notu (2026-09-29 · tek Sarmal simgesi ve bölüm yuvası): VIT-K78-A10
+eklentinin iki yerelleştirme kataloğuna bölüm sırasının ve dört bölüm yuvasının
+görünüş adlarını, yani beş yeni anahtarı ekledi ve iki katalog mührü ilerledi.
+Var olan hiçbir anahtarın metni değişmedi; öteki yedi kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-09-29 · girinti ile yapının uyumu): `girinti-yapı-uyumsuz`
+gözlemi DIL-2.2 maddesinin zorlama satırına bilgi düzeyinde ilan edildi ve kanon
+demeti ilerledi; maddenin hüküm, gerekçe ve örnek metinlerine dokunulmadı. Gözlemin
+sicil kaydı tanı sicilinin mührünü, Bildirimler hanesinin otuz yediden otuz sekize
+çıkması da yönlendirme matrisinin mührünü ilerletti. Üç mühür birlikte tazelendi ve
+kanon tutarlılık yüzü ile belge yüzleri aynı koşuda resmî üreticileriyle yeniden
+üretildi; öteki altı kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-09-29 · Faz dosyası düzeni): Founder hükmüyle MIM-1.2 maddesinin
+hükmü, gerekçesi ve örneği Faz dosyası düzenini taşıyacak biçimde genişledi ve zorlama
+satırına dört yeni gözlem ilanı eklendi; kanon demeti bu yüzden ilerledi. Gözlemler
+tanı sicilinin mührünü, üç bağ yolunun öğretimden kaldırılması ajan dil bağlamının
+mührünü, doğuş aracının yeni plan adresi MCP metinlerinin mührünü ve Bildirimler
+hanesinin otuz yediye çıkması yönlendirme matrisinin mührünü ilerletti. Beş mühür
+birlikte tazelendi ve kanon tutarlılık yüzü ile belge yüzleri aynı koşuda resmî
+üreticileriyle yeniden üretildi; öteki üç kaynağın mührü değişmedi.
+
+Tazeleme notu (2026-09-29 · erken Faz işinin kapsamı): bağımsız inceleme
+sonrası MIM-1.2 zorlama satırındaki `erken-faz-işi` cümlesi başlamış ya da bitmiş
+işi anlatacak biçimde düzeltildi; yalnız kanon demeti ilerledi.
+
+Tazeleme notu (2026-09-29 · Faz sırası ve Blok yapısı): Founder hükmüyle MIM-1.2,
+MIM-1.3 ve MIM-1.6 maddelerinin zorlama satırlarına altı yeni tanı ilanı eklendi
+ve kanon demeti ilerledi. Tanılar tanı sicilinin mührünü, `planlanmamış` kaçışının
+öğretimden kaldırılması ajan dil bağlamının mührünü, yönlendirme dağılımının yeni
+hâli de yönlendirme matrisinin mührünü ilerletti. Dört mühür birlikte tazelendi ve
+kanon tutarlılık yüzü ile belge yüzleri aynı koşuda resmî üreticileriyle yeniden
+üretildi; öteki dört kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-09-19 · Katman zemininin iki kenara bölünmesi): Founder
 hükmüyle MIM-1.4 ile ORK-2.4 maddeleri zemini iki tip-saf kenarla yazar oldu,
@@ -583,6 +683,18 @@ yasağın okuyucuyu meşru kullanımdan da alıkoyması ve gerekçesini taşıma
 Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts` dosyasının mührünü
 ilerletti ve yukarıdaki tablodaki satır canlı değerle tazelendi; araç
 açıklamaları, ek açıklamalar ve öteki bütün kaynaklar değişmedi.
+
+Tazeleme notu (2026-10-10 · doğuş aracının genişletme cümlesi · HST-MTR-A14):
+Doğuş paketi var olan bir yok sayma dosyasını genişletirken artık küresel
+kuralın istisnasıyla birlikte motorun iz klasörü satırını da sona ekler. Doğuş
+aracının Türkçe ve İngilizce açıklaması yalnız istisnanın eklendiğini
+söylüyordu; iki cümle aynı düzenlemede, eklenen iki satırı birlikte anacak
+biçimde yeniden yazıldı. Bu dönüşüm yalnız `urun/cekirdek/src/mcp-metinleri.ts`
+dosyasının mührünü ilerletti ve yukarıdaki tablodaki satır canlı değerle
+tazelendi; araç adları, parametreler, şema ve öteki bütün kaynaklar değişmedi.
+Belge yüzleri üreticisi aynı koşuda yeniden koşturuldu ve on altı yüzün hiçbiri
+değişmedi, çünkü üretilen bölgeler araç açıklamalarını değil, yalnız araç
+adlarını, okur ya da yazar beyanını ve başlıklarını okur.
 |<--
 
 Sınama( kod: SNM-TUREV-YUZ-01,

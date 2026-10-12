@@ -50,6 +50,7 @@ import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { type BelgeKabugu, diskBelgesi, turBelgeleriniTopla, turProgramlariniKur } from "../src/tur-belgesi.ts";
 import { turKapsami } from "../src/izleyici-cekirdek.ts";
+import { fazYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 import {
   sonTurGoruntusu, turGoruntusuOlcumleri, turGoruntusunuDinle, turGoruntusunuUnut,
   turGoruntusunuYayinla, type TurGoruntusu,
@@ -221,7 +222,7 @@ test("DARALTMA: daraltılmış turda görüntünün program haritası tam turla 
   assert.equal(darKapsam, ODAK, "olay turu daralmadı; nöbetin iki ucu aynı oldu");
 
   const disk = {
-    [`${ODAK}/plan/a.sar`]: "Faz( kod: A )",
+    [`${ODAK}/${fazYolu(1, "a")}`]: "Faz( kod: A )",
     [`${KÖK}/baska/b.sar`]: "Faz( kod: B )",   // odağın DIŞINDA kalan dosya
     [`${KÖK}/c.sar`]: "Faz( kod: C )",
   };

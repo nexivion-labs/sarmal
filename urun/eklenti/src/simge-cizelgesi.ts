@@ -26,8 +26,8 @@
 //
 //   SAF'lık notu (VIT-KIMLIK-A06 sonrası): çalışma zamanında vscode importu
 //   yine YOKTUR — dosyanın sonundaki EDİTÖR HANESİ vscode'u yalnız tip olarak
-//   alır ve kabuğu parametreyle taşır (gorsel-esad deseni); node:test bu
-//   modülü doğrudan koşmaya devam eder.
+//   alır ve kabuğu parametreyle taşır (kabuğun dışarıdan verildiği saf modül
+//   deseni); node:test bu modülü doğrudan koşmaya devam eder.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type * as vscode from "vscode";
@@ -111,21 +111,33 @@ export function eksenSvgVaryanti(tip: EksenTipi, evre: KapsayiciEvre, tema: Simg
 //    taşır ve v1 sonrası temizlenecektir — görünen adlar Gözlemler ve
 //    Onaylar'dır, simge dosya adları da görünen adı izler.
 
-/** Beş panel görünüşünün kimliği — package.json `views["sarmal-yol"]` kapsamı. */
+/** Kenar çubuğu görünüşlerinin kimliği — package.json `views["sarmal-yol"]` kapsamı.
+ *  🧩 VIT-K78-A10: bölüm sırası ile dört bölüm yuvası da bu haneye girer; yuvalar
+ *  kardeş eklentilerin kaydettiği bölümleri taşır ve her biri kendi simgesiyle
+ *  ayrılır (bolum-cekirdek.ts `YUVA_GORUNUSLERI`). Kısıtlı modun karşılama
+ *  görünüşü panel değildir ve aşağıda `KISITLI_KARSILAMA_GORUNUSU` olarak ayrı
+ *  ilan edilir (MGZ-A08). */
 export const PANEL_GORUNUSLERI = [
+  "sarmalBolumSirasi",
   "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
   "sarmalOnaylar", "sarmalMiniGraf",
+  "sarmalBolumYuvasi1", "sarmalBolumYuvasi2", "sarmalBolumYuvasi3", "sarmalBolumYuvasi4",
 ] as const;
 export type PanelGorunusu = (typeof PANEL_GORUNUSLERI)[number];
 
 /** Görünüş kimliği → raf dosya adı gövdesi (ASCII; görünen adı izler). */
 const PANEL_SVG_AD: Record<PanelGorunusu, string> = {
+  sarmalBolumSirasi: "sarmal",
   sarmalYolHaritasi: "yolharitasi",
   sarmalHatirlaticilar: "hatirlaticilar",
   sarmalFikirler: "fikirler",
   sarmalBildirimler: "gozlemler",
   sarmalOnaylar: "onaylar",
   sarmalMiniGraf: "minigraf",
+  sarmalBolumYuvasi1: "yuva-1",
+  sarmalBolumYuvasi2: "yuva-2",
+  sarmalBolumYuvasi3: "yuva-3",
+  sarmalBolumYuvasi4: "yuva-4",
 };
 
 /** Bir panel görünüşünün currentColor KAYNAK SVG'si (eklenti-köküne göreli yol). */
@@ -133,10 +145,25 @@ export function panelSvgKaynagi(gorunus: PanelGorunusu): string {
   return `${SIMGE_RAFI}/panel-${PANEL_SVG_AD[gorunus]}.svg`;
 }
 
-/** Etkinlik çubuğu kapsayıcısının simgesi: kapsayıcı ayrı bir kimlik taşımaz,
- *  raydaki ilk panelin (Yol Haritası) simgesini paylaşır — eski `ikonlar/ray.svg`
- *  düzeninin devamıdır, yalnız kaynağı artık bu çizelgedir. */
-export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalYolHaritasi");
+/** Etkinlik çubuğu kapsayıcısının simgesi: kapsayıcı ayrı bir kimlik taşımaz ve
+ *  kabın en üstündeki bölüm sırasının simgesini, yani Sarmal sarmalını paylaşır.
+ *  🧩 VIT-K78-A10 (Founder hükmü 2026-09-28): etkinlik çubuğunda tek bir Sarmal
+ *  simgesi durur; Ray, kabın içindeki bölümlerden biridir ve raylı Yol Haritası
+ *  simgesi artık kabın değil Ray bölümünün işaretidir. */
+export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalBolumSirasi");
+
+/** 🛡️ MGZ-A08 · Kısıtlı modun karşılama görünüşü. Panel ailesine girmez: veri
+ *  taşımaz, sağlayıcı istemez ve yalnız klasöre güvenilmediğinde görünür. O an
+ *  kapta tek başına durduğu için kabın Sarmal sarmalını taşır (Founder hükmü
+ *  2026-10-10: kısıtlı modda Sarmal simgesi kalır). Güvenilir klasörde hiç
+ *  görünmediğinden bölüm sırasıyla aynı simgeyi paylaşması, iki panelin yan yana
+ *  karışması kusurunu (Founder 2026-07-28) geri getiremez. */
+export const KISITLI_KARSILAMA_GORUNUSU = "sarmalKisitliKarsilama";
+export const KISITLI_KARSILAMA_SIMGESI = KAPSAYICI_SIMGE;
+
+/** Bölüm sırasında Ray bölümünün işareti: Ray'in ilk paneli olan Yol Haritasının
+ *  iki raylı simgesidir; ayrı bir çizim doğmaz. */
+export const RAY_BOLUM_SIMGESI = panelSvgKaynagi("sarmalYolHaritasi");
 
 // ── SATIR HANESİ (VIT-KIMLIK-A05 · Founder hükmü 2026-08-04: IDE'nin içi ─────
 //    baştan aşağı geometrik çizim dilinden konuşur — satır içi çan/katman/
@@ -400,7 +427,7 @@ const EKSEN_KUMESI: ReadonlySet<string> = new Set<string>(EKSEN_TIPLERI);
  * önbellek undefined verir ve o kare dekorsuzdur — editör akışı kesilmez.
  * Belirteçleyici emoji eşadını kanonik ada çevirir (🍃 → Adım); o satır ZATEN
  * bir simge taşıdığı için ham kaynak dilimi tip adıyla birebir değilse karar
- * verilmez (gorsel-esad ham-dilim nöbetiyle aynı güvence). `tipler` kapısı
+ * verilmez (ham kaynak dilimi tip adıyla birebir olmalıdır). `tipler` kapısı
  * yalnız nöbetin mutasyon kanıtı içindir; üretimde daima çizelge kümesidir.
  */
 export function eksenDekorKararlari(
@@ -498,6 +525,224 @@ export function eksenDekorKaydi(
       } },
   );
   gorunenleriBoya();
+}
+
+// ── PARAMETRE HANESİ (VIT-KIMLIK-A08 · Founder isteği 2026-08-30: aile ───────
+//    simgeleri editörde, ilgili oldukları parametrelerin yanında görünür).
+//    A06'nın eksen deseni parametre satırlarına uzatılır: bir gövdedeki
+//    `görev`, `sınır`, `referans`, `kabul` ve kardeşleri SATIR BAŞINDA
+//    yazıldığında parametre adının soluna raftaki aile simgesi basılır.
+//
+//    TEK KAYNAK: parametre adından simgeye eşleme yalnız aşağıdaki çizelgede
+//    yaşar. Çizelge dışı ad simge almaz; dekorasyon kodu hiçbir parametre
+//    adını kendisi yazmaz. Değerler `SatirSimgesi` tipindedir, dolayısıyla
+//    çizelge aileyi GENİŞLETEMEZ, yalnız raftaki mevcut çizimleri yerleştirir.
+//    Eşlemenin dayanağı koni kartının alan başlıklarıdır (ARAYUZ_ISARETI):
+//    aynı alan editörde ve kartta aynı simgeyle görünür.
+//
+//    PERFORMANS (PRF-A06 kapısının üstüne biner): karar YALNIZ görünür aralık
+//    ve onun bir ekran üstü ile bir ekran altı için verilir; satır metni
+//    yalnız aday satırlar için okunur, belge bütünüyle bölünmez. Program
+//    paylaşılan AST önbelleğinden gelir. Belge değişimi ve kaydırma gecikmeli
+//    tazelenir; her boyamanın süresi ölçülür ve çağırana bildirilir (eklenti
+//    bunu Sarmal Performans kanalına yazar).
+
+/** Parametre adı → satır simgesi. Anahtarlar kanonik parametre adlarıdır
+ *  (dilin yazdığı biçim); değerler raftaki aile üyeleridir. */
+export const PARAMETRE_SIMGESI: Readonly<Record<string, SatirSimgesi>> = {
+  "görev":      "gorev",          // koni alanı: görev
+  "sınır":      "sinir",          // koni alanı: sınır
+  "dokunulmaz": "dokunulmaz",     // koni alanı: dokunulmaz
+  "referans":   "referans",       // koni alanı: referans
+  "kabul":      "kabul",          // koni alanı: kabul
+  "yama":       "yama",           // koni alanı: yama
+  "rapor":      "dosya",          // koni alanı: rapor
+  "bağımlı":    "baglanti-geri",  // koni kartı: bağımlı olduğu düğümler
+  "koşu":       "kosum",          // Adımın koşum kaydı
+  "tarih":      "zaman",          // koşum dökümünün saati
+  "kurallar":   "kural",          // beceri kartının kural listesi
+};
+
+/** Parametre simgelerinin anlam rengi: renksiz ikon karşılığı. Parametre durum
+ *  taşımaz; RENK=DURUM kilidi (YUZ-4) eksen satırlarına aittir ve parametre
+ *  simgesi o kanalla yarışmamalıdır. Değer bu modülde yazılmaz (YUZ-4.1). */
+export const PARAMETRE_ANLAMI: AnlamRengi = "duz";
+
+/** Bir parametre simgesinin üretilmiş varyantı (eklenti köküne göreli yol). */
+export function parametreSvgVaryanti(simge: SatirSimgesi, tema: SimgeTemasi): string {
+  return satirSvgVaryanti(simge, PARAMETRE_ANLAMI, tema);
+}
+
+/** Satır aralığı — 0 tabanlı, iki uç dahil. */
+export interface SatirAraligi {
+  readonly bas: number;
+  readonly son: number;
+}
+
+/** VS Code aralığına çevrilmeden önceki saf parametre dekor kararı (0 tabanlı). */
+export interface ParametreDekorKarari {
+  readonly satir: number;
+  readonly baslangic: number;
+  readonly bitis: number;
+  readonly parametre: string;
+  readonly simge: SatirSimgesi;
+}
+
+/**
+ * Görünür aralıktaki parametre satırlarının dekor kararlarını toplar. Program
+ * paylaşılan önbellekten gelir (bu işlev ayrıştırmaz). Bir parametre ancak
+ * satırın İLK sözcüğüyse karar alır (satır başı), ham kaynak dilimi adla
+ * birebirse karar alır (dizgi ya da yorum içindeki ad AST'de parametre
+ * değildir; emoji eşadlı yazım ham dilimde tutmaz) ve ancak çizelgede varsa
+ * karar alır. `cizelge` parametresi yalnız nöbetin mutasyon kanıtı içindir.
+ */
+export function parametreDekorKararlari(
+  program: Program | undefined,
+  satirOku: (satir: number) => string | undefined,
+  araliklar: ReadonlyArray<SatirAraligi>,
+  cizelge: Readonly<Record<string, SatirSimgesi>> = PARAMETRE_SIMGESI,
+): ParametreDekorKarari[] {
+  if (!program || araliklar.length === 0) return [];
+  const gorunur = (s: number): boolean => araliklar.some((a) => s >= a.bas && s <= a.son);
+  const kararlar: ParametreDekorKarari[] = [];
+  const gorulen = new Set<number>();
+
+  const paramBak = (p: { ad: string; satir: number; sutun: number; deger: Dugum["parametreler"][number]["deger"] }): void => {
+    const simge = Object.hasOwn(cizelge, p.ad) ? cizelge[p.ad] : undefined;
+    const satir = p.satir - 1;
+    if (simge !== undefined && !gorulen.has(satir) && gorunur(satir)) {
+      const metin = satirOku(satir);
+      const baslangic = p.sutun - 1;
+      if (metin !== undefined
+        && metin.slice(0, baslangic).trim() === ""
+        && metin.slice(baslangic, baslangic + p.ad.length) === p.ad) {
+        gorulen.add(satir);
+        kararlar.push({ satir, baslangic, bitis: baslangic + p.ad.length, parametre: p.ad, simge });
+      }
+    }
+    degerGez(p.deger);
+  };
+  const degerGez = (d: Dugum["parametreler"][number]["deger"] | undefined): void => {
+    if (!d) return;
+    if (d.dugum) dugumGez(d.dugum);
+    if (d.ogeler) for (const o of d.ogeler) degerGez(o);
+  };
+  const dugumGez = (d: Dugum): void => {
+    for (const p of d.parametreler) paramBak(p);
+    for (const p of d.ozellikler) paramBak(p);
+    for (const c of d.cocuklar) dugumGez(c);
+  };
+  for (const b of program.bildirimler) dugumGez(b);
+  return kararlar.sort((a, b) => a.satir - b.satir);
+}
+
+/** Görünür aralıkları bir ekran yukarı ve bir ekran aşağı genişletir; kısa
+ *  kaydırmada simge sonradan belirmez. Sonuç belge sınırına kırpılır. */
+export function payliAraliklar(
+  gorunur: ReadonlyArray<SatirAraligi>,
+  satirSayisi: number,
+): SatirAraligi[] {
+  return gorunur.map((a) => {
+    const yukseklik = a.son - a.bas + 1;
+    return { bas: Math.max(0, a.bas - yukseklik), son: Math.min(satirSayisi - 1, a.son + yukseklik) };
+  });
+}
+
+/** Bir dekor boyamasının ölçümü — eklenti performans kanalına yazar. */
+export interface DekorOlcumu {
+  readonly sureMs: number;
+  readonly simge: number;
+  readonly satir: number;
+  readonly tetik: "acilis" | "belge" | "kaydirma" | "editor";
+}
+
+/**
+ * Parametre simge dekorasyonunun yaşam döngüsü (A06 kaydının ikizi). Tek
+ * dekorasyon türü açılışta kurulur; simge farkı satır başına renderOptions
+ * ile verilir. Belge değişimi `gecikmeMs`, kaydırma `kaydirmaGecikmeMs` ile
+ * tazelenir. Her boyama ölçülür ve `olcum` verildiyse ona bildirilir.
+ */
+export function parametreDekorKaydi(
+  context: vscode.ExtensionContext,
+  kabuk: typeof vscode,
+  olcum?: (o: DekorOlcumu) => void,
+  gecikmeMs = 200,
+  kaydirmaGecikmeMs = 60,
+): void {
+  const tur = kabuk.window.createTextEditorDecorationType({
+    rangeBehavior: kabuk.DecorationRangeBehavior.ClosedClosed,
+  });
+
+  // Simge seçenekleri tembel kurulur ve simge başına BİR KEZ üretilir.
+  const secenekBellek = new Map<SatirSimgesi, vscode.DecorationInstanceRenderOptions>();
+  const secenek = (simge: SatirSimgesi): vscode.DecorationInstanceRenderOptions => {
+    let s = secenekBellek.get(simge);
+    if (!s) {
+      const ek = (tema: SimgeTemasi): vscode.ThemableDecorationAttachmentRenderOptions => ({
+        contentIconPath: kabuk.Uri.joinPath(context.extensionUri, parametreSvgVaryanti(simge, tema)),
+        width: "1em", height: "1em", margin: "0 0.4em 0 0",
+      });
+      s = { light: { before: ek("acik") }, dark: { before: ek("koyu") } };
+      secenekBellek.set(simge, s);
+    }
+    return s;
+  };
+
+  const boya = (editor: vscode.TextEditor, tetik: DekorOlcumu["tetik"]): void => {
+    const belge = editor.document;
+    if (belge.languageId !== "sarmal") return;
+    const bas = performance.now();
+    const araliklar = payliAraliklar(
+      editor.visibleRanges.map((r) => ({ bas: r.start.line, son: r.end.line })),
+      belge.lineCount,
+    );
+    const kararlar = parametreDekorKararlari(
+      programAl(belge),
+      (n) => (n >= 0 && n < belge.lineCount ? belge.lineAt(n).text : undefined),
+      araliklar,
+    );
+    editor.setDecorations(tur, kararlar.map((k) => ({
+      range: new kabuk.Range(k.satir, k.baslangic, k.satir, k.bitis),
+      renderOptions: secenek(k.simge),
+    })));
+    olcum?.({
+      sureMs: performance.now() - bas,
+      simge: kararlar.length,
+      satir: araliklar.reduce((t, a) => t + (a.son - a.bas + 1), 0),
+      tetik,
+    });
+  };
+
+  const gorunenleriBoya = (tetik: DekorOlcumu["tetik"]): void => {
+    for (const editor of kabuk.window.visibleTextEditors) boya(editor, tetik);
+  };
+
+  let belgeZamanlayici: ReturnType<typeof setTimeout> | undefined;
+  const kaydirmaZamanlayici = new Map<vscode.TextEditor, ReturnType<typeof setTimeout>>();
+  context.subscriptions.push(
+    kabuk.window.onDidChangeVisibleTextEditors(() => gorunenleriBoya("editor")),
+    kabuk.window.onDidChangeTextEditorVisibleRanges((olay) => {
+      if (olay.textEditor.document.languageId !== "sarmal") return;
+      const onceki = kaydirmaZamanlayici.get(olay.textEditor);
+      if (onceki !== undefined) clearTimeout(onceki);
+      kaydirmaZamanlayici.set(olay.textEditor, setTimeout(() => {
+        kaydirmaZamanlayici.delete(olay.textEditor);
+        boya(olay.textEditor, "kaydirma");
+      }, kaydirmaGecikmeMs));
+    }),
+    kabuk.workspace.onDidChangeTextDocument((olay) => {
+      if (olay.document.languageId !== "sarmal") return;
+      if (belgeZamanlayici !== undefined) clearTimeout(belgeZamanlayici);
+      belgeZamanlayici = setTimeout(() => { belgeZamanlayici = undefined; gorunenleriBoya("belge"); }, gecikmeMs);
+    }),
+    { dispose: (): void => {
+        if (belgeZamanlayici !== undefined) clearTimeout(belgeZamanlayici);
+        for (const z of kaydirmaZamanlayici.values()) clearTimeout(z);
+        kaydirmaZamanlayici.clear();
+        tur.dispose();
+      } },
+  );
+  gorunenleriBoya("acilis");
 }
 
 // ── WEBVIEW HANESİ (VIT-KIMLIK-A07 · dördüncü görev maddesinin ULAŞILABİLİR ──

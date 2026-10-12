@@ -136,6 +136,33 @@ export interface Dag {
    *  Çevrim bu hâlde SUSAR (bugünkü ilk-tanım davranışı korunur) fakat susma
    *  burada adıyla ölçülür; araç "ayrıştırdım" demez, ayrıştıramadığını söyler. */
   ayrisamayan: Array<{ kod: string; dosyalar: string[] }>;
+  /** MIM-1.2 · TERS FAZ BAĞIMLILIĞI (KPS-SIR-A01 · Founder hükmü 2026-09-29). Aynı
+   *  Projenin Faz zincirinde öncülü SONRAKİ bir Fazda duran açık yürütme kenarları.
+   *  Faz sırası kanondur ve kenar onunla çelişir; iki kenar birlikte grafa girseydi
+   *  iki Fazın bütün yaprakları tek bir döngüde kilitlenirdi ve döngü tanısı yüzlerce
+   *  Adımı tek tek sayardı. Bu yüzden çelişen açık kenar sıra hesabına GİRMEZ ve
+   *  burada adıyla kaydolur; `fazSirasiTanilari` onu HATA olarak, iki ucu da
+   *  tamamlanmış tarihsel çifti ise BİLGİ olarak bildirir. Alan
+   *  isteğe bağlıdır: elle kurulan graf nesneleri onu taşımak zorunda değildir. */
+  tersFaz?: Array<{ kaynak: string; hedef: string; kenar: "bağımlı" | "besler"; oncul: string; ardil: string; onculFazi: string; ardilFazi: string;
+    /** Kenarın ters çiftlerinin hepsinde iki uç da tamamlanmış: çelişki tarihseldir. */
+    tarihsel: boolean; dosya: string; satir: number; sutun: number }>;
+  /** MIM-1.2 · YALNIZ Faz sırasından doğan kenar çiftleri (`önce\u0000sonra`). Aynı çift
+   *  açık bir kenarla da yazılmışsa burada durmaz. Durum tutarlılığı bu çiftleri
+   *  okumaz: önceki Faz açıkken sonraki Fazda başlamış ya da BİTMİŞ iş kendi adıyla (`erken-faz-işi`) ve
+   *  kanondaki düzeyiyle bildirilir, genel bir durum çelişkisi olarak değil. */
+  fazKenari?: ReadonlySet<string>;
+  /** MIM-1.2 · Faz → (kardeş grubu, grup içindeki sıra). Grup, Fazın Projesidir;
+   *  Projesi çözülemeyen Faz kendi dosyasında gruplanır (ders dünyası ve köksüz dosya). */
+  fazSirasi?: ReadonlyMap<string, { grup: string; sira: number }>;
+  /** MIM-1.2 · Adım → yürürlükte olduğu Faz (iç içe yazımdan ya da Blokun `çağır`
+   *  ve `mevsim` bağından). Fazı çözülemeyen Adım bu haritada yer almaz. */
+  adimFazi?: ReadonlyMap<string, string>;
+}
+
+/** Faz sırası kenar çiftinin anahtarı (`Dag.fazKenari`). */
+export function fazKenarAnahtari(once: string, sonra: string): string {
+  return `${once}\u0000${sonra}`;
 }
 
 /**
@@ -212,10 +239,27 @@ export function fazTarihAnahtari(hedefTarih?: string): string {
   return "9999-99-99";
 }
 
-/** Kardeş Faz karşılaştırıcısı: tarih anahtarı, ardından kaynak satırı (deterministik). */
-export function fazKarsilastir(a: { hedefTarih?: string; satir: number }, b: { hedefTarih?: string; satir: number }): number {
+/** MIM-1.2 · DOSYA YOLUNUN DOĞAL SAYI SIRASI (KPS-SIR-A01). Faz dosyaları sıra
+ *  önekiyle adlanır (`1_…`, `2_…`, `10_…`) ve düz sözlük sırası `10_` önekini `2_`
+ *  önekinin önüne koyar; karşılaştırma sayı parçalarını sayı olarak okur. Eşit
+ *  okunan iki farklı yol bayt sırasıyla ayrılır, böylece sıra daima toplamdır.
+ *  Panel aynı işlevi okur; ikinci bir çeviri yazılmaz (DIL-2). */
+export function dogalYolKarsilastir(a: string, b: string): number {
+  if (a === b) return 0;
+  return a.localeCompare(b, "tr", { numeric: true }) || (a < b ? -1 : 1);
+}
+
+/** Kardeş Faz karşılaştırıcısı: tarih anahtarı; eşitlikte ayrı dosyalar dosya yolunun
+ *  doğal sayı sırasıyla, aynı dosyadakiler kaynak satırıyla dizilir (deterministik).
+ *  KPS-SIR-A01: kardeş grubu artık dosyayı değil Projeyi kapsar; ayrı dosyalardaki
+ *  eşit tarihli Fazları satır numarasıyla karşılaştırmak anlamsız bir sıra üretirdi. */
+export function fazKarsilastir(
+  a: { hedefTarih?: string; satir: number; dosya?: string },
+  b: { hedefTarih?: string; satir: number; dosya?: string },
+): number {
   const ka = fazTarihAnahtari(a.hedefTarih), kb = fazTarihAnahtari(b.hedefTarih);
   if (ka !== kb) return ka < kb ? -1 : 1;
+  if (a.dosya !== undefined && b.dosya !== undefined && a.dosya !== b.dosya) return dogalYolKarsilastir(a.dosya, b.dosya);
   return a.satir - b.satir;
 }
 
@@ -413,6 +457,66 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   };
   for (const [dosya, program] of programlar) for (const b of program.bildirimler) toplaGez(b, dosya);
 
+  // ②0· MIM-1.2 · ÇAĞRILAN GÖVDENİN ZAMAN AİDİYETİ (KPS-SIR-A01). Faz bir Bloku iki
+  //    yolla kapsar: gövdesine iç içe yazarak ya da `çağır` ile (mevsim çevriminin
+  //    sanal `çağır` kenarı dâhil · MIM-1.3 Provider deseni). Yaprak haritası yalnız
+  //    iç içe yazımdan kurulduğu için çağrılan Blokun Adımları Faza hiç inmiyordu ve
+  //    Faz sırası o Adımlara ulaşmıyordu; bu ön geçiş çağrılan Blokun yapraklarını
+  //    Fazın yapraklarına ekler. SINIR: yalnız Faz ile Blok aynı Proje kökündeyse
+  //    bağ sayılır; kardeş projenin Fazına bağlanan Blok o Fazın zincirine girmez
+  //    (o hâli `yabancı-faz-bağı` gözlemi bildirir) ve iç içe yazılmış Blok ikinci
+  //    bir Faza çağrılsa da ilk bağını korur. İlk Faz kazanır (deterministik).
+  const blokFazi = new Map<string, string>();
+  const icIceFazli = (kod: string): boolean => {
+    let a = dugumler.get(kod)?.kapsayan;
+    for (let i = 0; a && i < 64; i++) {
+      const d = dugumler.get(a);
+      if (!d) return false;
+      if (d.tip === "Faz") return true;
+      a = d.kapsayan;
+    }
+    return false;
+  };
+  {
+    const cagirGez = (node: Dugum, dosya: string): void => {
+      if (node.tur === "widget" && node.ad === "Faz") {
+        const hamFaz = kodDeger(node);
+        const faz = hamFaz !== undefined ? anahtar(hamFaz, dosya) : undefined;
+        if (faz && dugumler.get(faz)?.tip === "Faz") {
+          for (const c of node.cocuklar) {
+            if (c.tur !== "çağır") continue;
+            const blok = dugumler.has(anahtar(c.ad, dosya)) ? anahtar(c.ad, dosya) : c.ad;
+            const bd = dugumler.get(blok);
+            if (!bd || bd.tip !== "Blok" || blokFazi.has(blok) || icIceFazli(blok)) continue;
+            if (projeKoku(bd.dosya) !== projeKoku(dosya)) continue;
+            blokFazi.set(blok, faz);
+            const y = yapraklar.get(faz) ?? [];
+            yapraklar.set(faz, [...y, ...(yapraklar.get(blok) ?? []).filter((k) => !y.includes(k))]);
+          }
+        }
+      }
+      for (const c of node.cocuklar) cagirGez(c, dosya);
+    };
+    for (const [dosya, program] of programlar) for (const b of program.bildirimler) cagirGez(b, dosya);
+  }
+  /** Bir düğümün yürürlükte olduğu Faz: kendisi Fazsa kendisi, değilse ilk Faz atası
+   *  ya da ilk çağrılmış Blok atasının Fazı. Çözülemeyen düğüm Fazsızdır. */
+  const fazOnbellegi = new Map<string, string | undefined>();
+  const fazi = (kod: string): string | undefined => {
+    if (fazOnbellegi.has(kod)) return fazOnbellegi.get(kod);
+    let sonuc: string | undefined;
+    let a: string | undefined = kod;
+    for (let i = 0; a && i < 64; i++) {
+      const d = dugumler.get(a);
+      if (!d) break;
+      if (d.tip === "Faz") { sonuc = a; break; }
+      if (d.tip === "Blok" && blokFazi.has(a)) { sonuc = blokFazi.get(a); break; }
+      a = d.kapsayan;
+    }
+    fazOnbellegi.set(kod, sonuc);
+    return sonuc;
+  };
+
   // Hedef bir plan-kapsayıcısıysa (Blok/Faz/Katman) MEKANİK genişler: "kapsayıcıya
   // bağımlı" = "onun TÜM yaprak Adımlarına bağımlı" (ORK-1.2 — beyan Adım'da, tek kez).
   const genislet = (kod: string): string[] => {
@@ -424,35 +528,51 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
     return [kod];
   };
 
-  // ② kenarları çöz — `once` düğümü `sonra` düğümünden ÖNCE gelir
-  const kenarEkle = (onceHam: string, sonraHam: string): void => {
+  // ② kenarları çöz — `once` düğümü `sonra` düğümünden ÖNCE gelir.
+  //    KPS-SIR-A01: Faz sırasından doğan çift `fazKenari` kümesinde işaretlenir; aynı
+  //    çift açık bir kenarla da yazılırsa işaret kalkar. `atla` verilirse (açık kenarın
+  //    ters Faz denetimi) çelişen çift sıra hesabına girmez.
+  const fazKenari = new Set<string>();
+  const kenarEkle = (onceHam: string, sonraHam: string, fazdan = false, atla?: (once: string, sonra: string) => boolean): void => {
     for (const once of genislet(onceHam)) for (const sonra of genislet(sonraHam)) {
       if (once === sonra) continue;                     // öz-döngü: sessiz atla (v1)
       const o = dugumler.get(once), s = dugumler.get(sonra);
       if (!o || !s) continue;                           // çözülmeyen uç → referansTanilari işi
-      if (!s.oncekiler.includes(once)) s.oncekiler.push(once);
+      if (atla?.(once, sonra)) continue;
+      const yeni = !s.oncekiler.includes(once);
+      if (yeni) s.oncekiler.push(once);
       if (!o.sonrakiler.includes(sonra)) o.sonrakiler.push(sonra);   // ters-türetme (ORK-1.2)
+      const cift = fazKenarAnahtari(once, sonra);
+      if (fazdan) { if (yeni) fazKenari.add(cift); } else fazKenari.delete(cift);
     }
   };
   // ②a MIM-1.2 FAZ-SIRASI TÜRETME (zaman ekseni makinede): kardeş Fazlar TARİH sırasında
   //    zincirlenir (Founder hükmü 2026-08-25 — önceki kaynak-sırası kuralı emekli; tarihsiz
-  //    Faz dizilişin sonunda ve kendi arasında kaynak sırasında kalır, fazKarsilastir) —
-  //    Faz-N+1, Faz-N'in Kapısına (varsa; yoksa Faz-N'in kendisine)
-  //    örtük bağımlı olur; genislet() bunu yaprak Adımlara açar (ORK-1.2 mekaniği).
+  //    Faz dizilişin sonunda kalır, fazKarsilastir) — Faz-N+1, Faz-N'in Kapısına (varsa;
+  //    yoksa Faz-N'in kendisine) örtük bağımlı olur; genislet() bunu yaprak Adımlara açar
+  //    (ORK-1.2 mekaniği).
+  //    KPS-SIR-A01 (Founder hükmü 2026-09-29): kardeş grubunun anahtarı artık DOSYA
+  //    DEĞİL PROJEDİR. Eski anahtar dosya adını taşıyordu ve her Fazı kendi dosyasında
+  //    yaşayan bir planda her grup tek üyeli kalıyor, Fazlar arasında hiçbir sıra kenarı
+  //    kurulmuyordu. Projesi çözülemeyen Faz (ders dünyası, köksüz dosya) eskisi gibi
+  //    kendi dosyasında gruplanır. Eşit tarihli ya da tarihsiz Fazlar dosyalar arasında
+  //    dosya yolunun doğal sayı sırasıyla dizilir.
   //    NOT (TERFİ 2026-07-12): Blok{Faz} artık izinsiz-sarma HATASIDIR — aşağıdaki
   //    kapsayan-Blok atlaması bozuk-girdide zincir kurmamak için SAVUNMACI kalır.
+  const fazSirasi = new Map<string, { grup: string; sira: number }>();
   {
     const fazGruplari = new Map<string, DagDugum[]>();
     for (const d of dugumler.values()) {
       if (d.tip !== "Faz") continue;
       const kapsayanTip = d.kapsayan ? dugumler.get(d.kapsayan)?.tip : undefined;
       if (kapsayanTip === "Blok") continue;   // savunmacı: bozuk girdi (TERFİ sonrası hata zaten)
-      const grup = `${d.dosya}::${d.kapsayan ?? ""}`;
+      const grup = d.kapsayan ?? `\u0000dosya:${d.dosya}`;
       (fazGruplari.get(grup) ?? fazGruplari.set(grup, []).get(grup)!).push(d);
     }
     const kapilar = [...dugumler.values()].filter((d) => d.tip === "Kapı");
-    for (const grup of fazGruplari.values()) {
-      grup.sort(fazKarsilastir);   // tarih sırası = zaman sırası; tarihsizde kaynak sırası (deterministik)
+    for (const [anahtarGrup, grup] of fazGruplari) {
+      grup.sort(fazKarsilastir);   // tarih sırası = zaman sırası; eşitlikte doğal dosya sırası, sonra satır
+      grup.forEach((f, i) => fazSirasi.set(f.kod, { grup: anahtarGrup, sira: i }));
       for (let i = 1; i < grup.length; i++) {
         const onceki = grup[i - 1];
         const kapi = kapilar
@@ -460,14 +580,22 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
           .sort((a, b) => a.satir - b.satir)[0];
         if (kapi) {
           // Kapı gerçek geçittir: Faz-N'in yaprakları → Kapı → Faz-N+1'in yaprakları
-          kenarEkle(onceki.kod, kapi.kod);
-          kenarEkle(kapi.kod, grup[i].kod);
+          kenarEkle(onceki.kod, kapi.kod, true);
+          kenarEkle(kapi.kod, grup[i].kod, true);
         } else {
-          kenarEkle(onceki.kod, grup[i].kod);
+          kenarEkle(onceki.kod, grup[i].kod, true);
         }
       }
     }
   }
+  /** Açık kenarın öncülü, ardılının Fazından SONRAKİ bir kardeş Fazda mı? */
+  const tersFazMi = (once: string, sonra: string): boolean => {
+    const fo = fazi(once), fs = fazi(sonra);
+    if (!fo || !fs || fo === fs) return false;
+    const so = fazSirasi.get(fo), ss = fazSirasi.get(fs);
+    return !!so && !!ss && so.grup === ss.grup && so.sira > ss.sira;
+  };
+  const tersFaz: NonNullable<Dag["tersFaz"]> = [];
 
   const kopuk: Dag["kopuk"] = [];
   const oz: Dag["oz"] = [];
@@ -558,7 +686,26 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
             if (!(kaynakD.zemin ??= []).includes(h)) kaynakD.zemin.push(h);
           }
         }
-        if (kenar === "bağımlı") kenarEkle(h, kod); else kenarEkle(kod, h);
+        // KPS-SIR-A01 · MIM-1.2: öncülü sonraki bir kardeş Fazda duran çift sıra
+        // hesabına girmez ve kenar başına bir kez adıyla kaydolur (ters-faz-bağımlılığı).
+        // İki ucu da tamamlanmış çift TARİHSELDİR: Blok gövdesi sonraki bir Faza
+        // devredildiğinde (Provider deseni) biten Adımları da yeni Faza taşınmış
+        // görünür; bu çift yürütme sırasını artık etkilemez ve kayıt onu ayrıca işaretler.
+        let tersKayit: NonNullable<Dag["tersFaz"]>[number] | undefined;
+        const atla = (once: string, sonra: string): boolean => {
+          if (!tersFazMi(once, sonra)) return false;
+          const bitti = dugumler.get(once)?.durum === "tamamlandı" && dugumler.get(sonra)?.durum === "tamamlandı";
+          if (!tersKayit) {
+            tersKayit = { kaynak: kod, hedef: t, kenar, oncul: once, ardil: sonra,
+              onculFazi: fazi(once)!, ardilFazi: fazi(sonra)!, tarihsel: bitti, dosya, satir: node.satir, sutun: node.sutun };
+            tersFaz.push(tersKayit);
+          } else if (!bitti && tersKayit.tarihsel) {
+            // Açık uçlu ilk çift bulguyu adlandırır: tarihsel kayıt yerini canlı ihlale bırakır.
+            Object.assign(tersKayit, { oncul: once, ardil: sonra, onculFazi: fazi(once)!, ardilFazi: fazi(sonra)!, tarihsel: false });
+          }
+          return true;
+        };
+        if (kenar === "bağımlı") kenarEkle(h, kod, false, atla); else kenarEkle(kod, h, false, atla);
       };
       const bag = param(node, "bağımlı");
       if (bag) for (const t of kenarHedefleri(bag)) isle("bağımlı", t);   // A bağımlı B → B önce
@@ -670,7 +817,16 @@ export function dagKur(programlar: ReadonlyMap<string, Program>, secenek?: DagSe
   }
   ayrisamayan.sort((a, b) => a.kod.localeCompare(b.kod, "tr"));
 
-  return { dugumler, kopuk, oz, disProje, catisiz, ortakKod, ayrisamayan };
+  // ①e· Adım → Faz haritası (KPS-SIR-A01): Faz sırası tanıları Adımın yürürlükte
+  //    olduğu Fazı buradan okur; ikinci bir kapsama çözümü kurulmaz.
+  const adimFazi = new Map<string, string>();
+  for (const d of dugumler.values()) {
+    if (d.tip !== "Adım") continue;
+    const f = fazi(d.kod);
+    if (f) adimFazi.set(d.kod, f);
+  }
+
+  return { dugumler, kopuk, oz, disProje, catisiz, ortakKod, ayrisamayan, tersFaz, fazKenari, fazSirasi, adimFazi };
 }
 
 /**
@@ -1187,6 +1343,9 @@ export function durumTutarlilikTanilari(dag: Dag): Array<{ dosya: string; tani: 
   for (const [, d] of dag.dugumler) {
     if (d.tip !== "Adım" || d.durum !== "tamamlandı") continue;
     for (const onceKod of d.oncekiler) {
+      // KPS-SIR-A01 · MIM-1.2: yalnız Faz sırasından doğan öncül burada okunmaz; Faz
+      // sırası ihlali kendi adıyla ve kanondaki düzeyiyle bildirilir (erken-faz-işi).
+      if (dag.fazKenari?.has(fazKenarAnahtari(onceKod, d.kod))) continue;
       const once = dag.dugumler.get(onceKod);
       if (!once?.durum || once.durum === "tamamlandı") continue;   // durumsuz öncül nötr
       // Adım yaşam-döngüsü DIŞI durum taşıyan öncül (Teknoloji durum:aktif gibi)

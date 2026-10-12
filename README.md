@@ -15,21 +15,23 @@ Sarmal bu hafızayı tek bir kaynağa indirir. Plan dört eksende yazılır: zam
 
 ## Nasıl çalışıyor: gerçek bir örnek
 
-Doğuş paketiyle doğan küçük bir projede şu Blok yazılmış olsun (`is/plan/randevu.sar`):
+Doğuş paketiyle doğan küçük bir projede ikinci Faz kendi dosyasında açılmış ve işin Bloku o Fazın gövdesine yazılmış olsun (`is/plan/faz/2_randevu.sar`):
 
 ```sar
-Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
-  ne: "Randevu oluşturma ucunun yazımı" ) {
-  Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", teknolojiBağımsız: "seçim kuruluş Adımında" ) {
-    AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
-      Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
-        görev: "POST /randevu ucunu yaz",
-        kabul: [ "uç 201 döner" ],
-        üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
-      Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
-        bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
-        görev: "Ucun sınamasını yaz",
-        kabul: [ "sınama yeşil" ] )
+Faz( kod: FAZ-RANDEVU-UC, ad: "Randevu Ucu Mevsimi" ) {
+  Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu",
+    ne: "Randevu oluşturma ucunun yazımı" ) {
+    Katman( kod: KAT-RANDEVU-ARKAYUZ, ad: "Arka Yüz", takım: TAKIM-ARKAYUZ ) {
+      AltKatman( kod: ALT-RANDEVU-UC, ad: "Uç", departman: kodlama ) {
+        Adım( kod: ADM-RANDEVU-01, ad: "Randevu ucu", durum: tamamlandı,
+          görev: "POST /randevu ucunu yaz",
+          kabul: [ "uç 201 döner" ],
+          üretir: [ Meyve( kod: MYV-RANDEVU-UC, tür: Kod, dosya: "src/randevu.ts" ) ] )
+        Adım( kod: ADM-RANDEVU-02, ad: "Randevu sınaması", durum: geliştirmede,
+          bağımlı: [ ADM-RANDEVU-01 ], referans: [ KRR-RANDEVU-03 ],
+          görev: "Ucun sınamasını yaz",
+          kabul: [ "sınama yeşil" ] )
+      }
     }
   }
 }
@@ -38,15 +40,13 @@ Blok( kod: BLK-RANDEVU-API, ad: "Randevu Ucu", mevsim: FAZ-RANDEVU-DOGUS,
 Birinci Adım tamamlandı diyor ama `src/randevu.ts` diskte yok; ikinci Adım hiç yazılmamış bir karara atıf veriyor. `sarmal denetle .` bunu şöyle bildirir (çıktı gerçektir, satırlar kırılmıştır):
 
 ```
-✖ is/plan/randevu.sar:8:19 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
-  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
-✖ is/plan/randevu.sar:10:50 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
+✖ is/plan/faz/2_randevu.sar:11:52 [kırık-referans] 'referans: KRR-RANDEVU-03' hedefi çözülmüyor —
   bu KOD hiçbir .sar'da tanımlı değil.
+✖ is/plan/faz/2_randevu.sar:9:21 [meyve-dosyası-eksik] Meyve "MYV-RANDEVU-UC" (tür: Kod) dosya-zorunlu
+  bir teslim ama beyan edilen yol diskte çözülmüyor ("src/randevu.ts").
 ```
 
-![Terminalde sarmal denetle çıktısı: kırık-referans ve meyve-dosyası-eksik hataları, özet satırı ve karne](urun/eklenti/medya/ekran/denetle.png)
-
-Yukarıdaki blok yalnız iki hatayı gösterir; ekran görüntüsü aynı koşunun tamamıdır ve uyarı ile bilgi satırlarını da taşır.
+Yukarıdaki blok yalnız iki hatayı gösterir; tam koşu uyarı ve bilgi satırlarını da taşır.
 
 Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder: `src/` klasörü diskte var ama projenin giriş dosyasında ilan edilmemiştir.
 
@@ -56,7 +56,7 @@ Dosya yazılıp atıf düzeltildiğinde motor bu kez başka bir şeyi fark eder:
    ↳ randevu_anadizin.sar'a ekle: Kitaplık( kod: KTP-…, yol: "src/", ne: "…" ) — ya da klasörü kaldır.
 ```
 
-Klasör ilan edilince karne temizdir: yirmi düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
+Klasör ilan edilince karne temizdir: yirmi bir düğüm, üç Adım, sıfır hata. Plan yalan söyleyemez, disk de; ikisi ayrıştığında bunu bir insanın fark etmesi gerekmez.
 
 Aynı plan editörde de yaşar: Yol Haritası ağacı, Mini Graf ve Sorunlar paneli aynı kaynağı okur, dosya kaydedildiği anda tanı düşer.
 
@@ -70,9 +70,9 @@ Sarmal'da her şey bir ağaçtır ve ağacın kökü projenin giriş dosyasıdı
 randevu/
 ├── randevu_anadizin.sar        giriş: Proje → Kitaplık → Raf, Teknoloji ve Takım burada ilan edilir
 ├── is/                         işin kitaplığı
-│   ├── plan/                   Faz → Blok → Katman → AltKatman → Adım → Meyve → dosya
-│   │   ├── ilk_plan.sar
-│   │   └── randevu.sar
+│   ├── plan/faz/               her Faz sıra önekli kendi dosyasında: Faz → Blok → Katman → AltKatman → Adım
+│   │   ├── 1_dogus.sar
+│   │   └── 2_randevu.sar
 │   └── durum/durum_devir.sar   nerede kaldık: oturum sonu devir kaydı
 ├── ogreti/ogrenme/             dersler ve geribildirim; Bellek buradan Beceriye yükselir
 ├── oz/siniflama/isaretci.json  tip kanonu işaretçisi; eklenti kanon kaydını bu raftan çözer
@@ -83,11 +83,11 @@ randevu/
 └── src/                        kod; diskte açılan her klasör giriş dosyasında ilan edilmek zorundadır
 ```
 
-Çizimdeki `randevu.sar` ile `src/` klasörü işin kendisine aittir; geri kalan on üç dosyanın
+Çizimdeki `2_randevu.sar` ile `src/` klasörü işin kendisine aittir; geri kalan on üç dosyanın
 tamamını `dogus` aracı yazar ve hiçbiri elle kurulmaz. Çalışma alanı türü seçilirse
 aynı paket iki kere doğar: bir kere çatı için, bir kere de çatının altındaki ilk proje için.
 
-Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası dallanan her klasörü Kitaplık, bir Kitaplığın içindeki her yaprak klasörü Raf olarak yazar ve ilansız klasör motor için drifttir. Kitaplık kademesi atlanamaz; kökün altına çıplak Raf dizilirse ağaç büyüdükçe giriş dosyası okunamaz bir liste hâline gelir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve mevsimler arasında sürebilir, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
+Mantık dört cümledir. Birincisi, yapı önce ilan edilir: giriş dosyası dallanan her klasörü Kitaplık, bir Kitaplığın içindeki her yaprak klasörü Raf olarak yazar ve ilansız klasör motor için drifttir. Kitaplık kademesi atlanamaz; kökün altına çıplak Raf dizilirse ağaç büyüdükçe giriş dosyası okunamaz bir liste hâline gelir. İkincisi, plan zamandan işe, işten teknolojiye, teknolojiden akışa iner: Faz bir mevsimdir, Blok tek kimlikli bir iş gövdesidir ve yaşadığı Fazın gövdesine sarılır, Katman bir Takıma ya da Teknolojiye bağlanır, AltKatman o teknolojinin içindeki konudur, Adım en küçük yürütme birimidir ve ürettiği Meyve diskte bir dosyaya çözülür. Üçüncüsü, her düğümün tekil bir kodu vardır ve düğümler yalnız kenarla bağlanır: `bağımlı` sırayı, `üretir` teslimi, `referans` dayanağı, `uygular` kuralı taşır; bir bağ tek yerde yazılır. Dördüncüsü, çalışma alanı birden çok projeyi kapsayabilir ve her proje kimliğini kendi kökünden türetir; bu depo da tam böyle yaşar: `is/` altındaki plan Sarmal'ın kendi ağacıdır.
 
 ## Ajanlar için ne değişiyor
 
@@ -199,5 +199,5 @@ Katkı yolu [CONTRIBUTING.md](CONTRIBUTING.md), davranış kuralları [CODE_OF_C
 
 ## Ölçülen yüzler
 
-Yeni tanı kümesi 47 hata, 18 uyarı ve 15 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 145 Problems, 3 Hatırlatıcılar ve 33 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 180'i, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
+Yeni tanı kümesi 48 hata, 24 uyarı ve 21 bilgi düzeyindedir. Sabit sicilin yönlendirme matrisi 153 Problems, 3 Hatırlatıcılar ve 38 Bildirimler (Gözlemler) olarak ölçülür. Tanı metinlerinin 193'ü, 18 MCP aracının açıklamaları, manifest, karşılama kartı ve bu belge yüzleri iki dillidir; sayılar kaynaktan ölçülür ve elle yazılmaz.
 <!-- SARMAL:URETILEN:KOK-README-TR:SON -->

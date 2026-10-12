@@ -250,4 +250,4 @@ Kod( kod: KOD-KANON-TUTARLILIK,
      ne: "Yalnız resmi sekizli ile canlı sicillerden A03 kanon tutarlılık yüzünü üreten çekirdek" )
 Kod( kod: KOD-SNM-KANON-TUTARLILIK,
      dosya: "urun/cekirdek/sinama/kanon-tutarlilik.test.ts",
-     ne: "A03 için 144/144, sabit SHA, tanı kümeleri ve kaynak yalıtımı nöbeti" )
+     ne: "Kanon tutarlılık nöbeti: tek kayıttaki madde sayımı, taşıyıcı ile belge metninin eşitliği, sabit SHA, tanı kümeleri ve kaynak yalıtımı (A03, HST-MTR-A01 ve A02 genişletmeleri)" )

@@ -12,12 +12,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { bicimle } from "../../cekirdek/src/bicimle.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { agaciYaz } from "../../cekirdek/src/yazdir.ts";
 
-const KOK = new URL("../../..", import.meta.url).pathname;
+const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const ornekler: string[] = [KOK + "sarmal_anadizin.sar"];
 for (const d of readdirSync(KOK + "ogreti/ornek", { recursive: true }) as string[]) {
   if (d.endsWith(".sar") && !d.includes("bozuk")) ornekler.push(KOK + "ogreti/ornek/" + d);

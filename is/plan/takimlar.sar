@@ -20,6 +20,14 @@ Takım( kod: TAKIM-CEKIRDEK, ne: "çekirdek motor takımı — cekirdek/src (ayr
 Takım( kod: TAKIM-EKLENTI, ne: "eklenti takımı — eklenti/src (panel · boyacı · giydir · tamamlama)",
        bağımlı: [ TEK-TYPESCRIPT, TEK-VSCODE-API, TEK-ESBUILD ] )
 
+// ── İNSAN TAKIMI (BKM-OLG-A12 · Founder hükmü 2026-10-10) ────────────────────
+//   İnsan ve onay işleri yeni bir tür icat edilmeden var olan Takım tipiyle
+//   taşınır, çünkü insanlardan kurulu bir Takım da Takımdır. Bu Takım kod
+//   yürütmez; kararlarını ve onaylarını Sarmal kayıtlarına yazar, dolayısıyla
+//   tek üyesi Sarmal dilidir.
+Takım( kod: TAKIM-FOUNDER, ne: "insan takımı — Founder'ın eylem, karar ve onay kalemleri; kod yürütmez, kararlarını Sarmal kayıtlarına yazar",
+       bağımlı: [ TEK-SARMAL ] )
+
 // ── TEKNOLOJİ DÖRTLÜSÜ — Model · MCP · Araç · Ortam İLK canlı kullanımları ──
 // (RF-T6-A01 dogfood turu · 2026-07-18 · Founder S1 hükmü: "lig kadrosu Model
 // tipiyle, MCP'ler MCP, ortamlar Ortam"). Hepsi yaşanmış gerçeğin ilanıdır;

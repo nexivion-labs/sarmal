@@ -13,6 +13,7 @@
 import type { Dag, KarneOzeti } from "./dag.ts";
 import { karneOzeti } from "./dag.ts";
 import { etkiCoz } from "./etki.ts";
+import { DERS_DUNYASI } from "./kimlik.ts";   // OGR-5: ders dünyasının örnek çatısı özet yüzüne inmez (KPS-CAT-A02)
 
 /** Tek düğümün dışa açık hâli — alan sırası SABİT (determinist çıktı). */
 export interface GrafDugum {
@@ -167,6 +168,22 @@ export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<K
     satirlar.push("", `🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`);
     for (const k of ilk) satirlar.push(`   ${k.kaynak} → ${k.hedef}`);
     if (g.kopuk.length > 10) satirlar.push(`   … ${g.kopuk.length - 10} kopuk uç daha.`);
+  }
+  // MIM-1.1 (KPS-CAT-A02): çalışma alanı projelerini ÇOCUKLARI olarak gösterir.
+  // Kök kademesi listesi çatıyı gösterir fakat altındaki Projeleri göstermez,
+  // çünkü onlar artık kök değildir; bağ ancak ayrıntı kipinde okunabiliyordu.
+  // Bölüm yalnız en az bir Proje bağlayan ürün çatısı için basılır; ders
+  // dünyasının örnek çatıları (OGR-5) özet yüzünü değiştirmez.
+  const catiProjeleri = new Map<string, string[]>();
+  for (const d of g.düğümler) {
+    if (d.tip !== "Proje" || !d.kapsayan || DERS_DUNYASI.test(d.dosya)) continue;
+    const ust = g.düğümler.find((u) => u.kod === d.kapsayan);
+    if (ust?.tip !== "ÇalışmaAlanı") continue;
+    catiProjeleri.set(ust.kod, [...(catiProjeleri.get(ust.kod) ?? []), d.kod]);
+  }
+  for (const [cati, projeler] of catiProjeleri) {
+    satirlar.push("", `🏛️ ÇALIŞMA ALANI ${cati} — PROJELERİ (${projeler.length}):`);
+    for (const p of projeler) satirlar.push(`   ${p}`);
   }
   // MIM-1.1 (KPS-CAT-A01): bağın kurulamadığı hâl susmaz — çatının altında
   // yaşayıp çatıya bağlanamayan Proje kökü burada adıyla görünür.

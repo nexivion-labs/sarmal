@@ -26,7 +26,7 @@ import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
 import {
-  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, varlikKokuBul,
+  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, tamDenetimKokTuru, varlikKokuBul,
 } from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
@@ -44,8 +44,7 @@ import { bicimlendirmeSaglayici } from "./bicimlendir.ts";
 import { girintiKaydi } from "./girinti.ts";
 import { camKaydi } from "./cam.ts";   // 🪟 cam efekti (Founder 2026-07-18)
 import { atifDekorKaydi } from "./atif-dekor.ts";   // NTK-A01: çözülen atıflar link görünümü alır
-import { gorselEsadKaydi } from "./gorsel-esad.ts"; // CDL-A08: İngilizce kaynak-içi görsel tip eşadları
-import { eksenDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06: eksen tip satırlarına geometrik simge
+import { eksenDekorKaydi, parametreDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06/A08: eksen ve parametre satırlarına aile simgesi
 import { onayKuyruguKaydi, onayYuzeyiOlcumleri } from "./onay-kuyrugu.ts"; // NTK-A08: Founder karar gelen-kutusu
 // 📬 VIT-POSTA-A03: ana tanı turunun anlık görüntüsü onay tarayıcısına AKTARILIR;
 // kapıyı ana hat değil tarayıcı tanır. eklenti.ts kapı bilmez, yalnız ağacı taşır.
@@ -62,6 +61,7 @@ import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts"; 
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
+import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
@@ -71,7 +71,7 @@ import { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tamDenetimSonucu } from "./t
 import { readFile, readdir } from "node:fs/promises";
 import { depoPaketiBul, paketKimligiCoz, surumAyrismasi } from "./surum-tazeligi.ts";
 import {
-  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri,
+  yuzeyeAyir, YuzeyDefteri, sayaclariOlayaBagla, meyveKokleri, taniHedefi, problemsYayini,
   type YuzeyKaydi, type YuzeyDagilimi,
 } from "./yuzey-cekirdek.ts";
 // 🔭 Kapsama ilişkisinin TEK evi: yol haritasındaki varlık kümeleri ile panel
@@ -94,6 +94,8 @@ import {
   EKLENTI_KABUK_METINLERI,
   IZ_METINLERI,
   KANON_ISARETCISI_METINLERI,
+  KISITLI_MOD_METINLERI,
+  hedefBaglantiMetni,
   iskeletKuruldu,
   iskeletSozDizimHatasi,
   ipucuIsaretCiziciniKur,
@@ -160,6 +162,7 @@ let fikirler: Fikirler | undefined;
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
 let onayPaneli: OnayPaneli | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
+let bolumYuvasi: BolumYuvasiYuzu | undefined;
 
 /**
  * Eklentinin dış yüzü. VS Code `activate` işlevinin döndürdüğü nesneyi
@@ -254,6 +257,19 @@ export interface SarmalEklentiYuzu {
   onbellekAnahtarlari(): string[];
   /** 🚂 Yol Haritası panelinin ŞU AN gösterdiği plan kodları — salt okur. */
   yolHaritasiKodlari(): string[];
+  /**
+   * 🧩 VIT-K78-A10 · KARDEŞ EKLENTİ ARAYÜZÜ. Kardeş eklentiler kendi bölümlerini
+   * kabın en üstündeki bölüm sırasına buradan kaydeder (bolum-yuvasi.ts başlığı
+   * sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
+   */
+  bolumYuvasiAl(surum: number): BolumYuvasiV1 | undefined;
+  /**
+   * 🧪 Bölüm yuvası nöbet kapısı — YALNIZ sınama kipinde (`ExtensionMode.Test`)
+   * vardır; kurulu eklentinin herkese açık yüzünde tanımsızdır. Bölüm sırasının
+   * ölçümünü, Yol Haritasının gerçek görünürlüğünü ve kullanıcı seçiminin
+   * eşdeğerini verir; kardeş eklentiler bu kapıya ulaşamaz.
+   */
+  bolumSinamaKapisi?: BolumSinamaKapisi & { yolHaritasiGorunurMu(): boolean };
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -307,8 +323,91 @@ function surumTazeligiNobetiniKur(context: vscode.ExtensionContext): void {
   })();
 }
 
+// ── 🔒 KISITLI MOD (MGZ-A02 · HTR-KISITLI-MODDA-EKLENTI-SESSIZ) ──────────────
+//   Ölçülmüş kusur: bildirim güvenilmeyen çalışma alanı beyanını taşımıyordu ve
+//   VS Code eklentiyi Kısıtlı Modda bütünüyle kapatıyordu; .sar dosyası düz metin
+//   görünüyor ve eklenti neden sustuğunu hiçbir yerde söylemiyordu. Bildirim
+//   artık sınırlı destek ilan eder: dil tanımı, dilbilgisi renklendirmesi ve
+//   parçacıklar bildirimseldir ve kod gerektirmeden çalışır.
+//
+//   KOD ÇALIŞTIRAN HİÇBİR YETENEK AÇILMAZ (Adımın sınırı). Tam denetim diski
+//   tarar ve mühürlü dosya bulunca `git` koşturur; paneller o turdan beslenir.
+//   Bu yüzden kısıtlı modda etkinleşme gövdesi HİÇ koşmaz: yalnız tek bir durum
+//   çubuğu işareti kurulur, katkı komutları aynı cümleyi söyleyen zararsız yer
+//   tutuculara bağlanır ve güven beklenir. Görünümler bildirimde
+//   `isWorkspaceTrusted` koşuluna bağlıdır; sağlayıcısız panel hiç açılmaz.
+//
+//   🛡️ KARŞILAMA GÖRÜNÜMÜ (MGZ-A08 · Founder hükmü 2026-10-10): görünümlerin
+//   güvene bağlanması kısıtlı modda kabı boşaltıyordu ve VS Code boş kalan kabı
+//   sol şeritteki Sarmal simgesiyle birlikte gizliyordu. Kapta artık yalnız
+//   kısıtlı modda görünen bir karşılama görünümü durur. Sağlayıcısı yoktur:
+//   metni ve Klasöre Güven düğmesi bildirimden (`viewsWelcome`) gelir ve bu
+//   gövde ona hiçbir şey kaydetmez, dolayısıyla kısıtlı modda yine kod çalışmaz.
+//
+//   GÜVEN VERİLİNCE pencere yeniden yüklenmez: yer tutucular bırakılır ve aynı
+//   `activate` güvenilir yoldan yeniden koşar. Dış yüz (kardeş eklenti arayüzü
+//   ve ölçüm kapıları) o andan sonra tam etkinleşmeye bağlanır. Karşılama
+//   görünümünün koşulu aynı anda düşer ve olağan görünümler bu yeniden
+//   etkinleşmenin kurduğu sağlayıcılarla açılır.
+
+/** VS Code'un çalışma alanı güveni ekranını açan yerleşik komut. */
+const GUVEN_KOMUTU = "workbench.trust.manage";
+
+/**
+ * Tam etkinleşme gelene dek bekleyen dış yüz. Güven verilmeden her üye
+ * `undefined` döndüren bir işlevdir (kardeş eklenti arayüzü dahil); güvenden
+ * sonra üyeler tam etkinleşmenin yüzüne bağlanır. `then` daima tanımsızdır,
+ * yoksa `activate()` sözünü bekleyen kardeş eklenti dış yüzü bir söz sanıp asılırdı.
+ */
+function ertelenmisYuz(tam: () => SarmalEklentiYuzu | undefined): SarmalEklentiYuzu {
+  return new Proxy({} as SarmalEklentiYuzu, {
+    get(_hedef, ad) {
+      if (ad === "then" || typeof ad === "symbol") return undefined;
+      const yuz = tam();
+      if (!yuz) return () => undefined;
+      const deger: unknown = Reflect.get(yuz as object, ad);
+      return typeof deger === "function" ? (deger as (...a: unknown[]) => unknown).bind(yuz) : deger;
+    },
+  });
+}
+
+/** Güvenilmeyen klasörde etkinleşme: tek işaret, zararsız komutlar ve güven beklenişi. */
+function kisitliModdaBekle(context: vscode.ExtensionContext, tamEtkinles: () => SarmalEklentiYuzu): SarmalEklentiYuzu {
+  let tamYuz: SarmalEklentiYuzu | undefined;
+  const isaret = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 101);
+  isaret.text = KISITLI_MOD_METINLERI.cubukMetni;
+  isaret.tooltip = KISITLI_MOD_METINLERI.ipucu;
+  isaret.command = GUVEN_KOMUTU;
+  isaret.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+  isaret.show();
+  // Katkı komutları paletten ve düğmelerden çağrılabilir; kayıtsız kalsalar
+  // VS Code "komut bulunamadı" der. Yer tutucu hiçbir şey çalıştırmaz, yalnız
+  // aynı cümleyi söyler ve istenirse güven ekranını açar.
+  const katkilar = (context.extension.packageJSON?.contributes?.commands ?? []) as { command: string }[];
+  const yerTutucular = katkilar.map((k) => vscode.commands.registerCommand(k.command, async () => {
+    const secim = await vscode.window.showInformationMessage(KISITLI_MOD_METINLERI.ipucu, KISITLI_MOD_METINLERI.guvenDugmesi);
+    if (secim) await vscode.commands.executeCommand(GUVEN_KOMUTU);
+  }));
+  let kapandi = false;
+  const kapat = (): void => {
+    if (kapandi) return;
+    kapandi = true;
+    bekleyis.dispose();
+    isaret.dispose();
+    for (const y of yerTutucular) y.dispose();
+  };
+  const bekleyis = vscode.workspace.onDidGrantWorkspaceTrust(() => {
+    kapat();
+    tamYuz = tamEtkinles();
+  });
+  context.subscriptions.push({ dispose: kapat });
+  return ertelenmisYuz(() => tamYuz);
+}
+
 export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyDiliniAyarla(etkinDil());
+  // 🔒 MGZ-A02: güvenilmeyen klasörde gövde koşmaz; güven verilince bu işlev yeniden çağrılır.
+  if (!vscode.workspace.isTrusted) return kisitliModdaBekle(context, () => activate(context));
   // VIT-KIMLIK-A07: ipucu balonunun işaretleri ailenin tema varyantından çizilir.
   ipucuIsaretCiziciniKur(ipucuIsaretCizicisi(context.extensionUri));
   // 📍 Kaynak satırı çalışma alanına göreli yazılsın diye kökler kataloga bağlanır;
@@ -319,6 +418,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
 
   // Kenar çubuğunun yüzeyleri eklenti etkinleşmesinde TAM BİR KEZ kaydedilir;
   // görünümleri context.subscriptions üstünden kapanışta serbest bırakılır.
+  // 🧩 VIT-K78-A10: bölüm sırası kabın en üstündedir ve ilk kaydedilen yüzeydir;
+  // seçim Ray'le başlar, dolayısıyla Ray panelleri hiç gizlenmeden açılır.
+  bolumYuvasi = bolumYuvasiKaydi(context);
   hatirlaticilar = hatirlaticilarKaydi(context);
   fikirler = fikirlerKaydi(context);
   bildirimler = bildirimlerKaydi(context);
@@ -596,12 +698,14 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // Keşif artık paketin kendi kanon kopyasına en son çare olarak düşer, dolayısıyla
     // mağazadan kurulan eklenti de tam denetimi koşar. Kopya da okunamazsa kök
     // atlanır, fakat bu artık SÖYLENİR: atlanan kökler durum çubuğundaki işarete gider.
-    const atlananKokler: string[] = [];
-    for (const kokYol of denetlenenKokler) {
-      try {
-        const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
-        const kanon = tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku);
-        if (!kanon) { atlananKokler.push(kokYol); continue; }
+    // 📣 MGZ-A04: kök turu saf gövdededir (kanon-kesif.ts `tamDenetimKokTuru`).
+    // Bir kökün tam denetimi çökerse canlı tanı akışı yine bozulmaz, fakat çöküş
+    // artık yutulmaz: çöken kök atlanan kök gibi işarete gider ve iletisi kanala düşer.
+    const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+    const { atlanan: atlananKokler, coken: cokenKokler } = tamDenetimKokTuru(
+      denetlenenKokler,
+      (kokYol) => tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku),
+      (kokYol, kanon) => {
         const sonuc = denetimKos(kokYol, { snfYol: kanon.snfYol, bugun, tamListe: true });
         for (const rapor of sonuc.akis) {
           const izinli = rapor.tanilar.filter((t) => {
@@ -617,9 +721,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
           liste.push(...izinli);
           donguHar.set(absDosya, liste);
         }
-      } catch { /* tam orkestrasyon çökerse canlı tanı akışı ASLA bozulmaz (blast-radius sıfır) */ }
-    }
-    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined);
+      });
+    for (const c of cokenKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiCoktu(c.kok, c.hata));
+    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler);
     // Her dosyanın tanıları = tek-dosya (tanilaCekirdek) + o dosyaya düşen DAG
     // döngü tanıları; hepsi doğasına göre üç kanonik yüzeye dağıtılır.
     //
@@ -786,6 +890,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         bildirimler?.diliTazele();
         onayPaneli?.diliTazele();
         yolHaritasiYuzeyi?.diliTazele();
+        bolumYuvasi?.diliTazele();
         denetimKilidi.iste("dil");
       }
     }),
@@ -843,15 +948,24 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   girintiKaydi(context);
   camKaydi(context);        // 🪟 tip/anahtar kelimelere buzlu-cam kapsül
   atifDekorKaydi(context);
-  gorselEsadKaydi(context, vscode, etkinDil, dilAyariDegistiMi);
+  // 🌐 MGZ-A09 (Founder hükmü 2026-10-10): dosyanın üzerine İngilizce tip adı
+  // boyayan katman (CDL-A08) söküldü. Kaynak her dilde olduğu gibi Türkçe görünür;
+  // İngilizce yalnız arayüzde, tanıda ve ipucu balonunda konuşur ve dosyadaki
+  // gerçek adları anar. Editöre basılan hiçbir dekor dile göre değişmez.
   // 🎨 VIT-KIMLIK-A06 (Founder hükmü 2026-08-04): geometrik simge ailesi kaynak
   // dosyanın İÇİNDE de konuşur — altı eksen tipinin bildirim satırı tip adının
   // solunda simgesini taşır; yollar simge-cizelgesi.ts'den, dosyaya bayt yazılmaz.
   eksenDekorKaydi(context, vscode);
+  // 🎨 VIT-KIMLIK-A08 (Founder isteği 2026-08-30): parametre satırları (görev,
+  // sınır, referans, kabul ve kardeşleri) satır başında aile simgesini taşır;
+  // eşleme simge-cizelgesi.ts'de yaşar, her boyamanın süresi performans kanalına düşer.
+  parametreDekorKaydi(context, vscode, (o) => perfKanal.appendLine(IZ_METINLERI.dekorTuru({
+    saat: new Date().toTimeString().slice(0, 8), sure: o.sureMs, simge: o.simge, satir: o.satir, tetik: o.tetik,
+  })));
   onayKuyruguKaydi(context, onayPaneli, odakKapisi);   // 📬 nabız + 🔭 odak kapsamı
 
   // Ağaç kılavuz çizgileri (kesintisiz dikey + ├└ dallar + kapanış etiketi)
-  dallarKaydi(context, dilAyariDegistiMi);
+  dallarKaydi(context);
 
   // Önizleme (MD önizlemesi gibi — ⇧⌘V / başlık çubuğu ikonu)
   onizlemeKaydi(context);
@@ -890,6 +1004,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     },
     onbellekAnahtarlari: () => onbellekAnahtarlari(),
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
+    bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
+    ...(context.extensionMode === vscode.ExtensionMode.Test && bolumYuvasi
+      ? { bolumSinamaKapisi: { ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false } }
+      : {}),
   };
 }
 
@@ -901,6 +1019,7 @@ export function deactivate(): void {
   fikirler = undefined;       // 💡 VIT-GRAF-A16: kapanmış görünüşe Fikir basılmasın
   bildirimler = undefined;
   onayPaneli = undefined;       // kapanmış görünüme kapı yazılmasın
+  bolumYuvasi = undefined;      // 🧩 kapanmış sıraya çizim istenmesin
   odakDinleyicileri.length = 0;  // kapanmış görünüme odak haberi gitmesin
   yuzeyDefteri.temizle(false);   // tutamaklar bırakıldı; kapanışta çizim istenmez
   fikirDefteri.temizle(false);   // 💡 KYN-YUZ-A01: Fikir hanesi de sessizce boşalır
@@ -1118,10 +1237,22 @@ function panelDeGorunur(fsPath: string): boolean {
   return !kok || kapsamIcinde(kok, aktifVarlik);
 }
 
+/**
+ * ⛔ MGZ-A03 · Sorunlar paneline basma kapısı. Odaktaki dosyanın bütün tanıları
+ * basılır; odak dışındaki dosyadan yalnız `söz-dizim` geçer (yuzey-cekirdek
+ * `problemsYayini`). Yayın ile odak değişimindeki yeniden yayın aynı kapıdan
+ * geçer; iki ayrı kural yazılsaydı odak değiştiğinde kırık dosya yeniden düşerdi.
+ */
+function problemseBas(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
+  const odakta = panelDeGorunur(uri.fsPath);
+  const gidecek = problemsYayini(tanilar, odakta);
+  if (odakta || gidecek.length) koleksiyon.set(uri, gidecek);
+  else koleksiyon.delete(uri);
+}
+
 function taniYayinla(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
   taniDefteri.set(uri.fsPath, { uri, tanilar });
-  if (panelDeGorunur(uri.fsPath)) koleksiyon.set(uri, tanilar);
-  else koleksiyon.delete(uri);
+  problemseBas(uri, tanilar);
   durumCubugu?.tazele();
 }
 
@@ -1181,10 +1312,7 @@ const meyveKapisi = {
 // dolayısıyla öteki varlığın hatırlatıcıları ve bildirimleri Problems onları
 // gizlediği hâlde panelde durmaya devam ediyordu.
 function hepsiniYenidenYayinla(): void {
-  for (const { uri, tanilar } of taniDefteri.values()) {
-    if (panelDeGorunur(uri.fsPath)) koleksiyon.set(uri, tanilar);
-    else koleksiyon.delete(uri);
-  }
+  for (const { uri, tanilar } of taniDefteri.values()) problemseBas(uri, tanilar);
   yuzeyDefteri.yayımla();
   fikirDefteri.yayımla();   // 💡 KYN-YUZ-A01: Fikir hanesi de odakla birlikte yeniden basılır
   for (const dinleyici of odakDinleyicileri) dinleyici();
@@ -1238,10 +1366,20 @@ async function kimlikIndeksiniTara(): Promise<void> {
  *  çevirir — TEK yer (proje taraması ve tek-dosya çapraz-önbellek aynı eşlemeyi
  *  kullanır, düzey/renk tutarsızlığı yapısal olarak imkânsız · SRN-PANEL-DALGA). */
 function taniYapTani(doc: BelgeYuzu, t: Tani): vscode.Diagnostic {
-  return taniYap(doc, t.satir, t.sutun, t.oneri ? `${t.mesaj}\n↳ ${t.oneri}` : t.mesaj,
+  const tani = taniYap(doc, t.satir, t.sutun, t.oneri ? `${t.mesaj}\n↳ ${t.oneri}` : t.mesaj,
     t.duzey === "hata" ? vscode.DiagnosticSeverity.Error
       : t.duzey === "uyarı" ? vscode.DiagnosticSeverity.Warning
         : vscode.DiagnosticSeverity.Information, t.kod);
+  // MGZ-A06: giriş dosyasına yazılıp başka bir dosyayı ya da klasörü anlatan bulgu,
+  // anlattığı yeri ilgili konum olarak taşır. Satır kaydın dosyasında kalır ve orada
+  // sayılır; ilgili konuma tıklamak hedefi açar. Hedef panel tıklamasıyla aynı işlevden gelir.
+  const hedef = taniHedefi(doc.uri.fsPath, t);
+  if (hedef && t.hedefDosya) {
+    tani.relatedInformation = [new vscode.DiagnosticRelatedInformation(
+      new vscode.Location(vscode.Uri.file(hedef.dosya), new vscode.Position(hedef.satir - 1, hedef.sutun - 1)),
+      hedefBaglantiMetni(t.hedefDosya, hedef.klasor))];
+  }
+  return tani;
 }
 
 /** (satır,sütun) 1-tabanlı konumdan, oradaki sözceyi kapsayan bir tanı üretir. */

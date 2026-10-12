@@ -55,7 +55,7 @@ import { fikirleriTopla, fikirGorunumu, fikirPanoMetni, type FikirKaydi } from "
 // birim süitinde yüklenemez; onun tek-kaynak sözleşmesi aşağıda panellerin KENDİ
 // kaynağı üstünden ölçülür (Onaylar panelinin nöbetiyle aynı yöntem).
 import { BILDIRIM_ROZET, bildirimTuru } from "../src/yol-dekor.ts";
-import { ANLAM_RENKLERI, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
+import { ANLAM_RENKLERI, KISITLI_KARSILAMA_GORUNUSU, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
@@ -69,7 +69,9 @@ const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.
 // sapma değil, bekleyen işi görünür kılan işaretlerdir.
 const TERFI_RET_KIMLIKLERI = new Set([
   "adım-atomikliği", "beceri-kartı-eksik", "yürütme-kenarı-sözleşmesi",
-  "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali", "seçilemez-adım-yürütümü",
+  "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali",
+  // `seçilemez-adım-yürütümü` sekizinci ret adayıydı; 2026-09-29 tarihinde Founder
+  // hükmüyle kanonun yazdığı uyarıya çıktı ve Problems hanesine gitti (KPS-SIR-A01).
   "şema-dışı-alan", "terfi-kanıtı-eksik",
   "önceliksiz-adım", "ateşlemiş-hatırlatıcı",
   // On birincisi 2026-08-27 tarihinde Founder ölçümüyle doğdu (ORK-8 mevsim
@@ -88,6 +90,18 @@ const TERFI_RET_KIMLIKLERI = new Set([
   // projesiz Faz): hiçbir Proje köküne çözülemeyen Fazı bildirir, yerleşim ya da
   // tarih dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
   "projesiz-faz",
+  // On beşincisi ile on altıncısı 2026-09-29 tarihinde Founder hükmüyle doğdu
+  // (KPS-SIR-A01): MIM-1.3 tek Adımlı Blok ve MIM-1.6 Adımsız kapsayıcı. İkisi de
+  // yapı gözlemidir, bir sapma dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "tek-adımlı-blok", "adımsız-kapsayıcı",
+  // On yedincisinden yirmincisine kadarki dört kimlik 2026-09-29 tarihinde Founder
+  // hükmüyle doğdu (KPS-SIR-A03 · MIM-1.2 Faz dosyası düzeni). Var olan planlar yeni
+  // düzene taşınana dek bilgi düzeyindedirler ve Bildirimler yüzeyine düşerler.
+  "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası",
+  // Yirmi birincisi 2026-09-29 tarihinde doğdu (KPS-SIR-A02 · DIL-2.2): yapısal
+  // girintinin yapıyla uyuşmadığını bildirir; motor yapıyı girintiden okumadığı için
+  // bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "girinti-yapı-uyumsuz",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
@@ -338,7 +352,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on üç kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: hata ve uyarı Problems'a, ret ve gözlem kimlikleri Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -357,16 +371,9 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on üç kimlik Bildiri
     assert.equal(yuzey, beklenen,
       `"${k.kod}" bugünkü kademesiyle (${k.kademe}) ${yuzey} yüzeyine düşüyor; A05 kararı ${beklenen} bekliyor`);
   }
-  // Kırk yedinci hata kimliği MIM-1.7 AltKatman tekilliğidir (Founder hükmü
-  // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 47);
-  // On yedinci uyarı kimliği MIM-3.4 `geçersiz-dosya-adı`dır (KPS-MHR-A01 · Founder hükmü 2026-09-11).
-  // KPS-CEL-A01 (2026-09-19): MIM-3.2 `kitaplıksız-kök` uyarısıyla on yediden on sekize çıktı.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 18);
-  // On ikinci bilgi kimliği ORK-8 mühür dürüstlüğü bekçisidir (KPS-MVS-A01 · 2026-09-10);
-  // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
-  // On beşincisi MIM-1.2 projesiz Faz gözlemidir (KPS-FAZ-A02 · Founder hükmü 2026-09-19).
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 15);
+  // Yeni kümenin düzey dağılımı burada dondurulmaz (HST-MTR-A12): tek kaydı çekirdekteki
+  // TANI_KUMESI_SAYIMI, kayda karşı tek nöbeti çekirdek süitindeki tanı kümesi sayım
+  // nöbetidir. Dağılımın kimlik kimlik geçmişi o kaydın geçmiş satırlarındadır.
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -611,12 +618,25 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // ve küme ON İKİYE çıktı; aynı gün doğan `sonraya-bırakılmış-dosya` bilgi
   // düzeyinde olmasına karşın Hatırlatıcılar hanesine gider.
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 `projesiz-faz` gözlemi bilgi düzeyinde doğdu ve küme ON ÜÇE çıktı.
-  assert.equal(yeniBildirim, 13,
-    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi, MIM-3.4 dosya mührü ve MIM-1.2 projesiz Faz gözlemi Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  // 2026-09-29 (KPS-SIR-A01): iki yapı gözlemi geldi, seçilemez Adım yürütümü Problems'a gitti; küme ON DÖRDE çıktı.
+  // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemi geldi; küme ON SEKİZE çıktı.
+  // 2026-09-29 (KPS-SIR-A02): DIL-2.2 girinti gözlemi geldi; küme ON DOKUZA çıktı.
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
   // 2026-09-11: MIM-3.4 `geçersiz-dosya-adı` uyarı düzeyinde doğdu ve küme altmış dörde çıktı.
-  assert.equal(yeniProblems, 65, "A05'in 47 hata ve 16 uyarı kimliği ile MIM-3.4 ve MIM-3.2 uyarıları Problems'a gitmelidir");
+  // 2026-09-29 (KPS-SIR-A01): bir hata, üç uyarı ve uyarıya çıkan seçilemez Adım yürütümüyle yetmişe çıktı.
+  // HST-MTR-A12 (2026-10-10): iki hanenin büyüklüğü artık burada dondurulmaz; yeni
+  // kümenin düzey dağılımının tek kaydı çekirdekteki TANI_KUMESI_SAYIMI'dır. Burada
+  // paylaşımın kuralı ölçülür: her hata ve uyarı kimliği Problems'a, ileri bağlam
+  // taşımayan her bilgi kimliği Gözlemler'e gider.
+  const yeniDuzeyde = (duzey: Duzey): number => YENI_TANI_KANONU.filter((k) => k.kademe === duzey).length;
+  const yeniHatirlatici = YENI_TANI_KANONU.filter(
+    (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "hatırlatıcılar",
+  ).length;
+  assert.equal(yeniBildirim + yeniHatirlatici, yeniDuzeyde("bilgi"),
+    "yeni kümenin bilgi kimlikleri Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  assert.equal(yeniProblems, yeniDuzeyde("hata") + yeniDuzeyde("uyarı"),
+    "yeni kümenin bütün hata ve uyarı kimlikleri Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,
@@ -729,7 +749,9 @@ test("üç panel bakışta ayrılır: hiçbiri diğerinin görünüş simgesini 
   const gorunusler = (JSON.parse(oku("../package.json")) as {
     contributes: { views: Record<string, Array<{ id: string; icon?: string }>> };
   }).contributes.views["sarmal-yol"];
-  const simgeler = gorunusler.map((g) => g.icon);
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = gorunusler.filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
   assert.equal(new Set(simgeler).size, simgeler.length,
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });
@@ -1754,7 +1776,9 @@ test("ODAK DEĞİŞİNCE BÜTÜN YÜZEYLER AYNI TURDA YENİDEN BASILIR", () => {
   // AYNI turda basılır. Biri atlanırsa kullanıcı çelişkili iki tablo görür:
   // bir panel yeni varlığı gösterirken öteki eskisini göstermeye devam eder.
   for (const [ad, desen] of Object.entries({
-    Problems: /koleksiyon\.(set|delete)/,
+    // MGZ-A03: Problems basımı yayınla aynı kapıdan (`problemseBas`) geçer; kapının
+    // davranışı sozdizim-yuzeyi.test.ts içinde gerçek odak değişimiyle ölçülür.
+    Problems: /koleksiyon\.(set|delete)|problemseBas\(/,
     "yüzey defteri": /yuzeyDefteri\.yayımla\(\)/,
     "fikir defteri": /fikirDefteri\.yayımla\(\)/,
     "odak dinleyicileri": /odakDinleyicileri/,

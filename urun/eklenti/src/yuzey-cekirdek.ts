@@ -20,6 +20,7 @@ import { dirname, join } from "node:path";
 import { beklenenSunumYuzeyi, type SunumYuzeyi } from "../../cekirdek/src/denetim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
+import { SOZ_DIZIM_KODU } from "../../cekirdek/src/tani-metinleri.ts";   // MGZ-A03: kimliğin tek kaynağı
 import {
   kayitEtiketi, kayitAciklamasi, kayitIpucu, panoKaydiMetni, panoKumeMetni,
 } from "./yuzey-metinleri.ts";
@@ -165,6 +166,19 @@ export function yuzeyeAyir(kayitlar: readonly YuzeyKaydi[]): YuzeyDagilimi {
     }
   }
   return { problems, hatırlatıcılar: tekSatiraIndir(hatırlatıcılar), bildirimler };
+}
+
+/**
+ * ⛔ MGZ-A03 · SORUNLAR PANELİNE GİDEN LİSTE. Odaktaki dosyanın bütün tanıları
+ * gider. Odak dışındaki dosyadan yalnız `söz-dizim` tanısı geçer: ayrıştırılamayan
+ * dosya bir projenin sapması değil, aracın hiç okuyamadığı bir dosyadır ve Yol
+ * Haritasının kırık dosyalar düğümü onu bütün pencere için zaten duyurur. Ölçülen
+ * kusur buydu: odak başka projedeyken Yol Haritası dosyanın kırık olduğunu
+ * söylerken Sorunlar paneli aynı anda sorun algılanmadı diyordu. Odak süzgeci
+ * yerinde kalır; öteki tanıların hiçbiri odağı aşmaz.
+ */
+export function problemsYayini<T extends { readonly code?: unknown }>(tanilar: readonly T[], odakta: boolean): T[] {
+  return odakta ? [...tanilar] : tanilar.filter((t) => t.code === SOZ_DIZIM_KODU);
 }
 
 /**
@@ -548,9 +562,24 @@ export interface KayitGorunumu {
  * alanından kurulur ve bu işlev ona dokunmaz.
  */
 export function kayitHedefi(kayit: YuzeyKaydi): { dosya: string; satir: number; sutun: number } {
-  const hedef = kayit.tani.hedefDosya;
+  const hedef = taniHedefi(kayit.dosya, kayit.tani);
   if (!hedef) return { dosya: kayit.dosya, satir: kayit.tani.satir, sutun: kayit.tani.sutun };
-  return { dosya: join(dirname(kayit.dosya), hedef), satir: 1, sutun: 1 };
+  return { dosya: hedef.dosya, satir: hedef.satir, sutun: hedef.sutun };
+}
+
+/**
+ * Bulgunun anlattığı yer (EKL-F6-A10 · MGZ-A06). Tanı `hedefDosya` taşımıyorsa
+ * kendi konumunu anlatır ve işlev boş döner. Taşıyorsa hedef, kaydın yazıldığı
+ * dosyanın klasörüne göre çözülür ve başından açılır; eğik çizgiyle biten hedef
+ * bir klasördür. Panel tıklaması (`kayitHedefi`) ile Problems yüzeyindeki ilgili
+ * konum bağlantısı hedefi bu tek işlevden okur, böylece iki yüzey aynı yeri açar.
+ */
+export function taniHedefi(
+  dosya: string, tani: Tani,
+): { dosya: string; satir: number; sutun: number; klasor: boolean } | undefined {
+  const hedef = tani.hedefDosya;
+  if (!hedef) return undefined;
+  return { dosya: join(dirname(dosya), hedef), satir: 1, sutun: 1, klasor: hedef.endsWith("/") };
 }
 
 /** Kaydı panel satırına çevirir — metin katalogdan, olgu tanıdan gelir. */

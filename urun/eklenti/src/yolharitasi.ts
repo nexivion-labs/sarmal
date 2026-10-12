@@ -17,7 +17,7 @@ import { dirname, basename, join } from "node:path";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { yuzeyAdi, tarihRozetiKisa } from "../../cekirdek/src/baslik.ts";   // YUZ: yüzey kodu değil adı gösterir, ad başlık düzeniyle yazılır
 import { OlayHatti, TekUcusKilidi } from "./izleyici-cekirdek.ts";   // 🛰️ iz hattı hâlâ kendi olay hattıyla ve kendi kilidiyle koşar (PRF-TA-A03 sınırı)
-import { dagKur, topolojikSira, fazTarihAnahtari, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25) · ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
+import { dagKur, topolojikSira, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // 🕰️ MIM-1.2: kardeş Faz sırasının anahtarı motordan (Founder 2026-08-25) · ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import { etkiCoz, type EtkiSonuc } from "../../cekirdek/src/etki.ts";       // VIT-GRAF-A03: etkiler düğümleri aynı motor
 import { koniCikar, koniAlani } from "../../cekirdek/src/koni.ts";     // VIT-GRAF-A04: kart koniyi TEK kaynaktan çıkarır; koniAlani → rapor/yama (STR-4 · NTK-A07)
 import { kurallariCikar, dugumeDusenKurallar, kuralNe, KAPSAM_JOKER, type KuralBilgi } from "../../cekirdek/src/kuralci.ts";   // #7: Adım'a düşen kurallar (kapsam TEK KAYNAK)
@@ -29,6 +29,7 @@ import { anadizinBul } from "../../cekirdek/src/denetci.ts";   // DIL-1.2: varl�
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";   // 🪆 varlık kimliği AĞAÇTAN okunur; ikinci bir okuma kuralı yazılmaz
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi (Adım sayaçlarının türetmesi PRF-TA-A03 ile çekirdeğe indi)
+import { YURUTUCU_ROLU } from "../../cekirdek/src/kopru/iz.ts";   // HST-MTR-A04: yürütücü satırı yazanla aynı sabitten tanınır
 import { miniGrafKaydi, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
 import {
   EKSEN_TIPLERI, eksenSvgVaryanti, aileyeCevir, satirSvgGovdesi,
@@ -39,11 +40,12 @@ import {
   varlikUstleri, enDerinVarlik, varlikSimgesi, grafImzasi, SiraBellegi, cagirCevrimi,
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
+  kardesKarsilastir,   // MIM-1.2: kardeş sırası motorun Faz karşılaştırıcısından (KPS-SIR-A01)
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
-  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, kanonikWidgetDuzYazisi,
+  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi,
 } from "./yuzey-metinleri.ts";
 
 // ── YUZ-4 RENK KANUNU (Founder kilidi 2026-07-12): renk = YALNIZ DURUM kanalı.
@@ -129,6 +131,10 @@ interface IzKaydi {
   tokenGiriş?: number;
   tokenÇıkış?: number;
   sıra?: number;
+  // HST-MTR-A04: dış yürütücünün teması (çekirdek YurutucuIziSatiri ikizi) — rolü YURUTUCU_ROLU.
+  arac?: string;
+  durum?: string;
+  yurutucu?: string;
 }
 /** İşlenen Adım'ın altındaki orkestrasyon alt-düğümü (üretici · denetçi · güvenlik). */
 interface Kosum {
@@ -136,6 +142,15 @@ interface Kosum {
   etiket: string;
   aciklama: string;
   kayit: IzKaydi;
+}
+/** HST-MTR-A04: dış yürütücünün teması — satır aracı, yürütücüyü ve yazılan durumu söyler. */
+function yurutucuSatiri(k: IzKaydi): Kosum {
+  return {
+    tur: "koşum",
+    etiket: YOL_METINLERI.yurutucuTemasi(k.arac ?? "?"),
+    aciklama: YOL_METINLERI.yurutucuAciklamasi(k.yurutucu, k.durum),
+    kayit: k,
+  };
 }
 
 // ── VIT-GRAF-A03: Adım'ın graf-kenarı alt-düğümleri — panel graf müfettişine büyür ──
@@ -512,19 +527,14 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       return r;
     };
     // 🕰️ MIM-1.2 (Founder 2026-08-25): kardeş Fazlar TARİH sırasına dizilir — Founder
-    // panelde mevsimlerin ad ve dosya sırasıyla karıştığını gördü. Anahtar motorun
-    // fazTarihAnahtari işlevinden gelir (DIL-2: panel kendi çevirisini yazmaz); Faz
-    // olmayan öğeler ile tarihsiz Fazlar tarihli mevsimlerin ARKASINDA topolojik
-    // sırayı olduğu gibi korur (aynı listede karışık tipler için de toplam sıra tutarlıdır).
-    const zamanAnahtari = (o: Oge): string => fazTarihAnahtari(o.tip === "Faz" ? o.hedefTarih : undefined);
+    // panelde mevsimlerin ad ve dosya sırasıyla karıştığını gördü. KPS-SIR-A01: iki Faz
+    // arasındaki karar motorun Faz karşılaştırıcısından gelir (tarih, eşitlikte dosya
+    // önekinin doğal sayı sırası); Faz öğeleri ötekilerin önünde durur ve Faz olmayan
+    // öğeler topolojik sırayı korur. Anahtar sözlük sıralı olduğu için karışık tipli
+    // listede de toplam sıra geçişlidir; karşılaştırıcı saf çekirdektedir ve
+    // sınaması vscode'suz koşar.
     const topolojikSirala = (liste: Oge[]): void => {
-      liste.sort((a, b) => {
-        const za = zamanAnahtari(a), zb = zamanAnahtari(b);
-        if (za !== zb) return za < zb ? -1 : 1;
-        return (rutbe(a) - rutbe(b)) ||
-          a.dosya.fsPath.localeCompare(b.dosya.fsPath) ||
-          a.satir - b.satir;
-      });
+      liste.sort((a, b) => kardesKarsilastir(a, b, rutbe, (o) => o.dosya.fsPath));
       for (const o of liste) topolojikSirala(o.cocuklar);
     };
 
@@ -737,7 +747,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // trace sırasında) + graf-kenarı bilgi satırları (bağımlı · etkiler · kabul).
     if (oge.tur === "oge" && oge.tip === "Adım") {
       const kayitlar = this.izler.get(oge.kod) ?? [];
-      const kosum: Kosum[] = kayitlar.map((k) => ({
+      const kosum: Kosum[] = kayitlar.map((k) => k.rol === YURUTUCU_ROLU ? yurutucuSatiri(k) : ({
         tur: "koşum",
         // A07: rol adı kendi etiketidir; ağaç etiketi resim taşımadığı için
         // rolün emoji işareti düştü ve kelime kaldı (YUZ-4.2).
@@ -791,8 +801,13 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // IZLE-A03 satırı — tıklama IZLE-A04 konuşma detayını açar (webview).
       const eleman = new vscode.TreeItem(p.etiket, vscode.TreeItemCollapsibleState.None);
       eleman.description = p.aciklama;
-      eleman.tooltip = YOL_METINLERI.kosumIpucu(p.etiket, p.kayit.zaman ?? "");
       eleman.iconPath = satirIkonu(this.eklentiKoku, "kosum", "turuncu");
+      // HST-MTR-A04: yürütücü satırı ham istem ve yanıt taşımaz; boş bir konuşma kartı açılmaz.
+      if (p.kayit.rol === YURUTUCU_ROLU) {
+        eleman.tooltip = YOL_METINLERI.yurutucuIpucu(p.etiket, p.kayit.zaman ?? "");
+        return eleman;
+      }
+      eleman.tooltip = YOL_METINLERI.kosumIpucu(p.etiket, p.kayit.zaman ?? "");
       eleman.command = { command: "sarmal.konusmaDetay", title: YOL_METINLERI.konusmaDetayi, arguments: [p.kayit] };
       return eleman;
     }
@@ -872,9 +887,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // ve emoji o rengin İKİNCİ, temadan bağımsız bir kopyasıydı (YUZ-4.2).
       nedenAktif = n ? (n.length > 48 ? n.slice(0, 46) + "…" : n) : YOL_METINLERI.gelistiriliyor;
     }
-    // 🧊 MIM-1.2 ③ (zaman-ekseni turu): planlanmamış gövde — tarih taahhüdü verilmemiş işin dürüst
-    // beyanı. Satır soluktur ve sayacı kelimeyle yazılır (VIT-KIMLIK-A07 · Founder sade hâli,
-    // 2026-09-13: eski buz işareti kalktı); NEDEN metni hover'da yaşar (tasarım: zaman-ekseni turu ②).
+    // 🧊 MIM-1.2 · `planlanmamış` beyanı (KPS-SIR-A01 · Founder hükmü 2026-09-29): beyan artık
+    // meşru bir erteleme DEĞİLDİR. Fazsız Blok motorda `fazsız-blok` hatası verir ve panel bu
+    // hatayı Problems yüzeyinde gösterir; satır beyanı kelimeyle işaretler (VIT-KIMLIK-A07 ·
+    // sayaç), ipucu ise beyanın bir zaman bağı olmadığını ve Blokun bir Faza bağlanması
+    // gerektiğini söyler.
     const planNeden = o.tip === "Blok" ? (planAlani(o.dugum, "planlanmamış")?.deger.metin ?? "").trim() : "";
     // 📅 YUZ (Founder hükmü 2026-08-26): Faz'ın zaman bilgisi ADIN İÇİNDE yaşamaz —
     // başlık kısa kalır ve panel sağa doğru kaydırılmak zorunda bırakmaz. Tarih,
@@ -902,7 +919,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     if (o.hedefTarih) md.appendMarkdown(YOL_METINLERI.tarife(o.hedefTarih));
     if (planNeden) md.appendMarkdown(YOL_METINLERI.planlanmamis(planNeden));
     if (bag) md.appendMarkdown(YOL_METINLERI.caprazFazIpucu(bagFaz, bagProje));
-    if (o.ne) md.appendMarkdown(`\n\n${kanonikWidgetDuzYazisi(o.tip, o.ne)}`);
+    // MGZ-A09: düğümün `ne` metni dosyanın içeriğidir ve her dilde olduğu gibi
+    // basılır; İngilizce yüz onu tipin sözlük tarifiyle değiştiremez.
+    if (o.ne) md.appendMarkdown(`\n\n${o.ne}`);
     md.appendMarkdown(`\n\n_${o.durum}_`);
     if (o.bloklu > 0 && kapsayici) md.appendMarkdown(YOL_METINLERI.blokluAlt(o.bloklu));
     eleman.tooltip = md;
@@ -1057,7 +1076,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 <h1>${this.ikon("kart")}${this.durumIkonu(o.durum)}${kacir(o.kod)}</h1>
 <p class="k">${kacir(kanonikWidgetAdi(o.tip, o.tip))} · ${kacir(o.durum)} ·
 <a href="command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([o.dosya.fsPath, o.satir]))}">${this.aile(YOL_METINLERI.dosyadaAc)}</a></p>
-<p>${kacir(kanonikWidgetDuzYazisi(o.tip, o.ne))}</p>
+<p>${kacir(o.ne)}</p>
 ${alan(YOL_METINLERI.alan("görev"), koni.görev)}
 ${alan(YOL_METINLERI.alan("kabul"), koni.kabul)}
 ${alan(YOL_METINLERI.alan("sınır"), koni.sınır)}
@@ -1122,6 +1141,8 @@ export interface YolHaritasiYuzu {
   diliTazele(): void;
   /** Panelin ŞU AN gösterdiği plan kodları — salt okur. */
   kodlar(): string[];
+  /** 🧩 VIT-K78-A10: ağaç şu an görünür mü (Ray bölümü seçiliyken doğru) — salt okur. */
+  gorunurMu(): boolean;
 }
 
 /** Paneli kur: ağaç + kutucuk olayları + tur görüntüsü aboneliği + koni-kartı menüsü.
@@ -1338,6 +1359,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
   // kez kuran ve soğuk açılışta birbiriyle yarışan ikinci hattın ta kendisiydi.
   return {
     kodlar: () => saglayici.panelKodlari(),
+    gorunurMu: () => gorunum.visible,
     diliTazele(): void {
       saglayici.diliTazele();
       miniGraf.tazele();

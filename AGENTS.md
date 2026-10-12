@@ -89,7 +89,7 @@ kanon canlıdır. Tipi `siniflama` aracına sor; uydurma tip adı kullanma.
   bağımsız ölçülmeden kabul edilmez.
 - **DOĞUŞ:** yeni bir Sarmal ağacı, anadizin ya da mimari elle yazılmaz; sıra `basla` → `dogus` → `iskelet` →
   her `.sar` yazımından sonra `denetle-proje`. Şema (`siniflama`) neyin izinli olduğunu, düzen
-  (`sarmal_anadizin.sar` · `is/plan/faz/faz.sar`) neyin doğru olduğunu söyler; düzen önce okunur. Faz anadizine
+  (`sarmal_anadizin.sar` · `is/plan/faz/` altındaki sıra önekli Faz dosyaları) neyin doğru olduğunu söyler; düzen önce okunur. Faz anadizine
   yazılmaz. Mimari işte önce iskelet Founder'a gösterilir, içerik onaydan sonra yazılır (Founder hükmü
   2026-09-09 · küresel kanca `~/.claude/hooks/sarmal-kapi-*.sh` zorlar).
 

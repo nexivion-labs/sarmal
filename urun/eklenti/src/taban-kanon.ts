@@ -23,6 +23,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
+import type { CokenKok } from "./kanon-kesif.ts";
 import { TABAN_KANON_METINLERI } from "./yuzey-metinleri.ts";
 
 /**
@@ -41,26 +42,36 @@ export interface TabanKanonDurumu {
    * gelmez ve işaret bunu her şeyden önce söyler.
    */
   readonly atlanan: readonly string[];
+  /**
+   * MGZ-A04: tam proje denetimi bir hatayla yarıda kalan kökler ve hatanın
+   * iletisi. Bu kökte de proje kapsamlı tanılar doğmaz; sebep kanonsuzluk
+   * değil çöküş olduğu için ayrı tutulur ve ipucunda kendi cümlesiyle söylenir.
+   */
+  readonly coken: readonly CokenKok[];
 }
 
-let durum: TabanKanonDurumu = { düşüldü: false, atlanan: [] };
+let durum: TabanKanonDurumu = { düşüldü: false, atlanan: [], coken: [] };
 const dinleyiciler = new Set<(d: TabanKanonDurumu) => void>();
+
+/** Çöken kök listesinin karşılaştırılabilir imzası; ileti değişirse ipucu da tazelenir. */
+const cokenImzasi = (liste: readonly CokenKok[]): string => liste.map((c) => `${c.kok}\t${c.hata}`).join("\n");
 
 function yayınla(yeni: TabanKanonDurumu): void {
   const değişti = yeni.düşüldü !== durum.düşüldü || yeni.belge !== durum.belge
-    || yeni.atlanan.join("\n") !== durum.atlanan.join("\n");
+    || yeni.atlanan.join("\n") !== durum.atlanan.join("\n")
+    || cokenImzasi(yeni.coken) !== cokenImzasi(durum.coken);
   durum = yeni;
   if (değişti) for (const d of dinleyiciler) d(durum);
 }
 
 /** Kanon kaydı bulunamadı ve gömülü taban kanonla çalışılıyor. */
 export function tabanKanonaDusuldu(belgeYolu: string): void {
-  yayınla({ düşüldü: true, belge: belgeYolu, atlanan: durum.atlanan });
+  yayınla({ düşüldü: true, belge: belgeYolu, atlanan: durum.atlanan, coken: durum.coken });
 }
 
 /** Kanon kaydı bulundu — işaret kalkar. */
 export function tabanKanonBulundu(): void {
-  if (durum.düşüldü) yayınla({ düşüldü: false, atlanan: durum.atlanan });
+  if (durum.düşüldü) yayınla({ düşüldü: false, atlanan: durum.atlanan, coken: durum.coken });
 }
 
 /**
@@ -69,12 +80,23 @@ export function tabanKanonBulundu(): void {
  * denetimi koşmayanlardır. Tam turda eski kayıt baştan kurulur; daraltılmış
  * turda yalnız ölçülen köklerin hanesi tazelenir ve öteki köklerin kaydı korunur,
  * çünkü onlar bu turda hiç sorulmamıştır.
+ *
+ * MGZ-A04: `coken` aynı kuralla tutulur. Ölçülen bir kök yeniden sağlıklı
+ * koşarsa iki listeden de düşer; ölçülmeyen kökün çöküş kaydı korunur.
  */
-export function tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean): void {
+export function tamDenetimSonucu(
+  olculen: readonly string[], atlanan: readonly string[], tamTur: boolean, coken: readonly CokenKok[] = [],
+): void {
   const kume = new Set(tamTur ? [] : durum.atlanan);
-  for (const kok of olculen) kume.delete(kok);
+  const cokenler = new Map(tamTur ? [] : durum.coken.map((c) => [c.kok, c] as const));
+  for (const kok of olculen) { kume.delete(kok); cokenler.delete(kok); }
   for (const kok of atlanan) kume.add(kok);
-  yayınla({ ...durum, atlanan: [...kume].sort() });
+  for (const c of coken) cokenler.set(c.kok, c);
+  yayınla({
+    ...durum,
+    atlanan: [...kume].sort(),
+    coken: [...cokenler.values()].sort((a, b) => (a.kok < b.kok ? -1 : a.kok > b.kok ? 1 : 0)),
+  });
 }
 
 /** Bugünkü durum — nöbet ve kabuk buradan okur. */
@@ -90,7 +112,7 @@ export function tabanKanonDinle(dinleyici: (d: TabanKanonDurumu) => void): { dis
 
 /** Yalnız nöbet içindir: kayıt sıfırlanır, iki sınama birbirinin izini ölçmez. */
 export function tabanKanonSifirla(): void {
-  durum = { düşüldü: false, atlanan: [] };
+  durum = { düşüldü: false, atlanan: [], coken: [] };
   dinleyiciler.clear();
 }
 
@@ -121,15 +143,25 @@ export class TabanKanonCubugu {
    */
   tazele(): void {
     const d = tabanKanonDurumu();
-    if (d.atlanan.length > 0) {
+    // MGZ-A04: çöken kök de tam denetimin koşmadığı hâldir ve aynı işaretle
+    // söylenir; ipucu her sebebi kendi cümlesiyle verir. Yalnız çöküş varken
+    // tıklama komutu kalkar, çünkü kanonu olan bir kökte işaretçi yazmak
+    // çöküşü onarmaz ve kullanıcıyı yanlış onarıma yönlendirir.
+    if (d.atlanan.length > 0 || d.coken.length > 0) {
       this.oge.text = TABAN_KANON_METINLERI.atlandiMetni;
-      this.oge.tooltip = TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan);
+      this.oge.tooltip = [
+        ...(d.atlanan.length > 0 ? [TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan)] : []),
+        // Sonuç cümlesi kanonsuz kökün ipucunda yazılıysa çöküş ipucu onu yinelemez.
+        ...(d.coken.length > 0 ? [TABAN_KANON_METINLERI.coktuIpucu(d.coken, d.atlanan.length > 0)] : []),
+      ].join("\n\n");
+      this.oge.command = d.atlanan.length > 0 ? KANON_ISARETCISI_KOMUTU : undefined;
       this.oge.show();
       return;
     }
     if (!d.düşüldü) { this.oge.hide(); return; }
     this.oge.text = TABAN_KANON_METINLERI.cubukMetni;
     this.oge.tooltip = TABAN_KANON_METINLERI.cubukIpucu(d.belge);
+    this.oge.command = KANON_ISARETCISI_KOMUTU;
     this.oge.show();
   }
 

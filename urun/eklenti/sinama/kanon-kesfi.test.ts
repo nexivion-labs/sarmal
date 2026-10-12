@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -21,9 +21,10 @@ import esbuild from "esbuild";
 import { VARSAYILAN, uret } from "../arac/renk-uret.mjs";
 import {
   PAKET_KANON_DIZINI, hasatHedefiBul, ilanliVarliklar, isaretciPlani, isaretciYaz, ortamDegiskenleriniCoz,
-  surumeBagliEklentiYolu, tamDenetimKanonuBul, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
+  surumeBagliEklentiYolu, tamDenetimKanonuBul, tamDenetimKokTuru, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
 } from "../src/kanon-kesif.ts";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
+import { DUZEN, fazYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
@@ -56,7 +57,7 @@ function gecici(onek: string): string {
 test("A04: varlık kökü klasör adından DEĞİL, *_anadizin.sar ilanından bulunur", () => {
   const alan = gecici("sarmal-kesif-");
   const varlik = varlikKur(alan, "kurumsal_urun", { kanon: true });
-  const belgeDizin = join(varlik, "plan", "derin", "daha-derin");
+  const belgeDizin = join(varlik, DUZEN.planRafi, "derin", "daha-derin");
   mkdirSync(belgeDizin, { recursive: true });
 
   assert.equal(varlikKokuBul(belgeDizin), varlik,
@@ -114,7 +115,7 @@ test("A04: geribildirim hasadının hedefi de ilandan bulunur (takdir.ts sabit y
 
   assert.equal(yazimKokuBul(undefined, [alan], tasir), ogrenmeli,
     "hedefi taşıyan varlık seçilmeli — hasat var olmayan bir yola yazılamaz");
-  const belgeDizin = join(alan, "birinci_varlik", "plan");
+  const belgeDizin = join(alan, "birinci_varlik", DUZEN.planRafi);
   mkdirSync(belgeDizin, { recursive: true });
   assert.equal(yazimKokuBul(belgeDizin, [alan], tasir), join(alan, "birinci_varlik"),
     "açık belgenin kendi varlığı her zaman önce gelir — hasat başka varlığa taşmaz");
@@ -219,11 +220,16 @@ interface KanonModulu {
   snfBul(doc: { uri: { fsPath: string } }): unknown;
   rozetRenkleri(): Record<string, string>;
   TabanKanonCubugu: new () => { dispose(): void };
-  tabanKanonDurumu(): { düşüldü: boolean; belge?: string; atlanan: readonly string[] };
+  tabanKanonDurumu(): { düşüldü: boolean; belge?: string; atlanan: readonly string[]; coken: readonly { kok: string; hata: string }[] };
   tabanKanonSifirla(): void;
-  tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean): void;
+  tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean,
+    coken?: readonly { kok: string; hata: string }[]): void;
   KANON_ISARETCISI_KOMUTU: string;
-  TABAN_KANON_METINLERI: { cubukIpucu(belge?: string): string; atlandiIpucu(kokler: readonly string[]): string };
+  TABAN_KANON_METINLERI: {
+    cubukIpucu(belge?: string): string;
+    atlandiIpucu(kokler: readonly string[]): string;
+    coktuIpucu(coken: readonly { kok: string; hata: string }[], sonucuAtla?: boolean): string;
+  };
   KANON_ISARETCISI_METINLERI: { eklentiKanonu: string };
   yuzeyDiliniAyarla(dil: string): void;
 }
@@ -289,7 +295,7 @@ test("A04 DAVRANIŞ: ÖRTÜLÜ projede taban bulunamazsa düşüş SÖYLENİR (s
 test("A04 DAVRANIŞ: kanon ilandan bulununca işaret kalkar ve gömülü kanona düşülmez", () => {
   const alan = gecici("sarmal-kanonlu-");
   const varlik = varlikKur(alan, "kurumsal_urun", { kanon: true });
-  const belge = join(varlik, "plan", "is.sar");
+  const belge = join(varlik, fazYolu(1, "is"));
   mkdirSync(dirname(belge), { recursive: true });
   writeFileSync(belge, "Faz( kod: F1, ad: \"deneme\" )\n", "utf8");
 
@@ -497,7 +503,7 @@ function isaretcisizAgac(alan: string): string {
   mkdirSync(kok, { recursive: true });
   dogusYaz(kok, "eski", "2026-09-15", "proje");
   renameSync(join(kok, "oz", "siniflama", "isaretci.json"), join(alan, "ayrilan-isaretci.json"));
-  const plan = join(kok, "is", "plan", "ilk_plan.sar");
+  const plan = join(kok, "is", "plan", "faz", "1_dogus.sar");
   writeFileSync(plan, readFileSync(plan, "utf8").replace("bağımlı: []", "bağımlı: [ADM-YOK-99]"), "utf8");
   return kok;
 }
@@ -610,7 +616,9 @@ test("EKL-F6-A09 KAYNAK: kabuk kanonu paketin köküyle çözer ve atlanan kökl
     "paketin kanon kökü eklentinin kurulu klasöründen türetilmiyor");
   assert.match(govde, /tamDenetimKanonuBul\(kokYol, koklar, paketKanonKoku\)/,
     "tam denetim turu paketin kopyasını keşfe vermiyor");
-  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined\)/,
+  // MGZ-A04: çağrı dördüncü argüman olarak çöken kökleri de taşır; atlanan kök
+  // bildirimi aynı yerde kalır ve bu desen onu eskisi kadar sıkı ölçer.
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined[,)]/,
     "tam denetim turu atlanan kökleri işarete bildirmiyor — atlama yeniden sessizleşir");
   assert.doesNotMatch(govde, /if \(!snfYol\) continue/, "sessiz atlama satırı geri gelmiş");
 });
@@ -748,4 +756,168 @@ test("EKL-F6-A09: işaretin ipucu işaretçiyi önerir, kopya çözümünü öne
   assert.match(kaynak, /registerCommand\(KANON_ISARETCISI_KOMUTU,/, "kabuk işaretçi komutunu kaydetmiyor");
   assert.match(kaynak, /isaretciPlani\(hedef, koklar, context\.extensionPath\)/,
     "kabuk kararı eklentinin kendi klasörünü bilmeden veriyor — sürüm süzgeci kör kalır");
+});
+
+// ── 8) MGZ-A04 · ÇÖKEN KÖK DE İŞARETE BİLDİRİLİR ─────────────────────────────
+//   Ölçülen kusur (HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR · 2026-09-15): tam
+//   denetim turu `denetimKos` çağrısını bir try/catch bloğu içinde koşturuyor ve
+//   çağrı çökünce hatayı yutuyordu. Kanonsuz kök EKL-F6-A09'dan beri durum
+//   çubuğundaki işarete bildiriliyordu, fakat çöken kök bu bildirime
+//   katılmıyordu; panel o kökün proje kapsamlı tanılarını hiç göstermiyor ve
+//   kullanıcı tam denetimin orada koşmadığını hiçbir yerden okuyamıyordu.
+//
+//   Çöküş fikstürde ZORLANIR ve uydurulmaz: kökün kendi örtüsüne (ortu.json)
+//   birleştirme çatışması işaretleri yazılır. Bu, bir dal birleştirmesinin
+//   gerçekten bırakabileceği bir dosyadır; tek dosya yolu örtüyü sessizce
+//   atladığı için renk ve tek dosya tanıları çalışmaya devam eder, tam denetim
+//   ise örtüyü okurken çöker. Çöküşün kendisi bu Adımda onarılmaz; yalnız
+//   görünür kılınır (Adımın sınırı).
+
+/** Kökün örtüsüne birleştirme çatışması bırakır; tam denetim bu dosyayı okurken çöker. */
+function ortusuCatismali(kok: string): void {
+  mkdirSync(join(kok, "oz", "siniflama"), { recursive: true });
+  writeFileSync(join(kok, "oz", "siniflama", "ortu.json"),
+    "<<<<<<< HEAD\n{ \"semalar\": {} }\n=======\n{}\n>>>>>>> yan-dal\n", "utf8");
+}
+
+test("MGZ-A04: çöken kök durum çubuğu işaretinde görünür ve sebebi kanonsuzluk değil çöküş olarak söylenir", (t) => {
+  const alan = gecici("sarmal-coken-isaret-");
+  t.after(() => rmSync(alan, { recursive: true, force: true }));   // başarısızlıkta da silinir
+  const coken = varlikKur(alan, "coken_proje");
+  const saglam = varlikKur(alan, "saglam_proje");
+
+  const { cubuk, vscode } = sahteYurutucu([alan]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
+  modul.tamDenetimSonucu([coken, saglam], [], true, [{ kok: coken, hata: "Unexpected token '<' in JSON" }]);
+
+  assert.deepEqual(modul.tabanKanonDurumu().coken, [{ kok: coken, hata: "Unexpected token '<' in JSON" }],
+    "çöken kök durumda kayıtlı değil — tur onu bildirse de işaret göremez");
+  assert.equal(cubuk.gorunur, true, "tam denetim çöktü ama durum çubuğu SUSTU — boş panel temiz ağaç sanılır");
+  assert.match(String(cubuk.metin), /tam denetim koşmadı/, "işaret denetimin koşmadığını adıyla söylemeli");
+  const ipucu = String(cubuk.ipucu);
+  assert.ok(ipucu.includes(coken), "ipucu çöken kökü adıyla söylemeli");
+  assert.ok(!ipucu.includes(saglam), "ipucu sağlıklı koşan kökü de çökmüş gibi anıyor");
+  assert.ok(ipucu.includes("Unexpected token '<' in JSON"), "ipucu çöküşün iletisini taşımıyor");
+  assert.match(ipucu, /hata/, "ipucu sebebin bir hata olduğunu söylemeli");
+  assert.doesNotMatch(ipucu, /tip sistemi kaydı bulunamadığı/,
+    "çöken kökün sebebi kanonsuzluk diye söyleniyor — kullanıcı yanlış onarıma yönlenir");
+  assert.match(ipucu, /temiz olduğu anlamına gelmez/, "ipucu boş panelin hüküm olmadığını söylemeli");
+  assert.match(ipucu, /sarmal denetle/, "ipucu hatanın tamamını gösteren yolu söylemeli");
+  assert.equal(cubuk.komut, undefined,
+    "yalnız çöküş varken işarete tıklamak kanon işaretçisi komutunu çalıştırıyor — kanonu olan kökte yanlış onarımdır");
+
+  // Daraltılmış tur yalnız ölçtüğü kökün hanesini tazeler; çöken kökün kaydı korunur.
+  modul.tamDenetimSonucu([saglam], [], false, []);
+  assert.equal(cubuk.gorunur, true, "başka kökü ölçen dar tur çöken kökün işaretini sildi");
+  modul.tamDenetimSonucu([coken], [], false, []);
+  assert.equal(cubuk.gorunur, false, "kök yeniden sağlıklı koştuğu hâlde işaret kalkmadı");
+
+  // Kanonsuz kök ile çöken kök aynı anda: iki sebep de kendi cümlesiyle söylenir.
+  modul.tamDenetimSonucu([coken, saglam], [saglam], true, [{ kok: coken, hata: "ENOENT" }]);
+  const ikili = String(cubuk.ipucu);
+  assert.match(ikili, /tip sistemi kaydı bulunamadığı/, "kanonsuz kökün sebebi kayboldu");
+  assert.ok(ikili.includes("ENOENT"), "çöken kökün sebebi kayboldu");
+  assert.equal(cubuk.komut, modul.KANON_ISARETCISI_KOMUTU, "kanonsuz kök varken işaret işaretçi komutunu çalıştırmalı");
+
+  // Tam tur her iki listeyi de baştan kurar: sorun kalmayınca işaret gizlenir.
+  modul.tamDenetimSonucu([coken, saglam], [], true, []);
+  assert.equal(cubuk.gorunur, false, "tam tur temiz bitince işaret kalkmadı");
+  isaret.dispose();
+});
+
+test("MGZ-A04: çöküş ipucu iki dilde aynı bilgiyi taşır ve emoji taşımaz", () => {
+  const { vscode } = sahteYurutucu([]);
+  const modul = kanonModulu(vscode);
+  const kayit = [{ kok: "/proje/bozuk", hata: "Unexpected token" }];
+  const emoji = /\p{Extended_Pictographic}/u;
+  for (const [dil, sebep] of [["tr", /hata/], ["en", /error/]] as const) {
+    modul.yuzeyDiliniAyarla(dil);
+    const ipucu = modul.TABAN_KANON_METINLERI.coktuIpucu(kayit);
+    assert.ok(ipucu.includes("/proje/bozuk"), `${dil}: ipucu kökü anmıyor`);
+    assert.ok(ipucu.includes("Unexpected token"), `${dil}: ipucu hatanın iletisini taşımıyor`);
+    assert.match(ipucu, sebep, `${dil}: ipucu sebebi söylemiyor`);
+    assert.match(ipucu, /sarmal denetle/, `${dil}: ipucu komut satırı yolunu söylemiyor`);
+    assert.doesNotMatch(ipucu, emoji, `${dil}: ipucu emoji taşıyor`);
+  }
+  modul.yuzeyDiliniAyarla("tr");
+});
+
+test("MGZ-A04: birleşik ipucunda sonuç cümlesi bir kez geçer ve birden çok çöken kök çoğul söylenir", () => {
+  const bir = [{ kok: "/alan/a", hata: "ENOENT" }];
+  const iki = [...bir, { kok: "/alan/b", hata: "Unexpected token" }];
+  for (const [dil, sonuc, tekil, cogul] of [
+    ["tr", /Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları/gu, /Şu kökte/u, /Şu köklerde/u],
+    ["en", /Broken reference, disk reconciliation and dependency graph diagnostics/gu, /for this root/u, /for these roots/u],
+  ] as const) {
+    const { cubuk, vscode } = sahteYurutucu([]);
+    const modul = kanonModulu(vscode);
+    modul.yuzeyDiliniAyarla(dil);
+    const isaret = new modul.TabanKanonCubugu();
+    // Kanonsuz kök ile çöken kök birlikte: iki sebep, tek sonuç cümlesi.
+    modul.tamDenetimSonucu(["/alan/k", "/alan/a"], ["/alan/k"], true, bir);
+    const birlesik = String(cubuk.ipucu);
+    assert.equal(birlesik.match(sonuc)?.length ?? 0, 1, `${dil}: birleşik ipucunda sonuç cümlesi bir kez geçmeli:\n${birlesik}`);
+    assert.ok(birlesik.includes("/alan/k") && birlesik.includes("/alan/a"), `${dil}: birleşik ipucu iki kökü de anmalı`);
+    // Tek çöken kök tekil, birden çoğu çoğul söylenir; ikisi de sonucu kendisi taşır.
+    const tek = modul.TABAN_KANON_METINLERI.coktuIpucu(bir);
+    assert.match(tek, tekil, `${dil}: tek çöken kök tekil söylenmeli`);
+    assert.doesNotMatch(tek, cogul, `${dil}: tek çöken kök çoğul söyleniyor`);
+    assert.equal(tek.match(sonuc)?.length ?? 0, 1, `${dil}: tek başına çöküş ipucu sonuç cümlesini taşımalı`);
+    const cok = modul.TABAN_KANON_METINLERI.coktuIpucu(iki);
+    assert.match(cok, cogul, `${dil}: birden çok çöken kök çoğul söylenmeli:\n${cok}`);
+    assert.doesNotMatch(cok, tekil, `${dil}: birden çok çöken kök tekil söyleniyor:\n${cok}`);
+    assert.equal(cok.match(sonuc)?.length ?? 0, 1, `${dil}: çoğul çöküş ipucu sonuç cümlesini bir kez taşımalı`);
+    isaret.dispose();
+  }
+});
+
+test("MGZ-A04: zorla çökertilen kökün tam denetimi yutulmaz; tur onu çöken kök olarak bildirir ve öteki kökler koşmaya devam eder", (t) => {
+  const alan = gecici("sarmal-coken-tur-");
+  t.after(() => rmSync(alan, { recursive: true, force: true }));   // başarısızlıkta da silinir
+  const bozuk = varlikKur(alan, "bozuk_proje", { kanon: true });
+  const saglam = varlikKur(alan, "saglam_proje", { kanon: true });
+  const kanonsuz = join(alan, "kanonsuz_disari");
+  mkdirSync(kanonsuz, { recursive: true });
+  ortusuCatismali(bozuk);
+
+  const kosulan: string[] = [];
+  const kos = (kok: string, kanon: { snfYol: string }): void => {
+    kosulan.push(kok);
+    denetimKos(kok, { snfYol: kanon.snfYol, bugun: "2026-10-10", tamListe: true });
+  };
+  // ① Fikstür ölçülen kusuru yeniden üretir: aynı gövde bu kökte GERÇEKTEN çöker.
+  assert.throws(() => kos(bozuk, { snfYol: join(bozuk, KAYIT_GORELI) }), SyntaxError,
+    "çatışmalı örtü tam denetimi çökertmiyor — fikstür kusuru yeniden üretemiyor");
+  kosulan.length = 0;
+
+  // ② Kabuğun kök turu: kanon keşfi ve koşu saf gövdeden geçer.
+  const tur = tamDenetimKokTuru(
+    [bozuk, kanonsuz, saglam],
+    (kok) => tamDenetimKanonuBul(kok, [kok], join(alan, "kopyasi-olmayan-paket")),
+    kos,
+  );
+  assert.deepEqual(tur.coken.map((c) => c.kok), [bozuk], "çöken kök turun çöküş listesine girmedi — hata yine yutuldu");
+  assert.match(tur.coken[0]!.hata, /JSON/, "çöküşün iletisi kaybolmuş");
+  assert.deepEqual(tur.atlanan, [kanonsuz], "kanonsuz kök atlananlar listesinden düştü ya da çöken kök oraya karıştı");
+  assert.deepEqual(kosulan, [bozuk, saglam], "bir kökün çöküşü sıradaki kökün tam denetimini durdurdu");
+
+  // ③ Turun sonucu işarete gider ve işaret çöken kökü gösterir.
+  const { cubuk, vscode } = sahteYurutucu([alan]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
+  modul.tamDenetimSonucu([bozuk, kanonsuz, saglam], tur.atlanan, true, tur.coken);
+  assert.equal(cubuk.gorunur, true, "çökmeye zorlanan kök durum çubuğu işaretinde görünmüyor");
+  assert.ok(String(cubuk.ipucu).includes(bozuk), "işaretin ipucu çöken kökü adıyla anmıyor");
+  isaret.dispose();
+});
+
+test("MGZ-A04 KAYNAK: kabuk kök turunu saf gövdeden koşturur ve çöken kökleri işarete bildirir", () => {
+  const kaynak = readFileSync(join(KOK, "src", "eklenti.ts"), "utf8");
+  const bas = kaynak.indexOf("const denetleHepsi");
+  const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
+  assert.match(govde, /tamDenetimKokTuru\(/, "tam denetimin kök turu saf gövdeden geçmiyor — çöküş kabuğun içinde yutulabilir");
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler\)/,
+    "tam denetim turu çöken kökleri işarete bildirmiyor — çöküş yeniden sessizleşir");
+  assert.doesNotMatch(govde, /catch \{ \/\* tam orkestrasyon/, "çöküşü yutan eski catch satırı geri gelmiş");
 });

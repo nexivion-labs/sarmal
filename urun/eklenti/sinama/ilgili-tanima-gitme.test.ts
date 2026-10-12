@@ -21,6 +21,7 @@
 //   sınamaları kırmızıya düştü (2/3); satır geri konunca 3/3 yeşil.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import "./kabuk-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -28,6 +29,12 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { dizindenIndeks, gezinmeSuzgeci } from "../../cekirdek/src/kimlik.ts";
 import { varlikKokuBul } from "../src/kanon-kesif.ts";
+
+// HST-YUZ-A05: KOD_SOZCUK madde kuyruğunu çekirdekten kurar ve artık düz bir
+// desen yazımı değildir; sağlayıcının desenini okumanın tek doğru yolu modülün
+// kendisidir. Modül editör kabuğunu içeri aldığı için kanca kurulduktan SONRA
+// yüklenir (kabuk-kur.ts).
+const { KOD_SOZCUK } = await import("../src/gezinme.ts");
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url)).replace(/\/$/, "");
 const DIL_SAR = join(KOK, "yasa", "kanon", "dil.sar");
@@ -47,12 +54,9 @@ function dil5Hukmu(): { satir: number; metin: string; sutun: number } {
   return { satir: satir + 1, metin, sutun };
 }
 
-/** Sağlayıcının kullandığı sözce desenini kaynağından okur; ikinci bir desen yazılmaz (YUZ-1.2). */
+/** Sağlayıcının kullandığı sözce desenini modülünden okur; ikinci bir desen yazılmaz (YUZ-1.2). */
 function kodSozcukDeseni(): RegExp {
-  const kaynak = readFileSync(fileURLToPath(new URL("../src/gezinme.ts", import.meta.url)), "utf8");
-  const es = /^const KOD_SOZCUK = \/(.+)\/;$/m.exec(kaynak);
-  assert.ok(es, "gezinme.ts içinde KOD_SOZCUK deseni bulunamadı");
-  return new RegExp(es[1], "gu");
+  return new RegExp(KOD_SOZCUK.source, "gu");
 }
 
 /** VS Code `getWordRangeAtPosition` davranışının ikizi: deseni satırda gezdirir, imleci kapsayan eşleşmeyi verir. */

@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
@@ -116,6 +116,7 @@ function geriYaziciSeç(dizin: string, sozlesmeDizin?: string): SonYaz | undefin
 import { ebediEnvanter, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import { belgeMd } from "./belgele.ts";
 import { yansıt, type Yüz } from "./prizma.ts";
+import { prizmaMd } from "./prizma-md.ts";
 import { agacYüz, agacBlokUygula } from "./agac.ts";
 import { etkiMetni } from "./etki.ts";
 import { grafYuz } from "./graf.ts";
@@ -127,6 +128,17 @@ import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MT
 import type { EbediKilit } from "./kuralci.ts";
 import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
+import { sozDizimTanisi } from "./tani-metinleri.ts";
+
+/**
+ * MGZ-A03 · Sözdizimi hatasının satırı. Ayrıştırılamayan dosya öteki tanılarla
+ * aynı biçimde, kimliğiyle basılır (`✖ dosya:satır:sütun [söz-dizim] ileti`);
+ * böylece komut satırı Sorunlar panelindeki kaydın aynısını anlatır. Satır
+ * standart hata akışına gider ve çıkış kodu değişmez (davranış korunur).
+ */
+function sozDizimSatiri(dosya: string, tani: Tani): string {
+  return `✖ ${dosya}:${tani.satir}:${tani.sutun} [${tani.kod}] ${tani.mesaj}`;
+}
 
 // ── Çıkış kapısı: makine yüzü boruya EKSİKSİZ teslim edilir ─────────────────
 //   ÖLÇÜLMÜŞ KUSUR (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR · 2026-08-31). POSIX'te
@@ -563,6 +575,12 @@ if (yol === "belge-yuzleri-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = belgeYuzleriniUret(dizin);
   console.log(`📚 belge yüzleri: ${sonuc.degisen.length} değişti · ${sonuc.degismeyen.length} aynı · ${sonuc.kanonMaddesi} madde · ${sonuc.aracSayisi} araç.`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
+  // HST-MTR-A12: yüzey sayılarının okunduğu matris kaydı canlı sicilden ayrışınca üretim durmaz; sapma adıyla söylenir.
+  if (sonuc.yonlendirmeBulgusu) console.log(`⚠️ ${sonuc.yonlendirmeBulgusu}`);
   process.exit(0);
 }
 
@@ -573,21 +591,30 @@ if (yol === "kanon-tutarlilik-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = kanonTutarlilikUret(dizin);
   console.log(`⚖️ kanon tutarlılık: ${sonuc.degisti ? "tazelendi" : "aynı"} · ${sonuc.madde} madde · ${sonuc.yeni} yeni · ${sonuc.onceki} önceki · ${sonuc.emekli} emekli · ${sonuc.emeklilikBorcu} açık emeklilik borcu.`);
+  // HST-MTR-A01: taşıyıcısı belge metninden ayrışan madde, yüzü tazeleyen kişiye adıyla söylenir.
+  if (sonuc.tasiyiciAyrisan.length > 0) console.log(`⚠️ taşıyıcısı belge metninden ayrışan madde: ${sonuc.tasiyiciAyrisan.join(" · ")} (ayrıntı: is/nitelik/goc/kanon_tutarlilik.sar).`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
   process.exit(0);
 }
 
-// ── `yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]` (FEL-5 Prizma) ──
-//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan
-//    (MD 👤insan = `belge` komutu). Dört yüz de TEK parse'tan → drift imkânsız.
+// ── `yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]` (FEL-5 Prizma) ──
+//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan ·
+//    MD 👤insan (prizma-md.ts — okunur dönüşüm, KYN-KYN-A05). Dört yüz de TEK
+//    parse'tan → drift imkânsız. `belge` komutu önizleme yüzüdür (kaynak kodu
+//    kendi hâliyle gösterir) ve ayrı kalır.
 if (yol === "yansıt" || yol === "yansit") {
   const dosya = args[1];
   if (!dosya || dosya.startsWith("--")) {
-    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]");
+    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]");
     process.exit(1);
   }
-  const yüz: Yüz | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml" : args.includes("--xml") ? "xml" : undefined;
+  const yüz: Yüz | "md" | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml"
+    : args.includes("--xml") ? "xml" : args.includes("--md") ? "md" : undefined;
   if (!yüz) {
-    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan)");
+    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan) · --md (insan)");
     process.exit(1);
   }
   const yazIdx = args.indexOf("--yaz");
@@ -597,7 +624,8 @@ if (yol === "yansıt" || yol === "yansit") {
     process.exit(1);
   }
   try {
-    const çıktı = yansıt(readFileSync(dosya, "utf8"), yüz);
+    const kaynak = readFileSync(dosya, "utf8");
+    const çıktı = yüz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yüz);
     if (hedef) { writeFileSync(hedef, çıktı, "utf8"); console.log(`✅ ${yüz.toUpperCase()} yüzü yazıldı → ${hedef}`); }
     else process.stdout.write(çıktı);
     process.exit(0);
@@ -975,7 +1003,7 @@ try {
   }
 } catch (e) {
   if (e instanceof SozDizimHatasi) {
-    console.error(`✖ ${yol}:${e.satir}:${e.sutun} — ${e.message}`);
+    console.error(sozDizimSatiri(yol, sozDizimTanisi(e)));
     process.exit(2);
   }
   throw e;
@@ -1028,7 +1056,7 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   const s = denetimKos(dizin, { anaYolu, bugun, snfYol: SNF_YOL, tamListe });
   if (s.sozdizimHata) {
     const h = s.sozdizimHata;
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));
     return s.cikis;
   }
   // göç motor turu A02 kapanışı (Karar A · ikinci parça): `--tanı <kod>` süzgeci hem kanonik
@@ -1193,7 +1221,7 @@ function yardimMetni(): string {
     grup("🌳 TEKİL DOSYA YÜZLERİ (Prizma — kaynak asla değişmez)", [
       "<dosya.sar> [--iskelet <hedef>]             Dosyayı ayrıştırır, ağacını ve drift tanılarını basar; --iskelet ile klasör/dosya iskeleti üretir.",
       "belge <dosya.sar> [--yaz <hedef.md>]        İnsan-okur Markdown yüzünü üretir.",
-      "yansıt <dosya.sar> --json|--yaml|--xml      Makine/config/ajan yüzünü üretir (JSON · YAML · XML).",
+      "yansıt <dosya.sar> --json|--yaml|--xml|--md Makine/config/ajan/insan yüzünü üretir (JSON · YAML · XML · okunur MD).",
       "agac <dosya.sar> [--kod] [--kok K] [...]    Klasör-ağacı çizimini basar (├──/└──).",
       "tema-md <dosya> [--dışa]                    DESIGN.md standardı ile Sarmal Tema kaynağı arasında dönüştürür.",
     ]),
@@ -1428,7 +1456,7 @@ function kilitleKomutu(dizin: string): number {
   const { programlar, muaflar, hatalar } = programlariYukle(dizin);
   if (hatalar.length) {
     const h = hatalar[0];
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));   // MGZ-A03: denetimle aynı biçim ve kimlik
     return 2;
   }
   if (muaflar.size) console.log(`ℹ ${muaflar.size} dosya bilerek-hatalı — parse edilenler envantere girer, bozuk olanlar mühürlemeyi kesmez.`);
@@ -1448,12 +1476,16 @@ function kilitleKomutu(dizin: string): number {
   return 0;
 }
 
-/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir). */
+/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir).
+ *  MGZ-A06: konumsuz tanı anlattığı dosyayı ya da klasörü `hedefDosya` alanında
+ *  taşıyorsa konum sütununa o hedef, denetlenen köke göreli olarak basılır; kayıt
+ *  yine giriş dosyasının bulgusudur, okuyucu ise bulgunun anlattığı yeri görür. */
 function raporla(kaynak: string, tanilar: Tani[]): void {
   if (tanilar.length === 0) return;
   const im = (d: string): string => (d === "hata" ? "✖" : d === "uyarı" ? "⚠" : "ℹ");
   for (const t of tanilar) {
-    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}` : "";
+    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}`
+      : t.hedefDosya ? ` ${posix.join(posix.dirname(kaynak), t.hedefDosya)}` : "";
     console.log(`${im(t.duzey)}${konum} [${t.kod}] ${t.mesaj}`);
     if (t.oneri) console.log(`   ↳ ${t.oneri}`);
   }

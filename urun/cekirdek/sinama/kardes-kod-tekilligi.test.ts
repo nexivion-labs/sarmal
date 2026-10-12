@@ -176,8 +176,13 @@ test("KPS-KOD-A01 · ad alanlı atıf (`PRJ-A::KOD`) kardeşin AYRIŞTIRILMIŞ d
         }
       }`,
   }));
-  assert.deepEqual(dag.dugumler.get("ADM-KUAFOR-EK")!.oncekiler, ["PRJ-BERBER::ADM-KURULUS-01"]);
+  // KPS-SIR-A01 (MIM-1.2): ek plan dosyasının Fazı artık kendi Projesinin doğuş
+  // Fazıyla tek zincirdedir (2026-09 → 2026-10); iki öncül Faz sırasından, biri ad
+  // alanlı açık kenardan gelir ve kardeş projenin zinciri bu Fazın zincirine girmez.
+  assert.deepEqual([...dag.dugumler.get("ADM-KUAFOR-EK")!.oncekiler].sort(),
+    ["PRJ-BERBER::ADM-KURULUS-01", "PRJ-KUAFOR::ADM-KURULUS-01", "PRJ-KUAFOR::ADM-KURULUS-02"]);
   assert.ok(dag.dugumler.get("PRJ-BERBER::ADM-KURULUS-01")!.sonrakiler.includes("ADM-KUAFOR-EK"));
+  assert.ok(!dag.fazKenari?.has("PRJ-BERBER::ADM-KURULUS-01\u0000ADM-KUAFOR-EK"), "ad alanlı kenar açık kenardır, Faz sırasından gelmez");
   assert.deepEqual(dag.kopuk, []);
 });
 
