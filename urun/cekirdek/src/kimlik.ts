@@ -25,7 +25,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname, resolve, basename } from "node:path";
+import { join, dirname, resolve, basename, isAbsolute } from "node:path";
 import { belirtecle } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import type { Deger, Dugum, DugumTuru, Program } from "./sozdizim.ts";
@@ -638,9 +638,10 @@ export interface CatiKapsami {
  * ebeveynine görelidir: `Kitaplık( yol: "oz/" ) { Raf( yol: "siniflama/" ) }`
  * yazımında iç rafın yolu çatı köküne değil `oz/` klasörüne görelidir ve
  * düzleştirilirse çatı köküne "siniflama/" diye yanlış bir kapsam yazılır.
- * `catiKardesleri` düzleştirmeyi kaldırabilir, çünkü orada uydurma bir yol
- * diskte karşılık bulamayıp sessizce düşer; burada ise grafa KENAR yazılır ve
- * yanlış bir kenar sessizce düşmez, yanlış aidiyeti gerçek gibi gösterir.
+ * `catiKardesleri` iç içe yolları ebeveynleriyle birleştirerek okur
+ * (BKM-OLG-A14); düzleştirilmiş bir yol orada kardeş kökü sessizce
+ * kaybettiriyordu. Burada ise grafa KENAR yazılır ve yanlış bir kenar sessizce
+ * düşmez, yanlış aidiyeti gerçek gibi gösterir.
  */
 function catiRafYollari(ca: Dugum): string[] {
   const yollar: string[] = [];
@@ -888,13 +889,18 @@ function calismaAlaniRaflari(program: Program): string[] {
       // alanına yapısal olarak kör kalıyordu: kardeş kök bulunamadığı için doğru
       // yazılmış bir çapraz atıf "ad alanı görünmüyor" hükmü alıyordu. İki tip de
       // okunur; `Raf` hükümden önce doğmuş çatılar için geriye dönük uyumdur.
-      for (const tip of ["Kitaplık", "Raf"]) {
-        widgetGez(ca, tip, (dugum) => {
-          const yol = [...dugum.parametreler, ...dugum.ozellikler]
-            .find((x) => x.ad === "yol" && x.deger.tur === "metin")?.deger.metin;
-          if (yol && !yollar.includes(yol)) yollar.push(yol);
-        });
-      }
+      // İÇ İÇE KİTAPLIK (BKM-OLG-A14): `yol` kendi ebeveynine görelidir; iç
+      // düğümün yolu üst Kitaplığın yoluyla birleştirilir (bkz. catiRafYollari).
+      const gez = (ebeveyn: Dugum, onek: string): void => {
+        for (const c of ebeveyn.cocuklar) {
+          if (c.tur !== "widget") continue;
+          const yol = c.ad === "Kitaplık" || c.ad === "Raf" ? widgetAlani(c, "yol") : undefined;
+          const tam = yol ? (isAbsolute(yol) ? yol : join(onek, yol)) : onek;
+          if (yol && !yollar.includes(tam)) yollar.push(tam);
+          gez(c, tam);
+        }
+      };
+      gez(ca, "");
     });
   }
   return yollar;
