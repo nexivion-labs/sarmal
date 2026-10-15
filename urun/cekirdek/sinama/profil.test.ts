@@ -156,6 +156,56 @@ test("sıradan sayı dizileri kişisel veri sayılmaz: tarih, sürüm, kod, saat
   assert.deepEqual(kisiselVeriTurleri("TR00 0000 0000 0000 0000 0000 01"), []);
 });
 
+// ── Bağımsız inceleme bulguları (2026-10-15): yanlış pozitifler ve kaçaklar ──
+test("adres: tek başına sokak, cadde ya da No: sözcüğü ve semt anması adres sayılmaz", () => {
+  for (const deger of [
+    "Sokak lezzetleri sunan bir büfe", "sokak yemekleri", "Ana cadde üzerinde", "Sokak hayvanları derneği",
+    "Sipariş No: 5 ile takip edilir", "Karar No. 3 uyarınca", "Fatura no:2026001",
+    "Bağdat Caddesi'nin sevilen kafesi", "Moda Mahallesi'nde 2015'ten beri",
+  ]) {
+    assert.deepEqual(kisiselVeriTurleri(deger), [], deger);
+  }
+  // Belge bloğunda da aynı ölçü geçerlidir.
+  const k = `-->|\nFatura no:2026001 ile kesilir; Sokak lezzetleri sunulur.\n|<--\nProfil( kod: PFL-ORNEK, ad: "Örnek Büfe", ne: "Büfe.", sektör: "sokak yemekleri", şehir: "Ankara" )`;
+  assert.deepEqual(profilTanilari(harita({ "musteri/profil.sar": k }), SNF), []);
+});
+
+test("adres: sokak ya da mahalle adı ile kapı numarası aynı satırda birlikte geçince yakalanır", () => {
+  for (const deger of ["Deneme Sokak No: 5", "Örnek Mahallesi No:12 Daire 3", "Deneme Caddesi No. 7", "Uydurma Bulvarı 14/2"]) {
+    assert.deepEqual(kisiselVeriTurleri(deger), ["açık adres"], deger);
+  }
+});
+
+test("telefon: tireli kodlar, uzun kimlikler ve sıradan sayı dizileri telefon sayılmaz", () => {
+  for (const deger of [
+    "SIP-20261015-0001", "ORD-2026-1015-001", "SIP_05001234567", "VKN 1234567890", "vergi no 1234567890", "vergi no 0123456789",
+    "ISBN 978-0-306-40615-7", "GTIN 8690000000001", "barkod 036000291452", "20261015143000",
+    "2026-10-15T14:30:00Z", "2026-2027-2028 dönemi", "1 2 3 4 5 6 7 8 9 10", "ciro 2 500 000 000 TL",
+  ]) {
+    assert.deepEqual(kisiselVeriTurleri(deger), [], deger);
+  }
+});
+
+test("telefon: gerçekçi biçimli uydurma numaralar yakalanmaya devam eder, dokuz hane telefon değildir", () => {
+  for (const deger of ["0 500 000 00 00", "0500 000 00 00", "05000000000", "+90 500 000 00 00", "+49 30 1234 5678", "(0500) 000 00 00"]) {
+    assert.deepEqual(kisiselVeriTurleri(deger), ["telefon"], deger);
+  }
+  assert.deepEqual(kisiselVeriTurleri("0 500 000 00"), [], "dokuz haneli dizi telefon sayılmamalı");
+});
+
+test("kart: Luhn tutmayan on altı haneli gruplu dizi kart sayılmaz", () => {
+  const bozuk = KART.slice(0, 15) + String((Number(KART[15]) + 1) % 10);
+  assert.deepEqual(kisiselVeriTurleri(bozuk.replace(/(.{4})/g, "$1 ").trim()), []);
+});
+
+test("kişiler düz metin yazılınca yapısız kişi kaydı hatası doğar", () => {
+  const k = `Profil( kod: PFL-ORNEK, ad: "Örnek Fırın", ne: "Fırın.", sektör: "gıda", şehir: "Ankara", kişiler: "Deneme Kişi Bey" )`;
+  const t = profilTanilari(harita({ "musteri/profil.sar": k }), SNF);
+  assert.deepEqual(t.map((x) => x.tani.kod), ["profil-kişisel-veri"]);
+  assert.match(t[0].tani.mesaj, /yapısız/);
+  assert.ok(!t[0].tani.mesaj.includes("Deneme Kişi Bey"));
+});
+
 test("profil-çift: aynı proje kökünde ikinci Profil hata alır, kardeş kök etkilenmez", () => {
   const ana = (kod: string) => `Proje( kod: ${kod}, ad: "Kök", ne: "Kök.", rejim: esnek )`;
   const prf = (kod: string) => `Profil( kod: ${kod}, ad: "Örnek", ne: "Örnek.", sektör: "gıda", şehir: "Ankara" )`;

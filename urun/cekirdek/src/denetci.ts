@@ -2035,16 +2035,29 @@ export function kisiselVeriTurleri(metin: string): string[] {
     // Tek rakamın yinelendiği dizi (0000 0000 …) Luhn'u geçer ama kart değildir.
     return r.length >= 13 && r.length <= 19 && !/^(\d)\1+$/.test(r) && luhnGecerli(r);
   }, "kart");
+  // Harf önekli kod gövdeleri (SIP-20261015-0001 · ORD-2026-1015-001 · SIP_05001234567) kimliktir,
+  // telefon değildir; rakam taşıyan tireli kod bütün olarak düşer.
+  s = s.replace(/(?<![\p{L}\p{N}])\p{L}[\p{L}\p{N}]*(?:[-_][\p{L}\p{N}]+)+/gu, (m) => (/\d/.test(m) ? " ".repeat(m.length) : m));
   // Tarih (2026-10-15 · 15.10.2026) ve saat (14:30) telefon adayından önce düşer.
   s = s.replace(/\d{4}-\d{2}-\d{2}|\d{1,2}[./]\d{1,2}[./]\d{2,4}|\d{1,2}:\d{2}(?::\d{2})?/g, (m) => " ".repeat(m.length));
-  maskele(/(?<![\p{L}\p{N}.])\+?\(?\d[\d ()-]{7,}\d(?![\p{L}\p{N}.])/gu, (m) => {
+  // Telefon biçim başı ister: ülke kodu (+90 · +49) ya da yurt içi sıfır (0 5xx · (0500)).
+  // Vergi numarası, barkod, ISBN, ciro ve dönem dizileri bu başı taşımaz. Ayraçsız
+  // yazılmış sıfırlı dizi yalnız on bir haneyse telefondur (05xxxxxxxxx); ayraçlı
+  // yazımda her grup en çok sekiz hanedir ve aday tireli bir dizinin ortasından başlamaz.
+  maskele(/(?<![\p{L}\p{N}.+\-])(?:\+\d{1,3}|\(?0)[\d ()-]{7,}\d(?![\p{L}\p{N}.])/gu, (m) => {
     const r = m.replace(/\D/g, "");
-    return r.length >= 10 && r.length <= 13;
+    const ulkeli = m.startsWith("+");
+    if (r.length < 10 || r.length > (ulkeli ? 13 : 11)) return false;
+    const ayracli = /[ ()-]/.test(m.replace(/^\(/, ""));
+    if (!ayracli) return ulkeli || r.length === 11;
+    return m.split(/[ ()-]+/).filter(Boolean).every((g) => g.replace(/\D/g, "").length <= 8);
   }, "telefon");
-  const adres =
-    /(?<!\p{L})(?:sokak|sokağı|sok\.|sk\.|cadde|caddesi|cad\.|cd\.|bulvarı|blv\.)(?!\p{L})/iu.test(s) ||
-    /(?<!\p{L})(?:mahallesi|mah\.|mh\.)(?!\p{L})[^\n]*\d/iu.test(s) ||
-    /(?<!\p{L})no\s*[:.]\s*\d/iu.test(s);
+  // Açık adres birleşik kanıt ister: aynı satırda bir sokak, cadde, bulvar ya da
+  // mahalle adı İLE bir kapı numarası (No: 5 · No. 7 · 14/2); noktalı virgül cümleyi böler. Tek başına sokak
+  // sözcüğü, tek başına "No: 5" ya da semt anması adres değildir.
+  const yerAdi = /(?<!\p{L})(?:sokak|sokağı|sok\.|sk\.|cadde|caddesi|cad\.|cd\.|bulvar|bulvarı|blv\.|mahalle|mahallesi|mah\.|mh\.)(?!\p{L})/iu;
+  const kapiNo = /(?<!\p{L})no\s*[:.]?\s*\d+|(?<![\d.])\d{1,4}\s*\/\s*\d{1,4}(?![\d.\/])/iu;
+  const adres = s.split(/[\n;]/).some((satir) => yerAdi.test(satir) && kapiNo.test(satir));
   if (adres) turler.push("açık adres");
   return turler;
 }
@@ -2093,6 +2106,8 @@ export function profilTanilari(
     for (const p of alanlar) {
       const konum = { satir: p.satir, sutun: p.sutun };
       tara(p.deger, p.ad, konum);
+      // Kişiler bir liste olmalıdır; düz metin yazılmış kişi yapısız kayıttır.
+      if (p.ad === "kişiler" && p.deger.tur !== "liste") kaydet("kişiler", ["kişi alanı (yapısız kayıt)"], konum);
       if (p.ad === "kişiler") {
         (p.deger.ogeler ?? []).forEach((o, i) => {
           const izinsiz = o.tur === "harita"
