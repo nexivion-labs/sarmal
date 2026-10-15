@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `4b40464e02a46ea3e929ca75b1fb5447b92a9b29fb879270f49228f6660c333d` |
+| `yasa/kanon demeti (A03 formülü)` | `d2b6840e29b5785e7a0cabc83348c4265e0c100f8beac765f5a11a52205e40eb` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
@@ -40,6 +40,12 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-15 · Profil maddesinin bilinen sınırı · BKM-OLG-A13 üçüncü
+teslim): TIP-1.17 maddesinin Zorlama satırına açık adres tanımanın Türkçe yer adı
+işaretleriyle ve tek satırla sınırlı olduğunu söyleyen bir cümle eklendi. Yalnız
+`tip.sar` dosyasının baytları değişti ve kanon demeti ilerledi; öteki sekiz kaynağın
+mührü değişmedi.
 
 Tazeleme notu (2026-10-15 · Profil maddesinin yüzey beyanı · BKM-OLG-A13 ikinci
 teslim): TIP-1.17 maddesinin Zorlama satırında genel eksik alan uyarısını anan ters
