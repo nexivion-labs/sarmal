@@ -577,6 +577,63 @@ test("KPS-ADA-A01: çatı kardeşleri KİTAPLIK olarak duyurulduğunda da okunur
   }
 });
 
+/** BKM-OLG-A14 · İÇ İÇE KİTAPLIK. Çatı ilanındaki `yol` değeri kendi ebeveynine
+ *  görelidir: `Kitaplık( yol: "teslim/" ) { Kitaplık( yol: "musteri-a/" ) }`
+ *  yazımında iç projenin kökü `teslim/musteri-a/` klasörüdür. Okuyucu iç yolu
+ *  çatı köküne göre çözüyordu; kardeş kök `<kök>/musteri-a/` diye aranıp
+ *  bulunamıyor ve o projeye yazılmış doğru bir ORK-4 atfı "ölçülemez, muaf"
+ *  uyarısı alıyordu. Fikstür iki yönü birlikte sınar: tek düzeyli projeden iç
+ *  içe projeye ve iç içe projeden tek düzeyli projeye (eski yazım bozulmamalı). */
+test("BKM-OLG-A14 · ORK-4: iç içe Kitaplık altındaki kardeş proje üst Kitaplığın yoluyla çözülür, tek düzeyli yazım bozulmaz", async () => {
+  const { adAlanliTanimlar, adAlaniKapsamiKur, catiKardesleri, kardesOnbelleginiTemizle } = await import("../src/kimlik.ts");
+  const { spawnSync } = await import("node:child_process");
+  const { fileURLToPath } = await import("node:url");
+  const { join } = await import("node:path");
+
+  const cati = calismaAlaniKur({ ad: "ornek-cati", onek: "sarmal-ic-ice-ktp-",
+    projeler: [{ ad: "ornek-urun" }, { ad: "musteri-a", klasor: "teslim/musteri-a" }] });
+  try {
+    const urun = cati.projeler.get("ornek-urun")!;
+    const musteri = cati.projeler.get("musteri-a")!;
+    assert.ok(musteri.kok.endsWith(join("teslim", "musteri-a")), musteri.kok);
+    musteri.yaz(planYolu("teslim_karari.sar"), 'Karar( kod: KRR-TESLIM, durum: kilitli, ne: "teslim kararı", karar: "k", gerekçe: "g" )');
+    urun.yaz(planYolu("urun_karari.sar"), 'Karar( kod: KRR-URUN, durum: kilitli, ne: "ürün kararı", karar: "k", gerekçe: "g" )');
+    const urunPlan = urun.yaz(planYolu("atif.sar"), "// atıf: PRJ-MUSTERI-A::KRR-TESLIM\n");
+    const musteriPlan = musteri.yaz(planYolu("atif.sar"), "// atıf: PRJ-ORNEK-URUN::KRR-URUN\n");
+
+    kardesOnbelleginiTemizle();
+    const kokler = new Map(catiKardesleri(urun.kok).map((k) => [k.kod, k.kok]));
+    assert.equal(kokler.get("PRJ-MUSTERI-A"), musteri.kok,
+      "iç içe Kitaplık altındaki projenin kökü üst Kitaplığın yoluyla birleşmeli (teslim/musteri-a/)");
+    assert.equal(kokler.get("PRJ-ORNEK-URUN"), urun.kok, "tek düzeyli projenin kökü değişmemeli");
+
+    const icIce = adAlanliTanimlar("PRJ-MUSTERI-A::KRR-TESLIM", urunPlan);
+    assert.equal(icIce.length, 1, "iç içe projeye ad alanlı atıf kardeş kökte çözülmeli");
+    assert.ok(icIce[0].dosya.startsWith(musteri.kok), icIce[0].dosya);
+    const tek = adAlanliTanimlar("PRJ-ORNEK-URUN::KRR-URUN", musteriPlan);
+    assert.equal(tek.length, 1, "iç içe projeden tek düzeyli projeye atıf çözülmeye devam etmeli");
+    assert.ok(tek[0].dosya.startsWith(urun.kok), tek[0].dosya);
+
+    // Denetimin "ölçülemez" hükmünü veren yüklem: ad alanı çatıdan bilinmeli.
+    const kapsam = adAlaniKapsamiKur({ kapsamlar: [], tanimDosyalari: () => [], kokDizin: urun.kok });
+    assert.equal(kapsam.adAlaniBilinir("PRJ-MUSTERI-A"), true, "iç içe kardeş ad alanı bilinmeli; bilinmezse atıf muaf sayılır");
+    assert.equal(kapsam.kardesKok("PRJ-MUSTERI-A"), musteri.kok);
+
+    // Uçtan uca: kullanıcının koştuğu CLI denetimi gerçek bir `uygular:` kenarını ölçer.
+    urun.yaz(planYolu("atif.sar"),
+      'Karar( kod: KRR-URUN-BAG, durum: kilitli, ne: "bağ", karar: "k", gerekçe: "g", uygular: PRJ-MUSTERI-A::KRR-TESLIM )\n');
+    kardesOnbelleginiTemizle();
+    const r = spawnSync(process.execPath, [fileURLToPath(new URL("../src/sarmal.ts", import.meta.url)), "denetle", urun.kok],
+      { encoding: "utf8", env: { ...process.env, NO_COLOR: "1" } });
+    const cikti = `${r.stdout}${r.stderr}`;
+    const ilgili = cikti.split("\n").filter((s) => s.includes("PRJ-MUSTERI-A::KRR-TESLIM"));
+    assert.deepEqual(ilgili, [], `iç içe kardeşe yazılmış doğru atıf hiçbir tanı almamalı:\n${ilgili.join("\n")}`);
+  } finally {
+    cati.sil();
+    kardesOnbelleginiTemizle();
+  }
+});
+
 /** Canlı depo nöbeti: bu deponun KENDİ ad alanlı atfı çözülmeli. Ölçülen kusurun
  *  birebir ikizidir ve kaynak değişirse kırmızı yanar. */
 test("KPS-ADA-A01 · canlı: bu deponun PRJ-SARMAL::TAKIM-CEKIRDEK atfı gezin yüzünde çözülür", async () => {

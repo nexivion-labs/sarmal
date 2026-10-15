@@ -1304,7 +1304,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
           ]
           sınır: "Founder kararı olmadan terfi yapılmaz ve insan işi için tür tasarlanmaz"
         }
-        Adım( kod: BKM-OLG-A14, ad: "İç İçe Kitaplıktaki Kardeş Projenin Yolu", durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4 ],
+        Adım( kod: BKM-OLG-A14, ad: "İç İçe Kitaplıktaki Kardeş Projenin Yolu", durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4 ], üretir: [ KOD-KIMLIK, KOD-SNM-KIMLIK ],
           ne:    "🧭 Çatı ilanında iç içe bir Kitaplığın altında duyurulan kardeş projenin kökü, üst Kitaplığın yoluyla birleştirilmeden çatı köküne göre aranmaktadır. Bu yüzden o projeye yazılan doğru bir ORK-4 atfı hedefini bulamamakta ve ölçülemez muafiyeti olarak bildirilmektedir; çatı ilanındaki yol değeri kendi ebeveynine görelidir ve kardeş kök çözümü bu kuralı uygulamalıdır" ) {
           görev: "Kimlik modülündeki çatı kardeşi okuyucusunu, ÇalışmaAlanı altındaki Kitaplık ve Raf düğümlerini ağaç olarak gezip her düğümün yolunu üst düğümlerinin yollarıyla birleştirecek biçimde düzelt. Önce nötr bir fikstürle kırmızı sınama yaz: iç içe Kitaplık altındaki kardeş projeye ad alanlı atıf çözülmeli ve tek düzeyli eski yazım bozulmamalıdır. Ardından en küçük düzeltmeyi yap ve sınamanın kusuru yakaladığını mutasyonlarla kanıtla"
           kabul: [
