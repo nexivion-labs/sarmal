@@ -40,7 +40,7 @@ const KANON_SHA = [
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
-  "tip.sar:4b859c077eacf72582b571927be54f0ef5b34bec05b7559a576f548ccb59a236",
+  "tip.sar:05e1fe8370841225ba6b3337c3fbf44a5e1a80602a906b239d0c52bcf1bec5c1",   // BKM-OLG-A13: TIP-1.3 Profil ile genişledi, TIP-1.17 doğdu
   "yas.sar:23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40",
   "yuz.sar:439364007d1ade1ae1a5f11f3b8d36db9582f884913b11b1f6efe68a808ffe02",
 ] as const;

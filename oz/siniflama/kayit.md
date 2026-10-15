@@ -11,12 +11,12 @@ Bu giriş elle korunur. Makine envanteri yalnız `oz/siniflama/kayit.json` kayna
 
 ## 📇 Makine Envanteri (kayit.json'dan üretilir — tek gerçek)
 
-**14 aile · 101 widget tipi · 20 kenar tipi**
+**14 aile · 102 widget tipi · 20 kenar tipi**
 
 | Aile | Tip sayısı | Tipler |
 |---|---|---|
 | **arkayuz** | 12 | Servis · Uç · Tablo · KimlikPolitikası · KimlikKökü · KimlikSağlayıcısı · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli |
-| **bilgi** | 8 | Karar · Formül · Sözlük · Fikir · Çıkarım · Deney · Felsefe · Mockup |
+| **bilgi** | 9 | Karar · Formül · Sözlük · Fikir · Çıkarım · Deney · Felsefe · Mockup · Profil |
 | **davranis** | 2 | Canlandırma · Durum |
 | **etmen** | 5 | Etmen · Yetenek · Beceri · Bellek · Tetikleyici |
 | **nitelik** | 6 | Sınama · Değerlendirme · Metrik · Log · Güvenlik · Kapsama |
@@ -127,6 +127,7 @@ Bu tablo kayıtlı bütün widget tiplerini gösterir. `—`, o tip için ilgili
 | Önbellek | ["kod","ne"] | — | — | — | — | — | — | — | — | — | — |
 | ÖzelKural | ["kod","ne","hedef"] | — | — | — | ["kapsam (serbest-seçici — joker genel \| aile \| tip \| KOD)","koşul (bugünkü ifade dili — yapısal ve eşik katmanında motor değerlendirir)","ihlal","düzey (hata\|uyarı\|bilgi)","tanı (liste — bu kuralı zorlayan motor tanı kodları; her kod tanı sicilinde doğrulanır)"] | {"otorite":["anayasa","politika","tercih"],"katman":["yapısal","eşik","niyet"]} | — | — | — | — | "ÖzelKural, `hedef:` alanında yazılı dizine inen Kural'dır; tipi diğerinden ayıran şey kapsamıdır. Hedefin dışındaki dosyalarda yapısal ve eşik değerlendirmesi atlanır. Ayrı bir değerlendirici yoktur: kural motoru aynıdır." |
 | Politika | ["kod","alan","ne"] | — | — | — | ["dayanak"] | {"alan":["öğrenme","maliyet","güvenlik","hız","içerik"]} | — | — | — | — | "Politika, dayandığı Karar kaydına `dayanak:` kenarıyla bağlanır." |
+| Profil | ["kod","ad","ne","sektör","şehir"] | — | — | — | ["bölge","unvan","hizmetler","marka","kanallar (harita: kanal adı → kullanıcı adı ya da alan adı)","kişiler (liste: her öğe yalnız hitap, rol ve sorumluluk anahtarlarını taşıyan bir harita)","uygular","referans","görünürlük"] | — | — | — | — | ["bir proje kökünde tek Profil bulunur (profil-çift)","kişi kaydı yalnız hitap, rol ve sorumluluk taşır; soyadı ya da iletişim alanı yoktur (profil-kişisel-veri)","hiçbir alan telefon, e-posta, IBAN, kart numarası ya da açık adres taşımaz (profil-kişisel-veri)"] | "Profil, bir proje kökünün kimlik kartıdır ve bir yapraktır: Proje, Kitaplık ya da Raf altında yaşar, çocuk taşımaz. Zorunlu alanın hiç yazılmadığı hâli genel eksik-alan uyarısı, yazılmış ama boş ya da yer tutucu kalmış hâli profil-eksik-alan uyarısı bildirir. Kişiler ayrı düğüm değildir, çünkü kişi düğümü kişisel veri yüzeyini büyütür; kişi yalnız hitap ve rolle anılır. Telefon, e-posta, IBAN, kart numarası ve açık adres deseni profil-kişisel-veri hatasıdır ve tanı metni bulduğu değeri yinelemez. Görünürlük için gizli önerilir." |
 | Proje | ["kod"] | — | — | — | ["önekler","biçimMuafları"] | {"rejim":["katı","esnek"],"görünürlük":["açık","gizli"]} | {"önekler":"liste","biçimMuafları":"liste"} | — | ["Amaç","Kapsam","Sonuç"] | — | "Rejim sözleşmesi (YAS-1 ailesi): katı rejimde her Katman→Adım sarma yolu en az bir AltKatman'dan geçer ve Katman'ın doğrudan Adım taşıması yasaktır (YAS-1.1 · zorlama tanısı katı-rejim-altkatman-eksik motor borcunda); yalnız esnek beyanlı küçük veya deneysel Projelerde Katman doğrudan Adım taşıyabilir ve bu izin AltKatman'ı yasaklamaz (YAS-1.2); rejim yalnız açık kullanıcı değişikliğiyle geçer, yapı otomatik sarılmaz, taşınmaz veya silinmez ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır (YAS-1.3)" |
 | Raf | ["kod","ne"] | — | — | — | ["yol (rafın göreli klasör yolu — kardeş Kitaplık tipinde aynı ad aynı anlamla ZORUNLUDUR ve Raf tipinin kendi kanonik tarifi de 'yeri yol: parametresinden gelir' der; ilan edilmemiş fakat kanonun kendi metninde zaten anlatılmış alan kayda geçirildi)"] | — | — | — | — | — | — |
 | Satır | ["kod"] | — | — | — | ["ne (kodu üretecek çevirmen için şarttır — tarif-eksik bekçisi henüz beklemededir, alan dürüst beyanla doldurulur)","erişilebilirlik","veriAnahtarı","olaylar"] | — | — | — | — | — | — |

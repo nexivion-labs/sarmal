@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: üretilen yazılım (meyve 🍎 — kod·sınama-dışı artefakt). Ailede 7 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: d87c23f9
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->

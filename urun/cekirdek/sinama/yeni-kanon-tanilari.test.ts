@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
-  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari, kodStandardiTanilari,
+  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari, kodStandardiTanilari, profilTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -1173,6 +1173,21 @@ test("proje: önek sicili beyan eden projede ilansız önek ve biçim dışı ko
   uretildi("ilansız-önek", t);
   uretildi("kod-biçimi-uyumsuz", t);
   assert.ok(t.every((x) => x.tani.duzey === "uyarı"), "DIL-1.8 tanıları uyarıyı aşamaz");
+});
+
+test("proje: Profil tipinin üç tanısı TIP-1.17 düzeyinde doğar (BKM-OLG-A13)", () => {
+  // Fikstür değerlerinin tamamı uydurmadır; e-posta ayrılmış örnek alan adını taşır.
+  const programlar = harita({
+    "p/p_anadizin.sar": `Proje( kod: PRJ-P, rejim: esnek, ne: "p" )\n`,
+    "p/kimlik/profil.sar": `Profil( kod: PFL-P, ad: "Örnek", ne: "Örnek.", sektör: "", şehir: "Ankara", bölge: "iletisim@ornek.example" )\n`,
+    "p/kimlik/ikinci.sar": `Profil( kod: PFL-P2, ad: "Örnek", ne: "Örnek.", sektör: "gıda", şehir: "Ankara" )\n`,
+  });
+  const t = profilTanilari(programlar, SNF);
+  uretildi("profil-eksik-alan", t);
+  uretildi("profil-kişisel-veri", t);
+  uretildi("profil-çift", t);
+  assert.deepEqual(t.map((x) => [x.tani.kod, x.tani.duzey]),
+    [["profil-eksik-alan", "uyarı"], ["profil-kişisel-veri", "hata"], ["profil-çift", "hata"]]);
 });
 
 test("kapanış: YETMİŞ BİR kimliğin tamamı fikstürle kanıtlanmış olmalı", () => {

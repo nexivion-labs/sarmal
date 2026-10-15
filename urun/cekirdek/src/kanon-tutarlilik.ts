@@ -57,6 +57,9 @@ import type { Deger, Dugum } from "./sozdizim.ts";
 //   üçten yüz yirmi dörde, kanon yüz altmış birden yüz altmış ikiye çıktı.
 //   2026-10-10 (HST-MTR-A02): sayı motordaki, üreticideki ve sınamalardaki
 //   dağınık dondurmalardan bu tek kayda taşındı; değer değişmedi.
+//   2026-10-15 (BKM-OLG-A13 · Founder onayı): TIP-1.17 Profil tipi maddesi Kural
+//   olarak doğdu ve Kural kümesi yüz yirmi dörtten yüz yirmi beşe, kanon yüz
+//   altmış ikiden yüz altmış üçe çıktı; Karar sayısı değişmedi.
 
 /** Kanonun dondurulmuş sayımı: `yasa/kanon/` altındaki bölüm dosyası, Karar ve Kural sayısı. */
 export interface KanonSayimi {
@@ -71,7 +74,7 @@ export interface OlculenKanonSayimi extends KanonSayimi {
 }
 
 /** TEK KAYIT. Kanon meşru biçimde büyüdüğünde ya da küçüldüğünde yalnız burası değişir. */
-export const KANON_SAYIMI: KanonSayimi = { dosya: 8, karar: 38, kural: 124 };
+export const KANON_SAYIMI: KanonSayimi = { dosya: 8, karar: 38, kural: 125 };
 
 /** Kaydın depo köküne göre yeri; bulgu ve belge metinleri bu adresi verir. */
 export const KANON_SAYIMI_KAYDI = "urun/cekirdek/src/kanon-tutarlilik.ts";
@@ -169,6 +172,9 @@ export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayi
 //   2026-10-10 (RFM-MOTOR-A02 · Founder onayı): DIL-1.8 düğüm kodu standardının iki tanısı,
 //   `ilansız-önek` ile `kod-biçimi-uyumsuz`, kanonun yazdığı uyarı düzeyinde doğdu; yeni küme
 //   doksan birden doksan üçe çıktı ve dağılım 48/24/21 oldu. Öteki kümeler değişmedi.
+//   2026-10-15 (BKM-OLG-A13 · Founder onayı): TIP-1.17 Profil tipinin üç tanısı doğdu,
+//   yani `profil-kişisel-veri` ile `profil-çift` hata, `profil-eksik-alan` uyarı düzeyinde;
+//   yeni küme doksan üçten doksan altıya çıktı ve dağılım 50/25/21 oldu. Öteki kümeler değişmedi.
 
 /** Tanı kümelerinin dondurulmuş sayımı. Yeni kümenin büyüklüğü üç düzeyin toplamıdır. */
 export interface TaniKumesiSayimi {
@@ -200,7 +206,7 @@ export interface OlculenTaniKumesi extends TaniKumesiSayimi {
 
 /** TEK KAYIT. Sicil meşru biçimde büyüdüğünde, küçüldüğünde ya da bir tanının düzeyi değiştiğinde yalnız burası değişir. */
 export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = {
-  yeni: { hata: 48, uyari: 24, bilgi: 21 },
+  yeni: { hata: 50, uyari: 25, bilgi: 21 },
   onceki: 101,
   siniflamaTurevli: 9,
   emekli: 16,

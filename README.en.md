@@ -189,7 +189,7 @@ Sarmal collects no data: the engine runs on your machine, your plan never leaves
 
 ## Shelf map
 
-[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 162 unique articles, 38 Decisions and 124 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
+[`yasa/kanon/`](yasa/kanon/) is the only address of the canon: eight section files hold 163 unique articles, 38 Decisions and 125 Rules. [`oz/siniflama/`](oz/siniflama/) is the type system; [`ogreti/`](ogreti/) carries templates, examples and teaching surfaces; [`is/`](is/) is Sarmal's own plan, status record and reminders; [`urun/cekirdek/`](urun/cekirdek/) is the engine, CLI and MCP server, [`urun/eklenti/`](urun/eklenti/) the VS Code extension. Documents are derived reading surfaces, not a second canon.
 
 ## Learn
 
@@ -201,5 +201,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 48 errors, 24 warnings, and 21 informational diagnostics. The fixed registry routing matrix sends 153 items to Problems, 3 to Reminders, and 38 to Notifications (Observations). 193 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 50 errors, 25 warnings, and 21 informational diagnostics. The fixed registry routing matrix sends 156 items to Problems, 3 to Reminders, and 38 to Notifications (Observations). 196 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

@@ -126,6 +126,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "kitapliksizKokTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },   // MIM-3.2 · Kitaplık kademesi (KPS-CEL-A01)
   // RFM-MOTOR-A02: DIL-1.8 düğüm kodu standardı — anadizin önek sicilini okur, proje kapsamında koşar.
   { uretici: "kodStandardiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
+  // BKM-OLG-A13 (TIP-1.17): Profil tipinin üç tanısı — en yüksek kademesi hatadır (kişisel veri ve çift profil).
+  { uretici: "profilTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu

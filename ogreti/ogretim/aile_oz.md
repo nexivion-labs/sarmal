@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: meta / kayıt (sınıflama·durum·hatırlatıcı). Ailede 5 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: d87c23f9
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -39,7 +39,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 |---|---|---|
 | DurumKaydı | — | — |
 | Hatırlatıcı | — | — |
-| Kitaplık | Kitaplık · Raf · Uygulama · Proje | ÇalışmaAlanı · Kitaplık · Proje · Uygulama |
-| Raf | Altyapı · Anayasa · ArkaGörev · Ayar · Blok · Canlandırma · Durum · Ekran · Etmen · Gizli · Karar · Kuyruk · Mekanizma · Metrik · Olay · Orkestrasyon · Döngü · Proje · Servis · Sözleşme · Sınama · Sınıflama · Tablo · Tema · Uygulama · Yasa · Zamanlayıcı · Önbellek | ÇalışmaAlanı · Kitaplık · Proje · Uygulama |
+| Kitaplık | Kitaplık · Raf · Uygulama · Proje · Profil | ÇalışmaAlanı · Kitaplık · Proje · Uygulama |
+| Raf | Altyapı · Anayasa · ArkaGörev · Ayar · Blok · Canlandırma · Durum · Ekran · Etmen · Gizli · Karar · Kuyruk · Mekanizma · Metrik · Olay · Orkestrasyon · Döngü · Proje · Servis · Sözleşme · Sınama · Sınıflama · Tablo · Tema · Uygulama · Yasa · Zamanlayıcı · Önbellek · Profil | ÇalışmaAlanı · Kitaplık · Proje · Uygulama |
 | Sınıflama | — | Raf |
 <!-- /SARMAL:AILE_ISKELETI -->

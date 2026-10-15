@@ -185,6 +185,14 @@
       ]
     },
     {
+      "ad": "Profil",
+      "aile": "bilgi",
+      "ne": "bir proje kökünün kimlik kartı — işletmenin, kurumun ya da müşterinin kim olduğu, ne iş yaptığı, nerede ve hangi kanallarda yaşadığı; kişiler yalnız hitap, rol ve sorumluluk düzeyinde taşınır",
+      "koken": [
+        "TIP-1.17"
+      ]
+    },
+    {
       "ad": "Orkestrasyon",
       "aile": "orkestrasyon",
       "ne": "etmen havuzunu yönetir; Adım'dan istem üretip çalışma anında dağıtır"
@@ -871,7 +879,8 @@
       "Durum",
       "Mekanizma",
       "Faz",
-      "KimlikKökü"
+      "KimlikKökü",
+      "Profil"
     ],
     "Blok": [
       "Katman",
@@ -946,13 +955,15 @@
       "Uygulama",
       "Yasa",
       "Zamanlayıcı",
-      "Önbellek"
+      "Önbellek",
+      "Profil"
     ],
     "Kitaplık": [
       "Kitaplık",
       "Raf",
       "Uygulama",
-      "Proje"
+      "Proje",
+      "Profil"
     ],
     "Anayasa": [
       "Kural"
@@ -2720,6 +2731,37 @@
       ],
       "kural": "Mockup-referans kipi: mockup ÖZETLENMEZ — .sar yalnız referansı taşır (Adım/Ekran `referans: [ MOK-… ]`); detay mockup dosyasının KENDİSİNDE yaşar, çünkü kayıplı özet niyeti kaçırır ve özetin var olması doğru olduğunu göstermez."
     },
+    "Profil": {
+      "zorunlu": [
+        "kod",
+        "ad",
+        "ne",
+        "sektör",
+        "şehir"
+      ],
+      "opsiyonel": [
+        "bölge",
+        "unvan",
+        "hizmetler",
+        "marka",
+        "kanallar (harita: kanal adı → kullanıcı adı ya da alan adı)",
+        "kişiler (liste: her öğe yalnız hitap, rol ve sorumluluk anahtarlarını taşıyan bir harita)",
+        "uygular",
+        "referans",
+        "görünürlük"
+      ],
+      "yapisalKurallar": [
+        "bir proje kökünde tek Profil bulunur (profil-çift)",
+        "kişi kaydı yalnız hitap, rol ve sorumluluk taşır; soyadı ya da iletişim alanı yoktur (profil-kişisel-veri)",
+        "hiçbir alan telefon, e-posta, IBAN, kart numarası ya da açık adres taşımaz (profil-kişisel-veri)"
+      ],
+      "kural": "Profil, bir proje kökünün kimlik kartıdır ve bir yapraktır: Proje, Kitaplık ya da Raf altında yaşar, çocuk taşımaz. Zorunlu alanın hiç yazılmadığı hâli genel eksik-alan uyarısı, yazılmış ama boş ya da yer tutucu kalmış hâli profil-eksik-alan uyarısı bildirir. Kişiler ayrı düğüm değildir, çünkü kişi düğümü kişisel veri yüzeyini büyütür; kişi yalnız hitap ve rolle anılır. Telefon, e-posta, IBAN, kart numarası ve açık adres deseni profil-kişisel-veri hatasıdır ve tanı metni bulduğu değeri yinelemez. Görünürlük için gizli önerilir.",
+      "koken": [
+        "TIP-1.17",
+        "TIP-1.3",
+        "MIM-1.1"
+      ]
+    },
     "AltKatman": {
       "zorunlu": [
         "kod",
@@ -3074,7 +3116,8 @@
     "Kapı": "OS-vadeli; ilk canlı kullanıcısı ZKA-A02 Adımının altı kapılı karnesidir ve o Adım koştuğunda bu muafiyet kendiliğinden kalkar.",
     "GenelKural": "Canlı kullanım 2026-07-18 tarihinde kazanılmıştı; genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kayboldu. Tip motor vatandaşıdır ve kanon yürürlüktedir, kullanıcısı ise arşivdedir.",
     "Yasa": "Canlı kanon, kanon rafında madde tipinde yaşar ve Yasa düğümü olarak beyan edilmez; üç kovadan hiçbiri bu duruma dürüstçe oturmadığı için gerekçe düz yazıyla beyan edilmektedir.",
-    "Fikir": "Founder hükmü 2026-08-28: deponun üç fikri kapalı tarafa indirildi ve açık depoda canlı Fikir düğümü kalmadı. Tip ürün için gerçektir ve kullanıcı bahçelerinde yaşar; muafiyet bu deponun kendi bahçesiyle sınırlıdır. Hüküm yalnız o üç fikri bağladığı için açık depoya yeni bir fikir yazıldığı gün bu satır düşer."
+    "Fikir": "Founder hükmü 2026-08-28: deponun üç fikri kapalı tarafa indirildi ve açık depoda canlı Fikir düğümü kalmadı. Tip ürün için gerçektir ve kullanıcı bahçelerinde yaşar; muafiyet bu deponun kendi bahçesiyle sınırlıdır. Hüküm yalnız o üç fikri bağladığı için açık depoya yeni bir fikir yazıldığı gün bu satır düşer.",
+    "Profil": "Profil, işletme, kurum ve müşteri projelerinin kimlik kartıdır; Sarmal'ın kendi deposu bir işletmeyi temsil etmediği için açık depoda canlı Profil düğümü bulunmaz ve tip kullanıcı bahçelerinde yaşar."
   },
   "emojiYazimi": {
     "not": "EMOJİ TAKMA ADLARI (Founder onaylı kanon, 2026-07-17): her emoji, karşılık geldiği Türkçe yazımın EŞDEĞER takma adıdır. Belirteçleyici tek yönlü normalleştirir, yani emojiyi kanonik ada çevirir; böylece iki yazım yüzü de aynı grafı üretir. Tek anlam kuralı gereği bir emoji tek bir kavrama bağlıdır. Çekirdekteki eşi src/emoji-yazim.ts dosyasıdır ve eşitliği nöbet testiyle korunur.",

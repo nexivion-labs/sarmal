@@ -3,7 +3,7 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: üretken kök / iskelet (kasa→proje→uygulama). Ailede 3 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: d87c23f9
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
 Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
@@ -36,6 +36,6 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | Tip | İçerebilir | İçine konabilir |
 |---|---|---|
 | ÇalışmaAlanı | Kitaplık · Raf · Uygulama · Proje · Mekanizma · KimlikKökü | — |
-| Proje | Kitaplık · Raf · Blok · Teknoloji · Takım · Orkestrasyon · Döngü · Ekran · Servis · Tablo · KimlikPolitikası · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli · Tema · Canlandırma · Durum · Mekanizma · Faz · KimlikKökü | ÇalışmaAlanı · Kitaplık · Raf |
+| Proje | Kitaplık · Raf · Blok · Teknoloji · Takım · Orkestrasyon · Döngü · Ekran · Servis · Tablo · KimlikPolitikası · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli · Tema · Canlandırma · Durum · Mekanizma · Faz · KimlikKökü · Profil | ÇalışmaAlanı · Kitaplık · Raf |
 | Uygulama | Kitaplık · Raf · Blok · Teknoloji · Takım · Orkestrasyon · Döngü · Ekran · Servis · Tablo · KimlikPolitikası · Kuyruk · ArkaGörev · Zamanlayıcı · Olay · Önbellek · Gizli · Tema · Canlandırma · Durum · Mekanizma · Faz | ÇalışmaAlanı · Kitaplık · Raf |
 <!-- /SARMAL:AILE_ISKELETI -->

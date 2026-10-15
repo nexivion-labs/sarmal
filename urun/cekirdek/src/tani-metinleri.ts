@@ -659,6 +659,19 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     },
     oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
+  // ── Profil tipi (TIP-1.17 · BKM-OLG-A13) ────────────────────────────────
+  "profil-eksik-alan": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Profilinin zorunlu ${d(p, "alanlar").map((x) => `"${x}"`).join(", ")} alanı yazılmış ama boş ya da yer tutucu kalmış; Profil motorun okuyabildiği bir kimlik kartıdır ve boş bir zorunlu alan eksik bir kimlik demektir (TIP-1.17).`,
+    oneri: (p) => `Alanı gerçek değeriyle doldur; değer henüz bilinmiyorsa onu açık bir Hatırlatıcıya bağla ve alanı yer tutucuyla bırakma. Örnek: \`Profil( kod: ${a(p, "kimlik")}, ad: "Örnek Fırın", ne: "Mahalle fırını.", sektör: "gıda", şehir: "Ankara" )\``,
+  },
+  "profil-kişisel-veri": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Profilinin "${a(p, "alan")}" alanında kişisel veri bulundu (${d(p, "türler").join(", ")}); Profil kişileri yalnız hitap, rol ve sorumluluk düzeyinde taşır ve telefon, e-posta, banka hesabı, kart numarası ya da açık adres taşıyamaz (TIP-1.17). Bulunan değer güvenlik gereği bu metinde yinelenmez.`,
+    oneri: () => 'Değeri profilden çıkar; iletişim bilgisi gerekiyorsa onu sürüm denetimine girmeyen bir yerde tut ve kişiyi yalnız hitabı ile rolüyle an. Örnek: `kişiler: [ { hitap: "Hanım", rol: "muhatap", sorumluluk: "onay" } ]`',
+  },
+  "profil-çift": {
+    mesaj: (p) => `"${a(p, "kimlik")}" Profili "${a(p, "proje")}" proje kökünde ikinci profil; aynı kökün "${a(p, "önceki")}" Profili zaten "${a(p, "öncekiDosya")}" dosyasında yaşıyor ve bir proje kökünün tek bir kimlik kartı olur (TIP-1.17).`,
+    oneri: (p) => `İki profili tek düğümde birleştir ve fazlasını kaldır; ikinci profil başka bir işletmeyi anlatıyorsa onu kendi Proje kökünün altına taşı. Örnek: \`Profil( kod: ${a(p, "önceki")}, ad: "Örnek Fırın", ne: "Mahalle fırını.", sektör: "gıda", şehir: "Ankara" )\``,
+  },
   // ── Düğüm kodu standardı (DIL-1.8 · RFM-MOTOR-A02) ──────────────────────
   "ilansız-önek": {
     mesaj: (p) => `"${a(p, "kimlik")}" kodu (${a(p, "tip")}) projenin önek sicilinde ilanı olmayan "${a(p, "önek")}" önekiyle doğmuş. Her önek tek bir yerde, anadizindeki Proje düğümünün \`önekler\` listesinde ilan edilir ve ilansız bir önekle yeni kod doğmaz (DIL-1.8).`,
@@ -1105,6 +1118,19 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
       }
     },
     oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Example: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+  },
+  // ── Profile type (TIP-1.17 · BKM-OLG-A13) ───────────────────────────────
+  "profil-eksik-alan": {
+    mesaj: (p) => `The required ${d(p, "alanlar").map((x) => `"${x}"`).join(", ")} field of Profil "${a(p, "kimlik")}" is written but empty or a placeholder; a Profil is an identity card the engine can read, and an empty required field means an incomplete identity (TIP-1.17).`,
+    oneri: (p) => `Fill the field with its real value; if the value is not known yet, link it to an open Hatırlatıcı instead of leaving a placeholder. Example: \`Profil( kod: ${a(p, "kimlik")}, ad: "Sample Bakery", ne: "A neighbourhood bakery.", sektör: "food", şehir: "Ankara" )\``,
+  },
+  "profil-kişisel-veri": {
+    mesaj: (p) => `Personal data was found in the "${a(p, "alan")}" field of Profil "${a(p, "kimlik")}" (${d(p, "türler").join(", ")}); a Profil carries people only by form of address, role and responsibility, and it cannot carry a phone number, e-mail address, bank account, card number or street address (TIP-1.17). The value found is not repeated in this message for safety.`,
+    oneri: () => 'Remove the value from the profile; if contact details are needed, keep them somewhere outside version control and refer to the person only by form of address and role. Example: `kişiler: [ { hitap: "Ms", rol: "contact", sorumluluk: "approval" } ]`',
+  },
+  "profil-çift": {
+    mesaj: (p) => `Profil "${a(p, "kimlik")}" is a second profile in project root "${a(p, "proje")}"; Profil "${a(p, "önceki")}" of the same root already lives in "${a(p, "öncekiDosya")}", and a project root has a single identity card (TIP-1.17).`,
+    oneri: (p) => `Merge the two profiles into one node and remove the extra one; if the second profile describes another business, move it under that business's own Proje root. Example: \`Profil( kod: ${a(p, "önceki")}, ad: "Sample Bakery", ne: "A neighbourhood bakery.", sektör: "food", şehir: "Ankara" )\``,
   },
   // ── Node code standard (DIL-1.8 · RFM-MOTOR-A02) ─────────────────────────
   "ilansız-önek": {

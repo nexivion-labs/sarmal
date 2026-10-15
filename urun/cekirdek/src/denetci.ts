@@ -1964,6 +1964,179 @@ export function kodStandardiTanilari(
   return out;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// TIP-1.17 · PROFİL TİPİ (BKM-OLG-A13 · Founder onayı 2026-10-15)
+//
+//   Bir proje kökü bir işletmeyi, kurumu ya da müşteriyi temsil ettiğinde onun
+//   kimliği tek bir Profil düğümünde yaşar. Bu üretici türün üç tanısını kurar:
+//     • profil-eksik-alan (UYARI): şemanın zorunlu alanı yazılmış ama boş ya da
+//       yer tutucu. Alanın hiç yazılmadığı hâl genel `eksik-alan` uyarısınındır ve
+//       burada ikinci kez sayılmaz (YUZ-3.3). Alan listesi şemadan okunur (TIP-2).
+//     • profil-kişisel-veri (HATA): herhangi bir alanda ya da belge bloğunda
+//       telefon, e-posta, IBAN, kart ya da açık adres deseni; kişi kaydında hitap,
+//       rol ve sorumluluk dışında bir anahtar. Tanı metni bulunan DEĞERİ taşımaz,
+//       çünkü tanı uçbirime, panele ve günlüklere akar ve değeri yinelemek sızıntıyı
+//       çoğaltır; yalnız alanın adı ile desenin türü söylenir.
+//     • profil-çift (HATA): aynı proje kökünde ikinci Profil. Kök iç içe yazımdan,
+//       yoksa dosyanın yaşadığı Proje kapsamından türer (ORK-4 tek kaynağı).
+//   Ders dünyası (OGR-5) ile bilerek hatalı dosyalar muaftır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** Kişi kaydının izinli anahtarları — TIP-1.17 hükmünün kendi listesidir. */
+const PROFIL_KISI_ANAHTARLARI: ReadonlySet<string> = new Set(["hitap", "rol", "sorumluluk"]);
+
+/** Yazılmış ama içi boş ya da yer tutucu kalmış değer. */
+const YER_TUTUCU = /^[\s\-–—?.…_*/]*$|^(?:bilinmiyor|belirsiz|yazılacak|sonra|todo|tbd|xxx|n\/a)$/iu;
+
+/** ISO 13616 mod-97 denetimi — rastgele uzun bir dizi IBAN sayılmasın diye. */
+function ibanGecerli(ham: string): boolean {
+  const s = ham.replace(/\s+/g, "").toUpperCase();
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(s)) return false;
+  const duzen = s.slice(4) + s.slice(0, 4);
+  let kalan = 0;
+  for (const c of duzen) {
+    const parca = /[A-Z]/.test(c) ? String(c.charCodeAt(0) - 55) : c;
+    for (const r of parca) kalan = (kalan * 10 + Number(r)) % 97;
+  }
+  return kalan === 1;
+}
+
+/** Luhn denetimi — sıradan bir sayı dizisi kart sayılmasın diye. */
+function luhnGecerli(rakamlar: string): boolean {
+  let top = 0;
+  for (let i = 0; i < rakamlar.length; i++) {
+    let r = Number(rakamlar[rakamlar.length - 1 - i]);
+    if (i % 2 === 1) { r *= 2; if (r > 9) r -= 9; }
+    top += r;
+  }
+  return top % 10 === 0;
+}
+
+/**
+ * Bir metinde bulunan kişisel veri desenlerinin TÜRLERİNİ döndürür (saf).
+ * Değerin kendisi döndürülmez. Sıra kesindir: IBAN ve kart önce aranır ve
+ * bulunan aralık maskelenir, böylece aynı rakamlar telefon diye ikinci kez
+ * sayılmaz. Tarih ve saat biçimleri telefon aramasından önce ayıklanır.
+ */
+export function kisiselVeriTurleri(metin: string): string[] {
+  const turler: string[] = [];
+  let s = metin;
+  const maskele = (re: RegExp, sina: (m: string) => boolean, tur: string): void => {
+    s = s.replace(re, (m) => {
+      if (!sina(m)) return m;
+      if (!turler.includes(tur)) turler.push(tur);
+      return " ".repeat(m.length);
+    });
+  };
+  maskele(/[\p{L}\p{N}._%+-]+@[\p{L}\p{N}.-]+\.\p{L}{2,}/gu, () => true, "e-posta");
+  maskele(/(?<![A-Za-z0-9])[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){11,30}(?![A-Za-z0-9])/g, ibanGecerli, "IBAN");
+  maskele(/(?<![\d.])(?:\d[ -]?){12,18}\d(?![\d.])/g, (m) => {
+    const r = m.replace(/\D/g, "");
+    // Tek rakamın yinelendiği dizi (0000 0000 …) Luhn'u geçer ama kart değildir.
+    return r.length >= 13 && r.length <= 19 && !/^(\d)\1+$/.test(r) && luhnGecerli(r);
+  }, "kart");
+  // Tarih (2026-10-15 · 15.10.2026) ve saat (14:30) telefon adayından önce düşer.
+  s = s.replace(/\d{4}-\d{2}-\d{2}|\d{1,2}[./]\d{1,2}[./]\d{2,4}|\d{1,2}:\d{2}(?::\d{2})?/g, (m) => " ".repeat(m.length));
+  maskele(/(?<![\p{L}\p{N}.])\+?\(?\d[\d ()-]{7,}\d(?![\p{L}\p{N}.])/gu, (m) => {
+    const r = m.replace(/\D/g, "");
+    return r.length >= 10 && r.length <= 13;
+  }, "telefon");
+  const adres =
+    /(?<!\p{L})(?:sokak|sokağı|sok\.|sk\.|cadde|caddesi|cad\.|cd\.|bulvarı|blv\.)(?!\p{L})/iu.test(s) ||
+    /(?<!\p{L})(?:mahallesi|mah\.|mh\.)(?!\p{L})[^\n]*\d/iu.test(s) ||
+    /(?<!\p{L})no\s*[:.]\s*\d/iu.test(s);
+  if (adres) turler.push("açık adres");
+  return turler;
+}
+
+/** Profil tanıları — eksik alan, kişisel veri ve çift profil (saf · TIP-1.17). */
+export function profilTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  snf: Siniflama,
+  muaflar: ReadonlySet<string> = new Set(),
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  const zorunlu = snf.semalar?.Profil?.zorunlu ?? [];
+  let kapsamlar: readonly ProjeKapsami[] | undefined;
+  /** proje kökü → ilk Profilin kimliği ve dosyası */
+  const ilk = new Map<string, { kimlik: string; dosya: string }>();
+
+  const kimligi = (n: Dugum): string =>
+    [...n.parametreler, ...n.ozellikler].find((p) => p.ad === "kod")?.deger.metin ?? n.ad;
+
+  const profilDenetle = (n: Dugum, dosya: string, proje: string | undefined): void => {
+    const kimlik = kimligi(n);
+    const alanlar = [...n.parametreler, ...n.ozellikler];
+
+    // ① boş ya da yer tutucu zorunlu alan
+    const bos = zorunlu.filter((ad) => {
+      const p = alanlar.find((x) => x.ad === ad);
+      return p !== undefined && p.deger.tur === "metin" && YER_TUTUCU.test((p.deger.metin ?? "").trim());
+    });
+    if (bos.length) {
+      out.push({ dosya, tani: yeniTani("profil-eksik-alan", { kimlik, alanlar: bos }, { satir: n.satir, sutun: n.sutun }) });
+    }
+
+    // ② kişisel veri — her alan yolu için bir bulgu; değer taşınmaz
+    const bulgular = new Map<string, { turler: string[]; satir: number; sutun: number }>();
+    const kaydet = (yol: string, turler: string[], konum: { satir: number; sutun: number }): void => {
+      if (!turler.length) return;
+      const k = bulgular.get(yol) ?? { turler: [], ...konum };
+      for (const t of turler) if (!k.turler.includes(t)) k.turler.push(t);
+      bulgular.set(yol, k);
+    };
+    const tara = (d: Deger, yol: string, konum: { satir: number; sutun: number }): void => {
+      if ((d.tur === "metin" || d.tur === "sayı") && d.metin) kaydet(yol, kisiselVeriTurleri(d.metin), konum);
+      d.ogeler?.forEach((o, i) => tara(o, `${yol}[${i + 1}]`, konum));
+      d.ciftler?.forEach((c) => tara(c.deger, `${yol}.${c.ad}`, konum));
+    };
+    for (const p of alanlar) {
+      const konum = { satir: p.satir, sutun: p.sutun };
+      tara(p.deger, p.ad, konum);
+      if (p.ad === "kişiler") {
+        (p.deger.ogeler ?? []).forEach((o, i) => {
+          const izinsiz = o.tur === "harita"
+            ? (o.ciftler ?? []).map((c) => c.ad).filter((ad) => !PROFIL_KISI_ANAHTARLARI.has(ad))
+            : ["(yapısız kayıt)"];
+          if (izinsiz.length) kaydet(`kişiler[${i + 1}]`, izinsiz.map((ad) => `kişi alanı ${ad}`), konum);
+        });
+      }
+    }
+    if (n.belge) kaydet("belge", kisiselVeriTurleri(n.belge), { satir: n.satir, sutun: n.sutun });
+    for (const [alan, b] of bulgular) {
+      out.push({ dosya, tani: yeniTani("profil-kişisel-veri", { kimlik, alan, türler: b.turler }, { satir: b.satir, sutun: b.sutun }) });
+    }
+
+    // ③ aynı proje kökünde ikinci Profil
+    if (proje === undefined) return;
+    const onceki = ilk.get(proje);
+    if (!onceki) { ilk.set(proje, { kimlik, dosya }); return; }
+    out.push({ dosya, tani: yeniTani("profil-çift",
+      { kimlik, proje, önceki: onceki.kimlik, öncekiDosya: onceki.dosya },
+      { satir: n.satir, sutun: n.sutun }) });
+  };
+
+  for (const [dosya, p] of programlar) {
+    if (muaflar.has(dosya) || ogretimDunyasi(yolNormal(dosya))) continue;
+    const gez = (n: Dugum, proje: string | undefined): void => {
+      if (n.tur !== "widget") return;
+      if (n.ad === "Profil") {
+        let kok = proje;
+        if (kok === undefined) {
+          kapsamlar ??= projeKapsamlari(programlar);
+          kok = sahipProjeKapsami(dosya, kapsamlar)?.kod;
+        }
+        profilDenetle(n, dosya, kok);
+        return;
+      }
+      const altProje = n.ad === "Proje" ? kimligi(n) : proje;
+      for (const c of n.cocuklar) gez(c, altProje);
+    };
+    for (const b of p.bildirimler) gez(b, undefined);
+  }
+  return out;
+}
+
 /**
  * Anadizin-şekli bekçisi (E1-A01 · IDA dogfood 2026-07-13 · Founder · EVRE-1 MIM-1.3):
  * bir anadizin KÖKÜ (Proje/Uygulama/ÇalışmaAlanı) DOĞRUDAN plan düğümü (Faz/Blok)

@@ -177,6 +177,12 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "ölü-iz", madde: "STR-5", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "tip-evreni-eksik", madde: "TIP-1", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "omurga-tipi-eksik", madde: "TIP-1.15", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
+  // BKM-OLG-A13 (2026-10-15 · Founder onayı): TIP-1.17 Profil tipinin üç tanısı kanonun
+  // yazdığı düzeyde doğar. Kapsam projedir, çünkü çift profil proje kökünden okunur ve
+  // üçü tek üreticide birlikte koşar; ders dünyası muaftır.
+  { kod: "profil-eksik-alan", madde: "TIP-1.17", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "profil-kişisel-veri", madde: "TIP-1.17", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
+  { kod: "profil-çift", madde: "TIP-1.17", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "şema-tanımı-eksik", madde: "TIP-2", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "şema-dışı-alan", madde: "TIP-2.2", kanonDüzey: "uyarı", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "bilgi" },
   { kod: "örtü-ihlali", madde: "TIP-2.5", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },

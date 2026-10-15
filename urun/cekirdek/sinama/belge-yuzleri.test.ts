@@ -48,7 +48,7 @@ test("Reference yüzü canlı sınıflamadaki bütün tiplerin alan satırını 
   assert.ok(icerik.includes("SARMAL:ALAN-TABLOSU:TAM"));
   const alanBolgesi = icerik.slice(icerik.indexOf("SARMAL:ALAN-TABLOSU:TAM"));
   for (const tip of snf.widgetTipleri) assert.ok(alanBolgesi.includes(`| ${tip.ad} |`), tip.ad);
-  assert.equal(snf.widgetTipleri.length, 101);
+  assert.equal(snf.widgetTipleri.length, 102);   // BKM-OLG-A13 (2026-10-15): TIP-1.17 Profil tipiyle yüz ikiye çıktı
 });
 
 test("Tutorial, How-To ve Explanation yüzleri sınıf sözleşmelerini karşılar", () => {
