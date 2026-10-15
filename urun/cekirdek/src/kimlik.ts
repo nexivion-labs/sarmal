@@ -25,7 +25,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname, resolve, basename } from "node:path";
+import { join, dirname, resolve, basename, isAbsolute } from "node:path";
 import { belirtecle } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import type { Deger, Dugum, DugumTuru, Program } from "./sozdizim.ts";
@@ -895,7 +895,7 @@ function calismaAlaniRaflari(program: Program): string[] {
         for (const c of ebeveyn.cocuklar) {
           if (c.tur !== "widget") continue;
           const yol = c.ad === "Kitaplık" || c.ad === "Raf" ? widgetAlani(c, "yol") : undefined;
-          const tam = yol ? join(onek, yol) : onek;
+          const tam = yol ? (isAbsolute(yol) ? yol : join(onek, yol)) : onek;
           if (yol && !yollar.includes(tam)) yollar.push(tam);
           gez(c, tam);
         }

@@ -634,6 +634,37 @@ test("BKM-OLG-A14 · ORK-4: iç içe Kitaplık altındaki kardeş proje üst Kit
   }
 });
 
+/** BKM-OLG-A14 · MUTLAK YOL. İç içe Kitaplığın `yol` değeri mutlak yazılmışsa
+ *  üst Kitaplığın yoluyla birleştirilmez; mutlak yol olduğu gibi kök sayılır
+ *  (eski `resolve` davranışı). Bağımsız inceleme `join` ile birleştirmenin
+ *  mutlak yolu üst yolun altına gömdüğünü ölçtü. */
+test("BKM-OLG-A14 · ORK-4: iç içe Kitaplıkta mutlak yol üst yolla birleştirilmez, kardeş kök olduğu gibi çözülür", async () => {
+  const { catiKardesleri, kardesOnbelleginiTemizle } = await import("../src/kimlik.ts");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const cati = mkdtempSync(join(tmpdir(), "sarmal-ornek-cati-"));
+  const dis = mkdtempSync(join(tmpdir(), "sarmal-mutlak-"));
+  try {
+    const musteri = join(dis, "musteri-a");
+    mkdirSync(musteri);
+    writeFileSync(join(musteri, "musteri_a_anadizin.sar"),
+      'Proje( kod: PRJ-MUSTERI-A, ad: "musteri-a", ne: "kardeş" ) { Takım( kod: TAKIM-A, ne: "y" ) }\n', "utf8");
+    writeFileSync(join(cati, "ornek_cati_anadizin.sar"),
+      'ÇalışmaAlanı( kod: CAL-ORNEK, ad: "ornek-cati", ne: "çatı" ) {\n'
+      + '  Kitaplık( kod: KTP-TESLIM, yol: "teslim/", ne: "teslim kitaplığı" ) {\n'
+      + `    Kitaplık( kod: KTP-TESLIM-MUSTERI-A, yol: "${musteri}/", ne: "mutlak yollu proje" )\n`
+      + '  }\n}\n', "utf8");
+    kardesOnbelleginiTemizle();
+    const kok = catiKardesleri(cati).find((k) => k.kod === "PRJ-MUSTERI-A")?.kok;
+    assert.equal(kok, musteri, "mutlak yol üst Kitaplığın altına gömülmemeli");
+  } finally {
+    rmSync(cati, { recursive: true, force: true });
+    rmSync(dis, { recursive: true, force: true });
+    kardesOnbelleginiTemizle();
+  }
+});
+
 /** Canlı depo nöbeti: bu deponun KENDİ ad alanlı atfı çözülmeli. Ölçülen kusurun
  *  birebir ikizidir ve kaynak değişirse kırmızı yanar. */
 test("KPS-ADA-A01 · canlı: bu deponun PRJ-SARMAL::TAKIM-CEKIRDEK atfı gezin yüzünde çözülür", async () => {
