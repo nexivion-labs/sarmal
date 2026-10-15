@@ -1307,7 +1307,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
         // Founder onayı 2026-10-15: bir proje kökünün kimlik ve profil bilgisi, motorun
         // okuyabildiği yapılandırılmış bir düğümde taşınır. Tasarımın tabanı çatının danışma
         // rafındaki taslaktır; taslağın kanonla çelişen yerleri kanona uydurulur.
-        Adım( kod: BKM-OLG-A13, ad: "Profil Türünün Doğuşu", durum: geliştirmede, öncelik: p2, bağımlı: [], referans: [ TIP-1, TIP-1.3, TIP-2, TIP-2.4, SNF-0 ],
+        Adım( kod: BKM-OLG-A13, ad: "Profil Türünün Doğuşu", durum: tamamlandı, öncelik: p2, bağımlı: [], referans: [ TIP-1, TIP-1.3, TIP-2, TIP-2.4, SNF-0 ],
           onay: "onaylandı — 2026-10-15 · Founder, bir proje kökünün kimlik ve profil bilgisinin bilgi ailesinde yeni bir Profil türüyle taşınmasını onaylamıştır; gerekçe, bugünkü kalıpta profilin düz yazı olması ve motorun eksik alanı, kişisel veri sızıntısını ve aynı kökte ikinci bir profili görememesidir.",
           ne:    "🪪 Bir proje kökü bir işletmeyi, kurumu ya da müşteriyi temsil ettiğinde onun kimliği bugün yalnız düz yazıda yaşar; motor alanları okuyamaz, eksik alanı söyleyemez ve kişisel veri sızıntısını yakalayamaz. Bu Adım bilgi ailesine Profil türünü ekler, türün şemasını ve sarma yerini tip kanonuna yazar, kısa bir kanon maddesiyle hükme bağlar ve motorun üç tanıyla profili denetlemesini sağlar" ) {
           görev: "Tip kanonuna Profil türünü bilgi ailesinde ekle: kimlik alanları ile sektör ve şehir zorunlu, öteki alanlar opsiyonel olsun ve kişiler yalnız hitap, rol ve sorumluluk taşısın; tür Proje, Kitaplık ve Raf altında yaşayabilen bir yaprak olsun. TIP-1.3 bilgi tipleri listesine Profil'i ekle ve türün hükmünü, gerekçesini, örneğini ve zorlamasını taşıyan kısa bir kanon maddesi yaz; kanon sürüm numarasını değiştirme. Önce kırmızı fikstür ve sınamaları yaz, sonra denetçiye profil-eksik-alan (uyarı), profil-kişisel-veri (hata; telefon, e-posta, IBAN, kart ve açık adres desenleri ile kişi kaydında izinsiz alan) ve profil-çift (hata; aynı proje kökünde ikinci Profil) tanılarını iki dilli metinleriyle ekle; tanı metni sızan değeri yinelemesin. Sınıflama kaydının yüzü, kanon tutarlılık yüzü, belge yüzleri ve öğretim kartları gibi üretilmiş dosyaları yalnız resmî üreticileriyle yeniden üret"
@@ -1319,9 +1319,10 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
             "çekirdek ve eklenti süitleri yeşil, depo kökünden tam denetim sıfır hata veriyor"
           ]
           sınır: "Açık depo kuralı gereği fikstürlerde yalnız uydurma ve nötr örnek kullanılır; hiçbir müşteri, kişi, gerçek iletişim bilgisi ya da kapalı ürün kodu yazılmaz. Kardeş projelerdeki profillerin göçü, panel kartı, görünürlük sınır nöbeti ve kanal ile Teknoloji eşlemesi bu Adımın dışındadır; kanon sürüm kararı Founder'ındır"
+          koşu: Koşum( kod: KSM-BKM-OLG-A13, tarih: 2026-10-15, mühür: COMPLETED, karar: kabul, kanıt: "işlemeler edb1a8e..dc87433 · sinama/profil.test.ts 23/23 · üç tur bağımsız inceleme · çekirdek 1781/1781 · eklenti 953/953 · denetim sıfır hata", ne: "Profil türü kanona, tip kaydına ve denetçiye girdi; üç tanı çalışıyor. Üç bağımsız inceleme turunda bulunan yanlış pozitifler ve kaçaklar sınamaya bağlanarak kapatıldı ve Founder onayıyla çalışma dalına alındı." )
           üretir: [ KOD-DENETCI, KOD-SNF-KANON, KOD-TANI-SICILI, KOD-TANI-METINLERI, KOD-SNM-PROFIL ]
         }
-        Adım( kod: BKM-OLG-A14, ad: "İç İçe Kitaplıktaki Kardeş Projenin Yolu", durum: geliştirmede, öncelik: p1, bağımlı: [], referans: [ ORK-4 ], üretir: [ KOD-KIMLIK, KOD-SNM-KIMLIK ],
+        Adım( kod: BKM-OLG-A14, ad: "İç İçe Kitaplıktaki Kardeş Projenin Yolu", durum: tamamlandı, öncelik: p1, bağımlı: [], referans: [ ORK-4 ], üretir: [ KOD-KIMLIK, KOD-SNM-KIMLIK ],
           ne:    "🧭 Çatı ilanında iç içe bir Kitaplığın altında duyurulan kardeş projenin kökü, üst Kitaplığın yoluyla birleştirilmeden çatı köküne göre aranmaktadır. Bu yüzden o projeye yazılan doğru bir ORK-4 atfı hedefini bulamamakta ve ölçülemez muafiyeti olarak bildirilmektedir; çatı ilanındaki yol değeri kendi ebeveynine görelidir ve kardeş kök çözümü bu kuralı uygulamalıdır" ) {
           görev: "Kimlik modülündeki çatı kardeşi okuyucusunu, ÇalışmaAlanı altındaki Kitaplık ve Raf düğümlerini ağaç olarak gezip her düğümün yolunu üst düğümlerinin yollarıyla birleştirecek biçimde düzelt. Önce nötr bir fikstürle kırmızı sınama yaz: iç içe Kitaplık altındaki kardeş projeye ad alanlı atıf çözülmeli ve tek düzeyli eski yazım bozulmamalıdır. Ardından en küçük düzeltmeyi yap ve sınamanın kusuru yakaladığını mutasyonlarla kanıtla"
           kabul: [
@@ -1331,6 +1332,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
             "Çekirdek ile eklenti süitleri yeşildir, tür ve biçem denetimleri temizdir ve depo denetimi sıfır hata verir."
           ]
           sınır: "Yalnız kardeş kök çözümü düzeltilir; çatı kapsamı ve graf kenarı üreten öteki okuyucular bu Adımın dışındadır ve özel depodaki gerçek çalışma alanına dokunulmaz"
+          koşu: Koşum( kod: KSM-BKM-OLG-A14, tarih: 2026-10-15, mühür: COMPLETED, karar: kabul, kanıt: "işlemeler b0d2270, 0cf8d9d, 03ccaba, birleştirme c18673e · kimlik.test.ts iki yeni sınama · iki tur bağımsız inceleme · denetim sıfır hata", ne: "İç içe Kitaplık altındaki kardeş projenin kökü üst yolla birleştirilerek çözülüyor; mutlak yol gerilemesi de kapatıldı. Gerçek çalışma alanında kardeş kökün doğru çözüldüğü çözümleyici düzeyinde ölçüldü." )
         }
       }
     }
