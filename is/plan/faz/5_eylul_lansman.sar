@@ -1304,6 +1304,22 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
           ]
           sınır: "Founder kararı olmadan terfi yapılmaz ve insan işi için tür tasarlanmaz"
         }
+        // Founder onayı 2026-10-15: bir proje kökünün kimlik ve profil bilgisi, motorun
+        // okuyabildiği yapılandırılmış bir düğümde taşınır. Tasarımın tabanı çatının danışma
+        // rafındaki taslaktır; taslağın kanonla çelişen yerleri kanona uydurulur.
+        Adım( kod: BKM-OLG-A13, ad: "Profil Türünün Doğuşu", durum: geliştirmede, öncelik: p2, bağımlı: [], referans: [ TIP-1, TIP-1.3, TIP-2, TIP-2.4, SNF-0 ],
+          onay: "onaylandı — 2026-10-15 · Founder, bir proje kökünün kimlik ve profil bilgisinin bilgi ailesinde yeni bir Profil türüyle taşınmasını onaylamıştır; gerekçe, bugünkü kalıpta profilin düz yazı olması ve motorun eksik alanı, kişisel veri sızıntısını ve aynı kökte ikinci bir profili görememesidir.",
+          ne:    "🪪 Bir proje kökü bir işletmeyi, kurumu ya da müşteriyi temsil ettiğinde onun kimliği bugün yalnız düz yazıda yaşar; motor alanları okuyamaz, eksik alanı söyleyemez ve kişisel veri sızıntısını yakalayamaz. Bu Adım bilgi ailesine Profil türünü ekler, türün şemasını ve sarma yerini tip kanonuna yazar, kısa bir kanon maddesiyle hükme bağlar ve motorun üç tanıyla profili denetlemesini sağlar" ) {
+          görev: "Tip kanonuna Profil türünü bilgi ailesinde ekle: kimlik alanları zorunlu, sektör ile şehir tamlık alanı, öteki alanlar opsiyonel olsun ve kişiler yalnız hitap, rol ve sorumluluk taşısın; tür Proje, Kitaplık ve Raf altında yaşayabilen bir yaprak olsun. TIP-1.3 bilgi tipleri listesine Profil'i ekle ve türün hükmünü, gerekçesini, örneğini ve zorlamasını taşıyan kısa bir kanon maddesi yaz; kanon sürüm numarasını değiştirme. Önce kırmızı fikstür ve sınamaları yaz, sonra denetçiye profil-eksik-alan (uyarı), profil-kişisel-veri (hata; telefon, e-posta, IBAN, kart ve açık adres desenleri ile kişi kaydında izinsiz alan) ve profil-çift (hata; aynı proje kökünde ikinci Profil) tanılarını iki dilli metinleriyle ekle; tanı metni sızan değeri yinelemesin. Sınıflama kaydının yüzü, kanon tutarlılık yüzü, belge yüzleri ve öğretim kartları gibi üretilmiş dosyaları yalnız resmî üreticileriyle yeniden üret"
+          kabul: [
+            "siniflama aracı Profil türünü bilgi ailesinde, şemasıyla ve sarma yeriyle gösteriyor; TIP-1.3 listesi Profil'i sayıyor ve yeni kanon maddesi üç tanıyı zorlama satırında anıyor",
+            "üç tanı fikstürde kırmızı yanıyor ve temiz profilde sessiz kalıyor: eksik tamlık alanı uyarı, telefon, e-posta, IBAN, kart ve açık adres deseni ile kişi kaydındaki izinsiz alan hata, aynı kökteki ikinci Profil hata; kişisel veri tanısının metni sızan değeri taşımıyor",
+            "tarih, sürüm ve kod gibi sıradan sayı dizileri kişisel veri sayılmıyor ve ders dünyası muaf kalıyor (testli)",
+            "üretilmiş yüzler resmî üreticilerden yeniden üretilmiş, hiçbiri elle düzenlenmemiş; kanon sürüm numarası değişmemiş",
+            "çekirdek ve eklenti süitleri yeşil, depo kökünden tam denetim sıfır hata veriyor"
+          ]
+          sınır: "Açık depo kuralı gereği fikstürlerde yalnız uydurma ve nötr örnek kullanılır; hiçbir müşteri, kişi, gerçek iletişim bilgisi ya da kapalı ürün kodu yazılmaz. Kardeş projelerdeki profillerin göçü, panel kartı, görünürlük sınır nöbeti ve kanal ile Teknoloji eşlemesi bu Adımın dışındadır; kanon sürüm kararı Founder'ındır"
+        }
       }
     }
 
