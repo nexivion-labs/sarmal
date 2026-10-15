@@ -162,6 +162,9 @@ test("adres: tek başına sokak, cadde ya da No: sözcüğü ve semt anması adr
     "Sokak lezzetleri sunan bir büfe", "sokak yemekleri", "Ana cadde üzerinde", "Sokak hayvanları derneği",
     "Sipariş No: 5 ile takip edilir", "Karar No. 3 uyarınca", "Fatura no:2026001",
     "Bağdat Caddesi'nin sevilen kafesi", "Moda Mahallesi'nde 2015'ten beri",
+    // Üçüncü tur: kesirli sayı ya da "no" yer adının hemen ardında değilse adres değildir.
+    "Mahalle ölçeğinde 24/7 hizmet veren fırın", "Cadde üzerinde 7/24 açık", "Bulvar şubesi 2/3 kapasiteyle",
+    "Sokak lezzetlerinde no 1 marka", "sokak sanatı festivali No. 4", "Cadde 24/7 açık", "Sokak 7/24 hizmet",
   ]) {
     assert.deepEqual(kisiselVeriTurleri(deger), [], deger);
   }
@@ -171,7 +174,10 @@ test("adres: tek başına sokak, cadde ya da No: sözcüğü ve semt anması adr
 });
 
 test("adres: sokak ya da mahalle adı ile kapı numarası aynı satırda birlikte geçince yakalanır", () => {
-  for (const deger of ["Deneme Sokak No: 5", "Örnek Mahallesi No:12 Daire 3", "Deneme Caddesi No. 7", "Uydurma Bulvarı 14/2"]) {
+  for (const deger of [
+    "Deneme Sokak No: 5", "Örnek Mahallesi No:12 Daire 3", "Deneme Caddesi No. 7", "Uydurma Bulvarı 14/2",
+    "Mah. Deneme Sk. No:3/1", "Örnek Cad. No 12 Kat 3", "Örnek Sk. 14/2", "Atatürk Blv. No:10", "Deneme Sokağı No:3",
+  ]) {
     assert.deepEqual(kisiselVeriTurleri(deger), ["açık adres"], deger);
   }
 });
@@ -179,7 +185,7 @@ test("adres: sokak ya da mahalle adı ile kapı numarası aynı satırda birlikt
 test("telefon: tireli kodlar, uzun kimlikler ve sıradan sayı dizileri telefon sayılmaz", () => {
   for (const deger of [
     "SIP-20261015-0001", "ORD-2026-1015-001", "SIP_05001234567", "VKN 1234567890", "vergi no 1234567890", "vergi no 0123456789",
-    "ISBN 978-0-306-40615-7", "GTIN 8690000000001", "barkod 036000291452", "20261015143000",
+    "ISBN 978-0-000-00000-2", "GTIN 8690000000001", "barkod 012345678905", "20261015143000",
     "2026-10-15T14:30:00Z", "2026-2027-2028 dönemi", "1 2 3 4 5 6 7 8 9 10", "ciro 2 500 000 000 TL",
   ]) {
     assert.deepEqual(kisiselVeriTurleri(deger), [], deger);
@@ -187,10 +193,20 @@ test("telefon: tireli kodlar, uzun kimlikler ve sıradan sayı dizileri telefon 
 });
 
 test("telefon: gerçekçi biçimli uydurma numaralar yakalanmaya devam eder, dokuz hane telefon değildir", () => {
-  for (const deger of ["0 500 000 00 00", "0500 000 00 00", "05000000000", "+90 500 000 00 00", "+49 30 1234 5678", "(0500) 000 00 00"]) {
+  for (const deger of [
+    "0 500 000 00 00", "0500 000 00 00", "05000000000", "+90 500 000 00 00", "+49 30 0000 0000", "(0500) 000 00 00",
+    // Üçüncü tur: etiketli yazım, sıfırsız GSM, 90 önekli on iki hane ve noktalı ayraç.
+    "Tel-05001234567", "WA-0500 000 00 00", "whatsapp_05001234567", "tel.05000000000", "GSM: 0500 000 00 00",
+    "500 000 00 00", "(500) 000 00 00", "5000000000", "905000000000", "90 500 000 00 00", "0500.000.00.00",
+    "Aramak için 0500 000 00 00.",
+  ]) {
     assert.deepEqual(kisiselVeriTurleri(deger), ["telefon"], deger);
   }
   assert.deepEqual(kisiselVeriTurleri("0 500 000 00"), [], "dokuz haneli dizi telefon sayılmamalı");
+  // Ayraçlı yazımda sekiz haneden uzun grup bir kimlik numarasıdır, telefon değildir.
+  for (const deger of ["0500 123456789", "0 1234567890", "+7 123456789012"]) {
+    assert.deepEqual(kisiselVeriTurleri(deger), [], deger);
+  }
 });
 
 test("kart: Luhn tutmayan on altı haneli gruplu dizi kart sayılmaz", () => {

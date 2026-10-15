@@ -2035,29 +2035,38 @@ export function kisiselVeriTurleri(metin: string): string[] {
     // Tek rakamın yinelendiği dizi (0000 0000 …) Luhn'u geçer ama kart değildir.
     return r.length >= 13 && r.length <= 19 && !/^(\d)\1+$/.test(r) && luhnGecerli(r);
   }, "kart");
+  // İletişim etiketi (Tel- · WA- · whatsapp_ · tel. · GSM:) bir kod öneki değildir; etiket
+  // düşer, ardındaki numara telefon aramasına kalır.
+  s = s.replace(/(?<![\p{L}\p{N}])(?:tel|telefon|wa|whatsapp|gsm|cep|phone|mobile)\s*[-_.:]\s*(?=[+(\d])/giu, (m) => " ".repeat(m.length));
   // Harf önekli kod gövdeleri (SIP-20261015-0001 · ORD-2026-1015-001 · SIP_05001234567) kimliktir,
   // telefon değildir; rakam taşıyan tireli kod bütün olarak düşer.
   s = s.replace(/(?<![\p{L}\p{N}])\p{L}[\p{L}\p{N}]*(?:[-_][\p{L}\p{N}]+)+/gu, (m) => (/\d/.test(m) ? " ".repeat(m.length) : m));
-  // Tarih (2026-10-15 · 15.10.2026) ve saat (14:30) telefon adayından önce düşer.
-  s = s.replace(/\d{4}-\d{2}-\d{2}|\d{1,2}[./]\d{1,2}[./]\d{2,4}|\d{1,2}:\d{2}(?::\d{2})?/g, (m) => " ".repeat(m.length));
-  // Telefon biçim başı ister: ülke kodu (+90 · +49) ya da yurt içi sıfır (0 5xx · (0500)).
-  // Vergi numarası, barkod, ISBN, ciro ve dönem dizileri bu başı taşımaz. Ayraçsız
-  // yazılmış sıfırlı dizi yalnız on bir haneyse telefondur (05xxxxxxxxx); ayraçlı
-  // yazımda her grup en çok sekiz hanedir ve aday tireli bir dizinin ortasından başlamaz.
-  maskele(/(?<![\p{L}\p{N}.+\-])(?:\+\d{1,3}|\(?0)[\d ()-]{7,}\d(?![\p{L}\p{N}.])/gu, (m) => {
+  // Tarih (2026-10-15 · 15.10.2026) ve saat (14:30) telefon adayından önce düşer; tarih
+  // yalnız kendi sınırlarıyla eşleşir, noktalı bir numaranın içinden koparılmaz.
+  s = s.replace(/(?<![\d.])(?:\d{4}-\d{2}-\d{2}|\d{1,2}[./]\d{1,2}[./]\d{2,4})(?![\d.])|\d{1,2}:\d{2}(?::\d{2})?/g, (m) => " ".repeat(m.length));
+  // Telefon biçim başı ister. Kabul edilen başlar: ülke kodu (+90 · +49), yurt içi
+  // sıfır (0 5xx · (0500)), sıfırsız on haneli GSM (5xx xxx xx xx) ve 90 önekli on iki
+  // hane. Vergi numarası, barkod, ISBN, ciro ve dönem dizileri bu başları taşımaz.
+  // Ayraçsız sıfırlı dizi yalnız on bir haneyse telefondur; ayraçlı yazımda her grup
+  // en çok sekiz hanedir ve aday tireli bir dizinin ortasından başlamaz. Nokta ayraç
+  // olabilir; cümle sonundaki nokta adayı kesmez.
+  const GSM_ON = /^\(?5\d{2}\)?[ .-]?\d{3}[ .-]?\d{2}[ .-]?\d{2}$/;
+  const GSM_90 = /^90[ .-]?\(?5\d{2}\)?[ .-]?\d{3}[ .-]?\d{2}[ .-]?\d{2}$/;
+  maskele(/(?<![\p{L}\p{N}.+\-])(?:\+\d{1,3}|\(?\d)[\d ().-]{7,}\d(?![\p{L}\p{N}]|\.\d)/gu, (m) => {
     const r = m.replace(/\D/g, "");
     const ulkeli = m.startsWith("+");
-    if (r.length < 10 || r.length > (ulkeli ? 13 : 11)) return false;
-    const ayracli = /[ ()-]/.test(m.replace(/^\(/, ""));
-    if (!ayracli) return ulkeli || r.length === 11;
-    return m.split(/[ ()-]+/).filter(Boolean).every((g) => g.replace(/\D/g, "").length <= 8);
+    const ayracli = /[ ().-]/.test(m.replace(/^\(/, ""));
+    const gruplar = (): boolean => m.split(/[ ().-]+/).filter(Boolean).every((g) => g.replace(/\D/g, "").length <= 8);
+    if (ulkeli) return r.length >= 10 && r.length <= 13 && (!ayracli || gruplar());
+    if (r.startsWith("0")) return r.length >= 10 && r.length <= 11 && (ayracli ? gruplar() : r.length === 11);
+    if (r.startsWith("90")) return GSM_90.test(m);
+    if (r.startsWith("5")) return GSM_ON.test(m);
+    return false;
   }, "telefon");
-  // Açık adres birleşik kanıt ister: aynı satırda bir sokak, cadde, bulvar ya da
-  // mahalle adı İLE bir kapı numarası (No: 5 · No. 7 · 14/2); noktalı virgül cümleyi böler. Tek başına sokak
-  // sözcüğü, tek başına "No: 5" ya da semt anması adres değildir.
-  const yerAdi = /(?<!\p{L})(?:sokak|sokağı|sok\.|sk\.|cadde|caddesi|cad\.|cd\.|bulvar|bulvarı|blv\.|mahalle|mahallesi|mah\.|mh\.)(?!\p{L})/iu;
-  const kapiNo = /(?<!\p{L})no\s*[:.]?\s*\d+|(?<![\d.])\d{1,4}\s*\/\s*\d{1,4}(?![\d.\/])/iu;
-  const adres = s.split(/[\n;]/).some((satir) => yerAdi.test(satir) && kapiNo.test(satir));
+  // Açık adres birleşik kanıt ister: bir sokak, cadde, bulvar ya da mahalle adının HEMEN
+  // ardında bir kapı numarası (Sk. No:3 · Cad. No 12 · Sk. 14/2). Tek başına yer adı,
+  // tek başına "No: 5", uzakta duran bir numara ve 24/7 ya da 7/24 adres değildir.
+  const adres = /(?<!\p{L})(?:sokak|sokağı|sok\.|sk\.|cadde|caddesi|cad\.|cd\.|bulvar|bulvarı|blv\.|mahalle|mahallesi|mah\.|mh\.)(?!\p{L})[ \t,]*(?:no\s*[:.]?\s*\d+|(?!24\s*\/\s*7(?!\d)|7\s*\/\s*24(?!\d))\d{1,4}\s*\/\s*\d{1,4}(?![\d/]))/iu.test(s);
   if (adres) turler.push("açık adres");
   return turler;
 }
