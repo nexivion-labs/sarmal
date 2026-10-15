@@ -6099,7 +6099,7 @@ sessizce körleşmez.
             ne:    "Doğan bir proje motorun iz klasörünü artık yok sayıyor: temiz bir makinede ham istem taşıyan iz dosyaları git durumunda görünmüyor ve var olan bir yok sayma dosyası genişletilirken kullanıcının satırları korunuyor. Doğuş aracının iki dilli tarifi ile kaynaktaki aşırı iddialı nöbet yorumu ölçülen gerçeğe çekildi. Bu düzeltmeden önce doğmuş köklerin habersiz kalması HST-MTR-A16'ya, yok sayma uç durumları ile iz klasörü adının beş yazıcıda ayrı yazılması iki hatırlatıcıya bağlandı." )
         }
 
-        Adım( kod: HST-MTR-A15, ad: "Gezinmede Adlı Kuralın Tipi", durum: beklemede, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
+        Adım( kod: HST-MTR-A15, ad: "Gezinmede Adlı Kuralın Tipi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
           referans: [ HST-YUZ-A06 ],
           ne: "🏷️ Gezinme aracı adlı bir Kuralın tanımında Kuralın adını değil tipini göstersin" ) {
           görev: "HST-YUZ-A06'nın bağımsız incelemesi (2026-10-10) eklentideki ipucu kartında onarılan kusurun motorun gezinme yüzünde de yaşadığını ölçmüştür: adlı bir Kuralın tanımı sorulduğunda araç tip yerine Kuralın adını basar; örneğin KRL-SAR-ARAC için araçÖnce, DIL-1.5 için anlatımBütünlüğü yazılır ve bağlam kartındaki adreslerde de ad geçer. Kaynak, kimlik dizinindeki dosya tarayıcısının tanımın tip alanına düğümün adını yazmasıdır. Bu alanın başka tüketicileri de olduğu için önce tüketiciler sayılır, ardından adlı bir Kuralla kırmızı sınama yazılır ve tip düğümün türünden okunur."
