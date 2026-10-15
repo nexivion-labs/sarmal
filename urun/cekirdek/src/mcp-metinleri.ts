@@ -161,7 +161,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        adim: parametre("string", "Adım KOD'u (ör. SEF-ATF-A01)", "Adım KOD (for example, SEF-ATF-A01)"),
+        adim: parametre("string", "Adım KOD'u (biçim: <ONEK>-<KONU>-A<NN>)", "Adım KOD (format: <ONEK>-<KONU>-A<NN>)"),
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
       required: ["adim"],
@@ -174,16 +174,16 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "Sarmal öğretim kapısı: konusuz çağrı KANONDAN üretilen karşılama kartını döndürür " +
         "(kopyalanabilir minimal proje + tam omurga + koni alanları + zorunlu kenarlar — CLI `sarmal ogret` ile AYNI kaynaktan üretilir); " +
-        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI').",
+        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner; konu bir ad (ör. 'uretir-kenari') ya da BCR-<KONU> biçiminde bir kart kodu olabilir.",
       () =>
         "Sarmal's learning gateway: a call without `konu` returns the welcome card generated FROM THE CANON " +
         "(a copyable minimal project, the complete backbone, cone fields, and required edges—from the SAME source as CLI `sarmal ogret`); " +
-        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI').",
+        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf; the topic may be a name (for example, 'uretir-kenari') or a card code in the form BCR-<KONU>.",
     ),
     inputSchema: {
       type: "object",
       properties: {
-        konu: parametre("string", "beceri konusu ya da kodu (ör. 'uretir-kenari' · 'BCR-ADIM-YAZIMI'); boş = karşılama kartı", "Beceri topic or code (for example, 'uretir-kenari' or 'BCR-ADIM-YAZIMI'); empty returns the welcome card"),
+        konu: parametre("string", "beceri konusu ya da kodu (ad: ör. 'uretir-kenari' · kod biçimi: BCR-<KONU>); boş = karşılama kartı", "Beceri topic or code (name: for example, 'uretir-kenari' · code format: BCR-<KONU>); empty returns the welcome card"),
       },
     },
   },
@@ -321,7 +321,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
-        kok: parametre("string", "isteğe bağlı odak KOD — alt-graf filtresi (ör. BLK-VITRIN)", "optional focus KOD used as a subgraph filter (for example, BLK-VITRIN)"),
+        kok: parametre("string", "isteğe bağlı odak KOD — alt-graf filtresi (biçim: <ONEK>-<KONU>)", "optional focus KOD used as a subgraph filter (format: <ONEK>-<KONU>)"),
       },
     },
   },
@@ -495,7 +495,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        kod: parametre("string", "etkisi sorulan KOD (ör. SEF-ATF-A01, MEK-SEF)", "KOD whose impact is requested (for example, SEF-ATF-A01 or MEK-SEF)"),
+        kod: parametre("string", "etkisi sorulan KOD (biçim: Adım için <ONEK>-<KONU>-A<NN>, öteki düğümler için <ONEK>-<KONU>)", "KOD whose impact is requested (format: <ONEK>-<KONU>-A<NN> for an Adım, <ONEK>-<KONU> for other nodes)"),
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
       required: ["kod"],

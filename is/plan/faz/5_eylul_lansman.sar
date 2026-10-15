@@ -6123,7 +6123,7 @@ sessizce körleşmez.
           sınır: "Kapı kullanıcının yok sayma dosyasına kendiliğinden yazmaz; yalnız bildirir"
         }
 
-        Adım( kod: HST-MTR-A17, ad: "Araç Açıklamalarında Biçim Kalıbı", durum: beklemede, öncelik: p2, üretir: [ KOD-MCP-METINLERI ], bağımlı: [],
+        Adım( kod: HST-MTR-A17, ad: "Araç Açıklamalarında Biçim Kalıbı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-MCP-METINLERI ], bağımlı: [],
           referans: [ HTR-ARAC-ACIKLAMALARINDA-OLU-ORNEK-KOD ],
           ne: "🧩 Araç açıklamaları hiçbir yerde tanımlı olmayan bir kodu örnek göstermesin" ) {
           görev: "İki MCP araç açıklamasında ve bir hata cümlesinde örnek olarak verilen Adım kodu hiçbir yerde tanımlı değildir; bu metinler kullanıcı projelerinde de okunur ve ajan örneği gerçek sanıp aramaya çıkar. Founder'ın 2026-10-10 hükmüyle örnekler somut bir kod anmaz, biçimi anlatan bir kalıp gösterir; kalıp da kod adları gibi yalnız ASCII harflerle yazılır. Önce araç açıklamalarında ve hata cümlelerinde örnek olarak geçen bütün kodlar sayılır ve her birinin tanımlı olup olmadığı ölçülür; somut örnekler iki dilde kalıba çevrilir ve örnek alanlarında somut bir kod bulunmadığını ölçen bir nöbet yazılır."
