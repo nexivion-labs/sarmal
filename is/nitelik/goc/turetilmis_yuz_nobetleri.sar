@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `7ef767938ec099f7095602296673e1472c214d5fb8188f23b96216ef165c54b6` |
+| `yasa/kanon demeti (A03 formülü)` | `4b40464e02a46ea3e929ca75b1fb5447b92a9b29fb879270f49228f6660c333d` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
@@ -40,6 +40,12 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-15 · Profil maddesinin yüzey beyanı · BKM-OLG-A13 ikinci
+teslim): TIP-1.17 maddesinin Zorlama satırında genel eksik alan uyarısını anan ters
+tırnaklı kimlik düz yazıya çevrildi, çünkü yüzey cümlesinden sonra anılan kimlik
+yüzey beyanı taşımayan bir çift olarak sayılıyordu. Yalnız `tip.sar` dosyasının
+baytları değişti ve kanon demeti ilerledi; öteki sekiz kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-10-15 · Profil tipi · BKM-OLG-A13): Founder'ın 2026-10-15
 tarihli onayıyla bilgi ailesine Profil tipi eklendi. Tip kanonunda TIP-1.3 maddesi
