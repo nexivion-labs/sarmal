@@ -6111,7 +6111,7 @@ sessizce körleşmez.
           sınır: "Kimlik dizininin öteki alanları ve atıf listeleri değişmez"
         }
 
-        Adım( kod: HST-MTR-A16, ad: "Kök Kapısında Eksik İz Satırı", durum: beklemede, öncelik: p2, üretir: [ KOD-YONERGE-IKIZI ], bağımlı: [],
+        Adım( kod: HST-MTR-A16, ad: "Kök Kapısında Eksik İz Satırı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-YONERGE-IKIZI ], bağımlı: [],
           referans: [ HST-MTR-A14 ],
           ne: "🚪 Doğuş onarımından önce doğmuş bir kök, yok sayma dosyasında iz klasörü satırı eksikse bunu kök kapısından öğrensin" ) {
           görev: "HST-MTR-A14'ün bağımsız incelemesi (2026-10-10) doğuş şablonuna iz klasörü satırı eklendikten sonra da bu düzeltmeden önce doğmuş köklerin habersiz kaldığını ölçmüştür: böyle bir kökte yönerge ikizi ölçümü tam der ve depo denetimi sessiz kalır, oysa git durumu iz klasörünü izlenmeyen olarak gösterir. Motorun ham istem taşıyan izi aynı klasöre yazdığı için bu bir gizlilik açığıdır ve yürütücü izi varsayılan açılacaksa önkoşuldur. Kök kapısı satırın eksikliğini bildirir ve onarım yolunu söyler; önce satırı eksik bir kök fikstürüyle kırmızı sınama yazılır."
