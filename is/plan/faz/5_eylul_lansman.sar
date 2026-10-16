@@ -6409,8 +6409,8 @@ sessizce körleşmez.
           sınır: "Paket sürüm numarası değişmez; sürüm yükleme günü seçilir ve yükleme bu Adımın kapsamında değildir"
         }
 
-        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI ], bağımlı: [ MGZ-A09 ],
-          referans: [ HTR-MCP-DIL-AYRISMASI ],
+        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI ], bağımlı: [],
+          referans: [ HTR-MCP-DIL-AYRISMASI, MGZ-A09 ],
           ne: "🌐 İngilizce kipte MCP araçları İngilizce konuşsun ve ajana yalnız dosyada gerçekten bulunan adları öğretsin; böylece İngilizce kipteki bir ajan geçersiz .sar yazmasın" ) {
           görev: "Founder 2026-10-16 tarihinde MCP yüzündeki dil ayrışmasının mağaza yüklemesinden önce kapanmasına hükmetmiştir; ilke MGZ-A09'daki İngilizce yüz ilkesinin aynısıdır. Önce on dokuz aracın İngilizce ve Türkçe kipteki çıktısı yeniden ölçülür ve Türkçe kalan metinler sayılır. En ağır kusur önce kapanır: öğretim aracı, başla rehberi, sunucu talimatı ve doğuş aracının açıklaması dosyada bulunmayan ad karşılıkları (Step, Phase, dependsOn) öğretmeyi bırakır ve dosyadaki gerçek Türkçe adları anar. Ardından denetim araçları İngilizce kipte çekirdeğin var olan İngilizce tanı metinlerini kullanır, araçların başlık satırları ve şef brifinginin şablonu İngilizceye çevrilir ve iki dil için bir nöbet yazılır. HTR-MCP-CIKTILARI-INGILIZCE-DEGIL kaydı aynı kusurun ikizidir ve bu Adımla birlikte kapanır."
           kabul: [
@@ -6420,6 +6420,18 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kanon metinleri, dosya içeriği ve dilin anahtar sözcükleri değişmez; çeviri yalnız araç yüzünde yaşar"
+        }
+
+        Adım( kod: MGZ-A12, ad: "Kırık Dosyanın Susturduğu Tam Denetim", durum: geliştirmede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+          referans: [ HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR, MGZ-A04 ],
+          ne: "⛔ Tek bir kırık .sar dosyası bir kökün tam denetimini yarıda bıraktığında eklenti bunu sessizce geçmesin, turun eksik kaldığını kullanıcıya söylesin" ) {
+          görev: "Founder 2026-10-16 tarihinde mağaza yüklemesinden önce kapanacak eksiklerin tamamlanmasına hükmetmiştir. MGZ-A04 istisnayla çöken kökün bildirimini kurmuştur; bu Adım erken çıkışla yarıda kalan turu kapsar. Önce kırık bir dosyanın tam denetimi hangi yolda durdurduğu ve Gözlemler sayacının neden düştüğü ölçülür ve bu durum kırmızı veren bir nöbetle gösterilir. Ardından yarıda kalan tur, MGZ-A04'ün kurduğu işaretle aynı yüzden söylenir; mümkünse kırık dosya atlanarak öteki dosyaların çapraz tanıları korunur."
+          kabul: [
+            "kırık bir .sar dosyası bulunan kökte tam denetimin eksik kaldığı kullanıcıya görünür biçimde söylenir; bunu bir nöbet ölçer (önce kırmızı, sonra yeşil)",
+            "kırık dosya onarılınca işaret kalkar ve sayaç önceki değerine döner",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Kırık dosyanın söz-dizim tanısının bugünkü yüzü ve MGZ-A04'ün çöküş bildirimi değişmez"
         }
       }
     }
