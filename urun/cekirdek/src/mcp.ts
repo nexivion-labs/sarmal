@@ -1125,7 +1125,9 @@ rl.on("line", (satir) => {
   if (cevap) process.stdout.write(JSON.stringify(cevap) + "\n");
 });
 
-process.stderr.write(
+process.stderr.write(y(
   `sarmal MCP hazır (stdio · ${SUNUCU.version} · dil: ${MCP_DILI}) — ` +
   `araçlar: ${MCP_ARAC_SEMALARI.map((a) => a.name).join(" · ")} · SNF: ${SNF_YOL}\n`,
-);
+  `sarmal MCP ready (stdio · ${SUNUCU.version} · language: ${MCP_DILI}) — ` +
+  `tools: ${MCP_ARAC_SEMALARI.map((a) => a.name).join(" · ")} · SNF: ${SNF_YOL}\n`,
+));
