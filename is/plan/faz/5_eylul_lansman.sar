@@ -6263,7 +6263,7 @@ sessizce körleşmez.
       AltKatman( kod: MGZ-EKLENTI-K1, departman: sınama, ad: "Mağaza Kapısı",
         ne: "entegrasyon süiti, kısıtlı mod, tanı yüzeyi ve paket nöbetleri" ) {
 
-        Adım( kod: MGZ-A01, ad: "Entegrasyon Süitinin On Altı Düşüşü", durum: beklemede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A01, ad: "Entegrasyon Süitinin On Altı Düşüşü", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-EKLENTI-ENTEGRASYON-ON-ALTI-DUSUS ],
           ne: "🧪 Gerçek VS Code içinde koşan entegrasyon süitindeki on altı düşüş sınıflarına göre kapansın" ) {
           görev: "Düşüşler dört sınıftadır: dil ya da yerel ayar, fikstür ya da kanon kayması, olası gerçek ürün kusuru ve ölçüm ayrışması. Önce bugünkü düşüş listesi yeniden ölçülür. Gerçek ürün kusuru olan Onaylar karar komutunun dizgi olmayan argümanla çökmesi önceliklidir ve gerçek bir çağrı yolunun bu argümanı geçirip geçirmediği ölçülür. Öteki sınıflar ya onarılır ya da gerekçesiyle güncellenir."
@@ -6407,6 +6407,19 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Paket sürüm numarası değişmez; sürüm yükleme günü seçilir ve yükleme bu Adımın kapsamında değildir"
+        }
+
+        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI ], bağımlı: [ MGZ-A09 ],
+          referans: [ HTR-MCP-DIL-AYRISMASI ],
+          ne: "🌐 İngilizce kipte MCP araçları İngilizce konuşsun ve ajana yalnız dosyada gerçekten bulunan adları öğretsin; böylece İngilizce kipteki bir ajan geçersiz .sar yazmasın" ) {
+          görev: "Founder 2026-10-16 tarihinde MCP yüzündeki dil ayrışmasının mağaza yüklemesinden önce kapanmasına hükmetmiştir; ilke MGZ-A09'daki İngilizce yüz ilkesinin aynısıdır. Önce on dokuz aracın İngilizce ve Türkçe kipteki çıktısı yeniden ölçülür ve Türkçe kalan metinler sayılır. En ağır kusur önce kapanır: öğretim aracı, başla rehberi, sunucu talimatı ve doğuş aracının açıklaması dosyada bulunmayan ad karşılıkları (Step, Phase, dependsOn) öğretmeyi bırakır ve dosyadaki gerçek Türkçe adları anar. Ardından denetim araçları İngilizce kipte çekirdeğin var olan İngilizce tanı metinlerini kullanır, araçların başlık satırları ve şef brifinginin şablonu İngilizceye çevrilir ve iki dil için bir nöbet yazılır. HTR-MCP-CIKTILARI-INGILIZCE-DEGIL kaydı aynı kusurun ikizidir ve bu Adımla birlikte kapanır."
+          kabul: [
+            "İngilizce kipte hiçbir MCP aracı dosyada bulunmayan bir tip ya da alan adı öğretmez; bunu bir nöbet ölçer (önce kırmızı, sonra yeşil)",
+            "İngilizce kipte araç çıktılarının düzyazısı İngilizcedir ve dosyadaki Türkçe adları aynen anar; kalan Türkçe satırlar yalnız dosya içeriği ve kanon metninin yankısıdır",
+            "Türkçe kipte araç çıktıları tabanla bayt bayt aynıdır",
+            "denetim 0 hata, süitler yeşil"
+          ]
+          sınır: "Kanon metinleri, dosya içeriği ve dilin anahtar sözcükleri değişmez; çeviri yalnız araç yüzünde yaşar"
         }
       }
     }

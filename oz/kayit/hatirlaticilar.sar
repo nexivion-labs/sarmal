@@ -1414,7 +1414,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-DIL-AYRISMASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         MGZ-A11,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-10,
