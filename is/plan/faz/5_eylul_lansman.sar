@@ -6422,7 +6422,7 @@ sessizce körleşmez.
           sınır: "Kanon metinleri, dosya içeriği ve dilin anahtar sözcükleri değişmez; çeviri yalnız araç yüzünde yaşar"
         }
 
-        Adım( kod: MGZ-A12, ad: "Kırık Dosyanın Susturduğu Tam Denetim", durum: geliştirmede, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A12, ad: "Kırık Dosyanın Susturduğu Tam Denetim", durum: tamamlandı, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR, MGZ-A04 ],
           ne: "⛔ Tek bir kırık .sar dosyası bir kökün tam denetimini yarıda bıraktığında eklenti bunu sessizce geçmesin, turun eksik kaldığını kullanıcıya söylesin" ) {
           görev: "Founder 2026-10-16 tarihinde mağaza yüklemesinden önce kapanacak eksiklerin tamamlanmasına hükmetmiştir. MGZ-A04 istisnayla çöken kökün bildirimini kurmuştur; bu Adım erken çıkışla yarıda kalan turu kapsar. Önce kırık bir dosyanın tam denetimi hangi yolda durdurduğu ve Gözlemler sayacının neden düştüğü ölçülür ve bu durum kırmızı veren bir nöbetle gösterilir. Ardından yarıda kalan tur, MGZ-A04'ün kurduğu işaretle aynı yüzden söylenir; mümkünse kırık dosya atlanarak öteki dosyaların çapraz tanıları korunur."
@@ -6432,6 +6432,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kırık dosyanın söz-dizim tanısının bugünkü yüzü ve MGZ-A04'ün çöküş bildirimi değişmez"
+          koşu:  Koşum( kod: KSM-MGZ-A12, tarih: 2026-10-16, mühür: COMPLETED,
+            kanıt: "işlemeler 23164c0 ve 18edce1 · çekirdek 1784/1784, eklenti 957/957, tsc ve eslint temiz, depo denetimi 0 hata 0 uyarı · entegrasyon süiti tabanla aynı 40 geçen ve 15 düşen, düşen başlıklar birebir aynı ve MGZ-A01 dalında onarılmıştır · bağımsız inceleme: kırık dosyalı fikstürde panel sayacı 11'den 0'a düşüyordu, atlama kipinde 7'de kalıyor ve dosya onarılınca 11'e dönüyor; işaret durum çubuğuna ve Performans kanalına ulaşıyor; çekirdekteki atlama dalı sökülünce üç, işaret koşulu sökülünce iki nöbet kırmızıya döndü; komut satırı çıktısı ve çıkış kodu tabanla aynı; MGZ-A04 bildirimi değişmedi · açık kalan iki gözlem: durum çubuğu metni üç sebep için ortak olduğundan eksik kalan tur için de tam denetim koşmadı diyor ve doğru cümle ipucunda duruyor; atlama kipinde kırık dosyanın kodlarına atıf veren satırlar kırık atıf olarak görünüyor ve ipucu bunu söylüyor",
+            ne:    "Tek bir kırık .sar dosyası artık bir kökün tam denetimini sessizce susturmuyor: eklenti kırık dosyayı atlayıp turu tamamlıyor, öteki dosyaların çapraz tanılarını koruyor ve turun eksik kaldığını dosyanın adı ve satırıyla durum çubuğunda söylüyor. Komut satırının davranışı ve MGZ-A04'ün çöküş bildirimi değişmedi." )
         }
       }
     }
