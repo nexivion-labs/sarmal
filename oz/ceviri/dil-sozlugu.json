@@ -352,10 +352,10 @@
     "5": {"en":"exemplary — the record is held up as an example to the roster"}
   },
   "karneBilesen": {
-    "kabulIsabeti": {"en":"whether acceptance items were met with evidence in closed Steps (run seals; a reopened Step lowers accuracy)"},
+    "kabulIsabeti": {"en":"whether acceptance items were met with evidence in closed Adım nodes (run seals; a reopened Adım lowers accuracy)"},
     "denetimTemizligi": {"en":"the check verdict at closure (0 errors expected; produced drift is recorded)"},
     "sinamaYesilligi": {"en":"suite status at the closing commit (gate records)"},
-    "founderSinyalleri": {"en":"appreciation/honor/suggestion records written on the Step (human signal, read qualitatively rather than numerically)"}
+    "founderSinyalleri": {"en":"appreciation/honor/suggestion records written on the Adım (human signal, read qualitatively rather than numerically)"}
   },
   "widgetNe": {
     "ÇalışmaAlanı": {"en":"the garden / workspace — a single foundation; it wraps many ⟦Uygulama|s⟧ in parallel (M-01)"},

@@ -49,7 +49,7 @@ import { ogretKarti, dogusAnlatisi } from "./ogret.ts";   // davranış-katmanı
 import { beceriKartiBul } from "./beceri-karti.ts";   // BKM-DNT-A16: konu kartı araması tek gövdeden okunur
 import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
-import { cevir, dilHanesi, etkinCiktiDili } from "./cevir.ts";
+import { cevir, dilHanesi, etkinCiktiDili, sozlukDuzYazisi } from "./cevir.ts";
 import { MCP_ARAC_ADI, MCP_KOK_DISI_NOTU, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
 import { tazeKaynak } from "./taze-kaynak.ts";   // BKM-MCP-A02: çağrı anında mühür karşılaştırması
 import { agacYüz } from "./agac.ts";   // ağaç-yüzü turu: MCP yüzü aynı ağaç üreticisini çağırır (YUZ-1.1)
@@ -103,7 +103,8 @@ function guncelSnfHam(): any { return snfHamKaynagi.deger(); }
 /** Bir araç çağrısında kanon tazelendiyse cevaba eklenecek tek satır. */
 function tazelemeNotu(): string {
   return snfKaynagi.sonCagridaTazelendi() || snfHamKaynagi.sonCagridaTazelendi()
-    ? "\n\n🔄 Kanon kaynağı diskte değişmişti; bu cevap tazelenmiş şemadan üretildi."
+    ? y("\n\n🔄 Kanon kaynağı diskte değişmişti; bu cevap tazelenmiş şemadan üretildi.",
+      "\n\n🔄 The canon source had changed on disk; this response was produced from the refreshed schema.")
     : "";
 }
 
@@ -120,6 +121,18 @@ for (const dosya of readdirSync(YASA_KOK)) {
 // tools/list okuma yüzü tek katalogdan ve tek dil kapısından kurulur.
 // Şema tipleri/enumlar/required alanları kanonik kaynaklarından aynı biçimde akar.
 const MCP_DILI = etkinCiktiDili();
+/**
+ * MGZ-A11 · İngilizce yüzün tek ilkesi (Founder hükmü 2026-10-10 · 2026-10-16):
+ * araç çıktısının düzyazısı seçilen dilde konuşur ve dosyadaki gerçek Türkçe
+ * adları (tip, kenar, alan, enum değeri, araç adı) aynen anar. Türkçe hane
+ * kanonik yüzdür ve bu yardımcıdan geçtiği için baytı değişmez.
+ */
+const y = (tr: string, en: string): string => dilHanesi({ tr, en }, MCP_DILI);
+/** Tanının okuma yüzü — Türkçe kipte tanıya dokunulmaz, İngilizce kipte çekirdeğin İngilizce hanesi seçilir. */
+const taniYuzu = (t: Tani): Tani => (MCP_DILI === "tr" ? t : taniDilineCevir(t, MCP_DILI));
+/** Altında .sar bulunmayan dizinin iletisi — beş araç aynı cümleyi kurar. */
+const bosDizinMetni = (dizin: string): string => y(`✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`,
+  `✖ No .sar file was found under '${dizin}' — dizin must be a workspace root.`);
 
 // ── HST-MTR-A04 · YÜRÜTÜCÜ İZİ ───────────────────────────────────────────────
 //   İz açıksa sef ve durum-guncelle temasları koşum izi klasörüne birer satır
@@ -174,10 +187,11 @@ export function denetleAraci(kaynak: string, etkinSnf: Siniflama = guncelSnf(), 
     // kaynak ile türetilen yüzü karşılaştırır, ayrıştırılmış ağaçtan ölçülemez.
     // Geçilmezse bu iki hüküm YALNIZ bu yüzeyde susar ve yüzler arasında tanı
     // farkı doğar — bu hâl `tanı-yüzü-uyumsuz` hükmünün yasakladığı durumdur.
-    tanilar = dogrula(program, etkinSnf, undefined, kaynak);
+    // MGZ-A11: İngilizce kipte çekirdeğin İngilizce tanı metinleri kullanılır (eklentiyle aynı hane).
+    tanilar = dogrula(program, etkinSnf, undefined, kaynak, MCP_DILI === "tr" ? undefined : { dil: MCP_DILI });
     // doğuş-rehberi turu: proje bağlamı YOKSA (anadizinsiz kaynak/dizin) doğuş-eksik
     // bekçisi de koşar — plan boş tarlaya yazılıyorsa tek-dosya yüzü artık susmaz.
-    if (dogusBaglami === "yok") tanilar.push(...dogusEksikTanilari(program));
+    if (dogusBaglami === "yok") tanilar.push(...dogusEksikTanilari(program).map(taniYuzu));
   } catch (e) {
     if (e instanceof SozDizimHatasi) {
       // Söz dizim hatası da bir tanıdır — ajan aynı kanaldan görsün.
@@ -207,10 +221,13 @@ function anadizinVarMi(kok?: string): boolean {
  *  2026-07-14: ajan tek-dosya `denetle` "temiz"ini PROJE-yeşili sandı → ana-yok +
  *  17 kayıp-yapı kaçtı, "bitti" dedi). Kaynak bir projenin parçasıysa (anadizin
  *  up-tree bulundu) sonuç MUTLAKA proje denetimine yükseltmeyi dayatır. */
-const PROJE_UYARISI =
+const PROJE_UYARISI = y(
   "⚠️ TEK-DOSYA sınırı (A7): bu sonuç PROJE-yeşili DEĞİL — ana-yok · kayıp-yapı · " +
   "kırık-referans · DAG/döngü · disk-mutabakat BURADA KOŞMAZ. 'Bitti/temiz' demeden " +
-  "ÖNCE MUTLAKA `denetle-proje { dizin }` koş; TAM hüküm yalnız oradan alınır.";
+  "ÖNCE MUTLAKA `denetle-proje { dizin }` koş; TAM hüküm yalnız oradan alınır.",
+  "⚠️ SINGLE-FILE boundary (A7): this result is NOT a project-wide green — `ana-yok` · `kayıp-yapı` · " +
+  "`kırık-referans` · DAG/cycle · disk agreement DO NOT RUN HERE. Before you say done or clean, " +
+  "ALWAYS run `denetle-proje { dizin }`; the FULL verdict comes only from there.");
 
 /** Tanıları ajanın okuyabileceği Türkçe metne çevirir (CLI raporla ile aynı ruh).
  *  projedeMi: kaynak bir PROJE'nin parçası mı (anadizin up-tree var mı) — öyleyse
@@ -218,8 +235,9 @@ const PROJE_UYARISI =
 export function taniMetni(s: DenetimSonucu, projedeMi = false): string {
   if (s.tanilar.length === 0) {
     return projedeMi
-      ? `✅ Tek-dosya temiz — .sar Sınıflama'ya (SNF-0) uygun.\n${PROJE_UYARISI}`
-      : "✅ Drift yok — .sar Sınıflama'ya (SNF-0) uygun.";
+      ? y(`✅ Tek-dosya temiz — .sar Sınıflama'ya (SNF-0) uygun.\n${PROJE_UYARISI}`,
+        `✅ Single file clean — the .sar source conforms to the SNF-0 type canon.\n${PROJE_UYARISI}`)
+      : y("✅ Drift yok — .sar Sınıflama'ya (SNF-0) uygun.", "✅ No drift — the .sar source conforms to the SNF-0 type canon.");
   }
   const im = (d: string): string => (d === "hata" ? "✖" : d === "uyarı" ? "⚠" : "ℹ");
   const satirlar = s.tanilar.map((t) => {
@@ -229,8 +247,10 @@ export function taniMetni(s: DenetimSonucu, projedeMi = false): string {
   });
   // YUZ-3.2 çapraz-yönlendirme: ajanın ⌘+tık'ı, az önce okuduğu çıktının içindeki
   // davettir — tanıda geçen bir KOD'a bakmanın kısa yolu burada söylenir.
-  const govde = `── DENETİM (${s.ozet.hata} hata · ${s.ozet.uyari} uyarı) ──\n${satirlar.join("\n")}` +
-    `\n🧭 Tanıda geçen bir KOD'un tanımına/atıflarına gitmek için: gezin { kod, dizin } (F12'nin ajan hâli).`;
+  const govde = y(`── DENETİM (${s.ozet.hata} hata · ${s.ozet.uyari} uyarı) ──`,
+    `── CHECK (${s.ozet.hata} errors · ${s.ozet.uyari} warnings) ──`) + `\n${satirlar.join("\n")}` +
+    y(`\n🧭 Tanıda geçen bir KOD'un tanımına/atıflarına gitmek için: gezin { kod, dizin } (F12'nin ajan hâli).`,
+      `\n🧭 To open the definition and references of a \`kod\` named in a diagnostic: gezin { kod, dizin } (the agent counterpart of F12).`);
   // Projede kısmi (tek-dosya) tanı listesi de tam-hüküm SANILMASIN.
   return projedeMi ? `${govde}\n${PROJE_UYARISI}` : govde;
 }
@@ -247,7 +267,9 @@ function kurallarAraci(kategori?: string): { metin: string; isError: boolean } {
     const norm = (s: string): string => s.toLocaleLowerCase("tr").replace(/[-_]/g, "");
     const yakin = Object.keys(KURAL_DOSYALARI).filter((k) => norm(k) === norm(anahtar) || norm(k).includes(norm(anahtar)));
     return {
-      metin: `✖ Bilinmeyen kategori: "${anahtar}".${yakin.length ? ` Şunu mu demek istedin: ${yakin.join(" · ")}?` : ""} Geçerli: ${Object.keys(KURAL_DOSYALARI).join(" · ")}`,
+      metin: y(
+        `✖ Bilinmeyen kategori: "${anahtar}".${yakin.length ? ` Şunu mu demek istedin: ${yakin.join(" · ")}?` : ""} Geçerli: ${Object.keys(KURAL_DOSYALARI).join(" · ")}`,
+        `✖ Unknown kategori: "${anahtar}".${yakin.length ? ` Did you mean: ${yakin.join(" · ")}?` : ""} Valid: ${Object.keys(KURAL_DOSYALARI).join(" · ")}`),
       isError: true,
     };
   }
@@ -255,9 +277,11 @@ function kurallarAraci(kategori?: string): { metin: string; isError: boolean } {
     const govde = dosya ? readFileSync(YASA_KOK + dosya, "utf8") : "";
     const baslik = dosya
       ? `── 📜 yasa/kanon/${dosya} ──\n\n`
-      : `── 📜 yasa/kanon — kanon bölümleri (bölüm adına "kategori" ver) ──\n`;
+      : y(`── 📜 yasa/kanon — kanon bölümleri (bölüm adına "kategori" ver) ──\n`,
+        `── 📜 yasa/kanon — canon sections (pass a section name as "kategori") ──\n`);
     let ek = !dosya
-      ? `\n── Bölümler (kurallar aracına "kategori" ver) ──\n${Object.keys(KURAL_DOSYALARI).join(" · ")}`
+      ? y(`\n── Bölümler (kurallar aracına "kategori" ver) ──\n`, `\n── Sections (pass "kategori" to the kurallar tool) ──\n`) +
+        Object.keys(KURAL_DOSYALARI).join(" · ")
       : "";
     // ── RF-T6-A03: kural↔kapı haritası MOTORDAN türetilir (elle enforcement
     //    raporu emekli): her Kural'ın tanı: beyanı taranır; bağlı/bağsız sayımı
@@ -285,13 +309,15 @@ function kurallarAraci(kategori?: string): { metin: string; isError: boolean } {
           for (const b of p.bildirimler) gez(b);
         } catch { /* kırık yasa dosyası haritayı düşürmez — kendi denetiminde yakalanır */ }
       }
-      ek += `\n\n── 🔗 KURAL↔KAPI HARİTASI (motordan türetildi) ──\n` +
-        `Bağlı: ${baglar.length}/${toplam} kural (tanı: kenarı — iddialar sicilde doğrulanır; bağsız kural kâğıtta kalmış niyettir)\n` +
+      ek += y(`\n\n── 🔗 KURAL↔KAPI HARİTASI (motordan türetildi) ──\n` +
+        `Bağlı: ${baglar.length}/${toplam} kural (tanı: kenarı — iddialar sicilde doğrulanır; bağsız kural kâğıtta kalmış niyettir)\n`,
+      `\n\n── 🔗 RULE↔GATE MAP (derived from the engine) ──\n` +
+        `Bound: ${baglar.length}/${toplam} Kural nodes (the \`tanı:\` edge — claims are verified in the registry; an unbound rule is an intention left on paper)\n`) +
         baglar.join("\n");
     }
     return { metin: baslik + govde + ek, isError: false };
   } catch (e) {
-    return { metin: `✖ Kural dosyası okunamadı: ${(e as Error).message}`, isError: true };
+    return { metin: y(`✖ Kural dosyası okunamadı: ${(e as Error).message}`, `✖ The rule file could not be read: ${(e as Error).message}`), isError: true };
   }
 }
 
@@ -307,7 +333,8 @@ function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isErro
       // en yakın adı öner (basit içerme — ajan yazım hatasını hızlı düzeltsin)
       const yakin = tipler.filter((x) => x.ad.toLocaleLowerCase("tr").includes(tip.toLocaleLowerCase("tr"))).map((x) => x.ad);
       return {
-        metin: `✖ Bilinmeyen tip: "${tip}".${yakin.length ? ` Şunu mu demek istedin: ${yakin.join(" · ")}?` : ""}`,
+        metin: y(`✖ Bilinmeyen tip: "${tip}".${yakin.length ? ` Şunu mu demek istedin: ${yakin.join(" · ")}?` : ""}`,
+          `✖ Unknown tip: "${tip}".${yakin.length ? ` Did you mean: ${yakin.join(" · ")}?` : ""}`),
         yapisal: null,
         isError: true,
       };
@@ -320,46 +347,56 @@ function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isErro
       .filter(([, cocuklar]) => (cocuklar as string[]).includes(t.ad))
       .map(([e]) => e);
     const yuzey = (snfHam.yuzeyKurali?.duzen ?? []).includes(t.ad)
-      ? "düzen (yüzey ağacında çocuk sarar)"
+      ? y("düzen (yüzey ağacında çocuk sarar)", "`düzen` (wraps children in the surface tree)")
       : (snfHam.yuzeyKurali?.yaprak ?? []).includes(t.ad)
-        ? "yaprak (çocuk sarmaz)"
+        ? y("yaprak (çocuk sarmaz)", "`yaprak` (wraps no children)")
         : null;
     // TIP-1.16 çapraz rol indeksi: tip ana ailesini korur, çapraz rol sorgusunda da
     // bulunur (örn. Sözleşme → yuzey+arkayuz). Kaynak: kayit.json widgetTipleri[].caprazRoller.
     const detay = { tip: t.ad, aile: t.aile, caprazRoller: t.caprazRoller ?? null, ne: t.ne, sema, icerebilir, konabilir, yuzeyKurali: yuzey, ortakEnum: snfHam.ortakEnum ?? null };
     const satirlar = [
-      `── 🗂️ ${t.ad} (aile: ${t.aile}) ──`,
-      `ne: ${t.ne}`,
-      t.caprazRoller?.length ? `çapraz roller (TIP-1.16): ${t.caprazRoller.join(" · ")} — tip ana ailesinde kalır, bu rol sorgularında da bulunur` : "",
-      sema ? `şema: ${JSON.stringify(sema, null, 2)}` : "şema: (yok — serbest alanlar)",
-      icerebilir ? `içerebilir: ${(icerebilir as string[]).join(" · ")}` : "içerebilir: (izinliSarma'da konteyner değil)",
+      y(`── 🗂️ ${t.ad} (aile: ${t.aile}) ──`, `── 🗂️ ${t.ad} (family: ${t.aile}) ──`),
+      // Tipin `ne` metni kanondadır; İngilizce kipte sözlüğün düzyazı hanesi okunur ve ad jetonları dosyadaki adla çözülür.
+      `ne: ${sozlukDuzYazisi("widgetNe", t.ad, t.ne, MCP_DILI, "kaynak")}`,
+      t.caprazRoller?.length ? y(`çapraz roller (TIP-1.16): ${t.caprazRoller.join(" · ")} — tip ana ailesinde kalır, bu rol sorgularında da bulunur`,
+        `cross roles (TIP-1.16): ${t.caprazRoller.join(" · ")} — the type stays in its main family and is also found by these role queries`) : "",
+      sema ? y(`şema: ${JSON.stringify(sema, null, 2)}`, `schema: ${JSON.stringify(sema, null, 2)}`) : y("şema: (yok — serbest alanlar)", "schema: (none — free fields)"),
+      icerebilir ? y(`içerebilir: ${(icerebilir as string[]).join(" · ")}`, `can contain: ${(icerebilir as string[]).join(" · ")}`)
+        : y("içerebilir: (izinliSarma'da konteyner değil)", "can contain: (not a container in izinliSarma)"),
       // hatırlatıcı-rayı turu (DOC-3): konabilir boşken aile-farkında dürüst mesaj — 'hiçbir yere
       // konamaz' yanılgısını bitir. oz-ailesi (DurumKaydı/Hatırlatıcı) DOSYA-KÖKÜ serbest
       // yerleşir (üst-seviye widget); temel-aile (Proje/Uygulama/ÇalışmaAlanı) proje köküdür.
-      konabilir.length ? `şuraya konabilir: ${konabilir.join(" · ")}`
-        : t.aile === "oz" ? "şuraya konabilir: 🗂️ dosya kökünde SERBEST yerleşir (oz ailesi üst-seviye widget — DurumKaydı/Hatırlatıcı gibi; ebeveyn gerekmez)"
-        : t.aile === "temel" ? "şuraya konabilir: 🌱 proje/dosya KÖKÜ (kendisi kök widget — Proje/Uygulama/ÇalışmaAlanı)"
-        : "şuraya konabilir: (izinliSarma değeri değil — üst-seviye/yüzey kuralına bakın)",
-      yuzey ? `yüzey kuralı: ${yuzey}` : "",
+      konabilir.length ? y(`şuraya konabilir: ${konabilir.join(" · ")}`, `can be placed in: ${konabilir.join(" · ")}`)
+        : t.aile === "oz" ? y("şuraya konabilir: 🗂️ dosya kökünde SERBEST yerleşir (oz ailesi üst-seviye widget — DurumKaydı/Hatırlatıcı gibi; ebeveyn gerekmez)",
+          "can be placed in: 🗂️ sits FREELY at the file root (a top-level widget of the oz family — like DurumKaydı/Hatırlatıcı; no parent needed)")
+        : t.aile === "temel" ? y("şuraya konabilir: 🌱 proje/dosya KÖKÜ (kendisi kök widget — Proje/Uygulama/ÇalışmaAlanı)",
+          "can be placed in: 🌱 the project or file ROOT (it is itself a root widget — Proje/Uygulama/ÇalışmaAlanı)")
+        : y("şuraya konabilir: (izinliSarma değeri değil — üst-seviye/yüzey kuralına bakın)",
+          "can be placed in: (no izinliSarma value — see the top-level and surface rules)"),
+      yuzey ? y(`yüzey kuralı: ${yuzey}`, `surface rule: ${yuzey}`) : "",
     ].filter(Boolean);
     return { metin: satirlar.join("\n"), yapisal: detay, isError: false };
   }
   // genel bakış
   const aileGrup: Record<string, string[]> = {};
   for (const t of tipler) (aileGrup[t.aile] ??= []).push(t.ad);
-  const kenarlar = (snfHam.kenarTipleri ?? []).map((e: { ad: string; ne?: string }) => `${e.ad}: ${e.ne ?? ""}`);
+  const kenarlar = (snfHam.kenarTipleri ?? []).map((e: { ad: string; ne?: string }) =>
+    `${e.ad}: ${sozlukDuzYazisi("kenarNe", e.ad, e.ne ?? "", MCP_DILI, "kaynak")}`);
   const satirlar = [
-    `── 🗂️ SNF-0 kanonu — ${tipler.length} tip · ${(snfHam.kenarTipleri ?? []).length} kenar ──`,
+    y(`── 🗂️ SNF-0 kanonu — ${tipler.length} tip · ${(snfHam.kenarTipleri ?? []).length} kenar ──`,
+      `── 🗂️ SNF-0 canon — ${tipler.length} types · ${(snfHam.kenarTipleri ?? []).length} edges ──`),
     "",
-    "AİLELER VE TİPLER:",
+    y("AİLELER VE TİPLER:", "FAMILIES AND TYPES:"),
     ...Object.entries(aileGrup).map(([a, ts]) => `  ${a}: ${ts.join(" · ")}`),
     "",
-    "KENARLAR (tipli ilişkiler):",
+    y("KENARLAR (tipli ilişkiler):", "EDGES (typed relations):"),
     ...kenarlar.map((k: string) => `  • ${k}`),
     "",
-    `YÜZEY KURALI: düzen=${(snfHam.yuzeyKurali?.duzen ?? []).join(",")} · yaprak=${(snfHam.yuzeyKurali?.yaprak ?? []).join(",")}`,
+    y(`YÜZEY KURALI: düzen=${(snfHam.yuzeyKurali?.duzen ?? []).join(",")} · yaprak=${(snfHam.yuzeyKurali?.yaprak ?? []).join(",")}`,
+      `SURFACE RULE: \`düzen\`=${(snfHam.yuzeyKurali?.duzen ?? []).join(",")} · \`yaprak\`=${(snfHam.yuzeyKurali?.yaprak ?? []).join(",")}`),
     "",
-    `Detay için: siniflama { tip: "Adım" } — şema/sarma ilişkileri döner.`,
+    y(`Detay için: siniflama { tip: "Adım" } — şema/sarma ilişkileri döner.`,
+      `For detail: siniflama { tip: "Adım" } returns the schema and containment relations.`),
   ];
   const yapisal = { aileler: aileGrup, kenarTipleri: snfHam.kenarTipleri, yuzeyKurali: snfHam.yuzeyKurali, izinliSarma: snfHam.izinliSarma };
   return { metin: satirlar.join("\n"), yapisal, isError: false };
@@ -369,7 +406,7 @@ function siniflamaAraci(tip?: string): { metin: string; yapisal: unknown; isErro
 // Motor DENETLER ama YÖNLENDİRMEZDİ (kör drift): ajan boş tarlaya düşüp ana.sar/
 // teknoloji/plan-ekseni/koni atlıyordu. başla, MIM-4 doğuş omurgasını + koni-dolu şablonu ELE
 // verir — Flutter'ın scaffold'u gibi doğuş sırasını öğretir. Dosya YAZMAZ.
-const DOGUS_OMURGASI = [
+const DOGUS_OMURGASI_TR = [
   "🌱 ① <varlık>_anadizin.sar (KÖK; eski adı ana.sar) — Proje ya da ÇalışmaAlanı, kullanılan Teknoloji ve Takım ORADA ilan edilir; teknolojisi ilan edilmemiş yüzey DOĞMAZ",
   "⚖️ ② Yasa/Anayasa — planı sınırlayan üst hüküm katmanıdır; plan onun altında yazılır",
   "🔩 ③ Mekanizma — kesişen altyapı (yönetişim · RBAC · telemetri · denetim izi) BİR KEZ ilan edilir; plan Adımları ona REFERANS verir, içine kopyalamaz. Yasa'nın küçük kardeşi, Plan'ın abisidir — DAĞITMAK YASAKTIR. Modüller arası sıra bağımlı-DAG, aktivasyon faz etiketiyle",
@@ -378,6 +415,18 @@ const DOGUS_OMURGASI = [
   "🌉 ⑥ KAVUŞUM · SÖZLEŞME ÖNCE (contract-first) — farklı Takım'a bağlı Adımlar ORTAK Sözleşme köprüsüyle kavuşur, köprüsüz paralel koşulamaz (bekçi: kavuşumsuz-paralellik — F2); Adım üretir Ekran · Ekran çağırır Uç · Uç bağlanır Sözleşme (bekçi: öksüz-düğme·kavuşumsuz-ekran)",
   "🍎 ⑦ ÜRETİM-YERİ — üretilebilir artefakt (Ekran·Uç·Tablo·Servis·Kimlik) `dosya:` ile KODUNUN düşeceği yeri beyan eder; yoksa ağaçtan türetilir — üreten taraf klasör uydurmaz",
 ];
+// MGZ-A11: omurganın İngilizce hanesi aynı yedi halkayı aynı sırayla taşır ve
+// dosyadaki adları (tip, alan, tanı kimliği) aynen anar.
+const DOGUS_OMURGASI_EN = [
+  "🌱 ① <varlık>_anadizin.sar (the ROOT; formerly ana.sar) — the Proje or ÇalışmaAlanı, the Teknoloji in use and the Takım are declared THERE; a surface whose technology is undeclared is NOT BORN",
+  "⚖️ ② Yasa/Anayasa — the upper ruling layer that bounds the plan; the plan is written beneath it",
+  "🔩 ③ Mekanizma — cross-cutting infrastructure (oversight · RBAC · telemetry · audit trail) is declared ONCE; plan Adım nodes REFERENCE it and never copy it inside. It is the younger sibling of Yasa and the elder sibling of the plan — SCATTERING IT IS FORBIDDEN. Order between modules is the bağımlı DAG; activation is by Faz label",
+  "📋 ④ Plan — Faz(TIME 🌀) → Blok(WORK 🪵) → Katman(TECHNOLOGY 🌿, bound to a Takım) → Adım(FLOW 🍃) (four axes · the FULL CHAIN is mandatory: every Blok binds to a time ring and every Adım to a Katman; reverse wrapping is forbidden). A Katman binds its ground first with `takım:` to the Takım that runs it, or, when there is no Takım, with `kullanır:` to a single Teknoloji; the kind of work (decision, process, review) is written not in the ground but in the AltKatman's `departman:` field. The `teknolojiBağımsız` escape is legitimate only at the moment of birth, in the founding Katman while the project has no Teknoloji and no Takım yet, and it is temporary: once the ground is declared it is deleted before the founding Adım closes, otherwise the `yersiz-teknoloji-kaçışı` warning appears. The time binding is in gentle mode: a date is STRONGLY RECOMMENDED — if you give `hedefTarih` (\"YYYY-AA-GG\" or, at month precision, \"YYYY-AA\") the deadline guard tracks delay; if you do not, the Faz still opens and the engine only reminds you (the flow is not cut; deferral is legitimate). Faz file layout (MIM-1.2): every Faz lives in its own prefix-numbered file under is/plan/faz/ (1_dogus.sar, 2_surum.sar, …), the Faz declaration stands at the top of the file and a Blok binds to a Faz ONLY by being wrapped in the Faz body; the `mevsim:` field and the Faz `çağır` list are retired as Blok bindings; there is no escape for a Blok without a Faz, and work awaiting prioritisation is bound to a Faz as well; the Faz nodes of one Proje form a single chain in the natural number order of their dates and file prefixes, and no work starts in a later Faz before the earlier one closes. The `kod` of a Blok is UNIQUE and the Blok lives in the body of its Faz; an Adım gives `bağımlı:` to mechanisms. DECLARE needs as Gereksinim nodes and bind the Adım nodes to them, so that which Adım satisfies which need stays TRACEABLE",
+  "🎯 ⑤ Every Adım carries a CONE — görev·kabul·üretir·bağımlı·referans·sınır (guard: konisiz-adım)",
+  "🌉 ⑥ MEETING POINT · CONTRACT FIRST — Adım nodes bound to different Takım nodes meet through a SHARED Sözleşme bridge and cannot run in parallel without one (guard: kavuşumsuz-paralellik — F2); an Adım `üretir` an Ekran · an Ekran `çağırır` an Uç · an Uç `bağlanır` a Sözleşme (guards: öksüz-düğme · kavuşumsuz-ekran)",
+  "🍎 ⑦ PRODUCTION PLACE — a producible artefact (Ekran·Uç·Tablo·Servis·Kimlik) declares with `dosya:` where its CODE will land; otherwise the place is derived from the tree — the producer does not invent folders",
+];
+const DOGUS_OMURGASI = MCP_DILI === "tr" ? DOGUS_OMURGASI_TR : DOGUS_OMURGASI_EN;
 
 // Şablonlar artık sablon/*.sar dosyalarında yaşar (tek kaynak) → sablon.ts okur.
 // başla üreteci hem bu MCP aracından hem CLI'dan aynı kütüphaneyi çağırır (YUZ-1.2).
@@ -387,15 +436,17 @@ function sefAraci(dizin: string, adimKod: string): { metin: string; isError: boo
   // ADM-STD-MCP-DIKSIYON (OGR-2.1 · YAS-3.4 ③): boş argüman ham hataya düşmesin —
   // aracın doğru kullanımı hata iletisinin kendisinden öğrenilir.
   if (!adimKod.trim()) {
-    return { metin: "✖ sef bir Adım kodu ister — kullanım: sef(dizin: \"<kök>\", adim: \"ADM-X\"). Açık Adımları görmek için denetle-proje (motor-susmaz listesi) ya da gezin(<ADIM-KOD>) kullan.", isError: true };
+    return { metin: y("✖ sef bir Adım kodu ister — kullanım: sef(dizin: \"<kök>\", adim: \"ADM-X\"). Açık Adımları görmek için denetle-proje (motor-susmaz listesi) ya da gezin(<ADIM-KOD>) kullan.",
+      "✖ sef needs an Adım KOD — usage: sef(dizin: \"<root>\", adim: \"ADM-X\"). To see open Adım nodes use denetle-proje (the engine-does-not-fall-silent list) or gezin(<ADIM-KOD>)."), isError: true };
   }
   const programlar = programHaritasi(dizin);
   const paket = baglamMontajla(programlar, adimKod, undefined, undefined, kavramVerisiYukle());
   if (!paket) {
-    return { metin: `✖ '${adimKod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı — dizin: ${dizin}). Kodu doğrula: gezin(${adimKod}) düğümü iki yönde gösterir; yanlış dizin verdiysen kökü düzelt.`, isError: true };
+    return { metin: y(`✖ '${adimKod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı — dizin: ${dizin}). Kodu doğrula: gezin(${adimKod}) düğümü iki yönde gösterir; yanlış dizin verdiysen kökü düzelt.`,
+      `✖ No Adım with KOD '${adimKod}' was found (${programlar.size} .sar files scanned — dizin: ${dizin}). Check the KOD: gezin(${adimKod}) shows the node in both directions; if you passed the wrong dizin, correct the root.`), isError: true };
   }
-  const prompt = promptUret(paket);
-  return { metin: `${prompt}\n\n📊 ~${tokenSay(prompt)} token (yaklaşık)`, isError: false };
+  const prompt = promptUret(paket, MCP_DILI);
+  return { metin: `${prompt}\n\n📊 ~${tokenSay(prompt)} ${y("token (yaklaşık)", "tokens (approximate)")}`, isError: false };
 }
 
 /** kavram aracı (KVR-A09): kelime → çeviri katmanının birleşik sonucu; bağlam → harita aileleri.
@@ -403,34 +454,40 @@ function sefAraci(dizin: string, adimKod: string): { metin: string; isError: boo
  *  STR-3: sorgu kapısıdır — öneri sunar, seçim yapmaz; bulunamama hata değil bulgudur. */
 function kavramAraci(kelime?: string, baglam?: string): { metin: string; isError: boolean } {
   if (!kelime && !baglam) {
-    return { metin: "✖ kavram için `kelime` ya da `baglam` gerekli — kelime: serbest terim (ör. 'kapsayıcı', 'hover'); baglam: harita anahtarı (ör. 'Ekran', 'Adım.görev').", isError: true };
+    return { metin: y("✖ kavram için `kelime` ya da `baglam` gerekli — kelime: serbest terim (ör. 'kapsayıcı', 'hover'); baglam: harita anahtarı (ör. 'Ekran', 'Adım.görev').",
+      "✖ kavram needs `kelime` or `baglam` — kelime: a free term (for example, 'kapsayıcı' or 'hover'); baglam: a map key (for example, 'Ekran' or 'Adım.görev')."), isError: true };
   }
   const s: string[] = [];
   if (kelime) {
     const c = cevir(kelime);
     if (!c.bulundu) {
-      s.push(`'${kelime}' dört sözlükte de bulunamadı — kanonda böyle bir kavram yaşamıyor.`);
-      s.push("↳ Kullanıcının tarifini kaydet ve kavramı BOŞLUK ADAYI olarak raporla; sözlüğe sessizce eklemek yasaktır. Aday aileleri görmek için `baglam` sorgusu kullanılabilir.");
+      s.push(y(`'${kelime}' dört sözlükte de bulunamadı — kanonda böyle bir kavram yaşamıyor.`,
+        `'${kelime}' was not found in any of the four dictionaries — no such concept lives in the canon.`));
+      s.push(y("↳ Kullanıcının tarifini kaydet ve kavramı BOŞLUK ADAYI olarak raporla; sözlüğe sessizce eklemek yasaktır. Aday aileleri görmek için `baglam` sorgusu kullanılabilir.",
+        "↳ Record the user's description and report the concept as a GAP CANDIDATE; adding it silently to the dictionary is forbidden. A `baglam` query shows the candidate families."));
     } else {
-      s.push(`🔍 '${kelime}' sorgusu:`);
-      if (c.stack) s.push(`- Kanon kavramı '${c.stack.kavram}' → ${Object.entries(c.stack.hedefler).map(([k, v]) => `${k}: ${v}`).join(" · ")}`);
+      s.push(y(`🔍 '${kelime}' sorgusu:`, `🔍 Query '${kelime}':`));
+      if (c.stack) s.push(y(`- Kanon kavramı '${c.stack.kavram}' → `, `- Canon concept '${c.stack.kavram}' → `) + Object.entries(c.stack.hedefler).map(([k, v]) => `${k}: ${v}`).join(" · "));
       if (c.sarmal) {
-        s.push(`- 🌀 Sarmal kavramı '${c.sarmal.kavram}'${c.sarmal.en ? ` (${c.sarmal.en})` : ""}${c.sarmal.nerede ? ` — ${c.sarmal.nerede}` : ""}`);
+        s.push(y(`- 🌀 Sarmal kavramı '${c.sarmal.kavram}'`, `- 🌀 Sarmal concept '${c.sarmal.kavram}'`) +
+          `${c.sarmal.en ? ` (${c.sarmal.en})` : ""}${c.sarmal.nerede ? ` — ${c.sarmal.nerede}` : ""}`);
         s.push(`  ${c.sarmal.tanim}`);
-        s.push(`  ↳ Kanonik dayanak: ${c.sarmal.dayanak}`);
+        s.push(y(`  ↳ Kanonik dayanak: ${c.sarmal.dayanak}`, `  ↳ Canonical basis: ${c.sarmal.dayanak}`));
       }
-      if (c.i18n) s.push(`- Sarmal dili (${c.i18n.tur}): ${Object.entries(c.i18n.diller).map(([d, v]) => `${d}=${v}`).join(" · ")}`);
-      if (c.terim) s.push(`- Terim: ${c.terim.tr} ↔ ${c.terim.en}`);
+      if (c.i18n) s.push(y(`- Sarmal dili (${c.i18n.tur}): `, `- Sarmal language (${c.i18n.tur}): `) + Object.entries(c.i18n.diller).map(([d, v]) => `${d}=${v}`).join(" · "));
+      if (c.terim) s.push(y(`- Terim: ${c.terim.tr} ↔ ${c.terim.en}`, `- Term: ${c.terim.tr} ↔ ${c.terim.en}`));
     }
   }
   if (baglam) {
     const veri = kavramVerisiYukle();
-    if (!veri) return { metin: "✖ kavram verisi yüklenemedi — ogreti/bilgi/tasarim_sozlugu altındaki harita ya da kanon okunamadı.", isError: true };
+    if (!veri) return { metin: y("✖ kavram verisi yüklenemedi — ogreti/bilgi/tasarim_sozlugu altındaki harita ya da kanon okunamadı.",
+      "✖ The kavram data could not be loaded — the map or canon under ogreti/bilgi/tasarim_sozlugu could not be read."), isError: true };
     const bağlamKaydı = veri.harita.bağlamlar?.[baglam];
     if (!bağlamKaydı) {
-      s.push(`'${baglam}' haritada tanımlı bir bağlam değil. Tanımlı anahtarlar: ${Object.keys(veri.harita.bağlamlar ?? {}).join(" · ")}`);
+      s.push(y(`'${baglam}' haritada tanımlı bir bağlam değil. Tanımlı anahtarlar: `, `'${baglam}' is not a context defined in the map. Defined keys: `) +
+        Object.keys(veri.harita.bağlamlar ?? {}).join(" · "));
     } else {
-      s.push(`🗺️ '${baglam}' bağlamının aday aileleri (öneri — dayatma değil):`);
+      s.push(y(`🗺️ '${baglam}' bağlamının aday aileleri (öneri — dayatma değil):`, `🗺️ Candidate families for the '${baglam}' context (suggestions, not mandates):`));
       for (const aileAd of bağlamKaydı.öner ?? []) {
         const aile = veri.harita.aileler?.[aileAd];
         if (!aile) continue;
@@ -440,7 +497,7 @@ function kavramAraci(kelime?: string, baglam?: string): { metin: string; isError
             (o, p) => (o && typeof o === "object" ? (o as Record<string, unknown>)[p] : undefined), veri.kanon);
           const eş = dugum && typeof dugum === "object"
             ? Object.entries(dugum as Record<string, string>).map(([k, v]) => `${k}: ${v}`).join(" · ")
-            : "⚠️ kanonda çözülmedi (nöbet: baglam-haritasi.test)";
+            : y("⚠️ kanonda çözülmedi (nöbet: baglam-haritasi.test)", "⚠️ not resolved in the canon (guard: baglam-haritasi.test)");
           s.push(`- ${yol} → ${eş}`);
         }
       }
@@ -466,17 +523,17 @@ function ogretAraci(konu?: string): { metin: string; isError: boolean } {
 
 function karneAraci(dizin: string): { metin: string; isError: boolean } {
   const etkinSnf = siniflamaOrtuMerge(guncelSnf(), siniflamaOrtuYukle(dizin));
-  const rapor = karneRaporu(etkinSnf, programHaritasi(dizin));
+  const rapor = karneRaporu(etkinSnf, programHaritasi(dizin), MCP_DILI);
   return { metin: rapor, isError: rapor.startsWith("✖") };
 }
 
 function gezinAraci(dizin: string, kod: string): { metin: string; isError: boolean } {
-  if (!kod) return { metin: "✖ gezin: 'kod' argümanı gerekli (aranacak düğümün kimliği).", isError: true };
+  if (!kod) return { metin: y("✖ gezin: 'kod' argümanı gerekli (aranacak düğümün kimliği).", "✖ gezin: the 'kod' argument is required (the identity of the node to look up)."), isError: true };
   const indeks = dizindenIndeks(dizin);
   if (!indeks.dosyaSayisi()) {
-    return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
+    return { metin: bosDizinMetni(dizin), isError: true };
   }
-  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli);   // NTK-A06: bağlam kartı MCP yüzünde de
+  const rapor = gezinRaporu(indeks, kod, dosyaOkuGuvenli, undefined, undefined, MCP_DILI);   // NTK-A06: bağlam kartı MCP yüzünde de
   return { metin: rapor, isError: rapor.startsWith("✖") };
 }
 
@@ -484,7 +541,7 @@ function gezinAraci(dizin: string, kod: string): { metin: string; isError: boole
 function grafAraci(dizin: string, kok?: string): { metin: string; isError: boolean } {
   const programlar = programHaritasi(dizin);
   if (!programlar.size) {
-    return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
+    return { metin: bosDizinMetni(dizin), isError: true };
   }
   // ORK-4 (KPS-ADA-A01): CLI ikizinin taşıdığı ad alanı kapısı burada da taşınır.
   const kapi = adAlaniKapisi(programlar, dizin);
@@ -496,45 +553,53 @@ function grafAraci(dizin: string, kok?: string): { metin: string; isError: boole
   const g = grafCikar(dag, kok);
   if (g === undefined) {
     // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
-    return { metin: dugumYokMetni(dag, kok!, `✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`), isError: true };
+    return { metin: dugumYokMetni(dag, kok!, y(`✖ '${kok}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kok}).`,
+      `✖ No node with KOD '${kok}' is in the graph — declare it first (kod: ${kok}).`), MCP_DILI), isError: true };
   }
   if (kok === undefined) {
-    return { metin: grafOzetYuzu(g, `${MCP_ARAC_ADI.graf} { dizin, kok: "<KOD>" }`), isError: false };
+    return { metin: grafOzetYuzu(g, `${MCP_ARAC_ADI.graf} { dizin, kok: "<KOD>" }`, MCP_DILI), isError: false };
   }
   return { metin: JSON.stringify(g, null, 2) + "\n", isError: false };
 }
 
 function baslaAraci(tur?: string): { metin: string; isError: boolean } {
-  const omurga = "🌳 DOĞUŞ OMURGASI (üstteki abi alttakini DOĞURUR, alttaki ona bağımlıdır):\n" +
+  const omurga = y("🌳 DOĞUŞ OMURGASI (üstteki abi alttakini DOĞURUR, alttaki ona bağımlıdır):\n",
+    "🌳 BIRTH BACKBONE (each elder GIVES BIRTH to the one below it, and the one below depends on it):\n") +
     DOGUS_OMURGASI.map((s) => "  " + s).join("\n");
   if (!tur) {
     return {
       metin: [
-        "🌱 SARMAL DOĞUŞ REHBERİ — yazmadan ÖNCE oku; motor yalnız denetlemez, yönlendirir de.",
+        y("🌱 SARMAL DOĞUŞ REHBERİ — yazmadan ÖNCE oku; motor yalnız denetlemez, yönlendirir de.",
+          "🌱 Sarmal BIRTH GUIDE — read it BEFORE you write; the engine does not only check, it also guides."),
         "",
         // BKM-DNT-A16: rehber ile karşılama kartı AYNI anlatıyı taşır (tek üretici,
         // YUZ-1.2). Bu araç boş bir dizinde de koştuğu için doğuş anının öğretisi
         // ajana buradan da ulaşır; kart okunmamış olsa bile kanal kapanmaz.
-        dogusAnlatisi(),
+        dogusAnlatisi(MCP_DILI),
         "",
-        mimariDiyalog(),
+        mimariDiyalog(MCP_DILI),
         "",
         omurga,
         "",
-        `📐 Koni-dolu şablon iste: başla { tür: ${sablonTurleri().map((t) => `"${t}"`).join(" | ")} }`,
+        y(`📐 Koni-dolu şablon iste: başla { tür: ${sablonTurleri().map((t) => `"${t}"`).join(" | ")} }`,
+          `📐 Ask for a cone-filled template: ${MCP_ARAC_ADI.basla} { tur: ${sablonTurleri().map((t) => `"${t}"`).join(" | ")} }`),
         "",
-        "🖼️ DOLU vitrin örnekleri (kopyala ve uyarla; düğüm baştan dolu doğsun): ornek/vitrinler/dogus_proje.sar · dogus_ekran.sar · dogus_etmen.sar.",
-        "⚠️ Motor seni yönlendirir — yazınca denetle ile gör: anadizin-plan-karışması · ana-yok · konisiz-adım · öksüz-düğme · kavuşumsuz-ekran · sözleşmesiz-uç.",
-        "📜 Kural: kurallar · 🗂️ Tip: siniflama · ✅ Doğrulama: denetle · 🧭 Gezinme: gezin { kod } (⌘+tık/F12'nin ajan hâli — KOD gördüğünde dosya tarama, gezin'e sor).",
-        "GÖREV: bu araç REHBER ve şablon verir; dosyayı SEN yazarsın — burası yönetişim katmanıdır, derleyici değil.",
+        y("🖼️ DOLU vitrin örnekleri (kopyala ve uyarla; düğüm baştan dolu doğsun): ornek/vitrinler/dogus_proje.sar · dogus_ekran.sar · dogus_etmen.sar.",
+          "🖼️ FILLED showcase examples (copy and adapt them so that the node is born full): ornek/vitrinler/dogus_proje.sar · dogus_ekran.sar · dogus_etmen.sar."),
+        y("⚠️ Motor seni yönlendirir — yazınca denetle ile gör: anadizin-plan-karışması · ana-yok · konisiz-adım · öksüz-düğme · kavuşumsuz-ekran · sözleşmesiz-uç.",
+          "⚠️ The engine guides you — after writing, see it with denetle: anadizin-plan-karışması · ana-yok · konisiz-adım · öksüz-düğme · kavuşumsuz-ekran · sözleşmesiz-uç."),
+        y("📜 Kural: kurallar · 🗂️ Tip: siniflama · ✅ Doğrulama: denetle · 🧭 Gezinme: gezin { kod } (⌘+tık/F12'nin ajan hâli — KOD gördüğünde dosya tarama, gezin'e sor).",
+          "📜 Canon rules: kurallar · 🗂️ Types: siniflama · ✅ Checking: denetle · 🧭 Navigation: gezin { kod } (the agent counterpart of ⌘+click/F12 — when you see a `kod`, do not scan files, ask gezin)."),
+        y("GÖREV: bu araç REHBER ve şablon verir; dosyayı SEN yazarsın — burası yönetişim katmanıdır, derleyici değil.",
+          "TASK: this tool gives a GUIDE and a template; YOU write the file — this is an oversight layer, not a compiler."),
       ].join("\n"),
       isError: false,
     };
   }
-  const s = sablonMetni(tur);
+  const s = sablonMetni(tur, MCP_DILI);
   if (!s) {
     return {
-      metin: `✖ Bilinmeyen tür: "${tur}". Geçerli: ${sablonTurleri().join(" · ")}`,
+      metin: y(`✖ Bilinmeyen tür: "${tur}". Geçerli: `, `✖ Unknown tur: "${tur}". Valid: `) + sablonTurleri().join(" · "),
       isError: true,
     };
   }
@@ -544,17 +609,19 @@ function baslaAraci(tur?: string): { metin: string; isError: boolean } {
       "",
       // Kök türlerinde (yeni ağaç doğuyor) doğuş anlatısı da basılır: kademeli onay
       // ile diyalog disiplini tam da bu iki türde atlanmaktadır (BKM-DNT-A16).
-      ...(["proje", "çalışmaalanı"].includes(tur.toLocaleLowerCase("tr")) ? [dogusAnlatisi(), "", mimariDiyalog(), ""] : []),
+      ...(["proje", "çalışmaalanı"].includes(tur.toLocaleLowerCase("tr")) ? [dogusAnlatisi(MCP_DILI), "", mimariDiyalog(MCP_DILI), ""] : []),
       omurga,
       "",
-      "📋 ŞABLON (kopyala, doldur — <...> yer-tutucuları gerçek değerle değiştir):",
+      y("📋 ŞABLON (kopyala, doldur — <...> yer-tutucuları gerçek değerle değiştir):",
+        "📋 TEMPLATE (copy and fill it in — replace the <...> placeholders with real values; the file text stays Turkish):"),
       "```sar",
       s.sablon,
       "```",
       "",
-      "🛡️ BEKÇİ (bu şablonu boş bırakırsan motor uyarır): " + s.bekci,
+      y("🛡️ BEKÇİ (bu şablonu boş bırakırsan motor uyarır): ", "🛡️ GUARD (the engine warns if you leave this template empty): ") + s.bekci,
       "",
-      "✍️ Yazınca denetle { kaynak } ile doğrula — motor eksik niyeti SÖYLER.",
+      y("✍️ Yazınca denetle { kaynak } ile doğrula — motor eksik niyeti SÖYLER.",
+        "✍️ After writing, verify it with denetle { kaynak } — the engine TELLS you the missing intent."),
     ].join("\n"),
     isError: false,
   };
@@ -577,7 +644,8 @@ function denetleProjeAraci(dizin: string): { metin: string; isError: boolean } {
     const metin = [h.stdout, h.stderr].filter(Boolean).join("\n").trimEnd();
     // çıkış 4 = drift bulundu — denetim deseniyle tutarlı: drift aracın SONUCU, hatası değil.
     if (h.status === 4 && metin) return { metin, isError: false };
-    return { metin: metin || `✖ denetle-proje koşulamadı: ${h.message ?? "bilinmeyen hata"}`, isError: true };
+    return { metin: metin || y(`✖ denetle-proje koşulamadı: ${h.message ?? "bilinmeyen hata"}`,
+      `✖ denetle-proje could not run: ${h.message ?? "unknown error"}`), isError: true };
   }
 }
 
@@ -594,25 +662,29 @@ function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: b
   const tur = yolTuru(dizin);
   if (tur === "yok") {
     return {
-      metin: `✖ '${dizin}' yolu diskte bulunamadı; iskelet, var olmayan bir yolun içinde giriş dosyası arayamadığı için durdu. Yolu düzelt ya da o kökü önce doğur: dogus { hedef: "${dizin}", tur: "proje" }.`,
+      metin: y(`✖ '${dizin}' yolu diskte bulunamadı; iskelet, var olmayan bir yolun içinde giriş dosyası arayamadığı için durdu. Yolu düzelt ya da o kökü önce doğur: dogus { hedef: "${dizin}", tur: "proje" }.`,
+        `✖ The path '${dizin}' was not found on disk; iskelet stopped because it cannot look for an entry file inside a path that does not exist. Correct the path or give birth to that root first: dogus { hedef: "${dizin}", tur: "proje" }.`),
       isError: true,
     };
   }
   if (tur === "dosya") {
     return {
-      metin: `✖ '${dizin}' bir dosyadır, dizin değildir; iskelet ise ilanı bir DİZİNİN içindeki giriş dosyasından okur ve verilen yol dizin olmadığı için arama hiç başlayamadı. İskeleti dosyanın bulunduğu dizine koş: iskelet { dizin: "${dirname(dizin)}" }.`,
+      metin: y(`✖ '${dizin}' bir dosyadır, dizin değildir; iskelet ise ilanı bir DİZİNİN içindeki giriş dosyasından okur ve verilen yol dizin olmadığı için arama hiç başlayamadı. İskeleti dosyanın bulunduğu dizine koş: iskelet { dizin: "${dirname(dizin)}" }.`,
+        `✖ '${dizin}' is a file, not a directory; iskelet reads the declaration from the entry file inside a DIRECTORY, and because the given path is not a directory the search never started. Run iskelet on the file's directory: iskelet { dizin: "${dirname(dizin)}" }.`),
       isError: true,
     };
   }
   const anaAdi = anadizinBul(dizin);
   if (!anaAdi || !existsSync(anaAdi)) {
-    return { metin: `✖ '${dizin}' dizininde giriş dosyası yok (ana-yok) — önce giriş ilanını yaz (başla { tür }), sonra iskelet.`, isError: true };
+    return { metin: y(`✖ '${dizin}' dizininde giriş dosyası yok (ana-yok) — önce giriş ilanını yaz (başla { tür }), sonra iskelet.`,
+      `✖ The directory '${dizin}' has no entry file (ana-yok) — write the entry declaration first (basla { tur }), then iskelet.`), isError: true };
   }
   let program;
   try {
     program = ayristir(belirtecle(readFileSync(anaAdi, "utf8")));
   } catch (e) {
-    return { metin: `✖ Giriş dosyası ayrıştırılamadı (${anaAdi}): ${(e as Error).message} — söz-dizimi düzelt, sonra iskelet.`, isError: true };
+    return { metin: y(`✖ Giriş dosyası ayrıştırılamadı (${anaAdi}): ${(e as Error).message} — söz-dizimi düzelt, sonra iskelet.`,
+      `✖ The entry file could not be parsed (${anaAdi}): ${(e as Error).message} — fix the syntax, then iskelet.`), isError: true };
   }
   const etkinSnf = siniflamaOrtuMerge(guncelSnf(), siniflamaOrtuYukle(dizin));
   const plan = iskeletPlani(program, etkinSnf);
@@ -622,13 +694,17 @@ function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: b
     // ── ÖNİZLEME (güvenli varsayılan · diske DOKUNMAZ) ──
     const eksik = plan.ogeler.filter((o) => !existsSync(join(dizin, o.yol)));
     if (!eksik.length) {
-      return { metin: `✅ İskelet ZATEN TAM → ${dizin} (giriş: ${giris})\nİlan-edilen ${plan.ogeler.length} yapının hepsi diskte var — üretilecek yeni yok.`, isError: false };
+      return { metin: y(`✅ İskelet ZATEN TAM → ${dizin} (giriş: ${giris})\nİlan-edilen ${plan.ogeler.length} yapının hepsi diskte var — üretilecek yeni yok.`,
+        `✅ The skeleton is ALREADY COMPLETE → ${dizin} (entry: ${giris})\nAll ${plan.ogeler.length} declared structures exist on disk — nothing new to generate.`), isError: false };
     }
     const liste = eksik.map((o) => `  + ${o.tur.padEnd(6)} ${o.yol}`).join("\n");
     return {
-      metin: `🔍 İSKELET ÖNİZLEME → ${dizin} (giriş: ${giris})\n` +
+      metin: y(`🔍 İSKELET ÖNİZLEME → ${dizin} (giriş: ${giris})\n` +
         `Üretilecek ${eksik.length} EKSİK yapı (mevcutlara DOKUNULMAZ):\n${liste}\n\n` +
         `⚙️ Gerçekten üret: iskelet { dizin: "${dizin}", uret: true }`,
+      `🔍 SKELETON PREVIEW → ${dizin} (entry: ${giris})\n` +
+        `${eksik.length} MISSING structures would be generated (existing ones are NOT TOUCHED):\n${liste}\n\n` +
+        `⚙️ Generate for real: iskelet { dizin: "${dizin}", uret: true }`),
       isError: false,
     };
   }
@@ -639,35 +715,40 @@ function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: b
   const dz = olusan.filter((u) => u.oge.tur === "dizin").length;
   const ds = olusan.filter((u) => u.oge.tur === "dosya").length;
   const atlanan = sonuc.length - olusan.length;
-  const liste = olusan.length ? olusan.map((u) => `  + ${u.oge.tur.padEnd(6)} ${u.oge.yol}`).join("\n") : "  (yeni üretilmedi — ilan-edilen her şey zaten diskte vardı)";
+  const liste = olusan.length ? olusan.map((u) => `  + ${u.oge.tur.padEnd(6)} ${u.oge.yol}`).join("\n")
+    : y("  (yeni üretilmedi — ilan-edilen her şey zaten diskte vardı)", "  (nothing new was generated — everything declared was already on disk)");
   return {
-    metin: `✅ İSKELET ÜRETİLDİ → ${dizin} (giriş: ${giris})\n${liste}\n\n` +
+    metin: y(`✅ İSKELET ÜRETİLDİ → ${dizin} (giriş: ${giris})\n${liste}\n\n` +
       `📊 ${dz} dizin · ${ds} dosya oluşturuldu${atlanan ? ` · ${atlanan} atlandı (zaten vardı, EZİLMEDİ)` : ""}.\n` +
       `🧭 Sıradaki: denetle-proje { dizin: "${dizin}" } — kayıp-yapı temizlendi mi doğrula.`,
+    `✅ SKELETON GENERATED → ${dizin} (entry: ${giris})\n${liste}\n\n` +
+      `📊 ${dz} directories · ${ds} files created${atlanan ? ` · ${atlanan} skipped (already present, NOT OVERWRITTEN)` : ""}.\n` +
+      `🧭 Next: denetle-proje { dizin: "${dizin}" } — verify that kayıp-yapı is cleared.`),
     isError: false,
   };
 }
 
 /** etki: ileri kapanış — CLI etki yüzüyle aynı çekirdek (etkiMetni · YUZ-1.2). */
 function etkiAraci(dizin: string, kod: string): { metin: string; isError: boolean } {
-  if (!kod) return { metin: "✖ etki: 'kod' argümanı gerekli (ör. SEF-ATF-A01).", isError: true };
+  if (!kod) return { metin: y("✖ etki: 'kod' argümanı gerekli (ör. SEF-ATF-A01).", "✖ etki: the 'kod' argument is required (for example, SEF-ATF-A01)."), isError: true };
   const programlar = programHaritasi(dizin);
   if (!programlar.size) {
-    return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
+    return { metin: bosDizinMetni(dizin), isError: true };
   }
-  const metin = etkiMetni(dagKur(programlar), kod);
+  const metin = etkiMetni(dagKur(programlar), kod, MCP_DILI);
   return {
-    metin: metin + "\n🧭 Listedeki bir KOD'un tanımına/atıflarına gitmek için: gezin { kod, dizin } (F12'nin ajan hâli).",
+    metin: metin + y("\n🧭 Listedeki bir KOD'un tanımına/atıflarına gitmek için: gezin { kod, dizin } (F12'nin ajan hâli).",
+      "\n🧭 To open the definition and references of a `kod` in the list: gezin { kod, dizin } (the agent counterpart of F12)."),
     isError: metin.startsWith("✖"),
   };
 }
 
 /** bul: düğüm KOD/ad/niyet metin araması (⌘T'nin ajan hâli) — programHaritasi üstünde saf gezinti. */
 function bulAraci(dizin: string, metin: string): { metin: string; isError: boolean } {
-  if (!metin) return { metin: "✖ bul: 'metin' argümanı gerekli.", isError: true };
+  if (!metin) return { metin: y("✖ bul: 'metin' argümanı gerekli.", "✖ bul: the 'metin' argument is required."), isError: true };
   const programlar = programHaritasi(dizin);
   if (!programlar.size) {
-    return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
+    return { metin: bosDizinMetni(dizin), isError: true };
   }
   const SONUC_SINIRI = 50;
   const norm = (s: string): string => s.toLocaleLowerCase("tr");
@@ -682,7 +763,7 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
   const projeEtiketi = (etiket: string): string => {
     if (!cokProjeli) return "";
     const p = sahipProjeKapsami(etiket, kapsamlar)?.kod;
-    return p ? `[${p}] ` : "[çatı] ";
+    return p ? `[${p}] ` : y("[çatı] ", "[umbrella] ");
   };
   for (const [etiket, program] of programlar) {
     const gez = (d: Dugum): void => {
@@ -713,12 +794,15 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
     for (const b of program.bildirimler) gez(b);
   }
   if (!toplam) {
-    return { metin: `🔎 "${metin}" hiçbir düğümün KOD/ad/görev/belge/geribildirim alanında geçmiyor (${programlar.size} .sar tarandı — boş ≠ hata).`, isError: false };
+    return { metin: y(`🔎 "${metin}" hiçbir düğümün KOD/ad/görev/belge/geribildirim alanında geçmiyor (${programlar.size} .sar tarandı — boş ≠ hata).`,
+      `🔎 "${metin}" does not occur in the KOD, name, görev, document or feedback field of any node (${programlar.size} .sar files scanned — empty ≠ error).`), isError: false };
   }
-  const kirpNotu = toplam > SONUC_SINIRI ? `\n… ilk ${SONUC_SINIRI} gösterildi (toplam ${toplam} — aramayı daralt).` : "";
+  const kirpNotu = toplam > SONUC_SINIRI ? y(`\n… ilk ${SONUC_SINIRI} gösterildi (toplam ${toplam} — aramayı daralt).`,
+    `\n… the first ${SONUC_SINIRI} are shown (${toplam} in total — narrow the search).`) : "";
   return {
-    metin: `🔎 "${metin}" → ${toplam} düğüm:\n${sonuclar.join("\n")}${kirpNotu}` +
-      "\n🧭 Bir sonucun tanımı/atıfları için: gezin { kod, dizin } (F12'nin ajan hâli).",
+    metin: y(`🔎 "${metin}" → ${toplam} düğüm:\n`, `🔎 "${metin}" → ${toplam} nodes:\n`) + `${sonuclar.join("\n")}${kirpNotu}` +
+      y("\n🧭 Bir sonucun tanımı/atıfları için: gezin { kod, dizin } (F12'nin ajan hâli).",
+        "\n🧭 For a result's definition and references: gezin { kod, dizin } (the agent counterpart of F12)."),
     isError: false,
   };
 }
@@ -726,7 +810,7 @@ function bulAraci(dizin: string, metin: string): { metin: string; isError: boole
 /** bicimle: BÇ-standart metin döndürür — dosya YAZMAZ (yazmak çağıranın işi). */
 function bicimleAraci(kaynak: string): { metin: string; isError: boolean } {
   if (typeof kaynak !== "string" || !kaynak.trim()) {
-    return { metin: "✖ bicimle: 'kaynak' argümanı gerekli (.sar kaynak metni).", isError: true };
+    return { metin: y("✖ bicimle: 'kaynak' argümanı gerekli (.sar kaynak metni).", "✖ bicimle: the 'kaynak' argument is required (.sar source text)."), isError: true };
   }
   return { metin: bicimle(kaynak, "\n"), isError: false };
 }
@@ -735,14 +819,15 @@ function bicimleAraci(kaynak: string): { metin: string; isError: boolean } {
 function prizmaAraci(kaynak: string, yuz: string): { metin: string; isError: boolean } {
   const YUZLER = ["json", "yaml", "xml", "md"];
   if (!YUZLER.includes(yuz)) {
-    return { metin: `✖ prizma: bilinmeyen yüz "${yuz}". Geçerli: ${YUZLER.join(" · ")}`, isError: true };
+    return { metin: y(`✖ prizma: bilinmeyen yüz "${yuz}". Geçerli: `, `✖ prizma: unknown yuz "${yuz}". Valid: `) + YUZLER.join(" · "), isError: true };
   }
   try {
     const metin = yuz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yuz as Yüz);
     return { metin, isError: false };
   } catch (e) {
     if (e instanceof SozDizimHatasi) {
-      return { metin: `✖ prizma: kaynak ayrıştırılamadı — ${e.satir}:${e.sutun} ${e.message}`, isError: true };
+      return { metin: y(`✖ prizma: kaynak ayrıştırılamadı — ${e.satir}:${e.sutun} ${e.message}`,
+        `✖ prizma: the source could not be parsed — ${e.satir}:${e.sutun} ${taniYuzu(sozDizimTanisi(e)).mesaj}`), isError: true };
     }
     throw e;
   }
@@ -752,30 +837,34 @@ function prizmaAraci(kaynak: string, yuz: string): { metin: string; isError: boo
  *  adimDurumYaz: kilit + satirdaDegerDegistir + re-parse guard; şüphede DOKUNMAZ). */
 function durumGuncelleAraci(dizin: string, kod: string, durum: string): { metin: string; isError: boolean } {
   const gecerli = guncelSnf().semalar?.["Adım"]?.enum?.durum ?? [];   // normalize kanon — `*` çözülmüş (doğuş-rehberi turu)
-  if (!kod) return { metin: "✖ durum-guncelle: 'kod' argümanı gerekli (Adım KOD'u).", isError: true };
+  if (!kod) return { metin: y("✖ durum-guncelle: 'kod' argümanı gerekli (Adım KOD'u).", "✖ durum-guncelle: the 'kod' argument is required (an Adım KOD)."), isError: true };
   if (!gecerli.includes(durum)) {
     return {
-      metin: `✖ Geçersiz durum: "${durum}" — dosyaya DOKUNULMADI. Geçerli (kanondan): ${gecerli.join(" · ")}`,
+      metin: y(`✖ Geçersiz durum: "${durum}" — dosyaya DOKUNULMADI. Geçerli (kanondan): `,
+        `✖ Invalid durum: "${durum}" — the file was NOT TOUCHED. Valid (from the canon): `) + gecerli.join(" · "),
       isError: true,
     };
   }
   const programlar = programHaritasi(dizin);
   if (!programlar.size) {
-    return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };
+    return { metin: bosDizinMetni(dizin), isError: true };
   }
   const etiket = adimEtiketiBul(programlar, kod);
   if (!etiket) {
-    return { metin: `✖ '${kod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı) — dosyaya DOKUNULMADI.`, isError: true };
+    return { metin: y(`✖ '${kod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı) — dosyaya DOKUNULMADI.`,
+      `✖ No Adım with KOD '${kod}' was found (${programlar.size} .sar files scanned) — the file was NOT TOUCHED.`), isError: true };
   }
   // TUR-2 DURUM MAKİNESİ: geçiş tablosu KANONDAN geçer — yasak geçiş (bloklu→
   // tamamlandı) adimDurumYaz içinde YAZ-ANINDA reddedilir (üç yazıcı tek mesaj).
   const s = adimDurumYaz(join(dizin, etiket), kod, durum, guncelSnf().durumGecisleri);
   if (!s.yazildi) {
-    return { metin: `✖ durum yazılamadı (fail-safe — dosyaya dokunulmadı): ${s.sebep}`, isError: true };
+    return { metin: y(`✖ durum yazılamadı (fail-safe — dosyaya dokunulmadı): ${s.sebep}`,
+      `✖ durum could not be written (fail-safe — the file was not touched): ${s.sebep}`), isError: true };
   }
   return {
-    metin: `✍️ ${etiket} → ${kod} durum: ${durum} (yalnız durum alanı — kilit+guard'lı tek-yazar, SENK-A05).` +
-      `\n🧭 TAM hüküm için değişiklikten sonra: denetle-proje { dizin } koş.`,
+    metin: `✍️ ${etiket} → ${kod} durum: ${durum} ` +
+      y(`(yalnız durum alanı — kilit+guard'lı tek-yazar, SENK-A05).\n🧭 TAM hüküm için değişiklikten sonra: denetle-proje { dizin } koş.`,
+        `(only the durum field — single writer with lock and guard, SENK-A05).\n🧭 For the FULL verdict after the change: run denetle-proje { dizin }.`),
     isError: false,
   };
 }
@@ -846,22 +935,25 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
   }
   if (ad === MCP_ARAC_ADI.dogus) {
     if (typeof arg0.hedef !== "string" || !arg0.hedef.trim()) {
-      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: "✖ dogus için hedef dizin gerekli: { hedef: \"<dizin>\", tur: \"proje\" | \"calisma-alani\", ad?: \"<ad>\", proje?: \"<ilk-proje-adı>\" }" }], isError: true } };
+      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: y("✖ dogus için hedef dizin gerekli: { hedef: \"<dizin>\", tur: \"proje\" | \"calisma-alani\", ad?: \"<ad>\", proje?: \"<ilk-proje-adı>\" }",
+        "✖ dogus needs a target directory: { hedef: \"<directory>\", tur: \"proje\" | \"calisma-alani\", ad?: \"<name>\", proje?: \"<first-project-name>\" }") }], isError: true } };
     }
     // GOC-A10 (Founder 2026-08-23): tür verilmemişse araç YAZMAZ, soruyu sorar — ajan aynı çağrıyı tur alanıyla yineler.
     const turHam = typeof arg0.tur === "string" ? arg0.tur : undefined;
     const tur = dogusTuruCoz(turHam);
     if (turHam === undefined) {
-      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: dogusSorusu() + "\n\n🧭 Hiçbir dosya yazılmadı. Yazım için aynı çağrıyı tur alanıyla yinele: { hedef: \"" + arg0.hedef + "\", tur: \"proje\" | \"calisma-alani\", ad?, proje? }" }], isError: false } };
+      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: dogusSorusu(MCP_DILI) + y("\n\n🧭 Hiçbir dosya yazılmadı. Yazım için aynı çağrıyı tur alanıyla yinele: { hedef: \"",
+        "\n\n🧭 No file was written. To write, repeat the same call with the tur field: { hedef: \"") + arg0.hedef + "\", tur: \"proje\" | \"calisma-alani\", ad?, proje? }" }], isError: false } };
     }
     if (!tur) {
-      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: `✖ tur yalnız "proje" ya da "calisma-alani" olabilir; verilen: "${turHam}".\n` + dogusSorusu() }], isError: true } };
+      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: y(`✖ tur yalnız "proje" ya da "calisma-alani" olabilir; verilen: "${turHam}".\n`,
+        `✖ tur can only be "proje" or "calisma-alani"; given: "${turHam}".\n`) + dogusSorusu(MCP_DILI) }], isError: true } };
     }
     try {
       const s = dogusYaz(arg0.hedef, typeof arg0.ad === "string" ? arg0.ad : undefined, undefined, tur, typeof arg0.proje === "string" ? arg0.proje : undefined);
-      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: dogusRaporu(s, arg0.hedef) }], isError: false } };
+      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: dogusRaporu(s, arg0.hedef, MCP_DILI) }], isError: false } };
     } catch (e) {
-      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: "✖ Doğuş paketi yazılamadı: " + (e as Error).message }], isError: true } };
+      return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: y("✖ Doğuş paketi yazılamadı: ", "✖ The birth package could not be written: ") + (e as Error).message }], isError: true } };
     }
   }
   if (ad === MCP_ARAC_ADI.graf) {
@@ -903,7 +995,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
   }
   if (ad === MCP_ARAC_ADI.prizma) {
-    if (typeof arg0.kaynak !== "string") return hata(id, -32602, "prizma: 'kaynak' argümanı gerekli.");
+    if (typeof arg0.kaynak !== "string") return hata(id, -32602, y("prizma: 'kaynak' argümanı gerekli.", "prizma: the 'kaynak' argument is required."));
     const s = prizmaAraci(arg0.kaynak, typeof arg0.yuz === "string" ? arg0.yuz : "");
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: s.metin }], isError: s.isError } };
   }
@@ -923,7 +1015,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
       result: { content: [{ type: "text", text: s.metin }], structuredContent: s.yapisal ?? undefined, isError: s.isError },
     };
   }
-  if (ad !== MCP_ARAC_ADI.denetle) return hata(id, -32602, `Bilinmeyen araç: ${ad}`);
+  if (ad !== MCP_ARAC_ADI.denetle) return hata(id, -32602, y(`Bilinmeyen araç: ${ad}`, `Unknown tool: ${ad}`));
 
   const arg = p.arguments ?? {};
   // EKL-F6-A07: denetle dizinsiz çağrıda taban kanonla kalır (A11/E2); açıkça
@@ -941,8 +1033,10 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
       // en sık yanlış kullanım, denetle'ye DİZİN verilmesidir (EISDIR).
       const kodu = (e as NodeJS.ErrnoException).code;
       const metin = kodu === "EISDIR"
-        ? `✖ '${arg.yol}' bir DİZİN — denetle TEK dosya denetler. Dizin/proje denetimi için denetle-proje aracını kullan (dizin: "${arg.yol}").`
-        : `✖ Dosya okunamadı: ${(e as Error).message} — tek dosya için denetle (yol: dosya.sar), dizin için denetle-proje.`;
+        ? y(`✖ '${arg.yol}' bir DİZİN — denetle TEK dosya denetler. Dizin/proje denetimi için denetle-proje aracını kullan (dizin: "${arg.yol}").`,
+          `✖ '${arg.yol}' is a DIRECTORY — denetle checks ONE file. For a directory or project check use the denetle-proje tool (dizin: "${arg.yol}").`)
+        : y(`✖ Dosya okunamadı: ${(e as Error).message} — tek dosya için denetle (yol: dosya.sar), dizin için denetle-proje.`,
+          `✖ The file could not be read: ${(e as Error).message} — use denetle for one file (yol: dosya.sar) and denetle-proje for a directory.`);
       return {
         jsonrpc: "2.0",
         id,
@@ -950,7 +1044,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
       };
     }
   } else {
-    return hata(id, -32602, "denetle: 'kaynak' ya da 'yol' argümanı gerekli.");
+    return hata(id, -32602, y("denetle: 'kaynak' ya da 'yol' argümanı gerekli.", "denetle: the 'kaynak' or 'yol' argument is required."));
   }
 
   // A11/E2: örtü çağrı-anında çözülür — yol'dan (dosyanın dizini) ya da dizin
@@ -973,7 +1067,7 @@ function aracCagir(id: number | string | null, params: unknown): Cevap {
     result: {
       content: [
         { type: "text", text: dizinNotu + taniMetni(sonuc, projedeMi) },
-        ...(agacMetni ? [{ type: "text", text: "🌳 Yapı ağacı:\n```\n" + agacMetni.trimEnd() + "\n```" }] : []),
+        ...(agacMetni ? [{ type: "text", text: y("🌳 Yapı ağacı:\n```\n", "🌳 Structure tree:\n```\n") + agacMetni.trimEnd() + "\n```" }] : []),
       ],
       structuredContent: agacMetni ? { ...sonuc, agac: agacMetni } : sonuc,
       isError: false, // drift = aracın SONUCU, aracın hatası değil
@@ -1011,7 +1105,7 @@ function isle(istek: Istek): Cevap | null {
     case "ping":
       return { jsonrpc: "2.0", id, result: {} };
     default:
-      return hata(id, -32601, `Bilinmeyen metod: ${method}`);
+      return hata(id, -32601, y(`Bilinmeyen metod: ${method}`, `Unknown method: ${method}`));
   }
 }
 

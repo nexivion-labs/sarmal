@@ -46,7 +46,7 @@ test("CDL-A06: karşılama kartı ve dil bağlamı iki düzyazı hanesini seçer
   const kartTr = ogretKarti(SNF, "tr");
   const kartEn = ogretKarti(SNF, "en");
   assert.match(kartTr, /^🚪 SARMAL KARŞILAMA KARTI/u);
-  assert.match(kartEn, /^🚪 SARMAL WELCOME CARD/u);
+  assert.match(kartEn, /^🚪 Sarmal WELCOME CARD/u);
   // MGZ-A11 · Founder hükmü 2026-10-10: İngilizce yüz dosyadaki gerçek adı anar.
   // Tip açıklaması sözlüğün İngilizce hanesinden gelir, ad ise çevrilmez.
   assert.match(kartEn, /🌀 Faz — .*TIME axis/u,
@@ -159,7 +159,7 @@ test("CDL-A06: elle yazılmış ikinci kart/bağlam üretici dosyası yoktur", (
   const dosyalar = readdirSync(SRC).filter((ad) => ad.endsWith(".ts"));
   const kartKaynaklari = dosyalar.filter((ad) => {
     const metin = readFileSync(join(SRC, ad), "utf8");
-    return metin.includes("SARMAL KARŞILAMA KARTI") || metin.includes("SARMAL WELCOME CARD");
+    return metin.includes("SARMAL KARŞILAMA KARTI") || metin.includes("Sarmal WELCOME CARD");
   });
   const baglamKaynaklari = dosyalar.filter((ad) => {
     const metin = readFileSync(join(SRC, ad), "utf8");
@@ -178,7 +178,7 @@ test("CDL-A06: SARMAL_DIL CLI kartına ve doğuş AGENTS.md üretimine uçtan uc
     encoding: "utf8",
   });
   assert.match(kart("tr"), /^🚪 SARMAL KARŞILAMA KARTI/u);
-  assert.match(kart("en"), /^🚪 SARMAL WELCOME CARD/u);
+  assert.match(kart("en"), /^🚪 Sarmal WELCOME CARD/u);
 
   const kod = `import { dogusManifesti } from ${JSON.stringify(pathToFileURL(DOGUS).href)};` +
     `process.stdout.write(dogusManifesti("deneme", "2026-08-02").find((d) => d.yol === "AGENTS.md").icerik);`;

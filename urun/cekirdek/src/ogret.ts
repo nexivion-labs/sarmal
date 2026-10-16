@@ -288,7 +288,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
 
   b.push(y(
     "🚪 SARMAL KARŞILAMA KARTI — bu kart kanondan üretilir, bu yüzden bayatlamaz",
-    "🚪 SARMAL WELCOME CARD — this card is generated from canon, so it cannot go stale",
+    "🚪 Sarmal WELCOME CARD — this card is generated from canon, so it cannot go stale",
   ));
   b.push("");
   b.push(y(
@@ -322,7 +322,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   b.push("");
   b.push(y(
     "② PLAN EKSENLERİ VE DEPARTMAN (katı rejimde Faz → Blok → Katman → AltKatman → Adım):",
-    "② PLAN AXES AND DISCIPLINE (strict mode uses Faz → Blok → Katman → AltKatman → Adım):",
+    "② THE FOUR AXES AND THE DISCIPLINE (strict mode uses Faz → Blok → Katman → AltKatman → Adım):",
   ));
   b.push(`   🌀 Faz — ${tipNe("Faz", "ZAMAN")}`);
   b.push(`   🪵 Blok — ${tipNe("Blok", "İŞ")}`);
@@ -506,7 +506,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   ));
   b.push(y(
     "   ③ KARAR→PLAN: kilitli karar plana iner — uygulama isteyen kararı",
-    "   ③ DECISION→PLAN: a locked decision flows into the plan — do not leave a decision that",
+    "   ③ From decision to plan: a locked decision flows into the plan — do not leave a decision that",
   ));
   b.push(y(
     "     plansız bırakma; bekliyor kararı UYGULAMA (önce Founder kilidi).",
