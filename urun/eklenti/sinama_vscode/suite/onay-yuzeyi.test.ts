@@ -473,7 +473,10 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     const bizimki = (merceklar ?? []).filter((l) => l.command?.command === "sarmal.onayKarar");
     assert.ok(bizimki.length > 0, "kapının üstünde Sarmal kod merceği yok");
     // Mercek başlığı artık karar VAAT ETMEZ; paneli açacağını dürüstçe söyler.
-    assert.ok(/Onaylar panelinde aç/.test(bizimki[0]!.command!.title),
+    // Başlık etkin dilde gelir (`sarmal.dil` · VS Code görüntü dili); sınama
+    // kabuğu İngilizce açıldığı için iki dilin karşılığı da kabul edilir
+    // (MGZ-A01 ölçümü). Sınanan söz aynıdır: mercek paneli açar.
+    assert.ok(/Onaylar panelinde aç|open in Approvals/.test(bizimki[0]!.command!.title),
       `mercek hâlâ olmayan bir karar penceresi vaat ediyor: ${bizimki[0]!.command!.title}`);
 
     await vscode.commands.executeCommand("sarmal.onayKarar", bizimki[0]!.command!.arguments![0]);
