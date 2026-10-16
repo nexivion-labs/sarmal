@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
 import { VARSAYILAN, uret } from "../arac/renk-uret.mjs";
 import {
-  PAKET_KANON_DIZINI, hasatHedefiBul, ilanliVarliklar, isaretciPlani, isaretciYaz, ortamDegiskenleriniCoz,
+  PAKET_KANON_DIZINI, eksikKokKaydi, hasatHedefiBul, ilanliVarliklar, isaretciPlani, isaretciYaz, ortamDegiskenleriniCoz,
   surumeBagliEklentiYolu, tamDenetimKanonuBul, tamDenetimKokTuru, varlikDosyasiBul, varlikKokuBul, yazimKokuBul,
 } from "../src/kanon-kesif.ts";
 import { dogusYaz } from "../../cekirdek/src/dogus.ts";
@@ -180,7 +180,7 @@ const PAKETLENMIS = (() => {
   writeFileSync(giris,
     `export { snfBul, rozetRenkleri } from ${JSON.stringify(join(KOK, "src", "ortak.ts"))};\n` +
     `export { KANON_ISARETCISI_KOMUTU, TabanKanonCubugu, tabanKanonDurumu, tabanKanonSifirla, tamDenetimSonucu } from ${JSON.stringify(join(KOK, "src", "taban-kanon.ts"))};\n` +
-    `export { KANON_ISARETCISI_METINLERI, TABAN_KANON_METINLERI, yuzeyDiliniAyarla } from ${JSON.stringify(join(KOK, "src", "yuzey-metinleri.ts"))};\n`);
+    `export { IZ_METINLERI, KANON_ISARETCISI_METINLERI, TABAN_KANON_METINLERI, yuzeyDiliniAyarla } from ${JSON.stringify(join(KOK, "src", "yuzey-metinleri.ts"))};\n`);
   const cikti = join(dizin, "kanon-kesfi.cjs");
   esbuild.buildSync({
     entryPoints: [giris],
@@ -220,16 +220,21 @@ interface KanonModulu {
   snfBul(doc: { uri: { fsPath: string } }): unknown;
   rozetRenkleri(): Record<string, string>;
   TabanKanonCubugu: new () => { dispose(): void };
-  tabanKanonDurumu(): { düşüldü: boolean; belge?: string; atlanan: readonly string[]; coken: readonly { kok: string; hata: string }[] };
+  tabanKanonDurumu(): {
+    düşüldü: boolean; belge?: string; atlanan: readonly string[]; coken: readonly { kok: string; hata: string }[];
+    eksik: readonly { kok: string; dosyalar: readonly string[] }[];
+  };
   tabanKanonSifirla(): void;
   tamDenetimSonucu(olculen: readonly string[], atlanan: readonly string[], tamTur: boolean,
-    coken?: readonly { kok: string; hata: string }[]): void;
+    coken?: readonly { kok: string; hata: string }[], eksik?: readonly { kok: string; dosyalar: readonly string[] }[]): void;
   KANON_ISARETCISI_KOMUTU: string;
   TABAN_KANON_METINLERI: {
     cubukIpucu(belge?: string): string;
     atlandiIpucu(kokler: readonly string[]): string;
     coktuIpucu(coken: readonly { kok: string; hata: string }[], sonucuAtla?: boolean): string;
+    eksikIpucu(eksik: readonly { kok: string; dosyalar: readonly string[] }[]): string;
   };
+  IZ_METINLERI: { kokDenetimiEksik(kok: string, dosyalar: readonly string[]): string };
   KANON_ISARETCISI_METINLERI: { eklentiKanonu: string };
   yuzeyDiliniAyarla(dil: string): void;
 }
@@ -917,7 +922,166 @@ test("MGZ-A04 KAYNAK: kabuk kök turunu saf gövdeden koşturur ve çöken kökl
   const bas = kaynak.indexOf("const denetleHepsi");
   const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
   assert.match(govde, /tamDenetimKokTuru\(/, "tam denetimin kök turu saf gövdeden geçmiyor — çöküş kabuğun içinde yutulabilir");
-  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler\)/,
+  // MGZ-A12: çağrı beşinci argüman olarak eksik koşan kökleri de taşır; çöken kök dördüncü sırada kalır.
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler[,)]/,
     "tam denetim turu çöken kökleri işarete bildirmiyor — çöküş yeniden sessizleşir");
   assert.doesNotMatch(govde, /catch \{ \/\* tam orkestrasyon/, "çöküşü yutan eski catch satırı geri gelmiş");
+});
+
+// ── 9) MGZ-A12 · KIRIK DOSYA TAM DENETİMİ SUSTURMAZ ────────────────────────
+//   Ölçülen kusur (HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR · 2026-10-10): tek
+//   bir kırık .sar dosyası `denetimKos`u ilk söz dizimi hatasında erken çıkışa
+//   götürüyordu; akış boş dönüyor, kabuk boşluğu temiz ağaç gibi okuyor, öteki
+//   dosyaların çapraz tanıları kayboluyor (Gözlemler 91 → 42) ve tur ne atlanan
+//   ne çöken kök bildirdiği için MGZ-A04'ün işareti susuyordu. Sorunlar
+//   yüzeyinde yalnız kırık dosyanın söz dizimi tanısı kalıyordu.
+//
+//   Başlangıç ölçümü (2026-10-16, deponun kopyası): sağlam ağaçta panele
+//   düşen 54 çapraz tanı; kırık dosya eklenince 0, tamKosum=false,
+//   tur atlanan=0 coken=0 — işaret sessiz.
+//
+//   Onarım iki parçadır: çekirdek atlama kipinde kırık dosyayı evrenden düşürüp
+//   turu tamamlar ve dosyayı `kirikDosyalar` ile söyler; kabuk bu kaydı MGZ-A04'ün
+//   kurduğu aynı işarete üçüncü sebep (eksik koşan kök) olarak taşır. Kırık
+//   dosyanın kendi söz dizimi tanısı tek dosya yolundan geldiği gibi kalır
+//   (Adımın sınırı).
+
+const EKSIK_PLANI = `Faz( kod: FZ-E, ad: "Eksik Mevsimi", ne: "dönem" ) {
+  Blok( kod: BLK-E, ad: "Eksik Gövdesi", ne: "iş" ) {
+    Katman( kod: KAT-E, ad: "Eksik Dalı", ne: "teknoloji" ) {
+      Adım( kod: ADM-E1, durum: beklemede, ne: "bekleyen iş", bağımlı: [ ADM-YOK ] )
+    }
+  }
+}\n`;
+
+/** Kabuğun kök turunu kabuk olmadan koşturur: dosya başına panele düşen çapraz tanı sayısı ve turun hükmü. */
+function panelTuru(kok: string, alan: string): { tur: ReturnType<typeof tamDenetimKokTuru>; panel: Map<string, number> } {
+  const panelUreticileri = panelCaprazUreticiKumesi();
+  const panel = new Map<string, number>();
+  const tur = tamDenetimKokTuru(
+    [kok],
+    (k) => tamDenetimKanonuBul(k, [k], join(alan, "kopyasi-olmayan-paket")),
+    (k, kanon) => {
+      const sonuc = denetimKos(k, { snfYol: kanon.snfYol, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+      for (const r of sonuc.akis) for (const t of r.tanilar) {
+        const u = sonuc.koken.get(t);
+        if (u && panelUreticileri.has(u)) panel.set(r.dosya, (panel.get(r.dosya) ?? 0) + 1);
+      }
+      return eksikKokKaydi(k, sonuc);
+    },
+  );
+  return { tur, panel };
+}
+
+test("MGZ-A12: kırık bir dosya kökün tam denetimini susturmaz — tur kökü eksik koşan kök olarak bildirir, öteki dosyaların çapraz tanıları korunur ve dosya onarılınca sayaç öncekine döner", (t) => {
+  const alan = gecici("sarmal-kirik-dosya-");
+  t.after(() => rmSync(alan, { recursive: true, force: true }));   // başarısızlıkta da silinir
+  const kok = varlikKur(alan, "eksik_proje", { kanon: true });
+  writeFileSync(join(kok, "plan.sar"), EKSIK_PLANI, "utf8");
+
+  // ① Sağlam ağaç: plan dosyası panele düşen çapraz tanı taşır, tur eksiklik bildirmez.
+  const once = panelTuru(kok, alan);
+  const sayac = once.panel.get("plan.sar") ?? 0;
+  assert.ok(sayac > 0, "fikstür çapraz tanı üretmiyor — ölçüm anlamsız");
+  assert.deepEqual(once.tur.eksik, [], "sağlam ağaçta eksik kök bildirildi — işaret gürültü olur");
+
+  // ② Kırık dosya: ölçülen kusur burada doğuyordu (sayaç sıfıra iner, tur susar).
+  writeFileSync(join(kok, "kirik.sar"), 'Faz( kod: FZ-KIRIK, ad: "yarım kalan ilan"\n', "utf8");
+  const kirik = panelTuru(kok, alan);
+  assert.deepEqual(kirik.tur.eksik.map((e) => e.kok), [kok],
+    "kırık dosya kökün tam denetimini sessizce susturdu — tur eksikliği bildirmiyor");
+  assert.ok(kirik.tur.eksik[0]!.dosyalar.some((d) => d.startsWith("kirik.sar")),
+    `eksik kaydı kırık dosyayı adıyla söylemiyor: ${JSON.stringify(kirik.tur.eksik)}`);
+  assert.equal(kirik.panel.get("plan.sar"), sayac,
+    "kırık dosya öteki dosyanın çapraz tanılarını da götürdü — sayaç düştü");
+  assert.deepEqual(kirik.tur.coken, [], "kırık dosya çöküş sayıldı — sebep yanlış söylenir");
+  assert.deepEqual(kirik.tur.atlanan, [], "kırık dosya kanonsuzluk sayıldı — kullanıcı yanlış onarıma yönlenir");
+
+  // ③ İşaret: MGZ-A04'ün yüzü eksik koşan kökü de söyler; sebep dosyanın söz dizimidir.
+  const { cubuk, vscode } = sahteYurutucu([alan]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
+  modul.tamDenetimSonucu([kok], [], true, [], kirik.tur.eksik);
+  assert.deepEqual(modul.tabanKanonDurumu().eksik, kirik.tur.eksik, "eksik kök durumda kayıtlı değil — işaret göremez");
+  assert.equal(cubuk.gorunur, true, "tam denetim eksik koştu ama durum çubuğu SUSTU");
+  assert.match(String(cubuk.metin), /tam denetim/, "işaret tam denetimin eksik kaldığını söylemeli");
+  const ipucu = String(cubuk.ipucu);
+  assert.ok(ipucu.includes(kok), "ipucu eksik koşan kökü adıyla söylemeli");
+  assert.ok(ipucu.includes("kirik.sar"), "ipucu kırık dosyayı adıyla söylemeli");
+  assert.match(ipucu, /söz dizimi/, "ipucu sebebin söz dizimi hatası olduğunu söylemeli");
+  assert.doesNotMatch(ipucu, /tip sistemi kaydı bulunamadığı/, "sebep kanonsuzluk diye söyleniyor");
+  assert.doesNotMatch(ipucu, /bir hata yüzünden yarıda kaldığı/, "sebep çöküş diye söyleniyor");
+  assert.equal(cubuk.komut, undefined, "kırık dosya varken işarete tıklamak kanon işaretçisi komutunu çalıştırıyor — yanlış onarım");
+
+  // ④ Onarım: dosya düzelince tur eksiklik bildirmez, işaret kalkar ve sayaç önceki değerine döner.
+  writeFileSync(join(kok, "kirik.sar"), "// onarıldı\n", "utf8");
+  const sonra = panelTuru(kok, alan);
+  assert.deepEqual(sonra.tur.eksik, [], "dosya onarıldı ama tur hâlâ eksik kök bildiriyor");
+  assert.equal(sonra.panel.get("plan.sar"), sayac, "onarımdan sonra sayaç önceki değerine dönmedi");
+  modul.tamDenetimSonucu([kok], [], true, [], sonra.tur.eksik);
+  assert.equal(cubuk.gorunur, false, "kırık dosya onarıldığı hâlde işaret kalkmadı");
+  isaret.dispose();
+});
+
+test("MGZ-A12: eksik koşan kökün kaydı dar turda korunur, kök yeniden tam koşunca düşer ve öteki iki sebeple birlikte kendi cümlesiyle söylenir", () => {
+  const eksik = [{ kok: "/alan/e", dosyalar: ["plan/kirik.sar:2"] }];
+  const { cubuk, vscode } = sahteYurutucu([]);
+  const modul = kanonModulu(vscode);
+  const isaret = new modul.TabanKanonCubugu();
+  modul.tamDenetimSonucu(["/alan/e", "/alan/s"], [], true, [], eksik);
+  assert.equal(cubuk.gorunur, true);
+  modul.tamDenetimSonucu(["/alan/s"], [], false, [], []);
+  assert.equal(cubuk.gorunur, true, "başka kökü ölçen dar tur eksik kökün işaretini sildi");
+  modul.tamDenetimSonucu(["/alan/e"], [], false, [], []);
+  assert.equal(cubuk.gorunur, false, "kök yeniden tam koştuğu hâlde işaret kalkmadı");
+
+  // Üç sebep bir arada: kanonsuz, çöken ve eksik kök; her biri kendi cümlesiyle, tıklama kanonsuz kök için.
+  modul.tamDenetimSonucu(["/alan/k", "/alan/c", "/alan/e"], ["/alan/k"], true, [{ kok: "/alan/c", hata: "ENOENT" }], eksik);
+  const uclu = String(cubuk.ipucu);
+  assert.match(uclu, /tip sistemi kaydı bulunamadığı/, "kanonsuz kökün cümlesi kayboldu");
+  assert.ok(uclu.includes("ENOENT"), "çöken kökün cümlesi kayboldu");
+  assert.ok(uclu.includes("plan/kirik.sar:2"), "eksik kökün dosyası kayboldu");
+  assert.equal(cubuk.komut, modul.KANON_ISARETCISI_KOMUTU, "kanonsuz kök varken işaret işaretçi komutunu çalıştırmalı");
+  // Yalnız çöken ve eksik kök: tıklama komutu yok (MGZ-A04 kuralı korunur).
+  modul.tamDenetimSonucu(["/alan/c", "/alan/e"], [], true, [{ kok: "/alan/c", hata: "ENOENT" }], eksik);
+  assert.equal(cubuk.komut, undefined);
+  isaret.dispose();
+});
+
+test("MGZ-A12: eksik koşum ipucu ve kanal satırı iki dilde aynı bilgiyi taşır, çoğulu kurar ve emoji taşımaz", () => {
+  const { vscode } = sahteYurutucu([]);
+  const modul = kanonModulu(vscode);
+  const emoji = /\p{Extended_Pictographic}/u;
+  const bir = [{ kok: "/proje/a", dosyalar: ["is/plan/kirik.sar:2"] }];
+  const iki = [...bir, { kok: "/proje/b", dosyalar: ["x.sar:1", "y.sar:7"] }];
+  for (const [dil, sebep, tekil, cogul] of [
+    ["tr", /söz dizimi/u, /Şu kökte/u, /Şu köklerde/u],
+    ["en", /syntax/u, /for this root/u, /for these roots/u],
+  ] as const) {
+    modul.yuzeyDiliniAyarla(dil);
+    const tek = modul.TABAN_KANON_METINLERI.eksikIpucu(bir);
+    assert.ok(tek.includes("/proje/a") && tek.includes("is/plan/kirik.sar:2"), `${dil}: ipucu kökü ve dosyayı anmıyor`);
+    assert.match(tek, sebep, `${dil}: ipucu sebebi söylemiyor`);
+    assert.match(tek, tekil, `${dil}: tek kök tekil söylenmeli`);
+    assert.doesNotMatch(tek, cogul, `${dil}: tek kök çoğul söyleniyor`);
+    assert.doesNotMatch(tek, emoji, `${dil}: ipucu emoji taşıyor`);
+    const cok = modul.TABAN_KANON_METINLERI.eksikIpucu(iki);
+    assert.match(cok, cogul, `${dil}: birden çok kök çoğul söylenmeli`);
+    assert.ok(cok.includes("x.sar:1") && cok.includes("y.sar:7"), `${dil}: çoğul ipucu bütün dosyaları anmalı`);
+    const satir = modul.IZ_METINLERI.kokDenetimiEksik("/proje/a", ["is/plan/kirik.sar:2"]);
+    assert.ok(satir.includes("/proje/a") && satir.includes("is/plan/kirik.sar:2"), `${dil}: kanal satırı kökü ve dosyayı anmıyor`);
+    assert.doesNotMatch(satir, emoji, `${dil}: kanal satırı emoji taşıyor`);
+  }
+  modul.yuzeyDiliniAyarla("tr");
+});
+
+test("MGZ-A12 KAYNAK: kabuk tam denetimi atlama kipinde koşturur, eksik koşan kökü işarete ve kanala bildirir", () => {
+  const kaynak = readFileSync(join(KOK, "src", "eklenti.ts"), "utf8");
+  const bas = kaynak.indexOf("const denetleHepsi");
+  const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
+  assert.match(govde, /kirikDosyayiAtla: true/, "kabuk tam denetimi atlama kipinde koşturmuyor — kırık dosya turu yine susturur");
+  assert.match(govde, /return eksikKokKaydi\(kokYol, sonuc\)/, "kabuk eksik koşan kökün kaydını saf gövdeden almıyor");
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler, eksikKokler\)/,
+    "tam denetim turu eksik koşan kökleri işarete bildirmiyor — eksiklik yeniden sessizleşir");
+  assert.match(govde, /IZ_METINLERI\.kokDenetimiEksik\(/, "eksik koşan kök Performans kanalına düşmüyor");
 });

@@ -26,7 +26,7 @@ import { denetimKos } from "../../cekirdek/src/denetim.ts";
 import { panelCaprazUreticiKumesi } from "../../cekirdek/src/kapi-kapsami.ts";
 import { snfBul } from "./ortak.ts";
 import {
-  PAKET_KANON_DIZINI, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, tamDenetimKokTuru, varlikKokuBul,
+  PAKET_KANON_DIZINI, eksikKokKaydi, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, tamDenetimKokTuru, varlikKokuBul,
 } from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
 import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
@@ -701,12 +701,18 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // 📣 MGZ-A04: kök turu saf gövdededir (kanon-kesif.ts `tamDenetimKokTuru`).
     // Bir kökün tam denetimi çökerse canlı tanı akışı yine bozulmaz, fakat çöküş
     // artık yutulmaz: çöken kök atlanan kök gibi işarete gider ve iletisi kanala düşer.
+    // ⛔ MGZ-A12: tek bir kırık .sar dosyası eskiden `denetimKos`u ilk söz dizimi
+    // hatasında erken çıkışa götürüyor, akış boş dönüyor ve bu boşluk temiz ağaç
+    // sanılıyordu (ölçüm 2026-10-10: Gözlemler 91 → 42, işaret sessiz). Tur artık
+    // atlama kipinde koşar: kırık dosya evrenden düşer, öteki dosyaların çapraz
+    // tanıları korunur ve eksik koşan kök aynı işarete üçüncü sebep olarak gider.
+    // Kırık dosyanın kendi söz dizimi tanısı tek dosya yolundan geldiği gibi kalır.
     const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
-    const { atlanan: atlananKokler, coken: cokenKokler } = tamDenetimKokTuru(
+    const { atlanan: atlananKokler, coken: cokenKokler, eksik: eksikKokler } = tamDenetimKokTuru(
       denetlenenKokler,
       (kokYol) => tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku),
       (kokYol, kanon) => {
-        const sonuc = denetimKos(kokYol, { snfYol: kanon.snfYol, bugun, tamListe: true });
+        const sonuc = denetimKos(kokYol, { snfYol: kanon.snfYol, bugun, tamListe: true, kirikDosyayiAtla: true });
         for (const rapor of sonuc.akis) {
           const izinli = rapor.tanilar.filter((t) => {
             const uretici = sonuc.koken.get(t);
@@ -721,9 +727,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
           liste.push(...izinli);
           donguHar.set(absDosya, liste);
         }
+        return eksikKokKaydi(kokYol, sonuc);
       });
     for (const c of cokenKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiCoktu(c.kok, c.hata));
-    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler);
+    for (const e of eksikKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiEksik(e.kok, e.dosyalar));
+    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler, eksikKokler);
     // Her dosyanın tanıları = tek-dosya (tanilaCekirdek) + o dosyaya düşen DAG
     // döngü tanıları; hepsi doğasına göre üç kanonik yüzeye dağıtılır.
     //
