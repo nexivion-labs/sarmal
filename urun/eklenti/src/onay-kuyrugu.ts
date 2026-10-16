@@ -751,7 +751,13 @@ export function onayKuyruguKaydi(
   // Yeni bir zamanlayıcı KURULMAZ; tur odağın kendi olayına bağlanır ve tarama
   // ana tanı hattının anlık görüntüsünden beslendiği için ikinci bir tam tarama
   // maliyeti doğurmaz.
-  odak.degisince(() => { void tumunuTara(); });
+  //
+  // ⚠️ GÖRÜNTÜDEN ÖNCE TUR YOKTUR (MGZ-A01 ölçümü). Odak etkinleşmede, ana
+  // tanı hattının ilk görüntüsünden ÖNCE de değişebilir; bu kayıt koşulsuzken
+  // o anda görüntüsüz bir tur başlıyor ve onay yüzeyi kendi bağımsız tam
+  // taramasını (dosya araması + ham okuma) koşuyordu. Görüntü henüz yoksa beklemek
+  // yeterlidir: ilk görüntü olayı kuyruğu zaten yeni odakla doldurur.
+  odak.degisince(() => { if (anaGoruntuHazirMi()) void tumunuTara(); });
 
   izYaz(IZ_METINLERI.komutlarKayitli(!!onayPaneli));
   // AÇILIŞTA HİÇBİR ŞEY YAPILMAZ. Ne belge açılır, ne iş parçacığı yaratılır, ne

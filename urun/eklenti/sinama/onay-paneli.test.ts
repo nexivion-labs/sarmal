@@ -1716,3 +1716,19 @@ test("PANEL BESLEMESİ: iki Adım yan yanayken YALNIZ beyanlı olan geçer", () 
   assert.ok(html.includes("BEYANLI-A03") && !html.includes("DESENLI-A04"),
     "panelin belgesi çekirdeğin hükmüyle ayrışmış");
 });
+
+// ── ⑳ ODAK DEĞİŞİMİ GÖRÜNTÜDEN ÖNCE TAM TARAMA BAŞLATMAZ (MGZ-A01) ─────────
+//
+//   Gerçek VS Code süiti etkinleşmede onaya ait bir bağımsız tam tarama turu
+//   ölçtü (`yedekTur: 1`). Kaynağı odak aboneliğiydi: odak ilk görüntüden önce
+//   değişince görüntüsüz bir tur koşuyordu. Bu nöbet kaynakta aboneliğin
+//   görüntü hazır olmadan tur başlatmadığını sınar.
+test("odak değişimi ana görüntü hazır değilken tam tarama turu başlatmaz", () => {
+  const kuyruk = oku("../src/onay-kuyrugu.ts");
+  const abonelik = /odak\.degisince\(\(\) => \{([^}]*)\}\);/.exec(kuyruk);
+  assert.ok(abonelik, "odak aboneliği kaynakta bulunamadı");
+  const govde = abonelik![1]!;
+  assert.ok(govde.includes("tumunuTara()"), "odak değişimi kuyruğu artık hiç yerleştirmiyor");
+  assert.ok(/if \(anaGoruntuHazirMi\(\)\)\s*void tumunuTara\(\)/.test(govde),
+    "odak değişimi görüntü hazır olmadan tur başlatıyor; onaya ait yedek tarama geri gelir");
+});
