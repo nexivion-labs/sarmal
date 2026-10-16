@@ -1010,6 +1010,29 @@ test("iptal ile boş kutu AYRI şeylerdir ve ikisi de HİÇBİR kayıt yazmaz", 
     "iptal sessiz kalıyor; kullanıcı vazgeçtiğini hiçbir yerden görmüyor");
 });
 
+// ── ⑮ KOMUT SINIRI: dizgi olmayan argüman çökertmez, hiçbir kayıt yazmaz ─────
+//
+//   MGZ-A01 ölçümü: `sarmal.onayKararVer` komutu panelden gelmeyen çağrılara da
+//   açıktır (başka bir eklenti, eski imzayla yazılmış bir çağıran). Gerekçe
+//   yerine dizgi olmayan bir değer gelince ölçü `trim is not a function` ile
+//   patlıyordu; çağıran anlaşılır bir ret yerine yakalanmamış bir hata alıyordu.
+//   Ölçü artık türü kendisi sınar ve geçersiz argümanı AYRI bir sonuçla reddeder.
+test("komut sınırı: dizgi olmayan gerekçe ya da boole olmayan bayrak GEÇERSİZ sayılır, patlamaz", () => {
+  const olc = gerekceyiOlc as (notIster: unknown, not: unknown) => ReturnType<typeof gerekceyiOlc>;
+  for (const [notIster, not] of [
+    [true, true], [false, 42], [true, null], [false, {}], ["📝", true], ["🧪", false],
+  ] as const) {
+    let sonuc: ReturnType<typeof gerekceyiOlc> | undefined;
+    assert.doesNotThrow(() => { sonuc = olc(notIster, not); },
+      `gerekceyiOlc(${JSON.stringify(notIster)}, ${JSON.stringify(not)}) patladı`);
+    assert.deepEqual(sonuc, { tur: "geçersiz" },
+      `gerekceyiOlc(${JSON.stringify(notIster)}, ${JSON.stringify(not)}) geçersiz sayılmadı`);
+  }
+  // Geçerli tipler eski sonuçlarını aynen korur.
+  assert.deepEqual(gerekceyiOlc(true, undefined), { tur: "iptal" });
+  assert.deepEqual(gerekceyiOlc(false, undefined), { tur: "geçerli", not: "" });
+});
+
 test("hata kullanıcının GÖZÜNÜN ÖNÜNDE, kutunun yanında görünür", () => {
   const durum = kapiyiAc(new PanelDurumu(), TEK_DOSYA, "A1");
   const notId = notKimligi(TEK_DOSYA, "A1");
