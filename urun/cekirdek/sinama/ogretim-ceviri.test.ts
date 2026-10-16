@@ -47,10 +47,14 @@ test("CDL-A06: karşılama kartı ve dil bağlamı iki düzyazı hanesini seçer
   const kartEn = ogretKarti(SNF, "en");
   assert.match(kartTr, /^🚪 SARMAL KARŞILAMA KARTI/u);
   assert.match(kartEn, /^🚪 SARMAL WELCOME CARD/u);
-  assert.match(kartEn, /Phase \(canonical: Faz\).*TIME axis/u,
-    "kanonik tip adı ve açıklaması sözlüğün İngilizce hanesinden gelmeli");
-  assert.match(kartEn, /Step \(canonical: Adım\) → task\|accept\|produces/u,
-    "zorunlu kenar adları sözlükten çevrilmeli");
+  // MGZ-A11 · Founder hükmü 2026-10-10: İngilizce yüz dosyadaki gerçek adı anar.
+  // Tip açıklaması sözlüğün İngilizce hanesinden gelir, ad ise çevrilmez.
+  assert.match(kartEn, /🌀 Faz — .*TIME axis/u,
+    "tip adı dosyadaki adla, açıklaması sözlüğün İngilizce hanesinden gelmeli");
+  assert.match(kartEn, /Adım → görev\|kabul\|üretir/u,
+    "zorunlu kenar adları dosyadaki adla anılmalı");
+  assert.doesNotMatch(kartEn, /\bPhase\b|\bStep\b|dependsOn|canonical: /u,
+    "kart dosyada bulunmayan ad karşılığı öğretmemeli");
 
   const baglamTr = dilBaglami("2026-08-02", "tr");
   const baglamEn = dilBaglami("2026-08-02", "en");

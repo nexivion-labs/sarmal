@@ -277,7 +277,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
         "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
-        "and is/plan/faz/1_dogus (in the Phase file layout, a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
+        "and is/plan/faz/1_dogus (in the Faz file layout, a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
         "a `!*.sar` exception against the global ignore rule, an executor setting that resolves the Sarmal server, " +
         "a byte-identical instruction twin (CLAUDE.md ≡ AGENTS.md), a birth lock plus an audit hook, and a canon pointer; " +
         "all of them live in the new root's OWN files and the global settings are left untouched. " +
@@ -705,11 +705,11 @@ export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
   ].join(" "),
   en: [
     "This project is governed by Sarmal: plans, rules, types and status live only in .sar files, and this server's tools are their sole authoritative reading surface.",
-    "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting a Step, basla before writing.",
-    "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while a Step is in progress; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
+    "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting an Adım, basla before writing.",
+    "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while an Adım is in geliştirmede; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
     "The tools may be deferred in the client and need loading before the first call; loading is one call, skipping it costs a wrong number.",
     "Reading .sar files with raw grep, sed or a hand-written parser is possible but misleading: raw search misses aligned code fields, multi-line declarations and duplicate definitions, produces a number, and the number looks right. This server's tools answer the same question from the identity index and the graph: gezin gives the definition and every reference, graf gives edges and dangling ends, denetle-proje gives the whole project's verdict. Raw search is the right tool for non-.sar files and for things not yet declared.",
-    "The write gate has three parts; do not conflate them. FIRST: a Step's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening a Step's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
+    "The write gate has three parts; do not conflate them. FIRST: an Adım's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening an Adım's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
   ].join(" "),
 };
 
