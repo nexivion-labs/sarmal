@@ -63,15 +63,14 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
   const ekle = (tr: readonly string[], en: readonly string[]): void => {
     b.push(...dilHanesi({ tr, en }, dil));
   };
+  // MGZ-A11 · İngilizce yüzün tek ilkesi (Founder hükmü 2026-10-10 · 2026-10-16): bağlam
+  // her dilde dosyadaki gerçek adı anar. İngilizce karşılık (Phase, Step, `dependsOn:`)
+  // öğretilseydi ajan motorun bilinmeyen tip ya da şema dışı alan saydığı bir dosya
+  // yazardı; sözlük düzyazısının ad jetonları da dosyadaki adla çözülür (`kaynak` kipi).
   const sozlukMetni = (bolum: DuzYaziBolumu, anahtar: string, turkce: string): string =>
-    sozlukDuzYazisi(bolum, anahtar, turkce, dil);
-  const kaynakAdi = (bolum: "widget" | "kenar" | "parametre", ad: string): string => {
-    const cevrilmis = sozlukAdi(bolum, ad, dil);
-    return dil === "tr" || cevrilmis === ad ? ad : `${cevrilmis} (\`${ad}\`)`;
-  };
-  const yonOkumaYuzu = (yon: string): string => dil === "tr"
-    ? yon
-    : yon.replace(/[A-Za-zÇĞİÖŞÜçğıöşü]+/gu, (ad) => sozlukAdi("widget", ad, dil));
+    sozlukDuzYazisi(bolum, anahtar, turkce, dil, "kaynak");
+  const kaynakAdi = (_bolum: "widget" | "kenar" | "parametre", ad: string): string => ad;
+  const yonOkumaYuzu = (yon: string): string => yon;
 
   ekle([
     "# Sarmal Dil Bağlamı — bu projede çalışan her AI ajanı için",
@@ -100,7 +99,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "it produces **intent** — an AI agent like you writes the code, while the engine (checker)",
     "detects drift between plan and disk and guides you with diagnostics. This file is the",
     "MAP of the language, not the final answer: the live ruling is always in the tools — consult",
-    "the MCP `basla` guide before writing, call `sef` before working on a Step, and verify with",
+    "the MCP `basla` guide before writing, call `sef` before working on an Adım, and verify with",
     "`denetle` after writing; the target is always zero errors.",
     "",
   ]);
@@ -156,33 +155,32 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
   ], [
     "## Plan axes, discipline, and the complete chain",
     "",
-    "In strict mode the chain must be complete — **Phase › Block › Layer › Sublayer › Step**",
-    "(canonical source: **Faz › Blok › Katman › AltKatman › Adım**):",
+    "In strict mode the chain must be complete — **Faz › Blok › Katman › AltKatman › Adım**:",
     "",
-    "- **Phase = TIME** — a growth period (year-ring). Every Phase lives in its own prefix-numbered file under `is/plan/faz/`; sibling phases are ordered.",
-    "- **Block = WORK** — a vertical slice (frontend+backend+security together, not silos). A Block is wrapped in the body of the Phase it lives in.",
-    "- **Layer = TECHNOLOGY** — expects a TechStack/Technology binding inside the canonical `bağımlı:` field.",
-    "- **Sublayer = DISCIPLINE** — groups work in a declared discipline module and can grow through an additive overlay.",
-    "- **Step = FLOW** — the leaf of work; one Step is one agent session (a crumb-sized Step is an anti-pattern).",
+    "- **Faz = TIME** — a growth period (year-ring). Every Faz lives in its own prefix-numbered file under `is/plan/faz/`; sibling Faz nodes are ordered.",
+    "- **Blok = WORK** — a vertical slice (frontend+backend+security together, not silos). A Blok is wrapped in the body of the Faz it lives in.",
+    "- **Katman = TECHNOLOGY** — expects a Takım/Teknoloji binding inside the `bağımlı:` field.",
+    "- **AltKatman = DISCIPLINE** — groups work in a declared `departman` module and can grow through an additive overlay.",
+    "- **Adım = FLOW** — the leaf of work; one Adım is one agent session (a crumb-sized Adım is an anti-pattern).",
     "",
-    "Every Block lives under a Phase and every Step under a Sublayer; the engine reports a broken chain with a diagnostic.",
+    "Every Blok lives under a Faz and every Adım under an AltKatman; the engine reports a broken chain with a diagnostic.",
     "",
     "### Time binding — gentle regime",
     "",
-    "A date is STRONGLY RECOMMENDED, not imposed: if you give a Phase `hedefTarih` (\"YYYY-AA-GG\";",
+    "A date is STRONGLY RECOMMENDED, not imposed: if you give a Faz `hedefTarih` (\"YYYY-AA-GG\";",
     "when the day is unknown, \"YYYY-AA\" is also valid and the engine gently asks for a day), the deadline",
-    "guard tracks overdue and approaching milestones for you. Without a date the Phase STILL opens; the engine",
+    "guard tracks overdue and approaching milestones for you. Without a date the Faz STILL opens; the engine",
     "reminds at information level and blocks no workflow. A date that cannot be met may be postponed",
-    "(update the date — commitment history remains in git). The Phase file layout is this (MIM-1.2): every",
-    "Phase lives in its own prefix-numbered file under `is/plan/faz/` (`1_dogus.sar`, `2_surum.sar`, …), the",
-    "Phase declaration stands at the top of the file, and Blocks are wrapped inside the Phase body; the next",
-    "Phase is born in a new file. This is the only way to bind a Block to time: the `mevsim: FAZ-…` field and",
-    "the Phase's `çağır BLK-…` list are retired as Block bindings and are reported by the `faz-dışı-blok`",
-    "observation. There is no escape for a phase-less Block: work awaiting prioritization is bound to a Phase",
-    "as well, and a `planlanmamış:` declaration does not lift the phase-less-block error. The Phases of one",
-    "Project form a single chain: they are ordered by date and, on a tie, by the",
-    "natural numeric order of the file prefix (`1_`, `2_`, … `10_`); work does not start in a later Phase before",
-    "the earlier Phase is closed (`erken-faz-işi`), and a Step cannot depend on work in a later Phase",
+    "(update the date — commitment history remains in git). The Faz file layout is this (MIM-1.2): every",
+    "Faz lives in its own prefix-numbered file under `is/plan/faz/` (`1_dogus.sar`, `2_surum.sar`, …), the",
+    "Faz declaration stands at the top of the file, and Blok nodes are wrapped inside the Faz body; the next",
+    "Faz is born in a new file. This is the only way to bind a Blok to time: the `mevsim: FAZ-…` field and",
+    "the Faz node's `çağır BLK-…` list are retired as Blok bindings and are reported by the `faz-dışı-blok`",
+    "observation. There is no escape for a Blok without a Faz: work awaiting prioritization is bound to a Faz",
+    "as well, and a `planlanmamış:` declaration does not lift the `fazsız-blok` error. The Faz nodes of one",
+    "Proje form a single chain: they are ordered by date and, on a tie, by the",
+    "natural numeric order of the file prefix (`1_`, `2_`, … `10_`); work does not start in a later Faz before",
+    "the earlier Faz is closed (`erken-faz-işi`), and an Adım cannot depend on work in a later Faz",
     "(`ters-faz-bağımlılığı`).",
     "",
   ]);
@@ -215,13 +213,13 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "doğru alana ayrılır; \"çalışıyor\" tek başına kabul ölçütü olamaz.",
     "",
   ], [
-    "## The Step's context cone",
+    "## The Adım's context cone",
     "",
-    `A Step is a rich node; its cone fields are: **${koniAlanlari.join(" · ")}** (+ the canonical \`üretir\` fruit edge).`,
-    "An empty-but-valid shell is forbidden (blind drift): a `geliştirmede` Step must have a full cone —",
-    "canonical `bağımlı:` is mandatory, `görev`/`kabul` are filled, and an `üretir:` fruit is written at closure.",
+    `An Adım is a rich node; its cone fields are: **${koniAlanlari.join(" · ")}** (+ the \`üretir\` fruit edge).`,
+    "An empty-but-valid shell is forbidden (blind drift): an Adım in `geliştirmede` must have a full cone —",
+    "`bağımlı:` is mandatory, `görev`/`kabul` are filled, and an `üretir:` fruit is written at closure.",
     "",
-    "### Step lifecycle",
+    "### Adım lifecycle",
     "",
     "`beklemede → geliştirmede → tamamlandı` — skipping is FORBIDDEN. At the start, mark",
     "`durum: geliştirmede` (a light *started* commit); at closure, write evidence to `koşu:` and the",
@@ -241,7 +239,7 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
   ]);
 
   b.push(
-    y("## Sözdizim örneği — koni-dolu Adım", "## Syntax example — a Step with a full cone"),
+    y("## Sözdizim örneği — koni-dolu Adım", "## Syntax example — an Adım with a full cone"),
     "",
     "```sar",
     "Faz( kod: FAZ-MVP, ad: \"mvp\", hedefTarih: \"2026-09-30\",   // tarih güçlü tavsiyedir — verirsen vade nöbeti çalışır (\"YYYY-AA\" ay hassasiyeti de geçerli); vermezsen Faz yine açılır, motor yalnız hatırlatır",
@@ -293,16 +291,16 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "düğümden HEMEN önce durur; Blok ve Proje için anlatı belgesi zorunludur.",
     "",
   ], [
-    "The Sublayer's canonical `departman:` field is a CLOSED set. If the work does not fit this set,",
+    "The AltKatman's `departman:` field is a CLOSED set. If the work does not fit this set,",
     "do not choose a nearby value: the engine cannot detect the false label, the gate stays green,",
     "and the plan silently becomes false. The correct solution is an additive overlay: write",
-    "`oz/siniflama/ortu.json` at the Workspace root and add your value to the set; the `ogret` card",
+    "`oz/siniflama/ortu.json` at the ÇalışmaAlanı root and add your value to the set; the `ogret` card",
     "explains the details.",
     "",
-    "Identity lives in the canonical `kod:` parameter and is unique; other nodes bind to that code",
+    "Identity lives in the `kod:` parameter and is unique; other nodes bind to that code",
     "through edges. Write the narrative document as MULTILINE text exactly as above — each of",
     "`## Amaç`, `## Kapsam`, and `## Sonuç` stands on its own line with real sentences underneath.",
-    "The document stands IMMEDIATELY before the node it belongs to; Block and Project require one.",
+    "The document stands IMMEDIATELY before the node it belongs to; Blok and Proje require one.",
     "",
   ]);
 
@@ -348,8 +346,8 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "Katman'ın Takım/Teknoloji eksen bağıdır. İlansız koda atıf KIRIK REFERANSTIR.",
     "",
   ], ["",
-    "Edges are declared on a Step; containers (Phase/Block/Layer) carry no edges — the only",
-    "exception is the Layer's TechStack/Technology axis binding. A reference to an undeclared code",
+    "Edges are declared on an Adım; containers (Faz/Blok/Katman) carry no edges — the only",
+    "exception is the Katman's Takım/Teknoloji axis binding. A reference to an undeclared code",
     "is a BROKEN REFERENCE.",
     "",
   ]);
@@ -415,9 +413,9 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
       "boşsa derece BASILMAZ — 'henüz sicil yok' denir; hiçbir yüzeyde puan uydurulmaz (`karne` aracı).",
       "",
     ], [
-      "## Agent scorecard scale (Founder-approved)",
+      "## Etmen scorecard scale (Founder-approved)",
       "",
-      `Agent performance is read through the language-independent ${ks.birim} grade (${ks.birim} is used ONLY`,
+      `Etmen performance is read through the language-independent ${ks.birim} grade (${ks.birim} is used ONLY`,
       "as a grade unit on language surfaces):",
       "",
       ...Object.entries(ks.dereceler).map(([d, anlam]) =>
@@ -550,9 +548,9 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "| Tool | When to use it |",
     "|---|---|",
     "| `basla` | BEFORE WRITING — birth guide + architecture dialogue + full-cone templates |",
-    "| `sef` | BEFORE WORKING ON A STEP — cone, critical constraints, and triggered skill cards as a ready prompt |",
+    "| `sef` | BEFORE WORKING ON AN Adım — cone, critical constraints, and triggered skill cards as a ready prompt |",
     "| `kavram` | Concept query — word → canon path+mappings; context → candidate families (suggestion, not imposition) |",
-    "| `karne` | Agent scorecard — ⭐ scale + roster breakdown (no grade for an empty registry; no invented score) |",
+    "| `karne` | Etmen scorecard — ⭐ scale + roster breakdown (no grade for an empty registry; no invented score) |",
     "| `dogus` | Create a working project in an empty directory (this package itself) |",
     "| `denetle` | Validate one file (immediately after writing) |",
     "| `denetle-proje` | Complete ruling for the WHOLE project — the only answer to \"is everything green?\" |",
@@ -562,10 +560,10 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "| `graf` / `etki` | Dependency graph / a node's impact area |",
     "| `bul` / `bicimle` | Text search / formatting |",
     "| `iskelet` | Scaffold the declared structure on disk |",
-    "| `durum-guncelle` | Update Step status safely (state-machine guarded) |",
+    "| `durum-guncelle` | Update an Adım's `durum` safely (state-machine guarded) |",
     "",
-    "Call `sef` before working on a Step; its cone, constraints, and the skill cards triggered for that",
-    "Step come from there. Cards live on the `ogreti/ogrenme/` shelf; if a card is trimmed with a ✂️ mark",
+    "Call `sef` before working on an Adım; its cone, constraints, and the skill cards triggered for that",
+    "Adım come from there. Cards live on the `ogreti/ogrenme/` shelf; if a card is trimmed with a ✂️ mark",
     "because it does not fit its budget share, open the full text with `gezin <KART-KODU>`.",
     "",
     "### When the tools do not appear: a server that cannot connect is not an undefined server",
@@ -581,14 +579,14 @@ export function dilBaglami(tarih: string, dil: CiktiDili = etkinCiktiDili()): st
     "This root's record reads the engine path from the `${SARMAL_KOK}` environment variable and carries no",
     "default. So when your client prints a warning such as \"Missing environment variables: SARMAL_KOK\", it",
     "means exactly one thing: the record is in place and only the variable is undefined in this shell,",
-    "which is why the server could not start. The repair is one line — write `export SARMAL_KOK=<root of",
-    "the Sarmal installation>` in your shell profile and reopen the session. The audit hook and the canon",
+    "which is why the server could not start. The repair is one line — write",
+    "`export SARMAL_KOK=<root of the Sarmal installation>` in your shell profile and reopen the session. The audit hook and the canon",
     "pointer read the same variable; when it is undefined the hook does not withdraw silently but says the",
     "check did not run and shows the same repair.",
     "",
     "## Working routine",
     "",
-    "1. **Decision → plan → step first**: for substantial work, write and approve the plan first; the plan is `.sar`.",
+    "1. **Decision → plan → Adım first**: for substantial work, write and approve the plan first; the plan is `.sar`.",
     "2. **Work check-clean**: run `denetle` after every meaningful change — target zero errors.",
     "3. **Generated files are not edited by hand** (including this one) — fix the source and regenerate.",
     "4. **Do not invent a rule you are unsure about**: ask `kurallar` and `siniflama`; if absent, ask a human.",

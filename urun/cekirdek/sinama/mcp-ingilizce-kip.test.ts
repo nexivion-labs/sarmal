@@ -7,7 +7,8 @@
 //
 //   ① ÖĞRETİM NÖBETİ. İngilizce kipteki bir ajan .sar yazmayı sunucu talimatından,
 //      araç açıklamalarından, karşılama kartından, doğuş rehberinden, şablonlardan,
-//      doğuş aracından ve şef brifinginden öğrenir. Bu yüzlerden biri dosyada
+//      doğuş aracından, onun yazdığı dil bağlamından (AGENTS.md) ve şef
+//      brifinginden öğrenir. Bu yüzlerden biri dosyada
 //      bulunmayan bir ad karşılığı (Step, Phase, `dependsOn:`) öğretirse ajan
 //      motorun bilinmeyen tip ya da şema dışı alan saydığı bir dosya yazar.
 //      Nöbet bu yüzleri gerçek stdio sunucusunda koşturur ve ölçere
@@ -108,6 +109,10 @@ test("MGZ-A11 nöbeti ①: İngilizce kipte öğretim yüzleri dosyada bulunmaya
       for (const [p, s] of Object.entries(a.inputSchema.properties)) kusurlar.push(...adKusurlari(`${a.name}.${p}`, s.description));
     }
     cagrilar.forEach(([ad, args], i) => kusurlar.push(...adKusurlari(`${ad}${JSON.stringify(args)}`, en.cevaplar[i]!)));
+    // İngilizce kipteki doğuş aracının yazdığı ajan dil bağlamı (AGENTS.md) da bir öğretim yüzüdür.
+    const baglam = readFileSync(join(kok, "yeni", "AGENTS.md"), "utf8");
+    assert.match(baglam, /^# Sarmal Language Context/u, "İngilizce kipteki doğuş İngilizce dil bağlamı yazmadı");
+    kusurlar.push(...adKusurlari("dogus → AGENTS.md", baglam));
     assert.deepEqual(kusurlar, [], `İngilizce kipte dosyada bulunmayan ${kusurlar.length} ad öğretiliyor:\n${kusurlar.join("\n")}`);
   } finally {
     rmSync(kok, { recursive: true, force: true });

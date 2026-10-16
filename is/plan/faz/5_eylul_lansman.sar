@@ -6788,7 +6788,7 @@ Kod( kod: KOD-SNM-INGILIZCE-YUZ-AYAR, dosya: "urun/cekirdek/sinama/ingilizce-yuz
   ne: "🧪 İngilizce yüz ölçerinin ayar nöbeti — ölçerin iki kusuru yakaladığını, dosyadaki adları, cümle başını, panel ve çatı adlarını kusur saymadığını ve sözlüğün ad jetonlarının eklentide dosyadaki adla, MCP yüzünde sözlüğün karşılığıyla çözüldüğünü ölçer (MGZ-A09)" )
 // 🍎 MCP yüzünün İngilizce kipi (MGZ-A11 · 2026-10-16)
 Kod( kod: KOD-SNM-MCP-INGILIZCE-KIP, dosya: "urun/cekirdek/sinama/mcp-ingilizce-kip.test.ts",
-  ne: "🌐 MCP İngilizce kip nöbeti — gerçek stdio sunucusunu doğuş paketinin ürettiği bir ağaçta İngilizce kipte koşturur; sunucu talimatının, araç açıklamalarının, karşılama kartının, doğuş rehberinin, şablonların, doğuş aracının ve şef brifinginin dosyada bulunmayan hiçbir ad karşılığı öğretmediğini ölçer (MGZ-A11)" )
+  ne: "🌐 MCP İngilizce kip nöbeti — gerçek stdio sunucusunu doğuş paketinin ürettiği bir ağaçta iki kipte koşturur; sunucu talimatının, araç açıklamalarının, karşılama kartının, doğuş rehberinin, şablonların, doğuş aracının, onun yazdığı dil bağlamının ve şef brifinginin dosyada bulunmayan hiçbir ad karşılığı öğretmediğini, araç çıktılarının düzyazısının İngilizce kipte dosya yankısı dışında İngilizce olduğunu ve Türkçe kipin Türkçe kaldığını ölçer (MGZ-A11)" )
 Kod( kod: KOD-SNM-ADLI-KURAL-IPUCU, dosya: "urun/eklenti/sinama/adli-kural-ipucu.test.ts",
   ne: "🧪 Adlı Kural ipucu nöbeti — adı olan bir Kuralın kartı başlıkta tipini gösterir, adsız kartların başlığı değişmez; satır taraması ve sözdizimi ağacı yedeği ayrı ayrı sınanır (HST-YUZ-A06)" )
 Kod( kod: KOD-SNM-DOGUS-AGACI-YARDIMCISI, dosya: "urun/cekirdek/sinama/dogus-agaci.ts",

@@ -60,12 +60,15 @@ test("CDL-A06: karşılama kartı ve dil bağlamı iki düzyazı hanesini seçer
   const baglamEn = dilBaglami("2026-08-02", "en");
   assert.match(baglamTr, /^# Sarmal Dil Bağlamı/u);
   assert.match(baglamEn, /^# Sarmal Language Context/u);
-  assert.match(baglamEn, /\*\*Phase \(`Faz`\)\*\* — a season or a year-ring/u,
-    "tip kanonu widget/widgetNe sözlük hanelerinden derlenmeli");
-  assert.match(baglamEn, /\*\*dependsOn \(`bağımlı`\)\*\* \(A->B\) — A depends on B/u,
-    "kenar kanonu kenar/kenarNe sözlük hanelerinden derlenmeli");
-  assert.match(baglamEn, /Canonical `ayakizi:` convention.*The `footprint:` field/u,
-    "şema kuralı semaKural sözlük hanesinden derlenmeli");
+  // MGZ-A11: dil bağlamı da dosyadaki adı anar; açıklama sözlüğün İngilizce hanesinden gelir.
+  assert.match(baglamEn, /\*\*Faz\*\* — a season or a year-ring/u,
+    "tip kanonu dosyadaki adla, açıklaması widgetNe sözlük hanesinden derlenmeli");
+  assert.match(baglamEn, /\*\*bağımlı\*\* \(A->B\) — A depends on B/u,
+    "kenar kanonu dosyadaki adla, açıklaması kenarNe sözlük hanesinden derlenmeli");
+  assert.match(baglamEn, /Canonical `ayakizi:` convention.*The `ayakizi:` field/u,
+    "şema kuralı semaKural sözlük hanesinden derlenmeli ve alanı dosyadaki adla anmalı");
+  assert.doesNotMatch(baglamEn, /\bPhase\b|\bStep\b|dependsOn|`footprint:`/u,
+    "dil bağlamı dosyada bulunmayan ad karşılığı öğretmemeli");
 });
 
 test("CDL-A06: `.sar` örnekleri iki dilde de aynı kanonik Türkçe kaynaktır", () => {

@@ -98,9 +98,10 @@ export type DuzYaziBolumu =
  *              tamamlaması ve tanılar bu kiple okur, çünkü dosya her dilde Türkçe
  *              görünür ve kullanıcı balonda okuduğu adı dosyada bulabilmelidir.
  *   `ceviri` — jeton sözlüğün karşılığını basar (`Step`, `dependsOn:`). MCP
- *              öğretim yüzü (karşılama kartı, dil bağlamı) bugün bu kiple okur;
- *              o yüzün yeni ilkeye hizalanması ayrı bir karardır ve varsayılan
- *              kip bu yüzden değişmemiştir.
+ *              öğretim yüzü (karşılama kartı, dil bağlamı) 2026-10-16 tarihinde
+ *              MGZ-A11 ile `kaynak` kipine geçmiştir; bugün hiçbir ürün yüzeyi bu
+ *              kiple okumaz. Kip, varsayılan değer olarak ve ölçerin ayar
+ *              nöbeti için yaşar.
  *
  * Jeton biçimleri: `⟦Adım⟧` ad · `⟦a:Adım⟧` ya da `⟦A:Adım⟧` belirsiz tanımlıkla
  * ad (tanımlık okunan ada göre seçilir: "an Adım" ama "a Step") · `⟦Adım|s⟧`
