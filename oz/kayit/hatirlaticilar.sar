@@ -1304,7 +1304,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         MGZ-A12,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-10,

@@ -23,7 +23,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import type { CokenKok } from "./kanon-kesif.ts";
+import type { CokenKok, EksikKok } from "./kanon-kesif.ts";
 import { TABAN_KANON_METINLERI } from "./yuzey-metinleri.ts";
 
 /**
@@ -48,30 +48,41 @@ export interface TabanKanonDurumu {
    * değil çöküş olduğu için ayrı tutulur ve ipucunda kendi cümlesiyle söylenir.
    */
   readonly coken: readonly CokenKok[];
+  /**
+   * MGZ-A12: tam proje denetimi kırık dosyalar dışarıda bırakılarak EKSİK koşan
+   * kökler ve o dosyalar. Öteki dosyaların çapraz tanıları üretilmiştir, fakat
+   * kırık dosyanın ilan ettiği kodlar ve kenarlar turda yoktur; sebep ne
+   * kanonsuzluk ne çöküştür, onarımı dosyanın söz dizimidir ve ipucunda kendi
+   * cümlesiyle söylenir.
+   */
+  readonly eksik: readonly EksikKok[];
 }
 
-let durum: TabanKanonDurumu = { düşüldü: false, atlanan: [], coken: [] };
+let durum: TabanKanonDurumu = { düşüldü: false, atlanan: [], coken: [], eksik: [] };
 const dinleyiciler = new Set<(d: TabanKanonDurumu) => void>();
 
 /** Çöken kök listesinin karşılaştırılabilir imzası; ileti değişirse ipucu da tazelenir. */
 const cokenImzasi = (liste: readonly CokenKok[]): string => liste.map((c) => `${c.kok}\t${c.hata}`).join("\n");
+/** Eksik koşan kök listesinin karşılaştırılabilir imzası; dosya listesi değişirse ipucu da tazelenir. */
+const eksikImzasi = (liste: readonly EksikKok[]): string => liste.map((e) => `${e.kok}\t${e.dosyalar.join(",")}`).join("\n");
 
 function yayınla(yeni: TabanKanonDurumu): void {
   const değişti = yeni.düşüldü !== durum.düşüldü || yeni.belge !== durum.belge
     || yeni.atlanan.join("\n") !== durum.atlanan.join("\n")
-    || cokenImzasi(yeni.coken) !== cokenImzasi(durum.coken);
+    || cokenImzasi(yeni.coken) !== cokenImzasi(durum.coken)
+    || eksikImzasi(yeni.eksik) !== eksikImzasi(durum.eksik);
   durum = yeni;
   if (değişti) for (const d of dinleyiciler) d(durum);
 }
 
 /** Kanon kaydı bulunamadı ve gömülü taban kanonla çalışılıyor. */
 export function tabanKanonaDusuldu(belgeYolu: string): void {
-  yayınla({ düşüldü: true, belge: belgeYolu, atlanan: durum.atlanan, coken: durum.coken });
+  yayınla({ düşüldü: true, belge: belgeYolu, atlanan: durum.atlanan, coken: durum.coken, eksik: durum.eksik });
 }
 
 /** Kanon kaydı bulundu — işaret kalkar. */
 export function tabanKanonBulundu(): void {
-  if (durum.düşüldü) yayınla({ düşüldü: false, atlanan: durum.atlanan, coken: durum.coken });
+  if (durum.düşüldü) yayınla({ düşüldü: false, atlanan: durum.atlanan, coken: durum.coken, eksik: durum.eksik });
 }
 
 /**
@@ -83,19 +94,26 @@ export function tabanKanonBulundu(): void {
  *
  * MGZ-A04: `coken` aynı kuralla tutulur. Ölçülen bir kök yeniden sağlıklı
  * koşarsa iki listeden de düşer; ölçülmeyen kökün çöküş kaydı korunur.
+ * MGZ-A12: `eksik` üçüncü liste olarak aynı kuralla tutulur; kök tam koşunca
+ * düşer, dar turda ölçülmeyen kökün eksiklik kaydı korunur.
  */
 export function tamDenetimSonucu(
   olculen: readonly string[], atlanan: readonly string[], tamTur: boolean, coken: readonly CokenKok[] = [],
+  eksik: readonly EksikKok[] = [],
 ): void {
   const kume = new Set(tamTur ? [] : durum.atlanan);
   const cokenler = new Map(tamTur ? [] : durum.coken.map((c) => [c.kok, c] as const));
-  for (const kok of olculen) { kume.delete(kok); cokenler.delete(kok); }
+  const eksikler = new Map(tamTur ? [] : durum.eksik.map((e) => [e.kok, e] as const));
+  for (const kok of olculen) { kume.delete(kok); cokenler.delete(kok); eksikler.delete(kok); }
   for (const kok of atlanan) kume.add(kok);
   for (const c of coken) cokenler.set(c.kok, c);
+  for (const e of eksik) eksikler.set(e.kok, e);
+  const kokeGore = <T extends { kok: string }>(a: T, b: T): number => (a.kok < b.kok ? -1 : a.kok > b.kok ? 1 : 0);
   yayınla({
     ...durum,
     atlanan: [...kume].sort(),
-    coken: [...cokenler.values()].sort((a, b) => (a.kok < b.kok ? -1 : a.kok > b.kok ? 1 : 0)),
+    coken: [...cokenler.values()].sort(kokeGore),
+    eksik: [...eksikler.values()].sort(kokeGore),
   });
 }
 
@@ -112,7 +130,7 @@ export function tabanKanonDinle(dinleyici: (d: TabanKanonDurumu) => void): { dis
 
 /** Yalnız nöbet içindir: kayıt sıfırlanır, iki sınama birbirinin izini ölçmez. */
 export function tabanKanonSifirla(): void {
-  durum = { düşüldü: false, atlanan: [], coken: [] };
+  durum = { düşüldü: false, atlanan: [], coken: [], eksik: [] };
   dinleyiciler.clear();
 }
 
@@ -147,12 +165,16 @@ export class TabanKanonCubugu {
     // söylenir; ipucu her sebebi kendi cümlesiyle verir. Yalnız çöküş varken
     // tıklama komutu kalkar, çünkü kanonu olan bir kökte işaretçi yazmak
     // çöküşü onarmaz ve kullanıcıyı yanlış onarıma yönlendirir.
-    if (d.atlanan.length > 0 || d.coken.length > 0) {
+    // MGZ-A12: kırık dosya yüzünden eksik koşan kök üçüncü sebeptir ve aynı
+    // işaretle söylenir; onarımı dosyanın söz dizimidir, tıklama komutu yine
+    // yalnız kanonsuz kök varken verilir.
+    if (d.atlanan.length > 0 || d.coken.length > 0 || d.eksik.length > 0) {
       this.oge.text = TABAN_KANON_METINLERI.atlandiMetni;
       this.oge.tooltip = [
         ...(d.atlanan.length > 0 ? [TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan)] : []),
         // Sonuç cümlesi kanonsuz kökün ipucunda yazılıysa çöküş ipucu onu yinelemez.
         ...(d.coken.length > 0 ? [TABAN_KANON_METINLERI.coktuIpucu(d.coken, d.atlanan.length > 0)] : []),
+        ...(d.eksik.length > 0 ? [TABAN_KANON_METINLERI.eksikIpucu(d.eksik)] : []),
       ].join("\n\n");
       this.oge.command = d.atlanan.length > 0 ? KANON_ISARETCISI_KOMUTU : undefined;
       this.oge.show();

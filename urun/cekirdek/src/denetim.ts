@@ -69,6 +69,25 @@ export interface DenetimSecenek {
    * Tür dökümündeki sayılar iki kipte de AYNIDIR — değişen yalnız sunumdur.
    */
   tamListe?: boolean;
+  /**
+   * KIRIK DOSYAYI ATLAMA KİPİ (MGZ-A12 · HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR):
+   * true verilirse söz dizimi hatasıyla ayrıştırılamayan bir dosya turu
+   * durdurmaz; dosya evrenden düşer, tur öteki dosyalarla tamamlanır ve kırık
+   * dosyalar sonucun `kirikDosyalar` alanına adıyla yazılır. Bayraksız çağrı
+   * ilk hatada durmaya devam eder (komut satırı sözleşmesi · çıkış 2). Kip
+   * canlı editör yüzeyi içindir: kırık dosyanın kendi tanısını tek dosya yolu
+   * zaten basar, oysa erken çıkış öteki dosyaların çapraz tanılarını da
+   * götürüyor ve boş panel temiz ağaç sanılıyordu (ölçüm 2026-10-10: 91 → 42).
+   */
+  kirikDosyayiAtla?: boolean;
+}
+
+/** Atlama kipinde evrenden düşürülen kırık dosya: etiketi, konumu ve söz dizimi iletisi. */
+export interface KirikDosya {
+  etiket: string;
+  satir: number;
+  sutun: number;
+  mesaj: string;
 }
 
 /**
@@ -97,6 +116,13 @@ export interface DenetimSonucu {
    *  MGZ-A03: hata `söz-dizim` kimlikli tanısını da taşır; kabuk kimliği ve
    *  konumu bu tanıdan basar, böylece komut satırı Sorunlar paneliyle aynı kaydı anlatır. */
   sozdizimHata?: { etiket: string; satir: number; sutun: number; mesaj: string; tani: Tani };
+  /**
+   * MGZ-A12: `kirikDosyayiAtla` kipinde evrenden düşürülen kırık dosyalar.
+   * Liste doluysa tur bu dosyalar OLMADAN koşmuştur: onların ilan ettiği kod ve
+   * kenarlar indekste yoktur ve kendi çapraz tanıları üretilmemiştir. Yüzey bu
+   * alanı okuyup eksikliği söyler; bayraksız çağrıda alan hiç doğmaz.
+   */
+  kirikDosyalar?: KirikDosya[];
   /** Tam koşum tamamlandı mı (erken çıkışlarda false — özet bölgesi kurulmaz). */
   tamKosum: boolean;
   anaEtiket?: string;
@@ -216,7 +242,14 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // ⚡ PRF-MK-A03: aynı anlık görüntü yükleyiciye verilir, disk bir kez taranır;
   // ham metinler yükleyicinin zaten okuduğu kaynaklardır ve bir daha okunmaz.
   const { programlar: evren, muaflar, hatalar, hamlar } = programlariYukle(dizin, anaYolu ? anaAdi : undefined, diskEvren);
-  if (hatalar.length) {
+  // MGZ-A12: atlama kipinde kırık dosyalar turu durdurmaz; yükleyici onları
+  // `programlar` ve `hamlar` haritalarına zaten almamıştır (muaf dosyayla aynı
+  // yol), dolayısıyla aşağıdaki hiçbir üretici onlara uğramaz. Liste sonuca
+  // yazılır ki yüzey eksikliği söyleyebilsin; sağlam ağaçta alan doğmaz.
+  const kirikDosyalar: KirikDosya[] | undefined = secenek.kirikDosyayiAtla && hatalar.length
+    ? hatalar.map((h) => ({ etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj }))
+    : undefined;
+  if (hatalar.length && !kirikDosyalar) {
     // İlk muaf-olmayan sözdizim hatası kapıyı kapatır (davranış korundu — çıkış 2).
     const h = hatalar[0];
     const s = bos(2);
@@ -231,6 +264,7 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     const s = bos(2);
     s.muaflar = muaflar;
     s.anaEtiket = anaEtiket;
+    if (kirikDosyalar) s.kirikDosyalar = kirikDosyalar;   // MGZ-A12: giriş dosyası kırıksa tur koşamaz, fakat sebep adıyla söylenir
     s.akis.push({ dosya: anaEtiket, tanilar: koklendir("denetimKos", [
       eskiTani("kural-ihlali", "hata", { dosya: anaEtiket, kusur: "giriş-ayrıştırılamıyor" }, { satir: 0, sutun: 0 }),
     ]) });
@@ -901,11 +935,15 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     }
   }
 
+  // Tam yeşil invaryantı: atlanan zorunlu kapı varken sonuç yeşil DÖNEMEZ —
+  // eksik denetim, temizlik kanıtı değildir.
+  const cikis = toplamHata + toplamUyari === 0 && atlananKapilar.length === 0
+    ? 0 : (toplamHata > 0 || atlananKapilar.length > 0 ? 4 : 0);
   return {
-    // Tam yeşil invaryantı: atlanan zorunlu kapı varken sonuç yeşil DÖNEMEZ —
-    // eksik denetim, temizlik kanıtı değildir.
-    cikis: toplamHata + toplamUyari === 0 && atlananKapilar.length === 0
-      ? 0 : (toplamHata > 0 || atlananKapilar.length > 0 ? 4 : 0),
+    // MGZ-A12: kırık dosya dışarıda bırakılarak koşan tur da yeşil dönemez;
+    // erken çıkışın söz dizimi kodu (2) korunur, daha ağır bir hüküm varsa o kalır.
+    cikis: kirikDosyalar && cikis === 0 ? 2 : cikis,
+    ...(kirikDosyalar ? { kirikDosyalar } : {}),
     akis, koken, tamKosum: true, anaEtiket, muaflar, toplamHata, toplamUyari, dosyaTanilari,
     projeGruplari: projeGruplariKur(akis, bulguGruplari, projeKarneListesi),
     adAlani: { ortakKod: dag.ortakKod, ayrisamayan: dag.ayrisamayan },

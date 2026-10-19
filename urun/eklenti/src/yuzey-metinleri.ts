@@ -966,6 +966,33 @@ export const TABAN_KANON_METINLERI = {
         "The error was also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for the same root, and once the error is fixed the next check run removes this indicator by itself.");
     return [baslik, ...(sonucuAtla ? [] : [sonuc]), cozum].join("\n");
   },
+  /**
+   * MGZ-A12: tam denetimi kırık dosyalar dışarıda bırakılarak EKSİK koşan
+   * köklerin ipucu. Sebep ne kanonsuzluk ne çöküştür; kökün kendi dosyası söz
+   * dizimi hatasıyla ayrıştırılamamış ve turdan düşürülmüştür. Sonuç cümlesi
+   * ötekilerden farklıdır: öteki dosyaların çapraz tanıları ÜRETİLMİŞTİR,
+   * eksik olan kırık dosyanın ilan ettiği kodlar ile kenarlardır; ona atıf
+   * veren satırlar bu yüzden kırık atıf görünebilir. Onarım dosyanın
+   * kendisidir ve Sorunlar panelindeki söz dizimi tanısı yerini gösterir.
+   */
+  eksikIpucu(eksik: readonly { readonly kok: string; readonly dosyalar: readonly string[] }[]): string {
+    const liste = eksik.map((e) => `${e.kok} (${e.dosyalar.join(", ")})`).join("; ");
+    const cogul = eksik.length > 1;
+    const baslik = cogul
+      ? yuzeyMetni(
+        `Şu köklerde tam proje denetimi eksik koştu, çünkü söz dizimi hatası taşıyan şu dosyalar ayrıştırılamadı ve tur dışında bırakıldı: ${liste}.`,
+        `The full project check ran incompletely for these roots because the following files could not be parsed due to a syntax error and were left out of the run: ${liste}.`)
+      : yuzeyMetni(
+        `Şu kökte tam proje denetimi eksik koştu, çünkü söz dizimi hatası taşıyan şu dosya ayrıştırılamadı ve tur dışında bırakıldı: ${liste}.`,
+        `The full project check ran incompletely for this root because the following file could not be parsed due to a syntax error and was left out of the run: ${liste}.`);
+    const sonuc = yuzeyMetni(
+      "Öteki dosyaların kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları üretildi; kırık dosyanın ilan ettiği kodlar ve kenarlar ise bu turda yoktur, dolayısıyla ona atıf veren satırlar kırık atıf görünebilir ve panel o dosya için eksik konuşur.",
+      "Broken reference, disk reconciliation and dependency graph diagnostics were produced for the other files; the codes and edges declared by the broken file are missing from this run, so lines that refer to it may show as broken references and the panel speaks incompletely about that file.");
+    const cozum = yuzeyMetni(
+      "Kırık dosyanın söz dizimi tanısı Sorunlar panelinde yerini gösterir; dosya onarıldığında bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+      "The syntax diagnostic of the broken file in the Problems panel points to the spot; once the file is repaired the next check run removes this indicator by itself.");
+    return [baslik, sonuc, cozum].join("\n");
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1634,6 +1661,10 @@ export const IZ_METINLERI = {
   denetimCoktu: (hata: string): string => yuzeyMetni(`⛔ denetim turu çöktü: ${hata}`, `⛔ validation run failed: ${hata}`),
   // MGZ-A04: turun kendisi değil, tek bir kökün tam denetimi çöktüğünde kanala düşen satır.
   kokDenetimiCoktu: (kok: string, hata: string): string => yuzeyMetni(`tam denetim şu kökte çöktü: ${kok} (${hata})`, `full check failed for this root: ${kok} (${hata})`),
+  // MGZ-A12: bir kökün tam denetimi kırık dosya dışarıda bırakılarak eksik koştuğunda kanala düşen satır.
+  kokDenetimiEksik: (kok: string, dosyalar: readonly string[]): string => yuzeyMetni(
+    `tam denetim şu kökte kırık dosya dışarıda bırakılarak eksik koştu: ${kok} (${dosyalar.join(", ")})`,
+    `full check ran incompletely for this root, leaving out a broken file: ${kok} (${dosyalar.join(", ")})`),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
   performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string }): string => yuzeyMetni(
     `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,

@@ -250,3 +250,92 @@ test("MGZ-A03: ayrıştırılamayan dosya denetimi eskisi gibi durdurur ve hatas
     assert.equal(t.dilMetinleri?.en?.mesaj, beklenen.ingilizceMesaj, "İngilizce yüz ayrıştırıcının cümlesi değil");
   } finally { rmSync(kok, { recursive: true, force: true }); }
 });
+
+// ── MGZ-A12 · KIRIK DOSYA TURU DURDURMAZ (HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR) ──
+//   Ölçülen kusur (2026-10-10, bağımsız inceleme): tek bir kırık .sar dosyası
+//   `denetimKos`u ilk söz dizimi hatasında erken çıkışa götürüyor ve akış boş
+//   dönüyordu; eklenti bu boşluğu temiz ağaç gibi okuyor, çapraz tanılar
+//   kayboluyor ve hiçbir işaret yanmıyordu. Komut satırı davranışı KORUNUR
+//   (bayraksız çağrı yine çıkış 2 ile durur); yalnız bayrakla çağıran yüzey,
+//   kırık dosyayı evrenden düşürüp öteki dosyaların tanılarını alır ve kırık
+//   dosyayı `kirikDosyalar` alanından okur.
+
+/** Dosya başına panel ya da komut satırı ayrımı yapmadan (dosya, kod) çiftlerinin kümesi. */
+const bulguKumesi = (akis: Array<{ dosya: string; tanilar: Array<{ kod: string }> }>, haric?: string): string[] =>
+  akis.filter((r) => r.dosya !== haric).flatMap((r) => r.tanilar.map((t) => `${r.dosya} · ${t.kod}`)).sort();
+
+function kirikFiksturu(kok: string): void {
+  writeFileSync(join(kok, "t_anadizin.sar"),
+    'Proje( kod: PRJ-KRK, ad: "krk", ne: "kırık dosya fikstürü", rejim: esnek ) {\n  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı" ) {\n    Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )\n  }\n}\n');
+  mkdirSync(join(kok, "is", "plan"), { recursive: true });
+  writeFileSync(join(kok, "is", "plan", "is.sar"), `Faz( kod: FZ-K, ad: "Mevsim", ne: "dönem" ) {
+  Blok( kod: BLK-K, ad: "Gövde", ne: "iş" ) {
+    Katman( kod: KAT-K, ad: "Dal", ne: "teknoloji" ) {
+      Adım( kod: ADM-K1, durum: beklemede, ne: "bekleyen iş", bağımlı: [ ADM-YOK ] )
+    }
+  }
+}\n`);
+}
+
+test("MGZ-A12: kirikDosyayiAtla bayrağı söz dizimi hatasında turu durdurmaz — kırık dosya evrenden düşer, kirikDosyalar onu söyler, öteki dosyaların bulguları korunur", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    const saglam = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true });
+    assert.equal(saglam.tamKosum, true);
+    const saglamKume = bulguKumesi(saglam.akis);
+    assert.ok(saglamKume.some((s) => s.endsWith("kırık-referans")), "fikstür çapraz tanı üretmiyor — ölçüm anlamsız");
+    assert.equal(saglam.kirikDosyalar, undefined, "sağlam ağaçta kırık dosya listesi doğmamalı");
+
+    writeFileSync(join(kok, "is", "plan", "kirik.sar"), 'Faz( kod: FZ-KIRIK, ad: "yarım kalan ilan"\n');
+
+    // ① Komut satırı sözleşmesi korunur: bayraksız çağrı ilk hatada durur.
+    const eski = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true });
+    assert.equal(eski.tamKosum, false, "bayraksız çağrı erken çıkışını korumalı — komut satırı davranışı değişmez");
+    assert.equal(eski.cikis, 2);
+    assert.equal(eski.sozdizimHata?.etiket, "is/plan/kirik.sar");
+    assert.deepEqual(eski.akis, [], "erken çıkış akış taşımaz — kusurun ölçüldüğü hâl budur");
+
+    // ② Bayrakla çağrı: kırık dosya düşer, tur tamamlanır ve öteki dosyaların bulguları birebir aynıdır.
+    const atla = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(atla.tamKosum, true, "kırık dosya atlanınca tur tamamlanmalı");
+    assert.equal(atla.sozdizimHata, undefined, "erken çıkış alanı atlama kipinde dolmaz — kırık dosya kendi alanında yaşar");
+    assert.equal(atla.kirikDosyalar?.length, 1, "kırık dosya listede yok — eksiklik sessiz kalır");
+    assert.equal(atla.kirikDosyalar?.[0]?.etiket, "is/plan/kirik.sar");
+    assert.ok((atla.kirikDosyalar?.[0]?.satir ?? 0) > 0, "kırık dosyanın satırı taşınmalı");
+    assert.ok((atla.kirikDosyalar?.[0]?.mesaj ?? "").length > 0, "kırık dosyanın iletisi taşınmalı");
+    assert.deepEqual(bulguKumesi(atla.akis, "is/plan/kirik.sar"), saglamKume,
+      "kırık dosya atlandığında öteki dosyaların bulguları sağlam ağaçtakiyle aynı olmalı");
+    assert.notEqual(atla.cikis, 0, "eksik koşan tur yeşil çıkış veremez — eksik denetim temizlik kanıtı değildir");
+
+    // ③ Dosya onarılınca liste kalkar ve bulgular öncekine döner.
+    writeFileSync(join(kok, "is", "plan", "kirik.sar"), "// onarıldı\n");
+    const onarildi = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(onarildi.kirikDosyalar, undefined, "onarılan dosya listede kaldı");
+    assert.deepEqual(bulguKumesi(onarildi.akis, "is/plan/kirik.sar"), saglamKume);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+test("MGZ-A12: giriş dosyasının kendisi kırıksa atlama kipi de tam koşamaz, fakat kırık dosyayı yine adıyla söyler", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    writeFileSync(join(kok, "t_anadizin.sar"), 'Proje( kod: PRJ-KRK, ad: "krk"\n');
+    const s = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(s.tamKosum, false, "giriş dosyası olmadan tur tamamlanamaz");
+    assert.equal(s.kirikDosyalar?.[0]?.etiket, "t_anadizin.sar", "kırık giriş dosyası listede adıyla yok");
+    assert.ok(s.akis.some((r) => r.tanilar.some((t) => t.mesaj.includes("giriş") || t.kod === "kural-ihlali")),
+      "giriş dosyasının ayrıştırılamadığı tanıyla söylenmeli");
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+test("MGZ-A12: bilerek-hatalı (muaf) dosya atlama kipinde kırık dosya sayılmaz", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    writeFileSync(join(kok, "is", "plan", "ders.sar"), '// sarmal: bilerek-hatalı — ders malzemesi\nFaz( kod: FZ-DERS, ad: "yarım"\n');
+    const s = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(s.tamKosum, true);
+    assert.equal(s.kirikDosyalar, undefined, "muaf dosya kırık dosya listesine girdi — ders malzemesi işaret yakar");
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
