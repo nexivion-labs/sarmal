@@ -272,7 +272,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     const sonuc = await Promise.race([
       vscode.commands.executeCommand<{ tur: string } | undefined>(
         "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01",
-        "şerhle onaylandı", "📝", true, "panel içi gerekçe denemesi"),
+        "şerhle onaylandı", true, "panel içi gerekçe denemesi"),
       new Promise((r) => setTimeout(() => r("ZAMAN_AŞIMI"), 12_000)),
     ]);
     assert.notStrictEqual(sonuc, "ZAMAN_AŞIMI",
@@ -319,7 +319,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     ];
     for (const [damga, notIster, not] of denemeler) {
       const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-        "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", damga, "🧪", notIster, not);
+        "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", damga, notIster, not);
       assert.strictEqual(sonuc, undefined,
         `"${damga}" (${JSON.stringify(not)}) yazım hattına geçti; karar yazılmamalıydı`);
       const diskte = fs.readFileSync(uri.fsPath, "utf8");
@@ -334,13 +334,46 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     fs.unlinkSync(uri.fsPath);
   });
 
+  // ═════════════════════════════════════════════════════════════════════════
+  // 🧱 KOMUT SINIRI — MGZ-A01 ölçümü
+  //
+  //   Bu süitin dört nöbeti komutu, açık depo doğmadan önce sökülmüş bir simge
+  //   argümanıyla, yani yedi argümanla çağırıyordu. Kayma bir argümanı öne
+  //   itiyor, gerekçe yerine boole geliyor ve ölçü `trim is not a function` ile
+  //   patlıyordu. Gerçek çağrı yolu (panel → `kararIste`) dizgi geçirdiği için
+  //   kullanıcı etkilenmiyordu; fakat panelden gelmeyen her çağıran aynı kaymada
+  //   yakalanmamış bir hata alıyordu. Komut artık geçersiz türü reddeder ve
+  //   diske dokunmaz; bu nöbet eski imzanın ta kendisiyle bunu canlı ölçer.
+  // ═════════════════════════════════════════════════════════════════════════
+  it("KOMUT SINIRI: geçersiz türde argüman çökertmez ve diske DOKUNMAZ", async () => {
+    await yuz();
+    const uri = geciciSar("_gecici-sinir.sar", KAPILI_KAYNAK);
+    await new Promise((r) => setTimeout(r, 800));
+
+    const denemeler: readonly unknown[][] = [
+      ["şerhle onaylandı", "📝", true, "eski imzayla yazılmış çağrı"],
+      ["reddedildi", true, 42],
+      ["onaylandı", false, { metin: "nesne" }],
+    ];
+    for (const kalan of denemeler) {
+      const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
+        "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", ...kalan);
+      assert.strictEqual(sonuc, undefined,
+        `${JSON.stringify(kalan)} yazım hattına geçti; geçersiz argüman reddedilmeliydi`);
+      assert.strictEqual(fs.readFileSync(uri.fsPath, "utf8"), KAPILI_KAYNAK,
+        `${JSON.stringify(kalan)} dosyayı değiştirdi; hiçbir kayıt yazılmamalıydı`);
+    }
+
+    fs.unlinkSync(uri.fsPath);
+  });
+
   it("GEÇERLİ GEREKÇE HÂLÂ YAZAR: reddetme kararı diske iner ve kanıtlanır", async () => {
     await yuz();
     const uri = geciciSar("_gecici-ret.sar", KAPILI_KAYNAK);
     await new Promise((r) => setTimeout(r, 800));
 
     const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "reddedildi", "⛔", true,
+      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "reddedildi", true,
       "  bu tasarım kabul edilmedi  ");
     assert.strictEqual(sonuc?.tur, "başarı", `ret kararı kanıtlanamadı: ${JSON.stringify(sonuc)}`);
     const diskte = fs.readFileSync(uri.fsPath, "utf8");
@@ -404,7 +437,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     await tdoc.save();
 
     const sonuc = await vscode.commands.executeCommand<{ tur: string } | undefined>(
-      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "onaylandı", "✅", false, "");
+      "sarmal.onayKararVer", uri.fsPath, 3, "GECICI-A01", "onaylandı", false, "");
     assert.strictEqual(sonuc?.tur, "başarı", `karar kanıtlanamadı: ${JSON.stringify(sonuc)}`);
     assert.ok(/onay:\s*"onaylandı/.test(fs.readFileSync(uri.fsPath, "utf8")),
       "karar diske inmedi; ölçüm yanlış yeri gösteriyor");
@@ -440,7 +473,10 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     const bizimki = (merceklar ?? []).filter((l) => l.command?.command === "sarmal.onayKarar");
     assert.ok(bizimki.length > 0, "kapının üstünde Sarmal kod merceği yok");
     // Mercek başlığı artık karar VAAT ETMEZ; paneli açacağını dürüstçe söyler.
-    assert.ok(/Onaylar panelinde aç/.test(bizimki[0]!.command!.title),
+    // Başlık etkin dilde gelir (`sarmal.dil` · VS Code görüntü dili); sınama
+    // kabuğu İngilizce açıldığı için iki dilin karşılığı da kabul edilir
+    // (MGZ-A01 ölçümü). Sınanan söz aynıdır: mercek paneli açar.
+    assert.ok(/Onaylar panelinde aç|open in Approvals/.test(bizimki[0]!.command!.title),
       `mercek hâlâ olmayan bir karar penceresi vaat ediyor: ${bizimki[0]!.command!.title}`);
 
     await vscode.commands.executeCommand("sarmal.onayKarar", bizimki[0]!.command!.arguments![0]);

@@ -6263,7 +6263,7 @@ sessizce körleşmez.
       AltKatman( kod: MGZ-EKLENTI-K1, departman: sınama, ad: "Mağaza Kapısı",
         ne: "entegrasyon süiti, kısıtlı mod, tanı yüzeyi ve paket nöbetleri" ) {
 
-        Adım( kod: MGZ-A01, ad: "Entegrasyon Süitinin On Altı Düşüşü", durum: geliştirmede, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
+        Adım( kod: MGZ-A01, ad: "Entegrasyon Süitinin On Altı Düşüşü", durum: tamamlandı, öncelik: p1, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
           referans: [ HTR-EKLENTI-ENTEGRASYON-ON-ALTI-DUSUS ],
           ne: "🧪 Gerçek VS Code içinde koşan entegrasyon süitindeki on altı düşüş sınıflarına göre kapansın" ) {
           görev: "Düşüşler dört sınıftadır: dil ya da yerel ayar, fikstür ya da kanon kayması, olası gerçek ürün kusuru ve ölçüm ayrışması. Önce bugünkü düşüş listesi yeniden ölçülür. Gerçek ürün kusuru olan Onaylar karar komutunun dizgi olmayan argümanla çökmesi önceliklidir ve gerçek bir çağrı yolunun bu argümanı geçirip geçirmediği ölçülür. Öteki sınıflar ya onarılır ya da gerekçesiyle güncellenir."
@@ -6273,6 +6273,9 @@ sessizce körleşmez.
             "denetim 0 hata, birim süitleri yeşil"
           ]
           sınır: "Sınamalar yalnız yeşile dönsün diye zayıflatılmaz"
+          koşu:  Koşum( kod: KSM-MGZ-A01, tarih: 2026-10-16, mühür: COMPLETED,
+            kanıt: "işlemeler 5bd4de8, f0fad98, 6e4ba3e ve a95552f · entegrasyon süiti tabanda (19eee43) 40 geçen ve 15 düşen, uçta 56/56 ve çıkış 0 · çekirdek 1781/1781, eklenti 955/955, tip denetimi temiz, depo denetimi 0 hata · bağımsız inceleme: gerekçe ölçümündeki tür sınaması sökülünce birim süitinde bir, entegrasyonda bir nöbet kırmızıya döndü; odak aboneliği koşulsuz yapılınca entegrasyonda iki davranış nöbeti kırmızıya döndü; geri konunca hepsi yeşil · değiştirilen her sınamanın gerekçesi ürünün belgelenmiş bir kararına dayanıyor (KPS-CEL-A01, VIT-GRAF-A13, VIT-KIMLIK-A05) · açık kalan iki küçük borç: kod merceği nöbeti iki dilin başlığını da kabul ettiği için yanlış dilin seçilmesini yakalamıyor ve beklenen metni etkin dilden seçmesi daha sıkı olur; onay-kuyrugu.ts içindeki yeni ret sabiti karar komutunun belge yorumu ile işlevin arasına girmiştir",
+            ne:    "Gerçek VS Code içinde koşan entegrasyon süiti on beş düşüşten sıfıra indi. Düşüşlerden ikisi gerçek ürün kusuruydu ve onarıldı: Onaylar karar komutu dizgi olmayan bir argümanla çökmek yerine anlaşılır bir ret veriyor ve odak değişimi ana görüntü gelmeden tam tarama başlatmıyor. Kullanıcının gerçek yolu komuta daima dizgi geçirdiği için onay verme bugüne kadar da çalışıyordu; kalan on üç düşüş ürünün sonraki kararlarına göre gerekçesiyle güncellenen bayat sınamalardı." )
         }
 
         Adım( kod: MGZ-A02, ad: "Kısıtlı Modda Eklentinin Sesi", durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, kısıtlı modda Sarmal simgesinin sol şeritte kalmasına ve açılan tek bir karşılama görünümünün neyin kapalı olduğunu söyleyip Klasöre Güven bağlantısı vermesine hükmetmiştir; gerekçe, simgenin kullanıcının Sarmal'ı aradığı yer olması ve kaybolan simgenin açıklayan bir ekrandan daha çok şaşırtmasıdır. Uygulama MGZ-A08'dedir.", öncelik: p1, üretir: [ KOD-EKL-EKLENTI, KOD-EKL-MANIFEST, KOD-YUZEY-METINLERI, KOD-SNM-KISITLI-MOD ], bağımlı: [],

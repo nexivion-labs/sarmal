@@ -1589,6 +1589,18 @@ export function gerekceArtik(): string {
 }
 
 /**
+ * Karar komutu panelden gelmeyen bir çağrıyla geçersiz türde argüman aldı
+ * (gerekçe dizgi değil ya da gerekçe bayrağı boole değil). Hiçbir kayıt
+ * yazılmaz; çağıran yakalanmamış bir hata yerine bu cümleyi görür (MGZ-A01).
+ */
+export function kararArgumaniGecersiz(kod: string): string {
+  return yuzeyMetni(
+    `${kod} için karar yazılmadı: komut geçersiz türde bir argüman aldı. Kararı Onaylar panelinden ver.`,
+    `No decision was written for ${kod}: the command received an argument of an invalid type. Make the decision in the Approvals panel.`,
+  );
+}
+
+/**
  * Emekli Comments karar komutları çağrılırsa basılan uyumluluk cümlesi. Komut
  * kimlikleri korunur (kullanıcının menü koşulları onlara bağlıdır) fakat karar
  * artık panelde verilir.

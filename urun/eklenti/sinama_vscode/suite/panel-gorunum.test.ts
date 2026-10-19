@@ -13,46 +13,102 @@
 //   Nöbet sağlayıcıları GERÇEK yollarından koşturur: kayıtlar `yerlestir` ile
 //   yerleşir, ağaç `getChildren` ile gezilir, satır `getTreeItem` ile üretilir.
 //   Hiçbir satır elle kurulmaz.
+//
+//   AĞAÇ ÜÇ KADEMEDİR: Proje → Dosya → kayıt (VIT-GRAF-A13). Bu dosyanın üç
+//   nöbeti, ara kademenin aynı-kök özeti olduğu eski düzene göre yazılmıştı ve
+//   ara kademe dosya satırına döndüğünde güncellenmemişti; MGZ-A01 onları
+//   bugünkü düzene, nöbetlerin korudukları sözleşme değişmeden çevirdi.
+//
+//   DİL BAĞI: bu paket üretim modüllerini kendi kopyası olarak içerir ve
+//   eklentinin etkinleşmede kurduğu dil bağı bu kopyaya ulaşmaz. Bağ, üretimin
+//   kullandığı aynı etkin dil kapısından (`dil.ts · etkinDil`) burada kurulur.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as assert from "node:assert";
+import * as fs from "node:fs";
 import * as vscode from "vscode";
 import { Hatirlaticilar } from "../../src/hatirlaticilar.ts";
 import { Bildirimler } from "../../src/bildirimler.ts";
+import { yuzeyDiliniAyarla } from "../../src/yuzey-metinleri.ts";
+import { etkinDil } from "../../src/dil.ts";
+import { eklentiCizelgesi } from "../../src/teknoloji-simgesi.ts";
+import { varlikSimgesi } from "../../src/yolharitasi-cekirdek.ts";
 import type { YuzeyKaydi } from "../../src/yuzey-cekirdek.ts";
 
 const PROJE = { kod: "SRM", ad: "Sarmal" };
 const TAM_YOL = "/Users/biri/Belgeler/proje/_Sarmal/yasa/kararlar/dil_format.sar";
 
-function kayit(kod: string, mesaj: string, dosya = "/p/plan/omurga.sar"): YuzeyKaydi {
+function kayit(
+  kod: string, mesaj: string, dosya = "/p/plan/omurga.sar",
+  duzey: YuzeyKaydi["tani"]["duzey"] = "bilgi",
+): YuzeyKaydi {
   return {
     proje: PROJE,
     dosya,
     tani: {
-      duzey: "bilgi", kod, mesaj, satir: 12, sutun: 3,
+      duzey, kod, mesaj, satir: 12, sutun: 3,
       oneri: `Yapıştır-düzelt: ${kod} için kanonik yazımı kullan.`,
     },
   };
 }
 
-/** ThemeIcon kimliğini okur (satır simgesi gerçekten kurulmuş mu). */
-function simgeKimligi(item: vscode.TreeItem): string {
-  const ikon = item.iconPath;
-  assert.ok(ikon instanceof vscode.ThemeIcon, "satır ThemeIcon taşımıyor");
-  return (ikon as vscode.ThemeIcon).id;
+// ── 🎨 SATIR SİMGESİ OKUMASI (VIT-KIMLIK-A05) ───────────────────────────────
+//   Satırlar artık codicon (`ThemeIcon`) taşımaz: geometrik ailenin üretilmiş
+//   anlam×tema varyantı iki-tema Uri çifti olarak kurulur ve codicon kimliğine
+//   geri düşüş yoktur. Bu dosyanın iki nöbeti ThemeIcon kimliği ile ThemeColor
+//   rolünü okuyordu ve o geçişte güncellenmemişti (MGZ-A01 ölçümü). Okuma artık
+//   varyant dosya adından yapılır: `satir-<simge>-<anlam>-<tema>.svg`. Simge
+//   kimliği şekli, anlam rengi söyler; ham renk değeri adreste yaşayamaz.
+
+const VARYANT = /\/satir-([a-z0-9]+(?:-[a-z0-9]+)*?)-([a-z]+)-(acik|koyu)\.svg$/;
+
+/** Eklenti kökü — sağlayıcılar simgelerini üretimdeki gibi buradan çözer. */
+function eklentiKoku(): vscode.Uri {
+  const eklenti = vscode.extensions.getExtension("nexivion-labs.sarmal");
+  assert.ok(eklenti, "eklenti yüklenmemiş");
+  return eklenti!.extensionUri;
 }
 
-/** ThemeIcon'un tema rolünü okur (renk ham değer değil, rol adı olmalı). */
+function varyant(item: vscode.TreeItem): { simge: string; anlam: string } {
+  const ikon = item.iconPath as { light?: vscode.Uri; dark?: vscode.Uri } | undefined;
+  assert.ok(ikon && ikon.light instanceof vscode.Uri && ikon.dark instanceof vscode.Uri,
+    "satır iki-tema simge çifti taşımıyor");
+  const acik = VARYANT.exec(ikon!.light!.path);
+  const koyu = VARYANT.exec(ikon!.dark!.path);
+  assert.ok(acik && koyu, `simge üretilmiş varyant değil: ${ikon!.light!.path}`);
+  assert.strictEqual(acik![1], koyu![1], "iki tema farklı şekil taşıyor");
+  assert.strictEqual(acik![2], koyu![2], "iki tema farklı anlam taşıyor");
+  for (const u of [ikon!.light!, ikon!.dark!]) {
+    assert.ok(fs.existsSync(u.fsPath), `simge varyantı diskte yok: ${u.fsPath}`);
+  }
+  return { simge: acik![1]!, anlam: acik![2]! };
+}
+
+/** Satır simgesinin şekil kimliği (satır simgesi gerçekten kurulmuş mu). */
+function simgeKimligi(item: vscode.TreeItem): string {
+  return varyant(item).simge;
+}
+
+/** Satır simgesinin anlam rengi (renk ham değer değil, anlam adı olmalı). */
 function temaRolu(item: vscode.TreeItem): string | undefined {
-  const ikon = item.iconPath as vscode.ThemeIcon;
-  const renk = ikon.color as vscode.ThemeColor | undefined;
-  return renk ? (renk as unknown as { id: string }).id : undefined;
+  return varyant(item).anlam;
+}
+
+/** Sağlayıcıya üretimin bağladığı simge kaynağını bağlar (eklenti.ts kaydı ile aynı). */
+function kur<T extends { simgeKaynaginiBagla(kok: vscode.Uri, cizelge: ReturnType<typeof eklentiCizelgesi>): void }>(
+  saglayici: T,
+): T {
+  const eklenti = vscode.extensions.getExtension("nexivion-labs.sarmal")!;
+  saglayici.simgeKaynaginiBagla(eklentiKoku(), eklentiCizelgesi(eklenti));
+  return saglayici;
 }
 
 describe("Sarmal panel satırları — gerçek VS Code görünüşü", () => {
+  before(() => { yuzeyDiliniAyarla(etkinDil()); });
+
   it("üç panel bakışta ayrılır: proje satırı simgeleri birbirinden ve roketten farklıdır", () => {
-    const htr = new Hatirlaticilar();
-    const bld = new Bildirimler();
+    const htr = kur(new Hatirlaticilar());
+    const bld = kur(new Bildirimler());
     htr.yerlestir([kayit("açık-hatırlatıcı", "Bu iş bilerek sonraya bırakıldı.")]);
     bld.yerlestir([kayit("şema-dışı-alan", "Bir alan şemada ilan edilmemiş.")]);
 
@@ -63,30 +119,37 @@ describe("Sarmal panel satırları — gerçek VS Code görünüşü", () => {
 
     assert.notStrictEqual(a, b,
       `Hatırlatıcılar ile Bildirimler aynı proje satırı simgesini kullanıyor: ${a}`);
+    // Yol Haritasının proje satırı seferi (ya da çalışma alanında istasyonu) taşır.
     for (const s of [a, b]) {
-      assert.notStrictEqual(s, "rocket",
-        "panel Yol Haritasının roket simgesini kullanıyor; iki panel bakışta ayrılmaz");
+      for (const yh of [varlikSimgesi("Proje"), varlikSimgesi("ÇalışmaAlanı")]) {
+        assert.notStrictEqual(s, yh,
+          `panel Yol Haritasının ${yh} simgesini kullanıyor; iki panel bakışta ayrılmaz`);
+      }
     }
   });
 
   it("Bildirimler kayıtları türlerine göre ayrılır ve rengi TEMA ROLÜNDEN alır", () => {
-    const bld = new Bildirimler();
-    // İkisi de bilgi düzeyindedir; kanonun hedef düzeyleri farklıdır.
+    const bld = kur(new Bildirimler());
+    // Rozetin türü motorun taşıdığı GERÇEK düzeydir (yol-dekor.ts · BILDIRIM_ROZET):
+    // yüzey kanon hedefinden ikinci bir "aday" düzey çıkarmaz. Bu nöbet eskiden iki
+    // bilgi kaydının kanon hedefleri farklı diye ayrı rozet almasını bekliyordu; o
+    // kural sökülmüştür (MGZ-A01 ölçümü). Ayrı doğa artık ayrı düzeyle kurulur.
     bld.yerlestir([
       kayit("şema-dışı-alan", "Bir alan şemada ilan edilmemiş."),
-      kayit("kural-sözleşmesi-eksik", "Bir kural üçlüsünü tamamlamıyor."),
+      kayit("kural-sözleşmesi-eksik", "Bir kural üçlüsünü tamamlamıyor.",
+        "/p/plan/omurga.sar", "uyarı"),
     ]);
     const proje = bld.getChildren()[0];
-    const gruplar = bld.getChildren(proje);
-    assert.strictEqual(gruplar.length, 2, "iki ayrı kök iki grup satırı vermeliydi");
+    const dosyalar = bld.getChildren(proje);
+    assert.strictEqual(dosyalar.length, 1, "aynı dosyanın iki kaydı tek dosya satırı vermeliydi");
+    const kayitlar = bld.getChildren(dosyalar[0]);
+    assert.strictEqual(kayitlar.length, 2, "iki kayıt da dosya satırının altında yaşamalı");
 
     const rozetler = new Set<string>();
-    for (const grup of gruplar) {
-      const kayitlar = bld.getChildren(grup);
-      assert.strictEqual(kayitlar.length, 1, "her kayıt kendi grubunun altında yaşamalı");
-      const item = bld.getTreeItem(kayitlar[0]);
+    for (const k of kayitlar) {
+      const item = bld.getTreeItem(k);
       const rol = temaRolu(item);
-      assert.ok(rol, "kayıt satırı tema rolü taşımıyor; renk kanondan okunmuyor");
+      assert.ok(rol, "kayıt satırı anlam rengi taşımıyor; renk kanondan okunmuyor");
       assert.ok(!/^#|\brgb\(/.test(rol!), `renk ham değer olarak gömülmüş: ${rol}`);
       rozetler.add(`${simgeKimligi(item)}|${rol}`);
     }
@@ -95,7 +158,7 @@ describe("Sarmal panel satırları — gerçek VS Code görünüşü", () => {
   });
 
   it("hiçbir kayıt etiketi ham dosya yolu değildir; tam yol yalnız ipucunda kalır", () => {
-    const bld = new Bildirimler();
+    const bld = kur(new Bildirimler());
     bld.yerlestir([kayit("kanonik-kaynak-biçimi",
       `"${TAM_YOL}" dosyası kanonik hüküm metnini kaynak-gerçek gibi taşıyor.`, TAM_YOL)]);
     const proje = bld.getChildren()[0];
@@ -109,38 +172,42 @@ describe("Sarmal panel satırları — gerçek VS Code görünüşü", () => {
     assert.ok(ipucu.includes(TAM_YOL), "tam yol ipucunda kaybolmamalı");
   });
 
-  it("grup başlığı çıplak tanı kimliği değildir; kimlik açıklamada durur", () => {
-    const bld = new Bildirimler();
+  it("ara kademe başlığı çıplak tanı kimliği değildir; kimlik kaydın ipucunda durur", () => {
+    const bld = kur(new Bildirimler());
     bld.yerlestir([
       kayit("şema-dışı-alan", "Birinci bulgu."),
       kayit("şema-dışı-alan", "İkinci bulgu."),
     ]);
     const proje = bld.getChildren()[0];
-    const grup = bld.getTreeItem(bld.getChildren(proje)[0]);
-    const baslik = String(grup.label);
+    const dosyaOgesi = bld.getChildren(proje)[0];
+    const dosya = bld.getTreeItem(dosyaOgesi);
+    const baslik = String(dosya.label);
 
     assert.notStrictEqual(baslik, "şema-dışı-alan",
-      "grup başlığı hâlâ çıplak tanı kimliği");
-    assert.ok(baslik.split(" ").length > 2, `grup başlığı bir cümle değil: ${baslik}`);
-    assert.ok(String(grup.description).includes("şema-dışı-alan"),
-      "tanı kimliği açıklamadan da düşmüş; aranabilirlik kaybolur");
+      "ara kademe başlığı hâlâ çıplak tanı kimliği");
+    assert.strictEqual(baslik, "omurga.sar", `ara kademe başlığı dosya adı değil: ${baslik}`);
+    for (const k of bld.getChildren(dosyaOgesi)) {
+      const ipucu = (bld.getTreeItem(k).tooltip as vscode.MarkdownString).value;
+      assert.ok(ipucu.includes("şema-dışı-alan"),
+        "tanı kimliği kaydın ipucundan da düşmüş; aranabilirlik kaybolur");
+    }
   });
 
-  it("Bildirimler ağacının kademeleri tutarlı: TEK kayıtlık kök de grup satırı alır", () => {
-    const bld = new Bildirimler();
+  it("Bildirimler ağacının kademeleri tutarlı: TEK kayıtlık dosya da dosya satırı alır", () => {
+    const bld = kur(new Bildirimler());
     bld.yerlestir([
       kayit("şema-dışı-alan", "Birinci bulgu."),
       kayit("şema-dışı-alan", "İkinci bulgu."),
-      kayit("düzyazı-koşul", "Tek başına duran bulgu."),
+      kayit("düzyazı-koşul", "Tek başına duran bulgu.", "/p/plan/tek.sar"),
     ]);
     const proje = bld.getChildren()[0];
     const cocuklar = bld.getChildren(proje);
-    assert.strictEqual(cocuklar.length, 2, "iki kök iki satır vermeliydi");
+    assert.strictEqual(cocuklar.length, 2, "iki dosya iki satır vermeliydi");
     for (const c of cocuklar) {
       const item = bld.getTreeItem(c);
       assert.strictEqual(item.collapsibleState, vscode.TreeItemCollapsibleState.Collapsed,
         `bir kayıt grup açılmadan basılmış: ${String(item.label)}`);
-      assert.strictEqual(item.contextValue, "sarmalBildirimOzeti",
+      assert.strictEqual(item.contextValue, "sarmalBildirimDosyasi",
         "kademe tutarsız: bazı kayıtlar grubun içinde, bazıları yanında duruyor");
     }
   });

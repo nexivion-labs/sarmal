@@ -263,7 +263,17 @@ function referansAlan(d: Dugum, ad: string): Param | undefined {
   return d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
 }
 
-/** Bir programın plan kodları: kök `Blok`/`Faz` ve altındaki plan kademeleri. */
+/**
+ * Bir programın plan kodları: ilk karşılaşılan plan düğümü kök sayılır ve
+ * altındaki plan kademeleri toplanır.
+ *
+ * Kök kuralı KPS-CEL-A01 hükmünü (2026-09-19) taşır: bir Blokun ya da Fazın
+ * dışında doğmuş Katman, AltKatman ya da Adım da köktür, çünkü panel hiçbir
+ * plan düğümünü sessizce düşürmez. Kolun eski hâli kökü yalnız Blok ile Fazdan
+ * seçiyordu ve bu yüzden korpustaki üst düzey Adımları saymıyordu; ayrışma
+ * ürünün değil referans kolunun bayatlığıydı (MGZ-A01 ölçümü). Kol yine
+ * üretimin hiçbir yardımcısını kullanmaz; kural burada yeniden yazılmıştır.
+ */
 function referansKodlari(bildirimler: readonly Dugum[]): string[] {
   const kodlar: string[] = [];
   const yap = (d: Dugum): void => {
@@ -271,7 +281,7 @@ function referansKodlari(bildirimler: readonly Dugum[]): string[] {
     for (const c of d.cocuklar) if (REFERANS_PLAN_TIPLERI.has(c.ad)) yap(c);
   };
   const gez = (d: Dugum): void => {
-    if (d.ad === "Blok" || d.ad === "Faz") { yap(d); return; }
+    if (REFERANS_PLAN_TIPLERI.has(d.ad)) { yap(d); return; }
     for (const c of d.cocuklar) gez(c);
   };
   for (const b of bildirimler) gez(b);

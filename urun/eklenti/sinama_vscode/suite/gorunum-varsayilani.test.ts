@@ -150,15 +150,19 @@ describe("EKL-F6-A04 — biçim eklentiden gelir, renk dayatılmaz", () => {
   });
 
   it("kanon ilandan bulunur: ornek/ korpusundaki bir .sar taban kanona düşmez", async () => {
-    // ornek/ klasörünün üstünde _Sarmal/oz/siniflama/kayit.json yaşar ve o varlık
-    // `sarmal_anadizin.sar` ile ilan edilmiştir; keşif kaydı oradan okumalıdır.
+    // Açık depoda korpus `ogreti/ornek/` altındadır; depo kökünde oz/siniflama/
+    // kayit.json yaşar ve o varlık `sarmal_anadizin.sar` ile ilan edilmiştir;
+    // keşif kaydı oradan okumalıdır. Fikstür eskiden laboratuvar düzenini
+    // (korpusun hemen üstünde kanon) ve depoda hiç bulunmayan `durum_kaydi.sar`
+    // dosyasını varsayıyordu (MGZ-A01 ölçümü); korpusun izli bir dosyası açılır.
     const kok = vscode.workspace.workspaceFolders![0].uri.fsPath;
-    assert.ok(fs.existsSync(path.join(kok, "..", "oz", "siniflama", "kayit.json")),
-      "fikstür beklentisi bozulmuş: ornek/ kardeşinde kanon kaydı yok");
-    assert.ok(fs.existsSync(path.join(kok, "..", "sarmal_anadizin.sar")),
+    const depoKoku = path.join(kok, "..", "..");
+    assert.ok(fs.existsSync(path.join(depoKoku, "oz", "siniflama", "kayit.json")),
+      "fikstür beklentisi bozulmuş: depo kökünde kanon kaydı yok");
+    assert.ok(fs.existsSync(path.join(depoKoku, "sarmal_anadizin.sar")),
       "fikstür beklentisi bozulmuş: varlık ilanı yok");
     const doc = await vscode.workspace.openTextDocument(
-      vscode.Uri.file(path.join(kok, "durum_kaydi.sar")));
+      vscode.Uri.file(path.join(kok, "tema_ornek.sar")));
     await vscode.window.showTextDocument(doc);
     const simgeler = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
       "vscode.executeDocumentSymbolProvider", doc.uri);

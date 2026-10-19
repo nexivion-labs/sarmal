@@ -399,7 +399,7 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
     if (!secenek) return;                       // tanınmayan rol: hiçbir şey yazılmaz
     const notId = notKimligi(m.dosya, m.kod);
     const olcu = gerekceyiOlc(secenek.notIster, m.not);
-    if (olcu.tur === "gerekçeBoş" || olcu.tur === "iptal") {
+    if (olcu.tur === "gerekçeBoş" || olcu.tur === "iptal" || olcu.tur === "geçersiz") {
       this.durum.hataYaz(notId, gerekceZorunlu());
       this.govdeyiTazele();
       return;
