@@ -46,7 +46,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dilBaglami } from "./dil-baglami.ts";   // DPK-A03: ajan dil bağlamı — kanondan üretilir
-import { yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri } from "./yonerge-ikizi.ts";   // BKM-DNT-A15: küresel yok sayma tuzağının desen listesi TEK kaynaktadır
+import { yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri, izKlasoruSatiriEksigi } from "./yonerge-ikizi.ts";   // BKM-DNT-A15: küresel yok sayma tuzağının desen listesi TEK kaynaktadır
 
 const DOGUS_SABLON_KOK = fileURLToPath(new URL("../../../ogreti/sablon/dogus/", import.meta.url));
 
@@ -242,52 +242,12 @@ const YOKSAYMA_ISTISNA_BASLIGI =
   "# ── Sarmal doğuş paketi: küresel yok sayma kuralının istisnası (silme) ──";
 
 /**
- * MOTORUN İZ KLASÖRÜ (HST-MTR-A14). Motor koşu artıklarını kökün `.sarmal/`
- * klasörüne yazar: döngünün kendi izi ham istemi ve ham yanıtı kısaltmadan
- * taşır, yürütücü izi dış bir yürütücünün temaslarını, kontrol noktası ise
- * koşunun ara hâlini. Hiçbiri kaynak değildir ve ilki gizli olabilecek bir metin
- * taşıdığı için depoya girmemelidir. Satırın başında eğik çizgi yoktur, çünkü
- * motor izi kendisine verilen dizine yazar ve çalışma alanında bu dizin çatı da
- * olabilir ilk proje de; satır klasörü her derinlikte kapsar. Klasörün adı beş
- * yazıcıda ayrı ayrı yazılıdır ve `dogus.test.ts` nöbetleri bunlardan yalnız
- * ikisini gerçek yollarından koşturup doğan kökün git durumunda ölçer: yürütücü
- * izini yazan `kopru/iz.ts` ile döngü izinin yolunu `--iz` bayrağında kuran
- * `sarmal.ts`. Makro döngünün izi (`makro-dongu.ts`), kontrol noktası
- * (`dongu.ts`) ve lig kaydı (`kopru/lig.ts`) nöbetin dışındadır; bu üçünden
- * birinin klasörü değişirse bu satır onu sessizce kapsamaz olur.
- */
-const IZ_KLASORU_SATIRI = ".sarmal/";
-
-/**
  * Var olan bir yok sayma dosyasına eklenen iz klasörü satırının başlığı. Satır
  * kullanıcının dosyasına sonradan girdiği için gerekçesini yanında taşır;
  * gerekçesiz bir satır ilk temizlikte silinir ve ham istem yeniden açığa çıkar.
  */
 const IZ_KLASORU_BASLIGI =
   "# ── Sarmal doğuş paketi: motorun koşu izleri (ham istem taşır, depoya girmez) ──";
-
-/**
- * Var olan bir yok sayma dosyasında iz klasörü satırı EKSİK mi (SAF)? Dosya
- * klasör hakkında bir karar zaten taşıyorsa satır eksik sayılmaz. `.sarmal`,
- * `/.sarmal/` ya da `.sarmal/**` gibi eşdeğer bir yazım klasörü zaten yok sayar
- * ve ikinci bir satır gereksizdir. Klasörü ya da içinden bir yolu geri alan bir
- * olumsuzlama (`!.sarmal/`) ise kullanıcının izleme kararıdır; git'te son
- * eşleşen desen kazandığı için sona eklenecek bir satır o kararı sessizce geri
- * çevirirdi. Yorum satırı karar kurmaz, çünkü `#` ile başlayan bir satır bu
- * biçimlerin hiçbirine uymaz; yalnız bir alt klasörü yok saymak da
- * (`.sarmal/trace/`) klasörün tamamını kapsamaz.
- */
-function izKlasoruSatiriEksigi(icerik: string): string[] {
-  const klasor = IZ_KLASORU_SATIRI.slice(0, -1);
-  const kararVar = icerik.split("\n").some((ham) => {
-    const satir = ham.trim();
-    const olumsuz = satir.startsWith("!");
-    const yol = (olumsuz ? satir.slice(1) : satir).replace(/^\//u, "").replace(/^\*\*\//u, "");
-    if (olumsuz) return yol === klasor || yol.startsWith(`${klasor}/`);
-    return yol.replace(/\/(\*\*?)?$/u, "") === klasor;
-  });
-  return kararVar ? [] : [IZ_KLASORU_SATIRI];
-}
 
 /** Tek projenin paketi (saf). Manifest DPK-A01 Founder onaylıdır. */
 function projePaketi(ad: string, tarih: string): DogusDosya[] {

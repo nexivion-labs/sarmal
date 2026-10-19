@@ -32,7 +32,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `a74b21da434b6e9f972820c960fb66ea8e7863eff2e5f416b4c768d746058a7d` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `a6bb170fc02996999857719032fce67de800f0c7c5f61f661d27ca3e229bada8` |
 | `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
 | `urun/eklenti/package.nls.tr.json` | `d53560d47587c73b7cd6848ea83049952805e49a43c79918123de6fd14a49873` |
 | `urun/eklenti/package.nls.json` | `980dcb5695a0e16fe47bd3e50ed2f42d98b4f76af1ab4784ad426932be5d40b3` |
@@ -40,6 +40,18 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-16 · araç metinlerinde örnek kalıbı · HST-MTR-A17):
+Araç açıklamalarında ve parametre tariflerinde örnek olarak gösterilen somut
+kodlar biçimi anlatan bir kalıba çevrildi. Founder 2026-10-10 tarihinde kalıbın
+bayatlamadığına ve kullanıcının projesinde var olmayan bir kodu aratmadığına
+hükmetmişti. Değişen yerler sef aracının Adım parametresi, ogret aracının
+açıklaması ile konu parametresi, graf aracının odak parametresi ve etki aracının
+KOD parametresidir; iki dil hanesi aynı düzenlemede birlikte ilerledi ve kalıp iki
+dilde aynı ASCII yazımı taşır. Yalnız `urun/cekirdek/src/mcp-metinleri.ts`
+dosyasının baytları değişti ve mührü ilerledi; araçların adı, şeması ve sayısı aynı
+kaldı, on altı belge yüzünün yeniden üretimi sıfır fark verdi ve öteki sekiz
+kaynağın mührü değişmedi.
 
 Tazeleme notu (2026-10-15 · Profil maddesinin bilinen sınırı · BKM-OLG-A13 üçüncü
 teslim): TIP-1.17 maddesinin Zorlama satırına açık adres tanımanın Türkçe yer adı

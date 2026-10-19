@@ -650,7 +650,7 @@ function iskeletAraci(dizin: string, uret: boolean): { metin: string; isError: b
 
 /** etki: ileri kapanış — CLI etki yüzüyle aynı çekirdek (etkiMetni · YUZ-1.2). */
 function etkiAraci(dizin: string, kod: string): { metin: string; isError: boolean } {
-  if (!kod) return { metin: "✖ etki: 'kod' argümanı gerekli (ör. SEF-ATF-A01).", isError: true };
+  if (!kod) return { metin: "✖ etki: 'kod' argümanı gerekli (biçim: Adım için <ONEK>-<KONU>-A<NN>, öteki düğümler için <ONEK>-<KONU>).", isError: true };
   const programlar = programHaritasi(dizin);
   if (!programlar.size) {
     return { metin: `✖ '${dizin}' altında .sar bulunamadı — dizin bir çalışma-alanı kökü olmalı.`, isError: true };

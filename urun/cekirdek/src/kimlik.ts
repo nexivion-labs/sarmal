@@ -168,6 +168,19 @@ export function ornekCitleriniBosalt(metin: string, kapsam: CitKapsami = "sar"):
   return cikti.join("\n");
 }
 
+// ── HST-MTR-A15 · Adlı tanımın tipi anahtar sözcüktür ────────────────────────
+//   Ayrıştırıcı `Kural ad( … )` ile `Tip Ad( … )` bildirimlerinde paranteze
+//   bitişik sözcüğü tanımın ADI olarak okur (ayristirici.ts ayristirTanim). Kod
+//   tanımının tipi ve bağlam kartının adresi bu adı tip sanıyordu; gezin bu
+//   yüzden KRL-SAR-ARAC için "araçÖnce" basıyordu. Tip düğümün sözdizimi
+//   türünden okunur; adsız düğümde tip yine düğümün adıdır.
+const ADLI_TANIM_TIPLERI: Readonly<Partial<Record<DugumTuru, string>>> = { kuralTanım: "Kural", tipTanım: "Tip" };
+
+/** Bir düğümün tipi: adlı tanımda anahtar sözcük, öteki düğümlerde düğüm adı. */
+function dugumTipi(n: Dugum): string {
+  return ADLI_TANIM_TIPLERI[n.tur] ?? n.ad;
+}
+
 export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
   // ÖĞRETİM ÖRNEĞİ KAPISI (.md/.ts): ```sar çitinin içi örnektir, atıf değildir.
   // Ölçülen kusur (2026-09-01): doğuş paketinin ürettiği AGENTS.md bir örnek plan
@@ -250,7 +263,7 @@ export function dosyayiTara(metin: string, sarMi = true): DosyaKaydi {
     const nodeKod = nodeKodP?.deger.metin;
     for (const p of [...n.parametreler, ...n.ozellikler]) {
       if (p.ad === "kod" && (p.deger.tur === "kod" || p.deger.tur === "metin") && p.deger.metin) {
-        tanimlar.push({ kod: p.deger.metin, tip: n.ad, ad: adParam, satir: p.deger.satir, sutun: p.deger.sutun });
+        tanimlar.push({ kod: p.deger.metin, tip: dugumTipi(n), ad: adParam, satir: p.deger.satir, sutun: p.deger.sutun });
       } else {
         // GİDEN kenar (beyanlı çıkış): kaynak-KOD → hedef (bağımlı/besler/hatırlat/üretir)
         if (nodeKod && GIDEN_KENAR_PARAM.has(p.ad)) {
@@ -1284,7 +1297,7 @@ const KART_ALANLARI = ["durum", "ne", "bağımlı", "üretir", "kullanır", "ref
 function baglamOzeti(n: Dugum): BaglamDugumu {
   const al = (ad: string): string | undefined =>
     [...n.parametreler, ...n.ozellikler].find((p) => p.ad === ad && p.deger.metin)?.deger.metin;
-  return { tip: n.ad, kod: al("kod"), ad: al("ad") };
+  return { tip: dugumTipi(n), kod: al("kod"), ad: al("ad") };
 }
 
 function koniOzeti(n: Dugum): [string, string][] {

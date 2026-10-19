@@ -172,6 +172,33 @@ test("gezinRaporu: tanım+atıf raporu · kırık atıf · hiç-geçmeyen kod (M
   assert.ok(gezinRaporu(i, "YOK-BOYLE-KOD").startsWith("✖"));
 });
 
+// ── HST-MTR-A15 · adlı tanımın tipi anahtar sözcüktür ──────────────────────────
+//   `Kural ad( kod: … )` ve `Tip Ad( kod: … )` yazımlarında paranteze bitişik
+//   sözcük tanımın ADIDIR; gezin tipi oradan basıyordu ("[araçÖnce]"). Tip,
+//   düğümün sözdizimi türünden okunur; adsız düğümler değişmez.
+test("HST-MTR-A15: adlı Kuralın gezin cevabı tipi Kural gösterir, kart adresleri de", () => {
+  const kaynak = `Anayasa( kod: ANY-ADLI, ad: "adlı anayasa" ) {
+  Kural birinciKural( kod: KRL-ADLI-1, ne: "birinci kural" )
+  Kural ikinciKural( kod: KRL-ADLI-2, ad: "ikinci", ne: "ikinci kural" )
+  Tip AdliTip( kod: TIP-ADLI-1, taban: Blok ) { ne: "adlı tip" }
+}`;
+  const i = new KimlikIndeksi();
+  i.dosyaGuncelle("/adli/kanon.sar", kaynak);
+  assert.equal(i.tanimlar("KRL-ADLI-1")[0].tip, "Kural");
+  assert.equal(i.tanimlar("KRL-ADLI-2")[0].tip, "Kural");
+  assert.equal(i.tanimlar("KRL-ADLI-2")[0].ad, "ikinci", "kardeş ad: alanı değişmez");
+  assert.equal(i.tanimlar("TIP-ADLI-1")[0].tip, "Tip");
+  assert.equal(i.tanimlar("ANY-ADLI")[0].tip, "Anayasa", "adsız düğüm değişmez");
+  assert.equal(i.tanimlar("birinciKural")[0].tip, "kuralTanım", "ad tanımı değişmez");
+  const rapor = gezinRaporu(i, "KRL-ADLI-1", () => kaynak);
+  assert.ok(rapor.includes("[Kural]"), rapor);
+  assert.ok(!rapor.includes("[birinciKural]"), rapor);
+  assert.ok(rapor.includes("kardeşler (2): Kural KRL-ADLI-2 (ikinci) · Tip TIP-ADLI-1"), rapor);
+  const b = dugumBaglami(kaynak, "KRL-ADLI-1");
+  assert.equal(b!.dugum.tip, "Kural");
+  assert.equal(b!.tur, "kuralTanım");
+});
+
 // ── HTR-A06 (IDA dogfood oturum-2 · DOC-4): gezin GİDEN kenar + smell yumuşatma ──
 test("HTR-A06: gezin GİDEN çıkış kenarlarını gösterir (hatırlat/bağımlı/besler/üretir)", () => {
   const i = new KimlikIndeksi();
