@@ -877,7 +877,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-CIKTILARI-INGILIZCE-DEGIL,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         MGZ-A11,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
@@ -1415,13 +1416,23 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MCP-DIL-AYRISMASI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         MGZ-A11,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-10,
   dönüşTetikleyici: "MCP sunucusunun araç çıktılarına ya da öğretim metinlerine bir sonraki kez dokunulduğunda; en geç mağaza yüklemesinden önce",
   ne:               "MGZ-A09'un üreticisi 2026-10-10 tarihinde İngilizce yüzün tek ilkesini MCP yüzünde ölçmüş ve düzeltme yapmadan dört ayrışma adlandırmıştır. Birincisi ve en ağırı, İngilizce kipte on dokuz araç çağrısının on altısı Türkçe kiple bayt bayt aynı Türkçe çıktı vermektedir; denetim, gezinme, graf, etki, karne, kurallar, sınıflama ve kavram bunlar arasındadır ve aynı dosyanın tanısı eklentide İngilizce, MCP'de Türkçe görünmektedir. İkincisi, sunucu talimatı ve doğuş aracının açıklaması dosyada bulunmayan Step ve Phase gibi ad karşılıkları kullanmaktadır. Üçüncüsü, öğretim aracının İngilizce çıktısı Türkçe düzyazı ile İngilizce ad karşılıklarını karıştırmaktadır. Dördüncüsü, başla aracının İngilizce çıktısı büyük ölçüde Türkçedir. Founder'ın 2026-10-10 hükmüyle İngilizce yüzde metin İngilizce olur ve dosyadaki Türkçe adları aynen anar; aynı ilke MCP yüzüne de uygulanmalıdır. MGZ-A09'un bağımsız incelemesi aynı gün ayrışmayı ölçmüş ve iki maddenin p1 olduğunu göstermiştir. Birincisi, denetim araçları İngilizce kipte tanıları Türkçe basar, oysa çekirdekte İngilizce metinler vardır ve eklenti onları kullanır. İkincisi ve daha ağırı, öğretim yüzleri dosyada olmayan adlar öğretir: öğretim aracı dependsOn alanını ve Phase'den Step'e uzanan zinciri, sunucu talimatı ve doğuş aracının açıklaması Step ve Phase adlarını kullanır; motor dependsOn alanını şema dışı alan, Step tipini bilinmeyen tip sayar, dolayısıyla İngilizce kipteki bir ajan geçersiz .sar yazabilir. Başla rehberinin İngilizce çıktısının 169 satırından 102'si Türkçedir ve şef brifinginin şablonu Türkçedir; graf, iskelet, durum güncelleme ve öteki araçların başlık satırları da Türkçedir. Kanon metinleri ve dosya içeriği ilke gereği Türkçe kalabilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KANCA-OZETI-IKI-DILLI-DEGIL,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-16,
+  dönüşTetikleyici: "Doğuşun denetim kapısı şablonuna bir sonraki kez dokunulduğunda; en geç mağaza yüklemesinden önce",
+  ne:               "MGZ-A11'in bağımsız incelemesi 2026-10-16 tarihinde komut satırı denetiminin SARMAL_DIL değişkenine uymaya başlamasının bir yan etkisini ölçmüştür. Doğuş paketinin denetim kapısı şablonu (ogreti/sablon/dogus/denetim_kapisi.sh) ve Founder'ın küresel kancası özet satırını yalnız Türkçe sözcükle aramaktadır; değişken İngilizce iken hatalı ağaçta kapı yine kapanmakta ve hata satırları basılmakta, fakat temiz ağaçta uyarı sayısını taşıyan özet satırı düşmekte ve hatalı ağaçta özet görünmemektedir. Onarım ya şablonun iki dilin özet sözcüğünü de araması ya da kancanın denetimi Türkçe kipte koşturmasıdır. Küresel kanca depo dışındadır ve Founder'ın dosyasıdır; ona yalnız Founder onayıyla dokunulur."
 )
 
 Hatırlatıcı(

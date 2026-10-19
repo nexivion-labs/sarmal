@@ -6412,7 +6412,7 @@ sessizce körleşmez.
           sınır: "Paket sürüm numarası değişmez; sürüm yükleme günü seçilir ve yükleme bu Adımın kapsamında değildir"
         }
 
-        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI ], bağımlı: [],
+        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI, KOD-SNM-MCP-INGILIZCE-KIP ], bağımlı: [],
           referans: [ HTR-MCP-DIL-AYRISMASI, MGZ-A09 ],
           ne: "🌐 İngilizce kipte MCP araçları İngilizce konuşsun ve ajana yalnız dosyada gerçekten bulunan adları öğretsin; böylece İngilizce kipteki bir ajan geçersiz .sar yazmasın" ) {
           görev: "Founder 2026-10-16 tarihinde MCP yüzündeki dil ayrışmasının mağaza yüklemesinden önce kapanmasına hükmetmiştir; ilke MGZ-A09'daki İngilizce yüz ilkesinin aynısıdır. Önce on dokuz aracın İngilizce ve Türkçe kipteki çıktısı yeniden ölçülür ve Türkçe kalan metinler sayılır. En ağır kusur önce kapanır: öğretim aracı, başla rehberi, sunucu talimatı ve doğuş aracının açıklaması dosyada bulunmayan ad karşılıkları (Step, Phase, dependsOn) öğretmeyi bırakır ve dosyadaki gerçek Türkçe adları anar. Ardından denetim araçları İngilizce kipte çekirdeğin var olan İngilizce tanı metinlerini kullanır, araçların başlık satırları ve şef brifinginin şablonu İngilizceye çevrilir ve iki dil için bir nöbet yazılır. HTR-MCP-CIKTILARI-INGILIZCE-DEGIL kaydı aynı kusurun ikizidir ve bu Adımla birlikte kapanır."
@@ -6423,6 +6423,9 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kanon metinleri, dosya içeriği ve dilin anahtar sözcükleri değişmez; çeviri yalnız araç yüzünde yaşar"
+          koşu:  Koşum( kod: KSM-MGZ-A11, tarih: 2026-10-16, mühür: COMPLETED,
+            kanıt: "işlemeler ba564a3, 9d4a1f0, fa0808c, caa564d, 04f90c4 ve 313d449 · çekirdek 1785/1785, eklenti 953/953, tsc ve eslint temiz, depo denetimi 0 hata · başlangıçta İngilizce kipte ölçülen 21 çağrının 19'u Türkçe kiple bayt bayt aynıydı ve öğretim aracı dosyada bulunmayan 39 ad öğretiyordu · bağımsız inceleme: Türkçe kipte talimat, araç listesi ve 17 araç çağrısı tabanla bayt bayt aynı; İngilizce kipte dosyada bulunmayan ad sayısı 19 anahtarın hepsinde sıfır; doğuşun yazdığı ajan bağlamında 142 ad kusuru sıfıra indi; talimata Step geri konunca yeni nöbet kırmızıya döndü, geri alınınca yeşil; kanon, şema ve şablonlar değişmedi · açık kalan iki küçük borç: komut satırı denetimi artık SARMAL_DIL değişkenine uyduğu için İngilizce kipte doğuş kancası ile küresel kanca özet satırını bulamıyor (kapı yine kapanıyor, yalnız özet satırı düşüyor; HTR-KANCA-OZETI-IKI-DILLI-DEGIL); dil sözlüğündeki Takım tipinin İngilizce açıklaması hâlâ dosyada bulunmayan iki ad anıyor",
+            ne:    "İngilizce kipte MCP araçları artık İngilizce konuşuyor ve ajana yalnız dosyada gerçekten bulunan adları öğretiyor; Türkçe kip tabanla bayt bayt aynı kaldı. Öğretim yüzlerinin dosyada olmayan Step, Phase ve dependsOn gibi adları öğretmesi, İngilizce kipteki bir ajanın geçersiz .sar yazmasına yol açabilen en ağır kusurdu ve bir nöbetle kapandı." )
         }
 
         Adım( kod: MGZ-A12, ad: "Kırık Dosyanın Susturduğu Tam Denetim", durum: tamamlandı, öncelik: p2, üretir: [ KOD-EKL-EKLENTI ], bağımlı: [],
@@ -6804,6 +6807,9 @@ Kod( kod: KOD-INGILIZCE-YUZ, dosya: "urun/cekirdek/src/ingilizce-yuz.ts",
   ne: "🌐 İngilizce yüz ölçeri — bir İngilizce yüz metninde cümlede kalan Türkçe düzyazıyı ve dosyada bulunmayan ad karşılığını bulur; ad evrenini dil sözlüğünden kurar, hiçbir ürün yüzeyi onu çağırmaz ve iki paketin nöbetleri İngilizce yüzü onunla ölçer (MGZ-A09)" )
 Kod( kod: KOD-SNM-INGILIZCE-YUZ-AYAR, dosya: "urun/cekirdek/sinama/ingilizce-yuz.test.ts",
   ne: "🧪 İngilizce yüz ölçerinin ayar nöbeti — ölçerin iki kusuru yakaladığını, dosyadaki adları, cümle başını, panel ve çatı adlarını kusur saymadığını ve sözlüğün ad jetonlarının eklentide dosyadaki adla, MCP yüzünde sözlüğün karşılığıyla çözüldüğünü ölçer (MGZ-A09)" )
+// 🍎 MCP yüzünün İngilizce kipi (MGZ-A11 · 2026-10-16)
+Kod( kod: KOD-SNM-MCP-INGILIZCE-KIP, dosya: "urun/cekirdek/sinama/mcp-ingilizce-kip.test.ts",
+  ne: "🌐 MCP İngilizce kip nöbeti — gerçek stdio sunucusunu doğuş paketinin ürettiği bir ağaçta iki kipte koşturur; sunucu talimatının, araç açıklamalarının, karşılama kartının, doğuş rehberinin, şablonların, doğuş aracının, onun yazdığı dil bağlamının ve şef brifinginin dosyada bulunmayan hiçbir ad karşılığı öğretmediğini, araç çıktılarının düzyazısının İngilizce kipte dosya yankısı dışında İngilizce olduğunu ve Türkçe kipin Türkçe kaldığını ölçer (MGZ-A11)" )
 Kod( kod: KOD-SNM-ADLI-KURAL-IPUCU, dosya: "urun/eklenti/sinama/adli-kural-ipucu.test.ts",
   ne: "🧪 Adlı Kural ipucu nöbeti — adı olan bir Kuralın kartı başlıkta tipini gösterir, adsız kartların başlığı değişmez; satır taraması ve sözdizimi ağacı yedeği ayrı ayrı sınanır (HST-YUZ-A06)" )
 Kod( kod: KOD-SNM-DOGUS-AGACI-YARDIMCISI, dosya: "urun/cekirdek/sinama/dogus-agaci.ts",

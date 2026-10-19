@@ -142,7 +142,9 @@ export function grafCikar(dag: Dag, kök?: string): GrafYuzu | undefined {
  * istenir ve çıktının son satırı bunu açıkça söyler, çünkü kırpılmış bir cevabın
  * nasıl açılacağını söylememek kullanıcıyı tahmine bırakır.
  */
-export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<KOD>" }'): string {
+export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<KOD>" }', dil: "tr" | "en" = "tr"): string {
+  // MGZ-A11: `dil` yalnız düzyazıyı seçer; kodlar, tipler ve yollar dosyadaki gibidir.
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
   const KOK_SINIRI = 40;
   const kokler = g.düğümler.filter((d) => d.kapsayan === undefined);
   const tipSayisi = new Map<string, number>();
@@ -153,21 +155,24 @@ export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<K
     .join(" · ");
   const gosterilen = kokler.slice(0, KOK_SINIRI);
   const satirlar = [
-    "🕸️ GRAF — ÖZET KİPİ (varsayılan). Tam düğüm listesi ayrıntı kipindedir.",
+    y("🕸️ GRAF — ÖZET KİPİ (varsayılan). Tam düğüm listesi ayrıntı kipindedir.",
+      "🕸️ GRAPH — SUMMARY MODE (default). The full node list is in detail mode."),
     "",
-    `📋 Karne: ${JSON.stringify(g.özet)}`,
-    `🔢 Düğüm ${g.düğümler.length} · kök kademesi ${kokler.length} · kopuk uç ${g.kopuk.length}`,
-    `🗂️ Tip dökümü: ${tipDokumu || "(düğüm yok)"}`,
+    y(`📋 Karne: ${JSON.stringify(g.özet)}`, `📋 Scorecard: ${JSON.stringify(g.özet)}`),
+    y(`🔢 Düğüm ${g.düğümler.length} · kök kademesi ${kokler.length} · kopuk uç ${g.kopuk.length}`,
+      `🔢 Nodes ${g.düğümler.length} · root tier ${kokler.length} · dangling ends ${g.kopuk.length}`),
+    y(`🗂️ Tip dökümü: ${tipDokumu || "(düğüm yok)"}`, `🗂️ Type breakdown: ${tipDokumu || "(no nodes)"}`),
     "",
-    `🌱 KÖK KADEMESİ${kokler.length > KOK_SINIRI ? ` (ilk ${KOK_SINIRI})` : ""}:`,
+    y(`🌱 KÖK KADEMESİ${kokler.length > KOK_SINIRI ? ` (ilk ${KOK_SINIRI})` : ""}:`, `🌱 ROOT TIER${kokler.length > KOK_SINIRI ? ` (first ${KOK_SINIRI})` : ""}:`),
     ...gosterilen.map((d) => `   ${d.kod} [${d.tip}]${d.durum ? ` · ${d.durum}` : ""} — ${d.dosya}:${d.satır}`),
-    ...(kokler.length > KOK_SINIRI ? [`   … ${kokler.length - KOK_SINIRI} kök daha var (ayrıntı için kök kodu ver).`] : []),
+    ...(kokler.length > KOK_SINIRI ? [y(`   … ${kokler.length - KOK_SINIRI} kök daha var (ayrıntı için kök kodu ver).`,
+      `   … ${kokler.length - KOK_SINIRI} more roots (pass a root KOD for detail).`)] : []),
   ];
   if (g.kopuk.length) {
     const ilk = g.kopuk.slice(0, 10);
-    satirlar.push("", `🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`);
+    satirlar.push("", y(`🔌 KOPUK UÇLAR${g.kopuk.length > 10 ? " (ilk 10)" : ""}:`, `🔌 DANGLING ENDS${g.kopuk.length > 10 ? " (first 10)" : ""}:`));
     for (const k of ilk) satirlar.push(`   ${k.kaynak} → ${k.hedef}`);
-    if (g.kopuk.length > 10) satirlar.push(`   … ${g.kopuk.length - 10} kopuk uç daha.`);
+    if (g.kopuk.length > 10) satirlar.push(y(`   … ${g.kopuk.length - 10} kopuk uç daha.`, `   … ${g.kopuk.length - 10} more dangling ends.`));
   }
   // MIM-1.1 (KPS-CAT-A02): çalışma alanı projelerini ÇOCUKLARI olarak gösterir.
   // Kök kademesi listesi çatıyı gösterir fakat altındaki Projeleri göstermez,
@@ -182,27 +187,30 @@ export function grafOzetYuzu(g: GrafYuzu, ayrintiIpucu = 'graf { dizin, kok: "<K
     catiProjeleri.set(ust.kod, [...(catiProjeleri.get(ust.kod) ?? []), d.kod]);
   }
   for (const [cati, projeler] of catiProjeleri) {
-    satirlar.push("", `🏛️ ÇALIŞMA ALANI ${cati} — PROJELERİ (${projeler.length}):`);
+    satirlar.push("", y(`🏛️ ÇALIŞMA ALANI ${cati} — PROJELERİ (${projeler.length}):`, `🏛️ ÇalışmaAlanı ${cati} — its Proje roots (${projeler.length}):`));
     for (const p of projeler) satirlar.push(`   ${p}`);
   }
   // MIM-1.1 (KPS-CAT-A01): bağın kurulamadığı hâl susmaz — çatının altında
   // yaşayıp çatıya bağlanamayan Proje kökü burada adıyla görünür.
   if (g.çatısız?.length) {
-    satirlar.push("", `🏛️ ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (${g.çatısız.length}):`);
+    satirlar.push("", y(`🏛️ ÇATIYA BAĞLANAMAYAN PROJE KÖKÜ (${g.çatısız.length}):`, `🏛️ Proje ROOTS THAT COULD NOT BIND TO THE UMBRELLA (${g.çatısız.length}):`));
     for (const c of g.çatısız) satirlar.push(`   ${c.proje} — ${c.dosya}:${c.satir} · ${c.sebep}`);
   }
   // ORK-4 (KPS-KOD-A01): ortak kod BEKLENEN durumdur ve tanı değildir; yüz onu
   // ölçüm olarak basar ki "yüz müşterinin Kitaplığı nereye gitti" sorusunun
   // cevabı okunsun. Ayrışamayan kök ise çevrimin sustuğu yerdir ve susmaz.
   if (g.ortakKod?.length) {
-    satirlar.push("", `🔀 KARDEŞ PROJELERDE ORTAK KOD (${g.ortakKod.length} · beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür):`);
+    satirlar.push("", y(`🔀 KARDEŞ PROJELERDE ORTAK KOD (${g.ortakKod.length} · beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür):`,
+      `🔀 KOD SHARED BY SIBLING Proje ROOTS (${g.ortakKod.length} · an expected state, not a diagnostic — each is a separate node under its own Proje with the \`PRJ::KOD\` key):`));
     for (const o of g.ortakKod) satirlar.push(`   ${o.kod} → ${o.projeler.join(" · ")}`);
   }
   if (g.ayrışamayan?.length) {
-    satirlar.push("", `⚠️ AD ALANI OLMADAN AYRIŞAMAYAN PROJE KÖKÜ (${g.ayrışamayan.length} · aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için çevrim bu kökleri AYIRAMADI ve ilk tanım kazandı):`);
+    satirlar.push("", y(`⚠️ AD ALANI OLMADAN AYRIŞAMAYAN PROJE KÖKÜ (${g.ayrışamayan.length} · aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için çevrim bu kökleri AYIRAMADI ve ilk tanım kazandı):`,
+      `⚠️ Proje ROOTS THAT CANNOT BE SEPARATED WITHOUT A NAMESPACE (${g.ayrışamayan.length} · the same Proje KOD is declared in several roots; because \`PRJ::KOD\` points to both, the conversion COULD NOT SEPARATE them and the first definition won):`));
     for (const a of g.ayrışamayan) satirlar.push(`   ${a.kod} — ${a.dosyalar.join(" · ")}`);
   }
-  satirlar.push("", `🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`);
+  satirlar.push("", y(`🔍 AYRINTI: bir düğümün tam alt-grafını (kapsadıkları · ataları · ileri kapanışı) almak için ${ayrintiIpucu} çağır.`,
+    `🔍 DETAIL: to get a node's full subgraph (what it contains · its ancestors · its forward closure) call ${ayrintiIpucu}.`));
   return satirlar.join("\n") + "\n";
 }
 

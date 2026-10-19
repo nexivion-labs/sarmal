@@ -1501,7 +1501,19 @@ function catiBaginiKartaEkle(b: Baglam, tanim: Tanim, baglariAl: () => CatiProje
   }
 }
 
-export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozet: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string): string {
+/** MGZ-A11: bölge rozetlerinin İngilizce okuma yüzü; varlık adı dosyadaki gibidir. */
+const ROZET_INGILIZCE: Readonly<Record<string, string>> = {
+  "🗄️ arşiv": "🗄️ archive", "🎓 örnek dünyası": "🎓 example world", "🧪 fikstür": "🧪 fixture",
+  "📋 şablon": "📋 template", "🧭 köksüz": "🧭 rootless",
+};
+
+export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosya: string) => string | undefined, rozetTr: (dosya: string) => string = bolgeEtiketi, tarananDizin?: string, dil: "tr" | "en" = "tr"): string {
+  // MGZ-A11: `dil` yalnız düzyazıyı seçer; kodlar, tipler, alan adları ve yollar dosyadaki gibidir.
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
+  const rozet = (dosya: string): string => {
+    const r = rozetTr(dosya);
+    return dil === "en" ? (ROZET_INGILIZCE[r] ?? r) : r;
+  };
   const hamTanimlar = indeks.tanimlar(kod);
   // ORK-4: ham kimlikle bulunamayan ad alanlı kod, kanon hükmüyle yeniden çözülür.
   const adAlanli = hamTanimlar.length ? { tanimlar: hamTanimlar } : adAlanliGezinCozumu(indeks, kod, tarananDizin);
@@ -1520,32 +1532,41 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   // durumlu cevabının dersi burada da geçerlidir. KOD biçimli sorgunun bütün
   // cümleleri aynen kalır.
   const kodBicimli = kodBicimliMi(kod);
-  const YAPISAL_KATMAN = "gezin böyle bir adı yalnız .sar dosyalarının yapısal katmanında, yani Tip ve Kural adlarında, kod değerlerinde ve çağır satırlarında arar";
+  const YAPISAL_KATMAN = y("gezin böyle bir adı yalnız .sar dosyalarının yapısal katmanında, yani Tip ve Kural adlarında, kod değerlerinde ve çağır satırlarında arar",
+    "gezin looks for such a name only in the structural layer of .sar files, that is in Tip and Kural names, kod values and çağır lines");
   if (!tanimlar.length && !atiflar.length) {
     if (!kodBicimli) {
-      return `✖ '${kod}' bulunamadı (${indeks.dosyaSayisi()} dosya tarandı), fakat bu, adın hiçbir yerde geçmediği anlamına gelmez. ` +
+      return y(`✖ '${kod}' bulunamadı (${indeks.dosyaSayisi()} dosya tarandı), fakat bu, adın hiçbir yerde geçmediği anlamına gelmez. ` +
         `Ad KOD biçiminde değildir ve ${YAPISAL_KATMAN}; .md ile .ts dosyalarında ve .sar içindeki metin ile yorumlarda geçip geçmediği ÖLÇÜLMEDİ. ` +
-        "Bir kod sembolü arıyorsan dil sunucusunu ya da metin aramasını kullan.";
+        "Bir kod sembolü arıyorsan dil sunucusunu ya da metin aramasını kullan.",
+      `✖ '${kod}' was not found (${indeks.dosyaSayisi()} files scanned), but this does not mean the name occurs nowhere. ` +
+        `The name is not in KOD form and ${YAPISAL_KATMAN}; whether it occurs in .md and .ts files or in text and comments inside .sar files was NOT MEASURED. ` +
+        "If you are looking for a code symbol, use the language server or a text search.");
     }
-    return `✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`;
+    return y(`✖ '${kod}' hiçbir yerde geçmiyor (${indeks.dosyaSayisi()} dosya tarandı) — kod doğru yazıldı mı?`,
+      `✖ '${kod}' occurs nowhere (${indeks.dosyaSayisi()} files scanned) — is the KOD spelled correctly?`);
   }
   const satir = (x: { dosya: string; satir: number; sutun: number }): string =>
     `  ${x.dosya}:${x.satir}:${x.sutun}`;
-  const bolumler: string[] = [`── 🗂️ ${kod} (${indeks.dosyaSayisi()} dosya tarandı) ──`];
+  const bolumler: string[] = [y(`── 🗂️ ${kod} (${indeks.dosyaSayisi()} dosya tarandı) ──`, `── 🗂️ ${kod} (${indeks.dosyaSayisi()} files scanned) ──`)];
   if (!kodBicimli) {
-    bolumler.push(`KAPSAM: '${kod}' KOD biçiminde değil ve ${YAPISAL_KATMAN}; .md ile .ts dosyalarındaki ve .sar içindeki metin ile yorumlardaki geçişler taranmadı. Aşağıdaki yokluk cümleleri yalnız bu katman için geçerlidir.`);
+    bolumler.push(y(`KAPSAM: '${kod}' KOD biçiminde değil ve ${YAPISAL_KATMAN}; .md ile .ts dosyalarındaki ve .sar içindeki metin ile yorumlardaki geçişler taranmadı. Aşağıdaki yokluk cümleleri yalnız bu katman için geçerlidir.`,
+      `SCOPE: '${kod}' is not in KOD form and ${YAPISAL_KATMAN}; occurrences in .md and .ts files and in text and comments inside .sar files were not scanned. The absence statements below hold only for this layer.`));
   }
   // KPN-A01: her tanım bölge/varlık rozetiyle etiketlenir — RAF-PLAN gibi standart
   // kodlarda hangi kapının gerçek olduğu (varlık · şablon · örnek) tek bakışta okunur.
   bolumler.push(tanimlar.length
-    ? `TANIM (${tanimlar.length}):\n${tanimlar.map((t) => `${satir(t)}  [${t.tip}${t.ad ? ` · ${t.ad}` : ""}] · ${rozet(t.dosya)}`).join("\n")}`
+    ? y(`TANIM (${tanimlar.length}):\n`, `DEFINITION (${tanimlar.length}):\n`) +
+      tanimlar.map((t) => `${satir(t)}  [${t.tip}${t.ad ? ` · ${t.ad}` : ""}] · ${rozet(t.dosya)}`).join("\n")
     // Ad alanlı kodda "tanım yok" demek yanlış bir hükümdür: ölçüm yapılamamış
     // olabilir. Araç hangisi olduğunu söyler (ORK-4 · KPS-ADA-A01).
     : adAlanli.cozulemedi
-      ? `TANIM: çözülemedi — ${adAlanli.cozulemedi}.`
+      ? y(`TANIM: çözülemedi — ${adAlanli.cozulemedi}.`, `DEFINITION: could not be resolved — ${adAlanli.cozulemedi}.`)
       : kodBicimli
-        ? "TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir)."
-        : "TANIM: .sar yapısal katmanında yok; ad KOD biçiminde olmadığı için öteki dosyalardaki tanımı ÖLÇÜLMEDİ.");
+        ? y("TANIM: yok — bu kod hiçbir yerde ilan edilmemiş (kırık atıf olabilir).",
+          "DEFINITION: none — this KOD is declared nowhere (it may be a broken reference).")
+        : y("TANIM: .sar yapısal katmanında yok; ad KOD biçiminde olmadığı için öteki dosyalardaki tanımı ÖLÇÜLMEDİ.",
+          "DEFINITION: not in the .sar structural layer; because the name is not in KOD form, its definition in other files was NOT MEASURED."));
   // KPS-KOD-A01 · ORK-4: aynı kod birden çok KARDEŞ Projede ilanlıysa araç
   // sessizce ilkini seçmez — her Projenin tanımı kendi kartıyla gösterilir ve
   // hangisinin kastedildiği `PRJ::KOD` yazımıyla SORULUR. Ders dünyası kopyaları
@@ -1555,7 +1576,9 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
   const cokProjeli = kardesProjeler.length > 1;
   if (cokProjeli) {
     const { yerel } = adAlaniAyir(kod);
-    bolumler.push(`🔀 '${yerel}' ${kardesProjeler.length} kardeş Projede birden ilanlı (beklenen durum: şablondan doğan projeler aynı kodu taşır). Hangisini kastettiğini ad alanıyla söyle (ORK-4):\n${kardesProjeler.map((p) => `  ${p}${AD_ALANI_AYRACI}${yerel}`).join("\n")}`);
+    bolumler.push(y(`🔀 '${yerel}' ${kardesProjeler.length} kardeş Projede birden ilanlı (beklenen durum: şablondan doğan projeler aynı kodu taşır). Hangisini kastettiğini ad alanıyla söyle (ORK-4):\n`,
+      `🔀 '${yerel}' is declared in ${kardesProjeler.length} sibling Proje roots at once (an expected state: projects born from a template carry the same KOD). Say which one you mean with its namespace (ORK-4):\n`) +
+      kardesProjeler.map((p) => `  ${p}${AD_ALANI_AYRACI}${yerel}`).join("\n"));
   }
   // NTK-A06 · BAĞLAM KARTI: üst zincir + kardeşler + çocuklar + koni özeti — ajan,
   // "bu Adım hangi Blok'ta, yanında ne var, ne iş yapar" sorularını tek çağrıda alır.
@@ -1575,10 +1598,13 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
       const adres = (x: BaglamDugumu): string =>
         `${x.tip}${x.kod ? ` ${x.kod}` : ""}${x.ad ? ` (${x.ad})` : ""}`;
       const kart: string[] = [];
-      if (b.zincir.length) kart.push(`  üst zincir: ${b.zincir.map(adres).join(" › ")}`);
-      if (b.kardesler.length) kart.push(`  kardeşler (${b.kardesler.length}): ${b.kardesler.map(adres).join(" · ")}`);
-      if (b.cocuklar.length) kart.push(`  çocuklar (${b.cocuklar.length}): ${b.cocuklar.map(adres).join(" · ")}`);
-      for (const [a, v] of b.alanlar) kart.push(`  ${a}: ${v}`);
+      if (b.zincir.length) kart.push(y("  üst zincir: ", "  parent chain: ") + b.zincir.map(adres).join(" › "));
+      if (b.kardesler.length) kart.push(y(`  kardeşler (${b.kardesler.length}): `, `  siblings (${b.kardesler.length}): `) + b.kardesler.map(adres).join(" · "));
+      if (b.cocuklar.length) kart.push(y(`  çocuklar (${b.cocuklar.length}): `, `  children (${b.cocuklar.length}): `) + b.cocuklar.map(adres).join(" · "));
+      // Alan adı dosyadaki addır; yalnız motorun kurduğu sayım sözcüğü çevrilir.
+      for (const [a, v] of b.alanlar) {
+        kart.push(`  ${a}: ${dil === "en" ? v.replace(/^(\d+) ölçüt$/u, "$1 criteria").replace(/^(\d+) öge$/u, "$1 items") : v}`);
+      }
       const proje = cokProjeli ? projeler[tanimlar.indexOf(tanim)] : undefined;
       // KPS-SIR-A02: tanıma başka projeden ad alanıyla verilen atıflar kartta da
       // görünür; kart ile ATIFLAR bölümü aynı kümeyi okur (YUZ-3.2).
@@ -1587,27 +1613,33 @@ export function gezinRaporu(indeks: KimlikIndeksi, kod: string, dosyaOku?: (dosy
       // Kart bir özettir: ilk beş kaynak adresiyle yazılır, tam liste ATIFLAR bölümündedir.
       if (nitelikli.length) {
         const ilk = nitelikli.slice(0, 5).map((a) => `${a.kod} ← ${a.dosya}:${a.satir}`).join(" · ");
-        kart.push(`  ad alanlı atıflar (${nitelikli.length}): ${ilk}${nitelikli.length > 5 ? ` · … ve ${nitelikli.length - 5} atıf daha (ATIFLAR bölümünde)` : ""}`);
+        kart.push(y(`  ad alanlı atıflar (${nitelikli.length}): ${ilk}${nitelikli.length > 5 ? ` · … ve ${nitelikli.length - 5} atıf daha (ATIFLAR bölümünde)` : ""}`,
+          `  namespaced references (${nitelikli.length}): ${ilk}${nitelikli.length > 5 ? ` · … and ${nitelikli.length - 5} more (in the REFERENCES section)` : ""}`));
       }
-      if (kart.length) bolumler.push(`BAĞLAM KARTI${proje ? ` · ${proje}` : ""}:\n${kart.join("\n")}`);
+      if (kart.length) bolumler.push(y("BAĞLAM KARTI", "CONTEXT CARD") + `${proje ? ` · ${proje}` : ""}:\n${kart.join("\n")}`);
     }
   }
   // ATIFLAR (gelen): boşsa "kimse kullanmıyor" — AMA GİDEN kenarı varsa bu düğüm
   // ileri-bağlamadır (ör. Hatırlatıcı: kimse ONA atıf vermez, o HEDEFİNE hatırlat eder);
   // ölü-kod smell'i bastırılır (hatırlatıcı-rayı turu · DOC-4).
   bolumler.push(atiflar.length
-    ? `ATIFLAR — gelen (${atiflar.length}):\n${atiflar.map(satir).join("\n")}`
+    ? y(`ATIFLAR — gelen (${atiflar.length}):\n`, `REFERENCES — incoming (${atiflar.length}):\n`) + atiflar.map(satir).join("\n")
     : giden.length
-      ? "ATIFLAR — gelen: yok — ama bu bir İLERİ-BAĞLAMA düğümü (aşağıdaki GİDEN kenarlarına bak); ölü kod DEĞİL."
+      ? y("ATIFLAR — gelen: yok — ama bu bir İLERİ-BAĞLAMA düğümü (aşağıdaki GİDEN kenarlarına bak); ölü kod DEĞİL.",
+        "REFERENCES — incoming: none — but this is a FORWARD-BINDING node (see the OUTGOING edges below); it is NOT dead code.")
       : kodBicimli
-        ? "ATIFLAR — gelen: yok — tanımlı ama kimse kullanmıyor (yetim olabilir)."
+        ? y("ATIFLAR — gelen: yok — tanımlı ama kimse kullanmıyor (yetim olabilir).",
+          "REFERENCES — incoming: none — defined but used by nobody (it may be an orphan).")
         // HST-MTR-A05: metin geçişleri taranmadan yetim hükmü kurulmaz.
-        : "ATIFLAR — gelen: .sar yapısal katmanında yok; metin geçişleri taranmadığı için yetim olup olmadığı ÖLÇÜLMEDİ.");
+        : y("ATIFLAR — gelen: .sar yapısal katmanında yok; metin geçişleri taranmadığı için yetim olup olmadığı ÖLÇÜLMEDİ.",
+          "REFERENCES — incoming: none in the .sar structural layer; because text occurrences were not scanned, whether it is an orphan was NOT MEASURED."));
   // GİDEN (bu düğümün beyan ettiği çıkış kenarları) — forward-binding görünür olur.
   if (giden.length) {
-    bolumler.push(`GİDEN — çıkış kenarları (${giden.length}):\n${giden.map((g) => `  → ${g.hedef} [${g.kenar}]  (${g.dosya}:${g.satir}:${g.sutun})`).join("\n")}`);
+    bolumler.push(y(`GİDEN — çıkış kenarları (${giden.length}):\n`, `OUTGOING — exit edges (${giden.length}):\n`) +
+      giden.map((g) => `  → ${g.hedef} [${g.kenar}]  (${g.dosya}:${g.satir}:${g.sutun})`).join("\n"));
   }
-  if (tanimlar.length > 1) bolumler.push("⚠️ Birden çok tanım — rozetlere bak: 📋 şablon ile 🎓 örnek kopyası ders malzemesidir, sapma değildir; farklı 🧭 varlık ise varlık sınırıdır (her varlık kendi eş kodunu taşıyabilir); AYNI varlıkta çift tanım gerçek yinelenen-kod drifti olabilir (denetle ile doğrula).");
+  if (tanimlar.length > 1) bolumler.push(y("⚠️ Birden çok tanım — rozetlere bak: 📋 şablon ile 🎓 örnek kopyası ders malzemesidir, sapma değildir; farklı 🧭 varlık ise varlık sınırıdır (her varlık kendi eş kodunu taşıyabilir); AYNI varlıkta çift tanım gerçek yinelenen-kod drifti olabilir (denetle ile doğrula).",
+    "⚠️ More than one definition — look at the badges: a 📋 template or 🎓 example copy is teaching material, not drift; a different 🧭 entity is an entity boundary (each entity may carry its own twin KOD); a double definition in the SAME entity may be real yinelenen-kod drift (verify with denetle)."));
   return bolumler.join("\n\n");
 }
 

@@ -11,6 +11,7 @@
 
 import type { Dag } from "./dag.ts";
 import { topolojikSira, dugumYokMetni } from "./dag.ts";
+import { dilHanesi, type CiktiDili } from "./cevir.ts";
 
 export interface EtkiSonuc {
   kod: string;
@@ -61,29 +62,35 @@ function satir(dag: Dag, kod: string, onek: string): string {
   return `${onek}${rozet} ${kod}${d ? `  (${d.tip} · ${d.dosya})` : ""}`;
 }
 
-/** İnsan yüzü (saf render): rozetli etki listesi ya da dürüst "bekleyen yok". */
-export function etkiMetni(dag: Dag, kod: string): string {
+/** İnsan yüzü (saf render): rozetli etki listesi ya da dürüst "bekleyen yok".
+ *  MGZ-A11: `dil` yalnız düzyazıyı seçer; Türkçe hane kanonik yüzdür ve değişmez. */
+export function etkiMetni(dag: Dag, kod: string, dil: CiktiDili = "tr"): string {
+  const y = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
   const e = etkiCoz(dag, kod);
   // KPS-KOD-A01: kardeş projelerde ortak kod "yok" değildir — seçenekler projesiyle sorulur.
-  if (!e) return dugumYokMetni(dag, kod, `✖ '${kod}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kod}).`);
-  const bas = `💥 Etki analizi — ${kod}: bu düğüme dokunursan…`;
+  if (!e) return dugumYokMetni(dag, kod, y(`✖ '${kod}' kodlu düğüm grafikte yok — önce ilan et (kod: ${kod}).`,
+    `✖ No node with KOD '${kod}' is in the graph — declare it first (kod: ${kod}).`), dil);
+  const bas = y(`💥 Etki analizi — ${kod}: bu düğüme dokunursan…`, `💥 Impact analysis — ${kod}: if you touch this node…`);
   const bolum = (baslik: string, kodlar: string[]): string[] =>
     kodlar.length ? [baslik, ...kodlar.map((k) => satir(dag, k, "  "))] : [];
   // hatırlatıcı-rayı turu: hatırlat-bağı AYRI bölüm (topolojik ardıl DEĞİL — düğüm işlenince gözden geçirilecek bağlam).
   const htrBolum = e.hatırlatBaglari.length
-    ? ["", `🔔 Hatırlat-bağı (${e.hatırlatBaglari.length} · bu düğüm işlenince gözden geçir · topolojik sıra dışı):`,
+    ? ["", y(`🔔 Hatırlat-bağı (${e.hatırlatBaglari.length} · bu düğüm işlenince gözden geçir · topolojik sıra dışı):`,
+      `🔔 hatırlat links (${e.hatırlatBaglari.length} · review them when this node is worked on · outside the topological order):`),
        ...e.hatırlatBaglari.map((k) => satir(dag, k, "  "))]
     : [];
   if (!e.dogrudan.length && !e.gecisli.length) {
-    return `${bas}\n\n✅ Bu düğümü bekleyen yok — etki bu düğümle sınırlı (boş ≠ hata).${htrBolum.join("\n")}`;
+    return `${bas}\n\n` + y("✅ Bu düğümü bekleyen yok — etki bu düğümle sınırlı (boş ≠ hata).",
+      "✅ Nothing waits on this node — the impact is limited to the node itself (empty ≠ error).") + htrBolum.join("\n");
   }
   return [
     bas,
     "",
-    ...bolum(`⚡ Doğrudan bekleyenler (${e.dogrudan.length}):`, e.dogrudan),
-    ...bolum(`🌊 Geçişli bekleyenler (${e.gecisli.length}):`, e.gecisli),
+    ...bolum(y(`⚡ Doğrudan bekleyenler (${e.dogrudan.length}):`, `⚡ Direct dependants (${e.dogrudan.length}):`), e.dogrudan),
+    ...bolum(y(`🌊 Geçişli bekleyenler (${e.gecisli.length}):`, `🌊 Transitive dependants (${e.gecisli.length}):`), e.gecisli),
     ...htrBolum,
     "",
-    `Toplam ${e.dogrudan.length + e.gecisli.length} düğüm bu değişiklikten etkilenir (topolojik sırada${e.hatırlatBaglari.length ? ` · +${e.hatırlatBaglari.length} hatırlat-bağı` : ""}).`,
+    y(`Toplam ${e.dogrudan.length + e.gecisli.length} düğüm bu değişiklikten etkilenir (topolojik sırada${e.hatırlatBaglari.length ? ` · +${e.hatırlatBaglari.length} hatırlat-bağı` : ""}).`,
+      `${e.dogrudan.length + e.gecisli.length} nodes in total are affected by this change (in topological order${e.hatırlatBaglari.length ? ` · +${e.hatırlatBaglari.length} hatırlat links` : ""}).`),
   ].join("\n");
 }

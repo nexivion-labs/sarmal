@@ -46,22 +46,29 @@ test("CDL-A06: karşılama kartı ve dil bağlamı iki düzyazı hanesini seçer
   const kartTr = ogretKarti(SNF, "tr");
   const kartEn = ogretKarti(SNF, "en");
   assert.match(kartTr, /^🚪 SARMAL KARŞILAMA KARTI/u);
-  assert.match(kartEn, /^🚪 SARMAL WELCOME CARD/u);
-  assert.match(kartEn, /Phase \(canonical: Faz\).*TIME axis/u,
-    "kanonik tip adı ve açıklaması sözlüğün İngilizce hanesinden gelmeli");
-  assert.match(kartEn, /Step \(canonical: Adım\) → task\|accept\|produces/u,
-    "zorunlu kenar adları sözlükten çevrilmeli");
+  assert.match(kartEn, /^🚪 Sarmal WELCOME CARD/u);
+  // MGZ-A11 · Founder hükmü 2026-10-10: İngilizce yüz dosyadaki gerçek adı anar.
+  // Tip açıklaması sözlüğün İngilizce hanesinden gelir, ad ise çevrilmez.
+  assert.match(kartEn, /🌀 Faz — .*TIME axis/u,
+    "tip adı dosyadaki adla, açıklaması sözlüğün İngilizce hanesinden gelmeli");
+  assert.match(kartEn, /Adım → görev\|kabul\|üretir/u,
+    "zorunlu kenar adları dosyadaki adla anılmalı");
+  assert.doesNotMatch(kartEn, /\bPhase\b|\bStep\b|dependsOn|canonical: /u,
+    "kart dosyada bulunmayan ad karşılığı öğretmemeli");
 
   const baglamTr = dilBaglami("2026-08-02", "tr");
   const baglamEn = dilBaglami("2026-08-02", "en");
   assert.match(baglamTr, /^# Sarmal Dil Bağlamı/u);
   assert.match(baglamEn, /^# Sarmal Language Context/u);
-  assert.match(baglamEn, /\*\*Phase \(`Faz`\)\*\* — a season or a year-ring/u,
-    "tip kanonu widget/widgetNe sözlük hanelerinden derlenmeli");
-  assert.match(baglamEn, /\*\*dependsOn \(`bağımlı`\)\*\* \(A->B\) — A depends on B/u,
-    "kenar kanonu kenar/kenarNe sözlük hanelerinden derlenmeli");
-  assert.match(baglamEn, /Canonical `ayakizi:` convention.*The `footprint:` field/u,
-    "şema kuralı semaKural sözlük hanesinden derlenmeli");
+  // MGZ-A11: dil bağlamı da dosyadaki adı anar; açıklama sözlüğün İngilizce hanesinden gelir.
+  assert.match(baglamEn, /\*\*Faz\*\* — a season or a year-ring/u,
+    "tip kanonu dosyadaki adla, açıklaması widgetNe sözlük hanesinden derlenmeli");
+  assert.match(baglamEn, /\*\*bağımlı\*\* \(A->B\) — A depends on B/u,
+    "kenar kanonu dosyadaki adla, açıklaması kenarNe sözlük hanesinden derlenmeli");
+  assert.match(baglamEn, /Canonical `ayakizi:` convention.*The `ayakizi:` field/u,
+    "şema kuralı semaKural sözlük hanesinden derlenmeli ve alanı dosyadaki adla anmalı");
+  assert.doesNotMatch(baglamEn, /\bPhase\b|\bStep\b|dependsOn|`footprint:`/u,
+    "dil bağlamı dosyada bulunmayan ad karşılığı öğretmemeli");
 });
 
 test("CDL-A06: `.sar` örnekleri iki dilde de aynı kanonik Türkçe kaynaktır", () => {
@@ -155,7 +162,7 @@ test("CDL-A06: elle yazılmış ikinci kart/bağlam üretici dosyası yoktur", (
   const dosyalar = readdirSync(SRC).filter((ad) => ad.endsWith(".ts"));
   const kartKaynaklari = dosyalar.filter((ad) => {
     const metin = readFileSync(join(SRC, ad), "utf8");
-    return metin.includes("SARMAL KARŞILAMA KARTI") || metin.includes("SARMAL WELCOME CARD");
+    return metin.includes("SARMAL KARŞILAMA KARTI") || metin.includes("Sarmal WELCOME CARD");
   });
   const baglamKaynaklari = dosyalar.filter((ad) => {
     const metin = readFileSync(join(SRC, ad), "utf8");
@@ -174,7 +181,7 @@ test("CDL-A06: SARMAL_DIL CLI kartına ve doğuş AGENTS.md üretimine uçtan uc
     encoding: "utf8",
   });
   assert.match(kart("tr"), /^🚪 SARMAL KARŞILAMA KARTI/u);
-  assert.match(kart("en"), /^🚪 SARMAL WELCOME CARD/u);
+  assert.match(kart("en"), /^🚪 Sarmal WELCOME CARD/u);
 
   const kod = `import { dogusManifesti } from ${JSON.stringify(pathToFileURL(DOGUS).href)};` +
     `process.stdout.write(dogusManifesti("deneme", "2026-08-02").find((d) => d.yol === "AGENTS.md").icerik);`;

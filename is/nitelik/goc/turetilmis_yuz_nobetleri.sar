@@ -32,14 +32,28 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
-| `urun/cekirdek/src/mcp-metinleri.ts` | `a6bb170fc02996999857719032fce67de800f0c7c5f61f661d27ca3e229bada8` |
-| `urun/cekirdek/src/dil-baglami.ts` | `9183d24c9c5528b02b7d4c0c6a9783b1c00019e29c810038a398b60f976b8591` |
+| `urun/cekirdek/src/mcp-metinleri.ts` | `cc57bb2fa7b8c303466bb03a93c0a21baab54fdebaa60bb1e20157ac5783b557` |
+| `urun/cekirdek/src/dil-baglami.ts` | `37212e330b73a9cf577f69ecab5134bab257b1c6403f03e169e2df5467980f69` |
 | `urun/eklenti/package.nls.tr.json` | `d53560d47587c73b7cd6848ea83049952805e49a43c79918123de6fd14a49873` |
 | `urun/eklenti/package.nls.json` | `980dcb5695a0e16fe47bd3e50ed2f42d98b4f76af1ab4784ad426932be5d40b3` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d25b70ba41aca77ad5b7d87183d6e2877737dc36b680412c75fdcf9cd9452113` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-16 · ajan dil bağlamının adları · MGZ-A11): doğuş paketinin
+İngilizce dilde yazdığı ajan dil bağlamı dosyada bulunmayan Phase, Step ve dependsOn
+karşılıkları yerine dosyadaki Faz, Adım ve bağımlı adlarını anar oldu. Yalnız
+`dil-baglami.ts` dosyasının İngilizce haneleri değişti ve mührü ilerledi; Türkçe
+dil bağlamı bayt bayt aynı kaldı, öteki sekiz kaynağın mührü değişmedi ve on altı
+yüzün yeniden üretimi fark vermedi.
+
+Tazeleme notu (2026-10-16 · MCP öğretim yüzünün adları · MGZ-A11): sunucu
+talimatının ve doğuş aracı açıklamasının İngilizce hanesi dosyada bulunmayan Step ve
+Phase karşılıkları yerine dosyadaki Adım ve Faz adlarını anar oldu. Yalnız
+`mcp-metinleri.ts` dosyasının İngilizce haneleri değişti ve mührü ilerledi; Türkçe
+haneler ile öteki sekiz kaynağın mührü değişmedi ve on altı yüzün yeniden üretimi
+fark vermedi.
 
 Tazeleme notu (2026-10-16 · araç metinlerinde örnek kalıbı · HST-MTR-A17):
 Araç açıklamalarında ve parametre tariflerinde örnek olarak gösterilen somut

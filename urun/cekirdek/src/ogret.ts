@@ -18,8 +18,6 @@ import { YENI_TANI_KANONU } from "./tani-sicili.ts";   // KPS-MHR-A01: MIM-3.4 t
 import {
   dilHanesi,
   etkinCiktiDili,
-  sozlukAdi,
-  sozlukDegeri,
   sozlukDuzYazisi,
   type CiktiDili,
 } from "./cevir.ts";
@@ -149,7 +147,7 @@ export function dogusAnlatisi(dil: CiktiDili = etkinCiktiDili()): string {
   ));
   b.push(y(
     "   Teknoloji ile Takım ilanı → Kitaplık ve Raf mimarisi → plan ekseni (② bölümündeki",
-    "   declaring Technology and Team → the Kitaplık/Raf architecture → the plan axes (the chain in",
+    "   declaring Teknoloji and Takım → the Kitaplık/Raf architecture → the plan axes (the chain in",
   ));
   b.push(y(
     "   zincir). Üst kademe onaylanmadan alt kademe yazılmaz; bir kademe atlanıp doğrudan",
@@ -238,7 +236,7 @@ const MUHUR_DAVRANISI: Readonly<Record<MuhurTuru, { tr: string; en: string }>> =
   },
   "sonra": {
     tr: "sonraya bırakılmış iş; içerik okunmaz, dosya bekleme süresiyle birlikte Hatırlatıcılar yüzeyinde görünür kalır",
-    en: "deferred work; its content is not read, and the file stays visible on the Reminders surface together with its waiting time",
+    en: "deferred work; its content is not read, and the file stays visible in the Reminders panel together with its waiting time",
   },
 };
 
@@ -278,19 +276,19 @@ export function dosyaMuhruOgretisi(dil: CiktiDili = etkinCiktiDili()): string[] 
 /** Karşılama kartını kanondan derler (saf). Tek iskelet, iki düzyazı hanesi. */
 export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): string {
   const y = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
-  const tipAdi = (ad: string): string => sozlukAdi("widget", ad, dil);
-  const kenarAdi = (ad: string): string => sozlukAdi("kenar", ad, dil);
-  const alanAdi = (ad: string): string => sozlukAdi("parametre", ad, dil);
-  const kodluAd = (cevrilmis: string, kanonik: string): string =>
-    dil === "tr" || cevrilmis === kanonik ? cevrilmis : `${cevrilmis} (canonical: ${kanonik})`;
+  // MGZ-A11 · İngilizce yüzün tek ilkesi (Founder hükmü 2026-10-10): kart her dilde
+  // dosyadaki gerçek adı anar. Tip, kenar ve alan adı çevrilmez; İngilizce karşılık
+  // (Phase, Step, `dependsOn:`) öğretilseydi ajan motorun bilinmeyen tip ya da şema
+  // dışı alan saydığı bir dosya yazardı. Tip düzyazısının ad jetonları da dosyadaki
+  // adla çözülür (`kaynak` kipi).
   const ne = new Map(snf.widgetTipleri.map((t) => [t.ad, t.ne]));
   const tipNe = (ad: string, yedek: string): string =>
-    sozlukDuzYazisi("widgetNe", ad, ne.get(ad) ?? yedek, dil);
+    sozlukDuzYazisi("widgetNe", ad, ne.get(ad) ?? yedek, dil, "kaynak");
   const b: string[] = [];
 
   b.push(y(
     "🚪 SARMAL KARŞILAMA KARTI — bu kart kanondan üretilir, bu yüzden bayatlamaz",
-    "🚪 SARMAL WELCOME CARD — this card is generated from canon, so it cannot go stale",
+    "🚪 Sarmal WELCOME CARD — this card is generated from canon, so it cannot go stale",
   ));
   b.push("");
   b.push(y(
@@ -324,12 +322,12 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   b.push("");
   b.push(y(
     "② PLAN EKSENLERİ VE DEPARTMAN (katı rejimde Faz → Blok → Katman → AltKatman → Adım):",
-    "② PLAN AXES AND DISCIPLINE (strict mode uses Phase → Block → Layer → Sublayer → Step):",
+    "② THE FOUR AXES AND THE DISCIPLINE (strict mode uses Faz → Blok → Katman → AltKatman → Adım):",
   ));
-  b.push(`   🌀 ${kodluAd(tipAdi("Faz"), "Faz")} — ${tipNe("Faz", "ZAMAN")}`);
-  b.push(`   🪵 ${kodluAd(tipAdi("Blok"), "Blok")} — ${tipNe("Blok", "İŞ")}`);
-  b.push(`   🌿 ${kodluAd(tipAdi("Katman"), "Katman")} — ${tipNe("Katman", "TEKNOLOJİ")}`);
-  b.push(`   🍃 ${kodluAd(tipAdi("Adım"), "Adım")} — ${tipNe("Adım", "AKIŞ")}`);
+  b.push(`   🌀 Faz — ${tipNe("Faz", "ZAMAN")}`);
+  b.push(`   🪵 Blok — ${tipNe("Blok", "İŞ")}`);
+  b.push(`   🌿 Katman — ${tipNe("Katman", "TEKNOLOJİ")}`);
+  b.push(`   🍃 Adım — ${tipNe("Adım", "AKIŞ")}`);
   // DEPARTMAN EKSENİ — kapalı küme + kaçış kapısı (TIP-2.5 katkılı örtü).
   // Ölçülmüş boşluk (2026-07-28): bu mekanizma iki öğretim yüzeyinde de SIFIR kez
   // geçiyordu ve depoda tek bir ortu.json yoktu. Sonucu sessiz yalan beyandı: işi
@@ -338,14 +336,15 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   const departmanlar = snf.semalar?.["AltKatman"]?.enum?.["departman"] ?? [];
   if (departmanlar.length) {
     const altSimge = snf.tipSimgeleri?.["AltKatman"] ?? "🌾";
-    const degerler = departmanlar.map((deger) => sozlukDegeri("departman", deger, dil));
+    // MGZ-A11: enum değeri de dosyaya yazıldığı gibi anılır (`departman: kodlama`).
+    const degerler = departmanlar;
     b.push(y(
       `   ${altSimge} AltKatman — DEPARTMAN ekseni: her AltKatman çekirdek kümeden tam olarak`,
-      `   ${altSimge} ${kodluAd(tipAdi("AltKatman"), "AltKatman")} — DISCIPLINE axis: every Sublayer carries exactly one`,
+      `   ${altSimge} AltKatman — DISCIPLINE axis: every AltKatman carries exactly one`,
     ));
     b.push(y(
       `   birini \`departman:\` alanıyla taşır (${degerler.join(" · ")}).`,
-      `   member of the core set through the canonical \`departman:\` field (${degerler.join(" · ")}).`,
+      `   member of the core set through the \`departman:\` field (${degerler.join(" · ")}).`,
     ));
     b.push(y(
       "   İşin bu kümeye GİRMİYORSA yanlış etiket yazma: motor yanlış etiketi yakalayamaz,",
@@ -357,7 +356,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
     ));
     b.push(y(
       "   (TIP-2.5): ÇalışmaAlanı kökünde `oz/siniflama/ortu.json` dosyasına kendi",
-      "   (TIP-2.5): add your own value to `oz/siniflama/ortu.json` at the Workspace root.",
+      "   (TIP-2.5): add your own value to `oz/siniflama/ortu.json` at the ÇalışmaAlanı root.",
     ));
     b.push(y(
       "   değerini EKLERSİN; taban küme silinmez ya da yeniden adlandırılmaz, örtü",
@@ -382,32 +381,29 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   ));
   b.push(y(
     "   takip eder; vermezsen Faz yine açılır, motor yalnız hatırlatır (yol kesmez).",
-    "   and approaching work; without it the Phase still opens and the engine only reminds you.",
+    "   and approaching work; without it the Faz still opens and the engine only reminds you.",
   ));
   b.push(y(
     "   Her Faz is/plan/faz/ altında sıra önekli kendi dosyasında yaşar ve Bloklar Faz",
-    "   Every Phase lives in its own prefix-numbered file under is/plan/faz/ and Blocks are",
+    "   Every Faz lives in its own prefix-numbered file under is/plan/faz/ and every Blok is",
   ));
   b.push(y(
     "   gövdesine sarılır (MIM-1.2); Fazsız Blok hatadır, bekleyen iş de bir Faza bağlanır.",
-    "   wrapped in the Phase body (MIM-1.2); a phase-less Block is an error, and waiting work is bound to a Phase too.",
+    "   wrapped in the Faz body (MIM-1.2); a Blok without a Faz is an error, and waiting work is bound to a Faz too.",
   ));
   b.push("");
   b.push(y(
     "③ KONİ ALANLARI (Adım'ın zengin alanları — orkestratör buradan prompt üretir):",
-    "③ CONTEXT-CONE FIELDS (the Step's rich fields — the orchestrator builds the prompt from them):",
+    "③ CONTEXT-CONE FIELDS (the Adım's rich fields — the orchestrator builds the prompt from them):",
   ));
-  const koniAlanlari = KONI_ALANLARI.map((ad) => {
-    const kenar = kenarAdi(ad);
-    return kenar === ad ? alanAdi(ad) : kenar;
-  });
+  const koniAlanlari = [...KONI_ALANLARI];
   b.push(y(
     `   ${koniAlanlari.join(" · ")} (+ kapanışta \`üretir:\` meyve kenarı)`,
-    `   ${koniAlanlari.join(" · ")} (+ the canonical \`üretir:\` fruit edge at closure)`,
+    `   ${koniAlanlari.join(" · ")} (+ the \`üretir:\` fruit edge at closure)`,
   ));
   b.push(y(
     "   `geliştirmede` Adım koni-dolu olmalı ve `bağımlı:` alanı zorunludur; kademe atlamak yasaktır:",
-    "   An in-progress Step must have a full cone and the canonical `bağımlı:` field is mandatory; skipping stages is forbidden:",
+    "   An Adım in `geliştirmede` must have a full cone and the `bağımlı:` field is mandatory; skipping stages is forbidden:",
   ));
   b.push(y(
     "   beklemede → geliştirmede → tamamlandı.",
@@ -423,12 +419,9 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
       "④ REQUIRED EDGES (canon `zorunluKenarlar` — the engine checks them through these diagnostics):",
     ));
     for (const [tip, kurallar] of zk) {
-      const gorunenTip = kodluAd(tipAdi(tip), tip);
+      const gorunenTip = tip;
       for (const k of kurallar) {
-        const grup = k.grup.map((ad) => {
-          const kenar = kenarAdi(ad);
-          return kenar === ad ? alanAdi(ad) : kenar;
-        });
+        const grup = k.grup;
         b.push(`   ${gorunenTip} → ${grup.join("|")} (${y("tanı", "diagnostic")}: ${k.tanı})`);
       }
     }
@@ -437,7 +430,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
 
   b.push(y(
     "⚖️ DAYANAK KENARI: bir Kural hangi karardan doğduğunu `dayanak: [ YAS-2 ]`",
-    "⚖️ RATIONALE EDGE: a Rule states which decision gave rise to it with `dayanak: [ YAS-2 ]`;",
+    "⚖️ RATIONALE EDGE: a Kural states which decision gave rise to it with `dayanak: [ YAS-2 ]`;",
   ));
   b.push(y(
     "   ile söyler — hedef KARAR düğümüdür (başka tip uyarılır), revize/tarihçe karara",
@@ -462,11 +455,11 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   // liste maddesi değildir — aracın NE ZAMAN çağrılacağını söyler.
   b.push(y(
     "🚦 BİR ADIMI İŞLEMEYE BAŞLAMADAN ÖNCE `sef` ARACINI ÇAĞIR. Adımın konisini, kritik",
-    "🚦 BEFORE YOU START WORKING ON A STEP, CALL THE `sef` TOOL. It gives you the Step's cone,",
+    "🚦 BEFORE YOU START WORKING ON AN Adım, CALL THE `sef` TOOL. It gives you the Adım's cone,",
   ));
   b.push(y(
     "   kısıtlarını ve o Adımda ateşleyen beceri kartlarını hazır bir prompt olarak sana",
-    "   critical constraints, and the skill cards triggered for that Step as a ready prompt;",
+    "   critical constraints, and the skill cards triggered for that Adım as a ready prompt;",
   ));
   b.push(y(
     "   bu araç verir; bağlamı elle toplamaya çalışma. Beceri kartları `ogreti/ogrenme/` rafında",
@@ -482,7 +475,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   ));
   b.push(y(
     "   Kontrolcü asistanın anayasası, kuralları ve Etmen tanımı `oz/kayit/asistan_kontrolcu.sar`",
-    "   The controller assistant's constitution, rules, and Agent declaration are in",
+    "   The controller assistant's constitution, rules, and Etmen declaration are in",
   ));
   b.push(y(
     "   dosyasındadır; bu depoda çalışıyorsan işe oradan başlarsın.",
@@ -513,7 +506,7 @@ export function ogretKarti(snf: Siniflama, dil: CiktiDili = etkinCiktiDili()): s
   ));
   b.push(y(
     "   ③ KARAR→PLAN: kilitli karar plana iner — uygulama isteyen kararı",
-    "   ③ DECISION→PLAN: a locked decision flows into the plan — do not leave a decision that",
+    "   ③ From decision to plan: a locked decision flows into the plan — do not leave a decision that",
   ));
   b.push(y(
     "     plansız bırakma; bekliyor kararı UYGULAMA (önce Founder kilidi).",

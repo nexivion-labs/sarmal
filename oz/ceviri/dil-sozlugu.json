@@ -335,14 +335,14 @@
     "özsu": {"en":"sap"}
   },
   "agacMetaforuNe": {
-    "kök": {"en":"Project/MAIN"},
-    "mevsim": {"en":"Phase — year-ring 🌀 (TIME axis: a growth period; sibling phases are ordered)"},
-    "gövde": {"en":"Block — WORK (the SAME trunk grows across seasons; cross-phase `çağır` continuity)"},
-    "dal": {"en":"Layer — TECHNOLOGY (expects a TechStack binding)"},
-    "yaprak": {"en":"Step — FLOW"},
+    "kök": {"en":"Proje/MAIN"},
+    "mevsim": {"en":"Faz — year-ring 🌀 (TIME axis: a growth period; sibling phases are ordered)"},
+    "gövde": {"en":"Blok — WORK (the SAME trunk grows across seasons; cross-phase `çağır` continuity)"},
+    "dal": {"en":"Katman — TECHNOLOGY (expects a Takım binding)"},
+    "yaprak": {"en":"Adım — FLOW"},
     "meyve": {"en":"the produced product (`üretir` → product family)"},
-    "bahçe": {"en":"Workspace"},
-    "özsu": {"en":"the knowledge family (Decision·Formula·Glossary·Idea·Insight·Experiment·Philosophy·Mockup) — the distillation layer that turns outside light into nourishment; an insight flows to the branch it feeds via the --> edge, and a leaf that does not flow does not feed the tree (Founder's metaphor · 2026-08-10)"}
+    "bahçe": {"en":"ÇalışmaAlanı"},
+    "özsu": {"en":"the knowledge family (Karar·Formül·Sözlük·Fikir·Çıkarım·Deney·Felsefe·Mockup) — the distillation layer that turns outside light into nourishment; an insight flows to the branch it feeds via the --> edge, and a leaf that does not flow does not feed the tree (Founder's metaphor · 2026-08-10)"}
   },
   "karneDerece": {
     "1": {"en":"weak — the record is markedly problematic"},
@@ -352,10 +352,10 @@
     "5": {"en":"exemplary — the record is held up as an example to the roster"}
   },
   "karneBilesen": {
-    "kabulIsabeti": {"en":"whether acceptance items were met with evidence in closed Steps (run seals; a reopened Step lowers accuracy)"},
+    "kabulIsabeti": {"en":"whether acceptance items were met with evidence in closed Adım nodes (run seals; a reopened Adım lowers accuracy)"},
     "denetimTemizligi": {"en":"the check verdict at closure (0 errors expected; produced drift is recorded)"},
     "sinamaYesilligi": {"en":"suite status at the closing commit (gate records)"},
-    "founderSinyalleri": {"en":"appreciation/honor/suggestion records written on the Step (human signal, read qualitatively rather than numerically)"}
+    "founderSinyalleri": {"en":"appreciation/honor/suggestion records written on the Adım (human signal, read qualitatively rather than numerically)"}
   },
   "widgetNe": {
     "ÇalışmaAlanı": {"en":"the garden / workspace — a single foundation; it wraps many ⟦Uygulama|s⟧ in parallel (M-01)"},
@@ -516,7 +516,7 @@
     "DurumKaydı": {"en":"A session handover is transferred without loss through standard sections. The sections are these: the progress field is a single sentence carrying one CODE; the next field gives the priority chain; the locks field lists the rulings that do not change between sessions; the openItems field holds the pending items, gate status included; and the summary field is the body that carries the session narrative."},
     "GenelKural": {"en":"A GeneralRule is a Rule whose scope defaults to `genel` (everything), and it governs the ENTIRE workspace. There is no separate evaluator: the rule engine evaluates it in the same place as every other rule."},
     "ÖzelKural": {"en":"A CustomRule is a Rule that descends into the directory named in its `target:` field; what separates this type from the other one is its scope. Outside the target, structural and threshold evaluation is skipped. There is no separate evaluator: the rule engine is the same."},
-    "Teknoloji": {"en":"The `footprint:` field holds, as a list, the known configuration, scaffold and generated-file traces a technology leaves on disk. The auditor treats these paths as DECLARED off-backbone and resolves them RELATIVE to the directory the declaration lives in. This is an allowlist with its reason written down, not a blanket silencer. Command-line tools that leave traces on disk (pnpm · wrangler) are modelled as Tools, not as Technologies."},
+    "Teknoloji": {"en":"The `ayakizi:` field holds, as a list, the known configuration, scaffold and generated-file traces a technology leaves on disk. The auditor treats these paths as DECLARED off-backbone and resolves them RELATIVE to the directory the declaration lives in. This is an allowlist with its reason written down, not a blanket silencer. Command-line tools that leave traces on disk (pnpm · wrangler) are modelled as Tools, not as Technologies."},
     "Takım": {"en":"code + what + dependsOn (the members) — A TECHSTACK WITH NO MEMBERS IS INVALID; every member is a resolvable Technology or TechStack CODE (drift-checked)"},
     "KimlikKökü": {"en":"The identity-domain boundary (MIM-1.1 · ORK-5): it covers exactly one IdentityPolicy and wraps zero or more IdentityProviders; Projects on shared Auth point to this root with the `uses` edge and Project identities never merge. A provider with no root, and a policy outside a root, are violations; engine enforcement is still owed by the engine round under the `auth-omurgası-ihlali` diagnostic"},
     "KimlikSağlayıcısı": {"en":"The base provider catalogue is closed (ORK-5.1): google · github · linkedin · apple · microsoft · sso are preserved in full; a new provider may be added only through an additive enum extension in the Workspace overlay, and a base option may never be deleted or renamed. A provider lives under exactly one IdentityRoot"},

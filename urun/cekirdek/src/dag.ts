@@ -849,10 +849,14 @@ export function adAlaniSecenekleri(dag: Dag, kod: string): string[] {
  * sıralar ve hangisinin kastedildiğini SORAR. Tek bir yüzeyin kendi cümlesini
  * kurması, üç yüzün üç ayrı şey söylemesi demekti (YUZ-1.2).
  */
-export function dugumYokMetni(dag: Dag, kod: string, yoksa: string): string {
+export function dugumYokMetni(dag: Dag, kod: string, yoksa: string, dil: "tr" | "en" = "tr"): string {
   const secenekler = adAlaniSecenekleri(dag, kod);
   if (!secenekler.length) return yoksa;
-  return `✖ '${kod}' kodu bu çatıda ${secenekler.length} kardeş Projede birden ilanlı; hangisini kastettiğini ad alanıyla söyle (ORK-4):\n${secenekler.map((s) => `  ${s}`).join("\n")}`;
+  // MGZ-A11: İngilizce kipte yalnız düzyazı değişir; ad alanı seçenekleri dosyadaki kodlardır.
+  const bas = dil === "en"
+    ? `✖ The KOD '${kod}' is declared in ${secenekler.length} sibling Proje roots under this umbrella; say which one you mean with its namespace (ORK-4):\n`
+    : `✖ '${kod}' kodu bu çatıda ${secenekler.length} kardeş Projede birden ilanlı; hangisini kastettiğini ad alanıyla söyle (ORK-4):\n`;
+  return `${bas}${secenekler.map((s) => `  ${s}`).join("\n")}`;
 }
 
 /**

@@ -46,6 +46,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dilBaglami } from "./dil-baglami.ts";   // DPK-A03: ajan dil bağlamı — kanondan üretilir
+import { dilHanesi, type CiktiDili } from "./cevir.ts";   // MGZ-A11: rapor ve sorunun İngilizce hanesi
 import { yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri, izKlasoruSatiriEksigi } from "./yonerge-ikizi.ts";   // BKM-DNT-A15: küresel yok sayma tuzağının desen listesi TEK kaynaktadır
 
 const DOGUS_SABLON_KOK = fileURLToPath(new URL("../../../ogreti/sablon/dogus/", import.meta.url));
@@ -158,7 +159,17 @@ export function dogusTuruCoz(ham: string | undefined): DogusTuru | undefined {
 }
 
 /** Tür sorusunun metni — CLI ile MCP aynı sesi verir (YUZ-1.2 tek kaynak). */
-export function dogusSorusu(): string {
+export function dogusSorusu(dil: CiktiDili = "tr"): string {
+  if (dil === "en") {
+    return [
+      "❓ What should be born? The birth command knows two tiers:",
+      "   ① one project    — the target directory becomes the Proje root itself: anadizin, status handover, learning shelf and first plan.",
+      "   ② workspace      — the target directory becomes the ÇalışmaAlanı root; the first project is born beneath it with its own root",
+      "                      (MIM-1.1: a workspace wraps at least one independent Proje root and does not merge identities).",
+      "   The choice is given on the command line with --tur proje | --tur calisma-alani, and in the MCP call with the tur field;",
+      "   in a workspace the first project's name is chosen with --proje <ad> (MCP: proje); when omitted it is " + VARSAYILAN_ILK_PROJE + ".",
+    ].join("\n");
+  }
   return [
     "❓ Ne doğsun? Doğuş komutu iki kademe bilir:",
     "   ① tek proje      — hedef dizin doğrudan Proje kökü olur: anadizin, durum devri, öğrenme rafı ve ilk plan.",
@@ -331,44 +342,56 @@ export function dogusYaz(hedefKok: string, ad?: string, tarih?: string, tur: Dog
 }
 
 /** İnsan/ajan-yüzlü doğuş raporu — CLI ve MCP aynı sesi verir (YUZ-1.2 tek kaynak). */
-export function dogusRaporu(s: DogusSonuc, hedef: string): string {
+export function dogusRaporu(s: DogusSonuc, hedef: string, dil: CiktiDili = "tr"): string {
+  // MGZ-A11: `dil` yalnız raporun düzyazısını seçer; yollar, kodlar ve dosya adları dosyadaki gibidir.
+  const t = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
   const satirlar: string[] = [];
   if (s.tur === "calisma-alani") {
-    satirlar.push(`🎁 DOĞUŞ PAKETİ — çalışma alanı "${s.ad}" (kod kısaltması: CAL-${s.kod}) ve altında ilk proje "${s.proje}" → ${hedef}`);
+    satirlar.push(t(`🎁 DOĞUŞ PAKETİ — çalışma alanı "${s.ad}" (kod kısaltması: CAL-${s.kod}) ve altında ilk proje "${s.proje}" → ${hedef}`,
+      `🎁 BIRTH PACKAGE — workspace "${s.ad}" (\`kod\` abbreviation: CAL-${s.kod}) with the first project "${s.proje}" beneath it → ${hedef}`));
   } else {
-    satirlar.push(`🎁 DOĞUŞ PAKETİ — "${s.ad}" (kod kısaltması: ${s.kod}) → ${hedef}`);
+    satirlar.push(t(`🎁 DOĞUŞ PAKETİ — "${s.ad}" (kod kısaltması: ${s.kod}) → ${hedef}`, `🎁 BIRTH PACKAGE — "${s.ad}" (\`kod\` abbreviation: ${s.kod}) → ${hedef}`));
   }
   if (s.yazilan.length) {
-    satirlar.push("", "🌱 Doğan dosyalar:");
+    satirlar.push("", t("🌱 Doğan dosyalar:", "🌱 Files born:"));
     for (const y of s.yazilan) satirlar.push(`   + ${y}`);
   }
   if (s.genisletilen.length) {
-    satirlar.push("", "🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik satır eklendi):");
+    satirlar.push("", t("🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik satır eklendi):",
+      "🛡️ Extended (already present — no line was deleted, only missing lines were appended):"));
     for (const y of s.genisletilen) satirlar.push(`   ~ ${y}`);
   }
   if (s.atlanan.length) {
-    satirlar.push("", "🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):");
+    satirlar.push("", t("🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):",
+      "🛡️ Left untouched (already present — the existing record belongs to its owner and is not overwritten):"));
     for (const y of s.atlanan) satirlar.push(`   = ${y}`);
   }
   const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/faz/1_dogus.sar` : "is/plan/faz/1_dogus.sar";
   satirlar.push(
     "",
     s.yazilan.length || s.genisletilen.length
-      ? `🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`
-      : "📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.");
+      ? t(`🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`,
+        `🧭 Next work: the founding Adım in ${planYolu} (the architecture dialogue). Verification: sarmal denetle <dizin> — zero errors are expected.`)
+      : t("📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.", "📪 There was no new file to write — the package appears to be installed already."));
   // BKM-OLG-A11 (MIM-1.4): Kuruluş Katmanının teknoloji kaçışı yalnız doğuş anı içindir;
   // rapor bunu açıkça söyler ki ajan kaçışı kalıcı bir üçüncü yol gibi kopyalamasın.
   if (s.yazilan.some((y) => y.endsWith("is/plan/faz/1_dogus.sar"))) {
     satirlar.push(
-      "⏳ Kuruluş Katmanındaki teknolojiBağımsız satırı GEÇİCİDİR: yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur.",
-      "   İlk Teknoloji ya da Takım ilan edilince motor onu yersiz-teknoloji-kaçışı uyarısıyla bildirir; kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır. Yeni Katmanlara kaçış kopyalanmaz; işin türü AltKatmanın departman: alanında yazılır.");
+      t("⏳ Kuruluş Katmanındaki teknolojiBağımsız satırı GEÇİCİDİR: yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur.",
+        "⏳ The teknolojiBağımsız line in the founding Katman is TEMPORARY: it is legitimate only while the project has no Teknoloji and no Takım yet."),
+      t("   İlk Teknoloji ya da Takım ilan edilince motor onu yersiz-teknoloji-kaçışı uyarısıyla bildirir; kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır. Yeni Katmanlara kaçış kopyalanmaz; işin türü AltKatmanın departman: alanında yazılır.",
+        "   Once the first Teknoloji or Takım is declared, the engine reports the line with the yersiz-teknoloji-kaçışı warning; the line is deleted before the founding Adım closes and the Katman binds with the takım: edge. The escape is not copied into new Katman nodes; the kind of work is written in the AltKatman's departman: field."));
   }
   if (s.yazilan.length) {
     satirlar.push(
-      `🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
-      `   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.sh ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
-      `   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
-      `   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`);
+      t(`🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
+        `🚪 The root's gates were installed: the ignore exception (${yokSaymaIstisnaSatirlari().join(" · ")}), the executor setting, the instruction twin, the birth lock with the audit hook, and the canon pointer.`),
+      t(`   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.sh ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
+        `   The gates' address was written PORTABLY: .mcp.json, .claude/kanca/denetim-kapisi.sh and oz/siniflama/isaretci.json read the engine path from the \`${SARMAL_KOK_ONEKI}\` environment variable and carry no default.`),
+      t(`   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
+        `   So when the tree moves to another machine no path is edited by hand; the only thing to do is define the variable on that machine: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`),
+      t(`   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`,
+        `   While the variable is undefined the client still loads the registration and names the missing variable; the audit hook does not withdraw silently either — it says it cannot find the engine and names the repair.`));
   }
   return satirlar.join("\n");
 }
