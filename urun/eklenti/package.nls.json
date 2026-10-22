@@ -41,7 +41,7 @@
   "config.validation": "Live drift checks — underline syntax and rule diagnostics in red or yellow as you type. When disabled, only highlighting and reading mode remain.",
   "config.inlineDiagnostics": "Inline diagnostics: errors and warnings from the Problems panel also appear at the end of their line, colored by severity. When disabled, diagnostics remain available through underlines and the Problems panel.",
   "config.activeEntityFocus": "Focus the Problems panel on the active entity: only diagnostics from the project root containing the current file are shown. When disabled, all entities are listed and remain separated by their source label (Sarmal · _Project).",
-  "config.indentColors": "Tint indentation levels with a full rainbow spectrum (red→violet, with a subtle glow). Applies only to .sar files.",
+  "config.indentColors": "Tint indentation levels with a rainbow spectrum (red→violet, with a subtle glow); the legacy look, off by default. Applies only to .sar files.",
   "config.glassEffect": "Render type names (Adım · Katman · Blok) and keywords (görev: · kabul:) inside frosted-glass capsules. Applies only to .sar files.",
   "config.liveMap": "Live map: while the cone card is open, it refreshes to the node under the cursor without requiring a click.",
   "config.miniGraph": "Mini graph: draw the entire project in one graph below the roadmap; Faz, Blok, Katman, AltKatman and Adım stay on their own tracks with dependency links between them. Selecting a roadmap node marks it without narrowing the graph; selecting a graph node opens its definition. Disabling this setting hides the view completely.",

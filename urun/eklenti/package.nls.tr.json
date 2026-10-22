@@ -41,7 +41,7 @@
   "config.validation": "Canlı drift denetimi — yazarken söz dizimi + kural tanıları (kırmızı/sarı alt çizgiler). Kapatınca yalnız renklendirme ve okuma modu kalır.",
   "config.inlineDiagnostics": "Satır-içi tanılar: Problems panelindeki hata ve uyarılar ilgili satırın sonunda düzeye göre renklendirilmiş olarak da gösterilir. Kapatınca tanılar yalnız alt çizgi ve Problems paneli üzerinden okunur.",
   "config.activeEntityFocus": "Problems paneli aktif varlığa odaklanır: hangi projenin anadizin kökü altındaki dosyadaysanız yalnız o projenin tanıları görünür. Kapatınca bütün varlıklar birden listelenir; kaynak etiketi (Sarmal · _Proje) ile gene ayrışırlar.",
-  "config.indentColors": "Girinti katmanlarını gerçek gökkuşağı tayfıyla tonla (kırmızı→mor, hafif ışımalı). Yalnız .sar dosyalarında.",
+  "config.indentColors": "Gökkuşağı girinti bantları (eski görünüm): girinti katmanlarını kırmızıdan mora tayfla tonlar, hafif ışımalıdır; varsayılan olarak kapalıdır. Yalnız .sar dosyalarında.",
   "config.glassEffect": "Tip adları (Adım · Katman · Blok) ve anahtar kelimeler (görev: · kabul:) buzlu-cam kapsülle çizilir. Yalnız .sar dosyalarında.",
   "config.liveMap": "Canlı harita: koni kartı açıkken imleç hangi düğümün üzerindeyse kart tıklamaya gerek kalmadan o düğüme tazelenir.",
   "config.miniGraph": "Mini graf: yol haritasının altında projenin tamamı tek bir grafta çizilir; Faz, Blok, Katman, AltKatman ve Adım kendi raylarında durur, aralarındaki bağımlılık bağları görünür. Yol haritasında seçtiğiniz düğüm grafı daraltmaz, yalnız işaretlenir; bir düğüme tıklayınca tanımının bulunduğu satıra atlarsınız. Kapatınca görünüm tamamen gizlenir.",

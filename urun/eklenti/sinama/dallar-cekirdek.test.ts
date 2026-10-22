@@ -133,3 +133,23 @@ test("⑤ editör çizimi: metin sıfırıncı sütundan başlarsa dal bilinçli
   const dogru = "Faz( kod: FAZ-D, ad: \"f\" ) {\n  Blok( kod: BLK-D, ne: \"g\" ) {\n  }\n}";
   assert.equal(cizim(dogru).get(1), `${SON}─`);
 });
+
+test("A06 blokAraliklari ve aktifBlok: imleç en içteki plan bloğunu bulur", async () => {
+  const { blokAraliklari, aktifBlok } = await import("../src/dallar-cekirdek.ts");
+  const satirlar = [
+    "Faz( kod: F1 ) {",         // 0
+    "  Blok( kod: B1 ) {",      // 1
+    "    Adım( kod: A1 ) {",    // 2
+    "      ne: \"x\"",          // 3
+    "    }",                    // 4
+    "    Raf( kod: R ) {",      // 5
+    "    }",                    // 6
+    "  }",                      // 7
+    "}",                        // 8
+  ];
+  const b = blokAraliklari(satirlar);
+  assert.equal(aktifBlok(b, 3)?.ad, "Adım", "imleç Adım gövdesinde: en içteki blok Adım olmalı");
+  assert.equal(aktifBlok(b, 5)?.ad, "Blok", "Raf plan bloğu değildir: üstteki Blok seçilmeli");
+  assert.equal(aktifBlok(b, 8)?.ad, "Faz", "kapanış satırı bloğa dâhildir");
+  assert.equal(aktifBlok(b, 99), undefined);
+});

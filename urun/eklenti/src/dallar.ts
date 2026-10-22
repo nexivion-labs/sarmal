@@ -33,13 +33,20 @@
 import * as vscode from "vscode";
 import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
-import { dalIzgarasi, satirDizesi } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
+import { dalIzgarasi, satirDizesi, blokAraliklari } from "./dallar-cekirdek.ts";   // KPS-SIR-A02: sütun yapı derinliğinden
 
 // Tek taban tür — glif/renk/konum her aralıkta ayrıca (renderOptions) verilir.
 const glifTuru = vscode.window.createTextEditorDecorationType({});
 const etiketTuru = vscode.window.createTextEditorDecorationType({});
 
-const ETIKET_ESIGI = 4;      // en az bu kadar satırlık bloklara kapanış etiketi
+const ETIKET_ESIGI = 4;      // (kapanış − açılış) satır farkı bu değerden küçükse etiket yok
+
+/** İnce stil (varsayılan): `sarmal.girintiRenkleri` açıkça true DEĞİLSE geçerlidir;
+ *  ayar okunamazsa da ince stile düşülür. true = eski gökkuşağı (girinti.ts). */
+export function inceStilMi(): boolean {
+  try { return vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri") !== true; }
+  catch { return true; }
+}
 
 /** Belge/yorum satırları (0-tabanlı): `-->| … |<--` blokları + tam-satır `//`.
  *  Kod-DIŞI bölge → ağaç çizgileri ve girinti boyası burada GÖRÜNMEZ (yalnız kod). */
@@ -59,50 +66,23 @@ export function belgeSatirlari(doc: vscode.TextDocument): Set<number> {
 //   Bağlaç sütunu girintiden değil ayrıştırıcının verdiği yapı derinliğinden
 //   hesaplanır; girintisi bozuk dosyada da ağaç yapıyı doğru gösterir.
 
-/** Kapanış `}` etiketleri için hafif sözcüksel tarama (dal ızgarasından bağımsız). */
+/** Kapanış `}` etiketleri: ortak blok taramasından (dallar-cekirdek.ts) türer. */
 function etiketleriTara(doc: vscode.TextDocument): vscode.DecorationOptions[] {
+  const satirlar: string[] = [];
+  for (let s = 0; s < doc.lineCount; s++) satirlar.push(doc.lineAt(s).text);
   const etiketler: vscode.DecorationOptions[] = [];
-  const yığın: { ad: string; kod: string; açan: number }[] = [];
-  const çağrı: { ad: string; ham: string }[] = [];
-  let belge = false, üçlü = false, sonKap: { ad: string; ham: string } | undefined;
-
-  for (let s = 0; s < doc.lineCount; s++) {
-    const m = doc.lineAt(s).text;
-    if (belge) { if (m.includes("|<--")) belge = false; continue; }
-    let i = 0, dz = false, ad = "", ab = -1;
-    while (i < m.length) {
-      const k = m[i];
-      if (üçlü) { if (m.startsWith('"""', i)) { üçlü = false; i += 3; continue; } i++; continue; }
-      if (dz) { if (k === '"') dz = false; i++; continue; }
-      if (m.startsWith('"""', i)) { üçlü = true; i += 3; continue; }
-      if (k === '"') { dz = true; i++; continue; }
-      if (k === "/" && m[i + 1] === "/") break;
-      if (m.startsWith("-->|", i)) { belge = true; break; }
-      if (/[\p{L}\p{N}_-]/u.test(k)) { if (ab < 0) ab = i; i++; continue; }
-      if (ab >= 0) { ad = m.slice(ab, i); ab = -1; }
-      // Yeni çağrı açıldı → bayat sonKap'ı temizle: `raflar: {` MAP bloğu, önceki
-      // `Raf(...)`'ın adını YANLIŞLIKLA almasın (Kitaplık'a "‹ Raf" etiketi bug'ı).
-      if (k === "(") { çağrı.push({ ad, ham: "" }); ad = ""; sonKap = undefined; }
-      else if (k === ")") { sonKap = çağrı.pop(); }
-      else if (k === "{") {
-        const sh = sonKap; sonKap = undefined;
-        yığın.push({ ad: sh?.ad ?? "", kod: sh ? /kod:\s*([^,\s)]+)/.exec(sh.ham)?.[1] ?? "" : "", açan: s });
-      } else if (k === "}") {
-        const b = yığın.pop();
-        if (b && b.ad && s - b.açan >= ETIKET_ESIGI) {
-          etiketler.push({
-            range: new vscode.Range(s, m.length, s, m.length),
-            renderOptions: { after: {
-              contentText: `  ‹ ${b.ad}${b.kod ? " " + b.kod : ""}`,
-              color: "rgba(150,150,150,0.5)", fontStyle: "italic",
-            } },
-          });
-        }
-      }
-      if (çağrı.length && k !== "(") çağrı[çağrı.length - 1].ham += k;
-      i++;
-    }
-    if (ab >= 0) ad = m.slice(ab);
+  const ince = inceStilMi();
+  for (const b of blokAraliklari(satirlar)) {
+    if (!b.ad || b.kapanan - b.acan < ETIKET_ESIGI) continue;
+    const m = satirlar[b.kapanan];
+    etiketler.push({
+      range: new vscode.Range(b.kapanan, m.length, b.kapanan, m.length),
+      renderOptions: { after: {
+        contentText: `  ‹ ${b.ad}${b.kod ? " " + b.kod : ""}`,
+        // İnce stilde etiket daha da soluk: kılavuz çizgisini bastırmasın.
+        color: ince ? "rgba(150,150,150,0.32)" : "rgba(150,150,150,0.5)", fontStyle: "italic",
+      } },
+    });
   }
   return etiketler;
 }
@@ -160,6 +140,8 @@ export function dallariCiz(editor: vscode.TextEditor | undefined): void {
     return;
   }
   const { glifler, etiketler } = dallariHesapla(editor.document);
+  // Ağaç çizgileri (├─ ╰ │) her stilde çizilir (Founder 2026-10-21: "çizgiler yine
+  // kaybolmuş"); tül derinlik stilinde girinti.ts yalnız zemini boyar, çizgiyi bu dosya verir.
   editor.setDecorations(glifTuru, glifler);
   editor.setDecorations(etiketTuru, etiketler);
 }
@@ -175,7 +157,7 @@ export function dallarKaydi(context: vscode.ExtensionContext): void {
       if (aktif && e.document === aktif.document) dallariCiz(aktif);
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("sarmal.agacCizgileri"))
+      if (e.affectsConfiguration("sarmal.agacCizgileri") || e.affectsConfiguration("sarmal.girintiRenkleri"))
         dallariCiz(vscode.window.activeTextEditor);
     }),
     { dispose: () => { glifTuru.dispose(); etiketTuru.dispose(); } },

@@ -8,10 +8,14 @@
 //   korur; boyacı yalnız derinliği okunur kılar, ceza kesmez.
 //   SÜREKLİLİK (Founder 2026-07-12): yorum/belge satırları DA boyanır — bantlar
 //   blok boyunca kesilmez (eski belge-muafiyeti kaldırıldı).
-//   Kapatma: sarmal.girintiRenkleri = false.
+//   İKİ STİL (Founder 2026-10-21 · "girinti boyası tül derinlik olsun"):
+//     • sarmal.girintiRenkleri = true  → yukarıdaki gökkuşağı bantları (eski stil).
+//     • aksi (false / okunamayan ayar) → TÜL DERİNLİK: her kademe için 1 piksellik
+//       soluk çizgi ve tek renkte, içeri girdikçe çok az koyulaşan bir tül.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
+import { inceStilMi } from "./dallar.ts";
 
 /** GERÇEK GÖKKUŞAĞI (Founder 2026-07-18: "gerçek gökkuşağı renkleri gibi olsa,
  *  hafiften glow'lu") — yedi seviye doğal tayf sırasında (kırmızı → mor); her
@@ -38,14 +42,75 @@ const turler: vscode.TextEditorDecorationType[] = PALET.map(({ zemin, isilti }) 
   }),
 );
 
+// ── Tül derinlik stili ─────────────────────────────────────────────────────
+
+// TÜL DERİNLİK (Founder 2026-10-21 · "girinti boyası tül derinlik olsun, daha estetik olur"):
+//   her kademe ince çizgisinin yanında tek renkte (mor) bir tül taşır ve tül içeri
+//   girdikçe çok az koyulaşır; derinlik hissedilir, renk cümbüşü olmaz.
+const TUL_ALFA = [0.035, 0.06, 0.085, 0.11, 0.13, 0.15, 0.17];
+const tulTurleri: vscode.TextEditorDecorationType[] = TUL_ALFA.map((a) =>
+  vscode.window.createTextEditorDecorationType({
+    // Çizgiyi dallar.ts'in ağaç glifleri verir; burada yalnız tül zemini boyanır.
+    backgroundColor: `rgba(199,146,234,${a})`,
+    light: { backgroundColor: `rgba(124,77,180,${a * 0.8})` },
+  }),
+);
+
+/** Girinti katmanları: 2 boşluk ya da 1 tab = 1 kat; her katın ilk karakteri çizgi taşır. */
+function katBaslangiclari(bas: string): number[] {
+  const sutunlar: number[] = [];
+  let sutun = 0;
+  while (sutun < bas.length) {
+    sutunlar.push(sutun);
+    sutun += bas[sutun] === "\t" ? 1 : Math.min(KAT, bas.length - sutun);
+  }
+  return sutunlar;
+}
+
+interface Cizgi { satir: number; sutun: number; bitis: number; kat: number; }
+let tabanBellegi: { uri: string; surum: number; cizgiler: Cizgi[] } | undefined;
+
+/** Taban çizgi konumları (belge sürümüne bağlı önbellek). */
+function tabanCizgileri(doc: vscode.TextDocument): Cizgi[] {
+  const uri = doc.uri.toString();
+  if (tabanBellegi && tabanBellegi.uri === uri && tabanBellegi.surum === doc.version) return tabanBellegi.cizgiler;
+  const cizgiler: Cizgi[] = [];
+  for (let s = 0; s < doc.lineCount; s++) {
+    const es = /^[ \t]+/.exec(doc.lineAt(s).text);
+    if (!es) continue;
+    const baslar = katBaslangiclari(es[0]);
+    baslar.forEach((c, i) => cizgiler.push({ satir: s, sutun: c, bitis: baslar[i + 1] ?? es[0].length, kat: i }));
+  }
+  tabanBellegi = { uri, surum: doc.version, cizgiler };
+  return cizgiler;
+}
+
+/** Tül derinlik stilini çizer: her kademe kendi tül türüyle, kademenin tam genişliğinde
+ *  ve solunda ince çizgiyle boyanır. Boya imlece bağlı değildir. */
+function inceBoya(editor: vscode.TextEditor): void {
+  const katlar: vscode.Range[][] = tulTurleri.map(() => []);
+  for (const c of tabanCizgileri(editor.document)) {
+    katlar[Math.min(c.kat, katlar.length - 1)].push(new vscode.Range(c.satir, c.sutun, c.satir, c.bitis));
+  }
+  tulTurleri.forEach((t, i) => editor.setDecorations(t, katlar[i]));
+}
+
 /** Etkin editördeki .sar belgesinin girintilerini boyar. */
 export function girintileriBoya(editor: vscode.TextEditor | undefined): void {
   if (!editor || editor.document.languageId !== "sarmal") return;
 
-  const acik = vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri") !== false;
-  const kovalar: vscode.Range[][] = PALET.map(() => []);
+  const gokkusagi = !inceStilMi();
+  // Stil değişince öteki stilin izi temizlenir.
+  if (gokkusagi) {
+    for (const t of tulTurleri) editor.setDecorations(t, []);
+  } else {
+    turler.forEach((t) => editor.setDecorations(t, []));
+    inceBoya(editor);
+    return;
+  }
 
-  if (acik) {
+  const kovalar: vscode.Range[][] = PALET.map(() => []);
+  {
     const doc = editor.document;
     // Founder 2026-07-12: "çizgiler kesilmesin" — yorum/belge satırları da boyanır
     // (eski "kod-dışı boyanmaz" tasarımı süreklilik lehine kaldırıldı); tek kalan
@@ -69,18 +134,31 @@ export function girintileriBoya(editor: vscode.TextEditor | undefined): void {
   turler.forEach((t, i) => editor.setDecorations(t, kovalar[i]));
 }
 
-/** Etkinleştirme: editör/belge/ayar değişimlerine bağlanır. */
+/** Basit geciktirici: art arda olaylar son çağrıya indirgenir. */
+function geciktir<A extends unknown[]>(ms: number, is: (...a: A) => void): ((...a: A) => void) & { iptal(): void } {
+  let zaman: ReturnType<typeof setTimeout> | undefined;
+  const f = (...a: A) => { if (zaman) clearTimeout(zaman); zaman = setTimeout(() => { zaman = undefined; is(...a); }, ms); };
+  f.iptal = () => { if (zaman) clearTimeout(zaman); zaman = undefined; };
+  return f;
+}
+
+/** Etkinleştirme: editör/belge/imleç/ayar değişimlerine bağlanır. */
 export function girintiKaydi(context: vscode.ExtensionContext): void {
   girintileriBoya(vscode.window.activeTextEditor);
+  // Yazarken 120 ms geciktirilir; boya imlece bağlı olmadığından imleç olayı dinlenmez.
+  const yazimBoya = geciktir(120, () => girintileriBoya(vscode.window.activeTextEditor));
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(girintileriBoya),
     vscode.workspace.onDidChangeTextDocument((e) => {
       const aktif = vscode.window.activeTextEditor;
-      if (aktif && e.document === aktif.document) girintileriBoya(aktif);
+      if (aktif && e.document === aktif.document) yazimBoya();
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("sarmal.girintiRenkleri")) girintileriBoya(vscode.window.activeTextEditor);
     }),
-    { dispose: () => turler.forEach((t) => t.dispose()) },
+    { dispose: () => {
+      yazimBoya.iptal();
+      [...turler, ...tulTurleri].forEach((t) => t.dispose());
+    } },
   );
 }

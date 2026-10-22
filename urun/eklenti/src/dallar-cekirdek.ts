@@ -121,3 +121,63 @@ export function satirDizesi(sr: ReadonlyMap<number, string>, ilkYazi: number, sa
   const capa = satirSonu < dolu ? 0 : dolu;
   return { capa, dize: chars.slice(capa).join("") };
 }
+
+// ── Blok aralıkları: kapanış etiketi ve aktif blok boyası için ortak tarama ──
+//   Hafif sözcüksel tarama (dal ızgarasından bağımsız): `Ad(...) { ... }` gövdelerinin
+//   açılış ve kapanış satırlarını (0-tabanlı) verir. Saftır; vscode'suz sınanır.
+
+export interface BlokAraligi { ad: string; kod: string; acan: number; kapanan: number; }
+
+/** Satır listesinden iç içe blok aralıklarını çıkarır; kapanış sırasıyla döner (içten dışa). */
+export function blokAraliklari(satirlar: readonly string[]): BlokAraligi[] {
+  const sonuc: BlokAraligi[] = [];
+  const yigin: { ad: string; kod: string; acan: number }[] = [];
+  const cagri: { ad: string; ham: string }[] = [];
+  let belge = false, uclu = false, sonKap: { ad: string; ham: string } | undefined;
+
+  for (let s = 0; s < satirlar.length; s++) {
+    const m = satirlar[s];
+    if (belge) { if (m.includes("|<--")) belge = false; continue; }
+    let i = 0, dz = false, ad = "", ab = -1;
+    while (i < m.length) {
+      const k = m[i];
+      if (uclu) { if (m.startsWith('"""', i)) { uclu = false; i += 3; continue; } i++; continue; }
+      if (dz) { if (k === '"') dz = false; i++; continue; }
+      if (m.startsWith('"""', i)) { uclu = true; i += 3; continue; }
+      if (k === '"') { dz = true; i++; continue; }
+      if (k === "/" && m[i + 1] === "/") break;
+      if (m.startsWith("-->|", i)) { belge = true; break; }
+      if (/[\p{L}\p{N}_-]/u.test(k)) { if (ab < 0) ab = i; i++; continue; }
+      if (ab >= 0) { ad = m.slice(ab, i); ab = -1; }
+      // Yeni çağrı açılınca bayat sonKap temizlenir: `raflar: {` MAP bloğu önceki
+      // `Raf(...)` adını almasın.
+      if (k === "(") { cagri.push({ ad, ham: "" }); ad = ""; sonKap = undefined; }
+      else if (k === ")") { sonKap = cagri.pop(); }
+      else if (k === "{") {
+        const sh = sonKap; sonKap = undefined;
+        yigin.push({ ad: sh?.ad ?? "", kod: sh ? /kod:\s*([^,\s)]+)/.exec(sh.ham)?.[1] ?? "" : "", acan: s });
+      } else if (k === "}") {
+        const b = yigin.pop();
+        if (b) sonuc.push({ ...b, kapanan: s });
+      }
+      if (cagri.length && k !== "(") cagri[cagri.length - 1].ham += k;
+      i++;
+    }
+    if (ab >= 0) ad = m.slice(ab);
+  }
+  return sonuc;
+}
+
+/** Aktif blok adayları: plan hiyerarşisinin beş düğüm türü. */
+export const AKTIF_BLOK_TURLERI: ReadonlySet<string> = new Set(["Faz", "Blok", "Katman", "AltKatman", "Adım"]);
+
+/** İmlecin (satır, 0-tabanlı) bulunduğu en içteki plan bloğu; yoksa tanımsız.
+ *  Açılış satırı ve kapanış satırı bloğa dâhildir. */
+export function aktifBlok(bloklar: readonly BlokAraligi[], satir: number): BlokAraligi | undefined {
+  let en: BlokAraligi | undefined;
+  for (const b of bloklar) {
+    if (!AKTIF_BLOK_TURLERI.has(b.ad) || satir < b.acan || satir > b.kapanan) continue;
+    if (!en || b.acan >= en.acan) en = b;   // en geç açılan = en içteki
+  }
+  return en;
+}
