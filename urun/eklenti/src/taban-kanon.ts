@@ -147,7 +147,7 @@ export class TabanKanonCubugu {
     // Sağ tarafta ve düşük öncelikte durur: bu bir sayaç değil, bir uyarıdır;
     // soldaki dört yüzey sayacının sırasını bozmaz.
     this.oge = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
-    this.oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+    // Zemin varsayılan olarak SAKİN: yalnız gerçek sorun hâlinde (tazele) sarıya döner.
     // İpucunun önerdiği çözüm tek tıkla çalışır: işaret, işaretçi komutunu çağırır.
     this.oge.command = KANON_ISARETCISI_KOMUTU;
     this.abone = tabanKanonDinle(() => this.tazele());
@@ -170,6 +170,7 @@ export class TabanKanonCubugu {
     // yalnız kanonsuz kök varken verilir.
     if (d.atlanan.length > 0 || d.coken.length > 0 || d.eksik.length > 0) {
       this.oge.text = TABAN_KANON_METINLERI.atlandiMetni;
+      this.oge.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
       this.oge.tooltip = [
         ...(d.atlanan.length > 0 ? [TABAN_KANON_METINLERI.atlandiIpucu(d.atlanan)] : []),
         // Sonuç cümlesi kanonsuz kökün ipucunda yazılıysa çöküş ipucu onu yinelemez.
@@ -181,6 +182,9 @@ export class TabanKanonCubugu {
       return;
     }
     if (!d.düşüldü) { this.oge.hide(); return; }
+    // Gömülü kanona düşüş bir ARIZA değil bilgidir: zeminsiz ve uyarı simgesiz gösterilir;
+    // bilgi yazıda ve ipucunda durur, yalnız renk sakinleşir (sessiz düşüş yasağı korunur).
+    this.oge.backgroundColor = undefined;
     this.oge.text = TABAN_KANON_METINLERI.cubukMetni;
     this.oge.tooltip = TABAN_KANON_METINLERI.cubukIpucu(d.belge);
     this.oge.command = KANON_ISARETCISI_KOMUTU;

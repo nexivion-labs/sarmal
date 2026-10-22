@@ -288,6 +288,8 @@ test("A04 DAVRANIŞ: ÖRTÜLÜ projede taban bulunamazsa düşüş SÖYLENİR (s
   assert.equal(modul.tabanKanonDurumu().düşüldü, true, "düşüş kaydedilmedi — kullanıcı kendi tiplerinin neden yüklenmediğini bilemez");
   assert.equal(cubuk.gorunur, true, "durum çubuğu işareti gösterilmedi — düşüş SESSİZ kaldı");
   assert.match(String(cubuk.metin), /Sarmal/, "işaret hangi araca ait olduğunu söylemeli");
+  assert.doesNotMatch(String(cubuk.metin), /warning|⚠/, "gömülü kanon bilgi durumudur: uyarı simgesi taşımamalı");
+  assert.match(String(cubuk.ipucu), /gömülü kanonu kullanılıyor/, "ipucu bilgiyi kısa cümleyle söylemeli");
   // EKL-F6-A09: çözüm artık kanon işaretçisidir; kopya önerisi terk edilmiştir.
   assert.match(String(cubuk.ipucu), /Kanon İşaretçisini Yaz/, "ipucu çözümü söylemeli: kanon işaretçisini yazan komut");
   assert.doesNotMatch(String(cubuk.ipucu), /kayit\.json/,

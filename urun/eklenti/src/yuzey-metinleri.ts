@@ -895,7 +895,8 @@ export const DURUM_CUBUGU_METINLERI = {
 export const TABAN_KANON_METINLERI = {
   /** Durum çubuğu girdisinin kendisi — ikon codicon ailesindendir. */
   get cubukMetni(): string {
-    return `$(warning) ${yuzeyMetni("Sarmal: eklentinin kanonu", "Sarmal: extension canon")}`;
+    // Bilgi durumu: uyarı simgesi yok (sarı zemin yalnız gerçek sorunda — atlandiMetni).
+    return yuzeyMetni("Sarmal · gömülü kanon", "Sarmal · built-in canon");
   },
   /**
    * İpucu sebebi ve çözümü tam cümlelerle söyler. EKL-F6-A09: çözüm artık kanon
@@ -903,6 +904,9 @@ export const TABAN_KANON_METINLERI = {
    * güncellemesinde bayatlayan ve BKM-DNT-A15 ile terk edilmiş çözüm olduğu için kalktı.
    */
   cubukIpucu(belgeYolu?: string): string {
+    const ozet = yuzeyMetni(
+      "Bu klasörde tip kaydı yok; eklentinin gömülü kanonu kullanılıyor.",
+      "This folder has no type record; the extension's built-in canon is in use.");
     const baslik = yuzeyMetni(
       "Bu projede tip sistemi kaydı da kanon işaretçisi de bulunamadı; Sarmal eklentinin kendi kanon kopyasıyla çalışıyor ve tam proje denetimi de bu kopyayla koşuyor.",
       "Neither a type system record nor a canon pointer was found for this project, so Sarmal is running on the extension's own canon copy, and the full project check runs on that copy as well.");
@@ -912,7 +916,7 @@ export const TABAN_KANON_METINLERI = {
     const belge = belgeYolu
       ? yuzeyMetni(`Son ölçüm şu belge için yapıldı: ${belgeYolu}`, `The latest measurement was taken for this document: ${belgeYolu}`)
       : undefined;
-    return [baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
+    return [ozet, baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
   },
   /** EKL-F6-A09: tam proje denetiminin hiç koşmadığı hâlin durum çubuğu metni. */
   get atlandiMetni(): string {
