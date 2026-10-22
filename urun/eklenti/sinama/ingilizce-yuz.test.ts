@@ -318,9 +318,9 @@ function katalogIngilizceHaneleri(): Array<{ yer: string; metin: string }> {
   return sonuc.filter((p) => p.metin.trim() && p.metin !== "⟨⟩");
 }
 
-const kusurDokumu = (liste: ReadonlyArray<{ yer: string; metin: string }>): string[] =>
-  liste.flatMap(({ yer, metin }) => {
-    const k = ingilizceYuzKusurlari(metin, ["⟨⟩"]);
+const kusurDokumu = (liste: ReadonlyArray<{ yer: string; metin: string; izin?: readonly string[] }>): string[] =>
+  liste.flatMap(({ yer, metin, izin }) => {
+    const k = ingilizceYuzKusurlari(metin, ["⟨⟩", ...(izin ?? [])]);
     return k.length ? [`${yer} [${k.map((x) => `${x.tur}=${x.sozce}`).join(", ")}] ${metin.replace(/\s+/gu, " ").slice(0, 90)}`] : [];
   });
 
@@ -332,7 +332,13 @@ test("MGZ-A09 ④ yüzey kataloğunun her İngilizce hanesi İngilizce konuşur 
 
 test("MGZ-A09 ④ paket bildiriminin ve sözlüğün İngilizce düzyazısı aynı ilkeye uyar", () => {
   const nls = JSON.parse(readFileSync(join(EKLENTI_KOKU, "package.nls.json"), "utf8")) as Record<string, string>;
-  assert.deepEqual(kusurDokumu(Object.entries(nls).map(([k, v]) => ({ yer: `package.nls.json:${k}`, metin: v }))), [],
+  assert.deepEqual(kusurDokumu(Object.entries(nls).map(([k, v]) => ({
+    yer: `package.nls.json:${k}`,
+    metin: v,
+    // MGZ-A10: mağazadaki görünen ad Founder hükmüyle (2026-09-17) sabittir ve "AI Agents"
+    // sözünü taşır; "Agents" burada ürünün vitrin adıdır, dosyadaki Etmen adının karşılığı değildir.
+    izin: k === "sarmal.displayName" ? ["Agents"] : undefined,
+  }))), [],
     "paket bildiriminin İngilizce dizesinde Türkçe düzyazı ya da İngilizce ad karşılığı var");
   // Sözlüğün eklentinin ve tanıların okuduğu üç bölümü, eklentinin okuduğu
   // kiple (ad jetonları dosyadaki adla) çözülür. Öteki bölümleri yalnız MCP

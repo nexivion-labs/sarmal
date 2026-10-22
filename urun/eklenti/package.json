@@ -13,7 +13,6 @@
     "declarative",
     "widget tree",
     "drift",
-    "orkestrasyon",
     "ai"
   ],
   "repository": {
@@ -1012,7 +1011,7 @@
     "tip-denetle": "tsc --noEmit -p .",
     "dil-denetle": "eslint .",
     "watch": "node esbuild.mjs --watch",
-    "package": "vsce package --no-dependencies",
+    "package": "vsce package --no-dependencies --readme-path README.en.md",
     "vscode:prepublish": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs --production",
     "test": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node --import ./sinama/dil-kur.ts --test \"sinama/*.test.ts\"",
     "build:sinama": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs && node esbuild-sinama.mjs",

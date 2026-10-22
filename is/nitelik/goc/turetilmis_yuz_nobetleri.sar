@@ -34,12 +34,18 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `cc57bb2fa7b8c303466bb03a93c0a21baab54fdebaa60bb1e20157ac5783b557` |
 | `urun/cekirdek/src/dil-baglami.ts` | `37212e330b73a9cf577f69ecab5134bab257b1c6403f03e169e2df5467980f69` |
-| `urun/eklenti/package.nls.tr.json` | `d53560d47587c73b7cd6848ea83049952805e49a43c79918123de6fd14a49873` |
-| `urun/eklenti/package.nls.json` | `980dcb5695a0e16fe47bd3e50ed2f42d98b4f76af1ab4784ad426932be5d40b3` |
+| `urun/eklenti/package.nls.tr.json` | `609cd519b512d1928a4ba5cdfd5729ebf2b05263855a37875807c447f889eedb` |
+| `urun/eklenti/package.nls.json` | `220b24e2cdad4bd27357bcfee872d90ad978ebc006bb802c052539e765e8213c` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d25b70ba41aca77ad5b7d87183d6e2877737dc36b680412c75fdcf9cd9452113` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-23 · mağaza vitrininin adı ve açıklaması · MGZ-A10):
+Founder'ın 2026-10-10 hükmüyle eklentinin iki yerelleştirme kataloğundaki görünen
+ad ile kısa açıklama mağaza vitrininin seçilmiş metnine çevrildi ve iki katalog
+mührü ilerledi. Yalnız bu iki anahtarın metni değişti; öteki yedi kaynağın mührü
+değişmedi.
 
 Tazeleme notu (2026-10-16 · ajan dil bağlamının adları · MGZ-A11): doğuş paketinin
 İngilizce dilde yazdığı ajan dil bağlamı dosyada bulunmayan Phase, Step ve dependsOn

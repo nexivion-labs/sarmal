@@ -72,7 +72,7 @@ function muhursuzDegisiklikVar() {
 
 function paketle(dizin) {
   kos("npm", ["run", "build"], dizin);
-  kos("npx", ["vsce", "package", "--no-dependencies"], dizin);
+  kos("npx", ["vsce", "package", "--no-dependencies", "--readme-path", "README.en.md"], dizin);
   return join(dizin, paketAdi(dizin).ad);
 }
 

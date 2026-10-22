@@ -15,3 +15,5 @@ dist-sinama/**
 arac/**
 plan.sar
 medya/ekran/**
+# MGZ-A10: mağaza beniokusu README.en.md dosyasıdır (--readme-path); Türkçe benioku depoda kalır, pakete girmez
+README.md
