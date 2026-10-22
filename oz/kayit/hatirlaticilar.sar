@@ -1444,3 +1444,33 @@ Hatırlatıcı(
   dönüşTetikleyici: "Kanon metnine bir sonraki Founder onaylı düzeltme yapılırken; en geç HST-MTR-A18 açılırken",
   ne:               "HST-MTR-A13'ün bağımsız incelemesi 2026-10-11 tarihinde, düzeltilen TIP-1.14 ile aynı sınıftan yeni bir kanon kusuru ölçmüştür: yasa/kanon/tip.sar dosyasındaki TIP-1.9 Ürün Tipleri maddesi ürün ailesinden altı tip saymaktadır, oysa sınıflamanın ürün ailesi yedi tip taşır ve Meyve listede yoktur. İnceleme öteki on üç ailenin kanon kataloğunun sınıflamayla birebir örtüştüğünü de ölçmüştür. Düzeltme, Founder'ın TIP-1.14 için onayladığı ilkenin aynısıdır: makinenin okuduğu metin insanın okuduğundan eksik olmamalıdır. Ancak kanon metnine dokunduğu için Founder kapısındadır; onay gelirse HST-MTR-A18 ile aynı turda yapılabilir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-DOGUS-WINDOWS-KANCALARI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-10-22,
+  dönüşTetikleyici: "Doğuşla açılmış bir kökün Windows bilgisayarına taşınması planlandığında; en geç böyle bir taşımanın kurulum paketi hazırlanırken",
+  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünün Windows bilgisayarına taşınması hazırlanırken ölçülmüştür ki doğuş paketinin ürettiği kanca betikleri (ogreti/sablon/dogus altındaki dogus_kilidi.sh ve denetim_kapisi.sh) ve kanca ayarındaki sh çağrıları Windows'ta Git Bash kurulu değilse çalışmaz. Bu durumda yeni kökte doğuş kilidi ve denetim kapısı sessizce devre dışı kalır. Kancaların Node ile yazılmış, işletim sisteminden bağımsız karşılıkları hazırlanmalı ve doğuş paketi bunları üretmelidir; kanca ayarı da yorumlayıcıyı platforma göre seçmelidir. Kabul ölçütü olarak aynı doğuş paketi macOS'ta ve Windows'ta kurulduğunda iki kancanın da aynı tanıyı verdiği ölçülür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DOGUS-ONEK-SICILI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-22,
+  dönüşTetikleyici: "Doğuş paketinin anadizin şablonuna bir sonraki dokunuşta",
+  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünde ölçülmüştür ki doğuş paketi kökün kod öneklerini sayan bir önek sicili (SOZ-ONEK-SICILI biçimli Sözlük) üretmemektedir; sicil kurulum sırasında elle eklenmiştir. Sicil olmadan kökte kullanılan öneklerin geçerliliği denetlenemez ve kök büyüdükçe önekler sessizce çoğalabilir. Doğuş paketi anadizine, kökün kendi yapı öneklerini taşıyan bir sicil üretmelidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-DOGUS-KILIDI-BELGE-METNI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-22,
+  dönüşTetikleyici: "Doğuş kilidi kancasına bir sonraki dokunuşta",
+  ne:               "2026-10-22 tarihinde iki kez ölçülmüştür ki doğuş kilidi kancası, bir kabuk komutunun içinde yalnız metin olarak geçen ve kök adıyla biten anadizin dosya adı biçimindeki bir sözü yeni anadizin yazımı sanmış ve komutu reddetmiştir; komut bir dosyanın sonuna düz metin ekliyordu ve hiçbir anadizin yazmıyordu. İkisinde de metin önce geçici bir dosyaya yazılıp oradan eklenerek iş tamamlanmıştır. Kanca, yazım hedefini komut metninin tamamından değil yalnız gerçek hedef yolundan çıkarmalıdır; düzeltme sonrası gerçek bir anadizin yazımının yine reddedildiği ölçülmelidir."
+)
