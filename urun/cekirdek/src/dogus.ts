@@ -220,6 +220,13 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
     KOKDEGISKENI: SARMAL_KOK_DEGISKENI,
   };
   const yoksayma = sablonDoldur("yoksayma.txt", d);
+  // KANCALAR NODE İLE YAZILIR (HTR-DOGUS-WINDOWS-KANCALARI · 2026-10-22). Kabuk
+  // betikleri Windows'ta Git Bash kurulu değilse hiç koşmuyor ve kök sessizce
+  // kapısız kalıyordu. Kanca ayarı betikleri artık kabuksuz biçimde (`command:
+  // node`, `args: [yol]`) çağırır; yolu yürütücü kendisi yerine koyar, dolayısıyla
+  // ayar macOS'ta, Linux'ta ve Windows'ta aynı metindir. Kabuk sürümleri doğan
+  // köke yazılmaz, çünkü bağlanmamış ikinci bir uygulama ilk düzenlemede
+  // ayrışır; onlar şablon rafında POSIX başvuru sürümü olarak yaşar.
   return [
     {
       yol: ".gitignore",
@@ -238,9 +245,23 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
     },
     { yol: ".mcp.json",                        icerik: sablonDoldur("yurutucu_ayari.json", d) },
     { yol: ".claude/settings.json",            icerik: sablonDoldur("kanca_ayari.json", d) },
-    { yol: ".claude/kanca/dogus-kilidi.sh",    icerik: sablonDoldur("dogus_kilidi.sh", d) },
-    { yol: ".claude/kanca/denetim-kapisi.sh",  icerik: sablonDoldur("denetim_kapisi.sh", d) },
+    { yol: ".claude/kanca/dogus-kilidi.mjs",   icerik: sablonDoldur("dogus_kilidi.mjs", d) },
+    { yol: ".claude/kanca/denetim-kapisi.mjs", icerik: sablonDoldur("denetim_kapisi.mjs", d) },
     { yol: "oz/siniflama/isaretci.json",       icerik: sablonDoldur("kanon_isaretcisi.json", d) },
+  ];
+}
+
+/**
+ * KANCALARIN KABUK SÜRÜMLERİ (saf · doğuş paketine girmez). Node kancalarının
+ * POSIX başvuru karşılıklarıdır: daha önce doğmuş ve kanca ayarı hâlâ `sh`
+ * çağıran köklerin elle tazelenmesine ve iki sürümün eşlik nöbetine hizmet eder.
+ * Yer tutucular doğan kökün kancalarıyla aynı değerlerle doldurulur.
+ */
+export function kabukKancalari(ad: string, tarih: string): DogusDosya[] {
+  const d = { AD: ad, TARIH: tarih, MOTOR: TASINABILIR_MOTOR_YOLU, KOKDEGISKENI: SARMAL_KOK_DEGISKENI };
+  return [
+    { yol: ".claude/kanca/dogus-kilidi.sh",   icerik: sablonDoldur("dogus_kilidi.sh", d) },
+    { yol: ".claude/kanca/denetim-kapisi.sh", icerik: sablonDoldur("denetim_kapisi.sh", d) },
   ];
 }
 
@@ -386,8 +407,8 @@ export function dogusRaporu(s: DogusSonuc, hedef: string, dil: CiktiDili = "tr")
     satirlar.push(
       t(`🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
         `🚪 The root's gates were installed: the ignore exception (${yokSaymaIstisnaSatirlari().join(" · ")}), the executor setting, the instruction twin, the birth lock with the audit hook, and the canon pointer.`),
-      t(`   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.sh ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
-        `   The gates' address was written PORTABLY: .mcp.json, .claude/kanca/denetim-kapisi.sh and oz/siniflama/isaretci.json read the engine path from the \`${SARMAL_KOK_ONEKI}\` environment variable and carry no default.`),
+      t(`   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.mjs ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
+        `   The gates' address was written PORTABLY: .mcp.json, .claude/kanca/denetim-kapisi.mjs and oz/siniflama/isaretci.json read the engine path from the \`${SARMAL_KOK_ONEKI}\` environment variable and carry no default.`),
       t(`   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
         `   So when the tree moves to another machine no path is edited by hand; the only thing to do is define the variable on that machine: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`),
       t(`   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`,

@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/kanca/dogus-kilidi.sh\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/kanca/dogus-kilidi.mjs"],
             "timeout": 15,
             "statusMessage": "Doğuş kilidi"
           }
@@ -19,7 +20,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PROJECT_DIR:-.}/.claude/kanca/denetim-kapisi.sh\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/kanca/denetim-kapisi.mjs"],
             "timeout": 90,
             "statusMessage": "Sarmal denetim kapısı"
           }

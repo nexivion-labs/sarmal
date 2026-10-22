@@ -40,8 +40,8 @@ const PROJE_MANIFESTI: readonly string[] = [
   ".gitignore",
   ".mcp.json",
   ".claude/settings.json",
-  ".claude/kanca/dogus-kilidi.sh",
-  ".claude/kanca/denetim-kapisi.sh",
+  ".claude/kanca/dogus-kilidi.mjs",
+  ".claude/kanca/denetim-kapisi.mjs",
   "oz/siniflama/isaretci.json",
 ];
 
@@ -150,8 +150,8 @@ test("GOC-A10: çalışma alanı manifesti — çatı ilanı + dil bağlamı + i
     ".gitignore",
     ".mcp.json",
     ".claude/settings.json",
-    ".claude/kanca/dogus-kilidi.sh",
-    ".claude/kanca/denetim-kapisi.sh",
+    ".claude/kanca/dogus-kilidi.mjs",
+    ".claude/kanca/denetim-kapisi.mjs",
     "oz/siniflama/isaretci.json",
     ...PROJE_MANIFESTI.map((y) => `ilk_proje/${y.replace("deneme_anadizin.sar", "ilk_proje_anadizin.sar")}`),
   ]);
@@ -374,13 +374,13 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
 
     // ④ kapı kancaları — kurulum kökün KENDİ dosyasında, motorun adresi gerçek
     const kancaAyari = readFileSync(join(dizin, ".claude", "settings.json"), "utf8");
-    assert.match(kancaAyari, /dogus-kilidi\.sh/u);
-    assert.match(kancaAyari, /denetim-kapisi\.sh/u);
-    for (const k of ["dogus-kilidi.sh", "denetim-kapisi.sh"]) {
+    assert.match(kancaAyari, /dogus-kilidi\.mjs/u);
+    assert.match(kancaAyari, /denetim-kapisi\.mjs/u);
+    for (const k of ["dogus-kilidi.mjs", "denetim-kapisi.mjs"]) {
       assert.ok(existsSync(join(dizin, ".claude", "kanca", k)), `${k} doğmadı`);
     }
-    const kapi = readFileSync(join(dizin, ".claude", "kanca", "denetim-kapisi.sh"), "utf8");
-    assert.ok(kapi.includes(`MOTOR="${TASINABILIR_MOTOR_YOLU}"`), "denetim kapısı motoru ortam değişkeninden çözmüyor");
+    const kapi = readFileSync(join(dizin, ".claude", "kanca", "denetim-kapisi.mjs"), "utf8");
+    assert.ok(kapi.includes(`const MOTOR_SABLONU = "${TASINABILIR_MOTOR_YOLU}";`), "denetim kapısı motoru ortam değişkeninden çözmüyor");
     assert.ok(!kapi.includes(SARMAL_KURULUM_KOKU), "denetim kapısı doğuran kurulumun MUTLAK yolunu taşıyor");
     assert.ok(existsSync(join(SARMAL_KURULUM_KOKU, MOTOR_GORELI_YOLU)), "motorun adresi diskte yok");
 
@@ -398,9 +398,9 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
   }
 });
 
-/** Kancayı gerçek bir kanca girdisiyle koşturur ve reddedip reddetmediğini döndürür. */
+/** Kancayı kanca ayarının çağırdığı biçimde (`node <betik>`) gerçek bir girdiyle koşturur ve reddedip reddetmediğini döndürür. */
 function kilitReddettiMi(kancaYolu: string, girdi: unknown): boolean {
-  const s = spawnSync("sh", [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8" });
+  const s = spawnSync(process.execPath, [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8" });
   return /DOĞUŞ KİLİDİ/u.test(`${s.stdout}${s.stderr}`);
 }
 
@@ -408,7 +408,7 @@ test("BKM-DNT-A15 · doğuş kilidi: gerçek yazım hedefini reddeder, deseni ya
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "kilitli", "2026-09-09");
-    const kanca = join(dizin, ".claude", "kanca", "dogus-kilidi.sh");
+    const kanca = join(dizin, ".claude", "kanca", "dogus-kilidi.mjs");
     const varOlan = join(dizin, "kilitli" + ILAN_SONEKI);
     const yeni = join(dizin, "yeni" + ILAN_SONEKI);
     const bash = (command: string) => ({ tool_name: "Bash", cwd: dizin, tool_input: { command } });
@@ -425,8 +425,13 @@ test("BKM-DNT-A15 · doğuş kilidi: gerçek yazım hedefini reddeder, deseni ya
       "var olan giriş ilanını düzenlemek serbesttir");
     assert.equal(kilitReddettiMi(kanca, bash(`cat > ${join(dizin, "not.md")} <<EOF\nkural: -> ${yeni} elle yazilmaz\nEOF`)), false,
       "belge GÖVDESİ komut değildir: deseni yalnızca anan not reddedildi (2026-09-09 yanlış pozitifi)");
-    assert.equal(kilitReddettiMi(kanca, bash(`echo dogus paketi -> ${yeni} yazar`)), false,
-      "ok işareti yönlendirme değildir");
+    // Ok işareti yalnız TIRNAK İÇİNDE veridir. Tırnaksız `->` kabukta `-` sözcüğü
+    // ile bir `>` yönlendirmesidir ve dosyayı gerçekten yazar (2026-10-22 ölçümü:
+    // `sh -c 'echo a -> f yazar'` f dosyasını yaratır); bu yüzden reddedilir.
+    assert.equal(kilitReddettiMi(kanca, bash(`echo "dogus paketi -> ${yeni} yazar" >> ${join(dizin, "not.md")}`)), false,
+      "tırnak içindeki ok işareti veridir, yönlendirme değildir");
+    assert.equal(kilitReddettiMi(kanca, bash(`echo dogus paketi -> ${yeni} yazar`)), true,
+      "tırnaksız ok gerçek bir yönlendirmedir ve dosyayı yazar");
     // Gövdede GERÇEK bir yönlendirme deyimi ALINTILANIYOR: bir çalışma notu
     // yasak komutu örnek olarak yazabilir. Kabuk için bu satır komut değil
     // veridir; kanca da öyle okumalıdır. Ok kalkanı bu vakayı YAKALAMAZ, çünkü
@@ -488,7 +493,7 @@ test("EKL-F6-A08 · doğan kökün üç kaydı da taşınabilirdir: mutlak yol y
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "tasinabilir", "2026-09-16");
-    for (const goreli of [".mcp.json", ".claude/kanca/denetim-kapisi.sh", "oz/siniflama/isaretci.json"]) {
+    for (const goreli of [".mcp.json", ".claude/kanca/denetim-kapisi.mjs", "oz/siniflama/isaretci.json"]) {
       const metin = readFileSync(join(dizin, ...goreli.split("/")), "utf8");
       assert.ok(metin.includes(SARMAL_KOK_ONEKI), `${goreli} motorun yolunu ${SARMAL_KOK_DEGISKENI} değişkeninden okumuyor`);
       assert.ok(!metin.includes(SARMAL_KURULUM_KOKU), `${goreli} doğuran kurulumun MUTLAK yolunu taşıyor — ağaç taşınırsa bu bağ kopar`);
@@ -504,9 +509,9 @@ test("EKL-F6-A08 · doğan kökün üç kaydı da taşınabilirdir: mutlak yol y
   }
 });
 
-/** Kancayı gerçek bir kanca girdisiyle koşturur; ortamı çağıran seçer. */
+/** Kancayı kanca ayarının çağırdığı biçimde (`node <betik>`) koşturur; ortamı çağıran seçer. */
 function kapiyiKostur(kancaYolu: string, girdi: unknown, ortam: Record<string, string | undefined>): string {
-  const s = spawnSync("sh", [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8", env: ortam });
+  const s = spawnSync(process.execPath, [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8", env: ortam });
   return `${s.stdout}${s.stderr}`;
 }
 
@@ -514,7 +519,7 @@ test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişke
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "sessizligin-sonu", "2026-09-16");
-    const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.sh");
+    const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.mjs");
     const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "faz", "1_dogus.sar") } };
 
     // ① Değişken TANIMSIZ: motor çözülemez ve kapı bunu TEK SATIRLA söyler.
