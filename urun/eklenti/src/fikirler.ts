@@ -35,7 +35,7 @@
 
 import * as vscode from "vscode";
 import {
-  GORUNUS_FIKIRLER, panelRozeti, projeyeGrupla, type ProjeKumesi,
+  panelRozeti, projeyeGrupla, type ProjeKumesi,
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
@@ -44,7 +44,7 @@ import {
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
 } from "./fikir-cekirdek.ts";
-import { satirIkonu } from "./ortak.ts";
+import { satirIkonu, type YuzDurumu } from "./ortak.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 
 /**
@@ -99,7 +99,7 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
     return this.kayitlar.length;
   }
 
-  gorunum?: vscode.TreeView<PanelOge>;
+  gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
   eklentiKoku?: vscode.Uri;
 
@@ -235,12 +235,7 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
 export function fikirlerKaydi(context: vscode.ExtensionContext): Fikirler {
   const saglayici = new Fikirler();
   saglayici.simgeKaynaginiBagla(context.extensionUri);
-  const gorunum = vscode.window.createTreeView<PanelOge>(GORUNUS_FIKIRLER, {
-    treeDataProvider: saglayici,
-  });
-  gorunum.description = YUZEY_ACIKLAMALARI.fikirler;
-  gorunum.message = YUZEY_BOS_DURUM.fikirler;
-  saglayici.gorunum = gorunum;
-  context.subscriptions.push(gorunum);
+  // Founder 2026-10-21: ayrı görünüm yoktur; sağlayıcı Makinist ağacının bir üst düğümüdür (makinist.ts).
+  saglayici.gorunum = { description: YUZEY_ACIKLAMALARI.fikirler, message: YUZEY_BOS_DURUM.fikirler };
   return saglayici;
 }

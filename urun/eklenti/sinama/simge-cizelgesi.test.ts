@@ -34,7 +34,7 @@ import {
   ARAYUZ_ISARETI, aileyeCevir, satirSvgGovdesi, govdeBellegiBosalt,
   EKSEN_TIPLERI, eksenSvgKaynagi, eksenSvgVaryanti, tipSimgesi,
   DOSYA_IKON_KAYNAGI, DOSYA_IKONU, SIMGE_RAFI,
-  PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE, KISITLI_KARSILAMA_GORUNUSU, KISITLI_KARSILAMA_SIMGESI,
+  PANEL_GORUNUSLERI, panelSvgKaynagi, KAPSAYICI_SIMGE, BOLUM_SIMGE_KAYNAKLARI, SEKME_SIMGE_KAYNAKLARI, KISITLI_KARSILAMA_GORUNUSU, KISITLI_KARSILAMA_SIMGESI,
   SATIR_SIMGELERI, ANLAM_RENKLERI, satirSvgKaynagi, satirSvgVaryanti,
   ADIM_EVRESI, eksenDekorKararlari, eksenDekorKaydi,
   SATIR_SONU_NOTLARI, SONUK_ANLAM, satirSonuVaryanti, satirSonuSecenekleri, type SatirSonuNotu,
@@ -144,18 +144,35 @@ test("simge nöbeti: .sar dosya ikonu MARKA ikonudur ve ilanı package.json'da y
 
 test("panel nöbeti: raf ile panel çizelgesi AYNI görünüşleri kapsar — eksik de fazla da kırmızı", () => {
   const raf = rafPanelAdlari();
-  const beklenen = PANEL_GORUNUSLERI.map((g) => panelSvgKaynagi(g).split("/").pop()!).sort();
+  // Founder 2026-10-21 (dördüncü hüküm): kapta tek görünüm vardır (sarmalPanel) ve beş görünüş ilanı
+  // (panel + dört yuva) panel ailesidir. Ek olarak kabın etkinlik çubuğu simgesi (panel-sarmal.svg) ile
+  // bölüm komutlarının kaynak çizimleri raftadır; `panel-` önekli olanlar (Graf ve Makinist) rafın aynı
+  // klasöründe yaşar, `bolum/` altındakiler (Ray, Tren) alt klasörde.
+  const bolumKaynaklari = Object.values(BOLUM_SIMGE_KAYNAKLARI).filter((y) => !y.includes("/bolum/")).map((y) => y.split("/").pop()!);
+  const beklenen = [...PANEL_GORUNUSLERI.map((g) => panelSvgKaynagi(g).split("/").pop()!), KAPSAYICI_SIMGE.split("/").pop()!, ...bolumKaynaklari].sort();
   assert.deepEqual(raf, beklenen,
     `panel nöbeti: raf ${JSON.stringify(raf)}, çizelge ${JSON.stringify(beklenen)} — ` +
     "panel SVG'si silmek/eklemek çizelgeyle BİRLİKTE yapılır (VIT-KIMLIK-A03 dersi paneller için de geçerlidir)");
-  // VIT-GRAF-A16 ile aile ALTIYA çıktı: Fikirler hanesi Hatırlatıcılar panelinin
-  // içinden çıkıp kendi görünüşüne taşındı ve kendi panel simgesini aldı. Sayı
-  // bilerek güncellenmiştir; nöbetin değeri sayının kendisinde değil,
-  // güncellemenin sessiz olamamasındadır.
-  // VIT-K78-A10 bölüm sırasını (Sarmal sarmalı) ve dört bölüm yuvasını ekledi;
-  // sayı aynı gerekçeyle bilerek güncellenmiştir.
-  assert.equal(raf.length, 11,
-    "panel ailesi ON BİR görünüştür (Bölümler · Ray'in altı paneli · dört bölüm yuvası)");
+  // Sayı bilerek güncellenmiştir (VIT-GRAF-A16 altıya, VIT-K78-A10 on bire, Founder 2026-10-21 dokuza, dördüncü hüküm
+  // sekize indirdi); nöbetin değeri sayının kendisinde değil, güncellemenin sessiz olamamasındadır.
+  assert.equal(raf.length, 8,
+    "panel rafı SEKİZ simgedir (kabın tek görünümü · dört bölüm yuvası · kabın Sarmal simgesi · Mini Graf ve Makinist kaynakları)");
+});
+
+test("Tren simgesi: lokomotif ile yapay zekâ ajanını birleştirir ve etkinlik çubuğu dışındaki her Tren simgesi bu dosyadır", () => {
+  const ajan = oku(`${SIMGE_RAFI}/bolum/tren-ajan.svg`);
+  assert.equal(BOLUM_SIMGE_KAYNAKLARI.tren, `${SIMGE_RAFI}/bolum/tren-ajan.svg`);
+  assert.equal(SEKME_SIMGE_KAYNAKLARI.tren, BOLUM_SIMGE_KAYNAKLARI.tren, "sekme şeridinin Tren simgesi başlık komutunun simgesinden ayrışmış");
+  for (const nitelik of ['viewBox="0 0 24 24"', 'fill="none"', 'stroke="currentColor"', 'stroke-width="1.7"', 'stroke-linecap="round"'])
+    assert.ok(ajan.includes(nitelik), `tren-ajan.svg çizim dilinden ayrılıyor: ${nitelik} yok`);
+  assert.ok(!/#[0-9A-Fa-f]{3,8}\b/.test(ajan), "tren-ajan.svg'ye ham renk gömülmüş");
+  // Çizim üç parçayı birlikte taşır: iki nokta göz (ajan yüzü), anten ve kıvılcım, iki ray ayağı.
+  assert.equal((ajan.match(/<circle /g) ?? []).length, 2, "iki nokta göz yok");
+  assert.ok(/<path d="M12 1 L[^"]*Z" fill="currentColor"/.test(ajan), "dört kollu kıvılcım yok");
+  assert.ok(/<path d="M12 5\.8 V8\.6"\/>/.test(ajan), "kısa anten yok");
+  assert.ok(ajan.includes("M8.6 18.4 L6.8 21.8") && ajan.includes("M15.4 18.4 L17.2 21.8"), "iki ray ayağı yok");
+  // Eski Tren görünüm simgesi rafta kalmamıştır.
+  assert.ok(!existsSync(join(KOK, SIMGE_RAFI, "panel-tren.svg")), "panel-tren.svg hâlâ rafta: ikinci bir Tren simgesi doğar");
 });
 
 test("panel nöbeti: panel simgelerinin içeriği birbirinden FARKLIDIR — aynı simge iki panele gidemez", () => {
@@ -213,7 +230,8 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     // 6 eksen × 3 evre × 2 tema = 36 · 53 satır × 9 anlam × 2 tema = 954 → 990
     // (A07 envanteri yirmi, otorite işaretleri üç, yapı ağacı bir ve ipucu
     //  balonu dokuz simge ekledi: 20 → 53 satır)
-    assert.equal(yazilan.length, 990, "üretici 990 varyant dökmeli (6×3×2 eksen + 53×9×2 satır)");
+    // + 4 bölüm × {düz, seçili} × 2 tema = 16 başlık eylemi simgesi (Founder 2026-10-21) → 1006
+    assert.equal(yazilan.length, 1006, "üretici 1006 varyant dökmeli (6×3×2 eksen + 53×9×2 satır + 4×2×2 bölüm)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');

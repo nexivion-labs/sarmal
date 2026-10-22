@@ -488,12 +488,11 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     fs.unlinkSync(uri.fsPath);
   });
 
-  it("KOMŞU PANELLER: Hatırlatıcılar ve Gözlemler görünüşleri yerinde durur", async () => {
+  it("MAKİNİST AĞACI: Onaylar, Hatırlatıcılar ve Gözlemler tek ağaçta yerinde durur", async () => {
     await yuz();
-    // Kimlikler paket bildiriminden okunur; görünüşün kayıtlı olduğunu odak
-    // komutunun HATA VERMEMESİ gösterir (kayıtsız görünüşe odaklanılamaz).
-    for (const kimlik of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalOnaylar"]) {
-      await vscode.commands.executeCommand(`${kimlik}.focus`);
-    }
+    // Founder 2026-10-21: üç yüzey ayrı görünüm değil, Makinist ağacının üst düğümleridir;
+    // bölüm komutu Makinist'i seçer ve ağaç görünümünü öne alır (HATA VERMEMESİ yeter).
+    await vscode.commands.executeCommand("sarmal.bolum.makinist");
+    await vscode.commands.executeCommand("sarmalPanel.focus");
   });
 });

@@ -210,20 +210,23 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
   //   olduğunu ve canlı yolda bir kaydın kendi panelinde TAM BİR KEZ göründüğünü
   //   göremez; o ölçüm yalnız burada yapılabilir.
 
-  it("iki yeni görünüş gerçek VS Code'da kayıtlı: Hatırlatıcılar ve Bildirimler açılabiliyor", async () => {
+  it("Makinist ağacı gerçek VS Code'da kayıtlı: Hatırlatıcılar ve Gözlemler onun üst düğümleridir ve bölüm seçilince açılır", async () => {
     const ext = vscode.extensions.getExtension(EKLENTI);
     assert.ok(ext, `${EKLENTI} bulunamadı`);
     await ext!.activate();
     const komutlar = await vscode.commands.getCommands(true);
-    for (const gorunus of ["sarmalHatirlaticilar", "sarmalBildirimler"]) {
+    // Founder 2026-10-21 (dördüncü hüküm): kabın TEK görünümü sarmalPanel'dir; Makinist onun sekmesidir.
+    for (const gorunus of ["sarmalPanel"]) {
       assert.ok(
         komutlar.includes(`${gorunus}.focus`),
         `"${gorunus}" görünüşü gerçek VS Code'da kayıtlı değil; odak komutu üretilmemiş`,
       );
     }
-    // Kayıt bildirimde kalmış olamaz: görünüşler gerçekten açılabilmelidir.
-    await vscode.commands.executeCommand("sarmalHatirlaticilar.focus");
-    await vscode.commands.executeCommand("sarmalBildirimler.focus");
+    // Founder 2026-10-21: Hatırlatıcılar ve Gözlemler ayrı görünüm değildir.
+    for (const eski of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalMakinist", "sarmalYolHaritasi", "sarmalMiniGraf", "sarmalTren"])
+      assert.ok(!komutlar.includes(`${eski}.focus`), `"${eski}" hâlâ ayrı görünüm olarak kayıtlı`);
+    // Bölüm komutu panelin Makinist sekmesini seçer ve kabı öne alır.
+    await vscode.commands.executeCommand("sarmal.bolum.makinist");
   });
 
   it("hatırlatıcı taşıyan .sar açılınca kayıt Hatırlatıcılar yüzeyinde TAM BİR KEZ görünür", async () => {

@@ -32,6 +32,7 @@ import {
   type YuzeyKaydi,
 } from "../src/yuzey-cekirdek.ts";
 import { HATIRLATICI_KAPATMA_METINLERI } from "../src/yuzey-metinleri.ts";
+import { satirEylemleri, satirHtml } from "../src/panel-cekirdek.ts";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 
@@ -241,7 +242,6 @@ test("KABLO: komut kayıtlıdır ve tazeleme gövdenin KENDİ kilidinden istenir
 //   bekleyeni reddettiğini ölçer.
 // ═══════════════════════════════════════════════════════════════════════════
 const KAPATMA_KOMUTU = "sarmal.hatirlaticiKapat";
-const GORUNUS_HATIRLATICILAR = "sarmalHatirlaticilar";
 /** Dosya başlığı satırının bağlam değeri — kapatma ona da uygulanamaz. */
 const BAGLAM_DOSYA = "sarmalHatirlaticiDosyasi";
 
@@ -254,32 +254,11 @@ const PAKET = JSON.parse(oku("../package.json")) as {
 };
 const NLS_EN = JSON.parse(oku("../package.nls.json")) as Record<string, string>;
 const NLS_TR = JSON.parse(oku("../package.nls.tr.json")) as Record<string, string>;
-const OGE_MENUSU = (): MenuGirdisi[] => PAKET.contributes.menus["view/item/context"] ?? [];
-const kapatmaGirdileri = (): MenuGirdisi[] => OGE_MENUSU().filter((g) => g.command === KAPATMA_KOMUTU);
-
-/**
- * `when` cümlesini iki değişkenli bir dünyada değerlendirir: hangi görünüş ve
- * hangi bağlam değeri. Karşılaştırma EŞİTLİKTİR, alt dizge değil — uykuda
- * bekleyenin bağlam değeri ateşlemiş olanın ÖN EKİDİR ("sarmalHatirlatici" ⊂
- * "sarmalHatirlaticiAtesledi") ve alt dizgeyle ölçen bir nöbet ikisini ayırt
- * edemez, yani asıl kusuru göremez. Değerlendirici yalnız `&&` ve `||`
- * tanır; cümle bundan karmaşık bir söz dizimi taşımaya başlarsa nöbet SESSİZ
- * GEÇMEZ, yüksek sesle düşer ve kendisinin büyütülmesini ister.
- */
-function menudeBelirir(when: string | undefined, gorunus: string, baglam: string): boolean {
-  if (!when) return true;
-  assert.ok(!/[()!]/.test(when),
-    `nöbetin değerlendiricisi bu koşulu tanımıyor: ${when} — değerlendiriciyi büyüt, koşulu kırpma`);
-  const cozumle = (parca: string): boolean => {
-    const item = /^\s*viewItem\s*(==|!=)\s*([A-Za-z0-9_.]+)\s*$/.exec(parca);
-    if (item) return item[1] === "==" ? item[2] === baglam : item[2] !== baglam;
-    const view = /^\s*view\s*(==|!=)\s*([A-Za-z0-9_.]+)\s*$/.exec(parca);
-    if (view) return view[1] === "==" ? view[2] === gorunus : view[2] !== gorunus;
-    if (/^\s*(true|false)\s*$/.test(parca)) return parca.trim() === "true";
-    assert.fail(`nöbetin değerlendiricisi bu yüklemi tanımıyor: ${parca}`);
-  };
-  return when.split("||").some((veya) => veya.split("&&").every(cozumle));
-}
+// Founder 2026-10-21 (dördüncü hüküm): ağaç artık Sarmal panelinin webview'indedir; satır eylemleri
+// `view/item/context` menüsünden değil panelin kendi satır düğmelerinden (panel-cekirdek.ts
+// `satirEylemleri`) gelir. Manifest nöbeti bu yüzden eylemin KARARINI ölçer: hangi bağlam değerinde
+// düğme belirir ve hangi satıra HTML'de basılır.
+const kapatmaVarMi = (baglam: string): boolean => satirEylemleri(baglam).some((e) => e.komut === KAPATMA_KOMUTU);
 
 test("MANİFEST: kapatma komutu ilan edilmiştir ve başlığı iki dilde yaşar", () => {
   const komut = PAKET.contributes.commands.find((k) => k.command === KAPATMA_KOMUTU);
@@ -291,30 +270,28 @@ test("MANİFEST: kapatma komutu ilan edilmiştir ve başlığı iki dilde yaşar
   assert.notEqual(NLS_EN[anahtar!], NLS_TR[anahtar!], "iki dil aynı metni taşıyor — ikinci dil yazılmamış");
 });
 
-test("MANİFEST: eylem yuvası YALNIZ ateşlemiş hatırlatıcı satırında belirir", () => {
-  const girdiler = kapatmaGirdileri();
-  assert.ok(girdiler.length > 0,
-    "view/item/context altında kapatma girdisi yok — komut kayıtlı olsa bile kullanıcı ona ulaşamaz");
-  assert.ok(girdiler.some((g) => menudeBelirir(g.when, GORUNUS_HATIRLATICILAR, BAGLAM_HATIRLATICI_ATESLEDI)),
-    "ateşlemiş satırda hiçbir kapatma girdisi belirmiyor — Adımın birinci kabul ölçütü karşılanmıyor");
-  for (const g of girdiler) {
-    assert.equal(menudeBelirir(g.when, GORUNUS_HATIRLATICILAR, BAGLAM_HATIRLATICI), false,
-      `uykuda bekleyen hatırlatıcıda kapatma beliriyor (${g.group}) — sessiz vazgeçmeye kapı açılır`);
-    assert.equal(menudeBelirir(g.when, GORUNUS_HATIRLATICILAR, BAGLAM_DOSYA), false,
-      `dosya başlığı satırında kapatma beliriyor (${g.group}) — kayıt taşımayan satıra eylem verilmiş`);
-    for (const yabanci of ["sarmalBildirimler", "sarmalFikirler", "sarmalYolHaritasi", "sarmalOnaylar"]) {
-      assert.equal(menudeBelirir(g.when, yabanci, BAGLAM_HATIRLATICI_ATESLEDI), false,
-        `kapatma '${yabanci}' görünüşüne sızıyor (${g.group}) — eylem kendi panelinin dışına taşmış`);
-    }
+test("PANEL: eylem düğmesi YALNIZ ateşlemiş hatırlatıcı satırında belirir", () => {
+  assert.ok(kapatmaVarMi(BAGLAM_HATIRLATICI_ATESLEDI),
+    "ateşlemiş satırda kapatma düğmesi belirmiyor — Adımın birinci kabul ölçütü karşılanmıyor");
+  assert.equal(kapatmaVarMi(BAGLAM_HATIRLATICI), false,
+    "uykuda bekleyen hatırlatıcıda kapatma beliriyor — sessiz vazgeçmeye kapı açılır");
+  assert.equal(kapatmaVarMi(BAGLAM_DOSYA), false,
+    "dosya başlığı satırında kapatma beliriyor — kayıt taşımayan satıra eylem verilmiş");
+  for (const yabanci of ["adim", "sarmalBildirim", "sarmalFikir", "sarmalMakinistGrubu.hatirlaticilar", "sarmalOnayKapisi", undefined]) {
+    assert.equal(satirEylemleri(yabanci).some((e) => e.komut === KAPATMA_KOMUTU), false,
+      `kapatma '${String(yabanci)}' satırına sızıyor — eylem kendi satırının dışına taşmış`);
   }
 });
 
-test("MANİFEST: eylem hem üzerine-gelme yuvasında hem bağlam menüsünde vardır", () => {
-  const gruplar = kapatmaGirdileri().map((g) => g.group ?? "");
-  assert.ok(gruplar.some((g) => g.startsWith("inline")),
-    "kapatma satır üzerine gelince görünmüyor; Adım 'üzerine gelince görünen bir eylem' ister");
-  assert.ok(gruplar.some((g) => !g.startsWith("inline")),
-    "kapatma yalnız üzerine-gelme yuvasında; sağ tık menüsünden ulaşılamaz ve klavyeyle gezen kullanıcı eylemi bulamaz");
+test("PANEL: eylem satırın üzerine gelince beliren düğmedir ve HTML'de komutuyla basılır; kopyalama onunla yan yana kalır", () => {
+  const eylemler = satirEylemleri(BAGLAM_HATIRLATICI_ATESLEDI);
+  assert.deepEqual(eylemler.map((e) => e.komut), [KAPATMA_KOMUTU, "sarmal.satiriKopyala"],
+    "ateşlemiş satırda önce kapatma, sonra kopyalama gelmeli");
+  const html = satirHtml({
+    id: "makinist/x", derinlik: 1, etiket: "Hatırlatıcı", aciklama: "", ipucu: "", durum: "yaprak", komutlu: true, eylemler,
+  });
+  assert.ok(html.includes(`data-komut="${KAPATMA_KOMUTU}"`), "kapatma düğmesi satıra basılmıyor");
+  assert.ok(/class="eyler"/.test(html), "eylem düğmeleri üzerine-gelme yuvasında (eyler) değil");
 });
 
 test("MANİFEST: kapatma simgesi rafta gerçekten vardır ve iki temayı da taşır", () => {

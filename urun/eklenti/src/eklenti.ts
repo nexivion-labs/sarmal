@@ -60,7 +60,10 @@ import { yolHaritasiKaydi, panelOlcumleri, projeKimligi, type YolHaritasiYuzu } 
 import { hatirlaticilarKaydi, type Hatirlaticilar } from "./hatirlaticilar.ts";   // 🔔 YUZ-3.3 ikinci yüzey
 import { fikirlerKaydi, type Fikirler } from "./fikirler.ts";                    // 💡 VIT-GRAF-A16 Fikirler yüzeyi
 import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";           // 🛈 YUZ-3.3 üçüncü yüzey
+import { trenKaydi, type Tren } from "./tren.ts";   // 🚆 Founder 2026-10-21: Tren (yapay zekâ ajanları) veri sağlayıcısı
+import { panelKaydi, type SarmalPaneliYuzu } from "./panel.ts";   // 🧭 Founder 2026-10-21: kabın tek webview görünümü (Ray · Tren · Makinist)
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
+import { makinistKaydi } from "./makinist.ts";   // 🧑‍✈️ Makinist ağacı
 import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
@@ -161,6 +164,8 @@ let fikirler: Fikirler | undefined;
 //   kuyruğuna verilir; kuyruk kendi nabzıyla (kaydetme · geciktirmeli yazım
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
 let onayPaneli: OnayPaneli | undefined;
+let tren: Tren | undefined;
+let panel: (SarmalPaneliYuzu & { sekmeSecVeOdakla(s: "ray" | "tren" | "makinist"): Promise<void> }) | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
 let bolumYuvasi: BolumYuvasiYuzu | undefined;
 
@@ -259,17 +264,17 @@ export interface SarmalEklentiYuzu {
   yolHaritasiKodlari(): string[];
   /**
    * 🧩 VIT-K78-A10 · KARDEŞ EKLENTİ ARAYÜZÜ. Kardeş eklentiler kendi bölümlerini
-   * kabın en üstündeki bölüm sırasına buradan kaydeder (bolum-yuvasi.ts başlığı
+   * kabın başlığındaki bölüm eylemlerine buradan kaydeder (bolum-yuvasi.ts başlığı
    * sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
    */
   bolumYuvasiAl(surum: number): BolumYuvasiV1 | undefined;
   /**
    * 🧪 Bölüm yuvası nöbet kapısı — YALNIZ sınama kipinde (`ExtensionMode.Test`)
-   * vardır; kurulu eklentinin herkese açık yüzünde tanımsızdır. Bölüm sırasının
+   * vardır; kurulu eklentinin herkese açık yüzünde tanımsızdır. Bölüm durumunun
    * ölçümünü, Yol Haritasının gerçek görünürlüğünü ve kullanıcı seçiminin
    * eşdeğerini verir; kardeş eklentiler bu kapıya ulaşamaz.
    */
-  bolumSinamaKapisi?: BolumSinamaKapisi & { yolHaritasiGorunurMu(): boolean };
+  bolumSinamaKapisi?: BolumSinamaKapisi & { yolHaritasiGorunurMu(): boolean; panelOlcumleri(): ReturnType<SarmalPaneliYuzu["olcumler"]> | undefined };
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -425,6 +430,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   fikirler = fikirlerKaydi(context);
   bildirimler = bildirimlerKaydi(context);
   onayPaneli = onayPaneliKaydi(context);
+  // 🚆 Founder 2026-10-21: Tren görünümü turun yayınından beslenir (kendi taraması yoktur).
+  tren = trenKaydi(context);
+  // 🧑‍✈️ Founder 2026-10-21: Onaylar · Hatırlatıcılar · Gözlemler · Fikirler tek Makinist ağacının
+  // dört üst düğümüdür; dört sağlayıcı veri ve satır çizimini olduğu gibi verir.
+  const makinistAgaci = makinistKaydi(context, { onayPaneli, hatirlaticilar, bildirimler, fikirler });
   // 📋 VIT-GRAF-A13: ağaç panellerinin satırı sağ tık menüsünden panoya iner.
   // Founder'ın cümlesi şudur: "hatırlatıcı ve bildirim metinlerini
   // kopyalayamıyorum." Ağaç görünüşlerinde metin seçilemez; kopyalama ancak bir
@@ -898,7 +908,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         bildirimler?.diliTazele();
         onayPaneli?.diliTazele();
         yolHaritasiYuzeyi?.diliTazele();
-        bolumYuvasi?.diliTazele();
+        tren?.diliTazele();
+        panel?.diliTazele();
         denetimKilidi.iste("dil");
       }
     }),
@@ -986,6 +997,13 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // denetim turu ister ve panel o turun yayınından beslenir. İkinci bir kilit ya da
   // ikinci bir tur gövdesi doğmaz.
   yolHaritasiYuzeyi = yolHaritasiKaydi(context, (s) => perfKanal.appendLine(s), odakKapisi, meyveKapisi, (t) => denetimKilidi.iste(t));   // 🗺️ PRF-A04: panel turları da kanala düşer · 🔭 mini graf odağı · 🍎 meyve kapısı
+  // 🧭 Founder 2026-10-21: kapta tek webview görünümü; Yol Haritası, Mini Graf, Tren ve Makinist veri
+  // sağlayıcıları bu görünümün sekmelerinde (Ray · Tren · Makinist) okunur. Yerleşik bölüm komutları
+  // (sarmal.bolum.*) sekmeyi seçer; Graf, Ray sekmesinin parçasıdır.
+  if (tren && yolHaritasiYuzeyi) {
+    panel = panelKaydi(context, { yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci });
+    bolumYuvasi?.sekmeBagla((b) => panel?.sekmeSecVeOdakla(b === "graf" ? "ray" : b));
+  }
 
   // 🎨 Çalışma Alanını Giydir (BKM-SNV2-A03): dış projede görünüm paritesi —
   // imzasız çalışma alanında bir kez sorar; bizim repo imzalı olduğundan sessiz.
@@ -1014,7 +1032,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
     bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
     ...(context.extensionMode === vscode.ExtensionMode.Test && bolumYuvasi
-      ? { bolumSinamaKapisi: { ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false } }
+      ? { bolumSinamaKapisi: { ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false, panelOlcumleri: () => panel?.olcumler() } }
       : {}),
   };
 }
@@ -1027,6 +1045,8 @@ export function deactivate(): void {
   fikirler = undefined;       // 💡 VIT-GRAF-A16: kapanmış görünüşe Fikir basılmasın
   bildirimler = undefined;
   onayPaneli = undefined;       // kapanmış görünüme kapı yazılmasın
+  tren = undefined;
+  panel = undefined;
   bolumYuvasi = undefined;      // 🧩 kapanmış sıraya çizim istenmesin
   odakDinleyicileri.length = 0;  // kapanmış görünüme odak haberi gitmesin
   yuzeyDefteri.temizle(false);   // tutamaklar bırakıldı; kapanışta çizim istenmez

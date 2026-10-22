@@ -1,0 +1,501 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// panel-cekirdek.ts — 🧭 SARMAL PANELİNİN SAF ÇEKİRDEĞİ (vscode importsuz)
+//
+//   Founder 2026-10-21 (bağlayıcı çizim): Sarmal etkinlik çubuğu kabı TEK bir
+//   webview görünümüdür (`sarmalPanel`). Kabın başlığının hemen altında Ray ·
+//   Tren · Makinist sekme şeridi durur; şeridin altından seçili sekmenin içeriği
+//   başlar. Kapta her an yalnız bir görünüm görünür, böylece VS Code görünüm
+//   başlığını kap başlığıyla birleştirir ve webview bütün yüksekliği kaplar.
+//
+//   Bu dosya üç iş yapar ve hiçbirinde VS Code'u tanımaz:
+//     1. Mevcut AĞAÇ SAĞLAYICILARINI (Yol Haritası · Tren · Makinist) olduğu
+//        gibi okur: `getChildren` ve `getTreeItem` çağrılır, yeni ayrıştırıcı ya
+//        da tarama yoktur. Yalnız AÇIK düğümlerin çocukları üretilir; 700+
+//        düğümlü bir projede kapalı varsayılanla çıktı küçük kalır.
+//     2. Satırları, sekme şeridini ve bölümleri HTML'e çevirir (bütün metinler
+//        kaçırılır; istemci betiğine hiçbir veri yorumlanacak metin olarak girmez).
+//     3. Sekme kimliklerini, klavye komşuluğunu ve Mini Graf gövdesinin gölge
+//        köke taşınmasını (stil seçicileri) saf işlevlerle karara bağlar.
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { PANEL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { GORUNUM_KAPAT_KOMUTU, GORUNUM_SEC_KOMUTU } from "./minigraf-gorunum.ts";
+import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
+
+// ── SEKMELER ────────────────────────────────────────────────────────────────
+
+/** Şeritteki sekmeler, soldan sağa. */
+export const SEKMELER = ["ray", "tren", "makinist"] as const;
+export type SekmeKimligi = (typeof SEKMELER)[number];
+
+/** Bilinmeyen ya da bozuk değer Ray'e düşer (kalıcı durumdan okunan değer güvenilmez). */
+export function sekmeNormalle(v: unknown): SekmeKimligi {
+  return (SEKMELER as readonly unknown[]).includes(v) ? (v as SekmeKimligi) : "ray";
+}
+
+/** Klavye komşuluğu: oklar sarar, Home ve End uçlara gider; başka tuş seçimi değiştirmez. */
+export function komsuSekme(secili: SekmeKimligi, tus: string): SekmeKimligi {
+  const i = SEKMELER.indexOf(secili);
+  switch (tus) {
+    case "ArrowRight": return SEKMELER[(i + 1) % SEKMELER.length]!;
+    case "ArrowLeft": return SEKMELER[(i - 1 + SEKMELER.length) % SEKMELER.length]!;
+    case "Home": return SEKMELER[0]!;
+    case "End": return SEKMELER[SEKMELER.length - 1]!;
+    default: return secili;
+  }
+}
+
+// ── KAÇIRMA VE KÜÇÜK YARDIMCILAR ─────────────────────────────────────────────
+
+/** HTML metni ve nitelik değeri için kaçırma. */
+export function kacir(s: unknown): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+/** SVG'yi tek satıra indirir: yorumlar atılır, boşluklar daralır (CSS veri adresi ve satır içi kullanım). */
+export function svgKucult(svg: string): string {
+  return svg.replace(/<!--[\s\S]*?-->/g, "").replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
+}
+
+/** Kararlı kısa özet (FNV-1a, 32 bit): ikon sınıf adı içeriğe bağlıdır, sıraya değil. */
+function ozet(metin: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < metin.length; i++) { h ^= metin.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(36);
+}
+
+// ── İKON DEFTERİ ─────────────────────────────────────────────────────────────
+
+/**
+ * Satır ikonlarının defteri. Ağaç ikonları açık ve koyu tema için AYRI dosyalardır
+ * (somut renkli, `iconPath` deseni); webview'de her satıra gömülmek yerine bir kez
+ * CSS kuralı olarak yazılır, satır yalnız sınıf adı taşır. Böylece yüzlerce satırda
+ * aynı çizim tekrar etmez.
+ */
+export class IkonDefteri {
+  private readonly kayit = new Map<string, { a: string; k: string }>();
+
+  /** Açık ve koyu çizimi kaydeder, satırın taşıyacağı sınıf adını verir. */
+  ekle(acik: string, koyu: string): string {
+    const a = svgKucult(acik);
+    const k = svgKucult(koyu);
+    const sinif = `i${ozet(a + "\u0001" + k)}`;
+    this.kayit.set(sinif, { a, k });
+    return sinif;
+  }
+
+  /** Kayıtlı bütün ikonların CSS kuralları (varsayılan açık, koyu temada koyu çizim). */
+  stil(): string {
+    const uri = (s: string): string => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+    const kurallar: string[] = [];
+    for (const [sinif, { a, k }] of this.kayit) {
+      kurallar.push(`.${sinif}{background-image:${uri(a)}}`);
+      if (a !== k) {
+        kurallar.push(`body.vscode-dark .${sinif},body.vscode-high-contrast:not(.vscode-high-contrast-light) .${sinif}{background-image:${uri(k)}}`);
+      }
+    }
+    return kurallar.join("\n");
+  }
+
+  get boyut(): number { return this.kayit.size; }
+}
+
+// ── TEMA İKONLARI (codicon karşılıkları; webview'de codicon yazı tipi yoktur) ──
+
+const TEMA_IKONLARI: Readonly<Record<string, string>> = {
+  "pass-filled": `<circle cx="8" cy="8" r="6" fill="currentColor"/><path d="M5.2 8.2l1.9 1.9 3.7-3.9" fill="none" stroke="var(--vscode-sideBar-background,#fff)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+  "pass": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.4 8.2l1.8 1.8 3.5-3.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`,
+  "circle-large-outline": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/>`,
+  "circle-slash": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.2 11.8l7.6-7.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`,
+  "sync": `<g class="don"><path d="M13 8a5 5 0 0 1-8.6 3.5M3 8a5 5 0 0 1 8.6-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12.4 2.4l0 2.5H9.9M3.6 13.6v-2.5h2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`,
+};
+
+/** `sync~spin` gibi değiştiricili kimliğin gövdesi; bilinmeyen kimlik boş döner. */
+function temaGovdesi(kimlik: string): string {
+  const ad = kimlik.split("~")[0]!;
+  return TEMA_IKONLARI[ad] ?? "";
+}
+
+/** Tema rengi kimliği (`charts.yellow`) → CSS değişkeni (`--vscode-charts-yellow`). */
+export function temaRengiDegiskeni(kimlik: string): string {
+  return `--vscode-${kimlik.replace(/\./g, "-")}`;
+}
+
+// ── AĞAÇ SAĞLAYICISINI SATIRLARA ÇEVİRME ────────────────────────────────────
+
+/** `vscode.TreeItem` yüzünün bu çekirdeğin okuduğu en küçük hâli. */
+export interface AgacOgesi {
+  id?: string;
+  label?: string | { label: string };
+  description?: string | boolean;
+  tooltip?: string | { value: string };
+  iconPath?: unknown;
+  /** 0 yaprak · 1 kapalı · 2 açık (`vscode.TreeItemCollapsibleState`). */
+  collapsibleState?: number;
+  command?: { command: string; arguments?: unknown[] };
+  contextValue?: string;
+  resourceUri?: { path: string };
+  /** 0 işaretsiz · 1 işaretli (`vscode.TreeItemCheckboxState`); ayrıntılı biçimde `{ state }`. */
+  checkboxState?: number | { state: number };
+}
+
+/** Ağaç sağlayıcısının bu çekirdeğin kullandığı yüzü. */
+export interface AgacKaynagi {
+  getChildren(oge?: unknown): readonly unknown[];
+  getTreeItem(oge: unknown): AgacOgesi;
+}
+
+/** Satır eylemi (üzerine gelince beliren küçük düğme). */
+export interface PanelEylemi {
+  komut: string;
+  ad: string;
+  ikon: "kart" | "kopya" | "onay";
+}
+
+/** İkon çözümünün sonucu: dosyadan gelen çizim çifti ya da tema ikonu. */
+export type IkonSonucu =
+  | { tur: "dosya"; acik: string; koyu: string }
+  | { tur: "tema"; ad: string; renk?: string };
+
+export interface PanelSatiri {
+  id: string;
+  derinlik: number;
+  etiket: string;
+  aciklama: string;
+  ipucu: string;
+  ikonSinifi?: string;
+  temaIkonu?: { ad: string; renk?: string };
+  /** Yazı rengi için tema değişkeni adı (`--vscode-...`). */
+  renk?: string;
+  rozet?: string;
+  /** Kutucuk durumu; tanımsızsa satırda kutucuk yoktur. */
+  isaret?: boolean;
+  /** "yaprak" · "kapali" · "acik". */
+  durum: "yaprak" | "kapali" | "acik";
+  /** Satırın bir komutu var (tıklayınca çalışır); yoksa tıklama aç-kapa yapar. */
+  komutlu: boolean;
+  eylemler: PanelEylemi[];
+}
+
+export interface UretilenSatir {
+  satir: PanelSatiri;
+  oge: unknown;
+  item: AgacOgesi;
+}
+
+export interface UretimSecenekleri {
+  /** Kullanıcının açık-kapalı tercihi; tercih yoksa düğümün kendi varsayılanı kullanılır. */
+  acikMi(id: string, varsayilan: boolean): boolean;
+  ikonCoz(iconPath: unknown): IkonSonucu | undefined;
+  /** `resourceUri` karar yolu: yazı rengi ve rozet (yol-dekor.ts `dekorCoz` çağıran kabuk). */
+  dekor(resourceUri: { path: string } | undefined): { renk?: string; rozet?: string } | undefined;
+  eylemler(contextValue: string | undefined): PanelEylemi[];
+  defter: IkonDefteri;
+  /** Kimlik önekü (kaynaklar arası çakışmayı önler). */
+  onek: string;
+}
+
+const etiketMetni = (l: AgacOgesi["label"]): string => (typeof l === "string" ? l : l?.label ?? "");
+const ipucuMetni = (t: AgacOgesi["tooltip"]): string => (typeof t === "string" ? t : t?.value ?? "");
+
+function durumunuBul(item: AgacOgesi, id: string, sec: UretimSecenekleri): "yaprak" | "kapali" | "acik" {
+  const cs = item.collapsibleState ?? 0;
+  if (cs === 0) return "yaprak";
+  return sec.acikMi(id, cs === 2) ? "acik" : "kapali";
+}
+
+/** Bir öğeden satır kurar (ağaç gezisinden bağımsız: tek satır yamasında da kullanılır). */
+export function satirKur(kaynak: AgacKaynagi, oge: unknown, id: string, derinlik: number, sec: UretimSecenekleri): UretilenSatir {
+  const item = kaynak.getTreeItem(oge);
+  const etiket = etiketMetni(item.label);
+  const dekor = sec.dekor(item.resourceUri);
+  const ikon = sec.ikonCoz(item.iconPath);
+  const aciklama = typeof item.description === "string" ? item.description : "";
+  const satir: PanelSatiri = {
+    id, derinlik, etiket, aciklama,
+    ipucu: ipucuMetni(item.tooltip) || [etiket, aciklama].filter(Boolean).join("  "),
+    durum: durumunuBul(item, id, sec),
+    komutlu: Boolean(item.command),
+    eylemler: sec.eylemler(item.contextValue),
+  };
+  if (ikon?.tur === "dosya") satir.ikonSinifi = sec.defter.ekle(ikon.acik, ikon.koyu);
+  else if (ikon?.tur === "tema") satir.temaIkonu = { ad: ikon.ad, renk: ikon.renk };
+  if (dekor?.renk) satir.renk = dekor.renk;
+  if (dekor?.rozet) satir.rozet = dekor.rozet;
+  if (item.checkboxState !== undefined) {
+    satir.isaret = (typeof item.checkboxState === "number" ? item.checkboxState : item.checkboxState.state) === 1;
+  }
+  return { satir, oge, item };
+}
+
+/**
+ * Sağlayıcının AÇIK düğümlerini düz satır listesine açar. Kapalı düğümün çocukları
+ * için `getChildren` ÇAĞRILMAZ: 700 düğümlü ağaçta maliyet görünen satır sayısıdır.
+ * Kardeşler arasında aynı etiket tekrarlanırsa kimlik sıra sayısıyla ayrılır.
+ */
+export function satirlariUret(kaynak: AgacKaynagi, sec: UretimSecenekleri): UretilenSatir[] {
+  const cikti: UretilenSatir[] = [];
+  const gez = (ust: unknown | undefined, ustId: string, derinlik: number): void => {
+    const cocuklar = kaynak.getChildren(ust);
+    const sayac = new Map<string, number>();
+    for (const c of cocuklar) {
+      const item0 = kaynak.getTreeItem(c);
+      const taban = item0.id ?? (etiketMetni(item0.label) || "?");
+      const n = sayac.get(taban) ?? 0;
+      sayac.set(taban, n + 1);
+      const id = `${ustId}/${n ? `${taban}#${n}` : taban}`;
+      const u = satirKur(kaynak, c, id, derinlik, sec);
+      cikti.push(u);
+      if (u.satir.durum === "acik") gez(c, id, derinlik + 1);
+    }
+  };
+  gez(undefined, sec.onek, 0);
+  return cikti;
+}
+
+/**
+ * Hedef öğenin kimliğini bulur. `gez` verilen öğenin altına inilip inilmeyeceğini
+ * söyler (Ray değiştirme yalnız varlık düğümlerinin içinde arar, bütün ağacı gezmez).
+ * Kimlik, `satirlariUret` ile birebir aynı kuralla kurulur. Bulunamazsa `undefined`.
+ */
+export function ogeKimligiBul(
+  kaynak: AgacKaynagi, hedef: unknown, onek: string, gez: (oge: unknown) => boolean,
+): { id: string; atalar: string[] } | undefined {
+  const ara = (ust: unknown | undefined, ustId: string, atalar: string[]): { id: string; atalar: string[] } | undefined => {
+    const sayac = new Map<string, number>();
+    for (const c of kaynak.getChildren(ust)) {
+      const item = kaynak.getTreeItem(c);
+      const taban = item.id ?? (etiketMetni(item.label) || "?");
+      const n = sayac.get(taban) ?? 0;
+      sayac.set(taban, n + 1);
+      const id = `${ustId}/${n ? `${taban}#${n}` : taban}`;
+      if (c === hedef) return { id, atalar };
+      if (gez(c)) {
+        const bulunan = ara(c, id, [...atalar, id]);
+        if (bulunan) return bulunan;
+      }
+    }
+    return undefined;
+  };
+  return ara(undefined, onek, []);
+}
+
+// ── SATIR VE AĞAÇ HTML'İ ─────────────────────────────────────────────────────
+
+const OK_SVG = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const EYLEM_SVG: Readonly<Record<PanelEylemi["ikon"], string>> = {
+  kart: `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M5 6.2h6M5 8.6h6M5 11h3.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+  kopya: `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.4" y="5.4" width="7.6" height="8.1" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M10.6 3.3L10.6 3.1a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1l0 6.3a1 1 0 0 0 1 1h.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+  onay: `<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M5.4 8.2l1.8 1.8 3.5-3.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+};
+
+/** Tek satırın HTML'i. */
+export function satirHtml(s: PanelSatiri): string {
+  const oznitelik = [
+    `class="sat"`, `role="treeitem"`, `data-id="${kacir(s.id)}"`, `data-d="${s.derinlik}"`,
+    `aria-level="${s.derinlik + 1}"`, `tabindex="-1"`, `style="--d:${s.derinlik}"`,
+    `title="${kacir(s.ipucu)}"`,
+  ];
+  if (s.komutlu) oznitelik.push(`data-komut="1"`);
+  if (s.durum !== "yaprak") oznitelik.push(`aria-expanded="${s.durum === "acik"}"`);
+  const ok = `<span class="ok">${s.durum === "yaprak" ? "" : OK_SVG}</span>`;
+  const kutu = s.isaret === undefined ? ""
+    : `<input type="checkbox" class="kt"${s.isaret ? " checked" : ""} aria-label="${kacir(s.etiket)}">`;
+  let ikon = "";
+  if (s.temaIkonu) {
+    const stil = s.temaIkonu.renk ? ` style="color:var(${temaRengiDegiskeni(s.temaIkonu.renk)})"` : "";
+    ikon = `<svg class="ik" viewBox="0 0 16 16" aria-hidden="true"${stil}>${temaGovdesi(s.temaIkonu.ad)}</svg>`;
+  } else if (s.ikonSinifi) {
+    ikon = `<span class="ik ${s.ikonSinifi}" aria-hidden="true"></span>`;
+  }
+  const renk = s.renk ? ` style="color:var(${temaRengiDegiskeni(s.renk)})"` : "";
+  const rozet = s.rozet ? `<span class="rz"${renk} aria-hidden="true">${kacir(s.rozet)}</span>` : "";
+  const eylemler = s.eylemler.length
+    ? `<span class="eyler">${s.eylemler.map((e) =>
+        `<button type="button" class="ey" data-komut="${kacir(e.komut)}" title="${kacir(e.ad)}" aria-label="${kacir(e.ad)}">${EYLEM_SVG[e.ikon]}</button>`).join("")}</span>`
+    : "";
+  return `<div ${oznitelik.join(" ")}>${ok}${kutu}${ikon}<span class="et"${renk}>${kacir(s.etiket)}</span>`
+    + (s.aciklama ? `<span class="ac">${kacir(s.aciklama)}</span>` : "") + rozet + eylemler + `</div>`;
+}
+
+/** Satır listesinin HTML'i. */
+export function satirlarHtml(satirlar: readonly PanelSatiri[]): string {
+  return satirlar.map(satirHtml).join("");
+}
+
+// ── MİNİ GRAF GÖVDESİNİ GÖLGE KÖKE HAZIRLAMA ────────────────────────────────
+
+/**
+ * Mini Graf çizicileri tam belge döndürür (`<html><meta><style>…<body>…`). Gölge
+ * kökte `body` ve `:root` seçicileri eşleşmez; bu yüzden stil bloklarındaki `body{`
+ * ve `:root{` seçicileri `:host{` olur, belge sarmalayıcıları atılır ve gövde ile
+ * stiller tek parça verilir. `:root` çevrilmezse satır yüksekliği (`--sat`), kademe
+ * girintisi (`--g`) ve kılavuz rengi (`--iz`) tanımsız kalır: satırlar 22 yerine
+ * yaklaşık 17 piksel çizilir, 22 piksellik düzene göre çizilen bağ şeridi satırların
+ * altından taşar ve gövdeyi uzatır; aşağı kaydıran kullanıcı yazısız çizgiler görür
+ * ve yapışkan sekme şeridi gövdenin sonunda ekrandan çıkar.
+ * Çizimin kendisine DOKUNULMAZ (Founder: Mini Graf görünüşü aynen kalır).
+ */
+export function grafParcasi(belge: string): string {
+  const stiller = [...belge.matchAll(/<style>([\s\S]*?)<\/style>/g)]
+    .map((m) => `<style>${m[1]!.replace(/(^|\})(\s*)(?:body|:root)\s*\{/g, "$1$2:host{")}</style>`).join("");
+  const govde = /<body[^>]*>([\s\S]*?)<\/body>/.exec(belge)?.[1] ?? "";
+  return `${stiller}${govde}`;
+}
+
+// ── BÖLÜMLER ─────────────────────────────────────────────────────────────────
+
+export interface RayBolumu {
+  agac: string;
+  /** Yol Haritası boşken ağaç yerine gösterilen cümle. */
+  bosMesaj?: string;
+  /** Mini Graf tam belgesi; tanımsızsa Mini Graf bölümü hiç çizilmez (ayar kapalı). */
+  graf?: string;
+  /** Katlanmış bölümler (eski ayrı görünümlerin başlığına tıklayınca kapanması gibi). */
+  kapali?: Readonly<Partial<Record<BolumKimligi, boolean>>>;
+}
+
+/** Ray sekmesinin katlanabilen bölümleri. */
+export const BOLUMLER = ["agac", "graf"] as const;
+export type BolumKimligi = typeof BOLUMLER[number];
+/** Bölümün katlanma durumunun açık-kapalı haritasındaki anahtarı (satır kimlikleriyle çakışmaz). */
+export const bolumAnahtari = (b: BolumKimligi): string => `bolum:${b}`;
+
+/**
+ * Katlanan bölüm başlığı. Eski panelde Yol Haritası ve Mini Graf ayrı VS Code görünümleriydi ve
+ * başlıklarına tıklayınca katlanıyordu (Founder 2026-10-22); başlık düğmedir, ok taşır ve
+ * `aria-expanded` bildirir. Gövde `hidden` ile gizlenir; içindeki parça kimlikleri değişmez.
+ */
+function bolumBasligi(b: BolumKimligi, ad: string, kapali: boolean, araya: boolean): string {
+  return `<h2 class="bas${araya ? " araya" : ""}"><button type="button" class="bb" data-bolum="${b}" aria-expanded="${!kapali}"`
+    + ` aria-controls="bolum-${b}"><span class="ok">${OK_SVG}</span>${kacir(ad)}</button></h2>`;
+}
+
+/** Ray sekmesi: "YOL HARİTASI" başlığı, ağaç, ardından Mini Graf. */
+export function rayBolumuHtml(b: RayBolumu): string {
+  const baslik = PANEL_METINLERI.yolHaritasiBasligi.toLocaleUpperCase(PANEL_METINLERI.dil);
+  const kapali = (k: BolumKimligi): boolean => b.kapali?.[k] === true;
+  const govde = (k: BolumKimligi, ic: string): string => `<div id="bolum-${k}" class="bolum"${kapali(k) ? " hidden" : ""}>${ic}</div>`;
+  const ag = b.bosMesaj
+    ? `<p class="bos">${kacir(b.bosMesaj)}</p>`
+    : `<div id="agac" role="tree" aria-label="${kacir(baslik)}">${b.agac}</div>`;
+  const bos = b.bosMesaj ? `<div id="agac" role="tree" hidden></div>` : "";
+  const graf = b.graf === undefined ? ""
+    : bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
+      + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`);
+  return `${bolumBasligi("agac", baslik, kapali("agac"), false)}${govde("agac", `${ag}${bos}`)}${graf}`;
+}
+
+/** Tren sekmesi: tren-cekirdek özetinin sade listesi; kardeş varsa Koşular bağlantısı. */
+export function trenBolumuHtml(agac: string, bos: boolean, kardesVar: boolean): string {
+  const govde = bos
+    ? `<p class="bos">${kacir(TREN_METINLERI.bosDurum)}</p><div id="tren-agac" role="tree" hidden></div>`
+    : `<div id="tren-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("tren"))}">${agac}</div>`;
+  const kardes = kardesVar
+    ? `<p class="kardes"><a href="#" data-kardes="1" role="button">${kacir(PANEL_METINLERI.kardesBaglantisi)}</a></p>`
+    : "";
+  return `${govde}${kardes}`;
+}
+
+/** Makinist sekmesi: dört açılır grup. */
+export function makinistBolumuHtml(agac: string): string {
+  return `<div id="makinist-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("makinist"))}">${agac}</div>`;
+}
+
+// ── TAM BELGE ────────────────────────────────────────────────────────────────
+
+export interface SekmeSimgeleri {
+  ray: string;
+  tren: string;
+  makinist: string;
+}
+
+export interface PanelBelgesi {
+  sekme: SekmeKimligi;
+  /** Seçili sekmenin içerik HTML'i. */
+  icerik: string;
+  ikonStili: string;
+  simgeler: SekmeSimgeleri;
+  nonce: string;
+  /** `webview.cspSource` (sınamada boş verilebilir). */
+  cspSource: string;
+  /** Makinist sekmesinin yanındaki sayı (bekleyen kayıt); 0 ise gizli. */
+  rozet: number;
+}
+
+/** Satır içi SVG simgesi: yalnız kaynak dosyanın kendi svg'si; 16 piksele indirilir. */
+function simgeSvg(svg: string): string {
+  return svgKucult(svg).replace(/^<svg /, `<svg width="16" height="16" aria-hidden="true" focusable="false" `);
+}
+
+export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, rozet: number): string {
+  const dugmeler = SEKMELER.map((s) => {
+    const sec = s === secili;
+    const sayi = s === "makinist"
+      ? `<span class="rozet"${rozet > 0 ? "" : " hidden"}>${rozet > 0 ? rozet : ""}</span>` : "";
+    return `<button type="button" class="sekme" role="tab" data-sekme="${s}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
+      + ` title="${kacir(PANEL_METINLERI.sekmeIpucu(s))}">${simgeSvg(simgeler[s])}<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>${sayi}</button>`;
+  }).join("");
+  return `<nav class="seritler" role="tablist" aria-label="${kacir(PANEL_METINLERI.seritEtiketi)}">${dugmeler}</nav>`;
+}
+
+/** Webview'in tam belgesi: şerit, içerik, betik. İçerik ilk çizimle birlikte gelir. */
+export function panelHtml(b: PanelBelgesi): string {
+  const csp = [
+    "default-src 'none'",
+    "style-src 'unsafe-inline'",
+    `script-src 'nonce-${b.nonce}'`,
+    `img-src data: ${b.cspSource}`.trim(),
+    `font-src ${b.cspSource}`.trim(),
+  ].join("; ");
+  return `<!DOCTYPE html><html lang="${PANEL_METINLERI.dil}"><head><meta charset="UTF-8">`
+    + `<meta http-equiv="Content-Security-Policy" content="${csp}">`
+    + `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+    + `<title>${kacir(PANEL_METINLERI.panelAdi)}</title>`
+    + `<style>${PANEL_STILI}</style><style id="ikon-stil">${b.ikonStili}</style></head><body>`
+    + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet)
+    + `<div id="icerik" role="tabpanel">${b.icerik}</div>`
+    + `<script nonce="${b.nonce}">${PANEL_BETIGI}</script></body></html>`;
+}
+
+// ── KOMUT KÖPRÜSÜ ───────────────────────────────────────────────────────────
+
+/** İzinli komut köprüsü: Mini Graf bağları yalnız bu üç komutu çalıştırabilir. */
+export const GRAF_KOMUTLARI: ReadonlySet<string> = new Set(["sarmal.dosyaAc", GORUNUM_SEC_KOMUTU, GORUNUM_KAPAT_KOMUTU]);
+/** Satır eylemi olarak çalıştırılabilen komutlar (satırın kendi eylem listesinde de bulunmalıdır). */
+export const EYLEM_KOMUTLARI: ReadonlySet<string> = new Set(["sarmal.koniKart", "sarmal.satiriKopyala", "sarmal.hatirlaticiKapat"]);
+
+/** Satırın bağlam değerinden eylem düğmeleri (üzerine gelince beliren küçük düğmeler). */
+export function satirEylemleri(contextValue: string | undefined): PanelEylemi[] {
+  if (!contextValue) return [];
+  const kopya: PanelEylemi = { komut: "sarmal.satiriKopyala", ad: PANEL_METINLERI.satiriKopyala, ikon: "kopya" };
+  if (contextValue === "adim") return [{ komut: "sarmal.koniKart", ad: PANEL_METINLERI.koniKarti, ikon: "kart" }];
+  if (contextValue === "sarmalHatirlaticiAtesledi") {
+    return [{ komut: "sarmal.hatirlaticiKapat", ad: PANEL_METINLERI.hatirlaticiKapat, ikon: "onay" }, kopya];
+  }
+  if (/^sarmal(Hatirlatici|Bildirim|Fikir)/.test(contextValue)) return [kopya];
+  return [];
+}
+
+/** `command:kimlik?[argümanlar]` bağını ayrıştırır; izinsiz komut ya da bozuk argüman `undefined` döner. */
+export function grafKomutu(href: string): { komut: string; argumanlar: unknown[] } | undefined {
+  if (!href.startsWith("command:")) return undefined;
+  const govde = href.slice("command:".length);
+  const i = govde.indexOf("?");
+  const komut = i < 0 ? govde : govde.slice(0, i);
+  if (!GRAF_KOMUTLARI.has(komut)) return undefined;
+  let argumanlar: unknown[] = [];
+  if (i >= 0) {
+    try {
+      const ham = JSON.parse(decodeURIComponent(govde.slice(i + 1))) as unknown;
+      argumanlar = Array.isArray(ham) ? ham : [ham];
+    } catch { return undefined; }
+  }
+  if (komut === "sarmal.dosyaAc" && !(typeof argumanlar[0] === "string" && typeof argumanlar[1] === "number")) return undefined;
+  if (komut === GORUNUM_SEC_KOMUTU && typeof argumanlar[0] !== "string") return undefined;
+  return { komut, argumanlar };
+}
+

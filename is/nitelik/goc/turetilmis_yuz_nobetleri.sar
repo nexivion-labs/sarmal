@@ -34,12 +34,18 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `cc57bb2fa7b8c303466bb03a93c0a21baab54fdebaa60bb1e20157ac5783b557` |
 | `urun/cekirdek/src/dil-baglami.ts` | `37212e330b73a9cf577f69ecab5134bab257b1c6403f03e169e2df5467980f69` |
-| `urun/eklenti/package.nls.tr.json` | `e12e779ebeec7e6e17eb5e24eaeaf3c432dfcfbd2ced09418ccd566d4708f41c` |
-| `urun/eklenti/package.nls.json` | `4d4a24268a05473b6295110f2b2e896fc9add069c7ec6f2be207b7666315bca0` |
+| `urun/eklenti/package.nls.tr.json` | `eb6f1dc483faeedcfcb4016ec6b9fea4c4d54f90d76cf29d2a1bd89b0e5d77d6` |
+| `urun/eklenti/package.nls.json` | `b0115794ba64f674242d867359d1debf6de62ac55b185c51716a02a56d5d5a11` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d25b70ba41aca77ad5b7d87183d6e2877737dc36b680412c75fdcf9cd9452113` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-23 · tek Sarmal paneli): Founder'ın 2026-10-21 hükmüyle
+kabın görünümleri tek bir Sarmal paneline indiği için iki katalogdan yedi eski
+görünüm adı kalktı; panelin adı, Mini Graf görünüm seçicisinin iki anahtarı ve beş
+bölüm komutunun başlığı eklendi ve iki katalog mührü ilerledi. Öteki yedi kaynağın
+mührü değişmedi.
 
 Tazeleme notu (2026-10-23 · girinti boyasının tül derinlik stili): Founder'ın
 2026-10-21 hükmüyle gökkuşağı girinti bantları varsayılan olmaktan çıktı ve iki

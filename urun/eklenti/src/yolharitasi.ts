@@ -30,7 +30,7 @@ import { belirtecle } from "../../cekirdek/src/belirtec.ts";   // 🪆 varlık k
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { kapsayiciEvre, gecisSinifla, yasakGecisMesaji, type DurumGecisleri } from "../../cekirdek/src/durum.ts";   // YUZ-4 tek tanım + TUR-2 durum makinesi (Adım sayaçlarının türetmesi PRF-TA-A03 ile çekirdeğe indi)
 import { YURUTUCU_ROLU } from "../../cekirdek/src/kopru/iz.ts";   // HST-MTR-A04: yürütücü satırı yazanla aynı sabitten tanınır
-import { miniGrafKaydi, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
+import { miniGrafKaydi, type MiniGrafGorunumu, type OdakKapisi, type MeyveKapisi } from "./minigraf.ts";   // VIT-GRAF-A08: yol haritasının altındaki mini graf
 import {
   EKSEN_TIPLERI, eksenSvgVaryanti, aileyeCevir, satirSvgGovdesi,
   type EksenTipi, type SatirSimgesi, type AnlamRengi,
@@ -376,7 +376,6 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   }
   /** VIT-GRAF-A08: mini graf saklı Dag'ı BURADAN okur (yeni tarama yok — tek kaynak). */
   dagAl(): Dag | undefined { return this.dag; }
-  gorunum?: vscode.TreeView<PanelOge>;
   /** VIT-KIMLIK-A03: eklenti kökü — geometrik SVG iconPath'leri buradan mutlaklaşır.
    *  Kayıt sırasında context.extensionUri'den dolar; köksüz (saf sınama)
    *  kurulumda codicon geri düşüşü çalışır, ağaç ikonsuz kalmaz. */
@@ -548,7 +547,6 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     for (const v of harita.values()) topolojikSirala(v.cocuklar);
     this.varliklar = [...harita.values()].sort((a, b) => a.ad.localeCompare(b.ad, "tr"));
     this.varlikUst = varlikUstleri(this.varliklar);   // 🪆 EKL-F7-A09: küme ilişkisi her turda taze kurulur
-    this.bosDurumuGuncelle();   // BKM-DNT-A05: varlıksız alanda panel susmaz, nasıl dolacağını söyler
     // ZRF-A06: varlık nesneleri yeniden kuruldu — bayat aktif referansı taze eşine bağlanır.
     this.aktifVarlik = undefined;
     this.aktifligiGuncelle(vscode.window.activeTextEditor);
@@ -565,14 +563,29 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   /**
    * BKM-DNT-A05: Yol Haritası'nın boş durum cümlesi. Öteki paneller gibi cümle
-   * katalogdan gelir ve görünüm nesnesinin `message` alanına yazılır; varlık
+   * katalogdan gelir; Sarmal paneli (Ray sekmesi) ağaç yerine bunu yazar. Varlık
    * listesi dolduğu an cümle geri çekilir. Ölçüt varlık sayısıdır, kırık dosya
    * uyarıları değil: kırık dosya satırı zaten kendi cümlesini taşır.
    */
-  bosDurumuGuncelle(): void {
-    if (!this.gorunum) return;
-    this.gorunum.message = this.varliklar.length ? undefined : YUZEY_BOS_DURUM.yolHaritası;
+  bosMesaj(): string | undefined {
+    return this.varliklar.length ? undefined : YUZEY_BOS_DURUM.yolHaritası;
   }
+
+  /** Panelin kutucuğu: yalnız Adım satırlarında durum yazılır (varlık ve koşumda kutucuk yoktur). */
+  async kutuIsaretle(oge: unknown, isaretli: boolean): Promise<void> {
+    const o = oge as PanelOge;
+    if (o.tur !== "oge") return;
+    await this.durumYaz(o, isaretli ? "tamamlandı" : "beklemede");
+  }
+
+  /** Satırın plan kodu (Adım, Blok, Faz...); kodsuz satırlarda tanımsız. Mini Graf seçimi bunu kullanır. */
+  ogeKodu(oge: unknown): string | undefined {
+    const o = oge as PanelOge;
+    return o.tur === "oge" && o.kod ? o.kod : undefined;
+  }
+
+  /** `oge` bir varlık düğümü mü (Ray değiştirme yalnız varlık zincirini açar). */
+  varlikMi(oge: unknown): boolean { return (oge as PanelOge).tur === "varlık"; }
 
   varlikListesi(): Varlik[] { return this.varliklar; }
 
@@ -1137,7 +1150,19 @@ ${kurallarBolum}
  * (eklenti.ts `SarmalEklentiYuzu`); panelin gösterdiği ağaç başka türlü
  * dışarıdan okunamaz.
  */
+export interface PanelBagi {
+  /** Ray değiştirme: varlık satırının atalarını açar, satırı seçer ve görünür kılar. */
+  varligaGit(varlik: unknown): void;
+  /** Sarmal paneli şu an görünür mü. */
+  gorunurMu(): boolean;
+}
+
 export interface YolHaritasiYuzu {
+  /** Panelin okuduğu veri kaynağı (kendi TreeView'ü yoktur). */
+  readonly saglayici: YolHaritasi;
+  readonly miniGraf: MiniGrafGorunumu;
+  /** Sarmal paneli kurulunca ray değiştirme ile görünürlük ölçümü ona bağlanır. */
+  panelBagla(p: PanelBagi): void;
   diliTazele(): void;
   /** Panelin ŞU AN gösterdiği plan kodları — salt okur. */
   kodlar(): string[];
@@ -1159,11 +1184,8 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
   const saglayici = new YolHaritasi();
   saglayici.eklentiKoku = context.extensionUri;   // VIT-KIMLIK-A03: geometrik iconPath kökü
   saglayici.olcum = olcum;
-  const gorunum = vscode.window.createTreeView("sarmalYolHaritasi", {
-    treeDataProvider: saglayici,
-    manageCheckboxStateManually: true,
-  });
-  saglayici.gorunum = gorunum;
+  // Founder 2026-10-21: ağaç artık kendi TreeView'ünü kurmaz; Sarmal paneli (Ray sekmesi)
+  // sağlayıcıyı olduğu gibi okur ve satırları kendi webview'ünde çizer (panel.ts).
 
   // ── VIT-GRAF-A08: 🕸️ mini graf — yol haritasının altındaki boşlukta tek proje
   //    grafı; panel seçimi + imleç (aşağıdaki geciktirici) buraya da akar.
@@ -1172,12 +1194,7 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
   //    Meyve kapısı da gövdeden gelir: graf beyan edilen teslimin diskte olup
   //    olmadığını buradan öğrenir ve boş camı ona göre çizer (VIT-GRAF-A12).
   const miniGraf = miniGrafKaydi(context, () => saglayici.dagAl(), odak, meyve);
-  context.subscriptions.push(
-    gorunum.onDidChangeSelection((e) => {
-      const ilk = e.selection[0];
-      if (ilk && ilk.tur === "oge" && ilk.kod) miniGraf.dugumSec(ilk.kod);
-    }),
-  );
+  let panelBagi: PanelBagi | undefined;
 
   // ── ZRF-A06 · aktif-varlık nabzı: imlecin yaşadığı proje roketi tek kalple atar ──
   saglayici.aktifligiGuncelle(vscode.window.activeTextEditor);
@@ -1293,7 +1310,7 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
   izKilidi.iste("başlangıç");
 
   context.subscriptions.push(
-    gorunum, izIzleyici,
+    izIzleyici,
     izIzleyici.onDidCreate(izTazele), izIzleyici.onDidChange(izTazele), izIzleyici.onDidDelete(izTazele),
     // IZLE-A04: koşum düğümüne tıkla → tam konuşma webview'i (ham prompt · ham yanıt ·
     // model · ajan imzası · token — hiçbir alan gizlenmez; onizleme.ts webview deseni)
@@ -1318,13 +1335,6 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
 <h2>${aile(YOL_METINLERI.hamPrompt)}</h2><pre>${kacir(kayit?.hamPrompt)}</pre>
 <h2>${aile(YOL_METINLERI.hamYanit)}</h2><pre>${kacir(JSON.stringify(kayit?.hamYanıt, null, 2))}</pre>
 </body></html>`;
-    }),
-    gorunum.onDidChangeCheckboxState(async (e) => {
-      for (const [oge, hal] of e.items) {
-        if (oge.tur !== "oge") continue;   // durumYaz yalnız Oge (Adım) alır — varlık/koşum'da checkbox yok
-        await saglayici.durumYaz(
-          oge, hal === vscode.TreeItemCheckboxState.Checked ? "tamamlandı" : "beklemede");
-      }
     }),
     // VIT-GRAF-A04: 🃏 koni kartı — panelde Adım'a sağ-tık/inline düğme → detay webview
     // (satıra-atla tıklaması korunur, kart onu EZMEZ). YALNIZ okuma (DIL-2).
@@ -1351,7 +1361,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
           varlik: v,
         })),
         { placeHolder: YOL_METINLERI.raySec });
-      if (secim) await gorunum.reveal(secim.varlik, { expand: 2, focus: true, select: true });
+      if (secim) panelBagi?.varligaGit(secim.varlik);
     }),
   );
   // Açılış tetiği YOKTUR: ilk resmi turun ilk yayını getirir (gövdedeki
@@ -1359,7 +1369,10 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
   // kez kuran ve soğuk açılışta birbiriyle yarışan ikinci hattın ta kendisiydi.
   return {
     kodlar: () => saglayici.panelKodlari(),
-    gorunurMu: () => gorunum.visible,
+    gorunurMu: () => panelBagi?.gorunurMu() ?? false,
+    saglayici,
+    miniGraf,
+    panelBagla: (p) => { panelBagi = p; },
     diliTazele(): void {
       saglayici.diliTazele();
       miniGraf.tazele();

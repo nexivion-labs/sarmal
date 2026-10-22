@@ -324,6 +324,16 @@
           "default": true,
           "description": "%config.miniGraph%"
         },
+        "sarmal.miniGrafGorunum": {
+          "type": "string",
+          "enum": [
+            "klasik",
+            "agac",
+            "ilerleme"
+          ],
+          "default": "agac",
+          "description": "%config.miniGraphView%"
+        },
         "sarmal.agacCizgileri": {
           "type": "boolean",
           "default": true,
@@ -332,6 +342,12 @@
       }
     },
     "commands": [
+      {
+        "command": "sarmal.miniGraf.gorunumDegistir",
+        "title": "%command.miniGraphView%",
+        "category": "%sarmal.category%",
+        "icon": "$(type-hierarchy)"
+      },
       {
         "command": "sarmal.iskeletKur",
         "title": "%command.scaffold%",
@@ -361,6 +377,84 @@
         "title": "%command.switchTrack%",
         "category": "%sarmal.category%",
         "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "sarmal.bolum.ray",
+        "title": "%command.sectionRail%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-ray-duz-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-ray-duz-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.raySecili",
+        "title": "%command.sectionRail%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-ray-secili-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-ray-secili-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.graf",
+        "title": "%command.sectionGraph%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-graf-duz-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-graf-duz-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.grafSecili",
+        "title": "%command.sectionGraph%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-graf-secili-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-graf-secili-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.tren",
+        "title": "%command.sectionTrain%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-tren-duz-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-tren-duz-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.trenSecili",
+        "title": "%command.sectionTrain%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-tren-secili-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-tren-secili-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.makinist",
+        "title": "%command.sectionDriver%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-makinist-duz-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-makinist-duz-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.makinistSecili",
+        "title": "%command.sectionDriver%",
+        "category": "%sarmal.category%",
+        "icon": {
+          "light": "medya/simgeler/uretilmis/bolum-makinist-secili-acik.svg",
+          "dark": "medya/simgeler/uretilmis/bolum-makinist-secili-koyu.svg"
+        }
+      },
+      {
+        "command": "sarmal.bolum.diger",
+        "title": "%command.sectionOther%",
+        "category": "%sarmal.category%",
+        "icon": "$(layers)"
       },
       {
         "command": "sarmal.takdirYaz",
@@ -470,61 +564,19 @@
       ],
       "view/title": [
         {
+          "command": "sarmal.miniGraf.gorunumDegistir",
+          "when": "view == sarmalPanel && sarmal.panel.sekme == ray && config.sarmal.miniGraf",
+          "group": "navigation@1"
+        },
+        {
           "command": "sarmal.rayDegistir",
-          "when": "view == sarmalYolHaritasi",
-          "group": "navigation@0"
+          "when": "view == sarmalPanel && sarmal.panel.sekme == ray",
+          "group": "navigation@2"
         },
         {
           "command": "sarmal.yolHaritasiYenile",
-          "when": "view == sarmalYolHaritasi",
-          "group": "navigation"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "sarmal.koniKart",
-          "when": "view == sarmalYolHaritasi && viewItem == adim",
-          "group": "inline"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalHatirlaticilar",
-          "group": "9_cutcopypaste"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalHatirlaticilar",
-          "group": "inline"
-        },
-        {
-          "command": "sarmal.hatirlaticiKapat",
-          "when": "view == sarmalHatirlaticilar && viewItem == sarmalHatirlaticiAtesledi",
-          "group": "1_modification"
-        },
-        {
-          "command": "sarmal.hatirlaticiKapat",
-          "when": "view == sarmalHatirlaticilar && viewItem == sarmalHatirlaticiAtesledi",
-          "group": "inline@0"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalBildirimler",
-          "group": "9_cutcopypaste"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalBildirimler",
-          "group": "inline"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalFikirler",
-          "group": "9_cutcopypaste"
-        },
-        {
-          "command": "sarmal.satiriKopyala",
-          "when": "view == sarmalFikirler",
-          "group": "inline"
+          "when": "view == sarmalPanel && sarmal.panel.sekme == ray",
+          "group": "navigation@3"
         }
       ],
       "comments/commentThread/context": [
@@ -579,6 +631,42 @@
         },
         {
           "command": "sarmal.hatirlaticiKapat",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.ray",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.raySecili",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.graf",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.grafSecili",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.tren",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.trenSecili",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.makinist",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.makinistSecili",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.bolum.diger",
           "when": "false"
         }
       ]
@@ -682,57 +770,12 @@
     "views": {
       "sarmal-yol": [
         {
-          "id": "sarmalBolumSirasi",
+          "id": "sarmalPanel",
           "type": "webview",
-          "name": "%view.sections%",
-          "icon": "medya/simgeler/panel-sarmal.svg",
-          "contextualTitle": "%view.sections%",
-          "initialSize": 1,
-          "when": "isWorkspaceTrusted"
-        },
-        {
-          "id": "sarmalYolHaritasi",
-          "name": "%view.roadmap%",
+          "name": "%view.panel%",
           "icon": "medya/simgeler/panel-yolharitasi.svg",
-          "contextualTitle": "%view.roadmap%",
-          "when": "isWorkspaceTrusted && !sarmal.bolum.rayGizli"
-        },
-        {
-          "id": "sarmalHatirlaticilar",
-          "name": "%view.reminders%",
-          "icon": "medya/simgeler/panel-hatirlaticilar.svg",
-          "contextualTitle": "%view.reminders%",
-          "when": "isWorkspaceTrusted && !sarmal.bolum.rayGizli"
-        },
-        {
-          "id": "sarmalFikirler",
-          "name": "%view.ideas%",
-          "icon": "medya/simgeler/panel-fikirler.svg",
-          "contextualTitle": "%view.ideas%",
-          "when": "isWorkspaceTrusted && !sarmal.bolum.rayGizli"
-        },
-        {
-          "id": "sarmalBildirimler",
-          "name": "%view.observations%",
-          "icon": "medya/simgeler/panel-gozlemler.svg",
-          "contextualTitle": "%view.observations%",
-          "when": "isWorkspaceTrusted && !sarmal.bolum.rayGizli"
-        },
-        {
-          "id": "sarmalOnaylar",
-          "type": "webview",
-          "name": "%view.approvals%",
-          "icon": "medya/simgeler/panel-onaylar.svg",
-          "contextualTitle": "%view.approvals%",
-          "when": "isWorkspaceTrusted && !sarmal.bolum.rayGizli"
-        },
-        {
-          "id": "sarmalMiniGraf",
-          "type": "webview",
-          "name": "%view.miniGraph%",
-          "icon": "medya/simgeler/panel-minigraf.svg",
-          "contextualTitle": "%view.miniGraph%",
-          "when": "isWorkspaceTrusted && config.sarmal.miniGraf && !sarmal.bolum.rayGizli"
+          "contextualTitle": "%view.panel%",
+          "when": "isWorkspaceTrusted"
         },
         {
           "id": "sarmalBolumYuvasi1",
@@ -740,7 +783,7 @@
           "name": "%view.sectionSlot1%",
           "icon": "medya/simgeler/panel-yuva-1.svg",
           "contextualTitle": "%view.sectionSlot1%",
-          "when": "isWorkspaceTrusted && sarmal.bolum.seciliYuva == yuva1"
+          "when": "false"
         },
         {
           "id": "sarmalBolumYuvasi2",
@@ -748,7 +791,7 @@
           "name": "%view.sectionSlot2%",
           "icon": "medya/simgeler/panel-yuva-2.svg",
           "contextualTitle": "%view.sectionSlot2%",
-          "when": "isWorkspaceTrusted && sarmal.bolum.seciliYuva == yuva2"
+          "when": "false"
         },
         {
           "id": "sarmalBolumYuvasi3",
@@ -756,7 +799,7 @@
           "name": "%view.sectionSlot3%",
           "icon": "medya/simgeler/panel-yuva-3.svg",
           "contextualTitle": "%view.sectionSlot3%",
-          "when": "isWorkspaceTrusted && sarmal.bolum.seciliYuva == yuva3"
+          "when": "false"
         },
         {
           "id": "sarmalBolumYuvasi4",
@@ -764,7 +807,7 @@
           "name": "%view.sectionSlot4%",
           "icon": "medya/simgeler/panel-yuva-4.svg",
           "contextualTitle": "%view.sectionSlot4%",
-          "when": "isWorkspaceTrusted && sarmal.bolum.seciliYuva == yuva4"
+          "when": "false"
         },
         {
           "id": "sarmalKisitliKarsilama",

@@ -45,6 +45,8 @@ export const kabuk = {
   belgeler: new Map<string, SahteBelge>(),
   /** Kayda giren webview görünüş sağlayıcıları (kimlik → sağlayıcı). */
   webviewSaglayicilari: new Map<string, unknown>(),
+  /** createWebviewPanel ile açılan kartlar (Onaylar kartı gibi). */
+  paneller: [] as SahteWebviewGorunusu[],
   /** Kurulmuş ağaç görünüşleri. */
   agaclar: [] as SahteAgacGorunusu[],
   /** `activeTextEditor` — sınama isterse atar. */
@@ -65,6 +67,7 @@ export function kabukSifirla(): void {
   kabuk.gosterilen.length = 0;
   kabuk.belgeler.clear();
   kabuk.webviewSaglayicilari.clear();
+  kabuk.paneller.length = 0;
   kabuk.agaclar.length = 0;
   kabuk.etkinEditor = undefined;
 }
@@ -406,6 +409,13 @@ export class SahteWebviewGorunusu {
     onDidReceiveMessage: this.gelen.event,
   };
   readonly onDidChangeVisibility = this.gorunurluk.event;
+  /** WebviewPanel yüzü (Onaylar kartı): başlık, durum olayı ve atılma olayı. */
+  title = "";
+  readonly onDidChangeViewState = this.gorunurluk.event;
+  private readonly atildi = new EventEmitter<void>();
+  readonly onDidDispose = this.atildi.event;
+  reveal(): void { this.gosterimler += 1; }
+  dispose(): void { this.atildi.fire(); }
   show(): void { this.gosterimler += 1; }
   /** Panelin içinden kabuğa bir mesaj gönderir (kullanıcının tıklaması). */
   mesajGonder(m: unknown): void { this.gelen.fire(m); }
@@ -442,7 +452,12 @@ export const window = {
   createTextEditorDecorationType: () => ({ key: "sahte", dispose() {} }),
   createOutputChannel: kanal,
   createStatusBarItem: () => ({ text: "", tooltip: "", command: undefined, show() {}, hide() {}, dispose() {} }),
-  createWebviewPanel: () => { throw new Error("sahte kabuk webview paneli kurmaz"); },
+  createWebviewPanel: (_tur: string, baslik: string) => {
+    const p = new SahteWebviewGorunusu();
+    p.title = baslik;
+    kabuk.paneller.push(p);
+    return p;
+  },
   onDidChangeActiveTextEditor: new EventEmitter<unknown>().event,
   onDidChangeTextEditorSelection: new EventEmitter<unknown>().event,
   onDidChangeVisibleTextEditors: new EventEmitter<unknown>().event,
@@ -453,6 +468,8 @@ export const commands = {
     kabuk.komutlar.set(komut, f);
     return atilabilir();
   },
+  /** Kayıtlı komutların kimlikleri: kardeş eklentinin varlığı komutundan ölçülür (panel.ts). */
+  getCommands: async (_ic?: boolean): Promise<string[]> => [...kabuk.komutlar.keys()],
   executeCommand: async (komut: string, ...argumanlar: unknown[]) => {
     kabuk.komutCagrilari.push({ komut, argumanlar });
     const cevap = kabuk.komutCevaplari.get(komut) ?? kabuk.komutlar.get(komut);
@@ -508,4 +525,4 @@ export const comments = {
   createCommentController: () => ({ commentingRangeProvider: undefined as unknown, createCommentThread() { throw new Error("sahte"); }, dispose() {} }),
 };
 
-export const extensions = { getExtension: () => undefined, all: [] as unknown[] };
+export const extensions = { getExtension: () => undefined, all: [] as unknown[], onDidChange: new EventEmitter<void>().event };

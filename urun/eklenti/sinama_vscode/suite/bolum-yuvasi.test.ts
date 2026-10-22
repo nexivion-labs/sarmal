@@ -5,7 +5,7 @@
 //   fikstürünü de geliştirme kipinde yükler. Fikstür gerçek bir kardeş
 //   eklentinin yapacağını yapar: açık eklentinin dış yüzünden arayüzün birinci
 //   sürümünü alır ve iki bölüm kaydeder. Nöbet kabul ölçütünü ölçer: bölümler
-//   sırada görünür, seçilen bölüm açılır (yuvanın sağlayıcısı VS Code'un kendi
+//   sıralanır, seçilen bölüm açılır (yuvanın sağlayıcısı VS Code'un kendi
 //   çağrısıyla çözülür), Ray panelleri seçimle gizlenip geri gelir, kardeş
 //   kayıtlarını bıraktığında sıra yalnız Ray'e döner ve hiçbir hata doğmaz.
 //
@@ -16,8 +16,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as assert from "node:assert";
-import * as fs from "node:fs";
-import * as path from "node:path";
 import * as vscode from "vscode";
 
 const EKLENTI = "nexivion-labs.sarmal";
@@ -27,11 +25,8 @@ interface Olcum {
   sira: string[];
   secili: string;
   seciliYuva: string;
-  siraCozuldu: boolean;
-  siraCizimi: number;
   yuvaCozumu: Record<string, number>;
-  ipuclari: Record<string, string>;
-  kokler: string[];
+  kardesVar: boolean;
 }
 interface Yuva {
   surum: number;
@@ -97,24 +92,11 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
     assert.strictEqual(acik.yolHaritasiGorunurMu, undefined);
   });
 
-  it("kardeşin iki bölümü Ray'in ardından sırada görünür, seçim Ray'dedir ve sıra çizilmiştir", async () => {
-    assert.deepStrictEqual(o().sira, ["ray", "birinci", "ikinci"]);
+  it("kardeşin iki bölümü yerleşik dörtlünün (Ray · Graf · Tren · Makinist) ardından sıralanır, seçim Ray'dedir ve 'Diğer bölümler' eylemi açılır", async () => {
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist", "birinci", "ikinci"]);
     assert.strictEqual(o().secili, "ray");
-    await bekle(() => o().siraCozuldu && o().siraCizimi > 0, "bölüm sırası webview'i çözülmedi");
+    await bekle(() => o().kardesVar, "kardeş varken kardesVar anahtarı doğru olmadı");
     await bekle(() => kapi.yolHaritasiGorunurMu(), "Ray seçiliyken Yol Haritası görünmüyor");
-  });
-
-  it("ipucu kaydeden eklentinin görünen adını taşır; kaynak kökleri simge klasörüyle sınırlıdır", () => {
-    const ad = String(vscode.extensions.getExtension(KARDES)!.packageJSON.displayName);
-    assert.strictEqual(o().ipuclari.birinci, `Birinci sahte bölüm · ${ad}`);
-    assert.strictEqual(o().ipuclari.ikinci, `İkinci · ${ad}`);
-    const kendi = vscode.extensions.getExtension(EKLENTI)!.extensionPath;
-    const yabanci = o().kokler.filter((k) => k !== kendi);
-    assert.ok(yabanci.length > 0, "kardeş simgesinin kökü eklenmedi");
-    for (const k of yabanci) {
-      assert.ok(k.startsWith(fs.realpathSync(kardesKok)), `kardeşin kökü dışına açılan kaynak kökü: ${k}`);
-      assert.notStrictEqual(k, path.parse(k).root, "dosya sistemi kökü eklenmiş");
-    }
   });
 
   it("geçersiz kayıt anlaşılır bir hatayla reddedilir ve sıra değişmez", () => {
@@ -125,6 +107,12 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
     const kardesSimge = vscode.Uri.joinPath(vscode.Uri.file(kardesKok), "simge-bir.svg").toString();
     assert.match(kardes.dene("birinci", "Yine", kardesSimge), /birinci/);
     assert.match(kardes.dene("ray", "Başka", kardesSimge), /ray/);
+    // Founder 2026-10-21: Tren ve Makinist de ayrılmış kimlik ve ad olur (İngilizce karşılıklarıyla).
+    assert.match(kardes.dene("tren", "Başka", kardesSimge), /tren/, "tren kimliği alınabildi");
+    assert.match(kardes.dene("makinist", "Başka", kardesSimge), /makinist/, "makinist kimliği alınabildi");
+    assert.match(kardes.dene("taklit-d", "Makinist", kardesSimge), /taklit-d/, "Makinist adı taklit edilebildi");
+    assert.match(kardes.dene("taklit-e", "Train", kardesSimge), /taklit-e/, "Train adı taklit edilebildi");
+    assert.match(kardes.dene("taklit-f", "Driver", kardesSimge), /taklit-f/, "Driver adı taklit edilebildi");
     assert.match(kardes.dene("taklit-a", "  SARMAL ", kardesSimge), /taklit-a/, "Sarmal adı taklit edilebildi");
     assert.match(kardes.dene("taklit-b", "RAY", kardesSimge), /taklit-b/, "Ray adı taklit edilebildi");
     const sarmalSimge = vscode.Uri.joinPath(vscode.extensions.getExtension(EKLENTI)!.extensionUri, "ikonlar", "sarmal.svg").toString();
@@ -144,15 +132,18 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
     } finally {
       Error.prepareStackTrace = eskiKanca;
     }
-    assert.deepStrictEqual(o().sira, ["ray", "birinci", "ikinci"]);
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist", "birinci", "ikinci"]);
   });
 
-  it("kullanıcı bölümü seçince açılır: yuvası görünür, sağlayıcısı çözülür ve Ray panelleri gizlenir", async () => {
+  it("kullanıcı kardeş bölümü seçince seçim değişir ama kapta ikinci görünüm AÇILMAZ: yuva görünümleri gösterilmez, panel görünür kalır", async () => {
+    // Founder 2026-10-21 (dördüncü hüküm): kapta her an yalnız bir görünüm görünür (sarmalPanel). Kardeş yuva
+    // görünümleri `when: false` ile kapalıdır; bu yüzden VS Code yuvanın sağlayıcısını çözmez.
     assert.strictEqual(await kapi.kullaniciSecimi("birinci"), true);
     assert.strictEqual(yuva.seciliBolum, "birinci");
     assert.strictEqual(o().seciliYuva, "yuva1");
-    await bekle(() => (kardes.cozulen.birinci ?? 0) > 0, "birinci bölümün webview'i çözülmedi");
-    await bekle(() => !kapi.yolHaritasiGorunurMu(), "başka bölüm seçiliyken Yol Haritası görünür kaldı");
+    await new Promise((r) => setTimeout(r, 300));
+    assert.strictEqual(kardes.cozulen.birinci ?? 0, 0, "kardeşin yuva görünümü kapta açıldı: kapta iki görünüm görünür");
+    assert.ok(kapi.yolHaritasiGorunurMu(), "kardeş seçiliyken kabın tek görünümü (sarmalPanel) görünmez oldu");
     assert.strictEqual(await kapi.kullaniciSecimi("yok"), false);
     assert.strictEqual(yuva.seciliBolum, "birinci");
   });
@@ -162,35 +153,24 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
     await bekle(() => kapi.yolHaritasiGorunurMu(), "Ray'e dönüldüğünde Yol Haritası geri gelmedi");
   });
 
-  it("sağlayıcısı çözülemeyen bölüm düşer ve seçim Ray'e döner", async () => {
-    kardes.bozukKaydet();
-    assert.deepStrictEqual(o().sira, ["ray", "birinci", "ikinci", "bozuk"]);
-    assert.strictEqual(await kapi.kullaniciSecimi("bozuk"), true);
-    await bekle(() => !o().sira.includes("bozuk"), "çözülemeyen bölüm sırada kaldı");
-    assert.strictEqual(o().secili, "ray");
-    await bekle(() => kapi.yolHaritasiGorunurMu(), "çözülemeyen bölümden sonra Ray panelleri geri gelmedi");
-  });
-
   it("kardeş kayıtlarını bırakınca bölümler kalkar, seçim Ray'e döner ve hata doğmaz", async () => {
     assert.strictEqual(await kapi.kullaniciSecimi("ikinci"), true);
-    await bekle(() => (kardes.cozulen.ikinci ?? 0) > 0, "ikinci bölümün webview'i çözülmedi");
-    const cizimOnce = o().siraCizimi;
     kardes.kapat();
-    assert.deepStrictEqual(o().sira, ["ray"], "kalkan bölümler sırada kaldı");
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist"], "kalkan bölümler sırada kaldı");
     assert.strictEqual(o().secili, "ray");
     assert.strictEqual(o().seciliYuva, "ray");
-    assert.ok(o().siraCizimi > cizimOnce, "sıra kalkıştan sonra yeniden çizilmedi");
+    await bekle(() => !o().kardesVar, "kardeş kalkınca 'Diğer bölümler' eylemi gizlenmedi");
     await bekle(() => kapi.yolHaritasiGorunurMu(), "kardeş kalkınca Ray panelleri geri gelmedi");
     kardes.kapat();   // ikinci bırakma sessizdir
-    assert.deepStrictEqual(o().sira, ["ray"]);
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist"]);
   });
 
   it("kaydını bırakmadan etkinliğini yitiren kardeşin bölümleri düşer ve Ray'e dönülür", async () => {
     kardes.kur();
-    assert.deepStrictEqual(o().sira, ["ray", "birinci", "ikinci"]);
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist", "birinci", "ikinci"]);
     assert.strictEqual(await kapi.kullaniciSecimi("birinci"), true);
     assert.deepStrictEqual(kapi.sahipKaybi(KARDES).sort(), ["birinci", "ikinci"]);
-    assert.deepStrictEqual(o().sira, ["ray"]);
+    assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist"]);
     assert.strictEqual(o().secili, "ray");
     await bekle(() => kapi.yolHaritasiGorunurMu(), "sahibi kaybolan bölümden sonra Ray panelleri geri gelmedi");
   });

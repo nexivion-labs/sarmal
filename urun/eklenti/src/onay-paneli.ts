@@ -1,5 +1,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// onay-paneli.ts — 📬 ONAYLAR PANELİ GÖRÜNÜŞÜ (kanonun dördüncü sunum yüzeyi)
+// onay-paneli.ts — 📬 ONAYLAR KARTI (kanonun dördüncü sunum yüzeyi)
+//
+//   Founder 2026-10-21 (üçüncü hüküm): kapta her bölüm TEK görünümdür, bu yüzden
+//   Onaylar artık bir kenar çubuğu görünümü değil, Makinist ağacının bir üst
+//   düğümüdür (makinist.ts; satırlar bu panelin defterinden gelir). Karar yüzeyi
+//   (gerekçe kutusu, üç düğme) bir ağaç satırına sığmadığı için bu dosyada ŞU AN
+//   YAN SEKMEDE AÇILAN BİR WEBVIEW KARTI olarak yaşar: kapı satırına tıklanınca
+//   ya da kod merceğinden gelince `gosterVeAc` kartı açar. Gövde, mesajlar ve
+//   hüküm hattı aynen korunmuştur; yalnız barınağı değişti (WebviewView →
+//   WebviewPanel). Sayı rozeti artık Makinist ağacında durur.
+//
+//   Aşağıdaki tarihçe kartın "panel" olduğu dönemi anlatır; "görünüş" yerine
+//   "kart" okunmalıdır.
 //
 //   Founder onayı bekleyen kapılar burada yaşar. Bugüne kadar bu yüzey bir AĞAÇ
 //   GÖRÜNÜŞÜYDÜ ve kararın gerekçesi `showInputBox` ile isteniyordu. Founder aynı
@@ -44,11 +56,10 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { GORUNUS_ONAYLAR, panelRozeti } from "./yuzey-cekirdek.ts";
 import { projeKimligi } from "./yolharitasi.ts";   // 🗺️ aidiyet TEK kaynaktan çözülür
 import {
-  YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
-  onayRozetIpucu, ONAY_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
+  YUZEY_BOS_DURUM, MAKINIST_METINLERI,
+  ONAY_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
   onayKapiBaglami, onayBaglamKopyalandi, onayBaglamKapiYok,
 } from "./yuzey-metinleri.ts";
 import {
@@ -76,7 +87,7 @@ function nonceUret(): string {
   return n;
 }
 
-export class OnayPaneli implements vscode.WebviewViewProvider {
+export class OnayPaneli {
   /**
    * Panel içeriği değişti. Durum çubuğu bu olaydan beslenir (ölçülmüş kusur
    * KUSUR-DURUM-ÇUBUĞU: panelde on dört kapı varken durum çubuğu sıfır gösteriyordu). Ağaç
@@ -89,7 +100,8 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
   private readonly defter = new OnayDefteri();
   /** Açıklık ve gerekçe taslakları — tazeleme bunları düşüremez. */
   private readonly durum = new PanelDurumu();
-  private gorunum?: vscode.WebviewView;
+  /** Açık kart (yan sekme); yoksa yoktur ve kapılar yalnız Makinist ağacında görünür. */
+  private gorunum?: vscode.WebviewPanel;
   /** Teknoloji simgesi kökü ve çizelgesi — kayıt anında bir kez kurulur. */
   private simgeKoku?: vscode.Uri;
   private simgeCizelgesi: SimgeCizelgesi = new Map();
@@ -148,10 +160,15 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
     return this.durum.taslakSayisi;
   }
 
-  /** Dil ayarı değiştiğinde rozet, açıklama ve gövdeyi aynı turda yeniler. */
+  /** Dil ayarı değiştiğinde kartın başlığını ve gövdeyi aynı turda yeniler. */
   diliTazele(): void {
-    if (this.gorunum) this.gorunum.description = YUZEY_ACIKLAMALARI.onayPaneli;
+    if (this.gorunum) this.gorunum.title = MAKINIST_METINLERI.onaylar;
     this.cizdir();
+  }
+
+  /** Makinist ağacının Onaylar düğümünün satırları: bekleyen bütün kapılar. */
+  kapilar(): KapiKaydi[] {
+    return this.defter.kayitlar();
   }
 
   /**
@@ -167,7 +184,6 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
   /** Tam taramanın sonucunu toptan yerleştirir (komutla panel aynı listeden beslenir). */
   yerlestirHepsi(kayitlar: readonly KapiKaydi[]): void {
     if (this.defter.tazele(kayitlar)) this.cizdir();
-    else this.rozetiGuncelle();
   }
 
   /** Tek bir belgenin kapılarını tazeler; öteki dosyalar yerinde kalır. */
@@ -181,59 +197,42 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
   }
 
   private cizdir(): void {
-    this.rozetiGuncelle();
     this.govdeyiTazele();
     this.degisti.fire();
-  }
-
-  /**
-   * Başlıktaki sayı rozeti — kuyruk boşken rozet hiç görünmez.
-   *
-   * Rozetin KARARI dört panelin ortak saf çekirdeğine devredilmiştir
-   * Founder hükmü (2026-08-27) üç komşu panele de sayı rozeti getirdi ve dördü
-   * ayrı ayrı yazsaydı biri sessizce bayatlar, bir panelin sayısı ötekiyle
-   * çelişirdi. Sayı yine bu panelin KENDİ defterinden okunur; ortak olan şey
-   * sayının kaynağı değil, rozete yazılma biçimidir.
-   */
-  private rozetiGuncelle(): void {
-    if (!this.gorunum) return;
-    const rozet = panelRozeti(this.defter.kapiSayisi, onayRozetIpucu);
-    this.gorunum.badge = rozet;
-    // ⚠️ ÖLÇÜLMÜŞ BELİRTİ (Founder canlı bulgusu 2026-08-27): odak başka bir
-    // varlığa geçtiğinde bu panelin rozeti eski sayıda asılı kalıyordu. Belirti
-    // yalnız BU panelde görüldü; komşu üç panel aynı turda doğru sayıya oturdu
-    // ve aynı kararı okuyor. İkisi arasındaki tek fark görünüş türüdür: komşular
-    // ağaç görünüşü, bu panel webview'dir. Defterin kendisi doğrudur, çünkü
-    // durum çubuğu aynı defterden sıfır okumaktadır ve panel gövdesi boş
-    // basılmaktadır; sapan tek şey rozetin kendisidir.
-    //
-    // Bu satır o belirtiye karşı SAVUNMADIR, teşhis değildir: rozeti tanımsıza
-    // çekmek editör tarafında etkisiz kalıyorsa, sıfır değerli bir rozet aynı
-    // sonucu verir ve editör sıfırı göstermez. Yazım bilerek iki adımdır ve
-    // ikincisi koşulludur; belirtinin kaynağı editörde değil bizde çıkarsa bu
-    // satır GERİ ALINMALIDIR, çünkü o zaman ikinci yazım bir kusuru örter.
-    if (!rozet) this.gorunum.badge = { value: 0, tooltip: onayRozetIpucu(0) };
   }
 
   // ═══════════════════════════════════════════════════════════════════════
   // 🖼️ ÇİZİM
   // ═══════════════════════════════════════════════════════════════════════
 
-  resolveWebviewView(gorunum: vscode.WebviewView): void {
+  /**
+   * Kartı etkin sütunda, dosya sekmelerinin yanında açar (varsa açık olanı
+   * döndürür). Founder 2026-10-22: yan sütunda açılan kart ekranı üçe bölüp
+   * açık dosyayı tek kelimelik şeride sıkıştırıyordu; kart artık sütun açmaz.
+   */
+  kartiAc(): vscode.WebviewPanel {
+    if (this.gorunum) return this.gorunum;
+    const gorunum = vscode.window.createWebviewPanel(
+      "sarmalOnayKarti", MAKINIST_METINLERI.onaylar,
+      { viewColumn: vscode.ViewColumn.Active, preserveFocus: false },
+      {
+        // Karar yüzeyi GİRİŞ ALIR; betiksiz olamaz. Mini Grafın betiksiz disiplini
+        // (bir GÖSTERGE olduğu için) aynen yerinde durur ve ona dokunulmadı.
+        enableScripts: true,
+        // Dış kaynağa hiç bağlanılmaz (STR-3.1): yalnız eklentinin kendi kökü.
+        localResourceRoots: this.simgeKoku ? [this.simgeKoku] : [],
+        // Kullanıcı başka sekmeye geçip döndüğünde yazdığı gerekçe DURMALIDIR.
+        retainContextWhenHidden: true,
+      },
+    );
     this.gorunum = gorunum;
-    gorunum.webview.options = {
-      // Karar yüzeyi GİRİŞ ALIR; betiksiz olamaz. Mini Grafın betiksiz disiplini
-      // (bir GÖSTERGE olduğu için) aynen yerinde durur ve ona dokunulmadı.
-      enableScripts: true,
-      // Dış kaynağa hiç bağlanılmaz (STR-3.1): yalnız eklentinin kendi kökü.
-      localResourceRoots: this.simgeKoku ? [this.simgeKoku] : [],
-    };
-    gorunum.description = YUZEY_ACIKLAMALARI.onayPaneli;
     gorunum.webview.onDidReceiveMessage((m: PanelMesaji) => { void this.mesaj(m); });
-    // Görünüş gizlenip yeniden açıldığında belge sıfırdan kurulur; durum eklenti
+    // Kart gizlenip yeniden göründüğünde belge sıfırdan kurulur; durum eklenti
     // tarafında yaşadığı için açıklık da taslaklar da yerinde gelir.
-    gorunum.onDidChangeVisibility(() => { if (gorunum.visible) this.yuzeyiKur(); });
+    gorunum.onDidChangeViewState(() => { if (gorunum.visible) this.yuzeyiKur(); });
+    gorunum.onDidDispose(() => { if (this.gorunum === gorunum) this.gorunum = undefined; });
     this.yuzeyiKur();
+    return gorunum;
   }
 
   /**
@@ -257,7 +256,6 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
    * aynı gerçeği söylüyorsa ikisi tek kaynaktan beslenir, yoksa biri sessizce bayatlar.
    */
   private yuzeyiKur(): void {
-    this.rozetiGuncelle();
     this.belgeyiBas();
   }
 
@@ -428,35 +426,26 @@ export class OnayPaneli implements vscode.WebviewViewProvider {
   async gosterVeAc(dosya: string, kod: string): Promise<boolean> {
     const kume = this.defter.kumeler().find((k) => k.dosya === dosya);
     const kayit = kume?.kayitlar.find((k) => k.kapi.kod === kod);
-    if (!kayit || !this.gorunum) return false;
+    if (!kayit) return false;
     this.durum.acikligiYaz(onayKimligi({ tur: "dosya", dosya }), true);
     this.durum.acikligiYaz(onayKimligi({ tur: "kapı", dosya, kod }), true);
-    this.gorunum.show(true);
+    const kart = this.kartiAc();
+    kart.reveal(vscode.ViewColumn.Active, false);
     this.govdeyiTazele();
     // Kod merceğinden gelen yol da kullanıcının KENDİ açtığı bir kapıdır; odak
     // orada da gerekçe kutusuna gider ve akış iki girişte de aynı hisseder.
-    await this.gorunum.webview.postMessage({ tur: "odakla", kimlik: notKimligi(dosya, kod) });
+    await kart.webview.postMessage({ tur: "odakla", kimlik: notKimligi(dosya, kod) });
     return true;
   }
 }
 
 /**
- * Görünüşü kurar ve sağlayıcıyı döndürür. Görünüş KİMLİĞİ DEĞİŞMEZ
- * (`sarmalOnaylar`): kimlik değişirse kullanıcının panel yerleşimi sıfırlanır.
- * Başlık, başlık altı açıklaması ve boş-durum cümlesi tek kaynaktan
- * (yuzey-cekirdek · yuzey-metinleri) okunur; paket bildirimiyle eşitliği nöbet ölçer.
+ * Onay defterini kurar. Görünüm KAYDI YOKTUR: satırlar Makinist ağacında yaşar
+ * (makinist.ts) ve kart yan sekmede, ilk `gosterVeAc` çağrısında açılır.
  */
 export function onayPaneliKaydi(context: vscode.ExtensionContext): OnayPaneli {
   const saglayici = new OnayPaneli();
   saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(GORUNUS_ONAYLAR, saglayici, {
-      // Kullanıcı başka panele geçip döndüğünde yazdığı gerekçe DURMALIDIR.
-      // Bağlam korunmasa bile taslak defteri metni geri koyardı; ikisi birlikte
-      // hem metni hem kaydırma konumunu korur.
-      webviewOptions: { retainContextWhenHidden: true },
-    }),
-  );
   return saglayici;
 }
 

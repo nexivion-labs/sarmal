@@ -103,37 +103,28 @@ export function eksenSvgVaryanti(tip: EksenTipi, evre: KapsayiciEvre, tema: Simg
 }
 
 // ── PANEL HANESİ (VIT halka 1 · Founder 2026-08-04: panel ailesi GEOMETRİK) ──
-//    Beş kenar-çubuğu panelinin görünüş simgesi de TEK kaynaktan okunur; iki
-//    panelin aynı simgeyi taşıması Founder'ın 2026-07-28 canlı bulgusuydu ve
-//    o kusurun geri gelmemesi simge-cizelgesi.test.ts nöbetiyle ölçülür.
-//    Anahtar, package.json'daki görünüş KİMLİĞİDİR (kapsayıcı dahil değil);
-//    "sarmalBildirimler" ile "sarmalOnaylar" iç kimlikleri eski adları
-//    taşır ve v1 sonrası temizlenecektir — görünen adlar Gözlemler ve
-//    Onaylar'dır, simge dosya adları da görünen adı izler.
+//    Kenar çubuğu görünüşlerinin simgesi TEK kaynaktan okunur; iki görünüşün aynı
+//    simgeyi taşıması Founder'ın 2026-07-28 canlı bulgusuydu ve o kusurun geri
+//    gelmemesi simge-cizelgesi.test.ts nöbetiyle ölçülür. Anahtar, package.json'daki
+//    görünüş KİMLİĞİDİR (kapsayıcı dahil değil). Founder 2026-10-21: Onaylar ·
+//    Hatırlatıcılar · Gözlemler · Fikirler ayrı görünüş olmaktan çıktı, tek
+//    `sarmalMakinist` ağacının üst düğümleri oldu; düğümler satır simgesi taşır.
 
 /** Kenar çubuğu görünüşlerinin kimliği — package.json `views["sarmal-yol"]` kapsamı.
- *  🧩 VIT-K78-A10: bölüm sırası ile dört bölüm yuvası da bu haneye girer; yuvalar
+ *  🧩 VIT-K78-A10: dört bölüm yuvası da bu haneye girer; yuvalar
  *  kardeş eklentilerin kaydettiği bölümleri taşır ve her biri kendi simgesiyle
  *  ayrılır (bolum-cekirdek.ts `YUVA_GORUNUSLERI`). Kısıtlı modun karşılama
  *  görünüşü panel değildir ve aşağıda `KISITLI_KARSILAMA_GORUNUSU` olarak ayrı
  *  ilan edilir (MGZ-A08). */
 export const PANEL_GORUNUSLERI = [
-  "sarmalBolumSirasi",
-  "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
-  "sarmalOnaylar", "sarmalMiniGraf",
+  "sarmalPanel",
   "sarmalBolumYuvasi1", "sarmalBolumYuvasi2", "sarmalBolumYuvasi3", "sarmalBolumYuvasi4",
 ] as const;
 export type PanelGorunusu = (typeof PANEL_GORUNUSLERI)[number];
 
 /** Görünüş kimliği → raf dosya adı gövdesi (ASCII; görünen adı izler). */
 const PANEL_SVG_AD: Record<PanelGorunusu, string> = {
-  sarmalBolumSirasi: "sarmal",
-  sarmalYolHaritasi: "yolharitasi",
-  sarmalHatirlaticilar: "hatirlaticilar",
-  sarmalFikirler: "fikirler",
-  sarmalBildirimler: "gozlemler",
-  sarmalOnaylar: "onaylar",
-  sarmalMiniGraf: "minigraf",
+  sarmalPanel: "yolharitasi",
   sarmalBolumYuvasi1: "yuva-1",
   sarmalBolumYuvasi2: "yuva-2",
   sarmalBolumYuvasi3: "yuva-3",
@@ -150,7 +141,7 @@ export function panelSvgKaynagi(gorunus: PanelGorunusu): string {
  *  🧩 VIT-K78-A10 (Founder hükmü 2026-09-28): etkinlik çubuğunda tek bir Sarmal
  *  simgesi durur; Ray, kabın içindeki bölümlerden biridir ve raylı Yol Haritası
  *  simgesi artık kabın değil Ray bölümünün işaretidir. */
-export const KAPSAYICI_SIMGE = panelSvgKaynagi("sarmalBolumSirasi");
+export const KAPSAYICI_SIMGE = `${SIMGE_RAFI}/panel-sarmal.svg`;
 
 /** 🛡️ MGZ-A08 · Kısıtlı modun karşılama görünüşü. Panel ailesine girmez: veri
  *  taşımaz, sağlayıcı istemez ve yalnız klasöre güvenilmediğinde görünür. O an
@@ -163,7 +154,35 @@ export const KISITLI_KARSILAMA_SIMGESI = KAPSAYICI_SIMGE;
 
 /** Bölüm sırasında Ray bölümünün işareti: Ray'in ilk paneli olan Yol Haritasının
  *  iki raylı simgesidir; ayrı bir çizim doğmaz. */
-export const RAY_BOLUM_SIMGESI = panelSvgKaynagi("sarmalYolHaritasi");
+export const RAY_BOLUM_SIMGESI = panelSvgKaynagi("sarmalPanel");
+
+/** Dört yerleşik bölümün başlık eylemi simgelerinin KAYNAKLARI (Founder 2026-10-21).
+ *  Kaynaklar currentColor konturludur; başlık eylemi simgesi somut renk ister, bu
+ *  yüzden `arac/simge-uret.mjs` her kaynaktan düz ve seçili, açık ve koyu tema
+ *  varyantlarını `uretilmis/` rafına türetir (üretici aynı eşlemeyi taşır ve
+ *  nöbet ikisinin ayrışmadığını ölçer). Graf, Tren ve Makinist ayrı bir çizim taşımaz; kendi
+ *  görünüşlerinin panel simgesini okur, böylece aynı çizimin iki kopyası doğmaz. */
+export const BOLUM_SIMGE_KAYNAKLARI = {
+  ray: `${SIMGE_RAFI}/bolum/ray.svg`,
+  graf: `${SIMGE_RAFI}/panel-minigraf.svg`,
+  tren: `${SIMGE_RAFI}/bolum/tren-ajan.svg`,
+  makinist: `${SIMGE_RAFI}/panel-makinist.svg`,
+} as const;
+
+/** Sarmal panelinin sekme şeridindeki üç simge (Founder 2026-10-21): şerit bu dosyaları satır içi SVG
+ *  olarak gömer. Tren sekmesi, lokomotif ile yapay zekâ ajanını birleştiren `bolum/tren-ajan.svg`
+ *  çizimini taşır; etkinlik çubuğu dışında hiçbir yerde başka bir Tren simgesi kullanılmaz. */
+export const SEKME_SIMGE_KAYNAKLARI = {
+  ray: BOLUM_SIMGE_KAYNAKLARI.ray,
+  tren: BOLUM_SIMGE_KAYNAKLARI.tren,
+  makinist: BOLUM_SIMGE_KAYNAKLARI.makinist,
+} as const;
+
+/** Başlık eylemi simgesinin üretilmiş varyantı (eklenti köküne göreli). Düz hâl tema
+ *  ön plan rengindedir; seçili hâl daha kalın kontur, alt çizgi ve marka mavisidir. */
+export function bolumKomutSimgesi(bolum: keyof typeof BOLUM_SIMGE_KAYNAKLARI, secili: boolean, tema: SimgeTemasi): string {
+  return `${URETILMIS_RAF}/bolum-${bolum}-${secili ? "secili" : "duz"}-${tema}.svg`;
+}
 
 // ── SATIR HANESİ (VIT-KIMLIK-A05 · Founder hükmü 2026-08-04: IDE'nin içi ─────
 //    baştan aşağı geometrik çizim dilinden konuşur — satır içi çan/katman/

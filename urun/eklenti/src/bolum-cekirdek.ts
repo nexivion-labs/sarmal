@@ -2,16 +2,20 @@
 // bolum-cekirdek.ts — 🧩 BÖLÜM YUVASININ SAF ÇEKİRDEĞİ (VIT-K78-A10)
 //
 //   Founder hükmü (2026-09-28, 2026-09-29'da yinelendi): Sarmal'ın VS Code'daki
-//   simgesi tektir. Simgeye tıklanınca kabın en üstünde yatay bir bölüm sırası
-//   açılır; Ray açık eklentinin kendi bölümüdür, öteki bölümleri kardeş
-//   eklentiler kaydeder. Açık eklenti tek başına kurulduğunda sıra yalnız
-//   Ray'i gösterir.
+//   simgesi tektir. Kabın içinde Ray açık eklentinin kendi bölümüdür, öteki
+//   bölümleri kardeş eklentiler kaydeder. Açık eklenti tek başına kurulduğunda
+//   yalnız Ray (ve Tren ile Makinist) vardır.
 //
-//   VS Code bir görünüm kabının içindeki görünümleri dikey yığar ve yerel bir
-//   yatay sekme şeridi tanımaz. Yuva bu yüzden iki parçadan kurulur: kabın en
-//   üstünde küçük bir webview (bölüm sırası) durur ve seçilen bölümün
-//   görünümleri bağlam anahtarlarıyla görünür kılınır. Ray'in ağaç panelleri
-//   olduğu gibi kalır; yalnız bir `when` koşulu kazanırlar.
+//   Founder 2026-10-21 (ikinci hüküm): bölüm şeridi bir WEBVIEW olamaz. VS Code
+//   her webview görünümüne kendi başlık çubuğunu koyar ve gövdenin altında
+//   yüz elli piksele yakın boşluk bırakır. Üç bölüm simgesi bu yüzden yerel
+//   görünüm başlığı eylemleridir (`view/title`, group `navigation`): kabın o
+//   an EN ÜSTÜNDE görünen görünümünün başlığında Ray · Tren · Makinist durur,
+//   seçili olanın simgesi dolu/vurgulu sürümdür. Kardeş bölüm varken dördüncü
+//   bir "Diğer bölümler" eylemi görünür ve QuickPick açar.
+//
+//   Seçilen bölümün görünümleri bağlam anahtarlarıyla görünür kılınır. Ray'in
+//   ağaç panelleri olduğu gibi kalır; yalnız bir `when` koşulu kazanırlar.
 //
 //   Kardeş eklentinin bölümü açık eklentinin önceden ilan ettiği dört yuva
 //   görünümünden birine yerleşir; yuvanın webview sağlayıcısı, kaydı yapan
@@ -19,26 +23,40 @@
 //   yalnız kimlik, ad, simge ve sağlayıcı alır.
 //
 //   Bu dosya VS Code'u tanımaz. Defter (kim kayıtlı, hangi yuvada, hangisi
-//   seçili) ve bölüm sırasının HTML'i burada üretilir ve kabuksuz sınanır;
+//   seçili) ve başlık eylemlerinin modeli burada üretilir ve kabuksuz sınanır;
 //   kabuk (bolum-yuvasi.ts) yalnız bu kararları editöre uygular.
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** Açık eklentinin kendi bölümünün kimliği; hiçbir kardeş bu kimliği alamaz. */
 export const RAY_BOLUMU = "ray";
+/** Bağımlılık grafı bölümü (Founder 2026-10-21): Mini Graf artık Ray'in parçası değil kendi bölümüdür. */
+export const GRAF_BOLUMU = "graf";
+/** Yapay zekâ ajanları bölümü (Founder 2026-10-21); kardeşe ayrılmıştır. */
+export const TREN_BOLUMU = "tren";
+/** İnsan bölümü (Founder 2026-10-21); kardeşe ayrılmıştır. */
+export const MAKINIST_BOLUMU = "makinist";
+/** Şeritteki yerleşik sekmeler, soldan sağa. Hiçbiri kardeşe verilmez. */
+export const YERLESIK_BOLUMLER = [RAY_BOLUMU, GRAF_BOLUMU, TREN_BOLUMU, MAKINIST_BOLUMU] as const;
+export type YerlesikBolum = (typeof YERLESIK_BOLUMLER)[number];
 
-/** Kabın en üstündeki bölüm sırasının görünüş kimliği. */
-export const BOLUM_SIRASI_GORUNUSU = "sarmalBolumSirasi";
+export function yerlesikMi(kimlik: string): kimlik is YerlesikBolum {
+  return (YERLESIK_BOLUMLER as readonly string[]).includes(kimlik);
+}
 
 /** Kardeş bölümlerinin yerleştiği yuva görünüşleri (package.json ile birebir). */
 export const YUVA_GORUNUSLERI = [
   "sarmalBolumYuvasi1", "sarmalBolumYuvasi2", "sarmalBolumYuvasi3", "sarmalBolumYuvasi4",
 ] as const;
 
-/** Ray'in bugünkü panelleri: bölüm sırası Ray'deyken görünürler. */
-export const RAY_GORUNUSLERI = [
-  "sarmalYolHaritasi", "sarmalHatirlaticilar", "sarmalFikirler", "sarmalBildirimler",
-  "sarmalOnaylar", "sarmalMiniGraf",
-] as const;
+// Founder 2026-10-21 (dördüncü hüküm, bağlayıcı çizim): kapta her an YALNIZ BİR görünüm
+// görünür. Dört yerleşik bölüm ayrı görünüm değildir; hepsi `sarmalPanel` webview
+// görünümünün içindedir (sekme şeridi: Ray · Tren · Makinist; Mini Graf Ray sekmesinin
+// parçasıdır). VS Code kapta birden çok görünüm varken her görünüme kendi başlığını
+// koyar ve webview'in altında boşluk bırakır; tek görünüm olunca görünüm başlığı kap
+// başlığıyla birleşir ve webview bütün yüksekliği kaplar. Bu bir nöbetle ölçülür.
+
+/** Kabın tek görünür görünümü: yerleşik bölümlerin hepsi buradadır. */
+export const PANEL_GORUNUSU = "sarmalPanel";
 
 /**
  * Bağlam anahtarları. `rayGizli` bilerek OLUMSUZ yazılır: eklenti etkinleşmeden
@@ -46,12 +64,52 @@ export const RAY_GORUNUSLERI = [
  * Ray panelleri etkinleşme beklenirken de görünür kalır.
  */
 export const BAGLAM = {
-  /** Seçili bölümün yuvası: "ray" ya da "yuva1".."yuva4". Yuva görünüşleri bunu okur. */
+  /** Seçili bölümün yuvası: yerleşik bölümde kendi kimliği ("ray" · "tren" · "makinist"),
+   *  kardeşte "yuva1".."yuva4". Yuva görünüşleri bunu okur. */
   seciliYuva: "sarmal.bolum.seciliYuva",
   /** Ray dışındaki bir bölüm seçiliyken doğru; Ray panelleri bunun olumsuzunu okur. */
   rayGizli: "sarmal.bolum.rayGizli",
-  /** Seçili bölümün kimliği; kardeş eklenti kendi ek görünümlerini buna bağlayabilir. */
+  /** Seçili bölümün kimliği; Tren ve Makinist görünümleri `== tren` / `== makinist` koşuluyla
+   *  buna bağlanır, kardeş eklenti de kendi ek görünümlerini bağlayabilir. */
   secili: "sarmal.bolum.secili",
+  /** En az bir kardeş bölüm kayıtlıyken doğru; "Diğer bölümler" başlık eylemi bunu okur. */
+  kardesVar: "sarmal.bolum.kardesVar",
+  /**
+   * Kapalı Tren eklentisi (kardeş) etkinleştiğinde KENDİ eklentisi doğru yapar: açık Tren
+   * görünümü gizlenir ve kardeşin `sarmal-yol` kabına katkı verdiği görünüm Tren bölümünün
+   * tek görünümü olur. Açık eklenti bu anahtarı yazmaz, yalnız okur.
+   */
+  trenKardes: "sarmal.tren.kardes",
+  /** Sarmal panelinin seçili sekmesi ("ray" · "tren" · "makinist"); başlık eylemleri (Yenile · Ray değiştir · Mini Graf görünümü) Ray'e özgüdür ve bunu okur. */
+  panelSekme: "sarmal.panel.sekme",
+} as const;
+
+/** Başlık eylemlerinin komut kimlikleri (package.json ile birebir). Seçili ve seçili
+ *  olmayan durum AYRI komuttur: komut simgesi `when` ile değişmez, bu yüzden her
+ *  bölümün düz ve seçili sürümü ayrı bir komut olarak ilan edilir; ikisi aynı
+ *  işi görür (bölümü seçer). */
+export const BOLUM_KOMUTLARI = {
+  ray: { duz: "sarmal.bolum.ray", secili: "sarmal.bolum.raySecili" },
+  graf: { duz: "sarmal.bolum.graf", secili: "sarmal.bolum.grafSecili" },
+  tren: { duz: "sarmal.bolum.tren", secili: "sarmal.bolum.trenSecili" },
+  makinist: { duz: "sarmal.bolum.makinist", secili: "sarmal.bolum.makinistSecili" },
+} as const satisfies Record<YerlesikBolum, { duz: string; secili: string }>;
+
+/** Kardeş bölümlerden birini seçtiren dördüncü başlık eylemi. */
+export const BOLUM_DIGER_KOMUTU = "sarmal.bolum.diger";
+
+/**
+ * Seçili bölümün görünümü. Yerleşik bölümlerin hepsi `sarmalPanel` içindedir; kardeşin
+ * bölümü kendi yuva görünümündedir (yuva görünümleri bugün kapta gösterilmez: Founder
+ * 2026-10-21 kapta yalnız tek görünüm görünsün dedi, kardeş bölümün sekme olarak
+ * panele girişi ayrı bir işin konusudur).
+ */
+export const BASLIK_GORUNUSLERI = {
+  ray: PANEL_GORUNUSU,
+  graf: PANEL_GORUNUSU,
+  tren: PANEL_GORUNUSU,
+  makinist: PANEL_GORUNUSU,
+  yuva1: "sarmalBolumYuvasi1", yuva2: "sarmalBolumYuvasi2", yuva3: "sarmalBolumYuvasi3", yuva4: "sarmalBolumYuvasi4",
 } as const;
 
 /** Yuva sırasının bağlam değeri: 0 tabanlı yuva sırası → "yuva1".. */
@@ -64,12 +122,13 @@ export const BOLUM_KIMLIK_DESENI = /^[a-z][a-z0-9-]{1,39}$/;
 
 // ── 🛡️ TAKLİT KORUMASI (VIT-K78-A10 güvenlik sıkılaştırması) ───────────────
 //   Kardeş bölümü sırada açık eklentinin kendi yüzüyle karıştırılabilecek bir
-//   adla duramaz: "Ray" ve "Sarmal" adları ayrılmıştır. Karşılaştırma büyük-küçük
+//   adla duramaz: "Sarmal" ile dört yerleşik bölümün adları (Ray · Graf · Tren · Makinist ve İngilizce karşılıkları
+//   Rail · Train · Driver) ayrılmıştır. Karşılaştırma büyük-küçük
 //   harfe ve baştaki ya da sondaki boşluğa duyarsızdır; Türkçe İ, ı ve I aynı
 //   harfe indirgenir, böylece "SARMAL", " ray " ya da "RAY" biçimleri de reddedilir.
 
 /** Kardeş bölümlerinin alamayacağı adlar (normalize edilmiş biçimde). */
-export const AYRILMIS_ADLAR = ["ray", "sarmal"] as const;
+export const AYRILMIS_ADLAR = ["ray", "sarmal", "graf", "tren", "makinist", "rail", "graph", "train", "driver"] as const;
 
 /** Adı karşılaştırma biçimine indirger: kırpılır, iki yerel ayarda küçültülür, ı/i birleşir. */
 export function adNormalize(ad: string): string {
@@ -185,11 +244,11 @@ export type KayitSonucu =
   | { tur: "tamam"; yuva: number }
   | { tur: "ret"; sebep: KayitReddi };
 
-/** Bölüm sırasında görünen tek bir öge. Ray daima ilk ögedir. */
+/** Bölüm sırasında görünen tek bir öge. Yerleşik dörtlü (Ray · Graf · Tren · Makinist) daima ilk dört ögedir. */
 export interface SiraOgesi {
   kimlik: string;
   ad: string;
-  /** Ray için tanımsızdır; kardeş bölümün oturduğu yuvanın sırası. */
+  /** Yerleşik bölümler için tanımsızdır; kardeş bölümün oturduğu yuvanın sırası. */
   yuva?: number;
 }
 
@@ -219,7 +278,7 @@ export class BolumDefteri<T = undefined> {
 
   kaydet(kimlik: string, ad: string, ek: T): KayitSonucu {
     if (typeof kimlik !== "string" || !BOLUM_KIMLIK_DESENI.test(kimlik)) return { tur: "ret", sebep: "kimlik-bicimi" };
-    if (kimlik === RAY_BOLUMU) return { tur: "ret", sebep: "kimlik-ayrilmis" };
+    if (yerlesikMi(kimlik)) return { tur: "ret", sebep: "kimlik-ayrilmis" };
     if (this.kayitlar.some((k) => k.kimlik === kimlik)) return { tur: "ret", sebep: "kimlik-yinelenen" };
     if (typeof ad !== "string" || ad.trim() === "") return { tur: "ret", sebep: "ad-bos" };
     if (ayrilmisAdMi(ad)) return { tur: "ret", sebep: "ad-ayrilmis" };
@@ -242,7 +301,7 @@ export class BolumDefteri<T = undefined> {
 
   /** Seçer; bilinmeyen kimlikte hiçbir şey değişmez ve yanlış döner. */
   sec(kimlik: string): boolean {
-    if (kimlik !== RAY_BOLUMU && !this.kayitlar.some((k) => k.kimlik === kimlik)) return false;
+    if (!yerlesikMi(kimlik) && !this.kayitlar.some((k) => k.kimlik === kimlik)) return false;
     this.seciliKimlik = kimlik;
     return true;
   }
@@ -251,16 +310,17 @@ export class BolumDefteri<T = undefined> {
     return this.seciliKimlik;
   }
 
-  /** Seçili bölümün yuva bağlam değeri: "ray" ya da "yuvaN". */
+  /** Seçili bölümün yuva bağlam değeri: yerleşikte kendi kimliği, kardeşte "yuvaN". */
   get seciliYuva(): string {
     const k = this.kayitlar.find((x) => x.kimlik === this.seciliKimlik);
-    return k ? yuvaBaglamDegeri(k.yuva) : RAY_BOLUMU;
+    return k ? yuvaBaglamDegeri(k.yuva) : this.seciliKimlik;
   }
 
-  /** Sıra: Ray başta, ardından kayıt sırasıyla kardeş bölümleri. */
-  sira(rayAdi: string): SiraOgesi[] {
+  /** Sıra: yerleşik üçlü başta, ardından kayıt sırasıyla kardeş bölümleri.
+   *  `adlar` yerleşik bölümlerin görünen adlarıdır; verilmeyen kimliğin kendisidir. */
+  sira(adlar: Readonly<Partial<Record<YerlesikBolum, string>>> = {}): SiraOgesi[] {
     return [
-      { kimlik: RAY_BOLUMU, ad: rayAdi },
+      ...YERLESIK_BOLUMLER.map((kimlik) => ({ kimlik: kimlik as string, ad: adlar[kimlik] ?? kimlik })),
       ...this.kayitlar.map((k) => ({ kimlik: k.kimlik, ad: k.ad, yuva: k.yuva })),
     ];
   }
@@ -283,148 +343,4 @@ export class BolumDefteri<T = undefined> {
     for (let i = 0; i < this.yuvaSayisi; i++) if (!dolu.has(i)) return i;
     return undefined;
   }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// 🖼️ BÖLÜM SIRASININ HTML'İ
-//
-//   Sıra bir sekme listesidir: her bölüm simgesi ve adıyla bir düğmedir, seçili
-//   olan `aria-selected` taşır ve vurgulanır. Klavye: sol ve sağ ok odak taşır,
-//   Home ile End uçlara gider, Enter ile Boşluk seçer (el ile etkinleştirme;
-//   odak gezinirken görünümler yerinden oynamaz). Sıra tek satırdır ve dar
-//   genişlikte öğeler daralır, adlar üç noktayla kısalır; alt satıra kırılmaz,
-//   çünkü görünüm bölmesi kısa başlar ve ikinci satır bölmenin altında kesilirdi
-//   (dar genişlikteki gerçek VS Code ekran görüntüsünde ölçüldü). Bütün renkler VS Code tema değişkenlerinden gelir; sayfa
-//   hiçbir somut renk taşımaz. İçerik güvenliği politikası `default-src 'none'`
-//   ile başlar, yalnız kendi nonce'unu ve webview kaynağından simge yüklemeyi açar.
-// ═══════════════════════════════════════════════════════════════════════════
-
-/** Bölüm sırasının bir ögesi, HTML'e hazır biçimde. */
-export interface SiraCizimOgesi {
-  kimlik: string;
-  ad: string;
-  ipucu: string;
-  secili: boolean;
-  /** Satır içi SVG (güvenilir kaynak: açık eklentinin kendi rafı). */
-  svg?: string;
-  /** Açık ve koyu temalar için webview adresleri (kardeş eklentinin logosu). */
-  simgeAcik?: string;
-  simgeKoyu?: string;
-}
-
-export interface SiraCizimGirdisi {
-  nonce: string;
-  cspKaynak: string;
-  dil: string;
-  listeEtiketi: string;
-  ogeler: readonly SiraCizimOgesi[];
-}
-
-/** HTML metin kaçışı: bölüm adı ve ipucu dışarıdan gelir, işaretleme olarak yorumlanmaz. */
-export function kacis(metin: string): string {
-  return metin
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-/** Satır içi SVG yalnız açık eklentinin kendi rafından gelir; yine de betik ve olay
- *  niteliği taşıyan bir çizim reddedilir, çünkü sayfaya işaretleme olarak girer. */
-export function guvenliSvg(svg: string | undefined): string {
-  if (!svg) return "";
-  const t = svg.trim();
-  if (!t.startsWith("<svg") || /<script|\son[a-z]+\s*=|javascript:/i.test(t)) return "";
-  return t.replace(/<!--[\s\S]*?-->/g, "");
-}
-
-export const SIRA_BICEMI = `
-body { margin: 0; padding: 8px 8px 6px; font-family: var(--vscode-font-family); font-size: var(--vscode-font-size);
-  color: var(--vscode-foreground); background: transparent; }
-.sira { display: flex; flex-wrap: nowrap; gap: 6px; margin: 0; padding: 0; }
-.bolum { flex: 0 1 88px; min-width: 0; display: flex; flex-direction: column; align-items: center;
-  gap: 4px; padding: 8px 10px 6px; border: 1px solid transparent; border-radius: 6px; background: transparent;
-  color: var(--vscode-panelTitle-inactiveForeground, var(--vscode-descriptionForeground)); font: inherit; cursor: pointer; }
-.bolum:hover { background: var(--vscode-toolbar-hoverBackground, var(--vscode-list-hoverBackground)); color: var(--vscode-foreground); }
-.bolum:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: 1px; }
-.bolum[aria-selected="true"] { color: var(--vscode-panelTitle-activeForeground, var(--vscode-foreground));
-  background: var(--vscode-list-inactiveSelectionBackground, transparent);
-  border-color: var(--vscode-contrastActiveBorder, transparent);
-  box-shadow: inset 0 -2px 0 var(--vscode-panelTitle-activeBorder, var(--vscode-focusBorder)); }
-.simge { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-.simge svg, .simge img { width: 28px; height: 28px; }
-.ad { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 16px; }
-.bolum[aria-selected="true"] .ad { font-weight: 600; }
-@media (max-width: 240px) {
-  body { padding: 6px 4px 4px; }
-  .sira { gap: 2px; }
-  .bolum { padding: 6px 2px 4px; }
-  .ad { font-size: 11px; }
-}
-img.koyu { display: none; }
-body.vscode-dark img.acik, body.vscode-high-contrast:not(.vscode-high-contrast-light) img.acik { display: none; }
-body.vscode-dark img.koyu, body.vscode-high-contrast:not(.vscode-high-contrast-light) img.koyu { display: inline; }
-`;
-
-/** Betik: tıklama ve klavye. Seçim ev sahibine iletilir; ev sahibi `secili` iletisiyle
- *  vurguyu doğrular. Odak gezintisi seçmez, Enter ya da Boşluk seçer. */
-export const SIRA_BETIGI = `
-(function () {
-  const vscode = acquireVsCodeApi();
-  const dugmeler = Array.from(document.querySelectorAll(".bolum"));
-  function vurgula(kimlik) {
-    for (const d of dugmeler) {
-      const secili = d.dataset.kimlik === kimlik;
-      d.setAttribute("aria-selected", secili ? "true" : "false");
-      d.tabIndex = secili ? 0 : -1;
-    }
-  }
-  function sec(d) { vurgula(d.dataset.kimlik); vscode.postMessage({ tur: "sec", kimlik: d.dataset.kimlik }); }
-  for (const d of dugmeler) {
-    d.addEventListener("click", () => sec(d));
-    d.addEventListener("keydown", (e) => {
-      const i = dugmeler.indexOf(d);
-      let hedef;
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") hedef = dugmeler[(i + 1) % dugmeler.length];
-      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") hedef = dugmeler[(i - 1 + dugmeler.length) % dugmeler.length];
-      else if (e.key === "Home") hedef = dugmeler[0];
-      else if (e.key === "End") hedef = dugmeler[dugmeler.length - 1];
-      if (hedef) { e.preventDefault(); for (const x of dugmeler) x.tabIndex = -1; hedef.tabIndex = 0; hedef.focus(); }
-    });
-  }
-  window.addEventListener("message", (e) => {
-    const m = e.data;
-    if (m && m.tur === "secili" && typeof m.kimlik === "string") vurgula(m.kimlik);
-  });
-})();
-`;
-
-function ogeHtml(o: SiraCizimOgesi): string {
-  let simge = guvenliSvg(o.svg);
-  if (!simge && o.simgeAcik) {
-    const koyu = o.simgeKoyu ?? o.simgeAcik;
-    simge = `<img class="acik" src="${kacis(o.simgeAcik)}" alt="" /><img class="koyu" src="${kacis(koyu)}" alt="" />`;
-  }
-  return `<button type="button" class="bolum" role="tab" id="bolum-${kacis(o.kimlik)}" data-kimlik="${kacis(o.kimlik)}"` +
-    ` aria-selected="${o.secili ? "true" : "false"}" tabindex="${o.secili ? "0" : "-1"}" title="${kacis(o.ipucu)}">` +
-    `<span class="simge" aria-hidden="true">${simge}</span><span class="ad">${kacis(o.ad)}</span></button>`;
-}
-
-/** Bölüm sırasının tam sayfası. */
-export function siraHtml(g: SiraCizimGirdisi): string {
-  const nonce = kacis(g.nonce);
-  return `<!DOCTYPE html>
-<html lang="${kacis(g.dil)}">
-<head>
-<meta charset="UTF-8" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${g.cspKaynak}; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style nonce="${nonce}">${SIRA_BICEMI}</style>
-</head>
-<body>
-<div class="sira" role="tablist" aria-label="${kacis(g.listeEtiketi)}">${g.ogeler.map(ogeHtml).join("")}</div>
-<script nonce="${nonce}">${SIRA_BETIGI}</script>
-</body>
-</html>`;
 }

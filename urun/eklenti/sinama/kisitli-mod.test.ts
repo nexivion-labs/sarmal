@@ -34,7 +34,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { etkinlestir, geciciAlan, kabukTemizle, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
-import { BAGLAM, BOLUM_SIRASI_GORUNUSU, RAY_BOLUMU, RAY_GORUNUSLERI, YUVA_GORUNUSLERI, yuvaBaglamDegeri } from "../src/bolum-cekirdek.ts";
+import {
+  BAGLAM, GRAF_BOLUMU, MAKINIST_BOLUMU, PANEL_GORUNUSU, RAY_BOLUMU, TREN_BOLUMU,
+  YUVA_GORUNUSLERI, yuvaBaglamDegeri,
+} from "../src/bolum-cekirdek.ts";
 import { KAPSAYICI_SIMGE } from "../src/simge-cizelgesi.ts";
 import { KISITLI_MOD_METINLERI, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
@@ -99,6 +102,8 @@ test("MGZ-A02: Sarmal panelleri güvene bağlıdır; kısıtlı modda yalnız sa
     // MGZ-A08: yalnız güvenilmeyen klasörde görünen karşılama görünümü bu kuralın
     // tek istisnasıdır; sağlayıcı istemediğini üçüncü bölümün nöbetleri ölçer.
     if (g.when === `!${GUVEN_ANAHTARI}`) { karsilamaSayisi += 1; continue; }
+    // Founder 2026-10-21: kardeş yuvaları kapta HİÇ görünmez (`when: false`); hiç görünmeyen görünüm kısıtlı modda da görünmez.
+    if (g.when === "false") continue;
     const parcalar = (g.when ?? "").split("&&").map((p) => p.trim());
     assert.ok(parcalar.includes(GUVEN_ANAHTARI),
       `${g.id} güvene bağlı değil (koşul: ${g.when ?? "yok"}) — kısıtlı modda sağlayıcısız açılır ve bozuk görünür`);
@@ -212,7 +217,7 @@ test("MGZ-A02: güvenilir klasörde kısıtlı mod işareti hiç görünmez", as
 const KAP = "sarmal-yol";
 const MINI_GRAF_AYARI = "config.sarmal.miniGraf";
 /** Görünüm koşullarının okuyabildiği bağlam anahtarları; yenisi doğarsa bileşimlere de girmelidir. */
-const BILINEN_ANAHTARLAR = new Set<string>([GUVEN_ANAHTARI, BAGLAM.rayGizli, BAGLAM.seciliYuva, MINI_GRAF_AYARI]);
+const BILINEN_ANAHTARLAR = new Set<string>([GUVEN_ANAHTARI, BAGLAM.rayGizli, BAGLAM.seciliYuva, BAGLAM.secili, BAGLAM.trenKardes, MINI_GRAF_AYARI]);
 
 /**
  * Bildirimdeki bir `when` koşulunu verilen bağlamda değerlendirir. Yalnız görünüm
@@ -222,6 +227,7 @@ const BILINEN_ANAHTARLAR = new Set<string>([GUVEN_ANAHTARI, BAGLAM.rayGizli, BAG
  */
 function kosulTutar(kosul: string | undefined, baglam: Readonly<Record<string, unknown>>): boolean {
   if (!kosul) return true;
+  if (kosul === "false") return false;   // VS Code `when` sabiti: hiçbir bağlamda görünmez
   return kosul.split("&&").map((t) => t.trim()).every((terim) => {
     const esitlik = /^([\w.]+)\s*==\s*([\w.-]+)$/u.exec(terim);
     if (esitlik) return baglam[esitlik[1]!] !== undefined && String(baglam[esitlik[1]!]) === esitlik[2];
@@ -234,7 +240,7 @@ function kosulTutar(kosul: string | undefined, baglam: Readonly<Record<string, u
 
 /** Bir koşulun okuduğu bağlam anahtarları. */
 const kosulAnahtarlari = (kosul: string | undefined): string[] =>
-  (kosul ?? "").split("&&").map((t) => t.trim()).filter(Boolean).map((t) => /^!?([\w.]+)/u.exec(t)?.[1] ?? t);
+  (kosul ?? "").split("&&").map((t) => t.trim()).filter((t) => Boolean(t) && t !== "false" && t !== "true").map((t) => /^!?([\w.]+)/u.exec(t)?.[1] ?? t);
 
 /**
  * Eklentinin kendi kurduğu bağlam anahtarlarının ve Mini Graf ayarının bütün
@@ -244,10 +250,13 @@ const kosulAnahtarlari = (kosul: string | undefined): string[] =>
  */
 function baglamlar(guvenilir: boolean): Array<Record<string, unknown>> {
   const sonuc: Array<Record<string, unknown>> = [];
+  // Founder 2026-10-21: Tren ve Makinist görünümleri `secili` anahtarını okur; anahtar da bileşimlere girer.
   for (const rayGizli of [undefined, false, true])
-    for (const yuva of [undefined, RAY_BOLUMU, ...YUVA_GORUNUSLERI.map((_, i) => yuvaBaglamDegeri(i))])
-      for (const miniGraf of [true, false])
-        sonuc.push({ [GUVEN_ANAHTARI]: guvenilir, [BAGLAM.rayGizli]: rayGizli, [BAGLAM.seciliYuva]: yuva, [MINI_GRAF_AYARI]: miniGraf });
+    for (const yuva of [undefined, RAY_BOLUMU, GRAF_BOLUMU, TREN_BOLUMU, MAKINIST_BOLUMU, ...YUVA_GORUNUSLERI.map((_, i) => yuvaBaglamDegeri(i))])
+      for (const secili of [undefined, RAY_BOLUMU, GRAF_BOLUMU, TREN_BOLUMU, MAKINIST_BOLUMU, "kardes"])
+        for (const miniGraf of [true, false])
+          for (const trenKardes of [undefined, true])
+            sonuc.push({ [GUVEN_ANAHTARI]: guvenilir, [BAGLAM.rayGizli]: rayGizli, [BAGLAM.seciliYuva]: yuva, [BAGLAM.secili]: secili, [BAGLAM.trenKardes]: trenKardes, [MINI_GRAF_AYARI]: miniGraf });
   return sonuc;
 }
 
@@ -296,19 +305,33 @@ test("MGZ-A08: karşılama görünümü sağlayıcı istemez — ağaç görün�
     assert.ok(!gorunenler(b).includes(k.id), `güvenilir klasörde karşılama görünümü görünüyor: ${JSON.stringify(b)}`);
 });
 
-test("MGZ-A08: güvenilir klasörde görünen görünümler değişmez", () => {
+test("MGZ-A08: güvenilir klasörde kapta TEK görünüm görünür: sarmalPanel — hiçbir seçim ya da bağlam bunu değiştirmez", () => {
   const guvenilir = (ek: Record<string, unknown>): string[] => gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true, ...ek });
-  // Beklenen kümeler bildirimden değil bölüm modelinden kurulur: Ray seçiliyken
-  // bölüm sırası ile Ray'in altı paneli, bir yuva seçiliyken sıra ile o yuva.
-  assert.deepEqual(guvenilir({}), [BOLUM_SIRASI_GORUNUSU, ...RAY_GORUNUSLERI], "ilk açılışta görünen görünümler değişmiş");
-  assert.deepEqual(guvenilir({ [BAGLAM.seciliYuva]: RAY_BOLUMU, [BAGLAM.rayGizli]: false }), [BOLUM_SIRASI_GORUNUSU, ...RAY_GORUNUSLERI],
-    "Ray seçiliyken görünen görünümler değişmiş");
-  assert.deepEqual(guvenilir({ [MINI_GRAF_AYARI]: false }), [BOLUM_SIRASI_GORUNUSU, ...RAY_GORUNUSLERI.filter((g) => g !== "sarmalMiniGraf")],
-    "Mini Graf kapalıyken görünen görünümler değişmiş");
+  // Founder 2026-10-21 (dördüncü hüküm, bağlayıcı çizim): Ray · Graf · Tren · Makinist ayrı görünüm değildir;
+  // hepsi sarmalPanel webview'inin içindedir. Kardeş yuvaları kapta gösterilmez.
+  const hedef = [PANEL_GORUNUSU];
+  assert.deepEqual(guvenilir({}), hedef, "ilk açılışta görünen görünümler değişmiş");
+  assert.deepEqual(guvenilir({ [MINI_GRAF_AYARI]: false }), hedef, "Mini Graf kapalıyken görünen görünüm değişmiş");
+  for (const secili of [RAY_BOLUMU, GRAF_BOLUMU, TREN_BOLUMU, MAKINIST_BOLUMU]) {
+    assert.deepEqual(guvenilir({ [BAGLAM.secili]: secili, [BAGLAM.seciliYuva]: secili, [BAGLAM.rayGizli]: secili !== RAY_BOLUMU }), hedef,
+      `${secili} seçiliyken görünen görünümler değişmiş`);
+  }
   YUVA_GORUNUSLERI.forEach((yuva, i) => {
-    assert.deepEqual(guvenilir({ [BAGLAM.seciliYuva]: yuvaBaglamDegeri(i), [BAGLAM.rayGizli]: true }), [BOLUM_SIRASI_GORUNUSU, yuva],
-      `${yuva} seçiliyken görünen görünümler değişmiş`);
+    assert.deepEqual(guvenilir({ [BAGLAM.seciliYuva]: yuvaBaglamDegeri(i), [BAGLAM.secili]: "kardes", [BAGLAM.rayGizli]: true }), hedef,
+      `${yuva} seçiliyken kapta ikinci bir görünüm belirmiş`);
   });
+  // Tren kardeşi etkinken de kapta ikinci görünüm belirmez: kardeşin Koşular paneli Tren sekmesinden bağlantıyla açılır.
+  assert.deepEqual(guvenilir({ [BAGLAM.secili]: TREN_BOLUMU, [BAGLAM.seciliYuva]: TREN_BOLUMU, [BAGLAM.rayGizli]: true, [BAGLAM.trenKardes]: true }),
+    hedef, "Tren kardeşi etkinken kapta ikinci görünüm belirdi");
+});
+
+test("Founder 2026-10-21: güvenilir klasörde her bağlamda kapta TAM BİR görünüm görünür (görünüm başlığı kap başlığıyla birleşsin)", () => {
+  for (const miniGraf of [true, false]) {
+    for (const b of baglamlar(true)) {
+      const gorunen = gorunenler({ ...b, [MINI_GRAF_AYARI]: miniGraf });
+      assert.equal(gorunen.length, 1, `${JSON.stringify(b)} bağlamında ${gorunen.length} görünüm görünüyor (${gorunen.join(" · ")}); tam bir görünüm olmalı`);
+    }
+  }
 });
 
 test("MGZ-A08: karşılama metni iki dildedir, yüzey kataloğundan gelir, kapalı olanı söyler ve Klasöre Güven bağlantısı taşır", () => {
@@ -351,7 +374,14 @@ test("MGZ-A08: karşılama metni iki dildedir, yüzey kataloğundan gelir, kapal
 
 test("MGZ-A08: kısıtlı modda hiçbir görünüm sağlayıcısı kurulmaz; güven gelince görünen her panel sağlayıcısını yeniden yüklemesiz alır", async () => {
   const karsilama = karsilamaGorunumu().id;
-  const ilkAcilis = gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true });
+  // Tren ve Makinist görünümlerinin sağlayıcıları ilk açılışta gizli olsalar da kurulur (seçim anında
+  // sağlayıcısız açılıp "veri sağlayıcı yok" demesinler); küme, dört yerleşik bölümün görünümlerinin birleşimidir.
+  const ilkAcilis = [...new Set([
+    ...gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true }),
+    ...gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true, [BAGLAM.secili]: GRAF_BOLUMU }),
+    ...gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true, [BAGLAM.secili]: TREN_BOLUMU }),
+    ...gorunenler({ [GUVEN_ANAHTARI]: true, [MINI_GRAF_AYARI]: true, [BAGLAM.secili]: MAKINIST_BOLUMU }),
+  ])];
   const a = agacKur();
   const e = etkinlestir({ klasorler: [a.alan], etkinDosya: a.plan, guvenilir: false });
   acik.push(e);

@@ -63,6 +63,23 @@ export const ANLAM_RENK = {
 
 /** Dosya ikonunun kaynak adı — evre taşımaz, yalnız tema çifti üretir. */
 
+/** Bölüm başlık eylemlerinin (Ray · Graf · Tren · Makinist) kaynakları, raf köküne göre.
+ *  src/simge-cizelgesi.ts `BOLUM_SIMGE_KAYNAKLARI` ile birebir olmalıdır; nöbet ikisini ölçer. */
+export const BOLUM_KAYNAKLARI = {
+  ray: "bolum/ray.svg",
+  graf: "panel-minigraf.svg",
+  tren: "bolum/tren-ajan.svg",
+  makinist: "panel-makinist.svg",
+};
+
+/** Seçili bölümün çizimi: aynı çizim biraz küçülür, kontur kalınlaşır ve altına bir
+ *  çizgi çekilir (başlık eylemlerinde seçili olanı renk körü de ayırt eder). */
+function seciliCizim(icerik) {
+  const govde = icerik.replace(/(<svg[^>]*>)([\s\S]*)(<\/svg>)/, (_, ac, ic, kapa) =>
+    `${ac}<g transform="translate(12 10.4) scale(.84) translate(-12 -12)">${ic}</g><path d="M6 22.2 H18"/>${kapa}`);
+  return govde.replace(/stroke-width="[\d.]+"/, 'stroke-width="2.4"');
+}
+
 /** currentColor'ı somut renkle değiştirir; kaynakta currentColor yoksa kaynak
  *  boyanmış demektir ve bu YUZ-4.1 ihlalidir — sessiz geçilmez, üretim düşer. */
 function boya(ad, icerik, renk) {
@@ -112,6 +129,17 @@ export function uret(yollar = {}) {
         writeFileSync(join(URETILMIS, hedef), boya(dosya, icerik, renk));
         yazilan.push(hedef);
       }
+    }
+  }
+  // Bölüm başlık eylemleri: bölüm × {düz, seçili} × tema. Komut simgesi currentColor çözmez.
+  for (const [bolum, kaynak] of Object.entries(BOLUM_KAYNAKLARI)) {
+    const icerik = readFileSync(join(RAF, kaynak), "utf8");
+    for (const tema of ["acik", "koyu"]) {
+      const duz = `bolum-${bolum}-duz-${tema}.svg`;
+      writeFileSync(join(URETILMIS, duz), boya(kaynak, icerik, ANLAM_RENK.duz[tema]));
+      const secili = `bolum-${bolum}-secili-${tema}.svg`;
+      writeFileSync(join(URETILMIS, secili), boya(kaynak, seciliCizim(icerik), TEMA_KONTUR[tema]));
+      yazilan.push(duz, secili);
     }
   }
   return { RAF, URETILMIS, yazilan };

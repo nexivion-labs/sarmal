@@ -18,7 +18,7 @@
 
 import * as vscode from "vscode";
 import {
-  GORUNUS_BILDIRIMLER, projeyeGrupla, dosyayaGrupla, kayitGorunumu,
+  projeyeGrupla, dosyayaGrupla, kayitGorunumu,
   panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
   panelRozeti,
@@ -29,7 +29,7 @@ import {
   dosyaSatiriAciklamasi, dosyaSatiriIpucu, kaydaGitBasligi, gozlemRozetIpucu,
 } from "./yuzey-metinleri.ts";
 import { BILDIRIM_ROZET } from "./yol-dekor.ts";
-import { satirIkonu } from "./ortak.ts";
+import { satirIkonu, type YuzDurumu } from "./ortak.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 // 🏷️ Dosya satırının teknoloji simgesi TEK kaynaktan gelir: çizelge eklentinin
 // kendi dil ilanından türer ve ikinci bir eşleme yazılmaz (teknoloji-simgesi.ts).
@@ -90,7 +90,7 @@ export class Bildirimler implements vscode.TreeDataProvider<PanelOge> {
   get kayitSayisi(): number {
     return this.kumeler.reduce((toplam, k) => toplam + k.kayitlar.length, 0);
   }
-  gorunum?: vscode.TreeView<PanelOge>;
+  gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
   eklentiKoku?: vscode.Uri;
   /** Uzantı → teknoloji simgesi çizelgesi; kayıtta eklentinin dil ilanından kurulur. */
@@ -234,12 +234,7 @@ export function bildirimlerKaydi(context: vscode.ExtensionContext): Bildirimler 
   // VIT-KIMLIK-A05: geometrik satır simgeleri · VIT-GRAF-A13: dosya satırının
   // teknoloji simgesi eklentinin KENDİ dil ilanından türer (tek kaynak).
   saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
-  const gorunum = vscode.window.createTreeView<PanelOge>(GORUNUS_BILDIRIMLER, {
-    treeDataProvider: saglayici,
-  });
-  gorunum.description = YUZEY_ACIKLAMALARI.bildirimler;
-  gorunum.message = YUZEY_BOS_DURUM.bildirimler;
-  saglayici.gorunum = gorunum;
-  context.subscriptions.push(gorunum);
+  // Founder 2026-10-21: ayrı görünüm yoktur; sağlayıcı Makinist ağacının bir üst düğümüdür (makinist.ts).
+  saglayici.gorunum = { description: YUZEY_ACIKLAMALARI.bildirimler, message: YUZEY_BOS_DURUM.bildirimler };
   return saglayici;
 }

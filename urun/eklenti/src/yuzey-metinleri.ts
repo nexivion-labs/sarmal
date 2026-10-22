@@ -2102,6 +2102,7 @@ export const MINI_GRAF_METINLERI = {
     doğrulanmamış: yuzeyMetni("doğrulanmamış", "doğrulanmamış"),
   }[durum] ?? durum),
   eksikMeyve: (adet: number): string => yuzeyMetni(`${adet} diskte yok`, `${adet} missing from disk`),
+  meyveSayaci: (adet: number): string => yuzeyMetni(`${adet} meyve`, `${adet} Meyve`),
   beyanYolu: (bos: boolean, yol: string): string => yuzeyMetni(`${bos ? "beyan edildi, diskte yok" : "diskte var"}: ${yol}`, `${bos ? "declared, missing from disk" : "present on disk"}: ${yol}`),
   kaynakIpucu: (baslik: string): string => yuzeyMetni(`${baslik}\ntıklayın: kaynağa atla`, `${baslik}\nselect to jump to source`),
   get ariaGraf(): string { return yuzeyMetni("tüm proje mini grafı", "whole-project mini graph"); },
@@ -2109,6 +2110,20 @@ export const MINI_GRAF_METINLERI = {
   get dugum(): string { return yuzeyMetni("düğüm", "node"); },
   get bag(): string { return yuzeyMetni("bağ", "edge"); },
   get kuruluyor(): string { return yuzeyMetni("harita kuruluyor…", "building map…"); },
+  // Görünüm seçici (Founder 2026-10-21): üç görünümün adı ve bir cümlelik tarifi.
+  gorunumAdi: (g: string): string => ({
+    klasik: yuzeyMetni("Klasik", "Classic"),
+    agac: yuzeyMetni("Ağaç", "Tree"),
+    ilerleme: yuzeyMetni("İlerleme", "Progress"),
+  }[g] ?? g),
+  gorunumTarifi: (g: string): string => ({
+    klasik: yuzeyMetni("Cam mercekli raylarda tam proje grafı, bağımlılık eğrileriyle.", "The full project graph on glass-lens rails, with dependency curves."),
+    agac: yuzeyMetni("Her düğüm kendi satırında; girinti, durum noktası ve bağ şeridi.", "One node per row, with indent, status dots and a link strip."),
+    ilerleme: yuzeyMetni("Her Katman bir kart: tamamlanan ve toplam Adım, ince ilerleme çubuğu.", "One card per Katman: completed and total Adım, with a thin progress bar."),
+  }[g] ?? g),
+  get gorunumBasligi(): string { return yuzeyMetni("Görünüm seç", "Choose a view"); },
+  gizliSatir: (n: number): string => yuzeyMetni(`+${n} tamamlanmış satır gizli`, `+${n} completed rows hidden`),
+  get gorunumKapat(): string { return yuzeyMetni("Kapat", "Close"); },
 } as const;
 
 /**
@@ -2619,20 +2634,18 @@ export const ONAY_GOVDE_METINLERI: GovdeMetinleri = {
 // ═══════════════════════════════════════════════════════════════════════════
 // 🧩 BÖLÜM SIRASI (VIT-K78-A10) — kabın en üstündeki yatay sıra
 //
-//   Ray adı markadır ve iki dilde aynı kalır. Kardeş bölümlerinin adını ve
-//   ipucunu kaydı yapan eklenti verir; açık eklenti onları çevirmez.
+//   Founder 2026-10-21: şeritte üç simge sekme durur; adları ve kısa tarifleri
+//   yalnız tooltip ile ekran okuyucuda görünür (MGZ-A09: arayüz İngilizce pencerede
+//   İngilizce konuşur). Ray = plan, Tren = yapay zekâ ajanları, Makinist = insan;
+//   İngilizce karşılıkları Rail, Train, Driver. "Driver" seçildi çünkü Train'in
+//   yanında iş gören kişiyi en kısa söyleyen sözcüktür; "Engineer" yazılım
+//   mühendisiyle karışır ve İngilizce "Sarmal ile çalışan mühendis" anlamına
+//   kayardı. Kardeş bölümlerinin adını ve ipucunu kaydı yapan eklenti verir;
+//   açık eklenti onları çevirmez.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const BOLUM_SIRASI_METINLERI = {
-  get htmlDili(): string { return yuzeyDili === "tr" ? "tr" : "en"; },
-  get rayAdi(): string { return "Ray"; },
-  get rayIpucu(): string {
-    return yuzeyMetni(
-      "Ray: yol haritası, hatırlatıcılar, fikirler, gözlemler, onaylar ve mini graf",
-      "Ray: roadmap, reminders, ideas, observations, approvals and mini graph",
-    );
-  },
-  get listeEtiketi(): string { return yuzeyMetni("Sarmal bölümleri", "Sarmal sections"); },
+  get digerYerTutucu(): string { return yuzeyMetni("Bir bölüm seçin", "Pick a section"); },
   kayitReddi(sebep: string, kimlik: string): string {
     const neden: Record<string, [string, string]> = {
       "kimlik-bicimi": [
@@ -2642,7 +2655,10 @@ export const BOLUM_SIRASI_METINLERI = {
       "kimlik-ayrilmis": ["bu kimlik açık eklentinin kendi bölümüne ayrılmıştır", "this id is reserved for the open extension's own section"],
       "kimlik-yinelenen": ["bu kimlikle kayıtlı bir bölüm zaten var", "a section with this id is already registered"],
       "ad-bos": ["bölümün adı boş olamaz", "the section title cannot be empty"],
-      "ad-ayrilmis": ["Ray ve Sarmal adları açık eklentiye ayrılmıştır", "the titles Ray and Sarmal are reserved for the open extension"],
+      "ad-ayrilmis": [
+        "Sarmal, Ray, Tren ve Makinist adları (ve Rail, Train, Driver karşılıkları) açık eklentiye ayrılmıştır",
+        "the titles Sarmal, Ray, Train and Driver (and their Turkish forms Tren, Makinist) are reserved for the open extension",
+      ],
       "sahip-yok": [
         "kaydı yapan eklenti okunamadı; bolumKaydet'i kendi kodunuzdan doğrudan çağırın, ör. .then((y) => y.bolumKaydet({ … })), .then(yuva.bolumKaydet) gibi bir aktarımla değil",
         "the registering extension could not be identified; call bolumKaydet directly from your own code, e.g. .then((y) => y.bolumKaydet({ … })), not through a reference such as .then(yuva.bolumKaydet)",
@@ -2655,4 +2671,77 @@ export const BOLUM_SIRASI_METINLERI = {
     const [tr, en] = neden[sebep] ?? [sebep, sebep];
     return yuzeyMetni(`Bölüm kaydedilemedi (${kimlik}): ${tr}.`, `Section could not be registered (${kimlik}): ${en}.`);
   },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧑‍✈️ MAKINIST AĞACI (Founder 2026-10-21) — dört üst düğümün adı ve boş cümlesi
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const MAKINIST_METINLERI = {
+  get onaylar(): string { return yuzeyMetni("Onaylar", "Approvals"); },
+  get hatirlaticilar(): string { return yuzeyMetni("Hatırlatıcılar", "Reminders"); },
+  get gozlemler(): string { return yuzeyMetni("Gözlemler", "Observations"); },
+  get fikirler(): string { return yuzeyMetni("Fikirler", "Ideas"); },
+  rozetIpucu: (n: number): string => yuzeyMetni(`Sizi bekleyen ${n} kayıt: onay kapıları ve hatırlatıcılar`, `${n} items waiting for you: approval gates and reminders`),
+  /** Kapı satırının ikinci sütunu: Adımın amacı yerine dosya adı gösterilir. */
+  get kapiIpucu(): string { return yuzeyMetni("Kapıyı kaynağında aç ve kararı kartta ver", "Open the gate in its source and decide on the card"); },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🚆 TREN GÖRÜNÜMÜ — yapay zekâ ajanlarının bölümü (Founder 2026-10-21)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const TREN_METINLERI = {
+  get bosDurum(): string {
+    return yuzeyMetni(
+      "Bu projede ilan edilmiş ajan ya da geliştirmede Adım yok.",
+      "No declared agents or Adım nodes in development in this project.",
+    );
+  },
+  get ajanlarBasligi(): string { return yuzeyMetni("Ajanlar", "Agents"); },
+  get adimlarBasligi(): string { return yuzeyMetni("Geliştirmedeki Adımlar", "Adım nodes in development"); },
+  get muhurBasligi(): string { return yuzeyMetni("Son Koşum mührü", "Latest run seal"); },
+  get aciklama(): string { return yuzeyMetni("ajanlar ve sürmekte olan işler", "agents and work in progress"); },
+  muhurAciklamasi(muhur: string, karar: string): string {
+    return [muhur, karar].filter(Boolean).join(" · ");
+  },
+  muhurIpucu(kod: string, adim: string, tarih: string, ne: string): string {
+    return [
+      yuzeyMetni(`Koşum ${kod || "-"} · Adım ${adim}`, `Run ${kod || "-"} · Adım ${adim}`),
+      tarih,
+      ne,
+    ].filter(Boolean).join("\n\n");
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧭 SARMAL PANELİ — tek webview kabı (Founder 2026-10-21 · bağlayıcı çizim)
+//
+//   Kapta Ray · Tren · Makinist sekme şeridi durur. Sekme adları İngilizce
+//   pencerede Rail · Train · Driver olur (MGZ-A09); "Driver" seçimi
+//   BOLUM_SIRASI_METINLERI üstündeki gerekçeyle aynıdır. Şeridin erişilebilir
+//   adı "bölüm" sözcüğünü ve "Bölümler" kutusunu taşımaz: çizimde böyle bir
+//   kutu yoktur ve hiçbir yerde üretilmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const PANEL_METINLERI = {
+  get dil(): string { return yuzeyDili === "en" ? "en" : "tr"; },
+  get panelAdi(): string { return "Sarmal"; },
+  sekmeAdi: (s: string): string => ({
+    ray: yuzeyMetni("Ray", "Rail"),
+    tren: yuzeyMetni("Tren", "Train"),
+    makinist: yuzeyMetni("Makinist", "Driver"),
+  }[s] ?? s),
+  sekmeIpucu: (s: string): string => ({
+    ray: yuzeyMetni("Ray: yol haritası ve proje grafı", "Rail: roadmap and project graph"),
+    tren: yuzeyMetni("Tren: yapay zekâ ajanları ve sürmekte olan işler", "Train: AI agents and work in progress"),
+    makinist: yuzeyMetni("Makinist: sizi bekleyen onaylar, hatırlatıcılar, gözlemler ve fikirler", "Driver: approvals, reminders, observations and ideas waiting for you"),
+  }[s] ?? s),
+  get seritEtiketi(): string { return yuzeyMetni("Sarmal sekmeleri", "Sarmal tabs"); },
+  get yolHaritasiBasligi(): string { return yuzeyMetni("Yol Haritası", "Roadmap"); },
+  get miniGrafBasligi(): string { return yuzeyMetni("Mini Graf", "Mini Graph"); },
+  get kardesBaglantisi(): string { return yuzeyMetni("Koşular paneli kardeş eklentide", "The runs panel lives in the sibling extension"); },
+  get koniKarti(): string { return yuzeyMetni("Koni kartını aç", "Open the cone card"); },
+  get satiriKopyala(): string { return yuzeyMetni("Satırı kopyala", "Copy row"); },
+  get hatirlaticiKapat(): string { return yuzeyMetni("Hatırlatıcıyı kapat", "Close reminder"); },
 } as const;

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// minigraf.test.ts — 🕸️ Tek proje grafı davranış sınamaları
+// minigraf.test.ts — 🕸️ Tek proje grafı (düzenli ağaç) davranış sınamaları
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Yüzey dili kapısını bu dosya kendi kurar: `npm test` ön-yüklemesi olmadan tek
@@ -15,8 +15,8 @@ import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import { mevsimNormalize } from "../../cekirdek/src/denetci.ts";
 import { dagKur, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";
-import {
-  projeGrafiCikar, projeGrafiSvg, miniGrafHtml, bosHtml, temaDegiskeni, tipSimgesi,
+import { MEYVE_SIMGESI_SVG,
+  projeGrafiCikar, projeGrafiAgaci, agacYerlesimi, bagYerlesimi, cizilecekBaglar, SERIT_EN_COK_SUTUN, SATIR_YUKSEKLIGI, KADEME_GIRINTISI, miniGrafHtml, bosHtml, temaDegiskeni, tipSimgesi,
 } from "../src/minigraf-cekirdek.ts";
 import { GOMULU_KAYIT } from "../src/gomulu-kanon.ts";
 import { fazYolu, planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
@@ -87,7 +87,7 @@ test("kapsayıcı rengi YUZ-4 kanonik durum türetmesinden gelir", () => {
   assert.equal(blok.durum, "geliştirmede"); // kısmi ilerleme = sürüyor = durum sarısı (YUZ-4.1)
 });
 
-test("projeGrafiSvg: GitLens rayları + cam ikonlar + bağımlılık + tıkla→atla", () => {
+test("projeGrafiAgaci: satır başına bir düğüm + durum noktası + kanon simgesi + tıkla→atla", () => {
   const dag = dagYap([
     { kod: "F", tip: "Faz", ad: "faz", dosya: "/p/f.sar", satir: 2 },
     { kod: "B", tip: "Blok", kapsayan: "F", ad: "blok" },
@@ -96,19 +96,24 @@ test("projeGrafiSvg: GitLens rayları + cam ikonlar + bağımlılık + tıkla→
     { kod: "A1", kapsayan: "AK", ad: "ilk", durum: "tamamlandı", sonrakiler: ["A2"] },
     { kod: "A2", kapsayan: "AK", ad: "ikinci", durum: "geliştirmede", oncekiler: ["A1"], dosya: "/p/a.sar", satir: 7 },
   ]);
-  const svg = projeGrafiSvg(projeGrafiCikar(dag, "A2"));
-  assert.ok(svg.includes('class="kapsama"'), "hiyerarşi rayı");
-  assert.ok(svg.includes('class="bag"'), "gerçek bağımlılık eğrisi");
-  assert.ok(svg.includes('class="dugum secili"'), "seçim grafı kesmeden işaretlenir");
-  assert.ok(svg.includes('class="mercek"') && svg.includes('class="isima"'), "cam mercek + ışıltı katmanları");
-  assert.ok(svg.includes("🌀") && svg.includes("🪵") && svg.includes("🌿") && svg.includes("🍃"), "ikonlar TIP-0 kanonundan");
-  assert.match(svg, /var\(--vscode-testing-iconPassed\)/);
-  assert.match(svg, /var\(--vscode-charts-yellow\)/);
-  assert.ok(svg.includes("command:sarmal.dosyaAc?"));
-  assert.ok(svg.includes(encodeURIComponent(JSON.stringify(["/p/a.sar", 7]))));
+  const html = projeGrafiAgaci(projeGrafiCikar(dag, "A2"));
+  const css = miniGrafHtml(projeGrafiCikar(dag, "A2"));
+  assert.equal([...html.matchAll(/class="dugum[ "]/g)].length, 6, "her düğüm kendi satırında olmalı");
+  assert.ok(html.includes('class="dugum secili"'), "seçim grafı kesmeden işaretlenir");
+  assert.ok(html.includes("class=gl"), "hiyerarşi L bağı");
+  assert.match(html, /class="nokta d[tg]/, "durum noktası");
+  assert.ok(html.includes("🌀") && html.includes("🪵") && html.includes("🌿") && html.includes("🍃"), "ikonlar TIP-0 kanonundan");
+  assert.match(css, /\.dt\{--r:var\(--vscode-testing-iconPassed\)\}/, "tamamlandı yeşil");
+  assert.match(css, /\.dg\{--r:var\(--vscode-charts-yellow\)\}/, "geliştirmede altın");
+  assert.ok(html.includes("command:sarmal.dosyaAc?"));
+  assert.ok(html.includes(encodeURIComponent(JSON.stringify(["/p/a.sar", 7]))));
+  // Tip adı sağ sütunda, tam ad ipucunda durur.
+  assert.match(html, /<span class=tip>Katman<\/span>/);
+  assert.match(html, /<span class=tip>Alt katman<\/span>/);
+  assert.match(html, /title="ikinci · A2\nAdım · geliştirmede\n/);
 });
 
-test("HTML: tek görünüm, betiksiz hover ışıltısı, arka plan gradyanı yok", () => {
+test("HTML: tek görünüm, betiksiz, gradyansız, :has() yok, tema renklerinden beslenir", () => {
   const html = miniGrafHtml(projeGrafiCikar(dagYap([
     { kod: "A", durum: "tamamlandı", sonrakiler: ["B"] },
     { kod: "B", durum: "beklemede", oncekiler: ["A"] },
@@ -116,13 +121,13 @@ test("HTML: tek görünüm, betiksiz hover ışıltısı, arka plan gradyanı yo
   assert.ok(!html.includes("MİNİ GRAF"), "görünüm başlığı zaten sekmede — iç başlık tekrarlanmaz");
   assert.match(html, /aria-label="düğüm">●<\/span>2/);
   assert.match(html, /aria-label="bağ">⎇<\/span>1/);
-  assert.match(html, /\.dugum:hover \.isima\{opacity:\.30\}/);
-  assert.match(html, /:has\(\.dugum\[data-i="0"\]:hover\).*\.bag\[data-a="0"\]/,
-    "hover doğrudan bağı hafifçe güçlendirir");
   assert.ok(!html.includes("<script"), "enableScripts:false disiplini");
   assert.ok(!html.includes("background:radial-gradient") && !html.includes("background:linear-gradient"),
     "sayfa arka planında gradyan yok");
   assert.ok(!html.includes("kip"), "kip/anahtar yok");
+  assert.ok(!html.includes(":has("), "hover için pahalı :has() seçicisi üretilmemeli");
+  assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(html), "ham renk değeri gömülmüş (YUZ-4.1 ihlali)");
+  assert.ok(!html.includes("viewBox"), "SVG ölçeklemesi yok: yazı gerçek piksel boyundadır");
 });
 
 test("boş hâl kaçışlı ve tema-token çevirisi kararlı", () => {
@@ -217,7 +222,7 @@ test("Katman ile AltKatman grafta GÖRSEL OLARAK ayrılır", () => {
     { kod: "K", tip: "Katman", ad: "dal" },
     { kod: "AK", tip: "AltKatman", kapsayan: "K", ad: "ufak dal" },
   ]);
-  const svg = projeGrafiSvg(projeGrafiCikar(dag));
+  const svg = projeGrafiAgaci(projeGrafiCikar(dag));
   const simgeler = (GOMULU_KAYIT as { tipSimgeleri: Record<string, string> }).tipSimgeleri;
   assert.notEqual(simgeler.Katman, simgeler.AltKatman,
     "Katman ile AltKatman kanonda hâlâ aynı simgeyi taşıyor");
@@ -249,7 +254,7 @@ function zeminliDag(): Dag {
 /** Meyve kapısının fikstürü — yalnız "src/var.ts" ile "src/oteki.ts" diskte vardır. */
 const diskte = (yol: string): boolean => yol === "src/var.ts" || yol === "src/oteki.ts";
 
-test("N4 · zemin kenarı ile adım kenarı grafta AYRI SINIFTIR ve ayrı çizilir", () => {
+test("N4 · zemin kenarı ile adım kenarı veride AYRI SINIFTIR", () => {
   const graf = projeGrafiCikar(dagYap([
     { kod: "TKM", tip: "Takım", ad: "takım" },
     { kod: "K", tip: "Katman", ad: "katman", zemin: ["TKM"] },
@@ -260,22 +265,6 @@ test("N4 · zemin kenarı ile adım kenarı grafta AYRI SINIFTIR ve ayrı çizil
   assert.deepEqual(graf.baglar.find((b) => b.once === "TKM"), { once: "TKM", sonra: "K", tur: "zemin" });
   assert.deepEqual(graf.baglar.find((b) => b.once === "A1"), { once: "A1", sonra: "A2", tur: "adım" });
 
-  const svg = projeGrafiSvg(graf);
-  assert.ok(svg.includes('class="zemin"'), "zemin kenarı çizilmedi");
-  assert.ok(svg.includes('class="bag"'), "adım kenarı çizilmedi");
-  // ② Zemin düz DİRSEKTİR, adım kenarı bezier EĞRİDİR — bakışta ayrılırlar.
-  const zeminYolu = /class="zemin"[^>]*d="M [^"]*"/.exec(svg)![0];
-  assert.ok(!zeminYolu.includes(" C "), "zemin bağı eğri çizilmiş; düz dirsek olmalıydı");
-  assert.match(zeminYolu, / H .* V .* H /, "zemin dirseği yatay-dikey-yatay değil");
-
-  // ③ ASIL NÖBET: iki sınıf FARKLI stroke-dasharray taşır (yoksa aynı görünürler).
-  const html = miniGrafHtml(graf);
-  const stil = (sinif: string): string =>
-    new RegExp(`\\.${sinif}\\{([^}]*)\\}`).exec(html)![1];
-  const desen = (s: string): string | undefined => /stroke-dasharray:([^;}]*)/.exec(s)?.[1];
-  assert.ok(desen(stil("zemin")), "zemin kenarının kesik deseni yok — adım kenarından ayrılmıyor");
-  assert.notEqual(desen(stil("zemin")), desen(stil("bag")),
-    "zemin ile adım kenarı aynı çizgi desenini taşıyor; graf iki kenar sınıfını ayırt ettirmiyor");
 });
 
 test("N4c · kenar sınıfı KAYNAĞIN TİPİNDEN doğar: `oncekiler`'den gelen zemin bağı da kesiklidir", () => {
@@ -332,34 +321,22 @@ test("N5 · meyve SATIRI yalnız seçili Adımın altında açılır; seçilmeye
   assert.ok(!oteki.dugumler.some((d) => d.kod === "KOD-VAR"));
 });
 
-test("N6 · beyan edilmiş ama diskte olmayan meyve BOŞ CAM çizilir", () => {
+test("N6 · beyan edilmiş ama diskte olmayan meyve BOŞ NOKTA çizilir", () => {
   const graf = projeGrafiCikar(zeminliDag(), "A1", () => true, diskte);
   const var_ = graf.dugumler.find((d) => d.kod === "KOD-VAR")!;
   const yok = graf.dugumler.find((d) => d.kod === "KOD-YOK")!;
   assert.equal(var_.diskte, true, "kapı true dedi, düğüm dolu sayılmalı");
   assert.equal(yok.diskte, false, "kapı false dedi, düğüm boş sayılmalı");
 
-  const svg = projeGrafiSvg(graf);
-  // ASIL NÖBET: boş cam DOLDURULMAZ — yalnız mercek ile kesikli çember kalır.
-  const dugumGovdesi = (kod: string): string => {
-    const i = graf.dugumler.findIndex((d) => d.kod === kod);
-    return new RegExp(`<g class="dugum[^"]*" data-i="${i}">[\\s\\S]*?</g>`).exec(svg)![0];
-  };
-  const bosGovde = dugumGovdesi("KOD-YOK");
-  assert.ok(bosGovde.includes('class="cember boş"'), "boş meyvenin çemberi ayrı işaret taşımıyor");
-  assert.ok(bosGovde.includes('class="mercek boş"'), "boş meyvenin merceği ayrı işaret taşımıyor");
-  assert.ok(!bosGovde.includes('class="isima"'), "boş cam ışıyor — yokluk doluluk gibi görünüyor");
-  assert.ok(!bosGovde.includes('class="parlama"'), "boş camda parlama var");
-  assert.ok(!bosGovde.includes('filter="url(#buz)"'), "boş camın buzlu gövdesi doldurulmuş");
-
-  const doluGovde = dugumGovdesi("KOD-VAR");
-  assert.ok(doluGovde.includes('class="cember"') && !doluGovde.includes("cember boş"));
-  assert.ok(doluGovde.includes('class="isima"'), "dolu meyve normal cam olarak çizilmeli");
-
-  // Boş ile dolu camın çemberi CSS'te de farklıdır; renk kanonik token'dan gelir.
-  const html = miniGrafHtml(graf);
-  assert.match(html, /\.cember\.boş\{[^}]*stroke-dasharray/, "boş çemberin kesik deseni yok");
-  assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(html), "ham renk değeri gömülmüş (YUZ-4.1 ihlali)");
+  const html = projeGrafiAgaci(graf);
+  const satirlar = html.split(/(?=<(?:a|div) class="dugum)/).filter((x) => /^<(a|div) class="dugum/.test(x));
+  const satir = (kod: string): string => satirlar[graf.dugumler.findIndex((d) => d.kod === kod)];
+  // ASIL NÖBET: yokluk doluluk gibi görünmez — boş meyvenin noktası içi boştur.
+  assert.ok(satir("KOD-YOK").includes("nokta bos"), "boş meyvenin noktası ayrı işaret taşımıyor");
+  assert.ok(satir("KOD-VAR").includes('class="nokta') && !satir("KOD-VAR").includes("nokta bos"));
+  const css = miniGrafHtml(graf);
+  assert.match(css, /\.nokta\.bos::before\{[^}]*background:transparent[^}]*dashed/, "boş noktanın kesik çerçevesi yok");
+  assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(css), "ham renk değeri gömülmüş (YUZ-4.1 ihlali)");
 });
 
 test("N7 · Adım alt yazısı eksik meyveyi SEÇİM OLMADAN bildirir", () => {
@@ -371,13 +348,14 @@ test("N7 · Adım alt yazısı eksik meyveyi SEÇİM OLMADAN bildirir", () => {
   assert.equal(graf.dugumler.find((d) => d.kod === "A2")!.eksikMeyve, 0);
   assert.ok(!graf.dugumler.some((d) => d.derinlik === 5), "seçim yokken meyve satırı açılmamalı");
 
-  const svg = projeGrafiSvg(graf);
-  assert.ok(svg.includes("🍎 2"), "meyve sayacı alt yazıda yok");
-  assert.ok(svg.includes("1 diskte yok"), "eksik meyve seçim olmadan bildirilmiyor");
+  const svg = projeGrafiAgaci(graf);
+  assert.ok(svg.includes(`<span class=rozet title="2 meyve">${MEYVE_SIMGESI_SVG}2</span>`), "meyve sayacı satırda yok");
+  assert.ok(!svg.includes("🍎"), "meyve sayacı emoji taşımaz (Founder 2026-10-22)");
+  assert.ok(svg.includes('<span class="rozet eksik">1 diskte yok</span>'), "eksik meyve seçim olmadan bildirilmiyor");
 });
 
 test("N7b · meyve satırının alt yazısı tipini ve BEYAN EDİLEN yolunu söyler", () => {
-  const svg = projeGrafiSvg(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
+  const svg = projeGrafiAgaci(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
   assert.ok(svg.includes("Kod · src/yok.ts"), "meyve alt yazısı beyan yolunu göstermiyor");
   assert.ok(svg.includes("Kod · src/var.ts"));
 });
@@ -399,8 +377,8 @@ test("N8 · simge KANONDAN gelir: koda gömülü ikinci bir çizelge yoktur", ()
 
   // ASIL NÖBET: grafta basılan HER simge kanonda karşılığı olan bir işarettir.
   // Koda gömülü bir çizelge kanonla sessizce ayrışır ve bu nöbet onu yakalar.
-  const svg = projeGrafiSvg(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
-  const basilanlar = [...svg.matchAll(/<text class="simge"[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]);
+  const svg = projeGrafiAgaci(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
+  const basilanlar = [...svg.matchAll(/<span class=simge>([^<]*)<\/span>/g)].map((m) => m[1]);
   assert.ok(basilanlar.length >= 7, `beklenenden az simge basıldı: ${basilanlar.length}`);
   for (const s of basilanlar) {
     assert.ok(kanonSimgeleri.has(s),
@@ -417,11 +395,12 @@ test("N8b · ALT YAZI kanalının simgesi de kanondan gelir; kaynakta gömülü 
   const kayit = GOMULU_KAYIT as unknown as { aileSimgeleri: Record<string, string> };
   const urunSimgesi = kayit.aileSimgeleri.urun;
 
-  // ① DAVRANIŞ: sayaç kanondaki ürün simgesini taşır.
+  // ① DAVRANIŞ: Founder 2026-10-22 hükmüyle arayüzde emoji kalmaz; sayaç kanonun ürün
+  //    emojisini artık TAŞIMAZ (ağaçta geometrik Meyve işareti, metin kanalında sözcük).
   const graf = projeGrafiCikar(zeminliDag(), "", () => true, diskte);
-  const svg = projeGrafiSvg(graf);
-  assert.ok(svg.includes(`${urunSimgesi} `),
-    `meyve sayacı kanonun ürün simgesini (${urunSimgesi}) taşımıyor`);
+  const svg = projeGrafiAgaci(graf);
+  assert.ok(!svg.includes(`${urunSimgesi} 2`) && /2 meyve/.test(svg),
+    `meyve sayacı emoji (${urunSimgesi}) yerine işaret ya da sözcük taşımalı`);
 
   // ② ASIL NÖBET — KAYNAK: alt yazı üretecinde gömülü emoji BULUNMAMALI. Davranış
   //    nöbeti tek başına yetmez, çünkü gömülü değer kanondakiyle bugün EŞİTTİR ve
@@ -437,134 +416,93 @@ test("N8b · ALT YAZI kanalının simgesi de kanondan gelir; kaynakta gömülü 
     `alt yazı üretecinin KOD satırlarında gömülü emoji var; simge kanondan okunmalı:\n${gomulu.join("\n")}`);
 });
 
-test("N9 · ETİKET MERDİVENİ: yazı da mercek gibi kademelenir, tek sütunda dizilmez", () => {
-  // FOUNDER HÜKMÜ (2026-07-30): "bloklar, katmanlar, adımlar gibi itemlerin isimleri
-  // düz bir çizgi gibi alt alta dizildiğinde karışabiliyor; hiyerarşi sırasına göre
-  // merdiven gibi olsa." Ölçülen kusur: mercekler altı ayrı rayda kademeleniyordu
-  // fakat bütün etiketler TEK sabitten (x=146) başlıyordu, dolayısıyla göz merdiveni
-  // dairelerde görüyor yazıda kaybediyordu.
-  const svg = projeGrafiSvg(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
-  const sutun = (sinif: string) =>
-    [...svg.matchAll(new RegExp(`<text class="${sinif}" x="(\\d+)"`, "g"))].map((m) => +m[1]);
-
-  const etiketler = sutun("etiket");
-  const tekil = [...new Set(etiketler)];
-  // ① ASIL NÖBET: birden çok sütun vardır. Tek sütun, merdivenin hiç kurulmadığıdır.
-  assert.ok(tekil.length > 1,
-    `bütün etiketler tek sütunda (x=${tekil[0]}) — kademe girintisi yok`);
-
-  // ② Girinti KADEMEYLE ARTAR: derin düğümün etiketi sığ düğümünkinden sağdadır.
+test("N9 · GİRİNTİ: hiyerarşi kademe başına sabit girintiyle okunur", () => {
   const graf = projeGrafiCikar(zeminliDag(), "A1", () => true, diskte);
-  const yerler = [...svg.matchAll(/<text class="etiket" x="(\d+)"/g)].map((m) => +m[1]);
-  assert.equal(yerler.length, graf.dugumler.length, "her düğüm bir etiket basmalı");
-  graf.dugumler.forEach((d, i) => {
-    graf.dugumler.forEach((e, j) => {
-      if (d.derinlik < e.derinlik) {
-        assert.ok(yerler[i] < yerler[j],
-          `kademe ${d.derinlik} (${d.kod}) etiketi kademe ${e.derinlik} (${e.kod}) ile aynı ya da sağında — merdiven bozuk`);
-      }
-    });
-  });
-
-  // ③ Etiket merceğin SAĞINDA durur — üstüne binmez.
-  const merkezler = [...svg.matchAll(/<circle class="mercek[^"]*" cx="([\d.]+)"/g)].map((m) => +m[1]);
-  merkezler.forEach((cx, i) => {
-    assert.ok(yerler[i] > cx, `etiket merceğin üstüne binmiş (x=${yerler[i]} ≤ cx=${cx})`);
-  });
+  const yerlesim = agacYerlesimi(graf);
+  assert.equal(yerlesim.length, graf.dugumler.length, "her düğüm bir satır almalı");
+  // ① Girinti ata zincirinden türer: çocuk, atasından tam bir kademe sağdadır.
+  const girinti = new Map(yerlesim.map((s) => [s.kod, s.girinti]));
+  for (const d of graf.dugumler) {
+    if (!d.ustKod) assert.equal(girinti.get(d.kod), 0, `${d.kod} kök olduğu hâlde girintili`);
+    else assert.equal(girinti.get(d.kod), girinti.get(d.ustKod)! + 1, `${d.kod} atasının bir kademe sağında değil`);
+  }
+  // ② Bağ kolu sayısı girintiye eşittir ve son hücre düğümün kendi dirseğidir.
+  for (const s of yerlesim) {
+    assert.equal(s.kollar.length, s.girinti, `${s.kod} kol sayısı girintiyle uyuşmuyor`);
+    if (s.girinti > 0) assert.ok(["l", "t"].includes(s.kollar[s.girinti - 1]), `${s.kod} dirseği yok`);
+  }
+  // ③ L yalnız son kardeşte, T öbürlerinde: A1 (ilk) T, A2 (son) L.
+  const kol = (kod: string) => yerlesim.find((s) => s.kod === kod)!.kollar.at(-1);
+  assert.equal(kol("A1"), "t");
+  assert.equal(kol("A2"), "l");
+  assert.equal(kol("KOD-VAR"), "t");
+  assert.equal(kol("KOD-YOK"), "l");
+  // ④ Son kardeşin altındaki satırlarda atanın dikey çizgisi SÜRMEZ, değilse sürer.
+  const meyve = yerlesim.find((s) => s.kod === "KOD-VAR")!;
+  assert.equal(meyve.kollar[meyve.girinti - 2], "i", "A1'in sonraki kardeşi (A2) var: dikey çizgi sürmeli");
+  // ⑤ CSS girintiyi ve L çizgilerini tanımlar; çizgi ince ve tema renklidir.
+  const html = miniGrafHtml(graf);
+  assert.ok(html.includes(`--g:${KADEME_GIRINTISI}px`));
+  assert.match(html, /\.gl::before\{bottom:50%\}/);
+  assert.match(html, /--iz:var\(--vscode-tree-indentGuidesStroke,var\(--vscode-panel-border\)\)/);
+  assert.match(html, /border-left:1px solid var\(--iz\)/, "bağ çizgisi ince değil");
+  assert.ok(!/stroke-width:(?:[2-9]|1\.[7-9])/.test(html) && !html.includes("kapsama"), "kalın gövde çizgisi kalkmış olmalı");
 });
 
-test("N10 · bağımlılık eğrileri yazılarla ÇAKIŞMAZ: kavis Adım sütununun solunda durur, yazı halelidir", () => {
-  // FOUNDER CANLI BULGUSU (2026-07-30): "bağımlılık çizgileri yazılar ile çakışıyor."
-  // Kusur etiket merdiveninin yan etkisiydi: merdiven öncesi bütün etiketler x=146'dan
-  // başlıyordu ve eğriler oraya hiç ulaşmıyordu; merdiven etiketleri sola kaydırınca
-  // hepsi eğri koridoruna (x=28..140) girdi. Ölçüm: en kalabalık sütun Adımlarındır
-  // ve x=128'den başlar, eğriler ise 140'a kadar çıkıyordu.
-  // Fikstür UZAK SATIRLAR arasında bağımlılık taşır: kavis genişliği satır
-  // mesafesiyle büyür, dolayısıyla tavan ancak uzun atlamada sınanabilir.
+test("N10 · ÇAKIŞMAZLIK: her düğüm kendi satırındadır, y aralıkları örtüşmez", () => {
+  // FOUNDER EKRAN GÖRÜNTÜSÜ BULGUSU: dar panelde etiketler üst üste biniyor ve
+  // okunmuyordu. Satır yüksekliği sabittir ve satırlar boşluksuz dizilir.
+  const dallar = Array.from({ length: 40 }, (_, i) => ({
+    kod: `A${i}`, kapsayan: "AK", ad: `adım numara ${i} ve oldukça uzun bir ad`, durum: "beklemede" as const,
+  }));
   const graf = projeGrafiCikar(dagYap([
     { kod: "F", tip: "Faz", ad: "faz" },
     { kod: "B", tip: "Blok", kapsayan: "F", ad: "blok" },
     { kod: "K", tip: "Katman", kapsayan: "B", ad: "katman" },
     { kod: "AK", tip: "AltKatman", kapsayan: "K", ad: "alt katman" },
-    { kod: "A1", kapsayan: "AK", ad: "ilk adım", durum: "tamamlandı", sonrakiler: ["A5"] },
-    { kod: "A2", kapsayan: "AK", ad: "ikinci", durum: "beklemede" },
-    { kod: "A3", kapsayan: "AK", ad: "üçüncü", durum: "beklemede" },
-    { kod: "A4", kapsayan: "AK", ad: "dördüncü", durum: "beklemede" },
-    { kod: "A5", kapsayan: "AK", ad: "beşinci", durum: "beklemede", oncekiler: ["A1"] },
+    ...dallar,
   ]), "A5");
-  const svg = projeGrafiSvg(graf);
-  const yollar = [...svg.matchAll(/class="bag"[^>]*d="([^"]+)"/g)].map((m) => m[1]);
-  assert.ok(yollar.length > 0, "fikstürde bağımlılık eğrisi yok — nöbet ölçemez");
-
-  // ① KAVİS TAVANI: hiçbir eğri Adım etiket sütununa ulaşmaz.
-  const adimSutunu = Math.min(
-    ...[...svg.matchAll(/<text class="etiket" x="(\d+)"/g)].map((m) => +m[1])
-      .filter((x) => x >= 128));
-  for (const d of yollar) {
-    const enSag = Math.max(...[...d.matchAll(/[ML,C]\s*([\d.]+)[ ,]/g)].map((m) => +m[1]));
-    assert.ok(enSag < adimSutunu,
-      `bağımlılık eğrisi Adım etiket sütununa girmiş (x=${enSag} ≥ ${adimSutunu})`);
+  const yerlesim = agacYerlesimi(graf);
+  assert.equal(yerlesim.length, 44);
+  for (let i = 0; i < yerlesim.length; i++) {
+    assert.equal(yerlesim[i].yukseklik, SATIR_YUKSEKLIGI);
+    assert.ok(yerlesim[i].yukseklik >= 24 && yerlesim[i].yukseklik <= 28, "satır yüksekliği 24-28 px aralığında olmalı");
+    for (let j = i + 1; j < yerlesim.length; j++) {
+      const a = yerlesim[i], b = yerlesim[j];
+      assert.ok(a.y + a.yukseklik <= b.y || b.y + b.yukseklik <= a.y,
+        `${a.kod} ile ${b.kod} satırlarının y aralığı örtüşüyor`);
+    }
   }
-
-  // ② YAZI HALESİ: eğri satırlar boyunca uzanır ve yolu üstündeki SIĞ kademelerin
-  //    adlarını da keser; tavan tek başına yetmez. Hale harfin arkasında çizgiyi
-  //    görünmez kılar.
+  // HTML tarafı: satır tek satıra zorlanır, ad üç nokta ile kesilir, yükseklik CSS'te sabittir.
   const html = miniGrafHtml(graf);
-  const kural = /\.etiket,\.alt\{([^}]*)\}/.exec(html)?.[1] ?? "";
-  assert.match(kural, /paint-order:\s*stroke fill/, "yazı halesi yok — çizgi harfin üstünden geçer");
-  assert.match(kural, /stroke:var\(--vscode-/, "hale rengi kanonik tema rolünden gelmeli (ham değer yasak)");
-
-  // ③ BOYAMA SIRASI: eğri metinden ÖNCE basılır, yoksa hale hiçbir işe yaramaz.
-  assert.ok(svg.indexOf('class="bag"') < svg.indexOf('class="etiket"'),
-    "eğri metinden SONRA basılıyor — hale çizgiyi kesemez");
+  assert.match(html, /\.dugum\{[^}]*height:var\(--sat\)/, "satır yüksekliği sabit değil");
+  assert.match(html, /\.dugum\{[^}]*white-space:nowrap/, "satır tek satıra zorlanmıyor");
+  assert.match(html, /\.ad\{[^}]*overflow:hidden;text-overflow:ellipsis/, "uzun ad üç nokta ile kesilmiyor");
+  assert.match(html, /--sat:26px/);
+  // Tam ad ipucunda durur (CSS kesse bile).
+  assert.ok(html.includes("adım numara 5 ve oldukça uzun bir ad · A5"), "tam ad ipucunda yok");
+  // Her satır ayrı bir öğedir: satır sayısı düğüm sayısına eşit.
+  assert.equal([...html.matchAll(/class="dugum[ "]/g)].length, 44);
 });
 
-test("N11 · hover kuralı YALNIZ yürütme kenarı için üretilir: zemin ölü seçici doğurmaz", () => {
-  // FOUNDER CANLI BULGUSU (2026-07-30): "IDE'de kasma var." Ölçülen kök sebep:
-  // bağlılık denetimi BÜTÜN kenarlara bakıyordu, oysa ürettiği kural yalnız `.bag`
-  // sınıfını boyar; zemin kenarı `.zemin` sınıfındadır. Yani yalnız zemine bağlı bir
-  // düğüm için hiçbir zaman eşleşemeyecek iki `:has()` seçicisi üretiliyordu. Zemin
-  // kenarları bu turda 151'den 722'ye çıkınca ölü maliyet grafa yayıldı ve seçici
-  // sayısı 1366'ya ulaştı; canlı korpusta düzeltmeden sonra 694'e indi.
-  // `:has()` en pahalı CSS seçicisidir ve her fare hareketinde yeniden değerlendirilir.
-  const graf = projeGrafiCikar(dagYap([
-    { kod: "TEK", tip: "Teknoloji", ad: "typescript" },
-    { kod: "K", tip: "Katman", ad: "katman", zemin: ["TEK"] },
-    // ZEMİNE bağlı ama yürütme bağı OLMAYAN Adım — hover kuralı ÜRETMEMELİ.
-    { kod: "AY", tip: "Adım", kapsayan: "K", ad: "yalnız zemine bağlı", durum: "beklemede",
-      oncekiler: ["TEK"] },
-    // Gerçek yürütme bağı olan iki Adım — hover kuralı ÜRETMELİ.
-    { kod: "AB", tip: "Adım", kapsayan: "K", ad: "birinci", durum: "beklemede", sonrakiler: ["AC"] },
-    { kod: "AC", tip: "Adım", kapsayan: "K", ad: "ikinci", durum: "beklemede", oncekiler: ["AB"] },
-  ]));
-  const html = miniGrafHtml(graf);
-  const sira = (kod: string) => graf.dugumler.findIndex((d) => d.kod === kod);
-  const kuralVar = (kod: string) => html.includes(`.dugum[data-i="${sira(kod)}"]:hover`);
-
-  // ① ASIL NÖBET: yalnız zemine bağlı düğüm ölü seçici doğurmaz.
-  assert.equal(kuralVar("AY"), false,
-    "yalnız zemine bağlı düğüm için hover kuralı üretilmiş — hiçbir zaman eşleşemez, saf maliyet");
-  assert.equal(kuralVar("TEK"), false, "zemin düğümü için de hover kuralı üretilmemeli");
-  // ② Gerçek yürütme bağı olan düğüm kuralını KAYBETMEZ — düzeltme fazla süpürmüyor.
-  assert.equal(kuralVar("AB"), true, "yürütme bağı olan düğümün hover kuralı düşmüş");
-  assert.equal(kuralVar("AC"), true);
-  // ③ Seçici sayısı bağlı düğüm başına İKİdir; toplam bunu aşarsa ölü kural sızmıştır.
-  const secici = (html.match(/:has\(/g) ?? []).length;
-  assert.equal(secici, 4, `beklenen 4 seçici (iki bağlı düğüm × 2), bulunan ${secici}`);
+test("N11 · OKUNURLUK: yazı gerçek piksel boyundadır; dar panelde tip sütunu ilk gizlenir; klavye odağı görünür", () => {
+  const html = miniGrafHtml(projeGrafiCikar(zeminliDag(), "A1", () => true, diskte));
+  const boyut = (sinif: string): number =>
+    +(new RegExp(`\\.${sinif}\\{[^}]*font-size:(\\d+)px`).exec(html)?.[1] ?? "0");
+  assert.match(html, /body\{[^}]*font-family:var\(--vscode-font-family\);font-size:12px/, "ad yazısı 12 px arayüz yazı tipinde değil");
+  assert.ok(boyut("tip") >= 10 && boyut("tip") <= 11, "tip adı yaklaşık 10 px olmalı");
+  assert.match(html, /@media \(max-width:\d+px\)\{\.tip\{display:none\}\}/, "dar panelde tip sütunu gizlenmiyor");
+  assert.match(html, /\.dugum:focus-visible\{outline:1px solid var\(--vscode-focusBorder\)/, "klavye odağı görünmüyor");
+  assert.match(html, /<a class="dugum[^"]*"[^>]*href="command:sarmal\.dosyaAc\?/, "satır tıklanabilir bağ olarak kalmalı");
+  // Açık temada da okunur: renkler yalnız tema değişkenlerinden gelir.
+  assert.match(html, /\.tip\{[^}]*color:var\(--vscode-descriptionForeground\)/);
+  assert.match(html, /\.dugum\.secili\{background:var\(--vscode-list-inactiveSelectionBackground\)/);
 });
 
 // ── 🍎 VIT-GRAF-A12 · ÜÇÜNCÜ KENAR SINIFI: ÜRETİM KÖKENİ ─────────────────────
-//   Kanon dayanağı iki maddedir ve ikisi de aynı şeyi söyler. ORK-1 hükmü kenar
-//   sınıflarını kesin olarak ayırır: `mimariBağı` yalnız kapsama ve görünürlük,
-//   `bağımlı|besler` yalnız Adım sırası, `üretir` yalnız Adım→Meyve üretim kökeni
-//   içindir ve bir kenar başka sınıfın anlamını üstlenemez. YUZ-3.2 maddesi ise
-//   bunu doğrudan GRAF YÜZÜ için tekrarlar ve örneğinde adıyla yasaklar: bir
-//   `üretir` bağı "mimari sarma bağı diye yeniden etiketlenmez".
-//
-//   ÖLÇÜLMÜŞ KUSUR (2026-08-08): meyve satırı yalnız `ustKod` alanıyla kapsama
-//   rayına asılıyordu, yani üretim kökeni mimari sarmanın çizgisiyle anlatılıyordu.
-//   Kusur hiçbir sınamayı kırmıyordu, çünkü o güne dek hiçbir nöbet meyvenin
-//   HANGİ SINIFIN çizgisiyle bağlandığına bakmamıştı.
+//   Kanon dayanağı ORK-1 ve YUZ-3.2: `üretir` yalnız Adım→Meyve üretim kökeni içindir
+//   ve mimari sarma bağı diye yeniden etiketlenmez. Sınıf veride taşınır; ağaçta
+//   meyve, üreten Adımın çocuk satırı olarak girintiyle okunur.
 
 /** Bir Adımın iki meyvesini ve bir Katmanın zemin bağını taşıyan fikstür. */
 function uretimliDag(): Dag {
@@ -599,52 +537,12 @@ test("N12 · üretim kökeni KENDİ kenar sınıfında doğar; meyve kapsama ray
     assert.equal(gelen[0].once, m.ustKod, "üretim kenarının kaynağı üreten Adım değil");
   }
 
-  const svg = projeGrafiSvg(graf);
-  const yollar = (sinif: string): string[] =>
-    [...svg.matchAll(new RegExp(`<path class="${sinif}"[^>]*d="([^"]+)"`, "g"))].map((m) => m[1]);
-
-  // ③ ASIL NÖBET — KAPSAMA SAYIMI: meyve satırı kapsama rayına asılırsa bu sayı
-  //    şişer. Beklenen kapsama yolu sayısı üç parçadan oluşur: birden çok kök varsa
-  //    bir omurga, her kök için bir bağlantı ve kök olmayan HER MEYVE DIŞI satır
-  //    için bir bağlantı. Meyve bu hesaba GİRMEZ.
-  const kok = graf.dugumler.filter((d) => !d.ustKod).length;
-  const meyve = graf.dugumler.filter((d) => d.derinlik === 5).length;
-  const beklenenKapsama = (kok > 1 ? 1 : 0) + kok + (graf.dugumler.length - kok - meyve);
-  assert.equal(yollar("kapsama").length, beklenenKapsama,
-    "meyve satırı kapsama rayına asılmış — üretim kökeni mimari sarma dilinde çizilmiş (YUZ-3.2 ihlali)");
-  assert.equal(yollar("uretir").length, 2, "üretim kökeni çizilmedi");
-
-  // ④ DÖRT SINIF DÖRT AYRI GEOMETRİ: üretir DÜZ iner, kapsama kavislidir, zemin
-  //    dik açılıdır, yürütme kenarı bezier eğridir. Aynı biçimi paylaşan iki sınıf
-  //    bakışta ayrılmaz.
-  for (const d of yollar("uretir")) {
-    assert.match(d, /^M [\d.]+ [\d.]+ L [\d.]+ [\d.]+$/,
-      `üretim kenarı düz iniş değil: ${d}`);
-  }
-  assert.ok(yollar("kapsama").some((d) => d.includes(" Q ")), "kapsama rayı kavisini yitirmiş");
-  assert.ok(yollar("zemin").every((d) => / H .* V /.test(d)), "zemin dirseği dik açısını yitirmiş");
-
-  // ⑤ YAZIYA GİRMEZ (Founder canlı bulgusu 2026-07-30: "çizgiler yazılarla
-  //    çakışıyor"): üretim kenarı iki mercek arasında kalır ve hiçbir etiket
-  //    sütununa ulaşmaz. En sağdaki etiket sütunu bu nöbetin ölçüsüdür.
-  const enSolEtiket = Math.min(
-    ...[...svg.matchAll(/<text class="etiket" x="(\d+)"/g)].map((m) => +m[1]).filter((x) => x >= 128));
-  for (const d of yollar("uretir")) {
-    const enSag = Math.max(...[...d.matchAll(/[ML]\s*([\d.]+) /g)].map((m) => +m[1]));
-    assert.ok(enSag < enSolEtiket,
-      `üretim kenarı etiket sütununa girmiş (x=${enSag} ≥ ${enSolEtiket})`);
-  }
-
-  // ⑤ DESEN DE AYRIDIR: üretir noktalı, zemin kesikli, kapsama süreklidir.
-  const html = miniGrafHtml(graf);
-  const stil = (sinif: string): string => new RegExp(`\\.${sinif}\\{([^}]*)\\}`).exec(html)![1];
-  const desen = (s: string): string | undefined => /stroke-dasharray:([^;}]*)/.exec(s)?.[1];
-  assert.ok(desen(stil("uretir")), "üretim kenarının noktalı deseni yok");
-  assert.notEqual(desen(stil("uretir")), desen(stil("zemin")),
-    "üretim kenarı ile zemin kenarı aynı çizgi desenini taşıyor");
-  assert.equal(desen(stil("kapsama")), undefined, "kapsama rayı sürekli çizgi olmalı");
-  assert.match(stil("uretir"), /stroke:var\(--vscode-/,
-    "üretim kenarının rengi kanonik tema rolünden gelmeli (YUZ-4.1 · ham değer yasak)");
+  // ③ KAPSAMA DİLİ: meyve satırı Adımın çocuğudur ve ağaçta Adımın altında,
+  //    bir kademe sağda durur; üretim kökeni veride kendi sınıfında kalır.
+  const yerlesim = agacYerlesimi(graf);
+  const girinti = (kod: string) => yerlesim.find((s) => s.kod === kod)!.girinti;
+  assert.equal(girinti("KOD-VAR"), girinti("A1") + 1, "meyve üreten Adımın bir kademe altında değil");
+  assert.equal(girinti("KOD-YOK"), girinti("A1") + 1);
 });
 
 // ── 🪵 VIT-GRAF-A12 · ZEMİN YİNELEMESİNİN KIRPILMASI ────────────────────────
@@ -692,20 +590,14 @@ test("N13 · zemin kenarı BEYAN KADEMESİNDE çizilir; yaprak yinelemesi kırp�
     [{ once: "A1", sonra: "A2", tur: "adım" }]);
 });
 
-test("N14 · üretim kenarı HOVER MALİYETİ doğurmaz: `:has()` seçici sayısı değişmez", () => {
-  // PERFORMANS DERSİ (2026-07-30 · Founder canlı bulgusu "IDE'de kasma var"):
-  // `:has()` en pahalı CSS seçicisidir ve tarayıcı onu her fare hareketinde
-  // yeniden değerlendirir; sayı 1366'ya çıktığında editörde kasma hissi doğmuştu.
-  // Yeni kenar sınıfı bu maliyeti BÜYÜTMEMELİDİR: hover kuralı yalnız yürütme
-  // kenarı için üretilir, üretim kökeni izlenecek bir sıra taşımaz.
+test("N14 · hover için `:has()` seçicisi üretilmez: kenar sayısı büyüse de maliyet değişmez", () => {
+  // PERFORMANS DERSİ (2026-07-30 · "IDE'de kasma var"): `:has()` en pahalı CSS
+  // seçicisidir. Düzenli ağaçta hover yalnız `.dugum:hover` düz seçicisidir.
   const dag = uretimliDag();
-  const secici = (kod: string): number => {
+  for (const kod of ["", "A1"]) {
     const html = miniGrafHtml(projeGrafiCikar(dag, kod, () => true, () => true));
-    return (html.match(/:has\(/g) ?? []).length;
-  };
-  assert.equal(secici(""), 0, "yürütme kenarı olmayan grafta hover kuralı üretilmemeli");
-  assert.equal(secici("A1"), 0,
-    "meyve satırları açılınca `:has()` seçicisi doğmuş — üretim kökeni hover maliyeti taşıyamaz");
+    assert.equal((html.match(/:has\(/g) ?? []).length, 0, "ağaç görünümü :has() seçicisi üretmemeli");
+  }
 });
 
 // ── 🌀 VIT-GRAF-A12 · MEVSİM BAĞI — Blok kendi Faz'ının altında gruplanır ────
@@ -772,11 +664,10 @@ test("N16 · Blok kendi Faz'ının altında GRUPLANIR ve bağı kapsama rayı ç
     (b.once === "FAZ-TEMMUZ" && b.sonra === "BLK-CAGRILI") || (b.once === "BLK-CAGRILI" && b.sonra === "FAZ-TEMMUZ") ||
     (b.once === "FAZ-AGUSTOS" && b.sonra === "BLK-MEVSIMLI") || (b.once === "BLK-MEVSIMLI" && b.sonra === "FAZ-AGUSTOS")),
     "mevsim bağı kenar listesine sızmış — kapsama rayının dilinde kalmalıydı");
-  // ④ KAPSAMA SAYIMI: iki kök için bir omurga ve iki kök bağlantısı, kök olmayan
-  //    altı satır için altı bağlantı — Blok satırları da bu hesabın İÇİNDEDİR.
-  const svg = projeGrafiSvg(graf);
-  const kapsama = [...svg.matchAll(/<path class="kapsama"/g)].length;
-  assert.equal(kapsama, 1 + 2 + 6, "mevsim bağı kapsama rayıyla çizilmedi");
+  // ④ GİRİNTİ: Blok kendi Fazının altında bir kademe sağdadır, kökler sıfırdadır.
+  const yerlesim = agacYerlesimi(graf);
+  assert.deepEqual(yerlesim.map((s) => s.girinti), [0, 1, 2, 3, 0, 1, 2, 3],
+    "mevsim bağı girintiyle okunmuyor");
 });
 
 test("N17 · savunmacı hâller: fiziksel ata mevsime baskındır; Fazı kapsam dışı Blok köksüz kalır ama kaybolmaz", () => {
@@ -796,4 +687,80 @@ test("N17 · savunmacı hâller: fiziksel ata mevsime baskındır; Fazı kapsam 
   ]));
   assert.equal(kapsamDisi.dugumler.length, 1, "Fazı görünmeyen Blok graftan düşmüş");
   assert.equal(kapsamDisi.dugumler[0].ustKod, undefined);
+});
+
+// ── Bağ şeridi: adım / zemin / üretir bağları ağacın solunda yay olarak çizilir ──
+
+test("N18 · BAĞ ŞERİDİ: YALNIZ seçili düğümün bağları çizilir; uçlar doğru satır merkezlerinde, sınıf veriden", () => {
+  const dag = dagYap([
+    { kod: "TKM", tip: "Takım", ad: "takım" },
+    { kod: "K", tip: "Katman", ad: "katman" },
+    { kod: "A1", kapsayan: "K", ad: "ilk", durum: "geliştirmede", sonrakiler: ["A2", "A3"], zemin: ["TKM"], üretiyor: ["KOD-VAR"] },
+    { kod: "A2", kapsayan: "K", ad: "ikinci", oncekiler: ["A1"] },
+    { kod: "A3", kapsayan: "K", ad: "üçüncü", oncekiler: ["A1"], sonrakiler: ["A4"] },
+    { kod: "A4", kapsayan: "K", ad: "dördüncü", oncekiler: ["A3"] },
+    { kod: "KOD-VAR", tip: "Kod", ad: "kod", beyanYolu: "src/var.ts", üretenler: ["A1"] },
+  ]);
+  const sinif = { "adım": "bag", "zemin": "zemin", "üretir": "uretir" } as const;
+  const yolRe = /<path class="(bag|zemin|uretir)" data-a="(\d+)" data-b="(\d+)" d="M ([\d.]+) ([\d.]+) C [\d.]+ [\d.]+, [\d.]+ [\d.]+, ([\d.]+) ([\d.]+)"/g;
+  const graf = projeGrafiCikar(dag, "A1", () => true, diskte2);
+  const secili = graf.baglar.filter((b) => b.once === "A1" || b.sonra === "A1");
+  assert.ok(graf.baglar.length > secili.length, "fikstürde seçili düğüme bağlı olmayan bağ da bulunmalı (A3→A4)");
+  assert.deepEqual([...new Set(secili.map((b) => b.tur))].sort(), ["adım", "zemin", "üretir"], "üç sınıf da seçilide");
+  const html = projeGrafiAgaci(graf);
+  const yollar = [...html.matchAll(yolRe)];
+  assert.equal(yollar.length, secili.length, "yalnız seçili düğümün bağları için yol çizilmeli");
+  const yerlesim = agacYerlesimi(graf);
+  for (const b of secili) {
+    const a = graf.dugumler.findIndex((d) => d.kod === b.once), z = graf.dugumler.findIndex((d) => d.kod === b.sonra);
+    const m = yollar.find((y) => +y[2] === a && +y[3] === z);
+    assert.ok(m, `${b.once}→${b.sonra} yolu yok`);
+    assert.equal(m![1], sinif[b.tur], "yol sınıfı kenar sınıfından türemeli");
+    assert.equal(+m![5], yerlesim[a].y + SATIR_YUKSEKLIGI / 2, "başlangıç kaynak satırın merkezinde değil");
+    assert.equal(+m![7], yerlesim[z].y + SATIR_YUKSEKLIGI / 2, "bitiş hedef satırın merkezinde değil");
+  }
+  assert.ok(!yollar.some((y) => graf.dugumler[+y[2]].kod === "A3" && graf.dugumler[+y[3]].kod === "A4"), "seçiliye bağlı olmayan bağ çizilmiş");
+  // Desenler ayrıdır; hover için düğüm başına seçici YOKTUR.
+  const css = miniGrafHtml(graf);
+  const desen = (k: string) => new RegExp(`\\.${k}\\{[^}]*stroke-dasharray:([^;}]*)`).exec(css)?.[1];
+  assert.equal(desen("bag"), undefined, "adım bağı düz olmalı");
+  assert.ok(desen("zemin") && desen("uretir") && desen("zemin") !== desen("uretir"));
+  assert.ok(!css.includes(":has(") && !css.includes(":hover~"), "düğüm başına hover seçicisi üretilmemeli");
+  assert.ok(!css.includes("<script"));
+  // SEÇİLİ DÜĞÜM YOKSA ŞERİT HİÇ ÇİZİLMEZ ve genişliği sıfırdır.
+  const secimsiz = miniGrafHtml(projeGrafiCikar(dag, "", () => true, diskte2));
+  assert.ok(!secimsiz.includes('<svg class="serit"') && secimsiz.includes("--serit:0px"), "seçimsiz grafta şerit çizilmiş");
+  assert.equal(cizilecekBaglar(projeGrafiCikar(dag)).length, 0);
+  // Başlıktaki bağ sayısı bütün ağı söylemeye devam eder.
+  assert.match(css, new RegExp(`aria-label="bağ">⎇</span>${graf.baglar.length}`));
+});
+
+const diskte2 = (): boolean => true;
+
+test("N19 · BAĞ ŞERİDİ: örtüşen bağlar ayrı sütun alır, sütun sayısı sınırlıdır, etiketler şeride binmez", () => {
+  const hedefler = Array.from({ length: 8 }, (_, i) => `H${i}`);
+  const graf = projeGrafiCikar(dagYap([
+    { kod: "K", tip: "Katman", ad: "k" },
+    { kod: "A0", kapsayan: "K", ad: "kaynak", sonrakiler: hedefler },
+    ...hedefler.map((h) => ({ kod: h, kapsayan: "K", ad: h, oncekiler: ["A0"] })),
+  ]), "A0");
+  const { yollar, sutunSayisi } = bagYerlesimi(graf);
+  assert.equal(yollar.length, 8);
+  assert.equal(sutunSayisi, SERIT_EN_COK_SUTUN, "sütun sayısı sınırda kalmalı");
+  assert.ok(yollar.every((y) => y.sutun < SERIT_EN_COK_SUTUN));
+  // Hepsi aynı kaynaktan çıktığı için aralıklar örtüşür: ilk dört sütun TEKİL, kalanlar en dışı paylaşır.
+  const sutunlar = yollar.map((y) => y.sutun);
+  for (let k = 0; k < SERIT_EN_COK_SUTUN - 1; k++) assert.equal(sutunlar.filter((x) => x === k).length, 1, `${k}. sütun tekil değil`);
+  assert.equal(sutunlar.filter((x) => x === SERIT_EN_COK_SUTUN - 1).length, 8 - (SERIT_EN_COK_SUTUN - 1));
+  // Satırlar şerit genişliği kadar içeriden başlar: etiket şeridin altına girmez.
+  const html = miniGrafHtml(graf);
+  assert.match(html, /style="--serit:\d+px"/);
+  assert.match(html, /\.dugum\{[^}]*padding:0 8px 0 calc\(var\(--serit\) \+ 6px\)/);
+});
+
+test("meyve sayacının işareti geometrik ailenin Meyve simgesidir (medya/simgeler/meyve.svg ile aynı şekiller)", () => {
+  const dosya = readFileSync(new URL("../medya/simgeler/meyve.svg", import.meta.url), "utf8");
+  const sekiller = [...dosya.matchAll(/<(circle|path)\b[^>]*\/>/g)].map((m) => m[0]);
+  assert.ok(sekiller.length >= 3, "meyve.svg şekilleri okunamadı");
+  for (const s of sekiller) assert.ok(MEYVE_SIMGESI_SVG.includes(s), `sayaç işaretinde eksik şekil: ${s}`);
 });

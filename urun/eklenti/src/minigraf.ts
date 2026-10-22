@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // minigraf.ts — 🕸️ MİNİ GRAF görünümü (vscode kabuğu)
 //
-//   Yol Haritasının altında yaşayan tek proje grafı. Saklı Dag'ı saf çekirdeğe
+//   Sarmal panelinin Ray sekmesinde Yol Haritasının altında yaşayan tek proje grafı. Saklı Dag'ı saf çekirdeğe
 //   verir; panel/editör seçimi yalnız ilgili satırı işaretler, grafı daraltmaz.
-//   Betik yoktur; düğüm tıklaması mevcut sarmal.dosyaAc kapısından kaynağa atlar.
+//   Çizici betiksizdir; düğüm tıklaması panelin komut köprüsünden sarmal.dosyaAc kapısına gider.
 //
 //   GRAF ODAKTAKİ VARLIĞI GÖSTERİR (Founder hükmü 2026-07-28). Bugüne kadar
 //   iki kusur vardı ve ikisi de kullanıcının gördüğü şeyle ilgiliydi: görünüm
@@ -18,7 +18,11 @@
 
 import * as vscode from "vscode";
 import type { Dag } from "../../cekirdek/src/dag.ts";
-import { projeGrafiCikar, miniGrafHtml, bosHtml } from "./minigraf-cekirdek.ts";
+import { projeGrafiCikar, bosHtml } from "./minigraf-cekirdek.ts";
+import {
+  gorunumHtml, seciciHtml, gorunumNormalle, GORUNUM_AYARI, GORUNUM_SEC_KOMUTU, GORUNUM_KAPAT_KOMUTU,
+  type GrafGorunumu,
+} from "./minigraf-gorunum.ts";
 import { MINI_GRAF_METINLERI } from "./yuzey-metinleri.ts";
 
 /**
@@ -51,25 +55,21 @@ export interface MeyveKapisi {
 /** Meyve kapısı verilmediğinde her beyan doğru sayılır — boş cam çizilmez. */
 const TUM_MEYVE: MeyveKapisi = { var: () => true };
 
-export class MiniGrafGorunumu implements vscode.WebviewViewProvider {
-  static readonly GORUNUM_ID = "sarmalMiniGraf";
-  private gorunum?: vscode.WebviewView;
+export class MiniGrafGorunumu {
   private kod = "";
+  /** Görünüm seçici kartları açık mı (başlık düğmesi açar, kart ya da Kapat kapatır). */
+  private secici = false;
   /** Kaç kez çizildiği — odak nöbeti tazelemeyi buradan ölçer. */
-  private cizimSayaci = 0;
+  private cizimSayac = 0;
+  private readonly degistiOlayi = new vscode.EventEmitter<void>();
+  /** Çizilecek içerik değiştiğinde ateşlenir; Sarmal paneli Ray sekmesindeyken HTML'i buradan ister. */
+  readonly onDegisti = this.degistiOlayi.event;
 
   constructor(private dagAl: () => Dag | undefined,
               private odak: OdakKapisi = TUM_KAPSAM,
               private meyve: MeyveKapisi = TUM_MEYVE) {
     // Odak değişimi grafı TAZELER: aynı olay üç tanı yüzeyini de yeniden basar.
     this.odak.degisince(() => this.ciz());
-  }
-
-  resolveWebviewView(gorunum: vscode.WebviewView): void {
-    this.gorunum = gorunum;
-    gorunum.webview.options = { enableScripts: false, enableCommandUris: true };
-    gorunum.onDidChangeVisibility(() => { if (gorunum.visible) this.ciz(); });
-    this.ciz();
   }
 
   /** Seçim yalnız odağı değiştirir; odaktaki varlığın tamamı görünür kalır. */
@@ -79,32 +79,63 @@ export class MiniGrafGorunumu implements vscode.WebviewViewProvider {
     this.ciz();
   }
 
+  /** Ayardaki görünüm; bozuk değer varsayılana (Ağaç) düşer. */
+  private gorunumAyari(): GrafGorunumu {
+    return gorunumNormalle(vscode.workspace.getConfiguration("sarmal").get(GORUNUM_AYARI));
+  }
+
+  /** Başlık düğmesi: seçici kartları açar, ikinci basış kapatır. */
+  seciciDegistir(): void { this.secici = !this.secici; this.ciz(); }
+
+  /** Karta tıklama: ayarı yazar, seçiciyi kapatır, paneli o görünümle çizer. */
+  async gorunumSec(deger: unknown): Promise<void> {
+    this.secici = false;
+    await vscode.workspace.getConfiguration("sarmal")
+      .update(GORUNUM_AYARI, gorunumNormalle(deger), vscode.ConfigurationTarget.Global);
+    this.ciz();
+  }
+
+  seciciKapat(): void { if (this.secici) { this.secici = false; this.ciz(); } }
+
   /** Graf yeniden kuruldu — saklı yeni veriyle tek görünümü tazele. */
   tazele(): void { this.ciz(); }
 
   /** Bugüne kadar kaç çizim yapıldığı (nöbet ölçüsü; davranışa etkisi yoktur). */
-  get cizimSayisi(): number { return this.cizimSayaci; }
+  get cizimSayisi(): number { return this.cizimSayac; }
 
-  private ciz(): void {
-    if (!this.gorunum || !this.gorunum.visible) return;
+  /** Şu anki görünümün tam belgesi (seçici açıksa seçici). Çizim bu çağrıda hesaplanır. */
+  html(): string {
     const dag = this.dagAl();
-    this.cizimSayaci += 1;
-    this.gorunum.webview.html = dag
-      ? miniGrafHtml(projeGrafiCikar(dag, this.kod,
+    this.cizimSayac += 1;
+    if (this.secici) return seciciHtml(this.gorunumAyari());
+    return dag
+      ? gorunumHtml(projeGrafiCikar(dag, this.kod,
           (dosya) => this.odak.kapsamda(dosya),
-          (beyanYolu) => this.meyve.var(beyanYolu)))
+          (beyanYolu) => this.meyve.var(beyanYolu)), this.gorunumAyari())
       : bosHtml(MINI_GRAF_METINLERI.kuruluyor);
   }
+
+  dispose(): void { this.degistiOlayi.dispose(); }
+
+  /** İçerik değişti: hesap yapılmaz, yalnız abone (panel) haberdar edilir. */
+  private ciz(): void { this.degistiOlayi.fire(); }
 }
 
-/** Görünümü kaydeder; ayrı kip/komut yoktur. */
+/** Mini Graf'ı kurar; çizim Sarmal panelinin Ray sekmesinde yapılır. */
 export function miniGrafKaydi(context: vscode.ExtensionContext,
                               dagAl: () => Dag | undefined,
                               odak: OdakKapisi = TUM_KAPSAM,
                               meyve: MeyveKapisi = TUM_MEYVE): MiniGrafGorunumu {
   const g = new MiniGrafGorunumu(dagAl, odak, meyve);
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(MiniGrafGorunumu.GORUNUM_ID, g),
+    { dispose: () => g.dispose() },
+    vscode.commands.registerCommand("sarmal.miniGraf.gorunumDegistir", () => g.seciciDegistir()),
+    vscode.commands.registerCommand(GORUNUM_SEC_KOMUTU, (deger: unknown) => g.gorunumSec(deger)),
+    vscode.commands.registerCommand(GORUNUM_KAPAT_KOMUTU, () => g.seciciKapat()),
+    // Ayar dışarıdan (settings.json) değişse de panel yeni görünümle çizilir.
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration(`sarmal.${GORUNUM_AYARI}`)) g.tazele();
+    }),
   );
   return g;
 }

@@ -43,6 +43,8 @@ const { OnayPaneli, onayPaneliKaydi } = await import("../src/onay-paneli.ts");
 const { Hatirlaticilar, hatirlaticilarKaydi } = await import("../src/hatirlaticilar.ts");
 const { Bildirimler, bildirimlerKaydi } = await import("../src/bildirimler.ts");
 const { onayKuyruguKaydi } = await import("../src/onay-kuyrugu.ts");
+const { makinistKaydi } = await import("../src/makinist.ts");
+const { fikirlerKaydi } = await import("../src/fikirler.ts");
 const { GORUNUS_ONAYLAR, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER } = await import("../src/yuzey-cekirdek.ts");
 
 const EKLENTI_KOKU = fileURLToPath(new URL("..", import.meta.url));
@@ -86,8 +88,8 @@ const kayitlar = (dosya: string, kaynak: string): KapiKaydi[] => kapilar(kaynak)
 /** Çözülmüş bir Onaylar paneli ve onun sahte görünüşü. */
 function panelKur(): { panel: InstanceType<typeof OnayPaneli>; gorunum: SahteWebviewGorunusu } {
   const panel = new OnayPaneli();
-  const gorunum = new SahteWebviewGorunusu();
-  panel.resolveWebviewView(gorunum as never);
+  panel.kartiAc();                       // Founder 2026-10-21: Onaylar kartı yan sekmede açılır
+  const gorunum = kabuk.paneller.at(-1)!;
   return { panel, gorunum };
 }
 
@@ -214,35 +216,35 @@ test("② kapıya git: defterde olmayan kapı sıfır satırla gider (kod bağla
 // ③ ONAYLAR PANELİ — ROZET DEFTERİN SAYISINI SÖYLER
 // ═══════════════════════════════════════════════════════════════════════════
 
-test("③ rozet: dolu panel kapı sayısını gösterir, boşalan panel sıfıra iner ve eski sayıda asılı kalmaz", () => {
-  const { panel, gorunum } = panelKur();
+test("③ sayı: kapı sayısı defterin sayısını söyler, boşalan defter sıfıra iner ve eski sayıda asılı kalmaz", () => {
+  // Rozet artık Makinist ağacında yaşar (MakinistAgaci.rozetSayisi); kaynağı bu sayıdır.
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
   assert.equal(panel.kapiSayisi, 2, "fikstür iki kapı üretmedi");
-  assert.equal(gorunum.badge?.value, 2, `dolu panelin rozeti ${gorunum.badge?.value}; iki olmalıydı`);
   panel.yerlestirDosya("/sahte/ikinci.sar", kapilar(zincir(adim("C1"))));
-  assert.equal(gorunum.badge?.value, 3, "ikinci dosyanın kapısı rozete yansımadı");
+  assert.equal(panel.kapiSayisi, 3, "ikinci dosyanın kapısı sayıya yansımadı");
+  assert.equal(panel.kapilar().length, 3, "ağaç satırları ile sayı ayrıştı");
   panel.yerlestirHepsi([]);
   assert.equal(panel.kapiSayisi, 0);
-  assert.equal(gorunum.badge?.value, 0,
-    "boşalan panelin rozeti sıfıra çekilmedi; eski sayı ekranda asılı kalır");
+  assert.equal(panel.kapilar().length, 0, "boşalan defterin ağaç satırları kalktı mı");
 });
 
-test("③ rozet ve gövde aynı defterden beslenir: görünüş yeniden çözüldüğünde ikisi birlikte kurulur", () => {
+test("③ gövde defterden beslenir: kart sonradan açıldığında defterdeki kapıları basar", () => {
   const panel = new OnayPaneli();
-  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));      // görünüş henüz yok
-  const gorunum = new SahteWebviewGorunusu();
-  panel.resolveWebviewView(gorunum as never);
-  assert.equal(gorunum.badge?.value, 2, "görünüş çözülürken rozet kurulmadı");
+  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));      // kart henüz yok
+  panel.kartiAc();
+  const gorunum = kabuk.paneller.at(-1)!;
   assert.ok(gorunum.webview.html.includes("A1") && gorunum.webview.html.includes("A2"),
-    "görünüş çözülürken gövde defterdeki kapıları basmadı");
+    "kart açılırken gövde defterdeki kapıları basmadı");
 });
 
-test("③ kayıt: Onaylar görünüşü kendi kimliğiyle kayda girer ve sağlayıcı o kimlikten çözülür", () => {
+test("③ kayıt: Onaylar artık ayrı görünüm kaydetmez; kart yan sekmede açılır", () => {
   const baglam = baglamKur();
   const panel = onayPaneliKaydi(baglam as never);
-  assert.equal(kabuk.webviewSaglayicilari.get(GORUNUS_ONAYLAR), panel,
-    "Onaylar paneli kendi görünüş kimliğiyle kayda girmedi");
-  assert.equal(baglam.subscriptions.length, 1, "kayıt bağlamın atılabilirlerine eklenmedi");
+  assert.equal(kabuk.webviewSaglayicilari.has(GORUNUS_ONAYLAR), false,
+    "Onaylar hâlâ kenar çubuğu görünümü kaydediyor");
+  assert.equal(kabuk.paneller.length, 0, "kart kullanıcı eylemi olmadan açıldı");
+  assert.ok(panel instanceof OnayPaneli);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -305,17 +307,50 @@ for (const [ad, Sinif, kaydet, kimlik, bos] of [
     assert.equal(cizim, 2, "değişen içerik çizim üretmedi; parmak izi bir alanı görmüyor");
   });
 
-  test(`④ ${ad} kaydı: görünüş kendi kimliğiyle kurulur ve boş başlar`, () => {
+  test(`④ ${ad} kaydı: ayrı görünüm kurulmaz, boş-durum cümlesi hafif yüz durumunda başlar`, () => {
     const baglam = baglamKur();
     const s = kaydet(baglam as never);
-    assert.equal(kabuk.agaclar.length, 1, "kayıt ağaç görünüşü kurmadı ya da birden fazla kurdu");
-    const [g] = kabuk.agaclar;
-    assert.equal(g.kimlik, kimlik, `${ad} görünüşü başka bir kimlikle kuruldu`);
-    assert.equal((g.secenek as { treeDataProvider: unknown }).treeDataProvider, s);
-    assert.equal(g.message, bos, "açılışta boş durum cümlesi yok");
-    assert.equal(baglam.subscriptions.length, 1);
+    assert.equal(kabuk.agaclar.length, 0, "kayıt ayrı bir ağaç görünümü kurdu; görünümü yalnız Makinist ağacı kurar");
+    assert.equal(s.gorunum?.message, bos, "açılışta boş durum cümlesi yok");
+    assert.equal(baglam.subscriptions.length, 0);
+    void kimlik;
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ⑤ MAKİNİST AĞACI — DÖRT ÜST DÜĞÜM, TEK GÖRÜNÜM (Founder 2026-10-21)
+// ═══════════════════════════════════════════════════════════════════════════
+
+test("⑤ Makinist ağacı: tek görünüm, dört üst düğüm; sayılar kaynakların kendi sayacından, alt düğümler kaynağın kendi nesneleridir", () => {
+  const baglam = baglamKur();
+  const onay = onayPaneliKaydi(baglam as never);
+  onay.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
+  const htr = hatirlaticilarKaydi(baglam as never);
+  const bld = bildirimlerKaydi(baglam as never);
+  const fkr = fikirlerKaydi(baglam as never);
+  htr.yerlestir(UC_KAYIT);
+  const agac = makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: htr, bildirimler: bld, fikirler: fkr });
+  // Founder 2026-10-21 (dördüncü hüküm): ağaçların kendi TreeView'ü yoktur; Sarmal paneli sağlayıcıyı webview'inde okur.
+  assert.equal(kabuk.agaclar.length, 0, "Makinist (ya da başka bir kaynak) kapta kendi ağaç görünümünü kurmamalı: kapta tek görünüm görünür");
+  const kokler = agac.getChildren() as Array<{ grup: string }>;
+  assert.deepEqual(kokler.map((k) => k.grup), ["onaylar", "hatirlaticilar", "gozlemler", "fikirler"], "üst düğümler ya da sıraları değişmiş");
+  const aciklama = (k: unknown) => agac.getTreeItem(k).description;
+  assert.equal(aciklama(kokler[0]), "2", "Onaylar düğümünün sayısı defterin kapı sayısı değil");
+  assert.equal(aciklama(kokler[1]), String(htr.kayitSayisi), "Hatırlatıcılar düğümünün sayısı kaynağın sayacından ayrışmış");
+  assert.equal(aciklama(kokler[2]), undefined, "boş Gözlemler düğümü sayı basıyor");
+  // Onaylar: iki kapı satırı, tıklayınca kapıyı açan komutla.
+  const kapilar = agac.getChildren(kokler[0]);
+  assert.equal(kapilar.length, 2);
+  const kapiOgesi = agac.getTreeItem(kapilar[0]);
+  assert.equal(kapiOgesi.command?.command, "sarmal.onayKapisiAc");
+  // Hatırlatıcılar: alt düğümler kaynağın kendi nesneleridir (sarmalanmaz) ve satırı kaynak çizer.
+  const proje = agac.getChildren(kokler[1])[0]!;
+  assert.equal(agac.getTreeItem(proje).contextValue, "sarmalHatirlaticiProjesi");
+  assert.ok(agac.getChildren(proje).length > 0, "proje düğümünün çocukları kaynağa devredilmedi");
+  // Rozet = kapılar + hatırlatıcılar.
+  assert.equal(agac.rozetSayisi, 2 + htr.kayitSayisi);
+  // Rozet Sarmal panelinin görünümüne yazılır (panel.ts, panel.test.ts ölçer); ağaç yalnız sayıyı verir.
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ONAY KUYRUĞU — KOMUT SINIRININ DAVRANIŞI

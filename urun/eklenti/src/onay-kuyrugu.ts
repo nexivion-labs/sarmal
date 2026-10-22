@@ -62,7 +62,8 @@ const ONAY_TUM_KAPSAM: OdakKapisi = {
   kapsamda: () => true,
   degisince: () => { /* olay yok */ },
 };
-import { GORUNUS_ONAYLAR, DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU } from "./yuzey-cekirdek.ts";
+import { DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU } from "./yuzey-cekirdek.ts";
+import { BOLUM_KOMUTLARI } from "./bolum-cekirdek.ts";
 import {
   etkinKararAdi, CATISMA_SECENEKLERI, commentsEmekli,
   gerekceZorunlu, gerekceArtik, kararArgumaniGecersiz,
@@ -478,8 +479,10 @@ export function onayKuyruguKaydi(
   // kimliği korunan tek kuyruğa, Onaylar görünüşüne odaklanır. Eskiden bu
   // komut her çağrıda tam tarama yapıp bir seçim listesi açıyordu ve böylece
   // panelin yanında ikinci bir "asıl kuyruk" gibi duruyordu.
+  // Founder 2026-10-21: Onaylar artık Makinist ağacının üst düğümüdür; komut Makinist
+  // bölümünü seçip ağacı öne alır (kart, kapıya tıklanınca ayrıca açılır).
   const onayPanelineOdaklan = async (): Promise<void> => {
-    await vscode.commands.executeCommand(`${GORUNUS_ONAYLAR}.focus`);
+    await vscode.commands.executeCommand(BOLUM_KOMUTLARI.makinist.duz);
   };
 
   // ⚡ ANLIK KUYRUK (Sorunlar sekmesi davranışı): yazarken biriken belgeler tek

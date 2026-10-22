@@ -19,7 +19,7 @@
 
 import * as vscode from "vscode";
 import {
-  GORUNUS_HATIRLATICILAR, projeyeGrupla, dosyayaGrupla, kayitGorunumu,
+  projeyeGrupla, dosyayaGrupla, kayitGorunumu,
   hatirlaticiIsareti, panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type SatirIsareti, type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
   panelRozeti,
@@ -37,7 +37,7 @@ import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { satirdaDegerDegistir } from "../../cekirdek/src/deger-yaz.ts";
 
-import { satirIkonu } from "./ortak.ts";
+import { satirIkonu, type YuzDurumu } from "./ortak.ts";
 import { eksenSvgVaryanti, type SatirSimgesi } from "./simge-cizelgesi.ts";
 // 🏷️ Dosya satırının teknoloji simgesi TEK kaynaktan gelir: çizelge eklentinin
 // kendi dil ilanından türer ve ikinci bir eşleme yazılmaz (teknoloji-simgesi.ts).
@@ -96,7 +96,7 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
     return this.kumeler.reduce((toplam, k) => toplam + k.kayitlar.length, 0);
   }
 
-  gorunum?: vscode.TreeView<PanelOge>;
+  gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
   eklentiKoku?: vscode.Uri;
   /** Uzantı → teknoloji simgesi çizelgesi; kayıtta eklentinin dil ilanından kurulur. */
@@ -351,12 +351,7 @@ export function hatirlaticilarKaydi(context: vscode.ExtensionContext): Hatirlati
   // VIT-KIMLIK-A05: geometrik satır simgeleri · VIT-GRAF-A13: dosya satırının
   // teknoloji simgesi eklentinin KENDİ dil ilanından türer (tek kaynak).
   saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
-  const gorunum = vscode.window.createTreeView<PanelOge>(GORUNUS_HATIRLATICILAR, {
-    treeDataProvider: saglayici,
-  });
-  gorunum.description = YUZEY_ACIKLAMALARI.hatırlatıcılar;
-  gorunum.message = YUZEY_BOS_DURUM.hatırlatıcılar;
-  saglayici.gorunum = gorunum;
-  context.subscriptions.push(gorunum);
+  // Founder 2026-10-21: ayrı görünüm yoktur; sağlayıcı Makinist ağacının bir üst düğümüdür (makinist.ts).
+  saglayici.gorunum = { description: YUZEY_ACIKLAMALARI.hatırlatıcılar, message: YUZEY_BOS_DURUM.hatırlatıcılar };
   return saglayici;
 }

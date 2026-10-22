@@ -47,7 +47,7 @@ import {
   type BeklerSilmesi,
 } from "../src/onay-cekirdek.ts";
 import {
-  GORUNUS_ONAYLAR, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
+  GORUNUS_ONAYLAR, 
   DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU, sayaclariOlayaBagla,
 } from "../src/yuzey-cekirdek.ts";
 // Emoji nöbeti artık tek tek metin ÇAĞIRMAZ: erişimini kaynaktaki sınır
@@ -341,15 +341,15 @@ test("açılışta hiçbir iş parçacığı yaratılmaz: modül sonunda koşuls
     "her bulgu için pencere açan eski işlev (kutuAc) hâlâ yaşıyor");
 });
 
-test("komut ikinci bir kuyruk YARATMAZ: yalnız Onaylar paneli görünüşüne odaklanır", () => {
+test("komut ikinci bir kuyruk YARATMAZ: yalnız Makinist bölümünü seçip Onaylar düğümünü barındıran ağacı öne alır", () => {
   const kaynak = oku("../src/onay-kuyrugu.ts");
   assert.ok(!kaynak.includes("showQuickPick"),
     "onay yüzeyi hâlâ bir seçim listesi açıyor; ikinci bir karar arayüzü yaşıyor");
   // Ölçü ÇAĞRI ve TANIM biçimine bakar; tarihsel kaydın adı anmasına değil.
   assert.ok(!/\bkararSor\s*[(=]/.test(kaynak),
     "emekli edilen kararSor akışı hâlâ kaynakta; iki karar yolu vardır");
-  assert.ok(kaynak.includes("`${GORUNUS_ONAYLAR}.focus`"),
-    "komut Onaylar paneli görünüşüne odaklanmıyor");
+  assert.ok(kaynak.includes("BOLUM_KOMUTLARI.makinist.duz"),
+    "komut Makinist bölümünü seçip ağacı öne almıyor");
   const basi = kaynak.indexOf("const onayPanelineOdaklan");
   const sonu = kaynak.indexOf("// ⚡ ANLIK KUYRUK");
   assert.ok(basi > 0 && sonu > basi, "komut gövdesi kaynakta bulunamadı");
@@ -472,9 +472,12 @@ test("kimlikler sabittir: görünüş, komut ve denetleyici kimliği birebir kor
   assert.equal(DENETLEYICI_ONAY, "sarmal-onay",
     "denetleyici kimliği değişti; Açıklamalar menü koşulları düğmeleri bulamaz");
 
+  // Founder 2026-10-21: görünüş kimliği sabiti korunur (kullanıcı verisi taşımaz) fakat artık ayrı
+  // görünüm ilan edilmez; Onaylar Makinist ağacının üst düğümüdür.
   const gorunusler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  assert.ok(gorunusler.includes(GORUNUS_ONAYLAR),
-    "paket bildirimindeki görünüş kimliği sabitten ayrıştı");
+  assert.ok(!gorunusler.includes(GORUNUS_ONAYLAR), "Onaylar hâlâ ayrı görünüm olarak ilan edilmiş");
+  assert.ok(!gorunusler.includes("sarmalMakinist"), "Makinist ağacı kapta ayrı görünüm olarak duruyor (Founder 2026-10-21: kapta tek görünüm)");
+  assert.ok(gorunusler.includes("sarmalPanel"), "kabın tek görünümü bildirimde yok");
   const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_ONAY_KUYRUGU);
   assert.ok(komut, "paket bildiriminde komut kimliği yok");
 
@@ -786,13 +789,12 @@ test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
         `${dosya} ikinci bir tazeleme ritmi kurmuş: ${ritim}`);
     }
   }
-  assert.ok(oku("../src/hatirlaticilar.ts").includes(`GORUNUS_HATIRLATICILAR`));
-  assert.ok(oku("../src/bildirimler.ts").includes(`GORUNUS_BILDIRIMLER`));
+  // Komşu kaynaklar artık kendi görünümlerini kurmaz; Makinist ağacı üst düğüm olarak okur.
   const gorunusler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  for (const kimlik of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER]) {
-    assert.ok(gorunusler.includes(kimlik),
-      `komşu panelin görünüş kimliği paket bildiriminden düşmüş: ${kimlik}`);
-  }
+  assert.ok(!gorunusler.includes("sarmalMakinist") && gorunusler.includes("sarmalPanel"),
+    "Makinist ağacı kabın tek görünümünün sekmesidir; ayrı görünüm kalmamalı");
+  for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts"])
+    assert.ok(!oku(dosya).includes("createTreeView"), `${dosya} ayrı görünüm kuruyor`);
 });
 
 // ── 📊 DURUM ÇUBUĞU: SAYI TÜRETİLİR, TUTULMAZ (VIT-GRAF-A13) ────────────────

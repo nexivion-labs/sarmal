@@ -110,6 +110,15 @@ export const GORUNUS_ONAYLAR = "sarmalOnaylar";
  * burada durur ki nöbet paket bildirimiyle eşitliği tek kaynaktan ölçebilsin.
  */
 export const DENETLEYICI_ONAY = "sarmal-onay";
+/** Makinist ağacının görünüm kimliği (package.json ile birebir). Founder 2026-10-21: Onaylar ·
+ *  Hatırlatıcılar · Gözlemler · Fikirler ayrı görünüm değil, bu tek ağacın dört üst düğümüdür. */
+export const GORUNUS_MAKINIST = "sarmalMakinist";
+export type MakinistGrubu = "onaylar" | "hatirlaticilar" | "gozlemler" | "fikirler";
+/** Üst düğümlerin sırası: Onaylar (karar bekleyen) en üstte. */
+export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "hatirlaticilar", "gozlemler", "fikirler"];
+
+/** Dört Makinist yüzeyinin (durum çubuğu) ortak odak komutu: Makinist bölümünü seçer ve ağacı öne alır. */
+export const MAKINIST_ODAK_KOMUTU = "sarmal.bolum.makinist";
 export const KOMUT_ONAY_KUYRUGU = "sarmal.onayKuyrugu";
 
 /** Kaydın geldiği Proje kimliği — panel gruplaması bu kimlikten kurulur. */
@@ -927,10 +936,10 @@ export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
   // ilkesinin arayüz karşılığıdır: aynı gerçeğin iki gösterimi zamanla ayrışır ve
   // ayrışmasa bile okuyanı yorar. Sarmal yalnız KENDİ üç yüzeyini basar; sorunları
   // platformun sayacına bırakır.
-  { simge: "$(mail)",          metin: "onayPaneli",   komut: `${GORUNUS_ONAYLAR}.focus`,   say: (k) => k.kapı() },
-  { simge: "$(bell)",          metin: "hatırlatıcılar", komut: `${GORUNUS_HATIRLATICILAR}.focus`, say: (k) => k.hatırlatıcı() },
-  { simge: "$(lightbulb)",     metin: "fikirler",      komut: `${GORUNUS_FIKIRLER}.focus`,       say: (k) => k.fikir() },
-  { simge: "$(eye)",           metin: "gözlemler",     komut: `${GORUNUS_BILDIRIMLER}.focus`,    say: (k) => k.gözlem() },
+  { simge: "$(mail)",          metin: "onayPaneli",   komut: MAKINIST_ODAK_KOMUTU,   say: (k) => k.kapı() },
+  { simge: "$(bell)",          metin: "hatırlatıcılar", komut: MAKINIST_ODAK_KOMUTU, say: (k) => k.hatırlatıcı() },
+  { simge: "$(lightbulb)",     metin: "fikirler",      komut: MAKINIST_ODAK_KOMUTU,       say: (k) => k.fikir() },
+  { simge: "$(eye)",           metin: "gözlemler",     komut: MAKINIST_ODAK_KOMUTU,    say: (k) => k.gözlem() },
 ];
 
 // ── 🔗 AYNI OLAY — panel ile durum çubuğu ayrı anlarda tazelenmez ────────────
