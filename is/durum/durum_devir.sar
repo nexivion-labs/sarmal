@@ -16,11 +16,16 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-12", oturum: 113,
-            neredeyiz: TUR-KAPANDI-YIRMI-DORT-ADIM-KAPANDI-DOKUZ-ADIM-FOUNDER-GOZUNU-BEKLIYOR,
-            sıradaki: V1-MAGAZA-YUKLEMESI-ONCE-DOKUZ-ADIMLIK-GOZ-TURU-SONRA-MGZ-A10-VE-1.0.0-YUKLEMESI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-22", oturum: 116,
+            neredeyiz: TEK-SURUM-BIRLESTIRMESI-YAPILDI-DOKUZ-ADIM-FOUNDER-GOZUNU-BEKLIYOR-MAGAZA-YUKLEMESI-HENUZ-YAPILMADI,
+            sıradaki: V1-MAGAZA-YUKLEMESI-ONCE-DOKUZ-ADIMLIK-GOZ-TURU-SONRA-MGZ-A10-VE-1.0.0-YUKLEMESI-VE-ICERIK-HATTI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ DOKUZ-ADIM-FOUNDER-CANLI-GOZUNU-BEKLIYOR-VIT-KIMLIK-A08-EKL-F6-A09-HST-MTR-A04-HST-YUZ-A05-HST-YUZ-A06-MGZ-A02-MGZ-A06-MGZ-A08-MGZ-A09,
+            açıkİşler: [ DOGUS-KANCALARININ-NODE-KARSILIGI-ISLENMEDEN-DURUYOR-WINDOWS-DOGRULAMASI-VE-FOUNDER-SOZU,
+                         SARMAL-AKISI-ARTIFACT-YAYINI-FOUNDER-ONAYI-BEKLIYOR,
+                         README-SAYILARI-TUTARSIZ-VE-ANADIZIN-YORUMU-DEPONUN-OZEL-OLDUGUNU-SOYLUYOR,
+                         HATIRLATICI-AYIKLAMA-RAPORUNDAKI-69-SATIR-ILE-72-ACIK-HATIRLATICI-FARKI-DOGRULANACAK,
+                         MAGAZA-SONRASI-AKIS-REHBERI-BLOKU-VE-GERI-BILDIRIM-KATKI-DESTEK-KANALLARI,
+                         DOKUZ-ADIM-FOUNDER-CANLI-GOZUNU-BEKLIYOR-VIT-KIMLIK-A08-EKL-F6-A09-HST-MTR-A04-HST-YUZ-A05-HST-YUZ-A06-MGZ-A02-MGZ-A06-MGZ-A08-MGZ-A09,
                          PR-5-TABANI-MAINE-CEVRILMELI-IZIN-DENETIMI-DURDURDU-FOUNDER,
                          HST-MTR-A18-KARAR-SAYFASININ-YEDI-KANON-HUKMU-SIRADA,
                          HST-MTR-A15-A16-A17-MOTOR-BORCLARI-VE-HST-MTR-A19,
@@ -50,6 +55,48 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-12", oturum: 113,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-22) · DOĞUŞ KANCALARININ İŞLETİM SİSTEMİNDEN BAĞIMSIZ KARŞILIĞI.
+        Doğuş paketinin kurduğu iki kanca bugüne kadar yalnız kabuk betiği olarak yazılmıştı ve Windows
+        üzerinde çalışmıyordu. Bir alt ajan iki kancanın Node karşılığını yazmıştır: doğuş kilidi
+        ogreti/sablon/dogus/dogus_kilidi.mjs, denetim kapısı ogreti/sablon/dogus/denetim_kapisi.mjs
+        dosyasındadır ve ikisi yalnız Node'un yerleşik modüllerini kullanır. Kanca ayarı artık kabuk yerine
+        Node çağırır ve doğuş paketi (urun/cekirdek/src/dogus.ts) yeni köklere yalnız Node sürümlerini kurar;
+        kabuk sürümleri doğan köke yazılmaz, şablon rafında daha önce doğmuş köklerin elle tazelenmesi için
+        POSIX başvuru sürümü olarak yaşar. Aynı işte doğuş kilidinin yanlış ret kusuru da giderilmiştir:
+        önceki sürüm komut metninin tamamında desen aradığı için bir giriş ilanının adını yalnızca metin
+        olarak anan komutları yeni ilan yazımı sanıyordu; kilit artık yazım hedefini yalnız tırnak dışındaki
+        yönlendirmelerden ve dosya yazan komutların argümanlarından çıkarır. Yeni sınama dosyası
+        urun/cekirdek/sinama/dogus-kancalari.test.ts ile birlikte kanca sınamaları 31/31 geçmiştir; kontrolcü
+        sonucu bağımsız olarak yeniden koşturmuştur. Değişiklik işlenmemiştir, çünkü işleme yasağı yürürlüktedir.
+        Gerçek bir Windows makinesinde doğrulama henüz yapılmamıştır ve hatırlatıcısı
+        HTR-DOGUS-WINDOWS-KANCALARI kaydında açıktır.
+
+        🧭 DEVİR · OTURUM 116 (2026-10-20) · TEK SÜRÜM BİRLEŞTİRMESİ VE İÇERİK HATTININ AÇILMASI.
+        Founder "tek sürüm" hükmünü vermiş ve temiz dalların blok/bakim-ve-olgunluk çalışma dalında
+        toplanmasına karar vermiştir. Dört birleştirme işlemesi bu dala indirilmiştir (11be401,
+        e63039e, 14d07b3 ve 804dcf8); ana dala dokunulmamış ve uzak depoya gönderim yapılmamıştır.
+        Çalışma ağaçları kaldırılmış ve altı eski dal silinmiştir. blok/eklenti-olgunlastirma dalı,
+        git onu birleşmemiş saydığı için silmeyi reddettiğinden bilinçle korunmuştur.
+        Dış bir değerlendirici botun hazırladığı Sarmal raporu okunmuş, geçerli dört çıkarım kapalı
+        ürün tarafına indirilmiştir. Founder 12 Ekim tarihli "tek odak mağaza" kararını korumuştur:
+        eklenti hesapsız yüklenecek, hesapla giriş sonraki sürüme kalacak, geri bildirim, katkı ve
+        destek kanalları eklenecek ve akış rehberi Bloku mağaza yüklemesinden sonraya bırakılmıştır.
+        Aboneliğin aylık API kredisi bireysel kuruluşta doğrulanmış, Claude Code bu krediyi kabul
+        etmemiş ve doğrulanmış yolun doğrudan API betikleri olduğu çatı kararlarına yazılmıştır.
+        2026-10-20 rakip araştırması şu sayıları vermiştir: Spec Kit 141.964, OpenSpec 72.436 ve
+        BMAD 54.334 yıldız; Sarmal henüz 0 yıldızdadır. Sarmal'ı ayıran nokta planla diskin
+        deterministik denetimi ve zorlanan durum makinesidir. Ölçülen eksikler şunlardır: mağaza
+        yüklemesinin yapılmamış olması, README'deki tutarsız sayılar ("119 madde, 175 tanı" ile
+        "163 madde"), anadizin yorumunun deponun hâlâ özel olduğunu söylemesi, ağır kurulum, kurulum
+        belgesinin yalnız Claude Code için yazılmış olması ve kabul sınamasının bulunmaması.
+        Founder Sarmal için içerik üretimine (LinkedIn, X ve Instagram) başlanmasına hükmetmiştir;
+        otomatik video üretimi yapılmayacak ve video ayrıca konuşulacaktır. İlk paylaşım taslağı
+        hazırdır ve paylaşılmamıştır.
+        Açık kalanlar: "Sarmal Akışı" sayfasının onarımı yapılmış (tuval boyut döngüsü düzeltilmiş)
+        fakat yayını Founder onayını beklemektedir; hatırlatıcı ayıklama raporundaki 69 satır ile 72
+        açık hatırlatıcı arasındaki farkın doğrulanması gerekmektedir. Sıradaki iş v1 mağaza
+        yüklemesi hattıdır (önceki kayıttaki dokuz Adımlık göz turu ve MGZ-A10) ve içerik hattıdır.
+
         🧭 DEVİR · OTURUM 113 (2026-10-11) · TUR KAPANDI.
         Founder'ın 10 Ekim'de başlattığı tur iki gün sürmüş ve yirmi dört Adım bağımsız incelemeden
         geçerek kapanmıştır. Dokuz Adımın kodu bloka girmiş, kapanışları ise Founder'ın gerçek editördeki
