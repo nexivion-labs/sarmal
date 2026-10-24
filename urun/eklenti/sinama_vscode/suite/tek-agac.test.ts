@@ -96,7 +96,8 @@ interface TurOlcumu {
 interface GoruntuOzeti {
   sıra: number;
   tetik: string;
-  kapsam: string | undefined;
+  /** BKM-DNT-A18: dar turun gerçekten denetlediği kökler; tam turda `undefined`. */
+  kapsam: string[] | undefined;
   programlar: string[];
   yollar: string[];
   kirik: string[];
@@ -373,8 +374,9 @@ describe("Sarmal tek ağaç — panelin turun yayınına bağlanmasının canlı
     // Nöbet ancak GERÇEKTEN daraltılmış bir turda bir şey ölçer.
     assert.ok(dar!.kapsam !== undefined,
       `tur daralmadı (tetik ${dar!.tetik}); odak kurulmamış olabilir — nöbet boş pencerede koşuyor`);
-    assert.strictEqual(dar!.kapsam, path.join(kok(), ODAK_VARLIK),
-      `tur beklenen varlığa değil ${dar!.kapsam} köküne daraldı`);
+    // BKM-DNT-A18: değişiklik odak içinde olduğu için tur yalnız odağa daralır.
+    assert.deepStrictEqual(dar!.kapsam, [path.join(kok(), ODAK_VARLIK)],
+      `tur beklenen varlığa değil ${JSON.stringify(dar!.kapsam)} köklerine daraldı`);
 
     // ÖLÇÜLEN HÜKÜM: daraltma yalnız çapraz denetimin köklerini seçer; belge
     // toplama ile ayrıştırma her turda BÜTÜN yollar üzerinde koşar.

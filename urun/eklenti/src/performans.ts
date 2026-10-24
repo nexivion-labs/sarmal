@@ -22,14 +22,20 @@ export interface TurBilgi {
   /** Turda taranan .sar dosya sayısı */
   dosyaSayısı: number;
   /**
-   * ⚡ PRF-A06: turun çapraz-dosya denetiminin DARALTILDIĞI varlık kökü; tam
+   * ⚡ PRF-A06: turun çapraz-dosya denetiminin DARALTILDIĞI varlık kökleri; tam
    * turda verilmez. Değer tetik alanına iliştirilir, çünkü kanal satırının
    * biçimi yüzey metinlerinde tek kaynaktan yaşar ve bu Adım o kaynağa
    * dokunmaz. Founder kanalda dar turu tam turdan ayırt edebilmelidir: aksi
    * hâlde düşen süre, işin hızlanmasından mı yoksa kapsamın daralmasından mı
    * geldiği okunamaz bir sayı olurdu.
+   *
+   * 🩹 BKM-DNT-A18: alan artık tek bir kök değil, turun GERÇEKTEN denetlediği
+   * köklerin mutlak yollarıdır (`turKapsami` çıktısı). 2026-10-24 günlüğünde
+   * satır değişikliğin yapıldığı projeyi değil odaktaki projeyi gösteriyordu ve
+   * bu, kusurun kanaldan okunabilen tek iziydi; satır şimdi denetlenen her kökü
+   * adıyla basar.
    */
-  kapsam?: string;
+  kapsam?: readonly string[];
   /**
    * 📄 PRF-KP-A02: turun belgelerinin nereden geldiğinin sayımı ve diskten
    * okunan toplam bayt. Kanal satırının sonuna dikey çizgiyle ayrılmış bir
@@ -50,10 +56,17 @@ export interface TurBilgi {
 }
 
 /** Tetik etiketini kapsam işaretiyle birleştirir — dar tur kanalda görünür
- *  olur ve süre karşılaştırması kapsamıyla birlikte okunur. */
+ *  olur ve süre karşılaştırması kapsamıyla birlikte okunur. Kökler varlık
+ *  adlarıyla (dizin adı · `varlikEtiketi` emsali) ve verildikleri sırayla,
+ *  artı işaretiyle bağlanarak basılır. */
 export function tetikEtiketi(bilgi: TurBilgi): string {
-  return bilgi.kapsam ? `${bilgi.tetik} · dar kapsam=${bilgi.kapsam}` : bilgi.tetik;
+  if (!bilgi.kapsam || bilgi.kapsam.length === 0) return bilgi.tetik;
+  return `${bilgi.tetik} · dar kapsam=${bilgi.kapsam.map(kokAdi).join("+")}`;
 }
+
+/** Kök yolunun son parçası; iki ayraç da tanınır, çünkü mercek Windows yollarında da koşar. */
+const kokAdi = (kok: string): string =>
+  kok.replace(/[\\/]+$/, "").split(/[\\/]/).pop() ?? kok;
 
 export class PerformansMercegi {
   /** İzleyici başına olay sayısı (son turdan beri) */

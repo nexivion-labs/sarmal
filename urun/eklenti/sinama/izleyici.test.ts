@@ -10,7 +10,7 @@
 
 import { test, type TestContext } from "node:test";
 import assert from "node:assert/strict";
-import { gurultuMu, sarGurultuMu, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi } from "../src/izleyici-cekirdek.ts";
+import { gurultuMu, sarGurultuMu, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, istekleriBirlestir } from "../src/izleyici-cekirdek.ts";
 import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
 
 // Meşru plan yolları doğuşun plan rafından türetilir (HST-MTR-A07).
@@ -162,4 +162,82 @@ test("kilit: çöken tur sessiz yutulmaz (hata geri-çağrısı) ve kilidi asıl
   await new Promise((coz) => setImmediate(coz));
   assert.deepEqual(kosulan, ["bir", "patlayan", "iki"]);
   assert.deepEqual(hatalar, ["tur çöktü"]);   // RED-1 R1: çöküş raporlanır
+});
+
+// ── ④ 🩹 BKM-DNT-A18 · DEĞİŞEN YOLLAR TURA TAŞINIR ──────────────────────────
+//   Saha bulgusu (2026-10-24 · HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL): olay hattı
+//   tura yalnız tetik adını taşıyordu; tur darlığını değişen dosyadan değil
+//   odaktaki varlıktan seçiyor ve kardeş kökteki değişiklik o kökün çapraz
+//   tanılarını tazelemiyordu. Hat artık geciktirme penceresinde süzgeçten geçen
+//   her olayın yolunu biriktirir, kilit bekleyen istekleri birleştirir.
+
+test("hat: geciktirme penceresindeki bütün meşru olayların yolu TEK istekle tura taşınır; gürültü taşınmaz", (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const istekler: Array<{ tetik: string; yollar: readonly string[] }> = [];
+  const hat = new OlayHatti({ gurultu: gurultuMu, gecikmeMs: 300,
+    iste: (tetik, yollar) => { istekler.push({ tetik, yollar }); } });
+
+  hat.olay("birinci/is/plan/a.sar", "sar-olayı", "/ws/birinci/is/plan/a.sar");
+  t.mock.timers.tick(100);
+  hat.olay(".git/index.lock", "sar-olayı", "/ws/.git/index.lock");          // süzülür
+  hat.olay("ikinci/is/plan/b.sar", "sar-olayı", "/ws/ikinci/is/plan/b.sar");
+  hat.olay("birinci/is/plan/a.sar", "sar-olayı", "/ws/birinci/is/plan/a.sar");
+  t.mock.timers.tick(300);
+
+  assert.deepEqual(istekler, [{ tetik: "sar-olayı", yollar: ["/ws/birinci/is/plan/a.sar", "/ws/ikinci/is/plan/b.sar"] }],
+    "seldeki olayların yolları tek isteğe birleşmedi; ilk olayın yolu sonrakine ezdirildi ya da gürültü tura sızdı");
+
+  // Pencere dolunca küme boşalır: sonraki istek önceki selin yollarını taşımaz.
+  hat.olay("ikinci/is/plan/c.sar", "sar-olayı", "/ws/ikinci/is/plan/c.sar");
+  t.mock.timers.tick(300);
+  assert.deepEqual(istekler[1], { tetik: "sar-olayı", yollar: ["/ws/ikinci/is/plan/c.sar"] },
+    "önceki selin yolları bir sonraki tura taşındı; dar kök gereksiz genişler");
+});
+
+test("hat: üçüncü argüman verilmezse süzgecin ölçtüğü yol taşınır", (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  let alınan: readonly string[] = [];
+  const hat = new OlayHatti({ gurultu: () => false, gecikmeMs: 10, iste: (_t, yollar) => { alınan = yollar; } });
+  hat.olay("a.sar", "sar-olayı");
+  t.mock.timers.tick(10);
+  assert.deepEqual(alınan, ["a.sar"]);
+});
+
+test("kilit: koşarken gelen isteklerin değişen yolları telafi turunda BİRLEŞİR", async () => {
+  const koşulan: Array<{ tetik: string; yollar: readonly string[] | undefined }> = [];
+  let bırak!: () => void;
+  const kilit = new TekUcusKilidi(async (tetik, yollar) => {
+    koşulan.push({ tetik, yollar });
+    if (koşulan.length === 1) await new Promise<void>((çöz) => { bırak = çöz; });
+  });
+
+  kilit.iste("sar-olayı", ["/ws/birinci/a.sar"]);          // koşuya girdi
+  kilit.iste("sar-olayı", ["/ws/ikinci/b.sar"]);           // kardeş kök — bekler
+  kilit.iste("disk-olayı", ["/ws/birinci/c.sar"]);         // odak — bekler
+  bırak();
+  await new Promise((çöz) => setImmediate(çöz));
+  await new Promise((çöz) => setImmediate(çöz));
+
+  assert.deepEqual(koşulan[1], { tetik: "disk-olayı", yollar: ["/ws/ikinci/b.sar", "/ws/birinci/c.sar"] },
+    "telafi turu yalnız son isteğin yolunu taşıyor; kardeş kökteki değişiklik ezilir ve tur odağa daralır");
+  assert.equal(koşulan.length, 2, "bekleyen istekler tek telafi turuna inmedi");
+});
+
+test("kilit: tam tur isteyen tetik ardından gelen dar olay tetiğine YENİLMEZ", () => {
+  // Odak değişimi tam tur ister; o istek beklerken gelen bir .sar olayı eski
+  // kilitte bayrağı ezip turu daraltıyordu ve yeni odağın resmi hiç kurulmuyordu.
+  const birleşik = istekleriBirlestir({ tetik: "odak", yollar: undefined }, { tetik: "sar-olayı", yollar: ["/ws/a.sar"] });
+  assert.deepEqual(birleşik, { tetik: "odak", yollar: undefined },
+    "tam tur isteği dar bir olay tetiğine yenildi; tam resim kurulmaz");
+  // Ters sırada da tam tur kazanır (son istek kazanır kuralı zaten bunu verir).
+  assert.deepEqual(istekleriBirlestir({ tetik: "sar-olayı", yollar: ["/ws/a.sar"] }, { tetik: "ayar", yollar: undefined }),
+    { tetik: "ayar", yollar: undefined });
+  // İki dar istekte son tetik kazanır ve yollar yinelenmeden birleşir.
+  assert.deepEqual(istekleriBirlestir({ tetik: "sar-olayı", yollar: ["/ws/a.sar"] }, { tetik: "disk-olayı", yollar: ["/ws/b", "/ws/a.sar"] }),
+    { tetik: "disk-olayı", yollar: ["/ws/a.sar", "/ws/b"] });
+  // Yollardan biri bilinmiyorsa birleşik istek de bilinmez (kapsam kararı onu tama çevirir).
+  assert.deepEqual(istekleriBirlestir({ tetik: "sar-olayı", yollar: undefined }, { tetik: "sar-olayı", yollar: ["/ws/a.sar"] }),
+    { tetik: "sar-olayı", yollar: undefined });
+  assert.deepEqual(istekleriBirlestir(undefined, { tetik: "sar-olayı", yollar: ["/ws/a.sar"] }),
+    { tetik: "sar-olayı", yollar: ["/ws/a.sar"] });
 });

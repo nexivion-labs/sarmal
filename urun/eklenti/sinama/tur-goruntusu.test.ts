@@ -62,8 +62,10 @@ const uriYap = (fsPath: string): vscode.Uri => ({ fsPath } as unknown as vscode.
 const KÖK = "/ws/depo";
 const ODAK = `${KÖK}/varlik`;
 
-/** Açık belgenin sahte kaydı: metni ile dili taşır, kabuk onu I/O'suz verir. */
-interface AçıkKayıt { readonly metin: string; readonly dil?: string }
+/** Açık belgenin sahte kaydı: metni ile dili taşır, kabuk onu I/O'suz verir.
+ *  `kirli` verilmezse belge kaydedilmemiş değişiklik taşır ve bellekten okunur
+ *  (BKM-DNT-A18 öncesi bu dosyanın bütün açık belgeleri bu anlamdaydı). */
+interface AçıkKayıt { readonly metin: string; readonly dil?: string; readonly kirli?: boolean }
 
 /**
  * Sahte kabuk. Açık belgeler bellekten gelir, disk kayıtları haritadan okunur ve
@@ -74,6 +76,7 @@ function kabukYap(açık: Record<string, AçıkKayıt>, disk: Record<string, str
   return {
     açıkBelge: (yol) => (yol in açık ? diskBelgesi(uriYap(yol), açık[yol]!.metin) : undefined),
     dilKimliği: (yol) => (yol in açık ? (açık[yol]!.dil ?? "sarmal") : undefined),
+    kaydedilmemisMi: (yol) => yol in açık && açık[yol]!.kirli !== false,
     oku: async (yol) => (yol in disk
       ? { belge: diskBelgesi(uriYap(yol), disk[yol]!), bayt: Buffer.byteLength(disk[yol]!, "utf8") }
       : undefined),
@@ -97,7 +100,7 @@ async function turKoş(o: {
   açık?: Record<string, AçıkKayıt>;
   disk?: Record<string, string>;
   tetik: string;
-  kapsam: string | undefined;
+  kapsam: readonly string[] | undefined;
 }): Promise<{ goruntu: TurGoruntusu; programlar: ReadonlyMap<string, Program> }> {
   const açık = o.açık ?? {};
   const { belgeler, dilDışı } = await turBelgeleriniTopla(o.yollar, kabukYap(açık, o.disk ?? {}));
@@ -216,10 +219,12 @@ test("DARALTMA: daraltılmış turda görüntünün program haritası tam turla 
   // odağa daralır, açılış tetiği tam koşar. Daraltma yalnız çapraz denetimin
   // köklerini seçer; belge toplama ile ayrıştırma her turda bütün yollar
   // üzerinde koşar, dolayısıyla görüntü küçülmez (PRF-TA-A01 sözleşmesi).
-  const tamKapsam = turKapsami("başlangıç", ODAK, true, [KÖK]);
-  const darKapsam = turKapsami("sar-olayı", ODAK, true, [KÖK]);
+  // BKM-DNT-A18: olay turu değişen yolları taşır; değişiklik odak içindedir.
+  const değişen = [`${ODAK}/${fazYolu(1, "a")}`];
+  const tamKapsam = turKapsami("başlangıç", ODAK, true, [KÖK], değişen);
+  const darKapsam = turKapsami("sar-olayı", ODAK, true, [KÖK], değişen);
   assert.equal(tamKapsam, undefined, "açılış turu daraltıldı; nöbetin iki ucu aynı oldu");
-  assert.equal(darKapsam, ODAK, "olay turu daralmadı; nöbetin iki ucu aynı oldu");
+  assert.deepEqual(darKapsam, [ODAK], "olay turu daralmadı; nöbetin iki ucu aynı oldu");
 
   const disk = {
     [`${ODAK}/${fazYolu(1, "a")}`]: "Faz( kod: A )",
@@ -236,7 +241,7 @@ test("DARALTMA: daraltılmış turda görüntünün program haritası tam turla 
   assert.deepEqual([...dar.goruntu.programlar.keys()].sort(), [...tam.goruntu.programlar.keys()].sort(),
     "dar turun program haritası tam turdakinden başka dosyalar taşıyor");
   assert.deepEqual(dar.goruntu.yollar, tam.goruntu.yollar, "dar turda taranan yol kümesi daraldı");
-  assert.equal(dar.goruntu.kapsam, ODAK,
+  assert.deepEqual(dar.goruntu.kapsam, [ODAK],
     "dar turun kapsam etiketi kayda geçmedi; tüketici turun hangi kökle daraldığını okuyamaz");
 });
 

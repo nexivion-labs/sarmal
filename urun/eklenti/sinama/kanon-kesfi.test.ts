@@ -625,7 +625,7 @@ test("EKL-F6-A09 KAYNAK: kabuk kanonu paketin köküyle çözer ve atlanan kökl
     "tam denetim turu paketin kopyasını keşfe vermiyor");
   // MGZ-A04: çağrı dördüncü argüman olarak çöken kökleri de taşır; atlanan kök
   // bildirimi aynı yerde kalır ve bu desen onu eskisi kadar sıkı ölçer.
-  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined[,)]/,
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKokler === undefined[,)]/,
     "tam denetim turu atlanan kökleri işarete bildirmiyor — atlama yeniden sessizleşir");
   assert.doesNotMatch(govde, /if \(!snfYol\) continue/, "sessiz atlama satırı geri gelmiş");
 });
@@ -925,7 +925,7 @@ test("MGZ-A04 KAYNAK: kabuk kök turunu saf gövdeden koşturur ve çöken kökl
   const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
   assert.match(govde, /tamDenetimKokTuru\(/, "tam denetimin kök turu saf gövdeden geçmiyor — çöküş kabuğun içinde yutulabilir");
   // MGZ-A12: çağrı beşinci argüman olarak eksik koşan kökleri de taşır; çöken kök dördüncü sırada kalır.
-  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler[,)]/,
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKokler === undefined, cokenKokler[,)]/,
     "tam denetim turu çöken kökleri işarete bildirmiyor — çöküş yeniden sessizleşir");
   assert.doesNotMatch(govde, /catch \{ \/\* tam orkestrasyon/, "çöküşü yutan eski catch satırı geri gelmiş");
 });
@@ -1083,7 +1083,7 @@ test("MGZ-A12 KAYNAK: kabuk tam denetimi atlama kipinde koşturur, eksik koşan 
   const govde = kaynak.slice(bas, kaynak.indexOf("const denetimKilidi", bas));
   assert.match(govde, /kirikDosyayiAtla: true/, "kabuk tam denetimi atlama kipinde koşturmuyor — kırık dosya turu yine susturur");
   assert.match(govde, /return eksikKokKaydi\(kokYol, sonuc\)/, "kabuk eksik koşan kökün kaydını saf gövdeden almıyor");
-  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler, eksikKokler\)/,
+  assert.match(govde, /tamDenetimSonucu\(denetlenenKokler, atlananKokler, darKokler === undefined, cokenKokler, eksikKokler\)/,
     "tam denetim turu eksik koşan kökleri işarete bildirmiyor — eksiklik yeniden sessizleşir");
   assert.match(govde, /IZ_METINLERI\.kokDenetimiEksik\(/, "eksik koşan kök Performans kanalına düşmüyor");
 });

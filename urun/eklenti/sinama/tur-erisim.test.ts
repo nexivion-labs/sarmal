@@ -54,6 +54,7 @@ function kabukYap(disk: Record<string, string> = {}): { kabuk: BelgeKabugu; okun
   const kabuk: BelgeKabugu = {
     açıkBelge: () => undefined,
     dilKimliği: () => undefined,
+    kaydedilmemisMi: () => false,
     oku: async (yol) => {
       okunanlar.push(yol);
       return yol in disk

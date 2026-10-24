@@ -90,7 +90,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği
-import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı
+import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -251,7 +251,8 @@ export interface SarmalEklentiYuzu {
   sonGoruntuOzeti(): {
     sıra: number;
     tetik: string;
-    kapsam: string | undefined;
+    /** 🩹 BKM-DNT-A18: dar turun gerçekten denetlediği kökler; tam turda `undefined`. */
+    kapsam: string[] | undefined;
     programlar: string[];
     yollar: string[];
     kirik: string[];
@@ -595,7 +596,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // DİSKTEKİ .sar — çalışma alanı geneli tarama + ORK-1.2 CROSS-FILE DAG döngü denetimi:
   // tüm .sar'lar TEK grafa girer; döngüsel-bağımlılık (dosyalar arası olabilir)
   // Problems'te ilgili dosyada görünür. Tek-dosya `tanila` cross-file'ı göremezdi.
-  const denetleHepsi = async (tetik = "?"): Promise<void> => {
+  // 🩹 BKM-DNT-A18: `degisenYollar` turu tetikleyen olayların değiştirdiği mutlak
+  // yollardır (olay hattı → tek-uçuş kilidi → tur); dar kök bunlardan türer.
+  const denetleHepsi = async (tetik = "?", degisenYollar?: readonly string[]): Promise<void> => {
     turSayacı.tur += 1;   // 📏 PRF-TA-A04: turun kendisi sayılır (salt okur ölçüm)
     // Denetim kapalıyken TANI yüzeyleri susar — biri açık kalıp bayat kayıt
     // gösteremez. Fakat tur yine koşar ve GÖRÜNTÜSÜNÜ yayınlar (PRF-TA-A03 ikinci
@@ -626,9 +629,12 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // ms, çapraz denetim sarmal kökünde beş yüz yetmiş dokuz ms); geri kalan
     // yaklaşık yirmi yedi saniye iki yüz yetmiş altı belge AÇMA çağrısıydı.
     // Karar saf modüldedir (tur-belgesi.ts) ve burası yalnız kabuktur; kabuğun
-    // hiçbir üyesi belge açmaz. Açık editör bellekten I/O'suz gelir ve DAİMA
-    // önceliklidir, çünkü kaydedilmemiş düzenlemenin tanısı diskteki eski
-    // metinden üretilirse panel kullanıcının gördüğü metni anlatmaz.
+    // hiçbir üyesi belge açmaz. Kaydedilmemiş değişiklik taşıyan açık editör
+    // bellekten I/O'suz gelir ve önceliklidir, çünkü kaydedilmemiş düzenlemenin
+    // tanısı diskteki eski metinden üretilirse panel kullanıcının gördüğü metni
+    // anlatmaz. 🩹 BKM-DNT-A18: kaydedilmemiş değişiklik taşımayan açık belge
+    // diskten okunur; editör dışından yapılan yazımı model henüz okumamışsa
+    // bellekteki metin eskidir ve panel pencere yeniden yüklenene dek bayat kalırdı.
     // Şema süzgeci zorunludur: `textDocuments` git karşılaştırma görünümlerini ve
     // çıktı kanallarını da taşır, onların `fsPath` değeri aynı yolu gösterir ve
     // süzgeçsiz bir harita dosyanın tanısını git'teki ESKİ sürümünden üretirdi.
@@ -642,6 +648,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       {
         açıkBelge: (fsPath) => açıkBelgeler.get(fsPath),
         dilKimliği: (fsPath) => açıkBelgeler.get(fsPath)?.languageId,
+        kaydedilmemisMi: (fsPath) => açıkBelgeler.get(fsPath)?.isDirty === true,
         oku: async (fsPath) => {
           try {
             const uri = vscode.Uri.file(fsPath);
@@ -692,16 +699,18 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // MIM-1.1'dir: odak açıkken paneller zaten yalnız odaktaki varlığı gösterir,
     // dolayısıyla odak dışında hesaplanan çapraz tanı üretildiği anda süzgeçte
     // eleniyordu. Soğuk açılış ile ayar/dil/odak turları TAM koşar (Adım sınırı).
-    const darKok = turKapsami(
+    // 🩹 BKM-DNT-A18: dar kökler odağın YANINDA turu tetikleyen olayların
+    // değiştirdiği dosyaların varlık köklerini de taşır; bir kök çözülemezse ya da
+    // değişen bilinmiyorsa tur tam koşar (karar saf: izleyici-cekirdek `turKapsami`).
+    const darKokler = turKapsami(
       tetik, aktifVarlik, odakAcik(),
-      (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+      (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath), degisenYollar, varlikKoku);
     // ⚙️ Tanı üretimi yalnız denetim AÇIKKEN koşar; görüntü yayını aşağıda her
     // iki hâlde de tek çağrıdır (tur-goruntusu.test.ts KAYNAK nöbeti onu sayar).
-    // Kapsam etiketi (darKok) her iki hâlde de hesaplanır, çünkü görüntü onu taşır.
+    // Kapsam etiketi (darKokler) her iki hâlde de hesaplanır, çünkü görüntü onu taşır.
     if (!taniKapali) {
-    const denetlenenKokler = darKok !== undefined
-      ? [darKok]
-      : (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
+    const denetlenenKokler = darKokler
+      ?? (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
     // 📦 EKL-F6-A09 · SESSİZ ATLAMANIN SONU. Tip kaydı bulunamayan kök eskiden
     // bir `continue` ile atlanıyordu ve o kökte kırık atıf, disk mutabakatı ve
     // bağımlılık grafı tanıları hiç doğmuyordu; boş panel temiz ağaç sanılıyordu.
@@ -741,7 +750,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       });
     for (const c of cokenKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiCoktu(c.kok, c.hata));
     for (const e of eksikKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiEksik(e.kok, e.dosyalar));
-    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKok === undefined, cokenKokler, eksikKokler);
+    tamDenetimSonucu(denetlenenKokler, atlananKokler, darKokler === undefined, cokenKokler, eksikKokler);
     // Her dosyanın tanıları = tek-dosya (tanilaCekirdek) + o dosyaya düşen DAG
     // döngü tanıları; hepsi doğasına göre üç kanonik yüzeye dağıtılır.
     //
@@ -760,7 +769,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // dışındaki varlığın kayıtları sessizce kaybolurdu; bunun yerine önceki
       // turun sonucu olduğu gibi korunur. Korunan kayıt odak oraya döndüğünde
       // tazelenir: odak değişimi tam tur ister (aktifVarligiGuncelle).
-      const kapsamDisi = darKok !== undefined && !kapsamIcinde(fsPath, darKok);
+      // 🩹 BKM-DNT-A18: değişen kardeş kök artık denetlenen kökler arasındadır ve
+      // bu karar onun dosyalarını önbellekten değil taze denetimden besler.
+      const kapsamDisi = !caprazYenidenHesaplanir(fsPath, darKokler);
       const capraz = kapsamDisi
         ? (caprazOnbellek.get(fsPath) ?? [])
         : (donguHar.get(fsPath) ?? []);
@@ -794,14 +805,14 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // olduğu gibi verilir ve daraltma yalnız `kapsam` etiketine yazılır, çünkü
     // dar tur belge toplamayı ve ayrıştırmayı değil, yalnız çapraz denetimin
     // köklerini daraltır (PRF-TA-A01 sözleşmesi).
-    turGoruntusunuYayinla({ programlar, yollar, belgeler: doclar, dilDışı, tetik, kapsam: darKok });
+    turGoruntusunuYayinla({ programlar, yollar, belgeler: doclar, dilDışı, tetik, kapsam: darKokler });
     // 🔬 PRF-A01 · ⚡ PRF-A06: dar tur kanalda kapsamıyla birlikte okunur.
     // 📄 PRF-KP-A02: belge sayacı merceğe bağlanır; kanal satırı açıktan,
     // diskten ve atlanan sayıları ile sıfır açma çağrısını ve okunan toplamı
     // basar. Açıktan artı diskten artı atlanan, taranan dosya sayısına eşittir.
     mercek.turBitti({
       tetik, süreMs: Date.now() - turBasi, dosyaSayısı: yollar.length,   // 🛡️ PRF-KP-A05: süzülmüş liste
-      kapsam: darKok !== undefined ? basename(darKok) : undefined,
+      kapsam: darKokler,   // 🩹 BKM-DNT-A18: gerçekten denetlenen kökler; adları mercek basar
       belgeler: { ...belgeSayacı, okunanBayt },
     });
   };
@@ -845,7 +856,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // başlatıyordu (benzetim: 10 olaylık dalga eski yapılandırmada 7 tetik).
   const diskHatti = new OlayHatti({
     gurultu: gurultuMu, gecikmeMs: 1500,
-    iste: (tetik) => denetimKilidi.iste(tetik),
+    iste: (tetik, yollar) => denetimKilidi.iste(tetik, yollar),   // 🩹 BKM-DNT-A18: değişen yollar tura taşınır
     suzuldu: () => mercek.süzüldü(),
     olay: () => mercek.olayGeldi("disk"),
     ertelendi: () => mercek.ertelendi(),
@@ -857,14 +868,16 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // denetle) DEĞİŞMEZ, gecikme yalnız cross-file tam turdadır.
   const sarHatti = new OlayHatti({
     gurultu: sarGurultuMu, gecikmeMs: 300,
-    iste: (tetik) => denetimKilidi.iste(tetik),
+    iste: (tetik, yollar) => denetimKilidi.iste(tetik, yollar),   // 🩹 BKM-DNT-A18: değişen yollar tura taşınır
     suzuldu: () => mercek.süzüldü(),
     olay: () => mercek.olayGeldi("sar"),
     ertelendi: () => mercek.ertelendi(),
   });
   const goreliYol = (u: vscode.Uri): string => vscode.workspace.asRelativePath(u, false);
-  const diskDegisti = (u: vscode.Uri): void => diskHatti.olay(goreliYol(u), "disk-olayı");
-  const sarDegisti = (u: vscode.Uri): void => sarHatti.olay(goreliYol(u), "sar-olayı");
+  // 🩹 BKM-DNT-A18: süzgeç göreli yolu ölçer (Sol RED-2 dersi); tura ise MUTLAK yol
+  // taşınır, çünkü kapsam kararı odaktaki varlık kökünü mutlak yolla karşılaştırır.
+  const diskDegisti = (u: vscode.Uri): void => diskHatti.olay(goreliYol(u), "disk-olayı", u.fsPath);
+  const sarDegisti = (u: vscode.Uri): void => sarHatti.olay(goreliYol(u), "sar-olayı", u.fsPath);
   context.subscriptions.push(
     izleyici,
     izleyiciAtif,
@@ -1023,7 +1036,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       const g = sonTurGoruntusu();
       if (!g) return undefined;
       return {
-        sıra: g.sıra, tetik: g.tetik, kapsam: g.kapsam,
+        sıra: g.sıra, tetik: g.tetik, kapsam: g.kapsam === undefined ? undefined : [...g.kapsam],
         programlar: [...g.programlar.keys()], yollar: [...g.yollar],
         kirik: [...g.kirik], okunamayan: g.okunamayan, dilDışı: [...g.dilDışı],
       };
