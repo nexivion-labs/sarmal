@@ -7,7 +7,8 @@
 //     • Girinti: süs/paren/köşe derinliğine göre 2 boşluk/kat (BÇ kuralı).
 //     • Sağ boşluk kırpılır · ardışık boş satırlar 1'e iner · baş/son boş atılır.
 //   DOKUNMADIĞI (bilerek — yoksa drift üretir):
-//     • Yorumlar (// ve /* */) · string içi · kullanıcının SÜTUN HİZALAMASI
+//     • Yorumlar (// ve /* */) · string içi (çok satırlı "..." dâhil — KPS-SIR-A05)
+//       · kullanıcının SÜTUN HİZALAMASI
 //       (yalnız satır-başı girinti değişir; iç boşluk `kod:   ANA` korunur).
 //   Belirteç (belirtec.ts) kurallarını birebir aynalar: string · // · /* */.
 // ═══════════════════════════════════════════════════════════════════════════
@@ -33,9 +34,17 @@ function basKapaticiSay(isk: string): number {
 export function bicimle(kaynak: string, eol: string): string {
   const satirlar = kaynak.split(/\r?\n/);
   const cikti: string[] = [];
+  // KPS-SIR-A05: birinci geçişin DEĞER İÇİ bulduğu satırlar (belge bloğu, """ ve
+  // çok satırlı "..." devamı) sonraki geçişlere bu dizi ile taşınır. Sığdırma ve
+  // iki-nokta hizalama durumu kendileri yeniden kestirmez; satır tabanlı bir
+  // kestirim çok satırlı düz dizginin devam satırını parametre sanıp boşluğunu
+  // değiştirir ve değer sessizce bozulur (DIL-2.2).
+  const koru: boolean[] = [];
+  const ekle = (s: string, k: boolean): void => { cikti.push(s); koru.push(k); };
   let derinlik = 0;      // açık süs/paren/köşe sayısı
   let blokYorum = false; // /* ... */ içindeyiz
   let ucluDizgi = false; // """ ... """ içindeyiz (DIL-2.2 — içerik AYNEN korunur)
+  let duzDizgi = false;  // çok satırlı "..." içindeyiz (KPS-SIR-A05 · DIL-2.2)
   let belgeBlok = false; // -->| ... |<-- içindeyiz (DIL-2 — şekil/MD AYNEN korunur, DIL-2.2)
   let bosKosusu = 0;     // ardışık boş satır sayacı
 
@@ -43,48 +52,56 @@ export function bicimle(kaynak: string, eol: string): string {
     // -->| belge bloğu (DIL-2): içerik HİÇ dokunulmaz — şekillerdeki [ ] { }
     // derinliği bozmasın, girinti/boş-satır kuralları MD'yi ezmesin (DIL-2.2).
     if (belgeBlok) {
-      cikti.push(ham);
+      ekle(ham, true);
       bosKosusu = 0;
       if (ham.includes("|<--")) {
         belgeBlok = false;
-        cikti.push("");            // kapanış sonrası NEFES: blok ile kod ayrışır
+        ekle("", false);           // kapanış sonrası NEFES: blok ile kod ayrışır
         bosKosusu = 1;
       }
       continue;
     }
-    const belgeAc = ham.indexOf("-->|");
-    if (belgeAc !== -1 && ham.indexOf("|<--", belgeAc + 4) === -1) {
-      if (cikti.length && cikti[cikti.length - 1] !== "") cikti.push(""); // açılış öncesi nefes
-      cikti.push(ham.replace(/[ \t]+$/, ""));
+
+    const bastaUclu = ucluDizgi;
+    const bastaDuz = duzDizgi;
+    const { iskelet, sonBlok, sonUclu, sonDuz, bastaYorum } = iskeleCikar(ham, blokYorum, ucluDizgi, duzDizgi);
+
+    // Belge bloğu açılışı İSKELETTE aranır (girintiYapiFarklari ile aynı kural):
+    // dizgi, """ ya da yorum içindeki `-->|` bir açılış değildir; ham satırda
+    // aranırsa değer içeriği belge sanılır ve sayaç dosyanın geri kalanında kayar.
+    const belgeAc = iskelet.indexOf("-->|");
+    if (belgeAc !== -1 && iskelet.indexOf("|<--", belgeAc + 4) === -1) {
+      if (cikti.length && cikti[cikti.length - 1] !== "") ekle("", false); // açılış öncesi nefes
+      ekle(ham.replace(/[ \t]+$/, ""), true);
       bosKosusu = 0;
       belgeBlok = true;
       continue;
     }
-
-    const bastaUclu = ucluDizgi;
-    const { iskelet, sonBlok, sonUclu, bastaYorum } = iskeleCikar(ham, blokYorum, ucluDizgi);
     ucluDizgi = sonUclu;
+    duzDizgi = sonDuz;
 
-    // """ İÇİNDE başlayan satır → satırın kendisine HİÇ dokunma (girinti/kırpma
-    // DEĞERİ bozar — DIL-2.2). Ama satır AYNI ANDA """ı kapatıp ardından yapısal
-    // karakter taşıyorsa (ör. `... """ ) {`), iskeleCikar bunu iskelete zaten
-    // doğru koymuştur — derinlik burada da güncellenmezse sayaç kalıcı kayar.
-    if (bastaUclu) {
-      cikti.push(ham);
+    // """ ya da "..." İÇİNDE başlayan satır → satırın kendisine HİÇ dokunma
+    // (girinti/kırpma DEĞERİ bozar — DIL-2.2). Ama satır AYNI ANDA değeri kapatıp
+    // ardından yapısal karakter taşıyorsa (ör. `... """ ) {`), iskeleCikar bunu
+    // iskelete zaten doğru koymuştur — derinlik burada da güncellenmezse sayaç
+    // kalıcı kayar.
+    if (bastaUclu || bastaDuz) {
+      ekle(ham, true);
       bosKosusu = 0;
       blokYorum = sonBlok;
       const { net } = koseSay(iskelet);
       derinlik = Math.max(0, derinlik + net);
       continue;
     }
-    const kirpik = ham.trim();
+    // Satır açık bir "..." ile BİTİYORSA sağdaki boşluk değerin parçasıdır, kırpılmaz.
+    const kirpik = sonDuz ? ham.trimStart() : ham.trim();
     const { net } = koseSay(iskelet);
     const basKapatici = basKapaticiSay(iskelet);
 
     // Blok yorum İÇİNDE başlayan satır → DOKUNMA (yalnız sağ boşluk kırp).
     // Yorum içi ASCII çizim/hizalama korunur. Derinlik yine de güncellenir.
     if (bastaYorum) {
-      cikti.push(ham.replace(/[ \t]+$/, ""));
+      ekle(sonDuz ? ham : ham.replace(/[ \t]+$/, ""), false);
       bosKosusu = 0;
       derinlik = Math.max(0, derinlik + net);
       blokYorum = sonBlok;
@@ -94,7 +111,7 @@ export function bicimle(kaynak: string, eol: string): string {
     // Boş satır → en çok 1 ardışık.
     if (kirpik === "") {
       bosKosusu++;
-      if (bosKosusu <= 1) cikti.push("");
+      if (bosKosusu <= 1) ekle("", false);
       blokYorum = sonBlok;
       continue;
     }
@@ -102,45 +119,84 @@ export function bicimle(kaynak: string, eol: string): string {
 
     // Yalnız satır BAŞINDAKİ kapatıcılar dedent eder (ortadaki `)` girintiyi bozmaz).
     const gosterim = Math.max(0, derinlik - basKapatici);
-    cikti.push(GIRINTI.repeat(gosterim) + kirpik);
+    ekle(GIRINTI.repeat(gosterim) + kirpik, false);
     derinlik = Math.max(0, derinlik + net);
     blokYorum = sonBlok;
   }
 
   // Baş ve son boş satırları at.
-  while (cikti.length && cikti[0] === "") cikti.shift();
-  while (cikti.length && cikti[cikti.length - 1] === "") cikti.pop();
+  while (cikti.length && cikti[0] === "" && !koru[0]) { cikti.shift(); koru.shift(); }
+  while (cikti.length && cikti[cikti.length - 1] === "" && !koru[koru.length - 1]) { cikti.pop(); koru.pop(); }
 
   // 2. geçiş: SATIR_SINIRI'nı aşan parametre listelerini alt alta kır.
   const sigdirilmis: string[] = [];
-  let sigdirBelge = false;
-  let sigdirUclu = false;
-  for (const satir of cikti) {
-    // Birinci geçiş belge ve üç-tırnak içeriğini bayt-birebir korur. İkinci
-    // geçiş de aynı sınırı taşımak zorundadır; aksi hâlde uzun bir PromQL ya da
-    // tablo satırı Sarmal parametresi sanılıp virgülden parçalanır.
-    if (sigdirBelge) {
-      sigdirilmis.push(satir);
-      if (satir.includes("|<--")) sigdirBelge = false;
-      continue;
-    }
-    if (satir.includes("-->|")) {
-      sigdirilmis.push(satir);
-      if (!satir.includes("|<--")) sigdirBelge = true;
-      continue;
-    }
-    const ucluAdet = (satir.match(/"""/g) ?? []).length;
-    if (sigdirUclu || ucluAdet > 0) {
-      sigdirilmis.push(satir);
-      if (ucluAdet % 2 === 1) sigdirUclu = !sigdirUclu;
-      continue;
-    }
-    sigdirilmis.push(...satiriSigdir(satir));
+  const sigdirKoru: boolean[] = [];
+  for (let i = 0; i < cikti.length; i++) {
+    const satir = cikti[i];
+    // Birinci geçiş belge ve değer içeriğini bayt-birebir korur. İkinci geçiş de
+    // aynı sınırı taşımak zorundadır; aksi hâlde uzun bir PromQL ya da tablo
+    // satırı Sarmal parametresi sanılıp virgülden parçalanır.
+    if (koru[i]) { sigdirilmis.push(satir); sigdirKoru.push(true); continue; }
+    for (const p of satiriSigdir(satir)) { sigdirilmis.push(p); sigdirKoru.push(false); }
   }
 
   // 3. geçiş (YUZ-3 · VIT-K77-A04): iki-nokta hizalama — aynı girintideki ardışık
   // parametre satırlarında değerler tek hizada başlar.
-  return ikiNoktaHizala(sigdirilmis).join(eol);
+  return ikiNoktaHizala(sigdirilmis, sigdirKoru).join(eol);
+}
+
+// ── yapısal girinti farkı (KPS-SIR-A02 · girinti-yapı-uyumsuz) ─────────────────
+//    Biçimlendiricinin birinci geçişiyle AYNI durum makinesini koşar ve yalnız
+//    YAPISAL satırların girintisini karşılaştırır: satır başında hiçbir `(` ya da
+//    `[` açık değilse satırın kademesi yalnız süslü gövdelerden gelir ve
+//    biçimlendirici onu `GIRINTI × derinlik` yazar. Parantez ya da köşe içindeki
+//    devam satırları (hizalı `kabul: [` listeleri, parametre sütunları), belge
+//    blokları, çok satırlı değerler, yorumlar ve boş satırlar SAYILMAZ; oralarda
+//    biçimlendiricinin görüşü hizalama tercihidir, yapı bilgisi değildir.
+
+/** Yapısal girintisi biçim kuralından sapan bir satır (satır bir tabanlı). */
+export interface GirintiFarki { satir: number; beklenen: number; bulunan: number }
+
+/** Kaynağın yapısal satırlarında biçimlendiricinin yazacağı girinti ile kaynağın
+ *  girintisi arasındaki farklar (saf). Sekme karakteri de sapmadır: BÇ iki boşluktur. */
+export function girintiYapiFarklari(kaynak: string): GirintiFarki[] {
+  const farklar: GirintiFarki[] = [];
+  const yigin: string[] = [];   // açık süs/paren/köşe sırası
+  let blokYorum = false;
+  let ucluDizgi = false;
+  let duzDizgi = false;         // çok satırlı "..." (KPS-SIR-A05)
+  let belgeBlok = false;
+  const satirlar = kaynak.split(/\r?\n/);
+  for (let i = 0; i < satirlar.length; i++) {
+    const ham = satirlar[i];
+    if (belgeBlok) { if (ham.includes("|<--")) belgeBlok = false; continue; }
+    const bastaUclu = ucluDizgi;
+    const bastaDuz = duzDizgi;
+    const bastaYorum = blokYorum;
+    const { iskelet, sonBlok, sonUclu, sonDuz } = iskeleCikar(ham, blokYorum, ucluDizgi, duzDizgi);
+    // Belge bloğu açılışı İSKELETTE aranır (KPS-SIR-A02 · inceleme bulgusu): dizgi
+    // ya da yorum içindeki `-->|` bir açılış değildir; ham satırda aranırsa gözlem
+    // dosyanın geri kalanında susar.
+    const belgeAc = iskelet.indexOf("-->|");
+    if (belgeAc !== -1 && iskelet.indexOf("|<--", belgeAc + 4) === -1) { belgeBlok = true; continue; }
+    ucluDizgi = sonUclu;
+    duzDizgi = sonDuz;
+    blokYorum = sonBlok;
+    const kirpik = ham.trim();
+    const yapisal = !bastaUclu && !bastaDuz && !bastaYorum && kirpik !== "" &&
+      !kirpik.startsWith("//") && !kirpik.startsWith("/*") &&
+      yigin.every((k) => k === "{");
+    if (yapisal) {
+      const beklenen = GIRINTI.length * Math.max(0, yigin.length - basKapaticiSay(iskelet));
+      const girinti = ham.slice(0, ham.length - ham.trimStart().length);
+      if (girinti !== " ".repeat(beklenen)) farklar.push({ satir: i + 1, beklenen, bulunan: girinti.length });
+    }
+    for (const c of iskelet) {
+      if (c === "(" || c === "[" || c === "{") yigin.push(c);
+      else if ((c === ")" || c === "]" || c === "}") && yigin.length) yigin.pop();
+    }
+  }
+  return farklar;
 }
 
 // ── iki-nokta hizalama (YUZ-3 · VIT-K77-A04) ──────────────────────────────────
@@ -150,10 +206,8 @@ export function bicimle(kaynak: string, eol: string): string {
 //    (-->| |<--) ve // yorumlar DOKUNULMAZ. İdempotent: ikinci koşu aynı çıktı.
 const PARAM_SATIRI = /^(\s*)([\p{L}_][\p{L}\p{N}_]*):\s+(\S.*)$/u;
 
-function ikiNoktaHizala(satirlar: string[]): string[] {
+function ikiNoktaHizala(satirlar: string[], koru: boolean[]): string[] {
   const out = [...satirlar];
-  let uclu = false;    // """ içi
-  let belge = false;   // -->| ... |<-- içi
   let grup: number[] = [];
   let grupGirinti = -1;
 
@@ -171,18 +225,15 @@ function ikiNoktaHizala(satirlar: string[]): string[] {
 
   for (let i = 0; i < out.length; i++) {
     const s = out[i];
-    if (belge) { uygula(); if (s.includes("|<--")) belge = false; continue; }
-    if (s.includes("-->|") && !s.includes("|<--")) { uygula(); belge = true; continue; }
-    const ucluAdet = (s.match(/"""/g) ?? []).length;
-    if (uclu) { uygula(); if (ucluAdet % 2 === 1) uclu = false; continue; }
+    // Değer içi ya da belge satırı (birinci geçişin işareti) grubu keser.
+    if (koru[i]) { uygula(); continue; }
     const m = s.match(PARAM_SATIRI);
-    if (m && !s.trimStart().startsWith("//") && ucluAdet === 0) {
+    if (m && !s.trimStart().startsWith("//") && !s.includes('"""')) {
       if (grupGirinti !== -1 && grupGirinti !== m[1].length) uygula();
       grupGirinti = m[1].length;
       grup.push(i);
     } else {
       uygula();
-      if (ucluAdet % 2 === 1) uclu = true;   // çok-satırlı değer açıldı — içi korunur
     }
   }
   uygula();
@@ -252,15 +303,28 @@ function iskeleCikar(
   satir: string,
   blokBasta: boolean,
   ucluBasta = false,
-): { iskelet: string; sonBlok: boolean; sonUclu: boolean; bastaYorum: boolean } {
+  duzBasta = false,
+): { iskelet: string; sonBlok: boolean; sonUclu: boolean; sonDuz: boolean; bastaYorum: boolean } {
   let out = "";
   let i = 0;
   let blok = blokBasta;
   let uclu = ucluBasta;
+  let duz = duzBasta;
 
   while (i < satir.length) {
     const c = satir[i];
     const n = satir[i + 1];
+
+    // "..." düz dizgi (KPS-SIR-A05 · DIL-2.2): belirteç düz dizgiyi satır sonunda
+    // KESMEZ, kapanış tırnağına kadar okur. Tırnak bu satırda kapanmazsa durum
+    // alt satıra taşınır; aksi hâlde devam satırı yapısal sanılır, girintisi
+    // yeniden yazılır ve içindeki { [ ( derinlik sayacını kaydırır.
+    if (duz) {
+      if (c === "\\") { i += 2; continue; }   // \" \\ \n ve satır sonu kaçışı
+      if (c === '"') duz = false;
+      i++;
+      continue;
+    }
 
     // """ çok-satırlı değer (DIL-2.2): içerik iskelete GİRMEZ (köşe saymaz).
     if (uclu) {
@@ -274,15 +338,8 @@ function iskeleCikar(
       continue;
     }
     if (c === '"' && n === '"' && satir[i + 2] === '"') { uclu = true; i += 3; continue; }
-    // dizgi "..."  (\" ve \\ kaçışları atlanır)
-    if (c === '"') {
-      i++;
-      while (i < satir.length && satir[i] !== '"') {
-        i += satir[i] === "\\" ? 2 : 1;
-      }
-      i++; // kapanış tırnağı (yoksa i taşar, döngü biter)
-      continue;
-    }
+    // dizgi "..." açılışı — içerik yukarıdaki düz dizgi dalında tüketilir.
+    if (c === '"') { duz = true; i++; continue; }
     // satır yorumu // → satır sonuna kadar yok say
     if (c === "/" && n === "/") break;
     // blok yorum aç /*
@@ -292,7 +349,7 @@ function iskeleCikar(
     i++;
   }
 
-  return { iskelet: out, sonBlok: blok, sonUclu: uclu, bastaYorum: blokBasta };
+  return { iskelet: out, sonBlok: blok, sonUclu: uclu, sonDuz: duz, bastaYorum: blokBasta };
 }
 
 /** İskeletteki parantezlerden {min: en düşük ön-toplam, net: toplam değişim}. */

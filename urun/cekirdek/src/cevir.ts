@@ -48,6 +48,14 @@ export interface DilSozlugu {
   agacOrgani: Record<string, Record<string, string>>;
   karneDerece: Record<string, Record<string, string>>;
   karneBilesen: Record<string, Record<string, string>>;
+  /** Kanonun `yetkiSozlugu` kademe tarifleri (L1–L6); kademe kodu çevrilmez. */
+  yetkiNe: Record<string, Record<string, string>>;
+  /**
+   * Şema alan dizgelerinin tarifi (MGZ-A09): anahtar kanondaki dizgenin kendisidir
+   * ("etkiler (kenar: …)"), İngilizce hane alanın adını ve enum değerlerini aynen
+   * taşır. Tamamlama ve imza yardımı İngilizce dilde bu haneyi gösterir.
+   */
+  semaAlani?: Record<string, Record<string, string>>;
 }
 let _dil: DilSozlugu | undefined;
 function dilSozlugu(): DilSozlugu {
@@ -59,6 +67,14 @@ export function dilSozlugunuBagla(sozluk: DilSozlugu): void {
   _dil = sozluk;
 }
 
+/**
+ * Sözlüğün salt okunur bütünü. İngilizce yüz ölçeri (ingilizce-yuz.ts) dosyada
+ * yazılabilen adların evrenini buradan kurar; ikinci bir ad çizelgesi doğmaz.
+ */
+export function dilSozluguAl(): Readonly<DilSozlugu> {
+  return dilSozlugu();
+}
+
 export type DuzYaziBolumu =
   | "widgetNe"
   | "kenarNe"
@@ -68,17 +84,69 @@ export type DuzYaziBolumu =
   | "agacMetaforuNe"
   | "agacOrgani"
   | "karneDerece"
-  | "karneBilesen";
+  | "karneBilesen"
+  | "yetkiNe"
+  | "semaAlani";
 
-/** Kanonik Türkçe düzyazının seçilen okuma yüzünü döndürür. */
+/**
+ * Düzyazıdaki ad jetonlarının okunuş kipi (MGZ-A09 · Founder hükmü 2026-10-10).
+ * Sözlüğün İngilizce düzyazısı dosyaya yazılan bir adı (tip, kenar, alan ya da
+ * enum değeri) düz sözcük olarak değil `⟦…⟧` jetonuyla taşır ve jetonu okuma
+ * yüzü çözer:
+ *
+ *   `kaynak` — jeton dosyada yazılan Türkçe adı anar. Eklentinin ipucu balonu,
+ *              tamamlaması ve tanılar bu kiple okur, çünkü dosya her dilde Türkçe
+ *              görünür ve kullanıcı balonda okuduğu adı dosyada bulabilmelidir.
+ *   `ceviri` — jeton sözlüğün karşılığını basar (`Step`, `dependsOn:`). MCP
+ *              öğretim yüzü (karşılama kartı, dil bağlamı) 2026-10-16 tarihinde
+ *              MGZ-A11 ile `kaynak` kipine geçmiştir; bugün hiçbir ürün yüzeyi bu
+ *              kiple okumaz. Kip, varsayılan değer olarak ve ölçerin ayar
+ *              nöbeti için yaşar.
+ *
+ * Jeton biçimleri: `⟦Adım⟧` ad · `⟦a:Adım⟧` ya da `⟦A:Adım⟧` belirsiz tanımlıkla
+ * ad (tanımlık okunan ada göre seçilir: "an Adım" ama "a Step") · `⟦Adım|s⟧`
+ * çoğul ("Adım nodes" ama "Steps") · `⟦durum=revize⟧` alan kapsamlı enum değeri.
+ */
+export type AdKipi = "kaynak" | "ceviri";
+
+const AD_JETONU = /⟦(?:([aA]):)?([^⟧|=]+)(?:=([^⟧|]+))?(\|s)?⟧/gu;
+const UNLU_BASI = /^[AEIOUİÖÜaeiouıöü]/u;
+
+function jetonKarsiligi(ad: string, dil: CiktiDili): string {
+  const s = dilSozlugu();
+  return s.widget[ad]?.[dil] ?? s.kenar[ad]?.[dil] ?? s.parametre[ad]?.[dil] ?? ad;
+}
+
+function ingilizceCogul(ad: string): string {
+  if (/[^aeiou]y$/u.test(ad)) return `${ad.slice(0, -1)}ies`;
+  return /(?:s|sh|ch|x)$/u.test(ad) ? `${ad}es` : `${ad}s`;
+}
+
+/** Bir düzyazıdaki ad jetonlarını seçilen kiple çözer; jetonsuz metin olduğu gibi döner. */
+export function adJetonlariniCoz(metin: string, dil: CiktiDili, kip: AdKipi): string {
+  if (!metin.includes("⟦")) return metin;
+  return metin.replace(AD_JETONU, (_jeton, tanimlik: string | undefined, ad: string, deger: string | undefined, cogul: string | undefined) => {
+    let yuz: string;
+    if (deger !== undefined) yuz = kip === "kaynak" ? deger : sozlukDegeri(ad, deger, dil);
+    else if (kip === "kaynak") yuz = cogul ? `${ad} nodes` : ad;
+    else yuz = cogul ? ingilizceCogul(jetonKarsiligi(ad, dil)) : jetonKarsiligi(ad, dil);
+    if (!tanimlik) return yuz;
+    const unlu = UNLU_BASI.test(yuz);
+    return `${tanimlik === "A" ? (unlu ? "An" : "A") : (unlu ? "an" : "a")} ${yuz}`;
+  });
+}
+
+/** Kanonik Türkçe düzyazının seçilen okuma yüzünü döndürür; ad jetonlarını `kip` çözer. */
 export function sozlukDuzYazisi(
   bolum: DuzYaziBolumu,
   anahtar: string,
   turkce: string,
   dil: CiktiDili,
+  kip: AdKipi = "ceviri",
 ): string {
   if (dil === "tr") return turkce;
-  return dilSozlugu()[bolum]?.[anahtar]?.[dil] ?? turkce;
+  const hane = dilSozlugu()[bolum]?.[anahtar]?.[dil];
+  return hane === undefined ? turkce : adJetonlariniCoz(hane, dil, kip);
 }
 
 /** Widget, kenar ya da alan adının okuma yüzündeki karşılığı. */
@@ -104,7 +172,9 @@ export function sozlukDegeri(
 /**
  * `zorunluKenarlar` tanılarının İngilizce yüzünü veri ve sözlükten kurar.
  * Dokuz kimliğe ayrı cümle çizelgesi kurulmaz: tipin hazır İngilizce düzyazısı
- * ile kuralın zorunlu alan/kenar grubu birlikte okunur.
+ * ile kuralın zorunlu alan/kenar grubu birlikte okunur. Tanı dosyadaki adları
+ * anar (MGZ-A09 · Founder hükmü 2026-10-10): tip, kenar ve alan adı çevrilmez,
+ * tipin düzyazısı da ad jetonlarını dosyadaki adla çözer.
  */
 export function zorunluKenarIngilizcesi(
   tip: string,
@@ -112,15 +182,11 @@ export function zorunluKenarIngilizcesi(
   grup: readonly string[],
   turkceTipAciklamasi: string,
 ): { mesaj: string; oneri: string } {
-  const tipAdi = sozlukAdi("widget", tip, "en");
-  const secenekler = grup.map((ad) => {
-    const kenar = sozlukAdi("kenar", ad, "en");
-    return kenar === ad ? sozlukAdi("parametre", ad, "en") : kenar;
-  });
-  const aciklama = sozlukDuzYazisi("widgetNe", tip, turkceTipAciklamasi, "en");
+  const aciklama = sozlukDuzYazisi("widgetNe", tip, turkceTipAciklamasi, "en", "kaynak");
+  const cumle = aciklama ? `${aciklama.charAt(0).toUpperCase()}${aciklama.slice(1)}` : aciklama;
   return {
-    mesaj: `${tipAdi} "${kimlik}" is missing every member of its required ${secenekler.join(" · ")} group. ${aciklama}`,
-    oneri: `Add at least one of these declared fields or edges: ${secenekler.map((ad) => `\`${ad}:\``).join(" · ")}.`,
+    mesaj: `${tip} "${kimlik}" is missing every member of its required ${grup.join(" · ")} group. ${cumle}`,
+    oneri: `Add at least one of these declared fields or edges: ${grup.map((ad) => `\`${ad}:\``).join(" · ")}.`,
   };
 }
 

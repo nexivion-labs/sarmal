@@ -96,7 +96,8 @@ interface TurOlcumu {
 interface GoruntuOzeti {
   sıra: number;
   tetik: string;
-  kapsam: string | undefined;
+  /** BKM-DNT-A18: dar turun gerçekten denetlediği kökler; tam turda `undefined`. */
+  kapsam: string[] | undefined;
   programlar: string[];
   yollar: string[];
   kirik: string[];
@@ -263,7 +264,17 @@ function referansAlan(d: Dugum, ad: string): Param | undefined {
   return d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
 }
 
-/** Bir programın plan kodları: kök `Blok`/`Faz` ve altındaki plan kademeleri. */
+/**
+ * Bir programın plan kodları: ilk karşılaşılan plan düğümü kök sayılır ve
+ * altındaki plan kademeleri toplanır.
+ *
+ * Kök kuralı KPS-CEL-A01 hükmünü (2026-09-19) taşır: bir Blokun ya da Fazın
+ * dışında doğmuş Katman, AltKatman ya da Adım da köktür, çünkü panel hiçbir
+ * plan düğümünü sessizce düşürmez. Kolun eski hâli kökü yalnız Blok ile Fazdan
+ * seçiyordu ve bu yüzden korpustaki üst düzey Adımları saymıyordu; ayrışma
+ * ürünün değil referans kolunun bayatlığıydı (MGZ-A01 ölçümü). Kol yine
+ * üretimin hiçbir yardımcısını kullanmaz; kural burada yeniden yazılmıştır.
+ */
 function referansKodlari(bildirimler: readonly Dugum[]): string[] {
   const kodlar: string[] = [];
   const yap = (d: Dugum): void => {
@@ -271,7 +282,7 @@ function referansKodlari(bildirimler: readonly Dugum[]): string[] {
     for (const c of d.cocuklar) if (REFERANS_PLAN_TIPLERI.has(c.ad)) yap(c);
   };
   const gez = (d: Dugum): void => {
-    if (d.ad === "Blok" || d.ad === "Faz") { yap(d); return; }
+    if (REFERANS_PLAN_TIPLERI.has(d.ad)) { yap(d); return; }
     for (const c of d.cocuklar) gez(c);
   };
   for (const b of bildirimler) gez(b);
@@ -363,8 +374,9 @@ describe("Sarmal tek ağaç — panelin turun yayınına bağlanmasının canlı
     // Nöbet ancak GERÇEKTEN daraltılmış bir turda bir şey ölçer.
     assert.ok(dar!.kapsam !== undefined,
       `tur daralmadı (tetik ${dar!.tetik}); odak kurulmamış olabilir — nöbet boş pencerede koşuyor`);
-    assert.strictEqual(dar!.kapsam, path.join(kok(), ODAK_VARLIK),
-      `tur beklenen varlığa değil ${dar!.kapsam} köküne daraldı`);
+    // BKM-DNT-A18: değişiklik odak içinde olduğu için tur yalnız odağa daralır.
+    assert.deepStrictEqual(dar!.kapsam, [path.join(kok(), ODAK_VARLIK)],
+      `tur beklenen varlığa değil ${JSON.stringify(dar!.kapsam)} köklerine daraldı`);
 
     // ÖLÇÜLEN HÜKÜM: daraltma yalnız çapraz denetimin köklerini seçer; belge
     // toplama ile ayrıştırma her turda BÜTÜN yollar üzerinde koşar.

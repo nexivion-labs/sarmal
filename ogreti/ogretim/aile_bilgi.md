@@ -1,11 +1,11 @@
 <!-- SARMAL:KART_KUNYESI -->
 # 📚 bilgi ailesi — öğretim kartı
 
-Bu aile kanonik sınıflama kaydında şöyle tanımlanır: bilgi & tecrübe (karar·formül·sözlük·fikir·deney). Ailede 8 tip yaşar.
+Bu aile kanonik sınıflama kaydında şöyle tanımlanır: bilgi & tecrübe (karar·formül·sözlük·fikir·deney). Ailede 9 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 23793bc1
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
-Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
+Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
 
 <!-- SARMAL:ANLATI -->
@@ -34,6 +34,7 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | 📚 Formül | bilimsel formül/temel — adıma informs kenarı | kod · tez · kaynak · ne |
 | 📚 Karar | karar kaydı; besler/referans ile Adım'ın bağlam-konisine girer | kod · karar · gerekçe · durum · ne |
 | 🖼️ Mockup | dış tasarım gerçeğidir (Figma · HTML · görsel) — olduğu gibi referans alınır; ÖZETLENMEZ, yeri dosya: parametresiyle beyan edilir | kod · ne |
+| 📚 Profil | bir proje kökünün kimlik kartı — işletmenin, kurumun ya da müşterinin kim olduğu, ne iş yaptığı, nerede ve hangi kanallarda yaşadığı; kişiler yalnız hitap, rol ve sorumluluk düzeyinde taşınır | kod · ad · ne · sektör · şehir |
 | 📚 Sözlük | alan terimleri sözlüğü (glossary) | kod · ne |
 
 ### İzinli sarma ilişkileri
@@ -47,5 +48,6 @@ Aşağıdaki iki tablo makine envanteridir. Elle yapılan düzenleme bir sonraki
 | Formül | — | — |
 | Karar | — | Raf |
 | Mockup | — | — |
+| Profil | — | Kitaplık · Proje · Raf |
 | Sözlük | — | — |
 <!-- /SARMAL:AILE_ISKELETI -->

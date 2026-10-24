@@ -32,27 +32,21 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
   GORUNUS_FIKIRLER, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
-  DURUM_CUBUGU_GIRDILERI,
+  DURUM_CUBUGU_GIRDILERI, MAKINIST_ODAK_KOMUTU, GORUNUS_MAKINIST, MAKINIST_GRUPLARI,
 } from "../src/yuzey-cekirdek.ts";
-import { PANEL_GORUNUSLERI, panelSvgKaynagi } from "../src/simge-cizelgesi.ts";
-import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, DURUM_CUBUGU_METINLERI } from "../src/yuzey-metinleri.ts";
+import { satirEylemleri } from "../src/panel-cekirdek.ts";
+import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, DURUM_CUBUGU_METINLERI, MAKINIST_METINLERI, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 
 const PAKET = JSON.parse(oku("../package.json")) as {
   version: string;
   contributes: {
+    commands: Array<{ command: string }>;
     views: Record<string, Array<{ id: string; name: string; icon?: string; contextualTitle?: string }>>;
     menus: Record<string, Array<{ command: string; when?: string; group?: string }>>;
   };
 };
-const PAKET_NLS_TR = JSON.parse(oku("../package.nls.tr.json")) as Record<string, string>;
-const PAKET_NLS_EN = JSON.parse(oku("../package.nls.json")) as Record<string, string>;
-const yerellestir = (deger: string): string => {
-  const anahtar = /^%([^%]+)%$/.exec(deger)?.[1];
-  return anahtar ? PAKET_NLS_TR[anahtar] : deger;
-};
-
 const GORUNUSLER = PAKET.contributes.views["sarmal-yol"];
 const FIKIRLER_KAYNAK = oku("../src/fikirler.ts");
 const HATIRLATICILAR_KAYNAK = oku("../src/hatirlaticilar.ts");
@@ -60,50 +54,37 @@ const EKLENTI_KAYNAK = oku("../src/eklenti.ts");
 
 // ── ① PANEL KENDİ KİMLİĞİYLE KENAR ÇUBUĞUNDA YAŞAR ──────────────────────────
 
-test("fikir paneli: görünüş kendi kimliğiyle paket bildirimine inmiştir ve kimlik tekildir", () => {
-  assert.equal(GORUNUS_FIKIRLER, "sarmalFikirler",
-    "Fikirler görünüşünün kanonik kimliği değişmiş; kullanıcının panel yerleşimi sessizce sıfırlanır");
+test("fikir paneli: ayrı görünüş YOKTUR; Fikirler Makinist ağacının üst düğümüdür (Founder 2026-10-21)", () => {
   const kimlikler = GORUNUSLER.map((g) => g.id);
-  assert.ok(kimlikler.includes(GORUNUS_FIKIRLER),
-    `paket bildiriminde "${GORUNUS_FIKIRLER}" görünüşü yok; panel kenar çubuğunda hiç doğmaz`);
+  assert.ok(!kimlikler.includes(GORUNUS_FIKIRLER),
+    "Fikirler hâlâ ayrı görünüm olarak ilan edilmiş; kapta her bölüm tek görünümdür");
+  // Founder 2026-10-21 (dördüncü hüküm): Makinist de ayrı görünüm değildir; kabın tek görünümü
+  // `sarmalPanel`dir ve Makinist onun sekmesidir.
+  assert.ok(!kimlikler.includes(GORUNUS_MAKINIST), "Makinist ağacı kapta ayrı görünüm olarak kalmış");
+  assert.ok(kimlikler.includes("sarmalPanel"), "kabın tek görünümü paket bildiriminde yok");
+  assert.ok(MAKINIST_GRUPLARI.includes("fikirler"), "Makinist ağacının Fikirler üst düğümü yok");
   assert.equal(new Set(kimlikler).size, kimlikler.length,
     `yinelenen görünüş kimliği var: ${kimlikler.join(" · ")}`);
-  // Kimlik sağlayıcıda da TEK kaynaktan okunur; panel dizeyi kendi içine gömmez.
-  assert.ok(FIKIRLER_KAYNAK.includes("GORUNUS_FIKIRLER"),
-    "panel görünüş kimliğini saf çekirdekteki sabitten okumuyor; iki kimlik zamanla ayrışır");
-  assert.ok(!/createTreeView<PanelOge>\("/.test(FIKIRLER_KAYNAK),
-    "panel görünüş kimliğini kaynağına gömmüş; paket bildirimiyle eşitlik ölçülemez hâle gelir");
+  assert.ok(!/createTreeView/.test(FIKIRLER_KAYNAK),
+    "Fikirler sağlayıcısı kendi görünümünü kuruyor; görünümü yalnız makinist.ts kurar");
 });
 
-test("fikir paneli: başlığı yerelleştirme kataloğundan gelir ve kapsayıcının adını TEKRAR ETMEZ", () => {
-  const fikirler = GORUNUSLER.find((g) => g.id === GORUNUS_FIKIRLER)!;
-  assert.equal(yerellestir(fikirler.name), "Fikirler");
-  assert.equal(yerellestir(fikirler.contextualTitle!), "Fikirler");
-  assert.equal(PAKET_NLS_EN["view.ideas"], "Ideas",
-    "İngilizce katalogda görünüş adı yok; iki dilden biri anahtarı çıplak basar");
-  const kapsayiciAdi = PAKET_NLS_TR["view.container"];
-  assert.ok(!yerellestir(fikirler.name).includes(kapsayiciAdi),
-    "görünüş adı kapsayıcının adını tekrar ediyor");
-});
-
-test("fikir paneli: kendi panel simgesini taşır ve hiçbir kardeşininkini kullanmaz", () => {
-  assert.ok((PANEL_GORUNUSLERI as readonly string[]).includes(GORUNUS_FIKIRLER),
-    "panel çizelgesi yeni görünüşü tanımıyor; simge yolu tek kaynaktan gelmiyor demektir");
-  const fikirler = GORUNUSLER.find((g) => g.id === GORUNUS_FIKIRLER)!;
-  assert.equal(fikirler.icon, panelSvgKaynagi("sarmalFikirler"),
-    "paket bildirimi çizelgenin söylediği simgeden sapmış");
-  const simgeler = GORUNUSLER.map((g) => g.icon);
-  assert.equal(new Set(simgeler).size, simgeler.length,
-    `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
-  // İçerik de karşılaştırılır: iki AYRI dosya aynı çizimi taşırsa kusur ad
-  // değiştirip geri gelir (Founder 2026-07-28 bulgusu).
-  const cizim = oku(`../${panelSvgKaynagi("sarmalFikirler")}`);
-  for (const kardes of PANEL_GORUNUSLERI.filter((g) => g !== "sarmalFikirler")) {
-    assert.notEqual(cizim, oku(`../${panelSvgKaynagi(kardes)}`),
-      `Fikirler paneli ${kardes} panelinin çizimini taşıyor; ikisi bakışta ayrılmaz`);
+test("fikir paneli: üst düğümün adı katalogdan gelir ve iki dildedir", () => {
+  assert.equal(MAKINIST_METINLERI.fikirler, "Fikirler");
+  yuzeyDiliniAyarla("en");
+  try {
+    assert.equal(MAKINIST_METINLERI.fikirler, "Ideas",
+      "İngilizce katalogda düğüm adı yok; iki dilden biri adı çıplak basar");
+  } finally {
+    yuzeyDiliniAyarla("tr");
   }
-  assert.ok(!/#[0-9A-Fa-f]{3,8}\b/.test(cizim),
-    "panel simgesine ham renk gömülmüş; renk temadan gelir (YUZ-4.1)");
+});
+
+test("fikir paneli: üst düğüm Fikir hanesinin kendi ampul simgesini taşır ve komşularınınkini kullanmaz", () => {
+  const makinist = oku("../src/makinist.ts");
+  assert.ok(/fikirler: "fikir"/.test(makinist), "Fikirler düğümü kendi ampul simgesini taşımıyor");
+  const simgeler = [...makinist.matchAll(/(onaylar|hatirlaticilar|gozlemler|fikirler): "([a-z]+)"/g)].map((m) => m[2]);
+  assert.equal(new Set(simgeler).size, simgeler.length, `üst düğümler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });
 
 // ── ② HATIRLATICILAR PANELİNDE FİKİR BÖLÜMÜ BİR DAHA DOĞMAZ ─────────────────
@@ -267,8 +248,8 @@ test("fikir paneli: yinelenen çizim yapısal olarak önlenir — parmak izi saf
 test("fikir paneli: durum çubuğu Fikirleri kendi adıyla sayar ve kendi paneline götürür", () => {
   const girdi = DURUM_CUBUGU_GIRDILERI.find((g) => g.metin === "fikirler");
   assert.ok(girdi, "durum çubuğunda Fikirler girdisi yok; hane kendi sayısını hiç söylemiyor");
-  assert.equal(girdi.komut, `${GORUNUS_FIKIRLER}.focus`,
-    "Fikirler girdisi kendi paneline götürmüyor");
+  assert.equal(girdi.komut, MAKINIST_ODAK_KOMUTU,
+    "Fikirler girdisi Makinist ağacına götürmüyor");
   assert.equal(DURUM_CUBUGU_METINLERI.fikirler.ad, "Fikirler",
     "durum çubuğu girdisinin adı hanesini söylemiyor");
   // Sayı GÖMÜLÜ olamaz: girdi kaynağı çağırır ve ayırt edici değeri aynen döndürür.
@@ -296,20 +277,19 @@ test("MUTASYON · fikir paneli: her girdi ayrı bir haneyi sayar; ikisi aynı sa
   const okunan = DURUM_CUBUGU_GIRDILERI.map((g) => g.say(kaynak));
   assert.equal(new Set(okunan).size, okunan.length,
     `iki durum çubuğu girdisi aynı haneyi sayıyor: ${okunan.join(" · ")}`);
-  // Girdiler var olan görünüşlere götürür; ölü bir odak komutu sessizce hiçbir şey yapmaz.
-  const kimlikler = new Set(GORUNUSLER.map((g) => g.id));
+  // Girdiler var olan bir komuta götürür; ölü bir komut sessizce hiçbir şey yapmaz.
+  const komutlar = new Set(PAKET.contributes.commands.map((c) => c.command));
   for (const g of DURUM_CUBUGU_GIRDILERI) {
-    assert.ok(kimlikler.has(g.komut.replace(/\.focus$/, "")),
-      `durum çubuğu var olmayan bir görünüşe götürüyor: ${g.komut}`);
+    assert.ok(komutlar.has(g.komut), `durum çubuğu var olmayan bir komuta götürüyor: ${g.komut}`);
   }
 });
 
 // ── ⑤ SATIR BİÇİMİ VE İŞARETLER ─────────────────────────────────────────────
 
 test("fikir paneli: satır kopyalama yolu korunmuştur ve komut TEKTİR", () => {
-  const menu = PAKET.contributes.menus["view/item/context"] ?? [];
-  assert.ok(menu.some((g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${GORUNUS_FIKIRLER}`),
-    "Fikirler görünüşünün sağ tık menüsünde kopyalama girdisi yok; hane taşınırken kopyalama düşmüş");
+  // Satır eylemleri panelin webview'indedir (panel-cekirdek.ts `satirEylemleri`); Fikir satırı kopyalama alır.
+  assert.ok(satirEylemleri("sarmalFikir").some((e) => e.komut === "sarmal.satiriKopyala"),
+    "Makinist sekmesinde Fikir satırı için kopyalama düğmesi yok");
   assert.ok(/fikirler\?\.panoMetni\(oge\)/.test(EKLENTI_KAYNAK),
     "kopyalama komutu yeni panele hiç sormuyor; Fikir satırı panoya inemez");
   assert.ok(/panoMetni\(oge: unknown\)/.test(FIKIRLER_KAYNAK),
@@ -321,8 +301,7 @@ test("fikir paneli: satır kopyalama yolu korunmuştur ve komut TEKTİR", () => 
 test("fikir paneli: kullanıcıya giden panel metinleri EMOJİ taşımaz (Founder hükmü)", () => {
   const emoji = /\p{Extended_Pictographic}/u;
   for (const [ad, metin] of Object.entries({
-    panelAdiTr: PAKET_NLS_TR["view.ideas"],
-    panelAdiEn: PAKET_NLS_EN["view.ideas"],
+    panelAdiTr: MAKINIST_METINLERI.fikirler,
     aciklama: YUZEY_ACIKLAMALARI.fikirler,
     bosDurum: YUZEY_BOS_DURUM.fikirler,
     durumCubuguAdi: DURUM_CUBUGU_METINLERI.fikirler.ad,
@@ -403,13 +382,9 @@ test("fikir paneli: paket sürümü ilerlemiştir — aynı numara kullanıcın�
 // ── ⑦ KOMŞU PANELLER BU TURDA KENDİ İŞLERİNİ SÜRDÜRÜR ───────────────────────
 
 test("fikir paneli: komşu iki panelin kimliği ve kayıt sayacı bu turda değişmedi", () => {
-  const kimlikler = GORUNUSLER.map((g) => g.id);
   for (const kimlik of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER]) {
-    assert.ok(kimlikler.includes(kimlik),
-      `komşu panelin görünüş kimliği paket bildiriminden düşmüş: ${kimlik}`);
+    assert.ok(kimlik.startsWith("sarmal"), `komşu panelin kimlik sabiti bozulmuş: ${kimlik}`);
   }
   assert.ok(/get kayitSayisi\(\): number \{\n\s*return this\.kumeler\.reduce/.test(HATIRLATICILAR_KAYNAK),
     "Hatırlatıcılar panelinin kayıt sayacı hane taşınırken bozulmuş");
-  assert.ok(HATIRLATICILAR_KAYNAK.includes("GORUNUS_HATIRLATICILAR"),
-    "Hatırlatıcılar paneli kendi görünüş kimliğini kaybetmiş");
 });

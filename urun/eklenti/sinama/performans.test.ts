@@ -53,7 +53,7 @@ test("mercek: tur sayaçları sıfırlar — ikinci tur birikimi taşımaz", () 
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { grafImzasi, SiraBellegi } from "../src/yolharitasi-cekirdek.ts";
-import { turKapsami } from "../src/izleyici-cekirdek.ts";
+import { turKapsami, caprazYenidenHesaplanir } from "../src/izleyici-cekirdek.ts";
 import { tetikEtiketi } from "../src/performans.ts";
 
 const dugum = (oncekiler: string[], sonrakiler: string[]) => ({ oncekiler, sonrakiler });
@@ -106,12 +106,80 @@ test("imza: ayraçlar iki ayrı grafı aynı dizeye çökertmez", () => {
   assert.notEqual(grafImzasi(a), grafImzasi(b));
 });
 
-test("kapsam: olay-tetikli tur odaktaki varlığa daralır", () => {
+test("kapsam: odak içindeki değişiklikle tetiklenen tur odaktaki varlığa daralır", () => {
   const koklar = ["/depo/Nexivion-Labs"];
-  assert.equal(turKapsami("sar-olayı", "/depo/Nexivion-Labs/sarmal", true, koklar),
-               "/depo/Nexivion-Labs/sarmal");
-  assert.equal(turKapsami("disk-olayı", "/depo/Nexivion-Labs/sarmal", true, koklar),
-               "/depo/Nexivion-Labs/sarmal");
+  const değişen = ["/depo/Nexivion-Labs/sarmal/is/plan/faz/5_eylul_lansman.sar"];
+  assert.deepEqual(turKapsami("sar-olayı", "/depo/Nexivion-Labs/sarmal", true, koklar, değişen, () => undefined),
+                   ["/depo/Nexivion-Labs/sarmal"]);
+  assert.deepEqual(turKapsami("disk-olayı", "/depo/Nexivion-Labs/sarmal", true, koklar, değişen, () => undefined),
+                   ["/depo/Nexivion-Labs/sarmal"]);
+});
+
+// ── 🩹 BKM-DNT-A18 · DAR KÖK OLAYLARDAN TÜRER ────────────────────────────────
+//   Saha bulgusu (2026-10-24 · HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL): kardeş projede
+//   yapılan değişiklikte olay turu odaktaki projeye daralıyor ve değişen projenin
+//   çapraz tanıları yeniden hesaplanmıyordu. Varlık kökü çözücüsü sahte bir
+//   haritadır; kabuk gerçek `varlikKoku` işlevini verir.
+
+const ÇATI = "/depo/Nexivion-Labs";
+const SARMAL = `${ÇATI}/sarmal`;
+const SITE = `${ÇATI}/site`;
+const HESAP = `${ÇATI}/hesap`;
+const kökler: Record<string, string> = {
+  [`${SITE}/is/plan/faz/3_icerik.sar`]: SITE,
+  [`${HESAP}/is/durum/hesap_durum_devir.sar`]: HESAP,
+  [`${SARMAL}/is/plan/faz/5_eylul_lansman.sar`]: SARMAL,
+  [`${ÇATI}/nexivion_labs_anadizin.sar`]: ÇATI,
+  [`${SARMAL}/alt/ic_plan.sar`]: `${SARMAL}/alt`,
+};
+const kökBul = (yol: string): string | undefined => kökler[yol];
+
+test("kapsam: odak dışındaki kardeş kökte değişen dosyanın kökü dar tura EKLENİR; o kökün çapraz tanıları tazelenir", () => {
+  const dar = turKapsami("sar-olayı", SARMAL, true, [ÇATI], [`${SITE}/is/plan/faz/3_icerik.sar`], kökBul);
+  assert.deepEqual(dar, [SARMAL, SITE],
+    "kardeş kökteki değişiklik dar tura girmedi; değişen projenin çapraz tanıları önceki turdan taşınır");
+  assert.equal(caprazYenidenHesaplanir(`${SITE}/is/plan/faz/3_icerik.sar`, dar), true,
+    "değişen kökün dosyası çapraz önbellekten beslenecek; tanıları bayat kalır");
+  assert.equal(caprazYenidenHesaplanir(`${HESAP}/is/durum/hesap_durum_devir.sar`, dar), false,
+    "değişmeyen kardeş kök de denetlendi; dar tur darlığını kaybetti");
+});
+
+test("kapsam: seldeki değişiklikler birden çok kökteyse kökler odaktan sonra sözlük sırasıyla ve yinelenmeden gelir", () => {
+  const dar = turKapsami("disk-olayı", SARMAL, true, [ÇATI], [
+    `${SITE}/is/plan/faz/3_icerik.sar`, `${HESAP}/is/durum/hesap_durum_devir.sar`,
+    `${SITE}/is/plan/faz/3_icerik.sar`, `${SARMAL}/is/plan/faz/5_eylul_lansman.sar`,
+  ], kökBul);
+  assert.deepEqual(dar, [SARMAL, HESAP, SITE], "dar turun kökleri odakla başlamıyor, sırasız ya da yinelenmiş");
+});
+
+test("kapsam: değişen bilinmiyorsa, kök çözülemiyorsa ya da kök çalışma alanı klasörünün kendisiyse tur TAM koşar", () => {
+  // Neyin değiştiğini bilmeyen tur daraltılamaz; eski davranış bu hâlde odağa daralıyordu.
+  assert.equal(turKapsami("sar-olayı", SARMAL, true, [ÇATI]), undefined,
+    "değişen yol taşımayan olay turu daraltıldı; kardeş kökteki değişiklik sessizce bayat kalır");
+  // Köksüz dosya dar bir kökle karşılanamaz.
+  assert.equal(turKapsami("sar-olayı", SARMAL, true, [ÇATI], [`${ÇATI}/serbest/not.sar`], kökBul), undefined,
+    "köksüz dosyanın değişikliği dar tura indi; o dosyanın çapraz tanıları hiç hesaplanmaz");
+  // Çatının kendi anadizini değişti: kökü çalışma alanı klasörünün kendisidir.
+  assert.equal(turKapsami("sar-olayı", SARMAL, true, [ÇATI], [`${ÇATI}/nexivion_labs_anadizin.sar`], kökBul), undefined,
+    "çalışma alanı kökündeki değişiklik dar tura indi; çatının çapraz tanıları bayat kalır");
+  // Çözücü verilmezse odak dışındaki her değişiklik tam tur ister.
+  assert.equal(turKapsami("sar-olayı", SARMAL, true, [ÇATI], [`${SITE}/is/plan/faz/3_icerik.sar`]), undefined,
+    "çözücüsüz kapsam kararı odak dışındaki değişikliği dar tura indirdi");
+});
+
+test("kapsam: iç içe köklerde yalnız dıştaki kalır; aynı dosyanın tanısı iki kez üretilmez", () => {
+  // Odak iç kökteyken dış kökte değişiklik: dış kök odağı da kapsar.
+  const dar = turKapsami("sar-olayı", `${SARMAL}/alt`, true, [ÇATI], [`${SARMAL}/is/plan/faz/5_eylul_lansman.sar`], kökBul);
+  assert.deepEqual(dar, [SARMAL], "iç içe kökler ayrı ayrı denetleniyor; iç kökün tanıları iki kez yayınlanır");
+});
+
+test("kapsam: çapraz tazelik kararı tam turda her dosya için evet, dar turda yalnız denetlenen köklerin altında evettir", () => {
+  assert.equal(caprazYenidenHesaplanir(`${SITE}/a.sar`, undefined), true, "tam tur bir dosyanın çapraz tanısını önbellekten taşıdı");
+  assert.equal(caprazYenidenHesaplanir(`${SARMAL}/a.sar`, [SARMAL]), true);
+  assert.equal(caprazYenidenHesaplanir(`${ÇATI}/sarmal-yedek/a.sar`, [SARMAL]), false,
+    "ad benzerliği kapsama sayıldı ('…-yedek' dersi)");
+  assert.equal(caprazYenidenHesaplanir(`${SITE}/a.sar`, [SARMAL, SITE]), true,
+    "ikinci denetlenen kökün dosyası tazelenmiş sayılmıyor; karar yalnız ilk köke bakıyor");
 });
 
 test("kapsam: soğuk açılış ve dünya-kuran tetikler TAM koşar", () => {
@@ -144,9 +212,20 @@ test("kapsam: odak çalışma alanı kökünün kendisiyse ya da dışındaysa d
 });
 
 test("mercek: dar tur kanalda kapsamıyla görünür, tam tur işaretsiz kalır", () => {
-  assert.equal(tetikEtiketi({ tetik: "sar-olayı", süreMs: 1, dosyaSayısı: 1, kapsam: "sarmal" }),
+  assert.equal(tetikEtiketi({ tetik: "sar-olayı", süreMs: 1, dosyaSayısı: 1, kapsam: ["/depo/Nexivion-Labs/sarmal"] }),
                "sar-olayı · dar kapsam=sarmal");
   assert.equal(tetikEtiketi({ tetik: "başlangıç", süreMs: 1, dosyaSayısı: 1 }), "başlangıç");
+});
+
+test("mercek: dar tur gerçekten denetlenen BÜTÜN kökleri adlarıyla ve sırasıyla basar (BKM-DNT-A18)", () => {
+  // 2026-10-24 günlüğünde satır değişikliğin yapıldığı projeyi değil odaktaki
+  // projeyi gösteriyordu; satır şimdi kapsam kararının döndürdüğü her kökü basar.
+  const kapsam = turKapsami("sar-olayı", SARMAL, true, [ÇATI], [`${SITE}/is/plan/faz/3_icerik.sar`], kökBul);
+  assert.equal(tetikEtiketi({ tetik: "sar-olayı", süreMs: 1, dosyaSayısı: 1, kapsam }),
+               "sar-olayı · dar kapsam=sarmal+site",
+               "mercek satırı denetlenen kökleri eksik ya da yanlış adla basıyor");
+  assert.equal(tetikEtiketi({ tetik: "sar-olayı", süreMs: 1, dosyaSayısı: 1, kapsam: ["C:\\ws\\proje\\"] }),
+               "sar-olayı · dar kapsam=proje", "Windows yolunda kök adı çözülmedi");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -401,6 +480,7 @@ test("EŞDEĞERLİK: panelin eski taraması ile turun görüntüsü AYNI kod kü
   const { belgeler, dilDışı } = await turBelgeleriniTopla(suzulmus, {
     açıkBelge: () => undefined,      // nöbette açık editör yoktur
     dilKimliği: () => undefined,
+    kaydedilmemisMi: () => false,
     oku: async (yol) => {
       try {
         const ham = readFileSync(yol);
@@ -625,7 +705,7 @@ test("EŞDEĞERLİK (sentetik çok köklü fikstür): iç içe kökler, iki giri
 
     const suzulmus = erisimSiniri(yollar, [kok]);
     const { belgeler, dilDışı } = await turBelgeleriniTopla(suzulmus, {
-      açıkBelge: () => undefined, dilKimliği: () => undefined,
+      açıkBelge: () => undefined, dilKimliği: () => undefined, kaydedilmemisMi: () => false,
       oku: async (yol) => { const ham = readFileSync(yol); return { belge: diskBelgesi({ fsPath: yol } as never, ham.toString("utf8")), bayt: ham.byteLength }; },
     });
     const yeniProgramlar = turProgramlariniKur(belgeler, new Map<string, never>(), () => undefined);

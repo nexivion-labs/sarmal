@@ -11,7 +11,9 @@ import {
   URETIM_SON,
   type BelgeAmaci,
   type BelgeYuzuHedefi,
+  sayiIyelik,
 } from "../src/belge-yuzleri.ts";
+import { kanonMaddeleriniOlc } from "../src/kanon-tutarlilik.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle } from "../src/siniflama.ts";
 
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
@@ -46,7 +48,7 @@ test("Reference yüzü canlı sınıflamadaki bütün tiplerin alan satırını 
   assert.ok(icerik.includes("SARMAL:ALAN-TABLOSU:TAM"));
   const alanBolgesi = icerik.slice(icerik.indexOf("SARMAL:ALAN-TABLOSU:TAM"));
   for (const tip of snf.widgetTipleri) assert.ok(alanBolgesi.includes(`| ${tip.ad} |`), tip.ad);
-  assert.equal(snf.widgetTipleri.length, 101);
+  assert.equal(snf.widgetTipleri.length, 102);   // BKM-OLG-A13 (2026-10-15): TIP-1.17 Profil tipiyle yüz ikiye çıktı
 });
 
 test("Tutorial, How-To ve Explanation yüzleri sınıf sözleşmelerini karşılar", () => {
@@ -101,9 +103,28 @@ test("iki kök tanıtım yüzü üretilen bölgede Gizlilik Politikası bölüm�
   }
 });
 
-test("belge üreticisinin resmi kanon ölçümü 162/162'dir", () => {
+test("belge üreticisinin kanon ölçümü resmi kanon ölçümüyle birebirdir", () => {
+  // Sayı burada dondurulmaz: tek kaydı src/kanon-tutarlilik.ts içindeki KANON_SAYIMI, kayda
+  // karşı tek nöbeti sinama/kanon-tutarlilik.test.ts içindedir (HST-MTR-A02). Bu sınama iki ölçümün aynı
+  // kanonu aynı biçimde saydığını bekler.
   const olcum = kanonOlc(KOK);
-  assert.deepEqual({ madde: olcum.madde, karar: olcum.karar, kural: olcum.kural, tekil: new Set(olcum.kodlar).size },
-    { madde: 162, karar: 38, kural: 124, tekil: 162 });
-  assert.equal(olcum.muhurler.length, 8);
+  const resmi = kanonMaddeleriniOlc(KOK);
+  assert.deepEqual(olcum.sayim, resmi.sayim);
+  assert.equal(olcum.madde, resmi.maddeler.length);
+  assert.deepEqual(olcum.kodlar, resmi.maddeler.map((m) => m.kod));
+  assert.deepEqual(olcum.muhurler, resmi.muhurler);
+});
+
+// KPS-SIR-A03 inceleme bulgusu: belge yüzleri sayıya sabit "'i" ekliyordu ve
+// "189'i" gibi dil bilgisine aykırı yüzler doğuyordu. Ek okunuşa göre seçilir.
+test("KPS-SIR-A03: sayının iyelik eki okunuşun son sözcüğüne uyar ve üretilen yüzlerde yanlış ek kalmaz", () => {
+  assert.deepEqual([1, 2, 3, 6, 9, 10, 20, 40, 60, 70, 100, 185, 186, 189, 190, 1000].map(sayiIyelik),
+    ["1'i", "2'si", "3'ü", "6'sı", "9'u", "10'u", "20'si", "40'ı", "60'ı", "70'i", "100'ü", "185'i", "186'sı", "189'u", "190'ı", "1000'i"]);
+  const kok = fileURLToPath(new URL("../../..", import.meta.url));
+  for (const yol of ["README.md", "urun/eklenti/README.md"]) {
+    const metin = readFileSync(join(kok, yol), "utf8");
+    const m = metin.match(/Tanı metinlerinin (\d+'[a-zıüşöç]+)/u);
+    assert.ok(m, `${yol} sayılı cümleyi taşımıyor`);
+    assert.equal(m[1], sayiIyelik(Number(m[1].split("'")[0])), `${yol} yanlış ek taşıyor`);
+  }
 });

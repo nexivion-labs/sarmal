@@ -501,3 +501,67 @@ test("BKM-DNT-A15 · gerçek depoda ölçüm: istisnasız kök `.sar` kaybeder, 
     rmSync(ust, { recursive: true, force: true });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HST-MTR-A16 · İZ KLASÖRÜ SATIRI EKSİK OLAN ESKİ KÖK
+//
+//   HST-MTR-A14 doğuş şablonuna `.sarmal/` satırını ekledi, fakat o düzeltmeden
+//   önce doğmuş bir kök habersiz kalıyordu: kök kapısı istisnaları "tam" diye
+//   okuyor ve iz klasörünü hiç anmıyordu, oysa git durumu motorun ham istem
+//   taşıyan izini izlenmeyen dosya olarak gösteriyordu. Kapı artık satırın
+//   eksikliğini adlı bir bulguyla bildirir ve onarımı söyler; dosyaya yazmaz.
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { IZ_KLASORU_SATIRI, izKlasoruSatiriEksigi } from "../src/yonerge-ikizi.ts";
+
+const IZ_BULGUSU = "[iz-klasoru-eksik]";
+
+test("HST-MTR-A16 · iz klasörü satırı eksik kök kapıda adlı bulgu ve onarım önerisi alır, dosya değişmez", () => {
+  const ust = mkdtempSync(join(tmpdir(), "sarmal-iz-klasoru-"));
+  try {
+    const kok = join(ust, "eski-kok");
+    mkdirSync(kok, { recursive: true });
+    const eski = yokSaymaIstisnaSatirlari().join("\n") + "\n";
+    writeFileSync(join(kok, ".gitignore"), eski, "utf8");
+    const rapor = yokSaymaRaporu(kok);
+    assert.ok(rapor.includes(IZ_BULGUSU), `iz klasörü eksikliği bildirilmedi:\n${rapor}`);
+    assert.ok(rapor.includes(`→ şu satırı ${kok}/.gitignore dosyasının sonuna ekle: ${IZ_KLASORU_SATIRI}`), rapor);
+    // Kapının gerçek yüzü: komut satırındaki kök kapısı aynı bulguyu basar. Kökte
+    // ikiz yönergeler olmadığı için kapı 4 ile çıkar; çıktısı yine ölçülür.
+    let cikti: string;
+    try {
+      cikti = execFileSync(process.execPath, [join(KOK, "urun", "cekirdek", "src", "sarmal.ts"), "yonerge-ikizi", kok],
+        { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    } catch (e) {
+      cikti = String((e as { stdout?: string }).stdout ?? "");
+    }
+    assert.ok(cikti.includes(IZ_BULGUSU), `kök kapısı iz klasörü eksikliğini basmadı:\n${cikti}`);
+    assert.equal(readFileSync(join(kok, ".gitignore"), "utf8"), eski, "kapı kullanıcının yok sayma dosyasına yazdı");
+  } finally {
+    rmSync(ust, { recursive: true, force: true });
+  }
+});
+
+test("HST-MTR-A16 · satırı taşıyan ya da bilinçle olumsuzlayan kök bulgu almaz", () => {
+  const istisnalar = yokSaymaIstisnaSatirlari().join("\n");
+  for (const satir of [".sarmal/", ".sarmal", "/.sarmal/", ".sarmal/**", "**/.sarmal/", "!.sarmal/", "!.sarmal/trace/"]) {
+    assert.deepEqual(izKlasoruSatiriEksigi(`${istisnalar}\n${satir}\n`), [], `'${satir}' kararı eksik sayıldı`);
+  }
+  for (const satir of ["# .sarmal/", ".sarmal/trace/", ".sarmalx/"]) {
+    assert.deepEqual(izKlasoruSatiriEksigi(`${istisnalar}\n${satir}\n`), [IZ_KLASORU_SATIRI], `'${satir}' karar sayıldı`);
+  }
+  assert.deepEqual(izKlasoruSatiriEksigi(undefined), [IZ_KLASORU_SATIRI], "yok sayma dosyası olmayan kökte satır eksiktir");
+  const ust = mkdtempSync(join(tmpdir(), "sarmal-iz-klasoru-"));
+  try {
+    for (const [ad, satir] of [["tasiyan", ".sarmal/"], ["olumsuzlayan", "!.sarmal/"]] as const) {
+      const kok = join(ust, ad);
+      mkdirSync(kok, { recursive: true });
+      writeFileSync(join(kok, ".gitignore"), `${istisnalar}\n${satir}\n`, "utf8");
+      assert.ok(!yokSaymaRaporu(kok).includes(IZ_BULGUSU), `${ad} kök bulgu aldı`);
+    }
+  } finally {
+    rmSync(ust, { recursive: true, force: true });
+  }
+  // Bu deponun kendi kökü satırı taşır.
+  assert.ok(!yokSaymaRaporu(CALISMA_ALANI_KOKU).includes(IZ_BULGUSU));
+});

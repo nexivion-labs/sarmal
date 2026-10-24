@@ -78,13 +78,17 @@
 //   Bu iki gözlem bu Adımın sınırının dışındadır ve burada yalnız KAYIT olarak
 //   durur; kapatılması varlık içi taramanın kendi işidir.
 //
-//   ÖRNEK KAYNAK BLOKLARI KAPSAM DIŞIDIR. `sar` etiketli bir çit bloğu öğretim
-//   malzemesidir: içindeki kodlar okuyucuya dilin biçimini gösterir, gerçek bir
-//   kimliğe atıf vermez. Gerekçe varlık taramasının `*.test.ts` muafiyetiyle
-//   aynıdır — sentetik malzeme kimlik evrenine karşı ölçülmez. Bu kural bugün
-//   hiçbir bulguyu değiştirmez, çünkü kökteki örnek bloğunun kodları rakamsızdır
-//   ve zaten ikinci süzgece takılır; kural yarın rakam taşıyan bir örnek kodu
-//   yazıldığında doğacak öngörülebilir sahte bulguyu baştan keser.
+//   KOD ÇİTLERİ KAPSAM DIŞIDIR (HST-YUZ-A04 · 2026-10-10). Kök yüzeyindeki her kod
+//   çiti örnektir: `sar` etiketli blok okuyucuya dilin biçimini, etiketsiz ya da
+//   başka dille etiketli blok ise komutun ve tanının çıktısını gösterir; ikisi de
+//   gerçek bir kimliğe atıf vermez. Gerekçe varlık taramasının `*.test.ts`
+//   muafiyetiyle aynıdır — sentetik malzeme kimlik evrenine karşı ölçülmez. Kural
+//   önce yalnız `sar` etiketli çiti kapsıyordu ve etiketsiz çit olgusal iddia
+//   sayılıyordu; bu yüzden tanıtım dosyasının kırık referans tanısını gösteren örnek
+//   çıktısı her işlemede sahte uyarı üretti. Kapsam kaybı ölçülmüştür: on iki
+//   yüzeyin çitlerinde çözülen tek bir kimlik yoktur ve kimlik şekilli tek aday o
+//   sahte uyarının kendisidir. Varlık içi metin atıf kapısı aynı ayrıştırıcının
+//   `sar` kapsamını kullanmaya devam eder (kimlik.ts · `CitKapsami`).
 //
 //   LİSANS METNİ NEDEN LİSTEDE DEĞİL. Kök dosyaların hepsi bizim yüzümüz değildir:
 //   lisans metni dış dünyaya ait standart bir belgedir ve bizim kimlik evrenimize
@@ -103,7 +107,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { KimlikIndeksi } from "./kimlik.ts";
-import { programlariYukle, kodIndeksle, diskTara } from "./denetci.ts";
+import { programlariYukle, kodIndeksle, diskTara, KOD_SEKLI } from "./denetci.ts";   // HST-MTR-A10: kimlik şekli süzgeci varlık kapısıyla TEK kaynaktır
 import { kokYuzeyiTanisi } from "./tani-metinleri.ts";   // kullanıcıya söylenen her cümle tek katalogda yaşar; üretici yalnız olguyu verir
 import type { Tani } from "./tani.ts";
 
@@ -188,8 +192,10 @@ export const KOK_ATIF_EVRENI = ".";   // açık depoda kök ile evren aynı ağa
  */
 export const GIZLI_KOK_ADI = "_KapaliUrun";   // kapalı ürünün gerçek klasör adı açık depoda ilan edilmez; sınır nöbeti bu yer tutucuyla çalışır ve gerçek ad çatı düzeyinde bağlanır (GOC-A08 · 2026-08-25)
 
-/** Kimlik şekli: en az bir parçası rakam taşıyan bir kuyrukla biter (ikinci süzgeç). */
-const KOD_SEKLI = /-[A-ZÇĞİÖŞÜ_]*\d[A-Z0-9ÇĞİÖŞÜ_]*$/u;
+// İkinci süzgeç (kimlik şekli) varlık içi metin atıf kapısıyla aynıdır ve yalnız
+// orada tanımlanır (denetci.ts · KOD_SEKLI). HST-MTR-A10 ölçümü iki kopyanın aynı
+// kusuru taşıdığını göstermiştir: ikisi de noktalı madde kuyruğunu tanımıyor ve
+// kırık bir alt madde atfını sessizce eliyordu.
 
 // Çit boşaltması TEK kaynakta yaşar (kimlik.ts) — kök yüzeyi kapısı ile .md/.ts
 // metin-atıf kapısı aynı kuralı paylaşır; re-export dışarıdaki çağrıyı korur.
@@ -225,8 +231,9 @@ export function kokYuzeyiAtiflari(
     }
     // Kimlik indeksi metin katmanını yürütür; `.sar` olmayan dosyada zaten yalnız
     // o katman çalışır, dolayısıyla söz dizimi ayrıştırılmaz ve bozuk metin de ölçülür.
+    // HST-YUZ-A04: kök yüzeyinde HER kod çiti örnektir ve atıf taramasının dışında kalır.
     const indeks = new KimlikIndeksi();
-    indeks.dosyaGuncelle(yuz.yol, ornekCitleriniBosalt(icerik));
+    indeks.dosyaGuncelle(yuz.yol, ornekCitleriniBosalt(icerik, "tum"));
     for (const aday of indeks.tumAdaylar()) {
       if (evren.has(aday.kod)) continue;      // çözülüyor — atıf sağlam
       if (!KOD_SEKLI.test(aday.kod)) continue; // ikinci süzgeç: kimlik şekli

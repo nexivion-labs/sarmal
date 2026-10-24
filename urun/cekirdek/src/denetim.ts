@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, katmansizTeknolojiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, kodStandardiTanilari, profilTanilari, katmansizTeknolojiTanilari, yersizTeknolojiKacisiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -35,9 +35,9 @@ import { ebediEnvanter, ebediTanilar, muhurTanilari, birlesimCatismaTanilari, EB
 import type { EbediKilit } from "./kuralci.ts";
 import { yolTuru, rejimTanilari, katiRejimliDosyalar, omurgaTanilari, iliskiSinifiTanilari, authTanilari, sefAkisiTanilari, dilKanonTanilari, ogretimTanilari, stratejiTanilari, tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari } from "./denetci.ts";
 import { dizindenIndeks, DERS_DUNYASI, projeKapsamlari, onekKapsar } from "./kimlik.ts";
-import { YENI_TANI_INDEKS, taniSicili, terfiKapisiKusurlari } from "./tani-sicili.ts";
+import { YENI_TANI_INDEKS, taniSicili, terfiKapisiBulgulari, terfiKapisiKusurlari } from "./tani-sicili.ts";
 import type { YeniTaniKaydi } from "./tani-sicili.ts";
-import { ORTAK_TANI_METINLERI, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
+import { ORTAK_TANI_METINLERI, ORTAK_TANI_METINLERI_EN, eskiTani, yeniTani, yapistirilabilirOrnekVar } from "./tani-metinleri.ts";
 import type { Tani, Duzey } from "./tani.ts";
 // göç motor turu A09 kapanışı (2026-07-27): halka 2 orkestrasyon tanılarını bu dosyaya taşırken
 // `Dugum` tipini içe aktarmayı atlamıştı; Node tipleri sıyırarak koştuğu için
@@ -69,6 +69,25 @@ export interface DenetimSecenek {
    * Tür dökümündeki sayılar iki kipte de AYNIDIR — değişen yalnız sunumdur.
    */
   tamListe?: boolean;
+  /**
+   * KIRIK DOSYAYI ATLAMA KİPİ (MGZ-A12 · HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR):
+   * true verilirse söz dizimi hatasıyla ayrıştırılamayan bir dosya turu
+   * durdurmaz; dosya evrenden düşer, tur öteki dosyalarla tamamlanır ve kırık
+   * dosyalar sonucun `kirikDosyalar` alanına adıyla yazılır. Bayraksız çağrı
+   * ilk hatada durmaya devam eder (komut satırı sözleşmesi · çıkış 2). Kip
+   * canlı editör yüzeyi içindir: kırık dosyanın kendi tanısını tek dosya yolu
+   * zaten basar, oysa erken çıkış öteki dosyaların çapraz tanılarını da
+   * götürüyor ve boş panel temiz ağaç sanılıyordu (ölçüm 2026-10-10: 91 → 42).
+   */
+  kirikDosyayiAtla?: boolean;
+}
+
+/** Atlama kipinde evrenden düşürülen kırık dosya: etiketi, konumu ve söz dizimi iletisi. */
+export interface KirikDosya {
+  etiket: string;
+  satir: number;
+  sutun: number;
+  mesaj: string;
 }
 
 /**
@@ -93,8 +112,17 @@ export interface DenetimSonucu {
   cikis: number;
   /** Rapor akışı — kabuk aynı sırayla basar. */
   akis: DenetimRapor[];
-  /** Sözdizim hatası erken çıkışı (console.error yolu — akışa girmez). */
-  sozdizimHata?: { etiket: string; satir: number; sutun: number; mesaj: string };
+  /** Sözdizim hatası erken çıkışı (console.error yolu — akışa girmez).
+   *  MGZ-A03: hata `söz-dizim` kimlikli tanısını da taşır; kabuk kimliği ve
+   *  konumu bu tanıdan basar, böylece komut satırı Sorunlar paneliyle aynı kaydı anlatır. */
+  sozdizimHata?: { etiket: string; satir: number; sutun: number; mesaj: string; tani: Tani };
+  /**
+   * MGZ-A12: `kirikDosyayiAtla` kipinde evrenden düşürülen kırık dosyalar.
+   * Liste doluysa tur bu dosyalar OLMADAN koşmuştur: onların ilan ettiği kod ve
+   * kenarlar indekste yoktur ve kendi çapraz tanıları üretilmemiştir. Yüzey bu
+   * alanı okuyup eksikliği söyler; bayraksız çağrıda alan hiç doğmaz.
+   */
+  kirikDosyalar?: KirikDosya[];
   /** Tam koşum tamamlandı mı (erken çıkışlarda false — özet bölgesi kurulmaz). */
   tamKosum: boolean;
   anaEtiket?: string;
@@ -214,12 +242,19 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // ⚡ PRF-MK-A03: aynı anlık görüntü yükleyiciye verilir, disk bir kez taranır;
   // ham metinler yükleyicinin zaten okuduğu kaynaklardır ve bir daha okunmaz.
   const { programlar: evren, muaflar, hatalar, hamlar } = programlariYukle(dizin, anaYolu ? anaAdi : undefined, diskEvren);
-  if (hatalar.length) {
+  // MGZ-A12: atlama kipinde kırık dosyalar turu durdurmaz; yükleyici onları
+  // `programlar` ve `hamlar` haritalarına zaten almamıştır (muaf dosyayla aynı
+  // yol), dolayısıyla aşağıdaki hiçbir üretici onlara uğramaz. Liste sonuca
+  // yazılır ki yüzey eksikliği söyleyebilsin; sağlam ağaçta alan doğmaz.
+  const kirikDosyalar: KirikDosya[] | undefined = secenek.kirikDosyayiAtla && hatalar.length
+    ? hatalar.map((h) => ({ etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj }))
+    : undefined;
+  if (hatalar.length && !kirikDosyalar) {
     // İlk muaf-olmayan sözdizim hatası kapıyı kapatır (davranış korundu — çıkış 2).
     const h = hatalar[0];
     const s = bos(2);
     s.muaflar = muaflar;
-    s.sozdizimHata = { etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj };
+    s.sozdizimHata = { etiket: h.etiket, satir: h.satir, sutun: h.sutun, mesaj: h.mesaj, tani: h.tani };
     return s;
   }
 
@@ -229,6 +264,7 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     const s = bos(2);
     s.muaflar = muaflar;
     s.anaEtiket = anaEtiket;
+    if (kirikDosyalar) s.kirikDosyalar = kirikDosyalar;   // MGZ-A12: giriş dosyası kırıksa tur koşamaz, fakat sebep adıyla söylenir
     s.akis.push({ dosya: anaEtiket, tanilar: koklendir("denetimKos", [
       eskiTani("kural-ihlali", "hata", { dosya: anaEtiket, kusur: "giriş-ayrıştırılamıyor" }, { satir: 0, sutun: 0 }),
     ]) });
@@ -391,6 +427,13 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     bas(dosya, [tani]);
   }
 
+  // MIM-1.4: yersiz-teknoloji-kaçışı bekçisi (BKM-OLG-A11 · kaçış yalnız doğuş anında meşrudur).
+  for (const { dosya, tani } of koklendirKayit("yersizTeknolojiKacisiTanilari", yersizTeknolojiKacisiTanilari(programlar))) {
+    if (muaflar.has(dosya)) continue;
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
   // DIL-1.1: dil denetçisi — şapkasız alan adı + NFD ham kaynak (bilgi; ham metin
   // diskten yeniden okunur çünkü belirteç girişte NFC'ler — DIL-1).
   {
@@ -511,6 +554,43 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // Aynı grafı okur, ikinci bir klasör→Proje çözümü kurmaz; ders dünyası muaftır.
   for (const { dosya, tani } of koklendirKayit("projesizFazTanilari", projesizFazTanilari(dag, evren))) {
     if (muaflar.has(dosya)) continue;
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 · ORK-3.2 Faz sırası (KPS-SIR-A01 · Founder hükmü 2026-09-29): graf aynı
+  // Projenin Fazlarını tek zincirde dizer; ters Faz bağımlılığı, erken Faz işi ve
+  // öncülü bitmemiş geliştirmedeki Adım bu zincirin kendi verisinden okunur.
+  for (const { dosya, tani } of koklendirKayit("fazSirasiTanilari", fazSirasiTanilari(dag, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 · MIM-1.3 · MIM-1.6 Blok yapısı (KPS-SIR-A01): yabancı Faz bağı, Katmansız
+  // Blok, Adımsız kapsayıcı ve tek Adımlı Blok; Faz boşluğu grafın Faz haritasından okunur.
+  for (const { dosya, tani } of koklendirKayit("blokYapisiTanilari", blokYapisiTanilari(programlar, dag, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // MIM-1.2 Faz dosyası düzeni (KPS-SIR-A03 · Founder hükmü 2026-09-29): birden çok
+  // Fazlı dosya, Faz gövdesi dışında bağlanan Blok, tepede durmayan Faz ilanı ve faz
+  // klasörü dışındaki ya da sıra öneksiz Faz dosyası; dördü de bilgi düzeyindedir.
+  for (const { dosya, tani } of koklendirKayit("fazDosyasiTanilari", fazDosyasiTanilari(programlar, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // DIL-1.8 düğüm kodu standardı (RFM-MOTOR-A02): anadizin önek sicili beyan ettiyse
+  // ilansız önekle ya da biçim dışı doğan kod uyarı alır; sicilsiz varlık ölçülmez.
+  for (const { dosya, tani } of koklendirKayit("kodStandardiTanilari", kodStandardiTanilari(programlar, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // TIP-1.17 Profil tipi (BKM-OLG-A13 · Founder onayı 2026-10-15): boş zorunlu alan,
+  // kişisel veri deseni ve aynı proje kökündeki ikinci Profil; ders dünyası muaftır.
+  for (const { dosya, tani } of koklendirKayit("profilTanilari", profilTanilari(programlar, snf, muaflar))) {
     say([tani], dosya);
     bas(dosya, [tani]);
   }
@@ -855,11 +935,15 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
     }
   }
 
+  // Tam yeşil invaryantı: atlanan zorunlu kapı varken sonuç yeşil DÖNEMEZ —
+  // eksik denetim, temizlik kanıtı değildir.
+  const cikis = toplamHata + toplamUyari === 0 && atlananKapilar.length === 0
+    ? 0 : (toplamHata > 0 || atlananKapilar.length > 0 ? 4 : 0);
   return {
-    // Tam yeşil invaryantı: atlanan zorunlu kapı varken sonuç yeşil DÖNEMEZ —
-    // eksik denetim, temizlik kanıtı değildir.
-    cikis: toplamHata + toplamUyari === 0 && atlananKapilar.length === 0
-      ? 0 : (toplamHata > 0 || atlananKapilar.length > 0 ? 4 : 0),
+    // MGZ-A12: kırık dosya dışarıda bırakılarak koşan tur da yeşil dönemez;
+    // erken çıkışın söz dizimi kodu (2) korunur, daha ağır bir hüküm varsa o kalır.
+    cikis: kirikDosyalar && cikis === 0 ? 2 : cikis,
+    ...(kirikDosyalar ? { kirikDosyalar } : {}),
     akis, koken, tamKosum: true, anaEtiket, muaflar, toplamHata, toplamUyari, dosyaTanilari,
     projeGruplari: projeGruplariKur(akis, bulguGruplari, projeKarneListesi),
     adAlani: { ortakKod: dag.ortakKod, ayrisamayan: dag.ayrisamayan },
@@ -995,6 +1079,21 @@ function gozlemOzetle(kayitlar: Array<{ dosya: string; tani: Tani }>, ozetle = t
         satir: kayit.tani.satir, sutun: kayit.tani.sutun,
         oneri: kayit.tani.oneri,
         ozetlenen: toplam - GOZLEM_TEKIL_SINIRI,
+        // MGZ-A09: özet satırı da iki dilin hanesini taşır; yoksa İngilizce yüzde
+        // Türkçe özet kalırdı. Hane yalnız katlanan tanı haneliyse kurulur, çünkü
+        // hanesiz bir tanının önerisini dil hanesine taşımak onu düşürürdü.
+        ...(kayit.tani.dilMetinleri ? {
+          dilMetinleri: {
+            tr: {
+              mesaj: ORTAK_TANI_METINLERI.projeBulguOzeti({ toplam, sınır: GOZLEM_TEKIL_SINIRI }),
+              ...(kayit.tani.dilMetinleri.tr.oneri === undefined ? {} : { oneri: kayit.tani.dilMetinleri.tr.oneri }),
+            },
+            en: {
+              mesaj: ORTAK_TANI_METINLERI_EN.projeBulguOzeti({ toplam, sınır: GOZLEM_TEKIL_SINIRI }),
+              ...(kayit.tani.dilMetinleri.en.oneri === undefined ? {} : { oneri: kayit.tani.dilMetinleri.en.oneri }),
+            },
+          },
+        } : {}),
       },
     });
   }
@@ -1094,19 +1193,24 @@ export function beklenenSunumYuzeyi(tani: Partial<Tani> & Pick<Tani, "kod" | "du
  */
 function kacakTerfiHukmu(
   kayit: YeniTaniKaydi, yuzeyDuzeyleri: ReadonlySet<string>, canliSayac: number,
-): string {
+): { terfiGerekce: string; terfiBulgulari: string[] } | undefined {
   const yukselenler = [...yuzeyDuzeyleri].filter((d): d is Duzey =>
     d in DUZEY_AGIRLIGI && DUZEY_AGIRLIGI[d as Duzey] < DUZEY_AGIRLIGI[kayit.kademe]);
-  if (!yukselenler.length) return "";
-  const kusurlar = yukselenler.flatMap((sonraki) => terfiKapisiKusurlari({
+  if (!yukselenler.length) return undefined;
+  const girdiler = yukselenler.map((sonraki) => ({
     kod: kayit.kod, onceki: kayit.kademe, sonraki,
     sayaclar: [canliSayac],
     ucluKanit: { uygulama: kayit.uretici, doğrulama: "", kanon: kayit.madde },
     acikKabul: "",
   }));
-  if (!kusurlar.length) return "";
-  const gerekce = kusurlar.map((k) => k.replace(`${kayit.kod}: `, "")).join(" · ");
-  return `; bu yükseltme bir terfidir ve terfi kapısından geçmemiştir (${gerekce})`;
+  const kusurlar = girdiler.flatMap((g) => terfiKapisiKusurlari(g));
+  if (!kusurlar.length) return undefined;
+  // MGZ-A09: Türkçe gerekçe kapının kendi cümlesidir; İngilizce gerekçe aynı ölçümün
+  // dilden bağımsız kodlarından tanı kataloğunda kurulur.
+  return {
+    terfiGerekce: kusurlar.map((k) => k.replace(`${kayit.kod}: `, "")).join(" · "),
+    terfiBulgulari: girdiler.flatMap((g) => terfiKapisiBulgulari(g)),
+  };
 }
 
 /**
@@ -1122,15 +1226,17 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   // Tanı sözleşmesi: her tanı beş alanını taşır ve kodu sicilde bulunur.
   for (const { dosya, tani } of g.uretilen) {
     const eksik: string[] = [];
-    if (!tani.duzey) eksik.push("düzey");
-    if (!tani.kod) eksik.push("tekil kod");
-    if (!tani.mesaj?.trim()) eksik.push("eyleme dönük mesaj");
-    if (typeof tani.satir !== "number" || typeof tani.sutun !== "number") eksik.push("kaynak konumu");
-    if (!tani.oneri?.trim()) eksik.push("düzeltme önerisi");
-    if (tani.kod && !g.sicil.has(tani.kod)) eksik.push("kanonik sicil kaydı");
+    if (!tani.duzey) eksik.push("duzey");
+    if (!tani.kod) eksik.push("kod");
+    if (!tani.mesaj?.trim()) eksik.push("mesaj");
+    if (typeof tani.satir !== "number" || typeof tani.sutun !== "number") eksik.push("konum");
+    if (!tani.oneri?.trim()) eksik.push("oneri");
+    if (tani.kod && !g.sicil.has(tani.kod)) eksik.push("sicil");
     if (!eksik.length) continue;
+    // MGZ-A09: kimliksiz tanının yer tutucusu iki dilde katalogda yaşar ("adsız
+    // tanı" · "An unnamed diagnostic"); boş kimlik de kimliksiz sayılır.
     out.push({ dosya, tani: yeniTani("tanı-sözleşmesi-uyumsuz",
-      { kod: tani.kod || "adsız tanı", kusur: `${eksik.join(" · ")} yok` },
+      { kod: tani.kod || undefined, kusur: "tani-alanlari-eksik", eksik },
       { satir: tani.satir, sutun: tani.sutun }) });
   }
 
@@ -1139,7 +1245,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
     const kayit = YENI_TANI_INDEKS.get(tani.kod);
     if (!kayit || kayit.kapsam === "proje") continue;
     out.push({ dosya, tani: yeniTani("tanı-kapsamı-karışması",
-      { kod: tani.kod, kusur: `"${kayit.kapsam}" kapsamındaki tanı Proje kapısında üretilmiş` },
+      { kod: tani.kod, kusur: "kapsam-proje-kapisinda", kapsam: kayit.kapsam },
       { satir: tani.satir, sutun: tani.sutun }) });
   }
 
@@ -1162,7 +1268,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   if (g.projeKodlari.size > 1) {
     if (!g.bulguGruplari) {
       out.push({ dosya: g.anaEtiket, tani: yeniTani("proje-tanı-kimliği-uyumsuz",
-        { kusur: `çalışma alanında ${g.projeKodlari.size} Proje kökü var (${[...g.projeKodlari].join(" · ")}) ama bulgular tek bir dizin kimliği altında toplanıyor` },
+        { kusur: "cok-kok-tek-dizin", sayi: g.projeKodlari.size, projeler: [...g.projeKodlari] },
         { satir: 1, sutun: 1 }) });
     } else {
       const evsiz = new Set<string>();
@@ -1172,7 +1278,8 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
       }
       if (evsiz.size) {
         out.push({ dosya: g.anaEtiket, tani: yeniTani("proje-tanı-kimliği-uyumsuz",
-          { kusur: `çalışma alanında ${g.projeKodlari.size} Proje kökü var (${[...g.projeKodlari].join(" · ")}) ama ${evsiz.size} dosyanın bulgusu hiçbir Proje koduna bağlanamadı (${[...evsiz].sort().slice(0, 3).join(" · ")}${evsiz.size > 3 ? " · …" : ""})` },
+          { kusur: "evsiz-bulgular", sayi: g.projeKodlari.size, projeler: [...g.projeKodlari],
+            evsizSayi: evsiz.size, evsiz: [...evsiz].sort().slice(0, 3) },
           { satir: 1, sutun: 1 }) });
       }
     }
@@ -1190,18 +1297,19 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
     }
     for (const [kod, kume] of duzeyler) {
       const kayit = YENI_TANI_INDEKS.get(kod);
-      if (kayit && [...kume].some((duzey) => duzey !== kayit.kademe)) {
+      // KPS-SIR-A01: sicilin ilan ettiği tarihsel kayıt düzeyi sapma sayılmaz.
+      if (kayit && [...kume].some((duzey) => duzey !== kayit.kademe && duzey !== kayit.tarihselKademe)) {
         // Terfi kapısı ÜRETİM yolundan koşar: yükseltme yönündeki sapmanın
         // gerekçesini kanonun kendi dört kapısı yazar (KPS-TRF-A01).
         const terfiHukmu = kacakTerfiHukmu(kayit, kume, canliSayaclar.get(kod) ?? 0);
         out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
-          { kod, kusur: `sicil bugünkü kademeyi "${kayit.kademe}" ilan ediyor, yüzey "${[...kume].join(" ve ")}" gösteriyor${terfiHukmu}` },
+          { kod, kusur: "yuz-kademe-sapmasi", kademe: kayit.kademe, duzeyler: [...kume], ...terfiHukmu },
           { satir: 1, sutun: 1 }) });
         continue;
       }
-      if (kume.size < 2 || BAGLAMA_GORE_DUZEY.has(kod)) continue;
+      if (kume.size < 2 || BAGLAMA_GORE_DUZEY.has(kod) || kayit?.tarihselKademe) continue;
       out.push({ dosya: g.anaEtiket, tani: yeniTani("tanı-yüzü-uyumsuz",
-        { kod, kusur: `aynı koşumda ${[...kume].join(" ve ")} düzeylerinde birden gösterilmiş` },
+        { kod, kusur: "coklu-duzey", duzeyler: [...kume] },
         { satir: 1, sutun: 1 }) });
     }
   }
@@ -1217,7 +1325,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
       // yaşar — katalog ile nöbet aynı yordamı okur).
       if (yapistirilabilirOrnekVar(tani.oneri)) continue;
       out.push({ dosya, tani: yeniTani("öğretim-yüzü-uyumsuz",
-        { kod: tani.kod, kusur: "tanının önerisi ne yapılacağını gösteren yapıştırılabilir bir iskelet taşımıyor; düzeltmeyi tarif ediyor ama göstermiyor" },
+        { kod: tani.kod, kusur: "iskeletsiz-oneri" },
         { satir: tani.satir, sutun: tani.sutun }) });
     }
   }
@@ -1243,7 +1351,7 @@ export function orkestrasyonTanilari(g: OrkestrasyonGirdisi): Array<{ dosya: str
   // Tam yeşil: atlanan zorunlu kapı varken sonuç yeşil sayılamaz.
   if (g.atlananKapilar.length) {
     out.push({ dosya: g.anaEtiket, tani: yeniTani("sahte-tam-yeşil",
-      { kusur: `zorunlu denetim kapılarından ${g.atlananKapilar.length} tanesi çalıştırılamadı (${g.atlananKapilar.join(" · ")})` },
+      { kusur: "atlanan-kapilar", sayi: g.atlananKapilar.length, kapilar: g.atlananKapilar },
       { satir: 1, sutun: 1 }) });
   }
   return out;

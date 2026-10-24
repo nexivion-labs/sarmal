@@ -24,7 +24,7 @@
 import type { GovdeMetinleri } from "./onay-govde.ts";
 import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
 import type { AnlamRengi, SatirSimgesi } from "./simge-cizelgesi.ts";
-import { dilHanesi, sozlukAdi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
+import { dilHanesi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
 
@@ -90,16 +90,17 @@ export function calismaAlaninaGoreli(yol: string): string {
   return enUzunOnek ? yol.slice(enUzunOnek.length) : yol;
 }
 
-/** Kaynaktaki Türkçe `ne` yalnız okuma yüzünde etkin sözlük hanesine iner. */
-export function kanonikWidgetDuzYazisi(tip: string, turkce: string): string {
-  if (!yuzeyDili) throw new Error("Yüzey dili etkin dil kapısından bağlanmadı.");
-  return sozlukDuzYazisi("widgetNe", tip, turkce, yuzeyDili);
-}
-
+/**
+ * Bir tipin yüzeyde görünen adı. İNGİLİZCE YÜZ DOSYADAKİ ADI ANAR (MGZ-A09 ·
+ * Founder hükmü 2026-10-10): tip her dilde dosyada yazıldığı gibi, yani kanonik
+ * Türkçe adıyla basılır. Türkçe yüz çağıranın verdiği okunur biçimi kullanmayı
+ * sürdürür ("Alt katman" gibi); İngilizce yüz kanonik adı kullanır, çünkü
+ * kullanıcı o adı dosyada arar. Eski İngilizce yüz burada `Step` ve `Layer`
+ * basıyordu ve dosyada bulunmayan bir ad öğretiyordu.
+ */
 export function kanonikWidgetAdi(tip: string, turkce: string): string {
   if (!yuzeyDili) throw new Error("Yüzey dili etkin dil kapısından bağlanmadı.");
-  if (yuzeyDili === "tr") return turkce;
-  return sozlukAdi("widget", tip, yuzeyDili);
+  return yuzeyDili === "tr" ? turkce : tip;
 }
 
 /**
@@ -154,7 +155,7 @@ export const YUZEY_BOS_DURUM = {
         "biten bir dosyayla ilan eder. Boş bir klasörde Doğuş komutunu çalıştırın " +
         "ya da var olan bir projenin anadizinini açın; ilan yazıldığı an harita dolar.",
       "There is nothing to show on the map yet. The roadmap shows the plan of every " +
-        "entity in your workspace as a chain of phases, blocks, layers and steps; " +
+        "entity in your workspace as a chain of Faz, Blok, Katman and Adım nodes; " +
         "an entity declares itself with a root file whose name ends in _anadizin.sar. " +
         "Run the Genesis command in an empty folder or open the root file of an " +
         "existing project; the map fills in the moment the declaration is written.",
@@ -166,7 +167,7 @@ export const YUZEY_BOS_DURUM = {
         "zaman onu kaynağın içine bir Hatırlatıcı düğümü olarak yazın; " +
         "yazdığınız an bu panelde belirir ve siz kapatana kadar burada durur.",
       "You have no pending reminders. When you deliberately leave work for later, " +
-        "write it into the source as a reminder node; it appears in this panel " +
+        "write it into the source as a Hatırlatıcı node; it appears in this panel " +
         "the moment you write it and stays here until you close it.",
     );
   },
@@ -191,8 +192,8 @@ export const YUZEY_BOS_DURUM = {
         "kendiliğinden yapmaz.",
       "You have no recorded ideas. An idea is a raw thought that has not yet " +
         "become a commitment; write a thought you do not want to lose into the " +
-        "source as an idea node, and it appears in this panel the moment you " +
-        "write it. Promoting a matured idea to a Decision is up to you; the " +
+        "source as a Fikir node, and it appears in this panel the moment you " +
+        "write it. Promoting a matured Fikir to a Karar is up to you; the " +
         "panel never does it on its own.",
     );
   },
@@ -211,9 +212,9 @@ export const YUZEY_BOS_DURUM = {
       "Kararınızı bekleyen bir kapı yok. Bir Adımın kabul ölçütü sizin " +
         "onayınızı şart koştuğunda kapısı buraya kendiliğinden düşer; " +
         "verdiğiniz karar Adımın kendi kaydına yazılır.",
-      "No gate is awaiting your decision. When a Step's acceptance criteria " +
+      "No gate is awaiting your decision. When an Adım's kabul criteria " +
         "require your approval, its gate lands here automatically; the decision " +
-        "you make is written back to the Step's own record.",
+        "you make is written back to the Adım's own record.",
     );
   },
 } as const;
@@ -246,9 +247,11 @@ export function projeSatiriAciklamasi(adet: number, turSayisi?: number): string 
  * çözülür: ikinci bir ad çizelgesi kurulmaz, çünkü iki ad çizelgesi zamanla
  * ayrışır ve aynı tür iki satırda iki adla görünür. Kimlik kanoniktir ve
  * yüzeyler arasında değişmez (YUZ-3.1), dolayısıyla dile göre de çevrilmez.
+ * İngilizce yüz kimliği tireleriyle birlikte tam olarak anar (MGZ-A09), çünkü
+ * tireleri çözülmüş Türkçe kimlik İngilizce bir satırda düzyazı gibi okunurdu.
  */
 export function taniKisaAdi(taniKodu: string): string {
-  return taniKodu.replace(/-/g, " ").trim();
+  return yuzeyMetni(taniKodu.replace(/-/g, " ").trim(), taniKodu.trim());
 }
 
 /**
@@ -288,8 +291,8 @@ export function projeSatiriIpucu(
   const bas = yuzeyMetni(
     `"${projeAdi}" Projesinde ${adet === 1 ? "bir" : adet} kayıt toplandı. ` +
       `Bu satırın altındaki her kayıt ${projeKodu} kimliğine bağlıdır ve başka bir Projeyle karışmaz.`,
-    `${adet === 1 ? "One record was" : `${adet} records were`} collected in Project "${projeAdi}". ` +
-      `Every record under this row belongs to ${projeKodu} and cannot be mixed with another Project.`,
+    `${adet === 1 ? "One record was" : `${adet} records were`} collected in Proje "${projeAdi}". ` +
+      `Every record under this row belongs to ${projeKodu} and cannot be mixed with another Proje.`,
   );
   if (!tumu.length) return bas;
   const baslik = yuzeyMetni(
@@ -340,6 +343,7 @@ const GRUP_BASLIKLARI: Readonly<Record<string, string>> = {
   "yetim-meyve": "İlan edilmiş meyve diskte bulunamıyor",
   "proje-köksüz-üretim": "Üretim bir Proje köküne bağlanmadan yapılıyor",
   "katmansız-teknoloji": "Teknoloji hiçbir Katmana bağlanmamış",
+  "yersiz-teknoloji-kaçışı": "Katman zemin ilanlı projede teknoloji kaçışı taşıyor",
   "kopuk-zincir": "Zincir kopmuş; düğüm hiçbir öncüle bağlanmıyor",
   "kayıp-kenar": "Beklenen bir bağ hiç kurulmamış",
   "durum-tutarsızlığı": "Durum, öncüllerin durumuyla çelişiyor",
@@ -392,36 +396,37 @@ const GRUP_BASLIKLARI_EN: Readonly<Record<string, string>> = {
   "ilgili-önek-geçersiz": "The related list leaves the canonical prefix set",
   "madde-kodu-uyumsuz": "The clause code does not match the numbering graph",
   "kanon-kodu-uyumsuz": "The canon code does not match the expected numbering pattern",
-  "çıplak-adımlı-katman": "A Layer holds Steps directly with no intermediate level",
+  "çıplak-adımlı-katman": "A Katman holds Adım nodes directly, with no intermediate level",
   "tek-çocuk-kapsayıcı": "A container has only one child",
-  "adım-atomikliği": "A Step takes responsibility for more than one task",
-  "meyvesiz-geliştirme": "An in-progress Step does not say which file it will produce",
-  "yetim-meyve": "A declared fruit cannot be found on disk",
-  "proje-köksüz-üretim": "Production occurs without a Project root",
-  "katmansız-teknoloji": "A technology is not bound to any Layer",
+  "adım-atomikliği": "An Adım takes responsibility for more than one task",
+  "meyvesiz-geliştirme": "An Adım in geliştirmede does not say which file it will produce",
+  "yetim-meyve": "A declared Meyve cannot be found on disk",
+  "proje-köksüz-üretim": "Production occurs without a Proje root",
+  "katmansız-teknoloji": "A Teknoloji is not bound to any Katman",
+  "yersiz-teknoloji-kaçışı": "A Katman keeps the teknolojiBağımsız escape in a project that has declared its ground",
   "kopuk-zincir": "The chain is broken; a node has no resolvable predecessor",
   "kayıp-kenar": "An expected relationship was never established",
-  "durum-tutarsızlığı": "Status conflicts with predecessor status",
-  "silo-blok": "A Block never connects to a convergence trunk",
+  "durum-tutarsızlığı": "A durum value conflicts with its predecessor's durum",
+  "silo-blok": "A Blok never connects to a convergence trunk",
   "kavuşumsuz-paralellik": "Parallel work has no meeting point",
   "kavuşumsuz-dilim": "A slice remains disconnected from convergence",
-  "kural-sözleşmesi-eksik": "A rule does not complete its authority, layer and scope contract",
+  "kural-sözleşmesi-eksik": "A Kural does not complete its otorite, katman and kapsam trio",
   "düzyazı-koşul": "A rule condition is prose and cannot be enforced by the engine",
   "zorlanamayan-koşul": "A condition is written but no engine measures it",
-  "dayanaksız-kural": "A rule is not grounded in any decision",
-  "politika-dayanaksız": "A policy does not identify the decision it came from",
-  "uygulanmamış-karar": "A locked decision has not been applied anywhere",
+  "dayanaksız-kural": "A Kural is not grounded in any Karar",
+  "politika-dayanaksız": "A Politika does not identify the Karar it came from",
+  "uygulanmamış-karar": "A locked Karar has not been applied anywhere",
   "yürütücü-bağımlılığı": "A ruling is tied to a specific external executor",
   "üretim-kökeni-ihlali": "A generated surface is edited as source",
   "yürütme-kenarı-sözleşmesi": "An execution edge does not complete its contract",
-  "rejim-beyanı-eksik": "The Project does not declare its enforcement regime",
+  "rejim-beyanı-eksik": "The Proje does not declare its rejim",
   "açık-gizli-sınır-ihlali": "The open core binds directly to the private product side",
   "yüz-idempotans-drifti": "The generated surface differs across runs from the same source",
   "görünürlük-sözleşmesi-eksik": "A surface does not declare its visibility",
-  "beceri-kartı-eksik": "A skill does not carry its own card",
+  "beceri-kartı-eksik": "A Beceri does not carry its own card",
   "açık-hatırlatıcı": "Work deliberately left for later and not yet decided",
-  "kararlaşmış-hatırlatıcı": "A decided reminder waiting for its place in the chain",
-  "açık-adım": "A Step that is not yet closed",
+  "kararlaşmış-hatırlatıcı": "A decided Hatırlatıcı waiting for its place in the chain",
+  "açık-adım": "An Adım that is not yet closed",
   "geliştirmede-çapa": "An anchor currently in development",
   "bloklu-çapa": "An anchor whose path is blocked",
   "doğrulanmamış-çapa": "Work delivered without independent evidence",
@@ -589,6 +594,17 @@ export function kaydaGitBasligi(): string {
   return yuzeyMetni("Kaydın geldiği satıra git", "Go to the record's source line");
 }
 
+/**
+ * Problems satırına eklenen ilgili konumun metni (MGZ-A06). Satırın kendisi kaydın
+ * yazıldığı giriş dosyasını açar; bu konum ise bulgunun anlattığı dosyayı ya da
+ * klasörü açar ve hangisini açtığını göreli yoluyla söyler.
+ */
+export function hedefBaglantiMetni(yol: string, klasor: boolean): string {
+  return klasor
+    ? yuzeyMetni(`Bulgunun anlattığı klasör: ${yol}`, `Folder this finding describes: ${yol}`)
+    : yuzeyMetni(`Bulgunun anlattığı dosya: ${yol}`, `File this finding describes: ${yol}`);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // 💡 FİKİR SATIRI — Fikirler panelinin metinleri (KYN-YUZ-A01 · VIT-GRAF-A16)
 //
@@ -634,7 +650,7 @@ function kirp(metin: string, sinir: number): string {
  * kullanıcı kaydın kimliksiz olduğunu bakışta okur.
  */
 export function fikirSatirKodu(kod: string): string {
-  return kod.trim() || yuzeyMetni("kimliksiz Fikir", "idea without identity");
+  return kod.trim() || yuzeyMetni("kimliksiz Fikir", "Fikir without a kod");
 }
 
 /**
@@ -684,23 +700,23 @@ export function fikirIpucu(p: {
   dosya: string;
   satir: number;
 }): string {
-  const kimlik = p.kod.trim() || yuzeyMetni("kimliksiz Fikir", "idea without identity");
+  const kimlik = p.kod.trim() || yuzeyMetni("kimliksiz Fikir", "Fikir without a kod");
   const amac = p.ne.trim();
   const durum = p.durum.trim();
   const tetik = p.dönüşTetikleyici.trim();
   const satirlar = yuzeyDili === "en"
     ? [
-      `**${kimlik}** · idea`,
+      `**${kimlik}** · Fikir`,
       "",
       amac ? amac : "_Its purpose is not stated in the source._",
       "",
-      `**Status:** ${durum || "not written"}`,
-      `**Return trigger:** ${tetik || "not written; this idea will never be revived on its own"}`,
+      `**durum:** ${durum || "not written"}`,
+      `**dönüşTetikleyici:** ${tetik || "not written; this Fikir will never be revived on its own"}`,
       "",
-      `Project: ${p.proje}`,
+      `Proje: ${p.proje}`,
       `Source: ${p.dosya}:${p.satir}`,
       "",
-      "Select this row to open the idea at its source line.",
+      "Select this row to open the Fikir at its source line.",
     ]
     : [
       `**${kimlik}** · fikir`,
@@ -879,7 +895,8 @@ export const DURUM_CUBUGU_METINLERI = {
 export const TABAN_KANON_METINLERI = {
   /** Durum çubuğu girdisinin kendisi — ikon codicon ailesindendir. */
   get cubukMetni(): string {
-    return `$(warning) ${yuzeyMetni("Sarmal: eklentinin kanonu", "Sarmal: extension canon")}`;
+    // Bilgi durumu: uyarı simgesi yok (sarı zemin yalnız gerçek sorunda — atlandiMetni).
+    return yuzeyMetni("Sarmal · gömülü kanon", "Sarmal · built-in canon");
   },
   /**
    * İpucu sebebi ve çözümü tam cümlelerle söyler. EKL-F6-A09: çözüm artık kanon
@@ -887,6 +904,9 @@ export const TABAN_KANON_METINLERI = {
    * güncellemesinde bayatlayan ve BKM-DNT-A15 ile terk edilmiş çözüm olduğu için kalktı.
    */
   cubukIpucu(belgeYolu?: string): string {
+    const ozet = yuzeyMetni(
+      "Bu klasörde tip kaydı yok; eklentinin gömülü kanonu kullanılıyor.",
+      "This folder has no type record; the extension's built-in canon is in use.");
     const baslik = yuzeyMetni(
       "Bu projede tip sistemi kaydı da kanon işaretçisi de bulunamadı; Sarmal eklentinin kendi kanon kopyasıyla çalışıyor ve tam proje denetimi de bu kopyayla koşuyor.",
       "Neither a type system record nor a canon pointer was found for this project, so Sarmal is running on the extension's own canon copy, and the full project check runs on that copy as well.");
@@ -896,7 +916,7 @@ export const TABAN_KANON_METINLERI = {
     const belge = belgeYolu
       ? yuzeyMetni(`Son ölçüm şu belge için yapıldı: ${belgeYolu}`, `The latest measurement was taken for this document: ${belgeYolu}`)
       : undefined;
-    return [baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
+    return [ozet, baslik, cozum, belge].filter((s): s is string => Boolean(s)).join("\n");
   },
   /** EKL-F6-A09: tam proje denetiminin hiç koşmadığı hâlin durum çubuğu metni. */
   get atlandiMetni(): string {
@@ -915,6 +935,119 @@ export const TABAN_KANON_METINLERI = {
       "Eklentiyi yeniden kurmak kanon kopyasını geri getirir; çalışma alanında bir Sarmal kanon kökü varsa Sarmal: Kanon İşaretçisini Yaz komutu da denetimi geri açar. Komut satırındaki sarmal denetle komutu ise tam hükmü her durumda verir.",
       "Reinstalling the extension restores the canon copy, and if the workspace holds a Sarmal canon root, Sarmal: Write Canon Pointer also brings the check back. The sarmal denetle command on the command line gives the full verdict in every case.");
     return [baslik, sonuc, cozum].join("\n");
+  },
+  /**
+   * MGZ-A04: tam denetimi bir hatayla yarıda kalan köklerin ipucu. Sebep
+   * kanonsuzluk değil çöküş olduğu için kanon onarımı önerilmez; kök ve hatanın
+   * iletisi adıyla söylenir, hatanın tamamını gösteren yol gösterilir. Birden
+   * çok kök çöktüğünde cümleler çoğul kurulur. `sonucuAtla` kanonsuz kökün
+   * ipucuyla birlikte basılırken verilir: sonuç cümlesi orada zaten yazılıdır
+   * ve birleşik ipucunda ikinci kez geçmez.
+   */
+  coktuIpucu(coken: readonly { readonly kok: string; readonly hata: string }[], sonucuAtla = false): string {
+    const liste = coken.map((c) => `${c.kok} (${c.hata})`).join("; ");
+    const cogul = coken.length > 1;
+    const baslik = cogul
+      ? yuzeyMetni(
+        `Şu köklerde tam proje denetimi birer hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
+        `The full project check did not run for these roots because each one stopped with an error: ${liste}.`)
+      : yuzeyMetni(
+        `Şu kökte tam proje denetimi bir hata yüzünden yarıda kaldığı için koşmadı: ${liste}.`,
+        `The full project check did not run for this root because it stopped with an error: ${liste}.`);
+    const sonuc = cogul
+      ? yuzeyMetni(
+        "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu köklerde üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+        "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for these roots, so an empty panel does not mean the tree is clean.")
+      : yuzeyMetni(
+        "Kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları bu kökte üretilmiyor; panelin boş görünmesi ağacın temiz olduğu anlamına gelmez.",
+        "Broken reference, disk reconciliation and dependency graph diagnostics are not produced for this root, so an empty panel does not mean the tree is clean.");
+    const cozum = cogul
+      ? yuzeyMetni(
+        "Hatalar Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu her kökte hatanın tamamını gösterir; hatalar giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+        "The errors were also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for each of these roots, and once the errors are fixed the next check run removes this indicator by itself.")
+      : yuzeyMetni(
+        "Hata Sarmal Performans çıktı kanalına da yazıldı. Komut satırındaki sarmal denetle komutu aynı kökte hatanın tamamını gösterir; hata giderildiğinde bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+        "The error was also written to the Sarmal Performance output channel. The sarmal denetle command on the command line shows the complete error for the same root, and once the error is fixed the next check run removes this indicator by itself.");
+    return [baslik, ...(sonucuAtla ? [] : [sonuc]), cozum].join("\n");
+  },
+  /**
+   * MGZ-A12: tam denetimi kırık dosyalar dışarıda bırakılarak EKSİK koşan
+   * köklerin ipucu. Sebep ne kanonsuzluk ne çöküştür; kökün kendi dosyası söz
+   * dizimi hatasıyla ayrıştırılamamış ve turdan düşürülmüştür. Sonuç cümlesi
+   * ötekilerden farklıdır: öteki dosyaların çapraz tanıları ÜRETİLMİŞTİR,
+   * eksik olan kırık dosyanın ilan ettiği kodlar ile kenarlardır; ona atıf
+   * veren satırlar bu yüzden kırık atıf görünebilir. Onarım dosyanın
+   * kendisidir ve Sorunlar panelindeki söz dizimi tanısı yerini gösterir.
+   */
+  eksikIpucu(eksik: readonly { readonly kok: string; readonly dosyalar: readonly string[] }[]): string {
+    const liste = eksik.map((e) => `${e.kok} (${e.dosyalar.join(", ")})`).join("; ");
+    const cogul = eksik.length > 1;
+    const baslik = cogul
+      ? yuzeyMetni(
+        `Şu köklerde tam proje denetimi eksik koştu, çünkü söz dizimi hatası taşıyan şu dosyalar ayrıştırılamadı ve tur dışında bırakıldı: ${liste}.`,
+        `The full project check ran incompletely for these roots because the following files could not be parsed due to a syntax error and were left out of the run: ${liste}.`)
+      : yuzeyMetni(
+        `Şu kökte tam proje denetimi eksik koştu, çünkü söz dizimi hatası taşıyan şu dosya ayrıştırılamadı ve tur dışında bırakıldı: ${liste}.`,
+        `The full project check ran incompletely for this root because the following file could not be parsed due to a syntax error and was left out of the run: ${liste}.`);
+    const sonuc = yuzeyMetni(
+      "Öteki dosyaların kırık atıf, disk mutabakatı ve bağımlılık grafı tanıları üretildi; kırık dosyanın ilan ettiği kodlar ve kenarlar ise bu turda yoktur, dolayısıyla ona atıf veren satırlar kırık atıf görünebilir ve panel o dosya için eksik konuşur.",
+      "Broken reference, disk reconciliation and dependency graph diagnostics were produced for the other files; the codes and edges declared by the broken file are missing from this run, so lines that refer to it may show as broken references and the panel speaks incompletely about that file.");
+    const cozum = yuzeyMetni(
+      "Kırık dosyanın söz dizimi tanısı Sorunlar panelinde yerini gösterir; dosya onarıldığında bir sonraki denetim turu bu işareti kendiliğinden kaldırır.",
+      "The syntax diagnostic of the broken file in the Problems panel points to the spot; once the file is repaired the next check run removes this indicator by itself.");
+    return [baslik, sonuc, cozum].join("\n");
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KISITLI MOD (MGZ-A02) — HTR-KISITLI-MODDA-EKLENTI-SESSIZ
+//
+//   Güvenilmeyen klasörde Sarmal yalnız dili tanır ve renklendirir; kapalı
+//   kalanı ve güvenmenin yolunu TEK cümle söyler. Aynı cümle hem durum
+//   çubuğu işaretinin ipucunda hem kısıtlı modda çağrılan bir komutun
+//   iletisinde basılır; iki bağlamda da anlamlı kalsın diye cümle bir tıklama
+//   yerini değil, güvenin verildiği iki yeri (Kısıtlı Mod şeridi ve Sarmal
+//   işareti) anar. Sol şeritteki Sarmal simgesinin açtığı karşılama görünümü
+//   (MGZ-A08) aynı durumu birkaç paragrafla anlatır ve Klasöre Güven düğmesini
+//   taşır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const KISITLI_MOD_METINLERI = {
+  /** Durum çubuğu girdisi — kalkan simgesi VS Code'un kendi kısıtlı mod simgesidir. */
+  get cubukMetni(): string {
+    return `$(shield) ${yuzeyMetni("Sarmal: kısıtlı mod", "Sarmal: Restricted Mode")}`;
+  },
+  /** Kapalı kalanı ve güvenmenin yolunu söyleyen tek cümle. */
+  get ipucu(): string {
+    return yuzeyMetni(
+      "Bu klasöre güvenilmediği için Sarmal yalnız .sar dosyalarını tanıyıp renklendiriyor; denetim ve Sarmal panelleri, Kısıtlı Mod şeridinden ya da Sarmal işaretinden klasöre güvendiğiniz anda pencere yeniden yüklenmeden açılır.",
+      "Because this folder is not trusted, Sarmal only recognizes and colors .sar files; validation and the Sarmal panels turn on without reloading the window as soon as you trust the folder from the Restricted Mode banner or the Sarmal indicator.");
+  },
+  /** Kısıtlı modda çağrılan komutun iletisindeki düğme — VS Code'un güven ekranını açar. */
+  get guvenDugmesi(): string {
+    return yuzeyMetni("Klasöre Güven", "Trust Folder");
+  },
+  /**
+   * MGZ-A08 · Kısıtlı modda sol şeritteki Sarmal simgesinin açtığı karşılama
+   * görünümünün içeriği. VS Code bu içeriği sağlayıcısı olmayan görünümde
+   * bildirimden okur (`viewsWelcome`), dolayısıyla iki yerelleştirme dosyası bu
+   * değeri birebir aynalar ve kisitli-mod nöbeti eşitliği iki dilde ölçer. Her
+   * satır ayrı bir paragraftır; kendi satırında duran komut bağlantısını VS Code
+   * düğme olarak çizer ve düğme, durum çubuğu işaretiyle aynı güven ekranını açar.
+   */
+  karsilama(guvenKomutu: string): string {
+    return [
+      yuzeyMetni(
+        "Bu klasöre güvenilmediği için Sarmal yalnız .sar dosyalarını tanıyıp renklendiriyor.",
+        "Because this folder is not trusted, Sarmal only recognizes and colors .sar files."),
+      yuzeyMetni(
+        "Denetim diski taradığı ve süreç başlatabildiği için kapalıdır; bu yüzden Sorunlar panelinde Sarmal tanısı görünmez ve Sarmal panelleri açılmaz.",
+        "Validation is off because it scans the disk and can start processes, so no Sarmal diagnostics appear in the Problems panel and the Sarmal panels do not open."),
+      yuzeyMetni(
+        "Klasöre güvendiğiniz anda denetim ve paneller pencere yeniden yüklenmeden açılır.",
+        "As soon as you trust the folder, validation and the panels turn on without reloading the window."),
+      `[${this.guvenDugmesi}](command:${guvenKomutu})`,
+    ].join("\n");
   },
 } as const;
 
@@ -1041,7 +1174,7 @@ export function onayDosyaIpucu(dosya: string, adet: number): string {
  */
 export function onayKapiEtiketi(kod: string, ne: string): string {
   const amac = yolusuzlastir(ne).trim();
-  const tam = amac ? `${kod} — ${amac}` : yuzeyMetni(`${kod} — amacı yazılmamış Adım`, `${kod} — Step with no stated purpose`);
+  const tam = amac ? `${kod} — ${amac}` : yuzeyMetni(`${kod} — amacı yazılmamış Adım`, `${kod} — Adım with no stated purpose`);
   return tam.length > 120 ? `${tam.slice(0, 117)}…` : tam;
 }
 
@@ -1064,7 +1197,7 @@ export function onayKapiIpucu(p: {
 }): string {
   return yuzeyMetni(
     [`**${p.kod}** kararınızı bekliyor.`, "", p.ne ? `**Adımın amacı:** ${p.ne}` : "**Adımın amacı:** yazılmamış.", "", `**Onay isteyen ölçüt:**\n> ${p.olcut}`, "", `Kaynak: ${p.dosya}:${p.satir}`, "", "Tek tıkla bu satır açılır ve Adım kaynağında önizleme sekmesinde gösterilir; odak panelde kalır. Hemen altında panelin kendi gerekçe kutusu açılır, onun altında da üç karar satırı durur: onayla, şerhle onayla ya da reddet."].join("\n"),
-    [`**${p.kod}** is awaiting a decision.`, "", p.ne ? `**Step purpose:** ${p.ne}` : "**Step purpose:** not stated.", "", `**Criterion requiring approval:**\n> ${p.olcut}`, "", `Source: ${p.dosya}:${p.satir}`, "", "Select this row to open it and show the Step source in a preview tab while focus remains in the panel. The panel's rationale box appears directly below it, followed by three decision rows: approve, approve with note, or reject."].join("\n"),
+    [`**${p.kod}** is awaiting a decision.`, "", p.ne ? `**Adım purpose:** ${p.ne}` : "**Adım purpose:** not stated.", "", `**Criterion requiring approval:**\n> ${p.olcut}`, "", `Source: ${p.dosya}:${p.satir}`, "", "Select this row to open it and show the Adım's source in a preview tab while focus remains in the panel. The panel's rationale box appears directly below it, followed by three decision rows: approve, approve with note, or reject."].join("\n"),
   );
 }
 
@@ -1094,7 +1227,7 @@ export function onayKararIpucu(p: {
     : "No additional question is asked. If the box above contains a rationale, this row writes nothing and warns you; choose the noted-approval row instead. ";
   return yuzeyMetni(
     `**${p.kod}** kapısına "${p.damga}" hükmünü yazar. ${notTr}Karar, Adımın kendi satırına \`onay: "${p.damga} — tarih"\` kaydı olarak işlenir ve ancak kayıt diskten geri okunduktan sonra başarı bildirilir.`,
-    `Writes the "${p.damga}" ruling to gate **${p.kod}**. ${notEn}The decision is written to the Step's own row as \`onay: "${p.damga} — date"\` and success is reported only after the record is read back from disk.`,
+    `Writes the "${p.damga}" ruling to gate **${p.kod}**. ${notEn}The decision is written to the Adım's own row as \`onay: "${p.damga} — YYYY-MM-DD"\` and success is reported only after the record is read back from disk.`,
   );
 }
 
@@ -1112,7 +1245,7 @@ export function onayKopyaEtiketi(): string {
 export function onayKopyaIpucu(kod: string): string {
   return yuzeyMetni(
     `**${kod}** kapısının tam bağlamını (kimlik, kaynak konumu, Adımın durumu, amacı ve onay isteyen ölçüt) panoya kopyalar. Hiçbir karar yazmaz; kopyaladığın bloğu karar vermek için asistan sohbetine ya da başka bir yere yapıştırabilirsin.`,
-    `Copies the full context of gate **${kod}** (identity, source location, Step status, purpose and the criterion requiring approval) to the clipboard. It writes no decision; paste the copied block into an assistant chat or anywhere else to reason about it.`,
+    `Copies the full context of gate **${kod}** (identity, source location, the Adım's durum, its purpose and the criterion requiring approval) to the clipboard. It writes no decision; paste the copied block into an assistant chat or anywhere else to reason about it.`,
   );
 }
 
@@ -1136,8 +1269,8 @@ export function onayKapiBaglami(p: {
     [
       `Gate ${p.kod} is awaiting the Founder's decision.`,
       `Source location: ${p.dosya}:${p.satir}`,
-      `Step status: ${p.durum}`,
-      p.ne ? `Step purpose: ${p.ne}` : "The Step's purpose is not stated in the source.",
+      `Adım durum: ${p.durum}`,
+      p.ne ? `Adım purpose: ${p.ne}` : "The Adım's purpose is not stated in the source.",
       `Acceptance criterion requiring approval: ${p.olcut}`,
     ].join("\n"),
   );
@@ -1220,7 +1353,7 @@ export function onayRozetIpucu(adet: number): string {
  * çalışsa bile "bozuk" hükmünü alır.
  */
 export function kapiyaGitBasligi(): string {
-  return yuzeyMetni("Adımı kaynakta aç", "Open Step in source");
+  return yuzeyMetni("Adımı kaynakta aç", "Open Adım in source");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1240,7 +1373,7 @@ export function kapiyaGitBasligi(): string {
 
 /** Comments denetleyicisinin KULLANICIYA GÖRÜNEN adı — kuyruk çağrıştırmaz. */
 export function etkinKararAdi(): string {
-  return yuzeyMetni("Sarmal Etkin Karar", "Sarmal Active Decision");
+  return yuzeyMetni("Sarmal Etkin Karar", "Sarmal active decision");
 }
 
 /** Onaylar panelini açan komutun kullanıcıya görünen adı. */
@@ -1291,7 +1424,7 @@ export function kararUcusta(kod: string): string {
 export function kararKapiYok(kod: string): string {
   return yuzeyMetni(
     `${kod} artık kararını beklemiyor — bu kapı büyük olasılıkla zaten karara bağlanmıştı ve Adım'ın kendi satırında onay kaydı duruyor. Hiçbir şey bozulmadı, ikinci bir kayıt yazılmadı; yanlış yere yazmaktansa durduk. Panel tazelendi, satır kendiliğinden düşüyor.`,
-    `${kod} is no longer awaiting a decision. This gate was probably already decided and its approval record is on the Step's own row. Nothing was damaged and no duplicate record was written; writing to the wrong place was refused. The panel has refreshed and the row will disappear.`,
+    `${kod} is no longer awaiting a decision. This gate was probably already decided and its approval record is on the Adım's own row. Nothing was damaged and no duplicate record was written; writing to the wrong place was refused. The panel has refreshed and the row will disappear.`,
   );
 }
 
@@ -1302,7 +1435,7 @@ export function kararKapiYok(kod: string): string {
 export function kararKimlikCakismasi(kod: string, adet: number, dosyaAdi: string): string {
   return yuzeyMetni(
     `Karar YAZILMADI — "${dosyaAdi}" dosyasında ${kod} kodu ${adet} kez geçiyor ve hangi Adıma yazılacağı belirsiz. Kodlardan birini benzersiz yapıp yeniden dene; belirsiz kimlikte tahmin yürütmek yanlış Adıma karar yazardı.`,
-    `Decision NOT WRITTEN — code ${kod} occurs ${adet} times in "${dosyaAdi}", so the target Step is ambiguous. Make one code unique and try again; guessing could write the decision to the wrong Step.`,
+    `Decision NOT WRITTEN — code ${kod} occurs ${adet} times in "${dosyaAdi}", so the target Adım is ambiguous. Make one code unique and try again; guessing could write the decision to the wrong Adım.`,
   );
 }
 
@@ -1318,7 +1451,7 @@ export function kararUygulanamadi(kod: string, neden: string): string {
 export function kararKaydedilemedi(kod: string, neden: string, geriAlindi: boolean): string {
   return yuzeyMetni(
     `Karar DİSKE YAZILAMADI — ${kod}: kaydetme başarısız oldu (${neden}). ${geriAlindi ? "Bellekteki ek geri alındı, dosyan karar öncesindeki hâlinde. " : "Bellekteki ek geri ALINAMADI; dosyayı aç ve durum satırını gözle kontrol et. "}Kapı Onaylar panelinde kararını beklemeye devam ediyor.`,
-    `Decision NOT WRITTEN TO DISK — ${kod}: save failed (${neden}). ${geriAlindi ? "The in-memory addition was reverted and the file is back to its pre-decision state. " : "The in-memory addition COULD NOT be reverted; open the file and inspect the status row. "}The gate remains in the Approvals panel.`,
+    `Decision NOT WRITTEN TO DISK — ${kod}: save failed (${neden}). ${geriAlindi ? "The in-memory addition was reverted and the file is back to its pre-decision state. " : "The in-memory addition COULD NOT be reverted; open the file and inspect the durum row. "}The gate remains in the Approvals panel.`,
   );
 }
 
@@ -1326,7 +1459,7 @@ export function kararKaydedilemedi(kod: string, neden: string, geriAlindi: boole
 export function kararBellekUyusmazligi(kod: string, beklenen: string, bulunan: string): string {
   return yuzeyMetni(
     `Karar DOĞRULANAMADI — ${kod}: yazımdan sonra bellekte beklenen kayıt yok. Beklenen: "${beklenen}" · bulunan: "${bulunan || "hiçbir onay kaydı"}". Dosyayı aç, durum satırını gözle kontrol et; başarı bildirilmedi.`,
-    `Decision COULD NOT BE VERIFIED — ${kod}: the expected record is absent from memory after writing. Expected: "${beklenen}" · found: "${bulunan || "no approval record"}". Open the file and inspect the status row; success was not reported.`,
+    `Decision COULD NOT BE VERIFIED — ${kod}: the expected record is absent from memory after writing. Expected: "${beklenen}" · found: "${bulunan || "no approval record"}". Open the file and inspect the durum row; success was not reported.`,
   );
 }
 
@@ -1357,7 +1490,7 @@ export function kararBelgeAyrisilamadi(
   const yerEn = evre === "bellek" ? "the document in the editor" : "the file on disk";
   return yuzeyMetni(
     `Karar DOĞRULANAMADI — ${kod}: yazımdan sonra ${yerTr} ayrıştırılamıyor ve dosya BOZULMUŞ OLABİLİR. Bu bir başarı değildir: kapının listeden düşmesi kararın işlendiğini değil, belgenin okunamadığını gösterir. Dosyayı aç, durum satırını gözle kontrol et ve gerekirse son değişikliği geri al.`,
-    `Decision COULD NOT BE VERIFIED — ${kod}: after writing, ${yerEn} cannot be parsed and the file MAY BE DAMAGED. This is not success: the gate leaving the list can mean the document became unreadable. Open the file, inspect the status row and undo the last change if necessary.`,
+    `Decision COULD NOT BE VERIFIED — ${kod}: after writing, ${yerEn} cannot be parsed and the file MAY BE DAMAGED. This is not success: the gate leaving the list can mean the document became unreadable. Open the file, inspect the durum row and undo the last change if necessary.`,
   );
 }
 
@@ -1371,7 +1504,7 @@ export function kararEklemeNoktasiDogrulanamadi(
 ): string {
   return yuzeyMetni(
     `Karar YAZILMADI — ${kod}: ekleme noktası kaynak metinle doğrulanamadı. Noktanın hemen önünde "${beklenen}" metni beklenirdi; "${bulunan}" bulundu. Bu noktaya yazmak dosyayı bozabilirdi, bu yüzden hiçbir şey değiştirilmedi. Durum değeri tırnaklı ya da alışılmadık biçimde olabilir; kaydı Adım satırına elle işleyebilir ya da durum değerini tırnaksız yazıp yeniden deneyebilirsin.`,
-    `Decision NOT WRITTEN — ${kod}: the insertion point could not be verified against source text. "${beklenen}" was expected immediately before it; "${bulunan}" was found. Writing there could damage the file, so nothing changed. The status value may be quoted or unusually formatted; write the record on the Step row manually or use an unquoted status and try again.`,
+    `Decision NOT WRITTEN — ${kod}: the insertion point could not be verified against source text. "${beklenen}" was expected immediately before it; "${bulunan}" was found. Writing there could damage the file, so nothing changed. The durum value may be quoted or unusually formatted; write the record on the Adım row manually or write the durum value without quotes and try again.`,
   );
 }
 
@@ -1388,7 +1521,7 @@ export function kararBeklerKaldirilamadi(
 ): string {
   return yuzeyMetni(
     `${kod}: onayBekler alanı kaldırılamadı. Beklenen "${beklenen}"; bulunan "${bulunan}". Onay yazıldığında bu alanın kalkması gerekir, çünkü bekleme ilanı ile verilmiş karar aynı düğümde birlikte duramaz. Alanı Adım satırından elle kaldır ve kaynağı bir kez daha denetle.`,
-    `${kod}: the onayBekler field could not be removed. Expected "${beklenen}"; found "${bulunan}". The field must disappear when an approval is written, because a pending declaration and a recorded decision cannot coexist on one node. Remove the field from the Step row by hand and audit the source once more.`,
+    `${kod}: the onayBekler field could not be removed. Expected "${beklenen}"; found "${bulunan}". The field must disappear when an approval is written, because a pending declaration and a recorded decision cannot coexist on one node. Remove the field from the Adım row by hand and audit the source once more.`,
   );
 }
 
@@ -1460,6 +1593,18 @@ export function gerekceArtik(): string {
 }
 
 /**
+ * Karar komutu panelden gelmeyen bir çağrıyla geçersiz türde argüman aldı
+ * (gerekçe dizgi değil ya da gerekçe bayrağı boole değil). Hiçbir kayıt
+ * yazılmaz; çağıran yakalanmamış bir hata yerine bu cümleyi görür (MGZ-A01).
+ */
+export function kararArgumaniGecersiz(kod: string): string {
+  return yuzeyMetni(
+    `${kod} için karar yazılmadı: komut geçersiz türde bir argüman aldı. Kararı Onaylar panelinden ver.`,
+    `No decision was written for ${kod}: the command received an argument of an invalid type. Make the decision in the Approvals panel.`,
+  );
+}
+
+/**
  * Emekli Comments karar komutları çağrılırsa basılan uyumluluk cümlesi. Komut
  * kimlikleri korunur (kullanıcının menü koşulları onlara bağlıdır) fakat karar
  * artık panelde verilir.
@@ -1480,7 +1625,7 @@ export const ONAY_YUZEY_METINLERI = {
     `**${kod}** is awaiting Founder approval. Select the lens above to reveal this gate in the Approvals panel, then choose Approve, Approve with note, or Reject.\n\n**Criterion requiring approval:**\n> ${olcut}`,
   ),
   lensBasligi: (kod: string): string => yuzeyMetni(`${kod} — Founder onayı bekliyor · Onaylar panelinde aç`, `${kod} — awaiting Founder approval · open in Approvals`),
-  get lensIpucu(): string { return yuzeyMetni("Bu kapı Onaylar panelinde seçili gelir ve satırı açılır; kararınızı orada verirsiniz (Onayla · Şerhle onayla · Reddet) ve kayıt Adım'a onay: olarak işlenir", "This gate is selected and expanded in the Approvals panel. Decide there (Approve · Approve with note · Reject); the record is written to the Step as onay:."); },
+  get lensIpucu(): string { return yuzeyMetni("Bu kapı Onaylar panelinde seçili gelir ve satırı açılır; kararınızı orada verirsiniz (Onayla · Şerhle onayla · Reddet) ve kayıt Adım'a onay: olarak işlenir", "This gate is selected and expanded in the Approvals panel. Decide there (Approve · Approve with note · Reject); the record is written to the Adım as onay:."); },
   paneldeBulunamadi: (kod: string): string => yuzeyMetni(`${kod} panelde bulunamadı — kuyruk henüz tazelenmemiş olabilir. Onaylar açıldı; kapı bir sonraki tazelemede görünür.`, `${kod} was not found in the panel; the queue may not have refreshed yet. Approvals was opened and the gate will appear on the next refresh.`),
   kararDosyasiOkunamiyor: (dosya: string): string => yuzeyMetni(`Karar işlenemedi — "${dosya}" okunamıyor. Dosya taşınmış ya da silinmiş olabilir.`, `The decision could not be applied because "${dosya}" cannot be read. The file may have been moved or deleted.`),
   kapiDosyasiOkunamiyor: (dosya: string): string => yuzeyMetni(`Kapı açılamadı — "${dosya}" okunamıyor. Dosya taşınmış ya da silinmiş olabilir; panel bir sonraki tazelemede düzelir.`, `The gate could not be opened because "${dosya}" cannot be read. The file may have been moved or deleted; the panel will correct itself on the next refresh.`),
@@ -1494,7 +1639,7 @@ export const ONAY_YUZEY_METINLERI = {
 
 export const EKLENTI_KABUK_METINLERI = {
   get performansKanali(): string { return yuzeyMetni("Sarmal Performans", "Sarmal Performance"); },
-  get kararYuzeyiKanali(): string { return yuzeyMetni("Sarmal Karar Yüzeyi", "Sarmal Decision Surface"); },
+  get kararYuzeyiKanali(): string { return yuzeyMetni("Sarmal Karar Yüzeyi", "Sarmal decision surface"); },
   get geribildirimDenetleyicisi(): string { return yuzeyMetni("Sarmal Geribildirim", "Sarmal Feedback"); },
   get iskeletIcinBelgeGerekli(): string {
     return yuzeyMetni(
@@ -1511,7 +1656,7 @@ export const EKLENTI_KABUK_METINLERI = {
   get giydirKlasorGerekli(): string {
     return yuzeyMetni(
       "Giydir çalışma alanı ister — önce bir klasör aç (ayarlar Workspace hedefine yazılır, kullanıcı ayarına değil).",
-      "Dressing requires a workspace — open a folder first (settings are written to the Workspace target, not user settings).",
+      "Dressing requires a workspace — open a folder first (the settings are written at workspace level, not in user settings).",
     );
   },
   get giydirildi(): string {
@@ -1530,6 +1675,12 @@ export const EKLENTI_KABUK_METINLERI = {
 
 export const IZ_METINLERI = {
   denetimCoktu: (hata: string): string => yuzeyMetni(`⛔ denetim turu çöktü: ${hata}`, `⛔ validation run failed: ${hata}`),
+  // MGZ-A04: turun kendisi değil, tek bir kökün tam denetimi çöktüğünde kanala düşen satır.
+  kokDenetimiCoktu: (kok: string, hata: string): string => yuzeyMetni(`tam denetim şu kökte çöktü: ${kok} (${hata})`, `full check failed for this root: ${kok} (${hata})`),
+  // MGZ-A12: bir kökün tam denetimi kırık dosya dışarıda bırakılarak eksik koştuğunda kanala düşen satır.
+  kokDenetimiEksik: (kok: string, dosyalar: readonly string[]): string => yuzeyMetni(
+    `tam denetim şu kökte kırık dosya dışarıda bırakılarak eksik koştu: ${kok} (${dosyalar.join(", ")})`,
+    `full check ran incompletely for this root, leaving out a broken file: ${kok} (${dosyalar.join(", ")})`),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
   performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string }): string => yuzeyMetni(
     `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
@@ -1551,6 +1702,13 @@ export const IZ_METINLERI = {
   panelTuru: (saat: string, sure: number, dosya: number, tetik: string): string => yuzeyMetni(
     `🗺️ ${saat} panel turu: ${sure} ms · ${dosya} dosya · tetik=${tetik}`,
     `🗺️ ${saat} panel run: ${sure} ms · ${dosya} files · trigger=${tetik}`,
+  ),
+  // VIT-KIMLIK-A08: parametre simge dekorasyonunun bir boyaması. Süre iki
+  // ondalıkla yazılır, çünkü görünür aralık boyaması milisaniyenin altında
+  // kalır ve tam sayıya yuvarlamak ölçümü sıfıra indirirdi.
+  dekorTuru: (p: { saat: string; sure: number; simge: number; satir: number; tetik: string }): string => yuzeyMetni(
+    `${p.saat} parametre dekoru: ${p.sure.toFixed(2)} ms · ${p.simge} simge · ${p.satir} satır · tetik=${p.tetik}`,
+    `${p.saat} parameter decoration: ${p.sure.toFixed(2)} ms · ${p.simge} icons · ${p.satir} lines · trigger=${p.tetik}`,
   ),
   yavasGenisletme: (saat: string, detay: string): string => yuzeyMetni(
     `🐢 ${saat} yavaş genişletme: ${detay}`,
@@ -1579,7 +1737,7 @@ export const ONAY_CEKIRDEK_METINLERI = {
   get mekanikOlcut(): string {
     return yuzeyMetni(
       "Adım kapanışını Founder onayına mekanik alanla bağlıyor (onayBekler: founder).",
-      "This Step binds closure to Founder approval through the mechanical field `onayBekler: founder`.",
+      "This Adım binds closure to Founder approval through the mechanical field `onayBekler: founder`.",
     );
   },
   get satirYok(): string { return yuzeyMetni("(satır yok)", "(line missing)"); },
@@ -1644,7 +1802,7 @@ export const DUZELTME_METINLERI = {
   get beceriTerfisi(): string {
     return yuzeyMetni(
       "Beceri iskeleti oluştur ve olgunlaşan kaydı ona bağla",
-      "Create a Skill scaffold and bind the matured record to it",
+      "Create a Beceri scaffold and bind the matured Bellek record to it",
     );
   },
   get tabloyuHizala(): string {
@@ -1659,19 +1817,19 @@ export const DUZELTME_METINLERI = {
   get kosuyaBasla(): string {
     return yuzeyMetni(
       "Koşuya başla — durumu geliştirmede yap (işe başlarken işaretlenir)",
-      "Start the run — set status to in progress",
+      "Start the run — set durum to geliştirmede",
     );
   },
   get adimiTamamla(): string {
     return yuzeyMetni(
       "Adımı tamamla — durum: tamamlandı (üretir: meyvesini yazmayı unutma)",
-      "Complete the Step — set status to done (remember to declare its fruit with üretir:)",
+      "Complete the Adım — set durum to tamamlandı (remember to declare its Meyve with üretir:)",
     );
   },
   get kararOzetiEkle(): string {
     return yuzeyMetni(
       "Karar'a özet alanı ekle — bağlamı bilmeyen de okuyabilsin",
-      "Add a summary field to the Decision so it is readable without prior context",
+      "Add an özet field to the Karar so it is readable without prior context",
     );
   },
 } as const;
@@ -1742,17 +1900,17 @@ export const HATIRLATICI_KAPATMA_METINLERI = {
   get kapatilamaz(): string {
     return yuzeyMetni(
       "Bu satır kapatılamaz: kapatma yalnız ATEŞLEMİŞ hatırlatıcıya uygulanır. Uykuda bekleyen bir hatırlatıcı, hedefi henüz kapanmamış bir taahhüttür.",
-      "This row cannot be closed: closing applies only to a FIRED reminder. A sleeping reminder is a commitment whose target has not closed yet.");
+      "This row cannot be closed: closing applies only to a FIRED Hatırlatıcı. A sleeping Hatırlatıcı is a commitment whose target has not closed yet.");
   },
   kapatildi: (kod: string): string => yuzeyMetni(
     `${kod} kapatıldı — hatırlatıcı yerinde kalır, yalnız durumu tamamlandı oldu.`,
-    `${kod} was closed. The reminder stays in place; only its state became completed.`),
+    `${kod} was closed. The Hatırlatıcı stays in place; only its durum became tamamlandı.`),
   zatenKapali: (kod: string): string => yuzeyMetni(
     `${kod} zaten kapalı — dosyaya dokunulmadı.`,
     `${kod} is already closed; the file was left untouched.`),
   basarisiz: (kod: string, neden: string): string => yuzeyMetni(
     `${kod} kapatılamadı ve dosyaya DOKUNULMADI. Sebep: ${neden}. Kaynağı açıp durum alanını elle yazabilirsin.`,
-    `${kod} could not be closed and the file was left UNTOUCHED. Reason: ${neden}. You may open the source and set the state field by hand.`),
+    `${kod} could not be closed and the file was left UNTOUCHED. Reason: ${neden}. You may open the source and set the durum field by hand.`),
   get ayristirilamadi(): string {
     return yuzeyMetni("dosya ayrıştırılamadı", "the file could not be parsed");
   },
@@ -1778,13 +1936,13 @@ export function imzaAlanBelgesi(zorunlu: boolean, tur?: string, degerler?: reado
 }
 
 export function imzaBelgesi(): string {
-  return yuzeyMetni("Kanondan (SNF-0) — `[ad]` = isteğe bağlı.", "From the canon (SNF-0) — `[name]` = optional.");
+  return yuzeyMetni("Kanondan (SNF-0) — `[ad]` = isteğe bağlı.", "From the canon (SNF-0) — a field in `[brackets]` is optional.");
 }
 
 export const YILDIZ_METINLERI = {
   get uzunNiyet(): string { return yuzeyMetni("Uzun niyet metnini üç tırnaklı çok satırlı biçime katlayabilirim; uzun satır bölününce okunurluk artar.", "I can fold the long intent into triple-quoted multiline form; splitting the long line improves readability."); },
   get tablo(): string { return yuzeyMetni("Tablonun sütunlarını hizalayabilirim — dikey çizgiler aynı hizaya gelir.", "I can align the table columns so their vertical bars line up."); },
-  get terfi(): string { return yuzeyMetni("Olgunlaşan bellek kaydı beceriye terfi etmeye hazır — dönüşümü başlatabilirim.", "The mature memory record is ready for promotion to a skill; I can start the conversion."); },
+  get terfi(): string { return yuzeyMetni("Olgunlaşan bellek kaydı beceriye terfi etmeye hazır — dönüşümü başlatabilirim.", "The mature Bellek record is ready for promotion to a Beceri; I can start the conversion."); },
   get bilinmeyenTip(): string { return yuzeyMetni("Bilinmeyen tip için düzeltme önerim var — en yakın kanonlu tipe çevirebilirim.", "I have a fix for the unknown type and can change it to the nearest canonical type."); },
   ipucu: (neden: string): string => yuzeyMetni(
     `${ipucuIsareti("yildiz")}**Kuzey Yıldızı** — bu satırda uygulanabilir bir öneri var:\n\n${neden}\n\nUygulamak için satıra gel ve **⌘.** (kod aksiyonları) menüsünü aç.`,
@@ -1802,17 +1960,17 @@ export const YILDIZ_METINLERI = {
 
 export function takdirKanallari(): ReadonlyArray<{ param: string; emoji: string; ad: string; ipucu: string }> {
   return [
-    { param: "teşekkür", emoji: "🙏", ad: yuzeyMetni("Teşekkür", "Thanks"), ipucu: yuzeyMetni("minnet — emeğe selam", "gratitude — recognition for the work") },
-    { param: "takdir", emoji: "❤️", ad: yuzeyMetni("Takdir", "Appreciation"), ipucu: yuzeyMetni("memnuniyet — tam isabet", "satisfaction — exactly right") },
-    { param: "onur", emoji: "🏅", ad: yuzeyMetni("Onur", "Honor"), ipucu: yuzeyMetni("üstün başarı — onurlandırma", "outstanding achievement — recognition") },
-    { param: "öneri", emoji: "💡", ad: yuzeyMetni("Öneri", "Suggestion"), ipucu: yuzeyMetni("yapıcı geribildirim — daha iyisi için", "constructive feedback — toward something better") },
+    { param: "teşekkür", emoji: "🙏", ad: yuzeyMetni("Teşekkür", "teşekkür"), ipucu: yuzeyMetni("minnet — emeğe selam", "gratitude — recognition for the work") },
+    { param: "takdir", emoji: "❤️", ad: yuzeyMetni("Takdir", "takdir"), ipucu: yuzeyMetni("memnuniyet — tam isabet", "satisfaction — exactly right") },
+    { param: "onur", emoji: "🏅", ad: yuzeyMetni("Onur", "onur"), ipucu: yuzeyMetni("üstün başarı — onurlandırma", "outstanding achievement — recognition") },
+    { param: "öneri", emoji: "💡", ad: yuzeyMetni("Öneri", "öneri"), ipucu: yuzeyMetni("yapıcı geribildirim — daha iyisi için", "constructive feedback — toward something better") },
   ];
 }
 
 export const TAKDIR_METINLERI = {
   get yerTutucu(): string { return yuzeyMetni("Kadroya notun... yazıp aşağıdan kanalını seç: 🙏 ❤️ 🏅 💡", "Your note to the team... then choose its channel below: 🙏 ❤️ 🏅 💡"); },
   get istem(): string { return yuzeyMetni("Yazdığın geribildirim dile işlenir ve ajanın hafızasına geçer", "Your feedback is recorded in the language and enters the agent's memory"); },
-  karsilama: (kod: string): string => yuzeyMetni(`**${kod}** tamamlandı 🕊️ Notunu aşağıya yaz, kanalını alttaki düğmeyle seç: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri`, `**${kod}** is complete 🕊️ Write your note below, then choose its channel: 🙏 thanks · ❤️ appreciation · 🏅 honor · 💡 suggestion`),
+  karsilama: (kod: string): string => yuzeyMetni(`**${kod}** tamamlandı 🕊️ Notunu aşağıya yaz, kanalını alttaki düğmeyle seç: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri`, `**${kod}** is complete 🕊️ Write your note below, then choose its channel: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri`),
   etiket: (kod: string): string => yuzeyMetni(`${kod} — kadroya geribildirim`, `${kod} — feedback to the team`),
   eklemeNoktasi: (kod: string, bulunan: string): string => yuzeyMetni(
     `Geribildirim yazılamadı — ${kod} satırındaki ekleme noktası doğrulanamadı (beklenen "tamamlandı", bulunan "${bulunan}"). Dosya bozulmasın diye yazım durdu; değeri elle işleyebilirsin.`,
@@ -1820,10 +1978,10 @@ export const TAKDIR_METINLERI = {
   ),
   islendi: (emoji: string, kod: string): string => yuzeyMetni(`${emoji} Geribildirim kadroya işlendi — ${kod}`, `${emoji} Feedback recorded for the team — ${kod}`),
   get bekliyorSus(): string { return yuzeyMetni("  ❤️  geribildirimini bekliyor", "  ❤️  awaiting your feedback"); },
-  get bosDavetIpucu(): string { return yuzeyMetni("💓 Bu adım tamamlandı — üstündeki lense tıklayın: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri", "💓 This Step is complete — select the lens above: 🙏 thanks · ❤️ appreciation · 🏅 honor · 💡 suggestion"); },
+  get bosDavetIpucu(): string { return yuzeyMetni("💓 Bu adım tamamlandı — üstündeki lense tıklayın: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri", "💓 This Adım is complete — select the lens above: 🙏 teşekkür · ❤️ takdir · 🏅 onur · 💡 öneri"); },
   lensBasligi: (dolu: boolean, emojiler: string): string => dolu
     ? yuzeyMetni(`${emojiler}  geribildirim (ekle/düzenle)`, `${emojiler}  feedback (add/edit)`)
-    : yuzeyMetni("🤍 geribildirim — teşekkür · takdir · onur · öneri", "🤍 feedback — thanks · appreciation · honor · suggestion"),
+    : yuzeyMetni("🤍 geribildirim — teşekkür · takdir · onur · öneri", "🤍 feedback — teşekkür · takdir · onur · öneri"),
   lensIpucu: (kod: string): string => yuzeyMetni(`${kod} tamamlandı — kadro kalbini bekliyor`, `${kod} is complete — the team awaits your response`),
   mevcutNot: (not: string): string => yuzeyMetni(`Mevcut not: ${not}`, `Current note: ${not}`),
   kanalSec: (kod: string): string => yuzeyMetni(`${kod} için bir kanal seçin — notunuz bu etmenin siciline işlenir ve zamanla hafızasına aktarılır.`, `Choose a channel for ${kod}. Your note is recorded in this agent's history and carried into its memory over time.`),
@@ -1834,7 +1992,7 @@ export const TAKDIR_METINLERI = {
   get rafYok(): string {
     return yuzeyMetni(
       "Geribildirim hasadı yazılmadı, çünkü kökün giriş dosyası bir öğrenme rafı (ogrenme/) ilan etmiyor. Rafı giriş dosyasındaki bir Kitaplığın içinde ilan et ve hasadı yeniden koştur.",
-      "The feedback harvest was not written because the entry file of the root declares no learning shelf (ogrenme/). Declare the shelf inside a library in the entry file and run the harvest again.",
+      "The feedback harvest was not written because the entry file of the root declares no learning Raf (ogrenme/). Declare the Raf inside a Kitaplık in the entry file and run the harvest again.",
     );
   },
 } as const;
@@ -1846,7 +2004,7 @@ export const TAKDIR_METINLERI = {
 export const YOL_METINLERI = {
   daha: (adet: number): string => yuzeyMetni(`… +${adet} daha`, `… +${adet} more`),
   get grafinTamami(): string { return yuzeyMetni("tamamı: sarmal graf / etki", "all: Sarmal graph / impact"); },
-  get bagimli(): string { return yuzeyMetni("bağımlı", "depends on"); },
+  get bagimli(): string { return yuzeyMetni("bağımlı", "bağımlı"); },
   get etkiler(): string { return yuzeyMetni("etkiler", "affects"); },
   get gecisli(): string { return yuzeyMetni("🌊 geçişli", "🌊 transitive"); },
   get dogrudan(): string { return yuzeyMetni("⚡ doğrudan", "⚡ direct"); },
@@ -1856,7 +2014,7 @@ export const YOL_METINLERI = {
   get gecisliDuz(): string { return yuzeyMetni("geçişli", "transitive"); },
   get dogrudanDuz(): string { return yuzeyMetni("doğrudan", "direct"); },
   etkiSayaci: (dogrudan: number, gecisli: number): string => yuzeyMetni(`${dogrudan} doğrudan · ${gecisli} geçişli`, `${dogrudan} direct · ${gecisli} transitive`),
-  kabul: (adet: number): string => yuzeyMetni(`↳ kabul · ${adet} madde`, `↳ acceptance · ${adet} item${adet === 1 ? "" : "s"}`),
+  kabul: (adet: number): string => yuzeyMetni(`↳ kabul · ${adet} madde`, `↳ kabul · ${adet} item${adet === 1 ? "" : "s"}`),
   get koniDetayi(): string { return yuzeyMetni("detay: koni kartı", "details: cone card"); },
   yavasGenisletme: (sure: number, kim: string, adet: number): string => yuzeyMetni(`${sure} ms · ${kim} · ${adet} çocuk`, `${sure} ms · ${kim} · ${adet} children`),
   kirikDosya: (adet: number): string => yuzeyMetni(`${adet} dosya ayrıştırılamadı`, `${adet} file${adet === 1 ? "" : "s"} could not be parsed`),
@@ -1872,54 +2030,63 @@ export const YOL_METINLERI = {
   bilgiIpucu: (etiket: string, aciklama: string, hedef: boolean): string => yuzeyMetni(`${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\ntıklayın: düğüme atla" : ""}`, `${etiket}${aciklama ? `\n${aciklama}` : ""}${hedef ? "\nselect to jump to the node" : ""}`),
   get dugumeAtla(): string { return yuzeyMetni("Düğüme atla", "Jump to node"); },
   kosumIpucu: (etiket: string, zaman: string): string => yuzeyMetni(`${etiket}\n${zaman}\ntıklayın: tam konuşma (ham prompt + ham yanıt)`, `${etiket}\n${zaman}\nselect for the full conversation (raw prompt + raw response)`),
+  // HST-MTR-A04: dış yürütücünün teması (MCP sef ve durum-guncelle) koşum satırı olur.
+  // Satır yalnız çağrının kendisidir; ham istem ve yanıt toplanmadığı için konuşma vaat edilmez.
+  yurutucuTemasi: (arac: string): string => yuzeyMetni(`yürütücü · ${arac}`, `executor · ${arac}`),
+  yurutucuAciklamasi: (yurutucu: string | undefined, durum: string | undefined): string =>
+    [yurutucu ?? "", durum ? `→ ${MINI_GRAF_METINLERI.durum(durum)}` : ""].filter(Boolean).join(" · "),
+  yurutucuIpucu: (etiket: string, zaman: string): string => yuzeyMetni(`${etiket}\n${zaman}\nyürütücü teması: yalnız çağrının kendisi kaydedilir; ham istem ve yanıt toplanmaz`, `${etiket}\n${zaman}\nexecutor contact: only the call itself is recorded; the raw prompt and response are not collected`),
   get konusmaDetayi(): string { return yuzeyMetni("Konuşma Detayı", "Conversation Details"); },
   get bosRay(): string { return yuzeyMetni("ray döşendi — vagon bekleniyor", "track laid — awaiting a car"); },
   // 🪆 EKL-F7-A09: kapsayıcı varlık satırı kaç projeyi sardığını söyler (küme kimliği).
   kumeAciklama: (sayi: number): string => yuzeyMetni(`${sayi} proje`, `${sayi} project${sayi === 1 ? "" : "s"}`),
   varlikIpucu: (tip: string, kod: string, kok: string, blok: number, bloklu: number): string => {
     const gorunenTip = kanonikWidgetAdi(tip, tip);
-    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\naltında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlocks: ${blok}${bloklu ? `\n${bloklu} blocked Step${bloklu === 1 ? "" : "s"} below` : ""}`);
+    return yuzeyMetni(`${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\naltında ${bloklu} bloklu adım` : ""}`, `${gorunenTip} · ${kod}\n${kok}\nBlok: ${blok}${bloklu ? `\n${bloklu} bloklu Adım node${bloklu === 1 ? "" : "s"} below` : ""}`);
   },
   aktifAciklama: (aciklama: string): string => yuzeyMetni(`aktif · ${aciklama}`, `active · ${aciklama}`),
   aktifIpucu: (ipucu: string): string => yuzeyMetni(`AKTİF VARLIK — imleç bu projede\n${ipucu}`, `ACTIVE ENTITY — the cursor is in this project\n${ipucu}`),
   get varligaOdaklan(): string { return yuzeyMetni("Varlığa odaklan", "Focus entity"); },
   get gelistiriliyor(): string { return yuzeyMetni("geliştiriliyor", "in progress"); },
-  tarife: (tarih: string): string => yuzeyMetni(`\n\n${ipucuIsareti("zaman")}tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n${ipucuIsareti("zaman")}schedule: **${tarih}** (engine check: overdue/approaching — phase deadline)`),
+  tarife: (tarih: string): string => yuzeyMetni(`\n\n${ipucuIsareti("zaman")}tarife: **${tarih}** (motor nöbeti: rötar/yaklaşıyor — faz-vade)`, `\n\n${ipucuIsareti("zaman")}schedule: **${tarih}** (engine check: overdue/approaching — faz-vade)`),
   // VIT-KIMLIK-A07 (Founder sade hâli, 2026-09-13): Blok satırının planlanmamış
   // sayacı kelimeye iner. Ağaç açıklaması düz metindir ve resim taşımaz; eski buz
   // işaretinin anlamını artık kelimenin kendisi taşır.
-  planlanmamisSayac: (tamam: number, toplam: number): string => yuzeyMetni(`planlanmamış [${tamam}/${toplam}]`, `unscheduled [${tamam}/${toplam}]`),
-  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Önceliklendirildiğinde bir zaman dilimine bağlanır._`, `\n\n${ipucuIsareti("planlanmamis")}**unscheduled** — ${neden}\n\n_It is bound to a time slice when prioritized._`),
+  planlanmamisSayac: (tamam: number, toplam: number): string => yuzeyMetni(`planlanmamış [${tamam}/${toplam}]`, `planlanmamış [${tamam}/${toplam}]`),
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): beyan bir zaman bağı değildir; Fazsız Blok
+  // motorda `fazsız-blok` hatasıdır ve ipucu bunu açıkça söyler (MIM-1.2).
+  planlanmamis: (neden: string): string => yuzeyMetni(`\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_Bu beyan bir zaman bağı değildir: Fazsız Blok \`fazsız-blok\` hatası verir (MIM-1.2). Bloku bir Faza bağla._`, `\n\n${ipucuIsareti("planlanmamis")}**planlanmamış** — ${neden}\n\n_This declaration is not a time binding: a Blok without a Faz is a \`fazsız-blok\` error (MIM-1.2). Bind the Blok to a Faz._`),
   // KPS-ADA-A01 (Founder şerhi 2026-09-13): başka projenin Fazına ad alanıyla bağlanan
   // Blok kendi projesinde durur. Satırın yanındaki not bağı söyler, ipucu sebebini.
-  caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the ${faz} Phase of ${proje}`),
-  caprazFazIpucu: (faz: string, proje: string): string => yuzeyMetni(`\n\n${ipucuIsareti("kenar")}**${proje}** projesinin **${faz}** Fazına bağlıdır. Blok kendi projesinin altında durur ve o Fazın sayacına katılmaz.`, `\n\n${ipucuIsareti("kenar")}Bound to the **${faz}** Phase of **${proje}**. The Block stays under its own project and is not counted in that Phase.`),
-  blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} blocked below`),
+  caprazFaz: (faz: string, proje: string): string => yuzeyMetni(`${proje} projesinin ${faz} Fazına bağlı`, `bound to the Faz ${faz} of ${proje}`),
+  caprazFazIpucu: (faz: string, proje: string): string => yuzeyMetni(`\n\n${ipucuIsareti("kenar")}**${proje}** projesinin **${faz}** Fazına bağlıdır. Blok kendi projesinin altında durur ve o Fazın sayacına katılmaz.`, `\n\n${ipucuIsareti("kenar")}Bound to the Faz **${faz}** of **${proje}**. The Blok stays under its own Proje and is not counted in that Faz.`),
+  blokluAlt: (adet: number): string => yuzeyMetni(` · ${ipucuIsareti("ret", "hata")}altında ${adet} bloklu`, ` · ${ipucuIsareti("ret", "hata")}${adet} ${adet === 1 ? "node below is" : "nodes below are"} bloklu`),
   get ac(): string { return yuzeyMetni("Aç", "Open"); },
   yasakGecis: (turkce: string, kod: string, eski: string, yeni: string): string => yuzeyMetni(turkce, `Transition ${eski} → ${yeni} is not allowed for ${kod}.`),
   geriAlma: (kod: string, eski: string, yeni: string): string => yuzeyMetni(`${kod}: ${eski} → ${yeni} (geri-alma — denetim bilgi notu düşer)`, `${kod}: ${eski} → ${yeni} (rollback — an audit note will be recorded)`),
   kartBasligi: (kod: string): string => kod,
-  rayBloklari: (tamam: number, toplam: number, adet: number): string => yuzeyMetni(`[${tamam}/${toplam}] · ${adet} blok`, `[${tamam}/${toplam}] · ${adet} block${adet === 1 ? "" : "s"}`),
+  rayBloklari: (tamam: number, toplam: number, adet: number): string => yuzeyMetni(`[${tamam}/${toplam}] · ${adet} blok`, `[${tamam}/${toplam}] · ${adet} Blok node${adet === 1 ? "" : "s"}`),
   get raySec(): string { return yuzeyMetni("Hangi rayın makinisti olalım?", "Which track should we drive?"); },
   get webDili(): string { return yuzeyDili === "en" ? "en" : "tr"; },
   get yok(): string { return yuzeyMetni("— yok —", "— none —"); },
   kuralKapsami: (katman: string, kapsam: string): string => yuzeyMetni(`${katman ? ` · ${katman}` : ""} · kapsam: ${kapsam}`, `${katman ? ` · ${katman}` : ""} · scope: ${kapsam}`),
-  genelYasa: (adet: number): string => yuzeyMetni(`+ ${adet} genel yasa (tüm düğümlere düşer — kapsam: genel/tümü)`, `+ ${adet} general law${adet === 1 ? "" : "s"} (applies to every node — scope: general/all)`),
+  genelYasa: (adet: number): string => yuzeyMetni(`+ ${adet} genel yasa (tüm düğümlere düşer — kapsam: genel/tümü)`, `+ ${adet} general law${adet === 1 ? "" : "s"} (applies to every node — kapsam: genel/tümü)`),
   bagliKurallar: (adet?: number): string => yuzeyMetni(`📏 bağlı kurallar${adet === undefined ? "" : ` (${adet})`}`, `📏 bound rules${adet === undefined ? "" : ` (${adet})`}`),
   get ozelKuralYok(): string { return yuzeyMetni("— bu düğüme ÖZEL kural yok —", "— no rule specific to this node —"); },
   get dosyadaAc(): string { return yuzeyMetni("📂 dosyada aç", "📂 open in file"); },
   alan: (alan: "görev" | "kabul" | "sınır" | "dokunulmaz" | "referans" | "rapor" | "yama"): string => ({
-    görev: yuzeyMetni("🎯 görev", "🎯 task"), kabul: yuzeyMetni("✅ kabul", "✅ acceptance"),
-    sınır: yuzeyMetni("🚧 sınır", "🚧 boundary"), dokunulmaz: yuzeyMetni("🛑 dokunulmaz", "🛑 off limits"),
-    referans: yuzeyMetni("📚 referans", "📚 reference"), rapor: yuzeyMetni("📄 rapor", "📄 report"),
-    yama: yuzeyMetni("🩹 yama", "🩹 patch"),
+    // MGZ-A09: kartın hanesi dosyadaki alanı adlandırır; iki dilde de alanın adıdır.
+    görev: yuzeyMetni("🎯 görev", "🎯 görev"), kabul: yuzeyMetni("✅ kabul", "✅ kabul"),
+    sınır: yuzeyMetni("🚧 sınır", "🚧 sınır"), dokunulmaz: yuzeyMetni("🛑 dokunulmaz", "🛑 dokunulmaz"),
+    referans: yuzeyMetni("📚 referans", "📚 referans"), rapor: yuzeyMetni("📄 rapor", "📄 rapor"),
+    yama: yuzeyMetni("🩹 yama", "🩹 yama"),
   })[alan],
   get bagimliDugumler(): string { return yuzeyMetni("⬅️ bağımlı olduğu düğümler", "⬅️ nodes it depends on"); },
   get etkiledigiDugumler(): string { return yuzeyMetni("➡️ etkilediği düğümler", "➡️ nodes it affects"); },
   konusmaBasligi: (rol: unknown, adim: unknown): string => yuzeyMetni(`Konuşma — ${String(rol ?? "?")} · ${String(adim ?? "")}`, `Conversation — ${String(rol ?? "?")} · ${String(adim ?? "")}`),
   konusmaOzeti: (zaman: string, ajan: string, giris: string, cikis: string, sira: string): string => yuzeyMetni(`🕐 ${zaman} · 👤 ajan: <b>${ajan}</b> · 🎫 token: <b>${giris}</b> → <b>${cikis}</b> · sıra #${sira}`, `🕐 ${zaman} · 👤 agent: <b>${ajan}</b> · 🎫 tokens: <b>${giris}</b> → <b>${cikis}</b> · sequence #${sira}`),
-  beceriler: (beceriler: string): string => yuzeyMetni(`⚙️ beceriler: ${beceriler}`, `⚙️ skills: ${beceriler}`),
-  beceriSayisi: (adet: number): string => yuzeyMetni(`${adet} beceri`, `${adet} skill${adet === 1 ? "" : "s"}`),
+  beceriler: (beceriler: string): string => yuzeyMetni(`⚙️ beceriler: ${beceriler}`, `⚙️ Beceri: ${beceriler}`),
+  beceriSayisi: (adet: number): string => yuzeyMetni(`${adet} beceri`, `${adet} Beceri`),
   get hamPrompt(): string { return yuzeyMetni("📤 ŞEF'in ham prompt'u", "📤 Raw lead prompt"); },
   get hamYanit(): string { return yuzeyMetni("📥 Etmenin ham yanıtı", "📥 Raw agent response"); },
 } as const;
@@ -1927,31 +2094,45 @@ export const YOL_METINLERI = {
 export const MINI_GRAF_METINLERI = {
   get dil(): string { return yuzeyDili === "en" ? "en" : "tr"; },
   durum: (durum: string): string => ({
-    beklemede: yuzeyMetni("beklemede", "pending"),
-    geliştirmede: yuzeyMetni("geliştirmede", "in progress"),
-    tamamlandı: yuzeyMetni("tamamlandı", "complete"),
-    bloklu: yuzeyMetni("bloklu", "blocked"),
-    doğrulanmamış: yuzeyMetni("doğrulanmamış", "unverified"),
+    // MGZ-A09: değer dosyadaki `durum:` değeridir ve iki dilde aynen anılır.
+    beklemede: yuzeyMetni("beklemede", "beklemede"),
+    geliştirmede: yuzeyMetni("geliştirmede", "geliştirmede"),
+    tamamlandı: yuzeyMetni("tamamlandı", "tamamlandı"),
+    bloklu: yuzeyMetni("bloklu", "bloklu"),
+    doğrulanmamış: yuzeyMetni("doğrulanmamış", "doğrulanmamış"),
   }[durum] ?? durum),
   eksikMeyve: (adet: number): string => yuzeyMetni(`${adet} diskte yok`, `${adet} missing from disk`),
+  meyveSayaci: (adet: number): string => yuzeyMetni(`${adet} meyve`, `${adet} Meyve`),
   beyanYolu: (bos: boolean, yol: string): string => yuzeyMetni(`${bos ? "beyan edildi, diskte yok" : "diskte var"}: ${yol}`, `${bos ? "declared, missing from disk" : "present on disk"}: ${yol}`),
   kaynakIpucu: (baslik: string): string => yuzeyMetni(`${baslik}\ntıklayın: kaynağa atla`, `${baslik}\nselect to jump to source`),
   get ariaGraf(): string { return yuzeyMetni("tüm proje mini grafı", "whole-project mini graph"); },
-  get bosGraf(): string { return yuzeyMetni("henüz Faz, Blok, Katman, AltKatman veya Adım yok", "there is no Phase, Block, Layer, Sub-layer or Step yet"); },
+  get bosGraf(): string { return yuzeyMetni("henüz Faz, Blok, Katman, AltKatman veya Adım yok", "there is no Faz, Blok, Katman, AltKatman or Adım yet"); },
   get dugum(): string { return yuzeyMetni("düğüm", "node"); },
   get bag(): string { return yuzeyMetni("bağ", "edge"); },
   get kuruluyor(): string { return yuzeyMetni("harita kuruluyor…", "building map…"); },
+  // Görünüm seçici (Founder 2026-10-21): üç görünümün adı ve bir cümlelik tarifi.
+  gorunumAdi: (g: string): string => ({
+    klasik: yuzeyMetni("Klasik", "Classic"),
+    agac: yuzeyMetni("Ağaç", "Tree"),
+    ilerleme: yuzeyMetni("İlerleme", "Progress"),
+  }[g] ?? g),
+  gorunumTarifi: (g: string): string => ({
+    klasik: yuzeyMetni("Cam mercekli raylarda tam proje grafı, bağımlılık eğrileriyle.", "The full project graph on glass-lens rails, with dependency curves."),
+    agac: yuzeyMetni("Her düğüm kendi satırında; girinti, durum noktası ve bağ şeridi.", "One node per row, with indent, status dots and a link strip."),
+    ilerleme: yuzeyMetni("Her Katman bir kart: tamamlanan ve toplam Adım, ince ilerleme çubuğu.", "One card per Katman: completed and total Adım, with a thin progress bar."),
+  }[g] ?? g),
+  get gorunumBasligi(): string { return yuzeyMetni("Görünüm seç", "Choose a view"); },
+  gizliSatir: (n: number): string => yuzeyMetni(`+${n} tamamlanmış satır gizli`, `+${n} completed rows hidden`),
+  get gorunumKapat(): string { return yuzeyMetni("Kapat", "Close"); },
 } as const;
 
-const AILE_ADLARI_EN: Readonly<Record<string, string>> = {
-  temel: "foundation", plan: "plan", bilgi: "knowledge", orkestrasyon: "orchestration",
-  etmen: "agent", yuzey: "surface", yasa: "law", teknoloji: "technology",
-  urun: "product", surec: "process", nitelik: "quality", oz: "core",
-  davranis: "behavior", arkayuz: "backend",
-};
-
+/**
+ * Ailenin yüzeyde görünen adı: kanondaki anahtarın kendisi. Aile adı dosyada
+ * `Tip` ilanının `aile:` alanında ve Kural `kapsam:` seçicisinde yazılır; bu
+ * yüzden İngilizce yüz de onu çevirmeden anar (MGZ-A09).
+ */
 export function aileAdi(aile: string): string {
-  return yuzeyDili === "en" ? (AILE_ADLARI_EN[aile] ?? aile) : aile;
+  return aile;
 }
 
 export const TAMAMLAMA_ORTAK_PARAMETRELERI: Readonly<Record<string, () => string>> = {
@@ -1965,18 +2146,18 @@ export const TAMAMLAMA_ORTAK_PARAMETRELERI: Readonly<Record<string, () => string
   görünür: () => yuzeyMetni("koşullu göster — örnek: `görünür: yaş >= 18`", "show conditionally — example: `görünür: yaş >= 18`"),
   boşsa: () => yuzeyMetni("liste boşken ne gösterileceğinin niyeti", "intent for what to show when the list is empty"),
   rota: () => yuzeyMetni("adlandırılmış gezinme yolu", "named navigation path"),
-  yetki: () => yuzeyMetni("erişim ilanı (herkese · girişli · rol) — D5 ortak sözlük", "access declaration (public · signed-in · role) — shared D5 vocabulary"),
+  yetki: () => yuzeyMetni("erişim ilanı (herkese · girişli · rol) — D5 ortak sözlük", "access declaration (herkese · girişli · role) — shared D5 vocabulary"),
   yol: () => yuzeyMetni("ucun HTTP yolu", "the endpoint's HTTP path"),
   metod: () => yuzeyMetni("istek yöntemi (GET · POST …) — kanonla aynı tek kelime yazılır", "request method (GET · POST …) — written with the canonical token"),
 };
 
 export const TAMAMLAMA_METINLERI = {
-  get belgeKodu(): string { return yuzeyMetni("belgedeki KOD — akış hedefi (--> = besler)", "CODE in this document — flow target (--> = feeds)"); },
+  get belgeKodu(): string { return yuzeyMetni("belgedeki KOD — akış hedefi (--> = besler)", "CODE in this document — flow target (--> = besler)"); },
   get yetkiKademesi(): string { return yuzeyMetni("yetki kademesi", "clearance tier"); },
   get tipografiRolu(): string {
     return yuzeyMetni(
       "tipografi ROLÜ (Tema sözleşmesi — sayısal değer teknoloji temasında yaşar)",
-      "typography ROLE (Theme contract — the numeric value lives in the technology theme)",
+      "typography ROLE (Tema contract — the numeric value lives in the technology's theme file)",
     );
   },
 } as const;
@@ -2007,9 +2188,19 @@ export function ifadePaletiBelgesi(kavram: string, kategori: string): string {
   );
 }
 
+/**
+ * Şema alan dizgesinin okuma yüzü (MGZ-A09 · kontrolcü incelemesi 2026-10-10): Türkçe
+ * yüz kanondaki dizgenin kendisidir; İngilizce yüz sözlüğün `semaAlani` hanesidir ve
+ * alanın adını ve enum değerlerini aynen taşır. Hanesi olmayan dizge (yalnız enum
+ * değerlerinden oluşan `düzey (hata|uyarı|bilgi)` gibi) olduğu gibi gösterilir.
+ */
+export function semaAlaniEtiketi(ham: string): string {
+  return yuzeyMetni(ham, sozlukDuzYazisi("semaAlani", ham, ham, "en", "kaynak"));
+}
+
 export function semaAlaniDetayi(rozet: string, tip: string, ham: string): string {
   const gorunenTip = kanonikWidgetAdi(tip, tip);
-  return yuzeyMetni(`${rozet} ${gorunenTip} şeması — ${ham}`, `${rozet} ${gorunenTip} schema — ${ham}`);
+  return yuzeyMetni(`${rozet} ${gorunenTip} şeması — ${ham}`, `${rozet} ${gorunenTip} schema — ${semaAlaniEtiketi(ham)}`);
 }
 
 export function kenarTamamlamaDetayi(ne: string): string {
@@ -2111,65 +2302,65 @@ const IPUCU_PARAM_EN: Readonly<Record<string, string>> = {
   aile: "the family declared for a type",
   içerir: "allowed child types",
   renk: "family/type color (#RRGGBB)",
-  görev: "the Step's task — part of the context cone used to build the orchestrator prompt",
-  kabul: "acceptance criteria — Tests verify the fruit against these",
+  görev: "the work the Adım will do — part of the context cone used to build the orchestrator prompt",
+  kabul: "acceptance criteria — Sınama nodes verify the Meyve against these",
   dokunulmaz: "areas that must not be changed (locked)",
-  sınır: "where this Step stops",
+  sınır: "where this Adım stops",
   her: "produce from a collection: `her: sepet.ürünler` — the declarative counterpart of a loop; the agent translates it",
   görünür: "show conditionally: `görünür: yaş >= 18 ve değil kilitli` — the declarative counterpart of an if statement",
   boşsa: "empty-state intent: what is shown when the collection is empty (`boşsa: MSJ-BOS`)",
   rota: "named navigation path (`rota: \"/giris\"`)",
   koruma: "access guard: `girişli` · `girişsiz`",
-  tema: "visual-constitution reference (Theme CODE)",
+  tema: "visual-constitution reference (Tema CODE)",
   bağla: "two-way state binding: `bağla: DRM-OTURUM.hatırla`",
   tür: "variant selection, depending on context: animation, field or button kind",
   süre: "time intent (`\"300ms\"` · `\"5dk\"`)",
   eğri: "animation curve (`hızlıÇıkışYavaşGiriş` — the Curves counterpart)",
   yol: "the endpoint's HTTP path (`yol: \"/giris\"`, appended to tabanYol)",
   metod: "HTTP method: GET · POST · PUT · DELETE (the canonical token is used)",
-  istek: "request-body contract (Contract CODE)",
-  yanıt: "response contract (Contract CODE)",
-  yetki: "access declaration — `herkese` · `girişli` · role for Endpoints; RBAC tier L1–L6 for Agents",
-  şema: "table schema — derived from a Contract (single source of truth)",
+  istek: "request-body contract (Sözleşme CODE)",
+  yanıt: "response contract (Sözleşme CODE)",
+  yetki: "access declaration — `herkese` · `girişli` · role on an Uç; RBAC tier L1–L6 on an Etmen",
+  şema: "table schema — derived from a Sözleşme (single source of truth)",
   otorite: "rule precedence: `anayasa` › `politika` › `tercih`; a higher authority overrides a lower one",
   ebedi: "immutability flag: `ebedi: evet`; constitutional rules only, with `ebedi-ihlal` on drift",
   katman: "who enforces the rule: `yapısal` (graph/checker) · `eşik` (threshold engine) · `niyet` (intent passed through ne:)",
   kapsam: "rule-cone selector: family (`etmen`) · type (`Adım`) · one CODE · `tümü`; the rule binds automatically",
-  uzmanlık: "Agent specialty: `önyüz · arkayüz · güvenlik · yapay-zekâ · test · altyapı · yönetişim`",
-  bellek: "Agent memory scope: `izole | paylaşık`; inspectors are isolated and L5 + shared is an error",
-  model: "model preference — the final choice belongs to the orchestrator, not the Agent",
-  tetik: "condition that activates the Agent",
-  önce: "pre-run Hook identities; run after validation checks and cannot be skipped",
-  sonra: "post-run Hook CODEs for output validation, audit and notification",
-  hataDa: "error Hook CODEs for fallback and escalation",
+  uzmanlık: "the Etmen's specialty: `önyüz · arkayüz · güvenlik · yapay-zekâ · test · altyapı · yönetişim`",
+  bellek: "the Etmen's memory scope: `izole | paylaşık`; inspectors are `izole` and L5 with `paylaşık` is an error",
+  model: "model preference — the final choice belongs to the orchestrator, not the Etmen",
+  tetik: "condition that activates the Etmen",
+  önce: "pre-run Kanca identities; they run after validation checks and cannot be skipped",
+  sonra: "post-run Kanca CODEs for output validation, audit and notification",
+  hataDa: "error Kanca CODEs for fallback and escalation",
   araçlar: "allowed MCP/tool CODE list; anything not declared is forbidden (least privilege)",
-  sağlar: "Capability CODE provided by a Skill: stack-agnostic ability — `sağlar: YTN-DURUM-YONETIMI`",
-  yığın: "Skill technology stack: `flutter · react · fastapi · evrensel`; stack implementations are separate Skills",
-  neZaman: "required Skill trigger: when it should be used",
-  kurallar: "required Skill application rules: a list or triple-quoted block",
+  sağlar: "Yetenek CODE provided by a Beceri: stack-agnostic ability — `sağlar: YTN-DURUM-YONETIMI`",
+  yığın: "the Beceri's technology stack: `flutter · react · fastapi · evrensel`; each stack implementation is a separate Beceri",
+  neZaman: "required Beceri trigger: when it should be used",
+  kurallar: "required Beceri application rules: a list or triple-quoted block",
   antiDesen: "required numbered list of patterns to avoid",
-  neden: "rule rationale — required for security/privacy Skills",
-  kullanır: "consumer-declared edge: `kullanır: BCR-…`; the cone brings the Skill automatically",
+  neden: "rule rationale — required on a security or privacy Beceri",
+  kullanır: "consumer-declared edge: `kullanır: BCR-…`; the cone brings the Beceri automatically",
   alanlar: "data-contract schema: compact map — `eposta: \"metin · zorunlu · eposta-biçimi\"`",
-  hatalar: "endpoint contract error map: `401: \"#hata.kimlik-geçersiz\"`",
+  hatalar: "endpoint contract error map: `401: \"#error.invalid-credentials\"`",
   sürüm: "contract version; increment on a breaking change (live checking is pending)",
-  nasılUygula: "required in lesson memory: step-by-step application instructions",
+  nasılUygula: "required on a lesson Bellek (`tür: ders`): step-by-step application instructions",
   aşama: "memory promotion path: `pratik → bellek → karar → yasa-taslağı → yasa`",
-  alan: "Policy dimension: `öğrenme · maliyet · güvenlik · hız · içerik`",
+  alan: "the Politika's dimension: `öğrenme · maliyet · güvenlik · hız · içerik`",
   yargıAlanı: "legal jurisdiction: `TR · AB · ABD · küresel`",
-  yaptırım: "regulatory consequence: penalty/SLA summary (`\"72 saat VERBİS bildirimi\"`)",
-  zorunluKılar: "Regulation edge: the Step, Gate or Policy it binds; an unbound Regulation is orphaned",
-  hatırlat: "Reminder edge: enters the cone when its target activates; closing the target while open raises `kaçırılmış-hatırlatıcı`",
-  çapa: "Reminder class: `mimari ≫ adım > yasa/nitelik > gelecek` — backlog priority",
-  dönüşTetikleyici: "return condition for a parked Idea or Reminder",
-  boyutlar: "Evaluation weight map; the checker verifies that the total is 1.0",
-  eşikler: "Evaluation score-to-action map: `kabul · kabulNotlu · izlemeyle · revizyon`",
-  hedef: "what the Evaluation scores: `etmen-çıktısı · meyve · adım`",
-  gerekçe: "required Decision rationale; a decision without rationale is invalid",
+  yaptırım: "regulatory consequence: penalty/SLA summary (`\"72-hour regulator notification\"`)",
+  zorunluKılar: "Mevzuat edge: the Adım, Kapı or Politika it binds; a Mevzuat bound to nothing is orphaned",
+  hatırlat: "Hatırlatıcı edge: enters the cone when its target activates; closing the target while open raises `kaçırılmış-hatırlatıcı`",
+  çapa: "the Hatırlatıcı's class: `mimari ≫ adım > yasa/nitelik > gelecek` — backlog priority",
+  dönüşTetikleyici: "return condition for a parked Fikir or Hatırlatıcı",
+  boyutlar: "the Değerlendirme's weight map; the checker verifies that the total is 1.0",
+  eşikler: "the Değerlendirme's score-to-action map: `kabul · kabulNotlu · izlemeyle · revizyon`",
+  hedef: "what the Değerlendirme scores: `etmen-çıktısı · meyve · adım`",
+  gerekçe: "required rationale of a Karar; a Karar without rationale is invalid",
   teşekkür: "🙏 Founder gratitude — a feedback channel carried into agent memory at harvest",
   onur: "🏅 Founder recognition — a record of outstanding achievement",
   öneri: "💡 constructive Founder feedback — toward a better result",
-  takdir: "❤️ Founder's note to the team — written to the completed Step and carried into agent cones",
+  takdir: "❤️ Founder's note to the team — written to the completed Adım and carried into agent cones",
 };
 
 export function ipucuParamMetni(ad: string): string | undefined {
@@ -2188,7 +2379,7 @@ const IPUCU_ANAHTAR_TR: Readonly<Record<string, string>> = {
 const IPUCU_ANAHTAR_EN: Readonly<Record<string, string>> = {
   çağır: "CODE-based import: `çağır KOD`; it uses identity rather than a drift-prone path",
   Tip: "user-defined type: `Tip Ad( aile:, içerir:, renk: ){ ne: }`",
-  Kural: "user-defined, function-like rule with authority, permanence, enforcement layer and scope fields",
+  Kural: "user-defined, function-like rule with the `otorite`, `ebedi`, `katman` and `kapsam` fields",
   ve: "logical AND: true when both conditions are true — `girişli ve yönetici`",
   veya: "logical OR: true when at least one condition is true",
   değil: "logical NOT (unary): `değil kilitli`; reverses the condition",
@@ -2277,7 +2468,7 @@ export function emojiBolumAdi(bolum: "kademe" | "parametre" | "durum"): string {
   return ({
     kademe: yuzeyMetni("kademe", "tier"),
     parametre: yuzeyMetni("parametre", "parameter"),
-    durum: yuzeyMetni("durum değeri", "status value"),
+    durum: yuzeyMetni("durum değeri", "durum value"),
   })[bolum];
 }
 
@@ -2289,10 +2480,10 @@ export function varsayilanlarIpucu(vars: Readonly<Record<string, unknown>>): str
   );
 }
 
-export function kenarIpucu(ad: string, gorunenAd: string, yon: string, ne: string, emojiEk: string): string {
+export function kenarIpucu(ad: string, yon: string, ne: string, emojiEk: string): string {
   return yuzeyMetni(
     `${ipucuIsareti("kenar")}**${ad}** — kenar (${yon})\n\n${ne}${emojiEk}`,
-    `${ipucuIsareti("kenar")}**${ad} · ${gorunenAd}** — edge (${yon})\n\n${ne}${emojiEk}`,
+    `${ipucuIsareti("kenar")}**${ad}** — edge (${yon})\n\n${ne}${emojiEk}`,
   );
 }
 
@@ -2336,17 +2527,19 @@ export function tipIpucuMetni(
   // gelir. Kanon emojisinin bu konumdaki akıbeti Founder sorusudur (VIT-KIMLIK-A07).
   const bas = simge ? `${simge} ` : ipucuIsareti("tip");
   if (!r) return `${bas}**${ad}** — _${aileAdi(aile)}_ ${dil === "en" ? "family" : "ailesi"}\n\n${ne}`;
-  let md = `${bas}**${ad}** — _${aile}_ ailesi\n\n${r.tanim}`;
-  if (r.yeri) md += `\n\n**${ipucuIsareti("agac")}Ağaçtaki yeri**\n${r.yeri}`;
-  if (r.gorev) md += `\n\n**${ipucuIsareti("gorev")}Görevi**\n${r.gorev}`;
-  if (r.ajan) md += `\n\n**${ipucuIsareti("ajan")}Ajana faydası**\n${r.ajan}`;
-  if (r.insan) md += `\n\n**${ipucuIsareti("kisi")}İnsana faydası**\n${r.insan}`;
+  // Zengin rehber bugün yalnız Türkçe yüzde verilir; başlıkları yine de iki
+  // hanelidir ki bir gün İngilizce rehber bağlandığında balon dili karıştırmasın.
+  let md = `${bas}**${ad}** — _${aile}_ ${yuzeyMetni("ailesi", "family")}\n\n${r.tanim}`;
+  if (r.yeri) md += `\n\n**${ipucuIsareti("agac")}${yuzeyMetni("Ağaçtaki yeri", "Place in the tree")}**\n${r.yeri}`;
+  if (r.gorev) md += `\n\n**${ipucuIsareti("gorev")}${yuzeyMetni("Görevi", "Its task")}**\n${r.gorev}`;
+  if (r.ajan) md += `\n\n**${ipucuIsareti("ajan")}${yuzeyMetni("Ajana faydası", "Benefit to agents")}**\n${r.ajan}`;
+  if (r.insan) md += `\n\n**${ipucuIsareti("kisi")}${yuzeyMetni("İnsana faydası", "Benefit to people")}**\n${r.insan}`;
   return md;
 }
 
 export function kararMetniIpucuEki(ozet: string | undefined, hukum: string | undefined): string {
-  return (ozet ? yuzeyMetni(`\n\n${ipucuIsareti("fikir")}**Özet:** ${ozet}`, `\n\n${ipucuIsareti("fikir")}**Summary:** ${ozet}`) : "") +
-    (hukum ? yuzeyMetni(`\n\n${ipucuIsareti("anayasa")}**Karar metni:** ${hukum}`, `\n\n${ipucuIsareti("anayasa")}**Decision text:** ${hukum}`) : "");
+  return (ozet ? yuzeyMetni(`\n\n${ipucuIsareti("fikir")}**Özet:** ${ozet}`, `\n\n${ipucuIsareti("fikir")}**Summary (\`özet\`):** ${ozet}`) : "") +
+    (hukum ? yuzeyMetni(`\n\n${ipucuIsareti("anayasa")}**Karar metni:** ${hukum}`, `\n\n${ipucuIsareti("anayasa")}**Ruling (\`karar\`):** ${hukum}`) : "");
 }
 
 export const ONIZLEME_METINLERI = {
@@ -2386,7 +2579,7 @@ export const ONIZLEME_METINLERI = {
 } as const;
 
 export function blokluAdimIpucu(adet: number): string {
-  return yuzeyMetni(`altında ${adet} bloklu adım`, `${adet} blocked Steps below`);
+  return yuzeyMetni(`altında ${adet} bloklu adım`, `${adet} bloklu Adım node${adet === 1 ? "" : "s"} below`);
 }
 
 export function bildirimRozetMetni(tur: "bilgi" | "uyarı" | "hata"): string {
@@ -2437,3 +2630,118 @@ export const ONAY_GOVDE_METINLERI: GovdeMetinleri = {
   get kopyaEtiketi(): string { return onayKopyaEtiketi(); },
   kopyaIpucu: onayKopyaIpucu,
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧩 BÖLÜM SIRASI (VIT-K78-A10) — kabın en üstündeki yatay sıra
+//
+//   Founder 2026-10-21: şeritte üç simge sekme durur; adları ve kısa tarifleri
+//   yalnız tooltip ile ekran okuyucuda görünür (MGZ-A09: arayüz İngilizce pencerede
+//   İngilizce konuşur). Ray = plan, Tren = yapay zekâ ajanları, Makinist = insan;
+//   İngilizce karşılıkları Rail, Train, Driver. "Driver" seçildi çünkü Train'in
+//   yanında iş gören kişiyi en kısa söyleyen sözcüktür; "Engineer" yazılım
+//   mühendisiyle karışır ve İngilizce "Sarmal ile çalışan mühendis" anlamına
+//   kayardı. Kardeş bölümlerinin adını ve ipucunu kaydı yapan eklenti verir;
+//   açık eklenti onları çevirmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const BOLUM_SIRASI_METINLERI = {
+  get digerYerTutucu(): string { return yuzeyMetni("Bir bölüm seçin", "Pick a section"); },
+  kayitReddi(sebep: string, kimlik: string): string {
+    const neden: Record<string, [string, string]> = {
+      "kimlik-bicimi": [
+        "kimlik küçük harfle başlamalı ve yalnız küçük harf, rakam ve tire taşımalıdır",
+        "the id must start with a lowercase letter and contain only lowercase letters, digits and hyphens",
+      ],
+      "kimlik-ayrilmis": ["bu kimlik açık eklentinin kendi bölümüne ayrılmıştır", "this id is reserved for the open extension's own section"],
+      "kimlik-yinelenen": ["bu kimlikle kayıtlı bir bölüm zaten var", "a section with this id is already registered"],
+      "ad-bos": ["bölümün adı boş olamaz", "the section title cannot be empty"],
+      "ad-ayrilmis": [
+        "Sarmal, Ray, Tren ve Makinist adları (ve Rail, Train, Driver karşılıkları) açık eklentiye ayrılmıştır",
+        "the titles Sarmal, Ray, Train and Driver (and their Turkish forms Tren, Makinist) are reserved for the open extension",
+      ],
+      "sahip-yok": [
+        "kaydı yapan eklenti okunamadı; bolumKaydet'i kendi kodunuzdan doğrudan çağırın, ör. .then((y) => y.bolumKaydet({ … })), .then(yuva.bolumKaydet) gibi bir aktarımla değil",
+        "the registering extension could not be identified; call bolumKaydet directly from your own code, e.g. .then((y) => y.bolumKaydet({ … })), not through a reference such as .then(yuva.bolumKaydet)",
+      ],
+      "simge-kok": ["simge kaydeden eklentinin kendi klasöründe var olan bir dosya olmalıdır ve yolu .. taşıyamaz", "the icon must be an existing file inside the registering extension's own folder and its path cannot contain .."],
+      "yuva-yok": ["bütün bölüm yuvaları dolu", "all section slots are taken"],
+      "simge-yok": ["bölümün simgesi bir dosya adresi olmalıdır", "the section icon must be a file URI"],
+      "saglayici-yok": ["bölümün bir webview sağlayıcısı olmalıdır", "the section must provide a webview view provider"],
+    };
+    const [tr, en] = neden[sebep] ?? [sebep, sebep];
+    return yuzeyMetni(`Bölüm kaydedilemedi (${kimlik}): ${tr}.`, `Section could not be registered (${kimlik}): ${en}.`);
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧑‍✈️ MAKINIST AĞACI (Founder 2026-10-21) — dört üst düğümün adı ve boş cümlesi
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const MAKINIST_METINLERI = {
+  get onaylar(): string { return yuzeyMetni("Onaylar", "Approvals"); },
+  get hatirlaticilar(): string { return yuzeyMetni("Hatırlatıcılar", "Reminders"); },
+  get gozlemler(): string { return yuzeyMetni("Gözlemler", "Observations"); },
+  get fikirler(): string { return yuzeyMetni("Fikirler", "Ideas"); },
+  rozetIpucu: (n: number): string => yuzeyMetni(`Sizi bekleyen ${n} kayıt: onay kapıları ve hatırlatıcılar`, `${n} items waiting for you: approval gates and reminders`),
+  /** Kapı satırının ikinci sütunu: Adımın amacı yerine dosya adı gösterilir. */
+  get kapiIpucu(): string { return yuzeyMetni("Kapıyı kaynağında aç ve kararı kartta ver", "Open the gate in its source and decide on the card"); },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🚆 TREN GÖRÜNÜMÜ — yapay zekâ ajanlarının bölümü (Founder 2026-10-21)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const TREN_METINLERI = {
+  get bosDurum(): string {
+    return yuzeyMetni(
+      "Bu projede ilan edilmiş ajan ya da geliştirmede Adım yok.",
+      "No declared agents or Adım nodes in development in this project.",
+    );
+  },
+  get ajanlarBasligi(): string { return yuzeyMetni("Ajanlar", "Agents"); },
+  get adimlarBasligi(): string { return yuzeyMetni("Geliştirmedeki Adımlar", "Adım nodes in development"); },
+  get muhurBasligi(): string { return yuzeyMetni("Son Koşum mührü", "Latest run seal"); },
+  get aciklama(): string { return yuzeyMetni("ajanlar ve sürmekte olan işler", "agents and work in progress"); },
+  muhurAciklamasi(muhur: string, karar: string): string {
+    return [muhur, karar].filter(Boolean).join(" · ");
+  },
+  muhurIpucu(kod: string, adim: string, tarih: string, ne: string): string {
+    return [
+      yuzeyMetni(`Koşum ${kod || "-"} · Adım ${adim}`, `Run ${kod || "-"} · Adım ${adim}`),
+      tarih,
+      ne,
+    ].filter(Boolean).join("\n\n");
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧭 SARMAL PANELİ — tek webview kabı (Founder 2026-10-21 · bağlayıcı çizim)
+//
+//   Kapta Ray · Tren · Makinist sekme şeridi durur. Sekme adları İngilizce
+//   pencerede Rail · Train · Driver olur (MGZ-A09); "Driver" seçimi
+//   BOLUM_SIRASI_METINLERI üstündeki gerekçeyle aynıdır. Şeridin erişilebilir
+//   adı "bölüm" sözcüğünü ve "Bölümler" kutusunu taşımaz: çizimde böyle bir
+//   kutu yoktur ve hiçbir yerde üretilmez.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const PANEL_METINLERI = {
+  get dil(): string { return yuzeyDili === "en" ? "en" : "tr"; },
+  get panelAdi(): string { return "Sarmal"; },
+  sekmeAdi: (s: string): string => ({
+    ray: yuzeyMetni("Ray", "Rail"),
+    tren: yuzeyMetni("Tren", "Train"),
+    makinist: yuzeyMetni("Makinist", "Driver"),
+  }[s] ?? s),
+  sekmeIpucu: (s: string): string => ({
+    ray: yuzeyMetni("Ray: yol haritası ve proje grafı", "Rail: roadmap and project graph"),
+    tren: yuzeyMetni("Tren: yapay zekâ ajanları ve sürmekte olan işler", "Train: AI agents and work in progress"),
+    makinist: yuzeyMetni("Makinist: sizi bekleyen onaylar, hatırlatıcılar, gözlemler ve fikirler", "Driver: approvals, reminders, observations and ideas waiting for you"),
+  }[s] ?? s),
+  get seritEtiketi(): string { return yuzeyMetni("Sarmal sekmeleri", "Sarmal tabs"); },
+  get yolHaritasiBasligi(): string { return yuzeyMetni("Yol Haritası", "Roadmap"); },
+  get miniGrafBasligi(): string { return yuzeyMetni("Mini Graf", "Mini Graph"); },
+  get kardesBaglantisi(): string { return yuzeyMetni("Koşular paneli kardeş eklentide", "The runs panel lives in the sibling extension"); },
+  get koniKarti(): string { return yuzeyMetni("Koni kartını aç", "Open the cone card"); },
+  get satiriKopyala(): string { return yuzeyMetni("Satırı kopyala", "Copy row"); },
+  get hatirlaticiKapat(): string { return yuzeyMetni("Hatırlatıcıyı kapat", "Close reminder"); },
+} as const;

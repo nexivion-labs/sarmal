@@ -161,7 +161,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        adim: parametre("string", "Adım KOD'u (ör. SEF-ATF-A01)", "Adım KOD (for example, SEF-ATF-A01)"),
+        adim: parametre("string", "Adım KOD'u (biçim: <ONEK>-<KONU>-A<NN>)", "Adım KOD (format: <ONEK>-<KONU>-A<NN>)"),
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
       required: ["adim"],
@@ -174,16 +174,16 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "Sarmal öğretim kapısı: konusuz çağrı KANONDAN üretilen karşılama kartını döndürür " +
         "(kopyalanabilir minimal proje + tam omurga + koni alanları + zorunlu kenarlar — CLI `sarmal ogret` ile AYNI kaynaktan üretilir); " +
-        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner (ör. 'uretir-kenari', 'BCR-DURUM-AKISI').",
+        "`konu` verilirse ogreti/ogrenme/ rafındaki eşleşen Beceri kartının TAM metni döner; konu bir ad (ör. 'uretir-kenari') ya da BCR-<KONU> biçiminde bir kart kodu olabilir.",
       () =>
         "Sarmal's learning gateway: a call without `konu` returns the welcome card generated FROM THE CANON " +
         "(a copyable minimal project, the complete backbone, cone fields, and required edges—from the SAME source as CLI `sarmal ogret`); " +
-        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf (for example, 'uretir-kenari' or 'BCR-DURUM-AKISI').",
+        "when `konu` is provided, it returns the FULL matching Beceri card from the ogreti/ogrenme/ shelf; the topic may be a name (for example, 'uretir-kenari') or a card code in the form BCR-<KONU>.",
     ),
     inputSchema: {
       type: "object",
       properties: {
-        konu: parametre("string", "beceri konusu ya da kodu (ör. 'uretir-kenari' · 'BCR-ADIM-YAZIMI'); boş = karşılama kartı", "Beceri topic or code (for example, 'uretir-kenari' or 'BCR-ADIM-YAZIMI'); empty returns the welcome card"),
+        konu: parametre("string", "beceri konusu ya da kodu (ad: ör. 'uretir-kenari' · kod biçimi: BCR-<KONU>); boş = karşılama kartı", "Beceri topic or code (name: for example, 'uretir-kenari' · code format: BCR-<KONU>); empty returns the welcome card"),
       },
     },
   },
@@ -263,7 +263,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       () =>
         "DOĞUŞ PAKETİ (DPK-A02 · flutter-create paritesi): hedef dizinde ÇALIŞIR proje doğurur — " +
         "giriş ilanı (Kitaplık kademeli) + is/durum/durum_devir + ogreti/ogrenme/dersler+geribildirim + " +
-        "is/plan/ilk_plan (katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
+        "is/plan/faz/1_dogus (Faz dosyası düzeninde, katı rejimde tam-zincir, koni-dolu ilk Adım). KÖKÜN KAPILARI da doğar: " +
         "küresel yok sayma kuralına karşı `!*.sar` istisnası, Sarmal sunucusunu çözen yürütücü ayarı, " +
         "bayt özdeş yönerge ikizi (CLAUDE.md ≡ AGENTS.md), doğuş kilidi ile denetim kancası ve kanon " +
         "işaretçisi; hepsi doğan kökün KENDİ dosyalarında yaşar, küresel ayara dokunulmaz. " +
@@ -271,12 +271,13 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "calisma-alani ise hedef ÇalışmaAlanı kökü olur ve ilk proje onun altında kendi köküyle doğar (MIM-1.1); " +
         "tur verilmezse araç yazmadan soruyu döndürür. Doğan proje denetle'den sıfır hata ile çıkar; her dosya " +
         "kendi doldurma öğretisini taşır. Var olan dosya ASLA ezilmez — atlanır ve raporlanır; tek istisna yok " +
-        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik istisna sona eklenir. " +
+        "sayma dosyasıdır ve orada da hiçbir satır silinmez, yalnız eksik satırlar sona eklenir: küresel " +
+        "yok sayma kuralının istisnası ile motorun iz klasörü (`.sarmal/`). " +
         "`basla` REHBER verir (yazmaz), bu araç PAKETİ YAZAR; ikisi kardeştir.",
       () =>
         "BIRTH PACKAGE (DPK-A02, flutter-create parity): creates a WORKING project in the target directory—" +
         "the entry declaration (with a Kitaplık tier); is/durum/durum_devir; ogreti/ogrenme/dersler plus geribildirim; " +
-        "and is/plan/ilk_plan (a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
+        "and is/plan/faz/1_dogus (in the Faz file layout, a complete strict-mode backbone with a cone-filled first Adım). THE ROOT'S GATES are born too: " +
         "a `!*.sar` exception against the global ignore rule, an executor setting that resolves the Sarmal server, " +
         "a byte-identical instruction twin (CLAUDE.md ≡ AGENTS.md), a birth lock plus an audit hook, and a canon pointer; " +
         "all of them live in the new root's OWN files and the global settings are left untouched. " +
@@ -284,7 +285,8 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
         "with tur = calisma-alani the target becomes the ÇalışmaAlanı root and the first project is born beneath it with its own root (MIM-1.1); " +
         "when tur is omitted the tool returns the question without writing. The new project passes denetle with zero errors, " +
         "and each file carries guidance for filling it in. Existing files are NEVER overwritten; they are skipped and reported. " +
-        "The single exception is the ignore file, and even there no line is deleted—only a missing exception is appended. " +
+        "The single exception is the ignore file, and even there no line is deleted—only missing lines are appended: " +
+        "the exception to the global ignore rule and the engine's trace folder (`.sarmal/`). " +
         "`basla` provides the GUIDE without writing, while this tool WRITES THE PACKAGE; they are companion tools.",
     ),
     inputSchema: {
@@ -319,7 +321,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
       type: "object",
       properties: {
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
-        kok: parametre("string", "isteğe bağlı odak KOD — alt-graf filtresi (ör. BLK-VITRIN)", "optional focus KOD used as a subgraph filter (for example, BLK-VITRIN)"),
+        kok: parametre("string", "isteğe bağlı odak KOD — alt-graf filtresi (biçim: <ONEK>-<KONU>)", "optional focus KOD used as a subgraph filter (format: <ONEK>-<KONU>)"),
       },
     },
   },
@@ -493,7 +495,7 @@ export const MCP_ARAC_METINLERI: Readonly<Record<McpAracAdi, McpAracMetni>> = {
     inputSchema: {
       type: "object",
       properties: {
-        kod: parametre("string", "etkisi sorulan KOD (ör. SEF-ATF-A01, MEK-SEF)", "KOD whose impact is requested (for example, SEF-ATF-A01 or MEK-SEF)"),
+        kod: parametre("string", "etkisi sorulan KOD (biçim: Adım için <ONEK>-<KONU>-A<NN>, öteki düğümler için <ONEK>-<KONU>)", "KOD whose impact is requested (format: <ONEK>-<KONU>-A<NN> for an Adım, <ONEK>-<KONU> for other nodes)"),
         dizin: dizinParametresi("çalışma-alanı dizini — .sar ağacı kökü", "workspace directory—the .sar tree root"),
       },
       required: ["kod"],
@@ -703,11 +705,11 @@ export const MCP_SUNUCU_TALIMATI: DilHaneleri<string> = {
   ].join(" "),
   en: [
     "This project is governed by Sarmal: plans, rules, types and status live only in .sar files, and this server's tools are their sole authoritative reading surface.",
-    "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting a Step, basla before writing.",
-    "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while a Step is in progress; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
+    "When a question concerns structure, progress, dependencies or health, ask these tools FIRST: denetle-proje for the whole project's verdict, gezin for a code's definition and references, graf for the graph and scorecard, etki for a change's blast radius, siniflama for the type schema, sef before starting an Adım, basla before writing.",
+    "A new tree, entry declaration or architecture is NEVER hand-written, and that prohibition holds in an empty directory too; the order is mandatory: read the basla guide, let dogus give birth to the tree, let iskelet land the declared-but-missing structure on disk, and run denetle-proje after every .sar write. At the moment of birth no skill card can fire, because cards fire only while an Adım is in geliştirmede; the teaching for that moment lives in the ogret and basla outputs, and both run in an empty directory.",
     "The tools may be deferred in the client and need loading before the first call; loading is one call, skipping it costs a wrong number.",
     "Reading .sar files with raw grep, sed or a hand-written parser is possible but misleading: raw search misses aligned code fields, multi-line declarations and duplicate definitions, produces a number, and the number looks right. This server's tools answer the same question from the identity index and the graph: gezin gives the definition and every reference, graf gives edges and dangling ends, denetle-proje gives the whole project's verdict. Raw search is the right tool for non-.sar files and for things not yet declared.",
-    "The write gate has three parts; do not conflate them. FIRST: a Step's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening a Step's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
+    "The write gate has three parts; do not conflate them. FIRST: an Adım's `durum:` field is never edited by hand — the single write gate is the durum-guncelle tool. SECOND: every other field — ne, görev, the acceptance text, sınır, bağımlı, referans and the body — is edited normally and then passes the check; for those fields the gate is NOT closed. THIRD: changes that carry a ruling, namely loosening an Adım's acceptance criterion or changing the schema/canon version, require Founder approval and are not made without it.",
   ].join(" "),
 };
 

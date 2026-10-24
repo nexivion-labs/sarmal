@@ -20,6 +20,18 @@ import { tabanKanonaDusuldu, tabanKanonBulundu } from "./taban-kanon.ts";
  *  enum bekçisine girerse dış projede sahte geçersiz-enum doğar (siniflamaYukle ikizi). */
 export const GOMULU_SNF = siniflamaNormalize(GOMULU_KAYIT as unknown as Siniflama);
 
+/**
+ * Makinist ağacının üç ağaç kaynağının (Hatırlatıcılar · Gözlemler · Fikirler) KENDİ görünüm
+ * durumu. Founder 2026-10-21: bu üç panel ayrı görünüm olmaktan çıktı ve Makinist ağacının
+ * üst düğümleri oldu; sağlayıcılar bugüne dek `TreeView` üzerine yazdıkları açıklama, boş-durum
+ * cümlesi ve rozeti bu hafif nesneye yazar, Makinist ağacı onu üst düğümün satırına çevirir.
+ */
+export interface YuzDurumu {
+  description?: string;
+  message?: string;
+  badge?: { value: number; tooltip: string } | undefined;
+}
+
 /** Bir widget tipinin eğitici açıklaması (rehber.json). */
 export interface RehberGiris {
   tanim: string;

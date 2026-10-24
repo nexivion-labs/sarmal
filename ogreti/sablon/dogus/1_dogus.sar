@@ -1,0 +1,68 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// is/plan/faz/1_dogus.sar — 🗺️ DOĞUŞ FAZI (doğuş paketi üretti: {{TARIH}})
+//
+//   MIM-1 dört ekseni: Faz=ZAMAN → Blok=İŞ → Katman=TEKNOLOJİ → Adım=AKIŞ.
+//   Her Adım koni taşır (görev · kabul · bağımlı · sınır) — yalın tek-cümle
+//   Adım kör drift'tir (YAS-3.4). Bir Adıma başlarken durum'unu geliştirmede
+//   yap, bitirince tamamlandı + üretir meyvesini yaz (ORK-3.2).
+//
+//   YERLEŞİM (MIM-1.2 · Founder hükmü 2026-09-29): Her Faz is/plan/faz/ altında
+//   sıra önekli kendi dosyasında yaşar ve Faz ilanı dosyanın tepesinde durur.
+//   Bloklar Faz gövdesinin içine sarılır; mevsim alanı, Faz'ın çağır listesi ve
+//   planlanmamış kaçışı kullanılmaz. Hiçbir Blok Fazsız yaşamaz; önceki Faz
+//   kapanmadan sonraki Fazda iş başlamaz. Sonraki Faz yeni bir dosyada doğar
+//   (örnek: is/plan/faz/2_surum.sar).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// MIM-1.2 (nazik rejim): tarih GÜÇLÜ TAVSİYEDİR — hedefTarih verirsen ("YYYY-AA-GG",
+// gün bilinmiyorsa "YYYY-AA") vade nöbeti rötarı/yaklaşanı takip eder; vermezsen Faz
+// yine açılır, motor yalnız hatırlatır (iş akışı kesilmez; yetişmeyen tarih ertelenir).
+// Aynı Projenin Fazları tarih ile dosya önekinin doğal sayı sırasıyla tek zincirdir.
+Faz( kod: FAZ-{{KOD}}-DOGUS, ad: "Doğuş Mevsimi",
+  ne: "🌀 Kuruluş dönemi — mimari kararlar verilir, proje gerçek planına kavuşur" ) {
+
+  -->|
+    ## Amaç
+    🎯 Projeyi doğuş iskeletinden gerçek kimliğine taşımak: mimari kararlar
+    verilir, teknolojiler ilan edilir, niyet metinleri gerçek cümlelerle dolar.
+
+    ## Kapsam
+    📦 Kapsar: mimari diyalog, Teknoloji/Takım ilanı, anadizin niyetlerinin
+    doldurulması ve ilk gerçek iş Blokunun yazımı. Kapsamaz: uygulama kodu —
+    kod, ilk gerçek iş Blokunun Adımlarında başlar.
+
+    ## Sonuç
+    ✅ Kabul: denetle sıfır hata verir; anadizin teknolojili ve gerçek
+    niyetli; bu Fazın gövdesinde koni-dolu ilk gerçek iş Bloku yazılmıştır.
+  |<--
+  Blok( kod: BLK-{{KOD}}-KURULUS, ad: "Kuruluş",
+    ne: "🪵 Projenin temel atma işi: mimari diyalog, teknoloji ilanı ve ilk gerçek planın yazımı" ) {
+
+    // NOT: Katman'ın Takım bağı ADM-KURULUS-01 kapanınca beyan edilir —
+    // Katman( ..., takım: TAKIM-X ) biçiminde (MIM-1.4 zemin bağı · Takım takım: ile, Teknoloji kullanır: ile yazılır).
+    // KAÇIŞ GEÇİCİDİR: aşağıdaki teknolojiBağımsız satırı yalnız doğuş anı içindir, yani
+    // projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken meşrudur. İlk Teknoloji ya
+    // da Takım ilan edildiği anda motor bu satırı yersiz-teknoloji-kaçışı uyarısıyla
+    // bildirir; Kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır.
+    // İşin türü (karar, süreç, inceleme) zeminde değil AltKatmanın departman: alanında yazılır.
+    Katman( kod: KAT-{{KOD}}-MIMARI, ad: "Mimari",
+      teknolojiBağımsız: "Geçici doğuş beyanı: projede henüz hiçbir Teknoloji ve Takım yoktur ve bağlanacağı Takım doğmamıştır; ADM-KURULUS-01 kapanmadan bu satır silinir ve Katman takım: kenarıyla bağlanır.",
+      ne: "🌿 Teknoloji henüz seçilmedi — ADM-KURULUS-01 kapanınca bu Katman seçilen Takım'a bağlanır" ) {
+
+      // YAS-1.1 (katı rejim): Katman ile Adım arasındaki yol en az bir departman
+      // kademesinden geçer. Anadizin `rejim: katı` ilan ettiği için bu AltKatman
+      // ZORUNLUDUR; kaldırılırsa doğan proje ilk denetiminde hata verir. Departman
+      // beşlisi: planlama · kodlama · sınama · inceleme · güvenlik (MIM-1.5).
+      AltKatman( kod: ALT-{{KOD}}-PLANLAMA, ad: "Planlama", departman: planlama,
+        ne: "📋 Kuruluşun karar işi: mimari diyalog, ilan ve ilk gerçek planın yazımı" ) {
+
+        Adım( kod: ADM-KURULUS-01, durum: beklemede, bağımlı: [], öncelik: p1,
+          ne: "🏛️ Mimari diyaloğu yürütmek ve projeyi gerçek kimliğine kavuşturmak. MCP `başla` aracının mimari diyaloğu izlenir: kapsayıcı tipi doğru mu (Proje / ÇalışmaAlanı), teknolojiler ve takımlar nelerdir, teknoloji hangi klasörleri doğurur. Sonuçlar anadizine ilan edilir, bu Fazın gövdesi gerçek iş Bloklarıyla büyür" ) {
+          görev: "MCP `başla` rehberini oku ve mimari diyaloğun üç sorusunu cevapla; Teknoloji ve Takım düğümlerini anadizine ilan et; bu Katmanı takım: kenarıyla kurulan Takım'a bağla ve teknolojiBağımsız satırını sil; anadizindeki yönerge metinlerini (Amaç/Kapsam/Sonuç ve ne alanları) projenin gerçek cümleleriyle değiştir; ilk gerçek iş Blokunu koni-dolu Adımlarla bu Fazın gövdesine ekle"
+          kabul: [ "anadizinde en az bir Teknoloji ve bir Takım ilanlı; katmanlar Takım'a bağlı", "teknoloji ilan edildikten sonra hiçbir Katmanda teknolojiBağımsız kaçışı kalmadı; denetim yersiz-teknoloji-kaçışı uyarısı vermiyor", "anadizinin bütün yönerge metinleri gerçek proje cümleleriyle değişti", "denetle sıfır hata veriyor ve ilk gerçek iş Bloku koni-dolu yazıldı" ]
+          sınır: "Bu Adım kod yazmaz — yalnız mimari karar, ilan ve plan; kod ilk gerçek iş Blokunun Adımlarında başlar"
+        }
+      }
+    }
+  }
+}

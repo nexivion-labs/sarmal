@@ -310,9 +310,7 @@ function ilgiliOnekDenetle(d: Dugum, b: Baglam): void {
     const uye = o.metin?.trim();
     if (!uye) continue;
     if (!BOLUM_KOKLERI.has(uye)) {
-      const kusur = BOLUM_ONEKLERI.has(uye)
-        ? `çıplak bölüm öneki bir kimlik değildir, bölüm kök kimliği \`${uye}-0\` yazılmalı`
-        : "bu üyelik sekiz bölüm kök kimliğinin dışında";
+      const kusur = BOLUM_ONEKLERI.has(uye) ? "ciplak-bolum-oneki" : "kok-kimlik-disi";
       b.out.push(yeniTani("ilgili-önek-geçersiz",
         { uye, kusur },
         { satir: o.satir ?? p.satir, sutun: o.sutun ?? p.sutun }));
@@ -320,7 +318,7 @@ function ilgiliOnekDenetle(d: Dugum, b: Baglam): void {
     }
     if (gorulen.has(uye)) {
       b.out.push(yeniTani("ilgili-önek-geçersiz",
-        { uye, kusur: "aynı üyelik listede ikinci kez yazılmış" },
+        { uye, kusur: "uyelik-yineleniyor" },
         { satir: o.satir ?? p.satir, sutun: o.sutun ?? p.sutun }));
       continue;
     }
@@ -391,13 +389,13 @@ function gorunurlukSozlesmesiDenetle(d: Dugum, b: Baglam): void {
   const alanlar = [...d.parametreler, ...d.ozellikler].filter((x) => x.ad === "görünürlük");
   if (alanlar.length === 0) {
     b.out.push(yeniTani("görünürlük-sözleşmesi-eksik",
-      { ad: d.ad, kimlik: kimlik(d), kusur: "görünürlük beyanı hiç yazılmamış" },
+      { ad: d.ad, kimlik: kimlik(d), kusur: "gorunurluk-yok" },
       { satir: d.satir, sutun: d.sutun }));
     return;
   }
   if (alanlar.length > 1) {
     b.out.push(yeniTani("görünürlük-sözleşmesi-eksik",
-      { ad: d.ad, kimlik: kimlik(d), kusur: `görünürlük beyanı ${alanlar.length} kez yazılmış, oysa tam bir kez yazılır` },
+      { ad: d.ad, kimlik: kimlik(d), kusur: "gorunurluk-cok", sayi: alanlar.length },
       { satir: alanlar[1].satir, sutun: alanlar[1].sutun }));
     return;
   }
@@ -405,7 +403,7 @@ function gorunurlukSozlesmesiDenetle(d: Dugum, b: Baglam): void {
     const kosul = [...d.parametreler, ...d.ozellikler].find((x) => x.ad === "açılmaKoşulu");
     if (!kosul || !kosul.deger.metin?.trim()) {
       b.out.push(yeniTani("görünürlük-sözleşmesi-eksik",
-        { ad: d.ad, kimlik: kimlik(d), kusur: "yüzey gizli beyan edilmiş ama açılma koşulu yazılmamış" },
+        { ad: d.ad, kimlik: kimlik(d), kusur: "gizli-kosulsuz" },
         { satir: alanlar[0].satir, sutun: alanlar[0].sutun }));
     }
   }
@@ -492,25 +490,29 @@ export function sekilDriftTanilari(kaynak: string, yuz: string, dosyaYolu?: stri
   const out: Tani[] = [];
   const kaynakBelge = belgeBolgeleri(kaynak);
   const yuzBelge = belgeBolgeleri(yuz);
+  // MGZ-A09: yolu bilinmeyen dosyanın iki dildeki adı ("bu dosya" · "this file")
+  // tanı kataloğunda yaşar; üretici yalnız bildiği yolu geçer.
   if (kaynakBelge.length !== yuzBelge.length) {
     out.push(yeniTani("belge-şekil-drift",
-      { dosya: dosyaYolu ?? "bu dosya", fark: 1 },
+      { dosya: dosyaYolu, fark: 1 },
       { satir: kaynakBelge[0]?.satir ?? 1, sutun: 1 }));
   } else {
     for (let i = 0; i < kaynakBelge.length; i++) {
       const fark = ilkFark(girintisiz(kaynakBelge[i].icerik), girintisiz(yuzBelge[i].icerik));
       if (!fark) continue;
       out.push(yeniTani("belge-şekil-drift",
-        { dosya: dosyaYolu ?? "bu dosya", fark },
+        { dosya: dosyaYolu, fark },
         { satir: kaynakBelge[i].satir + fark, sutun: 1 }));
     }
   }
 
+  // MGZ-A09: bölgenin alan adı burada bilinmez; adsız değerin iki dildeki adı
+  // tanı kataloğunda yaşar ve üretici bağlama düzyazı geçirmez.
   const kaynakDeger = cokSatirliBolgeler(kaynak);
   const yuzDeger = cokSatirliBolgeler(yuz);
   if (kaynakDeger.length !== yuzDeger.length) {
     out.push(yeniTani("çok-satırlı-değer-drift",
-      { alan: "çok satırlı değer", fark: 1 },
+      { fark: 1 },
       { satir: kaynakDeger[0]?.satir ?? 1, sutun: 1 }));
     return out;
   }
@@ -518,7 +520,7 @@ export function sekilDriftTanilari(kaynak: string, yuz: string, dosyaYolu?: stri
     const fark = ilkFark(girintisiz(kaynakDeger[i].icerik), girintisiz(yuzDeger[i].icerik));
     if (!fark) continue;
     out.push(yeniTani("çok-satırlı-değer-drift",
-      { alan: "çok satırlı değer", fark },
+      { fark },
       { satir: kaynakDeger[i].satir + fark, sutun: 1 }));
   }
   return out;
@@ -646,34 +648,36 @@ function degerdeGez(deger: Deger, b: Baglam): void {
  * tarafından yeniden-tanımlanmamış tipler denetlenir. Eksik alan = uyarı
  * (FEL-4: makine GÖRÜR ve SÖYLER; yarım-yazımı bloklamaz — hata değil).
  */
-/** Değer bildirilen türe uymuyorsa Türkçe kusur ifadesi, uyuyorsa boş döner (F9-A03).
+/** Değer bildirilen türe uymuyorsa kusur bağlamı, uyuyorsa boş döner (F9-A03). Bağlam
+ *  yan cümlenin kimliğini ve olgunun değerlerini taşır; cümle iki dilde tanı
+ *  kataloğunda yaşar (MGZ-A09).
  *  Birleşik tür (NTK-A04 · TIP-2 ②): "metin|liste" gibi | ile ayrılan türlerde
  *  değer üyelerden BİRİNE uyuyorsa geçerlidir (görev/sınır hem dizgi hem madde listesi). */
-function turUymaz(deger: string, tur: string): string | undefined {
+function turUymaz(deger: string, tur: string): TaniBaglami | undefined {
   if (tur.includes("|")) {
     const uyeler = tur.split("|");
     const kusurlar = uyeler.map((u) => turUymaz(deger, u));
     return kusurlar.every(Boolean) ? kusurlar[0] : undefined;
   }
   switch (tur) {
-    case "sayı":     return /^-?\d+$/.test(deger) ? undefined : "tam sayı olmalı";
-    case "ondalık":  return /^-?\d+([.,]\d+)?$/.test(deger) ? undefined : "sayı olmalı";
+    case "sayı":     return /^-?\d+$/.test(deger) ? undefined : { kusur: "tam-sayi" };
+    case "ondalık":  return /^-?\d+([.,]\d+)?$/.test(deger) ? undefined : { kusur: "sayi-olmali" };
     case "tarih": {
       if (/^(belirsiz|\?|tbd)$/i.test(deger)) return undefined;   // dürüst bilinmezlik (MIM-1.2 ②)
       const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(deger);
-      if (!m) return "Tarih ISO 8601 biçiminde yazılır: gün belliyse YYYY-AA-GG, yalnız ay belliyse YYYY-AA; henüz bilinmiyorsa 'belirsiz' yazılabilir.";
+      if (!m) return { kusur: "tarih-bicimi" };
       // Sol zemin denetimi bulgusu (2026-07-20): biçim yetmez, TAKVİM gerçeği gerekir —
       // 2026-13 (13. ay) ve 2026-02-31 (şubat 31) sessizce kabul ediliyordu.
       const [, y, ay, gun] = m;
-      if (+ay < 1 || +ay > 12) return `takvimde olmayan ay taşıyor (${ay} — ay 01-12 aralığındadır)`;
+      if (+ay < 1 || +ay > 12) return { kusur: "olmayan-ay", ay };
       if (gun !== undefined) {
         const sonGun = new Date(+y, +ay, 0).getDate();
-        if (+gun < 1 || +gun > sonGun) return `takvimde olmayan gün taşıyor (${y}-${ay} ayı ${String(sonGun).padStart(2, "0")} gün çeker, ${gun} yazılmış)`;
+        if (+gun < 1 || +gun > sonGun) return { kusur: "olmayan-gun", yil: y, ay, sonGun: String(sonGun).padStart(2, "0"), gun };
       }
       return undefined;
     }
-    case "mantıksal":return /^(evet|hayır|true|false)$/.test(deger) ? undefined : "mantıksal olmalı (evet·hayır)";
-    case "eposta-biçimi": return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(deger) ? undefined : "e-posta biçiminde olmalı";
+    case "mantıksal":return /^(evet|hayır|true|false)$/.test(deger) ? undefined : { kusur: "mantiksal" };
+    case "eposta-biçimi": return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(deger) ? undefined : { kusur: "eposta" };
     default:         return undefined;   // metin·liste·SZL-KOD → yapısal, burada denetlenmez
   }
 }
@@ -712,7 +716,9 @@ function semaDenetle(d: Dugum, b: Baglam): void {
   // Belge zorunlulugu (YAS-4 tam isabet): Beceri/Yetenek zengin acikla-blogu
   // (-->| <ne-zaman> <desenler> |<--) tasimali — kuru skill = corba, ajan tahmin eder.
   // Belge yanlış-düğüme bağlıysa 'eksik-alan'a EKLENMEZ (yanlış-düğüm tanısı daha isabetli).
-  if (sema.belgeZorunlu && !d.belge && !yanlisBelgeCocuk) eksikler.push(ORTAK_TANI_METINLERI.belgeEksikAdi({}));
+  // MGZ-A09: belge borcu `@` önekli bir kimlikle listeye girer; adı iki dilde
+  // tanı kataloğunda yaşar (eksik-alan), çünkü bir tarif dosyadaki bir alan adı değildir.
+  if (sema.belgeZorunlu && !d.belge && !yanlisBelgeCocuk) eksikler.push("@belge");
 
   // Anlati standardi (EKL-F2-A02): olgu parametrede, muhakeme belgede.
   // Semada bolumZorunlu varsa belge blogu "## Bolum" basliklarini tasimali
@@ -720,11 +726,11 @@ function semaDenetle(d: Dugum, b: Baglam): void {
   // insan disiplinidir (OGR-1.4); makine varligi zorlar.
   if (sema.bolumZorunlu?.length) {
     if (!d.belge) {
-      if (!yanlisBelgeCocuk) eksikler.push(ORTAK_TANI_METINLERI.anlatiBelgesiEksikAdi({ bölümler: sema.bolumZorunlu }));
+      if (!yanlisBelgeCocuk) eksikler.push("@anlati");
     } else {
       for (const bolum of sema.bolumZorunlu) {
         const baslik = new RegExp("^\\s*##\\s*" + bolum + "(?=\\s|$)", "mu"); // \b Türkçe harfte çalışmaz (ç/ş/ü kelime-dışı sayılır)
-        if (!baslik.test(d.belge)) eksikler.push(ORTAK_TANI_METINLERI.belgeBolumuEksikAdi({ bölüm: bolum }));
+        if (!baslik.test(d.belge)) eksikler.push(`@bolum:${bolum}`);
       }
     }
   }
@@ -764,7 +770,7 @@ function semaDenetle(d: Dugum, b: Baglam): void {
     const hata = turUymaz(deger, tur);
     if (hata) {
       b.out.push(eskiTani("geçersiz-tür", "uyarı",
-        { ad: d.ad, kimlik: kimlik(d), alan, kusur: hata, deger, tür: tur },
+        { ad: d.ad, kimlik: kimlik(d), alan, ...hata, deger, tür: tur },
         { satir: p!.satir, sutun: p!.sutun }));
     }
   }
@@ -780,7 +786,7 @@ function semaDenetle(d: Dugum, b: Baglam): void {
 
   if (eksikler.length) {
     b.out.push(eskiTani("eksik-alan", "uyarı",
-      { ad: d.ad, kimlik: kimlik(d), eksikler }, { satir: d.satir, sutun: d.sutun }));
+      { ad: d.ad, kimlik: kimlik(d), eksikler, bolumler: sema.bolumZorunlu ?? [] }, { satir: d.satir, sutun: d.sutun }));
   }
 
   // En-az-biri: gruplardan hiçbiri tam değilse (örn. Sözleşme iki-yüz).
@@ -1114,20 +1120,22 @@ function sarmaDenetle(ebeveyn: Dugum, cocuk: Dugum, b: Baglam): void {
 // olduğu HESAPLANIR ve bağlam olarak geçilir (CDL-A02 tek kaynak hükmü).
 function ekleSarma(b: Baglam, cocuk: Dugum, c: string, baglam: TaniBaglami): void {
   b.out.push(eskiTani("izinsiz-sarma", "hata",
-    { ...baglam, ebeveynler: mesruEbeveynler(c, b.snf) },
+    { ...baglam, ...mesruEbeveynler(c, b.snf) },
     { satir: cocuk.satir, sutun: cocuk.sutun }));
 }
 
-/** Bir tipin kanona göre altına konabileceği ebeveynler — cümle değil, OLGU. */
-function mesruEbeveynler(c: string, snf: Siniflama): string[] {
+/**
+ * Bir tipin kanona göre altına konabileceği ebeveynler — cümle değil, OLGU. Yüzey
+ * düzeni bir tip değil bir yerdir; adı iki dilde tanı kataloğunda yaşar ve burada
+ * yalnız bayrağı geçer (MGZ-A09).
+ */
+function mesruEbeveynler(c: string, snf: Siniflama): { ebeveynler: string[]; yuzeyDuzeni?: true } {
   const ebeveynler: string[] = [];
   for (const [e, cocuklar] of Object.entries(snf.izinliSarma)) {
     if (cocuklar.includes(c)) ebeveynler.push(e);
   }
-  if (snf.yuzeyKurali.duzen.includes(c) || snf.yuzeyKurali.yaprak.includes(c)) {
-    ebeveynler.push(ORTAK_TANI_METINLERI.yuzeyDuzeniEbeveyni({}));
-  }
-  return ebeveynler;
+  const yuzeyde = snf.yuzeyKurali.duzen.includes(c) || snf.yuzeyKurali.yaprak.includes(c);
+  return yuzeyde ? { ebeveynler, yuzeyDuzeni: true } : { ebeveynler };
 }
 
 // ── öneri motoru: en yakın geçerli ad (Levenshtein) ──────────────────────────

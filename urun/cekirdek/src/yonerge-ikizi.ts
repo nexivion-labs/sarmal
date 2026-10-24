@@ -166,6 +166,49 @@ export function yokSaymaIstisnasiEksikleri(
 }
 
 /**
+ * MOTORUN İZ KLASÖRÜ (HST-MTR-A14). Motor koşu artıklarını kökün `.sarmal/`
+ * klasörüne yazar: döngünün kendi izi ham istemi ve ham yanıtı kısaltmadan
+ * taşır, yürütücü izi dış bir yürütücünün temaslarını, kontrol noktası ise
+ * koşunun ara hâlini. Hiçbiri kaynak değildir ve ilki gizli olabilecek bir metin
+ * taşıdığı için depoya girmemelidir. Satırın başında eğik çizgi yoktur, çünkü
+ * motor izi kendisine verilen dizine yazar ve çalışma alanında bu dizin çatı da
+ * olabilir ilk proje de; satır klasörü her derinlikte kapsar. Klasörün adı beş
+ * yazıcıda ayrı ayrı yazılıdır ve `dogus.test.ts` nöbetleri bunlardan yalnız
+ * ikisini gerçek yollarından koşturup doğan kökün git durumunda ölçer: yürütücü
+ * izini yazan `kopru/iz.ts` ile döngü izinin yolunu `--iz` bayrağında kuran
+ * `sarmal.ts`. Makro döngünün izi (`makro-dongu.ts`), kontrol noktası
+ * (`dongu.ts`) ve lig kaydı (`kopru/lig.ts`) nöbetin dışındadır; bu üçünden
+ * birinin klasörü değişirse bu satır onu sessizce kapsamaz olur.
+ */
+export const IZ_KLASORU_SATIRI = ".sarmal/";
+
+/**
+ * Var olan bir yok sayma dosyasında iz klasörü satırı EKSİK mi (SAF)? Dosya
+ * klasör hakkında bir karar zaten taşıyorsa satır eksik sayılmaz. `.sarmal`,
+ * `/.sarmal/` ya da `.sarmal/**` gibi eşdeğer bir yazım klasörü zaten yok sayar
+ * ve ikinci bir satır gereksizdir. Klasörü ya da içinden bir yolu geri alan bir
+ * olumsuzlama (`!.sarmal/`) ise kullanıcının izleme kararıdır; git'te son
+ * eşleşen desen kazandığı için sona eklenecek bir satır o kararı sessizce geri
+ * çevirirdi. Yorum satırı karar kurmaz, çünkü `#` ile başlayan bir satır bu
+ * biçimlerin hiçbirine uymaz; yalnız bir alt klasörü yok saymak da
+ * (`.sarmal/trace/`) klasörün tamamını kapsamaz. Dosya hiç yoksa satır eksiktir.
+ * Doğuş paketi var olan bir dosyayı genişletirken, kök kapısı ise eski bir kökü
+ * ölçerken bu ölçümü kullanır (HST-MTR-A16); iki tüketici tek ölçümden okur.
+ */
+export function izKlasoruSatiriEksigi(icerik: string | undefined): string[] {
+  if (icerik === undefined) return [IZ_KLASORU_SATIRI];
+  const klasor = IZ_KLASORU_SATIRI.slice(0, -1);
+  const kararVar = icerik.split("\n").some((ham) => {
+    const satir = ham.trim();
+    const olumsuz = satir.startsWith("!");
+    const yol = (olumsuz ? satir.slice(1) : satir).replace(/^\//u, "").replace(/^\*\*\//u, "");
+    if (olumsuz) return yol === klasor || yol.startsWith(`${klasor}/`);
+    return yol.replace(/\/(\*\*?)?$/u, "") === klasor;
+  });
+  return kararVar ? [] : [IZ_KLASORU_SATIRI];
+}
+
+/**
  * Kökün yok sayma dosyasını okuyup eksik istisnaları raporlar (etkili katman).
  * Rapor tek satırdır ve ölçtüğü dosyayı adıyla söyler; eksik varsa onarımın
  * ne olduğunu da yazar, çünkü bu kusurun onarımı üç satır eklemekten ibarettir
@@ -175,15 +218,34 @@ export function yokSaymaRaporu(kok: string, desenler: readonly string[] = KURESE
   const yol = join(kok, ".gitignore");
   const icerik = existsSync(yol) ? readFileSync(yol, "utf8") : undefined;
   const eksikler = yokSaymaIstisnasiEksikleri(icerik, desenler);
-  if (eksikler.length === 0) {
-    return `🛡️✅ küresel yok sayma istisnası: tam — .gitignore ${yokSaymaIstisnaSatirlari(desenler).join(" · ")} satırlarını taşıyor`;
-  }
   const nerede = icerik === undefined ? ".gitignore dosyası yok" : ".gitignore eksik";
+  const istisna = eksikler.length === 0
+    ? [`🛡️✅ küresel yok sayma istisnası: tam — .gitignore ${yokSaymaIstisnaSatirlari(desenler).join(" · ")} satırlarını taşıyor`]
+    : [
+      `🛡️⛔ küresel yok sayma istisnası: ${eksikler.length} eksik — ${nerede} (${kok})`,
+      `   → şu satırları ${kok}/.gitignore dosyasının sonuna ekle: ${eksikler.join(" · ")}`,
+      "   → ölçmek için: git check-ignore -v <dosya> — hangi kuralın yok saydığını söyler",
+    ];
+  return [...istisna, ...izKlasoruBulgusu(kok, icerik, nerede)].join("\n");
+}
+
+/**
+ * İZ KLASÖRÜ BULGUSU (HST-MTR-A16). Doğuş şablonu `.sarmal/` satırını HST-MTR-A14
+ * ile kazandı; o düzeltmeden önce doğmuş bir kökün dosyası bu satırı taşımaz ve
+ * motorun ham istem taşıyan izi git durumunda izlenmeyen dosya olarak görünür.
+ * Kapı bunu adlı bir bulguyla bildirir ve onarımı söyler. Dosyaya kendisi yazmaz,
+ * çünkü yok sayma dosyası kullanıcınındır ve satırı ekleme kararı ona aittir.
+ * Satırı taşıyan ya da klasörü bilinçle olumsuzlayan bir kök hiçbir satır almaz;
+ * bu yüzden onarılmış bir kökün raporu öncekiyle bayt bayt aynı kalır.
+ */
+function izKlasoruBulgusu(kok: string, icerik: string | undefined, nerede: string): string[] {
+  const eksik = izKlasoruSatiriEksigi(icerik);
+  if (eksik.length === 0) return [];
   return [
-    `🛡️⛔ küresel yok sayma istisnası: ${eksikler.length} eksik — ${nerede} (${kok})`,
-    `   → şu satırları ${kok}/.gitignore dosyasının sonuna ekle: ${eksikler.join(" · ")}`,
-    "   → ölçmek için: git check-ignore -v <dosya> — hangi kuralın yok saydığını söyler",
-  ].join("\n");
+    `🛡️⛔ motorun iz klasörü yok sayılmıyor [iz-klasoru-eksik] — ${nerede} (${kok})`,
+    `   → şu satırı ${kok}/.gitignore dosyasının sonuna ekle: ${eksik.join(" · ")} — motorun koşu izi ham istem taşır ve satır yoksa toplu bir ekleme onu depoya sokar`,
+    `   → ölçmek için: git status --short ${IZ_KLASORU_SATIRI} — satır eklendikten sonra hiçbir dosya göstermemeli`,
+  ];
 }
 
 /**

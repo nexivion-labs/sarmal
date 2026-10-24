@@ -158,3 +158,84 @@ test("CDL-A05 nöbeti: 18 araç/34 parametre eksiksiz çevrilir; kimlik ve şema
   assert.ok(mcpMetinKapsamaEksikleri(parametreMutasyonu)
     .includes("sef.inputSchema.properties.dizin.description.en"));
 });
+
+// ── HST-MTR-A17 · ÖRNEK ALANINDA SOMUT KOD YOK ─────────────────────────────────
+//   Araç metinleri kullanıcı projelerinde de okunur. Örnek olarak verilen somut
+//   bir kod o projede yoktur ve ajan onu gerçek sanıp aramaya çıkar; bu depoda
+//   bile örnek kodlardan biri hiçbir yerde tanımlı değildi. Founder'ın 2026-10-10
+//   hükmüyle örnekler biçimi anlatan bir kalıp gösterir ve kalıp yalnız ASCII
+//   harf taşır. Nöbet örnek alanını işaretinden (`ör.`, `örneğin`, `for
+//   example`, `e.g.`) ilk kapanan paranteze ya da cümle sonuna kadar okur ve
+//   orada kimlik dizininin metin katmanının KOD saydığı bir sözce arar; ölçüm
+//   gezinin kendi tanıyıcısıyla yapılır, böylece nöbetin "kod" dediği şey
+//   aracın atıf saydığı şeyle aynıdır.
+
+import { readFileSync } from "node:fs";
+import { dosyayiTara } from "../src/kimlik.ts";
+import { MCP_SUNUCU_TALIMATI } from "../src/mcp-metinleri.ts";
+
+// JavaScript'in `\b` sınırı yalnız ASCII sözcük harfini tanır ve `ö` ile başlayan
+// işareti kaçırır; sınır bu yüzden Unicode harf sınıfıyla kurulur.
+const ORNEK_ISARETI = /(?<![\p{L}\p{N}])(?:ör\.|örn\.|örneğin|for example|e\.g\.)(?![\p{L}\p{N}])/giu;
+
+/** Bir metnin örnek alanlarında metin katmanının KOD saydığı sözceler. */
+function ornekKodlari(metin: string): string[] {
+  const bulunan: string[] = [];
+  for (const es of metin.matchAll(ORNEK_ISARETI)) {
+    const bas = es.index + es[0].length;
+    const kalan = metin.slice(bas);
+    const son = kalan.search(/\)|\.\s|\.$/u);
+    const alan = son < 0 ? kalan : kalan.slice(0, son);
+    bulunan.push(...dosyayiTara(alan, false).adaylar.map((a) => a.metin));
+  }
+  return bulunan;
+}
+
+/** Araç açıklamaları, parametre tarifleri, sunucu talimatı ve mcp.ts hata cümleleri. */
+function aracMetinleri(): [string, string][] {
+  const metinler: [string, string][] = [];
+  for (const dil of ["tr", "en"] as const) {
+    for (const s of mcpAracSemalari(dil, BAGLAM)) {
+      metinler.push([`${dil}:${s.name}`, s.description]);
+      for (const [p, v] of Object.entries(s.inputSchema.properties)) metinler.push([`${dil}:${s.name}.${p}`, v.description]);
+    }
+    metinler.push([`${dil}:talimat`, MCP_SUNUCU_TALIMATI[dil]]);
+  }
+  readFileSync(MCP, "utf8").split("\n").forEach((satir, i) => {
+    for (const es of satir.matchAll(/"(✖[^"]*)"|'(✖[^']*)'|`(✖[^`]*)`/gu)) metinler.push([`mcp.ts:${i + 1}`, es[1] ?? es[2] ?? es[3]!]);
+  });
+  return metinler;
+}
+
+test("HST-MTR-A17 · araç metinleri ve hata cümleleri örnek olarak somut bir kod göstermez", () => {
+  const metinler = aracMetinleri();
+  assert.ok(metinler.some(([yer]) => yer.startsWith("mcp.ts:")), "mcp.ts hata cümleleri okunamadı — nöbet dişsiz");
+  const ihlaller = metinler.flatMap(([yer, metin]) => ornekKodlari(metin).map((kod) => `${yer} → ${kod}`));
+  assert.deepEqual(ihlaller, [], `örnek alanında somut kod var:\n${ihlaller.join("\n")}`);
+  // Nöbetin dişi: aynı okuyucu somut bir örneği gerçekten yakalar.
+  assert.deepEqual(ornekKodlari("Adım KOD'u (ör. ABC-XYZ-A01)"), ["ABC-XYZ-A01"]);
+  assert.deepEqual(ornekKodlari("KOD (for example, ABC-XYZ-A01 or ABC-XYZ)."), ["ABC-XYZ-A01", "ABC-XYZ"]);
+  assert.deepEqual(ornekKodlari("✖ kod gerekli (ör. ABC-XYZ-A01)."), ["ABC-XYZ-A01"]);
+});
+
+test("HST-MTR-A17 · kalıp iki dilde aynıdır ve yalnız ASCII harf taşır", () => {
+  const tr = new Map(mcpAracSemalari("tr", BAGLAM).map((s) => [s.name, s]));
+  const en = new Map(mcpAracSemalari("en", BAGLAM).map((s) => [s.name, s]));
+  // Kod kalıbı yer tutucu taşıyan ve tireyle bölünen sözcedir (`<ONEK>-<KONU>`);
+  // `<dizin>` gibi tiresiz yer tutucular kod kalıbı değildir.
+  const kaliplar = (metin: string): string[] =>
+    (metin.match(/[^\s(),;:'"·.]+/gu) ?? []).filter((x) => x.includes("<") && x.includes("-"));
+  let sayi = 0;
+  for (const [ad, s] of tr) {
+    const yuzler: [string, string][] = [[s.description, en.get(ad)!.description]];
+    for (const [p, v] of Object.entries(s.inputSchema.properties)) yuzler.push([v.description, en.get(ad)!.inputSchema.properties[p]!.description]);
+    for (const [t, e] of yuzler) {
+      assert.deepEqual(kaliplar(t), kaliplar(e), `${ad}: Türkçe ve İngilizce kalıplar ayrışıyor`);
+      for (const k of kaliplar(t)) {
+        sayi++;
+        assert.match(k, /^[\x21-\x7e]+$/u, `${ad}: kalıp ASCII dışı harf taşıyor: ${k}`);
+      }
+    }
+  }
+  assert.ok(sayi >= 3, `kalıp sayısı ${sayi}: sef, graf ve etki örnekleri kalıba çevrilmemiş`);
+});

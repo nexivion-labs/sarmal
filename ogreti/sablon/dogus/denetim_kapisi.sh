@@ -15,6 +15,19 @@
 #   çözülür ve varsayılan taşımaz, çünkü varsayılan bir değer arızayı susturur ve
 #   kullanıcıyı yanlış bir kuruluma sessizce bağlar.
 #
+#   KABUK SÜRÜMÜ (HTR-DOGUS-WINDOWS-KANCALARI · 2026-10-22). Doğuş paketi yeni
+#   köklere bu kapının Node karşılığını (denetim_kapisi.mjs) kurar, çünkü Node
+#   sürümü Windows'ta da çalışır. Bu dosya POSIX başvuru sürümüdür ve daha önce
+#   doğmuş köklerin elle tazelenmesi için yaşar; iki sürüm aynı girdiye aynı
+#   çıkış kodunu ve aynı tanıyı verir ve eşlik doğuş paketinin sınamasında
+#   ölçülür. Eşlik için mühür listesi bayt sırasına dizilir ve satırlar `echo`
+#   ile değil `printf` ile basılır, çünkü bazı `sh` sürümlerinde `echo` ters
+#   bölüyü kaçış sanır.
+#
+#   İKİ DİLLİ ÖZET (HTR-KANCA-OZETI-IKI-DILLI-DEGIL). Motor SARMAL_DIL değişkenine
+#   uyar; kapı özet satırını Türkçe ve İngilizce sözcüklerin ikisiyle de arar,
+#   dolayısıyla İngilizce kipte de özet düşmez.
+#
 #   ARIZA-GÜVENLİ: `jq` ya da `node` yoksa kapı sessizce çekilir; bunlar
 #   kullanıcının kendi takımıdır ve kapı bir aracın önünde kendi arızasıyla
 #   durmaz. MOTOR bunlardan AYRILIR: motorun bulunamaması ürünün kendi bağıdır ve
@@ -27,17 +40,17 @@ command -v jq >/dev/null 2>&1 || exit 0
 command -v node >/dev/null 2>&1 || exit 0
 
 G=$(cat)
-TOOL=$(printf '%s' "$G" | jq -r '.tool_name // ""')
+TOOL=$(printf '%s' "$G" | jq -r '.tool_name // ""' 2>/dev/null)
 
 # Kapı yalnız GERÇEK bir kaynak dokunuşunda uyanır. Write ve Edit hedefini
 # kendisi bildirir; Bash için son iki dakikada değişmiş bir `.sar` dosyası
 # aranır, çünkü yazımın hangi kabuk deyimiyle yapıldığı kapıyı ilgilendirmez.
 case "$TOOL" in
   Write|Edit)
-    H=$(printf '%s' "$G" | jq -r '.tool_input.file_path // ""')
+    H=$(printf '%s' "$G" | jq -r '.tool_input.file_path // ""' 2>/dev/null)
     case "$H" in *.sar) ;; *) exit 0 ;; esac ;;
   Bash)
-    CMD=$(printf '%s' "$G" | jq -r '.tool_input.command // ""')
+    CMD=$(printf '%s' "$G" | jq -r '.tool_input.command // ""' 2>/dev/null)
     printf '%s' "$CMD" | grep -q '\.sar' || exit 0
     # Değişiklik tarihi ile birlikte durum tarihi de okunur: yeniden adlandırma
     # (ör. bir dosyaya mühür yazmak) değişiklik tarihini korur, yalnız durum
@@ -65,12 +78,12 @@ fi
 # ya da sonra mührü yazılmış bir `.sar` dosyası varsa kapı onu adıyla bildirir;
 # mühür meşru bir beyandır ve kapıyı durdurmaz, fakat sessiz de geçemez.
 MUHUR=$(find "$KOK" -maxdepth 8 -name '@*@_*.sar' -cmin -2 \
-  -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | sed "s|^$KOK/||" | head -8 | tr '\n' ' ')
+  -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | sed "s|^$KOK/||" | LC_ALL=C sort | head -8 | tr '\n' ' ')
 [ -n "$MUHUR" ] && MUHUR=" · 📛 yeni mühür: $MUHUR"
 
 LOG=$(mktemp)
 if node "$MOTOR" denetle "$KOK" >"$LOG" 2>&1; then
-  OZET=$(grep -E 'ÖZET:|Yapı temiz' "$LOG" | head -1)
+  OZET=$(grep -E 'ÖZET:|Yapı temiz|SUMMARY:|structure is clean' "$LOG" | head -1)
   printf '%s' "🚪✅ sarmal-kapı · $KOK · ${OZET:-denetim temiz}$MUHUR" \
     | jq -Rs '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:.}}'
   rm -f "$LOG"
@@ -78,9 +91,9 @@ if node "$MOTOR" denetle "$KOK" >"$LOG" 2>&1; then
 fi
 
 {
-  echo "✖ sarmal-kapı · $KOK · DENETİM HATA VERDİ — hata varken ikinci kaynak dosyası yazılmaz, önce düzelt:$MUHUR"
+  printf '%s\n' "✖ sarmal-kapı · $KOK · DENETİM HATA VERDİ — hata varken ikinci kaynak dosyası yazılmaz, önce düzelt:$MUHUR"
   grep -E '^✖' "$LOG" | head -12
-  grep -E 'ÖZET:' "$LOG" | head -1
+  grep -E 'ÖZET:|SUMMARY:' "$LOG" | head -1
 } >&2
 rm -f "$LOG"
 exit 2

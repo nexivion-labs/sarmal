@@ -118,7 +118,16 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "mevsimMuhurTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   // KPS-FAZ-A02 (Founder hükmü 2026-09-19): MIM-1.2 projesiz Faz gözlemi — grafı okur, proje kapsamında koşar.
   { uretici: "projesizFazTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): Faz sırası ile Blok yapısı — grafı okur, proje kapsamında koşar.
+  { uretici: "fazSirasiTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
+  { uretici: "blokYapisiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
+  // KPS-SIR-A03 (Founder hükmü 2026-09-29): MIM-1.2 Faz dosyası düzeni — programları okur, proje kapsamında koşar.
+  { uretici: "fazDosyasiTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli", "panel"] },
   { uretici: "kitapliksizKokTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },   // MIM-3.2 · Kitaplık kademesi (KPS-CEL-A01)
+  // RFM-MOTOR-A02: DIL-1.8 düğüm kodu standardı — anadizin önek sicilini okur, proje kapsamında koşar.
+  { uretici: "kodStandardiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
+  // BKM-OLG-A13 (TIP-1.17): Profil tipinin üç tanısı — en yüksek kademesi hatadır (kişisel veri ve çift profil).
+  { uretici: "profilTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu
@@ -147,6 +156,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
 
   // ── Bugün PANELDE de koşan (eski eklenti crossTanilar — cross-file ama ucuz+saf) ailesi. ──
   { uretici: "katmansizTeknolojiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
+  // BKM-OLG-A11 (2026-10-02): kaçışın doğuş anına sınırlanması; ikizinin ölçümünü okur ve aynı yüzeylerde koşar.
+  { uretici: "yersizTeknolojiKacisiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "yinelenenKodTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "dagTanilari", modul: "dag.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
   { uretici: "gizliBagimlilikTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
@@ -185,7 +196,7 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
     cliGerekcesi: "Yalnız bilgi düzeyinde konuşur: açık hatırlatıcı bilinçli bir ileri bağlamdır ve YUZ-3.3 onu Problems yüzeyinden açıkça ayırır." },
   { uretici: "kapsamTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "tekCocukTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli"],
-    cliGerekcesi: "Yalnız bilgi düzeyinde konuşur: tek çocuklu kapsayıcı bir öneridir, ihlal değildir; ara kademe kanonda isteğe bağlıdır." },
+    cliGerekcesi: "Yalnız bilgi düzeyinde konuşur: tek çocuklu kapsayıcı bir gözlemdir, ihlal değildir; Faz tek bir Blok taşıyabilir ve atlanamaz (MIM-1.2)." },
   { uretici: "yetimMeyveTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "docDriftTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   { uretici: "beyansizYapiTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },

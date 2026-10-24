@@ -22,6 +22,7 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dogusYaz } from "../src/dogus.ts";
+import { YURUTUCU_IZI_ORTAM_DEGISKENI } from "../src/kopru/iz.ts";
 import {
   MCP_ARAC_ADI,
   MCP_ARAC_METINLERI,
@@ -47,10 +48,20 @@ const BEKLENEN_YAZAR_SAYISI = 3;
 
 // ── yardımcılar ─────────────────────────────────────────────────────────────
 
+/** MCP alt sürecinin ortamı. Geliştiricinin kabuğunda dışa aktarılmış yürütücü
+ *  izi anahtarı çıkarılır (HST-MTR-A04): iz açıkken sef koşum izine yazar ve salt
+ *  okunur ilan edilmez, dolayısıyla nöbet varsayılan beyanı kabuğun ayarından
+ *  bağımsız ölçmelidir. */
+function aracOrtami(): NodeJS.ProcessEnv {
+  const ortam = { ...process.env };
+  delete ortam[YURUTUCU_IZI_ORTAM_DEGISKENI];
+  return ortam;
+}
+
 /** Sunucunun tools/list yüzünü gerçek alt-süreçten okur (katalogdan değil). */
 function sunucuAraclari(): readonly McpAracSemasi[] {
   const istek = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) + "\n";
-  const ham = execFileSync(process.execPath, [MCP], { input: istek, encoding: "utf8", timeout: 30_000 });
+  const ham = execFileSync(process.execPath, [MCP], { input: istek, encoding: "utf8", timeout: 30_000, env: aracOrtami() });
   return (JSON.parse(ham.trim()) as { result: { tools: McpAracSemasi[] } }).result.tools;
 }
 
@@ -60,7 +71,7 @@ function aracCagir(arac: string, args: Record<string, unknown>): { metin: string
     { jsonrpc: "2.0", id: 1, method: "initialize", params: {} },
     { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: arac, arguments: args } },
   ].map((x) => JSON.stringify(x)).join("\n") + "\n";
-  const ham = execFileSync(process.execPath, [MCP], { input: istekler, encoding: "utf8", timeout: 180_000, maxBuffer: 32 * 1024 * 1024 });
+  const ham = execFileSync(process.execPath, [MCP], { input: istekler, encoding: "utf8", timeout: 180_000, maxBuffer: 32 * 1024 * 1024, env: aracOrtami() });
   const satirlar = ham.trim().split("\n").filter(Boolean);
   const yanit = JSON.parse(satirlar[satirlar.length - 1]) as {
     result?: { content?: Array<{ text?: string }>; isError?: boolean };
@@ -195,7 +206,7 @@ test("EKL-F6-A03 nöbeti ③: okur/yazar beyanı gerçek disk davranışıyla ö
     // Şablon: doğuş paketinin ürettiği geçerli proje (denetle'den sıfır hata ile çıkar).
     const sablon = join(kok, "sablon");
     dogusYaz(sablon, "deneme");
-    const ornekKaynak = readFileSync(join(sablon, "is", "plan", "ilk_plan.sar"), "utf8");
+    const ornekKaynak = readFileSync(join(sablon, "is", "plan", "faz", "1_dogus.sar"), "utf8");
 
     /** Araç kendi taze kopyasında koşsun — tur birbirini kirletmesin. */
     const alanKur = (etiket: string): string => {

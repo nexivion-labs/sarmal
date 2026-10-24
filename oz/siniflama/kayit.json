@@ -185,6 +185,14 @@
       ]
     },
     {
+      "ad": "Profil",
+      "aile": "bilgi",
+      "ne": "bir proje kökünün kimlik kartı — işletmenin, kurumun ya da müşterinin kim olduğu, ne iş yaptığı, nerede ve hangi kanallarda yaşadığı; kişiler yalnız hitap, rol ve sorumluluk düzeyinde taşınır",
+      "koken": [
+        "TIP-1.17"
+      ]
+    },
+    {
       "ad": "Orkestrasyon",
       "aile": "orkestrasyon",
       "ne": "etmen havuzunu yönetir; Adım'dan istem üretip çalışma anında dağıtır"
@@ -871,7 +879,8 @@
       "Durum",
       "Mekanizma",
       "Faz",
-      "KimlikKökü"
+      "KimlikKökü",
+      "Profil"
     ],
     "Blok": [
       "Katman",
@@ -946,13 +955,15 @@
       "Uygulama",
       "Yasa",
       "Zamanlayıcı",
-      "Önbellek"
+      "Önbellek",
+      "Profil"
     ],
     "Kitaplık": [
       "Kitaplık",
       "Raf",
       "Uygulama",
-      "Proje"
+      "Proje",
+      "Profil"
     ],
     "Anayasa": [
       "Kural"
@@ -1750,6 +1761,14 @@
           "gizli"
         ]
       },
+      "opsiyonel": [
+        "önekler",
+        "biçimMuafları"
+      ],
+      "tür": {
+        "önekler": "liste",
+        "biçimMuafları": "liste"
+      },
       "beyanZorunlu": {
         "rejim": {
           "dayanak": "YAS-1",
@@ -1759,7 +1778,7 @@
         }
       },
       "kural": "Rejim sözleşmesi (YAS-1 ailesi): katı rejimde her Katman→Adım sarma yolu en az bir AltKatman'dan geçer ve Katman'ın doğrudan Adım taşıması yasaktır (YAS-1.1 · zorlama tanısı katı-rejim-altkatman-eksik motor borcunda); yalnız esnek beyanlı küçük veya deneysel Projelerde Katman doğrudan Adım taşıyabilir ve bu izin AltKatman'ı yasaklamaz (YAS-1.2); rejim yalnız açık kullanıcı değişikliğiyle geçer, yapı otomatik sarılmaz, taşınmaz veya silinmez ve hedef rejime aykırı düğümler düzeltilene kadar görünür tanı taşır (YAS-1.3)",
-      "not": "Görünürlük beyanı (Founder hükmü 2026-08-26): bir Proje yayımlanacaksa `açık`, kapalı kalacaksa `gizli` beyan eder; sözlük STR-3'ün açık-gizli sınırıyla aynıdır. Beyan zorunlu değildir ve yokluğunda proje AÇIK sayılır; sessiz varsayım burada nöbeti gevşetmez, sıkılaştırır. Açık-gizli sınır nöbeti bu beyanı okur, çünkü sınırın hangi yakasında olduğunu klasör adından çıkarmak iki yönden de yanlıştır: kapalı ürünün gerçek adı açık depoya yazılırsa ifşa olur, yazılmazsa nöbet kapalı tarafı kendi evinde haksız yere suçlar."
+      "not": "Görünürlük beyanı (Founder hükmü 2026-08-26): bir Proje yayımlanacaksa `açık`, kapalı kalacaksa `gizli` beyan eder; sözlük STR-3'ün açık-gizli sınırıyla aynıdır. Beyan zorunlu değildir ve yokluğunda proje AÇIK sayılır; sessiz varsayım burada nöbeti gevşetmez, sıkılaştırır. Açık-gizli sınır nöbeti bu beyanı okur, çünkü sınırın hangi yakasında olduğunu klasör adından çıkarmak iki yönden de yanlıştır: kapalı ürünün gerçek adı açık depoya yazılırsa ifşa olur, yazılmazsa nöbet kapalı tarafı kendi evinde haksız yere suçlar. Önek sicili (DIL-1.8): `önekler` listesi projenin düğüm kodu öneklerini tek yerde ilan eder; sicil beyan edildiği andan itibaren ilansız önekle doğan kod ve biçim dışı kod uyarı düzeyinde bildirilir, sicil beyan edilmemiş projede ise standart yürürlükte sayılmaz ve tanı doğmaz. `biçimMuafları` listesi standarttan önce doğmuş ve dokunulmaz kalan kodları adıyla, tire taşımayan bir öğe yazıldığında ise o önekin bütün kodlarını biçim tanısından muaf tutar."
     },
     "Orkestrasyon": {
       "zorunlu": [
@@ -1796,12 +1815,12 @@
         "ad"
       ],
       "opsiyonel": [
-        "teknolojiBağımsız (dürüst-beyan kaçışı: teknoloji dilimi taşımayan meşru bir Katman, teknolojisiz kalma gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; boş gerekçe beyan sayılmaz)"
+        "teknolojiBağımsız (geçici doğuş kaçışı: yalnız projede henüz hiçbir Teknoloji ve Takım ilan edilmemişken Kuruluş Katmanı gerekçesini burada yazar ve katmansız teknoloji bekçisi susar; zemin ilan edildiğinde satır silinir ve Katman takım ya da kullanır kenarıyla bağlanır, aksi hâlde yersiz teknoloji kaçışı uyarısı doğar; boş gerekçe beyan sayılmaz)"
       ],
       "tür": {
         "teknolojiBağımsız": "metin"
       },
-      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz; zeminsiz Katman yalnız `teknolojiBağımsız` beyanıyla kurulur ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
+      "kural": "Zemin bağı (MIM-1.4): her Katman zeminini iki tip-saf kenardan en az biriyle beyan eder; `kullanır` yalnız somut bir Teknolojiye ve en çok bir hedefe, `takım` yalnız Takıma ve bir ya da birden çok hedefe yönelir. İki kenar birbirinin yerine yazılamaz ve önce `takım` yolu denenir. Zeminsiz Katman yalnız doğuş anında, projede henüz hiçbir Teknoloji ve Takım yokken geçici `teknolojiBağımsız` beyanıyla kurulur; zemin ilan edildiğinde beyan kaldırılır ve Katman bağlanır. İşin türü zeminde değil AltKatmanın `departman` alanında yazılır ve birden çok teknoloji gerektiren iş ayrı Katmanlara bölünür. AltKatman bu bağı değiştirmeden miras alır ve kendi bağını beyan etmez"
     },
     "Adım": {
       "zorunlu": [
@@ -2712,6 +2731,37 @@
       ],
       "kural": "Mockup-referans kipi: mockup ÖZETLENMEZ — .sar yalnız referansı taşır (Adım/Ekran `referans: [ MOK-… ]`); detay mockup dosyasının KENDİSİNDE yaşar, çünkü kayıplı özet niyeti kaçırır ve özetin var olması doğru olduğunu göstermez."
     },
+    "Profil": {
+      "zorunlu": [
+        "kod",
+        "ad",
+        "ne",
+        "sektör",
+        "şehir"
+      ],
+      "opsiyonel": [
+        "bölge",
+        "unvan",
+        "hizmetler",
+        "marka",
+        "kanallar (harita: kanal adı → kullanıcı adı ya da alan adı)",
+        "kişiler (liste: her öğe yalnız hitap, rol ve sorumluluk anahtarlarını taşıyan bir harita)",
+        "uygular",
+        "referans",
+        "görünürlük"
+      ],
+      "yapisalKurallar": [
+        "bir proje kökünde tek Profil bulunur (profil-çift)",
+        "kişi kaydı yalnız hitap, rol ve sorumluluk taşır; soyadı ya da iletişim alanı yoktur (profil-kişisel-veri)",
+        "hiçbir alan telefon, e-posta, IBAN, kart numarası ya da açık adres taşımaz (profil-kişisel-veri)"
+      ],
+      "kural": "Profil, bir proje kökünün kimlik kartıdır ve bir yapraktır: Proje, Kitaplık ya da Raf altında yaşar, çocuk taşımaz. Zorunlu alanın hiç yazılmadığı hâli genel eksik-alan uyarısı, yazılmış ama boş ya da yer tutucu kalmış hâli profil-eksik-alan uyarısı bildirir. Kişiler ayrı düğüm değildir, çünkü kişi düğümü kişisel veri yüzeyini büyütür; kişi yalnız hitap ve rolle anılır. Telefon, e-posta, IBAN, kart numarası ve açık adres deseni profil-kişisel-veri hatasıdır ve tanı metni bulduğu değeri yinelemez. Görünürlük için gizli önerilir.",
+      "koken": [
+        "TIP-1.17",
+        "TIP-1.3",
+        "MIM-1.1"
+      ]
+    },
     "AltKatman": {
       "zorunlu": [
         "kod",
@@ -3066,7 +3116,8 @@
     "Kapı": "OS-vadeli; ilk canlı kullanıcısı ZKA-A02 Adımının altı kapılı karnesidir ve o Adım koştuğunda bu muafiyet kendiliğinden kalkar.",
     "GenelKural": "Canlı kullanım 2026-07-18 tarihinde kazanılmıştı; genel kural gövdesinin 2026-07-31 tarihinde arşive inmesiyle kayboldu. Tip motor vatandaşıdır ve kanon yürürlüktedir, kullanıcısı ise arşivdedir.",
     "Yasa": "Canlı kanon, kanon rafında madde tipinde yaşar ve Yasa düğümü olarak beyan edilmez; üç kovadan hiçbiri bu duruma dürüstçe oturmadığı için gerekçe düz yazıyla beyan edilmektedir.",
-    "Fikir": "Founder hükmü 2026-08-28: deponun üç fikri kapalı tarafa indirildi ve açık depoda canlı Fikir düğümü kalmadı. Tip ürün için gerçektir ve kullanıcı bahçelerinde yaşar; muafiyet bu deponun kendi bahçesiyle sınırlıdır. Hüküm yalnız o üç fikri bağladığı için açık depoya yeni bir fikir yazıldığı gün bu satır düşer."
+    "Fikir": "Founder hükmü 2026-08-28: deponun üç fikri kapalı tarafa indirildi ve açık depoda canlı Fikir düğümü kalmadı. Tip ürün için gerçektir ve kullanıcı bahçelerinde yaşar; muafiyet bu deponun kendi bahçesiyle sınırlıdır. Hüküm yalnız o üç fikri bağladığı için açık depoya yeni bir fikir yazıldığı gün bu satır düşer.",
+    "Profil": "Profil, işletme, kurum ve müşteri projelerinin kimlik kartıdır; Sarmal'ın kendi deposu bir işletmeyi temsil etmediği için açık depoda canlı Profil düğümü bulunmaz ve tip kullanıcı bahçelerinde yaşar."
   },
   "emojiYazimi": {
     "not": "EMOJİ TAKMA ADLARI (Founder onaylı kanon, 2026-07-17): her emoji, karşılık geldiği Türkçe yazımın EŞDEĞER takma adıdır. Belirteçleyici tek yönlü normalleştirir, yani emojiyi kanonik ada çevirir; böylece iki yazım yüzü de aynı grafı üretir. Tek anlam kuralı gereği bir emoji tek bir kavrama bağlıdır. Çekirdekteki eşi src/emoji-yazim.ts dosyasıdır ve eşitliği nöbet testiyle korunur.",

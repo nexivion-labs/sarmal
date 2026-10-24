@@ -758,6 +758,108 @@ Blok( kod: BLK-KT, ne: "iş" ) {
   assert.equal(katmansizTeknolojiTanilari(p(", kullanır: ADM-KT")).length, 1, "teknoloji-dışı kullanır hedefi bağ sayılmaz");
 });
 
+// ── MIM-1.4 · BKM-OLG-A11: yersiz-teknoloji-kaçışı (kaçış yalnız doğuş anında meşrudur) ──
+const kacisKatmani = (ek = "") => `Faz( kod: FAZ-YK, ad: "Mevsim", ne: "d" ) { Blok( kod: BLK-YK, ad: "İş", ne: "i" ) {
+  Katman( kod: KAT-YK, ad: "Mimari", ne: "k", teknolojiBağımsız: "teknoloji henüz seçilmedi"${ek} ) {
+    Adım( kod: ADM-YK, ne: "a", durum: beklemede, bağımlı: [] ) } } }`;
+const yersizKacis = async (dosyalar: Record<string, string>): Promise<string[]> => {
+  const { yersizTeknolojiKacisiTanilari } = await import("../src/denetci.ts");
+  const programlar = new Map(Object.entries(dosyalar).map(([d, k]) => [d, ayristir(belirtecle(k))]));
+  return yersizTeknolojiKacisiTanilari(programlar).map((t) => `${t.tani.kod}:${t.tani.duzey}:${String(t.tani.mesaj).match(/"([^"]+)"/)?.[1]}`);
+};
+
+test("MIM-1.4 (BKM-OLG-A11): Teknoloji ilanlı projede teknolojiBağımsız taşıyan Katman yersiz-teknoloji-kaçışı UYARISI alır", async () => {
+  const t = await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) }`,
+    "a/plan.sar": kacisKatmani(),
+  });
+  assert.deepEqual(t, ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  // Takım ilanı da zemin ilanıdır.
+  assert.equal((await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Takım( kod: TAKIM-A, ne: "ekip" ) }`,
+    "a/plan.sar": kacisKatmani(),
+  })).length, 1, "Takım ilanı da kaçışı yersiz kılar");
+});
+
+test("MIM-1.4 (BKM-OLG-A11): hiç Teknoloji ve Takım ilan etmemiş projede kaçış meşrudur ve tanı susar (doğuş anı)", async () => {
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): kardeş projenin Teknoloji ilanı tanıyı tetiklemez", async () => {
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+    "b/b_anadizin.sar": `Proje( kod: PRJ-B, ad: "b", rejim: esnek, ne: "y" ) { Teknoloji( kod: TEK-B, ne: "t" ) Takım( kod: TAKIM-B, ne: "ekip", bağımlı: [ TEK-B ] ) }`,
+  }), [], "kardeş projenin ilanı Katmanın projesine sayılmamalı");
+});
+
+test("MIM-1.4 (BKM-OLG-A11): çağır köprüsüyle köke gelen ilan meşru kapsamdır; çözülmeyen köprü zemin sayılmaz", async () => {
+  const ortak = `Teknoloji( kod: TEK-ORTAK, ne: "paylaşılan zemin" )`;
+  // Ortak ilan köksüz bir dosyada yaşar; proje onu anadizininden çağırır.
+  assert.deepEqual(await yersizKacis({
+    "ortak.sar": ortak,
+    "a/a_anadizin.sar": `çağır TEK-ORTAK\nProje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  // Köprüsüz aynı köksüz ilan projeye ait değildir.
+  assert.deepEqual(await yersizKacis({
+    "ortak.sar": ortak,
+    "a/a_anadizin.sar": `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+  // Bir Teknolojiye çözülmeyen köprü (ör. Blok çağrısı) zemin ilanı değildir.
+  assert.deepEqual(await yersizKacis({
+    "a/a_anadizin.sar": `çağır BLK-YK\nProje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { }`,
+    "a/plan.sar": kacisKatmani(),
+  }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): gerçek zemin bağıyla birlikte taşınan kaçış gereksizdir ve uyarı alır; bağlı ve kaçışsız Katman susar", async () => {
+  const proje = `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) Takım( kod: TAKIM-A, ne: "ekip", bağımlı: [ TEK-A ] ) }`;
+  const t = await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacisKatmani(", takım: TAKIM-A") });
+  assert.deepEqual(t, ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+  const { yersizTeknolojiKacisiTanilari } = await import("../src/denetci.ts");
+  const bagli = yersizTeknolojiKacisiTanilari(new Map([
+    ["a/a_anadizin.sar", ayristir(belirtecle(proje))],
+    ["a/plan.sar", ayristir(belirtecle(kacisKatmani(", takım: TAKIM-A")))],
+  ]));
+  assert.match(String(bagli[0].tani.mesaj), /zemin bağı taşıdığı hâlde/);
+  const kacissiz = kacisKatmani().replace(/, teknolojiBağımsız: "[^"]*"/, ", takım: TAKIM-A");
+  assert.deepEqual(await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacissiz }), []);
+  // Boş gerekçe kaçış sayılmaz; o hâli katmansız-teknoloji söyler, aynı kusur iki kez konuşmaz.
+  assert.deepEqual(await yersizKacis({ "a/a_anadizin.sar": proje, "a/plan.sar": kacisKatmani().replace("teknoloji henüz seçilmedi", "  ") }), []);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): ders dünyasındaki Katmanın kapsamı kendi dosyasıdır; ürünün ilanı öğretim örneğini uyarmaz", async () => {
+  const urun = `Proje( kod: PRJ-A, ad: "a", rejim: esnek, ne: "x" ) { Teknoloji( kod: TEK-A, ne: "t" ) }`;
+  assert.deepEqual(await yersizKacis({ "a_anadizin.sar": urun, "ogreti/ornek/dogus.sar": kacisKatmani() }), []);
+  assert.deepEqual(await yersizKacis({
+    "a_anadizin.sar": urun,
+    "ogreti/ornek/dogus.sar": `Teknoloji( kod: TEK-ORN, ne: "örnek" )\n${kacisKatmani()}`,
+  }), ["yersiz-teknoloji-kaçışı:uyarı:KAT-YK"]);
+});
+
+test("MIM-1.4 (BKM-OLG-A11): yeni tanının iki dilli metni eşit kurulur ve katmansız-teknoloji önerisi önce takım: yolunu söyler", async () => {
+  const { ONCEKI_TANI_METINLERI, ONCEKI_TANI_METINLERI_EN } = await import("../src/tani-metinleri.ts");
+  for (const hal of ["bağlı", "ilanlı"]) {
+    const tr = ONCEKI_TANI_METINLERI["yersiz-teknoloji-kaçışı"];
+    const en = ONCEKI_TANI_METINLERI_EN["yersiz-teknoloji-kaçışı"];
+    assert.ok(tr.mesaj({ kod: "KAT-X", hal }).includes("KAT-X") && en.mesaj({ kod: "KAT-X", hal }).includes("KAT-X"));
+    assert.ok(tr.oneri?.({ kod: "KAT-X", hal }) && en.oneri?.({ kod: "KAT-X", hal }));
+  }
+  const trOneri = String(ONCEKI_TANI_METINLERI["katmansız-teknoloji"].oneri?.({}));
+  const enOneri = String(ONCEKI_TANI_METINLERI_EN["katmansız-teknoloji"].oneri?.({}));
+  assert.ok(trOneri.indexOf("takım:") < trOneri.indexOf("kullanır:") && trOneri.indexOf("kullanır:") < trOneri.indexOf("teknolojiBağımsız"));
+  assert.ok(enOneri.indexOf("takım:") < enOneri.indexOf("kullanır:") && enOneri.indexOf("kullanır:") < enOneri.indexOf("teknolojiBağımsız"));
+  assert.match(trOneri, /doğuş anında/);
+  assert.match(enOneri, /moment of birth/);
+  assert.match(trOneri, /departman:/);
+  assert.match(enOneri, /departman:/);
+});
+
 // ── YAS-2.1: uygulanmamış-karar bekçisi (karar yönlendirme kapısı) ─────────────
 test("YAS-2.1: gerekli+kilitli+bağsız karar UYARI alır; kendinden-tam / bekliyor / beyansız / referans-bağlı karar susar", async () => {
   const { uygulanmamisKararTanilari } = await import("../src/denetci.ts");
@@ -783,6 +885,35 @@ Blok( kod: BLK-KYK, ne: "iş" ) {
   assert.equal(yap("kilitli", "").length, 0);
   // ⑤ gerekli + referans bağlı Adım → susar (ters-bağ ORK-1.2)
   assert.equal(yap("kilitli", 'uygulama: gerekli, ', ", referans: [ K-T1 ]").length, 0);
+});
+
+// BKM-BUG-A12: `Kural ad( … )` biçiminde ADLI yazılan Kural ayrıştırıcıda `kuralTanım`
+// türüne düşer; ters bağ toplayıcısı yalnız `widget` türünü gezdiği için adlı Kuralın
+// dayanak bağı sayılmıyor ve kararı kurala inmiş projede sahte uyarı düşüyordu.
+// Adsız biçim, bildirim adı taşımayan widget kuraldır (`GenelKural( kod: …, ad: "…" )`).
+test("YAS-2.1 (BKM-BUG-A12): adlı ve adsız Kuralın dayanak bağı kararı inmiş saydırır; bağsız karar uyarı almaya devam eder", async () => {
+  const { uygulanmamisKararTanilari } = await import("../src/denetci.ts");
+  const kararlar = `
+Karar( kod: KRR-ADLI, sıra: 1, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-ADSIZ, sıra: 2, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-ORTAK, sıra: 3, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )
+Karar( kod: KRR-BAGSIZ, sıra: 4, durum: kilitli, uygulama: gerekli, ne: "t", karar: "t", gerekçe: "t" )`;
+  const anayasa = `
+Anayasa( kod: ANY-ORNEK, ad: "Örnek Anayasa", ne: "fikstür" ) {
+  Kural adliKural( kod: KRL-ADLI, otorite: anayasa, katman: niyet, kapsam: genel,
+    dayanak: [ KRR-ADLI, KRR-ORTAK ], ne: "adlı biçimde yazılmış kural" )
+  GenelKural( kod: KRL-ADSIZ, ad: "adsizKural", otorite: anayasa, katman: niyet, kapsam: genel,
+    dayanak: [ KRR-ADSIZ, KRR-ORTAK ], ne: "widget biçiminde (bildirim adı olmadan) yazılmış kural" )
+}`;
+  const programlar = new Map([
+    ["yasa/kararlar.sar", ayristir(belirtecle(kararlar))],
+    ["yasa/anayasa.sar", ayristir(belirtecle(anayasa))],
+  ]);
+  const uyarilar = uygulanmamisKararTanilari(programlar).map((t) => t.tani.mesaj);
+  // Adlı (KRR-ADLI) ve adsız (KRR-ADSIZ) Kuralın dayanağı ve ikisinin ortak dayanağı inmiş sayılır.
+  // Regresyon: hiçbir düğümün bağlamadığı KRR-BAGSIZ uyarı almaya devam eder.
+  assert.equal(uyarilar.length, 1, `beklenen yalnız KRR-BAGSIZ, gelen: ${JSON.stringify(uyarilar)}`);
+  assert.match(String(uyarilar[0]), /KRR-BAGSIZ/);
 });
 
 // ── DIL-1.1: dil denetçisi (diakritik-kayıp + normalizasyon-uyumsuz) ───────────
@@ -1116,7 +1247,7 @@ test("MIM-1.2: ders dünyası (DERS_DUNYASI) hatırlatmalardan muaf; tam tarihli
   const fz = (t: string) => ayristir(belirtecle(
     `Faz( kod: FZ-B2, ad: "mvp", hedefTarih: ${t} ) {\n  Blok( kod: BLK-B2, ne: "iş" ) { Adım( kod: ADM-B2, ne: "a", durum: beklemede ) }\n}`));
   assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0);
-  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/sablon/dogus/ilk_plan.sar").length, 0);
+  assert.equal(fazVadeTanilari(fz('"belirsiz"'), "2026-07-12", "ogreti/sablon/dogus/1_dogus.sar").length, 0);
   assert.equal(fazVadeTanilari(fz('"2099-01"'), "2026-07-12", "ogreti/ornek/vitrin_dosyasi.sar").length, 0, "günsüz-tarih sorusu da ders dünyasında susar");
   // KPS-IND-A01 NÖBETİ: muafiyet ADI değil YERİ okur. Kullanıcının kendi kökü
   // altındaki `sablon/` bir ders rafı değildir ve hatırlatma orada SUSMAZ.
@@ -1168,18 +1299,20 @@ test("ZMN-A05: çift-mevsim-kaydı — bağ hem Faz çağır listesinde hem mevs
   assert.equal(hiyerarsiTanilari(tek).filter((x) => x.tani.kod === "çift-mevsim-kaydı").length, 0, "tek kayıt (mevsim:) uyarı almamalı");
 });
 
-test("ZMN-A05: planlanmamış beyanı — dolu neden fazsız-blok HATASINI bilgiye çevirir (planlanmamış-gövde); boş neden beyan sayılmaz", async () => {
+test("KPS-SIR-A01: planlanmamış beyanı kaçış DEĞİLDİR — dolu nedenle de fazsız-blok HATASI basılır (MIM-1.2)", async () => {
+  // Founder hükmü 2026-09-29: hiçbir Blok Fazsız bir yapıda yaşayamaz. Eski üçüncü
+  // hâl (beyanın hatayı planlanmamış-gövde bilgi notuna indirmesi) kanonda
+  // dayanaksızdı ve kaldırıldı; beyan yalnız hatanın metnine gerekçe olarak iner.
   const { hiyerarsiTanilari } = await import("../src/denetci.ts");
-  const dolu = hiyerarsiTanilari(progMap('Blok( kod: BLK-P, planlanmamış: "pazara çıkış kararı Founder\'da", ne: "raf işi" ) { Katman( kod: KTM-P, ad: "k" ) { Adım( kod: ADM-P, ne: "a", durum: beklemede ) } }'));
-  assert.equal(dolu.filter((x) => x.tani.kod === "fazsız-blok").length, 0, "dolu beyan hata almamalı (hâl ③)");
-  const bilgi = dolu.filter((x) => x.tani.kod === "planlanmamış-gövde");
-  assert.equal(bilgi.length, 1, "planlanmamış-gövde bilgi satırı basılmalı");
-  assert.equal(bilgi[0].tani.duzey, "bilgi");
-  // boş neden → hata sürer, mesaj zorunlu-nedeni anlatır
+  const dolu = hiyerarsiTanilari(progMap('Blok( kod: BLK-P, planlanmamış: "pazara çıkış kararı bekleniyor", ne: "raf işi" ) { Katman( kod: KTM-P, ad: "k" ) { Adım( kod: ADM-P, ne: "a", durum: beklemede ) } }'));
+  const hata = dolu.filter((x) => x.tani.kod === "fazsız-blok");
+  assert.equal(hata.length, 1, "dolu beyan fazsız-blok hatasını susturmamalı");
+  assert.equal(hata[0].tani.duzey, "hata");
+  assert.ok(hata[0].tani.mesaj.includes("pazara çıkış kararı bekleniyor"), "mesaj beyanın gerekçesini göstermeli");
+  assert.equal(dolu.filter((x) => x.tani.kod === "planlanmamış-gövde").length, 0, "emekli bilgi notu basılmamalı");
+  // boş neden → hata sürer
   const bos = hiyerarsiTanilari(progMap('Blok( kod: BLK-B, planlanmamış: "", ne: "iş" ) { Katman( kod: KTM-B, ad: "k" ) { Adım( kod: ADM-B, ne: "a", durum: beklemede ) } }'));
-  const hata = bos.filter((x) => x.tani.kod === "fazsız-blok");
-  assert.equal(hata.length, 1, "boş beyan fazsız-blok'u susturmamalı");
-  assert.ok(/BOŞ/.test(hata[0].tani.mesaj), "mesaj boş-beyan sebebini açmalı");
+  assert.equal(bos.filter((x) => x.tani.kod === "fazsız-blok").length, 1, "boş beyan fazsız-blok'u susturmamalı");
 });
 
 test("ZMN-A05: planlanmamış-çelişki — planlanmamış gövde altında geliştirmede Adım → UYARI (sahte-kaçış nöbeti)", async () => {
@@ -1191,13 +1324,13 @@ test("ZMN-A05: planlanmamış-çelişki — planlanmamış gövde altında geli�
   assert.ok(celiski[0].tani.mesaj.includes("ADM-K"), "mesaj başlayan Adım'ı adıyla göstermeli");
 });
 
-test("ZMN-A05: fazsız-blok önerisi üç meşru yolu sayar (mevsim: · gerçek-tarihli Faz · planlanmamış beyan)", async () => {
+test("ZMN-A05 · KPS-SIR-A01: fazsız-blok önerisi iki meşru yolu sayar (mevsim: · kendi Fazı) ve planlanmamış beyanını yol saymaz", async () => {
   const { hiyerarsiTanilari } = await import("../src/denetci.ts");
   const t = hiyerarsiTanilari(progMap('Blok( kod: BLK-Y, ne: "iş" ) { Katman( kod: KTM-Y, ad: "k" ) { Adım( kod: ADM-Y, ne: "a", durum: beklemede ) } }'));
   const hata = t.filter((x) => x.tani.kod === "fazsız-blok");
   assert.equal(hata.length, 1);
   assert.ok(/mevsim:/.test(hata[0].tani.oneri ?? ""), "öneri mevsim: yolunu göstermeli");
-  assert.ok(/planlanmamış/.test(hata[0].tani.oneri ?? ""), "öneri planlanmamış yolunu göstermeli");
+  assert.ok(!/planlanmamış/.test(hata[0].tani.oneri ?? ""), "öneri planlanmamış beyanını meşru yol olarak göstermemeli");
 });
 
 test("GBR-A03: 'belirsiz' hedefTarih ŞEMA tür-uyarısı ALMAZ (tür-denetimi tolere eder)", async () => {

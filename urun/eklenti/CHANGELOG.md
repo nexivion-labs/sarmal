@@ -2,6 +2,24 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.195 — 2026-10-24 (panel dışarıdan değişen dosyada bayat kalmıyor)
+
+- **Editörün dışında değişen dosya panelde tazelenir.** Başka bir pencerede çalışan bir ajan, git ya da komut satırı bir `.sar` dosyasını değiştirdiğinde yol haritası eski Adım sayısını pencere yeniden yüklenene kadar gösterebiliyordu, çünkü tur açık belgeyi her zaman diskten önce okuyordu. Artık yalnız kaydedilmemiş değişiklik taşıyan açık belge bellekten okunur; öteki her dosyanın gerçeği disktir.
+- **Değişen proje de denetlenir.** Bir dosya olayından sonra koşan dar tur yalnız odaktaki projeye daralıyordu ve dosyası değişen kardeş projenin çapraz tanıları yeniden hesaplanmıyordu. Tur artık odağın yanında değişen dosyaların projelerini de denetler; hangi projenin değiştiği bilinmiyorsa tam koşar. Performans kanalı denetlenen bütün projeleri adlarıyla gösterir.
+- **Davranışı nöbetler koruyor.** İki kardeş kökü olan gerçek bir geçici dizinde koşan yeni sınama, onarımsız eklentide on testin yedisinde düşer ve onarımla onunu da geçer; her koruma mutasyonla kanıtlanmıştır.
+
+## 0.9.194 — 2026-10-23 (Sarmal kabı tek panel oldu, vitrin mağazaya hazırlandı)
+
+- **Sarmal kabı Ray, Tren ve Makinist sekmeli tek panel oldu.** Etkinlik çubuğundaki kap artık tek bir görünüm taşır. Ray sekmesi Yol Haritasını ve Mini Grafı, Tren sekmesi projede ilan edilmiş ajanları, geliştirmedeki Adımları ve son Koşum mührünü, Makinist sekmesi ise Onaylar, Hatırlatıcılar, Gözlemler ve Fikirleri tek ağaçta gösterir. Onay kartı yan sekmede açılır ve durum çubuğundaki sayaçlar Makinist sekmesine götürür.
+- **Mini Grafın üç görünümü var.** Klasik görünüm cam mercekli rayları, varsayılan Ağaç görünümü her düğümü kendi satırında, İlerleme görünümü ise her Katmanı tamamlanan ve toplam Adım sayısıyla bir kart olarak gösterir; seçim `sarmal.miniGrafGorunum` ayarında saklanır.
+- **Girinti boyasının varsayılanı tül derinlik oldu.** Her kademe tek renkte, içeri girdikçe hafifçe koyulaşan bir tül taşır; eski gökkuşağı bantları `sarmal.girintiRenkleri` ayarı açıldığında çizilir.
+- **Gömülü kanona düşüş sakin bir bilgi olarak görünür.** Durum çubuğundaki işaret uyarı simgesi ve sarı zemin taşımaz; sarı zemin yalnız tam denetimin atlandığı, çöktüğü ya da eksik koştuğu gerçek sorun hâlinde verilir.
+- **Mağaza vitrini seçilmiş adı ve açıklamayı taşır.** Görünen ad İngilizcede "Sarmal: Plan & Guardrails for AI Agents", Türkçede "Sarmal: Yapay Zekâ Ajanları için Plan ve Ray" olur ve paket mağaza için yazılmış ayrı bir İngilizce beniokuyla üretilir.
+- **İngilizce pencerede arayüz İngilizce konuşur ve dosyadaki Türkçe adları anar.** Bindirme söküldü ve dosya her dilde olduğu gibi Türkçe görünür; tanılar, balonlar, tamamlama ve MCP araçlarının çıktıları İngilizce kipte İngilizcedir.
+- **Kısıtlı modda simge kaybolmaz.** Güvenilmeyen klasörde Sarmal simgesi yerinde kalır, bir karşılama görünümü eklentinin neden sustuğunu söyler ve dil tanıma çalışmayı sürdürür.
+- **Kırık bir dosya denetim turunu susturmaz.** Söz dizimi kırık bir dosya varken öteki dosyaların tanıları korunur ve eksik koşan tur durum çubuğunda kırık dosyanın adı ve satırıyla bildirilir.
+- **Paketlenen motorun yeni tanıları geldi.** Profil tipi kişisel veri tanılarıyla birlikte doğdu; önek sicili ile düğüm kodu biçim tanısı, girinti ile yapının uyumunu ölçen gözlem ve yersiz teknoloji kaçışı uyarısı eklendi. Doğuşun kurduğu iki kanca artık kabuk gerektirmeyen Node betikleridir.
+
 ## 0.9.193 — 2026-09-20 (panel hiçbir Adımı düşürmüyor, Katman zemini iki kenarla yazılıyor)
 
 - **Yol haritası Blok dışında doğmuş plan düğümünü artık gösteriyor.** Panel kökleri yalnız Blok ile Fazdan seçiyordu; Blokunun kapanış parantezi dışına doğmuş bir Katmanın Adımı bu yüzden ne görünüyor ne sayılıyordu ve panelin sayacı komut satırı karnesinden bir eksik kalıyordu. Artık bir Blokun ve bir Fazın dışında karşılaşılan her plan düğümü kendi başına köktür. Yerleşimin doğru olup olmadığına motor hükmeder; panelin işi var olanı göstermektir.

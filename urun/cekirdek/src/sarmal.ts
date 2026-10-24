@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
@@ -116,17 +116,29 @@ function geriYaziciSeç(dizin: string, sozlesmeDizin?: string): SonYaz | undefin
 import { ebediEnvanter, EBEDI_KILIT_ADI } from "./kuralci.ts";
 import { belgeMd } from "./belgele.ts";
 import { yansıt, type Yüz } from "./prizma.ts";
+import { prizmaMd } from "./prizma-md.ts";
 import { agacYüz, agacBlokUygula } from "./agac.ts";
 import { etkiMetni } from "./etki.ts";
 import { grafYuz } from "./graf.ts";
 import { sablonMetni, sablonTurleri, mimariDiyalog } from "./sablon.ts";
 import { designmdTema, temaDesignmd } from "./tema-designmd.ts";
-import { cevir } from "./cevir.ts";
+import { cevir, etkinCiktiDili } from "./cevir.ts";
 import { yonergeIkiziDenetle, ikizRaporu, YONERGE_IKIZLERI, yokSaymaRaporu } from "./yonerge-ikizi.ts";   // KYN-MTR-A02: yönerge ikizi nöbeti kök kapısıdır, varlık denetiminden ayrıdır
 import { kokYuzeyiDenetle, kokYuzeyiRaporu } from "./kok-yuzeyi.ts";   // KYN-MTR-A04: kök yüzeyi nöbeti de kök kapısıdır ve varlık karnesine yazmaz
 import type { EbediKilit } from "./kuralci.ts";
 import type { Dugum } from "./sozdizim.ts";
 import type { Tani } from "./tani.ts";
+import { sozDizimTanisi, taniDilineCevir } from "./tani-metinleri.ts";
+
+/**
+ * MGZ-A03 · Sözdizimi hatasının satırı. Ayrıştırılamayan dosya öteki tanılarla
+ * aynı biçimde, kimliğiyle basılır (`✖ dosya:satır:sütun [söz-dizim] ileti`);
+ * böylece komut satırı Sorunlar panelindeki kaydın aynısını anlatır. Satır
+ * standart hata akışına gider ve çıkış kodu değişmez (davranış korunur).
+ */
+function sozDizimSatiri(dosya: string, tani: Tani): string {
+  return `✖ ${dosya}:${tani.satir}:${tani.sutun} [${tani.kod}] ${tani.mesaj}`;
+}
 
 // ── Çıkış kapısı: makine yüzü boruya EKSİKSİZ teslim edilir ─────────────────
 //   ÖLÇÜLMÜŞ KUSUR (HTR-YANSIT-JSON-BORUDA-KIRPILIYOR · 2026-08-31). POSIX'te
@@ -563,6 +575,12 @@ if (yol === "belge-yuzleri-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = belgeYuzleriniUret(dizin);
   console.log(`📚 belge yüzleri: ${sonuc.degisen.length} değişti · ${sonuc.degismeyen.length} aynı · ${sonuc.kanonMaddesi} madde · ${sonuc.aracSayisi} araç.`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
+  // HST-MTR-A12: yüzey sayılarının okunduğu matris kaydı canlı sicilden ayrışınca üretim durmaz; sapma adıyla söylenir.
+  if (sonuc.yonlendirmeBulgusu) console.log(`⚠️ ${sonuc.yonlendirmeBulgusu}`);
   process.exit(0);
 }
 
@@ -573,21 +591,30 @@ if (yol === "kanon-tutarlilik-uret") {
   const dizin = args[1] && !args[1].startsWith("--") ? args[1] : "..";
   const sonuc = kanonTutarlilikUret(dizin);
   console.log(`⚖️ kanon tutarlılık: ${sonuc.degisti ? "tazelendi" : "aynı"} · ${sonuc.madde} madde · ${sonuc.yeni} yeni · ${sonuc.onceki} önceki · ${sonuc.emekli} emekli · ${sonuc.emeklilikBorcu} açık emeklilik borcu.`);
+  // HST-MTR-A01: taşıyıcısı belge metninden ayrışan madde, yüzü tazeleyen kişiye adıyla söylenir.
+  if (sonuc.tasiyiciAyrisan.length > 0) console.log(`⚠️ taşıyıcısı belge metninden ayrışan madde: ${sonuc.tasiyiciAyrisan.join(" · ")} (ayrıntı: is/nitelik/goc/kanon_tutarlilik.sar).`);
+  // HST-MTR-A02: sayı ayrışması üretimi durdurmaz; bulgu yüzü tazeleyen kişiye söylenir.
+  if (sonuc.kanonSayimiBulgusu) console.log(`⚠️ ${sonuc.kanonSayimiBulgusu}`);
+  // HST-MTR-A12: tanı kümesi ayrışması da üretimi durdurmaz; ayrışan küme adıyla söylenir.
+  if (sonuc.taniKumesiBulgusu) console.log(`⚠️ ${sonuc.taniKumesiBulgusu}`);
   process.exit(0);
 }
 
-// ── `yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]` (FEL-5 Prizma) ──
-//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan
-//    (MD 👤insan = `belge` komutu). Dört yüz de TEK parse'tan → drift imkânsız.
+// ── `yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]` (FEL-5 Prizma) ──
+//    Tek kaynak .sar → seçilen YÜZ: JSON ⚙️makine · YAML 🔧config · XML 🤖ajan ·
+//    MD 👤insan (prizma-md.ts — okunur dönüşüm, KYN-KYN-A05). Dört yüz de TEK
+//    parse'tan → drift imkânsız. `belge` komutu önizleme yüzüdür (kaynak kodu
+//    kendi hâliyle gösterir) ve ayrı kalır.
 if (yol === "yansıt" || yol === "yansit") {
   const dosya = args[1];
   if (!dosya || dosya.startsWith("--")) {
-    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml [--yaz <hedef>]");
+    console.error("✖ yansıt için .sar dosyası gerekli: sarmal yansıt <dosya.sar> --json|--yaml|--xml|--md [--yaz <hedef>]");
     process.exit(1);
   }
-  const yüz: Yüz | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml" : args.includes("--xml") ? "xml" : undefined;
+  const yüz: Yüz | "md" | undefined = args.includes("--json") ? "json" : args.includes("--yaml") ? "yaml"
+    : args.includes("--xml") ? "xml" : args.includes("--md") ? "md" : undefined;
   if (!yüz) {
-    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan)");
+    console.error("✖ yüz seç: --json (makine) · --yaml (config) · --xml (ajan) · --md (insan)");
     process.exit(1);
   }
   const yazIdx = args.indexOf("--yaz");
@@ -597,7 +624,8 @@ if (yol === "yansıt" || yol === "yansit") {
     process.exit(1);
   }
   try {
-    const çıktı = yansıt(readFileSync(dosya, "utf8"), yüz);
+    const kaynak = readFileSync(dosya, "utf8");
+    const çıktı = yüz === "md" ? prizmaMd(kaynak) : yansıt(kaynak, yüz);
     if (hedef) { writeFileSync(hedef, çıktı, "utf8"); console.log(`✅ ${yüz.toUpperCase()} yüzü yazıldı → ${hedef}`); }
     else process.stdout.write(çıktı);
     process.exit(0);
@@ -975,7 +1003,7 @@ try {
   }
 } catch (e) {
   if (e instanceof SozDizimHatasi) {
-    console.error(`✖ ${yol}:${e.satir}:${e.sutun} — ${e.message}`);
+    console.error(sozDizimSatiri(yol, sozDizimTanisi(e)));
     process.exit(2);
   }
   throw e;
@@ -1013,7 +1041,12 @@ function iskeletiUret(
  *  Çıkış: 0 temiz/yalnız-uyarı · 2 söz dizim hatası · 4 denetim drift'i (hata).
  */
 function denetleKomutu(dizin: string, anaYolu?: string): number {
-  console.log(`── DENETİM → ${dizin}${anaYolu ? ` (spec: ${anaYolu})` : ""} ──`);
+  // MGZ-A11 · İngilizce yüzün tek ilkesi: `SARMAL_DIL=en` iken kabuğun düzyazısı ve
+  // tanıların okuma yüzü İngilizcedir; MCP `denetle-proje` köprüsü bu çıktıyı aynen
+  // döndürdüğü için iki yüz aynı sesi verir. Türkçe hane kanonik yüzdür ve değişmez.
+  const dil = etkinCiktiDili();
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
+  console.log(y(`── DENETİM → ${dizin}${anaYolu ? ` (spec: ${anaYolu})` : ""} ──`, `── CHECK → ${dizin}${anaYolu ? ` (spec: ${anaYolu})` : ""} ──`));
   // BKM-OLG-A07: vade nöbetlerinin "bugün"ü CLI bayrağından enjekte edilir (determinizm).
   const tarihIdx = args.indexOf("--tarih");
   const bugun = tarihIdx >= 0 && args[tarihIdx + 1] && !args[tarihIdx + 1].startsWith("--")
@@ -1028,7 +1061,7 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   const s = denetimKos(dizin, { anaYolu, bugun, snfYol: SNF_YOL, tamListe });
   if (s.sozdizimHata) {
     const h = s.sozdizimHata;
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));
     return s.cikis;
   }
   // göç motor turu A02 kapanışı (Karar A · ikinci parça): `--tanı <kod>` süzgeci hem kanonik
@@ -1049,32 +1082,37 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
       console.error(`✖ '${taniGirdi}' tanı sicilinde çözülmedi — motor uydurma kimlik basmaz; sicildeki kanonik yazımı kullan.`);
       return 1;
     }
-    console.log(`🔎 Tanı süzgeci: ${suzgec}${suzgec === taniGirdi ? "" : ` (girdi '${taniGirdi}' katlanmış arama adıyla çözüldü)`} — özet satırı TAM koşumu anlatır, süzgeç yalnız listeyi daraltır.`);
+    console.log(y(`🔎 Tanı süzgeci: ${suzgec}${suzgec === taniGirdi ? "" : ` (girdi '${taniGirdi}' katlanmış arama adıyla çözüldü)`} — özet satırı TAM koşumu anlatır, süzgeç yalnız listeyi daraltır.`,
+      `🔎 Diagnostic filter: ${suzgec}${suzgec === taniGirdi ? "" : ` (input '${taniGirdi}' was resolved through its folded search name)`} — the summary line describes the FULL run; the filter only narrows the list.`));
   }
   if (tamListe) {
-    console.log("🔓 Özetleme kapalı (--tam-liste): aynı türden bulgular tek satıra katlanmadı, her bulgu kendi satırıyla basıldı. Tür dökümündeki sayılar özetli kiptekilerle birebir aynıdır — değişen yalnız sunumdur.");
+    console.log(y("🔓 Özetleme kapalı (--tam-liste): aynı türden bulgular tek satıra katlanmadı, her bulgu kendi satırıyla basıldı. Tür dökümündeki sayılar özetli kiptekilerle birebir aynıdır — değişen yalnız sunumdur.",
+      "🔓 Summarising is off (--tam-liste): findings of the same kind were not folded into one row; every finding was printed on its own row. The numbers in the kind breakdown are exactly those of the summarised mode — only the presentation changes."));
   }
   for (const r of s.akis) {
     const tanilar = suzgec ? r.tanilar.filter((t) => t.kod === suzgec) : r.tanilar;
-    if (tanilar.length) raporla(r.dosya, tanilar);
+    if (tanilar.length) raporla(r.dosya, dil === "tr" ? tanilar : tanilar.map((t) => taniDilineCevir(t, dil)));
   }
   if (!s.tamKosum) return s.cikis;
 
   const muafNotu = s.muaflar.size
-    ? `\nℹ️ ${s.muaflar.size} dosya bilerek-hatalı (tanıları atlandı): ${[...s.muaflar].join(" · ")}`
+    ? y(`\nℹ️ ${s.muaflar.size} dosya bilerek-hatalı (tanıları atlandı): `, `\nℹ️ ${s.muaflar.size} files are deliberately faulty (their diagnostics were skipped): `) + [...s.muaflar].join(" · ")
     : "";
   // ── YUZ-3 (VIT-K77-A02): build-sonu karnesi — tek bakışta plan sağlığı.
   const krn = s.karne!;
   const kd = krn.durumlar;
   // OGR-5: karne ürün kapsamındadır; örnek dünyasının açık Adımları ayrı satırla görünür.
   const dersNotu = s.dersAcik > 0
-    ? `\n📚 Örnek dünyasında ${s.dersAcik} açık Adım — ders malzemesidir ve kasıtlı olarak açıktır; ürün gündemine ve karneye girmez.`
+    ? y(`\n📚 Örnek dünyasında ${s.dersAcik} açık Adım — ders malzemesidir ve kasıtlı olarak açıktır; ürün gündemine ve karneye girmez.`,
+      `\n📚 ${s.dersAcik} open Adım nodes in the example world — they are teaching material and deliberately open; they do not enter the product agenda or the scorecard.`)
     : "";
   // RF-T6-A02 · SOL HÜKMÜ (b): dayanak eşleme borcu KARNEDE yaşar (tek satır, ürün/örnek ayrık).
   const dy = s.dayanak;
   const dayanakNotu = dy.urun > 0
-    ? `\n⚖️ Dayanak eşleme: ürün ${dy.urun} kural dayanaksız — nöbet işaretledi (Problems/denetim; dayanak: K-nn yaz ya da dayanaksız: "gerekçe" beyan et)${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`
-    : `\n⚖️ Dayanak haritası TAM: ürün kuralları bağlı${dy.beyanli ? ` (bilinçli-beyanlı ${dy.beyanli} dahil)` : ""} · ders-dünyası ${dy.ornek} örnek kuralı kasıtlı olarak dayanaksızdır${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`;
+    ? y(`\n⚖️ Dayanak eşleme: ürün ${dy.urun} kural dayanaksız — nöbet işaretledi (Problems/denetim; dayanak: K-nn yaz ya da dayanaksız: "gerekçe" beyan et)${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`,
+      `\n⚖️ dayanak mapping: ${dy.urun} product Kural nodes have no dayanak — the guard flagged them (Problems/check; write dayanak: K-nn or declare dayanaksız: "reason")${dy.kuralsizKarar ? ` · reverse inventory: ${dy.kuralsizKarar} locked decisions are the dayanak of no Kural` : ""}`)
+    : y(`\n⚖️ Dayanak haritası TAM: ürün kuralları bağlı${dy.beyanli ? ` (bilinçli-beyanlı ${dy.beyanli} dahil)` : ""} · ders-dünyası ${dy.ornek} örnek kuralı kasıtlı olarak dayanaksızdır${dy.kuralsizKarar ? ` · ters envanter: ${dy.kuralsizKarar} kilitli karar hiçbir kuralın dayanağı değil` : ""}`,
+      `\n⚖️ dayanak map COMPLETE: product Kural nodes are bound${dy.beyanli ? ` (including ${dy.beyanli} consciously declared)` : ""} · the example world's ${dy.ornek} sample Kural nodes are deliberately without dayanak${dy.kuralsizKarar ? ` · reverse inventory: ${dy.kuralsizKarar} locked decisions are the dayanak of no Kural` : ""}`);
   // ── PROJE AYRIMI (KPS-AYR-A01 · YAS-3.3) ────────────────────────────────────
   //   Çatı kökünden koşulan denetim, bulguları hangi Projenin taşıdığını ADIYLA
   //   söyler. Bugüne kadar doğru kullanım "her projeyi kendi kökünden denetle"
@@ -1085,11 +1123,13 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
     const projeSayisi = s.projeGruplari.filter((p) => !p.catininKendisi).length;
     if (projeSayisi < 2) return "";
     const satirlar = s.projeGruplari.map((p) => {
-      const ad = p.catininKendisi ? "çatının kendi ilanı (hiçbir Projenin malı değil)" : p.ad ? `${p.ad} (${p.kod})` : p.kod;
+      const ad = p.catininKendisi ? y("çatının kendi ilanı (hiçbir Projenin malı değil)", "the umbrella's own declaration (owned by no Proje)") : p.ad ? `${p.ad} (${p.kod})` : p.kod;
       const k = p.karne;
       const kd2 = k?.durumlar ?? {};
-      const karne = k ? ` · ${k.dugum} düğüm · ${k.adim} Adım → 🟢 ${kd2["tamamlandı"] ?? 0} · 🟡 ${kd2["geliştirmede"] ?? 0} · 🔵 ${kd2["beklemede"] ?? 0}` : "";
-      return `   ${ad} — ✖ ${p.hata} hata · ⚠ ${p.uyari} uyarı · ℹ ${p.bilgi} bilgi · ${p.dosyaSayisi} dosya${karne}`;
+      const karne = k ? y(` · ${k.dugum} düğüm · ${k.adim} Adım → `, ` · ${k.dugum} nodes · ${k.adim} Adım → `) +
+        `🟢 ${kd2["tamamlandı"] ?? 0} · 🟡 ${kd2["geliştirmede"] ?? 0} · 🔵 ${kd2["beklemede"] ?? 0}` : "";
+      return `   ${ad} — ` + y(`✖ ${p.hata} hata · ⚠ ${p.uyari} uyarı · ℹ ${p.bilgi} bilgi · ${p.dosyaSayisi} dosya`,
+        `✖ ${p.hata} errors · ⚠ ${p.uyari} warnings · ℹ ${p.bilgi} info · ${p.dosyaSayisi} files`) + karne;
     }).join("\n");
     // KPS-KOD-A01 · ORK-4: kardeş projelerin ortak kodları BEKLENEN durumdur ve
     // tanı üretmez; sayı burada okunur ki "ikinci projenin sekiz düğümü nereye
@@ -1097,23 +1137,33 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
     // yerdir: aynı Proje kodu iki kökte ilanlıysa ad alanı ayıramaz ve bunu söyler.
     const ak = s.adAlani;
     const ortak = ak.ortakKod.length
-      ? `\n   🔀 kardeş projelerde ortak kod: ${ak.ortakKod.length} (beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür): ${ak.ortakKod.map((o) => o.kod).join(" · ")}`
+      ? y(`\n   🔀 kardeş projelerde ortak kod: ${ak.ortakKod.length} (beklenen durum, tanı değil — her biri kendi Projesi altında \`PRJ::KOD\` anahtarıyla ayrı düğümdür): `,
+        `\n   🔀 KOD shared by sibling projects: ${ak.ortakKod.length} (an expected state, not a diagnostic — each is a separate node under its own Proje with the \`PRJ::KOD\` key): `) +
+        ak.ortakKod.map((o) => o.kod).join(" · ")
       : "";
     const ayrisamayan = ak.ayrisamayan.length
-      ? `\n   ⚠️ ad alanı olmadan ayrışamayan Proje kökü: ${ak.ayrisamayan.map((a) => `${a.kod} (${a.dosyalar.join(" · ")})`).join("; ")} — aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için graf bu kökleri AYIRAMADI ve ilk tanım kazandı`
+      ? y(`\n   ⚠️ ad alanı olmadan ayrışamayan Proje kökü: ${ak.ayrisamayan.map((a) => `${a.kod} (${a.dosyalar.join(" · ")})`).join("; ")} — aynı Proje kodu birden çok kökte ilanlı; \`PRJ::KOD\` iki kökü birden gösterdiği için graf bu kökleri AYIRAMADI ve ilk tanım kazandı`,
+        `\n   ⚠️ Proje roots that cannot be separated without a namespace: ${ak.ayrisamayan.map((a) => `${a.kod} (${a.dosyalar.join(" · ")})`).join("; ")} — the same Proje KOD is declared in several roots; because \`PRJ::KOD\` points to both, the graph COULD NOT SEPARATE these roots and the first definition won`)
       : "";
-    return `\n\n🏛️ PROJE AYRIMI — ${projeSayisi} Proje kökü. Her hanenin kimliği dizin yolu değil tekil Proje kodudur (YAS-3.3); bir Proje taşınsa hanesi adıyla korunur ve ayrı Projelerin bulguları birleşmez:\n${satirlar}${ortak}${ayrisamayan}`;
+    return y(`\n\n🏛️ PROJE AYRIMI — ${projeSayisi} Proje kökü. Her hanenin kimliği dizin yolu değil tekil Proje kodudur (YAS-3.3); bir Proje taşınsa hanesi adıyla korunur ve ayrı Projelerin bulguları birleşmez:\n`,
+      `\n\n🏛️ Proje SEPARATION — ${projeSayisi} Proje roots. Each row's identity is the unique Proje KOD, not a directory path (YAS-3.3); if a Proje moves, its row is kept by name and the findings of separate Proje roots never merge:\n`) +
+      `${satirlar}${ortak}${ayrisamayan}`;
   };
-  const karneSatiri = `📋 Karne (ürün): ${krn.dugum} düğüm · ${krn.adim} Adım → 🟢 ${kd["tamamlandı"] ?? 0} · 🟡 ${kd["geliştirmede"] ?? 0} · 🔵 ${kd["beklemede"] ?? 0} · ⛔ ${kd["bloklu"] ?? 0}${dayanakNotu}${dersNotu}`;
+  const karneSatiri = y(`📋 Karne (ürün): ${krn.dugum} düğüm · ${krn.adim} Adım → `, `📋 Scorecard (product): ${krn.dugum} nodes · ${krn.adim} Adım → `) +
+    `🟢 ${kd["tamamlandı"] ?? 0} · 🟡 ${kd["geliştirmede"] ?? 0} · 🔵 ${kd["beklemede"] ?? 0} · ⛔ ${kd["bloklu"] ?? 0}${dayanakNotu}${dersNotu}`;
   // MOTOR SUSMAZ (Founder 2026-07-14): açık adım varken motor "bitti/TAM-yeşil" DEMEZ.
   const acikSayi = s.acikAdimlar.length;
   const acikBlok = (): string => {
     if (acikSayi === 0) return "";
     const gelistirmede = s.acikAdimlar.filter((a) => /geliştirmede/.test(a.tani.mesaj)).length;
     const bekleyen = acikSayi - gelistirmede;
-    const liste = s.acikAdimlar.slice(0, 8).map((a) => `   • ${a.tani.mesaj.replace(/^.. AÇIK ADIM \([^)]*\) /, "").replace(/\. Motor bunu.*$/, "")}`).join("\n");
-    const artan = acikSayi > 8 ? `\n   … ve ${acikSayi - 8} açık Adım daha` : "";
-    return `\n\n🚧 MOTOR SUSMUYOR — ${acikSayi} açık Adım (🚧 ${gelistirmede} geliştirmede · 🔵 ${bekleyen} beklemede). Hepsi 'tamamlandı' olunca motor susar:\n${liste}${artan}`;
+    // İngilizce kipte satır tanının İngilizce hanesinden kurulur; sayım yukarıda kanonik metinden yapıldı.
+    const liste = s.acikAdimlar.slice(0, 8).map((a) => dil === "en"
+      ? `   • ${(a.tani.dilMetinleri?.en.mesaj ?? a.tani.mesaj).replace(/^.. Open Adım \([^)]*\) /, "").replace(/\. The engine does not forget.*$/, "")}`
+      : `   • ${a.tani.mesaj.replace(/^.. AÇIK ADIM \([^)]*\) /, "").replace(/\. Motor bunu.*$/, "")}`).join("\n");
+    const artan = acikSayi > 8 ? y(`\n   … ve ${acikSayi - 8} açık Adım daha`, `\n   … and ${acikSayi - 8} more open Adım nodes`) : "";
+    return y(`\n\n🚧 MOTOR SUSMUYOR — ${acikSayi} açık Adım (🚧 ${gelistirmede} geliştirmede · 🔵 ${bekleyen} beklemede). Hepsi 'tamamlandı' olunca motor susar:\n`,
+      `\n\n🚧 THE ENGINE DOES NOT FALL SILENT — ${acikSayi} open Adım nodes (🚧 ${gelistirmede} geliştirmede · 🔵 ${bekleyen} beklemede). The engine falls silent once all are 'tamamlandı':\n`) + `${liste}${artan}`;
   };
   // ── TÜR DÖKÜMÜ — kapının kendi sayısını dürüstçe söylediği yer ──────────────
   //   Dosya başına basılan özet satırı yalnız O DOSYANIN kalanını anlatır; bir
@@ -1122,25 +1172,33 @@ function denetleKomutu(dizin: string, anaYolu?: string): number {
   //   bu yüzden çıktıyı metin olarak ayrıştırmaya gerek yoktur.
   const turBloku = (): string => {
     if (!s.turDokumu.length) return "";
-    const rozet = (d: string): string => (d === "hata" ? "✖ hata" : d === "uyarı" ? "⚠ uyarı" : "ℹ bilgi");
+    const rozet = (d: string): string => (d === "hata" ? y("✖ hata", "✖ error") : d === "uyarı" ? y("⚠ uyarı", "⚠ warning") : y("ℹ bilgi", "ℹ info"));
     const gercekToplam = s.turDokumu.reduce((t, r) => t + r.toplam, 0);
     const basilanSatir = s.akis.reduce((t, r) => t + r.tanilar.length, 0);
     const genislik = Math.max(...s.turDokumu.map((r) => String(r.toplam).length));
     const satirlar = s.turDokumu.map((r) =>
-      `   ${String(r.toplam).padStart(genislik)} × ${r.kod} — ${r.dosyaSayisi} dosya · ${r.duzeyler.map(rozet).join(" + ")}`).join("\n");
-    return `\n\n📊 TÜR DÖKÜMÜ — ${s.turDokumu.length} tanı türü · ${gercekToplam} GERÇEK bulgu (yukarıda ${basilanSatir} satır basıldı; aradaki fark özet satırlarına katlandı):\n${satirlar}\n   ℹ️ Bu sayılar tam sayımdır: özet satırlarının katladığı bulgular dâhildir. Tek tek görmek istersen denetimi \`--tam-liste\` ile koştur; tek bir türe bakmak istersen \`--tanı <kimlik>\` süzgecini kullan.`;
+      `   ${String(r.toplam).padStart(genislik)} × ${r.kod} — ${r.dosyaSayisi} ${y("dosya", "files")} · ${r.duzeyler.map(rozet).join(" + ")}`).join("\n");
+    return y(`\n\n📊 TÜR DÖKÜMÜ — ${s.turDokumu.length} tanı türü · ${gercekToplam} GERÇEK bulgu (yukarıda ${basilanSatir} satır basıldı; aradaki fark özet satırlarına katlandı):\n`,
+      `\n\n📊 KIND BREAKDOWN — ${s.turDokumu.length} diagnostic kinds · ${gercekToplam} REAL findings (${basilanSatir} rows were printed above; the difference was folded into summary rows):\n`) +
+      satirlar +
+      y(`\n   ℹ️ Bu sayılar tam sayımdır: özet satırlarının katladığı bulgular dâhildir. Tek tek görmek istersen denetimi \`--tam-liste\` ile koştur; tek bir türe bakmak istersen \`--tanı <kimlik>\` süzgecini kullan.`,
+        `\n   ℹ️ These numbers are a full count: findings folded into summary rows are included. To see them one by one run the check with \`--tam-liste\`; to look at a single kind use the \`--tanı <kimlik>\` filter.`);
   };
   if (s.toplamHata + s.toplamUyari === 0) {
     if (acikSayi === 0) {
-      console.log(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).${muafNotu}\n${karneSatiri}${projeBloku()}${turBloku()}`);
+      console.log(y(`\n✅ Drift yok + tüm Adımlar tamamlandı — disk ${s.anaEtiket} ilanına uygun (kod=KANUN, klasör=ayna). Motor SUSTU (TAM-yeşil).`,
+        `\n✅ No drift + every Adım is tamamlandı — the disk conforms to the ${s.anaEtiket} declaration (code = LAW, folder = mirror). The engine FELL SILENT (FULL green).`) +
+        `${muafNotu}\n${karneSatiri}${projeBloku()}${turBloku()}`);
       return 0;
     }
-    console.log(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.${muafNotu}\n${karneSatiri}${projeBloku()}${acikBlok()}${turBloku()}`);
+    console.log(y(`\n🟡 Yapı temiz (drift yok) AMA iş bitmedi — motor susmuyor.`, `\n🟡 The structure is clean (no drift) BUT the work is not finished — the engine does not fall silent.`) +
+      `${muafNotu}\n${karneSatiri}${projeBloku()}${acikBlok()}${turBloku()}`);
     return 0;
   }
   const riskli = [...s.dosyaTanilari.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
     .map(([d, n]) => `${d} (${n})`).join(" · ");
-  console.log(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──${muafNotu}\n${karneSatiri}${projeBloku()}${riskli ? `\n🔥 En çok tanı: ${riskli}` : ""}${acikBlok()}${turBloku()}`);
+  console.log(y(`\n── ÖZET: ${s.toplamHata} hata · ${s.toplamUyari} uyarı ──`, `\n── SUMMARY: ${s.toplamHata} errors · ${s.toplamUyari} warnings ──`) +
+    `${muafNotu}\n${karneSatiri}${projeBloku()}${riskli ? y(`\n🔥 En çok tanı: ${riskli}`, `\n🔥 Most diagnostics: ${riskli}`) : ""}${acikBlok()}${turBloku()}`);
   return s.cikis;
 }
 
@@ -1193,7 +1251,7 @@ function yardimMetni(): string {
     grup("🌳 TEKİL DOSYA YÜZLERİ (Prizma — kaynak asla değişmez)", [
       "<dosya.sar> [--iskelet <hedef>]             Dosyayı ayrıştırır, ağacını ve drift tanılarını basar; --iskelet ile klasör/dosya iskeleti üretir.",
       "belge <dosya.sar> [--yaz <hedef.md>]        İnsan-okur Markdown yüzünü üretir.",
-      "yansıt <dosya.sar> --json|--yaml|--xml      Makine/config/ajan yüzünü üretir (JSON · YAML · XML).",
+      "yansıt <dosya.sar> --json|--yaml|--xml|--md Makine/config/ajan/insan yüzünü üretir (JSON · YAML · XML · okunur MD).",
       "agac <dosya.sar> [--kod] [--kok K] [...]    Klasör-ağacı çizimini basar (├──/└──).",
       "tema-md <dosya> [--dışa]                    DESIGN.md standardı ile Sarmal Tema kaynağı arasında dönüştürür.",
     ]),
@@ -1428,7 +1486,7 @@ function kilitleKomutu(dizin: string): number {
   const { programlar, muaflar, hatalar } = programlariYukle(dizin);
   if (hatalar.length) {
     const h = hatalar[0];
-    console.error(`✖ ${h.etiket}:${h.satir}:${h.sutun} — ${h.mesaj}`);
+    console.error(sozDizimSatiri(h.etiket, h.tani));   // MGZ-A03: denetimle aynı biçim ve kimlik
     return 2;
   }
   if (muaflar.size) console.log(`ℹ ${muaflar.size} dosya bilerek-hatalı — parse edilenler envantere girer, bozuk olanlar mühürlemeyi kesmez.`);
@@ -1448,12 +1506,16 @@ function kilitleKomutu(dizin: string): number {
   return 0;
 }
 
-/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir). */
+/** Denetim tanılarını yazar (konumsuzlarda kaynak gösterilmez — mesaj yolu içerir).
+ *  MGZ-A06: konumsuz tanı anlattığı dosyayı ya da klasörü `hedefDosya` alanında
+ *  taşıyorsa konum sütununa o hedef, denetlenen köke göreli olarak basılır; kayıt
+ *  yine giriş dosyasının bulgusudur, okuyucu ise bulgunun anlattığı yeri görür. */
 function raporla(kaynak: string, tanilar: Tani[]): void {
   if (tanilar.length === 0) return;
   const im = (d: string): string => (d === "hata" ? "✖" : d === "uyarı" ? "⚠" : "ℹ");
   for (const t of tanilar) {
-    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}` : "";
+    const konum = t.satir > 0 ? ` ${kaynak}:${t.satir}:${t.sutun}`
+      : t.hedefDosya ? ` ${posix.join(posix.dirname(kaynak), t.hedefDosya)}` : "";
     console.log(`${im(t.duzey)}${konum} [${t.kod}] ${t.mesaj}`);
     if (t.oneri) console.log(`   ↳ ${t.oneri}`);
   }

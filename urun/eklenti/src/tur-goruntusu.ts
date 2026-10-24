@@ -75,12 +75,15 @@ export interface TurGoruntusu {
   /** Turu başlatan olayın adı (`başlangıç` · `sar-olayı` · `ayar` …). */
   readonly tetik: string;
   /**
-   * Daraltılmış turun kökü; tam turda `undefined` (`turKapsami` sözleşmesi).
-   * Alan yalnız ETİKETTİR: daraltma çapraz denetimin köklerini seçer, belge
-   * toplama ile ayrıştırma her turda bütün yollar üzerinde koşar. Bu yüzden
-   * görüntünün program haritası dar turda da tam turdaki hâliyle aynıdır.
+   * Daraltılmış turun çapraz denetimi GERÇEKTEN koşturduğu kökler; tam turda
+   * `undefined` (`turKapsami` sözleşmesi). Alan yalnız ETİKETTİR: daraltma
+   * çapraz denetimin köklerini seçer, belge toplama ile ayrıştırma her turda
+   * bütün yollar üzerinde koşar. Bu yüzden görüntünün program haritası dar turda
+   * da tam turdaki hâliyle aynıdır. 🩹 BKM-DNT-A18: alan tek kök yerine kök
+   * listesi taşır, çünkü dar tur artık odağın yanında değişen dosyaların
+   * köklerini de denetler.
    */
-  readonly kapsam: string | undefined;
+  readonly kapsam: readonly string[] | undefined;
   /**
    * Tur başına bir artan yayın numarası. "Tur başına tek yayın" iddiası bu
    * sayıyla ölçülür; iddia ile değil.
@@ -105,7 +108,7 @@ export interface TurGoruntusuTaslagi {
   /** Belge toplamanın dili `sarmal` olmadığı için dışarıda bıraktığı açık belgeler. */
   readonly dilDışı: readonly string[];
   readonly tetik: string;
-  readonly kapsam: string | undefined;
+  readonly kapsam: readonly string[] | undefined;
 }
 
 /** Yayının abonesi. Dönüş değeri yoktur: tüketici turu yönlendiremez. */
@@ -145,7 +148,7 @@ function turGoruntusunuKur(taslak: TurGoruntusuTaslagi, sıra: number): TurGorun
     okunamayan,
     dilDışı: [...taslak.dilDışı],
     tetik: taslak.tetik,
-    kapsam: taslak.kapsam,
+    kapsam: taslak.kapsam === undefined ? undefined : [...taslak.kapsam],
     sıra,
   });
 }

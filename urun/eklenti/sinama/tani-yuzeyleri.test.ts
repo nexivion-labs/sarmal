@@ -33,14 +33,14 @@ import { taniSicili, YENI_TANI_KANONU, ONCEKI_TANI_KODLARI } from "../../cekirde
 import {
   yuzeyeAyir, projeyeGrupla, kokeGoreOzetle, kayitGorunumu, dagitimKusurlari,
   yuzeyMatrisi, kaydinYuzeyi, YuzeyDefteri, meyveKokleri,
-  GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER,
+  GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER, GORUNUS_MAKINIST, MAKINIST_ODAK_KOMUTU,
   dosyayaGrupla, yuzeyDosyaAdiniAl, dugumKodu, kodluEtiket,
   hatirlaticiIsareti, HATIRLATICI_ISARETLERI, panoMetni, panoDugumu,
   DURUM_CUBUGU_GIRDILERI, turDagilimi, OZET_TUR_SAYISI,
   type YuzeyKaydi, type YuzeyDagilimi, type SatirIsareti,
 } from "../src/yuzey-cekirdek.ts";
 import {
-  YUZEY_BOS_DURUM, YUZEY_ACIKLAMALARI,
+  YUZEY_BOS_DURUM, YUZEY_ACIKLAMALARI, MAKINIST_METINLERI,
   ozetSatiriEtiketi, ozetSatiriAciklamasi, ozetSatiriIpucu,
   panoyaKopyalaBasligi,
   projeSatiriEtiketi, projeSatiriAciklamasi, projeSatiriIpucu, taniKisaAdi,
@@ -55,7 +55,8 @@ import { fikirleriTopla, fikirGorunumu, fikirPanoMetni, type FikirKaydi } from "
 // birim süitinde yüklenemez; onun tek-kaynak sözleşmesi aşağıda panellerin KENDİ
 // kaynağı üstünden ölçülür (Onaylar panelinin nöbetiyle aynı yöntem).
 import { BILDIRIM_ROZET, bildirimTuru } from "../src/yol-dekor.ts";
-import { ANLAM_RENKLERI, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
+import { satirEylemleri, satirHtml } from "../src/panel-cekirdek.ts";
+import { ANLAM_RENKLERI, KISITLI_KARSILAMA_GORUNUSU, SATIR_SIMGELERI, satirSvgVaryanti } from "../src/simge-cizelgesi.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
@@ -69,7 +70,9 @@ const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.
 // sapma değil, bekleyen işi görünür kılan işaretlerdir.
 const TERFI_RET_KIMLIKLERI = new Set([
   "adım-atomikliği", "beceri-kartı-eksik", "yürütme-kenarı-sözleşmesi",
-  "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali", "seçilemez-adım-yürütümü",
+  "üretim-kökeni-ihlali", "kullanır-kenarı-ihlali",
+  // `seçilemez-adım-yürütümü` sekizinci ret adayıydı; 2026-09-29 tarihinde Founder
+  // hükmüyle kanonun yazdığı uyarıya çıktı ve Problems hanesine gitti (KPS-SIR-A01).
   "şema-dışı-alan", "terfi-kanıtı-eksik",
   "önceliksiz-adım", "ateşlemiş-hatırlatıcı",
   // On birincisi 2026-08-27 tarihinde Founder ölçümüyle doğdu (ORK-8 mevsim
@@ -88,11 +91,24 @@ const TERFI_RET_KIMLIKLERI = new Set([
   // projesiz Faz): hiçbir Proje köküne çözülemeyen Fazı bildirir, yerleşim ya da
   // tarih dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
   "projesiz-faz",
+  // On beşincisi ile on altıncısı 2026-09-29 tarihinde Founder hükmüyle doğdu
+  // (KPS-SIR-A01): MIM-1.3 tek Adımlı Blok ve MIM-1.6 Adımsız kapsayıcı. İkisi de
+  // yapı gözlemidir, bir sapma dayatmaz; bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "tek-adımlı-blok", "adımsız-kapsayıcı",
+  // On yedincisinden yirmincisine kadarki dört kimlik 2026-09-29 tarihinde Founder
+  // hükmüyle doğdu (KPS-SIR-A03 · MIM-1.2 Faz dosyası düzeni). Var olan planlar yeni
+  // düzene taşınana dek bilgi düzeyindedirler ve Bildirimler yüzeyine düşerler.
+  "çok-fazlı-dosya", "faz-dışı-blok", "faz-ilanı-tepede-değil", "yersiz-faz-dosyası",
+  // Yirmi birincisi 2026-09-29 tarihinde doğdu (KPS-SIR-A02 · DIL-2.2): yapısal
+  // girintinin yapıyla uyuşmadığını bildirir; motor yapıyı girintiden okumadığı için
+  // bilgi düzeyindedir ve Bildirimler yüzeyine düşer.
+  "girinti-yapı-uyumsuz",
 ]);
 const PAKET = JSON.parse(oku("../package.json")) as {
   contributes: { views: Record<string, Array<{ id: string; name: string; contextualTitle?: string }>> };
 };
 const PAKET_NLS_TR = JSON.parse(oku("../package.nls.tr.json")) as Record<string, string>;
+const PAKET_NLS_EN = JSON.parse(oku("../package.nls.json")) as Record<string, string>;
 const yerellestir = (deger: string): string => {
   const anahtar = /^%([^%]+)%$/.exec(deger)?.[1];
   return anahtar ? PAKET_NLS_TR[anahtar] : deger;
@@ -296,33 +312,32 @@ test("özetleme: aynı kökten gelen bilgi kayıtları tek başlık altında top
 
 // ── ⑥ Paket bildirimi ile sağlayıcı kimliklerinin birebirliği ────────────────
 
-test("görünüş kimlikleri: paket bildirimi ile sağlayıcı sabitleri birebir aynıdır", () => {
+test("görünüş kimlikleri: Hatırlatıcılar · Gözlemler · Fikirler ayrı görünüm değil, Makinist ağacının üst düğümleridir", () => {
   const gorunusler = PAKET.contributes.views["sarmal-yol"];
   const kimlikler = gorunusler.map((g) => g.id);
-  assert.ok(kimlikler.includes(GORUNUS_HATIRLATICILAR),
-    `paket bildiriminde "${GORUNUS_HATIRLATICILAR}" görünüşü yok`);
-  assert.ok(kimlikler.includes(GORUNUS_BILDIRIMLER),
-    `paket bildiriminde "${GORUNUS_BILDIRIMLER}" görünüşü yok`);
-  assert.ok(kimlikler.includes(GORUNUS_FIKIRLER),
-    `paket bildiriminde "${GORUNUS_FIKIRLER}" görünüşü yok`);
+  for (const eski of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER])
+    assert.ok(!kimlikler.includes(eski), `"${eski}" hâlâ ayrı görünüm olarak ilan edilmiş (Founder 2026-10-21: tek Makinist ağacı)`);
+  // Founder 2026-10-21 (dördüncü hüküm): Makinist de ayrı görünüm değil, kabın tek görünümünün (`sarmalPanel`) sekmesidir.
+  assert.ok(!kimlikler.includes(GORUNUS_MAKINIST), `"${GORUNUS_MAKINIST}" hâlâ ayrı görünüm olarak ilan edilmiş`);
+  assert.ok(kimlikler.includes("sarmalPanel"), 'paket bildiriminde "sarmalPanel" görünümü yok');
   assert.equal(new Set(kimlikler).size, kimlikler.length,
     `yinelenen görünüş kimliği var: ${kimlikler.join(" · ")}`);
 });
 
-test("görünüş kimlikleri: mevcut Yol Haritası ve Mini Graf görünüşleri geriye açılmadı", () => {
+test("görünüş kimlikleri: Yol Haritası ve Mini Graf kabın tek görünümünün Ray sekmesindedir; ayrı görünüm kalmamıştır", () => {
   const kimlikler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  assert.ok(kimlikler.includes("sarmalYolHaritasi"), "Yol Haritası görünüşü kayboldu");
-  assert.ok(kimlikler.includes("sarmalMiniGraf"), "Mini Graf görünüşü kayboldu");
+  assert.ok(!kimlikler.includes("sarmalYolHaritasi") && !kimlikler.includes("sarmalMiniGraf"),
+    "Yol Haritası ya da Mini Graf kapta ayrı görünüm olarak duruyor: kapta tek görünüm kuralı bozulur");
+  assert.ok(kimlikler.includes("sarmalPanel"), "kabın tek görünümü kayboldu");
 });
 
-test("başlıklar katalogdan gelir: paket bildirimi yerelleştirme anahtarlarına bağlıdır", () => {
+test("başlıklar katalogdan gelir: üst düğüm adları ve panel görünümü yerelleştirme anahtarlarına bağlıdır", () => {
   const gorunusler = PAKET.contributes.views["sarmal-yol"];
-  const htr = gorunusler.find((g) => g.id === GORUNUS_HATIRLATICILAR)!;
-  const bld = gorunusler.find((g) => g.id === GORUNUS_BILDIRIMLER)!;
-  assert.equal(yerellestir(htr.name), "Hatırlatıcılar");
-  assert.equal(yerellestir(htr.contextualTitle!), "Hatırlatıcılar");
-  assert.equal(yerellestir(bld.name), "Gözlemler");
-  assert.equal(yerellestir(bld.contextualTitle!), "Gözlemler");
+  const panel = gorunusler.find((g) => g.id === "sarmalPanel")!;
+  assert.equal(yerellestir(panel.name), "Sarmal");
+  assert.equal(yerellestir(panel.contextualTitle!), "Sarmal");
+  assert.equal(MAKINIST_METINLERI.hatirlaticilar, "Hatırlatıcılar");
+  assert.equal(MAKINIST_METINLERI.gozlemler, "Gözlemler");
 });
 
 // ── ⑦ Yönlendirme matrisi tam ve kayıtla aynı ────────────────────────────────
@@ -338,7 +353,7 @@ test("matris tamlığı: sicildeki her tanı kimliği tam olarak bir yüzeye dü
   }
 });
 
-test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on üç kimlik Bildirimler'e düşer", () => {
+test("A05 kademe hükmü: hata ve uyarı Problems'a, ret ve gözlem kimlikleri Bildirimler'e düşer", () => {
   // Yüzey yalnız tanının BUGÜN üretildiği kademeyi okur; hedef düzeyden ikinci
   // bir sunum düzeyi türetilmez.
   assert.ok(YENI_TANI_KANONU.length >= 70,
@@ -357,16 +372,9 @@ test("A05 kademe hükmü: 47 hata + 16 uyarı Problems'a, on üç kimlik Bildiri
     assert.equal(yuzey, beklenen,
       `"${k.kod}" bugünkü kademesiyle (${k.kademe}) ${yuzey} yüzeyine düşüyor; A05 kararı ${beklenen} bekliyor`);
   }
-  // Kırk yedinci hata kimliği MIM-1.7 AltKatman tekilliğidir (Founder hükmü
-  // 2026-08-28); terfi turundan gelmedi, doğrudan hata düzeyinde doğdu.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "hata").length, 47);
-  // On yedinci uyarı kimliği MIM-3.4 `geçersiz-dosya-adı`dır (KPS-MHR-A01 · Founder hükmü 2026-09-11).
-  // KPS-CEL-A01 (2026-09-19): MIM-3.2 `kitaplıksız-kök` uyarısıyla on yediden on sekize çıktı.
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "uyarı").length, 18);
-  // On ikinci bilgi kimliği ORK-8 mühür dürüstlüğü bekçisidir (KPS-MVS-A01 · 2026-09-10);
-  // on üçüncüsü ile on dördüncüsü MIM-3.4 dosya mühürlerinin iki gözlemidir (2026-09-11).
-  // On beşincisi MIM-1.2 projesiz Faz gözlemidir (KPS-FAZ-A02 · Founder hükmü 2026-09-19).
-  assert.equal(YENI_TANI_KANONU.filter((k) => k.kademe === "bilgi").length, 15);
+  // Yeni kümenin düzey dağılımı burada dondurulmaz (HST-MTR-A12): tek kaydı çekirdekteki
+  // TANI_KUMESI_SAYIMI, kayda karşı tek nöbeti çekirdek süitindeki tanı kümesi sayım
+  // nöbetidir. Dağılımın kimlik kimlik geçmişi o kaydın geçmiş satırlarındadır.
 });
 
 test("A06 yüzey eşitliği: sicil→üretici→Problems→hover aynı kimlik+düzeyi taşır", () => {
@@ -611,12 +619,25 @@ test("kayıt bayatlamaz: yönlendirme matrisinin sayıları sicilin bugünkü ge
   // ve küme ON İKİYE çıktı; aynı gün doğan `sonraya-bırakılmış-dosya` bilgi
   // düzeyinde olmasına karşın Hatırlatıcılar hanesine gider.
   // 2026-09-19 (KPS-FAZ-A02): MIM-1.2 `projesiz-faz` gözlemi bilgi düzeyinde doğdu ve küme ON ÜÇE çıktı.
-  assert.equal(yeniBildirim, 13,
-    "A05'in sekiz RET-ADAYI, iki gözlem, ORK-8 mühür bekçisi, MIM-3.4 dosya mührü ve MIM-1.2 projesiz Faz gözlemi Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  // 2026-09-29 (KPS-SIR-A01): iki yapı gözlemi geldi, seçilemez Adım yürütümü Problems'a gitti; küme ON DÖRDE çıktı.
+  // 2026-09-29 (KPS-SIR-A03): Faz dosyası düzeninin dört gözlemi geldi; küme ON SEKİZE çıktı.
+  // 2026-09-29 (KPS-SIR-A02): DIL-2.2 girinti gözlemi geldi; küme ON DOKUZA çıktı.
   // 2026-08-28: MIM-1.7 AltKatman tekilliği hata düzeyinde doğdu ve Problems'a
   // gider; A05'in altmış ikilik kümesi altmış üçe çıktı.
   // 2026-09-11: MIM-3.4 `geçersiz-dosya-adı` uyarı düzeyinde doğdu ve küme altmış dörde çıktı.
-  assert.equal(yeniProblems, 65, "A05'in 47 hata ve 16 uyarı kimliği ile MIM-3.4 ve MIM-3.2 uyarıları Problems'a gitmelidir");
+  // 2026-09-29 (KPS-SIR-A01): bir hata, üç uyarı ve uyarıya çıkan seçilemez Adım yürütümüyle yetmişe çıktı.
+  // HST-MTR-A12 (2026-10-10): iki hanenin büyüklüğü artık burada dondurulmaz; yeni
+  // kümenin düzey dağılımının tek kaydı çekirdekteki TANI_KUMESI_SAYIMI'dır. Burada
+  // paylaşımın kuralı ölçülür: her hata ve uyarı kimliği Problems'a, ileri bağlam
+  // taşımayan her bilgi kimliği Gözlemler'e gider.
+  const yeniDuzeyde = (duzey: Duzey): number => YENI_TANI_KANONU.filter((k) => k.kademe === duzey).length;
+  const yeniHatirlatici = YENI_TANI_KANONU.filter(
+    (k) => beklenenSunumYuzeyi({ duzey: k.kademe, kod: k.kod, mesaj: "", satir: 1, sutun: 1 }) === "hatırlatıcılar",
+  ).length;
+  assert.equal(yeniBildirim + yeniHatirlatici, yeniDuzeyde("bilgi"),
+    "yeni kümenin bilgi kimlikleri Gözlemler hanesinde kalmalıdır; ateşlemiş hatırlatıcı ile sonraya bırakılmış dosya kendi hanesine gider");
+  assert.equal(yeniProblems, yeniDuzeyde("hata") + yeniDuzeyde("uyarı"),
+    "yeni kümenin bütün hata ve uyarı kimlikleri Problems'a gitmelidir");
   assert.ok(bildirimler >= yeniBildirim,
     `kayıt Bildirimler yüzeyine ${bildirimler} kimlik yazıyor, oysa yalnız yeni kanon ${yeniBildirim} kimlik gönderiyor`);
   assert.ok(problems >= yeniProblems,
@@ -633,7 +654,7 @@ test("arayüz metinleri iç kod taşımaz: kullanıcı jargonsuz cümle görür"
   const metinler = [
     YUZEY_BOS_DURUM.hatırlatıcılar, YUZEY_BOS_DURUM.bildirimler,
     YUZEY_ACIKLAMALARI.hatırlatıcılar, YUZEY_ACIKLAMALARI.bildirimler,
-    PAKET_NLS_TR["view.reminders"], PAKET_NLS_TR["view.observations"],
+    MAKINIST_METINLERI.hatirlaticilar, MAKINIST_METINLERI.gozlemler,
   ];
   for (const m of metinler) {
     for (const y of YASAK) {
@@ -711,17 +732,20 @@ test("grup başlığı yazılı olanlar için gerçek bir cümledir; kimlik aç�
     "kimlik ipucunda kaybolmamalı");
 });
 
-test("hiçbir görünüş başlığı kapsayıcının adını tekrar etmez", () => {
+test("kabın tek görünümünün adı kapsayıcının adıdır: VS Code başlıkları birleştirir ve kapta 'SARMAL: Sarmal' yazmaz", () => {
   const kapsayici = (JSON.parse(oku("../package.json")) as {
     contributes: { viewsContainers: { activitybar: Array<{ id: string; title: string }> } };
   }).contributes.viewsContainers.activitybar.find((k) => k.id === "sarmal-yol")!;
   const kapsayiciAdi = PAKET_NLS_TR["view.container"];
   assert.equal(yerellestir(kapsayici.title), kapsayiciAdi);
-  for (const gorunus of PAKET.contributes.views["sarmal-yol"]) {
-    assert.ok(!yerellestir(gorunus.name).includes(kapsayiciAdi),
-      `görünüş adı kapsayıcının adını tekrar ediyor: ${gorunus.name}`);
-    assert.ok(!yerellestir(gorunus.contextualTitle ?? "").includes(kapsayiciAdi),
-      `bağlam başlığı kapsayıcının adını tekrar ediyor: ${gorunus.contextualTitle}`);
+  // VS Code: kapta tek görünüm görünürken kap başlığı `${kap}: ${görünüm}` olur; iki ad aynıysa yalnız ad yazılır.
+  // (Founder 2026-10-21: görünüm başlığı kap başlığıyla birleşir ve webview bütün yüksekliği kaplar.)
+  // Kapta bu görünümün yanında görünür başka görünüm olamaz (bolum-yuvasi.test.ts bunu ölçer); ad aynıdır.
+  const panel = PAKET.contributes.views["sarmal-yol"].find((g) => g.id === "sarmalPanel")!;
+  for (const dil of [PAKET_NLS_TR, PAKET_NLS_EN]) {
+    const ad = (m: string): string => dil[/^%(.+)%$/.exec(m)?.[1] ?? ""] ?? m;
+    assert.equal(ad(panel.name), ad(kapsayici.title), "görünüm adı kap başlığından ayrışırsa başlık 'SARMAL: ad' olur");
+    assert.equal(ad(panel.contextualTitle ?? ""), ad(kapsayici.title));
   }
 });
 
@@ -729,7 +753,9 @@ test("üç panel bakışta ayrılır: hiçbiri diğerinin görünüş simgesini 
   const gorunusler = (JSON.parse(oku("../package.json")) as {
     contributes: { views: Record<string, Array<{ id: string; icon?: string }>> };
   }).contributes.views["sarmal-yol"];
-  const simgeler = gorunusler.map((g) => g.icon);
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = gorunusler.filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
   assert.equal(new Set(simgeler).size, simgeler.length,
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });
@@ -1202,7 +1228,7 @@ test("pano düğümü çevirisi TEK yerdedir ve iki panelin düğümlerini de ta
   assert.equal(panoDugumu("satır"), undefined);
 });
 
-test("kopyalama komutu ağaç panellerinin SAĞ TIK menüsünde ilan edilmiştir", () => {
+test("kopyalama komutu ağaç satırlarında eylem olarak ilan edilmiştir (Founder 2026-10-21: satır eylemleri panelin webview'indedir)", () => {
   const paket = JSON.parse(oku("../package.json")) as {
     contributes: {
       commands: Array<{ command: string; title: string }>;
@@ -1213,10 +1239,11 @@ test("kopyalama komutu ağaç panellerinin SAĞ TIK menüsünde ilan edilmiştir
   assert.ok(komut, "kopyalama komutu paket bildiriminde ilan edilmemiş");
   assert.equal(yerellestir(komut.title), panoyaKopyalaBasligi(),
     "menüde okunan ad ile metin kataloğundaki cümle ayrışmış");
-  const menu = paket.contributes.menus["view/item/context"] ?? [];
-  for (const gorunus of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER]) {
-    assert.ok(menu.some((g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${gorunus}`),
-      `"${gorunus}" görünüşünün sağ tık menüsünde kopyalama girdisi yok`);
+  assert.equal(paket.contributes.menus["view/item/context"], undefined,
+    "ağaç satırları webview'dedir; VS Code'un ağaç bağlam menüsü artık hiçbir satıra ulaşmaz");
+  for (const kaynak of ["sarmalHatirlatici", "sarmalHatirlaticiAtesledi", "sarmalBildirim", "sarmalFikir"]) {
+    assert.ok(satirEylemleri(kaynak).some((e) => e.komut === "sarmal.satiriKopyala"),
+      `"${kaynak}" satırında kopyalama eylemi yok`);
   }
   // Komut TEKTİR: paneller aynı komuta bağlanır, ikinci bir kopyalama yolu
   // doğarsa iki panel panoya farklı metin yazmaya başlar.
@@ -1251,14 +1278,11 @@ test("MUTASYON · kopyalama: metin bulunamayınca panoya hiçbir şey yazılmaz"
 
 // ── ⑫g DURUM ÇUBUĞU: sayı türetilir, sıfır kaybolmaz ────────────────────────
 
-test("durum çubuğu girdileri GERÇEK görünüş kimliklerine götürür", () => {
-  const gorunusler = new Set(PAKET.contributes.views["sarmal-yol"].map((g) => g.id));
+test("durum çubuğu girdileri GERÇEK bir komuta götürür (Makinist bölümünü seçer ve ağacı öne alır)", () => {
+  const komutlar = new Set(PAKET_KOMUTLARI.contributes.commands.map((k) => k.command));
   for (const girdi of DURUM_CUBUGU_GIRDILERI) {
-    const kimlik = girdi.komut.replace(/\.focus$/, "");
-    assert.ok(girdi.komut.endsWith(".focus"),
-      `durum çubuğu girdisi bir panele götürmüyor: ${girdi.komut}`);
-    assert.ok(gorunusler.has(kimlik),
-      `durum çubuğu var olmayan bir görünüşe götürüyor: ${kimlik}`);
+    assert.ok(komutlar.has(girdi.komut), `durum çubuğu var olmayan bir komuta götürüyor: ${girdi.komut}`);
+    assert.equal(girdi.komut, MAKINIST_ODAK_KOMUTU, "dört yüzey tek Makinist odak komutuna inmeli");
   }
 });
 
@@ -1754,7 +1778,9 @@ test("ODAK DEĞİŞİNCE BÜTÜN YÜZEYLER AYNI TURDA YENİDEN BASILIR", () => {
   // AYNI turda basılır. Biri atlanırsa kullanıcı çelişkili iki tablo görür:
   // bir panel yeni varlığı gösterirken öteki eskisini göstermeye devam eder.
   for (const [ad, desen] of Object.entries({
-    Problems: /koleksiyon\.(set|delete)/,
+    // MGZ-A03: Problems basımı yayınla aynı kapıdan (`problemseBas`) geçer; kapının
+    // davranışı sozdizim-yuzeyi.test.ts içinde gerçek odak değişimiyle ölçülür.
+    Problems: /koleksiyon\.(set|delete)|problemseBas\(/,
     "yüzey defteri": /yuzeyDefteri\.yayımla\(\)/,
     "fikir defteri": /fikirDefteri\.yayımla\(\)/,
     "odak dinleyicileri": /odakDinleyicileri/,
@@ -1915,55 +1941,48 @@ const PAKET_YUZEYI = JSON.parse(oku("../package.json")) as {
     menus: Record<string, Array<{ command: string; when?: string; group?: string }>>;
   };
 };
-const SATIR_MENUSU = PAKET_YUZEYI.contributes.menus["view/item/context"] ?? [];
-const UC_PANEL_GORUNUSU = [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER];
+const UC_PANEL_ONEKI = ["sarmalHatirlatici", "sarmalBildirim", "sarmalFikir"];
+const PAKET_KOMUTLARI = PAKET_YUZEYI;
 
-test("satır içi kopyalama düğmesi üç panelde de ilan edilmiştir ve sağ tık girdisi YERİNDE KALIR", () => {
-  for (const gorunus of UC_PANEL_GORUNUSU) {
-    const girdiler = SATIR_MENUSU.filter(
-      (g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${gorunus}`);
-    assert.ok(girdiler.some((g) => g.group === "inline"),
-      `"${gorunus}" görünüşünde satır içi kopyalama düğmesi ilan edilmemiş; eylem yalnız ` +
-      "sağ tık menüsünde kalır ve Founder'ın bildirdiği keşfedilebilirlik kusuru geri gelir");
-    assert.ok(girdiler.some((g) => g.group === "9_cutcopypaste"),
-      `"${gorunus}" görünüşünün sağ tık kopyalama girdisi kaldırılmış; iki erişim yolu ` +
-      "birbirini DIŞLAMAZ ve Adımın hükmü girdinin kalmasını şart koşar (VIT-GRAF-A17)");
+test("satır içi kopyalama düğmesi üç kaynağın satırında da belirir (webview satır düğmesi); ağaç bağlam menüsü kalmamıştır", () => {
+  for (const onek of UC_PANEL_ONEKI) {
+    const eylemler = satirEylemleri(onek);
+    const html = satirHtml({ id: "makinist/x", derinlik: 1, etiket: "x", aciklama: "", ipucu: "", durum: "yaprak", komutlu: true, eylemler });
+    assert.ok(/class="eyler"/.test(html) && html.includes('data-komut="sarmal.satiriKopyala"'),
+      `"${onek}" satırında satır içi kopyalama düğmesi yok; eylem keşfedilemez olur (Founder'ın bildirdiği kusur geri gelir)`);
   }
+  assert.equal(PAKET_YUZEYI.contributes.menus["view/item/context"], undefined,
+    "ağaç bağlam menüsü artık hiçbir satıra ulaşmaz; webview satırları kendi düğmelerini taşır");
 });
 
 test("düğmenin yerleşimi Yol Haritası koni kartı EMSALİNİ izler — panel başına ayrı desen kurulmaz", () => {
-  // Emsal ölçülür, varsayılmaz: koni kartı düğmesi aynı menü haritasında ve aynı
-  // `inline` kümesinde yaşar. Emsal bir gün başka bir mekanizmaya taşınırsa bu
-  // nöbet kırmızıya döner ve iki panelin iki ayrı desene ayrışması sessiz olmaz.
-  const emsal = SATIR_MENUSU.find((g) => g.command === "sarmal.koniKart");
-  assert.ok(emsal, "koni kartı düğmesi satır menüsünde bulunamadı; emsal ölçülemiyor");
-  assert.equal(emsal.group, "inline",
-    "emsal düğme artık `inline` kümesinde değil; kopyalama düğmesi emsalden ayrışmış olur");
-  for (const gorunus of UC_PANEL_GORUNUSU) {
-    const satirIci = SATIR_MENUSU.find(
-      (g) => g.command === "sarmal.satiriKopyala" && g.when === `view == ${gorunus}` && g.group === "inline");
-    assert.equal(satirIci?.group, emsal.group,
-      `"${gorunus}" düğmesi emsalin kümesini kullanmıyor; panel başına ayrı desen doğmuş`);
+  // Emsal ölçülür, varsayılmaz: koni kartı düğmesi ile kopyalama düğmesi AYNI satır-eylem
+  // mekanizmasından (satirEylemleri) ve AYNI biçimden (`.ey` düğmesi, `.eyler` yuvası) gelir.
+  const koni = satirEylemleri("adim");
+  assert.deepEqual(koni.map((e) => e.komut), ["sarmal.koniKart"], "koni kartı düğmesi satır eylemlerinde bulunamadı; emsal ölçülemiyor");
+  const bicim = (e: ReturnType<typeof satirEylemleri>): string =>
+    satirHtml({ id: "x", derinlik: 0, etiket: "x", aciklama: "", ipucu: "", durum: "yaprak", komutlu: true, eylemler: e })
+      .replace(/data-komut="[^"]*"|title="[^"]*"|aria-label="[^"]*"|<svg[\s\S]*?<\/svg>/g, "");
+  for (const onek of UC_PANEL_ONEKI) {
+    assert.equal(bicim(satirEylemleri(onek)), bicim(koni),
+      `"${onek}" düğmesi emsalin biçimini kullanmıyor; panel başına ayrı desen doğmuş`);
   }
 });
 
 test("iki erişim yolu TEK komuta iner; İKİNCİ BİR KOPYALAMA MANTIĞI doğmamıştır", () => {
-  // ① Menü hanesinde kopyalamaya götüren bütün girdilerin komut kimliği tektir.
-  const kopyaGirdileri = SATIR_MENUSU.filter((g) => /Kopyala/i.test(g.command));
-  const kimlikler = new Set(kopyaGirdileri.map((g) => g.command));
-  assert.equal(kimlikler.size, 1,
-    `satır menüsünde ${kimlikler.size} ayrı kopyalama komutu var (${[...kimlikler].join(", ")}); ` +
+  // ① Üç kaynağın kopyalama eylemi aynı komuta götürür.
+  const komutlar = new Set(UC_PANEL_ONEKI.flatMap((o) => satirEylemleri(o).filter((e) => /Kopyala/i.test(e.komut)).map((e) => e.komut)));
+  assert.equal(komutlar.size, 1,
+    `satır eylemlerinde ${komutlar.size} ayrı kopyalama komutu var (${[...komutlar].join(", ")}); ` +
     "iki erişim yolu ayrı komuta inerse iki yol zamanla farklı metin üretir");
-  assert.equal(kopyaGirdileri.length, UC_PANEL_GORUNUSU.length * 2,
-    "üç panelin ikişer girdisi (sağ tık ve satır içi) beklenirken sayı tutmadı");
   // ② Gövdede komut BİR KEZ kaydedilir ve panoya yazan tek el odur.
   const eklenti = oku("../src/eklenti.ts");
   const kayitSayisi = eklenti.match(/registerCommand\("sarmal\.satiriKopyala"/g)?.length ?? 0;
   assert.equal(kayitSayisi, 1,
     `kopyalama komutu gövdede ${kayitSayisi} kez kaydedilmiş; satır içi düğme için ikinci bir ` +
     "işleyici yazılmış olabilir ve o işleyici zamanla asıl komuttan ayrışır");
-  // ③ Üç panelin hiçbiri panoya kendisi yazmaz; sağlayıcı yalnız METNİ hesaplar.
-  for (const ad of ["hatirlaticilar.ts", "bildirimler.ts", "fikirler.ts"]) {
+  // ③ Panel (webview) panoya kendisi yazmaz; yalnız komutu çağırır. Üç sağlayıcı da yalnız METNİ hesaplar.
+  for (const ad of ["hatirlaticilar.ts", "bildirimler.ts", "fikirler.ts", "panel.ts", "panel-cekirdek.ts"]) {
     const kaynak = oku(`../src/${ad}`);
     assert.ok(!kaynak.includes("clipboard"),
       `${ad} panoya kendisi yazıyor; pano yazan tek el komut olmalıdır (VIT-GRAF-A13 sözleşmesi)`);

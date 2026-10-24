@@ -1,13 +1,14 @@
 // TIP-1 anlık tip motoru: "tanımsız yasak değil, İLANSIZ yasak" (2026-07-02).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { fileURLToPath } from "node:url";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { dogrula } from "../src/dogrulayici.ts";
 import { siniflamaYukle } from "../src/siniflama.ts";
 import { YENI_TANI_KODLARI } from "../src/tani-sicili.ts";
 
-const SNF = siniflamaYukle(new URL("../../../oz/siniflama/kayit.json", import.meta.url).pathname);
+const SNF = siniflamaYukle(fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)));
 const tanila = (k: string) => dogrula(ayristir(belirtecle(k)), SNF);
 
 test("ilanlı anlık tip geçerli — kullanım ilandan ÖNCE bile olsa", () => {

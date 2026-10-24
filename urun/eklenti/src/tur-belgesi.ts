@@ -11,10 +11,20 @@
 //   oysa turun belgeden istediği yalnız metin, satırlar ve kimliktir.
 //
 //   ONARIM: tur hiçbir dosyayı açmaz. Zaten açık olan editörler bellektedir ve
-//   kabuk onları I/O'suz verir; açık olmayan dosya ham okunur. AÇIK BELGE
-//   DAİMA ÖNCELİKLİDİR, çünkü kaydedilmemiş bir düzenlemenin tanısı diskteki
-//   eski metinden üretilirse panel kullanıcının GÖRDÜĞÜ metni anlatmaz ve
-//   kullanıcı bunu kendi hatası sanar.
+//   kabuk onları I/O'suz verir; açık olmayan dosya ham okunur. KAYDEDİLMEMİŞ
+//   DEĞİŞİKLİK TAŞIYAN AÇIK BELGE önceliklidir, çünkü kaydedilmemiş bir
+//   düzenlemenin tanısı diskteki eski metinden üretilirse panel kullanıcının
+//   GÖRDÜĞÜ metni anlatmaz ve kullanıcı bunu kendi hatası sanar.
+//
+//   🩹 BKM-DNT-A18 (2026-10-24 saha bulgusu · HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL):
+//   öncelik eskiden koşulsuzdu. Bir dosya editörün DIŞINDAN değiştiğinde (başka
+//   bir penceredeki ajan, git, komut satırı) VS Code modeli diski kendi tazeleme
+//   döngüsünde okur; o döngüden önce koşan tur modeldeki ESKİ metni okuyor,
+//   model sonradan tazelendiğinde yalnız tek dosya yolu koşuyor ve görüntü
+//   yayını koşmadığı için yol haritası pencere yeniden yüklenene dek eski Adım
+//   sayısında kalıyordu. Kaydedilmemiş değişiklik taşımayan açık belgenin
+//   gerçeği disktir; artık o belge diskten okunur ve bellekteki önceliği yalnız
+//   kaydedilmemiş düzenleme korur.
 //
 //   Modül vscode'u YALNIZ TİP olarak ithal eder (onbellek.ts emsali) ve hiçbir
 //   çalışma zamanı çağrısı yapmaz; kabuk dışarıdan verilir (onay-tarayici.ts
@@ -54,6 +64,13 @@ export interface BelgeKabugu {
   açıkBelge(fsPath: string): BelgeYuzu | undefined;
   /** Açık belgenin dil kimliği; `sarmal` değilse dosya turun dışındadır. */
   dilKimliği(fsPath: string): string | undefined;
+  /**
+   * 🩹 BKM-DNT-A18: açık belge kaydedilmemiş değişiklik taşıyor mu (`isDirty`)?
+   * Yalnız evet ise belge bellekten okunur; hayır ise gerçeği disktir ve tur onu
+   * diskten okur. Üye zorunludur, çünkü kararı vermeyen bir kabuk açık belgeyi
+   * yeniden koşulsuz öncelikli kılardı.
+   */
+  kaydedilmemisMi(fsPath: string): boolean;
   /**
    * Açık OLMAYAN dosyanın belge yüzü ve diskten okunan HAM bayt sayısı;
    * okunamıyorsa `undefined`. Bayt sayısı çözmeden önce ham tampondan alınır
@@ -115,7 +132,8 @@ export function açıkBelgeHaritası<T extends { uri: vscode.Uri }>(
 
 /** Bir turda hangi dosyanın hangi kaynaktan geldiğinin sayımı — nöbetin ölçüsü. */
 export interface BelgeSayacı {
-  /** Editörde zaten açık olduğu için okunmayan dosya sayısı. */
+  /** Editörde açık ve kaydedilmemiş değişiklik taşıdığı için bellekten alınan,
+   *  dolayısıyla okunmayan dosya sayısı (BKM-DNT-A18). */
   açıktan: number;
   /** Diskten ham okunan dosya sayısı. */
   diskten: number;
@@ -124,10 +142,16 @@ export interface BelgeSayacı {
 }
 
 /**
- * Turun belgelerini toplar. Hiçbir dosya AÇILMAZ: açık olan bellekten alınır,
- * olmayan okunur. Okunamayan dosya sessizce atlanır ve turu düşürmez, çünkü
+ * Turun belgelerini toplar. Hiçbir dosya AÇILMAZ: kaydedilmemiş değişiklik
+ * taşıyan açık belge bellekten alınır, öteki her dosya diskten okunur. Bu karar
+ * (BKM-DNT-A18) burada, editör kabuğu olmadan sınanan saf gövdede verilir:
+ * kaydedilmemiş değişiklik taşımayan açık belgenin gerçeği disktir, çünkü editör
+ * dışından yapılan bir yazımı model henüz okumamış olabilir ve bellekteki metin
+ * o anda eskidir. Okunamayan dosya sessizce atlanır ve turu düşürmez, çünkü
  * silinmiş ya da erişilemeyen tek bir dosya yüzünden bütün panelin boşalması
- * ölçülen kusurdan daha ağır bir davranıştır.
+ * ölçülen kusurdan daha ağır bir davranıştır. Kaydedilmemiş değişiklik taşımayan
+ * açık belge diskten okunamazsa bellekteki metne düşülür; dosyanın elde kalan
+ * tek gerçeği odur ve eski davranış o hâlde de belgeyi turda tutuyordu.
  *
  * `okunanBayt` turun diskten okuduğu HAM bayt toplamıdır (PRF-KP-A01 üçüncü
  * kararı): boyut sınırı konmaz, fakat toplam merceğe düşer ki anormal büyüme
@@ -154,12 +178,19 @@ export async function turBelgeleriniTopla(
       // Açık belgenin dili elle değiştirilmişse dosya turun dışındadır; bu,
       // eski `openTextDocument` yolundaki `languageId !== "sarmal"` süzgecinin ikizidir.
       if (kabuk.dilKimliği(yol) !== "sarmal") { sayaç.atlanan += 1; dilDışı.push(yol); continue; }
-      belgeler.set(yol, açık);
-      sayaç.açıktan += 1;
-      continue;
+      if (kabuk.kaydedilmemisMi(yol)) {
+        belgeler.set(yol, açık);
+        sayaç.açıktan += 1;
+        continue;
+      }
+      // 🩹 BKM-DNT-A18: kaydedilmemiş değişiklik yok — gerçek disktir, aşağıda okunur.
     }
     const okunan = await kabuk.oku(yol);
-    if (okunan === undefined) { sayaç.atlanan += 1; continue; }
+    if (okunan === undefined) {
+      if (açık) { belgeler.set(yol, açık); sayaç.açıktan += 1; continue; }   // diski okunamayan açık belge turda kalır
+      sayaç.atlanan += 1;
+      continue;
+    }
     belgeler.set(yol, okunan.belge);
     sayaç.diskten += 1;
     okunanBayt += okunan.bayt;
@@ -170,15 +201,21 @@ export async function turBelgeleriniTopla(
 /**
  * Turun program haritasını kurar — kabuk değil, saf modül (PRF-KP-A02).
  *
- * Belge iki kaynaktan gelir ve ikisinin ayrıştırma yolu farklıdır. Açık belge
- * paylaşılan sürüm anahtarlı önbellekten okunur (`programAl` · onbellek.ts),
- * çünkü editör süsleri aynı belgeyi zaten ayrıştırmıştır ve ikinci bir
- * ayrıştırma boşuna maliyettir. Disk kaydı ise doğrudan ayrıştırılır ve
- * önbelleğe ASLA yazılmaz: önbellek belge SÜRÜMÜNE anahtarlıdır, diskten okunan
- * kaydın sürümü yoktur ve sürümsüz bir kayıt bir kez yazıldığında dosya diskte
- * değişse bile sonsuza dek taze sayılırdı. Söz dizimi kırık belge haritaya
- * girmez; onun hatasını tek dosya yolu yakalar ve çapraz denetim ağacına
- * girmesi gerekmez.
+ * Belge iki kaynaktan gelir ve ikisinin ayrıştırma yolu farklıdır. Turun
+ * belgesi açık belgenin KENDİSİ ise paylaşılan sürüm anahtarlı önbellekten
+ * okunur (`programAl` · onbellek.ts), çünkü editör süsleri aynı belgeyi zaten
+ * ayrıştırmıştır ve ikinci bir ayrıştırma boşuna maliyettir. Disk kaydı ise
+ * doğrudan ayrıştırılır ve önbelleğe ASLA yazılmaz: önbellek belge SÜRÜMÜNE
+ * anahtarlıdır, diskten okunan kaydın sürümü yoktur ve sürümsüz bir kayıt bir
+ * kez yazıldığında dosya diskte değişse bile sonsuza dek taze sayılırdı. Söz
+ * dizimi kırık belge haritaya girmez; onun hatasını tek dosya yolu yakalar ve
+ * çapraz denetim ağacına girmesi gerekmez.
+ *
+ * 🩹 BKM-DNT-A18: önbelleğin ölçütü "yol açık belge haritasında mı" değil,
+ * "turun belgesi açık belgenin kendisi mi" sorusudur. Kaydedilmemiş değişiklik
+ * taşımayan açık belge artık diskten okunur; harita yalnız yola baksaydı o
+ * dosyanın ağacı yine modeldeki ESKİ metinden gelir ve panel, belge diskten
+ * okunduğu hâlde eski Adım sayısını gösterirdi.
  *
  * Önbellek çağrısı dışarıdan verilir ki bu işlev editör kabuğu olmadan nöbete
  * bağlansın; `denetleHepsi` gerçek `programAl` işlevini geçirir. Açık belge
@@ -194,7 +231,7 @@ export function turProgramlariniKur<A>(
   for (const [fsPath, belge] of belgeler) {
     const açık = açıkBelgeler.get(fsPath);
     let program: Program | undefined;
-    if (açık !== undefined) program = programAl(açık);
+    if (açık !== undefined && (açık as unknown) === belge) program = programAl(açık);
     else {
       try { program = ayristir(belirtecle(belge.getText())); }
       catch { program = undefined; }

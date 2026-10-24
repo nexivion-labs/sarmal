@@ -3,9 +3,9 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: yönetir (işletim: şablon·politika·akış·kanca). Ailede 7 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 23793bc1
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
-Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
+Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
 
 <!-- SARMAL:ANLATI -->
@@ -15,7 +15,7 @@ Orkestrasyon ailesi şu soruyu cevaplar: iş kendiliğinden nasıl yürür? Plan
 
 Ailenin metaforu orkestradır ve üyeler orkestranın farklı görevlerini üstlenir. Orkestrasyon şefliktir; etmen havuzunu yönetir, Adımdan istem üretir ve çalışma anında dağıtır. Döngü tekrarlayan iştir ve ailenin en disiplinli üyesidir, çünkü tetiğini, işlettiği zinciri ve durma koşulunu birlikte beyan etmek zorundadır; çıkışı olmayan bir döngü yazılamaz, dolayısıyla sonsuz tur baştan engellenir. İşAkışı aşamalı bir yolculuğun tanımıdır ve durakları görünür kılar. Kanca yaşam döngüsünün belirli bir anına bağlanır ve zorlamayı orada uygular; öncesinde, sonrasında ya da hata anında devreye girer. Şablon ajana verilecek bağlamın biçimidir ve istemin her seferinde yeniden icat edilmesini önler. Politika işletim kuralını taşır ve kendi Kurallarını içine sarar. Mekanizma ise kesişen altyapıyı ilan eder ve ailenin en çok işe yarayan disiplinini kurar: yönetişim, yetkilendirme, telemetri ya da denetim gibi her yeri kesen bir konu bir kez ilan edilir ve birçok Adım ona bağlanır, çünkü aynı içeriği adımlara dağıtmak onu ilk değişiklikte parçalar.
 
-Canlı örnek Sarmal'ın kendi planındadır. `is/plan/rayda/reform_plani.sar` dosyasında `Döngü( kod: DNG-DOGFOOD, ad: "dogfood aile turları",` ilan edilmiştir; düğüm `tetik` alanındaki `el` değeriyle elle başlatıldığını, `koşar` alanındaki `RF-T6-A01` Adımıyla hangi işi işlettiğini ve `durunca: "durum(RF-T6-A01) == tamamlandı"` ile hangi koşulda duracağını yazar. Sınırı da aynı düğümde yaşar ve bir turda yalnız bir aileye dokunulacağını bildirir. Ailenin altyapı üyesi de canlıdır: `is/plan/mekanizma/mek_sef.sar` dosyasındaki `Mekanizma( kod: MEK-SEF,` düğümü kendisini `bağımlı: [ ORK-7 ]` kenarıyla kanon maddesine bağlar, orkestrasyon altyapısının çalışma anı sözleşmelerini tek yerde toplar ve o sözleşmeleri kendi içine sarar. İki düğümü de kodlarını `gezin` aracına sorarak açabilirsin.
+Canlı örnek Sarmal'ın kendi planındadır. `is/plan/faz/3_agustos_cati.sar` dosyasında `Döngü( kod: DNG-DOGFOOD, ad: "dogfood aile turları",` ilan edilmiştir; düğüm `tetik` alanındaki `el` değeriyle elle başlatıldığını, `koşar` alanındaki `RF-T6-A01` Adımıyla hangi işi işlettiğini ve `durunca: "durum(RF-T6-A01) == tamamlandı"` ile hangi koşulda duracağını yazar. Sınırı da aynı düğümde yaşar ve bir turda yalnız bir aileye dokunulacağını bildirir. Ailenin altyapı üyesi de canlıdır: `is/plan/mekanizma/mek_sef.sar` dosyasındaki `Mekanizma( kod: MEK-SEF,` düğümü kendisini `bağımlı: [ ORK-7 ]` kenarıyla kanon maddesine bağlar, orkestrasyon altyapısının çalışma anı sözleşmelerini tek yerde toplar ve o sözleşmeleri kendi içine sarar. İki düğümü de kodlarını `gezin` aracına sorarak açabilirsin.
 <!-- /SARMAL:ANLATI -->
 
 <!-- SARMAL:AILE_ISKELETI -->

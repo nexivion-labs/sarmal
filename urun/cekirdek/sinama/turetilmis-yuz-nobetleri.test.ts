@@ -26,7 +26,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BELGE_YUZU_HEDEFLERI, belgeYuzleriniUret } from "../src/belge-yuzleri.ts";
-import { kanonTutarlilikMetni } from "../src/kanon-tutarlilik.ts";
+import { kanonMaddeleriniOlc, kanonTutarlilikMetni } from "../src/kanon-tutarlilik.ts";
 import { belgeMd } from "../src/belgele.ts";
 import { ogretKarti } from "../src/ogret.ts";
 import { siniflamaOrtuMerge, siniflamaOrtuYukle, siniflamaYukle, taksonomiBlokUygula, taksonomiMd } from "../src/siniflama.ts";
@@ -110,7 +110,8 @@ test("② + ④ temiz kopyada on altı yüzün ilk ve ikinci koşusu sıfır far
   assert.deepEqual(ilk.degisen, [],
     `üretilen yüz canlı üreticiden ayrışmış (elle değişiklik ya da bayat yüz): ${ilk.degisen.join(", ")}`);
   assert.equal(ilk.degismeyen.length, BELGE_YUZU_HEDEFLERI.length);
-  assert.deepEqual({ madde: ilk.kanonMaddesi, arac: ilk.aracSayisi }, { madde: 162, arac: 18 });   // KPS-CEL-A01: MIM-3.5 ile 161 → 162
+  // Madde sayısı burada dondurulmaz; tek kaydı src/kanon-tutarlilik.ts içindeki KANON_SAYIMI'dır (HST-MTR-A02).
+  assert.deepEqual({ madde: ilk.kanonMaddesi, arac: ilk.aracSayisi }, { madde: kanonMaddeleriniOlc(sb).maddeler.length, arac: 18 });
   const ikinci = belgeYuzleriniUret(sb);
   assert.deepEqual(ikinci.degisen, [], "ikinci koşu fark verdi — idempotens drift");
 });
@@ -118,10 +119,11 @@ test("② + ④ temiz kopyada on altı yüzün ilk ve ikinci koşusu sıfır far
 test("② kırmızı fikstür: üretilen bölgeye elle dokunan bayt ilk koşuda yakalanır ve onarılır", () => {
   const sb = sandboxKur();
   const readme = join(sb, "README.md");
-  writeFileSync(readme, readFileSync(readme, "utf8").replace("162 tekil madde", "150 tekil madde"), "utf8");
+  const madde = kanonMaddeleriniOlc(sb).maddeler.length;
+  writeFileSync(readme, readFileSync(readme, "utf8").replace(`${madde} tekil madde`, `${madde - 12} tekil madde`), "utf8");
   const koşu = belgeYuzleriniUret(sb);
   assert.deepEqual(koşu.degisen, ["README.md"], "elle değiştirilen üretilen bölge ilk koşuda görünmedi");
-  assert.ok(readFileSync(readme, "utf8").includes("162 tekil madde"), "nöbet yüzü kanonik ölçüme onarmadı");
+  assert.ok(readFileSync(readme, "utf8").includes(`${madde} tekil madde`), "nöbet yüzü kanonik ölçüme onarmadı");
   assert.deepEqual(belgeYuzleriniUret(sb).degisen, [], "onarım sonrası koşu sıfır fark vermeli");
 });
 

@@ -34,14 +34,14 @@ const PROJE_MANIFESTI: readonly string[] = [
   "is/durum/durum_devir.sar",
   "ogreti/ogrenme/dersler.sar",
   "ogreti/ogrenme/geribildirim.sar",
-  "is/plan/ilk_plan.sar",
+  "is/plan/faz/1_dogus.sar",
   "AGENTS.md",
   "CLAUDE.md",
   ".gitignore",
   ".mcp.json",
   ".claude/settings.json",
-  ".claude/kanca/dogus-kilidi.sh",
-  ".claude/kanca/denetim-kapisi.sh",
+  ".claude/kanca/dogus-kilidi.mjs",
+  ".claude/kanca/denetim-kapisi.mjs",
   "oz/siniflama/isaretci.json",
 ];
 
@@ -75,6 +75,30 @@ test("dogusYaz + GERÇEK denetim: boş dizinde doğan proje sıfır hata verir",
       { encoding: "utf8" });
     assert.equal(s.status, 0, `denetle sıfırla çıkmalı — çıktı:\n${s.stdout}\n${s.stderr}`);
     assert.match(s.stdout, /0 hata/, "doğan proje hatasız denetlenmeli");
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});
+
+test("BKM-OLG-A11 · doğuş kaçışı geçicidir: Kuruluş kabulü kaçış temizliğini ister, boş proje uyarısız doğar, ilk ilan uyarıyı açar", () => {
+  const dizin = geciciDizin();
+  try {
+    const sonuc = dogusYaz(dizin, "kacis-deneme", "2026-10-02");
+    const plan = readFileSync(join(dizin, "is/plan/faz/1_dogus.sar"), "utf8");
+    assert.match(plan, /"teknoloji ilan edildikten sonra hiçbir Katmanda teknolojiBağımsız kaçışı kalmadı;/u,
+      "Kuruluş Adımının kabulü kaçış temizliği ölçütünü taşımalı");
+    assert.match(plan, /takım: kenarıyla kurulan Takım'a bağla/u, "görev Takımı takım: kenarıyla bağlatmalı");
+    assert.match(dogusRaporu(sonuc, dizin), /teknolojiBağımsız satırı GEÇİCİDİR/u, "doğuş raporu kaçışın geçici olduğunu söylemeli");
+    const denetle = (): string => spawnSync(process.execPath, [join(KOK, "src", "sarmal.ts"), "denetle", dizin],
+      { encoding: "utf8" }).stdout;
+    const ilk = denetle();
+    assert.match(ilk, /0 hata/);
+    assert.doesNotMatch(ilk, /yersiz-teknoloji-kaçışı/u, "hiç zemin ilan etmemiş projede kaçış meşrudur");
+    // İlk Teknoloji ilanı kaçışı yersiz kılar: Kuruluş kabulünün ölçütü motorda görünür.
+    const anadizin = join(dizin, sonuc.yazilan.find((y) => y.endsWith("_anadizin.sar"))!);
+    const kaynak = readFileSync(anadizin, "utf8");
+    writeFileSync(anadizin, kaynak.replace("  // ① TEKNOLOJİ", '  Teknoloji( kod: TEK-DENEME, ne: "deneme yığını" )\n  // ① TEKNOLOJİ'), "utf8");
+    assert.match(denetle(), /yersiz-teknoloji-kaçışı/u, "zemin ilanından sonra kaçış uyarı almalı");
   } finally {
     rmSync(dizin, { recursive: true, force: true });
   }
@@ -126,8 +150,8 @@ test("GOC-A10: çalışma alanı manifesti — çatı ilanı + dil bağlamı + i
     ".gitignore",
     ".mcp.json",
     ".claude/settings.json",
-    ".claude/kanca/dogus-kilidi.sh",
-    ".claude/kanca/denetim-kapisi.sh",
+    ".claude/kanca/dogus-kilidi.mjs",
+    ".claude/kanca/denetim-kapisi.mjs",
     "oz/siniflama/isaretci.json",
     ...PROJE_MANIFESTI.map((y) => `ilk_proje/${y.replace("deneme_anadizin.sar", "ilk_proje_anadizin.sar")}`),
   ]);
@@ -154,7 +178,7 @@ test("GOC-A10: dogusYaz(calisma-alani) + GERÇEK denetim — kökten başlayan y
     assert.equal(sonuc.yazilan.length, 9 + PROJE_MANIFESTI.length, "çatı kendi kapılarını taşır, ilk proje de kendi kapılarını");
     assert.ok(readFileSync(join(dizin, "deneme_cati_anadizin.sar"), "utf8").includes("ÇalışmaAlanı("));
     assert.match(dogusRaporu(sonuc, dizin), /çalışma alanı "deneme-cati"/u);
-    assert.match(dogusRaporu(sonuc, dizin), /ilk_proje\/is\/plan\/ilk_plan\.sar/u, "rapor ilk projenin planına yönlendirir");
+    assert.match(dogusRaporu(sonuc, dizin), /ilk_proje\/is\/plan\/faz\/1_dogus\.sar/u, "rapor ilk projenin planına yönlendirir");
     const s = spawnSync(process.execPath, [join(KOK, "src", "sarmal.ts"), "denetle", dizin], { encoding: "utf8" });
     assert.equal(s.status, 0, `denetle sıfırla çıkmalı — çıktı:\n${s.stdout}\n${s.stderr}`);
     assert.match(s.stdout, /0 hata/, "doğan çalışma alanı hatasız denetlenmeli");
@@ -215,6 +239,24 @@ const VARSAYILAN_DESENI = new RegExp(`\\$\\{${SARMAL_KOK_DEGISKENI}:`, "u");
  *  dosyayı bir yazım hedefi sanmasın (ölçüm aracı ölçtüğü kapıyı tetiklemez). */
 const ILAN_SONEKI = "_anadizin" + ".sar";
 
+/**
+ * Git'in kanca ortamından arındırılmış ortam. İşleme kapısı süiti bir git
+ * kancasının içinden koşturur ve git o anda GIT_DIR ile GIT_INDEX_FILE gibi
+ * değişkenleri ortama yazar; fikstür komutları bunları miras alırsa geçici depo
+ * yerine ÇALIŞAN deponun indeksine yazar. Kapı da arındırır; fikstür kendi
+ * ortamını ayrıca arındırır, çünkü süit kapı dışında da koşturulur.
+ */
+function gitOrtami(): NodeJS.ProcessEnv {
+  const ortam = { ...process.env };
+  for (const d of ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_PREFIX"]) delete ortam[d];
+  return ortam;
+}
+
+/** Fikstür deposunda git komutu koşturur ve çıktısını döndürür. */
+function git(kok: string, ...arglar: string[]): string {
+  return execFileSync("git", ["-C", kok, ...arglar], { encoding: "utf8", env: gitOrtami() });
+}
+
 /** Fikstür deposu: küresel yok sayma kuralının birebir taklidi yerel ayara konur. */
 function kureselYokSaymaliDepo(desenler: readonly string[]): { kok: string; sil: () => void } {
   const ust = geciciDizin();
@@ -222,15 +264,15 @@ function kureselYokSaymaliDepo(desenler: readonly string[]): { kok: string; sil:
   writeFileSync(kural, desenler.join("\n") + "\n", "utf8");
   const kok = join(ust, "depo");
   mkdirSync(kok, { recursive: true });
-  execFileSync("git", ["-C", kok, "init", "-q"], { stdio: "ignore" });
-  execFileSync("git", ["-C", kok, "config", "core.excludesFile", kural], { stdio: "ignore" });
+  execFileSync("git", ["-C", kok, "init", "-q"], { stdio: "ignore", env: gitOrtami() });
+  execFileSync("git", ["-C", kok, "config", "core.excludesFile", kural], { stdio: "ignore", env: gitOrtami() });
   return { kok, sil: () => rmSync(ust, { recursive: true, force: true }) };
 }
 
 /** `git check-ignore` ile ölçüm: dosya yok sayılıyor mu? */
 function yokSayiliyorMu(kok: string, goreli: string): boolean {
   try {
-    execFileSync("git", ["-C", kok, "check-ignore", "-q", goreli], { stdio: "ignore" });
+    execFileSync("git", ["-C", kok, "check-ignore", "-q", goreli], { stdio: "ignore", env: gitOrtami() });
     return true;
   } catch {
     return false;
@@ -243,7 +285,7 @@ test("BKM-DNT-A15 · yok sayma istisnası: küresel kural *.sar taşısa bile do
     dogusYaz(kok, "fikstur", "2026-09-09");
     const olculenler = [
       "fikstur" + ILAN_SONEKI,
-      "is/plan/ilk_plan.sar",
+      "is/plan/faz/1_dogus.sar",
       "is/durum/durum_devir.sar",
       "ogreti/ogrenme/dersler.sar",
       "ogreti/ogrenme/geribildirim.sar",
@@ -332,13 +374,13 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
 
     // ④ kapı kancaları — kurulum kökün KENDİ dosyasında, motorun adresi gerçek
     const kancaAyari = readFileSync(join(dizin, ".claude", "settings.json"), "utf8");
-    assert.match(kancaAyari, /dogus-kilidi\.sh/u);
-    assert.match(kancaAyari, /denetim-kapisi\.sh/u);
-    for (const k of ["dogus-kilidi.sh", "denetim-kapisi.sh"]) {
+    assert.match(kancaAyari, /dogus-kilidi\.mjs/u);
+    assert.match(kancaAyari, /denetim-kapisi\.mjs/u);
+    for (const k of ["dogus-kilidi.mjs", "denetim-kapisi.mjs"]) {
       assert.ok(existsSync(join(dizin, ".claude", "kanca", k)), `${k} doğmadı`);
     }
-    const kapi = readFileSync(join(dizin, ".claude", "kanca", "denetim-kapisi.sh"), "utf8");
-    assert.ok(kapi.includes(`MOTOR="${TASINABILIR_MOTOR_YOLU}"`), "denetim kapısı motoru ortam değişkeninden çözmüyor");
+    const kapi = readFileSync(join(dizin, ".claude", "kanca", "denetim-kapisi.mjs"), "utf8");
+    assert.ok(kapi.includes(`const MOTOR_SABLONU = "${TASINABILIR_MOTOR_YOLU}";`), "denetim kapısı motoru ortam değişkeninden çözmüyor");
     assert.ok(!kapi.includes(SARMAL_KURULUM_KOKU), "denetim kapısı doğuran kurulumun MUTLAK yolunu taşıyor");
     assert.ok(existsSync(join(SARMAL_KURULUM_KOKU, MOTOR_GORELI_YOLU)), "motorun adresi diskte yok");
 
@@ -356,9 +398,9 @@ test("BKM-DNT-A15 · doğan kök tek başına açıldığında beş kapının be
   }
 });
 
-/** Kancayı gerçek bir kanca girdisiyle koşturur ve reddedip reddetmediğini döndürür. */
+/** Kancayı kanca ayarının çağırdığı biçimde (`node <betik>`) gerçek bir girdiyle koşturur ve reddedip reddetmediğini döndürür. */
 function kilitReddettiMi(kancaYolu: string, girdi: unknown): boolean {
-  const s = spawnSync("sh", [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8" });
+  const s = spawnSync(process.execPath, [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8" });
   return /DOĞUŞ KİLİDİ/u.test(`${s.stdout}${s.stderr}`);
 }
 
@@ -366,7 +408,7 @@ test("BKM-DNT-A15 · doğuş kilidi: gerçek yazım hedefini reddeder, deseni ya
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "kilitli", "2026-09-09");
-    const kanca = join(dizin, ".claude", "kanca", "dogus-kilidi.sh");
+    const kanca = join(dizin, ".claude", "kanca", "dogus-kilidi.mjs");
     const varOlan = join(dizin, "kilitli" + ILAN_SONEKI);
     const yeni = join(dizin, "yeni" + ILAN_SONEKI);
     const bash = (command: string) => ({ tool_name: "Bash", cwd: dizin, tool_input: { command } });
@@ -383,8 +425,13 @@ test("BKM-DNT-A15 · doğuş kilidi: gerçek yazım hedefini reddeder, deseni ya
       "var olan giriş ilanını düzenlemek serbesttir");
     assert.equal(kilitReddettiMi(kanca, bash(`cat > ${join(dizin, "not.md")} <<EOF\nkural: -> ${yeni} elle yazilmaz\nEOF`)), false,
       "belge GÖVDESİ komut değildir: deseni yalnızca anan not reddedildi (2026-09-09 yanlış pozitifi)");
-    assert.equal(kilitReddettiMi(kanca, bash(`echo dogus paketi -> ${yeni} yazar`)), false,
-      "ok işareti yönlendirme değildir");
+    // Ok işareti yalnız TIRNAK İÇİNDE veridir. Tırnaksız `->` kabukta `-` sözcüğü
+    // ile bir `>` yönlendirmesidir ve dosyayı gerçekten yazar (2026-10-22 ölçümü:
+    // `sh -c 'echo a -> f yazar'` f dosyasını yaratır); bu yüzden reddedilir.
+    assert.equal(kilitReddettiMi(kanca, bash(`echo "dogus paketi -> ${yeni} yazar" >> ${join(dizin, "not.md")}`)), false,
+      "tırnak içindeki ok işareti veridir, yönlendirme değildir");
+    assert.equal(kilitReddettiMi(kanca, bash(`echo dogus paketi -> ${yeni} yazar`)), true,
+      "tırnaksız ok gerçek bir yönlendirmedir ve dosyayı yazar");
     // Gövdede GERÇEK bir yönlendirme deyimi ALINTILANIYOR: bir çalışma notu
     // yasak komutu örnek olarak yazabilir. Kabuk için bu satır komut değil
     // veridir; kanca da öyle okumalıdır. Ok kalkanı bu vakayı YAKALAMAZ, çünkü
@@ -446,7 +493,7 @@ test("EKL-F6-A08 · doğan kökün üç kaydı da taşınabilirdir: mutlak yol y
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "tasinabilir", "2026-09-16");
-    for (const goreli of [".mcp.json", ".claude/kanca/denetim-kapisi.sh", "oz/siniflama/isaretci.json"]) {
+    for (const goreli of [".mcp.json", ".claude/kanca/denetim-kapisi.mjs", "oz/siniflama/isaretci.json"]) {
       const metin = readFileSync(join(dizin, ...goreli.split("/")), "utf8");
       assert.ok(metin.includes(SARMAL_KOK_ONEKI), `${goreli} motorun yolunu ${SARMAL_KOK_DEGISKENI} değişkeninden okumuyor`);
       assert.ok(!metin.includes(SARMAL_KURULUM_KOKU), `${goreli} doğuran kurulumun MUTLAK yolunu taşıyor — ağaç taşınırsa bu bağ kopar`);
@@ -462,9 +509,9 @@ test("EKL-F6-A08 · doğan kökün üç kaydı da taşınabilirdir: mutlak yol y
   }
 });
 
-/** Kancayı gerçek bir kanca girdisiyle koşturur; ortamı çağıran seçer. */
+/** Kancayı kanca ayarının çağırdığı biçimde (`node <betik>`) koşturur; ortamı çağıran seçer. */
 function kapiyiKostur(kancaYolu: string, girdi: unknown, ortam: Record<string, string | undefined>): string {
-  const s = spawnSync("sh", [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8", env: ortam });
+  const s = spawnSync(process.execPath, [kancaYolu], { input: JSON.stringify(girdi), encoding: "utf8", env: ortam });
   return `${s.stdout}${s.stderr}`;
 }
 
@@ -472,8 +519,8 @@ test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişke
   const dizin = geciciDizin();
   try {
     dogusYaz(dizin, "sessizligin-sonu", "2026-09-16");
-    const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.sh");
-    const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "ilk_plan.sar") } };
+    const kanca = join(dizin, ".claude", "kanca", "denetim-kapisi.mjs");
+    const girdi = { tool_name: "Write", cwd: dizin, tool_input: { file_path: join(dizin, "is", "plan", "faz", "1_dogus.sar") } };
 
     // ① Değişken TANIMSIZ: motor çözülemez ve kapı bunu TEK SATIRLA söyler.
     const degiskensiz: Record<string, string | undefined> = { ...process.env, CLAUDE_PROJECT_DIR: dizin };
@@ -489,6 +536,174 @@ test("EKL-F6-A08 · denetim kapısı motoru bulamayınca SUSMAZ: eksik değişke
     const kostu = kapiyiKostur(kanca, girdi, degiskenli);
     assert.match(kostu, /🚪✅ sarmal-kapı/u, `değişken tanımlıyken kapı denetimi koşturmadı — çıktı:\n${kostu}`);
     assert.doesNotMatch(kostu, /DENETİM KOŞMADI/u, "değişken tanımlıyken kapı motoru bulamadığını iddia etti");
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HST-MTR-A14 · MOTORUN İZ KLASÖRÜ
+//
+//   Motor koşu artıklarını kökün `.sarmal/` klasörüne yazar. Bunların en ağırı
+//   döngünün kendi izidir ve ham istemi ile ham yanıtı kısaltmadan taşır; dış
+//   bir yürütücünün sef ve durum temasları da aynı klasöre düşer. Doğuş
+//   şablonunun yok sayma listesi bu klasörü kapsamadığında temiz bir makinede
+//   doğan projede izler izlenmeyen dosya olarak görünüyor ve ilk `git add .`
+//   onları depoya sokuyordu. Nöbetler izleri elle değil motorun GERÇEK
+//   yollarından üretir: doğuş ve yürütücü izi MCP alt sürecinden, döngü izi
+//   komut satırından gelir. Böylece bu iki yazıcının klasörü değişirse nöbet
+//   konusuz kalmaz, kırmızıya döner; makro döngü izi, kontrol noktası ve lig
+//   kaydının yazıcıları nöbetin dışındadır (yonerge-ikizi.ts, IZ_KLASORU_SATIRI). Küresel
+//   yok sayma kuralı bilinçle boş bırakılır, çünkü ölçülen şey doğan kökün kendi
+//   dosyasıdır.
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { readdirSync } from "node:fs";
+import { yurutucuIziYaz, yurutucuIziDosyaAdi, YURUTUCU_ROLU } from "../src/kopru/iz.ts";
+
+const MCP_GIRISI = join(KOK, "src", "mcp.ts");
+const MOTOR_GIRISI = join(KOK, "src", "sarmal.ts");
+/** Döngünün sözleşmeleri: doğan proje kendi sözleşme dosyasını taşımaz, kurulumunkini kullanır. */
+const SOZLESME_DIZINI = fileURLToPath(new URL("../../../is/plan/mekanizma/", import.meta.url));
+/** Doğuş şablonunun ilk Adımı; yürütücü ve döngü izi bu Adım adına yazılır. */
+const ILK_ADIM = "ADM-KURULUS-01";
+
+/** Git durumunda iz klasörünün altında görünen satırlar (izlenmeyen dosyalar tek tek listelenir). */
+function gorunenIzler(kok: string): string[] {
+  return git(kok, "status", "--porcelain", "--untracked-files=all")
+    .split("\n").filter((s) => s.includes(".sarmal/"));
+}
+
+/** Gerçek yazıcının bıraktığı tek satırlık yürütücü izi. */
+function yurutucuIziBirak(dizin: string): void {
+  yurutucuIziYaz(dizin, yurutucuIziDosyaAdi(), { zaman: new Date().toISOString(), adım: ILK_ADIM, rol: YURUTUCU_ROLU, arac: "sef" });
+}
+
+/** MCP sunucusunu tek süreçte koşturur: initialize, ardından sırayla araç çağrıları. */
+function mcpOturumu(
+  cwd: string,
+  cagrilar: ReadonlyArray<{ name: string; arguments: Record<string, unknown> }>,
+  ortam: Record<string, string>,
+): Array<{ metin: string; isError: boolean }> {
+  const istekler = [
+    { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "sinama-yurutucu", version: "1.0.0" } } },
+    ...cagrilar.map((c, i) => ({ jsonrpc: "2.0", id: i + 2, method: "tools/call", params: c })),
+  ].map((x) => JSON.stringify(x)).join("\n") + "\n";
+  const ham = execFileSync(process.execPath, [MCP_GIRISI], {
+    input: istekler, encoding: "utf8", timeout: 120_000, maxBuffer: 32 * 1024 * 1024, cwd,
+    env: { ...gitOrtami(), SARMAL_DIL: "tr", ...ortam },
+  });
+  const yanitlar = ham.trim().split("\n").filter(Boolean).map((s) => JSON.parse(s) as {
+    id: number; result?: { content?: Array<{ text?: string }>; isError?: boolean };
+  });
+  return cagrilar.map((_, i) => {
+    const y = yanitlar.find((x) => x.id === i + 2);
+    return { metin: y?.result?.content?.map((c) => c.text).join("\n") ?? "", isError: y?.result?.isError !== false };
+  });
+}
+
+test("HST-MTR-A14 · iz klasörü: doğan projede motorun ve yürütücünün izi git durumunda görünmez", { timeout: 180_000 }, () => {
+  const { kok, sil } = kureselYokSaymaliDepo([]);
+  try {
+    // Doğuş ve yürütücü teması gerçek MCP alt sürecinden gelir; iz açıktır.
+    const [dogus, sef] = mcpOturumu(kok, [
+      { name: "dogus", arguments: { hedef: kok, tur: "proje", ad: "fikstur" } },
+      { name: "sef", arguments: { dizin: kok, adim: ILK_ADIM } },
+    ], { SARMAL_YURUTUCU_IZI: "1" });
+    assert.equal(dogus.isError, false, dogus.metin);
+    assert.equal(sef.isError, false, sef.metin);
+    // Döngünün kendi izi komut satırından gelir ve ham istem taşır. Çıkış kodu
+    // kararın mührüne bağlıdır: demo etmeninin doğrulanmamış teslimi 3 verir,
+    // 4 ise Adımın ya da sözleşmenin bulunamadığını, yani döngünün hiç koşmadığını söyler.
+    const dongu = spawnSync(process.execPath,
+      [MOTOR_GIRISI, "sef-dongu", ILK_ADIM, kok, "--iz", "--sozlesme", SOZLESME_DIZINI],
+      { encoding: "utf8", cwd: kok, env: gitOrtami(), timeout: 120_000 });
+    assert.ok(dongu.status === 0 || dongu.status === 3, `döngü koşmadı (çıkış ${dongu.status}):\n${dongu.stdout}\n${dongu.stderr}`);
+
+    // Kontrol ölçümleri: iki iz de diskte vardır ve döngü izi gerçekten ham istem taşır.
+    const klasor = join(kok, ".sarmal", "trace");
+    const izler = existsSync(klasor) ? readdirSync(klasor).sort() : [];
+    assert.ok(izler.some((d) => /^yurutucu-.+\.jsonl$/u.test(d)), `yürütücü izi yazılmadı, ölçüm konusuz kalır: ${izler.join(" · ")}`);
+    const donguIzi = izler.find((d) => /^kosu-.+\.jsonl$/u.test(d));
+    assert.ok(donguIzi, `döngü izi yazılmadı, ölçüm konusuz kalır: ${izler.join(" · ")}`);
+    assert.match(readFileSync(join(klasor, donguIzi), "utf8"), /"hamPrompt"/u, "döngü izi ham istem taşımıyor, gizlilik ölçümü konusuz kalır");
+    // Kontrol ölçümü: git durumu bu kökün izlenmeyen dosyalarını gerçekten listeliyor.
+    assert.match(git(kok, "status", "--porcelain", "--untracked-files=all"), /^\?\? is\/plan\/faz\/1_dogus\.sar$/mu,
+      "git durumu doğan dosyaları listelemiyor, ölçüm anlamsız");
+
+    assert.deepEqual(gorunenIzler(kok), [], "motorun iz dosyaları doğan projenin git durumunda izlenmeyen dosya olarak görünüyor");
+  } finally {
+    sil();
+  }
+});
+
+test("HST-MTR-A14 · çalışma alanında çatının ve ilk projenin iz klasörü git durumunda görünmez", () => {
+  const { kok, sil } = kureselYokSaymaliDepo([]);
+  try {
+    dogusYaz(kok, "cati", "2026-10-10", "calisma-alani", "ilk");
+    const ilk = join(kok, "ilk");
+    yurutucuIziBirak(kok);
+    yurutucuIziBirak(ilk);
+    assert.equal(readdirSync(join(kok, ".sarmal", "trace")).length + readdirSync(join(ilk, ".sarmal", "trace")).length, 2,
+      "iki kökte de iz yazılmadı, ölçüm konusuz kalır");
+    assert.deepEqual(gorunenIzler(kok), [], "çalışma alanının deposunda iz dosyaları görünüyor");
+    // İlk proje kendi deposunda yaşadığında (MIM-3) yalnız kendi yok sayma dosyası
+    // hüküm sürer; çatının dosyası o depoya uygulanmaz.
+    git(ilk, "init", "-q");
+    git(ilk, "config", "core.excludesFile", join(dirname(kok), "kuresel_yoksayma"));
+    assert.match(git(ilk, "status", "--porcelain", "--untracked-files=all"), /^\?\? is\/plan\/faz\/1_dogus\.sar$/mu,
+      "ilk projenin deposu kendi dosyalarını listelemiyor, ölçüm anlamsız");
+    assert.deepEqual(gorunenIzler(ilk), [], "ilk projenin kendi deposunda iz dosyaları görünüyor");
+  } finally {
+    sil();
+  }
+});
+
+test("HST-MTR-A14 · eski yok sayma dosyası genişletilir: iz klasörü satırı eklenir, kullanıcının satırları bayt bayt korunur, ikinci koşu dokunmaz", () => {
+  const { kok, sil } = kureselYokSaymaliDepo([]);
+  try {
+    // Bu onarımdan önce doğmuş bir kökün dosyası: istisnalar tam, iz klasörü satırı yok.
+    // Son satırın satır sonu da yok; genişletme ayracı kendisi koymalıdır.
+    const emek = `# kullanıcının kendi kuralları\n*.log\ngizli/\n${yokSaymaIstisnaSatirlari().join("\n")}`;
+    writeFileSync(join(kok, ".gitignore"), emek, "utf8");
+    const sonuc = dogusYaz(kok, "eski", "2026-10-10");
+    assert.deepEqual(sonuc.genisletilen, [".gitignore"], "iz klasörü satırı eksik olan dosya genişletilmeli, atlanmamalı");
+    const yeni = readFileSync(join(kok, ".gitignore"), "utf8");
+    assert.ok(yeni.startsWith(emek), "kullanıcının satırları bayt bayt korunmadı");
+    const ekler = yeni.slice(emek.length).split("\n").map((s) => s.trim()).filter((s) => s.length > 0 && !s.startsWith("#"));
+    assert.deepEqual(ekler, [".sarmal/"], "genişletme yalnız eksik satırı eklemeli");
+    assert.match(dogusRaporu(sonuc, kok), /Genişletilenler/u);
+    // Davranış ölçümü: gerçek yazıcının bıraktığı iz git durumunda görünmez.
+    yurutucuIziBirak(kok);
+    assert.deepEqual(gorunenIzler(kok), [], "genişletilen dosya iz klasörünü kapsamıyor");
+    // İkinci koşu dosyaya dokunmaz.
+    const tekrar = dogusYaz(kok, "eski", "2026-10-10");
+    assert.deepEqual(tekrar.genisletilen, []);
+    assert.ok(tekrar.atlanan.includes(".gitignore"));
+    assert.equal(readFileSync(join(kok, ".gitignore"), "utf8"), yeni, "ikinci koşu dosyayı değiştirdi");
+  } finally {
+    sil();
+  }
+});
+
+test("HST-MTR-A14 · klasör hakkında kararı olan dosyaya satır eklenmez: eşdeğer yazım yeterlidir, olumsuzlama kullanıcının kararıdır", () => {
+  const dizin = geciciDizin();
+  try {
+    const istisnalar = yokSaymaIstisnaSatirlari().join("\n");
+    const kararlar = [".sarmal", "/.sarmal/", "**/.sarmal", ".sarmal/**", "  .sarmal/*  ", "!.sarmal/", "!/.sarmal", "!.sarmal/trace/"];
+    for (const karar of kararlar) {
+      const emek = `${karar}\n${istisnalar}\n`;
+      writeFileSync(join(dizin, ".gitignore"), emek, "utf8");
+      const sonuc = dogusYaz(dizin, "kararli", "2026-10-10");
+      assert.ok(sonuc.atlanan.includes(".gitignore"), `"${karar.trim()}" satırı klasör hakkında karar taşıdığı hâlde dosya genişletildi`);
+      assert.equal(readFileSync(join(dizin, ".gitignore"), "utf8"), emek);
+    }
+    // Yorum satırı karar kurmaz; yalnız bir alt klasörü yok saymak da klasörün tamamını kapsamaz.
+    for (const karar of ["# .sarmal/", ".sarmal/trace/"]) {
+      writeFileSync(join(dizin, ".gitignore"), `${karar}\n${istisnalar}\n`, "utf8");
+      const sonuc = dogusYaz(dizin, "kararli", "2026-10-10");
+      assert.deepEqual(sonuc.genisletilen, [".gitignore"], `"${karar}" satırı klasörün tamamı hakkında karar değildir`);
+    }
   } finally {
     rmSync(dizin, { recursive: true, force: true });
   }

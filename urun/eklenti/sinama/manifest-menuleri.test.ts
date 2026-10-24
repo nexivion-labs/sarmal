@@ -29,8 +29,10 @@ const PAKET = JSON.parse(oku("../package.json")) as {
   };
 };
 
-/** Manifestin bugün ilan ettiği beş menü grubu; yenisi doğarsa bu liste büyür ve nöbet onu da kapsar. */
-const MENU_GRUPLARI = ["editor/title", "view/title", "view/item/context", "comments/commentThread/context", "commandPalette"] as const;
+/** Manifestin bugün ilan ettiği dört menü grubu; yenisi doğarsa bu liste büyür ve nöbet onu da kapsar.
+ *  `view/item/context` Founder 2026-10-21 hükmüyle kalktı: ağaç satırları Sarmal panelinin webview'indedir
+ *  ve satır eylemleri panelin kendi düğmeleridir (panel-cekirdek.ts `satirEylemleri`). */
+const MENU_GRUPLARI = ["editor/title", "view/title", "comments/commentThread/context", "commandPalette"] as const;
 
 /**
  * `when` cümlesindeki dosya adı koşulunu değerlendirir. VS Code'un iki yazımı
@@ -45,7 +47,7 @@ function dosyaAdiKabulEder(when: string, dosyaAdi: string): boolean | undefined 
   return esitlikler.includes(dosyaAdi) || desenler.some((d) => d.test(dosyaAdi));
 }
 
-test("manifest kapsamı: beş menü grubunun beşi de ilanda vardır ve her girdinin komutu bildirilmiştir", () => {
+test("manifest kapsamı: dört menü grubunun dördü de ilanda vardır ve her girdinin komutu bildirilmiştir", () => {
   const komutlar = new Set(PAKET.contributes.commands.map((k) => k.command));
   for (const grup of MENU_GRUPLARI) {
     const girdiler = PAKET.contributes.menus[grup];

@@ -18,6 +18,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { ayristir } from "../src/ayristirici.ts";
+import { belirtecle } from "../src/belirtec.ts";
 import { kurtar, basitKurtarma } from "../src/muzakere.ts";
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
@@ -102,4 +104,35 @@ test("A01/STR-3: açık tarafta hiçbir kurtarma yolu seçim AĞIRLIĞI yazılı
     "ilan, seçim politikasının kapalı üründe yaşadığını açıkça söylemiyor — sınır beyanı eksik");
   assert.ok(/seçim politikası kapalı üründe yaşar/i.test(duz),
     "politikanın nerede yaşadığı yazılmamış — okuyucu onu açık tarafta aramaya devam eder");
+});
+
+// ── ③ HST-MTR-A08 · MEKANİZMA ÖZETİ SARDIĞI SÖZLEŞME SAYISINI SÖYLER ────────
+//   SZL-KURTARMA mekanizmanın dokuzuncu sözleşmesi olarak doğdu, fakat MEK-SEF
+//   düğümünün `ne` alanı ile Sonuç bölümündeki kabul cümlesi sekiz sözleşme
+//   saymayı sürdürdü (HTR-OGRETIM-TAZELIK-TURUNUN-ALAN-DISI-BULGULARI). `sef`
+//   brifingi düğümün `ne` alanını aynen bastığı için bayat sayı her ajana taşınır.
+//   Nöbet sayıyı dondurmaz: iki metnin iddia ettiği sayı mekanizmanın gerçekten
+//   sardığı Sözleşme düğümlerinin sayısıyla karşılaştırılır. Nöbetin boşa
+//   düşmemesi için iki metinden en az birinin sayı iddiası okunabilmelidir.
+const SAYI_SOZCUKLERI = ["sıfır", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz", "on",
+  "on bir", "on iki", "on üç", "on dört", "on beş", "on altı", "on yedi", "on sekiz", "on dokuz", "yirmi"];
+
+test("HST-MTR-A08: MEK-SEF özeti ve kabul cümlesi sardığı sözleşmelerin sayısını söyler", () => {
+  const mek = ayristir(belirtecle(MEKANIZMA)).bildirimler
+    .find((d) => d.ad === "Mekanizma" && d.parametreler.find((p) => p.ad === "kod")?.deger.metin === "MEK-SEF");
+  assert.ok(mek, "MEK-SEF ilanı mekanizma dosyasında bulunmalı");
+  const sozlesme = mek.cocuklar.filter((c) => c.ad === "Sözleşme").length;
+  assert.ok(sozlesme > 0 && sozlesme < SAYI_SOZCUKLERI.length, `sözleşme sayısı sözcük tablosunun dışında: ${sozlesme}`);
+  const ne = mek.parametreler.find((p) => p.ad === "ne")?.deger.metin ?? "";
+  const kabul = (mek.belge ?? "").split("\n").find((s) => s.includes("Kabul:")) ?? "";
+  const iddialar: Array<[string, string | undefined]> = [
+    ["ne alanı", ne.match(/— ([a-zçğıöşü ]+?) runtime sözleşmesi/)?.[1]],
+    ["Sonuç bölümündeki kabul cümlesi", kabul.match(/Kabul: ([a-zçğıöşü ]+?) Sözleşme/)?.[1]],
+  ];
+  assert.ok(iddialar.some(([, sozcuk]) => sozcuk !== undefined), "nöbet en az bir sayı iddiasını okuyabilmeli");
+  for (const [yer, sozcuk] of iddialar) {
+    if (sozcuk === undefined) continue;
+    assert.equal(sozcuk, SAYI_SOZCUKLERI[sozlesme],
+      `MEK-SEF ${yer} "${sozcuk}" sözleşme diyor, oysa mekanizma ${sozlesme} Sözleşme düğümü sarıyor`);
+  }
 });
