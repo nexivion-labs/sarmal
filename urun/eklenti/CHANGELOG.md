@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.195 — 2026-10-24 (panel dışarıdan değişen dosyada bayat kalmıyor)
+
+- **Editörün dışında değişen dosya panelde tazelenir.** Başka bir pencerede çalışan bir ajan, git ya da komut satırı bir `.sar` dosyasını değiştirdiğinde yol haritası eski Adım sayısını pencere yeniden yüklenene kadar gösterebiliyordu, çünkü tur açık belgeyi her zaman diskten önce okuyordu. Artık yalnız kaydedilmemiş değişiklik taşıyan açık belge bellekten okunur; öteki her dosyanın gerçeği disktir.
+- **Değişen proje de denetlenir.** Bir dosya olayından sonra koşan dar tur yalnız odaktaki projeye daralıyordu ve dosyası değişen kardeş projenin çapraz tanıları yeniden hesaplanmıyordu. Tur artık odağın yanında değişen dosyaların projelerini de denetler; hangi projenin değiştiği bilinmiyorsa tam koşar. Performans kanalı denetlenen bütün projeleri adlarıyla gösterir.
+- **Davranışı nöbetler koruyor.** İki kardeş kökü olan gerçek bir geçici dizinde koşan yeni sınama, onarımsız eklentide on testin yedisinde düşer ve onarımla onunu da geçer; her koruma mutasyonla kanıtlanmıştır.
+
 ## 0.9.194 — 2026-10-23 (Sarmal kabı tek panel oldu, vitrin mağazaya hazırlandı)
 
 - **Sarmal kabı Ray, Tren ve Makinist sekmeli tek panel oldu.** Etkinlik çubuğundaki kap artık tek bir görünüm taşır. Ray sekmesi Yol Haritasını ve Mini Grafı, Tren sekmesi projede ilan edilmiş ajanları, geliştirmedeki Adımları ve son Koşum mührünü, Makinist sekmesi ise Onaylar, Hatırlatıcılar, Gözlemler ve Fikirleri tek ağaçta gösterir. Onay kartı yan sekmede açılır ve durum çubuğundaki sayaçlar Makinist sekmesine götürür.
