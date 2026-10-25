@@ -1885,6 +1885,22 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
           sınır: "Denetim motorunun senkron yapısı ve işçi iş parçacığına taşınması bu Adımın dışındadır; eklenti sunucusunun yanıt vermez bildirimleri ayrı bir ölçüm Adımının konusudur. Panelin görsel tasarımına, sürüm numarasına ve değişiklik günlüğüne dokunulmaz; paketleme ve yayın ayrı bir Founder kararıdır."
           koşu: Koşum( kod: KSM-BKM-DNT-A18, tarih: 2026-10-24, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "urun/eklenti/sinama/dis-degisiklik.test.ts onarımsız ağaçta 3/10, onarımdan sonra 10/10 · on dokuz mutasyonun on dokuzu kırmızı · eklenti tip denetimi temiz · eklenti süiti 1082/1082 (taban 1059) · çekirdek süiti 1802/1802 · depo denetimi 0 hata 18 uyarı (taban 17; artış yeni sınama dosyasının yetim-meyve uyarısı)", ne: "Fikstürde Adım sayısının bayatlığını yalnız açık belge önceliği üretti; odaktan seçilen dar kök ise değişen kardeş kökün çapraz tanılarını bayat bıraktı ve sahada ikisi birlikte görüldü. Kaydedilmemiş değişiklik taşımayan açık belge artık diskten okunur ve dar tur, odağın yanında olaylarla değişen dosyaların köklerini de denetler. Gerçek VS Code entegrasyon süiti koşturulmadı, yeni sınama dosyasının meyve kenarı kapanışa kaldı ve kabul kontrolcünündür." )
         }
+
+        Adım( kod: BKM-DNT-A19, ad: "Klasik Görünümün Düğüm Başına Ağırlığı", durum: beklemede, öncelik: p2, bağımlı: [],
+          referans: [ BKM-DNT-A18 ],
+          ne: "🪶 Mini Grafın klasik görünümü gerçek planda düğüm başına yaklaşık 1 KB HTML üretmektedir. 2026-10-25 tarihinde 36 düğümlük yeni bir Faz klasik görünümü 292 KB'tan 332 KB'a çıkarmış ve 300 KB'lık ölçek nöbetini kırmıştır; Founder nöbetin sınırını gerekçesiyle 400 KB'a çıkarmış ve görünümün hafifletilmesini bu Adıma bağlamıştır. Varsayılan ağaç görünümü aynı planda 167 KB'tır." ) {
+          görev: [
+            "Klasik görünümün HTML'inde düğüm başına hangi parçanın ne kadar yer tuttuğunu ölç ve en ağır üç parçayı kayda geçir.",
+            "Görünümün görsel sonucunu değiştirmeden düğüm başına ağırlığı azalt; tekrar eden biçim bilgisi ortak sınıfa ya da tek tanıma taşınır.",
+            "Ölçek nöbetinin sınırını yeniden 300 KB'a indir ve gerçek planda üç görünümün de bu sınırın altında kaldığını göster."
+          ]
+          kabul: [
+            "Gerçek planda klasik görünüm 300 KB'ın altındadır ve ölçek nöbetinin sınırı yeniden 300 KB'tır.",
+            "Görünümün görsel sonucu değişmemiştir; bu, önce ve sonra alınan ekran görüntüleriyle karşılaştırılmıştır.",
+            "Eklenti süiti yeşildir."
+          ]
+          sınır: "Görünümün tasarımı ve bilgi içeriği değişmez; yalnız üretilen HTML hafifler."
+        }
       }
 
       AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "Nöbet Onarımları",

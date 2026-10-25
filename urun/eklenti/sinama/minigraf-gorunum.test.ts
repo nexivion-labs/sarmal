@@ -150,7 +150,11 @@ test("kabuk: çizici betiksiz kalır, komut köprüsü YALNIZ gerekli üç komut
 //   13.380 bağ; bütün bağları çizen Ağaç ve Klasik görünümler 1,8-2,0 MB HTML
 //   üretiyor, şerit tek renkli duvara dönüyor ve panel kasıyordu.
 
-const BOYUT_SINIRI = 300 * 1024;
+// Sınır 2026-10-25 tarihinde Founder kararıyla 300 KB'tan 400 KB'a çıkarıldı: gerçek plan büyüdükçe
+// klasik görünüm düğüm başına yaklaşık 1 KB taşıyor ve 36 düğümlük yeni bir Faz onu 292 KB'tan 332 KB'a
+// çıkardı. Nöbet patlamalı büyümeyi yakalamayı sürdürür; klasik görünümün düğüm başına ağırlığının
+// azaltılması ve sınırın yeniden 300 KB'a indirilmesi BKM-DNT-A19 Adımının işidir.
+const BOYUT_SINIRI = 400 * 1024;
 
 function gercekPlanDagi(): Dag {
   const kok = fileURLToPath(new URL("../../../", import.meta.url)).replace(/\/$/, "");
@@ -162,7 +166,7 @@ function gercekPlanDagi(): Dag {
   return dagKur(programlar);
 }
 
-test("ÖLÇEK: gerçek planda üç görünüm de 300 KB altında kalır (seçili HST-MTR-A04 ve seçimsiz)", () => {
+test("ÖLÇEK: gerçek planda üç görünüm de 400 KB altında kalır (seçili HST-MTR-A04 ve seçimsiz)", () => {
   const dag = gercekPlanDagi();
   assert.ok(dag.dugumler.has("HST-MTR-A04"), "ölçüt düğümü gerçek planda yok — nöbet ölçemez");
   for (const secili of ["HST-MTR-A04", ""]) {
@@ -171,7 +175,7 @@ test("ÖLÇEK: gerçek planda üç görünüm de 300 KB altında kalır (seçili
     assert.ok(graf.baglar.length > 1000, "gerçek planda binlerce bağ beklenir");
     for (const g of GORUNUMLER) {
       const boyut = gorunumHtml(graf, g).length;
-      assert.ok(boyut < BOYUT_SINIRI, `${g} görünümü ${secili || "seçimsiz"} için ${(boyut / 1024).toFixed(0)} KB — sınır 300 KB`);
+      assert.ok(boyut < BOYUT_SINIRI, `${g} görünümü ${secili || "seçimsiz"} için ${(boyut / 1024).toFixed(0)} KB — sınır ${BOYUT_SINIRI / 1024} KB`);
     }
     // Şerit YALNIZ seçili düğümün bağlarını çizer.
     const agac = gorunumHtml(graf, "agac");
