@@ -55,6 +55,21 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-22", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-24 ve 25) · PANEL BAYATLIĞI ONARIMI, 0.9.195 VE ARAÇ KÖPRÜSÜ PLANI.
+        Yol haritasının editör dışında değişen bir dosyada pencere yeniden yüklenene kadar eski Adım sayısını
+        göstermesi iki nedene bağlanmış ve onarılmıştır (BKM-DNT-A18, dba48af): kaydedilmemiş değişiklik
+        taşımayan açık belge artık diskten okunur ve dar tur odaktaki varlığın yanında değişen dosyaların
+        köklerini de denetler. Onarımı bir alt ajan yazmış, kontrolcü dört ölçümü bağımsız koşturmuş ve bir
+        mutasyonu ayrıca denemiştir. Onarım 0.9.195 olarak paketlenmiş (bebbe4c), Founder'ın düzenleyicisine
+        kurulmuş ve blok dalına gönderilmiştir; v0.9.194 sürüm etiketi değişmemiştir. İlk Windows müşteri
+        kurulumunda iki Sarmal kusuru ölçülüp hatırlatıcıya bağlanmıştır: eklentinin yanıt vermez bildirimleri
+        ile dar kapsamlı bayat panel (HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL) ve iskeletin boş ilanlı klasörlere
+        .gitkeep yazmaması (HTR-ISKELET-BOS-KLASOR-GITKEEP). Founder'ın hükmüyle Claude Code eklentisi
+        hatırlatıcısı açık depodan çıkarılmıştır (5267721). Founder 25 Ekim'de yapay zekâ araçlarının beceri,
+        ajan, kanca ve bellek dosyalarını Sarmal düğümleriyle eşleştiren bir araç köprüsüne hükmetmiş; sınır
+        kararıyla köprünün tesisatı FAZ-2026-KOPRU Fazında yedi Blok olarak bu depoya yazılmış ve KPR öneki
+        sicile eklenmiştir. İlk iş KPR-OLC-A01 biçim ölçümüdür.
+
         🧭 ARA DEVİR · OTURUM 116 (2026-10-22) · DOĞUŞ KANCALARININ İŞLETİM SİSTEMİNDEN BAĞIMSIZ KARŞILIĞI.
         Doğuş paketinin kurduğu iki kanca bugüne kadar yalnız kabuk betiği olarak yazılmıştı ve Windows
         üzerinde çalışmıyordu. Bir alt ajan iki kancanın Node karşılığını yazmıştır: doğuş kilidi
