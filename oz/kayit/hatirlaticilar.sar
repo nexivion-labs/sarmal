@@ -1494,3 +1494,73 @@ Hatırlatıcı(
   dönüşTetikleyici: "İskelet aracına ya da doğuş paketine bir sonraki dokunuşta; en geç bir Sarmal kökü başka bir makineye klonla taşınmadan önce",
   ne:               "2026-10-24 tarihinde bir Sarmal kökü başka bir makineye git ile klonlandığında proje denetimi yedi hata vermiştir; sebep, anadizinde ilan edilmiş ama içi boş klasörlerin klonda bulunmamasıdır. Git boş klasörü izlemez, dolayısıyla iskelet aracının açtığı ve henüz dosya almamış her ilanlı klasör klonda kaybolur ve disk mutabakatı onu kayıp-yapı olarak bildirir. Kontrolcü aynı gün durumu geçici bir dizinde, doğuş komutuyla doğan temiz bir köke boş bir raf ilan ederek yeniden üretmiştir: klonda kayıp-yapı doğmuş, klasöre boş bir .gitkeep dosyası konup işlendiğinde klonda klasör yerinde kalmış, kayıp-yapı kaybolmuş ve .gitkeep yeni bir uyarı doğurmamıştır. Onarım, iskelet aracının açtığı boş ilanlı klasöre bir .gitkeep yazması ve doğuş paketinin de aynı ilkeye uymasıdır; var olan köklerde boş ilanlı klasörleri bulup .gitkeep öneren bir gözlem de düşünülebilir. Kabul ölçütü olarak iskeletle açılıp işlenen bir kökün temiz bir klonunda kayıp-yapı doğmadığı ölçülür."
 )
+
+Hatırlatıcı(
+  kod:              HTR-PANEL-SAPMA-SEKMESI,
+  durum:            açık,
+  çapa:             gelecek,
+  öncelik:          p2,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Panelin sekme yapısına bir sonraki dokunuşta; en geç hatırlatıcı ve fikir değerlendirme oturumunda",
+  ne:               "Founder 2026-10-26 tarihinde Sarmal'ın denetim tanılarının VS Code'un genel Sorunlar panelinde öteki araçların bulgularıyla karışık durduğunu gözlemlemiş ve şu düzeni istemiştir: Sarmal panelinde Ray, Tren ve Makinist sekmelerinin yanına Sapma adlı yeni bir sekme açılır ve plan ile disk arasındaki sapmalar, yani bugün Sorunlar panelinde görünen denetim tanıları, orada gösterilir. Bugün Makinist sekmesinin altında duran Gözlemler ya Sapma sekmesinin altına alınır ya da kendi ayrı sekmesine taşınır; Founder'ın tercihi sapma ile gözlemlerin ayrı tutulmasıdır. Panel pencerenin altına alındığında bu sekmeler Ray, Tren ve Makinist ile yan yana dizilebilmelidir. Bu dosyanın başındaki tasarım notu hatırlatıcıların Sorunlar panelinde kasıtlı olarak bilgi iğnesi biçiminde göründüğünü yazar; yeni sekme bu kararı yeniden açtığı için uygulamadan önce hangi bulguların Sorunlar panelinde kalacağı Founder ile netleştirilir. Panelde Makinist yanına sekme ekleyen bir başka iş KPR-PNL-A01 Adımında yaşar; iki iş aynı sekme düzeni üzerinde birlikte tasarlanır."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TREN-CANLI-AJAN-EKRANI,
+  durum:            açık,
+  çapa:             gelecek,
+  öncelik:          p2,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Tren sekmesine ya da koşum izlerinin panele aktarılmasına bir sonraki dokunuşta",
+  ne:               "Founder 2026-10-26 tarihinde Tren sekmesinde ajanların bir liste olarak göründüğünü, bunun yanında ajanların o anda yaptığı işin canlı olarak izlenebildiği bir ekran görünümü istediğini bildirmiştir. Görünüm listeye ek olarak tasarlanır ve her ajan için üzerinde çalıştığı Adımı, son eylemini ve ilerlemesini anlık olarak akıtır; Founder ajanların ne yaptığını listeye bakarak değil, çalışmalarını izleyerek görebilmelidir. Fikir taahhütsüzdür; değerlendirme oturumunda plana alınıp alınmayacağına karar verilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-RAY-GIRINTI-CIZGILERI-SUREKLI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Panel ağaçlarının görünümüne ya da eklentinin varsayılan ayar katkılarına bir sonraki dokunuşta",
+  ne:               "Founder 2026-10-26 tarihinde Ray ağacındaki düğümleri birbirine bağlayan girinti çizgilerinin yalnız fare ağacın üzerine geldiğinde göründüğünü, fare ayrılınca kaybolduğunu gözlemlemiş ve çizgilerin her zaman görünmesini, fare üzerine geldiğinde ise hafifçe vurgulanmasını istemiştir. VS Code ağaçlarında bu davranışı workbench.tree.renderIndentGuides ayarı yönetir; varsayılan değeri yalnız üzerine gelindiğinde çizmektir ve always değeri çizgileri sürekli gösterir, etkin dalın çizgisi ise ayrı bir renkle vurgulanır. Eklentinin bu ayara varsayılan değer katkısı verip veremediği ölçülür; verebiliyorsa çözüm üründe yapılır, veremiyorsa kurulum rehberine ve çalışma alanı ayarına yazılır. Ayar bütün VS Code ağaçlarını etkilediği için kullanıcıya dayatılmadan önce bu etki de değerlendirilir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-SARMAL-AGIRLIK-ONCELIGI,
+  durum:            açık,
+  çapa:             gelecek,
+  öncelik:          p1,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Devam eden müşteri işleri kapandığında; her oturum başında öncelik sırası konuşulurken",
+  ne:               "Founder 2026-10-26 tarihinde, devam eden müşteri işleri tamamlandıktan sonra çalışmanın ağırlığının yeniden Sarmal'a verileceğine hükmetmiştir. Gerekçe, projenin yarım kalmış olması ve sürdürülmesi gerektiğidir. Bu hatırlatıcı müşteri işleri kapandığında öncelik sırasının Sarmal lehine değişmesini unutulmaz kılmak içindir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-HATIRLATICI-FIKIR-DEGERLENDIRME-OTURUMU,
+  durum:            açık,
+  çapa:             gelecek,
+  öncelik:          p1,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Sarmal'a ağırlık verilen ilk oturumda; en geç Makinist sekmesindeki hatırlatıcı ve gözlem sayısı yeniden artmadan önce",
+  ne:               "Founder 2026-10-26 tarihinde bütün bir oturumun yalnız hatırlatıcıların, gözlemlerin ve fikirlerin değerlendirilmesine ayrılacağını bildirmiştir; o gün Makinist sekmesi Sarmal projesinin kapsamında bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem, çalışma alanının çatı kapsamında ise yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir göstermektedir; değerlendirme çatının bütününü kapsar. Oturumda kayıtların her biri Founder ile tek tek ele alınır: gerçekten gerekli olanlar plana indirilip ilgili Faz, Blok ve Katmanlardaki yerlerine yerleştirilir, gereksiz olanlar silinir, tamamlanmış olanlar kapatılır. Hedef, Makinist panelinin yalnız canlı ve sahibi belli işleri gösteren temiz bir hâle gelmesidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PANEL-KAPSAM-SAYIMI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Panelin Makinist sayımlarına ya da kapsam seçimine bir sonraki dokunuşta; en geç hatırlatıcı ve fikir değerlendirme oturumunda",
+  ne:               "Founder 2026-10-26 tarihinde Makinist sekmesindeki sayıların bağlama göre büyük ölçüde değiştiğini gözlemlemiştir: Sarmal projesinin dosyası açıkken sekme bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem gösterip rozette kırk sekiz yazarken, çalışma alanının çatısındayken yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir gösterip rozette yüz yirmi dört yazmaktadır. Ölçüm, rozetin onay ve hatırlatıcı sayılarının toplamı olduğunu ve gözlemleri saymadığını göstermektedir. Panel hangi kapsamı gösterdiğini hiçbir yerde söylemediği için kullanıcı sayının tek bir projeye mi yoksa bütün çatıya mı ait olduğunu okuyamamaktadır. Doğru çalışma şudur: panel gösterdiği kapsamı açıkça yazar; çatı kapsamında her kategori proje proje kırılımıyla açılır ve toplam ile kırılım tutar; rozetin neyi saydığı görünür kılınır. Kabul ölçütü olarak aynı anda alınan bir çatı görünümündeki her kategori sayısının proje görünümlerindeki sayıların toplamına eşit olduğu ölçülür."
+)
+
+Hatırlatıcı(
+  kod:              HTR-ACIK-DEPO-SIZINTI-KALKANI,
+  durum:            açık,
+  çapa:             yasa,
+  öncelik:          p1,
+  tarih:            2026-10-26,
+  dönüşTetikleyici: "Hatırlatıcı ve fikir değerlendirme oturumunda; en geç açık depoya bir sonraki gönderimden önce",
+  ne:               "Founder 2026-10-26 tarihinde açık depo ile kapalı ürünün zaman zaman karıştırıldığını, açık depoya yazılmaması gereken kayıtların buraya yazılabildiğini gözlemlemiş ve iki deponun birleştirilmesini sormuştur. Değerlendirme sonucunda birleştirme önerilmemiştir, çünkü git bir deponun yalnız bir kısmını yayımlayamaz, bu depo herkese açıktır ve açılmış bir depo geri kapatılamaz; ayrık depolar sızıntının en kötü hâlinde bile tek bir cümleyle sınırlı kalmasını sağlar. Çare ayrımın güçlendirilmesidir. Bugün işleme kapısındaki yasak sözcük kancası kişi ve müşteri adlarını yakalamaktadır, fakat kapalı ürünün kod öneklerini ve kavram adlarını tanımamaktadır. Kapalı ürünün kod önekleri ile kavram adları kancanın depo dışında yaşayan yasak sözcük listesine eklenir; liste hiçbir koşulda bu depoya yazılmaz. Ayrıca bu depoya yazan her oturum kaydı yazmadan önce kaydın Sarmal aracının kendisiyle mi ilgili olduğunu sorar; değilse kayıt kapalı ürünün ya da laboratuvarın kendi kaydına gider. Kabul ölçütü olarak kapalı ürünün bir kod önekini taşıyan deneme işlemesinin kanca tarafından reddedildiği ölçülür."
+)
