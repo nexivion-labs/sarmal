@@ -847,7 +847,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A02,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-15,
@@ -1068,7 +1069,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A07,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-16,
@@ -1457,12 +1459,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-DOGUS-KILIDI-BELGE-METNI,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         BKM-DNT-A21,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-22,
   dönüşTetikleyici: "Doğuş kilidi kancasına bir sonraki dokunuşta",
-  ne:               "2026-10-22 tarihinde iki kez ölçülmüştür ki doğuş kilidi kancası, bir kabuk komutunun içinde yalnız metin olarak geçen ve kök adıyla biten anadizin dosya adı biçimindeki bir sözü yeni anadizin yazımı sanmış ve komutu reddetmiştir; komut bir dosyanın sonuna düz metin ekliyordu ve hiçbir anadizin yazmıyordu. İkisinde de metin önce geçici bir dosyaya yazılıp oradan eklenerek iş tamamlanmıştır. Kanca, yazım hedefini komut metninin tamamından değil yalnız gerçek hedef yolundan çıkarmalıdır; düzeltme sonrası gerçek bir anadizin yazımının yine reddedildiği ölçülmelidir."
+  ne:               "2026-10-22 tarihinde iki kez ölçülmüştür ki doğuş kilidi kancası, bir kabuk komutunun içinde yalnız metin olarak geçen ve kök adıyla biten anadizin dosya adı biçimindeki bir sözü yeni anadizin yazımı sanmış ve komutu reddetmiştir; komut bir dosyanın sonuna düz metin ekliyordu ve hiçbir anadizin yazmıyordu. İkisinde de metin önce geçici bir dosyaya yazılıp oradan eklenerek iş tamamlanmıştır. Kanca, yazım hedefini komut metninin tamamından değil yalnız gerçek hedef yolundan çıkarmalıdır; düzeltme sonrası gerçek bir anadizin yazımının yine reddedildiği ölçülmelidir. KAPANIŞ (2026-10-27): Kusur 2026-10-23 tarihli 2d61536 işlemesiyle giderilmiştir; kilit yazım hedefini artık yalnız tırnak dışındaki yönlendirmelerden ve dosya yazan komutların argümanlarından çıkarır. Metin olarak geçen adın geçtiğini ve gerçek bir anadizin yazımının yine reddedildiğini dogus-kancalari.test.ts ölçer; iş BKM-DNT-A21 ile kayda alınmıştır."
 )
 
 Hatırlatıcı(
@@ -1477,7 +1480,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A14,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-24,
@@ -1497,7 +1501,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-SAPMA-SEKMESI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A09,
   çapa:             gelecek,
   öncelik:          p2,
   tarih:            2026-10-26,
@@ -1507,17 +1512,19 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-TREN-CANLI-AJAN-EKRANI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A13,
   çapa:             gelecek,
   öncelik:          p2,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Tren sekmesine ya da koşum izlerinin panele aktarılmasına bir sonraki dokunuşta",
-  ne:               "Founder 2026-10-26 tarihinde Tren sekmesinde ajanların bir liste olarak göründüğünü, bunun yanında ajanların o anda yaptığı işin canlı olarak izlenebildiği bir ekran görünümü istediğini bildirmiştir. Görünüm listeye ek olarak tasarlanır ve her ajan için üzerinde çalıştığı Adımı, son eylemini ve ilerlemesini anlık olarak akıtır; Founder ajanların ne yaptığını listeye bakarak değil, çalışmalarını izleyerek görebilmelidir. Fikir taahhütsüzdür; değerlendirme oturumunda plana alınıp alınmayacağına karar verilir."
+  ne:               "Founder 2026-10-26 tarihinde Tren sekmesinde ajanların bir liste olarak göründüğünü, bunun yanında ajanların o anda yaptığı işin canlı olarak izlenebildiği bir ekran görünümü istediğini bildirmiştir. Görünüm listeye ek olarak tasarlanır ve her ajan için üzerinde çalıştığı Adımı, son eylemini ve ilerlemesini anlık olarak akıtır; Founder ajanların ne yaptığını listeye bakarak değil, çalışmalarını izleyerek görebilmelidir. Fikir taahhütsüzdür; değerlendirme oturumunda plana alınıp alınmayacağına karar verilir. KARAR (2026-10-27): Founder canlı ajan şemasının ve mesaj akışının kapalı kardeş eklentide yapılmasına hükmetmiştir (OZK-13). Açık eklentideki karşılığı, kardeş eklentinin Tren sekmesine takılacağı yuvadır (PNL-A13); bu kayıt o yuvanın teslimiyle kapanır ve canlı görünümün kendisi kapalı tarafın planında yürür."
 )
 
 Hatırlatıcı(
   kod:              HTR-RAY-GIRINTI-CIZGILERI-SUREKLI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A04,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-26,
@@ -1547,7 +1554,8 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-KAPSAM-SAYIMI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A08,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-26,

@@ -223,7 +223,7 @@ Faz( kod: FAZ-2026-KOPRU, ad: "Araç Köprüsü Mevsimi", hedefTarih: "2026-12",
       AltKatman( kod: ALT-KPR-PNL, departman: kodlama, ad: "Envanter Görünümü",
         ne: "☘️ Sekme, ağaç ve eylemler" ) {
 
-        Adım( kod: KPR-PNL-A01, ad: "Otomasyon Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ KPR-OKU-A01 ],
+        Adım( kod: KPR-PNL-A01, ad: "Otomasyon Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ KPR-OKU-A01, PNL-A13 ],
           ne: "🖥️ Panelin Ray, Tren ve Makinist sekmelerinin yanına envanteri gösteren bir otomasyon sekmesinin eklenmesi" ) {
           görev: [
             "Panelin Ray, Tren ve Makinist sekmelerinin yanına bir otomasyon sekmesi ekle.",

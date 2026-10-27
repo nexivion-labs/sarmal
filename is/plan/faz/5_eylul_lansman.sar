@@ -33,7 +33,7 @@
 //   bir Faza taşımak yerine vadeyi uzatmayı seçmiştir.
 // ────────────────────────────────────────────────────────────────────────────
 
-Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
+Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-11-30",
      ne: "🌀 Eylül dönemi — v1'in iki bitiş olayı bu mevsimde gerçekleşir: eklenti mağazaya yüklenir ve açık depo canlı yayında halka açılır. Kritik yol küratörlü aktarımın kapanışından mağaza yüklemesine, oradan taze klon provasına ve canlı açılışa uzanır; Ağustos'tan devrolan on bir gövdenin açık işi bu halkada olgunlaşır" ) {
 
   // Ağustos'tan devrolan gövdeler — `çağır` ile bağlananlar (2026-08-29 devri).
@@ -6510,6 +6510,349 @@ sessizce körleşmez.
           koşu:  Koşum( kod: KSM-MGZ-A12, tarih: 2026-10-16, mühür: COMPLETED,
             kanıt: "işlemeler 23164c0 ve 18edce1 · çekirdek 1784/1784, eklenti 957/957, tsc ve eslint temiz, depo denetimi 0 hata 0 uyarı · entegrasyon süiti tabanla aynı 40 geçen ve 15 düşen, düşen başlıklar birebir aynı ve MGZ-A01 dalında onarılmıştır · bağımsız inceleme: kırık dosyalı fikstürde panel sayacı 11'den 0'a düşüyordu, atlama kipinde 7'de kalıyor ve dosya onarılınca 11'e dönüyor; işaret durum çubuğuna ve Performans kanalına ulaşıyor; çekirdekteki atlama dalı sökülünce üç, işaret koşulu sökülünce iki nöbet kırmızıya döndü; komut satırı çıktısı ve çıkış kodu tabanla aynı; MGZ-A04 bildirimi değişmedi · açık kalan iki gözlem: durum çubuğu metni üç sebep için ortak olduğundan eksik kalan tur için de tam denetim koşmadı diyor ve doğru cümle ipucunda duruyor; atlama kipinde kırık dosyanın kodlarına atıf veren satırlar kırık atıf olarak görünüyor ve ipucu bunu söylüyor",
             ne:    "Tek bir kırık .sar dosyası artık bir kökün tam denetimini sessizce susturmuyor: eklenti kırık dosyayı atlayıp turu tamamlıyor, öteki dosyaların çapraz tanılarını koruyor ve turun eksik kaldığını dosyanın adı ve satırıyla durum çubuğunda söylüyor. Komut satırının davranışı ve MGZ-A04'ün çöküş bildirimi değişmedi." )
+        }
+      }
+    }
+  }
+
+  -->|
+  # 🧭 Panelin Yeniden Kurulması
+
+  ## Amaç
+  🎯 Sarmal panelini Founder'ın 2026-10-27 tarihli hükümlerine göre yeniden kurmak.
+  0.9.194 sürümüyle gelen tek panel, plana inmeden yapılmış ve Founder'ın çalışma
+  düzenini bozmuştur: onay kartı dosyanın yerinde açılmakta, Mini Graf tıklaması
+  dosyaya gitmemekte, ağaç çizgileri yalnız fare üzerindeyken görünmekte, editörün
+  renkli girinti bantları kaybolmuş ve açılış yavaşlamıştır (BKM-DNT-A20).
+
+  ## Kapsam
+  📦 Kapsar: Founder'ın çalışma düzenine göre geniş ve alçak bir alt panel; beş sekme
+  (Ray, Tren, Makinist, Gözlemler, Ayarlar); dosyanın her zaman editörde açılması ve
+  onay kararının panelin içinde verilmesi; Ray ve Makinist yüzlerinin onarımı; Tren
+  sekmesinin açık yüzü ile kapalı kardeş eklentinin takılacağı yuva; açılış ve tur
+  hızı; görsel ve gerçek VS Code kabul kapısı. Kapsamaz: canlı ajan şeması, ajanlar
+  arası mesaj akışı ve geliştirici mesajlaşması; bunlar kapalı kardeş eklentinin
+  işidir ve bu depoya yazılmaz (OZK-13).
+
+  ## Sonuç
+  ✅ Kabul: Founder'ın 2026-10-27 tarihinde bildirdiği her şikâyet kendi gözüyle
+  kapanmıştır; başlangıç ve denetim turları OZK-12 eşiklerinin içindedir; gerçek
+  VS Code süiti üç teslim basamağının her birinde yeşildir; depo denetimi sıfır hata
+  ve sıfır uyarı verir.
+  |<--
+
+  Blok( kod: BLK-PNL-YENIDEN-KURULUM, ad: "Panelin Yeniden Kurulması", uygular: ORK-7,
+    ne: "🧭 Sarmal panelinin Founder'ın 2026-10-27 tarihli hükümlerine göre beş sekmeli, dosyayı editörde açan ve kararı panelde veren biçimde yeniden kurulması; teslim üç basamakta yapılır (0.9.196, 0.9.197, 0.9.198)" ) {
+
+    Katman( kod: KAT-PNL-ZEMIN, takım: TAKIM-EKLENTI, ad: "Panel Zemini",
+      ne: "🧱 Hükümlerin kayda geçtiği, planın bağlandığı ve kabul kapısının kurulduğu zemin" ) {
+
+      AltKatman( kod: ALT-PNL-ZEMIN-PLANLAMA, ad: "Hükümler ve Plan Bağları", departman: planlama,
+        ne: "🗺️ Founder hükümlerinin karara, Blokun plana ve hatırlatıcıların Adımlara bağlandığı dal" ) {
+
+        Adım( kod: PNL-A01, ad: "Hükümlerin Karara ve Plana İndirilmesi", durum: tamamlandı, öncelik: p0, bağımlı: [],
+          referans: [ OZK-03, OZK-09, OZK-12, OZK-13, BKM-DNT-A20 ],
+          üretir: [ Meyve( kod: MYV-PNL-A01, tür: Karar, dosya: "is/plan/ozerk_kararlar.sar",
+              ne: "OZK-13 panel düzeni hükmü ve OZK-03'ün revizyonu" ) ],
+          ne: "📜 Founder'ın 2026-10-21 tarihli çizimi ile 2026-10-27 tarihli hükümlerinin kayda geçirilmesi ve bu Blokun plana bağlanması." ) {
+          görev: [
+            "Founder'ın panel hükümlerini OZK-13 kararı olarak yaz ve OZK-03'ü OZK-13'ün halefliğiyle revize et; OZK-09 ile OZK-12 olduğu gibi korunur.",
+            "PNL önekini anadizinin önek siciline ekle ve Lansman Mevsiminin vadesini 2026-11-30 olarak güncelle.",
+            "Panelle ilgili açık hatırlatıcıları onları karşılayan Adımlara bağla ve kararlaştı durumuna getir.",
+            "Köprü Fazındaki otomasyon sekmesi Adımını (KPR-PNL-A01) bu Blokun kardeş eklenti yuvasına bağımlı yaz."
+          ]
+          kabul: [
+            "OZK-13 kayıttadır, OZK-03 revize durumundadır ve halefi OZK-13'tür.",
+            "Panel hatırlatıcılarının her biri bir Adıma bağlıdır ya da neden açık kaldığı yazılıdır.",
+            "Depo denetimi sıfır hata ve sıfır uyarı verir."
+          ]
+          sınır: "Bu Adım kaynak koda dokunmaz."
+          koşu: Koşum( kod: KSM-PNL-A01, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "OZK-13 kilitli, OZK-03 revize ve halefi OZK-13 · PNL öneki sicilde · Lansman Mevsiminin vadesi 2026-11-30 · yedi hatırlatıcı kararlaştı (A02, A04, A07, A08, A09, A13, A14) ve HTR-DOGUS-KILIDI-BELGE-METNI tamamlandı · KPR-PNL-A01 PNL-A13'e bağımlı · depo denetimi drift yok", ne: "Founder'ın hükümleri OZK-13 kararına indi ve Blok plana bağlandı. Panelle ilgili iki kayıt bilinçle açık bırakıldı: HTR-ONAYLAR-DIS-ONAY-KAYDI, Founder'ın Makinist sekmesine sonra ekleyeceğini bildirdiği konulara aittir; HTR-DOGUS-WINDOWS-KANCALARI ise kancaların gerçek bir Windows makinesinde doğrulanmasını beklemektedir. Kaynak koda dokunulmadı." )
+        }
+      }
+
+      AltKatman( kod: ALT-PNL-ZEMIN-SINAMA, ad: "Kabul Düzeneği", departman: sınama,
+        ne: "🧪 Panelin görsel ve gerçek VS Code kapısının kurulduğu dal" ) {
+
+        Adım( kod: PNL-A02, ad: "Görsel ve Gerçek VS Code Kapısının Kurulması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A01 ],
+          referans: [ BKM-DNT-A14, HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI ],
+          ne: "🔭 Panelin her basamakta Founder'ın gözüne gelmeden önce ölçüldüğü kapının kurulması. Tek panel gerçek VS Code süiti koşulmadan yayımlanmıştı ve görsel kontrol aracı yanlış davranışı, yani onay kartının editörü örtmesini, nöbetle sabitliyordu." ) {
+          görev: [
+            "Görsel kontrol aracına Founder'ın alt paneline karşılık gelen 1400×400 ölçüsünü ekle; 300 ve 460 ölçüleri korunur.",
+            "Yeni nöbetleri yaz: ağaç çizgisi fare üzerine gelmeden görünür; Mini Grafın üç görünümünde de gerçek tıklama dosyaya gider; onay kartı editörü örtmez.",
+            "Eski davranışı sabitleyen iki nöbeti (onay-paneli.test.ts ve gorsel-kontrol.mjs içindeki onay kartı sütunu) OZK-13 hükmüne çevir.",
+            "Sınama klasörünü tip denetimi kapısına al ve oradaki önceden var olan tip hatalarını gider.",
+            "Gerçek VS Code süitini (npm run test:vscode) koştur ve tabanı kayda geçir."
+          ]
+          kabul: [
+            "Yeni nöbetler bugünkü panelde kırmızıdır ve hangi şikâyeti ölçtükleri adlarında yazılıdır.",
+            "Sınama klasörü tip denetiminden temiz geçer.",
+            "Gerçek VS Code süitinin tabanı koşu kaydındadır."
+          ]
+          sınır: "Bu Adım panelin davranışını değiştirmez; yalnız ölçüm kapısını kurar."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-RAY, takım: TAKIM-EKLENTI, ad: "Ray Sekmesi",
+      ne: "🛤️ Yol Haritası, Mini Graf ve editör girinti boyasının yüzü" ) {
+
+      AltKatman( kod: ALT-PNL-RAY-KODLAMA, ad: "Ray Yüzü", departman: kodlama,
+        ne: "🔧 Ray sekmesinin yerleşiminin, çizgilerinin ve tıklamalarının onarıldığı dal" ) {
+
+        Adım( kod: PNL-A03, ad: "Sekme Şeridi, Başlıklar ve Geniş Yerleşim", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+          referans: [ OZK-13 ],
+          ne: "📐 Panelin Founder'ın çalışma düzenine oturtulması. Founder paneli editörün altında, sol yana yaslı, geniş ve alçak bir alanda kullanır; terminal sağ sütundadır. Bugünkü yerleşim dar bir sütuna göre kurulmuştur ve pencere boyunun yüzde yüzüne dayanan kural paneli küçük bir kutuya sıkıştırabilmektedir." ) {
+          görev: [
+            "Sekme şeridini küçült: yazı 11 piksel, şerit 26 piksel; sekmeler Ray, Tren, Makinist, Gözlemler ve Ayarlar sırasıyla durur.",
+            "Yol Haritası ve Mini Graf başlıklarını çok küçük puntoya (10 piksel) indir; Yol Haritası açık başlar.",
+            "Pencere boyuna dayanan yerleşimi kaldır; panel her yükseklikte alanı doldurur ve hiçbir başlık küçük bir kutunun dibinde kalmaz.",
+            "İçeriği geniş ve alçak alana göre diz; geniş panelde bölümler yan yana yayılır."
+          ]
+          kabul: [
+            "Görsel kontrolün 1400×400 ölçüsünde boş kutu ya da sıkışma yoktur ve sekme şeridi yazısı 11 pikseldir.",
+            "Founder yerleşimi kendi penceresinde gözle onaylamıştır."
+          ]
+          sınır: "Sekmelerin içerikleri bu Adımın işi değildir; Gözlemler ile Ayarlar bu Adımda yalnız boş bölüm olarak doğar."
+        }
+
+        Adım( kod: PNL-A04, ad: "Sürekli Ağaç Çizgileri ve Üzerine Gelince Renk", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A03 ],
+          referans: [ HTR-RAY-GIRINTI-CIZGILERI-SUREKLI ],
+          ne: "🌿 Ağaç çizgilerinin hep görünmesi. Founder 2026-10-27 tarihinde çizgilerin ince olmasına, renginin zemindeki mor ton olmasına, fare bir satırın üzerine gelince o dalın çizgisinin ve gri yazılar ile Faz, Blok ve öteki ikonların renklenmesine hükmetmiştir. Bugün çizgiler yalnız ağacın üzerine gelindiğinde görünmektedir." ) {
+          görev: [
+            "Ağaç çizgisini her zaman çiz; çizgi incedir ve rengi tül derinliğin mor tonudur.",
+            "Fare bir satırın üzerine gelince o dalın çizgisini, satırın gri açıklama yazısını ve ikonunu renklendir."
+          ]
+          kabul: [
+            "Görsel kontrolde çizgiler fare üzerine gelmeden görünür; üzerine gelinen dalın çizgisi, yazısı ve ikonu renklenir.",
+            "Founder görünümü gözle onaylamıştır."
+          ]
+          sınır: "Satırların içeriği ve sırası değişmez."
+        }
+
+        Adım( kod: PNL-A05, ad: "Mini Graf Tıklamasının Onarılması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
+          referans: [ BKM-DNT-A19 ],
+          ne: "🖱️ Mini Graf düğümüne tıklayınca editörün ilgili satıra gitmesi. Founder 2026-10-27 tarihinde bu davranışın bozulduğunu bildirmiştir; ölçüm Klasik görünümdeki SVG bağının webview betiğinin aradığı büyük harfli öğe adıyla eşleşmediğini göstermiştir. Ayrıca her satır tıklaması Mini Grafı baştan hesaplatmaktadır." ) {
+          görev: [
+            "Üç görünümde (Ağaç, İlerleme, Klasik) düğüm tıklamasını tek yoldan dosyaya götür; SVG bağı da yakalanır.",
+            "Satır tıklamasının Mini Grafı baştan hesaplatmasını kaldır; yalnız seçim değişir."
+          ]
+          kabul: [
+            "Gerçek tıklama nöbeti üç görünümde de dosyanın doğru satırını açar.",
+            "Bir satır tıklaması Mini Grafı yeniden üretmez; bunu bir nöbet ölçer."
+          ]
+          sınır: "Görünümlerin tasarımı değişmez."
+        }
+
+        Adım( kod: PNL-A06, ad: "Editör Girinti Bantlarının Varsayılana Dönmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A01 ],
+          ne: "🌈 Editördeki renkli girinti bantlarının yeniden varsayılan olması. 0.9.194 sürümünde varsayılan tül derinliğe çevrilmiş ve Founder'ın alıştığı yan yana renkli bantlar kaybolmuştur; Founder 2026-10-27 tarihinde eski görünümü istemiştir." ) {
+          görev: [
+            "sarmal.girintiRenkleri ayarının varsayılanını açık yap; tül derinlik ayardan seçilebilir kalır."
+          ]
+          kabul: [
+            "Yeni kurulumda editör renkli bantlarla açılır ve ayar kapatılınca tül derinliğe döner; ikisini bir nöbet ölçer."
+          ]
+          sınır: "Bantların renkleri ve çizim biçimi 0.9.193'teki gibidir; yeni renk icat edilmez."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-MAKINIST, takım: TAKIM-EKLENTI, ad: "Makinist Sekmesi ve Onaylar",
+      ne: "🧑‍✈️ Onaylar, Hatırlatıcılar ve Fikirlerin yüzü" ) {
+
+      AltKatman( kod: ALT-PNL-MAK-KODLAMA, ad: "Makinist Yüzü", departman: kodlama,
+        ne: "🔧 Onay kararının panele döndüğü ve sayıların kapsamını söylediği dal" ) {
+
+        Adım( kod: PNL-A07, ad: "Onay Kararının Panelin İçine Dönmesi", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+          referans: [ OZK-09, OZK-13, VIT-POSTA-A06, HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR ],
+          ne: "✅ Founder'ın 2026-08-10 tarihinde gözle onayladığı düzene dönüş. Onaya tıklayınca dosya editörde Adımın satırında açılır ve odak panelde kalır; gerekçe kutusu ile onaylama, şerhle onaylama ve reddetme eylemleri satırın altında, panelin içinde belirir. Bugün kart editörün etkin sütununda açılıp odağı almakta ve dosyanın üstünü örtmektedir." ) {
+          görev: [
+            "Kartın editör sütununda açılmasını kaldır; karar satırın altında panelin içinde verilir.",
+            "Dosyayı Adımın satırında açan yolu ve odağın panelde kalmasını koru.",
+            "Onay kuyruğunun doğrulanmamış durumdaki Adımları da görmesini sağla."
+          ]
+          kabul: [
+            "Onaya tıklayınca dosya editörde doğru satırda açıktır, kart editörü örtmez ve odak paneldedir; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
+            "Doğrulanmamış durumdaki bir Adımın kapısı kuyrukta görünür.",
+            "Founder davranışı kendi penceresinde onaylamıştır."
+          ]
+          sınır: "Dış sistemlerden gelen onay kayıtlarının biçimi bu Adımın işi değildir."
+        }
+
+        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
+          referans: [ HTR-PANEL-KAPSAM-SAYIMI ],
+          ne: "🔢 Rozetin ve durum çubuğunun hangi kapsamı saydığını söylemesi. Aynı panel açık dosyaya göre çatının ya da tek projenin sayılarını göstermekte ve bunu söylememektedir." ) {
+          görev: [
+            "Rozet ve durum çubuğu sayının kapsamını adıyla yazar: çatı ya da projenin adı.",
+            "Çatı sayısının üzerine gelince sayı proje proje dökülür."
+          ]
+          kabul: [
+            "Aynı çatıda farklı dosyalar açıkken gösterilen her sayı kapsamını adıyla taşır; bunu bir nöbet ölçer."
+          ]
+          sınır: "Sayımın kuralı değişmez; yalnız görünürlüğü değişir."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-GOZLEM, takım: TAKIM-EKLENTI, ad: "Gözlemler Sekmesi",
+      ne: "👁️ Gözlemlerin ve Sarmal tanılarının kendi sekmesi" ) {
+
+      AltKatman( kod: ALT-PNL-GOZ-KODLAMA, ad: "Gözlemler Yüzü", departman: kodlama,
+        ne: "🔧 Gözlemlerin Makinist'ten taşındığı ve Sapmalar bölümünün kurulduğu dal" ) {
+
+        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A15 ],
+          referans: [ HTR-PANEL-SAPMA-SEKMESI, OZK-13 ],
+          ne: "🧭 Gözlemlerin Makinist'ten kendi sekmesine taşınması ve Sarmal'ın denetim tanılarının aynı sekmede ayrı bir Sapmalar bölümünde gösterilmesi. Tanılar bugün VS Code'un genel Sorunlar panelinde öteki araçların bulgularına karışmaktadır." ) {
+          görev: [
+            "Gözlemler grubunu Makinist'ten çıkar ve Gözlemler sekmesine taşı.",
+            "Sarmal tanılarını aynı sekmede Sapmalar bölümünde göster; her satır tanının yerine gider."
+          ]
+          kabul: [
+            "Gözlemler ile Sapmalar ayrı bölümlerdir ve her satır dosyanın doğru yerini açar.",
+            "Founder sekmeyi gözle onaylamıştır."
+          ]
+          sınır: "Tanıların üretimi değişmez; Sorunlar paneli de beslenmeye devam eder."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-AYAR, takım: TAKIM-EKLENTI, ad: "Ayarlar Sekmesi",
+      ne: "⚙️ Eklenti ayarlarının panel içinden değiştirildiği sekme" ) {
+
+      AltKatman( kod: ALT-PNL-AYAR-KODLAMA, ad: "Ayarlar Yüzü", departman: kodlama,
+        ne: "🔧 Ayar düğmelerinin kurulduğu dal" ) {
+
+        Adım( kod: PNL-A10, ad: "Panel İçinden Ayarlar", durum: beklemede, öncelik: p2, onayBekler: founder, bağımlı: [ PNL-A15 ],
+          ne: "⚙️ Eklenti ayarlarının panelin Ayarlar sekmesinden değiştirilmesi. Sekmenin içeriği ve sırası Founder tarafından ayrıca bildirilecektir." ) {
+          görev: [
+            "Founder'ın bildireceği ayarları sırasıyla düğme olarak göster; değişiklik anında uygulanır."
+          ]
+          kabul: [
+            "Her düğme kendi ayarını değiştirir ve değişiklik pencere yeniden yüklenmeden görünür; bunu bir nöbet ölçer.",
+            "Founder sekmeyi gözle onaylamıştır."
+          ]
+          sınır: "Founder içeriği bildirmeden bu Adım geliştirmeye alınmaz."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-TREN, takım: TAKIM-EKLENTI, ad: "Tren Sekmesinin Açık Yüzü",
+      ne: "🚆 Ajan profillerinin, geliştirmedeki işin zincirinin ve kardeş eklenti yuvasının açık yüzü" ) {
+
+      AltKatman( kod: ALT-PNL-TREN-KODLAMA, ad: "Tren Yüzü", departman: kodlama,
+        ne: "🔧 Planda ilan edilmiş ajanların ve işin zincirinin gösterildiği dal" ) {
+
+        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A16 ],
+          ne: "🪪 Planda ilan edilmiş her ajanın profil kartı. Bugün Tren ajanları düz bir liste olarak yalnız kodları ve türleriyle göstermektedir; Founder 2026-10-27 tarihinde ajanların görev, yetki, yetenek, beceri ve bellekleriyle görünmesine hükmetmiştir." ) {
+          görev: [
+            "Ajanları rozetli kutular olarak göster; yöneticiler üstte, uzmanlar altta durur ve yönetir bağları çizilir.",
+            "Ajana tıklayınca kartında uzmanlık, yetki, bellek tercihi, ne ve uygular alanlarını; Beceri, Yetenek, Bellek, Kanca ve Tetikleyici alt düğümlerini sayılarıyla göster; her satır tanımına gider."
+          ]
+          kabul: [
+            "Kartın her alanı .sar kaynağından okunur ve tanımına gider; bunu bir nöbet ölçer.",
+            "Founder kartı gözle onaylamıştır."
+          ]
+          sınır: "Şema değişmez; yalnız var olan alanlar ve alt düğümler gösterilir. Canlı oturum bilgisi bu Adımın işi değildir."
+        }
+
+        Adım( kod: PNL-A12, ad: "Geliştirmedeki İşin Zinciri", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
+          ne: "⛓️ Geliştirmedeki her Adım için Adımın, atanan ajanın, Katmanın teknolojisinin ya da takımının ve AltKatmanın departmanının tek satırda gösterilmesi." ) {
+          görev: [
+            "Geliştirmedeki Adımın kapsayan zincirini çöz: Katmanın teknolojisi ya da takımı ve AltKatmanın departmanı.",
+            "Adıma bir Görev ile atanmış ajan varsa onu da göster; yoksa atanmamış diye yaz."
+          ]
+          kabul: [
+            "Her satır dört parçayı da kaynaktan doğru okur; bunu bir nöbet ölçer."
+          ]
+          sınır: "Atama yapılmaz; yalnız var olan atama gösterilir."
+        }
+
+        Adım( kod: PNL-A13, ad: "Kardeş Eklenti Yuvası", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
+          referans: [ HTR-TREN-CANLI-AJAN-EKRANI, OZK-13 ],
+          ne: "🔌 Kapalı kardeş eklentinin Tren sekmesinin içine kendi canlı görünümünü takabileceği belgelenmiş bir yuva. Founder 2026-10-27 tarihinde canlı ajan şemasının ve mesajlaşmanın kapalı kardeş eklentide yaşamasına hükmetmiştir; açık eklenti yalnız yuvayı sunar." ) {
+          görev: [
+            "Yuvanın sözleşmesini yaz ve belgele: kardeş eklenti kendini kaydeder, Tren sekmesinde Canlı görünümü açılır, kardeş yoksa sekme açık yüzüyle çalışır.",
+            "Sözleşmeyi sahte bir kardeş eklentiyle gerçek VS Code süitinde sına."
+          ]
+          kabul: [
+            "Sahte kardeş eklenti kaydolunca Canlı görünümü açılır; kaydolmazsa sekme hatasız çalışır.",
+            "Açık depoda kapalı tarafa ait hiçbir kod, ad ya da protokol yoktur."
+          ]
+          sınır: "Canlı şemanın, mesaj akışının ve geliştirici mesajlaşmasının kendisi bu depoya yazılmaz."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-HIZ, takım: [ TAKIM-EKLENTI, TAKIM-CEKIRDEK ], ad: "Panel Hızı",
+      ne: "⚡ Açılışın ve denetim turunun süresi" ) {
+
+      AltKatman( kod: ALT-PNL-HIZ-KODLAMA, ad: "Tur Süresi", departman: kodlama,
+        ne: "🔧 Okumanın ve ayrıştırmanın hızlandırıldığı dal" ) {
+
+        Adım( kod: PNL-A14, ad: "Açılış ve Tur Süresinin Düşürülmesi", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+          referans: [ OZK-12, HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL, EKL-F6-A09, BLK-PRF-PANELKIPI, BLK-PRF-ISCI ],
+          ne: "🐢 Founder 2026-10-27 tarihinde eklentinin açılışının ve tepkisinin yavaşladığını bildirmiştir. Aynı gün ölçülen başlangıç turu çatıda yirmi iki saniye sürmüş ve 357 dosyayı, yaklaşık 7,5 MB'ı tek tek sırayla diskten okumuştur; her belge ayrıca ikinci kez ayrıştırılmaktadır." ) {
+          görev: [
+            "Performans kanalında tur süresini okuma, ayrıştırma, denetim ve yayın aşamalarına böl ve tabanı kayda geçir.",
+            "Diskteki dosyaları sırayla değil paralel oku.",
+            "Tanı için yapılan ikinci ayrıştırmayı kaldır; turun ağacını yeniden kullan.",
+            "Ölçümden sonra denetim turu OZK-12 eşiğini hâlâ aşıyorsa sonucu Founder'a sun; ertelenmiş işçi Blokunun mührü yalnız Founder'ın sözüyle kalkar."
+          ]
+          kabul: [
+            "Önce ve sonra ölçümleri aynı çatıda alınmış ve koşu kaydına yazılmıştır.",
+            "Denetim turları ve tanılar ölçümden önceki hâliyle birebir aynıdır; bunu bir nöbet ölçer.",
+            "Founder açılışı kendi penceresinde onaylamıştır."
+          ]
+          sınır: "Denetim kuralları değişmez. İşçi iş parçacığına taşıma bu Adımın işi değildir."
+        }
+      }
+    }
+
+    Katman( kod: KAT-PNL-TESLIM, takım: TAKIM-EKLENTI, ad: "Sürüm ve Teslim",
+      ne: "📦 Üç teslim basamağının paketlendiği ve Founder'ın gözünden geçtiği katman" ) {
+
+      AltKatman( kod: ALT-PNL-TESLIM-INCELEME, ad: "Basamak Teslimleri", departman: inceleme,
+        ne: "🔍 Her basamağın kapıdan ve Founder'ın gözünden geçtiği dal" ) {
+
+        Adım( kod: PNL-A15, ad: "Birinci Basamağın Teslimi", durum: beklemede, öncelik: p0, onayBekler: founder,
+          bağımlı: [ PNL-A03, PNL-A04, PNL-A05, PNL-A06, PNL-A07, PNL-A14 ],
+          ne: "📦 0.9.196 sürümü: zemin, Ray, Onaylar ve hız." ) {
+          görev: [
+            "Sürümü, kilit dosyasını ve değişiklik günlüğünü birlikte 0.9.196'ya ilerlet.",
+            "Bütün süitleri, görsel kontrolü ve gerçek VS Code süitini koştur; paketi yalnız üret.",
+            "Görsel kontrolün ekran görüntülerini Founder'a göster; onayından sonra paketi kur ve Founder'ın kontrol listesini yürümesini bekle."
+          ]
+          kabul: [
+            "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir.",
+            "Founder birinci basamağı kendi penceresinde onaylamıştır."
+          ]
+          sınır: "0.9.195 paketi geri dönüş için diskte saklanır; Founder beğenmezse bu basamağın işlemeleri geri alınır."
+        }
+
+        Adım( kod: PNL-A16, ad: "İkinci Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
+          bağımlı: [ PNL-A08, PNL-A09, PNL-A10 ],
+          ne: "📦 0.9.197 sürümü: Makinist sayıları, Gözlemler ve Ayarlar." ) {
+          görev: [
+            "Birinci basamağın teslim yolunu 0.9.197 için yinele."
+          ]
+          kabul: [
+            "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir.",
+            "Founder ikinci basamağı kendi penceresinde onaylamıştır."
+          ]
+          sınır: "Birinci basamağın davranışı değişmez."
+        }
+
+        Adım( kod: PNL-A17, ad: "Üçüncü Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
+          bağımlı: [ PNL-A11, PNL-A12, PNL-A13 ],
+          ne: "📦 0.9.198 sürümü: Tren sekmesinin açık yüzü ve kardeş eklenti yuvası." ) {
+          görev: [
+            "Birinci basamağın teslim yolunu 0.9.198 için yinele; dalın ana gövdeye alınması için PR'ı Founder'a sun."
+          ]
+          kabul: [
+            "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir.",
+            "Founder üçüncü basamağı onaylamış ve birleştirme sözünü vermiştir."
+          ]
+          sınır: "Birleştirme yalnız Founder'ın sözüyle yapılır."
         }
       }
     }
