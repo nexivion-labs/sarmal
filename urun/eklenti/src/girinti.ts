@@ -16,6 +16,7 @@
 
 import * as vscode from "vscode";
 import { inceStilMi } from "./dallar.ts";
+import { tulRengi } from "./tul-rengi.ts";
 
 /** GERÇEK GÖKKUŞAĞI (Founder 2026-07-18: "gerçek gökkuşağı renkleri gibi olsa,
  *  hafiften glow'lu") — yedi seviye doğal tayf sırasında (kırmızı → mor); her
@@ -51,8 +52,9 @@ const TUL_ALFA = [0.035, 0.06, 0.085, 0.11, 0.13, 0.15, 0.17];
 const tulTurleri: vscode.TextEditorDecorationType[] = TUL_ALFA.map((a) =>
   vscode.window.createTextEditorDecorationType({
     // Çizgiyi dallar.ts'in ağaç glifleri verir; burada yalnız tül zemini boyanır.
-    backgroundColor: `rgba(199,146,234,${a})`,
-    light: { backgroundColor: `rgba(124,77,180,${a * 0.8})` },
+    // Mor ton tek kaynaktandır (tul-rengi.ts); panel ağaçlarının çizgileri de oradan okur.
+    backgroundColor: tulRengi("koyu", a),
+    light: { backgroundColor: tulRengi("acik", a * 0.8) },
   }),
 );
 

@@ -23,7 +23,9 @@ import {
 import { SEKME_SIMGE_KAYNAKLARI } from "../src/simge-cizelgesi.ts";
 import { bosHtml } from "../src/minigraf-cekirdek.ts";
 import { seciciHtml } from "../src/minigraf-gorunum.ts";
-import { DAR_SERIT_PX, GENIS_PANEL_PX, PANEL_BETIGI, PANEL_STILI } from "../src/panel-betik.ts";
+import { CIZGI_ALFA, DAR_SERIT_PX, GENIS_PANEL_PX, PANEL_BETIGI, PANEL_STILI } from "../src/panel-betik.ts";
+import { TUL_MORU, tulRengi } from "../src/tul-rengi.ts";
+import { readdirSync } from "node:fs";
 import { PANEL_METINLERI, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
 const KOK = fileURLToPath(new URL("..", import.meta.url));
@@ -351,15 +353,68 @@ test("satır eylemleri: Adım koni kartı alır; ateşlemiş hatırlatıcı önc
   for (const c of [undefined, "", "sarmalOnayKapisi", "sarmalMakinistGrubu.onaylar", "baska"]) assert.deepEqual(satirEylemleri(c), [], String(c));
 });
 
-test("Ray ağacı girinti kılavuzlarını eski yerel ağaç gibi çizer: üzerine gelince her kademe, seçimde etkin kademe (Founder ekranı 2026-10-22)", () => {
-  // Kusur: Ray yerel TreeView iken VS Code girinti kılavuzlarını kendisi çiziyordu; tek webview
-  // paneline geçişte bu çizgiler hiç çizilmedi.
-  assert.match(PANEL_STILI, /\.sat::before\{[^}]*width:calc\(var\(--d,0\) \* 12px\)/, "her ata kademesi için 12 px aralıklı kılavuz");
-  assert.match(PANEL_STILI, /--vscode-tree-inactiveIndentGuidesStroke/, "soluk kılavuz tema renginden gelir");
-  assert.match(PANEL_STILI, /\[role="tree"\]:hover \.sat::before\{opacity:1\}/, "ağacın üzerine gelince kılavuzlar görünür");
+test("ağaç kılavuzları her zaman çizilir: ince, tül morunda, fare ağacın üzerine gelmesini beklemez; seçimin etkin kılavuzu korunur (PNL-A04)", () => {
+  // Kusur (Founder 2026-10-26 ve 2026-10-27): çizgiler yalnız fare ağacın üzerindeyken görünüyor,
+  // fare ayrılınca kayboluyordu. Hüküm: çizgiler her zaman görünür, incedir ve rengi editördeki tül
+  // derinliğin mor tonudur.
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  const once = /\n\.sat::before\{([^}]*)\}/.exec(temiz)?.[1] ?? "";
+  assert.match(once, /width:calc\(var\(--d,0\) \* 12px\)/, "her ata kademesi için 12 px aralıklı kılavuz");
+  assert.doesNotMatch(once, /opacity\s*:\s*0(?![.\d])/, "kılavuz dinlenikken saydam: yalnız fare üzerindeyken görünür");
+  assert.doesNotMatch(temiz, /:hover[^{]*\.sat::before\{[^}]*opacity/, "kılavuzun görünürlüğü fareye bağlı");
+  // İnce: 10 ile 11 piksel arasında, yani 1 piksellik çizgi; renk tül morunun ince çizgi değişkeni.
+  assert.match(once, /transparent 10px,var\(--tul-cizgi\) 10px,var\(--tul-cizgi\) 11px,transparent 11px/);
+  assert.match(temiz, new RegExp(`:root\\{--tul-cizgi:${esc(tulRengi("acik", CIZGI_ALFA))};--tul-vurgu:${esc(tulRengi("acik", 1))}\\}`), "açık tema tonu tül kaynağından gelmiyor");
+  assert.match(temiz, new RegExp(`body\\.vscode-dark,body\\.vscode-high-contrast:not\\(\\.vscode-high-contrast-light\\)\\{--tul-cizgi:${esc(tulRengi("koyu", CIZGI_ALFA))};--tul-vurgu:${esc(tulRengi("koyu", 1))}\\}`), "koyu tema tonu tül kaynağından gelmiyor");
+  // Seçimin etkin kılavuzu yerinde ve seçimle yeniden kurulur.
   assert.match(PANEL_STILI, /\.sat\.kl::after\{[^}]*border-left:1px solid var\(--vscode-tree-indentGuidesStroke/, "etkin kılavuz tema renginden gelir");
   const kilavuzCagrisi = PANEL_BETIGI.match(/kilavuzYaz\(\);/g)?.length ?? 0;
   assert.ok(/function kilavuzYaz\(\)/.test(PANEL_BETIGI) && kilavuzCagrisi >= 3, "seçim, parça yazımı ve satır yamasında etkin kılavuz yeniden kurulur");
+});
+
+/** Düzenli ifade için kaçırma. */
+function esc(s: string): string { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+test("fare vurgusu: üzerine gelinen satırın dalının çizgisi, gri açıklaması ve simgesi tül morunda renklenir; üç ağaçta aynıdır (PNL-A04)", () => {
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  // Dalın çizgisi: işaretli satırın ::before katmanı dalın kademesinde tam tonu taşır, öteki kademeler ince kalır.
+  const dv = /\n\.sat\.dv::before\{z-index:1;background:([^}]*)\}/.exec(temiz)?.[1] ?? "";
+  assert.ok(dv, "vurgulu dalın katmanı seçimin etkin çizgisinin (kl::after) üstünde değil: seçili dalda vurgu örtülür");
+  assert.match(dv, /var\(--tul-vurgu\) 10px,var\(--tul-vurgu\) 11px,transparent 11px\) calc\(var\(--va,0\) \* 12px\) 0\/12px 100% no-repeat/, "dalın kademesi vurgulanmıyor");
+  assert.match(dv, /var\(--tul-cizgi\)[^,]*,var\(--tul-cizgi\) 11px,transparent 11px\) 0 0\/12px 100% repeat-x/, "vurgulu satırda öteki kademeler kayboluyor");
+  // Aynı satırın gri açıklaması ve simgesi; seçili satırın yazısı seçim renginde kalır.
+  assert.match(temiz, /\n\.sat:hover:not\(\.sec\) \.ac\{color:var\(--tul-vurgu\)\}/);
+  assert.match(temiz, /\n\.sat:hover \.ik\{filter:[^}]*drop-shadow\([^)]*var\(--tul-vurgu\)\)\}/);
+  // Seçici hiçbir ağaca özgü değildir: Ray, Tren ve Makinist aynı .sat satırını paylaşır.
+  assert.doesNotMatch(temiz, /#(agac|tren-agac|makinist-agac)[^{]*\.(dv|ac|ik)\b/, "vurgu bir ağaca özgü yazılmış");
+  // Betik: dal kuralı seçim ve fare için tektir; fare satıra gelince kurulur, panelden çıkınca söner,
+  // içerik yenilenince fare altındaki satırdan yeniden kurulur.
+  assert.match(PANEL_BETIGI, /function kilavuzYaz\(\) \{ dalIsaretle\(satirBul\(seciliSatir\), 'kl', '--ka'\); \}/);
+  assert.match(PANEL_BETIGI, /dalIsaretle\(s, 'dv', '--va'\)/);
+  assert.match(PANEL_BETIGI, /addEventListener\('mouseover', function \(e\) \{\s*var t = e\.target;\s*vurguYaz\(t && t\.closest \? t\.closest\('\.sat'\) : null\);/);
+  assert.match(PANEL_BETIGI, /addEventListener\('mouseout', function \(e\) \{ if \(!e\.relatedTarget\) vurguYaz\(null\); \}\)/);
+  assert.ok((PANEL_BETIGI.match(/vurguTazele\(\);/g) ?? []).length >= 2, "parça yazımı ve satır yamasında vurgu yeniden kurulmuyor");
+});
+
+test("tül moru tek kaynaktır: editörün tül derinliği ile panel çizgileri aynı tonu tul-rengi.ts'ten okur; ton iki temada okunur", () => {
+  const ham = (rgb: readonly number[]): RegExp => new RegExp(rgb.map(String).join("\\s*,\\s*"));
+  const tanimlayan = readdirSync(`${KOK}src`).filter((f) => f.endsWith(".ts"))
+    .filter((f) => [TUL_MORU.koyu, TUL_MORU.acik].some((rgb) => ham(rgb).test(oku(`src/${f}`))));
+  assert.deepEqual(tanimlayan, ["tul-rengi.ts"], "tül morunun ikinci bir tanımı var");
+  assert.match(oku("src/girinti.ts"), /import \{ tulRengi \} from "\.\/tul-rengi\.ts";/);
+  assert.match(oku("src/girinti.ts"), /backgroundColor: tulRengi\("koyu", a\),\s*\n\s*light: \{ backgroundColor: tulRengi\("acik", a \* 0\.8\) \}/);
+  assert.equal(tulRengi("koyu", 0.035), "rgba(199,146,234,0.035)", "editörün tül zemini bugünkü tonundan ayrıştı");
+  // Vurgu yazısı iki temanın kenar çubuğu zemininde okunur (WCAG AA, 4,5:1).
+  const parlaklik = (rgb: readonly number[]): number => {
+    const [r, g, b] = rgb.map((c) => { const x = c / 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; });
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+  };
+  const karsitlik = (a: readonly number[], b: readonly number[]): number => {
+    const [x, y] = [parlaklik(a), parlaklik(b)].sort((m, n) => n - m);
+    return (x! + 0.05) / (y! + 0.05);
+  };
+  assert.ok(karsitlik(TUL_MORU.koyu, [24, 24, 24]) >= 4.5, "koyu temada vurgu yazısı okunmuyor");
+  assert.ok(karsitlik(TUL_MORU.acik, [248, 248, 248]) >= 4.5, "açık temada vurgu yazısı okunmuyor");
 });
 
 test("Mini Graf kendi kutusundan taşamaz ve sekme şeridi kaydırmayla ekrandan çıkamaz (Founder ekranı 2026-10-22)", () => {

@@ -24,6 +24,9 @@
 //   Boyutlar: 300×720 ve 460×720 (kenar çubuğu), 1400×400 (Founder'ın kullandığı
 //   alt panel: editörün altında, sola yaslı, geniş ve alçak · 2026-10-27).
 //   Kontrol listesi: betik hatası · sekme şeridi başta ve en alta kaydırınca üstte ·
+//   AĞAÇ ÇİZGİLERİ (PNL-A04): Ray, Tren ve Makinist ağaçlarında girinti kılavuzu fare
+//   ağacın dışındayken de çizili, ince (1 px) ve tül morunda · fare bir satırın üzerine
+//   gelince o dalın çizgisi, satırın gri açıklaması ve simgesi renklenir, fare çıkınca söner ·
 //   YERLEŞİM (PNL-A03): sekme yazısı 11 px ve şerit 26 px · sekme sırası Ray, Tren,
 //   Makinist, Gözlemler, Ayarlar · içerik alanı şeridin altından panelin dibine uzanır ·
 //   Ray başlıkları 10 px · geniş panelde (1400×400) Yol Haritası ile Mini Graf yan yana
@@ -40,8 +43,9 @@
 //
 //   BEKLENEN KIRMIZI (PNL-A02 · Founder 2026-10-27 şikâyetleri). Bazı kontroller
 //   bugünkü panelde bilerek kırmızıdır, çünkü onaracak Adım henüz koşmamıştır; böyle
-//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A04 ağaç
-//   çizgisi, PNL-A05 Mini Graf tıklaması, PNL-A07 onay kartı). İşaretli kontrolün
+//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A05 Mini Graf
+//   tıklaması, PNL-A07 onay kartı; PNL-A04 ağaç çizgisi yeşile döndü ve işareti
+//   kaldırıldı). İşaretli kontrolün
 //   kırmızısı çıkış kodunu bozmaz ve "BEKLENEN" diye yazılır. İşaretli kontrol yeşile
 //   dönerse "YEŞİLE DÖNDÜ" yazılır ve çıkış kodu 1 olur: onaran Adım işareti aynı
 //   işlemede kaldırır, yoksa kontrol bir sonraki gerilemeyi yakalamaz.
@@ -260,16 +264,58 @@ function seciliGorunurMu() {
   const nokta = kok.elementFromPoint(Math.min(innerWidth - 2, ar.left + 4), ar.top + ar.height / 2);
   return { var: true, ekranda: r.top >= 0 && r.bottom <= innerHeight, yaziGenislik: ar.width, ustte: !!nokta && e.contains(nokta) };
 }
-function kilavuzOlc() {
-  const satirlar = [...document.querySelectorAll("#agac .sat")];
+function kilavuzOlc({ agac = "#agac", tul } = {}) {
+  const satirlar = [...document.querySelectorAll(`${agac} .sat`)];
   const derin = satirlar.filter((s) => Number(s.dataset.d) > 0);
   const cizili = derin.filter((s) => {
     const b = getComputedStyle(s, "::before");
     return b.content !== "none" && b.backgroundImage !== "none" && parseFloat(b.width) > 0 && Number(b.opacity) > 0;
   });
-  const etkin = [...document.querySelectorAll("#agac .sat.kl")].filter((s) => parseFloat(getComputedStyle(s, "::after").borderLeftWidth) > 0);
-  return { satir: satirlar.length, derinSatir: derin.length, kilavuzlu: cizili.length, etkin: etkin.length,
+  // Çizgi ince (10 ile 11 piksel arası, 1 piksel) ve tül morunun ince çizgi tonundadır (PNL-A04).
+  const norm = (c) => String(c).replace(/\s+/g, "").replace(/rgba\((\d+,\d+,\d+),1\)/g, "rgb($1)");
+  const morInce = tul ? cizili.filter((s) => {
+    const g = norm(getComputedStyle(s, "::before").backgroundImage);
+    return g.includes(`${norm(tul.cizgi)}10px`) && g.includes(`${norm(tul.cizgi)}11px`);
+  }).length : null;
+  const etkin = [...document.querySelectorAll(`${agac} .sat.kl`)].filter((s) => parseFloat(getComputedStyle(s, "::after").borderLeftWidth) > 0);
+  return { satir: satirlar.length, derinSatir: derin.length, kilavuzlu: cizili.length, morInce, etkin: etkin.length,
     agacUzerinde: !!document.querySelector('[role="tree"]:hover') };
+}
+/**
+ * Fare vurgusunun hedefi (PNL-A04): ekranda görünen, açıklaması ve simgesi olan, seçili olmayan
+ * en derin satır; fare satırın adının ortasına götürülür.
+ */
+function vurguHedefi(agac) {
+  const altSinir = document.querySelector(".seritler")?.getBoundingClientRect().bottom ?? 0;
+  const adaylar = [...document.querySelectorAll(`${agac} .sat`)].filter((s) => {
+    const r = s.getBoundingClientRect();
+    return Number(s.dataset.d) > 0 && !s.classList.contains("sec") && r.top >= altSinir + 24 && r.bottom <= innerHeight - 4 && r.width > 0;
+  });
+  const puan = (s) => Number(s.dataset.d) * 4 + (s.querySelector(".ac") ? 2 : 0) + (s.querySelector(".ik") ? 1 : 0);
+  const s = adaylar.reduce((a, x) => (!a || puan(x) > puan(a) ? x : a), undefined);
+  if (!s) return { var: false };
+  const r = (s.querySelector(".et") ?? s).getBoundingClientRect();
+  return { var: true, id: s.dataset.id, x: r.left + Math.min(r.width / 2, 30), y: r.top + r.height / 2 };
+}
+/** Bir satırın vurgu ölçüsü: dalın işaretli satırları ve tonları, satırın açıklama rengi ve simge süzgeci. */
+function vurguOlc({ agac, id, tul }) {
+  const norm = (c) => String(c).replace(/\s+/g, "").replace(/rgba\((\d+,\d+,\d+),1\)/g, "rgb($1)");
+  const kok = document.querySelector(agac);
+  const s = [...(kok?.querySelectorAll(".sat") ?? [])].find((x) => x.dataset.id === id);
+  if (!s) return { var: false };
+  const dv = [...kok.querySelectorAll(".sat.dv")];
+  const ac = s.querySelector(".ac");
+  const ik = s.querySelector(".ik");
+  return {
+    var: true, ustunde: s.matches(":hover"), dv: dv.length,
+    dvTamTon: dv.filter((x) => norm(getComputedStyle(x, "::before").backgroundImage).includes(norm(tul.vurgu))).length,
+    // Vurgu katmanı seçimin etkin çizgisinin (kl::after) üstünde boyanır; yoksa seçili dalda örtülür.
+    dvUstte: dv.filter((x) => getComputedStyle(x, "::before").zIndex !== "auto").length,
+    seciliDalda: dv.some((x) => x.classList.contains("kl")),
+    satirDalda: s.classList.contains("dv") || s.getAttribute("aria-expanded") === "true",
+    acRenk: ac ? norm(getComputedStyle(ac).color) : null, vurgu: norm(tul.vurgu),
+    ikFiltre: ik ? getComputedStyle(ik).filter : null,
+  };
 }
 /**
  * Mini Graf'ta dosyaya götüren ilk düğüm bağı ve kullanıcının tıklayacağı nokta (düğümün adı).
@@ -322,6 +368,39 @@ try {
         document.body.className = "vscode-dark";
       }, KOYU);
       const etiket = `${d.ad} @${W}`;
+      /**
+       * Ağaç çizgileri ve fare vurgusu (PNL-A04 · Founder 2026-10-27), üç ağaçta aynı ölçü: fare ağacın
+       * dışındayken çizgiler ince ve tül morunda çizilidir; fare bir satırın üzerine gelince o dalın
+       * çizgisi tam tona geçer, satırın gri açıklaması o tona boyanır ve simgesi ışır; fare çıkınca söner.
+       */
+      const agacCizgisiOlc = async (agac, ad) => {
+        await p.evaluate(kaydir, "ust");
+        await p.mouse.move(2, 2);
+        await p.waitForTimeout(120);
+        const f = await p.evaluate(kilavuzOlc, { agac, tul: uretim.tul });
+        kontrol(`${etiket}: ${ad} ağacında girinti çizgileri fare dışındayken çizili, ince (1 px) ve tül morunda`,
+          !f.agacUzerinde && f.derinSatir > 0 && f.kilavuzlu === f.derinSatir && f.morInce === f.derinSatir, JSON.stringify(f));
+        const h = await p.evaluate(vurguHedefi, agac);
+        if (!h.var) { kontrol(`${etiket}: ${ad} ağacında fare vurgusu ölçülebilir`, false, "ekranda vurgulanacak derin satır yok"); return; }
+        await p.mouse.move(h.x, h.y);
+        await p.waitForTimeout(120);
+        const v = await p.evaluate(vurguOlc, { agac, id: h.id, tul: uretim.tul });
+        kontrol(`${etiket}: ${ad} ağacında fare üzerindeki satırın dalının çizgisi tül morunun tam tonuna geçer`,
+          v.ustunde && v.dv > 0 && v.dvTamTon === v.dv && v.dvUstte === v.dv && v.satirDalda, JSON.stringify({ ...v, id: h.id }));
+        kontrol(`${etiket}: ${ad} ağacında fare üzerindeki satırın gri açıklaması ve simgesi renklenir`,
+          v.ustunde && (v.acRenk === null || v.acRenk === v.vurgu) && (v.ikFiltre === null || /drop-shadow/.test(v.ikFiltre))
+            && (v.acRenk !== null || v.ikFiltre !== null),
+          JSON.stringify({ acRenk: v.acRenk, vurgu: v.vurgu, ikFiltre: v.ikFiltre }));
+        const vurgu = `${d.ad}-${W}-vurgu.png`;
+        await p.screenshot({ path: join(CIKTI, vurgu) });
+        goruntuler.push(vurgu);
+        await p.mouse.move(2, 2);
+        await p.waitForTimeout(120);
+        const s = await p.evaluate(vurguOlc, { agac, id: h.id, tul: uretim.tul });
+        kontrol(`${etiket}: ${ad} ağacında fare satırdan çıkınca vurgu söner`,
+          s.var && !s.ustunde && s.dv === 0 && s.acRenk !== s.vurgu && (s.ikFiltre === null || s.ikFiltre === "none"),
+          JSON.stringify(s));
+      };
       const cek = async (kip) => {
         await p.evaluate(kaydir, kip);
         await p.waitForTimeout(150);
@@ -380,6 +459,8 @@ try {
         const y = await p.evaluate(yaziBoyutu, { secici: ".sat .et", kokSecici: null });
         kontrol(`${etiket}: ağaç satırı yazı boyutu ${YAZI_EN_AZ}–${YAZI_EN_COK} px`, y.adet === 0 || (y.enAz >= YAZI_EN_AZ && y.enCok <= YAZI_EN_COK), JSON.stringify(y));
       }
+      if (d.ad === "tren") await agacCizgisiOlc("#tren-agac", "Tren");
+      if (d.ad === "makinist") await agacCizgisiOlc("#makinist-agac", "Makinist");
       if (d.ad === "makinist") {
         const m = await p.evaluate(() => {
           const ust = [...document.querySelectorAll("#makinist-agac .sat")].filter((s) => s.dataset.d === "0");
@@ -427,13 +508,14 @@ try {
             const d = s.reduce((a, x) => (Number(x.dataset.d) > Number(a.dataset.d) ? x : a), s[0]);
             d?.querySelector(".et")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
           });
-          // Ağaç çizgisi şikâyeti (Founder 2026-10-27): çizgiler fare ağacın üzerine GELMEDEN görünür.
-          // Fare önce sekme şeridine (ağacın dışına) götürülür ve ağacın :hover durumunda olmadığı ölçülür.
+          // Ağaç çizgisi şikâyeti (Founder 2026-10-27 · PNL-A04 ile kapandı): çizgiler fare ağacın üzerine
+          // GELMEDEN görünür. Fare önce sekme şeridine (ağacın dışına) götürülür ve ağacın :hover durumunda
+          // olmadığı ölçülür.
           await p.mouse.move(2, 2);
           await p.waitForTimeout(150);
           const f = await p.evaluate(kilavuzOlc);
           kontrol(`${etiket}: ağaç çizgisi şikâyeti: Ray ağacında girinti kılavuzları fare ağacın üzerine gelmeden çizili`,
-            !f.agacUzerinde && f.derinSatir > 0 && f.kilavuzlu === f.derinSatir, JSON.stringify(f), "PNL-A04");
+            !f.agacUzerinde && f.derinSatir > 0 && f.kilavuzlu === f.derinSatir, JSON.stringify(f));
           const faresiz = `${d.ad}-${W}-kilavuz-faresiz.png`;
           await p.screenshot({ path: join(CIKTI, faresiz) });
           goruntuler.push(faresiz);
@@ -446,6 +528,7 @@ try {
           await p.screenshot({ path: join(CIKTI, dosya) });
           goruntuler.push(dosya);
         }
+        await agacCizgisiOlc("#agac", "Ray");
         // Katlanan Mini Graf (PNL-A03): başlık sütununun üstünde kalır, alanın dibine yapıştırılmaz; geniş
         // panelde Yol Haritası boşalan genişliği alır, dar panelde başlık Yol Haritasının hemen altındadır.
         await p.evaluate(kaydir, "ust");

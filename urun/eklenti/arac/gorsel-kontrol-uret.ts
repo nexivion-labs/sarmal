@@ -29,6 +29,8 @@ import type { SekmeKimligi } from "../src/panel-cekirdek.ts";
 import { satirIkonu } from "../src/ortak.ts";
 import { yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 import { erisimSiniri } from "../src/tur-belgesi.ts";
+import { tulRengi } from "../src/tul-rengi.ts";
+import { CIZGI_ALFA } from "../src/panel-betik.ts";
 
 const [PROJE, CIKTI, SECILI_ARG = "-", ACIK_ARG = "3", DIL = "tr"] = process.argv.slice(2);
 if (!PROJE || !CIKTI) { console.error("kullanım: <proje_dizini> <cikti_dizini> [secili_kod|-] [acik_kademe] [tr|en]"); process.exit(2); }
@@ -142,8 +144,9 @@ function uret(d: Degiske): string {
 
 const degiskeler: Degiske[] = [
   { ad: "ray", sekme: "ray", acik: ACIK },
-  { ad: "tren", sekme: "tren" },
-  { ad: "makinist", sekme: "makinist" },
+  // Tren ve Makinist de açık üretilir: girinti çizgisi ve fare vurgusu üç ağaçta ölçülür (PNL-A04).
+  { ad: "tren", sekme: "tren", acik: ACIK },
+  { ad: "makinist", sekme: "makinist", acik: ACIK },
   { ad: "gozlemler", sekme: "gozlemler" },
   { ad: "ayarlar", sekme: "ayarlar" },
   { ad: "graf-secici", sekme: "ray", secici: true },
@@ -157,5 +160,7 @@ const liste = degiskeler.map((d) => {
   writeFileSync(join(CIKTI, `${d.ad}.html`), html);
   return { ...d, bayt: html.length };
 });
-process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, degiskeler: liste }));
+// Görsel kontrol koyu temada koşar; beklenen çizgi ve vurgu renkleri tül kaynağından verilir (PNL-A04).
+const tul = { cizgi: tulRengi("koyu", CIZGI_ALFA), vurgu: tulRengi("koyu", 1) };
+process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, tul, degiskeler: liste }));
 process.exit(0);

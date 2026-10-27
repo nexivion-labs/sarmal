@@ -1524,13 +1524,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-RAY-GIRINTI-CIZGILERI-SUREKLI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         PNL-A04,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Panel ağaçlarının görünümüne ya da eklentinin varsayılan ayar katkılarına bir sonraki dokunuşta",
-  ne:               "Founder 2026-10-26 tarihinde Ray ağacındaki düğümleri birbirine bağlayan girinti çizgilerinin yalnız fare ağacın üzerine geldiğinde göründüğünü, fare ayrılınca kaybolduğunu gözlemlemiş ve çizgilerin her zaman görünmesini, fare üzerine geldiğinde ise hafifçe vurgulanmasını istemiştir. VS Code ağaçlarında bu davranışı workbench.tree.renderIndentGuides ayarı yönetir; varsayılan değeri yalnız üzerine gelindiğinde çizmektir ve always değeri çizgileri sürekli gösterir, etkin dalın çizgisi ise ayrı bir renkle vurgulanır. Eklentinin bu ayara varsayılan değer katkısı verip veremediği ölçülür; verebiliyorsa çözüm üründe yapılır, veremiyorsa kurulum rehberine ve çalışma alanı ayarına yazılır. Ayar bütün VS Code ağaçlarını etkilediği için kullanıcıya dayatılmadan önce bu etki de değerlendirilir."
+  ne:               "Founder 2026-10-26 tarihinde Ray ağacındaki düğümleri birbirine bağlayan girinti çizgilerinin yalnız fare ağacın üzerine geldiğinde göründüğünü, fare ayrılınca kaybolduğunu gözlemlemiş ve çizgilerin her zaman görünmesini, fare üzerine geldiğinde ise hafifçe vurgulanmasını istemiştir. VS Code ağaçlarında bu davranışı workbench.tree.renderIndentGuides ayarı yönetir; varsayılan değeri yalnız üzerine gelindiğinde çizmektir ve always değeri çizgileri sürekli gösterir, etkin dalın çizgisi ise ayrı bir renkle vurgulanır. Eklentinin bu ayara varsayılan değer katkısı verip veremediği ölçülür; verebiliyorsa çözüm üründe yapılır, veremiyorsa kurulum rehberine ve çalışma alanı ayarına yazılır. Ayar bütün VS Code ağaçlarını etkilediği için kullanıcıya dayatılmadan önce bu etki de değerlendirilir. KAPANIŞ (2026-10-27): Ray artık panelin kendi webview'inde çizildiği için çözüm VS Code ayarına dokunmadan üründe yapılmıştır (PNL-A04). Çizgiler her zaman ince ve tül morunda görünür; fare üzerine gelince dalın çizgisi, açıklaması ve simgesi renklenir. Aynı davranış Tren ve Makinist ağaçlarında da geçerlidir."
 )
 
 Hatırlatıcı(

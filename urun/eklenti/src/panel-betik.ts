@@ -9,13 +9,20 @@
 //   koyar ve kullanıcı eylemlerini eklentiye iletir.
 //
 //   Renkler yalnız `var(--vscode-*)` değişkenlerinden gelir (açık ve koyu tema).
-//   Tek istisna Founder'ın seçtiği marka mavisidir (#2685F2, seçili sekme çizgisi).
+//   İki istisna Founder'ın seçtiği renklerdir: marka mavisi (#2685F2, seçili sekme
+//   çizgisi) ve ağaç çizgilerinin tül moru (tul-rengi.ts, editörün tül derinliğiyle
+//   aynı kaynak; PNL-A04).
 //   Betik nonce'lu tek bloktur; içeriğe gömülen hiçbir şey betik taşıyamaz çünkü
 //   bütün metinler kaçırılarak basılır.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { tulRengi } from "./tul-rengi.ts";
+
 /** Seçili sekmenin alt çizgisi: Founder'ın verdiği marka mavisi. */
 export const MARKA_MAVISI = "#2685F2";
+
+/** Ağaç çizgisinin dinlenik saydamlığı: ince, sürekli ve soluk (Founder 2026-10-27 · PNL-A04). */
+export const CIZGI_ALFA = 0.45;
 
 /** Ray bölümlerinin yan yana dizildiği en küçük panel genişliği: iki sütunun her biri en az 320 pikseldir. */
 export const GENIS_PANEL_PX = 640;
@@ -25,6 +32,11 @@ export const DAR_SERIT_PX = 420;
 export const PANEL_STILI = `
 :root{color-scheme:light dark}
 *{box-sizing:border-box}
+/* TÜL MORU (PNL-A04): ağaç çizgileri ve fare vurgusu editörün tül derinliğiyle aynı mor tondadır.
+   Varsayılan açık temanın tonudur; koyu ve yüksek karşıtlıklı koyu temada koyu tema tonu geçer.
+   --tul-cizgi dinlenik ince çizgi, --tul-vurgu fare üzerindeki dalın çizgisi ve yazısıdır. */
+:root{--tul-cizgi:${tulRengi("acik", CIZGI_ALFA)};--tul-vurgu:${tulRengi("acik", 1)}}
+body.vscode-dark,body.vscode-high-contrast:not(.vscode-high-contrast-light){--tul-cizgi:${tulRengi("koyu", CIZGI_ALFA)};--tul-vurgu:${tulRengi("koyu", 1)}}
 /* YERLEŞİM (PNL-A03 · Founder 2026-10-27): belge pencere boyuna (vh) dayanan bir en az yükseklik
    taşımaz ve şeridin ölçüsü hiçbir hesapta varsayılmaz. Gövde, panelin verdiği alanı dolduran
    esnek bir sütundur: şerit kendi boyunu alır, içerik kalan alanın tamamını kaplar ve kendi içinde
@@ -89,13 +101,19 @@ button{font:inherit;color:inherit}
 [role="tree"]{outline:none}
 .sat{position:relative;display:flex;align-items:center;height:22px;padding:0 8px 0 calc(var(--d,0) * 12px + 2px);cursor:pointer;white-space:nowrap;
   color:var(--vscode-foreground)}
-/* GİRİNTİ KILAVUZLARI: eski yerel ağaç görünümünün (VS Code TreeView) çizgileri aynen geri
-   gelir. Her ata kademesi için bir dikey çizgi, atanın açma okunun ortasından (12k+10 px) iner.
-   Ağacın üzerine gelinince bütün kılavuzlar soluk görünür (VS Code varsayılanı "onHover");
-   seçili satırın kardeşlerini bağlayan etkin kılavuz her zaman görünür (betikteki kilavuzYaz). */
-.sat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(var(--d,0) * 12px);pointer-events:none;opacity:0;
-  background:linear-gradient(to right,transparent 10px,var(--vscode-tree-inactiveIndentGuidesStroke,rgba(128,128,128,.4)) 10px,var(--vscode-tree-inactiveIndentGuidesStroke,rgba(128,128,128,.4)) 11px,transparent 11px) 0 0/12px 100% repeat-x}
-[role="tree"]:hover .sat::before{opacity:1}
+/* GİRİNTİ KILAVUZLARI (PNL-A04 · Founder 2026-10-27): her ata kademesi için ince (1 piksel), tül
+   morunda bir dikey çizgi atanın açma okunun ortasından (12k+10 px) iner ve HER ZAMAN görünür;
+   fare ağacın üzerine gelmesini beklemez. Seçili satırın dalını bağlayan etkin kılavuz (kl)
+   ayrıca çizilir. Fare bir satırın üzerine gelince o satırın dalı (dv, betikteki dalIsaretle;
+   seçimle aynı kural) tül morunun tam tonuna geçer, satırın gri açıklaması da o tona boyanır ve
+   simgesi canlanır. Vurgulu dalın katmanı seçimin etkin çizgisinin üstündedir; yoksa fare seçili
+   satırın dalındayken gri etkin çizgi mor vurguyu örter. Ray, Tren ve Makinist ağaçları aynı satır
+   üreticisini ve bu kuralları paylaşır. */
+.sat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(var(--d,0) * 12px);pointer-events:none;
+  background:linear-gradient(to right,transparent 10px,var(--tul-cizgi) 10px,var(--tul-cizgi) 11px,transparent 11px) 0 0/12px 100% repeat-x}
+.sat.dv::before{z-index:1;background:
+  linear-gradient(to right,transparent 10px,var(--tul-vurgu) 10px,var(--tul-vurgu) 11px,transparent 11px) calc(var(--va,0) * 12px) 0/12px 100% no-repeat,
+  linear-gradient(to right,transparent 10px,var(--tul-cizgi) 10px,var(--tul-cizgi) 11px,transparent 11px) 0 0/12px 100% repeat-x}
 .sat.kl::after{content:"";position:absolute;left:calc(var(--ka,0) * 12px + 10px);top:0;bottom:0;width:0;pointer-events:none;
   border-left:1px solid var(--vscode-tree-indentGuidesStroke,rgba(128,128,128,.7))}
 .sat:hover{background:var(--vscode-list-hoverBackground)}
@@ -112,6 +130,10 @@ svg.ik{background:none}
 .et{flex:0 1 auto;min-width:3ch;overflow:hidden;text-overflow:ellipsis}
 .ac{flex:0 2 auto;min-width:0;margin-left:8px;overflow:hidden;text-overflow:ellipsis;color:var(--vscode-descriptionForeground);font-size:12px}
 .sat.sec .ac{color:inherit;opacity:.85}
+/* Fare üzerindeki satırın gri açıklaması dalın tonuna boyanır (seçili satırda seçim rengi kalır,
+   çünkü mor yazı seçim zemininde okunmaz) ve simgesi canlanıp tül morunda hafifçe ışır. */
+.sat:hover:not(.sec) .ac{color:var(--tul-vurgu)}
+.sat:hover .ik{filter:saturate(1.6) brightness(1.15) drop-shadow(0 0 2px var(--tul-vurgu))}
 .rz{flex:none;margin-left:6px;font-weight:600}
 .eyler{flex:none;display:none;margin-left:auto;padding-left:6px}
 .sat:hover .eyler,.sat:focus-within .eyler{display:inline-flex}
@@ -178,11 +200,11 @@ export const PANEL_BETIGI = `
     return s ? s.getAttribute('data-id') : '';
   }
   function satirBul(id) { return id ? document.querySelector('.sat[data-id="' + kacirSel(id) + '"]') : null; }
-  // Etkin girinti kılavuzu (VS Code TreeView ile aynı kural): seçili satır açıksa kendi
-  // çocuklarını, değilse ebeveyninin çocuklarını bağlayan çizgi her zaman görünür.
-  function kilavuzYaz() {
-    Array.prototype.forEach.call(document.querySelectorAll('.sat.kl'), function (x) { x.classList.remove('kl'); });
-    var s = satirBul(seciliSatir);
+  // Bir satırın dalı (VS Code TreeView ile aynı kural): satır açıksa kendi çocukları, değilse
+  // ebeveyninin çocukları. Dalın satırları sınıfla işaretlenir ve dalın kademesi değişkene yazılır.
+  // Seçimin etkin kılavuzu (kl, --ka) ile fare vurgusu (dv, --va) bu tek kuralı paylaşır.
+  function dalIsaretle(s, sinif, degisken) {
+    Array.prototype.forEach.call(document.querySelectorAll('.sat.' + sinif), function (x) { x.classList.remove(sinif); });
     var agac = s && s.closest('[role="tree"]');
     if (!agac) return;
     var satirlar = Array.prototype.slice.call(agac.querySelectorAll('.sat'));
@@ -196,14 +218,26 @@ export const PANEL_BETIGI = `
     }
     var kademe = derin(satirlar[bas]);
     for (var j = bas + 1; j < satirlar.length && derin(satirlar[j]) > kademe; j++) {
-      satirlar[j].classList.add('kl');
-      satirlar[j].style.setProperty('--ka', String(kademe));
+      satirlar[j].classList.add(sinif);
+      satirlar[j].style.setProperty(degisken, String(kademe));
     }
   }
+  // Etkin girinti kılavuzu: seçili satırın dalını bağlayan çizgi her zaman görünür.
+  function kilavuzYaz() { dalIsaretle(satirBul(seciliSatir), 'kl', '--ka'); }
+  // Fare vurgusu (PNL-A04): fare bir satırın üzerine gelince o satırın dalı tül morunda renklenir.
+  // Satır değişmedikçe yeniden hesaplanmaz; içerik yenilenince fare altındaki satırdan yeniden kurulur.
+  var vurguSatiri = null;
+  function vurguYaz(s) {
+    if (s === vurguSatiri && s && s.isConnected) return;
+    vurguSatiri = s;
+    dalIsaretle(s, 'dv', '--va');
+  }
+  function vurguTazele() { vurguSatiri = null; vurguYaz(document.querySelector('.sat:hover')); }
   function secimiGeriYukle(odakId) {
     var s = satirBul(seciliSatir);
     if (s) s.classList.add('sec');
     kilavuzYaz();
+    vurguTazele();
     var agaclar = document.querySelectorAll('[role="tree"]');
     Array.prototype.forEach.call(agaclar, function (a) {
       var hedef = (odakId && a.querySelector('.sat[data-id="' + kacirSel(odakId) + '"]')) || a.querySelector('.sat.sec') || a.querySelector('.sat');
@@ -253,6 +287,7 @@ export const PANEL_BETIGI = `
           if (secti) yeni.classList.add('sec');
           if (tab) yeni.setAttribute('tabindex', tab);
           kilavuzYaz();
+          vurguTazele();
         }
       }
     } else if (m.tip === 'rozet') {
@@ -326,6 +361,13 @@ export const PANEL_BETIGI = `
     sec(sat);
     ac(sat);
   });
+
+  // ── Fare vurgusu: üzerine gelinen satırın dalı; fare satırdan ya da panelden çıkınca söner ──
+  document.addEventListener('mouseover', function (e) {
+    var t = e.target;
+    vurguYaz(t && t.closest ? t.closest('.sat') : null);
+  });
+  document.addEventListener('mouseout', function (e) { if (!e.relatedTarget) vurguYaz(null); });
 
   // ── Klavye: sekmeler ve ağaç ───────────────────────────────────────────────
   document.addEventListener('keydown', function (e) {

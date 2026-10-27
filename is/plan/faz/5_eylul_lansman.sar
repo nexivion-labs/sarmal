@@ -6620,8 +6620,9 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A03, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1093 sınama: 1089 geçti, 4 yapılacak, 0 düştü (kontrolcü koşturdu) · tip ve dil denetimi temiz · görsel kontrol 502 kontrol: 492 geçti, 10 beklenen kırmızı, 0 düştü · gerçek VS Code süiti 54 geçti, 1 düştü (taban 52/2; kalan düşüş PNL-A07'nin), kontrolcü ayrıca koşturdu · dört koruma tek tek bozulunca ilgili nöbet düştü · 1400×400 ekran görüntüsü scratchpad/gorsel-a03/ray-alt-ust.png", ne: "Sekme şeridi 26 piksele ve 11 piksellik yazıya indi; sekmeler Ray, Tren, Makinist, Gözlemler ve Ayarlar sırasıyla durur ve son ikisi şimdilik boş bölümdür. Pencere boyuna dayanan yerleşim ve başlığı dibe yapıştıran kural kaldırıldı; 640 piksel ve daha geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur, dar panelde alt alta durur. Açılışın Makinist'te kalmasının iki nedeni bulundu: gerçek VS Code süitinde sınamalar arası seçim sızıntısı ve ürünün seçilen sekmeyi çalışma alanı belleğinde saklayıp açılışta Ray'in önüne geçirmesi; sekme artık saklanmaz ve her açılış Ray'le başlar. Açık kalan bir nokta vardır: webview'deki sekme seçimi ile bölüm yuvasının seçimi oturum içinde ayrışabilir ve bunları bağlamak eklenti.ts değişikliği gerektirir. Founder'ın gördüğü küçük kutu ortamda yeniden üretilemedi; en olası nedeni kaldırılan kurallardır ve gerçek pencerede birinci basamağın tesliminde doğrulanacaktır." )
         }
 
-        Adım( kod: PNL-A04, ad: "Sürekli Ağaç Çizgileri ve Üzerine Gelince Renk", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A03 ],
+        Adım( kod: PNL-A04, ad: "Sürekli Ağaç Çizgileri ve Üzerine Gelince Renk", durum: tamamlandı, öncelik: p1, bağımlı: [ PNL-A03 ],
           referans: [ HTR-RAY-GIRINTI-CIZGILERI-SUREKLI ],
+          üretir: [ KOD-TUL-RENGI, KOD-PANEL-BETIK, KOD-EKL-GIRINTI, KOD-GORSEL-KONTROL ],
           ne: "🌿 Ağaç çizgilerinin hep görünmesi. Founder 2026-10-27 tarihinde çizgilerin ince olmasına, renginin zemindeki mor ton olmasına, fare bir satırın üzerine gelince o dalın çizgisinin ve gri yazılar ile Faz, Blok ve öteki ikonların renklenmesine hükmetmiştir. Bugün çizgiler yalnız ağacın üzerine gelindiğinde görünmektedir." ) {
           görev: [
             "Ağaç çizgisini her zaman çiz; çizgi incedir ve rengi tül derinliğin mor tonudur.",
@@ -6632,6 +6633,7 @@ sessizce körleşmez.
             "Çizgilerin ve renklenmenin ekran görüntüsü birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Satırların içeriği ve sırası değişmez."
+          koşu: Koşum( kod: KSM-PNL-A04, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1095 sınama: 1092 geçti, 3 yapılacak, 0 düştü (kontrolcü koşturdu; yük altında zaman ölçen A08 sınaması bir kez şaştı, yinelemede geçti) · tip ve dil denetimi temiz · görsel kontrol 538 kontrol: 531 geçti, 7 beklenen kırmızı, 0 düştü; çizgi ve vurgu kontrollerinin 45'i geçti · gerçek VS Code süiti 54 geçti, 1 düştü (PNL-A07'nin işi), kontrolcü ayrıca koşturdu · beş koruma tek tek bozulunca ilgili nöbet düştü", ne: "Ray, Tren ve Makinist ağaçlarında girinti çizgisi her zaman ince ve tül morunda çizilir; fare bir satırın üzerine gelince o dalın çizgisi tam tona geçer, gri açıklama mora boyanır ve simge parlaklaşıp hafifçe ışır. Tül morunun tek kaynağı tul-rengi.ts dosyasıdır ve editörün tül zemini de oradan okur; üretilen renk eskisiyle bayt bayt aynıdır. Fare seçili dalın üzerindeyken seçimin etkin çizgisinin vurguyu örtmesi kusuru üretici tarafından bulunup giderildi. İki saydamlık değeri ile simgenin renklenme yorumu birinci basamağın tesliminde Founder'ın gözüne sunulacaktır." )
         }
 
         Adım( kod: PNL-A05, ad: "Mini Graf Tıklamasının Onarılması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
@@ -7277,3 +7279,7 @@ Kod( kod: KOD-SNM-DOGUS-KANCALARI, dosya: "urun/cekirdek/sinama/dogus-kancalari.
 // 🍎 PNL-A02 teslimi (2026-10-27): panelin kabul kapısı
 Kod( kod: KOD-SNM-PANEL-SIKAYETLERI, dosya: "urun/eklenti/sinama/panel-sikayetleri.test.ts",
   ne: "🧪 Founder'ın 2026-10-27 tarihli panel şikâyetlerinin nöbeti — ağaç çizgisinin fare üzerine gelmeden görünmesini, Mini Grafın üç görünümünde düğüm tıklamasının dosyayı açan komuta ulaşmasını ve onay kapısında editörde kart açılmamasını ölçer; her nöbet onu yeşile çevirecek Adımın koduyla işaretlidir (PNL-A02)" )
+
+// 🍎 PNL-A04 teslimi (2026-10-27): sürekli ağaç çizgileri
+Kod( kod: KOD-TUL-RENGI, dosya: "urun/eklenti/src/tul-rengi.ts",
+  ne: "🎨 Tül morunun tek kaynağı — koyu ve açık tema tonlarını tutar; panelin ağaç çizgileri ile editörün tül derinlik zemini rengi buradan okur (PNL-A04)" )

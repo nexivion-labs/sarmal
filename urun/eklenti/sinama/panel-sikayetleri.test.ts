@@ -12,7 +12,8 @@
 //   NEDEN `todo`. Nöbetler bugünkü panelde KIRMIZIDIR, çünkü kusurları ölçerler;
 //   işlemeden önce koşan `npm test` kancası ise kırmızı sınamayı kabul etmez. Bu
 //   yüzden her nöbet node:test'in `todo` seçeneğiyle işaretlidir ve gerekçesi onu
-//   yeşile çevirecek Adımın kodunu taşır: ① PNL-A04, ② PNL-A05, ③ PNL-A07. Kırmızı
+//   yeşile çevirecek Adımın kodunu taşır: ② PNL-A05, ③ PNL-A07. ① PNL-A04 ile
+//   yeşile döndü ve işareti kaldırıldı. Kırmızı
 //   bir `todo` süiti düşürmez fakat çıktıda ✖ ve "# TODO" ile görünür kalır. Kodu
 //   onaran Adım nöbetin yeşile döndüğünü gösterir ve işareti aynı işlemede kaldırır;
 //   işaret kalırsa nöbet bir sonraki gerilemeyi yakalamaz.
@@ -79,8 +80,7 @@ function faresizOpaklik(stil: string, secici: string): number {
   return deger;
 }
 
-test("Ağaç çizgisi şikâyeti: Ray ağacının girinti kılavuzları fare ağacın üzerine gelmeden görünür (CSS kuralı)",
-  bekliyor("PNL-A04", "kılavuz çizgisi fare ağacın üzerine gelmeden de çizilir"), () => {
+test("Ağaç çizgisi şikâyeti: Ray ağacının girinti kılavuzları fare ağacın üzerine gelmeden görünür (CSS kuralı)", () => {
     // Ölçümün kendisi sınanır: hover kuralı ölçüme karışmaz, yazılmamış opaklık görünür sayılır.
     assert.equal(faresizOpaklik(".x::before{opacity:0}[role=\"tree\"]:hover .x::before{opacity:1}", ".x::before"), 0);
     assert.equal(faresizOpaklik(".x::before{width:1px}", ".x::before"), 1);
