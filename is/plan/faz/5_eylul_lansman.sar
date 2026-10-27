@@ -6864,8 +6864,9 @@ sessizce körleşmez.
           sınır: "0.9.195 paketi geri dönüş için diskte saklanır; Founder beğenmezse bu basamağın işlemeleri geri alınır."
         }
 
-        Adım( kod: PNL-A19, ad: "Anında Sekme Geçişinin Teslimi", durum: beklemede, öncelik: p0, onayBekler: founder,
-          bağımlı: [ PNL-A15, PNL-A18 ],
+        Adım( kod: PNL-A19, ad: "Anında Sekme Geçişinin Teslimi", durum: geliştirmede, öncelik: p0, onayBekler: founder,
+          bağımlı: [ PNL-A18 ],
+          referans: [ PNL-A15 ],
           ne: "📦 0.9.197 sürümü: birinci basamağın ikinci paketi. Founder 2026-10-28 tarihinde 0.9.196 paketinin sekme geçişi düzeltmesi beklenmeden kurulmasına hükmettiği için anında sekme geçişi bu ayrı pakette teslim edilir." ) {
           görev: [
             "Birinci basamağın teslim yolunu 0.9.197 için yinele.",

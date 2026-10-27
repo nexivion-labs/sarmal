@@ -2,6 +2,13 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.197 — 2026-10-28 (sekme geçişi eklentiyi beklemiyor)
+
+- **Sekmeler anında değişir.** Panel beş sekmenin içeriğini hazır tutar; sekmeye tıklayınca içerik eklentiye gidip gelen bir yanıt beklemeden değişir. Eklenti uzun bir denetim turundayken de sekme geçişi donmaz.
+- **Bir sekmenin içeriği başka sekmenin yerine çizilmez.** Eklentiden geç gelen bir güncelleme yalnız kendi sekmesine yazılır ve seçili sekmeyi değiştirmez. Önceki sürümde Makinist seçiliyken Yol Haritası ya da Mini Graf satırları görünebiliyordu.
+- **Seçili sekmenin tek kaynağı panel.** Bölüm komutları ile paneldeki tıklama aynı seçimi yazar ve ikisi ayrışmaz. Gizli sekmeler de güncel tutulur.
+- **Davranışı nöbetler koruyor.** Gerçek VS Code'da eklenti üç saniye kilitliyken yapılan altı sekme tıklamasının her birinde seçili sekme ile görünen içerik aynıdır; eski kusur geri konunca nöbet düşer.
+
 ## 0.9.196 — 2026-10-28 (panel Founder'ın çalışma düzenine döndü)
 
 - **Panelde beş sekme ve geniş, alçak yerleşim.** Sekmeler Ray, Tren, Makinist, Gözlemler ve Ayarlar sırasıyla durur; Gözlemler ile Ayarlar şimdilik boş bölümdür. Sekme şeridi ve başlıklar küçüldü. Editörün altındaki geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur, dar panelde alt alta durur. Panel pencere boyuna göre sıkışıp küçük bir kutuya dönmez ve her açılış Ray sekmesiyle başlar.
