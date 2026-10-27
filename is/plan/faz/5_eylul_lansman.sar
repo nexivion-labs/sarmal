@@ -6815,6 +6815,23 @@ sessizce körleşmez.
           ]
           sınır: "Denetim kuralları değişmez. İşçi iş parçacığına taşıma bu Adımın işi değildir."
         }
+
+        Adım( kod: PNL-A18, ad: "Sekme Geçişinin Eklentiyi Beklememesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A03 ],
+          referans: [ OZK-13 ],
+          ne: "⏱️ Sekme geçişinin anında ve eklentiden bağımsız olması. Founder 2026-10-28 tarihli ekran kaydında 0.9.195 sürümünde şunu göstermiştir: sekmeye tıklayınca vurgu hemen yeni sekmeye geçmekte, fakat içerik eski sekmede kalmakta ya da başka bir sekmenin içeriği görünmektedir; Makinist seçiliyken Yol Haritası, ardından Mini Grafın satırları görünmüş, Tren ve Ray tıklamaları içeriği değiştirmemiştir. Neden, içeriğin değişmesinin eklentiye gidip gelen bir iletiye bağlı olmasıdır: eklenti denetim turunun bölünmez senkron bloğundayken ileti gecikmekte ya da yanıt yanlış sekmeye düşmektedir. Founder bu durumu donma ve bazen açılmama olarak tarif etmiştir." ) {
+          görev: [
+            "Beş sekmenin içeriğini panelin webview'inde hazır tut; sekmeye tıklayınca içerik webview'in kendi içinde anında değişsin ve eklentiye gidip gelen bir yanıt beklenmesin.",
+            "Eklentiden gelen her parça güncellemesi kendi sekmesinin bölümüne yazılsın; hangi sekme seçili olursa olsun bir sekmenin içeriği başka bir sekmenin yerine çizilmesin.",
+            "Webview'deki sekme seçimi ile eklentinin tuttuğu sekme ve bölüm yuvası seçimi tek kaynaktan yürüsün; ikisinin ayrışması olanaksız olsun.",
+            "Nöbet kur: eklenti uzun bir senkron iş yaparken sekme geçişi gecikmesiz gerçekleşir ve seçili sekme ile görünen içerik her an aynıdır."
+          ]
+          kabul: [
+            "Eklentinin iş parçacığı yapay olarak birkaç saniye kilitliyken sekme geçişi webview'de anında gerçekleşir ve doğru içerik görünür; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
+            "Hiçbir sırada seçili sekme ile görünen içerik ayrışmaz; parça güncellemesi yalnız kendi sekmesine yazılır.",
+            "Sekme geçişinin kaydı birinci basamağın tesliminde Founder'a sunulmak üzere alınmıştır."
+          ]
+          sınır: "Denetim turunun kendisi bu Adımda değişmez; turun ana iş parçacığından çıkarılması işçi Blokunun işidir."
+        }
       }
     }
 
@@ -6825,8 +6842,8 @@ sessizce körleşmez.
         ne: "🔍 Her basamağın kapıdan ve Founder'ın gözünden geçtiği dal" ) {
 
         Adım( kod: PNL-A15, ad: "Birinci Basamağın Teslimi", durum: beklemede, öncelik: p0, onayBekler: founder,
-          bağımlı: [ PNL-A03, PNL-A04, PNL-A05, PNL-A06, PNL-A07, PNL-A14 ],
-          ne: "📦 0.9.196 sürümü: zemin, Ray, Onaylar ve hız." ) {
+          bağımlı: [ PNL-A03, PNL-A04, PNL-A05, PNL-A06, PNL-A07, PNL-A14, PNL-A18 ],
+          ne: "📦 0.9.196 sürümü: zemin, Ray, Onaylar, hız ve anında sekme geçişi." ) {
           görev: [
             "Sürümü, kilit dosyasını ve değişiklik günlüğünü birlikte 0.9.196'ya ilerlet.",
             "Bütün süitleri, görsel kontrolü ve gerçek VS Code süitini koştur; paketi yalnız üret.",
