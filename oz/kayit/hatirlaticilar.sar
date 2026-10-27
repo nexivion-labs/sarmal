@@ -1439,12 +1439,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-DOGUS-WINDOWS-KANCALARI,
-  durum:            açık,
+  durum:            tamamlandı,
+  hatırlat:         BKM-DNT-A21,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-22,
   dönüşTetikleyici: "Doğuşla açılmış bir kökün Windows bilgisayarına taşınması planlandığında; en geç böyle bir taşımanın kurulum paketi hazırlanırken",
-  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünün Windows bilgisayarına taşınması hazırlanırken ölçülmüştür ki doğuş paketinin ürettiği kanca betikleri (ogreti/sablon/dogus altındaki dogus_kilidi.sh ve denetim_kapisi.sh) ve kanca ayarındaki sh çağrıları Windows'ta Git Bash kurulu değilse çalışmaz. Bu durumda yeni kökte doğuş kilidi ve denetim kapısı sessizce devre dışı kalır. Kancaların Node ile yazılmış, işletim sisteminden bağımsız karşılıkları hazırlanmalı ve doğuş paketi bunları üretmelidir; kanca ayarı da yorumlayıcıyı platforma göre seçmelidir. Kabul ölçütü olarak aynı doğuş paketi macOS'ta ve Windows'ta kurulduğunda iki kancanın da aynı tanıyı verdiği ölçülür."
+  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünün Windows bilgisayarına taşınması hazırlanırken ölçülmüştür ki doğuş paketinin ürettiği kanca betikleri (ogreti/sablon/dogus altındaki dogus_kilidi.sh ve denetim_kapisi.sh) ve kanca ayarındaki sh çağrıları Windows'ta Git Bash kurulu değilse çalışmaz. Bu durumda yeni kökte doğuş kilidi ve denetim kapısı sessizce devre dışı kalır. Kancaların Node ile yazılmış, işletim sisteminden bağımsız karşılıkları hazırlanmalı ve doğuş paketi bunları üretmelidir; kanca ayarı da yorumlayıcıyı platforma göre seçmelidir. Kabul ölçütü olarak aynı doğuş paketi macOS'ta ve Windows'ta kurulduğunda iki kancanın da aynı tanıyı verdiği ölçülür. KAPANIŞ (2026-10-27): Kancaların Node karşılıkları 2026-10-23 tarihli 2d61536 işlemesiyle yazılmış ve doğuş paketi yeni köklere yalnız onları kurar olmuştur; kancaların iki Windows kurulumunda çalıştığı 2026-10-25 tarihinde durum kaydına yazılmıştır (306f423). İş BKM-DNT-A21 ile kayda alınmıştır."
 )
 
 Hatırlatıcı(
