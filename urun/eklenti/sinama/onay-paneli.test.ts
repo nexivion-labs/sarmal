@@ -476,7 +476,7 @@ test("panel kendi zamanlayıcısını kurmaz: tazeleme onay kuyruğunun nabzınd
 
 // ── ⑧ Paket bildirimi ile sağlayıcı tek kaynaktan ───────────────────────────
 
-test("görünüş kimliği: Onaylar ayrı görünüm değildir; Makinist ağacının üst düğümüdür, kart yan sekmede açılır", () => {
+test("görünüş kimliği: Onaylar ayrı görünüm değildir; Makinist ağacının üst düğümüdür", () => {
   const gorunusler = PAKET.contributes.views["sarmal-yol"];
   const kimlikler = gorunusler.map((g) => g.id);
   assert.ok(!kimlikler.includes(GORUNUS_ONAYLAR),
@@ -488,9 +488,9 @@ test("görünüş kimliği: Onaylar ayrı görünüm değildir; Makinist ağacı
   // Kenar çubuğu görünümleri: sarmalPanel · dört yuva (kapta gösterilmez) · kısıtlı karşılama.
   // Founder 2026-10-21 (dördüncü hüküm): sayı bilerek dokuzdan altıya inmiştir; kapta tek görünüm görünür.
   assert.equal(kimlikler.length, 6, "kenar çubuğunda altı görünüş bildirimi bekleniyordu");
-  // Kart: sağlayıcı görünüm kaydetmez, WebviewPanel açar.
+  // Sağlayıcı görünüm kaydetmez. Kartın bir WebviewPanel olduğunu sabitleyen iddia OZK-13 ile
+  // kaldırıldı; tersini "tek tık (OZK-13)" nöbeti PNL-A07'ye bağlı olarak ölçer.
   const kaynak = oku("../src/onay-paneli.ts");
-  assert.ok(kaynak.includes("createWebviewPanel"), "Onaylar kartı yan sekmede açılmıyor");
   assert.ok(!kaynak.includes("registerWebviewViewProvider"), "Onaylar hâlâ kenar çubuğu görünümü kaydediyor");
 });
 
@@ -742,7 +742,7 @@ test("tek tık: kapı komutu açma işini KENDİSİ üstlenir, VS Code'un tıkla
     "iki openMode kipinde de gösterdi — kullanıcı yine ikinci bir tık harcar");
 });
 
-test("tek tık: panelde gösterme görünüşü öne getirir, satırı AÇAR ve odaklar", () => {
+test("tek tık: panelde gösterme satırı AÇAR ve odaklar; hiçbir şey yan sütunda açılmaz", () => {
   const kaynak = oku("../src/onay-paneli.ts");
   const basi = kaynak.indexOf("async gosterVeAc(");
   assert.ok(basi > 0, "gosterVeAc gövdesi kaynakta bulunamadı");
@@ -751,14 +751,29 @@ test("tek tık: panelde gösterme görünüşü öne getirir, satırı AÇAR ve 
     "gösterme kapı satırını açmıyor; karar satırları ve gerekçe kutusu görünmez kalır");
   assert.ok(/acikligiYaz\(onayKimligi\(\{ tur: "dosya"[^)]*\}\), true\)/.test(g),
     "gösterme dosya satırını açmıyor; kapı kapalı bir dalın altında gizli kalır");
-  // Founder 2026-10-22: kart yan sütun açmaz, etkin sütunda öne gelir.
-  assert.ok(/kart\.reveal\(vscode\.ViewColumn\.Active, false\)/.test(g),
-    "gösterme kartı etkin sütunda öne getirmiyor; kullanıcı kartı kendisi aramak zorunda kalır ya da ekran bölünür");
   assert.ok(!/ViewColumn\.Beside/.test(kaynak),
     "onay kartı yan sütunda açılıyor; ekran üçe bölünür ve açık dosya şeride sıkışır");
   assert.ok(/tur: "odakla"/.test(g),
     "gösterme satıra odaklanmıyor; kullanıcının bir sonraki tuşu boşa düşer");
 });
+
+// OZK-13 (Founder 2026-10-27): dosya editörde ilgili satırda açılır, odak panelde kalır, panel
+// hiçbir şeyi editörün yerine ya da yan sütuna açmaz; onay kararı panelin içinde, satırın altında
+// verilir. Bu nöbet eskiden kartın etkin sütunda öne gelmesini (`kart.reveal(ViewColumn.Active,
+// false)`) ve kartın bir WebviewPanel olmasını sabitliyordu; ikisi de hükmün yasakladığı davranıştır.
+// Davranışın kendisini panel-sikayetleri.test.ts kabuk sahtesiyle ölçer; bu nöbet kaynağı okur.
+test("tek tık (OZK-13): kapıyı göstermek editörde kart açmaz ve öne getirmez; odak panelde kalır",
+  { todo: "PNL-A07 yeşile çevirecek: onay kararı panelin içinde verilir; editörde kart açılmaz" }, () => {
+    const kaynak = oku("../src/onay-paneli.ts");
+    const basi = kaynak.indexOf("async gosterVeAc(");
+    assert.ok(basi > 0, "gosterVeAc gövdesi kaynakta bulunamadı");
+    const g = kaynak.slice(basi, basi + 900);
+    assert.ok(!/kartiAc\(|\.reveal\(/.test(g),
+      "kapıyı göstermek kartı açıyor ya da öne getiriyor; kart editörün etkin sütununda dosyanın üstünü örter");
+    assert.ok(!kaynak.includes("createWebviewPanel"),
+      "onay yüzeyi editör sütununda WebviewPanel açıyor; OZK-13 kararın panelin içinde verilmesini ister");
+    assert.ok(!/preserveFocus: false/.test(kaynak), "onay yüzeyi açılırken odağı panelden alıyor");
+  });
 
 test("ebeveyn: karar satırının atası KAPI, kapının atası DOSYA, dosyanın atası yok", () => {
   const yol = "/depo/plan.sar";

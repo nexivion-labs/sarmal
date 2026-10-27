@@ -847,13 +847,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SINAMA-TIP-DENETIMI-KAPSAM-DISI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         PNL-A02,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Eklentinin tip denetimi yapılandırması ya da minigraf sınaması bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır. EK (2026-10-10): mağaza öncesi turun bağımsız incelemesi sınama klasörünün tür denetiminde önceden var olan üç hatayı yeniden ölçmüştür (bolum-yuvasi.test.ts içinde iki, minigraf.test.ts içinde bir); hiçbir kapı bu denetimi koşmadığı için hatalar görünmeden yaşamaktadır."
+  ne:               "EKL-F6-A09 turunda 2026-09-15 tarihinde ölçülmüştür: eklentinin sınama klasörü kendi yapılandırmasıyla tip denetiminden geçirildiğinde minigraf.test.ts dosyasının otuz birinci satırı TS2739 hatası vermektedir. Resmî tip denetimi komutu sınama klasörünü kapsamadığı için temiz geçmekte ve bu hata hiçbir kapıda görünmemektedir. Doğru davranış, ya hatanın düzeltilip sınama klasörünün tip denetimi kapısına alınması ya da kapsam dışı bırakılışının gerekçesiyle yazılmasıdır. EK (2026-10-10): mağaza öncesi turun bağımsız incelemesi sınama klasörünün tür denetiminde önceden var olan üç hatayı yeniden ölçmüştür (bolum-yuvasi.test.ts içinde iki, minigraf.test.ts içinde bir); hiçbir kapı bu denetimi koşmadığı için hatalar görünmeden yaşamaktadır. KAPANIŞ (2026-10-27): PNL-A02 ile eklentinin tip denetimi betiği sınama klasörünü ve gerçek VS Code süitinin klasörünü de kapsar oldu; sürekli tümleştirme aynı betiği çağırdığı için kapı orada da koşar. Ölçülen üç hata minigraf sınamalarının fikstürlerindeki eksik alanlardı ve davranış değiştirilmeden giderildi; sınama klasörünün tip hatası üçten sıfıra indi."
 )
 
 Hatırlatıcı(

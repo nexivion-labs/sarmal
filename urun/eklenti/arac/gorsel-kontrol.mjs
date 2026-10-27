@@ -10,8 +10,8 @@
 //     1. Verilen proje kökünün gerçek verisiyle panelin tam HTML'ini üretir
 //        (arac/gorsel-kontrol-uret.ts; Ray · Tren · Makinist · Mini Graf'ın üç
 //        görünümü seçili ve seçimsiz · görünüm seçici).
-//     2. Her değişkeyi başsız Chromium'da 300 ve 460 piksel genişlikte açar, koyu
-//        VS Code teması değişkenlerini tanımlar ve ekran görüntülerini yazar.
+//     2. Her değişkeyi başsız Chromium'da üç ölçüde açar, koyu VS Code teması
+//        değişkenlerini tanımlar ve ekran görüntülerini yazar.
 //     3. DOM ölçümüyle kontrol listesini koşar ve sonucu sonuc.txt ile sonuc.json
 //        dosyalarına yazar. Bir kontrol düşerse çıkış kodu 1'dir.
 //     4. --onceki <dizin> verilirse iki koşunun görüntülerini karsilastirma.html
@@ -21,14 +21,25 @@
 //     node arac/gorsel-kontrol.mjs <proje_dizini> <cikti_dizini>
 //          [--secili KOD] [--acik 3] [--dil tr|en] [--onceki <onceki_cikti_dizini>]
 //
-//   Boyutlar: 300×720 ve 460×720 (kenar çubuğu), 1400×500 (alt panel).
+//   Boyutlar: 300×720 ve 460×720 (kenar çubuğu), 1400×400 (Founder'ın kullandığı
+//   alt panel: editörün altında, sola yaslı, geniş ve alçak · 2026-10-27).
 //   Kontrol listesi: betik hatası · sekme şeridi başta ve en alta kaydırınca üstte ·
-//   Ray girinti kılavuzları ve etkin kılavuz · Ray başlıklarının tıklama, Enter ve
-//   Space ile katlanması · Makinist üst düğümlerinin katlanabilirliği · ana yazı
-//   boyutu 11–14 px · Mini Graf yazılarının görünürlüğü, taşmazlığı, satır boyu ve
-//   bağ çizgisi sayısı · onay kartının açıldığı sütun · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
+//   Ray girinti kılavuzları (fare ağacın üzerindeyken ve DEĞİLKEN) ve etkin kılavuz ·
+//   Ray başlıklarının tıklama, Enter ve Space ile katlanması · Makinist üst
+//   düğümlerinin katlanabilirliği · ana yazı boyutu 11–14 px · Mini Graf yazılarının
+//   görünürlüğü, taşmazlığı, satır boyu ve bağ çizgisi sayısı · Mini Graf düğümüne
+//   gerçek fare tıklamasının dosya açma iletisi doğurması (üç görünüm) · onay
+//   kapısının editörde kart açmaması (OZK-13) · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
+//
+//   BEKLENEN KIRMIZI (PNL-A02 · Founder 2026-10-27 şikâyetleri). Bazı kontroller
+//   bugünkü panelde bilerek kırmızıdır, çünkü onaracak Adım henüz koşmamıştır; böyle
+//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A04 ağaç
+//   çizgisi, PNL-A05 Mini Graf tıklaması, PNL-A07 onay kartı). İşaretli kontrolün
+//   kırmızısı çıkış kodunu bozmaz ve "BEKLENEN" diye yazılır. İşaretli kontrol yeşile
+//   dönerse "YEŞİLE DÖNDÜ" yazılır ve çıkış kodu 1 olur: onaran Adım işareti aynı
+//   işlemede kaldırır, yoksa kontrol bir sonraki gerilemeyi yakalamaz.
 //
 //   Playwright eklentinin bağımlılığı değildir. Komut onu sırasıyla SARMAL_PLAYWRIGHT
 //   ortam değişkeninden (playwright paketinin dizini ya da index.mjs yolu), eklenti
@@ -44,8 +55,8 @@ import { basename, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const EKLENTI = resolve(fileURLToPath(new URL("..", import.meta.url)));
-/** Kenar çubuğu (dar ve geniş) ve alt panel (geniş ve kısa) boyutları. */
-const BOYUTLAR = [{ ad: "300", w: 300, h: 720 }, { ad: "460", w: 460, h: 720 }, { ad: "alt", w: 1400, h: 500 }];
+/** Kenar çubuğu (dar ve geniş) ve alt panel (geniş ve alçak; Founder'ın panelinin ölçüsü) boyutları. */
+const BOYUTLAR = [{ ad: "300", w: 300, h: 720 }, { ad: "460", w: 460, h: 720 }, { ad: "alt", w: 1400, h: 400 }];
 /** Ana yazıların (ağaç satırı, düğüm adı) izinli boyutu: VS Code ağaç ölçeği. */
 const YAZI_EN_AZ = 11, YAZI_EN_COK = 14;
 
@@ -206,12 +217,39 @@ function kilavuzOlc() {
     return b.content !== "none" && b.backgroundImage !== "none" && parseFloat(b.width) > 0 && Number(b.opacity) > 0;
   });
   const etkin = [...document.querySelectorAll("#agac .sat.kl")].filter((s) => parseFloat(getComputedStyle(s, "::after").borderLeftWidth) > 0);
-  return { satir: satirlar.length, derinSatir: derin.length, kilavuzlu: cizili.length, etkin: etkin.length };
+  return { satir: satirlar.length, derinSatir: derin.length, kilavuzlu: cizili.length, etkin: etkin.length,
+    agacUzerinde: !!document.querySelector('[role="tree"]:hover') };
+}
+/**
+ * Mini Graf'ta dosyaya götüren ilk düğüm bağı ve kullanıcının tıklayacağı nokta (düğümün adı).
+ * Bağ HTML `<a>` (Ağaç, İlerleme) ya da SVG `<a>` (Klasik) olabilir; ikisi de `a` seçicisine uyar.
+ */
+function grafBagHedefi() {
+  const kok = document.getElementById("graf")?.shadowRoot;
+  const bag = kok && [...kok.querySelectorAll("a")].find((a) => (a.getAttribute("href") ?? "").startsWith("command:sarmal.dosyaAc"));
+  if (!bag) return { var: false };
+  bag.scrollIntoView({ block: "center", inline: "start" });
+  const ad = bag.querySelector(".ad, text.etiket") ?? bag;
+  const r = ad.getBoundingClientRect();
+  const x = Math.min(innerWidth - 2, r.left + Math.min(r.width / 2, 20)), y = r.top + r.height / 2;
+  const ust = kok.elementFromPoint(x, y);
+  return { var: true, x, y, href: bag.getAttribute("href"), ad: bag.namespaceURI === "http://www.w3.org/2000/svg" ? "SVG a" : "HTML A",
+    tagName: bag.tagName, ustte: !!ust && bag.contains(ust) };
+}
+/** `command:sarmal.dosyaAc?[dosya, satır]` bağının argümanları dosya ve satır mı (panelin komut köprüsünün kuralı)? */
+function dosyaAcBagiGecerli(href) {
+  const i = href.indexOf("?");
+  if (!href.startsWith("command:sarmal.dosyaAc?") || i < 0) return false;
+  try {
+    const a = JSON.parse(decodeURIComponent(href.slice(i + 1)));
+    return Array.isArray(a) && typeof a[0] === "string" && typeof a[1] === "number";
+  } catch { return false; }
 }
 
 // ── 4. Koşu ─────────────────────────────────────────────────────────────────
 const kontroller = [];
-const kontrol = (ad, gecti, ayrinti) => { kontroller.push({ ad, gecti: !!gecti, ayrinti }); };
+/** `bekleyen`: kontrol bugün bilerek kırmızıdır; değer onu yeşile çevirecek Adımın kodudur (başlıktaki BEKLENEN KIRMIZI). */
+const kontrol = (ad, gecti, ayrinti, bekleyen) => { kontroller.push({ ad, gecti: !!gecti, ayrinti, ...(bekleyen ? { bekleyen } : {}) }); };
 const goruntuler = [];
 const tarayici = await chromium.launch();
 try {
@@ -301,10 +339,20 @@ try {
             const d = s.reduce((a, x) => (Number(x.dataset.d) > Number(a.dataset.d) ? x : a), s[0]);
             d?.querySelector(".et")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
           });
+          // Ağaç çizgisi şikâyeti (Founder 2026-10-27): çizgiler fare ağacın üzerine GELMEDEN görünür.
+          // Fare önce sekme şeridine (ağacın dışına) götürülür ve ağacın :hover durumunda olmadığı ölçülür.
+          await p.mouse.move(2, 2);
+          await p.waitForTimeout(150);
+          const f = await p.evaluate(kilavuzOlc);
+          kontrol(`${etiket}: ağaç çizgisi şikâyeti: Ray ağacında girinti kılavuzları fare ağacın üzerine gelmeden çizili`,
+            !f.agacUzerinde && f.derinSatir > 0 && f.kilavuzlu === f.derinSatir, JSON.stringify(f), "PNL-A04");
+          const faresiz = `${d.ad}-${W}-kilavuz-faresiz.png`;
+          await p.screenshot({ path: join(CIKTI, faresiz) });
+          goruntuler.push(faresiz);
           await p.mouse.move(agac.x + agac.width - 30, agac.y + 40);
           await p.waitForTimeout(150);
           const k = await p.evaluate(kilavuzOlc);
-          kontrol(`${etiket}: Ray ağacında girinti kılavuzları çizili`, k.derinSatir > 0 && k.kilavuzlu === k.derinSatir, JSON.stringify(k));
+          kontrol(`${etiket}: Ray ağacında girinti kılavuzları çizili (fare ağacın üzerindeyken)`, k.derinSatir > 0 && k.kilavuzlu === k.derinSatir, JSON.stringify(k));
           kontrol(`${etiket}: Ray ağacında seçimin etkin kılavuzu çizili`, k.etkin > 0, JSON.stringify(k));
           const dosya = `${d.ad}-${W}-kilavuz.png`;
           await p.screenshot({ path: join(CIKTI, dosya) });
@@ -335,17 +383,44 @@ try {
           await cek("secili");
         }
         await cek("dip");
+        // Mini Graf şikâyeti (Founder 2026-10-27): düğüme GERÇEK fare tıklaması dosyayı açan komut
+        // iletisini doğurur. Tıklama en sonda yapılır; bağ sayfayı gezdirirse öteki ölçümler bozulmaz.
+        if (d.gorunum) {
+          const h = await p.evaluate(grafBagHedefi);
+          let iletiler = [];
+          let hata = "";
+          if (h.var) {
+            try {
+              await p.evaluate(() => { window.__iletiler.length = 0; });
+              await p.mouse.click(h.x, h.y);
+              await p.waitForTimeout(100);
+              iletiler = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "komut"));
+            } catch (e) { hata = String(e?.message ?? e).split("\n")[0]; }
+          }
+          const ulasti = iletiler.some((m) => m.href === h.href) && dosyaAcBagiGecerli(h.href ?? "");
+          kontrol(`${etiket}: Mini Graf şikâyeti: ${d.gorunum} görünümünde düğüme gerçek tıklama dosyayı açan komut iletisini doğurur`,
+            h.var && h.ustte && ulasti,
+            JSON.stringify({ bag: h.var, ad: h.ad, tagName: h.tagName, ustte: h.ustte, komutIletisi: iletiler.length, hata: hata || undefined }),
+            d.gorunum === "klasik" ? "PNL-A05" : undefined);
+        }
       }
       await p.close();
     }
   }
 } finally { await tarayici.close(); }
 
-// Onay kartı: etkin sütunda açılır; kod düzeyinde yan sütun (ViewColumn.Beside) kullanılmaz.
-const onayKaynagi = readFileSync(join(EKLENTI, "src", "onay-paneli.ts"), "utf8");
-kontrol("onay kartı etkin sütunda açılır (src/onay-paneli.ts içinde ViewColumn.Beside yok)",
-  !onayKaynagi.includes("ViewColumn.Beside") && onayKaynagi.includes("ViewColumn.Active"),
-  (onayKaynagi.match(/ViewColumn\.\w+/g) ?? []).join(", "));
+// Onay şikâyeti (OZK-13 · Founder 2026-10-27): dosya editörde ilgili satırda açılır, odak panelde
+// kalır, panel hiçbir şeyi editörün yerine ya da yan sütuna açmaz; karar panelin içinde verilir.
+// Bu kontrol eskiden kartın etkin sütunda (ViewColumn.Active) açılmasını doğru sayıyordu. Onay yolu
+// editör kabuğunda koştuğu için tarayıcıda ölçülemez; ölçüm yolun kaynağını okur. Davranışın kendisini
+// sinama/panel-sikayetleri.test.ts kabuk sahtesiyle ölçer.
+const onayYolu = ["onay-paneli.ts", "onay-kuyrugu.ts", "makinist.ts"].filter((f) => existsSync(join(EKLENTI, "src", f)));
+const onayIhlali = onayYolu.flatMap((f) => {
+  const k = readFileSync(join(EKLENTI, "src", f), "utf8");
+  return [...k.matchAll(/createWebviewPanel|ViewColumn\.\w+|preserveFocus: false/g)].map((m) => `${f}: ${m[0]}`);
+});
+kontrol("onay şikâyeti (OZK-13): onay kapısı açılınca editörde kart açılmaz ve odak panelde kalır (onay yolunda createWebviewPanel, ViewColumn ve preserveFocus: false yok)",
+  onayYolu.length > 0 && onayIhlali.length === 0, onayIhlali.join(" · ") || `okunan: ${onayYolu.join(", ")}`, "PNL-A07");
 
 // ── 5. Etkileşim envanteri: eski panel (git HEAD) ↔ yeni panel ─────────────
 //    Eski panel ayrı VS Code görünümlerinden kuruluydu; her görünüm, başlık düğmesi,
@@ -373,6 +448,8 @@ const ESKI_GORUNUM = {
   sarmalBolumYuvasi3: { bilincli: "Founder 2026-10-21: bölüm yuvaları kapandı" },
   sarmalBolumYuvasi4: { bilincli: "Founder 2026-10-21: bölüm yuvaları kapandı" },
   sarmalKisitliKarsilama: { yerinde: true },
+  // 0.9.194 işlendiğinden beri git HEAD'deki paket tek panelin kendisini de taşır.
+  sarmalPanel: { yerinde: true },
 };
 const eskiPaket = gitHead("package.json");
 if (!eskiPaket) {
@@ -425,10 +502,20 @@ if (!eskiPaket) {
 }
 
 // ── 6. Sonuç ────────────────────────────────────────────────────────────────
-const dusen = kontroller.filter((k) => !k.gecti);
-const metin = kontroller.map((k) => `${k.gecti ? "GEÇTİ" : "DÜŞTÜ"}  ${k.ad}${k.gecti ? "" : `\n        ${k.ayrinti}`}`).join("\n")
+// İşaretli (beklenen kırmızı) kontrolün kırmızısı çıkış kodunu bozmaz; yeşile dönmesi bozar (başlık).
+const beklenen = kontroller.filter((k) => k.bekleyen && !k.gecti);
+const yesileDonen = kontroller.filter((k) => k.bekleyen && k.gecti);
+const dusen = [...kontroller.filter((k) => !k.bekleyen && !k.gecti), ...yesileDonen];
+const satir = (k) => {
+  if (!k.bekleyen) return `${k.gecti ? "GEÇTİ" : "DÜŞTÜ"}  ${k.ad}${k.gecti ? "" : `\n        ${k.ayrinti}`}`;
+  return k.gecti
+    ? `DÜŞTÜ  YEŞİLE DÖNDÜ (${k.bekleyen}): ${k.ad}\n        beklenen kırmızı yeşile döndü; ${k.bekleyen} işareti kaldırılmalı`
+    : `BEKLENEN KIRMIZI (${k.bekleyen})  ${k.ad}\n        ${k.ayrinti}`;
+};
+const metin = kontroller.map(satir).join("\n")
   + (uyarilar.length ? `\n\n${uyarilar.map((u) => `UYARI  ${u.ad}\n        ${u.ayrinti}`).join("\n")}` : "")
-  + `\n\n${kontroller.length - dusen.length}/${kontroller.length} kontrol geçti · ${uyarilar.length} uyarı.\n`;
+  + `\n\n${kontroller.length - dusen.length - beklenen.length}/${kontroller.length} kontrol geçti · ${beklenen.length} beklenen kırmızı`
+  + ` (${[...new Set(beklenen.map((k) => k.bekleyen))].join(", ") || "yok"}) · ${dusen.length} düştü · ${uyarilar.length} uyarı.\n`;
 writeFileSync(join(CIKTI, "sonuc.txt"), metin);
 writeFileSync(join(CIKTI, "sonuc.json"), JSON.stringify({ proje: PROJE, secili: uretim.secili, kontroller, uyarilar, goruntuler }, null, 2));
 
@@ -447,6 +534,6 @@ th{text-align:left;font-weight:500;max-width:180px;word-break:break-all}img{max-
   console.log(`karşılaştırma: ${join(CIKTI, "karsilastirma.html")}`);
 }
 
-console.log(metin.split("\n").filter((l) => l.startsWith("DÜŞTÜ") || l.startsWith("UYARI") || l.startsWith("        ") || /kontrol geçti/.test(l)).join("\n"));
+console.log(metin.split("\n").filter((l) => l.startsWith("DÜŞTÜ") || l.startsWith("BEKLENEN") || l.startsWith("UYARI") || l.startsWith("        ") || /kontrol geçti/.test(l)).join("\n"));
 console.log(`çıktı: ${CIKTI}`);
 process.exit(dusen.length ? 1 : 0);

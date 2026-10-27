@@ -31,7 +31,7 @@ function dagYap(dugumler: Array<Partial<DagDugum> & { kod: string }>): Dag {
       oncekiler: [], sonrakiler: [], ...d,
     } as DagDugum);
   }
-  return { dugumler: m, kopuk: [], oz: [], disProje: [] };
+  return { dugumler: m, kopuk: [], oz: [], disProje: [], catisiz: [], ortakKod: [], ayrisamayan: [] };
 }
 
 test("projeGrafiCikar: Faz→Blok→Katman→AltKatman→Adım tek grafta ve ayrı raylarda", () => {

@@ -1051,7 +1051,7 @@
   },
   "scripts": {
     "build": "node arac/renk-uret.mjs && node arac/simge-uret.mjs && node esbuild.mjs",
-    "tip-denetle": "tsc --noEmit -p .",
+    "tip-denetle": "tsc --noEmit -p . && tsc --noEmit -p sinama && tsc --noEmit -p sinama_vscode",
     "dil-denetle": "eslint .",
     "watch": "node esbuild.mjs --watch",
     "package": "vsce package --no-dependencies --readme-path README.en.md",

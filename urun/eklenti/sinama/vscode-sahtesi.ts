@@ -411,10 +411,14 @@ export class SahteWebviewGorunusu {
   readonly onDidChangeVisibility = this.gorunurluk.event;
   /** WebviewPanel yüzü (Onaylar kartı): başlık, durum olayı ve atılma olayı. */
   title = "";
+  /** `createWebviewPanel` ile açıldıysa açılış sütunu ve odak seçeneği (PNL-A02 · OZK-13 nöbeti okur). */
+  acilis?: unknown;
+  /** `reveal(sütun, odağıKoru)` çağrılarının argümanları sırasıyla. */
+  readonly onaGetirmeler: unknown[][] = [];
   readonly onDidChangeViewState = this.gorunurluk.event;
   private readonly atildi = new EventEmitter<void>();
   readonly onDidDispose = this.atildi.event;
-  reveal(): void { this.gosterimler += 1; }
+  reveal(...a: unknown[]): void { this.gosterimler += 1; this.onaGetirmeler.push(a); }
   dispose(): void { this.atildi.fire(); }
   show(): void { this.gosterimler += 1; }
   /** Panelin içinden kabuğa bir mesaj gönderir (kullanıcının tıklaması). */
@@ -452,9 +456,10 @@ export const window = {
   createTextEditorDecorationType: () => ({ key: "sahte", dispose() {} }),
   createOutputChannel: kanal,
   createStatusBarItem: () => ({ text: "", tooltip: "", command: undefined, show() {}, hide() {}, dispose() {} }),
-  createWebviewPanel: (_tur: string, baslik: string) => {
+  createWebviewPanel: (_tur: string, baslik: string, acilis?: unknown) => {
     const p = new SahteWebviewGorunusu();
     p.title = baslik;
+    p.acilis = acilis;
     kabuk.paneller.push(p);
     return p;
   },
