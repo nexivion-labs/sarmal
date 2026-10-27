@@ -1901,6 +1901,39 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-10-31",
           ]
           sınır: "Görünümün tasarımı ve bilgi içeriği değişmez; yalnız üretilen HTML hafifler."
         }
+
+        Adım( kod: BKM-DNT-A20, ad: "Tek Panelin ve Görsel Kontrolün Kayda Alınması", durum: tamamlandı, öncelik: p1, bağımlı: [],
+          referans: [ OZK-03, OZK-09, BKM-DNT-A18 ],
+          üretir: [ KOD-PANEL, KOD-PANEL-CEKIRDEK, KOD-PANEL-BETIK, KOD-MAKINIST, KOD-TREN, KOD-TREN-CEKIRDEK,
+                    KOD-MINIGRAF-GORUNUM, KOD-MINIGRAF-ILERLEME, KOD-MINIGRAF-KLASIK,
+                    KOD-SNM-PANEL, KOD-SNM-PANEL-CEKIRDEK, KOD-SNM-TREN-CEKIRDEK, KOD-SNM-MINIGRAF-GORUNUM, KOD-SNM-MINIGRAF-KLASIK,
+                    KOD-GORSEL-KONTROL, KOD-GORSEL-KONTROL-URET ],
+          ne: "🗂️ Plana inmeden yapılmış iki işin geriye dönük olarak kayda alınması. Founder'ın 2026-10-21 tarihli çizimiyle Sarmal kabı, Ray, Tren ve Makinist sekmelerini taşıyan tek bir webview görünümüne indirilmiştir (72d9f56); Founder'ın 2026-10-22 tarihli hükmüyle de panelin kurulumdan önce tarayıcıda görsel olarak denetlenmesini sağlayan araç yazılmıştır (414b96a). İki işleme de hiçbir Adıma bağlanmamış ve 'Adım: yok' satırıyla girmiştir; doğan on altı dosya bu yüzden yetim meyve uyarısı vermiş ve deponun kendi denetimi 2026-10-25'ten beri kırmızı kalmıştır. 2026-10-27 tarihli kayıt incelemesi ayrıca şunu göstermiştir: tek panelde onay kartının dosyanın bulunduğu sütunda açılması Founder'ın açık isteği değildir, uygulayıcının türetmesidir ve kilitli OZK-09 hükmüyle çelişmektedir. Bu Adım yapılmış işi değiştirmez; yalnız onu plana bağlar ve çelişkiyi kayda geçirir. Panelin Founder'ın 2026-10-27 tarihli hükümlerine göre yeniden kurulması ayrı bir Blokun işidir." ) {
+          görev: [
+            "72d9f56 ve 414b96a işlemelerinin doğurduğu on altı dosyayı Kod meyvesi olarak Faz dosyasının sonunda ilan et ve bu Adımın üretir kenarına bağla.",
+            "Tek panelin hangi hükümle ve hangi gerekçeyle yapıldığını, hangi parçasının Founder'ın isteği hangi parçasının uygulayıcının türetmesi olduğunu koşu kaydına yaz."
+          ]
+          kabul: [
+            "On altı dosyanın her biri tam olarak bir Kod düğümüyle ilan edilmiştir ve bu Adımın üretir kenarına bağlıdır.",
+            "Deponun kendi denetimi bu on altı dosya için yetim meyve uyarısı vermez."
+          ]
+          sınır: "Bu Adım hiçbir kaynak dosyaya dokunmaz ve panelin davranışını değiştirmez; onay kartının yeri, sekmelerin sayısı ve panelin hızı yeniden kurulum Blokunun konusudur. OZK-03 ile OZK-09 bu Adımda revize edilmez."
+          koşu: Koşum( kod: KSM-BKM-DNT-A20, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "72d9f56 (tek panel, on dört dosya) · 414b96a (görsel kontrol, iki dosya) · deponun kendi denetiminde yetim meyve uyarısı on yediden bire indi; kalan bir uyarı BKM-DNT-A21 ile kapanır", ne: "İki işleme geriye dönük olarak plana bağlandı. Kayıt incelemesi tek panel düzeninin Founder'ın 2026-10-21 hükmünden geldiğini, onay kartının dosyanın sütununda açılmasının ise uygulayıcının türetmesi olduğunu gösterdi; gerçek VS Code entegrasyon süiti o işlemelerde koşulmamıştı. Kaynak dosyalara dokunulmadı." )
+        }
+
+        Adım( kod: BKM-DNT-A21, ad: "Doğuş Kancalarının İşletim Sisteminden Bağımsız Yazılmasının Kayda Alınması", durum: tamamlandı, öncelik: p1, bağımlı: [],
+          referans: [ HTR-DOGUS-WINDOWS-KANCALARI, HTR-DOGUS-KILIDI-BELGE-METNI ],
+          üretir: [ KOD-SNM-DOGUS-KANCALARI ],
+          ne: "🗂️ 2026-10-23 tarihinde doğuş kilidi ile denetim kapısının yalnız Node'un yerleşik modüllerini kullanan karşılıkları yazılmış, doğuş paketi yeni köklere yalnız bu sürümleri kurar olmuş ve kilidin metin olarak geçen anadizin adını reddetme kusuru giderilmiştir (2d61536). İşleme bir Adıma değil iki hatırlatıcıya atıf vermiş, bu yüzden işin nöbet dosyası plana bağlanmamış ve yetim meyve uyarısı vermiştir. Bu Adım yapılmış işi değiştirmez; yalnız nöbet dosyasını plana bağlar." ) {
+          görev: [
+            "2d61536 işlemesinin doğurduğu nöbet dosyasını Kod meyvesi olarak ilan et ve bu Adımın üretir kenarına bağla."
+          ]
+          kabul: [
+            "Nöbet dosyası tam olarak bir Kod düğümüyle ilan edilmiştir ve deponun kendi denetimi onun için yetim meyve uyarısı vermez."
+          ]
+          sınır: "Bu Adım hiçbir kaynak dosyaya dokunmaz. İki hatırlatıcı açık kalır, çünkü kancalar gerçek bir Windows makinesinde henüz doğrulanmamıştır."
+          koşu: Koşum( kod: KSM-BKM-DNT-A21, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "2d61536 · doğuş sınamaları o işlemede 31/31 · deponun kendi denetiminde son yetim meyve uyarısı kapandı", ne: "Nöbet dosyası geriye dönük olarak plana bağlandı. Kancaların gerçek bir Windows makinesinde doğrulanması hatırlatıcıda açık kalır." )
+        }
       }
 
       AltKatman( kod: BKM-DNT-K3, departman: sınama, ad: "Nöbet Onarımları",
@@ -6855,3 +6888,41 @@ Kod( kod: KOD-SNM-DOGUS-AGACI-YARDIMCISI, dosya: "urun/cekirdek/sinama/dogus-aga
   ne: "🧪 Doğuş ağacı yardımcısı — fikstür yollarını doğuş paketinin manifestinden ve doğan giriş ilanının çözülen iskeletinden türetir; iki kaynak ayrışırsa yüklenirken adıyla düşer (HST-MTR-A07)" )
 Kod( kod: KOD-SNM-DOGUS-AGACI, dosya: "urun/cekirdek/sinama/dogus-agaci.test.ts",
   ne: "🧪 Doğuş ağacı nöbeti — tek kaynak sınamaları ile doğuşun ağacında koşan dört uçtan uca sınama: ilk tur büyütme, tohumlanan kusurlar, doğrudan Kitaplık düzeni ve çatı (HST-MTR-A07)" )
+
+// 🍎 BKM-DNT-A20 teslimi (2026-10-27): tek panel (72d9f56) ve görsel kontrol aracı (414b96a) geriye dönük kayıt
+Kod( kod: KOD-PANEL, dosya: "urun/eklenti/src/panel.ts",
+  ne: "🗂️ Sarmal kabının tek webview görünümünün kabuğu — sağlayıcı olaylarını dinler, yeniden çizimi birleştirir ve webview ile eklenti arasındaki ileti köprüsünü taşır (BKM-DNT-A20)" )
+Kod( kod: KOD-PANEL-CEKIRDEK, dosya: "urun/eklenti/src/panel-cekirdek.ts",
+  ne: "🗂️ Panelin saf çekirdeği — sağlayıcı ağaçlarını satıra, bölüme ve tam belgeye çevirir, içerik güvenlik ilkesini koyar ve komut izin listelerini tutar; VS Code kabuğu istemez (BKM-DNT-A20)" )
+Kod( kod: KOD-PANEL-BETIK, dosya: "urun/eklenti/src/panel-betik.ts",
+  ne: "🗂️ Panelin stil ve betik metni — sekme şeridi, ağaç satırları, bölüm başlıkları ve webview içindeki tıklama yakalayıcısı (BKM-DNT-A20)" )
+Kod( kod: KOD-MAKINIST, dosya: "urun/eklenti/src/makinist.ts",
+  ne: "🗂️ Makinist sekmesinin ağacı — Onaylar, Hatırlatıcılar, Gözlemler ve Fikirleri dört üst düğüm olarak gösterir (BKM-DNT-A20)" )
+Kod( kod: KOD-TREN, dosya: "urun/eklenti/src/tren.ts",
+  ne: "🗂️ Tren sekmesinin kabuğu — ilan edilmiş Etmenleri, geliştirmedeki Adımları ve son Koşum mührünü turun yayınından okur (BKM-DNT-A20)" )
+Kod( kod: KOD-TREN-CEKIRDEK, dosya: "urun/eklenti/src/tren-cekirdek.ts",
+  ne: "🗂️ Tren sekmesinin saf çekirdeği — ayrışmış programlardan Etmen, geliştirmedeki Adım ve Koşum mührü satırlarını türetir (BKM-DNT-A20)" )
+Kod( kod: KOD-MINIGRAF-GORUNUM, dosya: "urun/eklenti/src/minigraf-gorunum.ts",
+  ne: "🗂️ Mini Grafın Ağaç görünümü — her düğümü kendi satırında çizer (BKM-DNT-A20)" )
+Kod( kod: KOD-MINIGRAF-ILERLEME, dosya: "urun/eklenti/src/minigraf-ilerleme.ts",
+  ne: "🗂️ Mini Grafın İlerleme görünümü — her Katmanı tamamlanan ve toplam Adım sayısıyla bir kart olarak gösterir (BKM-DNT-A20)" )
+Kod( kod: KOD-MINIGRAF-KLASIK, dosya: "urun/eklenti/src/minigraf-klasik.ts",
+  ne: "🗂️ Mini Grafın Klasik görünümü — cam mercekli rayları SVG olarak çizer (BKM-DNT-A20)" )
+Kod( kod: KOD-SNM-PANEL, dosya: "urun/eklenti/sinama/panel.test.ts",
+  ne: "🧪 Panel kabuğunun nöbeti — ileti köprüsünü, sekme geçişini ve satır komutlarının çalıştırılmasını sahte VS Code üzerinde ölçer (BKM-DNT-A20)" )
+Kod( kod: KOD-SNM-PANEL-CEKIRDEK, dosya: "urun/eklenti/sinama/panel-cekirdek.test.ts",
+  ne: "🧪 Panel çekirdeğinin nöbeti — satır, bölüm ve belge üretimini, kaçışı ve komut izin listelerini ölçer (BKM-DNT-A20)" )
+Kod( kod: KOD-SNM-TREN-CEKIRDEK, dosya: "urun/eklenti/sinama/tren-cekirdek.test.ts",
+  ne: "🧪 Tren çekirdeğinin nöbeti — Etmen, geliştirmedeki Adım ve en yeni Koşum mührünün seçimini ölçer (BKM-DNT-A20)" )
+Kod( kod: KOD-SNM-MINIGRAF-GORUNUM, dosya: "urun/eklenti/sinama/minigraf-gorunum.test.ts",
+  ne: "🧪 Mini Graf Ağaç görünümünün nöbeti (BKM-DNT-A20)" )
+Kod( kod: KOD-SNM-MINIGRAF-KLASIK, dosya: "urun/eklenti/sinama/minigraf-klasik.test.ts",
+  ne: "🧪 Mini Graf Klasik görünümünün nöbeti (BKM-DNT-A20)" )
+Kod( kod: KOD-GORSEL-KONTROL, dosya: "urun/eklenti/arac/gorsel-kontrol.mjs",
+  ne: "🔭 Panelin kurulumdan önce tarayıcıda görsel denetimi — verilen proje kökünün gerçek verisiyle paneli üretir, üç genişlikte ekran görüntüsü alır ve yazı boyu ile yerleşim ölçütlerini denetler (BKM-DNT-A20)" )
+Kod( kod: KOD-GORSEL-KONTROL-URET, dosya: "urun/eklenti/arac/gorsel-kontrol-uret.ts",
+  ne: "🔭 Görsel kontrolün üretici girişi — panel HTML'ini sahte VS Code kabuğu üzerinde gerçek veriden üretir (BKM-DNT-A20)" )
+
+// 🍎 BKM-DNT-A21 teslimi (2026-10-27): doğuş kancalarının nöbeti (2d61536) geriye dönük kayıt
+Kod( kod: KOD-SNM-DOGUS-KANCALARI, dosya: "urun/cekirdek/sinama/dogus-kancalari.test.ts",
+  ne: "🧪 Doğuş kancalarının nöbeti — kabuk ve Node sürümlerinin eşliğini, gerçek anadizin yazımının reddini, metin olarak geçen adın geçişini ve Windows yol biçimlerini sahte diskte ölçer (BKM-DNT-A21)" )
