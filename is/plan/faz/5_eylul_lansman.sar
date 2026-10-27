@@ -6544,7 +6544,7 @@ sessizce körleşmez.
   |<--
 
   Blok( kod: BLK-PNL-YENIDEN-KURULUM, ad: "Panelin Yeniden Kurulması", uygular: ORK-7,
-    ne: "🧭 Sarmal panelinin Founder'ın 2026-10-27 tarihli hükümlerine göre beş sekmeli, dosyayı editörde açan ve kararı panelde veren biçimde yeniden kurulması; teslim üç basamakta yapılır (0.9.196, 0.9.197, 0.9.198)" ) {
+    ne: "🧭 Sarmal panelinin Founder'ın 2026-10-27 tarihli hükümlerine göre beş sekmeli, dosyayı editörde açan ve kararı panelde veren biçimde yeniden kurulması; teslim üç basamakta yapılır. Founder 2026-10-28 tarihinde birinci basamağın anında sekme geçişi beklenmeden kurulmasına hükmettiği için birinci basamak iki pakete bölünmüştür (0.9.196 ve 0.9.197); ikinci basamak 0.9.198, üçüncü basamak 0.9.199 sürümüdür" ) {
 
     Katman( kod: KAT-PNL-ZEMIN, takım: TAKIM-EKLENTI, ad: "Panel Zemini",
       ne: "🧱 Hükümlerin kayda geçtiği, planın bağlandığı ve kabul kapısının kurulduğu zemin" ) {
@@ -6834,7 +6834,7 @@ sessizce körleşmez.
           kabul: [
             "Eklentinin iş parçacığı yapay olarak birkaç saniye kilitliyken sekme geçişi webview'de anında gerçekleşir ve doğru içerik görünür; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
             "Hiçbir sırada seçili sekme ile görünen içerik ayrışmaz; parça güncellemesi yalnız kendi sekmesine yazılır.",
-            "Sekme geçişinin kaydı birinci basamağın tesliminde Founder'a sunulmak üzere alınmıştır."
+            "Sekme geçişinin kaydı PNL-A19 tesliminde Founder'a sunulmak üzere alınmıştır."
           ]
           sınır: "Denetim turunun kendisi bu Adımda değişmez; turun ana iş parçacığından çıkarılması işçi Blokunun işidir."
         }
@@ -6847,9 +6847,9 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-TESLIM-INCELEME, ad: "Basamak Teslimleri", departman: inceleme,
         ne: "🔍 Her basamağın kapıdan ve Founder'ın gözünden geçtiği dal" ) {
 
-        Adım( kod: PNL-A15, ad: "Birinci Basamağın Teslimi", durum: beklemede, öncelik: p0, onayBekler: founder,
-          bağımlı: [ PNL-A03, PNL-A04, PNL-A05, PNL-A06, PNL-A07, PNL-A14, PNL-A18 ],
-          ne: "📦 0.9.196 sürümü: zemin, Ray, Onaylar, hız ve anında sekme geçişi." ) {
+        Adım( kod: PNL-A15, ad: "Birinci Basamağın Teslimi", durum: geliştirmede, öncelik: p0, onayBekler: founder,
+          bağımlı: [ PNL-A03, PNL-A04, PNL-A05, PNL-A06, PNL-A07, PNL-A14 ],
+          ne: "📦 0.9.196 sürümü: zemin, Ray, Onaylar ve hız. Founder 2026-10-28 tarihinde bu paketin anında sekme geçişi beklenmeden kurulmasına hükmetmiştir; sekme geçişi PNL-A19 ile ayrı pakette gelir ve bu paket kurulduktan sonra da sekme geçişinde zaman zaman gecikme görülebilir." ) {
           görev: [
             "Sürümü, kilit dosyasını ve değişiklik günlüğünü birlikte 0.9.196'ya ilerlet.",
             "Bütün süitleri, görsel kontrolü ve gerçek VS Code süitini koştur; paketi yalnız üret.",
@@ -6862,11 +6862,25 @@ sessizce körleşmez.
           sınır: "0.9.195 paketi geri dönüş için diskte saklanır; Founder beğenmezse bu basamağın işlemeleri geri alınır."
         }
 
-        Adım( kod: PNL-A16, ad: "İkinci Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
-          bağımlı: [ PNL-A08, PNL-A09, PNL-A10 ],
-          ne: "📦 0.9.197 sürümü: Makinist sayıları, Gözlemler ve Ayarlar." ) {
+        Adım( kod: PNL-A19, ad: "Anında Sekme Geçişinin Teslimi", durum: beklemede, öncelik: p0, onayBekler: founder,
+          bağımlı: [ PNL-A15, PNL-A18 ],
+          ne: "📦 0.9.197 sürümü: birinci basamağın ikinci paketi. Founder 2026-10-28 tarihinde 0.9.196 paketinin sekme geçişi düzeltmesi beklenmeden kurulmasına hükmettiği için anında sekme geçişi bu ayrı pakette teslim edilir." ) {
           görev: [
-            "Birinci basamağın teslim yolunu 0.9.197 için yinele."
+            "Birinci basamağın teslim yolunu 0.9.197 için yinele.",
+            "Sekme geçişinin kaydını Founder'a göster; Founder'ın donma ve açılmama olarak tarif ettiği davranışı kendi penceresinde yeniden denemesini bekle."
+          ]
+          kabul: [
+            "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir; depo denetimi sıfır hata ve sıfır uyarı verir.",
+            "Founder sekme geçişini kendi penceresinde onaylamıştır."
+          ]
+          sınır: "0.9.196 paketi geri dönüş için diskte saklanır; birinci paketin davranışı değişmez."
+        }
+
+        Adım( kod: PNL-A16, ad: "İkinci Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
+          bağımlı: [ PNL-A08, PNL-A09, PNL-A10, PNL-A19 ],
+          ne: "📦 0.9.198 sürümü: Makinist sayıları, Gözlemler ve Ayarlar." ) {
+          görev: [
+            "Birinci basamağın teslim yolunu 0.9.198 için yinele."
           ]
           kabul: [
             "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir.",
@@ -6877,9 +6891,9 @@ sessizce körleşmez.
 
         Adım( kod: PNL-A17, ad: "Üçüncü Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
           bağımlı: [ PNL-A11, PNL-A12, PNL-A13 ],
-          ne: "📦 0.9.198 sürümü: Tren sekmesinin açık yüzü ve kardeş eklenti yuvası." ) {
+          ne: "📦 0.9.199 sürümü: Tren sekmesinin açık yüzü ve kardeş eklenti yuvası." ) {
           görev: [
-            "Birinci basamağın teslim yolunu 0.9.198 için yinele; dalın ana gövdeye alınması için PR'ı Founder'a sun."
+            "Birinci basamağın teslim yolunu 0.9.199 için yinele; dalın ana gövdeye alınması için PR'ı Founder'a sun."
           ]
           kabul: [
             "Süitler, görsel kontrol ve gerçek VS Code süiti yeşildir.",

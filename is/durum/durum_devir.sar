@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-27", oturum: 116,
-            neredeyiz: PANEL-KABUL-KAPISI-KURULDU-PNL-A02-TAMAMLANDI-PR-6-TASLAK,
-            sıradaki: BIRINCI-BASAMAK-PNL-A03-A07-VE-A14-SONRA-PNL-A15-FOUNDER-GOZU,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
+            neredeyiz: BIRINCI-BASAMAGIN-ILK-PAKETI-HAZIRLANIYOR-PNL-A03-A07-VE-A14-TAMAMLANDI,
+            sıradaki: PNL-A15-ILK-PAKETIN-KURULUMU-SONRA-PNL-A18-VE-PNL-A19-ANINDA-SEKME-GECISI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PR-6-PANELIN-YENIDEN-KURULUMU-TASLAK-TABANI-BAKIM-DALI-UC-TESLIM-BASAMAGI,
                          PNL-A10-AYARLAR-SEKMESI-ICERIGINI-FOUNDER-BILDIRECEK-MAKINIST-EKLERI-DE-FOUNDERDAN,
@@ -59,6 +59,20 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-27", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28) · BİRİNCİ BASAMAĞIN ADIMLARI KAPANDI, İLK PAKET HAZIRLANIYOR.
+        Panel dalında birinci basamağın yedi Adımı tamamlanmıştır: sekme şeridi ve geniş yerleşim (PNL-A03,
+        a9a462f), hep görünen ağaç çizgileri ve üzerine gelince renklenme (PNL-A04, 5a1f396), Mini Graf
+        tıklaması (PNL-A05, fb4a5df), editörün renkli girinti bantlarının varsayılana dönmesi (PNL-A06, 02e20f0),
+        onay kararının panelin içine dönmesi (PNL-A07, ba60268) ve tur okumasının paralelleşmesi (PNL-A14,
+        e0013f8). Gerçek VS Code ders korpusunda başlangıç turu 1178 ms'den 739 ms'ye inmiştir; OZK-12 eşikleri
+        hâlâ aşıldığı için Founder işçi ve panel kipi Bloklarının mühürlerini kaldırmıştır. Founder'ın 28 Ekim
+        tarihli ekran kaydı sekme geçişinin eklentiye gidip gelen iletiyi beklediğini göstermiş ve bu iş PNL-A18
+        olarak plana yazılmıştır (7645dd0). Founder aynı gün birinci basamağın PNL-A18 beklenmeden kurulmasına
+        hükmetmiştir; bu yüzden birinci basamak iki pakete bölünmüş, 0.9.196 PNL-A15 ile, anında sekme geçişi
+        0.9.197 olarak yeni PNL-A19 ile teslim edilecektir ve sonraki basamaklar 0.9.198 ile 0.9.199 olmuştur.
+        Son ölçümde eklenti süiti 1119/1119, gerçek VS Code süiti 63/63 ve depo denetimi temizdir. Kod üretici
+        ajandadır; kontrolcü her teslimi bağımsız koşturmuş, kayda geçirmiş ve işlemiştir.
+
         🧭 ARA DEVİR · OTURUM 116 (2026-10-27) · PANELİN YENİDEN KURULUMU PLANA İNDİ, PR #5 YEŞİLE DÖNDÜ.
         Founder 0.9.194 ile gelen tek panelin çalışma düzenini bozduğunu bildirmiştir: onay kartı dosyanın
         yerinde açılmakta, Mini Graf tıklaması dosyaya gitmemekte, ağaç çizgileri yalnız fare üzerindeyken
