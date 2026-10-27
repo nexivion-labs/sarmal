@@ -112,8 +112,9 @@ export interface PanelOlcumleri {
   parca: number;
   yama: number;
   kardesVar: boolean;
-  /** Mini Graf'ın kaç kez üretildiği ve son üretimin görünümü (PNL-A05 nöbeti). */
+  /** Mini Graf'ın kaç kez üretildiği, son üretimlerin sebepleri ve son üretimin görünümü (PNL-A05 nöbeti). */
   grafCizim: number;
+  grafSebepler: readonly string[];
   grafGorunum: string;
   /** Webview'e en son gönderilen Mini Graf çiziminde dosyaya götüren ilk bağın hedefi. */
   grafIlkBag?: { dosya: string; satir: number };
@@ -147,6 +148,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private kardesVar = false;
   private sonBos = false;
   private sonGraf = "";
+  /**
+   * Webview'deki Mini Graf son gönderilen çizimden yalnız betiğin taşıdığı seçim işaretiyle mi ayrılıyor
+   * (PNL-A05)? Öyleyse bir sonraki çizim aynı olsa da gönderilir. Son gönderilen çizim bunun için
+   * silinmez, çünkü bir sonraki satır tıklaması düğümün bağını o çizimde arar (PNL-A14 ölçümü).
+   */
+  private grafIsaretli = false;
   private readonly harita = new Map<string, { kaynak: Kaynak; u: UretilenSatir }>();
   private readonly ogeKimligi = new Map<unknown, string>();
   private readonly sonSatirlar: Record<Kaynak, UretilenSatir[]> = { ray: [], tren: [], makinist: [] };
@@ -213,7 +220,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const k = bag ? grafKomutu(bag.replace(/&amp;/g, "&")) : undefined;
     return {
       sekme: this.sekme, satirSayisi, ...this.sayac, kardesVar: this.kardesVar,
-      grafCizim: this.g.yol.miniGraf.cizimSayisi, grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
+      grafCizim: this.g.yol.miniGraf.cizimSayisi, grafSebepler: [...this.g.yol.miniGraf.cizimSebepleri], grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
       grafIlkBag: k ? { dosya: String(k.argumanlar[0]), satir: Number(k.argumanlar[1]) } : undefined,
       hazir: this.hazirSayisi,
       onayKademesi: this.sonKademe,
@@ -223,8 +230,10 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 
   /** Sınama kipinin eylemleri (SINAMA_KOMUTU). */
   private async sinamaEylemi(ham: unknown): Promise<unknown> {
-    const e = (ham ?? {}) as { eylem?: unknown; ileti?: unknown };
+    const e = (ham ?? {}) as { eylem?: unknown; ileti?: unknown; metin?: unknown };
     if (e.eylem === "grafTikla") { this.yaz({ tip: "sinamaTikla" }); return this.olcumler().grafIlkBag; }
+    // Webview'e en son gönderilen Mini Graf çizimi verilen metni taşıyor mu (PNL-A14 nöbeti).
+    if (e.eylem === "grafIcerir") return typeof e.metin === "string" && this.sonGraf.includes(e.metin);
     if (e.eylem === "ileti") { await this.iletiyiIsle(e.ileti); return true; }
     if (e.eylem === "raySatirlari") {
       return [...this.harita].filter(([, v]) => v.kaynak === "ray").map(([id, v]) => ({
@@ -432,6 +441,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       this.sonBos = bos !== undefined;
       const graf = this.grafAcik() ? this.g.yol.miniGraf.html() : undefined;
       this.sonGraf = graf === undefined ? "" : grafParcasi(graf);
+      this.grafIsaretli = false;
       return {
         html: rayBolumuHtml({ agac: a.html, bosMesaj: bos, graf, kapali: this.kapaliBolumler() }),
         ikonStili: a.ikonStili,
@@ -474,10 +484,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private grafCiz(): void {
     if (!this.gorunum || this.sekme !== "ray" || !this.grafAcik()) return;
     if (!this.gorunum.visible) { this.kirli = true; return; }
-    // Mini Graf büyük olabilir (Sarmal deposunun kendisinde megabayta yakın); aynı çizim ikinci kez gönderilmez.
-    const html = grafParcasi(this.g.yol.miniGraf.html());
-    if (html === this.sonGraf) return;
+    // Tur yayını grafın modelini değiştirmediyse çizim yapılmaz (PNL-A14). Mini Graf büyük olabilir
+    // (Sarmal deposunun kendisinde megabayta yakın); aynı çizim ikinci kez de gönderilmez.
+    const yeni = this.g.yol.miniGraf.guncelHtml();
+    if (yeni === undefined) return;
+    const html = grafParcasi(yeni);
+    if (html === this.sonGraf && !this.grafIsaretli) return;
     this.sonGraf = html;
+    this.grafIsaretli = false;
     this.sayac.parca += 1;
     this.yaz({ tip: "parca", kimlik: "graf", html });
   }
@@ -511,11 +525,11 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (href === undefined) return;
     if (href && this.sonGraf.includes(`href="${href}"`)) {
       // Webview'deki çizim artık son gönderilenle aynı değildir; bir sonraki çizim mutlaka gönderilir.
-      this.sonGraf = "";
+      this.grafIsaretli = true;
       this.yaz({ tip: "grafSec", href });
       return;
     }
-    this.g.yol.miniGraf.tazele();
+    this.g.yol.miniGraf.yenidenCiz("secim");
   }
 
   /** Aynı anahtar için art arda gelen olaylar tek çizime iner. */

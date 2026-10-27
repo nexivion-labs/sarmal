@@ -29,7 +29,7 @@ import {
   PAKET_KANON_DIZINI, eksikKokKaydi, isaretciHedefAdaylari, isaretciPlani, isaretciYaz, tamDenetimKanonuBul, tamDenetimKokTuru, varlikKokuBul,
 } from "./kanon-kesif.ts";
 import { programAl, belgeKapandi, onbellekAnahtarlari } from "./onbellek.ts";
-import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
+import { açıkBelgeHaritası, type BelgeYuzu, diskBelgesi, erisimSiniri, taniAgaci, turBelgeleriniTopla, turProgramlariniKur } from "./tur-belgesi.ts";   // ⚡ PRF-A06: tur belge AÇMAZ · PRF-KP-A02: program haritası saf modülde   // EKL-F9-A06: paylaşımlı AST önbelleği
 import { kimlikIndeksi, INDEKS_DISI } from "../../cekirdek/src/kimlik.ts";  // EKL-F11-A01/A05: kimlik indeksi (çekirdekte — MCP/CLI ile ortak)
 import { gezinmeKaydi } from "./gezinme.ts";               // EKL-F11-A02/A03: F12 · ⇧F12 · F2 · ⌘T
 import { imzaSaglayici } from "./imza.ts";                 // EKL-F11-A04: ( imza yardımı
@@ -89,7 +89,7 @@ import { fikirleriTopla, FikirDefteri, type FikirKaydi } from "./fikir-cekirdek.
 import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
-import { PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği
+import { AsamaKronometresi, PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği · ⏱️ PNL-A14: aşama kronometresi
 import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
@@ -613,6 +613,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       tamDenetimSonucu([], [], true);   // 📦 EKL-F6-A09: kapalı denetimde "koşmadı" işareti bayat kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
+    // ⏱️ PNL-A14: süre aşamalara bölünür (okuma · ayrıştırma · denetim · yayın);
+    // kronometre yüksek çözünürlüklü saatle ölçer, toplam süre eski saatinde kalır.
+    const kron = new AsamaKronometresi();
+    const okumaBasi = kron.şimdi();
     // Öğreti kitaplığının ALTINDAKİ ders rafları hariç: ürün değil, kasıtlı drift
     // → paneli kirletmesin. RED-1 D1: evren izleyici süzgeciyle TEK KAYNAKTAN
     // (izleyici-cekirdek) hizalı — dist/out/gizli-dizin .sar'ları ne taranır ne
@@ -659,18 +663,36 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
           } catch { return undefined; }   // silinmiş/erişilemeyen dosya turu DÜŞÜRMEZ
         },
       });
+    // ⏱️ PNL-A14: toplamadan sonra turda bekleme noktası yoktur; buradan tur
+    // sonuna dek koşan her şey ana iş parçacığında tek bölünmez bloktur.
+    const okumaBitti = kron.şimdi();
+    kron.ekle("okuma", okumaBitti - okumaBasi);
     // 📄 PRF-KP-A02: program haritası saf modülde kurulur (tur-belgesi.ts) ve
     // editör kabuğu olmadan sınanır. Açık belge paylaşılan sürüm-anahtarlı
     // önbellekten okunur (EKL-F9-A06: editör süsleriyle AYNI parse); diskten
     // gelen kaydın sürümü yoktur ve önbelleği kirletmemesi için doğrudan
     // ayrıştırılır. Söz dizimi kırık belge haritaya girmez: tek-dosya yolu
     // onu yakalar, DAG'a girmez.
-    const programlar = turProgramlariniKur(doclar, açıkBelgeler, programAl);
+    const programlar = kron.ölç("ayrıştırma", () => turProgramlariniKur(doclar, açıkBelgeler, programAl));
+    // ⏱️ PNL-A14 · TEK-DOSYA TANISI TURUN AĞACINDAN. Tanı eskiden aşağıdaki
+    // dağıtım döngüsünde her belgenin metnini ikinci kez belirteçleyip
+    // ayrıştırıyordu; artık turun az önce kurduğu ağacı kullanır (`taniAgaci`).
+    // Tanılar BURADA, mevsim çevriminden ÖNCE üretilir: çevrim ağacı yerinde
+    // değiştirir (Faz düğümlerine sanal kenar ekler) ve eski yolun taze
+    // ayrıştırması o kenarları hiç görmezdi. Bilerek-hatalı işaretli dosya
+    // atlanır; onun tanısı aşağıdaki döngüde eskisi gibi silinir.
+    const dosyaTanilari = new Map<string, Tani[]>();
+    if (!taniKapali) kron.ölç("dosya", () => {
+      for (const [fsPath, doc] of doclar) {
+        if (bilerekHataliMi(doc)) continue;
+        dosyaTanilari.set(fsPath, tanilaCekirdek(doc, taniAgaci(fsPath, doc, açıkBelgeler, programlar)));
+      }
+    });
     // 🕰️ MIM-1.2 ③ (zaman-ekseni turu): mevsim çevrimi TANI turunda da koşar — Blok'un `mevsim:`
     // kenarı sanal çağır'a normalize edilmeden hiyerarsiTanilari fazsız-blok basardı
     // (Founder saha bulgusu 2026-07-19: panel yolu çevrimliydi, tanı yolu çevrimsiz
     // kalmıştı — CLI temiz, Problems kirli). Çevrim MOTORDA tek nokta (DIL-2); idempotent.
-    mevsimNormalize(programlar);
+    kron.ölç("ayrıştırma", () => mevsimNormalize(programlar));
     // 🚪 KYN-MTR-A05: CROSS-FILE tanılar artık TEK ORKESTRASYONDAN gelir. Eklenti
     // eskiden bu tanıları kendi elle seçtiği bir üretici alt kümesini (dagTanilari ·
     // gizliBagimlilikTanilari · … ) tek tek çağırarak kendi başına topluyordu, ayrıca
@@ -727,7 +749,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // tanıları korunur ve eksik koşan kök aynı işarete üçüncü sebep olarak gider.
     // Kırık dosyanın kendi söz dizimi tanısı tek dosya yolundan geldiği gibi kalır.
     const koklar = (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath);
-    const { atlanan: atlananKokler, coken: cokenKokler, eksik: eksikKokler } = tamDenetimKokTuru(
+    const { atlanan: atlananKokler, coken: cokenKokler, eksik: eksikKokler } = kron.ölç("çapraz", () => tamDenetimKokTuru(
       denetlenenKokler,
       (kokYol) => tamDenetimKanonuBul(kokYol, koklar, paketKanonKoku),
       (kokYol, kanon) => {
@@ -747,7 +769,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
           donguHar.set(absDosya, liste);
         }
         return eksikKokKaydi(kokYol, sonuc);
-      });
+      }));
     for (const c of cokenKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiCoktu(c.kok, c.hata));
     for (const e of eksikKokler) perfKanal.appendLine(IZ_METINLERI.kokDenetimiEksik(e.kok, e.dosyalar));
     tamDenetimSonucu(denetlenenKokler, atlananKokler, darKokler === undefined, cokenKokler, eksikKokler);
@@ -763,7 +785,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // TUR-2 muaf-asimetri onarımı (teftiş 🟠 KRR-MUT-2): bilerek-hatalı işaretli
       // dosya (ders malzemesi) DENETLEHEPSI yolundan da paneli kirletemez — tek-dosya
       // `denetle` süzgecinin ikizi; CLI muafiyetiyle simetri kapandı (kapi_kapsami).
-      if (doc.getText().split("\n", 5).some((s) => BILEREK_HATALI.test(s))) { taniSil(doc.uri, false); continue; }
+      if (bilerekHataliMi(doc)) { taniSil(doc.uri, false); continue; }
       // ⚡ PRF-A06: tur daraltılmışsa kapsam DIŞINDAKİ dosyanın çapraz tanısı bu
       // turda hiç hesaplanmamıştır. Boş liste yazmak onları SİLERDİ ve odak
       // dışındaki varlığın kayıtları sessizce kaybolurdu; bunun yerine önceki
@@ -779,11 +801,13 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // Üçüncü argüman YAYINI KAPATIR. Tam tarama yüzlerce belge gezer; her belgede
       // çizim tetiklenseydi Bildirimler paneli tur başına onlarca kez yeniden
       // çizilirdi. Turun tek yayını aşağıda, döngü bittikten sonra yapılır.
-      yuzeylereDagit(doc, [...tanilaCekirdek(doc), ...capraz], false, programlar.get(fsPath));   // MIM-1.1 ②
+      const tekDosya = dosyaTanilari.get(fsPath) ?? kron.ölç("dosya", () => tanilaCekirdek(doc));   // ⏱️ PNL-A14: yukarıda turun ağacından üretildi
+      kron.ölç("yayın", () => yuzeylereDagit(doc, [...tekDosya, ...capraz], false, programlar.get(fsPath)));   // MIM-1.1 ②
     }
     // Bu turda görülmeyen (kapanmış/dışlanmış) dosyaların bayat çapraz önbelleği
     // temizlenir — silinen tanı düzenlemede geri gelmesin.
     for (const yol of [...caprazOnbellek.keys()]) if (!doclar.has(yol)) caprazOnbellek.delete(yol);
+    const yuzeyYayiniBasi = kron.şimdi();   // ⏱️ PNL-A14: iki defterin tek yayını "yayın" aşamasına düşer
     yuzeyDefteri.buda(new Set(doclar.keys()));
     yuzeyDefteri.yayımla();   // turun TEK yayını
     // 💡 KYN-YUZ-A01: Fikir hanesi aynı budama ve aynı tek-yayın disiplinini
@@ -791,6 +815,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // hayalet olarak kalmaz ve tur başına yalnız bir çizim istenir.
     fikirDefteri.buda(new Set(doclar.keys()));
     fikirDefteri.yayımla();
+    kron.ekle("yayın", kron.şimdi() - yuzeyYayiniBasi);
     }   // tanı üretimi (denetim açık)
     // 📬 VIT-POSTA-A03 · 🗺️ PRF-TA-A02: turun TEK GÖRÜNTÜ YAYINI. Onay kapıları
     // bu turun ZATEN ürettiği ağaçtan çıkar; ana hat kapı TANIMAZ ve kapı listesi
@@ -805,7 +830,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // olduğu gibi verilir ve daraltma yalnız `kapsam` etiketine yazılır, çünkü
     // dar tur belge toplamayı ve ayrıştırmayı değil, yalnız çapraz denetimin
     // köklerini daraltır (PRF-TA-A01 sözleşmesi).
-    turGoruntusunuYayinla({ programlar, yollar, belgeler: doclar, dilDışı, tetik, kapsam: darKokler });
+    kron.ölç("yayın", () => turGoruntusunuYayinla({ programlar, yollar, belgeler: doclar, dilDışı, tetik, kapsam: darKokler }));
     // 🔬 PRF-A01 · ⚡ PRF-A06: dar tur kanalda kapsamıyla birlikte okunur.
     // 📄 PRF-KP-A02: belge sayacı merceğe bağlanır; kanal satırı açıktan,
     // diskten ve atlanan sayıları ile sıfır açma çağrısını ve okunan toplamı
@@ -814,6 +839,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       tetik, süreMs: Date.now() - turBasi, dosyaSayısı: yollar.length,   // 🛡️ PRF-KP-A05: süzülmüş liste
       kapsam: darKokler,   // 🩹 BKM-DNT-A18: gerçekten denetlenen kökler; adları mercek basar
       belgeler: { ...belgeSayacı, okunanBayt },
+      aşamalar: kron.dök(kron.şimdi() - okumaBitti),   // ⏱️ PNL-A14: aşama süreleri ve bölünmez blok
     });
   };
   // 🧯 PRF-A02 tek-uçuş kilidi: tam-proje denetimi ÜST ÜSTE BİNMEZ — koşarken
@@ -1103,6 +1129,11 @@ async function iskeletKur(): Promise<void> {
   vscode.window.showInformationMessage(iskeletKuruldu(olusan, atlanan));
 }
 
+/** Bilerek-hatalı işaretli dosya (ders malzemesi): ilk beş satırdan birinde işaret taşır. */
+function bilerekHataliMi(doc: BelgeYuzu): boolean {
+  return doc.getText().split("\n", 5).some((s) => BILEREK_HATALI.test(s));
+}
+
 /**
  * Bir .sar belgesini denetler → motorun KANONİK tanı nesneleri. Eskiden bu
  * işlev doğrudan editör tanısı üretiyordu; artık ham tanıyı döndürüyor, çünkü
@@ -1110,18 +1141,22 @@ async function iskeletKur(): Promise<void> {
  * yalnız yayın sınırında (taniYapTani) yapılır. Böylece düzey eşlemesi de tek
  * yerde kaldı: tek-dosya yolu ile proje taraması artık aynı kodu koşuyor.
  */
-function tanilaCekirdek(doc: BelgeYuzu): Tani[] {
+function tanilaCekirdek(doc: BelgeYuzu, hazirAgac?: Program): Tani[] {
   const dil = etkinDil();
   const metin = doc.getText();
 
-  let program;
-  try {
-    program = ayristir(belirtecle(metin));
-  } catch (e) {
-    if (e instanceof SozDizimHatasi) {
-      return [sozDizimTanisi(e)];
+  // ⏱️ PNL-A14: tur kendi ağacını verir (`taniAgaci`); ağaç yoksa metin burada
+  // ayrıştırılır. Ağaç, bu metnin aynı ayrıştırıcıdan geçmiş taze ağacıdır.
+  let program = hazirAgac;
+  if (!program) {
+    try {
+      program = ayristir(belirtecle(metin));
+    } catch (e) {
+      if (e instanceof SozDizimHatasi) {
+        return [sozDizimTanisi(e)];
+      }
+      throw e;
     }
-    throw e;
   }
 
   const snf = snfBul(doc);

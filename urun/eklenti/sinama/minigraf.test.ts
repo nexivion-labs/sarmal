@@ -16,7 +16,7 @@ import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import { mevsimNormalize } from "../../cekirdek/src/denetci.ts";
 import { dagKur, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";
 import { MEYVE_SIMGESI_SVG,
-  projeGrafiCikar, projeGrafiAgaci, agacYerlesimi, bagYerlesimi, cizilecekBaglar, SERIT_EN_COK_SUTUN, SATIR_YUKSEKLIGI, KADEME_GIRINTISI, miniGrafHtml, bosHtml, temaDegiskeni, tipSimgesi,
+  projeGrafiCikar, grafEsit, projeGrafiAgaci, agacYerlesimi, bagYerlesimi, cizilecekBaglar, SERIT_EN_COK_SUTUN, SATIR_YUKSEKLIGI, KADEME_GIRINTISI, miniGrafHtml, bosHtml, temaDegiskeni, tipSimgesi,
 } from "../src/minigraf-cekirdek.ts";
 import { GOMULU_KAYIT } from "../src/gomulu-kanon.ts";
 import { fazYolu, planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
@@ -319,6 +319,29 @@ test("N5 · meyve SATIRI yalnız seçili Adımın altında açılır; seçilmeye
   const oteki = projeGrafiCikar(dag, "A2", () => true, diskte);
   assert.ok(oteki.dugumler.some((d) => d.kod === "KOD-OTEKI"));
   assert.ok(!oteki.dugumler.some((d) => d.kod === "KOD-VAR"));
+});
+
+test("PNL-A14 · grafEsit: aynı girdiden yeniden kurulan model eşittir; düğüm alanı, bağ, seçim ya da disk değişirse eşit değildir", () => {
+  const kur = (dag = zeminliDag(), kod = "A1", disk = diskte) => projeGrafiCikar(dag, kod, () => true, disk);
+  const ilk = kur();
+  // Her tur Dag'ı yeniden kurar: nesneler yenidir, içerik aynıdır.
+  assert.ok(grafEsit(ilk, kur()), "aynı girdiden kurulan iki model eşit sayılmadı; her tur grafı boşuna yeniden çizer");
+  const durumu = zeminliDag();
+  durumu.dugumler.get("A2")!.durum = "tamamlandı";
+  assert.ok(!grafEsit(ilk, kur(durumu)), "Adımın durumu değişti ama model eşit sayıldı");
+  const adi = zeminliDag();
+  adi.dugumler.get("F")!.ad = "yeni ad";
+  assert.ok(!grafEsit(ilk, kur(adi)), "düğümün adı değişti ama model eşit sayıldı");
+  const bagi = zeminliDag();
+  bagi.dugumler.get("A1")!.sonrakiler = ["A2"];
+  bagi.dugumler.get("A2")!.oncekiler = ["A1"];
+  assert.ok(!grafEsit(ilk, kur(bagi)), "yeni bir bağ geldi ama model eşit sayıldı");
+  assert.ok(!grafEsit(ilk, kur(undefined, "A2")), "seçim değişti ama model eşit sayıldı");
+  assert.ok(!grafEsit(ilk, kur(undefined, "A1", () => true)), "meyvenin diskteki karşılığı değişti ama model eşit sayıldı");
+  // Modele eklenen bir alan elle yazılmış bir listeye bağlı kalmadan ölçülür.
+  const ekli = kur();
+  (ekli.dugumler[0] as unknown as Record<string, unknown>).yeniAlan = 1;
+  assert.ok(!grafEsit(ilk, ekli) && !grafEsit(ekli, ilk), "modele eklenen alan karşılaştırmaya girmedi");
 });
 
 test("N6 · beyan edilmiş ama diskte olmayan meyve BOŞ NOKTA çizilir", () => {

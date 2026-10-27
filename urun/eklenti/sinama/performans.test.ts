@@ -29,6 +29,39 @@ test("mercek: olaylar birikir, tur özeti hepsini tek satırda döker", () => {
   assert.match(satır, /süzülen 1 · atlanan 1 · ertelenen 2/);
 });
 
+// ── ⏱️ PNL-A14 · AŞAMA BÖLÜMÜ ───────────────────────────────────────────────
+//   Founder 2026-10-27 tarihinde yavaşlığı bildirdiğinde kanal yalnız toplamı
+//   basıyordu. Aşama bölümü verildiğinde satırın sonuna düşer; verilmediğinde
+//   satır eskisi gibidir (uydurma sıfır basılmaz).
+
+import { AsamaKronometresi } from "../src/performans.ts";
+
+test("mercek (PNL-A14): aşamalar verilince satır okuma · ayrıştırma · denetim (çapraz · dosya) · yayın ve bölünmez bloğu basar", () => {
+  const mercek = new PerformansMercegi(() => {});
+  const satır = mercek.turBitti({
+    tetik: "başlangıç", süreMs: 7549, dosyaSayısı: 357,
+    aşamalar: { okumaMs: 1404, ayrıştırmaMs: 244, çaprazMs: 4632, dosyaMs: 940, yayınMs: 248, bölünmezMs: 6116 },
+  });
+  assert.match(satır, /\| aşamalar: okuma 1404 · ayrıştırma 244 · denetim 5572 \(çapraz 4632 · dosya 940\) · yayın 248 ms · bölünmez blok 6116 ms$/u,
+    "aşama bölümü satırın sonunda değil ya da denetim çapraz ile dosya paylarının toplamı değil");
+  const çıplak = mercek.turBitti({ tetik: "başlangıç", süreMs: 10, dosyaSayısı: 5 });
+  assert.ok(!çıplak.includes("aşamalar"), "aşama verilmeyen turda uydurma bir aşama bölümü basıldı");
+});
+
+test("kronometre (PNL-A14): aynı aşamanın aralıkları toplanır, çöken iş de süresini ekler, sonuç tamsayıdır", () => {
+  let saat = 0;
+  const kron = new AsamaKronometresi(() => saat);
+  kron.ölç("dosya", () => { saat += 0.4; });
+  kron.ölç("dosya", () => { saat += 0.4; });
+  kron.ölç("dosya", () => { saat += 0.4; });
+  assert.throws(() => kron.ölç("çapraz", () => { saat += 5; throw new Error("kök çöktü"); }));
+  kron.ekle("okuma", 12.6);
+  const dönen = kron.ölç("yayın", () => { saat += 2; return 42; });
+  assert.equal(dönen, 42, "ölç işin dönüş değerini taşımıyor");
+  assert.deepEqual(kron.dök(9.5), { okumaMs: 13, ayrıştırmaMs: 0, çaprazMs: 5, dosyaMs: 1, yayınMs: 2, bölünmezMs: 10 },
+    "milisaniye altı aralıklar ayrı ayrı yuvarlanıp kayboldu ya da çöken işin süresi düştü");
+});
+
 test("mercek: tur sayaçları sıfırlar — ikinci tur birikimi taşımaz", () => {
   const mercek = new PerformansMercegi(() => {});
   mercek.olayGeldi("disk"); mercek.süzüldü();

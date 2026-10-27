@@ -5560,6 +5560,7 @@ sessizce körleşmez.
   // ── BLK-PRF-PANELKIPI · eski dosyası is/plan/blok/@SONRA@_prf_panelkipi.sar (KPS-SIR-A04 · 2026-09-29) ──
   // ═══════════════════════════════════════════════════════════════════════════
   //   ⏳ SONRA · Founder hükmü 2026-09-12: gövde hiç başlamadan sonraya bırakılmıştır; panel turu ölçütü PRF-TA-A05 kaydında karşılanmıştır. Denetim turu bir saniyelik ölçütü aşarsa bu dosyanın mührü kaldırılır (MIM-3.4).
+  //   🔓 MÜHÜR KALKTI · 2026-10-28: Founder'ın 2026-09-12 koşulu ölçümle karşılanmıştır; PNL-A14 koşusunda çatıdaki olay turu 2471 milisaniye sürmüştür. Founder 2026-10-27 tarihinde işçi Blokunun da mührünü kaldırmış ve sırayı belirlemiştir: iki Blok birinci teslim basamağından (PNL-A15) sonra, ikinci basamaktan önce yürür.
   // plan/blok/prf_panelkipi.sar — 🧭 Panel Kipi — denetim motoru yalnız panelin kullandığı üreticileri koşturur
   //
   //   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
@@ -5590,7 +5591,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PK-PLAN, ad: "Panel Kipi Planlaması", departman: planlama,
         ne: "🗺️ Yüzey parametresinin ve üretici atlama listesinin tasarlandığı planlama dalı." ) {
 
-        Adım( kod: PRF-PK-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A05, PRF-MK-A06 ],
+        Adım( kod: PRF-PK-A01, durum: beklemede, öncelik: p0, onay: "onaylandı — 2026-08-30 · Founder, yetki devriyle hazırlanan karar paketini onayladı (OZK-12)", bağımlı: [ PRF-TA-A05, PRF-MK-A06, PNL-A15 ],
           referans: [ SRN-IDE-KASMA-SOL-KOSUSU, OZK-12, YUZ-3.1, YUZ-3.3 ],
           ne:       "📐 Panel kipinin tasarımı. Mimar ölçtü: çatıda bin altı yüz yetmiş altı milisaniyelik koşunun bin seksen dokuz milisaniyesi panelin hiç kullanmadığı üreticilere gitmektedir; panelin kullandığı on dokuz üretici altmış altı milisaniyedir." ) {
           görev:    [
@@ -5759,6 +5760,7 @@ sessizce körleşmez.
   // ── BLK-PRF-ISCI · eski dosyası is/plan/blok/@SONRA@_prf_isci.sar (KPS-SIR-A04 · 2026-09-29) ──
   // ═══════════════════════════════════════════════════════════════════════════
   //   ⏳ SONRA · Founder hükmü 2026-09-12: gövde hiç başlamadan sonraya bırakılmıştır; Founder editörde bugün takılma görmemektedir. Takılma görülürse bu dosyanın mührü kaldırılır (MIM-3.4).
+  //   🔓 MÜHÜR KALKTI · Founder hükmü 2026-10-27: Founder editörde takılma görmüş ve 2026-10-28 tarihli ekran kaydında sekme geçişlerinin donduğunu göstermiştir; PNL-A14 ölçümüne göre olay turunun bölünmez bloğu 2341, başlangıç turununki 5997 milisaniyedir. Founder mührü kaldırmış ve sırayı belirlemiştir: Blok birinci teslim basamağından (PNL-A15) ve panel kipinden sonra, ikinci basamaktan önce yürür.
   // plan/blok/prf_isci.sar — 🧵 İşçi — denetim motoru ana iş parçacığından çıkar
   //
   //   Performans denetim mevsiminin gövdesi (FAZ-2026-PERFORMANS · Founder hükmü
@@ -6689,7 +6691,7 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A07, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1105 sınamanın 1105'i geçti, yapılacak işaret kalmadı (kontrolcü iki kez koşturdu) · tip ve dil temiz · gerçek VS Code süiti 61 geçti, 0 düştü; tek panelden beri ilk tam yeşil, kontrolcü ayrıca koşturdu · görsel kontrol 580/580 · yedi koruma tek tek bozulunca ilgili nöbet düştü · Makinist'te kapı açıkken 1400×400 ekran görüntüsü scratchpad/gorsel-a07/makinist-onay-alt-ust.png", ne: "Editörde açılan onay kartı kaldırıldı. Kapı satırı açılıp kapanan bir satırdır; gerekçe kutusu ve üç eylem satırın hemen altında, Makinist sekmesinde belirir ve aynı anda yalnız bir kapı açık kalır. Diske yazan hat değişmedi ve gerçek VS Code'da şerhin tek satır yazdığı ölçüldü. Panelden tıklanan her satır dosyayı odak panelde kalacak biçimde açar. Onay kuyruğu doğrulanmamış durumdaki Adımları da gösterir. Gerçek VS Code süitindeki 'üç belge açtı' düşüşü ürünün değil ölçümün kusuruydu: sınamanın kendi geçici dosyasının disk olayları sayaca giriyordu ve disk okumaları ayrı sayaca alındı. 0.9.193'teki kapıların dosyaya göre gruplanması ve bağlamı kopyalama düğmesi geri gelmedi; eski onay gövdesi artık yalnız sınamalarda yaşar ve ayrı bir temizlik işidir. Kademenin genişliği ve hizası birinci basamağın tesliminde Founder'ın gözüne sunulacaktır." )
         }
 
-        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15, PRF-IS-A05 ],
           referans: [ HTR-PANEL-KAPSAM-SAYIMI ],
           ne: "🔢 Rozetin ve durum çubuğunun hangi kapsamı saydığını söylemesi. Aynı panel açık dosyaya göre çatının ya da tek projenin sayılarını göstermekte ve bunu söylememektedir." ) {
           görev: [
@@ -6710,7 +6712,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-GOZ-KODLAMA, ad: "Gözlemler Yüzü", departman: kodlama,
         ne: "🔧 Gözlemlerin Makinist'ten taşındığı ve Sapmalar bölümünün kurulduğu dal" ) {
 
-        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15, PRF-IS-A05 ],
           referans: [ HTR-PANEL-SAPMA-SEKMESI, OZK-13 ],
           ne: "🧭 Gözlemlerin Makinist'ten kendi sekmesine taşınması ve Sarmal'ın denetim tanılarının aynı sekmede ayrı bir Sapmalar bölümünde gösterilmesi. Tanılar bugün VS Code'un genel Sorunlar panelinde öteki araçların bulgularına karışmaktadır." ) {
           görev: [
@@ -6732,7 +6734,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-AYAR-KODLAMA, ad: "Ayarlar Yüzü", departman: kodlama,
         ne: "🔧 Ayar düğmelerinin kurulduğu dal" ) {
 
-        Adım( kod: PNL-A10, ad: "Panel İçinden Ayarlar", durum: beklemede, öncelik: p2, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A10, ad: "Panel İçinden Ayarlar", durum: beklemede, öncelik: p2, bağımlı: [ PNL-A15, PRF-IS-A05 ],
           ne: "⚙️ Eklenti ayarlarının panelin Ayarlar sekmesinden değiştirilmesi. Sekmenin içeriği ve sırası Founder tarafından ayrıca bildirilecektir." ) {
           görev: [
             "Founder'ın bildireceği ayarları sırasıyla düğme olarak göster; değişiklik anında uygulanır."
@@ -6799,8 +6801,9 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-HIZ-KODLAMA, ad: "Tur Süresi", departman: kodlama,
         ne: "🔧 Okumanın ve ayrıştırmanın hızlandırıldığı dal" ) {
 
-        Adım( kod: PNL-A14, ad: "Açılış ve Tur Süresinin Düşürülmesi", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A02 ],
+        Adım( kod: PNL-A14, ad: "Açılış ve Tur Süresinin Düşürülmesi", durum: tamamlandı, öncelik: p0, bağımlı: [ PNL-A02 ],
           referans: [ OZK-12, HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL, EKL-F6-A09, BLK-PRF-PANELKIPI, BLK-PRF-ISCI ],
+          üretir: [ KOD-TUR-OLCUM, KOD-SNM-TUR-ESITLIGI, KOD-SNM-TUR-BELGESI-REFERANS, KOD-EKL-EKLENTI, KOD-TUR-BELGESI, KOD-PERFORMANS, KOD-MINIGRAF, KOD-MINIGRAF-CEKIRDEK ],
           ne: "🐢 Founder 2026-10-27 tarihinde eklentinin açılışının ve tepkisinin yavaşladığını bildirmiştir. Aynı gün ölçülen başlangıç turu çatıda yirmi iki saniye sürmüş ve 357 dosyayı, yaklaşık 7,5 MB'ı tek tek sırayla diskten okumuştur; her belge ayrıca ikinci kez ayrıştırılmaktadır." ) {
           görev: [
             "Performans kanalında tur süresini okuma, ayrıştırma, denetim ve yayın aşamalarına böl ve tabanı kayda geçir.",
@@ -6814,6 +6817,7 @@ sessizce körleşmez.
             "Açılış süresinin önce ve sonra değerleri birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Denetim kuralları değişmez. İşçi iş parçacığına taşıma bu Adımın işi değildir."
+          koşu: Koşum( kod: KSM-PNL-A14, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "gerçek çatıda (357 dosya, 7,51 MB) dönüşümlü yedi çiftin ortancası: başlangıç turu 7643 → 7380 ms, olay turu 2557 → 2471 ms, okuma 1425 → 1374 ms, bölünmez blok 5997 ms (başlangıç) ve 2341 ms (olay) · gerçek VS Code ders korpusunda başlangıç turu 1178 → 739 ms, sar olayı 146 → 96 ms, disk olayı 288 → 122 ms · eşitlik nöbeti yeşil ve üç mutasyonda kırmızı; çatıdaki dökümler değişiklikten önce ve sonra bayt bayt aynı · eklenti süiti 1116/1116, gerçek VS Code süiti 62/62 (kontrolcü koşturdu)", ne: "Tur okuması sınırlı eşzamanlılıkla paralel yürür ve tek dosya tanısı turun kendi ağacından üretilir; performans kanalı turu okuma, ayrıştırma, denetim, yayın ve bölünmez blok aşamalarına böler. Kazanç gerçek VS Code'da belirgin, çatı düzeneğinde küçüktür, çünkü sürenin asıl sahibi çekirdeğin senkron denetim koşusudur. OZK-12'nin üç eşiği hâlâ aşılmaktadır; Founder 2026-10-27 tarihinde işçi Blokunun mührünü kaldırmış, panel kipi Blokunun mührü de kendi koşuluyla kalkmıştır. Ana dala alınırken gerçek VS Code süitinde ortaya çıkan Mini Graf yeniden çizim gerilemesinin kökü PNL-A05 düzeltmesindeydi; aynı işlemede grafın girdisi değişmeyen turda yeniden üretilmemesi ve düğüm sırasının dosya yoluna göre sabitlenmesiyle onarıldı." )
         }
 
         Adım( kod: PNL-A18, ad: "Sekme Geçişinin Eklentiyi Beklememesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A03 ],
@@ -7308,3 +7312,11 @@ Kod( kod: KOD-TUL-RENGI, dosya: "urun/eklenti/src/tul-rengi.ts",
 // 🍎 PNL-A05 teslimi (2026-10-27): Mini Graf tıklaması
 Kod( kod: KOD-SNM-VSC-MINIGRAF-TIKLAMA, dosya: "urun/eklenti/sinama_vscode/suite/minigraf-tiklama.test.ts",
   ne: "🧪 Mini Graf tıklamasının gerçek VS Code nöbeti — üç görünümde düğüm tıklamasının dosyayı ilgili satırda açtığını ve Ray satırı tıklamasının grafı yeniden üretmediğini gerçek kabukta ölçer (PNL-A05)" )
+
+// 🍎 PNL-A14 teslimi (2026-10-28): tur süresinin aşamalara bölünmesi ve okumanın paralelleşmesi
+Kod( kod: KOD-TUR-OLCUM, dosya: "urun/eklenti/arac/tur-olcum.ts",
+  ne: "📏 Tur ölçüm betiği — eklentinin tur kodunu gerçek bir kök üzerinde VS Code sahtesiyle koşturur ve başlangıç ile olay turlarının aşama sürelerini dönüşümlü koşuların ortancasıyla verir (PNL-A14)" )
+Kod( kod: KOD-SNM-TUR-ESITLIGI, dosya: "urun/eklenti/sinama/tur-esitligi.test.ts",
+  ne: "🧪 Tur eşitliği nöbeti — hızlanan tur ile değişiklik öncesi turun gerçek ağaçta birebir aynı tanıları, hatırlatıcıları, bildirimleri ve tur görüntüsünü ürettiğini ölçer (PNL-A14)" )
+Kod( kod: KOD-SNM-TUR-BELGESI-REFERANS, dosya: "urun/eklenti/sinama/tur-belgesi-referans.ts",
+  ne: "🧪 Eşitlik nöbetinin başvuru modülü — değişiklik öncesi sıralı okuma döngüsünü ve taze ayrıştırmayı taşır (PNL-A14)" )

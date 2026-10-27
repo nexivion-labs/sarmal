@@ -556,11 +556,79 @@ test("Ray satırına tıklamak Mini Grafı yeniden üretmez ve göndermez; yaln�
   await bekle(250);
   assert.equal(o.graf.cizimSayisi - cizim, 0, "imleç izleme ya da ikinci tıklama Mini Grafı yeniden üretti");
   assert.equal(mesajlar(o, "grafSec").length, 1);
-  // Seçim Mini Grafın kendi durumuna yazılmıştır: bir sonraki çizim bu düğümü seçili çizer ve mutlaka gönderilir.
-  o.graf.tazele();
+  // Seçim Mini Grafın kendi durumuna yazılmıştır: bir sonraki çizim (ör. dil değişimi) bu düğümü seçili çizer ve mutlaka gönderilir.
+  o.graf.yenidenCiz("dil");
   await bekle(250);
   const son = mesajlar(o, "parca").filter((m) => m.kimlik === "graf").at(-1);
   assert.ok(son && /class="dugum secili" aria-current="true"/.test(String(son.html)), "sonraki çizim seçimi taşımıyor");
+});
+
+test("Art arda iki Ray satırı tıklaması Mini Grafı yeniden üretmez; ikinci tıklama düğümün bağını son gönderilen çizimde bulur (PNL-A14)", async () => {
+  // Ölçülmüş kusur (gerçek VS Code, 2026-10-28): birinci hafif seçim son gönderilen çizimi siliyordu ve
+  // ikinci tıklama bağı boş metinde arayıp grafı yeniden çiziyordu. Arada bir tur çizim yaptığında kusur görünmüyordu.
+  const o = ortamKur();
+  const cizili = ic(o).sonGraf;
+  const [a, b] = raySatirlari(o).filter((r) => cizili.includes(`href="${r.href}"`));
+  assert.ok(a && b && a.href !== b.href, "Mini Graf çiziminde düğümü bulunan iki Ray satırı yok");
+  const cizim = o.graf.cizimSayisi;
+  o.gorunum.mesajGonder({ tip: "ac", id: a!.id });
+  await bekle(250);
+  o.gorunum.mesajGonder({ tip: "ac", id: b!.id });
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 0, `ikinci satır tıklaması Mini Grafı yeniden üretti (sebepler: ${o.graf.cizimSebepleri.join(", ")})`);
+  assert.deepEqual(mesajlar(o, "grafSec").map((m) => m.href), [a!.href, b!.href], "iki seçim de işaretle taşınmalıydı");
+  // İşaret webview'deki çizimi son gönderilenden ayırır: son gönderilenle aynı metni üreten çizim de gönderilmelidir.
+  const grafGonderimi = (): Array<Record<string, unknown>> => mesajlar(o, "parca").filter((m) => m.kimlik === "graf");
+  o.graf.yenidenCiz("dil");   // b seçili çizilir ve gönderilir
+  await bekle(250);
+  o.gorunum.mesajGonder({ tip: "ac", id: a!.id });   // işaret a'ya taşınır; çizim yapılmaz
+  await bekle(250);
+  const gonderim = grafGonderimi().length;
+  o.graf.dugumSec(b!.kod);   // imleç izleme b'ye döner: çizim son gönderilenle aynıdır, webview ise a'yı işaretli gösterir
+  await bekle(250);
+  assert.equal(grafGonderimi().length - gonderim, 1, "webview'deki işaret son çizimden ayrıyken aynı çizim gönderilmedi");
+  assert.equal(/<a class="dugum secili" aria-current="true" title="[^"]*" href="([^"]*)"/.exec(String(grafGonderimi().at(-1)?.html))?.[1], b!.href,
+    "son gönderilen çizim imleç izlemenin seçimini taşımıyor");
+});
+
+test("Tur yayını Mini Grafın modelini değiştirmediyse graf yeniden üretilmez ve gönderilmez; değiştirdiyse bir kez üretilir ve seçimi taşır (PNL-A14)", async () => {
+  const o = ortamKur();
+  const grafGonderimi = (): string[] => mesajlar(o, "parca").filter((m) => m.kimlik === "graf").map((m) => String(m.html));
+  const cizili = ic(o).sonGraf;
+  const hedef = raySatirlari(o).find((r) => cizili.includes(`href="${r.href}"`));
+  assert.ok(hedef, "Mini Graf çiziminde düğümü bulunan bir Ray satırı yok; ölçüm boş küme üstünde koşar");
+  // Satır tıklaması seçimi çizmeden taşır; webview'deki çizim artık son gönderilenle aynı değildir.
+  o.gorunum.mesajGonder({ tip: "ac", id: hedef!.id });
+  await bekle(250);
+  const cizim = o.graf.cizimSayisi;
+  const gonderim = grafGonderimi().length;
+  // Gövdenin turu (yolharitasi.ts goruntuyuIsle): dosyalar yeniden ayrıştırılır, Dag yeniden kurulur, graf haber alır.
+  // Nesnelerin hepsi yenidir ama içerik aynıdır. Turun dosya araması yolları her turda başka sırayla verir
+  // (gerçek VS Code ölçümü); aynı dosyalar burada ters sırayla gelir.
+  const tur = (g: ReturnType<typeof goruntuKur>): void => { o.yol.yenile(g as never); o.graf.tazele(); };
+  const ters = goruntuKur();
+  ters.programlar = new Map([...ters.programlar].reverse());
+  tur(ters);
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 0, `grafı değiştirmeyen tur Mini Grafı yeniden üretti (sebepler: ${o.graf.cizimSebepleri.join(", ")})`);
+  assert.equal(grafGonderimi().length - gonderim, 0, "grafı değiştirmeyen tur Mini Grafı yeniden gönderdi");
+  // Grafa yeni bir Faz ekleyen tur: yeniden üretim meşrudur ve tam bir kez olur.
+  const degisen = goruntuKur();
+  const yeniYol = join(SARMAL_KOKU, "_pnl-a14-nobet.sar");
+  degisen.programlar.set(yeniYol, ayristir(belirtecle(`Faz( kod: PNLA14-F1, ad: "Mini Graf Nöbeti" ) {\n}\n`)));
+  degisen.yollar.push(yeniYol);
+  tur(degisen);
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 1, "grafı değiştiren tur Mini Grafı tam bir kez üretmeli");
+  assert.equal(grafGonderimi().length - gonderim, 1, "grafı değiştiren turun çizimi webview'e gitmeli");
+  const son = grafGonderimi().at(-1)!;
+  assert.ok(son.includes("Mini Graf Nöbeti"), "yeni çizim turun eklediği düğümü taşımıyor");
+  assert.equal(/<a class="dugum secili" aria-current="true" title="[^"]*" href="([^"]*)"/.exec(son)?.[1], hedef!.href,
+    "yeni çizim satır tıklamasının seçimini taşımıyor");
+  // Aynı turun ikinci yayını artık bir şey değiştirmez.
+  tur(degisen);
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 1, "aynı grafın ikinci yayını Mini Grafı yeniden üretti");
 });
 
 test("Ray satırının düğümü Mini Grafın daraltılmış bir dalındaysa graf o dalı açmak için bir kez çizilir (PNL-A05 istisnası)", async () => {

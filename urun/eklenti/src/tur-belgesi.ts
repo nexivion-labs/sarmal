@@ -130,6 +130,50 @@ export function açıkBelgeHaritası<T extends { uri: vscode.Uri }>(
   return harita;
 }
 
+/**
+ * ⏱️ PNL-A14 · turun aynı anda bekleyebileceği en çok disk okuması.
+ *
+ *   ÖLÇÜLEN KUSUR (2026-10-27): tur dosyaları SIRAYLA okuyordu; her okuma bir
+ *   öncekinin bitmesini bekliyordu. Açılışta kimlik indeksi taraması binlerce
+ *   okumayı aynı anda kuyruğa koyduğu için turun her okuması o kuyruğun arkasına
+ *   düşüyor ve okuma aşaması tek başına saniyeler sürüyordu. Okumalar artık
+ *   birlikte yürür; sınır, bir turun dosya sistemini ve bellek tamponlarını
+ *   yüzlerce eşzamanlı okumayla boğmamasını sağlar. Değer ölçüm düzeneğiyle
+ *   (arac/tur-olcum.ts) seçilmiştir; Node'un dosya iş havuzu dört iş parçacığıdır
+ *   ve bu sınır havuzu sürekli dolu tutmaya yeter.
+ */
+export const TUR_OKUMA_ESZAMANLILIGI = 16;
+
+/**
+ * Seçili yolları en çok `eşzamanlılık` okuma aynı anda bekleyecek biçimde okur;
+ * sonuç dizisi yol dizisiyle AYNI SIRADADIR (okunmayan ya da okunamayan yolun
+ * gözü `undefined`). Okumaların bitiş sırası sonucun sırasını etkilemez.
+ * Bir okuma fırlatırsa toplu okuma reddedilir ve yeni okuma başlatılmaz;
+ * bu, sıralı okumanın ilk hatada durmasının ikizidir (eklentinin kabuğu
+ * okuma hatasını zaten `undefined` döndürerek yutar).
+ */
+async function sinirliOku(
+  yollar: readonly string[],
+  okunacak: readonly boolean[],
+  kabuk: BelgeKabugu,
+  eşzamanlılık: number,
+): Promise<({ belge: BelgeYuzu; bayt: number } | undefined)[]> {
+  const sonuçlar: ({ belge: BelgeYuzu; bayt: number } | undefined)[] = new Array(yollar.length).fill(undefined);
+  let sıradaki = 0;
+  let düştü = false;
+  const işçi = async (): Promise<void> => {
+    while (!düştü && sıradaki < yollar.length) {
+      const i = sıradaki++;
+      if (!okunacak[i]) continue;
+      try { sonuçlar[i] = await kabuk.oku(yollar[i]!); }
+      catch (hata) { düştü = true; throw hata; }
+    }
+  };
+  const sınır = Math.max(1, Math.min(Math.floor(eşzamanlılık), yollar.length));
+  await Promise.all(Array.from({ length: sınır }, işçi));
+  return sonuçlar;
+}
+
 /** Bir turda hangi dosyanın hangi kaynaktan geldiğinin sayımı — nöbetin ölçüsü. */
 export interface BelgeSayacı {
   /** Editörde açık ve kaydedilmemiş değişiklik taşıdığı için bellekten alınan,
@@ -159,10 +203,15 @@ export interface BelgeSayacı {
  * metnin uzunluğu bunun yerini tutmaz, çünkü bayt sırası imi çözümde soyulur
  * ve geçersiz bir bayt üç baytlık yer tutucuya dönüşür. Açık belge
  * okunmadığından sayıma girmez.
+ *
+ * ⏱️ PNL-A14: disk okumaları sırayla değil, en çok `eşzamanlılık` okuma aynı
+ * anda bekleyecek biçimde birlikte yürür; çıktı (harita sırası, sayaçlar ve
+ * bayt toplamı) sıralı okumanınkiyle birebir aynıdır.
  */
 export async function turBelgeleriniTopla(
   yollar: readonly string[],
   kabuk: BelgeKabugu,
+  eşzamanlılık: number = TUR_OKUMA_ESZAMANLILIGI,
 ): Promise<{ belgeler: Map<string, BelgeYuzu>; sayaç: BelgeSayacı; okunanBayt: number; dilDışı: string[] }> {
   const belgeler = new Map<string, BelgeYuzu>();
   const sayaç: BelgeSayacı = { açıktan: 0, diskten: 0, atlanan: 0 };
@@ -172,20 +221,32 @@ export async function turBelgeleriniTopla(
   // kalır (kanal özdeşliği: açıktan + diskten + atlanan = taranan), fakat yolu
   // ayrıca döner ki tur görüntüsü onu okunamayanla karıştırmasın.
   const dilDışı: string[] = [];
-  for (const yol of yollar) {
-    const açık = kabuk.açıkBelge(yol);
-    if (açık) {
-      // Açık belgenin dili elle değiştirilmişse dosya turun dışındadır; bu,
-      // eski `openTextDocument` yolundaki `languageId !== "sarmal"` süzgecinin ikizidir.
-      if (kabuk.dilKimliği(yol) !== "sarmal") { sayaç.atlanan += 1; dilDışı.push(yol); continue; }
-      if (kabuk.kaydedilmemisMi(yol)) {
-        belgeler.set(yol, açık);
-        sayaç.açıktan += 1;
-        continue;
-      }
-      // 🩹 BKM-DNT-A18: kaydedilmemiş değişiklik yok — gerçek disktir, aşağıda okunur.
+  // ⏱️ PNL-A14 · ÖNCE KARAR, SONRA OKUMA, EN SON SIRALI TOPLAMA. Açık belge
+  // kararı (dil dışı · kaydedilmemiş değişiklik · diskten okunacak) her yol için
+  // önce verilir; okunacak yollar sınırlı eşzamanlılıkla birlikte okunur
+  // (`sinirliOku`); sonuçlar en sonda YOL SIRASIYLA toplanır. Haritanın ekleme
+  // sırası, sayaçlar ve okunan bayt toplamı bu yüzden sıralı okumanınkiyle
+  // birebir aynıdır: okumaların hangi sırayla BİTTİĞİ çıktıya sızamaz.
+  const açıklar = yollar.map((yol) => kabuk.açıkBelge(yol));
+  const kararlar = yollar.map((yol, i): "oku" | "dilDışı" | "bellek" => {
+    if (!açıklar[i]) return "oku";
+    // Açık belgenin dili elle değiştirilmişse dosya turun dışındadır; bu,
+    // eski `openTextDocument` yolundaki `languageId !== "sarmal"` süzgecinin ikizidir.
+    if (kabuk.dilKimliği(yol) !== "sarmal") return "dilDışı";
+    // 🩹 BKM-DNT-A18: kaydedilmemiş değişiklik yoksa gerçek disktir ve okunur.
+    return kabuk.kaydedilmemisMi(yol) ? "bellek" : "oku";
+  });
+  const okunanlar = await sinirliOku(yollar, kararlar.map((k) => k === "oku"), kabuk, eşzamanlılık);
+  for (let i = 0; i < yollar.length; i++) {
+    const yol = yollar[i]!;
+    const açık = açıklar[i];
+    if (kararlar[i] === "dilDışı") { sayaç.atlanan += 1; dilDışı.push(yol); continue; }
+    if (kararlar[i] === "bellek") {
+      belgeler.set(yol, açık!);
+      sayaç.açıktan += 1;
+      continue;
     }
-    const okunan = await kabuk.oku(yol);
+    const okunan = okunanlar[i];
     if (okunan === undefined) {
       if (açık) { belgeler.set(yol, açık); sayaç.açıktan += 1; continue; }   // diski okunamayan açık belge turda kalır
       sayaç.atlanan += 1;
@@ -239,6 +300,38 @@ export function turProgramlariniKur<A>(
     if (program) programlar.set(fsPath, program);
   }
   return programlar;
+}
+
+/**
+ * ⏱️ PNL-A14 · tek-dosya tanısının yeniden kullanacağı ağaç; `undefined` ise
+ * çağıran metni kendisi ayrıştırır.
+ *
+ *   ÖLÇÜLEN KUSUR (2026-10-27): tur her dosyayı program haritası için bir kez
+ *   ayrıştırıyor, ardından tek-dosya tanısı (`tanilaCekirdek`) AYNI metni ikinci
+ *   kez belirteçleyip ayrıştırıyordu. Turun ağacı artık tanıya verilir.
+ *
+ *   İki koşul eşitliği korur. Birincisi ZAMANDIR: ağaç tanıya mevsim çevriminden
+ *   ÖNCE verilmelidir, çünkü `mevsimNormalize` Faz düğümlerine sanal `çağır`
+ *   kenarları ekleyerek ağacı yerinde değiştirir ve eski yolun taze ayrıştırması
+ *   o kenarları hiç görmezdi; bu koşul çağıranın sırasıdır (eklenti.ts). İkincisi
+ *   KAYNAKTIR ve burada verilir: turun belgesi açık belgenin KENDİSİ ise ağaç
+ *   paylaşılan önbellekten gelmiştir (`turProgramlariniKur`); o ağaç önceki
+ *   turların mevsim çevrimini taşıyabilir ve taze ayrıştırmanın ikizi değildir,
+ *   bu yüzden yeniden kullanılmaz. Kaydedilmemiş değişiklik taşıyan açık belge
+ *   bir turda en çok birkaç tanedir; bedeli ihmal edilebilir.
+ *
+ *   Söz dizimi kırık belgenin ağacı haritada yoktur; çağıran metni ayrıştırır ve
+ *   söz dizimi tanısını eskisi gibi üretir.
+ */
+export function taniAgaci<A>(
+  fsPath: string,
+  belge: BelgeYuzu,
+  açıkBelgeler: ReadonlyMap<string, A>,
+  programlar: ReadonlyMap<string, Program>,
+): Program | undefined {
+  const açık = açıkBelgeler.get(fsPath);
+  if (açık !== undefined && (açık as unknown) === belge) return undefined;
+  return programlar.get(fsPath);
 }
 
 /**

@@ -1682,9 +1682,16 @@ export const IZ_METINLERI = {
     `tam denetim şu kökte kırık dosya dışarıda bırakılarak eksik koştu: ${kok} (${dosyalar.join(", ")})`,
     `full check ran incompletely for this root, leaving out a broken file: ${kok} (${dosyalar.join(", ")})`),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
-  performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string }): string => yuzeyMetni(
-    `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
-    `🔬 ${p.saat} validation run: ${p.sure} ms · ${p.dosya} files · trigger=${p.tetik} | intervening events: ${p.olaylar} · filtered ${p.suzulen} · skipped ${p.atlanan} · deferred ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}`,
+  performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string; asamalar?: string }): string => yuzeyMetni(
+    `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}${p.asamalar ? ` | ${p.asamalar}` : ""}`,
+    `🔬 ${p.saat} validation run: ${p.sure} ms · ${p.dosya} files · trigger=${p.tetik} | intervening events: ${p.olaylar} · filtered ${p.suzulen} · skipped ${p.atlanan} · deferred ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}${p.asamalar ? ` | ${p.asamalar}` : ""}`,
+  ),
+  // ⏱️ PNL-A14: denetim turu satırının aşama bölümü. Denetim, çapraz ve dosya
+  // paylarının toplamıdır; bölünmez blok, belge toplamadan sonra ana iş
+  // parçacığında kesintisiz koşan senkron penceredir (OZK-12 ölçütü).
+  turAsamalari: (p: { okuma: number; ayristirma: number; denetim: number; capraz: number; dosya: number; yayin: number; bolunmez: number }): string => yuzeyMetni(
+    `aşamalar: okuma ${p.okuma} · ayrıştırma ${p.ayristirma} · denetim ${p.denetim} (çapraz ${p.capraz} · dosya ${p.dosya}) · yayın ${p.yayin} ms · bölünmez blok ${p.bolunmez} ms`,
+    `phases: read ${p.okuma} · parse ${p.ayristirma} · validation ${p.denetim} (cross-file ${p.capraz} · per-file ${p.dosya}) · publish ${p.yayin} ms · uninterrupted block ${p.bolunmez} ms`,
   ),
   // 📄 PRF-KP-A02: denetim turu satırının belge bölümü. Açma sayısı sabit
   // sıfırdır ve açıkça yazılır, çünkü turun belge açmadığı iddiası ancak gözle

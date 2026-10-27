@@ -352,6 +352,31 @@ export function projeGrafiCikar(dag: Dag, seciliKod = "",
   };
 }
 
+/**
+ * İki graf modeli aynı mı (PNL-A14)? Her denetim turu grafı yeniden kurar; Mini Graf ancak model
+ * gerçekten değiştiyse yeniden çizilir. Düğümler ve bağlar sırasıyla, her alanıyla karşılaştırılır
+ * ve alan listesi elle yazılmaz, böylece modele eklenen yeni bir alan da kendiliğinden ölçülür.
+ * Nesne değerli bir alan kimlikle karşılaştırılır ve farklı sayılır; bu yanılgı yalnız fazladan bir
+ * çizime yol açar, eksik bir çizime yol açmaz. Ölçüm (Sarmal deposunun kendi planı, 917 düğüm ve
+ * 18 613 bağ): karşılaştırma yaklaşık iki milisaniye sürer; modelin JSON özeti on milisaniyeyi,
+ * grafın kendisini çizmek ise ağaç görünümünde altı milisaniyeyi bulur.
+ */
+export function grafEsit(a: ProjeGrafi, b: ProjeGrafi): boolean {
+  return kayitlarEsit(a.dugumler, b.dugumler) && kayitlarEsit(a.baglar, b.baglar);
+}
+
+function kayitlarEsit(a: readonly object[], b: readonly object[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i] as Record<string, unknown>, y = b[i] as Record<string, unknown>;
+    let alan = 0;
+    for (const k in x) { if (x[k] !== y[k]) return false; alan += 1; }
+    for (const _ in y) alan -= 1;
+    if (alan !== 0) return false;
+  }
+  return true;
+}
+
 // ── Düzenli ağaç çizimi ──────────────────────────────────────────────────────
 //
 //   Founder ekran görüntüsü bulgusu: dar kenar çubuğunda etiketler yedi punto

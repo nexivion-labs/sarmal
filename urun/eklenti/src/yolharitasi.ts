@@ -502,7 +502,13 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     // 🔗 ORK-1.2: kardeşler TOPOLOJİK sıraya dizilir — Adım rütbesi DAG'dan, kapsayıcı
     // rütbesi çocuklarının EN GEÇinden TÜRETİLİR (panel aynadır, DIL-2: kenar yaprakta
     // bir kez; kenarsız öğe rütbesiz kalır ve kaynak sırasını korur — serbest iş).
-    this.dag = dagKur(programlar);   // VIT-GRAF-A03: graf saklanır — kenar düğümleri buradan
+    // PNL-A14: Dag KARARLI SIRAYLA kurulur. Turun dosya araması yolları her turda başka sırayla
+    // verir; Dag'ın ekleme sırası ve kenar listeleri o sırayı izlediği için Mini Graf aynı dosyalardan
+    // her turda başka bir düğüm sırası çıkarıyor ve grafı boşuna yeniden çiziyordu (gerçek VS Code
+    // ölçümü 2026-10-28: ardışık üç turda kök Teknoloji düğümlerinin yeri her turda değişti). Taban
+    // sıra Ray ağacınınkiyle aynıdır (dosya yolu); harita yalnız bu kuruluş için dizilir, programlar
+    // kopyalanmaz.
+    this.dag = dagKur(new Map([...programlar].sort(([a], [b]) => a.localeCompare(b))));   // VIT-GRAF-A03: graf saklanır — kenar düğümleri buradan
     // 🐢 PRF-A05: graf değişti — kenar grubu önbelleği yalnız BURADA boşalır
     // (yenile-ömürlü sözleşme: bayat veri gösterilmez, aç/kapa hesap tetiklemez).
     // Bu önbellek düz yazıyı, durumu ve kabul sayısını da okuduğu için kenar
@@ -1384,7 +1390,7 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
     panelBagla: (p) => { panelBagi = p; },
     diliTazele(): void {
       saglayici.diliTazele();
-      miniGraf.tazele();
+      miniGraf.yenidenCiz("dil");
       if (acikKart && acikKartKodu) {
         const oge = saglayici.kodlaBul(acikKartKodu);
         if (oge) {

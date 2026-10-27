@@ -48,11 +48,11 @@ interface SinamaKapisi {
 }
 
 /** Bir koşul sağlanana dek kısa aralıklarla bekler (tanı/aktivasyon asenkron). */
-async function bekle(kosul: () => boolean, msSon = 10_000): Promise<boolean> {
+async function bekle(kosul: () => boolean, msSon = 10_000, aralikMs = 200): Promise<boolean> {
   const bitis = Date.now() + msSon;
   while (Date.now() < bitis) {
     if (kosul()) return true;
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, aralikMs));
   }
   return kosul();
 }
@@ -324,9 +324,16 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
     await vscode.window.showTextDocument(belge);
     await new Promise((r) => setTimeout(r, 1_000));
     fs.writeFileSync(uri.fsPath, belge.getText() + "\n", "utf8");
+    // ⏱️ PNL-A14: korpus kökü bir varlık değildir; daralan olay turunun bulduğu
+    // döngü tanısı, önceki sınamaların disk olaylarından gelen bir sonraki TAM
+    // turda (korpus kökü DAG'a inmez) yeniden düşer. Tanı yalnız iki yayın
+    // arasındaki pencerede görünür ve turlar hızlandıkça pencere daralır (ölçüm:
+    // 030bd86'da 428–518 ms, PNL-A14 sonrası 167–188 ms). 200 ms'lik yoklama
+    // pencereyi ara sıra kaçırıyordu; ölçüt aynıdır, yalnız yoklama sıklaşır.
     const dustu = await bekle(
       () => vscode.languages.getDiagnostics(uri).some((t) => String(t.code) === "döngüsel-bağımlılık"),
       15_000,
+      10,
     );
     const kodlar = vscode.languages.getDiagnostics(uri).map((t) => String(t.code));
     assert.ok(dustu, `döngüsel-bağımlılık tanısı Problems'e düşmedi; gelen kodlar: [${kodlar.join(", ")}]`);

@@ -35,6 +35,7 @@
 import esbuild from "esbuild";
 import { createRequire } from "node:module";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { readFile as diskOku } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -66,6 +67,81 @@ function paketle(): string {
   });
   paketYolu = realpathSync(cikti);
   return paketYolu;
+}
+
+// ── ⏱️ PNL-A14 · Ölçüm ve eşitlik paketi ─────────────────────────────────────
+//
+//   Ölçüm betiği (arac/tur-olcum.ts) ile tur eşitliği nöbeti
+//   (sinama/tur-esitligi.test.ts) turun ÜRETTİĞİ AĞACI görmek zorundadır:
+//   "tur görüntüsü birebir aynıdır" cümlesi yalnız yol listesiyle değil,
+//   ağaçların kendisiyle ölçülür. Eklentinin dış yüzü ağaçları bilinçle vermez
+//   (`sonGoruntuOzeti` belgesi); kapı bu yüzden üretim koduna değil, yalnız bu
+//   düzeneğin kurduğu pakete eklenir: paketleyici `tur-goruntusu.ts` modülünün
+//   sonuna son görüntüyü küresel bir anahtara bağlayan tek satır iliştirir.
+//
+//   Nöbetin karşılaştırma ölçüsü olan başvuru paketi ise bir kaynak modülün
+//   yerine `sinama/` altındaki bir başvuru modülünü koyarak kurulur; yerine
+//   konan modülün kendi içe aktarımı yönlendirilmez, dolayısıyla başvuru modülü
+//   gerçek modülü sarabilir. Üretim kaynağında hiçbir anahtar ya da kip yoktur.
+//   Eklentiler (esbuild plugin) yalnız eşzamansız paketlemede çalıştığı için
+//   bu paket ayrı ve eşzamansız kurulur; var olan sınamaların yolu değişmez.
+
+/** Paketin tur görüntüsü kapısının küresel anahtarı. */
+const GORUNTU_ANAHTARI = "__SARMAL_SINAMA_SON_TUR_GORUNTUSU__";
+
+export interface PaketSecenegi {
+  /**
+   * Yerine konacak modüller: `src/` altındaki mutlak kaynak yolu → yerine
+   * konacak modülün mutlak yolu. Yerine konan modülün kendi içe aktarımları
+   * yönlendirilmez.
+   */
+  readonly yerineKoy?: Readonly<Record<string, string>>;
+}
+
+/**
+ * Eklenti girişini tur görüntüsü kapısıyla (ve istenirse yerine konan
+ * modüllerle) paketler; paket yolunu döndürür. Klasörü `kabukTemizle` siler.
+ */
+export async function paketKur(secenek: PaketSecenegi = {}): Promise<string> {
+  const dizin = realpathSync(mkdtempSync(join(tmpdir(), "sarmal-olcum-paketi-")));
+  acilanAlanlar.add(dizin);
+  const kopru = join(dizin, "vscode-kopru.cjs");
+  writeFileSync(kopru, `module.exports = globalThis.${KOPRU_ANAHTARI};\n`);
+  const cikti = join(dizin, "eklenti.cjs");
+  const yerineKoy = new Map(Object.entries(secenek.yerineKoy ?? {}));
+  const yerineKonanlar = new Set(yerineKoy.values());
+  await esbuild.build({
+    entryPoints: [join(EKLENTI_KOKU, "src", "eklenti.ts")],
+    bundle: true, format: "cjs", platform: "node", target: "node18",
+    outfile: cikti, alias: { vscode: kopru }, logLevel: "silent",
+    plugins: [{
+      name: "sarmal-olcum-paketi",
+      setup(kurulum) {
+        kurulum.onResolve({ filter: /\.ts$/ }, (a) => {
+          if (!a.path.startsWith(".") || yerineKonanlar.has(a.importer)) return undefined;
+          const hedef = yerineKoy.get(join(a.resolveDir, a.path));
+          return hedef ? { path: hedef } : undefined;
+        });
+        kurulum.onLoad({ filter: /[\\/]src[\\/]tur-goruntusu\.ts$/ }, (a) => ({
+          contents: `${readFileSync(a.path, "utf8")}\n;(globalThis as Record<string, unknown>)[${JSON.stringify(GORUNTU_ANAHTARI)}] = sonTurGoruntusu;\n`,
+          loader: "ts",
+        }));
+      },
+    }],
+  });
+  return realpathSync(cikti);
+}
+
+/**
+ * `paketKur` ile kurulan paketin son tur görüntüsü (tur-goruntusu.ts
+ * `TurGoruntusu`); kapısız pakette ya da hiç yayın olmadıysa `undefined`.
+ */
+export function sonTurGoruntusu(): {
+  programlar: ReadonlyMap<string, unknown>; yollar: readonly string[]; kirik: readonly string[];
+  okunamayan: number; dilDışı: readonly string[]; tetik: string; kapsam: readonly string[] | undefined; sıra: number;
+} | undefined {
+  const kapi = (globalThis as Record<string, unknown>)[GORUNTU_ANAHTARI] as (() => ReturnType<typeof sonTurGoruntusu>) | undefined;
+  return kapi?.();
 }
 
 // ── Yedek: kayıt anında dokunulan geniş yüzey ───────────────────────────────
@@ -238,17 +314,23 @@ class SahteBelge {
   readonly languageId: string;
   readonly isUntitled = false;
   readonly isClosed = false;
-  readonly isDirty = false;
+  readonly isDirty: boolean;
   readonly eol = 1;
   readonly version = 1;
   private readonly metin: string;
-  constructor(fsPath: string, metin: string) {
+  constructor(fsPath: string, metin: string, kirli = false) {
     this.uri = Uri.file(fsPath);
     this.metin = metin;
+    this.isDirty = kirli;
     this.languageId = fsPath.endsWith(".sar") ? "sarmal" : "plaintext";
   }
   get fileName(): string { return this.uri.fsPath; }
-  private get satirlar(): string[] { return this.metin.split("\n"); }
+  // ⏱️ PNL-A14: satırlar bir kez bölünür (metin değişmez). Her erişimde yeniden
+  // bölmek `lineAt` döngülerini kareli yapıyor ve büyük bir etkin belgede
+  // etkinleşmeyi saniyelerce sahte maliyetle şişiriyordu; VS Code'un satır
+  // erişimi sabit zamanlıdır.
+  private satirOnbellegi: string[] | undefined;
+  private get satirlar(): string[] { return (this.satirOnbellegi ??= this.metin.split("\n")); }
   get lineCount(): number { return this.satirlar.length; }
   getText(aralik?: Range): string {
     if (!aralik) return this.metin;
@@ -344,6 +426,19 @@ export interface KabukKaydi {
    * karşılama görünümü (MGZ-A08) sağlayıcı istemediği için burada hiç görünmez.
    */
   readonly gorunumKayitlari: string[];
+  /**
+   * ⏱️ PNL-A14: kurulan dosya sistemi izleyicileri, kurulma sırasıyla. Olaylar
+   * gerçek yayıcıdır; ölçüm betiği kaydetme olayını bunlardan ateşler.
+   */
+  readonly izleyiciler: SahteIzleyici[];
+}
+
+/** Kurulmuş bir dosya sistemi izleyicisi ve üç olay yayıcısı. */
+export interface SahteIzleyici {
+  readonly desen: string;
+  readonly olustu: EventEmitter<Uri>;
+  readonly degisti: EventEmitter<Uri>;
+  readonly silindi: EventEmitter<Uri>;
 }
 
 export interface EtkinlesmeSecenegi {
@@ -357,6 +452,26 @@ export interface EtkinlesmeSecenegi {
   readonly ayarlar?: Readonly<Record<string, unknown>>;
   /** Editör dili (`vscode.env.language`). Verilmezse "tr". */
   readonly dil?: string;
+  /** ⏱️ PNL-A14: `paketKur` ile kurulmuş paketin yolu; verilmezse varsayılan paket. */
+  readonly paket?: string;
+  /**
+   * ⏱️ PNL-A14: dosya okumasının yapay gecikmesi (ms). Eşitlik nöbeti okumaların
+   * istek sırasından FARKLI bir sırayla tamamlanmasını bununla zorlar; sıraya
+   * bağımlı bir toplama ancak böyle görünür olur.
+   */
+  readonly okumaGecikmesi?: (yol: string) => number;
+  /**
+   * ⏱️ PNL-A14: boş dönecek dosya araması desenleri. Ölçüm betiği açılışta
+   * turla yarışan bir taramayı (kimlik indeksi) bununla devreden çıkarıp turun
+   * kendi maliyetini yarıştan ayırır.
+   */
+  readonly bosArama?: readonly string[];
+  /**
+   * ⏱️ PNL-A14: editörde açık belgeler (`workspace.textDocuments`). `metin`
+   * verilen belge bellekte o metni taşır ve kaydedilmemiş değişiklik taşır
+   * (`isDirty`); verilmeyen belge diskteki metniyle açıktır ve temizdir.
+   */
+  readonly acikBelgeler?: readonly { readonly yol: string; readonly metin?: string }[];
 }
 
 /** Etkinleşmiş eklenti ve onu çevreleyen kabuk. */
@@ -368,21 +483,39 @@ export interface EtkinEklenti {
   guvenVer(): void;
   /** İlk denetim turunun yayınını bekler; tur görüntüsü yayınlanınca döner. */
   turBekle(zamanAsimiMs?: number): Promise<void>;
+  /**
+   * ⏱️ PNL-A14: diskte değişmiş bir dosyanın izleyici olayını ateşler (kaydetme
+   * ya da editör dışı yazım); deseni dosyayı kapsayan her izleyicinin
+   * `onDidChange` olayı çağrılır. Ateşlenen izleyici sayısını döndürür.
+   */
+  dosyaDegisti(yol: string): number;
   /** Etkinleşmeyi kapatır: abonelikler bırakılır, `deactivate` çağrılır. */
   kapat(): void;
 }
 
-/** Klasörün altındaki dosyaları yürür; gizli dizinler ve paket klasörleri atlanır. */
-function dosyalariYuru(kok: string, uygun: (yol: string) => boolean, cikti: string[]): void {
+/** Klasörün altındaki dosyaları yürür; gizli dizinler, paket klasörleri ve dışlanan adlar atlanır. */
+function dosyalariYuru(kok: string, uygun: (yol: string) => boolean, cikti: string[], dislanan?: ReadonlySet<string>): void {
   let girdiler: import("node:fs").Dirent[];
   try { girdiler = readdirSync(kok, { withFileTypes: true }); } catch { return; }
   for (const g of girdiler) {
     const yol = join(kok, g.name);
     if (g.isDirectory()) {
-      if (g.name.startsWith(".") || g.name === "node_modules") continue;
-      dosyalariYuru(yol, uygun, cikti);
+      if (g.name.startsWith(".") || g.name === "node_modules" || dislanan?.has(g.name)) continue;
+      dosyalariYuru(yol, uygun, cikti, dislanan);
     } else if (g.isFile() && uygun(yol)) cikti.push(yol);
   }
+}
+
+/**
+ * ⏱️ PNL-A14: `**​/{a,b,…}/**` biçimli dışlama deseninin dizin adları. VS Code
+ * dosya araması dışlama desenine uyar; sahte uymasaydı açılıştaki kimlik
+ * indeksi taraması derleme çıktılarını da okur ve ölçüm gerçeğinden ağır çıkardı.
+ * Başka biçimdeki desen yok sayılır (yalnız gizli dizin ve paket klasörü atlanır).
+ */
+function dislamaAdlari(dislama: unknown): ReadonlySet<string> | undefined {
+  const metin = typeof dislama === "string" ? dislama : dislama instanceof RelativePattern ? dislama.pattern : undefined;
+  const adlar = metin === undefined ? undefined : /^\*\*\/\{([^}]+)\}\/\*\*$/u.exec(metin)?.[1];
+  return adlar === undefined ? undefined : new Set(adlar.split(",").filter((a) => !a.includes("*")));
 }
 
 /** `**​/*.sar`, `**​/*.{md,ts}` ve `**​/*` biçimli aramaların uzantı süzgeci. */
@@ -409,7 +542,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
   const kayit: KabukKaydi = {
     tanilar: new Map(), durumOgeleri: [], bilgiler: [], uyarilar: [], hatalar: [], durumMesajlari: [],
     kanallar: new Map(), komutlar: new Map(), komutCagrilari: [], dosyaAramasi: 0,
-    dekorTurleri: new Map(), dekorlar: new Map(), gorunumKayitlari: [],
+    dekorTurleri: new Map(), dekorlar: new Map(), gorunumKayitlari: [], izleyiciler: [],
   };
   const durum = { guvenilir: secenek.guvenilir ?? true };
   const guven = new EventEmitter<void>();
@@ -487,7 +620,8 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
     get name() { return klasorler[0]?.name; },
     get isTrusted() { return durum.guvenilir; },
     onDidGrantWorkspaceTrust: guven.event,
-    textDocuments: [] as SahteBelge[],
+    textDocuments: (secenek.acikBelgeler ?? []).map((b) =>
+      new SahteBelge(b.yol, b.metin ?? readFileSync(b.yol, "utf8"), b.metin !== undefined)),
     getConfiguration: (bolum?: string) => ({
       get: <T>(anahtar: string, varsayilan?: T): T | undefined => {
         const tam = bolum ? `${bolum}.${anahtar}` : anahtar;
@@ -503,12 +637,14 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
       const k = kapsayanKlasor(yol);
       return k ? relative(k.uri.fsPath, yol).split(sep).join("/") : yol;
     },
-    findFiles: async (desen: string | RelativePattern) => {
+    findFiles: async (desen: string | RelativePattern, dislama?: unknown) => {
       kayit.dosyaAramasi += 1;
       const metin = typeof desen === "string" ? desen : desen.pattern;
+      if (secenek.bosArama?.includes(metin)) return [];   // ⏱️ PNL-A14: ölçüm bu aramayı devreden çıkarmış
       const kokler = typeof desen === "string" ? klasorler.map((k) => k.uri.fsPath) : [desen.base];
       const yollar: string[] = [];
-      for (const k of kokler) dosyalariYuru(k, aramaSuzgeci(metin), yollar);
+      const dislanan = dislamaAdlari(dislama);
+      for (const k of kokler) dosyalariYuru(k, aramaSuzgeci(metin), yollar, dislanan);
       return yollar.sort().map((y) => Uri.file(y));
     },
     openTextDocument: async (hedef: Uri | string) => {
@@ -516,9 +652,25 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
       return new SahteBelge(yol, readFileSync(yol, "utf8"));
     },
     applyEdit: async () => true,
-    createFileSystemWatcher: () => adAlani({ onDidCreate: bosOlay(), onDidChange: bosOlay(), onDidDelete: bosOlay(), dispose: () => undefined }),
+    // ⏱️ PNL-A14: izleyici olayları gerçek yayıcıdır ve kayda girer; ölçüm
+    // betiği kaydetme olayını buradan ateşler. Desen dize ya da göreli desendir.
+    createFileSystemWatcher: (desen: string | RelativePattern) => {
+      const iz: SahteIzleyici = {
+        desen: typeof desen === "string" ? desen : desen.pattern,
+        olustu: new EventEmitter<Uri>(), degisti: new EventEmitter<Uri>(), silindi: new EventEmitter<Uri>(),
+      };
+      kayit.izleyiciler.push(iz);
+      return adAlani({ onDidCreate: iz.olustu.event, onDidChange: iz.degisti.event, onDidDelete: iz.silindi.event, dispose: () => undefined });
+    },
     fs: adAlani({
-      readFile: async (u: Uri) => new Uint8Array(readFileSync(u.fsPath)),
+      // ⏱️ PNL-A14: okuma eşzamansızdır, çünkü eklenti sunucusunun `file`
+      // şemasındaki okuması da eşzamansızdır; eşzamanlı okuyan bir sahte, turun
+      // okumaları paralel yürütüp yürütmediğini ölçülemez kılardı.
+      readFile: async (u: Uri) => {
+        const gecikme = secenek.okumaGecikmesi?.(u.fsPath) ?? 0;
+        if (gecikme > 0) await new Promise((r) => setTimeout(r, gecikme));
+        return new Uint8Array(await diskOku(u.fsPath));
+      },
       stat: async (u: Uri) => {
         const s = statSync(u.fsPath);
         return { type: s.isDirectory() ? 2 : 1, size: s.size, ctime: s.ctimeMs, mtime: s.mtimeMs };
@@ -605,7 +757,7 @@ function bellek(): { get<T>(k: string, v?: T): T | undefined; update(k: string, 
  */
 export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
   const { vscode, kayit, guven, durum } = kabukKur(secenek);
-  const yol = paketle();
+  const yol = secenek.paket ?? paketle();
   (globalThis as Record<string, unknown>)[KOPRU_ANAHTARI] = vscode;
   delete gerek.cache[yol];
   const eklenti = gerek(yol) as {
@@ -639,6 +791,15 @@ export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
         await new Promise((r) => setTimeout(r, 20));
       }
       throw new Error("ilk denetim turu zaman aşımında yayınlanmadı");
+    },
+    dosyaDegisti(yol: string): number {
+      let sayi = 0;
+      for (const iz of kayit.izleyiciler) {
+        if (!aramaSuzgeci(iz.desen)(yol)) continue;
+        iz.degisti.fire(Uri.file(yol));
+        sayi += 1;
+      }
+      return sayi;
     },
     kapat: () => {
       for (const d of baglam.subscriptions.splice(0)) { try { d.dispose(); } catch { /* kapanış kaydı ölçülmez */ } }

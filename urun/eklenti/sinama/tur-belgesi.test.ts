@@ -35,6 +35,16 @@
 //        metninden kurulur.
 //     ⑪ Okunan bayt sayacı kabuğun HAM baytını toplar, çözülmüş metnin
 //        uzunluğunu değil.
+//
+//   ⏱️ PNL-A14 ile eklenen iki güvence (okumalar artık sınırlı eşzamanlılıkla
+//   birlikte yürür ve tek-dosya tanısı turun ağacını yeniden kullanır):
+//     ⑫ SIRA VE SINIR — okumalar istek sırasından farklı bitse de harita sırası,
+//        sayaçlar ve bayt toplamı sıralı okumanınkiyle aynıdır; aynı anda
+//        bekleyen okuma sayısı sınırı aşmaz ve sınır gerçekten paralel yürür;
+//        bir okuma fırlatırsa toplama reddedilir ve yeni okuma başlamaz.
+//     ⑬ TANI AĞACI — tek-dosya tanısı turun ağacını alır; açık belgenin
+//        önbellekten gelen ağacı (önceki turların mevsim çevrimini taşıyabilir)
+//        ve söz dizimi kırık belge için ağaç verilmez, tanı metni kendisi ayrıştırır.
 //   Koşum: cd eklenti && npm test
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
@@ -46,8 +56,8 @@ import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import {
-  açıkBelgeHaritası, type BelgeKabugu, type BelgeYuzu, diskBelgesi, turBelgeleriniTopla,
-  turProgramlariniKur,
+  açıkBelgeHaritası, type BelgeKabugu, type BelgeYuzu, diskBelgesi, taniAgaci, TUR_OKUMA_ESZAMANLILIGI,
+  turBelgeleriniTopla, turProgramlariniKur,
 } from "../src/tur-belgesi.ts";
 
 /** Sahte kimlik — gerçek `Uri` yerine yalnız yol taşır; modül vscode çağırmaz. */
@@ -446,4 +456,107 @@ test("BAYT: toplam yalnız diskten okunan dosyaları sayar; açık ve atlanan do
 
   assert.equal(okunanBayt, 36, "toplam iki disk dosyasının ham baytı değil; açık ya da atlanan dosya sayıma girdi");
   assert.deepEqual(sayaç, { açıktan: 1, diskten: 2, atlanan: 1 });
+});
+
+// ── ⑫ PNL-A14 · SINIRLI EŞZAMANLI OKUMA: SIRA ÇIKTIYA SIZMAZ ────────────────
+//   Sahte kabuk her okumayı yola bağlı bir gecikmeyle bitirir; böylece okumalar
+//   istek sırasından FARKLI bir sırayla biter. Aynı anda bekleyen okuma sayısı
+//   ve en büyüğü sayılır.
+
+/** Gecikmeli kabuk: `/p/<n>.sar` dosyasının okuması `gecikme(n)` ms sonra biter. */
+function gecikmeliKabuk(o: { gecikme: (n: number) => number; açık?: Record<string, { metin: string; kirli: boolean }>; fırlatan?: string }): {
+  kabuk: BelgeKabugu; başlayan: string[]; biten: string[]; ölçü: { anlık: number; enÇok: number };
+} {
+  const başlayan: string[] = [];
+  const biten: string[] = [];
+  const ölçü = { anlık: 0, enÇok: 0 };
+  const açık = o.açık ?? {};
+  const kabuk: BelgeKabugu = {
+    açıkBelge: (yol) => (yol in açık ? diskBelgesi(uriYap(yol), açık[yol]!.metin) : undefined),
+    dilKimliği: (yol) => (yol in açık ? "sarmal" : undefined),
+    kaydedilmemisMi: (yol) => açık[yol]?.kirli === true,
+    oku: async (yol) => {
+      başlayan.push(yol);
+      ölçü.anlık += 1;
+      ölçü.enÇok = Math.max(ölçü.enÇok, ölçü.anlık);
+      const n = Number(/(\d+)\.sar$/u.exec(yol)?.[1] ?? 0);
+      await new Promise((r) => setTimeout(r, o.gecikme(n)));
+      ölçü.anlık -= 1;
+      if (yol === o.fırlatan) throw new Error("sahte okuma hatası");
+      biten.push(yol);
+      const metin = `Faz( kod: F${n} )`;
+      return { belge: diskBelgesi(uriYap(yol), metin), bayt: metin.length + n };
+    },
+  };
+  return { kabuk, başlayan, biten, ölçü };
+}
+
+const yolListesi = (adet: number): string[] => Array.from({ length: adet }, (_, i) => `/p/${i}.sar`);
+
+test("OKUMA (PNL-A14): okumalar ters sırayla bitse de harita sırası, sayaçlar ve bayt toplamı sıralı okumayla aynıdır", async () => {
+  const yollar = yolListesi(12);
+  // Sonraki dosya daha ÖNCE biter: bitiş sırası istek sırasının tersidir.
+  const paralel = gecikmeliKabuk({ gecikme: (n) => 2 * (12 - n) });
+  const sıralı = gecikmeliKabuk({ gecikme: (n) => 2 * (12 - n) });
+  const p = await turBelgeleriniTopla(yollar, paralel.kabuk, 4);
+  const s = await turBelgeleriniTopla(yollar, sıralı.kabuk, 1);
+
+  assert.notDeepEqual(paralel.biten, yollar, "okumalar istek sırasıyla bitti; sahte bitiş sırasını karıştırmıyor, sınama hiçbir şey ölçmüyor");
+  assert.deepEqual([...p.belgeler.keys()], yollar, "harita okumaların BİTİŞ sırasıyla kuruldu; tur görüntüsünün sırası değişir");
+  assert.deepEqual([...p.belgeler.keys()], [...s.belgeler.keys()]);
+  assert.deepEqual([...p.belgeler.values()].map((b) => b.getText()), [...s.belgeler.values()].map((b) => b.getText()));
+  assert.deepEqual(p.sayaç, s.sayaç);
+  assert.equal(p.okunanBayt, s.okunanBayt);
+});
+
+test("OKUMA (PNL-A14): aynı anda bekleyen okuma sayısı sınırı aşmaz ve sınıra ulaşır; varsayılan sınır bilinen sabittir", async () => {
+  const k = gecikmeliKabuk({ gecikme: () => 3 });
+  await turBelgeleriniTopla(yolListesi(40), k.kabuk, 6);
+  assert.equal(k.ölçü.enÇok, 6, `en çok ${k.ölçü.enÇok} okuma birlikte bekledi; sınır 6 ya aşıldı ya da paralel yürünmedi`);
+  assert.equal(k.başlayan.length, 40);
+
+  const v = gecikmeliKabuk({ gecikme: () => 1 });
+  await turBelgeleriniTopla(yolListesi(40), v.kabuk);
+  assert.equal(v.ölçü.enÇok, TUR_OKUMA_ESZAMANLILIGI, "varsayılan çağrı tanımlı eşzamanlılık sınırıyla yürümüyor");
+});
+
+test("OKUMA (PNL-A14): kaydedilmemiş açık belge paralel yolda da diskten okunmaz ve sırasını korur", async () => {
+  const yollar = yolListesi(6);
+  const k = gecikmeliKabuk({ gecikme: (n) => 6 - n, açık: { "/p/2.sar": { metin: "Faz( kod: BELLEK )", kirli: true } } });
+  const { belgeler, sayaç } = await turBelgeleriniTopla(yollar, k.kabuk, 3);
+  assert.ok(!k.başlayan.includes("/p/2.sar"), "kaydedilmemiş açık belge diskten okundu; kirli tampon diske ezdirilir");
+  assert.deepEqual([...belgeler.keys()], yollar);
+  assert.equal(belgeler.get("/p/2.sar")?.getText(), "Faz( kod: BELLEK )");
+  assert.deepEqual(sayaç, { açıktan: 1, diskten: 5, atlanan: 0 });
+});
+
+test("OKUMA (PNL-A14): fırlatan okuma toplamayı reddeder ve ardından yeni okuma başlatılmaz", async () => {
+  const k = gecikmeliKabuk({ gecikme: () => 2, fırlatan: "/p/1.sar" });
+  await assert.rejects(turBelgeleriniTopla(yolListesi(30), k.kabuk, 2), /sahte okuma hatası/u);
+  await new Promise((r) => setTimeout(r, 20));
+  assert.ok(k.başlayan.length <= 4, `hata sonrası okumalar sürdü (${k.başlayan.length} okuma başladı)`);
+});
+
+// ── ⑬ PNL-A14 · TANI AĞACI ───────────────────────────────────────────────────
+
+test("TANI AĞACI (PNL-A14): disk kaydı turun ağacını alır; açık belgenin önbellek ağacı ve kırık belge için ağaç verilmez", () => {
+  const diskKaydı = diskBelgesi(uriYap("/p/disk.sar"), "Faz( kod: D )");
+  const açık = diskBelgesi(uriYap("/p/acik.sar"), "Faz( kod: A )");
+  const açıkYerineDisk = diskBelgesi(uriYap("/p/acik2.sar"), "Faz( kod: B )");
+  const kırık = diskBelgesi(uriYap("/p/kirik.sar"), "Faz( kod: ");
+  const ağaç = (m: string): Program => ayristir(belirtecle(m));
+  const programlar = new Map<string, Program>([
+    ["/p/disk.sar", ağaç("Faz( kod: D )")], ["/p/acik.sar", ağaç("Faz( kod: A )")], ["/p/acik2.sar", ağaç("Faz( kod: B )")],
+  ]);
+  // `/p/acik2.sar` açık fakat turun belgesi diskten okunan kayıttır (BKM-DNT-A18).
+  const açıkBelgeler = new Map<string, BelgeYuzu>([["/p/acik.sar", açık], ["/p/acik2.sar", diskBelgesi(uriYap("/p/acik2.sar"), "eski")]]);
+
+  assert.equal(taniAgaci("/p/disk.sar", diskKaydı, açıkBelgeler, programlar), programlar.get("/p/disk.sar"),
+    "disk kaydının tanısı turun ağacını almıyor; metin ikinci kez ayrıştırılır");
+  assert.equal(taniAgaci("/p/acik2.sar", açıkYerineDisk, açıkBelgeler, programlar), programlar.get("/p/acik2.sar"),
+    "diskten okunan kayıt açık belgeyle karıştırıldı");
+  assert.equal(taniAgaci("/p/acik.sar", açık, açıkBelgeler, programlar), undefined,
+    "açık belgenin önbellek ağacı tanıya verildi; önceki turların mevsim kenarlarını taşıyabilir");
+  assert.equal(taniAgaci("/p/kirik.sar", kırık, açıkBelgeler, programlar), undefined,
+    "kırık belge için ağaç uyduruldu; söz dizimi tanısı tanının kendi ayrıştırmasından gelmeli");
 });
