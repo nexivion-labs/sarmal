@@ -2,6 +2,16 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.196 — 2026-10-28 (panel Founder'ın çalışma düzenine döndü)
+
+- **Panelde beş sekme ve geniş, alçak yerleşim.** Sekmeler Ray, Tren, Makinist, Gözlemler ve Ayarlar sırasıyla durur; Gözlemler ile Ayarlar şimdilik boş bölümdür. Sekme şeridi ve başlıklar küçüldü. Editörün altındaki geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur, dar panelde alt alta durur. Panel pencere boyuna göre sıkışıp küçük bir kutuya dönmez ve her açılış Ray sekmesiyle başlar.
+- **Ağaç çizgileri hep görünür.** Ray, Tren ve Makinist ağaçlarında girinti çizgisi her zaman ince ve tül morunda çizilir; fare bir satırın üzerine gelince o dalın çizgisi, gri açıklaması ve simgesi renklenir.
+- **Mini Grafta düğüme tıklamak dosyayı açar.** Klasik görünümdeki SVG bağları da yakalanır ve üç görünümün tıklaması dosyayı ilgili satırda açar, odak panelde kalır. Ray satırına tıklamak Mini Grafı baştan çizdirmez.
+- **Editördeki renkli girinti bantları yeniden varsayılan.** Yedi renkli bantlar 0.9.193'teki renk ve genişlikleriyle döndü; `sarmal.girintiRenkleri` kapatılınca tül derinlik çizilir.
+- **Onay kararı panelin içinde verilir.** Onaya tıklayınca dosya editörde Adımın satırında açılır; gerekçe kutusu ve onayla, şerhle onayla, reddet düğmeleri satırın altında, panelde belirir. Editörde kart açılmaz ve dosyanın üstü örtülmez.
+- **Açılış hızlandı.** Denetim turu dosyaları sırayla değil sınırlı eşzamanlılıkla okur ve tek dosya tanısı turun kendi ağacından üretilir; gerçek VS Code ölçümünde başlangıç turu 1178 ms'den 739 ms'ye indi. Performans kanalı turu okuma, ayrıştırma, denetim, yayın ve bölünmez blok aşamalarına böler.
+- **Bilinen açık.** Eklenti uzun bir denetim turundayken sekme geçişi gecikebilir; bu düzeltme bir sonraki sürümde gelir.
+
 ## 0.9.195 — 2026-10-24 (panel dışarıdan değişen dosyada bayat kalmıyor)
 
 - **Editörün dışında değişen dosya panelde tazelenir.** Başka bir pencerede çalışan bir ajan, git ya da komut satırı bir `.sar` dosyasını değiştirdiğinde yol haritası eski Adım sayısını pencere yeniden yüklenene kadar gösterebiliyordu, çünkü tur açık belgeyi her zaman diskten önce okuyordu. Artık yalnız kaydedilmemiş değişiklik taşıyan açık belge bellekten okunur; öteki her dosyanın gerçeği disktir.
