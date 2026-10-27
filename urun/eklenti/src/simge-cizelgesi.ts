@@ -169,13 +169,17 @@ export const BOLUM_SIMGE_KAYNAKLARI = {
   makinist: `${SIMGE_RAFI}/panel-makinist.svg`,
 } as const;
 
-/** Sarmal panelinin sekme şeridindeki üç simge (Founder 2026-10-21): şerit bu dosyaları satır içi SVG
- *  olarak gömer. Tren sekmesi, lokomotif ile yapay zekâ ajanını birleştiren `bolum/tren-ajan.svg`
- *  çizimini taşır; etkinlik çubuğu dışında hiçbir yerde başka bir Tren simgesi kullanılmaz. */
+/** Sarmal panelinin sekme şeridindeki beş simge (Founder 2026-10-21 · OZK-13): şerit bu dosyaları satır
+ *  içi SVG olarak gömer. Tren sekmesi, lokomotif ile yapay zekâ ajanını birleştiren `bolum/tren-ajan.svg`
+ *  çizimini taşır; etkinlik çubuğu dışında hiçbir yerde başka bir Tren simgesi kullanılmaz. Gözlemler
+ *  sekmesi Makinist ağacındaki Gözlemler grubunun kutu simgesini, Ayarlar sekmesi ailenin tercih
+ *  (anahtar) simgesini okur; yeni bir çizim doğmaz. */
 export const SEKME_SIMGE_KAYNAKLARI = {
   ray: BOLUM_SIMGE_KAYNAKLARI.ray,
   tren: BOLUM_SIMGE_KAYNAKLARI.tren,
   makinist: BOLUM_SIMGE_KAYNAKLARI.makinist,
+  gozlemler: `${SIMGE_RAFI}/satir-kutu.svg`,
+  ayarlar: `${SIMGE_RAFI}/satir-tercih.svg`,
 } as const;
 
 /** Başlık eylemi simgesinin üretilmiş varyantı (eklenti köküne göreli). Düz hâl tema

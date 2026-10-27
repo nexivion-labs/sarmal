@@ -2717,11 +2717,12 @@ export const TREN_METINLERI = {
 // ═══════════════════════════════════════════════════════════════════════════
 // 🧭 SARMAL PANELİ — tek webview kabı (Founder 2026-10-21 · bağlayıcı çizim)
 //
-//   Kapta Ray · Tren · Makinist sekme şeridi durur. Sekme adları İngilizce
-//   pencerede Rail · Train · Driver olur (MGZ-A09); "Driver" seçimi
-//   BOLUM_SIRASI_METINLERI üstündeki gerekçeyle aynıdır. Şeridin erişilebilir
-//   adı "bölüm" sözcüğünü ve "Bölümler" kutusunu taşımaz: çizimde böyle bir
-//   kutu yoktur ve hiçbir yerde üretilmez.
+//   Kapta Ray · Tren · Makinist · Gözlemler · Ayarlar sekme şeridi durur (OZK-13).
+//   Sekme adları İngilizce pencerede Rail · Train · Driver · Observations ·
+//   Settings olur (MGZ-A09); "Driver" seçimi BOLUM_SIRASI_METINLERI üstündeki
+//   gerekçeyle aynıdır. Şeridin erişilebilir adı "bölüm" sözcüğünü ve
+//   "Bölümler" kutusunu taşımaz: çizimde böyle bir kutu yoktur ve hiçbir yerde
+//   üretilmez.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const PANEL_METINLERI = {
@@ -2731,12 +2732,21 @@ export const PANEL_METINLERI = {
     ray: yuzeyMetni("Ray", "Rail"),
     tren: yuzeyMetni("Tren", "Train"),
     makinist: yuzeyMetni("Makinist", "Driver"),
+    gozlemler: yuzeyMetni("Gözlemler", "Observations"),
+    ayarlar: yuzeyMetni("Ayarlar", "Settings"),
   }[s] ?? s),
   sekmeIpucu: (s: string): string => ({
     ray: yuzeyMetni("Ray: yol haritası ve proje grafı", "Rail: roadmap and project graph"),
     tren: yuzeyMetni("Tren: yapay zekâ ajanları ve sürmekte olan işler", "Train: AI agents and work in progress"),
     makinist: yuzeyMetni("Makinist: sizi bekleyen onaylar, hatırlatıcılar, gözlemler ve fikirler", "Driver: approvals, reminders, observations and ideas waiting for you"),
+    gozlemler: yuzeyMetni("Gözlemler: Sarmal'ın gözlemleri ve denetim sapmaları", "Observations: Sarmal observations and audit drifts"),
+    ayarlar: yuzeyMetni("Ayarlar: Sarmal panelinin ayarları", "Settings: Sarmal panel settings"),
   }[s] ?? s),
+  /** Henüz içeriği olmayan sekmenin boş durum cümlesi (PNL-A03: Gözlemler ve Ayarlar boş bölüm olarak doğar). */
+  bosSekme: (s: string): string => ({
+    gozlemler: yuzeyMetni("Gözlemler ve sapmalar bu sekmede gösterilecek.", "Observations and drifts will be shown in this tab."),
+    ayarlar: yuzeyMetni("Panel ayarları bu sekmede gösterilecek.", "Panel settings will be shown in this tab."),
+  }[s] ?? ""),
   get seritEtiketi(): string { return yuzeyMetni("Sarmal sekmeleri", "Sarmal tabs"); },
   get yolHaritasiBasligi(): string { return yuzeyMetni("Yol Haritası", "Roadmap"); },
   get miniGrafBasligi(): string { return yuzeyMetni("Mini Graf", "Mini Graph"); },

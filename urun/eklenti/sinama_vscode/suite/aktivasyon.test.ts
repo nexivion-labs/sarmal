@@ -31,6 +31,22 @@ function geciciSar(ad: string, icerik: string): vscode.Uri {
   return vscode.Uri.file(tam);
 }
 
+/**
+ * Süitler TEK bir uzantı sürecini ve tek bir etkinleşmeyi paylaşır. Seçimi Ray'den başka bir
+ * bölüme alan sınama, işi bitince Ray'e döner; dönmezse sonraki süitler açılış hâlini (seçim
+ * Ray'de) değil bu sınamanın bıraktığı seçimi görür. VIT-K78-A10 süiti bu yüzden "seçim Ray'dedir"
+ * ölçümünde 'makinist' görüyordu (PNL-A03 ölçümü).
+ */
+async function rayeDon(): Promise<void> {
+  await vscode.commands.executeCommand("sarmal.bolum.ray");
+}
+
+/** Bölüm yuvasının sınama kapısı (yalnız sınama kipinde vardır). */
+interface SinamaKapisi {
+  olcumler(): { secili: string };
+  panelOlcumleri(): { sekme: string } | undefined;
+}
+
 /** Bir koşul sağlanana dek kısa aralıklarla bekler (tanı/aktivasyon asenkron). */
 async function bekle(kosul: () => boolean, msSon = 10_000): Promise<boolean> {
   const bitis = Date.now() + msSon;
@@ -51,6 +67,16 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
     assert.ok(ext, `${EKLENTI} bulunamadı`);
     await ext!.activate();
     assert.ok(ext!.isActive, "eklenti aktifleşmedi");
+  });
+
+  it("açılışta seçim Ray'dedir: panelin sekmesi ve bölüm seçimi Ray'dir, önceki oturumun sekmesi okunmaz (PNL-A03)", async () => {
+    // Sürücü kalıcı bir kullanıcı veri dizini kullanır (calistir.ts · /tmp/svt-ud): önceki koşunun
+    // workspaceState'i bu açılışta da durur. Panel o durumdan sekme okumaz; her açılış Ray'le başlar.
+    const yuz = (await vscode.extensions.getExtension(EKLENTI)!.activate()) as { bolumSinamaKapisi?: SinamaKapisi };
+    const kapi = yuz.bolumSinamaKapisi;
+    assert.ok(kapi, "sınama kipinde nöbet kapısı verilmeliydi");
+    assert.strictEqual(kapi!.olcumler().secili, "ray", "bölüm yuvası açılışta Ray'de değil");
+    assert.strictEqual(kapi!.panelOlcumleri()?.sekme, "ray", "panel açılışta Ray sekmesinde değil");
   });
 
   it("14 sarmal.* komutu kayıtlı", async () => {
@@ -226,7 +252,12 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
     for (const eski of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalMakinist", "sarmalYolHaritasi", "sarmalMiniGraf", "sarmalTren"])
       assert.ok(!komutlar.includes(`${eski}.focus`), `"${eski}" hâlâ ayrı görünüm olarak kayıtlı`);
     // Bölüm komutu panelin Makinist sekmesini seçer ve kabı öne alır.
+    const kapi = ((await ext!.activate()) as { bolumSinamaKapisi?: SinamaKapisi }).bolumSinamaKapisi!;
     await vscode.commands.executeCommand("sarmal.bolum.makinist");
+    assert.strictEqual(kapi.panelOlcumleri()?.sekme, "makinist", "bölüm komutu panelin Makinist sekmesini seçmedi");
+    await rayeDon();
+    assert.strictEqual(kapi.olcumler().secili, "ray");
+    assert.strictEqual(kapi.panelOlcumleri()?.sekme, "ray");
   });
 
   it("hatırlatıcı taşıyan .sar açılınca kayıt Hatırlatıcılar yüzeyinde TAM BİR KEZ görünür", async () => {

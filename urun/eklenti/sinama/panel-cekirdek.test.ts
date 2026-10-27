@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // panel-cekirdek.test.ts — 🧭 SARMAL PANELİNİN SAF ÇEKİRDEĞİ (Founder 2026-10-21)
 //
-//   Kap TEK webview görünümüdür; Ray · Tren · Makinist sekme şeridi o görünümün
-//   içindedir. Bu süit VS Code'suz ölçülebilen her şeyi kilitler: sekme kimlikleri
+//   Kap TEK webview görünümüdür; Ray · Tren · Makinist · Gözlemler · Ayarlar sekme
+//   şeridi o görünümün içindedir (OZK-13). Bu süit VS Code'suz ölçülebilen her şeyi kilitler: sekme kimlikleri
 //   ve klavye komşuluğu, sağlayıcı ağacının satırlara açılması (yalnız AÇIK
 //   düğümlerin çocukları üretilir), yüzlerce düğümde çıktının boyutu, HTML
 //   güvenliği (kaçış, nonce'lu tek betik, satır içi olay yok), Mini Graf gövdesinin
@@ -16,21 +16,24 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  IkonDefteri, SEKMELER, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
+  IkonDefteri, SEKMELER, bosSekmeHtml, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
   satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type SekmeSimgeleri, type UretimSecenekleri,
 } from "../src/panel-cekirdek.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "../src/simge-cizelgesi.ts";
 import { bosHtml } from "../src/minigraf-cekirdek.ts";
 import { seciciHtml } from "../src/minigraf-gorunum.ts";
-import { PANEL_BETIGI, PANEL_STILI } from "../src/panel-betik.ts";
+import { DAR_SERIT_PX, GENIS_PANEL_PX, PANEL_BETIGI, PANEL_STILI } from "../src/panel-betik.ts";
 import { PANEL_METINLERI, yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 
 const KOK = fileURLToPath(new URL("..", import.meta.url));
 const oku = (g: string): string => readFileSync(`${KOK}${g}`, "utf8");
-const SIMGELER: SekmeSimgeleri = {
-  ray: oku(SEKME_SIMGE_KAYNAKLARI.ray), tren: oku(SEKME_SIMGE_KAYNAKLARI.tren), makinist: oku(SEKME_SIMGE_KAYNAKLARI.makinist),
-};
+const SIMGELER = Object.fromEntries(SEKMELER.map((s) => [s, oku(SEKME_SIMGE_KAYNAKLARI[s])])) as SekmeSimgeleri;
+/** Seçili sekmenin içerik HTML'i (her sekmenin kendi bölüm üreticisi). */
+const sekmeIcerigi = (sekme: (typeof SEKMELER)[number]): string =>
+  sekme === "ray" ? rayBolumuHtml({ agac: "", graf: "<html><body></body></html>" })
+    : sekme === "tren" ? trenBolumuHtml("", true, true)
+      : sekme === "makinist" ? makinistBolumuHtml("") : bosSekmeHtml(sekme);
 
 // ── Sahte ağaç ──────────────────────────────────────────────────────────────
 
@@ -74,47 +77,51 @@ function yediYuzDugum(): Dugum[] {
 
 // ── ① SEKMELER ──────────────────────────────────────────────────────────────
 
-test("sekmeler: üç sekme soldan sağa Ray · Tren · Makinist; bozuk değer Ray'e düşer", () => {
-  assert.deepEqual([...SEKMELER], ["ray", "tren", "makinist"]);
+test("sekmeler: beş sekme soldan sağa Ray · Tren · Makinist · Gözlemler · Ayarlar (OZK-13); bozuk değer Ray'e düşer", () => {
+  assert.deepEqual([...SEKMELER], ["ray", "tren", "makinist", "gozlemler", "ayarlar"]);
   assert.equal(sekmeNormalle("tren"), "tren");
+  assert.equal(sekmeNormalle("ayarlar"), "ayarlar");
   for (const kotu of [undefined, null, 3, "graf", "", "RAY", {}]) assert.equal(sekmeNormalle(kotu), "ray", String(kotu));
 });
 
 test("klavye komşuluğu: oklar sarar, Home ve End uçlara gider, başka tuş seçimi değiştirmez", () => {
   assert.equal(komsuSekme("ray", "ArrowRight"), "tren");
-  assert.equal(komsuSekme("makinist", "ArrowRight"), "ray", "sağ ok sondan başa sarmalı");
-  assert.equal(komsuSekme("ray", "ArrowLeft"), "makinist", "sol ok baştan sona sarmalı");
+  assert.equal(komsuSekme("makinist", "ArrowRight"), "gozlemler");
+  assert.equal(komsuSekme("ayarlar", "ArrowRight"), "ray", "sağ ok sondan başa sarmalı");
+  assert.equal(komsuSekme("ray", "ArrowLeft"), "ayarlar", "sol ok baştan sona sarmalı");
   assert.equal(komsuSekme("tren", "Home"), "ray");
-  assert.equal(komsuSekme("tren", "End"), "makinist");
+  assert.equal(komsuSekme("tren", "End"), "ayarlar");
   assert.equal(komsuSekme("tren", "Enter"), "tren");
 });
 
-test("sekme şeridi: üç sekme, seçili olan aria-selected ve tek tabulu, simge ve ad taşır; Makinist sayı rozeti yalnız doluyken görünür", () => {
+test("sekme şeridi: beş sekme, seçili olan aria-selected ve tek tabulu, simge ve ad taşır; Makinist sayı rozeti yalnız doluyken görünür", () => {
   for (const secili of SEKMELER) {
     const h = sekmeSeridiHtml(secili, SIMGELER, 0);
-    assert.equal((h.match(/role="tab"/g) ?? []).length, 3);
+    assert.equal((h.match(/role="tab"/g) ?? []).length, 5);
+    assert.deepEqual([...h.matchAll(/data-sekme="([a-z]+)"/g)].map((m) => m[1]), [...SEKMELER], "şeritteki sıra SEKMELER sırası değil");
     assert.equal((h.match(/aria-selected="true"/g) ?? []).length, 1, "tam bir sekme seçili");
     assert.ok(h.includes(`data-sekme="${secili}" aria-selected="true" tabindex="0"`), `${secili}: seçili sekme tabulu değil`);
-    assert.equal((h.match(/tabindex="-1"/g) ?? []).length, 2, "seçili olmayan iki sekme tabu dışıdır (ok tuşlarıyla gezilir)");
-    assert.equal((h.match(/<svg /g) ?? []).length, 3, "her sekmede küçük simge");
+    assert.equal((h.match(/tabindex="-1"/g) ?? []).length, 4, "seçili olmayan dört sekme tabu dışıdır (ok tuşlarıyla gezilir)");
+    assert.equal((h.match(/<svg width="14" height="14" /g) ?? []).length, 5, "her sekmede 14 piksellik küçük simge");
     assert.ok(/role="tablist"/.test(h));
   }
   assert.ok(/class="rozet" hidden>/.test(sekmeSeridiHtml("ray", SIMGELER, 0)), "boş rozet görünüyor");
   assert.ok(/class="rozet">5</.test(sekmeSeridiHtml("ray", SIMGELER, 5)), "dolu rozet sayıyı taşımıyor");
 });
 
-test("TR ve EN sekme adları: Ray · Tren · Makinist ve Rail · Train · Driver", () => {
+test("TR ve EN sekme adları: Ray · Tren · Makinist · Gözlemler · Ayarlar ve Rail · Train · Driver · Observations · Settings", () => {
   const ad = (): string[] => SEKMELER.map((s) => PANEL_METINLERI.sekmeAdi(s));
   yuzeyDiliniAyarla("tr");
-  assert.deepEqual(ad(), ["Ray", "Tren", "Makinist"]);
+  assert.deepEqual(ad(), ["Ray", "Tren", "Makinist", "Gözlemler", "Ayarlar"]);
   const tr = sekmeSeridiHtml("ray", SIMGELER, 0);
-  assert.ok(tr.includes(">Ray<") && tr.includes(">Tren<") && tr.includes(">Makinist<"));
+  assert.ok(["Ray", "Tren", "Makinist", "Gözlemler", "Ayarlar"].every((a) => tr.includes(`>${a}<`)));
   yuzeyDiliniAyarla("en");
   try {
-    assert.deepEqual(ad(), ["Rail", "Train", "Driver"]);
+    assert.deepEqual(ad(), ["Rail", "Train", "Driver", "Observations", "Settings"]);
     const en = sekmeSeridiHtml("ray", SIMGELER, 0);
-    assert.ok(en.includes(">Rail<") && en.includes(">Train<") && en.includes(">Driver<"));
-    assert.ok(!en.includes(">Ray<") && !en.includes(">Makinist<"), "İngilizce şerit Türkçe sekme adı taşıyor");
+    assert.ok(["Rail", "Train", "Driver", "Observations", "Settings"].every((a) => en.includes(`>${a}<`)));
+    assert.ok(!en.includes(">Ray<") && !en.includes(">Makinist<") && !en.includes(">Ayarlar<"), "İngilizce şerit Türkçe sekme adı taşıyor");
+    for (const s of ["gozlemler", "ayarlar"] as const) assert.ok(!/[çğıöşüİ]/.test(PANEL_METINLERI.bosSekme(s)), `${s}: İngilizce boş durum cümlesi Türkçe harf taşıyor`);
     assert.equal(PANEL_METINLERI.yolHaritasiBasligi, "Roadmap");
     assert.equal(PANEL_METINLERI.dil, "en");
   } finally {
@@ -122,14 +129,12 @@ test("TR ve EN sekme adları: Ray · Tren · Makinist ve Rail · Train · Driver
   }
 });
 
-test("'Bölümler' ne bir kutu ne bir ad ne bir etiket olarak hiçbir yerde üretilmez (iki dil, üç sekme)", () => {
+test("'Bölümler' ne bir kutu ne bir ad ne bir etiket olarak hiçbir yerde üretilmez (iki dil, beş sekme)", () => {
   for (const dil of ["tr", "en"] as const) {
     yuzeyDiliniAyarla(dil);
     try {
       for (const sekme of SEKMELER) {
-        const icerik = sekme === "ray" ? rayBolumuHtml({ agac: "", graf: "<html><body></body></html>" })
-          : sekme === "tren" ? trenBolumuHtml("", true, true) : makinistBolumuHtml("");
-        const h = panelHtml({ sekme, icerik, ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 2 });
+        const h = panelHtml({ sekme, icerik: sekmeIcerigi(sekme), ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 2 });
         assert.ok(!/Bölümler|Bolumler|Sections\b|Bölüm\b/iu.test(h), `${dil}/${sekme}: 'Bölümler' metni üretilmiş`);
       }
     } finally {
@@ -306,8 +311,11 @@ test("Ray bölümü: 'YOL HARİTASI' başlığı, ağaç, ardından Mini Graf; a
   assert.ok(dolu.indexOf('id="agac"') < dolu.indexOf('id="graf"'), "Mini Graf ağacın altında değil");
   assert.ok(dolu.includes("MİNİ GRAF") && dolu.includes('<template id="graf-sablon">'));
   assert.ok(/<template id="graf-sablon"><style>:host\{x:y\}<\/style><p>g<\/p><\/template>/.test(dolu));
+  // Her bölüm başlığıyla birlikte kendi sütunundadır; sütunlar tek dizilimin içindedir (PNL-A03).
+  assert.match(dolu, /^<div class="ray-duzen"><div class="kol" data-kol="agac"><h2 class="bas">[\s\S]*<div id="bolum-agac" class="bolum">[\s\S]*<\/div><div class="kol" data-kol="graf"><h2 class="bas araya">[\s\S]*<div id="bolum-graf" class="bolum">[\s\S]*<\/div><\/div><\/div>$/);
   const grafsiz = rayBolumuHtml({ agac: "<div class='sat'></div>" });
   assert.ok(!grafsiz.includes('id="graf"') && !grafsiz.includes("MİNİ GRAF"), "ayar kapalıyken Mini Graf çizilmiş");
+  assert.equal((grafsiz.match(/class="kol"/g) ?? []).length, 1, "ayar kapalıyken tek sütun kalmalı");
   const bos = rayBolumuHtml({ agac: "", bosMesaj: "Henüz plan yok." });
   assert.ok(bos.includes("Henüz plan yok.") && !/role="tree" aria-label/.test(bos), "boş durumda cümle ağacın yerini almalı");
   yuzeyDiliniAyarla("en");
@@ -354,9 +362,88 @@ test("Ray ağacı girinti kılavuzlarını eski yerel ağaç gibi çizer: üzeri
   assert.ok(/function kilavuzYaz\(\)/.test(PANEL_BETIGI) && kilavuzCagrisi >= 3, "seçim, parça yazımı ve satır yamasında etkin kılavuz yeniden kurulur");
 });
 
-test("Mini Graf kendi kutusundan taşamaz: gölge kökteki taşma gövdeyi uzatıp yapışkan sekme şeridini ekrandan çıkaramaz (Founder ekranı 2026-10-22)", () => {
+test("Mini Graf kendi kutusundan taşamaz ve sekme şeridi kaydırmayla ekrandan çıkamaz (Founder ekranı 2026-10-22)", () => {
   // Kusur: satırlardan uzun çizilen bağ şeridi gövdenin dışına taştı; belge gövdeden uzun olunca
-  // yapışkan şerit gövdenin sonunda ekrandan çıktı. Kutu taşmayı kendi içinde tutar.
+  // o günkü yapışkan şerit gövdenin sonunda ekrandan çıktı. Kutu taşmayı kendi içinde tutar.
   assert.match(PANEL_STILI, /#graf\{display:block;overflow-x:auto\}/);
-  assert.match(PANEL_STILI, /\.seritler\{position:sticky;top:0;/);
+  // PNL-A03'ten beri şerit kayan alanın DIŞINDADIR: belge kaymaz, içerik alanı kendi içinde kayar.
+  assert.match(PANEL_STILI, /\nbody\{display:flex;flex-direction:column;overflow:hidden;/);
+  assert.match(PANEL_STILI, /\.seritler\{flex:none;/);
+  assert.match(PANEL_STILI, /#icerik\{flex:1 1 auto;min-height:0;overflow:auto;/);
+});
+
+// ── ⑥ YERLEŞİM (PNL-A03 · Founder 2026-10-27: geniş ve alçak alt panel) ─────────
+
+/** Stil metninden yorumları atar; ölçüm kural metnini okur, boyanan sonucu görsel kontrol ölçer. */
+const stilKurali = (secici: string): string => {
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  const i = temiz.indexOf(`\n${secici}{`);
+  assert.ok(i >= 0, `${secici} kuralı stilde yok`);
+  return temiz.slice(i + secici.length + 2, temiz.indexOf("}", i));
+};
+
+test("sekme şeridi küçüktür: sekme yazısı 11 piksel, şerit 26 piksel, simge 14 piksel (Founder 2026-10-27)", () => {
+  assert.match(stilKurali(".seritler"), /(^|;)height:26px(;|$)/);
+  assert.match(stilKurali(".sekme"), /(^|;)font-size:11px(;|$)/);
+  assert.match(stilKurali(".sekme svg"), /width:14px;height:14px/);
+});
+
+test(`dar şeritte (${DAR_SERIT_PX} pikselden dar) seçili olmayan sekme yalnız simgedir; adı ekran okuyucu için yerinde kalır`, () => {
+  assert.ok(DAR_SERIT_PX > 300 && DAR_SERIT_PX <= 460, "eşik 300 piksellik kenar çubuğunu kapsamalı, 460'ta adlar sığar");
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  const m = new RegExp(`@media \\(max-width:${DAR_SERIT_PX - 1}px\\)\\{([\\s\\S]*?)\\n\\}`).exec(temiz);
+  assert.ok(m, "dar şerit kuralı yok");
+  assert.match(m![1]!, /\.sekme:not\(\[aria-selected="true"\]\) \.sk-ad\{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset\(50%\)/);
+  assert.doesNotMatch(m![1]!, /display:none|visibility:hidden/, "gizlenen ad erişilebilirlik ağacından da düşer");
+  // Ad her sekmede yazılıdır ve ipucu sekmenin adını taşır.
+  const h = sekmeSeridiHtml("ray", SIMGELER, 0);
+  for (const s of SEKMELER) assert.ok(h.includes(`<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>`), s);
+});
+
+test("Yol Haritası ve Mini Graf başlıkları çok küçük puntoludur: 10 piksel (Founder 2026-10-27)", () => {
+  assert.match(stilKurali(".bas"), /(^|;)font-size:10px(;|$)/);
+  // Düğme yazısı başlıktan miras alır; kendi boyutunu yazmaz.
+  assert.match(stilKurali(".bb"), /font:inherit/);
+  assert.doesNotMatch(stilKurali(".bb"), /font-size/);
+});
+
+test("pencere boyuna dayanan kural yoktur: stilde vh birimi ve sabit şerit ölçüsüyle hesap yok; hiçbir başlık dibe yapıştırılmaz", () => {
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(temiz, /\d(\.\d+)?d?vh\b/, "stilde vh birimi var: yerleşim pencere boyuna dayanıyor");
+  assert.doesNotMatch(temiz, /calc\([^)]*\b(26|32)px/, "şeridin ölçüsü bir hesapta varsayılmış");
+  assert.doesNotMatch(temiz, /position:sticky;bottom/, "bir başlık alanın dibine yapıştırılıyor");
+  assert.match(temiz, /html,body\{margin:0;padding:0;height:100%\}/, "gövde panelin verdiği alanı doldurmuyor");
+});
+
+test(`geniş panelde (en az ${GENIS_PANEL_PX} piksel) Ray'in iki bölümü yan yana sütundur, her sütun kendi içinde kayar; dar panelde alt alta akar`, () => {
+  const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.ok(GENIS_PANEL_PX > 460 && GENIS_PANEL_PX < 1400, "eşik dar kenar çubuğu (300 ve 460) ile Founder'ın alt paneli (1400) arasında olmalı");
+  const m = new RegExp(`@media \\(min-width:${GENIS_PANEL_PX}px\\)\\{([\\s\\S]*?)\\n\\}`).exec(temiz);
+  assert.ok(m, "geniş panel kuralı yok");
+  const genis = m![1]!;
+  assert.match(genis, /\.ray-duzen\{[^}]*display:flex;align-items:stretch/, "sütunlar yan yana dizilmiyor");
+  assert.match(genis, /\.kol\{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column\}/, "sütun alanı eşit paylaşmıyor");
+  assert.match(genis, /\.kol>\.bolum\{[^}]*overflow:auto/, "sütun gövdesi kendi içinde kaymıyor");
+  assert.match(genis, /\.kol:has\(>\.bolum\[hidden\]\)\{flex:0 0 auto\}/, "katlanan bölüm boşalan genişliği bırakmıyor");
+  // Geniş kural dışında sütunlar düzenlenmez: dar panelde blok akışı (alt alta) geçerlidir.
+  const disari = temiz.replace(m![0], "");
+  assert.doesNotMatch(disari, /\.(ray-duzen|kol)\{/, "dar panel için sütun kuralı yazılmış");
+});
+
+test("Gözlemler ve Ayarlar sekmeleri boş bölüm olarak doğar: yalnız kısa boş durum cümlesi, ağaç yok (PNL-A03 sınırı)", () => {
+  yuzeyDiliniAyarla("tr");
+  for (const s of ["gozlemler", "ayarlar"] as const) {
+    const h = bosSekmeHtml(s);
+    assert.equal(h, `<p class="bos" data-bos-sekme="${s}">${kacir(PANEL_METINLERI.bosSekme(s))}</p>`);
+    assert.ok(PANEL_METINLERI.bosSekme(s).length > 0 && !/role="tree"/.test(h));
+    const belge = panelHtml({ sekme: s, icerik: h, ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
+    assert.ok(belge.includes(`data-sekme="${s}" aria-selected="true"`));
+  }
+  assert.match(bosSekmeHtml("gozlemler"), /Gözlemler/);
+  assert.match(bosSekmeHtml("ayarlar"), /ayarları/);
+});
+
+test("istemci betiği ikinci bir sekme listesi tutmaz: seçilebilir sekmeler şeridin kendisidir", () => {
+  assert.doesNotMatch(PANEL_BETIGI, /var SEKMELER\s*=/, "betik sekme listesini kopyalıyor; yeni sekme eklenince ayrışır");
+  assert.match(PANEL_BETIGI, /function sekmeSec\(ad, odakla\) \{\s*\n\s*if \(!sekmeler\(\)\.some\(/);
 });

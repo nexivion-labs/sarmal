@@ -38,6 +38,7 @@ interface Kapi {
   kullaniciSecimi(k: string): Promise<boolean>;
   sahipKaybi(id: string): string[];
   yolHaritasiGorunurMu(): boolean;
+  panelOlcumleri(): { sekme: string } | undefined;
 }
 interface Yuz {
   bolumYuvasiAl(s: number): Yuva | undefined;
@@ -94,7 +95,9 @@ describe("VIT-K78-A10 — tek Sarmal simgesi ve bölüm yuvası (gerçek VS Code
 
   it("kardeşin iki bölümü yerleşik dörtlünün (Ray · Graf · Tren · Makinist) ardından sıralanır, seçim Ray'dedir ve 'Diğer bölümler' eylemi açılır", async () => {
     assert.deepStrictEqual(o().sira, ["ray", "graf", "tren", "makinist", "birinci", "ikinci"]);
+    // Bölüm seçimi ile panelin sekmesi aynı yeri gösterir: ikisi de Ray'dedir.
     assert.strictEqual(o().secili, "ray");
+    assert.strictEqual(kapi.panelOlcumleri()?.sekme, "ray", "panelin sekmesi bölüm seçimiyle aynı yerde değil");
     await bekle(() => o().kardesVar, "kardeş varken kardesVar anahtarı doğru olmadı");
     await bekle(() => kapi.yolHaritasiGorunurMu(), "Ray seçiliyken Yol Haritası görünmüyor");
   });

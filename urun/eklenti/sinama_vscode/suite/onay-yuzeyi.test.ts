@@ -494,5 +494,7 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     // bölüm komutu Makinist'i seçer ve ağaç görünümünü öne alır (HATA VERMEMESİ yeter).
     await vscode.commands.executeCommand("sarmal.bolum.makinist");
     await vscode.commands.executeCommand("sarmalPanel.focus");
+    // Süitler tek uzantı sürecini paylaşır: seçim, sonraki süitlerin açılış varsayımı için Ray'e döner.
+    await vscode.commands.executeCommand("sarmal.bolum.ray");
   });
 });

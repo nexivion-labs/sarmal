@@ -25,6 +25,7 @@ import { projeGrafiCikar } from "../src/minigraf-cekirdek.ts";
 import { Tren } from "../src/tren.ts";
 import { MakinistAgaci } from "../src/makinist.ts";
 import { panelKaydi } from "../src/panel.ts";
+import type { SekmeKimligi } from "../src/panel-cekirdek.ts";
 import { satirIkonu } from "../src/ortak.ts";
 import { yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 import { erisimSiniri } from "../src/tur-belgesi.ts";
@@ -108,7 +109,7 @@ function seciliBul(): string {
 const SECILI = seciliBul();
 const ACIK = Number(ACIK_ARG) || 0;
 
-interface Degiske { ad: string; sekme: "ray" | "tren" | "makinist"; gorunum?: string; secili?: string; secici?: boolean; acik?: number }
+interface Degiske { ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number }
 
 function uret(d: Degiske): string {
   gorunumAyari = d.gorunum ?? "agac";
@@ -117,10 +118,13 @@ function uret(d: Degiske): string {
   if (d.secici) graf.seciciDegistir();
   const ctx = {
     subscriptions: [] as unknown[], extensionUri: koku, extensionPath: EKLENTI, extensionMode: 1,
-    workspaceState: { get: (k: string) => (k === "sarmal.panel.sekme" ? d.sekme : undefined), update: async () => undefined },
+    workspaceState: { get: () => undefined, update: async () => undefined },
   };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* görünürlük ölçümü yok */ }, diliTazele() { /* yok */ }, kodlar: () => [], gorunurMu: () => true };
   const panel = panelKaydi(ctx as never, { yol: yuz as never, tren, makinist });
+  // Panel her açılışta Ray'le başlar (PNL-A03); değişkenin sekmesi kullanıcının seçimi gibi verilir.
+  // Seçim eşzamanlı yazılır; belge aşağıda görünüm çözülünce bu sekmeyle üretilir.
+  void panel.sekmeSec(d.sekme);
   // Ray ağacı: kök altında `acik` kademeye kadar her düğüm açık (girinti kılavuzları ölçülebilsin).
   if (d.acik) {
     const derinlik = d.acik;
@@ -140,6 +144,8 @@ const degiskeler: Degiske[] = [
   { ad: "ray", sekme: "ray", acik: ACIK },
   { ad: "tren", sekme: "tren" },
   { ad: "makinist", sekme: "makinist" },
+  { ad: "gozlemler", sekme: "gozlemler" },
+  { ad: "ayarlar", sekme: "ayarlar" },
   { ad: "graf-secici", sekme: "ray", secici: true },
 ];
 for (const g of ["klasik", "agac", "ilerleme"]) {

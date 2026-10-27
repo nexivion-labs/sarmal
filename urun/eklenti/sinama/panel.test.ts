@@ -7,8 +7,8 @@
 //   doğru bölümün çizildiği, kapta ağaç görünümü kurulmadığı, açık-kapalı
 //   düğümde doğru satır sayısı üretildiği, çok düğümlü projede çıktının makul
 //   boyutta kaldığı, iletilerin (tıklama, kutucuk, eylem, komut köprüsü) yalnız
-//   izinli işleri yaptığı, görünmeyen panelin hiçbir şey çizmediği ve kalıcılığın
-//   workspaceState'e gittiği ölçülür.
+//   izinli işleri yaptığı, görünmeyen panelin hiçbir şey çizmediği, açık-kapalı
+//   tercihinin workspaceState'e gittiği ve her açılışın Ray'le başladığı ölçülür.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import "./dil-kur.ts";
@@ -87,8 +87,12 @@ function kaynakKur(satirlar: Array<{ ad: string; baglam: string }>) {
   };
 }
 
-/** Panelin tamamını sahte kabukta kurar; `sekme` workspaceState'te önceden verilebilir. */
-function ortamKur(sekme?: string, acik?: Record<string, boolean>): Ortam {
+/**
+ * Panelin tamamını sahte kabukta kurar. Panel her açılışta Ray'le başlar (PNL-A03); `sekme` verilirse
+ * görünüm çözülmeden önce kullanıcının seçimi gibi seçilir. `kalici` workspaceState'e önceden konan
+ * değerlerdir (önceki oturumdan kalan durum).
+ */
+function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record<string, unknown> = {}): Ortam {
   goruntuOnbellegi ??= goruntuKur();
   const yol = new YolHaritasi();
   yol.eklentiKoku = Uri.file(EKLENTI_KOKU) as never;
@@ -106,8 +110,7 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>): Ortam {
   const makinist = new MakinistAgaci(kaynaklar as never, Uri.file(EKLENTI_KOKU) as never);
   // Kaynak değişimi tek yenilemeye bağlanır (makinistKaydi'nin kurduğu bağ).
   for (const k of Object.values(kaynaklar)) k.onDidChangeTreeData(() => makinist.yenile());
-  const durum = new Map<string, unknown>();
-  if (sekme) durum.set("sarmal.panel.sekme", sekme);
+  const durum = new Map<string, unknown>(Object.entries(kalici));
   if (acik) durum.set("sarmal.panel.acik", acik);
   const baglam = {
     subscriptions: [] as { dispose(): unknown }[], extensionUri: Uri.file(EKLENTI_KOKU), extensionPath: EKLENTI_KOKU,
@@ -117,6 +120,8 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>): Ortam {
   yol.kutuIsaretle = async (o: unknown, b: boolean) => { kutuCagrilari.push([o, b]); };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* sınama bağı gerekmez */ }, diliTazele() { /* sınama */ }, kodlar: () => [], gorunurMu: () => true };
   const panel = panelKaydi(baglam as never, { yol: yuz as never, tren, makinist });
+  // Seçim eşzamanlı yazılır; ilk belge aşağıda bu sekmeyle üretilir.
+  if (sekme) void panel.sekmeSec(sekme as never);
   const saglayici = kabuk.webviewSaglayicilari.get(GORUNUS_PANEL) as { resolveWebviewView(g: unknown): void };
   const gorunum = new SahteWebviewGorunusu();
   saglayici.resolveWebviewView(gorunum);
@@ -159,7 +164,7 @@ test("kurulum: kapta TEK webview görünümü kaydolur (sarmalPanel); hiçbir a�
 test("Ray seçiliyken yalnız Ray çizilir: şerit, YOL HARİTASI başlığı, kapalı varsayılanlı ağaç, Mini Graf; Tren ve Makinist çizilmez", () => {
   const o = ortamKur();
   const h = o.gorunum.webview.html;
-  assert.equal((h.match(/role="tab"/g) ?? []).length, 3);
+  assert.equal((h.match(/role="tab"/g) ?? []).length, 5);
   assert.ok(h.includes('data-sekme="ray" aria-selected="true"'));
   assert.ok(h.includes("YOL HARİTASI") && h.includes('id="agac"'));
   assert.ok(h.includes('<template id="graf-sablon">') && h.includes("MİNİ GRAF"), "Mini Graf Ray sekmesinde çizilmeli");
@@ -186,14 +191,14 @@ test("Tren seçiliyken yalnız Tren çizilir (ajanlar, geliştirmedeki Adımlar)
   await otur();
 });
 
-test("sekme iletisi: doğru bölüm bir 'bolum' iletisiyle gelir, seçim workspaceState'e yazılır ve bağlam güncellenir", async () => {
+test("sekme iletisi: doğru bölüm bir 'bolum' iletisiyle gelir, bağlam güncellenir ve seçim workspaceState'e YAZILMAZ (her açılış Ray'le başlar)", async () => {
   const o = ortamKur();
   o.gorunum.mesajGonder({ tip: "sekme", ad: "tren" });
   await otur();
   const b = mesajlar(o, "bolum").at(-1)!;
   assert.equal(b.sekme, "tren");
   assert.ok(String(b.html).includes('id="tren-agac"') && !String(b.html).includes('id="agac"'));
-  assert.equal(o.durum.get("sarmal.panel.sekme"), "tren", "seçim kalıcı değil");
+  assert.equal(o.durum.has("sarmal.panel.sekme"), false, "sekme seçimi kalıcı yazılmış: bir sonraki açılış Ray yerine bu sekmeyle başlar");
   assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, "tren"]);
   o.gorunum.mesajGonder({ tip: "sekme", ad: "makinist" });
   await otur();
@@ -203,13 +208,40 @@ test("sekme iletisi: doğru bölüm bir 'bolum' iletisiyle gelir, seçim workspa
   o.gorunum.mesajGonder({ tip: "sekme", ad: 3 });
   await otur();
   assert.equal(mesajlar(o, "bolum").length, sayi, "bilinmeyen sekme seçimi değiştirmiş");
-  assert.equal(o.durum.get("sarmal.panel.sekme"), "makinist");
+  assert.equal(o.panel.olcumler().sekme, "makinist");
+  // Gözlemler ve Ayarlar da seçilebilir; ikisi bugün yalnız boş durum cümlesi taşır.
+  for (const s of ["gozlemler", "ayarlar"]) {
+    o.gorunum.mesajGonder({ tip: "sekme", ad: s });
+    await otur();
+    const son = mesajlar(o, "bolum").at(-1)!;
+    assert.equal(son.sekme, s);
+    assert.match(String(son.html), new RegExp(`^<p class="bos" data-bos-sekme="${s}">[^<]+</p>$`));
+    assert.equal(o.panel.olcumler().satirSayisi, 0);
+    assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, s]);
+  }
 });
 
-test("kalıcılık: yeniden kurulan panel son seçili sekmeyle açılır; bozuk kalıcı değer Ray'e düşer", () => {
-  assert.ok(ortamKur("makinist").gorunum.webview.html.includes('data-sekme="makinist" aria-selected="true"'));
-  assert.ok(ortamKur("tren").gorunum.webview.html.includes('data-sekme="tren" aria-selected="true"'));
-  assert.ok(ortamKur("silinmis-sekme").gorunum.webview.html.includes('data-sekme="ray" aria-selected="true"'));
+test("açılış Ray'le başlar: önceki oturumdan kalan sekme (workspaceState) seçimi ezemez ve Yol Haritası açık başlar (PNL-A03)", async () => {
+  // Kusur: panel eskiden son sekmeyi workspaceState'ten okuyordu; pencere yeniden yüklenince Makinist'te
+  // açılıyor, oysa bölüm yuvası her açılışı Ray'le başlatıyordu ve iki seçim birbirini tutmuyordu.
+  for (const eski of ["makinist", "tren", "gozlemler", "silinmis-sekme"]) {
+    const o = ortamKur(undefined, undefined, { "sarmal.panel.sekme": eski });
+    await otur();
+    assert.ok(o.gorunum.webview.html.includes('data-sekme="ray" aria-selected="true"'), `${eski}: önceki oturumun sekmesi açılışı ezdi`);
+    assert.equal(o.panel.olcumler().sekme, "ray");
+    assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, "ray"]);
+  }
+  // Yol Haritası önceki oturumda katlanmış olsa da açık başlar; Mini Graf katlaması kalıcıdır.
+  const k = ortamKur(undefined, { "bolum:agac": false, "bolum:graf": false });
+  assert.match(k.gorunum.webview.html, /data-bolum="agac" aria-expanded="true"/);
+  assert.match(k.gorunum.webview.html, /<div id="bolum-agac" class="bolum">/);
+  assert.match(k.gorunum.webview.html, /data-bolum="graf" aria-expanded="false"/);
+  // Oturum içindeki seçim bellekte korunur: görünüm yeniden çözülünce aynı sekmeyle çizilir.
+  const o = ortamKur("tren");
+  const yeniden = new SahteWebviewGorunusu();
+  (kabuk.webviewSaglayicilari.get(GORUNUS_PANEL) as { resolveWebviewView(g: unknown): void }).resolveWebviewView(yeniden);
+  assert.ok(yeniden.webview.html.includes('data-sekme="tren" aria-selected="true"'), "oturum içindeki seçim kayboldu");
+  assert.equal(o.panel.olcumler().sekme, "tren");
 });
 
 // ── ③ AÇIK / KAPALI DÜĞÜM ───────────────────────────────────────────────────

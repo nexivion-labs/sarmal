@@ -2,10 +2,11 @@
 // panel-cekirdek.ts — 🧭 SARMAL PANELİNİN SAF ÇEKİRDEĞİ (vscode importsuz)
 //
 //   Founder 2026-10-21 (bağlayıcı çizim): Sarmal etkinlik çubuğu kabı TEK bir
-//   webview görünümüdür (`sarmalPanel`). Kabın başlığının hemen altında Ray ·
-//   Tren · Makinist sekme şeridi durur; şeridin altından seçili sekmenin içeriği
-//   başlar. Kapta her an yalnız bir görünüm görünür, böylece VS Code görünüm
-//   başlığını kap başlığıyla birleştirir ve webview bütün yüksekliği kaplar.
+//   webview görünümüdür (`sarmalPanel`). Kabın başlığının hemen altında sekme
+//   şeridi durur; şeridin altından seçili sekmenin içeriği başlar. Kapta her an
+//   yalnız bir görünüm görünür, böylece VS Code görünüm başlığını kap başlığıyla
+//   birleştirir ve webview bütün yüksekliği kaplar. Founder 2026-10-27 (OZK-13):
+//   sekmeler sırasıyla Ray · Tren · Makinist · Gözlemler · Ayarlar'dır.
 //
 //   Bu dosya üç iş yapar ve hiçbirinde VS Code'u tanımaz:
 //     1. Mevcut AĞAÇ SAĞLAYICILARINI (Yol Haritası · Tren · Makinist) olduğu
@@ -24,9 +25,11 @@ import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
 
 // ── SEKMELER ────────────────────────────────────────────────────────────────
 
-/** Şeritteki sekmeler, soldan sağa. */
-export const SEKMELER = ["ray", "tren", "makinist"] as const;
+/** Şeritteki sekmeler, soldan sağa (OZK-13). */
+export const SEKMELER = ["ray", "tren", "makinist", "gozlemler", "ayarlar"] as const;
 export type SekmeKimligi = (typeof SEKMELER)[number];
+/** İçeriği henüz kurulmamış sekmeler: yalnız boş durum cümlesi taşırlar (PNL-A03 sınırı). */
+export type BosSekme = Extract<SekmeKimligi, "gozlemler" | "ayarlar">;
 
 /** Bilinmeyen ya da bozuk değer Ray'e düşer (kalıcı durumdan okunan değer güvenilmez). */
 export function sekmeNormalle(v: unknown): SekmeKimligi {
@@ -374,19 +377,25 @@ function bolumBasligi(b: BolumKimligi, ad: string, kapali: boolean, araya: boole
     + ` aria-controls="bolum-${b}"><span class="ok">${OK_SVG}</span>${kacir(ad)}</button></h2>`;
 }
 
-/** Ray sekmesi: "YOL HARİTASI" başlığı, ağaç, ardından Mini Graf. */
+/**
+ * Ray sekmesi: "YOL HARİTASI" başlığı ve ağaç, ardından Mini Graf. Her bölüm başlığıyla birlikte
+ * kendi sütununda (`.kol`) durur ve sütunlar `.ray-duzen` içinde dizilir. Geniş ve alçak panelde
+ * (Founder'ın alt paneli, PNL-A03) sütunlar yan yana yayılır, dar panelde alt alta akar; bu karar
+ * yalnız stildedir (panel-betik.ts), HTML iki ölçüde de aynıdır.
+ */
 export function rayBolumuHtml(b: RayBolumu): string {
   const baslik = PANEL_METINLERI.yolHaritasiBasligi.toLocaleUpperCase(PANEL_METINLERI.dil);
   const kapali = (k: BolumKimligi): boolean => b.kapali?.[k] === true;
   const govde = (k: BolumKimligi, ic: string): string => `<div id="bolum-${k}" class="bolum"${kapali(k) ? " hidden" : ""}>${ic}</div>`;
+  const kolon = (k: BolumKimligi, ic: string): string => `<div class="kol" data-kol="${k}">${ic}</div>`;
   const ag = b.bosMesaj
     ? `<p class="bos">${kacir(b.bosMesaj)}</p>`
     : `<div id="agac" role="tree" aria-label="${kacir(baslik)}">${b.agac}</div>`;
   const bos = b.bosMesaj ? `<div id="agac" role="tree" hidden></div>` : "";
   const graf = b.graf === undefined ? ""
-    : bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
-      + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`);
-  return `${bolumBasligi("agac", baslik, kapali("agac"), false)}${govde("agac", `${ag}${bos}`)}${graf}`;
+    : kolon("graf", bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
+      + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`));
+  return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
 }
 
 /** Tren sekmesi: tren-cekirdek özetinin sade listesi; kardeş varsa Koşular bağlantısı. */
@@ -405,13 +414,14 @@ export function makinistBolumuHtml(agac: string): string {
   return `<div id="makinist-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("makinist"))}">${agac}</div>`;
 }
 
+/** Gözlemler ve Ayarlar sekmeleri bu Adımda yalnız boş bölüm olarak doğar; içerikleri sonraki Adımların işidir. */
+export function bosSekmeHtml(s: BosSekme): string {
+  return `<p class="bos" data-bos-sekme="${s}">${kacir(PANEL_METINLERI.bosSekme(s))}</p>`;
+}
+
 // ── TAM BELGE ────────────────────────────────────────────────────────────────
 
-export interface SekmeSimgeleri {
-  ray: string;
-  tren: string;
-  makinist: string;
-}
+export type SekmeSimgeleri = Record<SekmeKimligi, string>;
 
 export interface PanelBelgesi {
   sekme: SekmeKimligi;
@@ -426,9 +436,9 @@ export interface PanelBelgesi {
   rozet: number;
 }
 
-/** Satır içi SVG simgesi: yalnız kaynak dosyanın kendi svg'si; 16 piksele indirilir. */
+/** Satır içi SVG simgesi: yalnız kaynak dosyanın kendi svg'si; küçük şeride göre 14 piksele indirilir (PNL-A03). */
 function simgeSvg(svg: string): string {
-  return svgKucult(svg).replace(/^<svg /, `<svg width="16" height="16" aria-hidden="true" focusable="false" `);
+  return svgKucult(svg).replace(/^<svg /, `<svg width="14" height="14" aria-hidden="true" focusable="false" `);
 }
 
 export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, rozet: number): string {

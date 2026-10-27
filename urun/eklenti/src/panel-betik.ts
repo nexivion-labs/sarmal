@@ -2,7 +2,8 @@
 // panel-betik.ts — 🧭 SARMAL PANELİNİN STİLİ VE İSTEMCİ BETİĞİ (SAF — vscode importsuz)
 //
 //   Founder 2026-10-21: Sarmal kabı tek bir webview görünümüdür (`sarmalPanel`).
-//   Üstte Ray · Tren · Makinist sekme şeridi, altında seçili sekmenin içeriği.
+//   Üstte Ray · Tren · Makinist · Gözlemler · Ayarlar sekme şeridi (OZK-13), altında
+//   seçili sekmenin içeriği.
 //   Bu dosya yalnız iki metin taşır: stil ve betik. Veri ve HTML üretimi
 //   panel-cekirdek.ts dosyasındadır; betik veri üretmez, yalnız gelen HTML'i yerine
 //   koyar ve kullanıcı eylemlerini eklentiye iletir.
@@ -16,39 +17,70 @@
 /** Seçili sekmenin alt çizgisi: Founder'ın verdiği marka mavisi. */
 export const MARKA_MAVISI = "#2685F2";
 
+/** Ray bölümlerinin yan yana dizildiği en küçük panel genişliği: iki sütunun her biri en az 320 pikseldir. */
+export const GENIS_PANEL_PX = 640;
+/** Beş sekmenin adlarının yan yana sığdığı en küçük şerit genişliği; daha darda seçili olmayan sekme yalnız simgedir. */
+export const DAR_SERIT_PX = 420;
+
 export const PANEL_STILI = `
 :root{color-scheme:light dark}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{background:transparent;color:var(--vscode-foreground);font-family:var(--vscode-font-family);font-size:13px;line-height:1.4;padding:0}
+/* YERLEŞİM (PNL-A03 · Founder 2026-10-27): belge pencere boyuna (vh) dayanan bir en az yükseklik
+   taşımaz ve şeridin ölçüsü hiçbir hesapta varsayılmaz. Gövde, panelin verdiği alanı dolduran
+   esnek bir sütundur: şerit kendi boyunu alır, içerik kalan alanın tamamını kaplar ve kendi içinde
+   kayar. Böylece şerit kaydırmayla ekrandan çıkmaz ve panel hangi yükseklikte açılırsa açılsın
+   içerik o alanı doldurur. */
+html,body{margin:0;padding:0;height:100%}
+body{display:flex;flex-direction:column;overflow:hidden;background:transparent;color:var(--vscode-foreground);font-family:var(--vscode-font-family);font-size:13px;line-height:1.4}
 button{font:inherit;color:inherit}
-.seritler{position:sticky;top:0;z-index:5;display:flex;align-items:stretch;height:32px;margin:0;padding:0;
+/* SEKME ŞERİDİ küçüktür (Founder 2026-10-27): yazı 11, şerit 26 piksel; yer kaplamaz. */
+.seritler{flex:none;position:relative;z-index:5;display:flex;align-items:stretch;height:26px;margin:0;padding:0;overflow:hidden;
   background:var(--vscode-sideBar-background);border-bottom:1px solid var(--vscode-sideBarSectionHeader-border,var(--vscode-panel-border,rgba(128,128,128,.35)))}
-.sekme{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;height:100%;padding:0 12px;margin:0;border:0;border-radius:0;
-  background:none;cursor:pointer;color:var(--vscode-descriptionForeground);font-size:13px;white-space:nowrap;opacity:.85}
-.sekme svg{flex:none;width:16px;height:16px}
+.sekme{display:inline-flex;align-items:center;gap:5px;flex:0 1 auto;min-width:0;height:100%;padding:0 9px;margin:0;border:0;border-radius:0;
+  background:none;cursor:pointer;color:var(--vscode-descriptionForeground);font-size:11px;line-height:1;white-space:nowrap;opacity:.85}
+.sekme svg{flex:none;width:14px;height:14px}
 .sekme .sk-ad{overflow:hidden;text-overflow:ellipsis}
 .sekme:hover{color:var(--vscode-foreground);opacity:1}
 .sekme[aria-selected="true"]{color:var(--vscode-foreground);opacity:1;box-shadow:inset 0 -2px 0 ${MARKA_MAVISI}}
 .sekme:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:-2px}
-.rozet{display:inline-block;min-width:16px;padding:0 4px;border-radius:8px;text-align:center;font-size:11px;line-height:16px;
+.rozet{display:inline-block;min-width:14px;padding:0 4px;border-radius:7px;text-align:center;font-size:10px;line-height:14px;
   background:var(--vscode-badge-background);color:var(--vscode-badge-foreground)}
-#icerik{padding:0 0 12px}
-.bas{margin:0;padding:10px 12px 4px 12px;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--vscode-descriptionForeground)}
-.bas.araya{margin-top:6px;padding-top:12px}
+/* DAR ŞERİT: kenar çubuğunda (${DAR_SERIT_PX} pikselden dar) beş sekmenin adı yan yana sığmaz ve kesilir.
+   Orada seçili olmayan sekme yalnız simgesiyle görünür; adı ipucunda kalır ve ekran okuyucu için
+   görünmez biçimde yerinde durur. Seçili sekmenin adı her zaman görünür. */
+@media (max-width:${DAR_SERIT_PX - 1}px){
+  .sekme{padding:0 7px}
+  .sekme:not([aria-selected="true"]) .sk-ad{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+#icerik{flex:1 1 auto;min-height:0;overflow:auto;padding:0 0 12px}
+/* Yol Haritası ve Mini Graf başlıkları çok küçük puntoludur (Founder 2026-10-27): 10 piksel. */
+.bas{margin:0;padding:6px 12px 3px 12px;font-size:10px;line-height:14px;font-weight:600;letter-spacing:.06em;color:var(--vscode-descriptionForeground)}
+/* Dar panelde Mini Graf başlığı Yol Haritasının hemen altından başlar; ayrım dış boşlukla değil iç boşlukla
+   yapılır, böylece sütunun kutusu ile başlığı aynı noktadan başlar. */
+.bas.araya{padding-top:10px}
 .bb{display:inline-flex;align-items:center;gap:2px;margin:0 0 0 -16px;padding:0;border:0;background:none;cursor:pointer;
   font:inherit;letter-spacing:inherit;color:inherit;text-transform:inherit}
 .bb:hover{color:var(--vscode-foreground)}
 .bb:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:1px}
 .bb[aria-expanded="true"] .ok svg{transform:rotate(90deg)}
+.bb .ok,.bb .ok svg{width:14px;height:14px}
 .bas:has(.bb){padding-left:20px}
-/* KAPALI MİNİ GRAF ALTA YAPIŞIR: eski ayrı görünümlerde VS Code katlanan Mini Graf'ın başlığını
-   kabın dibine koyar, boş alanı Yol Haritasına verirdi. Tek webview'de bu davranış yerleşimle
-   kurulur: Ray içeriği en az pencere boyundadır, açık Yol Haritası boş alanı doldurur (açılan Mini
-   Graf alttan yukarı açılır) ve katlanmış Mini Graf başlığı uzun ağaçta da ekranın dibinde kalır. */
-#icerik:has(>#bolum-graf){display:flex;flex-direction:column;min-height:calc(100vh - 32px);padding-bottom:0}
-#icerik>#bolum-agac{flex:1 0 auto}
-.bas.araya:has(>.bb[aria-expanded="false"]){position:sticky;bottom:0;z-index:4;background:var(--vscode-sideBar-background)}
+/* GENİŞ VE ALÇAK PANEL (Founder'ın alt paneli, yaklaşık 1400×400): Yol Haritası ile Mini Graf yan
+   yana iki sütundur. Her sütun içerik alanının bütün boyunu alır, başlığı sütunun üstünde durur ve
+   gövdesi kendi içinde kayar. Katlanan sütun yalnız başlığı kadar yer tutar ve öteki sütun boşalan
+   genişliği alır. Dar panelde (kenar çubuğu) iki sütun alt alta akar ve içerik bütün olarak kayar.
+   Hiçbir başlık alanın dibine yapıştırılmaz: eski düzende katlanan Mini Graf başlığı pencere boyuna
+   dayanan bir kuralla dibe itiliyordu ve panel küçük bir kutuya sıkışabiliyordu. */
+@media (min-width:${GENIS_PANEL_PX}px){
+  #icerik:has(>.ray-duzen){display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+  .ray-duzen{flex:1 1 auto;min-height:0;display:flex;align-items:stretch}
+  .kol{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column}
+  .kol:has(>.bolum[hidden]){flex:0 0 auto}
+  .kol>.bas{flex:none}
+  .kol>.bolum{flex:1 1 auto;min-height:0;overflow:auto;padding-bottom:8px}
+  .kol+.kol{border-left:1px solid var(--vscode-sideBarSectionHeader-border,var(--vscode-panel-border,rgba(128,128,128,.35)))}
+  .bas.araya{padding-top:6px}
+}
 .bos{margin:0;padding:8px 12px;color:var(--vscode-descriptionForeground)}
 .kardes{margin:0;padding:8px 12px}
 .kardes a{color:var(--vscode-textLink-foreground);text-decoration:none;cursor:pointer}
@@ -92,8 +124,8 @@ svg.ik{background:none}
 @keyframes don{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.don{animation:none}}
 /* Mini Graf kendi kutusundan taşamaz: gölge kökteki bir çizim (ör. satırlardan uzun bir bağ
-   şeridi) gövdenin dışına taşarsa belge gövdeden uzun olur ve yapışkan sekme şeridi gövdenin
-   sonunda ekrandan çıkar (Founder ekranı 2026-10-22). Taşma kutunun içinde kalır. */
+   şeridi) gövdenin dışına taşarsa kayan alan gövdeden uzun olur; o günkü yapışkan sekme şeridi
+   bu yüzden ekrandan çıkmıştı (Founder ekranı 2026-10-22). Taşma kutunun içinde kalır. */
 #graf{display:block;overflow-x:auto}
 `;
 
@@ -102,7 +134,6 @@ export const PANEL_BETIGI = `
 (function () {
   'use strict';
   var api = acquireVsCodeApi();
-  var SEKMELER = ['ray', 'tren', 'makinist'];
   var seciliSatir = '';
   var $ = function (id) { return document.getElementById(id); };
   function gonder(m) { api.postMessage(m); }
@@ -117,8 +148,9 @@ export const PANEL_BETIGI = `
       b.setAttribute('tabindex', s ? '0' : '-1');
     });
   }
+  // Sekme listesi şeridin kendisidir (panel-cekirdek.ts SEKMELER); betik ikinci bir liste tutmaz.
   function sekmeSec(ad, odakla) {
-    if (SEKMELER.indexOf(ad) < 0) return;
+    if (!sekmeler().some(function (b) { return b.getAttribute('data-sekme') === ad; })) return;
     sekmeIsaretle(ad);
     if (odakla) {
       var b = document.querySelector('.sekme[data-sekme="' + ad + '"]');

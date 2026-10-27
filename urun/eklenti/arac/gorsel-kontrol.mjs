@@ -8,8 +8,8 @@
 //   tarayıcıda görünür. Bu komut her kurulumdan önce koşar:
 //
 //     1. Verilen proje kökünün gerçek verisiyle panelin tam HTML'ini üretir
-//        (arac/gorsel-kontrol-uret.ts; Ray · Tren · Makinist · Mini Graf'ın üç
-//        görünümü seçili ve seçimsiz · görünüm seçici).
+//        (arac/gorsel-kontrol-uret.ts; Ray · Tren · Makinist · Gözlemler · Ayarlar ·
+//        Mini Graf'ın üç görünümü seçili ve seçimsiz · görünüm seçici).
 //     2. Her değişkeyi başsız Chromium'da üç ölçüde açar, koyu VS Code teması
 //        değişkenlerini tanımlar ve ekran görüntülerini yazar.
 //     3. DOM ölçümüyle kontrol listesini koşar ve sonucu sonuc.txt ile sonuc.json
@@ -24,6 +24,11 @@
 //   Boyutlar: 300×720 ve 460×720 (kenar çubuğu), 1400×400 (Founder'ın kullandığı
 //   alt panel: editörün altında, sola yaslı, geniş ve alçak · 2026-10-27).
 //   Kontrol listesi: betik hatası · sekme şeridi başta ve en alta kaydırınca üstte ·
+//   YERLEŞİM (PNL-A03): sekme yazısı 11 px ve şerit 26 px · sekme sırası Ray, Tren,
+//   Makinist, Gözlemler, Ayarlar · içerik alanı şeridin altından panelin dibine uzanır ·
+//   Ray başlıkları 10 px · geniş panelde (1400×400) Yol Haritası ile Mini Graf yan yana
+//   ve dibe kadar, dar panelde alt alta · başlıklar sütunlarının üstünde (katlanan
+//   Mini Graf başlığı dibe yapışmaz) · Gözlemler ve Ayarlar boş durum cümlesi ·
 //   Ray girinti kılavuzları (fare ağacın üzerindeyken ve DEĞİLKEN) ve etkin kılavuz ·
 //   Ray başlıklarının tıklama, Enter ve Space ile katlanması · Makinist üst
 //   düğümlerinin katlanabilirliği · ana yazı boyutu 11–14 px · Mini Graf yazılarının
@@ -59,6 +64,11 @@ const EKLENTI = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const BOYUTLAR = [{ ad: "300", w: 300, h: 720 }, { ad: "460", w: 460, h: 720 }, { ad: "alt", w: 1400, h: 400 }];
 /** Ana yazıların (ağaç satırı, düğüm adı) izinli boyutu: VS Code ağaç ölçeği. */
 const YAZI_EN_AZ = 11, YAZI_EN_COK = 14;
+/** PNL-A03 · Founder 2026-10-27: küçük sekme şeridi ve çok küçük puntolu bölüm başlıkları. */
+const SEKME_YAZI = "11px", SERIT_PX = 26, BASLIK_YAZI = "10px";
+const SEKME_SIRASI = ["ray", "tren", "makinist", "gozlemler", "ayarlar"];
+/** Ray bölümlerinin yan yana dizildiği en küçük genişlik (src/panel-betik.ts GENIS_PANEL_PX ile aynı). */
+const GENIS_PANEL_PX = 640;
 
 // ── Argümanlar ──────────────────────────────────────────────────────────────
 const arg = process.argv.slice(2);
@@ -147,15 +157,56 @@ function seritOlc() {
 function kaydir(kip) {
   const host = document.getElementById("graf");
   const kok = host?.shadowRoot;
-  if (kip === "ust") window.scrollTo(0, 0);
-  else if (kip === "dip") window.scrollTo(0, document.documentElement.scrollHeight);
+  // Kayan alanlar (PNL-A03): belge kaymaz; içerik alanı ve geniş paneldeki sütun gövdeleri kendi içinde kayar.
+  const alanlar = [document.scrollingElement, document.getElementById("icerik"), ...document.querySelectorAll(".kol>.bolum")].filter(Boolean);
+  if (kip === "ust") for (const a of alanlar) a.scrollTop = 0;
+  else if (kip === "dip") for (const a of alanlar) a.scrollTop = a.scrollHeight;
   else if (kip === "graf") {
     const h = document.querySelector("h2.araya");
-    if (h) window.scrollTo(0, h.getBoundingClientRect().top + scrollY - 40);
+    if (h) h.scrollIntoView({ block: "start" });
   } else if (kip === "secili") {
     const e = kok?.querySelector(".secili");
     if (e) e.scrollIntoView({ block: "center" });
   }
+}
+/**
+ * Panel yerleşiminin ölçüsü (PNL-A03): şerit, sekmeler, içerik alanı ve Ray sütunları. Sütun, bir
+ * bölümün başlığı ile gövdesini taşıyan kutudur; başlığın sütunun üstünde durması, hiçbir başlığın
+ * bir kutunun dibinde kalmadığı demektir.
+ */
+function duzenOlc() {
+  const serit = document.querySelector(".seritler");
+  const sr = serit?.getBoundingClientRect();
+  const sekmeYazi = [...new Set([...document.querySelectorAll(".sekme .sk-ad")].map((e) => getComputedStyle(e).fontSize))];
+  const sira = [...document.querySelectorAll(".sekme")].map((b) => b.dataset.sekme);
+  // Görünen sekme adı kesilmez (üç nokta yok); dar şeritte yalnız simgeyle duran sekmenin adı 1 pikseldir ve sayılmaz.
+  const kesik = [...document.querySelectorAll(".sekme .sk-ad")].filter((e) => e.offsetWidth > 1 && e.scrollWidth > e.clientWidth)
+    .map((e) => e.textContent);
+  const sekmeGen = [...document.querySelectorAll(".sekme")].reduce((t, b) => t + b.getBoundingClientRect().width, 0);
+  const ir = document.getElementById("icerik")?.getBoundingClientRect();
+  const yuvarla = (x) => (x === undefined ? undefined : Math.round(x * 10) / 10);
+  const kollar = [...document.querySelectorAll(".ray-duzen > .kol")].map((k) => {
+    const r = k.getBoundingClientRect();
+    const bas = k.querySelector(":scope > .bas");
+    const br = bas?.getBoundingClientRect();
+    const govde = k.querySelector(":scope > .bolum");
+    return {
+      kol: k.dataset.kol, sol: yuvarla(r.left), ust: yuvarla(r.top), alt: yuvarla(r.bottom), gen: yuvarla(r.width),
+      basUst: yuvarla(br?.top), basYazi: bas ? getComputedStyle(bas.querySelector(".bb") ?? bas).fontSize : null,
+      govdeYuk: govde && !govde.hidden ? yuvarla(govde.getBoundingClientRect().height) : 0,
+    };
+  });
+  const bos = document.querySelector(".bos[data-bos-sekme]");
+  return {
+    W: innerWidth, H: innerHeight, seritYuk: yuvarla(sr?.height ?? 0), seritAlt: yuvarla(sr?.bottom ?? 0), sekmeYazi, sira, kesik,
+    seritTasma: yuvarla(sekmeGen - (sr?.width ?? 0)),
+    icerikUst: yuvarla(ir?.top), icerikAlt: yuvarla(ir?.bottom), yatayTasma: document.documentElement.scrollWidth - innerWidth, kollar,
+    bosSekme: bos ? { metin: bos.textContent.trim(), gen: bos.getBoundingClientRect().width } : null,
+  };
+}
+/** Bir Ray bölümünün başlığına tıklar (katlar ya da açar). */
+function basligaTikla(bolum) {
+  document.querySelector(`.bb[data-bolum="${bolum}"]`)?.click();
 }
 function grafOlc() {
   const host = document.getElementById("graf");
@@ -279,6 +330,43 @@ try {
         goruntuler.push(dosya);
       };
       kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
+      // ── Yerleşim (PNL-A03): ölçüm açılış hâlinde, hiçbir şey kaydırılmadan yapılır. ──
+      const dz = await p.evaluate(duzenOlc);
+      const yakin = (a, b) => a !== undefined && b !== undefined && Math.abs(a - b) <= 1;
+      kontrol(`${etiket}: sekme şeridi yazısı ${SEKME_YAZI} ve şerit ${SERIT_PX} px`,
+        dz.sekmeYazi.length === 1 && dz.sekmeYazi[0] === SEKME_YAZI && Math.abs(dz.seritYuk - SERIT_PX) < 0.5,
+        JSON.stringify({ sekmeYazi: dz.sekmeYazi, seritYuk: dz.seritYuk }));
+      kontrol(`${etiket}: sekmeler sırasıyla Ray · Tren · Makinist · Gözlemler · Ayarlar`,
+        dz.sira.join(",") === SEKME_SIRASI.join(","), dz.sira.join(","));
+      kontrol(`${etiket}: sekme şeridi taşmaz ve görünen hiçbir sekme adı kesilmez`,
+        dz.seritTasma <= 0.5 && dz.kesik.length === 0, JSON.stringify({ seritTasma: dz.seritTasma, kesik: dz.kesik }));
+      kontrol(`${etiket}: içerik alanı şeridin hemen altından panelin dibine uzanır (küçük kutu ya da boş alt yok)`,
+        yakin(dz.icerikUst, dz.seritAlt) && yakin(dz.icerikAlt, dz.H) && dz.yatayTasma <= 0,
+        JSON.stringify({ seritAlt: dz.seritAlt, icerikUst: dz.icerikUst, icerikAlt: dz.icerikAlt, H: dz.H, yatayTasma: dz.yatayTasma }));
+      if (d.sekme === "ray") {
+        const [ag, gr] = dz.kollar;
+        kontrol(`${etiket}: Yol Haritası ve Mini Graf başlıkları ${BASLIK_YAZI}`,
+          dz.kollar.length === 2 && dz.kollar.every((k) => k.basYazi === BASLIK_YAZI), JSON.stringify(dz.kollar.map((k) => [k.kol, k.basYazi])));
+        kontrol(`${etiket}: başlıklar sütunlarının üstündedir; hiçbir başlık bir kutunun dibinde kalmaz`,
+          dz.kollar.length === 2 && dz.kollar.every((k) => yakin(k.basUst, k.ust)), JSON.stringify(dz.kollar));
+        if (B.w >= GENIS_PANEL_PX) {
+          const alan = dz.icerikAlt - dz.icerikUst;
+          kontrol(`${etiket}: geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur ve panelin dibine uzanır (boşluk yok)`,
+            ag && gr && yakin(ag.ust, gr.ust) && ag.sol < gr.sol && ag.gen >= 0.3 * dz.W && gr.gen >= 0.3 * dz.W
+              && ag.gen + gr.gen >= dz.W - 2 && yakin(ag.alt, dz.H) && yakin(gr.alt, dz.H),
+            JSON.stringify(dz.kollar));
+          kontrol(`${etiket}: geniş panelde sıkışma yok: her sütunun gövdesi içerik alanının en az %80'i boyundadır`,
+            ag && gr && ag.govdeYuk >= 0.8 * alan && gr.govdeYuk >= 0.8 * alan,
+            JSON.stringify({ alan, govde: dz.kollar.map((k) => [k.kol, k.govdeYuk]) }));
+        } else {
+          kontrol(`${etiket}: dar panelde Yol Haritası ile Mini Graf alt alta durur`,
+            ag && gr && yakin(ag.sol, gr.sol) && gr.ust >= ag.alt - 1, JSON.stringify(dz.kollar));
+        }
+      }
+      if (d.sekme === "gozlemler" || d.sekme === "ayarlar") {
+        kontrol(`${etiket}: ${d.sekme} sekmesi boş bölüm olarak doğar ve boş durum cümlesi görünür`,
+          !!dz.bosSekme && dz.bosSekme.metin.length > 0 && dz.bosSekme.gen > 0, JSON.stringify(dz.bosSekme));
+      }
       // Sekme şeridi: üstte ve kaydırınca da üstte.
       for (const kip of ["ust", "dip"]) {
         await p.evaluate(kaydir, kip);
@@ -358,6 +446,26 @@ try {
           await p.screenshot({ path: join(CIKTI, dosya) });
           goruntuler.push(dosya);
         }
+        // Katlanan Mini Graf (PNL-A03): başlık sütununun üstünde kalır, alanın dibine yapıştırılmaz; geniş
+        // panelde Yol Haritası boşalan genişliği alır, dar panelde başlık Yol Haritasının hemen altındadır.
+        await p.evaluate(kaydir, "ust");
+        await p.evaluate(basligaTikla, "graf");
+        await p.waitForTimeout(60);
+        const kz = await p.evaluate(duzenOlc);
+        const [kag, kgr] = kz.kollar;
+        const yakin2 = (a, b) => a !== undefined && b !== undefined && Math.abs(a - b) <= 1;
+        const genis = B.w >= GENIS_PANEL_PX;
+        kontrol(genis
+          ? `${etiket}: katlanan Mini Graf başlığı sütununun üstünde kalır ve Yol Haritası boşalan genişliği alır`
+          : `${etiket}: katlanan Mini Graf başlığı Yol Haritasının hemen altında durur, alanın dibine yapışmaz`,
+        kag && kgr && kgr.govdeYuk === 0 && yakin2(kgr.basUst, kgr.ust) && (genis
+          ? yakin2(kgr.ust, kz.icerikUst) && kag.gen >= 0.75 * kz.W && yakin2(kag.alt, kz.H)
+          : yakin2(kgr.ust, kag.alt)),
+        JSON.stringify(kz.kollar));
+        const katli = `${d.ad}-${W}-graf-katli.png`;
+        await p.screenshot({ path: join(CIKTI, katli) });
+        goruntuler.push(katli);
+        await p.evaluate(basligaTikla, "graf");
       }
       if (d.ad.startsWith("graf-")) {
         await p.evaluate(kaydir, "graf");

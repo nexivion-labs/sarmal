@@ -9,8 +9,10 @@
 //
 //   Bu kabuk karar vermez ve veri üretmez. Veri, mevcut sağlayıcılardan gelir:
 //   Yol Haritası ağacı, Mini Graf çizicileri, Tren özeti ve Makinist ağacı (onay,
-//   hatırlatıcı, gözlem, fikir). Sağlayıcıların `getChildren` ve `getTreeItem`
-//   yüzleri olduğu gibi okunur (panel-cekirdek.ts); kabuk yalnız ileti köprüsüdür:
+//   hatırlatıcı, gözlem, fikir). Gözlemler ve Ayarlar sekmeleri (OZK-13) bugün yalnız
+//   boş durum cümlesi taşır; içerikleri sonraki Adımların işidir. Sağlayıcıların
+//   `getChildren` ve `getTreeItem` yüzleri olduğu gibi okunur (panel-cekirdek.ts); kabuk
+//   yalnız ileti köprüsüdür:
 //   sekme seçimi, aç-kapa, tıklama, kutucuk ve satır eylemleri.
 //
 //   Çizim kuralları:
@@ -20,7 +22,14 @@
 //       Makinist); yalnız bir satırı ilgilendiren değişim (aktif varlık nabzı)
 //       tek satır yamasıdır. Görünmeyen panel hiçbir şey çizmez, görününce yetişir.
 //     · Yalnız AÇIK düğümlerin çocukları DOM'a basılır.
-//     · Sekme seçimi ile açık-kapalı tercihleri workspaceState'te kalıcıdır.
+//     · Açık-kapalı tercihleri workspaceState'te kalıcıdır. Sekme seçimi KALICI
+//       DEĞİLDİR: her açılış Ray'le başlar (PNL-A03). Önceki sürümler seçimi
+//       workspaceState'e yazıp açılışta okuyordu; pencere yeniden yüklenince panel son
+//       sekmeyle (ör. Makinist) açılıyor, oysa bölüm yuvası (bolum-yuvasi.ts) her
+//       açılışı Ray'le başlatıyordu ve iki seçim birbirini tutmuyordu. Seçim oturum
+//       boyunca bellekte korunur, çünkü görünüm gizlenince de sağlayıcı yaşar.
+//     · Yol Haritası bölümü her açılışta açık başlar; kullanıcının Mini Graf katlaması
+//       kalıcıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
@@ -28,7 +37,7 @@ import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
+  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
   satirKur, satirlarHtml, satirlariUret, sekmeNormalle, trenBolumuHtml,
   type AgacKaynagi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
   type UretilenSatir, type UretimSecenekleri,
@@ -49,7 +58,6 @@ export const BAGLAM_SEKME = BAGLAM.panelSekme;
 /** Kardeş Tren eklentisi bu komutu kaydeder; varlığı kardeşin varlığıdır. */
 export const TREN_KARDES_KOMUTU = "sarmal.tren.kardesAc";
 
-const SEKME_ANAHTARI = "sarmal.panel.sekme";
 const ACIK_ANAHTARI = "sarmal.panel.acik";
 const ACIK_USTU = 800;
 /** Veri değişimlerinin birleştirildiği bekleme; nabız ve tur yayını art arda gelebilir. */
@@ -57,6 +65,8 @@ const GECIKME_MS = 120;
 
 type Kaynak = "ray" | "tren" | "makinist";
 const KIMLIK_PARCASI: Readonly<Record<Kaynak, string>> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac" };
+/** Ağaç kaynağı olan sekme mi? Gözlemler ve Ayarlar bugün ağaç taşımaz. */
+const kaynakMi = (s: SekmeKimligi): s is Kaynak => s in KIMLIK_PARCASI;
 
 export interface PanelGirdileri {
   yol: YolHaritasiYuzu;
@@ -99,8 +109,11 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private sayac = { belge: 0, parca: 0, yama: 0 };
 
   constructor(private readonly context: vscode.ExtensionContext, private readonly g: PanelGirdileri) {
-    this.sekme = sekmeNormalle(context.workspaceState.get(SEKME_ANAHTARI));
+    // Her açılış Ray'le başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
+    this.sekme = "ray";
     this.acik = { ...(context.workspaceState.get<Record<string, boolean>>(ACIK_ANAHTARI) ?? {}) };
+    // Yol Haritası açık başlar (PNL-A03); oturum içindeki katlama yine korunur.
+    delete this.acik[bolumAnahtari("agac")];
     const abone = (d: vscode.Disposable | { dispose(): unknown }): void => { context.subscriptions.push(d as vscode.Disposable); };
     // Yol Haritası: öğe hedefli olay (nabız) tek satır yamasıdır, öğesiz olay ağacın tazelenmesidir.
     abone(g.yol.saglayici.onDidChangeTreeData((e) => {
@@ -142,7 +155,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   gorunurMu(): boolean { return this.gorunum?.visible ?? false; }
 
   olcumler(): PanelOlcumleri {
-    return { sekme: this.sekme, satirSayisi: this.sonSatirlar[this.sekme].length, ...this.sayac, kardesVar: this.kardesVar };
+    const satirSayisi = kaynakMi(this.sekme) ? this.sonSatirlar[this.sekme].length : 0;
+    return { sekme: this.sekme, satirSayisi, ...this.sayac, kardesVar: this.kardesVar };
   }
 
   /** Dil değişince tab şeridi ve bütün metinler yeniden yazılır. */
@@ -157,10 +171,11 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const yeni = sekmeNormalle(s);
     const degisti = yeni !== this.sekme;
     this.sekme = yeni;
-    void this.context.workspaceState.update(SEKME_ANAHTARI, yeni);
-    await this.sekmeBaglami();
     if (yeni === "tren") this.kardesiYokla();
+    // Çizim bağlam yazımını beklemez: görünüm henüz çözülmemişse ilk belge zaten bu sekmeyle üretilir
+    // ve ikinci bir bölüm iletisi gönderilmez.
     if (degisti || this.gorunum) this.bolumGonder();
+    await this.sekmeBaglami();
   }
 
   /** Bölüm komutlarının (sarmal.bolum.*) panel karşılığı: sekmeyi seçer ve kabı öne alır. */
@@ -202,9 +217,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       }
       return this.dosyaOnbellegi.get(rel) ?? "";
     };
-    return {
-      ray: oku(SEKME_SIMGE_KAYNAKLARI.ray), tren: oku(SEKME_SIMGE_KAYNAKLARI.tren), makinist: oku(SEKME_SIMGE_KAYNAKLARI.makinist),
-    };
+    return Object.fromEntries(SEKMELER.map((s) => [s, oku(SEKME_SIMGE_KAYNAKLARI[s])])) as SekmeSimgeleri;
   }
 
   private tamHtml(cspSource: string): string {
@@ -297,6 +310,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const a = this.agacUret("tren");
       return { html: trenBolumuHtml(a.html, this.g.tren.bos(), this.kardesVar), ikonStili: a.ikonStili };
     }
+    if (!kaynakMi(s)) return { html: bosSekmeHtml(s), ikonStili: "" };
     const a = this.agacUret("makinist");
     return { html: makinistBolumuHtml(a.html), ikonStili: a.ikonStili };
   }
