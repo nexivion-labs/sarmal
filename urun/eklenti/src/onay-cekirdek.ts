@@ -74,6 +74,13 @@ export interface OnayKapisi {
   bekler?: BeklerKaydi;
 }
 
+/**
+ * Kapının görüldüğü durumlar. `doğrulanmamış` iş teslim edilmiş fakat yetkili kabulü verilmemiş
+ * demektir; yani Founder onayını bekleyen asıl durumdur ve süzgecin dışında kalamaz
+ * (HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR · PNL-A07: kuyruk bu durumdaki kapıyı göstermiyordu).
+ */
+export const KAPI_DURUMLARI: ReadonlySet<string> = new Set(["beklemede", "geliştirmede", "doğrulanmamış"]);
+
 /** Ayrışmış ağaçta onay bekleyen Adımları bulur: durum açık + kabul'de onay imzası + onay: henüz yok. */
 export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
   const kapilar: OnayKapisi[] = [];
@@ -83,7 +90,7 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
       const alan = (ad: string) =>
         d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
       const durum = alan("durum");
-      const acik = durum?.deger.metin === "beklemede" || durum?.deger.metin === "geliştirmede";
+      const acik = KAPI_DURUMLARI.has(durum?.deger.metin ?? "");
       const kararVerilmis = alan("onay") !== undefined;
       const kabul = alan("kabul");
       const olcut = (kabul?.deger.ogeler ?? []).find((o) => o.metin && ONAY_DESENI.test(o.metin));

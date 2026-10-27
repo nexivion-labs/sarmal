@@ -23,7 +23,9 @@ import { YolHaritasi } from "../src/yolharitasi.ts";
 import { MiniGrafGorunumu } from "../src/minigraf.ts";
 import { projeGrafiCikar } from "../src/minigraf-cekirdek.ts";
 import { Tren } from "../src/tren.ts";
-import { MakinistAgaci } from "../src/makinist.ts";
+import { makinistKaydi } from "../src/makinist.ts";
+import { OnayPaneli } from "../src/onay-paneli.ts";
+import { onayKapilariTopla } from "../src/onay-cekirdek.ts";
 import { panelKaydi } from "../src/panel.ts";
 import type { SekmeKimligi } from "../src/panel-cekirdek.ts";
 import { satirIkonu } from "../src/ortak.ts";
@@ -82,12 +84,22 @@ function ornek(n: number, ikon: string, anlam: string, etiketler: [string, strin
     },
   };
 }
-const makinist = new MakinistAgaci({
-  onaylar: ornek(2, "kapi", "uyari", [["ORNEK-A01", "ornek.sar"], ["ORNEK-A02", "ornek.sar"]]),
-  hatirlaticilar: ornek(1, "yerimi", "uyari", [["Örnek hatırlatıcı", "ORNEK-FAZ"]]),
-  gozlemler: ornek(0, "kutu", "bilgi", []),
-  fikirler: ornek(1, "fikir", "bilgi", [["Örnek fikir", "ORNEK-FKR"]]),
-} as never, koku as never);
+// Onaylar gerçek onay defterinden gelir (PNL-A07): kapı satırları ve karar kademesi üründeki yoldan çizilir.
+// Kapılar yansız bir örnek plandan ayrıştırılır; gerçek onay verisi okunmaz.
+const ONAY_DOSYASI = join(PROJE, "is", "plan", "ornek.sar");
+const ONAY_ORNEGI =
+  `Faz( kod: ORNEK-FAZ, ad: "örnek dönem" ) {\n  Blok( kod: ORNEK-BLK, ad: "örnek iş" ) {\n    Katman( kod: ORNEK-KAT, ad: "örnek katman" ) {\n` +
+  ["ORNEK-A01", "ORNEK-A02"].map((k) => `      Adım( kod: ${k}, onayBekler: founder, durum: beklemede, ne: "${k} örnek karar", ` +
+    `kabul: [ "Tasarım Founder tarafından onaylanmıştır — onaysız uygulanmaz" ] )\n`).join("") + `    }\n  }\n}\n`;
+const onayDefteri = new OnayPaneli();
+onayDefteri.simgeKaynaginiBagla(koku as never);
+onayDefteri.yerlestirHepsi(onayKapilariTopla(ayristir(belirtecle(ONAY_ORNEGI)).bildirimler).map((kapi) => ({ dosya: ONAY_DOSYASI, kapi })));
+const makinist = makinistKaydi({ subscriptions: [], extensionUri: koku } as never, {
+  onayPaneli: onayDefteri,
+  hatirlaticilar: ornek(1, "yerimi", "uyari", [["Örnek hatırlatıcı", "ORNEK-FAZ"]]) as never,
+  bildirimler: ornek(0, "kutu", "bilgi", []) as never,
+  fikirler: ornek(1, "fikir", "bilgi", [["Örnek fikir", "ORNEK-FKR"]]) as never,
+});
 
 // ── Kabuk ayarları: görünüm ve açık kademe değişke başına değişir ─────────────
 let gorunumAyari = "agac";
@@ -111,10 +123,13 @@ function seciliBul(): string {
 const SECILI = seciliBul();
 const ACIK = Number(ACIK_ARG) || 0;
 
-interface Degiske { ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number }
+interface Degiske { ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number; onayAcik?: string }
 
 function uret(d: Degiske): string {
   gorunumAyari = d.gorunum ?? "agac";
+  // Karar kademesi açık kapı (PNL-A07): yalnız istenen değişkede bir kapı açıktır.
+  if (d.onayAcik) onayDefteri.kapiyiAc(ONAY_DOSYASI, d.onayAcik);
+  else onayDefteri.kapiyiKapat();
   const graf = new MiniGrafGorunumu(() => yol.dagAl());
   if (d.secili) graf.dugumSec(d.secili);
   if (d.secici) graf.seciciDegistir();
@@ -147,6 +162,7 @@ const degiskeler: Degiske[] = [
   // Tren ve Makinist de açık üretilir: girinti çizgisi ve fare vurgusu üç ağaçta ölçülür (PNL-A04).
   { ad: "tren", sekme: "tren", acik: ACIK },
   { ad: "makinist", sekme: "makinist", acik: ACIK },
+  { ad: "makinist-onay", sekme: "makinist", acik: ACIK, onayAcik: "ORNEK-A02" },
   { ad: "gozlemler", sekme: "gozlemler" },
   { ad: "ayarlar", sekme: "ayarlar" },
   { ad: "graf-secici", sekme: "ray", secici: true },

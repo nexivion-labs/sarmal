@@ -1,17 +1,23 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// onay-paneli.ts — 📬 ONAYLAR KARTI (kanonun dördüncü sunum yüzeyi)
+// onay-paneli.ts — 📬 ONAYLAR: KAPI DEFTERİ VE PANEL İÇİ KARAR (kanonun dördüncü sunum yüzeyi)
 //
-//   Founder 2026-10-21 (üçüncü hüküm): kapta her bölüm TEK görünümdür, bu yüzden
-//   Onaylar artık bir kenar çubuğu görünümü değil, Makinist ağacının bir üst
-//   düğümüdür (makinist.ts; satırlar bu panelin defterinden gelir). Karar yüzeyi
-//   (gerekçe kutusu, üç düğme) bir ağaç satırına sığmadığı için bu dosyada ŞU AN
-//   YAN SEKMEDE AÇILAN BİR WEBVIEW KARTI olarak yaşar: kapı satırına tıklanınca
-//   ya da kod merceğinden gelince `gosterVeAc` kartı açar. Gövde, mesajlar ve
-//   hüküm hattı aynen korunmuştur; yalnız barınağı değişti (WebviewView →
-//   WebviewPanel). Sayı rozeti artık Makinist ağacında durur.
+//   Founder 2026-10-27 (OZK-13 üçüncü hüküm · PNL-A07): onay kapılarının kuyruğu ile karar
+//   yüzeyi Sarmal panelinin Makinist sekmesindeki Onaylar bölümünde yaşar ve karar satırın
+//   altında verilir. Kapıya tıklayınca dosya editörde Adımın satırında açılır, odak panelde
+//   kalır; gerekçe kutusu ile üç eylem kapı satırının hemen altında, panelin içinde belirir.
+//   Panel hiçbir içeriği editörün yerine ya da yan sütuna açmaz. Aynı anda YALNIZ BİR kapının
+//   karar kademesi açıktır: Founder editörde açılan kartta birden çok kapının gerekçe kutusunun
+//   aynı anda açık durmasını dikkat dağıtıcı bulmuştur (2026-10-27).
 //
-//   Aşağıdaki tarihçe kartın "panel" olduğu dönemi anlatır; "görünüş" yerine
-//   "kart" okunmalıdır.
+//   0.9.194'te karar yüzeyi editörün etkin sütununda açılan bir WebviewPanel kartına taşınmıştı;
+//   kart dosyanın üstünü örtüyor ve odağı alıyordu. Bu dosya artık hiçbir webview kurmaz:
+//   kapılar Makinist ağacının Onaylar düğümünde satır olarak durur (makinist.ts), kademeyi
+//   Sarmal paneli çizer (panel.ts) ve kullanıcının eylemleri buradaki `mesaj` kapısına iner.
+//   Defter, gerekçe taslakları, gerekçe ölçüsü ve hüküm hattı (`sarmal.onayKararVer` →
+//   `kararIsle`) DEĞİŞMEDİ; 2026-08-10'da gözle onaylanan düzen (VIT-POSTA-A03) geri gelmiştir.
+//
+//   Aşağıdaki tarihçe yüzeyin ayrı bir Onaylar görünümü olduğu dönemi anlatır; ölçümleri
+//   (giriş kutusunun konumu, webview gerekçesi, klavye) panel içi karar için de geçerlidir.
 //
 //   Founder onayı bekleyen kapılar burada yaşar. Bugüne kadar bu yüzey bir AĞAÇ
 //   GÖRÜNÜŞÜYDÜ ve kararın gerekçesi `showInputBox` ile isteniyordu. Founder aynı
@@ -56,36 +62,38 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { projeKimligi } from "./yolharitasi.ts";   // 🗺️ aidiyet TEK kaynaktan çözülür
 import {
-  YUZEY_BOS_DURUM, MAKINIST_METINLERI,
   ONAY_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik,
   onayKapiBaglami, onayBaglamKopyalandi, onayBaglamKapiYok,
 } from "./yuzey-metinleri.ts";
 import {
-  OnayDefteri, onayKimligi,
+  OnayDefteri,
   type KapiKaydi, type OnayKapisi,
 } from "./onay-cekirdek.ts";
 import {
-  PanelDurumu, onayGovdesiHtml, onayIcGovdesi, gerekceyiOlc, secenekBul,
+  PanelDurumu, kararKademesiHtml, gerekceyiOlc, secenekBul,
   notKimligi, odakNiyeti, KARAR_SECENEKLERI,
-  type GovdeGirdisi, type PanelMesaji,
+  type PanelMesaji,
 } from "./onay-govde.ts";
-// 🏷️ Founder hükmü 2026-07-28: her satır ilgili olduğu dosyanın TEKNOLOJİ simgesini
-// taşır. Çizelge eklentinin kendi dil ilanından türer — tek kaynak (teknoloji-simgesi.ts).
-import { eklentiCizelgesi, teknolojiSimgesi, type SimgeCizelgesi } from "./teknoloji-simgesi.ts";
-// VIT-KIMLIK-A05: kapı satırının geometrik balonu satır çizelgesinden okunur —
+// VIT-KIMLIK-A05: karar düğmelerinin geometrik çizimleri satır çizelgesinden okunur —
 // gövde saf kaldığı için dosyayı KABUK okur ve metin olarak verir.
 import { satirSvgKaynagi, type SatirSimgesi } from "./simge-cizelgesi.ts";
 import { readFileSync } from "node:fs";
 
-/** İçerik güvenlik politikasının nonce'u — her belgede bir kez, tahmin edilemez. */
-function nonceUret(): string {
-  const harfler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let n = "";
-  for (let i = 0; i < 32; i += 1) n += harfler[Math.floor(Math.random() * harfler.length)];
-  return n;
+/**
+ * Kararın verildiği yüzey: Sarmal panelinin Makinist sekmesi (panel.ts). Defter yüzeyi tanımaz,
+ * yalnız bu iki çağrıyı yapar; böylece karar hattı hangi webview'in içinde çizildiğinden bağımsızdır.
+ */
+export interface OnayYuzeyi {
+  /** Karar kademesi değişti (açılan ya da kapanan kapı, gerekçe hatası): Makinist ağacı yeniden
+   *  çizilir. `odakNot` verilirse odak o kapının gerekçe kutusuna gider. */
+  tazele(odakNot?: string): void;
+  /** Kapıyı göstermek için Makinist sekmesi seçilir, Onaylar düğümü açılır ve panel öne gelir. */
+  goster(): Promise<void>;
 }
+
+/** Panelden gelebilen karar iletileri; kapı satırının kendisi panelin ağaç satırıdır. */
+export const ONAY_ILETILERI: ReadonlySet<string> = new Set(["taslak", "kararVer", "iptal", "bağlamKopyala"]);
 
 export class OnayPaneli {
   /**
@@ -98,36 +106,23 @@ export class OnayPaneli {
   readonly onDegisti = this.degisti.event;
 
   private readonly defter = new OnayDefteri();
-  /** Açıklık ve gerekçe taslakları — tazeleme bunları düşüremez. */
+  /** Gerekçe taslakları ve hataları — tazeleme bunları düşüremez. */
   private readonly durum = new PanelDurumu();
-  /** Açık kart (yan sekme); yoksa yoktur ve kapılar yalnız Makinist ağacında görünür. */
-  private gorunum?: vscode.WebviewPanel;
-  /** Teknoloji simgesi kökü ve çizelgesi — kayıt anında bir kez kurulur. */
+  /** Kararın çizildiği yüzey (Sarmal paneli); bağlanmadıysa defter yine çalışır, çizim yoktur. */
+  private yuzey?: OnayYuzeyi;
+  /** Karar kademesi açık TEK kapı (Founder 2026-10-27: aynı anda yalnız bir kapı açık). */
+  private acik?: { readonly dosya: string; readonly kod: string };
+  /** Simge kökü — karar düğmelerinin çizimleri buradan okunur. */
   private simgeKoku?: vscode.Uri;
-  private simgeCizelgesi: SimgeCizelgesi = new Map();
 
-  /** Simge kaynağını bağlar; verilmezse satırlar simgesiz kalır (uydurma yapılmaz). */
-  simgeKaynaginiBagla(kok: vscode.Uri, cizelge: SimgeCizelgesi): void {
-    this.simgeKoku = kok; this.simgeCizelgesi = cizelge;
+  /** Simge kaynağını bağlar; verilmezse düğmeler simgesiz kalır (uydurma yapılmaz). */
+  simgeKaynaginiBagla(kok: vscode.Uri): void {
+    this.simgeKoku = kok;
   }
 
-  /** Kapı balonunun currentColor SVG metni — çizelge yolundan BİR KEZ okunur;
-   *  kök yoksa ya da dosya okunamazsa satır işaretsiz kalır (uydurma yapılmaz). */
-  private kapiSimgesiOnbellek?: string;
-  private kapiSimgesi(): string {
-    if (this.kapiSimgesiOnbellek !== undefined) return this.kapiSimgesiOnbellek;
-    this.kapiSimgesiOnbellek = this.satirSimgesiOku("kapi");
-    return this.kapiSimgesiOnbellek;
-  }
-
-  /** Bağlam kopyalama eyleminin currentColor SVG metni — aynı kural: çizelge
-   *  yolundan bir kez okunur, okunamazsa eylem işaretsiz kalır. Emoji basmak
-   *  YASAKTIR (YUZ-4.1): panelin bütün satır işaretleri geometrik ailedendir. */
-  private kopyaSimgesiOnbellek?: string;
-  private kopyaSimgesi(): string {
-    if (this.kopyaSimgesiOnbellek !== undefined) return this.kopyaSimgesiOnbellek;
-    this.kopyaSimgesiOnbellek = this.satirSimgesiOku("kopya");
-    return this.kopyaSimgesiOnbellek;
+  /** Kararın çizileceği yüzeyi bağlar (Sarmal paneli kurulurken). */
+  yuzeyBagla(y: OnayYuzeyi): void {
+    this.yuzey = y;
   }
 
   /** Üç karar düğmesinin çizimleri — kaynak yine çizelgedir, emoji basılmaz. */
@@ -160,9 +155,8 @@ export class OnayPaneli {
     return this.durum.taslakSayisi;
   }
 
-  /** Dil ayarı değiştiğinde kartın başlığını ve gövdeyi aynı turda yeniler. */
+  /** Dil ayarı değiştiğinde kademe yeni dilde yeniden çizilir. */
   diliTazele(): void {
-    if (this.gorunum) this.gorunum.title = MAKINIST_METINLERI.onaylar;
     this.cizdir();
   }
 
@@ -196,116 +190,57 @@ export class OnayPaneli {
     if (this.defter.sil(dosya)) this.cizdir();
   }
 
+  /** Defter değişti: Makinist ağacı yeniden çizilir; karara bağlanıp düşen kapının kademesi kapanır. */
   private cizdir(): void {
-    this.govdeyiTazele();
+    if (this.acik && !this.kayitBul(this.acik.dosya, this.acik.kod)) this.acik = undefined;
     this.degisti.fire();
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // 🖼️ ÇİZİM
+  // 🖼️ KARAR KADEMESİ (PNL-A07)
   // ═══════════════════════════════════════════════════════════════════════
 
-  /**
-   * Kartı etkin sütunda, dosya sekmelerinin yanında açar (varsa açık olanı
-   * döndürür). Founder 2026-10-22: yan sütunda açılan kart ekranı üçe bölüp
-   * açık dosyayı tek kelimelik şeride sıkıştırıyordu; kart artık sütun açmaz.
-   */
-  kartiAc(): vscode.WebviewPanel {
-    if (this.gorunum) return this.gorunum;
-    const gorunum = vscode.window.createWebviewPanel(
-      "sarmalOnayKarti", MAKINIST_METINLERI.onaylar,
-      { viewColumn: vscode.ViewColumn.Active, preserveFocus: false },
-      {
-        // Karar yüzeyi GİRİŞ ALIR; betiksiz olamaz. Mini Grafın betiksiz disiplini
-        // (bir GÖSTERGE olduğu için) aynen yerinde durur ve ona dokunulmadı.
-        enableScripts: true,
-        // Dış kaynağa hiç bağlanılmaz (STR-3.1): yalnız eklentinin kendi kökü.
-        localResourceRoots: this.simgeKoku ? [this.simgeKoku] : [],
-        // Kullanıcı başka sekmeye geçip döndüğünde yazdığı gerekçe DURMALIDIR.
-        retainContextWhenHidden: true,
-      },
-    );
-    this.gorunum = gorunum;
-    gorunum.webview.onDidReceiveMessage((m: PanelMesaji) => { void this.mesaj(m); });
-    // Kart gizlenip yeniden göründüğünde belge sıfırdan kurulur; durum eklenti
-    // tarafında yaşadığı için açıklık da taslaklar da yerinde gelir.
-    gorunum.onDidChangeViewState(() => { if (gorunum.visible) this.yuzeyiKur(); });
-    gorunum.onDidDispose(() => { if (this.gorunum === gorunum) this.gorunum = undefined; });
-    this.yuzeyiKur();
-    return gorunum;
+  private kayitBul(dosya: string, kod: string): KapiKaydi | undefined {
+    return this.defter.kumeler().find((k) => k.dosya === dosya)?.kayitlar.find((k) => k.kapi.kod === kod);
+  }
+
+  /** Karar kademesi açık kapı; yoksa tanımsız. */
+  acikKapi(): { dosya: string; kod: string } | undefined {
+    return this.acik ? { ...this.acik } : undefined;
+  }
+
+  /** Verilen kapının kademesi açık mı? */
+  acikMi(dosya: string, kod: string): boolean {
+    return this.acik?.dosya === dosya && this.acik.kod === kod;
+  }
+
+  /** Kapının kademesini açar; açık olan öteki kapı kapanır (tek kapı). Kapı defterde yoksa yanlış döner. */
+  kapiyiAc(dosya: string, kod: string): boolean {
+    if (!this.kayitBul(dosya, kod)) return false;
+    this.acik = { dosya, kod };
+    return true;
+  }
+
+  /** Kademeyi kapatır; taslak defterde kalır, çünkü vazgeçmek silmek değildir. */
+  kapiyiKapat(): void {
+    this.acik = undefined;
   }
 
   /**
-   * 🔗 YÜZEYİN İKİ KANALI BİRLİKTE KURULUR — ROZET VE GÖVDE AYRI YOLDAN BESLENEMEZ.
-   *
-   * ÖLÇÜLMÜŞ KUSUR (Founder ekran görüntüsü 2026-07-30): panel gövdesi "gelen kutun
-   * sıfır" derken başlıktaki rozet 1 gösteriyordu. Beyan ile ölçüm aynı ekranda
-   * çelişiyordu ve çelişen taraf rozetti.
-   *
-   * KÖK SEBEP YAPISALDI, sayma hatası DEĞİL. Rozet ile gövde aynı deftere bakar ve
-   * defterde eleme yoktur (`dosyayaGrupla` hiçbir kaydı düşürmez), dolayısıyla ikisi
-   * aynı ANDA çelişemez. Çelişki iki tazeleme yolunun ayrışmasından doğuyordu:
-   * görünüş çözülürken rozet ile gövde birlikte kurulurdu, fakat görünürlük
-   * değiştiğinde YALNIZ gövde yeniden basılırdı. Panel gizliyken kapı düşerse rozet
-   * yazımı hedefsiz kalır; panel geri açıldığında gövde gerçeği yeniden çizer ama
-   * rozeti kimse yeniden ilan etmez ve son bilinen sayı ekranda asılı kalır.
-   *
-   * DÜZELTMENİN ŞEKLİ: kanalları çağıranlara bırakmak yerine tek kapıya aldık.
-   * Yüzeyi kuran her yol buradan geçer, dolayısıyla "birini çağırıp ötekini unutmak"
-   * artık yazılamaz bir hatadır. Bu, deponun kendi dersinin uygulamasıdır: iki kapı
-   * aynı gerçeği söylüyorsa ikisi tek kaynaktan beslenir, yoksa biri sessizce bayatlar.
+   * Açık kapının karar kademesi (gerekçe kutusu, hata satırı, üç eylem). Yalnız açık kapı için
+   * HTML verir; panel onu kapı satırının hemen altına basar.
    */
-  private yuzeyiKur(): void {
-    this.belgeyiBas();
+  kademeHtml(dosya: string, kod: string): string | undefined {
+    if (!this.acikMi(dosya, kod)) return undefined;
+    const kayit = this.kayitBul(dosya, kod);
+    return kayit
+      ? kararKademesiHtml({ durum: this.durum, kararSimgeleri: this.kararSimgeleri(), metinler: ONAY_GOVDE_METINLERI }, kayit)
+      : undefined;
   }
 
-  /** Gövdeyi basmak için gereken her şeyi toplar. */
-  private girdi(): GovdeGirdisi {
-    const kumeler = this.defter.kumeler();
-    // Dosya satırları AÇIK başlar; kullanıcı kapattıysa kapalı kalır.
-    for (const k of kumeler) {
-      this.durum.dosyayiVarsayilanAc(onayKimligi({ tur: "dosya", dosya: k.dosya }));
-    }
-    const webview = this.gorunum?.webview;
-    return {
-      kumeler,
-      durum: this.durum,
-      // Proje çözümü Yol Haritası ile AYNI kapıdan gelir; ikinci bir kök arama
-      // yazılsaydı iki panel aynı dosyayı farklı Projeye yazabilirdi.
-      proje: (dosya: string) => projeKimligi(dosya).ad || undefined,
-      simge: (dosya) => {
-        if (!this.simgeKoku || !webview) return undefined;
-        const s = teknolojiSimgesi(this.simgeKoku, this.simgeCizelgesi, dosya);
-        return s
-          ? { light: webview.asWebviewUri(s.light).toString(), dark: webview.asWebviewUri(s.dark).toString() }
-          : undefined;
-      },
-      nonce: nonceUret(),
-      kapiSimgesi: this.kapiSimgesi(),
-      kopyaSimgesi: this.kopyaSimgesi(),
-      kararSimgeleri: this.kararSimgeleri(),
-      cspKaynak: webview?.cspSource ?? "",
-      bosCumle: YUZEY_BOS_DURUM.onayPaneli,
-      metinler: ONAY_GOVDE_METINLERI,
-    };
-  }
-
-  /** Belgeyi BAŞTAN basar — yalnız görünüş çözüldüğünde ya da geri göründüğünde. */
-  private belgeyiBas(): void {
-    if (!this.gorunum) return;
-    this.gorunum.webview.html = onayGovdesiHtml(this.girdi());
-  }
-
-  /**
-   * Tazeleme belgeyi baştan YAZMAZ, yalnız iç gövdeyi gönderir. Belge yeniden
-   * yüklenseydi odak ve imleç konumu uçar, kullanıcı cümlesinin ortasında
-   * klavyeyi kaybederdi — ölçülen kusur ailesinin aynısı, başka kılıkta.
-   */
+  /** Kademe değişti: yüzey yeniden çizer; odak niyeti yalnız kullanıcının kendi açtığı kapıda doğar. */
   private govdeyiTazele(odakNot?: string): void {
-    if (!this.gorunum) return;
-    void this.gorunum.webview.postMessage({
-      tur: "gövde", html: onayIcGovdesi(this.girdi()), odakNot,
-    });
+    this.yuzey?.tazele(odakNot);
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -317,14 +252,19 @@ export class OnayPaneli {
   //   burada ikinci bir kural yazılmaz.
   // ═══════════════════════════════════════════════════════════════════════
 
-  private async mesaj(m: PanelMesaji): Promise<void> {
+  async mesaj(m: PanelMesaji): Promise<void> {
     switch (m.tur) {
       case "aç":
-        // ⌨️ Founder hükmü 2026-07-29: "kapı açılınca odak kendiliğinden gerekçe
-        // kutusuna gitsin." Odak niyeti SAF kuraldan okunur ve YALNIZ kullanıcının
-        // kendi açtığı kapıda doğar; tazeleme yolları bu argümanı hiç veremez,
-        // dolayısıyla odağı yapısal olarak çalamazlar.
-        if (this.durum.acikligiYaz(m.kimlik, m.acik)) this.govdeyiTazele(odakNiyeti(m));
+        // Kapı satırının açılıp kapanması. Tek kapı kuralı burada da geçerlidir. ⌨️ Founder hükmü
+        // 2026-07-29: "kapı açılınca odak kendiliğinden gerekçe kutusuna gitsin." Odak niyeti
+        // YALNIZ kullanıcının kendi açtığı kapıda doğar; tazeleme yolları odağı çalamaz.
+        if (!m.dosya || !m.kod) return;
+        if (m.acik) {
+          if (this.kapiyiAc(m.dosya, m.kod)) this.govdeyiTazele(odakNiyeti(m));
+        } else if (this.acikMi(m.dosya, m.kod)) {
+          this.kapiyiKapat();
+          this.govdeyiTazele();
+        }
         return;
       case "taslak":
         // Yazılan metin deftere düşer. GÖVDE YENİDEN BASILMAZ: her tuş vuruşunda
@@ -340,8 +280,7 @@ export class OnayPaneli {
       case "iptal": {
         // İPTAL İLE BOŞ KUTU AYRI ŞEYLERDİR. İptal hiçbir kayıt yazmaz ve kapı
         // satırı kapanır; taslak defterde KALIR, çünkü vazgeçmek silmek değildir.
-        const kimlik = onayKimligi({ tur: "kapı", dosya: m.dosya, kod: m.kod });
-        this.durum.acikligiYaz(kimlik, false);
+        if (this.acikMi(m.dosya, m.kod)) this.kapiyiKapat();
         this.govdeyiTazele();
         await vscode.commands.executeCommand("sarmal.onayKararIptal", m.kod);
         return;
@@ -418,34 +357,29 @@ export class OnayPaneli {
   }
 
   /**
-   * 📬 Dosya+kod ile kapıyı panelde GÖSTERİR ve satırını açar. Kod merceği ile
-   * yardımcı komutlar buraya gelir.
+   * 📬 Dosya+kod ile kapıyı panelde GÖSTERİR ve karar kademesini açar (tek kapı). Kapı satırı,
+   * `sarmal.onayKapisiAc` ve kod merceği buraya gelir. Hiçbir webview açılmaz ve editör
+   * öne getirilmez: yüzey Makinist sekmesini seçer, Onaylar düğümünü açar ve paneli öne alır.
    *
-   * @returns Kapı panelde bulunduysa doğru.
+   * @returns Kapı defterde bulunduysa doğru.
    */
   async gosterVeAc(dosya: string, kod: string): Promise<boolean> {
-    const kume = this.defter.kumeler().find((k) => k.dosya === dosya);
-    const kayit = kume?.kayitlar.find((k) => k.kapi.kod === kod);
-    if (!kayit) return false;
-    this.durum.acikligiYaz(onayKimligi({ tur: "dosya", dosya }), true);
-    this.durum.acikligiYaz(onayKimligi({ tur: "kapı", dosya, kod }), true);
-    const kart = this.kartiAc();
-    kart.reveal(vscode.ViewColumn.Active, false);
-    this.govdeyiTazele();
+    if (!this.kapiyiAc(dosya, kod)) return false;
+    await this.yuzey?.goster();
     // Kod merceğinden gelen yol da kullanıcının KENDİ açtığı bir kapıdır; odak
     // orada da gerekçe kutusuna gider ve akış iki girişte de aynı hisseder.
-    await kart.webview.postMessage({ tur: "odakla", kimlik: notKimligi(dosya, kod) });
+    this.govdeyiTazele(notKimligi(dosya, kod));
     return true;
   }
 }
 
 /**
- * Onay defterini kurar. Görünüm KAYDI YOKTUR: satırlar Makinist ağacında yaşar
- * (makinist.ts) ve kart yan sekmede, ilk `gosterVeAc` çağrısında açılır.
+ * Onay defterini kurar. Görünüm KAYDI YOKTUR ve webview açılmaz: kapılar Makinist ağacının
+ * Onaylar düğümünde, karar kademesi Sarmal panelinde kapı satırının altında çizilir.
  */
 export function onayPaneliKaydi(context: vscode.ExtensionContext): OnayPaneli {
   const saglayici = new OnayPaneli();
-  saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
+  saglayici.simgeKaynaginiBagla(context.extensionUri);
   return saglayici;
 }
 

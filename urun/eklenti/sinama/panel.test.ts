@@ -28,7 +28,12 @@ const { YolHaritasi } = await import("../src/yolharitasi.ts");
 const { MiniGrafGorunumu } = await import("../src/minigraf.ts");
 const { Tren } = await import("../src/tren.ts");
 const { MakinistAgaci } = await import("../src/makinist.ts");
-const { panelKaydi, GORUNUS_PANEL, BAGLAM_SEKME, TREN_KARDES_KOMUTU } = await import("../src/panel.ts");
+const { panelKaydi, odakPaneldeArgumanlar, GORUNUS_PANEL, BAGLAM_SEKME, TREN_KARDES_KOMUTU } = await import("../src/panel.ts");
+const { OnayPaneli } = await import("../src/onay-paneli.ts");
+const { onayKuyruguKaydi } = await import("../src/onay-kuyrugu.ts");
+const { makinistKaydi } = await import("../src/makinist.ts");
+const { onayKapilariTopla } = await import("../src/onay-cekirdek.ts");
+const { notKimligi } = await import("../src/onay-govde.ts");
 const { yolHaritasiKaydi } = await import("../src/yolharitasi.ts");
 const { atlaHref } = await import("../src/minigraf-cekirdek.ts");
 
@@ -66,7 +71,7 @@ interface Ortam {
   graf: InstanceType<typeof MiniGrafGorunumu>;
   panel: ReturnType<typeof panelKaydi>;
   gorunum: SahteWebviewGorunusu;
-  baglam: { subscriptions: { dispose(): unknown }[]; extensionUri: Uri; extensionPath: string; workspaceState: { get: (k: string) => unknown; update: (k: string, v: unknown) => Promise<void> } };
+  baglam: { subscriptions: { dispose(): unknown }[]; extensionUri: Uri; extensionPath: string; extension: { packageJSON: unknown }; workspaceState: { get: (k: string) => unknown; update: (k: string, v: unknown) => Promise<void> } };
   durum: Map<string, unknown>;
   makinistKaynaklari: Record<string, ReturnType<typeof kaynakKur>>;
   kutuCagrilari: Array<[unknown, boolean]>;
@@ -94,7 +99,8 @@ function kaynakKur(satirlar: Array<{ ad: string; baglam: string }>) {
  * görünüm çözülmeden önce kullanıcının seçimi gibi seçilir. `kalici` workspaceState'e önceden konan
  * değerlerdir (önceki oturumdan kalan durum).
  */
-function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record<string, unknown> = {}): Ortam {
+function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record<string, unknown> = {},
+  makinistKur?: (baglam: Ortam["baglam"]) => InstanceType<typeof MakinistAgaci>): Ortam {
   goruntuOnbellegi ??= goruntuKur();
   const yol = new YolHaritasi();
   yol.eklentiKoku = Uri.file(EKLENTI_KOKU) as never;
@@ -109,15 +115,16 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record
     gozlemler: kaynakKur([]),
     fikirler: kaynakKur([{ ad: "Fikir 1", baglam: "sarmalFikir" }]),
   };
-  const makinist = new MakinistAgaci(kaynaklar as never, Uri.file(EKLENTI_KOKU) as never);
-  // Kaynak değişimi tek yenilemeye bağlanır (makinistKaydi'nin kurduğu bağ).
-  for (const k of Object.values(kaynaklar)) k.onDidChangeTreeData(() => makinist.yenile());
   const durum = new Map<string, unknown>(Object.entries(kalici));
   if (acik) durum.set("sarmal.panel.acik", acik);
   const baglam = {
     subscriptions: [] as { dispose(): unknown }[], extensionUri: Uri.file(EKLENTI_KOKU), extensionPath: EKLENTI_KOKU,
+    extension: { packageJSON: {} },
     workspaceState: { get: (k: string) => durum.get(k), update: async (k: string, v: unknown) => { durum.set(k, v); } },
   };
+  const makinist = makinistKur ? makinistKur(baglam) : new MakinistAgaci(kaynaklar as never, Uri.file(EKLENTI_KOKU) as never);
+  // Kaynak değişimi tek yenilemeye bağlanır (makinistKaydi'nin kurduğu bağ).
+  if (!makinistKur) for (const k of Object.values(kaynaklar)) k.onDidChangeTreeData(() => makinist.yenile());
   const kutuCagrilari: Array<[unknown, boolean]> = [];
   yol.kutuIsaretle = async (o: unknown, b: boolean) => { kutuCagrilari.push([o, b]); };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* sınama bağı gerekmez */ }, diliTazele() { /* sınama */ }, kodlar: () => [], gorunurMu: () => true };
@@ -586,4 +593,118 @@ test("sarmal.dosyaAc: panelden gelen seçenekle dosyayı satırında açar ve od
   await ac("/p/plan.sar", 2);
   const secenek = kabuk.gosterilen.map((g) => g.secenek as { selection: { start: { line: number } }; preserveFocus: boolean });
   assert.deepEqual(secenek.map((s) => [s.selection.start.line, s.preserveFocus]), [[3, true], [1, false]]);
+});
+
+// ── ⑪ ONAY KARARI PANELİN İÇİNDE (OZK-13 · PNL-A07 · Founder 2026-10-27) ─────────
+
+const ONAY_DOSYASI = "/sahte/proje/is/plan/onay.sar";
+const ONAY_KAYNAGI =
+  `Faz( kod: F1, ad: "deneme dönemi" ) {\n  Blok( kod: B1, ad: "deneme işi" ) {\n    Katman( kod: KT1, ad: "deneme teknolojisi" ) {\n` +
+  ["A1", "A2"].map((k) => `      Adım( kod: ${k}, onayBekler: founder, durum: beklemede, ne: "${k} karar bekliyor", ` +
+    `kabul: [ "Tasarım Founder tarafından onaylanmıştır — onaysız uygulanmaz" ] )\n`).join("") +
+  `    }\n  }\n}\n`;
+
+/** Gerçek onay defteri, gerçek onay kuyruğu ve gerçek Makinist ağacıyla kurulan panel; Makinist sekmesi ve Onaylar düğümü açık. */
+function onayOrtami(): { o: Ortam; onay: InstanceType<typeof OnayPaneli>; kapilar: ReturnType<typeof onayKapilariTopla> } {
+  const onay = new OnayPaneli();
+  const kapilar = onayKapilariTopla(ayristir(belirtecle(ONAY_KAYNAGI)).bildirimler);
+  onay.yerlestirHepsi(kapilar.map((kapi) => ({ dosya: ONAY_DOSYASI, kapi })));
+  belgeKoy(ONAY_DOSYASI, ONAY_KAYNAGI);
+  const o = ortamKur("makinist", { "makinist/makinist.onaylar": true }, {}, (baglam) => {
+    onayKuyruguKaydi(baglam as never, onay);
+    return makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: kaynakKur([]) as never, bildirimler: kaynakKur([]) as never, fikirler: kaynakKur([]) as never });
+  });
+  return { o, onay, kapilar };
+}
+/** Makinist ağacının son çizimi (bölüm ya da parça). */
+function sonMakinist(o: Ortam): string {
+  const son = o.gorunum.gonderilen.filter((m) => ["bolum", "parca"].includes(String((m as { tip?: string }).tip))).at(-1) as { html?: string } | undefined;
+  return String(son?.html ?? o.gorunum.webview.html);
+}
+const kademeler = (html: string): string[] => [...html.matchAll(/<div class="kademe"[^>]*data-kapi="([^"]+)"/g)].map((m) => m[1]!);
+
+test("onay kapısına tıklamak dosyayı satırında, önizleme kipinde ve odak panelde kalarak açar; karar kademesi kapı satırının hemen altında panelin içinde çizilir, editörde kart açılmaz (OZK-13)", async () => {
+  const { o, kapilar } = onayOrtami();
+  const a1 = "makinist/makinist.onaylar/A1";
+  assert.ok(o.gorunum.webview.html.includes(`data-id="${a1}"`), "Onaylar düğümünde kapı satırı yok");
+  assert.match(o.gorunum.webview.html, new RegExp(`data-id="${a1}"[^>]*aria-expanded="false"`), "kapı satırı açılıp kapanan bir satır olarak çizilmiyor");
+  o.gorunum.mesajGonder({ tip: "ac", id: a1 });
+  await bekle(60);
+  // Dosya: tek belge, Adımın satırında, önizleme kipinde, odak panelde.
+  assert.deepEqual(kabuk.gosterilen, [{ dosya: ONAY_DOSYASI, secenek: { preview: true, preserveFocus: true } }], "kapı tıklaması tek belgeyi önizleme kipinde ve odağı bırakmadan açmadı");
+  assert.equal(kabuk.etkinEditor?.selection.active.line, kapilar[0]!.satir, "dosya kapının satırında açılmadı");
+  assert.equal(kabuk.paneller.length, 0, "editörde bir webview paneli (onay kartı) açıldı");
+  // Kademe: kapı satırının hemen altında, tek, gerekçe kutusu ve üç eylemle; odak kutuya gider.
+  const html = sonMakinist(o);
+  assert.deepEqual(kademeler(html), [a1], "karar kademesi açılan kapının altında tek başına çizilmedi");
+  assert.match(html, new RegExp(`data-id="${a1}"[^>]*aria-expanded="true"[\\s\\S]*?</div><div class="kademe"`), "kademe kapı satırının hemen altında değil");
+  assert.ok(html.indexOf('class="kademe"') < html.indexOf('data-id="makinist/makinist.onaylar/A2"'), "kademe kardeş kapının altına düşmüş");
+  const kademe = html.slice(html.indexOf('class="kademe"'));
+  assert.ok(/<textarea[^>]*class="not-metin"/.test(kademe), "gerekçe kutusu yok");
+  assert.deepEqual([...kademe.matchAll(/data-rol="([^"]+)"/g)].slice(0, 3).map((m) => m[1]), ["onay", "şerh", "ret"], "üç eylem kutunun altında değil");
+  assert.deepEqual(mesajlar(o, "onayOdak").map((m) => m.kimlik), [notKimligi(ONAY_DOSYASI, "A1")], "odak gerekçe kutusuna gitmedi");
+  assert.equal(o.panel.olcumler().sekme, "makinist");
+});
+
+test("aynı anda yalnız bir kapının karar kademesi açıktır; açık kapıya yeniden tıklamak kademeyi kapatır ve dosyayı yeniden açmaz (Founder 2026-10-27)", async () => {
+  const { o, onay } = onayOrtami();
+  const [a1, a2] = ["makinist/makinist.onaylar/A1", "makinist/makinist.onaylar/A2"];
+  o.gorunum.mesajGonder({ tip: "ac", id: a1 });
+  await bekle(60);
+  o.gorunum.mesajGonder({ tip: "ac", id: a2 });
+  await bekle(60);
+  assert.deepEqual(kademeler(sonMakinist(o)), [a2], "ikinci kapı açılınca birincinin kademesi açık kaldı");
+  assert.deepEqual(onay.acikKapi(), { dosya: ONAY_DOSYASI, kod: "A2" });
+  const acilan = kabuk.gosterilen.length;
+  o.gorunum.mesajGonder({ tip: "ac", id: a2 });
+  await bekle(60);
+  assert.deepEqual(kademeler(sonMakinist(o)), [], "açık kapıya tıklamak kademeyi kapatmadı");
+  assert.equal(kabuk.gosterilen.length, acilan, "kademeyi kapatmak dosyayı yeniden açtı");
+  // Ok tuşu (gec iletisi) aynı yolu kullanır.
+  o.gorunum.mesajGonder({ tip: "gec", id: a1, ac: true });
+  await bekle(60);
+  assert.deepEqual(kademeler(sonMakinist(o)), [a1], "kapının oku kademeyi açmadı");
+});
+
+test("kademedeki eylemler bugünkü yazım yolundan geçer: şerh karar komutunu kırpılmış gerekçeyle çağırır; boş gerekçe ve tanınmayan ileti çağırmaz", async () => {
+  // Diske tek satır indiği gerçek dosyada gerçek VS Code süitinde ölçülür (onay-yuzeyi.test.ts · panel yolu);
+  // kabuk sahtesi kanıtlı yazımı (yaz, kaydet, geri oku) koşturamaz. Burada ölçülen, panelin kademe iletisini
+  // onay defterinin karar hattına ve oradan tek yazıcıya (`sarmal.onayKararVer`) doğru argümanlarla indirmesidir.
+  const { o, kapilar } = onayOrtami();
+  o.gorunum.mesajGonder({ tip: "ac", id: "makinist/makinist.onaylar/A2" });
+  await bekle(60);
+  const a2 = kapilar[1]!;
+  const kararlar = (): unknown[][] => kabuk.komutCagrilari.filter((c) => c.komut === "sarmal.onayKararVer").map((c) => c.argumanlar);
+  // Tanınmayan onay iletisi ve boş gerekçe: yazım yok, hata kutunun yanında görünür.
+  o.gorunum.mesajGonder({ tip: "onay", ileti: { tur: "aç", dosya: ONAY_DOSYASI, kod: "A1", acik: true, kimlik: "x" } });
+  o.gorunum.mesajGonder({ tip: "onay", ileti: { tur: "kararVer", dosya: ONAY_DOSYASI, kod: "A2", satir: a2.satir, rol: "şerh", not: "   " } });
+  await bekle(60);
+  assert.deepEqual(kararlar(), [], "boş gerekçe ya da tanınmayan ileti karar komutuna ulaştı");
+  assert.match(sonMakinist(o), /<p class="not-hata"[^>]*role="alert">[^<]+<\/p>/, "boş gerekçe hatası kutunun yanında görünmedi");
+  assert.deepEqual(kademeler(sonMakinist(o)), ["makinist/makinist.onaylar/A2"], "tanınmayan ileti kademeyi değiştirdi");
+  // Taslak deftere düşer; şerh kırpılmış gerekçeyle tek yazıcıya iner.
+  o.gorunum.mesajGonder({ tip: "onay", ileti: { tur: "taslak", kimlik: notKimligi(ONAY_DOSYASI, "A2"), metin: "ölçüm eksik" } });
+  o.gorunum.mesajGonder({ tip: "onay", ileti: { tur: "kararVer", dosya: ONAY_DOSYASI, kod: "A2", satir: a2.satir, rol: "şerh", not: "  ölçüm eksik  " } });
+  await bekle(120);
+  assert.deepEqual(kararlar(), [[ONAY_DOSYASI, a2.satir, "A2", "şerhle onaylandı", true, "ölçüm eksik"]],
+    "kademenin şerh eylemi karar komutuna beklenen argümanlarla ulaşmadı");
+  assert.equal(kabuk.paneller.length, 0);
+});
+
+test("panelden tıklanan her satır dosyayı odak panelde kalarak açar (OZK-13): sarmal.dosyaAc seçenekle, vscode.open preserveFocus ile; öteki komutlar değişmez", async () => {
+  assert.deepEqual(odakPaneldeArgumanlar("sarmal.dosyaAc", ["/a.sar", 3]), ["/a.sar", 3, { odakPanelde: true }]);
+  const u = Uri.file("/a.sar");
+  assert.deepEqual(odakPaneldeArgumanlar("vscode.open", [u, { selection: 1 }]), [u, { selection: 1, preserveFocus: true }]);
+  assert.deepEqual(odakPaneldeArgumanlar("vscode.open", [u]), [u, { preserveFocus: true }]);
+  assert.deepEqual(odakPaneldeArgumanlar("sarmal.varligaOdaklan", ["x"]), ["x"]);
+  // Ray satırı uçtan uca: dosya açan satır odağı bırakmadan açar.
+  const o = ortamKur();
+  const id = [...o.gorunum.webview.html.matchAll(/data-id="([^"]+)"[^>]*data-komut="1"/g)].map((m) => m[1]!.replace(/&amp;/g, "&"))
+    .find((x) => (ic(o).harita.get(x)?.u as { item?: { command?: { command: string } } })?.item?.command?.command === "vscode.open");
+  assert.ok(id, "dosya açan Ray satırı yok");
+  const once = kabuk.komutCagrilari.length;
+  o.gorunum.mesajGonder({ tip: "ac", id: id! });
+  await otur();
+  const cagri = kabuk.komutCagrilari.slice(once).find((c) => c.komut === "vscode.open");
+  assert.ok(cagri && (cagri.argumanlar[1] as { preserveFocus?: boolean }).preserveFocus === true, "Ray satırı odağı editöre veriyor");
 });

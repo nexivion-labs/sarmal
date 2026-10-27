@@ -120,6 +120,13 @@ const olcum = {
    * dosyasını açıyordu ve ölçülen maliyet iki yüz doksan sekiz belgeydi.
    */
   olaydanAcilanBelge: 0,
+  /**
+   * Bunların kaçı DİSK İZLEYİCİSİNİN bildirdiği bir dosya olayı yüzünden açıldı (PNL-A07). Kullanıcı
+   * eyleminin açtığı belge sayısı `acilanBelge - diskAcilanBelge` farkıdır. Ayrım ölçülmüş bir
+   * karışıklığı giderir: gerçek VS Code süitinde "bir kapı tıklaması üç belge açtı" ölçümünün ikisi,
+   * sınamanın az önce diske yazdığı dosyanın gecikerek gelen oluşturma ve değişiklik olaylarıydı.
+   */
+  diskAcilanBelge: 0,
   /** İlk yerleşim anında dondurulan iki sayaç (-1: açılış daha bitmedi). */
   acilistaAcilanBelge: -1,
   acilistaOlaydanAcilanBelge: -1,
@@ -501,7 +508,7 @@ export function onayKuyruguKaydi(
   const diskTazele = async (uri: vscode.Uri): Promise<void> => {
     if (kapsamDisi(uri)) return;
     try {
-      olcum.acilanBelge += 1; olcum.olaydanAcilanBelge += 1;   // disk olayı: YALNIZ o dosya
+      olcum.acilanBelge += 1; olcum.olaydanAcilanBelge += 1; olcum.diskAcilanBelge += 1;   // disk olayı: YALNIZ o dosya
       tazele(await vscode.workspace.openTextDocument(uri));
       susle(); degisti.fire();
     } catch { /* açılamayan dosya kuyruğa girmez */ }
@@ -712,10 +719,10 @@ export function onayKuyruguKaydi(
     // │ fakat satırı AÇMIYOR. Yani "hem komut hem açılma kendiliğinden olur"
     // │ varsayımı YANLIŞTIR ve ölçümle çürütüldü.
     // │
-    // │ Bu yüzden açma işini komutun kendisi üstlenir: aynı kapı panelde
-    // │ `reveal` ile bir kademe AÇILIR. `focus: true` odağı panele geri getirir —
-    // │ editör önizleme kipinde açıldığı hâlde odak oraya kayabiliyordu ve
-    // │ kullanıcının bir sonraki tıklaması yine boşa düşerdi.
+    // │ Bu yüzden açma işini komutun kendisi üstlenir: kapının karar kademesi
+    // │ Sarmal panelinde, Makinist sekmesindeki kapı satırının altında AÇILIR
+    // │ (OZK-13 · PNL-A07). Hiçbir webview açılmaz; panel öne gelir ve odak
+    // │ gerekçe kutusuna gider, editör önizleme kipinde açık kalır.
     // └────────────────────────────────────────────────────────────────────────
     await onayPaneli?.gosterVeAc(dosya, kod);
   };

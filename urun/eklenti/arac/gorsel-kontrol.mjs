@@ -37,16 +37,19 @@
 //   düğümlerinin katlanabilirliği · ana yazı boyutu 11–14 px · Mini Graf yazılarının
 //   görünürlüğü, taşmazlığı, satır boyu ve bağ çizgisi sayısı · Mini Graf düğümüne
 //   gerçek fare tıklamasının dosya açma iletisi doğurması (üç görünüm) · satır seçiminin
-//   Mini Grafı yeniden yazmadan işareti taşıması (PNL-A05) · onay
+//   Mini Grafı yeniden yazmadan işareti taşıması (PNL-A05) · ONAY KARARI PANELDE
+//   (PNL-A07): açık kapının karar kademesi kapı satırının hemen altında, tek, gerekçe
+//   kutusu ve üç eylemle; kutuya yazmak taslak, Escape kutudan çıkış, ikinci Escape
+//   vazgeçiş, şerh düğmesi ile Ctrl+Enter karar iletisi doğurur · onay
 //   kapısının editörde kart açmaması (OZK-13) · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
 //
 //   BEKLENEN KIRMIZI (PNL-A02 · Founder 2026-10-27 şikâyetleri). Bazı kontroller
 //   bugünkü panelde bilerek kırmızıdır, çünkü onaracak Adım henüz koşmamıştır; böyle
-//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A07 onay kartı;
-//   PNL-A04 ağaç çizgisi ile PNL-A05 Mini Graf tıklaması yeşile döndü ve işaretleri
-//   kaldırıldı). İşaretli kontrolün
+//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir. PNL-A04 ağaç çizgisi,
+//   PNL-A05 Mini Graf tıklaması ve PNL-A07 onay kartı yeşile döndü ve işaretleri
+//   kaldırıldı; bugün işaretli kontrol yoktur. İşaretli kontrolün
 //   kırmızısı çıkış kodunu bozmaz ve "BEKLENEN" diye yazılır. İşaretli kontrol yeşile
 //   dönerse "YEŞİLE DÖNDÜ" yazılır ve çıkış kodu 1 olur: onaran Adım işareti aynı
 //   işlemede kaldırır, yoksa kontrol bir sonraki gerilemeyi yakalamaz.
@@ -148,6 +151,12 @@ const KOYU = {
   "--vscode-toolbar-hoverBackground": "rgba(90,93,94,.31)", "--vscode-icon-foreground": "#cccccc", "--vscode-editorWidget-background": "#202020",
   "--vscode-editor-background": "#1f1f1f", "--vscode-widget-border": "#313131", "--vscode-tree-indentGuidesStroke": "#585858",
   "--vscode-tree-inactiveIndentGuidesStroke": "rgba(88,88,88,.4)", "--vscode-editorWarning-foreground": "#cca700", "--vscode-sarmal-kenar": "#ff79c6",
+  // Karar kademesinin gerekçe kutusu ve düğmeleri (PNL-A07): Dark Modern'in giriş ve ikincil düğme renkleri.
+  "--vscode-input-background": "#313131", "--vscode-input-foreground": "#cccccc", "--vscode-input-border": "#3c3c3c",
+  "--vscode-input-placeholderForeground": "#989898", "--vscode-button-secondaryBackground": "#313131",
+  "--vscode-button-secondaryForeground": "#cccccc", "--vscode-button-secondaryHoverBackground": "#3c3c3c",
+  "--vscode-button-border": "rgba(255,255,255,.07)", "--vscode-inputValidation-errorBackground": "#5a1d1d",
+  "--vscode-inputValidation-errorBorder": "#be1100",
   "--vscode-font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
@@ -462,6 +471,50 @@ try {
       }
       if (d.ad === "tren") await agacCizgisiOlc("#tren-agac", "Tren");
       if (d.ad === "makinist") await agacCizgisiOlc("#makinist-agac", "Makinist");
+      if (d.ad === "makinist-onay") {
+        // Karar kademesi (OZK-13 · PNL-A07): panelin içinde, açık kapının satırının hemen altında ve tektir.
+        const k = await p.evaluate(() => {
+          const kademeler = [...document.querySelectorAll("#makinist-agac .kademe")];
+          const kademe = kademeler[0];
+          const satir = kademe?.previousElementSibling;
+          const alan = kademe?.querySelector("textarea.not-metin");
+          const dugmeler = kademe ? [...kademe.querySelectorAll(".karar-satiri")] : [];
+          const ar = alan?.getBoundingClientRect();
+          const kr = kademe?.getBoundingClientRect();
+          return {
+            kademe: kademeler.length, satirHemenUstte: !!satir && satir.classList.contains("sat") && satir.getAttribute("aria-expanded") === "true",
+            satirKimligi: satir?.dataset.id, alanGen: ar ? Math.round(ar.width) : 0, alanGorunur: !!ar && ar.height > 0 && ar.top < innerHeight,
+            dugme: dugmeler.length, roller: dugmeler.map((b) => b.dataset.rol), dugmeGorunur: dugmeler.every((b) => b.getBoundingClientRect().height > 0),
+            kademeAlti: kr ? Math.round(kr.bottom) : 0, H: innerHeight, editorKarti: !!document.querySelector("iframe"),
+          };
+        });
+        kontrol(`${etiket}: onay kararı panelde: açık kapının karar kademesi satırın hemen altında ve tektir; gerekçe kutusu ile üç eylem görünür`,
+          k.kademe === 1 && k.satirHemenUstte && k.alanGorunur && k.alanGen > 120 && k.alanGen <= 780 && k.dugme === 3 && k.dugmeGorunur
+            && k.roller.join(",") === "onay,şerh,ret" && !k.editorKarti, JSON.stringify(k));
+        // Klavye ve iletiler: yazmak taslak, Escape kutudan çıkış (iptal yok), ikinci Escape vazgeçiş, Ctrl+Enter şerh.
+        await p.evaluate(() => { window.__iletiler.length = 0; });
+        await p.click(".kademe textarea.not-metin");
+        await p.keyboard.type("ölçüm eksik");
+        await p.keyboard.press("Escape");
+        const cikis = await p.evaluate(() => ({
+          odakSatirda: document.activeElement?.classList.contains("sat") && document.activeElement === document.querySelector(".kademe")?.previousElementSibling,
+          iletiler: window.__iletiler.filter((m) => m.tip === "onay").map((m) => m.ileti.tur),
+        }));
+        kontrol(`${etiket}: gerekçe kutusuna yazmak taslak iletir; Escape kutudan çıkar, odağı kapı satırına verir ve vazgeçmez`,
+          cikis.odakSatirda && cikis.iletiler.includes("taslak") && !cikis.iletiler.includes("iptal"), JSON.stringify(cikis));
+        await p.keyboard.press("Escape");
+        const vazgec = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "onay").map((m) => m.ileti));
+        kontrol(`${etiket}: kapı satırında ikinci Escape vazgeçiştir (iptal iletisi)`,
+          vazgec.some((m) => m.tur === "iptal" && m.kod === "ORNEK-A02"), JSON.stringify(vazgec.map((m) => m.tur)));
+        await p.evaluate(() => { window.__iletiler.length = 0; });
+        await p.click('.kademe .karar-satiri[data-rol="şerh"]');
+        await p.click(".kademe textarea.not-metin");
+        await p.keyboard.press("ControlOrMeta+Enter");
+        const kararlar = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "onay" && m.ileti.tur === "kararVer").map((m) => m.ileti));
+        kontrol(`${etiket}: şerh düğmesi ve Ctrl+Enter karar iletisini kutunun metniyle doğurur`,
+          kararlar.length === 2 && kararlar.every((m) => m.rol === "şerh" && m.kod === "ORNEK-A02" && m.not === "ölçüm eksik" && Number.isInteger(m.satir)),
+          JSON.stringify(kararlar));
+      }
       if (d.ad === "makinist") {
         const m = await p.evaluate(() => {
           const ust = [...document.querySelectorAll("#makinist-agac .sat")].filter((s) => s.dataset.d === "0");
@@ -633,7 +686,7 @@ const onayIhlali = onayYolu.flatMap((f) => {
   return [...k.matchAll(/createWebviewPanel|ViewColumn\.\w+|preserveFocus: false/g)].map((m) => `${f}: ${m[0]}`);
 });
 kontrol("onay şikâyeti (OZK-13): onay kapısı açılınca editörde kart açılmaz ve odak panelde kalır (onay yolunda createWebviewPanel, ViewColumn ve preserveFocus: false yok)",
-  onayYolu.length > 0 && onayIhlali.length === 0, onayIhlali.join(" · ") || `okunan: ${onayYolu.join(", ")}`, "PNL-A07");
+  onayYolu.length > 0 && onayIhlali.length === 0, onayIhlali.join(" · ") || `okunan: ${onayYolu.join(", ")}`);
 
 // ── 5. Etkileşim envanteri: eski panel (git HEAD) ↔ yeni panel ─────────────
 //    Eski panel ayrı VS Code görünümlerinden kuruluydu; her görünüm, başlık düğmesi,

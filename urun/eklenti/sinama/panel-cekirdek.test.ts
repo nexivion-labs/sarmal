@@ -264,7 +264,7 @@ test("istemci betiği: acquireVsCodeApi tek kez, ileti tipleri sınırlı ve hi�
   assert.equal((betik.match(/acquireVsCodeApi\(\)/g) ?? []).length, 1);
   assert.ok(!/\beval\(|new Function|document\.write|insertAdjacentHTML/.test(betik));
   const gonderilen = [...betik.matchAll(/tip: '([a-z]+)'/g)].map((m) => m[1]).sort();
-  assert.deepEqual([...new Set(gonderilen)], ["ac", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "sekme"], "betiğin gönderdiği ileti tipleri değişmiş");
+  assert.deepEqual([...new Set(gonderilen)], ["ac", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme"], "betiğin gönderdiği ileti tipleri değişmiş");
   // Betik sözdizimi geçerlidir.
   assert.doesNotThrow(() => new Function(betik.replace("acquireVsCodeApi()", "({postMessage(){}})")), "betik derlenmiyor");
 });

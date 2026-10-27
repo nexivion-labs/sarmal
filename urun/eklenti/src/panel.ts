@@ -30,6 +30,13 @@
 //       boyunca bellekte korunur, çünkü görünüm gizlenince de sağlayıcı yaşar.
 //     · Yol Haritası bölümü her açılışta açık başlar; kullanıcının Mini Graf katlaması
 //       kalıcıdır.
+//     · Panelden tıklanan her satır dosyayı editörde ilgili satırda açar ve odak panelde
+//       kalır (OZK-13): dosya açan satır komutları odağı bırakma seçeneğiyle çağrılır.
+//     · ONAY KARARI PANELİN İÇİNDE VERİLİR (OZK-13 · PNL-A07): Onaylar düğümündeki kapı
+//       satırına tıklayınca kaynak açılır ve kapının karar kademesi (gerekçe kutusu, üç
+//       eylem) satırın hemen altında çizilir. Aynı anda yalnız bir kapı açıktır. Kademe
+//       onay defterinden (onay-paneli.ts) gelir; eylemler aynı deftere iletilir ve diske
+//       yazan yol değişmez.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
@@ -38,14 +45,16 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
-  satirKur, satirlarHtml, satirlariUret, sekmeNormalle, trenBolumuHtml,
-  type AgacKaynagi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
+  kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, trenBolumuHtml,
+  type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
   type UretilenSatir, type UretimSecenekleri,
 } from "./panel-cekirdek.ts";
 import { BAGLAM } from "./bolum-cekirdek.ts";
 import { dekorCoz } from "./yol-dekor.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "./simge-cizelgesi.ts";
 import { MAKINIST_METINLERI } from "./yuzey-metinleri.ts";
+import { ONAY_ILETILERI } from "./onay-paneli.ts";
+import type { PanelMesaji } from "./onay-govde.ts";
 import { panelRozeti } from "./yuzey-cekirdek.ts";
 import type { DosyaAcSecenegi, PanelBagi, YolHaritasiYuzu } from "./yolharitasi.ts";
 import type { Tren } from "./tren.ts";
@@ -55,6 +64,21 @@ import type { MakinistAgaci } from "./makinist.ts";
 export const GORUNUS_PANEL = "sarmalPanel";
 /** `sarmal.dosyaAc` seçeneği: panelden açılan dosya editörde açılır, odak panelde kalır (OZK-13). */
 const ODAK_PANELDE: DosyaAcSecenegi = { odakPanelde: true };
+
+/**
+ * Panelden tıklanan satırın komut argümanları (OZK-13: "panelden tıklanan her satır dosyayı editörde
+ * ilgili satırda açar ve odak panelde kalır"). Dosya açan iki komut odağı bırakma seçeneğini alır:
+ * `sarmal.dosyaAc` üçüncü argümanla, `vscode.open` seçenek nesnesindeki `preserveFocus` ile. Öteki
+ * komutlar olduğu gibi çalışır.
+ */
+export function odakPaneldeArgumanlar(komut: string, argumanlar: readonly unknown[]): unknown[] {
+  if (komut === "sarmal.dosyaAc" && argumanlar.length === 2) return [...argumanlar, ODAK_PANELDE];
+  if (komut === "vscode.open" && argumanlar.length >= 1) {
+    const secenek = argumanlar[1] && typeof argumanlar[1] === "object" ? argumanlar[1] : {};
+    return [argumanlar[0], { ...secenek, preserveFocus: true }, ...argumanlar.slice(2)];
+  }
+  return [...argumanlar];
+}
 /** Seçili sekmenin bağlam anahtarı: başlık eylemleri (Yenile · Ray değiştir · Mini Graf görünümü) bunu okur. */
 export const BAGLAM_SEKME = BAGLAM.panelSekme;
 /** Kardeş Tren eklentisi bu komutu kaydeder; varlığı kardeşin varlığıdır. */
@@ -66,6 +90,8 @@ const ACIK_USTU = 800;
 const GECIKME_MS = 120;
 
 type Kaynak = "ray" | "tren" | "makinist";
+/** Makinist ağacının Onaylar düğümünün satır kimliği (kapılar bu düğümün altında durur). */
+const ONAYLAR_DUGUMU = "makinist/makinist.onaylar";
 const KIMLIK_PARCASI: Readonly<Record<Kaynak, string>> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac" };
 /** Ağaç kaynağı olan sekme mi? Gözlemler ve Ayarlar bugün ağaç taşımaz. */
 const kaynakMi = (s: SekmeKimligi): s is Kaynak => s in KIMLIK_PARCASI;
@@ -93,6 +119,10 @@ export interface PanelOlcumleri {
   grafIlkBag?: { dosya: string; satir: number };
   /** Webview betiğinin kaç kez yüklendiğini bildirdiği ('hazir' iletisi). */
   hazir: number;
+  /** Son Makinist çiziminde karar kademesinin altına basıldığı kapı satırının kimliği (PNL-A07). */
+  onayKademesi?: string;
+  /** Onay defterinde karar kademesi açık kapı (PNL-A07). */
+  onayAcik?: { dosya: string; kod: string };
 }
 
 /**
@@ -124,6 +154,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private readonly dosyaOnbellegi = new Map<string, string | undefined>();
   private sayac = { belge: 0, parca: 0, yama: 0 };
   private hazirSayisi = 0;
+  private sonKademe?: string;
 
   constructor(private readonly context: vscode.ExtensionContext, private readonly g: PanelGirdileri) {
     // Her açılış Ray'le başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
@@ -151,6 +182,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     void this.sekmeBaglami();
     this.kardesiYokla();
     g.yol.panelBagla(this);
+    // Onay kararının yüzeyi bu paneldir (PNL-A07); defter kademe değişince ya da bir kapı gösterilince buraya döner.
+    g.makinist.onay?.yuzeyBagla({ tazele: (odakNot) => this.onayTazele(odakNot), goster: () => this.onayGoster() });
     if (context.extensionMode === vscode.ExtensionMode.Test) {
       abone(vscode.commands.registerCommand(SINAMA_KOMUTU, (e: unknown) => this.sinamaEylemi(e)));
     }
@@ -183,6 +216,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       grafCizim: this.g.yol.miniGraf.cizimSayisi, grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
       grafIlkBag: k ? { dosya: String(k.argumanlar[0]), satir: Number(k.argumanlar[1]) } : undefined,
       hazir: this.hazirSayisi,
+      onayKademesi: this.sonKademe,
+      onayAcik: this.g.makinist.onay?.acikKapi(),
     };
   }
 
@@ -321,7 +356,61 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     for (const o of [...this.ogeKimligi]) if (o[1].startsWith(`${k}/`)) this.ogeKimligi.delete(o[0]);
     for (const u of satirlar) { this.harita.set(u.satir.id, { kaynak: k, u }); this.ogeKimligi.set(u.oge, u.satir.id); }
     this.sonSatirlar[k] = satirlar;
-    return { satirlar, html: satirlarHtml(satirlar.map((x) => x.satir)), ikonStili: defter.stil() };
+    if (k !== "makinist") return { satirlar, html: satirlarHtml(satirlar.map((x) => x.satir)), ikonStili: defter.stil() };
+    // Makinist: kapı satırı açılıp kapanan bir satır gibi çizilir; açık kapının karar kademesi hemen altına basılır.
+    this.sonKademe = undefined;
+    const html = satirlar.map((u) => {
+      const kapi = this.kapiArgumanlari(u.item);
+      if (!kapi) return satirHtml(u.satir);
+      const kademe = this.g.makinist.onay?.kademeHtml(kapi.dosya, kapi.kod);
+      u.satir.durum = kademe ? "acik" : "kapali";
+      if (kademe) this.sonKademe = u.satir.id;
+      return satirHtml(u.satir) + (kademe
+        ? `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`
+        : "");
+    }).join("");
+    return { satirlar, html, ikonStili: defter.stil() };
+  }
+
+  // ── Onay kararı (PNL-A07 · OZK-13) ─────────────────────────────────────────
+
+  /** Makinist'teki kapı satırının komut argümanları (dosya, satır, kod); kapı satırı değilse tanımsız. */
+  private kapiArgumanlari(item: AgacOgesi): { dosya: string; satir: number; kod: string } | undefined {
+    if (item.contextValue !== "sarmalOnayKapisi" || item.command?.command !== "sarmal.onayKapisiAc") return undefined;
+    const [dosya, satir, kod] = item.command.arguments ?? [];
+    return typeof dosya === "string" && typeof kod === "string" ? { dosya, satir: Number(satir) || 0, kod } : undefined;
+  }
+
+  /**
+   * Kapı satırına tıklama (ya da okuna basma): kapı açıksa kademesi kapanır; kapalıysa kapının
+   * komutu kaynağı satırında açar ve kademeyi açar (`sarmal.onayKapisiAc` → `gosterVeAc`).
+   * Kapı satırı değilse yanlış döner.
+   */
+  private async onayKapisiGec(kayit: { kaynak: Kaynak; u: UretilenSatir }): Promise<boolean> {
+    const onay = this.g.makinist.onay;
+    const kapi = kayit.kaynak === "makinist" ? this.kapiArgumanlari(kayit.u.item) : undefined;
+    if (!onay || !kapi) return false;
+    if (onay.acikMi(kapi.dosya, kapi.kod)) {
+      onay.kapiyiKapat();
+      this.onayTazele();
+      return true;
+    }
+    await vscode.commands.executeCommand("sarmal.onayKapisiAc", kapi.dosya, kapi.satir, kapi.kod);
+    return true;
+  }
+
+  /** Onay yüzeyinin tazelemesi: Makinist ağacı hemen yeniden çizilir; istenirse gerekçe kutusuna odaklanılır. */
+  private onayTazele(odakNot?: string): void {
+    if (!this.gorunum || this.sekme !== "makinist") return;
+    if (!this.gorunum.visible) { this.kirli = true; return; }
+    this.agacTazele("makinist");
+    if (odakNot) this.yaz({ tip: "onayOdak", kimlik: odakNot });
+  }
+
+  /** Onay yüzeyinin gösterimi: Makinist sekmesi seçilir, Onaylar düğümü açılır ve panel öne gelir. */
+  private async onayGoster(): Promise<void> {
+    if (this.acik[ONAYLAR_DUGUMU] !== true) { this.acik[ONAYLAR_DUGUMU] = true; this.acikKaydet(); }
+    await this.sekmeSecVeOdakla("makinist");
   }
 
   private grafAcik(): boolean {
@@ -470,6 +559,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       }
       case "gec": {
         if (!kayit || typeof m.ac !== "boolean") return;
+        if (await this.onayKapisiGec(kayit)) return;
         this.acik[id] = m.ac;
         this.acikKaydet();
         this.agacTazele(kayit.kaynak);
@@ -488,8 +578,17 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
           const kod = this.g.yol.saglayici.ogeKodu(kayit.u.oge);
           if (kod) this.grafIsaretle(kod);
         }
+        if (await this.onayKapisiGec(kayit)) return;
         const k = kayit.u.item.command;
-        if (k) await vscode.commands.executeCommand(k.command, ...(k.arguments ?? []));
+        if (k) await vscode.commands.executeCommand(k.command, ...odakPaneldeArgumanlar(k.command, k.arguments ?? []));
+        return;
+      }
+      case "onay": {
+        // Karar kademesinin eylemleri (gerekçe taslağı, karar, vazgeçiş, bağlam kopyası) onay defterine iner.
+        const ileti = m.ileti as { tur?: unknown } | undefined;
+        const onay = this.g.makinist.onay;
+        if (!onay || !ileti || typeof ileti !== "object" || !ONAY_ILETILERI.has(String(ileti.tur))) return;
+        await onay.mesaj(ileti as PanelMesaji);
         return;
       }
       case "isaretle": {

@@ -149,6 +149,26 @@ svg.ik{background:none}
    şeridi) gövdenin dışına taşarsa kayan alan gövdeden uzun olur; o günkü yapışkan sekme şeridi
    bu yüzden ekrandan çıkmıştı (Founder ekranı 2026-10-22). Taşma kutunun içinde kalır. */
 #graf{display:block;overflow-x:auto}
+/* ONAY KARARI (OZK-13 · PNL-A07): kapı satırının hemen altında, panelin içinde durur; önce gerekçe
+   kutusu, sonra üç eylem. Kademe dalın kılavuz çizgisini sürdürür, içeriği satırın adıyla aynı
+   hizadan başlar ve geniş panelde okunur bir genişlikte kalır. Renkler yalnız tema değişkenlerinden
+   gelir; kutu ve düğmeler eski Onaylar görünümüyle aynı biçimdedir. */
+.kademe{margin:0 0 4px calc((var(--d,1) - 1) * 12px + 10px);padding:4px 12px 8px 41px;max-width:780px;border-left:1px solid var(--tul-cizgi)}
+.kademe .not-alani{display:flex;flex-direction:column;gap:4px}
+.kademe .not-baslik{color:var(--vscode-descriptionForeground);font-size:12px}
+.kademe .not-metin{width:100%;max-width:100%;min-width:0;resize:vertical;font:inherit;padding:4px 6px;overflow-wrap:anywhere;
+  color:var(--vscode-input-foreground);background:var(--vscode-input-background);border:1px solid var(--vscode-input-border,var(--vscode-contrastBorder,transparent))}
+.kademe .not-metin::placeholder{color:var(--vscode-input-placeholderForeground)}
+.kademe .not-metin:focus{outline:1px solid var(--vscode-focusBorder);outline-offset:-1px}
+.kademe .not-hata{margin:0;padding:2px 6px;line-height:1.4;overflow-wrap:anywhere;color:var(--vscode-inputValidation-errorForeground,var(--vscode-errorForeground));
+  background:var(--vscode-inputValidation-errorBackground);border:1px solid var(--vscode-inputValidation-errorBorder)}
+.kademe .kararlar{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.kademe .karar-satiri{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;line-height:20px;cursor:pointer;font:inherit;
+  border:1px solid var(--vscode-button-border,transparent);background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground)}
+.kademe .karar-satiri:hover{background:var(--vscode-button-secondaryHoverBackground)}
+.kademe .karar-satiri:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:1px}
+.kademe .karar-simge{display:inline-flex}
+.kademe .karar-simge svg{width:14px;height:14px;display:block}
 `;
 
 /** İstemci betiği. Veri üretmez; ileti köprüsü, klavye ve parça değiştirme yapar. */
@@ -269,13 +289,51 @@ export const PANEL_BETIGI = `
     if (!s || metin === undefined) return;
     s.textContent = degistir ? metin : s.textContent + metin;
   }
+  // Yeniden çizimde yazılmakta olan gerekçe kutusu korunur (PNL-A07): odak, imleç ve henüz eklentiye
+  // ulaşmamış olabilecek son harfler yeni kutuya aynen taşınır; kullanıcı cümlesinin ortasında
+  // klavyeyi ya da metni kaybetmez.
+  function alanOdagi() {
+    var a = document.activeElement;
+    return a && a.id && a.classList && a.classList.contains('not-metin')
+      ? { id: a.id, deger: a.value, bas: a.selectionStart, son: a.selectionEnd } : null;
+  }
+  function alanOdaginiGeriYukle(o) {
+    var y = o && document.getElementById(o.id);
+    if (!y) return;
+    y.value = o.deger;
+    y.focus({ preventScroll: true });
+    y.setSelectionRange(o.bas, o.son);
+  }
   function parcaYaz(kimlik, html) {
     var h = $(kimlik);
     if (!h) return;
     var odak = odakKimligi();
     if (kimlik === 'graf') { grafYaz(html); return; }
+    var alan = alanOdagi();
     h.innerHTML = html;
     secimiGeriYukle(odak);
+    alanOdaginiGeriYukle(alan);
+  }
+
+  // ── Onay kararı (PNL-A07 · OZK-13): kapı satırının altındaki karar kademesi ──
+  function kademeKapisi(el) {
+    var k = el && el.closest ? el.closest('.kademe') : null;
+    return k ? k.previousElementSibling : null;
+  }
+  function onayGonder(ileti) { gonder({ tip: 'onay', ileti: ileti }); }
+  // Odak gerekçe kutusuna gider (Founder hükmü 2026-07-29); önce kapı satırı görünür kılınır, sayfa
+  // zıplamaz ve imleç metnin sonuna konur.
+  function notaOdaklan(notId) {
+    var alan = document.getElementById('not-' + notId);
+    if (!alan) return;
+    var satir = kademeKapisi(alan);
+    if (satir) satir.scrollIntoView({ block: 'nearest' });
+    alan.focus({ preventScroll: true });
+    alan.setSelectionRange(alan.value.length, alan.value.length);
+  }
+  function kutuMetni(dugme) {
+    var alan = document.getElementById('not-' + dugme.getAttribute('data-not'));
+    return alan ? alan.value : '';
   }
 
   window.addEventListener('message', function (e) {
@@ -284,9 +342,11 @@ export const PANEL_BETIGI = `
       sekmeIsaretle(m.sekme);
       stilEkle(m.ikonStili, true);
       var odak = odakKimligi();
+      var alanB = alanOdagi();
       $('icerik').innerHTML = m.html;
       grafKur();
       secimiGeriYukle(odak);
+      alanOdaginiGeriYukle(alanB);
     } else if (m.tip === 'parca') {
       stilEkle(m.ikonStili, true);
       parcaYaz(m.kimlik, m.html);
@@ -310,6 +370,8 @@ export const PANEL_BETIGI = `
     } else if (m.tip === 'rozet') {
       var r = document.querySelector('.sekme[data-sekme="makinist"] .rozet');
       if (r) { r.textContent = m.sayi > 0 ? String(m.sayi) : ''; r.hidden = !(m.sayi > 0); }
+    } else if (m.tip === 'onayOdak') {
+      notaOdaklan(m.kimlik);
     } else if (m.tip === 'grafSec') {
       grafSec(m.href);
     } else if (m.tip === 'sinamaTikla') {
@@ -387,6 +449,14 @@ export const PANEL_BETIGI = `
     if (bb) { bolumGec(bb); return; }
     var kardes = t.closest('[data-kardes]');
     if (kardes) { e.preventDefault(); gonder({ tip: 'kardes' }); return; }
+    // Karar düğmesi: gerekçe kutusunun metniyle birlikte onay defterine iner; ölçü ve yazım eklentidedir.
+    var karar = t.closest('.kademe .karar-satiri');
+    if (karar) {
+      onayGonder({ tur: 'kararVer', dosya: karar.getAttribute('data-dosya'), kod: karar.getAttribute('data-kod'),
+        satir: Number(karar.getAttribute('data-satir')), rol: karar.getAttribute('data-rol'), not: kutuMetni(karar) });
+      return;
+    }
+    if (t.closest('.kademe')) return;
     var sat = t.closest('.sat');
     if (!sat) return;
     var id = sat.getAttribute('data-id');
@@ -406,10 +476,38 @@ export const PANEL_BETIGI = `
   });
   document.addEventListener('mouseout', function (e) { if (!e.relatedTarget) vurguYaz(null); });
 
+  // Yazılan her harf onay defterindeki taslağa düşer; yeniden çizim metni defterden geri getirir.
+  document.addEventListener('input', function (e) {
+    var alan = e.target && e.target.closest ? e.target.closest('.kademe .not-metin') : null;
+    if (!alan) return;
+    var kutu = alan.closest('.not-alani');
+    if (alan.value.trim()) {
+      var hata = document.getElementById('hata-' + kutu.getAttribute('data-kimlik'));
+      if (hata) hata.hidden = true;
+    }
+    onayGonder({ tur: 'taslak', kimlik: kutu.getAttribute('data-kimlik'), metin: alan.value });
+  });
+
   // ── Klavye: sekmeler ve ağaç ───────────────────────────────────────────────
   document.addEventListener('keydown', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
+    // Gerekçe kutusu: Escape (ya da Shift+Tab) kutudan çıkar ve odağı kapı satırına verir; kapı açık
+    // kalır, taslak durur, hiçbir kayıt yazılmaz. Ctrl/Cmd+Enter şerhle onaylar.
+    var alan = t.closest('.kademe .not-metin');
+    if (alan) {
+      if (e.key === 'Escape' || (e.key === 'Tab' && e.shiftKey)) {
+        e.preventDefault();
+        var kapiSatiri = kademeKapisi(alan);
+        if (kapiSatiri) { sec(kapiSatiri); kapiSatiri.focus({ preventScroll: true }); }
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        var serh = alan.closest('.kademe').querySelector('.karar-satiri[data-rol="şerh"]');
+        if (serh) serh.click();
+      }
+      return;
+    }
+    if (t.closest('.kademe')) return;
     var sek = t.closest('.sekme');
     if (sek) {
       var liste = sekmeler();
@@ -424,6 +522,15 @@ export const PANEL_BETIGI = `
     }
     var sat = t.closest('.sat');
     if (!sat || t.closest('.ey')) return;
+    // Kapı satırında ikinci Escape vazgeçmektir: kademe kapanır, hiçbir kayıt yazılmaz, vazgeçiş söylenir.
+    var acikKademe = sat.getAttribute('aria-expanded') === 'true' && sat.nextElementSibling
+      && sat.nextElementSibling.classList.contains('kademe') ? sat.nextElementSibling : null;
+    if (e.key === 'Escape' && acikKademe) {
+      e.preventDefault();
+      var na = acikKademe.querySelector('.not-alani');
+      if (na) onayGonder({ tur: 'iptal', dosya: na.getAttribute('data-dosya'), kod: na.getAttribute('data-kod') });
+      return;
+    }
     var agac = sat.closest('[role="tree"]');
     if (!agac) return;
     var satirlar = Array.prototype.slice.call(agac.querySelectorAll('.sat'));

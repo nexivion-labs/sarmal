@@ -80,6 +80,8 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
 
   private readonly kaynaklar: Readonly<Record<MakinistGrubu, MakinistKaynagi>>;
   private readonly kok: vscode.Uri | undefined;
+  /** Onaylar defteri (PNL-A07): Sarmal paneli karar kademesini bu defterden çizer ve eylemleri ona iletir. */
+  onay?: OnayPaneli;
 
   constructor(kaynaklar: Readonly<Record<MakinistGrubu, MakinistKaynagi>>, kok: vscode.Uri | undefined) {
     this.kaynaklar = kaynaklar;
@@ -146,6 +148,7 @@ export function makinistKaydi(context: vscode.ExtensionContext, g: MakinistGirdi
     { onaylar: onay, hatirlaticilar: g.hatirlaticilar, gozlemler: g.bildirimler, fikirler: g.fikirler },
     context.extensionUri,
   );
+  agac.onay = g.onayPaneli;
   context.subscriptions.push(
     g.hatirlaticilar.onDidChangeTreeData(() => agac.yenile()),
     g.bildirimler.onDidChangeTreeData(() => agac.yenile()),

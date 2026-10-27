@@ -24,7 +24,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import "./dil-kur.ts";
-import { kabuk, kabukSifirla, belgeKoy, SahteWebviewGorunusu, Uri } from "./kabuk-kur.ts";
+import { kabuk, kabukSifirla, belgeKoy, Uri } from "./kabuk-kur.ts";
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
@@ -85,38 +85,47 @@ const DOSYA = "/sahte/proje/is/plan/deneme.sar";
 const IKI_KAPI = zincir(adim("A1"), adim("A2"));
 const kayitlar = (dosya: string, kaynak: string): KapiKaydi[] => kapilar(kaynak).map((kapi) => ({ dosya, kapi }));
 
-/** Çözülmüş bir Onaylar paneli ve onun sahte görünüşü. */
-function panelKur(): { panel: InstanceType<typeof OnayPaneli>; gorunum: SahteWebviewGorunusu } {
+/**
+ * Kararın çizildiği yüzeyin sahtesi (PNL-A07 · OZK-13). Onay defteri artık webview kurmaz; karar
+ * kademesini Sarmal paneli çizer ve defter yüzeye yalnız "tazele" ile "göster" der. Sahte yüzey bu
+ * iki çağrıyı kaydeder; kademenin kendisi defterin `kademeHtml` çıktısından okunur.
+ */
+interface SahteYuzey { tazelemeler: Array<string | undefined>; gosterimler: number; tazele(o?: string): void; goster(): Promise<void> }
+function yuzeyKur(): SahteYuzey {
+  return {
+    tazelemeler: [], gosterimler: 0,
+    tazele(o?: string) { this.tazelemeler.push(o); },
+    async goster() { this.gosterimler += 1; },
+  };
+}
+
+/** Yüzeyine bağlanmış bir Onaylar defteri. */
+function panelKur(): { panel: InstanceType<typeof OnayPaneli>; yuzey: SahteYuzey } {
   const panel = new OnayPaneli();
-  panel.kartiAc();                       // Founder 2026-10-21: Onaylar kartı yan sekmede açılır
-  const gorunum = kabuk.paneller.at(-1)!;
-  return { panel, gorunum };
+  const yuzey = yuzeyKur();
+  panel.yuzeyBagla(yuzey);
+  return { panel, yuzey };
 }
 
 /** Panel mesaj işleyicisi eşzamansızdır; bütün sözlerin oturmasını bekler. */
 const otur = (): Promise<void> => new Promise((r) => setImmediate(r));
 
-/** Panele gönderilen son iç gövdenin HTML metni. */
-function sonGovde(gorunum: SahteWebviewGorunusu): string {
-  const govdeler = gorunum.gonderilen.filter((m) => (m as { tur?: string }).tur === "gövde");
-  assert.ok(govdeler.length > 0, "panel hiç gövde göndermedi; ölçüm boş küme üstünde koşuyor");
-  return (govdeler.at(-1) as { html: string }).html;
-}
-
 /** Kullanıcının bir kapı satırını açması — kutu ve hata satırı yalnız açık kapıda basılır. */
-function kapiyiAc(gorunum: SahteWebviewGorunusu, dosya: string, kod: string): void {
-  gorunum.mesajGonder({ tur: "aç", kimlik: onayKimligi({ tur: "kapı", dosya, kod }), acik: true, dosya, kod });
+function kapiyiAc(panel: InstanceType<typeof OnayPaneli>, dosya: string, kod: string): void {
+  void panel.mesaj({ tur: "aç", kimlik: onayKimligi({ tur: "kapı", dosya, kod }), acik: true, dosya, kod });
 }
 
 /**
- * Kutunun yanındaki hata satırının GÖRÜNÜR metni. Satır gövdede her zaman durur
+ * Kutunun yanındaki hata satırının GÖRÜNÜR metni. Satır kademede her zaman durur
  * ve hata yokken `hidden` taşır; bu yüzden metnin varlığı değil görünürlüğü ölçülür.
  */
-function gorunurHata(gorunum: SahteWebviewGorunusu, dosya: string, kod: string): string | undefined {
+function gorunurHata(panel: InstanceType<typeof OnayPaneli>, dosya: string, kod: string): string | undefined {
   const kimlik = kacisla(`hata-${notKimligi(dosya, kod)}`);
+  const kademe = panel.kademeHtml(dosya, kod);
+  assert.ok(kademe, "kapının karar kademesi açık değil; ölçüm boş küme üstünde koşuyor");
   const satir = new RegExp(`<p class="not-hata" id="${kimlik.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}" role="alert"( hidden)?>([^<]*)</p>`, "u")
-    .exec(sonGovde(gorunum));
-  assert.ok(satir, "açık kapının hata satırı gövdede yok; kapı açılmamış olabilir");
+    .exec(kademe!);
+  assert.ok(satir, "açık kapının hata satırı kademede yok; kapı açılmamış olabilir");
   return satir[1] ? undefined : satir[2];
 }
 
@@ -125,24 +134,23 @@ function gorunurHata(gorunum: SahteWebviewGorunusu, dosya: string, kod: string):
 // ═══════════════════════════════════════════════════════════════════════════
 
 test("① boş gerekçe: gerekçe isteyen karar boş ya da yalnız boşluklu kutuyla gelirse karar komutu ÇAĞRILMAZ ve hata kutunun yanında görünür", async () => {
-  const { panel, gorunum } = panelKur();
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
   const [a1] = kapilar(IKI_KAPI);
-  kapiyiAc(gorunum, DOSYA, a1.kod);
+  kapiyiAc(panel, DOSYA, a1.kod);
   await otur();
-  assert.equal(gorunurHata(gorunum, DOSYA, a1.kod), undefined, "karar verilmeden hata satırı görünüyor");
+  assert.equal(gorunurHata(panel, DOSYA, a1.kod), undefined, "karar verilmeden hata satırı görünüyor");
   for (const [rol, not] of [["şerh", ""], ["ret", "   "], ["şerh", undefined]] as const) {
-    gorunum.gonderilen.length = 0;
-    gorunum.mesajGonder({ tur: "kararVer", dosya: DOSYA, kod: a1.kod, satir: a1.satir, rol, not });
+    await panel.mesaj({ tur: "kararVer", dosya: DOSYA, kod: a1.kod, satir: a1.satir, rol, not: not as string });
     await otur();
     assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "sarmal.onayKararVer"), [],
       `${rol} kararı ${JSON.stringify(not)} gerekçeyle karar komutuna ulaştı; boş gerekçe dalı kaybolmuş`);
-    assert.equal(gorunurHata(gorunum, DOSYA, a1.kod), kacisla(gerekceZorunlu()),
+    assert.equal(gorunurHata(panel, DOSYA, a1.kod), kacisla(gerekceZorunlu()),
       `${rol} kararında gerekçe hatası kutunun yanında görünmedi`);
   }
   // Karşı kanıt: dolu gerekçe AYNI yoldan geçip komuta ulaşır; nöbet her kararı
   // durduran bir panel üstünde yeşil kalamaz.
-  gorunum.mesajGonder({ tur: "kararVer", dosya: DOSYA, kod: a1.kod, satir: a1.satir, rol: "şerh", not: "  ölçüm eksik  " });
+  await panel.mesaj({ tur: "kararVer", dosya: DOSYA, kod: a1.kod, satir: a1.satir, rol: "şerh", not: "  ölçüm eksik  " });
   await otur();
   const cagri = kabuk.komutCagrilari.filter((c) => c.komut === "sarmal.onayKararVer");
   assert.equal(cagri.length, 1, "geçerli gerekçe karar komutuna ulaşmadı");
@@ -151,27 +159,27 @@ test("① boş gerekçe: gerekçe isteyen karar boş ya da yalnız boşluklu kut
 });
 
 test("① artık gerekçe: düz onayda kutu doluysa yazım durur ve gerekçe atılmaz", async () => {
-  const { panel, gorunum } = panelKur();
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
-  kapiyiAc(gorunum, DOSYA, "A1");
-  gorunum.mesajGonder({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "onay", not: "yazdığım gerekçe" });
+  kapiyiAc(panel, DOSYA, "A1");
+  await panel.mesaj({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "onay", not: "yazdığım gerekçe" });
   await otur();
   assert.equal(kabuk.komutCagrilari.length, 0, "artık gerekçeli düz onay karar komutuna ulaştı");
-  assert.equal(gorunurHata(gorunum, DOSYA, "A1"), kacisla(gerekceArtik()), "artık gerekçe hatası gösterilmedi");
+  assert.equal(gorunurHata(panel, DOSYA, "A1"), kacisla(gerekceArtik()), "artık gerekçe hatası gösterilmedi");
 });
 
 test("① başarılı karardan sonra taslak düşer, başarısız karardan sonra yerinde kalır", async () => {
-  const { panel, gorunum } = panelKur();
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
   const notId = notKimligi(DOSYA, "A1");
-  gorunum.mesajGonder({ tur: "taslak", kimlik: notId, metin: "gerekçem" });
+  await panel.mesaj({ tur: "taslak", kimlik: notId, metin: "gerekçem" });
   assert.equal(panel.taslakSayisi, 1, "taslak deftere düşmedi");
   kabuk.komutCevaplari.set("sarmal.onayKararVer", () => ({ tur: "hata" }));
-  gorunum.mesajGonder({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "ret", not: "gerekçem" });
+  await panel.mesaj({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "ret", not: "gerekçem" });
   await otur();
   assert.equal(panel.taslakSayisi, 1, "kanıtlanmamış karar taslağı sildi; kullanıcının metni kayboldu");
   kabuk.komutCevaplari.set("sarmal.onayKararVer", () => ({ tur: "başarı" }));
-  gorunum.mesajGonder({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "ret", not: "gerekçem" });
+  await panel.mesaj({ tur: "kararVer", dosya: DOSYA, kod: "A1", satir: 3, rol: "ret", not: "gerekçem" });
   await otur();
   assert.equal(panel.taslakSayisi, 0, "kanıtlı karardan sonra taslak defterde kaldı");
 });
@@ -181,13 +189,13 @@ test("① başarılı karardan sonra taslak düşer, başarısız karardan sonra
 // ═══════════════════════════════════════════════════════════════════════════
 
 test("② kapıya git: satır seçimi kaynağı kapının GERÇEK satırıyla açtırır", async () => {
-  const { panel, gorunum } = panelKur();
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
   const [a1, a2] = kapilar(IKI_KAPI);
   assert.ok(a1.satir > 0 && a2.satir > a1.satir,
     "fikstür kapıları sıfırdan büyük ve ayrı satırlarda durmuyor; nöbet sıfır mutasyonunu ayırt edemez");
   for (const k of [a1, a2]) {
-    gorunum.mesajGonder({ tur: "kapıSeç", dosya: DOSYA, kod: k.kod });
+    await panel.mesaj({ tur: "kapıSeç", dosya: DOSYA, kod: k.kod });
     await otur();
   }
   assert.deepEqual(
@@ -197,15 +205,15 @@ test("② kapıya git: satır seçimi kaynağı kapının GERÇEK satırıyla a�
 });
 
 test("② kapıya git: defterde olmayan kapı sıfır satırla gider (kod bağlayıcıdır), bağlam kopyası ise susmadan reddedilir", async () => {
-  const { panel, gorunum } = panelKur();
+  const { panel } = panelKur();
   panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
-  gorunum.mesajGonder({ tur: "kapıSeç", dosya: DOSYA, kod: "YOK-A9" });
-  gorunum.mesajGonder({ tur: "bağlamKopyala", dosya: DOSYA, kod: "YOK-A9" });
+  await panel.mesaj({ tur: "kapıSeç", dosya: DOSYA, kod: "YOK-A9" });
+  await panel.mesaj({ tur: "bağlamKopyala", dosya: DOSYA, kod: "YOK-A9" });
   await otur();
   assert.deepEqual(kabuk.komutCagrilari.map((c) => c.argumanlar), [[DOSYA, 0, "YOK-A9"]]);
   assert.deepEqual(kabuk.pano, [], "defterde olmayan kapının bağlamı panoya yazıldı");
   assert.deepEqual(kabuk.uyarilar, [onayBaglamKapiYok("YOK-A9")], "reddin sebebi kullanıcıya söylenmedi");
-  gorunum.mesajGonder({ tur: "bağlamKopyala", dosya: DOSYA, kod: "A2" });
+  await panel.mesaj({ tur: "bağlamKopyala", dosya: DOSYA, kod: "A2" });
   await otur();
   assert.equal(kabuk.pano.length, 1, "var olan kapının bağlamı panoya inmedi");
   const pano: readonly string[] = kabuk.pano;   // deepEqual daraltmasını çözer
@@ -229,22 +237,51 @@ test("③ sayı: kapı sayısı defterin sayısını söyler, boşalan defter s�
   assert.equal(panel.kapilar().length, 0, "boşalan defterin ağaç satırları kalktı mı");
 });
 
-test("③ gövde defterden beslenir: kart sonradan açıldığında defterdeki kapıları basar", () => {
+test("③ kademe defterden beslenir: yüzey sonradan bağlansa da açık kapının kademesi defterdeki kapıyı basar", () => {
   const panel = new OnayPaneli();
-  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));      // kart henüz yok
-  panel.kartiAc();
-  const gorunum = kabuk.paneller.at(-1)!;
-  assert.ok(gorunum.webview.html.includes("A1") && gorunum.webview.html.includes("A2"),
-    "kart açılırken gövde defterdeki kapıları basmadı");
+  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));      // yüzey henüz yok
+  assert.equal(panel.kapiyiAc(DOSYA, "A2"), true);
+  const kademe = panel.kademeHtml(DOSYA, "A2");
+  assert.ok(kademe && kademe.includes(`data-kod="A2"`) && kademe.includes('class="not-metin"'),
+    "kademe defterdeki kapıyı basmadı");
+  assert.equal(panel.kapiyiAc(DOSYA, "YOK-A9"), false, "defterde olmayan kapı açıldı");
 });
 
-test("③ kayıt: Onaylar artık ayrı görünüm kaydetmez; kart yan sekmede açılır", () => {
+test("③ kayıt (OZK-13 · PNL-A07): Onaylar ayrı görünüm kaydetmez ve hiçbir koşulda editörde kart açmaz", async () => {
   const baglam = baglamKur();
   const panel = onayPaneliKaydi(baglam as never);
   assert.equal(kabuk.webviewSaglayicilari.has(GORUNUS_ONAYLAR), false,
     "Onaylar hâlâ kenar çubuğu görünümü kaydediyor");
-  assert.equal(kabuk.paneller.length, 0, "kart kullanıcı eylemi olmadan açıldı");
   assert.ok(panel instanceof OnayPaneli);
+  const yuzey = yuzeyKur();
+  panel.yuzeyBagla(yuzey);
+  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
+  assert.equal(await panel.gosterVeAc(DOSYA, "A1"), true);
+  assert.equal(kabuk.paneller.length, 0, "kapıyı göstermek editörde bir webview paneli (kart) açtı");
+  assert.equal(yuzey.gosterimler, 1, "kapıyı göstermek Sarmal panelini öne almadı");
+  assert.deepEqual(yuzey.tazelemeler, [notKimligi(DOSYA, "A1")], "kapı gösterilince odak gerekçe kutusuna gitmiyor");
+});
+
+test("③ tek kapı (Founder 2026-10-27): aynı anda yalnız bir kapının karar kademesi açıktır; karara bağlanıp düşen kapının kademesi kapanır", async () => {
+  const { panel, yuzey } = panelKur();
+  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
+  kapiyiAc(panel, DOSYA, "A1");
+  assert.ok(panel.kademeHtml(DOSYA, "A1"), "birinci kapının kademesi açılmadı");
+  kapiyiAc(panel, DOSYA, "A2");
+  assert.equal(panel.kademeHtml(DOSYA, "A1"), undefined, "ikinci kapı açılınca birincinin kademesi açık kaldı");
+  assert.ok(panel.kademeHtml(DOSYA, "A2"), "ikinci kapının kademesi açılmadı");
+  assert.deepEqual(panel.acikKapi(), { dosya: DOSYA, kod: "A2" });
+  // Vazgeçmek kademeyi kapatır ve taslağı silmez.
+  await panel.mesaj({ tur: "taslak", kimlik: notKimligi(DOSYA, "A2"), metin: "yarım gerekçe" });
+  await panel.mesaj({ tur: "iptal", dosya: DOSYA, kod: "A2" });
+  assert.equal(panel.acikKapi(), undefined, "vazgeçiş kademeyi kapatmadı");
+  assert.equal(panel.taslakSayisi, 1, "vazgeçiş taslağı sildi");
+  assert.deepEqual(kabuk.komutCagrilari.map((c) => c.komut), ["sarmal.onayKararIptal"], "vazgeçiş bildirilmedi");
+  // Açık kapı karara bağlanıp defterden düşerse kademe de kapanır.
+  kapiyiAc(panel, DOSYA, "A1");
+  panel.yerlestirHepsi(kayitlar(DOSYA, zincir(adim("A2"))));
+  assert.equal(panel.acikKapi(), undefined, "defterden düşen kapının kademesi açık kaldı");
+  assert.ok(yuzey.tazelemeler.length >= 3, "kademe değişimleri yüzeye bildirilmedi");
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -357,15 +394,15 @@ test("⑤ Makinist ağacı: tek görünüm, dört üst düğüm; sayılar kaynak
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** Kuyruğu sahte kabukta kurar; komutlar kabuk kaydına düşer. */
-function kuyrukKur(): { panel: InstanceType<typeof OnayPaneli>; gorunum: SahteWebviewGorunusu; komut: (ad: string, ...a: unknown[]) => Promise<unknown> } {
-  const { panel, gorunum } = panelKur();
+function kuyrukKur(): { panel: InstanceType<typeof OnayPaneli>; yuzey: SahteYuzey; komut: (ad: string, ...a: unknown[]) => Promise<unknown> } {
+  const { panel, yuzey } = panelKur();
   onayKuyruguKaydi(baglamKur() as never, panel);
   const komut = async (ad: string, ...a: unknown[]): Promise<unknown> => {
     const f = kabuk.komutlar.get(ad);
     assert.ok(f, `${ad} komutu kayda girmedi`);
     return f!(...a);
   };
-  return { panel, gorunum, komut };
+  return { panel, yuzey, komut };
 }
 
 test("kuyruk sınırı: panelden GELMEYEN boş gerekçeli karar da diske dokunmaz ve kullanıcı uyarılır", async () => {
@@ -383,7 +420,7 @@ test("kuyruk sınırı: panelden GELMEYEN boş gerekçeli karar da diske dokunma
 });
 
 test("kuyruk kapıya git: kapı KODLA çözülür, kaynak kapının satırında önizleme kipinde açılır ve panel satırı açar", async () => {
-  const { gorunum, komut } = kuyrukKur();
+  const { yuzey, komut } = kuyrukKur();
   belgeKoy(DOSYA, IKI_KAPI);
   const [, a2] = kapilar(IKI_KAPI);
   // Panelden bayat satır gelir (sıfır); kapı yine de kendi satırında bulunur.
@@ -393,7 +430,8 @@ test("kuyruk kapıya git: kapı KODLA çözülür, kaynak kapının satırında 
     "kaynak önizleme kipinde ve odak panelde kalarak açılmadı");
   assert.equal(kabuk.etkinEditor?.selection.active.line, a2.satir,
     `imleç ${kabuk.etkinEditor?.selection.active.line}. satırda; kapı ${a2.satir}. satırda`);
-  assert.equal(gorunum.gosterimler, 0, "panel defterinde olmayan kapı için panel gösterildi");
+  assert.equal(yuzey.gosterimler, 0, "panel defterinde olmayan kapı için panel gösterildi");
+  assert.equal(kabuk.paneller.length, 0, "kapıya gitmek editörde kart açtı");
 });
 
 test("kuyruk kapıya git: kararı verilmiş kapıda kaynak açılmaz ve kullanıcıya söylenir", async () => {

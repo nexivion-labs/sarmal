@@ -12,8 +12,8 @@
 //   NEDEN `todo`. Nöbetler bugünkü panelde KIRMIZIDIR, çünkü kusurları ölçerler;
 //   işlemeden önce koşan `npm test` kancası ise kırmızı sınamayı kabul etmez. Bu
 //   yüzden her nöbet node:test'in `todo` seçeneğiyle işaretlidir ve gerekçesi onu
-//   yeşile çevirecek Adımın kodunu taşır: ③ PNL-A07. ① PNL-A04 ile, ② PNL-A05 ile
-//   yeşile döndü ve işaretleri kaldırıldı. Kırmızı
+//   yeşile çevirecek Adımın kodunu taşırdı. ① PNL-A04, ② PNL-A05 ve ③ PNL-A07 ile
+//   üçü de yeşile döndü ve işaretleri kaldırıldı. Kırmızı
 //   bir `todo` süiti düşürmez fakat çıktıda ✖ ve "# TODO" ile görünür kalır. Kodu
 //   onaran Adım nöbetin yeşile döndüğünü gösterir ve işareti aynı işlemede kaldırır;
 //   işaret kalırsa nöbet bir sonraki gerilemeyi yakalamaz.
@@ -42,8 +42,6 @@ import { GORUNUMLER, gorunumHtml } from "../src/minigraf-gorunum.ts";
 const { OnayPaneli } = await import("../src/onay-paneli.ts");
 const { onayKuyruguKaydi } = await import("../src/onay-kuyrugu.ts");
 
-/** Bugün bilerek kırmızı olan nöbetin işareti: gerekçe, onu yeşile çevirecek Adımdır. */
-const bekliyor = (adim: string, ne: string): { todo: string } => ({ todo: `${adim} yeşile çevirecek: ${ne}` });
 
 const EKLENTI_KOKU = fileURLToPath(new URL("..", import.meta.url));
 type SahteBaglam = { subscriptions: { dispose(): unknown }[]; extensionUri: Uri; extension: { packageJSON: unknown } };
@@ -238,8 +236,7 @@ const DOSYA = "/sahte/proje/is/plan/deneme.sar";
 const IKI_KAPI = zincir(adim("A1"), adim("A2"));
 const kayitlar = (dosya: string, kaynak: string): KapiKaydi[] => kapilar(kaynak).map((kapi) => ({ dosya, kapi }));
 
-test("Onay şikâyeti (OZK-13): onay kapısı açılınca editörün etkin sütununda kart açılmaz, odak panelde kalır ve dosya ilgili satırda açılır",
-  bekliyor("PNL-A07", "onay kararı panelin içinde verilir; editörde kart açılmaz ve odak panelden kaçmaz"), async () => {
+test("Onay şikâyeti (OZK-13): onay kapısı açılınca editörün etkin sütununda kart açılmaz, odak panelde kalır ve dosya ilgili satırda açılır", async () => {
     // Kullanıcı Makinist ağacındaki onay satırına tıklar; satırın komutu sarmal.onayKapisiAc'tır (makinist.ts).
     const panel = new OnayPaneli();
     panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));

@@ -412,7 +412,7 @@ export interface GovdeGirdisi {
  * bakarak TAHMİN edebilirdik. Bu hâliyle yerleşim SAF GÖVDENİN bir gerçeğidir
  * ve nöbet onu gerçekten okur.
  */
-function kapiGovdesi(g: GovdeGirdisi, kayit: KapiKaydi): string {
+function kapiGovdesi(g: KademeGirdisi, kayit: KapiKaydi): string {
   const { dosya, kapi } = kayit;
   const notId = notKimligi(dosya, kapi.kod);
   const taslak = g.durum.taslak(notId);
@@ -446,6 +446,19 @@ function kapiGovdesi(g: GovdeGirdisi, kayit: KapiKaydi): string {
         </div>
         <div class="kararlar" role="group">${secenekler}</div>
       </div>`;
+}
+
+/** Karar kademesini basmak için gereken en küçük girdi (gerekçe defteri, simgeler, metinler). */
+export type KademeGirdisi = Pick<GovdeGirdisi, "durum" | "kararSimgeleri" | "metinler">;
+
+/**
+ * KARAR KADEMESİ (PNL-A07 · OZK-13): tek bir kapının gerekçe kutusu ve üç seçeneği. Sarmal
+ * panelinin Makinist sekmesi bunu Onaylar düğümündeki kapı satırının hemen altına basar.
+ * Kutu, hata satırı ve düğmelerin kimlikleri ile veri öznitelikleri eski Onaylar gövdesiyle
+ * aynıdır; diske yazan yol ve gerekçe ölçüsü değişmez.
+ */
+export function kararKademesiHtml(g: KademeGirdisi, kayit: KapiKaydi): string {
+  return kapiGovdesi(g, kayit);
 }
 
 /** Tek bir kapı satırı ve altındaki gövde (önce kutu, sonra üç seçenek). */

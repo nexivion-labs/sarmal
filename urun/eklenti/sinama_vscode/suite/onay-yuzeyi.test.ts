@@ -41,9 +41,19 @@ interface OnayYuzu {
     okunanDosya: number;
     dosyaAramasi: number;
     anaGoruntuHazir: boolean;
+    /** Disk izleyicisinin bildirdiği dosya olayları yüzünden açılan belgeler (PNL-A07 ayrımı). */
+    diskAcilanBelge: number;
   };
   onayKapilari(): { dosya: string; kod: string }[];
+  bolumSinamaKapisi?: { panelOlcumleri(): { sekme: string; onayKademesi?: string; onayAcik?: { dosya: string; kod: string } } | undefined };
 }
+
+/** Kullanıcı eyleminin açtığı belge sayısı: disk izleyicisinin okuduğu dosyalar ayrı sayılır (PNL-A07). */
+const kullanicininAcdigi = (o: ReturnType<OnayYuzu["onayOlcumleri"]>): number => o.acilanBelge - o.diskAcilanBelge;
+
+/** Editörde açık webview sekmeleri: onay kartı (OZK-13 öncesi `sarmalOnayKarti`) bir daha açılmaz. */
+const webviewSekmeleri = (): number => vscode.window.tabGroups.all.flatMap((g) => g.tabs)
+  .filter((t) => t.input instanceof vscode.TabInputWebview).length;
 
 const gecicilerSil: string[] = [];
 
@@ -208,15 +218,22 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
     await bekle(() => y.onayOlcumleri().sonYerlesenKapi > 0, 8_000);
 
     // Adım açılış satırı kaynakta dördüncü satırdır (0-tabanlı üç).
-    const oncekiAcilan = y.onayOlcumleri().acilanBelge;
+    // PNL-A07 ölçümü: bu nöbet eskiden "bir tıklama üç belge açtı" diye düşüyordu. Fazlalığın ikisi,
+    // sınamanın az önce yazdığı dosyanın disk izleyicisine geç ulaşan oluşturma ve değişiklik olaylarıydı;
+    // tıklamayla ilgisizdirler ve ayrı sayılırlar. Ölçülen, kullanıcı eyleminin açtığı belgedir.
+    const oncekiAcilan = kullanicininAcdigi(y.onayOlcumleri());
+    const oncekiDisk = y.onayOlcumleri().diskAcilanBelge;
+    const oncekiSekme = webviewSekmeleri();
     await vscode.commands.executeCommand("sarmal.onayKapisiAc", uri.fsPath, 3, "GECICI-A01");
     let o = y.onayOlcumleri();
     assert.strictEqual(o.canliIsParcacigi, 0,
       `"Kapıya git" ${o.canliIsParcacigi} karar penceresi kurdu; kullanıcı çizilmeyen bir yüzeye gönderiliyor`);
     assert.strictEqual(o.yaratilanYuzey, 0,
       `${o.yaratilanYuzey} Comments nesnesi yaratıldı; emekli yüzey geri gelmiş`);
-    assert.strictEqual(o.acilanBelge - oncekiAcilan, 1,
-      `bir satır tıklaması ${o.acilanBelge - oncekiAcilan} belge açtı; yalnız bir tane açmalıydı`);
+    assert.strictEqual(kullanicininAcdigi(o) - oncekiAcilan, 1,
+      `bir satır tıklaması ${kullanicininAcdigi(o) - oncekiAcilan} belge açtı; yalnız bir tane açmalıydı ` +
+      `(aynı pencerede disk izleyicisi ayrıca ${o.diskAcilanBelge - oncekiDisk} belge okudu)`);
+    assert.strictEqual(webviewSekmeleri() - oncekiSekme, 0, "kapıya gitmek editörde bir webview (onay kartı) açtı (OZK-13)");
 
     // KULLANICI SONUCU: doğru dosya, doğru satır. Ölçülen şey sayaç değil, imleçtir.
     const editor = vscode.window.activeTextEditor;
@@ -301,6 +318,45 @@ describe("Sarmal onay yüzeyi — çift yüzey kusurunun canlı ölçümü (VIT-
       "karar hâlâ çizilmeyen bir Comments penceresi kuruyor");
 
     fs.unlinkSync(uri.fsPath);
+  });
+
+  it("PANEL İÇİ KARAR (OZK-13 · PNL-A07): kapı kademesi Makinist sekmesinde kapının altında açılır, editörde kart açılmaz; panelin şerh eylemi diske TEK satır yazar", async () => {
+    const y = await yuz();
+    const kapi = y.bolumSinamaKapisi!;
+    const uri = geciciSar("_gecici-panel-karar.sar", KAPILI_KAYNAK);
+    await bekle(() => y.onayKapilari().some((k) => k.dosya === uri.fsPath), 10_000);
+    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+    const oncekiSekme = webviewSekmeleri();
+    // Kapı satırının çalıştırdığı komut: kaynak satırında açılır, kademe panelde açılır.
+    await vscode.commands.executeCommand("sarmal.onayKapisiAc", uri.fsPath, 3, "GECICI-A01");
+    // Aynı kodu taşıyan başka geçici dosyalar olabilir: satır kimliği sıra ekiyle ayrışır (GECICI-A01#1); açık kapı dosyasıyla doğrulanır.
+    assert.ok(await bekle(() => {
+      const p = kapi.panelOlcumleri();
+      return p?.onayAcik?.dosya === uri.fsPath && p.onayAcik.kod === "GECICI-A01" && /\/GECICI-A01(#\d+)?$/.test(p.onayKademesi ?? "");
+    }, 8_000), `karar kademesi panelde kapının altında çizilmedi (${JSON.stringify(kapi.panelOlcumleri())})`);
+    assert.strictEqual(kapi.panelOlcumleri()!.sekme, "makinist", "kapı gösterilince panel Makinist sekmesine geçmedi");
+    const editor = vscode.window.visibleTextEditors.find((e) => e.document.uri.fsPath === uri.fsPath);
+    assert.ok(editor, "kaynak editörde açılmadı");
+    assert.strictEqual(editor!.selection.active.line, 3, "kaynak kapının satırında açılmadı");
+    assert.strictEqual(webviewSekmeleri() - oncekiSekme, 0, "editörde onay kartı (webview sekmesi) açıldı");
+    // Panelin kademesinden gelen şerh iletisi: webview'in göndereceği ileti eklentide işlenir ve diske iner.
+    await vscode.commands.executeCommand("sarmal.sinama.panel", { eylem: "ileti", ileti: { tip: "onay",
+      ileti: { tur: "kararVer", dosya: uri.fsPath, kod: "GECICI-A01", satir: 3, rol: "şerh", not: "  panelden gerekçe  " } } });
+    assert.ok(await bekle(() => /onay:\s*"şerhle onaylandı/.test(fs.readFileSync(uri.fsPath, "utf8")), 10_000),
+      "panelin şerh eylemi diske inmedi");
+    const diskte = fs.readFileSync(uri.fsPath, "utf8");
+    assert.ok(diskte.includes("panelden gerekçe"), "panelde yazılan gerekçe kayda geçmedi");
+    const once = KAPILI_KAYNAK.split("\n");
+    const sonra = diskte.split("\n");
+    let degisen = Math.abs(once.length - sonra.length);
+    for (let i = 0; i < Math.min(once.length, sonra.length); i += 1) if (once[i] !== sonra[i]) degisen += 1;
+    assert.strictEqual(degisen, 1, `panelin kararı ${degisen} satır değiştirdi; tek alan eklemesi bekleniyordu`);
+    // Karara bağlanan kapı defterden düşer ve kademesi kapanır.
+    assert.ok(await bekle(() => kapi.panelOlcumleri()?.onayAcik === undefined && kapi.panelOlcumleri()?.onayKademesi === undefined, 10_000),
+      "karara bağlanan kapının kademesi açık kaldı");
+    fs.unlinkSync(uri.fsPath);
+    // Süitler tek uzantı sürecini paylaşır: panel sonraki süitlerin açılış varsayımı için Ray'e döner.
+    await vscode.commands.executeCommand("sarmal.bolum.ray");
   });
 
   it("BOŞ GEREKÇE · İPTAL · ARTIK GEREKÇE: üçü de diske DOKUNMAZ", async () => {
