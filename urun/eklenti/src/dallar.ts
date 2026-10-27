@@ -41,11 +41,15 @@ const etiketTuru = vscode.window.createTextEditorDecorationType({});
 
 const ETIKET_ESIGI = 4;      // (kapanış − açılış) satır farkı bu değerden küçükse etiket yok
 
-/** İnce stil (varsayılan): `sarmal.girintiRenkleri` açıkça true DEĞİLSE geçerlidir;
- *  ayar okunamazsa da ince stile düşülür. true = eski gökkuşağı (girinti.ts). */
+/** `sarmal.girintiRenkleri` ayarının varsayılanı (PNL-A06 · Founder 2026-10-27): gökkuşağı bantları.
+ *  Paketin ilanıyla (package.json) aynı olmak zorundadır; birim nöbeti ikisini karşılaştırır. */
+export const GIRINTI_RENKLERI_VARSAYILANI = true;
+
+/** İnce stil (tül derinlik): `sarmal.girintiRenkleri` açıkça false verildiğinde geçerlidir. Ayar
+ *  verilmemişse ya da okunamazsa varsayılan gökkuşağı bantları çizilir (girinti.ts). */
 export function inceStilMi(): boolean {
-  try { return vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri") !== true; }
-  catch { return true; }
+  try { return vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri", GIRINTI_RENKLERI_VARSAYILANI) === false; }
+  catch { return !GIRINTI_RENKLERI_VARSAYILANI; }
 }
 
 /** Belge/yorum satırları (0-tabanlı): `-->| … |<--` blokları + tam-satır `//`.

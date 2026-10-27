@@ -9,9 +9,11 @@
 //   SÜREKLİLİK (Founder 2026-07-12): yorum/belge satırları DA boyanır — bantlar
 //   blok boyunca kesilmez (eski belge-muafiyeti kaldırıldı).
 //   İKİ STİL (Founder 2026-10-21 · "girinti boyası tül derinlik olsun"):
-//     • sarmal.girintiRenkleri = true  → yukarıdaki gökkuşağı bantları (eski stil).
-//     • aksi (false / okunamayan ayar) → TÜL DERİNLİK: her kademe için 1 piksellik
-//       soluk çizgi ve tek renkte, içeri girdikçe çok az koyulaşan bir tül.
+//     • sarmal.girintiRenkleri = true (VARSAYILAN · PNL-A06, Founder 2026-10-27) →
+//       yukarıdaki gökkuşağı bantları; renkleri ve çizimi 0.9.193 ile aynıdır.
+//     • false → TÜL DERİNLİK: her kademe için 1 piksellik soluk çizgi ve tek
+//       renkte, içeri girdikçe çok az koyulaşan bir tül. Ayar okunamazsa
+//       varsayılana, yani bantlara düşülür (dallar.ts inceStilMi).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";

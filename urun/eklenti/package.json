@@ -306,7 +306,7 @@
         },
         "sarmal.girintiRenkleri": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "%config.indentColors%"
         },
         "sarmal.camEfekti": {

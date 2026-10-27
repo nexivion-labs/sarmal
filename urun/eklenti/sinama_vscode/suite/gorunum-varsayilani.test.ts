@@ -168,4 +168,15 @@ describe("EKL-F6-A04 — biçim eklentiden gelir, renk dayatılmaz", () => {
       "vscode.executeDocumentSymbolProvider", doc.uri);
     assert.ok(Array.isArray(simgeler), "belge simgeleri okunamadı — eklenti bu belgeyi hiç görmemiş olabilir");
   });
+
+  it("PNL-A06 · GİRİNTİ BANTLARI VARSAYILANDIR: yeni kurulumda sarmal.girintiRenkleri açık gelir", () => {
+    // Founder 2026-10-27: 0.9.194'te varsayılan tül derinliğe çevrilmiş ve renkli bantlar kaybolmuştu.
+    // Süit bandın ekrana boyandığını okuyamaz (yukarıdaki ölçüm sınırı); etkin değeri ve kaynağını okur.
+    const bakis = vscode.workspace.getConfiguration("sarmal").inspect<boolean>("girintiRenkleri");
+    assert.strictEqual(bakis?.globalValue, undefined, "girintiRenkleri kullanıcı ayarından geliyor — yeni kurulum ölçülmüyor");
+    assert.strictEqual(bakis?.workspaceValue, undefined, "girintiRenkleri çalışma alanı ayarından geliyor");
+    assert.strictEqual(bakis?.defaultValue, true, "paketin ilanında girintiRenkleri varsayılan olarak açık değil");
+    assert.strictEqual(vscode.workspace.getConfiguration("sarmal").get("girintiRenkleri"), true,
+      "yeni kurulumda girinti bantları kapalı geliyor; editör tül derinlikle açılır");
+  });
 });
