@@ -6600,7 +6600,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-RAY-KODLAMA, ad: "Ray Yüzü", departman: kodlama,
         ne: "🔧 Ray sekmesinin yerleşiminin, çizgilerinin ve tıklamalarının onarıldığı dal" ) {
 
-        Adım( kod: PNL-A03, ad: "Sekme Şeridi, Başlıklar ve Geniş Yerleşim", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+        Adım( kod: PNL-A03, ad: "Sekme Şeridi, Başlıklar ve Geniş Yerleşim", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
           referans: [ OZK-13 ],
           ne: "📐 Panelin Founder'ın çalışma düzenine oturtulması. Founder paneli editörün altında, sol yana yaslı, geniş ve alçak bir alanda kullanır; terminal sağ sütundadır. Bugünkü yerleşim dar bir sütuna göre kurulmuştur ve pencere boyunun yüzde yüzüne dayanan kural paneli küçük bir kutuya sıkıştırabilmektedir." ) {
           görev: [
@@ -6611,12 +6611,12 @@ sessizce körleşmez.
           ]
           kabul: [
             "Görsel kontrolün 1400×400 ölçüsünde boş kutu ya da sıkışma yoktur ve sekme şeridi yazısı 11 pikseldir.",
-            "Founder yerleşimi kendi penceresinde gözle onaylamıştır."
+            "Yerleşimin 1400×400 ekran görüntüsü birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Sekmelerin içerikleri bu Adımın işi değildir; Gözlemler ile Ayarlar bu Adımda yalnız boş bölüm olarak doğar."
         }
 
-        Adım( kod: PNL-A04, ad: "Sürekli Ağaç Çizgileri ve Üzerine Gelince Renk", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A03 ],
+        Adım( kod: PNL-A04, ad: "Sürekli Ağaç Çizgileri ve Üzerine Gelince Renk", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A03 ],
           referans: [ HTR-RAY-GIRINTI-CIZGILERI-SUREKLI ],
           ne: "🌿 Ağaç çizgilerinin hep görünmesi. Founder 2026-10-27 tarihinde çizgilerin ince olmasına, renginin zemindeki mor ton olmasına, fare bir satırın üzerine gelince o dalın çizgisinin ve gri yazılar ile Faz, Blok ve öteki ikonların renklenmesine hükmetmiştir. Bugün çizgiler yalnız ağacın üzerine gelindiğinde görünmektedir." ) {
           görev: [
@@ -6625,7 +6625,7 @@ sessizce körleşmez.
           ]
           kabul: [
             "Görsel kontrolde çizgiler fare üzerine gelmeden görünür; üzerine gelinen dalın çizgisi, yazısı ve ikonu renklenir.",
-            "Founder görünümü gözle onaylamıştır."
+            "Çizgilerin ve renklenmenin ekran görüntüsü birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Satırların içeriği ve sırası değişmez."
         }
@@ -6663,7 +6663,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-MAK-KODLAMA, ad: "Makinist Yüzü", departman: kodlama,
         ne: "🔧 Onay kararının panele döndüğü ve sayıların kapsamını söylediği dal" ) {
 
-        Adım( kod: PNL-A07, ad: "Onay Kararının Panelin İçine Dönmesi", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+        Adım( kod: PNL-A07, ad: "Onay Kararının Panelin İçine Dönmesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
           referans: [ OZK-09, OZK-13, VIT-POSTA-A06, HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR ],
           ne: "✅ Founder'ın 2026-08-10 tarihinde gözle onayladığı düzene dönüş. Onaya tıklayınca dosya editörde Adımın satırında açılır ve odak panelde kalır; gerekçe kutusu ile onaylama, şerhle onaylama ve reddetme eylemleri satırın altında, panelin içinde belirir. Bugün kart editörün etkin sütununda açılıp odağı almakta ve dosyanın üstünü örtmektedir." ) {
           görev: [
@@ -6674,7 +6674,7 @@ sessizce körleşmez.
           kabul: [
             "Onaya tıklayınca dosya editörde doğru satırda açıktır, kart editörü örtmez ve odak paneldedir; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
             "Doğrulanmamış durumdaki bir Adımın kapısı kuyrukta görünür.",
-            "Founder davranışı kendi penceresinde onaylamıştır."
+            "Davranışın ekran görüntüsü birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Dış sistemlerden gelen onay kayıtlarının biçimi bu Adımın işi değildir."
         }
@@ -6700,7 +6700,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-GOZ-KODLAMA, ad: "Gözlemler Yüzü", departman: kodlama,
         ne: "🔧 Gözlemlerin Makinist'ten taşındığı ve Sapmalar bölümünün kurulduğu dal" ) {
 
-        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
           referans: [ HTR-PANEL-SAPMA-SEKMESI, OZK-13 ],
           ne: "🧭 Gözlemlerin Makinist'ten kendi sekmesine taşınması ve Sarmal'ın denetim tanılarının aynı sekmede ayrı bir Sapmalar bölümünde gösterilmesi. Tanılar bugün VS Code'un genel Sorunlar panelinde öteki araçların bulgularına karışmaktadır." ) {
           görev: [
@@ -6709,7 +6709,7 @@ sessizce körleşmez.
           ]
           kabul: [
             "Gözlemler ile Sapmalar ayrı bölümlerdir ve her satır dosyanın doğru yerini açar.",
-            "Founder sekmeyi gözle onaylamıştır."
+            "Sekmenin ekran görüntüsü ikinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Tanıların üretimi değişmez; Sorunlar paneli de beslenmeye devam eder."
         }
@@ -6722,14 +6722,14 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-AYAR-KODLAMA, ad: "Ayarlar Yüzü", departman: kodlama,
         ne: "🔧 Ayar düğmelerinin kurulduğu dal" ) {
 
-        Adım( kod: PNL-A10, ad: "Panel İçinden Ayarlar", durum: beklemede, öncelik: p2, onayBekler: founder, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A10, ad: "Panel İçinden Ayarlar", durum: beklemede, öncelik: p2, bağımlı: [ PNL-A15 ],
           ne: "⚙️ Eklenti ayarlarının panelin Ayarlar sekmesinden değiştirilmesi. Sekmenin içeriği ve sırası Founder tarafından ayrıca bildirilecektir." ) {
           görev: [
             "Founder'ın bildireceği ayarları sırasıyla düğme olarak göster; değişiklik anında uygulanır."
           ]
           kabul: [
             "Her düğme kendi ayarını değiştirir ve değişiklik pencere yeniden yüklenmeden görünür; bunu bir nöbet ölçer.",
-            "Founder sekmeyi gözle onaylamıştır."
+            "Sekmenin ekran görüntüsü ikinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Founder içeriği bildirmeden bu Adım geliştirmeye alınmaz."
         }
@@ -6742,7 +6742,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-TREN-KODLAMA, ad: "Tren Yüzü", departman: kodlama,
         ne: "🔧 Planda ilan edilmiş ajanların ve işin zincirinin gösterildiği dal" ) {
 
-        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ PNL-A16 ],
+        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
           ne: "🪪 Planda ilan edilmiş her ajanın profil kartı. Bugün Tren ajanları düz bir liste olarak yalnız kodları ve türleriyle göstermektedir; Founder 2026-10-27 tarihinde ajanların görev, yetki, yetenek, beceri ve bellekleriyle görünmesine hükmetmiştir." ) {
           görev: [
             "Ajanları rozetli kutular olarak göster; yöneticiler üstte, uzmanlar altta durur ve yönetir bağları çizilir.",
@@ -6750,7 +6750,7 @@ sessizce körleşmez.
           ]
           kabul: [
             "Kartın her alanı .sar kaynağından okunur ve tanımına gider; bunu bir nöbet ölçer.",
-            "Founder kartı gözle onaylamıştır."
+            "Kartın ekran görüntüsü üçüncü basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Şema değişmez; yalnız var olan alanlar ve alt düğümler gösterilir. Canlı oturum bilgisi bu Adımın işi değildir."
         }
@@ -6789,7 +6789,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-HIZ-KODLAMA, ad: "Tur Süresi", departman: kodlama,
         ne: "🔧 Okumanın ve ayrıştırmanın hızlandırıldığı dal" ) {
 
-        Adım( kod: PNL-A14, ad: "Açılış ve Tur Süresinin Düşürülmesi", durum: beklemede, öncelik: p0, onayBekler: founder, bağımlı: [ PNL-A02 ],
+        Adım( kod: PNL-A14, ad: "Açılış ve Tur Süresinin Düşürülmesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
           referans: [ OZK-12, HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL, EKL-F6-A09, BLK-PRF-PANELKIPI, BLK-PRF-ISCI ],
           ne: "🐢 Founder 2026-10-27 tarihinde eklentinin açılışının ve tepkisinin yavaşladığını bildirmiştir. Aynı gün ölçülen başlangıç turu çatıda yirmi iki saniye sürmüş ve 357 dosyayı, yaklaşık 7,5 MB'ı tek tek sırayla diskten okumuştur; her belge ayrıca ikinci kez ayrıştırılmaktadır." ) {
           görev: [
@@ -6801,7 +6801,7 @@ sessizce körleşmez.
           kabul: [
             "Önce ve sonra ölçümleri aynı çatıda alınmış ve koşu kaydına yazılmıştır.",
             "Denetim turları ve tanılar ölçümden önceki hâliyle birebir aynıdır; bunu bir nöbet ölçer.",
-            "Founder açılışı kendi penceresinde onaylamıştır."
+            "Açılış süresinin önce ve sonra değerleri birinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Denetim kuralları değişmez. İşçi iş parçacığına taşıma bu Adımın işi değildir."
         }
