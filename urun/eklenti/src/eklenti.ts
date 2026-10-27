@@ -1041,7 +1041,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // (sarmal.bolum.*) sekmeyi seçer; Graf, Ray sekmesinin parçasıdır.
   if (tren && yolHaritasiYuzeyi) {
     panel = panelKaydi(context, { yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci });
-    bolumYuvasi?.sekmeBagla((b) => panel?.sekmeSecVeOdakla(b === "graf" ? "ray" : b));
+    // PNL-A18: yuvanın yerleşik seçimi panelin sekmesinden okunur; iki seçim ayrışamaz.
+    bolumYuvasi?.sekmeBagla((b) => panel?.sekmeSecVeOdakla(b === "graf" ? "ray" : b), panel);
   }
 
   // 🎨 Çalışma Alanını Giydir (BKM-SNV2-A03): dış projede görünüm paritesi —

@@ -41,7 +41,11 @@
 //   (PNL-A07): açık kapının karar kademesi kapı satırının hemen altında, tek, gerekçe
 //   kutusu ve üç eylemle; kutuya yazmak taslak, Escape kutudan çıkış, ikinci Escape
 //   vazgeçiş, şerh düğmesi ile Ctrl+Enter karar iletisi doğurur · onay
-//   kapısının editörde kart açmaması (OZK-13) · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
+//   kapısının editörde kart açmaması (OZK-13) · SEKME GEÇİŞİ EKLENTİYİ BEKLEMEZ (PNL-A18):
+//   sahte eklenti hiçbir iletiye yanıt vermezken (iş parçacığı kilitliymiş gibi) her sekmeye
+//   gerçek fare tıklaması o sekmenin içeriğini hemen gösterir, seçili sekme ile görünen kap
+//   ayrışmaz, eklentinin gecikmiş bölümü ve gecikmiş seçimi görünen içeriği değiştirmez; her
+//   adımın ekran görüntüsü sekme-gecisi-<boyut>-<sekme>.png olarak yazılır · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
 //
@@ -168,11 +172,23 @@ function seritOlc() {
   const ust = document.elementFromPoint(Math.min(innerWidth - 2, r.left + 20), r.top + r.height / 2);
   return { var: true, top: r.top, yukseklik: r.height, ustte: !!ust && s.contains(ust), scrollY };
 }
+/**
+ * Sekme geçişinin anlık durumu (PNL-A18): seçili sekme, görünen kaplar, görünen içeriğin hangi sekmeye
+ * ait olduğu (içeriğin kendi işaretinden okunur, kabın etiketinden değil) ve görünen kabın boyu.
+ */
+function sekmeDurumu() {
+  const secili = [...document.querySelectorAll(".sekme")].filter((b) => b.getAttribute("aria-selected") === "true").map((b) => b.dataset.sekme);
+  const gorunen = [...document.querySelectorAll(".sekme-paneli")].filter((p) => !p.hidden && p.getBoundingClientRect().height > 0);
+  const sahibi = (p) => p.querySelector("#agac") ? "ray" : p.querySelector("#tren-agac") ? "tren" : p.querySelector("#makinist-agac") ? "makinist"
+    : p.querySelector("[data-bos-sekme]")?.getAttribute("data-bos-sekme") ?? "?";
+  return { secili: secili.join(), gorunen: gorunen.map((p) => p.dataset.sekme), icerik: gorunen.map(sahibi), yukseklik: gorunen.map((p) => Math.round(p.getBoundingClientRect().height)) };
+}
 function kaydir(kip) {
   const host = document.getElementById("graf");
   const kok = host?.shadowRoot;
   // Kayan alanlar (PNL-A03): belge kaymaz; içerik alanı ve geniş paneldeki sütun gövdeleri kendi içinde kayar.
-  const alanlar = [document.scrollingElement, document.getElementById("icerik"), ...document.querySelectorAll(".kol>.bolum")].filter(Boolean);
+  // PNL-A18'den beri kayan alan görünen sekmenin kabıdır (.sekme-paneli).
+  const alanlar = [document.scrollingElement, document.getElementById("icerik"), ...document.querySelectorAll(".sekme-paneli"), ...document.querySelectorAll(".kol>.bolum")].filter(Boolean);
   if (kip === "ust") for (const a of alanlar) a.scrollTop = 0;
   else if (kip === "dip") for (const a of alanlar) a.scrollTop = a.scrollHeight;
   else if (kip === "graf") {
@@ -210,7 +226,8 @@ function duzenOlc() {
       govdeYuk: govde && !govde.hidden ? yuvarla(govde.getBoundingClientRect().height) : 0,
     };
   });
-  const bos = document.querySelector(".bos[data-bos-sekme]");
+  // Beş sekmenin kabı da belgededir (PNL-A18); ölçülen boş durum cümlesi görünen kabınkidir.
+  const bos = document.querySelector(".sekme-paneli:not([hidden]) .bos[data-bos-sekme]");
   return {
     W: innerWidth, H: innerHeight, seritYuk: yuvarla(sr?.height ?? 0), seritAlt: yuvarla(sr?.bottom ?? 0), sekmeYazi, sira, kesik,
     seritTasma: yuvarla(sekmeGen - (sr?.width ?? 0)),
@@ -672,6 +689,56 @@ try {
       }
       await p.close();
     }
+  }
+
+  // ── SEKME GEÇİŞİ EKLENTİYİ BEKLEMEZ (PNL-A18 · Founder 2026-10-28 ekran kaydı) ──────────────
+  // Sahte eklenti hiçbir iletiye yanıt vermez; eklentinin iş parçacığı bölünmez bir denetim turunda
+  // kilitliymiş gibidir. Her sekmeye gerçek fare tıklaması yapılır ve hiç beklenmeden ölçülür.
+  for (const B of BOYUTLAR) {
+    const W = B.ad;
+    const p = await tarayici.newPage({ viewport: { width: B.w, height: B.h } });
+    const hatalar = [];
+    p.on("pageerror", (e) => hatalar.push(e.message));
+    await p.addInitScript(() => {
+      window.__iletiler = [];
+      window.acquireVsCodeApi = () => ({ postMessage(m) { window.__iletiler.push(m); }, setState() {}, getState() {} });
+    });
+    await p.goto(pathToFileURL(join(HTML_DIZIN, "ray.html")).href, { waitUntil: "load" });
+    await p.evaluate((renkler) => {
+      const r = document.documentElement;
+      for (const [k, v] of Object.entries(renkler)) r.style.setProperty(k, v);
+      r.style.background = renkler["--vscode-sideBar-background"];
+      document.body.className = "vscode-dark";
+    }, KOYU);
+    const etiket = `sekme geçişi @${W}`;
+    const sira = ["tren", "makinist", "gozlemler", "ayarlar", "ray"];
+    for (const ad of sira) {
+      await p.click(`.sekme[data-sekme="${ad}"]`);
+      const g = await p.evaluate(sekmeDurumu);
+      kontrol(`${etiket}: eklenti yanıt vermezken ${ad} sekmesine tıklamak o sekmenin içeriğini hemen gösterir`,
+        g.secili === ad && g.gorunen.join() === ad && g.icerik.join() === ad, JSON.stringify(g));
+      const dosya = `sekme-gecisi-${W}-${ad}.png`;
+      await p.screenshot({ path: join(CIKTI, dosya) });
+      goruntuler.push(dosya);
+    }
+    const haberler = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "sekme").map((m) => `${m.ad}:${m.n}`));
+    kontrol(`${etiket}: her geçiş eklentiye yalnız haber olarak gider (sırası ve sayacıyla)`,
+      haberler.join() === sira.map((ad, i) => `${ad}:${i + 1}`).join(), haberler.join());
+    // Founder'ın kaydındaki durum: Makinist seçiliyken eklentinin gecikmiş Ray bölümü ve gecikmiş seçimi gelir.
+    await p.click('.sekme[data-sekme="makinist"]');
+    await p.evaluate(() => {
+      window.postMessage({ tip: "bolum", sekme: "ray", html: "<p class=\"bos\">gecikmiş Yol Haritası</p>", ikonStili: "" }, "*");
+      window.postMessage({ tip: "sekmeSec", ad: "tren", n: 0 }, "*");
+    });
+    await p.waitForTimeout(150);
+    const g = await p.evaluate(sekmeDurumu);
+    kontrol(`${etiket}: eklentinin gecikmiş bölümü ve gecikmiş seçimi Makinist seçiliyken görünen içeriği değiştirmez`,
+      g.secili === "makinist" && g.gorunen.join() === "makinist" && g.icerik.join() === "makinist", JSON.stringify(g));
+    const dosya = `sekme-gecisi-${W}-gecikmis-ileti.png`;
+    await p.screenshot({ path: join(CIKTI, dosya) });
+    goruntuler.push(dosya);
+    kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
+    await p.close();
   }
 } finally { await tarayici.close(); }
 

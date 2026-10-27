@@ -64,7 +64,10 @@ button{font:inherit;color:inherit}
   .sekme{padding:0 7px}
   .sekme:not([aria-selected="true"]) .sk-ad{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 }
-#icerik{flex:1 1 auto;min-height:0;overflow:auto;padding:0 0 12px}
+#icerik{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+/* Beş sekmenin içeriği belgede hazır durur (PNL-A18); yalnız seçili sekmenin kabı görünür ve kendi içinde kayar. */
+.sekme-paneli{flex:1 1 auto;min-height:0;overflow:auto;padding:0 0 12px}
+.sekme-paneli[hidden]{display:none!important}
 /* Yol Haritası ve Mini Graf başlıkları çok küçük puntoludur (Founder 2026-10-27): 10 piksel. */
 .bas{margin:0;padding:6px 12px 3px 12px;font-size:10px;line-height:14px;font-weight:600;letter-spacing:.06em;color:var(--vscode-descriptionForeground)}
 /* Dar panelde Mini Graf başlığı Yol Haritasının hemen altından başlar; ayrım dış boşlukla değil iç boşlukla
@@ -84,7 +87,7 @@ button{font:inherit;color:inherit}
    Hiçbir başlık alanın dibine yapıştırılmaz: eski düzende katlanan Mini Graf başlığı pencere boyuna
    dayanan bir kuralla dibe itiliyordu ve panel küçük bir kutuya sıkışabiliyordu. */
 @media (min-width:${GENIS_PANEL_PX}px){
-  #icerik:has(>.ray-duzen){display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+  .sekme-paneli:has(>.ray-duzen){display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
   .ray-duzen{flex:1 1 auto;min-height:0;display:flex;align-items:stretch}
   .kol{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column}
   .kol:has(>.bolum[hidden]){flex:0 0 auto}
@@ -181,14 +184,24 @@ export const PANEL_BETIGI = `
   function gonder(m) { api.postMessage(m); }
   function kacirSel(s) { return String(s).replace(/(["\\\\])/g, '\\\\$1'); }
 
-  // ── Sekme şeridi ───────────────────────────────────────────────────────────
+  // ── Sekme şeridi (PNL-A18) ─────────────────────────────────────────────────
+  // Beş sekmenin içeriği belgede hazır durur; geçiş yalnız hangi kabın görüneceğini değiştirir ve
+  // eklentiyi beklemez, eklenti seçimi yalnız haber olarak alır. Kullanıcının her geçişi bir sayaç
+  // artırır. Eklentinin seçtirdiği sekme (sekmeSec iletisi) eklentinin o ana kadar işlediği sayacı
+  // taşır; eklentiye henüz ulaşmamış daha yeni bir kullanıcı geçişi varsa uygulanmaz. Son söz böylece
+  // eklentinin işlediği son olaya aittir ve webview ile eklentinin seçimi ayrışmaz.
+  var gecisSayaci = 0;
   function sekmeler() { return Array.prototype.slice.call(document.querySelectorAll('.sekme')); }
+  function sekmePanelleri() { return Array.prototype.slice.call(document.querySelectorAll('.sekme-paneli')); }
+  function sekmeVarMi(ad) { return sekmeler().some(function (b) { return b.getAttribute('data-sekme') === ad; }); }
   function sekmeIsaretle(ad) {
+    if (!sekmeVarMi(ad)) return;
     sekmeler().forEach(function (b) {
       var s = b.getAttribute('data-sekme') === ad;
       b.setAttribute('aria-selected', s ? 'true' : 'false');
       b.setAttribute('tabindex', s ? '0' : '-1');
     });
+    sekmePanelleri().forEach(function (p) { p.hidden = p.getAttribute('data-sekme') !== ad; });
   }
   // Sekme listesi şeridin kendisidir (panel-cekirdek.ts SEKMELER); betik ikinci bir liste tutmaz.
   function sekmeSec(ad, odakla) {
@@ -198,8 +211,12 @@ export const PANEL_BETIGI = `
       var b = document.querySelector('.sekme[data-sekme="' + ad + '"]');
       if (b) b.focus();
     }
-    gonder({ tip: 'sekme', ad: ad });
+    gecisSayaci += 1;
+    gonder({ tip: 'sekme', ad: ad, n: gecisSayaci });
   }
+  /** Sekmenin içerik kabı; eklentiden gelen her güncelleme hedefini yalnız kendi sekmesinin kabında arar. */
+  function sekmePaneli(sekme) { return typeof sekme === 'string' ? $('panel-' + sekme) : null; }
+  function hedefBul(sekme, kimlik) { var p = sekmePaneli(sekme); return p ? p.querySelector('#' + kimlik) : null; }
 
   // ── Mini Graf: gölge kökte çizilir, komut bağları iletiye çevrilir ──────────
   function grafYaz(html) {
@@ -284,8 +301,8 @@ export const PANEL_BETIGI = `
     });
     if (odakId) { var o = satirBul(odakId); if (o) o.focus({ preventScroll: true }); }
   }
-  function stilEkle(metin, degistir) {
-    var s = $('ikon-stil');
+  function stilEkle(sekme, metin, degistir) {
+    var s = $('ikon-stil-' + sekme);
     if (!s || metin === undefined) return;
     s.textContent = degistir ? metin : s.textContent + metin;
   }
@@ -304,8 +321,8 @@ export const PANEL_BETIGI = `
     y.focus({ preventScroll: true });
     y.setSelectionRange(o.bas, o.son);
   }
-  function parcaYaz(kimlik, html) {
-    var h = $(kimlik);
+  function parcaYaz(sekme, kimlik, html) {
+    var h = hedefBul(sekme, kimlik);
     if (!h) return;
     var odak = odakKimligi();
     if (kimlik === 'graf') { grafYaz(html); return; }
@@ -339,20 +356,27 @@ export const PANEL_BETIGI = `
   window.addEventListener('message', function (e) {
     var m = e.data || {};
     if (m.tip === 'bolum') {
-      sekmeIsaretle(m.sekme);
-      stilEkle(m.ikonStili, true);
+      // Yalnız iletinin sekmesinin kabı yeniden yazılır; seçili sekme ve görünen kap değişmez (PNL-A18).
+      var p = sekmePaneli(m.sekme);
+      if (!p) return;
+      stilEkle(m.sekme, m.ikonStili, true);
       var odak = odakKimligi();
       var alanB = alanOdagi();
-      $('icerik').innerHTML = m.html;
-      grafKur();
+      p.innerHTML = m.html;
+      if (m.sekme === 'ray') grafKur();
       secimiGeriYukle(odak);
       alanOdaginiGeriYukle(alanB);
+    } else if (m.tip === 'sekmeSec') {
+      // Eklentinin seçtirdiği sekme (yerleşik komut, onay kapısı, durum çubuğu sayacı). Eklentiye henüz
+      // ulaşmamış daha yeni bir kullanıcı geçişi varsa uygulanmaz; eklenti o geçişi işleyince seçimi alır.
+      if (typeof m.n === 'number' && m.n >= gecisSayaci) sekmeIsaretle(m.ad);
     } else if (m.tip === 'parca') {
-      stilEkle(m.ikonStili, true);
-      parcaYaz(m.kimlik, m.html);
+      stilEkle(m.sekme, m.ikonStili, true);
+      parcaYaz(m.sekme, m.kimlik, m.html);
     } else if (m.tip === 'satir') {
-      stilEkle(m.ikonStili, false);
-      var s = satirBul(m.id);
+      stilEkle(m.sekme, m.ikonStili, false);
+      var sp = sekmePaneli(m.sekme);
+      var s = sp ? sp.querySelector('.sat[data-id="' + kacirSel(m.id) + '"]') : null;
       if (s) {
         var t = document.createElement('div');
         t.innerHTML = m.html;
@@ -385,11 +409,45 @@ export const PANEL_BETIGI = `
         (hedefBag.querySelector('.ad, text.etiket') || hedefBag)
           .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true, view: window }));
       }
+    } else if (m.tip === 'sinamaSekmeDizisi') {
+      sinamaSekmeDizisi(m.sira, m.aralik);
     } else if (m.tip === 'git') {
       var g = satirBul(m.id);
       if (g) { sec(g); g.focus(); g.scrollIntoView({ block: 'nearest' }); }
     }
   });
+
+  // ── Sınama kipi (PNL-A18): sekme geçişinin eklentiyi beklemediğinin ölçümü ──
+  // Yalnız sınama kipinde gelen iletiyle çalışır (panel.ts SINAMA_KOMUTU). Şeritteki sekmelere sırayla
+  // gerçek tıklama gönderilir ve her tıklamanın hemen ardından seçili sekme, görünen kap ve görünen
+  // içeriğin hangi sekmeye ait olduğu kaydedilir. Kayıt dizinin sonunda eklentiye gider; eklenti o
+  // sırada meşgulse ileti sıraya girer ve eklenti boşalınca ulaşır.
+  function seciliSekme() {
+    var b = sekmeler().filter(function (x) { return x.getAttribute('aria-selected') === 'true'; })[0];
+    return b ? b.getAttribute('data-sekme') : '';
+  }
+  function icerikSekmesi(p) {
+    if (p.querySelector('#agac')) return 'ray';
+    if (p.querySelector('#tren-agac')) return 'tren';
+    if (p.querySelector('#makinist-agac')) return 'makinist';
+    var bos = p.querySelector('[data-bos-sekme]');
+    return bos ? bos.getAttribute('data-bos-sekme') : '';
+  }
+  function sinamaSekmeDizisi(sira, aralik) {
+    var kayitlar = [];
+    var i = 0;
+    (function adim() {
+      if (!Array.isArray(sira) || i >= sira.length) { gonder({ tip: 'sinamaRapor', kayitlar: kayitlar }); return; }
+      var ad = sira[i++];
+      var b = document.querySelector('.sekme[data-sekme="' + ad + '"]');
+      var bas = performance.now();
+      if (b) b.click();
+      var gorunen = sekmePanelleri().filter(function (p) { return !p.hidden; });
+      kayitlar.push({ ad: ad, zaman: Date.now(), sure: performance.now() - bas, secili: seciliSekme(),
+        gorunen: gorunen.map(function (p) { return p.getAttribute('data-sekme'); }), icerik: gorunen.map(icerikSekmesi) });
+      setTimeout(adim, Number(aralik) || 0);
+    })();
+  }
 
   // ── Katlanan başlıklar: Enter, Space ve tıklama gövdeyi katlar; durum eklentide kalıcıdır ──
   function bolumGec(bb) {

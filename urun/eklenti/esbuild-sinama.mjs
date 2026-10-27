@@ -1,7 +1,7 @@
 // esbuild-sinama.mjs — Entegrasyon testlerini CJS'e paketler (VS Code test host için).
-//   On giriş: sürücü (calistir) · mocha köprüsü (suite/index) · sekiz test dosyası
+//   On bir giriş: sürücü (calistir) · mocha köprüsü (suite/index) · dokuz test dosyası
 //   (aktivasyon.test · panel-gorunum.test · onay-yuzeyi.test · gorunum-varsayilani.test ·
-//    tek-agac.test · bolum-yuvasi.test · davranis-nobeti.test · minigraf-tiklama.test).
+//    tek-agac.test · bolum-yuvasi.test · davranis-nobeti.test · minigraf-tiklama.test · sekme-gecisi.test).
 //   vscode + mocha DIŞ bırakılır (test host'ta node_modules'ten çözülür).
 import * as esbuild from "esbuild";
 
@@ -17,6 +17,7 @@ await esbuild.build({
     "sinama_vscode/suite/bolum-yuvasi.test.ts",
     "sinama_vscode/suite/davranis-nobeti.test.ts",
     "sinama_vscode/suite/minigraf-tiklama.test.ts",
+    "sinama_vscode/suite/sekme-gecisi.test.ts",
   ],
   bundle: true,
   format: "cjs",

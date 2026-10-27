@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 import {
   IkonDefteri, SEKMELER, bosSekmeHtml, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
   satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, trenBolumuHtml,
-  type AgacKaynagi, type AgacOgesi, type SekmeSimgeleri, type UretimSecenekleri,
+  type AgacKaynagi, type AgacOgesi, type SekmeBolumu, type SekmeKimligi, type SekmeSimgeleri, type UretimSecenekleri,
 } from "../src/panel-cekirdek.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "../src/simge-cizelgesi.ts";
 import { bosHtml } from "../src/minigraf-cekirdek.ts";
@@ -36,6 +36,12 @@ const sekmeIcerigi = (sekme: (typeof SEKMELER)[number]): string =>
   sekme === "ray" ? rayBolumuHtml({ agac: "", graf: "<html><body></body></html>" })
     : sekme === "tren" ? trenBolumuHtml("", true, true)
       : sekme === "makinist" ? makinistBolumuHtml("") : bosSekmeHtml(sekme);
+/** Beş sekmenin bölümü (PNL-A18: belge hepsini taşır). */
+const hepsi = (icerik: (s: SekmeKimligi) => string): Record<SekmeKimligi, SekmeBolumu> =>
+  Object.fromEntries(SEKMELER.map((s) => [s, { html: icerik(s), ikonStili: "" }])) as Record<SekmeKimligi, SekmeBolumu>;
+/** Yalnız bir sekmenin bölümü dolu belge; ötekiler boş kaptır. */
+const tekBolum = (sekme: SekmeKimligi, html: string, ikonStili = ""): Record<SekmeKimligi, SekmeBolumu> =>
+  Object.fromEntries(SEKMELER.map((s) => [s, s === sekme ? { html, ikonStili } : { html: "", ikonStili: "" }])) as Record<SekmeKimligi, SekmeBolumu>;
 
 // ── Sahte ağaç ──────────────────────────────────────────────────────────────
 
@@ -136,7 +142,7 @@ test("'Bölümler' ne bir kutu ne bir ad ne bir etiket olarak hiçbir yerde üre
     yuzeyDiliniAyarla(dil);
     try {
       for (const sekme of SEKMELER) {
-        const h = panelHtml({ sekme, icerik: sekmeIcerigi(sekme), ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 2 });
+        const h = panelHtml({ sekme, bolumler: hepsi((s) => sekmeIcerigi(s)), simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 2 });
         assert.ok(!/Bölümler|Bolumler|Sections\b|Bölüm\b/iu.test(h), `${dil}/${sekme}: 'Bölümler' metni üretilmiş`);
       }
     } finally {
@@ -177,8 +183,8 @@ test("700 düğümde kapalı varsayılanla HTML makul boyutta kalır (< 300 KB) 
   const defter = new IkonDefteri();
   const kapali = satirlariUret(sahteAgac(yediYuzDugum()), { ...secenek(), defter });
   const html = panelHtml({
-    sekme: "ray", icerik: rayBolumuHtml({ agac: satirlarHtml(kapali.map((u) => u.satir)) }),
-    ikonStili: defter.stil(), simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 0,
+    sekme: "ray", bolumler: tekBolum("ray", rayBolumuHtml({ agac: satirlarHtml(kapali.map((u) => u.satir)) }), defter.stil()),
+    simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 0,
   });
   assert.ok(html.length < 300 * 1024, `kapalı varsayılanla belge ${html.length} bayt`);
   assert.equal((html.match(/class="sat"/g) ?? []).length, 21, "DOM'da yalnız görünen satırlar var");
@@ -250,7 +256,7 @@ test("güvenlik: kullanıcı verisi kaçırılır; belge nonce'lu TEK betik taş
   // Çıplak `"` kalmamalı: nitelik değerinden kaçılamaz (kaçırılmış hâli &quot; olarak metinde kalır).
   assert.ok(!/="[^"]*"[^ >]*"/.test(h.replace(/<svg[\s\S]*?<\/svg>/g, "")), "nitelikten kaçılabilmiş");
   assert.equal(kacir(`<&>"'`), "&lt;&amp;&gt;&quot;&#39;");
-  const belge = panelHtml({ sekme: "ray", icerik: h, ikonStili: "", simgeler: SIMGELER, nonce: "NONCE123", cspSource: "vscode-resource", rozet: 0 });
+  const belge = panelHtml({ sekme: "ray", bolumler: tekBolum("ray", h), simgeler: SIMGELER, nonce: "NONCE123", cspSource: "vscode-resource", rozet: 0 });
   assert.equal((belge.match(/<script/g) ?? []).length, 1, "tam bir betik bloğu olmalı");
   assert.ok(belge.includes('<script nonce="NONCE123">'));
   assert.ok(/script-src 'nonce-NONCE123'/.test(belge) && /default-src 'none'/.test(belge));
@@ -259,12 +265,13 @@ test("güvenlik: kullanıcı verisi kaçırılır; belge nonce'lu TEK betik taş
 });
 
 test("istemci betiği: acquireVsCodeApi tek kez, ileti tipleri sınırlı ve hiçbir yerde eval ya da Function yok", () => {
-  const belge = panelHtml({ sekme: "ray", icerik: "", ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
+  const belge = panelHtml({ sekme: "ray", bolumler: tekBolum("ray", ""), simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
   const betik = /<script nonce="n">([\s\S]*)<\/script>/.exec(belge)![1]!;
   assert.equal((betik.match(/acquireVsCodeApi\(\)/g) ?? []).length, 1);
   assert.ok(!/\beval\(|new Function|document\.write|insertAdjacentHTML/.test(betik));
-  const gonderilen = [...betik.matchAll(/tip: '([a-z]+)'/g)].map((m) => m[1]).sort();
-  assert.deepEqual([...new Set(gonderilen)], ["ac", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme"], "betiğin gönderdiği ileti tipleri değişmiş");
+  // Büyük harf taşıyan tipler de sayılır (bolumGec eskiden bu süzgeçten kaçıyordu).
+  const gonderilen = [...betik.matchAll(/tip: '([a-zA-Z]+)'/g)].map((m) => m[1]).sort();
+  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sinamaRapor"], "betiğin gönderdiği ileti tipleri değişmiş");
   // Betik sözdizimi geçerlidir.
   assert.doesNotThrow(() => new Function(betik.replace("acquireVsCodeApi()", "({postMessage(){}})")), "betik derlenmiyor");
 });
@@ -424,7 +431,10 @@ test("Mini Graf kendi kutusundan taşamaz ve sekme şeridi kaydırmayla ekrandan
   // PNL-A03'ten beri şerit kayan alanın DIŞINDADIR: belge kaymaz, içerik alanı kendi içinde kayar.
   assert.match(PANEL_STILI, /\nbody\{display:flex;flex-direction:column;overflow:hidden;/);
   assert.match(PANEL_STILI, /\.seritler\{flex:none;/);
-  assert.match(PANEL_STILI, /#icerik\{flex:1 1 auto;min-height:0;overflow:auto;/);
+  // PNL-A18: içerik alanı beş sekmenin bölüm kabını taşır; görünen kap kendi içinde kayar.
+  assert.match(PANEL_STILI, /#icerik\{flex:1 1 auto;min-height:0;display:flex;flex-direction:column\}/);
+  assert.match(PANEL_STILI, /\.sekme-paneli\{flex:1 1 auto;min-height:0;overflow:auto;/);
+  assert.match(PANEL_STILI, /\.sekme-paneli\[hidden\]\{display:none!important\}/);
 });
 
 // ── ⑥ YERLEŞİM (PNL-A03 · Founder 2026-10-27: geniş ve alçak alt panel) ─────────
@@ -491,7 +501,7 @@ test("Gözlemler ve Ayarlar sekmeleri boş bölüm olarak doğar: yalnız kısa 
     const h = bosSekmeHtml(s);
     assert.equal(h, `<p class="bos" data-bos-sekme="${s}">${kacir(PANEL_METINLERI.bosSekme(s))}</p>`);
     assert.ok(PANEL_METINLERI.bosSekme(s).length > 0 && !/role="tree"/.test(h));
-    const belge = panelHtml({ sekme: s, icerik: h, ikonStili: "", simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
+    const belge = panelHtml({ sekme: s, bolumler: tekBolum(s, h), simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
     assert.ok(belge.includes(`data-sekme="${s}" aria-selected="true"`));
   }
   assert.match(bosSekmeHtml("gozlemler"), /Gözlemler/);

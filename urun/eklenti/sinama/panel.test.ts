@@ -36,6 +36,9 @@ const { onayKapilariTopla } = await import("../src/onay-cekirdek.ts");
 const { notKimligi } = await import("../src/onay-govde.ts");
 const { yolHaritasiKaydi } = await import("../src/yolharitasi.ts");
 const { atlaHref } = await import("../src/minigraf-cekirdek.ts");
+const { SEKMELER } = await import("../src/panel-cekirdek.ts");
+const { bolumYuvasiKaydi } = await import("../src/bolum-yuvasi.ts");
+const { BAGLAM } = await import("../src/bolum-cekirdek.ts");
 
 const EKLENTI_KOKU = fileURLToPath(new URL("..", import.meta.url));
 const SARMAL_KOKU = fileURLToPath(new URL("../../..", import.meta.url));
@@ -152,6 +155,17 @@ const bekle = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
 const satirSayisi = (html: string): number => (html.match(/class="sat"/g) ?? []).length;
 const mesajlar = (o: Ortam, tip: string): Array<Record<string, unknown>> =>
   o.gorunum.gonderilen.filter((m) => (m as { tip?: string }).tip === tip) as Array<Record<string, unknown>>;
+/** Belgedeki bir sekmenin bölüm kabının içeriği (PNL-A18: beş sekmenin bölümü de belgededir). */
+function panelIcerigi(html: string, sekme: string): string {
+  const bas = html.indexOf(`<div id="panel-${sekme}"`);
+  assert.ok(bas >= 0, `${sekme} sekmesinin bölüm kabı yok`);
+  const ic = html.indexOf(">", bas) + 1;
+  const sonraki = html.indexOf(`<div id="panel-`, ic);
+  const son = sonraki >= 0 ? sonraki : html.indexOf("</div><script", ic);
+  return html.slice(ic, son - "</div>".length);
+}
+const gizliMi = (html: string, sekme: string): boolean => new RegExp(`<div id="panel-${sekme}"[^>]*\\shidden>`).test(html);
+
 const kapaliSatirlar = (html: string): string[] =>
   [...html.matchAll(/data-id="([^"]+)"[^>]*aria-expanded="false"/g)].map((m) => m[1]!.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
 
@@ -170,64 +184,125 @@ test("kurulum: kapta TEK webview görünümü kaydolur (sarmalPanel); hiçbir a�
 
 // ── ② SEKME SEÇİMİNE GÖRE DOĞRU BÖLÜM ÇİZİLİR ───────────────────────────────
 
-test("Ray seçiliyken yalnız Ray çizilir: şerit, YOL HARİTASI başlığı, kapalı varsayılanlı ağaç, Mini Graf; Tren ve Makinist çizilmez", () => {
+test("beş sekmenin bölümü belgede hazırdır ve her içerik kendi sekmesinin kabındadır; yalnız seçili sekmeninki (Ray) görünür (PNL-A18)", () => {
   const o = ortamKur();
   const h = o.gorunum.webview.html;
   assert.equal((h.match(/role="tab"/g) ?? []).length, 5);
+  assert.equal((h.match(/role="tabpanel"/g) ?? []).length, 5, "beş sekmenin bölüm kabı belgede olmalı");
   assert.ok(h.includes('data-sekme="ray" aria-selected="true"'));
-  assert.ok(h.includes("YOL HARİTASI") && h.includes('id="agac"'));
-  assert.ok(h.includes('<template id="graf-sablon">') && h.includes("MİNİ GRAF"), "Mini Graf Ray sekmesinde çizilmeli");
-  assert.ok(!h.includes('id="tren-agac"') && !h.includes('id="makinist-agac"'), "seçili olmayan sekme çizilmiş");
-  assert.equal(o.panel.olcumler().satirSayisi, satirSayisi(h), "ölçülen satır sayısı DOM'a basılan satırlarla aynı değil");
-  assert.ok(h.includes("Sarmal"), "çalışma alanı satırı yok");
+  for (const s of SEKMELER) assert.equal(gizliMi(h, s), s !== "ray", `${s}: bölümün görünürlüğü seçili sekmeye uymuyor`);
+  const ray = panelIcerigi(h, "ray");
+  assert.ok(ray.includes("YOL HARİTASI") && ray.includes('id="agac"'));
+  assert.ok(ray.includes('<template id="graf-sablon">') && ray.includes("MİNİ GRAF"), "Mini Graf Ray sekmesinde çizilmeli");
+  assert.ok(!ray.includes('id="tren-agac"') && !ray.includes('id="makinist-agac"'), "başka sekmenin içeriği Ray kabına girmiş");
+  const tren = panelIcerigi(h, "tren");
+  assert.ok(tren.includes('id="tren-agac"') && !tren.includes('id="agac"') && !tren.includes("graf-sablon"), "Tren kabı kendi içeriğini taşımıyor");
+  assert.ok(panelIcerigi(h, "makinist").includes('id="makinist-agac"'));
+  for (const b of ["gozlemler", "ayarlar"]) assert.match(panelIcerigi(h, b), new RegExp(`^<p class="bos" data-bos-sekme="${b}">[^<]+</p>$`));
+  assert.equal(o.panel.olcumler().satirSayisi, satirSayisi(ray), "ölçülen satır sayısı Ray kabına basılan satırlarla aynı değil");
+  assert.ok(ray.includes("Sarmal"), "çalışma alanı satırı yok");
   assert.ok(!/Bölümler/.test(h), "'Bölümler' üretilmiş");
 });
 
-test("Tren seçiliyken yalnız Tren çizilir (ajanlar, geliştirmedeki Adımlar); Makinist seçiliyken yalnız dört açılır grup ve sayıları", async () => {
+test("Tren seçiliyken Tren bölümü görünür (ajanlar, geliştirmedeki Adımlar); Makinist seçiliyken dört açılır grup ve sayıları görünür", async () => {
   const t = ortamKur("tren");
   const ht = t.gorunum.webview.html;
-  assert.ok(ht.includes('data-sekme="tren" aria-selected="true"') && ht.includes('id="tren-agac"'));
-  assert.ok(!ht.includes('id="agac"') && !ht.includes("YOL HARİTASI") && !ht.includes('<template id="graf-sablon">'), "Ray içeriği Tren sekmesinde çizilmiş");
-  assert.ok(ht.includes("Ajanlar") && ht.includes("Geliştirmedeki Adımlar"), "Tren özeti çizilmemiş");
+  assert.ok(ht.includes('data-sekme="tren" aria-selected="true"') && !gizliMi(ht, "tren") && gizliMi(ht, "ray"));
+  const tren = panelIcerigi(ht, "tren");
+  assert.ok(tren.includes('id="tren-agac"') && !tren.includes('id="agac"') && !tren.includes("YOL HARİTASI"), "Ray içeriği Tren kabına girmiş");
+  assert.ok(tren.includes("Ajanlar") && tren.includes("Geliştirmedeki Adımlar"), "Tren özeti çizilmemiş");
   const m = ortamKur("makinist");
   const hm = m.gorunum.webview.html;
-  assert.ok(hm.includes('data-sekme="makinist" aria-selected="true"') && hm.includes('id="makinist-agac"'));
-  for (const ad of ["Onaylar", "Hatırlatıcılar", "Gözlemler", "Fikirler"]) assert.ok(hm.includes(`>${ad}<`), `${ad} grubu yok`);
-  assert.equal(satirSayisi(hm), 4, "Makinist kapalı varsayılanla dört grup satırıdır");
+  assert.ok(hm.includes('data-sekme="makinist" aria-selected="true"') && !gizliMi(hm, "makinist"));
+  const mk = panelIcerigi(hm, "makinist");
+  for (const ad of ["Onaylar", "Hatırlatıcılar", "Gözlemler", "Fikirler"]) assert.ok(mk.includes(`>${ad}<`), `${ad} grubu yok`);
+  assert.equal(satirSayisi(mk), 4, "Makinist kapalı varsayılanla dört grup satırıdır");
   // Sayı üst düğümün yanında, kaynağın kendi sayacından.
   assert.ok(/Onaylar<\/span><span class="ac">2</.test(hm) && /Hatırlatıcılar<\/span><span class="ac">1</.test(hm) && /Fikirler<\/span><span class="ac">1</.test(hm));
   assert.ok(/class="rozet">3</.test(hm), "rozet onaylar + hatırlatıcılar toplamını göstermeli");
   await otur();
 });
 
-test("sekme iletisi: doğru bölüm bir 'bolum' iletisiyle gelir, bağlam güncellenir ve seçim workspaceState'e YAZILMAZ (her açılış Ray'le başlar)", async () => {
+test("sekme iletisi: webview'in geçişi eklentide yalnız kaydedilir; hiçbir içerik gönderilmez, bağlam güncellenir ve seçim workspaceState'e YAZILMAZ (PNL-A18)", async () => {
+  // Founder 2026-10-28 ekran kaydı: içerik eklentinin yanıtına bağlıydı ve eklenti meşgulken eski sekmede
+  // kalıyor ya da gecikmiş bölüm başka sekmenin yerine çiziliyordu. İçerik webview'de hazırdır; yanıt yoktur.
   const o = ortamKur();
-  o.gorunum.mesajGonder({ tip: "sekme", ad: "tren" });
+  const icerikIletisi = (): number => o.gorunum.gonderilen.filter((m) => ["bolum", "parca", "satir", "sekmeSec"].includes(String((m as { tip?: string }).tip))).length;
+  const once = icerikIletisi();
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "tren", n: 1 });
   await otur();
-  const b = mesajlar(o, "bolum").at(-1)!;
-  assert.equal(b.sekme, "tren");
-  assert.ok(String(b.html).includes('id="tren-agac"') && !String(b.html).includes('id="agac"'));
+  assert.equal(icerikIletisi(), once, "sekme geçişi eklentiden içerik bekliyor: geçiş eklenti meşgulken donar");
+  assert.equal(o.panel.olcumler().sekme, "tren");
   assert.equal(o.durum.has("sarmal.panel.sekme"), false, "sekme seçimi kalıcı yazılmış: bir sonraki açılış Ray yerine bu sekmeyle başlar");
   assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, "tren"]);
-  o.gorunum.mesajGonder({ tip: "sekme", ad: "makinist" });
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "makinist", n: 2 });
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "graf", n: 3 });     // bilinmeyen sekme
+  o.gorunum.mesajGonder({ tip: "sekme", ad: 3, n: 4 });
   await otur();
-  assert.equal(mesajlar(o, "bolum").at(-1)!.sekme, "makinist");
-  const sayi = mesajlar(o, "bolum").length;
-  o.gorunum.mesajGonder({ tip: "sekme", ad: "graf" });     // bilinmeyen sekme
-  o.gorunum.mesajGonder({ tip: "sekme", ad: 3 });
-  await otur();
-  assert.equal(mesajlar(o, "bolum").length, sayi, "bilinmeyen sekme seçimi değiştirmiş");
-  assert.equal(o.panel.olcumler().sekme, "makinist");
+  assert.equal(o.panel.olcumler().sekme, "makinist", "bilinmeyen sekme seçimi değiştirmiş");
   // Gözlemler ve Ayarlar da seçilebilir; ikisi bugün yalnız boş durum cümlesi taşır.
-  for (const s of ["gozlemler", "ayarlar"]) {
-    o.gorunum.mesajGonder({ tip: "sekme", ad: s });
+  for (const [i, s] of ["gozlemler", "ayarlar"].entries()) {
+    o.gorunum.mesajGonder({ tip: "sekme", ad: s, n: 5 + i });
     await otur();
-    const son = mesajlar(o, "bolum").at(-1)!;
-    assert.equal(son.sekme, s);
-    assert.match(String(son.html), new RegExp(`^<p class="bos" data-bos-sekme="${s}">[^<]+</p>$`));
+    assert.equal(o.panel.olcumler().sekme, s);
     assert.equal(o.panel.olcumler().satirSayisi, 0);
     assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, s]);
   }
+  assert.equal(icerikIletisi(), once, "sekme geçişleri içerik iletisi doğurmuş");
+});
+
+test("eklentinin seçtirdiği sekme webview'e yalnız seçim olarak gider ve eklentinin işlediği son geçişin sayacını taşır (PNL-A18)", async () => {
+  const o = ortamKur();
+  await o.panel.sekmeSec("makinist");
+  assert.deepEqual(mesajlar(o, "sekmeSec").at(-1), { tip: "sekmeSec", ad: "makinist", n: 0 });
+  assert.equal(mesajlar(o, "bolum").length, 0, "seçim için bölüm yeniden gönderilmiş");
+  // Kullanıcının üç geçişi eklentiye ulaştıktan sonra eklentinin seçimi o sayacı taşır; webview daha yeni
+  // bir geçiş görmüşse seçimi uygulamaz (panel-betik.ts), görmemişse uygular.
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "tren", n: 3 });
+  await otur();
+  await o.panel.sekmeSec("ray");
+  assert.deepEqual(mesajlar(o, "sekmeSec").at(-1), { tip: "sekmeSec", ad: "ray", n: 3 });
+  assert.equal(o.panel.olcumler().sekme, "ray");
+  // Yeni belge (dil değişimi, yeniden çözüm) geçiş sayacını sıfırdan başlatır.
+  const yeniden = new SahteWebviewGorunusu();
+  (kabuk.webviewSaglayicilari.get(GORUNUS_PANEL) as { resolveWebviewView(g: unknown): void }).resolveWebviewView(yeniden);
+  await o.panel.sekmeSec("tren");
+  assert.deepEqual(yeniden.gonderilen.filter((m) => (m as { tip?: string }).tip === "sekmeSec").at(-1), { tip: "sekmeSec", ad: "tren", n: 0 });
+});
+
+test("TEK KAYNAK: webview geçişi, eklentinin seçtirdiği sekme ve bölüm yuvasının seçimi her adımda aynı yeri gösterir (PNL-A18)", async () => {
+  // PNL-A03 koşusunun notu: webview'deki geçiş yalnız panelin sekmesini değiştiriyordu, bölüm yuvası Ray'de
+  // kalıyordu. Yuva artık yerleşik seçimi saklamaz, panelin sekmesinden okur (eklenti.ts ile aynı bağlantı).
+  const o = ortamKur();
+  const yuva = bolumYuvasiKaydi(o.baglam as never);
+  yuva.sekmeBagla((b) => o.panel.sekmeSecVeOdakla(b === "graf" ? "ray" : b), o.panel);
+  const kapi = yuva.sinamaKapisi();
+  const kardesYuzu = yuva.al(1)!;
+  const duyurulan: string[] = [];
+  kardesYuzu.seciliBolumDegisti((b) => duyurulan.push(b));
+  const baglamSecili = (): unknown => kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM.secili).at(-1)?.argumanlar[1];
+  const ayni = async (ne: string): Promise<void> => {
+    await bekle(20);
+    const sekme = o.panel.olcumler().sekme;
+    assert.equal(kapi.olcumler().secili, sekme, `${ne}: bölüm yuvası panelin sekmesinden ayrıştı`);
+    assert.equal(kapi.olcumler().seciliYuva, sekme, `${ne}: yuva bağlam değeri ayrıştı`);
+    assert.equal(kardesYuzu.seciliBolum, sekme, `${ne}: kardeşe verilen seçim ayrıştı`);
+    assert.equal(baglamSecili(), sekme, `${ne}: bağlam anahtarı ayrıştı`);
+  };
+  await ayni("açılış");
+  let n = 0;
+  const tikla = async (ad: string): Promise<void> => { o.gorunum.mesajGonder({ tip: "sekme", ad, n: ++n }); await ayni(`webview ${ad}`); };
+  const komut = async (b: string): Promise<void> => { await kabuk.komutlar.get(`sarmal.bolum.${b}`)!(); await ayni(`komut ${b}`); };
+  await tikla("tren");
+  await komut("makinist");
+  assert.deepEqual(mesajlar(o, "sekmeSec").at(-1), { tip: "sekmeSec", ad: "makinist", n: 1 }, "komutun seçimi webview'e gitmedi");
+  await tikla("gozlemler");
+  await komut("graf");
+  assert.equal(o.panel.olcumler().sekme, "ray", "Graf komutu Ray sekmesini seçmeli");
+  await tikla("ayarlar");
+  await komut("tren");
+  await tikla("ray");
+  assert.deepEqual(duyurulan, ["tren", "makinist", "gozlemler", "ray", "ayarlar", "tren", "ray"], "seçim değişimi kardeşe sırasıyla ve yinelenmeden duyurulmadı");
 });
 
 test("açılış Ray'le başlar: önceki oturumdan kalan sekme (workspaceState) seçimi ezemez ve Yol Haritası açık başlar (PNL-A03)", async () => {
@@ -257,13 +332,15 @@ test("açılış Ray'le başlar: önceki oturumdan kalan sekme (workspaceState) 
 
 test("açık düğümde doğru satır sayısı: 'gec' iletisi yalnız o düğümün çocuklarını ekler, kapatınca geri alır ve tercih kalıcıdır", async () => {
   const o = ortamKur();
-  const once = satirSayisi(o.gorunum.webview.html);
-  const hedef = kapaliSatirlar(o.gorunum.webview.html).find((id) => id.split("/").length >= 3)!;
+  const ray = panelIcerigi(o.gorunum.webview.html, "ray");
+  const once = satirSayisi(ray);
+  const hedef = kapaliSatirlar(ray).find((id) => id.split("/").length >= 3)!;
   assert.ok(hedef, "açılacak kapalı düğüm yok");
   o.gorunum.mesajGonder({ tip: "gec", id: hedef, ac: true });
   await otur();
   const acik = mesajlar(o, "parca").at(-1)!;
   assert.equal(acik.kimlik, "agac");
+  assert.equal(acik.sekme, "ray", "parça kendi sekmesine adreslenmemiş");
   const cocuk = satirSayisi(String(acik.html)) - once;
   assert.ok(cocuk > 0, "düğüm açıldı fakat çocuk satır eklenmedi");
   assert.equal(o.panel.olcumler().satirSayisi, satirSayisi(String(acik.html)));
@@ -383,7 +460,7 @@ test("Mini Graf komut köprüsü: izinli bağ çalışır, izinsiz bağ ve bozuk
 
 // ── ⑥ VERİ DEĞİŞİNCE YALNIZ İLGİLİ PARÇA ───────────────────────────────────
 
-test("Makinist verisi değişince yalnız Makinist parçası yeniden çizilir; Ray sekmesindeyken Makinist değişimi hiçbir parça göndermez ama rozeti günceller", async () => {
+test("Makinist verisi değişince yalnız Makinist parçası yeniden çizilir ve kendi sekmesine adreslenir; Ray seçiliyken de çizilir ki sekme geçişi hazır içerik bulsun (PNL-A18)", async () => {
   const o = ortamKur("makinist");
   const k = o.makinistKaynaklari;
   k.fikirler!.satirlar.push({ ad: "Fikir 2", baglam: "sarmalFikir" });
@@ -393,14 +470,17 @@ test("Makinist verisi değişince yalnız Makinist parçası yeniden çizilir; R
   const p = mesajlar(o, "parca");
   assert.equal(p.length, 1, "tek değişim tek parça üretmeli");
   assert.equal(p[0]!.kimlik, "makinist-agac");
+  assert.equal(p[0]!.sekme, "makinist");
   assert.ok(/Fikirler<\/span><span class="ac">2</.test(String(p[0]!.html)), "sayı kaynağın yeni sayacını göstermeli");
   assert.equal(mesajlar(o, "bolum").length, 0);
   assert.equal(mesajlar(o, "rozet").at(-1)!.sayi, 3, "rozet onaylar + hatırlatıcılar toplamı");
-  // Ray sekmesindeyken: parça yok, rozet var.
+  // Ray seçiliyken de Makinist bölümü güncel tutulur; parça yalnız Makinist kabına gider ve seçimi değiştirmez.
   const r = ortamKur("ray");
   r.makinistKaynaklari.hatirlaticilar!.olay.fire(undefined);
   await bekle(250);
-  assert.equal(mesajlar(r, "parca").length, 0, "görünmeyen sekme için parça çizilmiş");
+  const rp = mesajlar(r, "parca");
+  assert.deepEqual(rp.map((m) => [m.sekme, m.kimlik]), [["makinist", "makinist-agac"]], "gizli sekmenin bölümü güncel tutulmamış ya da başka sekmeye yazılmış");
+  assert.equal(r.panel.olcumler().sekme, "ray");
   assert.ok(mesajlar(r, "rozet").length >= 1);
 });
 
@@ -424,7 +504,7 @@ test("Yol Haritası öğesiz değişimi ağaç parçasını yeniler; öğe hedef
   assert.ok(/^<div class="sat"/.test(String(yamalar.at(-1)!.html)) && !String(yamalar.at(-1)!.html).includes("</div><div"), "yama tek satır olmalı");
 });
 
-test("görünmeyen panel hiçbir şey çizmez; yeniden görününce seçili sekme baştan çizilir", async () => {
+test("görünmeyen panel hiçbir şey çizmez; yeniden görününce beş sekmenin bölümü baştan gönderilir ve seçim değişmez", async () => {
   const o = ortamKur("makinist");
   o.gorunum.visible = false;
   o.makinistKaynaklari.fikirler!.olay.fire(undefined);
@@ -433,8 +513,9 @@ test("görünmeyen panel hiçbir şey çizmez; yeniden görününce seçili sekm
   o.gorunum.visible = true;
   (o.gorunum as unknown as { gorunurluk: { fire(): void } }).gorunurluk.fire();
   await otur();
-  assert.equal(mesajlar(o, "bolum").length, 1, "yeniden görününce bölüm baştan gönderilmeli");
-  assert.equal(mesajlar(o, "bolum")[0]!.sekme, "makinist");
+  assert.deepEqual(mesajlar(o, "bolum").map((m) => m.sekme), [...SEKMELER], "yeniden görününce beş bölüm de baştan gönderilmeli");
+  assert.equal(mesajlar(o, "sekmeSec").length, 0, "yeniden görünme seçimi değiştirmiş");
+  assert.equal(o.panel.olcumler().sekme, "makinist");
 });
 
 // ── ⑦ KARDEŞ TREN EKLENTİSİ ────────────────────────────────────────────────
@@ -508,12 +589,20 @@ test("Ray başlıkları katlanır: YOL HARİTASI ve MİNİ GRAF düğmedir, ok v
   o.gorunum.mesajGonder({ tip: "bolumGec", bolum: "agac", ac: "hayir" });  // boolean olmayan değer reddedilir
   await otur();
   assert.deepEqual(o.durum.get("sarmal.panel.acik"), { "bolum:graf": false });
-  // Sekme değişip Ray'e dönülünce bölüm katlı gelir.
-  o.gorunum.mesajGonder({ tip: "sekme", ad: "tren" });
-  o.gorunum.mesajGonder({ tip: "sekme", ad: "ray" });
+  // Sekme değişimi Ray bölümünü yeniden çizmez (webview katlı bölümü olduğu gibi korur); bölüm bir
+  // sonraki çizimde (ör. panel yeniden görününce) katlı gelir.
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "tren", n: 1 });
+  o.gorunum.mesajGonder({ tip: "sekme", ad: "ray", n: 2 });
   await otur();
-  const son = mesajlar(o, "bolum").at(-1)!;
-  assert.equal(son.sekme, "ray");
+  assert.equal(mesajlar(o, "bolum").length, 0, "sekme değişimi bölümü yeniden çizmiş");
+  o.gorunum.visible = false;
+  o.makinistKaynaklari.fikirler!.olay.fire(undefined);   // gizliyken gelen değişim paneli kirletir
+  await bekle(250);
+  o.gorunum.visible = true;
+  (o.gorunum as unknown as { gorunurluk: { fire(): void } }).gorunurluk.fire();
+  await otur();
+  const son = mesajlar(o, "bolum").find((m) => m.sekme === "ray")!;
+  assert.ok(son, "Ray bölümü yeniden çizilmedi");
   assert.match(String(son.html), /data-bolum="graf" aria-expanded="false"/);
   assert.match(String(son.html), /<div id="bolum-graf" class="bolum" hidden>/);
   assert.match(String(son.html), /data-bolum="agac" aria-expanded="true"/);

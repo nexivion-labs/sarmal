@@ -423,11 +423,17 @@ export function bosSekmeHtml(s: BosSekme): string {
 
 export type SekmeSimgeleri = Record<SekmeKimligi, string>;
 
+/** Bir sekmenin bölümü: içerik HTML'i ve satır ikonlarının CSS kuralları. */
+export interface SekmeBolumu { html: string; ikonStili: string }
+
 export interface PanelBelgesi {
+  /** Seçili sekme: şeritte işaretlidir ve yalnız onun bölümü görünür. */
   sekme: SekmeKimligi;
-  /** Seçili sekmenin içerik HTML'i. */
-  icerik: string;
-  ikonStili: string;
+  /**
+   * Beş sekmenin bölümü (PNL-A18). Hepsi webview'de hazır durur; sekme geçişi eklentiye
+   * gidip gelen bir yanıt beklemez, yalnız hangi bölümün görüneceğini değiştirir.
+   */
+  bolumler: Readonly<Record<SekmeKimligi, SekmeBolumu>>;
   simgeler: SekmeSimgeleri;
   nonce: string;
   /** `webview.cspSource` (sınamada boş verilebilir). */
@@ -446,13 +452,22 @@ export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, 
     const sec = s === secili;
     const sayi = s === "makinist"
       ? `<span class="rozet"${rozet > 0 ? "" : " hidden"}>${rozet > 0 ? rozet : ""}</span>` : "";
-    return `<button type="button" class="sekme" role="tab" data-sekme="${s}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
+    return `<button type="button" class="sekme" role="tab" id="sekme-${s}" aria-controls="panel-${s}" data-sekme="${s}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
       + ` title="${kacir(PANEL_METINLERI.sekmeIpucu(s))}">${simgeSvg(simgeler[s])}<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>${sayi}</button>`;
   }).join("");
   return `<nav class="seritler" role="tablist" aria-label="${kacir(PANEL_METINLERI.seritEtiketi)}">${dugmeler}</nav>`;
 }
 
-/** Webview'in tam belgesi: şerit, içerik, betik. İçerik ilk çizimle birlikte gelir. */
+/**
+ * Sekmenin bölüm kabı (PNL-A18): sekme kimliğini taşır ve yalnız seçili sekmeninki görünür. Eklentiden
+ * gelen her güncelleme hedefini kendi sekmesinin kabının içinde arar; bir sekmenin içeriği başka bir
+ * sekmenin kabına yazılamaz.
+ */
+export function sekmePaneliHtml(s: SekmeKimligi, secili: SekmeKimligi, icerik: string): string {
+  return `<div id="panel-${s}" class="sekme-paneli" role="tabpanel" data-sekme="${s}" aria-labelledby="sekme-${s}"${s === secili ? "" : " hidden"}>${icerik}</div>`;
+}
+
+/** Webview'in tam belgesi: şerit, beş sekmenin bölümü, betik. Bölümler ilk çizimle birlikte gelir. */
 export function panelHtml(b: PanelBelgesi): string {
   const csp = [
     "default-src 'none'",
@@ -465,9 +480,12 @@ export function panelHtml(b: PanelBelgesi): string {
     + `<meta http-equiv="Content-Security-Policy" content="${csp}">`
     + `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
     + `<title>${kacir(PANEL_METINLERI.panelAdi)}</title>`
-    + `<style>${PANEL_STILI}</style><style id="ikon-stil">${b.ikonStili}</style></head><body>`
+    + `<style>${PANEL_STILI}</style>`
+    // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
+    + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
+    + `</head><body>`
     + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet)
-    + `<div id="icerik" role="tabpanel">${b.icerik}</div>`
+    + `<div id="icerik">${SEKMELER.map((s) => sekmePaneliHtml(s, b.sekme, b.bolumler[s].html)).join("")}</div>`
     + `<script nonce="${b.nonce}">${PANEL_BETIGI}</script></body></html>`;
 }
 

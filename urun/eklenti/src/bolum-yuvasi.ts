@@ -159,11 +159,21 @@ export interface BolumSinamaKapisi {
 /** Yerleşik bölüm seçildiğinde panelin ilgili sekmesini seçen kanca (panel.ts). */
 export type SekmeKancasi = (bolum: YerlesikBolum) => void | Promise<void>;
 
+/**
+ * Sarmal panelinin seçili sekmesi: yerleşik bölüm seçiminin TEK kaynağı (PNL-A18). Yuva yerleşik seçimi
+ * kendi saklamaz, panelden okur; panel sekmesini her yazdığında olay ateşlenir. Böylece webview'deki
+ * sekme geçişi, eklentinin seçtirdiği sekme ve bölüm yuvasının seçimi birbirinden ayrışamaz.
+ */
+export interface PanelSekmesi {
+  readonly seciliSekme: string;
+  readonly onSekmeSecildi: vscode.Event<unknown>;
+}
+
 export interface BolumYuvasiYuzu {
   al(surum: number): BolumYuvasiV1 | undefined;
   sinamaKapisi(): BolumSinamaKapisi;
-  /** Sarmal paneli kurulunca yerleşik bölüm komutları ona bağlanır. */
-  sekmeBagla(kanca: SekmeKancasi): void;
+  /** Sarmal paneli kurulunca yerleşik bölüm komutları ona bağlanır; yerleşik seçim panelin sekmesinden okunur. */
+  sekmeBagla(kanca: SekmeKancasi, panel?: PanelSekmesi): void;
 }
 
 function gercekYol(yol: string): string {
@@ -201,10 +211,15 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
   private readonly yuvaCozumu: Record<string, number> = {};
   private kardesVarYazildi = false;
   private sekmeKancasi?: SekmeKancasi;
+  private panel?: PanelSekmesi;
+  /** Seçim olayıyla en son duyurulan bölüm; aynı seçim ikinci kez duyurulmaz. */
+  private sonDuyurulan: string = RAY_BOLUMU;
+  private readonly context: vscode.ExtensionContext;
 
   private readonly kendiKok: string;
 
   constructor(context: vscode.ExtensionContext) {
+    this.context = context;
     this.kendiKok = gercekYol(context.extensionPath);
     context.subscriptions.push(
       this.degisti,
@@ -249,9 +264,30 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
     return sahibiBul(dosyalar.map(gercekYol), eklentiler, this.kendiKok);
   }
 
+  /**
+   * Seçili bölüm (PNL-A18): kardeş seçiliyse kardeş, değilse panelin sekmesi. Defterde yerleşik bir kimlik
+   * yalnız "kardeş seçili değil" demektir; yerleşik seçimin değeri panelden okunur ve ayrıca saklanmaz.
+   * Panel bağlanmadan önce defterin değeri geçerlidir.
+   */
+  private seciliOku(): string {
+    const k = this.defter.secili;
+    return yerlesikMi(k) && this.panel ? this.panel.seciliSekme : k;
+  }
+
+  private seciliYuvaOku(): string {
+    return yerlesikMi(this.defter.secili) && this.panel ? this.panel.seciliSekme : this.defter.seciliYuva;
+  }
+
+  /** Bağlam anahtarlarını yazar ve seçim değiştiyse olayı ateşler. */
+  private async yansit(): Promise<void> {
+    const secili = this.seciliOku();
+    if (secili !== this.sonDuyurulan) { this.sonDuyurulan = secili; this.degisti.fire(secili); }
+    await this.baglamiYaz();
+  }
+
   private async baglamiYaz(): Promise<void> {
-    const secili = this.defter.secili;
-    await vscode.commands.executeCommand("setContext", BAGLAM.seciliYuva, this.defter.seciliYuva);
+    const secili = this.seciliOku();
+    await vscode.commands.executeCommand("setContext", BAGLAM.seciliYuva, this.seciliYuvaOku());
     await vscode.commands.executeCommand("setContext", BAGLAM.secili, secili);
     await vscode.commands.executeCommand("setContext", BAGLAM.rayGizli, secili !== RAY_BOLUMU);
     this.kardesVarYazildi = this.defter.kayitSayisi > 0;
@@ -270,14 +306,23 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
     if (secilen) await this.sec(secilen.kimlik, true);
   }
 
-  sekmeBagla(kanca: SekmeKancasi): void { this.sekmeKancasi = kanca; }
+  sekmeBagla(kanca: SekmeKancasi, panel?: PanelSekmesi): void {
+    this.sekmeKancasi = kanca;
+    if (!panel) return;
+    this.panel = panel;
+    // Panelde seçilen sekme (webview geçişi ya da eklentinin seçtirdiği) kardeş seçimini düşürür:
+    // kullanıcının baktığı yer artık panelin sekmesidir.
+    this.context.subscriptions.push(panel.onSekmeSecildi(() => {
+      if (!yerlesikMi(this.defter.secili)) this.defter.sec(RAY_BOLUMU);
+      void this.yansit();
+    }));
+    void this.yansit();
+  }
 
   async sec(kimlik: string, odakla = false): Promise<boolean> {
-    const onceki = this.defter.secili;
     if (!this.defter.sec(kimlik)) return false;
-    await this.baglamiYaz();
-    if (onceki !== kimlik) this.degisti.fire(kimlik);
-    // Yerleşik bölüm panelin sekmesidir: kanca sekmeyi seçer ve kabı öne alır.
+    await this.yansit();
+    // Yerleşik bölüm panelin sekmesidir: kanca sekmeyi seçer ve kabı öne alır; seçim panelden yansır.
     if (yerlesikMi(kimlik) && this.sekmeKancasi) await this.sekmeKancasi(kimlik);
     else if (odakla) {
       // Kardeşin yuva görünümü öne alınır.
@@ -351,7 +396,7 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
       delete this.yuvaCozumu[kimlik];
       // Önce görünüş gizlenir (bağlam), sonra sağlayıcı bırakılır.
       void this.baglamiYaz().finally(() => ek.kayit?.dispose());
-      if (seciliDegisti) this.degisti.fire(RAY_BOLUMU);
+      if (seciliDegisti) void this.yansit();
     };
     return new vscode.Disposable(() => ek.dusur());
   }
@@ -363,7 +408,7 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
     return {
       surum: 1,
       bolumKaydet: (tanim) => kabuk.kaydet(tanim),
-      get seciliBolum() { return kabuk.defter.secili; },
+      get seciliBolum() { return kabuk.seciliOku(); },
       seciliBolumDegisti: kabuk.degisti.event,
     };
   }
@@ -379,8 +424,8 @@ class BolumYuvasiKabugu implements BolumYuvasiYuzu {
   private olcumler(): BolumOlcumleri {
     return {
       sira: this.defter.sira().map((o) => o.kimlik),
-      secili: this.defter.secili,
-      seciliYuva: this.defter.seciliYuva,
+      secili: this.seciliOku(),
+      seciliYuva: this.seciliYuvaOku(),
       yuvaCozumu: { ...this.yuvaCozumu },
       kardesVar: this.kardesVarYazildi,
     };

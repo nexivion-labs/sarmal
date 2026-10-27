@@ -16,8 +16,18 @@
 //   sekme seçimi, aç-kapa, tıklama, kutucuk ve satır eylemleri.
 //
 //   Çizim kuralları:
-//     · Yalnız SEÇİLİ sekmenin içeriği çizilir; diğerleri kullanıcı seçene kadar
-//       hesaplanmaz.
+//     · BEŞ SEKMENİN BÖLÜMÜ WEBVIEW'DE HAZIR DURUR (PNL-A18 · Founder 2026-10-28 ekran
+//       kaydı). Sekme geçişi webview'in kendi içinde, eklentiye gidip gelen bir yanıt
+//       beklemeden yapılır; eklenti seçimi yalnız haber olarak alır. Eskiden yalnız seçili
+//       sekmenin içeriği çiziliyor ve sekme değişince eklentiden yeni bölüm isteniyordu;
+//       eklenti denetim turunun bölünmez bloğundayken vurgu yeni sekmeye geçiyor, içerik
+//       eski sekmede kalıyor ya da gecikmiş bir bölüm iletisi başka sekmenin yerine
+//       çiziliyordu. Bugün her güncelleme kendi sekmesinin kabına yazılır ve seçili sekme
+//       ne olursa olsun bütün bölümler güncel tutulur.
+//     · SEÇİLİ SEKMENİN TEK KAYNAĞI bu paneldeki `sekme` alanıdır ve tek yazım yolu
+//       `sekmeyiYaz`dır. Bölüm yuvası (bolum-yuvasi.ts) yerleşik seçimi kendi saklamaz,
+//       buradan okur; webview ise eklentinin seçtirdiği sekmeyi, eklentiye henüz ulaşmamış
+//       daha yeni bir kullanıcı geçişi yoksa uygular (panel-betik.ts geçiş sayacı).
 //     · Veri değişince yalnız ilgili parça yeniden çizilir (ağaç · Mini Graf · Tren ·
 //       Makinist); yalnız bir satırı ilgilendiren değişim (aktif varlık nabzı)
 //       tek satır yamasıdır. Görünmeyen panel hiçbir şey çizmez, görününce yetişir.
@@ -44,6 +54,7 @@ import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  type SekmeBolumu,
   BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
   kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
@@ -135,6 +146,10 @@ export const SINAMA_KOMUTU = "sarmal.sinama.panel";
 
 export interface SarmalPaneliYuzu {
   sekmeSec(s: SekmeKimligi): Promise<void>;
+  /** Seçili sekme: yerleşik bölüm seçiminin tek kaynağı (PNL-A18). */
+  readonly seciliSekme: SekmeKimligi;
+  /** Seçili sekme her yazıldığında (değişmese de) ateşlenir; bölüm yuvası seçimini buradan yansıtır. */
+  readonly onSekmeSecildi: vscode.Event<SekmeKimligi>;
   gorunurMu(): boolean;
   diliTazele(): void;
   olcumler(): PanelOlcumleri;
@@ -162,6 +177,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private sayac = { belge: 0, parca: 0, yama: 0 };
   private hazirSayisi = 0;
   private sonKademe?: string;
+  /** Eklentinin işlediği son kullanıcı sekme geçişinin sayacı (webview'deki geçiş sayacının karşılığı). */
+  private gorulenGecis = 0;
+  private readonly sekmeSecildi = new vscode.EventEmitter<SekmeKimligi>();
+  readonly onSekmeSecildi = this.sekmeSecildi.event;
+  /** Sınama kipinde webview'in sekme dizisi raporu (PNL-A18 nöbeti). */
+  private sinamaRaporu?: unknown;
 
   constructor(private readonly context: vscode.ExtensionContext, private readonly g: PanelGirdileri) {
     // Her açılış Ray'le başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
@@ -177,12 +198,13 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     }));
     abone(g.yol.miniGraf.onDegisti(() => this.zamanla("graf", () => this.grafCiz())));
     abone(g.tren.onDidChangeTreeData(() => { this.kardesiYokla(); this.zamanla("tren", () => this.agacTazele("tren")); }));
+    abone(this.sekmeSecildi);
     abone(g.makinist.onDidChangeTreeData(() => {
       this.rozetiYaz();
       this.zamanla("makinist", () => this.agacTazele("makinist"));
     }));
     abone(vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("sarmal.miniGraf")) this.zamanla("bolum", () => this.bolumGonder());
+      if (e.affectsConfiguration("sarmal.miniGraf")) this.zamanla("bolum", () => this.bolumGonder("ray"));
     }));
     abone(vscode.extensions.onDidChange(() => this.kardesiYokla()));
     abone({ dispose: () => { for (const z of this.zamanlayicilar.values()) clearTimeout(z); this.zamanlayicilar.clear(); } });
@@ -214,6 +236,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 
   gorunurMu(): boolean { return this.gorunum?.visible ?? false; }
 
+  get seciliSekme(): SekmeKimligi { return this.sekme; }
+
   olcumler(): PanelOlcumleri {
     const satirSayisi = kaynakMi(this.sekme) ? this.sonSatirlar[this.sekme].length : 0;
     const bag = /href="(command:sarmal\.dosyaAc\?[^"]*)"/.exec(this.sonGraf)?.[1];
@@ -235,6 +259,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     // Webview'e en son gönderilen Mini Graf çizimi verilen metni taşıyor mu (PNL-A14 nöbeti).
     if (e.eylem === "grafIcerir") return typeof e.metin === "string" && this.sonGraf.includes(e.metin);
     if (e.eylem === "ileti") { await this.iletiyiIsle(e.ileti); return true; }
+    // PNL-A18: webview şeritteki sekmelere sırayla tıklar ve her geçişi kaydeder; rapor sonra okunur.
+    if (e.eylem === "sekmeDizisi") {
+      const d = ham as { sira?: unknown; aralik?: unknown };
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      return this.gorunum.webview.postMessage({ tip: "sinamaSekmeDizisi", sira: d.sira, aralik: d.aralik });
+    }
+    if (e.eylem === "sekmeRaporu") return this.sinamaRaporu;
     if (e.eylem === "raySatirlari") {
       return [...this.harita].filter(([, v]) => v.kaynak === "ray").map(([id, v]) => ({
         id, kod: this.g.yol.saglayici.ogeKodu(v.u.oge), komutlu: v.u.satir.komutlu,
@@ -253,15 +285,23 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.sayac.belge += 1;
   }
 
+  /**
+   * Eklentinin seçtirdiği sekme (bölüm komutu, onay kapısı, durum çubuğu sayacı). İçerik webview'de
+   * hazırdır; webview'e yalnız seçim gider. İleti eklentinin o ana kadar işlediği kullanıcı geçişinin
+   * sayacını taşır: webview'de eklentiye henüz ulaşmamış daha yeni bir geçiş varsa seçim uygulanmaz ve
+   * o geçiş eklentiye ulaşınca son söz onun olur. Görünüm henüz çözülmemişse ilk belge bu sekmeyle üretilir.
+   */
   async sekmeSec(s: SekmeKimligi): Promise<void> {
-    const yeni = sekmeNormalle(s);
-    const degisti = yeni !== this.sekme;
-    this.sekme = yeni;
-    if (yeni === "tren") this.kardesiYokla();
-    // Çizim bağlam yazımını beklemez: görünüm henüz çözülmemişse ilk belge zaten bu sekmeyle üretilir
-    // ve ikinci bir bölüm iletisi gönderilmez.
-    if (degisti || this.gorunum) this.bolumGonder();
+    this.sekmeyiYaz(sekmeNormalle(s));
+    this.yaz({ tip: "sekmeSec", ad: this.sekme, n: this.gorulenGecis });
     await this.sekmeBaglami();
+  }
+
+  /** Seçili sekmenin TEK yazım yolu (PNL-A18): webview geçişi de eklentinin seçimi de buradan geçer. */
+  private sekmeyiYaz(s: SekmeKimligi): void {
+    this.sekme = s;
+    if (s === "tren") this.kardesiYokla();
+    this.sekmeSecildi.fire(s);
   }
 
   /** Bölüm komutlarının (sarmal.bolum.*) panel karşılığı: sekmeyi seçer ve kabı öne alır. */
@@ -288,7 +328,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const var_ = Array.isArray(komutlar) && komutlar.includes(TREN_KARDES_KOMUTU);
       if (var_ === this.kardesVar) return;
       this.kardesVar = var_;
-      if (this.sekme === "tren") this.zamanla("tren", () => this.agacTazele("tren"));
+      this.zamanla("tren", () => this.agacTazele("tren"));
     }, () => undefined);
   }
 
@@ -307,9 +347,11 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   }
 
   private tamHtml(cspSource: string): string {
-    const b = this.bolumUret(this.sekme);
+    // Yeni belgenin geçiş sayacı sıfırdan başlar; beş sekmenin bölümü birlikte üretilir (PNL-A18).
+    this.gorulenGecis = 0;
+    const bolumler = Object.fromEntries(SEKMELER.map((s) => [s, this.bolumUret(s)])) as Record<SekmeKimligi, SekmeBolumu>;
     return panelHtml({
-      sekme: this.sekme, icerik: b.html, ikonStili: b.ikonStili, simgeler: this.simgeler(),
+      sekme: this.sekme, bolumler, simgeler: this.simgeler(),
       nonce: randomBytes(16).toString("base64"), cspSource, rozet: this.g.makinist.rozetSayisi,
     });
   }
@@ -410,7 +452,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 
   /** Onay yüzeyinin tazelemesi: Makinist ağacı hemen yeniden çizilir; istenirse gerekçe kutusuna odaklanılır. */
   private onayTazele(odakNot?: string): void {
-    if (!this.gorunum || this.sekme !== "makinist") return;
+    if (!this.gorunum) return;
     if (!this.gorunum.visible) { this.kirli = true; return; }
     this.agacTazele("makinist");
     if (odakNot) this.yaz({ tip: "onayOdak", kimlik: odakNot });
@@ -433,8 +475,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     return k;
   }
 
-  /** Seçili sekmenin tam içeriği. */
-  private bolumUret(s: SekmeKimligi): { html: string; ikonStili: string } {
+  /** Bir sekmenin tam içeriği. */
+  private bolumUret(s: SekmeKimligi): SekmeBolumu {
     if (s === "ray") {
       const a = this.agacUret("ray");
       const bos = this.g.yol.saglayici.bosMesaj();
@@ -461,28 +503,36 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     void Promise.resolve(this.gorunum.webview.postMessage(m)).catch(() => undefined);
   }
 
-  /** Seçili sekmenin içeriğini baştan gönderir (sekme değişimi, ayar değişimi, yeniden görünme). */
-  private bolumGonder(): void {
+  /**
+   * Bir sekmenin bölümünü baştan gönderir; sekme verilmezse beşini de (yeniden görünme). İleti
+   * webview'de yalnız kendi sekmesinin kabını yazar ve seçili sekmeyi değiştirmez (PNL-A18).
+   */
+  private bolumGonder(s?: SekmeKimligi): void {
     if (!this.gorunum) return;
     if (!this.gorunum.visible) { this.kirli = true; return; }
-    const b = this.bolumUret(this.sekme);
-    this.sayac.parca += 1;
-    this.yaz({ tip: "bolum", sekme: this.sekme, html: b.html, ikonStili: b.ikonStili });
+    for (const sekme of s ? [s] : SEKMELER) {
+      const b = this.bolumUret(sekme);
+      this.sayac.parca += 1;
+      this.yaz({ tip: "bolum", sekme, html: b.html, ikonStili: b.ikonStili });
+    }
   }
 
-  /** Ağaç parçasını yeniden çizer; Yol Haritası boş-durum geçişinde bölümün tamamı gönderilir. */
+  /**
+   * Ağaç parçasını yeniden çizer; Yol Haritası boş-durum geçişinde bölümün tamamı gönderilir. Seçili
+   * sekme ne olursa olsun çizilir: bütün bölümler webview'de güncel durur (PNL-A18).
+   */
   private agacTazele(k: Kaynak): void {
-    if (!this.gorunum || this.sekme !== k) return;
+    if (!this.gorunum) return;
     if (!this.gorunum.visible) { this.kirli = true; return; }
-    if (k === "ray" && (this.g.yol.saglayici.bosMesaj() !== undefined) !== this.sonBos) { this.bolumGonder(); return; }
-    if (k === "tren") { this.bolumGonder(); return; }   // boş durum ve kardeş bağlantısı aynı bölümdedir
+    if (k === "ray" && (this.g.yol.saglayici.bosMesaj() !== undefined) !== this.sonBos) { this.bolumGonder("ray"); return; }
+    if (k === "tren") { this.bolumGonder("tren"); return; }   // boş durum ve kardeş bağlantısı aynı bölümdedir
     const a = this.agacUret(k);
     this.sayac.parca += 1;
-    this.yaz({ tip: "parca", kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili });
+    this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili });
   }
 
   private grafCiz(): void {
-    if (!this.gorunum || this.sekme !== "ray" || !this.grafAcik()) return;
+    if (!this.gorunum || !this.grafAcik()) return;
     if (!this.gorunum.visible) { this.kirli = true; return; }
     // Tur yayını grafın modelini değiştirmediyse çizim yapılmaz (PNL-A14). Mini Graf büyük olabilir
     // (Sarmal deposunun kendisinde megabayta yakın); aynı çizim ikinci kez de gönderilmez.
@@ -493,12 +543,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.sonGraf = html;
     this.grafIsaretli = false;
     this.sayac.parca += 1;
-    this.yaz({ tip: "parca", kimlik: "graf", html });
+    this.yaz({ tip: "parca", sekme: "ray", kimlik: "graf", html });
   }
 
   /** Yalnız bir satırı ilgilendiren değişim: satır yeniden kurulur ve yamalanır. */
   private satirYama(k: Kaynak, oge: unknown): void {
-    if (!this.gorunum || this.sekme !== k || !this.gorunum.visible) return;
+    if (!this.gorunum || !this.gorunum.visible) return;
     const id = this.ogeKimligi.get(oge);
     if (!id) return;
     const eski = this.harita.get(id);
@@ -510,7 +560,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const i = dizi.findIndex((x) => x.satir.id === id);
     if (i >= 0) dizi[i] = yeni;
     this.sayac.yama += 1;
-    this.yaz({ tip: "satir", id, html: satirHtml(yeni.satir), ikonStili: defter.stil() });
+    this.yaz({ tip: "satir", sekme: k, id, html: satirHtml(yeni.satir), ikonStili: defter.stil() });
   }
 
   /**
@@ -549,7 +599,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.acikKaydet();
     void (async () => {
       await this.sekmeSecVeOdakla("ray");
-      this.bolumGonder();
+      this.bolumGonder("ray");
       this.yaz({ tip: "git", id: bulunan.id });
     })();
   }
@@ -568,7 +618,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const kayit = id ? this.harita.get(id) : undefined;
     switch (m.tip) {
       case "sekme": {
-        if ((SEKMELER as readonly unknown[]).includes(m.ad)) await this.sekmeSec(m.ad as SekmeKimligi);
+        // Kullanıcı sekmeyi webview'de değiştirdi ve içerik orada zaten görünüyor (PNL-A18). Eklenti
+        // seçimi yalnız kaydeder; hiçbir içerik göndermez ve yanıt beklenmez.
+        if (!(SEKMELER as readonly unknown[]).includes(m.ad)) return;
+        if (typeof m.n === "number" && m.n > this.gorulenGecis) this.gorulenGecis = m.n;
+        this.sekmeyiYaz(m.ad as SekmeKimligi);
+        await this.sekmeBaglami();
         return;
       }
       case "gec": {
@@ -625,6 +680,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
         return;
       }
       case "hazir": { this.hazirSayisi += 1; return; }
+      case "sinamaRapor": { this.sinamaRaporu = m.kayitlar; return; }
       case "kardes": {
         if (!this.kardesVar) return;
         try { await vscode.commands.executeCommand(TREN_KARDES_KOMUTU); } catch { /* kardeş kapanmış olabilir */ }
