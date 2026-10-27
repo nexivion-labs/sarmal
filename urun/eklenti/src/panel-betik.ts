@@ -192,6 +192,23 @@ export const PANEL_BETIGI = `
     var t = $('graf-sablon');
     if (t && $('graf')) grafYaz(t.innerHTML);
   }
+  // Satır tıklaması (PNL-A05): Mini Graf yeniden çizilmez, yalnız seçim işareti gölge kökte bağı
+  // verilen düğüme geçer. Önceki seçimin bağ çizgileri yeni seçimi anlatmadığı için gizlenir; yeni
+  // seçimin bağları ve meyve satırları graf bir sonraki kez çizildiğinde gelir.
+  function grafSec(href) {
+    var kok = $('graf') && $('graf').shadowRoot;
+    if (!kok || typeof href !== 'string') return;
+    Array.prototype.forEach.call(kok.querySelectorAll('.dugum.secili'), function (x) {
+      x.classList.remove('secili');
+      x.removeAttribute('aria-current');
+    });
+    Array.prototype.forEach.call(kok.querySelectorAll('svg.serit, .bag, .zemin, .uretir'), function (x) { x.style.display = 'none'; });
+    var bag = Array.prototype.filter.call(kok.querySelectorAll('a'), function (a) { return a.getAttribute('href') === href; })[0];
+    var dugum = bag && (bag.classList.contains('dugum') ? bag : bag.querySelector('.dugum'));
+    if (!dugum) return;
+    dugum.classList.add('secili');
+    dugum.setAttribute('aria-current', 'true');
+  }
 
   // ── Parça değiştirme: odak ve seçim korunur ────────────────────────────────
   function odakKimligi() {
@@ -293,6 +310,19 @@ export const PANEL_BETIGI = `
     } else if (m.tip === 'rozet') {
       var r = document.querySelector('.sekme[data-sekme="makinist"] .rozet');
       if (r) { r.textContent = m.sayi > 0 ? String(m.sayi) : ''; r.hidden = !(m.sayi > 0); }
+    } else if (m.tip === 'grafSec') {
+      grafSec(m.href);
+    } else if (m.tip === 'sinamaTikla') {
+      // Yalnız sınama kipinde gelir (panel.ts SINAMA_KOMUTU): Mini Graf'ta dosyaya götüren ilk bağın
+      // içindeki yazıya, gerçek bir fare tıklaması gibi gölge kökten belgeye kabaran bir tıklama gönderilir.
+      var gk = $('graf') && $('graf').shadowRoot;
+      var hedefBag = gk && Array.prototype.filter.call(gk.querySelectorAll('a'), function (a) {
+        return (a.getAttribute('href') || '').indexOf('command:sarmal.dosyaAc') === 0;
+      })[0];
+      if (hedefBag) {
+        (hedefBag.querySelector('.ad, text.etiket') || hedefBag)
+          .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true, view: window }));
+      }
     } else if (m.tip === 'git') {
       var g = satirBul(m.id);
       if (g) { sec(g); g.focus(); g.scrollIntoView({ block: 'nearest' }); }
@@ -332,12 +362,19 @@ export const PANEL_BETIGI = `
 
   document.addEventListener('click', function (e) {
     // Gölge kök içindeki bağlar (Mini Graf): yalnız command: bağı iletilir, gezinti yapılmaz.
+    // TEK YOL (PNL-A05): üç görünümün düğüm bağı da buradan eklentinin komut köprüsüne gider.
+    // Bağ HTML <a> (Ağaç, İlerleme) ya da SVG <a> (Klasik) olabilir. HTML öğesinin adı büyük harf
+    // (A), SVG öğesinin adı küçük harf (a) gelir; ad bu yüzden harf büyüklüğüne bakmadan okunur.
+    // Eskiden yalnız 'A' aranıyordu ve Klasik görünümün SVG bağı bu köprüye hiç ulaşmıyordu; tıklamayı
+    // VS Code'un kendi bağ işleyicisi yakalıyor, panel komut bağına izin vermediği için düşürüyordu.
+    // Olay burada durdurulur: VS Code'un bağ işleyicisi aynı tıklamayı ikinci bir yoldan taşımaz.
     var yol = e.composedPath ? e.composedPath() : [];
     for (var i = 0; i < yol.length; i++) {
       var n = yol[i];
-      if (n && n.tagName === 'A' && n.getRootNode && n.getRootNode() !== document) {
+      if (n && String(n.tagName || '').toLowerCase() === 'a' && n.getRootNode && n.getRootNode() !== document) {
         e.preventDefault();
-        var h = n.getAttribute('href') || '';
+        e.stopPropagation();
+        var h = n.getAttribute('href') || n.getAttribute('xlink:href') || '';
         if (h.indexOf('command:') === 0) gonder({ tip: 'komut', href: h });
         return;
       }

@@ -12,8 +12,8 @@
 //   NEDEN `todo`. Nöbetler bugünkü panelde KIRMIZIDIR, çünkü kusurları ölçerler;
 //   işlemeden önce koşan `npm test` kancası ise kırmızı sınamayı kabul etmez. Bu
 //   yüzden her nöbet node:test'in `todo` seçeneğiyle işaretlidir ve gerekçesi onu
-//   yeşile çevirecek Adımın kodunu taşır: ② PNL-A05, ③ PNL-A07. ① PNL-A04 ile
-//   yeşile döndü ve işareti kaldırıldı. Kırmızı
+//   yeşile çevirecek Adımın kodunu taşır: ③ PNL-A07. ① PNL-A04 ile, ② PNL-A05 ile
+//   yeşile döndü ve işaretleri kaldırıldı. Kırmızı
 //   bir `todo` süiti düşürmez fakat çıktıda ✖ ve "# TODO" ile görünür kalır. Kodu
 //   onaran Adım nöbetin yeşile döndüğünü gösterir ve işareti aynı işlemede kaldırır;
 //   işaret kalırsa nöbet bir sonraki gerilemeyi yakalamaz.
@@ -197,8 +197,7 @@ function dugumTiklamasi(zincir: Oge[]): { olay: unknown; engellendi: () => boole
   return { olay, engellendi: () => engel };
 }
 
-test("Mini Graf şikâyeti: Ağaç, İlerleme ve Klasik görünümlerinin üçünde de düğüme tıklamak dosyayı açan komutu doğurur",
-  bekliyor("PNL-A05", "üç görünümde de düğüm tıklaması sarmal.dosyaAc komutuna ulaşır"), () => {
+test("Mini Graf şikâyeti: Ağaç, İlerleme ve Klasik görünümlerinin üçünde de düğüme tıklamak dosyayı açan komutu doğurur", () => {
     const graf = projeGrafiCikar(GRAF_DAGI);
     const sonuclar = GORUNUMLER.map((g) => {
       // Panel çizimi gölge köke tam olarak bu biçimde basar (panel-cekirdek.ts · grafParcasi).

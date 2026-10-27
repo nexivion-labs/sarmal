@@ -16,6 +16,7 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "tek-agac.test.js"));   // 🗺️ PRF-TA-A04 tek ağaç nöbetleri
   mocha.addFile(path.resolve(__dirname, "bolum-yuvasi.test.js"));   // 🧩 VIT-K78-A10 bölüm yuvası (sahte kardeşle)
   mocha.addFile(path.resolve(__dirname, "davranis-nobeti.test.js"));   // 🛡️ BKM-DNT-A09 en büyük üç yüzey dosyası
+  mocha.addFile(path.resolve(__dirname, "minigraf-tiklama.test.js"));   // 🖱️ PNL-A05 Mini Graf tıklaması
 
   return new Promise((resolve, reject) => {
     try {

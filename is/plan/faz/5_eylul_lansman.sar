@@ -6636,8 +6636,9 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A04, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1095 sınama: 1092 geçti, 3 yapılacak, 0 düştü (kontrolcü koşturdu; yük altında zaman ölçen A08 sınaması bir kez şaştı, yinelemede geçti) · tip ve dil denetimi temiz · görsel kontrol 538 kontrol: 531 geçti, 7 beklenen kırmızı, 0 düştü; çizgi ve vurgu kontrollerinin 45'i geçti · gerçek VS Code süiti 54 geçti, 1 düştü (PNL-A07'nin işi), kontrolcü ayrıca koşturdu · beş koruma tek tek bozulunca ilgili nöbet düştü", ne: "Ray, Tren ve Makinist ağaçlarında girinti çizgisi her zaman ince ve tül morunda çizilir; fare bir satırın üzerine gelince o dalın çizgisi tam tona geçer, gri açıklama mora boyanır ve simge parlaklaşıp hafifçe ışır. Tül morunun tek kaynağı tul-rengi.ts dosyasıdır ve editörün tül zemini de oradan okur; üretilen renk eskisiyle bayt bayt aynıdır. Fare seçili dalın üzerindeyken seçimin etkin çizgisinin vurguyu örtmesi kusuru üretici tarafından bulunup giderildi. İki saydamlık değeri ile simgenin renklenme yorumu birinci basamağın tesliminde Founder'ın gözüne sunulacaktır." )
         }
 
-        Adım( kod: PNL-A05, ad: "Mini Graf Tıklamasının Onarılması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A02 ],
+        Adım( kod: PNL-A05, ad: "Mini Graf Tıklamasının Onarılması", durum: tamamlandı, öncelik: p0, bağımlı: [ PNL-A02 ],
           referans: [ BKM-DNT-A19 ],
+          üretir: [ KOD-SNM-VSC-MINIGRAF-TIKLAMA, KOD-PANEL-BETIK, KOD-PANEL, KOD-MINIGRAF, KOD-YOLHARITA ],
           ne: "🖱️ Mini Graf düğümüne tıklayınca editörün ilgili satıra gitmesi. Founder 2026-10-27 tarihinde bu davranışın bozulduğunu bildirmiştir; ölçüm Klasik görünümdeki SVG bağının webview betiğinin aradığı büyük harfli öğe adıyla eşleşmediğini göstermiştir. Ayrıca her satır tıklaması Mini Grafı baştan hesaplatmaktadır." ) {
           görev: [
             "Üç görünümde (Ağaç, İlerleme, Klasik) düğüm tıklamasını tek yoldan dosyaya götür; SVG bağı da yakalanır.",
@@ -6648,6 +6649,7 @@ sessizce körleşmez.
             "Bir satır tıklaması Mini Grafı yeniden üretmez; bunu bir nöbet ölçer."
           ]
           sınır: "Görünümlerin tasarımı değişmez."
+          koşu: Koşum( kod: KSM-PNL-A05, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "kök neden gerçek VS Code 1.143.1'de onarımdan önce ölçüldü: Klasik görünümde tıklama dosyayı açmadı ve kabuk ERR_BLOCKED_BY_CSP kaydı düştü · Founder'ın kullanıcı ayarında sarmal.miniGrafGorunum klasik (kontrolcü doğruladı) · eklenti süiti 1099 sınama: 1097 geçti, 2 yapılacak, 0 düştü (kontrolcü koşturdu; yük altında zaman sınaması bir kez şaştı, yinelemede geçti) · tip ve dil temiz · gerçek VS Code süiti 59 geçti, 1 düştü (PNL-A07'nin işi), CSP kaydı sıfır, kontrolcü ayrıca koşturdu · görsel kontrol 543 geçti, 1 beklenen kırmızı · altı koruma tek tek bozulunca ilgili nöbet düştü", ne: "Founder Mini Grafın Klasik görünümünü kullanmaktadır. Bu görünümün düğüm bağı bir SVG bağıdır ve tarayıcı onun adını küçük harfle verir; panelin köprüsü yalnız büyük harfli adı aradığı için tıklama yakalanmıyor, VS Code bağı sayfa gezintisi olarak açmaya çalışıp güvenlik ilkesiyle engelliyordu. 0.9.193'te Mini Graf komut bağlarına izin veren ayrı bir görünümdü ve bu yüzden aynı tıklama çalışıyordu. Köprü artık harf büyüklüğüne bakmadan HTML ve SVG bağını yakalar ve üç görünümün tıklaması tek yoldan dosyayı ilgili satırda açar; odak panelde kalır. Ray satırı tıklaması Mini Grafı artık yeniden üretmez, yalnız seçim işaretini taşır; seçimin bağ çizgileri ve meyve satırları graf bir sonraki çizildiğinde gelir ve daraltılmış daldaki düğüm için graf bir kez çizilir. Gerçek VS Code süiti webview içine erişemediği için tıklama, yalnız sınama kipinde kayıtlı bir komutla panelin kendi betiğine gönderilir." )
         }
 
         Adım( kod: PNL-A06, ad: "Editör Girinti Bantlarının Varsayılana Dönmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A01 ],
@@ -7283,3 +7285,7 @@ Kod( kod: KOD-SNM-PANEL-SIKAYETLERI, dosya: "urun/eklenti/sinama/panel-sikayetle
 // 🍎 PNL-A04 teslimi (2026-10-27): sürekli ağaç çizgileri
 Kod( kod: KOD-TUL-RENGI, dosya: "urun/eklenti/src/tul-rengi.ts",
   ne: "🎨 Tül morunun tek kaynağı — koyu ve açık tema tonlarını tutar; panelin ağaç çizgileri ile editörün tül derinlik zemini rengi buradan okur (PNL-A04)" )
+
+// 🍎 PNL-A05 teslimi (2026-10-27): Mini Graf tıklaması
+Kod( kod: KOD-SNM-VSC-MINIGRAF-TIKLAMA, dosya: "urun/eklenti/sinama_vscode/suite/minigraf-tiklama.test.ts",
+  ne: "🧪 Mini Graf tıklamasının gerçek VS Code nöbeti — üç görünümde düğüm tıklamasının dosyayı ilgili satırda açtığını ve Ray satırı tıklamasının grafı yeniden üretmediğini gerçek kabukta ölçer (PNL-A05)" )

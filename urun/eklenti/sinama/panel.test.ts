@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import "./dil-kur.ts";
-import { kabuk, kabukSifirla, SahteWebviewGorunusu, Uri } from "./kabuk-kur.ts";
+import { kabuk, kabukSifirla, belgeKoy, SahteWebviewGorunusu, Uri } from "./kabuk-kur.ts";
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -29,6 +29,8 @@ const { MiniGrafGorunumu } = await import("../src/minigraf.ts");
 const { Tren } = await import("../src/tren.ts");
 const { MakinistAgaci } = await import("../src/makinist.ts");
 const { panelKaydi, GORUNUS_PANEL, BAGLAM_SEKME, TREN_KARDES_KOMUTU } = await import("../src/panel.ts");
+const { yolHaritasiKaydi } = await import("../src/yolharitasi.ts");
+const { atlaHref } = await import("../src/minigraf-cekirdek.ts");
 
 const EKLENTI_KOKU = fileURLToPath(new URL("..", import.meta.url));
 const SARMAL_KOKU = fileURLToPath(new URL("../../..", import.meta.url));
@@ -361,6 +363,9 @@ test("Mini Graf komut köprüsü: izinli bağ çalışır, izinsiz bağ ve bozuk
   o.gorunum.mesajGonder({ tip: "komut", href: bag("sarmal.miniGraf.gorunumSec", ["klasik"]) });
   await otur();
   assert.deepEqual(kabuk.komutCagrilari.slice(once).map((c) => c.komut), ["sarmal.dosyaAc", "sarmal.miniGraf.gorunumSec"]);
+  // PNL-A05 · OZK-13: dosya bağı dosyayı satırında açar ve odağı panelde bırakma seçeneğini taşır; öteki komut taşımaz.
+  assert.deepEqual(kabuk.komutCagrilari.slice(once).map((c) => c.argumanlar),
+    [["/x/a.sar", 4, { odakPanelde: true }], ["klasik"]]);
   o.gorunum.mesajGonder({ tip: "komut", href: bag("workbench.action.reloadWindow") });
   o.gorunum.mesajGonder({ tip: "komut", href: bag("sarmal.dosyaAc", [1, 2]) });
   o.gorunum.mesajGonder({ tip: "komut", href: "https://example.com" });
@@ -508,4 +513,77 @@ test("Ray başlıkları katlanır: YOL HARİTASI ve MİNİ GRAF düğmedir, ok v
   // Yeniden kurulum (pencere yeniden yükleme): kalıcı tercih ilk belgede uygulanır.
   const yeni = ortamKur("ray", { "bolum:graf": false });
   assert.match(yeni.gorunum.webview.html, /data-bolum="graf" aria-expanded="false"/);
+});
+
+// ── ⑩ MİNİ GRAF TIKLAMASI VE SATIR SEÇİMİ (PNL-A05 · Founder 2026-10-27) ─────────
+
+type PanelIci = { harita: Map<string, { kaynak: string; u: { oge: unknown } }>; sonGraf: string };
+const ic = (o: Ortam): PanelIci => o.panel as unknown as PanelIci;
+/** Ray ağacının şu an çizili, kodu olan satırları ve düğümlerinin Mini Graf bağı. */
+function raySatirlari(o: Ortam): Array<{ id: string; kod: string; href: string }> {
+  const dag = o.yol.dagAl();
+  return [...ic(o).harita].filter(([, v]) => v.kaynak === "ray").flatMap(([id, v]) => {
+    const kod = o.yol.ogeKodu(v.u.oge);
+    const d = kod ? dag?.dugumler.get(kod) : undefined;
+    return kod && d ? [{ id, kod, href: atlaHref(d) }] : [];
+  });
+}
+
+test("Ray satırına tıklamak Mini Grafı yeniden üretmez ve göndermez; yalnız seçim işareti düğümün bağıyla taşınır (PNL-A05)", async () => {
+  const o = ortamKur();
+  const cizili = ic(o).sonGraf;
+  const hedef = raySatirlari(o).find((r) => cizili.includes(`href="${r.href}"`));
+  assert.ok(hedef, "Mini Graf çiziminde düğümü bulunan bir Ray satırı yok; ölçüm boş küme üstünde koşar");
+  const cizim = o.graf.cizimSayisi;
+  const gonderim = mesajlar(o, "parca").filter((m) => m.kimlik === "graf").length;
+  o.gorunum.mesajGonder({ tip: "ac", id: hedef!.id });
+  await bekle(250);   // panelin birleştirme gecikmesi (120 ms) geçer
+  assert.equal(o.graf.cizimSayisi - cizim, 0, "satır tıklaması Mini Grafı yeniden üretti");
+  assert.equal(mesajlar(o, "parca").filter((m) => m.kimlik === "graf").length - gonderim, 0, "satır tıklaması Mini Grafı yeniden gönderdi");
+  assert.deepEqual(mesajlar(o, "grafSec").map((m) => m.href), [hedef!.href], "seçim işareti düğümün bağıyla taşınmadı");
+  assert.ok(kabuk.komutCagrilari.some((c) => c.komut === "vscode.open"), "satır yine dosyayı açmalı");
+  // İmleç izleme aynı düğümü seçer (yolharitasi.ts imlecTakip → dugumSec): çizim yine yapılmaz.
+  o.graf.dugumSec(hedef!.kod);
+  // Aynı satıra ikinci tıklama hiçbir şey göndermez.
+  o.gorunum.mesajGonder({ tip: "ac", id: hedef!.id });
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 0, "imleç izleme ya da ikinci tıklama Mini Grafı yeniden üretti");
+  assert.equal(mesajlar(o, "grafSec").length, 1);
+  // Seçim Mini Grafın kendi durumuna yazılmıştır: bir sonraki çizim bu düğümü seçili çizer ve mutlaka gönderilir.
+  o.graf.tazele();
+  await bekle(250);
+  const son = mesajlar(o, "parca").filter((m) => m.kimlik === "graf").at(-1);
+  assert.ok(son && /class="dugum secili" aria-current="true"/.test(String(son.html)), "sonraki çizim seçimi taşımıyor");
+});
+
+test("Ray satırının düğümü Mini Grafın daraltılmış bir dalındaysa graf o dalı açmak için bir kez çizilir (PNL-A05 istisnası)", async () => {
+  const o = ortamKur();
+  // Tamamlanmış Fazlar büyük grafta tek satıra iner; birini Ray ağacında açıp çocuğuna tıklamak gizli düğümü seçer.
+  let gizli: { id: string; kod: string; href: string } | undefined;
+  for (const faz of raySatirlari(o)) {
+    if (gizli) break;
+    o.gorunum.mesajGonder({ tip: "gec", id: faz.id, ac: true });
+    await otur();
+    gizli = raySatirlari(o).find((r) => r.id.startsWith(`${faz.id}/`) && !ic(o).sonGraf.includes(`href="${r.href}"`));
+  }
+  assert.ok(gizli, "Mini Grafta gizli düğümü olan bir Ray satırı bulunamadı");
+  const cizim = o.graf.cizimSayisi;
+  o.gorunum.mesajGonder({ tip: "ac", id: gizli!.id });
+  await bekle(250);
+  assert.equal(o.graf.cizimSayisi - cizim, 1, "gizli düğüm için graf tam bir kez çizilmeli");
+  assert.equal(mesajlar(o, "grafSec").length, 0);
+  assert.ok(String(mesajlar(o, "parca").filter((m) => m.kimlik === "graf").at(-1)?.html).includes(`href="${gizli!.href}"`), "çizim gizli düğümü açmadı");
+});
+
+test("sarmal.dosyaAc: panelden gelen seçenekle dosyayı satırında açar ve odağı bırakmaz; seçeneksiz çağrı eskisi gibi odağı editöre verir (OZK-13)", async () => {
+  const baglam = { subscriptions: [] as { dispose(): unknown }[], extensionUri: Uri.file(EKLENTI_KOKU), extensionPath: EKLENTI_KOKU,
+    workspaceState: { get: () => undefined, update: async () => {} }, globalState: { get: () => undefined, update: async () => {} } };
+  ortamlar.push({ baglam } as unknown as Ortam);
+  yolHaritasiKaydi(baglam as never);
+  belgeKoy("/p/plan.sar", "a\nb\nc\nd\ne\n");
+  const ac = kabuk.komutlar.get("sarmal.dosyaAc") as (...a: unknown[]) => Promise<void>;
+  await ac("/p/plan.sar", 4, { odakPanelde: true });
+  await ac("/p/plan.sar", 2);
+  const secenek = kabuk.gosterilen.map((g) => g.secenek as { selection: { start: { line: number } }; preserveFocus: boolean });
+  assert.deepEqual(secenek.map((s) => [s.selection.start.line, s.preserveFocus]), [[3, true], [1, false]]);
 });

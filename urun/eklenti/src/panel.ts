@@ -47,12 +47,14 @@ import { dekorCoz } from "./yol-dekor.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "./simge-cizelgesi.ts";
 import { MAKINIST_METINLERI } from "./yuzey-metinleri.ts";
 import { panelRozeti } from "./yuzey-cekirdek.ts";
-import type { PanelBagi, YolHaritasiYuzu } from "./yolharitasi.ts";
+import type { DosyaAcSecenegi, PanelBagi, YolHaritasiYuzu } from "./yolharitasi.ts";
 import type { Tren } from "./tren.ts";
 import type { MakinistAgaci } from "./makinist.ts";
 
 /** Kabın tek görünümü. */
 export const GORUNUS_PANEL = "sarmalPanel";
+/** `sarmal.dosyaAc` seçeneği: panelden açılan dosya editörde açılır, odak panelde kalır (OZK-13). */
+const ODAK_PANELDE: DosyaAcSecenegi = { odakPanelde: true };
 /** Seçili sekmenin bağlam anahtarı: başlık eylemleri (Yenile · Ray değiştir · Mini Graf görünümü) bunu okur. */
 export const BAGLAM_SEKME = BAGLAM.panelSekme;
 /** Kardeş Tren eklentisi bu komutu kaydeder; varlığı kardeşin varlığıdır. */
@@ -84,7 +86,21 @@ export interface PanelOlcumleri {
   parca: number;
   yama: number;
   kardesVar: boolean;
+  /** Mini Graf'ın kaç kez üretildiği ve son üretimin görünümü (PNL-A05 nöbeti). */
+  grafCizim: number;
+  grafGorunum: string;
+  /** Webview'e en son gönderilen Mini Graf çiziminde dosyaya götüren ilk bağın hedefi. */
+  grafIlkBag?: { dosya: string; satir: number };
+  /** Webview betiğinin kaç kez yüklendiğini bildirdiği ('hazir' iletisi). */
+  hazir: number;
 }
+
+/**
+ * Yalnız sınama kipinde (`ExtensionMode.Test`) kaydedilen komut. Gerçek VS Code süiti webview'in
+ * içine ulaşamaz; bu komut panelin betiğine Mini Graf düğümüne tıklatır, webview'den gelmiş gibi
+ * bir iletiyi işler ya da Ray ağacının satırlarını verir. Kurulu eklentide kayıtlı değildir.
+ */
+export const SINAMA_KOMUTU = "sarmal.sinama.panel";
 
 export interface SarmalPaneliYuzu {
   sekmeSec(s: SekmeKimligi): Promise<void>;
@@ -107,6 +123,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private readonly zamanlayicilar = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly dosyaOnbellegi = new Map<string, string | undefined>();
   private sayac = { belge: 0, parca: 0, yama: 0 };
+  private hazirSayisi = 0;
 
   constructor(private readonly context: vscode.ExtensionContext, private readonly g: PanelGirdileri) {
     // Her açılış Ray'le başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
@@ -134,6 +151,9 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     void this.sekmeBaglami();
     this.kardesiYokla();
     g.yol.panelBagla(this);
+    if (context.extensionMode === vscode.ExtensionMode.Test) {
+      abone(vscode.commands.registerCommand(SINAMA_KOMUTU, (e: unknown) => this.sinamaEylemi(e)));
+    }
   }
 
   // ── Görünüm ────────────────────────────────────────────────────────────────
@@ -156,7 +176,29 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 
   olcumler(): PanelOlcumleri {
     const satirSayisi = kaynakMi(this.sekme) ? this.sonSatirlar[this.sekme].length : 0;
-    return { sekme: this.sekme, satirSayisi, ...this.sayac, kardesVar: this.kardesVar };
+    const bag = /href="(command:sarmal\.dosyaAc\?[^"]*)"/.exec(this.sonGraf)?.[1];
+    const k = bag ? grafKomutu(bag.replace(/&amp;/g, "&")) : undefined;
+    return {
+      sekme: this.sekme, satirSayisi, ...this.sayac, kardesVar: this.kardesVar,
+      grafCizim: this.g.yol.miniGraf.cizimSayisi, grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
+      grafIlkBag: k ? { dosya: String(k.argumanlar[0]), satir: Number(k.argumanlar[1]) } : undefined,
+      hazir: this.hazirSayisi,
+    };
+  }
+
+  /** Sınama kipinin eylemleri (SINAMA_KOMUTU). */
+  private async sinamaEylemi(ham: unknown): Promise<unknown> {
+    const e = (ham ?? {}) as { eylem?: unknown; ileti?: unknown };
+    if (e.eylem === "grafTikla") { this.yaz({ tip: "sinamaTikla" }); return this.olcumler().grafIlkBag; }
+    if (e.eylem === "ileti") { await this.iletiyiIsle(e.ileti); return true; }
+    if (e.eylem === "raySatirlari") {
+      return [...this.harita].filter(([, v]) => v.kaynak === "ray").map(([id, v]) => ({
+        id, kod: this.g.yol.saglayici.ogeKodu(v.u.oge), komutlu: v.u.satir.komutlu,
+        dosya: String((v.u.item.command?.arguments?.[0] as { fsPath?: string } | undefined)?.fsPath ?? v.u.item.command?.arguments?.[0] ?? ""),
+        durum: v.u.satir.durum,
+      }));
+    }
+    return undefined;
   }
 
   /** Dil değişince tab şeridi ve bütün metinler yeniden yazılır. */
@@ -368,6 +410,25 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.yaz({ tip: "satir", id, html: satirHtml(yeni.satir), ikonStili: defter.stil() });
   }
 
+  /**
+   * Ray satırına tıklama Mini Grafta yalnız seçimi taşır (PNL-A05): graf yeniden üretilmez ve
+   * webview'e gönderilmez; seçim işareti betikte düğümün bağıyla bulunur. Düğüm son çizimde yoksa
+   * (daraltılmış, tamamlanmış bir dalın içindeyse) graf o dalı açmak için bir kez çizilir.
+   * Seçim Mini Grafın kendi durumuna da yazılır; imleç izleme aynı düğümü seçince çizim yapılmaz.
+   */
+  private grafIsaretle(kod: string): void {
+    if (!this.grafAcik()) return;
+    const href = this.g.yol.miniGraf.isaretle(kod);
+    if (href === undefined) return;
+    if (href && this.sonGraf.includes(`href="${href}"`)) {
+      // Webview'deki çizim artık son gönderilenle aynı değildir; bir sonraki çizim mutlaka gönderilir.
+      this.sonGraf = "";
+      this.yaz({ tip: "grafSec", href });
+      return;
+    }
+    this.g.yol.miniGraf.tazele();
+  }
+
   /** Aynı anahtar için art arda gelen olaylar tek çizime iner. */
   private zamanla(anahtar: string, f: () => void): void {
     const eski = this.zamanlayicilar.get(anahtar);
@@ -425,7 +486,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
         if (!kayit) return;
         if (kayit.kaynak === "ray") {
           const kod = this.g.yol.saglayici.ogeKodu(kayit.u.oge);
-          if (kod) this.g.yol.miniGraf.dugumSec(kod);
+          if (kod) this.grafIsaretle(kod);
         }
         const k = kayit.u.item.command;
         if (k) await vscode.commands.executeCommand(k.command, ...(k.arguments ?? []));
@@ -444,9 +505,13 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       }
       case "komut": {
         const k = typeof m.href === "string" ? grafKomutu(m.href) : undefined;
-        if (k) await vscode.commands.executeCommand(k.komut, ...k.argumanlar);
+        if (!k) return;
+        // Mini Graf düğümü dosyayı editörde ilgili satırda açar ve odak panelde kalır (OZK-13).
+        const ek = k.komut === "sarmal.dosyaAc" ? [ODAK_PANELDE] : [];
+        await vscode.commands.executeCommand(k.komut, ...k.argumanlar, ...ek);
         return;
       }
+      case "hazir": { this.hazirSayisi += 1; return; }
       case "kardes": {
         if (!this.kardesVar) return;
         try { await vscode.commands.executeCommand(TREN_KARDES_KOMUTU); } catch { /* kardeş kapanmış olabilir */ }

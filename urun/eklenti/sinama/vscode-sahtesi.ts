@@ -210,6 +210,7 @@ export const TreeItemCollapsibleState = { None: 0, Collapsed: 1, Expanded: 2 } a
 export const TreeItemCheckboxState = { Unchecked: 0, Checked: 1 } as const;
 export const TextEditorRevealType = { Default: 0, InCenter: 1, InCenterIfOutsideViewport: 2, AtTop: 3 } as const;
 export const ViewColumn = { Active: -1, Beside: -2, One: 1, Two: 2 } as const;
+export const ExtensionMode = { Production: 1, Development: 2, Test: 3 } as const;
 export const EndOfLine = { LF: 1, CRLF: 2 } as const;
 export const StatusBarAlignment = { Left: 1, Right: 2 } as const;
 export const DiagnosticSeverity = { Error: 0, Warning: 1, Information: 2, Hint: 3 } as const;

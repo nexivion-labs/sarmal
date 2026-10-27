@@ -36,15 +36,16 @@
 //   Ray başlıklarının tıklama, Enter ve Space ile katlanması · Makinist üst
 //   düğümlerinin katlanabilirliği · ana yazı boyutu 11–14 px · Mini Graf yazılarının
 //   görünürlüğü, taşmazlığı, satır boyu ve bağ çizgisi sayısı · Mini Graf düğümüne
-//   gerçek fare tıklamasının dosya açma iletisi doğurması (üç görünüm) · onay
+//   gerçek fare tıklamasının dosya açma iletisi doğurması (üç görünüm) · satır seçiminin
+//   Mini Grafı yeniden yazmadan işareti taşıması (PNL-A05) · onay
 //   kapısının editörde kart açmaması (OZK-13) · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
 //
 //   BEKLENEN KIRMIZI (PNL-A02 · Founder 2026-10-27 şikâyetleri). Bazı kontroller
 //   bugünkü panelde bilerek kırmızıdır, çünkü onaracak Adım henüz koşmamıştır; böyle
-//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A05 Mini Graf
-//   tıklaması, PNL-A07 onay kartı; PNL-A04 ağaç çizgisi yeşile döndü ve işareti
+//   bir kontrol onu yeşile çevirecek Adımın koduyla işaretlenir (PNL-A07 onay kartı;
+//   PNL-A04 ağaç çizgisi ile PNL-A05 Mini Graf tıklaması yeşile döndü ve işaretleri
 //   kaldırıldı). İşaretli kontrolün
 //   kırmızısı çıkış kodunu bozmaz ve "BEKLENEN" diye yazılır. İşaretli kontrol yeşile
 //   dönerse "YEŞİLE DÖNDÜ" yazılır ve çıkış kodu 1 olur: onaran Adım işareti aynı
@@ -574,6 +575,27 @@ try {
           await cek("secili");
         }
         await cek("dip");
+        // Satır seçimi (PNL-A05): Ray satırına tıklayınca eklenti 'grafSec' iletisi gönderir; betik grafı yeniden
+        // yazmadan seçim işaretini bağı verilen düğüme taşır ve önceki seçimin bağ çizgilerini gizler.
+        if (d.secili && (d.gorunum === "agac" || d.gorunum === "klasik")) {
+          const s = await p.evaluate(async () => {
+            const kok = document.getElementById("graf")?.shadowRoot;
+            const ilk = kok?.firstElementChild;
+            const bag = kok && [...kok.querySelectorAll("a")].find((a) => (a.getAttribute("href") ?? "").startsWith("command:sarmal.dosyaAc")
+              && !(a.classList.contains("dugum") ? a : a.querySelector(".dugum"))?.classList.contains("secili"));
+            if (!bag) return { var: false };
+            const href = bag.getAttribute("href");
+            window.postMessage({ tip: "grafSec", href }, "*");
+            await new Promise((r) => setTimeout(r, 80));
+            const secililer = [...kok.querySelectorAll(".dugum.secili")];
+            const hedef = bag.classList.contains("dugum") ? bag : bag.querySelector(".dugum");
+            const cizgi = [...kok.querySelectorAll("svg.serit, .bag, .zemin, .uretir")];
+            return { var: true, ayniCizim: kok.firstElementChild === ilk && bag.isConnected, secili: secililer.length,
+              hedefSecili: secililer.length === 1 && secililer[0] === hedef, gorunenBagCizgisi: cizgi.filter((x) => getComputedStyle(x).display !== "none").length };
+          });
+          kontrol(`${etiket}: satır seçimi Mini Grafı yeniden yazmadan işareti düğüme taşır ve önceki seçimin bağ çizgilerini gizler`,
+            s.var && s.ayniCizim && s.hedefSecili && s.gorunenBagCizgisi === 0, JSON.stringify(s));
+        }
         // Mini Graf şikâyeti (Founder 2026-10-27): düğüme GERÇEK fare tıklaması dosyayı açan komut
         // iletisini doğurur. Tıklama en sonda yapılır; bağ sayfayı gezdirirse öteki ölçümler bozulmaz.
         if (d.gorunum) {
@@ -592,7 +614,7 @@ try {
           kontrol(`${etiket}: Mini Graf şikâyeti: ${d.gorunum} görünümünde düğüme gerçek tıklama dosyayı açan komut iletisini doğurur`,
             h.var && h.ustte && ulasti,
             JSON.stringify({ bag: h.var, ad: h.ad, tagName: h.tagName, ustte: h.ustte, komutIletisi: iletiler.length, hata: hata || undefined }),
-            d.gorunum === "klasik" ? "PNL-A05" : undefined);
+          );
         }
       }
       await p.close();

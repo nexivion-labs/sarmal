@@ -502,3 +502,19 @@ test("istemci betiği ikinci bir sekme listesi tutmaz: seçilebilir sekmeler şe
   assert.doesNotMatch(PANEL_BETIGI, /var SEKMELER\s*=/, "betik sekme listesini kopyalıyor; yeni sekme eklenince ayrışır");
   assert.match(PANEL_BETIGI, /function sekmeSec\(ad, odakla\) \{\s*\n\s*if \(!sekmeler\(\)\.some\(/);
 });
+
+test("Mini Graf köprüsü tektir: HTML ve SVG bağı harf büyüklüğünden bağımsız yakalanır, olay VS Code'un bağ işleyicisine bırakılmaz; satır seçimi grafı yeniden çizmeden işareti taşır (PNL-A05)", () => {
+  // Kusur (gerçek VS Code ölçümü 2026-10-27): Klasik görünümün SVG <a> öğesinin adı küçük harf geldiği için köprü onu
+  // tanımıyordu; tıklama VS Code'un bağ işleyicisine düşüyor, panel komut bağına izin vermediği için gezinti engelleniyordu.
+  assert.match(PANEL_BETIGI, /String\(n\.tagName \|\| ''\)\.toLowerCase\(\) === 'a' && n\.getRootNode/);
+  assert.doesNotMatch(PANEL_BETIGI, /n\.tagName === 'A'/, "köprü yalnız büyük harfli HTML bağını arıyor");
+  assert.match(PANEL_BETIGI, /e\.preventDefault\(\);\s*\n\s*e\.stopPropagation\(\);\s*\n\s*var h = n\.getAttribute\('href'\) \|\| n\.getAttribute\('xlink:href'\)/);
+  // Satır seçimi: önceki işaret kalkar, önceki seçimin bağ çizgileri gizlenir, işaret bağı verilen düğüme geçer; innerHTML yazılmaz.
+  const sec = /function grafSec\(href\) \{([\s\S]*?)\n  \}/.exec(PANEL_BETIGI)?.[1] ?? "";
+  assert.ok(sec, "betikte grafSec yok");
+  assert.match(sec, /classList\.remove\('secili'\)/);
+  assert.match(sec, /svg\.serit, \.bag, \.zemin, \.uretir/);
+  assert.match(sec, /a\.getAttribute\('href'\) === href/);
+  assert.doesNotMatch(sec, /innerHTML/, "seçim grafı yeniden yazıyor");
+  assert.match(PANEL_BETIGI, /m\.tip === 'grafSec'\) \{\s*grafSec\(m\.href\);/);
+});

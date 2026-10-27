@@ -18,7 +18,7 @@
 
 import * as vscode from "vscode";
 import type { Dag } from "../../cekirdek/src/dag.ts";
-import { projeGrafiCikar, bosHtml } from "./minigraf-cekirdek.ts";
+import { atlaHref, projeGrafiCikar, bosHtml } from "./minigraf-cekirdek.ts";
 import {
   gorunumHtml, seciciHtml, gorunumNormalle, GORUNUM_AYARI, GORUNUM_SEC_KOMUTU, GORUNUM_KAPAT_KOMUTU,
   type GrafGorunumu,
@@ -61,6 +61,8 @@ export class MiniGrafGorunumu {
   private secici = false;
   /** Kaç kez çizildiği — odak nöbeti tazelemeyi buradan ölçer. */
   private cizimSayac = 0;
+  /** Son çizimin görünümü (seçici açıkken "secici"); nöbet ölçüsüdür. */
+  private sonGorunum = "";
   private readonly degistiOlayi = new vscode.EventEmitter<void>();
   /** Çizilecek içerik değiştiğinde ateşlenir; Sarmal paneli Ray sekmesindeyken HTML'i buradan ister. */
   readonly onDegisti = this.degistiOlayi.event;
@@ -70,6 +72,19 @@ export class MiniGrafGorunumu {
               private meyve: MeyveKapisi = TUM_MEYVE) {
     // Odak değişimi grafı TAZELER: aynı olay üç tanı yüzeyini de yeniden basar.
     this.odak.degisince(() => this.ciz());
+  }
+
+  /**
+   * Seçimi çizmeden taşır (PNL-A05 · Ray satırına tıklama): grafı yeniden üretmez, düğümün
+   * dosya bağını verir; panel işareti webview'de bu bağla taşır. Düğüm zaten seçiliyse ya da
+   * grafta yoksa `undefined` döner. Sonraki her çizim bu seçimle yapılır.
+   */
+  isaretle(kod: string): string | undefined {
+    if (!kod || kod === this.kod) return undefined;
+    const d = this.dagAl()?.dugumler.get(kod);
+    if (!d) return undefined;
+    this.kod = kod;
+    return atlaHref(d);
   }
 
   /** Seçim yalnız odağı değiştirir; odaktaki varlığın tamamı görünür kalır. */
@@ -102,11 +117,14 @@ export class MiniGrafGorunumu {
 
   /** Bugüne kadar kaç çizim yapıldığı (nöbet ölçüsü; davranışa etkisi yoktur). */
   get cizimSayisi(): number { return this.cizimSayac; }
+  /** Son çizimin görünümü (nöbet ölçüsü). */
+  get cizilenGorunum(): string { return this.sonGorunum; }
 
   /** Şu anki görünümün tam belgesi (seçici açıksa seçici). Çizim bu çağrıda hesaplanır. */
   html(): string {
     const dag = this.dagAl();
     this.cizimSayac += 1;
+    this.sonGorunum = this.secici ? "secici" : this.gorunumAyari();
     if (this.secici) return seciciHtml(this.gorunumAyari());
     return dag
       ? gorunumHtml(projeGrafiCikar(dag, this.kod,

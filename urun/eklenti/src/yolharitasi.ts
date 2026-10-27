@@ -1150,6 +1150,12 @@ ${kurallarBolum}
  * (eklenti.ts `SarmalEklentiYuzu`); panelin gösterdiği ağaç başka türlü
  * dışarıdan okunamaz.
  */
+/** `sarmal.dosyaAc` komutunun isteğe bağlı üçüncü argümanı. */
+export interface DosyaAcSecenegi {
+  /** Dosya editörde açılır fakat odak çağıran yüzeyde (Sarmal paneli) kalır. */
+  odakPanelde?: boolean;
+}
+
 export interface PanelBagi {
   /** Ray değiştirme: varlık satırının atalarını açar, satırı seçer ve görünür kılar. */
   varligaGit(varlik: unknown): void;
@@ -1344,11 +1350,14 @@ ${Array.isArray(kayit?.beceriler) && (kayit.beceriler as string[]).length
       if (!oge || oge.tur !== "oge" || oge.tip !== "Adım") return;
       kartGoster(oge);
     }),
-    vscode.commands.registerCommand("sarmal.dosyaAc", async (yol: string, satir: number) => {
+    vscode.commands.registerCommand("sarmal.dosyaAc", async (yol: string, satir: number, secenek?: DosyaAcSecenegi) => {
       panelSayacı.belgeAcma += 1;   // kullanıcı gezinmesi — panel TURU belge açmaz
       const doc = await vscode.workspace.openTextDocument(yol);
-      await vscode.window.showTextDocument(doc,
-        { selection: new vscode.Range(Math.max(0, satir - 1), 0, Math.max(0, satir - 1), 0) });
+      // Sarmal panelinden gelen açılışta odak panelde kalır (OZK-13 · PNL-A05); öteki yüzeyler değişmez.
+      await vscode.window.showTextDocument(doc, {
+        selection: new vscode.Range(Math.max(0, satir - 1), 0, Math.max(0, satir - 1), 0),
+        preserveFocus: secenek?.odakPanelde === true,
+      });
     }),
     vscode.commands.registerCommand("sarmal.yolHaritasiYenile", tazele),
     // 🚆 Ray Değiştir (MIM-1): varlıklar/projeler arası tek tuşla geçiş
