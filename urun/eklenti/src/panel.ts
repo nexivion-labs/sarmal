@@ -33,11 +33,20 @@
 //       tek satır yamasıdır. Görünmeyen panel hiçbir şey çizmez, görününce yetişir.
 //     · Yalnız AÇIK düğümlerin çocukları DOM'a basılır.
 //     · Açık-kapalı tercihleri workspaceState'te kalıcıdır. Sekme seçimi KALICI
-//       DEĞİLDİR: her açılış Ray'le başlar (PNL-A03). Önceki sürümler seçimi
+//       DEĞİLDİR: her açılış sıranın İLK sekmesiyle başlar (PNL-A03; PNL-A23'ten önce
+//       bu sekme her zaman Ray'di). Önceki sürümler seçimi
 //       workspaceState'e yazıp açılışta okuyordu; pencere yeniden yüklenince panel son
 //       sekmeyle (ör. Makinist) açılıyor, oysa bölüm yuvası (bolum-yuvasi.ts) her
 //       açılışı Ray'le başlatıyordu ve iki seçim birbirini tutmuyordu. Seçim oturum
 //       boyunca bellekte korunur, çünkü görünüm gizlenince de sağlayıcı yaşar.
+//     · SEKME SIRASI KULLANICI AYARINDADIR (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ). Beş sekme
+//       sürüklenerek ya da Alt+Sol/Sağ ile yeniden sıralanır; webview yeni sırayı
+//       iletir ve eklenti onu `sarmal.sekmeSirasi` kullanıcı ayarına yazar. Sıra
+//       seçimden ayrıdır: sırayı değiştirmek seçili sekmeyi değiştirmez. Ayar yoksa
+//       paketin varsayılan sırası (package.json) uygulanır; bozuk ya da eksik değer
+//       `sekmeSirasiNormalle` ile varsayılana tamamlanır. Ayar başka bir yoldan
+//       değişirse (varsayılana döndürme komutu, ayar dosyası, başka pencere) yeni sıra
+//       webview'e iletilir ve şerit yeniden dizilir; belge yeniden yazılmaz.
 //     · Yol Haritası bölümü her açılışta açık başlar; kullanıcının Mini Graf katlaması
 //       kalıcıdır.
 //     · Panelden tıklanan her satır dosyayı editörde ilgili satırda açar ve odak panelde
@@ -56,7 +65,7 @@ import { join } from "node:path";
 import {
   type SekmeBolumu,
   BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
-  kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sinyallerBolumuHtml, trenBolumuHtml,
+  ayniSira, kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSirasiNormalle, sinyallerBolumuHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
   type UretilenSatir, type UretimSecenekleri,
 } from "./panel-cekirdek.ts";
@@ -121,6 +130,10 @@ export interface PanelGirdileri {
 /** Nöbetin okuduğu salt okur ölçüm. */
 export interface PanelOlcumleri {
   sekme: SekmeKimligi;
+  /** Şeridin sekme sırası (PNL-A23): son belgenin ve son sıra iletisinin kullandığı sıra. */
+  sekmeSirasi: readonly SekmeKimligi[];
+  /** Webview'den gelen sıra iletilerinden kaç tanesinin ayara yazıldığı (değişmeyen sıra yazılmaz). */
+  siraYazimi: number;
   /** Son çizimde DOM'a basılan satır sayısı (seçili sekme). */
   satirSayisi: number;
   /** Tam belge ve parça iletisi sayısı. */
@@ -158,6 +171,21 @@ export interface PanelOlcumleri {
  * bir iletiyi işler ya da Ray ağacının satırlarını verir. Kurulu eklentide kayıtlı değildir.
  */
 export const SINAMA_KOMUTU = "sarmal.sinama.panel";
+
+/** Sekme sırasının kullanıcı ayarı (PNL-A23); `sarmal` bölümünün altındaki adı. */
+export const SEKME_SIRASI_AYARI = "sekmeSirasi";
+/** Sekme sırasını paketin varsayılanına döndüren komut (komut paletinde). */
+export const SEKME_SIRASI_SIFIRLA_KOMUTU = "sarmal.sekmeSirasiniSifirla";
+
+/**
+ * Kullanıcının sekme sırası: kullanıcı ayarı, yoksa paketin varsayılanı; ikisi de `sekmeSirasiNormalle`
+ * süzgecinden geçer. Paketin varsayılanı package.json katkısındaki `default` değeridir (tek kaynak).
+ */
+export function sekmeSirasiOku(): SekmeKimligi[] {
+  const ayar = vscode.workspace.getConfiguration("sarmal");
+  const i = typeof ayar.inspect === "function" ? ayar.inspect<unknown>(SEKME_SIRASI_AYARI) : undefined;
+  return sekmeSirasiNormalle(i?.globalValue ?? i?.defaultValue, i?.defaultValue);
+}
 
 export interface SarmalPaneliYuzu {
   sekmeSec(s: SekmeKimligi): Promise<void>;
@@ -198,10 +226,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   readonly onSekmeSecildi = this.sekmeSecildi.event;
   /** Sınama kipinde webview'in sekme dizisi raporu (PNL-A18 nöbeti). */
   private sinamaRaporu?: unknown;
+  /** Şeridin bugünkü sekme sırası (PNL-A23); ayardan okunur ve ayar değişince tazelenir. */
+  private sira: SekmeKimligi[];
+  private siraYazimi = 0;
 
   constructor(private readonly context: vscode.ExtensionContext, private readonly g: PanelGirdileri) {
-    // Her açılış Ray'le başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
-    this.sekme = "ray";
+    // Her açılış sıranın ilk sekmesiyle başlar; önceki oturumun sekmesi okunmaz (başlıktaki çizim kuralı).
+    this.sira = sekmeSirasiOku();
+    this.sekme = this.sira[0]!;
     this.acik = { ...(context.workspaceState.get<Record<string, boolean>>(ACIK_ANAHTARI) ?? {}) };
     // Yol Haritası açık başlar (PNL-A03); oturum içindeki katlama yine korunur.
     delete this.acik[bolumAnahtari("agac")];
@@ -224,6 +256,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     }));
     abone(vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("sarmal.miniGraf")) this.zamanla("bolum", () => this.bolumGonder("ray"));
+      if (e.affectsConfiguration(`sarmal.${SEKME_SIRASI_AYARI}`)) this.siraTazele();
     }));
     abone(vscode.extensions.onDidChange(() => this.kardesiYokla()));
     abone({ dispose: () => { for (const z of this.zamanlayicilar.values()) clearTimeout(z); this.zamanlayicilar.clear(); } });
@@ -257,12 +290,38 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 
   get seciliSekme(): SekmeKimligi { return this.sekme; }
 
+  /** Ayar değişti: yeni sıra şeride iletilir; seçili sekme ve içerik değişmez. */
+  private siraTazele(): void {
+    const yeni = sekmeSirasiOku();
+    if (ayniSira(yeni, this.sira)) return;
+    this.sira = yeni;
+    this.yaz({ tip: "sekmeSirasi", sira: this.sira });
+  }
+
+  /** Webview'de kurulan sıra kullanıcı ayarına yazılır; değişmeyen sıra yazılmaz. */
+  private async siraYaz(ham: unknown): Promise<void> {
+    if (!Array.isArray(ham)) return;
+    const yeni = sekmeSirasiNormalle(ham, this.sira);
+    if (ayniSira(yeni, this.sira)) return;
+    this.sira = yeni;
+    this.siraYazimi += 1;
+    try {
+      await vscode.workspace.getConfiguration("sarmal").update(SEKME_SIRASI_AYARI, yeni, vscode.ConfigurationTarget.Global);
+    } catch { /* ayar yazılamazsa sıra yalnız bu oturumda kalır */ }
+  }
+
+  /** Sırayı paketin varsayılanına döndürür: kullanıcı ayarı silinir, şerit ayar olayıyla yeniden dizilir. */
+  async siraSifirla(): Promise<void> {
+    await vscode.workspace.getConfiguration("sarmal").update(SEKME_SIRASI_AYARI, undefined, vscode.ConfigurationTarget.Global);
+    this.siraTazele();
+  }
+
   olcumler(): PanelOlcumleri {
     const satirSayisi = kaynakMi(this.sekme) ? this.sonSatirlar[this.sekme].length : 0;
     const bag = /href="(command:sarmal\.dosyaAc\?[^"]*)"/.exec(this.sonGraf)?.[1];
     const k = bag ? grafKomutu(bag.replace(/&amp;/g, "&")) : undefined;
     return {
-      sekme: this.sekme, satirSayisi, ...this.sayac, kardesVar: this.kardesVar,
+      sekme: this.sekme, sekmeSirasi: [...this.sira], siraYazimi: this.siraYazimi, satirSayisi, ...this.sayac, kardesVar: this.kardesVar,
       grafCizim: this.g.yol.miniGraf.cizimSayisi, grafSebepler: [...this.g.yol.miniGraf.cizimSebepleri], grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
       grafIlkBag: k ? { dosya: String(k.argumanlar[0]), satir: Number(k.argumanlar[1]) } : undefined,
       hazir: this.hazirSayisi,
@@ -293,6 +352,28 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       return this.gorunum.webview.postMessage({ tip: "sinamaSekmeDizisi", sira: d.sira, aralik: d.aralik });
     }
     if (e.eylem === "sekmeRaporu") return this.sinamaRaporu;
+    // PNL-A23: webview şeritte bir sekmeyi gerçek sürükleme olaylarıyla başka bir sekmenin önüne ya da
+    // arkasına bırakır; şeridin durumu (sıra, seçili sekme, görünen kap, rozetler) rapor olarak döner.
+    if (e.eylem === "sekmeSurukle") {
+      const d = ham as { ad?: unknown; hedef?: unknown; once?: unknown };
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      return this.gorunum.webview.postMessage({ tip: "sinamaSurukle", ad: d.ad, hedef: d.hedef, once: d.once === true });
+    }
+    if (e.eylem === "seritDurumu") {
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      return this.gorunum.webview.postMessage({ tip: "sinamaSerit" });
+    }
+    // Pencerenin yeniden yüklenmesinin panel ayağı: sıra ayardan okunur, seçim sıranın ilk sekmesine
+    // döner ve belge baştan yazılır (yapıcının açılış yolunun aynısı).
+    if (e.eylem === "yenidenAc") {
+      this.sira = sekmeSirasiOku();
+      this.sekmeyiYaz(this.sira[0]!);
+      await this.sekmeBaglami();
+      if (this.gorunum) { this.gorunum.webview.html = this.tamHtml(this.gorunum.webview.cspSource); this.sayac.belge += 1; }
+      return this.sekme;
+    }
     // PNL-A09: Sinyaller ağacının bütün çizili satırları (kimlik, kademe, açık-kapalı) ve tanı satırlarının dosya bağları.
     if (e.eylem === "sinyalAgaci") {
       return this.sonSatirlar.sinyaller.map((u) => ({ id: u.satir.id, derinlik: u.satir.derinlik, durum: u.satir.durum, etiket: u.satir.etiket }));
@@ -394,7 +475,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.gorulenGecis = 0;
     const bolumler = Object.fromEntries(SEKMELER.map((s) => [s, this.bolumUret(s)])) as Record<SekmeKimligi, SekmeBolumu>;
     return panelHtml({
-      sekme: this.sekme, bolumler, simgeler: this.simgeler(),
+      sekme: this.sekme, bolumler, simgeler: this.simgeler(), sira: this.sira,
       nonce: randomBytes(16).toString("base64"), cspSource, rozet: this.g.makinist.rozetSayisi, sinyalRozeti: this.sinyalRozeti(),
     });
   }
@@ -728,6 +809,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
         await vscode.commands.executeCommand(k.komut, ...k.argumanlar, ...ek);
         return;
       }
+      case "sekmeSirasi": { await this.siraYaz(m.sira); return; }
       case "hazir": { this.hazirSayisi += 1; return; }
       case "sinamaRapor": { this.sinamaRaporu = m.kayitlar; return; }
       case "kardes": {
@@ -744,6 +826,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
 export function panelKaydi(context: vscode.ExtensionContext, g: PanelGirdileri): SarmalPaneliYuzu & { sekmeSecVeOdakla(s: SekmeKimligi): Promise<void> } {
   const panel = new SarmalPaneli(context, g);
   context.subscriptions.push(
+    // Sekme sırasını paketin varsayılanına döndürür (PNL-A23).
+    vscode.commands.registerCommand(SEKME_SIRASI_SIFIRLA_KOMUTU, () => panel.siraSifirla()),
     vscode.window.registerWebviewViewProvider(GORUNUS_PANEL, panel, { webviewOptions: { retainContextWhenHidden: true } }),
     // Gözlemler sayacı (durum çubuğu) ve öteki yollar Sinyaller sekmesine buradan gider (PNL-A09).
     vscode.commands.registerCommand(SINYALLER_ODAK_KOMUTU, () => panel.sekmeSecVeOdakla("sinyaller")),

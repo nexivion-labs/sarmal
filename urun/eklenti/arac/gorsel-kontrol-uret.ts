@@ -131,12 +131,18 @@ const sinyaller = new SinyallerAgaci(koku as never);
 const odakProje = projeKimligi(join(PROJE, "_")).kod;
 sinyaller.yerlestir(sinyalKayitlari, odakProje);
 
-// ── Kabuk ayarları: görünüm ve açık kademe değişke başına değişir ─────────────
+// ── Kabuk ayarları: görünüm, açık kademe ve sekme sırası değişke başına değişir ──
 let gorunumAyari = "agac";
+/** Sekme sırasının paket varsayılanı (package.json katkısı) ve değişkenin kullanıcı ayarı (PNL-A23). */
+const PAKET_SIRASI: unknown = (JSON.parse(readFileSync(join(EKLENTI, "package.json"), "utf8")) as {
+  contributes: { configuration: { properties: Record<string, { default?: unknown }> } };
+}).contributes.configuration.properties["sarmal.sekmeSirasi"]?.default;
+let siraAyari: unknown;
 (extensions as Record<string, unknown>).onDidChange = new EventEmitter<unknown>().event;
 (commands as Record<string, unknown>).getCommands = async () => [];
 (vs.workspace as Record<string, unknown>).getConfiguration = () => ({
   get: (k: string, v: unknown) => (k === "miniGrafGorunum" ? gorunumAyari : v),
+  inspect: (k: string) => (k === "sekmeSirasi" ? { key: `sarmal.${k}`, defaultValue: PAKET_SIRASI, globalValue: siraAyari } : undefined),
   update: async () => undefined,
 });
 
@@ -153,10 +159,15 @@ function seciliBul(): string {
 const SECILI = seciliBul();
 const ACIK = Number(ACIK_ARG) || 0;
 
-interface Degiske { ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number; onayAcik?: string }
+interface Degiske {
+  ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number; onayAcik?: string;
+  /** Kullanıcının sekme sırası ayarı (PNL-A23); verilirse panel seçtirilmeden açılır ve sıranın ilk sekmesiyle başlamalıdır. */
+  sira?: readonly string[];
+}
 
 function uret(d: Degiske): string {
   gorunumAyari = d.gorunum ?? "agac";
+  siraAyari = d.sira;
   // Karar kademesi açık kapı (PNL-A07): yalnız istenen değişkede bir kapı açıktır.
   if (d.onayAcik) onayDefteri.kapiyiAc(ONAY_DOSYASI, d.onayAcik);
   else onayDefteri.kapiyiKapat();
@@ -169,9 +180,10 @@ function uret(d: Degiske): string {
   };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* görünürlük ölçümü yok */ }, diliTazele() { /* yok */ }, kodlar: () => [], gorunurMu: () => true };
   const panel = panelKaydi(ctx as never, { yol: yuz as never, tren, makinist, sinyaller });
-  // Panel her açılışta Ray'le başlar (PNL-A03); değişkenin sekmesi kullanıcının seçimi gibi verilir.
+  // Panel her açılışta sıranın ilk sekmesiyle başlar (PNL-A03 · PNL-A23); değişkenin sekmesi kullanıcının
+  // seçimi gibi verilir. Sıra ayarı taşıyan değişke seçtirilmez: açılış sekmesini panel kendisi bulur.
   // Seçim eşzamanlı yazılır; belge aşağıda görünüm çözülünce bu sekmeyle üretilir.
-  void panel.sekmeSec(d.sekme);
+  if (!d.sira) void panel.sekmeSec(d.sekme);
   // Ray ağacı: kök altında `acik` kademeye kadar her düğüm açık (girinti kılavuzları ölçülebilsin).
   if (d.acik) {
     const derinlik = d.acik;
@@ -197,6 +209,8 @@ const degiskeler: Degiske[] = [
   // Bantlar ve projeler açık: satırların kodu, yeri, önerisi ve kanon maddesi görünür (PNL-A09).
   { ad: "sinyaller-acik", sekme: "sinyaller", acik: ACIK },
   { ad: "ayarlar", sekme: "ayarlar" },
+  // Kullanıcının kurduğu sıra (PNL-A23): panel ilk sekmeyle (Sinyaller) açılır, rozetler sekmeleriyle taşınır.
+  { ad: "sira-ozel", sekme: "sinyaller", sira: ["sinyaller", "makinist", "ray", "tren", "ayarlar"] },
   { ad: "graf-secici", sekme: "ray", secici: true },
 ];
 for (const g of ["klasik", "agac", "ilerleme"]) {

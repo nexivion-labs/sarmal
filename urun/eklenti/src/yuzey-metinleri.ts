@@ -2754,6 +2754,10 @@ export const PANEL_METINLERI = {
     ayarlar: yuzeyMetni("Panel ayarları bu sekmede gösterilecek.", "Panel settings will be shown in this tab."),
   }[s] ?? ""),
   get seritEtiketi(): string { return yuzeyMetni("Sarmal sekmeleri", "Sarmal tabs"); },
+  /** Sekme ipucunun ikinci satırı (PNL-A23): sıranın iki yolu, fare ve klavye. */
+  get sekmeTasimaIpucu(): string {
+    return yuzeyMetni("Yerini değiştirmek için sürükleyin ya da Alt+Sol/Sağ okuna basın", "Drag, or press Alt+Left/Right, to move this tab");
+  },
   get yolHaritasiBasligi(): string { return yuzeyMetni("Yol Haritası", "Roadmap"); },
   get miniGrafBasligi(): string { return yuzeyMetni("Mini Graf", "Mini Graph"); },
   get kardesBaglantisi(): string { return yuzeyMetni("Koşular paneli kardeş eklentide", "The runs panel lives in the sibling extension"); },

@@ -31,6 +31,34 @@ export type SekmeKimligi = (typeof SEKMELER)[number];
 /** İçeriği henüz kurulmamış sekme: yalnız boş durum cümlesi taşır (PNL-A03 sınırı). */
 export type BosSekme = Extract<SekmeKimligi, "ayarlar">;
 
+/**
+ * SEKME SIRASI (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ · Founder 2026-10-28). Beş sekmenin hepsi sürüklenerek
+ * yeniden sıralanabilir; sıra kullanıcı ayarında (`sarmal.sekmeSirasi`) durur ve ayar yoksa paketin
+ * varsayılan sırası uygulanır. Sıra ile seçim ayrı şeylerdir: sırayı değiştirmek seçili sekmeyi
+ * değiştirmez. Ayardan okunan değer güvenilmez ve bu işlevden geçer: dizi değilse varsayılana düşer;
+ * bilinmeyen ve yinelenen kimlikler atılır; eksik kimlikler varsayılandaki sırasıyla sona eklenir.
+ * Varsayılan da aynı kurala göre `SEKMELER`e karşı tamamlanır; bozuk bir paket varsayılanı da paneli
+ * bozamaz. Sonuç her zaman beş kimliğin her birini tam bir kez taşır.
+ */
+export function sekmeSirasiNormalle(deger: unknown, varsayilan: unknown = SEKMELER): SekmeKimligi[] {
+  const taban = Array.isArray(varsayilan) ? siraTamamla(varsayilan, SEKMELER) : [...SEKMELER];
+  return Array.isArray(deger) ? siraTamamla(deger, taban) : taban;
+}
+
+function siraTamamla(dizi: readonly unknown[], eksikSirasi: readonly SekmeKimligi[]): SekmeKimligi[] {
+  const sonuc: SekmeKimligi[] = [];
+  for (const x of dizi) {
+    if ((SEKMELER as readonly unknown[]).includes(x) && !sonuc.includes(x as SekmeKimligi)) sonuc.push(x as SekmeKimligi);
+  }
+  for (const s of eksikSirasi) if (!sonuc.includes(s)) sonuc.push(s);
+  return sonuc;
+}
+
+/** İki sıra aynı mı (kimlikler aynı yerde mi)? */
+export function ayniSira(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((x, i) => x === b[i]);
+}
+
 /** Bilinmeyen ya da bozuk değer Ray'e düşer (kalıcı durumdan okunan değer güvenilmez). */
 export function sekmeNormalle(v: unknown): SekmeKimligi {
   return (SEKMELER as readonly unknown[]).includes(v) ? (v as SekmeKimligi) : "ray";
@@ -454,6 +482,8 @@ export interface PanelBelgesi {
   rozet: number;
   /** Sinyaller sekmesinin yanındaki Dur ve Dikkat sayıları (PNL-A09); 0 olan gizlidir. */
   sinyalRozeti?: { dur: number; dikkat: number };
+  /** Şeritteki sekme sırası (PNL-A23); verilmezse `SEKMELER`. Normallenmiş olmalıdır (`sekmeSirasiNormalle`). */
+  sira?: readonly SekmeKimligi[];
 }
 
 /** Satır içi SVG simgesi: yalnız kaynak dosyanın kendi svg'si; küçük şeride göre 14 piksele indirilir (PNL-A03). */
@@ -468,15 +498,19 @@ function sinyalRozetleriHtml(r: { dur: number; dikkat: number }): string {
   return `<span class="sinyal-rozetleri" title="${kacir(SINYAL_METINLERI.rozetIpucu(r.dur, r.dikkat))}">${tek("dur", r.dur)}${tek("dikkat", r.dikkat)}</span>`;
 }
 
+/**
+ * Sekme şeridi. Düğmeler verilen sırayla dizilir ve sürüklenebilir (PNL-A23); rozetler kendi düğmesinin
+ * içinde durduğu için sırayla birlikte taşınır. Sıra ne olursa olsun seçili sekme `secili`dir.
+ */
 export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, rozet: number,
-  sinyalRozeti: { dur: number; dikkat: number } = { dur: 0, dikkat: 0 }): string {
-  const dugmeler = SEKMELER.map((s) => {
+  sinyalRozeti: { dur: number; dikkat: number } = { dur: 0, dikkat: 0 }, sira: readonly SekmeKimligi[] = SEKMELER): string {
+  const dugmeler = sekmeSirasiNormalle(sira).map((s) => {
     const sec = s === secili;
     const sayi = s === "makinist"
       ? `<span class="rozet"${rozet > 0 ? "" : " hidden"}>${rozet > 0 ? rozet : ""}</span>`
       : s === "sinyaller" ? sinyalRozetleriHtml(sinyalRozeti) : "";
     return `<button type="button" class="sekme" role="tab" id="sekme-${s}" aria-controls="panel-${s}" data-sekme="${s}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
-      + ` title="${kacir(PANEL_METINLERI.sekmeIpucu(s))}">${simgeSvg(simgeler[s])}<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>${sayi}</button>`;
+      + ` draggable="true" title="${kacir(`${PANEL_METINLERI.sekmeIpucu(s)}\n${PANEL_METINLERI.sekmeTasimaIpucu}`)}">${simgeSvg(simgeler[s])}<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>${sayi}</button>`;
   }).join("");
   return `<nav class="seritler" role="tablist" aria-label="${kacir(PANEL_METINLERI.seritEtiketi)}">${dugmeler}</nav>`;
 }
@@ -507,7 +541,7 @@ export function panelHtml(b: PanelBelgesi): string {
     // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
     + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
     + `</head><body>`
-    + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet, b.sinyalRozeti)
+    + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet, b.sinyalRozeti, b.sira)
     + `<div id="icerik">${SEKMELER.map((s) => sekmePaneliHtml(s, b.sekme, b.bolumler[s].html)).join("")}</div>`
     + `<script nonce="${b.nonce}">${PANEL_BETIGI}</script></body></html>`;
 }

@@ -28,7 +28,7 @@ const { YolHaritasi } = await import("../src/yolharitasi.ts");
 const { MiniGrafGorunumu } = await import("../src/minigraf.ts");
 const { Tren } = await import("../src/tren.ts");
 const { MakinistAgaci } = await import("../src/makinist.ts");
-const { panelKaydi, odakPaneldeArgumanlar, GORUNUS_PANEL, BAGLAM_SEKME, TREN_KARDES_KOMUTU } = await import("../src/panel.ts");
+const { panelKaydi, odakPaneldeArgumanlar, GORUNUS_PANEL, BAGLAM_SEKME, TREN_KARDES_KOMUTU, SEKME_SIRASI_SIFIRLA_KOMUTU } = await import("../src/panel.ts");
 const { OnayPaneli } = await import("../src/onay-paneli.ts");
 const { onayKuyruguKaydi } = await import("../src/onay-kuyrugu.ts");
 const { makinistKaydi } = await import("../src/makinist.ts");
@@ -175,9 +175,41 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record
 }
 
 beforeEach(() => kabukSifirla());
-afterEach(() => { for (const o of ortamlar.splice(0)) for (const d of o.baglam.subscriptions) d.dispose(); sahte.workspace.getConfiguration = acikAyar; });
+afterEach(() => {
+  for (const o of ortamlar.splice(0)) for (const d of o.baglam.subscriptions) d.dispose();
+  sahte.workspace.getConfiguration = acikAyar;
+  sahte.workspace.onDidChangeConfiguration = ayarOlayi;
+});
 
 const acikAyar = sahte.workspace.getConfiguration;
+const ayarOlayi = sahte.workspace.onDidChangeConfiguration;
+/** Paketin varsayılan sekme sırası (package.json katkısı): sahte kabuk onu `inspect().defaultValue` olarak verir. */
+const PAKET_SIRASI = (JSON.parse(readFileSync(join(EKLENTI_KOKU, "package.json"), "utf8")) as {
+  contributes: { configuration: { properties: Record<string, { default?: unknown }> } };
+}).contributes.configuration.properties["sarmal.sekmeSirasi"]!.default as string[];
+
+/**
+ * Sekme sırası ayarının sahtesi (PNL-A23): kullanıcı ayarı `deger`, varsayılan paketinki. Yazımlar
+ * kaydedilir ve ayar değişim olayı sınamanın elindedir (gerçek VS Code gibi yazım olayı ateşler).
+ */
+function siraAyari(deger: unknown): { yazimlar: Array<[string, unknown, unknown]>; degistir(yeni: unknown): void } {
+  const olay = new sahte.EventEmitter<{ affectsConfiguration(b: string): boolean }>();
+  const durum = { deger };
+  const yazimlar: Array<[string, unknown, unknown]> = [];
+  const degistir = (yeni: unknown): void => {
+    durum.deger = yeni;
+    olay.fire({ affectsConfiguration: (b: string) => b === "sarmal.sekmeSirasi" || b === "sarmal" });
+  };
+  sahte.workspace.onDidChangeConfiguration = olay.event as never;
+  sahte.workspace.getConfiguration = (() => ({
+    get: <T>(_: string, v?: T) => v,
+    has: () => false,
+    inspect: (k: string) => (k === "sekmeSirasi" ? { key: `sarmal.${k}`, defaultValue: PAKET_SIRASI, globalValue: durum.deger } : undefined),
+    update: async (k: string, v: unknown, hedef: unknown) => { yazimlar.push([k, v, hedef]); if (k === "sekmeSirasi") degistir(v); },
+  })) as never;
+  return { yazimlar, degistir };
+}
+const seritSirasi = (html: string): string[] => [...html.matchAll(/role="tab" id="sekme-([a-z]+)"/g)].map((m) => m[1]!);
 function miniGrafAyari(acik: boolean): void {
   sahte.workspace.getConfiguration = (() => ({ get: <T>(ad: string, v?: T) => (ad === "miniGraf" ? (acik as T) : v), has: () => false, inspect: () => undefined, update: async () => {} })) as never;
 }
@@ -1008,4 +1040,106 @@ test("panelden tıklanan her satır dosyayı odak panelde kalarak açar (OZK-13)
   await otur();
   const cagri = kabuk.komutCagrilari.slice(once).find((c) => c.komut === "vscode.open");
   assert.ok(cagri && (cagri.argumanlar[1] as { preserveFocus?: boolean }).preserveFocus === true, "Ray satırı odağı editöre veriyor");
+});
+
+// ── ⑬ SEKMELERİN SÜRÜKLENEREK SIRALANMASI (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ) ───────────────
+
+test("sekme sırası kullanıcı ayarından okunur: şerit o sırayla dizilir, panel sıranın ilk sekmesiyle açılır ve rozetler sekmeleriyle taşınır (PNL-A23)", () => {
+  const ozel = ["sinyaller", "makinist", "ray", "tren", "ayarlar"];
+  siraAyari(ozel);
+  const o = ortamKur();
+  const h = o.gorunum.webview.html;
+  assert.deepEqual(seritSirasi(h), ozel, "şerit kullanıcının sırasında değil");
+  assert.equal(o.panel.olcumler().sekme, "sinyaller", "panel sıranın ilk sekmesiyle açılmalı");
+  assert.ok(h.includes('data-sekme="sinyaller" aria-selected="true"') && !gizliMi(h, "sinyaller") && gizliMi(h, "ray"));
+  assert.deepEqual(o.panel.olcumler().sekmeSirasi, ozel);
+  // Makinist rozeti (3) Makinist düğmesinin, Dur ve Dikkat rozetleri Sinyaller düğmesinin içindedir.
+  const dugme = (s: string): string => new RegExp(`<button[^>]*data-sekme="${s}"[\\s\\S]*?</button>`).exec(h)![0];
+  assert.match(dugme("makinist"), /<span class="rozet">3<\/span>/);
+  assert.match(dugme("sinyaller"), /<span class="rozet dur">3<\/span><span class="rozet dikkat">1<\/span>/);
+  assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, "sinyaller"]);
+});
+
+test("bozuk ya da eksik sıra ayarı paneli bozmaz: dizi olmayan değer paketin varsayılanına düşer, bilinmeyen kimlik atılır, eksik kimlik sona eklenir (PNL-A23)", () => {
+  const durumlar: Array<[unknown, string[]]> = [
+    [undefined, PAKET_SIRASI], [null, PAKET_SIRASI], ["ray", PAKET_SIRASI], [42, PAKET_SIRASI], [{ ray: 1 }, PAKET_SIRASI],
+    [[], PAKET_SIRASI], [["yok", 3], PAKET_SIRASI],
+    [["ayarlar", "graf", "ayarlar"], ["ayarlar", ...PAKET_SIRASI.filter((s) => s !== "ayarlar")]],
+    [["tren", "makinist"], ["tren", "makinist", ...PAKET_SIRASI.filter((s) => s !== "tren" && s !== "makinist")]],
+  ];
+  for (const [deger, beklenen] of durumlar) {
+    siraAyari(deger);
+    const o = ortamKur();
+    const h = o.gorunum.webview.html;
+    assert.deepEqual(seritSirasi(h), beklenen, `${JSON.stringify(deger)}: şerit sırası`);
+    assert.equal(o.panel.olcumler().sekme, beklenen[0], `${JSON.stringify(deger)}: açılış sekmesi sıranın ilki değil`);
+    assert.equal((h.match(/role="tab"/g) ?? []).length, 5);
+    for (const s of PAKET_SIRASI) assert.ok(h.includes(`id="panel-${s}"`), `${JSON.stringify(deger)}: ${s} kabı yok`);
+    for (const d of o.baglam.subscriptions.splice(0)) d.dispose();
+  }
+});
+
+test("webview'de kurulan sıra kullanıcı (Global) ayarına yazılır; seçim değişmez, içerik gönderilmez; aynı ya da bozuk sıra yazılmaz (PNL-A23)", async () => {
+  const ayar = siraAyari(undefined);
+  const o = ortamKur();
+  await otur();
+  const once = o.gorunum.gonderilen.length;
+  const yeni = ["makinist", "ray", "tren", "sinyaller", "ayarlar"];
+  o.gorunum.mesajGonder({ tip: "sekmeSirasi", sira: yeni });
+  await otur();
+  assert.deepEqual(ayar.yazimlar, [["sekmeSirasi", yeni, sahte.ConfigurationTarget.Global]], "sıra kullanıcı ayarına yazılmadı");
+  assert.equal(o.panel.olcumler().sekme, "ray", "sıra seçimi değiştirmemeli");
+  assert.deepEqual(o.panel.olcumler().sekmeSirasi, yeni);
+  const sonra = o.gorunum.gonderilen.slice(once).map((m) => (m as { tip?: string }).tip);
+  assert.ok(!sonra.some((t) => ["bolum", "parca", "satir", "sekmeSec"].includes(String(t))), `sıra iletisi içerik ya da seçim doğurdu: ${sonra.join(",")}`);
+  assert.equal(o.durum.has("sarmal.panel.sekmeSirasi"), false, "sıra workspaceState'e yazılmış");
+  // Aynı sıra ikinci kez yazılmaz; dizi olmayan ileti yazılmaz; eksik sıra tamamlanarak yazılır.
+  o.gorunum.mesajGonder({ tip: "sekmeSirasi", sira: yeni });
+  o.gorunum.mesajGonder({ tip: "sekmeSirasi", sira: "ray" });
+  o.gorunum.mesajGonder({ tip: "sekmeSirasi" });
+  await otur();
+  assert.equal(ayar.yazimlar.length, 1, "değişmeyen ya da bozuk sıra yazıldı");
+  o.gorunum.mesajGonder({ tip: "sekmeSirasi", sira: ["ayarlar", "x"] });
+  await otur();
+  assert.deepEqual(ayar.yazimlar.at(-1)?.[1], ["ayarlar", "makinist", "ray", "tren", "sinyaller"], "eksik sıra şimdiki sıranın kalanıyla tamamlanmalı");
+  assert.equal(o.panel.olcumler().siraYazimi, 2);
+});
+
+test("ayar başka yoldan değişince yeni sıra webview'e iletilir ve belge yeniden yazılmaz; varsayılana döndürme komutu kullanıcı ayarını siler (PNL-A23)", async () => {
+  const ayar = siraAyari(["tren", "ray", "makinist", "sinyaller", "ayarlar"]);
+  const o = ortamKur();
+  await otur();
+  const belge = o.panel.olcumler().belge;
+  ayar.degistir(["ayarlar", "sinyaller", "makinist", "tren", "ray"]);
+  await otur();
+  assert.deepEqual(mesajlar(o, "sekmeSirasi").at(-1), { tip: "sekmeSirasi", sira: ["ayarlar", "sinyaller", "makinist", "tren", "ray"] });
+  assert.equal(o.panel.olcumler().belge, belge, "sıra değişimi belgeyi yeniden yazdı");
+  assert.equal(o.panel.olcumler().sekme, "tren", "sıra değişimi seçimi değiştirmemeli");
+  // Komut paletindeki varsayılana döndürme: kullanıcı ayarı silinir, şerit paketin sırasına döner.
+  const sifirla = kabuk.komutlar.get(SEKME_SIRASI_SIFIRLA_KOMUTU);
+  assert.ok(sifirla, "varsayılana döndürme komutu kayıtlı değil");
+  await sifirla!();
+  await otur();
+  assert.deepEqual(ayar.yazimlar.at(-1), ["sekmeSirasi", undefined, sahte.ConfigurationTarget.Global]);
+  assert.deepEqual(mesajlar(o, "sekmeSirasi").at(-1), { tip: "sekmeSirasi", sira: PAKET_SIRASI });
+  assert.deepEqual(o.panel.olcumler().sekmeSirasi, PAKET_SIRASI);
+});
+
+test("paket katkısı: sekme sırası kullanıcı (application) ayarıdır, varsayılanı beş kimliğin tam bir sırasıdır; varsayılana döndürme komutu komut paletindedir (PNL-A23)", () => {
+  const paket = JSON.parse(readFileSync(join(EKLENTI_KOKU, "package.json"), "utf8")) as {
+    contributes: {
+      configuration: { properties: Record<string, { scope?: string; type?: string; default?: unknown; items?: { enum?: string[] } }> };
+      commands: Array<{ command: string; title: string }>;
+      menus: { commandPalette?: Array<{ command: string; when?: string }> };
+    };
+  };
+  const ayar = paket.contributes.configuration.properties["sarmal.sekmeSirasi"]!;
+  assert.equal(ayar.scope, "application", "sıra kullanıcı ayarı olmalı (çalışma alanı ayarına yazılmaz)");
+  assert.equal(ayar.type, "array");
+  assert.deepEqual([...(ayar.items?.enum ?? [])].sort(), [...SEKMELER].sort());
+  assert.deepEqual(ayar.default, [...(ayar.default as string[])].filter((s, i, a) => SEKMELER.includes(s as never) && a.indexOf(s) === i), "varsayılanda bilinmeyen ya da yinelenen kimlik var");
+  assert.equal((ayar.default as string[]).length, SEKMELER.length, "varsayılan beş sekmenin hepsini taşımalı");
+  assert.ok(/^[\x20-\x7e]+$/.test("sarmal.sekmeSirasi") && /^[\x20-\x7e]+$/.test(SEKME_SIRASI_SIFIRLA_KOMUTU), "ayar ve komut adı ASCII olmalı (H15)");
+  assert.ok(paket.contributes.commands.some((k) => k.command === SEKME_SIRASI_SIFIRLA_KOMUTU), "komut katkıda yok");
+  assert.ok(!(paket.contributes.menus.commandPalette ?? []).some((m) => m.command === SEKME_SIRASI_SIFIRLA_KOMUTU && m.when === "false"), "komut paletten gizlenmiş");
 });

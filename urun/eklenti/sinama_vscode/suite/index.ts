@@ -19,6 +19,7 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "minigraf-tiklama.test.js"));   // 🖱️ PNL-A05 Mini Graf tıklaması
   mocha.addFile(path.resolve(__dirname, "sekme-gecisi.test.js"));   // ⏱️ PNL-A18 sekme geçişi eklentiyi beklemez
   mocha.addFile(path.resolve(__dirname, "sinyaller.test.js"));   // 🚦 PNL-A09 Sinyaller sekmesi
+  mocha.addFile(path.resolve(__dirname, "sekme-sirasi.test.js"));   // ↔️ PNL-A23 sekmelerin sürüklenerek sıralanması
 
   return new Promise((resolve, reject) => {
     try {

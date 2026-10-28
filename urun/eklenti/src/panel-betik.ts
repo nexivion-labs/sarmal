@@ -55,10 +55,21 @@ button{font:inherit;color:inherit}
 .sekme:hover{color:var(--vscode-foreground);opacity:1}
 .sekme[aria-selected="true"]{color:var(--vscode-foreground);opacity:1;box-shadow:inset 0 -2px 0 ${MARKA_MAVISI}}
 .sekme:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:-2px}
+/* SEKME SIRASI (PNL-A23): sürüklenen sekme soluklaşır; bırakılacağı yer marka mavisi ince bir çizgiyle
+   gösterilir. Çizgi sözde öğededir: seçili sekmenin alt çizgisini (box-shadow) ezmez. */
+.sekme{position:relative}
+.sekme.suruklenen{opacity:.4}
+.sekme.birak-once::before,.sekme.birak-sonra::before{content:"";position:absolute;top:4px;bottom:4px;width:2px;
+  background:${MARKA_MAVISI};pointer-events:none}
+.sekme.birak-once::before{left:0}
+.sekme.birak-sonra::before{right:0}
 .rozet{display:inline-block;min-width:14px;padding:0 4px;border-radius:7px;text-align:center;font-size:10px;line-height:14px;
   background:var(--vscode-badge-background);color:var(--vscode-badge-foreground)}
 /* Sinyaller sekmesinin Dur ve Dikkat sayıları (PNL-A09): editörün hata ve uyarı renkleriyle. */
 .sinyal-rozetleri{display:inline-flex;gap:3px}
+/* Sıfır olan rozet yer kaplamaz: .rozet görünüm kuralı [hidden]in tarayıcı varsayılanını ezdiği için
+   gizli rozet boş bir hap olarak yer tutuyor ve Sinyaller ile Ayarlar arasında boşluk bırakıyordu. */
+.rozet[hidden]{display:none}
 .rozet.dur{background:var(--vscode-editorError-foreground,#f14c4c);color:var(--vscode-editor-background,#1e1e1e)}
 .rozet.dikkat{background:var(--vscode-editorWarning-foreground,#cca700);color:var(--vscode-editor-background,#1e1e1e)}
 /* DAR ŞERİT: kenar çubuğunda (${DAR_SERIT_PX} pikselden dar) beş sekmenin adı yan yana sığmaz ve kesilir.
@@ -222,6 +233,70 @@ export const PANEL_BETIGI = `
     gecisSayaci += 1;
     gonder({ tip: 'sekme', ad: ad, n: gecisSayaci });
   }
+
+  // ── Sekme sırası (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ) ────────────────────────────
+  // Sıra ile seçim ayrı şeylerdir: sürükleme ve klavyeyle taşıma yalnız düğmelerin yerini değiştirir;
+  // seçili sekmeye, görünen kaba ve geçiş sayacına dokunmaz, sekme geçişi de sırayı değiştirmez. Yeni
+  // sıra eklentiye gider ve kullanıcı ayarına yazılır. Ayar başka bir yoldan değişince (varsayılana
+  // döndürme komutu, ayar dosyası, başka pencere) eklentinin bildirdiği sıra şeride uygulanır.
+  function seritSirasi() { return sekmeler().map(function (b) { return b.getAttribute('data-sekme'); }); }
+  function siraGonder() { gonder({ tip: 'sekmeSirasi', sira: seritSirasi() }); }
+  function siraUygula(sira) {
+    var serit = document.querySelector('.seritler');
+    if (!serit || !Array.isArray(sira) || sira.join() === seritSirasi().join()) return;
+    sira.forEach(function (ad) {
+      var b = serit.querySelector('.sekme[data-sekme="' + kacirSel(ad) + '"]');
+      if (b) serit.appendChild(b);
+    });
+  }
+  var suruklenen = null;
+  function birakIzleriniSil() {
+    sekmeler().forEach(function (b) { b.classList.remove('birak-once', 'birak-sonra', 'suruklenen'); });
+  }
+  /** Bırakma hedefi: üzerinde durulan sekme ve onun önü mü arkası mı; şeridin boş yeri en sondur. */
+  function birakHedefi(e) {
+    var t = e.target;
+    if (!t || !t.closest || !t.closest('.seritler')) return null;
+    var h = t.closest('.sekme');
+    if (!h) return { sekme: null, once: false };
+    var r = h.getBoundingClientRect();
+    return { sekme: h, once: (e.clientX - r.left) < r.width / 2 };
+  }
+  document.addEventListener('dragstart', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('.sekme') : null;
+    if (!b) return;
+    suruklenen = b;
+    b.classList.add('suruklenen');
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', b.getAttribute('data-sekme')); } catch (x) { /* veri yazılamasa da sürükleme sürer */ }
+    }
+  });
+  document.addEventListener('dragover', function (e) {
+    if (!suruklenen) return;
+    var h = birakHedefi(e);
+    if (!h) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    sekmeler().forEach(function (b) { b.classList.remove('birak-once', 'birak-sonra'); });
+    if (h.sekme && h.sekme !== suruklenen) h.sekme.classList.add(h.once ? 'birak-once' : 'birak-sonra');
+  });
+  document.addEventListener('drop', function (e) {
+    if (!suruklenen) return;
+    var h = birakHedefi(e);
+    var b = suruklenen;
+    suruklenen = null;
+    birakIzleriniSil();
+    if (!h) return;
+    e.preventDefault();
+    var once = seritSirasi().join();
+    var serit = b.parentNode;
+    if (!h.sekme) serit.appendChild(b);
+    else if (h.sekme !== b) serit.insertBefore(b, h.once ? h.sekme : h.sekme.nextSibling);
+    if (seritSirasi().join() !== once) siraGonder();
+  });
+  document.addEventListener('dragend', function () { suruklenen = null; birakIzleriniSil(); });
+
   /** Sekmenin içerik kabı; eklentiden gelen her güncelleme hedefini yalnız kendi sekmesinin kabında arar. */
   function sekmePaneli(sekme) { return typeof sekme === 'string' ? $('panel-' + sekme) : null; }
   function hedefBul(sekme, kimlik) { var p = sekmePaneli(sekme); return p ? p.querySelector('#' + kimlik) : null; }
@@ -424,8 +499,14 @@ export const PANEL_BETIGI = `
         (hedefBag.querySelector('.ad, text.etiket') || hedefBag)
           .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true, view: window }));
       }
+    } else if (m.tip === 'sekmeSirasi') {
+      siraUygula(m.sira);
     } else if (m.tip === 'sinamaSekmeDizisi') {
       sinamaSekmeDizisi(m.sira, m.aralik);
+    } else if (m.tip === 'sinamaSurukle') {
+      sinamaSurukle(m.ad, m.hedef, m.once);
+    } else if (m.tip === 'sinamaSerit') {
+      gonder({ tip: 'sinamaRapor', kayitlar: seritDurumu() });
     } else if (m.tip === 'git') {
       var g = satirBul(m.id);
       if (g) { sec(g); g.focus(); g.scrollIntoView({ block: 'nearest' }); }
@@ -464,6 +545,37 @@ export const PANEL_BETIGI = `
       });
       gonder({ tip: 'sinamaRapor', kayitlar: kayitlar });
     }, Number(aralik) || 0);
+  }
+
+  // ── Sınama kipi (PNL-A23): sekme sürüklemesi ve şeridin durumu ──────────────
+  // Sürükleme gerçek DOM sürükleme olaylarıyla (dragstart, dragover, drop, dragend) yapılır; olaylar
+  // bırakılacak sekmenin yarısına göre konumlanır ve şeridin kendi işleyicilerinden geçer.
+  function seritDurumu() {
+    var gorunen = sekmePanelleri().filter(function (p) { return !p.hidden; });
+    return {
+      sira: seritSirasi(), secili: seciliSekme(), gorunen: gorunen.map(function (p) { return p.getAttribute('data-sekme'); }),
+      icerik: gorunen.map(icerikSekmesi),
+      rozetler: sekmeler().map(function (b) {
+        return { sekme: b.getAttribute('data-sekme'), rozet: Array.prototype.map.call(b.querySelectorAll('.rozet'), function (r) { return r.className; }) };
+      }),
+    };
+  }
+  function sinamaSurukle(ad, hedef, once) {
+    var b = document.querySelector('.sekme[data-sekme="' + kacirSel(ad) + '"]');
+    var h = document.querySelector('.sekme[data-sekme="' + kacirSel(hedef) + '"]');
+    if (!b || !h) { gonder({ tip: 'sinamaRapor', kayitlar: seritDurumu() }); return; }
+    var r = h.getBoundingClientRect();
+    var x = once ? r.left + 2 : r.right - 2;
+    var y = r.top + r.height / 2;
+    var dt = new DataTransfer();
+    var olay = function (hedefOge, tur) {
+      hedefOge.dispatchEvent(new DragEvent(tur, { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, dataTransfer: dt }));
+    };
+    olay(b, 'dragstart');
+    olay(h, 'dragover');
+    olay(h, 'drop');
+    olay(b, 'dragend');
+    gonder({ tip: 'sinamaRapor', kayitlar: seritDurumu() });
   }
 
   // ── Katlanan başlıklar: Enter, Space ve tıklama gövdeyi katlar; durum eklentide kalıcıdır ──
@@ -584,6 +696,20 @@ export const PANEL_BETIGI = `
     }
     if (t.closest('.kademe')) return;
     var sek = t.closest('.sekme');
+    if (sek && e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      // Klavyeyle taşıma (PNL-A23): odaktaki sekme komşusuyla yer değiştirir; uçta sıra değişmez.
+      // Taşınan komşudur, odaktaki düğüm yerinden sökülmez ve odağını kaybetmez. Olay VS Code'a
+      // geçmez: Alt+Sol orada "geri git" kısayoludur.
+      e.preventDefault();
+      e.stopPropagation();
+      var sol = e.key === 'ArrowLeft';
+      var komsu = sol ? sek.previousElementSibling : sek.nextElementSibling;
+      if (komsu && komsu.classList.contains('sekme')) {
+        sek.parentNode.insertBefore(komsu, sol ? sek.nextSibling : sek);
+        siraGonder();
+      }
+      return;
+    }
     if (sek) {
       var liste = sekmeler();
       var i = liste.indexOf(sek);

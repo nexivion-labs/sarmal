@@ -1572,3 +1572,33 @@ Hatırlatıcı(
   dönüşTetikleyici: "Hatırlatıcı ve fikir değerlendirme oturumunda; en geç açık depoya bir sonraki gönderimden önce",
   ne:               "Founder 2026-10-26 tarihinde açık depo ile kapalı ürünün zaman zaman karıştırıldığını, açık depoya yazılmaması gereken kayıtların buraya yazılabildiğini gözlemlemiş ve iki deponun birleştirilmesini sormuştur. Değerlendirme sonucunda birleştirme önerilmemiştir, çünkü git bir deponun yalnız bir kısmını yayımlayamaz, bu depo herkese açıktır ve açılmış bir depo geri kapatılamaz; ayrık depolar sızıntının en kötü hâlinde bile tek bir cümleyle sınırlı kalmasını sağlar. Çare ayrımın güçlendirilmesidir. Bugün işleme kapısındaki yasak sözcük kancası kişi ve müşteri adlarını yakalamaktadır, fakat kapalı ürünün kod öneklerini ve kavram adlarını tanımamaktadır. Kapalı ürünün kod önekleri ile kavram adları kancanın depo dışında yaşayan yasak sözcük listesine eklenir; liste hiçbir koşulda bu depoya yazılmaz. Ayrıca bu depoya yazan her oturum kaydı yazmadan önce kaydın Sarmal aracının kendisiyle mi ilgili olduğunu sorar; değilse kayıt kapalı ürünün ya da laboratuvarın kendi kaydına gider. Kabul ölçütü olarak kapalı ürünün bir kod önekini taşıyan deneme işlemesinin kanca tarafından reddedildiği ölçülür."
 )
+
+Hatırlatıcı(
+  kod:              HTR-ZAMAN-SINAMASI-YUK-ALTINDA-SASIYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Panel hızı Bloklarından birine (panel kipi ya da işçi) başlanırken; en geç işleme kapısı bir hafta içinde yeniden bu sınamadan düştüğünde",
+  ne:               "Eklenti süitindeki A08 performans sınaması (sinama/parametre-dekor.test.ts) büyük bir plan dosyasında görünür aralık kararının on altı milisaniyenin altında kalmasını ölçmektedir. Makinenin yük ortalaması yükseldiğinde, örneğin bir ajan gerçek VS Code süitini koşarken, sınama işleme kapısında düşmekte ve ölçülen değer 834 ile 954 milisaniye arasında çıkmaktadır; tek başına koşulduğunda geçmektedir. 2026-10-27 ve 2026-10-28 tarihlerinde dört işleme bu yüzden yinelenmiştir ve kapı hiçbirinde atlanmamıştır. Sınama ölçtüğü şeyi değil makinenin o anki yükünü ölçmektedir; yalıtılmış bir koşu, göreli bir bütçe ya da yük ölçümüyle birlikte yazılan bir eşik değerlendirilmelidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-KONSOL-ATILMIS-DEPO-HATASI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Eklentinin etkinleştirme ya da kapanma koduna bir sonraki dokunuşta",
+  ne:               "Founder 2026-10-28 tarihinde VS Code'un Hata Ayıklama Konsolu'nda, pencere yeniden yüklendikten sonra çıktı kanalı oluşturan çağrıların atılmış bir depoya eklendiğini söyleyen yığın izlerini göstermiştir. İzlerden biri başka bir eklentiye aittir; ötekilerin kaynağı izde yazmamaktadır. Sarmal etkinleşirken iki çıktı kanalı oluşturmaktadır (performans kanalı ve karar yüzeyi kanalı); izlerin bu iki çağrıdan gelip gelmediği gerçek VS Code'da ölçülmelidir. Kullanıcıya görünen bir arıza bildirilmemiştir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-MAKINIST-IPUCU-SATIRI-ORTUYOR,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p3,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Makinist sekmesinin satır düzenine bir sonraki dokunuşta",
+  ne:               "Founder'ın 2026-10-28 tarihli ekran görüntüsünde Makinist sekmesindeki bir grup başlığının üzerine gelindiğinde çıkan ipucu kutusu bir alttaki satırın üstüne binmekte ve o satırın sayısını örtmektedir. İpucu başlığın kendi metnini yinelediği için bilgi taşımamaktadır; kaldırılması ya da konumunun değişmesi değerlendirilmelidir."
+)

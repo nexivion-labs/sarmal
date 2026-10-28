@@ -45,7 +45,11 @@
 //   sahte eklenti hiçbir iletiye yanıt vermezken (iş parçacığı kilitliymiş gibi) her sekmeye
 //   gerçek fare tıklaması o sekmenin içeriğini hemen gösterir, seçili sekme ile görünen kap
 //   ayrışmaz, eklentinin gecikmiş bölümü ve gecikmiş seçimi görünen içeriği değiştirmez; her
-//   adımın ekran görüntüsü sekme-gecisi-<boyut>-<sekme>.png olarak yazılır · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
+//   adımın ekran görüntüsü sekme-gecisi-<boyut>-<sekme>.png olarak yazılır · SEKMELERİN SÜRÜKLENEREK
+//   SIRALANMASI (PNL-A23): gerçek fare sürüklemesi sekmeyi bırakıldığı yere taşır, yeni sıra eklentiye
+//   tek iletiyle gider, seçim ve görünen içerik değişmez, rozet sekmesiyle taşınır; Alt+Sol/Sağ odaktaki
+//   sekmeyi taşır ve VS Code'a geçmez; eklentinin bildirdiği sıra şeride uygulanır; sıra ayarı taşıyan
+//   değişke ilk sekmeyle açılır; görüntüler sekme-sirasi-<boyut>-<an>.png · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
 //
@@ -78,7 +82,9 @@ const BOYUTLAR = [{ ad: "300", w: 300, h: 720 }, { ad: "460", w: 460, h: 720 }, 
 const YAZI_EN_AZ = 11, YAZI_EN_COK = 14;
 /** PNL-A03 · Founder 2026-10-27: küçük sekme şeridi ve çok küçük puntolu bölüm başlıkları. */
 const SEKME_YAZI = "11px", SERIT_PX = 26, BASLIK_YAZI = "10px";
-const SEKME_SIRASI = ["ray", "tren", "makinist", "sinyaller", "ayarlar"];
+/** Paketin varsayılan sekme sırası (PNL-A23): package.json katkısındaki `sarmal.sekmeSirasi` varsayılanı. */
+const SEKME_SIRASI = JSON.parse(readFileSync(join(EKLENTI, "package.json"), "utf8"))
+  .contributes.configuration.properties["sarmal.sekmeSirasi"].default;
 /** Ray bölümlerinin yan yana dizildiği en küçük genişlik (src/panel-betik.ts GENIS_PANEL_PX ile aynı). */
 const GENIS_PANEL_PX = 640;
 
@@ -443,8 +449,18 @@ try {
       kontrol(`${etiket}: sekme şeridi yazısı ${SEKME_YAZI} ve şerit ${SERIT_PX} px`,
         dz.sekmeYazi.length === 1 && dz.sekmeYazi[0] === SEKME_YAZI && Math.abs(dz.seritYuk - SERIT_PX) < 0.5,
         JSON.stringify({ sekmeYazi: dz.sekmeYazi, seritYuk: dz.seritYuk }));
-      kontrol(`${etiket}: sekmeler sırasıyla Ray · Tren · Makinist · Sinyaller · Ayarlar`,
-        dz.sira.join(",") === SEKME_SIRASI.join(","), dz.sira.join(","));
+      const beklenenSira = d.sira ?? SEKME_SIRASI;
+      kontrol(`${etiket}: sekmeler ${d.sira ? "kullanıcının sırasıyla" : "paketin varsayılan sırasıyla"} (${beklenenSira.join(" · ")})`,
+        dz.sira.join(",") === beklenenSira.join(","), dz.sira.join(","));
+      if (d.sira) {
+        // PNL-A23: panel sıranın ilk sekmesiyle açılır; rozetler sekmeleriyle birlikte taşınır.
+        const ac = await p.evaluate(sekmeDurumu);
+        const rz = await p.evaluate(() => [...document.querySelectorAll(".sekme")].map((b) => [b.dataset.sekme, [...b.querySelectorAll(".rozet")].map((r) => r.className).join("+")]));
+        kontrol(`${etiket}: panel sıranın ilk sekmesiyle (${d.sira[0]}) açılır ve o sekmenin içeriği görünür`,
+          ac.secili === d.sira[0] && ac.gorunen.join() === d.sira[0] && ac.icerik.join() === d.sira[0], JSON.stringify(ac));
+        kontrol(`${etiket}: rozetler kendi sekmeleriyle birlikte taşınır (Makinist sayısı Makinist'te, Dur ve Dikkat Sinyaller'de)`,
+          rz.every(([s, r]) => r === (s === "makinist" ? "rozet" : s === "sinyaller" ? "rozet dur+rozet dikkat" : "")), JSON.stringify(rz));
+      }
       kontrol(`${etiket}: sekme şeridi taşmaz ve görünen hiçbir sekme adı kesilmez`,
         dz.seritTasma <= 0.5 && dz.kesik.length === 0, JSON.stringify({ seritTasma: dz.seritTasma, kesik: dz.kesik }));
       kontrol(`${etiket}: içerik alanı şeridin hemen altından panelin dibine uzanır (küçük kutu ya da boş alt yok)`,
@@ -812,6 +828,112 @@ try {
     const dosya = `sekme-gecisi-${W}-gecikmis-ileti.png`;
     await p.screenshot({ path: join(CIKTI, dosya) });
     goruntuler.push(dosya);
+    kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
+    await p.close();
+  }
+
+  // ── SEKMELERİN SÜRÜKLENEREK SIRALANMASI (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ) ────────────────────────
+  // Gerçek fare sürüklemesi (Playwright'ın HTML5 sürükle-bırak yolu) ve gerçek klavye. Sıra ile seçim
+  // ayrıdır: sürükleme seçili sekmeyi ve görünen içeriği değiştirmez, yeni sıra eklentiye ileti olarak
+  // gider, rozet kendi sekmesiyle taşınır; sıradan sonra sekme geçişi yine anındadır (PNL-A18).
+  for (const B of BOYUTLAR) {
+    const W = B.ad;
+    const p = await tarayici.newPage({ viewport: { width: B.w, height: B.h } });
+    const hatalar = [];
+    p.on("pageerror", (e) => hatalar.push(e.message));
+    await p.addInitScript(() => {
+      window.__iletiler = [];
+      window.__pencereAltOk = 0;
+      window.acquireVsCodeApi = () => ({ postMessage(m) { window.__iletiler.push(m); }, setState() {}, getState() {} });
+      // Alt+ok VS Code'a geçerse pencere düzeyinde görünürdü (VS Code'da Alt+Sol "geri git"tir).
+      window.addEventListener("keydown", (e) => { if (e.altKey && e.key.startsWith("Arrow")) window.__pencereAltOk += 1; });
+    });
+    await p.goto(pathToFileURL(join(HTML_DIZIN, "ray.html")).href, { waitUntil: "load" });
+    await p.evaluate((renkler) => {
+      const r = document.documentElement;
+      for (const [k, v] of Object.entries(renkler)) r.style.setProperty(k, v);
+      r.style.background = renkler["--vscode-sideBar-background"];
+      document.body.className = "vscode-dark";
+    }, KOYU);
+    const etiket = `sekme sırası @${W}`;
+    const serit = () => p.evaluate(() => ({
+      sira: [...document.querySelectorAll(".sekme")].map((b) => b.dataset.sekme),
+      iletiler: window.__iletiler.filter((m) => m.tip === "sekmeSirasi").map((m) => m.sira.join(",")),
+      secimIletisi: window.__iletiler.filter((m) => m.tip === "sekme").length,
+      odak: document.activeElement?.dataset?.sekme ?? null,
+      pencereAltOk: window.__pencereAltOk,
+      rozet: (() => {
+        const b = document.querySelector('.sekme[data-sekme="makinist"]');
+        const r = b?.querySelector(".rozet");
+        if (!b || !r) return null;
+        const br = b.getBoundingClientRect(), rr = r.getBoundingClientRect();
+        return { metin: r.textContent, icinde: rr.left >= br.left - 0.5 && rr.right <= br.right + 0.5, gorunur: !r.hidden };
+      })(),
+      izKaldi: document.querySelectorAll(".sekme.suruklenen,.sekme.birak-once,.sekme.birak-sonra").length,
+    }));
+    const goruntu = async (ad) => {
+      const dosya = `sekme-sirasi-${W}-${ad}.png`;
+      await p.screenshot({ path: join(CIKTI, dosya), clip: { x: 0, y: 0, width: B.w, height: Math.min(B.h, 160) } });
+      goruntuler.push(dosya);
+    };
+    const s0 = await serit();
+    const gizliRozet = await p.evaluate(() => [...document.querySelectorAll(".sekme .rozet[hidden]")].map((r) => Math.round(r.getBoundingClientRect().width)));
+    kontrol(`${etiket}: sıfır olan rozet gizlidir ve şeritte yer kaplamaz`, gizliRozet.every((w) => w === 0), JSON.stringify(gizliRozet));
+    kontrol(`${etiket}: sürüklemeden önce şerit paketin varsayılan sırasındadır ve sekmeler sürüklenebilir`,
+      s0.sira.join() === SEKME_SIRASI.join() && await p.evaluate(() => [...document.querySelectorAll(".sekme")].every((b) => b.draggable)),
+      JSON.stringify(s0.sira));
+    await goruntu("once");
+    // ① Sıranın son sekmesi sürüklenip ilk sekmenin önüne (sol yarısına) bırakılır. Ölçüm paketin
+    //    varsayılan sırasından türer; Founder kendi sırasını varsayılan yaptığında da geçerli kalır.
+    const suruklenen = SEKME_SIRASI.at(-1);
+    const hedefSira = [suruklenen, ...SEKME_SIRASI.filter((s) => s !== suruklenen)];
+    await p.dragAndDrop(`.sekme[data-sekme="${suruklenen}"]`, `.sekme[data-sekme="${SEKME_SIRASI[0]}"]`, { targetPosition: { x: 3, y: 13 } });
+    await p.waitForTimeout(80);
+    const s1 = await serit();
+    const g1 = await p.evaluate(sekmeDurumu);
+    kontrol(`${etiket}: sürüklenen sekme bırakıldığı yere geçer ve yeni sıra eklentiye tek iletiyle gider`,
+      s1.sira.join() === hedefSira.join() && s1.iletiler.length === 1 && s1.iletiler[0] === hedefSira.join() && s1.izKaldi === 0,
+      JSON.stringify(s1));
+    kontrol(`${etiket}: sürükleme seçili sekmeyi ve görünen içeriği değiştirmez; seçim iletisi gitmez`,
+      g1.secili === "ray" && g1.gorunen.join() === "ray" && g1.icerik.join() === "ray" && s1.secimIletisi === 0, JSON.stringify({ g1, secimIletisi: s1.secimIletisi }));
+    kontrol(`${etiket}: Makinist'in rozeti sekmesinin düğmesinde kalır (düğmenin içinde, aynı sayı)`,
+      !!s1.rozet && s1.rozet.icinde && s1.rozet.metin === s0.rozet?.metin && s1.rozet.gorunur === s0.rozet?.gorunur, JSON.stringify({ once: s0.rozet, sonra: s1.rozet }));
+    await goruntu("surukle-sonra");
+    // ② Klavye: odaktaki ilk sekme Alt+Sağ ile bir sağa geçer; odak sekmede kalır, olay VS Code'a geçmez.
+    const tasinan = hedefSira[0];
+    await p.focus(`.sekme[data-sekme="${tasinan}"]`);
+    await p.keyboard.press("Alt+ArrowRight");
+    await p.waitForTimeout(50);
+    const s2 = await serit();
+    const beklenen2 = [hedefSira[1], hedefSira[0], ...hedefSira.slice(2)];
+    kontrol(`${etiket}: Alt+Sağ odaktaki sekmeyi bir sağa taşır, odak sekmede kalır ve yeni sıra eklentiye gider`,
+      s2.sira.join() === beklenen2.join() && s2.odak === tasinan && s2.iletiler.at(-1) === beklenen2.join() && s2.iletiler.length === 2,
+      JSON.stringify(s2));
+    kontrol(`${etiket}: Alt+ok olayı VS Code'a geçmez (pencere düzeyine ulaşmaz) ve seçim iletisi doğurmaz`,
+      s2.pencereAltOk === 0 && s2.secimIletisi === 0, JSON.stringify({ pencereAltOk: s2.pencereAltOk, secimIletisi: s2.secimIletisi }));
+    await p.focus(`.sekme[data-sekme="${beklenen2[0]}"]`);
+    await p.keyboard.press("Alt+ArrowLeft");
+    await p.waitForTimeout(50);
+    const s3 = await serit();
+    kontrol(`${etiket}: en soldaki sekmede Alt+Sol sırayı değiştirmez ve ileti göndermez`,
+      s3.sira.join() === beklenen2.join() && s3.iletiler.length === 2, JSON.stringify(s3));
+    await goruntu("klavye-sonra");
+    // ③ Sıradan sonra sekme geçişi yine anındadır (PNL-A18): tıklama içeriği hemen gösterir.
+    await p.click('.sekme[data-sekme="sinyaller"]');
+    const g4 = await p.evaluate(sekmeDurumu);
+    kontrol(`${etiket}: sıra değiştikten sonra sekmeye tıklamak içeriğini hemen gösterir (PNL-A18 korunur)`,
+      g4.secili === "sinyaller" && g4.gorunen.join() === "sinyaller" && g4.icerik.join() === "sinyaller", JSON.stringify(g4));
+    // Sıra geri yazılınca da şerit varsayılana döner: bunun ölçülebilmesi için şimdiki sıra varsayılandan farklı olmalıdır.
+    kontrol(`${etiket}: ölçüm anlamlıdır (sürükleme ve klavyeden sonra sıra varsayılandan farklıdır)`, (await serit()).sira.join() !== SEKME_SIRASI.join(), "");
+    // ④ Eklentinin bildirdiği sıra (varsayılana döndürme komutu ya da ayar dosyası) şeride uygulanır; seçim değişmez, geri ileti yok.
+    await p.evaluate((sira) => { window.postMessage({ tip: "sekmeSirasi", sira }, "*"); }, SEKME_SIRASI);
+    await p.waitForTimeout(80);
+    const s5 = await serit();
+    const g5 = await p.evaluate(sekmeDurumu);
+    kontrol(`${etiket}: eklentinin bildirdiği sıra (varsayılana dönüş) şeride uygulanır; seçim değişmez ve sıra geri yazılmaz`,
+      s5.sira.join() === SEKME_SIRASI.join() && g5.secili === "sinyaller" && g5.gorunen.join() === "sinyaller" && s5.iletiler.length === 2,
+      JSON.stringify({ s5, g5 }));
+    await goruntu("varsayilana-donus");
     kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
     await p.close();
   }

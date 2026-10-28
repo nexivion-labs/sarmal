@@ -17,7 +17,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
   IkonDefteri, SEKMELER, bosSekmeHtml, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
-  satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, trenBolumuHtml,
+  satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, sekmeSirasiNormalle, trenBolumuHtml,
   sinyallerBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type SekmeBolumu, type SekmeKimligi, type SekmeSimgeleri, type UretimSecenekleri,
 } from "../src/panel-cekirdek.ts";
@@ -121,6 +121,54 @@ test("sekme şeridi: beş sekme, seçili olan aria-selected ve tek tabulu, simge
   const sinyal = sekmeSeridiHtml("ray", SIMGELER, 0, { dur: 3, dikkat: 0 });
   assert.match(sinyal, /data-sekme="sinyaller"[^>]*>[\s\S]*?<span class="rozet dur">3<\/span><span class="rozet dikkat" hidden><\/span>/);
   assert.match(sekmeSeridiHtml("ray", SIMGELER, 0), /<span class="rozet dur" hidden><\/span><span class="rozet dikkat" hidden><\/span>/);
+});
+
+// ── ①b SEKME SIRASI (PNL-A23 · OZK-14 DÖRDÜNCÜSÜ) ──────────────────────────────
+
+test("sekme sırası: geçerli sıra korunur; dizi olmayan değer varsayılana düşer; bilinmeyen ve yinelenen kimlik atılır, eksik kimlik varsayılandaki sırasıyla sona eklenir", () => {
+  const VARSAYILAN = [...SEKMELER];
+  const ozel = ["sinyaller", "makinist", "ray", "tren", "ayarlar"];
+  assert.deepEqual(sekmeSirasiNormalle(ozel), ozel, "geçerli sıra değişmemeli");
+  for (const bozuk of [undefined, null, 3, "ray", "", {}, { 0: "ray" }, true]) {
+    assert.deepEqual(sekmeSirasiNormalle(bozuk), VARSAYILAN, `${JSON.stringify(bozuk)}: varsayılana düşmeli`);
+  }
+  assert.deepEqual(sekmeSirasiNormalle([]), VARSAYILAN, "boş dizi varsayılandır");
+  assert.deepEqual(sekmeSirasiNormalle(["yok", 7, null, "RAY"]), VARSAYILAN, "yalnız bilinmeyen kimlik varsayılandır");
+  assert.deepEqual(sekmeSirasiNormalle(["tren", "graf", "tren", "ayarlar"]), ["tren", "ayarlar", "ray", "makinist", "sinyaller"],
+    "bilinmeyen ve yinelenen atılır, eksikler varsayılan sırasıyla sona eklenir");
+  // Eksikler verilen varsayılanın sırasıyla eklenir; bozuk varsayılan SEKMELER'e düşer.
+  assert.deepEqual(sekmeSirasiNormalle(["ayarlar"], ozel), ["ayarlar", "sinyaller", "makinist", "ray", "tren"]);
+  assert.deepEqual(sekmeSirasiNormalle(undefined, ozel), ozel, "ayar yoksa paketin varsayılanı uygulanır");
+  assert.deepEqual(sekmeSirasiNormalle(undefined, "bozuk"), VARSAYILAN);
+  assert.deepEqual(sekmeSirasiNormalle(undefined, ["makinist", "x"]), ["makinist", "ray", "tren", "sinyaller", "ayarlar"]);
+  // Sonuç her zaman beş kimliğin her birini tam bir kez taşır.
+  for (const d of [ozel, ["tren", "tren"], ["x"], [1, 2], ["ayarlar", "ray"]]) {
+    const s = sekmeSirasiNormalle(d);
+    assert.equal(s.length, 5);
+    assert.deepEqual([...s].sort(), [...SEKMELER].sort());
+  }
+});
+
+test("sekme şeridi sırayla dizilir: düğmeler verilen sıradadır, sürüklenebilir ve ipuçları taşıma yolunu söyler; seçim ve rozetler sekmeleriyle gider", () => {
+  const sira = ["sinyaller", "makinist", "ray", "tren", "ayarlar"] as const;
+  const h = sekmeSeridiHtml("tren", SIMGELER, 4, { dur: 2, dikkat: 1 }, sira);
+  assert.deepEqual([...h.matchAll(/data-sekme="([a-z]+)"/g)].map((m) => m[1]), [...sira], "şerit verilen sırada değil");
+  assert.equal((h.match(/draggable="true"/g) ?? []).length, 5, "her sekme sürüklenebilir olmalı");
+  assert.ok(h.includes('data-sekme="tren" aria-selected="true" tabindex="0"'), "sıra seçimi değiştirmemeli");
+  assert.equal((h.match(/aria-selected="true"/g) ?? []).length, 1);
+  // Rozetler kendi düğmesinin içindedir: düğme taşınınca rozet de taşınır.
+  const dugme = (s: string): string => new RegExp(`<button[^>]*data-sekme="${s}"[\\s\\S]*?</button>`).exec(h)![0];
+  assert.match(dugme("makinist"), /<span class="rozet">4<\/span>/);
+  assert.match(dugme("sinyaller"), /<span class="rozet dur">2<\/span><span class="rozet dikkat">1<\/span>/);
+  for (const s of ["ray", "tren", "ayarlar"]) assert.doesNotMatch(dugme(s), /class="rozet/, `${s}: başka sekmenin rozeti`);
+  for (const s of SEKMELER) assert.ok(dugme(s).includes(kacir(PANEL_METINLERI.sekmeTasimaIpucu)), `${s}: ipucu taşıma yolunu söylemiyor`);
+  // Bozuk sıra şeridi bozmaz: beş sekme yine tam bir kez çizilir.
+  const bozuk = sekmeSeridiHtml("ray", SIMGELER, 0, undefined, ["ray", "ray", "x"] as never);
+  assert.deepEqual([...bozuk.matchAll(/data-sekme="([a-z]+)"/g)].map((m) => m[1]), [...SEKMELER]);
+  // Tam belge sırayı şeride taşır; içerik kapları kimliklerini korur.
+  const belge = panelHtml({ sekme: "ray", bolumler: tekBolum("ray", ""), simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0, sira });
+  assert.deepEqual([...belge.matchAll(/role="tab" id="sekme-([a-z]+)"/g)].map((m) => m[1]), [...sira]);
+  for (const s of SEKMELER) assert.ok(belge.includes(`id="panel-${s}"`), `${s}: içerik kabı yok`);
 });
 
 test("TR ve EN sekme adları: Ray · Tren · Makinist · Sinyaller · Ayarlar ve Rail · Train · Driver · Signals · Settings", () => {
@@ -277,7 +325,7 @@ test("istemci betiği: acquireVsCodeApi tek kez, ileti tipleri sınırlı ve hi�
   assert.ok(!/\beval\(|new Function|document\.write|insertAdjacentHTML/.test(betik));
   // Büyük harf taşıyan tipler de sayılır (bolumGec eskiden bu süzgeçten kaçıyordu).
   const gonderilen = [...betik.matchAll(/tip: '([a-zA-Z]+)'/g)].map((m) => m[1]).sort();
-  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sinamaRapor"], "betiğin gönderdiği ileti tipleri değişmiş");
+  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sekmeSirasi", "sinamaRapor"], "betiğin gönderdiği ileti tipleri değişmiş");
   // Betik sözdizimi geçerlidir.
   assert.doesNotThrow(() => new Function(betik.replace("acquireVsCodeApi()", "({postMessage(){}})")), "betik derlenmiyor");
 });

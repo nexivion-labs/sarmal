@@ -43,18 +43,21 @@ async function main(): Promise<void> {
   // 🧩 VIT-K78-A10: bölüm yuvası nöbeti için sahte bir kardeş eklenti de geliştirme
   // kipinde yüklenir. Fikstür paketlenmez (.vscodeignore sinama_vscode/** dışlar).
   const kardesKok = path.resolve(eklentiKok, "sinama_vscode", "sahte-kardes");
+  // KISA user-data-dir ŞART (macOS): derin proje yolu Unix soketini 103 char
+  // sınırının üstüne çıkarır → 'listen EINVAL'. /tmp/svt kısa ve güvenli.
+  // Dizin sınamalara da verilir: PNL-A23 nöbeti kullanıcı ayar dosyasını diskten okur.
+  const kullaniciDizini = "/tmp/svt-ud";
 
   await runTests({
     vscodeExecutablePath: yurutucuYolu(await downloadAndUnzipVSCode()),
     extensionDevelopmentPath: [eklentiKok, kardesKok],
     extensionTestsPath: testYolu,
+    extensionTestsEnv: { SARMAL_SINAMA_KULLANICI_DIZINI: kullaniciDizini },
     // ornek/ açılır (test .sar'ları elde); --disable-extensions yalnız DİĞERlerini kapatır.
-    // KISA user-data-dir ŞART (macOS): derin proje yolu Unix soketini 103 char
-    // sınırının üstüne çıkarır → 'listen EINVAL'. /tmp/svt kısa ve güvenli.
     launchArgs: [
       ornekKorpus,
       "--disable-extensions",
-      "--user-data-dir=/tmp/svt-ud",
+      `--user-data-dir=${kullaniciDizini}`,
       "--extensions-dir=/tmp/svt-ext",
     ],
   });
