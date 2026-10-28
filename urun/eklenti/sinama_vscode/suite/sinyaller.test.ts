@@ -12,9 +12,14 @@
 //       Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de yoktur ve Makinist'in
 //       Hatırlatıcılar kaynağındadır; bütün bantlar açıkken çizilen satır sayısı
 //       tekil kayıt sayısıdır; Sinyaller'de ayrı Gözlemler bölümü yoktur.
+//     · Türe göre toplama (PNL-A28): bir projenin bandında görünen satır sayısı o
+//       bantta projenin kayıtlarındaki farklı tür sayısıdır; her tür satırının sayısı
+//       o türün kayıt sayısıdır ve toplamlar bandın sayısıyla tutar; açılan tür
+//       satırı kayıtlarının hepsini gösterir ve hiçbir kayıt kaybolmaz. Beklenen
+//       değerler ağaçtan değil, Sinyaller defterinin kayıtlarından hesaplanır.
 //   Ölçüm, çalışma alanına yazılan geçici bir dosyanın bilinçli kusurları üzerinden
-//   yapılır: bilinmeyen tip (HATA), eksik alan (UYARI), öneksiz Blok (BİLGİ) ve
-//   açık bir Hatırlatıcı (Hatırlatıcılar yüzeyine yönlenen BİLGİ).
+//   yapılır: iki bilinmeyen tip (aynı türden iki HATA), eksik alan (UYARI), öneksiz
+//   Blok (BİLGİ) ve açık bir Hatırlatıcı (Hatırlatıcılar yüzeyine yönlenen BİLGİ).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as assert from "node:assert";
@@ -34,14 +39,14 @@ interface Kapi { panelOlcumleri(): { sekme: string; hazir: number; sinyaller?: S
 interface YuzKaydi { dosya: string; tani: { kod: string; satir: number } }
 interface DisYuz {
   bolumSinamaKapisi?: Kapi;
-  sinyalKayitlari(): Array<{ dosya: string; kod: string; duzey: string; satir: number }>;
+  sinyalKayitlari(): Array<{ dosya: string; kod: string; duzey: string; satir: number; proje: string }>;
   /** Makinist'in Hatırlatıcılar grubunu ve durum çubuğundaki Gözlemler sayacını besleyen dağıtım. */
   yuzeyKayitlari(): { hatırlatıcılar: readonly YuzKaydi[]; bildirimler: readonly YuzKaydi[] };
 }
 /** Denetim tarafının yönlendirmesi: kayıt Hatırlatıcılar yüzeyine mi gider (motorun kararı)? */
 const hatirlaticiya = (k: { kod: string; duzey: string }): boolean =>
   beklenenSunumYuzeyi({ kod: k.kod, duzey: k.duzey as never }) === "hatırlatıcılar";
-interface AgacSatiri { id: string; derinlik: number; durum: string; etiket: string }
+interface AgacSatiri { id: string; derinlik: number; durum: string; etiket: string; aciklama: string; kod?: string; tur?: { kod: string; adet: number } }
 interface SinyalSatiri { id: string; kod: string; dosya: string; satir: number; bant: string; komutlu: boolean }
 
 async function bekle(kosul: () => boolean | Promise<boolean>, ne: string, sure = 20_000): Promise<void> {
@@ -56,6 +61,7 @@ const KAYNAK = [
   `Faz( kod: SNY-F1, ad: "Sinyal nöbeti" ) {`,
   `  Blok( kod: SNY-B1, ad: "Sinyal işi" ) {`,
   `    Katmanx( kod: SNY-K1, ad: "Bilerek yanlış tip" )`,
+  `    Katmanx( kod: SNY-K2, ad: "Aynı türden ikinci yanlış tip" )`,
   `  }`,
   `}`,
   `Hatırlatıcı( kod: SNY-H1, ne: "Sinyal nöbetinin açık hatırlatıcısı", durum: açık )`,
@@ -69,6 +75,16 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
   const o = () => kapi.panelOlcumleri()!;
   const agac = async (): Promise<AgacSatiri[]> => (await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "sinyalAgaci" })) as AgacSatiri[];
   const satirlar = async (): Promise<SinyalSatiri[]> => (await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "sinyalSatirlari" })) as SinyalSatiri[];
+  const turSatiriMi = (x: AgacSatiri): boolean => x.id.split("/").at(-1)!.startsWith("tur.");
+  /** Kapalı bant ve proje satırlarını (`turler` doğruysa tür satırlarını da) webview'in kendi iletisiyle açar. */
+  const hepsiniAc = async (turler: boolean): Promise<void> => {
+    for (let tur = 0; tur < 4; tur++) {
+      for (const s of (await agac()).filter((x) => x.durum === "kapali" && (x.derinlik <= 1 || (turler && turSatiriMi(x))))) {
+        await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "ileti", ileti: { tip: "gec", id: s.id, ac: true } });
+      }
+      await new Promise((r) => setTimeout(r, 200));
+    }
+  };
 
   before(async () => {
     // Dur ve Dikkat bantları VS Code'un Sorunlar deposuyla karşılaştırılır; PNL-A22'den beri gönderim ayarla
@@ -119,12 +135,8 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
   });
 
   it("Sinyaller satırına tıklamak dosyayı tanının satırında açar (bilinmeyen tip · satır 3)", async () => {
-    // Kapalı bant ve projeleri webview'in kendi iletisiyle aç; tanı satırları çizilsin.
-    for (let tur = 0; tur < 3; tur++) {
-      for (const s of (await agac()).filter((x) => x.durum === "kapali" && x.derinlik <= 1)) {
-        await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "ileti", ileti: { tip: "gec", id: s.id, ac: true } });
-      }
-    }
+    // Kapalı bant, proje ve tür satırlarını webview'in kendi iletisiyle aç; tanı satırları çizilsin.
+    await hepsiniAc(true);
     await bekle(async () => (await satirlar()).some((s) => s.dosya === yol && s.kod === "bilinmeyen-tip"), "bilinmeyen tip satırı çizilmedi");
     const satir = (await satirlar()).find((s) => s.dosya === yol && s.kod === "bilinmeyen-tip")!;
     assert.strictEqual(satir.bant, "dur", "HATA düzeyindeki tanı Dur bandında değil");
@@ -140,11 +152,7 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
 
   it("panelde her tanı bir kez: Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de yok, Makinist'in kaynağında var; ayrı Gözlemler bölümü yok; çizilen satır tekil kayıt sayısıdır", async () => {
     // Bütün bant ve projeleri webview'in kendi iletisiyle aç (önceki sınama açmış olabilir; açık olan dokunulmaz).
-    for (let tur = 0; tur < 3; tur++) {
-      for (const s of (await agac()).filter((x) => x.durum === "kapali" && x.derinlik <= 1)) {
-        await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "ileti", ileti: { tip: "gec", id: s.id, ac: true } });
-      }
-    }
+    await hepsiniAc(true);
     await bekle(() => o().sinyaller!.cizilenSatir === o().sinyaller!.toplam, "bütün tanı satırları çizilmedi");
     const olcu = o().sinyaller!;
     const tum = await agac();
@@ -158,5 +166,53 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
     // Geçici dosyanın açık Hatırlatıcısı Makinist'in Hatırlatıcılar kaynağındadır, Sinyaller'de değildir.
     assert.ok(disYuz.yuzeyKayitlari().hatırlatıcılar.some((k) => k.dosya === yol && k.tani.kod === "açık-hatırlatıcı"), "açık hatırlatıcı Makinist'in kaynağına düşmedi");
     assert.ok(!sat.some((x) => x.dosya === yol && x.kod === "açık-hatırlatıcı"), "açık hatırlatıcı Sinyaller'de de görünüyor");
+  });
+
+  it("PNL-A28: projenin bandında görünen satır sayısı tür sayısıdır, tür sayıları kayıtların toplamıdır ve bandın sayısıyla tutar; açılan tür satırı kayıtların hepsini gösterir", async () => {
+    // Önce tür satırlarını kapat, yalnız bant ve projeleri aç: görünen satırlar türlerdir.
+    for (const s of (await agac()).filter((x) => x.durum === "acik" && turSatiriMi(x))) {
+      await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "ileti", ileti: { tip: "gec", id: s.id, ac: false } });
+    }
+    await hepsiniAc(false);
+    await bekle(async () => (await agac()).every((x) => !turSatiriMi(x) || x.durum === "kapali"), "tür satırları kapanmadı");
+    // Beklenen değer ağaçtan değil, Sinyaller defterinin kayıtlarından hesaplanır.
+    const bandi: Record<string, string> = { hata: "dur", uyarı: "dikkat", bilgi: "bilgi" };
+    const beklenen = new Map<string, Map<string, number>>();
+    for (const k of disYuz.sinyalKayitlari().filter((x) => !hatirlaticiya(x))) {
+      const yer = `sinyaller/bant.${bandi[k.duzey]}/proje.${k.proje}`;
+      const turler = beklenen.get(yer) ?? beklenen.set(yer, new Map()).get(yer)!;
+      turler.set(k.kod, (turler.get(k.kod) ?? 0) + 1);
+    }
+    assert.ok([...beklenen.values()].some((t) => [...t.values()].some((n) => n > 1)), "kapsamda çok kayıtlı tür yok: nöbet hiçbir şeyi ölçmüyor");
+    const tum = await agac();
+    const olcu = o().sinyaller!;
+    for (const bant of ["dur", "dikkat", "bilgi"] as const) {
+      let bantToplami = 0;
+      for (const proje of tum.filter((x) => x.derinlik === 1 && x.id.startsWith(`sinyaller/bant.${bant}/`))) {
+        const cocuklar = tum.filter((x) => x.derinlik === 2 && x.id.startsWith(`${proje.id}/`));
+        const turler = beklenen.get(proje.id) ?? new Map<string, number>();
+        assert.strictEqual(cocuklar.length, turler.size, `${proje.id}: görünen satır sayısı tür sayısı değil`);
+        for (const c of cocuklar) {
+          const kod = c.tur?.kod ?? c.kod;
+          assert.ok(kod && turler.has(kod), `${c.id}: beklenmeyen tür`);
+          const adet = c.tur?.adet ?? 1;
+          assert.strictEqual(adet, turler.get(kod!), `${c.id}: tür satırının sayısı o türün kayıt sayısı değil`);
+          assert.strictEqual(Boolean(c.tur), adet > 1, `${c.id}: tek kayıtlık tür ara satır açmamalı, çok kayıtlı tür toplanmalı`);
+          if (c.tur) assert.strictEqual(c.durum, "kapali", `${c.id}: tür satırı kapalı başlamalı`);
+          bantToplami += adet;
+        }
+      }
+      assert.strictEqual(bantToplami, olcu[bant], `${bant}: tür toplamları bandın sayısıyla tutmuyor`);
+    }
+    // Tür satırlarını aç: her biri kayıtlarının hepsini gösterir ve hiçbir kayıt kaybolmaz.
+    await hepsiniAc(true);
+    await bekle(() => o().sinyaller!.cizilenSatir === o().sinyaller!.toplam, "tür satırları açılınca bütün kayıtlar çizilmedi");
+    const acik = await agac();
+    for (const tur of acik.filter(turSatiriMi)) {
+      const tanilar = acik.filter((x) => x.kod && x.id.startsWith(`${tur.id}/`));
+      assert.strictEqual(tanilar.length, tur.tur!.adet, `${tur.id}: açılan tür satırı kayıtlarının hepsini göstermiyor`);
+      assert.ok(tanilar.every((x) => x.kod === tur.tur!.kod), `${tur.id}: altına başka türün kaydı düştü`);
+    }
+    assert.strictEqual(o().sinyaller!.tekilKayit, o().sinyaller!.cizilenSatir, "bir kayıt iki kez çizildi");
   });
 });

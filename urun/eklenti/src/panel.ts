@@ -409,8 +409,16 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       return this.sekme;
     }
     // PNL-A09: Sinyaller ağacının bütün çizili satırları (kimlik, kademe, açık-kapalı) ve tanı satırlarının dosya bağları.
+    // PNL-A28: tür satırı türün kimliğini ve topladığı kayıt sayısını, tanı satırı kaydının türünü taşır.
     if (e.eylem === "sinyalAgaci") {
-      return this.sonSatirlar.sinyaller.map((u) => ({ id: u.satir.id, derinlik: u.satir.derinlik, durum: u.satir.durum, etiket: u.satir.etiket }));
+      return this.sonSatirlar.sinyaller.map((u) => {
+        const tur = this.g.sinyaller?.sinyalTuru(u.oge);
+        return {
+          id: u.satir.id, derinlik: u.satir.derinlik, durum: u.satir.durum, etiket: u.satir.etiket, aciklama: u.satir.aciklama,
+          kod: this.g.sinyaller?.sinyalKaydi(u.oge)?.kayit.tani.kod,
+          ...(tur ? { tur: { kod: tur.kod, adet: tur.satirlar.length } } : {}),
+        };
+      });
     }
     if (e.eylem === "sinyalSatirlari") {
       return [...this.harita].filter(([, v]) => v.kaynak === "sinyaller").flatMap(([id, v]) => {

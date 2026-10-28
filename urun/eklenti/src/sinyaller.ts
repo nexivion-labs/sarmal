@@ -17,6 +17,14 @@
 //   yüzeyine yönlenen tanılar Sinyaller'de hiç görünmez, yalnız Makinist'in
 //   Hatırlatıcılar grubunda kalır; ayrım motorun sunum kararından gelir.
 //
+//   TÜRE GÖRE TOPLAMA (PNL-A28 · YAS-3.4). Proje satırının altında önce tür satırları
+//   durur: türün okunur adı, kayıt sayısı, tek cümlelik anlamı ve türün bütün
+//   kayıtlarında aynen geçen ortak öneri. Tür satırı kapalı başlar ve açılınca
+//   kayıtlar dosyaya göre dizilir. Tek kayıtlık tür ara satır açmaz; kaydı doğrudan
+//   proje satırının altında durur. Türler kayıt sayısına göre çoktan aza dizilir.
+//   Anlam çizelgede yazılıysa oradan (`taniAnlami`), yazılı değilse türün bütün
+//   kayıtlarının iletisinde aynen geçen son cümleden gelir; ikisi de yoksa yazılmaz.
+//
 //   TIKLAMA. Tanı satırı dosyayı tanının satırında açar ve odak panelde kalır
 //   (`sarmal.dosyaAc` · OZK-13). Kanon maddesi satırı maddenin tanımını kimlik
 //   indeksinden bulur ve aynı yoldan açar; tanım çalışma alanında yoksa bunu söyler.
@@ -28,10 +36,10 @@ import { kimlikIndeksi } from "../../cekirdek/src/kimlik.ts";
 import { sonTurGoruntusu } from "./tur-goruntusu.ts";
 import {
   SINYAL_BANTLARI, kanonMaddeleri, kanonTaniHaritasi, sinyalModeli,
-  type ProjeSinyalleri, type SinyalBandi, type SinyalModeli, type SinyalSatiri,
+  type ProjeSinyalleri, type SinyalBandi, type SinyalModeli, type SinyalSatiri, type SinyalTuru,
 } from "./sinyaller-cekirdek.ts";
 import { yuzeyDosyaAdiniAl, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
-import { SINYAL_METINLERI } from "./yuzey-metinleri.ts";
+import { SINYAL_METINLERI, taniAnlami, taniKisaAdi } from "./yuzey-metinleri.ts";
 import { satirIkonu } from "./ortak.ts";
 import type { AnlamRengi } from "./simge-cizelgesi.ts";
 
@@ -41,7 +49,10 @@ export const KANON_MADDESI_KOMUTU = "sarmal.kanonMaddesiAc";
 type SinyalOgesi =
   | { readonly tur: "sinyal-bant"; readonly bant: SinyalBandi }
   | { readonly tur: "sinyal-proje"; readonly bant: SinyalBandi; readonly grup: ProjeSinyalleri }
-  | { readonly tur: "sinyal"; readonly satir: SinyalSatiri }
+  | { readonly tur: "sinyal-tur"; readonly bant: SinyalBandi; readonly grup: SinyalTuru }
+  | { readonly tur: "sinyal-ortak-oneri"; readonly metin: string }
+  /** `turIcinde`: kayıt bir tür satırının altındadır; tür kimliği üst satırda yazılı olduğu için tekrarlanmaz. */
+  | { readonly tur: "sinyal"; readonly satir: SinyalSatiri; readonly turIcinde?: boolean }
   | { readonly tur: "sinyal-oneri"; readonly satir: SinyalSatiri }
   | { readonly tur: "sinyal-madde"; readonly madde: string };
 
@@ -104,6 +115,12 @@ export class SinyallerAgaci {
     return o?.tur === "sinyal" ? (o as { satir: SinyalSatiri }).satir : undefined;
   }
 
+  /** Satır bir tür satırıysa türün kimliği ve topladığı kayıtlar (PNL-A28 nöbetinin girdisi). */
+  sinyalTuru(oge: unknown): SinyalTuru | undefined {
+    const o = oge as Partial<SinyalOgesi> | undefined;
+    return o?.tur === "sinyal-tur" ? (o as { grup: SinyalTuru }).grup : undefined;
+  }
+
   getChildren(oge?: unknown): unknown[] {
     if (!oge) return SINYAL_BANTLARI.map((b) => this.bantlar.get(b)!);
     const o = oge as SinyalOgesi;
@@ -112,7 +129,15 @@ export class SinyallerAgaci {
         return (this.model.bantlar.find((b) => b.bant === o.bant)?.projeler ?? [])
           .map((grup): SinyalOgesi => ({ tur: "sinyal-proje", bant: o.bant, grup }));
       case "sinyal-proje":
-        return o.grup.satirlar.map((satir): SinyalOgesi => ({ tur: "sinyal", satir }));
+        // Tek kayıtlık tür ara satır açmaz; kaydı doğrudan gösterilir (PNL-A28).
+        return o.grup.turler.map((grup): SinyalOgesi => grup.satirlar.length === 1
+          ? { tur: "sinyal", satir: grup.satirlar[0]! }
+          : { tur: "sinyal-tur", bant: o.bant, grup });
+      case "sinyal-tur":
+        return [
+          ...(o.grup.ortakOneri ? [{ tur: "sinyal-ortak-oneri", metin: o.grup.ortakOneri } as SinyalOgesi] : []),
+          ...o.grup.satirlar.map((satir): SinyalOgesi => ({ tur: "sinyal", satir, turIcinde: true })),
+        ];
       case "sinyal":
         return [
           ...(o.satir.kayit.tani.oneri ? [{ tur: "sinyal-oneri", satir: o.satir } as SinyalOgesi] : []),
@@ -135,7 +160,16 @@ export class SinyallerAgaci {
         item.iconPath = satirIkonu(this.kok, "istasyon", "duz");
         return item;
       }
-      case "sinyal": return this.sinyalSatiri(o.satir);
+      case "sinyal-tur": return this.turSatiri(o.bant, o.grup);
+      case "sinyal-ortak-oneri": {
+        const item = new vscode.TreeItem(SINYAL_METINLERI.ortakOneri, vscode.TreeItemCollapsibleState.None);
+        item.id = "ortak-oneri";
+        item.description = o.metin;
+        item.tooltip = o.metin;
+        item.iconPath = satirIkonu(this.kok, "yama", "duz");
+        return item;
+      }
+      case "sinyal": return this.sinyalSatiri(o.satir, o.turIcinde === true);
       case "sinyal-oneri": {
         const item = new vscode.TreeItem(SINYAL_METINLERI.oneri, vscode.TreeItemCollapsibleState.None);
         item.id = "oneri";
@@ -172,7 +206,28 @@ export class SinyallerAgaci {
     return item;
   }
 
-  private sinyalSatiri(s: SinyalSatiri): vscode.TreeItem {
+  /**
+   * Tür satırı (PNL-A28): okunur ad, kayıt sayısı ve tek cümlelik anlam. Kapalı başlar; sayı
+   * türün kayıtlarının tamamıdır ve satır açılınca hepsi dosyaya göre görünür.
+   */
+  private turSatiri(bant: SinyalBandi, t: SinyalTuru): vscode.TreeItem {
+    const item = new vscode.TreeItem(taniKisaAdi(t.kod), vscode.TreeItemCollapsibleState.Collapsed);
+    item.id = `tur.${t.kod}`;
+    const anlam = taniAnlami(t.kod) ?? t.ortakAnlam;
+    item.description = [String(t.satirlar.length), anlam].filter(Boolean).join(" · ");
+    const maddeler = t.satirlar[0]?.maddeler ?? [];
+    item.tooltip = [
+      ...(anlam ? [anlam] : []),
+      SINYAL_METINLERI.turSayisi(t.kod, t.satirlar.length),
+      ...(t.ortakOneri ? [`${SINYAL_METINLERI.ortakOneri}: ${t.ortakOneri}`] : []),
+      ...(maddeler.length ? [`${SINYAL_METINLERI.kanonMaddesi}: ${maddeler.join(", ")}`] : []),
+    ].join("\n");
+    item.iconPath = satirIkonu(this.kok, "katmanlar", BANT_RENGI[bant]);
+    item.contextValue = "sarmalSinyalTuru";
+    return item;
+  }
+
+  private sinyalSatiri(s: SinyalSatiri, turIcinde: boolean): vscode.TreeItem {
     const t = s.kayit.tani;
     const cocuklu = Boolean(t.oneri) || s.maddeler.length > 0;
     const item = new vscode.TreeItem(t.mesaj,
@@ -180,8 +235,9 @@ export class SinyallerAgaci {
     // Kimlik tanının yerini taşır; yol ayırıcısı satır kimliklerinin kademe ayırıcısı olduğu için
     // yalnız dosya adı yazılır (aynı adlı iki dosya panelin #n ekiyle ayrışır).
     item.id = `${t.kod}@${yuzeyDosyaAdiniAl(s.kayit.dosya)}:${t.satir}:${t.sutun}`;
-    // Kod, dosya ve satır her satırda görünür; kanon maddesi yalnız bağı varsa yazılır (uydurulmaz).
-    item.description = [t.kod, `${yuzeyDosyaAdiniAl(s.kayit.dosya)}:${t.satir}`, ...s.maddeler].join(" · ");
+    // Kod, dosya ve satır her satırda görünür; kanon maddesi yalnız bağı varsa yazılır (uydurulmaz). Tür satırının
+    // altındaki kayıtta kod üst satırda yazılıdır ve tekrarlanmaz; dar panelde dosya ve satır görünür kalır (PNL-A28).
+    item.description = [...(turIcinde ? [] : [t.kod]), `${yuzeyDosyaAdiniAl(s.kayit.dosya)}:${t.satir}`, ...s.maddeler].join(" · ");
     item.tooltip = [
       t.mesaj, `${t.kod} · ${s.kayit.dosya}:${t.satir}:${t.sutun}`,
       ...(t.oneri ? [`${SINYAL_METINLERI.oneri}: ${t.oneri}`] : []),

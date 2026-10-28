@@ -187,7 +187,7 @@ let bolumYuvasi: BolumYuvasiYuzu | undefined;
 export interface SarmalEklentiYuzu {
   yuzeyKayitlari(): YuzeyDagilimi;
   /** 🚦 PNL-A09: Sinyaller sekmesinin girdisi — kapsamdaki bütün tanı kayıtları (salt okur ölçüm). */
-  sinyalKayitlari(): Array<{ dosya: string; kod: string; duzey: string; satir: number }>;
+  sinyalKayitlari(): Array<{ dosya: string; kod: string; duzey: string; satir: number; proje: string }>;
   /**
    * 📬 Onay yüzeyinin bugünkü sayaçları (VIT-POSTA-A03). Kabul ölçütleri
    * "etkinleşmeden sonra canlı Comments iş parçacığı sayısı sıfırdır" ve
@@ -1100,7 +1100,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   return {
     yuzeyKayitlari: () => yuzeyDefteri.gorunenler(),
     // 🚦 PNL-A09: Sinyaller defterinin kapsamdaki kayıtları (sekmenin girdisi; nöbet çıktıyı buna karşı ölçer).
-    sinyalKayitlari: () => sinyalDefteri.gorunenler().map((k) => ({ dosya: k.dosya, kod: k.tani.kod, duzey: k.tani.duzey, satir: k.tani.satir })),
+    sinyalKayitlari: () => sinyalDefteri.gorunenler().map((k) => ({ dosya: k.dosya, kod: k.tani.kod, duzey: k.tani.duzey, satir: k.tani.satir, proje: k.proje.kod })),
     onayOlcumleri: () => ({ ...onayYuzeyiOlcumleri(), ...tarayiciOlcumleri() }),
     onayKapilari: () => onayPaneli?.kapiKodlari() ?? [],
     // 🗺️ PRF-TA-A04 salt okur ölçüm kapıları: hepsi üretimin KENDİ sayaçlarını

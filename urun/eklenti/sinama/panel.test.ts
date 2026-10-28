@@ -886,7 +886,8 @@ test("Sinyaller sekmesi: yalnız Dur, Dikkat ve Bilgi bantları YAS-3.1 anlamlar
     "2 · Kapıyı kapatmayan ölçüm, istisna ya da yönlendirme işareti.",
   ], "bant başlığı sayıyı ve YAS-3.1 anlamını söylemiyor");
   assert.deepEqual(kokler.map((x) => x.durum), ["true", "true", "false"], "Dur ve Dikkat açık, Bilgi kapalı başlamalı");
-  // Dur bandı: odaktaki proje (Sarmal) üstte ve açık, öteki proje kapalı; bant içinde dosya ve satır sırası.
+  // Dur bandı: odaktaki proje (Sarmal) üstte ve açık, öteki proje kapalı. Bant içinde kayıtlar türlere toplanır;
+  // fikstürde her tür tek kayıtlıdır, bu yüzden ara satır açılmaz ve eşit sayılı türler kimlik sırasıyla dizilir (PNL-A28).
   const dur = satirlar.slice(satirlar.indexOf(kokler[0]!) + 1, satirlar.indexOf(kokler[1]!));
   const projeler = dur.filter((x) => x.derinlik === 1);
   assert.deepEqual(projeler.map((x) => [x.etiket, x.aciklama, x.durum]), [["Sarmal", "2", "true"], ["Örnek", "1", "false"]]);
@@ -894,7 +895,7 @@ test("Sinyaller sekmesi: yalnız Dur, Dikkat ve Bilgi bantları YAS-3.1 anlamlar
   assert.deepEqual(tanilar.map((x) => x.aciklama), [
     `${BAGSIZ_KOD} · 5_eylul_lansman.sar:12`,
     `${BAGLI.kod} · 5_eylul_lansman.sar:40 · ${BAGLI.madde}`,
-  ], "satır kodu, dosyayı ve satırı göstermeli; kanon maddesi yalnız bağı olan tanıda görünür");
+  ].sort((a, b) => a.localeCompare(b, "tr")), "satır kodu, dosyayı ve satırı göstermeli; kanon maddesi yalnız bağı olan tanıda görünür");
   assert.ok(tanilar.every((x) => x.komutlu), "tanı satırı dosyayı açan komutu taşımıyor");
   // Makinist'te Gözlemler grubu yoktur.
   assert.ok(!panelIcerigi(h, "makinist").includes("Gözlem"), "Makinist'te Gözlemler görünüyor");
@@ -965,6 +966,116 @@ test("Sinyal satırına tıklamak dosyayı tanının satırında açar ve odak p
   // Bağı olmayan tanının alt satırı yoktur: madde uydurulmaz.
   const bagsiz = satirlar.find((x) => x.aciklama === `${BAGSIZ_KOD} · 5_eylul_lansman.sar:12`)!;
   assert.equal(bagsiz.durum, "yaprak", "bağı ve önerisi olmayan tanı açılır satır olmuş");
+});
+
+// ── PNL-A28: türe göre toplama ───────────────────────────────────────────────
+
+/** Kapalı satırın önden üretilmiş çocukları: `<template data-ust="<kimlik>">` gövdesinin satırları (iç içe şablon yok). */
+function sablonSatirlari(html: string, ustId: string): ReturnType<typeof satirlariOku> {
+  const bas = html.indexOf(`<template data-ust="${ustId}">`);
+  if (bas < 0) return [];
+  const ic = html.slice(bas + `<template data-ust="${ustId}">`.length, html.indexOf("</template>", bas));
+  return satirlariOku(ic);
+}
+
+/**
+ * Tür fikstürü: Sarmal projesinin Bilgi bandında dört tür (4, 3, 2 ve 1 kayıt) ve Örnek projesinde aynı türün
+ * iki kaydı; Dur bandında Sarmal'ın iki kayıtlık bir türü. Beceri türünün önerileri ilk cümlede birleşir ve
+ * kayda özgü örnekte ayrışır; şema türünün önerilerinde ortak cümle yoktur; çizelgede anlamı yazılı olmayan
+ * türün anlamı iletilerinde aynen geçen son cümledir.
+ */
+const turKaydi = (kod: string, duzey: string, satir: number, mesaj: string, oneri?: string, dosya = SINYAL_DOSYASI, proje = SARMAL_PROJE) =>
+  ({ proje, dosya, tani: { kod, duzey, mesaj, satir, sutun: 1, ...(oneri ? { oneri } : {}) } }) as never;
+const BECERI = "beceri-kartı-eksik";
+const SEMA = "şema-dışı-alan";
+const KATALOGSUZ = "örnek-katalogsuz-tür";
+const TUR_KAYITLARI = [
+  ...[[30, SINYAL_DOSYASI], [10, SINYAL_DOSYASI], [8, BASKA_DOSYA], [3, BASKA_DOSYA]].map(([satir, dosya], i) =>
+    turKaydi(BECERI, "bilgi", satir as number, `Beceri "BCR-${i}" kartını taşımıyor.`, `Eksik bağı ekle. Örnek: \`Beceri( kod: BCR-${i} )\` yaz.`, dosya as string)),
+  ...[21, 4, 13].map((satir, i) => turKaydi(SEMA, "bilgi", satir, `"alan${i}" şemada yok.`, `"alan${i}" satırını kaldır.`)),
+  ...[50, 2].map((satir, i) => turKaydi(KATALOGSUZ, "bilgi", satir, `Kayıt ${i} ayrı. Ortak kural cümlesi.`)),
+  turKaydi("ad-ayracı", "bilgi", 1, "Dosya adında tire var."),
+  ...[6, 9].map((satir, i) => turKaydi(BECERI, "bilgi", satir, `Beceri "ORN-${i}" kartını taşımıyor.`, undefined, BASKA_DOSYA, ORNEK_PROJE)),
+  ...[70, 60].map((satir) => turKaydi(BAGSIZ_KOD, "hata", satir, `${BAGSIZ_KOD} iletisi`, "aynı öneri")),
+];
+
+test("Sinyaller kayıtları önce türe göre toplar: projenin bandında görünen satır sayısı tür sayısıdır, türler çoktan aza, tek kayıtlık tür ara satırsız; tür satırı okunur ad, sayı, tek cümlelik anlam ve ortak öneriyi taşır ve kapalı başlar (PNL-A28)", async () => {
+  const o = ortamKur("sinyaller", { "sinyaller/bant.bilgi": true, "sinyaller/bant.bilgi/proje.ORNEK": true });
+  o.sinyaller.yerlestir(TUR_KAYITLARI, "SARMAL");
+  await bekle(250);
+  const html = String(mesajlar(o, "bolum").filter((m) => m.sekme === "sinyaller").at(-1)?.html ?? "");
+  const satirlar = satirlariOku(html);
+  const cocuklari = (id: string) => satirlar.filter((x) => x.id.startsWith(`${id}/`) && x.id.split("/").length === id.split("/").length + 1);
+  const bilgiSarmal = "sinyaller/bant.bilgi/proje.SARMAL";
+  // Görünen satır sayısı tür sayısıdır; türler çoktan aza; tek kayıtlık tür kaydını doğrudan gösterir.
+  const turler = cocuklari(bilgiSarmal);
+  assert.deepEqual(turler.map((x) => [x.etiket, x.aciklama, x.durum]), [
+    ["beceri kartı eksik", "4 · Bir beceri kendi kartını taşımıyor", "false"],
+    ["şema dışı alan", "3 · Bir alan kullanılmış ama tipin şemasında ilan edilmemiş", "false"],
+    ["örnek katalogsuz tür", "2 · Ortak kural cümlesi.", "false"],
+    ["Dosya adında tire var.", "ad-ayracı · 5_eylul_lansman.sar:1", "yaprak"],
+  ], "tür satırları okunur ad, sayı ve anlamla çoktan aza dizilmeli; tek kayıtlık tür ara satır açmamalı");
+  assert.ok(turler.slice(0, 3).every((x) => !x.komutlu), "tür satırı bir dosya açmamalı, açılıp kapanmalı");
+  // Toplamlar: tür sayılarının toplamı projenin sayısı, projelerin toplamı bandın sayısıdır.
+  const sayi = (x: { aciklama: string }): number => Number(x.aciklama.split(" · ")[0]) || 1;
+  const projeSatiri = satirlar.find((x) => x.id === bilgiSarmal)!;
+  assert.equal(turler.reduce((t, x) => t + (x.durum === "yaprak" ? 1 : sayi(x)), 0), Number(projeSatiri.aciklama));
+  const bilgiProjeleri = cocuklari("sinyaller/bant.bilgi");
+  const bant = satirlar.find((x) => x.id === "sinyaller/bant.bilgi")!;
+  assert.equal(bilgiProjeleri.reduce((t, p) => t + Number(p.aciklama), 0), sayi(bant), "projelerin toplamı bandın sayısıyla tutmuyor");
+  // Örnek projesinin aynı türü kendi satırında toplanır (proje kimlikleri karışmaz).
+  assert.deepEqual(cocuklari("sinyaller/bant.bilgi/proje.ORNEK").map((x) => [x.etiket, sayi(x)]), [["beceri kartı eksik", 2]]);
+  // Tür satırı kapalı başlar; kayıtları önden üretilmiş şablondadır (PNL-A27): ortak öneri önce, kayıtlar dosyaya göre.
+  const beceri = turler[0]!;
+  const beceriCocuk = sablonSatirlari(html, beceri.id);
+  const madde = YENI_TANI_KANONU.find((k) => k.kod === BECERI)?.madde;
+  // Tür satırının altındaki kayıtta tür kimliği tekrarlanmaz: dosya, satır ve kanon maddesi görünür.
+  const yer = (dosyaSatiri: string): string => [dosyaSatiri, ...(madde ? [madde] : [])].join(" · ");
+  assert.deepEqual(beceriCocuk.map((x) => [x.etiket, x.aciklama]), [
+    ["Ortak öneri", "Eksik bağı ekle."],
+    ['Beceri "BCR-1" kartını taşımıyor.', yer("5_eylul_lansman.sar:10")],
+    ['Beceri "BCR-0" kartını taşımıyor.', yer("5_eylul_lansman.sar:30")],
+    ['Beceri "BCR-3" kartını taşımıyor.', yer("buyuk_bahce.sar:3")],
+    ['Beceri "BCR-2" kartını taşımıyor.', yer("buyuk_bahce.sar:8")],
+  ], "tür satırının altı ortak öneri ve dosyaya göre dizili kayıtlar olmalı");
+  // Ortak cümlesi olmayan önerilerden ortak öneri uydurulmaz.
+  assert.ok(!sablonSatirlari(html, turler[1]!.id).some((x) => x.etiket === "Ortak öneri"), "ortak cümlesi olmayan türe ortak öneri yazıldı");
+  // Kayıtların kendi önerisi ve metni değişmez.
+  const tumOneri = sablonSatirlari(html, beceri.id).filter((x) => x.komutlu);
+  assert.equal(tumOneri.length, 4);
+  // Dur bandındaki iki kayıtlık tür: önerileri tamamen aynıdır, ortak öneri metnin kendisidir.
+  const durTuru = cocuklari("sinyaller/bant.dur/proje.SARMAL");
+  assert.deepEqual(durTuru.map((x) => [x.etiket, sayi(x)]), [["örnek bağsız tanı", 2]]);
+  assert.deepEqual(sablonSatirlari(html, durTuru[0]!.id).map((x) => x.aciklama)[0], "aynı öneri");
+});
+
+test("Açılan tür satırı kayıtlarının hepsini gösterir ve hiçbir kayıt kaybolmaz: bütün türler açıkken çizilen tanı satırı toplam sayıdır ve her kayıt bir kez çizilir (PNL-A28)", async () => {
+  const o = ortamKur("sinyaller", { "sinyaller/bant.bilgi": true, "sinyaller/bant.bilgi/proje.ORNEK": true });
+  o.sinyaller.yerlestir(TUR_KAYITLARI, "SARMAL");
+  await bekle(250);
+  const sonHtml = (): string => String(mesajlar(o, "bolum").filter((m) => m.sekme === "sinyaller").at(-1)?.html ?? "");
+  // Türler kapalıyken görünen tanı satırı yalnız tek kayıtlık türlerinkidir.
+  assert.ok(o.panel.olcumler().sinyaller!.cizilenSatir < TUR_KAYITLARI.length, "türler kapalıyken bütün kayıtlar görünüyor");
+  for (const tur of satirlariOku(sonHtml()).filter((x) => x.id.includes("/tur.") && x.durum === "false")) {
+    o.gorunum.mesajGonder({ tip: "gec", id: tur.id, ac: true });
+    await otur();
+  }
+  await bekle(250);
+  const olcu = o.panel.olcumler().sinyaller!;
+  assert.equal(olcu.toplam, TUR_KAYITLARI.length, "sekmenin sayısı kayıt sayısından ayrıştı");
+  assert.equal(olcu.cizilenSatir, olcu.toplam, "bütün türler açıkken her kayıt çizilmeli; kayıt kayboldu");
+  assert.equal(olcu.tekilKayit, olcu.cizilenSatir, "bir kayıt iki kez çizildi");
+  // Her açılan tür satırının altındaki tanı satırı sayısı satırın sayısına eşittir ve hepsi o türdendir.
+  const satirlar = satirlariOku(sonHtml());
+  const turler = satirlar.filter((x) => x.id.includes("/tur.") && !x.id.split("/").at(-1)!.includes("@") && x.id.split("/").at(-1)!.startsWith("tur."));
+  assert.equal(turler.length, 5, "beş tür satırı bekleniyordu");
+  for (const tur of turler) {
+    assert.equal(tur.durum, "true", `${tur.id} açılmadı`);
+    const tanilar = satirlar.filter((x) => x.id.startsWith(`${tur.id}/`) && x.komutlu && x.id.split("/").length === tur.id.split("/").length + 1);
+    assert.equal(tanilar.length, Number(tur.aciklama.split(" · ")[0]), `${tur.id} satırının sayısı altındaki kayıtlarla tutmuyor`);
+    const kod = tur.id.split("/").at(-1)!.slice("tur.".length);
+    assert.ok(tanilar.every((x) => x.id.split("/").at(-1)!.startsWith(`${kod}@`)), `${tur.id} altına başka türün kaydı düştü`);
+  }
 });
 
 /** Sinyaller kabının satırları (ilk belgeden). */

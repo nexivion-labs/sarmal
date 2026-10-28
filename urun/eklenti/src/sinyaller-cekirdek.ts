@@ -26,13 +26,21 @@
 //   işlevidir ve buraya `kaydinYuzeyi` üzerinden tek kaynaktan gelir. Ayrı bir
 //   Gözlemler bölümü yoktur; Bilgi bandı eski Gözlemler grubunun yerini alır.
 //
+//   TÜRE GÖRE TOPLAMA (PNL-A28 · YAS-3.4). Founder 2026-10-28 tarihinde bir projenin
+//   Bilgi bandında altı yüzü aşkın kaydın alt alta dizildiğini ve tek bir türün
+//   (beceri-kartı-eksik) yüzlerce satır tuttuğunu gösterdi. Proje içinde kayıtlar
+//   önce tanı türüne göre toplanır: türler kayıt sayısına göre çoktan aza dizilir,
+//   tür içinde kayıtlar dosyaya göre kalır. Toplama yalnız sunumdur; hiçbir tanının
+//   düzeyi, sayısı ya da metni değişmez ve hiçbir kayıt düşmez. Türün ortak önerisi
+//   uydurulmaz: türün bütün kayıtlarının öneri metninde aynen geçen cümlelerdir.
+//
 //   SAF: bu modül `vscode` İTHAL ETMEZ; nöbetler onu doğrudan koşturur.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type { Duzey } from "../../cekirdek/src/tani.ts";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
-import { kaydinYuzeyi, type ProjeKimligi, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
+import { kaydinYuzeyi, kokeGoreOzetle, turDagilimi, type ProjeKimligi, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
 
 /** Üç bant, şeritteki sırasıyla. */
 export const SINYAL_BANTLARI = ["dur", "dikkat", "bilgi"] as const;
@@ -100,11 +108,28 @@ export interface SinyalSatiri {
   readonly maddeler: readonly string[];
 }
 
+/**
+ * Bir projenin bir banttaki tanılarından aynı türü taşıyanlar (PNL-A28). Ağaç türü tek satırda
+ * toplar; tek kayıtlık tür ara satır açmadan doğrudan kaydını gösterir.
+ */
+export interface SinyalTuru {
+  readonly kod: string;
+  /** Türün kayıtları, dosyaya, sonra satır ve sütuna göre dizili. */
+  readonly satirlar: readonly SinyalSatiri[];
+  /** Türün bütün kayıtlarının öneri metninde aynen geçen cümleler; böyle bir cümle yoksa tanımsız. */
+  readonly ortakOneri: string | undefined;
+  /** Türün bütün kayıtlarının iletisinde aynen geçen son cümle; çizelgede anlamı yazılı olmayan türe anlam verir. */
+  readonly ortakAnlam: string | undefined;
+}
+
 export interface ProjeSinyalleri {
   readonly proje: ProjeKimligi;
   /** Odaktaki proje: bandın en üstünde durur ve açık başlar. */
   readonly odakta: boolean;
+  /** Bütün kayıtlar, dosyaya göre dizili (türlerin birleşimi). */
   readonly satirlar: readonly SinyalSatiri[];
+  /** Kayıtların türlere toplanmış hâli; kayıt sayısına göre çoktan aza, eşit sayıda tür kimliğine göre dizili. */
+  readonly turler: readonly SinyalTuru[];
 }
 
 export interface BantSinyalleri {
@@ -134,12 +159,51 @@ export function sinyaldeGorunur(kayit: YuzeyKaydi): boolean {
 
 const karsilastir = (a: string, b: string): number => a.localeCompare(b, "tr");
 
+/** Metni cümlelerine böler: nokta, ünlem ya da soru işaretinden sonra boşluk ve büyük harfle (ya da sayı, tırnak, ayraç) başlayan yer cümle sınırıdır. */
+function cumlelereBol(metin: string): string[] {
+  return metin.split(/(?<=[.!?])\s+(?=[\p{Lu}\p{N}`"'(])/u).map((c) => c.trim()).filter(Boolean);
+}
+
+/**
+ * Bütün metinlerde AYNEN geçen cümleler, ilk metindeki sırasıyla. Hiçbir cümle yazılmaz ya da
+ * kısaltılmaz; kayda özgü bir ad taşıyan cümle (ör. örnek satırındaki kimlik) ortak sayılmaz.
+ * Metinlerden biri boşsa ortak cümle yoktur.
+ */
+export function ortakCumleler(metinler: readonly (string | undefined)[]): string[] {
+  if (!metinler.length || metinler.some((m) => !m)) return [];
+  const [ilk, ...oteki] = metinler.map((m) => cumlelereBol(m!));
+  const kumeler = oteki.map((c) => new Set(c));
+  return [...new Set(ilk)].filter((c) => kumeler.every((k) => k.has(c)));
+}
+
+/**
+ * Bir projenin kayıtlarını türlere toplar (PNL-A28). Gruplama ile sıra, öteki yüzeylerin tür özetini
+ * kuran çekirdekten gelir: `kokeGoreOzetle` türleri toplar ve tür içinde gelen sırayı korur,
+ * `turDagilimi` türleri çoktan aza ve eşitlikte kimlik sırasıyla dizer. Kayıtlar dosyaya göre dizili
+ * gelir; tür içinde de öyle kalır.
+ */
+export function tureGoreTopla(satirlar: readonly SinyalSatiri[]): SinyalTuru[] {
+  const satiri = new Map(satirlar.map((s) => [s.kayit, s] as const));
+  const kayitlar = satirlar.map((s) => s.kayit);
+  const kumeler = new Map(kokeGoreOzetle(kayitlar).map((k) => [k.kod, k.kayitlar] as const));
+  return turDagilimi(kayitlar, Infinity).tumu.map(({ kod }): SinyalTuru => {
+    const turSatirlari = kumeler.get(kod)!.map((k) => satiri.get(k)!);
+    const anlam = ortakCumleler(turSatirlari.map((s) => s.kayit.tani.mesaj));
+    const oneri = ortakCumleler(turSatirlari.map((s) => s.kayit.tani.oneri));
+    return {
+      kod, satirlar: turSatirlari,
+      ortakOneri: oneri.length ? oneri.join(" ") : undefined,
+      ortakAnlam: anlam.at(-1),
+    };
+  });
+}
+
 /**
  * Kayıtları üç banda yerleştirir. Hatırlatıcılar yüzeyine yönlenen kayıt yerleşmez ve
  * yalnız sayılır (YUZ-3.3). Bant içinde kayıtlar Proje kimliğine göre gruplanır
  * (YAS-3.3); odaktaki proje en üsttedir, ötekiler adlarına göre dizilir. Proje içinde
- * kayıtlar dosyaya, sonra satır ve sütuna göre dizilir. Öteki hiçbir kayıt düşmez ve
- * hiçbiri iki kez yerleşmez.
+ * kayıtlar dosyaya, sonra satır ve sütuna göre dizilir ve türlere toplanır (PNL-A28).
+ * Öteki hiçbir kayıt düşmez ve hiçbiri iki kez yerleşmez.
  */
 export function sinyalModeli(
   kayitlar: readonly YuzeyKaydi[], odakProje: string | undefined,
@@ -161,12 +225,12 @@ export function sinyalModeli(
   const bantlar = SINYAL_BANTLARI.map((bant): BantSinyalleri => {
     const projeler = [...kovalar.get(bant)!.values()]
       .sort((a, b) => Number(b.proje.kod === odakProje) - Number(a.proje.kod === odakProje) || karsilastir(a.proje.ad, b.proje.ad))
-      .map((g): ProjeSinyalleri => ({
-        proje: g.proje, odakta: g.proje.kod === odakProje,
-        satirlar: g.satirlar.sort((x, y) => karsilastir(x.kayit.dosya, y.kayit.dosya)
+      .map((g): ProjeSinyalleri => {
+        const satirlar = g.satirlar.sort((x, y) => karsilastir(x.kayit.dosya, y.kayit.dosya)
           || x.kayit.tani.satir - y.kayit.tani.satir || x.kayit.tani.sutun - y.kayit.tani.sutun
-          || karsilastir(x.kayit.tani.kod, y.kayit.tani.kod)),
-      }));
+          || karsilastir(x.kayit.tani.kod, y.kayit.tani.kod));
+        return { proje: g.proje, odakta: g.proje.kod === odakProje, satirlar, turler: tureGoreTopla(satirlar) };
+      });
     return { bant, duzey: BANT_DUZEYI[bant], sayi: projeler.reduce((t, p) => t + p.satirlar.length, 0), projeler };
   });
   return { bantlar, toplam: bantlar.reduce((t, b) => t + b.sayi, 0), bantsiz, hatirlatici };

@@ -1602,3 +1602,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "Makinist sekmesinin satır düzenine bir sonraki dokunuşta",
   ne:               "Founder'ın 2026-10-28 tarihli ekran görüntüsünde Makinist sekmesindeki bir grup başlığının üzerine gelindiğinde çıkan ipucu kutusu bir alttaki satırın üstüne binmekte ve o satırın sayısını örtmektedir. İpucu başlığın kendi metnini yinelediği için bilgi taşımamaktadır; kaldırılması ya da konumunun değişmesi değerlendirilmelidir."
 )
+
+Hatırlatıcı(
+  kod:              HTR-DAMGALI-DOSYA-ANLIK-TANI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Panel Blokunun bir sonraki eklenti Adımında",
+  ne:               "Founder'ın 2026-10-28 sabahki ekran görüntüsünde @ARSIV@ damgalı bir dosyanın söz dizimi tanısı Sorunlar panelinde görünmüştür. MIM-3.4 damgalı dosyanın motor tarafından okunmamasını ister; denetim turu bunu uygular, fakat dosya editörde açıkken eklentinin anlık tek dosya denetiminin damgaya bakmadığı tahmin edilmektedir. Gerçek VS Code'da ölçülüp düzeltilmelidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-PROJE-TEMIZLIK-TURU,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Panel Blokunun Tren ve Sinyaller işleri bittiğinde; Founder'ın onayıyla",
+  ne:               "Founder 2026-10-28 tarihinde her depodaki bilgi kalabalığının akıbetini sormuştur. Ölçümde Orkestrasyon'un Bilgi bandındaki kayıtların çoğu canlı kadro dosyalarındaki gerçek borçtur: 467 beceri kartı kabul satırı taşımamakta, 301 dosyada şema dışı alan bulunmakta ve 110 kayıt ad ayracı biçimindedir; laboratuvar arşivinin 104 dosyasının 103'ü damgalıdır ve tek damgasız dosya ebedî kural taşıdığı için damga alamamaktadır. Kontrolcü en kalabalık projeden başlayarak her proje için tek seferlik, ajanlarla yürütülen bir temizlik turu önermiştir: biçim sorunları araçla, şema dışı alanlar tek bir kararla, beceri kabul satırları toplu yazımla giderilir; gündem işaretleri kalır. Ebedî kuralın kilitlenmesi ya da canlı yasaya taşınması Founder kararıdır."
+)

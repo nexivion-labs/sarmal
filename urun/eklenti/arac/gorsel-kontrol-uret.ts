@@ -43,7 +43,7 @@ import { projeKimligi } from "../src/yolharitasi.ts";
 import { SinyallerAgaci } from "../src/sinyaller.ts";
 import { ILERI_BAGLAM_KIMLIKLERI } from "../../cekirdek/src/denetim.ts";
 import { bildirimlerKaydi } from "../src/bildirimler.ts";
-import { yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { kaydinYuzeyi, yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
 import { turGoruntusunuYayinla } from "../src/tur-goruntusu.ts";
 import { tulRengi } from "../src/tul-rengi.ts";
 import { CIZGI_ALFA } from "../src/panel-betik.ts";
@@ -130,6 +130,15 @@ gozlemler.yerlestir(yuzeyeAyir(sinyalKayitlari).bildirimler);
 const sinyaller = new SinyallerAgaci(koku as never);
 const odakProje = projeKimligi(join(PROJE, "_")).kod;
 sinyaller.yerlestir(sinyalKayitlari, odakProje);
+// PNL-A28 nöbetinin beklenen değeri ağaçtan değil, kayıtlardan sayılır: her bant ve proje için tür başına kayıt sayısı.
+// Hatırlatıcılar yüzeyine yönlenen kayıt Sinyaller'e girmez (yönlendirme motorun kararıdır).
+const BANT_ADI: Readonly<Record<string, string>> = { hata: "dur", uyarı: "dikkat", bilgi: "bilgi" };
+const turBeklenen: Record<string, Record<string, number>> = {};
+for (const k of sinyalKayitlari) {
+  if (kaydinYuzeyi(k) === "hatırlatıcılar") continue;
+  const turler = (turBeklenen[`sinyaller/bant.${BANT_ADI[k.tani.duzey]}/proje.${k.proje.kod}`] ??= {});
+  turler[k.tani.kod] = (turler[k.tani.kod] ?? 0) + 1;
+}
 
 // ── Kabuk ayarları: görünüm, açık kademe ve sekme sırası değişke başına değişir ──
 let gorunumAyari = "agac";
@@ -226,6 +235,6 @@ const liste = degiskeler.map((d) => {
 const tul = { cizgi: tulRengi("koyu", CIZGI_ALFA), vurgu: tulRengi("koyu", 1) };
 process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, tul, sinyal: {
   ...sinyaller.sayilar, denetim: sinyalKayitlari.length, durumCubuguGozlem: gozlemler.kayitSayisi,
-  hatirlaticiKodlari: [...ILERI_BAGLAM_KIMLIKLERI],
+  hatirlaticiKodlari: [...ILERI_BAGLAM_KIMLIKLERI], turler: turBeklenen,
 }, degiskeler: liste }));
 process.exit(0);

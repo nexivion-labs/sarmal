@@ -13,6 +13,9 @@
 //       yer alır; yönlendirme motorun `beklenenSunumYuzeyi` kararıdır.
 //     · Kural bağı olan her tanıda kanon maddesi görünür, bağı olmayanda madde boştur
 //       — sicilin kural bağı ve kanonun kendi `tanı:` kenarlarından kurulan harita.
+//     · Türe göre toplama (PNL-A28): projenin banttaki kayıtları türlere toplanır,
+//       türlerin sayıları projenin ve bandın sayısıyla tutar, hiçbir kayıt kaybolmaz
+//       ve ortak öneri yalnız bütün kayıtlarda aynen geçen cümlelerden kurulur.
 //   Panelde çizim, tıklama ve Makinist'ten çıkış panel.test.ts dosyasındadır; gerçek
 //   VS Code ölçümü sinama_vscode/suite/sinyaller.test.ts dosyasındadır.
 // ═══════════════════════════════════════════════════════════════════════════
@@ -31,7 +34,8 @@ import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import {
-  BANT_DUZEYI, SINYAL_BANTLARI, KayitDefteri, duzeyBandi, kanonMaddeleri, kanonTaniHaritasi, sinyalModeli,
+  BANT_DUZEYI, SINYAL_BANTLARI, KayitDefteri, duzeyBandi, kanonMaddeleri, kanonTaniHaritasi, ortakCumleler, sinyalModeli,
+  type SinyalModeli,
 } from "../src/sinyaller-cekirdek.ts";
 import { yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
 import { beklenenSunumYuzeyi, ILERI_BAGLAM_KIMLIKLERI } from "../../cekirdek/src/denetim.ts";
@@ -133,6 +137,86 @@ test("PNL-A09 · sekmedeki tanı sayısı denetim sonucunun sayısına eşittir:
       }
     }
   }
+});
+
+/**
+ * PNL-A28 nöbetinin ölçüsü: her bantta ve her projede türlerin sayısı kayıtlardaki farklı tür sayısıdır,
+ * türlerin kayıtları birleşince projenin kayıtlarının tamamı çıkar (kayıp ya da çift yok), tür sayıları
+ * projenin ve bandın sayısıyla tutar, türler çoktan aza dizilir ve tür içinde kayıtlar dosya ve satır sırasındadır.
+ */
+function turToplamasiniOlc(m: SinyalModeli): void {
+  for (const b of m.bantlar) {
+    let bantToplami = 0;
+    for (const p of b.projeler) {
+      const yer = `${b.bant}/${p.proje.kod}`;
+      assert.equal(p.turler.length, new Set(p.satirlar.map((s) => s.kayit.tani.kod)).size, `${yer}: tür sayısı farklı kod sayısından ayrıştı`);
+      const turKayitlari = p.turler.flatMap((t) => t.satirlar);
+      assert.equal(turKayitlari.length, p.satirlar.length, `${yer}: türlerin toplamı projenin sayısıyla tutmuyor`);
+      assert.equal(new Set(turKayitlari).size, p.satirlar.length, `${yer}: bir kayıt iki türde ya da hiçbirinde`);
+      assert.ok(p.satirlar.every((s) => turKayitlari.includes(s)), `${yer}: kayıt kayboldu`);
+      for (const t of p.turler) assert.ok(t.satirlar.every((s) => s.kayit.tani.kod === t.kod), `${yer}/${t.kod}: başka türün kaydı`);
+      for (let i = 1; i < p.turler.length; i++) {
+        const [a, c] = [p.turler[i - 1]!, p.turler[i]!];
+        assert.ok(a.satirlar.length > c.satirlar.length || (a.satirlar.length === c.satirlar.length && a.kod.localeCompare(c.kod, "tr") < 0),
+          `${yer}: türler çoktan aza dizili değil (${a.kod} ${a.satirlar.length} · ${c.kod} ${c.satirlar.length})`);
+      }
+      for (const t of p.turler) {
+        const sira = t.satirlar.map((s) => p.satirlar.indexOf(s));
+        assert.deepEqual(sira, [...sira].sort((x, y) => x - y), `${yer}/${t.kod}: tür içinde kayıtlar dosya sırasını yitirdi`);
+      }
+      bantToplami += p.turler.reduce((t, x) => t + x.satirlar.length, 0);
+    }
+    assert.equal(bantToplami, b.sayi, `${b.bant}: tür toplamları bandın sayısıyla tutmuyor`);
+  }
+}
+
+test("PNL-A28 · türe göre toplama motorun Sarmal deposundaki gerçek çıktısında: tür sayısı farklı kod sayısıdır, toplamlar proje ve bant sayısıyla tutar, hiçbir kayıt kaybolmaz, türler çoktan aza", () => {
+  const snf = siniflamaYukle(join(DEPO, "oz", "siniflama", "kayit.json"));
+  const kayitlar: YuzeyKaydi[] = [];
+  for (const dosya of sarDosyalari(DEPO)) {
+    const ham = readFileSync(dosya, "utf8");
+    let program: Program;
+    try { program = ayristir(belirtecle(ham)); } catch { continue; }
+    const proje = { kod: dosya.includes("/ogreti/") ? "ORNEK" : "SARMAL", ad: dosya.includes("/ogreti/") ? "Örnek" : "Sarmal" };
+    for (const t of dogrula(program, snf, dosya, ham)) kayitlar.push({ proje, dosya, tani: t });
+  }
+  const m = sinyalModeli(kayitlar, "SARMAL", (kod) => kanonMaddeleri(kod));
+  // Nöbet bir şey ölçsün: en az bir projede aynı türden birden çok kayıt toplanmış olmalı.
+  assert.ok(m.bantlar.some((b) => b.projeler.some((p) => p.turler.some((t) => t.satirlar.length > 1))), "gerçek çıktıda çok kayıtlı tür yok: nöbet hiçbir şeyi ölçmüyor");
+  turToplamasiniOlc(m);
+});
+
+test("PNL-A28 · türe göre toplama: çoktan aza ve eşitlikte kimlik sırası; ortak öneri yalnız bütün kayıtlarda aynen geçen cümlelerdir, anlam iletilerin ortak son cümlesidir; hiçbir metin değişmez", () => {
+  const t = (kod: string, satir: number, mesaj: string, oneri?: string, dosya = "/p/a.sar"): YuzeyKaydi =>
+    kayit({ kod, duzey: "bilgi", mesaj, satir, sutun: 1, ...(oneri ? { oneri } : {}) } as Tani, dosya);
+  const girdi = [
+    t("b-tür", 9, "B bir. Ortak kural.", "Bağı ekle. Örnek: `B1` yaz."),
+    t("a-tür", 4, "A tek."),
+    t("b-tür", 2, "B iki. Ortak kural.", "Bağı ekle. Örnek: `B2` yaz.", "/p/c.sar"),
+    t("c-tür", 7, "C bir.", "Sil."),
+    t("b-tür", 5, "B üç. Ortak kural.", "Bağı ekle. Örnek: `B3` yaz."),
+    t("c-tür", 1, "C iki.", "Taşı."),
+  ];
+  const kopya = JSON.stringify(girdi);
+  const m = sinyalModeli(girdi, "P", bagsiz);
+  const p = m.bantlar.find((b) => b.bant === "bilgi")!.projeler[0]!;
+  assert.deepEqual(p.turler.map((x) => [x.kod, x.satirlar.length]), [["b-tür", 3], ["c-tür", 2], ["a-tür", 1]]);
+  // Tür içinde kayıtlar dosyaya, sonra satıra göre kalır.
+  assert.deepEqual(p.turler[0]!.satirlar.map((s) => `${s.kayit.dosya}:${s.kayit.tani.satir}`), ["/p/a.sar:5", "/p/a.sar:9", "/p/c.sar:2"]);
+  assert.equal(p.turler[0]!.ortakOneri, "Bağı ekle.", "ortak öneri ilk cümle olmalı; kayda özgü örnek ortak değildir");
+  assert.equal(p.turler[0]!.ortakAnlam, "Ortak kural.");
+  assert.equal(p.turler[1]!.ortakOneri, undefined, "ortak cümlesi olmayan önerilerden ortak öneri uydurulmamalı");
+  assert.equal(p.turler[1]!.ortakAnlam, undefined);
+  // Sınır: tanıların düzeyi, sayısı ve metni değişmez.
+  assert.equal(JSON.stringify(girdi), kopya, "toplama tanı kaydını değiştirdi");
+  assert.equal(m.toplam, girdi.length);
+  turToplamasiniOlc(m);
+  // Ortak cümle: bir metin boşsa ortak cümle yoktur; tek metnin bütün cümleleri ortaktır.
+  assert.deepEqual(ortakCumleler(["Bir. İki.", undefined]), []);
+  assert.deepEqual(ortakCumleler(["Bir. İki."]), ["Bir.", "İki."]);
+  // Kayıtların yalnız bir kısmında geçen cümle ortak değildir.
+  assert.deepEqual(ortakCumleler(["Sil. Kaydet.", "Sil.", "Taşı. Kaydet."]), []);
+  assert.deepEqual(ortakCumleler(["Önce kapat. Örnek: `durum: tamamlandı` yap.", "Önce kapat. Örnek: `durum: beklemede` yap."]), ["Önce kapat."]);
 });
 
 test("PNL-A09 · kanon maddesi: sicilin kural bağı ve kanonun tanı: kenarlarından okunur; bağı olmayan tanıda madde uydurulmaz", () => {

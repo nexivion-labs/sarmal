@@ -534,10 +534,62 @@ try {
         kontrol(`${etiket}: Sinyaller sayısı denetim sonucu eksi Hatırlatıcılar yüzeyine yönlenenlerdir; Bilgi bandı durum çubuğundaki Gözlemler sayacına eşittir`,
           sy.toplam === sy.denetim - sy.hatirlatici && bantSayisi.reduce((t, n) => t + n, 0) === sy.toplam && bantSayisi[2] === sy.durumCubuguGozlem,
           JSON.stringify({ denetim: sy.denetim, hatirlatici: sy.hatirlatici, toplam: sy.toplam, bantSayisi, durumCubuguGozlem: sy.durumCubuguGozlem }));
-        const hatirlaticiSatiri = s.filter((x) => x.d === 2 && sy.hatirlaticiKodlari.includes(x.ac.split(" · ")[0]));
+        // Tanı satırı dosyayı açan ve kimliği tanının yerini taşıyan satırdır (sinyaller.ts: kod@dosya:satır:sütun); türlere
+        // toplandıktan sonra derinliği onu tanıtmaz (PNL-A28). Tür satırının kimliği `tur.<kod>` ile biter.
+        const taniMi = (x) => x.komut && /@[^@/]*:\d+:\d+(?:#\d+)?$/.test(x.id);
+        const turMu = (x) => /\/tur\.[^/]+$/.test(x.id);
+        const ustu = (x) => x.id.slice(0, x.id.lastIndexOf("/"));
+        const sayisi = (x) => Number(x.ac.split(" · ")[0]);
+        // Tanının kodu kimliğinden okunur: tür satırının altındaki kayıt kodu açıklamasında tekrarlamaz.
+        const taniKodu = (x) => { const son = x.id.slice(x.id.lastIndexOf("/") + 1); return son.slice(0, son.indexOf("@")); };
+        const hatirlaticiSatiri = s.filter((x) => taniMi(x) && sy.hatirlaticiKodlari.includes(taniKodu(x)));
         kontrol(`${etiket}: Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de çizilmez`, hatirlaticiSatiri.length === 0, JSON.stringify(hatirlaticiSatiri.slice(0, 3)));
+        // PNL-A28: projenin bandında görünen satır sayısı tür sayısıdır; tür satırının sayısı o türün kayıt sayısıdır ve
+        // tek kayıtlık tür ara satır açmaz; türler çoktan aza dizilir; tür toplamları projenin ve bandın sayısıyla tutar.
+        // Beklenen değer üretimin kayıtlardan saydığı tür dağılımıdır (ağaçtan değil). Kapalı satırın çocukları önden
+        // üretilmiş şablondadır (PNL-A27); proje kapalıyken açılınca görünecek satırlar oradan okunur.
+        const h = await p.evaluate(() => {
+          const out = [];
+          const gez = (kok, sablonda) => {
+            for (const x of kok.querySelectorAll(".sat")) out.push({ id: x.dataset.id, d: Number(x.dataset.d), ac: x.querySelector(".ac")?.textContent ?? "",
+              acik: x.getAttribute("aria-expanded"), komut: x.dataset.komut === "1", sablonda });
+            for (const t of kok.querySelectorAll("template")) gez(t.content, true);
+          };
+          gez(document.querySelector("#sinyaller-agac"), false);
+          return out;
+        });
+        const olculenProjeler = h.filter((x) => x.d === 1 && h.some((c) => c.d === 2 && ustu(c) === x.id));
+        const turHatasi = [];
+        for (const pr of olculenProjeler) {
+          const bek = sy.turler[pr.id] ?? {};
+          const cocuk = h.filter((x) => x.d === 2 && ustu(x) === pr.id);
+          if (cocuk.length !== Object.keys(bek).length) turHatasi.push({ proje: pr.id, gorunen: cocuk.length, tur: Object.keys(bek).length });
+          const sayilar = cocuk.map((c) => (turMu(c) ? sayisi(c) : 1));
+          cocuk.forEach((c, i) => {
+            const kod = turMu(c) ? c.id.slice(c.id.lastIndexOf("/tur.") + 5) : taniKodu(c);
+            if (bek[kod] !== sayilar[i] || turMu(c) !== sayilar[i] > 1 || (!turMu(c) && !taniMi(c))) turHatasi.push({ satir: c.id, kod, sayi: sayilar[i], beklenen: bek[kod] });
+            if (turMu(c) && d.ad === "sinyaller" && c.acik !== "false") turHatasi.push({ satir: c.id, acik: c.acik, neden: "tür satırı kapalı başlamalı" });
+          });
+          if (sayilar.some((n, i) => i > 0 && n > sayilar[i - 1])) turHatasi.push({ proje: pr.id, sira: sayilar });
+          if (Number(pr.ac) !== sayilar.reduce((t, n) => t + n, 0)) turHatasi.push({ proje: pr.id, projeSayisi: pr.ac, toplam: sayilar.reduce((t, n) => t + n, 0) });
+        }
+        for (const k of kokler.filter((x) => sayisi(x) > 0)) {
+          const projeToplami = h.filter((x) => x.d === 1 && ustu(x) === k.id).reduce((t, x) => t + Number(x.ac), 0);
+          if (projeToplami !== sayisi(k)) turHatasi.push({ bant: k.id, bantSayisi: sayisi(k), projeToplami });
+        }
+        kontrol(`${etiket}: projenin bandında görünen satır sayısı tür sayısıdır; tür satırının sayısı o türün kayıtlarının toplamıdır, türler çoktan aza, tek kayıtlık tür ara satırsız; toplamlar bandın sayısıyla tutar (PNL-A28)`,
+          olculenProjeler.length > 0 && h.some(turMu) && turHatasi.length === 0,
+          JSON.stringify({ olculenProje: olculenProjeler.length, turSatiri: h.filter(turMu).length, hata: turHatasi.slice(0, 5) }));
         if (d.ad === "sinyaller-acik") {
-          const tanilar = s.filter((x) => x.d === 2);
+          // Açılan tür satırı kayıtlarının hepsini gösterir ve hepsi o türdendir.
+          const eksik = s.filter((x) => turMu(x) && x.acik === "true").flatMap((t) => {
+            const alti = s.filter((x) => taniMi(x) && ustu(x) === t.id);
+            const kod = t.id.slice(t.id.lastIndexOf("/tur.") + 5);
+            return alti.length === sayisi(t) && alti.every((x) => taniKodu(x) === kod && !x.ac.startsWith(`${kod} · `)) ? [] : [{ tur: t.id, sayi: sayisi(t), gorunen: alti.length }];
+          });
+          kontrol(`${etiket}: açılan tür satırı kayıtlarının hepsini gösterir ve hiçbir kayıt kaybolmaz (PNL-A28)`,
+            s.some((x) => turMu(x) && x.acik === "true") && eksik.length === 0, JSON.stringify({ acikTur: s.filter((x) => turMu(x) && x.acik === "true").length, eksik: eksik.slice(0, 5) }));
+          const tanilar = s.filter(taniMi);
           kontrol(`${etiket}: bütün bantlar açıkken çizilen tanı satırı tekil kayıt sayısına eşittir (hiçbir tanı iki kez çizilmez)`,
             tanilar.length === sy.toplam && new Set(s.map((x) => x.id)).size === s.length, JSON.stringify({ cizilen: tanilar.length, toplam: sy.toplam, satir: s.length }));
         }
@@ -548,7 +600,7 @@ try {
           const ik = x.querySelector(".ik");
           const m = ik ? /url\("data:image\/svg\+xml,(.*)"\)/.exec(getComputedStyle(ik).backgroundImage) : null;
           const svg = m ? decodeURIComponent(m[1]) : "";
-          return { d: Number(x.dataset.d), renk: [...new Set((svg.match(/#[0-9a-fA-F]{6}\b/g) ?? []).map((r) => r.toUpperCase()))].sort().join() };
+          return { id: x.dataset.id, d: Number(x.dataset.d), komut: x.dataset.komut === "1", renk: [...new Set((svg.match(/#[0-9a-fA-F]{6}\b/g) ?? []).map((r) => r.toUpperCase()))].sort().join() };
         }));
         const bantRengi = ["hata", "uyari", "bilgi"].map((a) => [...new Set((readFileSync(join(EKLENTI, "medya", "simgeler", "uretilmis", `satir-sinyal-${a}-koyu.svg`), "utf8")
           .match(/#[0-9a-fA-F]{6}\b/g) ?? []).map((r) => r.toUpperCase()))].sort().join());
@@ -559,16 +611,17 @@ try {
         const ayriRenk = [];
         for (const x of simgeRengi) {
           if (x.d === 0) bantNo++;
-          else if (x.d === 2 && bantNo < 3 && x.renk !== bantRengi[bantNo]) ayriRenk.push({ bant: bantNo, renk: x.renk });
+          else if ((taniMi(x) || turMu(x)) && bantNo < 3 && x.renk !== bantRengi[bantNo]) ayriRenk.push({ bant: bantNo, id: x.id, renk: x.renk });
         }
-        if (d.ad === "sinyaller-acik") kontrol(`${etiket}: tanı satırının işareti bandının simgesiyle aynı renktir`, ayriRenk.length === 0, JSON.stringify(ayriRenk.slice(0, 5)));
+        if (d.ad === "sinyaller-acik") kontrol(`${etiket}: tanı ve tür satırının işareti bandının simgesiyle aynı renktir`, ayriRenk.length === 0, JSON.stringify(ayriRenk.slice(0, 5)));
         // Bant adı dar panelde de kısalmaz; tanı satırında kod, dosya ve satır görünür kalır (uzun ileti kısalır).
         const kesik = await p.evaluate(() => ({
           bant: [...document.querySelectorAll('#sinyaller-agac .sat[data-d="0"] .et')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent),
-          yer: [...document.querySelectorAll('#sinyaller-agac .sat[data-d="2"] .ac')].filter((e) => e.offsetWidth > 0 && e.scrollWidth > e.clientWidth + 1).length,
+          yer: [...document.querySelectorAll('#sinyaller-agac .sat[data-komut] .ac')].filter((e) => e.offsetWidth > 0 && e.scrollWidth > e.clientWidth + 1).length,
+          kisa: [...document.querySelectorAll('#sinyaller-agac .sat:not([data-komut]) .et')].filter((e) => e.offsetWidth > 0 && e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent),
         }));
-        kontrol(`${etiket}: Sinyaller bant adı kısalmaz`, kesik.bant.length === 0, JSON.stringify(kesik));
-        const tani = d.ad === "sinyaller-acik" ? s.find((x) => x.d === 2 && x.komut && x.gorunur) : undefined;
+        kontrol(`${etiket}: Sinyaller bant adı ile dosya açmayan satırların (proje, tür, öneri) kısa adı kısalmaz`, kesik.bant.length === 0 && kesik.kisa.length === 0, JSON.stringify(kesik));
+        const tani = d.ad === "sinyaller-acik" ? s.find((x) => taniMi(x) && x.gorunur) : undefined;
         if (d.ad === "sinyaller") { /* açık değişke tıklamayı ölçer */ }
         else if (!tani) kontrol(`${etiket}: Sinyaller satırı ölçülebilir`, false, "görünür tanı satırı yok");
         if (tani) {

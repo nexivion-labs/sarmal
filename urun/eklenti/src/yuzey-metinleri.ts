@@ -442,12 +442,21 @@ function bastanBuyut(s: string): string {
 }
 
 /**
+ * Tanı kimliğinin çizelgede yazılı tek cümlelik anlamı; çizelgede yoksa tanımsızdır ve
+ * yerine kimlikten türetilmiş bir söz öbeği konmaz (Sinyaller'in tür satırı, PNL-A28).
+ */
+export function taniAnlami(taniKodu: string): string | undefined {
+  const cizelge = yuzeyDili === "en" ? GRUP_BASLIKLARI_EN : GRUP_BASLIKLARI;
+  return Object.hasOwn(cizelge, taniKodu) ? cizelge[taniKodu] : undefined;
+}
+
+/**
  * Tanı kimliğinin panelde görünen başlığı. Çizelgede karşılığı varsa cümle,
  * yoksa kimliğin okunur söz öbeği hâli döner; hiçbir durumda çıplak kimlik
  * (tire ile yazılmış makine adı) başlık olarak basılmaz.
  */
 export function taniBasligi(taniKodu: string): string {
-  const yazili = (yuzeyDili === "en" ? GRUP_BASLIKLARI_EN : GRUP_BASLIKLARI)[taniKodu];
+  const yazili = taniAnlami(taniKodu);
   if (yazili) return yazili;
   return yuzeyMetni(
     bastanBuyut(taniKodu.replace(/-/g, " ").trim()),
@@ -2796,6 +2805,12 @@ export const SINYAL_METINLERI = {
     bilgi: yuzeyMetni("Kapıyı kapatmayan ölçüm, istisna ya da yönlendirme işareti.", "A measurement, exception or pointer that does not close the gate."),
   }[b] ?? ""),
   get oneri(): string { return yuzeyMetni("Öneri", "Suggestion"); },
+  /** Tür satırının altındaki, türün bütün kayıtlarında aynen geçen öneri (PNL-A28). */
+  get ortakOneri(): string { return yuzeyMetni("Ortak öneri", "Common suggestion"); },
+  /** Tür satırının ipucundaki sayı cümlesi: hiçbir kaydın elenmediğini söyler (PNL-A28). */
+  turSayisi: (kod: string, adet: number): string => yuzeyMetni(
+    `"${kod}" türünden ${adet} kayıt bu satırda toplandı; satırı açınca hepsi dosyaya göre görünür.`,
+    `${adet} ${adet === 1 ? "record" : "records"} of type "${kod}" are grouped in this row; expand it to see each one by file.`),
   get kanonMaddesi(): string { return yuzeyMetni("Kanon maddesi", "Canon article"); },
   maddeYok: (madde: string): string => yuzeyMetni(
     `${madde} maddesinin tanımı bu çalışma alanında bulunamadı.`,

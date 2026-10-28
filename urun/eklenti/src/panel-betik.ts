@@ -149,9 +149,13 @@ svg.ik{background:none}
 .ac{flex:0 2 auto;min-width:0;margin-left:8px;overflow:hidden;text-overflow:ellipsis;color:var(--vscode-descriptionForeground);font-size:12px}
 .sat.sec .ac{color:inherit;opacity:.85}
 /* SİNYALLER (PNL-A09): bant adı (Dur · Dikkat · Bilgi) hiç kısalmaz, kısalan bandın açıklamasıdır; tanı
-   satırında ise kod, dosya ve satır görünür kalır, uzun ileti kısalır (tamamı satırın ipucundadır). */
+   satırında ise kod, dosya ve satır görünür kalır, uzun ileti kısalır (tamamı satırın ipucundadır).
+   Tanı satırı tıklanınca dosyayı açan satırdır; türlere toplandıktan sonra derinliği tek başına onu
+   tanıtmaz (PNL-A28). Dosya açmayan satırların (bant, proje, tür, öneri) adı kısadır ve kısalmaz; kısalan
+   yanındaki anlam ya da öneri cümlesidir. */
 #sinyaller-agac .sat[data-d="0"] .et{flex-shrink:0}
-#sinyaller-agac .sat[data-d="2"] .ac{flex-shrink:0;max-width:60%}
+#sinyaller-agac .sat[data-komut] .ac{flex-shrink:0;max-width:60%}
+#sinyaller-agac .sat:not([data-komut]) .et{flex-shrink:0}
 /* Fare üzerindeki satırın gri açıklaması dalın tonuna boyanır (seçili satırda seçim rengi kalır,
    çünkü mor yazı seçim zemininde okunmaz) ve simgesi canlanıp tül morunda hafifçe ışır. */
 .sat:hover:not(.sec) .ac{color:var(--tul-vurgu)}
