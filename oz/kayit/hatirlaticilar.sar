@@ -1632,3 +1632,23 @@ Hatırlatıcı(
   dönüşTetikleyici: "Kullanım limiti yenilendiğinde ve PNL-A11 kapandıktan sonra",
   ne:               "Founder 2026-10-28 tarihinde Tren şirket şemasının şeritler, sütunlar ve kart ızgarası görünümlerinin üçünün de bulunmasına ve ayardan değiştirilmesine hükmetmiş, aynı akşam kullanım limiti yüzünden PNL-A11'de yalnız şeritler görünümünün yazılmasına karar vermiştir. Sütunlar ve kart ızgarası görünümleri aynı örgüt verisinden beslenerek eklenecek ve Ayarlar sekmesinin Görünüm bölümünde (PNL-A10) seçilebilir olacaktır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-DAG-ZEMIN-AD-ALANI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Çekirdeğe bir sonraki dokunuşta",
+  ne:               "PNL-A12'nin üretimi sırasında çekirdeğin zemin kaydının (dag.ts) ortak olmayan bir kodun ad alanlı yazımını, örneğin takım: PRJ-X::TKM biçimini, düşürdüğü bulunmuştur. Panel bu yüzden böyle bir Katmanın takımını gösteremez. Düzeltme çekirdekte yapılmalı ve bir nöbetle ölçülmelidir."
+)
+
+Hatırlatıcı(
+  kod:              HTR-TREN-DAR-PANEL-SIRASI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Founder 0.9.199'u dar kenar çubuğunda kullandığında",
+  ne:               "Tren sekmesinde dar panelde sıra şema, profil kartı ve geliştirmedeki işin ağacı biçimindedir; ağacı görmek için 300 piksel genişlikte yaklaşık 1700, 460 pikselde yaklaşık 1100 piksel kaydırmak gerekir. Ayrıca Sarmal'ın kendi verisinde bir departman adı Raf ilanının uzun ilk cümlesinden okunduğu için çok uzun görünür ve denetim kutusunda ajan kodu kesilir. İş ağacının dar panelde üste alınması Founder kararıdır; Raf ilanına kısa bir ilk cümle yazılması küçük bir düzeltmedir."
+)
