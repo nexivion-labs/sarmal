@@ -6571,6 +6571,21 @@ sessizce körleşmez.
           sınır: "Bu Adım kaynak koda dokunmaz."
           koşu: Koşum( kod: KSM-PNL-A01, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "OZK-13 kilitli, OZK-03 revize ve halefi OZK-13 · PNL öneki sicilde · Lansman Mevsiminin vadesi 2026-11-30 · yedi hatırlatıcı kararlaştı (A02, A04, A07, A08, A09, A13, A14) ve HTR-DOGUS-KILIDI-BELGE-METNI ile HTR-DOGUS-WINDOWS-KANCALARI tamamlandı · KPR-PNL-A01 PNL-A13'e bağımlı · depo denetimi drift yok", ne: "Founder'ın hükümleri OZK-13 kararına indi ve Blok plana bağlandı. Panelle ilgili bir kayıt bilinçle açık bırakıldı: HTR-ONAYLAR-DIS-ONAY-KAYDI, Founder'ın Makinist sekmesine sonra ekleyeceğini bildirdiği konulara aittir. HTR-DOGUS-WINDOWS-KANCALARI, kancaların iki Windows kurulumunda çalıştığını gösteren 2026-10-25 kaydıyla BKM-DNT-A21 üzerinden kapandı. Kaynak koda dokunulmadı." )
         }
+
+        Adım( kod: PNL-A20, ad: "Kanonun Sinyaller Hükmüne Uydurulması", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A01 ],
+          referans: [ OZK-14, YUZ-3.1, YAS-3.3, YAS-3.4 ],
+          ne: "📜 YUZ-3.1 kanon maddesinin OZK-14 hükmüne uydurulması. Madde bugün Problems panelini tanıların zorunlu yüzlerinden biri saymaktadır; Founder 2026-10-28 tarihinde tanıların asıl yüzünün Sarmal panelinin Sinyaller sekmesi olmasına ve Problems panelinin ayarla açılan isteğe bağlı bir yüz olmasına hükmetmiş ve maddenin bu hükümle değişeceğini bilerek seçimini yapmıştır." ) {
+          görev: [
+            "YUZ-3.1'in hüküm ve örnek metnini Sinyaller sekmesini asıl tanı yüzü, Problems panelini ayarla açılan isteğe bağlı yüz sayacak biçimde güncelle; tanının hiçbir yüzde yeniden derecelendirilemeyeceği ve gizlenemeyeceği hükmü olduğu gibi kalır.",
+            "YAS-3.3 ile YAS-3.4'ün Problems anan metninin yeni hükümle çelişip çelişmediğini ölç; çelişen yer varsa aynı biçimde güncelle.",
+            "Kanon demetinin türetilmiş yüz mührünü tazele ve tazeleme notunu yaz; kanonun başka kopyaları varsa aynı işlemede güncelle."
+          ]
+          kabul: [
+            "YUZ-3.1 metni OZK-14 ile çelişmez ve Problems panelini zorunlu yüz saymaz.",
+            "Çekirdek süiti, eklenti süiti ve depo denetimi yeşildir ve türetilmiş yüz mühür nöbeti geçer."
+          ]
+          sınır: "Tanı düzeylerinin anlamı (YAS-3.1) ve tanı sözleşmesi (YAS-3) değişmez; bu Adım ürün koduna dokunmaz."
+        }
       }
 
       AltKatman( kod: ALT-PNL-ZEMIN-SINAMA, ad: "Kabul Düzeneği", departman: sınama,
@@ -6666,6 +6681,20 @@ sessizce körleşmez.
           sınır: "Bantların renkleri ve çizim biçimi 0.9.193'teki gibidir; yeni renk icat edilmez."
           koşu: Koşum( kod: KSM-PNL-A06, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1119 sınama: 1119 geçti, 0 düştü (kontrolcü koşturdu) · tip ve dil denetimi temiz (kontrolcü koşturdu) · gerçek VS Code süiti 63 geçti, 0 düştü · çekirdeğin türetilmiş yüz mühür nöbeti iki katalog mührünün tazelenmesinden sonra 8 geçti, 0 düştü (kontrolcü mühürleri SHA-256 ile ayrıca ölçtü) · dört bozma denemesinin dördünü nöbet yakaladı · bantların seçenekleri 0.9.193 paletiyle birebir karşılaştırıldı", ne: "sarmal.girintiRenkleri ayarının varsayılanı yeniden açıktır ve yeni kurulumda editör yedi renkli bantlarla açılır; ayar kapatılınca tül derinlik çizilir, yeniden açılınca bantlar geri gelir. Ayar okunamadığında da artık bantlar çizilir; varsayılan tek bir sabitte durur ve bir nöbet onu paketin ilanıyla karşılaştırır. Bantların renkleri, saydamlıkları, iç gölgesi ve iki karakterlik genişliği 0.9.193 ile aynıdır; tek davranış farkı, 0.9.193'te ayarın kapatılması boyamayı tümüyle kaldırırken bugün tül derinliği çizmesidir. İki yerelleştirme kataloğunun ayar açıklaması yeni varsayılanı söyler. Gerçek VS Code süiti etkin ayarı ölçer fakat bandın ekrana boyandığını okuyamaz; bantların gözle doğrulanması birinci basamağın tesliminde yapılacaktır." )
         }
+
+        Adım( kod: PNL-A21, ad: "Ray'da Sinyal İşareti", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A09 ],
+          referans: [ OZK-14 ],
+          ne: "🚦 Ray sekmesinde tanı taşıyan düğümün işaretlenmesi. Founder 2026-10-28 tarihinde sorunun yalnız Sinyaller sekmesinde değil, plan ağacında da yerinde görünmesine hükmetmiştir (OZK-14)." ) {
+          görev: [
+            "Yol Haritasında tanı taşıyan düğümün satırına Dur ya da Dikkat işaretini ve sayısını koy; kapalı bir dalın satırı altındaki düğümlerin toplamını taşır.",
+            "İşarete tıklamak Sinyaller sekmesini açar ve o düğümün tanılarını seçer."
+          ]
+          kabul: [
+            "Bir tanının yeri bir düğümün tanım aralığındaysa o düğümün satırında işaret görünür ve tanı giderilince işaret kalkar; bunu bir nöbet ölçer.",
+            "İşarete tıklamak Sinyaller sekmesinde ilgili satırları seçer; bunu görsel kontrol ölçer."
+          ]
+          sınır: "Bilgi düzeyindeki tanılar Ray'da işaret üretmez; satırların içeriği ve sırası değişmez."
+        }
       }
     }
 
@@ -6708,24 +6737,49 @@ sessizce körleşmez.
       }
     }
 
-    Katman( kod: KAT-PNL-GOZLEM, takım: TAKIM-EKLENTI, ad: "Gözlemler Sekmesi",
-      ne: "👁️ Gözlemlerin ve Sarmal tanılarının kendi sekmesi" ) {
+    Katman( kod: KAT-PNL-GOZLEM, takım: TAKIM-EKLENTI, ad: "Sinyaller Sekmesi",
+      ne: "🚦 Sarmal tanılarının Dur, Dikkat ve Bilgi bantlarıyla ve gözlem kayıtlarıyla gösterildiği sekme (OZK-14)" ) {
 
-      AltKatman( kod: ALT-PNL-GOZ-KODLAMA, ad: "Gözlemler Yüzü", departman: kodlama,
-        ne: "🔧 Gözlemlerin Makinist'ten taşındığı ve Sapmalar bölümünün kurulduğu dal" ) {
+      AltKatman( kod: ALT-PNL-GOZ-KODLAMA, ad: "Sinyaller Yüzü", departman: kodlama,
+        ne: "🔧 Sinyaller sekmesinin kurulduğu ve Sorunlar paneline gönderimin ayara bağlandığı dal" ) {
 
-        Adım( kod: PNL-A09, ad: "Gözlemler ve Sapmalar Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15, PRF-IS-A05 ],
-          referans: [ HTR-PANEL-SAPMA-SEKMESI, OZK-13 ],
-          ne: "🧭 Gözlemlerin Makinist'ten kendi sekmesine taşınması ve Sarmal'ın denetim tanılarının aynı sekmede ayrı bir Sapmalar bölümünde gösterilmesi. Tanılar bugün VS Code'un genel Sorunlar panelinde öteki araçların bulgularına karışmaktadır." ) {
+        Adım( kod: PNL-A09, ad: "Sinyaller Sekmesi", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A18 ],
+          referans: [ HTR-PANEL-SAPMA-SEKMESI, OZK-13, OZK-14, PNL-A15, YAS-3.1 ],
+          ne: "🚦 Sarmal'ın tanılarının panelin içinde, kanonun üç düzeyini insanın anlayacağı biçimde ayıran bir sekmede gösterilmesi. Founder 2026-10-28 tarihinde dördüncü sekmenin adını Sinyaller yapmış ve tanıların Dur, Dikkat ve Bilgi bantlarında, dayandıkları kanon maddesiyle birlikte gösterilmesine hükmetmiştir (OZK-14); gözlem kayıtları aynı sekmede ayrı bir bölümde durur. Tanılar bugün VS Code'un genel Sorunlar panelinde öteki araçların bulgularına karışmakta ve kullanıcı bir tanının işini durdurup durdurmadığını okuyamamaktadır. Founder aynı gün bu işi öne almıştır; sekme içeriği PNL-A18'den beri eklentiyi beklemediği için iş işçi Blokunu beklemez." ) {
           görev: [
-            "Gözlemler grubunu Makinist'ten çıkar ve Gözlemler sekmesine taşı.",
-            "Sarmal tanılarını aynı sekmede Sapmalar bölümünde göster; her satır tanının yerine gider."
+            "Panelin dördüncü sekmesinin görünen adını ve simgesini Gözlemler yerine Sinyaller yap.",
+            "Sarmal'ın tanılarını üç bantta göster: Dur bandı HATA, Dikkat bandı UYARI, Bilgi bandı BİLGİ düzeyini taşır; her bandın başlığı düzeyin YAS-3.1'deki anlamını tek kısa cümleyle söyler.",
+            "Tanıları Proje kimliğine göre grupla (YAS-3.3); odaktaki proje üstte ve açık durur, bant içinde tanılar dosyaya göre dizilir.",
+            "Her satır tanının kodunu, iletisini, dosyasını ve satırını, düzeltme önerisini ve tanının dayandığı kanon maddesini gösterir; kanon maddesi tanı sicilinin kural bağından okunur ve bağı olmayan tanıda madde uydurulmaz.",
+            "Satıra tıklamak dosyayı ilgili yerde açar ve odak panelde kalır; kanon maddesine tıklamak maddenin tanımını açar.",
+            "Gözlem kayıtlarını Makinist'ten çıkar ve Sinyaller sekmesinde ayrı bir bölümde göster.",
+            "Sekme şeridinde Sinyaller'in yanında Dur ve Dikkat sayılarını rozet olarak göster; Bilgi bandı kapalı başlar."
           ]
           kabul: [
-            "Gözlemler ile Sapmalar ayrı bölümlerdir ve her satır dosyanın doğru yerini açar.",
+            "Üç bant YAS-3.1'in üç düzeyiyle birebir eşleşir ve hiçbir tanı başka bir düzeyin bandına düşmez; bunu bir nöbet tanı sicilinin bütün düzeyleri üzerinden ölçer.",
+            "Sinyaller sekmesindeki tanı sayısı aynı kapsamdaki denetim sonucunun sayısına eşittir; bunu bir nöbet ölçer.",
+            "Kural bağı olan her tanıda kanon maddesi görünür, kural bağı olmayan tanıda madde alanı boştur.",
+            "Her satır dosyanın doğru yerini açar; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
+            "Gözlem kayıtları Makinist'te görünmez ve Sinyaller'de ayrı bölümdedir.",
             "Sekmenin ekran görüntüsü ikinci basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
-          sınır: "Tanıların üretimi değişmez; Sorunlar paneli de beslenmeye devam eder."
+          sınır: "Tanıların üretimi, düzeyleri ve metinleri değişmez; bant adları yalnız sunumdur. Sorunlar paneline gönderim bu Adımda değişmez, onu PNL-A22 bağlar."
+        }
+
+        Adım( kod: PNL-A22, ad: "Sorunlar Paneline Gönderimin Ayara Bağlanması", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A09, PNL-A20 ],
+          referans: [ OZK-14, YUZ-3.1, YAS-3.4 ],
+          ne: "🔕 Sarmal tanılarının VS Code Sorunlar paneline gönderilmesinin ayara bağlanması. Founder 2026-10-28 tarihinde tanıların genel Sorunlar panelinden çıkarılmasına ve gönderimin varsayılanı kapalı bir ayarla seçilmesine hükmetmiştir (OZK-14). VS Code'da editördeki dalgalı çizgi ile Sorunlar paneli aynı tanı koleksiyonundan beslendiği için ayar kapalıyken editördeki işaretin, hover iletisinin ve hızlı düzeltmenin başka bir yoldan üretilmesi gerekir. Kontrolcü Founder'a bir bedeli bildirmiştir: ayar kapalıyken terminaldeki ajanlar Sarmal tanılarını Sorunlar paneli üzerinden göremez ve onları Sarmal araçlarından ve kancalardan öğrenir." ) {
+          görev: [
+            "Sarmal tanılarının Sorunlar paneline gönderilmesini seçen bir ayar ekle; varsayılanı kapalıdır ve iki yerelleştirme kataloğu ayarın anlamını ve ajanlar için bedelini söyler.",
+            "Ayar kapalıyken tanı koleksiyonuna yazma; editördeki satır işaretini, hover iletisini ve hızlı düzeltmeleri aynı tanı nesnesinden, tanı koleksiyonundan bağımsız bir yoldan üret.",
+            "Ayar açıkken bugünkü davranış aynen sürer; ayar değiştiğinde geçiş pencere yeniden yüklenmeden gerçekleşir."
+          ]
+          kabul: [
+            "Ayar kapalıyken Sorunlar panelinde Sarmal kaynaklı tanı yoktur ve editörde satır işareti, hover ve hızlı düzeltme aynı tanı kodu, düzey ve öneriyle görünür; bunu gerçek VS Code nöbeti ölçer.",
+            "Ayar açıldığında Sorunlar paneli aynı tanıları kayıpsız gösterir; bunu gerçek VS Code nöbeti ölçer.",
+            "Ayar kapalıyken her tanı en az Sinyaller sekmesinde ve editör satırında görünür kalır (YAS-3.4)."
+          ]
+          sınır: "Tanıların üretimi, düzeyleri ve metinleri değişmez; komut satırı ve MCP araçlarının çıktısı değişmez."
         }
       }
     }
@@ -6880,8 +6934,8 @@ sessizce körleşmez.
         }
 
         Adım( kod: PNL-A16, ad: "İkinci Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
-          bağımlı: [ PNL-A08, PNL-A09, PNL-A10, PNL-A19 ],
-          ne: "📦 0.9.198 sürümü: Makinist sayıları, Gözlemler ve Ayarlar." ) {
+          bağımlı: [ PNL-A08, PNL-A09, PNL-A10, PNL-A19, PNL-A21, PNL-A22 ],
+          ne: "📦 0.9.198 sürümü: Makinist sayıları, Sinyaller sekmesi, Ray'daki sinyal işareti, Sorunlar paneli ayarı ve Ayarlar." ) {
           görev: [
             "Birinci basamağın teslim yolunu 0.9.198 için yinele."
           ]
