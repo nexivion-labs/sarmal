@@ -359,7 +359,7 @@ test("istemci betiği: acquireVsCodeApi tek kez, ileti tipleri sınırlı ve hi�
   assert.ok(!/\beval\(|new Function|document\.write|insertAdjacentHTML/.test(betik));
   // Büyük harf taşıyan tipler de sayılır (bolumGec eskiden bu süzgeçten kaçıyordu).
   const gonderilen = [...betik.matchAll(/tip: '([a-zA-Z]+)'/g)].map((m) => m[1]).sort();
-  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sekmeSirasi", "sinamaRapor"], "betiğin gönderdiği ileti tipleri değişmiş");
+  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sekmeSirasi", "sinamaRapor", "sinyalGit"], "betiğin gönderdiği ileti tipleri değişmiş");
   // Betik sözdizimi geçerlidir.
   assert.doesNotThrow(() => new Function(betik.replace("acquireVsCodeApi()", "({postMessage(){}})")), "betik derlenmiyor");
 });

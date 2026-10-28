@@ -201,6 +201,12 @@ export interface PanelSatiri {
   /** Yazı rengi için tema değişkeni adı (`--vscode-...`). */
   renk?: string;
   rozet?: string;
+  /**
+   * Ray satırının Dur ve Dikkat işareti (PNL-A21): `kendi` düğümün kendi tanılarını, `toplam` alt ağacının
+   * tamamını sayar. Açık dal kendisini, kapalı dal toplamı gösterir; seçim CSS'te satırın açıklığına bağlıdır,
+   * böylece dal webview'de açılıp kapanınca (PNL-A27) işaret eklentiyi beklemeden doğru sayıyı gösterir.
+   */
+  sinyal?: { kendi: { dur: number; dikkat: number }; toplam: { dur: number; dikkat: number } };
   /** Kutucuk durumu; tanımsızsa satırda kutucuk yoktur. */
   isaret?: boolean;
   /** "yaprak" · "kapali" · "acik". */
@@ -368,12 +374,26 @@ export function satirHtml(s: PanelSatiri): string {
   }
   const renk = s.renk ? ` style="color:var(${temaRengiDegiskeni(s.renk)})"` : "";
   const rozet = s.rozet ? `<span class="rz"${renk} aria-hidden="true">${kacir(s.rozet)}</span>` : "";
+  const isaret = s.sinyal ? raySinyalIsareti(s.sinyal, s.durum === "yaprak") : "";
   const eylemler = s.eylemler.length
     ? `<span class="eyler">${s.eylemler.map((e) =>
         `<button type="button" class="ey" data-komut="${kacir(e.komut)}" title="${kacir(e.ad)}" aria-label="${kacir(e.ad)}">${EYLEM_SVG[e.ikon]}</button>`).join("")}</span>`
     : "";
   return `<div ${oznitelik.join(" ")}>${ok}${kutu}${ikon}<span class="et"${renk}>${kacir(s.etiket)}</span>`
-    + (s.aciklama ? `<span class="ac">${kacir(s.aciklama)}</span>` : "") + rozet + eylemler + `</div>`;
+    + (s.aciklama ? `<span class="ac">${kacir(s.aciklama)}</span>` : "") + isaret + rozet + eylemler + `</div>`;
+}
+
+/**
+ * Ray satırındaki Dur ve Dikkat işareti (PNL-A21): sıfır olmayan bandın rozeti. Dal satırı iki kümeyi
+ * taşır; `sny-acik` dal açıkken (kendi tanıları), `sny-kapali` kapalıyken (alt ağacın toplamı) görünür.
+ */
+function raySinyalIsareti(s: NonNullable<PanelSatiri["sinyal"]>, yaprak: boolean): string {
+  const kume = (n: { dur: number; dikkat: number }, sinif: string): string => (n.dur + n.dikkat > 0
+    ? `<span class="${sinif}" title="${kacir(SINYAL_METINLERI.rayIsaretIpucu(n.dur, n.dikkat))}">`
+      + (n.dur ? `<span class="rozet dur">${n.dur}</span>` : "") + (n.dikkat ? `<span class="rozet dikkat">${n.dikkat}</span>` : "") + `</span>`
+    : "");
+  const ic = yaprak ? kume(s.kendi, "sny-acik sny-kapali") : kume(s.kendi, "sny-acik") + kume(s.toplam, "sny-kapali");
+  return ic ? `<span class="sny" role="button" data-sinyal-git="1">${ic}</span>` : "";
 }
 
 /** Satır listesinin HTML'i. */

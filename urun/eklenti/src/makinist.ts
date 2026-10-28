@@ -23,6 +23,7 @@ import { satirIkonu } from "./ortak.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 import type { OnayPaneli } from "./onay-paneli.ts";
 import type { YuzDurumu } from "./ortak.ts";
+import type { ProjePayi } from "./kapsam-sayaci.ts";
 
 
 /** Ağacın üst düğümleri; kimlikleri sabittir. */
@@ -37,22 +38,31 @@ export interface MakinistKaynagi {
   readonly onDidChangeTreeData: vscode.Event<unknown>;
   getChildren(oge?: never): unknown[];
   getTreeItem(oge: never): vscode.TreeItem;
+  /** Ateşlemiş hatırlatıcı sayısı (YUZ-3.4); yalnız Hatırlatıcılar kaynağında vardır ve dış rozete girer (PNL-A08). */
+  readonly atesmisSayisi?: number;
+  /** Ateşlemiş hatırlatıcıların proje kırılımı (çatı kapsamında rozetin ipucunda dökülür). */
+  atesmisPaylari?(): ProjePayi[];
 }
 
-/** Onaylar defteri için ağaç yüzü: satırlar kapılardır. */
+/**
+ * Onaylar defteri için ağaç yüzü: satırlar kapılardır. `bugun` kararı bugün verilebilecek kapıları
+ * (Onaylar grubu), `ileride` Adımı beklemede olan kapıları ("İleride onay isteyecek" grubu) taşır (PNL-A08).
+ */
 class OnayKaynagi implements MakinistKaynagi {
   readonly onDidChangeTreeData: vscode.Event<unknown>;
   gorunum: YuzDurumu = {};
   private readonly panel: OnayPaneli;
   private readonly kok: vscode.Uri | undefined;
-  constructor(panel: OnayPaneli, kok: vscode.Uri | undefined) {
+  private readonly kume: "bugun" | "ileride";
+  constructor(panel: OnayPaneli, kok: vscode.Uri | undefined, kume: "bugun" | "ileride" = "bugun") {
     this.panel = panel;
     this.kok = kok;
+    this.kume = kume;
     this.onDidChangeTreeData = panel.onDegisti;
   }
-  get kayitSayisi(): number { return this.panel.kapiSayisi; }
+  get kayitSayisi(): number { return this.kume === "bugun" ? this.panel.kapiSayisi : this.panel.ilerideKapiSayisi; }
   getChildren(): unknown[] {
-    return this.panel.kapilar().map((k) => ({ tur: "kapi", kayit: k }));
+    return this.panel.kapilar(this.kume).map((k) => ({ tur: "kapi", kayit: k }));
   }
   getTreeItem(oge: { tur: "kapi"; kayit: ReturnType<OnayPaneli["kapilar"]>[number] }): vscode.TreeItem {
     const { dosya, kapi } = oge.kayit;
@@ -67,10 +77,13 @@ class OnayKaynagi implements MakinistKaynagi {
 }
 
 const GRUP_SIMGESI: Readonly<Record<MakinistGrubu, SatirSimgesi>> = {
-  onaylar: "kapi", hatirlaticilar: "yerimi", fikirler: "fikir",
+  onaylar: "kapi", ileride: "kapi", hatirlaticilar: "yerimi", fikirler: "fikir",
 };
 
 export { GORUNUS_MAKINIST, MAKINIST_GRUPLARI, type MakinistGrubu };
+
+/** Grupların kaynakları; "İleride onay isteyecek" kaynağı isteğe bağlıdır, verilmezse grup hiç çizilmez (PNL-A08). */
+export type MakinistKaynaklari = Readonly<Record<Exclude<MakinistGrubu, "ileride">, MakinistKaynagi>> & { readonly ileride?: MakinistKaynagi };
 
 export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
   private readonly degisti = new vscode.EventEmitter<unknown>();
@@ -79,12 +92,12 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
     new Map(MAKINIST_GRUPLARI.map((g) => [g, { tur: "makinist-grup" as const, grup: g }]));
   private readonly sahipler = new WeakMap<object, MakinistKaynagi>();
 
-  private readonly kaynaklar: Readonly<Record<MakinistGrubu, MakinistKaynagi>>;
+  private readonly kaynaklar: MakinistKaynaklari;
   private readonly kok: vscode.Uri | undefined;
   /** Onaylar defteri (PNL-A07): Sarmal paneli karar kademesini bu defterden çizer ve eylemleri ona iletir. */
   onay?: OnayPaneli;
 
-  constructor(kaynaklar: Readonly<Record<MakinistGrubu, MakinistKaynagi>>, kok: vscode.Uri | undefined) {
+  constructor(kaynaklar: MakinistKaynaklari, kok: vscode.Uri | undefined) {
     this.kaynaklar = kaynaklar;
     this.kok = kok;
   }
@@ -95,17 +108,37 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
   }
 
   private grupBaslik(g: MakinistGrubu): string {
-    return { onaylar: MAKINIST_METINLERI.onaylar, hatirlaticilar: MAKINIST_METINLERI.hatirlaticilar,
-      fikirler: MAKINIST_METINLERI.fikirler }[g];
+    return { onaylar: MAKINIST_METINLERI.onaylar, ileride: MAKINIST_METINLERI.ileride,
+      hatirlaticilar: MAKINIST_METINLERI.hatirlaticilar, fikirler: MAKINIST_METINLERI.fikirler }[g];
   }
 
-  /** Görünümün köşe sayısı: karar bekleyen kapılar + hatırlatıcılar (eski Makinist rozetiyle aynı). */
+  /** Makinist sekmesinin rozeti: kararı bugün verilebilecek kapılar + hatırlatıcılar. */
   get rozetSayisi(): number {
     return this.kaynaklar.onaylar.kayitSayisi + this.kaynaklar.hatirlaticilar.kayitSayisi;
   }
 
+  /** Kararı bugün verilebilecek kapı sayısı (PNL-A08): Onaylar grubunun sayısının kendisidir. */
+  get onaySayisi(): number {
+    return this.kaynaklar.onaylar.kayitSayisi;
+  }
+
+  /** Ateşlemiş hatırlatıcı sayısı (YUZ-3.4): Hatırlatıcılar kaynağının kendi kümesinden. */
+  get atesmisSayisi(): number {
+    return this.kaynaklar.hatirlaticilar.atesmisSayisi ?? 0;
+  }
+
+  /** Ateşlemiş hatırlatıcıların proje kırılımı. */
+  atesmisPaylari(): ProjePayi[] {
+    return this.kaynaklar.hatirlaticilar.atesmisPaylari?.() ?? [];
+  }
+
+  /** Görünen üst düğümler: "İleride onay isteyecek" grubu yalnız böyle bir kapı varken görünür (PNL-A08). */
+  private gorunenGruplar(): MakinistGrubu[] {
+    return MAKINIST_GRUPLARI.filter((g) => g !== "ileride" || (this.kaynaklar.ileride?.kayitSayisi ?? 0) > 0);
+  }
+
   getChildren(oge?: unknown): unknown[] {
-    if (!oge) return MAKINIST_GRUPLARI.map((g) => this.gruplar.get(g)!);
+    if (!oge) return this.gorunenGruplar().map((g) => this.gruplar.get(g)!);
     const grup = (oge as Partial<MakinistGrupOgesi>).tur === "makinist-grup" ? (oge as MakinistGrupOgesi) : undefined;
     const kaynak = grup ? this.kaynaklar[grup.grup] : this.sahipler.get(oge as object);
     if (!kaynak) return [];
@@ -118,13 +151,15 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
     if ((oge as Partial<MakinistGrupOgesi>).tur === "makinist-grup") {
       const g = (oge as MakinistGrupOgesi).grup;
       const k = this.kaynaklar[g];
+      if (!k) return new vscode.TreeItem("");
       const n = k.kayitSayisi;
       const item = new vscode.TreeItem(this.grupBaslik(g),
         n > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
       item.id = `makinist.${g}`;
       item.description = n > 0 ? String(n) : undefined;
-      item.tooltip = n > 0 ? undefined : k.gorunum?.message;
-      item.iconPath = satirIkonu(this.kok, GRUP_SIMGESI[g], n > 0 ? "bilgi" : "notr");
+      item.tooltip = g === "ileride" ? MAKINIST_METINLERI.ilerideIpucu : n > 0 ? undefined : k.gorunum?.message;
+      // İleride onay isteyecek kapılar bugün bir şey istemez: grup gri durur ve dikkat çekmez (PNL-A08).
+      item.iconPath = satirIkonu(this.kok, GRUP_SIMGESI[g], n > 0 && g !== "ileride" ? "bilgi" : "notr");
       item.contextValue = `sarmalMakinistGrubu.${g}`;
       return item;
     }
@@ -144,8 +179,9 @@ export interface MakinistGirdileri {
 /** Ağacı kurar: kaynakların değişimi tek yenilemeye bağlanır; kendi görünümü yoktur. */
 export function makinistKaydi(context: vscode.ExtensionContext, g: MakinistGirdileri): MakinistAgaci {
   const onay = new OnayKaynagi(g.onayPaneli, context.extensionUri);
+  const ileride = new OnayKaynagi(g.onayPaneli, context.extensionUri, "ileride");
   const agac = new MakinistAgaci(
-    { onaylar: onay, hatirlaticilar: g.hatirlaticilar, fikirler: g.fikirler },
+    { onaylar: onay, ileride, hatirlaticilar: g.hatirlaticilar, fikirler: g.fikirler },
     context.extensionUri,
   );
   agac.onay = g.onayPaneli;

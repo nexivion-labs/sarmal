@@ -23,6 +23,7 @@ await esbuild.build({
     "sinama_vscode/suite/sorunlar-paneli.test.ts",
     "sinama_vscode/suite/odak-turu.test.ts",
     "sinama_vscode/suite/dal-acma.test.ts",
+    "sinama_vscode/suite/kapsam-sayaci.test.ts",
   ],
   bundle: true,
   format: "cjs",

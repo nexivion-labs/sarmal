@@ -1089,7 +1089,7 @@ async function sinyalSatirlariniOku(o: Ortam): Promise<ReturnType<typeof satirla
 const ONAY_DOSYASI = "/sahte/proje/is/plan/onay.sar";
 const ONAY_KAYNAGI =
   `Faz( kod: F1, ad: "deneme dönemi" ) {\n  Blok( kod: B1, ad: "deneme işi" ) {\n    Katman( kod: KT1, ad: "deneme teknolojisi" ) {\n` +
-  ["A1", "A2"].map((k) => `      Adım( kod: ${k}, onayBekler: founder, durum: beklemede, ne: "${k} karar bekliyor", ` +
+  ["A1", "A2"].map((k) => `      Adım( kod: ${k}, onayBekler: founder, durum: geliştirmede, ne: "${k} karar bekliyor", ` +
     `kabul: [ "Tasarım Founder tarafından onaylanmıştır — onaysız uygulanmaz" ] )\n`).join("") +
   `    }\n  }\n}\n`;
 

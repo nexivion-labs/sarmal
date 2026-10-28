@@ -31,6 +31,7 @@ import { bildirimTuru, type BildirimTuru } from "./yol-dekor.ts";
 import type { AnlamRengi, SatirSimgesi, EksenTipi } from "./simge-cizelgesi.ts";
 import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
 import type { Dugum } from "../../cekirdek/src/sozdizim.ts";   // YALNIZ TİP — modül SAF kalır
+import type { ProjePayi, SayiKapsami } from "./kapsam-sayaci.ts";
 
 export type { SunumYuzeyi };
 
@@ -114,9 +115,13 @@ export const DENETLEYICI_ONAY = "sarmal-onay";
  *  Hatırlatıcılar · Fikirler ayrı görünüm değil, bu tek ağacın üst düğümleridir. Gözlemler
  *  PNL-A09'dan beri (OZK-14) Makinist'te değil, Sinyaller sekmesinin ayrı bölümündedir. */
 export const GORUNUS_MAKINIST = "sarmalMakinist";
-export type MakinistGrubu = "onaylar" | "hatirlaticilar" | "fikirler";
-/** Üst düğümlerin sırası: Onaylar (karar bekleyen) en üstte. */
-export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "hatirlaticilar", "fikirler"];
+export type MakinistGrubu = "onaylar" | "ileride" | "hatirlaticilar" | "fikirler";
+/**
+ * Üst düğümlerin sırası: Onaylar (kararı bugün verilebilecek kapılar) en üstte. "İleride onay isteyecek"
+ * grubu (PNL-A08) Adımı beklemede olan kapıları taşır, Onaylar'ın hemen altında durur, kapalı başlar ve
+ * yalnız böyle bir kapı varken görünür.
+ */
+export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "ileride", "hatirlaticilar", "fikirler"];
 
 /** Dört Makinist yüzeyinin (durum çubuğu) ortak odak komutu: Makinist bölümünü seçer ve ağacı öne alır. */
 export const MAKINIST_ODAK_KOMUTU = "sarmal.bolum.makinist";
@@ -130,6 +135,11 @@ export interface ProjeKimligi {
   readonly kod: string;
   /** Projenin insan adı — panelde görünen etiket. */
   readonly ad: string;
+  /**
+   * Kök düğümün tipi (ÇalışmaAlanı, Proje…). Satırın simgesi buradan, Yol Haritasının varlık simgesi
+   * kuralıyla seçilir (PNL-A25 · `varlikSimgesi`); tanımsızsa Proje sayılır.
+   */
+  readonly tip?: string;
 }
 
 /**
@@ -905,8 +915,18 @@ export interface SayacKaynagi {
    * konuşabilir hâle geldi.
    */
   readonly fikir: () => number;
-  /** Onaylar panelindeki bekleyen kapı sayısı. */
+  /** Onaylar panelindeki, kararı bugün verilebilecek kapı sayısı (PNL-A08). */
   readonly kapı: () => number;
+  /** Sinyaller'in Dur bandındaki tanı sayısı (PNL-A08). */
+  readonly dur?: () => number;
+  /** Sinyaller'in Dikkat bandındaki tanı sayısı (PNL-A08). */
+  readonly dikkat?: () => number;
+  /** Sorunlar paneline gönderim açık mı (PNL-A22)? Açıkken Dur ve Dikkat girdisi gösterilmez. */
+  readonly sorunlarPaneli?: () => boolean;
+  /** Sayıların kapsamı (PNL-A08): ipucu kapsamı adıyla yazar. */
+  readonly kapsam?: () => SayiKapsami | undefined;
+  /** Girdinin proje kırılımı; çatı kapsamında ipucunda proje proje dökülür (PNL-A08). */
+  readonly paylar?: (girdi: Girdi["metin"]) => readonly ProjePayi[];
 }
 
 /** Tek bir durum çubuğu girdisinin tarifi. */
@@ -914,9 +934,13 @@ interface Girdi {
   readonly simge: string;
   /** Metin kataloğundaki yüzey anahtarı. Katalog kabukta okunur; saf çekirdek
    *  ona bağımlı olmaz, yalnız anahtarın kendisini taşır. */
-  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "onayPaneli";
+  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "onayPaneli" | "sinyaller";
   readonly komut: string;
   readonly say: (k: SayacKaynagi) => number;
+  /** Girdi görünür mü? Tanımsızsa her zaman görünür (sıfır da bir bilgidir). */
+  readonly gorunur?: (k: SayacKaynagi) => boolean;
+  /** Girdi tek sayı yerine bant adlı parçalar basar (Dur ve Dikkat · PNL-A08). */
+  readonly parcalar?: (k: SayacKaynagi) => readonly { readonly bant: "dur" | "dikkat"; readonly adet: number }[];
 }
 
 /**
@@ -931,6 +955,18 @@ interface Girdi {
  * durur ve motorun haber satırı en sonda kalır.
  */
 export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
+  // 🚦 DUR VE DİKKAT GİRDİSİ (PNL-A08). 2026-07-29'da kaldırılmıştı, çünkü VS Code'un kendi sayacı
+  // aynı sayıyı basıyordu. PNL-A22'den beri Sorunlar paneline gönderim bir ayardır ve varsayılanı
+  // kapalıdır; ayar kapalıyken VS Code'un sayacı Sarmal tanılarını saymaz ve bu sayı hiçbir yerde
+  // görünmezdi. Girdi yalnız ayar kapalıyken görünür, ayar açıkken aynı sayı iki kez görünmesin diye
+  // gizlenir. VS Code'un hata ve uyarı simgeleri yerine bantların adları yazılır ki iki sayaç
+  // birbirine karışmasın.
+  {
+    simge: "", metin: "sinyaller", komut: SINYALLER_ODAK_KOMUTU,
+    say: (k) => (k.dur?.() ?? 0) + (k.dikkat?.() ?? 0),
+    gorunur: (k) => !(k.sorunlarPaneli?.() ?? false),
+    parcalar: (k) => [{ bant: "dur", adet: k.dur?.() ?? 0 }, { bant: "dikkat", adet: k.dikkat?.() ?? 0 }],
+  },
   // ⚠️ HATA VE UYARI GİRDİSİ YOKTUR — Founder canlı bulgusu 2026-07-29: "x ve ! iki tane var".
   //
   // VS Code hata ve uyarı sayacını ZATEN kendi durum çubuğunda basar. Onu ikinci kez

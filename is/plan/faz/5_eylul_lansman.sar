@@ -1294,7 +1294,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-11-30",
             ne:    "Denetçiye yersiz-teknoloji-kaçışı uyarısı eklendi; zemin ilanlı projede kaçış taşıyan ve zemin bağıyla birlikte kaçış taşıyan Katman uyarılır, kapsam ORK-4 sınırıyla çizilir ve çağır köprüsü meşru kapsam sayılır; doğuş paketi, blok şablonu, teknoloji becerisi, iki README, sınıflama kaydı, dil sözlüğü ve başla rehberi kaçışı doğuş anına bağlar. Depo denetimi hata üretmedi ve iki süit yeşildir; bu depoda uyarı iki Katmanda (BKM-FND, BKM-KBK) ateşler ve MIM-1.4 taslağı kanıt alanında Founder onayını bekler. Bilinen sınır şudur: kanon zorlama satırı değişmediği için tanı yeni kanon kümesine değil sabit kümeye girdi ve işlemeyi kırmızıya düşüren iki eski nöbet (BKM-OLG-A12 kapı alanı ile kardeş proje adıyla çakışan bir yorum sözcüğü) ayrı işlemelerle onarıldı." ),
           üretir: [ KOD-YERSIZ-KACIS-NOBETI, KOD-SNM-YERSIZ-KACIS, KOD-DOGUS-KURULUS-KACISI ]
         }
-        Adım( kod: BKM-OLG-A12, ad: "Kaçış Uyarısının Hataya Terfisi", durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER: Founder, insan ve onay işlerini taşıyan Katmanların yeni bir tür icat edilmeden var olan Takım tipiyle bir insan Takımına bağlanmasına hükmetmiştir; gerekçe, 2 Ekim hükmünün her Katmanı bir Takıma bağlaması ve insanlardan kurulu bir Takımın da Takım olmasıdır. Şema ve kanon değişmez. Takım tipi üyesiz kurulamadığı için insan Takımının tek üyesi kararlarını yazdığı Sarmal dilidir. Uygulama aynı gün Sarmal'da yapılmış ve Founder Kalemleri Katmanı bu Takıma bağlanmıştır; depo denetimi sıfır uyarıya inmiştir. Öteki iki uyarı ölçülmüştür ve ikisi de insan işi değildir: kapalı ürün projesindeki platform bağlantıları Katmanının yığını henüz seçilmemiştir ve Blokun planlama Adımında bağlanacaktır, hesap projesindeki mimari Katmanı ise kuruluş Adımı kapanınca seçilen Takıma bağlanacaktır. Gerçek sahibi belli olmayan bir Katmana Takım uydurulmadığı için bu iki uyarı açık iş olarak kalır ve tanının hataya terfisi onlar sıfırlanınca yapılır.", öncelik: p2, bağımlı: [ BKM-OLG-A11 ], referans: [ MIM-1.4 ],
+        Adım( kod: BKM-OLG-A12, ad: "Kaçış Uyarısının Hataya Terfisi", durum: beklemede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER: Founder, insan ve onay işlerini taşıyan Katmanların yeni bir tür icat edilmeden var olan Takım tipiyle bir insan Takımına bağlanmasına hükmetmiştir; gerekçe, 2 Ekim hükmünün her Katmanı bir Takıma bağlaması ve insanlardan kurulu bir Takımın da Takım olmasıdır. Şema ve kanon değişmez. Takım tipi üyesiz kurulamadığı için insan Takımının tek üyesi kararlarını yazdığı Sarmal dilidir. Uygulama aynı gün Sarmal'da yapılmış ve Founder Kalemleri Katmanı bu Takıma bağlanmıştır; depo denetimi sıfır uyarıya inmiştir. Öteki iki uyarı ölçülmüştür ve ikisi de insan işi değildir: kapalı ürün projesindeki platform bağlantıları Katmanının yığını henüz seçilmemiştir ve Blokun planlama Adımında bağlanacaktır, hesap projesindeki mimari Katmanı ise kuruluş Adımı kapanınca seçilen Takıma bağlanacaktır. Gerçek sahibi belli olmayan bir Katmana Takım uydurulmadığı için bu iki uyarı açık iş olarak kalır ve tanının hataya terfisi onlar sıfırlanınca yapılır.", öncelik: p2, bağımlı: [ BKM-OLG-A11 ], referans: [ MIM-1.4 ],
           ne:    "⛔ Uyarı tek başına borcu görünür kılar ama kapıyı kapatmaz; ajanlar akışı durdurmayan uyarıyı geçebilir. Var olan kaçışlar temizlendikten ve insan işi Katmanların nasıl modelleneceği kararlaştırıldıktan sonra tanı hata düzeyine terfi eder" ) {
           görev: "Çatıdaki her projede yeni uyarının ateşlediği Katmanları denetle-proje ile say; insan ve onay işlerinin (Founder kalemleri, çapraz araç zinciri gibi) kaçış yerine birinci sınıf bir türle mi yoksa var olan bir Takımla mı taşınacağına ilişkin seçenekleri Founder'a sun; karar kanona indikten ve sayı sıfıra düştükten sonra tanıyı hata düzeyine terfi ettir"
           kabul: [
@@ -1658,7 +1658,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-11-30",
           koşu: "2026-09-10 · KAPANDI. Kaydın üç sayı kaynağı gerçekten ayrışmıştı ve üçü de farklı şey söylüyordu: bir yer yüz yetmiş bir kimlik derken çizelge yüz yetmiş beş diyordu, düzyazı ise önceki gövdeyi iki yerde yüz iki sayıyordu, oysa gerçeği yüz birdi. Üçü de tek üretece bağlandı ve toplamın sicil boyutunu vermesi yapısal olarak zorunlu hâle geldi. Yönlendirme ile ULAŞMA ayrı çizelgeye çıkarıldı, çünkü bir tanının bir yüzeye yönlendirilmiş olması o yüzeye ulaştığı anlamına gelmiyordu. Kayıttaki kademe dağılımı da elle doğrulanmaktan çıkıp motor kaynağından ölçülür oldu ve eski dağılımın hem bayat hem yanlış taban üzerinden yazıldığı görüldü."
         }
 
-        Adım( kod: BKM-DNT-A03, durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, bir dosyanın planda kaç Kod ilanı taşıyabileceğine hükmetmiştir: her dosyanın tek canlı Kod düğümü olur; kapanmış Adımların üretir listesindeki satır içi ilanlar tarih kaydı sayılır ve nöbet onları canlı çiftlere katmadan ayrıca bilgi olarak gösterir. Gerekçe, gezinme ve etki araçlarının bir dosya için tek düğüm göstermesi, tarih kaydının yeniden yazılmadan korunması ve yüzey metinleri dosyasındaki 16 Ağustos üslup hükmünün aranabilir bir alana dönmesidir. Bu Adım yüzey metinleri dosyasının canlı kimliğini geri getirir; kalan on yedi çiftin canlı kimliğe taşınması ve nöbetin kapıya bağlanması BKM-DNT-A17'de, MIM-2 cümlesinin bu modele göre netleşmesi HST-MTR-A18'dedir.", öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
+        Adım( kod: BKM-DNT-A03, durum: beklemede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, bir dosyanın planda kaç Kod ilanı taşıyabileceğine hükmetmiştir: her dosyanın tek canlı Kod düğümü olur; kapanmış Adımların üretir listesindeki satır içi ilanlar tarih kaydı sayılır ve nöbet onları canlı çiftlere katmadan ayrıca bilgi olarak gösterir. Gerekçe, gezinme ve etki araçlarının bir dosya için tek düğüm göstermesi, tarih kaydının yeniden yazılmadan korunması ve yüzey metinleri dosyasındaki 16 Ağustos üslup hükmünün aranabilir bir alana dönmesidir. Bu Adım yüzey metinleri dosyasının canlı kimliğini geri getirir; kalan on yedi çiftin canlı kimliğe taşınması ve nöbetin kapıya bağlanması BKM-DNT-A17'de, MIM-2 cümlesinin bu modele göre netleşmesi HST-MTR-A18'dedir.", öncelik: p3, bağımlı: [], referans: [ MIM-2, MIM-3 ],
           üretir: [ KOD-DENETCI ],
           // ── 2026-09-10 · GÖZLEM: geçici fikstür ortak kapıyı kırmızıya çeviriyor ──
           //   Kontrolcü bu tarihte kapının kırmızı yandığını ve yazımının engellendiğini
@@ -6687,7 +6687,7 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A06, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1119 sınama: 1119 geçti, 0 düştü (kontrolcü koşturdu) · tip ve dil denetimi temiz (kontrolcü koşturdu) · gerçek VS Code süiti 63 geçti, 0 düştü · çekirdeğin türetilmiş yüz mühür nöbeti iki katalog mührünün tazelenmesinden sonra 8 geçti, 0 düştü (kontrolcü mühürleri SHA-256 ile ayrıca ölçtü) · dört bozma denemesinin dördünü nöbet yakaladı · bantların seçenekleri 0.9.193 paletiyle birebir karşılaştırıldı", ne: "sarmal.girintiRenkleri ayarının varsayılanı yeniden açıktır ve yeni kurulumda editör yedi renkli bantlarla açılır; ayar kapatılınca tül derinlik çizilir, yeniden açılınca bantlar geri gelir. Ayar okunamadığında da artık bantlar çizilir; varsayılan tek bir sabitte durur ve bir nöbet onu paketin ilanıyla karşılaştırır. Bantların renkleri, saydamlıkları, iç gölgesi ve iki karakterlik genişliği 0.9.193 ile aynıdır; tek davranış farkı, 0.9.193'te ayarın kapatılması boyamayı tümüyle kaldırırken bugün tül derinliği çizmesidir. İki yerelleştirme kataloğunun ayar açıklaması yeni varsayılanı söyler. Gerçek VS Code süiti etkin ayarı ölçer fakat bandın ekrana boyandığını okuyamaz; bantların gözle doğrulanması birinci basamağın tesliminde yapılacaktır." )
         }
 
-        Adım( kod: PNL-A21, ad: "Ray'da Sinyal İşareti", durum: geliştirmede, öncelik: p1, bağımlı: [ PNL-A09 ],
+        Adım( kod: PNL-A21, ad: "Ray'da Sinyal İşareti", durum: tamamlandı, öncelik: p1, bağımlı: [ PNL-A09 ],
           referans: [ OZK-14 ],
           ne: "🚦 Ray sekmesinde tanı taşıyan düğümün işaretlenmesi. Founder 2026-10-28 tarihinde sorunun yalnız Sinyaller sekmesinde değil, plan ağacında da yerinde görünmesine hükmetmiştir (OZK-14)." ) {
           görev: [
@@ -6699,6 +6699,8 @@ sessizce körleşmez.
             "İşarete tıklamak Sinyaller sekmesinde ilgili satırları seçer; bunu görsel kontrol ölçer."
           ]
           sınır: "Bilgi düzeyindeki tanılar Ray'da işaret üretmez; satırların içeriği ve sırası değişmez."
+          üretir: [ KOD-RAY-SINYALLERI, KOD-SNM-RAY-SINYALLERI, KOD-YOLHARITA, KOD-PANEL, KOD-PANEL-CEKIRDEK, KOD-PANEL-BETIK, KOD-SNM-PANEL, KOD-SNM-PANEL-CEKIRDEK, KOD-GORSEL-KONTROL, KOD-GORSEL-KONTROL-URET ]
+          koşu: Koşum( kod: KSM-PNL-A21, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "kontrolcü sırayla koşturdu: eklenti süiti 1165/1165, tip ve dil temiz · üretici: gerçek VS Code süiti 79/79, çatı görsel kontrolü 805/805 · sekiz bozmanın sekizi yakalandı", ne: "Tanı taşıyan düğümün Ray satırında Dur ve Dikkat işareti görünür; Bilgi işaret üretmez, kapalı dal alt ağacının toplamını taşır ve işarete tıklamak Sinyaller'i açıp düğümün tanı satırlarını seçili gösterir. Söz dizim ağacı bitiş satırı taşımadığı için tanım aralığı kardeşlerden kurulur; bir kapsayıcının kapanış ayracındaki tanı son çocuğuna yazılır." )
         }
 
         Adım( kod: PNL-A23, ad: "Sekmelerin Sürüklenerek Sıralanması", durum: tamamlandı, öncelik: p1, bağımlı: [ PNL-A09 ],
@@ -6763,7 +6765,7 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A07, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1105 sınamanın 1105'i geçti, yapılacak işaret kalmadı (kontrolcü iki kez koşturdu) · tip ve dil temiz · gerçek VS Code süiti 61 geçti, 0 düştü; tek panelden beri ilk tam yeşil, kontrolcü ayrıca koşturdu · görsel kontrol 580/580 · yedi koruma tek tek bozulunca ilgili nöbet düştü · Makinist'te kapı açıkken 1400×400 ekran görüntüsü scratchpad/gorsel-a07/makinist-onay-alt-ust.png", ne: "Editörde açılan onay kartı kaldırıldı. Kapı satırı açılıp kapanan bir satırdır; gerekçe kutusu ve üç eylem satırın hemen altında, Makinist sekmesinde belirir ve aynı anda yalnız bir kapı açık kalır. Diske yazan hat değişmedi ve gerçek VS Code'da şerhin tek satır yazdığı ölçüldü. Panelden tıklanan her satır dosyayı odak panelde kalacak biçimde açar. Onay kuyruğu doğrulanmamış durumdaki Adımları da gösterir. Gerçek VS Code süitindeki 'üç belge açtı' düşüşü ürünün değil ölçümün kusuruydu: sınamanın kendi geçici dosyasının disk olayları sayaca giriyordu ve disk okumaları ayrı sayaca alındı. 0.9.193'teki kapıların dosyaya göre gruplanması ve bağlamı kopyalama düğmesi geri gelmedi; eski onay gövdesi artık yalnız sınamalarda yaşar ve ayrı bir temizlik işidir. Kademenin genişliği ve hizası birinci basamağın tesliminde Founder'ın gözüne sunulacaktır." )
         }
 
-        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: tamamlandı, öncelik: p0, bağımlı: [ PNL-A15 ],
           referans: [ HTR-PANEL-KAPSAM-SAYIMI ],
           ne: "🔢 Rozetin ve durum çubuğunun hangi kapsamı saydığını söylemesi. Aynı panel açık dosyaya göre çatının ya da tek projenin sayılarını göstermekte ve bunu söylememektedir. Founder 2026-10-28 tarihinde bildirim göstergelerinin toplamlarının hatalı olup olmadığını anlayamadığını söylemiştir; ölçümde sayılar tutarlı fakat kapsamı yazmadığı için okunamaz bulunmuş ve iş işçi Blokunu beklemeden öne alınmıştır." ) {
           görev: [
@@ -6779,6 +6781,8 @@ sessizce körleşmez.
             "Beklemedeki bir Adımın kapısı onay sayacını ve dış rozeti artırmaz, geliştirmedeki bir Adımın kapısı artırır; bunu bir nöbet ölçer."
           ]
           sınır: "Tanıların ve kayıtların sayım kuralı değişmez; değişen yalnız görünürlük, dış rozetin neyi topladığı ve onay sayacının yalnız kararı bugün verilebilecek kapıları sayması kuralıdır."
+          üretir: [ KOD-KAPSAM-SAYACI, KOD-SNM-KAPSAM-SAYACI, KOD-SNM-VSC-KAPSAM-SAYACI, KOD-ONAY-CEKIRDEK, KOD-POSTA-PANEL, KOD-MAKINIST, KOD-DURUM-CUBUGU, KOD-EKL-EKLENTI, KD-GOC-YUZEY-METINLER, KOD-SNM-KABUK-DAVRANIS, KOD-SNM-POSTA, KOD-SNM-ONAY-YUZEYLERI, KOD-SNM-SORUNLAR-PANELI, SN-GOC-YUZEY-AYRIM, KOD-EKL-ESBUILD-SINAMA, KOD-PRF-KABUK-KOPRU ]
+          koşu: Koşum( kod: KSM-PNL-A08, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "kontrolcü sırayla koşturdu: eklenti süiti 1165/1165, tip ve dil temiz · üretici: gerçek VS Code süiti 79/79, çatı görsel kontrolü 805/805 · on bozmanın onu yakalandı", ne: "Onay sayacı yalnız Adımı geliştirmede ya da doğrulanmamış olan kapıları sayar; beklemedeki kapılar Makinist'te ayrı bir İleride onay isteyecek grubunda durur ve hiçbir sayaca girmez. Dış rozet yalnız onay, Dur ve ateşlemiş hatırlatıcı toplamını gösterir, sayıların ipucu kapsamı adıyla yazar ve Sorunlar ayarı kapalıyken durum çubuğuna Dur ve Dikkat girdisi döner. Yol üstünde onay defterinin değişiklik izinin kapı durumunu taşımadığı ve geliştirmeye geçen kapının sayaçlara yansımadığı kusuru giderilmiştir." )
         }
       }
     }
@@ -6848,7 +6852,7 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A28, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "üretici: eklenti süiti 1157/1157, gerçek VS Code süiti 78/78, çatı görsel kontrolü 766/766, dokuz bozmanın dokuzu yakalandı · kontrolcü sırayla koşturdu: tip ve dil temiz, eklenti süiti ilk koşuda 1156/1157 ve ikinci koşuda 1157/1157 (ilk koşuda düşen sınamanın adı yakalanmadı; yük altında şaşan zaman sınaması HTR-ZAMAN-SINAMASI-YUK-ALTINDA-SASIYOR ile kayıtlıdır) · katalog mühürleri değişmedi", ne: "Sinyaller sekmesinde her bant ve proje altındaki kayıtlar türe göre toplanır; tür satırı türün adını, sayısını, kanondan okunan tek cümlelik anlamını ve bütün kayıtlarda aynen geçen ortak öneriyi gösterir, tek kayıtlık tür ara satır açmaz ve hiçbir metin uydurulmaz. Orkestrasyon'un Bilgi bandı motorun tam çıktısıyla 1085 alt alta satırdan 21 satıra inmiş ve model 1090 kaydı 17 ms'de toplamıştır. Görsel kontrolün üreticisi yalnız dosya başına doğrulama koştuğu için dosyalar arası türler orada görünmez; onları model, panel ve gerçek VS Code nöbetleri ölçer." )
         }
 
-        Adım( kod: PNL-A25, ad: "Proje Satırlarının Doğru Simgesi", durum: geliştirmede, öncelik: p1, bağımlı: [ PNL-A09 ],
+        Adım( kod: PNL-A25, ad: "Proje Satırlarının Doğru Simgesi", durum: tamamlandı, öncelik: p1, bağımlı: [ PNL-A09 ],
           referans: [ OZK-14, MIM-1.1 ],
           ne: "🏷️ Panelde Proje kimliğini taşıyan satırların Proje simgesiyle çizilmesi. Founder 2026-10-28 tarihinde Sinyaller sekmesinde Laboratuvar, Orkestrasyon, site ve öteki projelerin satırlarında çatı simgesi göründüğünü, oysa bunların çatı değil her birinin bir proje olduğunu bildirmiştir. Çalışma alanı ile Proje ayrı tiplerdir (MIM-1.1) ve simge bu ayrımı yanlış söylemektedir." ) {
           görev: [
@@ -6860,6 +6864,8 @@ sessizce körleşmez.
             "Görsel kontrolün ekran görüntüsünde çatıdaki projelerin satırları Proje simgesiyle görünür."
           ]
           sınır: "Satırların sırası, sayıları ve gruplaması değişmez."
+          üretir: [ KOD-SNM-PROJE-SIMGESI, KD-GOC-YUZEY-CEKIRDEK, KOD-EKL-ORTAK, KD-GOC-YUZEY-HATIRLATICILAR, KD-GOC-YUZEY-BILDIRIMLER, KOD-FIKIR-PANELI, KOD-SINYALLER, KOD-PRF-KABUK-PANEL ]
+          koşu: Koşum( kod: KSM-PNL-A25, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "kontrolcü sırayla koşturdu: eklenti süiti 1165/1165, tip ve dil temiz · üretici: gerçek VS Code süiti 79/79, çatı görsel kontrolü 805/805 · dört bozmanın dördü yakalandı", ne: "Sinyaller ile Makinist'in Hatırlatıcılar ve Fikirler gruplarındaki her Proje satırı Yol Haritasının simgesini taşır; simge tek kaynaktan, kökün tipinden okunur ve çatı simgesi yalnız çatının kendi satırında kalır. Panellerin kendi seçtiği proje simgesi sabitleri kaldırılmıştır." )
         }
       }
     }
@@ -6893,16 +6899,16 @@ sessizce körleşmez.
         ne: "🔧 Planda ilan edilmiş ajanların ve işin zincirinin gösterildiği dal" ) {
 
         Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: geliştirmede, öncelik: p1, bağımlı: [ PNL-A15 ],
-          referans: [ OZK-13, OZK-15 ],
+          referans: [ OZK-13, OZK-15, OZK-16 ],
           ne: "🪪 Planda ilan edilmiş her ajanın profil kartı. Bugün Tren ajanları düz bir liste olarak yalnız kodları ve türleriyle göstermektedir; Founder 2026-10-27 tarihinde ajanların görev, yetki, yetenek, beceri ve bellekleriyle görünmesine hükmetmiştir." ) {
           görev: [
             "Ajanları rozetli kutular olarak göster; yöneticiler üstte, uzmanlar altta durur ve yönetir bağları çizilir.",
             "Ajana tıklayınca kartında uzmanlık, yetki, bellek tercihi, ne ve uygular alanlarını; Beceri, Yetenek, Bellek, Kanca ve Tetikleyici alt düğümlerini sayılarıyla göster; her satır tanımına gider.",
-            "Şirket şemasını üç görünümle çiz: şeritler, sütunlar ve kart ızgarası. Founder 2026-10-28 tarihinde üç görünümün de bulunmasına ve kullanıcının görünümü ayarlardan dilediği zaman değiştirebilmesine hükmetmiştir; varsayılan, geniş ve alçak panele en iyi oturan şeritler görünümüdür. Üç görünüm aynı örgüt verisinden beslenir, yalnız çizimleri ayrıdır."
+            "Şirket şemasını üç görünümle çiz: şeritler, sütunlar ve kart ızgarası. Founder 2026-10-28 tarihinde üç görünümün de bulunmasına ve kullanıcının görünümü ayarlardan dilediği zaman değiştirebilmesine hükmetmiştir; varsayılan, geniş ve alçak panele en iyi oturan şeritler görünümüdür. Üç görünüm aynı örgüt verisinden beslenir, yalnız çizimleri ayrıdır. Founder aynı akşam kullanım limiti yüzünden bu Adımda yalnız şeritler görünümünün yazılmasına, sütunlar ve kart ızgarasının limit yenilendiğinde eklenmesine karar vermiştir (HTR-TREN-IKI-GORUNUM)."
           ]
           kabul: [
             "Kartın her alanı .sar kaynağından okunur ve tanımına gider; bunu bir nöbet ölçer.",
-            "Üç görünüm bir ayarla seçilir, varsayılan şeritlerdir ve ayar değişince panel yeniden açılmadan yeni görünüme geçer; üç görünümün aynı ajan ve bağ kümesini çizdiğini bir nöbet ölçer.",
+            "Şeritler görünümü varsayılan olarak çizilir ve görünüm ayarı öteki iki görünümün eklenebileceği biçimde kurulmuştur; şemada yalnız planda ilan edilmiş ajanlar, insanlar ve bağlar görünür, ilan edilmemiş olan yerde tanımlı değil yazar ve hiçbir örnek veri çizilmez; bunu bir nöbet ölçer.",
             "Kartın ekran görüntüsü üçüncü basamağın tesliminde Founder'a sunulmak üzere kayda alınmıştır."
           ]
           sınır: "Şema değişmez; yalnız var olan alanlar ve alt düğümler gösterilir. Canlı oturum bilgisi bu Adımın işi değildir."
@@ -7561,3 +7567,17 @@ Kod( kod: KOD-SNM-VSC-SEKME-GECISI, dosya: "urun/eklenti/sinama_vscode/suite/sek
 // 🍎 PNL-A06 teslimi (2026-10-28): girinti bantlarının varsayılana dönmesi
 Kod( kod: KOD-SNM-GIRINTI, dosya: "urun/eklenti/sinama/girinti.test.ts",
   ne: "🧪 Girinti boyasının nöbeti — ayar verilmemişken editörün bantlarla boyandığını, ayar kapatılınca bantların silinip tül derinliğin çizildiğini, ayar okunamadığında bantlara düşüldüğünü ve bant seçeneklerinin 0.9.193 paletiyle aynı olduğunu ölçer (PNL-A06)" )
+
+// 🍎 PNL-A08, PNL-A25 ve PNL-A21 teslimi (2026-10-28): sayının kapsamı, proje simgesi ve Ray işareti
+Kod( kod: KOD-KAPSAM-SAYACI, dosya: "urun/eklenti/src/kapsam-sayaci.ts",
+  ne: "🔢 Sayıların kapsam adını, dış rozetin yalnız acil olanları (bugün karar verilebilecek onay, Dur ve ateşlemiş hatırlatıcı) toplamasını ve çatı sayısının proje proje dökümünü üreten saf çekirdek (PNL-A08)" )
+Kod( kod: KOD-RAY-SINYALLERI, dosya: "urun/eklenti/src/ray-sinyalleri.ts",
+  ne: "🚦 Ray satırlarının Dur ve Dikkat işaretlerini tanıların tanım aralığından kuran saf çekirdek; açık dal kendi tanılarını, kapalı dal alt ağacın toplamını taşır (PNL-A21)" )
+Kod( kod: KOD-SNM-KAPSAM-SAYACI, dosya: "urun/eklenti/sinama/kapsam-sayaci.test.ts",
+  ne: "🧪 Kapsam sayacının nöbeti — kapsam adını, dış rozetin üç parçanın toplamı olduğunu, beklemedeki kapının hiçbir sayaca girmediğini ve proje dökümünün sayıyla tuttuğunu ölçer (PNL-A08)" )
+Kod( kod: KOD-SNM-PROJE-SIMGESI, dosya: "urun/eklenti/sinama/proje-simgesi.test.ts",
+  ne: "🧪 Proje simgesinin nöbeti — panelin her sekmesinde Proje satırının Yol Haritasındaki simgeyi taşıdığını ve çatı simgesinin yalnız çatının kendi satırında kaldığını ölçer (PNL-A25)" )
+Kod( kod: KOD-SNM-RAY-SINYALLERI, dosya: "urun/eklenti/sinama/ray-sinyalleri.test.ts",
+  ne: "🧪 Ray işaretlerinin nöbeti — Bilgi düzeyinin işaret üretmediğini, kapalı dalın alt ağacın toplamını taşıdığını ve tanının doğru düğüme yazıldığını ölçer (PNL-A21)" )
+Kod( kod: KOD-SNM-VSC-KAPSAM-SAYACI, dosya: "urun/eklenti/sinama_vscode/suite/kapsam-sayaci.test.ts",
+  ne: "🧪 Kapsam sayacının gerçek VS Code nöbeti — dış rozetin üç parçanın toplamı olduğunu ve geliştirmedeki bir kapının onay sayısını bir artırdığını gerçek eklentide ölçer (PNL-A08)" )

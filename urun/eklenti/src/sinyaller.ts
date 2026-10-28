@@ -40,7 +40,8 @@ import {
 } from "./sinyaller-cekirdek.ts";
 import { yuzeyDosyaAdiniAl, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
 import { SINYAL_METINLERI, taniAnlami, taniKisaAdi } from "./yuzey-metinleri.ts";
-import { satirIkonu } from "./ortak.ts";
+import { projeSatiriIkonu, satirIkonu } from "./ortak.ts";
+import { paylariBirlestir, type ProjePayi } from "./kapsam-sayaci.ts";
 import type { AnlamRengi } from "./simge-cizelgesi.ts";
 
 /** Kanon maddesinin tanımını açan komut (satırın komutu; menüde yer almaz). */
@@ -106,6 +107,17 @@ export class SinyallerAgaci {
     };
   }
 
+  /** Verilen bantların bütün kayıtları (PNL-A21: Ray satırlarının Dur ve Dikkat işareti bunlardan kurulur). */
+  bantSatirlari(bantlar: readonly SinyalBandi[]): SinyalSatiri[] {
+    return this.model.bantlar.filter((b) => bantlar.includes(b.bant)).flatMap((b) => b.projeler.flatMap((p) => p.satirlar));
+  }
+
+  /** Verilen bantların proje kırılımı (PNL-A08): dış rozet ve durum çubuğu çatıda proje proje döker. */
+  projePaylari(bantlar: readonly SinyalBandi[]): ProjePayi[] {
+    return paylariBirlestir(...this.model.bantlar.filter((b) => bantlar.includes(b.bant))
+      .map((b) => b.projeler.map((p) => ({ ad: p.proje.ad, adet: p.satirlar.length }))));
+  }
+
   /** Sekmede gösterilecek bir sinyal var mı? */
   get bos(): boolean { return this.model.toplam === 0; }
 
@@ -157,7 +169,8 @@ export class SinyallerAgaci {
           o.grup.odakta ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
         item.id = `proje.${o.grup.proje.kod}`;
         item.description = String(o.grup.satirlar.length);
-        item.iconPath = satirIkonu(this.kok, "istasyon", "duz");
+        // PNL-A25: Proje satırı Yol Haritasının varlık simgesini taşır; çatı simgesi yalnız çatının kendi satırındadır.
+        item.iconPath = projeSatiriIkonu(this.kok, o.grup.proje, "duz");
         return item;
       }
       case "sinyal-tur": return this.turSatiri(o.bant, o.grup);

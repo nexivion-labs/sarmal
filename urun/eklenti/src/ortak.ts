@@ -185,6 +185,7 @@ function jsonYukle(yol: string): unknown {
 //   de yaşamaz (YUZ-4.1 — renk yalnız arac/simge-uret.mjs çizelgesindedir).
 
 import { satirSvgVaryanti, type AnlamRengi, type SatirSimgesi } from "./simge-cizelgesi.ts";
+import { varlikSimgesi } from "./yolharitasi-cekirdek.ts";
 
 /** Bir satır simgesinin iki-tema iconPath çifti. Eklenti kökü bilinmiyorsa
  *  (saf birim sınaması, köksüz kurulum) satır SİMGESİZ kalır — uydurma
@@ -198,4 +199,15 @@ export function satirIkonu(
     light: vscode.Uri.joinPath(kok, satirSvgVaryanti(ad, anlam, "acik")),
     dark:  vscode.Uri.joinPath(kok, satirSvgVaryanti(ad, anlam, "koyu")),
   };
+}
+
+/**
+ * Proje kimliği taşıyan satırın simgesi (PNL-A25): Yol Haritasının varlık satırıyla aynı kuraldan,
+ * kökün tipinden okunur (`varlikSimgesi`). Proje satırı seferdir; çatı simgesi (istasyon) yalnız
+ * çalışma alanının kendi satırında görünür. Satır başına elle simge seçilmez.
+ */
+export function projeSatiriIkonu(
+  kok: vscode.Uri | undefined, proje: { readonly tip?: string }, anlam: AnlamRengi = "duz",
+): { light: vscode.Uri; dark: vscode.Uri } | undefined {
+  return satirIkonu(kok, varlikSimgesi(proje.tip ?? "Proje"), anlam);
 }

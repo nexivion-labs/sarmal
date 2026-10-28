@@ -760,19 +760,15 @@ test("üç panel bakışta ayrılır: hiçbiri diğerinin görünüş simgesini 
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });
 
-test("üç panel bakışta ayrılır: proje satırı simgeleri birbirinden farklıdır", () => {
-  // VIT-KIMLIK-A05: üç panelin proje/varlık satırı da geometrik ailenin satır
-  // çizelgesinden okunur; ayrım artık codicon adlarında değil çizelge adlarındadır.
-  const simge = (dosya: string, desen: RegExp): string => (desen.exec(oku(dosya))?.[1] ?? "").trim();
-  const hatirlatici = simge("../src/hatirlaticilar.ts", /const PROJE_SIMGESI: SatirSimgesi = "([a-z-]+)"/);
-  const bildirim = simge("../src/bildirimler.ts", /const PROJE_SIMGESI: SatirSimgesi = "([a-z-]+)"/);
-  // 🪆 EKL-F7-A09: yol haritasının varlık simgesi sabit değil tipe bağlıdır —
-  // çalışma alanı istasyon, proje sefer; İKİSİ de öteki panellerle çakışamaz.
-  const yolKume = /return tip === "ÇalışmaAlanı" \? "([a-z-]+)" : "([a-z-]+)";/.exec(oku("../src/yolharitasi-cekirdek.ts"));
-  assert.ok(hatirlatici && bildirim && yolKume, "panel proje satırı simgesi bulunamadı");
-  const hepsi = [hatirlatici, bildirim, yolKume![1], yolKume![2]];
-  assert.equal(new Set(hepsi).size, hepsi.length,
-    "iki panel aynı proje satırı simgesini kullanıyor; kenar çubuğunda bakışta ayrılmazlar");
+test("PNL-A25 · proje satırı simgesi tek kaynaktandır: paneller Yol Haritasının varlık simgesi kuralını okur", () => {
+  // VIT-KIMLIK-A05'te üç ayrı görünümün proje satırları bakışta ayrılsın diye farklı simge taşıyordu. Paneller
+  // tek kabın sekmeleri olunca Founder her Proje satırının Yol Haritasındaki Proje simgesini taşımasına hükmetti
+  // (PNL-A25); simge satır başına seçilmez, kökün tipinden `projeSatiriIkonu` ile okunur.
+  for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts", "../src/fikirler.ts", "../src/sinyaller.ts"]) {
+    const kaynak = oku(dosya);
+    assert.ok(!/PROJE_SIMGESI/.test(kaynak) && !/satirIkonu\([^)]*"(?:istasyon|sefer)"/.test(kaynak), `${dosya} proje satırı simgesini elle seçiyor`);
+    assert.ok(/projeSatiriIkonu\(/.test(kaynak), `${dosya} proje satırını ortak kuraldan çizmiyor`);
+  }
 });
 
 test("bildirim rozet türü tanı nesnesinin GERÇEK düzeyini yeniden yorumlamadan okur", () => {
@@ -1282,20 +1278,27 @@ test("durum çubuğu girdileri GERÇEK bir komuta götürür (Makinist yüzeyler
   const komutlar = new Set(PAKET_KOMUTLARI.contributes.commands.map((k) => k.command));
   for (const girdi of DURUM_CUBUGU_GIRDILERI) {
     assert.ok(komutlar.has(girdi.komut), `durum çubuğu var olmayan bir komuta götürüyor: ${girdi.komut}`);
-    // PNL-A09 (OZK-14): Gözlemler Makinist'ten çıktı ve Sinyaller sekmesinin ayrı bölümündedir.
-    assert.equal(girdi.komut, girdi.metin === "gözlemler" ? SINYALLER_ODAK_KOMUTU : MAKINIST_ODAK_KOMUTU,
+    // PNL-A09 (OZK-14): Gözlemler Makinist'ten çıktı ve Sinyaller sekmesinin ayrı bölümündedir; Dur ve Dikkat
+    // girdisi de (PNL-A08) Sinyaller sekmesine götürür.
+    assert.equal(girdi.komut, ["gözlemler", "sinyaller"].includes(girdi.metin) ? SINYALLER_ODAK_KOMUTU : MAKINIST_ODAK_KOMUTU,
       `${girdi.metin}: durum çubuğu yüzeyin yaşadığı sekmeye götürmüyor`);
   }
 });
 
 test("SIFIR DA BİR BİLGİDİR: girdi sayı sıfırken de gizlenmez", () => {
   const kaynak = oku("../src/durum-cubugu.ts");
-  // Girdi her tazelemede koşulsuz gösterilir; sayıya bakan bir gizleme dalı yoktur.
+  // Girdi her tazelemede gösterilir; sayıya bakan bir gizleme dalı yoktur. Tek gizleme, girdinin kendi
+  // görünürlük koşuludur (PNL-A08: Dur ve Dikkat girdisi Sorunlar paneline gönderim açıkken gizlenir).
   assert.ok(/oge\.show\(\);/.test(kaynak), "durum çubuğu girdisi gösterilmiyor");
-  assert.ok(!/\.hide\(\)/.test(kaynak),
-    "durum çubuğu girdiyi gizliyor; sıfır sayaç ile bozuk sayaç kullanıcı gözünde aynıdır");
+  assert.deepEqual(kaynak.match(/[^\n]*\.hide\(\)[^\n]*/g)?.map((s) => s.trim()),
+    ["if (g.gorunur && !g.gorunur(this.kaynak)) { oge.hide(); return; }"],
+    "durum çubuğu girdiyi görünürlük koşulu dışında gizliyor; sıfır sayaç ile bozuk sayaç kullanıcı gözünde aynıdır");
   assert.ok(!/adet\s*(===|>|<|\?)\s*0/.test(kaynak),
     "durum çubuğu sıfır sayıya özel bir dal açmış; sıfır da bir bilgidir");
+  // Görünürlük koşulu sayıya bakmaz: ayar kapalıyken sayılar sıfır olsa da Dur ve Dikkat girdisi görünür.
+  const sifir = { hata: () => 0, uyarı: () => 0, gözlem: () => 0, hatırlatıcı: () => 0, fikir: () => 0, kapı: () => 0,
+    dur: () => 0, dikkat: () => 0, sorunlarPaneli: () => false };
+  for (const g of DURUM_CUBUGU_GIRDILERI) assert.ok(!g.gorunur || g.gorunur(sifir), `${g.metin}: sıfır sayıda gizleniyor`);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

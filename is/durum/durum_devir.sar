@@ -62,6 +62,17 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 LİMİT ÖNCESİ NOT · OTURUM 116 (2026-10-28 gece). Kullanım limiti dolmak üzereyken kaldığımız yer: iki
+        üretici ajan çalışmaktadır. Biri ana ağaçta PNL-A08, PNL-A25 ve PNL-A21'i, öteki .claude/worktrees altındaki
+        çalışma kopyasında PNL-A11'i (Founder kararıyla bu turda yalnız şeritler görünümü, HTR-TREN-IKI-GORUNUM) ve
+        PNL-A13'ü yürütmektedir; ikisinin de işi işlenmemiştir ve diskte durur. Yarım Adımları ölçen ajan limit için
+        durdurulmuştur. İşlenmemiş kayıtlar: OZK-16 (Tren yalnız ajanları, Makinist insanları gösterir; koltuk kişiden
+        ayrıdır; tepede tek lider ajan koltuğunda kontrolcü oturum oturur; denetim doğrudan insan katmanına bağlıdır),
+        PNL-A11 metni ve bu not; kapalı üründe tepe şeması kararı, apex kartı Adımının güncellemesi ve temizlik Bloku.
+        Sıradaki: ajanların teslimini ölç ve işle, apex kartını kapalı üründe yazdır, Tren worktree'sini ana dala al,
+        0.9.199'u paketle; ardından işçi Bloku (eklentinin ağırlığının kök nedeni) plan küçültme oturumunda ilk sıraya
+        önerilecektir.
+
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PLANIN YÜKÜ ÖLÇÜLDÜ, PANEL SON ADIMLARINDA.
         Founder açık işlerin çorbaya döndüğünü ve hiçbir işin bitmediğini bildirmiştir. Ölçümde yedi projede 494 Adım
         kapanmış, yaklaşık 245 Adım 64 Bloka dağılmış olarak açık bulunmuştur; Fazların tarihleri yürütme hızı

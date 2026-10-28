@@ -442,17 +442,13 @@ test("renk YALNIZ tema değişkeninden gelir: gövdeye ham renk değeri gömülm
     "karar bekleyen işin kanonik dikkat sarısı kaybolmuş");
 });
 
-test("beş panel bakışta ayrılır: kök simgeler tekildir", () => {
-  const hatirlatici = kokSimgesi("../src/hatirlaticilar.ts");
-  const bildirim = kokSimgesi("../src/bildirimler.ts");
-  // 🪆 EKL-F7-A09: yol haritasının varlık simgesi tipe bağlıdır (çalışma alanı
-  // istasyon, proje sefer) — iki simge de öteki panellerle çakışamaz.
-  const yolKume = /return tip === "ÇalışmaAlanı" \? "([a-z-]+)" : "([a-z-]+)";/.exec(oku("../src/yolharitasi-cekirdek.ts"));
-  assert.ok(hatirlatici && bildirim && yolKume, "panel kök simgeleri kaynakta bulunamadı");
-  const hepsi = [hatirlatici, bildirim, yolKume![1], yolKume![2]];
-  assert.equal(new Set(hepsi).size, hepsi.length,
-    "satır çizelgesini kullanan panellerin kök simgeleri tekil değil; kenar çubuğunda bakışta ayrılmazlar");
-  // Onaylar paneli dosya simgesi kullandığı için bu kümeye hiç girmez ve yarışamaz.
+test("PNL-A25 · Proje satırının simgesi panel başına seçilmez: her panel Yol Haritasının varlık simgesini taşır", () => {
+  // Paneller ayrı görünümken proje satırları bakışta ayrılsın diye her biri kendi simgesini taşıyordu
+  // (VIT-KIMLIK-A05). Bugün hepsi tek panelin sekmelerindedir ve Founder 2026-10-28 tarihinde her Proje
+  // satırının Yol Haritasının Proje simgesini taşımasına hükmetmiştir; grup satırları ayrımı taşır.
+  for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts", "../src/fikirler.ts"]) {
+    assert.equal(kokSimgesi(dosya), "", `${dosya} hâlâ kendi proje satırı simgesini seçiyor`);
+  }
 });
 
 // Bu iki ölçünün ağaca özgü hâli (ThemeIcon kimliği · ThemeColor rolü) yukarıda

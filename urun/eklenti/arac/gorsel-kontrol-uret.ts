@@ -103,7 +103,8 @@ function ornek(n: number, ikon: string, anlam: string, etiketler: [string, strin
 const ONAY_DOSYASI = join(PROJE, "is", "plan", "ornek.sar");
 const ONAY_ORNEGI =
   `Faz( kod: ORNEK-FAZ, ad: "örnek dönem" ) {\n  Blok( kod: ORNEK-BLK, ad: "örnek iş" ) {\n    Katman( kod: ORNEK-KAT, ad: "örnek katman" ) {\n` +
-  ["ORNEK-A01", "ORNEK-A02"].map((k) => `      Adım( kod: ${k}, onayBekler: founder, durum: beklemede, ne: "${k} örnek karar", ` +
+  // PNL-A08: kararı bugün verilebilecek iki kapı (Onaylar) ve Adımı beklemede olan bir kapı (İleride onay isteyecek).
+  [["ORNEK-A01", "geliştirmede"], ["ORNEK-A02", "doğrulanmamış"], ["ORNEK-A03", "beklemede"]].map(([k, durum]) => `      Adım( kod: ${k}, onayBekler: founder, durum: ${durum}, ne: "${k} örnek karar", ` +
     `kabul: [ "Tasarım Founder tarafından onaylanmıştır — onaysız uygulanmaz" ] )\n`).join("") + `    }\n  }\n}\n`;
 const onayDefteri = new OnayPaneli();
 onayDefteri.simgeKaynaginiBagla(koku as never);
@@ -172,9 +173,22 @@ interface Degiske {
   ad: string; sekme: SekmeKimligi; gorunum?: string; secili?: string; secici?: boolean; acik?: number; onayAcik?: string;
   /** Kullanıcının sekme sırası ayarı (PNL-A23); verilirse panel seçtirilmeden açılır ve sıranın ilk sekmesiyle başlamalıdır. */
   sira?: readonly string[];
+  /**
+   * PNL-A21: Ray satırındaki işarete tıklamanın eklenti tarafı üründeki yoldan koşar (webview'in gönderdiği
+   * `sinyalGit` iletisi); belge eklentinin vardığı durumla (Sinyaller sekmesi, ataları açık satırlar) yeniden
+   * üretilir ve eklentinin webview'e gönderdiği `sinyalSec` iletisi görsel kontrolde sayfaya verilir.
+   */
+  sinyalGit?: boolean;
 }
 
-function uret(d: Degiske): string {
+/** İşaretin gösterdiği sayı: açık dal kendi tanılarını, kapalı dal alt ağacınınkileri sayar. */
+type IsaretliSatir = { satir: { id: string; durum: string; sinyal?: { kendi: { dur: number; dikkat: number }; toplam: { dur: number; dikkat: number } } } };
+const isaretSayisi = (u: IsaretliSatir): number => {
+  const s = u.satir.durum === "acik" ? u.satir.sinyal!.kendi : u.satir.sinyal!.toplam;
+  return s.dur + s.dikkat;
+};
+
+async function uret(d: Degiske): Promise<{ html: string; ek?: Record<string, unknown> }> {
   gorunumAyari = d.gorunum ?? "agac";
   siraAyari = d.sira;
   // Karar kademesi açık kapı (PNL-A07): yalnız istenen değişkede bir kapı açıktır.
@@ -204,8 +218,23 @@ function uret(d: Degiske): string {
   const saglayici = kabuk.webviewSaglayicilari.get("sarmalPanel") as { resolveWebviewView(g: unknown): void };
   const gorunum = new SahteWebviewGorunusu();
   saglayici.resolveWebviewView(gorunum);
+  let html = gorunum.webview.html;
+  let ek: Record<string, unknown> | undefined;
+  if (d.sinyalGit) {
+    const ic = panel as unknown as { sonSatirlar: { ray: IsaretliSatir[] }; tamHtml(csp: string): string; olcumler(): { sinyalSecimi: readonly string[] } };
+    // Görünen ve işaret taşıyan satırlardan en az tanılısı seçilir: seçilen satırlar ekranda okunur kalır.
+    const aday = ic.sonSatirlar.ray.filter((u) => u.satir.sinyal && isaretSayisi(u) > 0).sort((a, b) => isaretSayisi(a) - isaretSayisi(b))[0];
+    if (aday) {
+      gorunum.mesajGonder({ tip: "sinyalGit", id: aday.satir.id, acik: aday.satir.durum === "acik" });
+      await new Promise((r) => setTimeout(r, 50));
+      html = ic.tamHtml("gorsel-kontrol");
+      // Belge eklentinin vardığı durumdadır: seçili sekme Sinyaller'dir (görsel kontrol bu sekmeyi ölçer).
+      ek = { sekme: "sinyaller", sinyalSec: { tip: "sinyalSec", idler: ic.olcumler().sinyalSecimi }, isaretSatiri: aday.satir.id,
+        isaretAcik: aday.satir.durum === "acik", isaretSayisi: isaretSayisi(aday) };
+    }
+  }
   for (const s of ctx.subscriptions) (s as { dispose?: () => void }).dispose?.();
-  return gorunum.webview.html;
+  return { html, ek };
 }
 
 const degiskeler: Degiske[] = [
@@ -221,20 +250,25 @@ const degiskeler: Degiske[] = [
   // Kullanıcının kurduğu sıra (PNL-A23): panel ilk sekmeyle (Sinyaller) açılır, rozetler sekmeleriyle taşınır.
   { ad: "sira-ozel", sekme: "sinyaller", sira: ["sinyaller", "makinist", "ray", "tren", "ayarlar"] },
   { ad: "graf-secici", sekme: "ray", secici: true },
+  // PNL-A21: Ray'daki Dur ve Dikkat işaretine tıklama: Sinyaller sekmesi düğümün tanı satırlarını seçili gösterir.
+  { ad: "sinyal-git", sekme: "ray", sinyalGit: true },
 ];
 for (const g of ["klasik", "agac", "ilerleme"]) {
   degiskeler.push({ ad: `graf-${g}-secimsiz`, sekme: "ray", gorunum: g });
   if (SECILI) degiskeler.push({ ad: `graf-${g}-secili`, sekme: "ray", gorunum: g, secili: SECILI });
 }
-const liste = degiskeler.map((d) => {
-  const html = uret(d);
+const liste: Array<Degiske & { bayt: number }> = [];
+for (const d of degiskeler) {
+  const { html, ek } = await uret(d);
   writeFileSync(join(CIKTI, `${d.ad}.html`), html);
-  return { ...d, bayt: html.length };
-});
+  liste.push({ ...d, ...ek, bayt: html.length });
+}
 // Görsel kontrol koyu temada koşar; beklenen çizgi ve vurgu renkleri tül kaynağından verilir (PNL-A04).
 const tul = { cizgi: tulRengi("koyu", CIZGI_ALFA), vurgu: tulRengi("koyu", 1) };
 process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, tul, sinyal: {
   ...sinyaller.sayilar, denetim: sinyalKayitlari.length, durumCubuguGozlem: gozlemler.kayitSayisi,
   hatirlaticiKodlari: [...ILERI_BAGLAM_KIMLIKLERI], turler: turBeklenen,
+  // PNL-A25: çatının kendi satırı (yalnız o) çatı simgesini taşır; kök bir çatı değilse tanımsız.
+  catiKodu: projeKimligi(join(PROJE, "_")).tip === "ÇalışmaAlanı" ? projeKimligi(join(PROJE, "_")).kod : undefined,
 }, degiskeler: liste }));
 process.exit(0);

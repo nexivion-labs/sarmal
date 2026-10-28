@@ -25,6 +25,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { etkinlestir, geciciAlan, kabukTemizle, type EtkinEklenti } from "./etkinlesme-kabugu.ts";
 import { kanonMaddeleri } from "../src/sinyaller-cekirdek.ts";
+import { beklenenSunumYuzeyi } from "../../cekirdek/src/denetim.ts";
 
 const KAYNAK = [
   `Faz( kod: SNY-F1, ad: "Sinyal nöbeti" ) {`,
@@ -62,7 +63,15 @@ type Aralik = { start: { line: number; character: number }; end: { line: number;
 type Kayit = { dosya: string; kod: string; duzey: string; satir: number };
 const kayitlar = (e: EtkinEklenti): Kayit[] => (e.yuz!.sinyalKayitlari as () => Kayit[])();
 const toplamTani = (e: EtkinEklenti): number => [...e.kayit.tanilar.values()].reduce((t, l) => t + l.length, 0);
-const durumMetinleri = (e: EtkinEklenti): string[] => e.kayit.durumOgeleri.filter((o) => !o.atildi).map((o) => o.text);
+/** Durum çubuğunda GÖRÜNEN girdilerin metinleri. */
+const durumMetinleri = (e: EtkinEklenti): string[] => e.kayit.durumOgeleri.filter((o) => !o.atildi && o.gorunur).map((o) => o.text);
+/** PNL-A08: Sarmal'ın Dur ve Dikkat girdisi (yalnız ayar kapalıyken görünür). */
+const sinyalGirdisi = (e: EtkinEklenti): string | undefined => durumMetinleri(e).find((t) => /^Dur \d+ · Dikkat \d+$/.test(t));
+/** Sinyaller'in Dur ve Dikkat sayıları, defterin kayıtlarından ve motorun yönlendirmesinden (ağaçtan değil). */
+const beklenenSinyalGirdisi = (e: EtkinEklenti): string => {
+  const sinyalde = kayitlar(e).filter((k) => beklenenSunumYuzeyi({ kod: k.kod, duzey: k.duzey as never }) !== "hatırlatıcılar");
+  return `Dur ${sinyalde.filter((k) => k.duzey === "hata").length} · Dikkat ${sinyalde.filter((k) => k.duzey === "uyarı").length}`;
+};
 const RENK = { hata: "charts.red", "uyarı": "charts.yellow", bilgi: "charts.blue" } as const;
 
 /** Satır işareti türünün anahtarı: dalgalı alt çizgisi verilen tema renginde olan süs türü. */
@@ -97,7 +106,11 @@ test("PNL-A22 · ayar kapalıyken koleksiyon boştur; durum çubuğu sayaçları
   const acikE = await etkin(a, { sorunlarPaneli: true });
   assert.ok(toplamTani(acikE) > 0, "ayar açıkken koleksiyonda tanı yok; karşılaştırma kurulamaz");
   assert.equal(toplamTani(kapali), 0, "ayar kapalıyken Sarmal tanısı koleksiyona (Sorunlar paneline) yazıldı");
-  assert.deepEqual(durumMetinleri(kapali), durumMetinleri(acikE), "durum çubuğu sayaçları ayara göre değişti");
+  // PNL-A08: ayar kapalıyken VS Code'un sayacı Sarmal tanılarını saymaz; Sarmal'ın Dur ve Dikkat girdisi görünür ve
+  // Sinyaller'in sayısını taşır. Ayar açıkken aynı sayı iki kez görünmesin diye gizlenir. Öteki sayaçlar değişmez.
+  assert.equal(sinyalGirdisi(kapali), beklenenSinyalGirdisi(kapali), "ayar kapalıyken Dur ve Dikkat girdisi yok ya da Sinyaller'in sayısını taşımıyor");
+  assert.equal(sinyalGirdisi(acikE), undefined, "ayar açıkken Dur ve Dikkat girdisi de görünüyor (aynı sayı iki kez)");
+  assert.deepEqual(durumMetinleri(kapali).filter((t) => t !== sinyalGirdisi(kapali)), durumMetinleri(acikE), "durum çubuğu sayaçları ayara göre değişti");
   assert.deepEqual(kayitlar(kapali), kayitlar(acikE), "Sinyaller kayıtları ayara göre değişti");
   assert.ok(kayitlar(kapali).some((k) => k.dosya === a.plan && k.duzey === "hata"), "fikstürde Dur kaydı yok");
 });
@@ -171,5 +184,6 @@ test("PNL-A22 · ayar açılınca pencere yeniden yüklenmeden koleksiyon kayıp
   e.ayarDegistir("sorunlarPaneli", false);
   await new Promise((r) => setTimeout(r, 20));
   assert.equal(toplamTani(e), 0, "ayar kapanınca koleksiyon boşalmadı");
+  assert.equal(sinyalGirdisi(e), beklenenSinyalGirdisi(e), "ayar kapanınca Dur ve Dikkat girdisi geri gelmedi (PNL-A08)");
   assert.equal(cizilen(e, RENK.hata).length, isaretler, "ayar kapanınca satır işaretleri geri gelmedi");
 });

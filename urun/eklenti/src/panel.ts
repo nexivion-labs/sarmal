@@ -84,6 +84,11 @@ import type { DosyaAcSecenegi, PanelBagi, YolHaritasiYuzu } from "./yolharitasi.
 import type { Tren } from "./tren.ts";
 import type { MakinistAgaci } from "./makinist.ts";
 import type { SinyallerAgaci } from "./sinyaller.ts";
+import { acilToplami, adaGoreSay, dokulur, paylariBirlestir, type AcilSayilar, type SayiKapsami } from "./kapsam-sayaci.ts";
+import { isaretSay, sinyalleriDagit } from "./ray-sinyalleri.ts";
+import { sonTurGoruntusu } from "./tur-goruntusu.ts";
+import type { SinyalSatiri } from "./sinyaller-cekirdek.ts";
+import type { Dugum } from "../../cekirdek/src/sozdizim.ts";
 
 /** Kabın tek görünümü. */
 export const GORUNUS_PANEL = "sarmalPanel";
@@ -129,6 +134,11 @@ export interface PanelGirdileri {
   makinist: MakinistAgaci;
   /** Sinyaller sekmesinin ağacı (PNL-A09); verilmezse sekme boş durum cümlesini gösterir. */
   sinyaller?: SinyallerAgaci;
+  /**
+   * Sayının kapsamı (PNL-A08): dış rozetin ipucu kapsamı adıyla yazar ve çatıda proje proje döker.
+   * `projeAdi` bir kapı dosyasının hangi Projeye ait olduğunu söyler. Verilmezse ipucu kapsam yazmaz.
+   */
+  kapsam?: { oku(): SayiKapsami | undefined; projeAdi(dosya: string): string };
 }
 
 /** Nöbetin okuduğu salt okur ölçüm. */
@@ -167,6 +177,12 @@ export interface PanelOlcumleri {
     /** Çizilen tanı satırlarının işaret ettiği farklı kayıt sayısı; bir kayıt iki kez çizilirse `cizilenSatir`dan küçük kalır. */
     tekilKayit: number;
   };
+  /** Dış Sarmal rozetinin son yazımı (PNL-A08): değer, ipucu ve üç acil parça. */
+  rozet?: { deger: number; ipucu: string } & AcilSayilar;
+  /** Son Ray çiziminde işaret taşıyan satırlar (PNL-A21): kendi tanıları ve alt ağacın toplamı. */
+  raySinyalleri: Record<string, NonNullable<UretilenSatir["satir"]["sinyal"]>>;
+  /** Son işaret tıklamasının Sinyaller'de seçtiği satırlar (PNL-A21). */
+  sinyalSecimi: readonly string[];
 }
 
 /**
@@ -200,6 +216,8 @@ export interface SarmalPaneliYuzu {
   gorunurMu(): boolean;
   diliTazele(): void;
   olcumler(): PanelOlcumleri;
+  /** Dış rozeti yeniden yazar (PNL-A08): sayılar aynı kalsa da kapsam değişince ipucu tazelenir. */
+  rozetiTazele(): void;
 }
 
 class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPaneliYuzu {
@@ -258,6 +276,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (g.sinyaller) abone(g.sinyaller.onDidChangeTreeData(() => {
       this.rozetiYaz();
       this.zamanla("sinyaller", () => this.agacTazele("sinyaller"));
+      // PNL-A21: Ray satırlarının Dur ve Dikkat işareti Sinyaller'in kayıtlarından gelir; işaretler değiştiyse Ray çizilir.
+      if (this.raySinyalDagilimi().iz !== this.sonRaySinyalIzi) this.zamanla("ray", () => this.agacTazele("ray"));
     }));
     abone(g.makinist.onDidChangeTreeData(() => {
       this.rozetiYaz();
@@ -337,6 +357,9 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       onayKademesi: this.sonKademe,
       onayAcik: this.g.makinist.onay?.acikKapi(),
       sinyaller: this.g.sinyaller ? this.sinyalOlcumu(this.g.sinyaller) : undefined,
+      rozet: this.sonRozet,
+      raySinyalleri: Object.fromEntries(this.tumSatirlar.ray.flatMap((u) => (u.satir.sinyal ? [[u.satir.id, u.satir.sinyal] as const] : []))),
+      sinyalSecimi: [...this.sonSinyalSecimi],
     };
   }
 
@@ -473,9 +496,30 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     await vscode.commands.executeCommand("setContext", BAGLAM_SEKME, this.sekme);
   }
 
+  /** Dış rozetin son yazımı (nöbet ölçüsü). */
+  private sonRozet?: NonNullable<PanelOlcumleri["rozet"]>;
+
+  rozetiTazele(): void { this.rozetiYaz(); }
+
+  /**
+   * Dış Sarmal rozeti bir alarmdır (PNL-A08 · Founder 2026-10-28 · YUZ-3.4): yalnız kararı bugün
+   * verilebilecek onay kapılarını, Dur bandındaki tanıları ve ateşlemiş hatırlatıcıları sayar; uyuyan
+   * hatırlatıcı, Dikkat ve Bilgi sayılmaz. İpucu üç sayıyı ayrı yazar, kapsamı adıyla anar ve çatıda
+   * proje proje döker. Makinist sekmesinin şeritteki rozeti değişmez: kapılar ve hatırlatıcılar.
+   */
   private rozetiYaz(): void {
-    const sayi = this.g.makinist.rozetSayisi;
-    if (this.gorunum) this.gorunum.badge = panelRozeti(sayi, MAKINIST_METINLERI.rozetIpucu);
+    const m = this.g.makinist;
+    const acil: AcilSayilar = { onay: m.onaySayisi, dur: this.g.sinyaller?.sayilar.dur ?? 0, atesmis: m.atesmisSayisi };
+    const kapsam = this.g.kapsam?.oku();
+    const paylar = dokulur(kapsam) ? paylariBirlestir(
+      adaGoreSay((m.onay?.kapilar("bugun") ?? []).map((k) => this.g.kapsam!.projeAdi(k.dosya))),
+      this.g.sinyaller?.projePaylari(["dur"]) ?? [],
+      m.atesmisPaylari(),
+    ) : [];
+    const ipucu = MAKINIST_METINLERI.acilRozetIpucu(kapsam, acil, paylar);
+    this.sonRozet = { deger: acilToplami(acil), ipucu, ...acil };
+    if (this.gorunum) this.gorunum.badge = panelRozeti(acilToplami(acil), () => ipucu);
+    const sayi = m.rozetSayisi;
     this.yaz({ tip: "rozet", sayi });
     // Sinyaller sekmesinin yanında Dur ve Dikkat sayıları (PNL-A09).
     this.yaz({ tip: "sinyalRozet", ...this.sinyalRozeti() });
@@ -593,12 +637,96 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
           `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`);
       }
     }
+    if (k === "ray") this.raySinyalleriniYaz(tum);
     this.tumSatirlar[k] = tum;
     const satirlar = gorunurSatirlar(tum);
     this.sonSatirlar[k] = satirlar;
     const html = satirlarHtml(tum.map((x) => x.satir), kademeler.size ? (s) => kademeler.get(s.id) ?? "" : undefined);
     return { satirlar, html, ikonStili: defter.stil() };
   }
+
+  // ── Ray'da Dur ve Dikkat işareti (PNL-A21 · OZK-14 ikincisi) ────────────────
+
+  /** Satır kimliği → işaretin topladığı Sinyaller kayıtları: açıkken kendi, kapalıyken alt ağacın tamamı. */
+  private raySinyalHedefi = new Map<string, { kendi: SinyalSatiri[]; toplam: SinyalSatiri[] }>();
+  /** Son Ray çiziminin işaret izi: Sinyaller değişince işaretler aynıysa Ray yeniden çizilmez. */
+  private sonRaySinyalIzi = "";
+
+  /**
+   * Sinyaller'in Dur ve Dikkat kayıtlarının Ray düğümlerine dağılımı (ray-sinyalleri.ts). Bilgi düzeyi
+   * işaret üretmez. Düğümlerin tanım aralığı turun ayrıştırdığı ağaçtan kurulur.
+   */
+  private raySinyalDagilimi(): { dagilim: Map<Dugum, SinyalSatiri[]>; iz: string } {
+    const kayitlar = this.g.sinyaller?.bantSatirlari(["dur", "dikkat"]) ?? [];
+    const programlar = sonTurGoruntusu()?.programlar;
+    const rayDugumleri = new Set<Dugum>();
+    const topla = (ogeler: readonly { dugum: Dugum; cocuklar: readonly unknown[] }[]): void => {
+      for (const o of ogeler) { rayDugumleri.add(o.dugum); topla(o.cocuklar as never); }
+    };
+    for (const v of this.g.yol.saglayici.varlikListesi?.() ?? []) topla(v.cocuklar as never);
+    const dagilim = kayitlar.length && programlar
+      ? sinyalleriDagit(kayitlar.map((s) => ({ dosya: s.kayit.dosya, satir: s.kayit.tani.satir, s })), (d) => programlar.get(d), (d) => rayDugumleri.has(d))
+      : new Map<Dugum, { s: SinyalSatiri }[]>();
+    const sade = new Map([...dagilim].map(([d, l]) => [d, l.map((x) => x.s)] as const));
+    const iz = [...sade.values()].flat().map((s) => `${s.kayit.dosya}:${s.kayit.tani.satir}:${s.bant}`).sort().join("|");
+    return { dagilim: sade, iz };
+  }
+
+  /** Ray satırlarına işaret sayılarını yazar; kapalı dal alt ağacının toplamını, açık dal kendi tanılarını taşır. */
+  private raySinyalleriniYaz(tum: readonly UretilenSatir[]): void {
+    const { dagilim, iz } = this.raySinyalDagilimi();
+    this.sonRaySinyalIzi = iz;
+    this.raySinyalHedefi.clear();
+    if (!dagilim.size) return;
+    // Alt ağaç Yol Haritasının kendi çocuklarından gezilir: çatının satırı kapsadığı projelerin toplamını da taşır.
+    const saglayici = this.g.yol.saglayici as unknown as AgacKaynagi;
+    const altAgac = new Map<object, SinyalSatiri[]>();
+    const toplam = (o: { tur?: string; dugum?: Dugum }): SinyalSatiri[] => {
+      const onbellek = altAgac.get(o);
+      if (onbellek) return onbellek;
+      const cocuklar = o.tur === "oge" || o.tur === "varlık" ? saglayici.getChildren(o) as { tur?: string; dugum?: Dugum }[] : [];
+      const liste = [...(o.tur === "oge" && o.dugum ? dagilim.get(o.dugum) ?? [] : []), ...cocuklar.flatMap(toplam)];
+      altAgac.set(o, liste);
+      return liste;
+    };
+    for (const u of tum) {
+      const o = u.oge as { tur?: string; dugum?: Dugum };
+      if (o.tur !== "oge" && o.tur !== "varlık") continue;
+      const hepsi = toplam(o);
+      if (!hepsi.length) continue;
+      const kendi = o.tur === "oge" && o.dugum ? dagilim.get(o.dugum) ?? [] : [];
+      u.satir.sinyal = { kendi: isaretSay(kendi), toplam: isaretSay(hepsi) };
+      this.raySinyalHedefi.set(u.satir.id, { kendi, toplam: hepsi });
+    }
+  }
+
+  /**
+   * İşarete tıklandı (PNL-A21): Sinyaller sekmesi seçilir, işaretin saydığı tanıların satırlarına giden
+   * bant, proje ve tür satırları açılır ve tanı satırları seçilir. Açık dalın işareti kendi tanılarını,
+   * kapalı dalınki alt ağacın tanılarını seçer (işaretin gösterdiği sayının kendisi).
+   */
+  private async sinyaleGit(id: string, acik: boolean): Promise<void> {
+    const hedef = this.raySinyalHedefi.get(id);
+    const sinyaller = this.g.sinyaller;
+    if (!hedef || !sinyaller) return;
+    const kayitlar = new Set((acik ? hedef.kendi : hedef.toplam).map((s) => s.kayit));
+    // Sinyaller ağacının bütün satırları üretilir; hedef kayıtların ataları açılır.
+    const tum = satirlariUret(sinyaller as unknown as AgacKaynagi, this.secenekler("sinyaller", new IkonDefteri()), Number.POSITIVE_INFINITY);
+    const idler = tum.filter((u) => { const k = sinyaller.sinyalKaydi(u.oge); return k !== undefined && kayitlar.has(k.kayit); }).map((u) => u.satir.id);
+    for (const t of idler) {
+      const parca = t.split("/");
+      for (let i = 2; i < parca.length; i++) this.acik[parca.slice(0, i).join("/")] = true;
+    }
+    this.acikKaydet();
+    this.sekmeyiYaz("sinyaller");
+    await this.sekmeBaglami();
+    this.bolumGonder("sinyaller");
+    this.yaz({ tip: "sekmeSec", ad: "sinyaller", n: this.gorulenGecis });
+    this.yaz({ tip: "sinyalSec", idler });
+    this.sonSinyalSecimi = idler;
+  }
+  /** Son işaret tıklamasının seçtiği Sinyaller satırları (nöbet ölçüsü). */
+  private sonSinyalSecimi: string[] = [];
 
   /**
    * 🌳 PNL-A27 · webview dalı kendisi açtı ya da kapattı: durum kaydedilir, son çizimin satırı ve
@@ -749,6 +877,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (!eski) return;
     const defter = new IkonDefteri();
     const yeni = satirKur(this.kaynak(k), oge, id, eski.u.satir.derinlik, this.secenekler(k, defter));
+    if (eski.u.satir.sinyal) yeni.satir.sinyal = eski.u.satir.sinyal;   // PNL-A21: tek satır yaması işareti korur
     this.harita.set(id, { kaynak: k, u: yeni });
     for (const dizi of [this.sonSatirlar[k], this.tumSatirlar[k]]) {
       const i = dizi.findIndex((x) => x.satir.id === id);
@@ -883,6 +1012,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
         await vscode.commands.executeCommand(k.komut, ...k.argumanlar, ...ek);
         return;
       }
+      case "sinyalGit": { if (kayit?.kaynak === "ray") await this.sinyaleGit(id, m.acik === true); return; }
       case "sekmeSirasi": { await this.siraYaz(m.sira); return; }
       case "hazir": { this.hazirSayisi += 1; return; }
       case "sinamaRapor": { this.sinamaRaporu = m.kayitlar; return; }

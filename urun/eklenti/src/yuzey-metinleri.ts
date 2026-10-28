@@ -24,6 +24,7 @@
 import type { GovdeMetinleri } from "./onay-govde.ts";
 import type { GezinmeRetSebebi } from "./gezinme-cekirdek.ts";
 import type { AnlamRengi, SatirSimgesi } from "./simge-cizelgesi.ts";
+import { acilToplami, dokulur, type AcilSayilar, type ProjePayi, type SayiKapsami } from "./kapsam-sayaci.ts";
 import { dilHanesi, sozlukDuzYazisi, type CiktiDili } from "../../cekirdek/src/cevir.ts";
 
 let yuzeyDili: CiktiDili | undefined;
@@ -875,12 +876,33 @@ export function panoyaKopyalanacakSatirYok(): string {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** Durum çubuğu girdisinin ipucu cümlesi — hangi yüzey, kaç kayıt, tıklayınca ne olur. */
-export function durumCubuguIpucu(yuzeyAdi: string, adet: number, eylem: string): string {
+export function durumCubuguIpucu(
+  yuzeyAdi: string, adet: number, eylem: string, kapsam?: SayiKapsami, paylar: readonly ProjePayi[] = [],
+): string {
+  // PNL-A08: sayının kapsamı adıyla yazılır; çatı kapsamında sayı proje proje dökülür.
+  const bas = kapsam ? `Sarmal · ${yuzeyAdi} · ${KAPSAM_METINLERI.kapsamAdi(kapsam)}` : `Sarmal · ${yuzeyAdi}`;
   const sayi = adet === 0
-    ? yuzeyMetni(`Sarmal · ${yuzeyAdi}: şu anda hiçbir kayıt yok.`, `Sarmal · ${yuzeyAdi}: no records right now.`)
-    : yuzeyMetni(`Sarmal · ${yuzeyAdi}: ${adet === 1 ? "bir" : adet} kayıt.`, `Sarmal · ${yuzeyAdi}: ${adet === 1 ? "one record" : `${adet} records`}.`);
-  return `${sayi}\n${eylem}`;
+    ? yuzeyMetni(`${bas}: şu anda hiçbir kayıt yok.`, `${bas}: no records right now.`)
+    : yuzeyMetni(`${bas}: ${adet === 1 ? "bir" : adet} kayıt.`, `${bas}: ${adet === 1 ? "one record" : `${adet} records`}.`);
+  return [sayi, ...(dokulur(kapsam) ? KAPSAM_METINLERI.dokum(paylar) : []), eylem].join("\n");
 }
+
+/**
+ * Sayının kapsamının adı ve çatı kapsamındaki proje kırılımı (PNL-A08 · HTR-PANEL-KAPSAM-SAYIMI).
+ * Aynı sayı bir projenin dosyası açıkken başka, çatıdayken başka çıkar; kullanıcı hangisini gördüğünü
+ * yalnız kapsamın adından okuyabilir.
+ */
+export const KAPSAM_METINLERI = {
+  kapsamAdi: (k: SayiKapsami): string => ({
+    proje: () => yuzeyMetni(`${k.ad} projesi`, `${k.ad} project`),
+    cati: () => yuzeyMetni(`${k.ad} çatısı`, `${k.ad} root`),
+    alan: () => yuzeyMetni(`${k.ad} çalışma alanı`, `${k.ad} workspace`),
+  })[k.tur](),
+  /** Çatı sayısının proje proje dökümü; pay yoksa satır da yoktur. */
+  dokum: (paylar: readonly ProjePayi[]): string[] => paylar.length
+    ? [yuzeyMetni("Projelere göre:", "By project:"), ...paylar.map((p) => `  ${p.ad}: ${p.adet}`)]
+    : [],
+} as const;
 
 /** Durum çubuğunda görünen yüzeylerin adları ve tıklama vaadi. */
 export const DURUM_CUBUGU_METINLERI = {
@@ -889,6 +911,15 @@ export const DURUM_CUBUGU_METINLERI = {
   get hatırlatıcılar(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Hatırlatıcılar", "Reminders"), eylem: yuzeyMetni("Tıklayınca Hatırlatıcılar paneli açılır.", "Select to open the Reminders panel.") }; },
   get fikirler(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Fikirler", "Ideas"), eylem: yuzeyMetni("Tıklayınca Fikirler paneli açılır.", "Select to open the Ideas panel.") }; },
   get onayPaneli(): { ad: string; eylem: string } { return { ad: yuzeyMetni("Onaylar", "Approvals"), eylem: yuzeyMetni("Tıklayınca Onaylar paneli açılır.", "Select to open the Approvals panel.") }; },
+  /** PNL-A08: Sorunlar paneline gönderim kapalıyken VS Code'un kendi sayacı Sarmal tanılarını saymaz; bu girdi sayar. */
+  get sinyaller(): { ad: string; eylem: string } {
+    return {
+      ad: yuzeyMetni("Dur ve Dikkat sinyalleri", "Stop and Caution signals"),
+      eylem: yuzeyMetni(
+        "Tıklayınca Sinyaller sekmesi açılır. Sorunlar paneline gönderim kapalı olduğu için bu sayıyı VS Code'un kendi sayacı göstermez.",
+        "Select to open the Signals tab. Sending to the Problems panel is off, so VS Code's own counter does not show this number."),
+    };
+  },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2708,6 +2739,28 @@ export const MAKINIST_METINLERI = {
   get gozlemler(): string { return yuzeyMetni("Gözlemler", "Observations"); },
   get fikirler(): string { return yuzeyMetni("Fikirler", "Ideas"); },
   rozetIpucu: (n: number): string => yuzeyMetni(`Sizi bekleyen ${n} kayıt: onay kapıları ve hatırlatıcılar`, `${n} items waiting for you: approval gates and reminders`),
+  /** PNL-A08: Adımı beklemede olan kapıların grubu; bugün karar istemez ve hiçbir sayaca girmez. */
+  get ileride(): string { return yuzeyMetni("İleride onay isteyecek", "Will ask for approval later"); },
+  get ilerideIpucu(): string {
+    return yuzeyMetni(
+      "Adımı henüz beklemede olan onay kapıları. Bugün bir karar istemezler ve hiçbir sayaca girmezler; Adım geliştirmeye geçince Onaylar grubuna taşınırlar.",
+      "Approval gates whose Adım is still waiting. They ask for no decision today and enter no counter; they move to Approvals when the Adım enters development.");
+  },
+  /**
+   * Dış Sarmal rozetinin ipucu (PNL-A08 · Founder 2026-10-28): rozet bir alarmdır ve yalnız acil işi
+   * sayar; üç parça ayrı ayrı yazılır, kapsam adıyla anılır ve çatıda proje proje dökülür.
+   */
+  acilRozetIpucu: (kapsam: SayiKapsami | undefined, a: AcilSayilar, paylar: readonly ProjePayi[]): string => {
+    const n = acilToplami(a);
+    const bas = kapsam ? KAPSAM_METINLERI.kapsamAdi(kapsam) : "Sarmal";
+    return [
+      yuzeyMetni(`${bas}: ${n} acil iş`, `${bas}: ${n} urgent ${n === 1 ? "item" : "items"}`),
+      yuzeyMetni(
+        `${a.onay} onay bekleyen kapı · ${a.dur} Dur sinyali · ${a.atesmis} ateşlemiş hatırlatıcı`,
+        `${a.onay} gates awaiting approval · ${a.dur} Stop signals · ${a.atesmis} fired reminders`),
+      ...(dokulur(kapsam) ? KAPSAM_METINLERI.dokum(paylar) : []),
+    ].join("\n");
+  },
   /** Kapı satırının ikinci sütunu: Adımın amacı yerine dosya adı gösterilir. */
   get kapiIpucu(): string { return yuzeyMetni("Kapıyı kaynağında aç ve kararı kartta ver", "Open the gate in its source and decide on the card"); },
 } as const;
@@ -2818,4 +2871,8 @@ export const SINYAL_METINLERI = {
   get bos(): string { return yuzeyMetni("Sarmal'ın bu kapsamda bir sinyali yok.", "Sarmal has no signals in this scope."); },
   rozetIpucu: (dur: number, dikkat: number): string => yuzeyMetni(
     `${dur} Dur · ${dikkat} Dikkat sinyali`, `${dur} Stop · ${dikkat} Caution signals`),
+  /** PNL-A21: Ray satırındaki işaretin ipucu; açık dal kendi, kapalı dal alt ağacının tanılarını sayar. */
+  rayIsaretIpucu: (dur: number, dikkat: number): string => yuzeyMetni(
+    `${dur} Dur · ${dikkat} Dikkat sinyali. Tıklayınca Sinyaller sekmesinde bu düğümün satırları seçilir.`,
+    `${dur} Stop · ${dikkat} Caution signals. Select to highlight this node's rows in the Signals tab.`),
 } as const;

@@ -85,6 +85,7 @@ import {
 // 🔭 Kapsama ilişkisinin TEK evi: yol haritasındaki varlık kümeleri ile panel
 // kapsam süzgeci aynı kuralı okur, ikinci bir kapsama kuralı yazılmaz.
 import { kapsamIcinde } from "./yolharitasi-cekirdek.ts";
+import { adaGoreSay, type ProjePayi, type SayiKapsami } from "./kapsam-sayaci.ts";
 // 💡 KYN-YUZ-A01 · VIT-GRAF-A16: Fikir düğümleri motorun tanı akışında YAŞAMAZ
 // (Fikir bir sapma değildir ve düzeltme istemez); bu yüzden kayıtları ayrışmış
 // ağaçtan doğrudan okunur ve Fikirler panelinin kendi görünüşüne basılır. İkinci
@@ -559,6 +560,12 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // konuşur oldu ve yine ikinci bir sayaç kurulmadı.
     fikir: () => fikirler?.kayitSayisi ?? 0,
     kapı: () => onayPaneli?.kapiSayisi ?? 0,
+    // 🔢 PNL-A08: Dur ve Dikkat girdisi (ayar kapalıyken), sayının kapsamı ve çatıdaki proje kırılımı.
+    dur: () => sinyaller?.sayilar.dur ?? 0,
+    dikkat: () => sinyaller?.sayilar.dikkat ?? 0,
+    sorunlarPaneli: () => sorunlarPaneliAcik(),
+    kapsam: () => sayiKapsami(),
+    paylar: (girdi) => girdiPaylari(girdi),
   });
   context.subscriptions.push(durumCubugu);
   // 🔗 Panel ile durum çubuğu AYNI OLAYDAN beslenir. Ölçülmüş kusur (KUSUR-DURUM-ÇUBUĞU):
@@ -568,6 +575,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // (`onayPaneli.kapiSayisi`), yalnız tazeleme aynı ağaç olayına bağlanır.
   context.subscriptions.push(sayaclariOlayaBagla(
     (dinleyici) => onayPaneli!.onDegisti(dinleyici),
+    () => durumCubugu?.tazele(),
+  ));
+  // 🚦 PNL-A08: Dur ve Dikkat girdisi Sinyaller'in kendi sayısından türer; aynı olayla tazelenir.
+  if (sinyaller) context.subscriptions.push(sayaclariOlayaBagla(
+    (dinleyici) => sinyaller!.onDidChangeTreeData(dinleyici),
     () => durumCubugu?.tazele(),
   ));
   durumCubugu.tazele();
@@ -1020,7 +1032,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // Problems o varlığın tanılarına döner — çok-proje tek panelde, tanılar karışmadan.
     // Anadizin de açılır; aktif-editör odağı (aktifVarligiGuncelle) aynı köke oturur.
     vscode.commands.registerCommand("sarmal.varligaOdaklan", async (kok: string, anaSar?: string) => {
-      if (kok && kok !== aktifVarlik) { aktifVarlik = kok; hepsiniYenidenYayinla(); odakTurunuKarara(kok); }   // 🎯 PNL-A26
+      if (kok && kok !== aktifVarlik) { aktifVarlik = kok; hepsiniYenidenYayinla(); odakTurunuKarara(kok); kapsamAdlariniTazele(); }   // 🎯 PNL-A26 · 🔢 PNL-A08
       vscode.window.setStatusBarMessage(panelOdakMesaji(basename(kok)), 4000);
       if (anaSar) await vscode.window.showTextDocument(vscode.Uri.file(anaSar), { preview: true });
     }),
@@ -1086,7 +1098,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // sağlayıcıları bu görünümün sekmelerinde (Ray · Tren · Makinist) okunur. Yerleşik bölüm komutları
   // (sarmal.bolum.*) sekmeyi seçer; Graf, Ray sekmesinin parçasıdır.
   if (tren && yolHaritasiYuzeyi) {
-    panel = panelKaydi(context, { yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci, sinyaller });
+    panel = panelKaydi(context, {
+      yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci, sinyaller,
+      kapsam: { oku: () => sayiKapsami(), projeAdi: (dosya) => projeKimligi(dosya).ad },   // 🔢 PNL-A08
+    });
     // PNL-A18: yuvanın yerleşik seçimi panelin sekmesinden okunur; iki seçim ayrışamaz.
     bolumYuvasi?.sekmeBagla((b) => panel?.sekmeSecVeOdakla(b === "graf" ? "ray" : b), panel);
   }
@@ -1551,6 +1566,40 @@ function aktifVarligiGuncelle(editor: vscode.TextEditor | undefined): void {
   aktifVarlik = kok;
   hepsiniYenidenYayinla();
   odakTurunuKarara(kok);
+  kapsamAdlariniTazele();
+}
+
+/**
+ * 🔢 PNL-A08 · sayının kapsamı. Odaktaki kökün adı ve türü: başka Proje köklerini kapsayan kök çatıdır,
+ * kapsamayan kök tek projedir. Odak kapalıyken ya da henüz bir kök seçilmemişken sayı bütün çalışma
+ * alanınındır. Kök kümesi Yol Haritasının varlık listesinden okunur; ikinci bir tarama yapılmaz.
+ */
+function sayiKapsami(): SayiKapsami {
+  if (!odakAcik() || !aktifVarlik) {
+    return { ad: vscode.workspace.name ?? basename(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? ""), tur: "alan" };
+  }
+  const kok = aktifVarlik;
+  const cati = (yolHaritasiYuzeyi?.saglayici.varlikListesi() ?? [])
+    .some((v) => v.kokDizin !== kok && kapsamIcinde(v.kokDizin, kok));
+  return { ad: projeKimligi(join(kok, "_")).ad, tur: cati ? "cati" : "proje" };
+}
+
+/** Durum çubuğu girdisinin proje kırılımı: sayıyı veren yüzeyin kendi kümesinden (ikinci sayaç yok). */
+function girdiPaylari(girdi: string): readonly ProjePayi[] {
+  switch (girdi) {
+    case "onayPaneli": return adaGoreSay((onayPaneli?.kapilar("bugun") ?? []).map((k) => projeKimligi(k.dosya).ad));
+    case "hatırlatıcılar": return hatirlaticilar?.projePaylari() ?? [];
+    case "fikirler": return fikirler?.projePaylari() ?? [];
+    case "gözlemler": return bildirimler?.projePaylari() ?? [];
+    case "sinyaller": return sinyaller?.projePaylari(["dur", "dikkat"]) ?? [];
+    default: return [];
+  }
+}
+
+/** Kapsam değişti: sayılar aynı kalsa da ipuçlarındaki kapsam adı tazelenir. */
+function kapsamAdlariniTazele(): void {
+  durumCubugu?.tazele();
+  panel?.rozetiTazele();
 }
 
 // ── 🗂️ EKL-F11-A01: kimlik indeksi beslemesi ────────────────────────────────

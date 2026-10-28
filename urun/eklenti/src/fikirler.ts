@@ -44,7 +44,8 @@ import {
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
 } from "./fikir-cekirdek.ts";
-import { satirIkonu, type YuzDurumu } from "./ortak.ts";
+import { projeSatiriIkonu, satirIkonu, type YuzDurumu } from "./ortak.ts";
+import { adaGoreSay, type ProjePayi } from "./kapsam-sayaci.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 
 /**
@@ -57,9 +58,8 @@ import type { SatirSimgesi } from "./simge-cizelgesi.ts";
  */
 const KAYIT_SIMGESI: SatirSimgesi = "fikir";
 
-/** Proje satırının işareti — Fikir hanesinin kendi ampulü, komşu panellerin
- *  yer imi ve kutu işaretlerinden bakışta ayrılır. */
-const PROJE_SIMGESI: SatirSimgesi = "fikir";
+// PNL-A25: Proje satırının simgesi panelin kendi seçimi değildir; Yol Haritasının varlık simgesi
+// kuralından (`projeSatiriIkonu` · `varlikSimgesi`) okunur. Dosya ve kayıt satırları kendi simgelerini taşır.
 
 /**
  * Panel düğümü. AĞAÇ İKİ KADEMEDİR: Proje → Fikir.
@@ -97,6 +97,11 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
    */
   get kayitSayisi(): number {
     return this.kayitlar.length;
+  }
+
+  /** Kayıtların proje kırılımı (PNL-A08): çatı kapsamında durum çubuğunun ipucunda dökülür. */
+  projePaylari(): ProjePayi[] {
+    return adaGoreSay(this.kayitlar.map((k) => k.proje.ad));
   }
 
   gorunum?: YuzDurumu;
@@ -179,7 +184,7 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
       item.description = fikirProjeAciklamasi(adet);
       item.tooltip = new vscode.MarkdownString(
         fikirProjeIpucu(oge.kume.proje.ad, oge.kume.proje.kod, adet));
-      item.iconPath = satirIkonu(this.eklentiKoku, PROJE_SIMGESI, "bilgi");
+      item.iconPath = projeSatiriIkonu(this.eklentiKoku, oge.kume.proje, "bilgi");
       item.contextValue = "sarmalFikirProjesi";
       return item;
     }

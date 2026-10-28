@@ -29,20 +29,15 @@ import {
   dosyaSatiriAciklamasi, dosyaSatiriIpucu, kaydaGitBasligi, gozlemRozetIpucu,
 } from "./yuzey-metinleri.ts";
 import { BILDIRIM_ROZET } from "./yol-dekor.ts";
-import { satirIkonu, type YuzDurumu } from "./ortak.ts";
+import { adaGoreSay, type ProjePayi } from "./kapsam-sayaci.ts";
+import { projeSatiriIkonu, satirIkonu, type YuzDurumu } from "./ortak.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 // 🏷️ Dosya satırının teknoloji simgesi TEK kaynaktan gelir: çizelge eklentinin
 // kendi dil ilanından türer ve ikinci bir eşleme yazılmaz (teknoloji-simgesi.ts).
 import { eklentiCizelgesi, teknolojiSimgesi, type SimgeCizelgesi } from "./teknoloji-simgesi.ts";
 
-/**
- * Panelin kendi proje satırı simgesi — geometrik ailenin satır çizelgesinden
- * (VIT-KIMLIK-A05). Yol Haritası seferi kullanır ve Hatırlatıcılar yer imini;
- * üç panel aynı simgeyi taşırsa bakışta ayrılmaz (Founder canlı bulgusu
- * 2026-07-28). Bildirimler gelen kutusudur: kayıtlar buraya düşer, kullanıcı
- * okur, hiçbiri düzeltme istemez.
- */
-const PROJE_SIMGESI: SatirSimgesi = "kutu";
+// PNL-A25: Proje satırının simgesi panelin kendi seçimi değildir; Yol Haritasının varlık simgesi
+// kuralından (`projeSatiriIkonu` · `varlikSimgesi`) okunur. Dosya ve kayıt satırları kendi simgelerini taşır.
 
 /**
  * Teknoloji simgesi çözülemeyen dosyanın işareti. Uydurma bir teknoloji simgesi
@@ -89,6 +84,11 @@ export class Bildirimler implements vscode.TreeDataProvider<PanelOge> {
    */
   get kayitSayisi(): number {
     return this.kumeler.reduce((toplam, k) => toplam + k.kayitlar.length, 0);
+  }
+
+  /** Kayıtların proje kırılımı (PNL-A08): çatı kapsamında durum çubuğunun ipucunda dökülür. */
+  projePaylari(): ProjePayi[] {
+    return adaGoreSay(this.kumeler.flatMap((k) => k.kayitlar.map(() => k.proje.ad)));
   }
   gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
@@ -166,7 +166,7 @@ export class Bildirimler implements vscode.TreeDataProvider<PanelOge> {
       item.description = projeSatiriAciklamasi(adet, dagilim.turSayisi);
       item.tooltip = new vscode.MarkdownString(
         projeSatiriIpucu(oge.kume.proje.ad, oge.kume.proje.kod, adet, dagilim.tumu));
-      item.iconPath = satirIkonu(this.eklentiKoku, PROJE_SIMGESI, "bilgi");
+      item.iconPath = projeSatiriIkonu(this.eklentiKoku, oge.kume.proje, "bilgi");
       item.contextValue = "sarmalBildirimProjesi";
       return item;
     }

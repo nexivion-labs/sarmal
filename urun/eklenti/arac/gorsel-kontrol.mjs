@@ -494,6 +494,29 @@ try {
         kontrol(`${etiket}: ${d.sekme} sekmesi boş bölüm olarak doğar ve boş durum cümlesi görünür`,
           !!dz.bosSekme && dz.bosSekme.metin.length > 0 && dz.bosSekme.gen > 0, JSON.stringify(dz.bosSekme));
       }
+      if (d.ad === "sinyal-git") {
+        // PNL-A21: Ray'daki Dur ve Dikkat işaretine gerçek fare tıklaması Sinyaller sekmesini açar ve eklentiye
+        // satırı bildirir; eklentinin yanıtı (üretimde üründeki yoldan alınmış `sinyalSec`) sayfaya verilir ve
+        // Sinyaller'de düğümün tanı satırları seçili, görünür ve işaretin gösterdiği sayıda olur.
+        await p.click('.sekme[data-sekme="ray"]');
+        await p.evaluate(() => { window.__iletiler.length = 0; });
+        const isaret = `#agac .sat[data-id="${d.isaretSatiri.replace(/(["\\])/g, "\\$1")}"] .sny`;
+        const isaretVar = await p.$(isaret);
+        if (isaretVar) await p.click(isaret);
+        const tik = await p.evaluate(() => ({ iletiler: window.__iletiler.filter((m) => m.tip === "sinyalGit"),
+          sekme: document.querySelector('.sekme[aria-selected="true"]')?.dataset.sekme }));
+        kontrol(`${etiket}: Ray satırındaki işarete tıklama Sinyaller sekmesini açar ve satırı eklentiye bildirir (PNL-A21)`,
+          !!isaretVar && tik.sekme === "sinyaller" && tik.iletiler.length === 1 && tik.iletiler[0].id === d.isaretSatiri && tik.iletiler[0].acik === d.isaretAcik,
+          JSON.stringify({ isaretVar: !!isaretVar, ...tik }));
+        await p.evaluate((m) => window.postMessage(m, "*"), d.sinyalSec);
+        await p.waitForTimeout(120);
+        const sec = await p.evaluate(() => [...document.querySelectorAll("#sinyaller-agac .sat.sec")]
+          .map((x) => ({ id: x.dataset.id, gorunur: x.getBoundingClientRect().height > 0, komut: x.dataset.komut === "1" })));
+        const beklenen = [...d.sinyalSec.idler].sort();
+        kontrol(`${etiket}: işaretin düğümünün tanı satırları Sinyaller'de seçili ve görünür; sayıları işaretin gösterdiği sayıdır (PNL-A21)`,
+          beklenen.length === d.isaretSayisi && sec.map((x) => x.id).sort().join("|") === beklenen.join("|") && sec.every((x) => x.gorunur && x.komut),
+          JSON.stringify({ isaretSayisi: d.isaretSayisi, secili: sec.length, beklenen: beklenen.length, gorunmeyen: sec.filter((x) => !x.gorunur).map((x) => x.id).slice(0, 3) }));
+      }
       // Sekme şeridi: üstte ve kaydırınca da üstte.
       for (const kip of ["ust", "dip"]) {
         await p.evaluate(kaydir, kip);
@@ -513,6 +536,17 @@ try {
         // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez.
         const g = await p.evaluate(() => [...document.querySelectorAll("#makinist-agac .sat .et")].map((e) => e.textContent));
         kontrol(`${etiket}: Makinist'te Gözlemler grubu yoktur (Sinyaller sekmesine taşındı)`, !g.includes("Gözlemler") && !g.includes("Observations"), JSON.stringify(g));
+        // PNL-A08: kararı bugün verilebilecek kapılar Onaylar'da, Adımı beklemede olan kapı onun hemen altındaki
+        // "İleride onay isteyecek" grubunda; Onaylar'ın sayısı yalnız bugünkü kapıları sayar.
+        const k = await p.evaluate(() => {
+          const satirlar = [...document.querySelectorAll("#makinist-agac .sat")].map((x) => ({ id: x.dataset.id, et: x.querySelector(".et")?.textContent ?? "", ac: x.querySelector(".ac")?.textContent ?? "", d: Number(x.dataset.d) }));
+          const kokler = satirlar.filter((x) => x.d === 0).map((x) => x.id);
+          const alti = (grup) => satirlar.filter((x) => x.id.startsWith(`makinist/makinist.${grup}/`)).map((x) => x.et);
+          return { kokler, onaylar: alti("onaylar"), ileride: alti("ileride"), onaySayisi: satirlar.find((x) => x.id === "makinist/makinist.onaylar")?.ac };
+        });
+        kontrol(`${etiket}: beklemedeki kapı "İleride onay isteyecek" grubunda, bugünkü kapılar Onaylar'da; Onaylar yalnız bugünkü kapıları sayar (PNL-A08)`,
+          k.kokler[1] === "makinist/makinist.ileride" && k.ileride.join() === "ORNEK-A03" && k.onaylar.join() === "ORNEK-A01,ORNEK-A02" && k.onaySayisi === "2",
+          JSON.stringify(k));
       }
       if (d.ad === "sinyaller" || d.ad === "sinyaller-acik") {
         // SİNYALLER (PNL-A09 · OZK-14 · YUZ-3.3): yalnız üç bant, ayrı Gözlemler bölümü yok; Bilgi kapalı başlar;
@@ -614,6 +648,21 @@ try {
           else if ((taniMi(x) || turMu(x)) && bantNo < 3 && x.renk !== bantRengi[bantNo]) ayriRenk.push({ bant: bantNo, id: x.id, renk: x.renk });
         }
         if (d.ad === "sinyaller-acik") kontrol(`${etiket}: tanı ve tür satırının işareti bandının simgesiyle aynı renktir`, ayriRenk.length === 0, JSON.stringify(ayriRenk.slice(0, 5)));
+        // PNL-A25: Proje satırı Yol Haritasının Proje simgesini (sefer) taşır; çatı simgesi (istasyon) yalnız çatının
+        // kendi satırındadır. Biçim, sayfanın gerçekten çizdiği simgenin şekil öğelerinden okunur (renk ayıklanır).
+        const sekil = (svg) => [...svg.matchAll(/<(?:path|circle|rect|line|polyline|polygon|ellipse)\b[^>]*>/g)]
+          .map((m) => m[0].replace(/\s(?:stroke|fill)="[^"]*"/g, "").replace(/\s+/g, " ")).join("|");
+        const sekilDosyasi = (ad) => sekil(readFileSync(join(EKLENTI, "medya", "simgeler", "uretilmis", `satir-${ad}-duz-koyu.svg`), "utf8"));
+        const projeSatirlari = await p.evaluate(() => [...document.querySelectorAll('#sinyaller-agac .sat[data-d="1"]')].map((x) => {
+          const ik = x.querySelector(".ik");
+          const m = ik ? /url\("data:image\/svg\+xml,(.*)"\)/.exec(getComputedStyle(ik).backgroundImage) : null;
+          return { id: x.dataset.id, svg: m ? decodeURIComponent(m[1]) : "" };
+        }));
+        const yanlisSimge = projeSatirlari.filter((x) => sekil(x.svg) !== sekilDosyasi(x.id.endsWith(`/proje.${sy.catiKodu}`) ? "istasyon" : "sefer"))
+          .map((x) => ({ id: x.id, sekil: sekil(x.svg).slice(0, 80) }));
+        kontrol(`${etiket}: her Proje satırı Yol Haritasının Proje simgesini taşır; çatı simgesi yalnız çatının kendi satırındadır (PNL-A25)`,
+          projeSatirlari.length > 0 && yanlisSimge.length === 0 && sekilDosyasi("sefer") !== sekilDosyasi("istasyon"),
+          JSON.stringify({ proje: projeSatirlari.length, yanlis: yanlisSimge.slice(0, 3) }));
         // Bant adı dar panelde de kısalmaz; tanı satırında kod, dosya ve satır görünür kalır (uzun ileti kısalır).
         const kesik = await p.evaluate(() => ({
           bant: [...document.querySelectorAll('#sinyaller-agac .sat[data-d="0"] .et')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent),

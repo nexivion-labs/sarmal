@@ -1622,3 +1622,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Panel Blokunun Tren ve Sinyaller işleri bittiğinde; Founder'ın onayıyla",
   ne:               "Founder 2026-10-28 tarihinde her depodaki bilgi kalabalığının akıbetini sormuştur. Ölçümde Orkestrasyon'un Bilgi bandındaki kayıtların çoğu canlı kadro dosyalarındaki gerçek borçtur: 467 beceri kartı kabul satırı taşımamakta, 301 dosyada şema dışı alan bulunmakta ve 110 kayıt ad ayracı biçimindedir; laboratuvar arşivinin 104 dosyasının 103'ü damgalıdır ve tek damgasız dosya ebedî kural taşıdığı için damga alamamaktadır. Kontrolcü en kalabalık projeden başlayarak her proje için tek seferlik, ajanlarla yürütülen bir temizlik turu önermiştir: biçim sorunları araçla, şema dışı alanlar tek bir kararla, beceri kabul satırları toplu yazımla giderilir; gündem işaretleri kalır. Ebedî kuralın kilitlenmesi ya da canlı yasaya taşınması Founder kararıdır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-TREN-IKI-GORUNUM,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p2,
+  tarih:            2026-10-28,
+  dönüşTetikleyici: "Kullanım limiti yenilendiğinde ve PNL-A11 kapandıktan sonra",
+  ne:               "Founder 2026-10-28 tarihinde Tren şirket şemasının şeritler, sütunlar ve kart ızgarası görünümlerinin üçünün de bulunmasına ve ayardan değiştirilmesine hükmetmiş, aynı akşam kullanım limiti yüzünden PNL-A11'de yalnız şeritler görünümünün yazılmasına karar vermiştir. Sütunlar ve kart ızgarası görünümleri aynı örgüt verisinden beslenerek eklenecek ve Ayarlar sekmesinin Görünüm bölümünde (PNL-A10) seçilebilir olacaktır."
+)

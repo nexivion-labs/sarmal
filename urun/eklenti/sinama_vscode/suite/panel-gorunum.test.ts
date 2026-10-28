@@ -106,25 +106,16 @@ function kur<T extends { simgeKaynaginiBagla(kok: vscode.Uri, cizelge: ReturnTyp
 describe("Sarmal panel satırları — gerçek VS Code görünüşü", () => {
   before(() => { yuzeyDiliniAyarla(etkinDil()); });
 
-  it("üç panel bakışta ayrılır: proje satırı simgeleri birbirinden ve roketten farklıdır", () => {
+  it("PNL-A25: Hatırlatıcılar ve Gözlemler'in Proje satırı Yol Haritasının Proje simgesini taşır; çatı simgesi Proje satırında görünmez", () => {
+    // VIT-KIMLIK-A05'te ayrı görünümler bakışta ayrılsın diye her panel kendi proje simgesini taşıyordu. Paneller
+    // tek kabın sekmeleri olunca Founder her Proje satırının Yol Haritasındaki Proje simgesini taşımasına hükmetti.
     const htr = kur(new Hatirlaticilar());
     const bld = kur(new Bildirimler());
     htr.yerlestir([kayit("açık-hatırlatıcı", "Bu iş bilerek sonraya bırakıldı.")]);
     bld.yerlestir([kayit("şema-dışı-alan", "Bir alan şemada ilan edilmemiş.")]);
-
-    const htrProje = htr.getTreeItem(htr.getChildren()[0]);
-    const bldProje = bld.getTreeItem(bld.getChildren()[0]);
-    const a = simgeKimligi(htrProje);
-    const b = simgeKimligi(bldProje);
-
-    assert.notStrictEqual(a, b,
-      `Hatırlatıcılar ile Bildirimler aynı proje satırı simgesini kullanıyor: ${a}`);
-    // Yol Haritasının proje satırı seferi (ya da çalışma alanında istasyonu) taşır.
-    for (const s of [a, b]) {
-      for (const yh of [varlikSimgesi("Proje"), varlikSimgesi("ÇalışmaAlanı")]) {
-        assert.notStrictEqual(s, yh,
-          `panel Yol Haritasının ${yh} simgesini kullanıyor; iki panel bakışta ayrılmaz`);
-      }
+    for (const s of [simgeKimligi(htr.getTreeItem(htr.getChildren()[0])), simgeKimligi(bld.getTreeItem(bld.getChildren()[0]))]) {
+      assert.strictEqual(s, varlikSimgesi("Proje"), `Proje satırı Yol Haritasının Proje simgesini taşımıyor: ${s}`);
+      assert.notStrictEqual(s, varlikSimgesi("ÇalışmaAlanı"), "Proje satırında çatı simgesi görünüyor");
     }
   });
 

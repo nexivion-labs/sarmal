@@ -828,9 +828,11 @@ test("durum çubuğu Sarmal'ın kendi yüzeylerini gösterir ve her sayı kaynak
   const kaynak = {
     hata: () => 11, uyarı: () => 22, gözlem: () => 33,
     hatırlatıcı: () => 44, fikir: () => 66, kapı: () => 55,
+    dur: () => 7, dikkat: () => 8,
   };
   const okunan = DURUM_CUBUGU_GIRDILERI.map((g) => g.say(kaynak));
-  assert.deepEqual(okunan, [55, 44, 66, 33],
+  // PNL-A08: Dur ve Dikkat girdisi en solda durur ve iki bandın toplamını sayar (metni iki parçayı ayrı yazar).
+  assert.deepEqual(okunan, [15, 55, 44, 66, 33],
     "durum çubuğu sayısı kaynaktan gelmiyor; ikinci bir sayaç tutuluyor olabilir");
 });
 

@@ -156,6 +156,11 @@ svg.ik{background:none}
 #sinyaller-agac .sat[data-d="0"] .et{flex-shrink:0}
 #sinyaller-agac .sat[data-komut] .ac{flex-shrink:0;max-width:60%}
 #sinyaller-agac .sat:not([data-komut]) .et{flex-shrink:0}
+/* RAY İŞARETİ (PNL-A21): tanı taşıyan düğümün satırında Dur ve Dikkat rozetleri. Açık dal kendi tanılarını,
+   kapalı dal alt ağacının toplamını gösterir; seçim satırın açıklığından okunur, eklenti beklenmez. */
+.sny{flex:none;display:inline-flex;gap:2px;margin-left:6px;cursor:pointer}
+.sny>span{display:inline-flex;gap:2px}
+.sat[aria-expanded="true"] .sny-kapali:not(.sny-acik),.sat:not([aria-expanded="true"]) .sny-acik:not(.sny-kapali){display:none}
 /* Fare üzerindeki satırın gri açıklaması dalın tonuna boyanır (seçili satırda seçim rengi kalır,
    çünkü mor yazı seçim zemininde okunmaz) ve simgesi canlanıp tül morunda hafifçe ışır. */
 .sat:hover:not(.sec) .ac{color:var(--tul-vurgu)}
@@ -517,6 +522,8 @@ export const PANEL_BETIGI = `
     } else if (m.tip === 'git') {
       var g = satirBul(m.id);
       if (g) { sec(g); g.focus(); g.scrollIntoView({ block: 'nearest' }); }
+    } else if (m.tip === 'sinyalSec') {
+      sinyalSecimiUygula(m.idler);
     }
   });
 
@@ -610,6 +617,21 @@ export const PANEL_BETIGI = `
     var g = $(bb.getAttribute('aria-controls'));
     if (g) g.hidden = !ac;
     gonder({ tip: 'bolumGec', bolum: bb.getAttribute('data-bolum'), ac: ac });
+  }
+
+  // ── Ray işaretinin seçimi (PNL-A21): Sinyaller'de düğümün bütün tanı satırları birlikte seçilir ──
+  function sinyalSecimiUygula(idler) {
+    Array.prototype.forEach.call(document.querySelectorAll('.sat.sec'), function (x) { x.classList.remove('sec'); });
+    var ilk = null;
+    (Array.isArray(idler) ? idler : []).forEach(function (id) {
+      var s = document.querySelector('#sinyaller-agac .sat[data-id="' + kacirSel(id) + '"]');
+      if (s) { s.classList.add('sec'); if (!ilk) ilk = s; }
+    });
+    if (!ilk) return;
+    seciliSatir = ilk.getAttribute('data-id') || '';
+    kilavuzYaz();
+    ilk.focus();
+    ilk.scrollIntoView({ block: 'nearest' });
   }
 
   // ── Seçim ve aç-kapa ───────────────────────────────────────────────────────
@@ -740,6 +762,13 @@ export const PANEL_BETIGI = `
     var sat = t.closest('.sat');
     if (!sat) return;
     var id = sat.getAttribute('data-id');
+    // PNL-A21: Ray satırındaki Dur ve Dikkat işareti Sinyaller sekmesini açar; satırın kendi eylemi çalışmaz.
+    if (t.closest('.sny')) {
+      e.stopPropagation();
+      sekmeSec('sinyaller', false);
+      gonder({ tip: 'sinyalGit', id: id, acik: sat.getAttribute('aria-expanded') === 'true' });
+      return;
+    }
     var ey = t.closest('.ey');
     if (ey) { e.stopPropagation(); gonder({ tip: 'eylem', id: id, komut: ey.getAttribute('data-komut') }); return; }
     var kt = t.closest('input.kt');

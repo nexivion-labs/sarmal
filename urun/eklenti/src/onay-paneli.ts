@@ -67,7 +67,7 @@ import {
   onayKapiBaglami, onayBaglamKopyalandi, onayBaglamKapiYok,
 } from "./yuzey-metinleri.ts";
 import {
-  OnayDefteri,
+  OnayDefteri, kararBugunVerilir,
   type KapiKaydi, type OnayKapisi,
 } from "./onay-cekirdek.ts";
 import {
@@ -145,9 +145,17 @@ export class OnayPaneli {
     }
   }
 
-  /** Bekleyen kapı sayısı — rozet, durum çubuğu ve nöbet bu sayıyı okur. */
+  /**
+   * Kararı bugün verilebilecek kapı sayısı — rozet, durum çubuğu, Makinist'in Onaylar grubu ve nöbet bu
+   * sayıyı okur (PNL-A08). Adımı beklemede olan kapı defterde kalır fakat bu sayıya girmez.
+   */
   get kapiSayisi(): number {
-    return this.defter.kapiSayisi;
+    return this.kapilar("bugun").length;
+  }
+
+  /** Adımı henüz beklemede olan, ileride onay isteyecek kapı sayısı; hiçbir sayaca girmez (PNL-A08). */
+  get ilerideKapiSayisi(): number {
+    return this.kapilar("ileride").length;
   }
 
   /** Nöbet ölçüsü: defterde kaç gerekçe taslağı duruyor. */
@@ -160,9 +168,12 @@ export class OnayPaneli {
     this.cizdir();
   }
 
-  /** Makinist ağacının Onaylar düğümünün satırları: bekleyen bütün kapılar. */
-  kapilar(): KapiKaydi[] {
-    return this.defter.kayitlar();
+  /**
+   * Makinist ağacının satırları (PNL-A08): `bugun` Onaylar grubunun, kararı bugün verilebilecek kapıları;
+   * `ileride` "İleride onay isteyecek" grubunun, Adımı beklemede olan kapıları.
+   */
+  kapilar(kume: "bugun" | "ileride" = "bugun"): KapiKaydi[] {
+    return this.defter.kayitlar().filter((k) => kararBugunVerilir(k.kapi) === (kume === "bugun"));
   }
 
   /**

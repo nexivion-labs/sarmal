@@ -78,8 +78,8 @@ const zincir = (...adimlar: string[]): string =>
   `  }\n` +
   `}\n`;
 const kapilar = (kaynak: string): OnayKapisi[] => onayKapilariTopla(ayristir(belirtecle(kaynak)).bildirimler);
-const adim = (kod: string): string =>
-  `Adım( kod: ${kod}, onayBekler: founder, durum: beklemede, ne: "🧪 ${kod} karar bekliyor", kabul: [ ${ONAYLI_OLCUT} ] )`;
+const adim = (kod: string, durum = "beklemede"): string =>
+  `Adım( kod: ${kod}, onayBekler: founder, durum: ${durum}, ne: "🧪 ${kod} karar bekliyor", kabul: [ ${ONAYLI_OLCUT} ] )`;
 
 const DOSYA = "/sahte/proje/is/plan/deneme.sar";
 const IKI_KAPI = zincir(adim("A1"), adim("A2"));
@@ -224,14 +224,16 @@ test("② kapıya git: defterde olmayan kapı sıfır satırla gider (kod bağla
 // ③ ONAYLAR PANELİ — ROZET DEFTERİN SAYISINI SÖYLER
 // ═══════════════════════════════════════════════════════════════════════════
 
-test("③ sayı: kapı sayısı defterin sayısını söyler, boşalan defter sıfıra iner ve eski sayıda asılı kalmaz", () => {
+test("③ sayı: kapı sayısı defterin kararı bugün verilebilecek kapılarını söyler, boşalan defter sıfıra iner ve eski sayıda asılı kalmaz (PNL-A08)", () => {
   // Rozet artık Makinist ağacında yaşar (MakinistAgaci.rozetSayisi); kaynağı bu sayıdır.
   const { panel } = panelKur();
-  panel.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
+  panel.yerlestirHepsi(kayitlar(DOSYA, zincir(adim("A1", "geliştirmede"), adim("A2", "doğrulanmamış"))));
   assert.equal(panel.kapiSayisi, 2, "fikstür iki kapı üretmedi");
-  panel.yerlestirDosya("/sahte/ikinci.sar", kapilar(zincir(adim("C1"))));
-  assert.equal(panel.kapiSayisi, 3, "ikinci dosyanın kapısı sayıya yansımadı");
+  panel.yerlestirDosya("/sahte/ikinci.sar", kapilar(zincir(adim("C1", "geliştirmede"), adim("C2"))));
+  assert.equal(panel.kapiSayisi, 3, "ikinci dosyanın kapısı sayıya yansımadı ya da beklemedeki kapı sayıldı");
   assert.equal(panel.kapilar().length, 3, "ağaç satırları ile sayı ayrıştı");
+  assert.deepEqual(panel.kapilar("ileride").map((k) => k.kapi.kod), ["C2"], "beklemedeki kapı ileride grubunda değil");
+  assert.equal(panel.ilerideKapiSayisi, 1);
   panel.yerlestirHepsi([]);
   assert.equal(panel.kapiSayisi, 0);
   assert.equal(panel.kapilar().length, 0, "boşalan defterin ağaç satırları kalktı mı");
@@ -361,7 +363,7 @@ for (const [ad, Sinif, kaydet, kimlik, bos] of [
 test("⑤ Makinist ağacı: tek görünüm, üç üst düğüm (Gözlemler yok); sayılar kaynakların kendi sayacından, alt düğümler kaynağın kendi nesneleridir", () => {
   const baglam = baglamKur();
   const onay = onayPaneliKaydi(baglam as never);
-  onay.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
+  onay.yerlestirHepsi(kayitlar(DOSYA, zincir(adim("A1", "geliştirmede"), adim("A2", "doğrulanmamış"), adim("A3"))));
   const htr = hatirlaticilarKaydi(baglam as never);
   const fkr = fikirlerKaydi(baglam as never);
   htr.yerlestir(UC_KAYIT);
@@ -370,22 +372,29 @@ test("⑤ Makinist ağacı: tek görünüm, üç üst düğüm (Gözlemler yok);
   assert.equal(kabuk.agaclar.length, 0, "Makinist (ya da başka bir kaynak) kapta kendi ağaç görünümünü kurmamalı: kapta tek görünüm görünür");
   const kokler = agac.getChildren() as Array<{ grup: string }>;
   // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez; Sinyaller sekmesinin ayrı bölümündedir.
-  assert.deepEqual(kokler.map((k) => k.grup), ["onaylar", "hatirlaticilar", "fikirler"], "üst düğümler ya da sıraları değişmiş");
+  // PNL-A08: beklemedeki kapı Onaylar'ın hemen altındaki, kapalı başlayan "İleride onay isteyecek" grubundadır.
+  assert.deepEqual(kokler.map((k) => k.grup), ["onaylar", "ileride", "hatirlaticilar", "fikirler"], "üst düğümler ya da sıraları değişmiş");
   const aciklama = (k: unknown) => agac.getTreeItem(k).description;
-  assert.equal(aciklama(kokler[0]), "2", "Onaylar düğümünün sayısı defterin kapı sayısı değil");
-  assert.equal(aciklama(kokler[1]), String(htr.kayitSayisi), "Hatırlatıcılar düğümünün sayısı kaynağın sayacından ayrışmış");
-  assert.equal(aciklama(kokler[2]), undefined, "boş Fikirler düğümü sayı basıyor");
+  assert.equal(aciklama(kokler[0]), "2", "Onaylar düğümünün sayısı kararı bugün verilebilecek kapı sayısı değil");
+  assert.equal(aciklama(kokler[1]), "1", "İleride onay isteyecek grubunun sayısı beklemedeki kapı sayısı değil");
+  assert.equal(agac.getTreeItem(kokler[1]).collapsibleState, 1, "İleride onay isteyecek grubu kapalı başlamalı");
+  assert.deepEqual((agac.getChildren(kokler[1]) as Array<{ kayit: { kapi: { kod: string } } }>).map((k) => k.kayit.kapi.kod), ["A3"]);
+  assert.equal(aciklama(kokler[2]), String(htr.kayitSayisi), "Hatırlatıcılar düğümünün sayısı kaynağın sayacından ayrışmış");
+  assert.equal(aciklama(kokler[3]), undefined, "boş Fikirler düğümü sayı basıyor");
   // Onaylar: iki kapı satırı, tıklayınca kapıyı açan komutla.
   const kapilar = agac.getChildren(kokler[0]);
   assert.equal(kapilar.length, 2);
   const kapiOgesi = agac.getTreeItem(kapilar[0]);
   assert.equal(kapiOgesi.command?.command, "sarmal.onayKapisiAc");
   // Hatırlatıcılar: alt düğümler kaynağın kendi nesneleridir (sarmalanmaz) ve satırı kaynak çizer.
-  const proje = agac.getChildren(kokler[1])[0]!;
+  const proje = agac.getChildren(kokler[2])[0]!;
   assert.equal(agac.getTreeItem(proje).contextValue, "sarmalHatirlaticiProjesi");
   assert.ok(agac.getChildren(proje).length > 0, "proje düğümünün çocukları kaynağa devredilmedi");
-  // Rozet = kapılar + hatırlatıcılar.
+  // Makinist sekmesinin rozeti = kararı bugün verilebilecek kapılar + hatırlatıcılar; beklemedeki kapı girmez.
   assert.equal(agac.rozetSayisi, 2 + htr.kayitSayisi);
+  // Beklemedeki kapı yoksa grup hiç çizilmez.
+  onay.yerlestirHepsi(kayitlar(DOSYA, zincir(adim("A1", "geliştirmede"))));
+  assert.deepEqual((agac.getChildren() as Array<{ grup: string }>).map((k) => k.grup), ["onaylar", "hatirlaticilar", "fikirler"]);
   // Rozet Sarmal panelinin görünümüne yazılır (panel.ts, panel.test.ts ölçer); ağaç yalnız sayıyı verir.
 });
 

@@ -292,9 +292,10 @@ function diskYuruyusu(dosyaYolu: string): VarlikKimligi {
  * gruplar ve Yol Haritası ile AYNI kimlik çıkarma kuralını kullanır; ikinci bir
  * okuma kuralı yazılmaz, dolayısıyla iki panel aynı dosyayı farklı Projeye yazamaz.
  */
-export function projeKimligi(dosyaYolu: string): { kod: string; ad: string } {
+export function projeKimligi(dosyaYolu: string): { kod: string; ad: string; tip: string } {
   const v = varlikBul(dosyaYolu);
-  return { kod: v.kod, ad: v.ad };
+  // PNL-A25: tip de taşınır; panelin her Proje satırı simgesini Yol Haritasıyla aynı kuraldan seçer.
+  return { kod: v.kod, ad: v.ad, tip: v.tip };
 }
 
 export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
