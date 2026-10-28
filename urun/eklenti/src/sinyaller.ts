@@ -45,14 +45,29 @@ type SinyalOgesi =
   | { readonly tur: "sinyal-oneri"; readonly satir: SinyalSatiri }
   | { readonly tur: "sinyal-madde"; readonly madde: string };
 
-const BANT_RENGI: Readonly<Record<SinyalBandi, AnlamRengi>> = { dur: "hata", dikkat: "uyari", bilgi: "bilgi" };
+/** Bandın anlam rengi: Dur kırmızı, Dikkat sarı, Bilgi mavi. Editörün satır işareti de bu rengi taşır (PNL-A22). */
+export const BANT_RENGI: Readonly<Record<SinyalBandi, AnlamRengi>> = { dur: "hata", dikkat: "uyari", bilgi: "bilgi" };
+
+let haritaSirasi = -1;
+let harita: ReadonlyMap<string, readonly string[]> = new Map();
+/**
+ * Tanının dayandığı kanon maddeleri: sicilin kural bağı ve turun kural↔kapı haritası. Harita son tur
+ * görüntüsünün programlarından tur başına bir kez kurulur; Sinyaller ağacı ile editörün hover'ı aynı
+ * haritayı okur (PNL-A22).
+ */
+export function turKanonMaddeleri(kod: string): readonly string[] {
+  const g = sonTurGoruntusu();
+  if (g && g.sıra !== haritaSirasi) {
+    harita = kanonTaniHaritasi(g.programlar.values());
+    haritaSirasi = g.sıra;
+  }
+  return kanonMaddeleri(kod, harita);
+}
 
 export class SinyallerAgaci {
   private readonly degisti = new vscode.EventEmitter<unknown>();
   readonly onDidChangeTreeData = this.degisti.event;
   private model: SinyalModeli = sinyalModeli([], undefined, () => []);
-  private haritaSirasi = -1;
-  private harita = new Map<string, string[]>();
   private readonly kok: vscode.Uri | undefined;
   private readonly bantlar = new Map<SinyalBandi, SinyalOgesi>(SINYAL_BANTLARI.map((b) => [b, { tur: "sinyal-bant", bant: b }]));
 
@@ -60,23 +75,12 @@ export class SinyallerAgaci {
     this.kok = kok;
   }
 
-  /** Turun kural↔kapı haritası: son tur görüntüsünün programlarından, tur başına bir kez kurulur. */
-  private kanonHaritasi(): ReadonlyMap<string, readonly string[]> {
-    const g = sonTurGoruntusu();
-    if (g && g.sıra !== this.haritaSirasi) {
-      this.harita = kanonTaniHaritasi(g.programlar.values());
-      this.haritaSirasi = g.sıra;
-    }
-    return this.harita;
-  }
-
   /**
    * Kapsamdaki bütün tanı kayıtları (yayın tur başına birdir); odaktaki Projenin kodu üstte durur.
    * Hatırlatıcılar yüzeyine yönlenenleri model ayırır; ağaç onları hiç çizmez.
    */
   yerlestir(kayitlar: readonly YuzeyKaydi[], odakProje: string | undefined): void {
-    const harita = this.kanonHaritasi();
-    this.model = sinyalModeli(kayitlar, odakProje, (kod) => kanonMaddeleri(kod, harita));
+    this.model = sinyalModeli(kayitlar, odakProje, turKanonMaddeleri);
     this.degisti.fire(undefined);
   }
 

@@ -174,7 +174,8 @@ test("MGZ-A02: kısıtlı modda bir Sarmal komutu çağrılırsa çalışmaz ve 
 
 test("MGZ-A02: klasöre güvenilince eklenti pencere yeniden yüklenmeden tam açılır ve işaret kalkar", async () => {
   const a = agacKur();
-  const e = etkinlestir({ klasorler: [a.alan], etkinDosya: a.plan, guvenilir: false });
+  // Kırık dosyanın tanısı Sorunlar panelinde aranır; gönderim PNL-A22'den beri ayarla seçilir.
+  const e = etkinlestir({ klasorler: [a.alan], etkinDosya: a.plan, guvenilir: false, ayarlar: { sorunlarPaneli: true } });
   acik.push(e);
   const isaret = e.kayit.durumOgeleri.find((o) => o.gorunur);
   assert.ok(isaret, "güven verilmeden önce kısıtlı mod işareti yok");

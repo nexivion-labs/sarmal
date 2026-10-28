@@ -65,7 +65,10 @@ import { panelKaydi, type SarmalPaneliYuzu } from "./panel.ts";   // 🧭 Founde
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
 import { makinistKaydi } from "./makinist.ts";
 import { sinyallerKaydi, type SinyallerAgaci } from "./sinyaller.ts";   // 🚦 PNL-A09 Sinyaller sekmesi (OZK-14)
-import { KayitDefteri } from "./sinyaller-cekirdek.ts";   // 🧑‍✈️ Makinist ağacı
+import { KayitDefteri, sinyaldeGorunur } from "./sinyaller-cekirdek.ts";   // 🧑‍✈️ Makinist ağacı
+// 〰️ PNL-A22: Sorunlar paneli ayarı; kapalıyken editörün satır işareti, hover'ı ve gezgin rozeti
+import { SORUNLAR_PANELI_AYARI, sorunKaynaginiBagla, sorunlarPaneliAcik, sorunTanilariDegisti } from "./sorun-tanilari.ts";
+import { EditorSinyalleri, type EditorSinyali, type EditorSinyalOlcumu } from "./editor-sinyalleri.ts";
 import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
@@ -127,16 +130,17 @@ let durumCubugu: DurumCubugu | undefined;
 const turSayacı = { tur: 0 };
 
 /**
- * Motorun tanı koleksiyonundaki belirli düzeydeki tanı sayısı. Durum çubuğu
- * bu işlevi çağırır; kendi listesini TUTMAZ, koleksiyonu her seferinde okur.
- * Koleksiyon zaten tek gerçektir ve panelin gördüğü de odur.
+ * Belirli düzeydeki Sarmal tanısı sayısı. Durum çubuğu bu işlevi çağırır; kendi
+ * listesini TUTMAZ. PNL-A22'den beri sayı koleksiyondan değil turun defterinden
+ * okunur ve Sorunlar paneline basma kapısının süzgecinden (`sorunlariOku`) geçer:
+ * ayar açıkken koleksiyonun taşıdığı listenin aynısıdır, kapalıyken koleksiyon boş
+ * kaldığı hâlde sayaç aynı sayıyı gösterir. Tek kaynak turun defteridir.
  */
 function taniSay(duzey: vscode.DiagnosticSeverity): number {
-  if (!koleksiyon) return 0;
   let toplam = 0;
-  koleksiyon.forEach((_uri, tanilar) => {
-    for (const t of tanilar) if (t.severity === duzey) toplam++;
-  });
+  for (const yol of taniDefteri.keys()) {
+    for (const t of sorunlariOku(yol)) if (t.severity === duzey) toplam++;
+  }
   return toplam;
 }
 
@@ -285,6 +289,8 @@ export interface SarmalEklentiYuzu {
     panelOlcumleri(): ReturnType<SarmalPaneliYuzu["olcumler"]> | undefined;
     /** 🟣 PNL-A24: editörün son girinti boyaması (tül derinlik mi gökkuşağı bantları mı). */
     girintiOlcumu(): GirintiOlcumu | undefined;
+    /** 〰️ PNL-A22: dosyanın son satır işareti çizimi (Sorunlar paneli kapalıyken). */
+    editorSinyalOlcumu(dosya: string): EditorSinyalOlcumu | undefined;
   };
 }
 
@@ -431,6 +437,19 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   yuzeyKokleriniTazele();
   koleksiyon = vscode.languages.createDiagnosticCollection("sarmal");
   context.subscriptions.push(koleksiyon);
+  // 〰️ PNL-A22 (OZK-14 ÜÇÜNCÜSÜ): Sorunlar paneli ayarı kapalıyken (varsayılan) koleksiyon boş kalır;
+  // editörün satır işareti, hover'ı, gezgin rozeti ve hızlı düzeltmesi turun defterinden gelir.
+  editorSinyalleri = new EditorSinyalleri({ sinyaller: editorSinyalleriniOku, sorunlar: sorunlariOku });
+  context.subscriptions.push(
+    editorSinyalleri,
+    sorunKaynaginiBagla((uri) => (sorunlarPaneliAcik() ? vscode.languages.getDiagnostics(uri) : sorunlariOku(uri.fsPath))),
+    vscode.languages.registerHoverProvider("sarmal", editorSinyalleri),
+    vscode.window.registerFileDecorationProvider(editorSinyalleri),
+    vscode.window.onDidChangeVisibleTextEditors(() => editorSinyalleri?.cizHepsi()),
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration(`sarmal.${SORUNLAR_PANELI_AYARI}`)) sorunlarPaneliGecis();
+    }),
+  );
 
   // Kenar çubuğunun yüzeyleri eklenti etkinleşmesinde TAM BİR KEZ kaydedilir;
   // görünümleri context.subscriptions üstünden kapanışta serbest bırakılır.
@@ -621,6 +640,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     const taniKapali = !denetimAcik();
     if (taniKapali) {
       koleksiyon.clear(); taniDefteri.clear(); yuzeyDefteri.temizle();
+      editorSinyalDefteri.clear(); sorunTanilariDegisti(); editorSinyalleri?.hepsiniTazele();   // 〰️ PNL-A22
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
       sinyalDefteri.temizle();   // 🚦 PNL-A09: Sinyaller de susar
       tamDenetimSonucu([], [], true);   // 📦 EKL-F6-A09: kapalı denetimde "koşmadı" işareti bayat kalmaz
@@ -1094,6 +1114,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       ? { bolumSinamaKapisi: {
         ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false,
         panelOlcumleri: () => panel?.olcumler(), girintiOlcumu: () => girintiOlcumu(),
+        editorSinyalOlcumu: (dosya: string) => editorSinyalleri?.olcum(dosya),
       } }
       : {}),
   };
@@ -1273,8 +1294,14 @@ function yuzeylereDagit(
     proje, dosya: doc.uri.fsPath, tani: taniDilineCevir(tani, dil),
   }));
   const dagilim = yuzeyeAyir(kayitlar);
-  taniYayinla(doc.uri, dagilim.problems.map((k) => taniYapTani(doc, k.tani)));
-  // 🚦 PNL-A09: Sinyaller tam listeyi alır (Sorunlar paneline gönderim değişmez · PNL-A22).
+  const sorunlar = dagilim.problems.map((k) => taniYapTani(doc, k.tani));
+  // 〰️ PNL-A22: editörün satır işareti ve hover'ı Sinyaller'in gösterdiği kayıtlardan (Dur, Dikkat, Bilgi)
+  // kurulur; hata ve uyarının editör tanısı koleksiyona giden nesnenin AYNISIDIR.
+  const sorunNesnesi = new Map(dagilim.problems.map((k, i) => [k, sorunlar[i]!]));
+  editorSinyalDefteri.set(doc.uri.fsPath, kayitlar.filter(sinyaldeGorunur)
+    .map((k): EditorSinyali => ({ tani: k.tani, tanilama: sorunNesnesi.get(k) ?? taniYapTani(doc, k.tani) })));
+  taniYayinla(doc.uri, sorunlar);
+  // 🚦 PNL-A09: Sinyaller tam listeyi alır; Sorunlar paneline gönderim ayara bağlıdır (PNL-A22 · problemseBas).
   sinyalDefteri.yaz(doc.uri.fsPath, kayitlar, yayımlansın);
   yuzeyDefteri.yaz(
     doc.uri.fsPath, [...dagilim.hatırlatıcılar, ...dagilim.bildirimler], yayımlansın,
@@ -1331,6 +1358,38 @@ function varlikEtiketi(dosyaYolu: string): string {
 const taniDefteri = new Map<string, { uri: vscode.Uri; tanilar: vscode.Diagnostic[] }>();
 let aktifVarlik: string | undefined;
 
+// ── 〰️ EDİTÖR SİNYAL DEFTERİ (PNL-A22 · OZK-14 ÜÇÜNCÜSÜ) ─────────────────────
+//   Dosya başına Sinyaller'de görünen kayıtların editör tanıları (Dur, Dikkat, Bilgi).
+//   Sorunlar paneli kapalıyken satır işareti ve hover buradan, hızlı düzeltme ile
+//   satır içi tanı `sorunlariOku` üzerinden okunur. Kapsam süzgeci Sorunlar paneline
+//   basma kapısının aynısıdır (MGZ-A03): odak dışındaki dosyadan yalnız söz-dizim geçer.
+const editorSinyalDefteri = new Map<string, EditorSinyali[]>();
+let editorSinyalleri: EditorSinyalleri | undefined;
+
+/** Ayar açıkken koleksiyona basılacak liste; kapalıyken editör yüzeyleri bunu okur. */
+function sorunlariOku(yol: string): vscode.Diagnostic[] {
+  return problemsYayini(taniDefteri.get(yol)?.tanilar ?? [], panelDeGorunur(yol));
+}
+
+/** Dosyanın editördeki sinyalleri, aynı kapsam süzgecinden geçerek. */
+function editorSinyalleriniOku(yol: string): EditorSinyali[] {
+  const hepsi = editorSinyalDefteri.get(yol) ?? [];
+  return problemsYayini(hepsi.map((s) => ({ code: s.tani.kod, s })), panelDeGorunur(yol)).map((x) => x.s);
+}
+
+/**
+ * Sorunlar paneli ayarı değişti (PNL-A22): pencere yeniden yüklenmeden geçilir. Açılınca defterdeki
+ * her dosya basma kapısından yeniden geçer ve koleksiyon kayıpsız dolar; kapanınca koleksiyon boşalır.
+ * Editörün satır işaretleri, gezgin rozetleri, satır içi tanı ve sayaçlar aynı anda tazelenir.
+ */
+function sorunlarPaneliGecis(): void {
+  if (sorunlarPaneliAcik()) for (const { uri, tanilar } of taniDefteri.values()) problemseBas(uri, tanilar);
+  else koleksiyon.clear();
+  sorunTanilariDegisti();
+  editorSinyalleri?.hepsiniTazele();
+  durumCubugu?.tazele();
+}
+
 function odakAcik(): boolean {
   return vscode.workspace.getConfiguration("sarmal").get<boolean>("aktifVarlikOdagi", true);
 }
@@ -1358,6 +1417,8 @@ function panelDeGorunur(fsPath: string): boolean {
  * geçer; iki ayrı kural yazılsaydı odak değiştiğinde kırık dosya yeniden düşerdi.
  */
 function problemseBas(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
+  // PNL-A22: ayar kapalıyken tanılar koleksiyona YAZILMAZ (OZK-14 ÜÇÜNCÜSÜ).
+  if (!sorunlarPaneliAcik()) { koleksiyon.delete(uri); return; }
   const odakta = panelDeGorunur(uri.fsPath);
   const gidecek = problemsYayini(tanilar, odakta);
   if (odakta || gidecek.length) koleksiyon.set(uri, gidecek);
@@ -1367,12 +1428,22 @@ function problemseBas(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
 function taniYayinla(uri: vscode.Uri, tanilar: vscode.Diagnostic[]): void {
   taniDefteri.set(uri.fsPath, { uri, tanilar });
   problemseBas(uri, tanilar);
+  editorYuzeyleriniTazele(uri);
   durumCubugu?.tazele();
+}
+
+/** Ayar kapalıyken koleksiyon olayı doğmaz; editörün yüzeyleri defterin değiştiğini buradan duyar (PNL-A22). */
+function editorYuzeyleriniTazele(uri: vscode.Uri): void {
+  if (sorunlarPaneliAcik()) return;
+  sorunTanilariDegisti();
+  editorSinyalleri?.dosyaTazele(uri);
 }
 
 function taniSil(uri: vscode.Uri, yayımlansın = true): void {
   taniDefteri.delete(uri.fsPath);
+  editorSinyalDefteri.delete(uri.fsPath);   // 〰️ PNL-A22
   koleksiyon.delete(uri);
+  editorYuzeyleriniTazele(uri);
   // Dosya kapsam dışına çıktıysa hatırlatıcıları ve bildirimleri de düşer —
   // üç yüzey aynı anda temizlenir, biri bayat kalmaz. Toplu tarama içinden
   // çağrıldığında yayın ertelenir; turun tek yayını bu silmeyi de kapsar.
@@ -1428,6 +1499,9 @@ const meyveKapisi = {
 // gizlediği hâlde panelde durmaya devam ediyordu.
 function hepsiniYenidenYayinla(): void {
   for (const { uri, tanilar } of taniDefteri.values()) problemseBas(uri, tanilar);
+  // 〰️ PNL-A22: kapsam değişince editörün sinyalleri ve gezgin rozetleri de yeniden basılır.
+  if (!sorunlarPaneliAcik()) sorunTanilariDegisti();
+  editorSinyalleri?.hepsiniTazele();
   yuzeyDefteri.yayımla();
   fikirDefteri.yayımla();   // 💡 KYN-YUZ-A01: Fikir hanesi de odakla birlikte yeniden basılır
   sinyalDefteri.yayımla();  // 🚦 PNL-A09: Sinyaller de odakla birlikte yeniden basılır

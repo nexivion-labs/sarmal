@@ -20,6 +20,7 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "sekme-gecisi.test.js"));   // ⏱️ PNL-A18 sekme geçişi eklentiyi beklemez
   mocha.addFile(path.resolve(__dirname, "sinyaller.test.js"));   // 🚦 PNL-A09 Sinyaller sekmesi
   mocha.addFile(path.resolve(__dirname, "sekme-sirasi.test.js"));   // ↔️ PNL-A23 sekmelerin sürüklenerek sıralanması
+  mocha.addFile(path.resolve(__dirname, "sorunlar-paneli.test.js"));   // 〰️ PNL-A22 Sorunlar paneline gönderim ayara bağlı
 
   return new Promise((resolve, reject) => {
     try {

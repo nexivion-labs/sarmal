@@ -6762,17 +6762,20 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A07, tarih: 2026-10-27, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1105 sınamanın 1105'i geçti, yapılacak işaret kalmadı (kontrolcü iki kez koşturdu) · tip ve dil temiz · gerçek VS Code süiti 61 geçti, 0 düştü; tek panelden beri ilk tam yeşil, kontrolcü ayrıca koşturdu · görsel kontrol 580/580 · yedi koruma tek tek bozulunca ilgili nöbet düştü · Makinist'te kapı açıkken 1400×400 ekran görüntüsü scratchpad/gorsel-a07/makinist-onay-alt-ust.png", ne: "Editörde açılan onay kartı kaldırıldı. Kapı satırı açılıp kapanan bir satırdır; gerekçe kutusu ve üç eylem satırın hemen altında, Makinist sekmesinde belirir ve aynı anda yalnız bir kapı açık kalır. Diske yazan hat değişmedi ve gerçek VS Code'da şerhin tek satır yazdığı ölçüldü. Panelden tıklanan her satır dosyayı odak panelde kalacak biçimde açar. Onay kuyruğu doğrulanmamış durumdaki Adımları da gösterir. Gerçek VS Code süitindeki 'üç belge açtı' düşüşü ürünün değil ölçümün kusuruydu: sınamanın kendi geçici dosyasının disk olayları sayaca giriyordu ve disk okumaları ayrı sayaca alındı. 0.9.193'teki kapıların dosyaya göre gruplanması ve bağlamı kopyalama düğmesi geri gelmedi; eski onay gövdesi artık yalnız sınamalarda yaşar ve ayrı bir temizlik işidir. Kademenin genişliği ve hizası birinci basamağın tesliminde Founder'ın gözüne sunulacaktır." )
         }
 
-        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15, PRF-IS-A05 ],
+        Adım( kod: PNL-A08, ad: "Sayıların Kapsamını Söylemesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A15 ],
           referans: [ HTR-PANEL-KAPSAM-SAYIMI ],
-          ne: "🔢 Rozetin ve durum çubuğunun hangi kapsamı saydığını söylemesi. Aynı panel açık dosyaya göre çatının ya da tek projenin sayılarını göstermekte ve bunu söylememektedir." ) {
+          ne: "🔢 Rozetin ve durum çubuğunun hangi kapsamı saydığını söylemesi. Aynı panel açık dosyaya göre çatının ya da tek projenin sayılarını göstermekte ve bunu söylememektedir. Founder 2026-10-28 tarihinde bildirim göstergelerinin toplamlarının hatalı olup olmadığını anlayamadığını söylemiştir; ölçümde sayılar tutarlı fakat kapsamı yazmadığı için okunamaz bulunmuş ve iş işçi Blokunu beklemeden öne alınmıştır." ) {
           görev: [
             "Rozet ve durum çubuğu sayının kapsamını adıyla yazar: çatı ya da projenin adı.",
-            "Çatı sayısının üzerine gelince sayı proje proje dökülür."
+            "Çatı sayısının üzerine gelince sayı proje proje dökülür.",
+            "VS Code panelindeki dış Sarmal rozeti yalnız acil olanları sayar: onay bekleyen kapılar, Dur bandındaki tanılar ve ateşlemiş hatırlatıcılar (YUZ-3.4); uyuyan hatırlatıcılar, Dikkat ve Bilgi sayılmaz. Rozetin ipucu bu üç sayıyı ayrı ayrı yazar (Founder hükmü 2026-10-28: rozet bir alarm gibi çalışır, sıfırsa acil iş yoktur).",
+            "Sorunlar paneli ayarı kapalıyken durum çubuğuna Sarmal'ın Dur ve Dikkat girdisini ekle; 2026-07-29'da bu girdi VS Code'un kendi sayacı aynı sayıyı bastığı için kaldırılmıştı, fakat PNL-A22'den beri ayar kapalıyken VS Code'un sayacı Sarmal tanılarını saymaz. Ayar açıkken girdi gösterilmez ki aynı sayı iki kez görünmesin."
           ]
           kabul: [
-            "Aynı çatıda farklı dosyalar açıkken gösterilen her sayı kapsamını adıyla taşır; bunu bir nöbet ölçer."
+            "Aynı çatıda farklı dosyalar açıkken gösterilen her sayı kapsamını adıyla taşır; bunu bir nöbet ölçer.",
+            "Dış Sarmal rozeti onay, Dur ve ateşlemiş hatırlatıcı sayılarının toplamına eşittir ve uyuyan hatırlatıcı ile Dikkat sayısından etkilenmez; bunu bir nöbet ölçer."
           ]
-          sınır: "Sayımın kuralı değişmez; yalnız görünürlüğü değişir."
+          sınır: "Tanıların ve kayıtların sayım kuralı değişmez; değişen yalnız görünürlük ve dış rozetin neyi topladığıdır."
         }
       }
     }
@@ -6808,8 +6811,9 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A09, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1135/1135, çekirdek süiti 1803/1803, tip ve dil temiz, gerçek VS Code süiti 67/67 (kontrolcü sırayla koşturdu) · görsel kontrol depoda ve ders korpusunda 670/670 (üretici koşturdu) · Sarmal deposunda denetim sonucu 103, Hatırlatıcılara giden 46, Sinyaller 57 (Dur 0, Dikkat 0, Bilgi 57); ders korpusunda Dur 7, Dikkat 26, Bilgi 47 · on beş bozma denemesinin hepsini nöbetler yakaladı · kontrolcü ekran görüntülerini gözle denetledi (scratchpad/gorsel-a09)", ne: "Panelin dördüncü sekmesi Sinyaller'dir ve Sarmal'ın tanılarını Dur, Dikkat ve Bilgi bantlarında, Projeye göre gruplu, öneri ve kanon maddesiyle gösterir; bant simgesi sayı sıfırken de düzeyinin rengini taşır ve şeritte Dur ile Dikkat rozetleri vardır. Yönlendirme çekirdeğin YUZ-3.3 kararından okunur: Hatırlatıcılar yüzeyine giden tanı Sinyaller'de görünmez, Bilgi bandı eski Gözlemler grubunun yerini alır ve panelde her tanı yalnız bir kez çizilir. İlk teslimde ayrı Gözlemler bölümü aynı kayıtları ikinci kez gösteriyordu; ölçüm Founder'a açıklandı ve kesin karar YUZ-3.3 ile OZK-14'e indi. Kanon maddesinin tanımını açan komut gerçek VS Code'da ölçülmedi, çünkü sınama çalışma alanında kanon dosyası yoktur; komut çağrısı birim düzeyinde ölçüldü. Ağır yük altında iki ara koşuda zamanlamaya bağlı sınamalar şaştı ve sekme geçişi sınaması sağlamlaştırıldı." )
         }
 
-        Adım( kod: PNL-A22, ad: "Sorunlar Paneline Gönderimin Ayara Bağlanması", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A09, PNL-A20 ],
+        Adım( kod: PNL-A22, ad: "Sorunlar Paneline Gönderimin Ayara Bağlanması", durum: tamamlandı, öncelik: p1, bağımlı: [ PNL-A09, PNL-A20 ],
           referans: [ OZK-14, YUZ-3.1, YAS-3.4 ],
+          üretir: [ KOD-SORUN-TANILARI, KOD-EDITOR-SINYALLERI, KOD-SNM-SORUNLAR-PANELI, KOD-SNM-VSC-SORUNLAR-PANELI, KOD-EKL-EKLENTI, KOD-SINYALLER, KOD-EKL-DUZELTME, KOD-EKL-SATIRICI, KOD-EKL-YILDIZ, KOD-EKL-MANIFEST, KOD-EKL-NLS, KOD-SNM-ETKINLESME-KABUGU, KOD-SNM-SOZDIZIM-YUZEYI, KOD-SNM-TUR-ESITLIGI, KOD-SNM-KISITLI-MOD, KOD-PRF-KABUK-AKTIVASYON, KOD-SNM-VSC-SINYALLER, KOD-PRF-KABUK-KOPRU, KOD-EKL-ESBUILD-SINAMA ],
           ne: "🔕 Sarmal tanılarının VS Code Sorunlar paneline gönderilmesinin ayara bağlanması. Founder 2026-10-28 tarihinde tanıların genel Sorunlar panelinden çıkarılmasına ve gönderimin varsayılanı kapalı bir ayarla seçilmesine hükmetmiştir (OZK-14). VS Code'da editördeki dalgalı çizgi ile Sorunlar paneli aynı tanı koleksiyonundan beslendiği için ayar kapalıyken editördeki işaretin, hover iletisinin ve hızlı düzeltmenin başka bir yoldan üretilmesi gerekir. Kontrolcü Founder'a bir bedeli bildirmiştir: ayar kapalıyken terminaldeki ajanlar Sarmal tanılarını Sorunlar paneli üzerinden göremez ve onları Sarmal araçlarından ve kancalardan öğrenir." ) {
           görev: [
             "Sarmal tanılarının Sorunlar paneline gönderilmesini seçen bir ayar ekle; varsayılanı kapalıdır ve iki yerelleştirme kataloğu ayarın anlamını ve ajanlar için bedelini söyler.",
@@ -6822,6 +6826,21 @@ sessizce körleşmez.
             "Ayar kapalıyken her tanı en az Sinyaller sekmesinde ve editör satırında görünür kalır (YAS-3.4)."
           ]
           sınır: "Tanıların üretimi, düzeyleri ve metinleri değişmez; komut satırı ve MCP araçlarının çıktısı değişmez."
+          koşu: Koşum( kod: KSM-PNL-A22, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "çekirdek süiti 1803/1803, eklenti süiti 1148/1148, tip ve dil temiz, gerçek VS Code süiti 75/75 (kontrolcü sırayla koşturdu; sınama sonunda kullanıcı ayarında kalıntı yok) · on bozmanın dokuzunu nöbet yakaladı; yakalanmayan, durum çubuğunda bugün gösterilmeyen hata ve uyarı sayacıdır ve PNL-A08'e bağlandı · katalog mühürleri kontrolcü tarafından SHA-256 ile ölçülüp tazelendi", ne: "sarmal.sorunlarPaneli ayarı eklendi ve varsayılanı kapalıdır; kapalıyken hiçbir Sarmal tanısı VS Code'un tanı koleksiyonuna yazılmaz. Editörde düzeyin renginde dalgalı çizgi ve genel bakış cetveli işareti, kod, ileti, öneri ve kanon maddesini taşıyan hover, hızlı düzeltmeler ve Dur ile Dikkat taşıyan dosyalara gezgin rozeti aynı tanı nesnesinden, koleksiyondan bağımsız bir yoldan üretilir. Hızlı düzeltme, satır içi tanı ve yıldız rozeti ortak bir kaynaktan okur. Ayar açıldığında tanılar kayıpsız Sorunlar paneline döner ve geçiş pencere yeniden yüklenmeden olur. Yol üstünde iki eski kusur giderildi: proje kaynağı taşıyan tanıda Katman düzeltme ampulü çıkmıyordu ve önerinin İngilizcesi okunmuyordu. Ayar kapalıyken VS Code'un hata ve uyarı sayacı Sarmal tanılarını saymaz; Sarmal'ın kendi Dur ve Dikkat girdisi PNL-A08 ile durum çubuğuna dönecektir." )
+        }
+
+        Adım( kod: PNL-A25, ad: "Proje Satırlarının Doğru Simgesi", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A09 ],
+          referans: [ OZK-14, MIM-1.1 ],
+          ne: "🏷️ Panelde Proje kimliğini taşıyan satırların Proje simgesiyle çizilmesi. Founder 2026-10-28 tarihinde Sinyaller sekmesinde Laboratuvar, Orkestrasyon, site ve öteki projelerin satırlarında çatı simgesi göründüğünü, oysa bunların çatı değil her birinin bir proje olduğunu bildirmiştir. Çalışma alanı ile Proje ayrı tiplerdir (MIM-1.1) ve simge bu ayrımı yanlış söylemektedir." ) {
+          görev: [
+            "Panelin bütün sekmelerinde Proje kimliğini taşıyan her satırı Yol Haritasının kullandığı Proje simgesiyle çiz; çatı simgesi yalnız çalışma alanının kendi satırında kullanılır.",
+            "Simgeyi tek kaynaktan, tipin simge kaydından oku; satır başına elle simge seçilmez."
+          ]
+          kabul: [
+            "Sinyaller'deki ve öteki sekmelerdeki her Proje satırı Yol Haritasındaki Proje simgesinin aynısını taşır ve hiçbir Proje satırında çatı simgesi görünmez; bunu bir nöbet ölçer.",
+            "Görsel kontrolün ekran görüntüsünde çatıdaki projelerin satırları Proje simgesiyle görünür."
+          ]
+          sınır: "Satırların sırası, sayıları ve gruplaması değişmez."
         }
       }
     }
@@ -6852,7 +6871,7 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-TREN-KODLAMA, ad: "Tren Yüzü", departman: kodlama,
         ne: "🔧 Planda ilan edilmiş ajanların ve işin zincirinin gösterildiği dal" ) {
 
-        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
+        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
           ne: "🪪 Planda ilan edilmiş her ajanın profil kartı. Bugün Tren ajanları düz bir liste olarak yalnız kodları ve türleriyle göstermektedir; Founder 2026-10-27 tarihinde ajanların görev, yetki, yetenek, beceri ve bellekleriyle görünmesine hükmetmiştir." ) {
           görev: [
             "Ajanları rozetli kutular olarak göster; yöneticiler üstte, uzmanlar altta durur ve yönetir bağları çizilir.",
@@ -6865,7 +6884,7 @@ sessizce körleşmez.
           sınır: "Şema değişmez; yalnız var olan alanlar ve alt düğümler gösterilir. Canlı oturum bilgisi bu Adımın işi değildir."
         }
 
-        Adım( kod: PNL-A12, ad: "Geliştirmedeki İşin Zinciri", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
+        Adım( kod: PNL-A12, ad: "Geliştirmedeki İşin Zinciri", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
           ne: "⛓️ Geliştirmedeki her Adım için Adımın, atanan ajanın, Katmanın teknolojisinin ya da takımının ve AltKatmanın departmanının tek satırda gösterilmesi." ) {
           görev: [
             "Geliştirmedeki Adımın kapsayan zincirini çöz: Katmanın teknolojisi ya da takımı ve AltKatmanın departmanı.",
@@ -6877,7 +6896,7 @@ sessizce körleşmez.
           sınır: "Atama yapılmaz; yalnız var olan atama gösterilir."
         }
 
-        Adım( kod: PNL-A13, ad: "Kardeş Eklenti Yuvası", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A16 ],
+        Adım( kod: PNL-A13, ad: "Kardeş Eklenti Yuvası", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
           referans: [ HTR-TREN-CANLI-AJAN-EKRANI, OZK-13 ],
           ne: "🔌 Kapalı kardeş eklentinin Tren sekmesinin içine kendi canlı görünümünü takabileceği belgelenmiş bir yuva. Founder 2026-10-27 tarihinde canlı ajan şemasının ve mesajlaşmanın kapalı kardeş eklentide yaşamasına hükmetmiştir; açık eklenti yalnız yuvayı sunar." ) {
           görev: [
@@ -6936,6 +6955,38 @@ sessizce körleşmez.
           sınır: "Denetim turunun kendisi bu Adımda değişmez; turun ana iş parçacığından çıkarılması işçi Blokunun işidir."
           koşu: Koşum( kod: KSM-PNL-A18, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1124/1124 (kontrolcü koşturdu; makine yükü 45 iken ilk koşuda zaman ölçen bir sınama şaştı, yükü 8'e inince yinelemede bütün süit geçti) · tip ve dil denetimi temiz (kontrolcü) · gerçek VS Code süiti 64/64, kontrolcü ayrıca koşturdu; yeni sınama eklentinin uzantı sürecini üç saniye kilitlerken webview'de altı gerçek sekme tıklaması yapar ve her adımda seçili sekme ile görünen içeriğin aynı olduğunu ölçer · görsel kontrol 604/604; yanıt vermeyen sahte eklenti altında her sekmeye gerçek tıklama ve Makinist seçiliyken gecikmiş Ray bölümü, kontrolcü ekran görüntüsünde içeriğin değişmediğini gördü (scratchpad/gorsel-a18) · altı birim bozmasının altısını da nöbet yakaladı; Founder'ın gördüğü yalnız vurgu kusuru gerçek VS Code'da ve görsel kontrolde de düşürüldü", ne: "Webview artık beş sekmenin içeriğini kendi kaplarında taşır ve sekme tıklaması seçimi ile görünen kabı betiğin içinde anında değiştirir; eklentiye yalnız haber gider. Eklentiden gelen bölüm ve parça güncellemeleri yalnız kendi sekmesinin kabına yazılır ve seçimi değiştirmez; donmanın nedeni, eklenti meşgulken gecikmiş bir bölüm iletisinin bütün içeriği ezip şeridi kendi sekmesine çevirmesiydi. Seçili sekmenin tek kaynağı paneldir ve bölüm yuvası yerleşik seçimi panelden okur; eklentinin seçtirdiği sekme bir geçiş sayacıyla gider ve webview'de daha yeni bir tıklama varsa uygulanmaz, böylece PNL-A03'te not edilen ayrışma olanaksız hâle gelmiştir. Bilinçli bir maliyet vardır: gizli sekmeler de güncel tutulur ve Ray ağacı ile Mini Graf başka bir sekme seçiliyken de çizilir. Sekme geçişinin kaydı PNL-A19 tesliminde Founder'a sunulacaktır." )
         }
+
+        Adım( kod: PNL-A26, ad: "Odak Değişiminin Tam Denetim Turu Başlatmaması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A14 ],
+          referans: [ OZK-12, PRF-PK-A01, PRF-IS-A05 ],
+          ne: "🐢 Founder 2026-10-28 tarihinde panelin çok ağır çalıştığını, yavaş açıldığını ve zaman zaman takıldığını bildirmiştir. Aynı gün performans kanalından okunan ölçüm şunu göstermiştir: çatıda 357 dosyalık denetim turu 7,2 ile 7,8 saniye sürmekte ve bunun 5 ile 6 saniyesi projeler arası denetime gitmektedir; tur eklentinin ana iş parçacığında koştuğu için bu sürede panel, hover ve tamamlama bekler. Founder'ın editörde başka bir projenin dosyasına geçmesi her seferinde bu tam turu yeniden başlatmaktadır (tetik odak); PRF-A06 bunu odak dışındaki projenin bayat kalabileceği gerekçesiyle kurmuştur, fakat odak projesinin kaydı çoğu zaman bayat değildir. Bu Adım, kalıcı çözüm olan panel kipi ve işçi Blokları gelene kadar en sık donma nedenini kaldırır." ) {
+          görev: [
+            "Odak başka bir projeye geçtiğinde tam tur başlatma; son turun kayıtlarını yeni odağa göre yeniden yayımla.",
+            "Yalnız yeni odağın projesinin kaydı bayatsa, yani o proje son tam turdan sonra değişmiş ve daraltılmış turlar onu tazelememişse, yalnız o projeyi kapsayan daraltılmış bir tur başlat.",
+            "Performans kanalı odak değişiminde turun atlandığını ya da daraltıldığını gerekçesiyle yazar."
+          ]
+          kabul: [
+            "Bayat olmayan bir projeye odak geçişi denetim turu başlatmaz ve paneli yeni odağa göre anında gösterir; bunu bir nöbet ölçer.",
+            "Bayatlamış bir projeye odak geçişi yalnız o projeyi denetler ve sonuç tam turun o proje için verdiği sonuçla aynıdır; bunu bir eşitlik nöbeti ölçer.",
+            "Gerçek VS Code'da iki proje arasında odak geçişinin süresi ve başlattığı tur sayısı değişiklikten önce ve sonra ölçülmüştür."
+          ]
+          sınır: "Denetimin kendisi ve tanıların içeriği değişmez; denetimin işçi iş parçacığına taşınması PRF-IS Blokunun işidir."
+        }
+
+        Adım( kod: PNL-A27, ad: "Ağaç Dalının Açılmasının Eklentiyi Beklememesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A18 ],
+          referans: [ PNL-A18, PNL-A26 ],
+          ne: "🌿 Yol Haritasında ve öteki ağaçlarda bir dalın anında açılıp kapanması. Founder 2026-10-28 tarihinde bir Blokun altındaki Adımların açılması için saniyelerce beklediğini bildirmiştir. Kodun okunması nedeni göstermiştir: dal açma tıklaması eklentiye gidip ağacın orada yeniden kurulmasını ve webview'e geri gönderilmesini beklemektedir; eklenti 7 saniyelik denetim turundayken tıklama da o kadar bekler. Bu, PNL-A18'in sekme geçişinde giderdiği kusurun ağaç dallarındaki karşılığıdır." ) {
+          görev: [
+            "Ağaçların açılıp kapanmasını webview'in kendi içinde anında yap; webview kapalı dalların çocuklarını da elinde tutar ve tıklama eklentiye gidip gelen bir yanıt beklemez.",
+            "Açık ve kapalı dalların durumu eklentiye yalnız haber olarak gider ve kalıcı yazılır; eklentiden gelen sonraki güncelleme kullanıcının açtığı ya da kapattığı dalı geri çevirmez.",
+            "Büyük ağaçta (çatıda yüzlerce Adım) webview'in ilk çizimi ve dal açma süresi ölçülür; gerekirse görünmeyen dalların çizimi ilk açılışa kadar ertelenir, fakat veri webview'de hazır durur."
+          ]
+          kabul: [
+            "Eklentinin iş parçacığı yapay olarak birkaç saniye kilitliyken bir dal webview'de anında açılır ve çocukları görünür; bunu görsel kontrol ve gerçek VS Code nöbeti ölçer.",
+            "Eklentiden gelen bir ağaç güncellemesi kullanıcının açtığı ya da kapattığı dalların durumunu değiştirmez; bunu bir nöbet ölçer.",
+            "Çatıdaki gerçek ağaçta dal açma süresi değişiklikten önce ve sonra ölçülmüştür."
+          ]
+          sınır: "Ağaçların içeriği, sırası ve sayıları değişmez; satır tıklamasının dosyayı açma davranışı değişmez."
+        }
       }
     }
 
@@ -6980,7 +7031,7 @@ sessizce körleşmez.
         }
 
         Adım( kod: PNL-A16, ad: "İkinci Basamağın Teslimi", durum: beklemede, öncelik: p1, onayBekler: founder,
-          bağımlı: [ PNL-A08, PNL-A09, PNL-A10, PNL-A19, PNL-A21, PNL-A22, PNL-A23, PNL-A24 ],
+          bağımlı: [ PNL-A08, PNL-A09, PNL-A10, PNL-A19, PNL-A21, PNL-A22, PNL-A23, PNL-A24, PNL-A25 ],
           ne: "📦 İkinci basamağın paketleri: Makinist sayıları, Sinyaller sekmesi, Ray'daki sinyal işareti, Sorunlar paneli ayarı, sürüklenen sekmeler, mor tül varsayılanı ve Ayarlar. İlk paket 0.9.198'dir; tamamlanan işler Founder görmek istediğinde ara paketlerle kurulur." ) {
           görev: [
             "Birinci basamağın teslim yolunu her paket için yinele.",
@@ -7440,6 +7491,16 @@ Kod( kod: KOD-SNM-TUR-ESITLIGI, dosya: "urun/eklenti/sinama/tur-esitligi.test.ts
   ne: "🧪 Tur eşitliği nöbeti — hızlanan tur ile değişiklik öncesi turun gerçek ağaçta birebir aynı tanıları, hatırlatıcıları, bildirimleri ve tur görüntüsünü ürettiğini ölçer (PNL-A14)" )
 Kod( kod: KOD-SNM-TUR-BELGESI-REFERANS, dosya: "urun/eklenti/sinama/tur-belgesi-referans.ts",
   ne: "🧪 Eşitlik nöbetinin başvuru modülü — değişiklik öncesi sıralı okuma döngüsünü ve taze ayrıştırmayı taşır (PNL-A14)" )
+
+// 🍎 PNL-A22 teslimi (2026-10-28): Sorunlar paneline gönderimin ayara bağlanması
+Kod( kod: KOD-SORUN-TANILARI, dosya: "urun/eklenti/src/sorun-tanilari.ts",
+  ne: "🔕 Sarmal tanılarının tek kaynağı — ayar açıkken VS Code tanı koleksiyonunu, kapalıyken turun defterinden aynı listeyi verir; hızlı düzeltme, satır içi tanı ve yıldız rozeti buradan okur (PNL-A22 · OZK-14)" )
+Kod( kod: KOD-EDITOR-SINYALLERI, dosya: "urun/eklenti/src/editor-sinyalleri.ts",
+  ne: "🚦 Ayar kapalıyken editördeki tanı yüzü — düzeyin renginde dalgalı çizgi, genel bakış cetveli işareti, kod, ileti, öneri ve kanon maddesini taşıyan hover ile Dur ve Dikkat taşıyan dosyalara gezgin rozeti (PNL-A22 · YAS-3.4)" )
+Kod( kod: KOD-SNM-SORUNLAR-PANELI, dosya: "urun/eklenti/sinama/sorunlar-paneli.test.ts",
+  ne: "🧪 Sorunlar paneli ayarının nöbeti — kapalıyken koleksiyonun boş, satır işareti, hover, hızlı düzeltme ve gezgin rozetinin doğru olduğunu ve açıp kapamanın kayıpsız olduğunu ölçer (PNL-A22)" )
+Kod( kod: KOD-SNM-VSC-SORUNLAR-PANELI, dosya: "urun/eklenti/sinama_vscode/suite/sorunlar-paneli.test.ts",
+  ne: "🧪 Sorunlar paneli ayarının gerçek VS Code nöbeti — kapalıyken VS Code'un tanı deposunda Sarmal tanısı olmadığını, her Sinyaller kaydının editör satırında işaretli olduğunu, hover ve hızlı düzeltmeyi ve açılınca tanıların kayıpsız döndüğünü ölçer (PNL-A22)" )
 
 // 🍎 PNL-A23 teslimi (2026-10-28): sürüklenen sekmeler
 Kod( kod: KOD-SNM-VSC-SEKME-SIRASI, dosya: "urun/eklenti/sinama_vscode/suite/sekme-sirasi.test.ts",

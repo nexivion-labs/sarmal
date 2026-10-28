@@ -71,6 +71,9 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
   const satirlar = async (): Promise<SinyalSatiri[]> => (await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "sinyalSatirlari" })) as SinyalSatiri[];
 
   before(async () => {
+    // Dur ve Dikkat bantları VS Code'un Sorunlar deposuyla karşılaştırılır; PNL-A22'den beri gönderim ayarla
+    // seçildiği için süit ayarı açar ve sonunda siler.
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", true, vscode.ConfigurationTarget.Global);
     disYuz = (await vscode.extensions.getExtension(EKLENTI)!.activate()) as DisYuz;
     assert.ok(disYuz.bolumSinamaKapisi, "sınama kipinde nöbet kapısı verilmeliydi");
     kapi = disYuz.bolumSinamaKapisi!;
@@ -84,6 +87,7 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
 
   after(async () => {
     try { fs.unlinkSync(yol); } catch { /* zaten silindi */ }
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", undefined, vscode.ConfigurationTarget.Global);
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await vscode.commands.executeCommand("sarmal.bolum.ray");
   });

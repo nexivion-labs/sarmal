@@ -61,9 +61,13 @@ const acik: EtkinEklenti[] = [];
 // geçici klasör ile paketlenmiş giriş, sınamalar başarısız olsa da silinir.
 after(() => { for (const e of acik.splice(0)) e.kapat(); kabukTemizle(); });
 
-/** Eklentiyi odak proje_a'da olacak biçimde etkinleştirir ve ilk turu bekler. */
+/**
+ * Eklentiyi odak proje_a'da olacak biçimde etkinleştirir ve ilk turu bekler. Bu süit Sorunlar paneline
+ * basma kapısını ölçer; PNL-A22'den beri gönderim ayarla seçildiği ve varsayılanı kapalı olduğu için
+ * ayar açık verilir (kapalı hâl sinama/sorunlar-paneli.test.ts'te ölçülür).
+ */
 async function etkin(a: Alan): Promise<EtkinEklenti> {
-  const e = etkinlestir({ klasorler: [a.alan], etkinDosya: a.aDosya });
+  const e = etkinlestir({ klasorler: [a.alan], etkinDosya: a.aDosya, ayarlar: { sorunlarPaneli: true } });
   acik.push(e);
   await e.turBekle();
   return e;

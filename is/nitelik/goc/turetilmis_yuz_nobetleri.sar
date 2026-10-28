@@ -34,8 +34,8 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `cc57bb2fa7b8c303466bb03a93c0a21baab54fdebaa60bb1e20157ac5783b557` |
 | `urun/cekirdek/src/dil-baglami.ts` | `37212e330b73a9cf577f69ecab5134bab257b1c6403f03e169e2df5467980f69` |
-| `urun/eklenti/package.nls.tr.json` | `91306e8a5ce24c238cf4aea53ce3f4f429f717cc9b7ad7f963e685d163cce268` |
-| `urun/eklenti/package.nls.json` | `742ea52223342ea4dea6f0177f535f81ece5ce8fbbcc540fa4784ba0b76740be` |
+| `urun/eklenti/package.nls.tr.json` | `03bc208342ac992e58b9f3abca298d84280bcbe5d95c432a4d6dcf58a98f86b4` |
+| `urun/eklenti/package.nls.json` | `44a063786fc5b87986dc67434b2ab1e6601b308febe40a4a3bb513e91b61100c` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d25b70ba41aca77ad5b7d87183d6e2877737dc36b680412c75fdcf9cd9452113` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;

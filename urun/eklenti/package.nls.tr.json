@@ -39,6 +39,7 @@
   "config.language.tr": "Okuma yüzeylerini Türkçe göster.",
   "config.language.en": "Okuma yüzeylerini İngilizce göster.",
   "config.validation": "Canlı drift denetimi — yazarken söz dizimi + kural tanıları (kırmızı/sarı alt çizgiler). Kapatınca yalnız renklendirme ve okuma modu kalır.",
+  "config.problemsPanel": "Sarmal tanılarını VS Code'un Sorunlar paneline de gönderir; varsayılan olarak kapalıdır. Kapalıyken her tanı Sarmal panelinin Sinyaller sekmesinde, editörde düzeyinin renginde satır işaretiyle, hover'da ve hızlı düzeltmede görünür. Bedeli: kapalıyken terminaldeki yapay zekâ ajanları Sarmal tanılarını Sorunlar paneli üzerinden göremez, onları Sarmal araçlarından okur.",
   "config.inlineDiagnostics": "Satır-içi tanılar: Problems panelindeki hata ve uyarılar ilgili satırın sonunda düzeye göre renklendirilmiş olarak da gösterilir. Kapatınca tanılar yalnız alt çizgi ve Problems paneli üzerinden okunur.",
   "config.activeEntityFocus": "Problems paneli aktif varlığa odaklanır: hangi projenin anadizin kökü altındaki dosyadaysanız yalnız o projenin tanıları görünür. Kapatınca bütün varlıklar birden listelenir; kaynak etiketi (Sarmal · _Proje) ile gene ayrışırlar.",
   "config.indentColors": "Gökkuşağı girinti bantları: girinti katmanlarını kırmızıdan mora tayfla tonlar, hafif ışımalıdır; varsayılan olarak kapalıdır. Kapalıyken her kademe tek renkte, içeri girdikçe çok az koyulaşan mor bir tül taşır (tül derinlik). Yalnız .sar dosyalarında.",

@@ -22,6 +22,9 @@
 
 import * as vscode from "vscode";
 import { uzunNiyetiKatla, tabloHizala, noktaliVirgulMaddele } from "./katla.ts";
+// PNL-A22: tanılar koleksiyondan değil editörün tanı kaynağından okunur; Sorunlar paneli kapalıyken de ampul çıkar.
+import { sorunTanilari } from "./sorun-tanilari.ts";
+import { sarmalKaynakli } from "./satirici.ts";
 import {
   DUZELTME_METINLERI,
   alaniMaddeleBasligi,
@@ -40,7 +43,7 @@ export function duzeltmeSaglayici(): vscode.CodeActionProvider {
       const satir = doc.lineAt(satirNo).text;
       const katli = uzunNiyetiKatla(satir);
       // EKL-F5-A03 · 🟡→🎓 terfi ampulü: bekleyen Bellek'ten Beceri iskeleti
-      for (const tani of vscode.languages.getDiagnostics(doc.uri)) {
+      for (const tani of sorunTanilari(doc.uri)) {
         if (tani.code !== "beceri-terfisi" || tani.range.start.line !== satirNo) continue;
         const belge = doc.getText();
         const kodEs = /Bellek\([^)]*?kod:\s*([\p{Lu}][\p{Lu}\p{N}-]*)/u.exec(
@@ -132,11 +135,14 @@ export function duzeltmeSaglayici(): vscode.CodeActionProvider {
         eylem.edit.replace(doc.uri, doc.lineAt(satirNo).range, maddeli);
         eylemler.push(eylem);
       }
-      for (const tani of vscode.languages.getDiagnostics(doc.uri)) {
-        if (tani.source !== "Sarmal" || tani.range.start.line !== satirNo) continue;
+      for (const tani of sorunTanilari(doc.uri)) {
+        // Kaynak varlık etiketi taşır ("Sarmal · <varlık>"); eskiden yalnız çıplak "Sarmal" kabul ediliyor ve
+        // bir anadizin altındaki dosyada ampul hiç çıkmıyordu (PNL-A22 nöbetinde ölçüldü).
+        if (!sarmalKaynakli(tani.source) || tani.range.start.line !== satirNo) continue;
 
         if (tani.code === "bilinmeyen-tip") {
-          const m = /Bunu mu demek istedin: "([^"]+)"/.exec(tani.message);
+          // Öneri iki dilde de okunur (TR "Bunu mu demek istedin", EN "Did you mean").
+          const m = /(?:Bunu mu demek istedin:|Did you mean) "([^"]+)"/.exec(tani.message);
           if (m) {
             const oneri = m[1];
             const eylem = new vscode.CodeAction(onerilenYazimaDuzelt(oneri), vscode.CodeActionKind.QuickFix);

@@ -101,8 +101,10 @@ async function turCiktisi(paket: string, acik: { yol: string; metin?: string }[]
   // Kimlik indeksi taraması turla aynı anda koşar fakat turun hiçbir çıktısına
   // girmez (tur indeksi okumaz); deponun bütün .md ve .ts dosyalarını okuduğu için
   // nöbetin süresini ikiye katlıyordu. İki pakette de aynı biçimde kapatılır.
+  // Sorunlar koleksiyonu da karşılaştırılır; PNL-A22'den beri gönderim ayarla seçildiği için ayar açık verilir.
   const e: EtkinEklenti = etkinlestir({
     klasorler: [KOK], paket, okumaGecikmesi: gecikme, acikBelgeler: acik, bosArama: ["**/*.{sar,md,ts}"],
+    ayarlar: { sorunlarPaneli: true },
   });
   try {
     await e.turBekle(300_000);

@@ -58,8 +58,14 @@ async function bekle(kosul: () => boolean, msSon = 10_000, aralikMs = 200): Prom
 }
 
 describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
-  after(() => {
+  // Bu süit tanıları VS Code'un Sorunlar deposundan okur. PNL-A22'den beri gönderim bir ayarla seçilir ve
+  // varsayılanı kapalıdır; süit açık hâli ölçer ve sonunda ayarı siler (kapalı hâl sorunlar-paneli.test.ts'te).
+  before(async () => {
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", true, vscode.ConfigurationTarget.Global);
+  });
+  after(async () => {
     for (const y of gecicilerSil) try { fs.unlinkSync(y); } catch { /* zaten yok */ }
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", undefined, vscode.ConfigurationTarget.Global);
   });
 
   it("eklenti bulunur ve aktifleşir", async () => {

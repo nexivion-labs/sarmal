@@ -285,6 +285,36 @@ class MarkdownString {
   appendText(m: string): this { this.value += m; return this; }
   appendCodeblock(m: string): this { this.value += m; return this; }
 }
+class Hover {
+  readonly contents: MarkdownString[];
+  readonly range?: Range;
+  constructor(icerik: MarkdownString | MarkdownString[], aralik?: Range) {
+    this.contents = Array.isArray(icerik) ? icerik : [icerik];
+    this.range = aralik;
+  }
+}
+/** 〰️ PNL-A22: hızlı düzeltme nöbeti eylemin başlığını, tanısını ve düzenlemesini okur. */
+class WorkspaceEdit {
+  readonly islemler: Array<{ tur: string; uri: Uri; aralik: Range | Position; metin: string }> = [];
+  replace(uri: Uri, aralik: Range, metin: string): void { this.islemler.push({ tur: "replace", uri, aralik, metin }); }
+  insert(uri: Uri, konum: Position, metin: string): void { this.islemler.push({ tur: "insert", uri, aralik: konum, metin }); }
+}
+class CodeAction {
+  title: string;
+  kind?: unknown;
+  diagnostics?: Diagnostic[];
+  edit?: WorkspaceEdit;
+  isPreferred?: boolean;
+  command?: unknown;
+  constructor(title: string, kind?: unknown) { this.title = title; this.kind = kind; }
+}
+class FileDecoration {
+  badge?: string;
+  tooltip?: string;
+  color?: ThemeColor;
+  propagate?: boolean;
+  constructor(badge?: string, tooltip?: string, color?: ThemeColor) { this.badge = badge; this.tooltip = tooltip; this.color = color; }
+}
 class TreeItem {
   label: unknown;
   collapsibleState: number;
@@ -431,6 +461,14 @@ export interface KabukKaydi {
    * gerçek yayıcıdır; ölçüm betiği kaydetme olayını bunlardan ateşler.
    */
   readonly izleyiciler: SahteIzleyici[];
+  /**
+   * 〰️ PNL-A22: kaydedilen dil sağlayıcıları ve gezgin süsleyicileri. Sorunlar paneli kapalıyken
+   * hover, hızlı düzeltme ve gezgin rozeti koleksiyondan değil bu sağlayıcılardan gelir; nöbet onları
+   * VS Code'un çağırdığı gibi çağırır.
+   */
+  readonly hoverSaglayicilari: Array<{ provideHover(d: unknown, p: unknown, t?: unknown): unknown }>;
+  readonly kodEylemSaglayicilari: Array<{ provideCodeActions(d: unknown, r: unknown, b: unknown, t?: unknown): unknown }>;
+  readonly dosyaSusleyicileri: Array<{ provideFileDecoration(u: unknown, t?: unknown): unknown }>;
 }
 
 /** Kurulmuş bir dosya sistemi izleyicisi ve üç olay yayıcısı. */
@@ -489,6 +527,13 @@ export interface EtkinEklenti {
    * `onDidChange` olayı çağrılır. Ateşlenen izleyici sayısını döndürür.
    */
   dosyaDegisti(yol: string): number;
+  /**
+   * 〰️ PNL-A22: bir `sarmal.*` ayarını değiştirir ve VS Code'daki gibi ayar değişimi olayını ateşler
+   * (pencere yeniden yüklenmez).
+   */
+  ayarDegistir(anahtar: string, deger: unknown): void;
+  /** Etkin editördeki belge (sağlayıcıları çağırmak için). */
+  readonly etkinBelge: unknown;
   /** Etkinleşmeyi kapatır: abonelikler bırakılır, `deactivate` çağrılır. */
   kapat(): void;
 }
@@ -538,12 +583,17 @@ function ayarVarsayilanlari(): Record<string, unknown> {
 }
 
 /** Sahte `vscode` ad alanını ve kaydını kurar. */
-function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKaydi; guven: EventEmitter<void>; durum: { guvenilir: boolean } } {
+function kabukKur(secenek: EtkinlesmeSecenegi): {
+  vscode: object; kayit: KabukKaydi; guven: EventEmitter<void>; durum: { guvenilir: boolean };
+  ayarDegistir(anahtar: string, deger: unknown): void; etkinBelge: unknown;
+} {
   const kayit: KabukKaydi = {
     tanilar: new Map(), durumOgeleri: [], bilgiler: [], uyarilar: [], hatalar: [], durumMesajlari: [],
     kanallar: new Map(), komutlar: new Map(), komutCagrilari: [], dosyaAramasi: 0,
     dekorTurleri: new Map(), dekorlar: new Map(), gorunumKayitlari: [], izleyiciler: [],
+    hoverSaglayicilari: [], kodEylemSaglayicilari: [], dosyaSusleyicileri: [],
   };
+  const ayarOlayi = new EventEmitter<{ affectsConfiguration(b: string): boolean }>();
   const durum = { guvenilir: secenek.guvenilir ?? true };
   const guven = new EventEmitter<void>();
   const ayarlar = { ...ayarVarsayilanlari(), ...Object.fromEntries(Object.entries(secenek.ayarlar ?? {}).map(([k, v]) => [`sarmal.${k}`, v])) };
@@ -602,6 +652,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
       });
     },
     registerTreeDataProvider: (kimlik: string) => { kayit.gorunumKayitlari.push(kimlik); return new Disposable(); },
+    registerFileDecorationProvider: (s: KabukKaydi["dosyaSusleyicileri"][number]) => { kayit.dosyaSusleyicileri.push(s); return new Disposable(); },
     registerWebviewViewProvider: (kimlik: string) => { kayit.gorunumKayitlari.push(kimlik); return new Disposable(); },
     createTextEditorDecorationType: (secenekler: unknown) => {
       const key = `sahte-dekor-${kayit.dekorTurleri.size + 1}`;
@@ -681,7 +732,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
     onDidChangeTextDocument: bosOlay(),
     onDidSaveTextDocument: bosOlay(),
     onDidCloseTextDocument: bosOlay(),
-    onDidChangeConfiguration: bosOlay(),
+    onDidChangeConfiguration: ayarOlayi.event,
     onDidChangeWorkspaceFolders: bosOlay(),
   });
 
@@ -698,6 +749,8 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
     }),
     getDiagnostics: (u?: Uri) => (u ? kayit.tanilar.get(u.fsPath) ?? [] : [...kayit.tanilar].map(([y, t]) => [Uri.file(y), t])),
     onDidChangeDiagnostics: bosOlay(),
+    registerHoverProvider: (_secici: unknown, s: KabukKaydi["hoverSaglayicilari"][number]) => { kayit.hoverSaglayicilari.push(s); return new Disposable(); },
+    registerCodeActionsProvider: (_secici: unknown, s: KabukKaydi["kodEylemSaglayicilari"][number]) => { kayit.kodEylemSaglayicilari.push(s); return new Disposable(); },
   });
 
   const commands = adAlani({
@@ -717,7 +770,9 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
 
   const vscode = adAlani({
     Uri, Range, Position, Selection, Diagnostic, DiagnosticSeverity, DiagnosticRelatedInformation, Location,
-    EventEmitter, Disposable, ThemeColor, ThemeIcon, MarkdownString, TreeItem, RelativePattern,
+    EventEmitter, Disposable, ThemeColor, ThemeIcon, MarkdownString, TreeItem, RelativePattern, Hover, FileDecoration, CodeAction, WorkspaceEdit,
+    OverviewRulerLane: { Left: 1, Center: 2, Right: 4, Full: 7 },
+    CodeActionKind: { QuickFix: { value: "quickfix" }, RefactorRewrite: { value: "refactor.rewrite" } },
     StatusBarAlignment: { Left: 1, Right: 2 },
     TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
     TreeItemCheckboxState: { Unchecked: 0, Checked: 1 },
@@ -737,7 +792,12 @@ function kabukKur(secenek: EtkinlesmeSecenegi): { vscode: object; kayit: KabukKa
     }),
     extensions: adAlani({ getExtension: () => undefined, all: [] as unknown[], onDidChange: bosOlay() }),
   });
-  return { vscode, kayit, guven, durum };
+  const ayarDegistir = (anahtar: string, deger: unknown): void => {
+    const tam = `sarmal.${anahtar}`;
+    if (deger === undefined) delete ayarlar[tam]; else ayarlar[tam] = deger;
+    ayarOlayi.fire({ affectsConfiguration: (b: string) => b === tam || b === "sarmal" || tam.startsWith(`${b}.`) });
+  };
+  return { vscode, kayit, guven, durum, ayarDegistir, etkinBelge: etkinEditor?.document };
 }
 
 /** Bellekte tutulan anahtar-değer deposu (Memento). */
@@ -756,7 +816,7 @@ function bellek(): { get<T>(k: string, v?: T): T | undefined; update(k: string, 
  * kaydı, eklentinin dış yüzünü ve kapanış kapısını taşır.
  */
 export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
-  const { vscode, kayit, guven, durum } = kabukKur(secenek);
+  const { vscode, kayit, guven, durum, ayarDegistir, etkinBelge } = kabukKur(secenek);
   const yol = secenek.paket ?? paketle();
   (globalThis as Record<string, unknown>)[KOPRU_ANAHTARI] = vscode;
   delete gerek.cache[yol];
@@ -783,6 +843,8 @@ export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
     kayit,
     yuz,
     guvenVer: () => { durum.guvenilir = true; guven.fire(); },
+    ayarDegistir,
+    etkinBelge,
     async turBekle(zamanAsimiMs = 20_000): Promise<void> {
       const bitis = Date.now() + zamanAsimiMs;
       const ozet = (): unknown => (yuz?.sonGoruntuOzeti as (() => unknown) | undefined)?.();

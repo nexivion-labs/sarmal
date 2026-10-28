@@ -294,6 +294,11 @@
           "default": true,
           "description": "%config.validation%"
         },
+        "sarmal.sorunlarPaneli": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.problemsPanel%"
+        },
         "sarmal.satirIciTani": {
           "type": "boolean",
           "default": true,
