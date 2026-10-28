@@ -7,7 +7,9 @@
 //
 //   ÖLÇÜM. Sınama eklentiyle aynı uzantı sürecinde koşar; bu süreci birkaç saniye
 //   meşgul bir döngüyle KİLİTLER, tıpkı bölünmez bir denetim turu gibi. Kilitten hemen
-//   önce panelin betiğine sekmelere sırayla tıklatan bir sınama iletisi gönderilir
+//   önce panelin betiğine sekmelere sırayla tıklatan bir sınama iletisi gönderilir; betik kısa bir
+//   gecikmeden sonra altı tıklamayı art arda yapar (arka plandaki webview'in zamanlayıcıları saniyeye
+//   yuvarlanabildiği için tıklamaların arasına zamanlayıcı konmaz)
 //   (panel.ts SINAMA_KOMUTU · panel-betik.ts). Tıklamalar gerçek webview'de, gerçek
 //   sekme düğmelerinde doğar ve eklenti kilitliyken işlenir; betik her tıklamanın hemen
 //   ardından seçili sekmeyi, görünen kabı ve görünen içeriğin hangi sekmeye ait olduğunu
@@ -22,7 +24,7 @@ const EKLENTI = "nexivion-labs.sarmal";
 const SINAMA_KOMUTU = "sarmal.sinama.panel";
 const KILIT_MS = 3_000;
 const ARALIK_MS = 300;
-const SIRA = ["tren", "makinist", "gozlemler", "ayarlar", "ray", "makinist"];
+const SIRA = ["tren", "makinist", "sinyaller", "ayarlar", "ray", "makinist"];
 
 interface Kayit { ad: string; zaman: number; sure: number; secili: string; gorunen: string[]; icerik: string[] }
 interface Kapi {
@@ -73,7 +75,7 @@ describe("PNL-A18 — sekme geçişi eklentiyi beklemez (gerçek VS Code, eklent
     }
     // Geçişler eklenti kilitliyken oldu: eklentiye gidip gelen hiçbir yanıt beklenmedi.
     const kilitte = kayitlar.filter((k) => k.zaman >= bas && k.zaman <= bitis).length;
-    assert.ok(kilitte >= SIRA.length - 1, `geçişlerin yalnız ${kilitte}/${SIRA.length} tanesi eklenti kilitliyken oldu (kilit ${bas}–${bitis}, geçişler ${kayitlar.map((k) => k.zaman).join(", ")})`);
+    assert.strictEqual(kilitte, SIRA.length, `geçişlerin yalnız ${kilitte}/${SIRA.length} tanesi eklenti kilitliyken oldu (kilit ${bas}–${bitis}, geçişler ${kayitlar.map((k) => k.zaman).join(", ")})`);
     // Kilit açılınca sıradaki sekme iletileri işlenir: panelin sekmesi ve bölüm yuvası son geçiştedir.
     const son = SIRA.at(-1)!;
     await bekle(() => kapi.panelOlcumleri()?.sekme === son, `panelin sekmesi son geçişe (${son}) yetişmedi`);

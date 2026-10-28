@@ -169,9 +169,9 @@ Kural tekDosyaVeProjeKapsamları( kod: YAS-3.2,
 
 -->|
 ### YAS-3.3 · Proje-Bazlı Problems ve Graf Kimliği [HATA]
-**Hüküm:** Problems grupları, graf, karne ve tanı kümesi kimliği fiziksel anadizin yolundan değil ÇalışmaAlanı içindeki tekil Proje düğümünün `kod` değerinden türer; Proje taşınsa kimliği korunur, aynı dizindeki ayrı Projelerin bulguları birleşmez ve ortak Auth Proje sınırını silemez; dayanak: YAS-3; ilgili: [YAS-0, MIM-0, YUZ-0, ORK-0].
+**Hüküm:** Sinyaller ve Problems grupları, graf, karne ve tanı kümesi kimliği fiziksel anadizin yolundan değil ÇalışmaAlanı içindeki tekil Proje düğümünün `kod` değerinden türer; Proje taşınsa kimliği korunur, aynı dizindeki ayrı Projelerin bulguları birleşmez ve ortak Auth Proje sınırını silemez; dayanak: YAS-3; ilgili: [YAS-0, MIM-0, YUZ-0, ORK-0].
 **Gerekçe:** Yol tabanlı kimlik taşıma ve yeniden adlandırmada geçmişi koparır; bir çalışma alanındaki çoklu Projelerin tanılarını birbirine karıştırarak yanlış karne ve graf üretir.
-**Örnek:** `PRJ-MOBIL` başka klasöre taşındığında aynı Problems grubu ve karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez.
+**Örnek:** `PRJ-MOBIL` başka klasöre taşındığında aynı Sinyaller ve Problems grubu ile karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez.
 **Zorlama:** Yeni tanı önerisi `proje-tanı-kimliği-uyumsuz` · HATA · “Tanı, graf veya karne kimliği Proje kodundan türemiyor ya da birden çok Projenin bulgularını birleştiriyor.” · yüzey: Problems, proje CLI, graf ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.
 |<--
 Kural projeBazlıProblemsVeGrafKimliği( kod: YAS-3.3,
@@ -181,7 +181,7 @@ Kural projeBazlıProblemsVeGrafKimliği( kod: YAS-3.3,
 
 -->|
 ### YAS-3.4 · Görünürlük ve Tanı Dürüstlüğü [UYARI]
-**Hüküm:** Tanılar Problems, satır-lensi, hover veya CLI yüzlerinden kapsamına uygun olan en az birinde görünür kalır, yinelenen aynı-kök bulguları anlam kaybetmeden özetler, önerisiyle düzeltmeyi öğretir ve sicilde bulunmayan bir zorlamayı canlıymış gibi sunamaz; dayanak: YAS-3; ilgili: [YAS-0, YUZ-0, OGR-0].
+**Hüküm:** Tanılar Sinyaller, Problems, satır-lensi, hover veya CLI yüzlerinden kapsamına uygun olan en az birinde görünür kalır, yinelenen aynı-kök bulguları anlam kaybetmeden özetler, önerisiyle düzeltmeyi öğretir ve sicilde bulunmayan bir zorlamayı canlıymış gibi sunamaz; dayanak: YAS-3; ilgili: [YAS-0, YUZ-0, OGR-0].
 **Gerekçe:** Gizli tanı uygulanabilir değildir, yinelenen gürültü ise gerçek nedeni örter; doğrulanmamış canlılık iddiası kullanıcıya var olmayan bir korumaya güven verir.
 **Örnek:** Aynı dosyadaki çok sayıda dayanak eksiği tek özet bulguda gösterilebilir; bir Kural `tanı: hayali-kod` diyorsa yüzey bunu çalışan zorlama olarak etiketlemez.
 **Zorlama:** `doğrulanamayan-tanı-iddiası` · UYARI · “Kuralın motorda zorlama iddiası kanonik tanı sicilinde doğrulanamıyor.” · yüzey: Problems, tek-dosya CLI ve satır-lensi · format: `{duzey, kod, mesaj, satir, sutun, oneri}`.

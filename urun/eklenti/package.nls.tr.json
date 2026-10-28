@@ -58,6 +58,7 @@
   "command.sectionGraph": "Graf — Bağımlılıklar",
   "command.sectionTrain": "Tren — Ajanlar",
   "command.sectionDriver": "Makinist — Kararını bekleyenler",
+  "command.openSignals": "Sinyalleri Aç",
   "command.sectionOther": "Diğer bölümler",
   "command.writeAppreciation": "💛 Takdir yaz (kadroya kalp notu)",
   "command.writeFeedback": "🙏❤️🏅💡 Geribildirim yaz (kanal seç)",

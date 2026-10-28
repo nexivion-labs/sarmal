@@ -231,7 +231,8 @@ test("simge nöbeti: üretici geçici kopyaya karşı GERÇEKTEN koşar; boyanm�
     // (A07 envanteri yirmi, otorite işaretleri üç, yapı ağacı bir ve ipucu
     //  balonu dokuz simge ekledi: 20 → 53 satır)
     // + 4 bölüm × {düz, seçili} × 2 tema = 16 başlık eylemi simgesi (Founder 2026-10-21) → 1006
-    assert.equal(yazilan.length, 1006, "üretici 1006 varyant dökmeli (6×3×2 eksen + 53×9×2 satır + 4×2×2 bölüm)");
+    // PNL-A09 Sinyaller sekmesinin demiryolu sinyali satır ailesine katıldı: 54 satır × 9 × 2 → 1024
+    assert.equal(yazilan.length, 1024, "üretici 1024 varyant dökmeli (6×3×2 eksen + 54×9×2 satır + 4×2×2 bölüm)");
     // Boyanmış kaynak (YUZ-4.1 ihlali) sessiz geçilmez:
     writeFileSync(join(gecici, "raf", "faz.svg"),
       '<svg xmlns="http://www.w3.org/2000/svg"><circle stroke="#FF0000"/></svg>');
@@ -270,8 +271,8 @@ test("satır nöbeti: raf ile satır çizelgesi AYNI simgeleri kapsar — eksik 
   // A07'nin dördüncü turunda ipucu balonu aileye bağlandı (kontrolcü hükmü
   // 2026-09-10: balon Markdown çizer ve dosya adresli görsel kabul eder).
   // Balonun işaretlerinden dokuzunun ailede karşılığı yoktu; çizildi ve aile
-  // ELLİ ÜÇE çıktı.
-  assert.equal(raf.length, 53, "satır ailesi ELLİ ÜÇ simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı + ipucu balonunun dokuzu)");
+  // ELLİ ÜÇE çıktı. PNL-A09'da Sinyaller sekmesinin demiryolu sinyali çizildi ve aile ELLİ DÖRDE çıktı.
+  assert.equal(raf.length, 54, "satır ailesi ELLİ DÖRT simgedir (A05'in yirmisi + A07 envanterinin yirmisi + üç otorite işareti + yapı ağacı + ipucu balonunun dokuzu + Sinyaller'in sinyali)");
 });
 
 test("satır nöbeti: satır kaynakları geometrik ailenin çizim dilini izler ve renk GÖMÜLMEZ (YUZ-4.1)", () => {

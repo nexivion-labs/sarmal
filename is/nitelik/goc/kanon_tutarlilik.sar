@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:d2b6840e29b5785e7a0cabc83348c4265e0c100f8beac765f5a11a52205e40eb
+// KAYNAK-MUHRU kanon-demeti-sha256:4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6
 
 -->|
 # Kanon tutarlılık yüzü
@@ -17,9 +17,9 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | `yasa/kanon/ork.sar` | `1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `9e50275c279b1253c6f16bdf7e0e3352e463170fab70ce851db03fc025a062e3` |
-| `yasa/kanon/yas.sar` | `23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40` |
-| `yasa/kanon/yuz.sar` | `439364007d1ade1ae1a5f11f3b8d36db9582f884913b11b1f6efe68a808ffe02` |
-| kanon demeti | `d2b6840e29b5785e7a0cabc83348c4265e0c100f8beac765f5a11a52205e40eb` |
+| `yasa/kanon/yas.sar` | `bd8f1b5466b4ce2a689c0caa232b461e28c2a42f810b0650f7bb472f5c4cfe55` |
+| `yasa/kanon/yuz.sar` | `4cf6145848fe3407ef828ced35e3bf3fcfbe0a218d07941e1f30a1a885d8e96f` |
+| kanon demeti | `4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -191,7 +191,7 @@ Belge metninden ayrışan taşıyıcı alan yoktur.
 | `YAS-3` | Karar | `yas.sar` | `{ duzey: hata, kod: "rejim-beyanı-eksik", mesaj: "Rejim beyanı eksik.", satir: 3, sutun: 1, oneri: "rejim: katı veya rejim: esnek ekle." }`; yalnız mesaj metni döndürmek yeterli değildir. |
 | `YAS-3.1` | Kural | `yas.sar` | `halef-döngü` HATA olarak kapıyı kapatır, `uygulanmamış-karar` UYARI olarak tam yeşili engeller, `açık-adım` BİLGİ olarak yalnız gündemi görünür kılar. |
 | `YAS-3.2` | Kural | `yas.sar` | `geçersiz-enum` açık dosyada belirlenebilir; `kırık-referans`, `yinelenen-kod` ve `doc-drift` ise bütün Proje indeksi ve disk görülmeden sonuçlandırılamaz. |
-| `YAS-3.3` | Kural | `yas.sar` | `PRJ-MOBIL` başka klasöre taşındığında aynı Problems grubu ve karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez. |
+| `YAS-3.3` | Kural | `yas.sar` | `PRJ-MOBIL` başka klasöre taşındığında aynı Sinyaller ve Problems grubu ile karne kimliğini korur; aynı ÇalışmaAlanındaki `PRJ-WEB` tanıları ona eklenmez. |
 | `YAS-3.4` | Kural | `yas.sar` | Aynı dosyadaki çok sayıda dayanak eksiği tek özet bulguda gösterilebilir; bir Kural `tanı: hayali-kod` diyorsa yüzey bunu çalışan zorlama olarak etiketlemez. |
 | `YAS-4` | Karar | `yas.sar` | Bir bilgi tanısı hâlâ açık bulgu üretirken uyarıya çevrilemez; uyarı bulguları sıfır, doğrulaması tekrar üretilebilir ve kabulü kayıtlıysa HATA terfisi değerlendirilebilir. |
 | `YAS-4.1` | Kural | `yas.sar` | `0 HATA · 0 UYARI · 7 BİLGİ` tam yeşildir; `0 HATA · 1 UYARI · 0 BİLGİ` tam yeşil değildir. |
@@ -207,9 +207,9 @@ Belge metninden ayrışan taşıyıcı alan yoktur.
 | `YUZ-2.2` | Kural | `yuz.sar` | `kontrast_incelemesi.md` ölçümleri ve seçenekleri karşılaştırabilir; seçilen erişilebilirlik sınırı yürürlüğe girecekse ayrı kanonik maddeye veya Karara yazılır. |
 | `YUZ-2.3` | Kural | `yuz.sar` | `Karar( kod: KAR-TEMA-01, ... )` düğümünden karar okuma başlığı üretilebilir; başlık altındaki hüküm değişecekse çıktı değil kaynak düğüm düzenlenir. |
 | `YUZ-3` | Karar | `yuz.sar` | Aynı `EKR-GIRIS` kimliği Problems, hover, graf ve gezinmede değişmeden görünür; `Ekran` ve `Kart` tiplerinin tanımlı olması tek başına çalışır bir cihaz görseli önizlemesi bulunduğu anlamına gelmez. |
-| `YUZ-3.1` | Kural | `yuz.sar` | `bilinmeyen-tip` tanısı Problems'te HATA ise hover ve satır-lensinde de aynı kodla HATA görünür ve aynı geçerli tipe yönlendirir; yalnız bir yüzde sessizce BİLGİ'ye indirilemez. |
+| `YUZ-3.1` | Kural | `yuz.sar` | `bilinmeyen-tip` tanısı Sinyaller yüzünde Dur bandında HATA olarak görünüyorsa hover ve satır-lensinde de aynı kodla HATA görünür ve aynı geçerli tipe yönlendirir; Problems paneli açıksa orada da HATA'dır ve hiçbir yüzde sessizce BİLGİ'ye indirilemez. |
 | `YUZ-3.2` | Kural | `yuz.sar` | `ADM-GIRIS üretir EKR-GIRIS` bağı Adımdan Ekrana giden `üretir`, Ekrandan Adıma gelen üretim-kökeni olarak görünür; mimari sarma bağı diye yeniden etiketlenmez. |
-| `YUZ-3.3` | Kural | `yuz.sar` | `rejim-beyanı-eksik` HATA düzeyiyle Problems'te, `Hatırlatıcı( durum: açık )` kendi kanonik kimliğiyle Hatırlatıcılar'da, bilgi düzeyli bir durum veya vade işareti Bildirimler'de görünür; her biri kodunu ve düzeyini yüzeyler arasında değiştirmeden korur. |
+| `YUZ-3.3` | Kural | `yuz.sar` | `rejim-beyanı-eksik` HATA düzeyiyle Sinyaller'in Dur bandında ve Problems paneli açıksa orada da, `Hatırlatıcı( durum: açık )` kendi kanonik kimliğiyle yalnız Makinist'in Hatırlatıcılar grubunda, bilgi düzeyli bir durum veya vade işareti Sinyaller'in Bilgi bandında görünür; her biri kodunu ve düzeyini yüzeyler arasında değiştirmeden korur. |
 | `YUZ-3.4` | Kural | `yuz.sar` | Doğru: bir Hatırlatıcı `durum: kararlaştı` ve `hatırlat: ADM-SIRADAKI` yazımıyla beklerken, ADM-SIRADAKI tamamlandığı anda ateşlemiş sayılır ve kapatılmayı bekler; yanlış: aynı düğümün o Adım kapandıktan sonra da uykudakilerle aynı grupta, ayırt edilmeden durması. |
 | `YUZ-3.5` | Kural | `yuz.sar` | Doğru: `Durumlar` yüzeyi `PRJ-SARMAL` kökü altında ana kaydı ve ona bağlı `DRM-BLK-PRF-TEKAGAC` ile `DRM-BLK-PRF-MIKRO` kayıtlarını sıralar, her satır tıklanınca kaynak dosyanın ilgili satırına gider. Yanlış: durumu yalnız dosya ağacından okumak, kaydı panelden düzenletmek ya da ana kayda bağlı olmayan bir dosyayı yüzeyde durum diye göstermek. |
 | `YUZ-4` | Karar | `yuz.sar` | `Ekran( kod: EKR-GIRIS, referans: ADM-GIRIS, tema: TEM-ANA, görünürlük: açık )` kimlik, köken, tema ve görünürlük bağlarını açıklar; yerel renkle ve üretici bağı olmadan bırakılan adsız ekran eksiktir. |

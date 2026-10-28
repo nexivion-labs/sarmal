@@ -111,14 +111,17 @@ export const GORUNUS_ONAYLAR = "sarmalOnaylar";
  */
 export const DENETLEYICI_ONAY = "sarmal-onay";
 /** Makinist ağacının görünüm kimliği (package.json ile birebir). Founder 2026-10-21: Onaylar ·
- *  Hatırlatıcılar · Gözlemler · Fikirler ayrı görünüm değil, bu tek ağacın dört üst düğümüdür. */
+ *  Hatırlatıcılar · Fikirler ayrı görünüm değil, bu tek ağacın üst düğümleridir. Gözlemler
+ *  PNL-A09'dan beri (OZK-14) Makinist'te değil, Sinyaller sekmesinin ayrı bölümündedir. */
 export const GORUNUS_MAKINIST = "sarmalMakinist";
-export type MakinistGrubu = "onaylar" | "hatirlaticilar" | "gozlemler" | "fikirler";
+export type MakinistGrubu = "onaylar" | "hatirlaticilar" | "fikirler";
 /** Üst düğümlerin sırası: Onaylar (karar bekleyen) en üstte. */
-export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "hatirlaticilar", "gozlemler", "fikirler"];
+export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "hatirlaticilar", "fikirler"];
 
 /** Dört Makinist yüzeyinin (durum çubuğu) ortak odak komutu: Makinist bölümünü seçer ve ağacı öne alır. */
 export const MAKINIST_ODAK_KOMUTU = "sarmal.bolum.makinist";
+/** Sinyaller sekmesini seçip paneli öne alan komut (PNL-A09); Gözlemler sayacı buraya götürür. */
+export const SINYALLER_ODAK_KOMUTU = "sarmal.sinyallerAc";
 export const KOMUT_ONAY_KUYRUGU = "sarmal.onayKuyrugu";
 
 /** Kaydın geldiği Proje kimliği — panel gruplaması bu kimlikten kurulur. */
@@ -939,7 +942,7 @@ export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
   { simge: "$(mail)",          metin: "onayPaneli",   komut: MAKINIST_ODAK_KOMUTU,   say: (k) => k.kapı() },
   { simge: "$(bell)",          metin: "hatırlatıcılar", komut: MAKINIST_ODAK_KOMUTU, say: (k) => k.hatırlatıcı() },
   { simge: "$(lightbulb)",     metin: "fikirler",      komut: MAKINIST_ODAK_KOMUTU,       say: (k) => k.fikir() },
-  { simge: "$(eye)",           metin: "gözlemler",     komut: MAKINIST_ODAK_KOMUTU,    say: (k) => k.gözlem() },
+  { simge: "$(eye)",           metin: "gözlemler",     komut: SINYALLER_ODAK_KOMUTU,   say: (k) => k.gözlem() },
 ];
 
 // ── 🔗 AYNI OLAY — panel ile durum çubuğu ayrı anlarda tazelenmez ────────────

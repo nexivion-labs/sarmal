@@ -433,6 +433,11 @@
         }
       },
       {
+        "command": "sarmal.sinyallerAc",
+        "title": "%command.openSignals%",
+        "category": "%sarmal.category%"
+      },
+      {
         "command": "sarmal.bolum.makinist",
         "title": "%command.sectionDriver%",
         "category": "%sarmal.category%",
@@ -659,6 +664,10 @@
         },
         {
           "command": "sarmal.bolum.makinist",
+          "when": "false"
+        },
+        {
+          "command": "sarmal.sinyallerAc",
           "when": "false"
         },
         {

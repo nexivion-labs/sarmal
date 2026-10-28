@@ -2724,9 +2724,9 @@ export const TREN_METINLERI = {
 // ═══════════════════════════════════════════════════════════════════════════
 // 🧭 SARMAL PANELİ — tek webview kabı (Founder 2026-10-21 · bağlayıcı çizim)
 //
-//   Kapta Ray · Tren · Makinist · Gözlemler · Ayarlar sekme şeridi durur (OZK-13).
-//   Sekme adları İngilizce pencerede Rail · Train · Driver · Observations ·
-//   Settings olur (MGZ-A09); "Driver" seçimi BOLUM_SIRASI_METINLERI üstündeki
+//   Kapta Ray · Tren · Makinist · Sinyaller · Ayarlar sekme şeridi durur (OZK-13 ·
+//   OZK-14: dördüncü sekme Gözlemler yerine Sinyaller'dir). Sekme adları İngilizce
+//   pencerede Rail · Train · Driver · Signals · Settings olur (MGZ-A09); "Driver" seçimi BOLUM_SIRASI_METINLERI üstündeki
 //   gerekçeyle aynıdır. Şeridin erişilebilir adı "bölüm" sözcüğünü ve
 //   "Bölümler" kutusunu taşımaz: çizimde böyle bir kutu yoktur ve hiçbir yerde
 //   üretilmez.
@@ -2739,19 +2739,18 @@ export const PANEL_METINLERI = {
     ray: yuzeyMetni("Ray", "Rail"),
     tren: yuzeyMetni("Tren", "Train"),
     makinist: yuzeyMetni("Makinist", "Driver"),
-    gozlemler: yuzeyMetni("Gözlemler", "Observations"),
+    sinyaller: yuzeyMetni("Sinyaller", "Signals"),
     ayarlar: yuzeyMetni("Ayarlar", "Settings"),
   }[s] ?? s),
   sekmeIpucu: (s: string): string => ({
     ray: yuzeyMetni("Ray: yol haritası ve proje grafı", "Rail: roadmap and project graph"),
     tren: yuzeyMetni("Tren: yapay zekâ ajanları ve sürmekte olan işler", "Train: AI agents and work in progress"),
-    makinist: yuzeyMetni("Makinist: sizi bekleyen onaylar, hatırlatıcılar, gözlemler ve fikirler", "Driver: approvals, reminders, observations and ideas waiting for you"),
-    gozlemler: yuzeyMetni("Gözlemler: Sarmal'ın gözlemleri ve denetim sapmaları", "Observations: Sarmal observations and audit drifts"),
+    makinist: yuzeyMetni("Makinist: sizi bekleyen onaylar, hatırlatıcılar ve fikirler", "Driver: approvals, reminders and ideas waiting for you"),
+    sinyaller: yuzeyMetni("Sinyaller: Sarmal'ın tanıları ve gözlemleri", "Signals: Sarmal diagnostics and observations"),
     ayarlar: yuzeyMetni("Ayarlar: Sarmal panelinin ayarları", "Settings: Sarmal panel settings"),
   }[s] ?? s),
-  /** Henüz içeriği olmayan sekmenin boş durum cümlesi (PNL-A03: Gözlemler ve Ayarlar boş bölüm olarak doğar). */
+  /** Henüz içeriği olmayan sekmenin boş durum cümlesi (PNL-A03: Ayarlar boş bölüm olarak doğar). */
   bosSekme: (s: string): string => ({
-    gozlemler: yuzeyMetni("Gözlemler ve sapmalar bu sekmede gösterilecek.", "Observations and drifts will be shown in this tab."),
     ayarlar: yuzeyMetni("Panel ayarları bu sekmede gösterilecek.", "Panel settings will be shown in this tab."),
   }[s] ?? ""),
   get seritEtiketi(): string { return yuzeyMetni("Sarmal sekmeleri", "Sarmal tabs"); },
@@ -2761,4 +2760,34 @@ export const PANEL_METINLERI = {
   get koniKarti(): string { return yuzeyMetni("Koni kartını aç", "Open the cone card"); },
   get satiriKopyala(): string { return yuzeyMetni("Satırı kopyala", "Copy row"); },
   get hatirlaticiKapat(): string { return yuzeyMetni("Hatırlatıcıyı kapat", "Close reminder"); },
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🚦 SİNYALLER SEKMESİ (PNL-A09 · OZK-14 · Founder 2026-10-28)
+//
+//   Bantların adları yalnız sunumdur; başlıktaki kısa cümle düzeyin YAS-3.1'deki
+//   anlamını söyler ve hiçbir tanıyı yeniden derecelendirmez. İngilizce adlar
+//   demiryolu sinyalinin karşılığıdır: Stop · Caution · Info.
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const SINYAL_METINLERI = {
+  bantAdi: (b: string): string => ({
+    dur: yuzeyMetni("Dur", "Stop"),
+    dikkat: yuzeyMetni("Dikkat", "Caution"),
+    bilgi: yuzeyMetni("Bilgi", "Info"),
+  }[b] ?? b),
+  /** YAS-3.1: HATA kapıyı kapatan yapısal ihlal, UYARI tam yeşilden önce giderilecek drift riski, BİLGİ kapıyı kapatmayan işaret. */
+  bantAnlami: (b: string): string => ({
+    dur: yuzeyMetni("Kapıyı kapatan yapısal ihlal; Sarmal bunu kabul etmez.", "A structural violation that closes the gate; Sarmal does not accept it."),
+    dikkat: yuzeyMetni("Tam yeşilden önce giderilmesi gereken drift riski.", "A drift risk to clear before full green."),
+    bilgi: yuzeyMetni("Kapıyı kapatmayan ölçüm, istisna ya da yönlendirme işareti.", "A measurement, exception or pointer that does not close the gate."),
+  }[b] ?? ""),
+  get oneri(): string { return yuzeyMetni("Öneri", "Suggestion"); },
+  get kanonMaddesi(): string { return yuzeyMetni("Kanon maddesi", "Canon article"); },
+  maddeYok: (madde: string): string => yuzeyMetni(
+    `${madde} maddesinin tanımı bu çalışma alanında bulunamadı.`,
+    `The definition of ${madde} was not found in this workspace.`),
+  get bos(): string { return yuzeyMetni("Sarmal'ın bu kapsamda bir sinyali yok.", "Sarmal has no signals in this scope."); },
+  rozetIpucu: (dur: number, dikkat: number): string => yuzeyMetni(
+    `${dur} Dur · ${dikkat} Dikkat sinyali`, `${dur} Stop · ${dikkat} Caution signals`),
 } as const;

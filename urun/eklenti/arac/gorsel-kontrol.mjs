@@ -8,7 +8,7 @@
 //   tarayıcıda görünür. Bu komut her kurulumdan önce koşar:
 //
 //     1. Verilen proje kökünün gerçek verisiyle panelin tam HTML'ini üretir
-//        (arac/gorsel-kontrol-uret.ts; Ray · Tren · Makinist · Gözlemler · Ayarlar ·
+//        (arac/gorsel-kontrol-uret.ts; Ray · Tren · Makinist · Sinyaller · Ayarlar ·
 //        Mini Graf'ın üç görünümü seçili ve seçimsiz · görünüm seçici).
 //     2. Her değişkeyi başsız Chromium'da üç ölçüde açar, koyu VS Code teması
 //        değişkenlerini tanımlar ve ekran görüntülerini yazar.
@@ -78,7 +78,7 @@ const BOYUTLAR = [{ ad: "300", w: 300, h: 720 }, { ad: "460", w: 460, h: 720 }, 
 const YAZI_EN_AZ = 11, YAZI_EN_COK = 14;
 /** PNL-A03 · Founder 2026-10-27: küçük sekme şeridi ve çok küçük puntolu bölüm başlıkları. */
 const SEKME_YAZI = "11px", SERIT_PX = 26, BASLIK_YAZI = "10px";
-const SEKME_SIRASI = ["ray", "tren", "makinist", "gozlemler", "ayarlar"];
+const SEKME_SIRASI = ["ray", "tren", "makinist", "sinyaller", "ayarlar"];
 /** Ray bölümlerinin yan yana dizildiği en küçük genişlik (src/panel-betik.ts GENIS_PANEL_PX ile aynı). */
 const GENIS_PANEL_PX = 640;
 
@@ -180,6 +180,7 @@ function sekmeDurumu() {
   const secili = [...document.querySelectorAll(".sekme")].filter((b) => b.getAttribute("aria-selected") === "true").map((b) => b.dataset.sekme);
   const gorunen = [...document.querySelectorAll(".sekme-paneli")].filter((p) => !p.hidden && p.getBoundingClientRect().height > 0);
   const sahibi = (p) => p.querySelector("#agac") ? "ray" : p.querySelector("#tren-agac") ? "tren" : p.querySelector("#makinist-agac") ? "makinist"
+    : p.querySelector("#sinyaller-agac") ? "sinyaller"
     : p.querySelector("[data-bos-sekme]")?.getAttribute("data-bos-sekme") ?? "?";
   return { secili: secili.join(), gorunen: gorunen.map((p) => p.dataset.sekme), icerik: gorunen.map(sahibi), yukseklik: gorunen.map((p) => Math.round(p.getBoundingClientRect().height)) };
 }
@@ -442,7 +443,7 @@ try {
       kontrol(`${etiket}: sekme şeridi yazısı ${SEKME_YAZI} ve şerit ${SERIT_PX} px`,
         dz.sekmeYazi.length === 1 && dz.sekmeYazi[0] === SEKME_YAZI && Math.abs(dz.seritYuk - SERIT_PX) < 0.5,
         JSON.stringify({ sekmeYazi: dz.sekmeYazi, seritYuk: dz.seritYuk }));
-      kontrol(`${etiket}: sekmeler sırasıyla Ray · Tren · Makinist · Gözlemler · Ayarlar`,
+      kontrol(`${etiket}: sekmeler sırasıyla Ray · Tren · Makinist · Sinyaller · Ayarlar`,
         dz.sira.join(",") === SEKME_SIRASI.join(","), dz.sira.join(","));
       kontrol(`${etiket}: sekme şeridi taşmaz ve görünen hiçbir sekme adı kesilmez`,
         dz.seritTasma <= 0.5 && dz.kesik.length === 0, JSON.stringify({ seritTasma: dz.seritTasma, kesik: dz.kesik }));
@@ -469,7 +470,7 @@ try {
             ag && gr && yakin(ag.sol, gr.sol) && gr.ust >= ag.alt - 1, JSON.stringify(dz.kollar));
         }
       }
-      if (d.sekme === "gozlemler" || d.sekme === "ayarlar") {
+      if (d.sekme === "ayarlar") {
         kontrol(`${etiket}: ${d.sekme} sekmesi boş bölüm olarak doğar ve boş durum cümlesi görünür`,
           !!dz.bosSekme && dz.bosSekme.metin.length > 0 && dz.bosSekme.gen > 0, JSON.stringify(dz.bosSekme));
       }
@@ -488,6 +489,80 @@ try {
       }
       if (d.ad === "tren") await agacCizgisiOlc("#tren-agac", "Tren");
       if (d.ad === "makinist") await agacCizgisiOlc("#makinist-agac", "Makinist");
+      if (d.ad === "makinist") {
+        // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez.
+        const g = await p.evaluate(() => [...document.querySelectorAll("#makinist-agac .sat .et")].map((e) => e.textContent));
+        kontrol(`${etiket}: Makinist'te Gözlemler grubu yoktur (Sinyaller sekmesine taşındı)`, !g.includes("Gözlemler") && !g.includes("Observations"), JSON.stringify(g));
+      }
+      if (d.ad === "sinyaller" || d.ad === "sinyaller-acik") {
+        // SİNYALLER (PNL-A09 · OZK-14 · YUZ-3.3): yalnız üç bant, ayrı Gözlemler bölümü yok; Bilgi kapalı başlar;
+        // satır gerçek fare tıklamasıyla dosyayı tanının yerinde açan iletiyi doğurur.
+        const s = await p.evaluate(() => {
+          const satirlar = [...document.querySelectorAll("#sinyaller-agac .sat")];
+          const oku = (x) => ({ id: x.dataset.id, d: Number(x.dataset.d), et: x.querySelector(".et")?.textContent ?? "",
+            ac: x.querySelector(".ac")?.textContent ?? "", acik: x.getAttribute("aria-expanded"), komut: x.dataset.komut === "1",
+            gorunur: x.getBoundingClientRect().height > 0 });
+          return satirlar.map(oku);
+        });
+        const kokler = s.filter((x) => x.d === 0);
+        kontrol(`${etiket}: Sinyaller yalnız üç bant (Dur · Dikkat · Bilgi) taşır, ayrı Gözlemler bölümü yoktur; başlık sayıyı ve düzeyin anlamını söyler`,
+          kokler.map((x) => x.et).join() === "Dur,Dikkat,Bilgi" && kokler.every((x) => /^\d+ · .+\.$/.test(x.ac)), JSON.stringify(kokler));
+        // Her tanı panelde bir kez (YUZ-3.3): Sinyaller = denetim sonucu eksi Hatırlatıcılar yüzeyine yönlenenler;
+        // Bilgi bandı durum çubuğundaki Gözlemler sayacına eşittir; Hatırlatıcılar yüzeyine yönlenen hiçbir kod çizilmez.
+        const sy = uretim.sinyal;
+        const bantSayisi = kokler.map((x) => Number(x.ac.split(" · ")[0]));
+        kontrol(`${etiket}: Sinyaller sayısı denetim sonucu eksi Hatırlatıcılar yüzeyine yönlenenlerdir; Bilgi bandı durum çubuğundaki Gözlemler sayacına eşittir`,
+          sy.toplam === sy.denetim - sy.hatirlatici && bantSayisi.reduce((t, n) => t + n, 0) === sy.toplam && bantSayisi[2] === sy.durumCubuguGozlem,
+          JSON.stringify({ denetim: sy.denetim, hatirlatici: sy.hatirlatici, toplam: sy.toplam, bantSayisi, durumCubuguGozlem: sy.durumCubuguGozlem }));
+        const hatirlaticiSatiri = s.filter((x) => x.d === 2 && sy.hatirlaticiKodlari.includes(x.ac.split(" · ")[0]));
+        kontrol(`${etiket}: Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de çizilmez`, hatirlaticiSatiri.length === 0, JSON.stringify(hatirlaticiSatiri.slice(0, 3)));
+        if (d.ad === "sinyaller-acik") {
+          const tanilar = s.filter((x) => x.d === 2);
+          kontrol(`${etiket}: bütün bantlar açıkken çizilen tanı satırı tekil kayıt sayısına eşittir (hiçbir tanı iki kez çizilmez)`,
+            tanilar.length === sy.toplam && new Set(s.map((x) => x.id)).size === s.length, JSON.stringify({ cizilen: tanilar.length, toplam: sy.toplam, satir: s.length }));
+        }
+        if (d.ad === "sinyaller") kontrol(`${etiket}: Bilgi bandı kapalı başlar`, kokler[2]?.acik !== "true", JSON.stringify(kokler[2]));
+        // Bant simgesi sayı sıfır olsa da düzeyinin rengini taşır (Founder 2026-10-28): Dur kırmızı, Dikkat sarı,
+        // Bilgi mavi; tanı satırının işareti bandıyla aynı renktir. Renk, sayfanın gerçekten çizdiği simgeden okunur.
+        const simgeRengi = await p.evaluate(() => [...document.querySelectorAll("#sinyaller-agac .sat")].map((x) => {
+          const ik = x.querySelector(".ik");
+          const m = ik ? /url\("data:image\/svg\+xml,(.*)"\)/.exec(getComputedStyle(ik).backgroundImage) : null;
+          const svg = m ? decodeURIComponent(m[1]) : "";
+          return { d: Number(x.dataset.d), renk: [...new Set((svg.match(/#[0-9a-fA-F]{6}\b/g) ?? []).map((r) => r.toUpperCase()))].sort().join() };
+        }));
+        const bantRengi = ["hata", "uyari", "bilgi"].map((a) => [...new Set((readFileSync(join(EKLENTI, "medya", "simgeler", "uretilmis", `satir-sinyal-${a}-koyu.svg`), "utf8")
+          .match(/#[0-9a-fA-F]{6}\b/g) ?? []).map((r) => r.toUpperCase()))].sort().join());
+        const bantSimgeleri = simgeRengi.filter((x) => x.d === 0).slice(0, 3).map((x) => x.renk);
+        kontrol(`${etiket}: bant simgesi sayı sıfır olsa da düzeyinin rengini taşır (Dur kırmızı · Dikkat sarı · Bilgi mavi)`,
+          bantSimgeleri.join("|") === bantRengi.join("|") && new Set(bantRengi).size === 3, JSON.stringify({ bantSimgeleri, bantRengi, sayilar: kokler.slice(0, 3).map((x) => x.ac.split(" · ")[0]) }));
+        let bantNo = -1;
+        const ayriRenk = [];
+        for (const x of simgeRengi) {
+          if (x.d === 0) bantNo++;
+          else if (x.d === 2 && bantNo < 3 && x.renk !== bantRengi[bantNo]) ayriRenk.push({ bant: bantNo, renk: x.renk });
+        }
+        if (d.ad === "sinyaller-acik") kontrol(`${etiket}: tanı satırının işareti bandının simgesiyle aynı renktir`, ayriRenk.length === 0, JSON.stringify(ayriRenk.slice(0, 5)));
+        // Bant adı dar panelde de kısalmaz; tanı satırında kod, dosya ve satır görünür kalır (uzun ileti kısalır).
+        const kesik = await p.evaluate(() => ({
+          bant: [...document.querySelectorAll('#sinyaller-agac .sat[data-d="0"] .et')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent),
+          yer: [...document.querySelectorAll('#sinyaller-agac .sat[data-d="2"] .ac')].filter((e) => e.offsetWidth > 0 && e.scrollWidth > e.clientWidth + 1).length,
+        }));
+        kontrol(`${etiket}: Sinyaller bant adı kısalmaz`, kesik.bant.length === 0, JSON.stringify(kesik));
+        const tani = d.ad === "sinyaller-acik" ? s.find((x) => x.d === 2 && x.komut && x.gorunur) : undefined;
+        if (d.ad === "sinyaller") { /* açık değişke tıklamayı ölçer */ }
+        else if (!tani) kontrol(`${etiket}: Sinyaller satırı ölçülebilir`, false, "görünür tanı satırı yok");
+        if (tani) {
+          await p.evaluate(() => { window.__iletiler.length = 0; });
+          await p.click(`#sinyaller-agac .sat[data-id="${tani.id.replace(/(["\\])/g, "\\$1")}"] .et`);
+          const ileti = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "ac"));
+          // Satırın kimliği tanının yerini taşır (sinyaller.ts: kod@dosya:satır:sütun) ve açıklaması aynı dosya:satırı gösterir.
+          const yer = /@([^@/]+):(\d+):\d+(?:#\d+)?$/.exec(tani.id);
+          const dosyaAdi = yer ? yer[1] : "";
+          kontrol(`${etiket}: Sinyal satırına gerçek tıklama dosyayı tanının yerinde açan iletiyi doğurur (satırın gösterdiği dosya:satır)`,
+            ileti.length === 1 && ileti[0].id === tani.id && !!yer && tani.ac.includes(`${dosyaAdi}:${yer[2]}`),
+            JSON.stringify({ tani, ileti }));
+        }
+      }
       if (d.ad === "makinist-onay") {
         // Karar kademesi (OZK-13 · PNL-A07): panelin içinde, açık kapının satırının hemen altında ve tektir.
         const k = await p.evaluate(() => {
@@ -711,7 +786,7 @@ try {
       document.body.className = "vscode-dark";
     }, KOYU);
     const etiket = `sekme geçişi @${W}`;
-    const sira = ["tren", "makinist", "gozlemler", "ayarlar", "ray"];
+    const sira = ["tren", "makinist", "sinyaller", "ayarlar", "ray"];
     for (const ad of sira) {
       await p.click(`.sekme[data-sekme="${ad}"]`);
       const g = await p.evaluate(sekmeDurumu);
@@ -773,7 +848,8 @@ const ESKI_GORUNUM = {
   sarmalMiniGraf: { ad: "Ray sekmesi · MİNİ GRAF (katlanan başlık)", dosya: "graf-agac-secimsiz", iz: 'data-bolum="graf"' },
   sarmalOnaylar: { ad: "Makinist · Onaylar grubu", dosya: "makinist", iz: "makinist.onaylar" },
   sarmalHatirlaticilar: { ad: "Makinist · Hatırlatıcılar grubu", dosya: "makinist", iz: "makinist.hatirlaticilar" },
-  sarmalBildirimler: { ad: "Makinist · Gözlemler grubu", dosya: "makinist", iz: "makinist.gozlemler" },
+  // PNL-A09 (OZK-14 · YUZ-3.3): Gözlemler Makinist'ten çıktı; Sinyaller sekmesinin Bilgi bandı onun yerini alır.
+  sarmalBildirimler: { ad: "Sinyaller · Bilgi bandı", dosya: "sinyaller", iz: 'data-id="sinyaller/bant.bilgi"' },
   sarmalFikirler: { ad: "Makinist · Fikirler grubu", dosya: "makinist", iz: "makinist.fikirler" },
   sarmalBolumSirasi: { bilincli: "Founder 2026-10-21: kapta tek görünüm; bölüm sırası yerine sekme şeridi" },
   sarmalBolumYuvasi1: { bilincli: "Founder 2026-10-21: bölüm yuvaları kapandı" },

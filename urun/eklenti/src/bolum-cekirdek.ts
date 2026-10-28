@@ -80,7 +80,7 @@ export const BAGLAM = {
    * tek görünümü olur. Açık eklenti bu anahtarı yazmaz, yalnız okur.
    */
   trenKardes: "sarmal.tren.kardes",
-  /** Sarmal panelinin seçili sekmesi ("ray" · "tren" · "makinist" · "gozlemler" · "ayarlar"); başlık eylemleri (Yenile · Ray değiştir · Mini Graf görünümü) Ray'e özgüdür ve bunu okur. */
+  /** Sarmal panelinin seçili sekmesi ("ray" · "tren" · "makinist" · "sinyaller" · "ayarlar"); başlık eylemleri (Yenile · Ray değiştir · Mini Graf görünümü) Ray'e özgüdür ve bunu okur. */
   panelSekme: "sarmal.panel.sekme",
 } as const;
 

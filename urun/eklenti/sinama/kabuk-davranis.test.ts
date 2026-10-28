@@ -355,26 +355,26 @@ for (const [ad, Sinif, kaydet, kimlik, bos] of [
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ⑤ MAKİNİST AĞACI — DÖRT ÜST DÜĞÜM, TEK GÖRÜNÜM (Founder 2026-10-21)
+// ⑤ MAKİNİST AĞACI — ÜÇ ÜST DÜĞÜM, TEK GÖRÜNÜM (Founder 2026-10-21 · Gözlemler PNL-A09'dan beri Sinyaller'de)
 // ═══════════════════════════════════════════════════════════════════════════
 
-test("⑤ Makinist ağacı: tek görünüm, dört üst düğüm; sayılar kaynakların kendi sayacından, alt düğümler kaynağın kendi nesneleridir", () => {
+test("⑤ Makinist ağacı: tek görünüm, üç üst düğüm (Gözlemler yok); sayılar kaynakların kendi sayacından, alt düğümler kaynağın kendi nesneleridir", () => {
   const baglam = baglamKur();
   const onay = onayPaneliKaydi(baglam as never);
   onay.yerlestirHepsi(kayitlar(DOSYA, IKI_KAPI));
   const htr = hatirlaticilarKaydi(baglam as never);
-  const bld = bildirimlerKaydi(baglam as never);
   const fkr = fikirlerKaydi(baglam as never);
   htr.yerlestir(UC_KAYIT);
-  const agac = makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: htr, bildirimler: bld, fikirler: fkr });
+  const agac = makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: htr, fikirler: fkr });
   // Founder 2026-10-21 (dördüncü hüküm): ağaçların kendi TreeView'ü yoktur; Sarmal paneli sağlayıcıyı webview'inde okur.
   assert.equal(kabuk.agaclar.length, 0, "Makinist (ya da başka bir kaynak) kapta kendi ağaç görünümünü kurmamalı: kapta tek görünüm görünür");
   const kokler = agac.getChildren() as Array<{ grup: string }>;
-  assert.deepEqual(kokler.map((k) => k.grup), ["onaylar", "hatirlaticilar", "gozlemler", "fikirler"], "üst düğümler ya da sıraları değişmiş");
+  // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez; Sinyaller sekmesinin ayrı bölümündedir.
+  assert.deepEqual(kokler.map((k) => k.grup), ["onaylar", "hatirlaticilar", "fikirler"], "üst düğümler ya da sıraları değişmiş");
   const aciklama = (k: unknown) => agac.getTreeItem(k).description;
   assert.equal(aciklama(kokler[0]), "2", "Onaylar düğümünün sayısı defterin kapı sayısı değil");
   assert.equal(aciklama(kokler[1]), String(htr.kayitSayisi), "Hatırlatıcılar düğümünün sayısı kaynağın sayacından ayrışmış");
-  assert.equal(aciklama(kokler[2]), undefined, "boş Gözlemler düğümü sayı basıyor");
+  assert.equal(aciklama(kokler[2]), undefined, "boş Fikirler düğümü sayı basıyor");
   // Onaylar: iki kapı satırı, tıklayınca kapıyı açan komutla.
   const kapilar = agac.getChildren(kokler[0]);
   assert.equal(kapilar.length, 2);

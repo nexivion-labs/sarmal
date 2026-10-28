@@ -33,7 +33,7 @@ import { taniSicili, YENI_TANI_KANONU, ONCEKI_TANI_KODLARI } from "../../cekirde
 import {
   yuzeyeAyir, projeyeGrupla, kokeGoreOzetle, kayitGorunumu, dagitimKusurlari,
   yuzeyMatrisi, kaydinYuzeyi, YuzeyDefteri, meyveKokleri,
-  GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER, GORUNUS_MAKINIST, MAKINIST_ODAK_KOMUTU,
+  GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER, GORUNUS_FIKIRLER, GORUNUS_MAKINIST, MAKINIST_ODAK_KOMUTU, SINYALLER_ODAK_KOMUTU,
   dosyayaGrupla, yuzeyDosyaAdiniAl, dugumKodu, kodluEtiket,
   hatirlaticiIsareti, HATIRLATICI_ISARETLERI, panoMetni, panoDugumu,
   DURUM_CUBUGU_GIRDILERI, turDagilimi, OZET_TUR_SAYISI,
@@ -1278,11 +1278,13 @@ test("MUTASYON · kopyalama: metin bulunamayınca panoya hiçbir şey yazılmaz"
 
 // ── ⑫g DURUM ÇUBUĞU: sayı türetilir, sıfır kaybolmaz ────────────────────────
 
-test("durum çubuğu girdileri GERÇEK bir komuta götürür (Makinist bölümünü seçer ve ağacı öne alır)", () => {
+test("durum çubuğu girdileri GERÇEK bir komuta götürür (Makinist yüzeyleri Makinist'e, Gözlemler Sinyaller sekmesine)", () => {
   const komutlar = new Set(PAKET_KOMUTLARI.contributes.commands.map((k) => k.command));
   for (const girdi of DURUM_CUBUGU_GIRDILERI) {
     assert.ok(komutlar.has(girdi.komut), `durum çubuğu var olmayan bir komuta götürüyor: ${girdi.komut}`);
-    assert.equal(girdi.komut, MAKINIST_ODAK_KOMUTU, "dört yüzey tek Makinist odak komutuna inmeli");
+    // PNL-A09 (OZK-14): Gözlemler Makinist'ten çıktı ve Sinyaller sekmesinin ayrı bölümündedir.
+    assert.equal(girdi.komut, girdi.metin === "gözlemler" ? SINYALLER_ODAK_KOMUTU : MAKINIST_ODAK_KOMUTU,
+      `${girdi.metin}: durum çubuğu yüzeyin yaşadığı sekmeye götürmüyor`);
   }
 });
 

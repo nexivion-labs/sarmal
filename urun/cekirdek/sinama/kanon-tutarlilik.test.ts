@@ -41,8 +41,8 @@ const KANON_SHA = [
   "ork.sar:1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",
   "tip.sar:9e50275c279b1253c6f16bdf7e0e3352e463170fab70ce851db03fc025a062e3",   // BKM-OLG-A13: TIP-1.3 Profil ile genişledi, TIP-1.17 doğdu
-  "yas.sar:23891b7c396bcff3dc35b2f540a295efff91210f4a5ade67a10a29ae507ede40",
-  "yuz.sar:439364007d1ade1ae1a5f11f3b8d36db9582f884913b11b1f6efe68a808ffe02",
+  "yas.sar:bd8f1b5466b4ce2a689c0caa232b461e28c2a42f810b0650f7bb472f5c4cfe55",   // PNL-A20: YAS-3.3 ile YAS-3.4 Sinyaller yüzünü anar (OZK-14)
+  "yuz.sar:4cf6145848fe3407ef828ced35e3bf3fcfbe0a218d07941e1f30a1a885d8e96f",   // PNL-A20: YUZ-3.1 ile YUZ-3.3 Sinyaller ve Makinist yüzlerini yazar (OZK-14)
 ] as const;
 
 test("resmi sekizlinin bütün maddeleri örneği ve dört parçayı sabit SHA'larla taşır", () => {

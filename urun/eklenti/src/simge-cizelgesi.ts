@@ -178,7 +178,7 @@ export const SEKME_SIMGE_KAYNAKLARI = {
   ray: BOLUM_SIMGE_KAYNAKLARI.ray,
   tren: BOLUM_SIMGE_KAYNAKLARI.tren,
   makinist: BOLUM_SIMGE_KAYNAKLARI.makinist,
-  gozlemler: `${SIMGE_RAFI}/satir-kutu.svg`,
+  sinyaller: `${SIMGE_RAFI}/satir-sinyal.svg`,
   ayarlar: `${SIMGE_RAFI}/satir-tercih.svg`,
 } as const;
 
@@ -270,6 +270,8 @@ export const SATIR_SIMGELERI = [
   "dil",              // i18n sözlük anahtarı (eski 🌐 · ipucu balonu)
   "islec",            // ifade işleci (eski 🧮 · ipucu balonu)
   "yildiz",           // Kuzey Yıldızı önerisi (eski 🌟 · ipucu balonu)
+  // ── PNL-A09 · Sinyaller sekmesi (OZK-14) ──────────────────────────────────
+  "sinyal",           // Sinyaller sekmesi ve bantları: demiryolu sinyali (Dur · Dikkat · Bilgi rengiyle)
 ] as const;
 export type SatirSimgesi = (typeof SATIR_SIMGELERI)[number];
 

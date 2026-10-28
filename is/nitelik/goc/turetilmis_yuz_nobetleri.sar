@@ -28,18 +28,27 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `d2b6840e29b5785e7a0cabc83348c4265e0c100f8beac765f5a11a52205e40eb` |
+| `yasa/kanon demeti (A03 formülü)` | `4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `urun/cekirdek/src/mcp-metinleri.ts` | `cc57bb2fa7b8c303466bb03a93c0a21baab54fdebaa60bb1e20157ac5783b557` |
 | `urun/cekirdek/src/dil-baglami.ts` | `37212e330b73a9cf577f69ecab5134bab257b1c6403f03e169e2df5467980f69` |
-| `urun/eklenti/package.nls.tr.json` | `4ee896eeb867f6f23bb35705dd6d549a73232b90087a5c2529abaaa6e0a91ae5` |
-| `urun/eklenti/package.nls.json` | `d7576c870d0850c081e1ded3fc5ee3136867d582d66bef05d1450710bdd5d75b` |
+| `urun/eklenti/package.nls.tr.json` | `d19aae9e1b97dd3234ec45c33682ad58a5a57753d41ac5dd91157baa46f34563` |
+| `urun/eklenti/package.nls.json` | `fb6214df36e4f1c8ffa62f26ffccb32a7c4eb0a4289c7776d60db6d983d87b5f` |
 | `is/nitelik/goc/tani_yuzeyi_yonlendirme_matrisi.sar` | `d25b70ba41aca77ad5b7d87183d6e2877737dc36b680412c75fdcf9cd9452113` |
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-10-28 · tanıların Sinyaller yüzü · PNL-A20): Founder'ın
+2026-10-28 hükmüyle (OZK-14) YUZ-3.1 maddesinin hüküm, gerekçe ve örnek metni
+Sarmal panelinin Sinyaller sekmesini tanıların asıl yüzü, editörün Problems
+panelini ise ayarla açılan isteğe bağlı bir yüz sayacak biçimde güncellenmiştir.
+Aynı hükümle YUZ-3.3 düzelt, hatırla ve bil ayrımını Sinyaller ile Makinist
+sekmelerine taşımış, YAS-3.3 ile YAS-3.4 de Sinyaller yüzünü anar olmuştur;
+kanon demeti mührü ilerlemiştir. Öteki kanon maddelerinin metni ve öteki sekiz
+kaynağın mührü değişmemiştir.
 
 Tazeleme notu (2026-10-28 · girinti bantlarının varsayılana dönmesi · PNL-A06):
 Founder'ın 2026-10-27 hükmüyle gökkuşağı girinti bantları yeniden varsayılan

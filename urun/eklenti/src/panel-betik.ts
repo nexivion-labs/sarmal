@@ -57,6 +57,10 @@ button{font:inherit;color:inherit}
 .sekme:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:-2px}
 .rozet{display:inline-block;min-width:14px;padding:0 4px;border-radius:7px;text-align:center;font-size:10px;line-height:14px;
   background:var(--vscode-badge-background);color:var(--vscode-badge-foreground)}
+/* Sinyaller sekmesinin Dur ve Dikkat sayıları (PNL-A09): editörün hata ve uyarı renkleriyle. */
+.sinyal-rozetleri{display:inline-flex;gap:3px}
+.rozet.dur{background:var(--vscode-editorError-foreground,#f14c4c);color:var(--vscode-editor-background,#1e1e1e)}
+.rozet.dikkat{background:var(--vscode-editorWarning-foreground,#cca700);color:var(--vscode-editor-background,#1e1e1e)}
 /* DAR ŞERİT: kenar çubuğunda (${DAR_SERIT_PX} pikselden dar) beş sekmenin adı yan yana sığmaz ve kesilir.
    Orada seçili olmayan sekme yalnız simgesiyle görünür; adı ipucunda kalır ve ekran okuyucu için
    görünmez biçimde yerinde durur. Seçili sekmenin adı her zaman görünür. */
@@ -133,6 +137,10 @@ svg.ik{background:none}
 .et{flex:0 1 auto;min-width:3ch;overflow:hidden;text-overflow:ellipsis}
 .ac{flex:0 2 auto;min-width:0;margin-left:8px;overflow:hidden;text-overflow:ellipsis;color:var(--vscode-descriptionForeground);font-size:12px}
 .sat.sec .ac{color:inherit;opacity:.85}
+/* SİNYALLER (PNL-A09): bant adı (Dur · Dikkat · Bilgi) hiç kısalmaz, kısalan bandın açıklamasıdır; tanı
+   satırında ise kod, dosya ve satır görünür kalır, uzun ileti kısalır (tamamı satırın ipucundadır). */
+#sinyaller-agac .sat[data-d="0"] .et{flex-shrink:0}
+#sinyaller-agac .sat[data-d="2"] .ac{flex-shrink:0;max-width:60%}
 /* Fare üzerindeki satırın gri açıklaması dalın tonuna boyanır (seçili satırda seçim rengi kalır,
    çünkü mor yazı seçim zemininde okunmaz) ve simgesi canlanıp tül morunda hafifçe ışır. */
 .sat:hover:not(.sec) .ac{color:var(--tul-vurgu)}
@@ -394,6 +402,13 @@ export const PANEL_BETIGI = `
     } else if (m.tip === 'rozet') {
       var r = document.querySelector('.sekme[data-sekme="makinist"] .rozet');
       if (r) { r.textContent = m.sayi > 0 ? String(m.sayi) : ''; r.hidden = !(m.sayi > 0); }
+    } else if (m.tip === 'sinyalRozet') {
+      // Sinyaller sekmesinin Dur ve Dikkat sayıları (PNL-A09); sıfır olan gizlenir.
+      ['dur', 'dikkat'].forEach(function (k) {
+        var e = document.querySelector('.sekme[data-sekme="sinyaller"] .rozet.' + k);
+        var n = Number(m[k]) || 0;
+        if (e) { e.textContent = n > 0 ? String(n) : ''; e.hidden = !(n > 0); }
+      });
     } else if (m.tip === 'onayOdak') {
       notaOdaklan(m.kimlik);
     } else if (m.tip === 'grafSec') {
@@ -430,23 +445,25 @@ export const PANEL_BETIGI = `
     if (p.querySelector('#agac')) return 'ray';
     if (p.querySelector('#tren-agac')) return 'tren';
     if (p.querySelector('#makinist-agac')) return 'makinist';
+    if (p.querySelector('#sinyaller-agac')) return 'sinyaller';
     var bos = p.querySelector('[data-bos-sekme]');
     return bos ? bos.getAttribute('data-bos-sekme') : '';
   }
+  // Dizi tek bir gecikmeden sonra art arda koşar: arka plandaki webview'in zamanlayıcıları saniyeye
+  // yuvarlanabilir ve tıklamalar arasına zamanlayıcı konursa dizi kilit süresinin dışına taşabilir.
   function sinamaSekmeDizisi(sira, aralik) {
     var kayitlar = [];
-    var i = 0;
-    (function adim() {
-      if (!Array.isArray(sira) || i >= sira.length) { gonder({ tip: 'sinamaRapor', kayitlar: kayitlar }); return; }
-      var ad = sira[i++];
-      var b = document.querySelector('.sekme[data-sekme="' + ad + '"]');
-      var bas = performance.now();
-      if (b) b.click();
-      var gorunen = sekmePanelleri().filter(function (p) { return !p.hidden; });
-      kayitlar.push({ ad: ad, zaman: Date.now(), sure: performance.now() - bas, secili: seciliSekme(),
-        gorunen: gorunen.map(function (p) { return p.getAttribute('data-sekme'); }), icerik: gorunen.map(icerikSekmesi) });
-      setTimeout(adim, Number(aralik) || 0);
-    })();
+    setTimeout(function () {
+      (Array.isArray(sira) ? sira : []).forEach(function (ad) {
+        var b = document.querySelector('.sekme[data-sekme="' + ad + '"]');
+        var bas = performance.now();
+        if (b) b.click();
+        var gorunen = sekmePanelleri().filter(function (p) { return !p.hidden; });
+        kayitlar.push({ ad: ad, zaman: Date.now(), sure: performance.now() - bas, secili: seciliSekme(),
+          gorunen: gorunen.map(function (p) { return p.getAttribute('data-sekme'); }), icerik: gorunen.map(icerikSekmesi) });
+      });
+      gonder({ tip: 'sinamaRapor', kayitlar: kayitlar });
+    }, Number(aralik) || 0);
   }
 
   // ── Katlanan başlıklar: Enter, Space ve tıklama gövdeyi katlar; durum eklentide kalıcıdır ──

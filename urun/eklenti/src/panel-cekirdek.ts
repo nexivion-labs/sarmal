@@ -19,17 +19,17 @@
 //        köke taşınmasını (stil seçicileri) saf işlevlerle karara bağlar.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { PANEL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { PANEL_METINLERI, SINYAL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
 import { GORUNUM_KAPAT_KOMUTU, GORUNUM_SEC_KOMUTU } from "./minigraf-gorunum.ts";
 import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
 
 // ── SEKMELER ────────────────────────────────────────────────────────────────
 
-/** Şeritteki sekmeler, soldan sağa (OZK-13). */
-export const SEKMELER = ["ray", "tren", "makinist", "gozlemler", "ayarlar"] as const;
+/** Şeritteki sekmeler, soldan sağa (OZK-13; dördüncü sekme OZK-14'ten beri Sinyaller'dir). */
+export const SEKMELER = ["ray", "tren", "makinist", "sinyaller", "ayarlar"] as const;
 export type SekmeKimligi = (typeof SEKMELER)[number];
-/** İçeriği henüz kurulmamış sekmeler: yalnız boş durum cümlesi taşırlar (PNL-A03 sınırı). */
-export type BosSekme = Extract<SekmeKimligi, "gozlemler" | "ayarlar">;
+/** İçeriği henüz kurulmamış sekme: yalnız boş durum cümlesi taşır (PNL-A03 sınırı). */
+export type BosSekme = Extract<SekmeKimligi, "ayarlar">;
 
 /** Bilinmeyen ya da bozuk değer Ray'e düşer (kalıcı durumdan okunan değer güvenilmez). */
 export function sekmeNormalle(v: unknown): SekmeKimligi {
@@ -414,7 +414,19 @@ export function makinistBolumuHtml(agac: string): string {
   return `<div id="makinist-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("makinist"))}">${agac}</div>`;
 }
 
-/** Gözlemler ve Ayarlar sekmeleri bu Adımda yalnız boş bölüm olarak doğar; içerikleri sonraki Adımların işidir. */
+/**
+ * Sinyaller sekmesi (PNL-A09 · OZK-14): Dur, Dikkat ve Bilgi bantları ile ayrı Gözlemler
+ * bölümü tek ağaçtadır; ağaç sinyaller.ts sağlayıcısından gelir. Kapsamda hiç kayıt
+ * yoksa kısa bir boş durum cümlesi gösterilir ve ağacın kabı yine yerinde durur.
+ */
+export function sinyallerBolumuHtml(agac: string, bos: boolean): string {
+  const etiket = kacir(PANEL_METINLERI.sekmeAdi("sinyaller"));
+  return bos
+    ? `<p class="bos">${kacir(SINYAL_METINLERI.bos)}</p><div id="sinyaller-agac" role="tree" aria-label="${etiket}" hidden></div>`
+    : `<div id="sinyaller-agac" role="tree" aria-label="${etiket}">${agac}</div>`;
+}
+
+/** Ayarlar sekmesi bu Adımda yalnız boş bölüm olarak doğar; içeriği sonraki Adımların işidir. */
 export function bosSekmeHtml(s: BosSekme): string {
   return `<p class="bos" data-bos-sekme="${s}">${kacir(PANEL_METINLERI.bosSekme(s))}</p>`;
 }
@@ -440,6 +452,8 @@ export interface PanelBelgesi {
   cspSource: string;
   /** Makinist sekmesinin yanındaki sayı (bekleyen kayıt); 0 ise gizli. */
   rozet: number;
+  /** Sinyaller sekmesinin yanındaki Dur ve Dikkat sayıları (PNL-A09); 0 olan gizlidir. */
+  sinyalRozeti?: { dur: number; dikkat: number };
 }
 
 /** Satır içi SVG simgesi: yalnız kaynak dosyanın kendi svg'si; küçük şeride göre 14 piksele indirilir (PNL-A03). */
@@ -447,11 +461,20 @@ function simgeSvg(svg: string): string {
   return svgKucult(svg).replace(/^<svg /, `<svg width="14" height="14" aria-hidden="true" focusable="false" `);
 }
 
-export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, rozet: number): string {
+/** Sinyaller sekmesinin iki rozeti: Dur ve Dikkat sayıları; sıfır olan gizlidir. */
+function sinyalRozetleriHtml(r: { dur: number; dikkat: number }): string {
+  const tek = (sinif: "dur" | "dikkat", n: number): string =>
+    `<span class="rozet ${sinif}"${n > 0 ? "" : " hidden"}>${n > 0 ? n : ""}</span>`;
+  return `<span class="sinyal-rozetleri" title="${kacir(SINYAL_METINLERI.rozetIpucu(r.dur, r.dikkat))}">${tek("dur", r.dur)}${tek("dikkat", r.dikkat)}</span>`;
+}
+
+export function sekmeSeridiHtml(secili: SekmeKimligi, simgeler: SekmeSimgeleri, rozet: number,
+  sinyalRozeti: { dur: number; dikkat: number } = { dur: 0, dikkat: 0 }): string {
   const dugmeler = SEKMELER.map((s) => {
     const sec = s === secili;
     const sayi = s === "makinist"
-      ? `<span class="rozet"${rozet > 0 ? "" : " hidden"}>${rozet > 0 ? rozet : ""}</span>` : "";
+      ? `<span class="rozet"${rozet > 0 ? "" : " hidden"}>${rozet > 0 ? rozet : ""}</span>`
+      : s === "sinyaller" ? sinyalRozetleriHtml(sinyalRozeti) : "";
     return `<button type="button" class="sekme" role="tab" id="sekme-${s}" aria-controls="panel-${s}" data-sekme="${s}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
       + ` title="${kacir(PANEL_METINLERI.sekmeIpucu(s))}">${simgeSvg(simgeler[s])}<span class="sk-ad">${kacir(PANEL_METINLERI.sekmeAdi(s))}</span>${sayi}</button>`;
   }).join("");
@@ -484,7 +507,7 @@ export function panelHtml(b: PanelBelgesi): string {
     // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
     + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
     + `</head><body>`
-    + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet)
+    + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet, b.sinyalRozeti)
     + `<div id="icerik">${SEKMELER.map((s) => sekmePaneliHtml(s, b.sekme, b.bolumler[s].html)).join("")}</div>`
     + `<script nonce="${b.nonce}">${PANEL_BETIGI}</script></body></html>`;
 }

@@ -89,7 +89,7 @@ function kur(secili = "ray") {
     belge.kok.ekle(new Oge(belge, `ikon-stil-${s}`));
   }
   const icerik = belge.kok.ekle(new Oge(belge, "icerik"));
-  const kimlik: Record<string, string> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac" };
+  const kimlik: Record<string, string> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac", sinyaller: "sinyaller-agac" };
   for (const s of SEKMELER) {
     const p = icerik.ekle(new Oge(belge, `panel-${s}`, "sekme-paneli", { "data-sekme": s }));
     p.hidden = s !== secili;
@@ -117,12 +117,12 @@ test("PNL-A18 · tıklama eklentiden yanıt beklemeden seçili sekmeyi ve görü
   const b = kur();
   assert.deepEqual(b.durum(), { secili: ["ray"], gorunen: ["ray"] });
   // Eklenti hiç yanıt vermez (iş parçacığı kilitli): her geçiş yine de anında ve tutarlıdır.
-  for (const s of ["tren", "makinist", "gozlemler", "ayarlar", "ray", "makinist"]) {
+  for (const s of ["tren", "makinist", "sinyaller", "ayarlar", "ray", "makinist"]) {
     b.tikla(s);
     assert.deepEqual(b.durum(), { secili: [s], gorunen: [s] }, `${s}: seçili sekme ile görünen kap ayrıştı ya da geçiş eklentiyi bekledi`);
   }
   assert.deepEqual(b.iletiler.filter((m) => m.tip === "sekme").map((m) => [m.ad, m.n]),
-    [["tren", 1], ["makinist", 2], ["gozlemler", 3], ["ayarlar", 4], ["ray", 5], ["makinist", 6]]);
+    [["tren", 1], ["makinist", 2], ["sinyaller", 3], ["ayarlar", 4], ["ray", 5], ["makinist", 6]]);
 });
 
 test("PNL-A18 · eklentinin gecikmiş seçimi eklentiye henüz ulaşmamış daha yeni bir kullanıcı geçişini ezemez; ulaştıktan sonraki seçim uygulanır", () => {

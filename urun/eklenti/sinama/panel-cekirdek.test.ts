@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 import {
   IkonDefteri, SEKMELER, bosSekmeHtml, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
   satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, trenBolumuHtml,
+  sinyallerBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type SekmeBolumu, type SekmeKimligi, type SekmeSimgeleri, type UretimSecenekleri,
 } from "../src/panel-cekirdek.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "../src/simge-cizelgesi.ts";
@@ -35,7 +36,8 @@ const SIMGELER = Object.fromEntries(SEKMELER.map((s) => [s, oku(SEKME_SIMGE_KAYN
 const sekmeIcerigi = (sekme: (typeof SEKMELER)[number]): string =>
   sekme === "ray" ? rayBolumuHtml({ agac: "", graf: "<html><body></body></html>" })
     : sekme === "tren" ? trenBolumuHtml("", true, true)
-      : sekme === "makinist" ? makinistBolumuHtml("") : bosSekmeHtml(sekme);
+      : sekme === "makinist" ? makinistBolumuHtml("")
+        : sekme === "sinyaller" ? sinyallerBolumuHtml("", true) : bosSekmeHtml(sekme);
 /** Beş sekmenin bölümü (PNL-A18: belge hepsini taşır). */
 const hepsi = (icerik: (s: SekmeKimligi) => string): Record<SekmeKimligi, SekmeBolumu> =>
   Object.fromEntries(SEKMELER.map((s) => [s, { html: icerik(s), ikonStili: "" }])) as Record<SekmeKimligi, SekmeBolumu>;
@@ -85,8 +87,8 @@ function yediYuzDugum(): Dugum[] {
 
 // ── ① SEKMELER ──────────────────────────────────────────────────────────────
 
-test("sekmeler: beş sekme soldan sağa Ray · Tren · Makinist · Gözlemler · Ayarlar (OZK-13); bozuk değer Ray'e düşer", () => {
-  assert.deepEqual([...SEKMELER], ["ray", "tren", "makinist", "gozlemler", "ayarlar"]);
+test("sekmeler: beş sekme soldan sağa Ray · Tren · Makinist · Sinyaller · Ayarlar (OZK-13 · OZK-14); bozuk değer Ray'e düşer", () => {
+  assert.deepEqual([...SEKMELER], ["ray", "tren", "makinist", "sinyaller", "ayarlar"]);
   assert.equal(sekmeNormalle("tren"), "tren");
   assert.equal(sekmeNormalle("ayarlar"), "ayarlar");
   for (const kotu of [undefined, null, 3, "graf", "", "RAY", {}]) assert.equal(sekmeNormalle(kotu), "ray", String(kotu));
@@ -94,7 +96,7 @@ test("sekmeler: beş sekme soldan sağa Ray · Tren · Makinist · Gözlemler ·
 
 test("klavye komşuluğu: oklar sarar, Home ve End uçlara gider, başka tuş seçimi değiştirmez", () => {
   assert.equal(komsuSekme("ray", "ArrowRight"), "tren");
-  assert.equal(komsuSekme("makinist", "ArrowRight"), "gozlemler");
+  assert.equal(komsuSekme("makinist", "ArrowRight"), "sinyaller");
   assert.equal(komsuSekme("ayarlar", "ArrowRight"), "ray", "sağ ok sondan başa sarmalı");
   assert.equal(komsuSekme("ray", "ArrowLeft"), "ayarlar", "sol ok baştan sona sarmalı");
   assert.equal(komsuSekme("tren", "Home"), "ray");
@@ -115,21 +117,25 @@ test("sekme şeridi: beş sekme, seçili olan aria-selected ve tek tabulu, simge
   }
   assert.ok(/class="rozet" hidden>/.test(sekmeSeridiHtml("ray", SIMGELER, 0)), "boş rozet görünüyor");
   assert.ok(/class="rozet">5</.test(sekmeSeridiHtml("ray", SIMGELER, 5)), "dolu rozet sayıyı taşımıyor");
+  // PNL-A09: Sinyaller'in yanında Dur ve Dikkat sayıları; sıfır olan gizlidir, Bilgi sayılmaz.
+  const sinyal = sekmeSeridiHtml("ray", SIMGELER, 0, { dur: 3, dikkat: 0 });
+  assert.match(sinyal, /data-sekme="sinyaller"[^>]*>[\s\S]*?<span class="rozet dur">3<\/span><span class="rozet dikkat" hidden><\/span>/);
+  assert.match(sekmeSeridiHtml("ray", SIMGELER, 0), /<span class="rozet dur" hidden><\/span><span class="rozet dikkat" hidden><\/span>/);
 });
 
-test("TR ve EN sekme adları: Ray · Tren · Makinist · Gözlemler · Ayarlar ve Rail · Train · Driver · Observations · Settings", () => {
+test("TR ve EN sekme adları: Ray · Tren · Makinist · Sinyaller · Ayarlar ve Rail · Train · Driver · Signals · Settings", () => {
   const ad = (): string[] => SEKMELER.map((s) => PANEL_METINLERI.sekmeAdi(s));
   yuzeyDiliniAyarla("tr");
-  assert.deepEqual(ad(), ["Ray", "Tren", "Makinist", "Gözlemler", "Ayarlar"]);
+  assert.deepEqual(ad(), ["Ray", "Tren", "Makinist", "Sinyaller", "Ayarlar"]);
   const tr = sekmeSeridiHtml("ray", SIMGELER, 0);
-  assert.ok(["Ray", "Tren", "Makinist", "Gözlemler", "Ayarlar"].every((a) => tr.includes(`>${a}<`)));
+  assert.ok(["Ray", "Tren", "Makinist", "Sinyaller", "Ayarlar"].every((a) => tr.includes(`>${a}<`)));
   yuzeyDiliniAyarla("en");
   try {
-    assert.deepEqual(ad(), ["Rail", "Train", "Driver", "Observations", "Settings"]);
+    assert.deepEqual(ad(), ["Rail", "Train", "Driver", "Signals", "Settings"]);
     const en = sekmeSeridiHtml("ray", SIMGELER, 0);
-    assert.ok(["Rail", "Train", "Driver", "Observations", "Settings"].every((a) => en.includes(`>${a}<`)));
-    assert.ok(!en.includes(">Ray<") && !en.includes(">Makinist<") && !en.includes(">Ayarlar<"), "İngilizce şerit Türkçe sekme adı taşıyor");
-    for (const s of ["gozlemler", "ayarlar"] as const) assert.ok(!/[çğıöşüİ]/.test(PANEL_METINLERI.bosSekme(s)), `${s}: İngilizce boş durum cümlesi Türkçe harf taşıyor`);
+    assert.ok(["Rail", "Train", "Driver", "Signals", "Settings"].every((a) => en.includes(`>${a}<`)));
+    assert.ok(!en.includes(">Ray<") && !en.includes(">Makinist<") && !en.includes(">Ayarlar<") && !en.includes(">Sinyaller<"), "İngilizce şerit Türkçe sekme adı taşıyor");
+    for (const s of ["ayarlar"] as const) assert.ok(!/[çğıöşüİ]/.test(PANEL_METINLERI.bosSekme(s)), `${s}: İngilizce boş durum cümlesi Türkçe harf taşıyor`);
     assert.equal(PANEL_METINLERI.yolHaritasiBasligi, "Roadmap");
     assert.equal(PANEL_METINLERI.dil, "en");
   } finally {
@@ -495,17 +501,23 @@ test(`geniş panelde (en az ${GENIS_PANEL_PX} piksel) Ray'in iki bölümü yan y
   assert.doesNotMatch(disari, /\.(ray-duzen|kol)\{/, "dar panel için sütun kuralı yazılmış");
 });
 
-test("Gözlemler ve Ayarlar sekmeleri boş bölüm olarak doğar: yalnız kısa boş durum cümlesi, ağaç yok (PNL-A03 sınırı)", () => {
+test("Ayarlar sekmesi boş bölüm olarak doğar: yalnız kısa boş durum cümlesi, ağaç yok (PNL-A03 sınırı)", () => {
   yuzeyDiliniAyarla("tr");
-  for (const s of ["gozlemler", "ayarlar"] as const) {
+  for (const s of ["ayarlar"] as const) {
     const h = bosSekmeHtml(s);
     assert.equal(h, `<p class="bos" data-bos-sekme="${s}">${kacir(PANEL_METINLERI.bosSekme(s))}</p>`);
     assert.ok(PANEL_METINLERI.bosSekme(s).length > 0 && !/role="tree"/.test(h));
     const belge = panelHtml({ sekme: s, bolumler: tekBolum(s, h), simgeler: SIMGELER, nonce: "n", cspSource: "c", rozet: 0 });
     assert.ok(belge.includes(`data-sekme="${s}" aria-selected="true"`));
   }
-  assert.match(bosSekmeHtml("gozlemler"), /Gözlemler/);
   assert.match(bosSekmeHtml("ayarlar"), /ayarları/);
+});
+
+test("Sinyaller sekmesi (PNL-A09): ağacın kabı tektir; kapsamda kayıt yokken kısa boş durum cümlesi görünür, kap yine yerindedir", () => {
+  yuzeyDiliniAyarla("tr");
+  assert.equal(sinyallerBolumuHtml("<div class=\"sat\"></div>", false), `<div id="sinyaller-agac" role="tree" aria-label="Sinyaller"><div class="sat"></div></div>`);
+  const bos = sinyallerBolumuHtml("", true);
+  assert.match(bos, /^<p class="bos">[^<]+<\/p><div id="sinyaller-agac" role="tree" aria-label="Sinyaller" hidden><\/div>$/);
 });
 
 test("istemci betiği ikinci bir sekme listesi tutmaz: seçilebilir sekmeler şeridin kendisidir", () => {

@@ -1,14 +1,15 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // makinist.ts — 🧑‍✈️ MAKINIST AĞACI (Founder 2026-10-21 · üçüncü hüküm)
 //
-//   Makinist (insan) bölümü TEK bir ağaçtır: Onaylar, Hatırlatıcılar,
-//   Gözlemler ve Fikirler bu ağacın dört üst düğümüdür. Ağacın kendi TreeView'ü
+//   Makinist (insan) bölümü TEK bir ağaçtır: Onaylar, Hatırlatıcılar ve
+//   Fikirler bu ağacın üst düğümleridir. Gözlemler PNL-A09'dan beri (OZK-14)
+//   Sinyaller sekmesinin ayrı bölümündedir (sinyaller.ts). Ağacın kendi TreeView'ü
 //   yoktur (Founder 2026-10-21, dördüncü hüküm): Sarmal paneli (Makinist sekmesi)
 //   sağlayıcıyı olduğu gibi okur ve satırları kendi webview'ünde çizer; bekleyen
 //   kayıt sayısı panelin rozetine gider.
 //
-//   AĞAÇ KARAR VERMEZ VE VERİ ÜRETMEZ. Dört kaynağın verisi ve satır çizimi
-//   mevcut sağlayıcılardan gelir (hatirlaticilar.ts · bildirimler.ts · fikirler.ts
+//   AĞAÇ KARAR VERMEZ VE VERİ ÜRETMEZ. Kaynakların verisi ve satır çizimi
+//   mevcut sağlayıcılardan gelir (hatirlaticilar.ts · fikirler.ts
 //   ve Onaylar defteri); burada yeni ayrıştırıcı ya da tarama yoktur. Alt düğümler
 //   kaynağın KENDİ nesneleridir (sarmalaşmaz), böylece "satırı kopyala" gibi komutlar
 //   kaynağın düğümünü olduğu gibi alır; sahip kaynak, nesneden bir `WeakMap` ile
@@ -24,7 +25,7 @@ import type { OnayPaneli } from "./onay-paneli.ts";
 import type { YuzDurumu } from "./ortak.ts";
 
 
-/** Ağacın dört üst düğümü; kimlikleri sabittir. */
+/** Ağacın üst düğümleri; kimlikleri sabittir. */
 export interface MakinistGrupOgesi { readonly tur: "makinist-grup"; readonly grup: MakinistGrubu }
 
 /** Mevcut bir ağaç sağlayıcısının ağaca verdiği yüz. */
@@ -66,7 +67,7 @@ class OnayKaynagi implements MakinistKaynagi {
 }
 
 const GRUP_SIMGESI: Readonly<Record<MakinistGrubu, SatirSimgesi>> = {
-  onaylar: "kapi", hatirlaticilar: "yerimi", gozlemler: "kutu", fikirler: "fikir",
+  onaylar: "kapi", hatirlaticilar: "yerimi", fikirler: "fikir",
 };
 
 export { GORUNUS_MAKINIST, MAKINIST_GRUPLARI, type MakinistGrubu };
@@ -95,7 +96,7 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
 
   private grupBaslik(g: MakinistGrubu): string {
     return { onaylar: MAKINIST_METINLERI.onaylar, hatirlaticilar: MAKINIST_METINLERI.hatirlaticilar,
-      gozlemler: MAKINIST_METINLERI.gozlemler, fikirler: MAKINIST_METINLERI.fikirler }[g];
+      fikirler: MAKINIST_METINLERI.fikirler }[g];
   }
 
   /** Görünümün köşe sayısı: karar bekleyen kapılar + hatırlatıcılar (eski Makinist rozetiyle aynı). */
@@ -137,21 +138,19 @@ export class MakinistAgaci implements vscode.TreeDataProvider<unknown> {
 export interface MakinistGirdileri {
   onayPaneli: OnayPaneli;
   hatirlaticilar: MakinistKaynagi;
-  bildirimler: MakinistKaynagi;
   fikirler: MakinistKaynagi;
 }
 
-/** Ağacı kurar: dört kaynağın değişimi tek yenilemeye bağlanır; kendi görünümü yoktur. */
+/** Ağacı kurar: kaynakların değişimi tek yenilemeye bağlanır; kendi görünümü yoktur. */
 export function makinistKaydi(context: vscode.ExtensionContext, g: MakinistGirdileri): MakinistAgaci {
   const onay = new OnayKaynagi(g.onayPaneli, context.extensionUri);
   const agac = new MakinistAgaci(
-    { onaylar: onay, hatirlaticilar: g.hatirlaticilar, gozlemler: g.bildirimler, fikirler: g.fikirler },
+    { onaylar: onay, hatirlaticilar: g.hatirlaticilar, fikirler: g.fikirler },
     context.extensionUri,
   );
   agac.onay = g.onayPaneli;
   context.subscriptions.push(
     g.hatirlaticilar.onDidChangeTreeData(() => agac.yenile()),
-    g.bildirimler.onDidChangeTreeData(() => agac.yenile()),
     g.fikirler.onDidChangeTreeData(() => agac.yenile()),
     onay.onDidChangeTreeData(() => agac.yenile()),
   );

@@ -3,9 +3,14 @@
 //
 //   arac/gorsel-kontrol.mjs bu dosyayı esbuild ile paketler (`vscode` → sinama/vscode-sahtesi.ts)
 //   ve ayrı bir süreçte koşturur. Verilen proje kökündeki bütün .sar dosyaları okunur,
-//   eklentinin kendi sağlayıcıları (Yol Haritası, Mini Graf, Tren, Makinist) kurulur ve
+//   eklentinin kendi sağlayıcıları (Yol Haritası, Mini Graf, Tren, Makinist, Sinyaller) kurulur ve
 //   panelin `resolveWebviewView` ile ürettiği belge her değişke için diske yazılır.
 //   Makinist kaynakları yerine yansız örnek satırlar kullanılır; geri kalan her şey gerçektir.
+//   Sinyaller sekmesi motorun projedeki GERÇEK tek-dosya tanılarını gösterir (PNL-A09): tanılar
+//   doğrulayıcıdan, Proje kimliği Yol Haritasının kuralından, kanon maddesi sicil ile kanonun
+//   `tanı:` kenarlarından gelir. Ayrı Gözlemler bölümü yoktur; Hatırlatıcılar yüzeyine yönlenen
+//   tanılar Sinyaller'e girmez (YUZ-3.3). Bildirimler sağlayıcısı yalnız durum çubuğundaki
+//   Gözlemler sayacının kaynağı olarak kurulur ve sayısı Bilgi bandıyla karşılaştırılır.
 //
 //   Argümanlar: <proje_dizini> <cikti_dizini> <secili_kod|-> <acik_kademe> <dil>
 //   Çıktı: <cikti_dizini>/<ad>.html dosyaları ve stdout'a JSON değişke listesi.
@@ -28,9 +33,18 @@ import { OnayPaneli } from "../src/onay-paneli.ts";
 import { onayKapilariTopla } from "../src/onay-cekirdek.ts";
 import { panelKaydi } from "../src/panel.ts";
 import type { SekmeKimligi } from "../src/panel-cekirdek.ts";
-import { satirIkonu } from "../src/ortak.ts";
+import { satirIkonu, GOMULU_SNF } from "../src/ortak.ts";
 import { yuzeyDiliniAyarla } from "../src/yuzey-metinleri.ts";
 import { erisimSiniri } from "../src/tur-belgesi.ts";
+import { dogrula } from "../../cekirdek/src/dogrulayici.ts";
+import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
+import { existsSync } from "node:fs";
+import { projeKimligi } from "../src/yolharitasi.ts";
+import { SinyallerAgaci } from "../src/sinyaller.ts";
+import { ILERI_BAGLAM_KIMLIKLERI } from "../../cekirdek/src/denetim.ts";
+import { bildirimlerKaydi } from "../src/bildirimler.ts";
+import { yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { turGoruntusunuYayinla } from "../src/tur-goruntusu.ts";
 import { tulRengi } from "../src/tul-rengi.ts";
 import { CIZGI_ALFA } from "../src/panel-betik.ts";
 
@@ -97,9 +111,25 @@ onayDefteri.yerlestirHepsi(onayKapilariTopla(ayristir(belirtecle(ONAY_ORNEGI)).b
 const makinist = makinistKaydi({ subscriptions: [], extensionUri: koku } as never, {
   onayPaneli: onayDefteri,
   hatirlaticilar: ornek(1, "yerimi", "uyari", [["Örnek hatırlatıcı", "ORNEK-FAZ"]]) as never,
-  bildirimler: ornek(0, "kutu", "bilgi", []) as never,
   fikirler: ornek(1, "fikir", "bilgi", [["Örnek fikir", "ORNEK-FKR"]]) as never,
 });
+
+// ── Sinyaller (PNL-A09): projenin gerçek tek-dosya tanıları ─────────────────
+// Kanon maddesi haritası son tur görüntüsünden kurulur; görüntü burada da yayınlanır.
+turGoruntusunuYayinla({ programlar, yollar, belgeler: new Map(), dilDışı: [], tetik: "gorsel-kontrol", kapsam: undefined } as never);
+const kayitYolu = join(PROJE, "oz", "siniflama", "kayit.json");
+// Projenin kendi tip kaydı yoksa eklentinin gömülü kaydına düşülür (eklentinin kendi davranışı).
+const snf = existsSync(kayitYolu) ? siniflamaYukle(kayitYolu) : GOMULU_SNF;
+const sinyalKayitlari: YuzeyKaydi[] = [];
+for (const [dosya, program] of programlar) {
+  for (const t of dogrula(program as never, snf, dosya, readFileSync(dosya, "utf8"))) sinyalKayitlari.push({ proje: projeKimligi(dosya), dosya, tani: t });
+}
+// Durum çubuğundaki Gözlemler sayacının kaynağı (eklenti.ts: `gözlem: () => bildirimler.kayitSayisi`).
+const gozlemler = bildirimlerKaydi({ subscriptions: [], extensionUri: koku, extension: { packageJSON: {} } } as never);
+gozlemler.yerlestir(yuzeyeAyir(sinyalKayitlari).bildirimler);
+const sinyaller = new SinyallerAgaci(koku as never);
+const odakProje = projeKimligi(join(PROJE, "_")).kod;
+sinyaller.yerlestir(sinyalKayitlari, odakProje);
 
 // ── Kabuk ayarları: görünüm ve açık kademe değişke başına değişir ─────────────
 let gorunumAyari = "agac";
@@ -138,7 +168,7 @@ function uret(d: Degiske): string {
     workspaceState: { get: () => undefined, update: async () => undefined },
   };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* görünürlük ölçümü yok */ }, diliTazele() { /* yok */ }, kodlar: () => [], gorunurMu: () => true };
-  const panel = panelKaydi(ctx as never, { yol: yuz as never, tren, makinist });
+  const panel = panelKaydi(ctx as never, { yol: yuz as never, tren, makinist, sinyaller });
   // Panel her açılışta Ray'le başlar (PNL-A03); değişkenin sekmesi kullanıcının seçimi gibi verilir.
   // Seçim eşzamanlı yazılır; belge aşağıda görünüm çözülünce bu sekmeyle üretilir.
   void panel.sekmeSec(d.sekme);
@@ -163,7 +193,9 @@ const degiskeler: Degiske[] = [
   { ad: "tren", sekme: "tren", acik: ACIK },
   { ad: "makinist", sekme: "makinist", acik: ACIK },
   { ad: "makinist-onay", sekme: "makinist", acik: ACIK, onayAcik: "ORNEK-A02" },
-  { ad: "gozlemler", sekme: "gozlemler" },
+  { ad: "sinyaller", sekme: "sinyaller" },
+  // Bantlar ve projeler açık: satırların kodu, yeri, önerisi ve kanon maddesi görünür (PNL-A09).
+  { ad: "sinyaller-acik", sekme: "sinyaller", acik: ACIK },
   { ad: "ayarlar", sekme: "ayarlar" },
   { ad: "graf-secici", sekme: "ray", secici: true },
 ];
@@ -178,5 +210,8 @@ const liste = degiskeler.map((d) => {
 });
 // Görsel kontrol koyu temada koşar; beklenen çizgi ve vurgu renkleri tül kaynağından verilir (PNL-A04).
 const tul = { cizgi: tulRengi("koyu", CIZGI_ALFA), vurgu: tulRengi("koyu", 1) };
-process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, tul, degiskeler: liste }));
+process.stdout.write(JSON.stringify({ secili: SECILI, kirik: kirik.length, sar: yollar.length, tul, sinyal: {
+  ...sinyaller.sayilar, denetim: sinyalKayitlari.length, durumCubuguGozlem: gozlemler.kayitSayisi,
+  hatirlaticiKodlari: [...ILERI_BAGLAM_KIMLIKLERI],
+}, degiskeler: liste }));
 process.exit(0);

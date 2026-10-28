@@ -38,6 +38,9 @@ const { yolHaritasiKaydi } = await import("../src/yolharitasi.ts");
 const { atlaHref } = await import("../src/minigraf-cekirdek.ts");
 const { SEKMELER } = await import("../src/panel-cekirdek.ts");
 const { bolumYuvasiKaydi } = await import("../src/bolum-yuvasi.ts");
+const { SinyallerAgaci } = await import("../src/sinyaller.ts");
+const { YENI_TANI_KANONU } = await import("../../cekirdek/src/tani-sicili.ts");
+const { ILERI_BAGLAM_KIMLIKLERI } = await import("../../cekirdek/src/denetim.ts");
 const { BAGLAM } = await import("../src/bolum-cekirdek.ts");
 
 const EKLENTI_KOKU = fileURLToPath(new URL("..", import.meta.url));
@@ -78,7 +81,34 @@ interface Ortam {
   durum: Map<string, unknown>;
   makinistKaynaklari: Record<string, ReturnType<typeof kaynakKur>>;
   kutuCagrilari: Array<[unknown, boolean]>;
+  sinyaller: InstanceType<typeof SinyallerAgaci>;
 }
+
+// ── Sinyaller fikstürü (PNL-A09): iki Proje, üç düzey; kural bağı olan ve olmayan tanılar ──
+const SINYAL_DOSYASI = join(SARMAL_KOKU, "is/plan/faz/5_eylul_lansman.sar");
+const BASKA_DOSYA = join(SARMAL_KOKU, "ogreti/ornek/gercek/buyuk_bahce.sar");
+/** Sicilde kural bağı olan bir tanı ve bağı olmayan bir tanı kodu (madde uydurulmaz). */
+const BAGLI = YENI_TANI_KANONU.find((k) => k.kanonDüzey === "hata")!;
+const BAGSIZ_KOD = "örnek-bağsız-tanı";
+/** Motorun Hatırlatıcılar yüzeyine yönlendirdiği iki kod: Sinyaller'de hiç görünmezler, yalnız Makinist'tedirler (YUZ-3.3). */
+const [ILERI_KOD, ILERI_KOD_2] = [...ILERI_BAGLAM_KIMLIKLERI] as [string, string];
+const SARMAL_PROJE = { kod: "SARMAL", ad: "Sarmal" };
+const ORNEK_PROJE = { kod: "ORNEK", ad: "Örnek" };
+const sinyalKaydi = (kod: string, duzey: string, satir: number, dosya = SINYAL_DOSYASI, proje = SARMAL_PROJE, oneri?: string) =>
+  ({ proje, dosya, tani: { kod, duzey, mesaj: `${kod} iletisi`, satir, sutun: 3, ...(oneri ? { oneri } : {}) } }) as never;
+const SINYAL_KAYITLARI = [
+  sinyalKaydi(BAGLI.kod, "hata", 40, SINYAL_DOSYASI, SARMAL_PROJE, "şöyle düzelt"),
+  sinyalKaydi(BAGSIZ_KOD, "hata", 12),
+  sinyalKaydi(BAGLI.kod, "hata", 7, BASKA_DOSYA, ORNEK_PROJE),
+  sinyalKaydi(BAGSIZ_KOD, "uyarı", 5),
+  sinyalKaydi(BAGSIZ_KOD, "bilgi", 9),
+  sinyalKaydi(BAGSIZ_KOD, "bilgi", 2, BASKA_DOSYA, ORNEK_PROJE),
+  // Hatırlatıcılar yüzeyine yönlenen kayıtlar: yönlendirme düzeye değil koda bağlıdır, biri uyarı düzeyindedir.
+  sinyalKaydi(ILERI_KOD, "bilgi", 15),
+  sinyalKaydi(ILERI_KOD_2, "uyarı", 18, BASKA_DOSYA, ORNEK_PROJE),
+];
+/** Sinyaller'de görünmesi gereken kayıtlar: girdiden Hatırlatıcılar yüzeyine yönlenen ikisi çıkar. */
+const SINYALDE = SINYAL_KAYITLARI.slice(0, -2);
 const ortamlar: Ortam[] = [];
 
 /** Makinist için sahte kaynak: sayı, satırlar ve değişim olayı sınama elindedir. */
@@ -115,9 +145,11 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record
   const kaynaklar = {
     onaylar: kaynakKur([{ ad: "ONY-1", baglam: "sarmalOnayKapisi" }, { ad: "ONY-2", baglam: "sarmalOnayKapisi" }]),
     hatirlaticilar: kaynakKur([{ ad: "Hatırlatıcı 1", baglam: "sarmalHatirlaticiAtesledi" }]),
-    gozlemler: kaynakKur([]),
     fikirler: kaynakKur([{ ad: "Fikir 1", baglam: "sarmalFikir" }]),
   };
+  // PNL-A09: gözlem kayıtları Makinist'te değil, Sinyaller sekmesinin Bilgi bandındadır (YUZ-3.3).
+  const sinyaller = new SinyallerAgaci(Uri.file(EKLENTI_KOKU) as never);
+  sinyaller.yerlestir(SINYAL_KAYITLARI, "SARMAL");
   const durum = new Map<string, unknown>(Object.entries(kalici));
   if (acik) durum.set("sarmal.panel.acik", acik);
   const baglam = {
@@ -131,13 +163,13 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record
   const kutuCagrilari: Array<[unknown, boolean]> = [];
   yol.kutuIsaretle = async (o: unknown, b: boolean) => { kutuCagrilari.push([o, b]); };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* sınama bağı gerekmez */ }, diliTazele() { /* sınama */ }, kodlar: () => [], gorunurMu: () => true };
-  const panel = panelKaydi(baglam as never, { yol: yuz as never, tren, makinist });
+  const panel = panelKaydi(baglam as never, { yol: yuz as never, tren, makinist, sinyaller });
   // Seçim eşzamanlı yazılır; ilk belge aşağıda bu sekmeyle üretilir.
   if (sekme) void panel.sekmeSec(sekme as never);
   const saglayici = kabuk.webviewSaglayicilari.get(GORUNUS_PANEL) as { resolveWebviewView(g: unknown): void };
   const gorunum = new SahteWebviewGorunusu();
   saglayici.resolveWebviewView(gorunum);
-  const o: Ortam = { yol, tren, makinist, graf, panel, gorunum, baglam, durum, makinistKaynaklari: kaynaklar, kutuCagrilari };
+  const o: Ortam = { yol, tren, makinist, graf, panel, gorunum, baglam, durum, makinistKaynaklari: kaynaklar, kutuCagrilari, sinyaller };
   ortamlar.push(o);
   return o;
 }
@@ -198,7 +230,8 @@ test("beş sekmenin bölümü belgede hazırdır ve her içerik kendi sekmesinin
   const tren = panelIcerigi(h, "tren");
   assert.ok(tren.includes('id="tren-agac"') && !tren.includes('id="agac"') && !tren.includes("graf-sablon"), "Tren kabı kendi içeriğini taşımıyor");
   assert.ok(panelIcerigi(h, "makinist").includes('id="makinist-agac"'));
-  for (const b of ["gozlemler", "ayarlar"]) assert.match(panelIcerigi(h, b), new RegExp(`^<p class="bos" data-bos-sekme="${b}">[^<]+</p>$`));
+  assert.match(panelIcerigi(h, "ayarlar"), /^<p class="bos" data-bos-sekme="ayarlar">[^<]+<\/p>$/);
+  assert.match(panelIcerigi(h, "sinyaller"), /^<div id="sinyaller-agac" role="tree"/, "Sinyaller kabı kendi ağacını taşımıyor");
   assert.equal(o.panel.olcumler().satirSayisi, satirSayisi(ray), "ölçülen satır sayısı Ray kabına basılan satırlarla aynı değil");
   assert.ok(ray.includes("Sarmal"), "çalışma alanı satırı yok");
   assert.ok(!/Bölümler/.test(h), "'Bölümler' üretilmiş");
@@ -215,8 +248,10 @@ test("Tren seçiliyken Tren bölümü görünür (ajanlar, geliştirmedeki Adım
   const hm = m.gorunum.webview.html;
   assert.ok(hm.includes('data-sekme="makinist" aria-selected="true"') && !gizliMi(hm, "makinist"));
   const mk = panelIcerigi(hm, "makinist");
-  for (const ad of ["Onaylar", "Hatırlatıcılar", "Gözlemler", "Fikirler"]) assert.ok(mk.includes(`>${ad}<`), `${ad} grubu yok`);
-  assert.equal(satirSayisi(mk), 4, "Makinist kapalı varsayılanla dört grup satırıdır");
+  for (const ad of ["Onaylar", "Hatırlatıcılar", "Fikirler"]) assert.ok(mk.includes(`>${ad}<`), `${ad} grubu yok`);
+  // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez.
+  assert.ok(!mk.includes(">Gözlemler<") && !mk.includes(BAGSIZ_KOD), "gözlem kayıtları hâlâ Makinist'te");
+  assert.equal(satirSayisi(mk), 3, "Makinist kapalı varsayılanla üç grup satırıdır");
   // Sayı üst düğümün yanında, kaynağın kendi sayacından.
   assert.ok(/Onaylar<\/span><span class="ac">2</.test(hm) && /Hatırlatıcılar<\/span><span class="ac">1</.test(hm) && /Fikirler<\/span><span class="ac">1</.test(hm));
   assert.ok(/class="rozet">3</.test(hm), "rozet onaylar + hatırlatıcılar toplamını göstermeli");
@@ -240,12 +275,12 @@ test("sekme iletisi: webview'in geçişi eklentide yalnız kaydedilir; hiçbir i
   o.gorunum.mesajGonder({ tip: "sekme", ad: 3, n: 4 });
   await otur();
   assert.equal(o.panel.olcumler().sekme, "makinist", "bilinmeyen sekme seçimi değiştirmiş");
-  // Gözlemler ve Ayarlar da seçilebilir; ikisi bugün yalnız boş durum cümlesi taşır.
-  for (const [i, s] of ["gozlemler", "ayarlar"].entries()) {
+  // Sinyaller ve Ayarlar da seçilebilir; Sinyaller satır taşır, Ayarlar bugün yalnız boş durum cümlesidir.
+  for (const [i, s] of ["sinyaller", "ayarlar"].entries()) {
     o.gorunum.mesajGonder({ tip: "sekme", ad: s, n: 5 + i });
     await otur();
     assert.equal(o.panel.olcumler().sekme, s);
-    assert.equal(o.panel.olcumler().satirSayisi, 0);
+    assert.equal(o.panel.olcumler().satirSayisi > 0, s === "sinyaller", `${s}: satır sayısı sekmenin içeriğine uymuyor`);
     assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "setContext" && c.argumanlar[0] === BAGLAM_SEKME).at(-1)?.argumanlar, [BAGLAM_SEKME, s]);
   }
   assert.equal(icerikIletisi(), once, "sekme geçişleri içerik iletisi doğurmuş");
@@ -296,13 +331,13 @@ test("TEK KAYNAK: webview geçişi, eklentinin seçtirdiği sekme ve bölüm yuv
   await tikla("tren");
   await komut("makinist");
   assert.deepEqual(mesajlar(o, "sekmeSec").at(-1), { tip: "sekmeSec", ad: "makinist", n: 1 }, "komutun seçimi webview'e gitmedi");
-  await tikla("gozlemler");
+  await tikla("sinyaller");
   await komut("graf");
   assert.equal(o.panel.olcumler().sekme, "ray", "Graf komutu Ray sekmesini seçmeli");
   await tikla("ayarlar");
   await komut("tren");
   await tikla("ray");
-  assert.deepEqual(duyurulan, ["tren", "makinist", "gozlemler", "ray", "ayarlar", "tren", "ray"], "seçim değişimi kardeşe sırasıyla ve yinelenmeden duyurulmadı");
+  assert.deepEqual(duyurulan, ["tren", "makinist", "sinyaller", "ray", "ayarlar", "tren", "ray"], "seçim değişimi kardeşe sırasıyla ve yinelenmeden duyurulmadı");
 });
 
 test("açılış Ray'le başlar: önceki oturumdan kalan sekme (workspaceState) seçimi ezemez ve Yol Haritası açık başlar (PNL-A03)", async () => {
@@ -752,6 +787,115 @@ test("sarmal.dosyaAc: panelden gelen seçenekle dosyayı satırında açar ve od
   assert.deepEqual(secenek.map((s) => [s.selection.start.line, s.preserveFocus]), [[3, true], [1, false]]);
 });
 
+// ── ⑫ SİNYALLER SEKMESİ (PNL-A09 · OZK-14 · Founder 2026-10-28) ───────────────────
+
+/** Satırın kimliği, etiketi, açıklaması ve açık-kapalı durumu (panel satır biçiminden okunur). */
+function satirlariOku(html: string): Array<{ id: string; etiket: string; aciklama: string; durum: string; derinlik: number; komutlu: boolean }> {
+  const coz = (x: string): string => x.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+  return [...html.matchAll(/<div class="sat" role="treeitem" data-id="([^"]*)" data-d="(\d+)"[^>]*?(data-komut="1")?(?: aria-expanded="(true|false)")?>[\s\S]*?<span class="et"[^>]*>([^<]*)<\/span>(?:<span class="ac">([^<]*)<\/span>)?/g)]
+    .map((m) => ({ id: coz(m[1]!), derinlik: Number(m[2]), komutlu: !!m[3], durum: m[4] ?? "yaprak", etiket: coz(m[5]!), aciklama: coz(m[6] ?? "") }));
+}
+
+test("Sinyaller sekmesi: yalnız Dur, Dikkat ve Bilgi bantları YAS-3.1 anlamlarıyla; Bilgi kapalı, odaktaki proje üstte ve açık; ayrı Gözlemler bölümü yok, Makinist'te Gözlemler yok; şeritte Dur ve Dikkat rozeti (PNL-A09)", () => {
+  const o = ortamKur("sinyaller");
+  const h = o.gorunum.webview.html;
+  const satirlar = satirlariOku(panelIcerigi(h, "sinyaller"));
+  const kokler = satirlar.filter((x) => x.derinlik === 0);
+  // YUZ-3.3 (Founder hükmü 2026-10-28): üst düğümler yalnız üç banttır; Bilgi bandı eski Gözlemler grubunun yerini alır.
+  assert.deepEqual(kokler.map((x) => x.etiket), ["Dur", "Dikkat", "Bilgi"], "üst düğümler yalnız üç bant olmalı");
+  assert.deepEqual(kokler.map((x) => x.aciklama), [
+    "3 · Kapıyı kapatan yapısal ihlal; Sarmal bunu kabul etmez.",
+    "1 · Tam yeşilden önce giderilmesi gereken drift riski.",
+    "2 · Kapıyı kapatmayan ölçüm, istisna ya da yönlendirme işareti.",
+  ], "bant başlığı sayıyı ve YAS-3.1 anlamını söylemiyor");
+  assert.deepEqual(kokler.map((x) => x.durum), ["true", "true", "false"], "Dur ve Dikkat açık, Bilgi kapalı başlamalı");
+  // Dur bandı: odaktaki proje (Sarmal) üstte ve açık, öteki proje kapalı; bant içinde dosya ve satır sırası.
+  const dur = satirlar.slice(satirlar.indexOf(kokler[0]!) + 1, satirlar.indexOf(kokler[1]!));
+  const projeler = dur.filter((x) => x.derinlik === 1);
+  assert.deepEqual(projeler.map((x) => [x.etiket, x.aciklama, x.durum]), [["Sarmal", "2", "true"], ["Örnek", "1", "false"]]);
+  const tanilar = dur.filter((x) => x.derinlik === 2);
+  assert.deepEqual(tanilar.map((x) => x.aciklama), [
+    `${BAGSIZ_KOD} · 5_eylul_lansman.sar:12`,
+    `${BAGLI.kod} · 5_eylul_lansman.sar:40 · ${BAGLI.madde}`,
+  ], "satır kodu, dosyayı ve satırı göstermeli; kanon maddesi yalnız bağı olan tanıda görünür");
+  assert.ok(tanilar.every((x) => x.komutlu), "tanı satırı dosyayı açan komutu taşımıyor");
+  // Makinist'te Gözlemler grubu yoktur.
+  assert.ok(!panelIcerigi(h, "makinist").includes("Gözlem"), "Makinist'te Gözlemler görünüyor");
+  // Şeritte Dur ve Dikkat sayıları; Bilgi sayılmaz.
+  assert.match(h, /data-sekme="sinyaller"[^>]*>[\s\S]*?<span class="rozet dur">3<\/span><span class="rozet dikkat">1<\/span>/);
+  assert.deepEqual(o.panel.olcumler().sinyaller && { dur: o.panel.olcumler().sinyaller!.dur, dikkat: o.panel.olcumler().sinyaller!.dikkat, bilgi: o.panel.olcumler().sinyaller!.bilgi }, { dur: 3, dikkat: 1, bilgi: 2 });
+});
+
+test("Sinyaller bant simgesi sayı sıfır olsa da düzeyinin rengini taşır: Dur kırmızı, Dikkat sarı, Bilgi mavi; satır işaretiyle aynı renk (PNL-A09 · Founder 2026-10-28)", () => {
+  const o = ortamKur("sinyaller");
+  const renk = (oge: unknown): string => String((o.sinyaller.getTreeItem(oge).iconPath as { light?: { fsPath?: string } } | undefined)?.light?.fsPath ?? "");
+  /** Simge dosyasının anlam rengi: `satir-<ad>-<anlam>-acik.svg` adının anlam parçası. */
+  const anlam = (oge: unknown): string | undefined => /satir-[a-z]+-([a-z]+)-acik\.svg$/.exec(renk(oge))?.[1];
+  const bantlar = (): unknown[] => o.sinyaller.getChildren() as unknown[];
+  assert.deepEqual(bantlar().map(anlam), ["hata", "uyari", "bilgi"], `bant simgesi düzey rengini taşımıyor: ${bantlar().map(renk).join(", ")}`);
+  // Satır işareti aynı renkte: her bandın ilk tanı satırının simgesi bandın rengindedir.
+  for (const bant of bantlar()) {
+    const proje = (o.sinyaller.getChildren(bant) as unknown[])[0];
+    const tani = proje ? (o.sinyaller.getChildren(proje) as unknown[])[0] : undefined;
+    assert.ok(tani, "fikstürde her bandın en az bir tanısı olmalı");
+    assert.equal(anlam(tani), anlam(bant), "bant simgesi ile satır işareti ayrı renkte");
+  }
+  // Sayı sıfır: üç bant da boşken simge gri olmaz, yine düzeyin rengindedir.
+  o.sinyaller.yerlestir([], "SARMAL");
+  assert.deepEqual(bantlar().map(anlam), ["hata", "uyari", "bilgi"], "boş bant gri simgeye dönmüş");
+});
+
+test("Sinyaller sayısı denetim sonucu eksi Hatırlatıcılar yüzeyine yönlenenlerdir; bütün bantlar açıkken her kayıt tam bir satırdır ve hiçbiri iki kez çizilmez; rozet yeni turla tazelenir (PNL-A09 · YUZ-3.3)", async () => {
+  const o = ortamKur("sinyaller", { "sinyaller/bant.bilgi": true, "sinyaller/bant.dur/proje.ORNEK": true, "sinyaller/bant.bilgi/proje.ORNEK": true });
+  const olcu = o.panel.olcumler().sinyaller!;
+  assert.equal(olcu.toplam, SINYALDE.length, "sekmenin sayısı denetim sonucu eksi Hatırlatıcılar yüzeyine yönlenenlerden ayrıştı");
+  assert.equal(olcu.hatirlatici, SINYAL_KAYITLARI.length - SINYALDE.length, "Hatırlatıcılar yüzeyine yönlenen kayıt sayısı yanlış");
+  assert.equal(olcu.bantsiz, 0);
+  assert.equal(olcu.cizilenSatir, SINYALDE.length, "bütün bantlar açıkken her kayıt tam bir satır olmalı");
+  assert.equal(olcu.tekilKayit, olcu.cizilenSatir, "bir kayıt Sinyaller'de iki kez çizildi");
+  // Hatırlatıcılar yüzeyine yönlenen tanılar Sinyaller'de hiç yoktur (yalnız Makinist'tedirler).
+  const satirlar = satirlariOku(panelIcerigi(o.gorunum.webview.html, "sinyaller"));
+  const kimlikler = satirlar.map((x) => x.id);
+  assert.equal(new Set(kimlikler).size, kimlikler.length, "aynı satır iki kez çizildi");
+  assert.deepEqual(satirlar.filter((x) => [ILERI_KOD, ILERI_KOD_2].includes(x.aciklama.split(" · ")[0]!)).map((x) => x.aciklama), [],
+    "Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de çizildi");
+  // Yeni tur: bir Dur kaydı düşer; rozet ve bölüm aynı yayında tazelenir.
+  o.sinyaller.yerlestir(SINYAL_KAYITLARI.slice(1), "SARMAL");
+  await bekle(250);
+  assert.deepEqual(mesajlar(o, "sinyalRozet").at(-1), { tip: "sinyalRozet", dur: 2, dikkat: 1 });
+  assert.ok(mesajlar(o, "bolum").some((m) => m.sekme === "sinyaller"), "Sinyaller bölümü yeni turla tazelenmedi");
+  assert.equal(o.panel.olcumler().sinyaller!.toplam, SINYALDE.length - 1);
+});
+
+test("Sinyal satırına tıklamak dosyayı tanının satırında açar ve odak panelde kalır; kanon maddesi satırı maddenin tanımını açan komutu çalıştırır (PNL-A09 · OZK-13)", async () => {
+  const o = ortamKur("sinyaller");
+  const satirlar = await sinyalSatirlariniOku(o);
+  const bagli = satirlar.find((x) => x.aciklama.startsWith(`${BAGLI.kod} · 5_eylul_lansman.sar:40`))!;
+  assert.ok(bagli, "kural bağlı tanı satırı yok");
+  o.gorunum.mesajGonder({ tip: "ac", id: bagli.id });
+  await otur();
+  assert.deepEqual(kabuk.komutCagrilari.filter((c) => c.komut === "sarmal.dosyaAc").at(-1)?.argumanlar, [SINYAL_DOSYASI, 40, { odakPanelde: true }],
+    "satır dosyayı tanının satırında ve odağı panelde bırakarak açmıyor");
+  // Satır açılınca öneri ve kanon maddesi alt satırları görünür; madde satırı tanımı açan komutu çalıştırır.
+  o.gorunum.mesajGonder({ tip: "gec", id: bagli.id, ac: true });
+  await otur();
+  const cocuklar = satirlariOku(String(mesajlar(o, "bolum").filter((m) => m.sekme === "sinyaller").at(-1)?.html ?? ""))
+    .filter((x) => x.id.startsWith(`${bagli.id}/`));
+  assert.deepEqual(cocuklar.map((x) => [x.etiket, x.aciklama]), [["Öneri", "şöyle düzelt"], [BAGLI.madde, "Kanon maddesi"]]);
+  o.gorunum.mesajGonder({ tip: "ac", id: cocuklar[1]!.id });
+  await otur();
+  assert.deepEqual(kabuk.komutCagrilari.at(-1), { komut: "sarmal.kanonMaddesiAc", argumanlar: [BAGLI.madde] });
+  // Bağı olmayan tanının alt satırı yoktur: madde uydurulmaz.
+  const bagsiz = satirlar.find((x) => x.aciklama === `${BAGSIZ_KOD} · 5_eylul_lansman.sar:12`)!;
+  assert.equal(bagsiz.durum, "yaprak", "bağı ve önerisi olmayan tanı açılır satır olmuş");
+});
+
+/** Sinyaller kabının satırları (ilk belgeden). */
+async function sinyalSatirlariniOku(o: Ortam): Promise<ReturnType<typeof satirlariOku>> {
+  await otur();
+  return satirlariOku(panelIcerigi(o.gorunum.webview.html, "sinyaller"));
+}
+
 // ── ⑪ ONAY KARARI PANELİN İÇİNDE (OZK-13 · PNL-A07 · Founder 2026-10-27) ─────────
 
 const ONAY_DOSYASI = "/sahte/proje/is/plan/onay.sar";
@@ -769,7 +913,7 @@ function onayOrtami(): { o: Ortam; onay: InstanceType<typeof OnayPaneli>; kapila
   belgeKoy(ONAY_DOSYASI, ONAY_KAYNAGI);
   const o = ortamKur("makinist", { "makinist/makinist.onaylar": true }, {}, (baglam) => {
     onayKuyruguKaydi(baglam as never, onay);
-    return makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: kaynakKur([]) as never, bildirimler: kaynakKur([]) as never, fikirler: kaynakKur([]) as never });
+    return makinistKaydi(baglam as never, { onayPaneli: onay, hatirlaticilar: kaynakKur([]) as never, fikirler: kaynakKur([]) as never });
   });
   return { o, onay, kapilar };
 }

@@ -63,7 +63,9 @@ import { bildirimlerKaydi, type Bildirimler } from "./bildirimler.ts";          
 import { trenKaydi, type Tren } from "./tren.ts";   // 🚆 Founder 2026-10-21: Tren (yapay zekâ ajanları) veri sağlayıcısı
 import { panelKaydi, type SarmalPaneliYuzu } from "./panel.ts";   // 🧭 Founder 2026-10-21: kabın tek webview görünümü (Ray · Tren · Makinist)
 import { onayPaneliKaydi, type OnayPaneli } from "./onay-paneli.ts";         // 📬 VIT-POSTA-A01 dördüncü yüzey
-import { makinistKaydi } from "./makinist.ts";   // 🧑‍✈️ Makinist ağacı
+import { makinistKaydi } from "./makinist.ts";
+import { sinyallerKaydi, type SinyallerAgaci } from "./sinyaller.ts";   // 🚦 PNL-A09 Sinyaller sekmesi (OZK-14)
+import { KayitDefteri } from "./sinyaller-cekirdek.ts";   // 🧑‍✈️ Makinist ağacı
 import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
@@ -156,6 +158,7 @@ let bildirimler: Bildirimler | undefined;
 //   2026-08-08 tarihinde Fikrin kendi panelini hak ettiğine hükmetti ve hükmün
 //   doğruluğu 2026-08-09 tarihinde canlı görünümde ölçüldü.
 let fikirler: Fikirler | undefined;
+let sinyaller: SinyallerAgaci | undefined;   // 🚦 PNL-A09
 
 // ── 📬 VIT-POSTA-A01 DÖRDÜNCÜ YÜZEY: ONAYLAR PANELİ ────────────────────────────
 //   Founder onayı bekleyen kapılar. Bu yüzey motorun tanı akışından beslenmez;
@@ -165,7 +168,7 @@ let fikirler: Fikirler | undefined;
 //   turu · disk izleyicisi) paneli tazeler. İkinci bir zamanlayıcı kurulmaz.
 let onayPaneli: OnayPaneli | undefined;
 let tren: Tren | undefined;
-let panel: (SarmalPaneliYuzu & { sekmeSecVeOdakla(s: "ray" | "tren" | "makinist"): Promise<void> }) | undefined;
+let panel: (SarmalPaneliYuzu & { sekmeSecVeOdakla(s: "ray" | "tren" | "makinist" | "sinyaller"): Promise<void> }) | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
 let bolumYuvasi: BolumYuvasiYuzu | undefined;
 
@@ -179,6 +182,8 @@ let bolumYuvasi: BolumYuvasiYuzu | undefined;
  */
 export interface SarmalEklentiYuzu {
   yuzeyKayitlari(): YuzeyDagilimi;
+  /** 🚦 PNL-A09: Sinyaller sekmesinin girdisi — kapsamdaki bütün tanı kayıtları (salt okur ölçüm). */
+  sinyalKayitlari(): Array<{ dosya: string; kod: string; duzey: string; satir: number }>;
   /**
    * 📬 Onay yüzeyinin bugünkü sayaçları (VIT-POSTA-A03). Kabul ölçütleri
    * "etkinleşmeden sonra canlı Comments iş parçacığı sayısı sıfırdır" ve
@@ -433,9 +438,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   onayPaneli = onayPaneliKaydi(context);
   // 🚆 Founder 2026-10-21: Tren görünümü turun yayınından beslenir (kendi taraması yoktur).
   tren = trenKaydi(context);
-  // 🧑‍✈️ Founder 2026-10-21: Onaylar · Hatırlatıcılar · Gözlemler · Fikirler tek Makinist ağacının
-  // dört üst düğümüdür; dört sağlayıcı veri ve satır çizimini olduğu gibi verir.
-  const makinistAgaci = makinistKaydi(context, { onayPaneli, hatirlaticilar, bildirimler, fikirler });
+  // 🧑‍✈️ Founder 2026-10-21: Onaylar · Hatırlatıcılar · Fikirler tek Makinist ağacının üst
+  // düğümleridir; sağlayıcılar veri ve satır çizimini olduğu gibi verir. 🚦 PNL-A09 (OZK-14):
+  // Gözlemler Makinist'ten çıktı; Sinyaller sekmesinin Bilgi bandı onun yerini alır (YUZ-3.3).
+  const makinistAgaci = makinistKaydi(context, { onayPaneli, hatirlaticilar, fikirler });
+  sinyaller = sinyallerKaydi(context);
   // 📋 VIT-GRAF-A13: ağaç panellerinin satırı sağ tık menüsünden panoya iner.
   // Founder'ın cümlesi şudur: "hatırlatıcı ve bildirim metinlerini
   // kopyalayamıyorum." Ağaç görünüşlerinde metin seçilemez; kopyalama ancak bir
@@ -610,6 +617,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     if (taniKapali) {
       koleksiyon.clear(); taniDefteri.clear(); yuzeyDefteri.temizle();
       fikirDefteri.temizle();   // 💡 KYN-YUZ-A01: Fikir hanesi de susar — bayat kayıt kalmaz
+      sinyalDefteri.temizle();   // 🚦 PNL-A09: Sinyaller de susar
       tamDenetimSonucu([], [], true);   // 📦 EKL-F6-A09: kapalı denetimde "koşmadı" işareti bayat kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
@@ -815,6 +823,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // hayalet olarak kalmaz ve tur başına yalnız bir çizim istenir.
     fikirDefteri.buda(new Set(doclar.keys()));
     fikirDefteri.yayımla();
+    // 🚦 PNL-A09: Sinyaller defteri aynı budama ve tek yayın disiplinini izler.
+    sinyalDefteri.buda(new Set(doclar.keys()));
+    sinyalDefteri.yayımla();
     kron.ekle("yayın", kron.şimdi() - yuzeyYayiniBasi);
     }   // tanı üretimi (denetim açık)
     // 📬 VIT-POSTA-A03 · 🗺️ PRF-TA-A02: turun TEK GÖRÜNTÜ YAYINI. Onay kapıları
@@ -945,6 +956,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
         hatirlaticilar?.diliTazele();
         fikirler?.diliTazele();
         bildirimler?.diliTazele();
+        sinyaller?.yenile();   // 🚦 PNL-A09: bant başlıkları yeni dilde
         onayPaneli?.diliTazele();
         yolHaritasiYuzeyi?.diliTazele();
         tren?.diliTazele();
@@ -1040,7 +1052,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // sağlayıcıları bu görünümün sekmelerinde (Ray · Tren · Makinist) okunur. Yerleşik bölüm komutları
   // (sarmal.bolum.*) sekmeyi seçer; Graf, Ray sekmesinin parçasıdır.
   if (tren && yolHaritasiYuzeyi) {
-    panel = panelKaydi(context, { yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci });
+    panel = panelKaydi(context, { yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci, sinyaller });
     // PNL-A18: yuvanın yerleşik seçimi panelin sekmesinden okunur; iki seçim ayrışamaz.
     bolumYuvasi?.sekmeBagla((b) => panel?.sekmeSecVeOdakla(b === "graf" ? "ray" : b), panel);
   }
@@ -1053,6 +1065,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
 
   return {
     yuzeyKayitlari: () => yuzeyDefteri.gorunenler(),
+    // 🚦 PNL-A09: Sinyaller defterinin kapsamdaki kayıtları (sekmenin girdisi; nöbet çıktıyı buna karşı ölçer).
+    sinyalKayitlari: () => sinyalDefteri.gorunenler().map((k) => ({ dosya: k.dosya, kod: k.tani.kod, duzey: k.tani.duzey, satir: k.tani.satir })),
     onayOlcumleri: () => ({ ...onayYuzeyiOlcumleri(), ...tarayiciOlcumleri() }),
     onayKapilari: () => onayPaneli?.kapiKodlari() ?? [],
     // 🗺️ PRF-TA-A04 salt okur ölçüm kapıları: hepsi üretimin KENDİ sayaçlarını
@@ -1084,6 +1098,7 @@ export function deactivate(): void {
   hatirlaticilar = undefined;
   fikirler = undefined;       // 💡 VIT-GRAF-A16: kapanmış görünüşe Fikir basılmasın
   bildirimler = undefined;
+  sinyaller = undefined;        // 🚦 PNL-A09: kapanmış sekmeye sinyal basılmasın
   onayPaneli = undefined;       // kapanmış görünüme kapı yazılmasın
   tren = undefined;
   panel = undefined;
@@ -1091,6 +1106,7 @@ export function deactivate(): void {
   odakDinleyicileri.length = 0;  // kapanmış görünüme odak haberi gitmesin
   yuzeyDefteri.temizle(false);   // tutamaklar bırakıldı; kapanışta çizim istenmez
   fikirDefteri.temizle(false);   // 💡 KYN-YUZ-A01: Fikir hanesi de sessizce boşalır
+  sinyalDefteri.temizle(false);  // 🚦 PNL-A09
 }
 
 /**
@@ -1198,6 +1214,17 @@ const yuzeyDefteri = new YuzeyDefteri(
   (dosya) => panelDeGorunur(dosya),
 );
 
+// ── 🚦 SİNYAL DEFTERİ (PNL-A09 · OZK-14) ─────────────────────────────────────
+//   Turun her dosya için ürettiği tanıların TAMAMI, yüzeylere ayrılmadan önceki
+//   hâliyle burada durur; Sinyaller sekmesi tam listeyi Dur, Dikkat ve Bilgi
+//   bantlarında gösterir. Kapsam süzgeci öteki yüzeylerinkiyle AYNIDIR
+//   (`panelDeGorunur`) ve yayın tur başına birdir. Odaktaki Projenin kodu
+//   sekmede o projeyi üste alır.
+const sinyalDefteri = new KayitDefteri<YuzeyKaydi>(
+  (kayitlar) => sinyaller?.yerlestir(kayitlar, aktifVarlik ? projeKimligi(join(aktifVarlik, "_")).kod : undefined),
+  (dosya) => panelDeGorunur(dosya),
+);
+
 // ── 💡 FİKİR DEFTERİ (KYN-YUZ-A01 · VIT-GRAF-A16) ────────────────────────────
 //   Fikir kayıtları da dosya başına tutulur ve Fikirler panelinin görünüşüne tek
 //   noktadan basılır. DEFTER, KAPSAM SÜZGECİ VE TEK YAYIN DİSİPLİNİ, hane bir
@@ -1239,6 +1266,8 @@ function yuzeylereDagit(
   }));
   const dagilim = yuzeyeAyir(kayitlar);
   taniYayinla(doc.uri, dagilim.problems.map((k) => taniYapTani(doc, k.tani)));
+  // 🚦 PNL-A09: Sinyaller tam listeyi alır (Sorunlar paneline gönderim değişmez · PNL-A22).
+  sinyalDefteri.yaz(doc.uri.fsPath, kayitlar, yayımlansın);
   yuzeyDefteri.yaz(
     doc.uri.fsPath, [...dagilim.hatırlatıcılar, ...dagilim.bildirimler], yayımlansın,
   );
@@ -1341,6 +1370,7 @@ function taniSil(uri: vscode.Uri, yayımlansın = true): void {
   // çağrıldığında yayın ertelenir; turun tek yayını bu silmeyi de kapsar.
   yuzeyDefteri.sil(uri.fsPath, yayımlansın);
   fikirDefteri.sil(uri.fsPath, yayımlansın);   // 💡 KYN-YUZ-A01: Fikir hanesi de aynı anda temizlenir
+  sinyalDefteri.sil(uri.fsPath, yayımlansın);  // 🚦 PNL-A09
 }
 
 // ── 🔭 ODAK KAPISI — kapsam süzgeci ile odak olayının TEK evi ────────────────
@@ -1392,6 +1422,7 @@ function hepsiniYenidenYayinla(): void {
   for (const { uri, tanilar } of taniDefteri.values()) problemseBas(uri, tanilar);
   yuzeyDefteri.yayımla();
   fikirDefteri.yayımla();   // 💡 KYN-YUZ-A01: Fikir hanesi de odakla birlikte yeniden basılır
+  sinyalDefteri.yayımla();  // 🚦 PNL-A09: Sinyaller de odakla birlikte yeniden basılır
   for (const dinleyici of odakDinleyicileri) dinleyici();
 }
 

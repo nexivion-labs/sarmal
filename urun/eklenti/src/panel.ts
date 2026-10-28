@@ -56,7 +56,7 @@ import { join } from "node:path";
 import {
   type SekmeBolumu,
   BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
-  kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, trenBolumuHtml,
+  kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sinyallerBolumuHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
   type UretilenSatir, type UretimSecenekleri,
 } from "./panel-cekirdek.ts";
@@ -66,10 +66,11 @@ import { SEKME_SIMGE_KAYNAKLARI } from "./simge-cizelgesi.ts";
 import { MAKINIST_METINLERI } from "./yuzey-metinleri.ts";
 import { ONAY_ILETILERI } from "./onay-paneli.ts";
 import type { PanelMesaji } from "./onay-govde.ts";
-import { panelRozeti } from "./yuzey-cekirdek.ts";
+import { panelRozeti, SINYALLER_ODAK_KOMUTU } from "./yuzey-cekirdek.ts";
 import type { DosyaAcSecenegi, PanelBagi, YolHaritasiYuzu } from "./yolharitasi.ts";
 import type { Tren } from "./tren.ts";
 import type { MakinistAgaci } from "./makinist.ts";
+import type { SinyallerAgaci } from "./sinyaller.ts";
 
 /** Kabın tek görünümü. */
 export const GORUNUS_PANEL = "sarmalPanel";
@@ -100,10 +101,12 @@ const ACIK_USTU = 800;
 /** Veri değişimlerinin birleştirildiği bekleme; nabız ve tur yayını art arda gelebilir. */
 const GECIKME_MS = 120;
 
-type Kaynak = "ray" | "tren" | "makinist";
+type Kaynak = "ray" | "tren" | "makinist" | "sinyaller";
 /** Makinist ağacının Onaylar düğümünün satır kimliği (kapılar bu düğümün altında durur). */
 const ONAYLAR_DUGUMU = "makinist/makinist.onaylar";
-const KIMLIK_PARCASI: Readonly<Record<Kaynak, string>> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac" };
+const KIMLIK_PARCASI: Readonly<Record<Kaynak, string>> = { ray: "agac", tren: "tren-agac", makinist: "makinist-agac", sinyaller: "sinyaller-agac" };
+/** Sinyaller sağlayıcısı verilmediğinde (sınama ve görsel kontrol kurulumu) sekme boş ağaç çizer. */
+const BOS_KAYNAK: AgacKaynagi = { getChildren: () => [], getTreeItem: () => new vscode.TreeItem("") } as unknown as AgacKaynagi;
 /** Ağaç kaynağı olan sekme mi? Gözlemler ve Ayarlar bugün ağaç taşımaz. */
 const kaynakMi = (s: SekmeKimligi): s is Kaynak => s in KIMLIK_PARCASI;
 
@@ -111,6 +114,8 @@ export interface PanelGirdileri {
   yol: YolHaritasiYuzu;
   tren: Tren;
   makinist: MakinistAgaci;
+  /** Sinyaller sekmesinin ağacı (PNL-A09); verilmezse sekme boş durum cümlesini gösterir. */
+  sinyaller?: SinyallerAgaci;
 }
 
 /** Nöbetin okuduğu salt okur ölçüm. */
@@ -135,6 +140,16 @@ export interface PanelOlcumleri {
   onayKademesi?: string;
   /** Onay defterinde karar kademesi açık kapı (PNL-A07). */
   onayAcik?: { dosya: string; kod: string };
+  /** Sinyaller sekmesinin bant sayıları ve son çizimde DOM'a basılan tanı satırı sayısı (PNL-A09). */
+  sinyaller?: {
+    dur: number; dikkat: number; bilgi: number; toplam: number; bantsiz: number;
+    /** Hatırlatıcılar yüzeyine yönlendiği için Sinyaller'e girmeyen kayıt sayısı (YUZ-3.3). */
+    hatirlatici: number;
+    /** Çizilen tanı satırı sayısı; bütün bantlar açıkken `toplam`a eşittir. */
+    cizilenSatir: number;
+    /** Çizilen tanı satırlarının işaret ettiği farklı kayıt sayısı; bir kayıt iki kez çizilirse `cizilenSatir`dan küçük kalır. */
+    tekilKayit: number;
+  };
 }
 
 /**
@@ -171,7 +186,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private grafIsaretli = false;
   private readonly harita = new Map<string, { kaynak: Kaynak; u: UretilenSatir }>();
   private readonly ogeKimligi = new Map<unknown, string>();
-  private readonly sonSatirlar: Record<Kaynak, UretilenSatir[]> = { ray: [], tren: [], makinist: [] };
+  private readonly sonSatirlar: Record<Kaynak, UretilenSatir[]> = { ray: [], tren: [], makinist: [], sinyaller: [] };
   private readonly zamanlayicilar = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly dosyaOnbellegi = new Map<string, string | undefined>();
   private sayac = { belge: 0, parca: 0, yama: 0 };
@@ -199,6 +214,10 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     abone(g.yol.miniGraf.onDegisti(() => this.zamanla("graf", () => this.grafCiz())));
     abone(g.tren.onDidChangeTreeData(() => { this.kardesiYokla(); this.zamanla("tren", () => this.agacTazele("tren")); }));
     abone(this.sekmeSecildi);
+    if (g.sinyaller) abone(g.sinyaller.onDidChangeTreeData(() => {
+      this.rozetiYaz();
+      this.zamanla("sinyaller", () => this.agacTazele("sinyaller"));
+    }));
     abone(g.makinist.onDidChangeTreeData(() => {
       this.rozetiYaz();
       this.zamanla("makinist", () => this.agacTazele("makinist"));
@@ -249,7 +268,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       hazir: this.hazirSayisi,
       onayKademesi: this.sonKademe,
       onayAcik: this.g.makinist.onay?.acikKapi(),
+      sinyaller: this.g.sinyaller ? this.sinyalOlcumu(this.g.sinyaller) : undefined,
     };
+  }
+
+  /** Sinyaller ağacının çizim ölçüsü: sayılar ile "her tanı bir kez" nöbetinin girdisi. */
+  private sinyalOlcumu(a: SinyallerAgaci): NonNullable<PanelOlcumleri["sinyaller"]> {
+    const cizilen = this.sonSatirlar.sinyaller.flatMap((u) => a.sinyalKaydi(u.oge) ?? []);
+    return { ...a.sayilar, cizilenSatir: cizilen.length, tekilKayit: new Set(cizilen.map((s) => s.kayit)).size };
   }
 
   /** Sınama kipinin eylemleri (SINAMA_KOMUTU). */
@@ -267,6 +293,16 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       return this.gorunum.webview.postMessage({ tip: "sinamaSekmeDizisi", sira: d.sira, aralik: d.aralik });
     }
     if (e.eylem === "sekmeRaporu") return this.sinamaRaporu;
+    // PNL-A09: Sinyaller ağacının bütün çizili satırları (kimlik, kademe, açık-kapalı) ve tanı satırlarının dosya bağları.
+    if (e.eylem === "sinyalAgaci") {
+      return this.sonSatirlar.sinyaller.map((u) => ({ id: u.satir.id, derinlik: u.satir.derinlik, durum: u.satir.durum, etiket: u.satir.etiket }));
+    }
+    if (e.eylem === "sinyalSatirlari") {
+      return [...this.harita].filter(([, v]) => v.kaynak === "sinyaller").flatMap(([id, v]) => {
+        const k = this.g.sinyaller?.sinyalKaydi(v.u.oge);
+        return k ? [{ id, kod: k.kayit.tani.kod, dosya: k.kayit.dosya, satir: k.kayit.tani.satir, bant: k.bant, maddeler: [...k.maddeler], komutlu: v.u.satir.komutlu }] : [];
+      });
+    }
     if (e.eylem === "raySatirlari") {
       return [...this.harita].filter(([, v]) => v.kaynak === "ray").map(([id, v]) => ({
         id, kod: this.g.yol.saglayici.ogeKodu(v.u.oge), komutlu: v.u.satir.komutlu,
@@ -318,6 +354,13 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const sayi = this.g.makinist.rozetSayisi;
     if (this.gorunum) this.gorunum.badge = panelRozeti(sayi, MAKINIST_METINLERI.rozetIpucu);
     this.yaz({ tip: "rozet", sayi });
+    // Sinyaller sekmesinin yanında Dur ve Dikkat sayıları (PNL-A09).
+    this.yaz({ tip: "sinyalRozet", ...this.sinyalRozeti() });
+  }
+
+  private sinyalRozeti(): { dur: number; dikkat: number } {
+    const s = this.g.sinyaller?.sayilar;
+    return { dur: s?.dur ?? 0, dikkat: s?.dikkat ?? 0 };
   }
 
   // ── Kardeş Tren eklentisi ───────────────────────────────────────────────────
@@ -352,11 +395,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const bolumler = Object.fromEntries(SEKMELER.map((s) => [s, this.bolumUret(s)])) as Record<SekmeKimligi, SekmeBolumu>;
     return panelHtml({
       sekme: this.sekme, bolumler, simgeler: this.simgeler(),
-      nonce: randomBytes(16).toString("base64"), cspSource, rozet: this.g.makinist.rozetSayisi,
+      nonce: randomBytes(16).toString("base64"), cspSource, rozet: this.g.makinist.rozetSayisi, sinyalRozeti: this.sinyalRozeti(),
     });
   }
 
   private kaynak(k: Kaynak): AgacKaynagi {
+    if (k === "sinyaller") return (this.g.sinyaller as unknown as AgacKaynagi | undefined) ?? BOS_KAYNAK;
     return (k === "ray" ? this.g.yol.saglayici : k === "tren" ? this.g.tren : this.g.makinist) as unknown as AgacKaynagi;
   }
 
@@ -493,6 +537,10 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const a = this.agacUret("tren");
       return { html: trenBolumuHtml(a.html, this.g.tren.bos(), this.kardesVar), ikonStili: a.ikonStili };
     }
+    if (s === "sinyaller") {
+      const a = this.agacUret("sinyaller");
+      return { html: sinyallerBolumuHtml(a.html, this.g.sinyaller?.bos ?? true), ikonStili: a.ikonStili };
+    }
     if (!kaynakMi(s)) return { html: bosSekmeHtml(s), ikonStili: "" };
     const a = this.agacUret("makinist");
     return { html: makinistBolumuHtml(a.html), ikonStili: a.ikonStili };
@@ -526,6 +574,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (!this.gorunum.visible) { this.kirli = true; return; }
     if (k === "ray" && (this.g.yol.saglayici.bosMesaj() !== undefined) !== this.sonBos) { this.bolumGonder("ray"); return; }
     if (k === "tren") { this.bolumGonder("tren"); return; }   // boş durum ve kardeş bağlantısı aynı bölümdedir
+    if (k === "sinyaller") { this.bolumGonder("sinyaller"); return; }   // boş durum cümlesi aynı bölümdedir
     const a = this.agacUret(k);
     this.sayac.parca += 1;
     this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili });
@@ -696,6 +745,8 @@ export function panelKaydi(context: vscode.ExtensionContext, g: PanelGirdileri):
   const panel = new SarmalPaneli(context, g);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(GORUNUS_PANEL, panel, { webviewOptions: { retainContextWhenHidden: true } }),
+    // Gözlemler sayacı (durum çubuğu) ve öteki yollar Sinyaller sekmesine buradan gider (PNL-A09).
+    vscode.commands.registerCommand(SINYALLER_ODAK_KOMUTU, () => panel.sekmeSecVeOdakla("sinyaller")),
   );
   return panel;
 }
