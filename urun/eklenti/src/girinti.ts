@@ -9,11 +9,12 @@
 //   SÜREKLİLİK (Founder 2026-07-12): yorum/belge satırları DA boyanır — bantlar
 //   blok boyunca kesilmez (eski belge-muafiyeti kaldırıldı).
 //   İKİ STİL (Founder 2026-10-21 · "girinti boyası tül derinlik olsun"):
-//     • sarmal.girintiRenkleri = true (VARSAYILAN · PNL-A06, Founder 2026-10-27) →
-//       yukarıdaki gökkuşağı bantları; renkleri ve çizimi 0.9.193 ile aynıdır.
-//     • false → TÜL DERİNLİK: her kademe için 1 piksellik soluk çizgi ve tek
-//       renkte, içeri girdikçe çok az koyulaşan bir tül. Ayar okunamazsa
-//       varsayılana, yani bantlara düşülür (dallar.ts inceStilMi).
+//     • VARSAYILAN (ayar verilmemiş, false ya da okunamayan) → TÜL DERİNLİK:
+//       her kademe için 1 piksellik soluk çizgi ve tek renkte (mor), içeri
+//       girdikçe çok az koyulaşan bir tül; renkleri ve çizimi 0.9.194 ile
+//       aynıdır (PNL-A24 · dallar.ts inceStilMi).
+//     • sarmal.girintiRenkleri = true → yukarıdaki gökkuşağı bantları;
+//       renkleri ve çizimi 0.9.193 ile aynıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
@@ -97,6 +98,14 @@ function inceBoya(editor: vscode.TextEditor): void {
     katlar[Math.min(c.kat, katlar.length - 1)].push(new vscode.Range(c.satir, c.sutun, c.satir, c.bitis));
   }
   tulTurleri.forEach((t, i) => editor.setDecorations(t, katlar[i]));
+  sonBoyama = { stil: "tul", dosya: editor.document.uri.fsPath, araliklar: katlar.map((k) => k.length) };
+}
+
+/** Son boyamanın salt okur ölçüsü (PNL-A24 nöbeti): hangi stil, hangi belge, kademe başına aralık sayısı. */
+export interface GirintiOlcumu { stil: "tul" | "bant"; dosya: string; araliklar: number[] }
+let sonBoyama: GirintiOlcumu | undefined;
+export function girintiOlcumu(): GirintiOlcumu | undefined {
+  return sonBoyama && { ...sonBoyama, araliklar: [...sonBoyama.araliklar] };
 }
 
 /** Etkin editördeki .sar belgesinin girintilerini boyar. */
@@ -136,6 +145,7 @@ export function girintileriBoya(editor: vscode.TextEditor | undefined): void {
     }
   }
   turler.forEach((t, i) => editor.setDecorations(t, kovalar[i]));
+  sonBoyama = { stil: "bant", dosya: editor.document.uri.fsPath, araliklar: kovalar.map((k) => k.length) };
 }
 
 /** Basit geciktirici: art arda olaylar son çağrıya indirgenir. */

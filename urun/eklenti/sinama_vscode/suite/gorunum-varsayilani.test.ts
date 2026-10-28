@@ -169,14 +169,45 @@ describe("EKL-F6-A04 — biçim eklentiden gelir, renk dayatılmaz", () => {
     assert.ok(Array.isArray(simgeler), "belge simgeleri okunamadı — eklenti bu belgeyi hiç görmemiş olabilir");
   });
 
-  it("PNL-A06 · GİRİNTİ BANTLARI VARSAYILANDIR: yeni kurulumda sarmal.girintiRenkleri açık gelir", () => {
-    // Founder 2026-10-27: 0.9.194'te varsayılan tül derinliğe çevrilmiş ve renkli bantlar kaybolmuştu.
-    // Süit bandın ekrana boyandığını okuyamaz (yukarıdaki ölçüm sınırı); etkin değeri ve kaynağını okur.
+  it("PNL-A24 · MOR TÜL VARSAYILANDIR: yeni kurulumda sarmal.girintiRenkleri kapalı gelir", () => {
+    // PNL-A06 varsayılanı yanlış bir okumayla gökkuşağı bantlarına çevirmişti; Founder'ın istediği
+    // görünüm 0.9.194'teki mor tül derinliktir. Burada etkin değer ve kaynağı okunur; boyamanın
+    // kendisi aşağıdaki sınamada eklentinin son boyama ölçüsünden okunur.
     const bakis = vscode.workspace.getConfiguration("sarmal").inspect<boolean>("girintiRenkleri");
     assert.strictEqual(bakis?.globalValue, undefined, "girintiRenkleri kullanıcı ayarından geliyor — yeni kurulum ölçülmüyor");
     assert.strictEqual(bakis?.workspaceValue, undefined, "girintiRenkleri çalışma alanı ayarından geliyor");
-    assert.strictEqual(bakis?.defaultValue, true, "paketin ilanında girintiRenkleri varsayılan olarak açık değil");
-    assert.strictEqual(vscode.workspace.getConfiguration("sarmal").get("girintiRenkleri"), true,
-      "yeni kurulumda girinti bantları kapalı geliyor; editör tül derinlikle açılır");
+    assert.strictEqual(bakis?.defaultValue, false, "paketin ilanında girintiRenkleri varsayılan olarak kapalı değil");
+    assert.strictEqual(vscode.workspace.getConfiguration("sarmal").get("girintiRenkleri"), false,
+      "yeni kurulumda girinti bantları açık geliyor; editör mor tülle açılmaz");
+  });
+
+  it("PNL-A24 · editör yeni kurulumda mor tülle boyanır; ayar açılınca gökkuşağı bantlarına, kapanınca tüle geçer", async () => {
+    // Süit ekrandaki rengi okuyamaz (yukarıdaki ölçüm sınırı); eklentinin etkin editöre son boyamada
+    // hangi süs ailesini, hangi belgeye ve kademe başına kaç aralıkla verdiğini sınama kapısından okur.
+    type Olcu = { stil: string; dosya: string; araliklar: number[] } | undefined;
+    const yuz = (await vscode.extensions.getExtension(EKLENTI)!.activate()) as { bolumSinamaKapisi?: { girintiOlcumu(): Olcu } };
+    assert.ok(yuz.bolumSinamaKapisi, "sınama kipinde nöbet kapısı verilmeliydi");
+    const olcu = (): Olcu => yuz.bolumSinamaKapisi!.girintiOlcumu();
+    const bekle = async (kosul: () => boolean, ne: string): Promise<void> => {
+      const son = Date.now() + 10_000;
+      while (!kosul()) {
+        if (Date.now() > son) throw new Error(`beklenen durum gelmedi: ${ne} (${JSON.stringify(olcu())})`);
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    };
+    const ayar = (): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration("sarmal");
+    const yol = path.join(vscode.workspace.workspaceFolders![0].uri.fsPath, "tema_ornek.sar");
+    const boyandi = (stil: string): boolean => { const o = olcu(); return o?.dosya === yol && o.stil === stil && o.araliklar.some((n) => n > 0); };
+    try {
+      await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(vscode.Uri.file(yol)));
+      await bekle(() => boyandi("tul"), "yeni kurulumda editör mor tülle boyanmadı");
+      await ayar().update("girintiRenkleri", true, vscode.ConfigurationTarget.Global);
+      await bekle(() => boyandi("bant"), "ayar açılınca gökkuşağı bantlarına geçilmedi");
+      await ayar().update("girintiRenkleri", false, vscode.ConfigurationTarget.Global);
+      await bekle(() => boyandi("tul"), "ayar kapanınca mor tüle dönülmedi");
+    } finally {
+      await ayar().update("girintiRenkleri", undefined, vscode.ConfigurationTarget.Global);
+    }
+    await bekle(() => boyandi("tul"), "ayar silinince varsayılan (mor tül) çizilmedi");
   });
 });

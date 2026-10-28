@@ -41,14 +41,17 @@ const etiketTuru = vscode.window.createTextEditorDecorationType({});
 
 const ETIKET_ESIGI = 4;      // (kapanış − açılış) satır farkı bu değerden küçükse etiket yok
 
-/** `sarmal.girintiRenkleri` ayarının varsayılanı (PNL-A06 · Founder 2026-10-27): gökkuşağı bantları.
- *  Paketin ilanıyla (package.json) aynı olmak zorundadır; birim nöbeti ikisini karşılaştırır. */
-export const GIRINTI_RENKLERI_VARSAYILANI = true;
+/** `sarmal.girintiRenkleri` ayarının varsayılanı (PNL-A24): kapalıdır, yani editör 0.9.194'ün mor tül
+ *  derinliğiyle açılır. PNL-A06 bu değeri true yapmıştı; Founder'ın istediği görünüm ise
+ *  0.9.194'teki mor tüldür. Paketin ilanıyla (package.json) aynı olmak zorundadır; birim nöbeti ikisini
+ *  karşılaştırır. */
+export const GIRINTI_RENKLERI_VARSAYILANI = false;
 
-/** İnce stil (tül derinlik): `sarmal.girintiRenkleri` açıkça false verildiğinde geçerlidir. Ayar
- *  verilmemişse ya da okunamazsa varsayılan gökkuşağı bantları çizilir (girinti.ts). */
+/** İnce stil (tül derinlik): `sarmal.girintiRenkleri` açıkça true verilmedikçe geçerlidir. Ayar
+ *  verilmemişse, okunamazsa ya da boolean değilse varsayılan görünüm, yani mor tül çizilir; gökkuşağı
+ *  bantları yalnız ayar açıkken çizilir (girinti.ts). */
 export function inceStilMi(): boolean {
-  try { return vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri", GIRINTI_RENKLERI_VARSAYILANI) === false; }
+  try { return vscode.workspace.getConfiguration("sarmal").get<boolean>("girintiRenkleri", GIRINTI_RENKLERI_VARSAYILANI) !== true; }
   catch { return !GIRINTI_RENKLERI_VARSAYILANI; }
 }
 

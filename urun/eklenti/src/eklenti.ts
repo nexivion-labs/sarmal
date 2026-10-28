@@ -41,7 +41,7 @@ import { anahatSaglayici } from "./anahat.ts";
 import { ipucuIsaretCizicisi, ipucuSaglayici } from "./ipucu.ts";
 import { duzeltmeSaglayici } from "./duzeltme.ts";
 import { bicimlendirmeSaglayici } from "./bicimlendir.ts";
-import { girintiKaydi } from "./girinti.ts";
+import { girintiKaydi, girintiOlcumu, type GirintiOlcumu } from "./girinti.ts";
 import { camKaydi } from "./cam.ts";   // 🪟 cam efekti (Founder 2026-07-18)
 import { atifDekorKaydi } from "./atif-dekor.ts";   // NTK-A01: çözülen atıflar link görünümü alır
 import { eksenDekorKaydi, parametreDekorKaydi } from "./simge-cizelgesi.ts"; // VIT-KIMLIK-A06/A08: eksen ve parametre satırlarına aile simgesi
@@ -280,7 +280,12 @@ export interface SarmalEklentiYuzu {
    * ölçümünü, Yol Haritasının gerçek görünürlüğünü ve kullanıcı seçiminin
    * eşdeğerini verir; kardeş eklentiler bu kapıya ulaşamaz.
    */
-  bolumSinamaKapisi?: BolumSinamaKapisi & { yolHaritasiGorunurMu(): boolean; panelOlcumleri(): ReturnType<SarmalPaneliYuzu["olcumler"]> | undefined };
+  bolumSinamaKapisi?: BolumSinamaKapisi & {
+    yolHaritasiGorunurMu(): boolean;
+    panelOlcumleri(): ReturnType<SarmalPaneliYuzu["olcumler"]> | undefined;
+    /** 🟣 PNL-A24: editörün son girinti boyaması (tül derinlik mi gökkuşağı bantları mı). */
+    girintiOlcumu(): GirintiOlcumu | undefined;
+  };
 }
 
 /** Panel ipuçlarının kaynak satırı bu köklere göre kısalır (VIT-GRAF-A18). */
@@ -1086,7 +1091,10 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
     bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
     ...(context.extensionMode === vscode.ExtensionMode.Test && bolumYuvasi
-      ? { bolumSinamaKapisi: { ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false, panelOlcumleri: () => panel?.olcumler() } }
+      ? { bolumSinamaKapisi: {
+        ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false,
+        panelOlcumleri: () => panel?.olcumler(), girintiOlcumu: () => girintiOlcumu(),
+      } }
       : {}),
   };
 }
