@@ -31,7 +31,11 @@
 //     · Veri değişince yalnız ilgili parça yeniden çizilir (ağaç · Mini Graf · Tren ·
 //       Makinist); yalnız bir satırı ilgilendiren değişim (aktif varlık nabzı)
 //       tek satır yamasıdır. Görünmeyen panel hiçbir şey çizmez, görününce yetişir.
-//     · Yalnız AÇIK düğümlerin çocukları DOM'a basılır.
+//     · DAL AÇMA EKLENTİYİ BEKLEMEZ (PNL-A27). Kapalı dalların çocukları da üretilir ve
+//       webview'e çizilmeyen bir şablon içinde gider; dal webview'de anında açılıp kapanır
+//       ve eklentiye yalnız haber gider (sayaçlı, PNL-A18'in sekme deseni). Eklentinin
+//       sonraki güncellemesi o haberi henüz görmemişse webview kullanıcının açtığı ya da
+//       kapattığı dalı yeniden uygular. Yalnız görünen satırlar DOM'da düzen alır.
 //     · Açık-kapalı tercihleri workspaceState'te kalıcıdır. Sekme seçimi KALICI
 //       DEĞİLDİR: her açılış sıranın İLK sekmesiyle başlar (PNL-A03; PNL-A23'ten önce
 //       bu sekme her zaman Ray'di). Önceki sürümler seçimi
@@ -65,7 +69,7 @@ import { join } from "node:path";
 import {
   type SekmeBolumu,
   BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
-  ayniSira, kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSirasiNormalle, sinyallerBolumuHtml, trenBolumuHtml,
+  ayniSira, gorunurSatirlar, kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSirasiNormalle, sinyallerBolumuHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
   type UretilenSatir, type UretimSecenekleri,
 } from "./panel-cekirdek.ts";
@@ -214,7 +218,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private grafIsaretli = false;
   private readonly harita = new Map<string, { kaynak: Kaynak; u: UretilenSatir }>();
   private readonly ogeKimligi = new Map<unknown, string>();
+  /** Son çizimde görünen satırlar (bütün ataları açık olanlar). */
   private readonly sonSatirlar: Record<Kaynak, UretilenSatir[]> = { ray: [], tren: [], makinist: [], sinyaller: [] };
+  /** 🌳 PNL-A27: son çizimin bütün satırları (kapalı dalların altı dahil), derinlik öncelikli. */
+  private readonly tumSatirlar: Record<Kaynak, UretilenSatir[]> = { ray: [], tren: [], makinist: [], sinyaller: [] };
+  /** 🌳 PNL-A27: eklentinin işlediği son yerel dal geçişinin sayacı (webview'deki dal sayacının karşılığı). */
+  private gorulenGec = 0;
   private readonly zamanlayicilar = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly dosyaOnbellegi = new Map<string, string | undefined>();
   private sayac = { belge: 0, parca: 0, yama: 0 };
@@ -352,6 +361,31 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       return this.gorunum.webview.postMessage({ tip: "sinamaSekmeDizisi", sira: d.sira, aralik: d.aralik });
     }
     if (e.eylem === "sekmeRaporu") return this.sinamaRaporu;
+    // 🌳 PNL-A27: webview verilen satırın açma okuna kısa bir gecikmeden sonra gerçek tıklama gönderir ve
+    // hemen ardından satırın durumunu ve dalın görünen çocuklarını raporlar (eklenti o sırada kilitli olabilir).
+    if (e.eylem === "dalAc") {
+      const d = ham as { id?: unknown; aralik?: unknown };
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      return this.gorunum.webview.postMessage({ tip: "sinamaDalAc", id: d.id, aralik: d.aralik });
+    }
+    // 🌳 PNL-A27: bir ağacın görünen satırları ve her birinin önden gelen çocuk sayısı (nöbet ölçüsü).
+    if (e.eylem === "gorunenSatirlar") {
+      const k = (ham as { kaynak?: unknown }).kaynak;
+      if (k !== "ray" && k !== "tren" && k !== "makinist" && k !== "sinyaller") return [];
+      const tum = this.tumSatirlar[k];
+      return this.sonSatirlar[k].map((u) => ({
+        id: u.satir.id, derinlik: u.satir.derinlik, durum: u.satir.durum,
+        onden: tum.filter((x) => x.satir.id.startsWith(`${u.satir.id}/`) && x.satir.derinlik === u.satir.derinlik + 1).length,
+      }));
+    }
+    // 🌳 PNL-A27: bir dalın eklentideki durumu ve son çizimin bütün satır sayısı (nöbet ölçüsü).
+    if (e.eylem === "dalDurumu") {
+      const d = ham as { id?: unknown };
+      const id = typeof d.id === "string" ? d.id : "";
+      const k = this.harita.get(id)?.kaynak;
+      return { acik: this.acik[id], kaynak: k, gorulenGec: this.gorulenGec, tum: k ? this.tumSatirlar[k].length : 0, gorunen: k ? this.sonSatirlar[k].length : 0 };
+    }
     // PNL-A23: webview şeritte bir sekmeyi gerçek sürükleme olaylarıyla başka bir sekmenin önüne ya da
     // arkasına bırakır; şeridin durumu (sıra, seçili sekme, görünen kap, rozetler) rapor olarak döner.
     if (e.eylem === "sekmeSurukle") {
@@ -473,6 +507,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private tamHtml(cspSource: string): string {
     // Yeni belgenin geçiş sayacı sıfırdan başlar; beş sekmenin bölümü birlikte üretilir (PNL-A18).
     this.gorulenGecis = 0;
+    this.gorulenGec = 0;
     const bolumler = Object.fromEntries(SEKMELER.map((s) => [s, this.bolumUret(s)])) as Record<SekmeKimligi, SekmeBolumu>;
     return panelHtml({
       sekme: this.sekme, bolumler, simgeler: this.simgeler(), sira: this.sira,
@@ -524,28 +559,49 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     };
   }
 
-  /** Bir kaynağın açık satırlarını üretir ve kimlik haritasını yeniler. */
+  /**
+   * Bir kaynağın satırlarını üretir ve kimlik haritasını yeniler. Kapalı dalların altı da üretilir ve
+   * haritaya girer (PNL-A27): webview'de anında açılan dalın satırına tıklama da çözülür. Dönen
+   * `satirlar` görünen satırlardır; çizim kapalı dalların altını şablona koyar.
+   */
   private agacUret(k: Kaynak): { satirlar: UretilenSatir[]; html: string; ikonStili: string } {
     const defter = new IkonDefteri();
-    const satirlar = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
+    const tum = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
     for (const [id, v] of [...this.harita]) if (v.kaynak === k) this.harita.delete(id);
     for (const o of [...this.ogeKimligi]) if (o[1].startsWith(`${k}/`)) this.ogeKimligi.delete(o[0]);
-    for (const u of satirlar) { this.harita.set(u.satir.id, { kaynak: k, u }); this.ogeKimligi.set(u.oge, u.satir.id); }
-    this.sonSatirlar[k] = satirlar;
-    if (k !== "makinist") return { satirlar, html: satirlarHtml(satirlar.map((x) => x.satir)), ikonStili: defter.stil() };
+    for (const u of tum) { this.harita.set(u.satir.id, { kaynak: k, u }); this.ogeKimligi.set(u.oge, u.satir.id); }
     // Makinist: kapı satırı açılıp kapanan bir satır gibi çizilir; açık kapının karar kademesi hemen altına basılır.
-    this.sonKademe = undefined;
-    const html = satirlar.map((u) => {
-      const kapi = this.kapiArgumanlari(u.item);
-      if (!kapi) return satirHtml(u.satir);
-      const kademe = this.g.makinist.onay?.kademeHtml(kapi.dosya, kapi.kod);
-      u.satir.durum = kademe ? "acik" : "kapali";
-      if (kademe) this.sonKademe = u.satir.id;
-      return satirHtml(u.satir) + (kademe
-        ? `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`
-        : "");
-    }).join("");
+    const kademeler = new Map<string, string>();
+    if (k === "makinist") {
+      this.sonKademe = undefined;
+      for (const u of tum) {
+        const kapi = this.kapiArgumanlari(u.item);
+        if (!kapi) continue;
+        const kademe = this.g.makinist.onay?.kademeHtml(kapi.dosya, kapi.kod);
+        u.satir.durum = kademe ? "acik" : "kapali";
+        if (!kademe) continue;
+        this.sonKademe = u.satir.id;
+        kademeler.set(u.satir.id,
+          `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`);
+      }
+    }
+    this.tumSatirlar[k] = tum;
+    const satirlar = gorunurSatirlar(tum);
+    this.sonSatirlar[k] = satirlar;
+    const html = satirlarHtml(tum.map((x) => x.satir), kademeler.size ? (s) => kademeler.get(s.id) ?? "" : undefined);
     return { satirlar, html, ikonStili: defter.stil() };
+  }
+
+  /**
+   * 🌳 PNL-A27 · webview dalı kendisi açtı ya da kapattı: durum kaydedilir, son çizimin satırı ve
+   * görünen satırlar güncellenir; hiçbir çizim gönderilmez.
+   */
+  private yerelDalGecisi(k: Kaynak, id: string, ac: boolean): void {
+    this.acik[id] = ac;
+    this.acikKaydet();
+    const u = this.tumSatirlar[k].find((x) => x.satir.id === id);
+    if (u && u.satir.durum !== "yaprak") u.satir.durum = ac ? "acik" : "kapali";
+    this.sonSatirlar[k] = gorunurSatirlar(this.tumSatirlar[k]);
   }
 
   // ── Onay kararı (PNL-A07 · OZK-13) ─────────────────────────────────────────
@@ -642,7 +698,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     for (const sekme of s ? [s] : SEKMELER) {
       const b = this.bolumUret(sekme);
       this.sayac.parca += 1;
-      this.yaz({ tip: "bolum", sekme, html: b.html, ikonStili: b.ikonStili });
+      this.yaz({ tip: "bolum", sekme, html: b.html, ikonStili: b.ikonStili, gec: this.gorulenGec });
     }
   }
 
@@ -658,7 +714,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (k === "sinyaller") { this.bolumGonder("sinyaller"); return; }   // boş durum cümlesi aynı bölümdedir
     const a = this.agacUret(k);
     this.sayac.parca += 1;
-    this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili });
+    this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili, gec: this.gorulenGec });
   }
 
   private grafCiz(): void {
@@ -686,11 +742,12 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const defter = new IkonDefteri();
     const yeni = satirKur(this.kaynak(k), oge, id, eski.u.satir.derinlik, this.secenekler(k, defter));
     this.harita.set(id, { kaynak: k, u: yeni });
-    const dizi = this.sonSatirlar[k];
-    const i = dizi.findIndex((x) => x.satir.id === id);
-    if (i >= 0) dizi[i] = yeni;
+    for (const dizi of [this.sonSatirlar[k], this.tumSatirlar[k]]) {
+      const i = dizi.findIndex((x) => x.satir.id === id);
+      if (i >= 0) dizi[i] = yeni;
+    }
     this.sayac.yama += 1;
-    this.yaz({ tip: "satir", sekme: k, id, html: satirHtml(yeni.satir), ikonStili: defter.stil() });
+    this.yaz({ tip: "satir", sekme: k, id, html: satirHtml(yeni.satir), ikonStili: defter.stil(), gec: this.gorulenGec });
   }
 
   /**
@@ -758,6 +815,15 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       }
       case "gec": {
         if (!kayit || typeof m.ac !== "boolean") return;
+        // 🌳 PNL-A27: dal webview'de zaten açıldı ya da kapandı; eklenti yalnız kaydeder ve yanıt göndermez.
+        if (m.yerel === true) {
+          if (typeof m.n === "number" && m.n > this.gorulenGec) this.gorulenGec = m.n;
+          this.yerelDalGecisi(kayit.kaynak, id, m.ac);
+          // Açılan dalın kapalı çocukları için bir kademe daha önden veri gider; çizim geciktirilir ve
+          // kullanıcının açtığı dal webview'de zaten açık olduğundan beklenmez.
+          if (m.ac) this.zamanla(kayit.kaynak, () => this.agacTazele(kayit.kaynak));
+          return;
+        }
         if (await this.onayKapisiGec(kayit)) return;
         this.acik[id] = m.ac;
         this.acikKaydet();

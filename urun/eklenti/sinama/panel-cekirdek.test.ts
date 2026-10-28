@@ -17,7 +17,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
   IkonDefteri, SEKMELER, bosSekmeHtml, grafKomutu, grafParcasi, kacir, komsuSekme, makinistBolumuHtml, panelHtml, rayBolumuHtml, satirEylemleri,
-  satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, sekmeSirasiNormalle, trenBolumuHtml,
+  gorunurSatirlar, satirHtml, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSeridiHtml, sekmeSirasiNormalle, trenBolumuHtml,
   sinyallerBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type SekmeBolumu, type SekmeKimligi, type SekmeSimgeleri, type UretimSecenekleri,
 } from "../src/panel-cekirdek.ts";
@@ -211,26 +211,59 @@ test("'Bölümler' ne bir kutu ne bir ad ne bir etiket olarak hiçbir yerde üre
 
 // ── ② AĞAÇ → SATIR ─────────────────────────────────────────────────────────
 
-test("yalnız AÇIK düğümlerin çocukları üretilir: kapalı varsayılanla satır sayısı görünen düğüm sayısıdır ve kapalı düğümün çocukları hiç istenmez", () => {
+/** 🌳 PNL-A27: çizilmeyen dal şablonları çıkarılınca kalan, ekranda görünen çizim. */
+function sablonsuz(html: string): string {
+  let h = html;
+  for (let eski = ""; eski !== h;) { eski = h; h = h.replace(/<template data-ust="[^"]*">(?:(?!<template)[\s\S])*?<\/template>/g, ""); }
+  return h;
+}
+
+test("PNL-A27 · görünen kapalı dalın çocukları önden üretilir (bir kapalı kademe), daha derini istenmez; görünen satırlar açık düğümlerinkidir", () => {
   const agac = sahteAgac(yediYuzDugum());
-  const kapali = satirlariUret(agac, secenek());
-  // Kök varsayılan olarak AÇIK (varlık satırı gibi); yirmi Faz kapalı.
-  assert.equal(kapali.length, 21, "kök + yirmi kapalı Faz");
-  assert.deepEqual(agac.istenen, ["<kök>", "Sarmal"], "kapalı Fazların çocukları istenmiş: 700 düğümlü ağaç boşuna kurulur");
-  assert.ok(kapali.slice(1).every((u) => u.satir.durum === "kapali" && u.satir.derinlik === 1));
-  assert.equal(kapali[0]!.satir.durum, "acik");
+  const tum = satirlariUret(agac, secenek());
+  // Kök varsayılan olarak AÇIK (varlık satırı gibi); yirmi Faz kapalı ve her birinin otuz dört çocuğu önden gelir.
+  assert.equal(tum.length, 21 + 680, "kapalı Fazların çocukları önden üretilmedi");
+  assert.equal(new Set(agac.istenen).size, 22, "kök, Sarmal ve yirmi Fazın çocukları istenmeli");
+  const gorunen = gorunurSatirlar(tum);
+  assert.equal(gorunen.length, 21, "görünen satırlar kök ve yirmi kapalı Faz");
+  assert.ok(gorunen.slice(1).every((u) => u.satir.durum === "kapali" && u.satir.derinlik === 1));
+  assert.equal(gorunen[0]!.satir.durum, "acik");
+  // Önden pay sıfırsa kapalı dalın altı hiç istenmez (eski davranış).
+  const sifir = sahteAgac(yediYuzDugum());
+  assert.equal(satirlariUret(sifir, secenek(), 0).length, 21);
+  assert.deepEqual(sifir.istenen, ["<kök>", "Sarmal"]);
+  // Pay yalnız kapalı kademede harcanır: üç kademeli ağaçta bir kapalı kademe önden gelir, ikincisi gelmez.
+  const derin = sahteAgac([{ ad: "K", varsayilanAcik: true, cocuklar: [{ ad: "A", cocuklar: [{ ad: "B", cocuklar: [{ ad: "C" }] }] }] }]);
+  assert.deepEqual(satirlariUret(derin, secenek()).map((u) => u.satir.id), ["ray/K", "ray/K/A", "ray/K/A/B"]);
+  assert.deepEqual(satirlariUret(sahteAgac([{ ad: "K", varsayilanAcik: true, cocuklar: [{ ad: "A", cocuklar: [{ ad: "B", cocuklar: [{ ad: "C" }] }] }] }]),
+    secenek({ "ray/K/A/B": true })).map((u) => u.satir.id), ["ray/K", "ray/K/A", "ray/K/A/B", "ray/K/A/B/C"], "kapalı dalın içindeki açık dalın altı önden gelmeli");
 });
 
-test("bir düğümü açmak yalnız onun çocuklarını ekler; hepsini açmak 701 satır üretir", () => {
+test("bir düğümü açmak yalnız onun çocuklarını görünür kılar; hepsini açmak 701 görünen satır üretir", () => {
   const kok = yediYuzDugum();
-  const agac = sahteAgac(kok);
-  const bir = satirlariUret(agac, secenek({ "ray/Sarmal/Faz 3": true }));
-  assert.equal(bir.length, 21 + 34, "açılan Fazın otuz dört çocuğu eklenmeli");
+  const bir = gorunurSatirlar(satirlariUret(sahteAgac(kok), secenek({ "ray/Sarmal/Faz 3": true })));
+  assert.equal(bir.length, 21 + 34, "açılan Fazın otuz dört çocuğu görünmeli");
   const hepsi: Record<string, boolean> = {};
   for (let i = 0; i < 20; i++) hepsi[`ray/Sarmal/Faz ${i}`] = true;
-  assert.equal(satirlariUret(sahteAgac(kok), secenek(hepsi)).length, 701);
+  assert.equal(gorunurSatirlar(satirlariUret(sahteAgac(kok), secenek(hepsi))).length, 701);
   // Kapatma, varsayılan açık olan kökü de kapatabilir.
-  assert.equal(satirlariUret(sahteAgac(kok), secenek({ "ray/Sarmal": false })).length, 1);
+  assert.equal(gorunurSatirlar(satirlariUret(sahteAgac(kok), secenek({ "ray/Sarmal": false }))).length, 1);
+});
+
+test("PNL-A27 · kapalı dalın çocukları satırın hemen ardındaki çizilmeyen şablondadır; şablonun içinde açık dal düz, kapalı dal yine şablon olarak durur", () => {
+  const agac = sahteAgac([{ ad: "K", varsayilanAcik: true, cocuklar: [
+    { ad: "A", cocuklar: [{ ad: "A1", varsayilanAcik: true, cocuklar: [{ ad: "x" }] }, { ad: "A2", cocuklar: [{ ad: "y" }] }] },
+    { ad: "B" },
+  ] }]);
+  const tum = satirlariUret(agac, secenek(), 2);
+  const h = satirlarHtml(tum.map((u) => u.satir));
+  const sira = [...h.matchAll(/data-id="([^"]+)"|<template data-ust="([^"]+)">|<\/template>/g)].map((m) => m[1] ?? (m[2] ? `[${m[2]}` : "]"));
+  assert.deepEqual(sira, ["ray/K", "ray/K/A", "[ray/K/A", "ray/K/A/A1", "ray/K/A/A1/x", "ray/K/A/A2", "[ray/K/A/A2", "ray/K/A/A2/y", "]", "]", "ray/K/B"]);
+  assert.deepEqual([...sablonsuz(h).matchAll(/data-id="([^"]+)"/g)].map((m) => m[1]), ["ray/K", "ray/K/A", "ray/K/B"], "şablon dışında yalnız görünen satırlar");
+  // Yalnız görünen satırlar verilirse çizim eskisinin aynısıdır (şablon yok).
+  assert.ok(!satirlarHtml(gorunurSatirlar(tum).map((u) => u.satir)).includes("<template"));
+  // Ek çizim (Makinist'in karar kademesi) satırın hemen ardına basılır.
+  assert.match(satirlarHtml(tum.map((u) => u.satir), (s) => (s.id === "ray/K/B" ? "<i>ek</i>" : "")), /data-id="ray\/K\/B"[^]*?<\/div><i>ek<\/i>/);
 });
 
 test("700 düğümde kapalı varsayılanla HTML makul boyutta kalır (< 300 KB) ve hepsi açıkken bile ölçülü büyür", () => {
@@ -241,7 +274,8 @@ test("700 düğümde kapalı varsayılanla HTML makul boyutta kalır (< 300 KB) 
     simgeler: SIMGELER, nonce: "n", cspSource: "csp", rozet: 0,
   });
   assert.ok(html.length < 300 * 1024, `kapalı varsayılanla belge ${html.length} bayt`);
-  assert.equal((html.match(/class="sat"/g) ?? []).length, 21, "DOM'da yalnız görünen satırlar var");
+  assert.equal((sablonsuz(html).match(/class="sat"/g) ?? []).length, 21, "DOM'da yalnız görünen satırlar düzen alır");
+  assert.equal((html.match(/<template data-ust=/g) ?? []).length, 20, "her kapalı Fazın önden gelen çocukları kendi şablonunda değil");
   const hepsi: Record<string, boolean> = {};
   for (let i = 0; i < 20; i++) hepsi[`ray/Sarmal/Faz ${i}`] = true;
   const acik = satirlariUret(sahteAgac(yediYuzDugum()), secenek(hepsi));

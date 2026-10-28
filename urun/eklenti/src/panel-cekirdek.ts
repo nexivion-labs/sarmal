@@ -262,13 +262,19 @@ export function satirKur(kaynak: AgacKaynagi, oge: unknown, id: string, derinlik
 }
 
 /**
- * Sağlayıcının AÇIK düğümlerini düz satır listesine açar. Kapalı düğümün çocukları
- * için `getChildren` ÇAĞRILMAZ: 700 düğümlü ağaçta maliyet görünen satır sayısıdır.
+ * Sağlayıcının düğümlerini derinlik öncelikli düz satır listesine açar. Açık düğümlerin
+ * altı her zaman listededir; kapalı düğümlerin altı ÖNDEN `onden` kapalı kademe kadar
+ * listeye girer (PNL-A27). Webview böylece görünen her kapalı dalın çocuklarını elinde
+ * tutar ve dalı eklentiye sormadan anında açar. Bütün ağacı göndermek ölçüldü ve
+ * reddedildi: Sarmal deposunun planında 11 608 satır, 6,2 MB ve 761 ms'lik üretim her
+ * turda eklentinin iş parçacığını tutuyordu. Görünen satırlar `gorunurSatirlar`, çizim
+ * kapalı dalın çocuklarını çizilmeyen bir `<template>` içine koyan `satirlarHtml` ile
+ * ayrılır. Önden üretilmemiş bir kapalı dalın şablonu yoktur ve o dal eklentiye sorulur.
  * Kardeşler arasında aynı etiket tekrarlanırsa kimlik sıra sayısıyla ayrılır.
  */
-export function satirlariUret(kaynak: AgacKaynagi, sec: UretimSecenekleri): UretilenSatir[] {
+export function satirlariUret(kaynak: AgacKaynagi, sec: UretimSecenekleri, onden = 1): UretilenSatir[] {
   const cikti: UretilenSatir[] = [];
-  const gez = (ust: unknown | undefined, ustId: string, derinlik: number): void => {
+  const gez = (ust: unknown | undefined, ustId: string, derinlik: number, kalan: number): void => {
     const cocuklar = kaynak.getChildren(ust);
     const sayac = new Map<string, number>();
     for (const c of cocuklar) {
@@ -279,10 +285,28 @@ export function satirlariUret(kaynak: AgacKaynagi, sec: UretimSecenekleri): Uret
       const id = `${ustId}/${n ? `${taban}#${n}` : taban}`;
       const u = satirKur(kaynak, c, id, derinlik, sec);
       cikti.push(u);
-      if (u.satir.durum === "acik") gez(c, id, derinlik + 1);
+      // Açık dalın altı aynı payla, kapalı dalın altı pay kalmışsa bir eksik payla üretilir.
+      if (u.satir.durum === "acik") gez(c, id, derinlik + 1, kalan);
+      else if (u.satir.durum === "kapali" && kalan > 0) gez(c, id, derinlik + 1, kalan - 1);
     }
   };
-  gez(undefined, sec.onek, 0);
+  gez(undefined, sec.onek, 0, onden);
+  return cikti;
+}
+
+/**
+ * Derinlik öncelikli bütün satır listesinden görünenler (PNL-A27): bütün ataları açık
+ * olan satırlar. Kapalı bir satırın altındaki her satır, o satırın derinliğine dönene
+ * dek gizlidir.
+ */
+export function gorunurSatirlar<T extends { satir: Pick<PanelSatiri, "derinlik" | "durum"> }>(tum: readonly T[]): T[] {
+  const cikti: T[] = [];
+  let kapaliDerinlik = Infinity;
+  for (const u of tum) {
+    if (u.satir.derinlik > kapaliDerinlik) continue;
+    kapaliDerinlik = u.satir.durum === "acik" ? Infinity : u.satir.derinlik;
+    cikti.push(u);
+  }
   return cikti;
 }
 
@@ -353,8 +377,29 @@ export function satirHtml(s: PanelSatiri): string {
 }
 
 /** Satır listesinin HTML'i. */
-export function satirlarHtml(satirlar: readonly PanelSatiri[]): string {
-  return satirlar.map(satirHtml).join("");
+/**
+ * Satır listesinin çizimi. Kapalı satırın altındaki satırlar (liste derinlik öncelikli
+ * olduğu için hemen ardından gelenler) çizilmeyen bir `<template data-ust="<kimlik>">`
+ * içine konur (PNL-A27): veri webview'dedir, düzen ve boyama dal ilk açılana dek
+ * yapılmaz. Şablonun içinde açık dallar düz, kapalı dallar yine şablon olarak durur.
+ * `sonra` bir satırın hemen ardına basılacak ek çizimi verir (Makinist'te kapının
+ * karar kademesi). Yalnız görünen satırlar verilirse çizim eskisinin aynısıdır.
+ */
+export function satirlarHtml(satirlar: readonly PanelSatiri[], sonra?: (s: PanelSatiri) => string): string {
+  let i = 0;
+  const parca = (ustId: string | undefined): string => {
+    let html = "";
+    while (i < satirlar.length && (ustId === undefined || satirlar[i]!.id.startsWith(`${ustId}/`))) {
+      const s = satirlar[i++]!;
+      html += satirHtml(s) + (sonra?.(s) ?? "");
+      if (s.durum === "kapali") {
+        const ic = parca(s.id);
+        if (ic) html += `<template data-ust="${kacir(s.id)}">${ic}</template>`;
+      }
+    }
+    return html;
+  };
+  return parca(undefined);
 }
 
 // ── MİNİ GRAF GÖVDESİNİ GÖLGE KÖKE HAZIRLAMA ────────────────────────────────

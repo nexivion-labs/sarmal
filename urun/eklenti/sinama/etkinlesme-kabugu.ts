@@ -534,6 +534,10 @@ export interface EtkinEklenti {
   ayarDegistir(anahtar: string, deger: unknown): void;
   /** Etkin editördeki belge (sağlayıcıları çağırmak için). */
   readonly etkinBelge: unknown;
+  /** 🎯 PNL-A26: etkin editörü başka bir dosyaya çevirir ve editör değişimi olayını ateşler. */
+  editorDegistir(yol: string): void;
+  /** 🎯 PNL-A26: dosyayı kaydetmeden düzenler (kirli açık belge) ve belge değişimi olayını ateşler. */
+  belgeDuzenle(yol: string, metin: string): void;
   /** Etkinleşmeyi kapatır: abonelikler bırakılır, `deactivate` çağrılır. */
   kapat(): void;
 }
@@ -586,6 +590,7 @@ function ayarVarsayilanlari(): Record<string, unknown> {
 function kabukKur(secenek: EtkinlesmeSecenegi): {
   vscode: object; kayit: KabukKaydi; guven: EventEmitter<void>; durum: { guvenilir: boolean };
   ayarDegistir(anahtar: string, deger: unknown): void; etkinBelge: unknown;
+  editorDegistir(yol: string): void; belgeDuzenle(yol: string, metin: string): void;
 } {
   const kayit: KabukKaydi = {
     tanilar: new Map(), durumOgeleri: [], bilgiler: [], uyarilar: [], hatalar: [], durumMesajlari: [],
@@ -598,10 +603,15 @@ function kabukKur(secenek: EtkinlesmeSecenegi): {
   const guven = new EventEmitter<void>();
   const ayarlar = { ...ayarVarsayilanlari(), ...Object.fromEntries(Object.entries(secenek.ayarlar ?? {}).map(([k, v]) => [`sarmal.${k}`, v])) };
   const klasorler = secenek.klasorler.map((k, index) => ({ uri: Uri.file(k), name: k.split(sep).at(-1) ?? k, index }));
-  const etkinEditor = secenek.etkinDosya
-    ? new SahteEditor(new SahteBelge(secenek.etkinDosya, readFileSync(secenek.etkinDosya, "utf8")),
-      (tur, dekorlar) => { kayit.dekorlar.set(tur.key ?? "", [...dekorlar]); })
+  const dekorKaydet = (tur: { key?: string }, dekorlar: readonly unknown[]): void => { kayit.dekorlar.set(tur.key ?? "", [...dekorlar]); };
+  // 🎯 PNL-A26: etkin editör değiştirilebilir (odak değişimi); açık belgeler listesi düzenlemeyle büyür.
+  let etkinEditor = secenek.etkinDosya
+    ? new SahteEditor(new SahteBelge(secenek.etkinDosya, readFileSync(secenek.etkinDosya, "utf8")), dekorKaydet)
     : undefined;
+  const editorOlayi = new EventEmitter<unknown>();
+  const belgeOlayi = new EventEmitter<unknown>();
+  const acikBelgeler: SahteBelge[] = (secenek.acikBelgeler ?? []).map((b) =>
+    new SahteBelge(b.yol, b.metin ?? readFileSync(b.yol, "utf8"), b.metin !== undefined));
   const bosOlay = (): ((d: Dinleyici<unknown>) => { dispose(): void }) => new EventEmitter<unknown>().event;
   const kapsayanKlasor = (yol: string): (typeof klasorler)[number] | undefined =>
     klasorler.find((k) => yol === k.uri.fsPath || yol.startsWith(k.uri.fsPath + sep));
@@ -659,7 +669,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): {
       kayit.dekorTurleri.set(key, secenekler);
       return { key, dispose: () => undefined };
     },
-    onDidChangeActiveTextEditor: bosOlay(),
+    onDidChangeActiveTextEditor: editorOlayi.event,
     onDidChangeTextEditorSelection: bosOlay(),
     onDidChangeVisibleTextEditors: bosOlay(),
     onDidChangeTextEditorVisibleRanges: bosOlay(),
@@ -671,8 +681,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): {
     get name() { return klasorler[0]?.name; },
     get isTrusted() { return durum.guvenilir; },
     onDidGrantWorkspaceTrust: guven.event,
-    textDocuments: (secenek.acikBelgeler ?? []).map((b) =>
-      new SahteBelge(b.yol, b.metin ?? readFileSync(b.yol, "utf8"), b.metin !== undefined)),
+    get textDocuments() { return acikBelgeler; },
     getConfiguration: (bolum?: string) => ({
       get: <T>(anahtar: string, varsayilan?: T): T | undefined => {
         const tam = bolum ? `${bolum}.${anahtar}` : anahtar;
@@ -729,7 +738,7 @@ function kabukKur(secenek: EtkinlesmeSecenegi): {
       readDirectory: async (u: Uri) => readdirSync(u.fsPath, { withFileTypes: true }).map((g) => [g.name, g.isDirectory() ? 2 : 1]),
     }),
     onDidOpenTextDocument: bosOlay(),
-    onDidChangeTextDocument: bosOlay(),
+    onDidChangeTextDocument: belgeOlayi.event,
     onDidSaveTextDocument: bosOlay(),
     onDidCloseTextDocument: bosOlay(),
     onDidChangeConfiguration: ayarOlayi.event,
@@ -792,12 +801,26 @@ function kabukKur(secenek: EtkinlesmeSecenegi): {
     }),
     extensions: adAlani({ getExtension: () => undefined, all: [] as unknown[], onDidChange: bosOlay() }),
   });
+  /** 🎯 PNL-A26: etkin editörü başka bir dosyaya çevirir (açık belge varsa onun metniyle) ve olayı ateşler. */
+  const editorDegistir = (yol: string): void => {
+    const belge = acikBelgeler.find((b) => b.uri.fsPath === yol) ?? new SahteBelge(yol, readFileSync(yol, "utf8"));
+    etkinEditor = new SahteEditor(belge, dekorKaydet);
+    editorOlayi.fire(etkinEditor);
+  };
+  /** 🎯 PNL-A26: dosyayı editörde kaydetmeden düzenler: açık belge kirli metinle değişir ve düzenleme olayı ateşlenir. */
+  const belgeDuzenle = (yol: string, metin: string): void => {
+    const belge = new SahteBelge(yol, metin, true);
+    const i = acikBelgeler.findIndex((b) => b.uri.fsPath === yol);
+    if (i >= 0) acikBelgeler[i] = belge; else acikBelgeler.push(belge);
+    if (etkinEditor?.document.uri.fsPath === yol) etkinEditor = new SahteEditor(belge, dekorKaydet);
+    belgeOlayi.fire({ document: belge, contentChanges: [], reason: undefined });
+  };
   const ayarDegistir = (anahtar: string, deger: unknown): void => {
     const tam = `sarmal.${anahtar}`;
     if (deger === undefined) delete ayarlar[tam]; else ayarlar[tam] = deger;
     ayarOlayi.fire({ affectsConfiguration: (b: string) => b === tam || b === "sarmal" || tam.startsWith(`${b}.`) });
   };
-  return { vscode, kayit, guven, durum, ayarDegistir, etkinBelge: etkinEditor?.document };
+  return { vscode, kayit, guven, durum, ayarDegistir, editorDegistir, belgeDuzenle, etkinBelge: etkinEditor?.document };
 }
 
 /** Bellekte tutulan anahtar-değer deposu (Memento). */
@@ -816,7 +839,7 @@ function bellek(): { get<T>(k: string, v?: T): T | undefined; update(k: string, 
  * kaydı, eklentinin dış yüzünü ve kapanış kapısını taşır.
  */
 export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
-  const { vscode, kayit, guven, durum, ayarDegistir, etkinBelge } = kabukKur(secenek);
+  const { vscode, kayit, guven, durum, ayarDegistir, editorDegistir, belgeDuzenle, etkinBelge } = kabukKur(secenek);
   const yol = secenek.paket ?? paketle();
   (globalThis as Record<string, unknown>)[KOPRU_ANAHTARI] = vscode;
   delete gerek.cache[yol];
@@ -844,6 +867,8 @@ export function etkinlestir(secenek: EtkinlesmeSecenegi): EtkinEklenti {
     yuz,
     guvenVer: () => { durum.guvenilir = true; guven.fire(); },
     ayarDegistir,
+    editorDegistir,
+    belgeDuzenle,
     etkinBelge,
     async turBekle(zamanAsimiMs = 20_000): Promise<void> {
       const bitis = Date.now() + zamanAsimiMs;

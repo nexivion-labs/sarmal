@@ -1681,6 +1681,15 @@ export const IZ_METINLERI = {
   kokDenetimiEksik: (kok: string, dosyalar: readonly string[]): string => yuzeyMetni(
     `tam denetim şu kökte kırık dosya dışarıda bırakılarak eksik koştu: ${kok} (${dosyalar.join(", ")})`,
     `full check ran incompletely for this root, leaving out a broken file: ${kok} (${dosyalar.join(", ")})`),
+  // 🎯 PNL-A26: odak değişiminin tur kararı performans kanalına gerekçesiyle yazılır.
+  odakKarari: (proje: string, tur: "yok" | "dar" | "tam"): string => ({
+    yok: yuzeyMetni(`odak ${proje}: proje taze, denetim turu başlatılmadı; panel son turun kayıtlarını yeni odağa göre gösterir`,
+      `focus ${proje}: project is fresh, no validation run started; the panel shows the last run's records for the new focus`),
+    dar: yuzeyMetni(`odak ${proje}: proje son hesaplamadan sonra değişmiş, yalnız bu proje denetlenir (tetik=odak-dar)`,
+      `focus ${proje}: project changed since it was last computed, only this project is validated (trigger=odak-dar)`),
+    tam: yuzeyMetni(`odak ${proje}: proje bayat ve dar tur kurulamıyor (odak çalışma alanı kökünde ya da odak ayarı kapalı), tam tur`,
+      `focus ${proje}: project is stale and a narrowed run is not possible (focus is a workspace root or focus is off), full run`),
+  }[tur]),
   get eklentiEtkin(): string { return yuzeyMetni("🌀 Sarmal eklentisi etkin — .sar canlı denetim + tamamlama.", "🌀 Sarmal extension active — live .sar validation and completion."); },
   performansTuru: (p: { saat: string; sure: number; dosya: number; tetik: string; olaylar: string; suzulen: number; atlanan: number; ertelenen: number; belgeler?: string; asamalar?: string }): string => yuzeyMetni(
     `🔬 ${p.saat} denetim turu: ${p.sure} ms · ${p.dosya} dosya · tetik=${p.tetik} | aradaki olaylar: ${p.olaylar} · süzülen ${p.suzulen} · atlanan ${p.atlanan} · ertelenen ${p.ertelenen}${p.belgeler ? ` | ${p.belgeler}` : ""}${p.asamalar ? ` | ${p.asamalar}` : ""}`,

@@ -216,7 +216,16 @@ function miniGrafAyari(acik: boolean): void {
 
 const otur = (): Promise<void> => new Promise((r) => setImmediate(r));
 const bekle = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
-const satirSayisi = (html: string): number => (html.match(/class="sat"/g) ?? []).length;
+/**
+ * 🌳 PNL-A27: kapalı dalın önden gelen çocukları çizilmeyen `<template data-ust>` içindedir; ekranda
+ * görünen satırlar şablonlar çıkarılınca kalanlardır (iç içe şablonlar içten dışa sökülür).
+ */
+function sablonsuz(html: string): string {
+  let h = html;
+  for (let eski = ""; eski !== h;) { eski = h; h = h.replace(/<template data-ust="[^"]*">(?:(?!<template)[\s\S])*?<\/template>/g, ""); }
+  return h;
+}
+const satirSayisi = (html: string): number => (sablonsuz(html).match(/class="sat"/g) ?? []).length;
 const mesajlar = (o: Ortam, tip: string): Array<Record<string, unknown>> =>
   o.gorunum.gonderilen.filter((m) => (m as { tip?: string }).tip === tip) as Array<Record<string, unknown>>;
 /** Belgedeki bir sekmenin bölüm kabının içeriği (PNL-A18: beş sekmenin bölümü de belgededir). */
@@ -423,6 +432,42 @@ test("açık düğümde doğru satır sayısı: 'gec' iletisi yalnız o düğüm
   o.gorunum.mesajGonder({ tip: "gec", id: hedef, ac: "evet" });
   await otur();
   assert.equal(mesajlar(o, "parca").length, n);
+});
+
+test("PNL-A27 · webview'in yerel dal haberi: eklenti durumu kalıcı yazar ve yanıt beklenmez; önden veri gecikmeli tazelenir ve iletiler eklentinin gördüğü dal sayacını taşır", async () => {
+  const o = ortamKur();
+  const ray = panelIcerigi(o.gorunum.webview.html, "ray");
+  const kacirId = (id: string): string => id.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  // Görünen ve önden çocukları şablonda duran bir kapalı dal.
+  const hedef = kapaliSatirlar(sablonsuz(ray)).find((id) => ray.includes(`<template data-ust="${kacirId(id)}">`))!;
+  assert.ok(hedef, "görünen ve şablonu olan kapalı dal yok");
+  const cocuklar = (ray.slice(ray.indexOf(`<template data-ust="${kacirId(hedef)}">`)).match(/class="sat"/g) ?? []).length;
+  assert.ok(cocuklar > 0);
+  const once = o.panel.olcumler().satirSayisi;
+  const parcaOnce = mesajlar(o, "parca").length;
+  o.gorunum.mesajGonder({ tip: "gec", id: hedef, ac: true, n: 1, yerel: true });
+  await otur();
+  assert.equal(mesajlar(o, "parca").length, parcaOnce, "yerel dal haberi eklentiden hemen çizim istedi");
+  assert.equal((o.durum.get("sarmal.panel.acik") as Record<string, boolean>)[hedef], true, "yerel dal durumu kalıcı yazılmadı");
+  assert.ok(o.panel.olcumler().satirSayisi > once, "eklentinin görünen satır sayısı yerel açılışı izlemiyor");
+  // Önden veri: kısa bir gecikmeden sonra ağaç bir kez yeniden çizilir; ileti haberin sayacını taşır.
+  await bekle(250);
+  const yeni = mesajlar(o, "parca").at(-1)!;
+  assert.equal(mesajlar(o, "parca").length, parcaOnce + 1, "önden veri tazelenmedi ya da birden çok kez çizildi");
+  assert.equal(yeni.gec, 1, "çizim eklentinin gördüğü dal sayacını taşımıyor");
+  assert.match(String(yeni.html), new RegExp(`data-id="${kacirId(hedef).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*aria-expanded="true"`), "çizimde dal açık değil");
+  assert.equal(o.panel.olcumler().satirSayisi, satirSayisi(String(yeni.html)));
+  // Kapatma haberi de yalnız kaydedilir; kapanınca önden tazeleme gerekmez.
+  o.gorunum.mesajGonder({ tip: "gec", id: hedef, ac: false, n: 2, yerel: true });
+  await bekle(250);
+  assert.equal(mesajlar(o, "parca").length, parcaOnce + 1, "yerel kapatma çizim istedi");
+  assert.equal((o.durum.get("sarmal.panel.acik") as Record<string, boolean>)[hedef], false);
+  assert.equal(o.panel.olcumler().satirSayisi, once);
+  // Bilinmeyen kimlik ve bozuk ileti hiçbir şeyi değiştirmez.
+  o.gorunum.mesajGonder({ tip: "gec", id: "yok/yok", ac: true, n: 3, yerel: true });
+  o.gorunum.mesajGonder({ tip: "gec", id: hedef, ac: "evet", n: 4, yerel: true });
+  await bekle(250);
+  assert.equal(mesajlar(o, "parca").length, parcaOnce + 1);
 });
 
 test("kalıcı açık tercih: önceden açık işaretli düğüm panel kurulur kurulmaz açıktır", () => {
@@ -824,7 +869,7 @@ test("sarmal.dosyaAc: panelden gelen seçenekle dosyayı satırında açar ve od
 /** Satırın kimliği, etiketi, açıklaması ve açık-kapalı durumu (panel satır biçiminden okunur). */
 function satirlariOku(html: string): Array<{ id: string; etiket: string; aciklama: string; durum: string; derinlik: number; komutlu: boolean }> {
   const coz = (x: string): string => x.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-  return [...html.matchAll(/<div class="sat" role="treeitem" data-id="([^"]*)" data-d="(\d+)"[^>]*?(data-komut="1")?(?: aria-expanded="(true|false)")?>[\s\S]*?<span class="et"[^>]*>([^<]*)<\/span>(?:<span class="ac">([^<]*)<\/span>)?/g)]
+  return [...sablonsuz(html).matchAll(/<div class="sat" role="treeitem" data-id="([^"]*)" data-d="(\d+)"[^>]*?(data-komut="1")?(?: aria-expanded="(true|false)")?>[\s\S]*?<span class="et"[^>]*>([^<]*)<\/span>(?:<span class="ac">([^<]*)<\/span>)?/g)]
     .map((m) => ({ id: coz(m[1]!), derinlik: Number(m[2]), komutlu: !!m[3], durum: m[4] ?? "yaprak", etiket: coz(m[5]!), aciklama: coz(m[6] ?? "") }));
 }
 

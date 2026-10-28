@@ -49,7 +49,11 @@
 //   SIRALANMASI (PNL-A23): gerçek fare sürüklemesi sekmeyi bırakıldığı yere taşır, yeni sıra eklentiye
 //   tek iletiyle gider, seçim ve görünen içerik değişmez, rozet sekmesiyle taşınır; Alt+Sol/Sağ odaktaki
 //   sekmeyi taşır ve VS Code'a geçmez; eklentinin bildirdiği sıra şeride uygulanır; sıra ayarı taşıyan
-//   değişke ilk sekmeyle açılır; görüntüler sekme-sirasi-<boyut>-<an>.png · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
+//   değişke ilk sekmeyle açılır; görüntüler sekme-sirasi-<boyut>-<an>.png · DAL AÇMA EKLENTİYİ
+//   BEKLEMEZ (PNL-A27): eklenti yanıt vermezken görünen kapalı dal tıklamayla anında açılır,
+//   çocukları görünür, eklentiye yalnız sayaçlı haber gider; eklentinin haberi görmeden ürettiği
+//   çizim dalı geri çevirmez, gördükten sonraki çizimi uygulanır; görüntüler dal-acma-<boyut>-<an>.png
+//   · ESKİ/YENİ ETKİLEŞİM ENVANTERİ
 //   (git HEAD'deki package.json'ın görünüm ve menü katkıları ile panelin karşılığı;
 //   kaybolan etkileşim DÜŞTÜ, yolu değişen etkileşim UYARI olarak yazılır).
 //
@@ -934,6 +938,92 @@ try {
       s5.sira.join() === SEKME_SIRASI.join() && g5.secili === "sinyaller" && g5.gorunen.join() === "sinyaller" && s5.iletiler.length === 2,
       JSON.stringify({ s5, g5 }));
     await goruntu("varsayilana-donus");
+    kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
+    await p.close();
+  }
+
+  // ── DAL AÇMA EKLENTİYİ BEKLEMEZ (PNL-A27) ────────────────────────────────────────────────────
+  // Sahte eklenti hiçbir iletiye yanıt vermez. Ray ağacında görünen ve önden çocukları şablonda duran
+  // bir kapalı dalın açma okuna gerçek fare tıklaması yapılır ve hiç beklenmeden ölçülür. Ardından
+  // eklentinin bu haberi henüz görmemiş gecikmiş çizimi gelir; dal açık kalmalıdır. Eklenti haberi
+  // gördükten sonra dalı kapatan bir çizim gönderirse son söz onundur.
+  for (const B of BOYUTLAR) {
+    const W = B.ad;
+    const p = await tarayici.newPage({ viewport: { width: B.w, height: B.h } });
+    const hatalar = [];
+    p.on("pageerror", (e) => hatalar.push(e.message));
+    await p.addInitScript(() => {
+      window.__iletiler = [];
+      window.acquireVsCodeApi = () => ({ postMessage(m) { window.__iletiler.push(m); }, setState() {}, getState() {} });
+    });
+    await p.goto(pathToFileURL(join(HTML_DIZIN, "ray.html")).href, { waitUntil: "load" });
+    await p.evaluate((renkler) => {
+      const r = document.documentElement;
+      for (const [k, v] of Object.entries(renkler)) r.style.setProperty(k, v);
+      r.style.background = renkler["--vscode-sideBar-background"];
+      document.body.className = "vscode-dark";
+    }, KOYU);
+    const etiket = `dal açma @${W}`;
+    const goruntu = async (ad) => {
+      const dosya = `dal-acma-${W}-${ad}.png`;
+      await p.screenshot({ path: join(CIKTI, dosya) });
+      goruntuler.push(dosya);
+    };
+    // Görünen, kapalı ve önden çocukları şablonda duran dallardan en çok çocuklu olanı; ekranda görünür olması
+    // için kaydırılır. Açılınca görünecek satırlar şablonun en üst kademesindeki satırlardır (iç şablonlar kapalı kalır).
+    const hedef = await p.evaluate(() => {
+      const ustSatir = (t) => [...t.content.children].filter((x) => x.classList && x.classList.contains("sat")).length;
+      const adaylar = [...document.querySelectorAll("#agac .sat[aria-expanded=\"false\"]")].map((x) => {
+        const t = x.nextElementSibling;
+        return t && t.tagName === "TEMPLATE" && t.getAttribute("data-ust") === x.dataset.id ? { s: x, n: ustSatir(t) } : null;
+      }).filter((a) => a && a.n > 0).sort((a, b) => b.n - a.n);
+      if (!adaylar.length) return null;
+      adaylar[0].s.scrollIntoView({ block: "center" });
+      return { id: adaylar[0].s.dataset.id, cocuk: adaylar[0].n, ilkHtml: document.getElementById("agac").innerHTML };
+    });
+    if (!hedef) { kontrol(`${etiket}: ölçülecek kapalı dal var`, false, "şablonlu kapalı dal yok"); await p.close(); continue; }
+    await goruntu("once");
+    const durum = () => p.evaluate((id) => {
+      const s = document.querySelector(`.sat[data-id="${CSS.escape(id)}"]`);
+      const onek = id + "/";
+      const cocuk = [...document.querySelectorAll("#agac .sat")].filter((x) => x.dataset.id.startsWith(onek) && x.getBoundingClientRect().height > 0).length;
+      return { acik: s?.getAttribute("aria-expanded"), cocuk, gec: window.__iletiler.filter((m) => m.tip === "gec"), ac: window.__iletiler.filter((m) => m.tip === "ac").length };
+    }, hedef.id);
+    // Tıklama ve ölçüm aynı görevde: eklenti hiç yanıt vermeden dal açık ve çocukları görünür olmalıdır.
+    const anlik = await p.evaluate((id) => {
+      const s = document.querySelector(`.sat[data-id="${CSS.escape(id)}"]`);
+      const bas = performance.now();
+      s.querySelector(".ok").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+      const sure = performance.now() - bas;
+      const onek = id + "/";
+      return { sure, acik: s.getAttribute("aria-expanded"),
+        cocuk: [...document.querySelectorAll("#agac .sat")].filter((x) => x.dataset.id.startsWith(onek) && x.getBoundingClientRect().height > 0).length };
+    }, hedef.id);
+    const d1 = await durum();
+    kontrol(`${etiket}: eklenti yanıt vermezken dal tıklamayla anında açılır ve çocukları görünür (${anlik.sure.toFixed(1)} ms)`,
+      anlik.acik === "true" && anlik.cocuk === hedef.cocuk && anlik.sure < 50, JSON.stringify({ anlik, beklenenCocuk: hedef.cocuk }));
+    kontrol(`${etiket}: eklentiye yalnız sayaçlı yerel haber gider (dosya açma iletisi yok)`,
+      d1.gec.length === 1 && d1.gec[0].yerel === true && d1.gec[0].ac === true && d1.gec[0].n === 1 && d1.gec[0].id === hedef.id && d1.ac === 0,
+      JSON.stringify(d1.gec));
+    await goruntu("acildi");
+    // Gerçek fare tıklaması da aynı yoldan kapatıp yeniden açar.
+    await p.click(`.sat[data-id="${hedef.id.replace(/(["\\])/g, "\\$1")}"] .ok`);
+    const d2 = await durum();
+    kontrol(`${etiket}: gerçek fare tıklaması dalı kapatır ve çocuklar görünmez olur`, d2.acik === "false" && d2.cocuk === 0 && d2.gec.at(-1)?.ac === false, JSON.stringify(d2));
+    await p.click(`.sat[data-id="${hedef.id.replace(/(["\\])/g, "\\$1")}"] .ok`);
+    const d3 = await durum();
+    kontrol(`${etiket}: gerçek fare tıklaması dalı yeniden açar`, d3.acik === "true" && d3.cocuk === hedef.cocuk && d3.gec.at(-1)?.n === 3, JSON.stringify({ acik: d3.acik, cocuk: d3.cocuk }));
+    // Eklentinin bu haberleri görmeden ürettiği gecikmiş çizim: kullanıcının açtığı dal geri çevrilmez.
+    await p.evaluate((html) => { window.postMessage({ tip: "parca", sekme: "ray", kimlik: "agac", html, ikonStili: "", gec: 0 }, "*"); }, hedef.ilkHtml);
+    await p.waitForTimeout(100);
+    const d4 = await durum();
+    kontrol(`${etiket}: eklentinin haberi görmeden ürettiği çizim kullanıcının açtığı dalı kapatmaz`, d4.acik === "true" && d4.cocuk === hedef.cocuk, JSON.stringify({ acik: d4.acik, cocuk: d4.cocuk }));
+    // Eklenti haberi gördükten sonra (sayaç 3) dalı kapalı çizerse son söz onundur.
+    await p.evaluate((html) => { window.postMessage({ tip: "parca", sekme: "ray", kimlik: "agac", html, ikonStili: "", gec: 3 }, "*"); }, hedef.ilkHtml);
+    await p.waitForTimeout(100);
+    const d5 = await durum();
+    kontrol(`${etiket}: eklentinin haberi gördükten sonraki çizimi uygulanır (son söz eklentinin)`, d5.acik === "false" && d5.cocuk === 0, JSON.stringify({ acik: d5.acik, cocuk: d5.cocuk }));
+    await goruntu("eklenti-cizimi");
     kontrol(`${etiket}: betik hatasız`, hatalar.length === 0, hatalar.join(" | "));
     await p.close();
   }

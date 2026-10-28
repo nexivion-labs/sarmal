@@ -447,6 +447,7 @@ export const PANEL_BETIGI = `
       var alanB = alanOdagi();
       p.innerHTML = m.html;
       if (m.sekme === 'ray') grafKur();
+      bekleyenDallariUygula(m.gec);
       secimiGeriYukle(odak);
       alanOdaginiGeriYukle(alanB);
     } else if (m.tip === 'sekmeSec') {
@@ -456,6 +457,7 @@ export const PANEL_BETIGI = `
     } else if (m.tip === 'parca') {
       stilEkle(m.sekme, m.ikonStili, true);
       parcaYaz(m.sekme, m.kimlik, m.html);
+      if (m.kimlik !== 'graf') bekleyenDallariUygula(m.gec);
     } else if (m.tip === 'satir') {
       stilEkle(m.sekme, m.ikonStili, false);
       var sp = sekmePaneli(m.sekme);
@@ -470,8 +472,7 @@ export const PANEL_BETIGI = `
           s.replaceWith(yeni);
           if (secti) yeni.classList.add('sec');
           if (tab) yeni.setAttribute('tabindex', tab);
-          kilavuzYaz();
-          vurguTazele();
+          bekleyenDallariUygula(m.gec);
         }
       }
     } else if (m.tip === 'rozet') {
@@ -505,6 +506,8 @@ export const PANEL_BETIGI = `
       sinamaSekmeDizisi(m.sira, m.aralik);
     } else if (m.tip === 'sinamaSurukle') {
       sinamaSurukle(m.ad, m.hedef, m.once);
+    } else if (m.tip === 'sinamaDalAc') {
+      sinamaDalAc(m.id, m.aralik);
     } else if (m.tip === 'sinamaSerit') {
       gonder({ tip: 'sinamaRapor', kayitlar: seritDurumu() });
     } else if (m.tip === 'git') {
@@ -544,6 +547,24 @@ export const PANEL_BETIGI = `
           gorunen: gorunen.map(function (p) { return p.getAttribute('data-sekme'); }), icerik: gorunen.map(icerikSekmesi) });
       });
       gonder({ tip: 'sinamaRapor', kayitlar: kayitlar });
+    }, Number(aralik) || 0);
+  }
+
+  // ── Sınama kipi (PNL-A27): dalın açılması eklentiyi beklemez ─────────────────
+  // Verilen satırın açma okuna kısa bir gecikmeden sonra gerçek tıklama gönderilir ve hemen ardından
+  // satırın durumu ile dalın görünen çocukları kaydedilir; eklenti o sırada kilitli olabilir.
+  function sinamaDalAc(id, aralik) {
+    setTimeout(function () {
+      var s = satirBul(id);
+      var ok = s ? s.querySelector('.ok') : null;
+      var bas = performance.now();
+      if (ok) ok.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      var sure = performance.now() - bas;
+      var onek = id + '/';
+      var cocuk = Array.prototype.filter.call(document.querySelectorAll('.sat'), function (x) {
+        return (x.getAttribute('data-id') || '').indexOf(onek) === 0 && x.getBoundingClientRect().height > 0;
+      }).length;
+      gonder({ tip: 'sinamaRapor', kayitlar: { id: id, zaman: Date.now(), sure: sure, acik: s ? s.getAttribute('aria-expanded') : null, cocuk: cocuk } });
     }, Number(aralik) || 0);
   }
 
@@ -600,9 +621,77 @@ export const PANEL_BETIGI = `
       satir.setAttribute('tabindex', '0');
     }
   }
+  // ── Dal aç-kapa (PNL-A27): eklentiyi beklemez ──────────────────────────────
+  // Kapalı dalın çocukları satırın hemen ardındaki çizilmeyen şablondadır; açmak şablonu yerine
+  // açar, kapatmak dalın satırlarını yeni bir şablona taşır. İkisi de webview'de anında olur ve
+  // eklentiye yalnız haber gider (sayaçlı). Eklentinin sonraki çizimi o haberi henüz görmemişse
+  // (iletideki sayaç küçükse) kullanıcının açtığı ya da kapattığı dal yeniden uygulanır. Şablonu
+  // olmayan kapalı satır (onay kapısı, çocuksuz dal) ile karar kademesi taşıyan açık kapı eklentiye
+  // sorulur; onların açılması eklentinin işidir.
+  var dalSayaci = 0;
+  var bekleyenDallar = {};
+  function dalSablonu(satir) {
+    var t = satir.nextElementSibling;
+    return t && t.tagName === 'TEMPLATE' && t.getAttribute('data-ust') === satir.getAttribute('data-id') ? t : null;
+  }
+  function dalAc(satir) {
+    var t = dalSablonu(satir);
+    if (!t) return false;
+    t.replaceWith(t.content);
+    satir.setAttribute('aria-expanded', 'true');
+    return true;
+  }
+  function dalinUyesi(el, onek) {
+    if (el.classList && el.classList.contains('sat')) return (el.getAttribute('data-id') || '').indexOf(onek) === 0;
+    if (el.tagName === 'TEMPLATE') return (el.getAttribute('data-ust') || '').indexOf(onek) === 0;
+    if (el.classList && el.classList.contains('kademe')) return (el.getAttribute('data-kapi') || '').indexOf(onek) === 0;
+    return false;
+  }
+  function dalKapat(satir) {
+    var n = satir.nextElementSibling;
+    if (n && n.classList.contains('kademe')) return false;
+    var id = satir.getAttribute('data-id');
+    var onek = id + '/';
+    var t = document.createElement('template');
+    t.setAttribute('data-ust', id);
+    while (n && dalinUyesi(n, onek)) {
+      var sonraki = n.nextElementSibling;
+      t.content.appendChild(n);
+      n = sonraki;
+    }
+    satir.after(t);
+    satir.setAttribute('aria-expanded', 'false');
+    // Seçili ya da odaktaki satır kapanan dalın içindeyse seçim dalın kendisine geçer (VS Code ağacı gibi).
+    if (seciliSatir && seciliSatir.indexOf(onek) === 0) { sec(satir); satir.focus({ preventScroll: true }); }
+    return true;
+  }
+  function dalDurumunuUygula(satir, ac) {
+    var acik = satir.getAttribute('aria-expanded') === 'true';
+    if (acik === ac) return true;
+    return ac ? dalAc(satir) : dalKapat(satir);
+  }
   function gec(satir) {
     if (satir.getAttribute('aria-expanded') === null) return;
-    gonder({ tip: 'gec', id: satir.getAttribute('data-id'), ac: satir.getAttribute('aria-expanded') !== 'true' });
+    var id = satir.getAttribute('data-id');
+    var ac = satir.getAttribute('aria-expanded') !== 'true';
+    if (!dalDurumunuUygula(satir, ac)) { gonder({ tip: 'gec', id: id, ac: ac }); return; }
+    dalSayaci += 1;
+    bekleyenDallar[id] = { ac: ac, n: dalSayaci };
+    kilavuzYaz();
+    vurguTazele();
+    gonder({ tip: 'gec', id: id, ac: ac, n: dalSayaci, yerel: true });
+  }
+  /** Eklentinin çizimi geldi: onun henüz görmediği yerel dal geçişleri yeniden uygulanır, gördükleri düşer. */
+  function bekleyenDallariUygula(gorulen) {
+    var g = typeof gorulen === 'number' ? gorulen : 0;
+    Object.keys(bekleyenDallar).forEach(function (id) {
+      var b = bekleyenDallar[id];
+      if (b.n <= g) { delete bekleyenDallar[id]; return; }
+      var s = satirBul(id);
+      if (s) dalDurumunuUygula(s, b.ac);
+    });
+    kilavuzYaz();
+    vurguTazele();
   }
   function ac(satir) {
     if (satir.getAttribute('data-komut') === '1') gonder({ tip: 'ac', id: satir.getAttribute('data-id') });

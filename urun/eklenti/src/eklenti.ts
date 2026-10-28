@@ -95,7 +95,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { AsamaKronometresi, PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği · ⏱️ PNL-A14: aşama kronometresi
-import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
+import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir, CaprazTazelik, odakTuruKarari, ODAK_DAR_TETIGI, type OdakTuruKarari } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -646,6 +646,11 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       tamDenetimSonucu([], [], true);   // 📦 EKL-F6-A09: kapalı denetimde "koşmadı" işareti bayat kalmaz
     }
     const turBasi = Date.now();   // 🔬 PRF-A01: tur süresi mercekten okunur
+    // 🎯 PNL-A26: çapraz tanıların tazeliği okumadan ÖNCE damgalanır; tur sürerken gelen değişiklik
+    // daha büyük bir an alır ve kökü bayat bırakır (tutucu). Turu tetikleyen değişen yollar da deftere
+    // yazılır: tur çökerse kökleri bayat kalır, bitince hesaplanan kökler tazelenir.
+    if (degisenYollar) caprazTazelik.degisti(degisenYollar);
+    const tazelikAni = caprazTazelik.turBasladi();
     // ⏱️ PNL-A14: süre aşamalara bölünür (okuma · ayrıştırma · denetim · yayın);
     // kronometre yüksek çözünürlüklü saatle ölçer, toplam süre eski saatinde kalır.
     const kron = new AsamaKronometresi();
@@ -823,7 +828,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
       // turda hiç hesaplanmamıştır. Boş liste yazmak onları SİLERDİ ve odak
       // dışındaki varlığın kayıtları sessizce kaybolurdu; bunun yerine önceki
       // turun sonucu olduğu gibi korunur. Korunan kayıt odak oraya döndüğünde
-      // tazelenir: odak değişimi tam tur ister (aktifVarligiGuncelle).
+      // tazelenir: 🎯 PNL-A26'dan beri odak değişimi yalnız bayat projeye dar tur ister (odakTurunuKarara).
       // 🩹 BKM-DNT-A18: değişen kardeş kök artık denetlenen kökler arasındadır ve
       // bu karar onun dosyalarını önbellekten değil taze denetimden besler.
       const kapsamDisi = !caprazYenidenHesaplanir(fsPath, darKokler);
@@ -852,6 +857,8 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     sinyalDefteri.buda(new Set(doclar.keys()));
     sinyalDefteri.yayımla();
     kron.ekle("yayın", kron.şimdi() - yuzeyYayiniBasi);
+    // 🎯 PNL-A26: bu turda çapraz tanıları yeniden hesaplanan kökler tazedir (tam turda hepsi).
+    caprazTazelik.turBitti(tazelikAni, darKokler);
     }   // tanı üretimi (denetim açık)
     // 📬 VIT-POSTA-A03 · 🗺️ PRF-TA-A02: turun TEK GÖRÜNTÜ YAYINI. Onay kapıları
     // bu turun ZATEN ürettiği ağaçtan çıkar; ana hat kapı TANIMAZ ve kapı listesi
@@ -886,10 +893,12 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // RED-1 R1: çöken tur sessiz yutulmaz — kanala düşer (kilit yine asılı kalmaz).
     (h) => perfKanal.appendLine(IZ_METINLERI.denetimCoktu(h instanceof Error ? h.message : String(h))));
 
-  // ⚡ PRF-A06: odak değişimi tam tur ister — kanca kilit kurulduktan SONRA
-  // bağlanır, böylece açılış turu (aşağıda) ikinci bir turu tetiklemez.
+  // ⚡ PRF-A06 · 🎯 PNL-A26: odak değişiminin tur kancası kilit kurulduktan SONRA
+  // bağlanır, böylece açılış turu (aşağıda) ikinci bir turu tetiklemez. Kanca
+  // artık yalnız bayat projeye ve yalnız o projeyi kapsayan dar tur ister.
   aktifVarligiGuncelle(vscode.window.activeTextEditor);   // MIM-1.1 ②: açılış odağı aktif dosyadan
-  odakTuruIste = (t) => denetimKilidi.iste(t);
+  odakTuruIste = (t, yollar) => denetimKilidi.iste(t, yollar);
+  odakIzi = (s) => perfKanal.appendLine(s);
   denetimKilidi.iste("başlangıç"); // başlangıç: tüm çalışma-alanı + ORK-1.2 DAG döngü denetimi
   void kimlikIndeksiniTara(); // 🗂️ EKL-F11-A01: kimlik indeksi arka-planda dolar (activate'i bekletmez)
   vscode.workspace.textDocuments.forEach(denetle); // hâlihazırda AÇIK belgeler (çalışma-alanı dışı dahil) hemen denetlensin
@@ -920,7 +929,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     gurultu: gurultuMu, gecikmeMs: 1500,
     iste: (tetik, yollar) => denetimKilidi.iste(tetik, yollar),   // 🩹 BKM-DNT-A18: değişen yollar tura taşınır
     suzuldu: () => mercek.süzüldü(),
-    olay: () => mercek.olayGeldi("disk"),
+    olay: (yol) => { mercek.olayGeldi("disk"); caprazTazelik.degisti([yol]); },   // 🎯 PNL-A26: değişen kök olay anında bayatlar
     ertelendi: () => mercek.ertelendi(),
   });
   // 🧯 PRF-A02: .sar olayları da hattan geçer — çok-dosyalı yazım dalgası
@@ -932,7 +941,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     gurultu: sarGurultuMu, gecikmeMs: 300,
     iste: (tetik, yollar) => denetimKilidi.iste(tetik, yollar),   // 🩹 BKM-DNT-A18: değişen yollar tura taşınır
     suzuldu: () => mercek.süzüldü(),
-    olay: () => mercek.olayGeldi("sar"),
+    olay: (yol) => { mercek.olayGeldi("sar"); caprazTazelik.degisti([yol]); },   // 🎯 PNL-A26: değişen kök olay anında bayatlar
     ertelendi: () => mercek.ertelendi(),
   });
   const goreliYol = (u: vscode.Uri): string => vscode.workspace.asRelativePath(u, false);
@@ -1011,7 +1020,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     // Problems o varlığın tanılarına döner — çok-proje tek panelde, tanılar karışmadan.
     // Anadizin de açılır; aktif-editör odağı (aktifVarligiGuncelle) aynı köke oturur.
     vscode.commands.registerCommand("sarmal.varligaOdaklan", async (kok: string, anaSar?: string) => {
-      if (kok && kok !== aktifVarlik) { aktifVarlik = kok; hepsiniYenidenYayinla(); }
+      if (kok && kok !== aktifVarlik) { aktifVarlik = kok; hepsiniYenidenYayinla(); odakTurunuKarara(kok); }   // 🎯 PNL-A26
       vscode.window.setStatusBarMessage(panelOdakMesaji(basename(kok)), 4000);
       if (anaSar) await vscode.window.showTextDocument(vscode.Uri.file(anaSar), { preview: true });
     }),
@@ -1508,11 +1517,32 @@ function hepsiniYenidenYayinla(): void {
   for (const dinleyici of odakDinleyicileri) dinleyici();
 }
 
-/** ⚡ PRF-A06: odak DEĞİŞTİĞİNDE yeni odağın çapraz tanılarını tazeleyecek tam
- *  tur isteyen kanca (activate kurar). Daraltılmış turlar odak dışındaki
- *  varlığın kaydını KORUR ama tazelemez; odak oraya döndüğünde resmin güncel
- *  olması bu tura bağlıdır. Kanca kurulmadan (saf sınama) davranış eskisi gibidir. */
-let odakTuruIste: ((tetik: string) => void) | undefined;
+/** ⚡ PRF-A06 · 🎯 PNL-A26: odak değişiminin tur isteyen kancası (activate kurar). Kanca
+ *  kurulmadan (açılıştan önce ya da saf sınamada) odak değişimi tur istemez. */
+let odakTuruIste: ((tetik: string, yollar?: readonly string[]) => void) | undefined;
+/** 🎯 PNL-A26: odak kararının performans kanalına yazılan satırı (activate bağlar). */
+let odakIzi: ((satir: string) => void) | undefined;
+
+/**
+ * 🎯 PNL-A26 · çapraz tanıların tazelik defteri. Turlar hesapladıkları kökleri, olay hatları diskte
+ * değişen yolları olay anında yazar; odak değişimi buradan bayatlığı okur. Kaydedilmemiş düzenleme
+ * yazılmaz: çapraz denetim kökü diskten okur ve düzenleme ancak kaydedilince sonucu değiştirir.
+ */
+const caprazTazelik = new CaprazTazelik();
+
+/**
+ * 🎯 PNL-A26 · odak yeni projeye geçti. Panel son turun kayıtlarını yeni odağa göre zaten yeniden
+ * bastı (hepsiniYenidenYayinla). Proje tazeyse tur yoktur; bayatsa yalnız o projeyi kapsayan dar tur,
+ * dar tur kurulamıyorsa tam tur istenir. Karar performans kanalına gerekçesiyle yazılır.
+ */
+function odakTurunuKarara(kok: string): void {
+  if (!odakTuruIste) return;
+  const karar: OdakTuruKarari = odakTuruKarari(kok, caprazTazelik.bayatMi(kok), odakAcik(),
+    (vscode.workspace.workspaceFolders ?? []).map((k) => k.uri.fsPath));
+  odakIzi?.(IZ_METINLERI.odakKarari(basename(kok), karar.tur));
+  if (karar.tur === "dar") odakTuruIste(ODAK_DAR_TETIGI, []);
+  else if (karar.tur === "tam") odakTuruIste("odak");
+}
 
 function aktifVarligiGuncelle(editor: vscode.TextEditor | undefined): void {
   if (!editor || editor.document.uri.scheme !== "file") return;   // yapışkan: panel boşalmaz
@@ -1520,9 +1550,7 @@ function aktifVarligiGuncelle(editor: vscode.TextEditor | undefined): void {
   if (!kok || kok === aktifVarlik) return;                        // köksüz → yapışkan
   aktifVarlik = kok;
   hepsiniYenidenYayinla();
-  // Odak turu TAM koşar (turKapsami 'odak' tetiğini daraltmaz): yeni odağın
-  // çapraz tanıları en son ne zaman hesaplandıysa o hâldedir ve tazelenmelidir.
-  odakTuruIste?.("odak");
+  odakTurunuKarara(kok);
 }
 
 // ── 🗂️ EKL-F11-A01: kimlik indeksi beslemesi ────────────────────────────────

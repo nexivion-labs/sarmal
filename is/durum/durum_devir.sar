@@ -17,8 +17,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
-            neredeyiz: BIRINCI-BASAMAGIN-ILK-PAKETI-HAZIRLANIYOR-PNL-A03-A07-VE-A14-TAMAMLANDI,
-            sıradaki: PNL-A15-ILK-PAKETIN-KURULUMU-SONRA-PNL-A18-VE-PNL-A19-ANINDA-SEKME-GECISI,
+            neredeyiz: IKINCI-BASAMAK-SURUYOR-PNL-A26-A27-PERFORMANS-VE-PNL-A11-A12-A13-TREN-AJANLARDA,
+            sıradaki: PNL-A26-A27-DOGRULAMA-VE-ISLEME-SONRA-TREN-SONRA-MAKINIST-GITHUB-BLOKU-ISKELETI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PR-6-PANELIN-YENIDEN-KURULUMU-TASLAK-TABANI-BAKIM-DALI-UC-TESLIM-BASAMAGI,
                          PNL-A10-AYARLAR-SEKMESI-ICERIGINI-FOUNDER-BILDIRECEK-MAKINIST-EKLERI-DE-FOUNDERDAN,
@@ -59,6 +59,24 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28 akşam) · SİNYALLER, SÜRÜKLENEN SEKMELER, MOR TÜL VE SORUNLAR AYARI.
+        Birinci basamak Founder onayıyla kapandı (PNL-A15 ve PNL-A19; 0.9.196 ile 0.9.197 kuruldu). Aynı gün
+        işlenenler: Sinyaller sekmesi ve kanondaki yeri (PNL-A09 ile PNL-A20, 5912fdf; YUZ-3.1, YUZ-3.3, YAS-3.3,
+        YAS-3.4 güncellendi, OZK-14), sürüklenen sekmeler (PNL-A23, 50aa330; Founder'ın sırasını bekler), mor tül
+        varsayılanı (PNL-A24, 16e01b5), 0.9.198 paketi (74744e6, Founder'ın penceresine kuruldu) ve Sorunlar
+        paneline gönderimin ayara bağlanması (PNL-A22, 24d394c). Founder'ın bildirdiği donmalar performans
+        kanalından ölçülmüştür: çatıda tam tur 7,2 ile 7,8 saniyedir ve proje değişimi ile dal açma onu
+        beklemektedir; PNL-A26 (odak turu) üretici tarafından teslim edilmiş ve doğrulanmayı beklemekte, PNL-A27
+        (dal açma) üretimdedir. Tren sekmesi ayrı bir çalışma kopyasında üretimdedir (PNL-A12 bitmek üzere; PNL-A11
+        şirket şeması Founder'ın seçtiği departman sütunları ve yelpaze iplikleriyle kodlanacak, ardından PNL-A13).
+        Departman adları Founder'ın seçimiyle orkestrasyonun ilan dosyasında değiştirilmiş ve orada işlenmeyi
+        beklemektedir. Founder ayrıca Makinist'in projedeki insanları GitHub üzerinden bağlamasına ve her onayın
+        onaylayanın kimliğiyle kayda geçmesine hükmetmiştir (OZK-15); Blokun iskeleti Founder'a gösterilmiş, içerik
+        onayı beklenmektedir ve OZK-15 plana inene kadar uygulanmamış karar uyarısı verir. Açık işler: PNL-A08 sayıların
+        kapsamı ile dış rozetin yalnız acil olanları sayması ve Sorunlar ayarı kapalıyken durum çubuğuna Dur ile Dikkat
+        girdisi, PNL-A25 proje satırlarının simgesi, panel kipi ve işçi Blokları, laboratuvar arşivinin denetimden
+        çıkarılması önerisi ve pazarlamanın yorumdan rehbere otomasyonu (PZ-A12, Founder sonra bakacak).
+
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28) · BİRİNCİ BASAMAĞIN ADIMLARI KAPANDI, İLK PAKET HAZIRLANIYOR.
         Panel dalında birinci basamağın yedi Adımı tamamlanmıştır: sekme şeridi ve geniş yerleşim (PNL-A03,
         a9a462f), hep görünen ağaç çizgileri ve üzerine gelince renklenme (PNL-A04, 5a1f396), Mini Graf

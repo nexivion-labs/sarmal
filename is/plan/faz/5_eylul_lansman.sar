@@ -6871,7 +6871,8 @@ sessizce körleşmez.
       AltKatman( kod: ALT-PNL-TREN-KODLAMA, ad: "Tren Yüzü", departman: kodlama,
         ne: "🔧 Planda ilan edilmiş ajanların ve işin zincirinin gösterildiği dal" ) {
 
-        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A15 ],
+        Adım( kod: PNL-A11, ad: "Ajan Profili Kartı", durum: geliştirmede, öncelik: p1, bağımlı: [ PNL-A15 ],
+          referans: [ OZK-13, OZK-15 ],
           ne: "🪪 Planda ilan edilmiş her ajanın profil kartı. Bugün Tren ajanları düz bir liste olarak yalnız kodları ve türleriyle göstermektedir; Founder 2026-10-27 tarihinde ajanların görev, yetki, yetenek, beceri ve bellekleriyle görünmesine hükmetmiştir." ) {
           görev: [
             "Ajanları rozetli kutular olarak göster; yöneticiler üstte, uzmanlar altta durur ve yönetir bağları çizilir.",
@@ -6956,8 +6957,9 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A18, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1124/1124 (kontrolcü koşturdu; makine yükü 45 iken ilk koşuda zaman ölçen bir sınama şaştı, yükü 8'e inince yinelemede bütün süit geçti) · tip ve dil denetimi temiz (kontrolcü) · gerçek VS Code süiti 64/64, kontrolcü ayrıca koşturdu; yeni sınama eklentinin uzantı sürecini üç saniye kilitlerken webview'de altı gerçek sekme tıklaması yapar ve her adımda seçili sekme ile görünen içeriğin aynı olduğunu ölçer · görsel kontrol 604/604; yanıt vermeyen sahte eklenti altında her sekmeye gerçek tıklama ve Makinist seçiliyken gecikmiş Ray bölümü, kontrolcü ekran görüntüsünde içeriğin değişmediğini gördü (scratchpad/gorsel-a18) · altı birim bozmasının altısını da nöbet yakaladı; Founder'ın gördüğü yalnız vurgu kusuru gerçek VS Code'da ve görsel kontrolde de düşürüldü", ne: "Webview artık beş sekmenin içeriğini kendi kaplarında taşır ve sekme tıklaması seçimi ile görünen kabı betiğin içinde anında değiştirir; eklentiye yalnız haber gider. Eklentiden gelen bölüm ve parça güncellemeleri yalnız kendi sekmesinin kabına yazılır ve seçimi değiştirmez; donmanın nedeni, eklenti meşgulken gecikmiş bir bölüm iletisinin bütün içeriği ezip şeridi kendi sekmesine çevirmesiydi. Seçili sekmenin tek kaynağı paneldir ve bölüm yuvası yerleşik seçimi panelden okur; eklentinin seçtirdiği sekme bir geçiş sayacıyla gider ve webview'de daha yeni bir tıklama varsa uygulanmaz, böylece PNL-A03'te not edilen ayrışma olanaksız hâle gelmiştir. Bilinçli bir maliyet vardır: gizli sekmeler de güncel tutulur ve Ray ağacı ile Mini Graf başka bir sekme seçiliyken de çizilir. Sekme geçişinin kaydı PNL-A19 tesliminde Founder'a sunulacaktır." )
         }
 
-        Adım( kod: PNL-A26, ad: "Odak Değişiminin Tam Denetim Turu Başlatmaması", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A14 ],
+        Adım( kod: PNL-A26, ad: "Odak Değişiminin Tam Denetim Turu Başlatmaması", durum: tamamlandı, öncelik: p0, bağımlı: [ PNL-A14 ],
           referans: [ OZK-12, PRF-PK-A01, PRF-IS-A05 ],
+          üretir: [ KOD-SNM-ODAK-TURU, KOD-SNM-VSC-ODAK-TURU, KOD-IZLEYICI-CEKIRDEK, KOD-EKL-EKLENTI, KD-GOC-YUZEY-METINLER, KOD-SNM-ETKINLESME-KABUGU, KOD-PRF-KABUK-KOPRU, KOD-EKL-ESBUILD-SINAMA ],
           ne: "🐢 Founder 2026-10-28 tarihinde panelin çok ağır çalıştığını, yavaş açıldığını ve zaman zaman takıldığını bildirmiştir. Aynı gün performans kanalından okunan ölçüm şunu göstermiştir: çatıda 357 dosyalık denetim turu 7,2 ile 7,8 saniye sürmekte ve bunun 5 ile 6 saniyesi projeler arası denetime gitmektedir; tur eklentinin ana iş parçacığında koştuğu için bu sürede panel, hover ve tamamlama bekler. Founder'ın editörde başka bir projenin dosyasına geçmesi her seferinde bu tam turu yeniden başlatmaktadır (tetik odak); PRF-A06 bunu odak dışındaki projenin bayat kalabileceği gerekçesiyle kurmuştur, fakat odak projesinin kaydı çoğu zaman bayat değildir. Bu Adım, kalıcı çözüm olan panel kipi ve işçi Blokları gelene kadar en sık donma nedenini kaldırır." ) {
           görev: [
             "Odak başka bir projeye geçtiğinde tam tur başlatma; son turun kayıtlarını yeni odağa göre yeniden yayımla.",
@@ -6970,10 +6972,12 @@ sessizce körleşmez.
             "Gerçek VS Code'da iki proje arasında odak geçişinin süresi ve başlattığı tur sayısı değişiklikten önce ve sonra ölçülmüştür."
           ]
           sınır: "Denetimin kendisi ve tanıların içeriği değişmez; denetimin işçi iş parçacığına taşınması PRF-IS Blokunun işidir."
+          koşu: Koşum( kod: KSM-PNL-A26, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1153/1153, çekirdek süiti 1803/1803, tip ve dil temiz (kontrolcü koşturdu) · gerçek VS Code süiti 77/77 ve görsel kontrol 757/757 (üretici koşturdu) · gerçek VS Code ölçümü: proje geçişinde başlatılan tur 1 tam turdan 0 tura indi · beş birim bozması ve bir gerçek VS Code bozması yakalandı", ne: "Odak başka bir projeye geçtiğinde panel son turun kayıtlarını yeni odağa göre hemen yeniden basar; proje tazeyse tur başlamaz, bayatsa yalnız o projeyi kapsayan dar tur koşar. Bayatlık olay hatlarının diskte değişen yolu yazdığı saf bir tazelik defterinden okunur; tur sürerken gelen değişiklik kökü bayat bırakır, çöken tur hiçbir kökü tazelemez. Kaydedilmemiş düzenleme bayatlık sayılmaz, çünkü çapraz denetim kökü diskten okur. Performans kanalı her odak kararını gerekçesiyle yazar. Çatıda kazanç, proje geçişi başına Founder'ın ölçtüğü 7,2 ile 7,8 saniyelik turdur." )
         }
 
-        Adım( kod: PNL-A27, ad: "Ağaç Dalının Açılmasının Eklentiyi Beklememesi", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A18 ],
+        Adım( kod: PNL-A27, ad: "Ağaç Dalının Açılmasının Eklentiyi Beklememesi", durum: tamamlandı, öncelik: p0, bağımlı: [ PNL-A18 ],
           referans: [ PNL-A18, PNL-A26 ],
+          üretir: [ KOD-SNM-VSC-DAL-ACMA, KOD-PANEL, KOD-PANEL-BETIK, KOD-PANEL-CEKIRDEK, KOD-SNM-PANEL, KOD-SNM-PANEL-CEKIRDEK, KOD-GORSEL-KONTROL, KOD-PRF-KABUK-KOPRU, KOD-EKL-ESBUILD-SINAMA ],
           ne: "🌿 Yol Haritasında ve öteki ağaçlarda bir dalın anında açılıp kapanması. Founder 2026-10-28 tarihinde bir Blokun altındaki Adımların açılması için saniyelerce beklediğini bildirmiştir. Kodun okunması nedeni göstermiştir: dal açma tıklaması eklentiye gidip ağacın orada yeniden kurulmasını ve webview'e geri gönderilmesini beklemektedir; eklenti 7 saniyelik denetim turundayken tıklama da o kadar bekler. Bu, PNL-A18'in sekme geçişinde giderdiği kusurun ağaç dallarındaki karşılığıdır." ) {
           görev: [
             "Ağaçların açılıp kapanmasını webview'in kendi içinde anında yap; webview kapalı dalların çocuklarını da elinde tutar ve tıklama eklentiye gidip gelen bir yanıt beklemez.",
@@ -6986,6 +6990,7 @@ sessizce körleşmez.
             "Çatıdaki gerçek ağaçta dal açma süresi değişiklikten önce ve sonra ölçülmüştür."
           ]
           sınır: "Ağaçların içeriği, sırası ve sayıları değişmez; satır tıklamasının dosyayı açma davranışı değişmez."
+          koşu: Koşum( kod: KSM-PNL-A27, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eklenti süiti 1153/1153, tip ve dil temiz (kontrolcü koşturdu) · gerçek VS Code süiti 77/77, eklenti üç saniye kilitliyken dal 0,8 ms içinde açıldı · görsel kontrol çatıda 757/757; yanıt vermeyen eklenti altında on iki çocuklu dal 2,4 ms içinde açıldı · sekiz bozmanın hepsi yakalandı (üretici koşturdu)", ne: "Ağaçlarda bir dal webview'in içinde anında açılıp kapanır; kapalı dalların çocukları önden bir kademe çizilmeden şablon olarak hazır durur ve eklentiye yalnız sayaçlı bir haber gider. Eklentinin haberi görmeden ürettiği gecikmiş çizim kullanıcının açtığı ya da kapattığı dalı geri çevirmez. Bütün ağacı önden göndermek ölçülmüş ve Sarmal deposunda 6,2 MB belge ile her turda 761 ms üretim çıktığı için reddedilmiştir; bu yüzden yeni açılan dalın içindeki kapalı dallar arka plandaki ek çizimle hazır olur ve eklenti uzun bir turdayken o ikinci kademe hemen tıklanırsa eski yoldan bekler. Panelin ilk belgesi çatıda 783 KB'den 896 KB'ye büyümüştür." )
         }
       }
     }
@@ -7491,6 +7496,14 @@ Kod( kod: KOD-SNM-TUR-ESITLIGI, dosya: "urun/eklenti/sinama/tur-esitligi.test.ts
   ne: "🧪 Tur eşitliği nöbeti — hızlanan tur ile değişiklik öncesi turun gerçek ağaçta birebir aynı tanıları, hatırlatıcıları, bildirimleri ve tur görüntüsünü ürettiğini ölçer (PNL-A14)" )
 Kod( kod: KOD-SNM-TUR-BELGESI-REFERANS, dosya: "urun/eklenti/sinama/tur-belgesi-referans.ts",
   ne: "🧪 Eşitlik nöbetinin başvuru modülü — değişiklik öncesi sıralı okuma döngüsünü ve taze ayrıştırmayı taşır (PNL-A14)" )
+
+// 🍎 PNL-A26 ve PNL-A27 teslimi (2026-10-28): odak turu ve dal açma
+Kod( kod: KOD-SNM-ODAK-TURU, dosya: "urun/eklenti/sinama/odak-turu.test.ts",
+  ne: "🧪 Odak turu nöbeti — taze projeye geçişin tur başlatmadığını, bayat projede yalnız o projenin denetlendiğini ve sonucun tam turla eşit olduğunu örnek çalışma alanında ölçer (PNL-A26)" )
+Kod( kod: KOD-SNM-VSC-ODAK-TURU, dosya: "urun/eklenti/sinama_vscode/suite/odak-turu.test.ts",
+  ne: "🧪 Odak turunun gerçek VS Code nöbeti — iki proje arasında editörle geçişte başlatılan tur sayısını, tetikleri ve süreleri ölçer (PNL-A26)" )
+Kod( kod: KOD-SNM-VSC-DAL-ACMA, dosya: "urun/eklenti/sinama_vscode/suite/dal-acma.test.ts",
+  ne: "🧪 Dal açmanın gerçek VS Code nöbeti — eklentinin süreci kilitliyken ağaç dalının webview'de anında açıldığını ve durumun kalıcı yazıldığını ölçer (PNL-A27)" )
 
 // 🍎 PNL-A22 teslimi (2026-10-28): Sorunlar paneline gönderimin ayara bağlanması
 Kod( kod: KOD-SORUN-TANILARI, dosya: "urun/eklenti/src/sorun-tanilari.ts",
