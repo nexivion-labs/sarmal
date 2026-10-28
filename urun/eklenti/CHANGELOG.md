@@ -2,6 +2,18 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.199 — 2026-10-28 (Tren şirket şeması, gerçek sayılar ve hızlı panel)
+
+- **Tren sekmesi ajanların şirket şemasını gösterir.** Ajanlar departmanlarına göre şeritlerde durur; her şeridin başında yönetici, ardından ona bağlı ajanlar gelir ve büyük ekipler tek bir özet kutusunda toplanır. Bir ajana tıklayınca profil kartı açılır: uzmanlık, yetki, bellek, sınır, uyguladığı yasa ve kime bağlı olduğu, her satır tanımına gider. Şema yalnız planda ilan edilmiş olanı çizer; ilan edilmemiş yerde "tanımlı değil" yazar ve insanlar Tren'de değil Makinist'te durur.
+- **Geliştirmedeki iş tek satırda.** Tren'in altında her açık Adım, ona atanan ajan, Katmanın teknolojisi ve AltKatmanın departmanıyla birlikte görünür.
+- **Kardeş eklenti yuvası.** Tren sekmesi, canlı ajan akışını gösterecek kapalı kardeş eklentinin takılabileceği belgelenmiş bir yuva taşır; Canlı görünüm kendiliğinden seçilmez.
+- **Sayılar gerçeği söyler.** Onay sayacı yalnız kararı bugün verilebilecek işleri sayar; beklemedeki işler Makinist'te ayrı bir "İleride onay isteyecek" grubunda durur. Dış Sarmal rozeti yalnız acil olanları toplar ve sıfırsa görünmez; her sayı neyi saydığını adıyla söyler.
+- **Ray'da Dur ve Dikkat işareti.** Tanı taşıyan düğümün satırında işaret görünür; tıklayınca Sinyaller açılır ve o düğümün tanıları seçili gelir.
+- **Sinyaller türe göre toplanır.** Aynı türden yüzlerce kayıt tek satırda, sayısı, anlamı ve ortak önerisiyle durur; satır açılınca kayıtlar dosyaya göre dizilir.
+- **Proje satırları doğru simgeyle.** Çatıdaki her proje Proje simgesini taşır; çatı simgesi yalnız çatının kendi satırındadır.
+- **Sorunlar paneli isteğe bağlı.** Sarmal tanıları varsayılan olarak VS Code'un Sorunlar paneline yazılmaz; Sinyaller sekmesinde, editördeki dalgalı çizgide ve ipucunda görünür. `sarmal.sorunlarPaneli` açılınca Sorunlar paneline kayıpsız döner. Ayar kapalıyken durum çubuğunda Dur ve Dikkat sayısı görünür.
+- **Panel donmaz.** Dosya değiştirince başlayan tam denetim turu kalktı ve Yol Haritasında bir dalı açmak eklentiyi beklemez.
+
 ## 0.9.198 — 2026-10-28 (Sinyaller sekmesi, sürüklenen sekmeler ve mor tül)
 
 - **Dördüncü sekme Sinyaller oldu.** Sarmal'ın tanıları üç bantta durur: Dur, Sarmal'ın kabul etmediği ve kapıyı kapatan ihlalleri; Dikkat, tam yeşilden önce giderilmesi gereken drift risklerini; Bilgi, kapıyı kapatmayan ölçüm ve durum işaretlerini taşır. Tanılar projeye göre gruplanır, her satır öneriyi ve dayandığı kanon maddesini gösterir, tıklanınca dosyayı ilgili satırda açar. Bant simgeleri düzeyin rengini taşır ve şeritte Dur ile Dikkat sayıları rozet olarak görünür.
