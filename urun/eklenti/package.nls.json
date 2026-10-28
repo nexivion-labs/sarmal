@@ -47,6 +47,7 @@
   "config.liveMap": "Live map: while the cone card is open, it refreshes to the node under the cursor without requiring a click.",
   "config.miniGraph": "Mini graph: draw the entire project in one graph below the roadmap; Faz, Blok, Katman, AltKatman and Adım stay on their own tracks with dependency links between them. Selecting a roadmap node marks it without narrowing the graph; selecting a graph node opens its definition. Disabling this setting hides the view completely.",
   "config.miniGraphView": "Mini graph view: classic (glass-lens rails), tree (one node per row, default) or progress (one card per Katman).",
+  "config.trainChartView": "Agent chart view in the Train tab: lanes (one row per department). Further views will be added to this setting; the panel switches without reopening.",
   "command.miniGraphView": "Switch view",
   "config.tabOrder": "Order of the Sarmal panel tabs, left to right. Drag a tab, or press Alt+Left/Right on it, to change the order; the panel opens on the first tab. Unknown names are ignored and missing tabs are added at the end.",
   "config.treeGuides": "Tree guides — depth-colored vertical lines connect every widget to its closing edge, with a ghost label at the close (‹ Blok BLK-X).",

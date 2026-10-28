@@ -2790,6 +2790,105 @@ export const TREN_METINLERI = {
       ne,
     ].filter(Boolean).join("\n\n");
   },
+  // ── Geliştirmedeki işin zinciri (PNL-A12): Adım → ajan → zemin → departman ──
+  /** Adıma Görev ile atanmış ajan yok. */
+  get atanmamis(): string { return yuzeyMetni("atanmamış", "unassigned"); },
+  /** Adımı kapsayan Katman yok (esnek rejim ya da Katmansız Adım). */
+  get katmansiz(): string { return yuzeyMetni("Katmansız", "no Katman"); },
+  /** Katman var, fakat takım ya da teknoloji beyanı yok. */
+  get zeminsiz(): string { return yuzeyMetni("zemin beyanı yok", "no ground declared"); },
+  /** Adımı kapsayan AltKatman yok. */
+  get altKatmansiz(): string { return yuzeyMetni("AltKatmansız", "no AltKatman"); },
+  /** AltKatman var, fakat departman beyanı yok. */
+  get departmansiz(): string { return yuzeyMetni("departman beyanı yok", "no department declared"); },
+  /** Zincir parçasının satırdaki adı. */
+  parcaAdi(p: "ajan" | "takım" | "teknoloji" | "zemin" | "departman"): string {
+    switch (p) {
+      case "ajan": return yuzeyMetni("ajan", "agent");
+      case "takım": return yuzeyMetni("takım", "team");
+      case "teknoloji": return yuzeyMetni("teknoloji", "technology");
+      case "zemin": return yuzeyMetni("zemin", "ground");
+      default: return yuzeyMetni("departman", "department");
+    }
+  },
+  /** Adım satırının açıklaması: dört parçanın üçü (Adımın kendisi satırın adıdır). */
+  zincirAciklamasi(ajan: string, zemin: string, departman: string): string {
+    return `→ ${ajan} → ${zemin} → ${departman}`;
+  },
+  // ── Ajan şeması ve profil kartı (PNL-A11) ──
+  get profilBasligi(): string { return yuzeyMetni("Profil", "Profile"); },
+  get profilIpucu(): string { return yuzeyMetni("Profil kartı için şemada bir ajana tıkla.", "Click an agent in the chart to see its profile card."); },
+  get ajanYok(): string { return yuzeyMetni("Bu projede ilan edilmiş ajan yok.", "No agents are declared in this project."); },
+  get liderYok(): string { return yuzeyMetni("Lider ajan · tanımlı değil", "Lead agent · not defined"); },
+  /** Lider ajan ve denetim gözlerinin tek işareti (OZK-16): insanlar, koltukları ve onayları Makinist sekmesindedir (OZK-15). */
+  get makinisteBagli(): string { return yuzeyMetni("Makinist'e bağlı", "Linked to Driver"); },
+  get makinisteBagliIpucu(): string {
+    return yuzeyMetni("İnsanlar, koltukları ve onayları Makinist sekmesindedir.", "People, their seats and approvals live in the Driver tab.");
+  },
+  get yoneticisiYok(): string { return yuzeyMetni("yöneticisi yok", "no manager"); },
+  get yoneticisi(): string { return yuzeyMetni("yöneticisi", "manager"); },
+  get rafsiz(): string { return yuzeyMetni("Rafı ilan edilmemiş", "No declared shelf"); },
+  get ilanEdilmemis(): string { return yuzeyMetni("ilan edilmemiş", "not declared"); },
+  get tanimaGit(): string { return yuzeyMetni("Tanımına git", "Go to definition"); },
+  get ekibiDaralt(): string { return yuzeyMetni("▴ daralt", "▴ collapse"); },
+  ekibiGoster(n: number): string { return yuzeyMetni(`▾ ${n} ajanı göster`, `▾ show ${n} ${n === 1 ? "agent" : "agents"}`); },
+  ekipSayisi(n: number): string { return yuzeyMetni(`yönettiği ${n} ajan`, `manages ${n} ${n === 1 ? "agent" : "agents"}`); },
+  ajanSayisi(n: number): string { return yuzeyMetni(`${n} ajan`, `${n} ${n === 1 ? "agent" : "agents"}`); },
+  semaSayaci(toplam: number, yonetici: number, uzman: number): string {
+    return yuzeyMetni(`${toplam} ajan · ${yonetici} yönetici · ${uzman} uzman`, `${toplam} agents · ${yonetici} managers · ${uzman} specialists`);
+  },
+  /** Etmen türünün (apex · yönetici · uzman) lejant adı. */
+  turAdi(t: "apex" | "yönetici" | "uzman"): string {
+    return t === "apex" ? "apex" : t === "yönetici" ? yuzeyMetni("yönetici", "manager") : yuzeyMetni("uzman", "specialist");
+  },
+  /** Kartın alan satırının adı. */
+  alanAdi(a: "uzmanlık" | "yetki" | "bellek" | "ne" | "sınır" | "uygular" | "yönetir"): string {
+    switch (a) {
+      case "uzmanlık": return yuzeyMetni("Uzmanlık", "Expertise");
+      case "yetki": return yuzeyMetni("Yetki", "Authority");
+      case "bellek": return yuzeyMetni("Bellek", "Memory");
+      case "ne": return yuzeyMetni("Ne", "Purpose");
+      case "sınır": return yuzeyMetni("Sınır", "Boundary");
+      case "uygular": return yuzeyMetni("Uygular", "Applies");
+      default: return yuzeyMetni("Yönetir", "Manages");
+    }
+  },
+  // ── Canlı yuvası (PNL-A13): kapalı kardeş eklentinin Tren sekmesindeki görünümü ──
+  get gorunumSeridi(): string { return yuzeyMetni("Tren görünümü", "Train view"); },
+  get planGorunumu(): string { return yuzeyMetni("Plan", "Plan"); },
+  get canliGorunumu(): string { return yuzeyMetni("Canlı", "Live"); },
+  canliIpucu(sahip: string): string { return yuzeyMetni(`Canlı görünüm · ${sahip}`, `Live view · ${sahip}`); },
+  /** Kardeşin Canlı kaydının reddi (Error iletisi). */
+  canliReddi(sebep: "dolu" | "sahip-yok" | "govde-tur" | "govde-buyuk"): string {
+    switch (sebep) {
+      case "dolu": return yuzeyMetni("Tren Canlı yuvası dolu: başka bir eklenti kayıtlı.", "Train live slot is taken: another extension is registered.");
+      case "sahip-yok": return yuzeyMetni("Kaydı yapan eklenti çağrı yığınından okunamadı; kayıt kardeşin kendi kodundan doğrudan yapılmalıdır.",
+        "The registering extension could not be read from the call stack; register directly from the sibling's own code.");
+      case "govde-tur": return yuzeyMetni("Canlı gövde düz HTML metni olmalıdır.", "The live body must be a plain HTML string.");
+      default: return yuzeyMetni("Canlı gövde boy sınırını aşıyor.", "The live body exceeds the size limit.");
+    }
+  },
+  /** Yetki rozetinin ipucu: kanonda anlamı yazılı kademeler anlamıyla, öbürleri yalnız adıyla (PNL-A11). */
+  yetkiIpucu(y: string): string {
+    if (!y) return yuzeyMetni("yetki ilan edilmemiş", "authority not declared");
+    if (y === "L5") return yuzeyMetni("yetki L5 · yalnız denetim ailesi; bellek izole olmak zorundadır", "authority L5 · audit family only; memory must be isolated");
+    if (y === "L6") return yuzeyMetni("yetki L6 · kalıcı atanamaz", "authority L6 · cannot be assigned permanently");
+    return yuzeyMetni(`yetki ${y}`, `authority ${y}`);
+  },
+  get izoleIpucu(): string { return yuzeyMetni("bellek izole (yalıtılmış)", "memory isolated"); },
+  sinirIpucu(s: string): string { return yuzeyMetni(`sınır: ${s}`, `boundary: ${s}`); },
+  get yolEtiketi(): string { return yuzeyMetni("Yol", "Path"); },
+  /** Alt düğüm tipinin adı: tip adları Sarmal dilinin sözcükleridir ve iki dilde aynı yazılır. */
+  altTipAdi(t: string): string { return t; },
+  /** Adım satırının ipucu: dört parça ve kapsayan Katman ile AltKatman adları. */
+  zincirIpucu(adim: string, ajan: string, zemin: string, departman: string, katman: string, altKatman: string): string {
+    return [
+      `Adım: ${adim}`,
+      `${yuzeyMetni("Ajan", "Agent")}: ${ajan}`,
+      `${yuzeyMetni("Zemin", "Ground")}: ${zemin}${katman ? ` (Katman ${katman})` : ""}`,
+      `${yuzeyMetni("Departman", "Department")}: ${departman}${altKatman ? ` (AltKatman ${altKatman})` : ""}`,
+    ].join("\n");
+  },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════

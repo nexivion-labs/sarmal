@@ -74,6 +74,15 @@ import {
   type UretilenSatir, type UretimSecenekleri,
 } from "./panel-cekirdek.ts";
 import { BAGLAM } from "./bolum-cekirdek.ts";
+import { trenGitKonumu, trenSemaGorunumNormalle, trenSemaHtml, type TrenSemaGorunumu } from "./tren-gorunum.ts";
+
+/** Tren şirket şemasının görünüm ayarı (PNL-A11): `sarmal.trenSemaGorunum` · bu turda yalnız şeritler (öteki görünümler eklenecek). */
+export const TREN_SEMA_GORUNUM_AYARI = "trenSemaGorunum";
+/** Ayardaki görünüm; bilinmeyen ya da bozuk değer varsayılana (şeritler) düşer. */
+function trenSemaGorunumOku(): TrenSemaGorunumu {
+  return trenSemaGorunumNormalle(vscode.workspace.getConfiguration("sarmal").get<unknown>(TREN_SEMA_GORUNUM_AYARI));
+}
+import type { TrenYuvasi } from "./tren-yuvasi.ts";
 import { dekorCoz } from "./yol-dekor.ts";
 import { SEKME_SIMGE_KAYNAKLARI } from "./simge-cizelgesi.ts";
 import { MAKINIST_METINLERI } from "./yuzey-metinleri.ts";
@@ -139,6 +148,8 @@ export interface PanelGirdileri {
    * `projeAdi` bir kapı dosyasının hangi Projeye ait olduğunu söyler. Verilmezse ipucu kapsam yazmaz.
    */
   kapsam?: { oku(): SayiKapsami | undefined; projeAdi(dosya: string): string };
+  /** Kardeş eklentinin Canlı görünümünün yuvası (PNL-A13); verilmezse Tren yalnız açık yüzünü gösterir. */
+  trenYuvasi?: TrenYuvasi;
 }
 
 /** Nöbetin okuduğu salt okur ölçüm. */
@@ -155,6 +166,10 @@ export interface PanelOlcumleri {
   parca: number;
   yama: number;
   kardesVar: boolean;
+  /** Tren Canlı yuvası (PNL-A13): kayıt var mı, webview'de seçili görünüm ve kardeşe bildirilen görünürlük. */
+  trenCanli: { var: boolean; gorunum: "plan" | "canli"; gorunur: boolean };
+  /** Tren şirket şemasının ayardaki görünümü (PNL-A11). */
+  trenSemaGorunum: TrenSemaGorunumu;
   /** Mini Graf'ın kaç kez üretildiği, son üretimlerin sebepleri ve son üretimin görünümü (PNL-A05 nöbeti). */
   grafCizim: number;
   grafSebepler: readonly string[];
@@ -253,6 +268,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   readonly onSekmeSecildi = this.sekmeSecildi.event;
   /** Sınama kipinde webview'in sekme dizisi raporu (PNL-A18 nöbeti). */
   private sinamaRaporu?: unknown;
+  /** Tren sekmesinde webview'in bildirdiği görünüm (PNL-A13); kayıt düşünce Plan'a döner. */
+  private trenGorunumu: "plan" | "canli" = "plan";
   /** Şeridin bugünkü sekme sırası (PNL-A23); ayardan okunur ve ayar değişince tazelenir. */
   private sira: SekmeKimligi[];
   private siraYazimi = 0;
@@ -272,6 +289,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     }));
     abone(g.yol.miniGraf.onDegisti(() => this.zamanla("graf", () => this.grafCiz())));
     abone(g.tren.onDidChangeTreeData(() => { this.kardesiYokla(); this.zamanla("tren", () => this.agacTazele("tren")); }));
+    // PNL-A13: kayıt değişince Tren bölümü yeniden çizilir; gövde değişince yalnız Canlı kabı yazılır.
+    if (g.trenYuvasi) abone(g.trenYuvasi.degisti((tur) => {
+      if (tur === "kayit") {
+        if (!g.trenYuvasi!.canliVar()) this.trenGorunumu = "plan";
+        this.canliGorunurlukYaz();
+        this.zamanla("tren", () => this.agacTazele("tren"));
+      } else this.yaz({ tip: "trenCanli", html: g.trenYuvasi!.canliHtml() });
+    }));
     abone(this.sekmeSecildi);
     if (g.sinyaller) abone(g.sinyaller.onDidChangeTreeData(() => {
       this.rozetiYaz();
@@ -286,6 +311,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     abone(vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("sarmal.miniGraf")) this.zamanla("bolum", () => this.bolumGonder("ray"));
       if (e.affectsConfiguration(`sarmal.${SEKME_SIRASI_AYARI}`)) this.siraTazele();
+      // PNL-A11: görünüm değişince içerik yeniden üretilmez; webview'e yalnız görünümün adı gider.
+      if (e.affectsConfiguration(`sarmal.${TREN_SEMA_GORUNUM_AYARI}`)) this.yaz({ tip: "trenSemaGorunum", ad: trenSemaGorunumOku() });
     }));
     abone(vscode.extensions.onDidChange(() => this.kardesiYokla()));
     abone({ dispose: () => { for (const z of this.zamanlayicilar.values()) clearTimeout(z); this.zamanlayicilar.clear(); } });
@@ -309,6 +336,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     this.rozetiYaz();
     gorunum.webview.onDidReceiveMessage((m: unknown) => { void this.iletiyiIsle(m); });
     gorunum.onDidChangeVisibility(() => {
+      this.canliGorunurlukYaz();
       if (!gorunum.visible || !this.kirli) return;
       this.kirli = false;
       this.bolumGonder();
@@ -353,6 +381,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       sekme: this.sekme, sekmeSirasi: [...this.sira], siraYazimi: this.siraYazimi, satirSayisi, ...this.sayac, kardesVar: this.kardesVar,
       grafCizim: this.g.yol.miniGraf.cizimSayisi, grafSebepler: [...this.g.yol.miniGraf.cizimSebepleri], grafGorunum: this.g.yol.miniGraf.cizilenGorunum,
       grafIlkBag: k ? { dosya: String(k.argumanlar[0]), satir: Number(k.argumanlar[1]) } : undefined,
+      trenCanli: { var: this.g.trenYuvasi?.canliVar() ?? false, gorunum: this.trenGorunumu, gorunur: this.g.trenYuvasi?.olcumler().gorunur ?? false },
+      trenSemaGorunum: trenSemaGorunumOku(),
       hazir: this.hazirSayisi,
       onayKademesi: this.sonKademe,
       onayAcik: this.g.makinist.onay?.acikKapi(),
@@ -408,6 +438,21 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const id = typeof d.id === "string" ? d.id : "";
       const k = this.harita.get(id)?.kaynak;
       return { acik: this.acik[id], kaynak: k, gorulenGec: this.gorulenGec, tum: k ? this.tumSatirlar[k].length : 0, gorunen: k ? this.sonSatirlar[k].length : 0 };
+    }
+    // PNL-A11: webview'in Tren şeması durumu; istenirse bütün ekipler açılır, görünüm ve ajan seçilir. Rapor `sekmeRaporu` ile okunur.
+    if (e.eylem === "trenDurumu") {
+      const d = ham as { hepsiniAc?: unknown; gorunum?: unknown; sec?: unknown };
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      return this.gorunum.webview.postMessage({ tip: "trenSinama", hepsiniAc: d.hepsiniAc === true, gorunum: d.gorunum, sec: d.sec });
+    }
+    // PNL-A13: Canlı yuvasının webview tarafı — görünüm seçimi (seçicinin düğmesine gerçek tıklama), gövdedeki
+    // ilk data-eylem öğesine tıklama ve anlık durum. Rapor `sekmeRaporu` ile okunur.
+    if (e.eylem === "trenGorunumSec" || e.eylem === "trenCanliTikla" || e.eylem === "trenCanliDurumu") {
+      this.sinamaRaporu = undefined;
+      if (!this.gorunum) return false;
+      const tip = e.eylem === "trenGorunumSec" ? "trenSinamaGorunum" : e.eylem === "trenCanliTikla" ? "trenSinamaCanliTikla" : "trenSinamaCanli";
+      return this.gorunum.webview.postMessage({ tip, ad: (ham as { ad?: unknown }).ad });
     }
     // PNL-A23: webview şeritte bir sekmeyi gerçek sürükleme olaylarıyla başka bir sekmenin önüne ya da
     // arkasına bırakır; şeridin durumu (sıra, seçili sekme, görünen kap, rozetler) rapor olarak döner.
@@ -483,7 +528,15 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private sekmeyiYaz(s: SekmeKimligi): void {
     this.sekme = s;
     if (s === "tren") this.kardesiYokla();
+    this.canliGorunurlukYaz();
     this.sekmeSecildi.fire(s);
+  }
+
+  /** Canlı görünümü görünür mü (panel görünür, Tren seçili, Canlı seçili): kardeşe bildirilir (PNL-A13). */
+  private canliGorunurlukYaz(): void {
+    const y = this.g.trenYuvasi;
+    if (!y) return;
+    y.gorunurlukYaz(y.canliVar() && (this.gorunum?.visible ?? false) && this.sekme === "tren" && this.trenGorunumu === "canli");
   }
 
   /** Bölüm komutlarının (sarmal.bolum.*) panel karşılığı: sekmeyi seçer ve kabı öne alır. */
@@ -807,8 +860,11 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       };
     }
     if (s === "tren") {
+      // PNL-A11: ajan şeması ve profil kartları webview'de hazır durur; PNL-A12: geliştirmedeki iş ağacı.
       const a = this.agacUret("tren");
-      return { html: trenBolumuHtml(a.html, this.g.tren.bos(), this.kardesVar), ikonStili: a.ikonStili };
+      const y = this.g.trenYuvasi;
+      const canli = y?.canliVar() ? { html: y.canliHtml(), ipucu: y.canliIpucu() } : undefined;
+      return { html: trenBolumuHtml(trenSemaHtml(this.g.tren.ozetAl(), trenSemaGorunumOku()), a.html, this.g.tren.bos(), this.kardesVar, canli), ikonStili: a.ikonStili };
     }
     if (s === "sinyaller") {
       const a = this.agacUret("sinyaller");
@@ -1013,6 +1069,20 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
         return;
       }
       case "sinyalGit": { if (kayit?.kaynak === "ray") await this.sinyaleGit(id, m.acik === true); return; }
+      case "trenGit": {
+        // PNL-A11: şemanın ve profil kartının satırı tanımına gider. Webview dosya yolu göndermez; anahtar
+        // eklentinin kendi Tren özetinden çözülür, çözülemeyen anahtar hiçbir dosya açmaz (OZK-13: odak panelde).
+        const k = trenGitKonumu(this.g.tren.ozetAl(), m.anahtar);
+        if (k) await vscode.commands.executeCommand("sarmal.dosyaAc", k.dosya, k.satir, ODAK_PANELDE);
+        return;
+      }
+      case "trenGorunum": {
+        // PNL-A13: kullanıcı Tren'de Plan ile Canlı arasında geçti; görünürlük kardeşe bildirilir.
+        this.trenGorunumu = m.ad === "canli" && this.g.trenYuvasi?.canliVar() ? "canli" : "plan";
+        this.canliGorunurlukYaz();
+        return;
+      }
+      case "trenCanliEylem": { this.g.trenYuvasi?.eylem(m); return; }
       case "sekmeSirasi": { await this.siraYaz(m.sira); return; }
       case "hazir": { this.hazirSayisi += 1; return; }
       case "sinamaRapor": { this.sinamaRaporu = m.kayitlar; return; }

@@ -70,6 +70,7 @@ import { KayitDefteri, sinyaldeGorunur } from "./sinyaller-cekirdek.ts";   // �
 import { SORUNLAR_PANELI_AYARI, sorunKaynaginiBagla, sorunlarPaneliAcik, sorunTanilariDegisti } from "./sorun-tanilari.ts";
 import { EditorSinyalleri, type EditorSinyali, type EditorSinyalOlcumu } from "./editor-sinyalleri.ts";
 import { bolumYuvasiKaydi, type BolumSinamaKapisi, type BolumYuvasiV1, type BolumYuvasiYuzu } from "./bolum-yuvasi.ts";   // 🧩 VIT-K78-A10 tek simge ve bölüm yuvası
+import { trenYuvasiKaydi, type TrenYuvasi, type TrenYuvasiV1 } from "./tren-yuvasi.ts";   // 🔌 PNL-A13 kardeşin Canlı yuvası
 // 📊 VIT-GRAF-A13: dört yüzeyin durum çubuğu sayaçları. Sayıları TÜRETİR,
 // ikinci bir sayaç tutmaz — panellerle ayrışması yapısal olarak imkânsızdır.
 import { DurumCubugu } from "./durum-cubugu.ts";
@@ -176,6 +177,7 @@ let tren: Tren | undefined;
 let panel: (SarmalPaneliYuzu & { sekmeSecVeOdakla(s: "ray" | "tren" | "makinist" | "sinyaller"): Promise<void> }) | undefined;
 let yolHaritasiYuzeyi: YolHaritasiYuzu | undefined;
 let bolumYuvasi: BolumYuvasiYuzu | undefined;
+let trenYuvasi: TrenYuvasi | undefined;
 
 /**
  * Eklentinin dış yüzü. VS Code `activate` işlevinin döndürdüğü nesneyi
@@ -279,6 +281,11 @@ export interface SarmalEklentiYuzu {
    * sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
    */
   bolumYuvasiAl(surum: number): BolumYuvasiV1 | undefined;
+  /**
+   * 🔌 PNL-A13 · TREN CANLI YUVASI. Kardeş eklenti Tren sekmesine kendi Canlı görünümünü
+   * buradan takar (tren-yuvasi.ts başlığı sözleşmenin tam metnidir). Bilinmeyen sürüm `undefined` döner.
+   */
+  trenYuvasiAl(surum: number): TrenYuvasiV1 | undefined;
   /**
    * 🧪 Bölüm yuvası nöbet kapısı — YALNIZ sınama kipinde (`ExtensionMode.Test`)
    * vardır; kurulu eklentinin herkese açık yüzünde tanımsızdır. Bölüm durumunun
@@ -1098,8 +1105,9 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   // sağlayıcıları bu görünümün sekmelerinde (Ray · Tren · Makinist) okunur. Yerleşik bölüm komutları
   // (sarmal.bolum.*) sekmeyi seçer; Graf, Ray sekmesinin parçasıdır.
   if (tren && yolHaritasiYuzeyi) {
+    trenYuvasi = trenYuvasiKaydi(context);   // 🔌 PNL-A13: kardeşin Canlı görünümünün yuvası
     panel = panelKaydi(context, {
-      yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci, sinyaller,
+      yol: yolHaritasiYuzeyi, tren, makinist: makinistAgaci, sinyaller, trenYuvasi,
       kapsam: { oku: () => sayiKapsami(), projeAdi: (dosya) => projeKimligi(dosya).ad },   // 🔢 PNL-A08
     });
     // PNL-A18: yuvanın yerleşik seçimi panelin sekmesinden okunur; iki seçim ayrışamaz.
@@ -1134,6 +1142,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
     onbellekAnahtarlari: () => onbellekAnahtarlari(),
     yolHaritasiKodlari: () => yolHaritasiYuzeyi?.kodlar() ?? [],
     bolumYuvasiAl: (surum: number) => bolumYuvasi?.al(surum),
+    trenYuvasiAl: (surum: number) => trenYuvasi?.al(surum),
     ...(context.extensionMode === vscode.ExtensionMode.Test && bolumYuvasi
       ? { bolumSinamaKapisi: {
         ...bolumYuvasi.sinamaKapisi(), yolHaritasiGorunurMu: () => yolHaritasiYuzeyi?.gorunurMu() ?? false,

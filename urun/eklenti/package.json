@@ -339,6 +339,14 @@
           "default": "agac",
           "description": "%config.miniGraphView%"
         },
+        "sarmal.trenSemaGorunum": {
+          "type": "string",
+          "enum": [
+            "seritler"
+          ],
+          "default": "seritler",
+          "description": "%config.trainChartView%"
+        },
         "sarmal.agacCizgileri": {
           "type": "boolean",
           "default": true,

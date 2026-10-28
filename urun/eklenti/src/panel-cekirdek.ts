@@ -22,6 +22,8 @@
 import { PANEL_METINLERI, SINYAL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
 import { GORUNUM_KAPAT_KOMUTU, GORUNUM_SEC_KOMUTU } from "./minigraf-gorunum.ts";
 import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
+import { TREN_BETIGI, TREN_STILI } from "./tren-betik.ts";
+import { TREN_CANLI_BETIGI, TREN_CANLI_STILI } from "./tren-canli-betik.ts";
 
 // ── SEKMELER ────────────────────────────────────────────────────────────────
 
@@ -491,15 +493,47 @@ export function rayBolumuHtml(b: RayBolumu): string {
   return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
 }
 
-/** Tren sekmesi: tren-cekirdek özetinin sade listesi; kardeş varsa Koşular bağlantısı. */
-export function trenBolumuHtml(agac: string, bos: boolean, kardesVar: boolean): string {
-  const govde = bos
-    ? `<p class="bos">${kacir(TREN_METINLERI.bosDurum)}</p><div id="tren-agac" role="tree" hidden></div>`
-    : `<div id="tren-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("tren"))}">${agac}</div>`;
+/** Tren şemasının iki parçası (tren-gorunum.ts `trenSemaHtml`): sol sütundaki şema ve sağ sütundaki profil. */
+export interface TrenSemaParcalari { sema: string; profil: string }
+
+/** Kardeş eklentinin Canlı görünümü (PNL-A13 · tren-yuvasi.ts): gövde ve seçicinin ipucu. */
+export interface TrenCanliParcasi { html: string; ipucu: string }
+
+/** Öğe METNİ için kaçırma: yalnız `&`, `<` ve `>` (kardeşin gövdesi belgeye ham girmez, metin olarak taşınır). */
+function metinKacir(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/**
+ * Canlı yuvasının çizimi (PNL-A13): "Plan | Canlı" seçicisi ve Canlı kabı. Kardeşin gövdesi gizli bir
+ * öğenin METNİDİR; istemci betiği onu Canlı kabının gölge köküne yazar (tren-canli-betik.ts). Seçim
+ * webview'dedir; kayıt seçimi değiştirmez ve açılış Plan görünümüyle başlar.
+ */
+export function trenCanliHtml(c: TrenCanliParcasi): string {
+  const dugme = (ad: "plan" | "canli", metin: string, sec: boolean, ipucu = ""): string =>
+    `<button type="button" class="tr-gs" role="tab" data-tren-gorunum="${ad}" aria-selected="${sec}" tabindex="${sec ? 0 : -1}"`
+    + `${ipucu ? ` title="${kacir(ipucu)}"` : ""}>${kacir(metin)}</button>`;
+  return `<div class="tr-gorunumler" role="tablist" aria-label="${kacir(TREN_METINLERI.gorunumSeridi)}">`
+    + dugme("plan", TREN_METINLERI.planGorunumu, true) + dugme("canli", TREN_METINLERI.canliGorunumu, false, c.ipucu) + `</div>`
+    + `<div class="tr-canli" role="tabpanel" aria-label="${kacir(TREN_METINLERI.canliGorunumu)}">`
+    + `<div id="tren-canli-veri" hidden>${metinKacir(c.html)}</div><div id="tren-canli"></div></div>`;
+}
+
+/**
+ * Tren sekmesi (PNL-A11 · PNL-A12): solda ajanların şirket şeması, sağda profil kartı ve altında
+ * geliştirmedeki işin ağacı (son Koşum mührü ve Adım zincirleri). Geniş panelde iki sütun yan yana
+ * durur ve her biri kendi içinde kayar; dar panelde alt alta akar. Ajan, Adım ve mühür yoksa yalnız
+ * boş durum cümlesi görünür; ağacın kabı her durumda yerindedir.
+ */
+export function trenBolumuHtml(sema: TrenSemaParcalari, agac: string, bos: boolean, kardesVar: boolean, canli?: TrenCanliParcasi): string {
   const kardes = kardesVar
     ? `<p class="kardes"><a href="#" data-kardes="1" role="button">${kacir(PANEL_METINLERI.kardesBaglantisi)}</a></p>`
     : "";
-  return `${govde}${kardes}`;
+  // PNL-A13: kardeşin Canlı görünümü kayıtlıysa seçici ve Canlı kabı açık yüzün yanına eklenir; açık yüz sarılmaz.
+  const yuva = canli ? trenCanliHtml(canli) : "";
+  if (bos) return `${yuva}<p class="bos">${kacir(TREN_METINLERI.bosDurum)}</p><div id="tren-agac" role="tree" hidden></div>${kardes}`;
+  const is = `<section class="tr-is"><div id="tren-agac" role="tree" aria-label="${kacir(PANEL_METINLERI.sekmeAdi("tren"))}">${agac}</div></section>`;
+  return `${yuva}<div class="tren-duzen"><div class="tr-sol">${sema.sema}</div><div class="tr-yan">${sema.profil}${is}${kardes}</div></div>`;
 }
 
 /** Makinist sekmesi: dört açılır grup. */
@@ -602,13 +636,13 @@ export function panelHtml(b: PanelBelgesi): string {
     + `<meta http-equiv="Content-Security-Policy" content="${csp}">`
     + `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
     + `<title>${kacir(PANEL_METINLERI.panelAdi)}</title>`
-    + `<style>${PANEL_STILI}</style>`
+    + `<style>${PANEL_STILI}${TREN_STILI}${TREN_CANLI_STILI}</style>`
     // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
     + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
     + `</head><body>`
     + sekmeSeridiHtml(b.sekme, b.simgeler, b.rozet, b.sinyalRozeti, b.sira)
     + `<div id="icerik">${SEKMELER.map((s) => sekmePaneliHtml(s, b.sekme, b.bolumler[s].html)).join("")}</div>`
-    + `<script nonce="${b.nonce}">${PANEL_BETIGI}</script></body></html>`;
+    + `<script nonce="${b.nonce}">${PANEL_BETIGI}${TREN_BETIGI}${TREN_CANLI_BETIGI}</script></body></html>`;
 }
 
 // ── KOMUT KÖPRÜSÜ ───────────────────────────────────────────────────────────

@@ -418,7 +418,17 @@ try {
         const f = await p.evaluate(kilavuzOlc, { agac, tul: uretim.tul });
         kontrol(`${etiket}: ${ad} ağacında girinti çizgileri fare dışındayken çizili, ince (1 px) ve tül morunda`,
           !f.agacUzerinde && f.derinSatir > 0 && f.kilavuzlu === f.derinSatir && f.morInce === f.derinSatir, JSON.stringify(f));
-        const h = await p.evaluate(vurguHedefi, agac);
+        let h = await p.evaluate(vurguHedefi, agac);
+        if (!h.var) {
+          // PNL-A11: dar panelde Tren'in iş ağacı şirket şemasının ve profil kartının ALTINDADIR (ilk ekranın
+          // dışında). Kullanıcının yapacağı gibi ağaç kaydırılarak görünür kılınır ve hedef yeniden aranır;
+          // ölçüt aynıdır, kaydırmadan sonra da ekranda derin satır yoksa kontrol düşer.
+          await p.evaluate((a) => {
+            [...document.querySelectorAll(`${a} .sat`)].find((x) => Number(x.dataset.d) > 0)?.scrollIntoView({ block: "center" });
+          }, agac);
+          await p.waitForTimeout(80);
+          h = await p.evaluate(vurguHedefi, agac);
+        }
         if (!h.var) { kontrol(`${etiket}: ${ad} ağacında fare vurgusu ölçülebilir`, false, "ekranda vurgulanacak derin satır yok"); return; }
         await p.mouse.move(h.x, h.y);
         await p.waitForTimeout(120);
@@ -494,7 +504,11 @@ try {
         kontrol(`${etiket}: ${d.sekme} sekmesi boş bölüm olarak doğar ve boş durum cümlesi görünür`,
           !!dz.bosSekme && dz.bosSekme.metin.length > 0 && dz.bosSekme.gen > 0, JSON.stringify(dz.bosSekme));
       }
-      if (d.ad === "sinyal-git") {
+      // Projede Dur ya da Dikkat işareti taşıyan Ray satırı yoksa değişke ölçülemez; komut çökmez, kontrol düşer.
+      if (d.ad === "sinyal-git" && !d.isaretSatiri) {
+        kontrol(`${etiket}: Ray'da Dur ya da Dikkat işareti taşıyan satır bulunur (PNL-A21 ölçümünün ön şartı)`, false, "üretici işaretli Ray satırı bulamadı");
+      }
+      if (d.ad === "sinyal-git" && d.isaretSatiri) {
         // PNL-A21: Ray'daki Dur ve Dikkat işaretine gerçek fare tıklaması Sinyaller sekmesini açar ve eklentiye
         // satırı bildirir; eklentinin yanıtı (üretimde üründeki yoldan alınmış `sinyalSec`) sayfaya verilir ve
         // Sinyaller'de düğümün tanı satırları seçili, görünür ve işaretin gösterdiği sayıda olur.
@@ -531,6 +545,35 @@ try {
         kontrol(`${etiket}: ağaç satırı yazı boyutu ${YAZI_EN_AZ}–${YAZI_EN_COK} px`, y.adet === 0 || (y.enAz >= YAZI_EN_AZ && y.enCok <= YAZI_EN_COK), JSON.stringify(y));
       }
       if (d.ad === "tren") await agacCizgisiOlc("#tren-agac", "Tren");
+      if (d.ad === "tren") {
+        // AJAN ŞEMASI (PNL-A11 · OZK-16): şema şeritler görünümüyle doğar ve yalnız ajanları çizer; lider ajan
+        // koltuğu ilan yoksa yokluğunu yazar ve Makinist işaretini taşır; ajana gerçek fare tıklaması profil kartını
+        // kurar ve kartın her etkin satırı tanımına giden tek bir trenGit iletisi doğurur.
+        await p.evaluate(kaydir, "ust");
+        const s = await p.evaluate(() => {
+          const sema = document.querySelector("#tren-sema");
+          const yuva = document.querySelector(".tr-apex-yuva");
+          return { var: !!sema, gorunum: sema?.getAttribute("data-gorunum") ?? null,
+            ajan: sema?.querySelector(".ajan[data-kod]")?.getAttribute("data-kod") ?? null,
+            yuva: yuva ? { metin: yuva.textContent, isaret: !!yuva.querySelector(".rz-m") } : null };
+        });
+        kontrol(`${etiket}: Tren ajan şeması şeritler görünümüyle doğar`, s.var && s.gorunum === "seritler", JSON.stringify(s));
+        kontrol(`${etiket}: lider ajan koltuğu boşsa yokluğunu yazar ve "Makinist'e bağlı" işaretini taşır (OZK-16)`,
+          !s.yuva || (s.yuva.metin.length > 0 && s.yuva.isaret), JSON.stringify(s.yuva));
+        if (s.ajan) {
+          await p.locator(`#tren-sema .ajan[data-kod="${s.ajan}"]`).first().click();
+          await p.waitForTimeout(80);
+          const satirlar = await p.evaluate(() => [...document.querySelectorAll(".tr-kart-yuva [data-git]")]
+            .filter((x) => x.getAttribute("aria-disabled") !== "true" && x.getClientRects().length > 0).map((x) => x.getAttribute("data-git")));
+          await cek("tren-kart");
+          const once = await p.evaluate(() => window.__iletiler.length);
+          for (const a of satirlar) await p.locator(`.tr-kart-yuva [data-git="${a}"]`).first().click();
+          const gelen = await p.evaluate((n) => window.__iletiler.slice(n).filter((m) => m.tip === "trenGit").map((m) => m.anahtar), once);
+          kontrol(`${etiket}: ajana tıklama profil kartını kurar; kartın her satırı tanımına giden tek trenGit iletisi doğurur`,
+            satirlar.length >= 2 && satirlar.some((a) => a.startsWith(`e|${s.ajan}`)) && JSON.stringify(gelen) === JSON.stringify(satirlar),
+            JSON.stringify({ ajan: s.ajan, satirlar, gelen }));
+        }
+      }
       if (d.ad === "makinist") await agacCizgisiOlc("#makinist-agac", "Makinist");
       if (d.ad === "makinist") {
         // PNL-A09 (OZK-14): gözlem kayıtları Makinist'te görünmez.

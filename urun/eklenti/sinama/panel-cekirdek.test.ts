@@ -35,7 +35,7 @@ const SIMGELER = Object.fromEntries(SEKMELER.map((s) => [s, oku(SEKME_SIMGE_KAYN
 /** Seçili sekmenin içerik HTML'i (her sekmenin kendi bölüm üreticisi). */
 const sekmeIcerigi = (sekme: (typeof SEKMELER)[number]): string =>
   sekme === "ray" ? rayBolumuHtml({ agac: "", graf: "<html><body></body></html>" })
-    : sekme === "tren" ? trenBolumuHtml("", true, true)
+    : sekme === "tren" ? trenBolumuHtml({ sema: "", profil: "" }, "", true, true)
       : sekme === "makinist" ? makinistBolumuHtml("")
         : sekme === "sinyaller" ? sinyallerBolumuHtml("", true) : bosSekmeHtml(sekme);
 /** Beş sekmenin bölümü (PNL-A18: belge hepsini taşır). */
@@ -359,7 +359,11 @@ test("istemci betiği: acquireVsCodeApi tek kez, ileti tipleri sınırlı ve hi�
   assert.ok(!/\beval\(|new Function|document\.write|insertAdjacentHTML/.test(betik));
   // Büyük harf taşıyan tipler de sayılır (bolumGec eskiden bu süzgeçten kaçıyordu).
   const gonderilen = [...betik.matchAll(/tip: '([a-zA-Z]+)'/g)].map((m) => m[1]).sort();
-  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sekmeSirasi", "sinamaRapor", "sinyalGit"], "betiğin gönderdiği ileti tipleri değişmiş");
+  // PNL-A11: tanımına git (anahtarla) · PNL-A13: Canlı görünüm seçimi ve kardeşin gövdesindeki eylem · PNL-A21: Ray işaretinden Sinyaller'e.
+  assert.deepEqual([...new Set(gonderilen)], ["ac", "bolumGec", "eylem", "gec", "hazir", "isaretle", "kardes", "komut", "onay", "sekme", "sekmeSirasi",
+    "sinamaRapor", "sinyalGit", "trenCanliEylem", "trenGit", "trenGorunum"], "betiğin gönderdiği ileti tipleri değişmiş");
+  // Webview API'si tek kez alınır; Tren betikleri iletiyi ana betiğin köprüsünden gönderir.
+  assert.equal((betik.match(/window\.sarmalKopru = /g) ?? []).length, 1, "ana betiğin köprüsü yok");
   // Betik sözdizimi geçerlidir.
   assert.doesNotThrow(() => new Function(betik.replace("acquireVsCodeApi()", "({postMessage(){}})")), "betik derlenmiyor");
 });
@@ -421,10 +425,13 @@ test("Ray bölümü: 'YOL HARİTASI' başlığı, ağaç, ardından Mini Graf; a
 
 test("Tren bölümü: kardeş yokken bağlantı yoktur, varken 'Koşular paneli kardeş eklentide' bağlantısı çizilir; boşken cümle", () => {
   yuzeyDiliniAyarla("tr");
-  assert.ok(!trenBolumuHtml("<div></div>", false, false).includes("data-kardes"));
-  const k = trenBolumuHtml("<div></div>", false, true);
+  const sema = { sema: "<h2>şema</h2>", profil: "<section>profil</section>" };
+  assert.ok(!trenBolumuHtml(sema, "<div></div>", false, false).includes("data-kardes"));
+  const k = trenBolumuHtml(sema, "<div></div>", false, true);
   assert.ok(k.includes("data-kardes") && k.includes("Koşular paneli kardeş eklentide"));
-  assert.ok(trenBolumuHtml("", true, false).includes("ajan"), "boş Tren cümlesi yok");
+  assert.ok(k.includes("<h2>şema</h2>") && k.includes("<section>profil</section>") && k.includes('id="tren-agac"'), "şema, profil ve iş ağacı yerinde değil");
+  const bos = trenBolumuHtml(sema, "", true, false);
+  assert.ok(bos.includes("ajan") && bos.includes('id="tren-agac"') && !bos.includes("<h2>şema</h2>"), "boş Tren cümlesi yok");
 });
 
 // ── ⑤ KOMUT KÖPRÜSÜ ────────────────────────────────────────────────────────

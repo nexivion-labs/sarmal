@@ -24,6 +24,7 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "odak-turu.test.js"));   // 🎯 PNL-A26 odak değişimi tam tur başlatmaz
   mocha.addFile(path.resolve(__dirname, "dal-acma.test.js"));   // 🌳 PNL-A27 dal açma eklentiyi beklemez
   mocha.addFile(path.resolve(__dirname, "kapsam-sayaci.test.js"));   // 🔢 PNL-A08 dış rozet ve sayının kapsamı
+  mocha.addFile(path.resolve(__dirname, "tren-yuvasi.test.js"));   // PNL-A13 Tren Canlı yuvası (sahte kardeşle)
 
   return new Promise((resolve, reject) => {
     try {

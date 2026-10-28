@@ -210,6 +210,8 @@ export const PANEL_BETIGI = `
   var seciliSatir = '';
   var $ = function (id) { return document.getElementById(id); };
   function gonder(m) { api.postMessage(m); }
+  // Tren betiği (tren-betik.ts) eklentiye yalnız bu köprüden ileti gönderir; webview API'si bir kez alınabilir.
+  window.sarmalKopru = { gonder: gonder };
   function kacirSel(s) { return String(s).replace(/(["\\\\])/g, '\\\\$1'); }
 
   // ── Sekme şeridi (PNL-A18) ─────────────────────────────────────────────────

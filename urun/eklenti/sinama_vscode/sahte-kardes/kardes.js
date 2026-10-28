@@ -43,7 +43,32 @@ exports.activate = async function activate(context) {
     for (const k of kayitlar) context.subscriptions.push(k);
   };
   kur();
+  // PNL-A13: Tren Canlı yuvası. Kayıt yalnız sınama isteyince yapılır (öteki süitler Tren'i yalın görür);
+  // kayıt, güncelleme ve bırakma BU dosyadan yapılır, böylece yuva sahibi bu fikstür olarak ölçer.
+  const trenYuvasi = yuz && typeof yuz.trenYuvasiAl === "function" ? yuz.trenYuvasiAl(1) : undefined;
+  let canli;
+  const canliEylemleri = [];
+  const canliGorunurluk = [];
   return {
+    trenYuvasiVar: trenYuvasi !== undefined,
+    canliEylemleri,
+    canliGorunurluk,
+    /** Canlı görünüme gövde kaydeder; "kabul" ya da ret metni döner. */
+    canliKur(html) {
+      try {
+        canli = trenYuvasi.canliKaydet({ html, eylem: (e) => canliEylemleri.push(e) });
+        canli.gorunurlukDegisti((v) => canliGorunurluk.push(v));
+        context.subscriptions.push(canli);
+        return "kabul";
+      } catch (e) { return String(e && e.message); }
+    },
+    canliGuncelle(html) { canli.guncelle(html); },
+    canliGorunurMu() { return !!canli && canli.gorunurMu; },
+    canliKapat() { if (canli) canli.dispose(); canli = undefined; },
+    /** Reddedilmesi beklenen bir Canlı kaydını dener; hata metnini ya da "kabul" döner. */
+    canliDene(html) {
+      try { const d = trenYuvasi.canliKaydet({ html }); d.dispose(); return "kabul"; } catch (e) { return String(e && e.message); }
+    },
     yuvaVar: yuva !== undefined,
     bolumSecVar: yuva !== undefined && "bolumSec" in yuva,
     cozulen,

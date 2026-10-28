@@ -39,6 +39,7 @@ const { atlaHref } = await import("../src/minigraf-cekirdek.ts");
 const { SEKMELER } = await import("../src/panel-cekirdek.ts");
 const { bolumYuvasiKaydi } = await import("../src/bolum-yuvasi.ts");
 const { SinyallerAgaci } = await import("../src/sinyaller.ts");
+const { TrenYuvasi } = await import("../src/tren-yuvasi.ts");
 const { YENI_TANI_KANONU } = await import("../../cekirdek/src/tani-sicili.ts");
 const { ILERI_BAGLAM_KIMLIKLERI } = await import("../../cekirdek/src/denetim.ts");
 const { BAGLAM } = await import("../src/bolum-cekirdek.ts");
@@ -133,7 +134,7 @@ function kaynakKur(satirlar: Array<{ ad: string; baglam: string }>) {
  * değerlerdir (önceki oturumdan kalan durum).
  */
 function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record<string, unknown> = {},
-  makinistKur?: (baglam: Ortam["baglam"]) => InstanceType<typeof MakinistAgaci>): Ortam {
+  makinistKur?: (baglam: Ortam["baglam"]) => InstanceType<typeof MakinistAgaci>, trenYuvasi?: InstanceType<typeof TrenYuvasi>): Ortam {
   goruntuOnbellegi ??= goruntuKur();
   const yol = new YolHaritasi();
   yol.eklentiKoku = Uri.file(EKLENTI_KOKU) as never;
@@ -163,7 +164,7 @@ function ortamKur(sekme?: string, acik?: Record<string, boolean>, kalici: Record
   const kutuCagrilari: Array<[unknown, boolean]> = [];
   yol.kutuIsaretle = async (o: unknown, b: boolean) => { kutuCagrilari.push([o, b]); };
   const yuz = { saglayici: yol, miniGraf: graf, panelBagla() { /* sınama bağı gerekmez */ }, diliTazele() { /* sınama */ }, kodlar: () => [], gorunurMu: () => true };
-  const panel = panelKaydi(baglam as never, { yol: yuz as never, tren, makinist, sinyaller });
+  const panel = panelKaydi(baglam as never, { yol: yuz as never, tren, makinist, sinyaller, trenYuvasi });
   // Seçim eşzamanlı yazılır; ilk belge aşağıda bu sekmeyle üretilir.
   if (sekme) void panel.sekmeSec(sekme as never);
   const saglayici = kabuk.webviewSaglayicilari.get(GORUNUS_PANEL) as { resolveWebviewView(g: unknown): void };
@@ -284,7 +285,8 @@ test("Tren seçiliyken Tren bölümü görünür (ajanlar, geliştirmedeki Adım
   assert.ok(ht.includes('data-sekme="tren" aria-selected="true"') && !gizliMi(ht, "tren") && gizliMi(ht, "ray"));
   const tren = panelIcerigi(ht, "tren");
   assert.ok(tren.includes('id="tren-agac"') && !tren.includes('id="agac"') && !tren.includes("YOL HARİTASI"), "Ray içeriği Tren kabına girmiş");
-  assert.ok(tren.includes("Ajanlar") && tren.includes("Geliştirmedeki Adımlar"), "Tren özeti çizilmemiş");
+  // PNL-A11: ajanlar şemanın başlığında (büyük harfle), geliştirmedeki Adımlar iş ağacında.
+  assert.ok(tren.includes("AJANLAR") && tren.includes('id="tren-sema"') && tren.includes("Geliştirmedeki Adımlar"), "Tren özeti çizilmemiş");
   const m = ortamKur("makinist");
   const hm = m.gorunum.webview.html;
   assert.ok(hm.includes('data-sekme="makinist" aria-selected="true"') && !gizliMi(hm, "makinist"));
@@ -1298,4 +1300,73 @@ test("paket katkısı: sekme sırası kullanıcı (application) ayarıdır, vars
   assert.ok(/^[\x20-\x7e]+$/.test("sarmal.sekmeSirasi") && /^[\x20-\x7e]+$/.test(SEKME_SIRASI_SIFIRLA_KOMUTU), "ayar ve komut adı ASCII olmalı (H15)");
   assert.ok(paket.contributes.commands.some((k) => k.command === SEKME_SIRASI_SIFIRLA_KOMUTU), "komut katkıda yok");
   assert.ok(!(paket.contributes.menus.commandPalette ?? []).some((m) => m.command === SEKME_SIRASI_SIFIRLA_KOMUTU && m.when === "false"), "komut paletten gizlenmiş");
+});
+
+// ── PNL-A11: Tren şemasının gezinmesi ve görünüm ayarı ──────────────────────
+
+test("PNL-A11: kartın satırı dosyayı tanımın satırında açar (odak panelde); bozuk ya da yabancı anahtar hiçbir dosya açmaz", async () => {
+  const o = ortamKur("tren");
+  const e = o.tren.ozetAl().etmenler.find((x) => x.alanlar.uzmanlik);
+  assert.ok(e, "gerçek planda uzmanlığı ilan edilmiş ajan yok");
+  const ac = () => kabuk.komutCagrilari.filter((c) => c.komut === "sarmal.dosyaAc");
+  o.gorunum.mesajGonder({ tip: "trenGit", anahtar: `a|${e.kod}|uzmanlik` });
+  await otur();
+  assert.deepEqual(ac().at(-1)?.argumanlar, [e.dosya, e.alanlar.uzmanlik!.satir, { odakPanelde: true }]);
+  assert.ok(readFileSync(e.dosya, "utf8").split("\n")[e.alanlar.uzmanlik!.satir - 1]!.includes("uzmanlık:"), "satır kaynakta uzmanlık alanı değil");
+  const once = ac().length;
+  for (const kotu of ["a|YOK-KOD|uzmanlik", `x|${e.kod}`, 42, "../../etc/passwd"]) o.gorunum.mesajGonder({ tip: "trenGit", anahtar: kotu });
+  await otur();
+  assert.equal(ac().length, once, "bozuk anahtar dosya açtı");
+});
+
+test("PNL-A11: görünüm ayarı değişince webview'e yalnız görünümün adı gider; belge ve Tren bölümü yeniden yazılmaz", async () => {
+  const olay = new sahte.EventEmitter<{ affectsConfiguration(b: string): boolean }>();
+  sahte.workspace.onDidChangeConfiguration = olay.event as never;
+  sahte.workspace.getConfiguration = (() => ({ get: <T>(ad: string, v?: T) => (ad === "trenSemaGorunum" ? ("seritler" as T) : v),
+    has: () => false, inspect: () => undefined, update: async () => {} })) as never;
+  const o = ortamKur("tren");
+  assert.ok(o.gorunum.webview.html.includes('data-gorunum="seritler"'), "varsayılan görünüm şeritler değil");
+  const once = { ...o.panel.olcumler() };
+  olay.fire({ affectsConfiguration: (b: string) => b === "sarmal.trenSemaGorunum" || b === "sarmal" });
+  await otur();
+  assert.deepEqual(mesajlar(o, "trenSemaGorunum").map((m) => m.ad), ["seritler"]);
+  const sonra = o.panel.olcumler();
+  assert.deepEqual([sonra.belge, sonra.parca], [once.belge, once.parca], "görünüm geçişi bölümü ya da belgeyi yeniden yazdı");
+  assert.equal(sonra.trenSemaGorunum, "seritler");
+});
+
+// ── PNL-A13: Kardeş eklenti yuvası panelde ──────────────────────────────────
+
+test("PNL-A13: kardeş kaydolunca Tren bölümü Canlı seçiciyle gelir; gövde yalnız Canlı kabına gider; görünürlük ve eylem kardeşe ulaşır; bırakınca seçici kalkar", async () => {
+  const yuva = new TrenYuvasi(EKLENTI_KOKU, () => ({ kimlik: "sahte.kardes", ad: "Sahte Kardeş", kok: "/sahte/kardes" }));
+  const o = ortamKur("tren", undefined, {}, undefined, yuva);
+  const trenBolumu = () => String(mesajlar(o, "bolum").filter((m) => m.sekme === "tren").at(-1)?.html ?? "");
+  assert.ok(!o.gorunum.webview.html.includes('class="tr-gorunumler"'), "kardeş yokken Canlı seçici çizilmemeli");
+  const eylemler: unknown[] = [];
+  const kayit = yuva.al(1)!.canliKaydet({ html: "<b>ilk</b>", eylem: (e) => eylemler.push(e) });
+  await bekle(250);
+  assert.ok(trenBolumu().includes('data-tren-gorunum="canli"') && trenBolumu().includes("&lt;b&gt;ilk&lt;/b&gt;"), "kayıt Tren bölümünü Canlı kabıyla yeniden göndermeli");
+  const once = { ...o.panel.olcumler() };
+  const bolumSayisi = mesajlar(o, "bolum").length;
+  kayit.guncelle("<i>iki</i>");
+  await bekle(250);
+  assert.deepEqual(mesajlar(o, "trenCanli").map((m) => m.html), ["<i>iki</i>"]);
+  assert.deepEqual([o.panel.olcumler().belge, mesajlar(o, "bolum").length], [once.belge, bolumSayisi], "gövde güncellemesi bölümü ya da belgeyi yeniden yazmamalı");
+  // Görünürlük: yalnız Tren sekmesinde ve Canlı seçiliyken görünür.
+  assert.equal(kayit.gorunurMu, false, "Canlı kendiliğinden seçilmemeli");
+  o.gorunum.mesajGonder({ tip: "trenGorunum", ad: "canli" });
+  await otur();
+  assert.deepEqual([kayit.gorunurMu, o.panel.olcumler().trenCanli.gorunum], [true, "canli"]);
+  await o.panel.sekmeSec("ray");
+  assert.equal(kayit.gorunurMu, false, "başka sekmede görünür sayılmamalı");
+  await o.panel.sekmeSec("tren");
+  assert.equal(kayit.gorunurMu, true);
+  o.gorunum.mesajGonder({ tip: "trenCanliEylem", eylem: "yenile", deger: "1" });
+  o.gorunum.mesajGonder({ tip: "trenCanliEylem", eylem: 7 });
+  await otur();
+  assert.deepEqual(eylemler, [{ eylem: "yenile", deger: "1" }]);
+  kayit.dispose();
+  await bekle(250);
+  assert.ok(!trenBolumu().includes('class="tr-gorunumler"'), "bırakılan kaydın seçicisi kalkmalı");
+  assert.deepEqual(o.panel.olcumler().trenCanli, { var: false, gorunum: "plan", gorunur: false });
 });
