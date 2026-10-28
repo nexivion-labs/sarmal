@@ -17,11 +17,14 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
-            neredeyiz: IKINCI-BASAMAK-SURUYOR-PNL-A26-A27-PERFORMANS-VE-PNL-A11-A12-A13-TREN-AJANLARDA,
-            sıradaki: PNL-A26-A27-DOGRULAMA-VE-ISLEME-SONRA-TREN-SONRA-MAKINIST-GITHUB-BLOKU-ISKELETI,
+            neredeyiz: PANELIN-SON-ADIMLARI-AJANLARDA-PNL-A08-A25-A21-VE-TREN-UC-GORUNUM-PNL-A11-A13,
+            sıradaki: PANEL-KAPANISI-0.9.199-SONRA-YARIM-ADIMLARIN-SIFIRLANMASI-SONRA-PLAN-KUCULTME-OTURUMU,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PR-6-PANELIN-YENIDEN-KURULUMU-TASLAK-TABANI-BAKIM-DALI-UC-TESLIM-BASAMAGI,
-                         PNL-A10-AYARLAR-SEKMESI-ICERIGINI-FOUNDER-BILDIRECEK-MAKINIST-EKLERI-DE-FOUNDERDAN,
+                         PNL-A10-AYARLAR-SEKMESI-GORUNUM-BOLUMU-KARARLI-KALANI-FOUNDER-BILDIRECEK,
+                         YARIM-ADIMLARIN-SIFIRLANMASI-45-ADIM-OLCUMU-AJANDA,
+                         PLAN-KUCULTME-OTURUMU-64-BLOK-SIMDI-SONRA-RAFA,
+                         KAPALI-URUN-TEMIZLIK-BLOKU-ISLENMEDEN-DURUYOR-GELISTIRME-SONRASI,
                          HTR-ONAYLAR-DIS-ONAY-KAYDI-MAKINIST-EKLERIYLE-BIRLIKTE-ELE-ALINACAK,
                          PR-5-BAKIM-DALI-MAINE-YALNIZ-BLOK-KAPANINCA-BIRLESIR-ACIK-ADIMLAR-VAR,
                          BKM-DNT-A19-MINI-GRAF-KLASIK-GORUNUM-HAFIFLETILIP-SINIR-YENIDEN-300-KB,
@@ -59,6 +62,22 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-28", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PLANIN YÜKÜ ÖLÇÜLDÜ, PANEL SON ADIMLARINDA.
+        Founder açık işlerin çorbaya döndüğünü ve hiçbir işin bitmediğini bildirmiştir. Ölçümde yedi projede 494 Adım
+        kapanmış, yaklaşık 245 Adım 64 Bloka dağılmış olarak açık bulunmuştur; Fazların tarihleri yürütme hızı
+        ölçülmeden konduğu için tutmamıştır. Panelin gösterdiği 24 onayın 24'ü beklemedeki Adımlara aittir ve o gün
+        hiçbiri Founder'dan karar istememektedir; onay sayacının yalnız kararı bugün verilebilecek kapıları sayması
+        PNL-A08'e yazılmıştır. Kontrolcü bu sıra bitene kadar yeni plan yazmama sözü vermiştir: önce panel kapanır,
+        ardından 45 yarım Adım kanıtla ya kapanır ya beklemeye döner, sonra Founder ile planı şimdi, sonra ve rafa
+        diye küçülten bir oturum yapılır. Aynı akşam işlenenler: sinyallerin türe göre toplanması (PNL-A28, fb9192f;
+        kapalı ürünün Bilgi bandı 1085 satırdan 21 satıra inmiştir), sekme sırasının bugünkü hâliyle varsayılan
+        kalması (PNL-A23) ve kapalı üründe departman adları. Founder'ın hükümleri: Tren şemasının şeritler,
+        sütunlar ve kart ızgarası görünümlerinin üçü de bulunur ve ayardan değişir, varsayılan şeritlerdir (PNL-A11);
+        Ayarlar sekmesinde Mini Graf, Tren ve Makinist görünümlerini taşıyan bir Görünüm bölümü olur (PNL-A10); tek
+        kararlı sürüm önce ana dala birleştirme, ardından mağazada 1.0.0 demektir ve yayından önce son kez sorulur
+        (PNL-A17). Kapalı ürünün tanı borcu için bir temizlik Bloku kendi planının son Fazına yazılmış, Founder'ın sözüyle geliştirme
+        bittikten sonra başlayacaktır ve henüz işlenmemiştir.
+
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 akşam) · SİNYALLER, SÜRÜKLENEN SEKMELER, MOR TÜL VE SORUNLAR AYARI.
         Birinci basamak Founder onayıyla kapandı (PNL-A15 ve PNL-A19; 0.9.196 ile 0.9.197 kuruldu). Aynı gün
         işlenenler: Sinyaller sekmesi ve kanondaki yeri (PNL-A09 ile PNL-A20, 5912fdf; YUZ-3.1, YUZ-3.3, YAS-3.3,
