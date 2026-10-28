@@ -2,6 +2,14 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.198 — 2026-10-28 (Sinyaller sekmesi, sürüklenen sekmeler ve mor tül)
+
+- **Dördüncü sekme Sinyaller oldu.** Sarmal'ın tanıları üç bantta durur: Dur, Sarmal'ın kabul etmediği ve kapıyı kapatan ihlalleri; Dikkat, tam yeşilden önce giderilmesi gereken drift risklerini; Bilgi, kapıyı kapatmayan ölçüm ve durum işaretlerini taşır. Tanılar projeye göre gruplanır, her satır öneriyi ve dayandığı kanon maddesini gösterir, tıklanınca dosyayı ilgili satırda açar. Bant simgeleri düzeyin rengini taşır ve şeritte Dur ile Dikkat sayıları rozet olarak görünür.
+- **Her kayıt bir kez görünür.** Bilgi bandı eski Gözlemler grubunun yerini aldı; hatırlatıcılar yalnız Makinist'te kalır. Makinist kullanıcının defteridir ve Onaylar, Hatırlatıcılar ile Fikirleri taşır.
+- **Sekmeler sürüklenerek sıralanır.** Beş sekme fareyle ya da odaktayken Alt ile ok tuşlarıyla yer değiştirir; sıra kullanıcı ayarında (`sarmal.sekmeSirasi`) saklanır ve panel sıranın ilk sekmesiyle açılır. "Panel Sekme Sırasını Sıfırla" komutu varsayılana döndürür.
+- **Girinti boyasının varsayılanı yeniden mor tül.** Editör her kademeyi içeri girdikçe hafifçe koyulaşan mor bir tülle boyar; gökkuşağı bantları `sarmal.girintiRenkleri` açılınca çizilir.
+- **Kanon bu düzeni yazar.** YUZ-3.1 ve YUZ-3.3 maddeleri tanıların asıl yüzünü Sinyaller, kullanıcının defterini Makinist olarak tanımlar.
+
 ## 0.9.197 — 2026-10-28 (sekme geçişi eklentiyi beklemiyor)
 
 - **Sekmeler anında değişir.** Panel beş sekmenin içeriğini hazır tutar; sekmeye tıklayınca içerik eklentiye gidip gelen bir yanıt beklemeden değişir. Eklenti uzun bir denetim turundayken de sekme geçişi donmaz.
