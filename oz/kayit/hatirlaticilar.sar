@@ -696,12 +696,12 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-OZET-SATIRI-KATLANAN-BULGUYU-SAYMIYOR,
-  durum:            açık,
+  durum:            tamamlandı,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-10,
   dönüşTetikleyici: "Denetim çıktısının özet satırını üreten gövde bir sonraki kez elden geçirildiğinde; ya da çok hatalı bir depo çatı altında ilk kez okunmak istendiğinde",
-  ne:               "Denetim çıktısının özet satırı, dosya başına özet satırına katlanan bulguları toplam sayıya katmamaktadır. 2026-09-10 tarihinde çatı kökünden koşulan denetimde özet satırı yedi yüz otuz altı hata bildirirken aynı çıktının proje ayrımı tablosu yedi yüz kırk yedi hata göstermiş; laboratuvarın kendi kökünden koşumunda da özet satırı yedi yüz otuz dört, tam liste ise yedi yüz kırk beş hata saymıştır. Tür dökümü ile proje tablosu doğru sayıyı vermektedir ve yanlış olan tek yüz özet satırıdır; fakat aynı olgu için iki yüzeyin farklı sayı söylemesi okuru hangisinin doğru olduğunu seçmeye zorlar. Sarmal kendi kökünde bugün hiçbir hata taşımadığı için kusur orada görünmemiş, ilk kez çok hatalı bir depo çatı altında okunduğunda ölçülmüştür; ölçüm KPS-AYR-A01 üreticisinin raporundan alınmış ve kontrolcü tarafından çatı kökünde tekrarlanmıştır."
+  ne:               "Denetim çıktısının özet satırı, dosya başına özet satırına katlanan bulguları toplam sayıya katmamaktadır. 2026-09-10 tarihinde çatı kökünden koşulan denetimde özet satırı yedi yüz otuz altı hata bildirirken aynı çıktının proje ayrımı tablosu yedi yüz kırk yedi hata göstermiş; laboratuvarın kendi kökünden koşumunda da özet satırı yedi yüz otuz dört, tam liste ise yedi yüz kırk beş hata saymıştır. Tür dökümü ile proje tablosu doğru sayıyı vermektedir ve yanlış olan tek yüz özet satırıdır; fakat aynı olgu için iki yüzeyin farklı sayı söylemesi okuru hangisinin doğru olduğunu seçmeye zorlar. Sarmal kendi kökünde bugün hiçbir hata taşımadığı için kusur orada görünmemiş, ilk kez çok hatalı bir depo çatı altında okunduğunda ölçülmüştür; ölçüm KPS-AYR-A01 üreticisinin raporundan alınmış ve kontrolcü tarafından çatı kökünde tekrarlanmıştır. KARAR ŞERHİ (2026-10-29): 2026-10-29 tarihinde çatı kökünden koşulan denetimde özet satırı 37 uyarı bildirmiş ve proje ayrımının toplamı da 37 çıkmıştır; katlanan bulgular artık özet satırına taşınmaktadır. Founder kapatılmasını onaylamıştır."
 )
 
 Hatırlatıcı(
@@ -772,12 +772,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AJAN-AKIS-CIZIMI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         KYN-OGR-A02,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Eğitim ve site işi başladığında ya da kaynak disiplini Blokunun öğretim yüzü katmanında yeni bir Adım açıldığında",
-  ne:               "Founder 2026-09-15 tarihinde doğuştan Adım döngüsüne kadar bütün akışın ve mimari kurma kademelerinin ajana çizimle anlatılmasını önermiş ve işin hatırlatıcıya yazılmasına hükmetmiştir. Aynı gün yapılan ölçüm şunu göstermiştir: ogreti/ogretim altındaki on dört aile kartını ajana veren hiçbir araç yoktur, dolayısıyla çizim oraya konursa ajan onu görmez. Ajanın gerçekten okuduğu yüzeyler oturum başındaki karşılama kartı, basla rehberi ve doğuşun yazdığı CLAUDE.md dosyasıdır ve akış bu üç yüzeyde bugün yalnız düz metinle anlatılmaktadır. Kaynak disiplini Blokunun öğretim yüzü katmanındaki tek açık Adım olan KYN-OGR-A02, insan için yazılan kartların düz yazı anlatısını istediği için bu işi kapsamaz. Çizim yazıyla kurulmalıdır ki hem ajan hem insan okuyabilsin ve terminalde bozulmasın; tek kaynaktan üretilmelidir, çünkü aynı resim üç yüzeye elle kopyalanırsa ilk değişiklikte biri bayatlar. Taslak şu sırayı çizer: basla rehberi, doğuş, Founder onayı isteyen dört mimari kademe (kapsayıcı, Teknoloji ve Takım, Kitaplık ve Raf, plan ekseni), iskelet ve her Adım için şef, geliştirme, üretim, kabul kapısı ve tamamlanma döngüsü; her .sar yazımından sonra denetim koşar."
+  ne:               "Founder 2026-09-15 tarihinde doğuştan Adım döngüsüne kadar bütün akışın ve mimari kurma kademelerinin ajana çizimle anlatılmasını önermiş ve işin hatırlatıcıya yazılmasına hükmetmiştir. Aynı gün yapılan ölçüm şunu göstermiştir: ogreti/ogretim altındaki on dört aile kartını ajana veren hiçbir araç yoktur, dolayısıyla çizim oraya konursa ajan onu görmez. Ajanın gerçekten okuduğu yüzeyler oturum başındaki karşılama kartı, basla rehberi ve doğuşun yazdığı CLAUDE.md dosyasıdır ve akış bu üç yüzeyde bugün yalnız düz metinle anlatılmaktadır. Kaynak disiplini Blokunun öğretim yüzü katmanındaki tek açık Adım olan KYN-OGR-A02, insan için yazılan kartların düz yazı anlatısını istediği için bu işi kapsamaz. Çizim yazıyla kurulmalıdır ki hem ajan hem insan okuyabilsin ve terminalde bozulmasın; tek kaynaktan üretilmelidir, çünkü aynı resim üç yüzeye elle kopyalanırsa ilk değişiklikte biri bayatlar. Taslak şu sırayı çizer: basla rehberi, doğuş, Founder onayı isteyen dört mimari kademe (kapsayıcı, Teknoloji ve Takım, Kitaplık ve Raf, plan ekseni), iskelet ve her Adım için şef, geliştirme, üretim, kabul kapısı ve tamamlanma döngüsü; her .sar yazımından sonra denetim koşar. KARAR ŞERHİ (2026-10-29): Ailelerin ajana anlatısı KYN-OGR-A02 Adımında yürümektedir ve o zamandan beri ogret aracı da doğmuştur; hatırlatıcı bu Adıma bağlanmıştır. Founder onaylamıştır."
 )
 
 Hatırlatıcı(
@@ -1501,24 +1502,24 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-SAPMA-SEKMESI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         PNL-A09,
   çapa:             gelecek,
   öncelik:          p2,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Panelin sekme yapısına bir sonraki dokunuşta; en geç hatırlatıcı ve fikir değerlendirme oturumunda",
-  ne:               "Founder 2026-10-26 tarihinde Sarmal'ın denetim tanılarının VS Code'un genel Sorunlar panelinde öteki araçların bulgularıyla karışık durduğunu gözlemlemiş ve şu düzeni istemiştir: Sarmal panelinde Ray, Tren ve Makinist sekmelerinin yanına Sapma adlı yeni bir sekme açılır ve plan ile disk arasındaki sapmalar, yani bugün Sorunlar panelinde görünen denetim tanıları, orada gösterilir. Bugün Makinist sekmesinin altında duran Gözlemler ya Sapma sekmesinin altına alınır ya da kendi ayrı sekmesine taşınır; Founder'ın tercihi sapma ile gözlemlerin ayrı tutulmasıdır. Panel pencerenin altına alındığında bu sekmeler Ray, Tren ve Makinist ile yan yana dizilebilmelidir. Bu dosyanın başındaki tasarım notu hatırlatıcıların Sorunlar panelinde kasıtlı olarak bilgi iğnesi biçiminde göründüğünü yazar; yeni sekme bu kararı yeniden açtığı için uygulamadan önce hangi bulguların Sorunlar panelinde kalacağı Founder ile netleştirilir. Panelde Makinist yanına sekme ekleyen bir başka iş KPR-PNL-A01 Adımında yaşar; iki iş aynı sekme düzeni üzerinde birlikte tasarlanır."
+  ne:               "Founder 2026-10-26 tarihinde Sarmal'ın denetim tanılarının VS Code'un genel Sorunlar panelinde öteki araçların bulgularıyla karışık durduğunu gözlemlemiş ve şu düzeni istemiştir: Sarmal panelinde Ray, Tren ve Makinist sekmelerinin yanına Sapma adlı yeni bir sekme açılır ve plan ile disk arasındaki sapmalar, yani bugün Sorunlar panelinde görünen denetim tanıları, orada gösterilir. Bugün Makinist sekmesinin altında duran Gözlemler ya Sapma sekmesinin altına alınır ya da kendi ayrı sekmesine taşınır; Founder'ın tercihi sapma ile gözlemlerin ayrı tutulmasıdır. Panel pencerenin altına alındığında bu sekmeler Ray, Tren ve Makinist ile yan yana dizilebilmelidir. Bu dosyanın başındaki tasarım notu hatırlatıcıların Sorunlar panelinde kasıtlı olarak bilgi iğnesi biçiminde göründüğünü yazar; yeni sekme bu kararı yeniden açtığı için uygulamadan önce hangi bulguların Sorunlar panelinde kalacağı Founder ile netleştirilir. Panelde Makinist yanına sekme ekleyen bir başka iş KPR-PNL-A01 Adımında yaşar; iki iş aynı sekme düzeni üzerinde birlikte tasarlanır. KARAR ŞERHİ (2026-10-29): Beklediği PNL-A09 tamamlanmış, Gözlemler ve Sapmalar Sinyaller sekmesinde ayrılmıştır; Founder kapatılmasını onaylamıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-TREN-CANLI-AJAN-EKRANI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         PNL-A13,
   çapa:             gelecek,
   öncelik:          p2,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Tren sekmesine ya da koşum izlerinin panele aktarılmasına bir sonraki dokunuşta",
-  ne:               "Founder 2026-10-26 tarihinde Tren sekmesinde ajanların bir liste olarak göründüğünü, bunun yanında ajanların o anda yaptığı işin canlı olarak izlenebildiği bir ekran görünümü istediğini bildirmiştir. Görünüm listeye ek olarak tasarlanır ve her ajan için üzerinde çalıştığı Adımı, son eylemini ve ilerlemesini anlık olarak akıtır; Founder ajanların ne yaptığını listeye bakarak değil, çalışmalarını izleyerek görebilmelidir. Fikir taahhütsüzdür; değerlendirme oturumunda plana alınıp alınmayacağına karar verilir. KARAR (2026-10-27): Founder canlı ajan şemasının ve mesaj akışının kapalı kardeş eklentide yapılmasına hükmetmiştir (OZK-13). Açık eklentideki karşılığı, kardeş eklentinin Tren sekmesine takılacağı yuvadır (PNL-A13); bu kayıt o yuvanın teslimiyle kapanır ve canlı görünümün kendisi kapalı tarafın planında yürür."
+  ne:               "Founder 2026-10-26 tarihinde Tren sekmesinde ajanların bir liste olarak göründüğünü, bunun yanında ajanların o anda yaptığı işin canlı olarak izlenebildiği bir ekran görünümü istediğini bildirmiştir. Görünüm listeye ek olarak tasarlanır ve her ajan için üzerinde çalıştığı Adımı, son eylemini ve ilerlemesini anlık olarak akıtır; Founder ajanların ne yaptığını listeye bakarak değil, çalışmalarını izleyerek görebilmelidir. Fikir taahhütsüzdür; değerlendirme oturumunda plana alınıp alınmayacağına karar verilir. KARAR (2026-10-27): Founder canlı ajan şemasının ve mesaj akışının kapalı kardeş eklentide yapılmasına hükmetmiştir (OZK-13). Açık eklentideki karşılığı, kardeş eklentinin Tren sekmesine takılacağı yuvadır (PNL-A13); bu kayıt o yuvanın teslimiyle kapanır ve canlı görünümün kendisi kapalı tarafın planında yürür. KARAR ŞERHİ (2026-10-29): Beklediği PNL-A13 kardeş eklenti yuvasını teslim etmiştir; canlı ajan ekranının kendisi kapalı kardeş eklentide sürmektedir. Founder kapatılmasını onaylamıştır."
 )
 
 Hatırlatıcı(
@@ -1554,13 +1555,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PANEL-KAPSAM-SAYIMI,
-  durum:            kararlaştı,
+  durum:            tamamlandı,
   hatırlat:         PNL-A08,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Panelin Makinist sayımlarına ya da kapsam seçimine bir sonraki dokunuşta; en geç hatırlatıcı ve fikir değerlendirme oturumunda",
-  ne:               "Founder 2026-10-26 tarihinde Makinist sekmesindeki sayıların bağlama göre büyük ölçüde değiştiğini gözlemlemiştir: Sarmal projesinin dosyası açıkken sekme bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem gösterip rozette kırk sekiz yazarken, çalışma alanının çatısındayken yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir gösterip rozette yüz yirmi dört yazmaktadır. Ölçüm, rozetin onay ve hatırlatıcı sayılarının toplamı olduğunu ve gözlemleri saymadığını göstermektedir. Panel hangi kapsamı gösterdiğini hiçbir yerde söylemediği için kullanıcı sayının tek bir projeye mi yoksa bütün çatıya mı ait olduğunu okuyamamaktadır. Doğru çalışma şudur: panel gösterdiği kapsamı açıkça yazar; çatı kapsamında her kategori proje proje kırılımıyla açılır ve toplam ile kırılım tutar; rozetin neyi saydığı görünür kılınır. Kabul ölçütü olarak aynı anda alınan bir çatı görünümündeki her kategori sayısının proje görünümlerindeki sayıların toplamına eşit olduğu ölçülür."
+  ne:               "Founder 2026-10-26 tarihinde Makinist sekmesindeki sayıların bağlama göre büyük ölçüde değiştiğini gözlemlemiştir: Sarmal projesinin dosyası açıkken sekme bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem gösterip rozette kırk sekiz yazarken, çalışma alanının çatısındayken yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir gösterip rozette yüz yirmi dört yazmaktadır. Ölçüm, rozetin onay ve hatırlatıcı sayılarının toplamı olduğunu ve gözlemleri saymadığını göstermektedir. Panel hangi kapsamı gösterdiğini hiçbir yerde söylemediği için kullanıcı sayının tek bir projeye mi yoksa bütün çatıya mı ait olduğunu okuyamamaktadır. Doğru çalışma şudur: panel gösterdiği kapsamı açıkça yazar; çatı kapsamında her kategori proje proje kırılımıyla açılır ve toplam ile kırılım tutar; rozetin neyi saydığı görünür kılınır. Kabul ölçütü olarak aynı anda alınan bir çatı görünümündeki her kategori sayısının proje görünümlerindeki sayıların toplamına eşit olduğu ölçülür. KARAR ŞERHİ (2026-10-29): Beklediği PNL-A08 sayıların kapsamını söyleyecek biçimde tamamlanmıştır; Founder kapatılmasını onaylamıştır."
 )
 
 Hatırlatıcı(
