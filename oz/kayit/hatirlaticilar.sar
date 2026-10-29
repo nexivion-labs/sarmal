@@ -1701,3 +1701,13 @@ Hatırlatıcı(
   dönüşTetikleyici: "Founder 0.9.199'u dar kenar çubuğunda kullandığında",
   ne:               "Tren sekmesinde dar panelde sıra şema, profil kartı ve geliştirmedeki işin ağacı biçimindedir; ağacı görmek için 300 piksel genişlikte yaklaşık 1700, 460 pikselde yaklaşık 1100 piksel kaydırmak gerekir. Ayrıca Sarmal'ın kendi verisinde bir departman adı Raf ilanının uzun ilk cümlesinden okunduğu için çok uzun görünür ve denetim kutusunda ajan kodu kesilir. İş ağacının dar panelde üste alınması Founder kararıdır; Raf ilanına kısa bir ilk cümle yazılması küçük bir düzeltmedir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; işi PNL-A29 Adımında sürdüğü için o Adıma bağlanmıştır."
 )
+
+Hatırlatıcı(
+  kod:              HTR-KAPSAM-VE-BAYAT-DURUM-TANISI,
+  durum:            açık,
+  çapa:             nitelik,
+  öncelik:          p1,
+  tarih:            2026-10-29,
+  dönüşTetikleyici: "Haftalık kullanım sınırı yenilendikten sonraki ilk çalışma oturumunda; en geç bir kardeş depoda plansız kod yeniden ölçüldüğünde",
+  ne:               "Motorun yetim meyve taraması yalnız planın daha önce en az bir dosya ilan ettiği klasörlerde çalışmaktadır; hiç dosya ilan etmemiş bir klasör ya da proje görünmez kalır ve denetim temiz sonuç verir. 2026-10-29 tarihinde yapılan elle ölçümde çalışma alanındaki iki kardeş depoda kaynak dosyaların sırasıyla yalnız 11/69 ve 0/21'i planda ilan edilmiş, motor ise iki depo için de yetim meyve bildirmemiştir. Aynı ölçüm, işleme kapısının Adım satırını zorladığı depolarda kapsamın yüzde doksan beşin üstünde, zorlamadığı depolarda sıfıra yakın olduğunu göstermiştir. İki tanı gerekmektedir: birincisi, her denetimde izlenen kaynak dosyaların ne kadarının planda ilan edildiğini bildiren bir kapsam tanısı; ikincisi, meyvesi diskte bulunduğu hâlde üreten Adımı beklemede görünen işi bildiren bir bayat durum tanısı. İş, haftalık kullanım sınırı yenilendikten sonra ele alınacaktır."
+)

@@ -17,10 +17,15 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
-            neredeyiz: EKIP-KURULDU-ILK-UYE-PNL-A29-UZERINDE-ISTEMCI-YONU-KARARLASTI-EKRAN-GOZU-BEKLENIYOR,
-            sıradaki: UYENIN-PR-INCELEMESI-VE-ISTEMCI-ISKELETI-FOUNDER-EKRAN-SECIMINDEN-SONRA,
+            neredeyiz: SINYALLER-KOPYALAMA-0.9.200-KURULDU-FOUNDER-DENEMESI-BEKLIYOR-KAPSAM-TANISI-HATIRLATICIDA,
+            sıradaki: PNL-A31-FOUNDER-DENEMESI-SONRA-UC-DALIN-BIRLESTIRME-ISTEKLERI-VE-MAGAZA-YAYINI-TARIHI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
+            açıkİşler: [ PNL-A31-SINYALLER-KOPYALAMA-blok/panel-sinyal-kopya-DALINDA-FOUNDER-DENEMESI-BEKLIYOR,
+                         HTR-KAPSAM-VE-BAYAT-DURUM-TANISI-MOTOR-KOR-NOKTASI-SINIR-YENILENINCE,
+                         MAGAZA-YAYINI-8-KASIM-ONCESI-PNL-A29-TEMIZ-MAKINE-DENEMESI-YAYINCI-HESABI-FOUNDERDA,
+                         FEL-5-PRIZMA-KAPSAM-SATIRI-BAYAT-DORT-YUZ-ARTIK-CALISIYOR,
+                         icerik/sarmal-hikayesi-README-DALI-BIRLESTIRME-ISTEGI-BEKLIYOR,
+                         PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
                          PNL-A30-KILAVUZ-YENI-BICIM-ONCE-MAKINIST-ORNEGI-LIMIT-YENILENINCE,
                          EKIP-WINDOWS-UYELERI-GUNCELLEME-VE-IKINCI-UYENIN-KATILIMI-GITHUB-EKIP-AYARI-FOUNDERDA,
                          WINDOWS-UYUMU-BLOKU-YAZILACAK-VE-ACIK-ISLER-UYELERE-GITHUB-KAYDIYLA-DAGITILACAK,
@@ -67,6 +72,17 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 OTURUM 116 SONU (2026-10-29 akşam): Sinyaller sekmesine Makinist'teki satır
+        kopyalama kolaylığı geldi (PNL-A31, blok/panel-sinyal-kopya dalı, 11a4a12 ve sürüm
+        a5bd433 · 0.9.200). Paket Founder'ın VS Code'una kuruldu; Adım Founder denemesi
+        bekliyor, kabulündeki sağ tık maddesi Makinist'te de olmadığı için Founder ile
+        netleşecek. Motorun yetim meyve taramasının yalnız ilanlı klasörlerde çalıştığı ve
+        bayat durumu yakalamadığı ölçüldü (HTR-KAPSAM-VE-BAYAT-DURUM-TANISI). Prizma (FEL-5)
+        dört yüzünün dördü de çalışıyor; manifestonun Kapsam satırı bayat. Sitenin elmas
+        sahnesi FEL-5'e bağlandı. Marketplace yayını 8 Kasım buluşmasından önce
+        önerildi; ön koşullar açık işlerde. Haftalık sınır nedeniyle oturum erken kapandı.
+
+        —— Önceki özet ——
         🧭 SIKIŞTIRMA ÖNCESİ DEVİR · OTURUM 116 (2026-10-29 öğleden önce). Bütün açık hatırlatıcılar karara
         bağlanmıştır; kapananlar şerhiyle dosyada durur, kendi Adımı olmayanlar HST-AYK-A01'e bağlıdır ve
         Sinyaller sayaç nöbeti canlı depoda bir açık hatırlatıcı şart koştuğu için kararsız zamanlama sınaması
