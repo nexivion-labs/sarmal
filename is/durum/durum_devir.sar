@@ -17,8 +17,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
-            neredeyiz: 0.9.199-KURULDU-BAKIM-VE-PANEL-MAINE-BIRLESTI-CALISMAYA-ARA,
-            sıradaki: ARADAN-SONRA-PNL-A29-TREN-KUSURLARI-VE-KAPALI-CANLI-PENCERE-SONRA-PNL-A10-SONRA-A16-A17-TESLIM-ONAYI,
+            neredeyiz: EKIP-KURULDU-ILK-UYE-PNL-A29-UZERINDE-ISTEMCI-YONU-KARARLASTI-EKRAN-GOZU-BEKLENIYOR,
+            sıradaki: UYENIN-PR-INCELEMESI-VE-ISTEMCI-ISKELETI-FOUNDER-EKRAN-SECIMINDEN-SONRA,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
                          PNL-A30-KILAVUZ-YENI-BICIM-ONCE-MAKINIST-ORNEGI-LIMIT-YENILENINCE,
@@ -67,6 +67,20 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 SIKIŞTIRMA ÖNCESİ DEVİR · OTURUM 116 (2026-10-29 öğleden önce). Bütün açık hatırlatıcılar karara
+        bağlanmıştır; kapananlar şerhiyle dosyada durur, kendi Adımı olmayanlar HST-AYK-A01'e bağlıdır ve
+        Sinyaller sayaç nöbeti canlı depoda bir açık hatırlatıcı şart koştuğu için kararsız zamanlama sınaması
+        bilinçle açık bırakılmıştır. Plan kayıtları PR 7 ile main'e alınmıştır. Windows kullanan ilk üye ekibe
+        katılmıştır: GitHub organizasyonunda taban izin kapatılmış, ekip yalnız gerekli depoları görmekte, üye
+        ekip kurulumuyla ortamını kurmuş ve ilk görevi PNL-A29 olan üç Blok kaydı (8, 9 ve 10) ona atanmıştır.
+        Üyeyle yazışma Founder'ın ağzından ve etiketsiz yürür; açık bu depoya kapalı ürünle ilgili hiçbir şey
+        yazılmaz, o konular özel ekip kurulumu deposundaki kayıtlarda konuşulur. Üyenin teslimleri PR ile gelir;
+        kontrolcü denetler, birleştirme Founder'ındır. Founder bağımsız masaüstü ve mobil istemcinin yönünü
+        onaylamıştır: motor açık kalır, istemci kapalı üründe Flutter ile yazılır, GitHub okuma ve yazma köprüsü
+        olur ve ilk dilim telefondan onay vermektir. Eski sistemin arşivindeki elli bir referans ekranından
+        sekizi Founder'ın gözüne sunulmuştur; iskelet bu seçimden sonra hazırlanacaktır. Bu Mac Intel
+        işlemcilidir ve Homebrew Intel için hazır paket üretmemektedir; araçlar resmî yollarından güncellenir.
+
         🧭 EKİP NOTU · OTURUM 116 (2026-10-29 öğle). Founder iki Windows kullanan üyenin sisteme alınmasına ve
         Sarmal'ın açık işlerinin onlara GitHub kayıtlarıyla dağıtılmasına hükmetmiştir; kişi adları açık depoya
         yazılmaz, kimin ne yaptığı GitHub'da durur. Üyelerin bildirdiği Windows kurulum hataları ekip kurulumu
