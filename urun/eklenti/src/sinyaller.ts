@@ -35,7 +35,7 @@ import * as vscode from "vscode";
 import { kimlikIndeksi } from "../../cekirdek/src/kimlik.ts";
 import { sonTurGoruntusu } from "./tur-goruntusu.ts";
 import {
-  SINYAL_BANTLARI, kanonMaddeleri, kanonTaniHaritasi, sinyalModeli,
+  SINYAL_BANTLARI, kanonMaddeleri, kanonTaniHaritasi, sinyalModeli, sinyalPanosu,
   type ProjeSinyalleri, type SinyalBandi, type SinyalModeli, type SinyalSatiri, type SinyalTuru,
 } from "./sinyaller-cekirdek.ts";
 import { yuzeyDosyaAdiniAl, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
@@ -133,6 +133,27 @@ export class SinyallerAgaci {
     return o?.tur === "sinyal-tur" ? (o as { grup: SinyalTuru }).grup : undefined;
   }
 
+  /**
+   * 📋 Satırın panoya inecek metni (PNL-A31). Sağlayıcı panoya YAZMAZ; karar saf çekirdektedir
+   * (`sinyalPanosu`) ve yazımı Makinist ile ORTAK olan `sarmal.satiriKopyala` komutu yapar. Tanı satırı
+   * kendi bloğunu, bant, proje ve tür satırı altındaki bütün tanıları alt alta verir; öneri ve kanon
+   * maddesi satırları (alt satırlar) kendi tanılarının bloğunu verir.
+   */
+  panoMetni(oge: unknown): { metin: string; adet: number } | undefined {
+    if (typeof oge !== "object" || oge === null || !("tur" in oge)) return undefined;
+    const o = oge as SinyalOgesi;
+    switch (o.tur) {
+      case "sinyal": case "sinyal-oneri": return sinyalPanosu([o.satir]);
+      case "sinyal-tur": return sinyalPanosu(o.grup.satirlar, taniKisaAdi(o.grup.kod));
+      case "sinyal-proje": return sinyalPanosu(o.grup.satirlar, o.grup.proje.ad);
+      case "sinyal-bant": {
+        const satirlar = (this.model.bantlar.find((b) => b.bant === o.bant)?.projeler ?? []).flatMap((p) => p.satirlar);
+        return sinyalPanosu(satirlar, SINYAL_METINLERI.bantAdi(o.bant));
+      }
+      default: return undefined;
+    }
+  }
+
   getChildren(oge?: unknown): unknown[] {
     if (!oge) return SINYAL_BANTLARI.map((b) => this.bantlar.get(b)!);
     const o = oge as SinyalOgesi;
@@ -171,6 +192,7 @@ export class SinyallerAgaci {
         item.description = String(o.grup.satirlar.length);
         // PNL-A25: Proje satırı Yol Haritasının varlık simgesini taşır; çatı simgesi yalnız çatının kendi satırındadır.
         item.iconPath = projeSatiriIkonu(this.kok, o.grup.proje, "duz");
+        item.contextValue = "sarmalSinyalProjesi";
         return item;
       }
       case "sinyal-tur": return this.turSatiri(o.bant, o.grup);

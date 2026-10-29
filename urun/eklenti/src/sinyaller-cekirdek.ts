@@ -40,7 +40,8 @@
 import type { Duzey } from "../../cekirdek/src/tani.ts";
 import type { Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
-import { kaydinYuzeyi, kokeGoreOzetle, turDagilimi, type ProjeKimligi, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
+import { panoKumeMetni } from "./yuzey-metinleri.ts";
+import { kaydinYuzeyi, kokeGoreOzetle, panoKaydi, turDagilimi, type ProjeKimligi, type YuzeyKaydi } from "./yuzey-cekirdek.ts";
 
 /** Üç bant, şeritteki sırasıyla. */
 export const SINYAL_BANTLARI = ["dur", "dikkat", "bilgi"] as const;
@@ -284,4 +285,17 @@ export class KayitDefteri<T> {
   yayımla(): void {
     this.yayinKapisi(this.gorunenler());
   }
+}
+
+// ── PANO (PNL-A31) ──────────────────────────────────────────────────────────
+
+/**
+ * Sinyaller satırlarının pano metni: Makinist'in kopyalama komutuyla AYNI blok biçimi (`panoKaydi`) ve AYNI
+ * küme birleştiricisi (`panoKumeMetni`); yalnız tanının kanon maddesi bloğa eklenir. Başlıksız tek kayıt
+ * bloğun kendisidir; başlıklı grup hiçbir kaydı düşürmeden alt alta dizilir.
+ */
+export function sinyalPanosu(satirlar: readonly SinyalSatiri[], baslik?: string): { metin: string; adet: number } | undefined {
+  if (satirlar.length === 0) return undefined;
+  const bloklar = satirlar.map((s) => panoKaydi(s.kayit, s.maddeler));
+  return { metin: baslik === undefined ? bloklar[0]! : panoKumeMetni(baslik, bloklar), adet: satirlar.length };
 }

@@ -799,6 +799,8 @@ export function panoKaydiMetni(p: {
   satir: number;
   sutun: number;
   oneri?: string;
+  /** Tanının dayandığı kanon maddeleri (Sinyaller satırı); yoksa satır yazılmaz. */
+  maddeler?: readonly string[];
 }): string {
   const satirlar = [
     `${p.etiket} — ${p.aciklama}`,
@@ -806,6 +808,7 @@ export function panoKaydiMetni(p: {
     p.mesaj.trim(),
   ];
   if (p.oneri?.trim()) satirlar.push(yuzeyMetni(`Ne yapmalı: ${p.oneri.trim()}`, `What to do: ${p.oneri.trim()}`));
+  if (p.maddeler?.length) satirlar.push(yuzeyMetni(`Kanon maddesi: ${p.maddeler.join(", ")}`, `Canon article: ${p.maddeler.join(", ")}`));
   satirlar.push(yuzeyMetni(`Kaynak: ${p.dosya}:${p.satir}:${p.sutun}`, `Source: ${p.dosya}:${p.satir}:${p.sutun}`));
   return satirlar.join("\n");
 }

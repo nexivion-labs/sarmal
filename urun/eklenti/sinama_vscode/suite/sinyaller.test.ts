@@ -150,6 +150,26 @@ describe("PNL-A09 — Sinyaller sekmesi (gerçek VS Code)", () => {
     if (uyari) assert.strictEqual(uyari.bant, "dikkat", "UYARI düzeyindeki tanı Dikkat bandında değil");
   });
 
+  it("PNL-A31: Sinyaller satırının kopyalama düğmesi ortak komutla tanının tam metnini panoya alır; bant başlığındaki düğme bandın bütün tanılarını alt alta alır", async () => {
+    await hepsiniAc(true);
+    await bekle(async () => (await satirlar()).some((s) => s.dosya === yol && s.kod === "bilinmeyen-tip"), "bilinmeyen tip satırı çizilmedi");
+    const satir = (await satirlar()).find((s) => s.dosya === yol && s.kod === "bilinmeyen-tip")!;
+    const kopyala = async (id: string): Promise<string> => {
+      await vscode.env.clipboard.writeText("");
+      await vscode.commands.executeCommand(SINAMA_KOMUTU, { eylem: "ileti", ileti: { tip: "eylem", id, komut: "sarmal.satiriKopyala" } });
+      await bekle(async () => (await vscode.env.clipboard.readText()) !== "", `pano dolmadı (${id})`, 8_000);
+      return vscode.env.clipboard.readText();
+    };
+    const tek = await kopyala(satir.id);
+    assert.ok(tek.includes("bilinmeyen-tip") && /hata (düzeyi|severity)/.test(tek), `tanı metni kod ve düzeyi taşımalı:\n${tek}`);
+    assert.ok(tek.includes(`${yol}:3:`), `tam yol ve satır eksik:\n${tek}`);
+    const bant = await kopyala("sinyaller/bant.dur");
+    const durKayitlari = disYuz.sinyalKayitlari().filter((k) => k.duzey === "hata" && !hatirlaticiya(k));
+    assert.ok(!/ — /.test(bant.split("\n\n")[0]!), "bant kopyası kısa bir başlıkla başlamalı (dil bağımsız)");
+    assert.strictEqual((bant.match(/hata (düzeyi|severity)/g) ?? []).length, durKayitlari.length, "bant kopyası bandın bütün tanılarını taşımalı");
+    await vscode.env.clipboard.writeText("");
+  });
+
   it("panelde her tanı bir kez: Hatırlatıcılar yüzeyine yönlenen tanı Sinyaller'de yok, Makinist'in kaynağında var; ayrı Gözlemler bölümü yok; çizilen satır tekil kayıt sayısıdır", async () => {
     // Bütün bant ve projeleri webview'in kendi iletisiyle aç (önceki sınama açmış olabilir; açık olan dokunulmaz).
     await hepsiniAc(true);

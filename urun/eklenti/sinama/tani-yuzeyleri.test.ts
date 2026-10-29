@@ -1987,7 +1987,7 @@ test("iki erişim yolu TEK komuta iner; İKİNCİ BİR KOPYALAMA MANTIĞI doğma
     `kopyalama komutu gövdede ${kayitSayisi} kez kaydedilmiş; satır içi düğme için ikinci bir ` +
     "işleyici yazılmış olabilir ve o işleyici zamanla asıl komuttan ayrışır");
   // ③ Panel (webview) panoya kendisi yazmaz; yalnız komutu çağırır. Üç sağlayıcı da yalnız METNİ hesaplar.
-  for (const ad of ["hatirlaticilar.ts", "bildirimler.ts", "fikirler.ts", "panel.ts", "panel-cekirdek.ts"]) {
+  for (const ad of ["hatirlaticilar.ts", "bildirimler.ts", "fikirler.ts", "sinyaller.ts", "panel.ts", "panel-cekirdek.ts"]) {
     const kaynak = oku(`../src/${ad}`);
     assert.ok(!kaynak.includes("clipboard"),
       `${ad} panoya kendisi yazıyor; pano yazan tek el komut olmalıdır (VIT-GRAF-A13 sözleşmesi)`);
