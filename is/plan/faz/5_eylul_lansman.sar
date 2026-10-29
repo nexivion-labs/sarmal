@@ -5932,6 +5932,23 @@ sessizce körleşmez.
     Katman( kod: HST-MOTOR, takım: TAKIM-CEKIRDEK, ad: "Motor Borçları",
       ne: "🔧 Kanon, tanı ve gezinme yüzündeki birikmiş motor kusurları" ) {
 
+      AltKatman( kod: HST-MOTOR-K0, departman: planlama, ad: "Biriken Hatırlatıcıların Ayıklanması",
+        ne: "kendi Adımı olmayan hatırlatıcıların plan küçültme oturumunda tek tek işe, mevsime ya da rafa ayrılması" ) {
+
+        Adım( kod: HST-AYK-A01, ad: "Biriken Hatırlatıcıların Ayıklanması", durum: beklemede, öncelik: p1,
+          ne: "🧺 Founder 2026-10-29 tarihinde panelde biriken hatırlatıcıların temizlenmesine hükmetmiştir. İşi bitmiş ya da geçersiz kalanlar kapatılmış, var olan bir Adımda süren işler o Adıma bağlanmış, kendi Adımı olmayan motor ve yüz borçları ise kaybolmasınlar diye bu Adıma bağlanmıştır. Bu Adım plan küçültme oturumunda bağlı her hatırlatıcıyı tek tek ele alır." ) {
+          görev: [
+            "Bu Adıma bağlı her hatırlatıcıyı kaynağından oku ve bugünkü kodda hâlâ geçerli olup olmadığını ölç.",
+            "Her biri için tek bir karar ver: kapat (şerhiyle), var olan bir Adıma bağla, yeni bir Adım aç ya da bilinçli olarak rafa kaldır; kararı Founder'a sun."
+          ]
+          kabul: [
+            "Bu Adıma bağlı hiçbir hatırlatıcı kalmamıştır; her biri kapatılmış, başka bir Adıma bağlanmış ya da rafa kaldırılmıştır ve her kararın tarihli şerhi vardır.",
+            "Deponun denetimi sıfır hata vermektedir."
+          ]
+          sınır: "Bu Adım kod yazmaz; yalnız hatırlatıcıların akıbetini belirler. Yeni açılan Adımların işi kendi Adımlarında yapılır."
+        }
+      }
+
       AltKatman( kod: HST-MOTOR-K1, departman: sınama, ad: "Kanon ve Tanı Nöbetleri",
         ne: "kanonun makine taşıyıcısı, madde sayısı, tanı kimlikleri ve yürütücü izi" ) {
 

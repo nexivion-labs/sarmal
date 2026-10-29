@@ -568,12 +568,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AJAN-KAPI-ATLAMA-DESENI-METINLE-KAPANMAZ,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   dönüşTetikleyici: "Ajan disiplinine dair yeni bir metin, yani anayasa maddesi, beceri kartı, yönerge satırı ya da bellek notu yazılmak istendiğinde; o metin yazılmadan önce",
   öncelik:          p1,
   tarih:            2026-09-09,
-  ne:               "Bir ajanın ürünün kendi aracını atlayıp elle ya da ham taramayla iş yapması ve sonucun yanlış çıkması, 2026-07-27 tarihinden 2026-09-09 tarihine kadar tarihli olarak en az yedi kez kaydedilmiştir: kontrolcü anayasası aynı hastalığa yedi kez düşüldüğünü yazmış, brifing dersi dokuz ajanın gönderilip şefin bir kez bile çağrılmadığını kaydetmiş, kilitli karar dersi hiçbirinin hatırlanmadığını yazmış, hizalanmış kod alanı dersi kusurun tekrar ettiğini söylemiş, MCP araçları dersi iki ayrı tarihte düzeltilmiş, ilk dış kullanıcı tanıklığı talimatın tek cümlesinin genellenip yazma kapısının kapalı sanıldığını göstermiş ve bugün yeni bir ağaç doğuş araçları çağrılmadan elle yazılmıştır. Her seferinde çözüm metin olmuştur: bir anayasa maddesi, iki beceri kartı, beş bellek notu, bir talimat sürümü ve tavsiye düzeyinde bir kanca; hiçbiri engelleyici değildir. Ürünün kendi kaydı hükmü 2026-07-27 tarihinde vermiştir: asistan o kartı okumuştu, yani liste davranış değiştirmemektedir. Beceri kartları yalnız bir Adım geliştirmede durumundayken ateşlediği için boş bir ağaçta yapısal olarak hiç ateşleyememekte, kontrolcü anayasasının on altı kuralı da niyet katmanında yaşamaktadır. Bu hatırlatıcı bir yasak koyar: bu desen için sekizinci metin, yanına mekanik bir zorlama kurulmadan yazılmaz. Mekanik zorlama şudur: her .sar yazımından sonra denetimi kendiliğinden koşturan ve hatayı ajana zorla döndüren bir yürütücü kancası, henüz var olmayan bir anadizinin elle yazımını reddeden bir kanca ve doğuş paketinin doğurduğu köke bu kancaları da yazması; Founder'ın makinesinde bu kancalar 2026-09-09 tarihinde kurulmuştur ve ürüne inmesi BKM-DNT-A15 Adımına bağlıdır. Ders tek cümledir: kapıyı çağıran mekanizma insan öfkesi olmamalıdır."
+  ne:               "Bir ajanın ürünün kendi aracını atlayıp elle ya da ham taramayla iş yapması ve sonucun yanlış çıkması, 2026-07-27 tarihinden 2026-09-09 tarihine kadar tarihli olarak en az yedi kez kaydedilmiştir: kontrolcü anayasası aynı hastalığa yedi kez düşüldüğünü yazmış, brifing dersi dokuz ajanın gönderilip şefin bir kez bile çağrılmadığını kaydetmiş, kilitli karar dersi hiçbirinin hatırlanmadığını yazmış, hizalanmış kod alanı dersi kusurun tekrar ettiğini söylemiş, MCP araçları dersi iki ayrı tarihte düzeltilmiş, ilk dış kullanıcı tanıklığı talimatın tek cümlesinin genellenip yazma kapısının kapalı sanıldığını göstermiş ve bugün yeni bir ağaç doğuş araçları çağrılmadan elle yazılmıştır. Her seferinde çözüm metin olmuştur: bir anayasa maddesi, iki beceri kartı, beş bellek notu, bir talimat sürümü ve tavsiye düzeyinde bir kanca; hiçbiri engelleyici değildir. Ürünün kendi kaydı hükmü 2026-07-27 tarihinde vermiştir: asistan o kartı okumuştu, yani liste davranış değiştirmemektedir. Beceri kartları yalnız bir Adım geliştirmede durumundayken ateşlediği için boş bir ağaçta yapısal olarak hiç ateşleyememekte, kontrolcü anayasasının on altı kuralı da niyet katmanında yaşamaktadır. Bu hatırlatıcı bir yasak koyar: bu desen için sekizinci metin, yanına mekanik bir zorlama kurulmadan yazılmaz. Mekanik zorlama şudur: her .sar yazımından sonra denetimi kendiliğinden koşturan ve hatayı ajana zorla döndüren bir yürütücü kancası, henüz var olmayan bir anadizinin elle yazımını reddeden bir kanca ve doğuş paketinin doğurduğu köke bu kancaları da yazması; Founder'ın makinesinde bu kancalar 2026-09-09 tarihinde kurulmuştur ve ürüne inmesi BKM-DNT-A15 Adımına bağlıdır. Ders tek cümledir: kapıyı çağıran mekanizma insan öfkesi olmamalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -643,12 +644,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GRAF-YUZU-MEVSIM-BAGINI-TASIMIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-10,
   dönüşTetikleyici: "Graf yüzünün düğüm şeması bir sonraki kez elden geçirildiğinde; ya da bir yüzey Blokları mevsime göre gruplamak istediğinde",
-  ne:               "Graf aracının döndürdüğü kanonik yüz, her düğüm için yalnız kodu, tipini, dosyasını, satırını, kapsayanını ve kardeş sırasını taşımaktadır; 2026-09-10 tarihinde alanlar tek tek sayılmış ve mevsim bağını taşıyan bir alan bulunamamıştır. Oysa bir Blok mevsimine iç içe yazımla değil, ayrı bir mevsim kenarıyla bağlanmaktadır ve o kenar motorun içinde normalleştirilmektedir. Sonuç ölçülmüştür: graf yüzünden okunan kapsayan zinciri bir Adımdan yukarı yürütüldüğünde ürün ağacının beş ana mevsiminin hiçbirine ulaşılamamakta, yalnız iç içe yazılmış ders ve örnek fazları görünmektedir. Bu, aynı yanılgının ikinci kez yaşandığı anlamına gelir: kontrolcü mevsim tablosunu bir kez daha graf yüzünden türetmeye çalışmış ve bir kez daha yanlış sayı üretmiştir; doğru sayı ancak motorun kendi mevsim çözümünden alınabilmektedir. Ders tek cümledir ve daha önce de kaydedilmiştir: bir bağ yüzeyde görünmüyorsa o yüzeyden türetilen her sayı yanlıştır. PANELİN ETKİLENİP ETKİLENMEDİĞİ AYRICA ÖLÇÜLMÜŞ VE ETKİLENMEDİĞİ GÖRÜLMÜŞTÜR: mini graf gövdesi bir Blokun mevsim alanını süreç içi düğüm yapısından doğrudan okumakta ve kapsamını ona göre kurmaktadır, dolayısıyla eklenti tarafında bir kayıp yoktur. Eksiklik YALNIZ komut satırının ve sunucunun döndürdüğü JSON yüzündedir, yani tam olarak dış bir ajanın gördüğü yüzdedir; süreç içinde var olan bir bağ dışa açılan yüzde düşmektedir. Kararın yönü budur ve iki yol vardır: ya JSON yüzü mevsim alanını da taşır ve içeriyle dışarısı eşitlenir, ya da aracın belgesi bu sınırı açıkça yazar ve mevsime göre gruplama isteyen tüketiciyi motorun kendi çözümüne yönlendirir. Birinci yol yeğdir, çünkü bir bağın süreç içinde var olup dışarıda görünmemesi tam olarak bu kaydın doğmasına yol açan yanılgıyı üretmektedir."
+  ne:               "Graf aracının döndürdüğü kanonik yüz, her düğüm için yalnız kodu, tipini, dosyasını, satırını, kapsayanını ve kardeş sırasını taşımaktadır; 2026-09-10 tarihinde alanlar tek tek sayılmış ve mevsim bağını taşıyan bir alan bulunamamıştır. Oysa bir Blok mevsimine iç içe yazımla değil, ayrı bir mevsim kenarıyla bağlanmaktadır ve o kenar motorun içinde normalleştirilmektedir. Sonuç ölçülmüştür: graf yüzünden okunan kapsayan zinciri bir Adımdan yukarı yürütüldüğünde ürün ağacının beş ana mevsiminin hiçbirine ulaşılamamakta, yalnız iç içe yazılmış ders ve örnek fazları görünmektedir. Bu, aynı yanılgının ikinci kez yaşandığı anlamına gelir: kontrolcü mevsim tablosunu bir kez daha graf yüzünden türetmeye çalışmış ve bir kez daha yanlış sayı üretmiştir; doğru sayı ancak motorun kendi mevsim çözümünden alınabilmektedir. Ders tek cümledir ve daha önce de kaydedilmiştir: bir bağ yüzeyde görünmüyorsa o yüzeyden türetilen her sayı yanlıştır. PANELİN ETKİLENİP ETKİLENMEDİĞİ AYRICA ÖLÇÜLMÜŞ VE ETKİLENMEDİĞİ GÖRÜLMÜŞTÜR: mini graf gövdesi bir Blokun mevsim alanını süreç içi düğüm yapısından doğrudan okumakta ve kapsamını ona göre kurmaktadır, dolayısıyla eklenti tarafında bir kayıp yoktur. Eksiklik YALNIZ komut satırının ve sunucunun döndürdüğü JSON yüzündedir, yani tam olarak dış bir ajanın gördüğü yüzdedir; süreç içinde var olan bir bağ dışa açılan yüzde düşmektedir. Kararın yönü budur ve iki yol vardır: ya JSON yüzü mevsim alanını da taşır ve içeriyle dışarısı eşitlenir, ya da aracın belgesi bu sınırı açıkça yazar ve mevsime göre gruplama isteyen tüketiciyi motorun kendi çözümüne yönlendirir. Birinci yol yeğdir, çünkü bir bağın süreç içinde var olup dışarıda görünmemesi tam olarak bu kaydın doğmasına yol açan yanılgıyı üretmektedir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -806,22 +808,24 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-HASAT-DOGUS-BASLIGINI-EZIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Geribildirim hasadının yazım gövdesi bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir. HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde aynı dosyanın doğuş şablonundaki başlığın da karşılığı olmayan bir vaat taşıdığını ölçmüştür: ogreti/sablon/dogus/geribildirim.sar başlığı kayıtların koşumda etmenlerin izole hafızalarına dağıtıldığını söyler, oysa böyle bir mekanizma yoktur ve şef yalnız hedef Adımın ve bağımlı Adımların kanal parametrelerini isteme koyar. Aynı iddia takdir üreticisinin baş yorumunda da geçer ve başlık her yeni projeye iner; hasat gövdesi elden geçirilirken başlık metni de gerçek davranışa göre düzeltilmelidir."
+  ne:               "EKL-F6-A10 turunda 2026-09-15 tarihinde ölçülmüştür: geribildirim hasadı ogreti/ogrenme/geribildirim.sar dosyasına yazarken doğuş şablonunun o dosyaya koyduğu başlığı ve doldurma öğretisini ezmektedir. Kusur bu turdan önce de vardı ve yolun düzelmesiyle görünür hâle gelmiştir. Doğru davranış, hasadın dosyanın mevcut başlığını koruyup kayıtları altına eklemesidir. HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde aynı dosyanın doğuş şablonundaki başlığın da karşılığı olmayan bir vaat taşıdığını ölçmüştür: ogreti/sablon/dogus/geribildirim.sar başlığı kayıtların koşumda etmenlerin izole hafızalarına dağıtıldığını söyler, oysa böyle bir mekanizma yoktur ve şef yalnız hedef Adımın ve bağımlı Adımların kanal parametrelerini isteme koyar. Aynı iddia takdir üreticisinin baş yorumunda da geçer ve başlık her yeni projeye iner; hasat gövdesi elden geçirilirken başlık metni de gerçek davranışa göre düzeltilmelidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-SURUM-NOBETI-SINIRLARI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-15,
   dönüşTetikleyici: "Kurulum betiği ya da sürüm tazeliği gövdesi bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A11 turunda 2026-09-15 tarihinde ölçülen iki sınır kayda geçmiştir. Birincisi, kurulum betiği uzantı klasörünü ~/.vscode/extensions olarak sabit yazmaktadır; VS Code Insiders ya da özel bir uzantı klasörü kullanıldığında betik kurulumu doğrulayamadığını söyler fakat hata vermez. İkincisi, eklenti açılışındaki nöbet yalnız sürümü karşılaştırdığı için eklenti kodu değişip sürüm ilerletilmediğinde bayatlığı görmez; bu durumu yalnız bir sonraki kurulumdaki damga karşılaştırması yakalar."
+  ne:               "EKL-F6-A11 turunda 2026-09-15 tarihinde ölçülen iki sınır kayda geçmiştir. Birincisi, kurulum betiği uzantı klasörünü ~/.vscode/extensions olarak sabit yazmaktadır; VS Code Insiders ya da özel bir uzantı klasörü kullanıldığında betik kurulumu doğrulayamadığını söyler fakat hata vermez. İkincisi, eklenti açılışındaki nöbet yalnız sürümü karşılaştırdığı için eklenti kodu değişip sürüm ilerletilmediğinde bayatlığı görmez; bu durumu yalnız bir sonraki kurulumdaki damga karşılaştırması yakalar. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -869,12 +873,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-GORELI-MCP-KAYDI-ALT-DIZINDE-KOPUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Deponun ya da çatının sunucu kaydı bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: sunucu kaydında göreli yazılmış bir motor yolu, Claude Code oturumu proje kökünden açıldığında bağlanmakta, bir alt dizinden açıldığında ise bağlanamamaktadır, çünkü göreli yol sürecin çalışma dizinine göre çözülür. Deponun kendi sunucu kaydı ile çatının sunucu kaydı bugün bu biçimde göreli yazılıdır; ölçülen bu iki kaydın kendisi değil aynı biçimdeki bir kayıttır, dolayısıyla etkinin bu iki kayıtta ayrıca doğrulanması gerekir. Proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözüldüğü için bu değişkenle yapılacak bir onarım işe yaramaz."
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde ölçülmüştür: sunucu kaydında göreli yazılmış bir motor yolu, Claude Code oturumu proje kökünden açıldığında bağlanmakta, bir alt dizinden açıldığında ise bağlanamamaktadır, çünkü göreli yol sürecin çalışma dizinine göre çözülür. Deponun kendi sunucu kaydı ile çatının sunucu kaydı bugün bu biçimde göreli yazılıdır; ölçülen bu iki kaydın kendisi değil aynı biçimdeki bir kayıttır, dolayısıyla etkinin bu iki kayıtta ayrıca doğrulanması gerekir. Proje dizini değişkeni sunucu argümanlarında yalnız bir varsayılanla çözüldüğü için bu değişkenle yapılacak bir onarım işe yaramaz. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -922,12 +927,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-PALET-ACIK-TEMA-VE-KARAR-SIMGESI-EKSIK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Kanon paleti ya da geometrik simge ailesi bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: kanon paletinin (oz/siniflama/kayit.json içindeki renkPaleti) ağaç renkleri ile aile renkleri bölümlerinin açık tema eşi yoktur ve açık temada bu renkler editörün ön plan rengine karıştırılarak türetilmek zorundadır. Aynı turda geometrik simge ailesinde Karar tipi için bir çizim bulunmadığı ve yüzeylerin bu tip için yedek bir simgeye düştüğü de ölçülmüştür. Paletin kendisi kanonun parçası olduğundan eş renklerin eklenmesi Founder onayı ister. KARAR (Founder, karar sayfası · 2026-10-10): açık tema eş renkleri ve Karar simgesinin ikisi de eklenir; önce görsel örnek Founder'a yan yana gösterilir ve onaydan sonra kanona iner."
+  ne:               "EKL-F6-A05 turunda 2026-09-16 tarihinde ölçülmüştür: kanon paletinin (oz/siniflama/kayit.json içindeki renkPaleti) ağaç renkleri ile aile renkleri bölümlerinin açık tema eşi yoktur ve açık temada bu renkler editörün ön plan rengine karıştırılarak türetilmek zorundadır. Aynı turda geometrik simge ailesinde Karar tipi için bir çizim bulunmadığı ve yüzeylerin bu tip için yedek bir simgeye düştüğü de ölçülmüştür. Paletin kendisi kanonun parçası olduğundan eş renklerin eklenmesi Founder onayı ister. KARAR (Founder, karar sayfası · 2026-10-10): açık tema eş renkleri ve Karar simgesinin ikisi de eklenir; önce görsel örnek Founder'a yan yana gösterilir ve onaydan sonra kanona iner. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -954,12 +960,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MIMARI-BAG-SINAMASI-VE-ATIFI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Mimari bağ tanısının sınaması ya da graf kapsayan türetmesi bir sonraki kez elden geçirildiğinde",
-  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: mimari bağ tanısının sınaması (urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts üç yüz on üç ile üç yüz yirmi üçüncü satırlar) eş kademe ve kademe atlama dallarını tek bir fikstürde birlikte tetiklemekte ve Katman içinde doğrudan Adım istisnasını sınamamaktadır; dallardan biri sökülünce sınamanın düşüp düşmediği ölçülmemiştir. Aynı turda urun/cekirdek/src/dag.ts kırk beşinci satırdaki yorumun içerme kenarını ORK-1.2'ye bağladığı, kanonun ve graf yüzünün ise aynı ilişkiyi ORK-1.1'e bağladığı da ölçülmüştür."
+  ne:               "KPS-KEN-A01 turunda 2026-09-16 tarihinde ölçülmüştür: mimari bağ tanısının sınaması (urun/cekirdek/sinama/yeni-kanon-tanilari.test.ts üç yüz on üç ile üç yüz yirmi üçüncü satırlar) eş kademe ve kademe atlama dallarını tek bir fikstürde birlikte tetiklemekte ve Katman içinde doğrudan Adım istisnasını sınamamaktadır; dallardan biri sökülünce sınamanın düşüp düşmediği ölçülmemiştir. Aynı turda urun/cekirdek/src/dag.ts kırk beşinci satırdaki yorumun içerme kenarını ORK-1.2'ye bağladığı, kanonun ve graf yüzünün ise aynı ilişkiyi ORK-1.1'e bağladığı da ölçülmüştür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -975,12 +982,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANCA-BOS-DEGISKENI-YOL-GIBI-GOSTERIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Doğuşun denetim kapısı şablonu bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde kontrolcünün uçtan uca ölçümünde görülmüştür: SARMAL_KOK değişkeni tanımsızken doğan ağacın denetim kancası doğru cümleyi basmakta ve onarımı göstermekte, fakat motor yolunu /urun/cekirdek/src/sarmal.ts biçiminde yazmaktadır, çünkü boş bir değişken genişlemesi geriye yalnız kök işaretini bırakır. Cümlenin kendisi doğrudur, ancak yol okuyucuya kökte gerçekten böyle bir dosya aranmış gibi görünür ve arızanın sebebini gizler. Kancanın değişkenin tanımsız olduğunu ayrıca söylemesi ve yolu ancak değişken tanımlıyken yazması daha dürüsttür."
+  ne:               "EKL-F6-A08 turunda 2026-09-16 tarihinde kontrolcünün uçtan uca ölçümünde görülmüştür: SARMAL_KOK değişkeni tanımsızken doğan ağacın denetim kancası doğru cümleyi basmakta ve onarımı göstermekte, fakat motor yolunu /urun/cekirdek/src/sarmal.ts biçiminde yazmaktadır, çünkü boş bir değişken genişlemesi geriye yalnız kök işaretini bırakır. Cümlenin kendisi doğrudur, ancak yol okuyucuya kökte gerçekten böyle bir dosya aranmış gibi görünür ve arızanın sebebini gizler. Kancanın değişkenin tanımsız olduğunu ayrıca söylemesi ve yolu ancak değişken tanımlıyken yazması daha dürüsttür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1007,12 +1015,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-MEYVE-MUAFIYETI-BEYAN-YOLU-YOK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Atomiklik borcunun temizliğine başlanmadan önce; en geç BLK-EKLENTI Bloku kapandığında",
-  ne:               "Founder 2026-09-16 tarihinde meyve muafiyeti kapısının açılmasına hükmetmiştir: bir Adım hiçbir Meyve teslim etmemesini gerekçesiyle birlikte beyan edebilecek, motor beyanlı Adımı atomiklik tanısının dışında tutacak ve beyansız Adıma tanıyı ateşlemeye devam edecektir. Ölçüm şunu göstermiştir: urun/cekirdek/src/denetci.ts dosyasının üç bin beş yüz altmış altıncı satırındaki bekçi yalnız durumun tamamlandı olmasına ve üretir kenarının boşluğuna bakmakta, hiçbir muafiyet yolu tanımamaktadır; oysa kardeş bekçi olan kullanımsız tip tanısı aynı dosyanın iki bin yüz seksen üçüncü satırında tip muafiyetleri beyanını okumakta ve beyanlı tipte susmaktadır. Otuz dört canlı bulgunun okunan on dördünde yarısı doğası gereği teslim üretmeyen Adımlardır: faz kapıları, taban ölçen plan Adımları, saha teyidi, bir açılış toplantısı, bir anahtar rotasyonu ve kapalı depoya fiziksel taşıma. EKL-F2-A04 Adımı meyvesizliğini 2026-07-18 tarihinde düzyazıyla zaten beyan etmiştir, fakat motor düzyazı okuyamadığı için tanı yine ateşlemektedir. Borcun sonucu ağırdır: YAS-4 maddesi bir tanıyı ancak bulguları sıfırlandığında terfi ettirdiği için kanonun hata dediği üç tanı, yani ORK-1.2 yürütme kenarı sözleşmesi, ORK-1.3 üretim kökeni ihlali ve ORK-2.4 kullanır kenarı ihlali, bugün bilgi düzeyinde kilitli kalmaktadır. Uygulama beş kalemdir: sınıflama kaydında Adım tipine gerekçeli muafiyet alanı açılması, motorda bekçinin beyanlı Adımı atlaması, MIM-1.6 maddesinin Zorlama bölümüne beyan yolunun yazılması, beyansız Adımın hâlâ kırmızı verdiğinin mutasyonla kanıtlanması ve planda yaklaşık on üç Adıma gerekçeli muafiyet ile yaklaşık on yedi Adıma gerçek üretir kenarı yazılması. Var olmayan bir dosyayı Meyve diye ilan etmek yasaktır, çünkü bilgi düzeyindeki borcu meyve dosyası eksik hatasına çevirir."
+  ne:               "Founder 2026-09-16 tarihinde meyve muafiyeti kapısının açılmasına hükmetmiştir: bir Adım hiçbir Meyve teslim etmemesini gerekçesiyle birlikte beyan edebilecek, motor beyanlı Adımı atomiklik tanısının dışında tutacak ve beyansız Adıma tanıyı ateşlemeye devam edecektir. Ölçüm şunu göstermiştir: urun/cekirdek/src/denetci.ts dosyasının üç bin beş yüz altmış altıncı satırındaki bekçi yalnız durumun tamamlandı olmasına ve üretir kenarının boşluğuna bakmakta, hiçbir muafiyet yolu tanımamaktadır; oysa kardeş bekçi olan kullanımsız tip tanısı aynı dosyanın iki bin yüz seksen üçüncü satırında tip muafiyetleri beyanını okumakta ve beyanlı tipte susmaktadır. Otuz dört canlı bulgunun okunan on dördünde yarısı doğası gereği teslim üretmeyen Adımlardır: faz kapıları, taban ölçen plan Adımları, saha teyidi, bir açılış toplantısı, bir anahtar rotasyonu ve kapalı depoya fiziksel taşıma. EKL-F2-A04 Adımı meyvesizliğini 2026-07-18 tarihinde düzyazıyla zaten beyan etmiştir, fakat motor düzyazı okuyamadığı için tanı yine ateşlemektedir. Borcun sonucu ağırdır: YAS-4 maddesi bir tanıyı ancak bulguları sıfırlandığında terfi ettirdiği için kanonun hata dediği üç tanı, yani ORK-1.2 yürütme kenarı sözleşmesi, ORK-1.3 üretim kökeni ihlali ve ORK-2.4 kullanır kenarı ihlali, bugün bilgi düzeyinde kilitli kalmaktadır. Uygulama beş kalemdir: sınıflama kaydında Adım tipine gerekçeli muafiyet alanı açılması, motorda bekçinin beyanlı Adımı atlaması, MIM-1.6 maddesinin Zorlama bölümüne beyan yolunun yazılması, beyansız Adımın hâlâ kırmızı verdiğinin mutasyonla kanıtlanması ve planda yaklaşık on üç Adıma gerekçeli muafiyet ile yaklaşık on yedi Adıma gerçek üretir kenarı yazılması. Var olmayan bir dosyayı Meyve diye ilan etmek yasaktır, çünkü bilgi düzeyindeki borcu meyve dosyası eksik hatasına çevirir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1028,22 +1037,24 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANCA-GECEN-FIKSTUR-CIKTISINI-HATA-SAYIYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-09-16,
   dönüşTetikleyici: "İşleme kancasının test kapısı bir sonraki kez elden geçirildiğinde",
-  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde bir üretici ajanın raporunda bildirilmiş ve kontrolcü tarafından doğrulanmıştır: işleme kancasının test kapısı süit günlüğünü çarpı imi ve failing sözcüğü için taramakta, fakat urun/cekirdek/src/sarmal.ts dosyasının dokuz yüz on ikinci satırındaki hata akışı çıktısı bir fikstürün beklenen çıktısıdır ve o fikstür geçmektedir. Sonuç olarak sağlıklı bir sınamanın beklenen çıktısı kanca tarafından başarısızlık gibi toplanmakta ve günlüğü okuyan kişiye kırmızı varmış gibi görünmektedir. Bugün işi engellememektedir, çünkü kanca hükmünü çıkış kodundan vermektedir; ancak gürültü bir gün gerçek kırmızıyı gizler. Doğru davranış, kapının hükmünü metin taramasından değil koşucunun kendi özet satırlarından almasıdır."
+  ne:               "EKL-F6-A03 turunda 2026-09-16 tarihinde bir üretici ajanın raporunda bildirilmiş ve kontrolcü tarafından doğrulanmıştır: işleme kancasının test kapısı süit günlüğünü çarpı imi ve failing sözcüğü için taramakta, fakat urun/cekirdek/src/sarmal.ts dosyasının dokuz yüz on ikinci satırındaki hata akışı çıktısı bir fikstürün beklenen çıktısıdır ve o fikstür geçmektedir. Sonuç olarak sağlıklı bir sınamanın beklenen çıktısı kanca tarafından başarısızlık gibi toplanmakta ve günlüğü okuyan kişiye kırmızı varmış gibi görünmektedir. Bugün işi engellememektedir, çünkü kanca hükmünü çıkış kodundan vermektedir; ancak gürültü bir gün gerçek kırmızıyı gizler. Doğru davranış, kapının hükmünü metin taramasından değil koşucunun kendi özet satırlarından almasıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-MCPB-PAKETININ-SURUM-NOTU-YOK,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Masaüstü eklenti paketi ilk kez yayımlanmadan önce; en geç EKL-F6-A01 Adımının kapanışında",
-  ne:               "Founder 2026-09-16 tarihinde çekirdek paketinin sürümünü sunucunun telde ilan ettiği 0.16.0 numarasına çekmeye hükmetmiş ve sürüm notu ihtiyacının hatırlatıcıya bağlanmasını istemiştir. Ölçüm şunu göstermiştir: depoda tek sürüm notu dosyası vardır ve o dosya eklentinin tarihçesidir (urun/eklenti/CHANGELOG.md, doksan yedi sürüm başlığı); çekirdek paketinin hiçbir sürüm notu yoktur ve sunucunun sürüm gerekçesi yalnız kaynak kodun içindeki yorumda yaşamaktadır (urun/cekirdek/src/mcp.ts altmış dokuzuncu satır). Masaüstü eklenti paketi eklentiden ayrı bir üründür ve ayrı mağazada yaşar; yayımlandığı gün kendi sürüm notunu ister, çünkü kurulanın hangi değişiklikle geldiğini eklentinin notundan okumak mümkün değildir. Doğru davranış, çekirdek paketine kendi sürüm notu dosyasının açılması ve sunucu sürümü her ilerlediğinde o notun aynı işlemede yazılmasıdır; not yokken paket yayımlanmaz."
+  ne:               "Founder 2026-09-16 tarihinde çekirdek paketinin sürümünü sunucunun telde ilan ettiği 0.16.0 numarasına çekmeye hükmetmiş ve sürüm notu ihtiyacının hatırlatıcıya bağlanmasını istemiştir. Ölçüm şunu göstermiştir: depoda tek sürüm notu dosyası vardır ve o dosya eklentinin tarihçesidir (urun/eklenti/CHANGELOG.md, doksan yedi sürüm başlığı); çekirdek paketinin hiçbir sürüm notu yoktur ve sunucunun sürüm gerekçesi yalnız kaynak kodun içindeki yorumda yaşamaktadır (urun/cekirdek/src/mcp.ts altmış dokuzuncu satır). Masaüstü eklenti paketi eklentiden ayrı bir üründür ve ayrı mağazada yaşar; yayımlandığı gün kendi sürüm notunu ister, çünkü kurulanın hangi değişiklikle geldiğini eklentinin notundan okumak mümkün değildir. Doğru davranış, çekirdek paketine kendi sürüm notu dosyasının açılması ve sunucu sürümü her ilerlediğinde o notun aynı işlemede yazılmasıdır; not yokken paket yayımlanmaz. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1070,22 +1081,23 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR,
-  durum:            açık,
+  durum:            tamamlandı,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-16,
   dönüşTetikleyici: "Onay çekirdeği ya da durum akışı kartı bir sonraki kez elden geçirildiğinde; en geç BLK-EKLENTI Bloku kapanmadan",
-  ne:               "Founder 2026-09-16 tarihinde onay kuyruğunun boş olduğunu bildirmiştir; oysa aynı gün EKL-F6-A05 ile EKL-F6-A09 Adımlarına onayBekler alanı yazılmış ve tur koşmuştur. Ölçüm şunu göstermiştir: onay çekirdeği kapıyı yalnız durumu beklemede ya da geliştirmede olan Adımlarda arar (urun/eklenti/src/onay-cekirdek.ts seksen altıncı satır), iki Adım ise kanonun tanımına birebir uyarak doğrulanmamış durumundaydı. Durum akışı kartı doğrulanmamış değerini iş teslim edilmiş fakat yetkili kabul verilmemiş diye tanımlar; yani ürünün kendi sözlüğünde Founder onayını bekleyen tek durum, onay kuyruğunun süzgecinin dışındadır. Sonuç, kapının mekanik beyanla yazılmış olmasına rağmen kuyruğun sessiz kalması ve Founder'ın onay veremeden beklemesidir. Bugün için iki Adım geliştirmede durumuna geri alınmıştır ki kuyruk onları görsün; bu bir geçici çözümdür ve kanonun doğru durumunu feda eder. Doğru davranış, kuyruğun doğrulanmamış durumunu da açık saymasıdır, çünkü o durumdaki her Adım tanım gereği bir kabul beklemektedir; süzgeç genişletildiğinde doğrulanmamış bir Adımın kuyruğa düştüğü ve beklemede olanın düşmediği mutasyonla kanıtlanmalıdır. DÜZELTME (aynı gün, ikinci ölçüm): iki Adım geliştirmede durumuna alındıktan sonra da kuyruk boş kalmıştır ve asıl sebep başkadır. Onay çekirdeği seksen yedinci satırda onay alanının varlığını kararın verildiğinin kanıtı sayar; oysa planın geleneği her Adıma doğduğunda onaylandı damgasını tarihiyle bu alana yazmak ve Founder şerhlerini de oraya işlemektir. Sonuç, doğmuş hemen her Adımın kuyruğun gözünde çoktan karara bağlanmış olması ve onayBekler alanı yazılsa bile kuyruğa hiç girmemesidir; kuyruk bu planda fiilen ölüdür. Onay alanı iki ayrı olguyu taşımaktadır: başlama onayının tarihçesi ve kapanış kararı; tarayıcı ikisini ayıramaz. Doğru davranış, onayBekler alanı duruyorsa Adımın karar beklediğine hükmetmektir, onay alanının tarihçesine bakılmaksızın; Founder'ın 2026-08-29 tarihli hükmü zaten kararın işareti olarak onayBekler alanının kalkmasını seçmiştir ve tarayıcının o işareti okuması yeter. Aynı gün üçüncü ölçüm çatışmanın öteki yüzünü göstermiştir: eklenti süitindeki çift beyan nöbeti, Founder'ın 2026-08-29 hükmü gereği onay ile onayBekler alanlarının aynı düğümde durmasını yasaklar ve iki Adıma yazılan onayBekler alanı o nöbeti kırmızıya düşürmüştür; alan iki Adımdan geri alınmıştır. Dolayısıyla planın doğuş onayı geleneği sürdükçe onayBekler alanı onaylanmış hiçbir Adımda kullanılamaz ve panel geçidi bu çatışma çözülene kadar kapalıdır; kapı hükmü verildiğinde Founder kararı sohbette verecek ve kontrolcü onay alanına tarihli şerh olarak yazacaktır. Kalıcı çözüm iki olguyu iki ayrı alana ayırmaktır: doğuş onayının tarihçesi bir alanda, kapanış kararı ötekinde. KARAR (Founder, karar sayfası · 2026-10-10): onay alanı ikiye ayrılır: doğuş onayının tarihçesi bir alanda, kapanış kararı ötekinde durur ve şema buna göre değişir. Gerekçe, Onaylar panelinin iki olguyu ayıramaması ve ayrımın nöbeti gevşetmekten daha kalıcı olmasıdır; uygulama kendi Adımını bekler. ARA KAPANIŞ (2026-10-27): Kaydın ilk yarısı PNL-A07 ile kapanmıştır; onay kuyruğu artık doğrulanmamış durumdaki Adımların kapısını da gösterir. İkinci yarısı, yani onay alanının doğuş tarihçesi ile kapanış kararı olarak ikiye ayrılması, bir şema değişikliğidir ve henüz kendi Adımına bağlanmamıştır; bu yüzden kayıt açık kalır."
+  ne:               "Founder 2026-09-16 tarihinde onay kuyruğunun boş olduğunu bildirmiştir; oysa aynı gün EKL-F6-A05 ile EKL-F6-A09 Adımlarına onayBekler alanı yazılmış ve tur koşmuştur. Ölçüm şunu göstermiştir: onay çekirdeği kapıyı yalnız durumu beklemede ya da geliştirmede olan Adımlarda arar (urun/eklenti/src/onay-cekirdek.ts seksen altıncı satır), iki Adım ise kanonun tanımına birebir uyarak doğrulanmamış durumundaydı. Durum akışı kartı doğrulanmamış değerini iş teslim edilmiş fakat yetkili kabul verilmemiş diye tanımlar; yani ürünün kendi sözlüğünde Founder onayını bekleyen tek durum, onay kuyruğunun süzgecinin dışındadır. Sonuç, kapının mekanik beyanla yazılmış olmasına rağmen kuyruğun sessiz kalması ve Founder'ın onay veremeden beklemesidir. Bugün için iki Adım geliştirmede durumuna geri alınmıştır ki kuyruk onları görsün; bu bir geçici çözümdür ve kanonun doğru durumunu feda eder. Doğru davranış, kuyruğun doğrulanmamış durumunu da açık saymasıdır, çünkü o durumdaki her Adım tanım gereği bir kabul beklemektedir; süzgeç genişletildiğinde doğrulanmamış bir Adımın kuyruğa düştüğü ve beklemede olanın düşmediği mutasyonla kanıtlanmalıdır. DÜZELTME (aynı gün, ikinci ölçüm): iki Adım geliştirmede durumuna alındıktan sonra da kuyruk boş kalmıştır ve asıl sebep başkadır. Onay çekirdeği seksen yedinci satırda onay alanının varlığını kararın verildiğinin kanıtı sayar; oysa planın geleneği her Adıma doğduğunda onaylandı damgasını tarihiyle bu alana yazmak ve Founder şerhlerini de oraya işlemektir. Sonuç, doğmuş hemen her Adımın kuyruğun gözünde çoktan karara bağlanmış olması ve onayBekler alanı yazılsa bile kuyruğa hiç girmemesidir; kuyruk bu planda fiilen ölüdür. Onay alanı iki ayrı olguyu taşımaktadır: başlama onayının tarihçesi ve kapanış kararı; tarayıcı ikisini ayıramaz. Doğru davranış, onayBekler alanı duruyorsa Adımın karar beklediğine hükmetmektir, onay alanının tarihçesine bakılmaksızın; Founder'ın 2026-08-29 tarihli hükmü zaten kararın işareti olarak onayBekler alanının kalkmasını seçmiştir ve tarayıcının o işareti okuması yeter. Aynı gün üçüncü ölçüm çatışmanın öteki yüzünü göstermiştir: eklenti süitindeki çift beyan nöbeti, Founder'ın 2026-08-29 hükmü gereği onay ile onayBekler alanlarının aynı düğümde durmasını yasaklar ve iki Adıma yazılan onayBekler alanı o nöbeti kırmızıya düşürmüştür; alan iki Adımdan geri alınmıştır. Dolayısıyla planın doğuş onayı geleneği sürdükçe onayBekler alanı onaylanmış hiçbir Adımda kullanılamaz ve panel geçidi bu çatışma çözülene kadar kapalıdır; kapı hükmü verildiğinde Founder kararı sohbette verecek ve kontrolcü onay alanına tarihli şerh olarak yazacaktır. Kalıcı çözüm iki olguyu iki ayrı alana ayırmaktır: doğuş onayının tarihçesi bir alanda, kapanış kararı ötekinde. KARAR (Founder, karar sayfası · 2026-10-10): onay alanı ikiye ayrılır: doğuş onayının tarihçesi bir alanda, kapanış kararı ötekinde durur ve şema buna göre değişir. Gerekçe, Onaylar panelinin iki olguyu ayıramaması ve ayrımın nöbeti gevşetmekten daha kalıcı olmasıdır; uygulama kendi Adımını bekler. ARA KAPANIŞ (2026-10-27): Kaydın ilk yarısı PNL-A07 ile kapanmıştır; onay kuyruğu artık doğrulanmamış durumdaki Adımların kapısını da gösterir. İkinci yarısı, yani onay alanının doğuş tarihçesi ile kapanış kararı olarak ikiye ayrılması, bir şema değişikliğidir ve henüz kendi Adımına bağlanmamıştır; bu yüzden kayıt açık kalır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; PNL-A07 ve PNL-A08 onay kuyruğunu ve sayacını geliştirmede ve doğrulanmamış kapıları sayacak biçimde yeniden kurmuştur."
 )
 
 Hatırlatıcı(
   kod:              HTR-GERIBILDIRIM-ARTI-DUGMESI-YALNIZ-BAZI-ADIMLARDA,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-17,
   dönüşTetikleyici: "Geribildirim kanalı ya da yorum aralığı sağlayıcısı bir sonraki kez elden geçirildiğinde; Founder derinlemesine inceleme istemiştir",
-  ne:               "Founder 2026-09-17 tarihinde canlı pencerede ölçmüştür: eklenti_olgunlastirma.sar dosyasında EKL-F3-A04 ile EKL-F3-A05 Adımlarının (yüz on dokuz ve yüz yirmi birinci satırlar) sol kenar boşluğunda artı düğmesi ve satırın altında geribildirim ipucu (teşekkür, takdir, onur, öneri) görünmekte, aynı dosyadaki ve öteki planlardaki hiçbir Adımda bu düğme görünmemektedir. Bu düğme VS Code yorum arayüzünün yorum ekle sunumudur ve yalnız eklentinin yorumlanabilir aralık olarak beyan ettiği satırlarda çıkar; şema notu geribildirim kanallarının yalnız tamamlanmış Adımlara ve yalnız Founder tarafından yazılabileceğini söyler, oysa tamamlanmış yüzlerce Adımın yalnız ikisinde düğme vardır. Sebep henüz ölçülmemiştir ve tahmin edilmemelidir; ölçülecek adaylar şunlardır: aralık sağlayıcısının yalnız belirli bir düğüm şekline (tek satırlı ilan, belirli bir parametre dizilişi ya da daha önce geribildirim almış Adımlar) bağlı olması, sağlayıcının yalnız imlecin dokunduğu aralığı kaydetmesi ve ipucunun yalnız fare üzerindeyken çizilmesi. Doğru davranış, kuralın söylediği kümenin tamamında, yani tamamlanmış her Adımda, düğmenin aynı biçimde görünmesi ve bunun bir nöbetle ölçülmesidir; Founder kusurun derinlemesine incelenmesini istemiştir."
+  ne:               "Founder 2026-09-17 tarihinde canlı pencerede ölçmüştür: eklenti_olgunlastirma.sar dosyasında EKL-F3-A04 ile EKL-F3-A05 Adımlarının (yüz on dokuz ve yüz yirmi birinci satırlar) sol kenar boşluğunda artı düğmesi ve satırın altında geribildirim ipucu (teşekkür, takdir, onur, öneri) görünmekte, aynı dosyadaki ve öteki planlardaki hiçbir Adımda bu düğme görünmemektedir. Bu düğme VS Code yorum arayüzünün yorum ekle sunumudur ve yalnız eklentinin yorumlanabilir aralık olarak beyan ettiği satırlarda çıkar; şema notu geribildirim kanallarının yalnız tamamlanmış Adımlara ve yalnız Founder tarafından yazılabileceğini söyler, oysa tamamlanmış yüzlerce Adımın yalnız ikisinde düğme vardır. Sebep henüz ölçülmemiştir ve tahmin edilmemelidir; ölçülecek adaylar şunlardır: aralık sağlayıcısının yalnız belirli bir düğüm şekline (tek satırlı ilan, belirli bir parametre dizilişi ya da daha önce geribildirim almış Adımlar) bağlı olması, sağlayıcının yalnız imlecin dokunduğu aralığı kaydetmesi ve ipucunun yalnız fare üzerindeyken çizilmesi. Doğru davranış, kuralın söylediği kümenin tamamında, yani tamamlanmış her Adımda, düğmenin aynı biçimde görünmesi ve bunun bir nöbetle ölçülmesidir; Founder kusurun derinlemesine incelenmesini istemiştir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1123,12 +1135,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AD-ALANLI-ATIF-KALAN-IKI-YUZ,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             mimari,
   öncelik:          p2,
   tarih:            2026-09-29,
   dönüşTetikleyici: "Gezin aracı ya da editörün yeniden adlandırma sağlayıcısı bir sonraki kez elden geçirildiğinde; kardeş projeler arasında ilk yeniden adlandırma yapılmadan önce",
-  ne:               "KPS-SIR-A02 çıplak koda yapılan atıf sorgusunun o tanıma çözülen ad alanlı atıfları bulmasını sağlamıştır, fakat iki yüz kabul kapsamı dışında kalmıştır. Birincisi, gezin aracı bir proje kökünden çağrıldığında kardeş köklerde yazılmış ad alanlı atıfları görmemektedir; ölçüm yalnız yüklü evren, yani çatı ya da çalışma alanı kökünden yapıldığında eksiksizdir ve kardeş kökleri her çağrıda taramak ek indeks maliyeti getirmektedir. İkincisi, editördeki yeniden adlandırma ad alanlı yazımları kapsamamaktadır; bir kardeş projede yazılmış atıf yeniden adlandırmadan sonra kırılır ve yalnız kırık-referans hatasıyla görünür olur. Ders tek cümledir: bir atıfın bulunabilmesi ile birlikte yeniden adlandırılabilmesi ayrı yüzlerdir ve biri kapandığında öteki kendiliğinden kapanmaz."
+  ne:               "KPS-SIR-A02 çıplak koda yapılan atıf sorgusunun o tanıma çözülen ad alanlı atıfları bulmasını sağlamıştır, fakat iki yüz kabul kapsamı dışında kalmıştır. Birincisi, gezin aracı bir proje kökünden çağrıldığında kardeş köklerde yazılmış ad alanlı atıfları görmemektedir; ölçüm yalnız yüklü evren, yani çatı ya da çalışma alanı kökünden yapıldığında eksiksizdir ve kardeş kökleri her çağrıda taramak ek indeks maliyeti getirmektedir. İkincisi, editördeki yeniden adlandırma ad alanlı yazımları kapsamamaktadır; bir kardeş projede yazılmış atıf yeniden adlandırmadan sonra kırılır ve yalnız kırık-referans hatasıyla görünür olur. Ders tek cümledir: bir atıfın bulunabilmesi ile birlikte yeniden adlandırılabilmesi ayrı yüzlerdir ve biri kapandığında öteki kendiliğinden kapanmaz. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1144,12 +1157,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ONAYLAR-DIS-ONAY-KAYDI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             mimari,
   öncelik:          p1,
   tarih:            2026-09-29,
   dönüşTetikleyici: "Onaylar paneli bir sonraki kez elden geçirildiğinde; en geç bir dış sistemin onay isteklerini bu panelde göstermesi istendiğinde",
-  ne:               "Founder 2026-09-29 tarihinde bütün onayların tek kutuda, yani Onaylar panelinde toplanmasına hükmetmiştir. Kardeş bir projenin motoru onay isteklerini panelin okuduğu biçimde bir Adım kaydı olarak yazabilmektedir, fakat panel bugün yalnız plan kararlarını tanır: onayla eylemi dosyaya onay alanı yazar, dış sistemin işi onaylanmaz ve kayıt kutudan düşer; kullanıcı onay verdiğini sanabilir. Ayrıca tek Adımlık bu kayıt bir projenin ağacına düştüğünde denetim onu köksüz plan düğümü sayar ve hata verir. Açık araçta üç şey gerekmektedir: denetimin plan düğümü saymadığı ve hiyerarşi kuralı uygulamadığı yalnız bildirim olan bir kayıt biçimi; böyle bir kayıtta onay eyleminin dosyaya yazmayıp kararı kayıtta adı geçen dış komuta devretmesi ya da yalnız bilgi göstermesi; ve bu kayıtların dizininin çalışma alanı düzeyinde ilan edilebilmesi. Ders tek cümledir: bir onay yüzü, onayın gerçekte nereye gittiğini göstermiyorsa güven değil yanılgı üretir."
+  ne:               "Founder 2026-09-29 tarihinde bütün onayların tek kutuda, yani Onaylar panelinde toplanmasına hükmetmiştir. Kardeş bir projenin motoru onay isteklerini panelin okuduğu biçimde bir Adım kaydı olarak yazabilmektedir, fakat panel bugün yalnız plan kararlarını tanır: onayla eylemi dosyaya onay alanı yazar, dış sistemin işi onaylanmaz ve kayıt kutudan düşer; kullanıcı onay verdiğini sanabilir. Ayrıca tek Adımlık bu kayıt bir projenin ağacına düştüğünde denetim onu köksüz plan düğümü sayar ve hata verir. Açık araçta üç şey gerekmektedir: denetimin plan düğümü saymadığı ve hiyerarşi kuralı uygulamadığı yalnız bildirim olan bir kayıt biçimi; böyle bir kayıtta onay eyleminin dosyaya yazmayıp kararı kayıtta adı geçen dış komuta devretmesi ya da yalnız bilgi göstermesi; ve bu kayıtların dizininin çalışma alanı düzeyinde ilan edilebilmesi. Ders tek cümledir: bir onay yüzü, onayın gerçekte nereye gittiğini göstermiyorsa güven değil yanılgı üretir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1176,22 +1190,24 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-OLU-IZ-OZ-BILDIRIM,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Ölü iz toplayıcısına bir sonraki kez dokunulduğunda; en geç bir projede emekli beyanı ilk kez kullanıldığında",
-  ne:               "HST-MTR-A09'un bağımsız incelemesi 2026-10-10 tarihinde ölü iz toplayıcısında Adımdan önce de var olan iki açığı ölçmüştür. Birincisi, emekli: evet beyanı taşıyan bir GenelKural ya da Karar kendi kod alanı için ölü iz üretmektedir, çünkü kaynak taraması yalnız durum: emekli yazan düğümü atlamaktadır; Adımın onarımı biçim eşitliğiyle bu kusuru adlı Kurala da taşımıştır. İkincisi, çağır kenarının hedefi parametrede değil düğümün ad alanında durduğu için emekli bir koda yapılan çağrı hiç sayılmamaktadır. Bugün hiçbir projede bu beyanlar kullanılmadığı ve iki değer sınıflama kaydında da bulunmadığı için canlı etkisi sıfırdır."
+  ne:               "HST-MTR-A09'un bağımsız incelemesi 2026-10-10 tarihinde ölü iz toplayıcısında Adımdan önce de var olan iki açığı ölçmüştür. Birincisi, emekli: evet beyanı taşıyan bir GenelKural ya da Karar kendi kod alanı için ölü iz üretmektedir, çünkü kaynak taraması yalnız durum: emekli yazan düğümü atlamaktadır; Adımın onarımı biçim eşitliğiyle bu kusuru adlı Kurala da taşımıştır. İkincisi, çağır kenarının hedefi parametrede değil düğümün ad alanında durduğu için emekli bir koda yapılan çağrı hiç sayılmamaktadır. Bugün hiçbir projede bu beyanlar kullanılmadığı ve iki değer sınıflama kaydında da bulunmadığı için canlı etkisi sıfırdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KONUMSUZ-BULGU-BAG-SINAMASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "VS Code bütünleşme süiti bir sonraki kez elden geçirildiğinde; en geç MGZ-A01 kapanırken",
-  ne:               "MGZ-A06'nın bağımsız incelemesi 2026-10-10 tarihinde eklentinin konumsuz bulguya hedef dosyayı bağlayan ilgili konum satırının hiçbir sınamayla korunmadığını ölçmüştür: bağ kapatıldığında eklenti süiti yeşil kalmıştır. Bu bağ yalnız gerçek editörde gözlenebildiği için korumanın yeri VS Code bütünleşme süitidir; Problems'taki bulgunun alt satırının hedef dosyayı ya da klasörü gösterdiğini iddia eden bir sınama yazılmalıdır. Ana satırın giriş dosyasını açması VS Code'un kendi davranışıdır ve bu kaydın konusu değildir."
+  ne:               "MGZ-A06'nın bağımsız incelemesi 2026-10-10 tarihinde eklentinin konumsuz bulguya hedef dosyayı bağlayan ilgili konum satırının hiçbir sınamayla korunmadığını ölçmüştür: bağ kapatıldığında eklenti süiti yeşil kalmıştır. Bu bağ yalnız gerçek editörde gözlenebildiği için korumanın yeri VS Code bütünleşme süitidir; Problems'taki bulgunun alt satırının hedef dosyayı ya da klasörü gösterdiğini iddia eden bir sınama yazılmalıdır. Ana satırın giriş dosyasını açması VS Code'un kendi davranışıdır ve bu kaydın konusu değildir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1207,92 +1223,101 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-METIN-ATIF-CIT-KURALI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Metin atıf kapısına bir sonraki kez dokunulduğunda",
-  ne:               "HST-YUZ-A04 kök yüzeyi nöbetini her türden kod çitinin içini ölçmeyen kipe geçirmiş, varlık içi metin atıf kapısını ise bilinçle eski kipte bırakmıştır; bu sınır bir sınamayla korunmaktadır. Sonuç olarak README'deki örnek kimlik işleme kancasında artık uyarı üretmemekte, fakat proje denetiminde karşılıksız metin atfı olarak iki bilgi kaydı vermeye devam etmektedir. Varlık kapısı da aynı kipe geçirilirse ölçülen etki şudur: Sarmal'da bilgi kaydı dörtten ikiye, laboratuvarda yetmiş birden altmış yediye iner, öteki projeler değişmez. Karar, etiketsiz çitlerin içindeki gerçek atıfların ölçülmeye değer olup olmadığına bağlıdır."
+  ne:               "HST-YUZ-A04 kök yüzeyi nöbetini her türden kod çitinin içini ölçmeyen kipe geçirmiş, varlık içi metin atıf kapısını ise bilinçle eski kipte bırakmıştır; bu sınır bir sınamayla korunmaktadır. Sonuç olarak README'deki örnek kimlik işleme kancasında artık uyarı üretmemekte, fakat proje denetiminde karşılıksız metin atfı olarak iki bilgi kaydı vermeye devam etmektedir. Varlık kapısı da aynı kipe geçirilirse ölçülen etki şudur: Sarmal'da bilgi kaydı dörtten ikiye, laboratuvarda yetmiş birden altmış yediye iner, öteki projeler değişmez. Karar, etiketsiz çitlerin içindeki gerçek atıfların ölçülmeye değer olup olmadığına bağlıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-ETIKET-YAZIMI-YUZEY-AYRISMASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Kimlik belirteci ya da eklentinin kod desenleri bir sonraki kez elden geçirildiğinde",
-  ne:               "HST-MTR-A06'nın bağımsız incelemesi 2026-10-10 tarihinde madde kodundan sonra tireyle süren etiket biçimli yazımlarda (ör. MIM-1.1 ile başlayan uzun bir durum etiketi) dört yüzeyin dört farklı şey gördüğünü ölçmüştür: belirteç bütün etiketi tek ad sayar, metin katmanı hiçbir aday görmez, F12 madde kodunu, eklentinin bağlantı dekoru ve ipucu ise üst maddeyi görür. Depoda bu yüzden iki gerçek metin atfı kaybolmuş, dokuz uydurma aday temizlenmiştir. Doğru sınırın etiketi mi yoksa içindeki madde kodunu mu tanıyacağı bir tasarım kararıdır ve dört yüzey aynı kuralı paylaşmalıdır. GÜNCELLEME (kontrolcü · 2026-10-10): HST-YUZ-A05 ile eklentinin bağlantı dekoru ve ipucu da artık madde kodunu görüyor; dört yüzeyden üçü (F12, dekor, ipucu) aynı kuralı paylaşır, belirteç ayrı kalır. Etiket biçimli on iki yazımda (ör. STR-3.1 ile başlayan kilit etiketleri) yalnız madde kodu parçası bağlanır. Aynı ailenin iki kalıntısı ölçülmüştür: tamamlama önerisi `kod: DIL-1.5` yazımını DIL-1 olarak önerir ve yüzey çekirdeği tırnak içindeki noktalı kodu tanımaz."
+  ne:               "HST-MTR-A06'nın bağımsız incelemesi 2026-10-10 tarihinde madde kodundan sonra tireyle süren etiket biçimli yazımlarda (ör. MIM-1.1 ile başlayan uzun bir durum etiketi) dört yüzeyin dört farklı şey gördüğünü ölçmüştür: belirteç bütün etiketi tek ad sayar, metin katmanı hiçbir aday görmez, F12 madde kodunu, eklentinin bağlantı dekoru ve ipucu ise üst maddeyi görür. Depoda bu yüzden iki gerçek metin atfı kaybolmuş, dokuz uydurma aday temizlenmiştir. Doğru sınırın etiketi mi yoksa içindeki madde kodunu mu tanıyacağı bir tasarım kararıdır ve dört yüzey aynı kuralı paylaşmalıdır. GÜNCELLEME (kontrolcü · 2026-10-10): HST-YUZ-A05 ile eklentinin bağlantı dekoru ve ipucu da artık madde kodunu görüyor; dört yüzeyden üçü (F12, dekor, ipucu) aynı kuralı paylaşır, belirteç ayrı kalır. Etiket biçimli on iki yazımda (ör. STR-3.1 ile başlayan kilit etiketleri) yalnız madde kodu parçası bağlanır. Aynı ailenin iki kalıntısı ölçülmüştür: tamamlama önerisi `kod: DIL-1.5` yazımını DIL-1 olarak önerir ve yüzey çekirdeği tırnak içindeki noktalı kodu tanımaz. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-GEZIN-ACIKLAMASI-KAPSAM-CUMLESI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "MCP metinleri bir sonraki kez mühür tazelemesiyle elden geçirildiğinde",
-  ne:               "HST-MTR-A05 gezinme aracını KOD biçimi dışındaki adlar için kapsamını açıkça söyler hâle getirmiştir, fakat aracın açıklaması (urun/cekirdek/src/mcp-metinleri.ts, Türkçe ve İngilizce) hâlâ atıf evreninin .sar, .md ve .ts dosyalarını kapsadığını söylemekte ve metin katmanının yalnız KOD biçimindeki adları tanıdığını anmamaktadır. HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR kaydının kapsam beyanını daraltma isteği bu yüzden yarım kalmıştır. Dosya mühürlü olduğu için değişiklik mühür tazelemesiyle birlikte yapılır."
+  ne:               "HST-MTR-A05 gezinme aracını KOD biçimi dışındaki adlar için kapsamını açıkça söyler hâle getirmiştir, fakat aracın açıklaması (urun/cekirdek/src/mcp-metinleri.ts, Türkçe ve İngilizce) hâlâ atıf evreninin .sar, .md ve .ts dosyalarını kapsadığını söylemekte ve metin katmanının yalnız KOD biçimindeki adları tanıdığını anmamaktadır. HTR-GEZIN-KAMEL-SEMBOLU-ADRESLEYEMIYOR kaydının kapsam beyanını daraltma isteği bu yüzden yarım kalmıştır. Dosya mühürlü olduğu için değişiklik mühür tazelemesiyle birlikte yapılır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-AGAC-KUMESI-UYELIK-NOBETI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "İşleme kapısına bir sonraki kez dokunulduğunda; en geç yeni bir ağaç okuyan çekirdek sınaması eklendiğinde",
-  ne:               "HST-YUZ-A01 işleme kapısına, çekirdek kodu değişmediğinde de koşan hızlı bir ağaç kümesi eklemiştir. Bağımsız inceleme 2026-10-10 tarihinde kümenin üyeliğinin elle tutulduğunu ve bunu ölçen bir nöbet bulunmadığını ölçmüştür: tetikleyici dışı bir yol okuyan 49 çekirdek sınama dosyasının 20'si kümededir; ogreti, oz/ceviri, anadizin ve kök belge dosyalarını okuyan 29 dosya kümenin dışındadır ve sözlükten tek satır silen bir işleme yeni kapıdan geçip sözlük kapsama nöbetini kırmızıya düşürmüştür. Çekirdek paketinin bildirim dosyasının değişmesi de hiçbir süiti tetiklememektedir. Üç yol vardır: bu yolları tam süitin tetikleyicisine eklemek, hızlı olanları kümeye almak ya da üyeliği ölçen bir nöbet yazmak. EK (2026-10-10): HST-MTR-A08'in yeni raf nöbeti kimlik indeksini, yani plan ağacını okuduğu hâlde sınama dosyası (ogretim-ureteci.test.ts) hızlı kümede değildir; yalnız plan dosyası değiştiren bir işlemede bu nöbeti yalnız sürekli tümleştirme görür."
+  ne:               "HST-YUZ-A01 işleme kapısına, çekirdek kodu değişmediğinde de koşan hızlı bir ağaç kümesi eklemiştir. Bağımsız inceleme 2026-10-10 tarihinde kümenin üyeliğinin elle tutulduğunu ve bunu ölçen bir nöbet bulunmadığını ölçmüştür: tetikleyici dışı bir yol okuyan 49 çekirdek sınama dosyasının 20'si kümededir; ogreti, oz/ceviri, anadizin ve kök belge dosyalarını okuyan 29 dosya kümenin dışındadır ve sözlükten tek satır silen bir işleme yeni kapıdan geçip sözlük kapsama nöbetini kırmızıya düşürmüştür. Çekirdek paketinin bildirim dosyasının değişmesi de hiçbir süiti tetiklememektedir. Üç yol vardır: bu yolları tam süitin tetikleyicisine eklemek, hızlı olanları kümeye almak ya da üyeliği ölçen bir nöbet yazmak. EK (2026-10-10): HST-MTR-A08'in yeni raf nöbeti kimlik indeksini, yani plan ağacını okuduğu hâlde sınama dosyası (ogretim-ureteci.test.ts) hızlı kümede değildir; yalnız plan dosyası değiştiren bir işlemede bu nöbeti yalnız sürekli tümleştirme görür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KATKI-VE-GUVENLIK-REHBERI-BAYAT,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Katkı rehberi ya da güvenlik belgesi bir sonraki kez elden geçirildiğinde",
-  ne:               "HST-YUZ-A01'in bağımsız incelemesi 2026-10-10 tarihinde iki kök belgede bayat ayrıntı ölçmüştür. Katkı rehberi çekirdek süitinin sınama sayısını iki yerde 1298 olarak yazmaktadır, gerçek sayı 1684'tür; sayı her turda bayatlayacağı için yerine komutun yazılması önerilir. Güvenlik belgesi işleme kancasının günlüklerini sabit dosya adlarıyla anmaktadır, oysa gerçek adlar süreç kimliği sonekiyle doğar, kök ve dil günlükleri hiç anılmamaktadır ve her işleme geçici dizinde silinmeyen yaklaşık 177 KB günlük bırakmaktadır."
+  ne:               "HST-YUZ-A01'in bağımsız incelemesi 2026-10-10 tarihinde iki kök belgede bayat ayrıntı ölçmüştür. Katkı rehberi çekirdek süitinin sınama sayısını iki yerde 1298 olarak yazmaktadır, gerçek sayı 1684'tür; sayı her turda bayatlayacağı için yerine komutun yazılması önerilir. Güvenlik belgesi işleme kancasının günlüklerini sabit dosya adlarıyla anmaktadır, oysa gerçek adlar süreç kimliği sonekiyle doğar, kök ve dil günlükleri hiç anılmamaktadır ve her işleme geçici dizinde silinmeyen yaklaşık 177 KB günlük bırakmaktadır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KANON-MUHUR-CIFT-KAYIT,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Kanon metnine bir sonraki Founder onaylı düzeltme yapılırken",
-  ne:               "HST-MTR-A01 ile A02'nin bağımsız incelemesi 2026-10-10 tarihinde kanon mühürlerinin iki yerde elle tutulduğunu ölçmüştür: KANON_SHA sabiti ile nöbet kaydındaki kanon demeti aynı sekiz dosyanın iki ayrı mührüdür ve her kanon düzeltmesi iki elle düzenleme ister. Ayrıca kaynak ayrışması nöbetinin kırmızı fikstürü önkoşul olarak canlı demetin kayıtla eşit olmasını aradığı için her kanon bayt değişikliğinde canlı mühür nöbetiyle birlikte düşer ve aynı sebebi ikinci kez sayar. Mührün tek kaynağı olmalı ve fikstür kendi mutasyon öncesi demetini taban almalıdır. DÖNÜŞ (kontrolcü · 2026-10-11): HST-MTR-A13'ün kanon düzeltmesi tetikleyiciyi ateşlemiştir. Üretici iki mührü bu turda da elle tazelemiş, bağımsız inceleme ise tarif edilen çift sayımı yeniden ölçmüştür: tek baytlık bir kanon değişikliği çekirdek süitinde dört bayt mührü sınamasını birlikte düşürmektedir. Kayıt açık kalır."
+  ne:               "HST-MTR-A01 ile A02'nin bağımsız incelemesi 2026-10-10 tarihinde kanon mühürlerinin iki yerde elle tutulduğunu ölçmüştür: KANON_SHA sabiti ile nöbet kaydındaki kanon demeti aynı sekiz dosyanın iki ayrı mührüdür ve her kanon düzeltmesi iki elle düzenleme ister. Ayrıca kaynak ayrışması nöbetinin kırmızı fikstürü önkoşul olarak canlı demetin kayıtla eşit olmasını aradığı için her kanon bayt değişikliğinde canlı mühür nöbetiyle birlikte düşer ve aynı sebebi ikinci kez sayar. Mührün tek kaynağı olmalı ve fikstür kendi mutasyon öncesi demetini taban almalıdır. DÖNÜŞ (kontrolcü · 2026-10-11): HST-MTR-A13'ün kanon düzeltmesi tetikleyiciyi ateşlemiştir. Üretici iki mührü bu turda da elle tazelemiş, bağımsız inceleme ise tarif edilen çift sayımı yeniden ölçmüştür: tek baytlık bir kanon değişikliği çekirdek süitinde dört bayt mührü sınamasını birlikte düşürmektedir. Kayıt açık kalır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KANON-NOBETI-MUTASYON-BOSLUKLARI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Kanon tutarlılık nöbetine ya da öğretim nöbetlerine bir sonraki kez dokunulduğunda",
-  ne:               "Hasat turunun kanon grubundaki bağımsız inceleme 2026-10-10 tarihinde bazı mutasyonların yaşadığını ölçmüştür. Taşıyıcı eşitliği yalnız uzunlukla ya da harf büyüklüğüne duyarsız karşılaştırılsa süit yeşil kalmaktadır; eşit uzunlukta sözcük değişimi taşıyan bir fikstür eksiktir. Bilinen ayrışma listesi içeriğe değil madde ve alan anahtarına baktığı için listedeki ORK-9 alanına eklenen yeni bir sapmayı yalnız genel bayt mühürleri yakalar; ORK-9 düzeltilince liste boşalır ve bu kendiliğinden kalkar. Kanon sayımı kaydı canlı diskten türetilse nöbet yeşil kalır, yani kaydın elle yazılmış olması yalnız yorumla korunur; dosya sayısı ile Karar ve Kural arasındaki rol değişimi bulgu sınamasında yoktur. Öğretim nöbeti de ne alanına rakamla yazılmış bir sayıyı okuyamamaktadır. DÖNÜŞ (kontrolcü · 2026-10-11): HST-MTR-A13 kaydın tetikleyicisini ateşlemiştir. ORK-9 düzeltilince bilinen ayrışma listesi boşalmış ve listeye bağlı boşluk kalkmıştır; bağımsız inceleme ORK-9 taşıyıcısına geri konan sapmanın artık canlı taşıyıcı nöbetinde adıyla kırmızı yandığını ölçmüştür. Eşit uzunlukta sözcük değişimini canlı karşılaştırıcı yakalamaktadır, fakat süitte buna ait bir fikstür yoktur. İnceleme ayrıca TIP-1.14'teki tip listesinin ve kanon başlıklarındaki madde sayısının anlamsal bir nöbeti olmadığını, geri dönüşlerini yalnız bayt mühürlerinin yakaladığını ölçmüştür. Kalan kalemler için kayıt açık kalır."
+  ne:               "Hasat turunun kanon grubundaki bağımsız inceleme 2026-10-10 tarihinde bazı mutasyonların yaşadığını ölçmüştür. Taşıyıcı eşitliği yalnız uzunlukla ya da harf büyüklüğüne duyarsız karşılaştırılsa süit yeşil kalmaktadır; eşit uzunlukta sözcük değişimi taşıyan bir fikstür eksiktir. Bilinen ayrışma listesi içeriğe değil madde ve alan anahtarına baktığı için listedeki ORK-9 alanına eklenen yeni bir sapmayı yalnız genel bayt mühürleri yakalar; ORK-9 düzeltilince liste boşalır ve bu kendiliğinden kalkar. Kanon sayımı kaydı canlı diskten türetilse nöbet yeşil kalır, yani kaydın elle yazılmış olması yalnız yorumla korunur; dosya sayısı ile Karar ve Kural arasındaki rol değişimi bulgu sınamasında yoktur. Öğretim nöbeti de ne alanına rakamla yazılmış bir sayıyı okuyamamaktadır. DÖNÜŞ (kontrolcü · 2026-10-11): HST-MTR-A13 kaydın tetikleyicisini ateşlemiştir. ORK-9 düzeltilince bilinen ayrışma listesi boşalmış ve listeye bağlı boşluk kalkmıştır; bağımsız inceleme ORK-9 taşıyıcısına geri konan sapmanın artık canlı taşıyıcı nöbetinde adıyla kırmızı yandığını ölçmüştür. Eşit uzunlukta sözcük değişimini canlı karşılaştırıcı yakalamaktadır, fakat süitte buna ait bir fikstür yoktur. İnceleme ayrıca TIP-1.14'teki tip listesinin ve kanon başlıklarındaki madde sayısının anlamsal bir nöbeti olmadığını, geri dönüşlerini yalnız bayt mühürlerinin yakaladığını ölçmüştür. Kalan kalemler için kayıt açık kalır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-YURUTUCU-IZI-ROTASYON-VE-BELGE,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Yürütücü izinin varsayılanı değiştirilmeden önce",
-  ne:               "HST-MTR-A04'ün bağımsız incelemesi 2026-10-10 tarihinde yürütücü izinin iki eksiğini ölçmüştür. Birincisi rotasyon yoktur: sunucu her başladığında yeni bir iz dosyası açılır, satır sınırı, saklama süresi ve temizlik bulunmaz ve dosyalar oturumdan oturuma birikir. İkincisi izi açan SARMAL_YURUTUCU_IZI değişkeni yalnız kod yorumunda geçmektedir; tanıtım yüzü, gizlilik belgesi, türetilmiş yüzler ve doğuşun MCP ayar şablonu onu anmaz. Ayrıca değişken geliştirici kabuğunda dışa aktarılırsa işleme kapısı kırılabilir; MCP ayarının env alanıyla açılması önerilir. İz varsayılan açılacaksa rotasyon önceliği p2'ye çıkar. KARAR (Founder, karar sayfası · 2026-10-10): yürütücü izi durum güncelleme aracında varsayılan açık, şef aracında isteğe bağlı olacaktır; varsayılan açılış bu kaydın istediği rotasyona bağlıdır ve rotasyon gelene kadar iz kapalı kalır."
+  ne:               "HST-MTR-A04'ün bağımsız incelemesi 2026-10-10 tarihinde yürütücü izinin iki eksiğini ölçmüştür. Birincisi rotasyon yoktur: sunucu her başladığında yeni bir iz dosyası açılır, satır sınırı, saklama süresi ve temizlik bulunmaz ve dosyalar oturumdan oturuma birikir. İkincisi izi açan SARMAL_YURUTUCU_IZI değişkeni yalnız kod yorumunda geçmektedir; tanıtım yüzü, gizlilik belgesi, türetilmiş yüzler ve doğuşun MCP ayar şablonu onu anmaz. Ayrıca değişken geliştirici kabuğunda dışa aktarılırsa işleme kapısı kırılabilir; MCP ayarının env alanıyla açılması önerilir. İz varsayılan açılacaksa rotasyon önceliği p2'ye çıkar. KARAR (Founder, karar sayfası · 2026-10-10): yürütücü izi durum güncelleme aracında varsayılan açık, şef aracında isteğe bağlı olacaktır; varsayılan açılış bu kaydın istediği rotasyona bağlıdır ve rotasyon gelene kadar iz kapalı kalır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-SINAMA-GECICI-KLASOR-SIZINTISI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Sınama altyapısına bir sonraki kez dokunulduğunda; en geç geçici dizin bir gigabaytı aşarken",
-  ne:               "Kontrolcü 2026-10-10 tarihinde çekirdek ve eklenti süitlerinin açtıkları geçici klasörleri silmediğini ölçmüştür: geliştirici makinesinin geçici dizininde 2 Ekim'den beri birikmiş 8663 sınama klasörü ve toplam 1,9 GB veri vardır; en kalabalık önekler koniyaz (800), sarmal-kesif (735), sarmal-ogretim (636), sarmal-turev (537) ve sarmal-magaza (441) klasörleridir. Her süit koşusu yüzlerce klasör bırakmaktadır. Sınamalar açtıkları klasörü başarısız durumda da silmeli ve bunu ölçen bir nöbet kurulmalıdır; sızıntı kapandıktan sonra birikmiş klasörler temizlenebilir. HST-MTR-A14'ün bağımsız incelemesi aynı gün doğuş sınamalarındaki iki eski örneği adıyla ölçmüştür: dogus.test.ts dosyasının 341. satırındaki sınama her koşuda boş bir klasör, 498. satırındaki sınama ise doğmuş tam bir proje bırakmaktadır. HST-MTR-A12'nin üreticisi aynı gün sızıntının koşu başına boyutunu ölçmüştür: çekirdek süiti her koşuda 51 klasör ve 8,3 MB, eklenti süiti 31 klasör ve 11 MB bırakmaktadır; en büyük payı türev, öğretim, taşıyıcı, keşif ve mağaza fikstürleri taşımaktadır. A02 ile A12 fikstürleri artık kopyalarını sildiği için onların payı sıfırdır."
+  ne:               "Kontrolcü 2026-10-10 tarihinde çekirdek ve eklenti süitlerinin açtıkları geçici klasörleri silmediğini ölçmüştür: geliştirici makinesinin geçici dizininde 2 Ekim'den beri birikmiş 8663 sınama klasörü ve toplam 1,9 GB veri vardır; en kalabalık önekler koniyaz (800), sarmal-kesif (735), sarmal-ogretim (636), sarmal-turev (537) ve sarmal-magaza (441) klasörleridir. Her süit koşusu yüzlerce klasör bırakmaktadır. Sınamalar açtıkları klasörü başarısız durumda da silmeli ve bunu ölçen bir nöbet kurulmalıdır; sızıntı kapandıktan sonra birikmiş klasörler temizlenebilir. HST-MTR-A14'ün bağımsız incelemesi aynı gün doğuş sınamalarındaki iki eski örneği adıyla ölçmüştür: dogus.test.ts dosyasının 341. satırındaki sınama her koşuda boş bir klasör, 498. satırındaki sınama ise doğmuş tam bir proje bırakmaktadır. HST-MTR-A12'nin üreticisi aynı gün sızıntının koşu başına boyutunu ölçmüştür: çekirdek süiti her koşuda 51 klasör ve 8,3 MB, eklenti süiti 31 klasör ve 11 MB bırakmaktadır; en büyük payı türev, öğretim, taşıyıcı, keşif ve mağaza fikstürleri taşımaktadır. A02 ile A12 fikstürleri artık kopyalarını sildiği için onların payı sıfırdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1308,102 +1333,112 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KISITLI-MOD-KALAN-SINIRLAR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Kısıtlı mod desteği bir sonraki kez elden geçirildiğinde",
-  ne:               "MGZ-A02 eklentinin kısıtlı modda sessizce kapanmasını onarmış, bağımsız inceleme 2026-10-10 tarihinde üç kalan sınırı ölçmüştür. Birincisi anlamsal renk katmanı kapalıdır, çünkü kanon için diski tarar; bu bilinçli bir sınırdır ve belgelenmelidir. İkincisi okuma kipinin özel düzenleyicisi kısıtlı modda sağlayıcısızdır ve Birlikte Aç ile seçilirse VS Code sağlayıcı bulunamadı der. Üçüncüsü güvenden önce etkinleşen bir kardeş eklenti dış yüzü tanımsız alır ve güvenden sonra yeniden sorma yolu yoktur; sözleşme başlığı güvenden söz etmez."
+  ne:               "MGZ-A02 eklentinin kısıtlı modda sessizce kapanmasını onarmış, bağımsız inceleme 2026-10-10 tarihinde üç kalan sınırı ölçmüştür. Birincisi anlamsal renk katmanı kapalıdır, çünkü kanon için diski tarar; bu bilinçli bir sınırdır ve belgelenmelidir. İkincisi okuma kipinin özel düzenleyicisi kısıtlı modda sağlayıcısızdır ve Birlikte Aç ile seçilirse VS Code sağlayıcı bulunamadı der. Üçüncüsü güvenden önce etkinleşen bir kardeş eklenti dış yüzü tanımsız alır ve güvenden sonra yeniden sorma yolu yoktur; sözleşme başlığı güvenden söz etmez. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-DONUSTURUCU-SOZDIZIM-BICIMI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Komut satırının dönüştürücü komutlarına bir sonraki kez dokunulduğunda",
-  ne:               "MGZ-A03 denetim kiplerinde söz-dizim hatasını yol, satır, sütun ve kimlikle basar hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde belge, yansıt ve ağaç dönüştürücülerinin hatayı hâlâ eski biçimde, yol ve kimlik taşımadan bastığını ölçmüştür. Çıkış kodu doğrudur; yalnız biçim denetim yüzeyiyle ayrışmaktadır."
+  ne:               "MGZ-A03 denetim kiplerinde söz-dizim hatasını yol, satır, sütun ve kimlikle basar hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde belge, yansıt ve ağaç dönüştürücülerinin hatayı hâlâ eski biçimde, yol ve kimlik taşımadan bastığını ölçmüştür. Çıkış kodu doğrudur; yalnız biçim denetim yüzeyiyle ayrışmaktadır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-HIJYEN-AYIKLAYICI-ESDEGERLIK-NOBETI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Hijyen ayıklayıcısına bir sonraki kez dokunulduğunda ya da taranan bir dosya sezginin kör kaldığı biçimlerden birini taşıdığında",
-  ne:               "HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde tanı metni hijyeninin yeni ayıklayıcısının taranan 125 dosyanın hepsinde TypeScript ayrıştırıcısıyla özdeş karar verdiğini, fakat düzenli ifadeyi bölme işaretinden ayıran sezginin üç nadir biçimde kör kaldığını ölçmüştür: bir koşulun kapanan ayracından hemen sonra gelen düzenli ifade, boş olmama işaretinden sonra gelen bölme ve artırma işlecinden sonra gelen bölme. Bugün hiçbir dosya bu biçimleri taşımamaktadır ve kusur gizli bir ihlal üretmemektedir. Ayıklayıcının çıktısını taranan dosyalarda TypeScript tarayıcısının gördüğüyle karşılaştıran kalıcı bir eşdeğerlik nöbeti kurulmalıdır; böylece sezgi bir gün yanılırsa bu sessiz bir kör bölge olarak değil kırmızı bir sınama olarak görünür."
+  ne:               "HST-MTR-A11'in bağımsız incelemesi 2026-10-10 tarihinde tanı metni hijyeninin yeni ayıklayıcısının taranan 125 dosyanın hepsinde TypeScript ayrıştırıcısıyla özdeş karar verdiğini, fakat düzenli ifadeyi bölme işaretinden ayıran sezginin üç nadir biçimde kör kaldığını ölçmüştür: bir koşulun kapanan ayracından hemen sonra gelen düzenli ifade, boş olmama işaretinden sonra gelen bölme ve artırma işlecinden sonra gelen bölme. Bugün hiçbir dosya bu biçimleri taşımamaktadır ve kusur gizli bir ihlal üretmemektedir. Ayıklayıcının çıktısını taranan dosyalarda TypeScript tarayıcısının gördüğüyle karşılaştıran kalıcı bir eşdeğerlik nöbeti kurulmalıdır; böylece sezgi bir gün yanılırsa bu sessiz bir kör bölge olarak değil kırmızı bir sınama olarak görünür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-MCP-ARAC-SAYISI-DONDURMASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "MCP sunucusuna bir sonraki araç eklendiğinde",
-  ne:               "HST-MTR-A12'nin bağımsız incelemesi 2026-10-10 tarihinde türetilmiş yüz üreticisinin MCP araç sayısını kaynakta on sekiz olarak dondurduğunu ve bir araç eklenince araç sayısının beklenenden farklı olduğunu söyleyerek çıkış 1 verdiğini ölçmüştür. Bu, HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR kaydının ölçtüğü kilidin araç sayısındaki eşidir: bir araç eklemek belgelerin yeniden üretimini durdurur. Kanon ve tanı kümesi sayılarına uygulanan desen burada da uygulanmalıdır; sayı tek kayıtta durmalı, sapma üreticiyi durdurmak yerine adlı bir bulgu olarak basılmalı ve bilinçli artırma için yalnız tek bir kırmızı nöbet kalmalıdır."
+  ne:               "HST-MTR-A12'nin bağımsız incelemesi 2026-10-10 tarihinde türetilmiş yüz üreticisinin MCP araç sayısını kaynakta on sekiz olarak dondurduğunu ve bir araç eklenince araç sayısının beklenenden farklı olduğunu söyleyerek çıkış 1 verdiğini ölçmüştür. Bu, HTR-KANON-SAYISI-BUYUMEYI-KILITLIYOR kaydının ölçtüğü kilidin araç sayısındaki eşidir: bir araç eklemek belgelerin yeniden üretimini durdurur. Kanon ve tanı kümesi sayılarına uygulanan desen burada da uygulanmalıdır; sayı tek kayıtta durmalı, sapma üreticiyi durdurmak yerine adlı bir bulgu olarak basılmalı ve bilinçli artırma için yalnız tek bir kırmızı nöbet kalmalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-YOKSAYMA-GENISLETME-UC-DURUMLARI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Doğuşun yok sayma genişletmesine ya da yönerge ikizinin istisna ölçümüne bir sonraki kez dokunulduğunda",
-  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde yok sayma genişletmesinin dört uç durumda git ile ayrıştığını ölçmüştür. Birincisi baştaki boşluktur: motor satırı kırparak okur, oysa git baştaki boşluğu kırpmaz; bu yüzden başı boşluklu bir iz satırı karar sayılır ama izleri gizlemez ve aynı kusur istisna ölçümünde de vardır, başı boşluklu bir istisna git'te istisna kurmadığı hâlde tam sayılır. İkincisi kök bağlı yazımlardır: eğik çizgiyle başlayan ya da yıldızla biten yazımlar eşdeğer sayılır, fakat alt dizinlerdeki iz klasörünü kapsamaz ve köprülerden biri çalışma dizinine yazar. Üçüncüsü kodlamadır: genişletme dosyayı UTF-8 olarak çözüp yeniden yazdığı için Latin-1 baytlar bozulur; istisnaları tam olan böyle bir dosya eskiden hiç yazılmıyordu. Dördüncüsü sınamaların kanca ortamı arındırmasıdır: git'in kendi yerel ortam listesi on beş değişken sayar ve git -c ile işlenince gelen yapılandırma değişkeni arındırılmaz. Dördünün de bugünkü riski düşüktür ve doğru davranış satırları git'in kurallarıyla ölçmek, dosyaya bayt düzeyinde eklemek ve listeyi git'in kendisinden almaktır."
+  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde yok sayma genişletmesinin dört uç durumda git ile ayrıştığını ölçmüştür. Birincisi baştaki boşluktur: motor satırı kırparak okur, oysa git baştaki boşluğu kırpmaz; bu yüzden başı boşluklu bir iz satırı karar sayılır ama izleri gizlemez ve aynı kusur istisna ölçümünde de vardır, başı boşluklu bir istisna git'te istisna kurmadığı hâlde tam sayılır. İkincisi kök bağlı yazımlardır: eğik çizgiyle başlayan ya da yıldızla biten yazımlar eşdeğer sayılır, fakat alt dizinlerdeki iz klasörünü kapsamaz ve köprülerden biri çalışma dizinine yazar. Üçüncüsü kodlamadır: genişletme dosyayı UTF-8 olarak çözüp yeniden yazdığı için Latin-1 baytlar bozulur; istisnaları tam olan böyle bir dosya eskiden hiç yazılmıyordu. Dördüncüsü sınamaların kanca ortamı arındırmasıdır: git'in kendi yerel ortam listesi on beş değişken sayar ve git -c ile işlenince gelen yapılandırma değişkeni arındırılmaz. Dördünün de bugünkü riski düşüktür ve doğru davranış satırları git'in kurallarıyla ölçmek, dosyaya bayt düzeyinde eklemek ve listeyi git'in kendisinden almaktır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-IZ-KLASORU-ADI-BES-YAZICIDA,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "İz klasörüne yazan yeni bir yazıcı eklendiğinde ya da klasörün adı değiştiğinde",
-  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde motorun iz klasörünün adının beş yazıcıda ayrı ayrı yazıldığını ölçmüştür: makro döngü, döngü, komut satırı girişi ve iki köprü dosyası. Doğuşun yok sayma şablonuyla bu adlar arasındaki bağı yalnız iki yazıcı için bir nöbet korumaktadır; kontrol noktası ya da makro döngü klasörünün adı değişirse nöbet yeşil kalır ve doğan projeler yeni klasörü yine izlenmeyen dosya olarak görür. Ad tek bir sabitte toplanmalı ve beş yazıcı ile doğuş şablonu onu oradan almalıdır."
+  ne:               "HST-MTR-A14'ün bağımsız incelemesi 2026-10-10 tarihinde motorun iz klasörünün adının beş yazıcıda ayrı ayrı yazıldığını ölçmüştür: makro döngü, döngü, komut satırı girişi ve iki köprü dosyası. Doğuşun yok sayma şablonuyla bu adlar arasındaki bağı yalnız iki yazıcı için bir nöbet korumaktadır; kontrol noktası ya da makro döngü klasörünün adı değişirse nöbet yeşil kalır ve doğan projeler yeni klasörü yine izlenmeyen dosya olarak görür. Ad tek bir sabitte toplanmalı ve beş yazıcı ile doğuş şablonu onu oradan almalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-SINAMA-FIKSTURU-YUKARI-YURUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Kanon keşfine, örtü zincirine ya da sınama altyapısının geçici klasör düzenine bir sonraki kez dokunulduğunda",
-  ne:               "HST-MTR-A14'ün üreticisi 2026-10-10 tarihinde süitlerin geçici klasörün yerine bağımlı olduğunu ölçmüştür: geçici klasör bir Sarmal ağacının içine yönlendirilince çekirdekte bir, eklentide on beş sınama kırmızıya döner. Sebep, kanon keşfi, örtü zinciri ve performans sınamalarının fikstürden yukarı yürüyerek kanon, örtü ve kök araması ve geçici klasör depo içindeyse deponun kendi anadizinini, tip kaydını ve örtü dosyasını bulmasıdır; aynı kod depo dışındaki bir geçici klasörde yeşildir. Sınamalar bugün geçici klasörün herhangi bir Sarmal ağacının dışında olduğunu sessizce varsaymaktadır. Fikstürler yukarı yürüyüşü kendi köklerinde durduran bir sınır taşımalı ya da süit bu varsayımı açılışta ölçüp açık bir iletiyle durmalıdır."
+  ne:               "HST-MTR-A14'ün üreticisi 2026-10-10 tarihinde süitlerin geçici klasörün yerine bağımlı olduğunu ölçmüştür: geçici klasör bir Sarmal ağacının içine yönlendirilince çekirdekte bir, eklentide on beş sınama kırmızıya döner. Sebep, kanon keşfi, örtü zinciri ve performans sınamalarının fikstürden yukarı yürüyerek kanon, örtü ve kök araması ve geçici klasör depo içindeyse deponun kendi anadizinini, tip kaydını ve örtü dosyasını bulmasıdır; aynı kod depo dışındaki bir geçici klasörde yeşildir. Sınamalar bugün geçici klasörün herhangi bir Sarmal ağacının dışında olduğunu sessizce varsaymaktadır. Fikstürler yukarı yürüyüşü kendi köklerinde durduran bir sınır taşımalı ya da süit bu varsayımı açılışta ölçüp açık bir iletiyle durmalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KOD-SEKLI-DONGU-KIRILGANLIGI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Denetçi, kök yüzeyi, yetki ya da şef modüllerinin içe aktarma düzenine bir sonraki kez dokunulduğunda ya da kimlik modülü bu döngüye girdiğinde",
-  ne:               "HST-MTR-A10'un bağımsız incelemesi 2026-10-10 tarihinde metin atfı süzgecinin denetçi, kök yüzeyi, yetki ve şef modüllerini kapsayan döngüsel bir içe aktarmanın içinde kurulduğunu ölçmüştür. Döngü bugün komut satırında, MCP sunucusunda ve eklenti paketinde güvenlidir, çünkü modül yüklenirken döngü ortağının sabitine dokunan bir kod yoktur. Ancak eklentinin paketleyicisi üst düzey sabitleri değişkene çevirir; yükleme sırası bir gün bozulursa paket hata vermez, süzgeç sessizce tanımsız bir kuyrukla kurulur ve bütün adayları eler. Bunu ölçen bir sınama yoktur. Süzgeç sabiti kimlik modülüne taşınırsa döngüden tamamen çıkar; ya da paketin yükleme anında süzgecin değerini ölçen bir duman sınaması yazılır."
+  ne:               "HST-MTR-A10'un bağımsız incelemesi 2026-10-10 tarihinde metin atfı süzgecinin denetçi, kök yüzeyi, yetki ve şef modüllerini kapsayan döngüsel bir içe aktarmanın içinde kurulduğunu ölçmüştür. Döngü bugün komut satırında, MCP sunucusunda ve eklenti paketinde güvenlidir, çünkü modül yüklenirken döngü ortağının sabitine dokunan bir kod yoktur. Ancak eklentinin paketleyicisi üst düzey sabitleri değişkene çevirir; yükleme sırası bir gün bozulursa paket hata vermez, süzgeç sessizce tanımsız bir kuyrukla kurulur ve bütün adayları eler. Bunu ölçen bir sınama yoktur. Süzgeç sabiti kimlik modülüne taşınırsa döngüden tamamen çıkar; ya da paketin yükleme anında süzgecin değerini ölçen bir duman sınaması yazılır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-TANI-ARTIRMA-ADIMININ-KALAN-ACIKLARI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Tanı sicilinin bir sonraki büyümesinden önce",
-  ne:               "HST-MTR-A12'nin ikinci bağımsız incelemesi 2026-10-10 tarihinde tanı kümesinin tek kaydında engelleyici olmayan üç açık ölçmüştür. Birincisi ve en önemlisi, yeni bir tanının Problems ile Bildirimler hanelerinden hangisine yönlendirildiğini canlı ölçen bir nöbet yoktur; kaldırılan literal bu bölüşümün elle yazılmış ikinci kopyasıydı ve bugün dağılımın doğruluğunu yalnız insan gözü tutmaktadır. Yeni küme tam canlı ölçülebildiği için Problems hanesi için 147 ile 153, Bildirimler hanesi için 36 ile 42 arasında canlı bir sınır bugün kurulabilir; yönlendirme ölçümünün ters yönde kaydırılamayacağını söyleyen yorum da tutarlı ters kaymayı yakalamadığı için yanlıştır. İkincisi, artırma adımının mühür basamağı yalnız sicil dosyasını ve matris mührünü anar; sınıflamadan türeyen bir tanıda tip kaydının mührü de değişir. Üçüncüsü, tutarlılık üreticisindeki anlatı cümlesinin kaynak listesi elle yazılıdır ve yeni bir tanıda eksik kalır. Birincisi önek sicilinin iki uyarı tanısından önce kurulursa en çok o iş yararlanır. NOT (kontrolcü · 2026-10-10): RFM-MOTOR-A02 aynı gün birleşmiştir; iki yeni tanının yönlendirmesini adıyla ölçen bir bölüşüm sınaması eklenmiştir, fakat bütün sicil için genel bir bölüşüm nöbeti hâlâ yoktur. Kayıt bu yüzden açık kalır ve tanı sicilinin bir sonraki büyümesinden önce ele alınmalıdır."
+  ne:               "HST-MTR-A12'nin ikinci bağımsız incelemesi 2026-10-10 tarihinde tanı kümesinin tek kaydında engelleyici olmayan üç açık ölçmüştür. Birincisi ve en önemlisi, yeni bir tanının Problems ile Bildirimler hanelerinden hangisine yönlendirildiğini canlı ölçen bir nöbet yoktur; kaldırılan literal bu bölüşümün elle yazılmış ikinci kopyasıydı ve bugün dağılımın doğruluğunu yalnız insan gözü tutmaktadır. Yeni küme tam canlı ölçülebildiği için Problems hanesi için 147 ile 153, Bildirimler hanesi için 36 ile 42 arasında canlı bir sınır bugün kurulabilir; yönlendirme ölçümünün ters yönde kaydırılamayacağını söyleyen yorum da tutarlı ters kaymayı yakalamadığı için yanlıştır. İkincisi, artırma adımının mühür basamağı yalnız sicil dosyasını ve matris mührünü anar; sınıflamadan türeyen bir tanıda tip kaydının mührü de değişir. Üçüncüsü, tutarlılık üreticisindeki anlatı cümlesinin kaynak listesi elle yazılıdır ve yeni bir tanıda eksik kalır. Birincisi önek sicilinin iki uyarı tanısından önce kurulursa en çok o iş yararlanır. NOT (kontrolcü · 2026-10-10): RFM-MOTOR-A02 aynı gün birleşmiştir; iki yeni tanının yönlendirmesini adıyla ölçen bir bölüşüm sınaması eklenmiştir, fakat bütün sicil için genel bir bölüşüm nöbeti hâlâ yoktur. Kayıt bu yüzden açık kalır ve tanı sicilinin bir sonraki büyümesinden önce ele alınmalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-FIKSTUR-YOLLARI-IKINCI-TUR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-10,
   dönüşTetikleyici: "Doğuş paketinin adresleri bir sonraki kez değiştiğinde ya da aşağıdaki sınama dosyalarından birine fikstür eklenirken",
-  ne:               "HST-MTR-A07 fikstür yollarının yarısından fazlasını doğuş paketinden türetir hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde kalan işi ölçmüştür. Birincisi, yaklaşık 263 doğuş biçimli yol hâlâ elle yazılıdır ve bunların 197'si Faz dosyası kuralından önceki biçimdedir; paket başka bir adrese taşınınca on bir fikstür sınaması kırılır ve üçü türetilmiş yolları zaten okuyan kanon keşfi sınamasındadır. İkincisi, dosya sınırı yüzünden bu turda taşınmayan yollar şunlardır: denetçi sınamasında 20, metin atfı sınamasında 2, yeni kanon tanıları sınamasında 17 ve tanı yüzeyleri sınamasında gerekçesi ölçülemeyen 29 çıplak yol; çatı kök devri ile ilansız gövde sınamaları ve doğuş sınamasının elle yazılmış manifest beklentisi de aynı turu bekler. Üçüncüsü, yüzeye ulaşma nöbetinin fikstürden gözlediği hata üreticisi ikiden bire inmiştir ve tutarsız bir beyan bugün yalnız statik nöbetle yakalanır. Dördüncüsü, delik kapama bilgi tanısı sınamasındaki iki kollu koşulun iki kolu da artık doğrudur ve sınama daha az özgüldür."
+  ne:               "HST-MTR-A07 fikstür yollarının yarısından fazlasını doğuş paketinden türetir hâle getirmiştir; bağımsız inceleme 2026-10-10 tarihinde kalan işi ölçmüştür. Birincisi, yaklaşık 263 doğuş biçimli yol hâlâ elle yazılıdır ve bunların 197'si Faz dosyası kuralından önceki biçimdedir; paket başka bir adrese taşınınca on bir fikstür sınaması kırılır ve üçü türetilmiş yolları zaten okuyan kanon keşfi sınamasındadır. İkincisi, dosya sınırı yüzünden bu turda taşınmayan yollar şunlardır: denetçi sınamasında 20, metin atfı sınamasında 2, yeni kanon tanıları sınamasında 17 ve tanı yüzeyleri sınamasında gerekçesi ölçülemeyen 29 çıplak yol; çatı kök devri ile ilansız gövde sınamaları ve doğuş sınamasının elle yazılmış manifest beklentisi de aynı turu bekler. Üçüncüsü, yüzeye ulaşma nöbetinin fikstürden gözlediği hata üreticisi ikiden bire inmiştir ve tutarsız bir beyan bugün yalnız statik nöbetle yakalanır. Dördüncüsü, delik kapama bilgi tanısı sınamasındaki iki kollu koşulun iki kolu da artık doğrudur ve sınama daha az özgüldür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1419,22 +1454,24 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-KANCA-OZETI-IKI-DILLI-DEGIL,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-16,
   dönüşTetikleyici: "Doğuşun denetim kapısı şablonuna bir sonraki kez dokunulduğunda; en geç mağaza yüklemesinden önce",
-  ne:               "MGZ-A11'in bağımsız incelemesi 2026-10-16 tarihinde komut satırı denetiminin SARMAL_DIL değişkenine uymaya başlamasının bir yan etkisini ölçmüştür. Doğuş paketinin denetim kapısı şablonu (ogreti/sablon/dogus/denetim_kapisi.sh) ve Founder'ın küresel kancası özet satırını yalnız Türkçe sözcükle aramaktadır; değişken İngilizce iken hatalı ağaçta kapı yine kapanmakta ve hata satırları basılmakta, fakat temiz ağaçta uyarı sayısını taşıyan özet satırı düşmekte ve hatalı ağaçta özet görünmemektedir. Onarım ya şablonun iki dilin özet sözcüğünü de araması ya da kancanın denetimi Türkçe kipte koşturmasıdır. Küresel kanca depo dışındadır ve Founder'ın dosyasıdır; ona yalnız Founder onayıyla dokunulur."
+  ne:               "MGZ-A11'in bağımsız incelemesi 2026-10-16 tarihinde komut satırı denetiminin SARMAL_DIL değişkenine uymaya başlamasının bir yan etkisini ölçmüştür. Doğuş paketinin denetim kapısı şablonu (ogreti/sablon/dogus/denetim_kapisi.sh) ve Founder'ın küresel kancası özet satırını yalnız Türkçe sözcükle aramaktadır; değişken İngilizce iken hatalı ağaçta kapı yine kapanmakta ve hata satırları basılmakta, fakat temiz ağaçta uyarı sayısını taşıyan özet satırı düşmekte ve hatalı ağaçta özet görünmemektedir. Onarım ya şablonun iki dilin özet sözcüğünü de araması ya da kancanın denetimi Türkçe kipte koşturmasıdır. Küresel kanca depo dışındadır ve Founder'ın dosyasıdır; ona yalnız Founder onayıyla dokunulur. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-URUN-AILESI-KATALOG-EKSIGI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-11,
   dönüşTetikleyici: "Kanon metnine bir sonraki Founder onaylı düzeltme yapılırken; en geç HST-MTR-A18 açılırken",
-  ne:               "HST-MTR-A13'ün bağımsız incelemesi 2026-10-11 tarihinde, düzeltilen TIP-1.14 ile aynı sınıftan yeni bir kanon kusuru ölçmüştür: yasa/kanon/tip.sar dosyasındaki TIP-1.9 Ürün Tipleri maddesi ürün ailesinden altı tip saymaktadır, oysa sınıflamanın ürün ailesi yedi tip taşır ve Meyve listede yoktur. İnceleme öteki on üç ailenin kanon kataloğunun sınıflamayla birebir örtüştüğünü de ölçmüştür. Düzeltme, Founder'ın TIP-1.14 için onayladığı ilkenin aynısıdır: makinenin okuduğu metin insanın okuduğundan eksik olmamalıdır. Ancak kanon metnine dokunduğu için Founder kapısındadır; onay gelirse HST-MTR-A18 ile aynı turda yapılabilir."
+  ne:               "HST-MTR-A13'ün bağımsız incelemesi 2026-10-11 tarihinde, düzeltilen TIP-1.14 ile aynı sınıftan yeni bir kanon kusuru ölçmüştür: yasa/kanon/tip.sar dosyasındaki TIP-1.9 Ürün Tipleri maddesi ürün ailesinden altı tip saymaktadır, oysa sınıflamanın ürün ailesi yedi tip taşır ve Meyve listede yoktur. İnceleme öteki on üç ailenin kanon kataloğunun sınıflamayla birebir örtüştüğünü de ölçmüştür. Düzeltme, Founder'ın TIP-1.14 için onayladığı ilkenin aynısıdır: makinenin okuduğu metin insanın okuduğundan eksik olmamalıdır. Ancak kanon metnine dokunduğu için Founder kapısındadır; onay gelirse HST-MTR-A18 ile aynı turda yapılabilir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1450,12 +1487,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-DOGUS-ONEK-SICILI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-22,
   dönüşTetikleyici: "Doğuş paketinin anadizin şablonuna bir sonraki dokunuşta",
-  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünde ölçülmüştür ki doğuş paketi kökün kod öneklerini sayan bir önek sicili (SOZ-ONEK-SICILI biçimli Sözlük) üretmemektedir; sicil kurulum sırasında elle eklenmiştir. Sicil olmadan kökte kullanılan öneklerin geçerliliği denetlenemez ve kök büyüdükçe önekler sessizce çoğalabilir. Doğuş paketi anadizine, kökün kendi yapı öneklerini taşıyan bir sicil üretmelidir."
+  ne:               "2026-10-22 tarihinde doğuş aracıyla açılmış bir işletme kökünde ölçülmüştür ki doğuş paketi kökün kod öneklerini sayan bir önek sicili (SOZ-ONEK-SICILI biçimli Sözlük) üretmemektedir; sicil kurulum sırasında elle eklenmiştir. Sicil olmadan kökte kullanılan öneklerin geçerliliği denetlenemez ve kök büyüdükçe önekler sessizce çoğalabilir. Doğuş paketi anadizine, kökün kendi yapı öneklerini taşıyan bir sicil üretmelidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1471,12 +1509,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-AD-ALANI-KARDES-KOK-COZUMU,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-23,
   dönüşTetikleyici: "Ad alanlı atıf çözümüne bir sonraki dokunuşta; en geç kardeş köke bağlanan ikinci bir çalışma alanı kurulmadan önce",
-  ne:               "2026-10-23 tarihinde iki ayrı makinede (macOS ve Windows) ölçülmüştür ki çatı ilanında Kitaplık olarak duyurulan ve çatının dışında göreli yolla (../) duran bir kardeş köke verilen ad alanlı atıflar üç yüzde tutarsız çözülmektedir. Birincisi, komut satırındaki gezin atfı kardeş kökteki tanımına çözerken MCP yüzündeki gezin aynı atfı 'ad alanı bu kökten görünmüyor' diye ölçülemez saymaktadır; kaynak incelemesi MCP yüzünün taranan dizini çözüm fonksiyonuna iletmediğini göstermektedir. İkincisi, sef aracı hem MCP yüzünde hem komut satırında Adımın referans alanındaki ad alanlı atıfları kardeş kökte aramamakta ve 'çözülmedi' basmaktadır; bu yüzden Adım bağlam konisine bağlayıcı şablon hükmü hiç girmemektedir. Üçüncüsü, çatı denetiminin disk mutabakatı aynı göreli yolu 'ilan edilmiş ama diskte yok' diye kayıp-yapı bilgi notuyla bildirmektedir, oysa klasör diskte vardır. Üç yüz aynı çözüm fonksiyonunu kullanmalı ve kardeş kök satırları disk mutabakatının dışında tutulmalıdır."
+  ne:               "2026-10-23 tarihinde iki ayrı makinede (macOS ve Windows) ölçülmüştür ki çatı ilanında Kitaplık olarak duyurulan ve çatının dışında göreli yolla (../) duran bir kardeş köke verilen ad alanlı atıflar üç yüzde tutarsız çözülmektedir. Birincisi, komut satırındaki gezin atfı kardeş kökteki tanımına çözerken MCP yüzündeki gezin aynı atfı 'ad alanı bu kökten görünmüyor' diye ölçülemez saymaktadır; kaynak incelemesi MCP yüzünün taranan dizini çözüm fonksiyonuna iletmediğini göstermektedir. İkincisi, sef aracı hem MCP yüzünde hem komut satırında Adımın referans alanındaki ad alanlı atıfları kardeş kökte aramamakta ve 'çözülmedi' basmaktadır; bu yüzden Adım bağlam konisine bağlayıcı şablon hükmü hiç girmemektedir. Üçüncüsü, çatı denetiminin disk mutabakatı aynı göreli yolu 'ilan edilmiş ama diskte yok' diye kayıp-yapı bilgi notuyla bildirmektedir, oysa klasör diskte vardır. Üç yüz aynı çözüm fonksiyonunu kullanmalı ve kardeş kök satırları disk mutabakatının dışında tutulmalıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1492,12 +1531,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ISKELET-BOS-KLASOR-GITKEEP,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-24,
   dönüşTetikleyici: "İskelet aracına ya da doğuş paketine bir sonraki dokunuşta; en geç bir Sarmal kökü başka bir makineye klonla taşınmadan önce",
-  ne:               "2026-10-24 tarihinde bir Sarmal kökü başka bir makineye git ile klonlandığında proje denetimi yedi hata vermiştir; sebep, anadizinde ilan edilmiş ama içi boş klasörlerin klonda bulunmamasıdır. Git boş klasörü izlemez, dolayısıyla iskelet aracının açtığı ve henüz dosya almamış her ilanlı klasör klonda kaybolur ve disk mutabakatı onu kayıp-yapı olarak bildirir. Kontrolcü aynı gün durumu geçici bir dizinde, doğuş komutuyla doğan temiz bir köke boş bir raf ilan ederek yeniden üretmiştir: klonda kayıp-yapı doğmuş, klasöre boş bir .gitkeep dosyası konup işlendiğinde klonda klasör yerinde kalmış, kayıp-yapı kaybolmuş ve .gitkeep yeni bir uyarı doğurmamıştır. Onarım, iskelet aracının açtığı boş ilanlı klasöre bir .gitkeep yazması ve doğuş paketinin de aynı ilkeye uymasıdır; var olan köklerde boş ilanlı klasörleri bulup .gitkeep öneren bir gözlem de düşünülebilir. Kabul ölçütü olarak iskeletle açılıp işlenen bir kökün temiz bir klonunda kayıp-yapı doğmadığı ölçülür."
+  ne:               "2026-10-24 tarihinde bir Sarmal kökü başka bir makineye git ile klonlandığında proje denetimi yedi hata vermiştir; sebep, anadizinde ilan edilmiş ama içi boş klasörlerin klonda bulunmamasıdır. Git boş klasörü izlemez, dolayısıyla iskelet aracının açtığı ve henüz dosya almamış her ilanlı klasör klonda kaybolur ve disk mutabakatı onu kayıp-yapı olarak bildirir. Kontrolcü aynı gün durumu geçici bir dizinde, doğuş komutuyla doğan temiz bir köke boş bir raf ilan ederek yeniden üretmiştir: klonda kayıp-yapı doğmuş, klasöre boş bir .gitkeep dosyası konup işlendiğinde klonda klasör yerinde kalmış, kayıp-yapı kaybolmuş ve .gitkeep yeni bir uyarı doğurmamıştır. Onarım, iskelet aracının açtığı boş ilanlı klasöre bir .gitkeep yazması ve doğuş paketinin de aynı ilkeye uymasıdır; var olan köklerde boş ilanlı klasörleri bulup .gitkeep öneren bir gözlem de düşünülebilir. Kabul ölçütü olarak iskeletle açılıp işlenen bir kökün temiz bir klonunda kayıp-yapı doğmadığı ölçülür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1535,22 +1575,22 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-SARMAL-AGIRLIK-ONCELIGI,
-  durum:            açık,
+  durum:            tamamlandı,
   çapa:             gelecek,
   öncelik:          p1,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Devam eden müşteri işleri kapandığında; her oturum başında öncelik sırası konuşulurken",
-  ne:               "Founder 2026-10-26 tarihinde, devam eden müşteri işleri tamamlandıktan sonra çalışmanın ağırlığının yeniden Sarmal'a verileceğine hükmetmiştir. Gerekçe, projenin yarım kalmış olması ve sürdürülmesi gerektiğidir. Bu hatırlatıcı müşteri işleri kapandığında öncelik sırasının Sarmal lehine değişmesini unutulmaz kılmak içindir."
+  ne:               "Founder 2026-10-26 tarihinde, devam eden müşteri işleri tamamlandıktan sonra çalışmanın ağırlığının yeniden Sarmal'a verileceğine hükmetmiştir. Gerekçe, projenin yarım kalmış olması ve sürdürülmesi gerektiğidir. Bu hatırlatıcı müşteri işleri kapandığında öncelik sırasının Sarmal lehine değişmesini unutulmaz kılmak içindir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; bu bir öncelik hükmüdür, durum kaydında yaşar ve ayrıca bir iş gerektirmez."
 )
 
 Hatırlatıcı(
   kod:              HTR-HATIRLATICI-FIKIR-DEGERLENDIRME-OTURUMU,
-  durum:            açık,
+  durum:            tamamlandı,
   çapa:             gelecek,
   öncelik:          p1,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Sarmal'a ağırlık verilen ilk oturumda; en geç Makinist sekmesindeki hatırlatıcı ve gözlem sayısı yeniden artmadan önce",
-  ne:               "Founder 2026-10-26 tarihinde bütün bir oturumun yalnız hatırlatıcıların, gözlemlerin ve fikirlerin değerlendirilmesine ayrılacağını bildirmiştir; o gün Makinist sekmesi Sarmal projesinin kapsamında bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem, çalışma alanının çatı kapsamında ise yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir göstermektedir; değerlendirme çatının bütününü kapsar. Oturumda kayıtların her biri Founder ile tek tek ele alınır: gerçekten gerekli olanlar plana indirilip ilgili Faz, Blok ve Katmanlardaki yerlerine yerleştirilir, gereksiz olanlar silinir, tamamlanmış olanlar kapatılır. Hedef, Makinist panelinin yalnız canlı ve sahibi belli işleri gösteren temiz bir hâle gelmesidir."
+  ne:               "Founder 2026-10-26 tarihinde bütün bir oturumun yalnız hatırlatıcıların, gözlemlerin ve fikirlerin değerlendirilmesine ayrılacağını bildirmiştir; o gün Makinist sekmesi Sarmal projesinin kapsamında bir onay, kırk yedi hatırlatıcı ve doksan sekiz gözlem, çalışma alanının çatı kapsamında ise yirmi iki onay, yüz iki hatırlatıcı, sekiz yüz doksan üç gözlem ve dokuz fikir göstermektedir; değerlendirme çatının bütününü kapsar. Oturumda kayıtların her biri Founder ile tek tek ele alınır: gerçekten gerekli olanlar plana indirilip ilgili Faz, Blok ve Katmanlardaki yerlerine yerleştirilir, gereksiz olanlar silinir, tamamlanmış olanlar kapatılır. Hedef, Makinist panelinin yalnız canlı ve sahibi belli işleri gösteren temiz bir hâle gelmesidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; değerlendirme oturumu 2026-10-29 tarihinde yapılmış ve hatırlatıcılar bu oturumda karara bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1566,12 +1606,13 @@ Hatırlatıcı(
 
 Hatırlatıcı(
   kod:              HTR-ACIK-DEPO-SIZINTI-KALKANI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             yasa,
   öncelik:          p1,
   tarih:            2026-10-26,
   dönüşTetikleyici: "Hatırlatıcı ve fikir değerlendirme oturumunda; en geç açık depoya bir sonraki gönderimden önce",
-  ne:               "Founder 2026-10-26 tarihinde açık depo ile kapalı ürünün zaman zaman karıştırıldığını, açık depoya yazılmaması gereken kayıtların buraya yazılabildiğini gözlemlemiş ve iki deponun birleştirilmesini sormuştur. Değerlendirme sonucunda birleştirme önerilmemiştir, çünkü git bir deponun yalnız bir kısmını yayımlayamaz, bu depo herkese açıktır ve açılmış bir depo geri kapatılamaz; ayrık depolar sızıntının en kötü hâlinde bile tek bir cümleyle sınırlı kalmasını sağlar. Çare ayrımın güçlendirilmesidir. Bugün işleme kapısındaki yasak sözcük kancası kişi ve müşteri adlarını yakalamaktadır, fakat kapalı ürünün kod öneklerini ve kavram adlarını tanımamaktadır. Kapalı ürünün kod önekleri ile kavram adları kancanın depo dışında yaşayan yasak sözcük listesine eklenir; liste hiçbir koşulda bu depoya yazılmaz. Ayrıca bu depoya yazan her oturum kaydı yazmadan önce kaydın Sarmal aracının kendisiyle mi ilgili olduğunu sorar; değilse kayıt kapalı ürünün ya da laboratuvarın kendi kaydına gider. Kabul ölçütü olarak kapalı ürünün bir kod önekini taşıyan deneme işlemesinin kanca tarafından reddedildiği ölçülür."
+  ne:               "Founder 2026-10-26 tarihinde açık depo ile kapalı ürünün zaman zaman karıştırıldığını, açık depoya yazılmaması gereken kayıtların buraya yazılabildiğini gözlemlemiş ve iki deponun birleştirilmesini sormuştur. Değerlendirme sonucunda birleştirme önerilmemiştir, çünkü git bir deponun yalnız bir kısmını yayımlayamaz, bu depo herkese açıktır ve açılmış bir depo geri kapatılamaz; ayrık depolar sızıntının en kötü hâlinde bile tek bir cümleyle sınırlı kalmasını sağlar. Çare ayrımın güçlendirilmesidir. Bugün işleme kapısındaki yasak sözcük kancası kişi ve müşteri adlarını yakalamaktadır, fakat kapalı ürünün kod öneklerini ve kavram adlarını tanımamaktadır. Kapalı ürünün kod önekleri ile kavram adları kancanın depo dışında yaşayan yasak sözcük listesine eklenir; liste hiçbir koşulda bu depoya yazılmaz. Ayrıca bu depoya yazan her oturum kaydı yazmadan önce kaydın Sarmal aracının kendisiyle mi ilgili olduğunu sorar; değilse kayıt kapalı ürünün ya da laboratuvarın kendi kaydına gider. Kabul ölçütü olarak kapalı ürünün bir kod önekini taşıyan deneme işlemesinin kanca tarafından reddedildiği ölçülür. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
@@ -1581,75 +1622,82 @@ Hatırlatıcı(
   öncelik:          p2,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Panel hızı Bloklarından birine (panel kipi ya da işçi) başlanırken; en geç işleme kapısı bir hafta içinde yeniden bu sınamadan düştüğünde",
-  ne:               "Eklenti süitindeki A08 performans sınaması (sinama/parametre-dekor.test.ts) büyük bir plan dosyasında görünür aralık kararının on altı milisaniyenin altında kalmasını ölçmektedir. Makinenin yük ortalaması yükseldiğinde, örneğin bir ajan gerçek VS Code süitini koşarken, sınama işleme kapısında düşmekte ve ölçülen değer 834 ile 954 milisaniye arasında çıkmaktadır; tek başına koşulduğunda geçmektedir. 2026-10-27 ve 2026-10-28 tarihlerinde dört işleme bu yüzden yinelenmiştir ve kapı hiçbirinde atlanmamıştır. Sınama ölçtüğü şeyi değil makinenin o anki yükünü ölçmektedir; yalıtılmış bir koşu, göreli bir bütçe ya da yük ölçümüyle birlikte yazılan bir eşik değerlendirilmelidir."
+  ne:               "Eklenti süitindeki A08 performans sınaması (sinama/parametre-dekor.test.ts) büyük bir plan dosyasında görünür aralık kararının on altı milisaniyenin altında kalmasını ölçmektedir. Makinenin yük ortalaması yükseldiğinde, örneğin bir ajan gerçek VS Code süitini koşarken, sınama işleme kapısında düşmekte ve ölçülen değer 834 ile 954 milisaniye arasında çıkmaktadır; tek başına koşulduğunda geçmektedir. 2026-10-27 ve 2026-10-28 tarihlerinde dört işleme bu yüzden yinelenmiştir ve kapı hiçbirinde atlanmamıştır. Sınama ölçtüğü şeyi değil makinenin o anki yükünü ölçmektedir; yalıtılmış bir koşu, göreli bir bütçe ya da yük ölçümüyle birlikte yazılan bir eşik değerlendirilmelidir. KARAR ŞERHİ (2026-10-29): Bilinçle açık bırakılmıştır. Hem bugün iki işlemeyi durduran gerçek bir kusurdur hem de Sinyaller sekmesinin sayaç nöbeti (sinama/sinyaller.test.ts, PNL-A09) deponun canlı hâlinde en az bir açık hatırlatıcı bulunmasını şart koşmaktadır; nöbet örnek veriye taşındığında bu hatırlatıcı da biriken hatırlatıcıların ayıklanmasına bağlanır."
 )
 
 Hatırlatıcı(
   kod:              HTR-KONSOL-ATILMIS-DEPO-HATASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Eklentinin etkinleştirme ya da kapanma koduna bir sonraki dokunuşta",
-  ne:               "Founder 2026-10-28 tarihinde VS Code'un Hata Ayıklama Konsolu'nda, pencere yeniden yüklendikten sonra çıktı kanalı oluşturan çağrıların atılmış bir depoya eklendiğini söyleyen yığın izlerini göstermiştir. İzlerden biri başka bir eklentiye aittir; ötekilerin kaynağı izde yazmamaktadır. Sarmal etkinleşirken iki çıktı kanalı oluşturmaktadır (performans kanalı ve karar yüzeyi kanalı); izlerin bu iki çağrıdan gelip gelmediği gerçek VS Code'da ölçülmelidir. Kullanıcıya görünen bir arıza bildirilmemiştir."
+  ne:               "Founder 2026-10-28 tarihinde VS Code'un Hata Ayıklama Konsolu'nda, pencere yeniden yüklendikten sonra çıktı kanalı oluşturan çağrıların atılmış bir depoya eklendiğini söyleyen yığın izlerini göstermiştir. İzlerden biri başka bir eklentiye aittir; ötekilerin kaynağı izde yazmamaktadır. Sarmal etkinleşirken iki çıktı kanalı oluşturmaktadır (performans kanalı ve karar yüzeyi kanalı); izlerin bu iki çağrıdan gelip gelmediği gerçek VS Code'da ölçülmelidir. Kullanıcıya görünen bir arıza bildirilmemiştir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-MAKINIST-IPUCU-SATIRI-ORTUYOR,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A29,
   çapa:             nitelik,
   öncelik:          p3,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Makinist sekmesinin satır düzenine bir sonraki dokunuşta",
-  ne:               "Founder'ın 2026-10-28 tarihli ekran görüntüsünde Makinist sekmesindeki bir grup başlığının üzerine gelindiğinde çıkan ipucu kutusu bir alttaki satırın üstüne binmekte ve o satırın sayısını örtmektedir. İpucu başlığın kendi metnini yinelediği için bilgi taşımamaktadır; kaldırılması ya da konumunun değişmesi değerlendirilmelidir."
+  ne:               "Founder'ın 2026-10-28 tarihli ekran görüntüsünde Makinist sekmesindeki bir grup başlığının üzerine gelindiğinde çıkan ipucu kutusu bir alttaki satırın üstüne binmekte ve o satırın sayısını örtmektedir. İpucu başlığın kendi metnini yinelediği için bilgi taşımamaktadır; kaldırılması ya da konumunun değişmesi değerlendirilmelidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; işi PNL-A29 Adımında sürdüğü için o Adıma bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-DAMGALI-DOSYA-ANLIK-TANI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Panel Blokunun bir sonraki eklenti Adımında",
-  ne:               "Founder'ın 2026-10-28 sabahki ekran görüntüsünde @ARSIV@ damgalı bir dosyanın söz dizimi tanısı Sorunlar panelinde görünmüştür. MIM-3.4 damgalı dosyanın motor tarafından okunmamasını ister; denetim turu bunu uygular, fakat dosya editörde açıkken eklentinin anlık tek dosya denetiminin damgaya bakmadığı tahmin edilmektedir. Gerçek VS Code'da ölçülüp düzeltilmelidir."
+  ne:               "Founder'ın 2026-10-28 sabahki ekran görüntüsünde @ARSIV@ damgalı bir dosyanın söz dizimi tanısı Sorunlar panelinde görünmüştür. MIM-3.4 damgalı dosyanın motor tarafından okunmamasını ister; denetim turu bunu uygular, fakat dosya editörde açıkken eklentinin anlık tek dosya denetiminin damgaya bakmadığı tahmin edilmektedir. Gerçek VS Code'da ölçülüp düzeltilmelidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-PROJE-TEMIZLIK-TURU,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p1,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Panel Blokunun Tren ve Sinyaller işleri bittiğinde; Founder'ın onayıyla",
-  ne:               "Founder 2026-10-28 tarihinde her depodaki bilgi kalabalığının akıbetini sormuştur. Ölçümde Orkestrasyon'un Bilgi bandındaki kayıtların çoğu canlı kadro dosyalarındaki gerçek borçtur: 467 beceri kartı kabul satırı taşımamakta, 301 dosyada şema dışı alan bulunmakta ve 110 kayıt ad ayracı biçimindedir; laboratuvar arşivinin 104 dosyasının 103'ü damgalıdır ve tek damgasız dosya ebedî kural taşıdığı için damga alamamaktadır. Kontrolcü en kalabalık projeden başlayarak her proje için tek seferlik, ajanlarla yürütülen bir temizlik turu önermiştir: biçim sorunları araçla, şema dışı alanlar tek bir kararla, beceri kabul satırları toplu yazımla giderilir; gündem işaretleri kalır. Ebedî kuralın kilitlenmesi ya da canlı yasaya taşınması Founder kararıdır."
+  ne:               "Founder 2026-10-28 tarihinde her depodaki bilgi kalabalığının akıbetini sormuştur. Ölçümde Orkestrasyon'un Bilgi bandındaki kayıtların çoğu canlı kadro dosyalarındaki gerçek borçtur: 467 beceri kartı kabul satırı taşımamakta, 301 dosyada şema dışı alan bulunmakta ve 110 kayıt ad ayracı biçimindedir; laboratuvar arşivinin 104 dosyasının 103'ü damgalıdır ve tek damgasız dosya ebedî kural taşıdığı için damga alamamaktadır. Kontrolcü en kalabalık projeden başlayarak her proje için tek seferlik, ajanlarla yürütülen bir temizlik turu önermiştir: biçim sorunları araçla, şema dışı alanlar tek bir kararla, beceri kabul satırları toplu yazımla giderilir; gündem işaretleri kalır. Ebedî kuralın kilitlenmesi ya da canlı yasaya taşınması Founder kararıdır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-TREN-IKI-GORUNUM,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A10,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Kullanım limiti yenilendiğinde ve PNL-A11 kapandıktan sonra",
-  ne:               "Founder 2026-10-28 tarihinde Tren şirket şemasının şeritler, sütunlar ve kart ızgarası görünümlerinin üçünün de bulunmasına ve ayardan değiştirilmesine hükmetmiş, aynı akşam kullanım limiti yüzünden PNL-A11'de yalnız şeritler görünümünün yazılmasına karar vermiştir. Sütunlar ve kart ızgarası görünümleri aynı örgüt verisinden beslenerek eklenecek ve Ayarlar sekmesinin Görünüm bölümünde (PNL-A10) seçilebilir olacaktır."
+  ne:               "Founder 2026-10-28 tarihinde Tren şirket şemasının şeritler, sütunlar ve kart ızgarası görünümlerinin üçünün de bulunmasına ve ayardan değiştirilmesine hükmetmiş, aynı akşam kullanım limiti yüzünden PNL-A11'de yalnız şeritler görünümünün yazılmasına karar vermiştir. Sütunlar ve kart ızgarası görünümleri aynı örgüt verisinden beslenerek eklenecek ve Ayarlar sekmesinin Görünüm bölümünde (PNL-A10) seçilebilir olacaktır. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; işi PNL-A10 Adımında sürdüğü için o Adıma bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-DAG-ZEMIN-AD-ALANI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         HST-AYK-A01,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Çekirdeğe bir sonraki dokunuşta",
-  ne:               "PNL-A12'nin üretimi sırasında çekirdeğin zemin kaydının (dag.ts) ortak olmayan bir kodun ad alanlı yazımını, örneğin takım: PRJ-X::TKM biçimini, düşürdüğü bulunmuştur. Panel bu yüzden böyle bir Katmanın takımını gösteremez. Düzeltme çekirdekte yapılmalı ve bir nöbetle ölçülmelidir."
+  ne:               "PNL-A12'nin üretimi sırasında çekirdeğin zemin kaydının (dag.ts) ortak olmayan bir kodun ad alanlı yazımını, örneğin takım: PRJ-X::TKM biçimini, düşürdüğü bulunmuştur. Panel bu yüzden böyle bir Katmanın takımını gösteremez. Düzeltme çekirdekte yapılmalı ve bir nöbetle ölçülmelidir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; kendi Adımı olmadığı için kaybolmaması amacıyla biriken hatırlatıcıların ayıklanması Adımına (HST-AYK-A01) bağlanmıştır."
 )
 
 Hatırlatıcı(
   kod:              HTR-TREN-DAR-PANEL-SIRASI,
-  durum:            açık,
+  durum:            kararlaştı,
+  hatırlat:         PNL-A29,
   çapa:             nitelik,
   öncelik:          p2,
   tarih:            2026-10-28,
   dönüşTetikleyici: "Founder 0.9.199'u dar kenar çubuğunda kullandığında",
-  ne:               "Tren sekmesinde dar panelde sıra şema, profil kartı ve geliştirmedeki işin ağacı biçimindedir; ağacı görmek için 300 piksel genişlikte yaklaşık 1700, 460 pikselde yaklaşık 1100 piksel kaydırmak gerekir. Ayrıca Sarmal'ın kendi verisinde bir departman adı Raf ilanının uzun ilk cümlesinden okunduğu için çok uzun görünür ve denetim kutusunda ajan kodu kesilir. İş ağacının dar panelde üste alınması Founder kararıdır; Raf ilanına kısa bir ilk cümle yazılması küçük bir düzeltmedir."
+  ne:               "Tren sekmesinde dar panelde sıra şema, profil kartı ve geliştirmedeki işin ağacı biçimindedir; ağacı görmek için 300 piksel genişlikte yaklaşık 1700, 460 pikselde yaklaşık 1100 piksel kaydırmak gerekir. Ayrıca Sarmal'ın kendi verisinde bir departman adı Raf ilanının uzun ilk cümlesinden okunduğu için çok uzun görünür ve denetim kutusunda ajan kodu kesilir. İş ağacının dar panelde üste alınması Founder kararıdır; Raf ilanına kısa bir ilk cümle yazılması küçük bir düzeltmedir. KARAR ŞERHİ (2026-10-29): Founder bütün hatırlatıcıların karara bağlanmasına hükmetmiştir; işi PNL-A29 Adımında sürdüğü için o Adıma bağlanmıştır."
 )
