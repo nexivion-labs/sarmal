@@ -6965,13 +6965,14 @@ sessizce körleşmez.
           sınır: "Sütunlar ve ızgara görünümleri ile kapalı kardeş eklentinin canlı görünümü bu Adımın işi değildir."
         }
 
-        Adım( kod: PNL-A30, ad: "Panelin Kullanıcı Gözüyle Gezilmesi ve Resimli Kılavuz", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A11 ],
+        Adım( kod: PNL-A30, ad: "Panelin Kullanıcı Gözüyle Gezilmesi ve Resimli Kılavuz", durum: beklemede, öncelik: p0, bağımlı: [ PNL-A11 ],
           referans: [ OZK-13 ],
           ne: "🧭 Founder 2026-10-29 sabahı yeni panelle gelen sorunları kendisinin bulup anlatmasının kendisini yorduğunu bildirmiş ve paneldeki her düğmenin ve göstergenin ekran görüntüsüyle tek tek sınanıp anlatılmasına hükmetmiştir. Testler yeşil olduğu hâlde onay sormadan yazan düğme, çelişen rozet ve ekranı kaplayan liste gibi kusurlar Founder'a ulaşmıştır, çünkü hiçbir ajan paneli bir kullanıcı gibi gezmemiştir. Bu Adım paneli gerçek veriyle açar, her öğeyi tıklayarak ölçer ve Founder için resimli bir kılavuz ile bulgu listesi üretir." ) {
           görev: [
             "Paneli gerçek çalışma alanı verisiyle görsel sınama düzeneğinde aç; her sekmedeki her düğmenin, rozetin, sayacın ve göstergenin ekran görüntüsünü al.",
             "Her öğeyi tıklayarak ölç: ne gösterdiği, tıklanınca hangi komutu gönderdiği ve eklentinin o komutla ne yaptığı, dosyaya yazıp yazmadığı, onay isteyip istemediği ve geri alınıp alınamadığı.",
-            "Her öğeye çalışıyor, kusurlu ya da anlaşılmıyor hükmü ver ve Founder için sade Türkçe, ekran görüntülü bir kılavuz sayfası üret; kusurları ayrı bir listede ekran görüntüsüyle ver."
+            "Her öğeye çalışıyor, kusurlu ya da anlaşılmıyor hükmü ver ve Founder için sade Türkçe, ekran görüntülü bir kılavuz sayfası üret; kusurları ayrı bir listede ekran görüntüsüyle ver.",
+            "FOUNDER HÜKMÜ 2026-10-29: İlk deneme reddedilmiştir. Sayfa 141 parçalı kırpıntıdan oluşuyordu, anlatımlar kullanıcının gördüğünü değil kodun yaptığını söylüyordu ve Founder'ın yanlışlıkla bastığı hatırlatıcı kapatma düğmesi örnek veri yüzünden hiç görünmüyordu; Founder sistemin geliştiricisi olduğu hâlde sayfadan bir şey anlamadığını bildirmiştir. Yeni biçim şudur: her sekme için gerçek veriyle tek bir ekran görüntüsü, üzerine numaralar ve altında her numaranın ne olduğunu ve ne işe yaradığını söyleyen birer cümle. Önce yalnız Makinist sekmesi örnek olarak yapılır ve Founder'a gösterilir; Founder beğenirse öteki sekmeler aynı kalıpla yapılır. Anlatımı yazan, ekran görüntüsüne kendisi bakar."
           ]
           kabul: [
             "Kılavuz panelin bütün sekmelerini ve her sekmedeki bütün etkileşimli öğeleri kapsar; her öğe bir ekran görüntüsü, ölçülmüş davranış ve hükümle gösterilir.",
