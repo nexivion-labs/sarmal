@@ -62,10 +62,11 @@ const ONAY_TUM_KAPSAM: OdakKapisi = {
   kapsamda: () => true,
   degisince: () => { /* olay yok */ },
 };
-import { GORUNUS_ONAYLAR, DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU } from "./yuzey-cekirdek.ts";
+import { DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU } from "./yuzey-cekirdek.ts";
+import { BOLUM_KOMUTLARI } from "./bolum-cekirdek.ts";
 import {
   etkinKararAdi, CATISMA_SECENEKLERI, commentsEmekli,
-  gerekceZorunlu, gerekceArtik,
+  gerekceZorunlu, gerekceArtik, kararArgumaniGecersiz,
   kirliBelgeSorusu, kararUcusta, kararKapiYok, kararKimlikCakismasi,
   kararUygulanamadi, kararKaydedilemedi, kararBellekUyusmazligi,
   kararDiskUyusmazligi, kararBasarili, kararIptalEdildi,
@@ -76,6 +77,7 @@ import {
 // İki ayrı yerde iki kural yazılsaydı biri ötekinden ayrışır ve vaat ile davranış
 // yine ikiye bölünürdü (RED-2 dersi).
 import { gerekceyiOlc } from "./onay-govde.ts";
+import type { GerekceSonucu } from "./onay-govde.ts";
 
 /** Karar seçenekleri — komut kimliği + yazılan damga. */
 const SECENEKLER = [
@@ -118,6 +120,13 @@ const olcum = {
    * dosyasını açıyordu ve ölçülen maliyet iki yüz doksan sekiz belgeydi.
    */
   olaydanAcilanBelge: 0,
+  /**
+   * Bunların kaçı DİSK İZLEYİCİSİNİN bildirdiği bir dosya olayı yüzünden açıldı (PNL-A07). Kullanıcı
+   * eyleminin açtığı belge sayısı `acilanBelge - diskAcilanBelge` farkıdır. Ayrım ölçülmüş bir
+   * karışıklığı giderir: gerçek VS Code süitinde "bir kapı tıklaması üç belge açtı" ölçümünün ikisi,
+   * sınamanın az önce diske yazdığı dosyanın gecikerek gelen oluşturma ve değişiklik olaylarıydı.
+   */
+  diskAcilanBelge: 0,
   /** İlk yerleşim anında dondurulan iki sayaç (-1: açılış daha bitmedi). */
   acilistaAcilanBelge: -1,
   acilistaOlaydanAcilanBelge: -1,
@@ -477,8 +486,10 @@ export function onayKuyruguKaydi(
   // kimliği korunan tek kuyruğa, Onaylar görünüşüne odaklanır. Eskiden bu
   // komut her çağrıda tam tarama yapıp bir seçim listesi açıyordu ve böylece
   // panelin yanında ikinci bir "asıl kuyruk" gibi duruyordu.
+  // Founder 2026-10-21: Onaylar artık Makinist ağacının üst düğümüdür; komut Makinist
+  // bölümünü seçip ağacı öne alır (kart, kapıya tıklanınca ayrıca açılır).
   const onayPanelineOdaklan = async (): Promise<void> => {
-    await vscode.commands.executeCommand(`${GORUNUS_ONAYLAR}.focus`);
+    await vscode.commands.executeCommand(BOLUM_KOMUTLARI.makinist.duz);
   };
 
   // ⚡ ANLIK KUYRUK (Sorunlar sekmesi davranışı): yazarken biriken belgeler tek
@@ -497,7 +508,7 @@ export function onayKuyruguKaydi(
   const diskTazele = async (uri: vscode.Uri): Promise<void> => {
     if (kapsamDisi(uri)) return;
     try {
-      olcum.acilanBelge += 1; olcum.olaydanAcilanBelge += 1;   // disk olayı: YALNIZ o dosya
+      olcum.acilanBelge += 1; olcum.olaydanAcilanBelge += 1; olcum.diskAcilanBelge += 1;   // disk olayı: YALNIZ o dosya
       tazele(await vscode.workspace.openTextDocument(uri));
       susle(); degisti.fire();
     } catch { /* açılamayan dosya kuyruğa girmez */ }
@@ -614,6 +625,19 @@ export function onayKuyruguKaydi(
    *   yazılmaz.
    * @returns Yazım hattının sonucu; panel taslağı yalnız kanıtlı başarıda düşürür.
    */
+  /** Yazılmayan kararın sebebini kullanıcıya söyler; sessizlik yasaktır (Kusur 9). */
+  const kararReddiniBildir = (
+    kod: string, tur: Exclude<GerekceSonucu["tur"], "geçerli">,
+  ): void => {
+    if (tur === "iptal") {
+      vscode.window.setStatusBarMessage(kararIptalEdildi(kod), 4_000);
+    } else if (tur === "geçersiz") {
+      vscode.window.showErrorMessage(kararArgumaniGecersiz(kod));
+    } else {
+      vscode.window.showWarningMessage(tur === "gerekçeBoş" ? gerekceZorunlu() : gerekceArtik());
+    }
+  };
+
   const onayKararVer = async (
     dosya: string, satir: number, kod: string,
     damga: string, notIster: boolean, not?: string,
@@ -626,12 +650,7 @@ export function onayKuyruguKaydi(
     const olcu = gerekceyiOlc(notIster, not);
     if (olcu.tur !== "geçerli") {
       izYaz(IZ_METINLERI.kararYazilmadi(kod, olcu.tur));
-      if (olcu.tur === "iptal") {
-        vscode.window.setStatusBarMessage(kararIptalEdildi(kod), 4_000);
-      } else {
-        vscode.window.showWarningMessage(
-          olcu.tur === "gerekçeBoş" ? gerekceZorunlu() : gerekceArtik());
-      }
+      kararReddiniBildir(String(kod), olcu.tur);
       return undefined;
     }
     let doc: vscode.TextDocument;
@@ -700,10 +719,10 @@ export function onayKuyruguKaydi(
     // │ fakat satırı AÇMIYOR. Yani "hem komut hem açılma kendiliğinden olur"
     // │ varsayımı YANLIŞTIR ve ölçümle çürütüldü.
     // │
-    // │ Bu yüzden açma işini komutun kendisi üstlenir: aynı kapı panelde
-    // │ `reveal` ile bir kademe AÇILIR. `focus: true` odağı panele geri getirir —
-    // │ editör önizleme kipinde açıldığı hâlde odak oraya kayabiliyordu ve
-    // │ kullanıcının bir sonraki tıklaması yine boşa düşerdi.
+    // │ Bu yüzden açma işini komutun kendisi üstlenir: kapının karar kademesi
+    // │ Sarmal panelinde, Makinist sekmesindeki kapı satırının altında AÇILIR
+    // │ (OZK-13 · PNL-A07). Hiçbir webview açılmaz; panel öne gelir ve odak
+    // │ gerekçe kutusuna gider, editör önizleme kipinde açık kalır.
     // └────────────────────────────────────────────────────────────────────────
     await onayPaneli?.gosterVeAc(dosya, kod);
   };
@@ -742,7 +761,13 @@ export function onayKuyruguKaydi(
   // Yeni bir zamanlayıcı KURULMAZ; tur odağın kendi olayına bağlanır ve tarama
   // ana tanı hattının anlık görüntüsünden beslendiği için ikinci bir tam tarama
   // maliyeti doğurmaz.
-  odak.degisince(() => { void tumunuTara(); });
+  //
+  // ⚠️ GÖRÜNTÜDEN ÖNCE TUR YOKTUR (MGZ-A01 ölçümü). Odak etkinleşmede, ana
+  // tanı hattının ilk görüntüsünden ÖNCE de değişebilir; bu kayıt koşulsuzken
+  // o anda görüntüsüz bir tur başlıyor ve onay yüzeyi kendi bağımsız tam
+  // taramasını (dosya araması + ham okuma) koşuyordu. Görüntü henüz yoksa beklemek
+  // yeterlidir: ilk görüntü olayı kuyruğu zaten yeni odakla doldurur.
+  odak.degisince(() => { if (anaGoruntuHazirMi()) void tumunuTara(); });
 
   izYaz(IZ_METINLERI.komutlarKayitli(!!onayPaneli));
   // AÇILIŞTA HİÇBİR ŞEY YAPILMAZ. Ne belge açılır, ne iş parçacığı yaratılır, ne

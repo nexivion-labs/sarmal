@@ -12,6 +12,8 @@
 
 import * as vscode from "vscode";
 import { nabizAbone } from "./nabiz.ts";   // VIT-K78-A01: hata lensi TEK kalpten nabız atar
+// PNL-A22: tanılar editörün tanı kaynağından okunur; Sorunlar paneli kapalıyken de satır içi tanı yazılır.
+import { sorunTanilari, sorunTanilariDegisince } from "./sorun-tanilari.ts";
 
 // Kanon rozet renkleri (settings.json workbench.colorCustomizations ile aynı).
 //
@@ -91,7 +93,7 @@ export function satiriciCiz(editor: vscode.TextEditor | undefined): void {
     return;
   }
 
-  const tanılar = vscode.languages.getDiagnostics(editor.document.uri)
+  const tanılar = sorunTanilari(editor.document.uri)
     .filter((t) => sarmalKaynakli(t.source));
 
   // Satır başına EN AĞIR tanıyı göster (errorlens deseni — satır sonu tek mesaj).
@@ -139,7 +141,7 @@ export function satiriciKaydi(context: vscode.ExtensionContext): void {
   const nabiz = nabizAbone((a) => { hataAtis = a; hataBoya(vscode.window.activeTextEditor); });
   context.subscriptions.push(
     // Tanılar değişince (motor yeniden denetleyince) satır-içini tazele.
-    vscode.languages.onDidChangeDiagnostics(() => satiriciCiz(vscode.window.activeTextEditor)),
+    sorunTanilariDegisince(() => satiriciCiz(vscode.window.activeTextEditor)),
     vscode.window.onDidChangeActiveTextEditor(satiriciCiz),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("sarmal.satirIciTani")) satiriciCiz(vscode.window.activeTextEditor);

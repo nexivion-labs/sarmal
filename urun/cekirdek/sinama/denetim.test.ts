@@ -10,9 +10,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { denetimKos } from "../src/denetim.ts";
+import { DUZEN } from "./dogus-agaci.ts";
+import { belirtecle, SozDizimHatasi } from "../src/belirtec.ts";
+import { ayristir } from "../src/ayristirici.ts";
 
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const gecici = (): string => mkdtempSync(join(tmpdir(), "sarmal-dnt-"));
@@ -194,8 +197,10 @@ test("giriş tanısı: kapsam giriş desenini AŞAR — giriş deseninde olmayan
 test("giriş tanısı: gerçekten giriş dosyası eksik DİZİN klasik tanıyı almaya devam eder (regresyon)", () => {
   const kok = gecici();
   try {
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "is.sar"), 'Faz( kod: FZ-GRS, ad: "mevsim", ne: "girişsiz dizin fikstürü" )\n');
+    // Doğuşun yazdığı Faz dosyası yerinde, giriş ilanı kaybolmuş bir ağaç (HST-MTR-A07).
+    const faz = join(kok, DUZEN.ilkFaz);
+    mkdirSync(dirname(faz), { recursive: true });
+    writeFileSync(faz, 'Faz( kod: FZ-GRS, ad: "mevsim", ne: "girişsiz dizin fikstürü" )\n');
     const t = erkenTani(kok);
     assert.equal(t.kod, "kural-ihlali");
     assert.match(t.mesaj, /giriş dosyası yok/u, `girişsiz dizinde hüküm korunmalı: ${t.mesaj}`);
@@ -210,5 +215,127 @@ test("giriş tanısı: diskte hiç bulunmayan yol, var olmayan bir kabın içini
     const t = erkenTani(join(kok, "hic-yok"));
     assert.doesNotMatch(t.mesaj, YANILTICI, `var olmayan yol için kap iddiası basıldı: ${t.mesaj}`);
     assert.match(t.mesaj, /diskte bulunamadı/u, t.mesaj);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+// ── MGZ-A03 · Ham sözdizimi hatası tanı kimliği kazanır ─────────────────────
+//   Erken çıkışın sözleşmesi aynen korunur (çıkış 2, boş akış, ilk hata kapıyı
+//   kapatır); değişen tek şey hatanın artık `söz-dizim` kimlikli, iki dilli bir
+//   tanı taşımasıdır. Komut satırı ve eklenti kimliği bu tanıdan okur.
+
+test("MGZ-A03: ayrıştırılamayan dosya denetimi eskisi gibi durdurur ve hatası söz-dizim kimlikli tanı taşır", () => {
+  const kok = gecici();
+  try {
+    writeFileSync(join(kok, "deneme_anadizin.sar"), 'ÇalışmaAlanı( kod: DNM, ad: "deneme" )\n');
+    const kaynak = 'Faz( kod: F1, ad: "sağlam" )\nFaz( kod: F2 ad: "kırık" )\n';
+    writeFileSync(join(kok, "kirik.sar"), kaynak);
+    let beklenen: SozDizimHatasi | undefined;
+    try { ayristir(belirtecle(kaynak)); } catch (e) { if (e instanceof SozDizimHatasi) beklenen = e; }
+    assert.ok(beklenen, "fikstür ayrıştırılabiliyor — kusur yeniden üretilemez");
+
+    const s = denetimKos(kok, { snfYol: SNF_YOL });
+    assert.equal(s.cikis, 2, "erken çıkışın çıkış kodu değişti");
+    assert.equal(s.akis.length, 0, "erken çıkışın akış sözleşmesi değişti");
+    assert.equal(s.tamKosum, false);
+    assert.ok(s.sozdizimHata, "sözdizimi hatası sonuçta yok");
+    assert.equal(s.sozdizimHata.etiket, "kirik.sar");
+    const t = s.sozdizimHata.tani;
+    assert.ok(t, "sözdizimi hatası tanı kimliği taşımıyor — ham hata olarak kaldı");
+    assert.equal(t.kod, "söz-dizim");
+    assert.equal(t.duzey, "hata");
+    assert.equal(t.satir, beklenen.satir);
+    assert.equal(t.sutun, beklenen.sutun);
+    assert.equal(t.mesaj, beklenen.message);
+    assert.equal(t.dilMetinleri?.tr?.mesaj, beklenen.message, "Türkçe yüz ayrıştırıcının cümlesi değil");
+    assert.equal(t.dilMetinleri?.en?.mesaj, beklenen.ingilizceMesaj, "İngilizce yüz ayrıştırıcının cümlesi değil");
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+// ── MGZ-A12 · KIRIK DOSYA TURU DURDURMAZ (HTR-KIRIK-DOSYA-TAM-DENETIMI-SUSTURUYOR) ──
+//   Ölçülen kusur (2026-10-10, bağımsız inceleme): tek bir kırık .sar dosyası
+//   `denetimKos`u ilk söz dizimi hatasında erken çıkışa götürüyor ve akış boş
+//   dönüyordu; eklenti bu boşluğu temiz ağaç gibi okuyor, çapraz tanılar
+//   kayboluyor ve hiçbir işaret yanmıyordu. Komut satırı davranışı KORUNUR
+//   (bayraksız çağrı yine çıkış 2 ile durur); yalnız bayrakla çağıran yüzey,
+//   kırık dosyayı evrenden düşürüp öteki dosyaların tanılarını alır ve kırık
+//   dosyayı `kirikDosyalar` alanından okur.
+
+/** Dosya başına panel ya da komut satırı ayrımı yapmadan (dosya, kod) çiftlerinin kümesi. */
+const bulguKumesi = (akis: Array<{ dosya: string; tanilar: Array<{ kod: string }> }>, haric?: string): string[] =>
+  akis.filter((r) => r.dosya !== haric).flatMap((r) => r.tanilar.map((t) => `${r.dosya} · ${t.kod}`)).sort();
+
+function kirikFiksturu(kok: string): void {
+  writeFileSync(join(kok, "t_anadizin.sar"),
+    'Proje( kod: PRJ-KRK, ad: "krk", ne: "kırık dosya fikstürü", rejim: esnek ) {\n  Kitaplık( kod: KTP-IS, yol: "is/", ne: "işin kitaplığı" ) {\n    Raf( kod: RAF-PLN, yol: "plan/", ne: "plan rafı" )\n  }\n}\n');
+  mkdirSync(join(kok, "is", "plan"), { recursive: true });
+  writeFileSync(join(kok, "is", "plan", "is.sar"), `Faz( kod: FZ-K, ad: "Mevsim", ne: "dönem" ) {
+  Blok( kod: BLK-K, ad: "Gövde", ne: "iş" ) {
+    Katman( kod: KAT-K, ad: "Dal", ne: "teknoloji" ) {
+      Adım( kod: ADM-K1, durum: beklemede, ne: "bekleyen iş", bağımlı: [ ADM-YOK ] )
+    }
+  }
+}\n`);
+}
+
+test("MGZ-A12: kirikDosyayiAtla bayrağı söz dizimi hatasında turu durdurmaz — kırık dosya evrenden düşer, kirikDosyalar onu söyler, öteki dosyaların bulguları korunur", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    const saglam = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true });
+    assert.equal(saglam.tamKosum, true);
+    const saglamKume = bulguKumesi(saglam.akis);
+    assert.ok(saglamKume.some((s) => s.endsWith("kırık-referans")), "fikstür çapraz tanı üretmiyor — ölçüm anlamsız");
+    assert.equal(saglam.kirikDosyalar, undefined, "sağlam ağaçta kırık dosya listesi doğmamalı");
+
+    writeFileSync(join(kok, "is", "plan", "kirik.sar"), 'Faz( kod: FZ-KIRIK, ad: "yarım kalan ilan"\n');
+
+    // ① Komut satırı sözleşmesi korunur: bayraksız çağrı ilk hatada durur.
+    const eski = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true });
+    assert.equal(eski.tamKosum, false, "bayraksız çağrı erken çıkışını korumalı — komut satırı davranışı değişmez");
+    assert.equal(eski.cikis, 2);
+    assert.equal(eski.sozdizimHata?.etiket, "is/plan/kirik.sar");
+    assert.deepEqual(eski.akis, [], "erken çıkış akış taşımaz — kusurun ölçüldüğü hâl budur");
+
+    // ② Bayrakla çağrı: kırık dosya düşer, tur tamamlanır ve öteki dosyaların bulguları birebir aynıdır.
+    const atla = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(atla.tamKosum, true, "kırık dosya atlanınca tur tamamlanmalı");
+    assert.equal(atla.sozdizimHata, undefined, "erken çıkış alanı atlama kipinde dolmaz — kırık dosya kendi alanında yaşar");
+    assert.equal(atla.kirikDosyalar?.length, 1, "kırık dosya listede yok — eksiklik sessiz kalır");
+    assert.equal(atla.kirikDosyalar?.[0]?.etiket, "is/plan/kirik.sar");
+    assert.ok((atla.kirikDosyalar?.[0]?.satir ?? 0) > 0, "kırık dosyanın satırı taşınmalı");
+    assert.ok((atla.kirikDosyalar?.[0]?.mesaj ?? "").length > 0, "kırık dosyanın iletisi taşınmalı");
+    assert.deepEqual(bulguKumesi(atla.akis, "is/plan/kirik.sar"), saglamKume,
+      "kırık dosya atlandığında öteki dosyaların bulguları sağlam ağaçtakiyle aynı olmalı");
+    assert.notEqual(atla.cikis, 0, "eksik koşan tur yeşil çıkış veremez — eksik denetim temizlik kanıtı değildir");
+
+    // ③ Dosya onarılınca liste kalkar ve bulgular öncekine döner.
+    writeFileSync(join(kok, "is", "plan", "kirik.sar"), "// onarıldı\n");
+    const onarildi = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(onarildi.kirikDosyalar, undefined, "onarılan dosya listede kaldı");
+    assert.deepEqual(bulguKumesi(onarildi.akis, "is/plan/kirik.sar"), saglamKume);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+test("MGZ-A12: giriş dosyasının kendisi kırıksa atlama kipi de tam koşamaz, fakat kırık dosyayı yine adıyla söyler", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    writeFileSync(join(kok, "t_anadizin.sar"), 'Proje( kod: PRJ-KRK, ad: "krk"\n');
+    const s = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(s.tamKosum, false, "giriş dosyası olmadan tur tamamlanamaz");
+    assert.equal(s.kirikDosyalar?.[0]?.etiket, "t_anadizin.sar", "kırık giriş dosyası listede adıyla yok");
+    assert.ok(s.akis.some((r) => r.tanilar.some((t) => t.mesaj.includes("giriş") || t.kod === "kural-ihlali")),
+      "giriş dosyasının ayrıştırılamadığı tanıyla söylenmeli");
+  } finally { rmSync(kok, { recursive: true, force: true }); }
+});
+
+test("MGZ-A12: bilerek-hatalı (muaf) dosya atlama kipinde kırık dosya sayılmaz", () => {
+  const kok = gecici();
+  try {
+    kirikFiksturu(kok);
+    writeFileSync(join(kok, "is", "plan", "ders.sar"), '// sarmal: bilerek-hatalı — ders malzemesi\nFaz( kod: FZ-DERS, ad: "yarım"\n');
+    const s = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-10-16", tamListe: true, kirikDosyayiAtla: true });
+    assert.equal(s.tamKosum, true);
+    assert.equal(s.kirikDosyalar, undefined, "muaf dosya kırık dosya listesine girdi — ders malzemesi işaret yakar");
   } finally { rmSync(kok, { recursive: true, force: true }); }
 });

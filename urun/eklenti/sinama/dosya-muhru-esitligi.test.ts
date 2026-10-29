@@ -20,6 +20,11 @@
 //   saydığında yalnız tıklama sınaması düştü; mutlak yol deseni başlangıcına
 //   bakmayan eski hâline döndürüldüğünde tıklama ve etiket sınamalarının ikisi
 //   birden düştü, çünkü etiket yeniden `is@SONRA@_…` basmaya başladı.
+//
+//   Mutasyon kanıtı (MGZ-A06 · 2026-10-10 koşusu; her mutasyon yedekten geri
+//   alındı): motor geçersiz ad ya da beyansız klasör bulgusundan `hedefDosya`
+//   alanını söktüğünde ve hedef çözücüsü klasör hedefini dosya saydığında
+//   Problems hedefi sınaması düştü.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { test } from "node:test";
@@ -38,8 +43,8 @@ import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import type { Dugum } from "../../cekirdek/src/sozdizim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { sarKapsamDisi, DISLANAN_ADLAR } from "../src/izleyici-cekirdek.ts";
-import { yuzeyeAyir, kayitGorunumu, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
-import { yolusuzlastir } from "../src/yuzey-metinleri.ts";
+import { yuzeyeAyir, kayitGorunumu, kayitHedefi, taniHedefi, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { yolusuzlastir, hedefBaglantiMetni } from "../src/yuzey-metinleri.ts";
 
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
 const BUGUN = "2026-09-11";
@@ -169,4 +174,45 @@ test("EKL-F6-A10 · etiket mutlak yolu dosya adına indirir, göreli yola dokunm
   assert.equal(yolusuzlastir(`"/Users/ad/proje/is/plan/a.sar" dosyası`), `"a.sar" dosyası`);
   assert.equal(yolusuzlastir("kaynak: /Users/ad/proje/b.sar okunamadı"), "kaynak: b.sar okunamadı");
   assert.equal(yolusuzlastir("(C:/Users/ad/c.sar)"), "(c.sar)");
+});
+
+// ── MGZ-A06 · geçersiz ad ile beyansız klasör bulgusunun hedefi ────────────
+//
+//   İki bulgu hata ya da uyarı düzeyinde konuştuğu için Problems yüzeyine düşer
+//   ve giriş dosyasının ilk satırına bağlanır; Problems satırının kendisi kaydın
+//   dosyasını açar ve kayıt orada sayılmaya devam eder. Eklenti bu yüzden
+//   bulgunun anlattığı yeri satıra ilgili konum olarak ekler: kullanıcı o konuma
+//   tıklayınca adı kusurlu dosya ya da ilansız klasör açılır. Hedef tek işlevden
+//   çözülür (`taniHedefi`) ve panel tıklaması da aynı işlevden okur.
+test("MGZ-A06 · geçersiz ad ve beyansız klasör bulgusu Problems yüzeyinde anlattığı yeri hedef gösterir", () => {
+  const kok = agac();
+  try {
+    mkdirSync(join(kok, "sablon"));
+    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: BUGUN, tamListe: true });
+    const giris = anadizinBul(kok)!;
+    const kayitlar: YuzeyKaydi[] = sonuc.akis.flatMap((rapor) => rapor.tanilar
+      .filter((t) => t.kod === "geçersiz-dosya-adı" || t.kod === "beyansız-yapı")
+      .map((tani) => ({
+        proje: { kod: "PRJ-DENEME", ad: "deneme" },
+        dosya: isAbsolute(rapor.dosya) ? rapor.dosya : join(kok, rapor.dosya),
+        tani,
+      })));
+    const d = yuzeyeAyir(kayitlar);
+    assert.equal(d.problems.length, 3, "iki geçersiz ad ile bir beyansız klasör Problems yüzeyine düşmeli");
+    const beklenen = new Map<string, boolean>([["is/plan/@FOO@_x.sar", false], ["is/plan/Rapor.sar", false], ["sablon/", true]]);
+    assert.deepEqual(d.problems.map((k) => k.tani.hedefDosya).sort(), [...beklenen.keys()].sort(),
+      "bulgu anlattığı dosyayı ya da klasörü taşımıyor");
+    for (const k of d.problems) {
+      const goreli = k.tani.hedefDosya!;
+      const hedef = taniHedefi(k.dosya, k.tani);
+      assert.equal(k.dosya, giris, `${k.tani.kod}: kayıt giriş dosyasında kalmalı, sayım değişmemeli`);
+      assert.deepEqual(hedef, { dosya: join(kok, goreli), satir: 1, sutun: 1, klasor: beklenen.get(goreli) },
+        `${k.tani.kod}: Problems kaydının ilgili konumu anlattığı yeri göstermiyor`);
+      assert.equal(kayitHedefi(k).dosya, hedef?.dosya, `${k.tani.kod}: panel tıklaması ile Problems hedefi ayrışıyor`);
+      assert.equal(hedefBaglantiMetni(goreli, beklenen.get(goreli)!),
+        `Bulgunun anlattığı ${beklenen.get(goreli) ? "klasör" : "dosya"}: ${goreli}`);
+    }
+    // Hedef taşımayan kayıt ilgili konum almaz; satırı eskisi gibi kendi konumuna gider.
+    assert.equal(taniHedefi(giris, { ...d.problems[0].tani, hedefDosya: undefined }), undefined);
+  } finally { rmSync(kok, { recursive: true, force: true }); }
 });

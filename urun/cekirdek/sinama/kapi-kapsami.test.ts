@@ -21,8 +21,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -31,6 +30,7 @@ import {
   type KapiGirdisi,
 } from "../src/kapi-kapsami.ts";
 import { denetimKos } from "../src/denetim.ts";
+import { dogusAgaciKur, planYolu, type DogusAgaci } from "./dogus-agaci.ts";
 
 const DENETIM_YOLU = fileURLToPath(new URL("../src/denetim.ts", import.meta.url));
 const SNF_YOL = fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url));
@@ -131,19 +131,17 @@ test("panelCaprazUreticiKumesi: per-dosya yol cross süzgeçte YOK, cross ailesi
 // Fikstür: tırnaklı bir referans hedefi taşıyan tek Adımlık en küçük çalışma
 // alanı. Tırnaklı hedef, referans üreticisinin kenar-metin tanısını doğurur —
 // bağımsız denetimin sızıntıyı kanıtladığı senaryonun birebir kendisidir.
-const FIKSTUR_ANA = `-->|
-## Amaç
-Köken süzgeci nöbetinin fikstür ağacıdır; tırnaklı referans hedefi kenar-metin tanısını doğurur.
-## Kapsam
-Bir plan rafı ve tek Adımlık bir plan dosyası bulunur.
-## Sonuç
-Sınama, yalnız komut satırına ayrılmış üreticinin tanısının panel süzgecinden geçmediğini ölçer.
-|<--
-Proje( kod: PRJ-FX, ad: "fx", rejim: katı, ne: "köken süzgeci nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FX, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FX-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
+//
+// GERÇEK AĞAÇ (HST-MTR-A07): üç fikstürün ağacı doğuş paketiyle doğar. Giriş
+// ilanı doğuşundur ve yalnız fikstürün teknolojisini ilan eder; plan, doğuşun
+// yazdığı ilk Faz dosyasının yerine yazılır. Eski fikstürler kökün altına çıplak
+// bir plan rafı ilan ediyordu ve o düzeni doğuş artık hiç üretmez.
+function fiksturAgaci(ad: string, teknoloji: string, plan: string, ek?: { yol: string; metin: string }): DogusAgaci {
+  const agac = dogusAgaciKur({ ad, onek: `sarmal-${ad}-`, ilkFaz: plan });
+  agac.ilanEkle(`  Teknoloji( kod: ${teknoloji}, ne: "fikstür teknolojisi" )`);
+  if (ek) agac.yaz(ek.yol, ek.metin);
+  return agac;
 }
-`;
 
 const FIKSTUR_PLAN = `Faz( kod: FAZ-FX, ad: "fx mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
   -->|
@@ -171,20 +169,8 @@ const FIKSTUR_PLAN = `Faz( kod: FAZ-FX, ad: "fx mevsimi", ne: "fikstür dönemi"
 // ilanın doğru yazıldığını ölçer; bu fikstür ilanın gerçek akışta karşılığı olduğunu
 // ölçer. Ayrım önemlidir, çünkü ilan doğru yazılıp tanı yine de köken damgası
 // taşımazsa süzgeç körleşir ve tanı panelden sessizce düşer.
-const FIKSTUR_ATESLEME_ANA = `-->|
-## Amaç
-Ateşlemiş hatırlatıcı nöbetinin fikstür ağacıdır; hedefi tamamlanmış bir hatırlatıcı taşır.
-## Kapsam
-Bir plan rafı, tamamlanmış tek Adım ve ona bağlanmış bir hatırlatıcı bulunur.
-## Sonuç
-Sınama, ateşleme tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
-|<--
-Proje( kod: PRJ-FXH, ad: "fxh", rejim: katı, ne: "ateşleme nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FXH, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FXH-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
-}
-
-Hatırlatıcı(
+// Hatırlatıcı, doğuş ağacının plan rafında kendi dosyasında yaşar.
+const FIKSTUR_ATESLEME_HATIRLATICI = `Hatırlatıcı(
   kod:              HTR-FXH,
   durum:            kararlaştı,
   çapa:             nitelik,
@@ -216,12 +202,10 @@ const FIKSTUR_ATESLEME_PLAN = `Faz( kod: FAZ-FXH, ad: "fxh mevsimi", ne: "fikst�
 `;
 
 test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden GEÇER", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-atesleme-"));
+  const agac = fiksturAgaci("fxh", "TEK-FXH", FIKSTUR_ATESLEME_PLAN,
+    { yol: planYolu("hatirlaticilar.sar"), metin: FIKSTUR_ATESLEME_HATIRLATICI });
   try {
-    writeFileSync(join(kok, "fxh_anadizin.sar"), FIKSTUR_ATESLEME_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fxh_plan.sar"), FIKSTUR_ATESLEME_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-28", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-08-28", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let atesleme = 0;
     let panelegecen = 0;
@@ -240,7 +224,7 @@ test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden
     assert.equal(panelegecen, atesleme,
       "ateşleme tanısı panel süzgecinden geçmedi — hatırlatma ANI yalnız komut satırında kalır ve hatırlatıcının vaadi boşa düşer (YUZ-3.4)");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -248,20 +232,6 @@ test("YUZ-3.4 uçtan uca: ateşlemiş hatırlatıcı tanısı panel süzgecinden
 // Ateşleme fikstürüyle aynı gövdeyi kullanır; tek fark Adımın açık (beklemede)
 // olması ve `öncelik` alanını taşımamasıdır. Nöbet, ORK-3.4 tanısının köken
 // damgasını ve panel süzgecinden geçişini ölçer.
-const FIKSTUR_ONCELIKSIZ_ANA = `-->|
-## Amaç
-Önceliksiz Adım nöbetinin fikstür ağacıdır; öncelik beyanı olmayan tek açık Adım taşır.
-## Kapsam
-Bir plan rafı ve beyansız tek açık Adım bulunur.
-## Sonuç
-Sınama, önceliksiz Adım tanısının panel süzgecinden GEÇTİĞİNİ ölçer.
-|<--
-Proje( kod: PRJ-FXO, ad: "fxo", rejim: katı, ne: "önceliksiz Adım nöbetinin fikstürü" ) {
-  Teknoloji( kod: TEK-FXO, ne: "fikstür teknolojisi" )
-  Raf( kod: RAF-FXO-PLAN, yol: "plan/", ne: "plan dosyaları rafı" )
-}
-`;
-
 const FIKSTUR_ONCELIKSIZ_PLAN = `Faz( kod: FAZ-FXO, ad: "fxo mevsimi", ne: "fikstür dönemi", hedefTarih: "2099-12-31" ) {
   -->|
   ## Amaç
@@ -284,12 +254,9 @@ const FIKSTUR_ONCELIKSIZ_PLAN = `Faz( kod: FAZ-FXO, ad: "fxo mevsimi", ne: "fiks
 `;
 
 test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-onceliksiz-"));
+  const agac = fiksturAgaci("fxo", "TEK-FXO", FIKSTUR_ONCELIKSIZ_PLAN);
   try {
-    writeFileSync(join(kok, "fxo_anadizin.sar"), FIKSTUR_ONCELIKSIZ_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fxo_plan.sar"), FIKSTUR_ONCELIKSIZ_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-09-02", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-09-02", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let onceliksiz = 0;
     let panelegecen = 0;
@@ -308,7 +275,7 @@ test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER",
     assert.equal(panelegecen, onceliksiz,
       "önceliksiz Adım tanısı panel süzgecinden geçmedi — beyansız açık Adım yalnız komut satırında kalır (ORK-3.4)");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -316,12 +283,9 @@ test("ORK-3.4 uçtan uca: önceliksiz Adım tanısı panel süzgecinden GEÇER",
  *  sızmaması ölçülüyordu; Founder hükmünden sonra ölçülen şey onun panele ULAŞMASIDIR.
  *  Köken damgası nöbeti olduğu gibi korunur: damgasız tanı süzgecin körü olur. */
 test("köken süzgeci (fikstürlü): uyarı düzeyli kenar-metin tanısı panele ULAŞIR ve akıştaki her tanı köken damgası taşır", () => {
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-koken-"));
+  const agac = fiksturAgaci("fx", "TEK-FX", FIKSTUR_PLAN);
   try {
-    writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fx_plan.sar"), FIKSTUR_PLAN, "utf8");
-    const sonuc = denetimKos(kok, { snfYol: SNF_YOL, bugun: "2026-08-23", tamListe: true });
+    const sonuc = denetimKos(agac.kok, { snfYol: SNF_YOL, bugun: "2026-08-23", tamListe: true });
     const paneller = panelCaprazUreticiKumesi();
     let kenarMetin = 0;
     let paneleUlasan = 0;
@@ -344,7 +308,7 @@ test("köken süzgeci (fikstürlü): uyarı düzeyli kenar-metin tanısı panele
     assert.deepEqual(kokensizler, [],
       "akıştaki her tanı köken damgası taşımalı; damgasız tanı süzgecin körü olur ve panelden sessizce düşer");
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
 });
 
@@ -440,14 +404,11 @@ test("BKM-DNT-A01 · görgül: gerçek koşumlarda gözlenen kademe ilandaki bey
   topla(fileURLToPath(new URL("../../..", import.meta.url)));
   // ② Bu yüzden BOZUK bir fikstür de koşulur: kırık atıf ile tırnaklı hedef,
   //    hata ve uyarı düzeyli üreticileri ateşler ve beyanı gerçekten sınar.
-  const kok = mkdtempSync(join(tmpdir(), "sarmal-gorgul-"));
+  const agac = fiksturAgaci("fx", "TEK-FX", FIKSTUR_PLAN);
   try {
-    writeFileSync(join(kok, "fx_anadizin.sar"), FIKSTUR_ANA, "utf8");
-    mkdirSync(join(kok, "plan"));
-    writeFileSync(join(kok, "plan", "fx_plan.sar"), FIKSTUR_PLAN, "utf8");
-    topla(kok);
+    topla(agac.kok);
   } finally {
-    rmSync(kok, { recursive: true, force: true });
+    agac.sil();
   }
   assert.ok(gozlenen.size >= 8, `ölçümün zemini: koşumlar en az sekiz üreticiyi ateşlemeli (gözlenen ${gozlenen.size})`);
   const hataUyari = [...gozlenen.values()].filter((d) => d !== "bilgi").length;
@@ -596,4 +557,329 @@ test("BKM-DNT-A06: alt süreç köprüsü kuralı — komut satırı yüzeyli he
   assert.ok(etkin.has("dogusEksikTanilari"), "doğrudan MCP çağrısı da etkin kümededir");
   assert.ok(etkin.size > cliKumesi.size,
     "köprü kümesi komut satırı kümesinden GENİŞ olmalı — eşitse doğrudan çağrılar sayılmıyor demektir");
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BKM-DNT-A11 · KANON-İLAN YÜZEY UYUM NÖBETİ
+//
+//   Kapsam nöbeti ilandaki üretici adlarını denetim hattının çağırdığı adlarla,
+//   kademe nöbeti ise ilandaki kademeyi YUZ-3.3'ün kademe-yüzey bağıyla
+//   karşılaştırır. İkisinin de girdisinde kanon maddesinin KENDİ yüzey cümlesi
+//   yoktur; bir madde zorlama satırında bir tanıyı panel yüzeyine yollarken
+//   o tanıyı basan üretici ilanda panelsiz kalırsa iki nöbet de susar. Bu aile o
+//   boşluğu kapatır ve üç makine-okur kaynağı birleştirir:
+//     ① kanonun `**Zorlama:**` satırındaki yüzey beyanı (madde · kimlik · yüzey),
+//     ② tanı kimliğini basan üretici işlev (dört ilan modülünün kaynağından),
+//     ③ ilanın yüzey listesi (`KAPI_KAPSAMI`).
+//   Kanon Problems, Bildirimler ya da Hatırlatıcılar diyorsa üretici panel yüzeyi
+//   taşımak zorundadır; üç sunum yüzeyinin üçü de panelde yaşar (YUZ-3.3 ·
+//   `SunumYuzeyi`). "Zorlanmaz" diyen ya da yüzey beyanı taşımayan maddeler
+//   nöbetin dışında kalır ve dışarıda kalanlar sayılır. Nöbet karar vermez;
+//   hangi tarafın değişeceği BKM-DNT-A01 sınıfı bir Founder hükmüdür.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const KANON_DIZINI_A11 = fileURLToPath(new URL("../../../yasa/kanon", import.meta.url));
+const SRC_DIZINI_A11 = fileURLToPath(new URL("../src/", import.meta.url));
+const ILAN_MODULLERI = ["denetci.ts", "dag.ts", "kuralci.ts", "dogrulayici.ts"] as const;
+
+/** Panelde yaşayan üç sunum yüzeyinin kanon metnindeki adları. */
+const PANEL_YUZEY_DESENI = /\b(Problems|Bildirimler|Hatırlatıcılar)\b/u;
+
+/** Kanonun bir zorlama satırının tek bir (kimlik · yüzey) beyanı. */
+interface KanonYuzeyBeyani {
+  kimlik: string;
+  madde: string;
+  /** Yüzey cümlesi; beyansız kimlikte tanımsızdır. */
+  yuzey?: string;
+}
+
+/**
+ * Bir zorlama satırını (madde · kimlik · yüzey) üçlülerine ayırır. Kanonun
+ * yazım kalıbı şudur: kimlikler sırayla anılır ve bir `yüzey:` cümlesi kendinden
+ * önceki, henüz yüzey almamış BÜTÜN kimliklere uygulanır (YAS-2.1 satırı iki
+ * kimliği tek cümleyle Problems'a, üçüncüsünü ayrı cümleyle proje CLI'ye
+ * yollar). Tırnak içindeki tanı cümleleri önce silinir, çünkü onlar ters tırnaklı
+ * alan adı ya da "yüzey" sözcüğü taşıyabilir. Yalnız sicilde bulunan kimlikler
+ * sayılır; `format:` alanının ters tırnaklı şablonu böylece kendiliğinden düşer.
+ */
+function zorlamaSatiriniAyir(
+  madde: string, zorlama: string, sicil: ReadonlySet<string>,
+): { beyanlar: KanonYuzeyBeyani[]; zorlanmaz: boolean } {
+  const metin = zorlama.trim();
+  if (/^Zorlanmaz(?![\p{L}\p{N}])/u.test(metin)) return { beyanlar: [], zorlanmaz: true };
+  const temiz = metin.replace(/“[^”]*”/gu, "“”");
+  const beyanlar: KanonYuzeyBeyani[] = [];
+  let bekleyen: string[] = [];
+  for (const es of temiz.matchAll(/`([^`]+)`|yüzey:\s*([^·;]+)/gu)) {
+    if (es[1] !== undefined) {
+      if (sicil.has(es[1]) && !bekleyen.includes(es[1])) bekleyen.push(es[1]);
+      continue;
+    }
+    const yuzey = es[2].trim();
+    for (const kimlik of bekleyen) beyanlar.push({ kimlik, madde, yuzey });
+    bekleyen = [];
+  }
+  for (const kimlik of bekleyen) beyanlar.push({ kimlik, madde });
+  return { beyanlar, zorlanmaz: false };
+}
+
+/** Kanonun sekiz bölümündeki bütün maddelerin yüzey beyanları — ayrıştırıcıdan okunur. */
+async function kanonYuzeyBeyanlari(sicil: ReadonlySet<string>): Promise<{
+  beyanlar: KanonYuzeyBeyani[]; zorlanmazMaddeler: string[]; zorlamasizMaddeler: string[];
+}> {
+  const { readdirSync } = await import("node:fs");
+  const { ayristir } = await import("../src/ayristirici.ts");
+  const { belirtecle } = await import("../src/belirtec.ts");
+  const beyanlar: KanonYuzeyBeyani[] = [];
+  const zorlanmazMaddeler: string[] = [];
+  const zorlamasizMaddeler: string[] = [];
+  for (const ad of readdirSync(KANON_DIZINI_A11).filter((a) => a.endsWith(".sar")).sort()) {
+    const program = ayristir(belirtecle(readFileSync(join(KANON_DIZINI_A11, ad), "utf8")));
+    const gez = (dugumler: typeof program.bildirimler): void => {
+      for (const d of dugumler) {
+        if (d.tur === "kuralTanım" || (d.tur === "widget" && d.ad === "Karar")) {
+          const kod = [...d.parametreler, ...d.ozellikler].find((p) => p.ad === "kod")?.deger?.metin;
+          const zorlama = /\*\*Zorlama:\*\*([^\n]*)/u.exec(d.belge ?? "")?.[1];
+          if (kod && zorlama === undefined) zorlamasizMaddeler.push(kod);
+          if (kod && zorlama !== undefined) {
+            const sonuc = zorlamaSatiriniAyir(kod, zorlama, sicil);
+            if (sonuc.zorlanmaz) zorlanmazMaddeler.push(kod);
+            beyanlar.push(...sonuc.beyanlar);
+          }
+        }
+        gez(d.cocuklar);
+      }
+    };
+    gez(program.bildirimler);
+  }
+  return { beyanlar, zorlanmazMaddeler, zorlamasizMaddeler };
+}
+
+/**
+ * Tanı kimliği → onu basan ilan üreticileri. Eşleme dört ilan modülünün
+ * kaynağından kurulur: her üreticinin gövdesindeki `yeniTani("…")` ve
+ * `eskiTani("…")` çağrıları, gövdenin çağırdığı yardımcıların gövdeleriyle
+ * birlikte toplanır. Çağrı çözümü ADLA değil MODÜLLE yapılır: bir ad önce aynı
+ * modülün işlevlerinde, sonra o modülün dört ilan modülünden GERÇEKTEN içe
+ * aktardığı adlarda aranır. Ad temelli kaba bir çözüm 2026-10-10 ölçümünde
+ * modüller arası ad çakışması yüzünden komut satırına ayrılmış altı üreticiyi
+ * tek-dosya tanılarının sahibi gibi göstermiş ve sahte ayrışmalarla dolmuştur.
+ * Yürüyüş başka bir ilan üreticisinde durur, çünkü onun tanıları kendi ilan
+ * satırının konusudur.
+ */
+function kimlikUreticileri(ilan: readonly KapiGirdisi[]): Map<string, Set<string>> {
+  type Islev = { modul: string; govde: string };
+  const islevler = new Map<string, Map<string, Islev>>();
+  const iceAktarma = new Map<string, Map<string, string>>();
+  for (const modul of ILAN_MODULLERI) {
+    const metin = readFileSync(join(SRC_DIZINI_A11, modul), "utf8");
+    const harita = new Map<string, Islev>();
+    for (const es of metin.matchAll(/^(?:export )?(?:async )?function \*?([A-Za-z0-9_]+)\s*[(<]/gmu)) {
+      const son = metin.indexOf("\n}\n", es.index);
+      harita.set(es[1], { modul, govde: metin.slice(es.index, son < 0 ? undefined : son + 3) });
+    }
+    islevler.set(modul, harita);
+    const aktarilan = new Map<string, string>();
+    for (const es of metin.matchAll(/import\s*\{([^}]*)\}\s*from\s*"\.\/(denetci|dag|kuralci|dogrulayici)\.ts"/gsu)) {
+      for (const ad of es[1].split(",")) {
+        const temiz = ad.trim().replace(/^type\s+/u, "");
+        if (temiz) aktarilan.set(temiz, `${es[2]}.ts`);
+      }
+    }
+    iceAktarma.set(modul, aktarilan);
+  }
+  const coz = (modul: string, ad: string): Islev | undefined => {
+    const yerel = islevler.get(modul)?.get(ad);
+    if (yerel) return yerel;
+    const kaynak = iceAktarma.get(modul)?.get(ad);
+    return kaynak ? islevler.get(kaynak)?.get(ad) : undefined;
+  };
+  const ureticiAdlari = new Set(ilan.map((g) => g.uretici));
+  const sonuc = new Map<string, Set<string>>();
+  for (const girdi of ilan) {
+    const bas = islevler.get(girdi.modul)?.get(girdi.uretici);
+    if (!bas) continue;
+    const gorulen = new Set<Islev>();
+    const yigin: Islev[] = [bas];
+    while (yigin.length) {
+      const islev = yigin.pop()!;
+      if (gorulen.has(islev)) continue;
+      gorulen.add(islev);
+      for (const es of islev.govde.matchAll(/(?:yeniTani|eskiTani)\(\s*"([^"]+)"/gu)) {
+        if (!sonuc.has(es[1])) sonuc.set(es[1], new Set());
+        sonuc.get(es[1])!.add(girdi.uretici);
+      }
+      for (const es of islev.govde.matchAll(/\b([A-Za-z0-9_]+)\s*\(/gu)) {
+        if (es[1] === girdi.uretici || ureticiAdlari.has(es[1])) continue;
+        const hedef = coz(islev.modul, es[1]);
+        if (hedef) yigin.push(hedef);
+      }
+    }
+  }
+  return sonuc;
+}
+
+/** Kanon ile ilan arasındaki tek bir yüzey ayrışması. */
+interface KanonIlanSapmasi { kimlik: string; madde: string; uretici: string; yuzey: string }
+
+/**
+ * NÖBETİN ÇEKİRDEĞİ. Tabanı üretilen tanılar değil İLAN EDİLEN üreticilerdir:
+ * kanon bir kimliği panel yüzeyine yolluyorsa o kimliği basan her ilan üreticisi
+ * panel yüzeyi taşımak zorundadır. Tek meşru istisna ilanın kendi `panelIkizi`
+ * beyanıdır ve o da ölçülür: ikiz panelde yaşamalı VE aynı kimliği basmalıdır.
+ */
+function kanonIlanSapmalari(
+  beyanlar: readonly KanonYuzeyBeyani[],
+  ureticiler: ReadonlyMap<string, ReadonlySet<string>>,
+  ilan: readonly KapiGirdisi[],
+): KanonIlanSapmasi[] {
+  const girdiler = new Map(ilan.map((g) => [g.uretici, g]));
+  const panelde = (ad: string | undefined): boolean => !!ad && !!girdiler.get(ad)?.yuzeyler.includes("panel");
+  const sapmalar: KanonIlanSapmasi[] = [];
+  for (const b of beyanlar) {
+    if (!b.yuzey || !PANEL_YUZEY_DESENI.test(b.yuzey)) continue;
+    for (const uretici of ureticiler.get(b.kimlik) ?? []) {
+      if (panelde(uretici)) continue;
+      const ikiz = girdiler.get(uretici)?.panelIkizi;
+      if (ikiz && panelde(ikiz) && ureticiler.get(b.kimlik)?.has(ikiz)) continue;
+      sapmalar.push({ kimlik: b.kimlik, madde: b.madde, uretici, yuzey: b.yuzey });
+    }
+  }
+  return sapmalar.sort((a, b) =>
+    a.kimlik.localeCompare(b.kimlik, "tr") || a.madde.localeCompare(b.madde) || a.uretici.localeCompare(b.uretici));
+}
+
+/**
+ * BİLİNEN AYRIŞMALAR (gerekçeli). Nöbet bugünkü depoda bunları bulmuştur ve
+ * kapatmak bu Adımın sınırı dışındadır: kanon Founder kapısıdır, ilanın yönü ise
+ * BKM-DNT-A01 sınıfı bir hükümdür. Liste uyarı düzeyine düşürmenin yerine
+ * seçilmiştir, çünkü sınama süitinde uyarının hiçbir yüzeyi yoktur ve sessizliğe
+ * eşittir; liste ise iki yönde ölçülür: listede olmayan YENİ bir ayrışma süiti
+ * kırmızıya çevirir, listede olup artık ölçülmeyen bir ayrışma da süiti
+ * kırmızıya çevirir ki kapanan istisna listede çürümesin.
+ */
+const BILINEN_KANON_ILAN_AYRISMALARI: readonly (KanonIlanSapmasi & { gerekce: string })[] = [
+  {
+    kimlik: "terfi-kanıtı-eksik", madde: "YAS-4.2", uretici: "terfiKanitiTanilari",
+    yuzey: "Problems, proje CLI ve satır-lensi",
+    gerekce: "Kanon maddesi tanıyı Problems yüzeyine yollar; sicil ise tanıyı bugün bilgi kademesinde " +
+      "üretir (kanon düzeyi uyarı, terfi borcu) ve ilan üreticiyi bilgi gerekçesiyle yalnız komut " +
+      "satırında tutar. Kademe nöbeti bu yüzden susar. Kapanış ya ilana panel yüzeyi eklemekle ya da " +
+      "kanon cümlesini değiştirmekle olur ve ikisi de bu Adımın sınırı dışındadır.",
+  },
+];
+
+test("BKM-DNT-A11: kanon ile ilan arasındaki yüzey ayrışması yalnız gerekçeli bilinen istisnalardan ibarettir", async (t) => {
+  const { SABIT_TANI_KODLARI } = await import("../src/tani-sicili.ts");
+  const sicil = new Set<string>(SABIT_TANI_KODLARI);
+  const { beyanlar } = await kanonYuzeyBeyanlari(sicil);
+  const ureticiler = kimlikUreticileri(KAPI_KAPSAMI);
+  // Zemin: nöbetin dişi olduğunu gösteren alt sınırlar. Ayrıştırıcı ya da eşleme
+  // çökerse nöbet boş kümeler üstünde sessizce yeşil yanardı.
+  const panelBeyanli = beyanlar.filter((b) => b.yuzey && PANEL_YUZEY_DESENI.test(b.yuzey));
+  assert.ok(panelBeyanli.length >= 100, `zemin: kanonda en az yüz panel yüzey beyanı okunmalı (okunan ${panelBeyanli.length})`);
+  assert.ok(ureticiler.size >= 150, `zemin: en az yüz elli kimliğin üreticisi bulunmalı (bulunan ${ureticiler.size})`);
+  const sapmalar = kanonIlanSapmalari(beyanlar, ureticiler, KAPI_KAPSAMI);
+  const anahtar = (s: KanonIlanSapmasi): string => `${s.kimlik}|${s.madde}|${s.uretici}`;
+  const bilinen = new Set(BILINEN_KANON_ILAN_AYRISMALARI.map(anahtar));
+  for (const s of sapmalar) t.diagnostic(`ayrışma: ${s.kimlik} · ${s.madde} · ${s.uretici} · kanon yüzeyi "${s.yuzey}"`);
+  const yeni = sapmalar.filter((s) => !bilinen.has(anahtar(s)));
+  assert.deepEqual(yeni, [],
+    "kanon tanıyı panel yüzeyine yolluyor fakat onu basan üretici ilanda panelsiz — HİÇ GÖRÜNMEME ayrışması");
+  const olculen = new Set(sapmalar.map(anahtar));
+  const curuyen = BILINEN_KANON_ILAN_AYRISMALARI.filter((s) => !olculen.has(anahtar(s))).map(anahtar);
+  assert.deepEqual(curuyen, [],
+    "bilinen istisna artık ölçülmüyor — ayrışma kapanmış, istisna satırı silinmeli");
+  for (const s of BILINEN_KANON_ILAN_AYRISMALARI) {
+    assert.ok(s.gerekce.trim().length > 40, `${anahtar(s)}: istisna gerekçe cümlesi taşımalı`);
+    assert.equal(sapmalar.find((x) => anahtar(x) === anahtar(s))?.yuzey, s.yuzey,
+      `${anahtar(s)}: kanonun yüzey cümlesi istisna yazıldığından beri değişti — istisna yeniden tartılmalı`);
+  }
+});
+
+test("BKM-DNT-A11: nöbetin dışında kalanlar sayılır ve eşlenemeyen kimlik yalnız ilan dışı modüllerde doğar", async (t) => {
+  const { readdirSync } = await import("node:fs");
+  const { SABIT_TANI_KODLARI } = await import("../src/tani-sicili.ts");
+  const sicil = new Set<string>(SABIT_TANI_KODLARI);
+  const { beyanlar, zorlanmazMaddeler, zorlamasizMaddeler } = await kanonYuzeyBeyanlari(sicil);
+  const ureticiler = kimlikUreticileri(KAPI_KAPSAMI);
+  const kanondaAnilan = new Set(beyanlar.map((b) => b.kimlik));
+  const beyansiz = beyanlar.filter((b) => !b.yuzey).map((b) => `${b.madde}:${b.kimlik}`);
+  const kanondaAnilmayan = [...sicil].filter((k) => !kanondaAnilan.has(k));
+  const eslenemeyen = [...sicil].filter((k) => !ureticiler.has(k)).sort((a, b) => a.localeCompare(b, "tr"));
+  t.diagnostic(`"Zorlanmaz" diyen madde: ${zorlanmazMaddeler.length}`);
+  t.diagnostic(`zorlama satırı taşımayan madde: ${zorlamasizMaddeler.length}`);
+  t.diagnostic(`yüzey beyanı taşımayan (madde · kimlik) çifti: ${beyansiz.length} — ${beyansiz.join(" · ")}`);
+  t.diagnostic(`hiçbir zorlama satırında anılmayan sicil kimliği: ${kanondaAnilmayan.length}`);
+  t.diagnostic(`ilan üreticisine eşlenemeyen sicil kimliği: ${eslenemeyen.length} — ${eslenemeyen.join(" · ")}`);
+  assert.ok(zorlanmazMaddeler.length > 0, "zemin: 'Zorlanmaz' maddeleri ayrıştırıcıdan okunabilmeli");
+  // Eşlenemeyen kimliğin üreticisi ilan modüllerinin İÇİNDE yaşıyorsa eşleme onu
+  // kaçırmıştır ve nöbet o kimlik için kördür; bu hâl sessiz kalamaz.
+  const ilanIci: string[] = [];
+  for (const kimlik of eslenemeyen) {
+    for (const modul of ILAN_MODULLERI) {
+      const kaynak = readFileSync(join(SRC_DIZINI_A11, modul), "utf8");
+      if (kaynak.includes(`Tani("${kimlik}"`)) ilanIci.push(`${kimlik}@${modul}`);
+    }
+  }
+  assert.deepEqual(ilanIci, [], "ilan modülünde basılan kimlik üreticisine eşlenemedi — nöbet bu kimlik için kör");
+  // Eşlenemeyenlerin her biri ilan dışı bir kaynakta gerçekten anılıyor olmalıdır.
+  const kaynaklar = readdirSync(SRC_DIZINI_A11)
+    .filter((a) => a.endsWith(".ts") && !["tani-sicili.ts", "tani-metinleri.ts", ...ILAN_MODULLERI].includes(a))
+    .map((a) => readFileSync(join(SRC_DIZINI_A11, a), "utf8"));
+  const sahipsiz = eslenemeyen.filter((k) => !kaynaklar.some((m) => m.includes(`"${k}"`)));
+  assert.deepEqual(sahipsiz, [], "eşlenemeyen kimlik hiçbir ilan dışı modülde de anılmıyor");
+});
+
+test("BKM-DNT-A11 · mutasyon: kanonun panel istediği bir üreticinin panel yüzeyi ilandan DÜŞÜRÜLÜNCE süit kırmızıya döner", async () => {
+  const { SABIT_TANI_KODLARI } = await import("../src/tani-sicili.ts");
+  const sicil = new Set<string>(SABIT_TANI_KODLARI);
+  const { beyanlar } = await kanonYuzeyBeyanlari(sicil);
+  const ureticiler = kimlikUreticileri(KAPI_KAPSAMI);
+  const kurban = "muhurTanilari";
+  const mutasyonlu: KapiGirdisi[] = KAPI_KAPSAMI.map((g) => g.uretici === kurban
+    ? { ...g, yuzeyler: g.yuzeyler.filter((y) => y !== "panel") }
+    : g);
+  const sapmalar = kanonIlanSapmalari(beyanlar, ureticiler, mutasyonlu).filter((s) => s.uretici === kurban);
+  assert.ok(sapmalar.some((s) => s.kimlik === "mühür-kırık" && s.madde === "YAS-2.4"),
+    "mühür-kırık YAS-2.4 satırında Problems yüzeyine yollanır; panelsiz üreticisi ayrışma olarak bildirilmeli");
+  for (const s of sapmalar) {
+    assert.ok(s.madde && s.kimlik && s.uretici, "ayrışma kimlik, madde ve üretici adını birlikte taşımalı");
+    assert.match(s.yuzey, PANEL_YUZEY_DESENI);
+  }
+  const geri = kanonIlanSapmalari(beyanlar, ureticiler, KAPI_KAPSAMI).filter((s) => s.uretici === kurban);
+  assert.deepEqual(geri, [], "geri alındıktan sonra mühür üreticisi için ayrışma kalmaz");
+});
+
+test("BKM-DNT-A11 · sentetik: kademe nöbetinin göremediği bilgi kademeli ayrışmayı bu nöbet görür", () => {
+  const sicil = new Set(["sentetik-bilgi", "sentetik-cli"]);
+  const { beyanlar } = zorlamaSatiriniAyir("SNT-1",
+    "Yeni tanı önerisi `sentetik-bilgi` · BİLGİ · “Cümle `alan` ve yüzey: sözcüğü taşır.” · yüzey: proje CLI ve Bildirimler; " +
+    "`sentetik-cli` · BİLGİ · “Yalnız komut satırı.” · yüzey: proje CLI · format: `{duzey, kod}`.", sicil);
+  const ilan: KapiGirdisi[] = [
+    { uretici: "sentetikTanilari", modul: "denetci.ts", kademe: "bilgi", yuzeyler: ["cli"],
+      cliGerekcesi: "Sentetik fikstür — yalnız bilgi düzeyinde konuşur." },
+  ];
+  const ureticiler = new Map([["sentetik-bilgi", new Set(["sentetikTanilari"])], ["sentetik-cli", new Set(["sentetikTanilari"])]]);
+  assert.deepEqual(kanonUyumNobeti(ilan), [], "kademe nöbeti bilgi kademeli CLI girdisini kusursuz sayar");
+  assert.deepEqual(kanonIlanSapmalari(beyanlar, ureticiler, ilan), [
+    { kimlik: "sentetik-bilgi", madde: "SNT-1", uretici: "sentetikTanilari", yuzey: "proje CLI ve Bildirimler" },
+  ], "kanon Bildirimler dediği için panelsiz üretici ayrışmadır; yalnız CLI diyen kimlik ayrışma değildir");
+  const panelli = ilan.map((g) => ({ ...g, yuzeyler: [...g.yuzeyler, "panel" as const] }));
+  assert.deepEqual(kanonIlanSapmalari(beyanlar, ureticiler, panelli), [], "panel yüzeyi eklenince ayrışma kapanır");
+});
+
+test("BKM-DNT-A11 · sentetik: yüzey cümlesi kendinden önceki bütün kimliklere uygulanır, Zorlanmaz ve beyansız dışarıda kalır", () => {
+  const sicil = new Set(["a-kimlik", "b-kimlik", "c-kimlik", "d-kimlik"]);
+  const ayrik = zorlamaSatiriniAyir("SNT-2",
+    "`a-kimlik` · UYARI · “a.”; `b-kimlik` · UYARI · “b.” · yüzey: Problems, tek-dosya CLI ve satır-lensi; " +
+    "`c-kimlik` · HATA · “c.” · yüzey: proje CLI; `d-kimlik` · BİLGİ · “d.” · format: `{duzey}`.", sicil);
+  assert.deepEqual(ayrik.beyanlar, [
+    { kimlik: "a-kimlik", madde: "SNT-2", yuzey: "Problems, tek-dosya CLI ve satır-lensi" },
+    { kimlik: "b-kimlik", madde: "SNT-2", yuzey: "Problems, tek-dosya CLI ve satır-lensi" },
+    { kimlik: "c-kimlik", madde: "SNT-2", yuzey: "proje CLI" },
+    { kimlik: "d-kimlik", madde: "SNT-2" },
+  ]);
+  assert.deepEqual(zorlamaSatiriniAyir("SNT-3", " Zorlanmaz — tanım/katalog/muafiyet.", sicil),
+    { beyanlar: [], zorlanmaz: true });
 });

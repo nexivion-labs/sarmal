@@ -958,7 +958,7 @@ export function yeniKuralTanilari(program: Program, snf: Siniflama): Tani[] {
       const kosul = paramVeyaOzellik(d, "koşul");
       if (kosul) {
         out.push(yeniTani("hüküm-türü-uyumsuz",
-          { kimlik: kodOf(d), kusur: `"${d.ad}" hükmü makine koşulu taşıyor, oysa zorlama koşulu Kural gövdesinde yaşar` },
+          { kimlik: kodOf(d), kusur: "hukum-makine-kosulu", tip: d.ad },
           kosul));
       }
     }
@@ -966,7 +966,7 @@ export function yeniKuralTanilari(program: Program, snf: Siniflama): Tani[] {
       const karar = paramVeyaOzellik(d, "karar");
       if (karar) {
         out.push(yeniTani("hüküm-türü-uyumsuz",
-          { kimlik: kodOf(d), kusur: "Kural gövdesi kilitli hüküm metnini taşıyor, oysa hükmün niçini Karar tipinde yaşar" },
+          { kimlik: kodOf(d), kusur: "kural-hukum-metni" },
           d));
       }
     }
@@ -975,15 +975,17 @@ export function yeniKuralTanilari(program: Program, snf: Siniflama): Tani[] {
   for (const b of program.bildirimler) gez(b);
 
   for (const k of kurallariCikar(program)) {
-    const eksik: string[] = [];
-    if (!k.otorite) eksik.push("otorite beyanı");
-    else if (!OTORITE_EVRENI.has(k.otorite)) eksik.push(`geçerli otorite (yazılan değer "${k.otorite}")`);
-    if (!k.katman) eksik.push("katman beyanı");
-    else if (!katmanlar.has(k.katman)) eksik.push(`geçerli katman (yazılan değer "${k.katman}")`);
-    if (!k.kapsam) eksik.push("kapsam beyanı");
-    if (eksik.length) {
+    // MGZ-A09: eksik parçalar olgu olarak geçer; cümle iki dilde tanı kataloğunda kurulur.
+    const sozlesme = {
+      otoriteYok: !k.otorite,
+      otoriteGecersiz: k.otorite && !OTORITE_EVRENI.has(k.otorite) ? k.otorite : "",
+      katmanYok: !k.katman,
+      katmanGecersiz: k.katman && !katmanlar.has(k.katman) ? k.katman : "",
+      kapsamYok: !k.kapsam,
+    };
+    if (sozlesme.otoriteYok || sozlesme.otoriteGecersiz || sozlesme.katmanYok || sozlesme.katmanGecersiz || sozlesme.kapsamYok) {
       out.push(yeniTani("kural-sözleşmesi-eksik",
-        { kimlik: k.kod, kusur: `${eksik.join(" · ")} yok` }, k.d));
+        { kimlik: k.kod, kusur: "kural-sozlesme-eksikleri", ...sozlesme }, k.d));
     }
 
     // Terfi kapısı: kuralın ilan ettiği düzey motorun bugünkü kademesini aşamaz.
@@ -1000,7 +1002,7 @@ export function yeniKuralTanilari(program: Program, snf: Siniflama): Tani[] {
       const kademeSira = sira[kayit.kademe] ?? 1;
       if (iddiaSira > kademeSira) {
         out.push(yeniTani("tanı-terfi-kapısı-ihlali",
-          { kimlik: k.kod, kusur: `kural "${kod}" tanısını "${duzey}" düzeyinde ilan ediyor, oysa bu hüküm motorda henüz "${kayit.kademe}" kademesinde gözleniyor` },
+          { kimlik: k.kod, kusur: "terfi-kapisi", taniKodu: kod, duzey, kademe: kayit.kademe },
           t));
       }
     }

@@ -13,6 +13,7 @@
   "scripts": {
     "sar": "node src/sarmal.ts",
     "test": "node --test --test-concurrency=1 \"sinama/*.test.ts\"",
+    "test:agac": "node --test sinama/belge-yuzleri.test.ts sinama/bicimle-deger-koruma.test.ts sinama/dil-denetimi-kapsami.test.ts sinama/dongu.test.ts sinama/gateway-surum-denetimi.test.ts sinama/kanon-sema-ayrismasi.test.ts sinama/kanon-tutarlilik.test.ts sinama/kapi-kapsami.test.ts sinama/kimlik.test.ts sinama/kok-yuzeyi.test.ts sinama/kurtarma-sozlesmesi.test.ts sinama/mcpb-bildirimi.test.ts sinama/motor-guven.test.ts sinama/prizma-md.test.ts sinama/sef.test.ts sinama/siniflama.test.ts sinama/tani-metni-hijyeni.test.ts sinama/turetilmis-yuz-nobetleri.test.ts sinama/yeni-kanon-tanilari.test.ts sinama/yuzey-ulasma.test.ts",
     "tip-denetle": "tsc --noEmit",
     "dil-denetle": "eslint .",
     "mcp": "node src/mcp.ts"

@@ -88,6 +88,26 @@ test("rakam taşımayan büyük-harf sözce kod sayılmaz (yanlış pozitif kalk
   assert.deepEqual(bulgular, [], "rakamsız kuyruk düz yazıdır, kimlik değildir");
 });
 
+// HST-MTR-A10: kimlik indeksi HST-MTR-A06'dan beri noktalı madde kodunu tek aday olarak
+// verir, fakat şekil süzgeci kuyruğu tanımadığı için noktalı her aday eleniyordu. Kırık
+// bir alt madde atfı da, üst maddesi de tanımsız bir yazım da bu yüzden sessizdi.
+test("kırık alt madde atfı ve üst maddesi tanımsız noktalı yazım bildirilir, tanımlı alt madde sessizdir (HST-MTR-A10)", () => {
+  const satir = "Kırık iki atıf: DIL-1.99 ve DIL-9.1.";
+  const bulgular = kokYuzeyiAtiflari(
+    [yuzey("README.md")],
+    icerikler({ "README.md": `Yazım hükmü DIL-1.5 maddesindedir; dayanağı DIL-1.\n${satir}\n` }),
+    new Set(["DIL-1", "DIL-1.5"]),
+  );
+  assert.deepEqual(
+    bulgular.map((b) => [b.tani.kod, b.tani.duzey, b.tani.mesaj.match(/'(DIL-[0-9.]+)'/)?.[1], b.tani.satir, b.tani.sutun]),
+    [
+      ["kök-yüzeyi-karşılıksız-atıf", "uyarı", "DIL-1.99", 2, satir.indexOf("DIL-1.99") + 1],
+      ["kök-yüzeyi-karşılıksız-atıf", "uyarı", "DIL-9.1", 2, satir.indexOf("DIL-9.1") + 1],
+    ],
+    "iki noktalı kırık yazım kendi adresiyle bildirilmeli; tanımlı alt madde ve cümle sonu noktası bulgu üretmemeli",
+  );
+});
+
 // ── ③ AİLE SÜZGECİ YOKTUR: nöbet kendi doğuş gerekçesini görebilmelidir ─────
 
 test("ailesi tamamen emekli olmuş kimlik de bildirilir (aile süzgeci bilinçli olarak yoktur)", () => {
@@ -124,19 +144,45 @@ test("`sar` etiketli çit bloğunun içi ölçülmez, dışı ölçülür", () =
   assert.equal(bulgular[0].tani.satir, 5, "çit boşaltması satır adresini kaydırmamalı");
 });
 
-test("`sar` dışındaki çit blokları ölçülmeye devam eder", () => {
-  // Kökteki gerçek tanıtım dosyasının raf ağacı etiketsiz bir çit bloğundadır ve
-  // orası öğretim malzemesi değil, deponun kendisi hakkında olgusal bir iddiadır.
-  const metin = ["```", "plan/   # PLN-1 kaydı", "```", ""].join("\n");
+// HST-YUZ-A04 (HTR-KOK-YUZEYI-NOBETI-ORNEK-CITINI-AYIRMIYOR): bu sınama eskiden etiketsiz
+// çitin ölçülmeye devam ettiğini savunuyordu, çünkü kök tanıtım dosyasının raf ağacı
+// etiketsiz bir çitte duruyordu. Hüküm 2026-10-10'da tersine döndü: kök yüzeyi tanının
+// nasıl göründüğünü ancak tanının kendi metnini yazarak öğretebilir ve README'deki örnek
+// çıktı her işlemede sahte uyarı üretiyordu. Kapsam kaybı ölçülmüştür: bugünkü on iki
+// yüzeyin çitlerinde çözülen tek bir kimlik yoktur, kimlik şekilli tek aday sahte uyarının
+// kendisidir. Etiketsiz, başka dille etiketli, tildeli ve iç içe çitlerin hepsi örnektir.
+test("kod çitiyle çevrili her blok ölçülmez, çit dışındaki kırık kimlik ölçülmeye devam eder (HST-YUZ-A04)", () => {
+  const metin = [
+    "Giriş cümlesi.",
+    "```",
+    "✖ is/plan/faz/2_ornek.sar:11:52 [kırık-referans] 'referans: KRR-ORNEK-03' hedefi çözülmüyor",
+    "```",
+    "~~~text",
+    "plan/   # PLN-1 kaydı",
+    "~~~",
+    "````md",
+    "```",
+    "ESKI-4 iç çitteki örnek",
+    "```",
+    "````",
+    "Kapanış cümlesinde EMEKLI-9 anılıyor.",
+    "",
+  ].join("\n");
   const bulgular = kokYuzeyiAtiflari([yuzey("README.md")], icerikler({ "README.md": metin }), new Set<string>());
-  assert.equal(bulgular.length, 1, "etiketsiz çit bloğu örnek kaynak sayılamaz");
-  assert.equal(bulgular[0].tani.satir, 2);
+  assert.deepEqual(bulgular.map((b) => b.tani.satir), [13],
+    `yalnız çit dışındaki kimlik bildirilmeli — gelen: ${JSON.stringify(bulgular.map((b) => b.tani.mesaj))}`);
+  assert.match(bulgular[0].tani.mesaj, /EMEKLI-9/);
 });
 
 test("çit boşaltması satır sayısını korur ve kapanmamış bloğu sonuna kadar boşaltır", () => {
   const metin = "bir\n```sar\niki\nüç\n```\ndört\n";
   assert.equal(ornekCitleriniBosalt(metin).split("\n").length, metin.split("\n").length);
   assert.equal(ornekCitleriniBosalt("bir\n```SAR\nADM-A01\n").split("\n")[2], "");
+  // HST-YUZ-A04: her çiti kapsayan kip de satır sayısını korur ve kapanmamış çiti sonuna dek boşaltır.
+  assert.equal(ornekCitleriniBosalt(metin, "tum").split("\n").length, metin.split("\n").length);
+  assert.deepEqual(ornekCitleriniBosalt("bir\n~~~\nADM-A01\n", "tum").split("\n"), ["bir", "", "", ""]);
+  assert.equal(ornekCitleriniBosalt("```ADM-A01``` satır içi kod\n", "tum"), "```ADM-A01``` satır içi kod\n",
+    "aynı satırda kapanan satır içi kod çit sayılmamalı");
 });
 
 // ── ⑤ İLAN İLE DİSK MUTABAKATI ──────────────────────────────────────────────

@@ -947,7 +947,16 @@ test("A06 gerçek kapı: 46 uyarı→hata terfisi sıra+sayaç+üçlü kanıt+a�
   assert.deepEqual(kusurlar, [], kusurlar.join("\n"));
   assert.ok(uyaridaKalan.every((x) => indeks.get(x.kod)?.kademe === "uyarı"
     && indeks.get(x.kod)?.kanonDüzey === "uyarı"), "16 kimlik uyarıda ve kanon hedefinde kalmadı");
-  assert.ok(ret.every((kod) => indeks.get(kod)?.kademe === "bilgi"), "sekiz RET-ADAYI bilgide kalmadı");
+  // KPS-SIR-A01 (Founder hükmü 2026-09-29): sekiz RET-ADAYI'nın biri olan
+  // `seçilemez-adım-yürütümü`, tanı ham bağımlı listesi yerine grafın genişletilmiş
+  // öncül listesini okumaya başladığı turda Founder hükmüyle kanonun yazdığı uyarı
+  // düzeyine tek kademe çıktı; açık deponun kendi ağacında sayacı sıfırdır. A05
+  // kaydının tarihsel ret hanesine dokunulmaz, kalan yedi kimlik bilgide kalır.
+  const sonradanTerfi = new Set(["seçilemez-adım-yürütümü"]);
+  assert.ok(ret.filter((kod) => !sonradanTerfi.has(kod)).every((kod) => indeks.get(kod)?.kademe === "bilgi"),
+    "yedi RET-ADAYI bilgide kalmadı");
+  assert.equal(indeks.get("seçilemez-adım-yürütümü")?.kademe, "uyarı",
+    "seçilemez-adım-yürütümü Founder hükmüyle uyarıya çıkmış olmalı");
 });
 
 test("A06 KIRMIZI FİKSTÜRLER: atlama, açık sayaç, eksik üçlü kanıt ve kapalı kabul reddedilir", () => {

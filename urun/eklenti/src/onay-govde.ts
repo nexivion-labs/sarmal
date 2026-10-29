@@ -134,15 +134,27 @@ export function kopyaKimligi(dosya: string, kod: string): string {
 //   ④ Kutu hiç gelmedi (`undefined`) + gerekçe isteyen seçenek → İPTAL. Panelden
 //      gelmeyen çağrılar (komut sınırı) için ayrılmıştır ve boş kutudan AYRI bir
 //      sonuçtur: iptal eden vazgeçmiştir, boş bırakan yazmayı denemiştir.
+//   ⑤ Bayrak boole değil ya da gerekçe dizgi değil → GEÇERSİZ. Komut sınırı
+//      panelden gelmeyen çağrılara da açıktır; dizgi olmayan bir gerekçe eskiden
+//      ölçüyü `trim is not a function` ile patlatıyordu (MGZ-A01 ölçümü). Ölçü
+//      türü kendisi sınar, geçersiz argüman hiçbir şey yazmaz ve çağırana
+//      anlaşılır bir ret döner.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type GerekceSonucu =
   | { readonly tur: "geçerli"; readonly not: string }
   | { readonly tur: "gerekçeBoş" }
   | { readonly tur: "gerekçeArtık" }
-  | { readonly tur: "iptal" };
+  | { readonly tur: "iptal" }
+  | { readonly tur: "geçersiz" };
 
 export function gerekceyiOlc(notIster: boolean, not: string | undefined): GerekceSonucu {
+  // Tür sınaması çalışma anındadır: imza panelin sözleşmesidir, komut sınırı ise
+  // her türden argüman alabilir.
+  const bayrak: unknown = notIster;
+  const metin: unknown = not;
+  if (typeof bayrak !== "boolean") return { tur: "geçersiz" };
+  if (metin !== undefined && typeof metin !== "string") return { tur: "geçersiz" };
   const kirpik = (not ?? "").trim();
   if (!notIster) return kirpik ? { tur: "gerekçeArtık" } : { tur: "geçerli", not: "" };
   if (not === undefined) return { tur: "iptal" };
@@ -400,7 +412,7 @@ export interface GovdeGirdisi {
  * bakarak TAHMİN edebilirdik. Bu hâliyle yerleşim SAF GÖVDENİN bir gerçeğidir
  * ve nöbet onu gerçekten okur.
  */
-function kapiGovdesi(g: GovdeGirdisi, kayit: KapiKaydi): string {
+function kapiGovdesi(g: KademeGirdisi, kayit: KapiKaydi): string {
   const { dosya, kapi } = kayit;
   const notId = notKimligi(dosya, kapi.kod);
   const taslak = g.durum.taslak(notId);
@@ -434,6 +446,19 @@ function kapiGovdesi(g: GovdeGirdisi, kayit: KapiKaydi): string {
         </div>
         <div class="kararlar" role="group">${secenekler}</div>
       </div>`;
+}
+
+/** Karar kademesini basmak için gereken en küçük girdi (gerekçe defteri, simgeler, metinler). */
+export type KademeGirdisi = Pick<GovdeGirdisi, "durum" | "kararSimgeleri" | "metinler">;
+
+/**
+ * KARAR KADEMESİ (PNL-A07 · OZK-13): tek bir kapının gerekçe kutusu ve üç seçeneği. Sarmal
+ * panelinin Makinist sekmesi bunu Onaylar düğümündeki kapı satırının hemen altına basar.
+ * Kutu, hata satırı ve düğmelerin kimlikleri ile veri öznitelikleri eski Onaylar gövdesiyle
+ * aynıdır; diske yazan yol ve gerekçe ölçüsü değişmez.
+ */
+export function kararKademesiHtml(g: KademeGirdisi, kayit: KapiKaydi): string {
+  return kapiGovdesi(g, kayit);
 }
 
 /** Tek bir kapı satırı ve altındaki gövde (önce kutu, sonra üç seçenek). */

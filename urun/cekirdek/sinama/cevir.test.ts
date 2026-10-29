@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { cevir, zorunluKenarIngilizcesi } from "../src/cevir.ts";
+import { ingilizceYuzKusurlari } from "../src/ingilizce-yuz.ts";
 
 test("① i18n: Ekran → Screen (keyword TR→EN)", () => {
   assert.equal(cevir("Ekran").i18n?.diller.en, "Screen");
@@ -46,7 +47,7 @@ test("bilinmeyen kelime → bulundu:false", () => {
   assert.equal(cevir("xyzzy123").bulundu, false);
 });
 
-test("katalog dışı dokuz zorunluKenar tanısının İngilizce yüzü sözlükten çözülür", () => {
+test("katalog dışı dokuz zorunluKenar tanısının İngilizce yüzü dosyadaki adları anar (MGZ-A09)", () => {
   const kanon = JSON.parse(readFileSync(
     fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)), "utf8",
   )) as {
@@ -59,16 +60,23 @@ test("katalog dışı dokuz zorunluKenar tanısının İngilizce yüzü sözlük
     for (const kural of kurallar) {
       kimlikler.add(kural.tanı);
       const metin = zorunluKenarIngilizcesi(tip, "KOD-ORNEK", kural.grup, ne);
-      assert.doesNotMatch(
-        `${metin.mesaj}\n${metin.oneri}`,
-        /[çğıöşüÇĞİÖŞÜ]/u,
-        `${kural.tanı}: İngilizce yüzde çevrilmemiş Türkçe ad kaldı`,
-      );
+      // Founder hükmü 2026-10-10: dosya her dilde Türkçe görünür ve İngilizce tanı
+      // dosyadaki adı anar. Eski nöbet Türkçe harfi kusur sayıyordu; bugün kusur,
+      // dosyada bulunmayan bir ad karşılığı ya da cümlede kalan Türkçe düzyazıdır.
+      assert.ok(metin.mesaj.startsWith(`${tip} "KOD-ORNEK"`), `${kural.tanı}: mesaj tipi dosyadaki adıyla anmıyor: ${metin.mesaj}`);
+      for (const ad of kural.grup) {
+        assert.ok(metin.oneri.includes(`\`${ad}:\``), `${kural.tanı}: öneri "${ad}" adını dosyadaki biçimiyle anmıyor: ${metin.oneri}`);
+      }
+      assert.deepEqual(ingilizceYuzKusurlari(`${metin.mesaj}\n${metin.oneri}`), [],
+        `${kural.tanı}: İngilizce yüzde Türkçe düzyazı ya da dosyada bulunmayan bir ad karşılığı var`);
       assert.match(metin.mesaj, /\bis missing\b/u);
       assert.match(metin.oneri, /\bAdd at least one\b/u);
     }
   }
-  assert.equal(kimlikler.size, 9, "zorunluKenarlar kümesi dokuz ayrı tanı kimliğidir");
+  // Kümenin büyüklüğü burada dondurulmaz (HST-MTR-A12): sınıflamadan türeyen tanı
+  // kümesinin tek kaydı çekirdekteki TANI_KUMESI_SAYIMI'dır. Bu nöbet yalnız
+  // ölçtüğü kümenin boş kalmadığını doğrular.
+  assert.ok(kimlikler.size > 0, "zorunluKenarlar kümesi boş kaldı; çeviri nöbeti hiçbir kimliği ölçmüyor demektir");
 });
 
 // ── ④ SARMAL'IN KENDİ KAVRAMLARI (V1B-KAVRAM-A01) ───────────────────────────

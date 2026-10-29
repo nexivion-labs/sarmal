@@ -15,6 +15,8 @@ import { uzunNiyetiKatla, tabloHizala } from "./katla.ts";
 import { rozetRenkleri } from "./ortak.ts";
 import { nabizAbone, geciktir } from "./nabiz.ts";   // EKL-F9-A07/A08: tek kalp + tek geciktirici
 import { YILDIZ_METINLERI } from "./yuzey-metinleri.ts";
+// PNL-A22: tanılar editörün tanı kaynağından okunur; Sorunlar paneli kapalıyken de yıldız ve rozet çıkar.
+import { sorunTanilari, sorunTanilariDegisince } from "./sorun-tanilari.ts";
 import { satirSonuSecenekleri, type SatirSonuNotu, type NabizEvresi } from "./simge-cizelgesi.ts";   // VIT-KIMLIK-A07: satır sonu notunun aile simgesi
 
 function susYap(baglam: vscode.ExtensionContext, dosya: string): vscode.TextEditorDecorationType {
@@ -49,7 +51,7 @@ function yildizSatirlari(doc: vscode.TextDocument): vscode.DecorationOptions[] {
       }
     }
   }
-  for (const tani of vscode.languages.getDiagnostics(doc.uri)) {
+  for (const tani of sorunTanilari(doc.uri)) {
     if (tani.code === "beceri-terfisi")
       ekle(tani.range.start.line, YILDIZ_METINLERI.terfi);
     else if (tani.code === "bilinmeyen-tip")
@@ -119,7 +121,7 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
     araliklar = yildizSatirlari(editor.document);
     terfiler = []; uyarilar = []; rozetIpuclari = [];
     const gorulen = new Set<number>();
-    for (const tani of vscode.languages.getDiagnostics(editor.document.uri)) {
+    for (const tani of sorunTanilari(editor.document.uri)) {
       const satir = tani.range.start.line;
       if (gorulen.has(satir)) continue;
       const satirAraligi = editor.document.lineAt(satir).range;
@@ -145,7 +147,7 @@ export function kuzeyYildiziKaydi(baglam: vscode.ExtensionContext): void {
     vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document === vscode.window.activeTextEditor?.document) bekletici.cagir();
     }),
-    vscode.languages.onDidChangeDiagnostics(() => bekletici.cagir()),
+    sorunTanilariDegisince(() => bekletici.cagir()),
     parlak, orta, sonuk, terfiParlak, terfiSonuk, uyariParlak, uyariSonuk, rozetIpucu,
   );
   hesapla();

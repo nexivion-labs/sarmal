@@ -14,6 +14,7 @@
 
 import type { Program, Dugum } from "./sozdizim.ts";
 import type { Siniflama } from "./siniflama.ts";
+import { sozlukDuzYazisi, type CiktiDili } from "./cevir.ts";
 
 export interface EtmenKaydi {
   kod: string;
@@ -55,35 +56,43 @@ export function karneSatiri(snf: Siniflama): string | undefined {
 }
 
 /** Kadro karne raporu — insan/ajan yüzü (CLI `sarmal karne` ve MCP `karne` aynı sesi verir). */
-export function karneRaporu(snf: Siniflama, programlar: ReadonlyMap<string, Program>): string {
+export function karneRaporu(snf: Siniflama, programlar: ReadonlyMap<string, Program>, dil: CiktiDili = "tr"): string {
+  // MGZ-A11: `dil` yalnız düzyazıyı seçer; skala ve bileşen anlamı kanondan, İngilizce
+  // hanesi dil sözlüğünden okunur; Etmen kodları ve `ne` metinleri dosyadaki gibidir.
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
   const k = snf.karneSkalasi;
   if (!k) {
-    return "✖ Karne skalası kanonu bulunamadı — kayit.json 'karneSkalasi' bölümü bekleniyor; skala kanondan okunur, rapordan uydurulmaz.";
+    return y("✖ Karne skalası kanonu bulunamadı — kayit.json 'karneSkalasi' bölümü bekleniyor; skala kanondan okunur, rapordan uydurulmaz.",
+      "✖ The scorecard scale canon was not found — the 'karneSkalasi' section of kayit.json is expected; the scale is read from the canon, never invented by the report.");
   }
   const s: string[] = [];
-  s.push("🏅 ETMEN KARNESİ — dilden bağımsız derece dili (Founder onayı 2026-07-18)");
+  s.push(y("🏅 ETMEN KARNESİ — dilden bağımsız derece dili (Founder onayı 2026-07-18)",
+    "🏅 Etmen SCORECARD — a language-independent grade notation (Founder approval 2026-07-18)"));
   s.push("");
-  s.push(`Skala (${k.birim} — bu işaret dilin yüzeylerinde YALNIZ derece birimidir):`);
+  s.push(y(`Skala (${k.birim} — bu işaret dilin yüzeylerinde YALNIZ derece birimidir):`,
+    `Scale (${k.birim} — on the language's surfaces this mark is ONLY the grade unit):`));
   for (const [derece, anlam] of Object.entries(k.dereceler)) {
-    s.push(`  ${k.birim.repeat(Number(derece))} — ${anlam}`);
+    s.push(`  ${k.birim.repeat(Number(derece))} — ${sozlukDuzYazisi("karneDerece", derece, anlam, dil, "kaynak")}`);
   }
   s.push("");
-  s.push("Derecenin türediği sicil bileşenleri (ağırlık ve formül örtü tarafının gizli politikasındadır):");
-  for (const [ad, anlam] of Object.entries(k.bilesenler)) s.push(`  • ${ad}: ${anlam}`);
+  s.push(y("Derecenin türediği sicil bileşenleri (ağırlık ve formül örtü tarafının gizli politikasındadır):",
+    "Registry components the grade derives from (weighting and formula are the overlay side's private policy):"));
+  for (const [ad, anlam] of Object.entries(k.bilesenler)) s.push(`  • ${ad}: ${sozlukDuzYazisi("karneBilesen", ad, anlam, dil, "kaynak")}`);
   s.push("");
 
   const etmenler = etmenleriTopla(programlar);
   if (!etmenler.length) {
-    s.push("📪 Bu çalışma alanında ilan edilmiş Etmen yok — karne listesi boş.");
+    s.push(y("📪 Bu çalışma alanında ilan edilmiş Etmen yok — karne listesi boş.", "📪 No Etmen is declared in this workspace — the scorecard list is empty."));
     return s.join("\n");
   }
-  s.push(`Kadro (${etmenler.length} etmen):`);
+  s.push(y(`Kadro (${etmenler.length} etmen):`, `Roster (${etmenler.length} Etmen nodes):`));
   for (const e of etmenler) {
-    s.push(`  🤖 ${e.kod}${e.ad ? ` (${e.ad})` : ""} — henüz sicil yok, derece basılmaz`);
+    s.push(`  🤖 ${e.kod}${e.ad ? ` (${e.ad})` : ""} — ` + y("henüz sicil yok, derece basılmaz", "no registry yet, no grade is printed"));
     if (e.ne) s.push(`     ${e.ne}`);
     s.push(`     📍 ${e.dosya}`);
   }
   s.push("");
-  s.push("ℹ Sicil verisi (kabul isabeti · denetim temizliği · sınama yeşilliği · Founder sinyalleri) henüz toplanmıyor — toplama ayrı rayda açılır; bu yüzey uydurma puan basmaz.");
+  s.push(y("ℹ Sicil verisi (kabul isabeti · denetim temizliği · sınama yeşilliği · Founder sinyalleri) henüz toplanmıyor — toplama ayrı rayda açılır; bu yüzey uydurma puan basmaz.",
+    "ℹ Registry data (acceptance accuracy · check cleanliness · suite greenness · Founder signals) is not collected yet — collection opens on a separate track; this surface never prints an invented score."));
   return s.join("\n");
 }

@@ -74,6 +74,27 @@ export interface OnayKapisi {
   bekler?: BeklerKaydi;
 }
 
+/**
+ * Kapının görüldüğü durumlar. `doğrulanmamış` iş teslim edilmiş fakat yetkili kabulü verilmemiş
+ * demektir; yani Founder onayını bekleyen asıl durumdur ve süzgecin dışında kalamaz
+ * (HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR · PNL-A07: kuyruk bu durumdaki kapıyı göstermiyordu).
+ */
+export const KAPI_DURUMLARI: ReadonlySet<string> = new Set(["beklemede", "geliştirmede", "doğrulanmamış"]);
+
+/**
+ * Kararı BUGÜN verilebilecek kapının durumları (PNL-A08): iş sürüyor ya da teslim edilmiş ve yetkili
+ * kabulünü bekliyor. 2026-10-28 ölçümünde çatıdaki 24 kapının 24'ü beklemedeki bir Adıma aitti; hiçbiri
+ * o gün Founder'dan karar istemiyordu, buna karşın sayaçlar 24 onay bekliyor diye gösteriyordu. Onay
+ * sayacı ve dış rozet yalnız bu durumlardaki kapıları sayar; beklemedeki kapı defterde kalır ve
+ * Makinist'in "İleride onay isteyecek" grubunda görünür, hiçbir sayaca girmez.
+ */
+export const KARAR_DURUMLARI: ReadonlySet<string> = new Set(["geliştirmede", "doğrulanmamış"]);
+
+/** Kapının kararı bugün verilebilir mi (Adımı geliştirmede ya da doğrulanmamış)? */
+export function kararBugunVerilir(kapi: Pick<OnayKapisi, "durumMetin">): boolean {
+  return KARAR_DURUMLARI.has(kapi.durumMetin);
+}
+
 /** Ayrışmış ağaçta onay bekleyen Adımları bulur: durum açık + kabul'de onay imzası + onay: henüz yok. */
 export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
   const kapilar: OnayKapisi[] = [];
@@ -83,7 +104,7 @@ export function onayKapilariTopla(bildirimler: readonly Dugum[]): OnayKapisi[] {
       const alan = (ad: string) =>
         d.parametreler.find((p) => p.ad === ad) ?? d.ozellikler.find((p) => p.ad === ad);
       const durum = alan("durum");
-      const acik = durum?.deger.metin === "beklemede" || durum?.deger.metin === "geliştirmede";
+      const acik = KAPI_DURUMLARI.has(durum?.deger.metin ?? "");
       const kararVerilmis = alan("onay") !== undefined;
       const kabul = alan("kabul");
       const olcut = (kabul?.deger.ogeler ?? []).find((o) => o.metin && ONAY_DESENI.test(o.metin));
@@ -515,8 +536,13 @@ export class OnayDefteri {
       .join(";");
   }
 
+  /**
+   * Görünür içeriğin izi. Kapının durumu da ize girer (PNL-A08): Adım beklemeden geliştirmeye geçince
+   * kapı "İleride onay isteyecek" grubundan Onaylar'a taşınır ve sayaçlara girer; iz durumu taşımasaydı
+   * defter değişmedi sanılır, sayaçlar ve rozet eski hâlinde kalırdı.
+   */
   private dosyaIzi(kapilar: readonly OnayKapisi[] | undefined): string {
-    return (kapilar ?? []).map((k) => `${k.satir}:${k.kod}:${k.ne}:${k.olcut}`).join(",");
+    return (kapilar ?? []).map((k) => `${k.satir}:${k.kod}:${k.durumMetin}:${k.ne}:${k.olcut}`).join(",");
   }
 }
 

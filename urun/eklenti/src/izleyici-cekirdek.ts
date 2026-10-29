@@ -10,6 +10,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { dosyaMuhru } from "../../cekirdek/src/kimlik.ts";   // MIM-3.4: dosya mührünü tek çözücü tanır
+import { kapsamIcinde } from "./yolharitasi-cekirdek.ts";   // 🩹 BKM-DNT-A18: kapsama ilişkisinin tek evi
 
 /**
  * 📐 KAPSAM TEK-KAYNAĞI (Sol RED-1 D1 onarımı): süzgeç ile tam taramanın
@@ -124,11 +125,14 @@ export interface OlayHattiAyar {
   gurultu: (yol: string) => boolean;
   /** Sel bittikten sonra tetiğe kadar beklenecek süre */
   gecikmeMs: number;
-  /** Geciktirme dolunca çağrılır (tek-uçuş kilidine bağlanır) */
-  iste: (tetik: string) => void;
+  /** Geciktirme dolunca çağrılır (tek-uçuş kilidine bağlanır). İkinci argüman
+   *  geciktirme penceresinde süzgeçten geçen olayların değiştirdiği yollardır
+   *  (BKM-DNT-A18): tur, darlığını odaktan değil bu yollardan türetir. */
+  iste: (tetik: string, yollar: readonly string[]) => void;
   /** Mercek sayaçları (isteğe bağlı) */
   suzuldu?: () => void;
-  olay?: () => void;
+  /** Süzgeçten geçen olay; değişen yol verilir (🎯 PNL-A26: çapraz tazelik defteri olayı geldiği an duyar). */
+  olay?: (degisen: string) => void;
   ertelendi?: () => void;
   /** Zamanlayıcı enjeksiyonu (test sahte-zamanlayıcı verir; varsayılan gerçek) */
   kur?: (is: () => void, ms: number) => unknown;
@@ -144,21 +148,67 @@ export interface OlayHattiAyar {
 export class OlayHatti {
   private readonly ayar: OlayHattiAyar;
   private zaman: unknown;
+  /** 🩹 BKM-DNT-A18: geciktirme penceresinde biriken değişen yollar. Pencere
+   *  dolunca hepsi tek istekle tura taşınır ve küme boşalır; seldeki hiçbir
+   *  olayın yolu, kendisinden sonra gelen olay tarafından ezilmez. */
+  private readonly degisenler = new Set<string>();
 
   constructor(ayar: OlayHattiAyar) { this.ayar = ayar; }
 
-  olay(yol: string, tetik: string): void {
+  /**
+   * @param yol      süzgecin ölçtüğü yol (çalışma-alanı-göreli; Sol RED-2 dersi)
+   * @param tetik    turun tetik adı
+   * @param degisen  tura taşınacak yol — verilmezse `yol` taşınır. Kabuk buraya
+   *                 MUTLAK yolu verir, çünkü turun kapsam kararı odaktaki varlık
+   *                 kökünü ve çalışma alanı köklerini mutlak yolla karşılaştırır.
+   */
+  olay(yol: string, tetik: string, degisen: string = yol): void {
     if (this.ayar.gurultu(yol)) { this.ayar.suzuldu?.(); return; }
-    this.ayar.olay?.();
+    this.ayar.olay?.(degisen);
+    this.degisenler.add(degisen);
     if (this.zaman !== undefined) {
       (this.ayar.iptal ?? clearTimeout)(this.zaman as Parameters<typeof clearTimeout>[0]);
       this.ayar.ertelendi?.();
     }
     this.zaman = (this.ayar.kur ?? setTimeout)(() => {
       this.zaman = undefined;
-      this.ayar.iste(tetik);
+      const yollar = [...this.degisenler];
+      this.degisenler.clear();
+      this.ayar.iste(tetik, yollar);
     }, this.ayar.gecikmeMs);
   }
+}
+
+/**
+ * 🩹 BKM-DNT-A18 · Tek-uçuş kilidinde bekleyen tur isteği. `yollar` turu
+ * tetikleyen olayların değiştirdiği yollardır; `undefined` "değişen bilinmiyor"
+ * demektir ve kapsam kararı onu TAM tura çevirir (`turKapsami`).
+ */
+export interface TurIstegi {
+  readonly tetik: string;
+  readonly yollar: readonly string[] | undefined;
+}
+
+/**
+ * Koşu sürerken gelen iki isteği tek telafi isteğine indirir (saf karar).
+ *
+ * Eski kilit yalnız son tetiği saklıyordu ("son istek kazanır"). Değişen yollar
+ * tura taşındığında bu kural iki ayrı bayatlık doğururdu ve ikisi de bu karar
+ * tarafından kapatılır. Birincisi, kardeş kökteki bir değişikliğin ardından odak
+ * içinde gelen ikinci bir değişiklik birinci olayın yolunu ezer ve telafi turu
+ * yalnız odağa daralırdı; bu yüzden yollar BİRLEŞİR. İkincisi, tam tur isteyen
+ * bir tetik (odak değişimi, ayar, el ile yenileme) ardından gelen dar bir olay
+ * tetiğine yenilir ve tam resim hiç kurulmazdı; bu yüzden tam tur tetiği dar
+ * tetiğe YENİLMEZ. Yollardan biri bilinmiyorsa birleşik istek de bilinmez sayılır.
+ */
+export function istekleriBirlestir(eski: TurIstegi | undefined, yeni: TurIstegi): TurIstegi {
+  if (eski === undefined) return yeni;
+  const tetik = TAM_TUR_TETIKLERI.has(eski.tetik) && !TAM_TUR_TETIKLERI.has(yeni.tetik)
+    ? eski.tetik : yeni.tetik;
+  const yollar = eski.yollar !== undefined && yeni.yollar !== undefined
+    ? [...new Set([...eski.yollar, ...yeni.yollar])]
+    : undefined;
+  return { tetik, yollar };
 }
 
 /**
@@ -169,35 +219,39 @@ export class OlayHatti {
  */
 export class TekUcusKilidi {
   private kosuyor = false;
-  private bekleyenTetik: string | undefined;
+  /** 🩹 BKM-DNT-A18: bekleyen istek tetiği ve değişen yolları birlikte taşır
+   *  (`istekleriBirlestir`); eski kilit yalnız son tetiği saklıyordu. */
+  private bekleyen: TurIstegi | undefined;
   /** Asıl işi koşan geri-çağrı (denetleHepsi) */
-  private readonly kos: (tetik: string) => Promise<void>;
+  private readonly kos: (tetik: string, yollar?: readonly string[]) => Promise<void>;
   /** Koşu sürerken atlanan istek bildirimi (mercek sayacı) */
   private readonly atlandi: (() => void) | undefined;
   /** Çöken tur bildirimi (RED-1 R1 onarımı: sessiz yutma yok — kanala düşer) */
   private readonly hata: ((h: unknown) => void) | undefined;
 
-  constructor(kos: (tetik: string) => Promise<void>, atlandi?: () => void,
+  constructor(kos: (tetik: string, yollar?: readonly string[]) => Promise<void>, atlandi?: () => void,
               hata?: (h: unknown) => void) {
     this.kos = kos;
     this.atlandi = atlandi;
     this.hata = hata;
   }
 
-  iste(tetik: string): void {
+  iste(tetik: string, yollar?: readonly string[]): void {
     if (this.kosuyor) {
-      this.bekleyenTetik = tetik;   // son istek kazanır — tur bitince telafi
+      // Tur bitince TEK telafi koşar; bekleyen istekler birleşir (son tetik
+      // kazanır, fakat tam tur tetiği dar tetiğe yenilmez ve yollar birleşir).
+      this.bekleyen = istekleriBirlestir(this.bekleyen, { tetik, yollar });
       this.atlandi?.();
       return;
     }
     this.kosuyor = true;
-    void this.kos(tetik)
+    void this.kos(tetik, yollar)
       .catch((h) => { this.hata?.(h); })   // kilit asılı kalmaz + çöküş raporlanır
       .finally(() => {
         this.kosuyor = false;
-        const bekleyen = this.bekleyenTetik;
-        this.bekleyenTetik = undefined;
-        if (bekleyen !== undefined) this.iste(bekleyen);
+        const bekleyen = this.bekleyen;
+        this.bekleyen = undefined;
+        if (bekleyen !== undefined) this.iste(bekleyen.tetik, bekleyen.yollar);
       });
   }
 }
@@ -236,39 +290,178 @@ const TAM_TUR_TETIKLERI: ReadonlySet<string> = new Set([
   "başlangıç", "ayar", "dil", "odak", "klasör", "el-ile",
 ]);
 
+//   🩹 BKM-DNT-A18 · DAR KÖK OLAYLARDAN TÜRER (2026-10-24 saha bulgusu,
+//   HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL): kapsam eskiden yalnız odaktaki varlıktan
+//   seçiliyordu. Başka bir pencerede çalışan bir ajan kardeş projedeki bir
+//   dosyayı değiştirdiğinde olay turu değişikliğin yapıldığı projeye değil odaktaki
+//   projeye daralıyor, değişen projenin çapraz tanıları (kırık atıf, disk
+//   mutabakatı, bağımlılık grafı) yeniden hesaplanmıyor ve bir önceki turdan
+//   olduğu gibi taşınıyordu. Artık dar tur odağın YANINDA, turu tetikleyen
+//   olayların değiştirdiği dosyaların varlık köklerini de denetler; bir kök
+//   çözülemezse tur tam koşar. Odak içindeki değişiklikte darlık korunur, çünkü
+//   PRF-A06'nın ölçtüğü maliyet (çatı kökünde dört saniyeyi aşan senkron blok)
+//   tek dosyalık bir olayın bütün çalışma alanını yeniden denetlememesini ister.
+
 /**
- * Bir turun ÇAPRAZ-DOSYA denetiminin koşacağı kök — daraltma yoksa `undefined`.
+ * Bir turun ÇAPRAZ-DOSYA denetiminin koşacağı kökler — daraltma yoksa `undefined`.
  *
- * `undefined` dönmesi "tam tur" demektir ve çağıran taraf bugünkü davranışını
- * birebir sürdürür; bir kök dönmesi "yalnız bu kökün altı yeniden hesaplansın"
- * demektir. İşlev saftır ve vscode tanımaz, dolayısıyla nöbeti host istemez.
+ * `undefined` dönmesi "tam tur" demektir ve çağıran taraf bütün çalışma alanı
+ * köklerini denetler; bir liste dönmesi "yalnız bu köklerin altı yeniden
+ * hesaplansın" demektir. Liste odaktaki varlıkla başlar ve odağın dışında
+ * değişen dosyaların varlık köklerini sözlük sırasıyla izler; iç içe kökte
+ * yalnız dıştaki kalır ki aynı dosyanın tanısı iki kez üretilmesin. İşlev
+ * saftır ve vscode tanımaz: varlık kökü çözücüsü dışarıdan verilir, dolayısıyla
+ * nöbeti host istemez.
  *
  * @param tetik            turu başlatan olayın adı
  * @param aktifVarlik      MIM-1.1 yapışkan odağı (varlık kök dizini)
  * @param odakAcik         `sarmal.aktifVarlikOdagi` ayarı
  * @param calismaKokleri   çalışma alanı klasörleri
+ * @param degisenYollar    turu tetikleyen olayların değiştirdiği MUTLAK yollar;
+ *                         `undefined` "değişen bilinmiyor" demektir ve tur tam koşar
+ * @param varlikKokuBul    bir yolun varlık kökünü çözer (kabukta `varlikKoku`);
+ *                         verilmezse odak dışındaki her değişiklik turu tama çevirir
  */
 export function turKapsami(
   tetik: string,
   aktifVarlik: string | undefined,
   odakAcik: boolean,
   calismaKokleri: readonly string[],
-): string | undefined {
+  degisenYollar?: readonly string[],
+  varlikKokuBul?: (yol: string) => string | undefined,
+): string[] | undefined {
   // Odak kapalıysa bütün varlıkların tanıları panelde görünür; daraltma
   // görünen tanıyı düşürürdü ve bu bir performans kazancı değil kayıp olurdu.
   if (!odakAcik || !aktifVarlik) return undefined;
   if (TAM_TUR_TETIKLERI.has(tetik)) return undefined;
   // Odak bir çalışma alanı klasörünün TA KENDİSİ ise daraltacak bir şey yoktur;
   // kapsam zaten o kökün kapsamıdır ve daraltma sahte bir kazanç gösterirdi.
-  if (calismaKokleri.some((k) => esitKok(k, aktifVarlik))) return undefined;
   // Odak çalışma alanının dışındaysa (kapsam-dışı bir dosya açıkken olur)
   // daraltma yapılmaz: tur o kökü hiç taramayacağı için resim boşalırdı.
-  if (!calismaKokleri.some((k) => altKapsamda(aktifVarlik, k))) return undefined;
-  return aktifVarlik;
+  if (!darKokOlabilir(aktifVarlik, calismaKokleri)) return undefined;
+  // 🩹 BKM-DNT-A18: neyin değiştiğini bilmeyen tur daraltılamaz; eskiden bu
+  // hâlde odağa daralınıyordu ve değişen kardeş kök sessizce bayat kalıyordu.
+  if (degisenYollar === undefined) return undefined;
+  const kokler = [aktifVarlik];
+  for (const yol of degisenYollar) {
+    if (kapsamIcinde(yol, aktifVarlik)) continue;   // odak zaten denetlenir
+    const kok = varlikKokuBul?.(yol);
+    // Köksüz dosya, çalışma alanı kökünün kendisinde ya da dışında yaşayan
+    // varlık dar bir kökle karşılanamaz; bu hâlde tur tam koşar.
+    if (kok === undefined || !darKokOlabilir(kok, calismaKokleri)) return undefined;
+    if (!kokler.some((k) => esitKok(k, kok))) kokler.push(kok);
+  }
+  const [odak, ...ekler] = kokler;
+  const sirali = [odak!, ...ekler.sort()];
+  // İç içe kökte dıştaki kalır: içteki kökün dosyaları dıştakinin denetiminde
+  // zaten vardır ve iki ayrı denetim aynı tanıyı iki kez yayınlardı.
+  return sirali.filter((k) => !sirali.some((u) => !esitKok(u, k) && kapsamIcinde(k, u)));
 }
+
+/**
+ * 🩹 BKM-DNT-A18 · Bir dosyanın çapraz tanıları bu turda YENİDEN Mİ hesaplandı?
+ * Tam turda her dosya için evet; dar turda yalnız denetlenen köklerden birinin
+ * kapsamındaki dosya için evet. Hayır dönen dosyanın çapraz tanısı önceki turdan
+ * korunur (eklenti.ts `caprazOnbellek`); bu yüzden değişen bir kökün bu kararla
+ * hayır alması o kökü bayat bırakır ve nöbet tam bunu ölçer.
+ */
+export function caprazYenidenHesaplanir(yol: string, darKokler: readonly string[] | undefined): boolean {
+  return darKokler === undefined || darKokler.some((k) => kapsamIcinde(yol, k));
+}
+
+/** Kök, dar bir tur kökü olabilir mi? Çalışma alanı klasörünün kendisi
+ *  olmamalı ve bir çalışma alanı klasörünün ALTINDA yaşamalıdır. */
+const darKokOlabilir = (kok: string, calismaKokleri: readonly string[]): boolean =>
+  !calismaKokleri.some((k) => esitKok(k, kok))
+  && calismaKokleri.some((k) => altKapsamda(kok, k));
 
 const duzle = (y: string): string => y.replace(/\\/g, "/").replace(/\/+$/, "");
 const esitKok = (a: string, b: string): boolean => duzle(a) === duzle(b);
 /** `yol`, `ustKok`un altında mı (kökün kendisi HARİÇ)? */
 const altKapsamda = (yol: string, ustKok: string): boolean =>
   duzle(yol).startsWith(`${duzle(ustKok)}/`);
+
+// ── 🎯 PNL-A26 · ODAK DEĞİŞİMİ TAM TUR BAŞLATMAZ ────────────────────────────
+//
+//   Founder'ın penceresinde çatıdaki 357 dosyalık tur 7,2–7,8 saniye sürüyor ve
+//   bunun 5–6 saniyesi çapraz denetim; her proje değişimi (tetik=odak) tam tur
+//   başlatıyordu. PRF-A06'nın gerekçesi daraltılmış turların odak dışındaki
+//   projenin çapraz tanılarını tazelememesiydi. BKM-DNT-A18'den beri dar tur
+//   değişen dosyaların köklerini de denetler; dolayısıyla bir proje yalnız
+//   değişikliği diskte olmuş fakat turu henüz koşmamışsa (olay hattının geciktirme
+//   penceresi, kilitte bekleyen ya da çöken tur) ya da hiç hesaplanmadıysa bayattır.
+//   Kaydedilmemiş düzenleme bayatlık sayılmaz: çapraz denetim kökü diskten okur
+//   (denetimKos) ve düzenleme ancak kaydedilince çapraz sonucu değiştirir. Odak değişimi artık yalnız bayat projeye ve
+//   yalnız o projeyi kapsayan daraltılmış turla döner; taze projede tur yoktur ve
+//   panel son turun kayıtlarını yeni odağa göre yeniden basar. Daraltmanın kararı
+//   yeniden yazılmaz: `turKapsami` aynı kuralla verir (dar kök kurulamazsa tam tur).
+
+/** Bayat projeye odak geçişinin tetiği: tam tur tetiklerinde yoktur, dolayısıyla tur yeni odağa daralır. */
+export const ODAK_DAR_TETIGI = "odak-dar";
+
+/**
+ * Çapraz tanıların tazelik defteri. Zaman artan bir sayaçtır (an). Değişiklik
+ * `degisti` ile kaydedilir; tur başladığında `turBasladi` bir an verir ve tur
+ * bitince `turBitti` o anı hesaplanan köklere yazar (tam turda bütün köklere).
+ * Bir kök, kendisini kapsayan son hesaplamadan SONRA altında bir değişiklik
+ * kaydedildiyse ya da hiç hesaplanmadıysa bayattır. Turun okumayı başladıktan
+ * sonra yapması bilinçli olarak tutucudur: tur sürerken gelen değişiklik daha
+ * büyük bir an alır ve kökü bayat bırakır. İşlev saftır, vscode tanımaz.
+ */
+export class CaprazTazelik {
+  private an = 0;
+  private tamTurAni: number | undefined;
+  private readonly kokAnlari = new Map<string, number>();
+  private readonly degisimler = new Map<string, number>();
+
+  /** Turun göremeyeceği ya da henüz görmediği değişiklikler (mutlak yollar). */
+  degisti(yollar: readonly string[]): void {
+    const an = ++this.an;
+    for (const y of yollar) this.degisimler.set(duzle(y), an);
+  }
+
+  /** Tur başlıyor: hesaplamanın anı. */
+  turBasladi(): number { return ++this.an; }
+
+  /** Tur bitti: çapraz tanıları yeniden hesaplanan kökler (`undefined` tam tur demektir). */
+  turBitti(an: number, darKokler: readonly string[] | undefined): void {
+    if (darKokler === undefined) {
+      this.tamTurAni = Math.max(this.tamTurAni ?? 0, an);
+      for (const [k, a] of [...this.kokAnlari]) if (a <= this.tamTurAni) this.kokAnlari.delete(k);
+      for (const [y, a] of [...this.degisimler]) if (a <= this.tamTurAni) this.degisimler.delete(y);
+      return;
+    }
+    for (const k of darKokler) this.kokAnlari.set(duzle(k), Math.max(this.kokAnlari.get(duzle(k)) ?? 0, an));
+  }
+
+  /** Kökün çapraz tanılarının en son hesaplandığı an: son tam tur ya da kökü kapsayan son dar tur. */
+  private hesapAni(kok: string): number | undefined {
+    let en = this.tamTurAni;
+    for (const [k, a] of this.kokAnlari) if (kapsamIcinde(kok, k) && (en === undefined || a > en)) en = a;
+    return en;
+  }
+
+  /** Kökün çapraz tanıları bayat mı? */
+  bayatMi(kok: string): boolean {
+    const h = this.hesapAni(kok);
+    if (h === undefined) return true;
+    for (const [y, a] of this.degisimler) if (a > h && kapsamIcinde(y, kok)) return true;
+    return false;
+  }
+}
+
+/** Odak değişiminin kararı: tur yok, yalnız yeni odağı kapsayan dar tur ya da (dar kök kurulamazsa) tam tur. */
+export type OdakTuruKarari = { tur: "yok" } | { tur: "dar"; kokler: string[] } | { tur: "tam" };
+
+/**
+ * Odak `yeniOdak`a geçti: taze projede tur yoktur; bayat projede tur, `turKapsami`nın
+ * odak-dar tetiğiyle verdiği köklere daralır. `turKapsami` dar kök kuramıyorsa (odak
+ * kapalı, odak bir çalışma alanı klasörünün kendisi ya da dışında) tur tam koşar.
+ */
+export function odakTuruKarari(
+  yeniOdak: string, bayat: boolean, odakAcik: boolean, calismaKokleri: readonly string[],
+): OdakTuruKarari {
+  if (!bayat) return { tur: "yok" };
+  const kokler = turKapsami(ODAK_DAR_TETIGI, yeniOdak, odakAcik, calismaKokleri, []);
+  return kokler === undefined ? { tur: "tam" } : { tur: "dar", kokler };
+}

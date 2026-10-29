@@ -6,13 +6,14 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { belirtecle } from "../src/belirtec.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { siniflamaYukle } from "../src/siniflama.ts";
 import { iskeletPlani, iskeletYaz } from "../src/iskeletci.ts";
 
-const SNF = siniflamaYukle(new URL("../../../oz/siniflama/kayit.json", import.meta.url).pathname);
-const CLI = new URL("../src/sarmal.ts", import.meta.url).pathname;
+const SNF = siniflamaYukle(fileURLToPath(new URL("../../../oz/siniflama/kayit.json", import.meta.url)));
+const CLI = fileURLToPath(new URL("../src/sarmal.ts", import.meta.url));
 
 const KAYNAK = `Proje( kod: ANA, ad: "cicek" ) {
   Kitaplık( kod: KTP-YASA, yol: "yasa/" ) { Raf( kod: RAF-GENEL, yol: "genel_kurallar/" ) }

@@ -51,7 +51,8 @@ Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu 
   }
 }
 
-// ③ PLAN — anadizinde DEĞİL, plan/ altında AYRI .sar'da (ör. plan/mvp_plani.sar).
+// ③ PLAN — anadizinde DEĞİL, her Faz plan/faz/ altında sıra önekli kendi dosyasında
+//    (ör. plan/faz/1_mvp.sar); Faz ilanı dosyanın tepesindedir ve Bloklar Faz gövdesine sarılır (MIM-1.2).
 //    Blok = DİKEY DİLİM: önyüz + arkayüz + güvenlik BİRLİKTE (silo değil · MIM-1.3 · TIP-1.4);
 //    Blok bunları KAVUŞTURUR (Ekran →çağırır→ Uç →sözleşme→ Sözleşme · ORK-2.3):
 //
@@ -70,4 +71,5 @@ Proje( kod: PRJ-Ornek, ad: "ornek-uygulama", rejim: katı, ne: "<tek cümle: bu 
 //        // KAVUŞUM: Adım üretir Ekran/Uç; Ekran çağırır Uç; Uç bağlanır Sözleşme (SZL-…)
 //      }
 //    }
-//    Sonraki fazlarda AYNI Blok sürer (MIM-1.3 süreklilik): Faz( FAZ-V1 ) { çağır BLK-Ornek }
+//    Sonraki Faz yeni bir dosyada doğar (ör. plan/faz/2_v1.sar) ve kendi Bloklarını gövdesinde taşır;
+//    `mevsim:` alanı ve Faz'ın `çağır` listesi Blok bağı olarak kullanılmaz (MIM-1.2).

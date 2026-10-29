@@ -14,6 +14,8 @@
 //     ⑤ ağaç gerçek bir ağaçtır ve satır kaynağın doğru satırını açar,
 //     ⑥ ağaç satırında kod kendi satırındadır, satır numarası kodun yanındadır
 //        ve açıklama kodun ALTINDA girintili bir gövde olarak durur.
+//     ⑦ stil yalnız okuma kipine gider; yerleşik Markdown önizlemesine katılmaz
+//        (HST-YUZ-A03).
 //   Ayrıca Founder'ın makette gördüğü üç kusur da burada kilitlenir: künye
 //   ağacın ÜSTÜNÜ kaplamaz, ağaç satırının adı kırpılmaz ve satırın tamamına
 //   bağlanan ipucu balonu yoktur.
@@ -323,4 +325,28 @@ test("A05 ⑥: stil kod hanesi ile açıklamayı ALT ALTA dizer", () => {
   assert.ok(adKural, ".as-ad kuralı stilde yok");
   assert.match(adKural, /padding-left:/,
     "açıklama girintili bir gövde değil — kodun altında hizasız akıyor");
+});
+
+// ── ⑦ HST-YUZ-A03 · STİL YABANCI BİR YÜZEYE KATILMAZ ────────────────────────
+//   Paket bildirimi bu stil dosyasını `markdown.previewStyles` katkısıyla VS
+//   Code'un yerleşik Markdown önizlemesine de ekliyordu. Okuma kipi stili kendi
+//   diskinden okuyup webview'e gömdüğü için (src/onizleme.ts) katkının okuma
+//   kipinde hiçbir işlevi yoktur; yerleşik önizleme ise bu katkıyı kurulu her
+//   eklentiden toplar ve kullanıcının açtığı her Markdown belgesine ekler.
+//   Stildeki `.hljs-*` kuralları kapsamsızdır ve rengini yalnız okuma kipinin
+//   tanımladığı `--sr-*` değişkenlerinden alır; Markdown önizlemesinde bu
+//   değişkenler tanımsız olduğundan kural vurgu rengini geçersiz kılar ve kod
+//   düz metin rengine düşer. Ölçüm (2026-10-10): VS Code 1.140.0'ın kendi
+//   markdown.css ve highlight.css dosyalarıyla kurulan sayfada, stilin hedeflediği
+//   yirmi beş vurgu sınıfının koyu temada yirmi üçü, açık temada ikisi rengini
+//   yitirmiştir. Katkı bu yüzden kaldırılmıştır ve nöbet geri dönüşünü kırmızıya
+//   çevirir. Sarmal bir gün Markdown önizlemesinde kendi yüzeyini açarsa o yüzeyin
+//   stili kapsamlı yazılır ve bu nöbet bilinçle yeniden tartılır.
+test("HST-YUZ-A03: okuma kipinin stili yerleşik Markdown önizlemesine katkı olarak verilmez", () => {
+  const paket = JSON.parse(oku("../package.json")) as { contributes: Record<string, unknown> };
+  assert.equal(paket.contributes["markdown.previewStyles"], undefined,
+    "paket bildirimi yerleşik Markdown önizlemesine stil katıyor; okuma kipinin kapsamsız `.hljs-*` " +
+      "kuralları kullanıcının bütün Markdown belgelerinde kod vurgusunu siler");
+  assert.match(KABUK_KAYNAK, /joinPath\(context\.extensionUri, "medya", "onizleme\.css"\)/,
+    "okuma kipi stilini artık kendi diskinden okumuyor; katkının kaldırılması okuma kipini etkileyebilir");
 });

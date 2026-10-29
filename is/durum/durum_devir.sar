@@ -16,72 +16,278 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
-            neredeyiz: DAL-GONDERILDI-BIRLESTIRME-ISTEGI-DORT-CI-YESIL-FOUNDER-BIRLESTIRMESI-BEKLIYOR,
-            sıradaki: ISTEK-DORT-BIRLESIR-SONRA-WINDOWS-UYUM-KATKILARI-VE-INGILIZCE-YUZ-ILKE-KARARI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
+            neredeyiz: 0.9.199-KURULDU-BAKIM-VE-PANEL-MAINE-BIRLESTI-CALISMAYA-ARA,
+            sıradaki: ARADAN-SONRA-PNL-A29-TREN-KUSURLARI-VE-KAPALI-CANLI-PENCERE-SONRA-PNL-A10-SONRA-A16-A17-TESLIM-ONAYI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
-            açıkİşler: [ BKM-DNT-A01-KIRK-URETICININ-YUZEY-KARARI-FOUNDER-HUKMU,
-                         BKM-DNT-ON-BIR-ADIM-AYRI-OTURUMDA-TEK-TEK,
-                         KYN-YUZ-A02-UC-CAPA-GOZLEMLERE-ATESLEMIS-HATIRLATICILARA,
-                         KYN-YUZ-A03-ATESLEMIS-HATIRLATICIYA-PANELDEN-KAPATMA,
-                         HATIRLATICI-TURU-KALAN-YIRMI-KALEM-P0-KAPANDI,
-                         DUMAN-NOBETI-KURULU-PAKET-DEPODAN-ESKI-KALDIGINI-PANEL-SOYLESIN,
-                         ONAYLAR-ROZETI-BAYAT-SAVUNMA-KONDU-CANLI-OLCUM-YAPILDI-KAPANDI-2026-08-29,
-                         VIT-POSTA-A05-VIT-GRAF-A19-A20-FOUNDER-CANLI-DOGRULAMASI-KAPANDI-2026-08-29,
+            açıkİşler: [ PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
+                         PNL-A10-AYARLAR-SEKMESI-GORUNUM-BOLUMU-KARARLI-KALANI-FOUNDER-BILDIRECEK,
+                         YARIM-ADIMLARIN-SIFIRLANMASI-45-ADIM-OLCUMU-AJANDA,
+                         PLAN-KUCULTME-OTURUMU-64-BLOK-SIMDI-SONRA-RAFA,
+                         KAPALI-URUN-TEMIZLIK-BLOKU-ISLENMEDEN-DURUYOR-GELISTIRME-SONRASI,
+                         HTR-ONAYLAR-DIS-ONAY-KAYDI-MAKINIST-EKLERIYLE-BIRLIKTE-ELE-ALINACAK,
+                         BKM-DNT-A19-MINI-GRAF-KLASIK-GORUNUM-HAFIFLETILIP-SINIR-YENIDEN-300-KB,
+                         SARMAL-AKISI-ARTIFACT-YAYINI-FOUNDER-ONAYI-BEKLIYOR,
+                         README-SAYILARI-TUTARSIZ-VE-ANADIZIN-YORUMU-DEPONUN-OZEL-OLDUGUNU-SOYLUYOR,
+                         HATIRLATICI-AYIKLAMA-RAPORUNDAKI-69-SATIR-ILE-72-ACIK-HATIRLATICI-FARKI-DOGRULANACAK,
+                         MAGAZA-SONRASI-AKIS-REHBERI-BLOKU-VE-GERI-BILDIRIM-KATKI-DESTEK-KANALLARI,
+                         DOKUZ-ADIM-FOUNDER-CANLI-GOZUNU-BEKLIYOR-VIT-KIMLIK-A08-EKL-F6-A09-HST-MTR-A04-HST-YUZ-A05-HST-YUZ-A06-MGZ-A02-MGZ-A06-MGZ-A08-MGZ-A09,
+                         PANEL-BLOKUNUN-ACIK-ADIMLARI-MAINDEN-ACILACAK-YENI-DALDA-A10-A16-A17-A29,
+                         HST-MTR-A18-KARAR-SAYFASININ-YEDI-KANON-HUKMU-SIRADA,
+                         HST-MTR-A15-A16-A17-MOTOR-BORCLARI-VE-HST-MTR-A19,
+                         HTR-URUN-AILESI-KATALOG-EKSIGI-TIP-1.9-MEYVE-FOUNDER-KAPISI,
+                         BKM-DNT-A03-TEK-KOD-MODELINE-GORE-YENIDEN-ISLENECEK-isci-hasat-denetci2-DALI-BAYAT,
+                         BKM-DNT-A17-CIFT-ILAN-TASIMA-VE-BKM-DNT-A14-GERCEK-KABUK-SUITI,
+                         MGZ-A10-VITRIN-VE-INGILIZCE-BENIOKU-MGZ-A09-GOZUNDEN-SONRA,
+                         EKL-F6-A01-MAGAZA-YUKLEMESI-1.0.0-MGZ-A10-SONRASI,
+                         KYN-OGR-A02-SEKIZ-KART-FOUNDER-OKUMASI-BEKLIYOR,
+                         KYN-KYN-A05-README-GOSTERIMI-FOUNDER-GOZU,
+                         TUR-SONU-P3-TEMIZLIK-ADIMI-YAZILACAK-MGZ-A09-KOR-NOKTALARI-DAHIL,
+                         SITE-PLANININ-BAGIMSIZ-KABUL-INCELEMESI-ON-DOGRULANMAMIS-ADIM,
+                         CLAUDE-CODE-MOD-PAKETI-ONARIMI-BAGIMSIZ-OLCUM-VE-KURULUM-FOUNDER-DEPO-DISINDA,
+                         EYLUL-VADESI-2026-11-30-PANEL-HASAT-VE-MAGAZA-ONCESI-ADIMLARI-SURUYOR,
+                         RFM-ONCELIK-IKI-EKSEN-REFORMU,
+                         HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
+                         BKM-KBK-A03-DENETCI-BOLME-YAYIN-SONRASI,
+                         UYM-DRM-A01-A02-VE-VIT-GRAF-A21-MAGAZA-YUKLEMESINI-BEKLIYOR,
                          CATI-YONETISIM-GOVDESI-ANAYASA-KURALLAR-POLITIKALAR,
-                         VIT-K78-A08-FOUNDER-GOZU-BEKLIYOR,
-                         DUZENLEYICI-TEPKISI-OLCULDU-KAPSAM-KARARI-FOUNDERIN,
-                         TEMMUZ-MEVSIMI-MUHURLU-ILAN-EDILMIS-AMA-ON-ACIK-ADIM-SARIYOR,
-                         TEMMUZ-ACIK-GOVDESININ-AGUSTOSA-DEVRI-FOUNDER-KARARI,
-                         SITE-TURKCE-H11-KENDI-PLANI-VE-DURUM-KAYDI-ACILACAK,
-                         BIRLESTIRME-ISTEGI-DORT-ONAY-KURALI-YUZUNDEN-FOUNDER-ELIYLE-BIRLESIR,
                          WINDOWS-UYUM-BULGULARI-SATIR-SONU-YOL-SEMBOLIK-BAG-CI-WINDOWS-ISI,
                          KOPRUDEKI-UC-MODEL-ADI-EMEKLI-MODEL-ADI-KODDAN-AYARA,
-                         DIS-KATKICI-YAZMA-YETKISIYLE-DAVETLI-KATKI-SOZLESMESI-OSS-A05-ACIK,
-                         SIFIR-UYARI-OLCUTU-OKUMASI-DORT-ADIMDA-KONTROLCU-SERHI-FOUNDER-ONAYI-BEKLER,
-                         RUTBE-ATLAMA-ILE-ORK-1.1-KADEME-YASAGI-NASIL-BAGDASIR-FOUNDER-HUKMU,
                          KARDES-KAPALI-DEPODA-TAKIM-GOCU-VE-ISARETCI-DUZELTMESI-ISLENMEDEN-DURUYOR,
                          OTURUM-SAYACI-LABORATUVAR-KAYDIYLA-AYRISMIS-YUZ-DOKUZ-YUZ-ON-IKI,
-                         CLAUDE-JSON-OLU-GIRDILER-VE-LABORATUVAR-SILMELERI-FOUNDER-KARARI,
-                         RENK-URET-CATI-AYARINI-TAZELEMIYOR,
-                         YUZEY-KURALI-KANONA-INECEK-YUZ-BOLUMU,
                          PROJE-VE-CALISMA-ALANI-SEMBOLLERI-EKSEN-TIPLERINE,
-                         GOC-A08-KURATORLU-AKTARIM-KAPANIS-ONAYI,
-                         EKL-F6-A01-MAGAZA-YUKLEMESI,
-                         OSS-A05-KATKI-SOZLESMESI,
-                         RFM-ONCELIK-IKI-EKSEN-REFORMU,
-                         KRR-YBI-YAYIN-BELGE-KARARLARI-FOUNDER-ONAYI,
-                         TURUN-KALAN-DORDU-VIT-KIMLIK-A07-A04-PRF-A06-BKM-DNT-A08,
-                         DORT-FAZSIZ-BLOKUN-EVI-FOUNDER-HUKMU-PANELDEKI-DORT-HATA,
-                         YUZ-4.2-ARAYUZ-ISARET-KATMANI-KANONA-INDI-KAPANDI-2026-08-29,
-                         VIT-POSTA-A02-DUZ-METIN-YEDEGININ-EMEKLILIGI-FOUNDER-KARARI,
-                         HTR-KANITSIZ-KAPANIS-NOBETSIZ-YAYIN-SONRASI,
-                         NOBET-HIJYENI-ON-DOSYADA-ONARILDI-KAPANDI-2026-08-29,
-                         ACIK-DEPONUN-UZAK-ADRESI-YOK-ILK-GONDERIM-CANLI-ACILIS,
-                         PAKETLEME-SONRASI-SUIT-SAHTE-KIRMIZI-ISLEME-KAPISINI-BLOKLADI,
-                         GERCEK-KABUK-SUITI-ONBES-KIRMIZI-VE-HIC-KAPIDA-KOSMUYOR,
                          BELGEKAPANDI-YOLU-HICBIR-NOBETLE-KORUNMUYOR,
                          KILAVUZ-CIZGILERI-FONTA-BAGIMLI-GOZLEM,
-                         HTR-SINAMA-SONUCU-YUZEYSIZ-FOUNDER-DEGERLENDIRMESI,
-                         BKM-FND-A05-RENK-URET-CATI-AYARI-PAKET-VARSAYILANI-GELDI-ADIM-ACIK,
-                         BKM-CLI-A01-KAPANDI-2026-09-02-MEVSIM-TEMIZLIGI,
-                         HTR-ATIF-AILE-SUZGECI-KOR-SEKSEN-BES-AILE-FOUNDER-DENGE-KARARI,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
-                         DOGUS-PAKETI-VSCODE-AYARI-VE-KANON-URETMIYOR-KARAR-BEKLIYOR,
-                         FOTO-HASADI-YIRMI-BIR-DEPO-ON-YONTEM-FOUNDER-DEGERLENDIRMESI,
-                         SONNET-YASAGININ-DAYANDIGI-OLCUM-BAYAT-YENIDEN-OLCULMELI,
-                         PRF-TA-A05-KAPANDI-PANEL-TURU-34MS-DENETCI-ONAY-2026-09-02,
-                         LISANS-APACHE-TAM-METIN-NOTICE-STANDART-2026-09-02,
-                         MCP-0-15-0-SUNUCU-TALIMATI-INSTRUCTIONS-ALANI,
-                         BKM-KBK-UC-ADIM-CI-ESLINT-BOLME-ACILDI,
-                         TRIYAJ-KOVA-A-BKM-DNT-A08-ADM-SIT-BAGLAM-ADM-SIT-PROMPT-KAPATILACAK,
-                         TRIYAJ-KOVA-B-SEKIZ-YARIM-SAATLIK-BKM-DNT-A04-A05-A07-A10-FND-A05-VIT-POSTA-A02-SIT-MCP-SIT-PLAN,
-                         CODEX-MCP-AYARI-SILINEN-ESKI-DEPO-YOLUNA-ISARET-EDIYOR,
-                         YAYIN-KARARLARI-LISANS-APACHE-EKL-F6-A05-ERTELE-GOC-A08-KAPAT-UZAK-ONCE-OZEL,
-                         DURUMLAR-PANELI-GELISTIRMEYE-ALINDI-YAYINI-BEKLEMEZ-UYM-DRM-A01-A02,
-                         MINI-GRAF-CALISMA-ALANI-KUMELERI-GELISTIRMEYE-ALINDI-MAGAZA-SONRASI-VIT-GRAF-A21,
-                         E-POSTA-VE-UZAK-DEPO-ACMA-EN-SONA ] ) {
+                         FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 ARA ÖNCESİ DEVİR · OTURUM 116 (2026-10-29 sabah). 0.9.199 sürümü kurulmuş ve kurulu paket
+        üretilen paketle doğrulanmıştır. Founder Tren sekmesine bakarak kâğıt şemanın bugün işi yapan
+        ajanları göstermediğini ve canlı pencerenin bulunmadığını tespit etmiş, canlı pencerenin
+        başlatılmasına hükmetmiştir; canlı pencere kapalı kardeş eklentinin işidir ve bu depoya yalnız var
+        olan yuva üzerinden dokunur. Aynı bakışta görülen üç kusur, yani lider ajan kartındaki çelişen
+        rozet, uzman listelerinin açık başlaması ve yöneticisi yok sayısının belirsiz kapsamı, PNL-A29
+        olarak plana yazılmıştır. Founder bakım ve panel isteklerinin main'e birleştirilmesine
+        hükmetmiştir. Kural gereği Blok kapanmadan birleştirme yapılmaz; istisna Founder sözüyle
+        verilmiştir ve gerekçesi, 10 Ekim'den beri açık iki uzun dalın açık dört Adımdan daha büyük bir
+        sapma riski taşımasıdır. Panel Blokunun açık Adımları (A10, A16, A17 ve A29) main'den açılacak
+        yeni bir dalda sürer. Haftalık kullanım sınırı azaldığı için çalışmaya ara verilmiştir; aradan
+        sonraki ilk işler PNL-A29 ile kapalı taraftaki canlı penceredir.
+
+        🧭 SIKIŞTIRMA ÖNCESİ NOT · OTURUM 116 (2026-10-29 sabah). Founder'ın sıkıştırmadan sonraki ilk isteği iki
+        dış kaynaklı yönergenin kurulmasıdır: kaynaksız rakam üretmeyi yasaklayan ve her rakamı kaynağına karşı
+        geçti, kaldı ya da engellendi diye işaretleyen ilk ilkeler yönergesi hem çalışma alanımızdaki sisteme hem
+        Founder'ın Grok'taki araştırma botuna yerleştirilecektir; Türkiye mevzuatına göre kodu yalnız okuyarak altı
+        başlıkta tarayan hukuk yönergesi 0.9.199 kurulduktan sonra hesap sisteminde ve sitede koşturulacaktır.
+        Hukuk yönergesinin KVKK rakamları (aydınlatma 1.709.200 TL, veri güvenliği 17.092.242 TL üst sınır) kaynaktan
+        doğrulanmıştır. Ön taramada site, hesap ve eklentide dışarıdan çekilen yazı tipi ya da takip kodu
+        bulunmamış; pazarlamanın yayımlanacak rehber sayfası üç yazı tipini Google'ın sunucusundan çekmektedir ve
+        yayından önce gömülmelidir. Reel izleyen ajan rehberi değerlendirilmiş, Instagram'ın otomasyon yasağı
+        nedeniyle ancak ayrı hesap ve ayrı telefonla, tercihen yorum yazmayan biçimde düşünülmesi önerilmiştir.
+        Bekleyenler: 0.9.199'un kurulması ve Founder kontrol listesi (gözünü bekleyen dokuz Mağaza ve hasat Adımı
+        dahil), site deposundaki sekiz beklemeye alma değişikliğinin işlenme izni, kapalı ürünün müşteri tarafındaki
+        otomasyon teklifinin cevabı ve yurt dışı pilot için tanışma mesajlarının gözden geçirilmesi.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PANELİN KODU TAMAM, 0.9.199 PAKETLENDİ.
+        Panel Blokunun bütün kod Adımları kapanmıştır: onay sayacı, proje simgesi ve Ray işareti (PNL-A08, A25,
+        A21, 8e2517a) ile Tren şirket şeması, iş zinciri ve kardeş yuvası (PNL-A11, A12, A13, b06b1dd). Tren işi
+        çalışma kopyasından ana ağaca üç yollu uygulamayla alınmış ve beş dosyadaki çakışma iki taraf korunarak
+        çözülmüştür. Sürüm 0.9.199'a ilerlemiş (e95e854) ve paket kurulmadan hazırlanmıştır; kontrolcünün bağımsız
+        koşusunda gerçek VS Code süiti 82/82, eklenti süiti 1181/1181, çatı köküyle görsel kontrol 814/814'tür.
+        Kurulum Founder'ın dönüşünü ve onayını bekler; ardından PNL-A16 ve PNL-A17 teslim onayları alınır. Açık
+        kalan panel işi yalnız Ayarlar sekmesidir (PNL-A10). Kapalı üründe lider ajan kartı yazılmış ve onaylanmıştır
+        (KLT-APEX-A01); Tren şeması onu gerçek veriden apex koltuğuna oturtur. Aynı gece kapalı ürünün müşteri
+        tarafında bir otomasyon sistemi teklifi hazırlanmış ve Founder'a iletilmiştir; ayrıntısı müşteri çalışma
+        alanındadır.
+
+        🧭 LİMİT ÖNCESİ NOT · OTURUM 116 (2026-10-28 gece). Kullanım limiti dolmak üzereyken kaldığımız yer: iki
+        üretici ajan çalışmaktadır. Biri ana ağaçta PNL-A08, PNL-A25 ve PNL-A21'i, öteki .claude/worktrees altındaki
+        çalışma kopyasında PNL-A11'i (Founder kararıyla bu turda yalnız şeritler görünümü, HTR-TREN-IKI-GORUNUM) ve
+        PNL-A13'ü yürütmektedir; ikisinin de işi işlenmemiştir ve diskte durur. Yarım Adımları ölçen ajan limit için
+        durdurulmuştur. İşlenmemiş kayıtlar: OZK-16 (Tren yalnız ajanları, Makinist insanları gösterir; koltuk kişiden
+        ayrıdır; tepede tek lider ajan koltuğunda kontrolcü oturum oturur; denetim doğrudan insan katmanına bağlıdır),
+        PNL-A11 metni ve bu not; kapalı üründe tepe şeması kararı, apex kartı Adımının güncellemesi ve temizlik Bloku.
+        Sıradaki: ajanların teslimini ölç ve işle, apex kartını kapalı üründe yazdır, Tren worktree'sini ana dala al,
+        0.9.199'u paketle; ardından işçi Bloku (eklentinin ağırlığının kök nedeni) plan küçültme oturumunda ilk sıraya
+        önerilecektir.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PLANIN YÜKÜ ÖLÇÜLDÜ, PANEL SON ADIMLARINDA.
+        Founder açık işlerin çorbaya döndüğünü ve hiçbir işin bitmediğini bildirmiştir. Ölçümde yedi projede 494 Adım
+        kapanmış, yaklaşık 245 Adım 64 Bloka dağılmış olarak açık bulunmuştur; Fazların tarihleri yürütme hızı
+        ölçülmeden konduğu için tutmamıştır. Panelin gösterdiği 24 onayın 24'ü beklemedeki Adımlara aittir ve o gün
+        hiçbiri Founder'dan karar istememektedir; onay sayacının yalnız kararı bugün verilebilecek kapıları sayması
+        PNL-A08'e yazılmıştır. Kontrolcü bu sıra bitene kadar yeni plan yazmama sözü vermiştir: önce panel kapanır,
+        ardından 45 yarım Adım kanıtla ya kapanır ya beklemeye döner, sonra Founder ile planı şimdi, sonra ve rafa
+        diye küçülten bir oturum yapılır. Aynı akşam işlenenler: sinyallerin türe göre toplanması (PNL-A28, fb9192f;
+        kapalı ürünün Bilgi bandı 1085 satırdan 21 satıra inmiştir), sekme sırasının bugünkü hâliyle varsayılan
+        kalması (PNL-A23) ve kapalı üründe departman adları. Founder'ın hükümleri: Tren şemasının şeritler,
+        sütunlar ve kart ızgarası görünümlerinin üçü de bulunur ve ayardan değişir, varsayılan şeritlerdir (PNL-A11);
+        Ayarlar sekmesinde Mini Graf, Tren ve Makinist görünümlerini taşıyan bir Görünüm bölümü olur (PNL-A10); tek
+        kararlı sürüm önce ana dala birleştirme, ardından mağazada 1.0.0 demektir ve yayından önce son kez sorulur
+        (PNL-A17). Kapalı ürünün tanı borcu için bir temizlik Bloku kendi planının son Fazına yazılmış, Founder'ın sözüyle geliştirme
+        bittikten sonra başlayacaktır ve henüz işlenmemiştir.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28 akşam) · SİNYALLER, SÜRÜKLENEN SEKMELER, MOR TÜL VE SORUNLAR AYARI.
+        Birinci basamak Founder onayıyla kapandı (PNL-A15 ve PNL-A19; 0.9.196 ile 0.9.197 kuruldu). Aynı gün
+        işlenenler: Sinyaller sekmesi ve kanondaki yeri (PNL-A09 ile PNL-A20, 5912fdf; YUZ-3.1, YUZ-3.3, YAS-3.3,
+        YAS-3.4 güncellendi, OZK-14), sürüklenen sekmeler (PNL-A23, 50aa330; Founder'ın sırasını bekler), mor tül
+        varsayılanı (PNL-A24, 16e01b5), 0.9.198 paketi (74744e6, Founder'ın penceresine kuruldu) ve Sorunlar
+        paneline gönderimin ayara bağlanması (PNL-A22, 24d394c). Founder'ın bildirdiği donmalar performans
+        kanalından ölçülmüştür: çatıda tam tur 7,2 ile 7,8 saniyedir ve proje değişimi ile dal açma onu
+        beklemektedir; PNL-A26 (odak turu) üretici tarafından teslim edilmiş ve doğrulanmayı beklemekte, PNL-A27
+        (dal açma) üretimdedir. Tren sekmesi ayrı bir çalışma kopyasında üretimdedir (PNL-A12 bitmek üzere; PNL-A11
+        şirket şeması Founder'ın seçtiği departman sütunları ve yelpaze iplikleriyle kodlanacak, ardından PNL-A13).
+        Departman adları Founder'ın seçimiyle orkestrasyonun ilan dosyasında değiştirilmiş ve orada işlenmeyi
+        beklemektedir. Founder ayrıca Makinist'in projedeki insanları GitHub üzerinden bağlamasına ve her onayın
+        onaylayanın kimliğiyle kayda geçmesine hükmetmiştir (OZK-15); Blokun iskeleti Founder'a gösterilmiş, içerik
+        onayı beklenmektedir ve OZK-15 plana inene kadar uygulanmamış karar uyarısı verir. Açık işler: PNL-A08 sayıların
+        kapsamı ile dış rozetin yalnız acil olanları sayması ve Sorunlar ayarı kapalıyken durum çubuğuna Dur ile Dikkat
+        girdisi, PNL-A25 proje satırlarının simgesi, panel kipi ve işçi Blokları, laboratuvar arşivinin denetimden
+        çıkarılması önerisi ve pazarlamanın yorumdan rehbere otomasyonu (PZ-A12, Founder sonra bakacak).
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-28) · BİRİNCİ BASAMAĞIN ADIMLARI KAPANDI, İLK PAKET HAZIRLANIYOR.
+        Panel dalında birinci basamağın yedi Adımı tamamlanmıştır: sekme şeridi ve geniş yerleşim (PNL-A03,
+        a9a462f), hep görünen ağaç çizgileri ve üzerine gelince renklenme (PNL-A04, 5a1f396), Mini Graf
+        tıklaması (PNL-A05, fb4a5df), editörün renkli girinti bantlarının varsayılana dönmesi (PNL-A06, 02e20f0),
+        onay kararının panelin içine dönmesi (PNL-A07, ba60268) ve tur okumasının paralelleşmesi (PNL-A14,
+        e0013f8). Gerçek VS Code ders korpusunda başlangıç turu 1178 ms'den 739 ms'ye inmiştir; OZK-12 eşikleri
+        hâlâ aşıldığı için Founder işçi ve panel kipi Bloklarının mühürlerini kaldırmıştır. Founder'ın 28 Ekim
+        tarihli ekran kaydı sekme geçişinin eklentiye gidip gelen iletiyi beklediğini göstermiş ve bu iş PNL-A18
+        olarak plana yazılmıştır (7645dd0). Founder aynı gün birinci basamağın PNL-A18 beklenmeden kurulmasına
+        hükmetmiştir; bu yüzden birinci basamak iki pakete bölünmüş, 0.9.196 PNL-A15 ile, anında sekme geçişi
+        0.9.197 olarak yeni PNL-A19 ile teslim edilecektir ve sonraki basamaklar 0.9.198 ile 0.9.199 olmuştur.
+        Son ölçümde eklenti süiti 1119/1119, gerçek VS Code süiti 63/63 ve depo denetimi temizdir. Kod üretici
+        ajandadır; kontrolcü her teslimi bağımsız koşturmuş, kayda geçirmiş ve işlemiştir.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-27) · PANELİN YENİDEN KURULUMU PLANA İNDİ, PR #5 YEŞİLE DÖNDÜ.
+        Founder 0.9.194 ile gelen tek panelin çalışma düzenini bozduğunu bildirmiştir: onay kartı dosyanın
+        yerinde açılmakta, Mini Graf tıklaması dosyaya gitmemekte, ağaç çizgileri yalnız fare üzerindeyken
+        görünmekte, editörün renkli girinti bantları kaybolmuş ve açılış yavaşlamıştır. Kayıt incelemesi tek
+        panelin plana inmeden yapıldığını, onay kartının yerinin uygulayıcının türetmesi olduğunu ve OZK-09 ile
+        çeliştiğini göstermiştir. Bakım dalına iki işleme yapılmıştır: 26 Ekim'in yedi hatırlatıcısı (6ad0f79)
+        ve tek panel ile doğuş kancalarının on yedi dosyasını plana bağlayan BKM-DNT-A20 ve BKM-DNT-A21
+        (2276432); PR #5'in beş kontrolü yeşile dönmüş ve tabanı main'e çevrilmiştir, birleştirme Founder'ın
+        sözünü bekler. Founder'ın hükümleri OZK-13 kararına inmiş, OZK-03 revize olmuş ve Lansman Mevsimine
+        BLK-PNL-YENIDEN-KURULUM Bloku yazılmıştır: on yedi Adım, üç teslim basamağı (0.9.196 Ray, Onaylar ve
+        hız; 0.9.197 Makinist sayıları, Gözlemler ve Ayarlar; 0.9.198 Tren'in açık yüzü ve kardeş eklenti
+        yuvası). Canlı ajan şeması ve geliştirici mesajlaşması kapalı kardeş eklentinin işidir. Founder'ın
+        isteğiyle onayı yalnız üç teslim Adımında beklenir ve panel yenilenene kadar onaylarla meşgul edilmez.
+        Yedi panel hatırlatıcısı Adımlara bağlanıp kararlaştı durumuna geçmiş, iki doğuş hatırlatıcısı kanıtıyla
+        kapanmıştır. Panel dalı gönderilmiş ve PR #6 taslak olarak açılmıştır; tabanı bakım dalıdır. PNL-A01
+        tamamlanmıştır. PNL-A02 ile kabul kapısı kurulmuştur: Founder'ın üç şikâyeti adlarıyla ölçülür ve
+        onları kapatacak Adımın koduyla işaretlidir, sınama klasörü tip denetimine girmiştir ve gerçek VS Code
+        süitinin tabanı 52 geçen ve 2 düşendir (düşenler PNL-A07 ile PNL-A03'ün işidir). Founder'ın hükmüyle kontrolcü kod
+        yazmaz, planın ve bu kaydın sorumlusudur; kod üretici ajanlarda, ölçüm ve işleme kontrolcüdedir.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-24 ve 25) · PANEL BAYATLIĞI ONARIMI, 0.9.195 VE ARAÇ KÖPRÜSÜ PLANI.
+        Yol haritasının editör dışında değişen bir dosyada pencere yeniden yüklenene kadar eski Adım sayısını
+        göstermesi iki nedene bağlanmış ve onarılmıştır (BKM-DNT-A18, dba48af): kaydedilmemiş değişiklik
+        taşımayan açık belge artık diskten okunur ve dar tur odaktaki varlığın yanında değişen dosyaların
+        köklerini de denetler. Onarımı bir alt ajan yazmış, kontrolcü dört ölçümü bağımsız koşturmuş ve bir
+        mutasyonu ayrıca denemiştir. Onarım 0.9.195 olarak paketlenmiş (bebbe4c), Founder'ın düzenleyicisine
+        kurulmuş ve blok dalına gönderilmiştir; v0.9.194 sürüm etiketi değişmemiştir. İlk Windows müşteri
+        kurulumunda iki Sarmal kusuru ölçülüp hatırlatıcıya bağlanmıştır: eklentinin yanıt vermez bildirimleri
+        ile dar kapsamlı bayat panel (HTR-EKLENTI-DAR-KAPSAM-BAYAT-PANEL) ve iskeletin boş ilanlı klasörlere
+        .gitkeep yazmaması (HTR-ISKELET-BOS-KLASOR-GITKEEP). Founder'ın hükmüyle Claude Code eklentisi
+        hatırlatıcısı açık depodan çıkarılmıştır (5267721). Founder 25 Ekim'de yapay zekâ araçlarının beceri,
+        ajan, kanca ve bellek dosyalarını Sarmal düğümleriyle eşleştiren bir araç köprüsüne hükmetmiş; sınır
+        kararıyla köprünün tesisatı FAZ-2026-KOPRU Fazında yedi Blok olarak bu depoya yazılmış ve KPR öneki
+        sicile eklenmiştir. İlk iş KPR-OLC-A01 biçim ölçümüdür.
+
+        🧭 ARA DEVİR · OTURUM 116 (2026-10-22) · DOĞUŞ KANCALARININ İŞLETİM SİSTEMİNDEN BAĞIMSIZ KARŞILIĞI.
+        Doğuş paketinin kurduğu iki kanca bugüne kadar yalnız kabuk betiği olarak yazılmıştı ve Windows
+        üzerinde çalışmıyordu. Bir alt ajan iki kancanın Node karşılığını yazmıştır: doğuş kilidi
+        ogreti/sablon/dogus/dogus_kilidi.mjs, denetim kapısı ogreti/sablon/dogus/denetim_kapisi.mjs
+        dosyasındadır ve ikisi yalnız Node'un yerleşik modüllerini kullanır. Kanca ayarı artık kabuk yerine
+        Node çağırır ve doğuş paketi (urun/cekirdek/src/dogus.ts) yeni köklere yalnız Node sürümlerini kurar;
+        kabuk sürümleri doğan köke yazılmaz, şablon rafında daha önce doğmuş köklerin elle tazelenmesi için
+        POSIX başvuru sürümü olarak yaşar. Aynı işte doğuş kilidinin yanlış ret kusuru da giderilmiştir:
+        önceki sürüm komut metninin tamamında desen aradığı için bir giriş ilanının adını yalnızca metin
+        olarak anan komutları yeni ilan yazımı sanıyordu; kilit artık yazım hedefini yalnız tırnak dışındaki
+        yönlendirmelerden ve dosya yazan komutların argümanlarından çıkarır. Yeni sınama dosyası
+        urun/cekirdek/sinama/dogus-kancalari.test.ts ile birlikte kanca sınamaları 31/31 geçmiştir; kontrolcü
+        sonucu bağımsız olarak yeniden koşturmuştur. Değişiklik işlenmemiştir, çünkü işleme yasağı yürürlüktedir.
+        Gerçek bir Windows makinesinde doğrulama henüz yapılmamıştır ve hatırlatıcısı
+        HTR-DOGUS-WINDOWS-KANCALARI kaydında açıktır.
+
+        🧭 DEVİR · OTURUM 116 (2026-10-20) · TEK SÜRÜM BİRLEŞTİRMESİ VE İÇERİK HATTININ AÇILMASI.
+        Founder "tek sürüm" hükmünü vermiş ve temiz dalların blok/bakim-ve-olgunluk çalışma dalında
+        toplanmasına karar vermiştir. Dört birleştirme işlemesi bu dala indirilmiştir (11be401,
+        e63039e, 14d07b3 ve 804dcf8); ana dala dokunulmamış ve uzak depoya gönderim yapılmamıştır.
+        Çalışma ağaçları kaldırılmış ve altı eski dal silinmiştir. blok/eklenti-olgunlastirma dalı,
+        git onu birleşmemiş saydığı için silmeyi reddettiğinden bilinçle korunmuştur.
+        Dış bir değerlendirici botun hazırladığı Sarmal raporu okunmuş, geçerli dört çıkarım kapalı
+        ürün tarafına indirilmiştir. Founder 12 Ekim tarihli "tek odak mağaza" kararını korumuştur:
+        eklenti hesapsız yüklenecek, hesapla giriş sonraki sürüme kalacak, geri bildirim, katkı ve
+        destek kanalları eklenecek ve akış rehberi Bloku mağaza yüklemesinden sonraya bırakılmıştır.
+        Aboneliğin aylık API kredisi bireysel kuruluşta doğrulanmış, Claude Code bu krediyi kabul
+        etmemiş ve doğrulanmış yolun doğrudan API betikleri olduğu çatı kararlarına yazılmıştır.
+        2026-10-20 rakip araştırması şu sayıları vermiştir: Spec Kit 141.964, OpenSpec 72.436 ve
+        BMAD 54.334 yıldız; Sarmal henüz 0 yıldızdadır. Sarmal'ı ayıran nokta planla diskin
+        deterministik denetimi ve zorlanan durum makinesidir. Ölçülen eksikler şunlardır: mağaza
+        yüklemesinin yapılmamış olması, README'deki tutarsız sayılar ("119 madde, 175 tanı" ile
+        "163 madde"), anadizin yorumunun deponun hâlâ özel olduğunu söylemesi, ağır kurulum, kurulum
+        belgesinin yalnız Claude Code için yazılmış olması ve kabul sınamasının bulunmaması.
+        Founder Sarmal için içerik üretimine (LinkedIn, X ve Instagram) başlanmasına hükmetmiştir;
+        otomatik video üretimi yapılmayacak ve video ayrıca konuşulacaktır. İlk paylaşım taslağı
+        hazırdır ve paylaşılmamıştır.
+        Açık kalanlar: "Sarmal Akışı" sayfasının onarımı yapılmış (tuval boyut döngüsü düzeltilmiş)
+        fakat yayını Founder onayını beklemektedir; hatırlatıcı ayıklama raporundaki 69 satır ile 72
+        açık hatırlatıcı arasındaki farkın doğrulanması gerekmektedir. Sıradaki iş v1 mağaza
+        yüklemesi hattıdır (önceki kayıttaki dokuz Adımlık göz turu ve MGZ-A10) ve içerik hattıdır.
+
+        🧭 DEVİR · OTURUM 113 (2026-10-11) · TUR KAPANDI.
+        Founder'ın 10 Ekim'de başlattığı tur iki gün sürmüş ve yirmi dört Adım bağımsız incelemeden
+        geçerek kapanmıştır. Dokuz Adımın kodu bloka girmiş, kapanışları ise Founder'ın gerçek editördeki
+        bakışını beklemektedir: VIT-KIMLIK-A08, EKL-F6-A09, HST-MTR-A04, HST-YUZ-A05, HST-YUZ-A06, MGZ-A02,
+        MGZ-A06, MGZ-A08 ve MGZ-A09. Founder karar sayfasında kırk bir kararı onaylamış, bu tur için bütün
+        kararları kontrolcüye devretmiş ve oturum penceresini korumak için aynı anda yalnız bir ajanın
+        çalışmasına hükmetmiştir. Turun son kısmında İngilizce yüz (MGZ-A09), ölçülen kanon düzeltmeleri
+        (HST-MTR-A13) ve kısıtlı mod karşılaması (MGZ-A08) bloka girmiştir; HST-MTR-A13 kapanmış, öteki iki
+        Adım göz beklemektedir. Kabul alıp Koşumu yazılan, fakat durum alanı ilerletilmemiş olan RFM-MOTOR-A02
+        bu devirde tamamlandı yapılmıştır. Founder'ın verdiği birleştirme yetkisiyle PR #4 ana dala
+        birleşmiştir; PR #5'in tabanını ana dala çevirmek izin denetimine takıldığı için Founder'a
+        bırakılmıştır. Kanon incelemesi TIP-1.9'da Meyve tipinin eksik olduğunu ölçmüş ve kayıt
+        HTR-URUN-AILESI-KATALOG-EKSIGI adıyla Founder kapısında açılmıştır. Founder'ın isteğiyle depo dışında,
+        ~/.claude/mods/sarmal klasöründe dört bekçi ile dört yüzden oluşan bir Claude Code mod paketi
+        yazılmıştır; bağımsız inceleme iki yanlış ret bulmuş, onarım 84 sınamanın tamamından geçmiştir ve
+        onarımın bağımsız ölçümü ile kurulum sonraki oturuma kalmıştır. Kapılar: çekirdek 1755/1755, eklenti
+        953/953, denetim 0 hata ve 0 uyarı.
+        ODAK HÜKMÜ (Founder · 2026-10-12): Sıradaki oturumun tek odağı v1'in mağaza yüklemesidir. Önce göz
+        bekleyen dokuz Adım gerçek editörde Founder ile birlikte tek turda bakılır, ardından MGZ-A10 ile mağaza
+        vitrini ve İngilizce benioku yazılır, son olarak eklenti 1.0.0 numarasıyla Founder onayıyla yüklenir.
+        HST-MTR-A15 ile A19 arasındaki motor ve kanon borçları, BKM-DNT-A03, A14 ve A17, tur sonu temizlik
+        Adımı, site planının kabul incelemesi ve mod paketi v1 yüklenene kadar bekler. Gerekçe, açık depo
+        doğmuş olduğu için v1'i kapatacak tek olayın mağaza yüklemesi olması ve yüklemenin son koşulu olan
+        İngilizce yüzün tamamlanmış bulunmasıdır.
+
+        🧭 ARA DEVİR · OTURUM 113 (2026-10-10) · ORKESTRASYON TURU VE EKİM HASAT MEVSİMİ.
+        Founder dört günlük aradan sonra bütün hatırlatıcıların okunmasını, sırası gelenlerin plana
+        indirilmesini ve yarım işlerin paralel ajanlarla tamamlanmasını istemiştir. Envanter 65 açık
+        hatırlatıcı, 2 geliştirmedeki ve 48 beklemedeki Adım ile vadesi geçmiş Eylül mevsimini
+        göstermiştir. Sırası gelmiş, Founder kararı istemeyen on dokuz hatırlatıcı Adım olarak inmiştir;
+        Adımlar önce ayrı bir Ekim Fazında doğmuş, Faz sırası katı olduğu için başlayamayacakları
+        ölçülünce Founder Eylül Fazının vadesini 2026-10-31'e uzatmış ve iki Blok bu Faza taşınmıştır. BKM-BUG-A12
+        bağımsız ölçümle kapanmış, kapsanan kapalı projedeki on bir sahte uyarı sıfıra inmiş ve aynı
+        körlüğün ölü iz toplayıcısındaki ikinci örneği HST-MTR-A09 Adımına bağlanmıştır. Bu kaydın
+        açık işler listesi kapanmış işlerden temizlenmiştir ve yalnız gerçekten açık kalemleri taşır.
+        Turun sonunda BKM-BUG-A12, BKM-DNT-A11, BKM-DNT-A09 ve KYN-KYN-A05 bağımsız incelemeden
+        geçip kapanmış, VIT-KIMLIK-A08'in kodu birleşmiş ve kapanışı Founder'ın canlı gözüne
+        bırakılmıştır. RFM-MOTOR-A02'nin kodu kabul edilmiş fakat DIL-1.8 Zorlama paragrafını
+        tasdikli metinde olmayan iki hükümle yeniden yazdığı için kendi dalında Founder onayını
+        bekler. Çekirdek 1676/1676,
+        eklenti 897/897. Gönderim kararı: dal uzak depoya gönderilir ve birleştirme isteği açılır,
+        ana dala birleştirmeyi Founder yapar.
+
+        🧭 ARA DEVİR · OTURUM 113 (2026-10-01) · MARKETPLACE YAYINCISI DOĞDU.
+        Founder nexivionlabs@outlook.com ile Microsoft hesabı açmış, Visual Studio Marketplace'te
+        nexivion-labs kimlikli Nexivion Labs yayıncısı oluşturulmuştur; kimlik package.json ile birebir
+        aynıdır. Alan adı altı aydan eskidir, doğrulanmış yayıncı rozeti için eklentinin altı ay mağazada
+        yaşaması beklenir. Eklenti güncel kaynaktan geçici klasörde yeniden paketlenmiş (1.102 dosya,
+        1,38 MB) ve yasak sözcük, sır ve riskli dosya taramalarından temiz geçmiştir. Yükleme Founder'ın
+        kararıyla ertelenmiştir: önce gönderim kararı, entegrasyon düşüşlerine bakış ve yeni ekran
+        görüntüsü tamamlanacak, ardından ön sürüm olarak yüklenecektir. Sürüm numarası yükleme günü seçilir.
+
         🧭 DOĞUM KAYDI (2026-08-25): Açık depo, atölye deposundan küratörlü
         aktarımla doğmuştur. Doğum anında sahnede on küme yaşamaktadır: yasa
         ile özün mekanik dilimi, kancalar, felsefe, öğrenme kartları ile
@@ -1881,7 +2087,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
         beyan etmiştir. İki işin ayrıntıları ve plan kenarlarının bu hükme göre
         güncellenmesi, Founder'ın zamanı geldiğinde vereceği tarife bağlıdır.
 
-        FOUNDER HÜKMÜ · 2026-09-12 · PLAN DİSİPLİNİ VE İLK TEMİZLİK: Founder, mevcut
+        FOUNDER HÜKMÜ · 2026-09-12 · PLAN DİSİPLİNİ VE İLK TEMİZLİK (kapsamı
+        2026-09-24 hükmüyle dengelenmiştir): Founder, mevcut
         Adımlar bitmeden yeni plan açılmayacağına ve bu süre içinde doğan her yeni
         işin ya da bulgunun bir hatırlatıcıya yazılacağına hükmetmiştir. Hükmün
         gerekçesi, on bir Blokun aynı anda açık durmasının ORK-3.5 maddesinin
@@ -1896,6 +2103,85 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-09-22", oturum: 112,
         arşivlemenin yirmi dört ile doksan arasında uyarı doğurduğunu göstermiştir.
         Performans mevsiminin şemsiye Adımı PRF-A06, Founder'ın editörde bugün
         takılma görmediğini beyan etmesiyle kapanmıştır.
+
+        FOUNDER HÜKMÜ · 2026-09-24 · PLAN DİSİPLİNİNİN DENGESİ: Founder,
+        2026-09-12 tarihli plan disiplini hükmünün kapsamını yeniden
+        belirlemiştir. Hüküm şudur: yeni bir plan doğabilir ve iskeletiyle
+        birlikte yol haritasına işlenerek bütünüyle görünür olur, ancak her
+        projede aynı anda yalnız bir Blok geliştirmede bulunur; öteki Bloklar
+        bağımlılık sırası gelene kadar beklemede durur ve açık Blok bitmeden
+        yenisine geçilmez. Hüküm proje başına uygulanır; bir projedeki açık iş
+        başka bir projede yeni bir planın doğmasını engellemez. Çalışma
+        sırasında doğan yeni iş, fikir ya da bulgu plana değil hatırlatıcıya
+        yazılır ve sırası geldiğinde plana girer. Kullanıcıyı sessizce yanıltan
+        acil bir kusur bu sırayı kesebilecek tek istisnadır. Gerekçe şudur:
+        2026-09-12 hükmü on bir Blokun aynı anda açık durup hiçbirinin
+        bitmemesine karşı verilmiştir ve amacında doğrudur, fakat bütün çalışma
+        alanını kilitleyecek biçimde yazıldığı için Sarmal'daki açık Adımlar
+        orkestrasyon projesinde yeni bir planın doğmasını da durdurmaktadır;
+        Founder bu hükmün Sarmal için verildiğini ve bir denge kurulması
+        gerektiğini beyan etmiştir. Hükmün amacı, yani işlerin yarım
+        kalmaması, aynı anda tek Blok ilkesiyle korunmakta, kaldırılan tek şey
+        bir projenin ötekini kilitlemesidir. Hükmün ilk uygulaması orkestrasyon
+        projesinin yeni iskeletidir: iskelet doğacak, yedi Faz yol haritasında
+        görünecek ve yalnız ilk Fazın ilk Bloku geliştirmeye alınacaktır. Bu
+        hüküm, 2026-09-12 hükmünün mevcut Adımlar bitmeden yeni plan
+        açılmayacağını söyleyen cümlesinin yerini alır; o hükmün geri kalanı,
+        yani ilk uygulamasına ait kayıtlar, tarih olarak yerinde durur.
+
+        FOUNDER HÜKMÜ · 2026-09-24 · TESLİM BİRİMİ: Founder, orkestrasyon
+        planının hakem incelemesinden sonra dalın ve birleştirme isteğinin
+        birimini Adıma indirmeye hükmetmiştir: her küçük iş kendi kısa ömürlü
+        dalında yürür, kendi birleştirme isteğiyle incelenir ve iş bitince
+        birleştirilir. Gerekçe şudur: ORK-9'un bugünkü metni dalı Faz birimine
+        bağlamakta ve bir mevsim boyunca açık kalan uzun ömürlü dallar
+        doğurmaktadır; endüstri araştırması, özellikle DORA bulguları ve
+        Google'ın küçük değişiklik ilkesi, ise kısa ömürlü dalları ve küçük
+        değişiklikleri önermektedir, çünkü hata küçükken yakalanır ve inceleme
+        yükü düşer. Hüküm bir kanon değişikliği gerektirir: ORK-9'un metni bu
+        hükme göre yeniden yazılacak ve çatı işaretçisindeki H12 metninin her
+        Blokun işini kendi dalına bağlayan ifadesi, ORK-9 ile çelişmemesi için
+        aynı işte hizalanacaktır. Kanon metni güncellenene kadar ORK-9
+        yürürlükte kalır.
+
+        FOUNDER HÜKMÜ · 2026-09-25 · BİRLEŞTİRME ONAYI VE GEÇİŞ DÖNEMİ: Founder,
+        2026-09-24 tarihli teslim birimi hükmünü iki yönden tamamlamıştır.
+        Birincisi, hedef düzende birleştirme isteklerini insan değil ajan
+        onaylar: üretici ajan isteği açar, otomatik kontroller (sınama, tip
+        denetimi, güvenlik taraması) koşar, üreticiden farklı model ve ayrı
+        bağlamda çalışan inceleyici ajan kararını zorunlu bir durum kontrolü
+        olarak yazar ve bütün kontroller yeşilse istek kendiliğinden
+        birleşir. Otomatik kontrollerden biri kırmızıysa inceleyici ajan
+        isteği birleştiremez. Kanon ve kural değişiklikleri, güvenlik
+        ayarları (sürekli tümleştirme dosyaları, dal koruma kuralları, gizli
+        anahtarlar, kimlik doğrulama kodu) ve yeni dış bağımlılıklar bu
+        akışın dışındadır ve Founder'ın sözünü bekler. Dal korumasında
+        yöneticiye de uygulama seçeneği açılır, böylece hiçbir hesap kapıyı
+        atlayamaz; Founder her gün birleşen, reddedilen ve bekleyen istekleri
+        tek bir özetle görür ve istemediği bir birleştirmeyi geri alabilir.
+        Gerekçe şudur: her isteği Founder'ın onaylaması teslim hattını tek bir
+        kişiye bağlar ve işi yavaşlatır; ayrıca 2026-09-25 ölçümü, Sarmal
+        deposundaki ilk üç isteğin hiçbir onay almadan yönetici hesabıyla
+        birleştirildiğini göstermiştir, çünkü dal korumasında yöneticiye de
+        uygulama seçeneği kapalıdır ve "en az bir onay" kuralı fiilen
+        işlememiştir. İkincisi, geçiş dönemi tanımlanmıştır: orkestrasyon
+        deposunda, kullanıcı bulunmadığı ve ürün yayımlanmadığı sürece,
+        geliştirme birleştirme isteği açılmadan doğrudan ana dalda yürür. Bu
+        dönemde üç koşul geçerlidir: üretici ile inceleyici yine ayrıdır ve
+        her iş işlenmeden önce inceleyici ajandan geçer; ORK-9'un işlemenin
+        Adım biriminde olduğu kuralı aynen uygulanır, dolayısıyla her Adım
+        kendi işlemesiyle kaydedilir; yerel kapılar her işlemede koşar ve
+        atlanmaz. Geçiş dönemi şu üç olaydan biri gerçekleştiğinde biter ve o
+        gün birleştirme isteğiyle yürüyen hedef düzene geçilir: ilk Fazdaki
+        teslim hattının uçtan uca çalışır hâle gelmesi, ilk dış kullanıcının
+        ya da müşterinin gelmesi veya ilk sürümün yayımlanması. Gerekçe şudur:
+        kullanıcısı olmayan ve yayımlanmamış özel bir depoda bozulan bir şey
+        kimseye zarar vermez ve iskeletin ilk Fazı teslim hattının kendisini
+        kurduğu için o hattın kurulurken kullanılması mümkün değildir; buna
+        karşılık üretici ile inceleyicinin ayrılığı ve Adım birimindeki geri
+        alınabilirlik bu dönemde de korunur. Bu hüküm yalnız orkestrasyon
+        deposunu bağlar; herkese açık Sarmal deposunda korumalı ana dal ve
+        yalnız Founder'ın sözüyle yapılan gönderim düzeni aynen sürer.
 
         OTURUM 111 DEVRİ · 2026-09-12 · BİR SONRAKİ OTURUM İÇİN: Bu oturumda teslim
         dalı main dalına birleştirilmiş, main dalı koruma altına alınmış, açık

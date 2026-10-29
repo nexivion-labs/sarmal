@@ -36,6 +36,10 @@ import {
 } from "../src/fikir-cekirdek.ts";
 import { YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM } from "../src/yuzey-metinleri.ts";
 import { SATIR_SIMGELERI, satirSvgKaynagi, type SatirSimgesi } from "../src/simge-cizelgesi.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+/** Fikir dosyası doğuşun plan rafında yaşar; yol paketin kendisinden türer (HST-MTR-A07). */
+const FIKIR_DOSYASI = `/sarmal/${planYolu("fikirler.sar")}`;
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 
@@ -55,7 +59,7 @@ const FIKSTUR = [
 ].join("\n");
 
 const PROJE = { kod: "PRJ-SARMAL", ad: "Sarmal" };
-const fikstureKayitlari = (dosya = "/sarmal/plan/fikirler.sar"): FikirKaydi[] =>
+const fikstureKayitlari = (dosya = FIKIR_DOSYASI): FikirKaydi[] =>
   fikirleriTopla(ayristir(belirtecle(FIKSTUR)).bildirimler)
     .map((fikir) => ({ proje: PROJE, dosya, fikir }));
 
@@ -113,7 +117,7 @@ test("fikir nöbeti: satırın etiketi fikrin AMACINI basar ve ipucu dört zorun
   assert.equal(g.etiket, "FKR-KAPI · Panel yüzeyi olmayan tipler için ortak bir kapı açmak",
     "fikir nöbeti: etiket ya kodunu ya da fikrin amacını basmıyor");
   for (const beklenen of ["FKR-KAPI", "park", "yüzey turu kapanınca", "Sarmal",
-    "/sarmal/plan/fikirler.sar:1"]) {
+    `${FIKIR_DOSYASI}:1`]) {
     assert.ok(g.ipucu.includes(beklenen),
       `fikir nöbeti: ipucu "${beklenen}" bilgisini düşürmüş`);
   }
@@ -131,7 +135,7 @@ test("fikir nöbeti: eksik yazılmış Fikir görünmez olmaz; eksikliği yüzey
 
 test("fikir nöbeti: satır tıklaması kaynağın KENDİ satırını hedefler", () => {
   const g = fikirGorunumu(fikstureKayitlari()[0]);
-  assert.equal(g.dosya, "/sarmal/plan/fikirler.sar");
+  assert.equal(g.dosya, FIKIR_DOSYASI);
   assert.equal(g.satir, 1,
     "fikir nöbeti: satır numarası sarmal.dosyaAc komutunun beklediği 1-tabanlı düzende değil");
 });

@@ -3,9 +3,9 @@
 
 Bu aile kanonik sınıflama kaydında şöyle tanımlanır: UI-mantık köprüsü (canlandırma·durum) — teknoloji-bağımsız niyet. Ailede 2 tip yaşar.
 
-Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: 23793bc1
+Bu kartın olgusal bölgeleri kanonik sınıflama kaydından üretilmiştir: oz/siniflama/kayit.json · mühür: a7f765e6
 
-Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için `node arac/ogretim-uret.ts` çalıştırılır.
+Anlatı bölgesi elle yazılır ve üreteç o bölgenin sınırını geçmez. Kartı tazelemek için depo kökünde `node urun/arac/ogretim-uret.ts` çalıştırılır.
 <!-- /SARMAL:KART_KUNYESI -->
 
 <!-- SARMAL:ANLATI -->

@@ -349,6 +349,99 @@ export function tamDenetimKanonuBul(
   return { snfYol, kaynak: snfYol === paketKaydi ? "paket" : "proje" };
 }
 
+// ── 📣 ÇÖKEN KÖK DE SÖYLENİR (MGZ-A04) ──────────────────────────────────────
+//   Ölçülmüş kusur (HTR-TAM-DENETIM-COKUSU-SESSIZ-DUSUYOR): kabuğun tam denetim
+//   turu her kökü bir try/catch bloğu içinde koşturuyor ve çöküşü yutuyordu.
+//   Kanonsuz kök EKL-F6-A09'dan beri durum çubuğundaki işarete bildiriliyordu,
+//   çöken kök ise bildirilmiyordu; panel o kökün proje kapsamlı tanılarını hiç
+//   göstermiyor ve boşluk temiz ağaç sanılıyordu. Kök turu bu yüzden kabuktan
+//   bu saf gövdeye indi: tur iki ayrı sebebi ayrı listelerde döndürür ve kabuk
+//   ikisini de işarete verir. Çöküşün kendisi burada onarılmaz; yalnız görünür
+//   kılınır, ve bir kökün çöküşü sıradaki kökün denetimini durdurmaz.
+
+/** İpucuna giden çöküş iletisinin üst sınırı; tam metni komut satırı verir. */
+const HATA_OZETI_SINIRI = 300;
+
+/** Tam denetimi bir hatayla yarıda kalan kök ve hatanın tek satırlık iletisi. */
+export interface CokenKok {
+  readonly kok: string;
+  readonly hata: string;
+}
+
+/**
+ * MGZ-A12: tam denetimi kırık dosyalar dışarıda bırakılarak EKSİK koşan kök.
+ * `dosyalar` kökün kendi etiketiyle ve satırıyla yazılır (`is/plan/x.sar:12`),
+ * çünkü ipucu ve kanal satırı kullanıcıya hangi dosyayı onaracağını söyler.
+ */
+export interface EksikKok {
+  readonly kok: string;
+  readonly dosyalar: readonly string[];
+}
+
+/** Bir tam denetim turunun kök hükmü: hangi kök neden koşmadı ya da eksik koştu. */
+export interface TamDenetimKokTuru {
+  /** Hiçbir kanon bulunamadığı için tam denetimi koşmayan kökler. */
+  readonly atlanan: string[];
+  /** Tam denetimi bir hatayla yarıda kalan kökler. */
+  readonly coken: CokenKok[];
+  /** MGZ-A12: tam denetimi kırık dosya dışarıda bırakılarak eksik koşan kökler. */
+  readonly eksik: EksikKok[];
+}
+
+/**
+ * MGZ-A12: bir kökün denetim sonucundan eksik koşum kaydını türetir. Kayıt yalnız
+ * çekirdeğin atlama kipinde düşürdüğü kırık dosya varsa doğar; giriş dosyasının
+ * yokluğu gibi öteki erken çıkışlar burada eksiklik SAYILMAZ, çünkü Sarmal
+ * ağacı olmayan bir çalışma alanı klasörü de aynı yoldan geçer ve onu her turda
+ * işaretlemek gürültüdür. Karar `vscode` bilmeden verilir; kabuk yalnız taşır.
+ */
+export function eksikKokKaydi(
+  kok: string,
+  sonuc: { readonly kirikDosyalar?: ReadonlyArray<{ readonly etiket: string; readonly satir: number }> },
+): EksikKok | undefined {
+  const kirik = sonuc.kirikDosyalar;
+  if (!kirik || kirik.length === 0) return undefined;
+  return { kok, dosyalar: kirik.map((k) => `${k.etiket}:${k.satir}`) };
+}
+
+/** Hatanın iletisi tek satıra indirilir ve sınırda kesilir; çok satırlı ya da çok uzun ileti ipucunu boğmaz. */
+function hataOzeti(hata: unknown): string {
+  const ileti = (hata instanceof Error ? hata.message : String(hata)).replace(/\s+/gu, " ").trim();
+  return ileti.length > HATA_OZETI_SINIRI ? `${ileti.slice(0, HATA_OZETI_SINIRI - 1)}…` : ileti;
+}
+
+/**
+ * Tam denetimin kök turu. Her kök için kanon çözülür ve denetim koşar; kanonu
+ * bulunamayan kök `atlanan`, kanon çözümü ya da koşu sırasında hata veren kök
+ * `coken` listesine girer. İki liste ayrıdır, çünkü iki hâlin sebebi ve
+ * onarımı farklıdır: kanonsuz köke işaretçi yazılır, çöken kökte ise kökün
+ * kendi dosyalarından biri okunamamıştır. MGZ-A12: `kos` kökün eksik koşum
+ * kaydını döndürebilir; dönen kayıt üçüncü liste olan `eksik`e girer. Üç hâlin
+ * onarımı da ayrıdır: eksik kökte kullanıcı adı söylenen kırık dosyayı onarır.
+ */
+export function tamDenetimKokTuru(
+  kokler: readonly string[],
+  kanonBul: (kok: string) => TamDenetimKanonu | undefined,
+  kos: (kok: string, kanon: TamDenetimKanonu) => EksikKok | undefined | void,
+): TamDenetimKokTuru {
+  const atlanan: string[] = [];
+  const coken: CokenKok[] = [];
+  const eksik: EksikKok[] = [];
+  for (const kok of kokler) {
+    try {
+      const kanon = kanonBul(kok);
+      if (!kanon) { atlanan.push(kok); continue; }
+      const kayit = kos(kok, kanon);
+      if (kayit) eksik.push(kayit);
+    } catch (hata) {
+      // Canlı tanı akışı yine bozulmaz (blast-radius sıfır); fark, çöküşün
+      // artık yutulmayıp kökün adıyla ve iletisiyle bildirilmesidir.
+      coken.push({ kok, hata: hataOzeti(hata) });
+    }
+  }
+  return { atlanan, coken, eksik };
+}
+
 // ── ✍️ İŞARETÇİYİ YAZAN YOL (EKL-F6-A09) ────────────────────────────────────
 //   Ölçülmüş kusur: işaretçi mekanizmasından (BKM-DNT-A15) önce doğmuş ağaçlar
 //   işaretçi taşımıyordu ve eklentide işaretçiyi yazan hiçbir yol yoktu; taban

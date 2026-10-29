@@ -14,6 +14,17 @@ export function run(): Promise<void> {
   mocha.addFile(path.resolve(__dirname, "onay-yuzeyi.test.js"));   // VIT-POSTA-A03
   mocha.addFile(path.resolve(__dirname, "gorunum-varsayilani.test.js"));   // EKL-F6-A04 kanıt ölçümü
   mocha.addFile(path.resolve(__dirname, "tek-agac.test.js"));   // 🗺️ PRF-TA-A04 tek ağaç nöbetleri
+  mocha.addFile(path.resolve(__dirname, "bolum-yuvasi.test.js"));   // 🧩 VIT-K78-A10 bölüm yuvası (sahte kardeşle)
+  mocha.addFile(path.resolve(__dirname, "davranis-nobeti.test.js"));   // 🛡️ BKM-DNT-A09 en büyük üç yüzey dosyası
+  mocha.addFile(path.resolve(__dirname, "minigraf-tiklama.test.js"));   // 🖱️ PNL-A05 Mini Graf tıklaması
+  mocha.addFile(path.resolve(__dirname, "sekme-gecisi.test.js"));   // ⏱️ PNL-A18 sekme geçişi eklentiyi beklemez
+  mocha.addFile(path.resolve(__dirname, "sinyaller.test.js"));   // 🚦 PNL-A09 Sinyaller sekmesi
+  mocha.addFile(path.resolve(__dirname, "sekme-sirasi.test.js"));   // ↔️ PNL-A23 sekmelerin sürüklenerek sıralanması
+  mocha.addFile(path.resolve(__dirname, "sorunlar-paneli.test.js"));   // 〰️ PNL-A22 Sorunlar paneline gönderim ayara bağlı
+  mocha.addFile(path.resolve(__dirname, "odak-turu.test.js"));   // 🎯 PNL-A26 odak değişimi tam tur başlatmaz
+  mocha.addFile(path.resolve(__dirname, "dal-acma.test.js"));   // 🌳 PNL-A27 dal açma eklentiyi beklemez
+  mocha.addFile(path.resolve(__dirname, "kapsam-sayaci.test.js"));   // 🔢 PNL-A08 dış rozet ve sayının kapsamı
+  mocha.addFile(path.resolve(__dirname, "tren-yuvasi.test.js"));   // PNL-A13 Tren Canlı yuvası (sahte kardeşle)
 
   return new Promise((resolve, reject) => {
     try {

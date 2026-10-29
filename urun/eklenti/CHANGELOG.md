@@ -2,6 +2,61 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.199 — 2026-10-28 (Tren şirket şeması, gerçek sayılar ve hızlı panel)
+
+- **Tren sekmesi ajanların şirket şemasını gösterir.** Ajanlar departmanlarına göre şeritlerde durur; her şeridin başında yönetici, ardından ona bağlı ajanlar gelir ve büyük ekipler tek bir özet kutusunda toplanır. Bir ajana tıklayınca profil kartı açılır: uzmanlık, yetki, bellek, sınır, uyguladığı yasa ve kime bağlı olduğu, her satır tanımına gider. Şema yalnız planda ilan edilmiş olanı çizer; ilan edilmemiş yerde "tanımlı değil" yazar ve insanlar Tren'de değil Makinist'te durur.
+- **Geliştirmedeki iş tek satırda.** Tren'in altında her açık Adım, ona atanan ajan, Katmanın teknolojisi ve AltKatmanın departmanıyla birlikte görünür.
+- **Kardeş eklenti yuvası.** Tren sekmesi, canlı ajan akışını gösterecek kapalı kardeş eklentinin takılabileceği belgelenmiş bir yuva taşır; Canlı görünüm kendiliğinden seçilmez.
+- **Sayılar gerçeği söyler.** Onay sayacı yalnız kararı bugün verilebilecek işleri sayar; beklemedeki işler Makinist'te ayrı bir "İleride onay isteyecek" grubunda durur. Dış Sarmal rozeti yalnız acil olanları toplar ve sıfırsa görünmez; her sayı neyi saydığını adıyla söyler.
+- **Ray'da Dur ve Dikkat işareti.** Tanı taşıyan düğümün satırında işaret görünür; tıklayınca Sinyaller açılır ve o düğümün tanıları seçili gelir.
+- **Sinyaller türe göre toplanır.** Aynı türden yüzlerce kayıt tek satırda, sayısı, anlamı ve ortak önerisiyle durur; satır açılınca kayıtlar dosyaya göre dizilir.
+- **Proje satırları doğru simgeyle.** Çatıdaki her proje Proje simgesini taşır; çatı simgesi yalnız çatının kendi satırındadır.
+- **Sorunlar paneli isteğe bağlı.** Sarmal tanıları varsayılan olarak VS Code'un Sorunlar paneline yazılmaz; Sinyaller sekmesinde, editördeki dalgalı çizgide ve ipucunda görünür. `sarmal.sorunlarPaneli` açılınca Sorunlar paneline kayıpsız döner. Ayar kapalıyken durum çubuğunda Dur ve Dikkat sayısı görünür.
+- **Panel donmaz.** Dosya değiştirince başlayan tam denetim turu kalktı ve Yol Haritasında bir dalı açmak eklentiyi beklemez.
+
+## 0.9.198 — 2026-10-28 (Sinyaller sekmesi, sürüklenen sekmeler ve mor tül)
+
+- **Dördüncü sekme Sinyaller oldu.** Sarmal'ın tanıları üç bantta durur: Dur, Sarmal'ın kabul etmediği ve kapıyı kapatan ihlalleri; Dikkat, tam yeşilden önce giderilmesi gereken drift risklerini; Bilgi, kapıyı kapatmayan ölçüm ve durum işaretlerini taşır. Tanılar projeye göre gruplanır, her satır öneriyi ve dayandığı kanon maddesini gösterir, tıklanınca dosyayı ilgili satırda açar. Bant simgeleri düzeyin rengini taşır ve şeritte Dur ile Dikkat sayıları rozet olarak görünür.
+- **Her kayıt bir kez görünür.** Bilgi bandı eski Gözlemler grubunun yerini aldı; hatırlatıcılar yalnız Makinist'te kalır. Makinist kullanıcının defteridir ve Onaylar, Hatırlatıcılar ile Fikirleri taşır.
+- **Sekmeler sürüklenerek sıralanır.** Beş sekme fareyle ya da odaktayken Alt ile ok tuşlarıyla yer değiştirir; sıra kullanıcı ayarında (`sarmal.sekmeSirasi`) saklanır ve panel sıranın ilk sekmesiyle açılır. "Panel Sekme Sırasını Sıfırla" komutu varsayılana döndürür.
+- **Girinti boyasının varsayılanı yeniden mor tül.** Editör her kademeyi içeri girdikçe hafifçe koyulaşan mor bir tülle boyar; gökkuşağı bantları `sarmal.girintiRenkleri` açılınca çizilir.
+- **Kanon bu düzeni yazar.** YUZ-3.1 ve YUZ-3.3 maddeleri tanıların asıl yüzünü Sinyaller, kullanıcının defterini Makinist olarak tanımlar.
+
+## 0.9.197 — 2026-10-28 (sekme geçişi eklentiyi beklemiyor)
+
+- **Sekmeler anında değişir.** Panel beş sekmenin içeriğini hazır tutar; sekmeye tıklayınca içerik eklentiye gidip gelen bir yanıt beklemeden değişir. Eklenti uzun bir denetim turundayken de sekme geçişi donmaz.
+- **Bir sekmenin içeriği başka sekmenin yerine çizilmez.** Eklentiden geç gelen bir güncelleme yalnız kendi sekmesine yazılır ve seçili sekmeyi değiştirmez. Önceki sürümde Makinist seçiliyken Yol Haritası ya da Mini Graf satırları görünebiliyordu.
+- **Seçili sekmenin tek kaynağı panel.** Bölüm komutları ile paneldeki tıklama aynı seçimi yazar ve ikisi ayrışmaz. Gizli sekmeler de güncel tutulur.
+- **Davranışı nöbetler koruyor.** Gerçek VS Code'da eklenti üç saniye kilitliyken yapılan altı sekme tıklamasının her birinde seçili sekme ile görünen içerik aynıdır; eski kusur geri konunca nöbet düşer.
+
+## 0.9.196 — 2026-10-28 (panel Founder'ın çalışma düzenine döndü)
+
+- **Panelde beş sekme ve geniş, alçak yerleşim.** Sekmeler Ray, Tren, Makinist, Gözlemler ve Ayarlar sırasıyla durur; Gözlemler ile Ayarlar şimdilik boş bölümdür. Sekme şeridi ve başlıklar küçüldü. Editörün altındaki geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur, dar panelde alt alta durur. Panel pencere boyuna göre sıkışıp küçük bir kutuya dönmez ve her açılış Ray sekmesiyle başlar.
+- **Ağaç çizgileri hep görünür.** Ray, Tren ve Makinist ağaçlarında girinti çizgisi her zaman ince ve tül morunda çizilir; fare bir satırın üzerine gelince o dalın çizgisi, gri açıklaması ve simgesi renklenir.
+- **Mini Grafta düğüme tıklamak dosyayı açar.** Klasik görünümdeki SVG bağları da yakalanır ve üç görünümün tıklaması dosyayı ilgili satırda açar, odak panelde kalır. Ray satırına tıklamak Mini Grafı baştan çizdirmez.
+- **Editördeki renkli girinti bantları yeniden varsayılan.** Yedi renkli bantlar 0.9.193'teki renk ve genişlikleriyle döndü; `sarmal.girintiRenkleri` kapatılınca tül derinlik çizilir.
+- **Onay kararı panelin içinde verilir.** Onaya tıklayınca dosya editörde Adımın satırında açılır; gerekçe kutusu ve onayla, şerhle onayla, reddet düğmeleri satırın altında, panelde belirir. Editörde kart açılmaz ve dosyanın üstü örtülmez.
+- **Açılış hızlandı.** Denetim turu dosyaları sırayla değil sınırlı eşzamanlılıkla okur ve tek dosya tanısı turun kendi ağacından üretilir; gerçek VS Code ölçümünde başlangıç turu 1178 ms'den 739 ms'ye indi. Performans kanalı turu okuma, ayrıştırma, denetim, yayın ve bölünmez blok aşamalarına böler.
+- **Bilinen açık.** Eklenti uzun bir denetim turundayken sekme geçişi gecikebilir; bu düzeltme bir sonraki sürümde gelir.
+
+## 0.9.195 — 2026-10-24 (panel dışarıdan değişen dosyada bayat kalmıyor)
+
+- **Editörün dışında değişen dosya panelde tazelenir.** Başka bir pencerede çalışan bir ajan, git ya da komut satırı bir `.sar` dosyasını değiştirdiğinde yol haritası eski Adım sayısını pencere yeniden yüklenene kadar gösterebiliyordu, çünkü tur açık belgeyi her zaman diskten önce okuyordu. Artık yalnız kaydedilmemiş değişiklik taşıyan açık belge bellekten okunur; öteki her dosyanın gerçeği disktir.
+- **Değişen proje de denetlenir.** Bir dosya olayından sonra koşan dar tur yalnız odaktaki projeye daralıyordu ve dosyası değişen kardeş projenin çapraz tanıları yeniden hesaplanmıyordu. Tur artık odağın yanında değişen dosyaların projelerini de denetler; hangi projenin değiştiği bilinmiyorsa tam koşar. Performans kanalı denetlenen bütün projeleri adlarıyla gösterir.
+- **Davranışı nöbetler koruyor.** İki kardeş kökü olan gerçek bir geçici dizinde koşan yeni sınama, onarımsız eklentide on testin yedisinde düşer ve onarımla onunu da geçer; her koruma mutasyonla kanıtlanmıştır.
+
+## 0.9.194 — 2026-10-23 (Sarmal kabı tek panel oldu, vitrin mağazaya hazırlandı)
+
+- **Sarmal kabı Ray, Tren ve Makinist sekmeli tek panel oldu.** Etkinlik çubuğundaki kap artık tek bir görünüm taşır. Ray sekmesi Yol Haritasını ve Mini Grafı, Tren sekmesi projede ilan edilmiş ajanları, geliştirmedeki Adımları ve son Koşum mührünü, Makinist sekmesi ise Onaylar, Hatırlatıcılar, Gözlemler ve Fikirleri tek ağaçta gösterir. Onay kartı yan sekmede açılır ve durum çubuğundaki sayaçlar Makinist sekmesine götürür.
+- **Mini Grafın üç görünümü var.** Klasik görünüm cam mercekli rayları, varsayılan Ağaç görünümü her düğümü kendi satırında, İlerleme görünümü ise her Katmanı tamamlanan ve toplam Adım sayısıyla bir kart olarak gösterir; seçim `sarmal.miniGrafGorunum` ayarında saklanır.
+- **Girinti boyasının varsayılanı tül derinlik oldu.** Her kademe tek renkte, içeri girdikçe hafifçe koyulaşan bir tül taşır; eski gökkuşağı bantları `sarmal.girintiRenkleri` ayarı açıldığında çizilir.
+- **Gömülü kanona düşüş sakin bir bilgi olarak görünür.** Durum çubuğundaki işaret uyarı simgesi ve sarı zemin taşımaz; sarı zemin yalnız tam denetimin atlandığı, çöktüğü ya da eksik koştuğu gerçek sorun hâlinde verilir.
+- **Mağaza vitrini seçilmiş adı ve açıklamayı taşır.** Görünen ad İngilizcede "Sarmal: Plan & Guardrails for AI Agents", Türkçede "Sarmal: Yapay Zekâ Ajanları için Plan ve Ray" olur ve paket mağaza için yazılmış ayrı bir İngilizce beniokuyla üretilir.
+- **İngilizce pencerede arayüz İngilizce konuşur ve dosyadaki Türkçe adları anar.** Bindirme söküldü ve dosya her dilde olduğu gibi Türkçe görünür; tanılar, balonlar, tamamlama ve MCP araçlarının çıktıları İngilizce kipte İngilizcedir.
+- **Kısıtlı modda simge kaybolmaz.** Güvenilmeyen klasörde Sarmal simgesi yerinde kalır, bir karşılama görünümü eklentinin neden sustuğunu söyler ve dil tanıma çalışmayı sürdürür.
+- **Kırık bir dosya denetim turunu susturmaz.** Söz dizimi kırık bir dosya varken öteki dosyaların tanıları korunur ve eksik koşan tur durum çubuğunda kırık dosyanın adı ve satırıyla bildirilir.
+- **Paketlenen motorun yeni tanıları geldi.** Profil tipi kişisel veri tanılarıyla birlikte doğdu; önek sicili ile düğüm kodu biçim tanısı, girinti ile yapının uyumunu ölçen gözlem ve yersiz teknoloji kaçışı uyarısı eklendi. Doğuşun kurduğu iki kanca artık kabuk gerektirmeyen Node betikleridir.
+
 ## 0.9.193 — 2026-09-20 (panel hiçbir Adımı düşürmüyor, Katman zemini iki kenarla yazılıyor)
 
 - **Yol haritası Blok dışında doğmuş plan düğümünü artık gösteriyor.** Panel kökleri yalnız Blok ile Fazdan seçiyordu; Blokunun kapanış parantezi dışına doğmuş bir Katmanın Adımı bu yüzden ne görünüyor ne sayılıyordu ve panelin sayacı komut satırı karnesinden bir eksik kalıyordu. Artık bir Blokun ve bir Fazın dışında karşılaşılan her plan düğümü kendi başına köktür. Yerleşimin doğru olup olmadığına motor hükmeder; panelin işi var olanı göstermektir.

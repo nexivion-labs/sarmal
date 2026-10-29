@@ -31,19 +31,41 @@ function geciciSar(ad: string, icerik: string): vscode.Uri {
   return vscode.Uri.file(tam);
 }
 
+/**
+ * Süitler TEK bir uzantı sürecini ve tek bir etkinleşmeyi paylaşır. Seçimi Ray'den başka bir
+ * bölüme alan sınama, işi bitince Ray'e döner; dönmezse sonraki süitler açılış hâlini (seçim
+ * Ray'de) değil bu sınamanın bıraktığı seçimi görür. VIT-K78-A10 süiti bu yüzden "seçim Ray'dedir"
+ * ölçümünde 'makinist' görüyordu (PNL-A03 ölçümü).
+ */
+async function rayeDon(): Promise<void> {
+  await vscode.commands.executeCommand("sarmal.bolum.ray");
+}
+
+/** Bölüm yuvasının sınama kapısı (yalnız sınama kipinde vardır). */
+interface SinamaKapisi {
+  olcumler(): { secili: string };
+  panelOlcumleri(): { sekme: string } | undefined;
+}
+
 /** Bir koşul sağlanana dek kısa aralıklarla bekler (tanı/aktivasyon asenkron). */
-async function bekle(kosul: () => boolean, msSon = 10_000): Promise<boolean> {
+async function bekle(kosul: () => boolean, msSon = 10_000, aralikMs = 200): Promise<boolean> {
   const bitis = Date.now() + msSon;
   while (Date.now() < bitis) {
     if (kosul()) return true;
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, aralikMs));
   }
   return kosul();
 }
 
 describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
-  after(() => {
+  // Bu süit tanıları VS Code'un Sorunlar deposundan okur. PNL-A22'den beri gönderim bir ayarla seçilir ve
+  // varsayılanı kapalıdır; süit açık hâli ölçer ve sonunda ayarı siler (kapalı hâl sorunlar-paneli.test.ts'te).
+  before(async () => {
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", true, vscode.ConfigurationTarget.Global);
+  });
+  after(async () => {
     for (const y of gecicilerSil) try { fs.unlinkSync(y); } catch { /* zaten yok */ }
+    await vscode.workspace.getConfiguration("sarmal").update("sorunlarPaneli", undefined, vscode.ConfigurationTarget.Global);
   });
 
   it("eklenti bulunur ve aktifleşir", async () => {
@@ -51,6 +73,16 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
     assert.ok(ext, `${EKLENTI} bulunamadı`);
     await ext!.activate();
     assert.ok(ext!.isActive, "eklenti aktifleşmedi");
+  });
+
+  it("açılışta seçim Ray'dedir: panelin sekmesi ve bölüm seçimi Ray'dir, önceki oturumun sekmesi okunmaz (PNL-A03)", async () => {
+    // Sürücü kalıcı bir kullanıcı veri dizini kullanır (calistir.ts · /tmp/svt-ud): önceki koşunun
+    // workspaceState'i bu açılışta da durur. Panel o durumdan sekme okumaz; her açılış Ray'le başlar.
+    const yuz = (await vscode.extensions.getExtension(EKLENTI)!.activate()) as { bolumSinamaKapisi?: SinamaKapisi };
+    const kapi = yuz.bolumSinamaKapisi;
+    assert.ok(kapi, "sınama kipinde nöbet kapısı verilmeliydi");
+    assert.strictEqual(kapi!.olcumler().secili, "ray", "bölüm yuvası açılışta Ray'de değil");
+    assert.strictEqual(kapi!.panelOlcumleri()?.sekme, "ray", "panel açılışta Ray sekmesinde değil");
   });
 
   it("14 sarmal.* komutu kayıtlı", async () => {
@@ -210,20 +242,28 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
   //   olduğunu ve canlı yolda bir kaydın kendi panelinde TAM BİR KEZ göründüğünü
   //   göremez; o ölçüm yalnız burada yapılabilir.
 
-  it("iki yeni görünüş gerçek VS Code'da kayıtlı: Hatırlatıcılar ve Bildirimler açılabiliyor", async () => {
+  it("Makinist ağacı gerçek VS Code'da kayıtlı: Hatırlatıcılar ve Gözlemler onun üst düğümleridir ve bölüm seçilince açılır", async () => {
     const ext = vscode.extensions.getExtension(EKLENTI);
     assert.ok(ext, `${EKLENTI} bulunamadı`);
     await ext!.activate();
     const komutlar = await vscode.commands.getCommands(true);
-    for (const gorunus of ["sarmalHatirlaticilar", "sarmalBildirimler"]) {
+    // Founder 2026-10-21 (dördüncü hüküm): kabın TEK görünümü sarmalPanel'dir; Makinist onun sekmesidir.
+    for (const gorunus of ["sarmalPanel"]) {
       assert.ok(
         komutlar.includes(`${gorunus}.focus`),
         `"${gorunus}" görünüşü gerçek VS Code'da kayıtlı değil; odak komutu üretilmemiş`,
       );
     }
-    // Kayıt bildirimde kalmış olamaz: görünüşler gerçekten açılabilmelidir.
-    await vscode.commands.executeCommand("sarmalHatirlaticilar.focus");
-    await vscode.commands.executeCommand("sarmalBildirimler.focus");
+    // Founder 2026-10-21: Hatırlatıcılar ve Gözlemler ayrı görünüm değildir.
+    for (const eski of ["sarmalHatirlaticilar", "sarmalBildirimler", "sarmalMakinist", "sarmalYolHaritasi", "sarmalMiniGraf", "sarmalTren"])
+      assert.ok(!komutlar.includes(`${eski}.focus`), `"${eski}" hâlâ ayrı görünüm olarak kayıtlı`);
+    // Bölüm komutu panelin Makinist sekmesini seçer ve kabı öne alır.
+    const kapi = ((await ext!.activate()) as { bolumSinamaKapisi?: SinamaKapisi }).bolumSinamaKapisi!;
+    await vscode.commands.executeCommand("sarmal.bolum.makinist");
+    assert.strictEqual(kapi.panelOlcumleri()?.sekme, "makinist", "bölüm komutu panelin Makinist sekmesini seçmedi");
+    await rayeDon();
+    assert.strictEqual(kapi.olcumler().secili, "ray");
+    assert.strictEqual(kapi.panelOlcumleri()?.sekme, "ray");
   });
 
   it("hatırlatıcı taşıyan .sar açılınca kayıt Hatırlatıcılar yüzeyinde TAM BİR KEZ görünür", async () => {
@@ -266,20 +306,40 @@ describe("Sarmal eklenti — gerçek VS Code entegrasyonu", () => {
   it("DAG döngüsü Problems'e düşer — cross-file döngü-denetimi (ORK-1.2)", async () => {
     // X↔Y karşılıklı bağımlı: tek-dosya `tanila` (şema) bunu GÖREMEZ; yalnız
     // denetleHepsi'nin cross-file DAG motoru yakalar → gerçek Problems kanıtı.
+    // Sarma sırası kanonundur (SNF-0): Blok Fazın içinde büyür. Fikstür eskiden
+    // Fazı Blokun içine koyuyordu; motor artık bunu izinsiz sarma sayar ve DAG
+    // bulgusuna hiç ulaşılmaz (MGZ-A01 ölçümü).
+    // Fikstür bir VARLIĞIN içine yazılır: korpus kökünde giriş dosyası yoktur ve
+    // proje denetimi orada yalnız "giriş dosyası yok" kuralını verip DAG'a hiç
+    // inmez (CLI ile aynı davranış). `calisma_alani/acik_arac` kendi anadiziniyle
+    // ilan edilmiş bir varlıktır. Tam tur korpus kökünü denetlediği için orada da
+    // DAG'a inilmez; DAG, olay turunun odaktaki varlığa daraldığı yolda koşar
+    // (PRF-A06). Kullanıcının gerçek dizisi kurulur: dosya editörde açılır (odak
+    // o varlığa geçer) ve dosya diskte değişir (olay turu).
     const uri = geciciSar(
-      "_gecici-dongu.sar",
-      'Blok( kod: GBLK, ne: "döngü testi" ) {\n' +
-        '  Faz( kod: GFZ, ad: "f" ) {\n' +
+      path.join("calisma_alani", "acik_arac", "_gecici-dongu.sar"),
+      'Faz( kod: GFZ, ad: "f" ) {\n' +
+        '  Blok( kod: GBLK, ne: "döngü testi" ) {\n' +
         '    Katman( kod: GKT, ad: "k" ) {\n' +
         '      Adım( kod: GX, bağımlı: GY, ne: "x" )\n' +
         '      Adım( kod: GY, bağımlı: GX, ne: "y — DÖNGÜ" )\n' +
         "    }\n  }\n}\n",
     );
     // geciciSar diske yazdı → FileSystemWatcher denetleHepsi'yi tetikler (cross-file).
-    await vscode.workspace.openTextDocument(uri);
+    const belge = await vscode.workspace.openTextDocument(uri);
+    await vscode.window.showTextDocument(belge);
+    await new Promise((r) => setTimeout(r, 1_000));
+    fs.writeFileSync(uri.fsPath, belge.getText() + "\n", "utf8");
+    // ⏱️ PNL-A14: korpus kökü bir varlık değildir; daralan olay turunun bulduğu
+    // döngü tanısı, önceki sınamaların disk olaylarından gelen bir sonraki TAM
+    // turda (korpus kökü DAG'a inmez) yeniden düşer. Tanı yalnız iki yayın
+    // arasındaki pencerede görünür ve turlar hızlandıkça pencere daralır (ölçüm:
+    // 030bd86'da 428–518 ms, PNL-A14 sonrası 167–188 ms). 200 ms'lik yoklama
+    // pencereyi ara sıra kaçırıyordu; ölçüt aynıdır, yalnız yoklama sıklaşır.
     const dustu = await bekle(
       () => vscode.languages.getDiagnostics(uri).some((t) => String(t.code) === "döngüsel-bağımlılık"),
       15_000,
+      10,
     );
     const kodlar = vscode.languages.getDiagnostics(uri).map((t) => String(t.code));
     assert.ok(dustu, `döngüsel-bağımlılık tanısı Problems'e düşmedi; gelen kodlar: [${kodlar.join(", ")}]`);

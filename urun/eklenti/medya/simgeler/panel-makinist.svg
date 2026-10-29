@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Makinist bölümü (insan): şapkalı makinist. Başlık eylemi simgesi de bu dosyadan türer. -->
+  <path d="M7.2 8.6 C7.6 4.6 16.4 4.6 16.8 8.6 Z"/>
+  <path d="M6.2 8.6 h12.6"/>
+  <path d="M8.6 9.4 a3.4 3.4 0 0 0 6.8 0"/>
+  <path d="M5 21.2 a7 6.2 0 0 1 14 0"/>
+  <path d="M12 15.6 v2.4"/>
+</svg>

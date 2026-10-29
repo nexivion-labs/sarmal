@@ -20,6 +20,18 @@ import { tabanKanonaDusuldu, tabanKanonBulundu } from "./taban-kanon.ts";
  *  enum bekçisine girerse dış projede sahte geçersiz-enum doğar (siniflamaYukle ikizi). */
 export const GOMULU_SNF = siniflamaNormalize(GOMULU_KAYIT as unknown as Siniflama);
 
+/**
+ * Makinist ağacının üç ağaç kaynağının (Hatırlatıcılar · Gözlemler · Fikirler) KENDİ görünüm
+ * durumu. Founder 2026-10-21: bu üç panel ayrı görünüm olmaktan çıktı ve Makinist ağacının
+ * üst düğümleri oldu; sağlayıcılar bugüne dek `TreeView` üzerine yazdıkları açıklama, boş-durum
+ * cümlesi ve rozeti bu hafif nesneye yazar, Makinist ağacı onu üst düğümün satırına çevirir.
+ */
+export interface YuzDurumu {
+  description?: string;
+  message?: string;
+  badge?: { value: number; tooltip: string } | undefined;
+}
+
 /** Bir widget tipinin eğitici açıklaması (rehber.json). */
 export interface RehberGiris {
   tanim: string;
@@ -173,6 +185,7 @@ function jsonYukle(yol: string): unknown {
 //   de yaşamaz (YUZ-4.1 — renk yalnız arac/simge-uret.mjs çizelgesindedir).
 
 import { satirSvgVaryanti, type AnlamRengi, type SatirSimgesi } from "./simge-cizelgesi.ts";
+import { varlikSimgesi } from "./yolharitasi-cekirdek.ts";
 
 /** Bir satır simgesinin iki-tema iconPath çifti. Eklenti kökü bilinmiyorsa
  *  (saf birim sınaması, köksüz kurulum) satır SİMGESİZ kalır — uydurma
@@ -186,4 +199,15 @@ export function satirIkonu(
     light: vscode.Uri.joinPath(kok, satirSvgVaryanti(ad, anlam, "acik")),
     dark:  vscode.Uri.joinPath(kok, satirSvgVaryanti(ad, anlam, "koyu")),
   };
+}
+
+/**
+ * Proje kimliği taşıyan satırın simgesi (PNL-A25): Yol Haritasının varlık satırıyla aynı kuraldan,
+ * kökün tipinden okunur (`varlikSimgesi`). Proje satırı seferdir; çatı simgesi (istasyon) yalnız
+ * çalışma alanının kendi satırında görünür. Satır başına elle simge seçilmez.
+ */
+export function projeSatiriIkonu(
+  kok: vscode.Uri | undefined, proje: { readonly tip?: string }, anlam: AnlamRengi = "duz",
+): { light: vscode.Uri; dark: vscode.Uri } | undefined {
+  return satirIkonu(kok, varlikSimgesi(proje.tip ?? "Proje"), anlam);
 }

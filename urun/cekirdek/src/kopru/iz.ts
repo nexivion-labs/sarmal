@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { appendFileSync, mkdirSync, statSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 import type { EtmenÇağır, EtmenÇağrı } from "../dongu.ts";
 
 /** Bir trace satırı (JSONL — SZL-ETMEN-CIKTI'nin izleme ikizi). */
@@ -81,4 +81,60 @@ export function izliEtmenYap(ic: EtmenÇağır, sec: IzSecenek): EtmenÇağır {
     }
     return yanıt;
   };
+}
+
+// ── HST-MTR-A04 · YÜRÜTÜCÜ İZİ ───────────────────────────────────────────────
+//   Yukarıdaki sarmalayıcı yalnız motorun kendi döngüsü bir model çağırdığında
+//   yazar. İşi dış bir yürütücü (MCP istemcisi, ör. Claude Code) yaptığında da
+//   panel Adımın altında bir satır görsün diye MCP sunucusu iki temas noktasında
+//   (sef ve durum-guncelle) bu hafif satırı aynı klasöre ekler. Satır yalnız
+//   çağrının kendisidir: ham istem ve yanıt toplanmaz (Adım sınırı); dosya yolu,
+//   kullanıcı adı ya da makine bilgisi de yazılmaz. İz kendiliğinden açılmaz:
+//   açık hâlde `sef` çalışma alanına yazar ve aracın salt okunur beyanı bu yüzden
+//   yalnız iz kapalıyken doğrudur (EKL-F6-A03 nöbeti beyanı davranışla ölçer).
+
+/** Yürütücü teması satırı (JSONL). `adım` panelin gruplama anahtarıdır ve IzSatiri ile aynı protokol alanıdır. */
+export interface YurutucuIziSatiri {
+  zaman: string;
+  adım: string;
+  rol: typeof YURUTUCU_ROLU;
+  /** Temas eden MCP aracı. */
+  arac: "sef" | "durum-guncelle";
+  /** durum-guncelle: Adıma yazılan yeni durum. */
+  durum?: string;
+  /** MCP istemcisinin kendini tanıttığı yazılım adı (initialize · clientInfo.name). */
+  yurutucu?: string;
+}
+
+/** Yürütücü satırının rolü — panel satırı bu değerle tanır. */
+export const YURUTUCU_ROLU = "yurutucu";
+
+/** İzi açan ortam değişkeni (MCP sunucusunun ayarında, ör. `.mcp.json` içindeki `env`). */
+export const YURUTUCU_IZI_ORTAM_DEGISKENI = "SARMAL_YURUTUCU_IZI";
+const ACIK_DEGERLER: ReadonlySet<string> = new Set(["1", "true", "on", "acik", "açık", "açik"]);
+
+/** İz yalnız ortam değişkeni açık bir değer taşıdığında yazılır; boş, `0` ya da `kapali` kapalıdır. */
+export function yurutucuIziAcik(ortam: Readonly<Record<string, string | undefined>> = process.env): boolean {
+  return ACIK_DEGERLER.has((ortam[YURUTUCU_IZI_ORTAM_DEGISKENI] ?? "").trim().toLowerCase());
+}
+
+/** İstemcinin yazılım adı yalnız sade bir ürün adıysa kayda girer; yol, e-posta ya da uzun metin düşer. */
+export function yurutucuAdi(ham: unknown): string | undefined {
+  return typeof ham === "string" && /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$/.test(ham) ? ham : undefined;
+}
+
+/** Sunucu oturumunun iz dosyası adı (bir kez kurulur; panel `*.jsonl` dinler). */
+export function yurutucuIziDosyaAdi(baslangic = new Date()): string {
+  return `yurutucu-${baslangic.toISOString().replace(/[:.]/g, "-")}.jsonl`;
+}
+
+/** Satırı `<dizin>/.sarmal/trace/<dosya>` dosyasına ekler. İzleme gözlemcidir: yazım hatası çağrıyı kırmaz. */
+export function yurutucuIziYaz(dizin: string, dosya: string, satir: YurutucuIziSatiri): void {
+  try {
+    const klasor = join(dizin, ".sarmal", "trace");
+    mkdirSync(klasor, { recursive: true });
+    appendFileSync(join(klasor, dosya), JSON.stringify(satir) + "\n", "utf8");
+  } catch (e) {
+    console.error(`📜 iz: yürütücü izi yazılamadı (çağrı sürüyor): ${(e as Error).message}`);
+  }
 }

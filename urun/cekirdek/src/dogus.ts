@@ -34,7 +34,8 @@
 //   doldurur — doğan her dosya kendi doldurma öğretisini içinde taşır (YAS-3.4).
 //   Dolu-dizin sözleşmesi (YUZ-1.3 ruhu): var olan dosya ASLA ezilmez, atlanır
 //   ve rapor ne yapılmadığını açıkça söyler. Tek istisna yok sayma dosyasıdır ve
-//   orada da silme yoktur: yalnız eksik istisna satırı sona eklenir.
+//   orada da silme yoktur: yalnız eksik satır, yani küresel kuralın istisnası ya
+//   da motorun iz klasörü, sona eklenir.
 //
 //   İki katman AYRIK (iskeletci.ts deseni):
 //     dogusManifesti()  → saf; diske dokunmaz (test edilebilir)
@@ -45,7 +46,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dilBaglami } from "./dil-baglami.ts";   // DPK-A03: ajan dil bağlamı — kanondan üretilir
-import { yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri } from "./yonerge-ikizi.ts";   // BKM-DNT-A15: küresel yok sayma tuzağının desen listesi TEK kaynaktadır
+import { dilHanesi, type CiktiDili } from "./cevir.ts";   // MGZ-A11: rapor ve sorunun İngilizce hanesi
+import { yokSaymaIstisnaSatirlari, yokSaymaIstisnasiEksikleri, izKlasoruSatiriEksigi } from "./yonerge-ikizi.ts";   // BKM-DNT-A15: küresel yok sayma tuzağının desen listesi TEK kaynaktadır
 
 const DOGUS_SABLON_KOK = fileURLToPath(new URL("../../../ogreti/sablon/dogus/", import.meta.url));
 
@@ -106,9 +108,9 @@ export interface DogusDosya {
    * kendi `.gitignore` dosyası varken paketin sessizce atlaması, küresel kuralın
    * `*.sar` desenini yok saydığı bir makinede projenin bütün hafızasını depodan
    * uzak tutar. Bu yüzden o dosya için ATLAMAK yerine GENİŞLETMEK yazılmıştır:
-   * işlev var olan metni alır, yalnız EKSİK istisna satırlarını sona ekler ve
-   * hiçbir mevcut satırı silmez; eklenecek bir şey yoksa `undefined` döner ve
-   * dosyaya hiç dokunulmaz.
+   * işlev var olan metni alır, yalnız EKSİK satırları (istisnalar ve motorun iz
+   * klasörü) sona ekler ve hiçbir mevcut satırı silmez; eklenecek bir şey yoksa
+   * `undefined` döner ve dosyaya hiç dokunulmaz.
    */
   genislet?: (mevcut: string) => string | undefined;
 }
@@ -157,7 +159,17 @@ export function dogusTuruCoz(ham: string | undefined): DogusTuru | undefined {
 }
 
 /** Tür sorusunun metni — CLI ile MCP aynı sesi verir (YUZ-1.2 tek kaynak). */
-export function dogusSorusu(): string {
+export function dogusSorusu(dil: CiktiDili = "tr"): string {
+  if (dil === "en") {
+    return [
+      "❓ What should be born? The birth command knows two tiers:",
+      "   ① one project    — the target directory becomes the Proje root itself: anadizin, status handover, learning shelf and first plan.",
+      "   ② workspace      — the target directory becomes the ÇalışmaAlanı root; the first project is born beneath it with its own root",
+      "                      (MIM-1.1: a workspace wraps at least one independent Proje root and does not merge identities).",
+      "   The choice is given on the command line with --tur proje | --tur calisma-alani, and in the MCP call with the tur field;",
+      "   in a workspace the first project's name is chosen with --proje <ad> (MCP: proje); when omitted it is " + VARSAYILAN_ILK_PROJE + ".",
+    ].join("\n");
+  }
   return [
     "❓ Ne doğsun? Doğuş komutu iki kademe bilir:",
     "   ① tek proje      — hedef dizin doğrudan Proje kökü olur: anadizin, durum devri, öğrenme rafı ve ilk plan.",
@@ -187,7 +199,8 @@ function sablonDoldur(dosya: string, degerler: Readonly<Record<string, string>>)
  * ayarlara dokunulmaz (Adım sınırı).
  *
  *   ① yok sayma dosyası — küresel kural `*.sar` desenini yok sayıyorsa projenin
- *      bütün hafızası depoya hiç girmez; istisna bu dosyada yaşar.
+ *      bütün hafızası depoya hiç girmez; istisna bu dosyada yaşar. Motorun iz
+ *      klasörü de burada yok sayılır, çünkü döngünün izi ham istem taşır.
  *   ② yürütücü ayarı — doğan kök Sarmal sunucusunu SARMAL_KOK ortam değişkeninden
  *      çözer ve ajan ilk turdan itibaren ürünün araçlarını kullanır.
  *   ③ kapı kancaları — ön kapı yeni bir giriş ilanının elle yazılmasını
@@ -207,22 +220,48 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
     KOKDEGISKENI: SARMAL_KOK_DEGISKENI,
   };
   const yoksayma = sablonDoldur("yoksayma.txt", d);
+  // KANCALAR NODE İLE YAZILIR (HTR-DOGUS-WINDOWS-KANCALARI · 2026-10-22). Kabuk
+  // betikleri Windows'ta Git Bash kurulu değilse hiç koşmuyor ve kök sessizce
+  // kapısız kalıyordu. Kanca ayarı betikleri artık kabuksuz biçimde (`command:
+  // node`, `args: [yol]`) çağırır; yolu yürütücü kendisi yerine koyar, dolayısıyla
+  // ayar macOS'ta, Linux'ta ve Windows'ta aynı metindir. Kabuk sürümleri doğan
+  // köke yazılmaz, çünkü bağlanmamış ikinci bir uygulama ilk düzenlemede
+  // ayrışır; onlar şablon rafında POSIX başvuru sürümü olarak yaşar.
   return [
     {
       yol: ".gitignore",
       icerik: yoksayma,
       genislet: (mevcut) => {
-        const eksikler = yokSaymaIstisnasiEksikleri(mevcut);
-        if (eksikler.length === 0) return undefined;
+        // Eksikler iki blokta eklenir ve istisna bloğu en sonda kalır: şablonda
+        // olduğu gibi küresel kuralın istisnası dosyanın son sözüdür.
+        const izKlasoru = izKlasoruSatiriEksigi(mevcut);
+        const istisnalar = yokSaymaIstisnasiEksikleri(mevcut);
+        if (izKlasoru.length === 0 && istisnalar.length === 0) return undefined;
         const ayrac = mevcut.endsWith("\n") || mevcut.length === 0 ? "" : "\n";
-        return `${mevcut}${ayrac}\n${YOKSAYMA_ISTISNA_BASLIGI}\n${eksikler.join("\n")}\n`;
+        const blok = (baslik: string, satirlar: readonly string[]): string =>
+          satirlar.length === 0 ? "" : `\n${baslik}\n${satirlar.join("\n")}\n`;
+        return `${mevcut}${ayrac}${blok(IZ_KLASORU_BASLIGI, izKlasoru)}${blok(YOKSAYMA_ISTISNA_BASLIGI, istisnalar)}`;
       },
     },
     { yol: ".mcp.json",                        icerik: sablonDoldur("yurutucu_ayari.json", d) },
     { yol: ".claude/settings.json",            icerik: sablonDoldur("kanca_ayari.json", d) },
-    { yol: ".claude/kanca/dogus-kilidi.sh",    icerik: sablonDoldur("dogus_kilidi.sh", d) },
-    { yol: ".claude/kanca/denetim-kapisi.sh",  icerik: sablonDoldur("denetim_kapisi.sh", d) },
+    { yol: ".claude/kanca/dogus-kilidi.mjs",   icerik: sablonDoldur("dogus_kilidi.mjs", d) },
+    { yol: ".claude/kanca/denetim-kapisi.mjs", icerik: sablonDoldur("denetim_kapisi.mjs", d) },
     { yol: "oz/siniflama/isaretci.json",       icerik: sablonDoldur("kanon_isaretcisi.json", d) },
+  ];
+}
+
+/**
+ * KANCALARIN KABUK SÜRÜMLERİ (saf · doğuş paketine girmez). Node kancalarının
+ * POSIX başvuru karşılıklarıdır: daha önce doğmuş ve kanca ayarı hâlâ `sh`
+ * çağıran köklerin elle tazelenmesine ve iki sürümün eşlik nöbetine hizmet eder.
+ * Yer tutucular doğan kökün kancalarıyla aynı değerlerle doldurulur.
+ */
+export function kabukKancalari(ad: string, tarih: string): DogusDosya[] {
+  const d = { AD: ad, TARIH: tarih, MOTOR: TASINABILIR_MOTOR_YOLU, KOKDEGISKENI: SARMAL_KOK_DEGISKENI };
+  return [
+    { yol: ".claude/kanca/dogus-kilidi.sh",   icerik: sablonDoldur("dogus_kilidi.sh", d) },
+    { yol: ".claude/kanca/denetim-kapisi.sh", icerik: sablonDoldur("denetim_kapisi.sh", d) },
   ];
 }
 
@@ -233,6 +272,14 @@ function kokKapilari(ad: string, tarih: string): DogusDosya[] {
  */
 const YOKSAYMA_ISTISNA_BASLIGI =
   "# ── Sarmal doğuş paketi: küresel yok sayma kuralının istisnası (silme) ──";
+
+/**
+ * Var olan bir yok sayma dosyasına eklenen iz klasörü satırının başlığı. Satır
+ * kullanıcının dosyasına sonradan girdiği için gerekçesini yanında taşır;
+ * gerekçesiz bir satır ilk temizlikte silinir ve ham istem yeniden açığa çıkar.
+ */
+const IZ_KLASORU_BASLIGI =
+  "# ── Sarmal doğuş paketi: motorun koşu izleri (ham istem taşır, depoya girmez) ──";
 
 /** Tek projenin paketi (saf). Manifest DPK-A01 Founder onaylıdır. */
 function projePaketi(ad: string, tarih: string): DogusDosya[] {
@@ -251,7 +298,7 @@ function projePaketi(ad: string, tarih: string): DogusDosya[] {
     { yol: "is/durum/durum_devir.sar",       icerik: sablonDoldur("durum_devir.sar", d) },
     { yol: "ogreti/ogrenme/dersler.sar",     icerik: sablonDoldur("dersler.sar", d) },
     { yol: "ogreti/ogrenme/geribildirim.sar", icerik: sablonDoldur("geribildirim.sar", d) },
-    { yol: "is/plan/ilk_plan.sar",           icerik: sablonDoldur("ilk_plan.sar", d) },
+    { yol: "is/plan/faz/1_dogus.sar",        icerik: sablonDoldur("1_dogus.sar", d) },   // MIM-1.2 Faz dosyası düzeni (KPS-SIR-A03)
     { yol: "AGENTS.md",                      icerik: yonerge },
     { yol: "CLAUDE.md",                      icerik: yonerge },
     ...kokKapilari(ad, tarih),
@@ -316,37 +363,56 @@ export function dogusYaz(hedefKok: string, ad?: string, tarih?: string, tur: Dog
 }
 
 /** İnsan/ajan-yüzlü doğuş raporu — CLI ve MCP aynı sesi verir (YUZ-1.2 tek kaynak). */
-export function dogusRaporu(s: DogusSonuc, hedef: string): string {
+export function dogusRaporu(s: DogusSonuc, hedef: string, dil: CiktiDili = "tr"): string {
+  // MGZ-A11: `dil` yalnız raporun düzyazısını seçer; yollar, kodlar ve dosya adları dosyadaki gibidir.
+  const t = (tr: string, en: string): string => dilHanesi({ tr, en }, dil);
   const satirlar: string[] = [];
   if (s.tur === "calisma-alani") {
-    satirlar.push(`🎁 DOĞUŞ PAKETİ — çalışma alanı "${s.ad}" (kod kısaltması: CAL-${s.kod}) ve altında ilk proje "${s.proje}" → ${hedef}`);
+    satirlar.push(t(`🎁 DOĞUŞ PAKETİ — çalışma alanı "${s.ad}" (kod kısaltması: CAL-${s.kod}) ve altında ilk proje "${s.proje}" → ${hedef}`,
+      `🎁 BIRTH PACKAGE — workspace "${s.ad}" (\`kod\` abbreviation: CAL-${s.kod}) with the first project "${s.proje}" beneath it → ${hedef}`));
   } else {
-    satirlar.push(`🎁 DOĞUŞ PAKETİ — "${s.ad}" (kod kısaltması: ${s.kod}) → ${hedef}`);
+    satirlar.push(t(`🎁 DOĞUŞ PAKETİ — "${s.ad}" (kod kısaltması: ${s.kod}) → ${hedef}`, `🎁 BIRTH PACKAGE — "${s.ad}" (\`kod\` abbreviation: ${s.kod}) → ${hedef}`));
   }
   if (s.yazilan.length) {
-    satirlar.push("", "🌱 Doğan dosyalar:");
+    satirlar.push("", t("🌱 Doğan dosyalar:", "🌱 Files born:"));
     for (const y of s.yazilan) satirlar.push(`   + ${y}`);
   }
   if (s.genisletilen.length) {
-    satirlar.push("", "🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik istisna eklendi):");
+    satirlar.push("", t("🛡️ Genişletilenler (vardı — hiçbir satır silinmedi, yalnız eksik satır eklendi):",
+      "🛡️ Extended (already present — no line was deleted, only missing lines were appended):"));
     for (const y of s.genisletilen) satirlar.push(`   ~ ${y}`);
   }
   if (s.atlanan.length) {
-    satirlar.push("", "🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):");
+    satirlar.push("", t("🛡️ Dokunulmayanlar (zaten vardı — mevcut kayıt sahibinindir, ezilmez):",
+      "🛡️ Left untouched (already present — the existing record belongs to its owner and is not overwritten):"));
     for (const y of s.atlanan) satirlar.push(`   = ${y}`);
   }
-  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/ilk_plan.sar` : "is/plan/ilk_plan.sar";
+  const planYolu = s.tur === "calisma-alani" ? `${dogusDosyaAdi(s.proje ?? VARSAYILAN_ILK_PROJE)}/is/plan/faz/1_dogus.sar` : "is/plan/faz/1_dogus.sar";
   satirlar.push(
     "",
     s.yazilan.length || s.genisletilen.length
-      ? `🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`
-      : "📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.");
+      ? t(`🧭 Sıradaki iş: ${planYolu} içindeki kuruluş Adımı (mimari diyalog). Doğrulama: sarmal denetle <dizin> — sıfır hata beklenir.`,
+        `🧭 Next work: the founding Adım in ${planYolu} (the architecture dialogue). Verification: sarmal denetle <dizin> — zero errors are expected.`)
+      : t("📪 Yazılacak yeni dosya yoktu — paket daha önce kurulmuş görünüyor.", "📪 There was no new file to write — the package appears to be installed already."));
+  // BKM-OLG-A11 (MIM-1.4): Kuruluş Katmanının teknoloji kaçışı yalnız doğuş anı içindir;
+  // rapor bunu açıkça söyler ki ajan kaçışı kalıcı bir üçüncü yol gibi kopyalamasın.
+  if (s.yazilan.some((y) => y.endsWith("is/plan/faz/1_dogus.sar"))) {
+    satirlar.push(
+      t("⏳ Kuruluş Katmanındaki teknolojiBağımsız satırı GEÇİCİDİR: yalnız projede henüz hiçbir Teknoloji ve Takım yokken meşrudur.",
+        "⏳ The teknolojiBağımsız line in the founding Katman is TEMPORARY: it is legitimate only while the project has no Teknoloji and no Takım yet."),
+      t("   İlk Teknoloji ya da Takım ilan edilince motor onu yersiz-teknoloji-kaçışı uyarısıyla bildirir; kuruluş Adımı kapanmadan satır silinir ve Katman takım: kenarıyla bağlanır. Yeni Katmanlara kaçış kopyalanmaz; işin türü AltKatmanın departman: alanında yazılır.",
+        "   Once the first Teknoloji or Takım is declared, the engine reports the line with the yersiz-teknoloji-kaçışı warning; the line is deleted before the founding Adım closes and the Katman binds with the takım: edge. The escape is not copied into new Katman nodes; the kind of work is written in the AltKatman's departman: field."));
+  }
   if (s.yazilan.length) {
     satirlar.push(
-      `🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
-      `   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.sh ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
-      `   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
-      `   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`);
+      t(`🚪 Kökün kapıları kuruldu: yok sayma istisnası (${yokSaymaIstisnaSatirlari().join(" · ")}), yürütücü ayarı, yönerge ikizi, doğuş kilidi ile denetim kancası ve kanon işaretçisi.`,
+        `🚪 The root's gates were installed: the ignore exception (${yokSaymaIstisnaSatirlari().join(" · ")}), the executor setting, the instruction twin, the birth lock with the audit hook, and the canon pointer.`),
+      t(`   Kapıların adresi TAŞINABİLİR yazıldı: .mcp.json, .claude/kanca/denetim-kapisi.mjs ve oz/siniflama/isaretci.json motorun yolunu ${SARMAL_KOK_ONEKI} ortam değişkeninden okur ve varsayılan taşımaz.`,
+        `   The gates' address was written PORTABLY: .mcp.json, .claude/kanca/denetim-kapisi.mjs and oz/siniflama/isaretci.json read the engine path from the \`${SARMAL_KOK_ONEKI}\` environment variable and carry no default.`),
+      t(`   Bu yüzden ağaç başka bir makineye taşındığında hiçbir yol elle güncellenmez; yapılacak tek şey o makinede değişkeni tanımlamaktır: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`,
+        `   So when the tree moves to another machine no path is edited by hand; the only thing to do is define the variable on that machine: export ${SARMAL_KOK_DEGISKENI}=${SARMAL_KURULUM_KOKU}`),
+      t(`   Değişken tanımsızken istemci kaydı yine yükler ve eksik değişkeni adıyla bildirir; denetim kancası da sessizce çekilmez, motoru bulamadığını ve onarımı söyler.`,
+        `   While the variable is undefined the client still loads the registration and names the missing variable; the audit hook does not withdraw silently either — it says it cannot find the engine and names the repair.`));
   }
   return satirlar.join("\n");
 }

@@ -35,7 +35,7 @@
 
 import * as vscode from "vscode";
 import {
-  GORUNUS_FIKIRLER, panelRozeti, projeyeGrupla, type ProjeKumesi,
+  panelRozeti, projeyeGrupla, type ProjeKumesi,
 } from "./yuzey-cekirdek.ts";
 import {
   YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, kaydaGitBasligi, fikirRozetIpucu,
@@ -44,7 +44,8 @@ import {
 import {
   fikirGorunumu, fikirParmakIzi, fikirPanoMetni, type FikirKaydi,
 } from "./fikir-cekirdek.ts";
-import { satirIkonu } from "./ortak.ts";
+import { projeSatiriIkonu, satirIkonu, type YuzDurumu } from "./ortak.ts";
+import { adaGoreSay, type ProjePayi } from "./kapsam-sayaci.ts";
 import type { SatirSimgesi } from "./simge-cizelgesi.ts";
 
 /**
@@ -57,9 +58,8 @@ import type { SatirSimgesi } from "./simge-cizelgesi.ts";
  */
 const KAYIT_SIMGESI: SatirSimgesi = "fikir";
 
-/** Proje satırının işareti — Fikir hanesinin kendi ampulü, komşu panellerin
- *  yer imi ve kutu işaretlerinden bakışta ayrılır. */
-const PROJE_SIMGESI: SatirSimgesi = "fikir";
+// PNL-A25: Proje satırının simgesi panelin kendi seçimi değildir; Yol Haritasının varlık simgesi
+// kuralından (`projeSatiriIkonu` · `varlikSimgesi`) okunur. Dosya ve kayıt satırları kendi simgelerini taşır.
 
 /**
  * Panel düğümü. AĞAÇ İKİ KADEMEDİR: Proje → Fikir.
@@ -99,7 +99,12 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
     return this.kayitlar.length;
   }
 
-  gorunum?: vscode.TreeView<PanelOge>;
+  /** Kayıtların proje kırılımı (PNL-A08): çatı kapsamında durum çubuğunun ipucunda dökülür. */
+  projePaylari(): ProjePayi[] {
+    return adaGoreSay(this.kayitlar.map((k) => k.proje.ad));
+  }
+
+  gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
   eklentiKoku?: vscode.Uri;
 
@@ -179,7 +184,7 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
       item.description = fikirProjeAciklamasi(adet);
       item.tooltip = new vscode.MarkdownString(
         fikirProjeIpucu(oge.kume.proje.ad, oge.kume.proje.kod, adet));
-      item.iconPath = satirIkonu(this.eklentiKoku, PROJE_SIMGESI, "bilgi");
+      item.iconPath = projeSatiriIkonu(this.eklentiKoku, oge.kume.proje, "bilgi");
       item.contextValue = "sarmalFikirProjesi";
       return item;
     }
@@ -235,12 +240,7 @@ export class Fikirler implements vscode.TreeDataProvider<PanelOge> {
 export function fikirlerKaydi(context: vscode.ExtensionContext): Fikirler {
   const saglayici = new Fikirler();
   saglayici.simgeKaynaginiBagla(context.extensionUri);
-  const gorunum = vscode.window.createTreeView<PanelOge>(GORUNUS_FIKIRLER, {
-    treeDataProvider: saglayici,
-  });
-  gorunum.description = YUZEY_ACIKLAMALARI.fikirler;
-  gorunum.message = YUZEY_BOS_DURUM.fikirler;
-  saglayici.gorunum = gorunum;
-  context.subscriptions.push(gorunum);
+  // Founder 2026-10-21: ayrı görünüm yoktur; sağlayıcı Makinist ağacının bir üst düğümüdür (makinist.ts).
+  saglayici.gorunum = { description: YUZEY_ACIKLAMALARI.fikirler, message: YUZEY_BOS_DURUM.fikirler };
   return saglayici;
 }

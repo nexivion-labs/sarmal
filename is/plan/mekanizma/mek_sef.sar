@@ -219,11 +219,11 @@
   bırakmıştır; bu ikame ORK-6 kararının hükmüdür.
 
   ## Sonuç
-  ✅ Kabul: sekiz Sözleşme denetle-temiz tanınır; L1 yasalarına bağlıdır. RAY-3
+  ✅ Kabul: dokuz Sözleşme denetle-temiz tanınır; L1 yasalarına bağlıdır. RAY-3
   motoru bunları okuyup Etmen çağrılarını bu şekle zorlar — sözleşmesiz uç kalmaz.
 |<--
 Mekanizma( kod: MEK-SEF, faz: "RAY-3", bağımlı: [ ORK-7 ],
-           ne: "🔩 ŞEF orkestrasyon altyapısı — sekiz runtime sözleşmesi: Etmen çıktısı, bağlam paketi, gerekçe, durak, araç talebi, araç sonucu, müzakere ve tasarım" ) {
+           ne: "🔩 ŞEF orkestrasyon altyapısı — dokuz runtime sözleşmesi: Etmen çıktısı, bağlam paketi, gerekçe, durak, araç talebi, araç sonucu, müzakere, tasarım ve kurtarma" ) {
 
   /// Etmen → ŞEF çıktısı. Üretici Etmen bir Adım'ı işledikten sonra bunu döndürür.
   Sözleşme( kod: SZL-ETMEN-CIKTI, sürüm: "1.0" ) {

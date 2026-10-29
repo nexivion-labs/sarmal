@@ -706,12 +706,24 @@ export function tokenSay(metin: string): number {
   return Math.ceil(metin.length / 4);
 }
 
-const GUARD = [
-  "## ⚠️ Kanıt & Halüsinasyon Koruması",
-  "- Emin değilsen açıkça söyle; varsayımlarını listele.",
-  "- Uydurma API/imza/config KULLANMA; belirsizliği işaretle.",
-  "- Her iddiayı kanıtla (dosya:satır); kanıtsız iddia = halüsinasyon.",
-].join("\n");
+/** Brifing şablonunun dili (MGZ-A11): Türkçe hane kanonik yüzdür; İngilizce hane
+ *  şablonun düzyazısını çevirir, Adımdan ve kartlardan gelen dosya metnini çevirmez. */
+type BrifingDili = "tr" | "en";
+
+const GUARD_HANELERI: Readonly<Record<BrifingDili, string>> = {
+  tr: [
+    "## ⚠️ Kanıt & Halüsinasyon Koruması",
+    "- Emin değilsen açıkça söyle; varsayımlarını listele.",
+    "- Uydurma API/imza/config KULLANMA; belirsizliği işaretle.",
+    "- Her iddiayı kanıtla (dosya:satır); kanıtsız iddia = halüsinasyon.",
+  ].join("\n"),
+  en: [
+    "## ⚠️ Evidence & Hallucination Guard",
+    "- If you are not sure, say so plainly; list your assumptions.",
+    "- DO NOT use an invented API, signature or config; mark the uncertainty.",
+    "- Back every claim with evidence (file:line); a claim without evidence is a hallucination.",
+  ].join("\n"),
+};
 
 // ── BECERİ BÖLMESİ: ADİL PAY KIRPMASI (davranış-katmanı turu · OGR-2.2) ─────────────────────
 //
@@ -738,21 +750,34 @@ const GUARD = [
 
 /** Kırpılan kartın başlığına düşen uzun damga: kesildiğini ve tam metnin adresini
  *  söyler. `gezin` kartın tanımını dosya:satır ile açar — CLI ve MCP'de aynı yol. */
-const uzunKirpmaDamgasi = (kod: string): string => ` ✂️(kırpıldı — tamamı: \`gezin ${kod}\`)`;
+const uzunKirpmaDamgasi = (kod: string, dil: BrifingDili = "tr"): string =>
+  dil === "en" ? ` ✂️(trimmed — full text: \`gezin ${kod}\`)` : ` ✂️(kırpıldı — tamamı: \`gezin ${kod}\`)`;
 
 /** Pay darken kullanılan kısa damga: uzun damga içeriğin yerini yiyecekse yerini
  *  ona bırakır; anlamını ve adresi bölme notu taşır. */
 const KISA_KIRPMA_DAMGASI = " ✂️";
 
 /** Kırpma bölümünün tek seferlik açıklaması (bölme başlığının altında, bütçe dışı). */
-const KART_KIRPMA_NOTU =
-  "> ✂️ damgalı kartlar beceri bütçesinin adil payına sığmadığı için kırpıldı; " +
-  "kartın tam metnini `gezin <KART-KODU>` ile ogrenme rafından açabilirsin.";
+const KART_KIRPMA_NOTU: Readonly<Record<BrifingDili, string>> = {
+  tr: "> ✂️ damgalı kartlar beceri bütçesinin adil payına sığmadığı için kırpıldı; " +
+    "kartın tam metnini `gezin <KART-KODU>` ile ogrenme rafından açabilirsin.",
+  en: "> ✂️ cards marked with the stamp were trimmed because they did not fit their fair share of the skill budget; " +
+    "open a card's full text from the ogrenme shelf with `gezin <KART-KODU>`.",
+};
 
 /** Kalem etiketleri. Bol payda tam yazılır; pay daraldığında anlamı koruyan sıkışık
  *  biçime düşülür (etiket uzunluğu, içerikten önce feda edilir). */
-const TAM_ETIKET = { antiDesen: "\n- Anti-desen (KAÇIN): ", ne: ": ", kurallar: "\n- Kurallar: " } as const;
-const SIKISIK_ETIKET = { antiDesen: "\n- KAÇIN: ", ne: ": ", kurallar: "\n- Kural: " } as const;
+const TAM_ETIKET_HANELERI = {
+  tr: { antiDesen: "\n- Anti-desen (KAÇIN): ", ne: ": ", kurallar: "\n- Kurallar: " },
+  en: { antiDesen: "\n- antiDesen (AVOID): ", ne: ": ", kurallar: "\n- kurallar: " },
+} as const;
+const SIKISIK_ETIKET_HANELERI = {
+  tr: { antiDesen: "\n- KAÇIN: ", ne: ": ", kurallar: "\n- Kural: " },
+  en: { antiDesen: "\n- AVOID: ", ne: ": ", kurallar: "\n- kurallar: " },
+} as const;
+/** Kartın tam gövdesindeki örnek etiketi ve çözülemeyen kartın işareti. */
+const ORNEK_ETIKETI: Readonly<Record<BrifingDili, string>> = { tr: "- Örnek: ", en: "- örnek: " };
+const COZULMEDI_IMI: Readonly<Record<BrifingDili, string>> = { tr: " (⚠️ çözülmedi)", en: " (⚠️ unresolved)" };
 
 /** Kalemlerin metin bütçesindeki ağırlıkları — bol payda kim ne kadar yer kaplar. */
 const KART_AGIRLIK = { antiDesen: 0.45, kurallar: 0.3, ne: 0.25 } as const;
@@ -778,23 +803,28 @@ function kirp(metin: string, sınır: number): string {
 
 /** Kart başlığını kurar (saf). `sade` verilince kaynak ekleri (⚙️ Etmen · ⚡ Tetikleyici)
  *  düşer — bunlar köken bilgisidir ve dar payda içeriğe yer açmak için ilk bırakılır. */
-function beceriBasligi(b: BeceriÖzet, damga: string, ne: string, sade = false): string {
+function beceriBasligi(b: BeceriÖzet, damga: string, ne: string, sade = false, dil: BrifingDili = "tr"): string {
   const ek = sade ? "" : `${b.etmen ? ` ⚙️${b.etmen}` : ""}${b.tetikleyici ? ` ⚡${b.tetikleyici}` : ""}`;
-  return `### ${b.kod}${ek}${b.çözüldü ? "" : " (⚠️ çözülmedi)"}${damga}${ne ? `: ${ne}` : ""}`;
+  return `### ${b.kod}${ek}${b.çözüldü ? "" : COZULMEDI_IMI[dil]}${damga}${ne ? `: ${ne}` : ""}`;
 }
 
 /** Kartın kırpılmamış tam gövdesini satır satır üretir (saf). */
-function beceriKartiTam(b: BeceriÖzet): string[] {
-  const kart: string[] = [beceriBasligi(b, "", b.ne)];
-  if (b.kurallar) kart.push(`- Kurallar: ${b.kurallar}`);
-  if (b.antiDesen) kart.push(`- Anti-desen (KAÇIN): ${b.antiDesen}`);
-  if (b.örnek) kart.push(`- Örnek: ${b.örnek}`);
+function beceriKartiTam(b: BeceriÖzet, dil: BrifingDili = "tr"): string[] {
+  const kart: string[] = [beceriBasligi(b, "", b.ne, false, dil)];
+  if (b.kurallar) kart.push(TAM_ETIKET_HANELERI[dil].kurallar.slice(1) + b.kurallar);
+  if (b.antiDesen) kart.push(TAM_ETIKET_HANELERI[dil].antiDesen.slice(1) + b.antiDesen);
+  if (b.örnek) kart.push(ORNEK_ETIKETI[dil] + b.örnek);
   return kart;
 }
 
 /** Kartın kırpılmamış tam gövdesinin karakter boyu — adil pay hesabının girdisi (saf). */
 export function beceriKartiTamBoyu(b: BeceriÖzet): number {
-  return beceriKartiTam(b).join("\n").length;
+  return beceriKartiTamBoyuDilde(b, "tr");
+}
+
+/** Seçilen brifing dilinde tam boy (MGZ-A11) — dışa açık tek argümanlı yüz `map` ile güvenle çağrılır. */
+function beceriKartiTamBoyuDilde(b: BeceriÖzet, dil: BrifingDili): number {
+  return beceriKartiTam(b, dil).join("\n").length;
 }
 
 /**
@@ -842,24 +872,26 @@ export function adilPaylarHesapla(
  * Pay bir başlığı bile taşımıyorsa başlığın kendisi kırpılır; kart gövdesi hiçbir
  * koşulda payı aşmaz (tavan iddiası kart sayısından bağımsız doğrudur).
  */
-export function beceriKartiUret(b: BeceriÖzet, pay: number): { satırlar: string[]; kırpıldı: boolean } {
-  const tam = beceriKartiTam(b);
+export function beceriKartiUret(b: BeceriÖzet, pay: number, dil: BrifingDili = "tr"): { satırlar: string[]; kırpıldı: boolean } {
+  const tam = beceriKartiTam(b, dil);
+  const TAM_ETIKET = TAM_ETIKET_HANELERI[dil];
+  const SIKISIK_ETIKET = SIKISIK_ETIKET_HANELERI[dil];
   if (tam.join("\n").length <= pay) return { satırlar: tam, kırpıldı: false };
 
   const dolular = KART_ONCELIK.filter((ad) => b[ad].length > 0);
   // Yazım kipleri zenginden yalına: ilk SIĞAN kip seçilir (deterministik).
   const kipler = [
-    { sade: false, damga: uzunKirpmaDamgasi(b.kod), etiket: TAM_ETIKET },
+    { sade: false, damga: uzunKirpmaDamgasi(b.kod, dil), etiket: TAM_ETIKET },
     { sade: false, damga: KISA_KIRPMA_DAMGASI, etiket: TAM_ETIKET },
     { sade: true, damga: KISA_KIRPMA_DAMGASI, etiket: TAM_ETIKET },
     { sade: true, damga: KISA_KIRPMA_DAMGASI, etiket: SIKISIK_ETIKET },
   ];
   const sığar = (kip: (typeof kipler)[number]): boolean =>
-    beceriBasligi(b, kip.damga, "", kip.sade).length +
+    beceriBasligi(b, kip.damga, "", kip.sade, dil).length +
     dolular.reduce((t, ad) => t + kip.etiket[ad].length, 0) + KART_ASGARI_METIN <= pay;
   const kip = kipler.find(sığar) ?? kipler[kipler.length - 1];
 
-  const başlık = beceriBasligi(b, kip.damga, "", kip.sade);
+  const başlık = beceriBasligi(b, kip.damga, "", kip.sade, dil);
   if (başlık.length >= pay) return { satırlar: [kirp(başlık, pay)], kırpıldı: true };
   let kalan = pay - başlık.length;
 
@@ -890,7 +922,7 @@ export function beceriKartiUret(b: BeceriÖzet, pay: number): { satırlar: strin
   const metinPayı = (ad: KartKalem): number => (verilen.get(ad) ?? 0) - kip.etiket[ad].length;
 
   const satırlar: string[] = [
-    beceriBasligi(b, kip.damga, verilen.has("ne") ? kirp(b.ne, metinPayı("ne")) : "", kip.sade),
+    beceriBasligi(b, kip.damga, verilen.has("ne") ? kirp(b.ne, metinPayı("ne")) : "", kip.sade, dil),
   ];
   if (verilen.has("kurallar")) {
     satırlar.push(kip.etiket.kurallar.slice(1) + kirp(b.kurallar, metinPayı("kurallar")));
@@ -918,34 +950,46 @@ export function beceriKartiUret(b: BeceriÖzet, pay: number): { satırlar: strin
 export const REFERANS_BOLME_TAVANI = 4000;
 
 /** Kırpma bölümünün tek seferlik açıklaması (bölme başlığının altında, bütçe dışı). */
-const REFERANS_KIRPMA_NOTU =
-  "> ✂️ damgalı hedefler referans bütçesinin adil payına sığmadığı için kırpıldı; " +
-  "hedefin tam metnini `gezin <KOD>` ile açabilirsin.";
+const REFERANS_KIRPMA_NOTU: Readonly<Record<BrifingDili, string>> = {
+  tr: "> ✂️ damgalı hedefler referans bütçesinin adil payına sığmadığı için kırpıldı; " +
+    "hedefin tam metnini `gezin <KOD>` ile açabilirsin.",
+  en: "> ✂️ targets marked with the stamp were trimmed because they did not fit their fair share of the reference budget; " +
+    "open a target's full text with `gezin <KOD>`.",
+};
 
 /** Bağlayıcı metnin etiketi kenarın türüne göre değişir: referans HÜKÜM taşır
- *  (bağlayıcıdır), bağımlılık ise zemin cümlesini taşır (`ne:`). */
-const refKalemEtiketi = (r: RefCozum): string => (r.tür === "bağımlılık" ? "\n- Ne: " : "\n- Hüküm: ");
-const REF_GEREKCE_ETIKETI = "\n- Gerekçe: ";
+ *  (bağlayıcıdır), bağımlılık ise zemin cümlesini taşır (`ne:`). İngilizce hanede
+ *  zemin cümlesi dosyadaki alan adıyla (`ne`) anılır. */
+const refKalemEtiketi = (r: RefCozum, dil: BrifingDili = "tr"): string =>
+  dil === "en" ? (r.tür === "bağımlılık" ? "\n- ne: " : "\n- Ruling: ") : (r.tür === "bağımlılık" ? "\n- Ne: " : "\n- Hüküm: ");
+const REF_GEREKCE_ETIKETI_HANELERI: Readonly<Record<BrifingDili, string>> = { tr: "\n- Gerekçe: ", en: "\n- Rationale: " };
 
 /** Referans kartının başlığı: kimlik · tip · kaynak dosya (+ kırpma damgası). */
-function referansBasligi(r: RefCozum, damga: string): string {
+function referansBasligi(r: RefCozum, damga: string, dil: BrifingDili = "tr"): string {
   const tip = r.tip ? ` · ${r.tip}` : "";
   const yer = r.dosya ? ` · ${r.dosya}` : "";
-  const durum = r.çözüldü ? "" : " (⚠️ çözülmedi — hedef hiçbir `.sar` kaynağında yok)";
+  const durum = r.çözüldü ? "" : dil === "en"
+    ? " (⚠️ unresolved — the target is in no `.sar` source)"
+    : " (⚠️ çözülmedi — hedef hiçbir `.sar` kaynağında yok)";
   return `### ${r.kod}${tip}${yer}${durum}${damga}`;
 }
 
 /** Kırpılmamış tam referans kartı (saf). */
-function referansKartiTam(r: RefCozum): string[] {
-  const kart: string[] = [referansBasligi(r, "")];
-  if (r.hüküm) kart.push(refKalemEtiketi(r).slice(1) + r.hüküm);
-  if (r.gerekçe) kart.push(REF_GEREKCE_ETIKETI.slice(1) + r.gerekçe);
+function referansKartiTam(r: RefCozum, dil: BrifingDili = "tr"): string[] {
+  const kart: string[] = [referansBasligi(r, "", dil)];
+  if (r.hüküm) kart.push(refKalemEtiketi(r, dil).slice(1) + r.hüküm);
+  if (r.gerekçe) kart.push(REF_GEREKCE_ETIKETI_HANELERI[dil].slice(1) + r.gerekçe);
   return kart;
 }
 
 /** Kartın tam gövdesinin karakter boyu — adil pay hesabının girdisi (saf). */
 export function referansKartiTamBoyu(r: RefCozum): number {
-  return referansKartiTam(r).join("\n").length;
+  return referansKartiTamBoyuDilde(r, "tr");
+}
+
+/** Seçilen brifing dilinde tam boy (MGZ-A11) — dışa açık tek argümanlı yüz `map` ile güvenle çağrılır. */
+function referansKartiTamBoyuDilde(r: RefCozum, dil: BrifingDili): number {
+  return referansKartiTam(r, dil).join("\n").length;
 }
 
 /**
@@ -957,16 +1001,17 @@ export function referansKartiTamBoyu(r: RefCozum): number {
  * en az bir okunur parçası basılır. Pay başlığı bile taşımıyorsa başlık kırpılır ve
  * kart gövdesi hiçbir koşulda payı aşmaz (tavan iddiası kenar sayısından bağımsızdır).
  */
-export function referansKartiUret(r: RefCozum, pay: number): { satırlar: string[]; kırpıldı: boolean } {
-  const tam = referansKartiTam(r);
+export function referansKartiUret(r: RefCozum, pay: number, dil: BrifingDili = "tr"): { satırlar: string[]; kırpıldı: boolean } {
+  const tam = referansKartiTam(r, dil);
   if (tam.join("\n").length <= pay) return { satırlar: tam, kırpıldı: false };
 
-  const etiketH = refKalemEtiketi(r);
-  const uzun = uzunKirpmaDamgasi(r.kod);
+  const etiketH = refKalemEtiketi(r, dil);
+  const REF_GEREKCE_ETIKETI = REF_GEREKCE_ETIKETI_HANELERI[dil];
+  const uzun = uzunKirpmaDamgasi(r.kod, dil);
   // ① Uzun damga ancak hükmün okunur bir parçasını da bırakabiliyorsa yaşar.
-  const damga = referansBasligi(r, uzun).length + etiketH.length + KALEM_ASGARI_METIN <= pay
+  const damga = referansBasligi(r, uzun, dil).length + etiketH.length + KALEM_ASGARI_METIN <= pay
     ? uzun : KISA_KIRPMA_DAMGASI;
-  const başlık = referansBasligi(r, damga);
+  const başlık = referansBasligi(r, damga, dil);
   if (başlık.length >= pay) return { satırlar: [kirp(başlık, pay)], kırpıldı: true };
 
   let kalan = pay - başlık.length;
@@ -986,9 +1031,11 @@ export function referansKartiUret(r: RefCozum, pay: number): { satırlar: string
 
 /** Meyve satırı: kod · tür → hedef yol (ya da türün anlamı) + kısaltılmış `ne` (saf).
  *  Yol ASLA kırpılmaz — bölmenin bütün varlık sebebi odur. */
-function meyveSatiri(m: MeyveÖzet): string {
+function meyveSatiri(m: MeyveÖzet, dil: BrifingDili = "tr"): string {
   const hedef = m.yol
-    ? `\`${m.yol}\`${m.yolKaynağı === "ne" ? " (yol `ne:` cümlesinden okundu — `dosya:` beyanı eksik)" : ""}`
+    ? `\`${m.yol}\`${m.yolKaynağı === "ne" ? (dil === "en"
+      ? " (the path was read from the `ne:` sentence — the `dosya:` declaration is missing)"
+      : " (yol `ne:` cümlesinden okundu — `dosya:` beyanı eksik)") : ""}`
     : (m.anlam ?? "—");
   return `- **${m.kod}** · ${m.tür} → ${hedef}${m.ne ? `\n  - ${m.ne}` : ""}`;
 }
@@ -998,35 +1045,38 @@ function meyveSatiri(m: MeyveÖzet): string {
  * WF-ORCH §6 parantezleme: kritik kısıtlar (dokunulmaz+sınır) BAŞTA, görev ortada,
  * kısa kabul/dokunulmaz özeti SONDA ("lost in the middle" karşı). TPL-023 guard gömülü.
  */
-export function promptUret(paket: BaglamPaket): string {
+export function promptUret(paket: BaglamPaket, dil: BrifingDili = "tr"): string {
+  // MGZ-A11: şablonun düzyazısı seçilen dilde, koni alanları dosyadaki adlarıyla
+  // (`görev`, `kabul`, `sınır`, `dokunulmaz`) anılır; Adımın kendi metni çevrilmez.
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
   const k = paket.koni;
   const s: string[] = [];
   // BAŞ — parantezin açılışı: kritik kısıtlar + guard
   s.push(`# 🍂 Adım: ${paket.adimKod}`, "");
-  s.push("## 🚧 Kritik Kısıtlar (ÖNCE OKU)");
-  s.push(`- Dokunulmaz: ${bos(k.dokunulmaz) ? "—" : k.dokunulmaz}`);
-  s.push(`- Sınır: ${bos(k.sınır) ? "—" : k.sınır}`, "");
-  s.push(GUARD, "");
+  s.push(y("## 🚧 Kritik Kısıtlar (ÖNCE OKU)", "## 🚧 Critical Constraints (READ FIRST)"));
+  s.push(y("- Dokunulmaz: ", "- dokunulmaz: ") + (bos(k.dokunulmaz) ? "—" : k.dokunulmaz));
+  s.push(y("- Sınır: ", "- sınır: ") + (bos(k.sınır) ? "—" : k.sınır), "");
+  s.push(GUARD_HANELERI[dil], "");
   // ORTA — görev + koni gövdesi
-  s.push("## 🎯 Görev", bos(k.görev) ? "(tanımsız)" : k.görev, "");
+  s.push(y("## 🎯 Görev", "## 🎯 The task (`görev`)"), bos(k.görev) ? y("(tanımsız)", "(undefined)") : k.görev, "");
   // İkinci kusur: meyvenin kodu, türü ve HEDEF YOLU ayrı ayrı basılır. Eskiden bu
   // başlığın altına koninin ham `üretir` metni düşüyordu ve satır-içi meyve orada
   // `Veri(…)` diye görünüyordu: ajan "bunu üret" emrini alıp nereye üreteceğini
   // göremiyordu. Meyve çözülemezse ham metne düşülür (geriye uyum).
   if (paket.meyveler?.length) {
-    s.push("## 🍎 Üretir (BUNU üret · üretim-yeri)");
-    for (const m of paket.meyveler) s.push(meyveSatiri(m));
+    s.push(y("## 🍎 Üretir (BUNU üret · üretim-yeri)", "## 🍎 Produces (`üretir` · produce THIS · production place)"));
+    for (const m of paket.meyveler) s.push(meyveSatiri(m, dil));
     s.push("");
   } else if (!bos(k.üretir)) {
-    s.push("## 🍎 Üretir (BUNU üret · üretim-yeri)", k.üretir, "");
+    s.push(y("## 🍎 Üretir (BUNU üret · üretim-yeri)", "## 🍎 Produces (`üretir` · produce THIS · production place)"), k.üretir, "");
   }
-  if (!bos(k.kabul)) s.push("## ✅ Kabul Ölçütü", k.kabul, "");
+  if (!bos(k.kabul)) s.push(y("## ✅ Kabul Ölçütü", "## ✅ Acceptance Criteria (`kabul`)"), k.kabul, "");
   // Birinci kusur: referans ve bağımlılık bölmeleri artık KOD LİSTESİ değil, hedefin
   // kendi metnidir. İki bölme TEK bütçe havuzunu paylaşır ve pay hesabı beceri
   // bölmesiyle aynı işlevden gelir; kırpılan hedef ✂️ damgasıyla adresini söyler.
   // Pay vektörü BİR KEZ, iki bölmenin kenarları üzerinden hesaplanır: referans ile
   // bağımlılık aynı Adım'ın aynı bütçesinden yer alır, ayrı tavan ikisini de yanlış ölçerdi.
-  const kenarPaylari = adilPaylarHesapla(paket.referanslar.map(referansKartiTamBoyu), REFERANS_BOLME_TAVANI);
+  const kenarPaylari = adilPaylarHesapla(paket.referanslar.map((r) => referansKartiTamBoyuDilde(r, dil)), REFERANS_BOLME_TAVANI);
   const kenarBölmesi = (tür: RefCozum["tür"], başlık: string, ham: string): void => {
     const seçili = paket.referanslar.filter((r) => r.tür === tür);
     if (!seçili.length) { if (!bos(ham)) s.push(başlık, ham, ""); return; }
@@ -1035,32 +1085,35 @@ export function promptUret(paket: BaglamPaket): string {
     let kırpılanVar = false;
     paket.referanslar.forEach((r, i) => {
       if (r.tür !== tür) return;
-      const { satırlar, kırpıldı } = referansKartiUret(r, paylar[i]);
+      const { satırlar, kırpıldı } = referansKartiUret(r, paylar[i], dil);
       kırpılanVar = kırpılanVar || kırpıldı;
       gövde.push(...satırlar);
     });
     s.push(başlık);
-    if (kırpılanVar) s.push(REFERANS_KIRPMA_NOTU);
+    if (kırpılanVar) s.push(REFERANS_KIRPMA_NOTU[dil]);
     s.push(...gövde, "");
   };
-  kenarBölmesi("referans", "## 📎 Referans (hedefin HÜKMÜ — bağlayıcıdır, kod değil metin okunur)", k.referans);
-  kenarBölmesi("bağımlılık", "## 🔗 Bağımlılık (üstüne inşa ettiğin zemin)", k.bağımlı);
+  kenarBölmesi("referans", y("## 📎 Referans (hedefin HÜKMÜ — bağlayıcıdır, kod değil metin okunur)",
+    "## 📎 References (`referans` · the target's RULING — binding; read the text, not the code)"), k.referans);
+  kenarBölmesi("bağımlılık", y("## 🔗 Bağımlılık (üstüne inşa ettiğin zemin)",
+    "## 🔗 Dependencies (`bağımlı` · the ground you build on)"), k.bağımlı);
   // EKL-F10-A12 (STR-4): Founder'ın hedefe ve zeminine yazdığı kanallar. Bölüm yalnız
   // kanal varken doğar; ajan hangi davranışın takdir edildiğini ya da neyin daha
   // iyi yapılması istendiğini kaynaktan okur, iddiadan değil.
   if (paket.geribildirim?.length) {
-    s.push("## ❤️ Founder Geribildirimi (STR-4 — takdir edilen davranışı sürdür, öneriyi uygula)");
+    s.push(y("## ❤️ Founder Geribildirimi (STR-4 — takdir edilen davranışı sürdür, öneriyi uygula)",
+      "## ❤️ Founder Feedback (STR-4 — keep the appreciated behaviour, apply the suggestion)"));
     for (const g of paket.geribildirim) s.push(`- ${g.adım} · ${g.kanal}: ${g.not}`);
     s.push("");
   }
   // Önceki Durak (D.3): çok-adımlı akışta bir önceki Adım'ın durum-devri (handoff)
   if (paket.öncekiDurak) {
     const d = paket.öncekiDurak;
-    s.push("## ⏮️ Önceki Durak (bağlam — devralınan durum)");
-    s.push(`- ${d.adım}: ${d.karar} · mühür: ${d.mühür}`);
-    if (!bos(d.özet)) s.push(`- Durum: ${d.özet}`);
-    if (d.kanıt && !bos(d.kanıt)) s.push(`- Kanıt: ${d.kanıt}`);
-    if (d.ertelenenler.length) s.push(`- ⏭️ Devralınan açık kalemler: ${d.ertelenenler.join(" · ")}`);
+    s.push(y("## ⏮️ Önceki Durak (bağlam — devralınan durum)", "## ⏮️ Previous Stop (context — the inherited state)"));
+    s.push(`- ${d.adım}: ${d.karar} · ${y("mühür", "seal")}: ${d.mühür}`);
+    if (!bos(d.özet)) s.push(y("- Durum: ", "- State: ") + d.özet);
+    if (d.kanıt && !bos(d.kanıt)) s.push(y("- Kanıt: ", "- Evidence: ") + d.kanıt);
+    if (d.ertelenenler.length) s.push(y("- ⏭️ Devralınan açık kalemler: ", "- ⏭️ Inherited open items: ") + d.ertelenenler.join(" · "));
     s.push("");
   }
   // Beceriler (D.2): kullanır: BCR-… çözümleri — kurallar + anti-desen prompt'a.
@@ -1070,23 +1123,24 @@ export function promptUret(paket: BaglamPaket): string {
   // damgası kırpıldığını ve tam metnin adresini söyler. Sıralama paket sırasıdır
   // ve pay hesabı tamsayıdır: aynı paket aynı prompt'u üretir (determinizm).
   if (paket.beceriler.length) {
-    s.push("## 🛠️ Beceriler (kurallara UY · anti-deseni KAÇIN)");
-    const paylar = adilPaylarHesapla(paket.beceriler.map(beceriKartiTamBoyu), BECERI_BOLME_TAVANI);
+    s.push(y("## 🛠️ Beceriler (kurallara UY · anti-deseni KAÇIN)", "## 🛠️ Skills (Beceri cards · FOLLOW the rules · AVOID the anti-pattern)"));
+    const paylar = adilPaylarHesapla(paket.beceriler.map((b) => beceriKartiTamBoyuDilde(b, dil)), BECERI_BOLME_TAVANI);
     const gövde: string[] = [];
     let kırpılanVar = false;
     paket.beceriler.forEach((b, i) => {
-      const { satırlar, kırpıldı } = beceriKartiUret(b, paylar[i]);
+      const { satırlar, kırpıldı } = beceriKartiUret(b, paylar[i], dil);
       kırpılanVar = kırpılanVar || kırpıldı;
       gövde.push(...satırlar);
     });
-    if (kırpılanVar) s.push(KART_KIRPMA_NOTU);
+    if (kırpılanVar) s.push(KART_KIRPMA_NOTU[dil]);
     s.push(...gövde, "");
   }
   // KVR-A08: kavram rehberi — ÖNERİ bölümü (dayatma değil); boş bileşende hiç basılmaz.
   // Token disiplini: üyeler yalnız yol+flutter; bütçe aşımında ilk kırpılacak aday budur.
   if (paket.kavramÖnerileri?.length) {
-    s.push("## 🗺️ Kavram Rehberi (öneri — dayatma değil)");
-    s.push("Kullanıcının niyeti belirsizse aşağıdaki aile sorularını kullan ve seçilen kavramı koniye KANON YOLUYLA yaz. Tam eşlemeler için MCP `kavram` sorgusunu kullan.");
+    s.push(y("## 🗺️ Kavram Rehberi (öneri — dayatma değil)", "## 🗺️ Concept Guide (suggestion — not a mandate)"));
+    s.push(y("Kullanıcının niyeti belirsizse aşağıdaki aile sorularını kullan ve seçilen kavramı koniye KANON YOLUYLA yaz. Tam eşlemeler için MCP `kavram` sorgusunu kullan.",
+      "If the user's intent is unclear, use the family questions below and write the chosen concept into the cone BY ITS CANON PATH. Use the MCP `kavram` query for full mappings."));
     for (const ö of paket.kavramÖnerileri) {
       s.push(`### ${ö.aile} [${ö.bağlam}]${ö.soru ? ` — ${ö.soru}` : ""}`);
       if (ö.üyeler.length) s.push(`- ${ö.üyeler.map((u) => `${u.yol}${u.flutter ? ` (${u.flutter})` : ""}`).join(" · ")}`);
@@ -1094,22 +1148,24 @@ export function promptUret(paket: BaglamPaket): string {
     s.push("");
   }
   if (paket.referanslar.length) {
-    s.push("## 🧭 Çözülen bağlar");
-    for (const r of paket.referanslar) s.push(`- ${r.tür}: ${r.kod} → ${r.çözüldü ? `✓ ${r.dosya}` : "✗ çözülmedi"}`);
+    s.push(y("## 🧭 Çözülen bağlar", "## 🧭 Resolved links"));
+    // İngilizce hanede kenar türü dosyadaki alan adıyla anılır (`referans` · `bağımlı`).
+    const tur = (t: RefCozum["tür"]): string => (dil === "en" && t === "bağımlılık" ? "bağımlı" : t);
+    for (const r of paket.referanslar) s.push(`- ${tur(r.tür)}: ${r.kod} → ${r.çözüldü ? `✓ ${r.dosya}` : y("✗ çözülmedi", "✗ unresolved")}`);
     s.push("");
   }
   // hatırlatıcı-rayı turu (BUG-1 · TIP-1.12): hedefe `hatırlat` eden Hatırlatıcılar — kapanıştan HEMEN
   // önce (yüksek-dikkat bölge): "hedef aktif oldu, bağlam koniye düştü". İleri-bağlamanın
   // asıl teslim noktası; global Problems listesinde kalmıyor artık.
   if (paket.hatırlatıcılar.length) {
-    s.push("## 🔔 Bağlı Hatırlatıcılar (hedef aktif — bağlam düştü)");
+    s.push(y("## 🔔 Bağlı Hatırlatıcılar (hedef aktif — bağlam düştü)", "## 🔔 Linked Hatırlatıcı Records (the target is active — their context has dropped in)"));
     for (const h of paket.hatırlatıcılar) s.push(`- ${h.kod} [${h.öncelik}·${h.çapa}]: ${bos(h.ne) ? "—" : h.ne}`);
     s.push("");
   }
   // SON — parantezin kapanışı: kritik-kısıt özeti (görevden hemen önce, yüksek dikkat)
-  s.push("---", "## 🔁 Kritik-kısıt özeti (son)");
-  s.push(`- Kabul: ${bos(k.kabul) ? "—" : k.kabul}`);
-  s.push(`- Dokunulmaza dokunma: ${bos(k.dokunulmaz) ? "—" : k.dokunulmaz}`);
+  s.push("---", y("## 🔁 Kritik-kısıt özeti (son)", "## 🔁 Critical-constraint summary (end)"));
+  s.push(y("- Kabul: ", "- kabul: ") + (bos(k.kabul) ? "—" : k.kabul));
+  s.push(y("- Dokunulmaza dokunma: ", "- Do not touch (`dokunulmaz`): ") + (bos(k.dokunulmaz) ? "—" : k.dokunulmaz));
   return s.join("\n");
 }
 

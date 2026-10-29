@@ -34,9 +34,9 @@ import {
   type OnayKapisi, type KapiKaydi, type OnayDugumu,
 } from "../src/onay-cekirdek.ts";
 import { GORUNUS_ONAYLAR, panelRozeti} from "../src/yuzey-cekirdek.ts";
-import { panelSvgKaynagi, satirSvgKaynagi } from "../src/simge-cizelgesi.ts";
+import { KISITLI_KARSILAMA_GORUNUSU, panelSvgKaynagi, satirSvgKaynagi } from "../src/simge-cizelgesi.ts";
 import {
-  YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM,
+  YUZEY_ACIKLAMALARI, YUZEY_BOS_DURUM, MAKINIST_METINLERI,
   onayDosyaAciklamasi, onayDosyaIpucu, onayKapiEtiketi, onayKapiAciklamasi,
   onayKapiIpucu, onayRozetIpucu, onayKararIpucu, kapiyaGitBasligi,
   ONAY_GOVDE_METINLERI, gerekceZorunlu, gerekceArtik, notBasligi,
@@ -51,6 +51,11 @@ import {
   notKimligi, kararKimligi, kopyaKimligi, odakNiyeti, KARAR_SECENEKLERI,
 } from "../src/onay-govde.ts";
 import { sarKapsamDisi, SAR_DISLANANLAR, TARAMA_DISLAMA_GLOB } from "../src/izleyici-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+/** Fikstürün plan dosyaları doğuşun plan rafında yaşar; yol paketin kendisinden türer (HST-MTR-A07). */
+const PLAN_GOC = planYolu("goc_plani.sar");
+const PLAN_VITRIN = planYolu("vitrin_ui.sar");
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 /** Sınama dosyasına göreli bir yolun diskteki mutlak karşılığı. */
@@ -151,7 +156,7 @@ function konum(html: string, isaret: string, ne: string): number {
 }
 
 /** Tek kapılı fikstür — yerleşim ölçümleri bunun üstünde koşar. */
-const TEK_DOSYA = "/depo/_Sarmal/plan/goc_plani.sar";
+const TEK_DOSYA = `/depo/_Sarmal/${PLAN_GOC}`;
 function tekKapiliFikstur(ne = "🧪 Karar bekleyen tek iş"): KapiKaydi[] {
   const bulunan = kapilar(zincir(
     `Adım( kod: A1, onayBekler: founder, durum: beklemede, ne: "${ne}", kabul: [ ${ONAYLI_OLCUT} ] )`));
@@ -167,8 +172,8 @@ function ikiDosyaliFikstur(): KapiKaydi[] {
   const vitrin = kapilar(zincir(
     `Adım( kod: B9, onayBekler: founder, durum: beklemede, ne: "🧪 Başka dosyadaki iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   return [
-    ...plan.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/goc_plani.sar", kapi })),
-    ...vitrin.map((kapi) => ({ dosya: "/depo/_Sarmal/plan/vitrin_ui.sar", kapi })),
+    ...plan.map((kapi) => ({ dosya: `/depo/_Sarmal/${PLAN_GOC}`, kapi })),
+    ...vitrin.map((kapi) => ({ dosya: `/depo/_Sarmal/${PLAN_VITRIN}`, kapi })),
   ];
 }
 
@@ -193,7 +198,7 @@ test("ağaç: kapılar dosyaya göre gruplanır, iki dosya birbirine karışmaz"
 });
 
 test("ağaç: dosya adı yoldan türetilir; iki ayraç da tanınır", () => {
-  assert.equal(dosyaAdiniAl("/depo/_Sarmal/plan/goc_plani.sar"), "goc_plani.sar");
+  assert.equal(dosyaAdiniAl(`/depo/_Sarmal/${PLAN_GOC}`), "goc_plani.sar");
   assert.equal(dosyaAdiniAl("C:\\depo\\plan\\goc_plani.sar"), "goc_plani.sar");
   assert.equal(dosyaAdiniAl("goc_plani.sar"), "goc_plani.sar");
 });
@@ -223,7 +228,7 @@ test("defter: tek dosya tazelenince ÖTEKİ dosyanın kapıları yerinde kalır"
   const defter = new OnayDefteri();
   defter.tazele(ikiDosyaliFikstur());
   // Kullanıcı goc_plani.sar'daki iki kapıyı da karara bağladı: dosya boşalır.
-  assert.equal(defter.yaz("/depo/_Sarmal/plan/goc_plani.sar", []), true);
+  assert.equal(defter.yaz(`/depo/_Sarmal/${PLAN_GOC}`, []), true);
   assert.equal(defter.kapiSayisi, 1, "bir tuş vuruşunda öteki dosyanın kapısı da düştü");
   assert.equal(defter.dosyaSayisi, 1);
   assert.deepEqual(defter.kumeler().map((k) => k.dosyaAdi), ["vitrin_ui.sar"]);
@@ -232,7 +237,7 @@ test("defter: tek dosya tazelenince ÖTEKİ dosyanın kapıları yerinde kalır"
 test("defter: silinen dosyanın kapıları düşer, olmayan dosyanın silinmesi çizim istemez", () => {
   const defter = new OnayDefteri();
   defter.tazele(ikiDosyaliFikstur());
-  assert.equal(defter.sil("/depo/_Sarmal/plan/vitrin_ui.sar"), true);
+  assert.equal(defter.sil(`/depo/_Sarmal/${PLAN_VITRIN}`), true);
   assert.equal(defter.kapiSayisi, 2);
   assert.equal(defter.sil("/depo/yok.sar"), false, "olmayan dosya çizim istememeli");
   assert.equal(defter.bosalt(), true);
@@ -257,7 +262,7 @@ test("kayıt açıklaması dosya:satır söyler ve satır 1-tabanlı okunur", ()
 });
 
 test("kayıt ipucu karar için gereken her şeyi taşır: kimlik, amaç, ÖLÇÜT ve tam yol", () => {
-  const tamYol = "/Users/biri/Belgeler/proje/_Sarmal/plan/goc_plani.sar";
+  const tamYol = `/Users/biri/Belgeler/proje/_Sarmal/${PLAN_GOC}`;
   const [kapi] = kapilar(zincir(
     `Adım( kod: A7, onayBekler: founder, durum: beklemede, ne: "🧪 Karar bekleyen iş", kabul: [ ${ONAYLI_OLCUT} ] )`));
   const ipucu = onayKapiIpucu({
@@ -271,7 +276,7 @@ test("kayıt ipucu karar için gereken her şeyi taşır: kimlik, amaç, ÖLÇÜ
 });
 
 test("dosya satırı: adet açıklamada, MUTLAK YOL yalnız ipucunda", () => {
-  const tamYol = "/Users/biri/proje/_Sarmal/plan/goc_plani.sar";
+  const tamYol = `/Users/biri/proje/_Sarmal/${PLAN_GOC}`;
   assert.equal(onayDosyaAciklamasi(1), "1 kapı");
   assert.equal(onayDosyaAciklamasi(4), "4 kapı");
   const ipucu = onayDosyaIpucu(tamYol, 4);
@@ -333,7 +338,7 @@ test("tek evren: kapsam süzgeci glob ile AYNI listeden türer", () => {
 test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ artık iki yüzde de dışlanır", () => {
   assert.ok(sarKapsamDisi("_Sarmal/ogreti/sablon/adim.sar"),
     "öğreti kitaplığının şablon rafı tam taramada dışlanıyor ama olay tarafında geçiyordu; ikiz liste hâlâ yaşıyor");
-  assert.ok(sarKapsamDisi("ogreti/sablon/dogus/ilk_plan.sar"),
+  assert.ok(sarKapsamDisi("ogreti/sablon/dogus/1_dogus.sar"),
     "sablon/ alt dizini de dışlanmalı");
   // KPS-IND-A01 NÖBETİ (Founder 2026-09-10): ders dışlaması kendi evine demirlidir.
   // Kullanıcının kendi kökü altındaki `sablon/` kitaplığı KAPSAM İÇİDİR; kapsam
@@ -348,13 +353,13 @@ test("tek evren: ÖLÇÜLEN ayrışma kapandı — ders rafı ve __pycache__ art
     "__pycache__ tam taramada dışlanıyor ama olay tarafında geçiyordu");
   assert.ok(sarKapsamDisi(".claude/worktrees/ajan/plan.sar"),
     "gizli dizin dışlanmıyor; SRN-ONAY-WORKTREE-SIZINTISI geri açıldı");
-  assert.ok(!sarKapsamDisi("_Sarmal/plan/goc_plani.sar"),
+  assert.ok(!sarKapsamDisi(`_Sarmal/${PLAN_GOC}`),
     "gerçek plan dosyası kapsam dışına düştü; kuyruk körleşir");
 });
 
 test("tek evren: ölçüm yalnız DİZİN parçalarına bakar — glob semantiği birebir", () => {
   // Glob `**/{…}/**` dizin segmentlerine bakar, dosya adına bakmaz.
-  assert.ok(!sarKapsamDisi("plan/dist.sar"), "dosya adı dizin sanıldı");
+  assert.ok(!sarKapsamDisi(planYolu("dist.sar")), "dosya adı dizin sanıldı");
   assert.ok(!sarKapsamDisi("goc_plani.sar"), "kök dosyası kapsam dışına düştü");
   assert.ok(sarKapsamDisi("a/ogreti/ornek/b/c.sar"), "ara dizin ölçülmüyor");
 });
@@ -391,10 +396,10 @@ test("dosya satırı KENDİ teknoloji simgesini taşır ve simge aynı çizelged
   const html = govde(ikiDosyaliFikstur());
   assert.ok(html.includes(SIMGE_ACIK) && html.includes(SIMGE_KOYU),
     "dosya satırı teknoloji simgesini basmıyor; panel yine uydurma bir kap simgesine düşer");
-  // Simge kaynağı SAĞLAYICIDA tek çizelgeden okunur — panel kendi çizelgesini kurmaz.
+  // PNL-A07: kapılar artık Makinist ağacında satırdır ve dosya satırı oradan çizilmez; onay defteri
+  // yine hiçbir simge yolunu elle gömmez (düğme çizimleri satır çizelgesinden okunur).
   const kaynak = oku("../src/onay-paneli.ts");
-  assert.ok(kaynak.includes("teknolojiSimgesi(") && kaynak.includes("eklentiCizelgesi("),
-    "panel simgeyi ortak çizelgeden almıyor; ikinci bir simge evreni doğmuş");
+  assert.ok(kaynak.includes("satirSvgKaynagi("), "karar düğmelerinin çizimi satır çizelgesinden okunmuyor");
   assert.ok(!/\.svg["'`]/.test(kaynak),
     "panele elle yazılmış bir simge yolu gömülmüş; çizelge ile ayrışır");
   // Simgesi olmayan dosya UYDURMA simge almaz: satır simgesiz kalır.
@@ -437,17 +442,13 @@ test("renk YALNIZ tema değişkeninden gelir: gövdeye ham renk değeri gömülm
     "karar bekleyen işin kanonik dikkat sarısı kaybolmuş");
 });
 
-test("beş panel bakışta ayrılır: kök simgeler tekildir", () => {
-  const hatirlatici = kokSimgesi("../src/hatirlaticilar.ts");
-  const bildirim = kokSimgesi("../src/bildirimler.ts");
-  // 🪆 EKL-F7-A09: yol haritasının varlık simgesi tipe bağlıdır (çalışma alanı
-  // istasyon, proje sefer) — iki simge de öteki panellerle çakışamaz.
-  const yolKume = /return tip === "ÇalışmaAlanı" \? "([a-z-]+)" : "([a-z-]+)";/.exec(oku("../src/yolharitasi-cekirdek.ts"));
-  assert.ok(hatirlatici && bildirim && yolKume, "panel kök simgeleri kaynakta bulunamadı");
-  const hepsi = [hatirlatici, bildirim, yolKume![1], yolKume![2]];
-  assert.equal(new Set(hepsi).size, hepsi.length,
-    "satır çizelgesini kullanan panellerin kök simgeleri tekil değil; kenar çubuğunda bakışta ayrılmazlar");
-  // Onaylar paneli dosya simgesi kullandığı için bu kümeye hiç girmez ve yarışamaz.
+test("PNL-A25 · Proje satırının simgesi panel başına seçilmez: her panel Yol Haritasının varlık simgesini taşır", () => {
+  // Paneller ayrı görünümken proje satırları bakışta ayrılsın diye her biri kendi simgesini taşıyordu
+  // (VIT-KIMLIK-A05). Bugün hepsi tek panelin sekmelerindedir ve Founder 2026-10-28 tarihinde her Proje
+  // satırının Yol Haritasının Proje simgesini taşımasına hükmetmiştir; grup satırları ayrımı taşır.
+  for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts", "../src/fikirler.ts"]) {
+    assert.equal(kokSimgesi(dosya), "", `${dosya} hâlâ kendi proje satırı simgesini seçiyor`);
+  }
 });
 
 // Bu iki ölçünün ağaca özgü hâli (ThemeIcon kimliği · ThemeColor rolü) yukarıda
@@ -471,47 +472,49 @@ test("panel kendi zamanlayıcısını kurmaz: tazeleme onay kuyruğunun nabzınd
 
 // ── ⑧ Paket bildirimi ile sağlayıcı tek kaynaktan ───────────────────────────
 
-test("görünüş kimliği: paket bildirimi ile sağlayıcı sabiti birebir aynıdır", () => {
+test("görünüş kimliği: Onaylar ayrı görünüm değildir; Makinist ağacının üst düğümüdür", () => {
   const gorunusler = PAKET.contributes.views["sarmal-yol"];
   const kimlikler = gorunusler.map((g) => g.id);
-  assert.ok(kimlikler.includes(GORUNUS_ONAYLAR),
-    `paket bildiriminde "${GORUNUS_ONAYLAR}" görünüşü yok`);
+  assert.ok(!kimlikler.includes(GORUNUS_ONAYLAR),
+    `"${GORUNUS_ONAYLAR}" hâlâ ayrı görünüm olarak ilan edilmiş (Founder 2026-10-21: kapta her bölüm tek görünümdür)`);
+  assert.ok(!kimlikler.includes("sarmalMakinist"), "Makinist ağacı kapta ayrı görünüm olarak duruyor");
+  assert.ok(kimlikler.includes("sarmalPanel"), "kabın tek görünümü paket bildiriminde yok");
   assert.equal(new Set(kimlikler).size, kimlikler.length,
     `yinelenen görünüş kimliği var: ${kimlikler.join(" · ")}`);
-  // VIT-GRAF-A16 ile kenar çubuğu ALTI görünüşe çıktı: Fikirler hanesi
-  // Hatırlatıcılar panelinin içinden çıkıp kendi görünüşüne taşındı. Sayı
-  // BİLEREK güncellenmiştir; nöbetin değeri sayının kendisinde değil,
-  // güncellemenin sessiz olamamasındadır.
-  assert.equal(kimlikler.length, 6, "kenar çubuğunda altı görünüş bekleniyordu");
+  // Kenar çubuğu görünümleri: sarmalPanel · dört yuva (kapta gösterilmez) · kısıtlı karşılama.
+  // Founder 2026-10-21 (dördüncü hüküm): sayı bilerek dokuzdan altıya inmiştir; kapta tek görünüm görünür.
+  assert.equal(kimlikler.length, 6, "kenar çubuğunda altı görünüş bildirimi bekleniyordu");
+  // Sağlayıcı görünüm kaydetmez. Kartın bir WebviewPanel olduğunu sabitleyen iddia OZK-13 ile
+  // kaldırıldı; tersini "tek tık (OZK-13)" nöbeti PNL-A07'ye bağlı olarak ölçer.
+  const kaynak = oku("../src/onay-paneli.ts");
+  assert.ok(!kaynak.includes("registerWebviewViewProvider"), "Onaylar hâlâ kenar çubuğu görünümü kaydediyor");
 });
 
-test("başlık yerelleştirme kataloğundan gelir ve kapsayıcının adını TEKRAR ETMEZ", () => {
-  const gorunus = PAKET.contributes.views["sarmal-yol"].find((g) => g.id === GORUNUS_ONAYLAR)!;
+test("üst düğüm adı yerelleştirme kataloğundan gelir ve kapsayıcının adını TEKRAR ETMEZ", () => {
   const kapsayiciAdi = PAKET_NLS_TR["view.container"];
-  assert.equal(yerellestir(gorunus.name), PAKET_NLS_TR["view.approvals"]);
-  assert.equal(yerellestir(gorunus.contextualTitle!), PAKET_NLS_TR["view.approvals"]);
-  assert.ok(!yerellestir(gorunus.name).includes(kapsayiciAdi),
-    "görünüş adı kapsayıcının adını tekrar ediyor");
-  assert.ok(!yerellestir(gorunus.contextualTitle!).includes(kapsayiciAdi),
-    "bağlam başlığı kapsayıcının adını tekrar ediyor");
+  assert.equal(MAKINIST_METINLERI.onaylar, "Onaylar");
+  assert.ok(!MAKINIST_METINLERI.onaylar.includes(kapsayiciAdi), "düğüm adı kapsayıcının adını tekrar ediyor");
+  // Kabın tek görünümünün adı kapsayıcının adıdır (VS Code ikisini birleştirir: tani-yuzeyleri.test.ts).
+  const panel = PAKET.contributes.views["sarmal-yol"].find((g) => g.id === "sarmalPanel")!;
+  assert.equal(yerellestir(panel.name), kapsayiciAdi, "görünüm adı kap başlığından ayrışırsa başlık 'SARMAL: ad' olur");
 });
 
-test("görünüş simgeleri tekildir: paneller aynı SVG'yi paylaşmaz", () => {
-  const simgeler = PAKET.contributes.views["sarmal-yol"].map((g) => g.icon);
-  // Simge yolu TEK kaynaktan (simge-cizelgesi) gelir — VIT halka 1, Founder
-  // 2026-08-04 geometrik panel ailesi. Eski simge dosyası `ikonlar/` altında emekliydi ve 2026-09-05 tarihinde silindi.
-  assert.ok(simgeler.includes(panelSvgKaynagi("sarmalOnaylar")),
-    "Onaylar paneli çizelgedeki kendi simgesini taşımıyor");
+test("görünüş simgeleri tekildir: görünümler aynı SVG'yi paylaşmaz", () => {
+  // MGZ-A08: kısıtlı modun karşılama görünüşü kabın sarmalını taşır; güvenilir
+  // klasörde hiç görünmediği için hiçbir panelle yan yana durmaz (kisitli-mod.test.ts).
+  const simgeler = PAKET.contributes.views["sarmal-yol"].filter((g) => g.id !== KISITLI_KARSILAMA_GORUNUSU).map((g) => g.icon);
+  assert.ok(simgeler.includes(panelSvgKaynagi("sarmalPanel")),
+    "kabın tek görünümü çizelgedeki kendi simgesini taşımıyor");
   assert.equal(new Set(simgeler).size, simgeler.length,
     `görünüşler aynı simgeyi paylaşıyor: ${simgeler.join(" · ")}`);
 });
 
 test("simge mevcut çizim dilini izler: dolgusuz, currentColor konturlu, yirmi dört birimlik", () => {
-  const simge = oku(`../${panelSvgKaynagi("sarmalOnaylar")}`);
-  const gozlem = oku(`../${panelSvgKaynagi("sarmalBildirimler")}`);
+  const simge = oku("../medya/simgeler/panel-makinist.svg");
+  const emsal = oku("../medya/simgeler/bolum/tren-ajan.svg");
   for (const nitelik of ['viewBox="0 0 24 24"', 'fill="none"', 'stroke="currentColor"', 'stroke-width="1.7"']) {
-    assert.ok(simge.includes(nitelik), `panel-onaylar.svg çizim dilinden ayrılıyor: ${nitelik} yok`);
-    assert.ok(gozlem.includes(nitelik), `emsal ölçüsü bozuldu: panel-gozlemler.svg ${nitelik} taşımıyor`);
+    assert.ok(simge.includes(nitelik), `panel-makinist.svg çizim dilinden ayrılıyor: ${nitelik} yok`);
+    assert.ok(emsal.includes(nitelik), `emsal ölçüsü bozuldu: bolum/tren-ajan.svg ${nitelik} taşımıyor`);
   }
   assert.ok(!/#[0-9a-fA-F]{3,6}\b/.test(simge), "simgeye ham renk gömülmüş");
 });
@@ -538,47 +541,30 @@ test("boş-durum cümlesi bekleyen kapı olmadığını anlatır ve ne yapılaca
   assert.ok(YUZEY_ACIKLAMALARI.onayPaneli.length > 0, "başlık altı açıklaması boş");
 });
 
-test("panel boşken rozet GÖRÜNMEZ, dolduğunda sayıyı taşır", () => {
-  // NÖBET KAYNAK TARAMASINDAN DAVRANIŞ ÖLÇÜMÜNE ÇEVRİLDİ (2026-08-27). Eskiden
-  // bu dosyada `badge = adet ?` kalıbını arıyordu; kalıp aramak yazımı kilitler
-  // ama davranışı ölçmez ve rozet kararı dört panelin ortak çekirdeğine taşınınca
-  // nöbet, davranış hiç değişmediği hâlde kırmızıya döndü. Kararın kendisi artık
-  // saf çekirdekte yaşadığı için gerçek işlev koşturulup sonucu ölçülebilir.
+test("rozet: boşken GÖRÜNMEZ, dolduğunda sayıyı taşır ve Makinist ağacı onu ortak karardan kurar", () => {
   assert.equal(panelRozeti(0, onayRozetIpucu), undefined,
     "boş kuyrukta rozet görünüyor; sıfır bir işaret gibi asılı kalır");
   const dolu = panelRozeti(3, onayRozetIpucu);
   assert.equal(dolu?.value, 3, "rozet kapı sayısını taşımıyor");
   assert.ok(dolu?.tooltip.includes("3"), "rozet ipucusu sayıyı söylemiyor");
   assert.ok(panelRozeti(1, onayRozetIpucu)?.tooltip.length, "rozet ipucusuz basılıyor");
-
-  // Panel tarafı kararı KENDİ yeniden vermez, ortak çekirdeğe sorar; ikinci bir
-  // rozet kararı yazılsaydı biri sessizce bayatlar ve iki panel çelişirdi.
-  const kaynak = oku("../src/onay-paneli.ts");
-  assert.ok(kaynak.includes("panelRozeti("), "rozet ortak karardan geçmiyor");
-  assert.ok(kaynak.includes("onayRozetIpucu"), "rozet ipucusuz basılıyor");
+  // Founder 2026-10-21: rozet Sarmal panelinde (kabın tek görünümü) yaşar; karar yine ortak çekirdekte verilir.
+  const panel = oku("../src/panel.ts");
+  assert.ok(panel.includes("panelRozeti(") && panel.includes("rozetSayisi"), "Makinist rozeti ortak karardan geçmiyor");
 });
 
-test("ROZET GÖVDEYLE AYNI KAPIDAN KURULUR — görünürlük dönüşü rozeti de yeniler", () => {
-  // ÖLÇÜLMÜŞ KUSUR (Founder ekran görüntüsü 2026-07-30): gövde "kararını bekleyen
-  // hiçbir kapı yok" derken başlıktaki rozet 1 gösteriyordu. Rozet ile gövde aynı
-  // deftere bakar ve defterde eleme yoktur, dolayısıyla ikisi aynı ANDA çelişemez;
-  // çelişki iki TAZELEME YOLUNUN ayrışmasından doğdu. Görünüş çözülürken ikisi
-  // birlikte kurulurdu, görünürlük değiştiğinde ise yalnız gövde yeniden basılırdı.
-  // Panel gizliyken kapı düşerse rozet yazımı hedefsiz kalır ve panel geri
-  // açıldığında son bilinen sayı ekranda asılı kalır.
+test("KARAR KADEMESİ TEK KAPIDAN ÇİZİLİR — defter webview kurmaz, panel kademeyi defterin kendi HTML'inden basar (PNL-A07)", () => {
+  // ÖLÇÜLMÜŞ KUSUR AİLESİ (Founder ekran görüntüsü 2026-07-30): iki tazeleme yolu ayrışınca ekran çelişkili
+  // iki sayı gösteriyordu. Ders yerinde kalır: karar kademesini çizen TEK yol vardır. OZK-13 ile kart kalktı;
+  // defter hiçbir webview kurmaz, Sarmal paneli kademeyi defterin `kademeHtml` çıktısından basar.
   const kaynak = oku("../src/onay-paneli.ts");
-
-  const gorunurluk = /onDidChangeVisibility\(\(\) => \{[^}]*\}\)/.exec(kaynak);
-  assert.ok(gorunurluk, "görünürlük değişimi hiç ele alınmıyor");
-  assert.ok(gorunurluk[0].includes("yuzeyiKur"),
-    "görünürlük dönüşü tek kurulum kapısından geçmiyor; rozet bayat kalabilir");
-  assert.ok(!/onDidChangeVisibility\(\(\) => \{[^}]*belgeyiBas\(\)/.test(kaynak),
-    "görünürlük dönüşü gövdeyi doğrudan basıyor; rozeti atlayan eski desen geri gelmiş");
-
-  const kapi = /private yuzeyiKur\(\): void \{([^}]*)\}/.exec(kaynak);
-  assert.ok(kapi, "tek kurulum kapısı (yuzeyiKur) yok");
-  assert.ok(kapi[1].includes("rozetiGuncelle()"), "kurulum kapısı rozeti ilan etmiyor");
-  assert.ok(kapi[1].includes("belgeyiBas()"), "kurulum kapısı gövdeyi basmıyor");
+  assert.ok(!/createWebviewPanel|registerWebviewViewProvider|onDidChangeViewState|webview\.html =/.test(kaynak),
+    "onay defteri kendi webview'ini kuruyor; karar iki ayrı yüzeyde çizilebilir");
+  assert.ok(/kademeHtml\(dosya: string, kod: string\): string \| undefined \{[\s\S]{0,300}kararKademesiHtml\(/.test(kaynak),
+    "kademe saf gövdenin tek üreticisinden basılmıyor");
+  const panel = oku("../src/panel.ts");
+  assert.ok(/this\.g\.makinist\.onay\?\.kademeHtml\(kapi\.dosya, kapi\.kod\)/.test(panel),
+    "Sarmal paneli kademeyi defterden okumuyor");
 });
 
 test("HİÇBİR KAYNAK DOSYASI HAM NUL TAŞIMAZ — dosya grep'e görünür kalır", () => {
@@ -619,7 +605,7 @@ test("HİÇBİR KAYNAK DOSYASI HAM NUL TAŞIMAZ — dosya grep'e görünür kal�
 //   Founder açtığı kapıyı elinin altında kaybediyordu.
 
 test("kimlik: kapı kimliği ETİKETTEN değil KAYNAKTAN doğar — etiket değişse de sabit kalır", () => {
-  const yol = "/depo/_Sarmal/plan/goc_plani.sar";
+  const yol = `/depo/_Sarmal/${PLAN_GOC}`;
   const once = onayKimligi({ tur: "kapı", dosya: yol, kod: "VIT-POSTA-A01" });
   // Adımın `ne` metni düzenlendi: etiket değişti, kapı aynı kapı.
   const sonra = onayKimligi({ tur: "kapı", dosya: yol, kod: "VIT-POSTA-A01" });
@@ -750,20 +736,39 @@ test("tek tık: kapı komutu açma işini KENDİSİ üstlenir, VS Code'un tıkla
     "iki openMode kipinde de gösterdi — kullanıcı yine ikinci bir tık harcar");
 });
 
-test("tek tık: panelde gösterme görünüşü öne getirir, satırı AÇAR ve odaklar", () => {
+test("tek tık: panelde gösterme kapının kademesini AÇAR, Onaylar düğümünü açar ve odaklar; hiçbir şey yan sütunda açılmaz", () => {
   const kaynak = oku("../src/onay-paneli.ts");
   const basi = kaynak.indexOf("async gosterVeAc(");
   assert.ok(basi > 0, "gosterVeAc gövdesi kaynakta bulunamadı");
-  const g = kaynak.slice(basi, basi + 900);
-  assert.ok(/acikligiYaz\(onayKimligi\(\{ tur: "kapı"[^)]*\}\), true\)/.test(g),
-    "gösterme kapı satırını açmıyor; karar satırları ve gerekçe kutusu görünmez kalır");
-  assert.ok(/acikligiYaz\(onayKimligi\(\{ tur: "dosya"[^)]*\}\), true\)/.test(g),
-    "gösterme dosya satırını açmıyor; kapı kapalı bir dalın altında gizli kalır");
-  assert.ok(/this\.gorunum\.show\(/.test(g),
-    "gösterme görünüşü öne getirmiyor; kullanıcı paneli kendisi aramak zorunda kalır");
-  assert.ok(/tur: "odakla"/.test(g),
-    "gösterme satıra odaklanmıyor; kullanıcının bir sonraki tuşu boşa düşer");
+  const g = kaynak.slice(basi, kaynak.indexOf("\n  }", basi));
+  assert.ok(/if \(!this\.kapiyiAc\(dosya, kod\)\) return false;/.test(g),
+    "gösterme kapının kademesini açmıyor; karar satırları ve gerekçe kutusu görünmez kalır");
+  assert.ok(/await this\.yuzey\?\.goster\(\);/.test(g),
+    "gösterme yüzeyi öne almıyor; kapı kapalı bir düğümün altında ya da başka sekmede gizli kalır");
+  assert.ok(/this\.acik\[ONAYLAR_DUGUMU\] = true/.test(oku("../src/panel.ts")),
+    "Sarmal paneli Onaylar düğümünü açmıyor");
+  assert.ok(!/ViewColumn\./.test(kaynak),
+    "onay yüzeyi editör sütununda bir şey açıyor; ekran bölünür ve açık dosya şeride sıkışır");
+  assert.ok(/this\.govdeyiTazele\(notKimligi\(dosya, kod\)\)/.test(g),
+    "gösterme gerekçe kutusuna odaklanmıyor; kullanıcının bir sonraki tuşu boşa düşer");
 });
+
+// OZK-13 (Founder 2026-10-27): dosya editörde ilgili satırda açılır, odak panelde kalır, panel
+// hiçbir şeyi editörün yerine ya da yan sütuna açmaz; onay kararı panelin içinde, satırın altında
+// verilir. Bu nöbet eskiden kartın etkin sütunda öne gelmesini (`kart.reveal(ViewColumn.Active,
+// false)`) ve kartın bir WebviewPanel olmasını sabitliyordu; ikisi de hükmün yasakladığı davranıştır.
+// Davranışın kendisini panel-sikayetleri.test.ts kabuk sahtesiyle ölçer; bu nöbet kaynağı okur.
+test("tek tık (OZK-13): kapıyı göstermek editörde kart açmaz ve öne getirmez; odak panelde kalır", () => {
+    const kaynak = oku("../src/onay-paneli.ts");
+    const basi = kaynak.indexOf("async gosterVeAc(");
+    assert.ok(basi > 0, "gosterVeAc gövdesi kaynakta bulunamadı");
+    const g = kaynak.slice(basi, basi + 900);
+    assert.ok(!/kartiAc\(|\.reveal\(/.test(g),
+      "kapıyı göstermek kartı açıyor ya da öne getiriyor; kart editörün etkin sütununda dosyanın üstünü örter");
+    assert.ok(!kaynak.includes("createWebviewPanel"),
+      "onay yüzeyi editör sütununda WebviewPanel açıyor; OZK-13 kararın panelin içinde verilmesini ister");
+    assert.ok(!/preserveFocus: false/.test(kaynak), "onay yüzeyi açılırken odağı panelden alıyor");
+  });
 
 test("ebeveyn: karar satırının atası KAPI, kapının atası DOSYA, dosyanın atası yok", () => {
   const yol = "/depo/plan.sar";
@@ -997,6 +1002,29 @@ test("iptal ile boş kutu AYRI şeylerdir ve ikisi de HİÇBİR kayıt yazmaz", 
     "iptal sessiz kalıyor; kullanıcı vazgeçtiğini hiçbir yerden görmüyor");
 });
 
+// ── ⑮ KOMUT SINIRI: dizgi olmayan argüman çökertmez, hiçbir kayıt yazmaz ─────
+//
+//   MGZ-A01 ölçümü: `sarmal.onayKararVer` komutu panelden gelmeyen çağrılara da
+//   açıktır (başka bir eklenti, eski imzayla yazılmış bir çağıran). Gerekçe
+//   yerine dizgi olmayan bir değer gelince ölçü `trim is not a function` ile
+//   patlıyordu; çağıran anlaşılır bir ret yerine yakalanmamış bir hata alıyordu.
+//   Ölçü artık türü kendisi sınar ve geçersiz argümanı AYRI bir sonuçla reddeder.
+test("komut sınırı: dizgi olmayan gerekçe ya da boole olmayan bayrak GEÇERSİZ sayılır, patlamaz", () => {
+  const olc = gerekceyiOlc as (notIster: unknown, not: unknown) => ReturnType<typeof gerekceyiOlc>;
+  for (const [notIster, not] of [
+    [true, true], [false, 42], [true, null], [false, {}], ["📝", true], ["🧪", false],
+  ] as const) {
+    let sonuc: ReturnType<typeof gerekceyiOlc> | undefined;
+    assert.doesNotThrow(() => { sonuc = olc(notIster, not); },
+      `gerekceyiOlc(${JSON.stringify(notIster)}, ${JSON.stringify(not)}) patladı`);
+    assert.deepEqual(sonuc, { tur: "geçersiz" },
+      `gerekceyiOlc(${JSON.stringify(notIster)}, ${JSON.stringify(not)}) geçersiz sayılmadı`);
+  }
+  // Geçerli tipler eski sonuçlarını aynen korur.
+  assert.deepEqual(gerekceyiOlc(true, undefined), { tur: "iptal" });
+  assert.deepEqual(gerekceyiOlc(false, undefined), { tur: "geçerli", not: "" });
+});
+
 test("hata kullanıcının GÖZÜNÜN ÖNÜNDE, kutunun yanında görünür", () => {
   const durum = kapiyiAc(new PanelDurumu(), TEK_DOSYA, "A1");
   const notId = notKimligi(TEK_DOSYA, "A1");
@@ -1040,23 +1068,25 @@ test("tazeleme: yazılmakta olan gerekçe DÜŞMEZ, satır da AÇIK kalır", () 
 test("tazeleme: belge BAŞTAN yazılmaz; odak ve imleç konumu korunur", () => {
   const panel = oku("../src/onay-paneli.ts");
   assert.ok(/govdeyiTazele\(\)[\s\S]{0,80}/.test(panel), "tazeleme yolu yok");
-  const basi = panel.indexOf("private govdeyiTazele(");
-  const govdeIsleve = panel.slice(basi, basi + 400);
-  assert.ok(govdeIsleve.includes('tur: "gövde"') && !govdeIsleve.includes("webview.html ="),
+  // PNL-A07: kademenin tazelemesi Sarmal panelinde yalnız Makinist ağacının parçasını gönderir; belge baştan yazılmaz.
+  const sarmal = oku("../src/panel.ts");
+  const basi = sarmal.indexOf("private onayTazele(");
+  const govdeIsleve = sarmal.slice(basi, sarmal.indexOf("\n  }", basi));
+  assert.ok(govdeIsleve.includes('this.agacTazele("makinist")') && !govdeIsleve.includes("webview.html ="),
     "tazeleme belgeyi baştan yazıyor; sayfa yeniden yüklenir ve kullanıcı " +
     "cümlesinin ortasında klavyeyi kaybeder");
   // Her tuş vuruşunda gövde YENİDEN BASILMAZ: taslak yalnız deftere düşer.
   assert.ok(/case "taslak":[\s\S]{0,400}taslakYaz\(m\.kimlik, m\.metin\);\s*\n\s*return;/.test(panel),
     "taslak mesajı gövdeyi yeniden bastırıyor; her harfte imleç yeniden kurulur");
-  const betik = oku("../src/onay-govde.ts");
+  const betik = oku("../src/panel-betik.ts");
   assert.ok(betik.includes("setSelectionRange") && betik.includes("activeElement"),
     "tazeleme sonrası odak ve imleç konumu geri konmuyor");
 });
 
 test("taslak: her KAPININ kutusu ayrıdır; başka kapıyı açmak metni silmez", () => {
   const durum = new PanelDurumu();
-  const bir = notKimligi("/depo/_Sarmal/plan/goc_plani.sar", "A1");
-  const iki = notKimligi("/depo/_Sarmal/plan/vitrin_ui.sar", "B9");
+  const bir = notKimligi(`/depo/_Sarmal/${PLAN_GOC}`, "A1");
+  const iki = notKimligi(`/depo/_Sarmal/${PLAN_VITRIN}`, "B9");
   durum.taslakYaz(bir, "birinci kapının gerekçesi");
   durum.taslakYaz(iki, "ikinci kapının gerekçesi");
   assert.equal(durum.taslak(bir), "birinci kapının gerekçesi",
@@ -1101,9 +1131,11 @@ test("güvenlik: içerik güvenlik politikası dar tutulur ve DIŞ KAYNAĞA hiç
   const kaynak = oku("../src/onay-govde.ts");
   assert.ok(!/https?:\/\//.test(kaynak),
     "gövde kaynağında dış adres var; sıfır bağımlılık ilkesi çiğnenmiş");
+  // PNL-A07: onay defteri kendi webview'ini kurmaz; karar Sarmal panelinin dar politikası altında çizilir
+  // (panel-cekirdek.test.ts: default-src 'none', nonce'lu tek betik).
   const panel = oku("../src/onay-paneli.ts");
-  assert.ok(/localResourceRoots/.test(panel),
-    "yerel kaynak kökü sınırlanmamış; panel eklenti dışına erişebilir");
+  assert.ok(!/createWebviewPanel|enableScripts/.test(panel),
+    "onay defteri kendi webview'ini kuruyor; ikinci bir içerik güvenlik politikası doğar");
 });
 
 test("güvenlik: kullanıcı verisi gövdeye KAÇIŞSIZ girmez", () => {
@@ -1121,10 +1153,14 @@ test("güvenlik: kullanıcı verisi gövdeye KAÇIŞSIZ girmez", () => {
 });
 
 test("betiksiz disiplin: Mini Graf betiksiz KALIR, karar yüzeyi betik alır", () => {
+  // Founder 2026-10-21: Mini Graf kendi webview'ünü kurmaz; çizicileri betiksiz kalır, betik yalnız
+  // Sarmal panelinin nonce'lu tek bloğudur ve Mini Graf gövdesi gölge kökte yalnız komut bağlarını iletir.
   const minigraf = oku("../src/minigraf.ts");
-  assert.ok(minigraf.includes("enableScripts: false"),
-    "Mini Grafın betiksiz disiplini bozulmuş; ona dokunulmayacaktı");
-  const panel = oku("../src/onay-paneli.ts");
+  assert.ok(!minigraf.includes("enableScripts"), "Mini Graf betik açmaya başlamış; ona dokunulmayacaktı");
+  for (const dosya of ["../src/minigraf-cekirdek.ts", "../src/minigraf-klasik.ts", "../src/minigraf-ilerleme.ts", "../src/minigraf-gorunum.ts"])
+    assert.ok(!oku(dosya).includes("<script"), `${dosya} çiziciye betik gömmüş; Mini Grafın betiksiz disiplini bozulmuş`);
+  // Karar yüzeyi artık Sarmal panelinin içindedir (OZK-13 · PNL-A07); giriş alan panel betiklidir.
+  const panel = oku("../src/panel.ts");
   assert.ok(panel.includes("enableScripts: true"),
     "karar yüzeyi betiksiz; giriş alan bir yüzey betiksiz olamaz");
 });
@@ -1231,7 +1267,7 @@ test("bayat görüntü: açık belge kapıyı hâlâ görüyorsa kapı DÜŞMEZ"
 
 test("bayat görüntü: AÇIK OLMAYAN dosyaların kapıları görüntüden aynen geçer", () => {
   const kayitlar = ikiDosyaliFikstur();
-  const acikYol = "/depo/_Sarmal/plan/goc_plani.sar";
+  const acikYol = `/depo/_Sarmal/${PLAN_GOC}`;
   // Yalnız bir dosya açık ve o dosyanın kapıları karara bağlanmış.
   const sonuc = acikBelgeleriUstuneYaz(kayitlar, [acikBelge(acikYol, [])]);
   assert.deepEqual(sonuc.map((k) => k.kapi.kod), ["B9"],
@@ -1290,15 +1326,17 @@ test("odak ①: kullanıcının KENDİ açtığı kapıda odak gerekçe kutusuna
   const acik = govde(tekKapiliFikstur(), kapiyiAc(new PanelDurumu(), TEK_DOSYA, "A1"));
   assert.ok(acik.includes(`id="not-${niyet}"`),
     "odak niyetinin gösterdiği alan gövdede yok; odak boşluğa gider");
-  // Kabuk niyeti gövde mesajına GERÇEKTEN koyar ve betik onu uygular.
+  // Kabuk niyeti yüzeyin tazelemesine GERÇEKTEN koyar, panel onu webview'e iletir ve betik uygular (PNL-A07).
   const panel = oku("../src/onay-paneli.ts");
-  assert.ok(/acikligiYaz\(m\.kimlik, m\.acik\)\) this\.govdeyiTazele\(odakNiyeti\(m\)\)/.test(panel),
-    "kabuk odak niyetini tazeleme mesajına koymuyor");
-  const betik = oku("../src/onay-govde.ts");
-  assert.ok(/if \(m\.odakNot\) notaOdaklan\(m\.odakNot\)/.test(betik),
+  assert.ok(/if \(this\.kapiyiAc\(m\.dosya, m\.kod\)\) this\.govdeyiTazele\(odakNiyeti\(m\)\)/.test(panel),
+    "kabuk odak niyetini tazelemeye koymuyor");
+  assert.ok(/if \(odakNot\) this\.yaz\(\{ tip: "onayOdak", kimlik: odakNot \}\)/.test(oku("../src/panel.ts")),
+    "Sarmal paneli odak niyetini webview'e iletmiyor");
+  const betik = oku("../src/panel-betik.ts");
+  assert.ok(/m\.tip === 'onayOdak'\) \{\s*notaOdaklan\(m\.kimlik\);/.test(betik),
     "betik odak niyetini uygulamıyor");
   // ③ üncü şart: sayfa zıplamaz ve kapı satırı görünür kalır.
-  assert.ok(/satir\.scrollIntoView\(\{ block: "nearest" \}\);\s*\n\s*alan\.focus\(\{ preventScroll: true \}\)/.test(betik),
+  assert.ok(/satir\.scrollIntoView\(\{ block: 'nearest' \}\);\s*\n\s*alan\.focus\(\{ preventScroll: true \}\)/.test(betik),
     "odak verilirken sayfa zıplayabiliyor ya da kapı satırı görünür kalmıyor; " +
     "kullanıcı hangi kapıya yazdığını göremez");
 });
@@ -1320,48 +1358,42 @@ test("odak ②: TAZELEME odağı çalamaz — niyet yalnız kullanıcı açılı
   }), undefined, "karar olayı odak taşıyor");
   assert.equal(odakNiyeti({ tur: "kapıSeç", dosya: TEK_DOSYA, kod: "A1" }), undefined,
     "kapı seçimi ikinci bir odak yolu açıyor");
-  // TAZELEME YOLLARI argümansız çağırır: odak niyeti üretemezler.
+  // TAZELEME YOLLARI odak niyeti üretemez: defter değişimi yalnız ağacı yeniden çizdirir (PNL-A07).
   const panel = oku("../src/onay-paneli.ts");
   const basi = panel.indexOf("private cizdir()");
-  const cizdir = panel.slice(basi, basi + 260);
-  assert.ok(/this\.govdeyiTazele\(\);/.test(cizdir),
+  const cizdir = panel.slice(basi, panel.indexOf("\n  }", basi));
+  assert.ok(/this\.degisti\.fire\(\);/.test(cizdir) && !/govdeyiTazele\(|tazele\(/.test(cizdir.replace("this.degisti.fire();", "")),
     "tazeleme yolu odak niyeti taşıyor; kullanıcı yazarken odağı kayar " +
     "(bu depoda bu hafta üç kez ölçülmüş kusur ailesi)");
-  // Ve odak, tazeleme sonrası kullanıcının BIRAKTIĞI yere geri konur.
-  const betik = oku("../src/onay-govde.ts");
-  assert.ok(/odakKimlik = odak && odak\.dataset \? odak\.dataset\.kimlik/.test(betik),
-    "tazeleme sonrası odak KARARLI KİMLİKTEN geri okunmuyor; kutuda olmayan " +
+  // Ve odak, tazeleme sonrası kullanıcının BIRAKTIĞI yere geri konur: satır kararlı kimliğinden,
+  // gerekçe kutusu kimliği, imleci ve henüz eklentiye ulaşmamış metniyle.
+  const betik = oku("../src/panel-betik.ts");
+  assert.ok(/var odak = odakKimligi\(\);[\s\S]{0,120}var alan = alanOdagi\(\);\s*\n\s*h\.innerHTML = html;\s*\n\s*secimiGeriYukle\(odak\);\s*\n\s*alanOdaginiGeriYukle\(alan\);/.test(betik),
+    "tazeleme sonrası odak KARARLI KİMLİKTEN ve gerekçe kutusundan geri konmuyor; " +
     "kullanıcının odağı gövdeye düşer ve ok tuşları çalışmaz olur");
-  assert.ok(/kok\.querySelector\('\[data-kimlik="' \+ CSS\.escape\(odakKimlik\)/.test(betik),
+  assert.ok(/if \(odakId\) \{ var o = satirBul\(odakId\); if \(o\) o\.focus\(\{ preventScroll: true \}\); \}/.test(betik),
     "kararlı kimlikle odak geri konmuyor");
-  assert.ok(/yeni\.setSelectionRange\(bas, son\)/.test(betik),
+  assert.ok(/y\.setSelectionRange\(o\.bas, o\.son\)/.test(betik),
     "tazeleme sonrası imleç konumu geri konmuyor; kullanıcı cümlesinin " +
     "ortasında imlecini kaybeder");
 });
 
-test("odak ③: kutudan ÇIKIŞ yolu açıktır ve odak kapı satırına döner", () => {
-  const betik = oku("../src/onay-govde.ts");
-  const basi = betik.indexOf("function kutudanCik(");
+test("odak ③: kutudan ÇIKIŞ yolu açıktır ve odak kapı satırına döner (Sarmal paneli · PNL-A07)", () => {
+  // Karar kademesi artık Sarmal panelinin içindedir; klavye sözleşmesi panelin betiğinde yaşar.
+  const betik = oku("../src/panel-betik.ts");
+  const basi = betik.indexOf("var alan = t.closest('.kademe .not-metin');");
   assert.ok(basi > 0, "kutudan çıkış yolu hiç yok; klavye kullanıcısı kapana kısılır");
-  const cikis = betik.slice(basi, basi + 400);
-  assert.ok(cikis.includes("kapiSatiriBul(") && cikis.includes("focus("),
-    "çıkış odağı kapı satırına vermiyor; kullanıcı gezinmeye devam edemez");
-  // İKİ YOL: Escape ve Shift+Tab.
-  assert.ok(/olay\.key === "Escape" \|\| \(olay\.key === "Tab" && olay\.shiftKey\)/.test(betik),
+  const dal = betik.slice(basi, betik.indexOf("if (t.closest('.kademe')) return;", basi));
+  // İKİ YOL: Escape ve Shift+Tab; ikisi de odağı kapı satırına verir.
+  assert.ok(/e\.key === 'Escape' \|\| \(e\.key === 'Tab' && e\.shiftKey\)/.test(dal),
     "çıkış için ikinci bir yol (Shift+Tab) kurulmamış");
-  // ÇIKIŞ VAZGEÇMEK DEĞİLDİR: ÇAĞRI YERİ ölçülür, yalnız işlev gövdesi değil.
-  const tusBasi = betik.indexOf('olay.key === "Escape" || (olay.key === "Tab" && olay.shiftKey)');
-  assert.ok(tusBasi > 0, "kutudaki çıkış tuşları ele alınmıyor");
-  const tusDali = betik.slice(tusBasi, tusBasi + 220);
-  assert.ok(tusDali.includes("kutudanCik(kutu)"),
-    "çıkış tuşu kutudan çıkış yolunu çağırmıyor");
-  assert.ok(!/tur: "iptal"/.test(tusDali),
-    "kutudaki Escape hâlâ VAZGEÇMEYE bağlı; çıkmak ile vazgeçmek aynı tuşa " +
-    "binmiş ve kullanıcı yalnız kutudan çıkmak isterken kapıyı kapatıyor");
-  assert.ok(!/kutudanCik[\s\S]{0,300}postMessage/.test(cikis),
-    "çıkış işlevi kabuğa bir şey bildiriyor; çıkmak kapıyı kapatmamalı");
+  assert.ok(/var kapiSatiri = kademeKapisi\(alan\);\s*\n\s*if \(kapiSatiri\) \{ sec\(kapiSatiri\); kapiSatiri\.focus\(/.test(dal),
+    "çıkış odağı kapı satırına vermiyor; kullanıcı gezinmeye devam edemez");
+  // ÇIKIŞ VAZGEÇMEK DEĞİLDİR: kutudaki Escape hiçbir ileti göndermez.
+  assert.ok(!/tur: 'iptal'|onayGonder/.test(dal.slice(0, dal.indexOf("} else if (e.key === 'Enter'"))),
+    "kutudaki Escape hâlâ VAZGEÇMEYE bağlı; çıkmak ile vazgeçmek aynı tuşa binmiş");
   // VAZGEÇME ayrı bir eylemdir: kapı satırındaki ikinci Escape.
-  assert.ok(/olay\.key === "Escape" && dugme\.classList\.contains\("kapi-satiri"\)[\s\S]{0,300}tur: "iptal"/.test(betik),
+  assert.ok(/if \(e\.key === 'Escape' && acikKademe\) \{[\s\S]{0,240}onayGonder\(\{ tur: 'iptal'/.test(betik),
     "vazgeçme yolu kaybolmuş; iptal ile boş kutu ayrımı ancak iptal yolu varsa yaşar");
 });
 
@@ -1679,4 +1711,34 @@ test("PANEL BESLEMESİ: iki Adım yan yanayken YALNIZ beyanlı olan geçer", () 
   const html = govde(bulunan.map((kapi) => ({ dosya: TEK_DOSYA, kapi })));
   assert.ok(html.includes("BEYANLI-A03") && !html.includes("DESENLI-A04"),
     "panelin belgesi çekirdeğin hükmüyle ayrışmış");
+});
+
+// ── ⑳ ODAK DEĞİŞİMİ GÖRÜNTÜDEN ÖNCE TAM TARAMA BAŞLATMAZ (MGZ-A01) ─────────
+//
+//   Gerçek VS Code süiti etkinleşmede onaya ait bir bağımsız tam tarama turu
+//   ölçtü (`yedekTur: 1`). Kaynağı odak aboneliğiydi: odak ilk görüntüden önce
+//   değişince görüntüsüz bir tur koşuyordu. Bu nöbet kaynakta aboneliğin
+//   görüntü hazır olmadan tur başlatmadığını sınar.
+test("odak değişimi ana görüntü hazır değilken tam tarama turu başlatmaz", () => {
+  const kuyruk = oku("../src/onay-kuyrugu.ts");
+  const abonelik = /odak\.degisince\(\(\) => \{([^}]*)\}\);/.exec(kuyruk);
+  assert.ok(abonelik, "odak aboneliği kaynakta bulunamadı");
+  const govde = abonelik![1]!;
+  assert.ok(govde.includes("tumunuTara()"), "odak değişimi kuyruğu artık hiç yerleştirmiyor");
+  assert.ok(/if \(anaGoruntuHazirMi\(\)\)\s*void tumunuTara\(\)/.test(govde),
+    "odak değişimi görüntü hazır olmadan tur başlatıyor; onaya ait yedek tarama geri gelir");
+});
+
+// ── PNL-A07 · HTR-ONAY-KUYRUGU-DOGRULANMAMISI-GORMUYOR ─────────────────────────
+
+test("kuyruk doğrulanmamış durumdaki Adımın kapısını da görür; karara bağlanmış ya da tamamlanmış Adım kapı değildir", () => {
+  // Ölçülmüş kusur (Founder 2026-09-16): süzgeç yalnız beklemede ve geliştirmede durumlarına bakıyordu; kanonun kendi
+  // sözlüğünde Founder onayını bekleyen durum olan doğrulanmamış süzgecin dışında kalıyor ve kuyruk sessiz kalıyordu.
+  const adim = (durum: string, ek = ""): string => zincir(
+    `Adım( kod: A1, onayBekler: founder, durum: ${durum}, ${ek}ne: "iş", kabul: [ ${ONAYLI_OLCUT} ] )`);
+  for (const durum of ["beklemede", "geliştirmede", "doğrulanmamış"]) {
+    assert.deepEqual(kapilar(adim(durum)).map((k) => k.kod), ["A1"], `${durum} durumundaki kapı kuyruğa girmedi`);
+  }
+  assert.equal(kapilar(adim("tamamlandı")).length, 0, "tamamlanmış Adım kapı sayıldı");
+  assert.equal(kapilar(adim("doğrulanmamış", `onay: "onaylandı — 2026-10-01", `)).length, 0, "karara bağlanmış Adım kapı sayıldı");
 });

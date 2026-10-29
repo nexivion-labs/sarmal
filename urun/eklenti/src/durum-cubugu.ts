@@ -20,7 +20,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
-import { durumCubuguIpucu, DURUM_CUBUGU_METINLERI } from "./yuzey-metinleri.ts";
+import { durumCubuguIpucu, DURUM_CUBUGU_METINLERI, SINYAL_METINLERI } from "./yuzey-metinleri.ts";
 // Girdi çizelgesi SAF çekirdektedir: nöbet onu vscode kabuğu olmadan koşturur.
 import { DURUM_CUBUGU_GIRDILERI as GIRDILER, type SayacKaynagi } from "./yuzey-cekirdek.ts";
 
@@ -45,14 +45,21 @@ export class DurumCubugu {
     });
   }
 
-  /** Sayıları kaynaktan TÜRETİR ve metinleri tazeler. */
+  /**
+   * Sayıları kaynaktan TÜRETİR ve metinleri tazeler. İpucu sayının kapsamını adıyla yazar ve çatı
+   * kapsamında sayıyı proje proje döker (PNL-A08). Görünürlüğü koşula bağlı girdi koşul tutmayınca gizlenir.
+   */
   tazele(): void {
+    const kapsam = this.kaynak.kapsam?.();
     GIRDILER.forEach((g, i) => {
+      const oge = this.ogeler[i]!;
+      if (g.gorunur && !g.gorunur(this.kaynak)) { oge.hide(); return; }
       const adet = g.say(this.kaynak);
       const metin = DURUM_CUBUGU_METINLERI[g.metin];
-      const oge = this.ogeler[i]!;
-      oge.text = `${g.simge} ${adet}`;
-      oge.tooltip = durumCubuguIpucu(metin.ad, adet, metin.eylem);
+      oge.text = g.parcalar
+        ? g.parcalar(this.kaynak).map((p) => `${SINYAL_METINLERI.bantAdi(p.bant)} ${p.adet}`).join(" · ")
+        : `${g.simge} ${adet}`;
+      oge.tooltip = durumCubuguIpucu(metin.ad, adet, metin.eylem, kapsam, this.kaynak.paylar?.(g.metin) ?? []);
       oge.show();
     });
   }

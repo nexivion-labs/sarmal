@@ -19,7 +19,7 @@
 
 import * as vscode from "vscode";
 import {
-  GORUNUS_HATIRLATICILAR, projeyeGrupla, dosyayaGrupla, kayitGorunumu,
+  projeyeGrupla, dosyayaGrupla, kayitGorunumu,
   hatirlaticiIsareti, panoMetni, panoDugumu, panoAdedi, turDagilimi,
   type SatirIsareti, type YuzeyKaydi, type ProjeKumesi, type YuzeyDosyaKumesi,
   panelRozeti,
@@ -34,23 +34,18 @@ import {
   HATIRLATICI_KAPATMA_METINLERI,
 } from "./yuzey-metinleri.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
+import { adaGoreSay, type ProjePayi } from "./kapsam-sayaci.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
 import { satirdaDegerDegistir } from "../../cekirdek/src/deger-yaz.ts";
 
-import { satirIkonu } from "./ortak.ts";
+import { projeSatiriIkonu, satirIkonu, type YuzDurumu } from "./ortak.ts";
 import { eksenSvgVaryanti, type SatirSimgesi } from "./simge-cizelgesi.ts";
 // 🏷️ Dosya satırının teknoloji simgesi TEK kaynaktan gelir: çizelge eklentinin
 // kendi dil ilanından türer ve ikinci bir eşleme yazılmaz (teknoloji-simgesi.ts).
 import { eklentiCizelgesi, teknolojiSimgesi, type SimgeCizelgesi } from "./teknoloji-simgesi.ts";
 
-/**
- * Panelin kendi proje satırı simgesi — geometrik ailenin satır çizelgesinden
- * (VIT-KIMLIK-A05). Yol Haritası seferi kullanır ve Bildirimler gelen kutusunu;
- * üç panel aynı simgeyi taşırsa bakışta ayrılmaz (Founder canlı bulgusu
- * 2026-07-28). Hatırlatıcılar bir yer imi defteridir: kullanıcı bir işi
- * bilerek işaretler ve sonra oraya döner.
- */
-const PROJE_SIMGESI: SatirSimgesi = "yerimi";
+// PNL-A25: Proje satırının simgesi panelin kendi seçimi değildir; Yol Haritasının varlık simgesi
+// kuralından (`projeSatiriIkonu` · `varlikSimgesi`) okunur. Dosya ve kayıt satırları kendi simgelerini taşır.
 
 /**
  * Teknoloji simgesi çözülemeyen dosyanın işareti. Uydurma bir teknoloji simgesi
@@ -96,7 +91,27 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
     return this.kumeler.reduce((toplam, k) => toplam + k.kayitlar.length, 0);
   }
 
-  gorunum?: vscode.TreeView<PanelOge>;
+  /**
+   * Ateşlemiş hatırlatıcı sayısı (YUZ-3.4 · PNL-A08): bağlandığı iş tamamlanmış ve kapatılmayı bekleyen
+   * hatırlatıcı. Dış rozet yalnız bunları sayar; uyuyan hatırlatıcı rozete girmez. Sayı panelin kendi
+   * kümesinden türer (aynı düğümün iki tanısı tek satıra inmiş hâliyle).
+   */
+  get atesmisSayisi(): number {
+    return this.kumeler.reduce((t, k) => t + k.kayitlar.filter(hatirlaticiKapatilabilir).length, 0);
+  }
+
+  /** Kayıtların proje kırılımı; `yalnizAtesmis` doğruysa yalnız ateşlemiş olanlar (PNL-A08). */
+  projePaylari(yalnizAtesmis = false): ProjePayi[] {
+    return adaGoreSay(this.kumeler.flatMap((k) =>
+      k.kayitlar.filter((y) => !yalnizAtesmis || hatirlaticiKapatilabilir(y)).map(() => k.proje.ad)));
+  }
+
+  /** Ateşlemiş hatırlatıcıların proje kırılımı (Makinist kaynağı yüzü). */
+  atesmisPaylari(): ProjePayi[] {
+    return this.projePaylari(true);
+  }
+
+  gorunum?: YuzDurumu;
   /** VIT-KIMLIK-A05: satır simgelerinin üretilmiş varyant kökü (kayıtta bağlanır). */
   eklentiKoku?: vscode.Uri;
   /** Uzantı → teknoloji simgesi çizelgesi; kayıtta eklentinin dil ilanından kurulur. */
@@ -191,7 +206,7 @@ export class Hatirlaticilar implements vscode.TreeDataProvider<PanelOge> {
       item.description = projeSatiriAciklamasi(adet, dagilim.turSayisi);
       item.tooltip = new vscode.MarkdownString(
         projeSatiriIpucu(oge.kume.proje.ad, oge.kume.proje.kod, adet, dagilim.tumu));
-      item.iconPath = satirIkonu(this.eklentiKoku, PROJE_SIMGESI, "bilgi");
+      item.iconPath = projeSatiriIkonu(this.eklentiKoku, oge.kume.proje, "bilgi");
       item.contextValue = "sarmalHatirlaticiProjesi";
       return item;
     }
@@ -351,12 +366,7 @@ export function hatirlaticilarKaydi(context: vscode.ExtensionContext): Hatirlati
   // VIT-KIMLIK-A05: geometrik satır simgeleri · VIT-GRAF-A13: dosya satırının
   // teknoloji simgesi eklentinin KENDİ dil ilanından türer (tek kaynak).
   saglayici.simgeKaynaginiBagla(context.extensionUri, eklentiCizelgesi(context.extension));
-  const gorunum = vscode.window.createTreeView<PanelOge>(GORUNUS_HATIRLATICILAR, {
-    treeDataProvider: saglayici,
-  });
-  gorunum.description = YUZEY_ACIKLAMALARI.hatırlatıcılar;
-  gorunum.message = YUZEY_BOS_DURUM.hatırlatıcılar;
-  saglayici.gorunum = gorunum;
-  context.subscriptions.push(gorunum);
+  // Founder 2026-10-21: ayrı görünüm yoktur; sağlayıcı Makinist ağacının bir üst düğümüdür (makinist.ts).
+  saglayici.gorunum = { description: YUZEY_ACIKLAMALARI.hatırlatıcılar, message: YUZEY_BOS_DURUM.hatırlatıcılar };
   return saglayici;
 }

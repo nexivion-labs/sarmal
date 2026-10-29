@@ -179,23 +179,31 @@ test("MUTASYON: çizelgenin bir hanesi kaydırılınca kayıt nöbeti KIRMIZI ya
   const ozet = yuzeyUlasmaOzeti();
   assert.deepEqual(matrisKayitSapmalari(saglam, ozet), []);
 
+  // Hanelerin bugünkü sayısı kaydın kendisinden okunur; böylece sicil büyüyüp kayıt
+  // tazelendiğinde fikstür yine aynı satırı kaydırır ve sayıyı ikinci kez dondurmaz
+  // (HST-MTR-A12).
+  const kaydir = (metin: string, desen: RegExp, fark: number): string =>
+    metin.replace(desen, (satir, sayi: string) => satir.replace(sayi, String(Number(sayi) + fark)));
+  const PROBLEMS = /^\| Problems \| (\d+) \|/m;
+  const BILDIRIMLER = /^\| Bildirimler \| (\d+) \|/m;
+  const TOPLAM = /^\| \*\*Toplam\*\* \| \*\*(\d+)\*\* \|/m;
+
   // ① Çizelgenin Problems hanesi tek başına kayarsa yüzey toplamı sicil boyutunu
   //    vermez; kaydın eski uyarısının "iki sayı ters yönde kayabilir" açığı budur.
-  const tekKayma = saglam.replace("| Problems | 145 |", "| Problems | 144 |");
+  const tekKayma = kaydir(saglam, PROBLEMS, -1);
   assert.notEqual(tekKayma, saglam, "mutasyon deseni kayda uymadı — nöbet yanlış satırı ölçüyor olabilir");
   const sapma1 = matrisKayitSapmalari(tekKayma, ozet);
   assert.ok(sapma1.some((s) => s.includes("sicil boyutunu vermiyor")), sapma1.join(" · "));
 
   // ② İki hane ters yönde birlikte kayarsa toplam korunur; nöbet bunu Çıkarım
   //    düğümüyle ayrışma üstünden yakalar — tek bir kaynağa yazmak yetmez.
-  const ciftKayma = saglam
-    .replace("| Problems | 145 |", "| Problems | 144 |")
-    .replace("| Bildirimler | 33 |", "| Bildirimler | 34 |");
+  const ciftKayma = kaydir(kaydir(saglam, PROBLEMS, -1), BILDIRIMLER, +1);
   const sapma2 = matrisKayitSapmalari(ciftKayma, ozet);
   assert.ok(sapma2.some((s) => s.startsWith("problems hanesi kaynaklar arasında ayrışıyor")), sapma2.join(" · "));
 
   // ③ Canlı sicilden türeyen hane kaydırılınca ölçümle ayrışma bildirilir.
-  const toplamKayma = saglam.replace("| **Toplam** | **181** |", "| **Toplam** | **180** |");
+  const toplamKayma = kaydir(saglam, TOPLAM, -1);
+  assert.notEqual(toplamKayma, saglam, "mutasyon deseni Toplam satırına uymadı");
   const sapma3 = matrisKayitSapmalari(toplamKayma, ozet);
   assert.ok(sapma3.some((s) => s.includes("canlı ölçümle uyuşmuyor")), sapma3.join(" · "));
 
@@ -208,10 +216,11 @@ test("MUTASYON: Çıkarım düğümünün sayısı kaydın çizelgesinden ayrıl
   const ozet = yuzeyUlasmaOzeti();
   // Kaydın 2026-09-10 öncesi hâli tam da buydu: Çıkarım düğümü 171 kimlik ve
   // 143/4/24 dağılımı yazarken çizelge 175 kimlik ve 143/2/30 yazıyordu.
+  // Kaydın bugünkü sayıları desenle bulunur; yalnız eski hâl sabit yazılıdır (HST-MTR-A12).
   const bayat = saglam
-    .replace("sicilin 181 kimliğinin tamamını tek yüzeye YÖNLENDİRİR",
+    .replace(/sicilin \d+ kimliğinin tamamını tek yüzeye YÖNLENDİRİR/,
       "sicilin 171 kimliğinin tamamını tek yüzeye YÖNLENDİRİR")
-    .replace("dağılım 145 Problems, 3 Hatırlatıcılar ve 33 Bildirimler",
+    .replace(/dağılım \d+ Problems, \d+ Hatırlatıcılar ve \d+ Bildirimler/,
       "dağılım 143 Problems, 4 Hatırlatıcılar ve 24 Bildirimler");
   assert.notEqual(bayat, saglam, "mutasyon deseni Çıkarım düğümüne uymadı");
   const sapmalar = matrisKayitSapmalari(bayat, ozet);
@@ -222,7 +231,7 @@ test("MUTASYON: Çıkarım düğümünün sayısı kaydın çizelgesinden ayrıl
 
 test("MUTASYON: bir sayı kaynağı kayıttan tümüyle silinince nöbet sessiz kalmaz", () => {
   const saglam = readFileSync(KAYIT_YOLU, "utf8");
-  const eksik = saglam.replace(/^\| Hatırlatıcılar \| 3 \|.*$/m, "| Hatırlatıcılar | — |");
+  const eksik = saglam.replace(/^\| Hatırlatıcılar \| \d+ \|.*$/m, "| Hatırlatıcılar | — |");
   assert.notEqual(eksik, saglam);
   const sapmalar = matrisKayitSapmalari(eksik, yuzeyUlasmaOzeti());
   assert.ok(sapmalar.some((s) => s.startsWith("okunamayan iddia")), sapmalar.join(" · "));

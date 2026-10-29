@@ -30,7 +30,7 @@ import "./dil-kur.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
@@ -47,7 +47,7 @@ import {
   type BeklerSilmesi,
 } from "../src/onay-cekirdek.ts";
 import {
-  GORUNUS_ONAYLAR, GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER,
+  GORUNUS_ONAYLAR, 
   DENETLEYICI_ONAY, KOMUT_ONAY_KUYRUGU, sayaclariOlayaBagla,
 } from "../src/yuzey-cekirdek.ts";
 // Emoji nöbeti artık tek tek metin ÇAĞIRMAZ: erişimini kaynaktaki sınır
@@ -55,6 +55,10 @@ import {
 // aktarılmış bir metin listesi tutmaya gerek kalmadı.
 import { etkinKararAdi, onayPaneliniAcBasligi } from "../src/yuzey-metinleri.ts";
 import { sarKapsamDisi } from "../src/izleyici-cekirdek.ts";
+import { planYolu } from "../../cekirdek/sinama/dogus-agaci.ts";
+
+/** Fikstür dosyaları doğuşun plan rafında yaşar; yol paketin kendisinden türer (HST-MTR-A07). */
+const D = (ad: string): string => `/depo/${planYolu(ad)}`;
 
 const oku = (u: string): string => readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8");
 const yol = (u: string): string => fileURLToPath(new URL(u, import.meta.url));
@@ -125,8 +129,8 @@ function sayanKabuk(dosyalar: ReadonlyMap<string, string>, yollar?: readonly str
 
 test("ana görüntü verildiğinde kabuğa HİÇ dokunulmaz: sıfır arama, sıfır okuma, sıfır ayrıştırma", async () => {
   const goruntu: ProgramGoruntusu = new Map([
-    ["/depo/plan/goc_plani.sar", bildirimler(IKI_KAPILI)],
-    ["/depo/plan/vitrin_ui.sar", bildirimler(TEK_KAPILI)],
+    [D("goc_plani.sar"), bildirimler(IKI_KAPILI)],
+    [D("vitrin_ui.sar"), bildirimler(TEK_KAPILI)],
   ]);
   const { kabuk, sayac } = sayanKabuk(new Map());
 
@@ -141,12 +145,12 @@ test("ana görüntü verildiğinde kabuğa HİÇ dokunulmaz: sıfır arama, sıf
 
 test("ana hat susunca YEDEK yol koşar ve her dosya EN ÇOK BİR KEZ okunur", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
-    ["/depo/plan/vitrin_ui.sar", TEK_KAPILI],
+    [D("goc_plani.sar"), IKI_KAPILI],
+    [D("vitrin_ui.sar"), TEK_KAPILI],
   ]);
   // Aynı yol listede iki kez geçse bile ikinci okuma YAPILMAMALIDIR.
   const { kabuk, sayac, okunanlar } = sayanKabuk(
-    dosyalar, ["/depo/plan/goc_plani.sar", "/depo/plan/vitrin_ui.sar", "/depo/plan/goc_plani.sar"]);
+    dosyalar, [D("goc_plani.sar"), D("vitrin_ui.sar"), D("goc_plani.sar")]);
 
   const bulgular = await kapilariTopla(undefined, kabuk);
 
@@ -158,8 +162,8 @@ test("ana hat susunca YEDEK yol koşar ve her dosya EN ÇOK BİR KEZ okunur", as
 
 test("iki yol AYNI kapıları döndürür: görüntü yolu ile yedek yol ayrışamaz", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
-    ["/depo/plan/vitrin_ui.sar", TEK_KAPILI],
+    [D("goc_plani.sar"), IKI_KAPILI],
+    [D("vitrin_ui.sar"), TEK_KAPILI],
   ]);
   const goruntu: ProgramGoruntusu = new Map(
     [...dosyalar].map(([y, metin]) => [y, bildirimler(metin)]));
@@ -181,11 +185,11 @@ test("iki yol AYNI kapıları döndürür: görüntü yolu ile yedek yol ayrış
 
 test("yedek yol kırık ve okunamaz dosyada çökmez, öteki kapıları düşürmez", async () => {
   const dosyalar = new Map([
-    ["/depo/plan/kirik.sar", "Bloo( kod: X"],          // sözdizimi kırık
-    ["/depo/plan/goc_plani.sar", IKI_KAPILI],
+    [D("kirik.sar"), "Bloo( kod: X"],          // sözdizimi kırık
+    [D("goc_plani.sar"), IKI_KAPILI],
   ]);
   const { kabuk } = sayanKabuk(
-    dosyalar, ["/depo/plan/kirik.sar", "/depo/plan/yok.sar", "/depo/plan/goc_plani.sar"]);
+    dosyalar, [D("kirik.sar"), D("yok.sar"), D("goc_plani.sar")]);
 
   const bulgular = await kapilariTopla(undefined, kabuk);
 
@@ -194,9 +198,19 @@ test("yedek yol kırık ve okunamaz dosyada çökmez, öteki kapıları düşür
 });
 
 test("GERÇEK depo üstünde iki yol birebir aynı kapı kümesini verir", async (t) => {
-  // Fikstür değil, çalışma ağacının kendisi: `_Sarmal/plan/` altındaki gerçek
-  // dosyalar. Sayı burada SABİTLENMEZ — Founder bir kapıyı onayladığında düşer ve
-  // sabitlenmiş bir sayı o gün yanlış alarm verirdi.
+  // Fikstür değil, çalışma ağacının kendisi: deponun plan rafındaki gerçek
+  // dosyalar, Faz klasörü dâhil bütün alt klasörleriyle. Sayı burada SABİTLENMEZ —
+  // Founder bir kapıyı onayladığında düşer ve sabitlenmiş bir sayı o gün yanlış
+  // alarm verirdi.
+  //
+  // 🔻 HST-MTR-A07 BULGUSU (2026-10-10): tarama eskiden yalnız rafın üst düzeyini
+  // okuyor ve kapsam süzgecine çıplak bir `plan/<ad>` yolu veriyordu. Faz dosyaları
+  // 2026-09-29'da rafın Faz klasörüne taşındığından beri Adımların ve onay
+  // kapılarının yaşadığı dosyalar bu nöbete hiç girmiyordu; nöbet "bekleyen kapı
+  // yok" teşhisiyle boş küme üstünde yeşil kalırken depoda Faz dosyasındaki
+  // HST-MTR-A13 Adımının bekleyen kapısı vardı (ölçüm 7dc1e28 işlemesinde yapıldı).
+  // Tarama artık özyinelemelidir ve süzgece dosyanın deponun köküne göreli gerçek
+  // yolunu verir.
   //
   // 🔻 BOŞ KÜME ARTIK ÇÖKERTMEZ, ÇÜNKÜ BOŞ KÜME MEŞRU BİR DEPO DURUMUDUR.
   // Bu nöbet eskiden kümenin boş olmamasını da şart koşuyordu ve gerekçesi
@@ -213,12 +227,14 @@ test("GERÇEK depo üstünde iki yol birebir aynı kapı kümesini verir", async
   // bildirilir — susturulmaz ama kapıyı da kilitlemez. Eşitliğin dolu küme
   // üstünde gerçekten koştuğunu bu dosyadaki fikstür nöbetleri kanıtlar
   // (IKI_KAPILI kümesi iki kapı üretir ve iki yolu da oradan geçirir).
+  const depoKoku = yol("../../..");
   const planDizini = yol("../../../is/plan");
   const dosyalar = new Map<string, string>();
-  for (const ad of readdirSync(planDizini)) {
+  for (const ad of readdirSync(planDizini, { recursive: true }) as string[]) {
     if (!ad.endsWith(".sar")) continue;
-    if (sarKapsamDisi(`plan/${ad}`)) continue;
-    dosyalar.set(join(planDizini, ad), readFileSync(join(planDizini, ad), "utf8"));
+    const tam = join(planDizini, ad);
+    if (sarKapsamDisi(relative(depoKoku, tam).split(sep).join("/"))) continue;
+    dosyalar.set(tam, readFileSync(tam, "utf8"));
   }
   assert.ok(dosyalar.size >= 3, `plan dizininde ölçülecek dosya yok: ${dosyalar.size}`);
 
@@ -325,15 +341,15 @@ test("açılışta hiçbir iş parçacığı yaratılmaz: modül sonunda koşuls
     "her bulgu için pencere açan eski işlev (kutuAc) hâlâ yaşıyor");
 });
 
-test("komut ikinci bir kuyruk YARATMAZ: yalnız Onaylar paneli görünüşüne odaklanır", () => {
+test("komut ikinci bir kuyruk YARATMAZ: yalnız Makinist bölümünü seçip Onaylar düğümünü barındıran ağacı öne alır", () => {
   const kaynak = oku("../src/onay-kuyrugu.ts");
   assert.ok(!kaynak.includes("showQuickPick"),
     "onay yüzeyi hâlâ bir seçim listesi açıyor; ikinci bir karar arayüzü yaşıyor");
   // Ölçü ÇAĞRI ve TANIM biçimine bakar; tarihsel kaydın adı anmasına değil.
   assert.ok(!/\bkararSor\s*[(=]/.test(kaynak),
     "emekli edilen kararSor akışı hâlâ kaynakta; iki karar yolu vardır");
-  assert.ok(kaynak.includes("`${GORUNUS_ONAYLAR}.focus`"),
-    "komut Onaylar paneli görünüşüne odaklanmıyor");
+  assert.ok(kaynak.includes("BOLUM_KOMUTLARI.makinist.duz"),
+    "komut Makinist bölümünü seçip ağacı öne almıyor");
   const basi = kaynak.indexOf("const onayPanelineOdaklan");
   const sonu = kaynak.indexOf("// ⚡ ANLIK KUYRUK");
   assert.ok(basi > 0 && sonu > basi, "komut gövdesi kaynakta bulunamadı");
@@ -456,9 +472,12 @@ test("kimlikler sabittir: görünüş, komut ve denetleyici kimliği birebir kor
   assert.equal(DENETLEYICI_ONAY, "sarmal-onay",
     "denetleyici kimliği değişti; Açıklamalar menü koşulları düğmeleri bulamaz");
 
+  // Founder 2026-10-21: görünüş kimliği sabiti korunur (kullanıcı verisi taşımaz) fakat artık ayrı
+  // görünüm ilan edilmez; Onaylar Makinist ağacının üst düğümüdür.
   const gorunusler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  assert.ok(gorunusler.includes(GORUNUS_ONAYLAR),
-    "paket bildirimindeki görünüş kimliği sabitten ayrıştı");
+  assert.ok(!gorunusler.includes(GORUNUS_ONAYLAR), "Onaylar hâlâ ayrı görünüm olarak ilan edilmiş");
+  assert.ok(!gorunusler.includes("sarmalMakinist"), "Makinist ağacı kapta ayrı görünüm olarak duruyor (Founder 2026-10-21: kapta tek görünüm)");
+  assert.ok(gorunusler.includes("sarmalPanel"), "kabın tek görünümü bildirimde yok");
   const komut = PAKET.contributes.commands.find((k) => k.command === KOMUT_ONAY_KUYRUGU);
   assert.ok(komut, "paket bildiriminde komut kimliği yok");
 
@@ -742,10 +761,18 @@ test("tek yazıcı korunur: onay: metnini üreten tek yer çekirdektir", () => {
 // ── ⑦ KALEM 11 — KOMŞU İKİ PANELE DOKUNULMADI ──────────────────────────────
 //   "Değişmedi" cümlesi ancak ölçülürse doğrudur. Üç ölçü kullanılır: iki dosya
 //   onay yüzeyinden hiçbir şey içeri almaz, kimlikleri sabittir ve yinelenen
-//   çizimi önleyen parmak izi güvencesi yerindedir. Dördüncü ölçü BAYT
-//   ÖZETİDİR: bu tur o iki dosyaya dokunmadığını sayıyla söyler. Özet, komşu
-//   panellerde meşru bir iş yapıldığında BİLEREK güncellenir; kazayla değişmeyi
-//   yakalamak tam olarak onun görevidir.
+//   çizimi önleyen parmak izi güvencesi yerindedir.
+//
+//   BAYT ÖZETİ NÖBETİ EMEKLİYE AYRILDI (BKM-DNT-A09). Bu yerde iki komşu panelin
+//   sha256 özetini sabit bir değerle karşılaştıran bir nöbet yaşıyordu. Nöbet bir
+//   davranış nöbeti değil bir değişiklik dedektörüydü ve on dört kez bilerek
+//   güncellendi; ölçülmüş bedeli şuydu: hatırlatıcı sayacı iki katına
+//   çıkarıldığında tek koruma bu özetti ve özet güncellenince süit yeşil kaldı.
+//   İki panelin davranışı artık kabuk sahtesiyle modül olarak yüklenip
+//   `kabuk-davranis.test.ts` dosyasında ölçülür: sayaç ile rozetin ağaçtaki
+//   kayıt satırlarıyla eşitliği, aynı içerikte yinelenen çizimin olmaması, boş
+//   durum cümlesi ve görünüş kimliği. Özetin güncelleme tarihçesi git
+//   geçmişinde durur.
 
 test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
   for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts"]) {
@@ -762,165 +789,12 @@ test("komşu paneller onay yüzeyinden hiçbir şey içeri almaz", () => {
         `${dosya} ikinci bir tazeleme ritmi kurmuş: ${ritim}`);
     }
   }
-  assert.ok(oku("../src/hatirlaticilar.ts").includes(`GORUNUS_HATIRLATICILAR`));
-  assert.ok(oku("../src/bildirimler.ts").includes(`GORUNUS_BILDIRIMLER`));
+  // Komşu kaynaklar artık kendi görünümlerini kurmaz; Makinist ağacı üst düğüm olarak okur.
   const gorunusler = PAKET.contributes.views["sarmal-yol"].map((g) => g.id);
-  for (const kimlik of [GORUNUS_HATIRLATICILAR, GORUNUS_BILDIRIMLER]) {
-    assert.ok(gorunusler.includes(kimlik),
-      `komşu panelin görünüş kimliği paket bildiriminden düşmüş: ${kimlik}`);
-  }
-});
-
-test("komşu iki panelin BAYTI bu turda değişmedi", async () => {
-  const { createHash } = await import("node:crypto");
-  const ozet = (dosya: string): string =>
-    createHash("sha256").update(oku(dosya), "utf8").digest("hex").slice(0, 16);
-  // ÖZETLER BİLEREK GÜNCELLENDİ — VIT-GRAF-A13 (2026-07-29).
-  //
-  // Bu nöbet VIT-POSTA-A03 turunda "komşu panellere dokunulmadı" sözleşmesini
-  // korumak için kuruldu ve İŞİNİ YAPTI: bir sonraki tur iki panele de dokununca
-  // anında kırmızıya döndü. Değişiklik meşrudur ve kapsamı bellidir — her iki
-  // panele yalnız `kayitSayisi` okuyucusu eklendi, çünkü durum çubuğu sayıları
-  // panellerin KENDİ kümelerinden türetir ve ikinci bir sayaç tutmaz.
-  //
-  // Özet güncellemek nöbeti zayıflatmaz, çünkü güncelleme SESSİZ OLAMAZ: sayı
-  // değişince süit kırmızıya döner ve değiştiren kişi buraya gelip neyi neden
-  // değiştirdiğini yazmak zorunda kalır. Nöbetin değeri sayının kendisinde değil,
-  // bu zorunlulukta yaşar.
-  // ÖZET İKİNCİ KEZ BİLEREK GÜNCELLENDİ — kanon göçü (2026-07-29 akşamı).
-  //
-  // Nöbet aynı gün İKİNCİ KEZ işini yaptı ve yine haklıydı. Bu kez değişen şey
-  // davranış değil ATIF: `bildirimler.ts` yorumunda eski renk kararının defter kodu
-  // yazılıydı ve halefi `YUZ-4` ile değiştirildi. Founder kusuru IDE'de gözüyle buldu, çünkü
-  // günün göç turu yalnız mekanik kenarları (`referans:` · `dayanak:`) taşımış,
-  // YORUM ve DÜZYAZI içindeki atıflara hiç dokunmamıştı. Ölçüm: eklenti kaynağında
-  // yüz elli iki, çekirdekte on atıf; yüz kırk üçünün halefi vardı ve taşındı.
-  // Panellerin davranışı, kimliği ve sayaç türetimi DEĞİŞMEDİ — yalnız bir yorum
-  // satırı güncel kanona işaret eder oldu.
-  // ÖZET ÜÇÜNCÜ KEZ BİLEREK GÜNCELLENDİ — CDL-A04 dil katmanı göçü (2026-08-02).
-  //
-  // İki paneldeki kullanıcıya görünen metinler iki dilli yüzey sözlüğüne
-  // taşındı. Onay yüzeyi davranışı, panel kimlikleri, yenileme
-  // ritmi ve sayaç türetimi DEĞİŞMEDİ; yalnız metinlerin geldiği dil katmanı
-  // değişti. Nöbet bu meşru bayt değişikliğini görünür kılmaya devam eder.
-  // ÖZET DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — GOC-TERFI-A06 (2026-08-03).
-  //
-  // Bildirim özetinin rozeti artık ayrı bir yüzey hedefinden değil, grubun ilk
-  // tanısındaki sicil düzeyinden türetilir. Panel kimliği, yenileme ritmi ve
-  // sayaç türetimi değişmedi; yalnız yüzeyde yeniden derecelendirme yolu kapandı.
-  // ÖZET BEŞİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-KIMLIK-A05 (2026-08-04).
-  //
-  // Founder hükmü: IDE'nin içi baştan aşağı geometrik çizim dilinden konuşur.
-  // İki panelin proje ve kayıt satırlarındaki hazır codicon kimlikleri
-  // (bookmark · bell · inbox · layers · circle-small-filled) satır çizelgesinin
-  // (simge-cizelgesi.ts) geometrik simgelerine çevrildi; renk anlamları üretici
-  // varyantlarıyla aynen korunur. Panel davranışı, kayıt içeriği, yenileme
-  // ritmi ve sayaç türetimi DEĞİŞMEDİ — yalnız görsel katman değişti.
-  // Yedinci meşru güncelleme (2026-08-04 · Founder canlı bulgusu): düz gri
-  // basılan satır ikonları metinden ayrışmıyordu; çan uyarı sarısına, iki
-  // proje satırı bilgi mavisine bağlandı — yalnız varyant seçimi değişti.
-  // ÖZET SEKİZİNCİ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A01 (2026-08-08).
-  //
-  // Ölçülmüş kusur şuydu: sınıflama Fikir tipini Hatırlatıcı'nın söz-verilmemiş
-  // kardeşi ilan ettiği hâlde yazılan bir Fikir hiçbir panele ulaşmıyordu, çünkü
-  // motor Fikir için hiçbir tanı üretmez ve bu panel yalnız tanı akışından
-  // beslenirdi. Onarım Hatırlatıcılar panelinin İÇİNE bir Fikir bölümü açtı;
-  // kayıtlar ayrışmış ağaçtan okunur ve bölüm satırı ile Fikir satırları
-  // geometrik ailenin işaretlerini taşır. Hatırlatıcı hanesinin davranışı,
-  // kaynağı, panel kimliği, yenileme ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ;
-  // yalnız aynı panele ikinci bir hane eklendi. `bildirimler.ts` bu turda hiç
-  // açılmadı ve özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET DOKUZUNCU KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A13 (2026-08-08).
-  //
-  // İki panel de bu turda GEZİLEBİLİR ve KOPYALANABİLİR kılındı; değişiklik
-  // ikisine de dokunur ve kapsamı bellidir. Ağaca Proje ile kayıt arasına DOSYA
-  // kademesi girdi ve dosya satırı teknoloji simgesini `teknoloji-simgesi.ts`
-  // tek kaynağından okur; kayıt satırı kendi kodunu söyler ve Hatırlatıcılar
-  // hanesinde işaret kayıt türüne göre ayrışır; her satır sağ tık menüsünden
-  // panoya inebilir. Onay yüzeyine hiçbir bağ kurulmadı: iki panel hâlâ
-  // `onay-cekirdek` · `onay-tarayici` · `onay-kuyrugu` · `onay-paneli`
-  // adlarının hiçbirini içermez ve bunu yukarıdaki nöbet ayrıca ölçer. Panel
-  // kimlikleri, yenileme ritmi ve sayaç türetimi DEĞİŞMEDİ.
-  // ÖZET ONUNCU KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A15 (2026-08-08).
-  //
-  // Founder hükmü tür özetinin en üstteki proje satırına yazılmasıdır. Hükmün
-  // doğuşu ölçülmüştür: VIT-GRAF-A13 ağacı üç kademeye indirirken tanı kimliğine
-  // göre yığan eski kademeyi dosya kademesiyle değiştirmek zorunda kaldı ve
-  // kullanıcı hangi tür sorunun baskın olduğunu ancak bütün dosyaları açıp
-  // sayarak öğrenir hâle geldi. Founder kaybolan görünümü geri istedi fakat
-  // dördüncü kademeyi reddetti, dolayısıyla geri gelen şey bir kademe değil bir
-  // özet satırıdır. İki panelde de değişen tek şey Proje satırının etiketi,
-  // gri açıklaması ve ipucudur; dağılım panellerin KENDİ kayıt kümesinden
-  // `turDagilimi` ile türetilir ve ikinci bir tarama ya da ikinci bir sayaç
-  // kurulmaz. Ağacın kademe sayısı, kayıt içeriği, panel kimlikleri, yenileme
-  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ; onay yüzeyine hiçbir bağ
-  // kurulmadı ve bunu yukarıdaki nöbet ayrıca ölçer.
-  // ÖZET ON BİRİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A15 düzeltme turu (2026-08-09).
-  //
-  // Bağımsız denetim, `hatirlaticilar.ts` içindeki Fikir hanesi yorumunun
-  // YÜRÜRLÜKTEKİ HÜKMÜN TERSİNİ söylediğini ölçtü: yorum, Fikir satırının kodlu
-  // etiket hükmünün dışında bırakıldığını yazıyordu, oysa aynı turda o sınır
-  // kaldırılmış ve iki hane ortak biçime bağlanmıştı. Kaydı okuyan kişi kilitli
-  // hükmün tersine yönlendiriliyordu. Bu turda değişen tek şey o yorumun
-  // metnidir; davranış, veri kaynağı, panel kimliği, yenileme ritmi ve sayaç
-  // türetimi DEĞİŞMEDİ. `bildirimler.ts` bu düzeltme turunda hiç açılmadı ve
-  // özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET ON İKİNCİ KEZ BİLEREK GÜNCELLENDİ — VIT-GRAF-A16 (2026-08-09).
-  //
-  // Founder 2026-08-08 tarihinde Fikirlerin kendi panelini hak ettiğine hükmetti
-  // ve hükmün doğruluğu 2026-08-09 tarihinde canlı görünümde ölçüldü: canlı rafa
-  // yazılan iki gerçek Fikir panelde bulunamadı, çünkü ikisi de yirmi dokuz
-  // hatırlatıcı kaydının altında kalmıştı. Bu turda `hatirlaticilar.ts`
-  // dosyasından Fikir hanesinin tamamı söküldü; `fikirBölümü` ile `fikir` kök
-  // türleri, `fikirleriYerlestir` kapısı, `fikirSayisi` okuyucusu, iki Fikir
-  // simgesi, saf çekirdeğe kurulan bağ ve pano dalındaki Fikir kolu kalktı.
-  // Boşluk ölçüsü de yalnız hatırlatıcıları sayar hâle döndü. Hatırlatıcı
-  // hanesinin davranışı, veri kaynağı, panel kimliği, yenileme ritmi ve
-  // `kayitSayisi` türetimi DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu
-  // yukarıdaki nöbet ayrıca ölçer. `bildirimler.ts` bu turda hiç açılmadı ve
-  // özeti bilerek olduğu gibi bırakıldı.
-  // ÖZET ON ÜÇÜNCÜ KEZ BİLEREK GÜNCELLENDİ — VIT-POSTA-A06 (2026-08-27).
-  //
-  // Founder hükmü dört panelin de kendi sayı rozetini taşımasıdır. Hükmün doğuşu
-  // ölçülmüştür: rozet bugüne dek yalnız Onaylar panelinde vardı ve komşu üç
-  // panel sayısını yalnız durum çubuğunda söylüyordu, dolayısıyla kullanıcı bir
-  // panelin dolu mu boş mu olduğunu ancak onu açarak öğreniyordu. Bu turda iki
-  // panelde de değişen tek şey boş durum güncelleyicisine eklenen tek satırlık
-  // rozet atamasıdır. Rozetin KARARI saf çekirdekte tek bir yerde yaşar
-  // (yuzey-cekirdek.panelRozeti) ve sayı yine panelin KENDİ listesinden, durum
-  // çubuğunun okuduğu aynı `kayitSayisi` kaynağından türer; ikinci bir sayaç
-  // kurulmadı ve bu yüzden rozet ile durum çubuğu çelişemez. Ağacın kademe
-  // sayısı, kayıt içeriği, panel kimlikleri, yenileme ritmi ve sayaç türetimi
-  // DEĞİŞMEDİ; onay yüzeyine hiçbir bağ kurulmadı ve bunu yukarıdaki nöbet
-  // ayrıca ölçer.
-  // ÖZET ON DÖRDÜNCÜ KEZ BİLEREK GÜNCELLENDİ — KYN-YUZ-A03 (2026-09-10).
-  //
-  // Hatırlatıcı mekanizmasının üçüncü halkası, yani KAPATMA, bugüne kadar yalnız
-  // elle dosya düzenlemesiyle mümkündü; Founder bunu boş gürültü olarak adlandırdı
-  // ve haklıydı, çünkü hatırlatan fakat kapattırmayan bir bildirim kullanıcının
-  // dikkat bütçesinden yer alır ve karşılığında eylem sunmaz. Bu turda
-  // `hatirlaticilar.ts` iki şey kazandı: satırın bağlam değeri artık ATEŞLEMİŞ ile
-  // uykuda bekleyen kaydı ayırır (karar saf çekirdekte, `hatirlaticiKapatilabilir`)
-  // ve kullanıcının başlattığı bir kapatma kapısı eklendi. Kapı, Adım durumunu
-  // yazan tek yazar kapısının hatırlatıcı ikizidir: yalnız `durum` alanına dokunur,
-  // konumu ayrıştırıcıdan alır, yazımdan önce kaynakla bayt düzeyinde doğrular ve
-  // en küçük şüphede dosyaya dokunmadan dürüst hata döner. Kayıt SİLİNMEZ (SNF-0).
-  //
-  // ONAY YÜZEYİNE HİÇBİR BAĞ KURULMADI ve iki panel hâlâ `onay-cekirdek` ·
-  // `onay-tarayici` · `onay-kuyrugu` · `onay-paneli` adlarının hiçbirini içermez;
-  // bunu yukarıdaki nöbet ayrıca ölçer. Panel kimliği, veri kaynağı, yenileme
-  // ritmi ve `kayitSayisi` türetimi DEĞİŞMEDİ: kapatma sonrası tazeleme panelin
-  // kendi taramasından değil gövdenin TEK denetim kilidinden istenir.
-  // `bildirimler.ts` bu turda hiç açılmadı ve özeti bilerek olduğu gibi bırakıldı.
-  const BEKLENEN: Record<string, string> = {
-    "../src/hatirlaticilar.ts": "4bf07ba296fe58cc",
-    "../src/bildirimler.ts": "adeaa39549882d72",
-  };
-  for (const [dosya, beklenen] of Object.entries(BEKLENEN)) {
-    assert.equal(ozet(dosya), beklenen,
-      `${dosya} değişmiş. Bu değişiklik onay yüzeyi turunun kapsamı dışıdır; ` +
-      "meşruysa buradaki özet BİLEREK güncellenmelidir.");
-  }
+  assert.ok(!gorunusler.includes("sarmalMakinist") && gorunusler.includes("sarmalPanel"),
+    "Makinist ağacı kabın tek görünümünün sekmesidir; ayrı görünüm kalmamalı");
+  for (const dosya of ["../src/hatirlaticilar.ts", "../src/bildirimler.ts"])
+    assert.ok(!oku(dosya).includes("createTreeView"), `${dosya} ayrı görünüm kuruyor`);
 });
 
 // ── 📊 DURUM ÇUBUĞU: SAYI TÜRETİLİR, TUTULMAZ (VIT-GRAF-A13) ────────────────
@@ -954,9 +828,11 @@ test("durum çubuğu Sarmal'ın kendi yüzeylerini gösterir ve her sayı kaynak
   const kaynak = {
     hata: () => 11, uyarı: () => 22, gözlem: () => 33,
     hatırlatıcı: () => 44, fikir: () => 66, kapı: () => 55,
+    dur: () => 7, dikkat: () => 8,
   };
   const okunan = DURUM_CUBUGU_GIRDILERI.map((g) => g.say(kaynak));
-  assert.deepEqual(okunan, [55, 44, 66, 33],
+  // PNL-A08: Dur ve Dikkat girdisi en solda durur ve iki bandın toplamını sayar (metni iki parçayı ayrı yazar).
+  assert.deepEqual(okunan, [15, 55, 44, 66, 33],
     "durum çubuğu sayısı kaynaktan gelmiyor; ikinci bir sayaç tutuluyor olabilir");
 });
 
@@ -1118,7 +994,7 @@ const KAPILI_KAYNAK = zincir(
   `Adım( kod: PRB-A02, onayBekler: founder, durum: beklemede, ne: "🧪 ikinci kapı", kabul: [ ${ONAYLI_OLCUT} ] )`);
 
 const ISTEK = {
-  dosya: "/depo/plan/prob.sar", kod: "PRB-A01", satir: 3,
+  dosya: D("prob.sar"), kod: "PRB-A01", satir: 3,
   damga: "onaylandı", not: "", gun: "2026-07-29",
 };
 
@@ -1234,9 +1110,9 @@ test("EKLEME NOKTASI: tırnaklı değerde hesap kaynağa uymaz ve KÖR yazım do
 });
 
 test("EKLEME NOKTASI: yazım hattı doğrulanamayan noktaya YAZMAZ ve dürüst hata verir", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/tirnak.sar", TIRNAKLI_KAYNAK);
+  const { durum, kabuk } = sahteBelge(D("tirnak.sar"), TIRNAKLI_KAYNAK);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/tirnak.sar", kod: "TRN-A01" });
+    { ...ISTEK, dosya: D("tirnak.sar"), kod: "TRN-A01" });
   assert.equal(sonuc.tur, "eklemeNoktasıDoğrulanamadı",
     `tırnaklı durumda yazım "${sonuc.tur}" ile bitti; ya dosya bozuldu ya hata yanlış konuştu`);
   assert.equal(durum.eklemeSayisi, 0, "doğrulanamayan noktaya yine de yazıldı");
@@ -2066,9 +1942,9 @@ test("BEKLER SİLME: mekanik kayıt verilmediğinde silinecek aralık üretilmez
 });
 
 test("YAZIM: karar yazılınca `onayBekler` alanı KALKAR ve dosya ayrıştırılabilir kalır", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
 
   assert.equal(sonuc.tur, "başarı", `karar "${sonuc.tur}" ile bitti`);
   const kayit = onayKaydiMetni(ISTEK.damga, ISTEK.gun, ISTEK.not);
@@ -2086,9 +1962,9 @@ test("YAZIM: karar yazılınca `onayBekler` alanı KALKAR ve dosya ayrıştırı
 });
 
 test("YAZIM: TIRNAKLI beyanda da alan kalkar ve belge bozulmaz", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/tirnakli-beyan.sar", BEKLEYEN_TIRNAKLI);
+  const { durum, kabuk } = sahteBelge(D("tirnakli-beyan.sar"), BEKLEYEN_TIRNAKLI);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/tirnakli-beyan.sar", kod: "MEK-A04" });
+    { ...ISTEK, dosya: D("tirnakli-beyan.sar"), kod: "MEK-A04" });
   assert.equal(sonuc.tur, "başarı", `tırnaklı beyanda karar "${sonuc.tur}" ile bitti`);
   assert.doesNotThrow(() => bildirimler(durum.disk), "tırnaklı beyan belgeyi bozdu");
   assert.equal(adimBeklerDegeri(bildirimler(durum.disk), "MEK-A04"), undefined);
@@ -2098,9 +1974,9 @@ test("YAZIM: silme ekleme noktasına DEĞSE bile tek düzenleme doğru belge ür
   // `durum`un hemen ardından gelen son alanda silme, kendinden önceki virgülü
   // alır ve o virgül tam da eklemenin yapılacağı noktadadır. İki düzenleme aynı
   // konumda başlarsa sıraları belirsizdir; nöbet üretilen belgeyi ölçer.
-  const { durum, kabuk } = sahteBelge("/depo/plan/bitisik.sar", BEKLEYEN_BITISIK);
+  const { durum, kabuk } = sahteBelge(D("bitisik.sar"), BEKLEYEN_BITISIK);
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/bitisik.sar", kod: "MEK-A05" });
+    { ...ISTEK, dosya: D("bitisik.sar"), kod: "MEK-A05" });
   assert.equal(sonuc.tur, "başarı", `bitişik düzenlemede karar "${sonuc.tur}" ile bitti`);
   assert.doesNotThrow(() => bildirimler(durum.disk), "bitişik düzenleme belgeyi bozdu");
   const agac = bildirimler(durum.disk);
@@ -2113,7 +1989,7 @@ test("YAZIM: silme ekleme noktasına DEĞSE bile tek düzenleme doğru belge ür
 });
 
 test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   // Kaynak satırı ayrıştırıcının bildirdiği konumdan iki karakter kaydırılmış
   // gibi okutulur: kanıt zinciri kopar ve yazım hattı durmak zorundadır.
   const kaydiran: YazimKabugu = {
@@ -2124,7 +2000,7 @@ test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", asyn
     },
   };
   const sonuc = await kararIsle(new UcusDefteri(), kaydiran,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
     `kanıtsız silme "${sonuc.tur}" ile bitti; ya dosya bozuldu ya hata yanlış konuştu`);
   assert.equal(durum.eklemeSayisi, 0, "kanıtlanamayan silmeye rağmen yazıldı");
@@ -2135,13 +2011,13 @@ test("YAZIM: silme aralığı kanıtlanamıyorsa HİÇBİR ŞEY yazılmaz", asyn
 test("YAZIM: alan yazımdan SONRA hâlâ duruyorsa BAŞARI bildirilmez", async () => {
   // Kabuk kararı yazar fakat bekleme ilanını bırakır — onarım sökülürse üretimin
   // kendisi tam olarak böyle davranır. Kanıt zinciri bunu yakalamak zorundadır.
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA);
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA);
   const yarim: YazimKabugu = {
     ...kabuk,
     ekle: (kapi, ek) => kabuk.ekle(kapi, ek),      // silme aralığı bilerek DÜŞÜRÜLÜR
   };
   const sonuc = await kararIsle(new UcusDefteri(), yarim,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "beklerAlanıKaldırılamadı",
     "karar yazılıp bekleme ilanı kalmışken başarı bildirildi; hüküm ölçülmüyor");
   assert.equal(adimBeklerDegeri(bildirimler(durum.bellek), "MEK-A01"), "founder",
@@ -2149,9 +2025,9 @@ test("YAZIM: alan yazımdan SONRA hâlâ duruyorsa BAŞARI bildirilmez", async (
 });
 
 test("GERİ ALMA: kaydetme başarısızsa ekleme DE silme DE geri alınır", async () => {
-  const { durum, kabuk } = sahteBelge("/depo/plan/mek.sar", BEKLEYEN_ORTA, { kaydetBasarili: false });
+  const { durum, kabuk } = sahteBelge(D("mek.sar"), BEKLEYEN_ORTA, { kaydetBasarili: false });
   const sonuc = await kararIsle(new UcusDefteri(), kabuk,
-    { ...ISTEK, dosya: "/depo/plan/mek.sar", kod: "MEK-A01" });
+    { ...ISTEK, dosya: D("mek.sar"), kod: "MEK-A01" });
   assert.equal(sonuc.tur, "kaydedilemedi");
   assert.equal(sonuc.tur === "kaydedilemedi" && sonuc.geriAlindi, true);
   assert.equal(durum.bellek, BEKLEYEN_ORTA,

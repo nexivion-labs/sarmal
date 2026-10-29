@@ -1,0 +1,399 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// is/plan/faz/6_arac_koprusu.sar — FAZ-2026-KOPRU · Araç Köprüsü Mevsimi
+//
+//   HÜKÜM (Founder · 2026-10-25): Sarmal, hangi yapay zekâ aracı kullanılırsa
+//   kullanılsın o aracın beceri (skill), alt ajan, kanca ve bellek dosyalarını
+//   tanımalı, kendi Etmen, Beceri, Yetenek, Tetikleyici, Kanca ve Bellek
+//   düğümleriyle eşleştirmeli ve bunları bir otomasyon panelinde göstermelidir.
+//   Desenler ve anti-desenler bu eşleşmenin parçasıdır.
+//
+//   SINIR (Founder onayı · 2026-10-25): köprünün tesisatı açıktır, içerik ve
+//   seçim politikası açık çekirdeğin dışında kalır. Dosya biçimi bilgisi, ortak
+//   model, okuma adaptörleri, eşleşme denetimi, panel, sahiplenme ve genel
+//   üretici bu depoda yaşar. Hangi becerinin hangi köke ineceğine karar veren
+//   gelişmiş politika ve beceri içerikleri açık çekirdeğe bağımlılık olarak
+//   girmez; çekirdek yalnız takılabilir bir arayüz ve yalın bir varsayılan taşır
+//   (STR-3). Bu çizgi karne ölçeğinin açık, ağırlıklarının örtü tarafında
+//   durmasıyla aynı desendir.
+//
+//   SIRA: tahminle adaptör yazılmaz, önce biçim ölçülür; önce okunur, sonra
+//   üretilir; önce tek araç (Claude Code) uçtan uca çalışır, sonra öteki araçlara
+//   genişlenir. Kanca üretimi bu mevsimde yapılmaz: kanca çalıştırılabilir bir
+//   komuttur ve makine yolu taşır; ilk sürümde yalnız okunur.
+// ═══════════════════════════════════════════════════════════════════════════
+
+Faz( kod: FAZ-2026-KOPRU, ad: "Araç Köprüsü Mevsimi", hedefTarih: "2026-12",
+  ne: "🌀 Sarmal'ın yapay zekâ araçlarının beceri, ajan, kanca ve bellek dosyalarını tanıdığı, kendi düğümleriyle eşleştirdiği ve gösterdiği mevsim" ) {
+
+  -->|
+  ## Amaç
+  Köprünün tahminle değil ölçülmüş biçimle yazılmasıdır. Claude Code'un skill,
+  alt ajan, kanca, bellek ve kural dosyalarının gerçek alanları ve konumları
+  resmî belgeden ve gerçek bir makineden ölçülür.
+
+  ## Kapsam
+  Kapsar: Claude Code biçim ölçümü ve kişisel veri taşımayan sentetik bir
+  fikstür korpusu. Kapsamaz: öteki araçların ölçümü (Öteki Araçlar Bloku) ve
+  adaptör kodu.
+
+  ## Sonuç
+  Blok kapandığında her dosya türü için alan listesi, konum listesi ve kaynak
+  belge adresi kayıttadır; fikstür korpusu depoda donmuştur ve kişisel veri
+  taşımaz.
+  |<--
+  Blok( kod: BLK-KPR-OLCUM, ad: "Biçim Ölçümü",
+    ne: "📏 Araç dosyalarının gerçek biçiminin ölçülüp fikstür korpusu olarak dondurulması" ) {
+
+    Katman( kod: KPR-OLC, takım: [ TAKIM-CEKIRDEK ], ad: "Biçim Korpusu",
+      ne: "Claude Code dosya biçimlerinin ölçümü ve sentetik örnek dosyalar" ) {
+
+      AltKatman( kod: ALT-KPR-OLC, departman: planlama, ad: "Biçim Ölçümü",
+        ne: "☘️ Belgeden ve gerçek makineden biçim ölçümü" ) {
+
+        Adım( kod: KPR-OLC-A01, ad: "Claude Code Biçimlerinin Ölçümü", durum: beklemede, öncelik: p1, bağımlı: [],
+          ne: "📏 Claude Code'un skill, alt ajan, kanca, bellek ve kural dosyalarının alanlarının ve konumlarının ölçülmesi" ) {
+          görev: [
+            "Claude Code'un resmî belgesinden skill (SKILL.md ön bölümü ve klasör düzeni), alt ajan dosyası, kanca ayarı, bellek ve kural dosyalarının alanlarını ve proje, kullanıcı ve eklenti konumlarını çıkar; her bilginin belge adresini yaz.",
+            "Aynı biçimleri gerçek bir makinede yalnız okuyarak doğrula; kişisel içerik okunmaz, yalnız alan adları ve konumlar not edilir.",
+            "Ölçülen her tür için kişisel veri taşımayan sentetik bir örnek dosya üret ve fikstür korpusu olarak dondur; korpus ölçüldüğü araç sürümünü taşır."
+          ]
+          kabul: [
+            "Her dosya türü için alan listesi, konum listesi ve kaynak belge adresi kayıttadır.",
+            "Fikstür korpusu depodadır ve hiçbir dosyası kişi, müşteri ya da makine yolu taşımaz; bu bir nöbetle ölçülür.",
+            "Belge ile gerçek makine arasında ayrışan her alan adıyla kayda geçmiştir."
+          ]
+          sınır: "Adaptör kodu yazılmaz; öteki araçların biçimi bu Adımın dışındadır. Kullanıcının bellek ve ayar dosyalarının içeriği okunmaz ve kopyalanmaz."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Etmen, Beceri, Yetenek, Tetikleyici, Kanca ve Bellek düğümlerinin dış araç
+  dosyalarını taşıyabilmesidir: her düğüm hangi araçtan geldiğini, dosya yolunu,
+  parmak izini ve sahipliğini bildirir.
+
+  ## Kapsam
+  Kapsar: dış kaynak sözleşmesi ve belge bloğundaki ne-zaman ile desenler
+  parçalarının yapısal okunması. Kapsamaz: adaptörler. Kanon ya da şema sürümünü
+  değiştiren her madde Founder onayından geçer.
+
+  ## Sonuç
+  Blok kapandığında sözleşme sınıflamadadır, belge bloğu parçaları düğüme açık
+  bir bağla bağlıdır ve nöbetler yeşildir.
+  |<--
+  Blok( kod: BLK-KPR-MODEL, ad: "Ortak Model",
+    ne: "🧬 Düğümlerin dış araç dosyalarını taşıyabilmesi için sözleşme ve şema" ) {
+
+    Katman( kod: KPR-MDL, takım: [ TAKIM-CEKIRDEK ], ad: "Dış Kaynak Sözleşmesi",
+      ne: "Dış kaynak alanları ve desenlerin yapısal okunması" ) {
+
+      AltKatman( kod: ALT-KPR-MDL, departman: planlama, ad: "Sözleşme ve Şema",
+        ne: "☘️ Dış kaynak sözleşmesinin ve desen bağının yazılması" ) {
+
+        Adım( kod: KPR-MDL-A01, ad: "Dış Kaynak Sözleşmesi", durum: beklemede, öncelik: p1, onayBekler: founder, bağımlı: [ KPR-OLC-A01 ],
+          ne: "🧬 Düğüme araç, yol, parmak izi ve sahiplik alanlarının girmesi" ) {
+          görev: [
+            "Etmen, Beceri, Tetikleyici, Kanca ve Bellek tiplerine dış kaynak alanlarını öner: araç, yol, parmak izi, araç sürümü ve sahiplik (Sarmal'ın kendisi ya da dış).",
+            "Önerinin kanon ya da şema sürümünü değiştiren kısmını Founder onayına sun; onaysız şema değişmez.",
+            "Sahibi dış olan düğümün motor tarafından hiçbir zaman üretilmediğini ve üzerine yazılmadığını sözleşmeye yaz."
+          ]
+          kabul: [
+            "Dış kaynak alanları sınıflamada tanımlıdır ve Founder onayı koşu kaydındadır.",
+            "Sahipliği dış olan bir düğüm için üretim yolu reddeder; bu nöbetle kanıtlanmıştır.",
+            "Depo denetimi sıfır hata verir."
+          ]
+          sınır: "Adaptör yazılmaz. Kullanıcı belleğinin içeriği için alan açılmaz; Bellek düğümü dış kaynakta yalnız yol, başlık ve parmak izi taşır."
+        }
+
+        Adım( kod: KPR-MDL-A02, ad: "Desenlerin Yapısal Okunması", durum: beklemede, öncelik: p1, bağımlı: [ KPR-MDL-A01 ],
+          ne: "🧩 Becerinin anti-deseni bugün şemada zorunlu bir alandır; ne-zaman ve desenler ise belge bloğunda yaşar ve belge bloğu ile Beceri arasındaki bağ yalnız sıra komşuluğudur. Bu Adım iki parçayı yapısal olarak okur ve bağı açık hâle getirir." ) {
+          görev: [
+            "Prizmanın belge alanından ne-zaman ve desenler parçalarını yapısal olarak süz.",
+            "Belge bloğu ile Beceri arasındaki bağı sıra komşuluğundan çıkarıp açık bir bağa dönüştür; çok bloklu bir Etmen gövdesinde hangi bloğun hangi Beceriye ait olduğu kesin okunur.",
+            "Anti-desen alanı ile desenler parçasının skill gövdesine nasıl ineceğini sözleşmeye yaz."
+          ]
+          kabul: [
+            "Çok bloklu bir fikstür Etmen gövdesinde her Becerinin ne-zaman ve desenler parçası doğru düğüme bağlanır; bu nöbetle kanıtlanmıştır.",
+            "Belge bloğu ile Beceri arasındaki sıra değiştiğinde bağ kopmaz.",
+            "Çekirdek süiti yeşildir."
+          ]
+          sınır: "Var olan beceri kartlarının metni değiştirilmez; yalnız okunma biçimi değişir."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Motorun bir makinedeki Claude Code skill, alt ajan, kanca, bellek ve kural
+  dosyalarını kendiliğinden tanıması ve her birinin Sarmal'daki karşılığıyla
+  eşleşme durumunu söylemesidir.
+
+  ## Kapsam
+  Kapsar: Claude Code okuma adaptörü, dört eşleşme durumu (eşleşmiş, yalnız
+  araçta, yalnız Sarmal'da, sapmış), MCP aracı ve komut satırı karşılığı, bellek
+  gizlilik nöbeti ve sapma nöbeti. Kapsamaz: dosya yazımı ve öteki araçlar.
+
+  ## Sonuç
+  Blok kapandığında envanter fikstür korpusunda ve gerçek bir makinede doğrudur,
+  bellek içeriği hiçbir .sar dosyasına girmez ve sapma adıyla bildirilir.
+  |<--
+  Blok( kod: BLK-KPR-OKUMA, ad: "Okuma ve Sapma Nöbeti",
+    ne: "🔎 Claude Code dosyalarının tanınması, eşleşme durumu ve sapmanın bildirilmesi" ) {
+
+    Katman( kod: KPR-OKU, takım: [ TAKIM-CEKIRDEK ], ad: "Claude Code Okuma Adaptörü",
+      ne: "Envanter, eşleşme durumu, gizlilik ve sapma" ) {
+
+      AltKatman( kod: ALT-KPR-OKU-KOD, departman: kodlama, ad: "Envanter ve Eşleşme",
+        ne: "☘️ Okuma adaptörü ve sapma nöbeti" ) {
+
+        Adım( kod: KPR-OKU-A01, ad: "Claude Code Envanteri", durum: beklemede, öncelik: p1, bağımlı: [ KPR-MDL-A01 ],
+          ne: "🔎 Proje, kullanıcı ve eklenti konumlarındaki Claude Code dosyalarının taranması ve eşleşme durumunun hesaplanması" ) {
+          görev: [
+            "Adaptörü bir veri eşleme tablosuyla yaz: dosya türü, konum ve alan eşlemesi kodun içinde değil tabloda durur.",
+            "Proje, kullanıcı ve eklenti konumlarındaki skill, alt ajan, kanca, bellek ve kural dosyalarını tara ve her birini dış düğüm olarak döndür.",
+            "Her öğe için dört eşleşme durumundan birini hesapla: eşleşmiş, yalnız araçta, yalnız Sarmal'da, sapmış.",
+            "Envanteri bir MCP aracı ve bir komut satırı komutu olarak sun; çıktı taranan kökün kendi .sarmal dizinine iner."
+          ]
+          kabul: [
+            "Fikstür korpusunda envanter beklenen öğeleri ve durumları birebir verir.",
+            "Gerçek bir makinede koşulan envanter, kullanıcının skill ve kanca sayısını bağımsız bir sayımla aynı verir.",
+            "MCP aracı ile komut satırı aynı sonucu döndürür."
+          ]
+          sınır: "Hiçbir araç dosyasına yazılmaz. Öteki araçlar bu Adımın dışındadır."
+        }
+
+        Adım( kod: KPR-OKU-A03, ad: "Sapma Nöbeti", durum: beklemede, öncelik: p1, bağımlı: [ KPR-OKU-A01 ],
+          ne: "🧭 Kaynağından farklılaşan dosyanın ve değişen araç biçiminin adıyla bildirilmesi" ) {
+          görev: [
+            "Sahibi .sar olan bir dosya kaynaktan farklılaşınca bunu tanı olarak bildir ve iki çıkış göster: dosyayı kaynağa geri al ya da sahipliği dosyaya devret.",
+            "Araç biçimi değiştiğinde, yani fikstür sınaması kırıldığında, köprünün sessizce değil adıyla durduğunu sağla.",
+            "Parmak izine araç sürümünü kat."
+          ]
+          kabul: [
+            "Elle değiştirilmiş üretilmiş bir dosya denetimde adıyla görünür.",
+            "Biçimi değiştirilmiş bir fikstür köprüyü adıyla durdurur ve yanlış eşleşme üretmez."
+          ]
+          sınır: "Sapma kendiliğinden onarılmaz; karar kullanıcınındır."
+        }
+      }
+
+      AltKatman( kod: ALT-KPR-OKU-GVN, departman: güvenlik, ad: "Bellek Gizliliği",
+        ne: "☘️ Kişisel bellek içeriğinin köprüden sızmaması" ) {
+
+        Adım( kod: KPR-OKU-A02, ad: "Bellek Gizlilik Nöbeti", durum: beklemede, öncelik: p0, bağımlı: [ KPR-OKU-A01 ],
+          ne: "🔒 Kullanıcının bellek ve kural dosyaları kişi, müşteri ve kişisel gözlem taşır; köprü bu dosyaların içeriğine dokunmamalıdır" ) {
+          görev: [
+            "Bellek ve kural dosyalarından yalnız yol, başlık ve parmak izi alındığını zorlayan bir nöbet kur.",
+            "Bellek içeriğinin hiçbir .sar dosyasına, envanter çıktısına ya da sınama fikstürüne geçmediğini ölç.",
+            "Açık deponun yasak sözcük kapısının köprü çıktılarını da taradığını doğrula."
+          ]
+          kabul: [
+            "İçeriği kopyalamaya çalışan bir mutasyon nöbeti kırmızıya düşürür.",
+            "Envanter çıktısında bellek dosyası başına yalnız yol, başlık ve parmak izi bulunur."
+          ]
+          sınır: "Bellek içeriğini okuyan hiçbir özellik bu mevsimde yazılmaz."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Envanterin VS Code eklentisinde görünmesidir: kullanıcı bir bakışta hangi
+  beceri, ajan, kanca ve belleğin Sarmal ile eşleştiğini görür.
+
+  ## Kapsam
+  Kapsar: panelde yeni bir sekme, araca ve türe göre dizilen ağaç, durum
+  simgeleri, dosyayı açma ve karşılığa gitme eylemleri. Kapsamaz: dosya üretimi
+  ve sahiplenme.
+
+  ## Sonuç
+  Blok kapandığında sekme envanteri gösterir, durumlar envanter aracıyla aynıdır
+  ve panel kendi taramasını yapmaz.
+  |<--
+  Blok( kod: BLK-KPR-PANEL, ad: "Otomasyon Paneli",
+    ne: "🖥️ Envanterin VS Code panelinde bir otomasyon sekmesi olarak görünmesi" ) {
+
+    Katman( kod: KPR-PNL, takım: [ TAKIM-EKLENTI ], ad: "Otomasyon Sekmesi",
+      ne: "Envanter görünümü ve satır eylemleri" ) {
+
+      AltKatman( kod: ALT-KPR-PNL, departman: kodlama, ad: "Envanter Görünümü",
+        ne: "☘️ Sekme, ağaç ve eylemler" ) {
+
+        Adım( kod: KPR-PNL-A01, ad: "Otomasyon Sekmesi", durum: beklemede, öncelik: p1, bağımlı: [ KPR-OKU-A01, PNL-A13 ],
+          ne: "🖥️ Panelin Ray, Tren ve Makinist sekmelerinin yanına envanteri gösteren bir otomasyon sekmesinin eklenmesi" ) {
+          görev: [
+            "Panelin Ray, Tren ve Makinist sekmelerinin yanına bir otomasyon sekmesi ekle.",
+            "Ağacı araca ve türe göre diz: beceri, ajan, kanca, bellek; her satırda eşleşme durumunu bir simgeyle göster.",
+            "Satır eylemlerini yaz: dosyayı aç, Sarmal'daki karşılığına git, eşleşme önerisini göster.",
+            "Sekmeyi envanter aracının yayınına abone et; panel ikinci bir tarama gövdesi doğurmaz."
+          ]
+          kabul: [
+            "Fikstür çalışma alanında sekmedeki durumlar envanter aracının çıktısıyla birebir aynıdır.",
+            "Sekme açıkken dosya olaylarında ikinci bir tarama koşmaz; bu performans kanalında ölçülür.",
+            "Eklenti süiti yeşildir."
+          ]
+          sınır: "Sekme hiçbir araç dosyasına yazmaz; sahiplenme ve üretim eylemleri sonraki Blokların işidir."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Dışarıdan gelen bir becerinin ya da ajanın kullanıcının açık onayıyla Sarmal'a
+  alınmasıdır; o andan sonra kaynak .sar dosyasıdır ve araç dosyası üretilir.
+
+  ## Kapsam
+  Kapsar: sahiplenme akışı ve onay kapısı. Kapsamaz: üretim ve toplu
+  sahiplenme.
+
+  ## Sonuç
+  Blok kapandığında onaysız sahiplenme yoktur ve sahiplenilen düğüm kaynak
+  dosyayla birebir başlar.
+  |<--
+  Blok( kod: BLK-KPR-SAHIP, ad: "Sahiplenme",
+    ne: "🤝 Dış bir becerinin ya da ajanın onaylı olarak Sarmal'a alınması" ) {
+
+    Katman( kod: KPR-SHP, takım: [ TAKIM-CEKIRDEK, TAKIM-EKLENTI ], ad: "Sahiplenme Akışı",
+      ne: "Onay kapılı sahiplik devri" ) {
+
+      AltKatman( kod: ALT-KPR-SHP, departman: kodlama, ad: "Onaylı Devir",
+        ne: "☘️ Sahiplenme akışı ve onay kapısı" ) {
+
+        Adım( kod: KPR-SHP-A01, ad: "Dış Düğümün Sahiplenilmesi", durum: beklemede, öncelik: p2, bağımlı: [ KPR-OKU-A03, KPR-PNL-A01 ],
+          ne: "🤝 Dış bir Beceri ya da Etmenin açık onayla Sarmal'a alınması; geri dönüşsüz bir adım olduğu için tek başına durur" ) {
+          görev: [
+            "Dış bir Beceri ya da Etmenin Sarmal'a alınmasını yapan akışı yaz: düğümün sahipliği değişir ve kaynak dosyanın parmak izi koşu kaydına geçer.",
+            "Akışı açık bir onay kapısına bağla; onaysız sahiplenme yoktur.",
+            "Sahiplenmeden sonra dosyanın üretilir duruma geçtiğini ve elle yapılan değişikliğin sapma olarak görüneceğini kullanıcıya bildir."
+          ]
+          kabul: [
+            "Onay verilmeden sahiplenme gerçekleşmez; bu nöbetle kanıtlanmıştır.",
+            "Sahiplenilen düğümün içeriği kaynak dosyayla birebir başlar."
+          ]
+          sınır: "Toplu sahiplenme bu Adımın dışındadır."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Sahibi .sar olan Becerilerden skill dosyalarının, Etmenlerden alt ajan
+  dosyalarının üretilmesidir.
+
+  ## Kapsam
+  Kapsar: prizmanın araç yüzü olarak genel üretici, kısa açıklama kuralı,
+  takılabilir seçim arayüzü ve yalın varsayılanı. Kapsamaz: kanca üretimi (ilk
+  sürümde kanca yalnız okunur) ve gelişmiş seçim politikası (açık çekirdeğin
+  dışından takılır, STR-3).
+
+  ## Sonuç
+  Blok kapandığında açık deponun kendi beceri kartlarından üretilen skill ve ajan
+  dosyaları Claude Code'da yüklenir ve üretilen dosya kaynağıyla bayt bayt
+  eşleşir.
+  |<--
+  Blok( kod: BLK-KPR-URETIM, ad: "Üretim",
+    ne: "🏭 Beceriden skill, Etmenden alt ajan dosyası üreten prizma yüzü" ) {
+
+    Katman( kod: KPR-URT, takım: [ TAKIM-CEKIRDEK ], ad: "Prizmanın Araç Yüzü",
+      ne: "Genel üretici ve takılabilir seçim arayüzü" ) {
+
+      AltKatman( kod: ALT-KPR-URT, departman: kodlama, ad: "Üretici",
+        ne: "☘️ Skill ve alt ajan dosyası üretimi" ) {
+
+        Adım( kod: KPR-URT-A01, ad: "Beceriden Skill, Etmenden Alt Ajan", durum: beklemede, öncelik: p1, bağımlı: [ KPR-MDL-A02, KPR-SHP-A01 ],
+          ne: "🏭 Sahibi .sar olan düğümlerden Claude Code skill ve alt ajan dosyalarının üretilmesi" ) {
+          görev: [
+            "Sahibi .sar olan Beceriden skill klasörünü ve SKILL.md dosyasını, Etmenden alt ajan dosyasını üreten genel üreticiyi prizmanın yeni bir yüzü olarak yaz.",
+            "Üretilen her dosyaya elle düzenlenmez başlığını koy ve kaynağını adıyla an.",
+            "Açıklamayı kısa tut; uzun desen metni skill klasöründe ek dosyaya iner, çünkü her oturumda bütün açıklamalar bağlama yüklenir.",
+            "Üreticiyi açık deponun kendi beceri kartlarıyla ve kadrosuyla kanıtla."
+          ]
+          kabul: [
+            "Açık deponun beceri kartlarından üretilen skill dosyaları gerçek bir Claude Code oturumunda yüklenir ve doğru durumda çağrılır.",
+            "Üretilen dosya üreticinin çıktısıyla bayt bayt aynıdır; ikiz nöbeti bunu ölçer.",
+            "Hiçbir açıklama belirlenen üst sınırı aşmaz."
+          ]
+          sınır: "Kanca üretilmez. Sahibi dış olan düğüm üretilmez."
+        }
+
+        Adım( kod: KPR-URT-A02, ad: "Takılabilir Seçim Arayüzü", durum: beklemede, öncelik: p2, bağımlı: [ KPR-URT-A01 ],
+          referans: [ STR-3 ],
+          ne: "🔌 Her oturumda bütün skill açıklamaları bağlama yüklendiği için bir köke yalnız orada gereken beceriler inmelidir. Açık çekirdek seçim için bir arayüz ve yalın bir varsayılan taşır; gelişmiş seçim politikası açık çekirdeğin dışından takılır." ) {
+          görev: [
+            "Üreticiye seçim için takılabilir bir arayüz ekle; arayüz hangi düğümlerin hangi köke ineceğini sorar.",
+            "Yalın varsayılanı yaz: kökün kendi kadrosunun tamamı.",
+            "Dışarıdan takılan politikanın açık çekirdeğe bağımlılık olarak girmediğini doğrula."
+          ]
+          kabul: [
+            "Varsayılan politika fikstür kökünde kökün kadrosunu birebir üretir.",
+            "Sahte bir dış politika takıldığında üretilen küme değişir ve çekirdek o politikayı tanımaz; bu nöbetle kanıtlanmıştır."
+          ]
+          sınır: "Gelişmiş seçim politikası bu depoda yazılmaz."
+        }
+      }
+    }
+  }
+
+  -->|
+  ## Amaç
+  Köprünün Claude Code'da uçtan uca çalıştıktan sonra öteki yapay zekâ
+  araçlarına genişlemesidir.
+
+  ## Kapsam
+  Kapsar: Codex, Gemini ve Cursor biçimlerinin resmî belgelerden ölçümü ve okuma
+  adaptörlerinin bu araçlara genişlemesi. Kapsamaz: bu araçlar için üretim; o ayrı
+  bir karardır.
+
+  ## Sonuç
+  Blok kapandığında envanter ve otomasyon sekmesi dört aracın dosyalarını
+  gösterir ve her aracın biçimi kendi fikstür korpusuyla korunur.
+  |<--
+  Blok( kod: BLK-KPR-ARACLAR, ad: "Öteki Araçlar",
+    ne: "🔗 Köprünün Codex, Gemini ve Cursor dosyalarına genişlemesi" ) {
+
+    Katman( kod: KPR-ARC, takım: [ TAKIM-CEKIRDEK ], ad: "Araç Adaptörleri",
+      ne: "Öteki araçların ölçümü ve okuma adaptörleri" ) {
+
+      AltKatman( kod: ALT-KPR-ARC-OLC, departman: planlama, ad: "Öteki Araçların Ölçümü",
+        ne: "☘️ Codex, Gemini ve Cursor biçimlerinin ölçümü" ) {
+
+        Adım( kod: KPR-ARC-A01, ad: "Öteki Araçların Biçim Ölçümü", durum: beklemede, öncelik: p2, bağımlı: [ KPR-URT-A01 ],
+          ne: "📏 Codex, Gemini ve Cursor'un beceri, ajan, kanca ve bellek dosyalarının biçiminin resmî belgelerden ölçülmesi" ) {
+          görev: [
+            "Her aracın resmî belgesinden beceri, ajan, kanca, bellek ve kural dosyalarının alanlarını ve konumlarını çıkar; her bilginin belge adresini yaz.",
+            "Her araç için kişisel veri taşımayan sentetik bir fikstür korpusu dondur.",
+            "Bir aracın karşılığı olmayan bir türü (örneğin kanca) açıkça yok olarak kaydet."
+          ]
+          kabul: [
+            "Üç aracın her biri için alan, konum ve kaynak belge adresi kayıttadır.",
+            "Her aracın fikstür korpusu depodadır ve kişisel veri taşımaz."
+          ]
+          sınır: "Adaptör kodu yazılmaz; belgede bulunmayan bir biçim tahminle doldurulmaz."
+        }
+      }
+
+      AltKatman( kod: ALT-KPR-ARC-KOD, departman: kodlama, ad: "Öteki Araçların Adaptörleri",
+        ne: "☘️ Okuma adaptörlerinin genişlemesi" ) {
+
+        Adım( kod: KPR-ARC-A02, ad: "Öteki Araçların Okuma Adaptörleri", durum: beklemede, öncelik: p2, bağımlı: [ KPR-ARC-A01 ],
+          ne: "🔗 Envanterin Codex, Gemini ve Cursor dosyalarını da tanıması" ) {
+          görev: [
+            "Okuma adaptörünün veri eşleme tablosuna üç aracın satırlarını ekle; çekirdek kodu araca göre çatallanmaz.",
+            "Otomasyon sekmesinde araç düzeyinde gruplamanın dört aracı gösterdiğini doğrula."
+          ]
+          kabul: [
+            "Üç aracın fikstür korpusunda envanter beklenen öğeleri ve durumları birebir verir.",
+            "Claude Code'un var olan sınamaları değişmeden yeşil kalır."
+          ]
+          sınır: "Bu araçlar için dosya üretimi yapılmaz."
+        }
+      }
+    }
+  }
+}

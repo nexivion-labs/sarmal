@@ -27,12 +27,29 @@
 //   fotoğrafıdır ve bu nöbetin ölçüm alanının dışındadır. Aynı şekilde bu
 //   nöbet bir dosyanın İÇİNDEKİ metni değil, yalnız hangi dosyaların pakete
 //   GİRDİĞİNİ ölçer; paketlenen bir dosyanın içeriği bayatsa bunu yakalamaz.
+//
+//   ZORUNLU KALEMLER (MGZ-A05 · 2026-10-10). Nöbet yalnız sızanı değil, eksik
+//   kalanı da ölçer. Derleme üreticisi (arac/renk-uret.mjs) tip kaydını ve
+//   rehberi paketin kanon kopyasına yazar; mağazadan kurulan eklenti tam
+//   denetimi bu kopyayla koşar (EKL-F6-A09). Ölçüm şunu göstermiştir: kopyalama
+//   adımı söküldüğünde ve `dist/kanon` bulunmadığında bu dosyanın dört sınaması
+//   yeşil kalıyordu, yani paket kanonsuz çıksa bile paket nöbeti susuyordu.
+//   Beklenen yol elle yazılmaz, eklentinin kopyayı ARADIĞI sabitten türetilir
+//   (src/kanon-kesif.ts · PAKET_KANON_DIZINI); böylece üretici kopyayı başka bir
+//   yere yazmaya başlarsa ya da `.vscodeignore` kopyayı dışlarsa da nöbet kırmızıya
+//   döner. Sınırı da yazılır: liste diskten üretilir, dolayısıyla eski bir
+//   derlemeden kalmış bir `dist/kanon` kopyası, kirli bir geliştirici ağacında
+//   kopyalama adımının söküldüğünü gizleyebilir. O ağaçta söküm, üreticiyi geçici
+//   bir klasöre koşturan kanon-kesfi.test.ts sınamasıyla yakalanır; paketleme
+//   betiği (arac/kur.mjs) ve CI ise `dist/` klasörünün önceden bulunmadığı taze
+//   bir ağaçta koşar.
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { dirname } from "node:path";
+import { dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { listFiles } from "@vscode/vsce";
+import { PAKET_KANON_DIZINI } from "../src/kanon-kesif.ts";
 
 const EKLENTI_KOKU = dirname(fileURLToPath(new URL("../package.json", import.meta.url)));
 
@@ -64,6 +81,25 @@ test("PKI: paketlenecek liste boş değildir ve makul büyüklüktedir", () => {
       "güdük küme üstünde koşuyorsa hiçbir şeyi gerçekten ölçmemiş olur",
   );
 });
+
+/** Kullanıcıya gitmesi ZORUNLU kalemler; yol, paketin listesindeki biçimle (eğik çizgiyle) yazılır. */
+const KANON_KOPYASI = PAKET_KANON_DIZINI.split(sep).join("/");
+const ZORUNLU_KALEMLER: { ad: string; yol: string }[] = [
+  { ad: "paketin kanon kopyasındaki tip kaydı", yol: `${KANON_KOPYASI}/oz/siniflama/kayit.json` },
+  { ad: "paketin kanon kopyasındaki rehber", yol: `${KANON_KOPYASI}/oz/siniflama/rehber.json` },
+];
+
+for (const kalem of ZORUNLU_KALEMLER) {
+  test(`PKI: zorunlu kalem pakette var — ${kalem.ad}`, () => {
+    assert.ok(
+      PAKETLENECEK_LISTE.includes(kalem.yol),
+      `"${kalem.yol}" paketlenecek listede yok\n` +
+        "↳ mağazadan kurulan eklenti tam denetimi bu kopyayla koşar; kopya pakete girmezse " +
+        "depo klonu olmayan kullanıcıda tam denetim hiç koşmaz. arac/renk-uret.mjs kopyalama " +
+        "adımını ve .vscodeignore dosyasını denetle.",
+    );
+  });
+}
 
 for (const desen of YASAKLI_DESENLER) {
   test(`PKI: yasaklı desen pakette yok — ${desen.ad}`, () => {

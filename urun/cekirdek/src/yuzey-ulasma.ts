@@ -152,7 +152,7 @@ export function yuzeyUlasmaOzeti(ilan: readonly KapiGirdisi[] = KAPI_KAPSAMI): U
 /**
  * Motor kaynağının `eskiTani("<kimlik>", "<kademe>", …)` çağrılarını tarayarak
  * önceki gövdenin kademe dağılımını ölçer. Bu ölçüm kaydın "elle doğrulanır"
- * dediği iki sayıyı makineye bağlar: önceki 101 kimliğin kademesi sicilde
+ * dediği iki sayıyı makineye bağlar: önceki gövdenin kimliklerinin kademesi sicilde
  * makine-okur biçimde tutulmaz, yalnız üreticinin çağrı satırında yaşar ve
  * tarama tam da o satırı okur.
  *

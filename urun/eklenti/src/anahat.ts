@@ -4,32 +4,55 @@
 //   Widget ağacını Outline panelinde + breadcrumb'da gösterir → Faz › Blok ›
 //   Katman › AltKatman › Adım gezinme (MIM-1 dizilişi). İkon: Proje=paket ·
 //   Blok=sınıf · Faz/Katman/AltKatman=ad-alanı · Adım=alan. Ayrıştırılamayan belge → anahat yok.
+//   Çatı ilanında Kitaplık/Raf satırının altında o klasörün Proje kökü görünür (KPS-CAT-A02).
 // ═══════════════════════════════════════════════════════════════════════════
 
 import * as vscode from "vscode";
 import { programAl } from "./onbellek.ts";   // EKL-F9-A06: paylaşımlı AST önbelleği
 import type { Dugum, Deger } from "../../cekirdek/src/sozdizim.ts";
 import { kanonikWidgetAdi } from "./yuzey-metinleri.ts";
+import { catiIlaniProjeleri, type CatiProjeBagi } from "../../cekirdek/src/kimlik.ts";   // KPS-CAT-A02: çatı bağı grafın tek kaynağından
 
 export function anahatSaglayici(): vscode.DocumentSymbolProvider {
   return {
     provideDocumentSymbols(doc) {
-      const bildirimler = programAl(doc)?.bildirimler;
-      if (!bildirimler) return undefined; // ayrıştırılamıyorsa anahat yok
-      return bildirimler.map(sembol);
+      const program = programAl(doc);
+      const bildirimler = program?.bildirimler;
+      if (!program || !bildirimler) return undefined; // ayrıştırılamıyorsa anahat yok
+      // KPS-CAT-A02 · MIM-1.1: çatı ilanı açıldığında çalışma alanının projeleri
+      // ilan satırlarının altında görünür. Disk yalnız ÇalışmaAlanı taşıyan bir
+      // dosya diskte açıkken okunur; öteki belgelerin anahattı hiç dokunulmaz.
+      const catiProjeleri = doc.uri.scheme === "file" && bildirimler.some((b) => b.ad === "ÇalışmaAlanı")
+        ? catiIlaniProjeleri(doc.uri.fsPath, program)
+        : undefined;
+      return bildirimler.map((b) => sembol(b, catiProjeleri));
     },
   };
 }
 
-function sembol(d: Dugum): vscode.DocumentSymbol {
+function sembol(d: Dugum, catiProjeleri?: ReadonlyMap<string, CatiProjeBagi[]>): vscode.DocumentSymbol {
   const kaps = kapsam(d);
   const tamAralik = new vscode.Range(kaps.bS, kaps.bC, kaps.sS, kaps.sC);
   const secim = new vscode.Range(d.satir - 1, d.sutun - 1, d.satir - 1, d.sutun - 1 + d.ad.length);
   const sym = new vscode.DocumentSymbol(isim(d), detay(d), tur(d), tamAralik, secim);
   // ağaç-yüzü turu: outline = agacUret ağaç-yapısı — gerçek çocuklar ÖNCE, `raflar: {}`
   // kısayol yaprakları SONRA (çocuklarıTopla ile aynı sıra; girinti anlamı bir).
-  sym.children = [...d.cocuklar.map(sembol), ...rafSembolleri(d)];
+  sym.children = [...d.cocuklar.map((c) => sembol(c, catiProjeleri)), ...rafSembolleri(d), ...catiProjeSembolleri(d, secim, catiProjeleri)];
   return sym;
+}
+
+// KPS-CAT-A02: çatı ilanının Kitaplık/Raf satırı bir proje klasörünü duyuruyorsa o
+// klasördeki Proje kökü satırın çocuğu olarak gösterilir. Proje başka bir dosyada
+// yaşadığı için sembolün aralığı ilan satırının kendisidir; seçim oraya iner.
+function catiProjeSembolleri(
+  d: Dugum, aralik: vscode.Range, catiProjeleri?: ReadonlyMap<string, CatiProjeBagi[]>,
+): vscode.DocumentSymbol[] {
+  if (!catiProjeleri || (d.ad !== "Kitaplık" && d.ad !== "Raf")) return [];
+  const kod = paramMetni(d, "kod");
+  const baglar = kod ? catiProjeleri.get(kod) : undefined;
+  if (!baglar) return [];
+  return baglar.map((b) => new vscode.DocumentSymbol(
+    `${kanonikWidgetAdi("Proje", "Proje")} · ${b.proje}`, b.projeAd ?? "", vscode.SymbolKind.Package, aralik, aralik));
 }
 
 // `raflar: { src: "…", sinama: "…" }` kısayolu agacUret'te çocuk satırlardır (agac.ts

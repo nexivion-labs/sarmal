@@ -48,7 +48,12 @@ function isimBul(n: YalınDüğüm): string {
 // ── bir düğümün yorumu: `ne` alanı (+ opsiyonel kod/kararlılık etiketleri) ────
 function yorumBul(n: YalınDüğüm, _sec: AgacSecenek): string {
   const ne = n.alanlar["ne"];
-  let y = typeof ne === "string" ? ne.replace(/\s*⏎\s*/g, " ").trim() : "";
+  // HST-YUZ-A02: ⏎ işareti ile gerçek satır sonu aynı biçimde tek boşluğa iner.
+  // Yalnız ⏎ indirildiği sürece çok satırlı ne metninin ikinci satırı sütun
+  // sıfırdan başlıyor ve ağaç çizgisini kırıyordu (2026-10-10 ölçümü: depodaki
+  // bir plan dosyasında yirmi dört satır); README bloğu ile komut satırı da bu
+  // gövdeden geçtiği için onarım üç yüze birden iner.
+  let y = typeof ne === "string" ? ne.replace(/\s*[⏎\r\n]\s*/g, " ").trim() : "";
   const kar = n.alanlar["kararlılık"];
   if (typeof kar === "string" && kar === "değişmez") y += (y ? "  " : "") + "[değişmez]";
   return y;

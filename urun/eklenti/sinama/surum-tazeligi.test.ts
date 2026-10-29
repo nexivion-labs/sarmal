@@ -64,6 +64,25 @@ test("BKM-DNT-A12 · canlı: deponun paket bildirimi karşılaştırılabilir bi
   assert.equal(surumAyrismasi({ kuruluSurum: p.version, depoSurumu: p.version, gelistirmeKipi: true }), undefined);
 });
 
+/**
+ * MGZ-A05 · paket kilidi sürümle birlikte ilerler. Sürüm artışları paket
+ * bildirimine elle yazılır ve kilit bunu kendiliğinden izlemez. Ölçüm
+ * (2026-10-10): deponun doğumundan bu yana eklenti bildirimine ya da kilidine
+ * dokunan otuz altı işlemenin yirmi sekizinde kilidin sürümü paketinkinden
+ * ayrışmıştır; kilit iki kez elle hizalanmış ve ilk hizalamadan sonra yeniden
+ * kaymıştır. `npm ci` kökteki sürüm farkını kabul ettiği için bu ayrışmayı
+ * hiçbir adım yakalamıyordu.
+ */
+test("MGZ-A05 · canlı: paket kilidinin sürümü paket bildiriminin sürümüyle aynıdır", () => {
+  const oku = (u: string): unknown => JSON.parse(readFileSync(fileURLToPath(new URL(u, import.meta.url)), "utf8"));
+  const paket = oku("../package.json") as { version: string };
+  const kilit = oku("../package-lock.json") as { version?: string; packages?: Record<string, { version?: string }> };
+  assert.equal(kilit.version, paket.version,
+    "package-lock.json kökteki sürümü paket bildiriminden ayrışmış; sürüm artışı kilide de yazılmalı");
+  assert.equal(kilit.packages?.[""]?.version, paket.version,
+    "package-lock.json içindeki kök paket kaydının sürümü paket bildiriminden ayrışmış");
+});
+
 // ═══════════════════════════════════════════════════════════════════════════
 // EKL-F6-A11 · KURULU PAKET İLE DEPO DERLEMESİNİN AYRIŞMA NÖBETİ
 //

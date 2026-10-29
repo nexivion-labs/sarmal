@@ -280,7 +280,7 @@ Kod( kod: KOD-YASA-DIZIN,
 Kod( kod: KOD-DERSLER, dosya: "ogreti/ogrenme/dersler.sar",
   ne: "🍎 Ders defteri — Sarmal'ın kendi hafızası: Bellek(tür:ders) kayıtları + terfi zinciri (EKL-F8-A02 kalıbı ve EKL-F9-A13 kadro-denetimi derslerinin meyvesi)" )
 Kod( kod: KOD-KANCA-PRECOMMIT, dosya: "kanca/pre-commit",
-  ne: "🍎 Commit kapısı betiği — denetle drift-gate + staged .ts değişiminde test kapısı; arıza-güvenli (EKL-F9-A11 meyvesi; sicil kaydı: KNC-COMMIT-KAPISI)" )
+  ne: "🍎 İşleme kapısı betiği — denetim sapma kapısı, kodu değişen paketin süiti, her işlemede eklenti süiti ve çekirdek kodu değişmediğinde ağacı okuyan hızlı çekirdek kümesi; arıza-güvenli (EKL-F9-A11 meyvesi, HST-YUZ-A01 genişletmesi; sicil kaydı: KNC-COMMIT-KAPISI)" )
 Kod( kod: KOD-EKL-IKONLAR,
   ne: "🍎 Kuzey Yıldızı ikon ailesi — eklenti/ikonlar/{kuzey-parlak·kuzey-orta·kuzey-sonuk}.svg + gömülü codicon ürün-ikonu (EKL-F10-A09 meyvesi)" )
 Kod( kod: KOD-YASA-ISAKISI,
@@ -468,6 +468,8 @@ Kod( kod: KOD-FIKIR-PANELI, dosya: "urun/eklenti/src/fikirler.ts",
   ne: "🍎 Fikirler panelinin görünüş kabuğu — Fikir kayıtlarını kenar çubuğundaki kendi ağacına basar; satır tarifini saf çekirdekten alır ve kendi tarifini icat etmez, kayıtları paylaşılan önbellekten gelen defterden okur ve ikinci bir tarama kurmaz (VIT-GRAF-A16 meyvesi)" )
 Kod( kod: KOD-SNM-FIKIR-PANELI, dosya: "urun/eklenti/sinama/fikir-paneli.test.ts",
   ne: "🍎 Fikir panelinin ayrışma nöbeti — Fikirlerin kendi görünüşünde yaşadığını, Hatırlatıcılar panelinde Fikir bölümünün bir daha doğmadığını, iki panelin boş durum cümlesinin kendi hanesini anlattığını ve ikinci sayaç kurulmadığını mutasyonla ölçer (VIT-GRAF-A16 meyvesi)" )
+Kod( kod: KOD-SNM-DIS-DEGISIKLIK, dosya: "urun/eklenti/sinama/dis-degisiklik.test.ts",
+  ne: "🍎 Dışarıdan değişen dosyanın nöbeti — editör dışında değişen açık belgenin ve odak dışındaki kardeş kökün ilk turdan sonra tazelendiği, iki kardeş köklü gerçek bir geçici dizinde ölçülür (BKM-DNT-A18)" )
 Veri( kod: VRI-SIMGE-FIKIR, dosya: "urun/eklenti/medya/simgeler/satir-fikir.svg",
   ne: "🍎 Fikir bölümünün vektörel işareti — geometrik ailenin çizim dilinde (24x24 görüş kutusu, currentColor kontur, 1.7 kalınlık) çizilmiş yanan halka; renk gömülmez, anlam varyantları arac/simge-uret.mjs üreticisiyle türer (KYN-YUZ-A01 meyvesi)" )
 

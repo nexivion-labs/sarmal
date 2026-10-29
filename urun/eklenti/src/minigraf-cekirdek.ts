@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // minigraf-cekirdek.ts — 🕸️ MİNİ GRAF çekirdeği (SAF — vscode importsuz)
 //
-//   GitLens grafı gibi tek, dikey ve okunur bir proje yüzü. Saklı Dag'daki
-//   Faz → Blok → Katman → AltKatman → Adım kapsama bağlarını ince raylarda,
-//   gerçek bağımlılıkları yumuşak eğrilerde gösterir. Seçim grafı daraltmaz;
-//   tüm proje görünür kalır. Düğüm camının içindeki simge TIP-0 kanonundan,
-//   rengi YUZ-4 durum kanonundan gelir. Betik ve yeni tarama yoktur.
+//   Tek, dikey ve okunur bir proje yüzü: düzenli ağaç. Saklı Dag'daki
+//   Faz → Blok → Katman → AltKatman → Adım kapsama bağları girinti ve ince L
+//   biçimli çizgilerle, her düğüm kendi satırında gösterilir. Seçim grafı
+//   daraltmaz; tüm proje görünür kalır. Tip simgesi TIP-0 kanonundan, durum
+//   noktasının rengi YUZ-4 durum kanonundan gelir. Betik ve yeni tarama yoktur.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { ZEMIN_TIPLERI, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";
@@ -47,7 +47,7 @@ const TIP_DERINLIK: Record<MiniGrafTipi, number> = {
 /** Meyve rolünün rayı — Adım'ın bir altında ayrı kademe. Satır kapsama rayına
  *  ASILMAZ: onu üreten Adım'a `üretir` kenarıyla bağlanır, çünkü üretim kökeni
  *  mimari sarmanın dilinde çizilemez (ORK-1.3 · YUZ-3.2). */
-const MEYVE_DERINLIK = 5;
+export const MEYVE_DERINLIK = 5;
 
 const GORUNEN_TIPLER = new Set<string>(Object.keys(TIP_DERINLIK));
 
@@ -103,7 +103,7 @@ export function temaDegiskeni(token?: string): string {
     : "var(--vscode-descriptionForeground)";
 }
 
-function durumRengi(durum?: Durum): string {
+export function durumRengi(durum?: Durum): string {
   return temaDegiskeni(durum ? DURUM_ROZET[durum]?.renk : undefined);
 }
 
@@ -352,266 +352,409 @@ export function projeGrafiCikar(dag: Dag, seciliKod = "",
   };
 }
 
-// ── SVG çizimi ───────────────────────────────────────────────────────────────
+/**
+ * İki graf modeli aynı mı (PNL-A14)? Her denetim turu grafı yeniden kurar; Mini Graf ancak model
+ * gerçekten değiştiyse yeniden çizilir. Düğümler ve bağlar sırasıyla, her alanıyla karşılaştırılır
+ * ve alan listesi elle yazılmaz, böylece modele eklenen yeni bir alan da kendiliğinden ölçülür.
+ * Nesne değerli bir alan kimlikle karşılaştırılır ve farklı sayılır; bu yanılgı yalnız fazladan bir
+ * çizime yol açar, eksik bir çizime yol açmaz. Ölçüm (Sarmal deposunun kendi planı, 917 düğüm ve
+ * 18 613 bağ): karşılaştırma yaklaşık iki milisaniye sürer; modelin JSON özeti on milisaniyeyi,
+ * grafın kendisini çizmek ise ağaç görünümünde altı milisaniyeyi bulur.
+ */
+export function grafEsit(a: ProjeGrafi, b: ProjeGrafi): boolean {
+  return kayitlarEsit(a.dugumler, b.dugumler) && kayitlarEsit(a.baglar, b.baglar);
+}
 
-const SVG_G = 376;
-const SATIR_Y = 34;
-const ILK_Y = 18;
-const KOK_X = 12;
-// Altıncı ray meyve rolünündür; yarıçap kademesi de onunla birlikte incelir.
-const RAY_X = [28, 48, 68, 88, 108, 126] as const;
-const YARICAP = [8.2, 7.8, 7.3, 6.9, 6.5, 5.8] as const;
+function kayitlarEsit(a: readonly object[], b: readonly object[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i] as Record<string, unknown>, y = b[i] as Record<string, unknown>;
+    let alan = 0;
+    for (const k in x) { if (x[k] !== y[k]) return false; alan += 1; }
+    for (const _ in y) alan -= 1;
+    if (alan !== 0) return false;
+  }
+  return true;
+}
+
+// ── Düzenli ağaç çizimi ──────────────────────────────────────────────────────
+//
+//   Founder ekran görüntüsü bulgusu: dar kenar çubuğunda etiketler yedi punto
+//   civarında küçülüyor, üst üste biniyor ve kalın renkli bir gövde çizgisi
+//   okumayı engelliyordu. Kök sebep SVG'nin `viewBox` ile panele SIĞDIRILMASIYDI:
+//   376 birimlik tuval dar panele ölçeklenince yazı da ölçekleniyordu ve satır
+//   yüksekliği yazıdan bağımsız kalıyordu. Onarım çizim katmanındadır: her düğüm
+//   KENDİ satırındadır, satır yüksekliği sabittir ve yazı gerçek piksel boyundadır.
+//   Hiyerarşiyi girinti ile ince L biçimli bağ çizgileri taşır; durum solda
+//   küçük bir noktadır; tip adı sağa yaslı soluk bir sütundur ve panel daralınca
+//   o sütun ilk gizlenir. Uzun ad üç nokta ile kesilir, tam ad ipucundadır.
+//   Çekirdek veri mantığı (projeGrafiCikar) bu değişiklikten etkilenmez.
+
+/** Bir düğüm satırının sabit yüksekliği (px). Yerleşim ve CSS bu tek sabitten beslenir. */
+export const SATIR_YUKSEKLIGI = 26;
+/** Kademe başına girinti (px). */
+export const KADEME_GIRINTISI = 18;
 
 /**
- * ETİKET MERDİVENİ — yazı da mercek gibi kademelenir (Founder hükmü 2026-07-30).
- *
- * Ölçülmüş kusur: mercekler altı ayrı rayda kademeleniyordu fakat bütün etiketler
- * TEK sütundan (x=146) başlıyordu. Göz merdiveni dairelerde görüyor, yazıda
- * kaybediyordu; alt alta dizilen Blok, Katman, Adım ve meyve adları düz bir liste
- * gibi okunuyor ve hangi adın hangi kademeye ait olduğu karışıyordu. Girinti,
- * ağaç yüzeyinin en temel görsel ipucudur.
- *
- * SIĞ KADEMELER YER KAZANIR, DERİN KADEME AYNI KALIR: en derin etiket bugünkü
- * 146 değerinde durur, üstündeki her kademe sola kayar ve yazıya daha çok alan
- * bulur. Dolayısıyla değişiklik hiçbir kademede gerileme üretmez.
+ * Bağ kolu: satırın girinti hücrelerinden birinde çizilen çizgi parçası.
+ *   `i` → dikey çizgi sürer (atanın sonraki kardeşi var),
+ *   `b` → boş (atanın sonraki kardeşi yok),
+ *   `t` → T dirseği (düğümün kendisi, sonraki kardeşi var),
+ *   `l` → L dirseği (düğümün kendisi, son kardeş).
  */
-const ETIKET_BOSLUGU = 20;   // mercek merkezinden yazının başına — en büyük yarıçap 8.2
-function etiketX(derinlik: number): number {
-  const ray = RAY_X[Math.min(derinlik, RAY_X.length - 1)];
-  return ray + ETIKET_BOSLUGU;
+export type BagKolu = "i" | "b" | "t" | "l";
+
+export interface AgacSatiri {
+  kod: string;
+  /** Düğümün graf içindeki sırası (= satır numarası). */
+  sira: number;
+  /** Satırın üst kenarı (px) — satırlar boşluksuz dizilir, aralıklar örtüşmez. */
+  y: number;
+  yukseklik: number;
+  /** Ata zincirinden türeyen gerçek girinti kademesi (kök = 0). */
+  girinti: number;
+  /** `girinti` kadar hücre: son hücre düğümün kendi dirseğidir. */
+  kollar: BagKolu[];
+  /** Altında en az bir satır var mı (durum noktasından aşağı kısa kök çizgisi iner). */
+  cocuklu: boolean;
 }
 
 /**
- * Etiketin sığabileceği karakter sayısı da girintiden TÜREİR — sabit bir üst sınır
- * derin kademede taşmaya, sığ kademede boşuna kırpmaya yol açardı. Kırpma yalnız
- * görüntüdedir; tam ad üzerine gelme baloncuğunda durur.
+ * Grafın satır yerleşimini hesaplar. Girinti `derinlik` alanından DEĞİL ata
+ * zincirinden türer: kapsayanı görünmeyen düğüm kökleşir ve boşuna girintili
+ * kalmaz. Sıra, `projeGrafiCikar`ın derinlik-öncelikli sırasıdır; bir alt ağaç
+ * ardışıktır, dolayısıyla "son kardeş" bilgisi bağ çizgilerini kesintisiz tutar.
  */
-const KARAKTER_G = 7.9;   // ölçülen ortalama karakter genişliği (etiket punto'sunda)
-function etiketUstSiniri(derinlik: number): number {
-  return Math.max(16, Math.floor((SVG_G - etiketX(derinlik) - 10) / KARAKTER_G));
+export function agacYerlesimi(graf: ProjeGrafi): AgacSatiri[] {
+  const ust = new Map(graf.dugumler.map((d) => [d.kod, d.ustKod] as const));
+  const sonCocuk = new Map<string, string>();
+  const cocukluKodlar = new Set<string>();
+  for (const d of graf.dugumler) {
+    sonCocuk.set(d.ustKod ?? "", d.kod);
+    if (d.ustKod) cocukluKodlar.add(d.ustKod);
+  }
+  const sonMu = (d: { kod: string; ustKod?: string }): boolean => sonCocuk.get(d.ustKod ?? "") === d.kod;
+  /** Kökten düğüme ata zinciri; bozuk döngüde sonsuza gitmez. */
+  const zincir = (kod: string): string[] => {
+    const z = [kod];
+    const gorulen = new Set(z);
+    let u = ust.get(kod);
+    while (u && ust.has(u) && !gorulen.has(u)) { z.unshift(u); gorulen.add(u); u = ust.get(u); }
+    return z;
+  };
+  const dugumByKod = new Map(graf.dugumler.map((d) => [d.kod, d] as const));
+  return graf.dugumler.map((d, sira) => {
+    const z = zincir(d.kod);
+    const girinti = z.length - 1;
+    const kollar: BagKolu[] = [];
+    for (let k = 0; k < girinti; k++) {
+      const hedef = dugumByKod.get(z[k + 1])!;
+      kollar.push(k === girinti - 1 ? (sonMu(hedef) ? "l" : "t") : (sonMu(hedef) ? "b" : "i"));
+    }
+    return {
+      kod: d.kod, sira, y: sira * SATIR_YUKSEKLIGI, yukseklik: SATIR_YUKSEKLIGI,
+      girinti, kollar, cocuklu: cocukluKodlar.has(d.kod),
+    };
+  });
+}
+
+/**
+ * ÇİZİLECEK BAĞLAR: yalnız SEÇİLİ düğümün bağları; seçili düğüm yoksa hiçbiri.
+ * ÖLÇÜLMÜŞ KUSUR (2026-10-22 · Sarmal deposunun gerçek planı): 713 düğümlük
+ * grafta 13.380 bağ vardı; hepsini çizen görünüm 1,8-2,0 MB HTML üretiyor, şerit
+ * tek bir renkli duvara dönüyor ve panel kasıyordu. Bütün ağ okunmaz; okunan şey
+ * "seçtiğim düğüm kime bağlı" sorusunun cevabıdır. Veri (`graf.baglar`) kırpılmaz,
+ * yalnız çizim kırpılır; başlıktaki bağ sayısı bütün ağı söylemeye devam eder.
+ */
+export function cizilecekBaglar(graf: ProjeGrafi): ProjeGrafBagi[] {
+  const sec = graf.dugumler.find((d) => d.secili)?.kod;
+  if (!sec) return [];
+  return graf.baglar.filter((b) => b.once === sec || b.sonra === sec);
+}
+
+/** Bundan çok satırlı graf BÜYÜK sayılır: tamamlanmış alt ağaçlar daraltılır. */
+export const BUYUK_GRAF_ESIGI = 300;
+
+export interface GorunurGraf {
+  graf: ProjeGrafi;
+  /** Daraltılan düğüm → altında gizlenen satır sayısı. */
+  gizli: Map<string, number>;
+}
+
+/**
+ * BÜYÜK GRAF DARALTMASI (2026-10-22): gerçek planda 713 düğüm vardı ve her satırı
+ * basan görünümler 420-740 KB HTML üretiyordu. Okunmaya değer olan, biten işin
+ * dökümü değil sürenin ve bekleyenin yeridir; bu yüzden eşiği aşan grafta bütün
+ * Adımları TAMAMLANMIŞ alt ağaçlar (en üst kademede) tek satıra iner ve satırın
+ * rozeti kaç satırın gizlendiğini söyler. SEÇİLİ düğümü taşıyan alt ağaç hiç
+ * daralmaz. Veri kırpılmaz; yalnız çizilen satırlar azalır.
+ */
+export function gorunurGraf(graf: ProjeGrafi): GorunurGraf {
+  const gizli = new Map<string, number>();
+  if (graf.dugumler.length <= BUYUK_GRAF_ESIGI) return { graf, gizli };
+  const cocuklar = new Map<string, string[]>();
+  for (const d of graf.dugumler) if (d.ustKod) (cocuklar.get(d.ustKod) ?? cocuklar.set(d.ustKod, []).get(d.ustKod)!).push(d.kod);
+  const dugum = new Map(graf.dugumler.map((d) => [d.kod, d] as const));
+  // Alt ağaç özeti (aşağıdan yukarı): kaç Adım, kaçı tamamlandı, seçili var mı, kaç satır, kaç meyve (ve eksiği).
+  const ozet = new Map<string, { adim: number; tamam: number; secili: boolean; satir: number; meyve: number; eksik: number }>();
+  const ozetle = (kod: string, derinlik = 0): { adim: number; tamam: number; secili: boolean; satir: number; meyve: number; eksik: number } => {
+    const onceki = ozet.get(kod);
+    if (onceki) return onceki;
+    const d = dugum.get(kod)!;
+    const o = { adim: d.tip === "Adım" ? 1 : 0, tamam: d.tip === "Adım" && d.durum === "tamamlandı" ? 1 : 0, secili: d.secili, satir: 1,
+      meyve: d.meyveSayisi ?? 0, eksik: d.eksikMeyve ?? 0 };
+    ozet.set(kod, o);   // döngüye karşı önce yaz
+    if (derinlik < 64) for (const c of cocuklar.get(kod) ?? []) {
+      const k = ozetle(c, derinlik + 1);
+      o.adim += k.adim; o.tamam += k.tamam; o.secili ||= k.secili; o.satir += k.satir; o.meyve += k.meyve; o.eksik += k.eksik;
+    }
+    return o;
+  };
+  const gizlenen = new Set<string>();
+  const gez = (kod: string): void => {
+    const o = ozetle(kod);
+    const alt = cocuklar.get(kod) ?? [];
+    if (alt.length && !o.secili && o.adim > 0 && o.tamam === o.adim) {
+      gizli.set(kod, o.satir - 1);
+      const sil = (k: string): void => { for (const c of cocuklar.get(k) ?? []) { gizlenen.add(c); sil(c); } };
+      sil(kod);
+      return;
+    }
+    for (const c of alt) gez(c);
+  };
+  for (const d of graf.dugumler) if (!d.ustKod) gez(d.kod);
+  if (!gizli.size) return { graf, gizli };
+  // MEYVE SAYACI DARALMAYLA KAYBOLMAZ: daralan satır gizlediği Adımların meyve sayacını ve eksik
+  // bildirimini taşır (sayaç seçimden bağımsızdır, eksik teslim kırpılmaz). Satıra tıklamak onu seçer
+  // ve alt ağacı açar; Adımın kendi sayacı ve seçilince meyve satırları oradan okunur.
+  const tasi = (d: ProjeGrafDugumu): ProjeGrafDugumu => {
+    const o = gizli.has(d.kod) ? ozet.get(d.kod) : undefined;
+    return o && o.meyve > 0 ? { ...d, meyveSayisi: o.meyve, eksikMeyve: o.eksik } : d;
+  };
+  return { graf: { dugumler: graf.dugumler.filter((d) => !gizlenen.has(d.kod)).map(tasi), baglar: graf.baglar }, gizli };
+}
+
+/** Bağ şeridinde en çok kaç sütun açılır; fazlası EN DIŞ sütunu paylaşır. */
+export const SERIT_EN_COK_SUTUN = 5;
+/** Şerit sütunları arası mesafe (px). */
+export const SERIT_SUTUN_ARALIGI = 5;
+
+export interface BagYolu {
+  once: string;
+  sonra: string;
+  tur: ProjeGrafiBagiTuru;
+  /** Uç satırların merkez y'si (px) — satır yerleşimiyle aynı ölçüden türer. */
+  ya: number;
+  yb: number;
+  /** 0 = ağaca en yakın sütun. */
+  sutun: number;
+}
+type ProjeGrafiBagiTuru = ProjeGrafBagi["tur"];
+
+/**
+ * Bağları şerit sütunlarına dağıtır (git log grafiği gibi). Kısa bağlar iç
+ * sütunlara girer, aralıkları örtüşen bağlar ayrı sütun alır; sütun sayısı
+ * SERIT_EN_COK_SUTUN'u aşarsa kalanlar en dış sütunu paylaşır.
+ */
+export function bagYerlesimi(graf: ProjeGrafi): { yollar: BagYolu[]; sutunSayisi: number } {
+  const sira = new Map(graf.dugumler.map((d, i) => [d.kod, i] as const));
+  const adaylar = cizilecekBaglar(graf).flatMap((b) => {
+    const a = sira.get(b.once), z = sira.get(b.sonra);
+    return a === undefined || z === undefined || a === z ? [] : [{ b, a, z, ust: Math.min(a, z), alt: Math.max(a, z) }];
+  }).sort((x, y) => (x.alt - x.ust) - (y.alt - y.ust) || x.ust - y.ust);
+  const sutunSonlari: Array<Array<[number, number]>> = [];
+  const yollar: BagYolu[] = adaylar.map((c) => {
+    let k = sutunSonlari.findIndex((aralik) => aralik.every(([u, a]) => c.alt < u || c.ust > a));
+    if (k < 0) k = sutunSonlari.length < SERIT_EN_COK_SUTUN ? sutunSonlari.length : SERIT_EN_COK_SUTUN - 1;
+    (sutunSonlari[k] ??= []).push([c.ust, c.alt]);
+    return {
+      once: c.b.once, sonra: c.b.sonra, tur: c.b.tur,
+      ya: c.a * SATIR_YUKSEKLIGI + SATIR_YUKSEKLIGI / 2, yb: c.z * SATIR_YUKSEKLIGI + SATIR_YUKSEKLIGI / 2, sutun: k,
+    };
+  });
+  return { yollar, sutunSayisi: sutunSonlari.length };
+}
+
+/** Şeridin genişliği (px); bağ yoksa sıfırdır. */
+function seritGenisligi(sutunSayisi: number): number {
+  return sutunSayisi ? sutunSayisi * SERIT_SUTUN_ARALIGI + 8 : 0;
 }
 
 /** Webview HTML kaçışı (saf modül kendi güvenlik sınırını taşır). */
-function kacir(s: unknown): string {
+export function kacir(s: unknown): string {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function kisalt(s: string, ust: number): string {
-  return s.length > ust ? s.slice(0, ust - 1) + "…" : s;
-}
-
-function atlaHref(d: Pick<ProjeGrafDugumu, "dosya" | "satir">): string {
+export function atlaHref(d: Pick<ProjeGrafDugumu, "dosya" | "satir">): string {
   return d.dosya
     ? `command:sarmal.dosyaAc?${encodeURIComponent(JSON.stringify([d.dosya, d.satir]))}`
     : "";
 }
 
 /** Satır meyve ROLÜNDE mi çiziliyor — rolün tek görsel gerçeği kendi rayıdır. */
-function meyveRolu(d: ProjeGrafDugumu): boolean {
+export function meyveRolu(d: ProjeGrafDugumu): boolean {
   return d.derinlik === MEYVE_DERINLIK;
 }
 
-function dugumAltYazisi(d: ProjeGrafDugumu): string {
-  const tip = kanonikWidgetAdi(d.tip, d.tip === "AltKatman" ? "Alt katman" : d.tip);
+function tipAdi(d: ProjeGrafDugumu): string {
+  return kanonikWidgetAdi(d.tip, d.tip === "AltKatman" ? "Alt katman" : d.tip);
+}
+
+/** Adım satırının meyve sayacı ve eksik bildirimi (SEÇİMDEN BAĞIMSIZ). */
+/**
+ * Meyve sayacının simgesi: geometrik ailenin Meyve işareti (medya/simgeler/meyve.svg ile
+ * aynı şekiller; eşitliği minigraf.test.ts ölçer). Founder 2026-10-22: arayüzde emoji
+ * kalmaz; sayaç 🍎 yerine bu işaretle çizilir. Metin bağlamlarında (ipucu, Klasik SVG alt
+ * yazısı) işaret basılamadığı için sayaç sözcükle yazılır.
+ */
+export const MEYVE_SIMGESI_SVG = `<svg class=ms viewBox="0 0 24 24" aria-hidden="true">` +
+  `<circle cx="12" cy="13" r="6.2"/><path d="M12 6.8 L12 3.5"/><path d="M9.4 3.5 H14.6"/><circle cx="12" cy="13" r="1.5"/></svg>`;
+
+function meyveRozetleri(d: ProjeGrafDugumu): { sayac?: string; adet?: number; eksik?: string } {
+  // Eksik teslim sinyali ASLA kırpılmaz; grafın söylemesi gereken dürüstlük cümlesidir.
+  return {
+    sayac: d.meyveSayisi ? MINI_GRAF_METINLERI.meyveSayaci(d.meyveSayisi) : undefined,
+    adet: d.meyveSayisi || undefined,
+    eksik: d.eksikMeyve && d.eksikMeyve > 0 ? MINI_GRAF_METINLERI.eksikMeyve(d.eksikMeyve) : undefined,
+  };
+}
+
+export function dugumAltYazisi(d: ProjeGrafDugumu): string {
+  const tip = tipAdi(d);
   // Meyve rolü: kendi tipini ve BEYAN ettiği teslim yolunu söyler; kullanıcı
   // grafta "bu Adım neyi nereye teslim ediyor" sorusunu okuyabilsin diye.
   if (meyveRolu(d)) return d.beyanYolu ? `${tip} · ${d.beyanYolu}` : tip;
   let s = d.durum ? `${tip} · ${MINI_GRAF_METINLERI.durum(d.durum)}` : tip;
-  // Meyve sayacı SEÇİMDEN BAĞIMSIZDIR: eksik teslim kullanıcıya hiçbir seçim
-  // yapmadan bildirilir, aksi hâlde beyan ile gerçeğin farkı saklı kalırdı.
-  // Sayacın simgesi de KANONDAN okunur. Ölçülmüş kusur (2026-07-29 · bağımsız
-  // denetim): bu satır simgeyi koda gömüyordu. Kanondaki `aileSimgeleri.urun`
-  // değeri değiştirildiğinde mercek yeni simgeye geçiyor, sayaç eskisinde
-  // kalıyordu — yani AYNI SATIR aynı kavramı iki ayrı işaretle anlatıyordu ve
-  // eklenti süitinin tamamı yeşil kalıyordu (N8 yalnız mercek damgalarına bakar).
-  // VIT-KIMLIK-A03: okuma artık tek kaynak çizelgeden — Meyve rolünün simgesi
-  // tipSimgesi("Meyve") ile ailesinden (urun) çözülür; ikinci okuma yolu kalmadı.
-  if (d.meyveSayisi) s += ` · ${tipSimgesi("Meyve")} ${d.meyveSayisi}`;
-  if (d.eksikMeyve && d.eksikMeyve > 0) s += ` · ${MINI_GRAF_METINLERI.eksikMeyve(d.eksikMeyve)}`;
+  const r = meyveRozetleri(d);
+  if (r.sayac) s += ` · ${r.sayac}`;
+  if (r.eksik) s += ` · ${r.eksik}`;
   return s;
 }
 
-/** GitLens-benzeri tek proje grafını satır-içi SVG'ye çizer. */
-export function projeGrafiSvg(graf: ProjeGrafi): string {
-  if (!graf.dugumler.length) return "";
-  const H = ILK_Y * 2 + (graf.dugumler.length - 1) * SATIR_Y;
-  const konum = new Map(graf.dugumler.map((d, i) => [d.kod, {
-    x: RAY_X[d.derinlik], y: ILK_Y + i * SATIR_Y, i,
-  }]));
-  const parcalar: string[] = [];
+/** Durum → kısa CSS sınıfı (satır başına satır-içi stil yerine; HTML boyutu için). */
+const DURUM_SINIFI: Record<Durum, string> = {
+  "tamamlandı": "dt", "geliştirmede": "dg", "beklemede": "db", "doğrulanmamış": "dd", "bloklu": "dk",
+};
 
-  // Gerçek kenarlar: bütün ağ görünür, düğümlerin altında kalır. ÜÇ SINIF ÜÇ
-  // ÇİZGİDİR — yürütme sırası yumuşak bir eğridir, zemin bağı kesikli düz bir
-  // dirsektir, üretim kökeni ise noktalı düz bir iniştir; kullanıcı "bu iş şundan
-  // sonra gelir", "bu katman şunun üstünde durur" ve "bu Adım şunu teslim eder"
-  // cümlelerini bakışta ayırır. Sınıf veriden okunur, tahmin edilmez.
-  for (const bag of graf.baglar) {
-    const a = konum.get(bag.once), b = konum.get(bag.sonra);
-    if (!a || !b) continue;
-    // ÜRETİM KÖKENİ DÜZ İNER (ORK-1.3): Adımın merceğinden meyvenin merceğine tek
-    // bir doğru parçası gider. Geometri bilinçli olarak kavis hesabına GİRMEZ,
-    // çünkü iki uç yalnız bir ray (108 → 126) uzaktadır ve doğru parçası en geniş
-    // hâlinde bile x=126'da kalır; Adım etiket sütunu x=128'de başladığından bu
-    // kenar hiçbir yazıyı kesemez. Kapsama rayının kavisli dilinden de böylece
-    // kesin olarak ayrılır — YUZ-3.2 üretim kökeninin mimari sarma diye yeniden
-    // etiketlenmesini yasaklar.
-    if (bag.tur === "üretir") {
-      parcalar.push(`<path class="uretir" data-a="${a.i}" data-b="${b.i}" ` +
-        `d="M ${a.x} ${a.y} L ${b.x} ${b.y}"/>`);
-      continue;
-    }
-    // KAVİS TAVANI EN KALABALIK ETİKET SÜTUNUNUN SOLUNDA DURUR. Founder canlı
-    // bulgusu 2026-07-30: bağımlılık eğrileri yazılarla çakışıyordu. Ölçüldü —
-    // eğriler x=28..140 arasında akıyordu, Adım etiketleri ise x=128'den
-    // başlıyordu, dolayısıyla en kalabalık sütunun (523 etiket) üstünden
-    // geçiyorlardı. Tavan Adım sütununun soluna çekildi; eğri on dört piksel
-    // dar salınıyor fakat kendi kademesinin adını hiç kesmiyor.
-    const kavisX = Math.min(etiketX(4) - 2, Math.max(a.x, b.x) + 12 + Math.abs(b.y - a.y) * 0.07);
-    if (bag.tur === "zemin") {
-      parcalar.push(`<path class="zemin" data-a="${a.i}" data-b="${b.i}" ` +
-        `d="M ${a.x} ${a.y} H ${kavisX} V ${b.y} H ${b.x}"/>`);
-      continue;
-    }
-    parcalar.push(`<path class="bag" data-a="${a.i}" data-b="${b.i}" ` +
-      `d="M ${a.x} ${a.y} C ${kavisX} ${a.y}, ${kavisX} ${b.y}, ${b.x} ${b.y}"/>`);
-  }
-
-  // Kapsama rayları: kökler ortak proje rayına bağlanır; tüm yüz tek bütün görünür.
-  //
-  // KAPSAMA YALNIZ MİMARİ GÖRÜNÜRLÜĞÜ ÇİZER (ORK-1.1). Bir satırın bağlayıcısı
-  // veriden okunan başka bir sınıfa aitse burada İKİNCİ kez çizilmez; aksi hâlde
-  // aynı ilişki iki sınıfın dilinde birden anlatılır ve ORK-1 bunu yasaklar.
-  // Bugünkü tek örnek meyvedir: onun bağlayıcısı `üretir` sınıfındadır.
-  const kokler = graf.dugumler.filter((d) => !d.ustKod).map((d) => konum.get(d.kod)!);
-  if (kokler.length > 1) {
-    parcalar.push(`<path class="kapsama" d="M ${KOK_X} ${kokler[0].y} V ${kokler[kokler.length - 1].y}"/>`);
-  }
-  const kendiSinifiVar = new Set(
-    graf.baglar.filter((b) => b.tur === "üretir").map((b) => b.sonra));
-  for (const d of graf.dugumler) {
-    const p = konum.get(d.kod)!;
-    if (!d.ustKod) {
-      parcalar.push(`<path class="kapsama" d="M ${KOK_X} ${p.y} H ${p.x}"/>`);
-      continue;
-    }
-    if (kendiSinifiVar.has(d.kod)) continue;
-    const ust = konum.get(d.ustKod);
-    if (!ust) continue;
-    const donusY = Math.max(ust.y + 6, p.y - 10);
-    parcalar.push(`<path class="kapsama" d="M ${ust.x} ${ust.y} V ${donusY} Q ${ust.x} ${p.y} ${p.x} ${p.y}"/>`);
-  }
-
-  // Cam mercekler + kanon ikonları. Renk yalnız durumdan (YUZ-4).
-  graf.dugumler.forEach((d, i) => {
-    const p = konum.get(d.kod)!;
-    const r = YARICAP[d.derinlik];
-    const renk = durumRengi(d.durum);
-    const simge = tipSimgesi(d.tip);
-    const kimlik = d.ad === d.kod ? d.kod : `${d.ad} · ${d.kod}`;
-    // BOŞ CAM: beyan edilmiş ama diskte bulunamayan meyve DOLDURULMAZ. Işıma,
-    // buzlu gövde ve parlama çizilmez; geriye yalnız boş mercek ile kesikli
-    // çemberi kalır. Boşluk bir renk değil, bir YOKLUK olarak anlatılır.
-    const bos = d.diskte === false;
-    const bosCam = bos ? " boş" : "";
-    const dolgu = bos ? ""
-      : `<circle class="isima" cx="${p.x}" cy="${p.y}" r="${r + 7}" fill="${renk}"/>` +
-        `<circle cx="${p.x}" cy="${p.y}" r="${r - 1}" fill="${renk}" fill-opacity=".76" filter="url(#buz)"/>`;
-    const parlama = bos ? ""
-      : `<ellipse class="parlama" cx="${p.x - 1.5}" cy="${p.y - r / 2.5}" rx="${Math.max(2, r - 3)}" ry="${Math.max(1, (r - 3) / 2)}"/>`;
-    const baslik = `${kanonikWidgetAdi(d.tip, d.tip)} · ${kimlik}${d.durum ? ` · ${MINI_GRAF_METINLERI.durum(d.durum)}` : ""}` +
-      (meyveRolu(d) && d.beyanYolu ? `\n${MINI_GRAF_METINLERI.beyanYolu(bos, d.beyanYolu)}` : "");
-    // Etiket merdiveni: yazı da mercek gibi kademelenir; kırpma sınırı girintiden türer.
-    const ex = etiketX(d.derinlik);
-    const ust = etiketUstSiniri(d.derinlik);
-    const govde = `<g class="dugum${d.secili ? " secili" : ""}" data-i="${i}">` +
-      `<title>${kacir(MINI_GRAF_METINLERI.kaynakIpucu(baslik))}</title>` +
-      `<rect class="satir" x="0" y="${p.y - SATIR_Y / 2}" width="${SVG_G}" height="${SATIR_Y}" rx="7"/>` +
-      dolgu +
-      `<circle class="mercek${bosCam}" cx="${p.x}" cy="${p.y}" r="${r}"/>` +
-      parlama +
-      `<circle class="cember${bosCam}" cx="${p.x}" cy="${p.y}" r="${r}" stroke="${renk}"/>` +
-      `<text class="simge" x="${p.x}" y="${p.y + 3.2}" font-size="${d.derinlik < 2 ? 9.5 : 8.5}">${simge}</text>` +
-      `<text class="etiket" x="${ex}" y="${p.y - 1}">${kacir(kisalt(d.ad, ust))}</text>` +
-      // ALT YAZI KIRPILMAZ. Denendi ve geri alındı (2026-07-30): girintiden türeyen
-      // sınır Adım alt yazısının kuyruğunu kesiyordu ve kesilen tam da "N diskte yok"
-      // uyarısıydı. Eksik teslim sinyalini kırpmak, grafın söylemesi gereken tek
-      // dürüstlük cümlesini susturmak olurdu; genişlik kaygısı bunun önüne geçemez.
-      `<text class="alt" x="${ex}" y="${p.y + 10.5}">${kacir(dugumAltYazisi(d))}</text>` +
-      `</g>`;
-    const href = atlaHref(d);
-    parcalar.push(href ? `<a href="${href}">${govde}</a>` : govde);
-  });
-
-  return `<svg class="graf" viewBox="0 0 ${SVG_G} ${H}" width="100%" ` +
-    `xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${MINI_GRAF_METINLERI.ariaGraf}">` +
-    `<defs><filter id="buz" x="-80%" y="-80%" width="260%" height="260%">` +
-    `<feGaussianBlur stdDeviation="1.6"/></filter></defs>${parcalar.join("")}</svg>`;
+function satirHtml(d: ProjeGrafDugumu, s: AgacSatiri, gizli = 0): string {
+  const bos = d.diskte === false;   // beyan edilmiş ama diskte yok: içi boş nokta
+  const kimlik = d.ad === d.kod ? d.kod : `${d.ad} · ${d.kod}`;
+  const ipucu = `${kimlik}\n${dugumAltYazisi(d)}` +
+    (meyveRolu(d) && d.beyanYolu ? `\n${MINI_GRAF_METINLERI.beyanYolu(bos, d.beyanYolu)}` : "") +
+    (gizli ? `\n${MINI_GRAF_METINLERI.gizliSatir(gizli)}` : "");
+  const r = meyveRolu(d) ? {} : meyveRozetleri(d);
+  // HTML boyutu (ölçülmüş): gerçek planda 713 satır; her satırdaki bayt çarpılır, bu
+  // yüzden sınıflar tırnaksızdır ve dolgu öznitelikleri yazılmaz.
+  const icerik =
+    s.kollar.map((k) => `<i class=g${k}></i>`).join("") +
+    `<b class="nokta${d.durum ? " " + DURUM_SINIFI[d.durum] : ""}${bos ? " bos" : ""}${s.cocuklu ? " ac" : ""}"></b>` +
+    `<span class=simge>${tipSimgesi(d.tip)}</span>` +
+    `<span class=ad>${kacir(d.ad)}</span>` +
+    (r.sayac ? `<span class=rozet title="${kacir(r.sayac)}">${MEYVE_SIMGESI_SVG}${r.adet}</span>` : "") +
+    (r.eksik ? `<span class="rozet eksik">${kacir(r.eksik)}</span>` : "") +
+    (gizli ? `<span class="rozet gz">${kacir(MINI_GRAF_METINLERI.gizliSatir(gizli))}</span>` : "") +
+    `<span class=tip>${kacir(meyveRolu(d) ? dugumAltYazisi(d) : tipAdi(d))}</span>`;
+  const nitelik = `class="dugum${d.secili ? " secili" : ""}"${d.secili ? ' aria-current="true"' : ""} ` +
+    `title="${kacir(MINI_GRAF_METINLERI.kaynakIpucu(ipucu))}"`;
+  const href = atlaHref(d);
+  return href ? `<a ${nitelik} href="${href}">${icerik}</a>` : `<div ${nitelik}>${icerik}</div>`;
 }
 
 /**
- * Hover edilen düğümün yalnız doğrudan bağımlılık bağlarını hafifçe güçlendirir.
- *
- * YALNIZ `adım` KENARI SAYILIR. Ölçülmüş kusur (2026-07-30 · Founder canlı
- * bulgusu "IDE'de kasma var"): bağlılık denetimi BÜTÜN kenarlara bakıyordu, oysa
- * ürettiği kural yalnız `.bag` sınıfını boyar. Zemin kenarı `.zemin` sınıfındadır,
- * dolayısıyla yalnız zemine bağlı bir düğüm için hiçbir zaman EŞLEŞEMEYECEK iki
- * seçici üretiliyordu. Zemin kenarları A12 turunda 151'den 722'ye çıkınca bu ölü
- * maliyet grafın tamamına yayıldı ve `:has()` seçici sayısı 1366'ya ulaştı;
- * `:has()` en pahalı seçicidir ve tarayıcı onu her fare hareketinde yeniden
- * değerlendirir. Zemin zaten ortam bilgisidir — izlenecek olan yürütme bağıdır.
+ * Bağ şeridi: satırların solunda, SVG'si ağacın ARKASINDAN değil yanından geçer
+ * (satırlar şerit genişliği kadar içeriden başlar). Her bağ, kaynak satırın
+ * merkezinden hedef satırın merkezine tek bir yumuşak kübik yaydır; sınıfı
+ * veriden okunur (adım düz, zemin kesikli, üretir noktalı).
  */
-function bagHoverStili(graf: ProjeGrafi): string {
-  return graf.dugumler.map((d, i) => {
-    const bagli = graf.baglar.some((b) => b.tur === "adım" && (b.once === d.kod || b.sonra === d.kod));
-    if (!bagli) return "";
-    return `.graf:has(.dugum[data-i="${i}"]:hover) .bag[data-a="${i}"],` +
-      `.graf:has(.dugum[data-i="${i}"]:hover) .bag[data-b="${i}"]{stroke-opacity:.72;stroke-width:1.5}`;
+function seritSvg(graf: ProjeGrafi, yerlesim: AgacSatiri[]): string {
+  const { yollar, sutunSayisi } = bagYerlesimi(graf);
+  if (!yollar.length) return "";
+  const G = seritGenisligi(sutunSayisi), R = G - 3;
+  const sira = new Map(graf.dugumler.map((d, i) => [d.kod, i] as const));
+  const yol = yollar.map((b) => {
+    const xc = R - 3 - b.sutun * SERIT_SUTUN_ARALIGI;
+    const cx = Math.round((R - (R - xc) * 4 / 3) * 100) / 100;
+    const a = sira.get(b.once)!, z = sira.get(b.sonra)!;
+    const sinif = b.tur === "adım" ? "bag" : b.tur === "zemin" ? "zemin" : "uretir";
+    return `<path class="${sinif}" data-a="${a}" data-b="${z}" ` +
+      `d="M ${R} ${b.ya} C ${cx} ${b.ya}, ${cx} ${b.yb}, ${R} ${b.yb}"/>`;
   }).join("");
+  return `<svg class="serit" aria-hidden="true" width="${G}" height="${yerlesim.length * SATIR_YUKSEKLIGI}" ` +
+    `xmlns="http://www.w3.org/2000/svg">${yol}</svg>`;
+}
+
+/** Tek proje grafını düzenli ağaç olarak (satır başına bir düğüm) HTML'e çizer. */
+export function projeGrafiAgaci(tamGraf: ProjeGrafi): string {
+  if (!tamGraf.dugumler.length) return "";
+  const { graf, gizli } = gorunurGraf(tamGraf);
+  const yerlesim = agacYerlesimi(graf);
+  const G = seritGenisligi(bagYerlesimi(graf).sutunSayisi);
+  return `<div class="graf" role="group" aria-label="${MINI_GRAF_METINLERI.ariaGraf}" style="--serit:${G}px">` +
+    graf.dugumler.map((d, i) => satirHtml(d, yerlesim[i], gizli.get(d.kod))).join("") + seritSvg(graf, yerlesim) + `</div>`;
 }
 
 // ── HTML kabuğu ──────────────────────────────────────────────────────────────
 
+const DURUM_RENKLERI = (Object.keys(DURUM_SINIFI) as Durum[])
+  .map((d) => `.${DURUM_SINIFI[d]}{--r:${durumRengi(d)}}`).join("");
+
 const STIL = `<style>
-body{font-family:var(--vscode-font-family);font-size:11px;color:var(--vscode-foreground);padding:0 6px;margin:0;background:transparent}
-.ust{display:flex;justify-content:flex-end;align-items:center;height:22px;padding:0 6px;border-bottom:1px solid var(--vscode-widget-border)}
+:root{--sat:${SATIR_YUKSEKLIGI}px;--g:${KADEME_GIRINTISI}px;--iz:var(--vscode-tree-indentGuidesStroke,var(--vscode-panel-border))}
+body{font-family:var(--vscode-font-family);font-size:12px;color:var(--vscode-foreground);padding:0;margin:0;background:transparent}
+.ust{display:flex;justify-content:flex-end;align-items:center;height:22px;padding:0 8px;border-bottom:1px solid var(--vscode-widget-border)}
 .ozet{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:10px;color:var(--vscode-descriptionForeground)}
 .sayac-simge{font-size:9px;color:var(--vscode-foreground);opacity:.72}.ayrac{opacity:.55}
-a{text-decoration:none}.bag{fill:none;stroke:var(--vscode-sarmal-kenar);stroke-width:1.05;stroke-opacity:.20}
-.zemin{fill:none;stroke:var(--vscode-panel-border);stroke-width:.85;stroke-opacity:.42;stroke-dasharray:2 3}
-/* ÜRETİM KÖKENİ (ORK-1.3) — kendi görsel dili. Kapsama sürekli ve kavislidir,
-   zemin kesikli ve dik açılıdır, yürütme kenarı yumuşak bir eğridir; üretir ise
-   NOKTALI ve düz iner. Dört sınıf dört ayrı (biçim × desen) çiftidir, dolayısıyla
-   hiçbiri ötekiyle karışmaz. Renk yine kanonik tema rolünden gelir (YUZ-4.1) ve
-   durum renkleriyle ORTAK DEĞİLDİR — kenar sınıfı bir durum değildir. */
-.uretir{fill:none;stroke:var(--vscode-descriptionForeground);stroke-width:1;stroke-opacity:.55;stroke-dasharray:1 2.6;stroke-linecap:round}
-.kapsama{fill:none;stroke:var(--vscode-panel-border);stroke-width:1.1;stroke-opacity:.58}
-.satir{fill:transparent}.isima{opacity:0;filter:blur(5px);transition:opacity .16s ease}
-.mercek{fill:var(--vscode-editorWidget-background);fill-opacity:.78}
-.parlama{fill:var(--vscode-foreground);fill-opacity:.16;pointer-events:none}
-.cember{fill:none;stroke-opacity:.60;stroke-width:.9}
-.cember.boş{stroke-dasharray:2.5 2}
-.mercek.boş{fill-opacity:.10}
-.simge{font-family:var(--vscode-font-family);text-anchor:middle;pointer-events:none}
-/* YAZI HALESİ — bağımlılık eğrisi harfin ARKASINDA kesilir (Founder bulgusu
-   2026-07-30). Kavis tavanını çekmek tek başına yetmez: bir eğri satırlar boyunca
-   uzanır ve yolu üstündeki SIĞ kademelerin adlarını da keser. Hale, her harfe
-   panel arka planı renginde ince bir dış çizgi verir; çizgi harfe değdiği yerde
-   görünmez olur, yazı okunur kalır. Saf CSS'tir, betik ya da kütüphane istemez.
-   Renk yine kanonik tema rolünden gelir (YUZ-4.1) — ham değer gömülmez. */
-.etiket,.alt{paint-order:stroke fill;stroke:var(--vscode-sideBar-background,var(--vscode-editor-background));stroke-width:3px;stroke-linejoin:round}
-.etiket{fill:var(--vscode-foreground);font-size:11px}.alt{fill:var(--vscode-descriptionForeground);font-size:9px}
-.dugum{cursor:pointer}.dugum:hover .satir{fill:var(--vscode-list-hoverBackground)}
-.dugum:hover .isima{opacity:.30}.dugum:hover .etiket{font-weight:600}
-.dugum.secili .isima{opacity:.16}.dugum.secili .cember{stroke-opacity:.95;stroke-width:1.2}
+a{text-decoration:none}
+.graf{position:relative;padding:2px 0 6px;--serit:0px}
+/* SATIR: sabit yükseklik, tek satır. İki düğüm aynı satırı paylaşamaz, dolayısıyla
+   etiketler birbirine BİNEMEZ. content-visibility ekran dışı satırların yerleşim ve
+   boyama maliyetini atlar (çok düğümlü projede sanal kaydırma yerine geçer). */
+.dugum{display:flex;align-items:center;box-sizing:border-box;height:var(--sat);padding:0 8px 0 calc(var(--serit) + 6px);color:inherit;white-space:nowrap;cursor:pointer;content-visibility:auto;contain-intrinsic-block-size:var(--sat)}
+.dugum:hover{background:var(--vscode-list-hoverBackground)}
+.dugum:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:-1px}
+.dugum.secili{background:var(--vscode-list-inactiveSelectionBackground);color:var(--vscode-list-inactiveSelectionForeground,var(--vscode-foreground))}
+.dugum.secili .ad{font-weight:600}
+.dugum.secili .tip,.dugum.secili .rozet{color:inherit;opacity:.8}
+/* BAĞ ÇİZGİLERİ: ince ve soluk (tema kılavuz rengi); kalın renkli gövde çizgisi yoktur.
+   Hücre x=8 çizgisi atanın durum noktasının merkezine denk gelir. */
+.gi,.gb,.gt,.gl{flex:0 0 var(--g);align-self:stretch;position:relative}
+.gi::before,.gt::before,.gt::after,.gl::before,.gl::after{content:"";position:absolute;pointer-events:none}
+.gi::before,.gt::before,.gl::before{left:8px;top:0;bottom:0;border-left:1px solid var(--iz)}
+.gl::before{bottom:50%}
+.gt::after,.gl::after{left:8px;right:0;top:50%;border-top:1px solid var(--iz)}
+/* DURUM NOKTASI: renk yalnız durumdan (YUZ-4) ve kanonik tema rolünden gelir. Nokta
+   satır yüksekliğinde 16px'lik bir kutudur; yuvarlak ::before, kök çizgisi ::after'dır. */
+.nokta{flex:0 0 16px;align-self:stretch;position:relative;--r:var(--vscode-descriptionForeground)}
+.nokta::before{content:"";position:absolute;left:4px;top:50%;width:8px;height:8px;margin-top:-4px;box-sizing:border-box;border-radius:50%;background:var(--r);z-index:1}
+.nokta.bos::before{background:transparent;border:1px dashed var(--r)}
+.nokta.ac::after{content:"";position:absolute;left:8px;top:calc(50% + 5px);bottom:0;border-left:1px solid var(--iz);pointer-events:none}
+${DURUM_RENKLERI}
+.simge{flex:0 0 16px;margin-left:2px;text-align:center;font-size:11px;pointer-events:none}
+.ad{flex:1 1 auto;min-width:0;margin-left:4px;overflow:hidden;text-overflow:ellipsis}
+.rozet{flex:0 0 auto;margin-left:6px;font-size:10px;color:var(--vscode-descriptionForeground)}
+.ms{width:12px;height:12px;margin-right:2px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rozet.eksik{color:var(--vscode-editorWarning-foreground,var(--vscode-descriptionForeground))}
+/* Daralan satırın "gizli satır" yazısı dar panelde ilk kısalır: ad ve meyve sayacı yerinde kalır. */
+.rozet.gz{flex-shrink:1000;min-width:3ch;overflow:hidden;text-overflow:ellipsis}
+.tip{flex:0 0 auto;max-width:45%;min-width:0;margin-left:10px;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:10px;color:var(--vscode-descriptionForeground)}
+/* DAR PANEL: tip sütunu ilk gizlenir; ad ve durum noktası kalır. */
+@media (max-width:239px){.tip{display:none}}
 .k{color:var(--vscode-descriptionForeground);padding:6px}
+/* BAĞ ŞERİDİ (git log grafiği gibi): üç sınıf üç çizgi dilidir ve yarı saydamdır.
+   adım düz, zemin kesikli, üretir noktalı; renk kanonik tema rolünden gelir. */
+.serit{position:absolute;left:0;top:2px;pointer-events:none;overflow:visible}
+.serit path{fill:none;stroke-linecap:round}
+.bag{stroke:var(--vscode-sarmal-kenar,var(--vscode-descriptionForeground));stroke-width:1.3;stroke-opacity:.7}
+.zemin{stroke:var(--vscode-descriptionForeground);stroke-width:1.3;stroke-opacity:.7;stroke-dasharray:3 3}
+.uretir{stroke:var(--vscode-descriptionForeground);stroke-width:1.3;stroke-opacity:.8;stroke-dasharray:1 2.6}
 </style>`;
 
 /** Tek doğru görünüm: tüm proje grafı. Kip/anahtar yoktur. */
 export function miniGrafHtml(graf: ProjeGrafi): string {
   if (!graf.dugumler.length) return bosHtml(MINI_GRAF_METINLERI.bosGraf);
-  return `<!DOCTYPE html><html lang="${MINI_GRAF_METINLERI.dil}"><meta charset="UTF-8">${STIL}<style>${bagHoverStili(graf)}</style><body>
+  return `<!DOCTYPE html><html lang="${MINI_GRAF_METINLERI.dil}"><meta charset="UTF-8">${STIL}<body>
 <div class="ust"><span class="ozet"><span class="sayac-simge" title="${MINI_GRAF_METINLERI.dugum}" aria-label="${MINI_GRAF_METINLERI.dugum}">●</span>${graf.dugumler.length}<span class="ayrac">·</span><span class="sayac-simge" title="${MINI_GRAF_METINLERI.bag}" aria-label="${MINI_GRAF_METINLERI.bag}">⎇</span>${graf.baglar.length}</span></div>
-${projeGrafiSvg(graf)}
+${projeGrafiAgaci(graf)}
 </body></html>`;
 }
 

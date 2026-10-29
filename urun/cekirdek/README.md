@@ -12,5 +12,5 @@ Bu geliştirme girişi elle korunur; komut ve kaynak özeti canlı koddan üreti
 
 `npm run tip-denetle` TypeScript kapısını, `npm test` çekirdek süitini çalıştırır. Üst kökü denetlemek için `node src/sarmal.ts denetle ../..`, kalıcı belge yüzlerini tazelemek için `node src/sarmal.ts belge-yuzleri-uret ../..` kullanılır.
 
-Belge üretim yolu iki parçalıdır. `belgele.ts` tekil `.sar` kaynağını Markdown'a yansıtır; `belge-yuzleri.ts` README, indeks ve Diátaxis bölgelerini canlı kanon, sınıflama ve sicilden üretir. `siniflama.ts` ise 101 tipin tam alan tablosunu ayrı Reference yüzünde kurar.
+Belge üretim yolu iki parçalıdır. `belgele.ts` tekil `.sar` kaynağını Markdown'a yansıtır; `belge-yuzleri.ts` README, indeks ve Diátaxis bölgelerini canlı kanon, sınıflama ve sicilden üretir. `siniflama.ts` ise 102 tipin tam alan tablosunu ayrı Reference yüzünde kurar.
 <!-- SARMAL:URETILEN:CEKIRDEK-README:SON -->

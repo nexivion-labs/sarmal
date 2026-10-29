@@ -20,6 +20,7 @@ import { dirname, join } from "node:path";
 import { beklenenSunumYuzeyi, type SunumYuzeyi } from "../../cekirdek/src/denetim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import { YENI_TANI_INDEKS } from "../../cekirdek/src/tani-sicili.ts";
+import { SOZ_DIZIM_KODU } from "../../cekirdek/src/tani-metinleri.ts";   // MGZ-A03: kimliğin tek kaynağı
 import {
   kayitEtiketi, kayitAciklamasi, kayitIpucu, panoKaydiMetni, panoKumeMetni,
 } from "./yuzey-metinleri.ts";
@@ -30,6 +31,7 @@ import { bildirimTuru, type BildirimTuru } from "./yol-dekor.ts";
 import type { AnlamRengi, SatirSimgesi, EksenTipi } from "./simge-cizelgesi.ts";
 import type { KapsayiciEvre } from "../../cekirdek/src/durum.ts";
 import type { Dugum } from "../../cekirdek/src/sozdizim.ts";   // YALNIZ TİP — modül SAF kalır
+import type { ProjePayi, SayiKapsami } from "./kapsam-sayaci.ts";
 
 export type { SunumYuzeyi };
 
@@ -109,6 +111,22 @@ export const GORUNUS_ONAYLAR = "sarmalOnaylar";
  * burada durur ki nöbet paket bildirimiyle eşitliği tek kaynaktan ölçebilsin.
  */
 export const DENETLEYICI_ONAY = "sarmal-onay";
+/** Makinist ağacının görünüm kimliği (package.json ile birebir). Founder 2026-10-21: Onaylar ·
+ *  Hatırlatıcılar · Fikirler ayrı görünüm değil, bu tek ağacın üst düğümleridir. Gözlemler
+ *  PNL-A09'dan beri (OZK-14) Makinist'te değil, Sinyaller sekmesinin ayrı bölümündedir. */
+export const GORUNUS_MAKINIST = "sarmalMakinist";
+export type MakinistGrubu = "onaylar" | "ileride" | "hatirlaticilar" | "fikirler";
+/**
+ * Üst düğümlerin sırası: Onaylar (kararı bugün verilebilecek kapılar) en üstte. "İleride onay isteyecek"
+ * grubu (PNL-A08) Adımı beklemede olan kapıları taşır, Onaylar'ın hemen altında durur, kapalı başlar ve
+ * yalnız böyle bir kapı varken görünür.
+ */
+export const MAKINIST_GRUPLARI: readonly MakinistGrubu[] = ["onaylar", "ileride", "hatirlaticilar", "fikirler"];
+
+/** Dört Makinist yüzeyinin (durum çubuğu) ortak odak komutu: Makinist bölümünü seçer ve ağacı öne alır. */
+export const MAKINIST_ODAK_KOMUTU = "sarmal.bolum.makinist";
+/** Sinyaller sekmesini seçip paneli öne alan komut (PNL-A09); Gözlemler sayacı buraya götürür. */
+export const SINYALLER_ODAK_KOMUTU = "sarmal.sinyallerAc";
 export const KOMUT_ONAY_KUYRUGU = "sarmal.onayKuyrugu";
 
 /** Kaydın geldiği Proje kimliği — panel gruplaması bu kimlikten kurulur. */
@@ -117,6 +135,11 @@ export interface ProjeKimligi {
   readonly kod: string;
   /** Projenin insan adı — panelde görünen etiket. */
   readonly ad: string;
+  /**
+   * Kök düğümün tipi (ÇalışmaAlanı, Proje…). Satırın simgesi buradan, Yol Haritasının varlık simgesi
+   * kuralıyla seçilir (PNL-A25 · `varlikSimgesi`); tanımsızsa Proje sayılır.
+   */
+  readonly tip?: string;
 }
 
 /**
@@ -165,6 +188,19 @@ export function yuzeyeAyir(kayitlar: readonly YuzeyKaydi[]): YuzeyDagilimi {
     }
   }
   return { problems, hatırlatıcılar: tekSatiraIndir(hatırlatıcılar), bildirimler };
+}
+
+/**
+ * ⛔ MGZ-A03 · SORUNLAR PANELİNE GİDEN LİSTE. Odaktaki dosyanın bütün tanıları
+ * gider. Odak dışındaki dosyadan yalnız `söz-dizim` tanısı geçer: ayrıştırılamayan
+ * dosya bir projenin sapması değil, aracın hiç okuyamadığı bir dosyadır ve Yol
+ * Haritasının kırık dosyalar düğümü onu bütün pencere için zaten duyurur. Ölçülen
+ * kusur buydu: odak başka projedeyken Yol Haritası dosyanın kırık olduğunu
+ * söylerken Sorunlar paneli aynı anda sorun algılanmadı diyordu. Odak süzgeci
+ * yerinde kalır; öteki tanıların hiçbiri odağı aşmaz.
+ */
+export function problemsYayini<T extends { readonly code?: unknown }>(tanilar: readonly T[], odakta: boolean): T[] {
+  return odakta ? [...tanilar] : tanilar.filter((t) => t.code === SOZ_DIZIM_KODU);
 }
 
 /**
@@ -548,9 +584,24 @@ export interface KayitGorunumu {
  * alanından kurulur ve bu işlev ona dokunmaz.
  */
 export function kayitHedefi(kayit: YuzeyKaydi): { dosya: string; satir: number; sutun: number } {
-  const hedef = kayit.tani.hedefDosya;
+  const hedef = taniHedefi(kayit.dosya, kayit.tani);
   if (!hedef) return { dosya: kayit.dosya, satir: kayit.tani.satir, sutun: kayit.tani.sutun };
-  return { dosya: join(dirname(kayit.dosya), hedef), satir: 1, sutun: 1 };
+  return { dosya: hedef.dosya, satir: hedef.satir, sutun: hedef.sutun };
+}
+
+/**
+ * Bulgunun anlattığı yer (EKL-F6-A10 · MGZ-A06). Tanı `hedefDosya` taşımıyorsa
+ * kendi konumunu anlatır ve işlev boş döner. Taşıyorsa hedef, kaydın yazıldığı
+ * dosyanın klasörüne göre çözülür ve başından açılır; eğik çizgiyle biten hedef
+ * bir klasördür. Panel tıklaması (`kayitHedefi`) ile Problems yüzeyindeki ilgili
+ * konum bağlantısı hedefi bu tek işlevden okur, böylece iki yüzey aynı yeri açar.
+ */
+export function taniHedefi(
+  dosya: string, tani: Tani,
+): { dosya: string; satir: number; sutun: number; klasor: boolean } | undefined {
+  const hedef = tani.hedefDosya;
+  if (!hedef) return undefined;
+  return { dosya: join(dirname(dosya), hedef), satir: 1, sutun: 1, klasor: hedef.endsWith("/") };
 }
 
 /** Kaydı panel satırına çevirir — metin katalogdan, olgu tanıdan gelir. */
@@ -864,8 +915,18 @@ export interface SayacKaynagi {
    * konuşabilir hâle geldi.
    */
   readonly fikir: () => number;
-  /** Onaylar panelindeki bekleyen kapı sayısı. */
+  /** Onaylar panelindeki, kararı bugün verilebilecek kapı sayısı (PNL-A08). */
   readonly kapı: () => number;
+  /** Sinyaller'in Dur bandındaki tanı sayısı (PNL-A08). */
+  readonly dur?: () => number;
+  /** Sinyaller'in Dikkat bandındaki tanı sayısı (PNL-A08). */
+  readonly dikkat?: () => number;
+  /** Sorunlar paneline gönderim açık mı (PNL-A22)? Açıkken Dur ve Dikkat girdisi gösterilmez. */
+  readonly sorunlarPaneli?: () => boolean;
+  /** Sayıların kapsamı (PNL-A08): ipucu kapsamı adıyla yazar. */
+  readonly kapsam?: () => SayiKapsami | undefined;
+  /** Girdinin proje kırılımı; çatı kapsamında ipucunda proje proje dökülür (PNL-A08). */
+  readonly paylar?: (girdi: Girdi["metin"]) => readonly ProjePayi[];
 }
 
 /** Tek bir durum çubuğu girdisinin tarifi. */
@@ -873,9 +934,13 @@ interface Girdi {
   readonly simge: string;
   /** Metin kataloğundaki yüzey anahtarı. Katalog kabukta okunur; saf çekirdek
    *  ona bağımlı olmaz, yalnız anahtarın kendisini taşır. */
-  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "onayPaneli";
+  readonly metin: "sorunlar" | "gözlemler" | "hatırlatıcılar" | "fikirler" | "onayPaneli" | "sinyaller";
   readonly komut: string;
   readonly say: (k: SayacKaynagi) => number;
+  /** Girdi görünür mü? Tanımsızsa her zaman görünür (sıfır da bir bilgidir). */
+  readonly gorunur?: (k: SayacKaynagi) => boolean;
+  /** Girdi tek sayı yerine bant adlı parçalar basar (Dur ve Dikkat · PNL-A08). */
+  readonly parcalar?: (k: SayacKaynagi) => readonly { readonly bant: "dur" | "dikkat"; readonly adet: number }[];
 }
 
 /**
@@ -890,6 +955,18 @@ interface Girdi {
  * durur ve motorun haber satırı en sonda kalır.
  */
 export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
+  // 🚦 DUR VE DİKKAT GİRDİSİ (PNL-A08). 2026-07-29'da kaldırılmıştı, çünkü VS Code'un kendi sayacı
+  // aynı sayıyı basıyordu. PNL-A22'den beri Sorunlar paneline gönderim bir ayardır ve varsayılanı
+  // kapalıdır; ayar kapalıyken VS Code'un sayacı Sarmal tanılarını saymaz ve bu sayı hiçbir yerde
+  // görünmezdi. Girdi yalnız ayar kapalıyken görünür, ayar açıkken aynı sayı iki kez görünmesin diye
+  // gizlenir. VS Code'un hata ve uyarı simgeleri yerine bantların adları yazılır ki iki sayaç
+  // birbirine karışmasın.
+  {
+    simge: "", metin: "sinyaller", komut: SINYALLER_ODAK_KOMUTU,
+    say: (k) => (k.dur?.() ?? 0) + (k.dikkat?.() ?? 0),
+    gorunur: (k) => !(k.sorunlarPaneli?.() ?? false),
+    parcalar: (k) => [{ bant: "dur", adet: k.dur?.() ?? 0 }, { bant: "dikkat", adet: k.dikkat?.() ?? 0 }],
+  },
   // ⚠️ HATA VE UYARI GİRDİSİ YOKTUR — Founder canlı bulgusu 2026-07-29: "x ve ! iki tane var".
   //
   // VS Code hata ve uyarı sayacını ZATEN kendi durum çubuğunda basar. Onu ikinci kez
@@ -898,10 +975,10 @@ export const DURUM_CUBUGU_GIRDILERI: readonly Girdi[] = [
   // ilkesinin arayüz karşılığıdır: aynı gerçeğin iki gösterimi zamanla ayrışır ve
   // ayrışmasa bile okuyanı yorar. Sarmal yalnız KENDİ üç yüzeyini basar; sorunları
   // platformun sayacına bırakır.
-  { simge: "$(mail)",          metin: "onayPaneli",   komut: `${GORUNUS_ONAYLAR}.focus`,   say: (k) => k.kapı() },
-  { simge: "$(bell)",          metin: "hatırlatıcılar", komut: `${GORUNUS_HATIRLATICILAR}.focus`, say: (k) => k.hatırlatıcı() },
-  { simge: "$(lightbulb)",     metin: "fikirler",      komut: `${GORUNUS_FIKIRLER}.focus`,       say: (k) => k.fikir() },
-  { simge: "$(eye)",           metin: "gözlemler",     komut: `${GORUNUS_BILDIRIMLER}.focus`,    say: (k) => k.gözlem() },
+  { simge: "$(mail)",          metin: "onayPaneli",   komut: MAKINIST_ODAK_KOMUTU,   say: (k) => k.kapı() },
+  { simge: "$(bell)",          metin: "hatırlatıcılar", komut: MAKINIST_ODAK_KOMUTU, say: (k) => k.hatırlatıcı() },
+  { simge: "$(lightbulb)",     metin: "fikirler",      komut: MAKINIST_ODAK_KOMUTU,       say: (k) => k.fikir() },
+  { simge: "$(eye)",           metin: "gözlemler",     komut: SINYALLER_ODAK_KOMUTU,   say: (k) => k.gözlem() },
 ];
 
 // ── 🔗 AYNI OLAY — panel ile durum çubuğu ayrı anlarda tazelenmez ────────────

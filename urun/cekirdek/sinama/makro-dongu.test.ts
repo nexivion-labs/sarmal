@@ -11,35 +11,36 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readdirSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { rmSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { donguKos, donguBul, duruncaDegerlendir, turKarnesi } from "../src/makro-dongu.ts";
 import { demoEtmenYap } from "../src/dongu.ts";
 import { programlariYukle } from "../src/denetci.ts";
+import { dogusAgaciKur, fazMetni, planYolu } from "./dogus-agaci.ts";
 
-/** Geçici bahçe: anadizin + koni-dolu hedef Adım + verilen Döngü. */
+/**
+ * Geçici bahçe: doğuşun ağacı + koni-dolu hedef Adım + verilen Döngü.
+ *
+ * GERÇEK AĞAÇ (HST-MTR-A07): bahçe doğuş paketiyle doğar ve hedef Adım doğuşun
+ * ilk Faz dosyasında, tam zincirde yaşar. Döngü sınıflamanın izin verdiği yerde,
+ * plan rafındaki bir dosyanın kök düzeyindedir (Döngü yalnız Uygulama, Proje ya
+ * da Raf içine konabilir). Eski bahçe Döngüyü bir Blokun, Fazı da bir Blokun
+ * içine yazıyordu ve plan rafını eski `raflar:` haritasıyla kökte ilan ediyordu.
+ */
 function bahce(donguSatiri: string): string {
-  const d = mkdtempSync(join(tmpdir(), "sarmal-dongu-"));
-  writeFileSync(join(d, "test_anadizin.sar"),
-    'Proje( kod: DNG-BAHCE, baslik: "döngü bahçesi" ) {\n' +
-    '  raflar: { PLAN: "plan/" }\n' +
-    "}\n" +
-    "/// ## Amaç\n/// döngü sınaması\n/// ## Kapsam\n/// tek hedef Adım + tek Döngü — koşucu güvencesi ölçülür.\n/// ## Sonuç\n/// koşucu kararları doğru\n");
-  mkdirSync(join(d, "plan"));
-  writeFileSync(join(d, "plan", "is.sar"),
-    'Blok( kod: DNB, ne: "döngü işi" ) {\n' +
-    '  Faz( kod: DNB-F1, ad: "f" ) {\n' +
-    '    Adım( kod: ADM-HEDEF, durum: geliştirmede, bağımlı: [],\n' +
-    '          ne: "koşulan hedef" ) {\n' +
-    '      görev: "demo görevi işle"\n' +
-    '      kabul: [ "demo kabulü" ]\n' +
-    '      sınır: "demo"\n' +
-    "    }\n" +
-    "  }\n" +
-    `  ${donguSatiri}\n` +
-    "}\n");
-  return d;
+  const agac = dogusAgaciKur({
+    onek: "sarmal-dongu-",
+    ilkFaz: fazMetni({ ek: "DNB", adimlar: [
+      "        Adım( kod: ADM-HEDEF, durum: geliştirmede, bağımlı: [],",
+      '              ne: "koşulan hedef" ) {',
+      '          görev: "demo görevi işle"',
+      '          kabul: [ "demo kabulü" ]',
+      '          sınır: "demo"',
+      "        }",
+    ].join("\n") }),
+  });
+  agac.yaz(planYolu("donguler.sar"), `${donguSatiri}\n`);
+  return agac.kok;
 }
 
 test("ORK-3.3: el-tetikli döngü tur atar ve turLimiti'nde durur; trace yazılır", () => {
