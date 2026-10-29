@@ -21,6 +21,12 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
             sıradaki: ARADAN-SONRA-PNL-A29-TREN-KUSURLARI-VE-KAPALI-CANLI-PENCERE-SONRA-PNL-A10-SONRA-A16-A17-TESLIM-ONAYI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
+                         PNL-A30-KILAVUZ-YENI-BICIM-ONCE-MAKINIST-ORNEGI-LIMIT-YENILENINCE,
+                         EKIP-WINDOWS-UYELERI-GUNCELLEME-VE-IKINCI-UYENIN-KATILIMI-GITHUB-EKIP-AYARI-FOUNDERDA,
+                         WINDOWS-UYUMU-BLOKU-YAZILACAK-VE-ACIK-ISLER-UYELERE-GITHUB-KAYDIYLA-DAGITILACAK,
+                         PANEL-KIPI-CEKIRDEGE-DOKUNUR-UYELERE-KONTROLLU-VERILIR,
+                         CEKIRDEGE-DOKUNAN-UYE-ISTEGI-KAPALI-TARAF-DENETIMINDEN-GECER,
+                         DIS-GELISTIRICIYLE-IS-ORTAKLIGI-MODELI-FOUNDER-KARARI-BEKLIYOR,
                          PNL-A10-AYARLAR-SEKMESI-GORUNUM-BOLUMU-KARARLI-KALANI-FOUNDER-BILDIRECEK,
                          YARIM-ADIMLARIN-SIFIRLANMASI-45-ADIM-OLCUMU-AJANDA,
                          PLAN-KUCULTME-OTURUMU-64-BLOK-SIMDI-SONRA-RAFA,
@@ -61,6 +67,17 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🧭 EKİP NOTU · OTURUM 116 (2026-10-29 öğle). Founder iki Windows kullanan üyenin sisteme alınmasına ve
+        Sarmal'ın açık işlerinin onlara GitHub kayıtlarıyla dağıtılmasına hükmetmiştir; kişi adları açık depoya
+        yazılmaz, kimin ne yaptığı GitHub'da durur. Üyelerin bildirdiği Windows kurulum hataları ekip kurulumu
+        deposunda giderilmiş ve gönderilmiştir (b574b12); ad alanlı atıf hataları HTR-AD-ALANI-KARDES-KOK-COZUMU
+        altındadır. Ölçüme göre kapalı taraf Sarmal'a plan atıfları ve ayrıştırıcı, onay biçimi ile Tren yuvası
+        üzerinden bağlıdır; arayüz işleri kapalı tarafa dokunmaz, çekirdeğe dokunan işler ise birleştirmeden önce
+        kapalı tarafın denetiminden geçirilir. Panel Kipi Bloku çekirdeğe dokunduğu için kontrollü sayılmıştır.
+        Organizasyonun taban okuma izni bütün özel depoları her üyeye açmaktadır; Founder ekip üzerinden yalnız
+        gerekli depoların açılmasına karar vermiştir ve ayarı kendisi yapacaktır. Founder sistemin büyüdükçe
+        takibinin zorlaştığını bildirmiştir; kontrolcü bundan sonra her oturumun başında en fazla üç karar sunar.
+
         🧭 ARA ÖNCESİ DEVİR · OTURUM 116 (2026-10-29 sabah). 0.9.199 sürümü kurulmuş ve kurulu paket
         üretilen paketle doğrulanmıştır. Founder Tren sekmesine bakarak kâğıt şemanın bugün işi yapan
         ajanları göstermediğini ve canlı pencerenin bulunmadığını tespit etmiş, canlı pencerenin
