@@ -6946,18 +6946,20 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-PNL-A13, tarih: 2026-10-28, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "kontrolcü sırayla koşturdu: eklenti süiti 1181/1181, tip ve dil temiz, çatı köküyle görsel kontrol 814/814 (Tren'in dar panel vurgu kontrolü yeni yerleşime göre kaydırarak ölçecek biçimde güncellendi, ölçüt gevşetilmedi) · üretici: ana ağaçta gerçek VS Code süiti 82/82 · yirmi iki bozmanın yirmi biri yakalandı; yakalanmayan, davranışı değiştirmeyen eski tutacak bozmasıdır · sahte kardeşle gerçek VS Code sınaması üç sınamayla yeşil", ne: "Kapalı kardeş eklentinin canlı görünümünü takabileceği belgelenmiş bir yuva kurulmuştur: sözleşme sürümü 1, tek kayıt, sahiplik çağrı yığınından okunur, gövde sınırlıdır ve kardeşin gövdesi kaçırılmış metin olarak gölge köke yazılır. Canlı görünüm kayıtla kendiliğinden seçilmez, yalnız seçenek olarak belirir. Yol üstünde yuvanın Node sınamalarında hiç yüklenmemesine yol açan bir sınıf alanı yazımı düzeltilmiştir." )
         }
 
-        Adım( kod: PNL-A29, ad: "Tren Şemasının Üç Kusuru", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A11 ],
+        Adım( kod: PNL-A29, ad: "Tren Şeması ve Hatırlatıcı Kapatma Kusurları", durum: beklemede, öncelik: p1, bağımlı: [ PNL-A11 ],
           referans: [ OZK-16 ],
-          ne: "🩹 Founder 0.9.199 sürümünü 2026-10-29 sabahı kurduktan sonra Tren sekmesinde üç kusur görülmüştür. Birincisi, lider ajan kartı hem Makinist'e bağlı hem de yöneticisi yok rozetini taşımaktadır; oysa tepe koltuğunun yöneticisi Makinist'teki insandır ve iki rozet birbiriyle çelişir. İkincisi, her direktörün uzmanları açık başladığı için ekran uzman listeleriyle dolmakta ve kimin kime bağlı olduğu ilk bakışta okunamamaktadır. Üçüncüsü, yöneticisi yok sayısı on göstermekte, kapalı üründe ise üç olarak ölçülmüştür; sayının hangi kapsamı saydığı belirsizdir." ) {
+          ne: "🩹 Founder 0.9.199 sürümünü 2026-10-29 sabahı kurduktan sonra Tren sekmesinde üç kusur görülmüştür. Birincisi, lider ajan kartı hem Makinist'e bağlı hem de yöneticisi yok rozetini taşımaktadır; oysa tepe koltuğunun yöneticisi Makinist'teki insandır ve iki rozet birbiriyle çelişir. İkincisi, her direktörün uzmanları açık başladığı için ekran uzman listeleriyle dolmakta ve kimin kime bağlı olduğu ilk bakışta okunamamaktadır. Üçüncüsü, yöneticisi yok sayısı on göstermekte, kapalı üründe ise üç olarak ölçülmüştür; sayının hangi kapsamı saydığı belirsizdir. Aynı sabah dördüncü bir kusur ölçülmüştür: Makinist'teki hatırlatıcı satırının üzerine gelince beliren onay işaretli kapatma düğmesi onay sormadan dosyaya yazmakta ve geri alınamamaktadır; Founder bu düğmeyi okundu işareti sanarak altı hatırlatıcıyı yanlışlıkla kapatmıştır." ) {
           görev: [
             "Makinist'e bağlı tepe koltuğunda yöneticisi yok rozetini kaldır ve bu koltuğu yöneticisi yok sayımına katma.",
             "Direktörlerin uzman listeleri varsayılan olarak kapalı başlasın; direktör kartı uzman sayısını göstersin ve tıklanınca liste açılsın.",
-            "Yöneticisi yok sayısının hangi ajanları ve hangi kapsamı saydığını ölç; listeyi teslim raporuna yaz ve sayım yanlışsa düzelt."
+            "Yöneticisi yok sayısının hangi ajanları ve hangi kapsamı saydığını ölç; listeyi teslim raporuna yaz ve sayım yanlışsa düzelt.",
+            "Hatırlatıcı kapatma düğmesi yazmadan önce panelin içinde onay istesin, düğmenin ipucu ne yapacağını açıkça söylesin ve kapatılan hatırlatıcı kısa bir süre içinde aynı yerden geri alınabilsin."
           ]
           kabul: [
             "Görsel kontrolde lider ajan kartı yalnız Makinist'e bağlı rozetini taşır ve yöneticisi yok sayımına girmez.",
             "İlk açılışta bütün direktörlerin uzman listeleri kapalıdır ve 1400 piksel genişliğindeki alt panelde bütün direktör kartları kaydırmadan görünür.",
             "Yöneticisi yok sayısı teslim raporundaki ölçülmüş listeyle eşittir ve kapsamı rozetin ipucunda yazılıdır.",
+            "Hatırlatıcı kapatma düğmesine tek tıklama dosyaya yazmaz; yazım ancak panel içindeki onaydan sonra olur ve geri alma eylemi dosyayı önceki hâline döndürür.",
             "Eklenti süiti, gerçek VS Code süiti ve görsel kontrol yeşildir; deponun denetimi sıfır hata vermektedir."
           ]
           sınır: "Sütunlar ve ızgara görünümleri ile kapalı kardeş eklentinin canlı görünümü bu Adımın işi değildir."
