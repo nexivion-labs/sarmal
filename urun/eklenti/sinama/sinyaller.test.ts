@@ -34,10 +34,11 @@ import { siniflamaYukle } from "../../cekirdek/src/siniflama.ts";
 import type { Program } from "../../cekirdek/src/sozdizim.ts";
 import type { Tani } from "../../cekirdek/src/tani.ts";
 import {
-  BANT_DUZEYI, SINYAL_BANTLARI, KayitDefteri, duzeyBandi, kanonMaddeleri, kanonTaniHaritasi, ortakCumleler, sinyalModeli,
+  BANT_DUZEYI, SINYAL_BANTLARI, KayitDefteri, sinyalPanosu, duzeyBandi, kanonMaddeleri, kanonTaniHaritasi, ortakCumleler, sinyalModeli,
   type SinyalModeli,
 } from "../src/sinyaller-cekirdek.ts";
-import { yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { panoKaydi, yuzeyeAyir, type YuzeyKaydi } from "../src/yuzey-cekirdek.ts";
+import { panoKumeMetni } from "../src/yuzey-metinleri.ts";
 import { beklenenSunumYuzeyi, ILERI_BAGLAM_KIMLIKLERI } from "../../cekirdek/src/denetim.ts";
 
 /** Denetim tarafının yönlendirmesi: kayıt Hatırlatıcılar yüzeyine mi gider (motorun kararı)? */
@@ -280,4 +281,19 @@ test("PNL-A09 · kayıt defteri: kapsam süzgecinden geçen kayıtlar yayınlan�
   d.yaz("/p/a.sar", ["a1"], false);
   d.temizle();
   assert.deepEqual(d.gorunenler(), []);
+});
+
+test("PNL-A31 · Sinyaller pano metni: tek tanı Makinist'in kayıt bloğunun aynısıdır ve kanon maddesi eklenir; grup başlıkla bütün tanıları alt alta verir, boş küme pano üretmez", () => {
+  const a = { ...tani("T-1", "hata", 4), oneri: "şöyle düzelt" } as Tani;
+  const m = sinyalModeli([kayit(a), kayit(tani("T-2", "hata", 9), "/p/b.sar")], undefined, (k) => (k === "T-1" ? ["YAS-3.1"] : []));
+  const satirlar = m.bantlar[0]!.projeler[0]!.satirlar;
+  const tek = sinyalPanosu([satirlar[0]!])!;
+  assert.equal(tek.adet, 1);
+  assert.equal(tek.metin, panoKaydi(satirlar[0]!.kayit, ["YAS-3.1"]));
+  for (const p of ["T-1", "hata düzeyi", "Ne yapmalı: şöyle düzelt", "Kanon maddesi: YAS-3.1", "Kaynak: /p/a.sar:4:1"]) assert.ok(tek.metin.includes(p), p);
+  assert.ok(!sinyalPanosu([satirlar[1]!])!.metin.includes("Kanon maddesi"), "bağı olmayan tanıda madde uydurulmaz");
+  const grup = sinyalPanosu(satirlar, "Proje")!;
+  assert.equal(grup.adet, 2);
+  assert.equal(grup.metin, panoKumeMetni("Proje", satirlar.map((s) => panoKaydi(s.kayit, s.maddeler))));
+  assert.equal(sinyalPanosu([], "Boş"), undefined);
 });

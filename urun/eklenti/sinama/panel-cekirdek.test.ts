@@ -451,6 +451,8 @@ test("komut köprüsü: yalnız üç komut geçer; bozuk ya da izinsiz bağ redd
 test("satır eylemleri: Adım koni kartı alır; ateşlemiş hatırlatıcı önce kapatma sonra kopyalama; bilinmeyen bağlam eylemsizdir", () => {
   assert.deepEqual(satirEylemleri("adim").map((e) => e.komut), ["sarmal.koniKart"]);
   assert.deepEqual(satirEylemleri("sarmalHatirlaticiAtesledi").map((e) => e.komut), ["sarmal.hatirlaticiKapat", "sarmal.satiriKopyala"]);
+  // PNL-A31: Sinyaller bant, proje, tür ve tanı satırları aynı ortak kopyalama düğmesini taşır; alt satırlar taşımaz.
+  for (const c of ["sarmalSinyal", "sarmalSinyalTuru", "sarmalSinyalProjesi", "sarmalSinyalBandi.dur"]) assert.deepEqual(satirEylemleri(c).map((e) => e.komut), ["sarmal.satiriKopyala"], c);
   for (const c of ["sarmalHatirlatici", "sarmalBildirim", "sarmalFikir"]) assert.deepEqual(satirEylemleri(c).map((e) => e.komut), ["sarmal.satiriKopyala"], c);
   for (const c of [undefined, "", "sarmalOnayKapisi", "sarmalMakinistGrubu.onaylar", "baska"]) assert.deepEqual(satirEylemleri(c), [], String(c));
 });

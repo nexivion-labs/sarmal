@@ -726,6 +726,21 @@ try {
           kontrol(`${etiket}: Sinyal satırına gerçek tıklama dosyayı tanının yerinde açan iletiyi doğurur (satırın gösterdiği dosya:satır)`,
             ileti.length === 1 && ileti[0].id === tani.id && !!yer && tani.ac.includes(`${dosyaAdi}:${yer[2]}`),
             JSON.stringify({ tani, ileti }));
+          // PNL-A31: kopyalama düğmesi satırın üzerine gelince belirir (Makinist'teki .ey düğmesi), yalnız oradadır ve tıklanınca
+          // ortak kopyalama komutuyla `eylem` iletisini doğurur; bant ve proje başlığında da bulunur.
+          const sel = `#sinyaller-agac .sat[data-id="${tani.id.replace(/(["\\])/g, "\\$1")}"]`;
+          await p.mouse.move(2, 2);
+          await p.evaluate(() => { document.activeElement?.blur?.(); });
+          const gizli = await p.evaluate((q) => { const b = document.querySelector(q + " .ey"); return !!b && b.getBoundingClientRect().width === 0; }, sel);
+          await p.hover(sel + " .et");
+          const gorunur = await p.evaluate((q) => { const b = document.querySelector(q + " .ey[data-komut='sarmal.satiriKopyala']"); const r = b?.getBoundingClientRect(); return !!r && r.width >= 16 && r.height >= 16; }, sel);
+          const baslikta = await p.evaluate(() => ["0", "1"].map((dd) => [...document.querySelectorAll(`#sinyaller-agac .sat[data-d="${dd}"]`)].filter((e) => !e.querySelector(".ey[data-komut='sarmal.satiriKopyala']")).length));
+          await p.evaluate(() => { window.__iletiler.length = 0; });
+          await p.click(sel + " .ey[data-komut='sarmal.satiriKopyala']");
+          const eylem = await p.evaluate(() => window.__iletiler.filter((m) => m.tip === "eylem"));
+          kontrol(`${etiket}: Sinyal satırında kopyalama düğmesi yalnız üzerine gelince belirir, tıklanınca ortak kopyalama eylemini bildirir; bant ve proje başlıklarında da vardır (PNL-A31)`,
+            gizli && gorunur && baslikta[0] === 0 && baslikta[1] === 0 && eylem.length === 1 && eylem[0].id === tani.id && eylem[0].komut === "sarmal.satiriKopyala",
+            JSON.stringify({ gizli, gorunur, baslikta, eylem }));
         }
       }
       if (d.ad === "makinist-onay") {

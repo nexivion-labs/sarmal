@@ -1370,3 +1370,36 @@ test("PNL-A13: kardeş kaydolunca Tren bölümü Canlı seçiciyle gelir; gövde
   assert.ok(!trenBolumu().includes('class="tr-gorunumler"'), "bırakılan kaydın seçicisi kalkmalı");
   assert.deepEqual(o.panel.olcumler().trenCanli, { var: false, gorunum: "plan", gorunur: false });
 });
+
+test("Sinyaller satırlarında kopyalama (PNL-A31): tanı, tür, proje ve bant satırı Makinist'in ortak düğmesini ve komutunu kullanır; pano metni düzey, kod, ileti, öneri, kanon maddesi ve tam kaynağı taşır, grup bütün tanıları alt alta verir", async () => {
+  const o = ortamKur("sinyaller");
+  const h = panelIcerigi(o.gorunum.webview.html, "sinyaller");
+  assert.ok(h.includes('data-komut="sarmal.satiriKopyala"'), "Sinyaller satırı kopyalama düğmesini taşımalı");
+  const bantlar = o.sinyaller.getChildren() as unknown[];
+  const dur = bantlar[0]!;
+  const proje = (o.sinyaller.getChildren(dur) as unknown[])[0]!;
+  const tani = (o.sinyaller.getChildren(proje) as unknown[]).find((x) => o.sinyaller.sinyalKaydi(x)?.kayit.tani.kod === BAGLI.kod)!;
+  for (const oge of [dur, proje, tani]) assert.equal(o.sinyaller.getTreeItem(oge).contextValue?.startsWith("sarmal"), true);
+  const tek = o.sinyaller.panoMetni(tani)!;
+  assert.equal(tek.adet, 1);
+  for (const parca of ["hata düzeyi", BAGLI.kod, `${BAGLI.kod} iletisi`, "şöyle düzelt", BAGLI.madde, `${SINYAL_DOSYASI}:40:3`]) {
+    assert.ok(tek.metin.includes(parca), `tanı pano metni '${parca}' parçasını taşımalı:\n${tek.metin}`);
+  }
+  assert.ok(tek.metin.trimEnd().endsWith(`${SINYAL_DOSYASI}:40:3`), "son satır tam kaynak olmalı");
+  const grup = o.sinyaller.panoMetni(dur)!;
+  assert.equal(grup.adet, 3, "Dur bandı üç tanıyı birden kopyalamalı");
+  assert.ok(grup.metin.startsWith("Dur\n\n"), "grup başlıkla başlamalı");
+  assert.equal((grup.metin.match(/hata düzeyi/g) ?? []).length, 3, "grup bütün tanıları alt alta vermeli");
+  assert.equal(o.sinyaller.panoMetni(proje)!.adet, 2, "proje satırı yalnız kendi tanılarını vermeli");
+  assert.equal(o.sinyaller.panoMetni({ tur: "sinyal-madde", madde: "X" }), undefined, "kopyalanamayan düğüm boş dönmeli");
+  // Düğme tıklaması Makinist'tekiyle AYNI komuta iner ve komuta satırın kendi nesnesi verilir.
+  const satir = satirlariOku(h).find((x) => x.derinlik === 2 && x.etiket === `${BAGLI.kod} iletisi`)!;
+  assert.ok(satir, "tanı satırı çizilmeli");
+  const once = kabuk.komutCagrilari.length;
+  o.gorunum.mesajGonder({ tip: "eylem", id: satir.id, komut: "sarmal.satiriKopyala" });
+  o.gorunum.mesajGonder({ tip: "eylem", id: satir.id, komut: "sarmal.hatirlaticiKapat" });
+  await otur();
+  const c = kabuk.komutCagrilari.slice(once);
+  assert.deepEqual(c.map((x) => x.komut), ["sarmal.satiriKopyala"], "yalnız ortak kopyalama komutu çalışmalı");
+  assert.equal(o.sinyaller.sinyalKaydi(c[0]!.argumanlar[0])?.kayit.tani.kod, BAGLI.kod, "komuta satırın kendi nesnesi verilmeli");
+});

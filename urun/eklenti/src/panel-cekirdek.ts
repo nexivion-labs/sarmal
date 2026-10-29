@@ -660,7 +660,7 @@ export function satirEylemleri(contextValue: string | undefined): PanelEylemi[] 
   if (contextValue === "sarmalHatirlaticiAtesledi") {
     return [{ komut: "sarmal.hatirlaticiKapat", ad: PANEL_METINLERI.hatirlaticiKapat, ikon: "onay" }, kopya];
   }
-  if (/^sarmal(Hatirlatici|Bildirim|Fikir)/.test(contextValue)) return [kopya];
+  if (/^sarmal(Hatirlatici|Bildirim|Fikir|Sinyal)/.test(contextValue)) return [kopya];
   return [];
 }
 

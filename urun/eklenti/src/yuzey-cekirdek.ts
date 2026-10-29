@@ -655,12 +655,12 @@ export type PanoDugumu =
   | { readonly tur: "küme"; readonly baslik: string; readonly kayitlar: readonly YuzeyKaydi[] };
 
 /** Tek bir kaydın pano bloğu — etiket kodla başlar, son satır tam kaynaktır. */
-export function panoKaydi(kayit: YuzeyKaydi): string {
+export function panoKaydi(kayit: YuzeyKaydi, maddeler?: readonly string[]): string {
   const g = kayitGorunumu(kayit);
   return panoKaydiMetni({
     etiket: g.kodluEtiket, aciklama: g.aciklama, kod: g.kod, duzey: g.duzey,
     mesaj: kayit.tani.mesaj, dosya: g.dosya, satir: g.satir, sutun: g.sutun,
-    oneri: kayit.tani.oneri,
+    oneri: kayit.tani.oneri, maddeler,
   });
 }
 
@@ -668,7 +668,7 @@ export function panoKaydi(kayit: YuzeyKaydi): string {
 export function panoMetni(dugum: PanoDugumu): string {
   return dugum.tur === "kayıt"
     ? panoKaydi(dugum.kayit)
-    : panoKumeMetni(dugum.baslik, dugum.kayitlar.map(panoKaydi));
+    : panoKumeMetni(dugum.baslik, dugum.kayitlar.map((k) => panoKaydi(k)));
 }
 
 /**

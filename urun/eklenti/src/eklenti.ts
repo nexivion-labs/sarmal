@@ -502,7 +502,7 @@ export function activate(context: vscode.ExtensionContext): SarmalEklentiYuzu {
   context.subscriptions.push(
     vscode.commands.registerCommand("sarmal.satiriKopyala", async (oge: unknown) => {
       const pano = hatirlaticilar?.panoMetni(oge) ?? bildirimler?.panoMetni(oge)
-        ?? fikirler?.panoMetni(oge);
+        ?? fikirler?.panoMetni(oge) ?? sinyaller?.panoMetni(oge);
       if (!pano) {
         void vscode.window.showWarningMessage(panoyaKopyalanacakSatirYok());
         return;
