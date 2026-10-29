@@ -2,6 +2,10 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.200 — 2026-10-29 (Sinyaller satırları kopyalanır)
+
+- **Sinyaller'de satır kopyalama.** Makinist'teki gibi, bir tanı satırının üzerine gelince kopyalama düğmesi belirir ve tanının düzeyini, kodunu, iletisini, önerisini, kanon maddesini ve dosya yolunu satırıyla birlikte panoya alır. Tür, proje ve bant başlıklarındaki düğme altındaki bütün tanıları alt alta kopyalar. Düğmeye klavyeyle de ulaşılır. Kopyalama mantığı Makinist ile tek kaynaktandır.
+
 ## 0.9.199 — 2026-10-28 (Tren şirket şeması, gerçek sayılar ve hızlı panel)
 
 - **Tren sekmesi ajanların şirket şemasını gösterir.** Ajanlar departmanlarına göre şeritlerde durur; her şeridin başında yönetici, ardından ona bağlı ajanlar gelir ve büyük ekipler tek bir özet kutusunda toplanır. Bir ajana tıklayınca profil kartı açılır: uzmanlık, yetki, bellek, sınır, uyguladığı yasa ve kime bağlı olduğu, her satır tanımına gider. Şema yalnız planda ilan edilmiş olanı çizer; ilan edilmemiş yerde "tanımlı değil" yazar ve insanlar Tren'de değil Makinist'te durur.
