@@ -33,6 +33,8 @@ export interface BinaKitapligi {
   kod: string;
   /** Görünen ad: `ad` alanı, yoksa `ne` metninin ilk cümlesi, o da yoksa kod. */
   ad: string;
+  /** İlanın `ne` metni (bina dışı klasör satırının ipucu alanın kuralını buradan okur). */
+  ne?: string;
   /** Çalışma alanı köküne göre çözülmüş dizin (eğik çizgiyle, sonda ayraçsız). */
   dizin: string;
   /** İlanın kendi `kat:` değeri (geçerliyse). */
@@ -185,6 +187,7 @@ export function binaOku(program: Program, dosya: string, kusurlar?: KatKusuru[])
       const profil = cocukProfili(c);
       const k: BinaKitapligi = {
         kod, ad: binaIlanAdi(c, kod), dizin, sira: sira++, satir: c.satir,
+        ...(metin(c, "ne") ? { ne: metin(c, "ne") } : {}),
         ...(kendi !== undefined ? { kendiKati: kendi } : {}),
         ...(profil ? { profil } : {}),
       };
@@ -297,4 +300,179 @@ export function logoCoz(
 /** Gösterilebilir logonun webview veri adresi (`<img src>` için; CSP `img-src data:` izinlidir). */
 export function logoVeriAdresi(svg: string): string {
   return `data:image/svg+xml;base64,${Buffer.from(svg, "utf8").toString("base64")}`;
+}
+
+// ── YÖNETİM KATININ YASASI ───────────────────────────────────────────────────
+//
+//   Founder 2026-11-04 gecesi: yönetim katındaki bir proje yasanın yeridir ve açılınca
+//   plan ağacı değil yasası görünür. Gruplar yalnız tiplerden türer (SNF-0); hiçbir proje
+//   adı, kod öneki ya da dosya adı okunmaz:
+//     • Anayasa: Anayasa düğümleri ve sardıkları Kurallar; hiçbir şeyin sarmadığı
+//       `otorite: anayasa` Kuralları da buraya düşer.
+//     • Yönetmelik ve Politikalar: Politika ve Mevzuat düğümleri, Kural ya da Politika
+//       saran Mekanizmalar (Kural ile Politika şemada Mekanizmaya konabilir) ve bir yasa
+//       Kitaplığında duran Mekanizmalar; sarılmamış öteki Kurallar da buraya düşer.
+//       Yasa Kitaplığı, dosyalarından birinde Anayasa, Kural, Karar, Politika ya da Mevzuat
+//       düğümü taşıyan Kitaplıktır; içi henüz boş bir yönetmelik böylece yerini korur.
+//     • Kararlar: Karar düğümleri; açıklama `durum` dağılımını sayılarla verir.
+//     • Arayüz Dili: Tema düğümleri (tasarım sistemi sözleşmesi).
+
+/** Yasa görünümündeki bir düğüm: tanımına gidilecek konum, görünen ad ve sardığı yasa düğümleri. */
+export interface YasaDugumu {
+  kod: string;
+  /** Kanon tipi (Anayasa, Kural, Politika, Mekanizma, Mevzuat, Karar, Tema). */
+  tip: string;
+  ad: string;
+  dosya: string;
+  satir: number;
+  /** Karar düğümünün `durum` değeri. */
+  durum?: string;
+  /** Sardığı Kurallar ve Politikalar (Politika da kendi Kurallarını sarar). */
+  cocuklar: YasaDugumu[];
+}
+
+/** Bir yönetim katı projesinin yasası. Gruplar boş olsa da vardır; boş grup yüzeyde boş diye yazılır. */
+export interface Yasa {
+  anayasa: YasaDugumu[];
+  yonetmelik: YasaDugumu[];
+  karar: YasaDugumu[];
+  arayuz: YasaDugumu[];
+  /** Yasa görünümündeki bütün Kuralların sayısı (her grupta, her derinlikte). */
+  kuralSayisi: number;
+  /** Karar durumlarının dağılımı: çoktan aza, eşitlikte ada göre. */
+  kararDurumlari: Array<readonly [string, number]>;
+}
+
+/** Bir tipin yasa ağacında tuttuğu yer; tip kanonun adıdır. */
+const YASA_SARAN = new Set(["Anayasa", "Politika", "Mekanizma"]);
+const YASA_ROLU = new Set(["Anayasa", "Kural", "Karar", "Politika", "Mevzuat"]);
+
+/** Kuralın düğüm tipi: `Kural ad(...)` tanımı ya da `Kural(...)` widget'ı. */
+const kuralMi = (d: Dugum): boolean => (d.tur === "kuralTanım") || (d.tur === "widget" && d.ad === "Kural");
+
+/** Tanım adı (`yasaKatmanları`) → görünen ad (`Yasa Katmanları`). */
+function tanimAdi(ad: string): string {
+  return ad.replace(/([\p{Ll}\d])(\p{Lu})/gu, "$1 $2").replace(/^\p{Ll}/u, (h) => h.toLocaleUpperCase("tr"));
+}
+
+/**
+ * Yasa satırının görünen adı: `ad` alanı; Kural tanımında kuralın adı; o da yoksa `ne` alanının kısa
+ * hâli (baştaki simge atılır, iki nokta ya da uzun çizgiden önceki parça alınır, uzun metin kısaltılır).
+ */
+export function yasaAdi(d: Dugum, kod: string): string {
+  const ad = metin(d, "ad");
+  if (ad) return ad;
+  if (d.tur === "kuralTanım" && d.ad) return tanimAdi(d.ad);
+  const ne = metin(d, "ne").replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, "").replace(/\s+/g, " ").trim();
+  const ilk = baslikHarfi(ne.split(/:\s|\s—\s|\.\s/)[0]!.trim());
+  if (!ilk) return kod;
+  return ilk.length > 60 ? `${ilk.slice(0, 58).trimEnd()}…` : ilk;
+}
+
+/** Bağlaçlar başlıkta küçük kalır. */
+const BAGLACLAR = new Set(["ve", "ile", "ya", "da", "de", "ki", "veya", "için"]);
+
+/**
+ * `ne` metninden türeyen adın başlık biçimi: her sözcüğün yalnız ilk harfi büyür, sözcüğün geri kalanı
+ * olduğu gibi kalır (`ASCII`, `WhatsApp` bozulmaz); ilk sözcük dışındaki bağlaçlar küçük kalır.
+ */
+function baslikHarfi(metin: string): string {
+  return metin.split(" ").map((s, i) => (i > 0 && BAGLACLAR.has(s)) ? s
+    : s.replace(/^\p{Ll}/u, (h) => h.toLocaleUpperCase("tr"))).join(" ");
+}
+
+/** Bir proje kökünün (Proje ya da Uygulama) Kitaplık dizinleri; `yol:` üst Kitaplığa göreli çözülür. */
+export function projeKitapliklari(program: Program, dosya: string): string[] {
+  const duz = yolDuzle(dosya);
+  const kokDizin = duz.includes("/") ? duz.slice(0, duz.lastIndexOf("/")) || "/" : ".";
+  const sonuc: string[] = [];
+  const gez = (d: Dugum, taban: string): void => {
+    for (const c of d.cocuklar) {
+      if (c.tur !== "widget") continue;
+      if (c.ad !== "Kitaplık") { gez(c, taban); continue; }
+      const yol = metin(c, "yol");
+      const dizin = yol ? yolDuzle(`${taban}/${yol}`) : taban;
+      sonuc.push(dizin);
+      gez(c, dizin);
+    }
+  };
+  for (const d of program.bildirimler) {
+    if (d.tur === "widget" && (d.ad === "Proje" || d.ad === "Uygulama")) gez(d, kokDizin);
+  }
+  return sonuc;
+}
+
+/**
+ * Bir yönetim katı projesinin yasa okuması. `dosyalar` projenin kendi dosyalarıdır (iç içe projelerin
+ * dosyaları çağıran tarafından ayrılmıştır); `kitapliklar` projenin Kitaplık dizinleridir.
+ */
+export function yasaOku(dosyalar: Iterable<readonly [string, Program]>, kitapliklar: readonly string[] = []): Yasa {
+  const liste = [...dosyalar].sort((a, b) => a[0].localeCompare(b[0]));
+  const yasa: Yasa = { anayasa: [], yonetmelik: [], karar: [], arayuz: [], kuralSayisi: 0, kararDurumlari: [] };
+  const enDerinKitaplik = (yol: string): string | undefined => {
+    let sec: string | undefined;
+    for (const k of kitapliklar) if (dizinKapsar(k, yol) && (!sec || k.length > sec.length)) sec = k;
+    return sec;
+  };
+  // Yasa Kitaplıkları: dosyalarından birinde yasa rolünde bir düğüm taşıyan Kitaplıklar.
+  const yasaKitapliklari = new Set<string>();
+  const yasaVarMi = (ds: readonly Dugum[]): boolean =>
+    ds.some((d) => kuralMi(d) || (d.tur === "widget" && YASA_ROLU.has(d.ad)) || yasaVarMi(d.cocuklar));
+  for (const [dosya, p] of liste) {
+    const k = enDerinKitaplik(dosya);
+    if (k && yasaVarMi(p.bildirimler)) yasaKitapliklari.add(k);
+  }
+  const dugum = (d: Dugum, dosya: string, tip: string): YasaDugumu => {
+    const kod = metin(d, "kod") || d.ad;
+    const durum = tip === "Karar" ? metin(d, "durum") : "";
+    return { kod, tip, ad: yasaAdi(d, kod), dosya, satir: d.satir, ...(durum ? { durum } : {}), cocuklar: [] };
+  };
+  /** Saran düğümün içindeki Kurallar ve Politikalar. */
+  const ic = (d: Dugum, dosya: string): YasaDugumu[] => {
+    const sonuc: YasaDugumu[] = [];
+    for (const c of d.cocuklar) {
+      if (kuralMi(c)) { sonuc.push(dugum(c, dosya, "Kural")); yasa.kuralSayisi += 1; continue; }
+      if (c.tur === "widget" && c.ad === "Politika") { const p = dugum(c, dosya, "Politika"); p.cocuklar = ic(c, dosya); sonuc.push(p); }
+    }
+    return sonuc;
+  };
+  const sarar = (d: Dugum): boolean => d.cocuklar.some((c) => kuralMi(c) || (c.tur === "widget" && c.ad === "Politika"));
+  const serbestAnayasa: YasaDugumu[] = [];
+  const gez = (ds: readonly Dugum[], dosya: string, yasaKitapligi: boolean): void => {
+    for (const d of ds) {
+      if (kuralMi(d)) {
+        const k = dugum(d, dosya, "Kural");
+        yasa.kuralSayisi += 1;
+        (metin(d, "otorite") === "anayasa" ? serbestAnayasa : yasa.yonetmelik).push(k);
+        continue;
+      }
+      if (d.tur !== "widget") { gez(d.cocuklar, dosya, yasaKitapligi); continue; }
+      if (d.ad === "Anayasa") { const a = dugum(d, dosya, "Anayasa"); a.cocuklar = ic(d, dosya); yasa.anayasa.push(a); continue; }
+      if (d.ad === "Politika" || d.ad === "Mevzuat") { const p = dugum(d, dosya, d.ad); p.cocuklar = ic(d, dosya); yasa.yonetmelik.push(p); continue; }
+      if (d.ad === "Mekanizma" && (yasaKitapligi || sarar(d))) {
+        const m = dugum(d, dosya, "Mekanizma"); m.cocuklar = ic(d, dosya); yasa.yonetmelik.push(m); continue;
+      }
+      if (d.ad === "Karar") { yasa.karar.push(dugum(d, dosya, "Karar")); continue; }
+      if (d.ad === "Tema") { yasa.arayuz.push(dugum(d, dosya, "Tema")); continue; }
+      if (YASA_SARAN.has(d.ad)) continue;
+      gez(d.cocuklar, dosya, yasaKitapligi);
+    }
+  };
+  for (const [dosya, p] of liste) {
+    const k = enDerinKitaplik(dosya);
+    gez(p.bildirimler, dosya, k !== undefined && yasaKitapliklari.has(k));
+  }
+  // Hiçbir Anayasanın sarmadığı anayasa otoriteli Kurallar: tek Anayasa varsa onun yanına, yoksa grubun kendisine.
+  if (serbestAnayasa.length) {
+    if (yasa.anayasa.length === 1) yasa.anayasa[0]!.cocuklar.push(...serbestAnayasa); else yasa.anayasa.push(...serbestAnayasa);
+  }
+  const say = new Map<string, number>();
+  for (const k of yasa.karar) if (k.durum) say.set(k.durum, (say.get(k.durum) ?? 0) + 1);
+  yasa.kararDurumlari = [...say].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "tr"));
+  return yasa;
+}
+
+/** Bir yasa düğümünün (her derinlikte) sardığı Kural sayısı. */
+export function yasaKuralSayisi(d: YasaDugumu): number {
+  return d.cocuklar.reduce((n, c) => n + (c.tip === "Kural" ? 1 : 0) + yasaKuralSayisi(c), 0);
 }

@@ -16,7 +16,7 @@
 
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
-import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
+import { adAlaniAyir, dosyaMuhru } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
 import { adAlaniSecenekleri, fazKarsilastir, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
@@ -633,7 +633,24 @@ export type BinaDugumu<T> =
   | { tur: "grup"; kitaplik: BinaKitapligi; disari: boolean; cocuklar: BinaDugumu<T>[]; birim: number }
   | { tur: "musteri"; kitaplik?: BinaKitapligi; dizin: string; cocuklar: BinaDugumu<T>[]; birim: number }
   | { tur: "varlik"; varlik: T; rol: BinaRolu }
-  | { tur: "disari"; kitapliklar: BinaKitapligi[]; cocuklar: BinaDugumu<T>[] };
+  | { tur: "disari"; kitapliklar: BinaKitapligi[]; cocuklar: BinaDugumu<T>[] }
+  /** Bina dışında projesi olmayan Kitaplık: diskteki klasörleri yalnız adlarıyla sayılır. */
+  | { tur: "klasor"; kitaplik: BinaKitapligi };
+
+/**
+ * 🏢 PNL-A31 (Founder bulgusu 2026-11-04 gecesi): bina dışındaki projesiz bir Kitaplığın klasör sayımı.
+ * Girdiler dizinin doğrudan çocuklarıdır ve yalnız adları okunur; mühürlü klasörün (arşiv ya da sonra
+ * mührü, MIM-3.4) içine inilmez. Gizli adlar (`.git` gibi) ve dosyalar sayılmaz.
+ */
+export function klasorSayimi(girdiler: Iterable<{ ad: string; dizin: boolean }>): { klasor: number; muhurlu: number } {
+  let klasor = 0, muhurlu = 0;
+  for (const g of girdiler) {
+    if (!g.dizin || g.ad.startsWith(".")) continue;
+    const tur = dosyaMuhru(g.ad)?.tur;
+    if (tur === "arşiv" || tur === "sonra") muhurlu += 1; else klasor += 1;
+  }
+  return { klasor, muhurlu };
+}
 
 /**
  * Müşteri satırının adı: Profildeki ilk kişinin hitabı, kişi yazılmamışsa Profilin adı (firma), Profil
@@ -653,7 +670,8 @@ export const OZ_KLASORU = "oz";
 export function binaBirimi<T>(dugumler: readonly BinaDugumu<T>[]): number {
   let n = 0;
   for (const d of dugumler) {
-    if (d.tur === "varlik" || d.tur === "musteri") n += 1;
+    // Yönetim katı proje çağırmaz (Founder hükmü 2026-11-04 gecesi): yönetim projesi proje sayısına girmez.
+    if ((d.tur === "varlik" && d.rol !== "yonetim") || d.tur === "musteri") n += 1;
     else if (d.tur === "grup" || d.tur === "ofis" || d.tur === "kat" || d.tur === "disari") n += binaBirimi(d.cocuklar);
   }
   return n;
@@ -766,6 +784,7 @@ export function binaAgaci<T extends { kokDizin: string }>(
     if (v) { disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" }); continue; }
     const cocuklar = icerik(k, "proje", false, true);
     if (cocuklar.length) disCocuk.push({ tur: "grup", kitaplik: k, disari: true, cocuklar, birim: binaBirimi(cocuklar) });
+    else disCocuk.push({ tur: "klasor", kitaplik: k });   // projesiz Kitaplık klasör sayısıyla görünür
   }
   for (const v of (serbest.get(undefined) ?? []).sort(dizinIle)) disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" });
   if (dislar.length || disCocuk.length) dugumler.push({ tur: "disari", kitapliklar: dislar, cocuklar: disCocuk });

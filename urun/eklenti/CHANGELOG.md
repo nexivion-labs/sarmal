@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.205 — 2026-11-05 (Yönetim katının yasası, bina dışı klasörler ve dibe yapışık Mini Graf)
+
+- **Yönetim katı proje çağırmaz.** Birinci katta proje satırı, roket, plan sayacı ya da plan ağacı görünmez; yasa grupları doğrudan kat başlığının altında durur: Anayasa ve onun kuralları, Yönetmelikler, Kararlar ve Arayüz Dili. Gruplar yalnız düğüm tiplerinden türer: Anayasa düğümü ve sardığı Kurallar; Politika ve Mevzuat düğümleri ile Kural ya da Politika saran ya da yasa taşıyan bir Kitaplıkta duran Mekanizmalar; Karar düğümleri; Tema düğümleri. Boş grup yerini korur ve boş diye yazılır. Kat başlığı kural, yönetmelik ve karar sayılarını taşır ve tıklanınca anayasa açılır; her grup ve satır tıklanınca düğümün tanımına gider. Kararlar grubu durum dağılımını sayılarla verir. Katta birden çok yönetim projesi varsa her biri roketsiz bir yasa başlığı alır. Yönetim projesi şirketin proje sayısına girmez; yönetim projelerinin planı Ray ağacında görünmez, öteki yüzeylerde değişmez.
+- **Bina dışı klasörler.** Bina dışındaki projesiz bir Kitaplık açılabilir bir satır olarak görünür ve klasör sayısını verir; arşiv ya da sonra mührü taşıyan klasörler mühürlü klasör olarak ayrıca sayılır. Klasörlerin yalnız adları okunur, mühürlü klasörlerin içine inilmez. Satıra tıklanınca klasör gezginde gösterilir; ipucu Kitaplığın kendi ilanındaki açıklamayı taşır.
+- **Mini Graf dar panelde dibe yapışıktır.** Kenar çubuğunda Yol Haritası kalan yüksekliği alır ve kendi içinde kayar; Mini Graf açıkken kendi içerik yüksekliğini alır fakat panelin yarısını geçmez, katlıyken yalnız başlık satırı kalır. Ağaç uzasa da Mini Graf başlığı görünür kalır.
+
 ## 0.9.204 — 2026-11-04 (Binanın tepesi ve müşteri kademesi)
 
 - **Şirket yalnız bir kez görünür.** Kat ilan eden bir çalışma alanında Ray sekmesinin en üstünde logo, çalışma alanının adı, etkinlik ve proje sayısı ile Dur ve Dikkat toplamı tek bir başlıkta durur; "Yol Haritası" başlığı onun altına iner ve katlar doğrudan bu başlığın altında açılır. Ağaçtaki ikinci kök satırı kalkmıştır. Kat ilan etmeyen çalışma alanında ve tek proje kökünde görünüm değişmez.

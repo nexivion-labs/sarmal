@@ -3002,8 +3002,53 @@ export const BINA_METINLERI = {
   get binaDisiIpucu(): string {
     return yuzeyMetni("Kat alanı taşımayan kitaplıklar ve onların projeleri", "Libraries without a floor field and their projects");
   },
-  /** Yönetim katındaki projenin açıklaması (kanun, karar ve arayüz dili yönetim katında yaşar). */
-  get yonetimAciklamasi(): string { return yuzeyMetni("kanun · karar · dil", "law · decision · language"); },
+  // Yönetim katının yasa görünümü (Founder onayı 2026-11-04 gecesi): proje açılınca yasası görünür.
+  /** Yönetim katının (ya da yönetim projesinin yasa başlığının) açıklaması: Kural, yönetmelik ve Karar sayıları. */
+  yasaAciklamasi(kural: number, yonetmelik: number, karar: number): string {
+    const c = (n: number, t: string, e: string): string => yuzeyMetni(`${n} ${t}`, `${n} ${e}${n === 1 ? "" : "s"}`);
+    return [c(kural, "kural", "rule"), c(yonetmelik, "yönetmelik", "regulation"), c(karar, "karar", "decision")].join(" · ");
+  },
+  get yasaAnayasa(): string { return yuzeyMetni("Anayasa", "Constitution"); },
+  /** Tek Anayasası olan projede grubun adı Anayasanın adını taşır. */
+  yasaAnayasaAdli(ad: string): string { return `${yuzeyMetni("Anayasa", "Constitution")} · ${ad}`; },
+  get yasaYonetmelik(): string { return yuzeyMetni("Yönetmelikler", "Regulations"); },
+  get yasaKararlar(): string { return yuzeyMetni("Kararlar", "Decisions"); },
+  get yasaArayuz(): string { return yuzeyMetni("Arayüz Dili", "Interface Language"); },
+  /** Boş grubun açıklaması: yasa katmanı henüz yazılmamıştır, grup yerini korur. */
+  get yasaBos(): string { return yuzeyMetni("boş", "empty"); },
+  kuralSayisi(n: number): string { return yuzeyMetni(`${n} kural`, `${n} rule${n === 1 ? "" : "s"}`); },
+  /** Kararlar grubunun açıklaması: toplam ve durum dağılımı (`35 · 33 kilitli · 2 bekliyor`). */
+  kararDagilimi(toplam: number, durumlar: ReadonlyArray<readonly [string, number]>): string {
+    return [String(toplam), ...durumlar.map(([d, n]) => `${n} ${d}`)].join(" · ");
+  },
+  get yasaIpucu(): string {
+    return yuzeyMetni("Yönetim katı proje çağırmaz; yalnız yasası görünür: anayasa, yönetmelikler, kararlar ve arayüz dili. Tıklayınca anayasa açılır.",
+      "The management floor calls no projects; only its law is shown: constitution, regulations, decisions and interface language. Select to open the constitution.");
+  },
+  yasaGrubuIpucu(ad: string): string {
+    return yuzeyMetni(`${ad}\nBu grup düğüm tiplerinden türer.`, `${ad}\nThis group is derived from node types.`);
+  },
+  /** Yasa satırının ipucu: tip, kod ve (Karar için) durum. */
+  yasaSatiriIpucu(tip: string, kod: string, durum?: string): string {
+    return `${tip} · ${kod}${durum ? ` · ${durum}` : ""}`;
+  },
+  // Bina dışı kitaplıkların klasör satırları
+  klasorSayisi(klasor: number, muhurlu: number): string {
+    const k = klasor ? yuzeyMetni(`${klasor} klasör`, `${klasor} folder${klasor === 1 ? "" : "s"}`) : "";
+    const m = muhurlu ? yuzeyMetni(`${muhurlu} mühürlü klasör`, `${muhurlu} sealed folder${muhurlu === 1 ? "" : "s"}`) : "";
+    return [k, m].filter(Boolean).join(" · ") || yuzeyMetni("boş", "empty");
+  },
+  /**
+   * Bina dışı klasör satırının ipucu: kitaplığın adı, kendi ilanındaki `ne` metni (alanın kuralı orada
+   * yazılıdır), dizin ve sayımın nasıl yapıldığı. Mühürlü klasörlerin içi okunmaz.
+   */
+  klasorIpucu(ad: string, ne: string | undefined, dizin: string, muhurlu: number): string {
+    const muhur = muhurlu
+      ? yuzeyMetni("Mühürlü klasörleri motor okumaz; içleri taranmaz, yalnız adları sayılır.", "The engine does not read sealed folders; their contents are not scanned, only their names are counted.")
+      : yuzeyMetni("Klasörlerin içine inilmez, yalnız adları sayılır.", "Folders are not entered; only their names are counted.");
+    const tik = yuzeyMetni("Tıklayınca klasör gezginde gösterilir.", "Select to reveal the folder in the Explorer.");
+    return [ad, ne, dizin, `${muhur} ${tik}`].filter(Boolean).join("\n");
+  },
   logoAlt(ad: string): string { return yuzeyMetni(`${ad} logosu`, `${ad} logo`); },
   // Tren şemasının bantları
   get kanonBasligi(): string { return yuzeyMetni("Kanon", "Canon"); },

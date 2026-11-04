@@ -47,7 +47,8 @@ import { trenSemaHtml, IS_AKISI_YUVA_SAYISI } from "../src/tren-gorunum.ts";
 import { binaBasligiHtml } from "../src/bina-gorunum.ts";
 import { BINA_METINLERI } from "../src/yuzey-metinleri.ts";
 import { satirlariUret, satirHtml, IkonDefteri, binaKokunuAyir, rayBolumuHtml, BINA_TEPESI_KIMLIGI } from "../src/panel-cekirdek.ts";
-import { depoAdresiNormal, kendiDeposuMu } from "../src/yolharitasi-cekirdek.ts";
+import { depoAdresiNormal, kendiDeposuMu, klasorSayimi } from "../src/yolharitasi-cekirdek.ts";
+import { yasaOku } from "../../cekirdek/src/bina.ts";
 
 const { YolHaritasi, MARKA_SIMGESI } = await import("../src/yolharitasi.ts");
 const { binaBasligiKur } = await import("../src/panel.ts");
@@ -116,7 +117,38 @@ const binaDosyalari = (logo = "oz/logo.svg"): Record<string, string> => ({
   Kitaplık( kod: KTP-OZ, yol: "oz/", ne: "Öz" )
 }
 `,
-  [`${BINA}/yonetim/kurallar/kurallar_anadizin.sar`]: `Proje( kod: PRJ-KURALLAR, ad: "Kurallar", rejim: esnek )\n`,
+  // Yönetim katının projesi: yasası tiplerden okunur, plan ağacı Ray ağacına girmez (Founder hükmü 2026-11-04 gecesi).
+  [`${BINA}/yonetim/kurallar/kurallar_anadizin.sar`]: `Proje( kod: PRJ-KURALLAR, ad: "Kurallar", rejim: esnek ) {
+  Kitaplık( kod: KTP-K-YASA, yol: "yasa/", ne: "Yasa" )
+  Kitaplık( kod: KTP-K-IS, yol: "is/", ne: "İş" )
+}
+`,
+  [`${BINA}/yonetim/kurallar/yasa/anayasa.sar`]: `Anayasa( kod: ANY-ORNEK, ad: "Örnek Atölye Anayasası", ne: "Uydurma anayasa" ) {
+  Kural birinciIlke( kod: KRL-BIRINCI, ne: "Birinci ilke: uydurma" )
+  Kural ikinciIlke( kod: KRL-IKINCI, ad: "İkinci İlke", ne: "uydurma" )
+}
+`,
+  // İçi boş yönetmelik: yasa Kitaplığında durduğu için yerini korur.
+  [`${BINA}/yonetim/kurallar/yasa/yonetmelik/bos.sar`]: `Mekanizma( kod: MEK-BOS, ad: "Boş Yönetmelik" )\n`,
+  [`${BINA}/yonetim/kurallar/yasa/yonetmelik/dolu.sar`]: `Mekanizma( kod: MEK-DOLU, ad: "Dolu Yönetmelik" ) {
+  Kural ucuncuIlke( kod: KRL-UCUNCU, otorite: politika, ne: "uydurma" )
+}
+`,
+  [`${BINA}/yonetim/kurallar/yasa/kararlar.sar`]: `Karar( kod: KRR-BIR, karar: "k", gerekçe: "g", durum: kilitli, ne: "🔤 Örnek ASCII kararı: uydurma açıklama" )
+Karar( kod: KRR-IKI, karar: "k", gerekçe: "g", durum: bekliyor, ne: "Bekleyen öneri" )
+Karar( kod: KRR-UC, karar: "k", gerekçe: "g", durum: kilitli, ne: "Üçüncü karar ve ekleri — uzun açıklama" )
+`,
+  [`${BINA}/yonetim/kurallar/yasa/tema.sar`]: `Tema( kod: TEM-ORNEK, ne: "Örnek arayüz dili — sade" )\n`,
+  // Plan ağacı ve yasa Kitaplığı dışındaki kuralsız Mekanizma: ikisi de yasa görünümüne girmez.
+  [`${BINA}/yonetim/kurallar/is/plan.sar`]: `Faz( kod: FZ-K, ad: "Kuruluş" ) {
+  Blok( kod: BLK-K ) {
+    Katman( kod: KAT-K ) {
+      Adım( kod: ADM-K1 )
+    }
+  }
+}
+Mekanizma( kod: MEK-IS, ad: "İş Mekanizması" )
+`,
   [`${BINA}/atolye/zeta/zeta_anadizin.sar`]: `Proje( kod: PRJ-ZETA, ad: "Zeta", rejim: esnek )\n`,
   [`${BINA}/atolye/alfa/alfa_anadizin.sar`]: `Proje( kod: PRJ-ALFA, ad: "Alfa", rejim: esnek )\n`,
   // Kendi anadizinli ofis: müşterileri yalnız kendi ilanında yaşar.
@@ -152,6 +184,9 @@ const binaDosyalari = (logo = "oz/logo.svg"): Record<string, string> => ({
   [`${BINA}/kisisel/defter/defter_anadizin.sar`]: `Proje( kod: PRJ-DEFTER, ad: "Defter", rejim: esnek )\n`,
 });
 mkdirSync(join(BINA, "oz"), { recursive: true });
+// Bina dışındaki projesiz Depo Kitaplığı: klasörleri yalnız adlarıyla sayılır, mühürlülerin içine inilmez.
+for (const k of ["acik-klasor", "@ARSIV@_birinci/ic", "@ARSIV@_ikinci", ".gizli"]) mkdirSync(join(BINA, "depo", k), { recursive: true });
+writeFileSync(join(BINA, "depo", "not.txt"), "dosya klasör sayılmaz");
 writeFileSync(join(BINA, "oz", "logo.svg"), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10"/></svg>');
 writeFileSync(join(BINA, "oz", "kotu.svg"), '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
 // Zeta, eklentinin kendi deposudur: git uzak adresi paket ilanındaki depo adresiyle aynıdır (yazım biçimi farklı).
@@ -184,9 +219,12 @@ const binaYolu = (logo?: string) => yolHaritasi(binaDosyalari(logo));
 test("①' ⑤ bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › Kat › Ofis › Proje, müşteri Kişi › Proje ve bina dışı", () => {
   const yol = yolHaritasiDepolu(binaDosyalari());
   assert.deepEqual(dokum(yol), [
-    "[dosya:logo.svg] Örnek Atölye — 5 proje",
-    "  [-] 1. Kat · Yönetim",
-    `    [law] Kurallar — ${BINA_METINLERI.yonetimAciklamasi}`,
+    "[dosya:logo.svg] Örnek Atölye — 8 proje",
+    "  [-] 1. Kat · Yönetim — 3 kural · 2 yönetmelik · 3 karar",
+    "    [book] Anayasa · Örnek Atölye Anayasası — 2 kural",
+    "    [notebook] Yönetmelikler — 2",
+    "    [verified] Kararlar — 3 · 2 kilitli · 1 bekliyor",
+    "    [symbol-color] Arayüz Dili",
     "  [-] 2. Kat · Ofisler",
     "    [briefcase] Atölye — 2 proje",
     "      [marka] Zeta — ray döşendi — vagon bekleniyor",
@@ -206,6 +244,7 @@ test("①' ⑤ bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › K
     "  [archive] Bina dışı · Kişisel · Depo — 1 proje",
     "    [archive] Kişisel — 1 proje",
     "      [rocket] Defter — ray döşendi — vagon bekleniyor",
+    "    [archive] Depo — 1 klasör · 2 mühürlü klasör",
   ]);
   // Geri dönüş zinciri ağacın kendisinden geçer: proje → müşteri → grup → ofis (varlık) → kat → kök.
   const kok = (yol.getChildren() as O[])[0]!;
@@ -229,7 +268,6 @@ test("①' simge eşlemesi: kök organization ya da logo, yönetim law, ofis bri
   const tum = satirlariUret(yol as never, { acikMi: (_i: string, v: boolean) => v, ikonCoz: () => undefined, dekor: () => undefined,
     eylemler: () => [], defter: new IkonDefteri(), onek: "y" }, 0);
   const item = (ad: string) => tum.find((u) => u.satir.etiket === ad)!.item as { iconPath?: { id?: string; color?: { id: string }; light?: { fsPath: string }; dark?: { fsPath: string } } };
-  assert.equal(item("Kurallar").iconPath?.id, "law");
   assert.equal(item("Atölye").iconPath?.id, "briefcase");
   assert.equal(item("Hizmet").iconPath?.id, "briefcase");
   assert.equal(item("Alfa").iconPath?.id, "rocket");
@@ -256,7 +294,7 @@ test("①' simge eşlemesi: kök organization ya da logo, yönetim law, ofis bri
     eylemler: () => [], defter: new IkonDefteri(), onek: "y" }, 0).find((u) => u.satir.etiket === "Zeta")!;
   assert.equal((z.item.iconPath as { id?: string }).id, "rocket");
   // Webview codicon yazı tipi taşımaz: altı simgenin her birinin panelde kendi çizimi vardır.
-  for (const ad of ["organization", "law", "briefcase", "rocket", "person", "archive"]) {
+  for (const ad of ["organization", "law", "briefcase", "rocket", "person", "archive", "book", "notebook", "verified", "symbol-color", "folder"]) {
     const html = satirHtml({ id: "x", derinlik: 0, etiket: "x", aciklama: "", ipucu: "", durum: "yaprak", komutlu: false, eylemler: [], temaIkonu: { ad } });
     assert.ok(/<svg class="ik"[^>]*><g [^>]*>.+<\/g><\/svg>/.test(html), `${ad} çizimi yok`);
   }
@@ -290,7 +328,7 @@ test("④ şirket yalnız bir kez tepede durur: kök satırı ağaçtan çıkar,
   assert.ok(kok, "katlı binada tepeye taşınacak kök vardır");
   const { tepe, satirlar } = binaKokunuAyir(tum, kok);
   assert.equal(tepe?.satir.etiket, "Örnek Atölye");
-  assert.equal(tepe?.satir.aciklama, "5 proje", "durum bilgisi tepeye taşınan satırdan gelir");
+  assert.equal(tepe?.satir.aciklama, "8 proje", "durum bilgisi tepeye taşınan satırdan gelir; yönetim katı sayılmaz");
   assert.ok(!satirlar.some((u) => u.oge === kok), "ikinci bir kök satırı kalmaz");
   assert.deepEqual(satirlar.filter((u) => u.satir.derinlik === 0).map((u) => u.satir.etiket),
     [BINA_METINLERI.katAdi(1), BINA_METINLERI.katAdi(2), BINA_METINLERI.binaDisiSatiri(["Kişisel", "Depo"])],
@@ -301,7 +339,7 @@ test("④ şirket yalnız bir kez tepede durur: kök satırı ağaçtan çıkar,
   const html = rayBolumuHtml({ bina: { ad: "Örnek Atölye", logo: "data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=", aciklama: tepe!.satir.aciklama }, agac: "" });
   const tepeYeri = html.indexOf(`id="${BINA_TEPESI_KIMLIGI}"`);
   assert.ok(tepeYeri >= 0 && tepeYeri < html.indexOf('<h2 class="bas"'), "tepe bölüm başlığından önce gelir");
-  assert.ok(html.includes('class="bina-logo"') && html.includes(">Örnek Atölye<") && html.includes('class="bina-ac">5 proje<'));
+  assert.ok(html.includes('class="bina-logo"') && html.includes(">Örnek Atölye<") && html.includes('class="bina-ac">8 proje<'));
   assert.equal((html.match(/Örnek Atölye/g) ?? []).length, 2, "ad yalnız başlıkta ve logonun alt metninde geçer");
 });
 
@@ -406,4 +444,125 @@ test("③ logo yalnız kökün içindeki betiksiz SVG ise çizilir; kök dışı
   } finally {
     rmSync(dis, { recursive: true, force: true });
   }
+});
+
+// ── ⑥ Yönetim katı proje çağırmaz (Founder hükmü 2026-11-04 gecesi) ─────────────
+//   Katın altında proje satırı, roket, sayaç ya da plan ağacı yoktur; yasa grupları doğrudan
+//   bandın altında durur ve gruplar yalnız tiplerden türer. Banda tıklanınca anayasa açılır.
+type Komut = { command: string; arguments?: Array<{ fsPath?: string; selection?: { start: { line: number } } }> };
+const komutu = (u: { item: unknown }): string => {
+  const c = (u.item as { command?: Komut }).command;
+  if (!c) return "";
+  const yer = c.arguments?.[0]?.fsPath?.replace(BINA, "") ?? "";
+  const satir = c.arguments?.[1]?.selection ? `:${c.arguments[1].selection.start.line + 1}` : "";
+  return ` {${c.command} ${yer}${satir}}`;
+};
+function acikDokum(yol: InstanceType<typeof YolHaritasi>): Array<{ metin: string; u: ReturnType<typeof satirlariUret>[number] }> {
+  const tum = satirlariUret(yol as never, { acikMi: () => true, ikonCoz: (p: unknown) => ({ tur: "tema", ad: simgeAdi(p) }),
+    dekor: () => undefined, eylemler: () => [], defter: new IkonDefteri(), onek: "y" }, 99);
+  return tum.map((u) => ({ u, metin: `${"  ".repeat(u.satir.derinlik)}[${u.satir.temaIkonu?.ad ?? "-"}] ${u.satir.etiket}${u.satir.aciklama ? ` — ${u.satir.aciklama}` : ""}${komutu(u)}` }));
+}
+/** Birinci kat bandının alt ağacı (bant dâhil). */
+function yonetimKati(yol: InstanceType<typeof YolHaritasi>) {
+  const tum = acikDokum(yol);
+  const i = tum.findIndex((x) => x.u.satir.etiket === BINA_METINLERI.katAdi(1));
+  const d = tum[i]!.u.satir.derinlik;
+  const son = tum.findIndex((x, j) => j > i && x.u.satir.derinlik <= d);
+  return tum.slice(i, son < 0 ? undefined : son);
+}
+
+test("⑥ yönetim katında proje satırı, roket, sayaç ya da plan satırı yoktur; yasa grupları tiplerden türer ve tanımına gider", () => {
+  const kat = yonetimKati(yolHaritasiDepolu(binaDosyalari()));
+  const Y = "/yonetim/kurallar/yasa";
+  assert.deepEqual(kat.map((x) => x.metin), [
+    `  [-] 1. Kat · Yönetim — 3 kural · 2 yönetmelik · 3 karar {vscode.open ${Y}/anayasa.sar:1}`,
+    `    [book] Anayasa · Örnek Atölye Anayasası — 2 kural {vscode.open ${Y}/anayasa.sar:1}`,
+    `      [-] Birinci Ilke {vscode.open ${Y}/anayasa.sar:2}`,
+    `      [-] İkinci İlke {vscode.open ${Y}/anayasa.sar:3}`,
+    "    [notebook] Yönetmelikler — 2",
+    `      [-] Boş Yönetmelik — ${BINA_METINLERI.yasaBos} {vscode.open ${Y}/yonetmelik/bos.sar:1}`,
+    `      [-] Dolu Yönetmelik — 1 kural {vscode.open ${Y}/yonetmelik/dolu.sar:1}`,
+    `        [-] Ucuncu Ilke {vscode.open ${Y}/yonetmelik/dolu.sar:2}`,
+    `    [verified] Kararlar — 3 · 2 kilitli · 1 bekliyor {vscode.open ${Y}/kararlar.sar:1}`,
+    `      [-] Örnek ASCII Kararı {vscode.open ${Y}/kararlar.sar:1}`,
+    `      [-] Bekleyen Öneri {vscode.open ${Y}/kararlar.sar:2}`,
+    `      [-] Üçüncü Karar ve Ekleri {vscode.open ${Y}/kararlar.sar:3}`,
+    `    [symbol-color] Arayüz Dili {vscode.open ${Y}/tema.sar:1}`,
+    `      [-] Örnek Arayüz Dili {vscode.open ${Y}/tema.sar:1}`,
+  ]);
+  // Kanıt: katın hiçbir satırı varlık değildir, hiçbiri roket ya da sayaç taşımaz, plan düğümü (Faz) girmez.
+  for (const x of kat) {
+    assert.notEqual((x.u.oge as { tur?: string }).tur, "varlık", `${x.metin} bir proje satırı`);
+    assert.notEqual((x.u.oge as { tur?: string }).tur, "oge", `${x.metin} bir plan satırı`);
+    assert.ok(!/\[rocket\]|\[law\]|\[\d+\/\d+\]|Kuruluş|İş Mekanizması/.test(x.metin), x.metin);
+  }
+  // Gruplar ve yasa satırları kapalı doğar; bant açıktır.
+  const yol = yolHaritasiDepolu(binaDosyalari());
+  const kapali = satirlariUret(yol as never, { acikMi: (_i: string, v: boolean) => v, ikonCoz: () => undefined, dekor: () => undefined,
+    eylemler: () => [], defter: new IkonDefteri(), onek: "y" }, 0);
+  const grup = kapali.find((u) => u.satir.etiket === BINA_METINLERI.yasaKararlar)!;
+  assert.equal(grup.satir.durum, "kapali");
+});
+
+test("⑥ birden çok yönetim projesi kendi roketsiz yasa başlığıyla durur; boş yasa grupları yerini korur", () => {
+  const dosyalar = {
+    [`${BINA}/bina_anadizin.sar`]: `ÇalışmaAlanı( kod: CAL-IKI, ad: "İki Yönetimli" ) {
+  Kitaplık( kod: KTP-Y1, ad: "Birinci", yol: "y1/", kat: 1 )
+  Kitaplık( kod: KTP-Y2, ad: "İkinci", yol: "y2/", kat: 1 )
+  Kitaplık( kod: KTP-O, ad: "Ofis", yol: "o/", kat: 2 )
+}
+`,
+    [`${BINA}/y1/y1_anadizin.sar`]: `Proje( kod: PRJ-Y1, ad: "Birinci Yönetim", rejim: esnek )\n`,
+    [`${BINA}/y1/yasa.sar`]: `Anayasa( kod: ANY-Y1, ad: "Birinci Anayasa", ne: "u" ) {\n  Kural bir( kod: KRL-Y1, ne: "u" )\n}\n`,
+    [`${BINA}/y2/y2_anadizin.sar`]: `Proje( kod: PRJ-Y2, ad: "İkinci Yönetim", rejim: esnek )\n`,
+    [`${BINA}/o/p/p_anadizin.sar`]: `Proje( kod: PRJ-P, ad: "Proje", rejim: esnek )\n`,
+  };
+  const kat = yonetimKati(yolHaritasi(dosyalar));
+  assert.deepEqual(kat.map((x) => x.metin.replace(/ \{.*\}$/, "")), [
+    "  [-] 1. Kat · Yönetim — 1 kural · 0 yönetmelik · 0 karar",
+    "    [law] Birinci Yönetim — 1 kural · 0 yönetmelik · 0 karar",
+    "      [book] Anayasa · Birinci Anayasa — 1 kural",
+    "        [-] Bir",
+    `      [notebook] Yönetmelikler — ${BINA_METINLERI.yasaBos}`,
+    `      [verified] Kararlar — ${BINA_METINLERI.yasaBos}`,
+    `      [symbol-color] Arayüz Dili — ${BINA_METINLERI.yasaBos}`,
+    "    [law] İkinci Yönetim — 0 kural · 0 yönetmelik · 0 karar",
+    `      [book] Anayasa — ${BINA_METINLERI.yasaBos}`,
+    `      [notebook] Yönetmelikler — ${BINA_METINLERI.yasaBos}`,
+    `      [verified] Kararlar — ${BINA_METINLERI.yasaBos}`,
+    `      [symbol-color] Arayüz Dili — ${BINA_METINLERI.yasaBos}`,
+  ]);
+  assert.ok(kat.every((x) => (x.u.oge as { tur?: string }).tur !== "varlık"), "yasa başlığı proje satırı değildir");
+  assert.match(kat[1]!.metin, /\{vscode\.open \/y1\/yasa\.sar:1\}$/, "başlık kendi anayasasına gider");
+});
+
+test("⑥ yasa okuması yalnız tiplerden türer: serbest kurallar otoritelerine göre, Politika Mekanizmanın içinde, kuralsız Mekanizma yasa Kitaplığı dışında sayılmaz", () => {
+  const p = (m: string) => ayristir(belirtecle(m));
+  const yasa = yasaOku([
+    ["/k/yasa/a.sar", p(`Anayasa( kod: ANY-A, ad: "A" ) {\n  Kural x( kod: KRL-X, ne: "u" )\n}\nKural serbestAnayasa( kod: KRL-SA, otorite: anayasa, ne: "u" )\n`)],
+    ["/k/yasa/b.sar", p(`Kural serbestTercih( kod: KRL-ST, otorite: tercih, ne: "u" )\nMevzuat( kod: MVZ-A, kaynak: "u", yargıAlanı: TR, ne: "u", zorunluKılar: [] )\n`)],
+    ["/k/is/c.sar", p(`Mekanizma( kod: MEK-POL, ad: "Politikalı" ) {\n  Politika( kod: POL-A, alan: hız, ne: "u" ) {\n    Kural y( kod: KRL-Y, ne: "u" )\n  }\n}\n`)],
+    ["/k/diger/d.sar", p(`Mekanizma( kod: MEK-BOS, ad: "Boş" )\n`)],
+  ], ["/k/yasa", "/k/is", "/k/diger"]);
+  assert.deepEqual(yasa.anayasa.map((d) => [d.kod, d.cocuklar.map((c) => c.kod)]), [["ANY-A", ["KRL-X", "KRL-SA"]]]);
+  assert.deepEqual(yasa.yonetmelik.map((d) => d.kod), ["MEK-POL", "KRL-ST", "MVZ-A"], "kuralsız MEK-BOS yasa Kitaplığı dışında olduğu için girmez");
+  assert.deepEqual(yasa.yonetmelik[0]!.cocuklar.map((c) => [c.kod, c.cocuklar.map((k) => k.kod)]), [["POL-A", ["KRL-Y"]]]);
+  assert.equal(yasa.kuralSayisi, 4);
+});
+
+test("⑦ bina dışındaki projesiz Kitaplık klasör sayısıyla görünür ve gezginde gösterir; mühürlü klasörlerin içine inilmez", () => {
+  assert.deepEqual(klasorSayimi([
+    { ad: "hobiler", dizin: true }, { ad: "okuma", dizin: true }, { ad: "@ARSIV@_eski", dizin: true }, { ad: "@SONRA@_yarin", dizin: true },
+    { ad: "@EGITIM@_ders", dizin: true }, { ad: ".git", dizin: true }, { ad: "not.txt", dizin: false },
+  ]), { klasor: 3, muhurlu: 2 }, "eğitim mühürlü klasör okunur ve sıradan klasör sayılır");
+  const tum = acikDokum(yolHaritasiDepolu(binaDosyalari()));
+  const depo = tum.find((x) => x.u.satir.etiket === "Depo")!;
+  assert.equal(depo.metin.trim(), "[archive] Depo — 1 klasör · 2 mühürlü klasör {revealInExplorer /depo}");
+  assert.equal(depo.u.satir.durum, "yaprak", "klasörler tek tek listelenmez");
+  const ipucu = String((depo.u.item as { tooltip?: unknown }).tooltip);
+  assert.ok(ipucu.startsWith(`Depo\nDepo\n${BINA}/depo\n`) && ipucu.includes("Mühürlü klasörleri motor okumaz"), ipucu);
+  // Bina dışı satırı açılabilir; yalnız açılıp kapanır, komut taşımaz.
+  const disari = tum.find((x) => x.u.satir.etiket.startsWith(BINA_METINLERI.binaDisiSatiri([])))!;
+  assert.equal((disari.u.item as { command?: unknown }).command, undefined);
+  assert.notEqual(disari.u.satir.durum, "yaprak");
 });

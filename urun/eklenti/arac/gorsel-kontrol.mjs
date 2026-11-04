@@ -231,7 +231,9 @@ function duzenOlc() {
     const bas = k.querySelector(":scope > .bas");
     const br = bas?.getBoundingClientRect();
     const govde = k.querySelector(":scope > .bolum");
+    const tepe = k.querySelector(":scope > #bina-tepe");
     return {
+      tepeYuk: tepe ? yuvarla(tepe.getBoundingClientRect().height) : 0,
       kol: k.dataset.kol, sol: yuvarla(r.left), ust: yuvarla(r.top), alt: yuvarla(r.bottom), gen: yuvarla(r.width),
       basUst: yuvarla(br?.top), basYazi: bas ? getComputedStyle(bas.querySelector(".bb") ?? bas).fontSize : null,
       govdeYuk: govde && !govde.hidden ? yuvarla(govde.getBoundingClientRect().height) : 0,
@@ -327,7 +329,10 @@ function vurguHedefi(agac) {
   const altSinir = document.querySelector(".seritler")?.getBoundingClientRect().bottom ?? 0;
   const adaylar = [...document.querySelectorAll(`${agac} .sat`)].filter((s) => {
     const r = s.getBoundingClientRect();
-    return Number(s.dataset.d) > 0 && !s.classList.contains("sec") && r.top >= altSinir + 24 && r.bottom <= innerHeight - 4 && r.width > 0;
+    if (!(Number(s.dataset.d) > 0 && !s.classList.contains("sec") && r.top >= altSinir + 24 && r.bottom <= innerHeight - 4 && r.width > 0)) return false;
+    // Satır kendi kayan alanında görünür olmalıdır: dar panelde dibe yapışık Mini Graf ağacın altını örter.
+    const ust = document.elementFromPoint(r.left + Math.min(r.width / 2, 30), r.top + r.height / 2);
+    return !!ust && s.contains(ust);
   });
   const puan = (s) => Number(s.dataset.d) * 4 + (s.querySelector(".ac") ? 2 : 0) + (s.querySelector(".ik") ? 1 : 0);
   const s = adaylar.reduce((a, x) => (!a || puan(x) > puan(a) ? x : a), undefined);
@@ -484,8 +489,9 @@ try {
         const [ag, gr] = dz.kollar;
         kontrol(`${etiket}: Yol Haritası ve Mini Graf başlıkları ${BASLIK_YAZI}`,
           dz.kollar.length === 2 && dz.kollar.every((k) => k.basYazi === BASLIK_YAZI), JSON.stringify(dz.kollar.map((k) => [k.kol, k.basYazi])));
-        kontrol(`${etiket}: başlıklar sütunlarının üstündedir; hiçbir başlık bir kutunun dibinde kalmaz`,
-          dz.kollar.length === 2 && dz.kollar.every((k) => yakin(k.basUst, k.ust)), JSON.stringify(dz.kollar));
+        // PNL-A31: bina başlığı (logo ve şirket adı) yalnız Yol Haritası sütununun en üstünde, başlığın üstünde durur.
+        kontrol(`${etiket}: başlıklar sütunlarının üstündedir (bina başlığı varsa onun hemen altında)`,
+          dz.kollar.length === 2 && dz.kollar.every((k) => yakin(k.basUst, k.ust + k.tepeYuk)), JSON.stringify(dz.kollar));
         if (B.w >= GENIS_PANEL_PX) {
           const alan = dz.icerikAlt - dz.icerikUst;
           kontrol(`${etiket}: geniş panelde Yol Haritası ile Mini Graf yan yana iki sütundur ve panelin dibine uzanır (boşluk yok)`,
@@ -498,6 +504,11 @@ try {
         } else {
           kontrol(`${etiket}: dar panelde Yol Haritası ile Mini Graf alt alta durur`,
             ag && gr && yakin(ag.sol, gr.sol) && gr.ust >= ag.alt - 1, JSON.stringify(dz.kollar));
+          // Founder bulgusu 2026-11-04 gecesi: Mini Graf panelin dibine yapışıktır; ağaç uzasa da başlığı görünür
+          // kalır, Yol Haritası kalan yüksekliği alıp kendi içinde kayar ve açık Mini Graf panelin yarısını geçmez.
+          kontrol(`${etiket}: dar panelde Mini Graf panelin dibine yapışıktır, başlığı görünür ve yarı yüksekliği geçmez`,
+            ag && gr && yakin(gr.alt, dz.H) && yakin(ag.alt, gr.ust) && gr.basUst < dz.H - 10
+              && (gr.alt - gr.ust) <= 0.5 * (dz.icerikAlt - dz.icerikUst) + 2, JSON.stringify(dz.kollar));
         }
       }
       if (d.sekme === "ayarlar") {
@@ -851,10 +862,10 @@ try {
         const genis = B.w >= GENIS_PANEL_PX;
         kontrol(genis
           ? `${etiket}: katlanan Mini Graf başlığı sütununun üstünde kalır ve Yol Haritası boşalan genişliği alır`
-          : `${etiket}: katlanan Mini Graf başlığı Yol Haritasının hemen altında durur, alanın dibine yapışmaz`,
+          : `${etiket}: katlanan Mini Graf yalnız başlık satırıdır, panelin dibine yapışıktır ve Yol Haritası boşalan yüksekliği alır`,
         kag && kgr && kgr.govdeYuk === 0 && yakin2(kgr.basUst, kgr.ust) && (genis
           ? yakin2(kgr.ust, kz.icerikUst) && kag.gen >= 0.75 * kz.W && yakin2(kag.alt, kz.H)
-          : yakin2(kgr.ust, kag.alt)),
+          : yakin2(kgr.ust, kag.alt) && yakin2(kgr.alt, kz.H) && (kgr.alt - kgr.ust) <= 34),
         JSON.stringify(kz.kollar));
         const katli = `${d.ad}-${W}-graf-katli.png`;
         await p.screenshot({ path: join(CIKTI, katli) });
@@ -865,6 +876,17 @@ try {
         await p.evaluate(kaydir, "graf");
         const g = await p.evaluate(grafOlc);
         kontrol(`${etiket}: Mini Graf gölge kökte çizildi`, g.golge, JSON.stringify(g));
+        // Founder bulgusu 2026-11-04 gecesi: başlık ile ilk içerik satırı arasında boşluk yoktur.
+        const bosluk = await p.evaluate(() => {
+          const g = document.getElementById("bolum-graf");
+          if (g) g.scrollTop = 0;
+          const h = document.querySelector("h2.araya")?.getBoundingClientRect();
+          const kok = document.getElementById("graf")?.shadowRoot;
+          const ilk = kok ? [...kok.querySelectorAll("*")].filter((e) => !e.closest("style") && e.tagName !== "STYLE")
+            .map((e) => e.getBoundingClientRect()).filter((r) => r.height > 0 && r.width > 0).sort((a, b) => a.top - b.top)[0] : undefined;
+          return h && ilk ? Math.round(ilk.top - h.bottom) : null;
+        });
+        kontrol(`${etiket}: Mini Graf başlığı ile ilk içerik satırı arasında boşluk yoktur (≤ 12 px)`, bosluk !== null && bosluk <= 12 && bosluk >= -1, `boşluk ${bosluk}px`);
         kontrol(`${etiket}: Mini Graf yazıları görünür (genişlik ve yükseklik > 0, panel içinde)`, g.yaziliOge > 0 && g.yazisiz === 0, JSON.stringify(g));
         kontrol(`${etiket}: Mini Graf içeriği kendi kutusundan taşmaz`, g.taskinPx <= 1, `taşma ${g.taskinPx}px`);
         if (g.agacGorunumu && g.dugum > 0) {

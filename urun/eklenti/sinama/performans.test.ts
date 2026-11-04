@@ -708,6 +708,14 @@ test("PRF-TA-A06 · yol haritası kaynağında zamanlayıcı yoktur, izleyici ya
     assert.ok(izinli.some((re) => re.test(s)), `izin listesinde olmayan disk okuması: ${s.trim().slice(0, 120)}`);
   }
   assert.ok(okumaSatirlari.length <= 6, `disk okuması sayısı büyüdü (${okumaSatirlari.length}); yeni okuma önce gerekçesiyle izin listesine girer`);
+  // PNL-A31 (Founder bulgusu 2026-11-04 gecesi): dizin listelemesi tek kapıdan geçer. Bina dışındaki projesiz
+  // Kitaplığın klasörleri yalnız adlarıyla sayılır; tur başına Kitaplık başına bir listeleme yapılır ve
+  // mühürlü klasörlerin içine inilmez. İkinci bir listeleme ya da özyinelemeli tarama nöbeti kırmızıya çevirir.
+  const listeleme = k.split("\n").filter((s) => /readdirSync\s*\(/.test(s));
+  assert.deepEqual(listeleme.map((s) => s.trim()),
+    ["try { return readdirSync(dizin, { withFileTypes: true }).map((g) => ({ ad: g.name, dizin: g.isDirectory() })); } catch { return []; }"],
+    "panelde bina dışı klasör sayımından başka bir dizin listelemesi var");
+  assert.equal(say(/recursive\s*:\s*true/g), 0, "panel özyinelemeli dizin taraması yapıyor");
   // Belge açma: yalnız kullanıcı gezinmesi ve her biri sayaçtan geçer (SIFIR nöbeti sayar); burada tavan ölçülür.
   assert.ok(say(/openTextDocument\s*\(/g) <= 2, "panelde iki kullanıcı gezinmesinden fazla belge açma var");
 });

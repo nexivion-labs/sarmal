@@ -567,15 +567,15 @@ test("Yol Haritası ve Mini Graf başlıkları çok küçük puntoludur: 10 piks
   assert.doesNotMatch(stilKurali(".bb"), /font-size/);
 });
 
-test("pencere boyuna dayanan kural yoktur: stilde vh birimi ve sabit şerit ölçüsüyle hesap yok; hiçbir başlık dibe yapıştırılmaz", () => {
+test("pencere boyuna dayanan kural yoktur: stilde vh birimi ve sabit şerit ölçüsüyle hesap yok; dibe yapışma yapışkan konumla değil esnek kutuyla kurulur", () => {
   const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
   assert.doesNotMatch(temiz, /\d(\.\d+)?d?vh\b/, "stilde vh birimi var: yerleşim pencere boyuna dayanıyor");
   assert.doesNotMatch(temiz, /calc\([^)]*\b(26|32)px/, "şeridin ölçüsü bir hesapta varsayılmış");
-  assert.doesNotMatch(temiz, /position:sticky;bottom/, "bir başlık alanın dibine yapıştırılıyor");
+  assert.doesNotMatch(temiz, /position:sticky;bottom/, "bir başlık yapışkan konumla dibe yapıştırılıyor; dar paneldeki Mini Graf esnek kutuyla dipte durur");
   assert.match(temiz, /html,body\{margin:0;padding:0;height:100%\}/, "gövde panelin verdiği alanı doldurmuyor");
 });
 
-test(`geniş panelde (en az ${GENIS_PANEL_PX} piksel) Ray'in iki bölümü yan yana sütundur, her sütun kendi içinde kayar; dar panelde alt alta akar`, () => {
+test(`geniş panelde (en az ${GENIS_PANEL_PX} piksel) Ray'in iki bölümü yan yana sütundur, her sütun kendi içinde kayar; dar panelde alt alta durur ve Mini Graf dibe yapışıktır`, () => {
   const temiz = PANEL_STILI.replace(/\/\*[\s\S]*?\*\//g, "");
   assert.ok(GENIS_PANEL_PX > 460 && GENIS_PANEL_PX < 1400, "eşik dar kenar çubuğu (300 ve 460) ile Founder'ın alt paneli (1400) arasında olmalı");
   const m = new RegExp(`@media \\(min-width:${GENIS_PANEL_PX}px\\)\\{([\\s\\S]*?)\\n\\}`).exec(temiz);
@@ -585,9 +585,20 @@ test(`geniş panelde (en az ${GENIS_PANEL_PX} piksel) Ray'in iki bölümü yan y
   assert.match(genis, /\.kol\{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column\}/, "sütun alanı eşit paylaşmıyor");
   assert.match(genis, /\.kol>\.bolum\{[^}]*overflow:auto/, "sütun gövdesi kendi içinde kaymıyor");
   assert.match(genis, /\.kol:has\(>\.bolum\[hidden\]\)\{flex:0 0 auto\}/, "katlanan bölüm boşalan genişliği bırakmıyor");
-  // Geniş kural dışında sütunlar düzenlenmez: dar panelde blok akışı (alt alta) geçerlidir.
-  const disari = temiz.replace(m![0], "");
-  assert.doesNotMatch(disari, /\.(ray-duzen|kol)\{/, "dar panel için sütun kuralı yazılmış");
+  // Dar panel (Founder bulgusu 2026-11-04 gecesi): sütunlar alt alta durur; Yol Haritası kalan yüksekliği alıp
+  // kendi içinde kayar, Mini Graf dibe yapışıktır ve açıkken panelin yarısını geçmez, katlıyken yalnız başlıktır.
+  const d = new RegExp(`@media \\(max-width:${GENIS_PANEL_PX - 1}px\\)\\{([\\s\\S]*?)\\n\\}`).exec(temiz);
+  assert.ok(d, "dar panel kuralı yok");
+  const dar = d![1]!;
+  assert.match(dar, /\.ray-duzen\{[^}]*display:flex;flex-direction:column\}/, "dar panelde sütunlar alt alta dizilmiyor");
+  assert.match(dar, /\.kol\[data-kol="agac"\]\{flex:1 1 0\}/, "Yol Haritası kalan yüksekliği almıyor");
+  assert.match(dar, /\.kol>\.bolum\{min-height:0;overflow:auto\}/, "bölüm gövdesi kendi içinde kaymıyor");
+  assert.match(dar, /\.kol\[data-kol="graf"\]\{flex:0 0 auto;max-height:50%/, "Mini Graf dibe yapışık ve yarı yükseklikle sınırlı değil");
+  assert.match(dar, /\.kol\[data-kol="agac"\]:has\(>\.bolum\[hidden\]\)\+\.kol\[data-kol="graf"\]\{flex:1 1 0;max-height:none\}/,
+    "Yol Haritası katlanınca Mini Graf boşalan yüksekliği almıyor");
+  // İki kural dışında sütunlar düzenlenmez.
+  const disari = temiz.replace(m![0], "").replace(d![0], "");
+  assert.doesNotMatch(disari, /\.(ray-duzen|kol)\{/, "sütun kuralı iki ölçü kuralının dışına yazılmış");
 });
 
 test("Ayarlar sekmesi boş bölüm olarak doğar: yalnız kısa boş durum cümlesi, ağaç yok (PNL-A03 sınırı)", () => {

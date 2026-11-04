@@ -30,6 +30,12 @@ export const BINA_SIMGESI = {
   proje: "rocket",
   musteri: "person",
   disari: "archive",
+  // Yönetim katının yasa grupları ve bina dışı klasör satırı (Founder onayı 2026-11-04 gecesi).
+  anayasa: "book",
+  yonetmelik: "notebook",
+  karar: "verified",
+  arayuz: "symbol-color",
+  klasor: "folder",
 } as const;
 
 /**
