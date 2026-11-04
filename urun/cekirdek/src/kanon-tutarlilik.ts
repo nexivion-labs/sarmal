@@ -175,6 +175,9 @@ export function kanonSayimiBulgusu(olculen: OlculenKanonSayimi, kayit: KanonSayi
 //   2026-10-15 (BKM-OLG-A13 · Founder onayı): TIP-1.17 Profil tipinin üç tanısı doğdu,
 //   yani `profil-kişisel-veri` ile `profil-çift` hata, `profil-eksik-alan` uyarı düzeyinde;
 //   yeni küme doksan üçten doksan altıya çıktı ve dağılım 50/25/21 oldu. Öteki kümeler değişmedi.
+//   2026-11-04 (PNL-A31 · Founder onayı): MIM-3.2 maddesine çalışma alanının katları ve logosu
+//   için iki uyarı, `geçersiz-kat` ile `geçersiz-logo`, eklendi; yeni küme doksan altıdan doksan
+//   sekize çıktı ve dağılım 50/27/21 oldu. Kanon sayımı ve öteki kümeler değişmedi.
 
 /** Tanı kümelerinin dondurulmuş sayımı. Yeni kümenin büyüklüğü üç düzeyin toplamıdır. */
 export interface TaniKumesiSayimi {
@@ -206,7 +209,7 @@ export interface OlculenTaniKumesi extends TaniKumesiSayimi {
 
 /** TEK KAYIT. Sicil meşru biçimde büyüdüğünde, küçüldüğünde ya da bir tanının düzeyi değiştiğinde yalnız burası değişir. */
 export const TANI_KUMESI_SAYIMI: TaniKumesiSayimi = {
-  yeni: { hata: 50, uyari: 25, bilgi: 21 },
+  yeni: { hata: 50, uyari: 27, bilgi: 21 },
   onceki: 101,
   siniflamaTurevli: 9,
   emekli: 16,

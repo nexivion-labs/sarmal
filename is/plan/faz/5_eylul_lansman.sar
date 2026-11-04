@@ -7032,6 +7032,28 @@ sessizce körleşmez.
           ]
           sınır: "Bu Adım kusurları düzeltmez; bulgular PNL-A29 ya da yeni Adımlara iner. Depo koduna ve kullanıcının dosyalarına yazılmaz."
         }
+
+        Adım( kod: PNL-A31, ad: "Çalışma Alanının Katları ve Logosu", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A11 ],
+          onayBekler: founder,
+          referans: [ OZK-16 ],
+          üretir: [ KOD-BINA, KOD-BINA-GORUNUM, KOD-YOLHARITA, KOD-YOLHARITA-CEKIRDEK, KOD-PANEL, KOD-PANEL-CEKIRDEK, KOD-TREN-CEKIRDEK, KOD-TREN-GORUNUM, KOD-TREN-BETIK, KOD-YUZEY-METINLERI, KOD-DENETCI, KOD-DENETIM, KOD-TANI-METINLERI, KOD-TANI-SICILI, KOD-SNF-KANON, KOD-SNM-BINA, KOD-SNM-BINA-GORUNUMU, KOD-SNM-YENI-KANON ],
+          ne: "🏢 Founder 2026-11-04 tarihinde çok ofisli bir çalışma alanının panelde bir bina gibi görünmesine hükmetmiştir. Bugün yol haritası çalışma alanının altındaki bütün projeleri alfabetik ve düz bir liste olarak dizmekte, kuralların ve kararların yaşadığı yönetim katını öteki ofislerden ayırmamaktadır; Tren sekmesindeki şirket şeması da aynı ayrımı göstermemektedir. Founder önizlemeden üç seçim yapmıştır: katlar Kitaplık düğümüne eklenen isteğe bağlı bir kat alanıyla ilan edilir ve klasörler yerinden oynamaz; birinci kat yönetim katıdır, ikinci kat çalışan ofislerin katıdır ve kişisel ile arşiv kitaplıkları bina dışında ayrı bir şeritte durur; şirket şemasında kanon (yasa ve kararlar, bir ajan değildir · H9) ile lider ajan birinci katın bandında, ofis ajanları ikinci katın bandında, teknoloji kadrosu bunların altında görünür. Founder ayrıca lider ajanın altında iş akışı ajanlarının yer alacağını ve bunların zamanla ilan edileceğini bildirmiştir; şema bu ajanlar için şimdiden yer ayırmalıdır. Çalışma alanının logosu yol haritasının ve şemanın tepesinde durur." ) {
+          görev: [
+            "Tip kanonuna iki isteğe bağlı alan ekle: Kitaplık için pozitif tam sayı alan kat ve ÇalışmaAlanı için çalışma alanı köküne göreli bir SVG dosya yolu alan logo. Alanlar yalnız ekleme yapar; var olan hiçbir ilan değişmeden geçerli kalır. Kat alanını taşıyan bir Kitaplık başka bir kat Kitaplığının içinde yaşıyorsa ve logo dosyası diskte yoksa motor açık bir tanı verir.",
+            "Yol haritasında kat alanı taşıyan bir çalışma alanının çocuklarını katlara göre grupla: en üstte logo ve çalışma alanının adı, altında artan kat sırasıyla kat bantları, her bantta o katın Kitaplıklarına düşen projeler ilan sırasıyla durur; katsız kitaplıkların projeleri en altta bina dışı şeridinde görünür. Kat alanı hiç kullanılmamışsa bugünkü görünüm aynen korunur.",
+            "Tren sekmesindeki şirket şemasını aynı katlara göre bantla: birinci katın bandında kanon kutusu ile apex koltuğu, onun altında iş akışı ajanları için ayrılmış bir şerit durur. Bu şerit İşAkışı ile ilişkilendirilmiş ve apex tarafından yönetilen ajanları gösterir; böyle bir ajan henüz ilan edilmemişse şerit bugünkü boş lider ajan yuvası gibi tanımlı değil yazan boş yuvalarla çizilir ve hiçbir örnek veri gösterilmez. Ajanlar ilan edildikleri dosyanın kapsandığı Kitaplığın katına düşer; hiçbir kata düşmeyen teknoloji kadrosu bantların altında bugünkü departman sütunlarında kalır.",
+            "Logoyu webview içinde güvenli biçimde göster: dosya çalışma alanı kökünün dışına çıkamaz, yalnız SVG kabul edilir ve içerik betik ile dış kaynak taşımayacak biçimde süzülür.",
+            "Değişikliği görsel kontrol düzeneğinde çok katlı ve logolu bir örnek çalışma alanıyla ekran görüntüsü alarak sına; ekran görüntüsüne yazan ajan kendisi bakar ve Founder'a teslimde gösterilir."
+          ]
+          kabul: [
+            "kat ve logo alanları siniflama aracında görünür; alanı taşımayan ilanlar önceki gibi temiz geçer ve iki yeni tanının her biri bir nöbetle ölçülür.",
+            "Kat alanı taşıyan bir çalışma alanında yol haritası projeleri kat bantlarında, katsızları bina dışı şeridinde gösterir; kat alanı olmayan bir çalışma alanının görünümü değişmemiştir. İkisini de bir nöbet ölçer.",
+            "Şirket şemasında birinci kat bandında kanon kutusu, apex koltuğu ve iş akışı şeridi görünür; iş akışı ajanı ilan edilmemişse şerit boş yuvalarla çizilir ve bir ajan apex tarafından yönetilen İşAkışı ajanı olarak ilan edildiğinde yuvası kendiliğinden dolar. Bunu bir nöbet ölçer.",
+            "Kök dışına çıkan, SVG olmayan ya da betik taşıyan bir logo gösterilmez ve tanı alır; bunu bir nöbet ölçer.",
+            "Çekirdek süiti, eklenti süiti, gerçek VS Code süiti ve görsel kontrol yeşildir; deponun denetimi sıfır hata verir ve ekran görüntüleri Founder'a sunulmuştur."
+          ]
+          sınır: "Klasörler taşınmaz ve hiçbir kullanıcı ilanı bu Adımda yazılmaz; kat ve logo değerlerini çalışma alanının sahibi kendi ilanına yazar. Açık depoya hiçbir şirketin adı, logosu ya da ofis adı girmez; örnekler uydurma ve nötr adlar taşır. Sütunlar ve kart ızgarası görünümleri, ofis gruplamasının Makinist sekmesine taşınması ve iş akışı ajanlarının kendileri bu Adımın işi değildir. Şemaya yalnız iki isteğe bağlı alan eklenir; var olan hiçbir alan ya da tip değişmez (Founder onayı 2026-11-04)."
+        }
       }
     }
 
@@ -7697,3 +7719,13 @@ Kod( kod: KOD-SNM-TREN-YUVASI, dosya: "urun/eklenti/sinama/tren-yuvasi.test.ts",
   ne: "🧪 Kardeş yuvasının nöbeti — sürüm denetimi, tek kayıt, gövde sınırı, sahiplik, görünürlük bildirimi, eylem süzgeci ve Canlı'nın kendiliğinden seçilmemesi (PNL-A13)" )
 Kod( kod: KOD-SNM-VSC-TREN-YUVASI, dosya: "urun/eklenti/sinama_vscode/suite/tren-yuvasi.test.ts",
   ne: "🧪 Kardeş yuvasının gerçek VS Code nöbeti — sahte kardeş eklentiyle kayıt, gövde güncellemesi ve bırakılınca Plan'a dönüşü ölçer (PNL-A13)" )
+
+// 🍎 PNL-A31 teslimi (2026-11-04): çalışma alanının katları ve logosu
+Kod( kod: KOD-BINA, dosya: "urun/cekirdek/src/bina.ts",
+  ne: "🏢 Çalışma alanının bina okumasının saf çekirdeği — Kitaplık kat alanını ve ÇalışmaAlanı logo alanını okur, etkin katı atadan devralır, iç içe ve pozitif olmayan katı kusur sayar ve logoyu kök dışı, SVG olmayan, betik ya da dış kaynak taşıyan içerikte reddeder (PNL-A31)" )
+Kod( kod: KOD-BINA-GORUNUM, dosya: "urun/eklenti/src/bina-gorunum.ts",
+  ne: "🏢 Binanın tepesinin ve kat bantlarının saf çizimi — çalışma alanının adını ve yalnız veri adresi biçimindeki logoyu img içinde basar; Ray ve Tren sekmeleri ortak kullanır (PNL-A31)" )
+Kod( kod: KOD-SNM-BINA, dosya: "urun/cekirdek/sinama/bina.test.ts",
+  ne: "🧪 Bina okumasının nöbeti — etkin katın atadan devralındığını, iç içe ve pozitif olmayan katın kusur sayıldığını ve kök dışı, sembolik bağlı, SVG olmayan, betikli ya da dış kaynaklı logonun reddedildiğini ölçer (PNL-A31)" )
+Kod( kod: KOD-SNM-BINA-GORUNUMU, dosya: "urun/eklenti/sinama/bina-gorunumu.test.ts",
+  ne: "🧪 Bina görünümünün nöbeti — yol haritasının kat bantlarını ve bina dışı şeridini, katsız çalışma alanının değişmeyen görünümünü, Tren şemasının kanon kutusunu, apex koltuğunu ve iş akışı yuvalarını ve logonun güvenli çizimini ölçer (PNL-A31)" )

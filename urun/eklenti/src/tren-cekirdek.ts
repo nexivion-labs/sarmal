@@ -14,6 +14,7 @@ import type { Deger, Dugum, Program } from "../../cekirdek/src/sozdizim.ts";
 import { degerMetni } from "../../cekirdek/src/yolcoz.ts";
 import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";
 import { planAlani } from "./yolharitasi-cekirdek.ts";
+import { binaOku, katBul, type Bina } from "../../cekirdek/src/bina.ts";   // PNL-A31: ajanın katı binanın kat okumasından
 
 /** Etmenin bir alanı: değeri ve alanın kaynak satırı (kartın satırı oraya götürür). */
 export interface TrenAlan {
@@ -68,6 +69,11 @@ export interface TrenEtmeni {
   departman?: TrenRaf;
   /** Ekip: departmanın altındaki kompakt `raflar:` haritasında dosyayı kapsayan girdi (ör. bir teknoloji ekibi). */
   ekip?: TrenRaf;
+  /**
+   * PNL-A31: ajanın katı — ilan edildiği dosyanın kapsandığı Kitaplığın etkin katı (çalışma alanının
+   * binasından). Bina katsızsa ya da dosya katsız bir Kitaplıktaysa tanımsızdır.
+   */
+  kat?: number;
 }
 
 /**
@@ -134,6 +140,13 @@ export interface TrenOzeti {
   adimlar: TrenAdimi[];
   /** Tarihi en yeni Koşum; tarih yoksa taramada son görülen. */
   sonMuhur?: TrenMuhru;
+  /** PNL-A31: kat alanı taşıyan (en dıştaki) çalışma alanının binası; yoksa şema bantsız çizilir. */
+  bina?: Bina;
+  /**
+   * PNL-A31: kanonun dosya başına sayımı — yasa (Kural, Anayasa ve kural tanımları) ile Karar düğümleri.
+   * Kanon bir ajan değildir (H9); şema onu yönetim katının bandında bir kutu olarak sayar.
+   */
+  kanon?: Array<{ dosya: string; yasa: number; karar: number }>;
 }
 
 const metin = (d: Dugum, alan: string): string => planAlani(d, alan)?.deger.metin ?? "";
@@ -214,12 +227,22 @@ export function trenOzetiCikar(programlar: Iterable<readonly [string, Program]>)
   /** Etmeni fiziksel olarak saran en yakın Raf ya da Kitaplık (dosya yolundan önce gelir). */
   const sarilan = new Map<TrenEtmeni, TrenRaf>();
   const hamEtmen = new Map<TrenEtmeni, { uygular: string[]; yonetir: string[] }>();
+  /** PNL-A31: kat alanı taşıyan binalar ve kanonun dosya başına sayımı. */
+  const binalar: Bina[] = [];
+  const kanonSayimi = new Map<string, { yasa: number; karar: number }>();
+  const YASA_TIPLERI: ReadonlySet<string> = new Set(["Kural", "Anayasa", "GenelKural", "ÖzelKural"]);
   const enYakin = (tip: string): { d: Dugum; dosya: string } | undefined => {
     for (let i = atalar.length - 1; i >= 0; i--) if (atalar[i]!.ad === tip) return { d: atalar[i]!, dosya: ataDosyasi[i]! };
     return undefined;
   };
   const gez = (d: Dugum, dosya: string, taban: string): void => {
     const kodu = metin(d, "kod");
+    const yasaMi = d.tur === "kuralTanım" || (d.tur === "widget" && YASA_TIPLERI.has(d.ad));
+    if (yasaMi || (d.tur === "widget" && d.ad === "Karar")) {
+      const k = kanonSayimi.get(dosya) ?? { yasa: 0, karar: 0 };
+      if (yasaMi) k.yasa++; else k.karar++;
+      kanonSayimi.set(dosya, k);
+    }
     let altTaban = taban;
     if (d.ad === "Raf" || d.ad === "Kitaplık") {
       const yol = metin(d, "yol");
@@ -294,7 +317,13 @@ export function trenOzetiCikar(programlar: Iterable<readonly [string, Program]>)
     atalar.pop();
     ataDosyasi.pop();
   };
-  for (const [dosya, program] of programlar) for (const d of program.bildirimler) gez(d, dosya, dizinAdi(dosya));
+  for (const [dosya, program] of programlar) {
+    const b = binaOku(program, dosya);
+    if (b?.katlar.length) binalar.push(b);
+    for (const d of program.bildirimler) gez(d, dosya, dizinAdi(dosya));
+  }
+  // En dıştaki katlı bina geçerlidir (iç içe çalışma alanında dıştaki binanın katları okunur).
+  const bina = binalar.sort((a, b) => a.kokDizin.length - b.kokDizin.length || a.kokDizin.localeCompare(b.kokDizin))[0];
 
   // Ad alanlı yazım (`PRJ-X::KOD`, ORK-4) yerel parçasıyla çözülür; yerel kod birden çok yerde ilan
   // edilmişse hangi projenin tanımı olduğu buradan bilinemez ve hedef çözülmeden bırakılır.
@@ -348,10 +377,16 @@ export function trenOzetiCikar(programlar: Iterable<readonly [string, Program]>)
     e.departman = sarilan.get(e) ?? yalin(yoldan);
     const ekip = rafSec(e, true, sarilan.has(e) ? "" : yoldan?.dizin ?? "");
     if (ekip) e.ekip = yalin(ekip);
+    if (bina) { const kat = katBul(bina, e.dosya).kat; if (kat !== undefined) e.kat = kat; }
   }
   const sirala = <T extends { kod: string; dosya: string }>(l: T[]): T[] =>
     l.sort((a, b) => a.kod.localeCompare(b.kod, "tr") || a.dosya.localeCompare(b.dosya));
-  return { etmenler: sirala(etmenler), adimlar: sirala(adimlar), sonMuhur };
+  const sonuc: TrenOzeti = { etmenler: sirala(etmenler), adimlar: sirala(adimlar), sonMuhur };
+  if (bina) {
+    sonuc.bina = bina;
+    sonuc.kanon = [...kanonSayimi].map(([dosya, k]) => ({ dosya, ...k })).sort((a, b) => a.dosya.localeCompare(b.dosya));
+  }
+  return sonuc;
 }
 
 /** Özet boş mu: ne ajan ilanı ne geliştirmede Adım ne de Koşum mührü var. */
@@ -368,5 +403,7 @@ export function trenParmakIzi(o: TrenOzeti): string {
     o.adimlar.map((a) => [a.kod, a.ad, a.dosya, a.satir, a.zincir.ajanlar.map(h), h(a.zincir.katman), a.zincir.zemin.map(h),
       h(a.zincir.altKatman), a.zincir.departman ? [a.zincir.departman.deger, a.zincir.departman.dosya, a.zincir.departman.satir] : null]),
     m ? [m.kod, m.adim, m.muhur, m.karar, m.tarih, m.dosya, m.satir] : null,
+    o.bina ? [o.bina.ad, o.bina.logo?.yol ?? null, o.bina.kitapliklar.map((k) => [k.kod, k.ad, k.dizin, k.kat ?? null])] : null,
+    o.kanon ?? null,
   ]);
 }

@@ -41,12 +41,14 @@ import {
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
   kardesKarsilastir,   // MIM-1.2: kardeş sırası motorun Faz karşılaştırıcısından (KPS-SIR-A01)
+  katBantlari,   // PNL-A31: çalışma alanının kat bantları
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
-  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi,
+  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, BINA_METINLERI,
 } from "./yuzey-metinleri.ts";
+import { binaOku, type Bina } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
 
 // ── YUZ-4 RENK KANUNU (Founder kilidi 2026-07-12): renk = YALNIZ DURUM kanalı.
 //    Karar mantığı SAF modülde (yol-dekor.ts — davranış testli, Terra-RED
@@ -113,7 +115,19 @@ export class YolRenklendirici implements vscode.FileDecorationProvider {
 //  PRF-TA-A03: kaydın kendisi vscode'suz çekirdektedir (yolharitasi-cekirdek.ts);
 //  panel yalnız kimlik türünü, yani gerçek `Uri`yi yerine koyar.
 type Varlik = PlanVarligi<vscode.Uri>;
-type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup;
+type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup | KatOge;
+/**
+ * 🏢 PNL-A31: çalışma alanının kat bandı (`kat` sayıdır) ya da bina dışı şeridi (`kat` boştur). Bant bir
+ * plan düğümü değildir; kat alanı taşıyan ÇalışmaAlanının kapsadığı varlıkları gruplar ve nesnesi tur
+ * ömürlüdür, böylece açık-kapalı tercihi ve geri dönüş zinciri aynı bantta kalır.
+ */
+interface KatOge {
+  tur: "kat";
+  kat: number | null;
+  kitapliklar: string[];
+  varliklar: Varlik[];
+  ust: Varlik;
+}
 // (YUZ-4 süpürmesi: VARLIK_SIMGE emoji haritası kalktı — varlık satırı da kanuna uyar:
 //  şekil=sefer (satır çizelgesinin sefer simgesi · tren dili), renk=durum, tip hover'da.)
 
@@ -305,6 +319,10 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   // 🪆 EKL-F7-A09: varlıklar arası küme ilişkisi — üstü olmayan köktedir,
   // kapsananlar kapsayıcının çocuğu olarak basılır.
   private varlikUst = new Map<Varlik, Varlik | undefined>();
+  /** 🏢 PNL-A31: kat alanı taşıyan çalışma alanlarının binası ve bantları (tur ömürlü). */
+  private binalar = new Map<Varlik, { bina: Bina; bantlar: KatOge[] }>();
+  /** 🏢 PNL-A31: bir bandın içindeki varlığın bandı (geri dönüş zinciri bantdan geçer). */
+  private katUst = new Map<Varlik, KatOge>();
   // ── ZRF-A06 · aktif-varlık nabzı (Founder 2026-07-18: "hangi proje üzerindeysek
   //    o proje ikonu yanıp sönse, aktifliği belli olsun") — imlecin yaşadığı varlığın
   //    roketi tek kalple atar; tazeleme YALNIZ o satırı yeniden çizer (öğe-hedefli fire).
@@ -554,6 +572,21 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     for (const v of harita.values()) topolojikSirala(v.cocuklar);
     this.varliklar = [...harita.values()].sort((a, b) => a.ad.localeCompare(b.ad, "tr"));
     this.varlikUst = varlikUstleri(this.varliklar);   // 🪆 EKL-F7-A09: küme ilişkisi her turda taze kurulur
+    // 🏢 PNL-A31: kat alanı taşıyan çalışma alanının kapsadıkları kat bantlarına dağılır; katsız
+    // çalışma alanında hiçbir bant kurulmaz ve görünüm bugünkü gibi kalır.
+    this.binalar.clear();
+    this.katUst.clear();
+    for (const v of this.varliklar) {
+      if (v.tip !== "ÇalışmaAlanı" || !v.anaSar) continue;
+      const program = programlar.get(v.anaSar);
+      const bina = program ? binaOku(program, v.anaSar) : undefined;
+      const dagilim = bina ? katBantlari(bina, this.altVarliklar(v)) : undefined;
+      if (!bina || !dagilim) continue;
+      const bantlar: KatOge[] = dagilim.bantlar.map((b) => ({ tur: "kat", kat: b.kat, kitapliklar: b.kitapliklar.map((k) => k.ad), varliklar: b.varliklar, ust: v }));
+      if (dagilim.disari.length) bantlar.push({ tur: "kat", kat: null, kitapliklar: [], varliklar: dagilim.disari, ust: v });
+      for (const b of bantlar) for (const x of b.varliklar) this.katUst.set(x, b);
+      this.binalar.set(v, { bina, bantlar });
+    }
     // ZRF-A06: varlık nesneleri yeniden kuruldu — bayat aktif referansı taze eşine bağlanır.
     this.aktifVarlik = undefined;
     this.aktifligiGuncelle(vscode.window.activeTextEditor);
@@ -594,6 +627,18 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   /** `oge` bir varlık düğümü mü (Ray değiştirme yalnız varlık zincirini açar). */
   varlikMi(oge: unknown): boolean { return (oge as PanelOge).tur === "varlık"; }
 
+  /** 🏢 PNL-A31: varlık zincirinin geçtiği düğüm mü (varlık ya da kat bandı)? Ray değiştirme bantların içine de iner. */
+  varlikZinciriMi(oge: unknown): boolean { const t = (oge as PanelOge).tur; return t === "varlık" || t === "kat"; }
+
+  /**
+   * 🏢 PNL-A31: yol haritasının tepesindeki bina: kat alanı taşıyan ilk kök çalışma alanının adı ve logo
+   * ilanı. Katsız çalışma alanında tanımsızdır ve tepede hiçbir şey çizilmez.
+   */
+  binaAl(): Bina | undefined {
+    for (const v of this.kokVarliklar()) { const b = this.binalar.get(v); if (b) return b.bina; }
+    return undefined;
+  }
+
   varlikListesi(): Varlik[] { return this.varliklar; }
 
   /**
@@ -633,7 +678,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   getParent(p: PanelOge): PanelOge | undefined {
     // 🪆 EKL-F7-A09: kapsanan varlık artık kökte değil — reveal üstünü bilmeli.
-    if (p.tur === "varlık") return this.varlikUst.get(p);
+    if (p.tur === "varlık") return this.katUst.get(p) ?? this.varlikUst.get(p);
+    if (p.tur === "kat") return p.ust;   // 🏢 PNL-A31
     return undefined;   // öteki türlerde kök-seviye çözümü yeterli
   }
 
@@ -722,7 +768,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     const sure = Date.now() - bas;
     if (sure >= YAVAS_GENISLETME_ESIK_MS) {
       const kim = oge === undefined ? "kök"
-        : oge.tur === "varlık" || oge.tur === "oge" ? oge.kod : oge.etiket;
+        : oge.tur === "varlık" || oge.tur === "oge" ? oge.kod : oge.tur === "kat" ? `kat:${oge.kat ?? "-"}` : oge.etiket;
       this.olcum?.(IZ_METINLERI.yavasGenisletme(
         new Date().toTimeString().slice(0, 8), YOL_METINLERI.yavasGenisletme(sure, kim, sonuc.length),
       ));
@@ -785,8 +831,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     if (oge.tur === "varlık") {
       // 🪆 EKL-F7-A09: kapsanan varlıklar kapsayıcının altında, kendi plan
       // ögelerinden ÖNCE görünür — küme önce üyelerini, sonra kendi işini anlatır.
-      return [...this.altVarliklar(oge), ...oge.cocuklar];
+      // 🏢 PNL-A31: binası olan çalışma alanında üyeler kat bantlarında durur.
+      const bina = this.binalar.get(oge);
+      return [...(bina ? bina.bantlar : this.altVarliklar(oge)), ...oge.cocuklar];
     }
+    if (oge.tur === "kat") return oge.varliklar;
     return oge.cocuklar;   // Oge cocuklar: Oge[] taşır
   }
 
@@ -815,6 +864,19 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
         command: "vscode.open", title: YOL_METINLERI.dugumeAtla,
         arguments: [p.hedef.dosya, { selection: new vscode.Range(p.hedef.satir - 1, 0, p.hedef.satir - 1, 0) }],
       };
+      return eleman;
+    }
+    if (p.tur === "kat") {
+      // 🏢 PNL-A31: kat bandı ya da bina dışı şeridi; açık doğar, projesi yoksa yapraktır.
+      const ad = p.kat === null ? BINA_METINLERI.binaDisi : BINA_METINLERI.katAdi(p.kat);
+      const eleman = new vscode.TreeItem(ad,
+        p.varliklar.length ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None);
+      eleman.id = `kat:${p.ust.kokDizin}:${p.kat ?? "disari"}`;
+      eleman.description = p.kat === null
+        ? [BINA_METINLERI.binaDisiAciklamasi, YOL_METINLERI.kumeAciklama(p.varliklar.length)].join(" — ")
+        : BINA_METINLERI.katAciklamasi(p.kitapliklar, p.varliklar.length);
+      eleman.tooltip = BINA_METINLERI.katIpucu(ad, p.kitapliklar);
+      eleman.contextValue = "sarmalKat";
       return eleman;
     }
     if (p.tur === "koşum") {

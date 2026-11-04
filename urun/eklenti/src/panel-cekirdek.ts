@@ -20,6 +20,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { PANEL_METINLERI, SINYAL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { BINA_STILI, binaBasligiHtml, type BinaBasligi } from "./bina-gorunum.ts";   // PNL-A31: binanın tepesi (ad ve logo)
 import { GORUNUM_KAPAT_KOMUTU, GORUNUM_SEC_KOMUTU } from "./minigraf-gorunum.ts";
 import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
 import { TREN_BETIGI, TREN_STILI } from "./tren-betik.ts";
@@ -447,6 +448,8 @@ export function grafParcasi(belge: string): string {
 // ── BÖLÜMLER ─────────────────────────────────────────────────────────────────
 
 export interface RayBolumu {
+  /** 🏢 PNL-A31: kat alanı taşıyan çalışma alanında yol haritasının tepesindeki bina başlığı. */
+  bina?: BinaBasligi;
   agac: string;
   /** Yol Haritası boşken ağaç yerine gösterilen cümle. */
   bosMesaj?: string;
@@ -490,7 +493,7 @@ export function rayBolumuHtml(b: RayBolumu): string {
   const graf = b.graf === undefined ? ""
     : kolon("graf", bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
       + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`));
-  return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
+  return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${binaBasligiHtml(b.bina)}${ag}${bos}`))}${graf}</div>`;
 }
 
 /** Tren şemasının iki parçası (tren-gorunum.ts `trenSemaHtml`): sol sütundaki şema ve sağ sütundaki profil. */
@@ -636,7 +639,7 @@ export function panelHtml(b: PanelBelgesi): string {
     + `<meta http-equiv="Content-Security-Policy" content="${csp}">`
     + `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
     + `<title>${kacir(PANEL_METINLERI.panelAdi)}</title>`
-    + `<style>${PANEL_STILI}${TREN_STILI}${TREN_CANLI_STILI}</style>`
+    + `<style>${PANEL_STILI}${TREN_STILI}${TREN_CANLI_STILI}${BINA_STILI}</style>`
     // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
     + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
     + `</head><body>`

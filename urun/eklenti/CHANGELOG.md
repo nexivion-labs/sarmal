@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.202 — 2026-11-04 (Çalışma alanının katları ve logosu)
+
+- **Bina görünümü.** Kitaplık düğümü isteğe bağlı `kat:` alanını, ÇalışmaAlanı düğümü isteğe bağlı `logo:` alanını taşıyabilir. Kat ilan eden bir çalışma alanında yol haritası projeleri kat bantlarında, katsız kitaplıkları bina dışı şeridinde gösterir ve tepede logoyu çizer; Tren sekmesindeki şirket şeması aynı katlara bölünür, en üst katta kanon kutusu, lider koltuğu ve iş akışı ajanları için yuvalar durur. Kat ilan etmeyen çalışma alanlarının görünümü değişmez.
+- **İki yeni uyarı.** `geçersiz-kat` iç içe ya da pozitif olmayan kat değerini, `geçersiz-logo` kök dışına çıkan, SVG olmayan, bulunmayan ya da betik taşıyan logoyu bildirir (PNL-A31).
+
 ## 0.9.201 — 2026-11-04 (Paket tazeleme)
 
 - **Klasör mührü kurulu eklentiye ulaşır.** 0.9.200 numarası daha önce eski bir derlemeyle kurulmuş olduğu için düzenleyici yeni paketi tazelemiyordu; sürüm ilerletilerek klasör mührünü taşıyan derleme kurulabilir hâle getirildi. Kullanıcıya görünen davranış 0.9.200 notlarında anlatıldığı gibidir.

@@ -693,6 +693,27 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
     mesaj: (p) => `"${a(p, "kimlik")}" Profili "${a(p, "proje")}" proje kökünde ikinci profil; aynı kökün "${a(p, "önceki")}" Profili zaten "${a(p, "öncekiDosya")}" dosyasında yaşıyor ve bir proje kökünün tek bir kimlik kartı olur (TIP-1.17).`,
     oneri: (p) => `İki profili tek düğümde birleştir ve fazlasını kaldır; ikinci profil başka bir işletmeyi anlatıyorsa onu kendi Proje kökünün altına taşı. Örnek: \`Profil( kod: ${a(p, "önceki")}, ad: "Örnek Fırın", ne: "Mahalle fırını.", sektör: "gıda", şehir: "Ankara" )\``,
   },
+  // ── Çalışma alanının katları ve logosu (MIM-3.2 · PNL-A31) ───────────────
+  "geçersiz-kat": {
+    mesaj: (p) => a(p, "neden") === "iç-içe"
+      ? `"${a(p, "kimlik")}" Kitaplığı kat ${a(p, "kat")} ilan ediyor, fakat kat ${a(p, "üstKat")} ilan eden "${a(p, "üst")}" Kitaplığının içinde yaşıyor; bir kat binanın tek bir yatay dilimidir ve katlı bir Kitaplığın içinde ikinci bir kat açılamaz (MIM-3.2). Panel bu Kitaplığı üst Kitaplığının katında gösterir.`
+      : `"${a(p, "kimlik")}" Kitaplığının kat değeri ${a(p, "kat")} pozitif değil; katlar birden başlar ve birinci kat yönetim katıdır (MIM-3.2). Panel bu Kitaplığı katsız sayar.`,
+    oneri: (p) => a(p, "neden") === "iç-içe"
+      ? `İç Kitaplığın \`kat:\` satırını kaldır; o Kitaplık üst Kitaplığının katını kendiliğinden taşır. Başka bir kata ait ise onu katlı Kitaplığın dışına, çalışma alanının köküne taşı. Örnek: \`Kitaplık( kod: KTP-OFIS, yol: "ofis/", kat: 2 ) { Kitaplık( kod: ${a(p, "kimlik")}, yol: "ekip/" ) }\``
+      : `Katı birden başlayan bir tam sayıyla yaz ya da satırı kaldırıp Kitaplığı bina dışında bırak. Örnek: \`Kitaplık( kod: ${a(p, "kimlik")}, yol: "yonetim/", kat: 1 )\``,
+  },
+  "geçersiz-logo": {
+    mesaj: (p) => `"${a(p, "kimlik")}" çalışma alanının logosu gösterilmiyor: ${({
+      "boş": "logo yolu boş",
+      "kök-dışı": `"${a(p, "yol")}" yolu çalışma alanı kökünün dışına çıkıyor`,
+      "svg-değil": `"${a(p, "yol")}" bir SVG dosyası değil`,
+      "yok": `"${a(p, "yol")}" dosyası diskte yok`,
+      "büyük": `"${a(p, "yol")}" dosyası 256 KB sınırını aşıyor`,
+      "betik": `"${a(p, "yol")}" dosyası betik taşıyor (script, olay niteliği, javascript adresi ya da foreignObject)`,
+      "dış-kaynak": `"${a(p, "yol")}" dosyası dış kaynağa bağlanıyor (belge dışı href, url, @import ya da DOCTYPE)`,
+    } as Record<string, string>)[a(p, "neden")] ?? a(p, "neden")}. Logo panelde bir resim olarak gösterilir ve yalnız kökün içindeki, betiksiz ve kendi kendine yeten bir SVG kabul edilir (MIM-3.2).`,
+    oneri: () => 'Logoyu çalışma alanı kökünün içinde, betik ve dış bağlantı taşımayan düz bir SVG olarak kaydet ve yolunu köke göreli yaz. Örnek: `ÇalışmaAlanı( kod: CAL-ORNEK, ad: "Örnek Atölye", logo: "oz/marka/logo.svg" )`',
+  },
   // ── Düğüm kodu standardı (DIL-1.8 · RFM-MOTOR-A02) ──────────────────────
   "ilansız-önek": {
     mesaj: (p) => `"${a(p, "kimlik")}" kodu (${a(p, "tip")}) projenin önek sicilinde ilanı olmayan "${a(p, "önek")}" önekiyle doğmuş. Her önek tek bir yerde, anadizindeki Proje düğümünün \`önekler\` listesinde ilan edilir ve ilansız bir önekle yeni kod doğmaz (DIL-1.8).`,
@@ -1171,6 +1192,27 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   "profil-çift": {
     mesaj: (p) => `Profil "${a(p, "kimlik")}" is a second profile in project root "${a(p, "proje")}"; Profil "${a(p, "önceki")}" of the same root already lives in "${a(p, "öncekiDosya")}", and a project root has a single identity card (TIP-1.17).`,
     oneri: (p) => `Merge the two profiles into one node and remove the extra one; if the second profile describes another business, move it under that business's own Proje root. Example: \`Profil( kod: ${a(p, "önceki")}, ad: "Sample Bakery", ne: "A neighbourhood bakery.", sektör: "food", şehir: "Ankara" )\``,
+  },
+  // ── Workspace floors and logo (MIM-3.2 · PNL-A31) ───────────────────────
+  "geçersiz-kat": {
+    mesaj: (p) => a(p, "neden") === "iç-içe"
+      ? `Kitaplık "${a(p, "kimlik")}" declares floor ${a(p, "kat")}, but it lives inside Kitaplık "${a(p, "üst")}", which declares floor ${a(p, "üstKat")}; a floor is a single horizontal slice of the building and no second floor can be opened inside a Kitaplık that already has one (MIM-3.2). The panel shows this Kitaplık on its parent's floor.`
+      : `The floor value ${a(p, "kat")} of Kitaplık "${a(p, "kimlik")}" is not positive; floors start at one and the first floor is the management floor (MIM-3.2). The panel treats this Kitaplık as having no floor.`,
+    oneri: (p) => a(p, "neden") === "iç-içe"
+      ? `Remove the \`kat:\` line of the inner Kitaplık; it carries its parent's floor by itself. If it belongs to another floor, move it out of the floored Kitaplık to the workspace root. Example: \`Kitaplık( kod: KTP-OFIS, yol: "ofis/", kat: 2 ) { Kitaplık( kod: ${a(p, "kimlik")}, yol: "ekip/" ) }\``
+      : `Write the floor as a whole number starting at one, or remove the line and leave the Kitaplık outside the building. Example: \`Kitaplık( kod: ${a(p, "kimlik")}, yol: "yonetim/", kat: 1 )\``,
+  },
+  "geçersiz-logo": {
+    mesaj: (p) => `The logo of workspace "${a(p, "kimlik")}" is not shown: ${({
+      "boş": "the logo path is empty",
+      "kök-dışı": `the path "${a(p, "yol")}" leaves the workspace root`,
+      "svg-değil": `"${a(p, "yol")}" is not an SVG file`,
+      "yok": `the file "${a(p, "yol")}" does not exist on disk`,
+      "büyük": `the file "${a(p, "yol")}" exceeds the 256 KB limit`,
+      "betik": `the file "${a(p, "yol")}" carries a script (script element, event attribute, javascript address or foreignObject)`,
+      "dış-kaynak": `the file "${a(p, "yol")}" links to an external resource (href outside the document, url, @import or DOCTYPE)`,
+    } as Record<string, string>)[a(p, "neden")] ?? a(p, "neden")}. The panel shows the logo as an image and accepts only a self-contained SVG inside the root that carries no script (MIM-3.2).`,
+    oneri: () => 'Save the logo inside the workspace root as a plain SVG without scripts or external links and write its path relative to the root. Example: `ÇalışmaAlanı( kod: CAL-ORNEK, ad: "Sample Studio", logo: "oz/marka/logo.svg" )`',
   },
   // ── Node code standard (DIL-1.8 · RFM-MOTOR-A02) ─────────────────────────
   "ilansız-önek": {

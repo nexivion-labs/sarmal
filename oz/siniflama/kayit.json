@@ -1730,7 +1730,13 @@
         "Amaç",
         "Kapsam",
         "Sonuç"
-      ]
+      ],
+      "opsiyonel": [
+        "logo (çalışma alanının logosu: köke göreli, betik ve dış kaynak taşımayan bir SVG dosyasının yolu; panel onu binanın tepesinde gösterir)"
+      ],
+      "tür": {
+        "logo": "metin"
+      }
     },
     "Uygulama": {
       "zorunlu": [
@@ -1942,7 +1948,13 @@
         "kod",
         "yol",
         "ne"
-      ]
+      ],
+      "opsiyonel": [
+        "kat (binanın katı: pozitif tam sayı; birinci kat yönetim katıdır, katlı bir Kitaplığın içindeki Kitaplık atasının katını taşır ve kendi katını ilan edemez, katsız Kitaplık bina dışında kalır)"
+      ],
+      "tür": {
+        "kat": "sayı"
+      }
     },
     "Anayasa": {
       "zorunlu": [

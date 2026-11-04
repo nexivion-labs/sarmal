@@ -21,8 +21,8 @@
 //       değil · proje kökünde giriş dosyası ilan edilmemiş · MIM-3)
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { readdirSync, readFileSync, existsSync, statSync, type Dirent } from "node:fs";
-import { join, posix } from "node:path";
+import { readdirSync, readFileSync, existsSync, statSync, realpathSync, type Dirent } from "node:fs";
+import { join, posix, resolve } from "node:path";
 import { execFileSync } from "node:child_process";   // KPS-MHR-A01: sonraya bırakılmış dosyanın bekleme süresi git'e sorulur
 import type { IskeletPlan } from "./iskeletci.ts";
 import type { Program, Dugum, Deger, Param } from "./sozdizim.ts";
@@ -36,6 +36,7 @@ import { ZEMIN_TIPLERI, fazKenarAnahtari, type Dag } from "./dag.ts";   // zemin
 import { belirtecle, SozDizimHatasi } from "./belirtec.ts";
 import { ayristir } from "./ayristirici.ts";
 import { onekSiciliOku, kodStandardiHukmu, type OnekSicili } from "./kod-standardi.ts";   // RFM-MOTOR-A02: düğüm kodu standardının saf ölçümü (DIL-1.8)
+import { binaOku, katDegeri, logoCoz, type KatKusuru } from "./bina.ts";   // PNL-A31: çalışma alanının katları ve logosu tek kaynaktan okunur
 import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
@@ -2234,6 +2235,70 @@ export function profilTanilari(
       for (const c of n.cocuklar) gez(c, altProje);
     };
     for (const b of p.bildirimler) gez(b, undefined);
+  }
+  return out;
+}
+
+/**
+ * PNL-A31 (Founder onayı 2026-11-04 · MIM-3.2): çalışma alanının katları ve logosu. Kitaplık
+ * isteğe bağlı `kat:` alanıyla binanın katını, ÇalışmaAlanı isteğe bağlı `logo:` alanıyla
+ * köke göreli bir SVG dosyasını ilan eder. İki tanı doğar ve ikisi de UYARI düzeyindedir:
+ *   `geçersiz-kat`   katlı bir Kitaplık başka bir katlı Kitaplığın içinde yaşıyor ya da kat
+ *                    değeri pozitif değil (tam sayı olmayan değer şemanın `geçersiz-tür`
+ *                    uyarısına kalır; aynı olgu iki tanıyla bildirilmez · YUZ-3.3).
+ *   `geçersiz-logo`  logo yolu boş, kökün dışında, SVG değil, diskte yok, çok büyük ya da
+ *                    içeriği betik veya dış kaynak taşıyor; panel böyle bir logoyu göstermez.
+ * Okuma ve güvenlik kararının tek evi bina.ts dosyasıdır; panel aynı kararı verir. Ders dünyası
+ * muaftır. `dizin` program anahtarlarının köküdür (anahtarlar ona göreli olabilir).
+ */
+export function binaTanilari(
+  programlar: ReadonlyMap<string, Program>,
+  dizin: string,
+  muaflar: ReadonlySet<string> = new Set(),
+  oku: (mutlakYol: string) => string | undefined = (y) => {
+    try { return statSync(y).isFile() ? readFileSync(y, "utf8") : undefined; } catch { return undefined; }
+  },
+  gercekYol: (mutlakYol: string) => string = (y) => realpathSync(y),
+): Array<{ dosya: string; tani: Tani }> {
+  const out: Array<{ dosya: string; tani: Tani }> = [];
+  for (const [dosya, p] of programlar) {
+    if (muaflar.has(dosya) || ogretimDunyasi(yolNormal(dosya))) continue;
+    const kusurlar: KatKusuru[] = [];
+    const bina = binaOku(p, dosya, kusurlar);
+    for (const k of kusurlar) {
+      out.push({ dosya, tani: yeniTani("geçersiz-kat",
+        { kimlik: k.kimlik, kat: k.kat, neden: k.neden, üst: k.ust ?? "", üstKat: k.ustKat === undefined ? "" : String(k.ustKat) },
+        { satir: k.satir, sutun: k.sutun }) });
+    }
+    // Kitaplık kat alanı ÇalışmaAlanı dışında da yazılabilir (Proje, Uygulama); iç içe kural her yerde aynıdır.
+    if (!bina) {
+      const gez = (d: Dugum, ustKatli: { kod: string; kat: number } | undefined): void => {
+        for (const c of d.cocuklar) {
+          if (c.tur !== "widget") continue;
+          if (c.ad !== "Kitaplık") { gez(c, ustKatli); continue; }
+          const katP = [...c.parametreler, ...c.ozellikler].find((x) => x.ad === "kat");
+          const ham = katP ? degerMetni(katP.deger).trim() : "";
+          const kat = katP ? katDegeri(ham) : undefined;
+          const kimlik = [...c.parametreler, ...c.ozellikler].find((x) => x.ad === "kod")?.deger.metin ?? c.ad;
+          if (katP && kat === undefined && /^-?\d+$/.test(ham)) {
+            out.push({ dosya, tani: yeniTani("geçersiz-kat", { kimlik, kat: ham, neden: "pozitif-değil", üst: "", üstKat: "" }, { satir: katP.satir, sutun: katP.sutun }) });
+          }
+          if (kat !== undefined && ustKatli) {
+            out.push({ dosya, tani: yeniTani("geçersiz-kat", { kimlik, kat: ham, neden: "iç-içe", üst: ustKatli.kod, üstKat: String(ustKatli.kat) }, { satir: katP!.satir, sutun: katP!.sutun }) });
+          }
+          gez(c, ustKatli ?? (kat !== undefined ? { kod: kimlik, kat } : undefined));
+        }
+      };
+      for (const b of p.bildirimler) if (b.tur === "widget" && (b.ad === "Proje" || b.ad === "Uygulama")) gez(b, undefined);
+      continue;
+    }
+    if (!bina.logo) continue;
+    const sonuc = logoCoz(resolve(dizin, bina.kokDizin), bina.logo.yol, oku, gercekYol);
+    if (sonuc.tur === "kusur") {
+      out.push({ dosya, tani: yeniTani("geçersiz-logo",
+        { kimlik: bina.kod || bina.ad, yol: bina.logo.yol, neden: sonuc.neden },
+        { satir: bina.logo.satir, sutun: bina.logo.sutun }) });
+    }
   }
   return out;
 }

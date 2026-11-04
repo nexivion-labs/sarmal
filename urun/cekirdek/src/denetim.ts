@@ -23,7 +23,7 @@ import { join, basename, relative, isAbsolute } from "node:path";
 import { dogrula, dayanaksizKurallar, beyanliDayanaksizKurallar } from "./dogrulayici.ts";
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle } from "./siniflama.ts";
 import { iskeletPlani } from "./iskeletci.ts";
-import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, kodStandardiTanilari, profilTanilari, katmansizTeknolojiTanilari, yersizTeknolojiKacisiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
+import { denetle, diskTara, kodIndeksle, adAlaniKapisi, referansTanilari, kuralTanilari, anaYokTanisi, programlariYukle, yinelenenKodTanilari, dosyalararasiCatismaTanilari, gizliBagimlilikTanilari, donguTanilari, yetimMeyveTanilari, docDriftTanilari, beyansizYapiTanilari, ilansizGovdeDenetle, teknolojisizYuzeyTanilari, tekCocukTanilari, anadizinBul, adAyraciTanilari, halefTanilari, kapsamTanilari, rafsizAnadizinTanilari, kitapliksizKokTanilari, kavusumsuzParalellikTanilari, fazVadeTanilari, mevsimVadeTanilari, mevsimMuhurTanilari, projesizFazTanilari, fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, kodStandardiTanilari, profilTanilari, binaTanilari, katmansizTeknolojiTanilari, yersizTeknolojiKacisiTanilari, altKatmanTekilligiTanilari, dilTanilari, uygulanmamisKararTanilari, beceriDriftTanilari, kullanimsizTipTanilari, hiyerarsiTanilari, dayanakTanilari, dayanaksizKararlar, anadizinSekliTanilari, yerelEvre1Yumusat, siloBlokTanilari, kavusumsuzDilimTanilari, acikAdimTanilari, durumsizAdimTanilari, acikAdimGosterimi, dersAcikAdimSayisi, acikHatirlaticiGosterimi, dogusEksikProjeTanilari, olgunlukOnayiTanilari, planlamaEvresiMi, evre1Yumusat, metinAtifTanilari,
   onceliksizAdimTanilari,
   atesleyenHatirlaticiTanilari,
   dosyaMuhruTanilari, arsivEbediEnvanteri,
@@ -593,6 +593,13 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   // TIP-1.17 Profil tipi (BKM-OLG-A13 · Founder onayı 2026-10-15): boş zorunlu alan,
   // kişisel veri deseni ve aynı proje kökündeki ikinci Profil; ders dünyası muaftır.
   for (const { dosya, tani } of koklendirKayit("profilTanilari", profilTanilari(programlar, snf, muaflar))) {
+    say([tani], dosya);
+    bas(dosya, [tani]);
+  }
+
+  // PNL-A31 (Founder onayı 2026-11-04 · MIM-3.2): çalışma alanının katları ve logosu —
+  // iç içe ya da pozitif olmayan kat ile gösterilemeyecek logo; ders dünyası muaftır.
+  for (const { dosya, tani } of koklendirKayit("binaTanilari", binaTanilari(programlar, dizin, muaflar))) {
     say([tani], dosya);
     bas(dosya, [tani]);
   }

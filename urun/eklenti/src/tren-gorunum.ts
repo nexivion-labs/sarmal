@@ -30,7 +30,9 @@
 import {
   ALT_DUGUM_TIPLERI, type TrenEtmeni, type TrenHedef, type TrenOzeti, type TrenRaf,
 } from "./tren-cekirdek.ts";
-import { PANEL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { BINA_METINLERI, PANEL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { binaBasligiHtml, type BinaBasligi } from "./bina-gorunum.ts";   // PNL-A31: binanın tepesi
+import { katBul } from "../../cekirdek/src/bina.ts";
 
 /** HTML metni ve nitelik değeri için kaçırma (panel-cekirdek.ts `kacir` ile aynı kural; döngüsel bağımlılık olmasın diye burada). */
 function kac(s: unknown): string {
@@ -81,6 +83,12 @@ export interface SemaDepartmani {
 
 export interface TrenSemasi {
   apexler: SemaGrubu[];
+  /**
+   * PNL-A31: iş akışı ajanları — apex tarafından yönetilen (ilk yöneticisi bir apex olan) ve `yönetir`
+   * kenarıyla bir İşAkışı düğümünü yöneten ajanlar, kaynak sırasıyla. Bu ajanlar departmanlarında da
+   * kalır; bantlı şema onları departmandan alıp yönetim katının iş akışı şeridine koyar.
+   */
+  isAkisi: SemaGrubu[];
   departmanlar: SemaDepartmani[];
   /** Ajan kodu → yöneticisinin kodu (`yönetir` kenarının ilk sahibi). */
   ust: ReadonlyMap<string, string>;
@@ -90,6 +98,9 @@ export interface TrenSemasi {
 }
 
 const TUR_SIRASI: Readonly<Record<string, number>> = { apex: 0, "yönetici": 1, uzman: 2 };
+
+/** PNL-A31: ajan `yönetir` kenarıyla bir İşAkışı düğümünü yönetiyor mu (hedefin tipi kod indeksinden çözülür)? */
+export const isAkisiAjaniMi = (e: TrenEtmeni): boolean => e.yonetir.some((h) => h.tip === "İşAkışı");
 
 /**
  * Ajanların şirket şeması. Ajan kimliği koddur; aynı kod iki kez ilan edilmişse ilki geçerlidir.
@@ -147,8 +158,13 @@ export function trenSemasi(o: TrenOzeti): TrenSemasi {
   const departmanlar = [...depler.values()].sort((a, b) =>
     (a.raf ? 0 : 1) - (b.raf ? 0 : 1) || (a.raf?.dosya ?? "").localeCompare(b.raf?.dosya ?? "") || (a.raf?.satir ?? 0) - (b.raf?.satir ?? 0));
   const yoneticisiz = ajanlar.filter((e) => !apexMi(e) && !ust.has(e.kod)).length;
+  const kokGruplar = departmanlar.flatMap((d) => d.gruplar);
+  const isAkisi = kaynakSirasi
+    .filter((e) => !apexMi(e) && isAkisiAjaniMi(e) && apexMi(kodla.get(ust.get(e.kod) ?? "") ?? e))
+    .map((e) => kokGruplar.find((g) => g.etmen === e))
+    .filter((g): g is SemaGrubu => g !== undefined);
   return {
-    apexler, departmanlar, ust, ajanlar: kodla,
+    apexler, isAkisi, departmanlar, ust, ajanlar: kodla,
     sayac: {
       toplam: ajanlar.length, apex: apexler.length, yoneticisiz,
       yonetici: ajanlar.filter((e) => e.tur === "yönetici").length, uzman: ajanlar.filter((e) => e.tur === "uzman").length,
@@ -339,6 +355,57 @@ function kartMetinleri(): Record<string, unknown> {
   };
 }
 
+/** PNL-A31: iş akışı şeridinde en az kaç yuva çizilir (ilan edilmiş ajan yoksa hepsi boş yuvadır). */
+export const IS_AKISI_YUVA_SAYISI = 3;
+
+/**
+ * PNL-A31 · BANTLI ŞEMA (Founder 2026-11-04). Kat alanı taşıyan çalışma alanında şema katlara göre
+ * bantlanır: en alçak kat (birinci kat, yönetim katı) bandında kanon kutusu ile apex koltuğu, onun
+ * altında iş akışı ajanlarının şeridi durur; her katın bandında o kata düşen ajanların departmanları
+ * vardır. Ajan, ilan edildiği dosyanın kapsandığı Kitaplığın katına düşer (`TrenEtmeni.kat`). Hiçbir kata
+ * düşmeyen kadro bantların altında bugünkü departman şeritlerinde kalır. Kanon bir ajan değildir (H9);
+ * kutusu yalnız yönetim katında ilan edilmiş yasa ve karar düğümlerini sayar. İş akışı ajanı ilan
+ * edilmemişse şerit "tanımlı değil" yazan boş yuvalarla çizilir ve hiçbir örnek veri gösterilmez.
+ */
+function bantliGovde(o: TrenOzeti, s: TrenSemasi, apex: string, depHtml: (d: SemaDepartmani, i: number) => string): string {
+  const bina = o.bina!;
+  const yonetimKati = bina.katlar[0]!;
+  const akisSet = new Set(s.isAkisi.map((g) => g.etmen.kod));
+  // Departmanlar iş akışı ajanlarından arındırılır ve ilk ajanın katına göre bantlara dağılır.
+  const sayG = (g: SemaGrubu): number => 1 + g.astlar.reduce((n, a) => n + sayG(a), 0);
+  const depler = s.departmanlar.map((d, i) => {
+    const gruplar = d.gruplar.filter((g) => !akisSet.has(g.etmen.kod));
+    return { d: { ...d, gruplar, ajan: gruplar.reduce((n, g) => n + sayG(g), 0) }, i };
+  }).filter((x) => x.d.gruplar.length);
+  const katOf = (d: SemaDepartmani): number | undefined => d.gruplar[0]?.etmen.kat;
+  const kanon = (o.kanon ?? []).filter((k) => katBul(bina, k.dosya).kat === yonetimKati)
+    .reduce((t, k) => ({ yasa: t.yasa + k.yasa, karar: t.karar + k.karar }), { yasa: 0, karar: 0 });
+  const kanonKutusu = kanon.yasa + kanon.karar
+    ? `<div class="tr-kanon" title="${kac(BINA_METINLERI.kanonAciklamasi)}"><b>${kac(BINA_METINLERI.kanonBasligi)}</b>`
+      + `<span>${kac(BINA_METINLERI.kanonSayaci(kanon.yasa, kanon.karar))}</span><span>${kac(BINA_METINLERI.kanonAciklamasi)}</span></div>`
+    : `<div class="tr-kanon bos"><b>${kac(BINA_METINLERI.kanonBasligi)}</b><span>${kac(BINA_METINLERI.kanonYok)}</span></div>`;
+  const apexKod = s.apexler[0]?.etmen.kod ?? "";
+  const doluYuvalar = s.isAkisi.map((g) => grupHtml(g, apexKod)).join("");
+  const bosYuvalar = Array.from({ length: Math.max(0, IS_AKISI_YUVA_SAYISI - s.isAkisi.length) },
+    () => `<div class="tr-akis-yuva">${kac(BINA_METINLERI.isAkisiYuvasi)}</div>`).join("");
+  const akis = `<div class="tr-akis" title="${kac(BINA_METINLERI.isAkisiIpucu)}"><div class="tr-akis-bas">${kac(BINA_METINLERI.isAkisiBasligi)}</div>`
+    + `<div class="tr-akis-yuvalar">${doluYuvalar}${bosYuvalar}</div></div>`;
+  const bantlar = bina.katlar.map((kat) => {
+    const icindekiler = depler.filter((x) => katOf(x.d) === kat);
+    const kitapliklar = bina.kitapliklar.filter((k) => k.kendiKati === kat && k.kat === kat).map((k) => k.ad);
+    const yonetim = kat === yonetimKati ? `<div class="tr-yonetim">${kanonKutusu}<div class="tr-apex">${apex}</div></div>${akis}` : "";
+    return `<section class="tr-kat" data-kat="${kat}"><div class="tr-kat-bas">${kac(BINA_METINLERI.katAdi(kat))}`
+      + `<span class="tr-kat-ac">${kac(kitapliklar.join(" · "))}</span></div>${yonetim}`
+      + (icindekiler.length ? `<div class="tr-depler">${icindekiler.map((x) => depHtml(x.d, x.i)).join("")}</div>` : "") + `</section>`;
+  }).join("");
+  const katsiz = depler.filter((x) => katOf(x.d) === undefined || !bina.katlar.includes(katOf(x.d)!));
+  const disari = katsiz.length
+    ? `<section class="tr-kat tr-katsiz" data-kat="yok"><div class="tr-kat-bas">${kac(BINA_METINLERI.katsizKadro)}</div>`
+      + `<div class="tr-depler">${katsiz.map((x) => depHtml(x.d, x.i)).join("")}</div></section>`
+    : "";
+  return `<div class="tr-bina">${bantlar}${disari}</div>`;
+}
+
 /** Tren şemasının iki parçası: sol sütundaki şema ve sağ sütundaki profil bölümü. */
 export interface TrenSemaHtml { sema: string; profil: string; ajan: number }
 
@@ -346,11 +413,12 @@ export interface TrenSemaHtml { sema: string; profil: string; ajan: number }
  * Ajan şemasının ve profil kartlarının HTML'i. Ajan yoksa şema kısa bir cümle taşır. Görünüm yalnız şemanın
  * kabındaki niteliktir; görünümlerin HTML'i bu nitelik dışında birebir aynıdır.
  */
-export function trenSemaHtml(o: TrenOzeti, gorunum: TrenSemaGorunumu = "seritler"): TrenSemaHtml {
+export function trenSemaHtml(o: TrenOzeti, gorunum: TrenSemaGorunumu = "seritler", binaBasligi?: BinaBasligi): TrenSemaHtml {
   const s = trenSemasi(o);
   const baslik = TREN_METINLERI.ajanlarBasligi.toLocaleUpperCase(PANEL_METINLERI.dil);
   const profilBasligi = TREN_METINLERI.profilBasligi.toLocaleUpperCase(PANEL_METINLERI.dil);
-  if (!s.sayac.toplam) {
+  const bantli = Boolean(o.bina?.katlar.length);
+  if (!s.sayac.toplam && !bantli) {
     return {
       ajan: 0,
       sema: `<h2 class="bas">${kac(baslik)}</h2><p class="bos tr-ajan-yok">${kac(TREN_METINLERI.ajanYok)}</p>`,
@@ -363,7 +431,7 @@ export function trenSemaHtml(o: TrenOzeti, gorunum: TrenSemaGorunumu = "seritler
   const apex = s.apexler.length
     ? `<div class="tr-apex-kutular">${s.apexler.map((g) => kutuHtml(g, "")).join("")}</div>`
     : `<div class="tr-apex-yuva">${kac(TREN_METINLERI.liderYok)}${makinistIsareti()}</div>`;
-  const depler = s.departmanlar.map((d, i) => {
+  const depHtml = (d: SemaDepartmani, i: number): string => {
     const ad = d.raf ? d.raf.ad : TREN_METINLERI.rafsiz;
     const ilk = d.gruplar[0]?.etmen;
     const bas = d.raf && ilk
@@ -372,10 +440,11 @@ export function trenSemaHtml(o: TrenOzeti, gorunum: TrenSemaGorunumu = "seritler
     return `<div class="tr-dep" data-dep="${i}" style="--n:${Math.min(6, Math.max(1, d.gruplar.length))}">`
       + `<div class="tr-dep-bas">${bas}<span class="tr-dep-say">${kac(TREN_METINLERI.ajanSayisi(d.ajan))}</span></div>`
       + `<div class="tr-izgara">${d.gruplar.map((g) => grupHtml(g, s.ust.get(g.etmen.kod) ?? "")).join("")}</div></div>`;
-  }).join("");
+  };
+  const govde = bantli ? bantliGovde(o, s, apex, depHtml) : `<div class="tr-apex">${apex}</div><div class="tr-depler">${s.departmanlar.map(depHtml).join("")}</div>`;
   const sema = `<h2 class="bas">${kac(baslik)}<span class="say">${kac(TREN_METINLERI.semaSayaci(s.sayac.toplam, s.sayac.yonetici, s.sayac.uzman))}</span>${lejant}</h2>`
-    + `<div class="tr-sema" id="tren-sema" data-gorunum="${trenSemaGorunumNormalle(gorunum)}"><svg class="tr-iplik" aria-hidden="true"></svg><div class="tr-apex">${apex}</div>`
-    + `<div class="tr-depler">${depler}</div></div>`;
+    + (bantli ? binaBasligiHtml(binaBasligi ?? (o.bina ? { ad: o.bina.ad } : undefined)) : "")
+    + `<div class="tr-sema" id="tren-sema" data-gorunum="${trenSemaGorunumNormalle(gorunum)}"${bantli ? ` data-bina="1"` : ""}><svg class="tr-iplik" aria-hidden="true"></svg>${govde}</div>`;
   const veri = { m: kartMetinleri(), a: [...s.ajanlar.values()].map((e) => kartVerisi(e, s)) };
   const profil = `<section class="tr-bolum tr-profil"><h2 class="bas">${kac(profilBasligi)}</h2>`
     + `<p class="bos tr-profil-ipucu">${kac(TREN_METINLERI.profilIpucu)}</p><div class="tr-kart-yuva"></div>`

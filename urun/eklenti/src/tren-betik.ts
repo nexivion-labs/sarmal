@@ -223,7 +223,8 @@ export const TREN_BETIGI = `
     var apex = secili ? s.querySelector('.tr-apex .ajan[data-kod="' + kacirSel(secili) + '"]') : null;
     if (apex) {
       var a2 = yer(apex), ax = a2.l + a2.w / 2, ay = a2.b;
-      dizi(s.querySelectorAll('.tr-depler .ajan[data-ust="' + kacirSel(secili) + '"]')).forEach(function (k) {
+      // PNL-A31: bantlı şemada iş akışı şeridindeki ajanlar da apex'e bağlanır.
+      dizi(s.querySelectorAll('.tr-depler .ajan[data-ust="' + kacirSel(secili) + '"], .tr-akis .ajan[data-ust="' + kacirSel(secili) + '"]')).forEach(function (k) {
         if (!k.getClientRects().length) return;
         var b = yer(k), bx = b.l + Math.min(24, b.w / 2), by = b.t;
         ekle('M ' + ax + ' ' + ay + ' C ' + ax + ' ' + (ay + (by - ay) * 0.5) + ', ' + bx + ' ' + (ay + (by - ay) * 0.5) + ', ' + bx + ' ' + by, true, false);

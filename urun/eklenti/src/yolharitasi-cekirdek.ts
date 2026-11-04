@@ -20,6 +20,7 @@ import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alan�
 import { adAlaniSecenekleri, fazKarsilastir, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
+import { katBul, type Bina, type BinaKitapligi } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
 
 /**
  * Bir yol, verilen kökün KAPSAMINDA mı? Kökün kendisi de kapsama dâhildir.
@@ -590,4 +591,42 @@ export function dagDugumunuCoz(dag: Dag | undefined, kod: string, dosyaYolu?: st
     const hedef = d.dosya.replace(/\\/g, "/");
     return yol === hedef || yol.endsWith(`/${hedef}`);
   });
+}
+
+// ── 🏢 PNL-A31: ÇALIŞMA ALANININ KATLARI (Founder 2026-11-04) ─────────────────
+//   Çok ofisli bir çalışma alanı yol haritasında bir bina gibi görünür: kat alanı
+//   taşıyan bir ÇalışmaAlanının kapsadığı projeler artan kat sırasıyla kat
+//   bantlarında, katsız Kitaplıklara (ya da hiçbir Kitaplığa) düşen projeler en
+//   altta bina dışı şeridinde durur. Bantta sıra Kitaplıkların ilan sırasıdır, aynı
+//   Kitaplıkta kök dizinidir; alfabetik düz liste yalnız katsız çalışma alanında
+//   kalır. Bina okuması motorun kendi okumasıdır (cekirdek/src/bina.ts).
+
+/** Bir kat bandı: kat numarası, o katı ilan eden Kitaplıklar ve kata düşen varlıklar. */
+export interface KatBandi<T> {
+  kat: number;
+  kitapliklar: BinaKitapligi[];
+  varliklar: T[];
+}
+
+/**
+ * Çalışma alanının kapsadığı varlıkları katlara dağıtır. Bina katsızsa (hiçbir Kitaplık kat
+ * taşımıyorsa) tanımsız döner ve panel bugünkü görünümü aynen korur. Ataları katlı olmayan,
+ * yani hiçbir kata düşmeyen varlıklar `disari` listesindedir.
+ */
+export function katBantlari<T extends { kokDizin: string }>(
+  bina: Bina, varliklar: readonly T[],
+): { bantlar: KatBandi<T>[]; disari: T[] } | undefined {
+  if (!bina.katlar.length) return undefined;
+  const yer = new Map<T, { kat?: number; sira: number }>();
+  for (const v of varliklar) {
+    const b = katBul(bina, v.kokDizin);
+    yer.set(v, { kat: b.kat, sira: b.kitaplik?.sira ?? Number.MAX_SAFE_INTEGER });
+  }
+  const sirala = (l: T[]): T[] => l.sort((a, b) => yer.get(a)!.sira - yer.get(b)!.sira || a.kokDizin.localeCompare(b.kokDizin));
+  const bantlar = bina.katlar.map((kat) => ({
+    kat,
+    kitapliklar: bina.kitapliklar.filter((k) => k.kendiKati === kat && (k.kat === kat)),
+    varliklar: sirala(varliklar.filter((v) => yer.get(v)!.kat === kat)),
+  }));
+  return { bantlar, disari: sirala(varliklar.filter((v) => yer.get(v)!.kat === undefined)) };
 }

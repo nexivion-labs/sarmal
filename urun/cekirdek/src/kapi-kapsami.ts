@@ -128,6 +128,8 @@ export const KAPI_KAPSAMI: readonly KapiGirdisi[] = [
   { uretici: "kodStandardiTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   // BKM-OLG-A13 (TIP-1.17): Profil tipinin üç tanısı — en yüksek kademesi hatadır (kişisel veri ve çift profil).
   { uretici: "profilTanilari", modul: "denetci.ts", kademe: "hata", yuzeyler: ["cli", "panel"] },
+  // PNL-A31 (MIM-3.2): çalışma alanının katları ve logosu — iki tanı da uyarı düzeyindedir.
+  { uretici: "binaTanilari", modul: "denetci.ts", kademe: "uyarı", yuzeyler: ["cli", "panel"] },
   // BKM-DNT-A06 (2026-09-10): `tekil` beyanı ölçümle ayrıştığı için DÜŞÜRÜLDÜ.
   // Tek-dosya yolu (`sarmal.ts` içindeki YÜZEY:tekil bölgesi) yalnız `dogrula`
   // çağırır ve bu üreticiye hiç uğramaz; beyan bir niyetti, ölçüm değildi. Bu

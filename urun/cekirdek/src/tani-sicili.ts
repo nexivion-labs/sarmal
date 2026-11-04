@@ -183,6 +183,11 @@ export const YENI_TANI_KANONU: readonly YeniTaniKaydi[] = [
   { kod: "profil-eksik-alan", madde: "TIP-1.17", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "profil-kişisel-veri", madde: "TIP-1.17", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "profil-çift", madde: "TIP-1.17", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
+  // PNL-A31 (2026-11-04 · Founder onayı): çalışma alanının katları ve logosu. Kitaplık `kat:` ile
+  // ÇalışmaAlanı `logo:` alanının iki tanısı MIM-3.2 maddesinin yazdığı uyarı düzeyinde doğar.
+  // Kapsam projedir, çünkü logonun diskteki varlığı ve içeriği tek dosyadan ölçülemez.
+  { kod: "geçersiz-kat", madde: "MIM-3.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
+  { kod: "geçersiz-logo", madde: "MIM-3.2", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },
   { kod: "şema-tanımı-eksik", madde: "TIP-2", kanonDüzey: "hata", kapsam: "proje", uretici: "denetci.ts", kademe: "hata" },
   { kod: "şema-dışı-alan", madde: "TIP-2.2", kanonDüzey: "uyarı", kapsam: "tek-dosya", uretici: "dogrulayici.ts", kademe: "bilgi" },
   { kod: "örtü-ihlali", madde: "TIP-2.5", kanonDüzey: "uyarı", kapsam: "proje", uretici: "denetci.ts", kademe: "uyarı" },

@@ -96,9 +96,12 @@ test("① giriş ilanına yazılan Faz bildirilir — şema ile bekçi aynı hü
 // ── ② Kitaplık kademesi ─────────────────────────────────────────────────────
 
 test("② kanon ile sicil Kitaplık kademesi için aynı kimliği ve aynı kademeyi söyler", () => {
-  assert.match(kanon("mim.sar"), /tanı: \[ kitaplıksız-kök, rafsız-anadizin \]/);
-  const kayit = YENI_TANI_KANONU.find((t) => t.kod === "kitaplıksız-kök");
-  assert.deepEqual({ madde: kayit?.madde, kademe: kayit?.kademe }, { madde: "MIM-3.2", kademe: "uyarı" });
+  // PNL-A31: MIM-3.2 kat ve logo alanlarının iki uyarısını da zorlar; dördü de aynı madde ve kademededir.
+  assert.match(kanon("mim.sar"), /tanı: \[ geçersiz-kat, geçersiz-logo, kitaplıksız-kök, rafsız-anadizin \]/);
+  for (const kod of ["kitaplıksız-kök", "geçersiz-kat", "geçersiz-logo"]) {
+    const kayit = YENI_TANI_KANONU.find((t) => t.kod === kod);
+    assert.deepEqual({ madde: kayit?.madde, kademe: kayit?.kademe }, { madde: "MIM-3.2", kademe: "uyarı" }, kod);
+  }
   // Maddenin zorlama cümlesi Rafı Kitaplığın ALTERNATİFİ saymayı bırakmıştır.
   assert.doesNotMatch(kanon("mim.sar"), /Kitaplık veya Raf ekle/);
 });

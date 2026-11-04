@@ -27,7 +27,7 @@ import {
   tipEvreniTanilari, terfiKanitiTanilari, yuzTanilari,
   onceliksizAdimTanilari, atesleyenHatirlaticiTanilari,
   mevsimVadeTanilari, mevsimMuhurTanilari, dosyaMuhruTanilari, projesizFazTanilari, kitapliksizKokTanilari,
-  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari, kodStandardiTanilari, profilTanilari,
+  fazSirasiTanilari, blokYapisiTanilari, fazDosyasiTanilari, mevsimNormalize, dilTanilari, kodStandardiTanilari, profilTanilari, binaTanilari,
   type DiskAnlikGoruntu, altKatmanTekilligiTanilari, diskTara, yoksaymaSabitYollari,
 } from "../src/denetci.ts";
 import { dagKur } from "../src/dag.ts";
@@ -1188,6 +1188,29 @@ test("proje: Profil tipinin üç tanısı TIP-1.17 düzeyinde doğar (BKM-OLG-A1
   uretildi("profil-çift", t);
   assert.deepEqual(t.map((x) => [x.tani.kod, x.tani.duzey]),
     [["profil-eksik-alan", "uyarı"], ["profil-kişisel-veri", "hata"], ["profil-çift", "hata"]]);
+});
+
+test("proje: çalışma alanının katları ve logosu MIM-3.2 uyarılarını doğurur (PNL-A31)", () => {
+  // Fikstür adları uydurmadır. Disk okuması enjekte edilir; kök /bina dizinidir.
+  const programlar = harita({
+    "w/w_anadizin.sar": `ÇalışmaAlanı( kod: CAL-W, ad: "Örnek Atölye", logo: "oz/logo.svg" ) {\n`
+      + `  Kitaplık( kod: KTP-YON, yol: "yon/", ne: "yönetim", kat: 1 ) { Kitaplık( kod: KTP-IC, yol: "ic/", ne: "iç", kat: 2 ) }\n`
+      + `  Kitaplık( kod: KTP-SIFIR, yol: "sifir/", ne: "sıfır", kat: 0 )\n}\n`,
+    "v/v_anadizin.sar": `ÇalışmaAlanı( kod: CAL-V, logo: "../disari.svg" )\n`,
+  });
+  const t = binaTanilari(programlar, "/bina", new Set(), (y) => (y === "/bina/w/oz/logo.svg" ? "<svg><script>x()</script></svg>" : undefined), (y) => y);
+  uretildi("geçersiz-kat", t);
+  uretildi("geçersiz-logo", t);
+  assert.deepEqual(t.map((x) => [x.tani.kod, x.tani.duzey, x.dosya]), [
+    ["geçersiz-kat", "uyarı", "w/w_anadizin.sar"], ["geçersiz-kat", "uyarı", "w/w_anadizin.sar"],
+    ["geçersiz-logo", "uyarı", "w/w_anadizin.sar"], ["geçersiz-logo", "uyarı", "v/v_anadizin.sar"],
+  ]);
+  // Temiz bina: geçerli katlar ve betiksiz logo hiçbir tanı doğurmaz; kat ve logo taşımayan ilan da öyle.
+  const temiz = harita({
+    "w/w_anadizin.sar": `ÇalışmaAlanı( kod: CAL-W, logo: "logo.svg" ) {\n  Kitaplık( kod: KTP-YON, yol: "yon/", ne: "y", kat: 1 ) { Kitaplık( kod: KTP-IC, yol: "ic/", ne: "i" ) }\n  Kitaplık( kod: KTP-ARSIV, yol: "arsiv/", ne: "a" )\n}\n`,
+    "p/p_anadizin.sar": `Proje( kod: PRJ-P, rejim: esnek, ne: "p" ) { Kitaplık( kod: KTP-P, yol: "x/", ne: "x" ) }\n`,
+  });
+  assert.deepEqual(binaTanilari(temiz, "/bina", new Set(), () => '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1"/></svg>', (y) => y), []);
 });
 
 test("kapanış: YETMİŞ BİR kimliğin tamamı fikstürle kanıtlanmış olmalı", () => {
