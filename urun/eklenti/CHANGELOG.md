@@ -2,6 +2,10 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.201 — 2026-11-04 (Paket tazeleme)
+
+- **Klasör mührü kurulu eklentiye ulaşır.** 0.9.200 numarası daha önce eski bir derlemeyle kurulmuş olduğu için düzenleyici yeni paketi tazelemiyordu; sürüm ilerletilerek klasör mührünü taşıyan derleme kurulabilir hâle getirildi. Kullanıcıya görünen davranış 0.9.200 notlarında anlatıldığı gibidir.
+
 ## 0.9.200 — 2026-11-03 (Klasör mührü)
 
 - **Mühür artık bir klasörün adına da basılabilir.** `@ARSIV@_`, `@EGITIM@_` ve `@SONRA@_` mühürleri dosya adında olduğu gibi bir klasörün adının başında da yazılabilir ve o klasörün bütün içeriğini kapsar. Bitmiş bir projeyi ya da eski bir çalışma alanını arşive almak için içindeki dosyaları tek tek yeniden adlandırmak gerekmez; klasörün adına mühür basmak yeterlidir.
