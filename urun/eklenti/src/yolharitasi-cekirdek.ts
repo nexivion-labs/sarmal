@@ -20,7 +20,7 @@ import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alan�
 import { adAlaniSecenekleri, fazKarsilastir, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
-import { dizinKapsar, yolDuzle, type Bina, type BinaKitapligi } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
+import { dizinKapsar, yolDuzle, type Bina, type BinaKitapligi, type BinaProfili } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
 
 /**
  * Bir yol, verilen kökün KAPSAMINDA mı? Kökün kendisi de kapsama dâhildir.
@@ -609,20 +609,39 @@ export function dagDugumunuCoz(dag: Dag | undefined, kod: string, dosyaYolu?: st
 //       Kitaplık görünmez. Ofisin doğrudan altındaki bir grubun çocukları ofisin
 //       müşterileridir (ajansın Müşteriler grubu gibi); daha derindeki projeler
 //       yine projedir.
+//     • Müşteri kademesi Kişi › Proje › Faz düzenindedir (Founder onayı 2026-11-04
+//       gecesi): her müşteri kendi satırını alır, tek projeli müşteri de iki projeli
+//       müşteri de aynı biçimde görünür ve projeleri onun altında durur. Satırın adı
+//       müşterinin Profil düğümünden okunur (müşteri Kitaplığının içindeki Profil, o
+//       yoksa müşterinin kendi proje kökünün Profili); kişi yazılmamışsa Profilin adı,
+//       Profil de yoksa Kitaplığın adı yazar. Müşteri üst satırın sayısında bir sayılır.
 //     • Katı olmayan üst Kitaplıklar (çalışma alanının kendi `oz/` kitaplığı hariç)
 //       en altta bina dışı satırında anılır.
 //   Bina okuması motorun kendi okumasıdır (cekirdek/src/bina.ts).
 
 /** Bina ağacındaki bir varlığın rolü; panel simgeyi bu rolden seçer. */
-export type BinaRolu = "yonetim" | "proje" | "musteri";
+export type BinaRolu = "yonetim" | "proje";
 
-/** Bina ağacının düğümü. `birim`, ofisin ve grubun açıklamasında yazan proje sayısıdır. */
+/**
+ * Bina ağacının düğümü. `birim`, ofisin, grubun ve müşterinin açıklamasında yazan proje sayısıdır.
+ * Müşteri düğümünün `kitaplik` alanı müşteriyi ilan eden Kitaplıktır; Kitaplığı olmayan (müşteriler
+ * grubunda serbest duran) proje kendi başına bir müşteridir ve yalnız `dizin` taşır.
+ */
 export type BinaDugumu<T> =
   | { tur: "kat"; kat: number; cocuklar: BinaDugumu<T>[] }
   | { tur: "ofis"; kitaplik: BinaKitapligi; varlik?: T; cocuklar: BinaDugumu<T>[]; birim: number }
-  | { tur: "grup"; kitaplik: BinaKitapligi; musteri: boolean; disari: boolean; cocuklar: BinaDugumu<T>[]; birim: number }
+  | { tur: "grup"; kitaplik: BinaKitapligi; disari: boolean; cocuklar: BinaDugumu<T>[]; birim: number }
+  | { tur: "musteri"; kitaplik?: BinaKitapligi; dizin: string; cocuklar: BinaDugumu<T>[]; birim: number }
   | { tur: "varlik"; varlik: T; rol: BinaRolu }
   | { tur: "disari"; kitapliklar: BinaKitapligi[]; cocuklar: BinaDugumu<T>[] };
+
+/**
+ * Müşteri satırının adı: Profildeki ilk kişinin hitabı, kişi yazılmamışsa Profilin adı (firma), Profil
+ * yoksa yedek ad (Kitaplığın ya da projenin adı). Kodda hiçbir müşteri adı yazılmaz.
+ */
+export function musteriAdi(profil: BinaProfili | undefined, yedek: string): string {
+  return profil?.kisi || profil?.ad || yedek;
+}
 
 /** Çalışma alanının kendi öz kitaplığının klasörü; motor kanonu da `<kök>/oz/` altında arar. */
 export const OZ_KLASORU = "oz";
@@ -634,7 +653,7 @@ export const OZ_KLASORU = "oz";
 export function binaBirimi<T>(dugumler: readonly BinaDugumu<T>[]): number {
   let n = 0;
   for (const d of dugumler) {
-    if (d.tur === "varlik" || (d.tur === "grup" && d.musteri)) n += 1;
+    if (d.tur === "varlik" || d.tur === "musteri") n += 1;
     else if (d.tur === "grup" || d.tur === "ofis" || d.tur === "kat" || d.tur === "disari") n += binaBirimi(d.cocuklar);
   }
   return n;
@@ -692,20 +711,29 @@ export function binaAgaci<T extends { kokDizin: string }>(
   const dizinIle = (a: T, b: T): number => a.kokDizin.localeCompare(b.kokDizin);
   /**
    * `kap` Kitaplığının içeriği; `rol` içerideki varlıkların rolüdür. Ofisin doğrudan altındaki
-   * (`ofisDuzeyi`) grubun içi müşteridir; müşteri grubunun içi yine projedir; öteki grupların içi
-   * bulundukları yerin rolünü taşır.
+   * (`ofisDuzeyi`) grubun çocukları müşteridir (`musteriler`): her biri bir müşteri düğümü olur ve
+   * içindeki projeler yine projedir. Öteki grupların içi bulundukları yerin rolünü taşır.
    */
-  const icerik = (kap: BinaKitapligi, rol: BinaRolu, ofisDuzeyi: boolean, disari: boolean): BinaDugumu<T>[] => {
+  const icerik = (kap: BinaKitapligi, rol: BinaRolu, ofisDuzeyi: boolean, disari: boolean, musteriler = false): BinaDugumu<T>[] => {
     const cikti: BinaDugumu<T>[] = [];
     for (const c of kitapliklar.filter((k) => ust.get(k) === kap && k.kendiKati === undefined).sort(siraIle)) {
       const v = kimlik.get(c);
+      if (musteriler) {
+        // Müşteri: kendi proje kökü olan Kitaplık tek projeli müşteridir, öteki Kitaplık projelerini sarar.
+        const cocuklar: BinaDugumu<T>[] = v ? [{ tur: "varlik", varlik: v, rol: "proje" }] : icerik(c, "proje", false, disari);
+        if (cocuklar.length) cikti.push({ tur: "musteri", kitaplik: c, dizin: c.dizin, cocuklar, birim: binaBirimi(cocuklar) });
+        continue;
+      }
       if (v) { cikti.push({ tur: "varlik", varlik: v, rol }); continue; }
-      const icRol: BinaRolu = ofisDuzeyi ? "musteri" : rol === "musteri" ? "proje" : rol;
-      const cocuklar = icerik(c, icRol, false, disari);
+      const cocuklar = icerik(c, rol, false, disari, ofisDuzeyi);
       if (!cocuklar.length) continue;
-      cikti.push({ tur: "grup", kitaplik: c, musteri: rol === "musteri", disari, cocuklar, birim: binaBirimi(cocuklar) });
+      cikti.push({ tur: "grup", kitaplik: c, disari, cocuklar, birim: binaBirimi(cocuklar) });
     }
-    for (const v of (serbest.get(kap) ?? []).sort(dizinIle)) cikti.push({ tur: "varlik", varlik: v, rol });
+    for (const v of (serbest.get(kap) ?? []).sort(dizinIle)) {
+      cikti.push(musteriler
+        ? { tur: "musteri", dizin: v.kokDizin, cocuklar: [{ tur: "varlik", varlik: v, rol: "proje" }], birim: 1 }
+        : { tur: "varlik", varlik: v, rol });
+    }
     return cikti;
   };
   const dugumler: BinaDugumu<T>[] = [];
@@ -737,7 +765,7 @@ export function binaAgaci<T extends { kokDizin: string }>(
     const v = kimlik.get(k);
     if (v) { disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" }); continue; }
     const cocuklar = icerik(k, "proje", false, true);
-    if (cocuklar.length) disCocuk.push({ tur: "grup", kitaplik: k, musteri: false, disari: true, cocuklar, birim: binaBirimi(cocuklar) });
+    if (cocuklar.length) disCocuk.push({ tur: "grup", kitaplik: k, disari: true, cocuklar, birim: binaBirimi(cocuklar) });
   }
   for (const v of (serbest.get(undefined) ?? []).sort(dizinIle)) disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" });
   if (dislar.length || disCocuk.length) dugumler.push({ tur: "disari", kitapliklar: dislar, cocuklar: disCocuk });

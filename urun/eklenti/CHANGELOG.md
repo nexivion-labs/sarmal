@@ -2,6 +2,11 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.204 — 2026-11-04 (Binanın tepesi ve müşteri kademesi)
+
+- **Şirket yalnız bir kez görünür.** Kat ilan eden bir çalışma alanında Ray sekmesinin en üstünde logo, çalışma alanının adı, etkinlik ve proje sayısı ile Dur ve Dikkat toplamı tek bir başlıkta durur; "Yol Haritası" başlığı onun altına iner ve katlar doğrudan bu başlığın altında açılır. Ağaçtaki ikinci kök satırı kalkmıştır. Kat ilan etmeyen çalışma alanında ve tek proje kökünde görünüm değişmez.
+- **Müşteriler Kişi › Proje › Faz düzenindedir.** Ofisin müşteriler grubunda her müşteri kendi satırını alır ve projeleri onun altında, her projenin fazları da projenin altında durur; tek projeli müşteri de aynı biçimde görünür. Müşteri satırının adı müşterinin Profil düğümünden okunur: müşteri Kitaplığının içindeki Profil, o yoksa müşterinin kendi proje kökünün Profili kullanılır. Satırda Profildeki ilk kişinin hitabı yazar; kişi yazılmamışsa Profilin adı, Profil yoksa Kitaplığın adı yazar. Müşteri, üst satırın proje sayısında bir sayılır.
+
 ## 0.9.203 — 2026-11-04 (Binanın ağacı)
 
 - **Kat, ofis ve proje kademeleri.** Kat ilan eden bir çalışma alanında yol haritası Kitaplık düzeninden türeyen bir bina ağacı çizer: kökün altında "1. Kat · Yönetim" ve "2. Kat · Ofisler" gibi kat satırları, üst katlarda her ofisin kendi satırı ve proje sayısı, ofislerin altında projeler durur. Ofisin içinde proje taşıyan bir grup Kitaplık kendi satırıyla görünür ve bu grubun çocukları ofisin müşterileri sayılır; katı olmayan kitaplıklar en altta tek bir "Bina dışı" satırında anılır. Ağaç hiçbir adı elle tutmaz; adlar ve sıra anadizinlerden okunur.

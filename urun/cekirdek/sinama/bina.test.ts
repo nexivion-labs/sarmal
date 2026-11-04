@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { binaOku, binalariBul, katBul, logoCoz, svgSuzgeci, logoVeriAdresi, LOGO_EN_BUYUK } from "../src/bina.ts";
+import { binaOku, binalariBul, katBul, logoCoz, svgSuzgeci, logoVeriAdresi, LOGO_EN_BUYUK, projeProfili } from "../src/bina.ts";
 import { ayristir } from "../src/ayristirici.ts";
 import { belirtecle } from "../src/belirtec.ts";
 
@@ -88,4 +88,22 @@ test("logo çözümü: kök dışı, SVG olmayan, olmayan ve betikli logo göste
   assert.equal(ozet(""), "boş");
   const s = logoCoz("/ev", "oz/logo.svg", oku);
   assert.ok(s.tur === "svg" && logoVeriAdresi(s.svg).startsWith("data:image/svg+xml;base64,"));
+});
+
+// 🪪 PNL-A31 (Founder onayı 2026-11-04 gecesi): müşteri satırının adı Profilden okunur. Adlar uydurmadır.
+test("Profil okuması: Kitaplığın içindeki Profil ilana bağlanır, proje kökünün Profili bulunur, ilk kişinin hitabı okunur", () => {
+  const b = binaOku(p(`ÇalışmaAlanı( kod: CAL-X, ad: "x" ) {
+  Kitaplık( kod: KTP-M, yol: "m/", ne: "M" ) {
+    Profil( kod: PFL-M, ad: "Örnek Ortaklık", ne: "n", sektör: "s", şehir: "ş",
+      kişiler: [ { rol: "muhatap" }, { hitap: "Ayla Hanım", rol: "muhatap" }, { hitap: "Can Bey" } ] )
+    Kitaplık( kod: KTP-M-A, yol: "a/", ne: "A" )
+  }
+  Kitaplık( kod: KTP-N, yol: "n/", ne: "N" )
+}`), "/k/x_anadizin.sar")!;
+  assert.deepEqual(b.kitapliklar.find((k) => k.kod === "KTP-M")?.profil, { kod: "PFL-M", ad: "Örnek Ortaklık", kisi: "Ayla Hanım" });
+  assert.equal(b.kitapliklar.find((k) => k.kod === "KTP-M-A")?.profil, undefined, "Profil yalnız doğrudan sahibinin ilanına bağlanır");
+  assert.equal(b.kitapliklar.find((k) => k.kod === "KTP-N")?.profil, undefined);
+  assert.deepEqual(projeProfili(p(`Proje( kod: PRJ-X, ad: "x" ) {\n  Profil( kod: PFL-X, ad: "Örnek Fırın", ne: "n", sektör: "s", şehir: "ş" )\n}`)),
+    { kod: "PFL-X", ad: "Örnek Fırın" }, "kişi yazılmamışsa yalnız ad okunur");
+  assert.equal(projeProfili(p(`Proje( kod: PRJ-Y, ad: "y" )`)), undefined);
 });

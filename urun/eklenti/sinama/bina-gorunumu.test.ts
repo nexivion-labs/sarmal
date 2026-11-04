@@ -13,6 +13,15 @@
 //       ve eklentinin kendi deposunun marka simgesi istisnası depo kimliğinden
 //       türer. Kendi anadizinli ofis kendi kökünden açılınca ve tek proje kökünde
 //       görünüm değişmez.
+//     ④ Ray sekmesinin tepesi (Founder onayı 2026-11-04 gecesi): şirket yalnız bir
+//       kez, logosuyla "Yol Haritası" başlığının üstünde durur; kök satırı ağaçtan
+//       çıkar, katlar doğrudan başlığın altında açılır ve durum bilgisi (proje sayısı)
+//       başlıkta kalır. Katsız çalışma alanında tepe yoktur ve ağaç değişmez.
+//     ⑤ Müşteriler Kişi › Proje › Faz düzenindedir: her müşteri kendi satırını alır,
+//       tek projeli müşteri de aynı biçimde görünür; satırın adı Profildeki ilk kişinin
+//       hitabıdır, kişi yoksa Profilin adı, Profil yoksa Kitaplığın adı yazar. Profil
+//       müşteri Kitaplığının içinden ya da müşterinin proje kökünden okunur. Müşteri
+//       üst satırın sayısında bir sayılır.
 //     ② Tren şemasında birinci kat bandında kanon kutusu, apex koltuğu ve iş
 //       akışı şeridi görünür; iş akışı ajanı ilan edilmemişse şerit "tanımlı değil"
 //       yazan boş yuvalardan ibarettir; apex'in yönettiği ve bir İşAkışı düğümünü
@@ -37,7 +46,7 @@ import { trenOzetiCikar } from "../src/tren-cekirdek.ts";
 import { trenSemaHtml, IS_AKISI_YUVA_SAYISI } from "../src/tren-gorunum.ts";
 import { binaBasligiHtml } from "../src/bina-gorunum.ts";
 import { BINA_METINLERI } from "../src/yuzey-metinleri.ts";
-import { satirlariUret, satirHtml, IkonDefteri } from "../src/panel-cekirdek.ts";
+import { satirlariUret, satirHtml, IkonDefteri, binaKokunuAyir, rayBolumuHtml, BINA_TEPESI_KIMLIGI } from "../src/panel-cekirdek.ts";
 import { depoAdresiNormal, kendiDeposuMu } from "../src/yolharitasi-cekirdek.ts";
 
 const { YolHaritasi, MARKA_SIMGESI } = await import("../src/yolharitasi.ts");
@@ -116,14 +125,28 @@ const binaDosyalari = (logo = "oz/logo.svg"): Record<string, string> => ({
   Kitaplık( kod: KTP-H-PAYDAS, yol: "paydaslar/", ne: "Paydaşlar" ) {
     Kitaplık( kod: KTP-P-KUZEY, yol: "kuzey/", ne: "Kuzey — tek projeli paydaş" )
     Kitaplık( kod: KTP-P-GUNEY, yol: "guney/", ne: "Güney çatısı — iki projeli paydaş" ) {
+      Profil( kod: PFL-GUNEY, ad: "Güney Ortaklığı", ne: "İki projeli uydurma paydaş.", sektör: "örnek", şehir: "Örnekköy",
+        kişiler: [ { hitap: "Selin Hanım", rol: "muhatap", sorumluluk: "onay" } ] )
       Kitaplık( kod: KTP-P-GUNEY-BIR, yol: "bir/", ne: "Bir" )
       Kitaplık( kod: KTP-P-GUNEY-IKI, yol: "iki/", ne: "İki" )
     }
+    Kitaplık( kod: KTP-P-BATI, yol: "bati/", ne: "Batı — kişisi yazılmamış paydaş" )
+    Kitaplık( kod: KTP-P-DOGU, yol: "dogu/", ne: "Doğu — Profili olmayan paydaş" )
   }
 }
 `,
   [`${BINA}/hizmet/cekirdek/cekirdek_anadizin.sar`]: `Proje( kod: PRJ-CEKIRDEK, ad: "Çekirdek", rejim: esnek )\n`,
-  [`${BINA}/hizmet/paydaslar/kuzey/kuzey_anadizin.sar`]: `Proje( kod: PRJ-KUZEY, ad: "Kuzey", rejim: esnek )\n`,
+  // Tek projeli paydaşın Profili kendi proje kökündedir; Batı'nın Profili kişi taşımaz (firma adı yazar).
+  [`${BINA}/hizmet/paydaslar/kuzey/kuzey_anadizin.sar`]: `Proje( kod: PRJ-KUZEY, ad: "Kuzey", rejim: esnek ) {
+  Profil( kod: PFL-KUZEY, ad: "Kuzey Fırını", ne: "Uydurma fırın.", sektör: "gıda", şehir: "Örnekköy",
+    kişiler: [ { hitap: "Deniz Bey", rol: "muhatap", sorumluluk: "onay" } ] )
+}
+`,
+  [`${BINA}/hizmet/paydaslar/bati/bati_anadizin.sar`]: `Proje( kod: PRJ-BATI, ad: "Batı", rejim: esnek ) {
+  Profil( kod: PFL-BATI, ad: "Batı Atölyesi", ne: "Uydurma atölye.", sektör: "örnek", şehir: "Örnekköy" )
+}
+`,
+  [`${BINA}/hizmet/paydaslar/dogu/dogu_anadizin.sar`]: `Proje( kod: PRJ-DOGU, ad: "Doğu", rejim: esnek )\n`,
   [`${BINA}/hizmet/paydaslar/guney/bir/bir_anadizin.sar`]: `Proje( kod: PRJ-BIR, ad: "Bir", rejim: esnek )\n`,
   [`${BINA}/hizmet/paydaslar/guney/iki/iki_anadizin.sar`]: `Proje( kod: PRJ-IKI, ad: "İki", rejim: esnek )\n`,
   [`${BINA}/kisisel/defter/defter_anadizin.sar`]: `Proje( kod: PRJ-DEFTER, ad: "Defter", rejim: esnek )\n`,
@@ -158,7 +181,7 @@ function dokum(yol: InstanceType<typeof YolHaritasi>): string[] {
 /** Paket ilanında depo adresi taşımayan kabuk (istisnanın doğmadığı hâl). */
 const binaYolu = (logo?: string) => yolHaritasi(binaDosyalari(logo));
 
-test("①' bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › Kat › Ofis › Proje, müşteri ve bina dışı", () => {
+test("①' ⑤ bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › Kat › Ofis › Proje, müşteri Kişi › Proje ve bina dışı", () => {
   const yol = yolHaritasiDepolu(binaDosyalari());
   assert.deepEqual(dokum(yol), [
     "[dosya:logo.svg] Örnek Atölye — 5 proje",
@@ -168,13 +191,18 @@ test("①' bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › Kat �
     "    [briefcase] Atölye — 2 proje",
     "      [marka] Zeta — ray döşendi — vagon bekleniyor",
     "      [rocket] Alfa — ray döşendi — vagon bekleniyor",
-    "    [briefcase] Hizmet — 3 proje",
+    "    [briefcase] Hizmet — 5 proje",
     "      [rocket] Çekirdek — ray döşendi — vagon bekleniyor",
-    "      [-] Paydaşlar — 2 proje",
-    "        [person] Kuzey — ray döşendi — vagon bekleniyor",
-    "        [person] Güney çatısı — 2 proje",
+    "      [-] Paydaşlar — 4 proje",
+    "        [person] Deniz Bey — 1 proje",
+    "          [rocket] Kuzey — ray döşendi — vagon bekleniyor",
+    "        [person] Selin Hanım — 2 proje",
     "          [rocket] Bir — ray döşendi — vagon bekleniyor",
     "          [rocket] İki — ray döşendi — vagon bekleniyor",
+    "        [person] Batı Atölyesi — 1 proje",
+    "          [rocket] Batı — ray döşendi — vagon bekleniyor",
+    "        [person] Doğu — 1 proje",
+    "          [rocket] Doğu — ray döşendi — vagon bekleniyor",
     "  [archive] Bina dışı · Kişisel · Depo — 1 proje",
     "    [archive] Kişisel — 1 proje",
     "      [rocket] Defter — ray döşendi — vagon bekleniyor",
@@ -185,7 +213,7 @@ test("①' bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › Kat �
   const kat2 = bul(kok, BINA_METINLERI.katAdi(2));
   const hizmet = bul(kat2, "Hizmet");
   const paydas = bul(hizmet, "Paydaşlar");
-  const guney = bul(paydas, "Güney çatısı");
+  const guney = bul(paydas, "Selin Hanım");
   const bir = bul(guney, "Bir");
   assert.equal(yol.getParent(bir as never), guney);
   assert.equal(yol.getParent(guney as never), paydas);
@@ -205,8 +233,9 @@ test("①' simge eşlemesi: kök organization ya da logo, yönetim law, ofis bri
   assert.equal(item("Atölye").iconPath?.id, "briefcase");
   assert.equal(item("Hizmet").iconPath?.id, "briefcase");
   assert.equal(item("Alfa").iconPath?.id, "rocket");
-  assert.equal(item("Kuzey").iconPath?.id, "person");
-  assert.equal(item("Güney çatısı").iconPath?.id, "person");
+  assert.equal(item("Deniz Bey").iconPath?.id, "person");
+  assert.equal(item("Selin Hanım").iconPath?.id, "person");
+  assert.equal(item("Kuzey").iconPath?.id, "rocket", "tek projeli müşterinin projesi de projedir");
   assert.equal(item("Bir").iconPath?.id, "rocket", "müşterinin içindeki proje yine projedir");
   assert.equal(item(BINA_METINLERI.binaDisiSatiri(["Kişisel", "Depo"])).iconPath?.id, "archive");
   assert.equal(item("Kişisel").iconPath?.id, "archive");
@@ -241,14 +270,51 @@ test("①' kendi anadizinli ofis kendi kökünden açıldığında ve tek proje 
   const sadece = (onek: string) => Object.fromEntries(Object.entries(hepsi).filter(([y]) => y.startsWith(onek)));
   const ofis = yolHaritasiDepolu(sadece(`${BINA}/hizmet/`));
   const satirlar = dokum(ofis);
-  assert.equal(satirlar[0], "[dosya:satir-istasyon-notr-acik.svg] Hizmet — 4 proje");
+  assert.equal(satirlar[0], "[dosya:satir-istasyon-notr-acik.svg] Hizmet — 6 proje");
   assert.deepEqual(satirlar.slice(1).map((s) => s.trim().replace(/ —.*$/, "")), [
-    "[dosya:satir-sefer-notr-acik.svg] Bir", "[dosya:satir-sefer-notr-acik.svg] Çekirdek",
-    "[dosya:satir-sefer-notr-acik.svg] İki", "[dosya:satir-sefer-notr-acik.svg] Kuzey",
-  ], "ofisin kendi panelinde bina satırı doğmaz, projeler bugünkü gibi düz ve alfabetiktir");
+    "[dosya:satir-sefer-notr-acik.svg] Batı", "[dosya:satir-sefer-notr-acik.svg] Bir", "[dosya:satir-sefer-notr-acik.svg] Çekirdek",
+    "[dosya:satir-sefer-notr-acik.svg] Doğu", "[dosya:satir-sefer-notr-acik.svg] İki", "[dosya:satir-sefer-notr-acik.svg] Kuzey",
+  ], "ofisin kendi panelinde bina satırı ve müşteri satırı doğmaz, projeler bugünkü gibi düz ve alfabetiktir");
   const tek = yolHaritasiDepolu(sadece(`${BINA}/atolye/zeta/`));
   assert.deepEqual(dokum(tek), ["[dosya:satir-sefer-notr-acik.svg] Zeta — ray döşendi — vagon bekleniyor"],
     "çatı yokken kendi depo da bugünkü sefer simgesini taşır");
+});
+
+// ── ④ Ray sekmesinin tepesi (Founder onayı 2026-11-04 gecesi) ─────────────────
+test("④ şirket yalnız bir kez tepede durur: kök satırı ağaçtan çıkar, katlar başlığın altında açılır, durum başlıkta kalır", () => {
+  const yol = yolHaritasiDepolu(binaDosyalari());
+  const sec = { acikMi: (_i: string, v: boolean) => v, ikonCoz: () => undefined, dekor: () => undefined,
+    eylemler: () => [], defter: new IkonDefteri(), onek: "y" };
+  const tum = satirlariUret(yol as never, sec, 0);
+  const kok = yol.binaKoku();
+  assert.ok(kok, "katlı binada tepeye taşınacak kök vardır");
+  const { tepe, satirlar } = binaKokunuAyir(tum, kok);
+  assert.equal(tepe?.satir.etiket, "Örnek Atölye");
+  assert.equal(tepe?.satir.aciklama, "5 proje", "durum bilgisi tepeye taşınan satırdan gelir");
+  assert.ok(!satirlar.some((u) => u.oge === kok), "ikinci bir kök satırı kalmaz");
+  assert.deepEqual(satirlar.filter((u) => u.satir.derinlik === 0).map((u) => u.satir.etiket),
+    [BINA_METINLERI.katAdi(1), BINA_METINLERI.katAdi(2), BINA_METINLERI.binaDisiSatiri(["Kişisel", "Depo"])],
+    "katlar doğrudan Yol Haritası başlığının altında açılır");
+  // Kimlikler değişmez: açık-kapalı tercihi ve tıklama iletileri aynı satırlara gider.
+  assert.ok(satirlar.every((u) => tum.includes(u)) && satirlar.length === tum.length - 1);
+  // Çizim: tepe "Yol Haritası" bölüm başlığının ÜSTÜNDE durur ve adı, logoyu ve açıklamayı taşır.
+  const html = rayBolumuHtml({ bina: { ad: "Örnek Atölye", logo: "data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=", aciklama: tepe!.satir.aciklama }, agac: "" });
+  const tepeYeri = html.indexOf(`id="${BINA_TEPESI_KIMLIGI}"`);
+  assert.ok(tepeYeri >= 0 && tepeYeri < html.indexOf('<h2 class="bas"'), "tepe bölüm başlığından önce gelir");
+  assert.ok(html.includes('class="bina-logo"') && html.includes(">Örnek Atölye<") && html.includes('class="bina-ac">5 proje<'));
+  assert.equal((html.match(/Örnek Atölye/g) ?? []).length, 2, "ad yalnız başlıkta ve logonun alt metninde geçer");
+});
+
+test("④ katsız çalışma alanında tepe yoktur ve ağaç bugünkü gibi kalır", () => {
+  const yol = yolHaritasi(katli(false));
+  assert.equal(yol.binaKoku(), undefined);
+  const tum = satirlariUret(yol as never, { acikMi: (_i: string, v: boolean) => v, ikonCoz: () => undefined, dekor: () => undefined,
+    eylemler: () => [], defter: new IkonDefteri(), onek: "y" }, 0);
+  const derinlikler = tum.map((u) => u.satir.derinlik);
+  const { tepe, satirlar } = binaKokunuAyir(tum, undefined);
+  assert.equal(tepe, undefined);
+  assert.deepEqual(satirlar.map((u) => u.satir.derinlik), derinlikler, "hiçbir satır kaymaz");
+  assert.ok(!rayBolumuHtml({ agac: "" }).includes(BINA_TEPESI_KIMLIGI), "bina yoksa tepe çizilmez");
 });
 
 test("①' depo kimliği: adres yazımları aynı depoya iner, başka depo eşleşmez", () => {

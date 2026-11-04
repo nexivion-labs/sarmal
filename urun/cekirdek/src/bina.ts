@@ -42,6 +42,55 @@ export interface BinaKitapligi {
   /** İlan sırası (kaynakta baştan sona); kat bandında projelerin sırası buradan gelir. */
   sira: number;
   satir: number;
+  /** Kitaplığın doğrudan içinde ilan edilmiş Profil (müşteri düzeyindeki kimlik kartı gibi). */
+  profil?: BinaProfili;
+}
+
+/**
+ * 🪪 Bir Profil düğümünün bina ağacının okuduğu yüzü (TIP-1.17): kimliği, adı ve kişiler listesindeki
+ * ilk kişinin hitabı. Profil kişileri yalnız hitap, rol ve sorumlulukla taşır; ad soyad alanı yoktur,
+ * dolayısıyla kişinin görünen adı hitaptır.
+ */
+export interface BinaProfili {
+  kod: string;
+  ad: string;
+  /** Kişiler listesindeki ilk kişinin hitabı; kişi yazılmamışsa tanımsız. */
+  kisi?: string;
+}
+
+/** Bir Profil düğümünü okur; düğüm Profil değilse tanımsız döner. */
+export function profilOku(d: Dugum): BinaProfili | undefined {
+  if (d.tur !== "widget" || d.ad !== "Profil") return undefined;
+  const kod = metin(d, "kod");
+  let kisi: string | undefined;
+  for (const o of alan(d, "kişiler")?.deger.ogeler ?? []) {
+    const hitap = o.tur === "harita" ? (o.ciftler ?? []).find((c) => c.ad === "hitap") : undefined;
+    const m = hitap ? degerMetni(hitap.deger).trim() : "";
+    if (m) { kisi = m; break; }
+  }
+  return { kod, ad: metin(d, "ad") || kod, ...(kisi ? { kisi } : {}) };
+}
+
+/** Bir düğümün doğrudan çocukları arasındaki ilk Profil. */
+function cocukProfili(d: Dugum): BinaProfili | undefined {
+  for (const c of d.cocuklar) { const p = profilOku(c); if (p) return p; }
+  return undefined;
+}
+
+/**
+ * Bir proje giriş dosyasının kimlik kartı: kök Proje (ya da Uygulama) düğümünün doğrudan içindeki ya
+ * da dosyanın tepesindeki ilk Profil. Proje kökünde tek Profil bulunur (`profil-çift`).
+ */
+export function projeProfili(program: Program): BinaProfili | undefined {
+  for (const d of program.bildirimler) {
+    const p = profilOku(d);
+    if (p) return p;
+    if (d.tur === "widget" && (d.ad === "Proje" || d.ad === "Uygulama")) {
+      const ic = cocukProfili(d);
+      if (ic) return ic;
+    }
+  }
+  return undefined;
 }
 
 /** Bir ÇalışmaAlanı kökünün bina okuması. */
@@ -133,9 +182,11 @@ export function binaOku(program: Program, dosya: string, kusurlar?: KatKusuru[])
         kusurlar?.push({ kimlik: kod, kat: ham, neden: "iç-içe", ust: ustKatli.kod, ustKat: ustKatli.kendiKati,
           satir: katP!.satir, sutun: katP!.sutun });
       }
+      const profil = cocukProfili(c);
       const k: BinaKitapligi = {
         kod, ad: binaIlanAdi(c, kod), dizin, sira: sira++, satir: c.satir,
         ...(kendi !== undefined ? { kendiKati: kendi } : {}),
+        ...(profil ? { profil } : {}),
       };
       // Etkin kat: iç içe kusurlu ilanda atanın katı geçerli kalır (tanı konuşur, görünüm atlamaz).
       const etkin = ustKatli?.kendiKati ?? kendi;

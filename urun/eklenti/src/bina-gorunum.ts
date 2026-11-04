@@ -32,8 +32,11 @@ export const BINA_SIMGESI = {
   disari: "archive",
 } as const;
 
-/** Binanın tepesi: çalışma alanının adı ve (gösterilebilirse) logonun veri adresi. */
-export interface BinaBasligi { ad: string; logo?: string }
+/**
+ * Binanın tepesi: çalışma alanının adı, (gösterilebilirse) logonun veri adresi ve Ray sekmesinde kök
+ * satırından taşınan açıklama (etkinlik ve proje sayısı gibi). Tren sekmesi açıklama vermez.
+ */
+export interface BinaBasligi { ad: string; logo?: string; aciklama?: string }
 
 /** Logo adresinin kabul edilen tek biçimi. */
 const LOGO_ADRESI = /^data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+$/;
@@ -42,12 +45,16 @@ function kac(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-/** Binanın tepesinin HTML'i; bina yoksa boş. Biçim dışı logo adresi çizilmez, ad yine yazılır. */
-export function binaBasligiHtml(b: BinaBasligi | undefined): string {
+/**
+ * Binanın tepesinin HTML'i; bina yoksa boş. Biçim dışı logo adresi çizilmez, ad yine yazılır. `ek`,
+ * çağıranın kaçırarak kurduğu ek çizimdir (Ray sekmesinde kök satırının Dur ve Dikkat sayıları).
+ */
+export function binaBasligiHtml(b: BinaBasligi | undefined, ek = ""): string {
   if (!b) return "";
   const logo = b.logo && LOGO_ADRESI.test(b.logo)
     ? `<img class="bina-logo" src="${b.logo}" alt="${kac(BINA_METINLERI.logoAlt(b.ad))}">` : "";
-  return `<div class="bina-bas">${logo}<span class="bina-ad">${kac(b.ad)}</span></div>`;
+  const aciklama = b.aciklama ? `<span class="bina-ac">${kac(b.aciklama)}</span>` : "";
+  return `<div class="bina-bas">${logo}<span class="bina-ad">${kac(b.ad)}</span>${aciklama}${ek}</div>`;
 }
 
 /** Binanın tepesi ile Tren şemasının kat bantlarının stili. */
@@ -55,6 +62,8 @@ export const BINA_STILI = `
 .bina-bas{display:flex;align-items:center;gap:8px;padding:6px 12px 4px;min-width:0}
 .bina-logo{flex:none;display:block;height:22px;width:auto;max-width:120px;object-fit:contain}
 .bina-ad{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:600;letter-spacing:.02em}
+.bina-ac{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--vscode-descriptionForeground)}
+.bina-bas .sny{flex:none}
 .tr-bina{position:relative;z-index:1;display:flex;flex-direction:column;gap:6px}
 .tr-kat{border:1px solid var(--vscode-widget-border,rgba(128,128,128,.35));border-radius:5px;padding:4px 8px 6px;
   background:color-mix(in srgb,var(--vscode-editorWidget-background,transparent) 60%,transparent)}

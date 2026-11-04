@@ -455,8 +455,13 @@ export function grafParcasi(belge: string): string {
 // ── BÖLÜMLER ─────────────────────────────────────────────────────────────────
 
 export interface RayBolumu {
-  /** 🏢 PNL-A31: kat alanı taşıyan çalışma alanında yol haritasının tepesindeki bina başlığı. */
+  /**
+   * 🏢 PNL-A31: kat alanı taşıyan çalışma alanında yol haritasının tepesindeki bina başlığı. Başlık "Yol
+   * Haritası" bölüm başlığının ÜSTÜNDE durur ve kök satırının yerini alır (Founder onayı 2026-11-04 gecesi).
+   */
   bina?: BinaBasligi;
+  /** Tepeye taşınan kök satırının Dur ve Dikkat sayıları (alt ağacın toplamı). */
+  binaSinyali?: PanelSatiri["sinyal"];
   agac: string;
   /** Yol Haritası boşken ağaç yerine gösterilen cümle. */
   bosMesaj?: string;
@@ -500,7 +505,49 @@ export function rayBolumuHtml(b: RayBolumu): string {
   const graf = b.graf === undefined ? ""
     : kolon("graf", bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
       + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`));
-  return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${binaBasligiHtml(b.bina)}${ag}${bos}`))}${graf}</div>`;
+  const tepe = b.bina ? `<div id="${BINA_TEPESI_KIMLIGI}">${binaTepesiIcerik(b.bina, b.binaSinyali)}</div>` : "";
+  return `<div class="ray-duzen">${kolon("agac", tepe + bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
+}
+
+/** Ray sekmesinin tepesindeki bina başlığının parça kimliği (ağaç tazelenince yalnız bu parça yazılır). */
+export const BINA_TEPESI_KIMLIGI = "bina-tepe";
+
+/** Tepedeki bina başlığının içi: ad, logo, açıklama ve Dur ile Dikkat toplamı. */
+export function binaTepesiIcerik(bina: BinaBasligi, sinyal?: PanelSatiri["sinyal"]): string {
+  return binaBasligiHtml(bina, sinyal ? binaTepesiIsareti(sinyal) : "");
+}
+
+/**
+ * Tepedeki bina başlığının Dur ve Dikkat sayıları: kök satırının bütün alt ağacının toplamı. Başlık bir
+ * ağaç satırı olmadığı için açık-kapalı ayrımı yoktur ve sayılar yalnız bilgi verir.
+ */
+export function binaTepesiIsareti(s: NonNullable<PanelSatiri["sinyal"]>): string {
+  const n = s.toplam;
+  if (n.dur + n.dikkat <= 0) return "";
+  return `<span class="sny" title="${kacir(SINYAL_METINLERI.rayIsaretIpucu(n.dur, n.dikkat))}">`
+    + (n.dur ? `<span class="rozet dur">${n.dur}</span>` : "") + (n.dikkat ? `<span class="rozet dikkat">${n.dikkat}</span>` : "") + `</span>`;
+}
+
+/**
+ * 🏢 PNL-A31 (Founder onayı 2026-11-04 gecesi): binası çizilen kök satırını ağaçtan ayırır. Şirket yalnız
+ * bir kez, tepedeki başlıkta görünür; kökün alt ağacındaki satırlar bir kademe yukarı çıkar ve katlar
+ * doğrudan "Yol Haritası" başlığının altında açılır. Satır kimlikleri değişmez, böylece açık-kapalı
+ * tercihleri ve tıklama iletileri aynı satırlara gider. `kok` ağaçta kök kademesinde yoksa liste olduğu
+ * gibi döner.
+ */
+export function binaKokunuAyir<T extends { satir: PanelSatiri; oge: unknown }>(
+  tum: readonly T[], kok: unknown,
+): { tepe?: T; satirlar: T[] } {
+  const tepe = tum.find((u) => u.oge === kok && u.satir.derinlik === 0);
+  if (!tepe) return { satirlar: [...tum] };
+  const onek = `${tepe.satir.id}/`;
+  const satirlar: T[] = [];
+  for (const u of tum) {
+    if (u === tepe) continue;
+    if (u.satir.id.startsWith(onek)) u.satir.derinlik -= 1;
+    satirlar.push(u);
+  }
+  return { tepe, satirlar };
 }
 
 /** Tren şemasının iki parçası (tren-gorunum.ts `trenSemaHtml`): sol sütundaki şema ve sağ sütundaki profil. */

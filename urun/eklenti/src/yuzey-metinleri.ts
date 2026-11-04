@@ -2990,6 +2990,11 @@ export const BINA_METINLERI = {
     return yuzeyMetni(`${ad} ofisi\n${dizin}`, `${ad} office\n${dizin}`);
   },
   grupIpucu(ad: string, dizin: string): string { return `${ad}\n${dizin}`; },
+  /** Müşteri satırının ipucu: görünen ad, Profilin adı (görünen addan farklıysa) ve dizin. */
+  musteriIpucu(ad: string, profilAdi: string | undefined, dizin: string): string {
+    const ilk = profilAdi && profilAdi !== ad ? `${ad} · ${profilAdi}` : ad;
+    return yuzeyMetni(`Müşteri: ${ilk}\n${dizin}`, `Client: ${ilk}\n${dizin}`);
+  },
   /** Bina dışı satırı: katı ilan edilmemiş üst kitaplıkların adlarıyla. */
   binaDisiSatiri(adlar: readonly string[]): string {
     return [yuzeyMetni("Bina dışı", "Outside the building"), ...adlar].join(" · ");

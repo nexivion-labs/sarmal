@@ -41,14 +41,14 @@ import {
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
   kardesKarsilastir,   // MIM-1.2: kardeş sırası motorun Faz karşılaştırıcısından (KPS-SIR-A01)
-  binaAgaci, binaBirimi, kapsamIcinde, kendiDeposuMu, type BinaDugumu, type BinaRolu,   // PNL-A31: çalışma alanının bina ağacı ve eklentinin kendi deposu
+  binaAgaci, binaBirimi, kapsamIcinde, kendiDeposuMu, musteriAdi, type BinaDugumu, type BinaRolu,   // PNL-A31: çalışma alanının bina ağacı ve eklentinin kendi deposu
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
   IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, BINA_METINLERI,
 } from "./yuzey-metinleri.ts";
-import { binaOku, logoCoz, yolDuzle, type Bina, type BinaKitapligi } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
+import { binaOku, logoCoz, projeProfili, yolDuzle, type Bina, type BinaKitapligi, type BinaProfili } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
 import { existsSync, realpathSync, statSync } from "node:fs";
 import { BINA_SIMGESI } from "./bina-gorunum.ts";   // PNL-A31: bina ağacının codicon tablosu (tek kaynak)
 import { join as yolBirlestir, resolve as yolCoz } from "node:path";
@@ -126,7 +126,7 @@ type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup | KatOge;
  */
 interface KatOge {
   tur: "kat";
-  bicim: "kat" | "ofis" | "grup" | "disari";
+  bicim: "kat" | "ofis" | "grup" | "musteri" | "disari";
   /** Satırın kararlı kimliği (çalışma alanının kökü ve Kitaplık dizini ya da kat numarası). */
   anahtar: string;
   ad: string;
@@ -702,6 +702,22 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       });
       const agac = binaAgaci(bina, ek, yerlesen);
       if (!agac) continue;
+      // Müşterinin kimlik kartı: müşteri Kitaplığının içindeki Profil, yoksa müşterinin kendi proje
+      // kökünün Profili (Kitaplığın dizini bir varlık köküyse ya da müşteri serbest duran bir projeyse).
+      const musteriProfili = (d: Extract<BinaDugumu<Varlik>, { tur: "musteri" }>): BinaProfili | undefined => {
+        if (d.kitaplik?.profil) return d.kitaplik.profil;
+        const kendi = d.cocuklar.find((c): c is Extract<BinaDugumu<Varlik>, { tur: "varlik" }> =>
+          c.tur === "varlik" && yolDuzle(c.varlik.kokDizin) === yolDuzle(d.dizin));
+        const p = kendi?.varlik.anaSar ? programlar.get(kendi.varlik.anaSar) : undefined;
+        return p ? projeProfili(p) : undefined;
+      };
+      const musteriOgesi = (d: Extract<BinaDugumu<Varlik>, { tur: "musteri" }>, ust: PanelOge): KatOge => {
+        const profil = musteriProfili(d);
+        const tek = d.cocuklar[0]?.tur === "varlik" ? d.cocuklar[0].varlik : undefined;
+        const ad = musteriAdi(profil, d.kitaplik?.ad ?? (tek ? yuzeyAdi(tek.ad, tek.kod) : d.dizin.replace(/^.*\//, "")));
+        return { tur: "kat", bicim: "musteri", anahtar: `bina:${d.dizin}`, ad, ikon: BINA_SIMGESI.musteri,
+          aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.musteriIpucu(ad, profil?.ad, d.dizin), cocuklar: [], ust };
+      };
       const cevir = (d: BinaDugumu<Varlik>, ust: PanelOge): PanelOge => {
         if (d.tur === "varlik") {
           this.binaYeri.set(d.varlik, { rol: d.rol, ...(d.rol === "proje" && kendiDeposu(d.varlik.kokDizin) ? { marka: true } : {}) });
@@ -723,9 +739,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
                 aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.ofisIpucu(d.kitaplik.ad, d.kitaplik.dizin), cocuklar: [], ust }
             : d.tur === "grup"
               ? { tur: "kat", bicim: "grup", anahtar: `bina:${d.kitaplik.dizin}`, ad: d.kitaplik.ad,
-                  ...(d.musteri ? { ikon: BINA_SIMGESI.musteri } : d.disari ? { ikon: BINA_SIMGESI.disari } : {}),
+                  ...(d.disari ? { ikon: BINA_SIMGESI.disari } : {}),
                   aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.grupIpucu(d.kitaplik.ad, d.kitaplik.dizin), cocuklar: [], ust }
-              : { tur: "kat", bicim: "disari", anahtar: `bina:${cati.kokDizin}:disari`, ikon: BINA_SIMGESI.disari,
+              : d.tur === "musteri"
+                ? musteriOgesi(d, ust)
+                : { tur: "kat", bicim: "disari", anahtar: `bina:${cati.kokDizin}:disari`, ikon: BINA_SIMGESI.disari,
                   ad: BINA_METINLERI.binaDisiSatiri(d.kitapliklar.map((k) => k.ad)),
                   aciklama: d.cocuklar.length ? YOL_METINLERI.kumeAciklama(binaBirimi(d.cocuklar)) : "",
                   ipucu: BINA_METINLERI.binaDisiIpucu, cocuklar: [], ust };
@@ -771,8 +789,17 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
    * ilanı. Katsız çalışma alanında tanımsızdır ve tepede hiçbir şey çizilmez.
    */
   binaAl(): Bina | undefined {
-    for (const v of this.kokVarliklar()) { const b = this.binalar.get(v); if (b) return b.bina; }
-    return undefined;
+    const v = this.binaKoku();
+    return v ? this.binalar.get(v)!.bina : undefined;
+  }
+
+  /**
+   * 🏢 PNL-A31 (Founder onayı 2026-11-04 gecesi): binası çizilen kök çalışma alanının satırı. Ray sekmesi
+   * bu satırı ağaçtan çıkarıp tepeye taşır: şirket yalnız bir kez, logosuyla en üstte durur ve katlar
+   * doğrudan "Yol Haritası" başlığının altında açılır. Katsız çalışma alanında tanımsızdır.
+   */
+  binaKoku(): Varlik | undefined {
+    return this.kokVarliklar().find((v) => this.binalar.has(v));
   }
 
   varlikListesi(): Varlik[] { return this.varliklar; }
@@ -983,8 +1010,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   /**
    * 🏢 PNL-A31: bina ağacındaki varlık satırının simgesi (Founder onayı 2026-11-04): şirket kökü logo ya
-   * da `organization`, ofis `briefcase`, yönetim katının projesi `law`, müşteri `person`, proje `rocket`.
-   * Proje, yönetim ve müşteri simgesi durum rengini taşır. Tek istisna eklentinin kendi deposudur: o
+   * da `organization`, ofis `briefcase`, yönetim katının projesi `law`, proje `rocket`; müşteri satırı bir
+   * varlık değildir ve `person` simgesini kendi satırında taşır. Proje ve yönetim simgesi durum rengini taşır. Tek istisna eklentinin kendi deposudur: o
    * satır Sarmal'ın marka simgesini taşır (rengi kendi çiziminde, iki temada da aynı dosya).
    */
   private binaSimgesi(
@@ -997,7 +1024,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       return { light: marka, dark: marka };
     }
     const renk = ANLAM_TEMA_RENGI[anlam];
-    const ad = BINA_SIMGESI[yer?.rol === "yonetim" ? "yonetim" : yer?.rol === "musteri" ? "musteri" : "proje"];
+    const ad = BINA_SIMGESI[yer?.rol === "yonetim" ? "yonetim" : "proje"];
     return new vscode.ThemeIcon(ad, renk ? new vscode.ThemeColor(renk) : undefined);
   }
 

@@ -70,10 +70,10 @@ import type { BinaBasligi } from "./bina-gorunum.ts";
 import { join } from "node:path";
 import {
   type SekmeBolumu,
-  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
+  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, binaKokunuAyir, binaTepesiIcerik, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
   ayniSira, gorunurSatirlar, kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSirasiNormalle, sinyallerBolumuHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
-  type UretilenSatir, type UretimSecenekleri,
+  type UretilenSatir, type UretimSecenekleri, type PanelSatiri, BINA_TEPESI_KIMLIGI,
 } from "./panel-cekirdek.ts";
 import { BAGLAM } from "./bolum-cekirdek.ts";
 import { trenGitKonumu, trenSemaGorunumNormalle, trenSemaHtml, type TrenSemaGorunumu } from "./tren-gorunum.ts";
@@ -259,6 +259,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private kardesVar = false;
   private sonBos = false;
   private sonGraf = "";
+  /**
+   * 🏢 PNL-A31: Ray sekmesinin tepesindeki bina başlığının son çizimi; tanımsızsa tepe yoktur. Ağaç
+   * parçası tazelendiğinde başlık da kendi parçasıyla (`bina-tepe`) güncellenir, tepe doğup kaybolursa
+   * bölümün tamamı gönderilir.
+   */
+  private sonTepe: string | undefined;
+  /** Son Ray çiziminde tepeye taşınan kök satırı. */
+  private rayTepeSatiri: UretilenSatir | undefined;
   /**
    * Webview'deki Mini Graf son gönderilen çizimden yalnız betiğin taşıdığı seçim işaretiyle mi ayrılıyor
    * (PNL-A05)? Öyleyse bir sonraki çizim aynı olsa da gönderilir. Son gönderilen çizim bunun için
@@ -687,7 +695,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
    */
   private agacUret(k: Kaynak): { satirlar: UretilenSatir[]; html: string; ikonStili: string } {
     const defter = new IkonDefteri();
-    const tum = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
+    let tum = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
     for (const [id, v] of [...this.harita]) if (v.kaynak === k) this.harita.delete(id);
     for (const o of [...this.ogeKimligi]) if (o[1].startsWith(`${k}/`)) this.ogeKimligi.delete(o[0]);
     for (const u of tum) { this.harita.set(u.satir.id, { kaynak: k, u }); this.ogeKimligi.set(u.oge, u.satir.id); }
@@ -706,7 +714,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
           `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`);
       }
     }
-    if (k === "ray") this.raySinyalleriniYaz(tum);
+    if (k === "ray") {
+      this.raySinyalleriniYaz(tum);
+      // 🏢 PNL-A31: binanın kök satırı ağaçtan çıkar ve tepeye taşınır; altındakiler bir kademe yukarı çıkar.
+      const kok = this.g.yol.saglayici.binaKoku();
+      const ayrik = kok ? binaKokunuAyir(tum, kok) : { satirlar: tum, tepe: undefined };
+      tum = ayrik.satirlar;
+      this.rayTepeSatiri = ayrik.tepe;
+    }
     this.tumSatirlar[k] = tum;
     const satirlar = gorunurSatirlar(tum);
     this.sonSatirlar[k] = satirlar;
@@ -870,8 +885,10 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const graf = this.grafAcik() ? this.g.yol.miniGraf.html() : undefined;
       this.sonGraf = graf === undefined ? "" : grafParcasi(graf);
       this.grafIsaretli = false;
+      const tepe = this.rayTepesi();
+      this.sonTepe = tepe.bina ? binaTepesiIcerik(tepe.bina, tepe.binaSinyali) : undefined;
       return {
-        html: rayBolumuHtml({ bina: binaBasligiKur(this.g.yol.saglayici.binaAl()), agac: a.html, bosMesaj: bos, graf, kapali: this.kapaliBolumler() }),
+        html: rayBolumuHtml({ ...tepe, agac: a.html, bosMesaj: bos, graf, kapali: this.kapaliBolumler() }),
         ikonStili: a.ikonStili,
       };
     }
@@ -922,8 +939,30 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (k === "tren") { this.bolumGonder("tren"); return; }   // boş durum ve kardeş bağlantısı aynı bölümdedir
     if (k === "sinyaller") { this.bolumGonder("sinyaller"); return; }   // boş durum cümlesi aynı bölümdedir
     const a = this.agacUret(k);
+    if (k === "ray") {
+      // 🏢 PNL-A31: tepe doğdu ya da kayboldu → bölümün tamamı; değiştiyse yalnız tepe parçası.
+      const tepe = this.rayTepesi();
+      const yeni = tepe.bina ? binaTepesiIcerik(tepe.bina, tepe.binaSinyali) : undefined;
+      if ((yeni === undefined) !== (this.sonTepe === undefined)) { this.bolumGonder("ray"); return; }
+      if (yeni !== undefined && yeni !== this.sonTepe) {
+        this.sonTepe = yeni;
+        this.sayac.parca += 1;
+        this.yaz({ tip: "parca", sekme: "ray", kimlik: BINA_TEPESI_KIMLIGI, html: yeni, ikonStili: "", gec: this.gorulenGec });
+      }
+    }
     this.sayac.parca += 1;
     this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili, gec: this.gorulenGec });
+  }
+
+  /**
+   * 🏢 PNL-A31: Ray sekmesinin tepesindeki bina başlığı: binanın adı ve logosu, tepeye taşınan kök
+   * satırının açıklaması (etkinlik ve proje sayısı) ve alt ağacın Dur ve Dikkat toplamı.
+   */
+  private rayTepesi(): { bina?: BinaBasligi; binaSinyali?: PanelSatiri["sinyal"] } {
+    const bina = binaBasligiKur(this.g.yol.saglayici.binaAl());
+    if (!bina) return {};
+    const t = this.rayTepeSatiri?.satir;
+    return { bina: { ...bina, ...(t?.aciklama ? { aciklama: t.aciklama } : {}) }, ...(t?.sinyal ? { binaSinyali: t.sinyal } : {}) };
   }
 
   private grafCiz(): void {
@@ -944,6 +983,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   /** Yalnız bir satırı ilgilendiren değişim: satır yeniden kurulur ve yamalanır. */
   private satirYama(k: Kaynak, oge: unknown): void {
     if (!this.gorunum || !this.gorunum.visible) return;
+    // 🏢 PNL-A31: tepeye taşınan kök satırının ağaçta karşılığı yoktur; değişimi tepe parçasına iner.
+    if (k === "ray" && this.rayTepeSatiri && oge === this.rayTepeSatiri.oge) { this.agacTazele("ray"); return; }
     const id = this.ogeKimligi.get(oge);
     if (!id) return;
     const eski = this.harita.get(id);
