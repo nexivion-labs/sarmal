@@ -331,6 +331,11 @@ test("satır nöbeti: hiçbir panel hazır ikon kimliğine GERİ DÜŞMEZ — co
   //     codicon fontu basabilir (SVG kabul etmez); satır ikonu değildir.
   //   • Onaylar dosya satırının teknoloji simgesi — kendi tek kaynağı
   //     teknoloji-simgesi.ts'dir ve dosyanın teknoloji kimliğini taşır.
+  //   • Yol Haritasının bina ağacı (PNL-A31 · Founder onayı 2026-11-04): Founder
+  //     kök, ofis, yönetim, proje, müşteri ve bina dışı satırları için codicon
+  //     kimliklerini açıkça seçmiştir. Kimlikler tek kaynakta, bina-gorunum.ts
+  //     BINA_SIMGESI tablosunda yaşar ve yolharitasi.ts onları literal yazmaz;
+  //     bina dışındaki her satır geometrik aileden okunmaya devam eder.
   const paneller = [
     "src/yolharitasi.ts", "src/hatirlaticilar.ts",
     "src/bildirimler.ts", "src/onay-paneli.ts", "src/onay-govde.ts",

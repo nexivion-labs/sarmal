@@ -2979,21 +2979,26 @@ export const SINYAL_METINLERI = {
 // ── 🏢 PNL-A31: ÇALIŞMA ALANININ KATLARI VE LOGOSU ──────────────────────────
 /** Bina görünümünün metinleri: yol haritasının kat bantları ve Tren şemasının bantları. */
 export const BINA_METINLERI = {
-  /** Kat bandının adı; birinci kat yönetim katıdır (Founder 2026-11-04). */
+  /** Kat bandının adı; birinci kat yönetim katı, üst katlar ofislerdir (bina modeli · Founder şeması 2026-11-04). */
   katAdi(kat: number): string {
-    return kat === 1 ? yuzeyMetni("1. Kat · Yönetim", "Floor 1 · Management") : yuzeyMetni(`${kat}. Kat`, `Floor ${kat}`);
+    return kat === 1 ? yuzeyMetni("1. Kat · Yönetim", "Floor 1 · Management") : yuzeyMetni(`${kat}. Kat · Ofisler`, `Floor ${kat} · Offices`);
   },
-  get binaDisi(): string { return yuzeyMetni("Bina dışı", "Outside the building"); },
-  katAciklamasi(kitapliklar: readonly string[], proje: number): string {
-    const sayi = proje ? yuzeyMetni(`${proje} proje`, `${proje} project${proje === 1 ? "" : "s"}`) : yuzeyMetni("boş kat", "empty floor");
-    return [kitapliklar.join(" · "), sayi].filter(Boolean).join(" — ");
+  katIpucu(ad: string): string {
+    return yuzeyMetni(`${ad}\nBu kat, kat alanı taşıyan kitaplıklardan okunur.`, `${ad}\nThis floor is read from the libraries that carry a floor field.`);
   },
-  get binaDisiAciklamasi(): string { return yuzeyMetni("katı ilan edilmemiş kitaplıklar", "libraries without a declared floor"); },
-  katIpucu(ad: string, kitapliklar: readonly string[]): string {
-    return kitapliklar.length
-      ? yuzeyMetni(`${ad}\nBu kat şu kitaplıkların kat alanından okunur: ${kitapliklar.join(", ")}`, `${ad}\nThis floor is read from the floor field of: ${kitapliklar.join(", ")}`)
-      : yuzeyMetni(`${ad}\nKat alanı taşımayan kitaplıkların projeleri`, `${ad}\nProjects of libraries without a floor field`);
+  ofisIpucu(ad: string, dizin: string): string {
+    return yuzeyMetni(`${ad} ofisi\n${dizin}`, `${ad} office\n${dizin}`);
   },
+  grupIpucu(ad: string, dizin: string): string { return `${ad}\n${dizin}`; },
+  /** Bina dışı satırı: katı ilan edilmemiş üst kitaplıkların adlarıyla. */
+  binaDisiSatiri(adlar: readonly string[]): string {
+    return [yuzeyMetni("Bina dışı", "Outside the building"), ...adlar].join(" · ");
+  },
+  get binaDisiIpucu(): string {
+    return yuzeyMetni("Kat alanı taşımayan kitaplıklar ve onların projeleri", "Libraries without a floor field and their projects");
+  },
+  /** Yönetim katındaki projenin açıklaması (kanun, karar ve arayüz dili yönetim katında yaşar). */
+  get yonetimAciklamasi(): string { return yuzeyMetni("kanun · karar · dil", "law · decision · language"); },
   logoAlt(ad: string): string { return yuzeyMetni(`${ad} logosu`, `${ad} logo`); },
   // Tren şemasının bantları
   get kanonBasligi(): string { return yuzeyMetni("Kanon", "Canon"); },

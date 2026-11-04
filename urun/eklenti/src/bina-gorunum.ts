@@ -17,6 +17,21 @@
 import { BINA_METINLERI } from "./yuzey-metinleri.ts";
 import { TREN_DAR_PX } from "./tren-betik.ts";
 
+/**
+ * Bina ağacının simgeleri (Founder onayı 2026-11-04): türe göre tek simge ve her biri bir VS Code
+ * codicon kimliğidir. Panel webview'i codicon yazı tipi taşımadığı için her kimliğin çizimi
+ * panel-cekirdek.ts `TEMA_IKONLARI` tablosundadır. Kökte logo gösterilebiliyorsa logo kullanılır;
+ * eklentinin kendi deposu roket yerine marka simgesini taşır (yolharitasi.ts `MARKA_SIMGESI`).
+ */
+export const BINA_SIMGESI = {
+  kok: "organization",
+  yonetim: "law",
+  ofis: "briefcase",
+  proje: "rocket",
+  musteri: "person",
+  disari: "archive",
+} as const;
+
 /** Binanın tepesi: çalışma alanının adı ve (gösterilebilirse) logonun veri adresi. */
 export interface BinaBasligi { ad: string; logo?: string }
 

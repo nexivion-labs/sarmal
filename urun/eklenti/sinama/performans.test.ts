@@ -699,11 +699,15 @@ test("PRF-TA-A06 · yol haritası kaynağında zamanlayıcı yoktur, izleyici ya
     /kok\.fsPath, g\), "utf8"\)/,                 // SVG simge varlığı (eklenti kökü)
     /context\.extensionUri\.fsPath, g\), "utf8"\)/, // SVG simge varlığı (eklenti kökü)
     /readFileSync\(anaSar, "utf8"\)/,             // varlikBul: tur dışı dosyanın aidiyeti için giriş dosyası
+    // PNL-A31 (Founder şeması 2026-11-04): bina ağacının tek okuma kapısı. Yalnız kat alanı taşıyan
+    // çalışma alanında, tur başına bina içindeki varlık köklerinin git yapılandırması (eklentinin kendi
+    // deposunu tanımak için) ve çalışma alanının logosu okunur.
+    /function binaDosyasi\(yol: string\)[^\n]*|statSync\(yol\)\.isFile\(\) \? readFileSync\(yol, "utf8"\)/,
   ];
   for (const s of okumaSatirlari) {
     assert.ok(izinli.some((re) => re.test(s)), `izin listesinde olmayan disk okuması: ${s.trim().slice(0, 120)}`);
   }
-  assert.ok(okumaSatirlari.length <= 5, `disk okuması sayısı büyüdü (${okumaSatirlari.length}); yeni okuma önce gerekçesiyle izin listesine girer`);
+  assert.ok(okumaSatirlari.length <= 6, `disk okuması sayısı büyüdü (${okumaSatirlari.length}); yeni okuma önce gerekçesiyle izin listesine girer`);
   // Belge açma: yalnız kullanıcı gezinmesi ve her biri sayaçtan geçer (SIFIR nöbeti sayar); burada tavan ölçülür.
   assert.ok(say(/openTextDocument\s*\(/g) <= 2, "panelde iki kullanıcı gezinmesinden fazla belge açma var");
 });

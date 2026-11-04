@@ -143,6 +143,13 @@ const TEMA_IKONLARI: Readonly<Record<string, string>> = {
   "pass": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.4 8.2l1.8 1.8 3.5-3.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`,
   "circle-large-outline": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/>`,
   "circle-slash": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.2 11.8l7.6-7.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`,
+  // 🏢 PNL-A31 bina ağacı (Founder onayı 2026-11-04): codicon kimlikleri, panelin kendi çizimiyle.
+  "organization": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="4.4" r="2"/><path d="M4.6 11.6a3.4 3.4 0 0 1 6.8 0"/><circle cx="3.2" cy="7.2" r="1.4"/><circle cx="12.8" cy="7.2" r="1.4"/><path d="M1 12.6a2.4 2.4 0 0 1 3-2.2M15 12.6a2.4 2.4 0 0 0-3-2.2"/></g>`,
+  "law": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.2v11M5 13.6h6M2.8 4.4h10.4M2.8 4.4 1.3 8.6M2.8 4.4l1.5 4.2M13.2 4.4l-1.5 4.2M13.2 4.4l1.5 4.2"/><path d="M1.1 8.6h3.4a1.7 1.7 0 0 1-3.4 0zM11.5 8.6h3.4a1.7 1.7 0 0 1-3.4 0z"/></g>`,
+  "briefcase": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="4.8" width="12.4" height="8.6" rx="1.2"/><path d="M5.8 4.8 L5.8 2.6 L10.2 2.6 L10.2 4.8 M1.8 8.6 L14.2 8.6"/></g>`,
+  "rocket": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.6c2.2 1.6 3.2 4 3 7l-1.4 2.4H6.4L5 8.6c-.2-3 .8-5.4 3-7z"/><circle cx="8" cy="6" r="1.1"/><path d="M5 8.6 3.2 10.8l2.4.5M11 8.6l1.8 2.2-2.4.5M7 13l1 1.6 1-1.6"/></g>`,
+  "person": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="2.6"/><path d="M3 14a5 5 0 0 1 10 0"/></g>`,
+  "archive": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="2.6" width="12.4" height="3.2" rx=".6"/><path d="M2.8 5.8 L2.8 13.4 L13.2 13.4 L13.2 5.8 M6.4 8.4 L9.6 8.4"/></g>`,
   "sync": `<g class="don"><path d="M13 8a5 5 0 0 1-8.6 3.5M3 8a5 5 0 0 1 8.6-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12.4 2.4l0 2.5H9.9M3.6 13.6v-2.5h2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`,
 };
 

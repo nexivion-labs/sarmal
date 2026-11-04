@@ -2,6 +2,12 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.203 — 2026-11-04 (Binanın ağacı)
+
+- **Kat, ofis ve proje kademeleri.** Kat ilan eden bir çalışma alanında yol haritası Kitaplık düzeninden türeyen bir bina ağacı çizer: kökün altında "1. Kat · Yönetim" ve "2. Kat · Ofisler" gibi kat satırları, üst katlarda her ofisin kendi satırı ve proje sayısı, ofislerin altında projeler durur. Ofisin içinde proje taşıyan bir grup Kitaplık kendi satırıyla görünür ve bu grubun çocukları ofisin müşterileri sayılır; katı olmayan kitaplıklar en altta tek bir "Bina dışı" satırında anılır. Ağaç hiçbir adı elle tutmaz; adlar ve sıra anadizinlerden okunur.
+- **Türe göre tek simge.** Şirket kökü logosunu ya da logo gösterilemiyorsa kurum simgesini, yönetim katının projeleri terazi, ofisler çanta, projeler roket, müşteriler kişi, bina dışı arşiv simgesi taşır; proje simgesi durum rengini korur. Tek istisna eklentinin kendi deposudur: git uzak adresi eklentinin depo adresiyle aynı olan proje Sarmal'ın marka simgesini taşır.
+- **Değişmeyenler.** Kat ilan etmeyen çalışma alanının, kendi kökünden açılan bir ofisin ve tek proje kökünün görünümü önceki gibidir.
+
 ## 0.9.202 — 2026-11-04 (Çalışma alanının katları ve logosu)
 
 - **Bina görünümü.** Kitaplık düğümü isteğe bağlı `kat:` alanını, ÇalışmaAlanı düğümü isteğe bağlı `logo:` alanını taşıyabilir. Kat ilan eden bir çalışma alanında yol haritası projeleri kat bantlarında, katsız kitaplıkları bina dışı şeridinde gösterir ve tepede logoyu çizer; Tren sekmesindeki şirket şeması aynı katlara bölünür, en üst katta kanon kutusu, lider koltuğu ve iş akışı ajanları için yuvalar durur. Kat ilan etmeyen çalışma alanlarının görünümü değişmez.
