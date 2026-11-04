@@ -28,7 +28,7 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 | Kaynak | SHA-256 |
 |---|---|
-| `yasa/kanon demeti (A03 formülü)` | `4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6` |
+| `yasa/kanon demeti (A03 formülü)` | `cb0b42e7fb6ae3161c8879c8f12f9363c4360c84e28c9fe9ede84195e8bbfadb` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
@@ -40,6 +40,20 @@ sonlarıyla birleştirilir ve bu demetin SHA-256 özeti alınır.
 
 Tazeleme notları aşağıdadır ve tabloyu bölmemeleri için buraya toplanmıştır;
 her not hangi kaynağın niçin ilerlediğini söyler.
+
+Tazeleme notu (2026-11-03 · klasör mührü · KPS-MHR-A02): Founder'ın 2026-11-03
+hükmüyle MIM-3.4 maddesi, dosya mührünün bir klasörün adına da basılabileceğini ve
+o hâlde klasörün bütün içeriğini kapsadığını söyleyecek biçimde genişletilmiştir.
+Hüküm, gerekçe, örnek ve zorlama parçalarına yalnız yeni cümleler eklenmiş, dosya
+mührüne ilişkin mevcut cümlelerin hiçbirinin metni değişmemiştir. Değişiklik yalnız
+`mim.sar` dosyasının baytlarını değiştirdiği için kaynak mühürlerinden yalnız kanon
+demeti ilerlemiş ve aynı dosyanın `urun/cekirdek/sinama/kanon-tutarlilik.test.ts`
+içindeki SHA-256 satırı tazelenmiştir; öteki sekiz kaynağın mührü değişmemiştir.
+Kanonun madde sayısı ve Karar ile Kural dağılımı değişmemiştir, çünkü yeni bir madde
+doğmamış ve yeni bir tanı kimliği eklenmemiştir. Ardından `kanon-tutarlilik-uret` ve
+`belge-yuzleri-uret` üreticileri yeniden koşturulmuştur: kanon tutarlılık yüzü
+yalnız mühür satırlarında tazelenmiş, on altı belge yüzünün hiçbiri değişmemiş ve
+ikinci koşu sıfır fark vermiştir.
 
 Tazeleme notu (2026-10-28 · tanıların Sinyaller yüzü · PNL-A20): Founder'ın
 2026-10-28 hükmüyle (OZK-14) YUZ-3.1 maddesinin hüküm, gerekçe ve örnek metni

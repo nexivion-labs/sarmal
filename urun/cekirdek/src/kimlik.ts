@@ -360,10 +360,59 @@ export function dosyaMuhru(yol: string): DosyaMuhru | undefined {
   return m && tur ? { etiket: m[1], tur } : undefined;
 }
 
-/** Motorun İÇERİĞİNİ OKUMADIĞI mühürlü dosya: arşiv ya da sonra mührü. */
+// ── KPS-MHR-A02 · KLASÖR MÜHRÜ (MIM-3.4 · Founder hükmü 2026-11-03) ──────────
+//   Aynı mühür bir klasörün ADINA da basılabilir ve o klasörün bütün içeriğini
+//   kapsar. Biçim ve küme dosya mührününkiyle aynıdır, dolayısıyla klasör adı da
+//   `dosyaMuhru` çözücüsünden geçer; ikinci bir desen yazılmaz. Klasör mührü bir
+//   ad tahmini değildir: `arsiv/` adlı bir klasör hiçbir şey beyan etmez, yalnız
+//   `@ARSIV@_` önekiyle yazılmış ad beyan eder. Yol köke GÖRELİ verilmelidir;
+//   kökün üstündeki klasörlerin adı ölçüme katılmaz, çünkü kullanıcının
+//   çalışma alanının nerede yaşadığı onun içeriği hakkında bir beyan değildir.
+
+/** Çözülmüş klasör mührü: mührün kendisi ve mühürlü klasörün köke göreli yolu. */
+export interface KlasorMuhru extends DosyaMuhru { klasor: string }
+
+/**
+ * TEK ÇÖZÜCÜ (klasör yüzü): köke göreli bir DOSYA yolunun klasör parçalarından
+ * geçerli bir mühür taşıyanı döndürür; son parça dosya adıdır ve sayılmaz. Arşiv
+ * ya da sonra mührü eğitim mühründen ağır basar, çünkü okunmayan bir klasörün
+ * içi hiçbir derinlikte okunmaz; aynı türden iki mühürde en dıştaki kazanır.
+ */
+export function klasorMuhru(yol: string): KlasorMuhru | undefined {
+  const parcalar = yol.split(/[\\/]/).filter((p) => p.length > 0);
+  let egitim: KlasorMuhru | undefined;
+  for (let i = 0; i < parcalar.length - 1; i++) {
+    const m = dosyaMuhru(parcalar[i]);
+    if (!m) continue;
+    const bulunan = { ...m, klasor: parcalar.slice(0, i + 1).join("/") };
+    if (m.tur !== "eğitim") return bulunan;
+    egitim ??= bulunan;
+  }
+  return egitim;
+}
+
+/** Motorun İÇERİĞİNİ OKUMADIĞI mühürlü dosya: adında ya da köke göreli yolunun
+ *  bir klasör parçasında arşiv ya da sonra mührü taşır (MIM-3.4). */
 export function okunmazMuhurlu(yol: string): boolean {
   const tur = dosyaMuhru(yol)?.tur;
-  return tur === "arşiv" || tur === "sonra";
+  if (tur === "arşiv" || tur === "sonra") return true;
+  const klasor = klasorMuhru(yol)?.tur;
+  return klasor === "arşiv" || klasor === "sonra";
+}
+
+/**
+ * Bir KLASÖR adının mühür biçimine uyup uymadığını ölçer. Klasör adında büyük harf
+ * dosya adındaki gibi yasak değildir; bu yüzden yalnız mühüre benzeyen ad ölçülür:
+ * `@` ile başlayan ya da `@ETİKET@` parçası taşıyan ad geçerli bir mühür değilse,
+ * ya da geçerli mührü izleyen ad büyük harf taşıyorsa kusur döner.
+ */
+export function klasorAdiKusuru(ad: string): DosyaAdiKusuru | undefined {
+  const m = DOSYA_MUHRU_BICIMI.exec(ad);
+  if (m) {
+    if (!DOSYA_MUHRU_KUMESI.has(m[1])) return { kusur: "bilinmeyen-etiket", etiket: m[1] };
+    return /\p{Lu}/u.test(ad.slice(m[0].length)) ? { kusur: "mühür-sonrası-büyük-harf", etiket: m[1] } : undefined;
+  }
+  return ad.startsWith("@") || /@\p{Lu}+@/u.test(ad) ? { kusur: "bozuk-biçim" } : undefined;
 }
 
 /** Dosya adının MIM-3.4 biçim kusuru. */
@@ -404,7 +453,8 @@ const EGITIM_ETIKETI = [...DOSYA_MUHRU_KUMESI].find(([, tur]) => tur === "eğiti
 export const DERS_DUNYASI = new RegExp(
   String.raw`(^|\/)ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)(\/|$)` +
   // KPS-MHR-A01 · MIM-3.4: eğitim mührü taşıyan dosya da ders dünyasıdır (OGR-5).
-  `|(^|\/)@${EGITIM_ETIKETI}@_[^/]*$`,
+  // KPS-MHR-A02: aynı mührü taşıyan KLASÖRÜN bütün içeriği de ders dünyasıdır.
+  `|(^|\/)@${EGITIM_ETIKETI}@_[^/]*(\\/|$)`,
 );
 
 /** BAĞIMLILIK VE DERLEME ÇIKTISI — yol parçası NEREDE geçerse geçsin taranmaz.
@@ -415,8 +465,14 @@ export const URETILMIS_GOVDE = /(^|\/)(?:node_modules|dist|dist-sinama)(\/|$)/;
 
 /** İNDEKS KAPSAMI DIŞI = ders dünyası ∪ üretilmiş gövde. Kimlik indeksinin ve
  *  eklenti beslemesinin kapsam kararı iki gerekçeyi birlikte sorar; OGR-5
- *  muafiyeti soran çağrı yerleri ise `DERS_DUNYASI` desenini tek başına okur. */
-export const INDEKS_DISI = /(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)|node_modules|dist|dist-sinama)(\/|$)/;
+ *  muafiyeti soran çağrı yerleri ise `DERS_DUNYASI` desenini tek başına okur.
+ *  KPS-MHR-A02: eğitim mühürlü bir KLASÖRÜN içi de ders rafı gibi bu kapsamın
+ *  dışındadır; içindeki Proje kök sayılmaz. Dal yalnız klasörü yakalar (adı
+ *  eğik çizgi izler), dolayısıyla eğitim mühürlü dosyanın mevcut davranışı değişmez. */
+export const INDEKS_DISI = new RegExp(
+  String.raw`(^|\/)(?:ogreti\/(?:[^/]+\/)*(?:arsiv|ornek|fikstur|sablon)|node_modules|dist|dist-sinama)(\/|$)` +
+  String.raw`|(^|\/)@` + EGITIM_ETIKETI + String.raw`@_[^/]*\/`,
+);
 
 /** AYRIŞTIRILMAYAN SENTETİK GÖVDE — yer tutucu taşıyan şablon, kapatılmış arşiv ve
  *  sınama fikstürü. İki demirli evi vardır ve ikisi de klasörün ADINDAN değil
@@ -862,6 +918,8 @@ export function catiIlaniProjeleri(catiDosyasi: string, program: Program): Map<s
         const rafKod = dugumKodu(c);
         const yol = widgetAlani(c, "yol");
         if (!rafKod || !yol) continue;
+        // KPS-MHR-A02 · MIM-3.4: mühürlü klasördeki Proje kökü canlı bağ kurmaz (bkz. catiKardesleri).
+        if (okunmazMuhurlu(`${yol.replaceAll("\\", "/").replace(/\/+$/, "")}/_`)) continue;
         const rafDizini = resolve(catiDizini, yol);
         let girisler: string[];
         try { girisler = readdirSync(rafDizini); } catch { continue; }
@@ -948,6 +1006,10 @@ export function catiKardesleri(baslangicDizin: string): KardesProje[] {
       if (!raflar.length) continue;
       const kardesler: KardesProje[] = [];
       for (const yol of raflar) {
+        // KPS-MHR-A02 · MIM-3.4: arşiv ya da sonra mühürlü bir klasörün içindeki
+        // Proje kökü kardeş sayılmaz ve ad alanı çözümüne girmez. Raf yolu çatıya
+        // görelidir; son parça da klasördür, bu yüzden yol bir dosya adıyla uzatılır.
+        if (okunmazMuhurlu(`${yol.replaceAll("\\", "/").replace(/\/+$/, "")}/_`)) continue;
         const kok = resolve(d, yol);
         for (const p of anadizinProgramlari(kok)) {
           for (const b of p.bildirimler) {
@@ -1245,7 +1307,9 @@ export function dizindenIndeks(dizin: string): KimlikIndeksi {
       if (g.isDirectory()) {
         // KPS-IND-A01: sınama TAM YOLA yapılır, klasör adına değil — ders dışlaması
         // öğreti kitaplığına demirlendiği için ad tek başına hüküm veremez.
-        if (!INDEKS_DISI.test(yol.replaceAll("\\", "/") + "/")) gez(yol);
+        // KPS-MHR-A02 · MIM-3.4: mühürlü klasörün içi kod dizinine girmez — arşiv ile
+        // sonra okunmaz, eğitim ise mühürlü dosya gibi indeks kapsamının dışındadır.
+        if (!INDEKS_DISI.test(yol.replaceAll("\\", "/") + "/") && !dosyaMuhru(g.name)) gez(yol);
       } else if (INDEKS_DOSYASI.test(g.name) && !dosyaMuhru(g.name)) {
         // KPS-MHR-A01 · MIM-3.4: mühürlü dosya kod dizinine girmez — arşiv ile sonra
         // okunmaz, eğitim ise ders rafı gibi indeks kapsamının dışındadır.

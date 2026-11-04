@@ -39,7 +39,7 @@ import { onekSiciliOku, kodStandardiHukmu, type OnekSicili } from "./kod-standar
 import { girintiYapiFarklari } from "./bicimle.ts";   // KPS-SIR-A02: girinti-yapı-uyumsuz biçimlendiricinin kendi derinlik kuralından okunur
 import { kurallariCikar, ciftCatismasi, KAPSAM_JOKER, ebediEnvanter } from "./kuralci.ts";
 import type { KuralBilgi } from "./kuralci.ts";
-import { DERS_DUNYASI, AYRISTIRILMAZ_SENTETIK, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, MADDE_KUYRUGU, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01) · HST-MTR-A10: şekil süzgecinin madde kuyruğu kimlik tanımından
+import { DERS_DUNYASI, AYRISTIRILMAZ_SENTETIK, dosyaMuhru, okunmazMuhurlu, dosyaAdiKusuru, klasorAdiKusuru, klasorMuhru, DOSYA_MUHRU_KUMESI, DOSYA_MUHRU_BICIMI, kapsamOneki, adAlaniAyir, projeKapsamlari, sahipProjeKapsami, kesinProjeKapsami, onekKapsar, adAlaniKapsamiKur, MADDE_KUYRUGU, type AdAlaniKapsami, type KimlikIndeksi, type ProjeKapsami } from "./kimlik.ts";   // kanıt-ekseni turu: gezginin GÖZÜ ödünç (indeksler AYRI) · OGR-5: ders-kapsamı tek kaynaktan · ORK-4: proje kapsamı TEK kaynaktan (KPS-ADA-A01) · HST-MTR-A10: şekil süzgecinin madde kuyruğu kimlik tanımından
 import { rbacGrafDenetle, rbacKapsami } from "./rbac.ts";   // V1B-RBAC-A01: RBAC ihlalleri proje-çapı akışa iş bölümü kapısından katılır; kapsam süzgeci iki yüzeyde ortaktır
 import { GIZLI_KOK_ADI } from "./kok-yuzeyi.ts";   // açık-gizli sınır nöbeti kapalı ürünün kök adını TEK kaynaktan okur (ad koda gömülü kalırsa yeniden adlandırmada nöbet sessizce körleşir)
 
@@ -66,6 +66,9 @@ export interface DiskAnlikGoruntu {
    * disk mutabakatı, ilan yokluğu ve yetim bekçileri onları görmez. Ayrı listede
    * tutulmalarının tek sebebi mührün sessiz olmamasıdır: denetim onları türüyle
    * ve adıyla listeler. Eğitim mührü burada değildir, çünkü o dosya okunur.
+   * KPS-MHR-A02: arşiv ya da sonra mühürlü KLASÖR de `dizin` türüyle burada
+   * durur; içine inilmediği için içindeki hiçbir dosya ne burada ne `girdiler`
+   * listesinde görünür.
    */
   muhurlular?: DiskGirdi[];
 }
@@ -110,6 +113,10 @@ export function diskTara(kok: string): DiskAnlikGoruntu {
         // YOKSAY klasörü KAYDEDİLİR (kayıp-yapı görsün, yapı-aynası tam) ama İÇİNE
         // İNİLMEZ — içeriği parse/taranmaz (şablon placeholder'ı · arşiv · build çöpü).
         girdiler.push({ tur: "dizin", yol });
+        // KPS-MHR-A02 · MIM-3.4: arşiv ya da sonra mühürlü klasör kayda alınır fakat
+        // içine inilmez; yalnız listelenmek üzere mühürlüler listesine de yazılır.
+        // Eğitim mühürlü klasörün içine inilir, çünkü içerik okunur ve doğrulanır.
+        if (okunmazMuhurlu(`${yol}/_`)) { muhurlular.push({ tur: "dizin", yol }); continue; }
         // Sentetik gövde sınaması TAM YOLA yapılır, klasör adına değil (KPS-IND-A01).
         if (!YOKSAY.has(d.name) && !AYRISTIRILMAZ_SENTETIK.test(yol)) gez(yol);
       } else if (d.isFile()) {
@@ -343,7 +350,55 @@ export function dosyaMuhruTanilari(
       }, konum), hedefDosya } });
     }
   }
+  // KPS-MHR-A02 · KLASÖR MÜHRÜ: mühürlü klasör de aynı üç tanıyla ve aynı yere
+  // yazılır; `yer` parametresi cümleyi klasöre göre kurar. Yol ile hedef eğik
+  // çizgiyle biter (`beyansız-yapı` emsali), böylece yüzey hedefi klasör sayar.
+  // Arşiv ile sonra mühürlü klasör `muhurlular` listesinden, eğitim mühürlü ve
+  // geçersiz adlı klasör ise içine inilen olağan listeden okunur.
+  const dizinler = [...disk.girdiler, ...(disk.muhurlular ?? [])]
+    .filter((g) => g.tur === "dizin")
+    .map((g) => g.yol)
+    .sort((a, b) => a.localeCompare(b, "tr"));
+  for (const dizin of [...new Set(dizinler)]) {
+    const ad = dizin.slice(dizin.lastIndexOf("/") + 1);
+    const muhur = dosyaMuhru(ad);
+    const yol = `${dizin}/`;
+    const hedefDosya = `${posix.relative(posix.dirname(anaEtiket), dizin)}/`;
+    if (muhur?.tur === "sonra") {
+      const t = tarihCoz(kok, dizin);
+      const gun = t ? Math.max(0, Math.floor((Date.parse(bugun) - Date.parse(t.tarih)) / GUN_MS)) : undefined;
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("sonraya-bırakılmış-dosya", {
+        yol, yer: "klasör", etiket: muhur.etiket, gün: gun ?? "?", tarih: t?.tarih ?? "?", kaynak: t?.kaynak ?? "yok", canlı: `${muhursuzYol(dizin)}/`,
+      }, konum), hedefDosya } });
+    } else if (muhur) {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("dosya-mührü", {
+        yol, yer: "klasör", etiket: muhur.etiket, tür: muhur.tur, canlı: `${muhursuzYol(dizin)}/`,
+      }, konum), hedefDosya } });
+    }
+    const kusur = klasorAdiKusuru(ad);
+    if (kusur) {
+      out.push({ dosya: anaEtiket, tani: { ...yeniTani("geçersiz-dosya-adı", {
+        yol, yer: "klasör", kusur: kusur.kusur, etiket: "etiket" in kusur ? kusur.etiket : undefined, küme: kume,
+        öneri: `${dizin.slice(0, dizin.length - ad.length)}${onerilenKlasorAdi(ad, kusur)}/`,
+      }, konum), hedefDosya } });
+    }
+  }
   return out;
+}
+
+/** Kusurlu bir klasör adının yapıştırılabilir düzeltmesi (KPS-MHR-A02). Klasör adında
+ *  büyük harf serbest olduğu için yalnız mühür parçası düzeltilir. */
+function onerilenKlasorAdi(ad: string, kusur: NonNullable<ReturnType<typeof klasorAdiKusuru>>): string {
+  const m = DOSYA_MUHRU_BICIMI.exec(ad);
+  if (kusur.kusur === "mühür-sonrası-büyük-harf" && m) return m[0] + kucukAd(ad.slice(m[0].length));
+  if (kusur.kusur === "bilinmeyen-etiket" && m) return ad.slice(m[0].length);
+  // Bozuk biçim: etiket büyük/küçük harf farkıyla ya da yanlış yerde kümedeyse doğru biçim önerilir.
+  const gevsek = /@+([^@/]+)@+_?/u.exec(ad);
+  if (gevsek && DOSYA_MUHRU_KUMESI.has(gevsek[1].toUpperCase())) {
+    const kalan = (ad.slice(0, gevsek.index) + ad.slice(gevsek.index + gevsek[0].length)).replace(/^_+|_+$/g, "");
+    return `@${gevsek[1].toUpperCase()}@_${kucukAd(kalan)}`;
+  }
+  return ad.replace(/@/g, "");
 }
 
 /**
@@ -358,8 +413,26 @@ export function arsivEbediEnvanteri(
   disk: DiskAnlikGoruntu,
 ): Map<string, { yol: string; satir: number; sutun: number }> {
   const env = new Map<string, { yol: string; satir: number; sutun: number }>();
+  // KPS-MHR-A02: arşiv mühürlü bir KLASÖRÜN içindeki her `.sar` dosyası da bu
+  // okumaya girer, çünkü klasör mührü ebedî kuralı graftan dosya mührü kadar
+  // sessiz düşürür. Yürüyüş disk taramasının gizli ve YOKSAY kuralını izler.
+  const arsivDosyalari: string[] = [];
+  const klasorGez = (goreli: string): void => {
+    let girisler: Dirent[];
+    try { girisler = readdirSync(join(kok, goreli), { withFileTypes: true }); } catch { return; }
+    for (const e of girisler) {
+      if (e.name.startsWith(".") || YOKSAY.has(e.name) || e.isSymbolicLink()) continue;
+      const alt = `${goreli}/${e.name}`;
+      if (e.isDirectory()) klasorGez(alt);
+      else if (e.isFile() && e.name.endsWith(".sar")) arsivDosyalari.push(alt);
+    }
+  };
   for (const g of disk.muhurlular ?? []) {
-    if (g.tur !== "dosya" || dosyaMuhru(g.yol)?.tur !== "arşiv") continue;
+    if (g.tur === "dosya" && dosyaMuhru(g.yol)?.tur === "arşiv") arsivDosyalari.push(g.yol);
+    else if (g.tur === "dizin" && dosyaMuhru(g.yol)?.tur === "arşiv") klasorGez(g.yol);
+  }
+  for (const yol of arsivDosyalari) {
+    const g = { yol };
     let kaynak: string;
     try { kaynak = readFileSync(join(kok, g.yol), "utf8"); } catch { continue; }
     let program: Program | undefined;
@@ -582,6 +655,10 @@ export function denetle(plan: IskeletPlan, disk: DiskAnlikGoruntu): Tani[] {
   // ── kayıp-yapı ─────────────────────────────────────────────────────────────
   for (const o of plan.ogeler) {
     if (bastirilanKayip.has(o.yol)) continue; // yer-uyuşmazlığı olarak raporlandı
+    // KPS-MHR-A02 · MIM-3.4: arşiv ya da sonra mühürlü klasörün içine inilmez; içindeki
+    // ilanlı yapı ölçülemez ve kayıp sayılamaz. Mühürlü klasörün kendisi ölçülmeye devam eder.
+    const klasor = klasorMuhru(o.yol);
+    if (klasor && klasor.tur !== "eğitim") continue;
     const diskte = diskTur.get(o.yol);
     if (diskte === o.tur) continue;
     // A07 (bug-avı B5): yalnız büyük/küçük harf farkıyla eşleşen öğe eskiden

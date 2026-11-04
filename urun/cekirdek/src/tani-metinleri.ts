@@ -627,10 +627,15 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
   },
   // ── Dosya mühürleri (MIM-3.4 · KPS-MHR-A01) ──────────────────────────────
   "dosya-mührü": {
-    mesaj: (p) => a(p, "tür") === "eğitim"
+    // KPS-MHR-A02: `yer` "klasör" ise mühür bir klasörün adındadır ve bütün içeriği kapsar.
+    mesaj: (p) => a(p, "yer") === "klasör"
+      ? (a(p, "tür") === "eğitim"
+        ? `"${a(p, "yol")}" klasörü eğitim mührü (@${a(p, "etiket")}@_) taşıyor: motor klasörün bütün içeriğini okur ve sözleşmelerine göre doğrular, fakat onu ürün karnesine ve açık iş gündemine saymaz, çünkü eğitim malzemesi ürün işi değildir.`
+        : `"${a(p, "yol")}" klasörü arşiv mührü (@${a(p, "etiket")}@_) taşıyor ve bütün içeriğiyle graf dışında: motor klasörün içine inmez; graf, kod dizini, karne, açık iş gündemi ve kardeş kök çözümü içindeki hiçbir dosyayı saymaz. Mührün türü ve klasörün adı her denetimde bu satırla listelenir.`)
+      : a(p, "tür") === "eğitim"
       ? `"${a(p, "yol")}" dosyası eğitim mührü (@${a(p, "etiket")}@_) taşıyor: motor dosyayı okur ve sözleşmelerine göre doğrular, fakat onu ürün karnesine ve açık iş gündemine saymaz, çünkü eğitim malzemesi ürün işi değildir.`
       : `"${a(p, "yol")}" dosyası arşiv mührü (@${a(p, "etiket")}@_) taşıyor ve graf dışında: motor dosyayı okumaz; graf, kod dizini, karne ve açık iş gündemi onu saymaz. Mührün türü ve dosyanın adı her denetimde bu satırla listelenir.`,
-    oneri: (p) => `Mühür, dosyanın sahibinin açık beyanıdır ve bir bulguyu susturmak için kullanılamaz; dosya yeniden canlı kaynak olacaksa mührü addan kaldır. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+    oneri: (p) => `Mühür, ${a(p, "yer") === "klasör" ? "klasörün" : "dosyanın"} sahibinin açık beyanıdır ve bir bulguyu susturmak için kullanılamaz; ${a(p, "yer") === "klasör" ? "klasör" : "dosya"} yeniden canlı kaynak olacaksa mührü addan kaldır. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
   },
   "sonraya-bırakılmış-dosya": {
     mesaj: (p) => {
@@ -640,12 +645,26 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
         : kaynak === "dosya"
           ? `Mühür henüz depoya işlenmediği için süre, dosyanın yeniden adlandırıldığı ${a(p, "tarih")} gününden, yani dosyanın durum değişikliği tarihinden ölçülür.`
           : "Bekleme süresi ölçülemedi, çünkü ne depo kaydı ne de dosya tarihi okunabildi.";
+      if (a(p, "yer") === "klasör") {
+        return `"${a(p, "yol")}" klasörü sonraya bırakılmış (@${a(p, "etiket")}@_) ve ${a(p, "gün")} gündür bekliyor; motor klasörün içine inmez ve klasörü yalnız bu hatırlatmayla görünür tutar. ${olcum.replace("dosyanın yeniden adlandırıldığı", "klasörün yeniden adlandırıldığı").replace("dosyanın durum değişikliği", "klasörün durum değişikliği").replace("dosya tarihi", "klasör tarihi")}`;
+      }
       return `"${a(p, "yol")}" dosyası sonraya bırakılmış (@${a(p, "etiket")}@_) ve ${a(p, "gün")} gündür bekliyor; motor içeriğini okumaz ve dosyayı yalnız bu hatırlatmayla görünür tutar. ${olcum}`;
     },
     oneri: (p) => `İşe dönme zamanı geldiyse mührü kaldır ve dosyayı canlı kaynağa geri al; iş düşürüldüyse sonra mührünü arşiv mührüne çevir. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
   },
   "geçersiz-dosya-adı": {
     mesaj: (p) => {
+      // KPS-MHR-A02: klasör adında büyük harf serbesttir; yalnız mühüre benzeyen klasör adı ölçülür.
+      if (a(p, "yer") === "klasör") {
+        switch (a(p, "kusur")) {
+          case "bilinmeyen-etiket":
+            return `"${a(p, "yol")}" klasör adı "@${a(p, "etiket")}@_" biçiminde başlıyor fakat bu etiket kapalı mühür kümesinde (${a(p, "küme")}) değil; klasör mühürsüz sayılır ve içeriği canlı kaynak olarak okunur.`;
+          case "mühür-sonrası-büyük-harf":
+            return `"${a(p, "yol")}" klasör adı geçerli bir mühür taşıyor fakat mührü izleyen ad büyük harf taşıyor; mührün ardından ad küçük harfle sürer.`;
+          default:
+            return `"${a(p, "yol")}" klasör adı bir mühre benziyor fakat mühür biçimine uymuyor; mühür adın başına \`@ETİKET@_\` biçiminde ve büyük harfli bir etiketle yazılır (${a(p, "küme")}). Klasör mühürsüz sayılır ve içeriği canlı kaynak olarak okunur.`;
+        }
+      }
       switch (a(p, "kusur")) {
         case "bilinmeyen-etiket":
           return `"${a(p, "yol")}" adı "@${a(p, "etiket")}@_" biçiminde başlıyor fakat bu etiket kapalı mühür kümesinde (${a(p, "küme")}) değil; dosya mühürsüz sayılır ve canlı kaynak olarak okunur.`;
@@ -657,7 +676,9 @@ export const TANI_METINLERI: Readonly<Record<string, TaniMetni>> = {
           return `"${a(p, "yol")}" dosya adı büyük harf taşıyor fakat geçerli bir dosya mührü değil; dosya adında büyük harf yalnız mühüre ayrılmıştır.`;
       }
     },
-    oneri: (p) => `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+    oneri: (p) => a(p, "yer") === "klasör"
+      ? `Mührü kapalı kümeden (${a(p, "küme")}) doğru biçimde adın başına yaz ya da mühre benzeyen parçayı addan kaldır. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`
+      : `Adı küçük harfle yaz ya da kapalı kümeden (${a(p, "küme")}) bir mühür kullan. Örnek: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
   // ── Profil tipi (TIP-1.17 · BKM-OLG-A13) ────────────────────────────────
   "profil-eksik-alan": {
@@ -1087,10 +1108,14 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
   },
   // ── File seals (MIM-3.4 · KPS-MHR-A01) ───────────────────────────────────
   "dosya-mührü": {
-    mesaj: (p) => a(p, "tür") === "eğitim"
+    mesaj: (p) => a(p, "yer") === "klasör"
+      ? (a(p, "tür") === "eğitim"
+        ? `The folder "${a(p, "yol")}" carries the teaching seal (@${a(p, "etiket")}@_): the engine reads and validates its whole content against its contracts, but does not count it in the product scorecard or the open-work agenda, because teaching material is not product work.`
+        : `The folder "${a(p, "yol")}" carries the archive seal (@${a(p, "etiket")}@_) and is outside the graph with all its content: the engine does not descend into it, and the graph, the code index, the scorecard, the open-work agenda and sibling-root resolution count none of its files. Every check lists the seal type and the folder name on this line.`)
+      : a(p, "tür") === "eğitim"
       ? `The file "${a(p, "yol")}" carries the teaching seal (@${a(p, "etiket")}@_): the engine reads and validates it against its contracts, but does not count it in the product scorecard or the open-work agenda, because teaching material is not product work.`
       : `The file "${a(p, "yol")}" carries the archive seal (@${a(p, "etiket")}@_) and is outside the graph: the engine does not read it, and the graph, the code index, the scorecard and the open-work agenda do not count it. Every check lists the seal type and the file name on this line.`,
-    oneri: (p) => `A seal is an explicit declaration by the file's owner and cannot be used to silence a finding; if the file becomes a live source again, remove the seal from its name. Example: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
+    oneri: (p) => `A seal is an explicit declaration by the ${a(p, "yer") === "klasör" ? "folder" : "file"}'s owner and cannot be used to silence a finding; if the ${a(p, "yer") === "klasör" ? "folder" : "file"} becomes a live source again, remove the seal from its name. Example: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
   },
   "sonraya-bırakılmış-dosya": {
     mesaj: (p) => {
@@ -1100,12 +1125,25 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
         : kaynak === "dosya"
           ? `Because the seal has not been committed yet, the wait is measured from ${a(p, "tarih")}, the day the file was renamed, that is, from the file's status-change date.`
           : "The waiting time could not be measured, because neither a repository record nor a file date could be read.";
+      if (a(p, "yer") === "klasör") {
+        return `The folder "${a(p, "yol")}" has been deferred (@${a(p, "etiket")}@_) and has been waiting for ${a(p, "gün")} days; the engine does not descend into it and keeps the folder visible only through this reminder. ${olcum.replace("the day the file was renamed, that is, from the file's", "the day the folder was renamed, that is, from the folder's")}`;
+      }
       return `The file "${a(p, "yol")}" has been deferred (@${a(p, "etiket")}@_) and has been waiting for ${a(p, "gün")} days; the engine does not read its content and keeps the file visible only through this reminder. ${olcum}`;
     },
     oneri: (p) => `If it is time to resume the work, remove the seal and return the file to the live source; if the work was dropped, change the deferral seal into the archive seal. Example: \`git mv "${a(p, "yol")}" "${a(p, "canlı")}"\`.`,
   },
   "geçersiz-dosya-adı": {
     mesaj: (p) => {
+      if (a(p, "yer") === "klasör") {
+        switch (a(p, "kusur")) {
+          case "bilinmeyen-etiket":
+            return `The folder name "${a(p, "yol")}" starts in the "@${a(p, "etiket")}@_" form, but this tag is not in the closed seal set (${a(p, "küme")}); the folder counts as unsealed and its content is read as a live source.`;
+          case "mühür-sonrası-büyük-harf":
+            return `The folder name "${a(p, "yol")}" carries a valid seal, but the name after the seal contains upper-case letters; after the seal the name continues in lower case.`;
+          default:
+            return `The folder name "${a(p, "yol")}" looks like a seal but does not follow the seal form; a seal is written at the start of the name as \`@ETİKET@_\` with an upper-case tag (${a(p, "küme")}). The folder counts as unsealed and its content is read as a live source.`;
+        }
+      }
       switch (a(p, "kusur")) {
         case "bilinmeyen-etiket":
           return `The name "${a(p, "yol")}" starts in the "@${a(p, "etiket")}@_" form, but this tag is not in the closed seal set (${a(p, "küme")}); the file counts as unsealed and is read as a live source.`;
@@ -1117,7 +1155,9 @@ export const TANI_METINLERI_EN: Readonly<Record<string, TaniMetni>> = {
           return `The file name "${a(p, "yol")}" contains upper-case letters but is not a valid file seal; upper case in a file name is reserved for seals.`;
       }
     },
-    oneri: (p) => `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Example: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
+    oneri: (p) => a(p, "yer") === "klasör"
+      ? `Write the seal from the closed set (${a(p, "küme")}) correctly at the start of the name, or remove the seal-like part from the name. Example: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`
+      : `Write the name in lower case or use a seal from the closed set (${a(p, "küme")}). Example: \`git mv "${a(p, "yol")}" "${a(p, "öneri")}"\`.`,
   },
   // ── Profile type (TIP-1.17 · BKM-OLG-A13) ───────────────────────────────
   "profil-eksik-alan": {

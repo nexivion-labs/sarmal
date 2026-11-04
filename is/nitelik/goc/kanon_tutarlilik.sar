@@ -1,6 +1,6 @@
 // is/nitelik/goc/kanon_tutarlilik.sar — göç belge turu A03 kapanışı
 // Bu dosya türetilmiş ölçüm yüzüdür; kanon değildir ve hüküm değiştiremez.
-// KAYNAK-MUHRU kanon-demeti-sha256:4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6
+// KAYNAK-MUHRU kanon-demeti-sha256:cb0b42e7fb6ae3161c8879c8f12f9363c4360c84e28c9fe9ede84195e8bbfadb
 
 -->|
 # Kanon tutarlılık yüzü
@@ -12,14 +12,14 @@ Bu türev yalnız `yasa/kanon/` altındaki sekiz resmi hüküm dosyasını, canl
 | Kaynak | SHA-256 |
 |---|---|
 | `yasa/kanon/dil.sar` | `3ed77f36fc53f5d048365b7134685d96e2b71eb847adccc39e144f139539de92` |
-| `yasa/kanon/mim.sar` | `5749d49cbd2ecd6dd96e228072a8348190b3e81293a7f7c3785023b50583c95a` |
+| `yasa/kanon/mim.sar` | `75a51d58f375274c08735b661a05b17acaaf09ec3d4825db4ce31e1131d0d9f5` |
 | `yasa/kanon/ogr.sar` | `ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67` |
 | `yasa/kanon/ork.sar` | `1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3` |
 | `yasa/kanon/str.sar` | `2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e` |
 | `yasa/kanon/tip.sar` | `9e50275c279b1253c6f16bdf7e0e3352e463170fab70ce851db03fc025a062e3` |
 | `yasa/kanon/yas.sar` | `bd8f1b5466b4ce2a689c0caa232b461e28c2a42f810b0650f7bb472f5c4cfe55` |
 | `yasa/kanon/yuz.sar` | `4cf6145848fe3407ef828ced35e3bf3fcfbe0a218d07941e1f30a1a885d8e96f` |
-| kanon demeti | `4c77c6331e0b64a74657f1529c7136d219e2fe5bc1b26f715375948d9b5460b6` |
+| kanon demeti | `cb0b42e7fb6ae3161c8879c8f12f9363c4360c84e28c9fe9ede84195e8bbfadb` |
 | `urun/cekirdek/src/tani-sicili.ts` | `273bb176e5bbf803be868ba4c114543fe9322dfdafec3bdc260db8f4678ed7b6` |
 | `oz/siniflama/kayit.json` | `e29728ad183e7ac7cab377e9970a484fef0dfd43c14756af330862f258696321` |
 | `oz/siniflama/ortu.json` | `85a055abdc8429572fc723116d699a6dc5777ec20f223a896d9771d0210880ef` |
@@ -91,7 +91,7 @@ Belge metninden ayrışan taşıyıcı alan yoktur.
 | `MIM-3.1` | Kural | `mim.sar` | Doğru: `Katman { AltKatman { Adım } }`; yanlış: `Proje { Adım }` veya `Adım { Katman }`. |
 | `MIM-3.2` | Kural | `mim.sar` | Doğru: `Kitaplık( kod: KTP-UYGULAMA, yol: "uygulama/" ) { Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" ) }` fiziksel yeri ilan eder ve Ekran içeriği ayrı kaynakta yaşar; yanlış: kökün altına doğrudan `Raf( kod: RAF-EKRANLAR, yol: "ekranlar/" )` yazmak. |
 | `MIM-3.3` | Kural | `mim.sar` | Doğru: `is/durum/blok_durum/blk-prf-tekagac_durum_devir.sar` dosyası `DurumKaydı( kod: DRM-BLK-PRF-TEKAGAC, referans: [ BLK-PRF-TEKAGAC ] )` kökünü taşır ve ana kayıt `DurumKaydı( kod: DRM-SARMAL, referans: [ BLK-PRF-TEKAGAC, BLK-PRF-MIKRO ] )` satırıyla durum taşıyan Blokları sayar. Yanlış: bütün Blokların devir metnini ana kayıtta biriktirmek, Blokun kaydını plan dosyasının yanına koymak ya da kaydı yazıp ana kayda atıf vermemek. |
-| `MIM-3.4` | Kural | `mim.sar` | Doğru: `arsiv/@ARSIV@_gstack_inceleme.sar` graf dışında kalır ve denetim çıktısında adıyla listelenir; `deney/fikstur/@EGITIM@_eski_proje_core.sar` doğrulanır, fakat kırık atıfları karneye girmez. Yanlış: `@arsiv@_x.sar` gibi küçük harfli bir etiket, `[ARSIV]x.sar` ya da `#ARSIV#x.sar` biçimi, mühürsüz `Rapor.sar` adı ve kapıyı yeşile çevirmek için hata veren canlı bir plan dosyasına `@SONRA@_` mührü eklemek. |
+| `MIM-3.4` | Kural | `mim.sar` | Doğru: `arsiv/@ARSIV@_gstack_inceleme.sar` graf dışında kalır ve denetim çıktısında adıyla listelenir; `deney/fikstur/@EGITIM@_eski_proje_core.sar` doğrulanır, fakat kırık atıfları karneye girmez. Yanlış: `@arsiv@_x.sar` gibi küçük harfli bir etiket, `[ARSIV]x.sar` ya da `#ARSIV#x.sar` biçimi, mühürsüz `Rapor.sar` adı ve kapıyı yeşile çevirmek için hata veren canlı bir plan dosyasına `@SONRA@_` mührü eklemek. Klasör için doğru: `arsiv/@ARSIV@_eski/` klasörü, içindeki eski Proje köküyle birlikte graf dışında kalır ve denetim çıktısında adıyla listelenir. Klasör için yanlış: `@arsiv@_eski/` ya da `eski_@ARSIV@_/` biçimi ve içinde ebedî kural taşıyan bir klasöre arşiv mührü basmak. |
 | `MIM-3.5` | Kural | `mim.sar` | Doğru: `cati_anadizin.sar` yalnız Kitaplık, Raf ve Proje ilan eder, iş ise `is/plan/faz/faz.sar` dosyasında `Faz( kod: FAZ-EYLUL ) { Blok( … ) }` biçiminde yaşar. Yanlış: aynı giriş ilanının içine `Faz( kod: FAZ-EYLUL )` yazmak ya da bir Proje kökünün gövdesine doğrudan Blok koymak. |
 | `MIM-4` | Kural | `mim.sar` | Proje kökü ve disk aynası MIM altında tanımlanır; tip alanları TIP, rejim istisnası YAS ve yürütme bağı ORK tarafından yalnızca kendi sözleşmesi kadar tamamlanır. |
 | `OGR-0` | Karar | `ogr.sar` | Kanonik akış: `kanon → Tutorial · How-To · Reference · Explanation → hover · tanı önerisi · Beceri`; ok hangi öğretim yüzünün hangi kaynaktan türediğini gösterir. |

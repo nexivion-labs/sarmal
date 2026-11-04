@@ -298,7 +298,9 @@ function denetimKosGovde(dizin: string, secenek: DenetimSecenek): DenetimSonucu 
   if (devir.length) devredildi = (dosya: string): boolean => devir.some((k) => onekKapsar(k.onek, dosya));
   const programlar = devir.length ? new Map([...evren].filter(([etiket]) => !devredildi(etiket))) : evren;
   const disk: typeof diskEvren = devir.length
-    ? { girdiler: diskEvren.girdiler.filter((g) => !devredildi(g.yol)) }
+    // KPS-MHR-A02: mühürlü kayıtlar da çatının payıyla birlikte taşınır; yoksa çok
+    // projeli bir çatıda çatının kendi mühürlü dosya ve klasörleri sessiz kalırdı.
+    ? { girdiler: diskEvren.girdiler.filter((g) => !devredildi(g.yol)), muhurlular: diskEvren.muhurlular?.filter((g) => !devredildi(g.yol)) }
     : diskEvren;
 
   const plan = iskeletPlani(ana, snf);

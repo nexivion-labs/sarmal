@@ -261,6 +261,12 @@ export function dosyaMuhruOgretisi(dil: CiktiDili = etkinCiktiDili()): string[] 
     // İm `▸` seçildi: `•` imi bu anlatıda ölçülmüş anti-desenlere ayrılmıştır ve nöbet onları sayar.
     b.push(`     ▸ \`@${etiket}@_\` — ${dil === "tr" ? MUHUR_DAVRANISI[tur].tr : MUHUR_DAVRANISI[tur].en}`);
   }
+  // KPS-MHR-A02 (OGR-3): klasör mührü aynı üreticiden öğretilir; karşılama kartı,
+  // doğuş rehberi ve ajan bağlam paketi bu cümleyi tek kaynaktan alır.
+  b.push(y(
+    "   Aynı mühür bir KLASÖRÜN adının başına da yazılabilir ve klasörün bütün içeriğini kapsar: `arsiv/@ARSIV@_eski/`. Arşiv ya da sonra mühürlü klasörün içine motor inmez ve içindeki Proje kökü kardeş kök sayılmaz; eğitim mühürlü klasör okunur fakat karneye sayılmaz. Bitmiş bir projeyi arşive almak için içindeki dosyaları tek tek yeniden adlandırma, klasörünü mühürle.",
+    "   The same seal can also be written at the start of a FOLDER name and then covers the folder's whole content: `arsiv/@ARSIV@_eski/`. The engine does not descend into an archive- or deferral-sealed folder and a Proje root inside it is not a sibling root; a teaching-sealed folder is read but not counted in the scorecard. To archive a finished project, do not rename its files one by one; seal its folder.",
+  ));
   const tanilar = YENI_TANI_KANONU.filter((t) => t.madde === "MIM-3.4").map((t) => `\`${t.kod}\` (${t.kademe})`).join(" · ");
   b.push(y(
     `   Küme kapalıdır. Mühür sessiz değildir: her denetim mühürlü dosyayı türüyle ve adıyla listeler ve biçime uymayan adı uyarır — ${tanilar}.`,

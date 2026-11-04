@@ -15,6 +15,7 @@
 import * as nodeModulu from "node:module";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { transformSync } from "esbuild";
 
 // Deponun `@types/node` sürümü bu iki işlevi henüz bildirmez (çalışma zamanı
 // Node 24 ve sonrasıdır); kullanılan dar imza burada elle yazılır.
@@ -23,9 +24,8 @@ type Kancalar = {
   resolve(belirtec: string, baglam: unknown, sonraki: (b: string, c: unknown) => Sonuc): Sonuc;
   load(url: string, baglam: unknown, sonraki: (u: string, c: unknown) => Sonuc): Sonuc;
 };
-const { registerHooks, stripTypeScriptTypes } = nodeModulu as unknown as {
+const { registerHooks } = nodeModulu as unknown as {
   registerHooks(k: Kancalar): void;
-  stripTypeScriptTypes(kaynak: string, secenek: { mode: "transform"; sourceUrl: string }): string;
 };
 
 const SAHTE = new URL("./vscode-sahtesi.ts", import.meta.url).href;
@@ -39,7 +39,10 @@ registerHooks({
   // Eklenti kaynağı esbuild ile paketlenir ve bu yüzden Node'un tip söküm
   // kipinin kabul etmediği iki sözdizimini (kurucu parametre alanı ve enum)
   // serbestçe kullanır. Kaynak dosyası değiştirilmez; yalnız eklenti kaynağı
-  // Node'un kendi dönüştürme kipinden geçirilir (dış bağımlılık yok · STR-3.1).
+  // paketleyicinin kendisi olan esbuild ile dönüştürülür. Node 26 tip sökümünün
+  // dönüştürme kipini kaldırdığı için yerleşik `stripTypeScriptTypes` artık bu
+  // işi yapamaz; esbuild eklentinin zaten var olan geliştirme bağımlılığıdır ve
+  // yalnız sınamada kullanılır, ürüne yeni bağımlılık girmez (STR-3.1).
   //   Varsayılan yükleyici söküm kipini biçim tespiti sırasında uyguladığı için
   //   kaynak burada doğrudan diskten okunur ve sonraki halkaya hiç verilmez.
   load(url, baglam, sonraki) {
@@ -47,7 +50,7 @@ registerHooks({
       const metin = readFileSync(fileURLToPath(url), "utf8");
       return {
         format: "module",
-        source: stripTypeScriptTypes(metin, { mode: "transform", sourceUrl: url }),
+        source: transformSync(metin, { loader: "ts", format: "esm", sourcefile: url, sourcemap: "inline" }).code,
         shortCircuit: true,
       };
     }

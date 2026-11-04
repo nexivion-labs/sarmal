@@ -67,6 +67,16 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
                          TASARIM-SISTEMI-PLAN-BEKCISI-KANON-MADDESI-FOUNDER-KAPISI,
                          FOTO-HASADI-TEK-SAYFADA-FOUNDER-DEGERLENDIRMESINE-SUNULACAK ] ) {
   özet: """
+        🚨 ACİL DEVİR · OTURUM 117 (2026-11-04 saat 11.30) · FOUNDER BİLGİSAYARI YENİDEN BAŞLATIYOR.
+        blok/klasor-muhru dalında KPS-MHR-A02 (klasör mührü, MIM-3.4'ün klasörlere genişlemesi) yazılmış,
+        kontrolcü tarafından ölçülmüş ve İŞLENMEMİŞ olarak diskte durmaktadır; dalda 18 değişen dosya
+        vardır ve eklenti sürümü 0.9.200'dür. Ölçüm: çekirdek tsc temiz, çekirdek süiti 1810/1810, depo
+        denetimi 0 hata 0 uyarı. Eklenti süitinde 15 sınama makinedeki Node 26.13 güncellemesi yüzünden
+        düşer (sinama/kabuk-kur.ts:50); düşüş değişiklikten önce de vardır ve ayrı iş açılacaktır. Adım bu
+        yüzden geliştirmede kalır. İşleme Founder sözüne bağlıdır ve mesaj `Adım: KPS-MHR-A02` satırıyla
+        biter. VS Code'daki eski 5_eylul_lansman.sar tamponu kaydedilmez. Bu kaydın üstteki neredeyiz ve
+        sıradaki alanları sonraki oturumda yenilenecektir.
+
         🧭 EKİP NOTU · OTURUM 116 (2026-10-29 öğle). Founder iki Windows kullanan üyenin sisteme alınmasına ve
         Sarmal'ın açık işlerinin onlara GitHub kayıtlarıyla dağıtılmasına hükmetmiştir; kişi adları açık depoya
         yazılmaz, kimin ne yaptığı GitHub'da durur. Üyelerin bildirdiği Windows kurulum hataları ekip kurulumu

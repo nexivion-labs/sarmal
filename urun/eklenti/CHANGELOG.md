@@ -2,6 +2,13 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.200 — 2026-11-03 (Klasör mührü)
+
+- **Mühür artık bir klasörün adına da basılabilir.** `@ARSIV@_`, `@EGITIM@_` ve `@SONRA@_` mühürleri dosya adında olduğu gibi bir klasörün adının başında da yazılabilir ve o klasörün bütün içeriğini kapsar. Bitmiş bir projeyi ya da eski bir çalışma alanını arşive almak için içindeki dosyaları tek tek yeniden adlandırmak gerekmez; klasörün adına mühür basmak yeterlidir.
+- **Arşivdeki eski kopya canlı projeyle çakışmaz.** Arşiv ya da sonra mühürlü bir klasörün içine motor inmez; içindeki dosyalar graf, kod dizini, karne ve açık iş gündemine girmez ve içindeki Proje kökü kardeş kök sayılmaz. Canlı projeyle aynı Proje kodunu taşıyan bir arşiv kopyası bu yüzden artık "ad alanı olmadan ayrışamayan Proje kökü" uyarısı üretmez.
+- **Eğitim mühürlü klasör doğrulanır fakat sayılmaz.** Böyle bir klasörün içeriği okunur ve sözleşmelerine göre denetlenir, fakat ürün karnesine ve gündeme girmez.
+- **Mühür sessiz değildir.** Mühürlü klasör her denetimde türüyle ve adıyla listelenir, içinde ebedî kural taşıyan bir klasöre arşiv mührü basılması hata verir ve mühre benzeyen fakat geçersiz bir klasör adı uyarı alır. Panelin yol haritası ve sayımları mühürlü klasörü motorla birebir aynı biçimde dışarıda bırakır.
+
 ## 0.9.199 — 2026-10-28 (Tren şirket şeması, gerçek sayılar ve hızlı panel)
 
 - **Tren sekmesi ajanların şirket şemasını gösterir.** Ajanlar departmanlarına göre şeritlerde durur; her şeridin başında yönetici, ardından ona bağlı ajanlar gelir ve büyük ekipler tek bir özet kutusunda toplanır. Bir ajana tıklayınca profil kartı açılır: uzmanlık, yetki, bellek, sınır, uyguladığı yasa ve kime bağlı olduğu, her satır tanımına gider. Şema yalnız planda ilan edilmiş olanı çizer; ilan edilmemiş yerde "tanımlı değil" yazar ve insanlar Tren'de değil Makinist'te durur.

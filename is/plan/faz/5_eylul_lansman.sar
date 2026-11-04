@@ -4476,6 +4476,40 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           dokunulmaz: [ "Kanon metni ve kanon madde sayısı", "Koni eşiğinin değeri", "yasa/kanon/ork.sar dosyasının bölünüşü" ]
           koşu: "2026-09-11 · ÜRETİCİ TESLİMİ: koni yükü artık kapsam çözümünün üstüne kurulan tek bir predikatla sayılır ve joker kapsamlı (genel, tümü) bir kural, tipi şemada Yasa rolünde olan düğüme (TIP-1.16: Karar, Politika, Kural, Anayasa, Mevzuat ve kural tipleri) yük olarak düşmez, düğümü adıyla, ailesiyle ya da koduyla anan kural ise düşer. Ölçüt dosya yolundan değil, kuralın kapsam beyanı ile düğüm tipinin rol beyanından türer; koni sayımı ile panelin düğüme düşen kural listesi aynı predikatı ve aynı şema evrenini sürer, M-3 yapısal değerlendirmesi ise eski kapsam çözümünde kalır. Depo denetimi sıfır hata ve sekiz uyarıdan sıfır hata ve sıfır uyarıya indi, kullanıcı evreninde yirmi bir genel kural Blok ile Adımda taşma üretmeyi sürdürdü; beş yeni nöbet kuruldu, dört mutasyonun dördü beklenen nöbetleri kırmızıya düşürdü ve iki tür denetimi sıfır hata, çekirdek süiti bin üç yüz yetmiş yedide bin üç yüz yetmiş yedi, eklenti süiti yedi yüz elli yedide yedi yüz elli yedi verdi."
         }
+
+        // ── FOUNDER HÜKMÜ · 2026-11-03 · KLASÖR MÜHRÜ ──
+        //   Founder çok projeli bir çalışma alanında bütün bir arşiv klasörünün canlı
+        //   kaynaktan ayrılmasını istemiştir. 2026-11-03 gecesi kurulan iki projeli maket
+        //   şunu göstermiştir: adının başında `@ARSIV@_` taşıyan bir klasörün içine motor
+        //   iner, arşivdeki eski Proje kökünü canlı kökle aynı kodla okur ve "ad alanı
+        //   olmadan ayrışamayan Proje kökü" uyarısıyla ilk tanımı kazandırır. Mühür bugün
+        //   yalnız dosya adına basılabilmektedir (MIM-3.4, kimlik.ts okunmazMuhurlu). Founder
+        //   aynı gece mührün klasör adına da basılabilmesine hükmetmiştir; hüküm tahmin
+        //   değil açık beyandır ve MIM-3.4'ün klasör adından tahmin yürüten eski kuralı
+        //   kaldırma gerekçesini korur.
+        Adım( kod: KPS-MHR-A02, ad: "Klasör Mührünün Kanona ve Motora İnmesi", durum: geliştirmede, öncelik: p0,
+          bağımlı: [ KPS-MHR-A01 ], referans: [ MIM-3, MIM-3.4, OGR-3 ],
+          üretir: [ KOD-KIMLIK, KOD-DENETIM, KOD-SNM-KLASOR-MUHRU, KOD-SNM-EKL-KLASOR-MUHRU ],
+          onay: "onaylandı — 2026-11-03 · FOUNDER: kontrolcünün maket ölçümüyle sunduğu klasör mührü önerisi kabul edilmiş ve işin aynı gece başlatılmasına hükmedilmiştir.",
+          ne: "📛 Bir klasörün adının başına yazılan dosya mührünün o klasörün bütün içeriğini kapsaması. Çok projeli bir çalışma alanında işi bitmiş bir projeyi ya da eski bir çalışma alanını arşive almak, içindeki her .sar dosyasını tek tek yeniden adlandırmayı gerektirmektedir; bu hem binlerce dosyaya dokunmak hem de git tarihini kirletmek demektir. Mühürsüz bırakılan arşiv ise canlı projelerle aynı kodu taşıdığında motor iki kökü ayıramaz ve ilk tanımı kazandırır." ) {
+          görev: [
+            "MIM-3.4 maddesini mührün dosya adına olduğu gibi klasör adına da basılabileceğini söyleyecek biçimde genişlet: `@ARSIV@_` ve `@SONRA@_` mühürlü bir klasörün içine motor inmez, `@EGITIM@_` mühürlü klasörün içeriği okunur ve doğrulanır fakat karneye ve gündeme sayılmaz; kanon sayısının dondurulduğu yerleri ve türetilmiş yüzleri aynı turda güncelle.",
+            "Motorda mühür çözümünü tek noktada tut: disk taraması mühürlü bir klasörü kayda alır fakat içine inmez ve klasörü denetim çıktısında türüyle ve adıyla listeler; kod dizini, graf, karne, açık iş gündemi ve kardeş kök çözümü aynı çözücüyü okusun. Mühürlü klasörün içindeki Proje kökü kardeş kök sayılmaz ve ad alanı çözümüne girmez.",
+            "Mührün sessiz olmamasını sağla: mühürlü klasör her denetimde listelenir, ebedî kural taşıyan bir dosyayı içeren klasöre arşiv mührü basılması ebedî ihlal tanısıyla durdurulur ve büyük harfli fakat geçersiz bir klasör adı bildirilir.",
+            "Kuralı eklentiye taşı: panelin yol haritası ve sayımları mühürlü klasörü motorun ayrımıyla birebir aynı biçimde dışarıda bıraksın; değişiklik günlüğüne tam cümlelerle bir girdi yaz ve eklenti sürümünü bir artır.",
+            "OGR-3 uyarınca hükmü ajan bağlam paketine, karşılama kartına, öğretim aracının kartlarına ve doğuş rehberine üreticiyle işle.",
+            "Nöbet kur ve mutasyonla kanıtla: aynı Proje kodunu taşıyan arşiv klasörünün çakışma üretmediği, mühürsüz aynı klasörün çakışma uyarısını sürdürdüğü, eğitim mühürlü klasörün sayılmadığı ve ebedî engelin çalıştığı ayrı ayrı sınansın."
+          ]
+          kabul: [
+            "MIM-3.4 maddesi klasör mührünü kapsar ve kanon tutarlılık ile belge yüzü nöbetleri yeşildir.",
+            "Bir canlı projeyi ve aynı Proje kodunu taşıyan `@ARSIV@_` önekli bir klasörü barındıran sınav çalışma alanında denetim çakışma uyarısı üretmez, arşiv klasörü çıktıda adıyla listelenir ve klasörün içindeki hiçbir tanı sayıma girmez; mühür kaldırıldığında çakışma uyarısı geri döner.",
+            "Ebedî kural taşıyan bir dosyayı içeren klasöre arşiv mührü basıldığında denetim hata verir.",
+            "Eklentinin panel sayımları ile motorun sayımı mühürlü klasör varken aynı sonucu verir.",
+            "Nöbetler mutasyonla kanıtlanmıştır; çekirdek ile eklenti süitleri yeşildir ve depo denetimi sıfır hata ile sıfır uyarı verir."
+          ]
+          sınır: "Bu Adım mekanizmayı Sarmal'ın kendi deposunda kurar; herhangi bir kullanıcı çalışma alanındaki klasörü yeniden adlandırmak bu Adımın işi değildir. Klasör adından tahmin yürüten hiçbir kural geri getirilmez; muafiyet yalnız açık mühürle doğar. Mevcut dosya mühürlerinin davranışı değişmez."
+          dokunulmaz: [ "MIM-3.4'ün dosya mührüne ilişkin mevcut hükmü", "Mevcut .sar dosyalarının adları", "Öğreti kitaplığındaki ders raflarının klasör yeriyle tanınması" ]
+        }
       }
 
       AltKatman( kod: KPS-KAPSAM-K4, departman: sınama, ad: "Terfi Kapısı Ölçümü",
@@ -7365,6 +7399,11 @@ Kod( kod: KOD-SNM-DOSYA-MUHRU, dosya: "urun/cekirdek/sinama/dosya-muhru.test.ts"
   ne: "📛 Dosya mühürleri nöbeti — sekiz sınama: tek çözücü ile biçim kuralı, arşiv ile sonra mühürlü dosyanın okunmaması, eğitim mühürlü dosyanın doğrulanıp karneye girmemesi, listeleme, ebedî engel, geçersiz ad, mühürlü giriş dosyası ve bekleme süresinin kaynağı; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MHR-A01)" )
 Kod( kod: KOD-SNM-EKL-DOSYA-MUHRU, dosya: "urun/eklenti/sinama/dosya-muhru-esitligi.test.ts",
   ne: "📛 Panel ile motorun dosya mührü eşitliği nöbeti — eklentinin gerçek tur hattının yüzey sayımı ile Adım evreni, motorun tür dökümü ve karnesiyle birebir karşılaştırılır (KPS-MHR-A01)" )
+// 🍎 KPS-MHR-A02 (2026-11-03): klasör mührünün nöbetleri
+Kod( kod: KOD-SNM-KLASOR-MUHRU, dosya: "urun/cekirdek/sinama/klasor-muhru.test.ts",
+  ne: "📛 Klasör mührü nöbeti — altı sınama: tek çözücü ile klasör adı kuralı, aynı Proje kodunu taşıyan arşiv klasörünün çakışma üretmemesi ve mühür kalkınca çakışmanın geri dönmesi, eğitim mühürlü klasörün doğrulanıp karneye girmemesi, ebedî engel, geçersiz klasör adı ve kardeş kök çözümü; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MHR-A02)" )
+Kod( kod: KOD-SNM-EKL-KLASOR-MUHRU, dosya: "urun/eklenti/sinama/klasor-muhru-esitligi.test.ts",
+  ne: "📛 Panel ile motorun klasör mührü eşitliği nöbeti — eklentinin gerçek tur hattının yüzey sayımı ile Adım evreni, mühürlü klasör varken motorun tür dökümü ve karnesiyle birebir karşılaştırılır (KPS-MHR-A02)" )
 
 // 🍎 KPS-ADA-A01 son teslim (2026-09-19): ad alanlı atfın üç durumlu doğrulanması
 Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogrulama.test.ts",
