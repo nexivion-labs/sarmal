@@ -871,3 +871,162 @@ test("EKL-F10-A12: ŞEF paketi hedefin ve zemininin geribildirimini taşır; pro
   assert.equal(p2.geribildirim, undefined, "kanalsız Adımda bileşen doğmaz");
   assert.doesNotMatch(promptUret(p2), /Founder Geribildirimi/);
 });
+
+// ── OSS-A12 · REFERANS DOSYALARI VE YÜRÜTÜCÜ YIĞIN İSTEME YOL İLE GİRER ──────
+//
+//   Founder 2026-11-12: bir Adımın kullanacağı referans görseller ve dosyalar
+//   isteme dosya yollarıyla birlikte "referans dosyaları" başlığı altında girer
+//   ve ilgili ajan onları oradan alır. Ölçülen kusur: Mockup referansının
+//   kendi `dosya:` beyanı hiç basılmıyor, yalnız ilan edildiği `.sar` dosyası
+//   görünüyor ve açıklaması referans bütçesine sığmak için kırpılıyordu.
+//   Fikstür adları uydurmadır (KNT-16).
+
+import { mkdirSync } from "node:fs";
+import { referansDosyalariniDogrula } from "../src/sef.ts";
+
+const RD_PLAN = String.raw`
+Teknoloji( kod: TEK-RD-GORSEL, ad: "Görsel Üretici", ne: "görsel üretim aracı" )
+Teknoloji( kod: TEK-RD-YAYIN, ne: "yayın kanalı — sosyal medya hesapları" )
+Teknoloji( kod: TEK-RD-DIL, ne: "planlama dili" )
+Takım( kod: TAKIM-RD-GORSEL, ne: "görsel takımı — ürün görselleri", bağımlı: [ TEK-RD-GORSEL, TEK-RD-YAYIN ] )
+Mockup( kod: MOK-RD-SAYFA-1, dosya: "referans/sayfa-1.jpg", kaynak: "görsel", ne: "${"birinci basılı sayfa açıklaması ".repeat(40)}" )
+Mockup( kod: MOK-RD-SAYFA-2, dosya: "referans/sayfa-2.png", kaynak: "görsel", ne: "ikinci sayfa (diskte yok)" )
+Mockup( kod: MOK-RD-YOLSUZ, kaynak: "görsel", ne: "dosyası beyan edilmemiş taslak" )
+Mockup( kod: MOK-RD-TASLAK, dosya: "referans/taslak.html", kaynak: "Stitch", ne: "ekran taslağı" )
+Ekran( kod: EKR-RD-LISTE, ne: "liste ekranı", referans: [ MOK-RD-TASLAK ] )
+Katman( kod: KAT-RD-GORSEL, ad: "Görsel", takım: TAKIM-RD-GORSEL ){
+  AltKatman( kod: ALT-RD-GORSEL, ad: "Ürün Görselleri", departman: kodlama ){
+    Adım( kod: ADM-RD-1, görev: "görselleri üret", kabul: [ "her görsel referansla karşılaştırıldı" ],
+          referans: [ MOK-RD-SAYFA-1, MOK-RD-SAYFA-2, MOK-RD-YOLSUZ, EKR-RD-LISTE ] )
+  }
+}
+Katman( kod: KAT-RD-DIL, ad: "Dil", kullanır: TEK-RD-DIL ){
+  Adım( kod: ADM-RD-2, görev: "planı yaz" )
+}
+Katman( kod: KAT-RD-BOS, ad: "Zeminsiz" ){
+  Adım( kod: ADM-RD-3, görev: "zeminsiz iş" )
+}
+Katman( kod: KAT-RD-KURULUS, ad: "Kuruluş", teknolojiBağımsız: "doğuş anı — henüz Teknoloji yok" ){
+  Adım( kod: ADM-RD-4, görev: "kuruluş" )
+}
+`;
+const rdProg = (): Map<string, Program> => new Map([["is/plan/plan.sar", ayristir(belirtecle(RD_PLAN))]]);
+
+test("OSS-A12 · Mockup referansının dosya yolu pakete ve 📁 bölmesine girer; Ekranın referansı da toplanır", () => {
+  const paket = baglamMontajla(rdProg(), "ADM-RD-1")!;
+  const dosyalar = paket.referansDosyalari ?? [];
+  assert.deepEqual(dosyalar.map((d) => [d.kod, d.tür, d.yol ?? null, d.üzerinden ?? null]), [
+    ["MOK-RD-SAYFA-1", "Mockup", "referans/sayfa-1.jpg", null],
+    ["MOK-RD-SAYFA-2", "Mockup", "referans/sayfa-2.png", null],
+    ["MOK-RD-YOLSUZ", "Mockup", null, null],
+    ["MOK-RD-TASLAK", "Mockup", "referans/taslak.html", "EKR-RD-LISTE"],
+  ]);
+  const prompt = promptUret(paket);
+  assert.match(prompt, /## 📁 Referans dosyaları/u);
+  assert.match(prompt, /- MOK-RD-SAYFA-1 · Mockup · `referans\/sayfa-1\.jpg`/u);
+  assert.match(prompt, /- MOK-RD-TASLAK · Mockup · `referans\/taslak\.html`.*EKR-RD-LISTE/u);
+  assert.ok(prompt.indexOf("## 🎯 Görev") < prompt.indexOf("## 📁 Referans dosyaları"), "bölme Görevden sonra gelir");
+  const sonrakiBölme = prompt.indexOf("\n## ", prompt.indexOf("## 🎯 Görev") + 1);
+  assert.equal(sonrakiBölme, prompt.indexOf("\n## 📁 Referans dosyaları"), "📁 bölmesi Görevden HEMEN sonradır");
+  assert.match(prompt, /Referans dosyaları: 3 dosya \(bölmeye bak\)/u, "kritik-kısıt özetinde sayı");
+});
+
+test("OSS-A12 · dosya beyanı olmayan Mockup eksik beyanı ADIYLA söyler (Üretir bölmesinin eşi)", () => {
+  const prompt = promptUret(baglamMontajla(rdProg(), "ADM-RD-1")!);
+  assert.match(prompt, /- MOK-RD-YOLSUZ · Mockup · ⚠️ yol beyan edilmemiş/u);
+});
+
+test("OSS-A12 · referans bütçesi kırpılsa bile 📁 bölmesinin yolları KIRPILMAZ", () => {
+  // Kırk uzun hükümlü Karar referans bütçesini tüketir; Mockup kartı ✂️ ile kırpılır
+  // ama yolu (uzun bir yol dahi) 📁 bölmesinde tam ve bir kez basılır.
+  const uzunYol = `referans/${"derin-klasor/".repeat(20)}son-sayfa.jpg`;
+  const kararlar = Array.from({ length: 40 }, (_, i) =>
+    `Karar( kod: KRR-RD-${i}, durum: kilitli, karar: "${"H".repeat(600)}", gerekçe: "${"G".repeat(600)}" )`).join("\n");
+  const sar = `${kararlar}
+Mockup( kod: MOK-RD-UZUN, dosya: "${uzunYol}", ne: "${"uzun açıklama ".repeat(80)}" )
+Katman( kod: KAT-RD-DAR ){
+  Adım( kod: ADM-RD-DAR, görev: "dar bütçe", referans: [ ${Array.from({ length: 40 }, (_, i) => `KRR-RD-${i}`).join(", ")}, MOK-RD-UZUN ] )
+}`;
+  const prompt = promptUret(baglamMontajla(new Map([["d.sar", ayristir(belirtecle(sar))]]), "ADM-RD-DAR")!);
+  assert.match(prompt, /✂️/u, "referans bölmesi gerçekten kırpıldı (sınama boşa geçmiyor)");
+  const bölme = prompt.slice(prompt.indexOf("## 📁 Referans dosyaları"), prompt.indexOf("\n## ", prompt.indexOf("## 📁 Referans dosyaları") + 1));
+  assert.ok(bölme.includes("`" + uzunYol + "`"), "uzun yol 📁 bölmesinde tam basılır");
+});
+
+test("OSS-A12 · diskte olan dosya ✓, olmayan ⚠️ yok; görsel uzantısı görsel notunu taşır; mutlak yol basılır", () => {
+  const dizin = mkdtempSync(join(tmpdir(), "sarmal-sef-rd-"));
+  try {
+    const kök = join(dizin, "proje");
+    mkdirSync(join(kök, "referans"), { recursive: true });
+    mkdirSync(join(kök, "is", "plan"), { recursive: true });
+    writeFileSync(join(kök, "proje_anadizin.sar"), `Proje( kod: PRJ-RD, ne: "uydurma proje" )\n`, "utf8");
+    writeFileSync(join(kök, "is", "plan", "plan.sar"), RD_PLAN, "utf8");
+    writeFileSync(join(kök, "referans", "sayfa-1.jpg"), "x", "utf8");
+    writeFileSync(join(kök, "referans", "taslak.html"), "<p>x</p>", "utf8");
+    // Çatıdan (bir üst dizinden) çağrılır: yol beyanı proje köküne göredir, çağrı dizinine değil.
+    const programlar = programHaritasi(dizin);
+    const paket = referansDosyalariniDogrula(baglamMontajla(programlar, "ADM-RD-1")!, dizin);
+    const bul = (kod: string) => paket.referansDosyalari!.find((d) => d.kod === kod)!;
+    assert.equal(bul("MOK-RD-SAYFA-1").diskte, true);
+    assert.equal(bul("MOK-RD-SAYFA-1").mutlak, join(kök, "referans", "sayfa-1.jpg"));
+    assert.equal(bul("MOK-RD-SAYFA-2").diskte, false);
+    const prompt = promptUret(paket);
+    assert.match(prompt, /- MOK-RD-SAYFA-1 · Mockup · `referans\/sayfa-1\.jpg` ✓/u);
+    assert.ok(prompt.includes("`" + join(kök, "referans", "sayfa-1.jpg") + "`"), "mutlak yol basılır");
+    assert.match(prompt, /- MOK-RD-SAYFA-2 · Mockup · `referans\/sayfa-2\.png` ⚠️ yok/u);
+    assert.match(prompt, /MOK-RD-SAYFA-1[^\n]*görsel — işe başlamadan aç ve incele/u, "jpg görsel notu taşır");
+    assert.match(prompt, /MOK-RD-SAYFA-2[^\n]*görsel — işe başlamadan aç ve incele/u, "png görsel notu taşır");
+    assert.doesNotMatch(prompt, /MOK-RD-TASLAK[^\n]*görsel — işe başlamadan/u, "html görsel sayılmaz");
+    // CLI kabuğu da aynı çözümü kullanır.
+    const { çıktı, kod } = sefCiktisi(dizin, "ADM-RD-1");
+    assert.equal(kod, 0);
+    assert.match(çıktı, /`referans\/sayfa-1\.jpg` ✓/u);
+    assert.match(çıktı, /`referans\/sayfa-2\.png` ⚠️ yok/u);
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});
+
+test("OSS-A12 · Yürütücü Takım ve yığın: Katmanın Takımı ve Takımın Teknolojileri adlarıyla basılır", () => {
+  const paket = baglamMontajla(rdProg(), "ADM-RD-1")!;
+  assert.equal(paket.yürütücü?.katman?.kod, "KAT-RD-GORSEL");
+  assert.deepEqual(paket.yürütücü?.takımlar.map((t) => [t.kod, t.teknolojiler.map((x) => x.kod)]),
+    [["TAKIM-RD-GORSEL", ["TEK-RD-GORSEL", "TEK-RD-YAYIN"]]]);
+  const prompt = promptUret(paket);
+  assert.match(prompt, /## 🧑‍🔧 Yürütücü Takım ve Yığın/u);
+  assert.match(prompt, /Katman: KAT-RD-GORSEL \(Görsel\)/u);
+  assert.match(prompt, /AltKatman: ALT-RD-GORSEL \(Ürün Görselleri\) · departman: kodlama/u);
+  assert.match(prompt, /Takım: TAKIM-RD-GORSEL — görsel takımı/u);
+  assert.match(prompt, /TEK-RD-GORSEL \(Görsel Üretici\)/u, "Teknoloji adıyla basılır");
+  assert.match(prompt, /TEK-RD-YAYIN \(yayın kanalı/u, "adı olmayan Teknoloji ne cümlesiyle basılır");
+  assert.ok(prompt.indexOf("## 🧑‍🔧 Yürütücü") < prompt.indexOf("## ✅ Kabul"), "yığın bölmesi üst kısımdadır");
+});
+
+test("OSS-A12 · Katmanın doğrudan Teknolojisi, teknolojiBağımsız beyanı ve bağsız Katman uyarısı", () => {
+  const p2 = promptUret(baglamMontajla(rdProg(), "ADM-RD-2")!);
+  assert.match(p2, /Teknoloji \(Katmanın kullanır bağı\): TEK-RD-DIL \(planlama dili\)/u);
+  assert.match(p2, /ℹ️ Katmanın takım: bağı yok/u, "Takımsız Katman bunu açıkça söyler (meşru zemin: uyarı değil bilgi)");
+  const p3 = promptUret(baglamMontajla(rdProg(), "ADM-RD-3")!);
+  assert.match(p3, /⚠️ Katmanın ne takım: ne kullanır: bağı var/u);
+  const p4 = promptUret(baglamMontajla(rdProg(), "ADM-RD-4")!);
+  assert.match(p4, /teknolojiBağımsız: doğuş anı — henüz Teknoloji yok/u);
+  const katmansız = `Adım( kod: ADM-RD-YETIM, görev: "katmansız" )`;
+  const p5 = promptUret(baglamMontajla(new Map([["y.sar", ayristir(belirtecle(katmansız))]]), "ADM-RD-YETIM")!);
+  assert.match(p5, /⚠️ Adım hiçbir Katmanın içinde değil/u);
+});
+
+test("OSS-A12 · referans dosyası olmayan Adımda 📁 bölmesi doğmaz", () => {
+  const prompt = promptUret(baglamMontajla(rdProg(), "ADM-RD-2")!);
+  assert.doesNotMatch(prompt, /## 📁 Referans dosyaları/u);
+  assert.doesNotMatch(prompt, /Referans dosyaları: \d+ dosya/u);
+});
+
+test("OSS-A12 · İngilizce hane yeni bölmeleri İngilizce başlıklarla basar", () => {
+  const prompt = promptUret(baglamMontajla(rdProg(), "ADM-RD-1")!, "en");
+  assert.match(prompt, /## 📁 Reference files/u);
+  assert.match(prompt, /- MOK-RD-YOLSUZ · Mockup · ⚠️ path not declared/u);
+  assert.match(prompt, /## 🧑‍🔧 Executing Takım and stack/u);
+  assert.match(prompt, /Reference files: 3 files \(see the section\)/u);
+  assert.match(prompt, /MOK-RD-SAYFA-1[^\n]*image — open and inspect it before you start/u);
+  assert.doesNotMatch(prompt, /## 📁 Referans dosyaları/u);
+});
